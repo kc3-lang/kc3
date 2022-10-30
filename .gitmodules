@@ -1,0 +1,4 @@
+[submodule "libtommath"]
+	path = libtommath
+	url = https://git.kmx.io/c3-lang/libtommath.git
+	branch = v1.2

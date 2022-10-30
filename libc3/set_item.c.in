@@ -1,0 +1,49 @@
+/* c3
+ * Copyright 2022 kmx.io <contact@kmx.io>
+ *
+ * Permission is hereby granted to use this software granted
+ * the above copyright notice and this permission paragraph
+ * are included in all copies and substantial portions of this
+ * software.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+ * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+ * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
+/* Gen from set_item.c.in NAME=_NAME$ TYPE=_TYPE$ */
+#include <assert.h>
+#include <err.h>
+#include <stdlib.h>
+#include "set_item___NAME$.h"
+#include "_NAME$.h"
+
+s_set_item___NAME$ *
+set_item_new___NAME$ (const _TYPE$ *data, uw hash, s_set_item___NAME$ *next)
+{
+  s_set_item___NAME$ *item;
+  if (! (item = malloc(sizeof(s_set_item___NAME$))))
+    errx(1, "set_item_new___NAME$: out of memory");
+  _NAME$_copy(data, &item->data);
+  item->hash = hash;
+  item->next = next;
+  item->usage = 0;
+  return item;
+}
+
+void set_item_delete___NAME$ (s_set_item___NAME$ *x)
+{
+  assert(x);
+  _NAME$_clean(&x->data);
+  free(x);
+}
+
+void set_item_delete_all___NAME$ (s_set_item___NAME$ *x)
+{
+  s_set_item___NAME$ *y;
+  while (x) {
+    y = x;
+    x = x->next;
+    set_item_delete___NAME$(y);
+  }
+}

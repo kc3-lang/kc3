@@ -1,0 +1,37 @@
+#!/bin/sh
+## c3
+## Copyright 2022 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted
+## the above copyright notice and this permission paragraph
+## are included in all copies and substantial portions of this
+## software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+set -e
+
+export C3_TOP="$(pwd)"
+
+( cd libtommath && ./configure; )
+( cd ucd2c && ./configure; )
+( cd libc3 && ./configure; )
+( cd ic3 && ./configure; )
+( cd test && ./configure; )
+
+. ./config.subr
+
+C3_DIRS="ic3 libc3 test"
+C3_CONFIGURES="$(find . -name "configure" | tr '\n' ' ')"
+C3_MAKEFILES="$(find . -name "Makefile" | tr '\n' ' ')"
+C3_C_SOURCES="$(find $C3_DIRS -name "[a-z]*.c" -or -name "[a-z]*.h" -or -name "[a-z]*.c.in" -or -name "[a-z]*.h.in" | tr '\n' ' ')"
+C3_C_SOURCES="$C3_C_SOURCES ucd2c/ucd.h"
+
+echo "C3_CONFIGURES = $C3_CONFIGURES" >> ${CONFIG_MK}
+echo "C3_MAKEFILES = $C3_MAKEFILES" >> ${CONFIG_MK}
+echo "C3_C_SOURCES = $C3_C_SOURCES" >> ${CONFIG_MK}
+
+update_config_mk

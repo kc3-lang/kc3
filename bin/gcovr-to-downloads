@@ -1,0 +1,4 @@
+#!/bin/sh
+rm -rf ~/Downloads/c3_gcovr/
+find ic3 libc3 libtommath test -name '*.html' -or -name '*.css' | \
+    cpio -pd ~/Downloads/c3_gcovr/

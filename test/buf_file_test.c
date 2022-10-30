@@ -1,0 +1,66 @@
+/* c3
+ * Copyright 2022 kmx.io <contact@kmx.io>
+ *
+ * Permission is hereby granted to use this software granted
+ * the above copyright notice and this permission paragraph
+ * are included in all copies and substantial portions of this
+ * software.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+ * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+ * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
+#include "../libc3/buf.h"
+#include "../libc3/buf_file.h"
+#include "test.h"
+
+void buf_file_test ();
+void buf_file_test_open_r_close ();
+void buf_file_test_open_r_refill ();
+void buf_file_test_open_w_close ();
+void buf_file_test_open_w_flush ();
+
+void buf_file_test ()
+{
+  buf_file_test_open_r_close();
+  buf_file_test_open_r_refill();
+  buf_file_test_open_w_close();
+}
+
+void buf_file_test_open_r_close ()
+{
+  s_buf buf;
+  FILE *fp;
+  fp = fopen("/dev/null", "r");
+  assert(fp);
+  BUF_INIT_ALLOCA(&buf, 16);
+  TEST_EQ(buf_file_open_r(&buf, fp), &buf);
+  buf_file_close(&buf);
+  test_ok();
+  fclose(fp);
+}
+
+void buf_file_test_open_r_refill ()
+{
+  u8 b = 0x80;
+  s_buf buf;
+  FILE *fp;
+  sw i = 64;
+  test_context("buf_file_open_r_refill(/dev/zero)");
+  fp = fopen("/dev/zero", "r");
+  assert(fp);
+  BUF_INIT_ALLOCA(&buf, 16);
+  buf_file_open_r(&buf, fp);
+  while (i--) {
+    TEST_EQ(buf_read_u8(&buf, &b), 1);
+    TEST_EQ(b, 0);
+  }
+  buf_file_close(&buf);
+  fclose(fp);
+  test_context(NULL);
+}
+
+void buf_file_test_open_w_close ()
+{
+}
