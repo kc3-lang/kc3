@@ -52,6 +52,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest);
 sw buf_parse_integer (s_buf *buf, s_integer *dest);
 sw buf_parse_list (s_buf *buf, s_list **dest);
 sw buf_parse_module (s_buf *buf, const s_sym **dest);
+sw buf_parse_new_tag (s_buf *buf, s_tag **dest);
 sw buf_parse_str (s_buf *buf, s_str *dest);
 sw buf_parse_str_character (s_buf *buf, character *dest);
 sw buf_parse_str_character_unicode (s_buf *buf, character *dest);

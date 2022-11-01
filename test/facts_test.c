@@ -19,8 +19,10 @@
 
 void facts_test ();
 void facts_test_add ();
+void facts_test_dump ();
 void facts_test_find ();
 void facts_test_init_clean ();
+void facts_test_load ();
 void facts_test_log_add ();
 void facts_test_log_remove ();
 void facts_test_new_delete ();
@@ -87,6 +89,49 @@ void facts_test_add ()
     fact_test_clean(fact + i);
     i++;
   }
+  facts_clean(&facts);
+}
+
+void facts_test_dump ()
+{
+  uw i = 0;
+  s8 *p[24] = {
+    "\"a\"",
+    ":a",
+    "A",
+    "a",
+    "[]",
+    "[[], []]",
+    "{:a, :b}",
+    "{{:a, :b}, {:c, :d}}",
+    "{a, b}",
+    "{{a, b}, {c, d}}",
+    "0",
+    "1",
+    "10",
+    "0x100",
+    "0x10000",
+    "0x100000000",
+    "0x10000000000000000",
+    "-1",
+    "-10",
+    "-0x100",
+    "-0x10000",
+    "-0x100000000",
+    "-0x10000000000000000",
+    NULL
+  };
+  s_fact fact[24];
+  s_facts facts;
+  facts_init(&facts, NULL);
+  while (p[i]) {
+    fact_test_init_1(fact + i, p[i]);
+    facts_add_fact(&facts, fact + i);
+    i++;
+  }
+  facts_dump(&facts, "facts_test_dump.facts");
+  test_file_compare("facts_test_dump.facts",
+                    "facts_test_dump.facts.expected");
   facts_clean(&facts);
 }
 
@@ -160,6 +205,10 @@ void facts_test_init_clean ()
   TEST_EQ(facts.log, &buf);
   facts_clean(&facts);
   test_ok();
+}
+
+void facts_test_load ()
+{
 }
 
 void facts_test_log_add ()

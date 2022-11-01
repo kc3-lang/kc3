@@ -63,6 +63,7 @@ s_tag * tag_init_void (s_tag *tag);
 void    tag_clean (s_tag *tag);
 
 /* Constructors, call tag_delete after use */
+s_tag * tag_new ();
 s_tag * tag_new_1 (const s8 *p);
 s_tag * tag_new_str (s8 *free, uw size, const s8 *p);
 s_tag * tag_new_bool (bool p);

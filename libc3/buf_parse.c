@@ -345,6 +345,88 @@ sw buf_parse_digit_dec (s_buf *buf, u8 *dest)
   return r;
 }
 
+sw buf_parse_fact (s_buf *buf, s_fact *dest)
+{
+  s_tag *object;
+  s_tag *predicate;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_tag *subject;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "{")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_new_tag(buf, &subject)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, ",")) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_new_tag(buf, &predicate)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, ",")) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_new_tag(buf, &object)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "}")) < 0)
+    goto restore;
+  dest->subject = subject;
+  dest->predicate = predicate;
+  dest->object = object;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+  tag_delete(subject);
+  tag_delete(predicate);
+  tag_delete(object);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_ident (s_buf *buf, s_ident *dest)
 {
   character c;
@@ -737,6 +819,19 @@ sw buf_parse_module (s_buf *buf, const s_sym **dest)
  clean:
   buf_save_clean(buf, &save);
   buf_clean(&tmp);
+  return r;
+}
+
+sw buf_parse_new_tag (s_buf *buf, s_tag **dest)
+{
+  sw r;
+  s_tag *tag = tag_new();
+  if ((r = buf_parse_tag(buf, tag)) < 0) {
+    tag_delete(tag);
+    *dest = NULL;
+    return r;
+  }
+  *dest = tag;
   return r;
 }
 

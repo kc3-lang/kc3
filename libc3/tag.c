@@ -643,6 +643,13 @@ s_tag * tag_list_1 (s_tag *tag, const s8 *p)
   return tag_init_list_1(tag, p);
 }
 
+s_tag * tag_new ()
+{
+  s_tag *tag;
+  tag = calloc(1, sizeof(s_tag));
+  return tag;
+}
+
 s_tag * tag_new_1 (const s8 *p)
 {
   s_tag *tag;
