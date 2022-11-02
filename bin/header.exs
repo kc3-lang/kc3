@@ -1,4 +1,4 @@
-## c3
+## cl89
 ## Copyright 2022 kmx.io <contact@kmx.io>
 ##
 ## Permission is hereby granted to use this software granted
@@ -16,6 +16,12 @@ defmodule Header.C do
     split(src, "")
   end
 
+  def split("/*" <> rest, "") do
+    split(rest, "/*")
+  end
+  def split("/*" <> rest, acc) do
+    {"", acc <> "/*" <> rest}
+  end
   def split("*/\n" <> rest, acc) do
     header = acc <> "*/"
     {header, rest}
@@ -28,13 +34,17 @@ defmodule Header.C do
   end
 
   def main([src_path | dest_paths]) do
-    {:ok, src} = File.read(src_path)
-    {header, _} = split(src)
-    Enum.each dest_paths, fn dest_path ->
-      {:ok, dest} = File.read(dest_path)
-      {_, rest} = split(dest)
-      result = header <> "\n" <> rest
-      File.write(dest_path, result)
+    case File.read(src_path) do
+      {:ok, src} ->
+        {header, _} = split(src)
+        Enum.each dest_paths, fn dest_path ->
+          {:ok, dest} = File.read(dest_path)
+          {_, rest} = split(dest)
+          result = header <> "\n" <> rest
+          File.write(dest_path, result)
+        end
+      {:error, e} ->
+        IO.inspect "Error: #{src_path}: #{e}"
     end
   end
 end
