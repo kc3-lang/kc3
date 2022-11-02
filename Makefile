@@ -95,7 +95,7 @@ libc3_gcovr:
 libc3_test_cov: cov
 	${MAKE} -C test libc3_test_cov
 
-license:
+licence:
 	elixir bin/header.exs config.subr ${C3_CONFIGURES}
 	elixir bin/header.exs Makefile ${C3_MAKEFILES}
 	elixir bin/header.exs libc3/c3.h ${C3_C_SOURCES}
