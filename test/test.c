@@ -38,19 +38,23 @@ void test_context (const char *context)
 
 int test_file_compare(const char *path_a, const char *path_b)
 {
-  FILE *f1 = fopen(path_a, "r");
-  FILE *f2 = fopen(path_b, "r");
-  char c1, c2;
-  if (f1 == NULL || f2 == NULL) {
-    return 1;
+  FILE *fp_a = fopen(path_a, "rb");
+  FILE *fp_b = fopen(path_b, "rb");
+  char buf_a[1024];
+  char buf_b[1024];
+  if (fp_a == NULL || fp_b == NULL) {
+    return -1;
   }
-  while ((c1 = fgetc(f1)) != EOF && (c2 = fgetc(f2)) != EOF) {
-    if (c1 != c2) {
+  while (fgets(buf_a, 1024, fp_a)!= NULL) {
+    if (fgets(buf_b, 1024, fp_b) == NULL) {
+      return -1;
+    }
+    if (strcmp(buf_a, buf_b) != 0) {
       return 1;
     }
   }
-  if (c1 != c2) {
-    return 1;
+  if (fgets(buf_b, 1024, fp_b) != NULL) {
+    return -1;
   }
   return 0;
 }
