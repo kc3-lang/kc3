@@ -36,6 +36,25 @@ void test_context (const char *context)
   /* printf("test_context(%s)\n", context); */
 }
 
+int test_file_compare(const char *path_a, const char *path_b)
+{
+  FILE *f1 = fopen(path_a, "r");
+  FILE *f2 = fopen(path_b, "r");
+  char c1, c2;
+  if (f1 == NULL || f2 == NULL) {
+    return 1;
+  }
+  while ((c1 = fgetc(f1)) != EOF && (c2 = fgetc(f2)) != EOF) {
+    if (c1 != c2) {
+      return 1;
+    }
+  }
+  if (c1 != c2) {
+    return 1;
+  }
+  return 0;
+}
+
 void test_init (int argc, char **argv)
 {
   const char **t;
