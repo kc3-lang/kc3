@@ -36,22 +36,27 @@ void test_context (const char *context)
   /* printf("test_context(%s)\n", context); */
 }
 
-int test_file_compare(const char *path_a, const char *path_b)
+int test_file_compare (const char *path_a, const char *path_b)
 {
   FILE *fp_a = fopen(path_a, "rb");
   FILE *fp_b = fopen(path_b, "rb");
   char buf_a[1024];
   char buf_b[1024];
-  if (fp_a == NULL || fp_b == NULL) {
+  sw r;
+  if (fp_a == fp_b)
+    return 0;
+  if (fp_a == NULL)
     return -1;
-  }
-  while (fgets(buf_a, 1024, fp_a)!= NULL) {
+  if (fp_b == NULL)
+    return 1;
+  /* TODO: use fread and check how many bytes are read */
+  while (fgets(buf_a, 1024, fp_a) != NULL) {
     if (fgets(buf_b, 1024, fp_b) == NULL) {
-      return -1;
-    }
-    if (strcmp(buf_a, buf_b) != 0) {
       return 1;
     }
+    /* TODO: use memcmp */
+    if ((r = strcmp(buf_a, buf_b)))
+      return r;
   }
   if (fgets(buf_b, 1024, fp_b) != NULL) {
     return -1;
