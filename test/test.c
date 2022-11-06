@@ -54,7 +54,7 @@ int test_file_compare (const char *path_a, const char *path_b)
     if (fgets(buf_b, 1024, fp_b) == NULL) {
       return 1;
     }
-    /* TODO: use memcmp */
+    /* TODO: use memcmp for NUL bytes */
     if ((r = strcmp(buf_a, buf_b)))
       return r;
   }
