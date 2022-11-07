@@ -44,3 +44,4 @@ remove {a, a, a}
 remove {A, A, A}
 remove {:a, :a, :a}
 remove {"a", "a", "a"}
+x

@@ -11,11 +11,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef EVAL_H
-#define EVAL_H
+#include "env.h"
+#include "eval.h"
+#include "tag.h"
 
-#include "types.h"
-
-s_tag * eval_tag (s_env *env, s_tag *dest, s_tag *tag);
-
-#endif /* EVAL_H */
+s_tag * eval_tag (s_env *env, s_tag *dest, s_tag *tag)
+{
+  (void) env;
+  return tag_copy(tag, dest);
+}

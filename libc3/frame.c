@@ -25,8 +25,10 @@ void frame_clean (s_frame *frame)
 
 void frame_delete (s_frame *frame)
 {
-  if (frame)
+  if (frame) {
     frame_clean(frame);
+    free(frame);
+  }
 }
 
 void frame_delete_all (s_frame *frame)
