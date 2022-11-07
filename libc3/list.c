@@ -60,6 +60,7 @@ s8 list_compare (const s_list *a, const s_list *b)
   }
 }
 
+/* FIXME: does not work on circular lists */
 s_list * list_copy (const s_list *src, s_list **dest)
 {
   s_list *next;
