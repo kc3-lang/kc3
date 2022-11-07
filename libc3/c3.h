@@ -21,6 +21,8 @@
 #include "buf_parse.h"
 #include "call.h"
 #include "character.h"
+#include "env.h"
+#include "eval.h"
 #include "f32.h"
 #include "f64.h"
 #include "fact.h"

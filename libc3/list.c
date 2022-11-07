@@ -62,6 +62,7 @@ s8 list_compare (const s_list *a, const s_list *b)
 
 s_list * list_copy (const s_list *src, s_list **dest)
 {
+  s_list *next;
   s_list *result = NULL;
   *dest = NULL;
   while (src) {
@@ -69,8 +70,14 @@ s_list * list_copy (const s_list *src, s_list **dest)
     if (! result)
       result = *dest;
     tag_copy(&src->tag, &(*dest)->tag);
-    dest = &(*dest)->next.data.list;
-    src = list_next(src);
+    if ((next = list_next(src))) {
+      src = next;
+      dest = &(*dest)->next.data.list;
+    }
+    else {
+      tag_copy(&src->next, &(*dest)->next);
+      break;
+    }
   }
   return result;
 }

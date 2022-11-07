@@ -62,11 +62,13 @@ sw buf_xfer_spaces (s_buf *out, s_buf *in)
 int main (int argc, char **argv)
 {
   s_module c3;
+  s_env env;
   s_facts facts;
   s_buf in;
+  s_tag input;
   s_buf out;
   sw r;
-  s_tag tag;
+  s_tag result;
   libc3_init();
   facts_init(&facts, NULL);
   c3_init(&c3, &facts);
@@ -77,13 +79,20 @@ int main (int argc, char **argv)
   in.line = 0;
   BUF_INIT_ALLOCA(&out, BUFSZ);
   buf_file_open_w(&out, stdout);
+  env_init(&env);
   while ((r = buf_xfer_spaces(&out, &in)) >= 0) {
-    if ((r = buf_parse_tag(&in, &tag)) > 0) {
-      if (buf_inspect_tag(&out, &tag) < 0) {
-	tag_clean(&tag);
+    if ((r = buf_parse_tag(&in, &input)) > 0) {
+      if (! eval_tag(&env, &result, &input)) {
+        tag_clean(&input);
+        continue;
+      }
+      if (buf_inspect_tag(&out, &result) < 0) {
+	tag_clean(&input);
+	tag_clean(&result);
         break;
       }
-      tag_clean(&tag);
+      tag_clean(&input);
+      tag_clean(&result);
       buf_write_u8(&out, '\n');
       if ((r = buf_flush(&out)) < 0)
         break;
@@ -95,6 +104,7 @@ int main (int argc, char **argv)
     if ((r = buf_refill_compact(&in)) < 0)
       break;
   }
+  env_clean(&env);
   buf_readline_close(&in);
   buf_file_close(&out);
   c3_clean(&c3);
