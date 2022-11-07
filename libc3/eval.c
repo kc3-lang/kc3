@@ -11,6 +11,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <assert.h>
 #include "env.h"
 #include "eval.h"
 #include "tag.h"
@@ -18,5 +19,10 @@
 s_tag * eval_tag (s_env *env, s_tag *dest, s_tag *tag)
 {
   (void) env;
-  return tag_copy(tag, dest);
+  switch (tag->type.type) {
+  default:
+    return tag_copy(tag, dest);
+  }
+  assert(! "error");
+  return NULL;
 }
