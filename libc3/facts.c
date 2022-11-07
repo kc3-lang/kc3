@@ -248,6 +248,8 @@ e_bool facts_remove_fact (s_facts *facts, const s_fact *fact)
   assert(fact);
   found = facts_find_fact(facts, fact);
   if (found) {
+    if (facts->log)
+      facts_log_remove(facts->log, found);
     skiplist_remove__fact(facts->index_spo, found);
     skiplist_remove__fact(facts->index_pos, found);
     skiplist_remove__fact(facts->index_osp, found);

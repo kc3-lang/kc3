@@ -11,12 +11,20 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef ENV_H
-#define ENV_H
+#ifndef FRAME_H
+#define FRAME_H
 
 #include "types.h"
 
-s_env * env_init (s_env *env);
-void    env_clean (s_env *env);
+/* stack-allocation compatible functions */
+void      frame_clean (s_frame *frame);
+s_frame * frame_init (s_frame *frame, s_frame *next);
 
-#endif /* ENV_H */
+/* constructors */
+s_frame * frame_new ();
+
+/* destructors */
+void frame_delete (s_frame *frame);
+void frame_delete_all (s_frame *frame);
+
+#endif /* FRAME_H */

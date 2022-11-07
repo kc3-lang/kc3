@@ -14,6 +14,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <setjmp.h>
 #include <stdio.h>
 #include "../libtommath/tommath.h"
 
@@ -306,5 +307,28 @@ typedef struct module {
   const s_sym *name;
   s_facts *facts;
 } s_module;
+
+/* error_handler */
+typedef struct error_handler s_error_handler;
+
+struct error_handler
+{
+  jmp_buf jmp_buf;
+  s_error_handler *next;
+};
+
+/* frame */
+typedef struct frame s_frame;
+
+struct frame {
+  s_list *bindings;
+  s_frame *next;
+};
+
+/* env */
+typedef struct env {
+  s_frame *frame;
+  s_error_handler *error_handler;
+} s_env;
 
 #endif /* TYPES_H */

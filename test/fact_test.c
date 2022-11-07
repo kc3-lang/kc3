@@ -34,18 +34,6 @@ void fact_test ()
   fact_test_inspect();
 }
 
-s_fact * fact_test_1 (s_fact *fact, const s8 *tag)
-{
-  return fact_test_3(fact, tag, tag, tag);
-}
-
-s_fact * fact_test_3 (s_fact *fact, const s8 *subject,
-                      const s8 *predicate, const s8 *object)
-{
-  fact_test_clean(fact);
-  return fact_test_init_3(fact, subject, predicate, object);
-}
-
 s_fact * fact_test_clean (s_fact *fact)
 {
   assert(fact);

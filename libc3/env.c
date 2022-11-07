@@ -11,12 +11,22 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef ENV_H
-#define ENV_H
+#include <assert.h>
+#include "env.h"
+#include "error_handler.h"
+#include "frame.h"
 
-#include "types.h"
+s_env * env_init (s_env *env)
+{
+  assert(env);
+  env->frame = NULL;
+  env->error_handler = NULL;
+  return env;
+}
 
-s_env * env_init (s_env *env);
-void    env_clean (s_env *env);
-
-#endif /* ENV_H */
+void env_clean (s_env *env)
+{
+  assert(env);
+  frame_delete_all(env->frame);
+  error_handler_delete_all(env->error_handler);
+}

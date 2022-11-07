@@ -11,12 +11,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef ENV_H
-#define ENV_H
+#ifndef EVAL_H
+#define EVAL_H
 
 #include "types.h"
 
-s_env * env_init (s_env *env);
-void    env_clean (s_env *env);
+s_tag * eval_tag (s_env *env, s_tag *tag);
 
-#endif /* ENV_H */
+#endif /* EVAL_H */

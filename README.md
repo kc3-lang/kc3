@@ -1,7 +1,7 @@
 # C3 v0.1
 
 C3 is a programming language, inspired by C89, Elixir and Common Lisp.
-It aims to replace C89 with an Elixir syntax.
+It aims to better C89 with an Elixir syntax.
 
 ```
 defmodule C3 do

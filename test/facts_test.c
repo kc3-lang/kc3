@@ -37,6 +37,7 @@ void facts_test ()
   facts_test_find();
   facts_test_log_add();
   facts_test_log_remove();
+  facts_test_dump();
 }
 
 void facts_test_add ()
@@ -296,7 +297,7 @@ void facts_test_log_remove ()
   BUF_INIT_ALLOCA(&log, 1024);
   fp = fopen("facts_test_log_remove.facts", "w");
   buf_file_open_w(&log, fp);
-  facts_init(&facts, NULL);
+  facts_init(&facts, &log);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
@@ -306,6 +307,7 @@ void facts_test_log_remove ()
     facts_remove_fact(&facts, fact + i);
   }
   facts_clean(&facts);
+  buf_file_close(&log);
   fclose(fp);
   test_file_compare("facts_test_log_remove.facts",
                     "facts_test_log_remove.facts.expected");
