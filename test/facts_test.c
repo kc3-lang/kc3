@@ -12,6 +12,7 @@
  * THIS SOFTWARE.
  */
 #include <stdio.h>
+#include <unistd.h>
 #include "../libc3/buf.h"
 #include "../libc3/facts.h"
 #include "fact_test.h"
@@ -133,6 +134,8 @@ void facts_test_dump ()
   facts_dump(&facts, "facts_test_dump.facts");
   test_file_compare("facts_test_dump.facts",
                     "facts_test_dump.facts.expected");
+  if (g_test_last_ok)
+    unlink("facts_test_dump.facts");
   i = 0;
   while (p[i]) {
     fact_test_clean_1(fact + i);
@@ -264,6 +267,8 @@ void facts_test_log_add ()
   fclose(fp);
   test_file_compare("facts_test_log_add.facts",
                     "facts_test_log_add.facts.expected");
+  if (g_test_last_ok)
+    unlink("facts_test_log_add.facts");
 }
 
 void facts_test_log_remove ()
@@ -321,6 +326,8 @@ void facts_test_log_remove ()
   fclose(fp);
   test_file_compare("facts_test_log_remove.facts",
                     "facts_test_log_remove.facts.expected");
+  if (g_test_last_ok)
+    unlink("facts_test_log_remove.facts");
 }
 
 void facts_test_new_delete ()

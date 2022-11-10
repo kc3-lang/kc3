@@ -113,13 +113,13 @@ void facts_with_test_ ()
   TAG_TEST_EQ(predicate.data.var, tag + 1);
   TAG_TEST_EQ(object.data.var, tag + 2);
   TEST_ASSERT(facts_with_cursor_next(&cursor));
-  TAG_TEST_EQ(subject.data.var, tag);
-  TAG_TEST_EQ(predicate.data.var, tag + 1);
-  TAG_TEST_EQ(object.data.var, tag + 3);
-  TEST_ASSERT(facts_with_cursor_next(&cursor));
   TAG_TEST_EQ(subject.data.var, tag + 5);
   TAG_TEST_EQ(predicate.data.var, tag + 1);
   TAG_TEST_EQ(object.data.var, tag + 2);
+  TEST_ASSERT(facts_with_cursor_next(&cursor));
+  TAG_TEST_EQ(subject.data.var, tag);
+  TAG_TEST_EQ(predicate.data.var, tag + 1);
+  TAG_TEST_EQ(object.data.var, tag + 3);
   TEST_ASSERT(! facts_with_cursor_next(&cursor));
   TEST_ASSERT(! facts_with_cursor_next(&cursor));
   facts_with_cursor_clean(&cursor);
