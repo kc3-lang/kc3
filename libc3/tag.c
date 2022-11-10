@@ -256,7 +256,10 @@ t_hash_context * tag_hash_update (t_hash_context *context,
   case TAG_U16: u16_hash_update(context, tag->data.u16);          break;
   case TAG_U32: u32_hash_update(context, tag->data.u32);          break;
   case TAG_U64: u64_hash_update(context, tag->data.u64);          break;
-  case TAG_VAR: errx(1, "var hash update");                 return NULL;
+  case TAG_VAR:
+    assert(! "var hash update");
+    errx(1, "var hash update");
+    return NULL;
   }
   return context;
 }
@@ -628,7 +631,8 @@ e_bool tag_is_number (const s_tag *tag)
 e_bool tag_is_var (const s_tag *tag)
 {
   return (tag &&
-          tag->type.type == TAG_VAR);
+          tag->type.type == TAG_VAR &&
+          tag->data.var == NULL);
 }
 
 s_tag * tag_list (s_tag *tag, s_list *x)
