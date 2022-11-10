@@ -41,6 +41,9 @@ distclean:
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details test.html
 
+gdb_test: debug
+	if [ -f libc3_test.debug.core ]; then gdb libc3_test.debug libc3_test.debug.core; else gdb libc3_test.debug; fi
+
 ic3_test_cov:
 	IC3=${C3_TOP}/ic3/ic3.cov time ./ic3_test
 

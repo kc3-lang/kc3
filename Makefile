@@ -70,10 +70,10 @@ gcovr:
 	if [ -d "$$HOME/Downloads/c3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
 gdb_ic3: debug
-	if [ -f ic3/ic3.debug.core ]; then gdb ic3/ic3.debug ic3/ic3.debug.core; else gdb ic3/ic3.debug; fi
+	${MAKE} -C ic3 gdb_ic3
 
 gdb_test: debug
-	if [ -f test/libc3_test.debug.core ]; then gdb test/libc3_test.debug test/libc3_test.debug.core; else gdb test/libc3_test.debug; fi
+	${MAKE} -C test gdb_test
 
 ic3_gcovr:
 	${MAKE} clean_cov
