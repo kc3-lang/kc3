@@ -118,6 +118,7 @@ void tag_clean (s_tag *tag)
 {
   assert(tag);
   switch (tag->type.type) {
+  case TAG_CALL:    call_clean(&tag->data.call);       break;
   case TAG_INTEGER: integer_clean(&tag->data.integer); break;
   case TAG_LIST:    list_delete(tag->data.list);       break;
   case TAG_QUOTE:   quote_clean(tag->data.quote);      break;
@@ -168,7 +169,7 @@ s8 tag_compare (const s_tag *a, const s_tag *b) {
   case TAG_U16: return u16_compare(a->data.u16, b->data.u16);
   case TAG_U32: return u32_compare(a->data.u32, b->data.u32);
   case TAG_U64: return u64_compare(a->data.u64, b->data.u64);
-  case TAG_VAR: return ptr_compare(a, b);
+  case TAG_VAR: return ptr_compare(a->data.var, b->data.var);
   }
   assert(! "tag_compare: error");
   errx(1, "tag_compare");
@@ -180,6 +181,7 @@ s_tag * tag_copy (const s_tag *src, s_tag *dest)
   assert(src);
   assert(dest);
   switch (src->type.type) {
+  case TAG_CALL: call_copy(&src->data.call, &dest->data.call);    break;
   case TAG_INTEGER:
     integer_init(&dest->data.integer);
     integer_copy(&src->data.integer, &dest->data.integer);        break;

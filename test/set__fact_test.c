@@ -133,7 +133,7 @@ void set__fact_test_add ()
   }
   i = 0;
   while (p[i]) {
-    fact_test_clean(fact + i);
+    fact_test_clean_1(fact + i);
     i++;
   }
   set_clean__fact(&set);
@@ -183,7 +183,7 @@ void set__fact_test_cursor ()
   while (i--) {
     set_remove__fact(&set, fact + i);
     SET__FACT_TEST_CURSOR(i);
-    fact_test_clean(fact + i);
+    fact_test_clean_1(fact + i);
   }
   set_clean__fact(&set);
 }
@@ -263,7 +263,7 @@ void set__fact_test_remove ()
   i = set.count;
   while (i--) {
     SET__FACT_TEST_REMOVE(fact + i, i);
-    fact_test_clean(fact + i);
+    fact_test_clean_1(fact + i);
   }
   set_clean__fact(&set);
 }
@@ -341,8 +341,10 @@ void set__fact_test_resize ()
   SET__FACT_TEST_RESIZE(32768);
   SET__FACT_TEST_RESIZE(65536);
   SET__FACT_TEST_RESIZE(65536);
-  i = set.count;
-  while (i--)
-    fact_test_clean(fact + i);
+  i = 0;
+  while (p[i]) {
+    fact_test_clean_1(fact + i);
+    i++;
+  }
   set_clean__fact(&set);
 }

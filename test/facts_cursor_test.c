@@ -91,7 +91,7 @@ void facts_cursor_test_init ()
                             fact + 6), &cursor);
   i = 0;
   while (p[i]) {
-    fact_test_clean(fact + i);
+    fact_test_clean_1(fact + i);
     i++;
   }
   facts_clean(&facts);
@@ -203,7 +203,7 @@ void facts_cursor_test_next ()
   TEST_EQ(facts_cursor_next(&cursor), NULL);
   i = 0;
   while (p[i]) {
-    fact_test_clean(fact + i);
+    fact_test_clean_1(fact + i);
     i++;
   }
   facts_clean(&facts);

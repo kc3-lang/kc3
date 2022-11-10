@@ -54,8 +54,8 @@ p_facts_spec facts_spec_new_expand (p_facts_spec spec)
 
 p_facts_spec facts_spec_sort (p_facts_spec spec)
 {
-  p_var *a;
-  p_var *b;
+  s_tag **a;
+  s_tag **b;
   uw count;
   uw i = 0;
   uw j;
@@ -68,7 +68,7 @@ p_facts_spec facts_spec_sort (p_facts_spec spec)
         a = spec + j * 4;
         b = spec + (j + 1) * 4;
         if (fact_compare_var_count((s_fact *) a, (s_fact *) b) > 0) {
-          p_var swap[3];
+          s_tag *swap[3];
           swap[0] = a[0];
           swap[1] = a[1];
           swap[2] = a[2];

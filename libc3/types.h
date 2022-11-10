@@ -129,7 +129,7 @@ typedef struct call {
   s_list *args;
 } s_call;
 
-typedef s_tag * p_var;
+typedef const s_tag * p_var;
 
 typedef enum tag_type {
   TAG_VOID = 0,
@@ -183,6 +183,7 @@ typedef union tag_data {
   u16          u16;
   u32          u32;
   u64          u64;
+  p_var        var;
 } u_tag_data;
 
 struct tag {
@@ -283,7 +284,7 @@ typedef s_tag ** p_facts_spec;
 
 typedef struct facts_spec_cursor {
   p_facts_spec spec;
-  s_tag *subject;
+  const s_tag *subject;
   uw pos;
 } s_facts_spec_cursor;
 

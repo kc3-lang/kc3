@@ -18,8 +18,8 @@
 
 #define TAG_TEST_EQ(test, expected)                                    \
   do {                                                                 \
-    s_tag *tag_expected;                                               \
-    s_tag *tag_test;                                                   \
+    const s_tag *tag_expected;                                               \
+    const s_tag *tag_test;                                                   \
     tag_expected = (expected);                                         \
     tag_test = (test);                                                 \
     if (tag_compare(tag_test, tag_expected) == 0) {                    \

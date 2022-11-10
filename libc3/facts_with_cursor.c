@@ -49,7 +49,7 @@ s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
   }
   while (cursor->level < cursor->facts_count) {
     level = cursor->l + cursor->level;
-    if (!level->spec) {
+    if (! level->spec) {
       parent_spec = cursor->level ?
         cursor->l[cursor->level - 1].spec + 4 :
         cursor->spec;
@@ -58,23 +58,17 @@ s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
                       level->spec[1], level->spec[2]);
     }
     level->fact = fact = facts_cursor_next(&level->cursor);
-    if (level->fact)
+    if (fact) {
       cursor->level++;
-    else {
-      free(level->spec);
-      level->spec = NULL;
-      if (cursor->level > 0) {
-        cursor->level--;
-        if (!cursor->level) {
-          cursor->facts_count = 0;
-          return NULL;
-        }
-      }
-      else {
-        cursor->facts_count = 0;
-        return NULL;
-      }
+      continue;
     }
+    free(level->spec);
+    level->spec = NULL;
+    if (! cursor->level) {
+      cursor->facts_count = 0;
+      return NULL;
+    }
+    cursor->level--;
   }
   return fact;
 }

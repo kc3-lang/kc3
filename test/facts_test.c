@@ -87,7 +87,7 @@ void facts_test_add ()
     TEST_EQ(tag_compare(fact[i].subject, pf->subject), 0);
     TEST_EQ(tag_compare(fact[i].predicate, pf->predicate), 0);
     TEST_EQ(tag_compare(fact[i].object, pf->object), 0);
-    fact_test_clean(fact + i);
+    fact_test_clean_1(fact + i);
     i++;
   }
   facts_clean(&facts);
@@ -133,6 +133,11 @@ void facts_test_dump ()
   facts_dump(&facts, "facts_test_dump.facts");
   test_file_compare("facts_test_dump.facts",
                     "facts_test_dump.facts.expected");
+  i = 0;
+  while (p[i]) {
+    fact_test_clean_1(fact + i);
+    i++;
+  }
   facts_clean(&facts);
 }
 
@@ -184,7 +189,7 @@ void facts_test_find ()
     facts_remove_fact(&facts, fact + i);
     TEST_EQ(facts_find_fact(&facts, fact + i), NULL);
     TEST_EQ(facts_find_fact(&facts, fact + i), NULL);
-    fact_test_clean(fact + i);
+    fact_test_clean_1(fact + i);
   }
   facts_clean(&facts);
 }
@@ -252,7 +257,7 @@ void facts_test_log_add ()
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
-    fact_test_clean(fact + i);
+    fact_test_clean_1(fact + i);
     i++;
   }
   facts_clean(&facts);
@@ -305,6 +310,11 @@ void facts_test_log_remove ()
   }
   while (i--) {
     facts_remove_fact(&facts, fact + i);
+  }
+  i = 0;
+  while (p[i]) {
+    fact_test_clean_1(fact + i);
+    i++;
   }
   facts_clean(&facts);
   buf_file_close(&log);
@@ -380,7 +390,7 @@ void facts_test_remove ()
     TEST_EQ(facts_remove_fact(&facts, fact + i), false);
     TEST_EQ(facts.tags.count, i);
     TEST_EQ(facts.facts.count, i);
-    fact_test_clean(fact + i);
+    fact_test_clean_1(fact + i);
   }
   facts_clean(&facts);
 }

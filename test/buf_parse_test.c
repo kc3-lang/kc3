@@ -17,6 +17,7 @@
 #include <string.h>
 #include "../libc3/buf.h"
 #include "../libc3/buf_parse.h"
+#include "../libc3/call.h"
 #include "../libc3/list.h"
 #include "../libc3/str.h"
 #include "../libc3/integer.h"
@@ -42,6 +43,7 @@
     test_context("buf_parse_call(" # test ")");                        \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_call(&buf, &dest), strlen(test));                \
+    call_clean(&dest);                                                 \
     buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)

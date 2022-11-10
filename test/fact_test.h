@@ -44,7 +44,8 @@
     }                                                                  \
   } while (0)
 
-s_fact * fact_test_clean (s_fact *fact);
+void     fact_test_clean_1 (s_fact *fact);
+void     fact_test_clean_3 (s_fact *fact);
 s_fact * fact_test_init_1 (s_fact *fact, const s8 *tag);
 s_fact * fact_test_init_3 (s_fact *fact, const s8 *subject,
                            const s8 *predicate, const s8 *object);

@@ -130,7 +130,7 @@ void skiplist__fact_test_find ()
       while (i--) {
         skiplist_remove__fact(skiplist, fact + i);
         TEST_ASSERT(! skiplist_find__fact(skiplist, fact + i));
-        fact_test_clean(fact + i);
+        fact_test_clean_1(fact + i);
       }
       skiplist_clean__fact(skiplist);
     }
@@ -190,7 +190,7 @@ void skiplist__fact_test_insert ()
   }
   i = 0;
   while (p[i]) {
-    fact_test_clean(fact + i);
+    fact_test_clean_1(fact + i);
     i++;
   }
 }
@@ -268,7 +268,7 @@ void skiplist__fact_test_remove ()
       i = skiplist->length;
       while (i--) {
         SKIPLIST__FACT_TEST_REMOVE(fact + i, i);
-        fact_test_clean(fact + i);
+        fact_test_clean_1(fact + i);
       }
       skiplist_clean__fact(skiplist);
     }

@@ -39,6 +39,15 @@ s8 call_compare (const s_call *a, const s_call *b)
   return list_compare(a->args, b->args);
 }
 
+s_call * call_copy (const s_call *src, s_call *dest)
+{
+  assert(src);
+  assert(dest);
+  ident_copy(&src->ident, &dest->ident);
+  list_copy(src->args, &dest->args);
+  return dest;
+}
+
 t_hash_context * call_hash_update (t_hash_context *context,
                                    const s_call *x)
 {

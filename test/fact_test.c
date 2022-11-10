@@ -13,6 +13,7 @@
  */
 #include <string.h>
 #include "../libc3/fact.h"
+#include "../libc3/str.h"
 #include "fact_test.h"
 #include "test.h"
 
@@ -21,7 +22,9 @@
     s_str str;                                                         \
     TEST_EQ(fact_inspect(test, &str), &str);                           \
     TEST_EQ(str.size, strlen(expected));                               \
-    TEST_STRNCMP(str.ptr.p, (expected), str.size);                     \
+    if (g_test_last_ok)						       \
+      TEST_STRNCMP(str.ptr.p, (expected), str.size);		       \
+    str_clean(&str);						       \
   } while (0)
 
 void fact_test ();
@@ -34,13 +37,18 @@ void fact_test ()
   fact_test_inspect();
 }
 
-s_fact * fact_test_clean (s_fact *fact)
+void fact_test_clean_1 (s_fact *fact)
+{
+  assert(fact);
+  tag_delete((s_tag *) fact->subject);
+}
+
+void fact_test_clean_3 (s_fact *fact)
 {
   assert(fact);
   tag_delete((s_tag *) fact->subject);
   tag_delete((s_tag *) fact->predicate);
   tag_delete((s_tag *) fact->object);
-  return fact;
 }
 
 void fact_test_init ()
@@ -58,7 +66,9 @@ void fact_test_init ()
 
 s_fact * fact_test_init_1 (s_fact *fact, const s8 *tag)
 {
-  return fact_test_init_3(fact, tag, tag, tag);
+  assert(fact);
+  fact->subject = fact->predicate = fact->object = tag_new_1(tag);
+  return fact;
 }
 
 s_fact * fact_test_init_3 (s_fact *fact, const s8 *subject,

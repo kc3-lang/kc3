@@ -47,6 +47,13 @@ s8 ident_compare (const s_ident *a, const s_ident *b)
   return sym_compare(a->sym, b->sym);
 }
 
+s_ident * ident_copy (const s_ident *src, s_ident *dest)
+{
+  dest->module = src->module;
+  dest->sym = src->sym;
+  return dest;
+}
+
 e_bool ident_first_character_is_reserved (character c)
 {
   return (character_is_digit(c) ||

@@ -91,9 +91,9 @@ s_facts_cursor * facts_with_tags (const s_facts *facts,
                                   s_tag *predicate,
                                   s_tag *object)
 {
-  p_var var_subject;
-  p_var var_predicate;
-  p_var var_object;
+  s_tag *var_subject;
+  s_tag *var_predicate;
+  s_tag *var_object;
   assert(facts);
   assert(cursor);
   assert(subject);

@@ -812,7 +812,9 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_U16:     return buf_inspect_u16_size(tag->data.u16);
   case TAG_U32:     return buf_inspect_u32_size(tag->data.u32);
   case TAG_U64:     return buf_inspect_u64_size(tag->data.u64);
-  case TAG_VAR:     errx(1, "buf_inspect_tag_size: variable");
+  case TAG_VAR:
+    assert(! "variable");
+    errx(1, "buf_inspect_tag_size: variable");
     return -1;
   }
   assert(! "unknown tag type");

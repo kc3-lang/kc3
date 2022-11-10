@@ -31,6 +31,8 @@ e_bool ident_character_is_reserved (character c);
 /* Compare two idents. Returns -1 if a < b, 0 if a = b, 1 if a > b. */
 s8 ident_compare (const s_ident *a, const s_ident *b);
 
+s_ident * ident_copy (const s_ident *src, s_ident *dest);
+
 /* Returns true iff c is an ident reserved character as first. */
 e_bool ident_first_character_is_reserved (character c);
 

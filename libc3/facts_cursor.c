@@ -64,11 +64,11 @@ s_fact * facts_cursor_next (s_facts_cursor *cursor)
   if (cursor->node) {
     s_fact *fact = cursor->node->fact;
     if (cursor->var_subject)
-      tag_copy(fact->subject, cursor->var_subject);
+      cursor->var_subject->data.var = fact->subject;
     if (cursor->var_predicate)
-      tag_copy(fact->predicate, cursor->var_predicate);
+      cursor->var_predicate->data.var = fact->predicate;
     if (cursor->var_object)
-      tag_copy(fact->object, cursor->var_object);
+      cursor->var_object->data.var = fact->object;
     return fact;
   }
   if (cursor->var_subject)

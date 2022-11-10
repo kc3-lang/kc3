@@ -13,6 +13,7 @@
  */
 #include <string.h>
 #include "../libc3/call.h"
+#include "../libc3/str.h"
 #include "test.h"
 
 #define CALL_TEST_INIT_1(test)                                         \
@@ -30,7 +31,10 @@
     call_init_1(&call, (test));                                        \
     TEST_EQ(call_inspect(&call, &result), &result);                    \
     TEST_EQ(result.size, strlen(test));                                \
-    TEST_STRNCMP(result.ptr.p, (test), result.size);                   \
+    if (g_test_last_ok)	                                               \
+      TEST_STRNCMP(result.ptr.p, (test), result.size);                 \
+    call_clean(&call);						       \
+    str_clean(&result);						       \
   } while (0)
 
 void call_test ();
