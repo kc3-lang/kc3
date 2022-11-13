@@ -68,7 +68,7 @@ e_bool ident_has_reserved_characters (const s_ident *ident)
   character c;
   sw r;
   s_str stra;
-  str_init(&stra, false, ident->sym->str.size, ident->sym->str.ptr.p);
+  str_init(&stra, NULL, ident->sym->str.size, ident->sym->str.ptr.p);
   if ((r = str_read_character(&stra, &c)) > 0) {
     if (ident_first_character_is_reserved(c))
       return true;
@@ -103,7 +103,7 @@ s_ident * ident_init (s_ident *ident, const s_sym *sym)
 s_ident * ident_init_1 (s_ident *ident, const s8 *p)
 {
   s_str tmp;
-  str_init_1(&tmp, false, p);
+  str_init_1(&tmp, NULL, p);
   str_to_ident(&tmp, ident);
   return ident;
 }

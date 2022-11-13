@@ -25,7 +25,7 @@ LIB_DEBUG=libc3.debug.la
 
 SOURCES="$(ls *.c | tr '\n' ' ')"
 echo "SOURCES = $SOURCES" >> ${CONFIG_MK}
-LIBTOMMATH_SOURCES="$(ls ../libtommath/*.c | tr '\n' ' ')"
+LIBTOMMATH_SOURCES="$(ls ../libtommath/*.c | grep -v -e bn_mp_set_double.c -e bn_s_mp_rand_platform.c | tr '\n' ' ')"
 LO_SOURCES="$SOURCES $LIBTOMMATH_SOURCES"
 OBJECTS="$(c2ext .main.lo "$LO_SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}

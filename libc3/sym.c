@@ -32,7 +32,7 @@ static s_sym_list * g_sym_list = NULL;
 const s_sym * sym_1 (const s8 *p)
 {
   s_str stra;
-  str_init_1(&stra, false, p);
+  str_init_1(&stra, NULL, p);
   return str_to_sym(&stra);
 }
 
@@ -100,7 +100,7 @@ e_bool sym_has_reserved_characters (const s_sym *sym)
   character c;
   sw r;
   s_str stra;
-  str_init(&stra, false, sym->str.size, sym->str.ptr.p);
+  str_init(&stra, NULL, sym->str.size, sym->str.ptr.p);
   while ((r = str_read_character(&stra, &c)) > 0) {
     if (sym_character_is_reserved(c))
       return true;

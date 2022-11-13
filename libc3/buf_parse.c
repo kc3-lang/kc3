@@ -347,12 +347,12 @@ sw buf_parse_digit_dec (s_buf *buf, u8 *dest)
 
 sw buf_parse_fact (s_buf *buf, s_fact *dest)
 {
-  s_tag *object;
-  s_tag *predicate;
+  s_tag *object = NULL;
+  s_tag *predicate = NULL;
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_tag *subject;
+  s_tag *subject = NULL;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -1389,7 +1389,7 @@ sw buf_parse_f32 (s_buf *buf, f32 *dest)
   sw r;
   sw result = 0;
   u8 digit;
-  u8  exponent;
+  u8 exponent = 0;
   s_buf_save save;
   f32 tmp = 0;
   f32 frac = 0.1;
@@ -1452,7 +1452,7 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest) {
   sw r;
   sw result = 0;
   u8 digit;
-  u8 exponent;
+  u8 exponent = 0;
   s_buf_save save;
   f64 tmp = 0;
   f64 frac = 0.1;

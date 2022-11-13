@@ -127,7 +127,7 @@
     s_buf buf;                                                         \
     s_str str;                                                         \
     test_context("buf_inspect_str(" # test ") -> " # expected);        \
-    str_init_1(&str, false, (test));                                   \
+    str_init_1(&str, NULL, (test));                                   \
     buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_str(&buf, &str), strlen(expected));            \
     TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
