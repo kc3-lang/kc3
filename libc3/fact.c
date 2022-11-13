@@ -35,7 +35,8 @@ s8 fact_compare (const s_fact *a, const s_fact *b)
   return r;
 }
 
-s8 fact_compare_var_count (const s_fact *a, const s_fact *b)
+s8 fact_compare_unbound_var_count (const s_fact *a,
+                                   const s_fact *b)
 {
   u8 ca;
   u8 cb;
@@ -47,17 +48,17 @@ s8 fact_compare_var_count (const s_fact *a, const s_fact *b)
     return 1;
   ca = 0;
   cb = 0;
-  if (tag_is_var(a->subject))
+  if (tag_is_unbound_var(a->subject))
     ca++;
-  if (tag_is_var(a->predicate))
+  if (tag_is_unbound_var(a->predicate))
     ca++;
-  if (tag_is_var(a->object))
+  if (tag_is_unbound_var(a->object))
     ca++;
-  if (tag_is_var(b->subject))
+  if (tag_is_unbound_var(b->subject))
     cb++;
-  if (tag_is_var(b->predicate))
+  if (tag_is_unbound_var(b->predicate))
     cb++;
-  if (tag_is_var(b->object))
+  if (tag_is_unbound_var(b->object))
     cb++;
   return u8_compare(ca, cb);
 }

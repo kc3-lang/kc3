@@ -67,7 +67,8 @@ p_facts_spec facts_spec_sort (p_facts_spec spec)
       while (j < count - i - 1) {
         a = spec + j * 4;
         b = spec + (j + 1) * 4;
-        if (fact_compare_var_count((s_fact *) a, (s_fact *) b) > 0) {
+        if (fact_compare_unbound_var_count((s_fact *) a,
+                                           (s_fact *) b) > 0) {
           s_tag *swap[3];
           swap[0] = a[0];
           swap[1] = a[1];

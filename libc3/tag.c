@@ -129,6 +129,10 @@ void tag_clean (s_tag *tag)
 }
 
 s8 tag_compare (const s_tag *a, const s_tag *b) {
+  if (tag_is_bound_var(a))
+    a = a->data.var;
+  if (tag_is_bound_var(b))
+    b = b->data.var;
   if (a == b)
     return 0;
   if (!a ||
@@ -609,6 +613,13 @@ s_tag * tag_integer_reduce (s_tag *tag)
   return tag;
 }
 
+e_bool tag_is_bound_var (const s_tag *tag)
+{
+  return (tag &&
+          tag->type.type == TAG_VAR &&
+          tag->data.var);
+}
+
 e_bool tag_is_number (const s_tag *tag)
 {
   assert(tag);
@@ -628,7 +639,7 @@ e_bool tag_is_number (const s_tag *tag)
   return false;
 }
 
-e_bool tag_is_var (const s_tag *tag)
+e_bool tag_is_unbound_var (const s_tag *tag)
 {
   return (tag &&
           tag->type.type == TAG_VAR &&
