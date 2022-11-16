@@ -100,6 +100,13 @@ void facts_with_test_ ()
   TEST_ASSERT(! facts_with_cursor_next(&cursor));
   TEST_ASSERT(! facts_with_cursor_next(&cursor));
   facts_with_cursor_clean(&cursor);
+  facts_with(&facts, &cursor, (s_tag *[]) { tag + 5, tag + 1, tag + 2,
+                                            NULL, NULL });
+  fact_init(&fact, tag + 5, tag + 1, tag + 2);
+  FACT_TEST_EQ(&fact, facts_with_cursor_next(&cursor));
+  TEST_ASSERT(! facts_with_cursor_next(&cursor));
+  TEST_ASSERT(! facts_with_cursor_next(&cursor));
+  facts_with_cursor_clean(&cursor);
   facts_with(&facts, &cursor, (s_tag *[]) { tag_init_var(&subject),
                                             tag_init_var(&predicate),
                                             tag_init_var(&object),
@@ -117,6 +124,10 @@ void facts_with_test_ ()
   TAG_TEST_EQ(predicate.data.var, tag + 1);
   TAG_TEST_EQ(object.data.var, tag + 3);
   TEST_ASSERT(facts_with_cursor_next(&cursor));
+  TAG_TEST_EQ(subject.data.var, tag);
+  TAG_TEST_EQ(predicate.data.var, tag + 4);
+  TAG_TEST_EQ(object.data.var, tag + 3);
+  TEST_ASSERT(facts_with_cursor_next(&cursor));
   TAG_TEST_EQ(subject.data.var, tag + 5);
   TAG_TEST_EQ(predicate.data.var, tag + 1);
   TAG_TEST_EQ(object.data.var, tag + 2);
@@ -128,12 +139,8 @@ void facts_with_test_ ()
                                                  NULL,
                                             tag + 5, tag + 1, tag + 2,
                                             NULL, NULL });
-  TEST_ASSERT(facts_with_cursor_next(&cursor));
-  if (! g_test_last_ok)
-    return;
-  TAG_TEST_EQ(subject.data.var, tag + 5);
-  TAG_TEST_EQ(predicate.data.var, tag + 1);
-  TAG_TEST_EQ(object.data.var, tag + 2);
+  fact_init(&fact, tag + 5, tag + 1, tag + 2);
+  FACT_TEST_EQ(&fact, facts_with_cursor_next(&cursor));
   TEST_ASSERT(! facts_with_cursor_next(&cursor));
   TEST_ASSERT(! facts_with_cursor_next(&cursor));
   facts_with(&facts, &cursor, (s_tag *[]) { tag + 3, tag, tag + 1,
