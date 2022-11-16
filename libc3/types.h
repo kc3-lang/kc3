@@ -271,7 +271,7 @@ typedef struct facts {
 } s_facts;
 
 typedef struct facts_cursor {
-  s_skiplist__fact *tree;
+  s_skiplist__fact *index;
   s_skiplist_node__fact *node;
   s_fact start;
   s_fact end;
@@ -298,7 +298,7 @@ typedef struct facts_with_cursor {
   const s_facts *facts;
   s_list *bindings;
   size_t facts_count;
-  s_facts_with_cursor_level *l;
+  s_facts_with_cursor_level *levels;
   size_t level;
   p_facts_spec spec;
 } s_facts_with_cursor;

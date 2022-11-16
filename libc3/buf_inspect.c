@@ -194,6 +194,33 @@ sw buf_inspect_fact_size (const s_fact *fact)
   return result;
 }
 
+sw buf_inspect_fact_spec (s_buf *buf, p_facts_spec spec)
+{
+  sw r;
+  sw result = 0;
+  if (spec) {
+    if ((r = buf_write_1(buf, "{")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_tag(buf, spec[0])) < 0)
+      return r;
+    result += r;
+    while (spec[0] || spec[1]) {
+      spec++;
+      if ((r = buf_write_1(buf, ", ")) < 0)
+        return r;
+      result += r;
+      if ((r = buf_inspect_tag(buf, spec[0])) < 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_write_1(buf, "}")) < 0)
+      return r;
+    result += r;
+  }
+  return result;
+}
+
 sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
 {
   sw r;
@@ -754,7 +781,8 @@ sw buf_inspect_sym_reserved_size (const s_sym *x)
 
 sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
 {
-  assert(tag);
+  if (! tag)
+    return buf_write_1(buf, "NULL");
   switch(tag->type.type) {
   case TAG_VOID:    return 0;
   case TAG_BOOL:    return buf_inspect_bool(buf, tag->data.bool);
@@ -779,7 +807,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_U16:     return buf_inspect_u16(buf, tag->data.u16);
   case TAG_U32:     return buf_inspect_u32(buf, tag->data.u32);
   case TAG_U64:     return buf_inspect_u64(buf, tag->data.u64);
-  case TAG_VAR:     break;
+  case TAG_VAR:     return buf_inspect_var(buf, tag->data.var);
   }
   assert(! "unknown tag type");
   return -1;
@@ -1007,13 +1035,30 @@ sw buf_inspect_u64 (s_buf *buf, u64 x)
   return size;
 }
 
-sw buf_inspect_u64_size (u64 x)
+sw buf_inspect_u64_hex (s_buf *buf, u64 i)
+{
+  const s8 basis[] = "0123456789ABCDEF";
+  uw shift = 64;
+  while (shift) {
+    shift -= 4;
+    buf_write_s8(buf, basis[(i >> shift) & 0xF]);
+  }
+  return 16;
+}
+
+sw buf_inspect_u64_hex_size (u64 i)
+{
+  (void) i;
+  return 16;
+}
+
+sw buf_inspect_u64_size (u64 i)
 {
   sw size = 0;
-  if (x == 0)
+  if (i == 0)
     return 1;
-  while (x > 0) {
-    x /= 10;
+  while (i > 0) {
+    i /= 10;
     size++;
   }
   return size;
@@ -1021,21 +1066,35 @@ sw buf_inspect_u64_size (u64 x)
 
 sw buf_inspect_uw_hex (s_buf *buf, uw i)
 {
-  const s8 map[] = "0123456789ABCDEF";
-  u8 s = (sizeof(uw) - 1) / 4;
-  uw w = 0xF << s;
-  sw r;
-  while (0xF < w) {
-    if ((r = buf_write_u8(buf, map[(i & w) >> s])) < 0)
-      return r;
-    s -= 4;
-    w >>= 4;
-  }
+  if (sizeof(uw) == 8)
+    return buf_inspect_u64_hex(buf, i);
+  if (sizeof(uw) == 4)
+    return buf_inspect_u32_hex(buf, i);
+  assert(! "unknown word size");
+  return -1;
+}
+
+sw buf_inspect_uw_hex_size (uw i)
+{
+  (void) i;
   return sizeof(uw) / 4;
 }
 
-sw buf_inspect_uw_hex_size (uw x)
+sw buf_inspect_var (s_buf *buf, const s_tag *var)
 {
-  (void) x;
-  return sizeof(uw) / 4;
+  sw r;
+  sw result = 0;
+  if ((r = buf_write_1(buf, "var(0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw_hex(buf, (uw) var)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ") = ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_tag(buf, var)) < 0)
+    return r;
+  result += r;
+  return result;
 }

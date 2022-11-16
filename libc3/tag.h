@@ -132,6 +132,7 @@ s_tag * tag_u16 (s_tag *tag, u16 i);
 s_tag * tag_u32 (s_tag *tag, u32 i);
 s_tag * tag_u64 (s_tag *tag, u64 i);
 s_tag * tag_u8 (s_tag *tag, u8 i);
+s_tag * tag_var (s_tag *tag);
 s_tag * tag_void (s_tag *tag);
 ffi_type tag_to_ffi_type(const s_tag *tag);
 

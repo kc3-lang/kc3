@@ -957,41 +957,6 @@ s_tag * tag_sym_1 (s_tag *tag, const s8 *p)
   return tag_init_sym_1(tag, p);
 }
 
-s_tag * tag_u8 (s_tag *tag, u8 x)
-{
-  assert(tag);
-  tag_clean(tag);
-  return tag_init_u8(tag, x);
-}
-
-s_tag * tag_u16 (s_tag *tag, u16 x)
-{
-  assert(tag);
-  tag_clean(tag);
-  return tag_init_u16(tag, x);
-}
-
-s_tag * tag_u32 (s_tag *tag, u32 x)
-{
-  assert(tag);
-  tag_clean(tag);
-  return tag_init_u32(tag, x);
-}
-
-s_tag * tag_u64 (s_tag *tag, u64 x)
-{
-  assert(tag);
-  tag_clean(tag);
-  return tag_init_u64(tag, x);
-}
-
-s_tag * tag_void (s_tag *tag)
-{
-  assert(tag);
-  tag_clean(tag);
-  return tag_init_void(tag);
-}
-
 ffi_type tag_to_ffi_type(const s_tag *tag)
 {
   switch (tag->type.type) {
@@ -1025,6 +990,49 @@ ffi_type tag_to_ffi_type(const s_tag *tag)
       return ffi_type_schar;
     default: ;
   }
-  assert(! "tag_to_ffi_type: not a good type");
+  assert(! "tag_to_ffi_type: unknown type");
+  errx(1, "tag_to_ffi_type: unknown type");
   return ffi_type_void;
+}
+
+s_tag * tag_u8 (s_tag *tag, u8 x)
+{
+  assert(tag);
+  tag_clean(tag);
+  return tag_init_u8(tag, x);
+}
+
+s_tag * tag_u16 (s_tag *tag, u16 x)
+{
+  assert(tag);
+  tag_clean(tag);
+  return tag_init_u16(tag, x);
+}
+
+s_tag * tag_u32 (s_tag *tag, u32 x)
+{
+  assert(tag);
+  tag_clean(tag);
+  return tag_init_u32(tag, x);
+}
+
+s_tag * tag_u64 (s_tag *tag, u64 x)
+{
+  assert(tag);
+  tag_clean(tag);
+  return tag_init_u64(tag, x);
+}
+
+s_tag * tag_var (s_tag *tag)
+{
+  assert(tag);
+  tag_clean(tag);
+  return tag_init_var(tag);
+}
+
+s_tag * tag_void (s_tag *tag)
+{
+  assert(tag);
+  tag_clean(tag);
+  return tag_init_void(tag);
 }

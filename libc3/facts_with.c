@@ -18,6 +18,31 @@
 #include "facts_with.h"
 #include "tag.h"
 
+s_facts_with_cursor * facts_with (const s_facts *facts,
+                                  s_facts_with_cursor *cursor,
+                                  p_facts_spec spec)
+{
+  uw facts_count;
+  assert(facts);
+  assert(cursor);
+  assert(spec);
+  facts_count = facts_spec_count_facts(spec);
+  cursor->facts = facts;
+  cursor->facts_count = facts_count;
+  if (facts_count > 0) {
+    cursor->levels = calloc(facts_count,
+                            sizeof(s_facts_with_cursor_level));
+    cursor->spec = facts_spec_new_expand(spec);
+    /* facts_spec_sort(cursor->spec); */
+  }
+  else {
+    cursor->levels = NULL;
+    cursor->spec = NULL;
+  }
+  cursor->level = 0;
+  return cursor;
+}
+
 s_facts_cursor * facts_with_0 (const s_facts *facts,
                                s_facts_cursor *cursor,
                                s_tag *var_subject,
@@ -57,9 +82,12 @@ s_facts_cursor * facts_with_1_2 (const s_facts *facts,
   end.subject   = var_subject   ? TAG_LAST : subject;
   end.predicate = var_predicate ? TAG_LAST : predicate;
   end.object    = var_object    ? TAG_LAST : object;
-  tree = (! var_subject && var_object) ? facts->index_spo :
-    ! var_predicate ? facts->index_pos :
-    facts->index_osp;
+  if (! var_subject && var_object)
+    tree = facts->index_spo;
+  else if (! var_predicate)
+    tree = facts->index_pos;
+  else
+    tree = facts->index_osp;
   facts_cursor_init(cursor, tree, &start, &end);
   cursor->var_subject = var_subject;
   cursor->var_predicate = var_predicate;
@@ -112,29 +140,4 @@ s_facts_cursor * facts_with_tags (const s_facts *facts,
     return facts_with_3(facts, cursor, subject, predicate, object);
   return facts_with_1_2(facts, cursor, subject, predicate, object,
                         var_subject, var_predicate, var_object);
-}
-
-s_facts_with_cursor * facts_with (const s_facts *facts,
-                                  s_facts_with_cursor *cursor,
-                                  p_facts_spec spec)
-{
-  uw facts_count;
-  assert(facts);
-  assert(cursor);
-  assert(spec);
-  facts_count = facts_spec_count_facts(spec);
-  cursor->facts = facts;
-  cursor->facts_count = facts_count;
-  if (facts_count > 0) {
-    cursor->l = calloc(facts_count,
-                       sizeof(s_facts_with_cursor_level));
-    cursor->spec = facts_spec_new_expand(spec);
-    facts_spec_sort(cursor->spec);
-  }
-  else {
-    cursor->l = NULL;
-    cursor->spec = NULL;
-  }
-  cursor->level = 0;
-  return cursor;
 }

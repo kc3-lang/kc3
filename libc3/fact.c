@@ -29,9 +29,11 @@ s8 fact_compare (const s_fact *a, const s_fact *b)
     return -1;
   if (!b)
     return 1;
-  (void) ((r = tag_compare(a->subject, b->subject)) ||
-          (r = tag_compare(a->predicate, b->predicate)) ||
-          (r = tag_compare(a->object, b->object)));
+  if ((r = tag_compare(a->subject, b->subject)))
+    return r;
+  if ((r = tag_compare(a->predicate, b->predicate)))
+    return r;
+  r = tag_compare(a->object, b->object);
   return r;
 }
 
@@ -72,9 +74,11 @@ s8 fact_compare_pos (const s_fact *a, const s_fact *b)
     return -1;
   if (!b)
     return 1;
-  (void) ((r = tag_compare(a->predicate, b->predicate)) ||
-          (r = tag_compare(a->object, b->object)) ||
-          (r = tag_compare(a->subject, b->subject)));
+  if ((r = tag_compare(a->predicate, b->predicate)))
+    return r;
+  if ((r = tag_compare(a->object, b->object)))
+    return r;
+  r = tag_compare(a->subject, b->subject);
   return r;
 }
 
@@ -87,9 +91,11 @@ s8 fact_compare_osp (const s_fact *a, const s_fact *b)
     return -1;
   if (!b)
     return 1;
-  (void) ((r = tag_compare(a->object, b->object)) ||
-          (r = tag_compare(a->subject, b->subject)) ||
-          (r = tag_compare(a->predicate, b->predicate)));
+  if ((r = tag_compare(a->object, b->object)))
+    return r;
+  if ((r = tag_compare(a->subject, b->subject)))
+    return r;
+  r = tag_compare(a->predicate, b->predicate);
   return r;
 }
 

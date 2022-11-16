@@ -26,17 +26,18 @@ extern const sw buf_inspect_str_byte_size;
 
 sw buf_inspect_bool (s_buf *buf, e_bool b);
 sw buf_inspect_bool_size (e_bool b);
+sw buf_inspect_call (s_buf *buf, const s_call *funcall);
+sw buf_inspect_call_args (s_buf *buf, const s_list *args);
+sw buf_inspect_call_size (const s_call *funcall);
 sw buf_inspect_character (s_buf *buf, character c);
 sw buf_inspect_character_size (character c);
 sw buf_inspect_f32 (s_buf *buf, f32 x);
 sw buf_inspect_f32_size (f32 x);
 sw buf_inspect_f64 (s_buf *buf, f64 x);
 sw buf_inspect_f64_size (f64 x);
-sw buf_inspect_call (s_buf *buf, const s_call *funcall);
-sw buf_inspect_call_args (s_buf *buf, const s_list *args);
-sw buf_inspect_call_size (const s_call *funcall);
 sw buf_inspect_fact (s_buf *buf, const s_fact *fact);
 sw buf_inspect_fact_size (const s_fact *fact);
+sw buf_inspect_fact_spec (s_buf *buf, p_facts_spec spec);
 sw buf_inspect_ident (s_buf *buf, const s_ident *ident);
 sw buf_inspect_ident_size (const s_ident *ident);
 sw buf_inspect_integer (s_buf *buf, const s_integer *x);
@@ -71,9 +72,14 @@ sw buf_inspect_u16 (s_buf *buf, u16 i);
 sw buf_inspect_u16_size (u16 i);
 sw buf_inspect_u32 (s_buf *buf, u32 i);
 sw buf_inspect_u32_size (u32 i);
+sw buf_inspect_u32_hex (s_buf *buf, u32 i);
+sw buf_inspect_u32_hex_size (u32 i);
+sw buf_inspect_u64_hex (s_buf *buf, u64 i);
+sw buf_inspect_u64_hex_size (u64 i);
 sw buf_inspect_u64 (s_buf *buf, u64 i);
 sw buf_inspect_u64_size (u64 i);
 sw buf_inspect_uw_hex (s_buf *buf, uw i);
 sw buf_inspect_uw_hex_size (uw i);
+sw buf_inspect_var (s_buf *buf, const s_tag *var);
 
 #endif /* BUF_INSPECT_H */

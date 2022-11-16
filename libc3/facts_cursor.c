@@ -20,35 +20,35 @@
 #include "tag.h"
 
 s_facts_cursor * facts_cursor_init (s_facts_cursor *cursor,
-                                    s_skiplist__fact *tree,
+                                    s_skiplist__fact *index,
                                     s_fact *start,
                                     s_fact *end)
 {
   s_skiplist_node__fact *pred;
   assert(cursor);
-  assert(tree);
-  pred = skiplist_pred__fact(tree, start);
+  assert(index);
+  pred = skiplist_pred__fact(index, start);
   assert(pred);
-  cursor->tree = tree;
+  cursor->index = index;
   cursor->node = SKIPLIST_NODE_NEXT__fact(pred, 0);
   skiplist_node_delete__fact(pred);
   if (start)
     cursor->start = *start;
   else {
-    cursor->start.subject =
-      cursor->start.predicate =
-      cursor->start.object = TAG_FIRST;
+    cursor->start.subject   = TAG_FIRST;
+    cursor->start.predicate = TAG_FIRST;
+    cursor->start.object    = TAG_FIRST;
   }
   if (end)
     cursor->end = *end;
   else {
-    cursor->end.subject =
-      cursor->end.predicate =
-      cursor->end.object = TAG_LAST;
+    cursor->end.subject   = TAG_LAST;
+    cursor->end.predicate = TAG_LAST;
+    cursor->end.object    = TAG_LAST;
   }
-  cursor->var_subject = NULL;
+  cursor->var_subject   = NULL;
   cursor->var_predicate = NULL;
-  cursor->var_object = NULL;
+  cursor->var_object    = NULL;
   return cursor;
 }
 
@@ -58,7 +58,7 @@ s_fact * facts_cursor_next (s_facts_cursor *cursor)
   if (cursor->node) {
     cursor->node = SKIPLIST_NODE_NEXT__fact(cursor->node, 0);
     if (cursor->node &&
-        cursor->tree->compare(&cursor->end, cursor->node->fact) < 0)
+        cursor->index->compare(&cursor->end, cursor->node->fact) < 0)
       cursor->node = NULL;
   }
   if (cursor->node) {

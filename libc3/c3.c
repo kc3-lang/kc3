@@ -34,9 +34,17 @@ s_module * c3_init (s_module *c3, s_facts *facts)
 
 void libc3_init ()
 {
+#ifdef DEBUG
+  buf_init_alloc(&g_debug_buf, 1024);
+  buf_file_open_w(&g_debug_buf, stderr);
+#endif
 }
 
 void libc3_shutdown ()
 {
   sym_delete_all();
+#ifdef DEBUG
+  buf_file_close(&g_debug_buf);
+  buf_clean(&g_debug_buf);
+#endif
 }
