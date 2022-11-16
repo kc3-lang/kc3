@@ -311,6 +311,7 @@ typedef struct module {
 
 /* error_handler */
 typedef struct error_handler s_error_handler;
+typedef const s_sym * (* f_error_handler) (s_error_handler *);
 
 struct error_handler
 {
