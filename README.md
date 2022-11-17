@@ -1,14 +1,18 @@
 # C3 v0.1
 
 C3 is a programming language, inspired by C89, Elixir and Common Lisp.
-It aims to better C89 with an Elixir syntax.
+It could be described as C89 with Elixir macros and pattern matching,
+and an embedded graph database for a fully indexed object system.
+
+The idea is to plug macros and pattern matching into C89.
+The garbage collector is optional, like in C.
 
 ```
 defmodule C3 do
   def compile (c3, opts) when is_string(c3) do
     |> C3.parse(c3, opts)
-    |> C3.to_c89(opts)
-    |> C89.compile(opts)
+    |> C3.to_assembly(opts)
+    |> Assembly.compile(opts)
   end
 end
 ```
@@ -16,11 +20,8 @@ end
 ## TODO
 
  - libc3
-   - `buf_parse_fact`
-   - dump
    - errors (setjmp, longjmp) -> jc
      - stacktrace
-   - log
    - load
    - pattern matching (xor xor) -> baptiste
    - `test_file_compare`
