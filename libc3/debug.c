@@ -17,4 +17,8 @@
 
 s_buf g_debug_buf = {0};
 
+#else
+
+typedef struct debug s_debug;
+
 #endif /* DEBUG */

@@ -41,7 +41,7 @@ LDFLAGS="${LDFLAGS:=}"
 LIBS="${LIBS:=-lm -lffi}"
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -Wno-empty-translation-unit -std=c99 -pedantic"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 config_asan
 config_libbsd
 config_libcrypto
