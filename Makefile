@@ -56,6 +56,11 @@ debug:
 	${MAKE} -C ic3 debug
 	${MAKE} -C test debug
 
+dist: c3-${C3_VERSION}.tar.gz
+
+c3-${C3_VERSION}.tar.gz:
+	pax -wz < c3.index > c3-${C3_VERSION}.tar.gz
+
 distclean:
 	${MAKE} -C libtommath distclean
 	${MAKE} -C ucd2c distclean
