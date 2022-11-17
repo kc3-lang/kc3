@@ -382,6 +382,7 @@ test/ic3/tuple.err.expected
 test/ic3/tuple.in
 test/ic3/tuple.out.expected
 test/ic3/tuple.ret.expected
+test/ic3_test
 test/ident_test.c
 test/libc3_test.c
 test/list_test.c
