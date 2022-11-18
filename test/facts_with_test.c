@@ -143,6 +143,7 @@ void facts_with_test_ ()
   FACT_TEST_EQ(&fact, facts_with_cursor_next(&cursor));
   TEST_ASSERT(! facts_with_cursor_next(&cursor));
   TEST_ASSERT(! facts_with_cursor_next(&cursor));
+  facts_with_cursor_clean(&cursor);
   facts_with(&facts, &cursor, (s_tag *[]) { tag + 3, tag, tag + 1,
                                                      tag, tag + 2,
                                                      NULL,
