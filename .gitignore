@@ -2,6 +2,7 @@
 c3-*/
 c3-*.tar.gz
 c3c/c3c
+c3s/c3s
 config.mk
 *.core
 *.css
