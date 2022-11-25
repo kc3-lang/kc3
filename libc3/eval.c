@@ -12,17 +12,130 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
+#include <err.h>
+#include <stdlib.h>
+#include "binding.h"
 #include "env.h"
 #include "eval.h"
+#include "frame.h"
+#include "list.h"
 #include "tag.h"
 
-s_tag * eval_tag (s_env *env, s_tag *dest, s_tag *tag)
+s_tag * eval_call_function (s_env *env, s_call *call, s_tag *dest)
 {
+  s_arg *args;
+  s_list *call_args;
+  s_frame frame;
+  s_function *function;
+  s_tag tmp;
+  assert(env);
+  assert(call);
+  assert(dest);
+  function = call->function;
+  assert(function);
+  frame_init(&frame, env->frame);
+  frame.bindings = function->bindings;
+  args = function->args;
+  call_args = call->arguments;
+  while (args) {
+    if (! call_args) {
+      assert(! "eval_function_call: missing argument");
+      errx(1, "eval_function_call: missing argument");
+      return NULL;
+    }
+    eval_tag(env, &call_args->tag, &tmp);
+    frame.bindings = binding_new(args->name, &call_args->tag,
+                                 frame.bindings);
+    args = args->next;
+    call_args = list_next(call_args);
+  }
+  if (call_args) {
+    assert(! "eval_function_call: too many arguments");
+    errx(1, "eval_function_call: too many arguments");
+    return NULL;
+  }
+  env->frame = &frame;
+  eval_progn(env, function->program, dest);
+  env->frame = frame_clean(&frame);
+  return dest;
+}
+
+s_tag * eval_call_macro (s_env *env, s_call *call, s_tag *dest)
+{
+  s_tag *expanded;
+  assert(env);
+  assert(call);
+  assert(dest);
   (void) env;
+  (void) call;
+  (void) expanded;
+  return dest;
+}
+
+const s_tag * eval_ident (s_env *env, s_ident *ident)
+{
+  const s_tag *tag;
+  assert(env);
+  assert(ident);
+  assert(dest);
+  if (! (tag = frame_get(env->frame, ident->sym))) {
+    assert(! "eval_ident: unbound variable");
+    errx(1, "eval_ident: unbound variable");
+  }
+  return tag;
+}
+
+s_tag * eval_progn (s_env *env, s_list *program, s_tag *dest)
+{
+  s_tag tmp;
+  assert(env);
+  assert(program);
+  assert(dest);
+  while (program) {
+    eval_tag(env, &program->tag, &tmp);
+    program = list_next(program);
+  }
+  *dest = tmp;
+  return dest;
+}
+
+s_tag * eval_tag (s_env *env, s_tag *tag, s_tag *dest)
+{
   switch (tag->type.type) {
-  default:
+  case TAG_VOID: return tag_init_void(dest);
+  case TAG_CALL:
+    assert(! "eval_tag: invalid tag type: TAG_CALL");
+    errx(1, "eval_tag: invalid tag type TAG_CALL");
+    return NULL;
+  case TAG_CALL_FUNCTION:
+    return eval_call_function(env, &tag->data.call, dest);
+  case TAG_CALL_MACRO:
+    return eval_call_macro(env, &tag->data.call, dest);
+  case TAG_IDENT:
+    return tag_copy(eval_ident(env, &tag->data.ident), dest);
+  case TAG_BOOL:
+  case TAG_CHARACTER:
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_INTEGER:
+  case TAG_LIST:
+  case TAG_PTAG:
+  case TAG_QUOTE:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_S8:
+  case TAG_STR:
+  case TAG_SYM:
+  case TAG_TUPLE:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_U8:
+  case TAG_VAR:
     return tag_copy(tag, dest);
   }
-  assert(! "error");
+  assert(! "eval_tag: invalid tag");
+  errx(1, "eval_tag: invalid tag");
   return NULL;
 }

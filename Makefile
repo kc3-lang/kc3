@@ -16,6 +16,7 @@ build:
 	${MAKE} -C ucd2c build
 	${MAKE} -C libc3 build
 	${MAKE} -C ic3 build
+	${MAKE} -C c3s build
 	${MAKE} -C test build
 
 all:
@@ -23,18 +24,21 @@ all:
 	${MAKE} -C ucd2c all
 	${MAKE} -C libc3 all
 	${MAKE} -C ic3 all
+	${MAKE} -C c3s all
 	${MAKE} -C test all
 
 asan:
 	${MAKE} -C libtommath asan
 	${MAKE} -C libc3 asan
 	${MAKE} -C ic3 asan
+	${MAKE} -C c3s asan
 	${MAKE} -C test asan
 
 cov:
 	${MAKE} -C libtommath cov
 	${MAKE} -C libc3 cov
 	${MAKE} -C ic3 cov
+	${MAKE} -C c3s cov
 	${MAKE} -C test cov
 
 clean:
@@ -42,18 +46,21 @@ clean:
 	${MAKE} -C ucd2c clean
 	${MAKE} -C libc3 clean
 	${MAKE} -C ic3 clean
+	${MAKE} -C c3s clean
 	${MAKE} -C test clean
 
 clean_cov:
 	${MAKE} -C libtommath clean_cov
 	${MAKE} -C libc3 clean_cov
 	${MAKE} -C ic3 clean_cov
+	${MAKE} -C c3s clean_cov
 	${MAKE} -C test clean_cov
 
 debug:
 	${MAKE} -C libtommath debug
 	${MAKE} -C libc3 debug
 	${MAKE} -C ic3 debug
+	${MAKE} -C c3s debug
 	${MAKE} -C test debug
 
 dist: c3-${C3_VERSION}.tar.gz
@@ -68,11 +75,13 @@ distclean:
 	${MAKE} -C ucd2c distclean
 	${MAKE} -C libc3 distclean
 	${MAKE} -C ic3 distclean
+	${MAKE} -C c3s distclean
 	${MAKE} -C test distclean
 
 gcovr:
 	${MAKE} -C libc3 gcovr
 	${MAKE} -C ic3 gcovr
+	${MAKE} -C c3s gcovr
 	${MAKE} -C test gcovr
 	if [ -d "$$HOME/Downloads/c3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
@@ -93,6 +102,7 @@ ic3_test_cov: cov
 install: all
 	${MAKE} -C libc3 install
 	${MAKE} -C ic3 install
+	${MAKE} -C c3s install
 
 libc3_gcovr:
 	${MAKE} clean_cov
@@ -128,6 +138,6 @@ test_gcovr:
 test_ic3: build
 	${MAKE} -C test test_ic3
 
-.PHONY: all asan cov clean clean_cov debug gcovr ic3 install libc3 libtommath license test test_asan test_cov test_debug test_gcovr test_ic3
+.PHONY: all asan c3s cov clean clean_cov debug gcovr ic3 install libc3 libtommath license test test_asan test_cov test_debug test_gcovr test_ic3
 
 include config.mk

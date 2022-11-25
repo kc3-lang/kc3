@@ -150,7 +150,10 @@ s8 tag_compare (const s_tag *a, const s_tag *b) {
   switch (a->type.type) {
   case TAG_VOID: return 0;
   case TAG_BOOL: return bool_compare(a->data.bool, b->data.bool);
-  case TAG_CALL: return call_compare(&a->data.call, &b->data.call);
+  case TAG_CALL:
+  case TAG_CALL_FUNCTION:
+  case TAG_CALL_MACRO:
+    return call_compare(&a->data.call, &b->data.call);
   case TAG_CHARACTER: return character_compare(a->data.character,
                                                b->data.character);
   case TAG_F32: return f32_compare(a->data.f32, b->data.f32);
@@ -238,7 +241,10 @@ t_hash_context * tag_hash_update (t_hash_context *context,
   switch (tag->type.type) {
   case TAG_VOID: break;
   case TAG_BOOL: bool_hash_update(context, tag->data.bool);       break;
-  case TAG_CALL: call_hash_update(context, &tag->data.call);      break;
+  case TAG_CALL:
+  case TAG_CALL_FUNCTION:
+  case TAG_CALL_MACRO:
+    call_hash_update(context, &tag->data.call);                   break;
   case TAG_CHARACTER:
     character_hash_update(context, tag->data.character);          break;
   case TAG_F32: f32_hash_update(context, tag->data.f32);          break;

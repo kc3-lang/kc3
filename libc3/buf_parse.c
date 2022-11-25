@@ -74,7 +74,7 @@ sw buf_parse_call (s_buf *buf, s_call *call)
   if ((r = buf_parse_ident(buf, &call->ident)) <= 0)
     goto clean;
   result += r;
-  if ((r = buf_parse_call_args(buf, &call->args)) <= 0)
+  if ((r = buf_parse_call_args(buf, &call->arguments)) <= 0)
     goto restore;
   result += r;
   r = result;

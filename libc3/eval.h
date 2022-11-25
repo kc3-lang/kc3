@@ -16,6 +16,13 @@
 
 #include "types.h"
 
-s_tag * eval_tag (s_env *env, s_tag *dest, s_tag *tag);
+s_tag *       eval_call_function (s_env *env, s_call *call,
+                                  s_tag *dest);
+s_tag *       eval_call_macro (s_env *env, s_call *call, s_tag *dest);
+s_tag *       eval_function (s_env *env, s_function *function,
+                             s_tag *dest);
+const s_tag * eval_ident (s_env *env, s_ident *ident);
+s_tag *       eval_progn (s_env *env, s_list *program, s_tag *dest);
+s_tag *       eval_tag (s_env *env, s_tag *tag, s_tag *dest);
 
 #endif /* EVAL_H */

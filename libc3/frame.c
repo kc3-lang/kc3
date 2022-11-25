@@ -14,13 +14,17 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include "binding.h"
 #include "frame.h"
 #include "list.h"
 
-void frame_clean (s_frame *frame)
+s_frame * frame_clean (s_frame *frame)
 {
+  s_frame *next;
   assert(frame);
-  list_delete(frame->bindings);
+  next = frame->next;
+  binding_delete_all(frame->bindings);
+  return next;
 }
 
 void frame_delete (s_frame *frame)
@@ -39,6 +43,17 @@ void frame_delete_all (s_frame *frame)
     frame_delete(frame);
     frame = next;
   }
+}
+
+const s_tag * frame_get (s_frame *frame, const s_sym *sym)
+{
+  const s_tag *tag;
+  while (frame) {
+    if ((tag = binding_get(frame->bindings, sym)))
+      return tag;
+    frame = frame->next;
+  }
+  return NULL;
 }
 
 s_frame * frame_init (s_frame *frame, s_frame *next)

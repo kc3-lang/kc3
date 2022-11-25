@@ -20,6 +20,7 @@ export C3_TOP="$(pwd)"
 ( cd ucd2c && ./configure; )
 ( cd libc3 && ./configure; )
 ( cd ic3 && ./configure; )
+( cd c3s && ./configure; )
 ( cd test && ./configure; )
 
 . ./config.subr

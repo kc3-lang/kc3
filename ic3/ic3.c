@@ -82,7 +82,7 @@ int main (int argc, char **argv)
   env_init(&env);
   while ((r = buf_xfer_spaces(&out, &in)) >= 0) {
     if ((r = buf_parse_tag(&in, &input)) > 0) {
-      if (! eval_tag(&env, &result, &input)) {
+      if (! eval_tag(&env, &input, &result)) {
         tag_clean(&input);
         continue;
       }
@@ -100,8 +100,6 @@ int main (int argc, char **argv)
     if (r < 0 ||
         (r == 0 &&
          (r = buf_ignore_character(&in)) <= 0))
-      break;
-    if ((r = buf_refill_compact(&in)) < 0)
       break;
   }
   env_clean(&env);

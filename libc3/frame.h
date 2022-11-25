@@ -17,7 +17,7 @@
 #include "types.h"
 
 /* stack-allocation compatible functions */
-void      frame_clean (s_frame *frame);
+s_frame * frame_clean (s_frame *frame);
 s_frame * frame_init (s_frame *frame, s_frame *next);
 
 /* constructors */
@@ -26,5 +26,8 @@ s_frame * frame_new ();
 /* destructors */
 void frame_delete (s_frame *frame);
 void frame_delete_all (s_frame *frame);
+
+/* observers */
+const s_tag * frame_get (s_frame *frame, const s_sym *sym);
 
 #endif /* FRAME_H */
