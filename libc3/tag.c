@@ -158,6 +158,7 @@ s8 tag_compare (const s_tag *a, const s_tag *b) {
                                                b->data.character);
   case TAG_F32: return f32_compare(a->data.f32, b->data.f32);
   case TAG_F64: return f64_compare(a->data.f64, b->data.f64);
+  case TAG_FUNCTION: return ptr_compare(a, b);
   case TAG_IDENT: return ident_compare(&a->data.ident, &b->data.ident);
   case TAG_INTEGER: return integer_compare(&a->data.integer,
                                            &b->data.integer);
@@ -249,6 +250,7 @@ t_hash_context * tag_hash_update (t_hash_context *context,
     character_hash_update(context, tag->data.character);          break;
   case TAG_F32: f32_hash_update(context, tag->data.f32);          break;
   case TAG_F64: f64_hash_update(context, tag->data.f64);          break;
+  case TAG_FUNCTION: u64_hash_update(context, (u64) tag);         break;
   case TAG_IDENT: ident_hash_update(context, &tag->data.ident);   break;
   case TAG_INTEGER:
     integer_hash_update(context, &tag->data.integer);             break;

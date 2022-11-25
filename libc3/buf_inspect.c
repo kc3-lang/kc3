@@ -794,6 +794,8 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
     return buf_inspect_character(buf, tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, tag->data.f64);
+  case TAG_FUNCTION:
+    return buf_inspect_uw_hex(buf, (uw) &tag->data.function);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
   case TAG_LIST:    return buf_inspect_list(buf, tag->data.list);
@@ -820,32 +822,34 @@ sw buf_inspect_tag_size (const s_tag *tag)
 {
   assert(tag);
   switch(tag->type.type) {
-  case TAG_VOID:    return 0;
-  case TAG_BOOL:    return buf_inspect_bool_size(tag->data.bool);
+  case TAG_VOID:     return 0;
+  case TAG_BOOL:     return buf_inspect_bool_size(tag->data.bool);
   case TAG_CALL:
   case TAG_CALL_FUNCTION:
   case TAG_CALL_MACRO:
     return buf_inspect_call_size(&tag->data.call);
   case TAG_CHARACTER:
     return buf_inspect_character_size(tag->data.character);
-  case TAG_F32:     return buf_inspect_f32_size(tag->data.f32);
-  case TAG_F64:     return buf_inspect_f64_size(tag->data.f64);
-  case TAG_IDENT:   return buf_inspect_ident_size(&tag->data.ident);
-  case TAG_INTEGER: return buf_inspect_integer_size(&tag->data.integer);
-  case TAG_LIST:    return buf_inspect_list_size(tag->data.list);
-  case TAG_PTAG:    return buf_inspect_ptag_size(tag->data.ptag);
-  case TAG_QUOTE:   return buf_inspect_quote_size(tag->data.quote);
-  case TAG_S8:      return buf_inspect_s8_size(tag->data.s8);
-  case TAG_S16:     return buf_inspect_s16_size(tag->data.s16);
-  case TAG_S32:     return buf_inspect_s32_size(tag->data.s32);
-  case TAG_S64:     return buf_inspect_s64_size(tag->data.s64);
-  case TAG_STR:     return buf_inspect_str_size(&tag->data.str);
-  case TAG_SYM:     return buf_inspect_sym_size(tag->data.sym);
-  case TAG_TUPLE:   return buf_inspect_tuple_size(&tag->data.tuple);
-  case TAG_U8:      return buf_inspect_u8_size(tag->data.u8);
-  case TAG_U16:     return buf_inspect_u16_size(tag->data.u16);
-  case TAG_U32:     return buf_inspect_u32_size(tag->data.u32);
-  case TAG_U64:     return buf_inspect_u64_size(tag->data.u64);
+  case TAG_F32:      return buf_inspect_f32_size(tag->data.f32);
+  case TAG_F64:      return buf_inspect_f64_size(tag->data.f64);
+  case TAG_FUNCTION: return BUF_INSPECT_UW_HEX_SIZE;
+  case TAG_IDENT:    return buf_inspect_ident_size(&tag->data.ident);
+  case TAG_INTEGER:
+    return buf_inspect_integer_size(&tag->data.integer);
+  case TAG_LIST:     return buf_inspect_list_size(tag->data.list);
+  case TAG_PTAG:     return buf_inspect_ptag_size(tag->data.ptag);
+  case TAG_QUOTE:    return buf_inspect_quote_size(tag->data.quote);
+  case TAG_S8:       return buf_inspect_s8_size(tag->data.s8);
+  case TAG_S16:      return buf_inspect_s16_size(tag->data.s16);
+  case TAG_S32:      return buf_inspect_s32_size(tag->data.s32);
+  case TAG_S64:      return buf_inspect_s64_size(tag->data.s64);
+  case TAG_STR:      return buf_inspect_str_size(&tag->data.str);
+  case TAG_SYM:      return buf_inspect_sym_size(tag->data.sym);
+  case TAG_TUPLE:    return buf_inspect_tuple_size(&tag->data.tuple);
+  case TAG_U8:       return buf_inspect_u8_size(tag->data.u8);
+  case TAG_U16:      return buf_inspect_u16_size(tag->data.u16);
+  case TAG_U32:      return buf_inspect_u32_size(tag->data.u32);
+  case TAG_U64:      return buf_inspect_u64_size(tag->data.u64);
   case TAG_VAR:
     assert(! "variable");
     errx(1, "buf_inspect_tag_size: variable");
@@ -1052,12 +1056,6 @@ sw buf_inspect_u64_hex (s_buf *buf, u64 i)
   return 16;
 }
 
-sw buf_inspect_u64_hex_size (u64 i)
-{
-  (void) i;
-  return 16;
-}
-
 sw buf_inspect_u64_size (u64 i)
 {
   sw size = 0;
@@ -1078,12 +1076,6 @@ sw buf_inspect_uw_hex (s_buf *buf, uw i)
     return buf_inspect_u32_hex(buf, i);
   assert(! "unknown word size");
   return -1;
-}
-
-sw buf_inspect_uw_hex_size (uw i)
-{
-  (void) i;
-  return sizeof(uw) / 4;
 }
 
 sw buf_inspect_var (s_buf *buf, const s_tag *var)

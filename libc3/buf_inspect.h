@@ -22,7 +22,8 @@
 
 #include "types.h"
 
-extern const sw buf_inspect_str_byte_size;
+#define BUF_INSPECT_U64_HEX_SIZE 16
+#define BUF_INSPECT_UW_HEX_SIZE (sizeof(uw) / 4)
 
 sw buf_inspect_bool (s_buf *buf, e_bool b);
 sw buf_inspect_bool_size (e_bool b);
@@ -38,6 +39,8 @@ sw buf_inspect_f64_size (f64 x);
 sw buf_inspect_fact (s_buf *buf, const s_fact *fact);
 sw buf_inspect_fact_size (const s_fact *fact);
 sw buf_inspect_fact_spec (s_buf *buf, p_facts_spec spec);
+sw buf_inspect_function (s_buf *buf, const s_function *fun);
+sw buf_inspect_function_size (const s_function *fun);
 sw buf_inspect_ident (s_buf *buf, const s_ident *ident);
 sw buf_inspect_ident_size (const s_ident *ident);
 sw buf_inspect_integer (s_buf *buf, const s_integer *x);
@@ -79,7 +82,6 @@ sw buf_inspect_u64_hex_size (u64 i);
 sw buf_inspect_u64 (s_buf *buf, u64 i);
 sw buf_inspect_u64_size (u64 i);
 sw buf_inspect_uw_hex (s_buf *buf, uw i);
-sw buf_inspect_uw_hex_size (uw i);
 sw buf_inspect_var (s_buf *buf, const s_tag *var);
 
 #endif /* BUF_INSPECT_H */

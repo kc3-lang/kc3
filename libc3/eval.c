@@ -117,6 +117,7 @@ s_tag * eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
+  case TAG_FUNCTION:
   case TAG_INTEGER:
   case TAG_LIST:
   case TAG_PTAG:

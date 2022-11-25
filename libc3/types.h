@@ -52,6 +52,7 @@ typedef enum {
   TAG_CHARACTER,
   TAG_F32,
   TAG_F64,
+  TAG_FUNCTION,
   TAG_IDENT,
   TAG_INTEGER,
   TAG_S64,
@@ -242,6 +243,7 @@ union tag_data {
   character    character;
   f32          f32;
   f64          f64;
+  s_function   function;
   s_ident      ident;
   s_integer    integer;
   s_list      *list;
