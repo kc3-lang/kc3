@@ -1,11 +1,11 @@
 # C3
 
-C3 is a programming language, inspired by C, Elixir and Common Lisp.
-It could be described as C with Elixir macros and pattern matching,
-and an embedded graph database for a fully indexed object system.
+C3 is a programming language project, inspired by C, Elixir and
+Common Lisp. It could be described as C with Elixir macros and pattern
+matching, and a semantic object system.
 
 The idea is to plug macros and pattern matching into C89 and use them to implement
-a graph database for a semantic object system.
+the graph database.
 
 The garbage collector is optional, like in C.
 
@@ -15,7 +15,7 @@ defmodule C3 do
     c3
     |> C3.parse(opts)
     |> C3.to_assembly(opts)
-    |> C3.compile(opts)
+    |> Assembly.compile(opts)
   end
 end
 ```
@@ -39,8 +39,17 @@ The AST is represented as C3 data structures and can be meta-programmed in C.
 
 #### Interpreter
 
-The interpreter is under development by kmx.io .
-Please get in touch on discord if you are interested.
+Under development.
+
+
+### ic3
+
+Interactive shell. Under development.
+
+
+### c3s
+
+Script interpreter. Under development.
 
 
 ## TODO
@@ -59,6 +68,7 @@ Please get in touch on discord if you are interested.
      - & &1
      - defmodule
      - funcall
+
 
 ## Copying
 
