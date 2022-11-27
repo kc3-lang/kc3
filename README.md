@@ -1,7 +1,7 @@
 # C3
 
-C3 is a programming language, inspired by C89, Elixir and Common Lisp.
-It could be described as C89 with Elixir macros and pattern matching,
+C3 is a programming language, inspired by C, Elixir and Common Lisp.
+It could be described as C with Elixir macros and pattern matching,
 and an embedded graph database for a fully indexed object system.
 
 The idea is to plug macros and pattern matching into C89 and use them to implement
@@ -12,9 +12,10 @@ The garbage collector is optional, like in C.
 ```
 defmodule C3 do
   def compile (c3, opts) when is_string(c3) do
-    |> C3.parse(c3, opts)
+    c3
+    |> C3.parse(opts)
     |> C3.to_assembly(opts)
-    |> Assembly.compile(opts)
+    |> C3.compile(opts)
   end
 end
 ```
@@ -45,10 +46,10 @@ Please get in touch on discord if you are interested.
 ## TODO
 
  - libc3
-   - errors (setjmp, longjmp) -> jc
+   - errors (setjmp, longjmp)
      - stacktrace
    - load
-   - pattern matching (xor xor) -> baptiste
+   - pattern matching (xor xor)
    - `test_file_compare`
    - ffi
      - types
