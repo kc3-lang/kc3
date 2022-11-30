@@ -13,7 +13,7 @@ defmodule C3 do
     c3
     |> C3.parse(opts)
     |> C3.to_assembly(opts)
-    |> Assembly.compile(opts)
+    |> Assembly.to_elf(opts)
   end
 end
 ```
