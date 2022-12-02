@@ -11,17 +11,22 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef EVAL_H
-#define EVAL_H
+#ifndef ARG_H
+#define ARG_H
 
 #include "types.h"
 
-s_tag *       eval_call_function (s_env *env, s_call *call,
-                                  s_tag *dest);
-s_tag *       eval_call_macro (s_env *env, s_call *call, s_tag *dest);
-s_tag *       eval_fn (s_env *env, s_fn *fn, s_tag *dest);
-const s_tag * eval_ident (s_env *env, s_ident *ident);
-s_tag *       eval_progn (s_env *env, s_list *program, s_tag *dest);
-s_tag *       eval_tag (s_env *env, s_tag *tag, s_tag *dest);
+/* stack-allocation compatible functions */
+s_arg * arg_init (s_arg *arg, s_arg *next);
 
-#endif /* EVAL_H */
+/* constructors */
+s_arg * arg_new ();
+
+/* destructors */
+s_arg * arg_delete (s_arg *arg);
+void    arg_delete_all (s_arg *arg);
+
+/* observers */
+uw arg_length (s_arg *args);
+
+#endif /* ARG_H */

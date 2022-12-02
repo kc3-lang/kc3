@@ -11,12 +11,18 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef FUNCTION_H
-#define FUNCTION_H
+/**
+ * @file fn.h
+ * Function type.
+ *
+ * Syntax : "fn" (type? "(" ((type space)? sym ","?)* ")" "{" prog "}")+
+ */
+#ifndef FN_H
+#define FN_H
 
 #include "types.h"
 
-s_function * function_init (s_function *function);
-void         function_clean (s_function *function);
+s_fn * fn_init (s_fn *fn);
+void   fn_clean (s_fn *fn);
 
-#endif /* FUNCTION_H */
+#endif /* FN_H */

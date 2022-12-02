@@ -27,9 +27,9 @@
 
 sw buf_inspect_bool (s_buf *buf, e_bool b);
 sw buf_inspect_bool_size (e_bool b);
-sw buf_inspect_call (s_buf *buf, const s_call *funcall);
+sw buf_inspect_call (s_buf *buf, const s_call *call);
 sw buf_inspect_call_args (s_buf *buf, const s_list *args);
-sw buf_inspect_call_size (const s_call *funcall);
+sw buf_inspect_call_size (const s_call *call);
 sw buf_inspect_character (s_buf *buf, character c);
 sw buf_inspect_character_size (character c);
 sw buf_inspect_f32 (s_buf *buf, f32 x);
@@ -39,8 +39,8 @@ sw buf_inspect_f64_size (f64 x);
 sw buf_inspect_fact (s_buf *buf, const s_fact *fact);
 sw buf_inspect_fact_size (const s_fact *fact);
 sw buf_inspect_fact_spec (s_buf *buf, p_facts_spec spec);
-sw buf_inspect_function (s_buf *buf, const s_function *fun);
-sw buf_inspect_function_size (const s_function *fun);
+sw buf_inspect_fn (s_buf *buf, const s_fn *fn);
+sw buf_inspect_fn_size (const s_fn *fn);
 sw buf_inspect_ident (s_buf *buf, const s_ident *ident);
 sw buf_inspect_ident_size (const s_ident *ident);
 sw buf_inspect_integer (s_buf *buf, const s_integer *x);

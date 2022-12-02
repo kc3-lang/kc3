@@ -83,10 +83,21 @@ s_list * list_copy (const s_list *src, s_list **dest)
   return result;
 }
 
-void list_delete (s_list *list)
+s_list * list_delete (s_list *list)
 {
-  list_clean(list);
-  free(list);
+  s_list *next = NULL;
+  if (list) {
+    next = list_next(list);
+    list_clean(list);
+    free(list);
+  }
+  return next;
+}
+
+void list_delete_all (s_list *list)
+{
+  while (list)
+    list = list_delete(list);
 }
 
 /* FIXME: dotted lists, circular lists */

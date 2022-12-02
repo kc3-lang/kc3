@@ -47,12 +47,12 @@ typedef enum {
   TAG_VOID = 0,
   TAG_BOOL = 1,
   TAG_CALL,
-  TAG_CALL_FUNCTION,
+  TAG_CALL_FN,
   TAG_CALL_MACRO,
   TAG_CHARACTER,
   TAG_F32,
   TAG_F64,
-  TAG_FUNCTION,
+  TAG_FN,
   TAG_IDENT,
   TAG_INTEGER,
   TAG_S64,
@@ -86,8 +86,8 @@ typedef struct facts_cursor            s_facts_cursor;
 typedef struct facts_spec_cursor       s_facts_spec_cursor;
 typedef struct facts_with_cursor       s_facts_with_cursor;
 typedef struct facts_with_cursor_level s_facts_with_cursor_level;
+typedef struct fn                      s_fn;
 typedef struct frame                   s_frame;
-typedef struct function                s_function;
 typedef struct ident                   s_ident;
 typedef struct integer                 s_integer;
 typedef struct list                    s_list;
@@ -141,11 +141,11 @@ struct frame {
   s_frame *next;
 };
 
-struct function {
+struct fn {
   uw arity;
   s_arg *args;
   s_binding *bindings;
-  s_list *program;
+  s_list *algo;
 };
 
 struct ident {
@@ -214,7 +214,7 @@ struct buf {
 struct call {
   s_ident ident;
   s_list *arguments;
-  s_function *function;
+  s_fn *fn;
 };
 
 struct facts_spec_cursor {
@@ -243,7 +243,7 @@ union tag_data {
   character    character;
   f32          f32;
   f64          f64;
-  s_function   function;
+  s_fn         fn;
   s_ident      ident;
   s_integer    integer;
   s_list      *list;

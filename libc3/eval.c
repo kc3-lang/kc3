@@ -21,28 +21,29 @@
 #include "list.h"
 #include "tag.h"
 
-s_tag * eval_call_function (s_env *env, s_call *call, s_tag *dest)
+s_tag * eval_call_fn (s_env *env, s_call *call, s_tag *dest)
 {
   s_arg *args;
   s_list *call_args;
   s_frame frame;
-  s_function *function;
+  s_fn *fn;
   s_tag tmp;
   assert(env);
   assert(call);
   assert(dest);
-  function = call->function;
-  assert(function);
+  fn = call->fn;
+  assert(fn);
   frame_init(&frame, env->frame);
-  frame.bindings = function->bindings;
-  args = function->args;
+  frame.bindings = fn->bindings;
+  args = fn->args;
   call_args = call->arguments;
   while (args) {
     if (! call_args) {
-      assert(! "eval_function_call: missing argument");
-      errx(1, "eval_function_call: missing argument");
+      assert(! "eval_call_fn: missing argument");
+      errx(1, "eval_call_fn: missing argument");
       return NULL;
     }
+    /* TODO: check type */
     eval_tag(env, &call_args->tag, &tmp);
     frame.bindings = binding_new(args->name, &call_args->tag,
                                  frame.bindings);
@@ -50,12 +51,12 @@ s_tag * eval_call_function (s_env *env, s_call *call, s_tag *dest)
     call_args = list_next(call_args);
   }
   if (call_args) {
-    assert(! "eval_function_call: too many arguments");
-    errx(1, "eval_function_call: too many arguments");
+    assert(! "eval_call_fn: too many arguments");
+    errx(1, "eval_call_fn: too many arguments");
     return NULL;
   }
   env->frame = &frame;
-  eval_progn(env, function->program, dest);
+  eval_progn(env, fn->program, dest);
   env->frame = frame_clean(&frame);
   return dest;
 }
@@ -107,8 +108,8 @@ s_tag * eval_tag (s_env *env, s_tag *tag, s_tag *dest)
     assert(! "eval_tag: invalid tag type: TAG_CALL");
     errx(1, "eval_tag: invalid tag type TAG_CALL");
     return NULL;
-  case TAG_CALL_FUNCTION:
-    return eval_call_function(env, &tag->data.call, dest);
+  case TAG_CALL_FN:
+    return eval_call_fn(env, &tag->data.call, dest);
   case TAG_CALL_MACRO:
     return eval_call_macro(env, &tag->data.call, dest);
   case TAG_IDENT:
@@ -117,7 +118,7 @@ s_tag * eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
-  case TAG_FUNCTION:
+  case TAG_FN:
   case TAG_INTEGER:
   case TAG_LIST:
   case TAG_PTAG:

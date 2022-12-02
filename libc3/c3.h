@@ -14,11 +14,13 @@
 #ifndef C3_H
 #define C3_H
 
+#include "arg.h"
 #include "bool.h"
 #include "buf.h"
 #include "buf_file.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
+#include "buf_save.h"
 #include "call.h"
 #include "character.h"
 #include "debug.h"
@@ -28,6 +30,7 @@
 #include "f64.h"
 #include "fact.h"
 #include "facts.h"
+#include "fn.h"
 #include "ident.h"
 #include "integer.h"
 #include "list.h"

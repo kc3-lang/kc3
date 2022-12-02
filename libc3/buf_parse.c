@@ -16,18 +16,7 @@
 #include <string.h>
 #include <math.h>
 #include "../libtommath/tommath.h"
-#include "buf.h"
-#include "buf_inspect.h"
-#include "buf_parse.h"
-#include "buf_save.h"
-#include "character.h"
-#include "ident.h"
-#include "integer.h"
-#include "list.h"
-#include "str.h"
-#include "sym.h"
-#include "tag.h"
-#include "tuple.h"
+#include "c3.h"
 
 sw buf_parse_bool (s_buf *buf, bool *p)
 {
@@ -422,6 +411,103 @@ sw buf_parse_fact (s_buf *buf, s_fact *dest)
   tag_delete(subject);
   tag_delete(predicate);
   tag_delete(object);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_fn (s_buf *buf, s_fn *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "fn")) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  fn_init(dest);
+  if ((r = buf_parse_fn_args(buf, &dest->args)) < 0)
+    goto restore;
+  dest->arity = arg_length(dest->args);
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_fn_algo(buf, &dest->algo)) <= 0)
+    goto restore;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_tag tag;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_read_1(buf, "{")) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  while ((r = buf_parse_tag(buf, &tag)) > 0) {
+    result += r;
+    if (tag.type.type == TAG_IDENT &&
+        tag.data.ident.sym == sym_1(";"))
+      break;
+    *dest = list_new(NULL);
+    (*dest)->tag = tag;
+    tag_init_list(&(*dest)->next, NULL);
+    dest = &(*dest)->next.data.list;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    if ((r = buf_read_1(buf, ";")) < 0)
+      goto restore;
+  }
+  if (r < 0)
+    goto restore;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_fn_args (s_buf *buf, s_arg **dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_tag tag;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(")) < 0)
+    goto restore;
+  while (1) {
+    if ((r = buf_parse_tag(buf, &tag)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
   return r;

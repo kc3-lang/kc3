@@ -787,15 +787,15 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_VOID:    return 0;
   case TAG_BOOL:    return buf_inspect_bool(buf, tag->data.bool);
   case TAG_CALL:
-  case TAG_CALL_FUNCTION:
+  case TAG_CALL_FN:
   case TAG_CALL_MACRO:
                     return buf_inspect_call(buf, &tag->data.call);
   case TAG_CHARACTER:
     return buf_inspect_character(buf, tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, tag->data.f64);
-  case TAG_FUNCTION:
-    return buf_inspect_uw_hex(buf, (uw) &tag->data.function);
+  case TAG_FN:
+    return buf_inspect_uw_hex(buf, (uw) &tag->data.fn);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
   case TAG_LIST:    return buf_inspect_list(buf, tag->data.list);
@@ -825,14 +825,14 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_VOID:     return 0;
   case TAG_BOOL:     return buf_inspect_bool_size(tag->data.bool);
   case TAG_CALL:
-  case TAG_CALL_FUNCTION:
+  case TAG_CALL_FN:
   case TAG_CALL_MACRO:
     return buf_inspect_call_size(&tag->data.call);
   case TAG_CHARACTER:
     return buf_inspect_character_size(tag->data.character);
   case TAG_F32:      return buf_inspect_f32_size(tag->data.f32);
   case TAG_F64:      return buf_inspect_f64_size(tag->data.f64);
-  case TAG_FUNCTION: return BUF_INSPECT_UW_HEX_SIZE;
+  case TAG_FN:       return BUF_INSPECT_UW_HEX_SIZE;
   case TAG_IDENT:    return buf_inspect_ident_size(&tag->data.ident);
   case TAG_INTEGER:
     return buf_inspect_integer_size(&tag->data.integer);

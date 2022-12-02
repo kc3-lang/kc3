@@ -34,7 +34,8 @@ s_list * list_1 (const s8 *p);
 s_list * list_new ();
 
 /* Destructor */
-void list_delete (s_list *list);
+s_list * list_delete (s_list *list);
+void     list_delete_all (s_list *list);
 
 /* Observers */
 s8               list_compare (const s_list *a, const s_list *b);
