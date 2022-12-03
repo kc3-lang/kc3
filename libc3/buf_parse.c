@@ -493,17 +493,40 @@ sw buf_parse_fn_args (s_buf *buf, s_arg **dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_tag tag;
+  const s_sym *sym;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "(")) < 0)
     goto restore;
-  while (1) {
-    if ((r = buf_parse_tag(buf, &tag)) < 0)
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  r = 0;
+  while (! r) {
+    if ((r = buf_parse_sym(buf, &sym)) <= 0)
       goto restore;
     result += r;
-    if ((r = buf_
+    *dest = arg_new();
+    (*dest)->name = sym;
+    dest = &(*dest)->next;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, ",")) < 0)
+      goto restore;
+    result += r;
+    if (r > 0) {
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      continue;
+    }
+    if ((r = buf_read_1(buf, ")")) < 0)
+      goto restore;
+    result += r;
+  }
   r = result;
   goto clean;
  restore:

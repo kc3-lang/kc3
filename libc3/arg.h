@@ -17,7 +17,7 @@
 #include "types.h"
 
 /* stack-allocation compatible functions */
-s_arg * arg_init (s_arg *arg, s_arg *next);
+s_arg * arg_init (s_arg *arg);
 
 /* constructors */
 s_arg * arg_new ();

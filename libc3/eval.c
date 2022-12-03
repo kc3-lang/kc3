@@ -56,7 +56,7 @@ s_tag * eval_call_fn (s_env *env, s_call *call, s_tag *dest)
     return NULL;
   }
   env->frame = &frame;
-  eval_progn(env, fn->program, dest);
+  eval_progn(env, fn->algo, dest);
   env->frame = frame_clean(&frame);
   return dest;
 }

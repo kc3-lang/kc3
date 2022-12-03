@@ -2,7 +2,13 @@
 c3-*/
 c3-*.tar.gz
 c3c/c3c
+c3c/c3c.asan
+c3c/c3c.cov
+c3c/c3c.debug
 c3s/c3s
+c3s/c3s.asan
+c3s/c3s.cov
+c3s/c3s.debug
 config.mk
 *.core
 *.css
