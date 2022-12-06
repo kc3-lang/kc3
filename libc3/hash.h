@@ -15,7 +15,7 @@
 #define HASH_H
 
 #include <sys/types.h>
-#include <sha1.h>
+#include "sha1.h"
 #include "types.h"
 
 #define HASH_SIZE SHA1_DIGEST_LENGTH

@@ -29,7 +29,6 @@ void facts_cursor_test ();
 void facts_with_test ();
 void ident_test ();
 void list_test ();
-void sha1_test ();
 void set__fact_test ();
 void set__tag_test ();
 void skiplist__fact_test ();
@@ -74,10 +73,6 @@ int main (int argc, char **argv)
   if (test_target("str")) {
     printf("\nstr\n");
     str_test();
-  }
-  if (test_target("sha1")) {
-    printf("\nsha1\n");
-    sha1_test();
   }
   if (test_target("sym")) {
     printf("\nsym\n");
