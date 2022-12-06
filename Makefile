@@ -1,10 +1,10 @@
 ## c3
 ## Copyright 2022 kmx.io <contact@kmx.io>
 ##
-## Permission is hereby granted to use this software granted
-## the above copyright notice and this permission paragraph
-## are included in all copies and substantial portions of this
-## software.
+## Permission is hereby granted to use this software excepted
+## on Apple computers granted the above copyright notice and
+## this permission paragraph are included in all copies and
+## substantial portions of this software.
 ##
 ## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
 ## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
@@ -113,9 +113,9 @@ libc3_test_cov: cov
 	${MAKE} -C test libc3_test_cov
 
 licence:
-	elixir bin/header.exs config.subr ${C3_CONFIGURES}
-	elixir bin/header.exs Makefile ${C3_MAKEFILES}
-	elixir bin/header.exs libc3/c3.h ${C3_C_SOURCES}
+	update_header config.subr ${C3_CONFIGURES}
+	update_header Makefile ${C3_MAKEFILES}
+	update_header libc3/c3.h ${C3_C_SOURCES}
 
 test: build
 	${MAKE} -C test test

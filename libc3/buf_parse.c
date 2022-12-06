@@ -1,10 +1,10 @@
 /* c3
  * Copyright 2022 kmx.io <contact@kmx.io>
  *
- * Permission is hereby granted to use this software granted
- * the above copyright notice and this permission paragraph
- * are included in all copies and substantial portions of this
- * software.
+ * Permission is hereby granted to use this software excepted
+ * on Apple computers granted the above copyright notice and
+ * this permission paragraph are included in all copies and
+ * substantial portions of this software.
  *
  * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
  * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
@@ -52,18 +52,18 @@ sw buf_parse_bool (s_buf *buf, bool *p)
   return r;
 }
 
-sw buf_parse_call (s_buf *buf, s_call *call)
+sw buf_parse_call (s_buf *buf, s_call *dest)
 {
   sw r;
   sw result = 0;
   s_buf_save save;
   assert(buf);
-  assert(call);
+  assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_parse_ident(buf, &call->ident)) <= 0)
+  if ((r = buf_parse_ident(buf, &dest->ident)) <= 0)
     goto clean;
   result += r;
-  if ((r = buf_parse_call_args(buf, &call->arguments)) <= 0)
+  if ((r = buf_parse_call_args(buf, dest)) <= 0)
     goto restore;
   result += r;
   r = result;
@@ -75,15 +75,19 @@ sw buf_parse_call (s_buf *buf, s_call *call)
   return r;
 }
 
-sw buf_parse_call_args (s_buf *buf, s_list **args)
+sw buf_parse_call_args (s_buf *buf, s_call *dest)
 {
+  s_list **args;
   sw r;
   sw result = 0;
   s_buf_save save;
   assert(buf);
+  assert(dest);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "(")) <= 0)
     goto clean;
+  args = &dest->args;
+  *args = NULL;
   result += r;
   if ((r = buf_parse_comments(buf)) < 0)
     goto restore;
@@ -95,11 +99,9 @@ sw buf_parse_call_args (s_buf *buf, s_list **args)
     goto restore;
   if (r > 0) {
     result += r;
-    *args = NULL;
     r = result;
     goto clean;
   }
-  *args = NULL;
   while (1) {
     *args = list_new();
     if ((r = buf_parse_tag(buf, &(*args)->tag)) <= 0)
@@ -131,7 +133,7 @@ sw buf_parse_call_args (s_buf *buf, s_list **args)
       result += r;
       continue;
     }
-    if ((r = buf_read_1(buf, "|")) < 0)
+    if ((r = buf_read_1(buf, ",|")) < 0) /* apply */
       goto restore;
     if (r > 0) {
       result += r;

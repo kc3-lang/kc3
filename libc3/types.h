@@ -1,10 +1,10 @@
 /* c3
  * Copyright 2022 kmx.io <contact@kmx.io>
  *
- * Permission is hereby granted to use this software granted
- * the above copyright notice and this permission paragraph
- * are included in all copies and substantial portions of this
- * software.
+ * Permission is hereby granted to use this software excepted
+ * on Apple computers granted the above copyright notice and
+ * this permission paragraph are included in all copies and
+ * substantial portions of this software.
  *
  * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
  * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
@@ -91,6 +91,7 @@ typedef struct frame                   s_frame;
 typedef struct ident                   s_ident;
 typedef struct integer                 s_integer;
 typedef struct list                    s_list;
+typedef struct list                    s_list_map;
 typedef struct module                  s_module;
 typedef struct str                     s_str;
 typedef struct sym                     s_sym;
@@ -133,7 +134,7 @@ struct fact {
   const s_tag *subject;
   const s_tag *predicate;
   const s_tag *object;
-  uw id;
+  uw id; /* XXX random without collision */
 };
 
 struct frame {
@@ -212,8 +213,11 @@ struct buf {
 };
 
 struct call {
+  /* key */
   s_ident ident;
   s_list *arguments;
+  s_list_map *keyword;
+  /* value */
   s_fn *fn;
 };
 

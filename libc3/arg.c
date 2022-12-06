@@ -1,10 +1,10 @@
 /* c3
  * Copyright 2022 kmx.io <contact@kmx.io>
  *
- * Permission is hereby granted to use this software granted
- * the above copyright notice and this permission paragraph
- * are included in all copies and substantial portions of this
- * software.
+ * Permission is hereby granted to use this software excepted
+ * on Apple computers granted the above copyright notice and
+ * this permission paragraph are included in all copies and
+ * substantial portions of this software.
  *
  * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
  * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
@@ -50,10 +50,10 @@ uw arg_length (s_arg *arg)
   return length;
 }
 
-s_arg * arg_new (s_arg *next)
+s_arg * arg_new ()
 {
   s_arg *arg;
   if (! (arg = malloc(sizeof(s_arg))))
     errx(1, "arg_new: out of memory");
-  return arg_init(arg, next);
+  return arg_init(arg);
 }

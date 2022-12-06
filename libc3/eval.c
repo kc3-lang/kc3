@@ -1,10 +1,10 @@
 /* c3
  * Copyright 2022 kmx.io <contact@kmx.io>
  *
- * Permission is hereby granted to use this software granted
- * the above copyright notice and this permission paragraph
- * are included in all copies and substantial portions of this
- * software.
+ * Permission is hereby granted to use this software excepted
+ * on Apple computers granted the above copyright notice and
+ * this permission paragraph are included in all copies and
+ * substantial portions of this software.
  *
  * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
  * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
@@ -78,7 +78,6 @@ const s_tag * eval_ident (s_env *env, s_ident *ident)
   const s_tag *tag;
   assert(env);
   assert(ident);
-  assert(dest);
   if (! (tag = frame_get(env->frame, ident->sym))) {
     assert(! "eval_ident: unbound variable");
     errx(1, "eval_ident: unbound variable");
