@@ -63,7 +63,7 @@ sw buf_parse_call (s_buf *buf, s_call *dest)
   if ((r = buf_parse_ident(buf, &dest->ident)) <= 0)
     goto clean;
   result += r;
-  if ((r = buf_parse_call_args(buf, dest)) <= 0)
+  if ((r = buf_parse_call_args_paren(buf, dest)) <= 0)
     goto restore;
   result += r;
   r = result;
@@ -75,18 +75,19 @@ sw buf_parse_call (s_buf *buf, s_call *dest)
   return r;
 }
 
-sw buf_parse_call_args (s_buf *buf, s_call *dest)
+sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
 {
   s_list **args;
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_tag tag;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "(")) <= 0)
     goto clean;
-  args = &dest->args;
+  args = &dest->arguments;
   *args = NULL;
   result += r;
   if ((r = buf_parse_comments(buf)) < 0)
@@ -104,7 +105,7 @@ sw buf_parse_call_args (s_buf *buf, s_call *dest)
   }
   while (1) {
     *args = list_new();
-    if ((r = buf_parse_tag(buf, &(*args)->tag)) <= 0)
+    if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
     if ((r = buf_parse_comments(buf)) < 0)
@@ -152,7 +153,7 @@ sw buf_parse_call_args (s_buf *buf, s_call *dest)
       if ((r = buf_ignore_spaces(buf)) < 0)
         goto restore;
       result += r;
-      if ((r = buf_read_1(buf, "]")) <= 0)
+      if ((r = buf_read_1(buf, ")")) <= 0)
         goto restore;
       result += r;
       r = result;

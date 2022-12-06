@@ -44,7 +44,7 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest);
 sw buf_parse_fn_algo (s_buf *buf, s_list **dest);
 sw buf_parse_fn_args (s_buf *buf, s_arg **dest);
 sw buf_parse_call (s_buf *buf, s_call *dest);
-sw buf_parse_call_args (s_buf *buf, s_list **dest);
+sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);
 sw buf_parse_comments (s_buf *buf);
 sw buf_parse_integer (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_unsigned_bin (s_buf *buf, s_integer *dest);
