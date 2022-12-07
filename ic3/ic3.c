@@ -12,7 +12,7 @@
  * THIS SOFTWARE.
  */
 #include "../libc3/c3.h"
-#include "buf_readline.h"
+#include "buf_linenoise.h"
 
 #define BUFSZ 0x10000
 
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
   if (argc < 1)
     return usage(argv[0]);
   BUF_INIT_ALLOCA(&in, BUFSZ);
-  buf_readline_open_r(&in, "ic3> ");
+  buf_linenoise_open_r(&in, "ic3> ");
   in.line = 0;
   BUF_INIT_ALLOCA(&out, BUFSZ);
   buf_file_open_w(&out, stdout);
@@ -103,7 +103,7 @@ int main (int argc, char **argv)
       break;
   }
   env_clean(&env);
-  buf_readline_close(&in);
+  buf_linenoise_close(&in);
   buf_file_close(&out);
   c3_clean(&c3);
   facts_clean(&facts);

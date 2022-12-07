@@ -23,10 +23,11 @@ LIB_ASAN=libc3.asan.la
 LIB_COV=libc3.cov.la
 LIB_DEBUG=libc3.debug.la
 
-SOURCES="$(ls *.c | tr '\n' ' ')"
+SOURCES="$(ls *.c)"
 if [ -f /usr/include/sha1.h ]; then
     SOURCES="$(echo "$SOURCES" | grep -v sha1.c)"
 fi
+SOURCES="$(echo "$SOURCES" | tr '\n' ' ')"
 echo "SOURCES = $SOURCES" >> ${CONFIG_MK}
 LIBTOMMATH_SOURCES="$(ls ../libtommath/*.c | grep -v -e bn_mp_set_double.c -e bn_s_mp_rand_platform.c | tr '\n' ' ')"
 LO_SOURCES="$SOURCES $LIBTOMMATH_SOURCES"
