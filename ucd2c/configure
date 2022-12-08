@@ -33,7 +33,7 @@ LIBS="${LIBS:=}"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -O0 -ggdb"
-pkg_config libbsd
+pkg_config libbsd-overlay
 
 # Main config
 if [ "x$ENV_CFLAGS" = "x" ]; then
