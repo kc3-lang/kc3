@@ -55,6 +55,7 @@ void ucd_parse (s_ucd ucd[UCD_MAX], char *line,
   unsigned long i;
   char *p = NULL;
   char *sep;
+  size_t size;
 #define UCD_PARSE_UNKNOWN_CATEGORY \
   warnx("line %lu: unknown category : %c%c", lineno, p[0], p[1])
   p = line;
@@ -67,7 +68,9 @@ void ucd_parse (s_ucd ucd[UCD_MAX], char *line,
   if (! (sep = strchr(p, ';')))
     goto error;
   *sep = '\0';
-  ucd[i].name = strdup(p);
+  size = strlen(p) + 1;
+  ucd[i].name = malloc(size);
+  strlcpy(ucd[i].name, p, size);
   p = sep + 1;
   if (! (sep = strchr(p, ';')))
     goto error;
