@@ -18,7 +18,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "../libc3/c3.h"
-#include "linenoise.h"
+#include "../linenoise/linenoise.h"
 
 typedef struct buf_linenoise {
   s_buf       buf;

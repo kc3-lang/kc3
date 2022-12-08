@@ -77,6 +77,13 @@ config_libcrypto() {
     fi
 }
 
+config_libffi() {
+    if pkg-config libffi; then
+        CFLAGS="$CFLAGS $(pkg-config --cflags libffi)"
+        LIBS="$LIBS $(pkg-config --libs libffi)"
+    fi
+}
+
 require_pkg_config() {
     if ! which pkg-config >/dev/null; then
         echo "please install pkg-config" >&2

@@ -42,13 +42,14 @@ CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe -fPIC"
 LDFLAGS="${LDFLAGS:=}"
-LIBS="${LIBS:=-lm -lffi}"
+LIBS="${LIBS:=-lm}"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 config_asan
 config_libbsd
 config_libcrypto
+config_libffi
 
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
