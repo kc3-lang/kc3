@@ -1,1 +1,1 @@
-../ucd2c/ucd.c
+#include "../ucd2c/ucd.c"

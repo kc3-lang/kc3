@@ -24,9 +24,6 @@ LIB_COV=libc3.cov.la
 LIB_DEBUG=libc3.debug.la
 
 SOURCES="$(ls *.c)"
-if [ -f /usr/include/sha1.h ]; then
-    SOURCES="$(echo "$SOURCES" | grep -v sha1.c)"
-fi
 SOURCES="$(echo "$SOURCES" | tr '\n' ' ')"
 echo "SOURCES = $SOURCES" >> ${CONFIG_MK}
 LIBTOMMATH_SOURCES="$(ls ../libtommath/*.c | grep -v -e bn_mp_set_double.c -e bn_s_mp_rand_platform.c | tr '\n' ' ')"
@@ -48,7 +45,7 @@ LIBS="${LIBS:=-lm}"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 config_asan
 config_gnu
-pkg_config libbsd
+pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
 
