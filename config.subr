@@ -64,6 +64,12 @@ config_asan() {
     rm .config_asan.c
 }
 
+config_gnu() {
+    if grep -q _GNU_SOURCE /usr/include/features.h 2>/dev/null; then
+	CFLAGS="$CFLAGS -D_GNU_SOURCE"
+    fi
+}
+
 pkg_config() {
     if pkg-config "$1"; then
 	CFLAGS="$CFLAGS $(pkg-config --cflags "$1")"

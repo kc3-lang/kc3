@@ -47,6 +47,7 @@ LIBS="${LIBS:=-lm}"
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 config_asan
+config_gnu
 pkg_config libbsd
 pkg_config libffi
 pkg_config libmd
