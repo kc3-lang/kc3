@@ -14,6 +14,8 @@
 
 set -e
 
+echo "$(basename "$PWD")/$(basename "$0")"
+
 o_rule() {
     "$CC" $CPPFLAGS $CFLAGS -M "$1" || { echo "$1" | sed -e 's/^\(.*\)\.c$/\1.o: \1.c/'; }
     echo "$1" | sed -e 's/^\(.*\)\.c$/\1.o: Makefile config.mk/'
@@ -62,25 +64,10 @@ config_asan() {
     rm .config_asan.c
 }
 
-config_libbsd() {
-    if pkg-config libbsd-overlay; then
-	CPPFLAGS="$CPPFLAGS -D_NOT_GNU_SOURCE -D_GNU_SOURCE"
-	CFLAGS="$CFLAGS $(pkg-config --cflags libbsd-overlay)"
-	LIBS="$LIBS $(pkg-config --libs libbsd-overlay) -lmd"
-    fi
-}
-
-config_libcrypto() {
-    if pkg-config libcrypto; then
-	CFLAGS="$CFLAGS $(pkg-config --cflags libcrypto)"
-	LIBS="$LIBS $(pkg-config --libs libcrypto)"
-    fi
-}
-
-config_libffi() {
-    if pkg-config libffi; then
-        CFLAGS="$CFLAGS $(pkg-config --cflags libffi)"
-        LIBS="$LIBS $(pkg-config --libs libffi)"
+pkg_config() {
+    if pkg-config "$1"; then
+	CFLAGS="$CFLAGS $(pkg-config --cflags "$1")"
+	LIBS="$LIBS $(pkg-config --libs "$1")"
     fi
 }
 
@@ -94,7 +81,7 @@ require_pkg_config() {
 update_config_mk() {
     if ! cmp "${CONFIG_MK}" config.mk >/dev/null 2>&1; then
         mv "${CONFIG_MK}" config.mk
-        echo "$PWD/config.mk"
+        echo "-> $PWD/config.mk"
     else
         rm "${CONFIG_MK}"
     fi

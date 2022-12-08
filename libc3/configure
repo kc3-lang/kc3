@@ -47,9 +47,9 @@ LIBS="${LIBS:=-lm}"
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 config_asan
-config_libbsd
-config_libcrypto
-config_libffi
+pkg_config libbsd
+pkg_config libffi
+pkg_config libmd
 
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
