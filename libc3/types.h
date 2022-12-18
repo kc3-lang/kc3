@@ -98,6 +98,7 @@ typedef struct sym                     s_sym;
 typedef struct sym_list                s_sym_list;
 typedef struct tag                     s_tag;
 typedef struct tuple                   s_tuple;
+typedef struct unwind_protect          s_unwind_protect;
 
 /* unions */
 typedef union ptr      u_ptr;
@@ -117,17 +118,6 @@ struct buf_save {
   s_buf_save *next;
   uw rpos;
   uw wpos;
-};
-
-struct env {
-  s_frame *frame;
-  s_error_handler *error_handler;
-};
-
-struct error_handler
-{
-  jmp_buf jmp_buf;
-  s_error_handler *next;
 };
 
 struct fact {
@@ -185,6 +175,12 @@ struct tuple {
   s_tag *tag;
 };
 
+struct unwind_protect {
+  jmp_buf buf;
+  jmp_buf *jmp;
+  s_unwind_protect *next;
+};
+
 /* 2 */
 struct arg {
   const s_sym *name;
@@ -237,6 +233,17 @@ struct str {
   u_ptr   ptr;         /**< Pointer to memory. */
 };
 
+/* 3 */
+struct env {
+  s_list           *backtrace;
+  s_error_handler  *error_handler;
+  s_frame          *frame;
+  s_buf             err;
+  s_buf             in;
+  s_buf             out;
+  s_unwind_protect *unwind_protect;
+};
+
 struct sym {
   s_str str;
 };
@@ -267,13 +274,21 @@ union tag_data {
   p_var        var;
 };
 
-/* 3 */
+/* 4 */
 struct tag {
   u_tag_type type;
   u_tag_data data;
 };
 
-/* 4 */
+/* 5 */
+struct error_handler
+{
+  s_list *backtrace;
+  jmp_buf jmp_buf;
+  s_error_handler *next;
+  s_tag tag;
+};
+
 struct list {
   s_tag tag;
   s_tag next;

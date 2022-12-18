@@ -28,14 +28,16 @@
 #define STR_MAX (16 * 1024 * 1024)
 
 /* Stack allocation compatible functions */
+void    str_clean (s_str *str);
 s_str * str_init (s_str *str, s8 *free, uw size, const s8 *p);
 s_str * str_init_1 (s_str *str, s8 *free, const s8 *p);
 s_str * str_init_alloc (s_str *str, uw size, const s8 *p);
 s_str * str_init_dup (s_str *str, const s_str *src);
 s_str * str_init_dup_1 (s_str *str, const s8 *p);
 s_str * str_init_empty (s_str *str);
+s_str * str_init_f (s_str *str, const char *fmt, ...);
 s_str * str_init_str (s_str *str, const s_str *src);
-void str_clean (s_str *str);
+s_str * str_init_vf (s_str *str, const char *fmt, va_list ap);
 
 /* Constructors, call str_delete after use */
 s_str * str_new (s8 *free, uw size, const s8 *p);

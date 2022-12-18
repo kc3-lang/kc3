@@ -11,13 +11,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
-#include <stdlib.h>
-#include "binding.h"
-#include "env.h"
-#include "eval.h"
-#include "frame.h"
-#include "list.h"
-#include "tag.h"
+#ifndef ERROR_H
+#define ERROR_H
 
+#include "types.h"
+
+void error_print (s_buf *buf, const s_error_handler *error_handler);
+void error_print_backtrace (s_buf *buf, const s_list *backtrace);
+
+#endif /* ERROR_H */

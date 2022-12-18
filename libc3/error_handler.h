@@ -25,7 +25,7 @@ s_error_handler * error_handler_init (s_error_handler *error_handler,
 s_error_handler * error_handler_new (s_error_handler *next);
 
 /* destructors */
-void error_handler_delete (s_error_handler *error_handler);
-void error_handler_delete_all (s_error_handler *error_handler);
+s_error_handler * error_handler_delete (s_error_handler *error_handler);
+void              error_handler_delete_all (s_error_handler *error_handler);
 
 #endif /* ERROR_HANDLER_H */

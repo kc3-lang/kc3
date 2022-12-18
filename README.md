@@ -9,11 +9,31 @@ The garbage collector is optional, like in C.
 
 ```
 defmodule C3 do
+  
   def compile (c3, opts) when is_string(c3) do
     c3
     |> C3.parse(opts)
+    |> C3.compile()
+  end
+
+  def eval (c3, env, opts) when is_string(c3) do
+    c3
+    |> C3.parse(opts)
+    |> C3.eval(env)
+  end
+
+  defguard is_c3 (x) do
+    is_tuple(x)
+  end
+
+  def compile (c3, opts) when is_c3(c3) do
+    c3
     |> C3.to_assembly(opts)
     |> Assembly.to_elf(opts)
+  end
+
+  def eval (c3, env) when is_c3(c3) do
+    [...]
   end
 end
 ```

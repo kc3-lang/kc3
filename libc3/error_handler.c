@@ -22,21 +22,20 @@ void error_handler_clean (s_error_handler *error_handler)
   (void) error_handler;  
 }
 
-void error_handler_delete (s_error_handler *error_handler)
+s_error_handler * error_handler_delete (s_error_handler *error_handler)
 {
+  s_error_handler *next;
   assert(error_handler);
+  next = error_handler->next;
   error_handler_clean(error_handler);
   free(error_handler);
+  return next;
 }
 
 void error_handler_delete_all (s_error_handler *error_handler)
 {
-  s_error_handler *next;
-  while (error_handler) {
-    next = error_handler->next;
-    error_handler_delete(error_handler);
-    error_handler = next;
-  }
+  while (error_handler)
+    error_handler = error_handler_delete(error_handler);
 }
 
 s_error_handler *

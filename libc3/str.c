@@ -154,6 +154,25 @@ s_str * str_init_empty (s_str *str)
   return str;
 }
 
+s_str * str_init_f (s_str *str, const char *fmt, ...)
+{
+  va_list ap;
+  va_start(ap, fmt);
+  str_init_vf(str, fmt, ap);
+  va_end(ap);
+  return str;
+}
+
+s_str * str_init_vf (s_str *str, const char *fmt, va_list ap)
+{
+  int len;
+  s8 *s;
+  len = vasprintf(&s, fmt, ap);
+  if (len < 0)
+    err(1, "vasprintf");
+  return str_init(str, s, len, s);
+}
+
 s_str * str_init_str (s_str *str, const s_str *src)
 {
   assert(str);

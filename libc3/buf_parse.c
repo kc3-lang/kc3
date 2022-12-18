@@ -104,10 +104,11 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
     goto clean;
   }
   while (1) {
-    *args = list_new();
     if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
+    *args = list_new();
+    (*args)->tag = tag; 
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
