@@ -36,6 +36,18 @@ void buf_file_close (s_buf *buf)
   buf->user_ptr = NULL;
 }
 
+e_bool buf_file_is_open (s_buf *buf)
+{
+  s_buf_file *buf_file;
+  assert(buf);
+  if (buf->user_ptr) {
+    buf_file = (s_buf_file *) buf->user_ptr;
+    if (! ferror(buf_file->fp) && ! feof(buf_file->fp))
+      return true;
+  }
+  return false;
+}
+
 s_buf * buf_file_open_r (s_buf *buf, FILE *fp)
 {
   s_buf_file *buf_file;

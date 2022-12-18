@@ -20,7 +20,6 @@
 #include "buf_inspect.h"
 #include "env.h"
 #include "error_handler.h"
-#include "eval.h"
 #include "frame.h"
 #include "list.h"
 #include "str.h"
@@ -85,24 +84,24 @@ s_tag * env_eval_call_fn (s_env *env, s_call *call, s_tag *dest)
   call_args = call->arguments;
   while (args) {
     if (! call_args) {
-      assert(! "eval_call_fn: missing argument");
-      errx(1, "eval_call_fn: missing argument");
+      assert(! "env_eval_call_fn: missing argument");
+      errx(1, "env_eval_call_fn: missing argument");
       return NULL;
     }
     /* TODO: check type */
-    eval_tag(env, &call_args->tag, &tmp);
+    env_eval_tag(env, &call_args->tag, &tmp);
     frame.bindings = binding_new(args->name, &call_args->tag,
                                  frame.bindings);
     args = args->next;
     call_args = list_next(call_args);
   }
   if (call_args) {
-    assert(! "eval_call_fn: too many arguments");
-    errx(1, "eval_call_fn: too many arguments");
+    assert(! "env_eval_call_fn: too many arguments");
+    errx(1, "env_eval_call_fn: too many arguments");
     return NULL;
   }
   env->frame = &frame;
-  eval_progn(env, fn->algo, dest);
+  env_eval_progn(env, fn->algo, dest);
   env->frame = frame_clean(&frame);
   return dest;
 }
@@ -125,8 +124,8 @@ const s_tag * env_eval_ident (s_env *env, s_ident *ident)
   assert(env);
   assert(ident);
   if (! (tag = frame_get(env->frame, ident->sym))) {
-    assert(! "eval_ident: unbound variable");
-    errx(1, "eval_ident: unbound variable");
+    assert(! "env_eval_ident: unbound variable");
+    errx(1, "env_eval_ident: unbound variable");
   }
   return tag;
 }
@@ -150,8 +149,8 @@ s_tag * env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   switch (tag->type.type) {
   case TAG_VOID: return tag_init_void(dest);
   case TAG_CALL:
-    assert(! "eval_tag: invalid tag type: TAG_CALL");
-    errx(1, "eval_tag: invalid tag type TAG_CALL");
+    assert(! "env_eval_tag: invalid tag type: TAG_CALL");
+    errx(1, "env_eval_tag: invalid tag type TAG_CALL");
     return NULL;
   case TAG_CALL_FN:
     return env_eval_call_fn(env, &tag->data.call, dest);
@@ -182,8 +181,8 @@ s_tag * env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_VAR:
     return tag_copy(tag, dest);
   }
-  assert(! "eval_tag: invalid tag");
-  errx(1, "eval_tag: invalid tag");
+  assert(! "env_eval_tag: invalid tag");
+  errx(1, "env_eval_tag: invalid tag");
   return NULL;
 }
 
@@ -247,7 +246,7 @@ s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_list *cleanup,
     env_eval_progn(env, cleanup, &tmp);
     longjmp(*unwind_protect.jmp, 1);
   }
-  eval_tag(env, protected, dest);
+  env_eval_tag(env, protected, dest);
   env_pop_unwind_protect(env);
   env_eval_progn(env, cleanup, &tmp);
   return dest;
