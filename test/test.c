@@ -37,33 +37,37 @@ void test_context (const char *context)
 
 int test_file_compare (const char *path_a, const char *path_b)
 {
-  FILE *fp_a = fopen(path_a, "rb");
-  FILE *fp_b = fopen(path_b, "rb");
+  FILE *fp_a;
+  FILE *fp_b;
   char buf_a[1024];
   char buf_b[1024];
-  int r;
-  if (fp_a == fp_b)
-    return 0;
-  if (fp_a == NULL)
-    return -1;
-  if (fp_b == NULL)
-    return 1;
-  /* TODO: use fread and check how many bytes are read */
-  while (fgets(buf_a, 1024, fp_a) != NULL) {
-    if (fgets(buf_b, 1024, fp_b) == NULL) {
-      test_ko();
-      return 1;
+  unsigned lineno = 0;
+  if (path_a == path_b)
+    goto ok;
+  if (! (fp_a = fopen(path_a, "rb")))
+    goto ko;
+  if (! (fp_b = fopen(path_b, "rb")))
+    goto ko;
+  while (1) {
+    lineno++;
+    if (! fgets(buf_a, sizeof(buf_a), fp_a)) {
+      if (fgets(buf_b, sizeof(buf_b), fp_b))
+        goto ko;
+      goto ok;
     }
-    /* TODO: use memcmp for NUL bytes */
-    if ((r = strcmp(buf_a, buf_b))) {
-      test_ko();
-      return r;
-    }
+    if (! fgets(buf_b, sizeof(buf_b), fp_b))
+      goto ko;
+    if (strncmp(buf_a, buf_b, sizeof(buf_a)))
+      goto ko;
   }
-  if (fgets(buf_b, 1024, fp_b) != NULL) {
-    test_ko();
-    return -1;
-  }
+  /* never reached */
+ ko:
+  printf("\n%sFiles %s and %s differ line %u.%s",
+         TEST_COLOR_KO,
+         path_a, path_b, lineno,
+         TEST_COLOR_RESET);
+  test_ko();
+ ok:
   test_ok();
   return 0;
 }
