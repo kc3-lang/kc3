@@ -67,6 +67,7 @@ int test_file_compare (const char *path_a, const char *path_b)
          path_a, path_b, lineno,
          TEST_COLOR_RESET);
   test_ko();
+  return 1;
  ok:
   test_ok();
   return 0;

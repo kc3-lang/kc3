@@ -49,7 +49,7 @@ void env_error_tag (s_env *env, const s_tag *tag)
 {
   s_error_handler *error_handler;
   assert(env);
-  assert(str);
+  assert(tag);
   error_handler = env->error_handler;
   if (error_handler) {
     tag_copy(tag, &error_handler->tag);
@@ -240,7 +240,7 @@ s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_list *cleanup,
   s_tag tmp;
   s_unwind_protect unwind_protect;
   assert(env);
-  assert(protect);
+  assert(protected);
   if (setjmp(unwind_protect.buf)) {
     env_pop_unwind_protect(env);
     env_eval_progn(env, cleanup, &tmp);

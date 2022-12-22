@@ -76,35 +76,46 @@ void facts_delete (s_facts *facts)
   free(facts);
 }
 
-sw facts_dump (const s_facts *facts, const s8 *path)
+sw facts_dump (const s_facts *facts, s_buf *buf)
 {
-  s_buf buf;
   s_facts_cursor cursor;
   s_fact *fact;
-  FILE *fp;
   s_tag predicate;
   s_tag object;
   sw r;
   sw result = 0;
   s_tag subject;
   assert(facts);
-  assert(path);
-  BUF_INIT_ALLOCA(&buf, 1024);
-  fp = fopen(path, "w");
-  buf_file_open_w(&buf, fp);
+  assert(buf);
   tag_init_var(&subject);
   tag_init_var(&predicate);
   tag_init_var(&object);
   facts_with_0(facts, &cursor, &subject, &predicate, &object);
   while ((fact = facts_cursor_next(&cursor))) {
-    if ((r = facts_log_add(&buf, fact)) < 0)
-      goto clean;
+    if ((r = facts_log_add(buf, fact)) < 0)
+      return r;
     result += r;
   }
- clean:
+  return result;
+}
+
+sw facts_dump_file (const s_facts *facts, const s8 *path)
+{
+  s_buf buf;
+  FILE *fp;
+  sw r;
+  assert(facts);
+  assert(path);
+  BUF_INIT_ALLOCA(&buf, 1024);
+  if (! (fp = fopen(path, "wb"))) {
+    warn("fopen: %s", path);
+    return -1;
+  }
+  buf_file_open_w(&buf, fp);
+  r = facts_dump(facts, &buf);
   buf_file_close(&buf);
   fclose(fp);
-  return result;
+  return r;
 }
 
 s_fact * facts_find_fact (const s_facts *facts, const s_fact *fact)
@@ -151,40 +162,48 @@ s_facts * facts_init (s_facts *facts, s_buf *log)
   return facts;
 }
 
-/* XXX nested databases should be used with care */
-sw facts_load (s_facts *facts, const s8 *path)
+sw facts_load (s_facts *facts, s_buf *buf)
 {
-  s_buf buf;
   s_fact fact;
-  FILE *fp;
   sw r;
   sw result = 0;
   assert(facts);
-  assert(path);
-  BUF_INIT_ALLOCA(&buf, 1024);
-  fp = fopen(path, "r");
-  buf_file_open_r(&buf, fp);
+  assert(buf);
   while (1) {
-    if ((r = buf_read_1(&buf, "add ")) < 0)
+    if ((r = buf_read_1(buf, "add ")) < 0)
       break;
     result += r;
     if (r) {
-      if ((r = buf_parse_fact(&buf, &fact)) <= 0)
+      if ((r = buf_parse_fact(buf, &fact)) <= 0)
         break;
       result += r;
       facts_add_fact(facts, &fact);
       goto ok;
     }
-    if ((r = buf_read_1(&buf, "remove ")) <= 0)
+    if ((r = buf_read_1(buf, "remove ")) <= 0)
       break;
     result += r;
-    if ((r = buf_parse_fact(&buf, &fact)) <= 0)
+    if ((r = buf_parse_fact(buf, &fact)) <= 0)
       break;
     result += r;
     facts_remove_fact(facts, &fact);
   ok:
-    buf_read_1(&buf, "\n");
+    buf_read_1(buf, "\n");
   }
+  return result;
+}
+
+sw facts_load_file (s_facts *facts, const s8 *path)
+{
+  s_buf buf;
+  FILE *fp;
+  sw result;
+  assert(facts);
+  assert(path);
+  BUF_INIT_ALLOCA(&buf, 1024);
+  fp = fopen(path, "r");
+  buf_file_open_r(&buf, fp);
+  result = facts_load(facts, &buf);
   buf_file_close(&buf);
   fclose(fp);
   return result;

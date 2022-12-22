@@ -20,7 +20,7 @@
 
 void facts_test ();
 void facts_test_add ();
-void facts_test_dump ();
+void facts_test_dump_file ();
 void facts_test_find ();
 void facts_test_init_clean ();
 void facts_test_load ();
@@ -38,7 +38,7 @@ void facts_test ()
   facts_test_find();
   facts_test_log_add();
   facts_test_log_remove();
-  facts_test_dump();
+  facts_test_dump_file();
 }
 
 void facts_test_add ()
@@ -94,7 +94,7 @@ void facts_test_add ()
   facts_clean(&facts);
 }
 
-void facts_test_dump ()
+void facts_test_dump_file ()
 {
   uw i = 0;
   s8 *p[24] = {
@@ -131,11 +131,11 @@ void facts_test_dump ()
     facts_add_fact(&facts, fact + i);
     i++;
   }
-  facts_dump(&facts, "facts_test_dump.facts");
-  test_file_compare("facts_test_dump.facts",
-                    "facts_test_dump.facts.expected");
+  facts_dump_file(&facts, "facts_test_dump_file.facts");
+  test_file_compare("facts_test_dump_file.facts",
+                    "facts_test_dump_file.facts.expected");
   if (g_test_last_ok)
-    unlink("facts_test_dump.facts");
+    unlink("facts_test_dump_file.facts");
   i = 0;
   while (p[i]) {
     fact_test_clean_1(fact + i);
