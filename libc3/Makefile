@@ -96,6 +96,10 @@ set__tag.c: set.c.in Makefile
 
 test:
 
-.PHONY: all asan build clean cov debug distclean test
+update_sources:
+	./update_sources
+
+.PHONY: all asan build clean cov debug distclean test update_sources
 
 include config.mk
+include sources.mk
