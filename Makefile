@@ -138,13 +138,6 @@ test_gcovr:
 test_ic3: build
 	${MAKE} -C test test_ic3
 
-update_sources:
-	cd libtommath && ./update_sources
-	cd libc3 && ./update_sources
-	cd ic3 && ./update_sources
-	cd c3s && ./update_sources
-	cd test && ./update_sources
-
 .PHONY: all asan c3s cov clean clean_cov debug gcovr ic3 install libc3 libtommath license test test_asan test_cov test_debug test_gcovr test_ic3
 
 include config.mk

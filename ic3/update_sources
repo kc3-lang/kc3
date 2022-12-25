@@ -10,29 +10,5 @@ SOURCES="$(echo "$SOURCES" | tr '\n' ' ')"
 echo "SOURCES = $SOURCES" >> ${SOURCES_MK}
 echo "SOURCES='$SOURCES'" >> ${SOURCES_SH}
 
-for SRC in $SOURCES; do
-    echo >> ${SOURCES_MK}
-    SRC_LO="$(c2lo "$SRC")"
-    lo_rule "$SRC" >> ${SOURCES_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${SOURCES_MK}
-
-    echo >> ${SOURCES_MK}
-    SRC_ASAN_LO="$(c2ext .asan.lo "$SRC")"
-    ext_rule .asan.lo "$SRC" >> ${SOURCES_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${SOURCES_MK}
-
-    if $HAVE_GCOV; then
-        echo >> ${SOURCES_MK}
-        SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
-        ext_rule .cov.lo "$SRC" >> ${SOURCES_MK}
-        echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${SOURCES_MK}
-    fi
-
-    echo >> ${SOURCES_MK}
-    SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
-    ext_rule .debug.lo "$SRC" >> ${SOURCES_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${SOURCES_MK}
-done
-
 update_sources_mk
 update_sources_sh

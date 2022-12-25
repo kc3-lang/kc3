@@ -21,12 +21,10 @@ for SRC in $SOURCES; do
     ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
 
-    if $HAVE_GCOV; then
-        echo >> ${CONFIG_MK}
-        SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
-        ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
-        echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
-    fi
+    echo >> ${CONFIG_MK}
+    SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
+    ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
+    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
     SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"

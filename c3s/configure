@@ -116,4 +116,28 @@ echo >> ${CONFIG_MK}
 echo "$PROG_DEBUG: $LIBC3_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_DEBUG} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} ${LIBS_DEBUG} -o $PROG_DEBUG" >> ${CONFIG_MK}
 
+for SRC in $SOURCES; do
+    echo >> ${CONFIG_MK}
+    SRC_LO="$(c2lo "$SRC")"
+    lo_rule "$SRC" >> ${CONFIG_MK}
+    echo "     ${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
+
+    echo >> ${CONFIG_MK}
+    SRC_ASAN_LO="$(c2ext .asan.lo "$SRC")"
+    ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
+    echo "     ${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
+
+    if $HAVE_GCOV; then
+        echo >> ${CONFIG_MK}
+        SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
+        ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
+        echo " ${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
+    fi
+
+    echo >> ${CONFIG_MK}
+    SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
+    ext_rule .debug.lo "$SRC" >> ${CONFIG_MK}
+    echo "     ${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
+done
+
 update_config_mk

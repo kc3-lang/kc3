@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+( cd libtommath && ./update_sources; )
+( cd libc3 && ./update_sources; )
+( cd ic3 && ./update_sources; )
+( cd c3s && ./update_sources; )
+( cd test && ./update_sources; )
