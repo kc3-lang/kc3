@@ -39,3 +39,10 @@ uw hash_result (t_hash_context *context)
   SHA1Final(digest, context);
   return *((uw *) digest);
 }
+
+u64 hash_result_u64 (t_hash_context *context)
+{
+  u8 digest[SHA1_DIGEST_LENGTH];
+  SHA1Final(digest, context);
+  return *((u64 *) digest);
+}

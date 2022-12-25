@@ -282,6 +282,82 @@ e_bool facts_remove_fact (s_facts *facts, const s_fact *fact)
   return false;
 }
 
+sw facts_save (s_facts *facts, const s8 *path)
+{
+  s_buf *buf;
+  u64 digest = 0;
+  u64 dump_pos = 0;
+  FILE *fp;
+  u64 log_pos = 0;
+  sw r;
+  sw result = 0;
+  assert(facts);
+  assert(path);
+  assert(! facts->log);
+  buf = buf_new_alloc(1024);
+  if (! (fp = fopen(path, "wb"))) {
+    warn("fopen: %s", path);
+    return -1;
+  }
+  buf_file_open_w(buf, fp);
+  if ((r = facts_save_header(facts, buf, digest, dump_pos,
+                             log_pos)) < 0)
+    goto ko;
+  result += r;
+  dump_pos = result;
+  if ((r = facts_dump(facts, buf)) < 0)
+    goto ko;
+  result += r;
+  log_pos = result;
+  buf_flush(buf);
+  fseek(fp, 0, SEEK_SET);
+  if ((r = facts_save_header(facts, buf, digest, dump_pos,
+                             log_pos)) < 0)
+    goto ko;
+  buf_flush(buf);
+  fseek(fp, log_pos, SEEK_SET);
+  facts->log = buf;
+  return result;
+ ko:
+  fclose(fp);
+  return r;
+}
+
+sw facts_save_header (const s_facts *facts, s_buf *buf, u64 digest,
+                      u64 dump_pos, u64 log_pos)
+{
+  sw r;
+  sw result = 0;
+  if ((r = buf_write_1(buf, "%{count:  0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u64_hex(buf, facts_count(facts))) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ",\n  digest: 0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u64_hex(buf, digest)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ",\n  dump:   0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u64_hex(buf, dump_pos)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ",\n  log:    0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u64_hex(buf, log_pos)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "}\n")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 e_bool facts_unref_tag (s_facts *facts, const s_tag *tag)
 {
   s_set_item__tag *item;

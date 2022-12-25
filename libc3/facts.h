@@ -16,6 +16,8 @@
 
 #include "types.h"
 
+#define facts_count(facts) (facts->facts.count)
+
 /* Stack allocation compatible functions */
 void      facts_clean (s_facts *facts);
 s_facts * facts_init (s_facts *facts, s_buf *log);
@@ -34,9 +36,10 @@ s_fact * facts_add_tags (s_facts *facts, const s_tag *subject,
 void     facts_close (s_facts *facts);
 sw       facts_load (s_facts *facts, s_buf *buf);
 sw       facts_load_file (s_facts *facts, const s8 *path);
-sw       facts_open (s_facts *facts, const s8 *path);
+sw       facts_open_file (s_facts *facts, const s8 *path);
 s_tag *  facts_ref_tag (s_facts *facts, const s_tag *tag);
 e_bool   facts_remove_fact (s_facts *facts, const s_fact *fact);
+sw       facts_save (s_facts *facts, const s8 *path);
 e_bool   facts_unref_tag (s_facts *facts, const s_tag *tag);
 
 /* Observers */
@@ -46,6 +49,7 @@ s_fact * facts_find_fact (const s_facts *facts, const s_fact *fact);
 s_tag *  facts_find_tag (const s_facts *facts, const s_tag *tag);
 sw       facts_log_add (s_buf *log, const s_fact *fact);
 sw       facts_log_remove (s_buf *log, const s_fact *fact);
-sw       facts_save (s_facts *facts, const s8 *path);
+sw       facts_save_header (const s_facts *facts, s_buf *buf,
+                            u64 digest, u64 dump_pos, u64 log_pos);
 
 #endif /* FACTS_H */

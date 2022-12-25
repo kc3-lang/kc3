@@ -26,5 +26,6 @@ t_hash_context * hash_init (t_hash_context *context);
 t_hash_context * hash_update (t_hash_context *context,
                               const void *data, uw size);
 uw               hash_result (t_hash_context *context);
+u64              hash_result_u64 (t_hash_context *context);
 
 #endif /* HASH_H */
