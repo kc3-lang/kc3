@@ -789,9 +789,9 @@ void buf_parse_test_digit_dec ()
 
 void buf_parse_test_f32()
 {
-  BUF_PARSE_TEST_F32("123.123", 123.12299);
-  BUF_PARSE_TEST_F32("3.14159", 3.141589641571045);
-  BUF_PARSE_TEST_F32("2.1e+2", 209.9999847412109);
+  BUF_PARSE_TEST_F32("123.123", 123.123);
+  BUF_PARSE_TEST_F32("3.14159", 3.14159);
+  BUF_PARSE_TEST_F32("2.1e+2", 210);
 }
 
 void buf_parse_test_f64()

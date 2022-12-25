@@ -30,8 +30,10 @@ echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 
-OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
-echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
+if $HAVE_GCOV; then
+    OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
+    echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
+fi
 
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
@@ -86,10 +88,12 @@ echo >> ${CONFIG_MK}
 echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
-echo >> ${CONFIG_MK}
-echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
-echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
-echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
+if $HAVE_GCOV; then
+    echo >> ${CONFIG_MK}
+    echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
+    echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
+    echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
+fi
 echo >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
@@ -106,10 +110,12 @@ for SRC in $SOURCES; do
     ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
 
-    echo >> ${CONFIG_MK}
-    SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
-    ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
+    if $HAVE_GCOV; then
+        echo >> ${CONFIG_MK}
+        SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
+        ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
+        echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
+    fi
 
     echo >> ${CONFIG_MK}
     SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
@@ -125,9 +131,11 @@ echo >> ${CONFIG_MK}
 echo "$PROG_ASAN: $LIBC3_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_ASAN} \${LDFLAGS_ASAN} ${OBJECTS_ASAN} ${LIBS_ASAN} -o $PROG_ASAN" >> ${CONFIG_MK}
 
-echo >> ${CONFIG_MK}
-echo "$PROG_COV: $LIBC3_COV $OBJECTS_COV" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_COV} \${LDFLAGS_COV} ${OBJECTS_COV} ${LIBS_COV} -o $PROG_COV" >> ${CONFIG_MK}
+if $HAVE_GCOV; then
+    echo >> ${CONFIG_MK}
+    echo "$PROG_COV: $LIBC3_COV $OBJECTS_COV" >> ${CONFIG_MK}
+    echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_COV} \${LDFLAGS_COV} ${OBJECTS_COV} ${LIBS_COV} -o $PROG_COV" >> ${CONFIG_MK}
+fi
 
 echo >> ${CONFIG_MK}
 echo "$PROG_DEBUG: $LIBC3_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}

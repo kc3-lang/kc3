@@ -17,7 +17,7 @@
 #include "skiplist_node__fact.h"
 
 s_skiplist_node__fact *
-skiplist_node_init (s_skiplist_node__fact *node, s_fact * fact, uw height)
+skiplist_node_init (s_skiplist_node__fact *node, s_fact * fact, u8 height)
 {
   node->fact = fact;
   node->height = height;
@@ -27,7 +27,7 @@ skiplist_node_init (s_skiplist_node__fact *node, s_fact * fact, uw height)
 }
 
 s_skiplist_node__fact *
-skiplist_node_new__fact (s_fact * fact, uw height)
+skiplist_node_new__fact (s_fact * fact, u8 height)
 {
   s_skiplist_node__fact *node = malloc(SKIPLIST_NODE_SIZE__fact(height));
   if (node)

@@ -14,21 +14,27 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <limits.h>
 #include <setjmp.h>
 #include <stdio.h>
+#include <sys/types.h>
 #include "../libtommath/tommath.h"
 
 /* Basic integer types. */
-typedef char                s8;
-typedef short               s16;
-typedef int                 s32;
-typedef long                sw;
-typedef long long           s64;
-typedef unsigned char       u8;
-typedef unsigned short      u16;
-typedef unsigned int        u32;
-typedef unsigned long       uw;
-typedef unsigned long long  u64;
+typedef char          s8;
+typedef int16_t       s16;
+typedef int32_t       s32;
+typedef long          sw;
+typedef int64_t       s64;
+typedef uint8_t       u8;
+typedef uint16_t      u16;
+typedef uint32_t      u32;
+typedef unsigned long uw;
+typedef uint64_t      u64;
+
+#define S32_MAX LONG_MAX
+#define S64_MAX LLONG_MAX
+#define U64_MAX ULLONG_MAX
 
 /* IEEE 754 floating point numbers. */
 typedef float               f32;
@@ -112,6 +118,10 @@ typedef s_tag      **p_facts_spec;
 typedef s_tag       *p_quote;
 typedef const s_tag *p_tag;
 typedef const s_tag *p_var;
+typedef u64          t_skiplist_height;
+
+#define CHARACTER_MAX S32_MAX
+#define SKIPLIST_HEIGHT_MAX U64_MAX
 
 /* 1 */
 struct buf_save {

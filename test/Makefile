@@ -20,7 +20,10 @@ DISTCLEANFILES = ${CLEANFILES} config.mk
 
 build: libc3_test
 
-all: build cov debug
+all:
+	${MAKE} build
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
+	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 asan: libc3_test.asan

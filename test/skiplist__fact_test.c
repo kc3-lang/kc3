@@ -85,7 +85,7 @@ void skiplist__fact_test_find ()
 {
   s_fact fact[24];
   const u8 *h;
-  const u8 height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 64, 128, 255, 0};
+  const u8 height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 0};
   sw i;
   s8 *p[24] = {
     "\"a\"",
@@ -141,7 +141,7 @@ void skiplist__fact_test_insert ()
 {
   sw i;
   const u8 *h;
-  const u8 height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 64, 128, 255, 0};
+  const u8 height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 0};
   const double *s;
   const double spacing[] = {2.0, 2.4, 3.0, 0.0};
   s8 *p[24] = {
@@ -198,7 +198,7 @@ void skiplist__fact_test_insert ()
 void skiplist__fact_test_init_clean ()
 {
   const u8 *h;
-  const u8  height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 64, 128, 255, 0};
+  const u8  height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 0};
   const double *s;
   const double  spacing[] = {2.0, 2.4, 3.0, 0.0};
   for (h = height; *h; h++) {
@@ -211,7 +211,7 @@ void skiplist__fact_test_init_clean ()
 void skiplist__fact_test_new_delete ()
 {
   const u8 *h;
-  const u8  height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 64, 128, 255, 0};
+  const u8  height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 0};
   const double *s;
   const double  spacing[] = {2.0, 2.4, 3.0, 0.0};
   for (h = height; *h; h++) {
@@ -225,7 +225,7 @@ void skiplist__fact_test_remove ()
 {
   s_fact fact[24];
   const u8 *h;
-  const u8 height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 64, 128, 255, 0};
+  const u8 height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 0};
   sw i;
   s8 *p[24] = {
     "\"a\"",

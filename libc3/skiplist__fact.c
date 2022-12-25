@@ -95,7 +95,7 @@ skiplist_find__fact (s_skiplist__fact *skiplist, s_fact * fact)
 
 static void skiplist_height_table_init__fact (s_skiplist__fact *skiplist, f64 spacing)
 {
-  sw *height_table;
+  t_skiplist_height *height_table;
   u8 h;
   f64 w = spacing;
   f64 end = w;
@@ -103,6 +103,7 @@ static void skiplist_height_table_init__fact (s_skiplist__fact *skiplist, f64 sp
   for (h = 0; h < skiplist->max_height; h++) {
     w *= spacing;
     end += w;
+    assert(end <= (f64) SKIPLIST_HEIGHT_MAX);
     height_table[h] = end;
   }
 }
@@ -122,10 +123,12 @@ skiplist_init__fact (s_skiplist__fact *skiplist, u8 max_height, f64 spacing)
 s_skiplist_node__fact *
 skiplist_insert__fact (s_skiplist__fact *skiplist, s_fact * fact)
 {
-  s_skiplist_node__fact *pred = skiplist_pred__fact(skiplist, fact);
-  s_skiplist_node__fact *next = SKIPLIST_NODE_NEXT__fact(pred, 0);
+  s_skiplist_node__fact *pred;
+  s_skiplist_node__fact *next;
   uw height;
   s_skiplist_node__fact *node;
+  pred = skiplist_pred__fact(skiplist, fact);
+  next = SKIPLIST_NODE_NEXT__fact(pred, 0);
   next = SKIPLIST_NODE_NEXT__fact(next, 0);
   if (next && skiplist->compare(fact, next->fact) == 0)
     return next;
@@ -149,13 +152,17 @@ skiplist_new__fact (u8 max_height, f64 spacing)
 s_skiplist_node__fact *
 skiplist_pred__fact (s_skiplist__fact *skiplist, s_fact * fact)
 {
-  int level = skiplist->max_height;
-  s_skiplist_node__fact *pred =
-    skiplist_node_new__fact(NULL, skiplist->max_height);
-  s_skiplist_node__fact *node = skiplist->head;
+  int level;
+  s_skiplist_node__fact *pred;
+  s_skiplist_node__fact *n;
+  s_skiplist_node__fact *node;
+  assert(skiplist);
+  level = skiplist->max_height;
+  pred = skiplist_node_new__fact(NULL, skiplist->max_height);
+  node = skiplist->head;
   assert(pred);
   while (level--) {
-    s_skiplist_node__fact *n = node;
+    n = node;
     while (n && skiplist->compare(fact, n->fact) > 0) {
       node = n;
       n = SKIPLIST_NODE_NEXT__fact(node, level);
@@ -168,14 +175,20 @@ skiplist_pred__fact (s_skiplist__fact *skiplist, s_fact * fact)
 u8
 skiplist_random_height__fact (s_skiplist__fact *skiplist)
 {
-  const sw *height_table = SKIPLIST_HEIGHT_TABLE__fact(skiplist);
-  sw max = height_table[skiplist->max_height - 1];
-
-  sw k = random() % max;
+  u8 height;
+  const t_skiplist_height *height_table;
+  sw max;
+  t_skiplist_height k;
   sw i;
-  for (i = 0; k > height_table[i]; i++)
+  assert(skiplist);
+  height_table = SKIPLIST_HEIGHT_TABLE__fact(skiplist);
+  max = height_table[skiplist->max_height - 1];
+  k = random() % max;
+  for (i = 0; i < skiplist->max_height && k > height_table[i]; i++)
     ;
-  return skiplist->max_height - i;
+  height = skiplist->max_height - i;
+  assert(height);
+  return height;
 }
 
 e_bool

@@ -1045,6 +1045,17 @@ sw buf_inspect_u64 (s_buf *buf, u64 x)
   return size;
 }
 
+sw buf_inspect_u32_hex (s_buf *buf, u32 i)
+{
+  const s8 basis[] = "0123456789ABCDEF";
+  uw shift = 32;
+  while (shift) {
+    shift -= 4;
+    buf_write_s8(buf, basis[(i >> shift) & 0xF]);
+  }
+  return 8;
+}
+
 sw buf_inspect_u64_hex (s_buf *buf, u64 i)
 {
   const s8 basis[] = "0123456789ABCDEF";

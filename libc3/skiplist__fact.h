@@ -24,10 +24,10 @@
 #include "types.h"
 
 #define SKIPLIST_HEIGHT_TABLE__fact(skiplist) \
-  ((sw *) (((s_skiplist__fact *) skiplist) + 1))
+  ((t_skiplist_height *) (((s_skiplist__fact *) skiplist) + 1))
 
 #define SKIPLIST_SIZE__fact(max_height) \
-  (sizeof(s_skiplist__fact) + (max_height) * sizeof(sw))
+  (sizeof(s_skiplist__fact) + (max_height) * sizeof(t_skiplist_height))
 
 #define SKIPLIST_INIT_ALLOCA__fact(max_height, spacing) \
   (skiplist_init__fact(alloca(SKIPLIST_SIZE__fact(max_height)), \

@@ -20,7 +20,10 @@ DISTCLEANFILES = ${CLEANFILES} config.mk
 
 build: c3s
 
-all: build cov debug
+all:
+	${MAKE} build
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
+	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 asan: c3s.asan

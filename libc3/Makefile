@@ -22,7 +22,7 @@ build: libc3.la libc3.a
 
 all:
 	${MAKE} build
-	${MAKE} cov
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 

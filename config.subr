@@ -110,17 +110,23 @@ if test -z "$CC"; then
 fi
 echo "CC = $CC" >> ${CONFIG_MK}
 
-if test -z "$GCOV"; then
-    if test -x "$(which gcov)"; then
-        GCOV=gcov
-    elif test -x "$(which egcov)"; then
-        GCOV=egcov
-    else
-        GCOV=gcov
+if [ "x$GCOV" = "x" ]; then
+    if which gcov 2>/dev/null; then
+	GCOV=gcov
+        HAVE_GCOV=true
+    elif which egcov 2>/dev/null; then
+	GCOV=egcov
+        HAVE_GCOV=true
     fi
+    HAVE_GCOV=false
+else
+    HAVE_GCOV=true
 fi
-echo "GCOV = $GCOV" >> ${CONFIG_MK}
-    
+echo "HAVE_GCOV = $HAVE_GCOV" >> ${CONFIG_MK}
+if ${HAVE_GCOV}; then
+    echo "GCOV = $GCOV" >> ${CONFIG_MK}
+fi
+
 if test -z "$INSTALL"; then
     if test -x "$(which install)"; then
         INSTALL=install

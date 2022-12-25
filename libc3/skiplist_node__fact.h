@@ -33,10 +33,10 @@
   (sizeof(s_skiplist_node__fact) + (height) * sizeof(s_fact *))
 
 s_skiplist_node__fact *
-skiplist_node_init (s_skiplist_node__fact *node, s_fact * value, unsigned long height);
+skiplist_node_init (s_skiplist_node__fact *node, s_fact * value, u8 height);
 
 s_skiplist_node__fact *
-skiplist_node_new__fact (s_fact * value, unsigned long height);
+skiplist_node_new__fact (s_fact * value, u8 height);
 
 void
 skiplist_node_delete__fact (s_skiplist_node__fact *node);
