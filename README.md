@@ -86,3 +86,17 @@ Script interpreter. Under development.
      - & &1
      - defmodule
      - funcall
+  - buf_sha256
+  - buf_popen
+
+# File format
+
+On disk format :
+
+         0               1               2               3               4
+         0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF01
+ 0x0000  %{dump: 0x0000000000000100, log: 0x0000000000001000, format: :c3}
+ 0x0042  _comments_
+_0x0100_ _count_ _dump_
+ 0x0900  _sha256_
+_0x1000_ _log_
