@@ -22,23 +22,23 @@
 
 #define BUFSZ 1024
 
-unsigned long read_hex (const char **src) {
-  unsigned long ul = 0;
+unsigned long long read_hex (const char **src) {
+  unsigned long long u64 = 0;
   char c;
   while ((c = **src) != '\0' && c != ';') {
     if ('0' <= c && c <= '9') {
-      ul *= 16;
-      ul += c - '0';
+      u64 *= 16;
+      u64 += c - '0';
       (*src)++;
     }
     else if ('A' <= c && c <= 'F') {
-      ul *= 16;
-      ul += c - 'A' + 10;
+      u64 *= 16;
+      u64 += c - 'A' + 10;
       (*src)++;
     }
     else if ('a' <= c && c <= 'f') {
-      ul *= 16;
-      ul += c - 'a' + 10;
+      u64 *= 16;
+      u64 += c - 'a' + 10;
       (*src)++;
     }
     else {
@@ -47,7 +47,7 @@ unsigned long read_hex (const char **src) {
   }
   if (c == ';')
     (*src)++;
-  return ul;
+  return u64;
 }
 
 void ucd_parse (s_ucd ucd[UCD_MAX], char *line,
@@ -182,7 +182,7 @@ void ucd_write_c (s_ucd ucd[UCD_MAX])
   while (i < UCD_MAX) {
     if (i > 0)
       printf(",\n");
-    printf("  {0x%lx, ",
+    printf("  {0x%llx, ",
            ucd[i].flags);
     if (ucd[i].name)
       printf("\"%s\"", ucd[i].name);

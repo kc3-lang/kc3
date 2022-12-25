@@ -55,7 +55,7 @@
 #define UCD_OTHER_PRIVATE_USE         0x0800000000
 #define UCD_OTHER_NOT_ASSIGNED        0x1000000000
 
-typedef unsigned long ucd_flags;
+typedef unsigned long long ucd_flags;
 
 typedef struct ucd {
   ucd_flags flags;
