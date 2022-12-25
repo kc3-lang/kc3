@@ -76,3 +76,4 @@ test_valgrind: libc3_test
 .PHONY: all asan cov debug clean clean_cov distclean ic3_test_cov libc3_test_cov test test_asan test_cov test_debug test_ic3 test_valgrind
 
 include config.mk
+include sources.mk

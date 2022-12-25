@@ -50,3 +50,4 @@ gdb_ic3: debug
 .PHONY: all asan cov debug clean clean_cov distclean
 
 include config.mk
+include sources.mk
