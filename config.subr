@@ -134,10 +134,10 @@ fi
 echo "CC = $CC" >> ${CONFIG_MK}
 
 if [ "x$GCOV" = "x" ]; then
-    if which gcov 2>/dev/null; then
+    if which gcov >/dev/null 2>&1; then
 	GCOV=gcov
         HAVE_GCOV=true
-    elif which egcov 2>/dev/null; then
+    elif which egcov >/dev/null 2>&1; then
 	GCOV=egcov
         HAVE_GCOV=true
     fi
