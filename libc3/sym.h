@@ -44,8 +44,7 @@ const s_sym * sym_find (const s_str *src);
 
 e_bool sym_has_reserved_characters (const s_sym *sym);
 
-t_hash_context * sym_hash_update (t_hash_context *context,
-                                  const s_sym *src);
+void sym_hash_update (const s_sym *sym, t_hash *hash);
 
 s_str * sym_inspect (const s_sym *sym, s_str *dest);
 

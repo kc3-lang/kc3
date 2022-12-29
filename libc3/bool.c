@@ -11,11 +11,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "bool.h"
 #include "buf.h"
 #include "buf_inspect.h"
-#include "hash.h"
 
-s8 bool_compare (bool a, bool b)
+s8 bool_compare (e_bool a, e_bool b)
 {
   if (! a && b)
     return -1;
@@ -24,13 +24,7 @@ s8 bool_compare (bool a, bool b)
   return 1;
 }
 
-t_hash_context * bool_hash_update (t_hash_context *context, e_bool x)
-{
-  bool b = x ? 1 : 0;
-  return hash_update(context, &b, sizeof(b));
-}
-
-s_str * bool_inspect (bool x, s_str *dest)
+s_str * bool_inspect (e_bool x, s_str *dest)
 {
   sw size;
   s_buf tmp;

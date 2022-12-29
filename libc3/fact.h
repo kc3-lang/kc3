@@ -14,7 +14,6 @@
 #ifndef FACT_H
 #define FACT_H
 
-#include "hash.h"
 #include "types.h"
 
 /* Stack-allocation compatible functions */
@@ -23,15 +22,8 @@ s_fact * fact_init (s_fact *fact, const s_tag *subject,
                     const s_tag *predicate, const s_tag *object);
 
 /* Observers */
-s8               fact_compare (const s_fact *a, const s_fact *b);
-s8               fact_compare_pos (const s_fact *a, const s_fact *b);
-s8               fact_compare_osp (const s_fact *a, const s_fact *b);
-s8               fact_compare_unbound_var_count (const s_fact *a,
-                                                 const s_fact *b);
-s_fact *         fact_copy (const s_fact *src, s_fact *dest);
-t_hash_context * fact_hash_update (t_hash_context *context,
-                                   const s_fact *fact);
-uw               fact_hash (const s_fact *x);
-s_str *          fact_inspect (const s_fact *fact, s_str *dest);
+s_fact * fact_copy (const s_fact *src, s_fact *dest);
+uw       fact_hash_uw (const s_fact *x);
+s_str *  fact_inspect (const s_fact *fact, s_str *dest);
 
 #endif /* FACT_H */

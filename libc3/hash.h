@@ -14,18 +14,34 @@
 #ifndef HASH_H
 #define HASH_H
 
-#include <sys/types.h>
-#include "sha1.h"
 #include "types.h"
 
-#define HASH_SIZE SHA1_DIGEST_LENGTH
+#define HASH_UPDATE_PROTOTYPE(type)                           \
+  void hash_update_##type (t_hash *hash, type x)
 
-typedef SHA1_CTX t_hash_context;
-
-t_hash_context * hash_init (t_hash_context *context);
-t_hash_context * hash_update (t_hash_context *context,
-                              const void *data, uw size);
-uw               hash_result (t_hash_context *context);
-u64              hash_result_u64 (t_hash_context *context);
+void hash_init (t_hash *hash);
+uw   hash_to_uw (t_hash *hash);
+u64  hash_to_u64 (t_hash *hash);
+void hash_update (t_hash *hash, const void *data, uw size);
+void hash_update_bool (t_hash *hash, e_bool b);
+void hash_update_call (t_hash *hash, const s_call *call);
+void hash_update_fact (t_hash *hash, const s_fact *fact);
+HASH_UPDATE_PROTOTYPE(f32);
+HASH_UPDATE_PROTOTYPE(f64);
+void hash_update_ident (t_hash *hash, const s_ident *ident);
+void hash_update_integer (t_hash *hash, const s_integer *i);
+void hash_update_list (t_hash *hash, const s_list *list);
+void hash_update_ptag (t_hash *hash, const p_tag ptag);
+void hash_update_quote (t_hash *hash, const p_quote x);
+HASH_UPDATE_PROTOTYPE(s8);
+HASH_UPDATE_PROTOTYPE(s16);
+HASH_UPDATE_PROTOTYPE(s32);
+HASH_UPDATE_PROTOTYPE(s64);
+void hash_update_tag (t_hash *hash, const s_tag *tag);
+void hash_update_tuple (t_hash *hash, const s_tuple *tuple);
+HASH_UPDATE_PROTOTYPE(u8);
+HASH_UPDATE_PROTOTYPE(u16);
+HASH_UPDATE_PROTOTYPE(u32);
+HASH_UPDATE_PROTOTYPE(u64);
 
 #endif /* HASH_H */

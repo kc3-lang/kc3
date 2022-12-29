@@ -225,55 +225,22 @@ s_tag * tag_f64 (s_tag *tag, f64 x)
   return tag_init_f64(tag, x);
 }
 
-uw tag_hash (const s_tag *tag)
+u64 tag_hash_u64 (const s_tag *tag)
 {
-  t_hash_context context;
+  t_hash hash;
   assert(tag);
-  hash_init(&context);
-  tag_hash_update(&context, tag);
-  return hash_result(&context);
+  hash_init(&hash);
+  tag_hash_update(tag, &hash);
+  return hash_to_u64(&hash);
 }
 
-t_hash_context * tag_hash_update (t_hash_context *context,
-                                  const s_tag *tag)
+uw tag_hash_uw (const s_tag *tag)
 {
+  t_hash hash;
   assert(tag);
-  u64_hash_update(context, tag->type.type);
-  switch (tag->type.type) {
-  case TAG_VOID: break;
-  case TAG_BOOL: bool_hash_update(context, tag->data.bool);       break;
-  case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
-    call_hash_update(context, &tag->data.call);                   break;
-  case TAG_CHARACTER:
-    character_hash_update(context, tag->data.character);          break;
-  case TAG_F32: f32_hash_update(context, tag->data.f32);          break;
-  case TAG_F64: f64_hash_update(context, tag->data.f64);          break;
-  case TAG_FN: u64_hash_update(context, (u64) tag);               break;
-  case TAG_IDENT: ident_hash_update(context, &tag->data.ident);   break;
-  case TAG_INTEGER:
-    integer_hash_update(context, &tag->data.integer);             break;
-  case TAG_LIST: list_hash_update(context, tag->data.list);       break;
-  case TAG_PTAG: ptag_hash_update(context, tag->data.ptag);       break;
-  case TAG_QUOTE: quote_hash_update(context, tag->data.quote);    break;
-  case TAG_S8: s8_hash_update(context, tag->data.s8);             break;
-  case TAG_S16: s16_hash_update(context, tag->data.s16);          break;
-  case TAG_S32: s32_hash_update(context, tag->data.s32);          break;
-  case TAG_S64: s64_hash_update(context, tag->data.s64);          break;
-  case TAG_STR: str_hash_update(context, &tag->data.str);         break;
-  case TAG_SYM: sym_hash_update(context, tag->data.sym);          break;
-  case TAG_TUPLE: tuple_hash_update(context, &tag->data.tuple);   break;
-  case TAG_U8: u8_hash_update(context, tag->data.u8);             break;
-  case TAG_U16: u16_hash_update(context, tag->data.u16);          break;
-  case TAG_U32: u32_hash_update(context, tag->data.u32);          break;
-  case TAG_U64: u64_hash_update(context, tag->data.u64);          break;
-  case TAG_VAR:
-    assert(! "var hash update");
-    errx(1, "var hash update");
-    return NULL;
-  }
-  return context;
+  hash_init(&hash);
+  tag_hash_update(tag, &hash);
+  return hash_to_uw(&hash);
 }
 
 s_tag * tag_ident (s_tag *tag, const s_ident *x)

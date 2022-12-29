@@ -20,7 +20,6 @@
 #include "character.h"
 #include "str.h"
 #include "sym.h"
-#include "u8.h"
 
 void         sym_delete (s_sym *sym);
 s_str *      sym_inspect_reserved (const s_sym *sym, s_str *dest);
@@ -108,15 +107,6 @@ e_bool sym_has_reserved_characters (const s_sym *sym)
   if (r < 0)
     return true;
   return false;
-}
-
-t_hash_context * sym_hash_update (t_hash_context *context,
-                                  const s_sym *src)
-{
-  assert(context);
-  assert(src);
-  u8_hash_update(context, ':');
-  return str_hash_update(context, &src->str);
 }
 
 s_str * sym_inspect (const s_sym *sym, s_str *dest)

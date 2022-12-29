@@ -20,12 +20,10 @@
 #ifndef BOOL_H
 #define BOOL_H
 
-#include "hash.h"
 #include "types.h"
 
 /* Observers */
-s8               bool_compare (e_bool a, e_bool b);
-t_hash_context * bool_hash_update (t_hash_context *context, bool b);
-s_str *          bool_inspect (e_bool b, s_str *dest);
+s8      bool_compare (e_bool a, e_bool b);
+s_str * bool_inspect (e_bool b, s_str *dest);
 
 #endif /* SYM_H */

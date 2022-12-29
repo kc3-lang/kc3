@@ -17,18 +17,17 @@
 #include "hash.h"
 #include "types.h"
 
-character        character_1 (const s8 *p);
-s8               character_compare (character a, character b);
-t_hash_context * character_hash_update (t_hash_context *context,
-                                        character c);
-e_bool           character_is_digit (character c);
-e_bool           character_is_lowercase (character c);
-e_bool           character_is_printable (character c);
-e_bool           character_is_space (character c);
-e_bool           character_is_uppercase (character c);
-sw               character_read (s_buf *buf, character *c);
-sw               character_write (s_buf *buf, character c);
-sw               character_utf8 (character c, s8 *dest);
-sw               character_utf8_size (character c);
+character character_1 (const s8 *p);
+s8        character_compare (character a, character b);
+void      character_hash_update (character c, t_hash *hash);
+e_bool    character_is_digit (character c);
+e_bool    character_is_lowercase (character c);
+e_bool    character_is_printable (character c);
+e_bool    character_is_space (character c);
+e_bool    character_is_uppercase (character c);
+sw        character_read (s_buf *buf, character *c);
+sw        character_write (s_buf *buf, character c);
+sw        character_utf8 (character c, s8 *dest);
+sw        character_utf8_size (character c);
 
 #endif /* CHARACTER_H */

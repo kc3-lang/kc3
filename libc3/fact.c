@@ -18,7 +18,6 @@
 #include "hash.h"
 #include "fact.h"
 #include "tag.h"
-#include "u8.h"
 
 s8 fact_compare (const s_fact *a, const s_fact *b)
 {
@@ -107,21 +106,13 @@ s_fact * fact_copy (const s_fact *src, s_fact *dest)
   return dest;
 }
 
-uw fact_hash (const s_fact *fact)
+uw fact_hash_uw (const s_fact *fact)
 {
-  t_hash_context context;
+  t_hash hash;
   assert(fact);
-  hash_init(&context);
-  fact_hash_update(&context, fact);
-  return hash_result(&context);
-}
-
-t_hash_context * fact_hash_update (t_hash_context *context,
-                                   const s_fact *fact)
-{
-  tag_hash_update(context, fact->subject);
-  tag_hash_update(context, fact->predicate);
-  return tag_hash_update(context, fact->object);
+  hash_init(&hash);
+  fact_hash_update(&hash, fact);
+  return hash_to_uw(&hash);
 }
 
 s_fact * fact_init (s_fact *fact, const s_tag *subject,

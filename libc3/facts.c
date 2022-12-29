@@ -13,6 +13,7 @@
  */
 #include <assert.h>
 #include <err.h>
+#include <errno.h>
 #include <stdlib.h>
 #include "buf.h"
 #include "buf_file.h"
@@ -90,6 +91,24 @@ sw facts_dump (const s_facts *facts, s_buf *buf)
   tag_init_var(&subject);
   tag_init_var(&predicate);
   tag_init_var(&object);
+  if ((r = buf_write_1(buf,
+                       "%{module: C3.Facts,\n"
+                       "  version: 0x0000000000000001,\n"
+                       "  count: 0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u64_hex(buf, facts_count(facts))) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ",\n  digest: 0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u64_hex(buf, digest)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "}\n")) < 0)
+    return r;
+  result += r;
   facts_with_0(facts, &cursor, &subject, &predicate, &object);
   while ((fact = facts_cursor_next(&cursor))) {
     if ((r = facts_log_add(buf, fact)) < 0)
@@ -249,6 +268,83 @@ s_facts * facts_new (s_buf *log)
   return facts_init(n, log);
 }
 
+sw facts_open_buf (s_facts *facts, s_buf *buf)
+{
+  u64 count;
+  u64 digest;
+  u64 dump_pos;
+  u64 log_pos;
+  sw r;
+  if ((r = buf_read_1(buf,
+                      "%{module: C3.Facts,\n"
+                      "  version: 0x0000000000000001,\n"
+                      "  count: 0x")) < 0)
+    return r;
+  if ((r = buf_parse_u64_hex(buf, &count)) < 0)
+    return r;
+  if ((r = buf_read_1(buf, ",\n  digest: 0x")) < 0)
+    return r;
+  if ((r = buf_parse_u64_hex(buf, &digest)) < 0)
+    return r;
+  if ((r = buf_read_1(buf, ",\n  dump: 0x")) < 0)
+    return r;
+  if ((r = buf_parse_u64_hex(buf, &dump_pos)) < 0)
+    return r;
+  if ((r = buf_read_1(buf, ",\n  log: 0x")) < 0)
+    return r;
+  if ((r = buf_parse_u64_hex(buf, &log_pos)) < 0)
+    return r;
+  if ((r = buf_read_1(buf, "}\n")) < 0)
+    return r;
+  if ((r = buf_seek(buf, dump_pos, SEEK_SET)) < 0)
+    return r;
+  if ((r = facts_open_buf_read_dump(facts, buf, count, digest)) < 0)
+    return r;
+  if ((r = buf_seek(buf, log_pos, SEEK_SET)) < 0)
+    return r;
+  if ((r = facts_load(facts, buf)) < 0)
+    return r;
+  return 0;
+}
+  
+sw facts_open_file (s_facts *facts, const s8 *path)
+{
+  FILE *fp;
+  s_buf in;
+  s_buf *out;
+  sw r;
+  BUF_INIT_ALLOCA(&in, BUF_SIZE);
+  if (! (fp = fopen(path, "rb"))) {
+    if (errno == ENOENT) {
+      if (! (fp = fopen(path, "wb"))) {
+        warn("fopen: %s", path);
+        return -1;
+      }
+      if (facts_count(facts))
+        /* TODO: clear facts
+           facts_close(facts);
+           facts_remove_all(facts);
+        */
+        warnx("facts_open_file: not supported");
+        return -1;
+      }
+      out = buf_new_alloc(BUF_SIZE);
+      buf_file_open_w(out, fp);
+      if ((r = facts_save_header(facts, out, 0xda39a3ee5e6b4b0d, 100,
+                                 100)) != 100) {
+        warnx("facts_open_file: invalid header (%x)", r);
+      buf_flush(out);
+      facts->log = out;
+      return r;
+    }
+    fp = fopen(path, "wb"
+    return -1;
+  }
+  buf_file_open_r(&in, fp);
+  if ((r = facts_open_buf(facts, &in)) < 0)
+    return r;
+}
+
 s_tag * facts_ref_tag (s_facts *facts, const s_tag *tag)
 {
   s_set_item__tag *item;
@@ -282,7 +378,11 @@ e_bool facts_remove_fact (s_facts *facts, const s_fact *fact)
   return false;
 }
 
-sw facts_save (s_facts *facts, const s8 *path)
+sw buf_seek (s_buf *buf, s64 pos, u8 rel);
+{
+}
+ 
+sw facts_save_file (s_facts *facts, const s8 *path)
 {
   s_buf *buf;
   u64 digest = 0;
@@ -309,8 +409,7 @@ sw facts_save (s_facts *facts, const s8 *path)
     goto ko;
   result += r;
   log_pos = result;
-  buf_flush(buf);
-  fseek(fp, 0, SEEK_SET);
+  buf_seek(buf, 0, SEEK_SET);
   if ((r = facts_save_header(facts, buf, digest, dump_pos,
                              log_pos)) < 0)
     goto ko;
@@ -328,7 +427,10 @@ sw facts_save_header (const s_facts *facts, s_buf *buf, u64 digest,
 {
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(buf, "%{count:  0x")) < 0)
+  if ((r = buf_write_1(buf,
+                       "%{module: C3.Facts,\n"
+                       "  version: 0x0000000000000001,\n"
+                       "  count: 0x")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_u64_hex(buf, facts_count(facts))) < 0)
@@ -340,16 +442,22 @@ sw facts_save_header (const s_facts *facts, s_buf *buf, u64 digest,
   if ((r = buf_inspect_u64_hex(buf, digest)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1(buf, ",\n  dump:   0x")) < 0)
+  if ((r = buf_write_1(buf, ",\n  dump: 0x")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_u64_hex(buf, dump_pos)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1(buf, ",\n  log:    0x")) < 0)
+  if ((r = buf_write_1(buf, ",\n  log: 0x")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_u64_hex(buf, log_pos)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ",\n  log_count: 0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u64_hex(buf, facts->log_count)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "}\n")) < 0)

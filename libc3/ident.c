@@ -17,7 +17,6 @@
 #include "character.h"
 #include "str.h"
 #include "sym.h"
-#include "u8.h"
 
 e_bool ident_character_is_reserved (character c)
 {
@@ -80,15 +79,6 @@ e_bool ident_has_reserved_characters (const s_ident *ident)
   if (r < 0)
     return true;
   return false;
-}
-
-t_hash_context * ident_hash_update (t_hash_context *context,
-                                    const s_ident *ident)
-{
-  assert(context);
-  assert(ident);
-  u8_hash_update(context, '_');
-  return sym_hash_update(context, ident->sym);
 }
 
 s_ident * ident_init (s_ident *ident, const s_sym *sym)

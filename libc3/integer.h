@@ -22,7 +22,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include "hash.h"
 #include "types.h"
 
 #define MP_IS_ZERO(a) ((a)->used == 0)
@@ -70,12 +69,6 @@ s_integer * integer_new_copy (const s_integer *a);
 /* Observers */
 uw               integer_bits (const s_integer *i);
 uw               integer_bytes (const s_integer *i);
-s8               integer_compare (const s_integer *a,
-                                  const s_integer *b);
-s8               integer_compare_s64 (const s_integer *a, s64 b);
-s8               integer_compare_u64 (const s_integer *a, u64 b);
-t_hash_context * integer_hash_update (t_hash_context *context,
-                                      const s_integer *i);
 e_bool           integer_is_negative (const s_integer *i);
 e_bool           integer_is_zero (const s_integer *i);
 s8               integer_to_s8 (const s_integer *i);

@@ -17,32 +17,145 @@
 #include "hash.h"
 #include "str.h"
 
-t_hash_context * hash_init (t_hash_context *context)
+#define HASH_UPDATE_DEF(type)                                       \
+  void hash_update_##type (t_hash *hash, type x) !                     \
+  {                                                                    \
+    hash_update(hash, &x, sizeof(x));                                  \
+  }                                                                    \
+
+void hash_init (t_hash *hash)
 {
-  assert(context);
-  SHA1Init(context);
-  return context;
+  assert(hash);
+  SHA1Init(hash);
 }
 
-t_hash_context * hash_update (t_hash_context *context,
-                              const void *data, uw size)
-{
-  assert(context);
-  assert(data);
-  SHA1Update(context, data, size);
-  return context;
-}
-
-uw hash_result (t_hash_context *context)
+uw hash_to_uw (p_hash hash)
 {
   u8 digest[SHA1_DIGEST_LENGTH];
-  SHA1Final(digest, context);
+  SHA1Final(digest, hash);
   return *((uw *) digest);
 }
 
-u64 hash_result_u64 (t_hash_context *context)
+u64 hash_to_u64 (p_hash hash)
 {
   u8 digest[SHA1_DIGEST_LENGTH];
-  SHA1Final(digest, context);
+  SHA1Final(digest, hash);
   return *((u64 *) digest);
 }
+
+void hash_update (t_hash *hash, const void *data, uw size)
+{
+  assert(hash);
+  assert(data);
+  SHA1Update(hash, data, size);
+}
+
+void hash_update_bool (t_hash *hash, e_bool x)
+{
+  bool b = x ? 1 : 0;
+  hash_update(hash, &b, sizeof(b));
+}
+
+
+void hash_update_call (t_hash *hash, const s_call *call);
+{
+  assert(hash);
+  assert(call);
+  hash_update_ident(hash, &call->ident);
+  hash_update_list(hash, call->arguments);
+}
+
+HASH_UPDATE_DEF(character)
+
+void hash_update_fact (t_hash *hash, const s_fact *fact)
+{
+  const u8 type = 3;
+  hash_update(hash, &type, sizeof(type));
+  hash_update_tag(hash, fact->subject);
+  hash_update_tag(hash, fact->predicate);
+  hash_update_tag(hash, fact->object);
+}
+
+void hash_update_ident (t_hash *hash, const s_ident *ident)
+{
+  assert(hash);
+  assert(ident);
+  hash_update_u8(hash, '_');
+  hash_update_sym(hash, ident->sym);
+}
+
+/* FIXME: circular lists */
+void hash_update_list (t_hash *hash, const s_list *list)
+{
+  const s_list *last;
+  const u8 type = 2;
+  if (list) {
+    while (list) {
+      hash_update(hash, &type, sizeof(type));
+      hash_update_tag(hash, &list->tag);
+      last = list;
+      list = list_next(list);
+    }
+    return hash_update_tag(hash, &last->next);
+  }
+  return hash;
+}
+
+HASH_UPDATE_DEF(s8);
+HASH_UPDATE_DEF(s16);
+HASH_UPDATE_DEF(s32);
+HASH_UPDATE_DEF(s64);
+
+void hash_update_sym (t_hash *hash, const s_sym *sym);
+{
+  assert(hash);
+  assert(src);
+  hash_update_u8(hash, ':');
+  hash_update_str(hash, &src->str);
+}
+
+void hash_update_tag (t_hash *hash, const s_tag *tag)
+{
+  assert(tag);
+  hash_update_u64(hash, tag->type.type);
+  switch (tag->type.type) {
+  case TAG_VOID: break;
+  case TAG_BOOL: hash_update_bool(hash, tag->data.bool);       break;
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO:
+    hash_update_call(hash, &tag->data.call);                   break;
+  case TAG_CHARACTER:
+    hash_update_character(hash, tag->data.character);          break;
+  case TAG_F32: hash_update_f32(hash, tag->data.f32);          break;
+  case TAG_F64: hash_update_f64(hash, tag->data.f64);          break;
+  case TAG_FN: hash_update_u64(hash, (u64) tag);               break;
+  case TAG_IDENT: hash_update_ident(hash, &tag->data.ident);   break;
+  case TAG_INTEGER:
+    hash_update_integer(hash, &tag->data.integer);             break;
+  case TAG_LIST: hash_update_list(hash, tag->data.list);       break;
+  case TAG_PTAG: hash_update_ptag(hash, tag->data.ptag);       break;
+  case TAG_QUOTE: hash_update_quote(hash, tag->data.quote);    break;
+  case TAG_S8: hash_update_s8(hash, tag->data.s8);             break;
+  case TAG_S16: hash_update_s16(hash, tag->data.s16);          break;
+  case TAG_S32: hash_update_s32(hash, tag->data.s32);          break;
+  case TAG_S64: hash_update_s64(hash, tag->data.s64);          break;
+  case TAG_STR: hash_update_str(hash, &tag->data.str);         break;
+  case TAG_SYM: hash_update_sym(hash, tag->data.sym);          break;
+  case TAG_TUPLE: hash_update_tuple(hash, &tag->data.tuple);   break;
+  case TAG_U8: hash_update_u8(hash, tag->data.u8);             break;
+  case TAG_U16: hash_update_u16(hash, tag->data.u16);          break;
+  case TAG_U32: hash_update_u32(hash, tag->data.u32);          break;
+  case TAG_U64: hash_update_u64(hash, tag->data.u64);          break;
+  case TAG_VAR:
+    assert(! "var hash update");
+    errx(1, "var hash update");
+    return NULL;
+  }
+  return hash;
+}
+
+HASH_UPDATE_DEF(u8);
+HASH_UPDATE_DEF(u16);
+HASH_UPDATE_DEF(u32);
+HASH_UPDATE_DEF(u64);

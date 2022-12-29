@@ -35,12 +35,6 @@ s8 character_compare (character a, character b)
   return 1;
 }
 
-t_hash_context * character_hash_update (t_hash_context *context,
-                                        character x)
-{
-  return hash_update(context, &x, sizeof(x));
-}
-
 e_bool character_is_digit (character c)
 {
   return ('0' <= c && c <= '9');

@@ -14,13 +14,9 @@
 #ifndef QUOTE_H
 #define QUOTE_H
 
-#include "hash.h"
 #include "types.h"
 
 void             quote_clean (p_quote quote);
-s8               quote_compare (const p_quote a, const p_quote b);
 p_quote          quote_copy (const p_quote src, p_quote *dest);
-t_hash_context * quote_hash_update (t_hash_context *context,
-                                    const p_quote x);
 
 #endif /* QUOTE_H */

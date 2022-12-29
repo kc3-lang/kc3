@@ -39,7 +39,7 @@ sw       facts_load_file (s_facts *facts, const s8 *path);
 sw       facts_open_file (s_facts *facts, const s8 *path);
 s_tag *  facts_ref_tag (s_facts *facts, const s_tag *tag);
 e_bool   facts_remove_fact (s_facts *facts, const s_fact *fact);
-sw       facts_save (s_facts *facts, const s8 *path);
+sw       facts_save_file (s_facts *facts, const s8 *path);
 e_bool   facts_unref_tag (s_facts *facts, const s_tag *tag);
 
 /* Observers */

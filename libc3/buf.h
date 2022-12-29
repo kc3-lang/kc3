@@ -37,6 +37,8 @@
     buf_init((buf), false, (size), p);          \
   } while (0)
 
+#define BUF_SIZE 1024
+
 extern const sw buf_u8_to_hex_size;
 extern const sw buf_inspect_str_byte_size;
 
@@ -93,6 +95,7 @@ sw      buf_read_integer (s_buf *buf, s_integer *dst);
 sw      buf_refill (s_buf *buf, sw size);
 sw      buf_refill_compact (s_buf *buf);
 s_buf * buf_restore (s_buf *buf, const s_buf *save);
+sw      buf_seek (s_buf *buf, sw offset, u8 whence);
 sw      buf_str_to_hex (s_buf *buf, const s_str *src);
 sw      buf_str_to_hex_size (const s_str *src);
 sw      buf_u8_to_hex (s_buf *buf, u8 x);

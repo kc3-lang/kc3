@@ -22,7 +22,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include "hash.h"
 #include "../libffi/ffi.h"
 #include "types.h"
 
@@ -88,17 +87,16 @@ s_tag * tag_new_var ();
 void tag_delete (s_tag *tag);
 
 /* Observers */
-s8               tag_compare (const s_tag *a, const s_tag *b);
-uw               tag_hash (const s_tag *tag);
-t_hash_context * tag_hash_update (t_hash_context *context,
-                                  const s_tag *tag);
-s_str *          tag_inspect (const s_tag *tag, s_str *dest);
-e_bool           tag_is_bound_var (const s_tag *tag);
-e_bool           tag_is_number (const s_tag *tag);
-e_bool           tag_is_unbound_var (const s_tag *tag);
-s8               tag_number_compare (const s_tag *a, const s_tag *b);
-sw               tag_size (const s_tag *tag);
-sw               tag_type_size (e_tag_type type);
+s8      tag_compare (const s_tag *a, const s_tag *b);
+u64     tag_hash_u64 (const s_tag *tag);
+uw      tag_hash_uw (const s_tag *tag);
+s_str * tag_inspect (const s_tag *tag, s_str *dest);
+e_bool  tag_is_bound_var (const s_tag *tag);
+e_bool  tag_is_number (const s_tag *tag);
+e_bool  tag_is_unbound_var (const s_tag *tag);
+s8      tag_number_compare (const s_tag *a, const s_tag *b);
+sw      tag_size (const s_tag *tag);
+sw      tag_type_size (e_tag_type type);
 
 /* Modifiers */
 s_tag * tag_1 (s_tag *tag, const s8 *p);

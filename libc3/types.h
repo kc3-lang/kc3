@@ -18,6 +18,7 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <sha1.h>
 #include "../libtommath/tommath.h"
 
 /* Basic integer types. */
@@ -113,8 +114,9 @@ typedef union tag_data u_tag_data;
 typedef union tag_type u_tag_type;
 
 /* typedefs */
-typedef s32          character;
+typedef s32            character;
 typedef s_tag      **p_facts_spec;
+typedef SHA1_CTX     t_hash;
 typedef s_tag       *p_quote;
 typedef const s_tag *p_tag;
 typedef const s_tag *p_var;
@@ -213,6 +215,7 @@ struct buf {
   sw        (*refill) (s_buf *buf);
   uw          rpos;
   s_buf_save *save;
+  sw        (*seek) (s_buf *buf, sw offset, u8 whence);
   uw          size;
   void       *user_ptr;
   u64         wpos;
@@ -365,6 +368,8 @@ struct facts {
   s_skiplist__fact *index_pos;
   s_skiplist__fact *index_osp;
   s_buf            *log;
+  u64               log_count;
+  t_hash            log_hash;
 };
 
 struct facts_cursor {

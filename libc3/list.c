@@ -100,24 +100,6 @@ void list_delete_all (s_list *list)
     list = list_delete(list);
 }
 
-/* FIXME: dotted lists, circular lists */
-t_hash_context * list_hash_update (t_hash_context *context,
-                                   const s_list *x)
-{
-  const s_list *last;
-  if (x) {
-    while (x) {
-      const u8 two = 2;
-      hash_update(context, &two, sizeof(two));
-      tag_hash_update(context, &x->tag);
-      last = x;
-      x = list_next(x);
-    }
-    return tag_hash_update(context, &last->next);
-  }
-  return context;
-}
-
 s_list * list_init (s_list *list)
 {
   assert(list);

@@ -25,20 +25,6 @@ void call_clean (s_call *call)
   list_delete(call->arguments);
 }
 
-s8 call_compare (const s_call *a, const s_call *b)
-{
-  s8 r;
-  if (a == b)
-    return 0;
-  if (!a)
-    return -1;
-  if (!b)
-    return 1;
-  if ((r = ident_compare(&a->ident, &b->ident)))
-    return r;
-  return list_compare(a->arguments, b->arguments);
-}
-
 s_call * call_copy (const s_call *src, s_call *dest)
 {
   assert(src);
@@ -46,14 +32,6 @@ s_call * call_copy (const s_call *src, s_call *dest)
   ident_copy(&src->ident, &dest->ident);
   list_copy(src->arguments, &dest->arguments);
   return dest;
-}
-
-t_hash_context * call_hash_update (t_hash_context *context,
-                                   const s_call *x)
-{
-  assert(x);
-  ident_hash_update(context, &x->ident);
-  return list_hash_update(context, x->arguments);
 }
 
 s_call * call_init_1 (s_call *call, const s8 *p)

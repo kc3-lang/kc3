@@ -38,14 +38,12 @@ s_list * list_delete (s_list *list);
 void     list_delete_all (s_list *list);
 
 /* Observers */
-s8               list_compare (const s_list *a, const s_list *b);
-s_list *         list_copy (const s_list *src, s_list **dest);
-t_hash_context * list_hash_update (t_hash_context *context,
-                                   const s_list *list);
-sw               list_length (const s_list *list);
-s_list *         list_next (const s_list *list);
-s_tuple *        list_to_tuple_reverse (s_list *list, s_tuple *tuple);
+s8        list_compare (const s_list *a, const s_list *b);
+s_list *  list_copy (const s_list *src, s_list **dest);
+sw        list_length (const s_list *list);
+s_list *  list_next (const s_list *list);
+s_tuple * list_to_tuple_reverse (s_list *list, s_tuple *tuple);
 /* Call str_delete after use. */
-s_str *          list_inspect (const s_list *x, s_str *dest);
+s_str *   list_inspect (const s_list *list, s_str *dest);
 
 #endif /* STR_H */

@@ -52,31 +52,30 @@ s_str * str_new_vf (const char *fmt, va_list ap);
 void str_delete (s_str *str);
 
 /* Observers */
-character        str_character_escape (character c);
-e_bool           str_character_is_reserved (character c);
-sw               str_compare (const s_str *a, const s_str *b);
-s_str *          str_copy (const s_str *src, s_str *dest);
-e_bool           str_has_reserved_characters (const s_str *str);
-t_hash_context * str_hash_update (t_hash_context *context,
-                                  const s_str *src);
-s_str *          str_inspect (const s_str *x, s_str *dest);
-sw               str_peek_bool (const s_str *src, bool *p);
-sw               str_peek_character (const s_str *src, character *p);
-sw               str_peek_f32 (const s_str *src, f32 *p);
-sw               str_peek_f64 (const s_str *src, f64 *p);
-sw               str_peek_s8 (const s_str *src, s8 *p);
-sw               str_peek_s16 (const s_str *src, s16 *p);
-sw               str_peek_s32 (const s_str *src, s32 *p);
-sw               str_peek_s64 (const s_str *src, s64 *p);
-sw               str_peek_str (const s_str *src, s_str *p);
-sw               str_peek_sym (const s_str *src, s_sym *p);
-sw               str_peek_u8 (const s_str *src, u8 *p);
-sw               str_peek_u16 (const s_str *src, u16 *p);
-sw               str_peek_u32 (const s_str *src, u32 *p);
-sw               str_peek_u64 (const s_str *src, u64 *p);
-s_str *          str_to_hex (const s_str *src, s_str *dest);
-s_ident *        str_to_ident (const s_str *src, s_ident *dest);
-const s_sym *    str_to_sym (const s_str *src);
+character     str_character_escape (character c);
+e_bool        str_character_is_reserved (character c);
+sw            str_compare (const s_str *a, const s_str *b);
+s_str *       str_copy (const s_str *src, s_str *dest);
+e_bool        str_has_reserved_characters (const s_str *str);
+void          str_hash_update (const s_str *src, t_hash *hash);
+s_str *       str_inspect (const s_str *x, s_str *dest);
+sw            str_peek_bool (const s_str *src, bool *p);
+sw            str_peek_character (const s_str *src, character *p);
+sw            str_peek_f32 (const s_str *src, f32 *p);
+sw            str_peek_f64 (const s_str *src, f64 *p);
+sw            str_peek_s8 (const s_str *src, s8 *p);
+sw            str_peek_s16 (const s_str *src, s16 *p);
+sw            str_peek_s32 (const s_str *src, s32 *p);
+sw            str_peek_s64 (const s_str *src, s64 *p);
+sw            str_peek_str (const s_str *src, s_str *p);
+sw            str_peek_sym (const s_str *src, s_sym *p);
+sw            str_peek_u8 (const s_str *src, u8 *p);
+sw            str_peek_u16 (const s_str *src, u16 *p);
+sw            str_peek_u32 (const s_str *src, u32 *p);
+sw            str_peek_u64 (const s_str *src, u64 *p);
+s_str *       str_to_hex (const s_str *src, s_str *dest);
+s_ident *     str_to_ident (const s_str *src, s_ident *dest);
+const s_sym * str_to_sym (const s_str *src);
 
 /* Modifiers */
 sw str_read (s_str *str, u8 *p);

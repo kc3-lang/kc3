@@ -39,10 +39,7 @@ void tuple_delete (s_tuple *tuple);
 s_tuple * tuple_1 (s_tuple *tuple, const s8 *p);
 
 /* Observers */
-s8               tuple_compare (const s_tuple *a, const s_tuple *b);
 s_tuple *        tuple_copy (const s_tuple *src, s_tuple *dest);
-t_hash_context * tuple_hash_update (t_hash_context *context,
-                                    const s_tuple *tuple);
 s_list *         tuple_to_list (const s_tuple *tuple, s_list **list);
 
 /* Call str_delete after use. */
