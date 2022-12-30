@@ -19,6 +19,7 @@
 #include "buf_file.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
+#include "compare.h"
 #include "fact.h"
 #include "facts.h"
 #include "facts_cursor.h"
@@ -100,12 +101,6 @@ sw facts_dump (const s_facts *facts, s_buf *buf)
   if ((r = buf_inspect_u64_hex(buf, facts_count(facts))) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1(buf, ",\n  digest: 0x")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_u64_hex(buf, digest)) < 0)
-    return r;
-  result += r;
   if ((r = buf_write_1(buf, "}\n")) < 0)
     return r;
   result += r;
@@ -115,6 +110,17 @@ sw facts_dump (const s_facts *facts, s_buf *buf)
       return r;
     result += r;
   }
+  /*
+  if ((r = buf_write_1(buf, "\n%{hash: 0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_u64_hex(buf, hash_u64)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "}\n")) < 0)
+    return r;
+  result += r;
+  */
   return result;
 }
 
@@ -170,25 +176,38 @@ s_facts * facts_init (s_facts *facts, s_buf *log)
   set_init__fact(&facts->facts, 1024);
   facts->index_spo = skiplist_new__fact(max_height, spacing);
   assert(facts->index_spo);
-  facts->index_spo->compare = fact_compare;
+  facts->index_spo->compare = compare_fact;
   facts->index_pos = skiplist_new__fact(max_height, spacing);
   assert(facts->index_pos);
-  facts->index_pos->compare = fact_compare_pos;
+  facts->index_pos->compare = compare_fact_pos;
   facts->index_osp = skiplist_new__fact(max_height, spacing);
   assert(facts->index_osp);
-  facts->index_osp->compare = fact_compare_osp;
+  facts->index_osp->compare = compare_fact_osp;
   facts->log = log;
   return facts;
 }
 
 sw facts_load (s_facts *facts, s_buf *buf)
 {
+  u64 count;
   s_fact fact;
+  u64 i;
   sw r;
   sw result = 0;
   assert(facts);
   assert(buf);
-  while (1) {
+  if ((r = buf_read_1(buf,
+                      "%{module: C3.Facts,\n"
+                      "  version: 0x0000000000000001,\n"
+                      "  count: 0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_parse_u64_hex(buf, &count)) < 0)
+    return r;
+  if ((r = buf_write_1(buf, "}\n")) < 0)
+    return r;
+  result += r;
+  for (i = 0; i < count; i++) {
     if ((r = buf_read_1(buf, "add ")) < 0)
       break;
     result += r;
@@ -276,29 +295,9 @@ sw facts_open_buf (s_facts *facts, s_buf *buf)
   u64 log_pos;
   sw r;
   if ((r = buf_read_1(buf,
-                      "%{module: C3.Facts,\n"
-                      "  version: 0x0000000000000001,\n"
-                      "  count: 0x")) < 0)
-    return r;
-  if ((r = buf_parse_u64_hex(buf, &count)) < 0)
-    return r;
-  if ((r = buf_read_1(buf, ",\n  digest: 0x")) < 0)
-    return r;
-  if ((r = buf_parse_u64_hex(buf, &digest)) < 0)
-    return r;
-  if ((r = buf_read_1(buf, ",\n  dump: 0x")) < 0)
-    return r;
-  if ((r = buf_parse_u64_hex(buf, &dump_pos)) < 0)
-    return r;
-  if ((r = buf_read_1(buf, ",\n  log: 0x")) < 0)
-    return r;
-  if ((r = buf_parse_u64_hex(buf, &log_pos)) < 0)
-    return r;
-  if ((r = buf_read_1(buf, "}\n")) < 0)
-    return r;
-  if ((r = buf_seek(buf, dump_pos, SEEK_SET)) < 0)
-    return r;
-  if ((r = facts_open_buf_read_dump(facts, buf, count, digest)) < 0)
+                      "%{module: C3.Facts.Open,\n"
+                      "  version: 0x0000000000000001}"
+  if ((r = facts_load(facts, buf)) < 0)
     return r;
   if ((r = buf_seek(buf, log_pos, SEEK_SET)) < 0)
     return r;

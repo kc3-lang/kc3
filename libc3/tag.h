@@ -87,7 +87,6 @@ s_tag * tag_new_var ();
 void tag_delete (s_tag *tag);
 
 /* Observers */
-s8      tag_compare (const s_tag *a, const s_tag *b);
 u64     tag_hash_u64 (const s_tag *tag);
 uw      tag_hash_uw (const s_tag *tag);
 s_str * tag_inspect (const s_tag *tag, s_str *dest);

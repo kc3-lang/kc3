@@ -19,85 +19,6 @@
 #include "fact.h"
 #include "tag.h"
 
-s8 fact_compare (const s_fact *a, const s_fact *b)
-{
-  s8 r;
-  if (a == b)
-    return 0;
-  if (!a)
-    return -1;
-  if (!b)
-    return 1;
-  if ((r = tag_compare(a->subject, b->subject)))
-    return r;
-  if ((r = tag_compare(a->predicate, b->predicate)))
-    return r;
-  r = tag_compare(a->object, b->object);
-  return r;
-}
-
-s8 fact_compare_unbound_var_count (const s_fact *a,
-                                   const s_fact *b)
-{
-  u8 ca;
-  u8 cb;
-  if (a == b)
-    return 0;
-  if (!a)
-    return -1;
-  if (!b)
-    return 1;
-  ca = 0;
-  cb = 0;
-  if (tag_is_unbound_var(a->subject))
-    ca++;
-  if (tag_is_unbound_var(a->predicate))
-    ca++;
-  if (tag_is_unbound_var(a->object))
-    ca++;
-  if (tag_is_unbound_var(b->subject))
-    cb++;
-  if (tag_is_unbound_var(b->predicate))
-    cb++;
-  if (tag_is_unbound_var(b->object))
-    cb++;
-  return u8_compare(ca, cb);
-}
-
-s8 fact_compare_pos (const s_fact *a, const s_fact *b)
-{
-  s8 r;
-  if (a == b)
-    return 0;
-  if (!a)
-    return -1;
-  if (!b)
-    return 1;
-  if ((r = tag_compare(a->predicate, b->predicate)))
-    return r;
-  if ((r = tag_compare(a->object, b->object)))
-    return r;
-  r = tag_compare(a->subject, b->subject);
-  return r;
-}
-
-s8 fact_compare_osp (const s_fact *a, const s_fact *b)
-{
-  s8 r;
-  if (a == b)
-    return 0;
-  if (!a)
-    return -1;
-  if (!b)
-    return 1;
-  if ((r = tag_compare(a->object, b->object)))
-    return r;
-  if ((r = tag_compare(a->subject, b->subject)))
-    return r;
-  r = tag_compare(a->predicate, b->predicate);
-  return r;
-}
-
 s_fact * fact_copy (const s_fact *src, s_fact *dest)
 {
   assert(src);
@@ -111,7 +32,7 @@ uw fact_hash_uw (const s_fact *fact)
   t_hash hash;
   assert(fact);
   hash_init(&hash);
-  fact_hash_update(&hash, fact);
+  hash_update_fact(&hash, fact);
   return hash_to_uw(&hash);
 }
 

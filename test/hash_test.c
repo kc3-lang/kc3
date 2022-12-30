@@ -11,18 +11,5 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/**
- * @file bool.h
- * @brief Boolean operations.
- *
- * Structure to manipulate booleans.
- */
-#ifndef BOOL_H
-#define BOOL_H
-
-#include "types.h"
-
-/* Observers */
-s_str * bool_inspect (e_bool b, s_str *dest);
-
-#endif /* SYM_H */
+#include <string.h>
+#include "test.h"

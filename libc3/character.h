@@ -18,7 +18,6 @@
 #include "types.h"
 
 character character_1 (const s8 *p);
-s8        character_compare (character a, character b);
 void      character_hash_update (character c, t_hash *hash);
 e_bool    character_is_digit (character c);
 e_bool    character_is_lowercase (character c);

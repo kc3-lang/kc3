@@ -128,62 +128,6 @@ void tag_clean (s_tag *tag)
   }
 }
 
-s8 tag_compare (const s_tag *a, const s_tag *b) {
-  if (tag_is_bound_var(a))
-    a = a->data.var;
-  if (tag_is_bound_var(b))
-    b = b->data.var;
-  if (a == b)
-    return 0;
-  if (!a ||
-      a == TAG_FIRST ||
-      b == TAG_LAST)
-    return -1;
-  if (!b ||
-      a == TAG_LAST ||
-      b == TAG_FIRST)
-    return 1;
-  if (a->type.type < b->type.type)
-    return -1;
-  if (a->type.type > b->type.type)
-    return 1;
-  switch (a->type.type) {
-  case TAG_VOID: return 0;
-  case TAG_BOOL: return bool_compare(a->data.bool, b->data.bool);
-  case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
-    return call_compare(&a->data.call, &b->data.call);
-  case TAG_CHARACTER: return character_compare(a->data.character,
-                                               b->data.character);
-  case TAG_F32: return f32_compare(a->data.f32, b->data.f32);
-  case TAG_F64: return f64_compare(a->data.f64, b->data.f64);
-  case TAG_FN: return ptr_compare(a, b);
-  case TAG_IDENT: return ident_compare(&a->data.ident, &b->data.ident);
-  case TAG_INTEGER: return integer_compare(&a->data.integer,
-                                           &b->data.integer);
-  case TAG_LIST: return list_compare(a->data.list, b->data.list);
-  case TAG_PTAG: return ptag_compare(a->data.ptag, b->data.ptag);
-  case TAG_QUOTE: return quote_compare(a->data.quote, b->data.quote);
-  case TAG_S8: return s8_compare(a->data.s8, b->data.s8);
-  case TAG_S16: return s16_compare(a->data.s16, b->data.s16);
-  case TAG_S32: return s32_compare(a->data.s32, b->data.s32);
-  case TAG_S64: return s64_compare(a->data.s64, b->data.s64);
-  case TAG_STR: return str_compare(&a->data.str, &b->data.str);
-  case TAG_SYM: return str_compare(&a->data.sym->str,
-                                   &b->data.sym->str);
-  case TAG_TUPLE: return tuple_compare(&a->data.tuple, &b->data.tuple);
-  case TAG_U8: return u8_compare(a->data.u8, b->data.u8);
-  case TAG_U16: return u16_compare(a->data.u16, b->data.u16);
-  case TAG_U32: return u32_compare(a->data.u32, b->data.u32);
-  case TAG_U64: return u64_compare(a->data.u64, b->data.u64);
-  case TAG_VAR: return ptr_compare(a->data.var, b->data.var);
-  }
-  assert(! "tag_compare: error");
-  errx(1, "tag_compare");
-  return 0;
-}
-
 s_tag * tag_copy (const s_tag *src, s_tag *dest)
 {
   assert(src);

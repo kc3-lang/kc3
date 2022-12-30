@@ -54,10 +54,8 @@ void str_delete (s_str *str);
 /* Observers */
 character     str_character_escape (character c);
 e_bool        str_character_is_reserved (character c);
-sw            str_compare (const s_str *a, const s_str *b);
 s_str *       str_copy (const s_str *src, s_str *dest);
 e_bool        str_has_reserved_characters (const s_str *str);
-void          str_hash_update (const s_str *src, t_hash *hash);
 s_str *       str_inspect (const s_str *x, s_str *dest);
 sw            str_peek_bool (const s_str *src, bool *p);
 sw            str_peek_character (const s_str *src, character *p);
