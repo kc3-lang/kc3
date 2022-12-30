@@ -42,24 +42,6 @@ void list_clean (s_list *list)
   }
 }
 
-/* FIXME: does not work on dotted lists or circular lists */
-s8 list_compare (const s_list *a, const s_list *b)
-{
-  s8 r;
-  while (1) {
-    if (a == b)
-      return 0;
-    if (!a)
-      return -1;
-    if (!b)
-      return 1;
-    if ((r = tag_compare(&a->tag, &b->tag)))
-      return r;
-    a = list_next(a);
-    b = list_next(b);
-  }
-}
-
 /* FIXME: does not work on circular lists */
 s_list * list_copy (const s_list *src, s_list **dest)
 {

@@ -18,6 +18,7 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "character.h"
+#include "compare.h"
 #include "str.h"
 #include "sym.h"
 
@@ -50,17 +51,6 @@ e_bool sym_character_is_reserved (character c)
           c == '}');
 }
 
-s8 sym_compare (const s_sym *a, const s_sym *b)
-{
-  if (a == b)
-    return 0;
-  if (!a)
-    return -1;
-  if (!b)
-    return 1;
-  return str_compare(&a->str, &b->str);
-}
-
 void sym_delete (s_sym *sym)
 {
   str_clean(&sym->str);
@@ -87,7 +77,7 @@ const s_sym * sym_find (const s_str *str)
   sym_list = g_sym_list;
   while (sym_list) {
     s_sym *sym = sym_list->sym;
-    if (str_compare(str, &sym->str) == 0)
+    if (compare_str(str, &sym->str) == 0)
       return sym;
     sym_list = sym_list->next;
   }

@@ -44,8 +44,6 @@ const s_sym * sym_find (const s_str *src);
 
 e_bool sym_has_reserved_characters (const s_sym *sym);
 
-void sym_hash_update (const s_sym *sym, t_hash *hash);
-
 s_str * sym_inspect (const s_sym *sym, s_str *dest);
 
 /** @brief True iff sym is a module name (starts with a capital). */

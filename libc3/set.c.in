@@ -14,6 +14,7 @@
 /* Gen from set.c.in NAME=_NAME$ TYPE=_TYPE$ */
 #include <assert.h>
 #include <stdlib.h>
+#include "compare.h"
 #include "_NAME$.h"
 #include "set___NAME$.h"
 #include "set_item___NAME$.h"
@@ -24,7 +25,7 @@ set_add___NAME$ (s_set___NAME$ *set, const _TYPE$ *data)
   uw hash;
   assert(set);
   assert(data);
-  hash = _NAME$_hash(data);
+  hash = _NAME$_hash_uw(data);
   return set_add_h___NAME$(set, data, hash);
 }
 
@@ -74,7 +75,7 @@ set_get___NAME$ (const s_set___NAME$ *set, const _TYPE$ *data)
   uw hash;
   assert(set);
   assert(data);
-  hash = _NAME$_hash(data);
+  hash = _NAME$_hash_uw(data);
   return set_get_h___NAME$(set, data, hash);
 }
 
@@ -86,7 +87,7 @@ set_get_h___NAME$ (const s_set___NAME$ *set, const _TYPE$ *data, uw hash)
   assert(data);
   i = set_get_hash___NAME$(set, hash);
   while (i) {
-    if (_NAME$_compare(&i->data, data) == 0)
+    if (compare__NAME$(&i->data, data) == 0)
       return i;
     i = set_get_hash_next___NAME$(i);
   }

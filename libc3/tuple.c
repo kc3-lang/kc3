@@ -29,26 +29,6 @@ void tuple_clean (s_tuple *tuple)
   free(tuple->tag);
 }
 
-s8 tuple_compare (const s_tuple *a, const s_tuple *b)
-{
-  uw i = 0;
-  s8 r;
-  assert(a);
-  assert(b);
-  if (a == b)
-    return 0;
-  if (a->count < b->count)
-    return -1;
-  if (a->count > b->count)
-    return 1;
-  while (i < a->count) {
-    if ((r = tag_compare(a->tag + i, b->tag + i)))
-      return r;
-    i++;
-  }
-  return 0;
-}
-
 s_tuple * tuple_copy (const s_tuple *src, s_tuple *dest)
 {
   uw i = 0;
@@ -66,19 +46,6 @@ void tuple_delete (s_tuple *tuple)
 {
   tuple_clean(tuple);
   free(tuple);
-}
-
-t_hash_context * tuple_hash_update (t_hash_context *context,
-                                    const s_tuple *tuple)
-{
-  uw i = 0;
-  assert(tuple);
-  hash_update(context, &tuple->count, sizeof(tuple->count));
-  while (i < tuple->count) {
-    tag_hash_update(context, tuple->tag + i);
-    i++;
-  }
-  return context;
 }
 
 s_tuple * tuple_init (s_tuple *tuple, uw count)

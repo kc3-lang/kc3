@@ -43,25 +43,6 @@ s_str * str_copy (const s_str *src, s_str *dest)
   return str_init_dup(dest, src);
 }
 
-sw str_compare (const s_str *a, const s_str *b)
-{
-  sw r;
-  assert(a);
-  assert(b);
-  if (a == b)
-    return 0;
-  if (a->size < b->size)
-    return -1;
-  if (a->size > b->size)
-    return 1;
-  r = memcmp(a->ptr.p, b->ptr.p, a->size);
-  if (r < 0)
-    return -1;
-  if (r > 0)
-    return 1;
-  return 0;
-}
-
 void str_delete (s_str *str)
 {
   str_clean(str);
@@ -81,14 +62,6 @@ e_bool str_has_reserved_characters (const s_str *src)
   if (r < 0)
     return true;
   return false;
-}
-
-t_hash_context * str_hash_update (t_hash_context *context,
-                                  const s_str *str)
-{
-  assert(str);
-  hash_update(context, &str->size, sizeof(str->size));
-  return hash_update(context, str->ptr.p, str->size);
 }
 
 s_str * str_init (s_str *str, s8 *free, uw size, const s8 *p)

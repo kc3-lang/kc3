@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include "buf.h"
 #include "buf_parse.h"
+#include "compare.h"
 #include "integer.h"
 
 s_integer * integer_abs (const s_integer *a, s_integer *dest)
@@ -108,51 +109,6 @@ void integer_clean (s_integer *dest)
   mp_clear(&dest->mp_int);
 }
 
-s8 integer_compare (const s_integer *a, const s_integer *b)
-{
-  sw r;
-  assert(a);
-  assert(b);
-  r = mp_cmp(&a->mp_int, &b->mp_int);
-  switch (r) {
-  case MP_LT: return -1;
-  case MP_EQ: return 0;
-  case MP_GT: return 1;
-  }
-  errx(1, "integer_compare: %s", mp_error_to_string(r));
-  return -1;
-}
-
-s8 integer_compare_s64 (const s_integer *a, s64 b)
-{
-  assert(a);
-  if (b >= 0)
-    return integer_compare_u64(a, b);
-  if (a->mp_int.sign != MP_NEG)
-    return 1;
-  if (a->mp_int.used > 1)
-    return -1;
-  if (a->mp_int.dp[0] < (u64) -b)
-    return 1;
-  if (a->mp_int.dp[0] > (u64) -b)
-    return -1;
-  return 0;
-}
-
-s8 integer_compare_u64 (const s_integer *a, u64 b)
-{
-  sw r;
-  assert(a);
-  r = mp_cmp_d(&a->mp_int, b);
-  switch (r) {
-  case MP_LT: return -1;
-  case MP_EQ: return 0;
-  case MP_GT: return 1;
-  }
-  errx(1, "integer_compare: %s", mp_error_to_string(r));
-  return -1;
-}
-
 s_integer * integer_copy (const s_integer *a, s_integer *dest)
 {
   sw r;
@@ -186,20 +142,6 @@ s_integer * integer_gcd (const s_integer *a, const s_integer *b,
   if ((r = mp_gcd(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_gcd: %s", mp_error_to_string(r));
   return dest;
-}
-
-t_hash_context * integer_hash_update (t_hash_context *context,
-                                      const s_integer *i)
-{
-  int j = 0;
-  mp_digit *digit;
-  assert(i);
-  digit = i->mp_int.dp;
-  while (j < i->mp_int.used) {
-    hash_update(context, digit, sizeof(*digit));
-    j++;
-  }
-  return context;
 }
 
 s_integer * integer_init (s_integer *dest)

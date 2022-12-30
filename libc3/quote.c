@@ -31,20 +31,3 @@ p_quote quote_init (p_quote *quote, const s_tag *tag)
 {
   return *quote = tag_new_copy(tag);
 }
-
-s8 quote_compare (const p_quote a, const p_quote b)
-{
-  if (a == b)
-    return 0;
-  if (! a)
-    return -1;
-  if (! b)
-    return 1;
-  return tag_compare(a, b);
-}
-
-t_hash_context * quote_hash_update (t_hash_context *context,
-                                    const p_quote x)
-{
-  return tag_hash_update(context, x);
-}

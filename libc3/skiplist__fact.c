@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <strings.h>
+#include "compare.h"
 #include "fact.h"
 #include "skiplist_node__fact.h"
 #include "skiplist__fact.h"
@@ -113,7 +114,7 @@ skiplist_init__fact (s_skiplist__fact *skiplist, u8 max_height, f64 spacing)
 {
   assert(skiplist);
   skiplist->head = skiplist_node_new__fact(NULL, max_height);
-  skiplist->compare = fact_compare;
+  skiplist->compare = compare_fact;
   skiplist->length = 0;
   skiplist->max_height = max_height;
   skiplist_height_table_init__fact(skiplist, spacing);

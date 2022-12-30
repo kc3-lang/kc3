@@ -14,11 +14,13 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include <string.h>
 #include "hash.h"
+#include "list.h"
 #include "str.h"
 
-#define HASH_UPDATE_DEF(type)                                       \
-  void hash_update_##type (t_hash *hash, type x) !                     \
+#define HASH_UPDATE_DEF(type)                                          \
+  void hash_update_##type (t_hash *hash, type x)                       \
   {                                                                    \
     hash_update(hash, &x, sizeof(x));                                  \
   }                                                                    \
@@ -29,14 +31,14 @@ void hash_init (t_hash *hash)
   SHA1Init(hash);
 }
 
-uw hash_to_uw (p_hash hash)
+uw hash_to_uw (t_hash *hash)
 {
   u8 digest[SHA1_DIGEST_LENGTH];
   SHA1Final(digest, hash);
   return *((uw *) digest);
 }
 
-u64 hash_to_u64 (p_hash hash)
+u64 hash_to_u64 (t_hash *hash)
 {
   u8 digest[SHA1_DIGEST_LENGTH];
   SHA1Final(digest, hash);
@@ -57,7 +59,7 @@ void hash_update_bool (t_hash *hash, e_bool x)
 }
 
 
-void hash_update_call (t_hash *hash, const s_call *call);
+void hash_update_call (t_hash *hash, const s_call *call)
 {
   assert(hash);
   assert(call);
@@ -84,38 +86,72 @@ void hash_update_ident (t_hash *hash, const s_ident *ident)
   hash_update_sym(hash, ident->sym);
 }
 
+void hash_update_integer (t_hash *hash, const s_integer *i)
+{
+  int j = 0;
+  mp_digit *digit;
+  const s8 type[] = "integer";
+  assert(hash);
+  assert(i);
+  digit = i->mp_int.dp;
+  hash_update(hash, type, 7);
+  hash_update(hash, &i->mp_int.used, sizeof(i->mp_int.used));
+  while (j < i->mp_int.used) {
+    hash_update(hash, digit, sizeof(*digit));
+    digit++;
+    j++;
+  }
+}
+
 /* FIXME: circular lists */
 void hash_update_list (t_hash *hash, const s_list *list)
 {
   const s_list *last;
-  const u8 type = 2;
+  const s8 type[] = "list";
+  hash_update(hash, &type, sizeof(type));
   if (list) {
     while (list) {
-      hash_update(hash, &type, sizeof(type));
       hash_update_tag(hash, &list->tag);
       last = list;
       list = list_next(list);
     }
-    return hash_update_tag(hash, &last->next);
+    hash_update_tag(hash, &last->next);
   }
-  return hash;
 }
 
-HASH_UPDATE_DEF(s8);
-HASH_UPDATE_DEF(s16);
-HASH_UPDATE_DEF(s32);
-HASH_UPDATE_DEF(s64);
+void hash_update_quote (t_hash *hash, const p_quote x)
+{
+  const s8 type[] = "quote";
+  hash_update(hash, type, strlen(type));
+  hash_update_tag(hash, x);
+}
 
-void hash_update_sym (t_hash *hash, const s_sym *sym);
+HASH_UPDATE_DEF(s8)
+HASH_UPDATE_DEF(s16)
+HASH_UPDATE_DEF(s32)
+HASH_UPDATE_DEF(s64)
+
+void hash_update_str (t_hash *hash, const s_str *str)
+{
+  s8 type[] = "str";
+  assert(hash);
+  assert(str);
+  hash_update(hash, type, strlen(type));
+  hash_update(hash, &str->size, sizeof(str->size));
+  hash_update(hash, str->ptr.p, str->size);
+}
+
+void hash_update_sym (t_hash *hash, const s_sym *sym)
 {
   assert(hash);
-  assert(src);
+  assert(sym);
   hash_update_u8(hash, ':');
-  hash_update_str(hash, &src->str);
+  hash_update_str(hash, &sym->str);
 }
 
 void hash_update_tag (t_hash *hash, const s_tag *tag)
 {
+  assert(hash);
   assert(tag);
   hash_update_u64(hash, tag->type.type);
   switch (tag->type.type) {
@@ -150,12 +186,21 @@ void hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_VAR:
     assert(! "var hash update");
     errx(1, "var hash update");
-    return NULL;
   }
-  return hash;
 }
 
-HASH_UPDATE_DEF(u8);
-HASH_UPDATE_DEF(u16);
-HASH_UPDATE_DEF(u32);
-HASH_UPDATE_DEF(u64);
+void hash_update_tuple (t_hash *hash, const s_tuple *tuple)
+{
+  uw i = 0;
+  assert(tuple);
+  hash_update(hash, &tuple->count, sizeof(tuple->count));
+  while (i < tuple->count) {
+    hash_update_tag(hash, tuple->tag + i);
+    i++;
+  }
+}
+
+HASH_UPDATE_DEF(u8)
+HASH_UPDATE_DEF(u16)
+HASH_UPDATE_DEF(u32)
+HASH_UPDATE_DEF(u64)

@@ -93,7 +93,7 @@ sw facts_dump (const s_facts *facts, s_buf *buf)
   tag_init_var(&predicate);
   tag_init_var(&object);
   if ((r = buf_write_1(buf,
-                       "%{module: C3.Facts,\n"
+                       "%{module: C3.Facts.Dump,\n"
                        "  version: 0x0000000000000001,\n"
                        "  count: 0x")) < 0)
     return r;
@@ -289,23 +289,18 @@ s_facts * facts_new (s_buf *log)
 
 sw facts_open_buf (s_facts *facts, s_buf *buf)
 {
-  u64 count;
-  u64 digest;
-  u64 dump_pos;
-  u64 log_pos;
   sw r;
   if ((r = buf_read_1(buf,
-                      "%{module: C3.Facts.Open,\n"
-                      "  version: 0x0000000000000001}"
-  if ((r = facts_load(facts, buf)) < 0)
-    return r;
-  if ((r = buf_seek(buf, log_pos, SEEK_SET)) < 0)
+                      "%{module: C3.Facts.Save,\n"
+                      "  version: 0x0000000000000001}")) < 0)
     return r;
   if ((r = facts_load(facts, buf)) < 0)
+    return r;
+  if ((r = facts_open_log(facts, buf)) < 0)
     return r;
   return 0;
 }
-  
+
 sw facts_open_file (s_facts *facts, const s8 *path)
 {
   FILE *fp;
@@ -319,7 +314,7 @@ sw facts_open_file (s_facts *facts, const s8 *path)
         warn("fopen: %s", path);
         return -1;
       }
-      if (facts_count(facts))
+      if (facts_count(facts)) {
         /* TODO: clear facts
            facts_close(facts);
            facts_remove_all(facts);
@@ -329,19 +324,29 @@ sw facts_open_file (s_facts *facts, const s8 *path)
       }
       out = buf_new_alloc(BUF_SIZE);
       buf_file_open_w(out, fp);
-      if ((r = facts_save_header(facts, out, 0xda39a3ee5e6b4b0d, 100,
-                                 100)) != 100) {
-        warnx("facts_open_file: invalid header (%x)", r);
+      if ((r = facts_save_header(out)) < 0)
+        return r;
+      if ((r = facts_dump(facts, out)) < 0)
+        return r;
       buf_flush(out);
       facts->log = out;
       return r;
     }
-    fp = fopen(path, "wb"
+    fp = fopen(path, "wb");
     return -1;
   }
   buf_file_open_r(&in, fp);
   if ((r = facts_open_buf(facts, &in)) < 0)
     return r;
+  fclose(fp);
+  if (! (fp = fopen(path, "wb"))) {
+    warn("fopen: %s", path);
+    return -1;
+  }
+  out = buf_new_alloc(BUF_SIZE);
+  buf_file_open_w(out, fp);
+  facts->log = out;
+  return r;
 }
 
 s_tag * facts_ref_tag (s_facts *facts, const s_tag *tag)
@@ -377,17 +382,10 @@ e_bool facts_remove_fact (s_facts *facts, const s_fact *fact)
   return false;
 }
 
-sw buf_seek (s_buf *buf, s64 pos, u8 rel);
-{
-}
- 
 sw facts_save_file (s_facts *facts, const s8 *path)
 {
   s_buf *buf;
-  u64 digest = 0;
-  u64 dump_pos = 0;
   FILE *fp;
-  u64 log_pos = 0;
   sw r;
   sw result = 0;
   assert(facts);
@@ -399,21 +397,12 @@ sw facts_save_file (s_facts *facts, const s8 *path)
     return -1;
   }
   buf_file_open_w(buf, fp);
-  if ((r = facts_save_header(facts, buf, digest, dump_pos,
-                             log_pos)) < 0)
+  if ((r = facts_save_header(buf)) < 0)
     goto ko;
   result += r;
-  dump_pos = result;
   if ((r = facts_dump(facts, buf)) < 0)
     goto ko;
   result += r;
-  log_pos = result;
-  buf_seek(buf, 0, SEEK_SET);
-  if ((r = facts_save_header(facts, buf, digest, dump_pos,
-                             log_pos)) < 0)
-    goto ko;
-  buf_flush(buf);
-  fseek(fp, log_pos, SEEK_SET);
   facts->log = buf;
   return result;
  ko:
@@ -421,45 +410,13 @@ sw facts_save_file (s_facts *facts, const s8 *path)
   return r;
 }
 
-sw facts_save_header (const s_facts *facts, s_buf *buf, u64 digest,
-                      u64 dump_pos, u64 log_pos)
+sw facts_save_header (s_buf *buf)
 {
   sw r;
   sw result = 0;
   if ((r = buf_write_1(buf,
-                       "%{module: C3.Facts,\n"
-                       "  version: 0x0000000000000001,\n"
-                       "  count: 0x")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_u64_hex(buf, facts_count(facts))) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, ",\n  digest: 0x")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_u64_hex(buf, digest)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, ",\n  dump: 0x")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_u64_hex(buf, dump_pos)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, ",\n  log: 0x")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_u64_hex(buf, log_pos)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, ",\n  log_count: 0x")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_u64_hex(buf, facts->log_count)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, "}\n")) < 0)
+                       "%{module: C3.Facts.Save,\n"
+                       "  version: 0x0000000000000001}\n")) < 0)
     return r;
   result += r;
   return result;

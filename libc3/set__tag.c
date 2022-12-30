@@ -14,6 +14,7 @@
 /* Gen from set.c.in NAME=tag TYPE=s_tag */
 #include <assert.h>
 #include <stdlib.h>
+#include "compare.h"
 #include "tag.h"
 #include "set__tag.h"
 #include "set_item__tag.h"
@@ -24,7 +25,7 @@ set_add__tag (s_set__tag *set, const s_tag *data)
   uw hash;
   assert(set);
   assert(data);
-  hash = tag_hash(data);
+  hash = tag_hash_uw(data);
   return set_add_h__tag(set, data, hash);
 }
 
@@ -74,7 +75,7 @@ set_get__tag (const s_set__tag *set, const s_tag *data)
   uw hash;
   assert(set);
   assert(data);
-  hash = tag_hash(data);
+  hash = tag_hash_uw(data);
   return set_get_h__tag(set, data, hash);
 }
 
@@ -86,7 +87,7 @@ set_get_h__tag (const s_set__tag *set, const s_tag *data, uw hash)
   assert(data);
   i = set_get_hash__tag(set, hash);
   while (i) {
-    if (tag_compare(&i->data, data) == 0)
+    if (compare_tag(&i->data, data) == 0)
       return i;
     i = set_get_hash_next__tag(i);
   }

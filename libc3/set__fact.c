@@ -14,6 +14,7 @@
 /* Gen from set.c.in NAME=fact TYPE=s_fact */
 #include <assert.h>
 #include <stdlib.h>
+#include "compare.h"
 #include "fact.h"
 #include "set__fact.h"
 #include "set_item__fact.h"
@@ -24,7 +25,7 @@ set_add__fact (s_set__fact *set, const s_fact *data)
   uw hash;
   assert(set);
   assert(data);
-  hash = fact_hash(data);
+  hash = fact_hash_uw(data);
   return set_add_h__fact(set, data, hash);
 }
 
@@ -74,7 +75,7 @@ set_get__fact (const s_set__fact *set, const s_fact *data)
   uw hash;
   assert(set);
   assert(data);
-  hash = fact_hash(data);
+  hash = fact_hash_uw(data);
   return set_get_h__fact(set, data, hash);
 }
 
@@ -86,7 +87,7 @@ set_get_h__fact (const s_set__fact *set, const s_fact *data, uw hash)
   assert(data);
   i = set_get_hash__fact(set, hash);
   while (i) {
-    if (fact_compare(&i->data, data) == 0)
+    if (compare_fact(&i->data, data) == 0)
       return i;
     i = set_get_hash_next__fact(i);
   }

@@ -13,6 +13,7 @@
  */
 #include <assert.h>
 #include <stdlib.h>
+#include "compare.h"
 #include "fact.h"
 #include "facts_spec.h"
 #include "facts_spec_cursor.h"
@@ -67,7 +68,7 @@ p_facts_spec facts_spec_sort (p_facts_spec spec)
       while (j < count - i - 1) {
         a = spec + j * 4;
         b = spec + (j + 1) * 4;
-        if (fact_compare_unbound_var_count((s_fact *) a,
+        if (compare_fact_unbound_var_count((s_fact *) a,
                                            (s_fact *) b) > 0) {
           s_tag *swap[3];
           swap[0] = a[0];
