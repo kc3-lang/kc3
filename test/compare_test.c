@@ -11,22 +11,75 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "test.h"
-#include "../libc3/compare.h"
+#include "compare_test.h"
+#include "../libc3/list.h"
 #include "../libc3/tag.h"
+#include "../libc3/tuple.h"
+
+#define COMPARE_TEST_LIST(a, b, expected)                              \
+  do {                                                                 \
+    s_list *tmp_a = (a);                                               \
+    s_list *tmp_b = (b);                                               \
+    test_context("compare_list(" # a ", " # b ") -> " # expected);     \
+    TEST_EQ(compare_list(tmp_a, tmp_b), (expected));                   \
+    list_delete(tmp_a);                                                \
+    list_delete(tmp_b);                                                \
+  } while (0)
 
 #define COMPARE_TEST_TAG(a, b, expected)                               \
   do {                                                                 \
     TEST_EQ(compare_tag((a), (b)), (expected));                        \
   } while (0)
 
+#define COMPARE_TEST_TUPLE(a, b, expected)                             \
+  do {                                                                 \
+    test_context("compare_tuple(" # a ", " # b ") -> " # expected);    \
+    TEST_EQ(compare_tuple((a), (b)), (expected));                      \
+    test_context(NULL);                                                \
+  } while (0)
+
+void compare_test_bool ();
+void compare_test_character ();
 void compare_test_f32 ();
 void compare_test_f64 ();
+void compare_test_list ();
+void compare_test_str ();
+void compare_test_tag ();
+void compare_test_tuple ();
 
 void compare_test ()
 {
+  compare_test_bool();
+  compare_test_character();
   compare_test_f32();
   compare_test_f64();
+  compare_test_list();
+  compare_test_str();
+  compare_test_tag();
+  compare_test_tuple();
+}
+
+void compare_test_bool ()
+{
+  TEST_EQ(compare_bool(false, false), 0);
+  TEST_EQ(compare_bool(false, true), -1);
+  TEST_EQ(compare_bool(true, false), 1);
+  TEST_EQ(compare_bool(true, true), 0);
+}
+
+void compare_test_character ()
+{
+  TEST_EQ(compare_character('0', '0'), 0);
+  TEST_EQ(compare_character('0', '1'), -1);
+  TEST_EQ(compare_character('1', '0'), 1);
+  TEST_EQ(compare_character('1', '1'), 0);
+  TEST_EQ(compare_character('0', 'A'), -1);
+  TEST_EQ(compare_character('A', '0'), 1);
+  TEST_EQ(compare_character('A', 'A'), 0);
+  TEST_EQ(compare_character('A', 'B'), -1);
+  TEST_EQ(compare_character('B', 'A'), 1);
+  TEST_EQ(compare_character('A', 'a'), -1);
+  TEST_EQ(compare_character('a', 'A'), 1);
 }
 
 void compare_test_f32 ()
@@ -78,6 +131,40 @@ void compare_test_f64 ()
   TEST_EQ(compare_f64(1.797693134862315708145274237317043567980e+308,
                       1.597693134862315708145274237317043567981e+308),
           1);
+}
+
+void compare_test_list ()
+{
+  COMPARE_TEST_LIST(NULL, NULL, 0);
+  COMPARE_TEST_LIST(list_1("[A, B]"), list_1("[A, C]"), -1);
+  COMPARE_TEST_LIST(list_1("[A, C]"), list_1("[A, B]"), 1);
+}
+
+void compare_test_str ()
+{
+  s_str *a;
+  TEST_EQ((a = str_new_empty(), compare_str(a, a)), 0);
+  str_delete(a);
+  TEST_EQ((a = str_new_1(NULL, "abc"), compare_str(a, a)), 0);
+  str_delete(a);
+  COMPARE_TEST_STR(str_new_empty(), str_new_empty(), 0);
+  COMPARE_TEST_STR(str_new_empty(), str_new_1(NULL, "0"), -1);
+  COMPARE_TEST_STR(str_new_1(NULL, "0"), str_new_empty(), 1);
+  COMPARE_TEST_STR(str_new_1(NULL, "0"), str_new_1(NULL, "0"), 0);
+  COMPARE_TEST_STR(str_new_1(NULL, "0"), str_new_1(NULL, "A"), -1);
+  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "0"), 1);
+  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "01"), 0);
+  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "012"), -1);
+  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "02"), -1);
+  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "023"), -1);
+  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "ABC"), -1);
+  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "0"), 1);
+  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "01"), 1);
+  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "012"), 0);
+  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "0123"), -1);
+  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "013"), -1);
+  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "0134"), -1);
+  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "ABC"), -1);
 }
 
 void compare_test_tag ()
@@ -269,4 +356,31 @@ void compare_test_tag ()
                    tag_1(&b, "0x200000000"), 0);
   tag_clean(&a);
   tag_clean(&b);
+}
+
+void compare_test_tuple ()
+{
+  s_tuple a;
+  s_tuple b;
+  COMPARE_TEST_TUPLE(tuple_init_1(&a, "{A, B}"),
+                     tuple_init_1(&b, "{A, B}"), 0);
+  COMPARE_TEST_TUPLE(&a, &a, 0);
+  tuple_clean(&a);
+  tuple_clean(&b);
+  COMPARE_TEST_TUPLE(tuple_init_1(&a, "{A, A}"),
+                     tuple_init_1(&b, "{A, B}"), -1);
+  tuple_clean(&a);
+  tuple_clean(&b);
+  COMPARE_TEST_TUPLE(tuple_init_1(&a, "{A, B}"),
+                     tuple_init_1(&b, "{A, A}"), 1);
+  tuple_clean(&a);
+  tuple_clean(&b);
+  COMPARE_TEST_TUPLE(tuple_init_1(&a, "{A, B}"),
+                     tuple_init_1(&b, "{A, B, C}"), -1);
+  tuple_clean(&a);
+  tuple_clean(&b);
+  COMPARE_TEST_TUPLE(tuple_init_1(&a, "{A, B, C}"),
+                     tuple_init_1(&b, "{A, B}"), 1);
+  tuple_clean(&a);
+  tuple_clean(&b);
 }

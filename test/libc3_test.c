@@ -21,10 +21,9 @@ void buf_parse_test ();
 void buf_test ();
 void call_test ();
 void character_test ();
+void compare_test ();
 void fact_test ();
 void facts_test ();
-void f32_test ();
-void f64_test ();
 void facts_cursor_test ();
 void facts_with_test ();
 void ident_test ();
@@ -102,9 +101,9 @@ int main (int argc, char **argv)
     printf("\nfact\n");
     fact_test();
   }
-  if (test_target("f64")) {
-    printf("\nf64\n");
-    f64_test();
+  if (test_target("compare")) {
+      printf("\ncompare\n");
+      compare_test();
   }
   if (test_target("set__tag")) {
     printf("\nset__tag\n");
@@ -129,10 +128,6 @@ int main (int argc, char **argv)
   if (test_target("facts_with")) {
     printf("\nfacts_with\n");
     facts_with_test();
-  }
-  if (test_target("f32")) {
-      printf("\nf32\n");
-      f32_test();
   }
   test_summary();
   test_shutdown();

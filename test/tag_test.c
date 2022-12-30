@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../libc3/tag.h"
+#include "../libc3/compare.h"
 #include "test.h"
 
 #define TAG_TEST_HASH_U64_COMPARE(a, b, expected)                      \
@@ -24,23 +25,23 @@
   } while (0)
 
 void tag_test ();
-void tag_test_hash ();
+void tag_test_hash_u64 ();
 
 void tag_test ()
 {
-  tag_test_hash();
+  tag_test_hash_u64();
 }
 
-void tag_test_hash ()
+void tag_test_hash_u64 ()
 {
   s_tag a;
   s_tag b;
   tag_init_1(&a, "{a, b}");
-  TAG_TEST_HASH_COMPARE(&a, &a, 0);
-  TAG_TEST_HASH_COMPARE(tag_1(&a, "{a, b}"), tag_init_1(&b, "{a, b}"), 0);
-  TAG_TEST_HASH_COMPARE(tag_1(&a, "{a, b}"), tag_1(&b, "{a, b}"), 0);
-  TAG_TEST_HASH_COMPARE(tag_1(&a, "{{a, b}, {c, d}}"),
-                        tag_1(&b, "{{a, b}, {c, d}}"), 0);
+  TAG_TEST_HASH_U64_COMPARE(&a, &a, 0);
+  TAG_TEST_HASH_U64_COMPARE(tag_1(&a, "{a, b}"), tag_init_1(&b, "{a, b}"), 0);
+  TAG_TEST_HASH_U64_COMPARE(tag_1(&a, "{a, b}"), tag_1(&b, "{a, b}"), 0);
+  TAG_TEST_HASH_U64_COMPARE(tag_1(&a, "{{a, b}, {c, d}}"),
+                            tag_1(&b, "{{a, b}, {c, d}}"), 0);
   tag_clean(&a);
   tag_clean(&b);
 }

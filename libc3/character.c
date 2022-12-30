@@ -26,15 +26,6 @@ character character_1 (const s8 *p)
   return c;
 }
 
-s8 character_compare (character a, character b)
-{
-  if (a < b)
-    return -1;
-  if (a == b)
-    return 0;
-  return 1;
-}
-
 e_bool character_is_digit (character c)
 {
   return ('0' <= c && c <= '9');

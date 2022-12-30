@@ -28,6 +28,15 @@
     return 0;                                   \
   }                                             \
 
+s8 compare_bool (e_bool a, e_bool b)
+{
+  if (! a && b)
+    return -1;
+  if ((! a && ! b) || (a && b))
+    return 0;
+  return 1;
+}
+
 s8 compare_call (const s_call *a, const s_call *b)
 {
   s8 r;
@@ -42,6 +51,7 @@ s8 compare_call (const s_call *a, const s_call *b)
   return compare_list(a->arguments, b->arguments);
 }
 
+COMPARE_DEF(character)
 
 COMPARE_DEF(f32)
 
@@ -64,7 +74,7 @@ s8 compare_fact (const s_fact *a, const s_fact *b)
   return r;
 }
 
-s8 fact_compare_unbound_var_count (const s_fact *a,
+s8 compare_fact_unbound_var_count (const s_fact *a,
                                    const s_fact *b)
 {
   u8 a_count;
@@ -124,6 +134,20 @@ s8 compare_fact_osp (const s_fact *a, const s_fact *b)
     return r;
   r = compare_tag(a->predicate, b->predicate);
   return r;
+}
+
+s8 compare_ident (const s_ident *a, const s_ident *b)
+{
+  sw r;
+  if (a == b)
+    return 0;
+  if (!a)
+    return -1;
+  if (!b)
+    return 1;
+  if ((r = compare_sym(a->module, b->module)))
+    return r;
+  return compare_sym(a->sym, b->sym);
 }
 
 s8 compare_integer (const s_integer *a, const s_integer *b)
@@ -187,6 +211,15 @@ s8 compare_list (const s_list *a, const s_list *b)
     a = list_next(a);
     b = list_next(b);
   }
+}
+
+s8 compare_ptag (const p_tag a, const p_tag b)
+{
+  if (a < b)
+    return -1;
+  if (a == b)
+    return 0;
+  return 1;
 }
 
 s8 compare_ptr (const void *a, const void *b)

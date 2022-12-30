@@ -17,7 +17,6 @@
 #include "test.h"
 
 void character_test_1 ();
-void character_test_compare ();
 void character_test_is_digit ();
 void character_test_is_lowercase ();
 void character_test_is_space ();
@@ -28,7 +27,6 @@ void character_test_utf8_size ();
 void character_test ()
 {
   character_test_1();
-  character_test_compare();
   character_test_is_digit();
   character_test_is_lowercase();
   character_test_is_space();
@@ -74,21 +72,6 @@ void character_test_1 ()
   TEST_EQ(character_1("꒴"), 42164);
   TEST_EQ(character_1("Ꝝ"), 42844);
   TEST_EQ(character_1("ꝝ"), 42845);
-}
-
-void character_test_compare ()
-{
-  TEST_EQ(character_compare('0', '0'), 0);
-  TEST_EQ(character_compare('0', '1'), -1);
-  TEST_EQ(character_compare('1', '0'), 1);
-  TEST_EQ(character_compare('1', '1'), 0);
-  TEST_EQ(character_compare('0', 'A'), -1);
-  TEST_EQ(character_compare('A', '0'), 1);
-  TEST_EQ(character_compare('A', 'A'), 0);
-  TEST_EQ(character_compare('A', 'B'), -1);
-  TEST_EQ(character_compare('B', 'A'), 1);
-  TEST_EQ(character_compare('A', 'a'), -1);
-  TEST_EQ(character_compare('a', 'A'), 1);
 }
 
 void character_test_is_digit ()

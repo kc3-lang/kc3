@@ -14,30 +14,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include "compare_test.h"
 #include "../libc3/str.h"
 #include "test.h"
-
-#define STR_TEST_CMP(a, b, expected)                                   \
-  do {                                                                 \
-    s_str *a_ = (a);                                                   \
-    s_str *b_ = (b);                                                   \
-    sw tmp = str_compare(a_, b_);                                          \
-    str_delete(a_);                                                    \
-    str_delete(b_);                                                    \
-    if (tmp == expected) {                                             \
-      test_ok();                                                       \
-    }                                                                  \
-    else {                                                             \
-      test_ko();                                                       \
-      printf("\n%sAssertion failed in %s:%d %s\n"                      \
-             "str_compare(%s, %s) == %s\n"                                 \
-             "Expected %s got %ld.%s\n",                               \
-             TEST_COLOR_KO,                                            \
-             __FILE__, __LINE__, __func__,                             \
-             # a, # b, # expected, # expected, tmp,                    \
-             TEST_COLOR_RESET);                                        \
-    }                                                                  \
-  } while (0)
 
 #define STR_TEST_INSPECT(test, expected)                               \
   do {                                                                 \
@@ -79,11 +58,10 @@
     str_init_1(&str, NULL, (test));                                    \
     TEST_ASSERT((result = str_to_sym(&str)));                          \
     TEST_EQ(str_to_sym(&str), result);                                 \
-    TEST_STR_CMP(&result->str, &str, 0);                               \
+    COMPARE_TEST_STR(&result->str, &str, 0);                           \
   } while (0)
 
 void str_test_character_is_reserved ();
-void str_test_compare ();
 void str_test_init_clean ();
 void str_test_init_dup ();
 void str_test_init_dup_1 ();
@@ -106,7 +84,6 @@ void str_test ()
   str_test_new_delete();
   str_test_new_1();
   str_test_new_dup();
-  str_test_compare();
   str_test_new_cpy();
   str_test_new_f();
   str_test_character_is_reserved();
@@ -147,33 +124,6 @@ void str_test_character_is_reserved ()
   TEST_ASSERT(! str_character_is_reserved('\''));
   TEST_ASSERT(str_character_is_reserved('"'));
   TEST_ASSERT(str_character_is_reserved('\\'));
-}
-
-void str_test_compare ()
-{
-  s_str *a;
-  TEST_EQ((a = str_new_empty(), str_compare(a, a)), 0);
-  str_delete(a);
-  TEST_EQ((a = str_new_1(NULL, "abc"), str_compare(a, a)), 0);
-  str_delete(a);
-  STR_TEST_CMP(str_new_empty(), str_new_empty(), 0);
-  STR_TEST_CMP(str_new_empty(), str_new_1(NULL, "0"), -1);
-  STR_TEST_CMP(str_new_1(NULL, "0"), str_new_empty(), 1);
-  STR_TEST_CMP(str_new_1(NULL, "0"), str_new_1(NULL, "0"), 0);
-  STR_TEST_CMP(str_new_1(NULL, "0"), str_new_1(NULL, "A"), -1);
-  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "0"), 1);
-  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "01"), 0);
-  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "012"), -1);
-  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "02"), -1);
-  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "023"), -1);
-  STR_TEST_CMP(str_new_1(NULL, "01"), str_new_1(NULL, "ABC"), -1);
-  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "0"), 1);
-  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "01"), 1);
-  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "012"), 0);
-  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "0123"), -1);
-  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "013"), -1);
-  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "0134"), -1);
-  STR_TEST_CMP(str_new_1(NULL, "012"), str_new_1(NULL, "ABC"), -1);
 }
 
 void str_test_init_clean ()

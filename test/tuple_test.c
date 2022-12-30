@@ -18,13 +18,6 @@
 #include "../libc3/str.h"
 #include "test.h"
 
-#define TUPLE_TEST_COMPARE(a, b, expected)                             \
-  do {                                                                 \
-    test_context("tuple_compare(" # a ", " # b ") -> " # expected);    \
-    TEST_EQ(tuple_compare((a), (b)), (expected));                      \
-    test_context(NULL);                                                \
-  } while (0)
-
 #define TUPLE_TEST_INIT_CLEAN(test)                                    \
   do {                                                                 \
     s_tuple tuple_test;                                                \
@@ -81,7 +74,6 @@
   } while (0)
 
 void tuple_test ();
-void tuple_test_compare ();
 void tuple_test_init_1 ();
 void tuple_test_init_clean ();
 void tuple_test_inspect ();
@@ -94,35 +86,7 @@ void tuple_test ()
   tuple_test_new_delete();
   tuple_test_init_1();
   tuple_test_new_1();
-  tuple_test_compare();
   tuple_test_inspect();
-}
-
-void tuple_test_compare ()
-{
-  s_tuple a;
-  s_tuple b;
-  TUPLE_TEST_COMPARE(tuple_init_1(&a, "{A, B}"),
-                     tuple_init_1(&b, "{A, B}"), 0);
-  TUPLE_TEST_COMPARE(&a, &a, 0);
-  tuple_clean(&a);
-  tuple_clean(&b);
-  TUPLE_TEST_COMPARE(tuple_init_1(&a, "{A, A}"),
-                     tuple_init_1(&b, "{A, B}"), -1);
-  tuple_clean(&a);
-  tuple_clean(&b);
-  TUPLE_TEST_COMPARE(tuple_init_1(&a, "{A, B}"),
-                     tuple_init_1(&b, "{A, A}"), 1);
-  tuple_clean(&a);
-  tuple_clean(&b);
-  TUPLE_TEST_COMPARE(tuple_init_1(&a, "{A, B}"),
-                     tuple_init_1(&b, "{A, B, C}"), -1);
-  tuple_clean(&a);
-  tuple_clean(&b);
-  TUPLE_TEST_COMPARE(tuple_init_1(&a, "{A, B, C}"),
-                     tuple_init_1(&b, "{A, B}"), 1);
-  tuple_clean(&a);
-  tuple_clean(&b);
 }
 
 void tuple_test_init_clean ()

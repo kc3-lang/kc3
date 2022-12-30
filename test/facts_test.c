@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "../libc3/buf.h"
+#include "../libc3/compare.h"
 #include "../libc3/facts.h"
 #include "fact_test.h"
 #include "test.h"
@@ -81,15 +82,15 @@ void facts_test_add ()
     TEST_ASSERT((pf = facts_add_fact(&facts, fact + i)));
     TEST_EQ(facts.tags.count, i + 1);
     TEST_EQ(facts.facts.count, i + 1);
-    TEST_EQ(tag_compare(fact[i].subject, pf->subject), 0);
-    TEST_EQ(tag_compare(fact[i].predicate, pf->predicate), 0);
-    TEST_EQ(tag_compare(fact[i].object, pf->object), 0);
+    TEST_EQ(compare_tag(fact[i].subject, pf->subject), 0);
+    TEST_EQ(compare_tag(fact[i].predicate, pf->predicate), 0);
+    TEST_EQ(compare_tag(fact[i].object, pf->object), 0);
     TEST_ASSERT((pf = facts_add_fact(&facts, fact + i)));
     TEST_EQ(facts.tags.count, i + 1);
     TEST_EQ(facts.facts.count, i + 1);
-    TEST_EQ(tag_compare(fact[i].subject, pf->subject), 0);
-    TEST_EQ(tag_compare(fact[i].predicate, pf->predicate), 0);
-    TEST_EQ(tag_compare(fact[i].object, pf->object), 0);
+    TEST_EQ(compare_tag(fact[i].subject, pf->subject), 0);
+    TEST_EQ(compare_tag(fact[i].predicate, pf->predicate), 0);
+    TEST_EQ(compare_tag(fact[i].object, pf->object), 0);
     fact_test_clean_1(fact + i);
     i++;
   }
@@ -185,9 +186,9 @@ void facts_test_find ()
     TEST_EQ(facts_find_fact(&facts, fact + i), NULL);
     facts_add_fact(&facts, fact + i);
     TEST_ASSERT((pf = facts_find_fact(&facts, fact + i)));
-    TEST_EQ(tag_compare(fact[i].subject, pf->subject), 0);
-    TEST_EQ(tag_compare(fact[i].predicate, pf->predicate), 0);
-    TEST_EQ(tag_compare(fact[i].object, pf->object), 0);
+    TEST_EQ(compare_tag(fact[i].subject, pf->subject), 0);
+    TEST_EQ(compare_tag(fact[i].predicate, pf->predicate), 0);
+    TEST_EQ(compare_tag(fact[i].object, pf->object), 0);
     i++;
   }
   while (i--) {
@@ -441,7 +442,7 @@ void facts_test_save ()
     facts_add_fact(&facts, fact + i);
     i++;
   }
-  facts_save(&facts, "facts_test_save.facts");
+  facts_save_file(&facts, "facts_test_save.facts");
   test_file_compare("facts_test_save.facts",
                     "facts_test_save.facts.expected");
   if (g_test_last_ok)

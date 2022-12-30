@@ -32,20 +32,6 @@ e_bool ident_character_is_reserved (character c)
           c == '}');
 }
 
-s8 ident_compare (const s_ident *a, const s_ident *b)
-{
-  sw r;
-  if (a == b)
-    return 0;
-  if (!a)
-    return -1;
-  if (!b)
-    return 1;
-  if ((r = sym_compare(a->module, b->module)))
-    return r;
-  return sym_compare(a->sym, b->sym);
-}
-
 s_ident * ident_copy (const s_ident *src, s_ident *dest)
 {
   dest->module = src->module;

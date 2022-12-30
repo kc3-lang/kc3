@@ -28,23 +28,13 @@
   } while (0)
 
 void bool_test ();
-void bool_test_compare ();
 void bool_test_compat ();
 void bool_test_inspect ();
 
 void bool_test ()
 {
-  bool_test_compare();
   bool_test_compat();
   bool_test_inspect();
-}
-
-void bool_test_compare ()
-{
-  TEST_EQ(bool_compare(false, false), 0);
-  TEST_EQ(bool_compare(false, true), -1);
-  TEST_EQ(bool_compare(true, false), 1);
-  TEST_EQ(bool_compare(true, true), 0);
 }
 
 void bool_test_compat ()

@@ -27,16 +27,6 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define LIST_TEST_COMPARE(a, b, expected)                              \
-  do {                                                                 \
-    s_list *tmp_a = (a);                                               \
-    s_list *tmp_b = (b);                                               \
-    test_context("list_compare(" # a ", " # b ") -> " # expected);     \
-    TEST_EQ(list_compare(tmp_a, tmp_b), (expected));                   \
-    list_delete(tmp_a);                                                \
-    list_delete(tmp_b);                                                \
-  } while (0)
-
 #define LIST_TEST_INSPECT(test, expected)                              \
   do {                                                                 \
     s_list *list_test;                                                 \
@@ -52,14 +42,12 @@
 
 void list_test ();
 void list_test_1 ();
-void list_test_compare ();
 void list_test_inspect ();
 
 void list_test ()
 {
   list_test_1();
   list_test_inspect();
-  list_test_compare();
 }
 
 void list_test_1 ()
@@ -74,13 +62,6 @@ void list_test_1 ()
   LIST_TEST_1("[A, B | C]");
   LIST_TEST_1("[A, B, C]");
   LIST_TEST_1("[A, B, C | D]");
-}
-
-void list_test_compare ()
-{
-  LIST_TEST_COMPARE(NULL, NULL, 0);
-  LIST_TEST_COMPARE(list_1("[A, B]"), list_1("[A, C]"), -1);
-  LIST_TEST_COMPARE(list_1("[A, C]"), list_1("[A, B]"), 1);
 }
 
 void list_test_inspect ()

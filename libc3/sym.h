@@ -34,8 +34,6 @@ const s_sym * sym_1 (const s8 *p);
 
 e_bool sym_character_is_reserved (character c);
 
-s8 sym_compare (const s_sym *a, const s_sym *b);
-
 /** @brief Call when exiting program. */
 void sym_delete_all ();
 

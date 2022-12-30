@@ -15,15 +15,6 @@
 #include "buf.h"
 #include "buf_inspect.h"
 
-s8 bool_compare (e_bool a, e_bool b)
-{
-  if (! a && b)
-    return -1;
-  if ((! a && ! b) || (a && b))
-    return 0;
-  return 1;
-}
-
 s_str * bool_inspect (e_bool x, s_str *dest)
 {
   sw size;

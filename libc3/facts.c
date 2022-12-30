@@ -24,6 +24,7 @@
 #include "facts.h"
 #include "facts_cursor.h"
 #include "facts_with.h"
+#include "hash.h"
 #include "set__fact.h"
 #include "set__tag.h"
 #include "skiplist__fact.h"
@@ -82,6 +83,7 @@ sw facts_dump (const s_facts *facts, s_buf *buf)
 {
   s_facts_cursor cursor;
   s_fact *fact;
+  t_hash hash;
   s_tag predicate;
   s_tag object;
   sw r;
@@ -104,23 +106,26 @@ sw facts_dump (const s_facts *facts, s_buf *buf)
   if ((r = buf_write_1(buf, "}\n")) < 0)
     return r;
   result += r;
+  hash_init(&hash);
   facts_with_0(facts, &cursor, &subject, &predicate, &object);
   while ((fact = facts_cursor_next(&cursor))) {
-    if ((r = facts_log_add(buf, fact)) < 0)
+    hash_update_fact(&hash, fact);
+    if ((r = buf_inspect_fact(buf, fact)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, "\n")) < 0)
       return r;
     result += r;
   }
-  /*
-  if ((r = buf_write_1(buf, "\n%{hash: 0x")) < 0)
+  if ((r = buf_write_1(buf, "%{hash: 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_u64_hex(buf, hash_u64)) < 0)
+  if ((r = buf_inspect_u64_hex(buf, hash_to_u64(&hash))) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "}\n")) < 0)
     return r;
   result += r;
-  */
   return result;
 }
 
@@ -197,7 +202,7 @@ sw facts_load (s_facts *facts, s_buf *buf)
   assert(facts);
   assert(buf);
   if ((r = buf_read_1(buf,
-                      "%{module: C3.Facts,\n"
+                      "%{module: C3.Facts.Dump,\n"
                       "  version: 0x0000000000000001,\n"
                       "  count: 0x")) < 0)
     return r;
@@ -208,26 +213,16 @@ sw facts_load (s_facts *facts, s_buf *buf)
     return r;
   result += r;
   for (i = 0; i < count; i++) {
-    if ((r = buf_read_1(buf, "add ")) < 0)
-      break;
-    result += r;
-    if (r) {
-      if ((r = buf_parse_fact(buf, &fact)) <= 0)
-        break;
-      result += r;
-      facts_add_fact(facts, &fact);
-      goto ok;
-    }
-    if ((r = buf_read_1(buf, "remove ")) <= 0)
-      break;
-    result += r;
     if ((r = buf_parse_fact(buf, &fact)) <= 0)
       break;
     result += r;
-    facts_remove_fact(facts, &fact);
-  ok:
+    facts_add_fact(facts, &fact);
     buf_read_1(buf, "\n");
   }
+  /*
+    buf_write_1(buf, "%{hash: 0x");
+    buf_inspect_u64_hex(buf, hash_u64);
+  */
   return result;
 }
 
@@ -349,6 +344,37 @@ sw facts_open_file (s_facts *facts, const s8 *path)
   return r;
 }
 
+sw facts_open_log (s_facts *facts, s_buf *buf)
+{
+  s_fact fact;
+  sw r;
+  sw result = 0;
+  assert(facts);
+  assert(buf);
+  while (1) {
+    if ((r = buf_read_1(buf, "add ")) < 0)
+      break;
+    result += r;
+    if (r) {
+      if ((r = buf_parse_fact(buf, &fact)) <= 0)
+        break;
+      result += r;
+      facts_add_fact(facts, &fact);
+      goto ok;
+    }
+    if ((r = buf_read_1(buf, "remove ")) <= 0)
+      break;
+    result += r;
+    if ((r = buf_parse_fact(buf, &fact)) <= 0)
+      break;
+    result += r;
+    facts_remove_fact(facts, &fact);
+  ok:
+    buf_read_1(buf, "\n");
+  }
+  return result;
+}
+
 s_tag * facts_ref_tag (s_facts *facts, const s_tag *tag)
 {
   s_set_item__tag *item;
@@ -403,6 +429,7 @@ sw facts_save_file (s_facts *facts, const s8 *path)
   if ((r = facts_dump(facts, buf)) < 0)
     goto ko;
   result += r;
+  buf_flush(buf);
   facts->log = buf;
   return result;
  ko:

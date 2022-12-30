@@ -22,7 +22,7 @@
     const s_tag *tag_test;                                                   \
     tag_expected = (expected);                                         \
     tag_test = (test);                                                 \
-    if (tag_compare(tag_test, tag_expected) == 0) {                    \
+    if (compare_tag(tag_test, tag_expected) == 0) {                    \
       test_ok();                                                       \
     }                                                                  \
     else {                                                             \

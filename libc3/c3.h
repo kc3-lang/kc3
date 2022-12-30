@@ -34,7 +34,6 @@
 #include "ident.h"
 #include "integer.h"
 #include "list.h"
-#include "ptr.h"
 #include "quote.h"
 #include "str.h"
 #include "tag.h"

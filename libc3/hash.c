@@ -69,6 +69,10 @@ void hash_update_call (t_hash *hash, const s_call *call)
 
 HASH_UPDATE_DEF(character)
 
+HASH_UPDATE_DEF(f32)
+
+HASH_UPDATE_DEF(f64)
+
 void hash_update_fact (t_hash *hash, const s_fact *fact)
 {
   const u8 type = 3;
@@ -119,6 +123,13 @@ void hash_update_list (t_hash *hash, const s_list *list)
   }
 }
 
+void hash_update_ptag (t_hash *hash, const p_tag ptag)
+{
+  const s8 type[] = "ptag";
+  hash_update(hash, type, strlen(type));
+  hash_update(hash, &ptag, sizeof(ptag));
+}
+
 void hash_update_quote (t_hash *hash, const p_quote x)
 {
   const s8 type[] = "quote";
@@ -127,8 +138,11 @@ void hash_update_quote (t_hash *hash, const p_quote x)
 }
 
 HASH_UPDATE_DEF(s8)
+
 HASH_UPDATE_DEF(s16)
+
 HASH_UPDATE_DEF(s32)
+
 HASH_UPDATE_DEF(s64)
 
 void hash_update_str (t_hash *hash, const s_str *str)

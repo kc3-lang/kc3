@@ -22,7 +22,7 @@
     s_fact *fact_test;                                                 \
     fact_expected = (expected);                                        \
     fact_test = (test);                                                \
-    if (fact_compare(fact_test, fact_expected) == 0) {                 \
+    if (compare_fact(fact_test, fact_expected) == 0) {                 \
       test_ok();                                                       \
     }                                                                  \
     else {                                                             \

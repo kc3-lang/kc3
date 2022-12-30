@@ -41,6 +41,7 @@ COMPARE_PROTOTYPE(s16);
 COMPARE_PROTOTYPE(s32);
 COMPARE_PROTOTYPE(s64);
 s8 compare_str (const s_str *a, const s_str *b);
+s8 compare_sym (const s_sym *a, const s_sym *b);
 s8 compare_tag (const s_tag *a, const s_tag *b);
 s8 compare_tuple (const s_tuple *a, const s_tuple *b);
 COMPARE_PROTOTYPE(u8);
