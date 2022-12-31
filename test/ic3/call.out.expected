@@ -1,4 +1,16 @@
-Module.ident(arg, arg, arg)
+quote test()
 
-a(b)
+quote test(1)
+
+quote test(1, 2)
+
+quote test(1, 2, 3)
+
+quote Test.test()
+
+quote Test.test(1)
+
+quote Test.test(1, 2)
+
+quote Test.test(1, 2, 3)
 

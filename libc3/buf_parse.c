@@ -948,6 +948,31 @@ sw buf_parse_new_tag (s_buf *buf, s_tag **dest)
   return r;
 }
 
+/* call tag_delete after */
+sw buf_parse_quote (s_buf *buf, p_quote *dest)
+{
+  p_quote quote;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "quote ")) <= 0)
+    goto clean;
+  result += r;
+  quote = tag_new();
+  if ((r = buf_parse_tag(buf, quote)) <= 0)
+    goto restore;
+  result += r;
+  *dest = quote;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {
   u8 b;
@@ -1238,6 +1263,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
   if ((r = buf_parse_tag_list(buf, dest)) != 0 ||
       (r = buf_parse_tag_str(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
+      (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_ident(buf, dest)) != 0 ||
       (r = buf_parse_tag_sym(buf, dest)) != 0)
@@ -1305,6 +1331,14 @@ sw buf_parse_tag_list (s_buf *buf, s_tag *dest)
   sw r;
   if ((r = buf_parse_list(buf, &dest->data.list)) > 0)
     dest->type.type = TAG_LIST;
+  return r;
+}
+
+sw buf_parse_tag_quote (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_quote(buf, &dest->data.quote)) > 0)
+    dest->type.type = TAG_QUOTE;
   return r;
 }
 

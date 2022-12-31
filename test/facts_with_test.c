@@ -44,7 +44,7 @@ void facts_with_test_ ()
     tag_init_1(tag + i, p[i]);
     i++;
   }
-  facts_init(&facts, NULL);
+  facts_init(&facts);
   facts_add_tags(&facts, tag, tag + 1, tag + 2);
   facts_add_tags(&facts, tag, tag + 1, tag + 3);
   facts_add_tags(&facts, tag, tag + 4, tag + 3);
@@ -194,7 +194,7 @@ void facts_with_test_tags ()
     tag_init_1(tag + i, p[i]);
     i++;
   }
-  facts_init(&facts, NULL);
+  facts_init(&facts);
   facts_add_tags(&facts, tag, tag + 1, tag + 2);
   facts_add_tags(&facts, tag, tag + 1, tag + 3);
   facts_add_tags(&facts, tag, tag + 4, tag + 3);

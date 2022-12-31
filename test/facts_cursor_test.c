@@ -59,7 +59,7 @@ void facts_cursor_test_init ()
   };
   s_fact fact[24];
   s_facts facts;
-  facts_init(&facts, NULL);
+  facts_init(&facts);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
@@ -129,7 +129,7 @@ void facts_cursor_test_next ()
   };
   s_fact fact[24];
   s_facts facts;
-  facts_init(&facts, NULL);
+  facts_init(&facts);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);

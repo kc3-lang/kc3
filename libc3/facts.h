@@ -16,14 +16,14 @@
 
 #include "types.h"
 
-#define facts_count(facts) (facts->facts.count)
+#define facts_count(f) ((f)->facts.count)
 
 /* Stack allocation compatible functions */
 void      facts_clean (s_facts *facts);
-s_facts * facts_init (s_facts *facts, s_buf *log);
+s_facts * facts_init (s_facts *facts);
 
 /* Constructors */
-s_facts * facts_new (s_buf *log);
+s_facts * facts_new ();
 
 /* Destructor */
 void     facts_delete (s_facts *facts);

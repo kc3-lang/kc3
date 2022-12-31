@@ -76,7 +76,7 @@ void facts_test_add ()
   s_fact *pf;
   s_fact fact[24];
   s_facts facts;
-  facts_init(&facts, NULL);
+  facts_init(&facts);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     TEST_ASSERT((pf = facts_add_fact(&facts, fact + i)));
@@ -128,7 +128,7 @@ void facts_test_dump_file ()
   };
   s_fact fact[24];
   s_facts facts;
-  facts_init(&facts, NULL);
+  facts_init(&facts);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
@@ -179,7 +179,7 @@ void facts_test_find ()
   s_fact fact[24];
   s_facts facts;
   s_fact *pf;
-  facts_init(&facts, NULL);
+  facts_init(&facts);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     TEST_EQ(facts_find_fact(&facts, fact + i), NULL);
@@ -203,24 +203,28 @@ void facts_test_find ()
 void facts_test_init_clean ()
 {
   s_facts facts;
-  s_buf buf;
-  TEST_EQ(facts_init(&facts, NULL), &facts);
+  TEST_EQ(facts_init(&facts), &facts);
   TEST_EQ(facts.tags.count, 0);
   TEST_EQ(facts.facts.count, 0);
   TEST_EQ(facts.log, NULL);
   facts_clean(&facts);
   test_ok();
-  BUF_INIT_ALLOCA(&buf, 1024);
-  TEST_EQ(facts_init(&facts, &buf), &facts);
+  TEST_EQ(facts_init(&facts), &facts);
   TEST_EQ(facts.tags.count, 0);
   TEST_EQ(facts.facts.count, 0);
-  TEST_EQ(facts.log, &buf);
+  TEST_EQ(facts.log, NULL);
   facts_clean(&facts);
   test_ok();
 }
 
 void facts_test_load ()
 {
+  s_facts facts;
+  facts_init(&facts);
+  TEST_EQ(facts_load_file(&facts,
+                          "facts_test_dump_file.facts.expected"),
+          0);
+  TEST_EQ(facts_count(&facts), 23);
 }
 
 void facts_test_log_add ()
@@ -259,7 +263,8 @@ void facts_test_log_add ()
   BUF_INIT_ALLOCA(&log, 1024);
   fp = fopen("facts_test_log_add.facts", "w");
   buf_file_open_w(&log, fp);
-  facts_init(&facts, &log);
+  facts_init(&facts);
+  facts.log = &log;
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
@@ -310,7 +315,8 @@ void facts_test_log_remove ()
   BUF_INIT_ALLOCA(&log, 1024);
   fp = fopen("facts_test_log_remove.facts", "w");
   buf_file_open_w(&log, fp);
-  facts_init(&facts, &log);
+  facts_init(&facts);
+  facts.log = &log;
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
@@ -345,12 +351,11 @@ void facts_test_new_delete ()
     facts_delete(facts);
     test_ok();
   }
-  BUF_INIT_ALLOCA(&buf, 1024);
   TEST_ASSERT((facts = facts_new(&buf)));
   if (g_test_last_ok) {
     TEST_EQ(facts->tags.count, 0);
     TEST_EQ(facts->facts.count, 0);
-    TEST_EQ(facts->log, &buf);
+    TEST_EQ(facts->log, NULL);
     facts_delete(facts);
     test_ok();
   }
@@ -387,7 +392,7 @@ void facts_test_remove ()
   };
   s_fact fact[24];
   s_facts facts;
-  facts_init(&facts, NULL);
+  facts_init(&facts);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
@@ -436,7 +441,7 @@ void facts_test_save ()
   };
   s_fact fact[24];
   s_facts facts;
-  facts_init(&facts, NULL);
+  facts_init(&facts);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);

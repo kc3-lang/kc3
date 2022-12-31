@@ -70,7 +70,7 @@ int main (int argc, char **argv)
   sw r;
   s_tag result;
   libc3_init();
-  facts_init(&facts, NULL);
+  facts_init(&facts);
   c3_init(&c3, &facts);
   if (argc < 1)
     return usage(argv[0]);

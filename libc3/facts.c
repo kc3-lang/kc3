@@ -172,7 +172,7 @@ s_tag * facts_find_tag (const s_facts *facts, const s_tag *tag)
   return NULL;
 }
 
-s_facts * facts_init (s_facts *facts, s_buf *log)
+s_facts * facts_init (s_facts *facts)
 {
   const u8 max_height = 10;
   const double spacing = 2.7;
@@ -188,7 +188,7 @@ s_facts * facts_init (s_facts *facts, s_buf *log)
   facts->index_osp = skiplist_new__fact(max_height, spacing);
   assert(facts->index_osp);
   facts->index_osp->compare = compare_fact_osp;
-  facts->log = log;
+  facts->log = NULL;
   return facts;
 }
 
@@ -274,12 +274,12 @@ sw facts_log_remove (s_buf *log, const s_fact *fact)
   return result;
 }
 
-s_facts * facts_new (s_buf *log)
+s_facts * facts_new ()
 {
   s_facts *n;
   if (! (n = malloc(sizeof(s_facts))))
     errx(1, "facts_new: out of memory");
-  return facts_init(n, log);
+  return facts_init(n);
 }
 
 sw facts_open_buf (s_facts *facts, s_buf *buf)

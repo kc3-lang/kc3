@@ -442,7 +442,7 @@ sw buf_inspect_quote (s_buf *buf, p_quote quote)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(buf, "'")) < 0)
+  if ((r = buf_write_1(buf, "quote ")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_tag(buf, quote)) < 0)
