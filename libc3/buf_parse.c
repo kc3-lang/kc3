@@ -405,6 +405,7 @@ sw buf_parse_fact (s_buf *buf, s_fact *dest)
   result += r;
   if ((r = buf_read_1(buf, "}")) < 0)
     goto restore;
+  result += r;
   dest->subject = subject;
   dest->predicate = predicate;
   dest->object = object;

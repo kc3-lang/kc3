@@ -30,6 +30,9 @@
 #include "skiplist__fact.h"
 #include "tag.h"
 
+sw facts_open_file_create (s_facts *facts, const s8 *path);
+sw facts_open_log (s_facts *facts, s_buf *buf);
+
 s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
 {
   s_fact tmp;
@@ -196,6 +199,9 @@ sw facts_load (s_facts *facts, s_buf *buf)
 {
   u64 count;
   s_fact fact;
+  t_hash hash;
+  u64 hash_u64;
+  u64 hash_u64_buf;
   u64 i;
   sw r;
   sw result = 0;
@@ -209,21 +215,49 @@ sw facts_load (s_facts *facts, s_buf *buf)
   result += r;
   if ((r = buf_parse_u64_hex(buf, &count)) < 0)
     return r;
-  if ((r = buf_write_1(buf, "}\n")) < 0)
+  result += r;
+  if ((r = buf_read_1(buf, "}\n")) < 0)
     return r;
   result += r;
+  hash_init(&hash);
   for (i = 0; i < count; i++) {
     if ((r = buf_parse_fact(buf, &fact)) <= 0)
-      break;
+      goto ko_fact;
     result += r;
+    hash_update_fact(&hash, &fact);
     facts_add_fact(facts, &fact);
-    buf_read_1(buf, "\n");
+    if ((r = buf_read_1(buf, "\n")) <= 0) {
+      r = -1;
+      goto ko_fact;
+    }
+    result += r;
   }
-  /*
-    buf_write_1(buf, "%{hash: 0x");
-    buf_inspect_u64_hex(buf, hash_u64);
-  */
+  hash_u64 = hash_to_u64(&hash);
+  if ((r = buf_read_1(buf, "%{hash: 0x")) <= 0)
+    goto ko_hash;
+  result += r;
+  if ((r = buf_parse_u64_hex(buf, &hash_u64_buf)) <= 0)
+    goto ko_hash;
+  result += r;
+  if ((r = buf_read_1(buf, "}\n")) <= 0)
+    goto ko_hash;
+  result += r;
+  i++;
+  if (hash_u64_buf != hash_u64)
+    goto ko_hash;
   return result;
+ ko_fact:
+  if (r)
+    warnx("facts_load: invalid fact line %llu", i + 3);
+  else
+    warnx("facts_load: missing fact line %llu", i + 3);
+  return -1;
+ ko_hash:
+  if (r)
+    warnx("facts_load: invalid hash line %llu", i + 3);
+  else
+    warnx("facts_load: missing hash line %llu", i + 3);
+  return -1;
 }
 
 sw facts_load_file (s_facts *facts, const s8 *path)
@@ -302,37 +336,17 @@ sw facts_open_file (s_facts *facts, const s8 *path)
   s_buf in;
   s_buf *out;
   sw r;
+  sw result = 0;
   BUF_INIT_ALLOCA(&in, BUF_SIZE);
   if (! (fp = fopen(path, "rb"))) {
-    if (errno == ENOENT) {
-      if (! (fp = fopen(path, "wb"))) {
-        warn("fopen: %s", path);
-        return -1;
-      }
-      if (facts_count(facts)) {
-        /* TODO: clear facts
-           facts_close(facts);
-           facts_remove_all(facts);
-        */
-        warnx("facts_open_file: not supported");
-        return -1;
-      }
-      out = buf_new_alloc(BUF_SIZE);
-      buf_file_open_w(out, fp);
-      if ((r = facts_save_header(out)) < 0)
-        return r;
-      if ((r = facts_dump(facts, out)) < 0)
-        return r;
-      buf_flush(out);
-      facts->log = out;
-      return r;
-    }
-    fp = fopen(path, "wb");
+    if (errno == ENOENT)
+      return facts_open_file_create(facts, path);
     return -1;
   }
   buf_file_open_r(&in, fp);
   if ((r = facts_open_buf(facts, &in)) < 0)
     return r;
+  result += r;
   fclose(fp);
   if (! (fp = fopen(path, "wb"))) {
     warn("fopen: %s", path);
@@ -341,7 +355,38 @@ sw facts_open_file (s_facts *facts, const s8 *path)
   out = buf_new_alloc(BUF_SIZE);
   buf_file_open_w(out, fp);
   facts->log = out;
-  return r;
+  return result;
+}
+
+sw facts_open_file_create (s_facts *facts, const s8 *path)
+{
+  FILE *fp;
+  s_buf *out;
+  sw r;
+  sw result = 0;
+  if (! (fp = fopen(path, "wb"))) {
+    warn("fopen: %s", path);
+    return -1;
+  }
+  if (facts_count(facts)) {
+    /* TODO: clear facts
+       facts_close(facts);
+       facts_remove_all(facts);
+    */
+    warnx("facts_open_file: not supported");
+    return -1;
+  }
+  out = buf_new_alloc(BUF_SIZE);
+  buf_file_open_w(out, fp);
+  if ((r = facts_save_header(out)) < 0)
+    return r;
+  result += r;
+  if ((r = facts_dump(facts, out)) < 0)
+    return r;
+  result += r;
+  buf_flush(out);
+  facts->log = out;
+  return result;
 }
 
 sw facts_open_log (s_facts *facts, s_buf *buf)

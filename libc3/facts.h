@@ -37,7 +37,6 @@ void     facts_close (s_facts *facts);
 sw       facts_load (s_facts *facts, s_buf *buf);
 sw       facts_load_file (s_facts *facts, const s8 *path);
 sw       facts_open_file (s_facts *facts, const s8 *path);
-sw       facts_open_log (s_facts *facts, s_buf *buf);
 s_tag *  facts_ref_tag (s_facts *facts, const s_tag *tag);
 e_bool   facts_remove_fact (s_facts *facts, const s_fact *fact);
 sw       facts_save_file (s_facts *facts, const s8 *path);
