@@ -25,6 +25,7 @@
 #include "facts_cursor.h"
 #include "facts_with.h"
 #include "hash.h"
+#include "log.h"
 #include "set__fact.h"
 #include "set__tag.h"
 #include "skiplist__fact.h"
@@ -67,12 +68,20 @@ s_fact * facts_add_tags (s_facts *facts, const s_tag *subject,
 void facts_clean (s_facts *facts)
 {
   if (facts->log)
-    buf_file_close(facts->log);
+    facts_close(facts);
   skiplist_delete__fact(facts->index_osp);
   skiplist_delete__fact(facts->index_pos);
   skiplist_delete__fact(facts->index_spo);
   set_clean__fact(&facts->facts);
   set_clean__tag(&facts->tags);
+}
+
+void facts_close (s_facts *facts)
+{
+  assert(facts->log);
+  log_close(facts->log);
+  log_delete(facts->log);
+  facts->log = NULL;
 }
 
 void facts_delete (s_facts *facts)
@@ -276,33 +285,39 @@ sw facts_load_file (s_facts *facts, const s8 *path)
   return result;
 }
 
-sw facts_log_add (s_buf *log, const s_fact *fact)
+sw facts_log_add (s_log *log, const s_fact *fact)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(log, "add ")) < 0)
+  assert(log);
+  assert(fact);
+  if ((r = buf_write_1(&log->buf, "add ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_fact(log, fact)) < 0)
+  hash_update_1(&log->hash, "add");
+  if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1(log, "\n")) < 0)
+  hash_update_fact(&log->hash, fact);
+  if ((r = buf_write_1(&log->buf, "\n")) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw facts_log_remove (s_buf *log, const s_fact *fact)
+sw facts_log_remove (s_log *log, const s_fact *fact)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(log, "remove ")) < 0)
+  if ((r = buf_write_1(&log->buf, "remove ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_fact(log, fact)) < 0)
+  hash_update_1(&log->hash, "remove");
+  if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1(log, "\n")) < 0)
+  hash_update_fact(&log->hash, fact);
+  if ((r = buf_write_1(&log->buf, "\n")) < 0)
     return r;
   result += r;
   return result;
@@ -334,7 +349,6 @@ sw facts_open_file (s_facts *facts, const s8 *path)
 {
   FILE *fp;
   s_buf in;
-  s_buf *out;
   sw r;
   sw result = 0;
   BUF_INIT_ALLOCA(&in, BUF_SIZE);
@@ -348,13 +362,13 @@ sw facts_open_file (s_facts *facts, const s8 *path)
     return r;
   result += r;
   fclose(fp);
-  if (! (fp = fopen(path, "wb"))) {
+  if (! (fp = fopen(path, "ab"))) {
     warn("fopen: %s", path);
     return -1;
   }
-  out = buf_new_alloc(BUF_SIZE);
-  buf_file_open_w(out, fp);
-  facts->log = out;
+  if (! (facts->log = log_new(BUF_SIZE)))
+    return -1;
+  log_open(facts->log, fp);
   return result;
 }
 
@@ -385,7 +399,9 @@ sw facts_open_file_create (s_facts *facts, const s8 *path)
     return r;
   result += r;
   buf_flush(out);
-  facts->log = out;
+  if (! (facts->log = log_new()))
+    return -1;
+  buf_file_open_w(&facts->log->buf, fp);
   return result;
 }
 
@@ -455,27 +471,30 @@ e_bool facts_remove_fact (s_facts *facts, const s_fact *fact)
 
 sw facts_save_file (s_facts *facts, const s8 *path)
 {
-  s_buf *buf;
+  s_buf buf;
   FILE *fp;
   sw r;
   sw result = 0;
   assert(facts);
   assert(path);
   assert(! facts->log);
-  buf = buf_new_alloc(1024);
+  BUF_INIT_ALLOCA(&buf, BUF_SIZE);
   if (! (fp = fopen(path, "wb"))) {
     warn("fopen: %s", path);
     return -1;
   }
-  buf_file_open_w(buf, fp);
-  if ((r = facts_save_header(buf)) < 0)
+  buf_file_open_w(&buf, fp);
+  if ((r = facts_save_header(&buf)) < 0)
     goto ko;
   result += r;
-  if ((r = facts_dump(facts, buf)) < 0)
+  if ((r = facts_dump(facts, &buf)) < 0)
     goto ko;
   result += r;
-  buf_flush(buf);
-  facts->log = buf;
+  buf_flush(&buf);
+  if (! (facts->log = log_new()))
+    goto ko;
+  if (log_open(facts->log, fp) < 0)
+    goto ko;
   return result;
  ko:
   fclose(fp);

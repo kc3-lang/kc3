@@ -99,6 +99,7 @@ typedef struct ident                   s_ident;
 typedef struct integer                 s_integer;
 typedef struct list                    s_list;
 typedef struct list                    s_list_map;
+typedef struct log                     s_log;
 typedef struct module                  s_module;
 typedef struct str                     s_str;
 typedef struct sym                     s_sym;
@@ -257,6 +258,12 @@ struct env {
   s_unwind_protect *unwind_protect;
 };
 
+struct log {
+  s_buf  buf;
+  u64    count;
+  t_hash hash;
+};
+
 struct sym {
   s_str str;
 };
@@ -359,7 +366,7 @@ TYPEDEF_SKIPLIST_NODE(fact, s_fact *);
   } s_skiplist__##name
 
 TYPEDEF_SKIPLIST(fact, s_fact *);
-
+  
 /* 5 */
 struct facts {
   s_set__tag        tags;
@@ -367,9 +374,7 @@ struct facts {
   s_skiplist__fact *index_spo;
   s_skiplist__fact *index_pos;
   s_skiplist__fact *index_osp;
-  s_buf            *log;
-  u64               log_count;
-  t_hash            log_hash;
+  s_log            *log;
 };
 
 struct facts_cursor {

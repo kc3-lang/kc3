@@ -47,8 +47,8 @@ sw       facts_dump (const s_facts *facts, s_buf *buf);
 sw       facts_dump_file (const s_facts *facts, const s8 *path);
 s_fact * facts_find_fact (const s_facts *facts, const s_fact *fact);
 s_tag *  facts_find_tag (const s_facts *facts, const s_tag *tag);
-sw       facts_log_add (s_buf *log, const s_fact *fact);
-sw       facts_log_remove (s_buf *log, const s_fact *fact);
+sw       facts_log_add (s_log *log, const s_fact *fact);
+sw       facts_log_remove (s_log *log, const s_fact *fact);
 sw       facts_save_header (s_buf *buf);
 
 #endif /* FACTS_H */

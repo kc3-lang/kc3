@@ -19,10 +19,12 @@
 #define HASH_UPDATE_PROTOTYPE(type)                           \
   void hash_update_##type (t_hash *hash, type x)
 
+void hash_clean (t_hash *hash);
 void hash_init (t_hash *hash);
 uw   hash_to_uw (t_hash *hash);
 u64  hash_to_u64 (t_hash *hash);
 void hash_update (t_hash *hash, const void *data, uw size);
+void hash_update_1 (t_hash *hash, const s8 *p);
 void hash_update_bool (t_hash *hash, e_bool b);
 void hash_update_call (t_hash *hash, const s_call *call);
 void hash_update_fact (t_hash *hash, const s_fact *fact);

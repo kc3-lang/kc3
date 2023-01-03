@@ -25,6 +25,11 @@
     hash_update(hash, &x, sizeof(x));                                  \
   }                                                                    \
 
+void hash_clean (t_hash *hash)
+{
+  bzero(hash, sizeof(t_hash));
+}
+
 void hash_init (t_hash *hash)
 {
   assert(hash);
@@ -50,6 +55,13 @@ void hash_update (t_hash *hash, const void *data, uw size)
   assert(hash);
   assert(data);
   SHA1Update(hash, data, size);
+}
+
+void hash_update_1 (t_hash *hash, const s8 *p)
+{
+  assert(hash);
+  assert(p);
+  hash_update(hash, p, strlen(p));
 }
 
 void hash_update_bool (t_hash *hash, e_bool x)

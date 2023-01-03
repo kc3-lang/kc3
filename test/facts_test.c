@@ -16,6 +16,7 @@
 #include "../libc3/buf.h"
 #include "../libc3/compare.h"
 #include "../libc3/facts.h"
+#include "../libc3/log.h"
 #include "fact_test.h"
 #include "test.h"
 
@@ -295,12 +296,10 @@ void facts_test_log_add ()
   s_fact fact[24];
   s_facts facts;
   FILE *fp;
-  s_buf log;
-  BUF_INIT_ALLOCA(&log, 1024);
   fp = fopen("facts_test_log_add.facts", "w");
-  buf_file_open_w(&log, fp);
   facts_init(&facts);
-  facts.log = &log;
+  facts.log = log_new();
+  log_open(facts.log, fp);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
@@ -347,12 +346,10 @@ void facts_test_log_remove ()
   s_fact fact[24];
   s_facts facts;
   FILE *fp;
-  s_buf log;
-  BUF_INIT_ALLOCA(&log, 1024);
   fp = fopen("facts_test_log_remove.facts", "w");
-  buf_file_open_w(&log, fp);
   facts_init(&facts);
-  facts.log = &log;
+  facts.log = log_new();
+  log_open(facts.log, fp);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
     facts_add_fact(&facts, fact + i);
@@ -367,7 +364,6 @@ void facts_test_log_remove ()
     i++;
   }
   facts_clean(&facts);
-  buf_file_close(&log);
   fclose(fp);
   test_file_compare("facts_test_log_remove.facts",
                     "facts_test_log_remove.facts.expected");
