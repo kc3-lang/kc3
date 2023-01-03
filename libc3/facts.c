@@ -219,14 +219,14 @@ sw facts_load (s_facts *facts, s_buf *buf)
   if ((r = buf_read_1(buf,
                       "%{module: C3.Facts.Dump,\n"
                       "  version: 0x0000000000000001,\n"
-                      "  count: 0x")) < 0)
-    return r;
+                      "  count: 0x")) <= 0)
+    goto ko_header;
   result += r;
-  if ((r = buf_parse_u64_hex(buf, &count)) < 0)
-    return r;
+  if ((r = buf_parse_u64_hex(buf, &count)) <= 0)
+    goto ko_header;
   result += r;
-  if ((r = buf_read_1(buf, "}\n")) < 0)
-    return r;
+  if ((r = buf_read_1(buf, "}\n")) <= 0)
+    goto ko_header;
   result += r;
   hash_init(&hash);
   for (i = 0; i < count; i++) {
@@ -255,6 +255,9 @@ sw facts_load (s_facts *facts, s_buf *buf)
   if (hash_u64_buf != hash_u64)
     goto ko_hash;
   return result;
+ ko_header:
+  warnx("facts_load: invalid or missing header");
+  return -1;
  ko_fact:
   if (r)
     warnx("facts_load: invalid fact line %llu", i + 3);
@@ -334,15 +337,21 @@ s_facts * facts_new ()
 sw facts_open_buf (s_facts *facts, s_buf *buf)
 {
   sw r;
+  sw result = 0;
   if ((r = buf_read_1(buf,
                       "%{module: C3.Facts.Save,\n"
-                      "  version: 0x0000000000000001}")) < 0)
+                      "  version: 0x0000000000000001}\n")) <= 0) {
+    warnx("facts_open_buf: invalid or missing header");
+    return -1;
+  }
+  result += r;
+  if ((r = facts_load(facts, buf)) <= 0)
     return r;
-  if ((r = facts_load(facts, buf)) < 0)
-    return r;
+  result += r;
   if ((r = facts_open_log(facts, buf)) < 0)
     return r;
-  return 0;
+  result += r;
+  return result;
 }
 
 sw facts_open_file (s_facts *facts, const s8 *path)
@@ -431,7 +440,9 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
     result += r;
     facts_remove_fact(facts, &fact);
   ok:
-    buf_read_1(buf, "\n");
+    if ((r = buf_read_1(buf, "\n")) <= 0)
+      break;
+    result += r;
   }
   return result;
 }
