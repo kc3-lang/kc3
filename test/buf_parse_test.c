@@ -126,14 +126,14 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define BUF_PARSE_TEST_F32(test, expected)                             \
+#define BUF_PARSE_TEST_F32(test, expected1, expected2)                 \
   do {                                                                 \
     s_buf buf;                                                         \
     f32 dest = -1;                                                     \
-    test_context("buf_parse_f32(" # test ") -> " # expected);          \
+    test_context("buf_parse_f32(" # test ") -> " # expected1);         \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_f32(&buf, &dest), strlen(test));                 \
-    TEST_FLOAT_EQ(dest, (expected));                                   \
+    TEST_FLOAT_EQ2(dest, (expected1), (expected2));                    \
     buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
@@ -789,9 +789,9 @@ void buf_parse_test_digit_dec ()
 
 void buf_parse_test_f32()
 {
-  BUF_PARSE_TEST_F32("123.123", 123.123);
-  BUF_PARSE_TEST_F32("3.14159", 3.14159);
-  BUF_PARSE_TEST_F32("2.1e+2", 210);
+  BUF_PARSE_TEST_F32("123.123", 123.123, 123.1229934692383);
+  BUF_PARSE_TEST_F32("3.14159", 3.14159, 3.141589641571045);
+  BUF_PARSE_TEST_F32("2.1e+2", 210, 209.9999847412109);
 }
 
 void buf_parse_test_f64()

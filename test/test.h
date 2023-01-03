@@ -66,6 +66,24 @@
     }                                                                  \
   } while (0)
 
+#define TEST_FLOAT_EQ2(test, expected1, expected2)                     \
+  do {                                                                 \
+    f32 tmp = (f32) (test);                                            \
+    if (fabsf(tmp - (f32) (expected1)) <= FLT_EPSILON ||               \
+        fabsf(tmp - (f32) (expected2)) <= FLT_EPSILON)                 \
+      test_ok();                                                       \
+    else {                                                             \
+      test_ko();                                                       \
+      printf("\n%sAssertion failed in %s:%d %s\n"                      \
+             "%s == %s\n"                                              \
+             "Expected %s got %.16g.%s\n",                             \
+             TEST_COLOR_KO,                                            \
+             __FILE__, __LINE__, __func__,                             \
+             # test, # expected1, # expected1, tmp,                    \
+             TEST_COLOR_RESET);                                        \
+    }                                                                  \
+  } while (0)
+
 #define TEST_DOUBLE_EQ(test, expected)                                 \
   do {                                                                 \
     f64 tmp = (f64) (test);                                            \
@@ -75,7 +93,7 @@
       test_ko();                                                       \
       printf("\n%sAssertion failed in %s:%d %s\n"                      \
              "%s == %s\n"                                              \
-             "Expected %s got %f.%s\n",                                \
+             "Expected %s got %lf.%s\n",                                \
              TEST_COLOR_KO,                                            \
              __FILE__, __LINE__, __func__,                             \
              # test, # expected, # expected, tmp,                      \
