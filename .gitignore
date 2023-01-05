@@ -22,7 +22,6 @@ ic3/ic3.debug
 .libs/
 *.lo
 *.o
-test/*.facts
 test/ic3/*.diff
 test/ic3/*.err
 test/ic3/*.out
