@@ -47,6 +47,9 @@ gcovr:
 gdb_c3s: debug
 	if [ -f c3s.debug.core ]; then gdb c3s.debug c3s.debug.core; else gdb c3s.debug; fi
 
+install:
+	install -m 755 c3s ${PREFIX}/bin
+
 .PHONY: all asan cov debug clean clean_cov distclean
 
 include config.mk

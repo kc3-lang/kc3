@@ -124,7 +124,7 @@ VER=0.1
 echo "VER = $VER" >> ${CONFIG_MK}
 echo "C3_TOP = $C3_TOP" >> ${CONFIG_MK}
 
-if test -z "$CC"; then
+if [ "x$CC" = "x" ]; then
     if test -n $(which cc); then
         CC=cc
     elif test -n $(which gcc); then
@@ -150,14 +150,14 @@ if ${HAVE_GCOV}; then
     echo "GCOV = $GCOV" >> ${CONFIG_MK}
 fi
 
-if test -z "$INSTALL"; then
+if [ "x$INSTALL" = "x" ]; then
     if test -x "$(which install)"; then
         INSTALL=install
     fi
 fi
 echo "INSTALL = $INSTALL" >> ${CONFIG_MK}
 
-if test -z "$LIBTOOL"; then
+if [ "x$LIBTOOL" = "x" ]; then
     if test -x "$(which glibtool 2>/dev/null)"; then
         LIBTOOL="$(which glibtool)"
     elif test -x "/usr/local/bin/libtool"; then
@@ -170,37 +170,31 @@ if test -z "$LIBTOOL"; then
 fi
 echo "LIBTOOL = $LIBTOOL" >> ${CONFIG_MK}
 
-if test -z "$PREFIX"; then
-    if test -d "$HOME/.c3"; then
+if [ "x$PREFIX" = "x" ]; then
+    if [ -d "$HOME/.c3" ]; then
         PREFIX="$HOME/.c3"
-    elif test -d /usr/local; then
+    else
         PREFIX=/usr/local
-    elif test -d /usr; then
-        PREFIX=/usr
-    elif test -d /opt/local; then
-        PREFIX=/opt/local
-    elif test -d /opt; then
-        PREFIX=/opt
     fi
 fi
 echo "PREFIX = $PREFIX" >> ${CONFIG_MK}
 
-if test -z "$OWNER"; then
+if [ "x$OWNER" = "x" ]; then
     OWNER="$(ls -ld "$PREFIX" | tr -s ' ' | cut -d ' ' -f 3)"
 fi
 echo "OWNER = $OWNER" >> ${CONFIG_MK}
 
-if test -z "$GROUP"; then
+if [ "x$GROUP" = "x" ]; then
     GROUP="$(ls -ld "$PREFIX" | tr -s ' ' | cut -d ' ' -f 4)"
 fi
 echo "GROUP = $GROUP" >> ${CONFIG_MK}
 
-if test -z "$BINDIR"; then
+if [ "x$BINDIR" = "x" ]; then
     BINDIR=${PREFIX}/bin
 fi
 echo "BINDIR = $BINDIR" >> ${CONFIG_MK}
 
-if test -z "$LIBDIR"; then
+if [ "x$LIBDIR" = "x" ]; then
     LIBDIR=${PREFIX}/lib
 fi
 echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}

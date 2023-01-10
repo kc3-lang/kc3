@@ -99,7 +99,7 @@ ic3_gcovr:
 ic3_test_cov: cov
 	${MAKE} -C test ic3_test_cov
 
-install: all
+install:
 	${MAKE} -C libc3 install
 	${MAKE} -C ic3 install
 	${MAKE} -C c3s install

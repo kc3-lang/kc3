@@ -47,6 +47,9 @@ gcovr:
 gdb_ic3: debug
 	if [ -f ic3.debug.core ]; then gdb ic3.debug ic3.debug.core; else gdb ic3.debug; fi
 
+install:
+	install -m 755 ic3 ${PREFIX}/bin
+
 .PHONY: all asan cov debug clean clean_cov distclean
 
 include config.mk

@@ -16,6 +16,13 @@ set -e
 
 export C3_TOP="$(pwd)"
 
+PREFIX=${PREFIX:-/usr/local}
+if [ "x$1" = "x--prefix" ]; then
+    PREFIX="$2"
+    shift 2
+fi
+export PREFIX
+
 ( cd libtommath && ./configure; )
 ( cd ucd2c && ./configure; )
 ( cd libc3 && ./configure; )
