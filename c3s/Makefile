@@ -11,7 +11,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a c3s c3s.asan c3s.cov c3s.debug *.css *.gcno *.html *.o .libs *.lo
+CLEANFILES = *.a c3s c3s_asan c3s_cov c3s_debug *.css *.gcno *.html *.o .libs *.lo
 
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
@@ -26,7 +26,7 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: c3s.asan
+asan: c3s_asan
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -34,9 +34,9 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
-cov:   c3s.cov
+cov:   c3s_cov
 
-debug: c3s.debug
+debug: c3s_debug
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
@@ -45,7 +45,7 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details c3s.html
 
 gdb_c3s: debug
-	if [ -f c3s.debug.core ]; then gdb c3s.debug c3s.debug.core; else gdb c3s.debug; fi
+	if [ -f c3s_debug.core ]; then gdb c3s_debug c3s_debug.core; else gdb c3s_debug; fi
 
 install:
 	install -m 755 c3s ${PREFIX}/bin

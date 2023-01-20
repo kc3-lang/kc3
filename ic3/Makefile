@@ -11,7 +11,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a ic3 ic3.asan ic3.cov ic3.debug *.css *.gcno *.html *.o .libs *.lo
+CLEANFILES = *.a ic3 ic3_asan ic3_cov ic3_debug *.css *.gcno *.html *.o .libs *.lo
 
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
@@ -26,7 +26,7 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: ic3.asan
+asan: ic3_asan
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -34,9 +34,9 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
-cov:   ic3.cov
+cov:   ic3_cov
 
-debug: ic3.debug
+debug: ic3_debug
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
@@ -45,7 +45,7 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ic3.html
 
 gdb_ic3: debug
-	if [ -f ic3.debug.core ]; then gdb ic3.debug ic3.debug.core; else gdb ic3.debug; fi
+	if [ -f ic3_debug.core ]; then gdb ic3_debug ic3_debug.core; else gdb ic3_debug; fi
 
 install:
 	install -m 755 ic3 ${PREFIX}/bin

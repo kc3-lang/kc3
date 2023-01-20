@@ -14,9 +14,9 @@
 
 set -e
 
-export C3_TOP="$(pwd)"
+export SRC_TOP="$(pwd)"
 
-PREFIX=${PREFIX:-/usr/local}
+PREFIX="${PREFIX:-/usr/local}"
 if [ "x$1" = "x--prefix" ]; then
     PREFIX="$2"
     shift 2

@@ -11,17 +11,16 @@
 ## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
-
 set -e
 
-export C3_TOP="$(pwd)/.."
+export SRC_TOP="$(pwd)/.."
 
 . ../config.subr
 
 LIB=libc3.la
-LIB_ASAN=libc3.asan.la
-LIB_COV=libc3.cov.la
-LIB_DEBUG=libc3.debug.la
+LIB_ASAN=libc3_asan.la
+LIB_COV=libc3_cov.la
+LIB_DEBUG=libc3_debug.la
 
 . ./sources.sh
 
@@ -94,11 +93,9 @@ echo >> ${CONFIG_MK}
 echo "$LIB_ASAN: $OBJECTS_ASAN" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} -o ${LIB_ASAN}" >> ${CONFIG_MK}
 
-if [ -n "$GCOV" ]; then
-    echo >> ${CONFIG_MK}
-    echo "$LIB_COV: $OBJECTS_COV" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} -o ${LIB_COV}" >> ${CONFIG_MK}
-fi
+echo >> ${CONFIG_MK}
+echo "$LIB_COV: $OBJECTS_COV" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} -o ${LIB_COV}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$LIB_DEBUG: $OBJECTS_DEBUG" >> ${CONFIG_MK}
@@ -120,12 +117,10 @@ for SRC in $SOURCES; do
     ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
 
-    if [ -n "$GCOV" ]; then
-       echo >> ${CONFIG_MK}
-       SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
-       ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
-       echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
-    fi
+    echo >> ${CONFIG_MK}
+    SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
+    ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
+    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
     SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"

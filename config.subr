@@ -1,6 +1,6 @@
 #!/bin/sh
 ## c3
-## Copyright 2022 kmx.io <contact@kmx.io>
+## Copyright 2022,2023 kmx.io <contact@kmx.io>
 ##
 ## Permission is hereby granted to use this software excepted
 ## on Apple computers granted the above copyright notice and
@@ -11,7 +11,6 @@
 ## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
-
 set -e
 
 echo "$(basename "$PWD")/$(basename "$0")"
@@ -122,7 +121,7 @@ SOURCES_SH=".sources.sh.tmp"
 
 VER=0.1
 echo "VER = $VER" >> ${CONFIG_MK}
-echo "C3_TOP = $C3_TOP" >> ${CONFIG_MK}
+echo "SRC_TOP = $SRC_TOP" >> ${CONFIG_MK}
 
 if [ "x$CC" = "x" ]; then
     if test -n $(which cc); then
@@ -170,13 +169,7 @@ if [ "x$LIBTOOL" = "x" ]; then
 fi
 echo "LIBTOOL = $LIBTOOL" >> ${CONFIG_MK}
 
-if [ "x$PREFIX" = "x" ]; then
-    if [ -d "$HOME/.c3" ]; then
-        PREFIX="$HOME/.c3"
-    else
-        PREFIX=/usr/local
-    fi
-fi
+PREFIX="${PREFIX:-/usr/local}"
 echo "PREFIX = $PREFIX" >> ${CONFIG_MK}
 
 if [ "x$OWNER" = "x" ]; then
