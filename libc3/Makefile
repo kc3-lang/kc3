@@ -1,5 +1,5 @@
 ## c3
-## Copyright 2022 kmx.io <contact@kmx.io>
+## Copyright 2022,2023 kmx.io <contact@kmx.io>
 ##
 ## Permission is hereby granted to use this software excepted
 ## on Apple computers granted the above copyright notice and
@@ -10,8 +10,8 @@
 ## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
-
-CLEANFILES = *.a *.gcno *.la libc3.la .libs *.lo *.o
+##
+CLEANFILES = *.a *.gcno *.la .libs *.lo *.o
 
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
@@ -26,7 +26,7 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: libc3.asan.la libc3.asan.a
+asan: libc3_asan.la libc3_asan.a
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -34,9 +34,9 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
-cov: libc3.cov.la libc3.cov.a
+cov: libc3_cov.la libc3_cov.a
 
-debug: libc3.debug.la libc3.debug.a
+debug: libc3_debug.la libc3_debug.a
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
@@ -78,14 +78,14 @@ install:
 libc3.a: libc3.la
 	cp .libs/libc3.a ./
 
-libc3.asan.a: libc3.asan.la
-	cp .libs/libc3.asan.a ./
+libc3_asan.a: libc3_asan.la
+	cp .libs/libc3_asan.a ./
 
-libc3.cov.a: libc3.cov.la
-	cp .libs/libc3.cov.a ./
+libc3_cov.a: libc3_cov.la
+	cp .libs/libc3_cov.a ./
 
-libc3.debug.a: libc3.debug.la
-	cp .libs/libc3.debug.a ./
+libc3_debug.a: libc3_debug.la
+	cp .libs/libc3_debug.a ./
 
 SED_FACT = sed -e 's/_NAME[$$]/fact/g' -e 's/_TYPE[$$]/s_fact/g'
 set_cursor__fact.h: set_cursor.h.in Makefile

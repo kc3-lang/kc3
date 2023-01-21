@@ -14,7 +14,7 @@
 
 set -e
 
-export SRC_TOP="$(pwd)/.."
+export SRC_TOP="$(dirname "$PWD")"
 
 . ../config.subr
 
