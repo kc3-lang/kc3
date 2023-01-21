@@ -102,6 +102,7 @@ typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct module                  s_module;
 typedef struct str                     s_str;
+typedef struct struct_                 s_struct;
 typedef struct sym                     s_sym;
 typedef struct sym_list                s_sym_list;
 typedef struct tag                     s_tag;
@@ -172,6 +173,13 @@ union ptr_w {
   void *p;
   s8   *ps8;
   u8   *pu8;
+};
+
+struct struct_ {
+  void *data;
+  uw count;
+  s_module *module;
+  s_ident *type;
 };
 
 struct sym_list {
