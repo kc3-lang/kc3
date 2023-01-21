@@ -260,15 +260,15 @@ sw facts_load (s_facts *facts, s_buf *buf)
   return -1;
  ko_fact:
   if (r)
-    warnx("facts_load: invalid fact line %llu", i + 3);
+    warnx("facts_load: invalid fact line %lu", (unsigned long) i + 3);
   else
-    warnx("facts_load: missing fact line %llu", i + 3);
+    warnx("facts_load: missing fact line %lu", (unsigned long) i + 3);
   return -1;
  ko_hash:
   if (r)
-    warnx("facts_load: invalid hash line %llu", i + 3);
+    warnx("facts_load: invalid hash line %lu", (unsigned long) i + 3);
   else
-    warnx("facts_load: missing hash line %llu", i + 3);
+    warnx("facts_load: missing hash line %lu", (unsigned long) i + 3);
   return -1;
 }
 
