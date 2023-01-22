@@ -48,7 +48,8 @@ gdb_c3s: debug
 	if [ -f c3s_debug.core ]; then gdb c3s_debug c3s_debug.core; else gdb c3s_debug; fi
 
 install:
-	install -m 755 c3s ${PREFIX}/bin
+	mkdir -p ${PREFIX}/bin
+	install -m 755 c3s ${PREFIX}/bin/c3s
 
 .PHONY: all asan cov debug clean clean_cov distclean
 
