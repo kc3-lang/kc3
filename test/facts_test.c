@@ -450,9 +450,13 @@ void facts_test_open_file ()
     "-0x10000000000000001",
     NULL
   };
+  sw r;
   s_fact fact;
   s_facts facts;
-  system("cp facts_test_open_file.1.in.facts facts_test_open_file.1.facts");
+  if ((r = system("cp facts_test_open_file.1.in.facts facts_test_open_file.1.facts")) < 0)
+    err(1, "%s:%i: cp", __FILE__, __LINE__);
+  if (r > 0)
+    errx(1, "%s:%i: cp", __FILE__, __LINE__);
   facts_init(&facts);
   TEST_EQ(facts_open_file(&facts,
                           "facts_test_open_file.1.facts"),
@@ -481,7 +485,10 @@ void facts_test_open_file ()
   if (g_test_last_ok)
     unlink("facts_test_open_file.1.facts");
   facts_init(&facts);
-  system("cp facts_test_open_file.2.in.facts facts_test_open_file.2.facts");
+  if ((r = system("cp facts_test_open_file.2.in.facts facts_test_open_file.2.facts")) < 0)
+    err(1, "%s:%i: cp", __FILE__, __LINE__);
+  if (r > 0)
+    errx(1, "%s:%i: cp", __FILE__, __LINE__);
   TEST_EQ(facts_open_file(&facts,
                           "facts_test_open_file.2.facts"),
           1531);
@@ -506,7 +513,10 @@ void facts_test_open_file ()
   if (g_test_last_ok)
     unlink("facts_test_open_file.2.facts");
   facts_init(&facts);
-  system("cp facts_test_open_file.3.in.facts facts_test_open_file.3.facts");
+  if ((r = system("cp facts_test_open_file.3.in.facts facts_test_open_file.3.facts")) < 0)
+    err(1, "%s:%i: cp", __FILE__, __LINE__);
+  if (r > 0)
+    errx(1, "%s:%i: cp", __FILE__, __LINE__);
   TEST_EQ(facts_open_file(&facts,
                           "facts_test_open_file.3.facts"),
           1588);
