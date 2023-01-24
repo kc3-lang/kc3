@@ -101,11 +101,6 @@ echo >> ${CONFIG_MK}
 echo "$LIB_DEBUG: $OBJECTS_DEBUG" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} -o ${LIB_DEBUG}" >> ${CONFIG_MK}
 
-echo >> ${CONFIG_MK}
-echo "install: ${LIB}" >> ${CONFIG_MK}
-echo "	\${INSTALL} -o \${OWNER} -g \${GROUP} -m 0755 -d \${prefix}/lib" >> ${CONFIG_MK}
-echo "	\${LIBTOOL} --tag=CC --mode=install \${INSTALL} -o \${OWNER} -g \${GROUP} -m 0755 ${LIB} \${prefix}/lib" >> ${CONFIG_MK}
-
 for SRC in $SOURCES; do
     echo >> ${CONFIG_MK}
     SRC_LO="$(c2ext .main.lo "$SRC")"

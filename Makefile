@@ -91,6 +91,9 @@ gdb_ic3: debug
 gdb_test: debug
 	${MAKE} -C test gdb_test
 
+gen:
+	${MAKE} -C libc3 gen
+
 ic3_gcovr:
 	${MAKE} clean_cov
 	${MAKE} ic3_test_cov

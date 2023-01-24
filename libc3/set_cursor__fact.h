@@ -11,6 +11,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* Gen from set_cursor.h.in NAME=fact TYPE=s_fact */
 #ifndef SET_CURSOR__fact_H
 #define SET_CURSOR__fact_H
 

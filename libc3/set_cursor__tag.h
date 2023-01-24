@@ -11,6 +11,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* Gen from set_cursor.h.in NAME=tag TYPE=s_tag */
 #ifndef SET_CURSOR__tag_H
 #define SET_CURSOR__tag_H
 

@@ -16,6 +16,17 @@ CLEANFILES = *.a *.gcno *.la .libs *.lo *.o
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
 
+GENERATED_FILES = \
+	set__fact.c set__fact.h \
+	set__tag.c set__tag.h \
+	set_cursor__fact.c set_cursor__fact.h \
+	set_cursor__tag.c set_cursor__tag.h \
+	set_item__fact.c set_item__fact.h \
+	set_item__tag.c set_item__tag.h \
+	skiplist__fact.c skiplist__fact.h \
+	skiplist_node__fact.c skiplist_node__fact.h
+CLEANFILES += ${GENERATED_FILES}
+
 DISTCLEANFILES = ${CLEANFILES} config.mk
 
 build: libc3.la libc3.a
@@ -44,50 +55,11 @@ distclean:
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libc3.html
 
-install:
-	mkdir -p ${prefix}/include/c3
-	install -m 644 arg.h ${prefix}/include/c3/
-	install -m 644 bool.h ${prefix}/include/c3/
-	install -m 644 buf.h ${prefix}/include/c3/
-	install -m 644 buf_file.h ${prefix}/include/c3/
-	install -m 644 buf_inspect.h ${prefix}/include/c3/
-	install -m 644 buf_parse.h ${prefix}/include/c3/
-	install -m 644 buf_save.h ${prefix}/include/c3/
-	install -m 644 c3.h ${prefix}/include/c3/
-	install -m 644 call.h ${prefix}/include/c3/
-	install -m 644 character.h ${prefix}/include/c3/
-	install -m 644 compare.h ${prefix}/include/c3/
-	install -m 644 debug.h ${prefix}/include/c3/
-	install -m 644 env.h ${prefix}/include/c3/
-	install -m 644 eval.h ${prefix}/include/c3/
-	install -m 644 fact.h ${prefix}/include/c3/
-	install -m 644 facts.h ${prefix}/include/c3/
-	install -m 644 fn.h ${prefix}/include/c3/
-	install -m 644 hash.h ${prefix}/include/c3/
-	install -m 644 ident.h ${prefix}/include/c3/
-	install -m 644 integer.h ${prefix}/include/c3/
-	install -m 644 list.h ${prefix}/include/c3/
-	install -m 644 quote.h ${prefix}/include/c3/
-	install -m 644 str.h ${prefix}/include/c3/
-	install -m 644 tag.h ${prefix}/include/c3/
-	install -m 644 tuple.h ${prefix}/include/c3/
-	install -m 644 ucd.h ${prefix}/include/c3/
-	mkdir -p ${prefix}/lib
-	libtool install libc3.la ${prefix}/lib
+gen: ${GENERATED_FILES}
 
-libc3.a: libc3.la
-	cp .libs/libc3.a ./
-
-libc3_asan.a: libc3_asan.la
-	cp .libs/libc3_asan.a ./
-
-libc3_cov.a: libc3_cov.la
-	cp .libs/libc3_cov.a ./
-
-libc3_debug.a: libc3_debug.la
-	cp .libs/libc3_debug.a ./
-
-SED_FACT = sed -e 's/_NAME[$$]/fact/g' -e 's/_TYPE[$$]/s_fact/g'
+SED_FACT = sed \
+	-e 's/_NAME[$$]/fact/g' \
+	-e 's/_TYPE[$$]/s_fact/g'
 set_cursor__fact.h: set_cursor.h.in Makefile
 	${SED_FACT} < set_cursor.h.in > set_cursor__fact.h
 set_cursor__fact.c: set_cursor.c.in Makefile
@@ -100,8 +72,9 @@ set_item__fact.h: set_item.h.in Makefile
 	${SED_FACT} < set_item.h.in > set_item__fact.h
 set_item__fact.c: set_item.c.in Makefile
 	${SED_FACT} < set_item.c.in > set_item__fact.c
-
-SED_FACT_P = sed -e 's/_NAME[$$]/fact/g' -e 's/_TYPE[$$]/s_fact */g'
+SED_FACT_P = sed \
+	-e 's/_NAME[$$]/fact/g' \
+	-e 's/_TYPE[$$]/s_fact */g'
 skiplist__fact.h: skiplist.h.in Makefile
 	${SED_FACT_P} < skiplist.h.in > skiplist__fact.h
 skiplist__fact.c: skiplist.c.in Makefile
@@ -110,8 +83,9 @@ skiplist_node__fact.h: skiplist_node.h.in Makefile
 	${SED_FACT_P} < skiplist_node.h.in > skiplist_node__fact.h
 skiplist_node__fact.c: skiplist_node.c.in Makefile
 	${SED_FACT_P} < skiplist_node.c.in > skiplist_node__fact.c
-
-SED_TAG = sed -e 's/_NAME[$$]/tag/g' -e 's/_TYPE[$$]/s_tag/g'
+SED_TAG = sed \
+	-e 's/_NAME[$$]/tag/g' \
+	-e 's/_TYPE[$$]/s_tag/g'
 set_cursor__tag.h: set_cursor.h.in Makefile
 	${SED_TAG} < set_cursor.h.in > set_cursor__tag.h
 set_cursor__tag.c: set_cursor.c.in Makefile
@@ -125,12 +99,30 @@ set__tag.h: set.h.in Makefile
 set__tag.c: set.c.in Makefile
 	${SED_TAG} < set.c.in > set__tag.c
 
+install:
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/c3
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
+
+libc3.a: libc3.la
+	cp .libs/libc3.a ./
+
+libc3_asan.a: libc3_asan.la
+	cp .libs/libc3_asan.a ./
+
+libc3_cov.a: libc3_cov.la
+	cp .libs/libc3_cov.a ./
+
+libc3_debug.a: libc3_debug.la
+	cp .libs/libc3_debug.a ./
+
 test:
 
 update_sources:
 	./update_sources
 
-.PHONY: all asan build clean cov debug distclean install test update_sources
+.PHONY: all asan build clean cov debug distclean gen install test update_sources
 
 include config.mk
 include sources.mk
