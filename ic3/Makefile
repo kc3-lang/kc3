@@ -48,8 +48,8 @@ gdb_ic3: debug
 	if [ -f ic3_debug.core ]; then gdb ic3_debug ic3_debug.core; else gdb ic3_debug; fi
 
 install:
-	mkdir -p ${PREFIX}/bin
-	install -m 755 ic3 ${PREFIX}/bin/ic3
+	mkdir -p ${prefix}/bin
+	install -m 755 ic3 ${prefix}/bin/ic3
 
 .PHONY: all asan cov debug clean clean_cov distclean
 

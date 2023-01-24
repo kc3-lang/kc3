@@ -45,35 +45,35 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libc3.html
 
 install:
-	mkdir -p ${PREFIX}/include/c3
-	install -m 644 arg.h ${PREFIX}/include/c3/
-	install -m 644 bool.h ${PREFIX}/include/c3/
-	install -m 644 buf.h ${PREFIX}/include/c3/
-	install -m 644 buf_file.h ${PREFIX}/include/c3/
-	install -m 644 buf_inspect.h ${PREFIX}/include/c3/
-	install -m 644 buf_parse.h ${PREFIX}/include/c3/
-	install -m 644 buf_save.h ${PREFIX}/include/c3/
-	install -m 644 c3.h ${PREFIX}/include/c3/
-	install -m 644 call.h ${PREFIX}/include/c3/
-	install -m 644 character.h ${PREFIX}/include/c3/
-	install -m 644 compare.h ${PREFIX}/include/c3/
-	install -m 644 debug.h ${PREFIX}/include/c3/
-	install -m 644 env.h ${PREFIX}/include/c3/
-	install -m 644 eval.h ${PREFIX}/include/c3/
-	install -m 644 fact.h ${PREFIX}/include/c3/
-	install -m 644 facts.h ${PREFIX}/include/c3/
-	install -m 644 fn.h ${PREFIX}/include/c3/
-	install -m 644 hash.h ${PREFIX}/include/c3/
-	install -m 644 ident.h ${PREFIX}/include/c3/
-	install -m 644 integer.h ${PREFIX}/include/c3/
-	install -m 644 list.h ${PREFIX}/include/c3/
-	install -m 644 quote.h ${PREFIX}/include/c3/
-	install -m 644 str.h ${PREFIX}/include/c3/
-	install -m 644 tag.h ${PREFIX}/include/c3/
-	install -m 644 tuple.h ${PREFIX}/include/c3/
-	install -m 644 ucd.h ${PREFIX}/include/c3/
-	mkdir -p ${PREFIX}/lib
-	libtool install libc3.la ${PREFIX}/lib
+	mkdir -p ${prefix}/include/c3
+	install -m 644 arg.h ${prefix}/include/c3/
+	install -m 644 bool.h ${prefix}/include/c3/
+	install -m 644 buf.h ${prefix}/include/c3/
+	install -m 644 buf_file.h ${prefix}/include/c3/
+	install -m 644 buf_inspect.h ${prefix}/include/c3/
+	install -m 644 buf_parse.h ${prefix}/include/c3/
+	install -m 644 buf_save.h ${prefix}/include/c3/
+	install -m 644 c3.h ${prefix}/include/c3/
+	install -m 644 call.h ${prefix}/include/c3/
+	install -m 644 character.h ${prefix}/include/c3/
+	install -m 644 compare.h ${prefix}/include/c3/
+	install -m 644 debug.h ${prefix}/include/c3/
+	install -m 644 env.h ${prefix}/include/c3/
+	install -m 644 eval.h ${prefix}/include/c3/
+	install -m 644 fact.h ${prefix}/include/c3/
+	install -m 644 facts.h ${prefix}/include/c3/
+	install -m 644 fn.h ${prefix}/include/c3/
+	install -m 644 hash.h ${prefix}/include/c3/
+	install -m 644 ident.h ${prefix}/include/c3/
+	install -m 644 integer.h ${prefix}/include/c3/
+	install -m 644 list.h ${prefix}/include/c3/
+	install -m 644 quote.h ${prefix}/include/c3/
+	install -m 644 str.h ${prefix}/include/c3/
+	install -m 644 tag.h ${prefix}/include/c3/
+	install -m 644 tuple.h ${prefix}/include/c3/
+	install -m 644 ucd.h ${prefix}/include/c3/
+	mkdir -p ${prefix}/lib
+	libtool install libc3.la ${prefix}/lib
 
 libc3.a: libc3.la
 	cp .libs/libc3.a ./

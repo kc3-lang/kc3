@@ -171,6 +171,8 @@ echo "LIBTOOL = $LIBTOOL" >> ${CONFIG_MK}
 
 PREFIX="${PREFIX:-/usr/local}"
 echo "PREFIX = $PREFIX" >> ${CONFIG_MK}
+echo "DESTDIR ?=" >> ${CONFIG_MK}
+echo "prefix ?= ${DESTDIR}/${PREFIX}" >> ${CONFIG_MK}
 
 if [ "x$OWNER" = "x" ]; then
     OWNER="$(ls -ld "$PREFIX" | tr -s ' ' | cut -d ' ' -f 3)"
