@@ -12,7 +12,7 @@ C3_CONFIGURES="${C3_CONFIGURES} libtommath/configure"
 echo "C3_CONFIGURES = $C3_CONFIGURES" >> ${SOURCES_MK}
 echo "C3_CONFIGURES='$C3_CONFIGURES'" >> ${SOURCES_SH}
 
-C3_MAKEFILES="$(find c3c c3s ic3 libc3 test ucd2c -name Makefile)"
+C3_MAKEFILES="$(find c3c c3s ic3 libc3 test ucd2c -name Makefile -or -name gen.mk)"
 C3_MAKEFILES="$(echo "${C3_MAKEFILES}" | tr '\n' ' ')"
 C3_MAKEFILES="${C3_MAKEFILES} libtommath/Makefile"
 echo "C3_MAKEFILES = $C3_MAKEFILES" >> ${SOURCES_MK}
