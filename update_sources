@@ -19,6 +19,7 @@ echo "C3_MAKEFILES = $C3_MAKEFILES" >> ${SOURCES_MK}
 echo "C3_MAKEFILES='$C3_MAKEFILES'" >> ${SOURCES_SH}
 
 C3_C_SOURCES="$(find c3c c3s ic3 libc3 test -name "[a-z]*.c" -or -name "[a-z]*.h" -or -name "[a-z]*.c.in" -or -name "[a-z]*.h.in")"
+C3_C_SOURCES="$(echo "${C3_C_SOURCES}" | grep -Ev '^libc3/config[.]h$')"
 C3_C_SOURCES="$(echo "${C3_C_SOURCES}" | tr '\n' ' ')"
 C3_C_SOURCES="$C3_C_SOURCES ucd2c/ucd.h ucd2c/ucd2c.c"
 echo "C3_C_SOURCES = $C3_C_SOURCES" >> ${SOURCES_MK}

@@ -18,10 +18,11 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <sys/types.h>
-#ifdef HAVE_SHA1_H
+#include "config.h"
+#if HAVE_SHA1_H
 # include <sha1.h>
 #else
-# ifdef HAVE_SHA_H
+# if HAVE_SHA_H
 #  include <sha.h>
 # endif
 #endif

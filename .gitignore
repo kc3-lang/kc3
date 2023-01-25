@@ -19,6 +19,7 @@ ic3/ic3_asan
 ic3/ic3_cov
 ic3/ic3_debug
 *.la
+libc3/config.h
 .libs/
 *.lo
 *.o

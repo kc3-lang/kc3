@@ -130,4 +130,5 @@ for SRC in $SOURCES; do
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
 done
 
+update_config_h
 update_config_mk
