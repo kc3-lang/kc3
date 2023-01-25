@@ -1,5 +1,5 @@
 ## c3
-## Copyright 2022 kmx.io <contact@kmx.io>
+## Copyright 2022,2023 kmx.io <contact@kmx.io>
 ##
 ## Permission is hereby granted to use this software excepted
 ## on Apple computers granted the above copyright notice and

@@ -10,7 +10,7 @@
 ## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
-##
+
 build:
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c build
@@ -144,3 +144,4 @@ test_ic3: build
 .PHONY: all asan c3s cov clean clean_cov debug gcovr ic3 install libc3 libtommath license test test_asan test_cov test_debug test_gcovr test_ic3
 
 include config.mk
+include sources.mk
