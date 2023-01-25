@@ -18,7 +18,13 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <sha1.h>
+#ifdef HAVE_SHA1_H
+# include <sha1.h>
+#else
+# ifdef HAVE_SHA_H
+#  include <sha.h>
+# endif
+#endif
 #include "../libtommath/tommath.h"
 
 /* Basic integer types. */

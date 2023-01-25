@@ -45,6 +45,8 @@ config_gnu
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
+config_include sha_h sys/types.h sha.h HAVE_SHA_H
+config_include sha1_h sys/types.h sha1.h HAVE_SHA1_H
 
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
