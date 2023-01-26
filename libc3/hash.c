@@ -33,20 +33,35 @@ void hash_clean (t_hash *hash)
 void hash_init (t_hash *hash)
 {
   assert(hash);
+#if HAVE_SHA1_H
   SHA1Init(hash);
+#endif
+#if HAVE_SHA_H
+  SHA1_Init(hash);
+#endif
 }
 
 uw hash_to_uw (t_hash *hash)
 {
   u8 digest[SHA1_DIGEST_LENGTH];
+#if HAVE_SHA1_H
   SHA1Final(digest, hash);
+#endif
+#if HAVE_SHA_H
+  SHA1_Final(digest, hash);
+#endif
   return *((uw *) digest);
 }
 
 u64 hash_to_u64 (t_hash *hash)
 {
   u8 digest[SHA1_DIGEST_LENGTH];
+#if HAVE_SHA1_H
   SHA1Final(digest, hash);
+#endif
+#if HAVE_SHA_H
+  SHA1_Final(digest, hash);
+#endif
   return *((u64 *) digest);
 }
 
@@ -54,7 +69,12 @@ void hash_update (t_hash *hash, const void *data, uw size)
 {
   assert(hash);
   assert(data);
+#if HAVE_SHA1_H
   SHA1Update(hash, data, size);
+#endif
+#if HAVE_SHA_H
+  SHA1_Update(hash, data, size);
+#endif
 }
 
 void hash_update_1 (t_hash *hash, const s8 *p)
