@@ -53,6 +53,7 @@ config_gnu
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
+config_lib libmd -lmd
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
