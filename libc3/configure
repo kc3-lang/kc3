@@ -49,6 +49,10 @@ config_include sha_h sys/types.h sha.h HAVE_SHA_H
 config_include sha1_h sys/types.h sha1.h HAVE_SHA1_H
 update_config_h
 
+if [ "x${HAVE_SHA_H}" = "xYes" ]; then
+    LIBS="${LIBS} -lmd"
+fi
+
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
