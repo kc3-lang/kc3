@@ -19,13 +19,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include "config.h"
-#if HAVE_SHA1_H
-# include <sha1.h>
-#else
-# if HAVE_SHA_H
-#  include <sha.h>
-# endif
-#endif
+#include "sha1.h"
 #include "../libtommath/tommath.h"
 
 /* Basic integer types. */
