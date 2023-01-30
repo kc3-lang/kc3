@@ -38,6 +38,7 @@ skiplist_delete__fact (s_skiplist__fact *skiplist);
 s_skiplist_node__fact *
 skiplist_find__fact (s_skiplist__fact *skiplist, s_fact * value);
 
+/* do not call directly */
 s_skiplist__fact *
 skiplist_init__fact (s_skiplist__fact *skiplist, u8 max_height, f64 spacing);
 

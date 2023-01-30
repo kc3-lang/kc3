@@ -23,23 +23,9 @@
   do {                                                                 \
     test_context("skiplist_insert__fact(" # test ") -> "               \
                  # expected_length);                                   \
-    TEST_ASSERT(skiplist_insert__fact(&skiplist, (test)));             \
-    TEST_EQ(skiplist.length, (expected_length));                       \
+    TEST_ASSERT(skiplist_insert__fact(skiplist, (test)));             \
+    TEST_EQ(skiplist->length, (expected_length));                       \
     test_context(NULL);                                                \
-  } while (0)
-
-#define SKIPLIST__FACT_TEST_INIT_CLEAN(max_height_, spacing)           \
-  do {                                                                 \
-    s_skiplist__fact skiplist;                                         \
-    TEST_ASSERT(skiplist_init__fact(&skiplist, max_height_,            \
-                                    spacing));                         \
-    TEST_ASSERT(skiplist.head);                                        \
-    TEST_ASSERT(skiplist.compare);                                     \
-    TEST_EQ(skiplist.length, 0);                                       \
-    TEST_EQ(skiplist.max_height, max_height_);                         \
-    TEST_EQ(skiplist.head->height, max_height_);                       \
-    skiplist_clean__fact(&skiplist);                                   \
-    test_ok();                                                         \
   } while (0)
 
 #define SKIPLIST__FACT_TEST_NEW_DELETE(max_height_, spacing)           \
@@ -60,21 +46,19 @@
   do {                                                                 \
     test_context("skiplist_remove__fact(" # test ") -> "               \
                  # expected_length);                                   \
-    skiplist_remove__fact(&skiplist, (test));                          \
-    TEST_EQ(skiplist.length, (expected_length));                       \
+    skiplist_remove__fact(skiplist, (test));                          \
+    TEST_EQ(skiplist->length, (expected_length));                       \
     test_context(NULL);                                                \
   } while (0)
 
 void skiplist__fact_test ();
 void skiplist__fact_test_find ();
 void skiplist__fact_test_insert ();
-void skiplist__fact_test_init_clean ();
 void skiplist__fact_test_new_delete ();
 void skiplist__fact_test_remove ();
 
 void skiplist__fact_test ()
 {
-  skiplist__fact_test_init_clean();
   skiplist__fact_test_new_delete();
   skiplist__fact_test_insert();
   skiplist__fact_test_remove();
@@ -114,25 +98,25 @@ void skiplist__fact_test_find ()
     NULL
   };
   const double *s;
-  s_skiplist__fact skiplist;
+  s_skiplist__fact *skiplist;
   const double spacing[] = {2.0, 2.4, 3.0, 0.0};
   for (h = height; *h; h++) {
     for (s = spacing; *s != 0.0; s++) {
-      skiplist_init__fact(&skiplist, *h, *s);
+      skiplist = skiplist_new__fact(*h, *s);
       i = 0;
       while (p[i]) {
         fact_test_init_1(fact + i, p[i]);
-        skiplist_insert__fact(&skiplist, fact + i);
-        TEST_ASSERT(skiplist_find__fact(&skiplist, fact + i));
+        skiplist_insert__fact(skiplist, fact + i);
+        TEST_ASSERT(skiplist_find__fact(skiplist, fact + i));
         i++;
       }
-      i = skiplist.length;
+      i = skiplist->length;
       while (i--) {
-        skiplist_remove__fact(&skiplist, fact + i);
-        TEST_ASSERT(! skiplist_find__fact(&skiplist, fact + i));
+        skiplist_remove__fact(skiplist, fact + i);
+        TEST_ASSERT(! skiplist_find__fact(skiplist, fact + i));
         fact_test_clean_1(fact + i);
       }
-      skiplist_clean__fact(&skiplist);
+      skiplist_delete__fact(skiplist);
     }
   }
 }
@@ -171,7 +155,7 @@ void skiplist__fact_test_insert ()
     NULL
   };
   s_fact fact[24];
-  s_skiplist__fact skiplist;
+  s_skiplist__fact *skiplist;
   i = 0;
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
@@ -179,32 +163,19 @@ void skiplist__fact_test_insert ()
   }
   for (h = height; *h; h++) {
     for (s = spacing; *s != 0.0; s++) {
-      skiplist_init__fact(&skiplist, *h, *s);
+      skiplist = skiplist_new__fact(*h, *s);
       i = 0;
       while (p[i]) {
         SKIPLIST__FACT_TEST_INSERT(fact + i, i + 1);
         i++;
       }
-      skiplist_clean__fact(&skiplist);
+      skiplist_delete__fact(skiplist);
     }
   }
   i = 0;
   while (p[i]) {
     fact_test_clean_1(fact + i);
     i++;
-  }
-}
-
-void skiplist__fact_test_init_clean ()
-{
-  const u8 *h;
-  const u8  height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 0};
-  const double *s;
-  const double  spacing[] = {2.0, 2.4, 3.0, 0.0};
-  for (h = height; *h; h++) {
-    for (s = spacing; *s != 0.0; s++) {
-      SKIPLIST__FACT_TEST_INIT_CLEAN(*h, *s);
-    }
   }
 }
 
@@ -254,23 +225,23 @@ void skiplist__fact_test_remove ()
     NULL
   };
   const double *s;
-  s_skiplist__fact skiplist;
+  s_skiplist__fact *skiplist;
   const double spacing[] = {2.0, 2.4, 3.0, 0.0};
   for (h = height; *h; h++) {
     for (s = spacing; *s != 0.0; s++) {
-      skiplist_init__fact(&skiplist, *h, *s);
+      skiplist = skiplist_new__fact(*h, *s);
       i = 0;
       while (p[i]) {
         fact_test_init_1(fact + i, p[i]);
-        skiplist_insert__fact(&skiplist, fact + i);
+        skiplist_insert__fact(skiplist, fact + i);
         i++;
       }
-      i = skiplist.length;
+      i = skiplist->length;
       while (i--) {
         SKIPLIST__FACT_TEST_REMOVE(fact + i, i);
         fact_test_clean_1(fact + i);
       }
-      skiplist_clean__fact(&skiplist);
+      skiplist_delete__fact(skiplist);
     }
   }
 }
