@@ -61,9 +61,7 @@ sw buf_xfer_spaces (s_buf *out, s_buf *in)
 
 int main (int argc, char **argv)
 {
-  s_module c3;
   s_env env;
-  s_facts facts;
   s8 i[BUF_SIZE];
   s_buf in;
   s_tag input;
@@ -71,9 +69,7 @@ int main (int argc, char **argv)
   s_buf out;
   sw r;
   s_tag result;
-  libc3_init();
-  facts_init(&facts);
-  c3_init(&c3, &facts);
+  c3_init();
   if (argc < 1)
     return usage(argv[0]);
   buf_init(&in, false, sizeof(i), i);
@@ -107,9 +103,7 @@ int main (int argc, char **argv)
   env_clean(&env);
   buf_linenoise_close(&in);
   buf_file_close(&out);
-  c3_clean(&c3);
-  facts_clean(&facts);
-  libc3_shutdown();
+  c3_clean();
   return 0;
 }
 

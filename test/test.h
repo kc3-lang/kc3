@@ -145,12 +145,12 @@ extern long         g_test_last_ok;
 extern long         g_test_ok;
 extern const char **g_test_targets;
 
+void test_clean ();
 void test_context (const char *context);
 int  test_file_compare (const char *path_a, const char *path_b);
 void test_init (int argc, char **argv);
 void test_ko ();
 void test_ok ();
-void test_shutdown ();
 void test_summary ();
 int  test_target (const char *target);
 

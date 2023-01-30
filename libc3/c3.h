@@ -42,8 +42,7 @@
 
 extern s_env g_c3_env;
 
-/* libc3 */
-void libc3_init ();
-void libc3_shutdown ();
+void c3_init ();
+void c3_clean ();
 
 #endif /* C3_H */

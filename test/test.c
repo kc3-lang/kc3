@@ -30,6 +30,10 @@ char         g_test_targets_env[TARGETS_MAX * TARGET_NAME_MAX];
 char        *g_test_targets_env_v[TARGETS_MAX + 1];
 const char **g_test_targets = {NULL};
 
+void test_clean ()
+{
+}
+
 void test_context (const char *context)
 {
   g_test_context = context;
@@ -134,10 +138,6 @@ void test_ok ()
   g_test_ok++;
   fprintf(stderr, "%s.%s", TEST_COLOR_OK, TEST_COLOR_RESET);
   g_test_last_ok = 1;
-}
-
-void test_shutdown ()
-{
 }
 
 void test_summary ()

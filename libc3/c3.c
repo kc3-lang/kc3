@@ -18,7 +18,7 @@
 
 s_env g_c3_env = {0};
 
-void libc3_init ()
+void c3_init ()
 {
   env_init(&g_c3_env);
 #ifdef DEBUG
@@ -27,12 +27,12 @@ void libc3_init ()
 #endif
 }
 
-void libc3_shutdown ()
+void c3_clean ()
 {
-  sym_delete_all();
-  env_clean(&g_c3_env);
 #ifdef DEBUG
   buf_file_close(&g_debug_buf);
   buf_clean(&g_debug_buf);
 #endif
+  sym_delete_all();
+  env_clean(&g_c3_env);
 }
