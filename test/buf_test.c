@@ -931,15 +931,12 @@ void buf_test_write_str ()
 
 void buf_test_xfer ()
 {
-  const s8 a[16] = "0123456789ABCDEF";
   s8 d[16];
   s_buf dest;
-  s8 s[16];
+  s8 s[16] = "0123456789ABCDEF";
   s_buf src;
-  s_str str;
-  str_init_1(&str, NULL, a);
   buf_init(&src, false, sizeof(s), s);
-  buf_write_str(&src, &str);
+  src.wpos = 16;
   buf_init(&dest, false, sizeof(d), d);
   TEST_EQ(buf_xfer(&dest, &src, 0), 0);
   TEST_EQ(buf_xfer(&dest, &src, 1), 1);
