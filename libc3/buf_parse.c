@@ -339,7 +339,7 @@ sw buf_parse_digit_dec (s_buf *buf, u8 *dest)
   return r;
 }
 
-sw buf_parse_fact (s_buf *buf, s_fact *dest)
+sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
 {
   s_tag *object = NULL;
   s_tag *predicate = NULL;

@@ -25,5 +25,9 @@ s_fact * fact_init (s_fact *fact, const s_tag *subject,
 s_fact * fact_copy (const s_fact *src, s_fact *dest);
 uw       fact_hash_uw (const s_fact *x);
 s_str *  fact_inspect (const s_fact *fact, s_str *dest);
+s_fact * fact_r (const s_fact_w *fact);
+
+/* Modifiers */
+void fact_w_clean (s_fact_w *fact);
 
 #endif /* FACT_H */

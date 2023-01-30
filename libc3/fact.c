@@ -64,3 +64,18 @@ s_str * fact_inspect (const s_fact *fact, s_str *dest)
   }
   return buf_to_str(&buf, dest);
 }
+
+s_fact * fact_r (const s_fact_w *fact)
+{
+  return (s_fact *) fact;
+}
+
+void fact_w_clean (s_fact_w *fact)
+{
+  tag_delete(fact->subject);
+  fact->subject = NULL;
+  tag_delete(fact->predicate);
+  fact->predicate = NULL;
+  tag_delete(fact->object);
+  fact->object = NULL;
+}

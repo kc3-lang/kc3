@@ -89,6 +89,7 @@ typedef struct call                    s_call;
 typedef struct env                     s_env;
 typedef struct error_handler           s_error_handler;
 typedef struct fact                    s_fact;
+typedef struct fact_w                  s_fact_w;
 typedef struct facts                   s_facts;
 typedef struct facts_cursor            s_facts_cursor;
 typedef struct facts_spec_cursor       s_facts_spec_cursor;
@@ -139,6 +140,13 @@ struct fact {
   const s_tag *subject;
   const s_tag *predicate;
   const s_tag *object;
+  uw id; /* XXX random without collision */
+};
+
+struct fact_w {
+  s_tag *subject;
+  s_tag *predicate;
+  s_tag *object;
   uw id; /* XXX random without collision */
 };
 

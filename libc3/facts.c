@@ -208,7 +208,8 @@ s_facts * facts_init (s_facts *facts)
 sw facts_load (s_facts *facts, s_buf *buf)
 {
   u64 count;
-  s_fact fact;
+  s_fact_w fact;
+  s_fact *factp = fact_r(&fact);
   t_hash hash;
   u64 hash_u64;
   u64 hash_u64_buf;
@@ -234,8 +235,9 @@ sw facts_load (s_facts *facts, s_buf *buf)
     if ((r = buf_parse_fact(buf, &fact)) <= 0)
       goto ko_fact;
     result += r;
-    hash_update_fact(&hash, &fact);
-    facts_add_fact(facts, &fact);
+    hash_update_fact(&hash, factp);
+    facts_add_fact(facts, factp);
+    fact_w_clean(&fact);
     if ((r = buf_read_1(buf, "\n")) <= 0) {
       r = -1;
       goto ko_fact;
@@ -419,7 +421,8 @@ sw facts_open_file_create (s_facts *facts, const s8 *path)
 
 sw facts_open_log (s_facts *facts, s_buf *buf)
 {
-  s_fact fact;
+  s_fact_w fact;
+  s_fact *factp = fact_r(&fact);
   sw r;
   sw result = 0;
   assert(facts);
@@ -432,7 +435,7 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
       if ((r = buf_parse_fact(buf, &fact)) <= 0)
         break;
       result += r;
-      facts_add_fact(facts, &fact);
+      facts_add_fact(facts, factp);
       goto ok;
     }
     if ((r = buf_read_1(buf, "remove ")) <= 0)
@@ -441,8 +444,9 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
     if ((r = buf_parse_fact(buf, &fact)) <= 0)
       break;
     result += r;
-    facts_remove_fact(facts, &fact);
+    facts_remove_fact(facts, factp);
   ok:
+    fact_w_clean(&fact);
     if ((r = buf_read_1(buf, "\n")) <= 0)
       break;
     result += r;
