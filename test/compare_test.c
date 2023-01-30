@@ -142,29 +142,30 @@ void compare_test_list ()
 
 void compare_test_str ()
 {
-  s_str *a;
-  TEST_EQ((a = str_new_empty(), compare_str(a, a)), 0);
-  str_delete(a);
-  TEST_EQ((a = str_new_1(NULL, "abc"), compare_str(a, a)), 0);
-  str_delete(a);
-  COMPARE_TEST_STR(str_new_empty(), str_new_empty(), 0);
-  COMPARE_TEST_STR(str_new_empty(), str_new_1(NULL, "0"), -1);
-  COMPARE_TEST_STR(str_new_1(NULL, "0"), str_new_empty(), 1);
-  COMPARE_TEST_STR(str_new_1(NULL, "0"), str_new_1(NULL, "0"), 0);
-  COMPARE_TEST_STR(str_new_1(NULL, "0"), str_new_1(NULL, "A"), -1);
-  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "0"), 1);
-  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "01"), 0);
-  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "012"), -1);
-  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "02"), -1);
-  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "023"), -1);
-  COMPARE_TEST_STR(str_new_1(NULL, "01"), str_new_1(NULL, "ABC"), -1);
-  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "0"), 1);
-  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "01"), 1);
-  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "012"), 0);
-  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "0123"), -1);
-  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "013"), -1);
-  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "0134"), -1);
-  COMPARE_TEST_STR(str_new_1(NULL, "012"), str_new_1(NULL, "ABC"), -1);
+  s_str *p;
+  s_str a;
+  s_str b;
+  TEST_EQ((p = str_new_empty(), compare_str(p, p)), 0);
+  str_delete(p);
+  TEST_EQ((str_init_1(&a, NULL, "abc"), compare_str(&a, &a)), 0);
+  COMPARE_TEST_STR(str_init_empty(&a), str_init_empty(&b), 0);
+  COMPARE_TEST_STR(str_init_empty(&a), str_init_1(&b, NULL, "0"), -1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "0"), str_init_empty(&b), 1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "0"), str_init_1(&b, NULL, "0"), 0);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "0"), str_init_1(&b, NULL, "A"), -1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "01"), str_init_1(&b, NULL, "0"), 1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "01"), str_init_1(&b, NULL, "01"), 0);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "01"), str_init_1(&b, NULL, "012"), -1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "01"), str_init_1(&b, NULL, "02"), -1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "01"), str_init_1(&b, NULL, "023"), -1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "01"), str_init_1(&b, NULL, "ABC"), -1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "012"), str_init_1(&b, NULL, "0"), 1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "012"), str_init_1(&b, NULL, "01"), 1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "012"), str_init_1(&b, NULL, "012"), 0);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "012"), str_init_1(&b, NULL, "0123"), -1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "012"), str_init_1(&b, NULL, "013"), -1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "012"), str_init_1(&b, NULL, "0134"), -1);
+  COMPARE_TEST_STR(str_init_1(&a, NULL, "012"), str_init_1(&b, NULL, "ABC"), -1);
 }
 
 void compare_test_tag ()
