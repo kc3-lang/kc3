@@ -209,7 +209,7 @@ sw facts_load (s_facts *facts, s_buf *buf)
 {
   u64 count;
   s_fact_w fact;
-  s_fact *factp = fact_r(&fact);
+  s_fact *factp;
   t_hash hash;
   u64 hash_u64;
   u64 hash_u64_buf;
@@ -235,6 +235,7 @@ sw facts_load (s_facts *facts, s_buf *buf)
     if ((r = buf_parse_fact(buf, &fact)) <= 0)
       goto ko_fact;
     result += r;
+    factp = fact_r(&fact);
     hash_update_fact(&hash, factp);
     facts_add_fact(facts, factp);
     fact_w_clean(&fact);
@@ -422,7 +423,7 @@ sw facts_open_file_create (s_facts *facts, const s8 *path)
 sw facts_open_log (s_facts *facts, s_buf *buf)
 {
   s_fact_w fact;
-  s_fact *factp = fact_r(&fact);
+  s_fact *factp;
   sw r;
   sw result = 0;
   assert(facts);
@@ -435,6 +436,7 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
       if ((r = buf_parse_fact(buf, &fact)) <= 0)
         break;
       result += r;
+      factp = fact_r(&fact);
       facts_add_fact(facts, factp);
       goto ok;
     }
@@ -444,6 +446,7 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
     if ((r = buf_parse_fact(buf, &fact)) <= 0)
       break;
     result += r;
+    factp = fact_r(&fact);
     facts_remove_fact(facts, factp);
   ok:
     fact_w_clean(&fact);
