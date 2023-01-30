@@ -376,7 +376,7 @@ sw facts_open_file (s_facts *facts, const s8 *path)
   if ((r = facts_open_buf(facts, &in)) < 0)
     return r;
   result += r;
-  fclose(fp);
+  buf_file_close(&in);
   if (! (fp = fopen(path, "ab"))) {
     warn("fopen: %s", path);
     return -1;
@@ -513,6 +513,8 @@ sw facts_save_file (s_facts *facts, const s8 *path)
     goto ko;
   result += r;
   buf_flush(&buf);
+  free(buf.user_ptr);
+  buf.user_ptr = NULL;
   if (! (facts->log = log_new()))
     goto ko;
   if (log_open(facts->log, fp) < 0)
