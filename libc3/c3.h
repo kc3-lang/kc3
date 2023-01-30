@@ -40,12 +40,10 @@
 #include "tuple.h"
 #include "ucd.h"
 
+extern s_env g_c3_env;
+
 /* libc3 */
 void libc3_init ();
 void libc3_shutdown ();
-
-/* c3 */
-s_module * c3_init (s_module *c3, s_facts *facts);
-void       c3_clean (s_module *c3);
 
 #endif /* C3_H */

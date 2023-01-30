@@ -20,9 +20,11 @@
 #include "buf_inspect.h"
 #include "env.h"
 #include "error_handler.h"
+#include "facts.h"
 #include "frame.h"
 #include "list.h"
 #include "str.h"
+#include "sym.h"
 #include "tag.h"
 
 void env_clean (s_env *env)
@@ -30,6 +32,7 @@ void env_clean (s_env *env)
   assert(env);
   frame_delete_all(env->frame);
   error_handler_delete_all(env->error_handler);
+  facts_clean(&env->facts);
 }
 
 void env_error_f (s_env *env, const char *fmt, ...)
@@ -189,8 +192,11 @@ s_tag * env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
 s_env * env_init (s_env *env)
 {
   assert(env);
-  env->frame = NULL;
   env->error_handler = NULL;
+  env->frame = NULL;
+  facts_init(&env->facts);
+  env->module.name = sym_1("C3");
+  env->module.facts = &env->facts;
   return env;
 }
 

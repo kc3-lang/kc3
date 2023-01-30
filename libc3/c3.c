@@ -16,24 +16,11 @@
 #include "c3.h"
 #include "sym.h"
 
-void c3_clean (s_module *c3)
-{
-  /* TODO */
-  (void) c3;
-}
-
-s_module * c3_init (s_module *c3, s_facts *facts)
-{
-  assert(c3);
-  assert(facts);
-  c3->name = sym_1("C3");
-  c3->facts = facts;
-  /* TODO */
-  return c3;
-}
+s_env g_c3_env = {0};
 
 void libc3_init ()
 {
+  env_init(&g_c3_env);
 #ifdef DEBUG
   buf_init_alloc(&g_debug_buf, 1024);
   buf_file_open_w(&g_debug_buf, stderr);
@@ -43,6 +30,7 @@ void libc3_init ()
 void libc3_shutdown ()
 {
   sym_delete_all();
+  env_clean(&g_c3_env);
 #ifdef DEBUG
   buf_file_close(&g_debug_buf);
   buf_clean(&g_debug_buf);
