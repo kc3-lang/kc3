@@ -507,6 +507,7 @@ void facts_test_open_file ()
     fact_test_clean_1(&fact);
     i++;
   }
+  facts_close(&facts);
   facts_clean(&facts);
   test_file_compare("facts_test_open_file.2.facts",
                     "facts_test_open_file.2.expected.facts");
@@ -537,6 +538,7 @@ void facts_test_open_file ()
     fact_test_clean_1(&fact);
     i++;
   }
+  facts_close(&facts);
   facts_clean(&facts);
   test_file_compare("facts_test_open_file.3.facts",
                     "facts_test_open_file.3.expected.facts");
