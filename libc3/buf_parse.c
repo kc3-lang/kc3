@@ -23,17 +23,17 @@ sw buf_parse_bool (s_buf *buf, bool *p)
   character c;
   sw r;
   s_buf_save save;
-  bool value;
+  bool value = 2;
   assert(buf);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "true")) < 0)
     goto clean;
-  if (r > 0)
+  else if (r > 0)
     value = true;
   else {
     if ((r = buf_read_1(buf, "false")) < 0)
       goto clean;
-    if (r > 0)
+    else if (r > 0)
       value = false;
   }
   if (r == 0)
@@ -43,6 +43,7 @@ sw buf_parse_bool (s_buf *buf, bool *p)
     r = 0;
     goto restore;
   }
+  assert(value == true || value == false);
   *p = value;
   goto clean;
  restore:
