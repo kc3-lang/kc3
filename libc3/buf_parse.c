@@ -551,6 +551,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   sw result = 0;
   s_buf_save save;
   s_str str;
+  s8 t[IDENT_MAX];
   s_buf tmp;
   assert(buf);
   assert(dest);
@@ -581,7 +582,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
     goto restore;
   if (r > 0 && ! ident_first_character_is_reserved(c)) {
     csize = r;
-    BUF_INIT_ALLOCA(&tmp, IDENT_MAX);
+    buf_init(&tmp, false, sizeof(t), t);
     if ((r = buf_xfer(&tmp, buf, csize)) < 0)
       goto restore;
     result += csize;
@@ -1175,13 +1176,14 @@ sw buf_parse_str_u8 (s_buf *buf, u8 *dest)
 
 sw buf_parse_sym (s_buf *buf, const s_sym **dest)
 {
-  s_buf tmp;
   character c;
   sw csize;
   sw r;
   sw result = 0;
   s_buf_save save;
   s_str str;
+  s8 t[SYM_MAX];
+  s_buf tmp;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -1203,7 +1205,7 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
     goto clean;
   if (c == ':' || character_is_uppercase(c)) {
     csize = r;
-    BUF_INIT_ALLOCA(&tmp, SYM_MAX);
+    buf_init(&tmp, false, sizeof(t), t);
     if (c == ':') {
       if ((r = buf_ignore(buf, csize)) < 0)
         goto clean;

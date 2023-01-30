@@ -143,12 +143,13 @@ sw facts_dump (const s_facts *facts, s_buf *buf)
 
 sw facts_dump_file (const s_facts *facts, const s8 *path)
 {
+  s8 b[BUF_SIZE];
   s_buf buf;
   FILE *fp;
   sw r;
   assert(facts);
   assert(path);
-  BUF_INIT_ALLOCA(&buf, 1024);
+  buf_init(&buf, false, sizeof(b), b);
   if (! (fp = fopen(path, "wb"))) {
     warn("fopen: %s", path);
     return -1;
@@ -274,12 +275,13 @@ sw facts_load (s_facts *facts, s_buf *buf)
 
 sw facts_load_file (s_facts *facts, const s8 *path)
 {
+  s8 b[BUF_SIZE];
   s_buf buf;
   FILE *fp;
   sw result;
   assert(facts);
   assert(path);
-  BUF_INIT_ALLOCA(&buf, 1024);
+  buf_init(&buf, false, sizeof(b), b);
   fp = fopen(path, "r");
   buf_file_open_r(&buf, fp);
   result = facts_load(facts, &buf);
@@ -357,10 +359,11 @@ sw facts_open_buf (s_facts *facts, s_buf *buf)
 sw facts_open_file (s_facts *facts, const s8 *path)
 {
   FILE *fp;
+  s8 i[BUF_SIZE];
   s_buf in;
   sw r;
   sw result = 0;
-  BUF_INIT_ALLOCA(&in, BUF_SIZE);
+  buf_init(&in, false, sizeof(i), i);
   if (! (fp = fopen(path, "rb"))) {
     if (errno == ENOENT)
       return facts_open_file_create(facts, path);
@@ -482,6 +485,7 @@ e_bool facts_remove_fact (s_facts *facts, const s_fact *fact)
 
 sw facts_save_file (s_facts *facts, const s8 *path)
 {
+  s8 b[BUF_SIZE];
   s_buf buf;
   FILE *fp;
   sw r;
@@ -489,7 +493,7 @@ sw facts_save_file (s_facts *facts, const s8 *path)
   assert(facts);
   assert(path);
   assert(! facts->log);
-  BUF_INIT_ALLOCA(&buf, BUF_SIZE);
+  buf_init(&buf, false, sizeof(b), b);
   if (! (fp = fopen(path, "wb"))) {
     warn("fopen: %s", path);
     return -1;

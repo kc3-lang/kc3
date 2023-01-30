@@ -64,8 +64,10 @@ int main (int argc, char **argv)
   s_module c3;
   s_env env;
   s_facts facts;
+  s8 i[BUF_SIZE];
   s_buf in;
   s_tag input;
+  s8 o[BUF_SIZE];
   s_buf out;
   sw r;
   s_tag result;
@@ -74,9 +76,9 @@ int main (int argc, char **argv)
   c3_init(&c3, &facts);
   if (argc < 1)
     return usage(argv[0]);
-  BUF_INIT_ALLOCA(&in, BUFSZ);
+  buf_init(&in, false, sizeof(i), i);
   buf_file_open_r(&in, stdin);
-  BUF_INIT_ALLOCA(&out, BUFSZ);
+  buf_init(&out, false, sizeof(o), o);
   buf_file_open_w(&out, stdout);
   env_init(&env);
   while ((r = buf_xfer_spaces(&out, &in)) >= 0) {

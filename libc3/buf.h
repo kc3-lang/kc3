@@ -26,17 +26,6 @@
 #include <stdlib.h>
 #include "types.h"
 
-#define BUF_INIT_ALLOCA(buf, size)              \
-  do {                                          \
-    s8 *p;                                      \
-    assert(buf);                                \
-    assert(size);                               \
-    p = alloca(size);                           \
-    if (!p)                                     \
-      err(1, "out of memory");                  \
-    buf_init((buf), false, (size), p);          \
-  } while (0)
-
 #define BUF_SIZE 1024
 
 extern const sw buf_u8_to_hex_size;

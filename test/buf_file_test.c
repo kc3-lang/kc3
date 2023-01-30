@@ -30,11 +30,12 @@ void buf_file_test ()
 
 void buf_file_test_open_r_close ()
 {
+  s8 b[16];
   s_buf buf;
   FILE *fp;
   fp = fopen("/dev/null", "r");
   assert(fp);
-  BUF_INIT_ALLOCA(&buf, 16);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_file_open_r(&buf, fp), &buf);
   buf_file_close(&buf);
   test_ok();
@@ -44,13 +45,14 @@ void buf_file_test_open_r_close ()
 void buf_file_test_open_r_refill ()
 {
   u8 b = 0x80;
+  s8 bu[16];
   s_buf buf;
   FILE *fp;
   sw i = 64;
   test_context("buf_file_open_r_refill(/dev/zero)");
   fp = fopen("/dev/zero", "r");
   assert(fp);
-  BUF_INIT_ALLOCA(&buf, 16);
+  buf_init(&buf, false, sizeof(bu), bu);
   buf_file_open_r(&buf, fp);
   while (i--) {
     TEST_EQ(buf_read_u8(&buf, &b), 1);

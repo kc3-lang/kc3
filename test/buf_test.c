@@ -214,8 +214,9 @@ void buf_test ()
 
 void buf_test_f ()
 {
+  s8 b[32];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 32);
+  buf_init(&buf, false, sizeof(b), b);          \
   BUF_TEST_F(buf_f(&buf, "09AZaz"), "09AZaz");
   BUF_TEST_F(buf_f(&buf, "%d", 0), "0");
   BUF_TEST_F(buf_f(&buf, "%d", 42), "42");
@@ -253,23 +254,23 @@ void buf_test_init_clean ()
   char a[4] = "test";
   size_t len;
   char *m;
-  s_buf bufa;
+  s_buf buf;
   len = 4;
-  buf_init(&bufa, false, len, a);
-  TEST_EQ(bufa.size, len);
-  TEST_EQ(strncmp(bufa.ptr.p, "test", len), 0);
-  TEST_EQ(bufa.rpos, 0);
-  TEST_EQ(bufa.wpos, 0);
-  BUF_TEST_CLEAN(bufa);
+  buf_init(&buf, false, len, a);
+  TEST_EQ(buf.size, len);
+  TEST_EQ(strncmp(buf.ptr.p, "test", len), 0);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 0);
+  BUF_TEST_CLEAN(buf);
   len = 4;
   m = malloc(len);
   memcpy(m, "test", len);
-  buf_init(&bufa, true, len, m);
-  TEST_EQ(bufa.size, len);
-  TEST_EQ(strncmp(bufa.ptr.p, "test", len), 0);
-  TEST_EQ(bufa.rpos, 0);
-  TEST_EQ(bufa.wpos, 0);
-  BUF_TEST_CLEAN(bufa);
+  buf_init(&buf, true, len, m);
+  TEST_EQ(buf.size, len);
+  TEST_EQ(strncmp(buf.ptr.p, "test", len), 0);
+  TEST_EQ(buf.rpos, 0);
+  TEST_EQ(buf.wpos, 0);
+  BUF_TEST_CLEAN(buf);
 }
 
 void buf_test_new_delete ()
@@ -359,9 +360,10 @@ void buf_test_peek_s8 ()
 
 void buf_test_peek_s16 ()
 {
+  s8 b[8];
   s_buf buf;
   s16 val;
-  BUF_INIT_ALLOCA(&buf, 8);
+  buf_init(&buf, false, sizeof(b), b);          \
   TEST_EQ(buf_write_s16(&buf, 0), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 2);
@@ -431,9 +433,10 @@ void buf_test_read_character_utf8 ()
 
 void buf_test_read_f32()
 {
+  s8 b[16];
   s_buf buf;
   f32 f;
-  BUF_INIT_ALLOCA(&buf, 16);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_f32(&buf, 1.0f), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
@@ -459,9 +462,10 @@ void buf_test_read_f32()
 
 void buf_test_read_f64 ()
 {
+  s8 b[32];
   s_buf buf;
   f64 f;
-  BUF_INIT_ALLOCA(&buf, 32);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_f64(&buf, 1.0), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 8);
@@ -529,9 +533,10 @@ void buf_test_read_s8 ()
 
 void buf_test_read_s16 ()
 {
+  s8 b[8];
   s_buf buf;
   s16 val;
-  BUF_INIT_ALLOCA(&buf, 8);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s16(&buf, 0), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 2);
@@ -552,9 +557,10 @@ void buf_test_read_s16 ()
 
 void buf_test_read_s32()
 {
-  s32 val;
+  s8 b[16];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 16);
+  s32 val;
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s32(&buf, 0x00000000), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
@@ -580,9 +586,10 @@ void buf_test_read_s32()
 
 void buf_test_read_s64()
 {
-  s64 val;
+  s8 b[32];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 32);
+  s64 val;
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s64(&buf, 0x0000000000000000), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 8);
@@ -649,9 +656,10 @@ void buf_test_read_u8 ()
 
 void buf_test_read_u16()
 {
+  s8 b[8];
   s_buf buf;
   u16 val;
-  BUF_INIT_ALLOCA(&buf, 8);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_u16(&buf, 0x0000), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 2);
@@ -677,9 +685,10 @@ void buf_test_read_u16()
 
 void buf_test_read_u32()
 {
+  s8 b[16];
   s_buf buf;
   u32 val;
-  BUF_INIT_ALLOCA(&buf, 16);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_u32(&buf, 0x00000000), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
@@ -705,9 +714,10 @@ void buf_test_read_u32()
 
 void buf_test_read_u64()
 {
+  s8 b[32];
   s_buf buf;
   u64 val;
-  BUF_INIT_ALLOCA(&buf, 32);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_u64(&buf, 0x0000000000000000), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 8);
@@ -733,8 +743,9 @@ void buf_test_read_u64()
 
 void buf_test_write_s8 ()
 {
+  s8 b[4];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 4);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s8(&buf, 0x00), 1);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 1);
@@ -755,8 +766,9 @@ void buf_test_write_s8 ()
 
 void buf_test_write_s16 ()
 {
+  s8 b[8];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 8);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s16(&buf, 0x0000), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 2);
@@ -777,8 +789,9 @@ void buf_test_write_s16 ()
 
 void buf_test_write_s32 ()
 {
+  s8 b[16];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 16);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s32(&buf, 0x00000000), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
@@ -799,8 +812,9 @@ void buf_test_write_s32 ()
 
 void buf_test_write_s64 ()
 {
+  s8 b[32];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 32);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s64(&buf, 0x0000000000000000), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 8);
@@ -821,8 +835,9 @@ void buf_test_write_s64 ()
 
 void buf_test_write_u8 ()
 {
+  s8 b[4];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 4);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_u8(&buf, 0x00), 1);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 1);
@@ -843,8 +858,9 @@ void buf_test_write_u8 ()
 
 void buf_test_write_u16 ()
 {
+  s8 b[8];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 8);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_u16(&buf, 0x0000), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 2);
@@ -865,8 +881,9 @@ void buf_test_write_u16 ()
 
 void buf_test_write_u32 ()
 {
+  s8 b[16];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 16);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_u32(&buf, 0x00000000), 4);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 4);
@@ -887,8 +904,9 @@ void buf_test_write_u32 ()
 
 void buf_test_write_u64 ()
 {
+  s8 b[32];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 32);
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_u64(&buf, 0x0000000000000000), 8);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 8);
@@ -913,14 +931,16 @@ void buf_test_write_str ()
 
 void buf_test_xfer ()
 {
-  const char a[] = "0123456789ABCDEF";
+  const s8 a[16] = "0123456789ABCDEF";
+  s8 d[16];
   s_buf dest;
+  s8 s[16];
   s_buf src;
   s_str str;
   str_init_1(&str, NULL, a);
-  BUF_INIT_ALLOCA(&src, sizeof(a));
+  buf_init(&src, false, sizeof(s), s);
   buf_write_str(&src, &str);
-  BUF_INIT_ALLOCA(&dest, sizeof(a));
+  buf_init(&dest, false, sizeof(d), d);
   TEST_EQ(buf_xfer(&dest, &src, 0), 0);
   TEST_EQ(buf_xfer(&dest, &src, 1), 1);
   TEST_EQ(buf_xfer(&dest, &src, 2), 2);

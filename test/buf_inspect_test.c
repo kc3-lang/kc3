@@ -18,9 +18,10 @@
 
 #define BUF_INSPECT_TEST_BOOL(test, expected)                          \
   do {                                                                 \
+    s8 b[16];                                                          \
     s_buf buf;                                                         \
     test_context("buf_inspect_bool(" # test ") -> " # expected);       \
-    BUF_INIT_ALLOCA(&buf, 16);                                         \
+    buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_bool(&buf, (test)), strlen(expected));         \
     TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
     test_context(NULL);                                                \
@@ -39,9 +40,10 @@
 
 #define BUF_INSPECT_TEST_F32(test, expected)                           \
   do {                                                                 \
+    s8 b[32];                                                          \
     s_buf buf;                                                         \
     test_context("buf_inspect_f32(" # test ") -> " # expected);        \
-    BUF_INIT_ALLOCA(&buf, 32);                                         \
+    buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_f32_size(test), strlen(expected));             \
     TEST_EQ(buf_inspect_f32(&buf, test), strlen(expected));            \
     TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
@@ -50,9 +52,10 @@
 
 #define BUF_INSPECT_TEST_F64(test, expected)                           \
   do {                                                                 \
+    s8 b[64];                                                          \
     s_buf buf;                                                         \
     test_context("buf_inspect_f64(" # test ") -> " # expected);        \
-    BUF_INIT_ALLOCA(&buf, 64);                                         \
+    buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_f64_size(test), strlen(expected));             \
     TEST_EQ(buf_inspect_f64(&buf, test), strlen(expected));            \
     TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \

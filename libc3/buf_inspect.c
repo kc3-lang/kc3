@@ -124,8 +124,9 @@ sw buf_inspect_f32 (s_buf *buf, f32 x)
 
 sw buf_inspect_f32_size (f32 x)
 {
+  s8 b[16];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 16);
+  buf_init(&buf, false, sizeof(b), b);
   return buf_inspect_f32(&buf, x);
 }
 
@@ -136,8 +137,9 @@ sw buf_inspect_f64 (s_buf *buf, f64 x)
 
 sw buf_inspect_f64_size (f64 x)
 {
+  s8 b[16];
   s_buf buf;
-  BUF_INIT_ALLOCA(&buf, 16);
+  buf_init(&buf, false, sizeof(b), b);
   return buf_inspect_f64(&buf, x);
 }
 
@@ -587,6 +589,7 @@ sw buf_inspect_str_byte (s_buf *buf, u8 x)
 
 sw buf_inspect_str_character (s_buf *buf, character x)
 {
+  s8 b[4];
   s_buf char_buf;
   int i;
   int j;
@@ -608,7 +611,7 @@ sw buf_inspect_str_character (s_buf *buf, character x)
   case '\'': if ((r = buf_write_u8(buf, '\'')) < 0) return r; break;
   case '\\': if ((r = buf_write_u8(buf, '\\')) < 0) return r; break;
   default:
-    BUF_INIT_ALLOCA(&char_buf, 4);
+    buf_init(&char_buf, false, sizeof(b), b);
     if ((i = buf_write_character_utf8(&char_buf, x)) < 0)
       return i;
     j = 0;
@@ -915,8 +918,9 @@ sw buf_inspect_u8 (s_buf *buf, u8 x)
   sw i;
   sw r;
   sw size = 0;
+  s8 t[3];
   s_buf tmp;
-  BUF_INIT_ALLOCA(&tmp, 3);
+  buf_init(&tmp, false, sizeof(t), t);
   if (x == 0)
     return buf_write_u8(buf, '0');
   while (x > 0) {
@@ -952,8 +956,9 @@ sw buf_inspect_u16 (s_buf *buf, u16 x)
   sw i;
   sw r;
   sw size = 0;
+  s8 t[5];
   s_buf tmp;
-  BUF_INIT_ALLOCA(&tmp, 5);
+  buf_init(&tmp, false, sizeof(t), t);
   if (x == 0)
     return buf_write_u8(buf, '0');
   while (x > 0) {
@@ -989,8 +994,9 @@ sw buf_inspect_u32 (s_buf *buf, u32 x)
   sw i;
   sw r;
   sw size = 0;
+  s8 t[10];
   s_buf tmp;
-  BUF_INIT_ALLOCA(&tmp, 10);
+  buf_init(&tmp, false, sizeof(t), t);
   if (x == 0)
     return buf_write_u8(buf, '0');
   while (x > 0) {
@@ -1026,8 +1032,9 @@ sw buf_inspect_u64 (s_buf *buf, u64 x)
   sw i;
   sw r;
   sw size = 0;
+  s8 t[20];
   s_buf tmp;
-  BUF_INIT_ALLOCA(&tmp, 20);
+  buf_init(&tmp, false, sizeof(t), t);
   if (x == 0)
     return buf_write_u8(buf, '0');
   while (x > 0) {

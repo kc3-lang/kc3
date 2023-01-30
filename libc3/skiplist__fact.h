@@ -29,10 +29,6 @@
 #define SKIPLIST_SIZE__fact(max_height) \
   (sizeof(s_skiplist__fact) + (max_height) * sizeof(t_skiplist_height))
 
-#define SKIPLIST_INIT_ALLOCA__fact(max_height, spacing) \
-  (skiplist_init__fact(alloca(SKIPLIST_SIZE__fact(max_height)), \
-                         (max_height), (spacing)))
-
 void
 skiplist_clean__fact (s_skiplist__fact *skiplist);
 
