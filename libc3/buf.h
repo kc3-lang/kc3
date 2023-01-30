@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include "types.h"
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 10240
 
 extern const sw buf_u8_to_hex_size;
 extern const sw buf_inspect_str_byte_size;
