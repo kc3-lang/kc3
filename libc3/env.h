@@ -21,13 +21,13 @@ void    env_clean (s_env *env);
 s_env * env_init (s_env *env);
 
 /* modifiers */
-s_tag *       env_eval_call_fn (s_env *env, s_call *call, s_tag *dest);
-s_tag *       env_eval_call_macro (s_env *env, s_call *call,
+s_tag *       env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest);
+s_tag *       env_eval_call_macro (s_env *env, const s_call *call,
                                    s_tag *dest);
-s_tag *       env_eval_fn (s_env *env, s_fn *fn, s_tag *dest);
-const s_tag * env_eval_ident (s_env *env, s_ident *ident);
-s_tag *       env_eval_progn (s_env *env, s_list *program, s_tag *dest);
-s_tag *       env_eval_tag (s_env *env, s_tag *tag, s_tag *dest);
+s_tag *       env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest);
+const s_tag * env_eval_ident (s_env *env, const s_ident *ident);
+s_tag *       env_eval_progn (s_env *env, const s_list *program, s_tag *dest);
+s_tag *       env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
 
 /* control structures */
 void env_error_f (s_env *env, const char *fmt, ...);

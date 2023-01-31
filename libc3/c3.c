@@ -18,21 +18,25 @@
 
 s_env g_c3_env = {0};
 
-void c3_init ()
+void c3_init (s_env *env)
 {
-  env_init(&g_c3_env);
+  if (! env)
+    env = &g_c3_env;
+  env_init(env);
 #ifdef DEBUG
   buf_init_alloc(&g_debug_buf, 1024);
   buf_file_open_w(&g_debug_buf, stderr);
 #endif
 }
 
-void c3_clean ()
+void c3_clean (s_env *env)
 {
+  if (! env)
+    env = &g_c3_env;
 #ifdef DEBUG
   buf_file_close(&g_debug_buf);
   buf_clean(&g_debug_buf);
 #endif
   sym_delete_all();
-  env_clean(&g_c3_env);
+  env_clean(env);
 }

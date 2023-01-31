@@ -69,7 +69,7 @@ void env_error_tag (s_env *env, const s_tag *tag)
   }
 }
 
-s_tag * env_eval_call_fn (s_env *env, s_call *call, s_tag *dest)
+s_tag * env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
 {
   s_arg *args;
   s_list *call_args;
@@ -109,7 +109,7 @@ s_tag * env_eval_call_fn (s_env *env, s_call *call, s_tag *dest)
   return dest;
 }
 
-s_tag * env_eval_call_macro (s_env *env, s_call *call, s_tag *dest)
+s_tag * env_eval_call_macro (s_env *env, const s_call *call, s_tag *dest)
 {
   s_tag *expanded;
   assert(env);
@@ -121,7 +121,7 @@ s_tag * env_eval_call_macro (s_env *env, s_call *call, s_tag *dest)
   return dest;
 }
 
-const s_tag * env_eval_ident (s_env *env, s_ident *ident)
+const s_tag * env_eval_ident (s_env *env, const s_ident *ident)
 {
   const s_tag *tag;
   assert(env);
@@ -133,7 +133,7 @@ const s_tag * env_eval_ident (s_env *env, s_ident *ident)
   return tag;
 }
 
-s_tag * env_eval_progn (s_env *env, s_list *program, s_tag *dest)
+s_tag * env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
 {
   s_tag tmp;
   assert(env);
@@ -147,7 +147,7 @@ s_tag * env_eval_progn (s_env *env, s_list *program, s_tag *dest)
   return dest;
 }
 
-s_tag * env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
+s_tag * env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
 {
   switch (tag->type.type) {
   case TAG_VOID: return tag_init_void(dest);
@@ -197,6 +197,7 @@ s_env * env_init (s_env *env)
   facts_init(&env->facts);
   env->module.name = sym_1("C3");
   env->module.facts = &env->facts;
+  /* TODO: load module ? */
   return env;
 }
 

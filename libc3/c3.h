@@ -42,7 +42,7 @@
 
 extern s_env g_c3_env;
 
-void c3_init ();
-void c3_clean ();
+void c3_init (s_env *env);
+void c3_clean (s_env *env);
 
 #endif /* C3_H */

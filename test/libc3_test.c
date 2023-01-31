@@ -40,7 +40,7 @@ void types_test ();
 int main (int argc, char **argv)
 {
   test_init(argc, argv);
-  c3_init();
+  c3_init(NULL);
   if (test_target("types")) {
     printf("\ntypes\n");
     types_test();
@@ -131,6 +131,6 @@ int main (int argc, char **argv)
   }
   test_summary();
   test_clean();
-  c3_clean();
+  c3_clean(NULL);
   return 0;
 }

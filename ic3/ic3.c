@@ -61,7 +61,6 @@ sw buf_xfer_spaces (s_buf *out, s_buf *in)
 
 int main (int argc, char **argv)
 {
-  s_env env;
   s8 i[BUF_SIZE];
   s_buf in;
   s_tag input;
@@ -69,7 +68,7 @@ int main (int argc, char **argv)
   s_buf out;
   sw r;
   s_tag result;
-  c3_init();
+  c3_init(NULL);
   if (argc < 1)
     return usage(argv[0]);
   buf_init(&in, false, sizeof(i), i);
@@ -77,10 +76,9 @@ int main (int argc, char **argv)
   in.line = 0;
   buf_init(&out, false, sizeof(o), o);
   buf_file_open_w(&out, stdout);
-  env_init(&env);
   while ((r = buf_xfer_spaces(&out, &in)) >= 0) {
     if ((r = buf_parse_tag(&in, &input)) > 0) {
-      if (! env_eval_tag(&env, &input, &result)) {
+      if (! eval_tag(&input, &result)) {
         tag_clean(&input);
         continue;
       }
@@ -100,10 +98,9 @@ int main (int argc, char **argv)
          (r = buf_ignore_character(&in)) <= 0))
       break;
   }
-  env_clean(&env);
   buf_linenoise_close(&in);
   buf_file_close(&out);
-  c3_clean();
+  c3_clean(NULL);
   return 0;
 }
 

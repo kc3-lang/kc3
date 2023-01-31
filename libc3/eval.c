@@ -14,10 +14,9 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
-#include "binding.h"
-#include "env.h"
-#include "eval.h"
-#include "frame.h"
-#include "list.h"
-#include "tag.h"
+#include "c3.h"
 
+s_tag * eval_tag (const s_tag *tag, s_tag *dest)
+{
+  return env_eval_tag(&g_c3_env, tag, dest);
+}

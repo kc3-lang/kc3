@@ -61,7 +61,6 @@ sw buf_xfer_spaces (s_buf *out, s_buf *in)
 
 int main (int argc, char **argv)
 {
-  s_env env;
   s8 i[BUF_SIZE];
   s_buf in;
   s_tag input;
@@ -69,17 +68,16 @@ int main (int argc, char **argv)
   s_buf out;
   sw r;
   s_tag result;
-  c3_init();
+  c3_init(NULL);
   if (argc < 1)
     return usage(argv[0]);
   buf_init(&in, false, sizeof(i), i);
   buf_file_open_r(&in, stdin);
   buf_init(&out, false, sizeof(o), o);
   buf_file_open_w(&out, stdout);
-  env_init(&env);
   while ((r = buf_xfer_spaces(&out, &in)) >= 0) {
     if ((r = buf_parse_tag(&in, &input)) > 0) {
-      if (! env_eval_tag(&env, &result, &input)) {
+      if (! eval_tag(&result, &input)) {
         tag_clean(&input);
         continue;
       }
@@ -101,10 +99,9 @@ int main (int argc, char **argv)
     if ((r = buf_refill_compact(&in)) < 0)
       break;
   }
-  env_clean(&env);
   buf_readline_close(&in);
   buf_file_close(&out);
-  c3_clean();
+  c3_clean(NULL);
   return 0;
 }
 
