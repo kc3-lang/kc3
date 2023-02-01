@@ -60,6 +60,8 @@ typedef unsigned long long ucd_flags;
 typedef struct ucd {
   ucd_flags flags;
   char *name;
+  unsigned long to_lower;
+  unsigned long to_upper;
 } s_ucd;
 
 extern const s_ucd g_ucd[UCD_MAX];

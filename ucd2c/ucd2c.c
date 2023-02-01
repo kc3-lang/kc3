@@ -50,6 +50,29 @@ unsigned long long read_hex (const char **src) {
   return u64;
 }
 
+void ucd_case (s_ucd ucd[UCD_MAX])
+{
+  char *capital;
+  unsigned long i;
+  unsigned long j;
+  char name[1024];
+  for (i = 0; i < UCD_MAX; i++) {
+    if (ucd[i].name &&
+        (capital = strstr(ucd[i].name, " CAPITAL "))) {
+      strlcpy(name, ucd[i].name, (capital - ucd[i].name) + 1);
+      strlcat(name, " SMALL ", sizeof(name));
+      strlcat(name, capital + strlen(" CAPITAL "), sizeof(name));
+      for (j = 0; j < UCD_MAX; j++) {
+        if (ucd[j].name &&
+            strcmp(ucd[j].name, name) == 0) {
+          ucd[i].to_lower = j;
+          ucd[j].to_upper = i;
+        }
+      }
+    }
+  }
+}
+
 void ucd_parse (s_ucd ucd[UCD_MAX], char *line,
                 unsigned long lineno) {
   unsigned long i;
@@ -188,6 +211,10 @@ void ucd_write_c (s_ucd ucd[UCD_MAX])
       printf("\"%s\"", ucd[i].name);
     else
       printf("0");
+    printf(", ");
+    printf("0x%lx", ucd[i].to_lower);
+    printf(", ");
+    printf("0x%lx", ucd[i].to_upper);
     printf("}");
     i++;
   }
@@ -208,6 +235,7 @@ int main (int argc, char **argv)
       buf[len - 1] = 0;
     ucd_parse(ucd, buf, ++lineno);
   }
+  ucd_case(ucd);
   ucd_write_c(ucd);
   free(ucd);
   return 0;
