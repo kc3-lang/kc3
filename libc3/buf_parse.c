@@ -546,7 +546,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
 {
   character c;
   sw csize;
-  const s_sym *module = 0;
+  const s_sym *module_name;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -555,8 +555,10 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   s_buf tmp;
   assert(buf);
   assert(dest);
+  assert(g_c3_env.current_module);
+  module_name = g_c3_env.current_module->name;
   buf_save_init(buf, &save);
-  if ((r = buf_parse_module(buf, &module)) < 0)
+  if ((r = buf_parse_module(buf, &module_name)) < 0)
     goto clean;
   if (r > 0) {
     result += r;
@@ -595,7 +597,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
     }
     buf_read_to_str(&tmp, &str);
     str_to_ident(&str, dest);
-    dest->module = module;
+    dest->module = module_name;
     str_clean(&str);
     r = result;
     goto clean;

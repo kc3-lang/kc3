@@ -397,12 +397,13 @@ struct facts_cursor {
 /* 6 */
 struct env {
   s_list           *backtrace;
+  const s_module   *current_module;
+  s_module          c3_module;
   s_buf             err;
   s_error_handler  *error_handler;
   s_facts           facts;
   s_frame          *frame;
   s_buf             in;
-  s_module          module;
   s_buf             out;
   s_unwind_protect *unwind_protect;
 };

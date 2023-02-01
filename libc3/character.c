@@ -62,6 +62,34 @@ e_bool character_is_uppercase (character c)
           g_ucd[c].flags & UCD_LETTER_UPPERCASE);
 }
 
+character character_switch_case (character c)
+{
+  character s;
+  if (c >= 0 &&
+      c < UCD_MAX &&
+      (s = g_ucd[c].to_lower | g_ucd[c].to_upper))
+    return s;
+  return c;
+}
+
+character character_to_lower (character c)
+{
+  if (c >= 0 &&
+      c < UCD_MAX &&
+      g_ucd[c].to_lower)
+    return g_ucd[c].to_lower;
+  return c;
+}
+
+character character_to_upper (character c)
+{
+  if (c >= 0 &&
+      c < UCD_MAX &&
+      g_ucd[c].to_upper)
+    return g_ucd[c].to_upper;
+  return c;
+}
+
 sw character_utf8 (character c, s8 *dest)
 {
   const u8 _00000111 = 0x07;

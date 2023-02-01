@@ -21,4 +21,7 @@
 #ifndef MODULE_H
 #define MODULE_H
 
+s_module * module_load (s_module *module, const s_sym *name,
+                        s_facts *facts);
+
 #endif /* MODULE_H */

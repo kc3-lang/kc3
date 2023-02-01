@@ -23,6 +23,7 @@
 #include "facts.h"
 #include "frame.h"
 #include "list.h"
+#include "module.h"
 #include "str.h"
 #include "sym.h"
 #include "tag.h"
@@ -195,9 +196,7 @@ s_env * env_init (s_env *env)
   env->error_handler = NULL;
   env->frame = NULL;
   facts_init(&env->facts);
-  env->module.name = sym_1("C3");
-  env->module.facts = &env->facts;
-  /* TODO: load module ? */
+  module_load(&env->c3_module, sym_1("C3"), &env->facts);
   return env;
 }
 
