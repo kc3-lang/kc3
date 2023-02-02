@@ -114,32 +114,32 @@ void tuple_test_init_clean ()
 
 void tuple_test_init_1 ()
 {
-  TUPLE_TEST_INIT_1("{a, b}");
-  TUPLE_TEST_INIT_1("{a, b, c}");
-  TUPLE_TEST_INIT_1("{a, b, c, d}");
-  TUPLE_TEST_INIT_1("{{a, b}, {c, d}}");
-  TUPLE_TEST_INIT_1("{{a, b}, {c, d}, {e, f}}");
-  TUPLE_TEST_INIT_1("{{a, b}, {c, d}, {e, f}, {g, h}}");
-  TUPLE_TEST_INIT_1("{{a, b}, {c, d}, {e, f}, {g, h}, {i, j}}");
+  TUPLE_TEST_INIT_1("{:a, :b}");
+  TUPLE_TEST_INIT_1("{:a, :b, :c}");
+  TUPLE_TEST_INIT_1("{:a, :b, :c, :d}");
+  TUPLE_TEST_INIT_1("{:{:a, :b}, :{:c, :d}}");
+  TUPLE_TEST_INIT_1("{:{:a, :b}, :{:c, :d}, :{:e, :f}}");
+  TUPLE_TEST_INIT_1("{:{:a, :b}, :{:c, :d}, :{:e, :f}, :{:g, :h}}");
+  TUPLE_TEST_INIT_1("{:{:a, :b}, :{:c, :d}, :{:e, :f}, :{:g, :h}, :{:i, :j}}");
 }
 
 void tuple_test_inspect ()
 {
-  TUPLE_TEST_INSPECT("{a, b}", "{a, b}");
-  TUPLE_TEST_INSPECT("{{a, b}, {c, d}}", "{{a, b}, {c, d}}");
-  TUPLE_TEST_INSPECT("{{a, b}, {c, d}, {e, f}}",
-                     "{{a, b}, {c, d}, {e, f}}");
+  TUPLE_TEST_INSPECT("{:a, :b}", "{:a, :b}");
+  TUPLE_TEST_INSPECT("{{:a, :b}, {:c, :d}}", "{{:a, :b}, {:c, :d}}");
+  TUPLE_TEST_INSPECT("{{:a, :b}, {:c, :d}, {:e, :f}}",
+                     "{{:a, :b}, {:c, :d}, {:e, :f}}");
 }
 
 void tuple_test_new_1 ()
 {
-  TUPLE_TEST_NEW_1("{a, b}");
-  TUPLE_TEST_NEW_1("{a, b, c}");
-  TUPLE_TEST_NEW_1("{a, b, c, d}");
-  TUPLE_TEST_NEW_1("{{a, b}, {c, d}}");
-  TUPLE_TEST_NEW_1("{{a, b}, {c, d}, {e, f}}");
-  TUPLE_TEST_NEW_1("{{a, b}, {c, d}, {e, f}, {g, h}}");
-  TUPLE_TEST_NEW_1("{{a, b}, {c, d}, {e, f}, {g, h}, {i, j}}");
+  TUPLE_TEST_NEW_1("{:a, :b}");
+  TUPLE_TEST_NEW_1("{:a, :b, :c}");
+  TUPLE_TEST_NEW_1("{:a, :b, :c, :d}");
+  TUPLE_TEST_NEW_1("{:{:a, :b}, :{:c, :d}}");
+  TUPLE_TEST_NEW_1("{:{:a, :b}, :{:c, :d}, :{:e, :f}}");
+  TUPLE_TEST_NEW_1("{:{:a, :b}, :{:c, :d}, :{:e, :f}, :{:g, :h}}");
+  TUPLE_TEST_NEW_1("{:{:a, :b}, :{:c, :d}, :{:e, :f}, :{:g, :h}, :{:i, :j}}");
 }
 
 void tuple_test_new_delete ()

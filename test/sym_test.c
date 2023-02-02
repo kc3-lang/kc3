@@ -18,18 +18,30 @@
 #include "../libc3/sym.h"
 #include "test.h"
 
-const s_sym * sym_test_1_test (const s8 *p)
-{
-  uw len;
-  const s_sym *sym;
-  len = strlen(p);
-  TEST_ASSERT((sym = sym_1(p)));
-  TEST_EQ(sym->str.size, len);
-  TEST_EQ(strncmp(p, sym->str.ptr.p, len), 0);
-  TEST_EQ(sym_1(p), sym_1(p));
-  return sym;
-}
+#define SYM_TEST_INSPECT(test, result)                                 \
+  do {                                                                 \
+    const s_sym *sym;                                                  \
+    s_str str;                                                         \
+    assert(test);                                                      \
+    assert(result);                                                    \
+    test_context("sym_inspect(" # test ") -> " # result);              \
+    sym = sym_1(test);                                                 \
+    TEST_EQ(sym_inspect(sym, &str), &str);                             \
+    TEST_STRNCMP(str.ptr.p, (result), str.size);                       \
+    str_clean(&str);                                                   \
+    test_context(NULL);                                                \
+  } while (0)
 
+void          sym_test_1 ();
+const s_sym * sym_test_1_test (const s8 *p);
+void          sym_test_inspect ();
+
+
+void sym_test ()
+{
+  sym_test_1();
+  sym_test_inspect();
+}
 void sym_test_1 ()
 {
   const s_sym *mod;
@@ -81,25 +93,17 @@ void sym_test_1 ()
   sym_test_1_test("éoà \n\r\t\v\"");
 }
 
-void sym_test_delete_all ()
+const s_sym * sym_test_1_test (const s8 *p)
 {
-  sym_delete_all();
-  test_ok();
+  uw len;
+  const s_sym *sym;
+  len = strlen(p);
+  TEST_ASSERT((sym = sym_1(p)));
+  TEST_EQ(sym->str.size, len);
+  TEST_EQ(strncmp(p, sym->str.ptr.p, len), 0);
+  TEST_EQ(sym_1(p), sym_1(p));
+  return sym;
 }
-
-#define SYM_TEST_INSPECT(test, result)                                 \
-  do {                                                                 \
-    const s_sym *sym;                                                  \
-    s_str str;                                                         \
-    assert(test);                                                      \
-    assert(result);                                                    \
-    test_context("sym_inspect(" # test ") -> " # result);              \
-    sym = sym_1(test);                                                 \
-    TEST_EQ(sym_inspect(sym, &str), &str);                             \
-    TEST_STRNCMP(str.ptr.p, (result), str.size);                       \
-    str_clean(&str);                                                   \
-    test_context(NULL);                                                \
-  } while (0)
 
 void sym_test_inspect ()
 {
@@ -137,13 +141,4 @@ void sym_test_inspect ()
   SYM_TEST_INSPECT("éo", ":éo");
   SYM_TEST_INSPECT("éoà \n\r\t\v\"",
                    ":\"éoà \\n\\r\\t\\v\\\"\"");
-}
-
-void sym_test ()
-{
-  sym_test_delete_all();
-  sym_test_1();
-  sym_test_delete_all();
-  sym_test_inspect();
-  sym_test_delete_all();
 }
