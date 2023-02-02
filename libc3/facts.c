@@ -257,8 +257,13 @@ sw facts_load (s_facts *facts, s_buf *buf)
   result += r;
   i++;
   if (hash_u64_buf != hash_u64) {
-    warnx("facts_load: invalid hash line %lu: 0x%llx",
-          (unsigned long) i + 3, hash_u64);
+    s_buf tmp;
+    buf_init_alloc(&tmp, 16);
+    buf_inspect_u64_hex(&tmp, hash_u64);
+    buf_write_s8(&tmp, 0);
+    warnx("facts_load: invalid hash line %lu: 0x%s",
+          (unsigned long) i + 3,
+          tmp.ptr.ps8);
     return -1;
   }
   return result;
