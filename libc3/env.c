@@ -196,7 +196,10 @@ s_env * env_init (s_env *env)
   env->error_handler = NULL;
   env->frame = NULL;
   facts_init(&env->facts);
-  module_load(&env->c3_module, sym_1("C3"), &env->facts);
+  str_init_1(&env->module_path, NULL, "/home/dx/c/c3-lang/c3/lib");
+  if (! module_load(&env->c3_module, sym_1("C3"), &env->facts))
+    return NULL;
+  env->current_module = &env->c3_module;
   return env;
 }
 
@@ -212,6 +215,24 @@ void env_longjmp (s_env *env, jmp_buf *jmp_buf)
     longjmp(env->unwind_protect->buf, 1);
   }
   longjmp(*jmp_buf, 1);
+}
+
+s_module * env_module_load (s_env *env, s_module *module,
+                            const s_sym *name, s_facts *facts)
+{
+  s_str path;
+  assert(env);
+  assert(module);
+  assert(name);
+  assert(facts);
+  module->name = name;
+  module->facts = facts;
+  if (! module_name_path(&env->module_path, name, &path))
+    return 0;
+  printf("module_load %s -> %s\n", name->str.ptr.ps8, path.ptr.ps8);
+  if (facts_load_file(facts, path.ptr.ps8) < 0)
+    return 0;
+  return module;
 }
 
 void env_pop_error_handler (s_env *env)

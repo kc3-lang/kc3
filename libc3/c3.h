@@ -34,11 +34,14 @@
 #include "ident.h"
 #include "integer.h"
 #include "list.h"
+#include "module.h"
 #include "quote.h"
 #include "str.h"
 #include "tag.h"
 #include "tuple.h"
 #include "ucd.h"
+
+#define C3_EXT ".c3"
 
 extern s_env g_c3_env;
 

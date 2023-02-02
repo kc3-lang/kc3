@@ -285,7 +285,10 @@ sw facts_load_file (s_facts *facts, const s8 *path)
   assert(facts);
   assert(path);
   buf_init(&buf, false, sizeof(b), b);
-  fp = fopen(path, "r");
+  if (! (fp = fopen(path, "r"))) {
+    warn("facts_load_file: %s", path);
+    return -1;
+  }
   buf_file_open_r(&buf, fp);
   result = facts_load(facts, &buf);
   buf_file_close(&buf);

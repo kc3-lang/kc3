@@ -21,7 +21,13 @@
 #ifndef MODULE_H
 #define MODULE_H
 
+#include "types.h"
+
 s_module * module_load (s_module *module, const s_sym *name,
                         s_facts *facts);
+s_str *    module_name_path (const s_str *prefix, const s_sym *name,
+                             s_str *dest);
+sw         module_name_path_size (const s_str *prefix,
+                                  const s_sym *name);
 
 #endif /* MODULE_H */

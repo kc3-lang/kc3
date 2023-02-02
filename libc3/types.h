@@ -404,6 +404,7 @@ struct env {
   s_facts           facts;
   s_frame          *frame;
   s_buf             in;
+  s_str             module_path;
   s_buf             out;
   s_unwind_protect *unwind_protect;
 };

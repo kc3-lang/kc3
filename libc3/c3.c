@@ -22,7 +22,8 @@ void c3_init (s_env *env)
 {
   if (! env)
     env = &g_c3_env;
-  env_init(env);
+  if (! env_init(env))
+    exit(1);
 #ifdef DEBUG
   buf_init_alloc(&g_debug_buf, 1024);
   buf_file_open_w(&g_debug_buf, stderr);

@@ -16,6 +16,8 @@
 
 #include "types.h"
 
+#define FACTS_EXT ".facts"
+
 #define facts_count(f) ((f)->facts.count)
 
 /* Stack allocation compatible functions */

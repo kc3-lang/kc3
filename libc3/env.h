@@ -28,6 +28,8 @@ s_tag *       env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest);
 const s_tag * env_eval_ident (s_env *env, const s_ident *ident);
 s_tag *       env_eval_progn (s_env *env, const s_list *program, s_tag *dest);
 s_tag *       env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
+s_module *    env_module_load (s_env *env, s_module *module,
+                               const s_sym *name, s_facts *facts);
 
 /* control structures */
 void env_error_f (s_env *env, const char *fmt, ...);

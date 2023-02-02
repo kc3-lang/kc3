@@ -555,7 +555,9 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   s_buf tmp;
   assert(buf);
   assert(dest);
-  assert(g_c3_env.current_module);
+  /* XXX cannot parse ident if there is no module */
+  if (! g_c3_env.current_module)
+    return 0;
   module_name = g_c3_env.current_module->name;
   buf_save_init(buf, &save);
   if ((r = buf_parse_module(buf, &module_name)) < 0)

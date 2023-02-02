@@ -156,9 +156,20 @@ s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p)
   return buf;
 }
 
+s_buf * buf_init_str (s_buf *buf, const s_str *str)
+{
+  assert(buf);
+  assert(str);
+  buf_init_alloc(buf, str->size);
+  memcpy(buf->ptr.p, str->ptr.p, str->size);
+  buf->wpos = str->size;
+  return buf;
+}
+
 s_buf * buf_init_1 (s_buf *buf, const s8 *p)
 {
   uw size;
+  assert(buf);
   assert(p);
   size = strlen(p);
   buf_init_alloc(buf, size);
