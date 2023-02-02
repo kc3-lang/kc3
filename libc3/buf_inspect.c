@@ -230,7 +230,7 @@ sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
   assert(buf);
   assert(ident);
   result = 0;
-  if (ident->module) {
+  if (ident->module && ident->module != g_c3_env.current_module->name) {
     if ((r = buf_inspect_sym(buf, ident->module)) < 0)
       return r;
     result += r;
