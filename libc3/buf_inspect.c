@@ -285,7 +285,7 @@ sw buf_inspect_ident_size (const s_ident *ident)
   sw r;
   sw result = 0;
   assert(ident);
-  if (ident->module) {
+  if (ident->module && ident->module != g_c3_env.current_module->name) {
     if ((r = buf_inspect_sym_size(ident->module)) < 0)
       return r;
     result += r;
