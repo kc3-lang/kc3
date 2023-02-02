@@ -64,7 +64,7 @@ s_str * module_name_path (const s_str *prefix, const s_sym *name,
 
 sw module_name_path_size (const s_str *prefix, const s_sym *name)
 {
-  character b;
+  character b = 0;
   character c;
   s_buf in;
   sw r;
