@@ -35,6 +35,12 @@ void env_clean (s_env *env)
   frame_delete_all(env->frame);
   error_handler_delete_all(env->error_handler);
   facts_clean(&env->facts);
+  buf_file_close(&env->in);
+  buf_clean(&env->in);
+  buf_file_close(&env->out);
+  buf_clean(&env->out);
+  buf_file_close(&env->err);
+  buf_clean(&env->err);
 }
 
 void env_error_f (s_env *env, const char *fmt, ...)
@@ -236,12 +242,14 @@ s_module * env_module_load (s_env *env, s_module *module,
   module->facts = facts;
   if (! module_name_path(&env->module_path, name, &path))
     return 0;
+  /*
   buf_write_1(&env->out, "module_load ");
   buf_write_str(&env->out, &name->str);
   buf_write_1(&env->out, " -> ");
   buf_write_str(&env->out, &path);
   buf_write_s8(&env->out, '\n');
   buf_flush(&env->out);
+  */
   if (facts_load_file(facts, path.ptr.ps8) < 0)
     return 0;
   return module;

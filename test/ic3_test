@@ -38,15 +38,15 @@ for TARGET in $TARGETS; do
     RESULT=test_ok
     $IC3 < ${TARGET}.in > ${TARGET}.out 2> ${TARGET}.err
     echo $? > ${TARGET}.ret
-    if ! diff -u ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff
+    if ! diff -au ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff
     then
         RESULT=test_ko
     fi
-    if ! diff -u ${TARGET}.err.expected ${TARGET}.err >> ${TARGET}.diff
+    if ! diff -au ${TARGET}.err.expected ${TARGET}.err >> ${TARGET}.diff
     then
         RESULT=test_ko
     fi
-    if ! diff -u ${TARGET}.ret.expected ${TARGET}.ret >> ${TARGET}.diff
+    if ! diff -au ${TARGET}.ret.expected ${TARGET}.ret >> ${TARGET}.diff
     then
         RESULT=test_ko
     fi
