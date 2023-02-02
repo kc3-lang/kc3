@@ -250,8 +250,11 @@ s_module * env_module_load (s_env *env, s_module *module,
   buf_write_s8(&env->out, '\n');
   buf_flush(&env->out);
   */
-  if (facts_load_file(facts, path.ptr.ps8) < 0)
+  if (facts_load_file(facts, path.ptr.ps8) < 0) {
+    str_clean(&path);
     return 0;
+  }
+  str_clean(&path);
   return module;
 }
 
