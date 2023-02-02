@@ -256,23 +256,22 @@ sw facts_load (s_facts *facts, s_buf *buf)
     goto ko_hash;
   result += r;
   i++;
-  if (hash_u64_buf != hash_u64)
-    goto ko_hash;
+  if (hash_u64_buf != hash_u64) {
+    warnx("facts_load: invalid hash line %lu: 0x%llx",
+          (unsigned long) i + 3, hash_u64);
+    return -1;
+  }
   return result;
  ko_header:
   warnx("facts_load: invalid or missing header");
   return -1;
  ko_fact:
-  if (r)
-    warnx("facts_load: invalid fact line %lu", (unsigned long) i + 3);
-  else
-    warnx("facts_load: missing fact line %lu", (unsigned long) i + 3);
+  warnx("facts_load: %s fact line %lu", r ? "invalid" : "missing",
+        (unsigned long) i + 3);
   return -1;
  ko_hash:
-  if (r)
-    warnx("facts_load: invalid hash line %lu", (unsigned long) i + 3);
-  else
-    warnx("facts_load: missing hash line %lu", (unsigned long) i + 3);
+  warnx("facts_load: %s hash line %lu", r ? "invalid" : "missing",
+        (unsigned long) i + 3);
   return -1;
 }
 
