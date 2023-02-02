@@ -13,6 +13,7 @@
  */
 #include <assert.h>
 #include <err.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include "binding.h"
 #include "buf.h"
@@ -195,6 +196,12 @@ s_env * env_init (s_env *env)
   assert(env);
   env->error_handler = NULL;
   env->frame = NULL;
+  buf_init_alloc(&env->in, BUF_SIZE);
+  buf_file_open_r(&env->in, stdin);
+  buf_init_alloc(&env->out, BUF_SIZE);
+  buf_file_open_w(&env->out, stdout);
+  buf_init_alloc(&env->err, BUF_SIZE);
+  buf_file_open_w(&env->err, stderr);
   facts_init(&env->facts);
   str_init_1(&env->module_path, NULL, "/home/dx/c/c3-lang/c3/lib");
   if (! module_load(&env->c3_module, sym_1("C3"), &env->facts))
@@ -229,7 +236,12 @@ s_module * env_module_load (s_env *env, s_module *module,
   module->facts = facts;
   if (! module_name_path(&env->module_path, name, &path))
     return 0;
-  printf("module_load %s -> %s\n", name->str.ptr.ps8, path.ptr.ps8);
+  buf_write_1(&env->out, "module_load ");
+  buf_write_str(&env->out, &name->str);
+  buf_write_1(&env->out, " -> ");
+  buf_write_str(&env->out, &path);
+  buf_write_s8(&env->out, '\n');
+  buf_flush(&env->out);
   if (facts_load_file(facts, path.ptr.ps8) < 0)
     return 0;
   return module;
