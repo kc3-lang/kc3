@@ -34,7 +34,7 @@ s_str * module_name_path (const s_str *prefix, const s_sym *name,
   assert(name);
   buf_init_str(&in, &name->str);
   out_size = module_name_path_size(prefix, name);
-  buf_init_alloc(&out, out_size);
+  buf_init_alloc(&out, out_size + 1);
   if ((r = buf_write_str(&out, prefix)) < 0)
     goto error;
   if ((r = buf_write_s8(&out, '/')) < 0)
@@ -53,7 +53,10 @@ s_str * module_name_path (const s_str *prefix, const s_sym *name,
       goto error;
     b = c;
   }
-  buf_write_1(&out, FACTS_EXT);
+  if ((r = buf_write_1(&out, FACTS_EXT)) < 0)
+    goto error;
+  if ((r = buf_write_s8(&out, 0)) < 0)
+    goto error;
   buf_clean(&in);
   return buf_to_str(&out, dest);
  error:
