@@ -19,8 +19,8 @@
 #include "c3.h"
 #include "../libffi/ffi.h"
 
-s_tag g_tag_first = {0};
-s_tag g_tag_last = {0};
+s_tag g_tag_first;
+s_tag g_tag_last;
 
 s_tag * tag_1 (s_tag *tag, const s8 *p)
 {
