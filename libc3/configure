@@ -53,24 +53,28 @@ update_config_h
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_ASAN="$LIBS ../libtommath/libtommath_asan.la"
+LIBTOMMATH_ASAN=../libtommath/libtommath_asan.la
+LIBS_ASAN="$LIBTOMMATH_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LDFLAGS_COV="$LDFLAGS"
-LIBS_COV="$LIBS ../libtommath/libtommath_cov.la"
+LIBTOMMATH_COV=../libtommath/libtommath_cov.la
+LIBS_COV="$LIBTOMMATH_COV $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_DEBUG="$LIBS ../libtommath/libtommath_debug.la"
+LIBTOMMATH_DEBUG=../libtommath/libtommath_debug.la
+LIBS_DEBUG="$LIBTOMMATH_DEBUG $LIBS"
 
 # Main config
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS="$LIBS ../libtommath/libtommath.la"
+LIBTOMMATH=../libtommath/libtommath.la
+LIBS="$LIBTOMMATH $LIBS"
 
 make -f gen.mk
 
@@ -97,19 +101,19 @@ echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
-echo "$LIB: $OBJECTS" >> ${CONFIG_MK}
+echo "$LIB: $LIBTOMMATH $OBJECTS" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS} ${OBJECTS} \${LIBS} -o ${LIB} -rpath ${LIBDIR}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
-echo "$LIB_ASAN: $OBJECTS_ASAN" >> ${CONFIG_MK}
+echo "$LIB_ASAN: $LIBTOMMATH_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} -o ${LIB_ASAN}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
-echo "$LIB_COV: $OBJECTS_COV" >> ${CONFIG_MK}
+echo "$LIB_COV: $LIBTOMMATH_COV $OBJECTS_COV" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} -o ${LIB_COV}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
-echo "$LIB_DEBUG: $OBJECTS_DEBUG" >> ${CONFIG_MK}
+echo "$LIB_DEBUG: $LIBTOMMATH_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} -o ${LIB_DEBUG}" >> ${CONFIG_MK}
 
 for SRC in $SOURCES; do

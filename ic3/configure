@@ -59,19 +59,25 @@ config_lib libmd -lmd
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
 LIBC3_ASAN=../libc3/libc3_asan.la
-LIBS_ASAN="$LIBC3_ASAN $LIBS ../libtommath/libtommath_asan.la"
+LIBTOMMATH_ASAN=../libtommath/libtommath_asan.la
+LOCAL_LIBS_ASAN="$LIBC3_ASAN $LIBTOMMATH_ASAN"
+LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LDFLAGS_COV="$LDFLAGS"
 LIBC3_COV=../libc3/libc3_cov.la
-LIBS_COV="$LIBC3_COV $LIBS ../libtommath/libtommath_cov.la"
+LIBTOMMATH_COV=../libtommath/libtommath_cov.la
+LOCAL_LIBS_COV="$LIBC3_COV $LIBTOMMATH_COV"
+LIBS_COV="$LOCAL_LIBS_COV $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
 LDFLAGS_DEBUG="$LDFLAGS"
 LIBC3_DEBUG=../libc3/libc3_debug.la
-LIBS_DEBUG="$LIBC3_DEBUG $LIBS ../libtommath/libtommath_debug.la"
+LIBTOMMATH_DEBUG=../libtommath/libtommath_debug.la
+LOCAL_LIBS_DEBUG="$LIBC3_DEBUG $LIBTOMMATH_DEBUG"
+LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
 if [ "x$ENV_CFLAGS" = "x" ]; then
@@ -79,7 +85,9 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
 LIBC3=../libc3/libc3.la
-LIBS="$LIBC3 $LIBS ../libtommath/libtommath.la"
+LIBTOMMATH=../libtommath/libtommath.la
+LOCAL_LIBS="$LIBC3 $LIBTOMMATH"
+LIBS="$LOCAL_LIBS $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
@@ -90,33 +98,31 @@ echo >> ${CONFIG_MK}
 echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
-if $HAVE_GCOV; then
-    echo >> ${CONFIG_MK}
-    echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
-    echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
-    echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
-fi
+echo >> ${CONFIG_MK}
+echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
+echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
+echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
-echo "$PROG: $LIBC3 $OBJECTS" >> ${CONFIG_MK}
+echo "$PROG: $LOCAL_LIBS $OBJECTS" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} ${OBJECTS} ${LIBS} -o $PROG" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
-echo "$PROG_ASAN: $LIBC3_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
+echo "$PROG_ASAN: $LOCAL_LIBS_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_ASAN} \${LDFLAGS_ASAN} ${OBJECTS_ASAN} ${LIBS_ASAN} -o $PROG_ASAN" >> ${CONFIG_MK}
 
 if $HAVE_GCOV; then
     echo >> ${CONFIG_MK}
-    echo "$PROG_COV: $LIBC3_COV $OBJECTS_COV" >> ${CONFIG_MK}
+    echo "$PROG_COV: $LOCAL_LIBS_COV $OBJECTS_COV" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_COV} \${LDFLAGS_COV} ${OBJECTS_COV} ${LIBS_COV} -o $PROG_COV" >> ${CONFIG_MK}
 fi
 
 echo >> ${CONFIG_MK}
-echo "$PROG_DEBUG: $LIBC3_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
+echo "$PROG_DEBUG: $LOCAL_LIBS_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_DEBUG} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} ${LIBS_DEBUG} -o $PROG_DEBUG" >> ${CONFIG_MK}
 
 for SRC in $SOURCES; do
