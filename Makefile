@@ -11,7 +11,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-build:
+build: gen
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c build
 	${MAKE} -C libc3 build
@@ -19,7 +19,7 @@ build:
 	${MAKE} -C c3s build
 	${MAKE} -C test build
 
-all:
+all: gen
 	${MAKE} -C libtommath all
 	${MAKE} -C ucd2c all
 	${MAKE} -C libc3 all
