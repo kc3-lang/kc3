@@ -74,8 +74,6 @@ C3_C_SOURCES = \
 	libc3/call.c \
 	libc3/call.h \
 	libc3/character.c \
-	libc3/debug.c \
-	libc3/debug.h \
 	libc3/log.c \
 	libc3/error.c \
 	libc3/error.h \

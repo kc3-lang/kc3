@@ -18,7 +18,7 @@
 
 #define CALL_TEST_INIT_1(test)                                         \
   do {                                                                 \
-    s_call call = {0};                                                 \
+    s_call call;                                                       \
     TEST_EQ(call_init_1(&call, (test)), &call);                        \
     call_clean(&call);                                                 \
     test_ok();                                                         \
@@ -26,8 +26,8 @@
 
 #define CALL_TEST_INSPECT(test)                                        \
   do {                                                                 \
-    s_call call = {0};                                                 \
-    s_str result = {0};                                                \
+    s_call call;                                                       \
+    s_str result;                                                      \
     call_init_1(&call, (test));                                        \
     TEST_EQ(call_inspect(&call, &result), &result);                    \
     TEST_EQ(result.size, strlen(test));                                \

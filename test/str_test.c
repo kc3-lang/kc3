@@ -200,7 +200,8 @@ void str_test_init_dup_1 ()
 
 void str_test_inspect ()
 {
-  s8 zero[16] = {0};
+  s8 zero[16];
+  bzero(zero, sizeof(zero));
   STR_TEST_INSPECT_1("", "\"\"");
   STR_TEST_INSPECT_1(" ", "\" \"");
   STR_TEST_INSPECT_1("\n", "\"\\n\"");
@@ -353,7 +354,8 @@ void str_test_new_f ()
 
 void str_test_to_hex ()
 {
-  s8 zero[32] = {0};
+  s8 zero[32];
+  bzero(zero, sizeof(zero));
   STR_TEST_TO_HEX(str_new_1(NULL, ""), "");
   STR_TEST_TO_HEX(str_new(NULL,  1, zero), "00");
   STR_TEST_TO_HEX(str_new(NULL,  2, zero), "0000");

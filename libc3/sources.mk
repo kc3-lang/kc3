@@ -15,7 +15,6 @@ HEADERS = \
 	character.h \
 	compare.h \
 	config.h \
-	debug.h \
 	env.h \
 	error.h \
 	error_handler.h \
@@ -66,7 +65,6 @@ SOURCES = \
 	call.c \
 	character.c \
 	compare.c \
-	debug.c \
 	env.c \
 	error.c \
 	error_handler.c \
@@ -115,7 +113,6 @@ LO_SOURCES = \
 	call.c \
 	character.c \
 	compare.c \
-	debug.c \
 	env.c \
 	error.c \
 	error_handler.c \

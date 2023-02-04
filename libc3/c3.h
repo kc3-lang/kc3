@@ -24,7 +24,6 @@
 #include "call.h"
 #include "character.h"
 #include "compare.h"
-#include "debug.h"
 #include "env.h"
 #include "eval.h"
 #include "fact.h"
