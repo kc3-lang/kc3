@@ -39,7 +39,7 @@
 #define BUF_PARSE_TEST_CALL(test)                                      \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_call dest = {0};                                                 \
+    s_call dest;                                                       \
     test_context("buf_parse_call(" # test ")");                        \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_call(&buf, &dest), strlen(test));                \
@@ -153,7 +153,7 @@
 #define BUF_PARSE_TEST_IDENT(test, expected)                           \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_ident dest = {0};                                                \
+    s_ident dest;                                                      \
     test_context("buf_parse_ident(" # test ") -> " # expected);        \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_ident(&buf, &dest), strlen(test));               \
@@ -259,7 +259,8 @@
 #define BUF_PARSE_TEST_NOT_CALL(test)                                  \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_call dest = {0};                                                 \
+    s_call dest;                                                       \
+    bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_call(" # test ") -> 0");                   \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_call(&buf, &dest), 0);                           \
@@ -336,7 +337,8 @@
 #define BUF_PARSE_TEST_NOT_IDENT(test)                                 \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_ident dest = {0};                                                \
+    s_ident dest;                                                      \
+    bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_ident(" # test ") -> 0");                  \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_ident(&buf, &dest), 0);                          \
@@ -408,7 +410,8 @@
 #define BUF_PARSE_TEST_NOT_STR(test)                                   \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_str dest = {0};                                                  \
+    s_str dest;                                                        \
+    bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_str(" # test ") -> 0");                    \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_str(&buf, &dest), 0);                            \
@@ -442,7 +445,8 @@
 #define BUF_PARSE_TEST_STR(test, expected)                             \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_str dest = {0};                                                  \
+    s_str dest;                                                        \
+    bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_str(" # test ") -> " # expected);          \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_str(&buf, &dest), strlen(test));                 \
@@ -457,7 +461,8 @@
 #define BUF_PARSE_TEST_STR_EOF(test)                                   \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_str dest = {0};                                                  \
+    s_str dest;                                                        \
+    bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_str(" # test ") -> EOF");                  \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_str(&buf, &dest), -1);                           \
@@ -545,7 +550,8 @@
 #define BUF_PARSE_TEST_TUPLE(test)                                     \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_tuple dest = {0};						       \
+    s_tuple dest;						       \
+    bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_tuple(" # test ")");                       \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_tuple(&buf, &dest), strlen(test));               \
