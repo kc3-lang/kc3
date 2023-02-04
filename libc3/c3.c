@@ -16,7 +16,7 @@
 #include "c3.h"
 #include "sym.h"
 
-s_env g_c3_env = {0};
+s_env g_c3_env;
 
 void c3_init (s_env *env)
 {
