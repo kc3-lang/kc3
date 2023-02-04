@@ -53,28 +53,24 @@ update_config_h
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBTOMMATH_ASAN=../libtommath/libtommath_asan.la
-LIBS_ASAN="$LIBTOMMATH_ASAN $LIBS"
+LIBS_ASAN="$LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LDFLAGS_COV="$LDFLAGS"
-LIBTOMMATH_COV=../libtommath/libtommath_cov.la
-LIBS_COV="$LIBTOMMATH_COV $LIBS"
+LIBS_COV="$LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBTOMMATH_DEBUG=../libtommath/libtommath_debug.la
-LIBS_DEBUG="$LIBTOMMATH_DEBUG $LIBS"
+LIBS_DEBUG="$LIBS"
 
 # Main config
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBTOMMATH=../libtommath/libtommath.la
-LIBS="$LIBTOMMATH $LIBS"
+LIBS="$LIBS"
 
 make -f gen.mk
 
