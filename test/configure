@@ -58,28 +58,28 @@ config_lib libmd -lmd
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBC3_ASAN=../libc3/libc3_asan.a
-LIBS_ASAN="$LIBC3_ASAN $LIBS"
+LIBC3_ASAN=../libc3/libc3_asan.la
+LIBS_ASAN="$LIBC3_ASAN $LIBS ../libtommath/libtommath_asan.la"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LDFLAGS_COV="$LDFLAGS"
-LIBC3_COV=../libc3/libc3_cov.a
-LIBS_COV="$LIBC3_COV $LIBS"
+LIBC3_COV=../libc3/libc3_cov.la
+LIBS_COV="$LIBC3_COV $LIBS ../libtommath/libtommath_cov.la"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBC3_DEBUG=../libc3/libc3_debug.a
-LIBS_DEBUG="$LIBC3_DEBUG $LIBS"
+LIBC3_DEBUG=../libc3/libc3_debug.la
+LIBS_DEBUG="$LIBC3_DEBUG $LIBS ../libtommath/libtommath_debug.la"
 
 # Main config
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBC3=../libc3/libc3.a
-LIBS="$LIBC3 $LIBS"
+LIBC3=../libc3/libc3.la
+LIBS="$LIBC3 $LIBS ../libtommath/libtommath.la"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
