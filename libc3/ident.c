@@ -34,7 +34,7 @@ e_bool ident_character_is_reserved (character c)
 
 s_ident * ident_copy (const s_ident *src, s_ident *dest)
 {
-  dest->module = src->module;
+  dest->module_name = src->module_name;
   dest->sym = src->sym;
   return dest;
 }
@@ -71,7 +71,7 @@ s_ident * ident_init (s_ident *ident, const s_sym *sym)
 {
   assert(ident);
   assert(sym);
-  ident->module = NULL;
+  ident->module_name = NULL;
   ident->sym = sym;
   return ident;
 }
@@ -100,3 +100,14 @@ s_str * ident_inspect (const s_ident *ident, s_str *dest)
   }
   return buf_to_str(&buf, dest);
 }
+
+void ident_resolve_module (s_ident *ident, const s_env *env)
+{
+  assert(env);
+  assert(ident);
+  if (! ident->module_name) {
+    assert(env->current_module);
+    ident->module_name = env->current_module->name;
+  }
+}
+

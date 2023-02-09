@@ -16,18 +16,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "binding.h"
-#include "buf.h"
-#include "buf_file.h"
-#include "buf_inspect.h"
-#include "env.h"
+#include "c3.h"
 #include "error_handler.h"
-#include "facts.h"
 #include "frame.h"
-#include "list.h"
-#include "module.h"
-#include "str.h"
-#include "sym.h"
-#include "tag.h"
+
+s_env g_c3_env;
 
 void env_clean (s_env *env)
 {
@@ -75,6 +68,50 @@ void env_error_tag (s_env *env, const s_tag *tag)
     buf_write_1(&env->err, "\n");
     return;
   }
+}
+
+s_tag * env_eval_call (s_env *env, const s_call *call, s_tag *dest)
+{
+  s_call c;
+  s_facts_with_cursor cursor;
+  s_tag *result;
+  s_tag tag_fn;
+  s_tag tag_ident;
+  s_tag tag_is_a;
+  s_tag tag_macro;
+  s_tag tag_module;
+  s_tag tag_module_name;
+  s_tag tag_sym;
+  assert(env);
+  assert(call);
+  assert(dest);
+  call_copy(call, &c);
+  ident_resolve_module(&c.ident, env);
+  tag_init_ident(&tag_ident, &c.ident);
+  tag_init_1(    &tag_is_a,   ":is-a");
+  tag_init_1(    &tag_macro,  ":macro");
+  tag_init_1(    &tag_module, ":module");
+  tag_init_sym(  &tag_module_name, c.ident.module_name);
+  tag_init_sym(  &tag_sym, call->ident.sym);
+  facts_with(&env->facts, &cursor, (t_facts_spec) {
+      &tag_module_name,
+      &tag_is_a, &tag_module,       /* module exists */
+      &tag_sym, &tag_ident, NULL,   /* module exports symbol */
+      &tag_ident, &tag_fn,          /* function */
+      NULL, NULL });
+  if (! facts_with_cursor_next(&cursor))
+    errx(1, "symbol %s not found in module %s",
+         call->ident.sym->str.ptr.ps8,
+         call->ident.module_name->str.ptr.ps8);
+  facts_with_cursor_clean(&cursor);
+  facts_with(&env->facts, &cursor, (t_facts_spec) {
+      &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });
+  if (facts_with_cursor_next(&cursor))
+    result = env_eval_call_macro(env, &c, dest);
+  else
+    result = env_eval_call_fn(env, &c, dest);
+  facts_with_cursor_clean(&cursor);
+  return result;
 }
 
 s_tag * env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
@@ -160,9 +197,7 @@ s_tag * env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   switch (tag->type.type) {
   case TAG_VOID: return tag_init_void(dest);
   case TAG_CALL:
-    assert(! "env_eval_tag: invalid tag type: TAG_CALL");
-    errx(1, "env_eval_tag: invalid tag type TAG_CALL");
-    return NULL;
+    return env_eval_call(env, &tag->data.call, dest);
   case TAG_CALL_FN:
     return env_eval_call_fn(env, &tag->data.call, dest);
   case TAG_CALL_MACRO:

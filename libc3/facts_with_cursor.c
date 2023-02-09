@@ -13,6 +13,9 @@
  */
 #include <assert.h>
 #include <stdlib.h>
+#include "buf.h"
+#include "buf_inspect.h"
+#include "env.h"
 #include "facts_cursor.h"
 #include "facts_spec.h"
 #include "facts_with.h"
@@ -42,11 +45,11 @@ s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
     level = &cursor->levels[cursor->facts_count - 1];
 #ifdef DEBUG
     buf_write_1(&g_c3_env.err, "[debug] cursor->level=");
-    buf_inspect_u64(&g_debug_buf, cursor->level);
+    buf_inspect_u64(&g_c3_env.err, cursor->level);
     buf_write_1(&g_c3_env.err, " level->spec=");
-    buf_inspect_fact_spec(&g_debug_buf, level->spec);
+    buf_inspect_fact_spec(&g_c3_env.err, level->spec);
     buf_write_1(&g_c3_env.err, " ");
-    buf_inspect_fact(&g_debug_buf, level->fact);
+    buf_inspect_fact(&g_c3_env.err, level->fact);
 #endif
     level->fact = facts_cursor_next(&level->cursor);
 #ifdef DEBUG

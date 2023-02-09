@@ -23,6 +23,9 @@
 /* Constructors, call ident_clean after use. */
 s_ident * ident_init_1 (s_ident *ident, const s8 *p);
 
+/* Modifiers */
+s_ident * ident_resolve_module (s_ident *ident, const s_env *env);
+
 /* Observers */
 
 /* Returns true iff c is an ident reserved character. */

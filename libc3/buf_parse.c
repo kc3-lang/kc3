@@ -555,12 +555,8 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   s_buf tmp;
   assert(buf);
   assert(dest);
-  /* XXX cannot parse ident if there is no module */
-  if (! g_c3_env.current_module)
-    return 0;
-  module_name = g_c3_env.current_module->name;
   buf_save_init(buf, &save);
-  if ((r = buf_parse_module(buf, &module_name)) < 0)
+  if ((r = buf_parse_module_name(buf, &module_name)) < 0)
     goto clean;
   if (r > 0) {
     result += r;
@@ -599,7 +595,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
     }
     buf_read_to_str(&tmp, &str);
     str_to_ident(&str, dest);
-    dest->module = module_name;
+    dest->module_name = module_name;
     str_clean(&str);
     r = result;
     goto clean;
@@ -906,7 +902,7 @@ sw buf_parse_list (s_buf *buf, s_list **list)
   return r;
 }
 
-sw buf_parse_module (s_buf *buf, const s_sym **dest)
+sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
 {
   sw r;
   sw result = 0;

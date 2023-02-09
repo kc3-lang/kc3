@@ -230,8 +230,8 @@ sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
   assert(buf);
   assert(ident);
   result = 0;
-  if (ident->module && ident->module != g_c3_env.current_module->name) {
-    if ((r = buf_inspect_sym(buf, ident->module)) < 0)
+  if (ident->module_name) {
+    if ((r = buf_inspect_sym(buf, ident->module_name)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, ".")) < 0)
@@ -285,8 +285,8 @@ sw buf_inspect_ident_size (const s_ident *ident)
   sw r;
   sw result = 0;
   assert(ident);
-  if (ident->module && ident->module != g_c3_env.current_module->name) {
-    if ((r = buf_inspect_sym_size(ident->module)) < 0)
+  if (ident->module_name) {
+    if ((r = buf_inspect_sym_size(ident->module_name)) < 0)
       return r;
     result += r;
     result += strlen(".");

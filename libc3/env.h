@@ -16,6 +16,8 @@
 
 #include "types.h"
 
+extern s_env g_c3_env;
+
 /* stack allocation compatible functions */
 void    env_clean (s_env *env);
 s_env * env_init (s_env *env);

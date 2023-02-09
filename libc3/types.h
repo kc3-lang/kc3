@@ -120,6 +120,7 @@ typedef union tag_type u_tag_type;
 /* typedefs */
 typedef s32            character;
 typedef s_tag      **p_facts_spec;
+typedef s_tag       *t_facts_spec[];
 typedef SHA1_CTX     t_hash;
 typedef s_tag       *p_quote;
 typedef const s_tag *p_tag;
@@ -160,11 +161,6 @@ struct fn {
   s_arg *args;
   s_binding *bindings;
   s_list *algo;
-};
-
-struct ident {
-  const s_sym *module;
-  const s_sym *sym;
 };
 
 struct module {
@@ -212,12 +208,6 @@ struct unwind_protect {
 };
 
 /* 2 */
-struct arg {
-  const s_sym *name;
-  s_ident type;
-  s_arg *next;
-};
-
 struct binding {
   const s_sym *name;
   const s_tag *value;
@@ -239,19 +229,16 @@ struct buf {
   u64         wpos;
 };
 
-struct call {
-  /* key */
-  s_ident ident;
-  s_list *arguments;
-  s_list_map *keyword;
-  /* value */
-  s_fn *fn;
-};
-
 struct facts_spec_cursor {
   p_facts_spec spec;
   const s_tag *subject;
   uw pos;
+};
+
+struct ident {
+  /*const s_module *module;*/
+  const s_sym *module_name;
+  const s_sym *sym;
 };
 
 struct integer {
@@ -265,6 +252,21 @@ struct str {
 };
 
 /* 3 */
+struct arg {
+  const s_sym *name;
+  s_ident type;
+  s_arg *next;
+};
+
+struct call {
+  /* key */
+  s_ident ident;
+  s_list *arguments;
+  s_list_map *keyword;
+  /* value */
+  s_fn *fn;
+};
+
 struct log {
   s_buf  buf;
   u64    count;

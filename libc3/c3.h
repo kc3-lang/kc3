@@ -25,9 +25,13 @@
 #include "character.h"
 #include "compare.h"
 #include "env.h"
+#include "error.h"
 #include "eval.h"
 #include "fact.h"
 #include "facts.h"
+#include "facts_cursor.h"
+#include "facts_with.h"
+#include "facts_with_cursor.h"
 #include "fn.h"
 #include "hash.h"
 #include "ident.h"
@@ -41,8 +45,6 @@
 #include "ucd.h"
 
 #define C3_EXT ".c3"
-
-extern s_env g_c3_env;
 
 void c3_init (s_env *env);
 void c3_clean (s_env *env);
