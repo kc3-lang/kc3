@@ -292,10 +292,6 @@ s8 compare_sym (const s_sym *a, const s_sym *b)
 }
 
 s8 compare_tag (const s_tag *a, const s_tag *b) {
-  if (tag_is_bound_var(a))
-    a = a->data.var;
-  if (tag_is_bound_var(b))
-    b = b->data.var;
   if (a == b)
     return 0;
   if (!a ||
@@ -340,7 +336,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_U16: return compare_u16(a->data.u16, b->data.u16);
   case TAG_U32: return compare_u32(a->data.u32, b->data.u32);
   case TAG_U64: return compare_u64(a->data.u64, b->data.u64);
-  case TAG_VAR: return compare_ptr(a->data.var, b->data.var);
+  case TAG_VAR: return compare_ptr(a, b);
   }
   assert(! "compare_tag: error");
   errx(1, "compare_tag");

@@ -25,6 +25,14 @@ void fn_clean (s_fn *fn)
   list_delete_all(fn->algo);
 }
 
+s_fn * fn_copy (const s_fn *src, s_fn *dest)
+{
+  dest->arity = src->arity;
+  list_copy(src->pattern, &dest->pattern);
+  list_copy(src->algo, &dest->algo);
+  return dest;
+}
+
 s_fn * fn_init (s_fn *fn)
 {
   assert(fn);

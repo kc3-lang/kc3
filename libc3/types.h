@@ -124,7 +124,6 @@ typedef s_tag       *t_facts_spec[];
 typedef SHA1_CTX     t_hash;
 typedef s_tag       *p_quote;
 typedef const s_tag *p_tag;
-typedef const s_tag *p_var;
 typedef u64          t_skiplist_height;
 
 #define CHARACTER_MAX S32_MAX
@@ -299,7 +298,6 @@ union tag_data {
   u16          u16;
   u32          u32;
   u64          u64;
-  p_var        var;
 };
 
 /* 4 */

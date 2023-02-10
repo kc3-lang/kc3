@@ -153,17 +153,50 @@ s_tag * tag_copy (const s_tag *src, s_tag *dest)
   assert(src);
   assert(dest);
   switch (src->type.type) {
-  case TAG_CALL: call_copy(&src->data.call, &dest->data.call);    break;
+  case TAG_VAR:
+    error("tag_copy: TAG_VAR");
+  case TAG_VOID:
+    break;
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO:
+    call_copy(&src->data.call, &dest->data.call);
+    break;
+  case TAG_FN:
+    fn_copy(&src->data.fn, &dest->data.fn);
+    break;
   case TAG_INTEGER:
     integer_init(&dest->data.integer);
-    integer_copy(&src->data.integer, &dest->data.integer);        break;
-  case TAG_LIST: list_copy(src->data.list, &dest->data.list);     break;
-  case TAG_QUOTE: quote_copy(src->data.quote, &dest->data.quote); break;
-  case TAG_STR: str_copy(&src->data.str, &dest->data.str);        break;
+    integer_copy(&src->data.integer, &dest->data.integer);
+    break;
+  case TAG_LIST:
+    list_copy(src->data.list, &dest->data.list);
+    break;
+  case TAG_QUOTE:
+    quote_copy(src->data.quote, &dest->data.quote);
+    break;
+  case TAG_STR:
+    str_copy(&src->data.str, &dest->data.str);
+    break;
   case TAG_TUPLE:
-    tuple_copy(&src->data.tuple, &dest->data.tuple);              break;
-  case TAG_VAR: errx(1, "tag_copy: variable");              return NULL;
-  default: dest->data = src->data;
+    tuple_copy(&src->data.tuple, &dest->data.tuple);
+    break;
+  case TAG_BOOL:
+  case TAG_CHARACTER:
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_IDENT:
+  case TAG_PTAG:
+  case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_SYM:
+  case TAG_U8:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+    dest->data = src->data;
   }
   dest->type.type = src->type.type;
   return dest;
@@ -555,8 +588,7 @@ s_tag * tag_integer_reduce (s_tag *tag)
 e_bool tag_is_bound_var (const s_tag *tag)
 {
   return (tag &&
-          tag->type.type == TAG_VAR &&
-          tag->data.var);
+          tag->type.type != TAG_VAR);
 }
 
 e_bool tag_is_number (const s_tag *tag)
@@ -581,8 +613,7 @@ e_bool tag_is_number (const s_tag *tag)
 e_bool tag_is_unbound_var (const s_tag *tag)
 {
   return (tag &&
-          tag->type.type == TAG_VAR &&
-          tag->data.var == NULL);
+          tag->type.type == TAG_VAR);
 }
 
 s_tag * tag_list (s_tag *tag, s_list *x)

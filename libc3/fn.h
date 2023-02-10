@@ -22,7 +22,11 @@
 
 #include "types.h"
 
-s_fn * fn_init (s_fn *fn);
+/* stack-allocation compatible functions */
 void   fn_clean (s_fn *fn);
+s_fn * fn_init (s_fn *fn);
+
+/* modifiers */
+s_fn * fn_copy (const s_fn *src, s_fn *dest);
 
 #endif /* FN_H */

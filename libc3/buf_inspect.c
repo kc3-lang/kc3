@@ -901,7 +901,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_U16:     return buf_inspect_u16(buf, tag->data.u16);
   case TAG_U32:     return buf_inspect_u32(buf, tag->data.u32);
   case TAG_U64:     return buf_inspect_u64(buf, tag->data.u64);
-  case TAG_VAR:     return buf_inspect_var(buf, tag->data.var);
+  case TAG_VAR:     return buf_inspect_var(buf, tag);
   }
   assert(! "unknown tag type");
   return -1;
@@ -939,10 +939,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_U16:      return buf_inspect_u16_size(tag->data.u16);
   case TAG_U32:      return buf_inspect_u32_size(tag->data.u32);
   case TAG_U64:      return buf_inspect_u64_size(tag->data.u64);
-  case TAG_VAR:
-    assert(! "variable");
-    errx(1, "buf_inspect_tag_size: variable");
-    return -1;
+  case TAG_VAR:      return BUF_INSPECT_VAR_SIZE;
   }
   assert(! "unknown tag type");
   return -1;
@@ -1192,10 +1189,7 @@ sw buf_inspect_var (s_buf *buf, const s_tag *var)
   if ((r = buf_inspect_uw_hex(buf, (uw) var)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1(buf, ") = ")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_tag(buf, var)) < 0)
+  if ((r = buf_write_1(buf, ")")) < 0)
     return r;
   result += r;
   return result;
