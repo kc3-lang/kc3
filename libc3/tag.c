@@ -118,13 +118,33 @@ void tag_clean (s_tag *tag)
 {
   assert(tag);
   switch (tag->type.type) {
-  case TAG_CALL:    call_clean(&tag->data.call);       break;
-  case TAG_INTEGER: integer_clean(&tag->data.integer); break;
-  case TAG_LIST:    list_delete(tag->data.list);       break;
-  case TAG_QUOTE:   quote_clean(tag->data.quote);      break;
-  case TAG_STR:     str_clean(&tag->data.str);         break;
-  case TAG_TUPLE:   tuple_clean(&tag->data.tuple);     break;
-  default: ;
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO: call_clean(&tag->data.call);       break;
+  case TAG_FN:         fn_clean(&tag->data.fn);           break;
+  case TAG_INTEGER:    integer_clean(&tag->data.integer); break;
+  case TAG_LIST:       list_delete(tag->data.list);       break;
+  case TAG_QUOTE:      quote_clean(tag->data.quote);      break;
+  case TAG_STR:        str_clean(&tag->data.str);         break;
+  case TAG_TUPLE:      tuple_clean(&tag->data.tuple);     break;
+  case TAG_BOOL:
+  case TAG_CHARACTER:
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_IDENT:
+  case TAG_PTAG:
+  case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_SYM:
+  case TAG_U8:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_VAR:
+  case TAG_VOID:
+    break;
   }
 }
 
