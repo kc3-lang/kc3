@@ -19,7 +19,7 @@
 #define error(message)                                                 \
   do {                                                                 \
     assert(! message);                                                 \
-    errx(1, "%s: %s", __FUNCTION__, message);                          \
+    errx(1, "%s", message);                                            \
   } while (0)
 
 void error_print (s_buf *buf, const s_error_handler *error_handler);
