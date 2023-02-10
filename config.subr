@@ -64,6 +64,10 @@ config_asan() {
     rm .config_asan.c
 }
 
+config_define () {
+    echo "#define $1 $2" >> "${CONFIG_H}"
+}
+
 config_gnu() {
     if grep -q _GNU_SOURCE /usr/include/features.h 2>/dev/null; then
 	CFLAGS="$CFLAGS -D_GNU_SOURCE"

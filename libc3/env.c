@@ -154,10 +154,11 @@ s_tag * env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   frame_init(&frame, env->frame);
   env->frame = &frame;
   args = env_eval_call_arguments(env, call->arguments);
-  env_eval_equal_list(env, fn->pattern, args, &tmp);
-  env_eval_progn(env, fn->algo, dest);
+  if (env_eval_equal_list(env, fn->pattern, args, &tmp)) {
+    env_eval_progn(env, fn->algo, dest);
+    list_delete_all(tmp);
+  }
   env->frame = frame_clean(&frame);
-  list_delete_all(tmp);
   return dest;
 }
 
@@ -375,7 +376,7 @@ s_env * env_init (s_env *env)
   buf_init_alloc(&env->err, BUF_SIZE);
   buf_file_open_w(&env->err, stderr);
   facts_init(&env->facts);
-  str_init_1(&env->module_path, NULL, "/home/dx/c/c3-lang/c3/lib");
+  str_init_1(&env->module_path, NULL, PREFIX "/lib/c3/0.1");
   if (! module_load(&env->c3_module, sym_1("C3"), &env->facts))
     return NULL;
   env->current_module = &env->c3_module;

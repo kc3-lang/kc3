@@ -48,6 +48,7 @@ pkg_config libmd
 config_lib libmd -lmd
 config_include sha_h sys/types.h sha.h HAVE_SHA_H
 config_include sha1_h sys/types.h sha1.h HAVE_SHA1_H
+config_define PREFIX "\"${PREFIX}\""
 update_config_h
 
 # Address Sanitizer config
