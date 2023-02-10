@@ -65,6 +65,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_bool (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_character (s_buf *buf, s_tag *dest);
+sw buf_parse_tag_fn (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_ident (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_integer (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_list (s_buf *buf, s_tag *dest);

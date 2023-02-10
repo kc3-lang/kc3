@@ -16,6 +16,12 @@
 
 #include "types.h"
 
+#define error(message)                                                 \
+  do {                                                                 \
+    assert(! message);                                                 \
+    errx(1, "%s: %s", __FUNCTION__, message);                          \
+  } while (0)
+
 void error_print (s_buf *buf, const s_error_handler *error_handler);
 void error_print_backtrace (s_buf *buf, const s_list *backtrace);
 

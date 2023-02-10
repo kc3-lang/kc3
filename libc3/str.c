@@ -85,7 +85,7 @@ s_str * str_init_1 (s_str *str, s8 *free, const s8 *p)
 s_str * str_init_alloc (s_str *str, uw size, const s8 *p)
 {
   assert(str);
-  str->free.p = malloc(size);
+  str->free.p = calloc(size + 1, 1);
   str->size = size;
   str->ptr.p = str->free.p;
   if (! str->ptr.p)
@@ -98,7 +98,7 @@ s_str * str_init_dup (s_str *str, const s_str *src)
 {
   assert(str);
   assert(src);
-  str->free.p = malloc(src->size);
+  str->free.p = calloc(src->size + 1, 1);
   str->size = src->size;
   str->ptr.p = str->free.p;
   memcpy(str->free.p, src->ptr.p, str->size);
@@ -111,7 +111,7 @@ s_str * str_init_dup_1 (s_str *str, const s8 *src)
   assert(str);
   assert(src);
   len = strlen(src);
-  str->free.p = malloc(len + 1);
+  str->free.p = calloc(len + 1, 1);
   str->size = len;
   str->ptr.p = str->free.p;
   memcpy(str->free.p, src, len + 1);

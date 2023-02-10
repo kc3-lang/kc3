@@ -431,21 +431,26 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
   assert(dest);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "fn")) <= 0)
-    return r;
+    goto clean;
   result += r;
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
   fn_init(dest);
-  if ((r = buf_parse_fn_pattern(buf, &dest->pattern)) < 0)
+  if ((r = buf_parse_fn_pattern(buf, &dest->pattern)) < 0) {
+    warnx("buf_parse_fn: invalid pattern");
     goto restore;
+  }
   dest->arity = list_length(dest->pattern);
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_fn_algo(buf, &dest->algo)) <= 0)
+  if ((r = buf_parse_fn_algo(buf, &dest->algo)) <= 0) {
+    buf_inspect_fn(&g_c3_env.err, dest);
+    warnx("buf_parse_fn: invalid program");
     goto restore;
+  }
   r = result;
   goto clean;
  restore:
@@ -463,8 +468,9 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
   s_tag tag;
   assert(buf);
   assert(dest);
+  buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "{")) <= 0)
-    return r;
+    goto clean;
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
@@ -477,10 +483,15 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
     dest = &(*dest)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
+    result += r;
     if ((r = buf_read_1(buf, ";")) < 0)
       goto restore;
+    if (! r)
+      break;
+    result += r;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
+    result += r;
   }
   if (r < 0)
     goto restore;
@@ -506,7 +517,7 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
   assert(dest);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "(")) < 0)
-    goto restore;
+    goto clean;
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
@@ -1271,6 +1282,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_str(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
+      (r = buf_parse_tag_fn(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_ident(buf, dest)) != 0 ||
       (r = buf_parse_tag_sym(buf, dest)) != 0)
@@ -1314,6 +1326,14 @@ sw buf_parse_tag_character (s_buf *buf, s_tag *dest)
   sw r;
   if ((r = buf_parse_character(buf, &dest->data.character)) > 0)
     dest->type.type = TAG_CHARACTER;
+  return r;
+}
+
+sw buf_parse_tag_fn (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_fn(buf, &dest->data.fn)) > 0)
+    dest->type.type = TAG_FN;
   return r;
 }
 

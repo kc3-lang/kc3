@@ -223,6 +223,93 @@ sw buf_inspect_fact_spec (s_buf *buf, p_facts_spec spec)
   return result;
 }
 
+sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
+{
+  sw r;
+  sw result = 0;
+  if ((r = buf_write_1(buf, "fn ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_fn_pattern(buf, fn->pattern)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_u8(buf, ' ')) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_fn_algo(buf, fn->algo)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_fn_algo (s_buf *buf, const s_list *algo)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  if (! algo) {
+    if ((r = buf_write_1(buf, "{}")) < 0)
+      return r;
+    result += r;
+    return result;
+  }
+  if (! list_next(algo)) {
+    if ((r = buf_write_1(buf, "{ ")) <= 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_tag(buf, &algo->tag)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, " }")) <= 0)
+      return r;
+    result += r;
+    return result;
+  }
+  if ((r = buf_write_1(buf, "{\n  ")) <= 0)
+    return r;
+  result += r;
+  while (algo) {
+    if ((r = buf_inspect_tag(buf, &algo->tag)) < 0)
+      return r;
+    result += r;
+    algo = list_next(algo);
+    if (algo) {
+      if ((r = buf_write_1(buf, ";\n  ")) < 0)
+        return r;
+      result += r;
+    }
+  }
+  if ((r = buf_write_1(buf, "\n}")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_fn_pattern (s_buf *buf, const s_list *pattern)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  if ((r = buf_write_u8(buf, '(')) <= 0)
+    return r;
+  result += r;
+  while (pattern) {
+    if ((r = buf_inspect_tag(buf, &pattern->tag)) < 0)
+      return r;
+    result += r;
+    pattern = list_next(pattern);
+    if (pattern) {
+      if ((r = buf_write_1(buf, ", ")) < 0)
+        return r;
+      result += r;
+    }
+  }
+  if ((r = buf_write_u8(buf, ')')) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
 {
   sw r;
@@ -797,8 +884,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
     return buf_inspect_character(buf, tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, tag->data.f64);
-  case TAG_FN:
-    return buf_inspect_uw_hex(buf, (uw) &tag->data.fn);
+  case TAG_FN:      return buf_inspect_fn(buf, &tag->data.fn);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
   case TAG_LIST:    return buf_inspect_list(buf, tag->data.list);

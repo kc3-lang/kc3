@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include "binding.h"
 #include "c3.h"
+#include "error.h"
 #include "error_handler.h"
 #include "frame.h"
 
@@ -124,43 +125,39 @@ s_tag * env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   return result;
 }
 
+s_list * env_eval_call_arguments (s_env *env, s_list *args)
+{
+  s_list **dest;
+  s_list *result;
+  dest = &result;
+  while (args) {
+    *dest = list_new();
+    env_eval_tag(env, &args->tag, &(*dest)->tag);
+    tag_init_list(&(*dest)->next, NULL);
+    dest = &(*dest)->next.data.list;
+    args = list_next(args);
+  }
+  return result;
+}
+
 s_tag * env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
 {
-  s_arg *args;
-  s_list *call_args;
+  s_list *args;
   s_frame frame;
   s_fn *fn;
-  s_tag tmp;
+  s_list *tmp;
   assert(env);
   assert(call);
   assert(dest);
   fn = call->fn;
   assert(fn);
   frame_init(&frame, env->frame);
-  frame.bindings = fn->bindings;
-  args = fn->args;
-  call_args = call->arguments;
-  while (args) {
-    if (! call_args) {
-      assert(! "env_eval_call_fn: missing argument");
-      errx(1, "env_eval_call_fn: missing argument");
-      return NULL;
-    }
-    /* TODO: check type */
-    env_eval_tag(env, &call_args->tag, &tmp);
-    frame.bindings = binding_new(args->name, &call_args->tag,
-                                 frame.bindings);
-    args = args->next;
-    call_args = list_next(call_args);
-  }
-  if (call_args) {
-    assert(! "env_eval_call_fn: too many arguments");
-    errx(1, "env_eval_call_fn: too many arguments");
-    return NULL;
-  }
   env->frame = &frame;
+  args = env_eval_call_arguments(env, call->arguments);
+  env_eval_equal_list(env, fn->pattern, args, &tmp);
   env_eval_progn(env, fn->algo, dest);
   env->frame = frame_clean(&frame);
+  list_delete_all(tmp);
   return dest;
 }
 
@@ -174,6 +171,130 @@ s_tag * env_eval_call_macro (s_env *env, const s_call *call, s_tag *dest)
   (void) call;
   (void) expanded;
   return dest;
+}
+
+bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
+                          s_list **dest)
+{
+  s_list *tmp;
+  s_list **t;
+  t = &tmp;
+  while (1) {
+    if (! a && ! b) {
+      *t = NULL;
+      goto ok;
+    }
+    if (! a)
+      goto ko;
+    if (! b)
+      goto ko;
+    *t = list_new();
+    if (! env_eval_equal_tag(env, &a->tag, &b->tag, &(*t)->tag))
+      goto ko;
+    a = list_next(a);
+    b = list_next(b);
+    t = &(*t)->next.data.list;
+  }
+ ok:
+  *dest = tmp;
+  return true;
+ ko:
+  list_delete_all(tmp);
+  return false;
+}
+
+bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
+                         s_tag *dest)
+{
+  assert(env);
+  assert(a);
+  assert(b);
+  assert(dest);
+  if (a->type.type == TAG_IDENT) {
+    if (b->type.type == TAG_IDENT)
+      warnx("TAG_IDENT = TAG_IDENT");
+    tag_copy(b, dest);
+    frame_binding_new(env->frame, a->data.ident.sym, dest);
+    return true;
+  }
+  if (b->type.type == TAG_IDENT) {
+    tag_copy(a, dest);
+    frame_binding_new(env->frame, b->data.ident.sym, dest);
+    return true;
+  }
+  if (a->type.type != b->type.type) {
+    warnx("env_eval_equal_tag: type mismatch");
+    return false;
+  }
+  switch (a->type.type) {
+  case TAG_VOID:
+    tag_init_void(dest);
+    return true;
+  case TAG_IDENT:
+    error("env_eval_equal_tag: TAG_IDENT");
+  case TAG_LIST:
+    tag_init_list(dest, NULL);
+    return env_eval_equal_list(env, a->data.list, b->data.list,
+                               &dest->data.list);
+  case TAG_TUPLE:
+    dest->type.type = TAG_TUPLE;
+    return env_eval_equal_tuple(env, &a->data.tuple, &b->data.tuple,
+                                &dest->data.tuple);
+  case TAG_BOOL:
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO:
+  case TAG_CHARACTER:
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_FN:
+  case TAG_INTEGER:
+  case TAG_PTAG:
+  case TAG_QUOTE:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_S8:
+  case TAG_STR:
+  case TAG_SYM:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_U8:
+  case TAG_VAR:
+    if (compare_tag(a, b)) {
+      warnx("env_eval_compare_tag: value mismatch");
+      return false;
+    }
+    tag_copy(a, dest);
+    return true;
+  }
+  error("env_eval_equal_tag: invalid tag");
+  return false;
+}
+
+bool env_eval_equal_tuple (s_env *env, const s_tuple *a,
+                           const s_tuple *b, s_tuple *dest)
+{
+  uw i;
+  s_tuple tmp;
+  assert(env);
+  assert(a);
+  assert(b);
+  assert(dest);
+  if (a->count != b->count)
+    return false;
+  tuple_init(&tmp, a->count);
+  i = 0;
+  while (i < a->count) {
+    if (! env_eval_equal_tag(env, a->tag + i, b->tag + i, tmp.tag + i)) {
+      tuple_clean(&tmp);
+      return false;
+    }
+    i++;
+  }
+  *dest = tmp;
+  return true;
 }
 
 const s_tag * env_eval_ident (s_env *env, const s_ident *ident)

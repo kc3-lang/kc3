@@ -18,6 +18,11 @@
 #include "frame.h"
 #include "list.h"
 
+void frame_binding_new (s_frame *frame, const s_sym *name, s_tag *value)
+{
+  frame->bindings = binding_new(name, value, frame->bindings);
+}
+
 s_frame * frame_clean (s_frame *frame)
 {
   s_frame *next;

@@ -64,11 +64,11 @@ s_fact * facts_cursor_next (s_facts_cursor *cursor)
   if (cursor->node) {
     s_fact *fact = cursor->node->fact;
     if (cursor->var_subject)
-      cursor->var_subject->data.var = fact->subject;
+      *cursor->var_subject = *fact->subject;
     if (cursor->var_predicate)
-      cursor->var_predicate->data.var = fact->predicate;
+      *cursor->var_predicate = *fact->predicate;
     if (cursor->var_object)
-      cursor->var_object->data.var = fact->object;
+      *cursor->var_object = *fact->object;
     return fact;
   }
   if (cursor->var_subject)
