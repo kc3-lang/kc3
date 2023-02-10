@@ -437,9 +437,9 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
     goto restore;
   result += r;
   fn_init(dest);
-  if ((r = buf_parse_fn_args(buf, &dest->args)) < 0)
+  if ((r = buf_parse_fn_pattern(buf, &dest->pattern)) < 0)
     goto restore;
-  dest->arity = arg_length(dest->args);
+  dest->arity = list_length(dest->pattern);
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
@@ -471,9 +471,6 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
   result += r;
   while ((r = buf_parse_tag(buf, &tag)) > 0) {
     result += r;
-    if (tag.type.type == TAG_IDENT &&
-        tag.data.ident.sym == sym_1(";"))
-      break;
     *dest = list_new(NULL);
     (*dest)->tag = tag;
     tag_init_list(&(*dest)->next, NULL);
@@ -482,9 +479,14 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
       goto restore;
     if ((r = buf_read_1(buf, ";")) < 0)
       goto restore;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
   }
   if (r < 0)
     goto restore;
+  if ((r = buf_read_1(buf, "}")) <= 0)
+    goto restore;
+  result += r;
   r = result;
   goto clean;
  restore:
@@ -494,12 +496,12 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
   return r;
 }
 
-sw buf_parse_fn_args (s_buf *buf, s_arg **dest)
+sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
 {
   sw r;
   sw result = 0;
   s_buf_save save;
-  const s_sym *sym;
+  s_tag tag;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -509,29 +511,30 @@ sw buf_parse_fn_args (s_buf *buf, s_arg **dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  r = 0;
-  while (! r) {
-    if ((r = buf_parse_sym(buf, &sym)) <= 0)
+  while (1) {
+    if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
-    *dest = arg_new();
-    (*dest)->name = sym;
-    dest = &(*dest)->next;
+    *dest = list_new(NULL);
+    (*dest)->tag = tag;
+    tag_init_list(&(*dest)->next, NULL);
+    dest = &(*dest)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
     if ((r = buf_read_1(buf, ",")) < 0)
       goto restore;
     result += r;
-    if (r > 0) {
-      if ((r = buf_ignore_spaces(buf)) < 0)
+    if (! r) {
+      if ((r = buf_read_1(buf, ")")) < 0)
         goto restore;
       result += r;
-      continue;
+      break;
     }
-    if ((r = buf_read_1(buf, ")")) < 0)
+    if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
+    continue;
   }
   r = result;
   goto clean;
@@ -546,7 +549,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
 {
   character c;
   sw csize;
-  const s_sym *module_name;
+  const s_sym *module_name = NULL;
   sw r;
   sw result = 0;
   s_buf_save save;

@@ -262,7 +262,7 @@ sw facts_load (s_facts *facts, s_buf *buf)
     buf_inspect_u64_hex(&tmp, hash_u64);
     buf_write_s8(&tmp, 0);
     warnx("facts_load: invalid hash line %lu: 0x%s",
-          (unsigned long) i + 3,
+          (unsigned long) i + 4,
           tmp.ptr.ps8);
     return -1;
   }
@@ -272,11 +272,11 @@ sw facts_load (s_facts *facts, s_buf *buf)
   return -1;
  ko_fact:
   warnx("facts_load: %s fact line %lu", r ? "invalid" : "missing",
-        (unsigned long) i + 3);
+        (unsigned long) i + 4);
   return -1;
  ko_hash:
   warnx("facts_load: %s hash line %lu", r ? "invalid" : "missing",
-        (unsigned long) i + 3);
+        (unsigned long) i + 4);
   return -1;
 }
 

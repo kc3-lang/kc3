@@ -76,33 +76,43 @@ s_tag * env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   s_facts_with_cursor cursor;
   s_tag *result;
   s_tag tag_fn;
+  s_tag tag_function;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_macro;
   s_tag tag_module;
   s_tag tag_module_name;
   s_tag tag_sym;
+  s_tag tag_var_fn;
   assert(env);
   assert(call);
   assert(dest);
   call_copy(call, &c);
   ident_resolve_module(&c.ident, env);
   tag_init_ident(&tag_ident, &c.ident);
-  tag_init_1(    &tag_is_a,   ":is-a");
-  tag_init_1(    &tag_macro,  ":macro");
-  tag_init_1(    &tag_module, ":module");
+  tag_init_1(    &tag_fn,       ":fn");
+  tag_init_1(    &tag_function, ":function");
+  tag_init_1(    &tag_is_a,     ":is-a");
+  tag_init_1(    &tag_macro,    ":macro");
+  tag_init_1(    &tag_module,   ":module");
   tag_init_sym(  &tag_module_name, c.ident.module_name);
   tag_init_sym(  &tag_sym, call->ident.sym);
+  tag_init_var(  &tag_var_fn);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_module_name,
       &tag_is_a, &tag_module,       /* module exists */
-      &tag_sym, &tag_ident, NULL,   /* module exports symbol */
-      &tag_ident, &tag_fn,          /* function */
+      &tag_function, &tag_ident, NULL,   /* module exports symbol */
+      &tag_ident, &tag_fn, &tag_var_fn,
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor))
     errx(1, "symbol %s not found in module %s",
-         call->ident.sym->str.ptr.ps8,
-         call->ident.module_name->str.ptr.ps8);
+         c.ident.sym->str.ptr.ps8,
+         c.ident.module_name->str.ptr.ps8);
+  if (tag_var_fn.type.type != TAG_FN)
+    errx(1, "%s.%s is not a function",
+         c.ident.module_name->str.ptr.ps8,
+         c.ident.sym->str.ptr.ps8);
+  c.fn = &tag_var_fn.data.fn;
   facts_with_cursor_clean(&cursor);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });

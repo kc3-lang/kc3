@@ -21,8 +21,7 @@
 void fn_clean (s_fn *fn)
 {
   assert(fn);
-  arg_delete_all(fn->args);
-  binding_delete_all(fn->bindings);
+  list_delete_all(fn->pattern);
   list_delete_all(fn->algo);
 }
 

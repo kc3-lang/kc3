@@ -8,4 +8,4 @@ quote Test.test(1, 2)
 quote Test.test(1, 2, 3)
 
 first([1, 2])
-Kernel.first([1, 2])
+C3.first([1, 2])

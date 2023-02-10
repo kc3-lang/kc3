@@ -158,8 +158,7 @@ struct frame {
 
 struct fn {
   uw arity;
-  s_arg *args;
-  s_binding *bindings;
+  s_list *pattern;
   s_list *algo;
 };
 

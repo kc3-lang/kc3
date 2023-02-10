@@ -1,7 +1,9 @@
 %{module: C3.Facts.Dump,
   version: 0x0000000000000001,
-  count: 0x0000000000000003}
+  count: 0x0000000000000005}
 {C3, :is-a, :module}
 {C3, :name, "C3"}
 {C3, :path, "c3.facts"}
-%{hash: 0x895f440de1b5a7f5}
+{C3, :function, C3.first}
+{C3.first, :fn, :fn}
+%{hash: 0x55B52EDF4CF3E808}

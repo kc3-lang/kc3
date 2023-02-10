@@ -42,7 +42,7 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest);
 sw buf_parse_fact (s_buf *buf, s_fact_w *dest);
 sw buf_parse_fn (s_buf *buf, s_fn *dest);
 sw buf_parse_fn_algo (s_buf *buf, s_list **dest);
-sw buf_parse_fn_args (s_buf *buf, s_arg **dest);
+sw buf_parse_fn_pattern (s_buf *buf, s_list **dest);
 sw buf_parse_call (s_buf *buf, s_call *dest);
 sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);
 sw buf_parse_comments (s_buf *buf);
