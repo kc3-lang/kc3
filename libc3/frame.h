@@ -24,8 +24,8 @@ s_frame * frame_init (s_frame *frame, s_frame *next);
 s_frame * frame_new ();
 
 /* destructors */
-void frame_delete (s_frame *frame);
-void frame_delete_all (s_frame *frame);
+s_frame * frame_delete (s_frame *frame);
+void      frame_delete_all (s_frame *frame);
 
 /* modifiers */
 void frame_binding_new(s_frame *frame, const s_sym *name,

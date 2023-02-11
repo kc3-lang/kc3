@@ -33,22 +33,20 @@ s_frame * frame_clean (s_frame *frame)
   return next;
 }
 
-void frame_delete (s_frame *frame)
+s_frame * frame_delete (s_frame *frame)
 {
+  s_frame *next = NULL;
   if (frame) {
-    frame_clean(frame);
+    next = frame_clean(frame);
     free(frame);
   }
+  return next;
 }
 
 void frame_delete_all (s_frame *frame)
 {
-  s_frame *next;
-  while (frame) {
-    next = frame->next;
-    frame_delete(frame);
-    frame = next;
-  }
+  while (frame)
+    frame = frame_delete(frame);
 }
 
 const s_tag * frame_get (s_frame *frame, const s_sym *sym)

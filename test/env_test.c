@@ -11,7 +11,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "../libc3/compare.h"
 #include "../libc3/env.h"
+#include "../libc3/frame.h"
+#include "../libc3/tag.h"
 #include "test.h"
 
 void env_test ();
@@ -30,20 +33,27 @@ void env_test_eval_equal_tag ()
   s_frame frame;
   s_tag x;
   s_tag y;
+  s_tag z;
   env_init(&env);
-  env->frame = frame_init(&frame, env->frame);
+  env.frame = frame_init(&frame, env.frame);
   test_context("x = 1");
   TEST_ASSERT(env_eval_equal_tag(&env, tag_init_1(&x, "x"),
-                                 tag_init_1(&y, "1")));
-  TEST_ASSERT(frame_get(&frame, x.data.sym));
+                                 tag_init_1(&y, "1"), &z));
+  TEST_ASSERT(frame_get(&frame, x.data.ident.sym));
+  TEST_EQ(compare_tag(&z, &y), 0);
+  env.frame = frame_clean(&frame);
   env_clean(&env);
   env_init(&env);
-  env->frame = frame_init(&frame, env->frame);
-  test_context("x = 1");
-  TEST_ASSERT(env_eval_equal_tag(&env, tag_init_1(&x, "x"),
-                                 tag_init_1(&y, "[1, 2]")));
-  TEST_ASSERT(frame_get(&frame, x.data.sym));
+  env.frame = frame_init(&frame, env.frame);
+  test_context("x = [1, 2]");
+  TEST_ASSERT(env_eval_equal_tag(&env, tag_1(&x, "x"),
+                                 tag_1(&y, "[1, 2]"), &z));
+  TEST_ASSERT(frame_get(&frame, x.data.ident.sym));
+  TEST_EQ(compare_tag(&z, &y), 0);
+  env.frame = frame_clean(&frame);
   env_clean(&env);
+  tag_clean(&x);
+  tag_clean(&y);
   test_context(NULL);
 }
 
