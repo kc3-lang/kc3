@@ -41,6 +41,7 @@ void env_test_eval_equal_tag ()
                                  tag_init_1(&y, "1"), &z));
   TEST_ASSERT(frame_get(&frame, x.data.ident.sym));
   TEST_EQ(compare_tag(&z, &y), 0);
+  tag_clean(&z);
   env.frame = frame_clean(&frame);
   env_clean(&env);
   env_init(&env);
@@ -54,6 +55,7 @@ void env_test_eval_equal_tag ()
   env_clean(&env);
   tag_clean(&x);
   tag_clean(&y);
+  tag_clean(&z);
   test_context(NULL);
 }
 
