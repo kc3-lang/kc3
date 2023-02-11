@@ -16,7 +16,7 @@
 
 #include "types.h"
 
-void             quote_clean (p_quote quote);
-p_quote          quote_copy (const p_quote src, p_quote *dest);
+void      quote_clean (s_quote *quote);
+s_quote * quote_copy (const s_quote *src, s_quote *dest);
 
 #endif /* QUOTE_H */

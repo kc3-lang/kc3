@@ -527,24 +527,24 @@ sw buf_inspect_ptag_size (p_tag ptag)
   return result;
 }
 
-sw buf_inspect_quote (s_buf *buf, p_quote quote)
+sw buf_inspect_quote (s_buf *buf, const s_quote *quote)
 {
   sw r;
   sw result = 0;
   if ((r = buf_write_1(buf, "quote ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_tag(buf, quote)) < 0)
+  if ((r = buf_inspect_tag(buf, quote->tag)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_quote_size (p_quote quote)
+sw buf_inspect_quote_size (const s_quote *quote)
 {
   sw result = 0;
   result += strlen("'");
-  result += buf_inspect_tag_size(quote);
+  result += buf_inspect_tag_size(quote->tag);
   return result;
 }
 
@@ -889,7 +889,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
   case TAG_LIST:    return buf_inspect_list(buf, tag->data.list);
   case TAG_PTAG:    return buf_inspect_ptag(buf, tag->data.ptag);
-  case TAG_QUOTE:   return buf_inspect_quote(buf, tag->data.quote);
+  case TAG_QUOTE:   return buf_inspect_quote(buf, &tag->data.quote);
   case TAG_S8:      return buf_inspect_s8(buf, tag->data.s8);
   case TAG_S16:     return buf_inspect_s16(buf, tag->data.s16);
   case TAG_S32:     return buf_inspect_s32(buf, tag->data.s32);
@@ -927,7 +927,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
     return buf_inspect_integer_size(&tag->data.integer);
   case TAG_LIST:     return buf_inspect_list_size(tag->data.list);
   case TAG_PTAG:     return buf_inspect_ptag_size(tag->data.ptag);
-  case TAG_QUOTE:    return buf_inspect_quote_size(tag->data.quote);
+  case TAG_QUOTE:    return buf_inspect_quote_size(&tag->data.quote);
   case TAG_S8:       return buf_inspect_s8_size(tag->data.s8);
   case TAG_S16:      return buf_inspect_s16_size(tag->data.s16);
   case TAG_S32:      return buf_inspect_s32_size(tag->data.s32);

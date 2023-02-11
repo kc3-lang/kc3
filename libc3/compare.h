@@ -35,7 +35,7 @@ s8 compare_integer_s64 (const s_integer *a, s64 b);
 s8 compare_integer_u64 (const s_integer *a, u64 b);
 s8 compare_list (const s_list *a, const s_list *b);
 s8 compare_ptag (const p_tag a, const p_tag b);
-s8 compare_quote (const p_quote a, const p_quote b);
+s8 compare_quote (const s_quote *a, const s_quote *b);
 COMPARE_PROTOTYPE(s8);
 COMPARE_PROTOTYPE(s16);
 COMPARE_PROTOTYPE(s32);

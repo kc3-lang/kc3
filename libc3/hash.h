@@ -35,7 +35,7 @@ void hash_update_ident (t_hash *hash, const s_ident *ident);
 void hash_update_integer (t_hash *hash, const s_integer *i);
 void hash_update_list (t_hash *hash, const s_list *list);
 void hash_update_ptag (t_hash *hash, const p_tag ptag);
-void hash_update_quote (t_hash *hash, const p_quote x);
+void hash_update_quote (t_hash *hash, const s_quote *x);
 HASH_UPDATE_PROTOTYPE(s8);
 HASH_UPDATE_PROTOTYPE(s16);
 HASH_UPDATE_PROTOTYPE(s32);

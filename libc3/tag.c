@@ -124,7 +124,7 @@ void tag_clean (s_tag *tag)
   case TAG_FN:         fn_clean(&tag->data.fn);           break;
   case TAG_INTEGER:    integer_clean(&tag->data.integer); break;
   case TAG_LIST:       list_delete_all(tag->data.list);   break;
-  case TAG_QUOTE:      quote_clean(tag->data.quote);      break;
+  case TAG_QUOTE:      quote_clean(&tag->data.quote);     break;
   case TAG_STR:        str_clean(&tag->data.str);         break;
   case TAG_TUPLE:      tuple_clean(&tag->data.tuple);     break;
   case TAG_BOOL:
@@ -173,7 +173,7 @@ s_tag * tag_copy (const s_tag *src, s_tag *dest)
     list_copy(src->data.list, &dest->data.list);
     break;
   case TAG_QUOTE:
-    quote_copy(src->data.quote, &dest->data.quote);
+    quote_copy(&src->data.quote, &dest->data.quote);
     break;
   case TAG_STR:
     str_copy(&src->data.str, &dest->data.str);

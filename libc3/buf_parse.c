@@ -977,10 +977,9 @@ sw buf_parse_new_tag (s_buf *buf, s_tag **dest)
   return r;
 }
 
-/* call tag_delete after */
-sw buf_parse_quote (s_buf *buf, p_quote *dest)
+sw buf_parse_quote (s_buf *buf, s_quote *dest)
 {
-  p_quote quote;
+  s_quote quote;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -988,8 +987,8 @@ sw buf_parse_quote (s_buf *buf, p_quote *dest)
   if ((r = buf_read_1(buf, "quote ")) <= 0)
     goto clean;
   result += r;
-  quote = tag_new();
-  if ((r = buf_parse_tag(buf, quote)) <= 0)
+  quote.tag = tag_new();
+  if ((r = buf_parse_tag(buf, quote.tag)) <= 0)
     goto restore;
   result += r;
   *dest = quote;

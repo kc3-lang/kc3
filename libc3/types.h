@@ -103,6 +103,7 @@ typedef struct list                    s_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct module                  s_module;
+typedef struct quote                   s_quote;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
 typedef struct sym                     s_sym;
@@ -122,7 +123,6 @@ typedef s32            character;
 typedef s_tag      **p_facts_spec;
 typedef s_tag       *t_facts_spec[];
 typedef SHA1_CTX     t_hash;
-typedef s_tag       *p_quote;
 typedef const s_tag *p_tag;
 typedef u64          t_skiplist_height;
 
@@ -176,6 +176,10 @@ union ptr_w {
   void *p;
   s8   *ps8;
   u8   *pu8;
+};
+
+struct quote {
+  s_tag *tag;
 };
 
 struct struct_ {
@@ -286,7 +290,7 @@ union tag_data {
   s_integer    integer;
   s_list      *list;
   p_tag        ptag;
-  p_quote      quote;
+  s_quote      quote;
   s_str        str;
   const s_sym *sym;
   s8           s8;

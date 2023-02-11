@@ -231,7 +231,7 @@ s8 compare_ptr (const void *a, const void *b)
   return 1;
 }
 
-s8 compare_quote (const p_quote a, const p_quote b)
+s8 compare_quote (const s_quote *a, const s_quote *b)
 {
   if (a == b)
     return 0;
@@ -239,7 +239,7 @@ s8 compare_quote (const p_quote a, const p_quote b)
     return -1;
   if (! b)
     return 1;
-  return compare_tag(a, b);
+  return compare_tag(a->tag, b->tag);
 }
 
 COMPARE_DEF(s8)
@@ -323,7 +323,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                            &b->data.integer);
   case TAG_LIST: return compare_list(a->data.list, b->data.list);
   case TAG_PTAG: return compare_ptag(a->data.ptag, b->data.ptag);
-  case TAG_QUOTE: return compare_quote(a->data.quote, b->data.quote);
+  case TAG_QUOTE: return compare_quote(&a->data.quote, &b->data.quote);
   case TAG_S8: return compare_s8(a->data.s8, b->data.s8);
   case TAG_S16: return compare_s16(a->data.s16, b->data.s16);
   case TAG_S32: return compare_s32(a->data.s32, b->data.s32);

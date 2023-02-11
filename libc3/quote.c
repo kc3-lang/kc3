@@ -16,18 +16,20 @@
 #include "quote.h"
 #include "tag.h"
 
-void quote_clean (p_quote quote)
+void quote_clean (s_quote *quote)
 {
   assert(quote);
-  tag_clean(quote);
+  tag_delete(quote->tag);
 }
 
-p_quote quote_copy (const p_quote src, p_quote *dest)
+s_quote * quote_copy (const s_quote *src, s_quote *dest)
 {
-  return *dest = tag_new_copy(src);
+  dest->tag = tag_new_copy(src->tag);
+  return dest;
 }
 
-p_quote quote_init (p_quote *quote, const s_tag *tag)
+s_quote * quote_init (s_quote *quote, const s_tag *tag)
 {
-  return *quote = tag_new_copy(tag);
+  quote->tag = tag_new_copy(tag);
+  return quote;
 }

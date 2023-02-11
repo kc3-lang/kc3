@@ -150,11 +150,11 @@ void hash_update_ptag (t_hash *hash, const p_tag ptag)
   hash_update(hash, &ptag, sizeof(ptag));
 }
 
-void hash_update_quote (t_hash *hash, const p_quote x)
+void hash_update_quote (t_hash *hash, const s_quote *x)
 {
   const s8 type[] = "quote";
   hash_update(hash, type, strlen(type));
-  hash_update_tag(hash, x);
+  hash_update_tag(hash, x->tag);
 }
 
 HASH_UPDATE_DEF(s8)
@@ -205,7 +205,7 @@ void hash_update_tag (t_hash *hash, const s_tag *tag)
     hash_update_integer(hash, &tag->data.integer);             break;
   case TAG_LIST: hash_update_list(hash, tag->data.list);       break;
   case TAG_PTAG: hash_update_ptag(hash, tag->data.ptag);       break;
-  case TAG_QUOTE: hash_update_quote(hash, tag->data.quote);    break;
+  case TAG_QUOTE: hash_update_quote(hash, &tag->data.quote);   break;
   case TAG_S8: hash_update_s8(hash, tag->data.s8);             break;
   case TAG_S16: hash_update_s16(hash, tag->data.s16);          break;
   case TAG_S32: hash_update_s32(hash, tag->data.s32);          break;
