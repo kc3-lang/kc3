@@ -28,7 +28,8 @@ void frame_delete (s_frame *frame);
 void frame_delete_all (s_frame *frame);
 
 /* modifiers */
-void frame_binding_new(s_frame *frame, const s_sym *name, s_tag *value);
+void frame_binding_new(s_frame *frame, const s_sym *name,
+                       const s_tag *value);
 
 /* observers */
 const s_tag * frame_get (s_frame *frame, const s_sym *sym);

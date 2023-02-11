@@ -77,32 +77,32 @@ s_tag * env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   s_facts_with_cursor cursor;
   s_tag *result;
   s_tag tag_fn;
-  s_tag tag_function;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_macro;
   s_tag tag_module;
   s_tag tag_module_name;
   s_tag tag_sym;
+  s_tag tag_symbol;
   s_tag tag_var_fn;
   assert(env);
   assert(call);
   assert(dest);
   call_copy(call, &c);
   ident_resolve_module(&c.ident, env);
-  tag_init_ident(&tag_ident, &c.ident);
   tag_init_1(    &tag_fn,       ":fn");
-  tag_init_1(    &tag_function, ":function");
+  tag_init_ident(&tag_ident, &c.ident);
   tag_init_1(    &tag_is_a,     ":is-a");
   tag_init_1(    &tag_macro,    ":macro");
   tag_init_1(    &tag_module,   ":module");
   tag_init_sym(  &tag_module_name, c.ident.module_name);
   tag_init_sym(  &tag_sym, call->ident.sym);
+  tag_init_1(    &tag_symbol,   ":symbol");
   tag_init_var(  &tag_var_fn);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_module_name,
       &tag_is_a, &tag_module,       /* module exists */
-      &tag_function, &tag_ident, NULL,   /* module exports symbol */
+      &tag_symbol, &tag_ident, NULL,   /* module exports symbol */
       &tag_ident, &tag_fn, &tag_var_fn,
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor))
@@ -153,11 +153,21 @@ s_tag * env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   assert(fn);
   frame_init(&frame, env->frame);
   env->frame = &frame;
-  args = env_eval_call_arguments(env, call->arguments);
-  if (env_eval_equal_list(env, fn->pattern, args, &tmp)) {
-    env_eval_progn(env, fn->algo, dest);
-    list_delete_all(tmp);
+  if (call->arguments) {
+    if (! (args = env_eval_call_arguments(env, call->arguments)))
+      return NULL;
+    if (! env_eval_equal_list(env, fn->pattern, args, &tmp)) {
+      list_delete_all(args);
+      return NULL;
+    }
   }
+  if (! env_eval_progn(env, fn->algo, dest)) {
+    list_delete_all(args);
+    list_delete_all(tmp);
+    return NULL;
+  }
+  list_delete_all(args);
+  list_delete_all(tmp);
   env->frame = frame_clean(&frame);
   return dest;
 }
@@ -215,12 +225,12 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     if (b->type.type == TAG_IDENT)
       warnx("TAG_IDENT = TAG_IDENT");
     tag_copy(b, dest);
-    frame_binding_new(env->frame, a->data.ident.sym, dest);
+    frame_binding_new(env->frame, a->data.ident.sym, b);
     return true;
   }
   if (b->type.type == TAG_IDENT) {
     tag_copy(a, dest);
-    frame_binding_new(env->frame, b->data.ident.sym, dest);
+    frame_binding_new(env->frame, b->data.ident.sym, a);
     return true;
   }
   if (a->type.type != b->type.type) {
