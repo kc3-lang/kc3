@@ -488,9 +488,8 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
     if (! r)
       break;
     result += r;
-    *t = list_new(NULL);
+    *t = list_new();
     (*t)->tag = tag;
-    tag_init_list(&(*t)->next, NULL);
     t = &(*t)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
@@ -539,7 +538,7 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
     if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
-    *t = list_new(NULL);
+    *t = list_new();
     (*t)->tag = tag;
     t = &(*t)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)

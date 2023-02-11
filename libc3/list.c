@@ -38,7 +38,8 @@ void list_clean (s_list *list)
 {
   if (list) {
     tag_clean(&list->tag);
-    tag_clean(&list->next);
+    if (list->next.type.type != TAG_LIST)
+      tag_clean(&list->next);
   }
 }
 

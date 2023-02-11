@@ -22,6 +22,7 @@
 #include "../libc3/list.h"
 #include "../libc3/str.h"
 #include "../libc3/integer.h"
+#include "../libc3/tag.h"
 #include "../libc3/tuple.h"
 #include "test.h"
 
@@ -560,6 +561,18 @@
     buf_clean(&buf);                                                   \
   } while (0)
 
+#define BUF_PARSE_TEST_TAG(test)                                       \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_tag dest;                                                        \
+    bzero(&dest, sizeof(dest));                                        \
+    test_context("buf_parse_tag(" # test ")");                         \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_tag(&buf, &dest), strlen(test));                 \
+    buf_clean(&buf);                                                   \
+    tag_clean(&dest);                                                  \
+  } while (0)
+
 #define BUF_PARSE_TEST_TUPLE(test)                                     \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -593,6 +606,7 @@ void buf_parse_test_str ();
 void buf_parse_test_str_character ();
 void buf_parse_test_str_u8 ();
 void buf_parse_test_sym ();
+void buf_parse_test_tag ();
 void buf_parse_test_tuple ();
 
 void buf_parse_test ()
@@ -618,6 +632,7 @@ void buf_parse_test ()
   buf_parse_test_sym();
   buf_parse_test_ident();
   buf_parse_test_list();
+  buf_parse_test_tag();
   buf_parse_test_tuple();
 }
 
@@ -1126,6 +1141,13 @@ void buf_parse_test_sym ()
   BUF_PARSE_TEST_SYM("Z", "Z");
   BUF_PARSE_TEST_SYM("Az09az", "Az09az");
   BUF_PARSE_TEST_SYM(":az09AZ", "az09AZ");
+}
+
+void buf_parse_test_tag ()
+{
+  BUF_PARSE_TEST_TAG("x");
+  BUF_PARSE_TEST_TAG("_x");
+  BUF_PARSE_TEST_TAG("[x | _y]");
 }
 
 void buf_parse_test_tuple ()
