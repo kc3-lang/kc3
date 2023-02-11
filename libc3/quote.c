@@ -19,7 +19,7 @@
 void quote_clean (p_quote quote)
 {
   assert(quote);
-  free(quote);
+  tag_clean(quote);
 }
 
 p_quote quote_copy (const p_quote src, p_quote *dest)
