@@ -253,7 +253,7 @@
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_list(&buf, &dest), strlen(test));                \
     buf_clean(&buf);                                                   \
-    list_delete(dest);                                                 \
+    list_delete_all(dest);                                                 \
     test_context(NULL);                                                \
   } while (0)
 

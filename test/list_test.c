@@ -23,7 +23,7 @@
     s_list *list_test;                                                 \
     test_context("list_1(" # test ")");                                \
     TEST_ASSERT((list_test = list_1(test)));                           \
-    list_delete(list_test);                                            \
+    list_delete_all(list_test);                                            \
     test_context(NULL);                                                \
   } while (0)
 
@@ -36,7 +36,7 @@
     TEST_EQ(list_inspect(list_test, &str_result), &str_result);        \
     TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
     str_clean(&str_result);                                            \
-    list_delete(list_test);                                            \
+    list_delete_all(list_test);                                            \
     test_context(NULL);                                                \
   } while (0)
 

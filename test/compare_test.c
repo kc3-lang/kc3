@@ -22,8 +22,8 @@
     s_list *tmp_b = (b);                                               \
     test_context("compare_list(" # a ", " # b ") -> " # expected);     \
     TEST_EQ(compare_list(tmp_a, tmp_b), (expected));                   \
-    list_delete(tmp_a);                                                \
-    list_delete(tmp_b);                                                \
+    list_delete_all(tmp_a);                                                \
+    list_delete_all(tmp_b);                                                \
   } while (0)
 
 #define COMPARE_TEST_TAG(a, b, expected)                               \
