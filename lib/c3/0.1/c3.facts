@@ -4,6 +4,6 @@
 {C3, :is-a, :module}
 {C3, :name, "C3"}
 {C3, :path, "c3.facts"}
-{C3, :function, C3.first}
+{C3, :symbol, C3.first}
 {C3.first, :fn, fn ([a | _b]) { a }}
-%{hash: 0x08854B651E330862}
+%{hash: 0xD3CCC8472829759D}
