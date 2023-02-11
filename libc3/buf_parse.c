@@ -438,7 +438,7 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
     goto restore;
   result += r;
   fn_init(&tmp);
-  if ((r = buf_parse_fn_pattern(buf, &tmp.pattern)) < 0) {
+  if ((r = buf_parse_fn_pattern(buf, &tmp.pattern)) <= 0) {
     warnx("buf_parse_fn: invalid pattern");
     goto restore;
   }
@@ -452,6 +452,7 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
     warnx("buf_parse_fn: invalid program");
     goto restore;
   }
+  result += r;
   *dest = tmp;
   r = result;
   goto clean;

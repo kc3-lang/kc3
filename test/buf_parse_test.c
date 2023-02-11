@@ -18,6 +18,7 @@
 #include "../libc3/buf.h"
 #include "../libc3/buf_parse.h"
 #include "../libc3/call.h"
+#include "../libc3/fn.h"
 #include "../libc3/list.h"
 #include "../libc3/str.h"
 #include "../libc3/integer.h"
@@ -148,6 +149,18 @@
     TEST_DOUBLE_EQ(f64_tmp, (expected)); \
     buf_clean(&buf); \
     test_context(NULL); \
+  } while (0)
+
+#define BUF_PARSE_TEST_FN(test)                                        \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_fn dest;                                                         \
+    test_context("buf_parse_fn(" # test ")");                          \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_fn(&buf, &dest), strlen(test));                  \
+    fn_clean(&dest);                                                 \
+    buf_clean(&buf);                                                   \
+    test_context(NULL);                                                \
   } while (0)
 
 #define BUF_PARSE_TEST_IDENT(test, expected)                           \
@@ -568,6 +581,7 @@ void buf_parse_test_digit_oct ();
 void buf_parse_test_digit_dec ();
 void buf_parse_test_f32 ();
 void buf_parse_test_f64 ();
+void buf_parse_test_fn ();
 void buf_parse_test_integer ();
 void buf_parse_test_integer_dec ();
 void buf_parse_test_integer_hex ();
@@ -594,6 +608,7 @@ void buf_parse_test ()
   buf_parse_test_character();
   buf_parse_test_f32();
   buf_parse_test_f64();
+  buf_parse_test_fn();
   buf_parse_test_integer_bin();
   buf_parse_test_integer_dec();
   buf_parse_test_integer_hex();
@@ -802,6 +817,13 @@ void buf_parse_test_f32()
 
 void buf_parse_test_f64()
 {
+}
+
+void buf_parse_test_fn ()
+{
+  BUF_PARSE_TEST_FN("fn () { [] }");
+  BUF_PARSE_TEST_FN("fn (x) { x }");
+  BUF_PARSE_TEST_FN("fn (x, y) { x }");
 }
 
 void buf_parse_test_ident ()

@@ -26,9 +26,11 @@
 
 void tag_test ();
 void tag_test_hash_u64 ();
+void tag_test_init_1 ();
 
 void tag_test ()
 {
+  tag_test_init_1();
   tag_test_hash_u64();
 }
 
@@ -44,4 +46,15 @@ void tag_test_hash_u64 ()
                             tag_1(&b, "{{a, b}, {c, d}}"), 0);
   tag_clean(&a);
   tag_clean(&b);
+}
+
+void tag_test_init_1 ()
+{
+  s_tag a;
+  TEST_ASSERT(tag_init_1(&a, "fn () { [] }"));
+  tag_clean(&a);
+  TEST_ASSERT(tag_init_1(&a, "fn (x) { x }"));
+  tag_clean(&a);
+  TEST_ASSERT(tag_init_1(&a, "fn (x, y) { x }"));
+  tag_clean(&a);
 }
