@@ -23,9 +23,13 @@ void    env_clean (s_env *env);
 s_env * env_init (s_env *env);
 
 /* modifiers */
-s_tag *    env_eval_call_fn (s_env *env, const s_call *call,
+bool       env_eval_call (s_env *env, const s_call *call,
+                          s_tag *dest);
+bool       env_eval_call_arguments (s_env *env, s_list *args,
+                                    s_list **dest);
+bool       env_eval_call_fn (s_env *env, const s_call *call,
                              s_tag *dest);
-s_tag *    env_eval_call_macro (s_env *env, const s_call *call,
+bool       env_eval_call_macro (s_env *env, const s_call *call,
                                 s_tag *dest);
 bool       env_eval_equal_list (s_env *env, const s_list *a,
                                 const s_list *b, s_list **dest);
@@ -33,12 +37,12 @@ bool       env_eval_equal_tag (s_env *env, const s_tag *a,
                                const s_tag *b, s_tag *dest);
 bool       env_eval_equal_tuple (s_env *env, const s_tuple *a,
                                  const s_tuple *b, s_tuple *dest);
-s_tag *    env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest);
-s_tag *    env_eval_ident (s_env *env, const s_ident *ident,
+bool       env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest);
+bool       env_eval_ident (s_env *env, const s_ident *ident,
                            s_tag *dest);
-s_tag *    env_eval_progn (s_env *env, const s_list *program,
+bool       env_eval_progn (s_env *env, const s_list *program,
                            s_tag *dest);
-s_tag *    env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
+bool       env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
 s_module * env_module_load (s_env *env, s_module *module,
                             const s_sym *name, s_facts *facts);
 

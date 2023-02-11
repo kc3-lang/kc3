@@ -71,11 +71,11 @@ void env_error_tag (s_env *env, const s_tag *tag)
   }
 }
 
-s_tag * env_eval_call (s_env *env, const s_call *call, s_tag *dest)
+bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
 {
   s_call c;
   s_facts_with_cursor cursor;
-  s_tag *result;
+  bool result;
   s_tag tag_fn;
   s_tag tag_ident;
   s_tag tag_is_a;
@@ -88,7 +88,7 @@ s_tag * env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
-  call_copy(call, &c);
+  c = *call;
   ident_resolve_module(&c.ident, env);
   tag_init_1(    &tag_fn,       ":fn");
   tag_init_ident(&tag_ident, &c.ident);
@@ -101,8 +101,8 @@ s_tag * env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   tag_init_var(  &tag_var_fn);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_module_name,
-      &tag_is_a, &tag_module,       /* module exists */
-      &tag_symbol, &tag_ident, NULL,   /* module exports symbol */
+      &tag_is_a, &tag_module,           /* module exists */
+      &tag_symbol, &tag_ident, NULL,    /* module exports symbol */
       &tag_ident, &tag_fn, &tag_var_fn,
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor))
@@ -125,26 +125,30 @@ s_tag * env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   return result;
 }
 
-s_list * env_eval_call_arguments (s_env *env, s_list *args)
+bool env_eval_call_arguments (s_env *env, s_list *args, s_list **dest)
 {
-  s_list **dest;
-  s_list *result;
-  dest = &result;
+  s_list **t;
+  s_list *tmp;
+  t = &tmp;
   while (args) {
-    *dest = list_new();
-    env_eval_tag(env, &args->tag, &(*dest)->tag);
-    tag_init_list(&(*dest)->next, NULL);
-    dest = &(*dest)->next.data.list;
+    *t = list_new();
+    if (! env_eval_tag(env, &args->tag, &(*t)->tag)) {
+      list_delete_all(tmp);
+      return false;
+    }
+    t = &(*t)->next.data.list;
     args = list_next(args);
   }
-  return result;
+  *dest = tmp;
+  return true;
 }
 
-s_tag * env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
+bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
 {
   s_list *args = NULL;
   s_frame frame;
   s_fn *fn;
+  s_tag tag;
   s_list *tmp = NULL;
   assert(env);
   assert(call);
@@ -154,29 +158,30 @@ s_tag * env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   frame_init(&frame, env->frame);
   env->frame = &frame;
   if (call->arguments) {
-    if (! (args = env_eval_call_arguments(env, call->arguments))) {
+    if (! env_eval_call_arguments(env, call->arguments, &args)) {
       env->frame = frame_clean(&frame);
-      return NULL;
+      return false;
     }
     if (! env_eval_equal_list(env, fn->pattern, args, &tmp)) {
       list_delete_all(args);
       env->frame = frame_clean(&frame);
-      return NULL;
+      return false;
     }
   }
-  if (! env_eval_progn(env, fn->algo, dest)) {
+  if (! env_eval_progn(env, fn->algo, &tag)) {
     list_delete_all(args);
     list_delete_all(tmp);
     env->frame = frame_clean(&frame);
-    return NULL;
+    return false;
   }
+  *dest = tag;
   list_delete_all(args);
   list_delete_all(tmp);
   env->frame = frame_clean(&frame);
-  return dest;
+  return true;
 }
 
-s_tag * env_eval_call_macro (s_env *env, const s_call *call, s_tag *dest)
+bool env_eval_call_macro (s_env *env, const s_call *call, s_tag *dest)
 {
   s_tag *expanded;
   assert(env);
@@ -185,7 +190,8 @@ s_tag * env_eval_call_macro (s_env *env, const s_call *call, s_tag *dest)
   (void) env;
   (void) call;
   (void) expanded;
-  return dest;
+  (void) dest;
+  return false;
 }
 
 bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
@@ -312,7 +318,7 @@ bool env_eval_equal_tuple (s_env *env, const s_tuple *a,
   return true;
 }
 
-s_tag * env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
+bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
 {
   const s_tag *tag;
   assert(env);
@@ -321,10 +327,11 @@ s_tag * env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
     assert(! "env_eval_ident: unbound variable");
     errx(1, "env_eval_ident: unbound variable");
   }
-  return tag_copy(tag, dest);
+  tag_copy(tag, dest);
+  return true;
 }
 
-s_tag * env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
+bool env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
 {
   const s_list *next;
   s_tag tmp;
@@ -333,19 +340,22 @@ s_tag * env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
   assert(dest);
   while (program) {
     next = list_next(program);
-    env_eval_tag(env, &program->tag, &tmp);
+    if (! env_eval_tag(env, &program->tag, &tmp))
+      return false;
     if (next)
       tag_clean(&tmp);
     program = next;
   }
   *dest = tmp;
-  return dest;
+  return true;
 }
 
-s_tag * env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
+bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
 {
   switch (tag->type.type) {
-  case TAG_VOID: return tag_init_void(dest);
+  case TAG_VOID:
+    tag_init_void(dest);
+    return true;
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
   case TAG_CALL_FN:
@@ -375,11 +385,12 @@ s_tag * env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_U64:
   case TAG_U8:
   case TAG_VAR:
-    return tag_copy(tag, dest);
+    tag_copy(tag, dest);
+    return true;
   }
   assert(! "env_eval_tag: invalid tag");
   errx(1, "env_eval_tag: invalid tag");
-  return NULL;
+  return false;
 }
 
 s_env * env_init (s_env *env)
