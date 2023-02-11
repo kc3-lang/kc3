@@ -469,7 +469,9 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_list **t;
   s_tag tag;
+  s_list *tmp = NULL;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -479,12 +481,17 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  while ((r = buf_parse_tag(buf, &tag)) > 0) {
+  t = &tmp;
+  while (1) {
+    if ((r = buf_parse_tag(buf, &tag)) < 0)
+      goto restore;
+    if (! r)
+      break;
     result += r;
-    *dest = list_new(NULL);
-    (*dest)->tag = tag;
-    tag_init_list(&(*dest)->next, NULL);
-    dest = &(*dest)->next.data.list;
+    *t = list_new(NULL);
+    (*t)->tag = tag;
+    tag_init_list(&(*t)->next, NULL);
+    t = &(*t)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
@@ -497,11 +504,10 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
       goto restore;
     result += r;
   }
-  if (r < 0)
-    goto restore;
   if ((r = buf_read_1(buf, "}")) <= 0)
     goto restore;
   result += r;
+  *dest = tmp;
   r = result;
   goto clean;
  restore:
@@ -516,7 +522,9 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_list **t;
   s_tag tag;
+  s_list *tmp = NULL;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -526,13 +534,14 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
+  t = &tmp;
   while (1) {
     if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
-    *dest = list_new(NULL);
-    (*dest)->tag = tag;
-    dest = &(*dest)->next.data.list;
+    *t = list_new(NULL);
+    (*t)->tag = tag;
+    t = &(*t)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
@@ -549,10 +558,12 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
       goto restore;
     result += r;
   }
+  *dest = tmp;
   r = result;
   goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
+  list_delete_all(tmp);
  clean:
   buf_save_clean(buf, &save);
   return r;
