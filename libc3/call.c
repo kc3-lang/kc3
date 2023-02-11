@@ -22,7 +22,7 @@
 void call_clean (s_call *call)
 {
   assert(call);
-  list_delete(call->arguments);
+  list_delete_all(call->arguments);
 }
 
 s_call * call_copy (const s_call *src, s_call *dest)

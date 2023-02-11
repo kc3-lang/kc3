@@ -123,7 +123,7 @@ void tag_clean (s_tag *tag)
   case TAG_CALL_MACRO: call_clean(&tag->data.call);       break;
   case TAG_FN:         fn_clean(&tag->data.fn);           break;
   case TAG_INTEGER:    integer_clean(&tag->data.integer); break;
-  case TAG_LIST:       list_delete(tag->data.list);       break;
+  case TAG_LIST:       list_delete_all(tag->data.list);   break;
   case TAG_QUOTE:      quote_clean(tag->data.quote);      break;
   case TAG_STR:        str_clean(&tag->data.str);         break;
   case TAG_TUPLE:      tuple_clean(&tag->data.tuple);     break;

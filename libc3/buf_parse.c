@@ -1477,7 +1477,7 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
  clean:
   buf_save_clean(buf, &save);
   if (list)
-    list_delete(list);
+    list_delete_all(list);
   return r;
 }
 
