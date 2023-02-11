@@ -765,7 +765,7 @@ sw buf_vf (s_buf *buf, const char *fmt, va_list ap)
   return r;
 }
 
-sw buf_write_1 (s_buf *buf, s8 *p)
+sw buf_write_1 (s_buf *buf, const s8 *p)
 {
   s_str stra;
   str_init_1(&stra, NULL, p);

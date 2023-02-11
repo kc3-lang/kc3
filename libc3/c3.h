@@ -36,6 +36,7 @@
 #include "hash.h"
 #include "ident.h"
 #include "integer.h"
+#include "io.h"
 #include "list.h"
 #include "module.h"
 #include "quote.h"

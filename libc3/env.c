@@ -134,6 +134,9 @@ bool env_eval_call_arguments (s_env *env, s_list *args, s_list **dest)
     *t = list_new();
     if (! env_eval_tag(env, &args->tag, &(*t)->tag)) {
       list_delete_all(tmp);
+      err_puts("env_eval_call_arguments: invalid argument: ");
+      err_inspect(&args->tag);
+      err_puts("\n");
       return false;
     }
     t = &(*t)->next.data.list;
@@ -163,6 +166,11 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
       return false;
     }
     if (! env_eval_equal_list(env, fn->pattern, args, &tmp)) {
+      err_puts("env_eval_call_fn: no clause matching.\nTried clauses :\n");
+      err_inspect_list(fn->pattern);
+      err_puts("\nArguments :\n");
+      err_inspect_list(args);
+      err_puts("\n");
       list_delete_all(args);
       env->frame = frame_clean(&frame);
       return false;
@@ -197,6 +205,8 @@ bool env_eval_call_macro (s_env *env, const s_call *call, s_tag *dest)
 bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
                           s_list **dest)
 {
+  s_list *a_next;
+  s_list *b_next;
   s_list *tmp;
   s_list **t;
   t = &tmp;
@@ -212,8 +222,15 @@ bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
     *t = list_new();
     if (! env_eval_equal_tag(env, &a->tag, &b->tag, &(*t)->tag))
       goto ko;
-    a = list_next(a);
-    b = list_next(b);
+    a_next = list_next(a);
+    b_next = list_next(b);
+    if (! a_next || ! b_next) {
+      if (! env_eval_equal_tag(env, &a->next, &b->next, &(*t)->next))
+        goto ko;
+      break;
+    }
+    a = a_next;
+    b = b_next;
     t = &(*t)->next.data.list;
   }
  ok:

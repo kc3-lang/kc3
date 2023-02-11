@@ -31,6 +31,7 @@ HEADERS = \
 	hash.h \
 	ident.h \
 	integer.h \
+	io.h \
 	list.h \
 	log.h \
 	module.h \
@@ -81,6 +82,7 @@ SOURCES = \
 	hash.c \
 	ident.c \
 	integer.c \
+	io.c \
 	list.c \
 	log.c \
 	module.c \
@@ -129,6 +131,7 @@ LO_SOURCES = \
 	hash.c \
 	ident.c \
 	integer.c \
+	io.c \
 	list.c \
 	log.c \
 	module.c \
