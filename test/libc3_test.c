@@ -22,6 +22,7 @@ void buf_test ();
 void call_test ();
 void character_test ();
 void compare_test ();
+void env_test ();
 void fact_test ();
 void facts_test ();
 void facts_cursor_test ();
@@ -128,6 +129,10 @@ int main (int argc, char **argv)
   if (test_target("facts_with")) {
     printf("\nfacts_with\n");
     facts_with_test();
+  }
+  if (test_target("env")) {
+    printf("\nenv\n");
+    env_test();
   }
   test_summary();
   test_clean();
