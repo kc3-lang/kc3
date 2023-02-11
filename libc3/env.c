@@ -142,10 +142,10 @@ s_list * env_eval_call_arguments (s_env *env, s_list *args)
 
 s_tag * env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
 {
-  s_list *args;
+  s_list *args = NULL;
   s_frame frame;
   s_fn *fn;
-  s_list *tmp;
+  s_list *tmp = NULL;
   assert(env);
   assert(call);
   assert(dest);
