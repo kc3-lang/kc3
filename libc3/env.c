@@ -312,7 +312,7 @@ bool env_eval_equal_tuple (s_env *env, const s_tuple *a,
   return true;
 }
 
-const s_tag * env_eval_ident (s_env *env, const s_ident *ident)
+s_tag * env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
 {
   const s_tag *tag;
   assert(env);
@@ -321,7 +321,7 @@ const s_tag * env_eval_ident (s_env *env, const s_ident *ident)
     assert(! "env_eval_ident: unbound variable");
     errx(1, "env_eval_ident: unbound variable");
   }
-  return tag;
+  return tag_copy(tag, dest);
 }
 
 s_tag * env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
@@ -353,7 +353,7 @@ s_tag * env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_CALL_MACRO:
     return env_eval_call_macro(env, &tag->data.call, dest);
   case TAG_IDENT:
-    return tag_copy(env_eval_ident(env, &tag->data.ident), dest);
+    return env_eval_ident(env, &tag->data.ident, dest);
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:
