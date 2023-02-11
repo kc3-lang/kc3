@@ -427,6 +427,7 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_fn tmp;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -436,24 +437,26 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
-  fn_init(dest);
-  if ((r = buf_parse_fn_pattern(buf, &dest->pattern)) < 0) {
+  fn_init(&tmp);
+  if ((r = buf_parse_fn_pattern(buf, &tmp.pattern)) < 0) {
     warnx("buf_parse_fn: invalid pattern");
     goto restore;
   }
-  dest->arity = list_length(dest->pattern);
+  tmp.arity = list_length(tmp.pattern);
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_fn_algo(buf, &dest->algo)) <= 0) {
-    buf_inspect_fn(&g_c3_env.err, dest);
+  if ((r = buf_parse_fn_algo(buf, &tmp.algo)) <= 0) {
+    buf_inspect_fn(&g_c3_env.err, &tmp);
     warnx("buf_parse_fn: invalid program");
     goto restore;
   }
+  *dest = tmp;
   r = result;
   goto clean;
  restore:
+  fn_clean(&tmp);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);

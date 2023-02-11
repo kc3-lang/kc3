@@ -154,16 +154,20 @@ s_tag * env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   frame_init(&frame, env->frame);
   env->frame = &frame;
   if (call->arguments) {
-    if (! (args = env_eval_call_arguments(env, call->arguments)))
+    if (! (args = env_eval_call_arguments(env, call->arguments))) {
+      env->frame = frame_clean(&frame);
       return NULL;
+    }
     if (! env_eval_equal_list(env, fn->pattern, args, &tmp)) {
       list_delete_all(args);
+      env->frame = frame_clean(&frame);
       return NULL;
     }
   }
   if (! env_eval_progn(env, fn->algo, dest)) {
     list_delete_all(args);
     list_delete_all(tmp);
+    env->frame = frame_clean(&frame);
     return NULL;
   }
   list_delete_all(args);
