@@ -326,13 +326,17 @@ const s_tag * env_eval_ident (s_env *env, const s_ident *ident)
 
 s_tag * env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
 {
+  const s_list *next;
   s_tag tmp;
   assert(env);
   assert(program);
   assert(dest);
   while (program) {
+    next = list_next(program);
     env_eval_tag(env, &program->tag, &tmp);
-    program = list_next(program);
+    if (next)
+      tag_clean(&tmp);
+    program = next;
   }
   *dest = tmp;
   return dest;
