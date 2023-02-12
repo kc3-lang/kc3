@@ -42,7 +42,7 @@ end
 
 ### libc3
 
-C3 is implemented using libc3 a small C89 library implementing the core
+C3 is implemented using libc3 a small C99 library implementing the core
 of the language.
 
 The library includes a parser and an interpreter for C3 code in C structures.
@@ -73,6 +73,9 @@ Script interpreter. Under development.
 ## TODO
 
  - libc3
+   - ci
+   - c function call
+   - infix operators
    - errors (setjmp, longjmp)
      - stacktrace
    - load
@@ -88,15 +91,3 @@ Script interpreter. Under development.
      - funcall
   - buf_sha256
   - buf_popen
-
-# File format
-
-On disk format :
-
-         0               1               2               3               4
-         0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF01
- 0x0000  %{dump: 0x0000000000000100, log: 0x0000000000001000, format: :c3}
- 0x0042  _comments_
-_0x0100_ _count_ _dump_
- 0x0900  _sha256_
-_0x1000_ _log_

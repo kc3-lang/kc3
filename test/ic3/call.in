@@ -10,4 +10,4 @@ quote first([1, 2])
 quote C3.first([1, 2])
 
 first([1, 2])
-C3.first([1, 2])
+C3.first([2, 3])

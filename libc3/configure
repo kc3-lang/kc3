@@ -39,7 +39,7 @@ LDFLAGS="${LDFLAGS:=}"
 LIBS="${LIBS:=-lm}"
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c89 -pedantic"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
