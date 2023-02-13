@@ -1,4 +1,4 @@
-# C3
+# C3 v0.1
 
 C3 is a programming language project, inspired by C, Elixir and
 Common Lisp. It could be described as C with Elixir macros, pattern
