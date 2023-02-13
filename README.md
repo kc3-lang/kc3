@@ -3,7 +3,7 @@
 C3 is a programming language project, inspired by C, Elixir and
 Common Lisp. It could be described as C with Elixir macros, pattern
 matching, and a semantic object system. The idea is to plug macros and
-pattern matching into C89 and use them to implement the graph database.
+pattern matching into C99 and use them to implement the graph database.
 
 The garbage collector is optional, like in C.
 
