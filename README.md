@@ -79,7 +79,6 @@ Script interpreter. Under development.
    - errors (setjmp, longjmp)
      - stacktrace
    - load
-   - pattern matching (xor xor)
    - `test_file_compare`
    - ffi
      - types
