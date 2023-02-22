@@ -207,7 +207,7 @@ bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
 {
   s_list *a_next;
   s_list *b_next;
-  s_list *tmp;
+  s_list *tmp = NULL;
   s_list **t;
   t = &tmp;
   while (1) {
