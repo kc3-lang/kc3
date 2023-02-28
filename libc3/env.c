@@ -15,6 +15,7 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "binding.h"
 #include "c3.h"
 #include "error.h"
@@ -422,9 +423,21 @@ s_env * env_init (s_env *env)
   buf_init_alloc(&env->err, BUF_SIZE);
   buf_file_open_w(&env->err, stderr);
   facts_init(&env->facts);
-  str_init_1(&env->module_path, NULL, PREFIX "/lib/c3/0.1");
-  if (! module_load(&env->c3_module, sym_1("C3"), &env->facts))
+  if (! access("lib/c3/0.1", X_OK))
+    str_init_1(&env->module_path, NULL, "lib/c3/0.1");
+  else if (! access("../lib/c3/0.1", X_OK))
+    str_init_1(&env->module_path, NULL, "../lib/c3/0.1");
+  else if (! access("../../lib/c3/0.1", X_OK))
+    str_init_1(&env->module_path, NULL, "../../lib/c3/0.1");
+  else if (! access(PREFIX "/lib/c3/0.1", X_OK))
+    str_init_1(&env->module_path, NULL, PREFIX "/lib/c3/0.1");
+  else {
+    assert(! "env_init: module path not found");
+    err(1, "env_init: module_path not found");
+  }
+  if (! module_load(&env->c3_module, sym_1("C3"), &env->facts)) {
     return NULL;
+  }
   env->current_module = &env->c3_module;
   return env;
 }
