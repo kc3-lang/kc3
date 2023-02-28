@@ -15,8 +15,8 @@
 #define TEST_H
 
 #include <stdio.h>
-#define TEST_COLOR_KO "\033[91m"
-#define TEST_COLOR_OK "\033[92m"
+#define TEST_COLOR_KO "\033[0;91m"
+#define TEST_COLOR_OK "\033[0;92m"
 #define TEST_COLOR_RESET "\033[0m"
 
 #define TEST_ASSERT(test)                                              \
