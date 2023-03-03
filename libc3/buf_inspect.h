@@ -44,6 +44,7 @@ sw buf_inspect_fact_size (const s_fact *fact);
 sw buf_inspect_fact_spec (s_buf *buf, p_facts_spec spec);
 sw buf_inspect_fn (s_buf *buf, const s_fn *fn);
 sw buf_inspect_fn_algo (s_buf *buf, const s_list *algo);
+sw buf_inspect_fn_clause (s_buf *buf, const s_fn *fn);
 sw buf_inspect_fn_pattern (s_buf *buf, const s_list *pattern);
 sw buf_inspect_fn_size (const s_fn *fn);
 sw buf_inspect_ident (s_buf *buf, const s_ident *ident);

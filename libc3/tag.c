@@ -121,7 +121,7 @@ void tag_clean (s_tag *tag)
   case TAG_CALL:
   case TAG_CALL_FN:
   case TAG_CALL_MACRO: call_clean(&tag->data.call);       break;
-  case TAG_FN:         fn_clean(&tag->data.fn);           break;
+  case TAG_FN:         fn_delete_all(tag->data.fn);       break;
   case TAG_INTEGER:    integer_clean(&tag->data.integer); break;
   case TAG_LIST:       list_delete_all(tag->data.list);   break;
   case TAG_QUOTE:      quote_clean(&tag->data.quote);     break;
@@ -163,7 +163,7 @@ s_tag * tag_copy (const s_tag *src, s_tag *dest)
     call_copy(&src->data.call, &dest->data.call);
     break;
   case TAG_FN:
-    fn_copy(&src->data.fn, &dest->data.fn);
+    fn_copy(src->data.fn, &dest->data.fn);
     break;
   case TAG_INTEGER:
     integer_init(&dest->data.integer);

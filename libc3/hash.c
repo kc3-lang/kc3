@@ -98,8 +98,11 @@ void hash_update_fn (t_hash *hash, const s_fn *fn)
 {
   const s8 type[] = "fn";
   hash_update(hash, type, sizeof(type));
-  hash_update_list(hash, fn->pattern);
-  hash_update_list(hash, fn->algo);
+  while (fn) {
+    hash_update_list(hash, fn->pattern);
+    hash_update_list(hash, fn->algo);
+    fn = fn->next_clause;
+  }
 }
 
 void hash_update_ident (t_hash *hash, const s_ident *ident)
@@ -199,7 +202,7 @@ void hash_update_tag (t_hash *hash, const s_tag *tag)
     hash_update_character(hash, tag->data.character);          break;
   case TAG_F32: hash_update_f32(hash, tag->data.f32);          break;
   case TAG_F64: hash_update_f64(hash, tag->data.f64);          break;
-  case TAG_FN: hash_update_fn(hash, &tag->data.fn);            break;
+  case TAG_FN: hash_update_fn(hash, tag->data.fn);             break;
   case TAG_IDENT: hash_update_ident(hash, &tag->data.ident);   break;
   case TAG_INTEGER:
     hash_update_integer(hash, &tag->data.integer);             break;

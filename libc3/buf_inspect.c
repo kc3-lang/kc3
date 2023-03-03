@@ -230,15 +230,28 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
   if ((r = buf_write_1(buf, "fn ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_fn_pattern(buf, fn->pattern)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_u8(buf, ' ')) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_fn_algo(buf, fn->algo)) < 0)
-    return r;
-  result += r;
+  if (fn->next_clause) {
+    if ((r = buf_write_1(buf, "{\n")) < 0)
+      return r;
+    result += r;
+    while (fn) {
+      if ((r = buf_inspect_fn_clause(buf, fn)) < 0)
+        return r;
+      result += r;
+      if ((r = buf_write_1(buf, "\n  ")) < 0)
+        return r;
+      result += r;
+      fn = fn->next_clause;
+    }
+    if ((r = buf_write_1(buf, "}\n")) < 0)
+      return r;
+    result += r;
+  }
+  else {
+    if ((r = buf_inspect_fn_clause(buf, fn)) < 0)
+      return r;
+    result += r;
+  }
   return result;
 }
 
@@ -280,6 +293,24 @@ sw buf_inspect_fn_algo (s_buf *buf, const s_list *algo)
     }
   }
   if ((r = buf_write_1(buf, "\n}")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_fn_clause (s_buf *buf, const s_fn *fn)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(fn);
+  if ((r = buf_inspect_fn_pattern(buf, fn->pattern)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_u8(buf, ' ')) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_fn_algo(buf, fn->algo)) < 0)
     return r;
   result += r;
   return result;
@@ -884,7 +915,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
     return buf_inspect_character(buf, tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, tag->data.f64);
-  case TAG_FN:      return buf_inspect_fn(buf, &tag->data.fn);
+  case TAG_FN:      return buf_inspect_fn(buf, tag->data.fn);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
   case TAG_LIST:    return buf_inspect_list(buf, tag->data.list);

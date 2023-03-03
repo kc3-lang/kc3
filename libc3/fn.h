@@ -24,9 +24,16 @@
 
 /* stack-allocation compatible functions */
 void   fn_clean (s_fn *fn);
-s_fn * fn_init (s_fn *fn);
+s_fn * fn_init (s_fn *fn, s_fn *next_clause);
+
+/* constructors */
+s_fn * fn_new (s_fn *next_clause);
+
+/* destructors */
+s_fn * fn_delete (s_fn *fn);
+void   fn_delete_all (s_fn *fn);
 
 /* modifiers */
-s_fn * fn_copy (const s_fn *src, s_fn *dest);
+s_fn * fn_copy (const s_fn *src, s_fn **dest);
 
 #endif /* FN_H */

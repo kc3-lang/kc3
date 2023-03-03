@@ -114,7 +114,7 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
     errx(1, "%s.%s is not a function",
          c.ident.module_name->str.ptr.ps8,
          c.ident.sym->str.ptr.ps8);
-  c.fn = &tag_var_fn.data.fn;
+  c.fn = tag_var_fn.data.fn;
   facts_with_cursor_clean(&cursor);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });

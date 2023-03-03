@@ -159,6 +159,7 @@ struct fn {
   uw arity;
   s_list *pattern;
   s_list *algo;
+  s_fn *next_clause;
 };
 
 struct module {
@@ -285,7 +286,7 @@ union tag_data {
   character    character;
   f32          f32;
   f64          f64;
-  s_fn         fn;
+  s_fn        *fn;
   s_ident      ident;
   s_integer    integer;
   s_list      *list;
