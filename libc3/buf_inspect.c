@@ -235,10 +235,13 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
       return r;
     result += r;
     while (fn) {
+      if ((r = buf_write_1(buf, "  ")) < 0)
+        return r;
+      result += r;
       if ((r = buf_inspect_fn_clause(buf, fn)) < 0)
         return r;
       result += r;
-      if ((r = buf_write_1(buf, "\n  ")) < 0)
+      if ((r = buf_write_1(buf, "\n")) < 0)
         return r;
       result += r;
       fn = fn->next_clause;

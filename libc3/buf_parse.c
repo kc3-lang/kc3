@@ -442,6 +442,9 @@ sw buf_parse_fn (s_buf *buf, s_fn **dest)
     goto restore;
   if (r > 0) {
     result += r;
+    if ((r = buf_ignore_spaces(buf)) <= 0)
+      goto restore;
+    result += r;
     while (1) {
       *tail = fn_new(NULL);
       if ((r = buf_parse_fn_clause(buf, *tail)) <= 0)
@@ -485,18 +488,19 @@ sw buf_parse_fn_clause (s_buf *buf, s_fn *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  bzero(&tmp, sizeof(s_fn));
+  fn_init(&tmp, NULL);
   if ((r = buf_parse_fn_pattern(buf, &tmp.pattern)) <= 0) {
     warnx("buf_parse_fn: invalid pattern");
     goto restore;
   }
-  tmp.arity = list_length(tmp.pattern);
   result += r;
+  tmp.arity = list_length(tmp.pattern);
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
   if ((r = buf_parse_fn_algo(buf, &tmp.algo)) <= 0) {
     buf_inspect_fn(&g_c3_env.err, &tmp);
+    buf_flush(&g_c3_env.err);
     warnx("buf_parse_fn: invalid program");
     goto restore;
   }
@@ -517,7 +521,7 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_list **t;
+  s_list **tail;
   s_tag tag;
   s_list *tmp = NULL;
   assert(buf);
@@ -529,16 +533,16 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  t = &tmp;
+  tail = &tmp;
   while (1) {
     if ((r = buf_parse_tag(buf, &tag)) < 0)
       goto restore;
     if (! r)
       break;
     result += r;
-    *t = list_new();
-    (*t)->tag = tag;
-    t = &(*t)->next.data.list;
+    *tail = list_new();
+    (*tail)->tag = tag;
+    tail = &(*tail)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
@@ -569,9 +573,9 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_list **t;
   s_tag tag;
   s_list *tmp = NULL;
+  s_list **tail = &tmp;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -581,14 +585,13 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  t = &tmp;
   while (1) {
     if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
-    *t = list_new();
-    (*t)->tag = tag;
-    t = &(*t)->next.data.list;
+    *tail = list_new();
+    (*tail)->tag = tag;
+    tail = &(*tail)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
