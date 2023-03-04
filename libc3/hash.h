@@ -27,6 +27,7 @@ void hash_update (t_hash *hash, const void *data, uw size);
 void hash_update_1 (t_hash *hash, const s8 *p);
 void hash_update_bool (t_hash *hash, e_bool b);
 void hash_update_call (t_hash *hash, const s_call *call);
+void hash_update_cfn (t_hash *hash, const s_cfn *cfn);
 HASH_UPDATE_PROTOTYPE(f32);
 HASH_UPDATE_PROTOTYPE(f64);
 void hash_update_fact (t_hash *hash, const s_fact *fact);

@@ -18,6 +18,9 @@
 
 /* stack-allocation compatible functions */
 s_cfn * cfn_init (s_cfn *cfn);
-void cfn_clean (s_cfn *cfn);
+void    cfn_clean (s_cfn *cfn);
+
+/* observers */
+s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest);
 
 #endif /* CFN_H */

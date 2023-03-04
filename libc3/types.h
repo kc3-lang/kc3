@@ -18,6 +18,7 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <ffi.h>
 #include "config.h"
 #include "sha1.h"
 #include "../libtommath/tommath.h"
@@ -142,6 +143,9 @@ struct buf_save {
 struct cfn {
   const s_sym *name;
   void *p;
+  u8 arity;
+  s_list *arg_types;
+  ffi_cif cif;
 };
 
 struct fact {
@@ -296,7 +300,7 @@ struct sym {
 union tag_data {
   bool         bool;
   s_call       call;
-  s_cfn       *cfn;
+  s_cfn        cfn;
   character    character;
   f32          f32;
   f64          f64;

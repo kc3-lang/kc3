@@ -21,6 +21,7 @@
 
 s8 compare_bool (e_bool a, e_bool b);
 s8 compare_call (const s_call *a, const s_call *b);
+s8 compare_cfn (const s_cfn *a, const s_cfn *b);
 s8 compare_character (character a, character b);
 COMPARE_PROTOTYPE(f32);
 COMPARE_PROTOTYPE(f64);
@@ -29,6 +30,7 @@ s8 compare_fact_pos (const s_fact *a, const s_fact *b);
 s8 compare_fact_osp (const s_fact *a, const s_fact *b);
 s8 compare_fact_unbound_var_count (const s_fact *a,
                                    const s_fact *b);
+s8 compare_fn (const s_fn *a, const s_fn *b);
 s8 compare_ident (const s_ident *a, const s_ident *b);
 s8 compare_integer (const s_integer *a, const s_integer *b);
 s8 compare_integer_s64 (const s_integer *a, s64 b);

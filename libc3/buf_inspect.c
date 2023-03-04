@@ -93,6 +93,57 @@ sw buf_inspect_call_size (const s_call *call)
   return result;
 }
 
+sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
+{
+  s_list *arg_type;
+  sw r;
+  sw result = 0;
+  assert(cfn);
+  if ((r = buf_inspect_sym(buf, cfn->name)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "(")) < 0)
+    return r;
+  result += r;
+  arg_type = cfn->arg_types;
+  while (arg_type) {
+    if ((r = buf_inspect_tag(buf, &arg_type->tag)) < 0)
+      return r;
+    arg_type = list_next(arg_type);
+    if (arg_type) {
+      if ((r = buf_write_1(buf, ", ")) < 0)
+        return r;
+      result += r;
+    }
+  }
+  if ((r = buf_write_1(buf, ")")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_cfn_size (const s_cfn *cfn)
+{
+  s_list *arg_type;
+  sw r;
+  sw result = 0;
+  assert(cfn);
+  if ((r = buf_inspect_sym_size(cfn->name)) < 0)
+    return r;
+  result += r;
+  result += strlen("(");
+  arg_type = cfn->arg_types;
+  while (arg_type) {
+    if ((r = buf_inspect_tag_size(&arg_type->tag)) < 0)
+      return r;
+    arg_type = list_next(arg_type);
+    if (arg_type)
+      result += strlen(", ");
+  }
+  result += strlen(")");
+  return result;
+}
+
 sw buf_inspect_character (s_buf *buf, character x)
 {
   sw r;
@@ -914,6 +965,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_CALL_FN:
   case TAG_CALL_MACRO:
                     return buf_inspect_call(buf, &tag->data.call);
+  case TAG_CFN:     return buf_inspect_cfn(buf, &tag->data.cfn);
   case TAG_CHARACTER:
     return buf_inspect_character(buf, tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
@@ -951,6 +1003,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_CALL_FN:
   case TAG_CALL_MACRO:
     return buf_inspect_call_size(&tag->data.call);
+  case TAG_CFN:      return buf_inspect_cfn_size(&tag->data.cfn);
   case TAG_CHARACTER:
     return buf_inspect_character_size(tag->data.character);
   case TAG_F32:      return buf_inspect_f32_size(tag->data.f32);

@@ -89,4 +89,25 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args) {
 
   return result;
 }
-#endif /* CFN_H */
+
+void cfn_clean (s_cfn *cfn)
+{
+  assert(cfn);
+  list_delete_all(cfn->arg_types);
+}
+
+s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
+{
+  assert(cfn);
+  assert(dest);
+  dest->name = cfn->name;
+  dest->arg_types = list_copy(cfn->arg_types);
+  return dest;
+}
+
+s_cfn * cfn_init (s_cfn *cfn)
+{
+  assert(cfn);
+  bzero(cfn, sizeof(s_cfn));
+  return cfn;
+}

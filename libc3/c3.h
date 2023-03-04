@@ -22,6 +22,7 @@
 #include "buf_parse.h"
 #include "buf_save.h"
 #include "call.h"
+#include "cfn.h"
 #include "character.h"
 #include "compare.h"
 #include "env.h"

@@ -283,6 +283,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   case TAG_CALL:
   case TAG_CALL_FN:
   case TAG_CALL_MACRO:
+  case TAG_CFN:
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
@@ -383,6 +384,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
   case TAG_BOOL:
+  case TAG_CFN:
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:

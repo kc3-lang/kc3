@@ -79,6 +79,16 @@ void hash_update_call (t_hash *hash, const s_call *call)
   hash_update_list(hash, call->arguments);
 }
 
+void hash_update_cfn (t_hash *hash, const s_cfn *cfn)
+{
+  const s8 type[] = "cfn";
+  assert(hash);
+  assert(cfn);
+  hash_update(hash, type, sizeof(type));
+  hash_update_sym(hash, cfn->name);
+  hash_update_list(hash, cfn->arg_types);
+}
+
 HASH_UPDATE_DEF(character)
 
 HASH_UPDATE_DEF(f32)
@@ -88,6 +98,8 @@ HASH_UPDATE_DEF(f64)
 void hash_update_fact (t_hash *hash, const s_fact *fact)
 {
   const u8 type = 3;
+  assert(hash);
+  assert(fact);
   hash_update(hash, &type, sizeof(type));
   hash_update_tag(hash, fact->subject);
   hash_update_tag(hash, fact->predicate);
@@ -97,6 +109,8 @@ void hash_update_fact (t_hash *hash, const s_fact *fact)
 void hash_update_fn (t_hash *hash, const s_fn *fn)
 {
   const s8 type[] = "fn";
+  assert(hash);
+  assert(fn);
   hash_update(hash, type, sizeof(type));
   while (fn) {
     hash_update_list(hash, fn->pattern);
@@ -198,6 +212,7 @@ void hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_CALL_FN:
   case TAG_CALL_MACRO:
     hash_update_call(hash, &tag->data.call);                   break;
+  case TAG_CFN: hash_update_cfn(hash, &tag->data.cfn);         break;
   case TAG_CHARACTER:
     hash_update_character(hash, tag->data.character);          break;
   case TAG_F32: hash_update_f32(hash, tag->data.f32);          break;

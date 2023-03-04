@@ -31,6 +31,8 @@ sw buf_inspect_bool_size (e_bool b);
 sw buf_inspect_call (s_buf *buf, const s_call *call);
 sw buf_inspect_call_args (s_buf *buf, const s_list *args);
 sw buf_inspect_call_size (const s_call *call);
+sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn);
+sw buf_inspect_cfn_size (const s_cfn *cfn);
 sw buf_inspect_character (s_buf *buf, character c);
 sw buf_inspect_character_size (character c);
 sw buf_inspect_error_handler (s_buf *buf,

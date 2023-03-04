@@ -51,6 +51,20 @@ s8 compare_call (const s_call *a, const s_call *b)
   return compare_list(a->arguments, b->arguments);
 }
 
+s8 compare_cfn (const s_fn *a, const s_fn *b)
+{
+  s8 r;
+  if (a == b)
+    return 0;
+  if (!a)
+    return -1;
+  if (!b)
+    return 1;
+  if ((r = compare_sym(&a->name, &b->name)))
+    return r;
+  return compare_list(a->arg_types, b->arg_types);
+}
+
 COMPARE_DEF(character)
 
 COMPARE_DEF(f32)
@@ -134,6 +148,20 @@ s8 compare_fact_osp (const s_fact *a, const s_fact *b)
     return r;
   r = compare_tag(a->predicate, b->predicate);
   return r;
+}
+
+s8 compare_fn (const s_fn *a, const s_fn *b)
+{
+  s8 r;
+  if (a == b)
+    return 0;
+  if (!a)
+    return -1;
+  if (!b)
+    return 1;
+  if ((r = compare_ident(&a->ident, &b->ident)))
+    return r;
+  return compare_list(a->arguments, b->arguments);
 }
 
 s8 compare_ident (const s_ident *a, const s_ident *b)
@@ -313,11 +341,12 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_CALL_FN:
   case TAG_CALL_MACRO:
     return compare_call(&a->data.call, &b->data.call);
+  case TAG_CFN: return compare_cfn(&a->data.cfn, &b->data.cfn);
   case TAG_CHARACTER: return compare_character(a->data.character,
                                                b->data.character);
   case TAG_F32: return compare_f32(a->data.f32, b->data.f32);
   case TAG_F64: return compare_f64(a->data.f64, b->data.f64);
-  case TAG_FN: return compare_ptr(a, b);
+  case TAG_FN: return compare_fn(a->data.fn, b->data.fn);
   case TAG_IDENT: return compare_ident(&a->data.ident, &b->data.ident);
   case TAG_INTEGER: return compare_integer(&a->data.integer,
                                            &b->data.integer);
