@@ -57,6 +57,7 @@ typedef enum {
   TAG_CALL,
   TAG_CALL_FN,
   TAG_CALL_MACRO,
+  TAG_CFN,
   TAG_CHARACTER,
   TAG_F32,
   TAG_F64,
@@ -86,6 +87,7 @@ typedef struct binding                 s_binding;
 typedef struct buf                     s_buf;
 typedef struct buf_save                s_buf_save;
 typedef struct call                    s_call;
+typedef struct cfn                     s_cfn;
 typedef struct env                     s_env;
 typedef struct error_handler           s_error_handler;
 typedef struct fact                    s_fact;
@@ -110,6 +112,7 @@ typedef struct sym                     s_sym;
 typedef struct sym_list                s_sym_list;
 typedef struct tag                     s_tag;
 typedef struct tuple                   s_tuple;
+typedef struct type_list               s_type_list;
 typedef struct unwind_protect          s_unwind_protect;
 
 /* unions */
@@ -134,6 +137,11 @@ struct buf_save {
   s_buf_save *next;
   uw rpos;
   uw wpos;
+};
+
+struct cfn {
+  const s_sym *name;
+  void *p;
 };
 
 struct fact {
@@ -202,6 +210,11 @@ union tag_type {
 struct tuple {
   uw count;
   s_tag *tag;
+};
+
+struct type_list {
+  e_tag_type type;
+  s_type_list *next;
 };
 
 struct unwind_protect {
@@ -283,6 +296,7 @@ struct sym {
 union tag_data {
   bool         bool;
   s_call       call;
+  s_cfn       *cfn;
   character    character;
   f32          f32;
   f64          f64;
