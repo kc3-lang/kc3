@@ -11,16 +11,75 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <assert.h>
+#include <err.h>
+#include <stdlib.h>
 #include "cfn.h"
+#include "list.h"
+
+s_cfn * cfn_set_arg_types (s_cfn *cfn, s_list *arg_types)
+{
+  s_list *a;
+  ffi_type **arg_ffi_type = NULL;
+  sw arity;
+  ffi_cif cif;
+  u8 i = 0;
+  ffi_type *result_type;
+  assert(cfn);
+  if ((arity = list_length(arg_types))) {
+    if (arity > 255) {
+      assert(arity <= 255);
+      errx(1, "cfn_set_arg_types: arity > 255");
+    }
+    if (! (arg_types = malloc(sizeof(ffi_type *) * arity)))
+      err(1, "cfn_set_arg_types");
+    a = arg_types;
+    while (a) {
+      assert(i < arity);
+      arg_ffi_type[i] = cfn_arg_type_to_ffi_type(&a->tag);
+      i++;
+      a = list_next(a);
+    }
+  }
+  cfn->arg_types = arg_types;
+  cfn->arity = arity;
+  return cfn;
+}
+
+ffi_type * cfn_arg_type_to_ffi_type (const s_tag *tag)
+{
+  assert(tag);
+  assert(tag->type.type == TAG_SYM);
+  if (tag->data.sym == sym_1("s8"))
+    return &ffi_type_sint8;
+  if (tag->data.sym == sym_1("s16"))
+    return &ffi_type_sint16;
+  if (tag->data.sym == sym_1("s32"))
+    return &ffi_type_sint32;
+  if (tag->data.sym == sym_1("s64"))
+    return &ffi_type_sint64;
+  if (tag->data.sym == sym_1("sw"))
+    return &ffi_type_sint;
+  if (tag->data.sym == sym_1("u8"))
+    return &ffi_type_uint8;
+  if (tag->data.sym == sym_1("u16"))
+    return &ffi_type_uint16;
+  if (tag->data.sym == sym_1("u32"))
+    return &ffi_type_uint32;
+  if (tag->data.sym == sym_1("u64"))
+    return &ffi_type_uint64;
+  if (tag->data.sym == sym_1("uw"))
+    return &ffi_type_uint;
+}
+
 
 s_tag * cfn_apply (s_cfn *cfn, s_list *args) {
-  ffi_type **arg_types;
   void **arg_values;
-  ffi_cif cif;
   sw i;
   sw num_args;
   void* result;
-  ffi_type* result_type;
+  assert(cfn);
+  assert(args);
   num_args = list_length(args);
   if (! num_args) {
     /* TODO */
@@ -28,8 +87,6 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args) {
     err(1, "todo");
     return NULL;
   }
-  if (! (arg_types = malloc(sizeof(ffi_type *) * num_args)))
-    err(1, "cfn_apply");
   if (! (arg_values = malloc(sizeof(void *) * num_args)))
     err(1, "cfn_apply");
   while (args) {

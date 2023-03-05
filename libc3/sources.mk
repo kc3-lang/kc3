@@ -12,6 +12,7 @@ HEADERS = \
 	c3.h \
 	c_types.h \
 	call.h \
+	cfn.h \
 	character.h \
 	compare.h \
 	config.h \
@@ -64,6 +65,7 @@ SOURCES = \
 	buf_save.c \
 	c3.c \
 	call.c \
+	cfn.c \
 	character.c \
 	compare.c \
 	env.c \
@@ -113,6 +115,7 @@ LO_SOURCES = \
 	buf_save.c \
 	c3.c \
 	call.c \
+	cfn.c \
 	character.c \
 	compare.c \
 	env.c \

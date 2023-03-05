@@ -51,7 +51,7 @@ s8 compare_call (const s_call *a, const s_call *b)
   return compare_list(a->arguments, b->arguments);
 }
 
-s8 compare_cfn (const s_fn *a, const s_fn *b)
+s8 compare_cfn (const s_cfn *a, const s_cfn *b)
 {
   s8 r;
   if (a == b)
@@ -60,7 +60,7 @@ s8 compare_cfn (const s_fn *a, const s_fn *b)
     return -1;
   if (!b)
     return 1;
-  if ((r = compare_sym(&a->name, &b->name)))
+  if ((r = compare_sym(a->name, b->name)))
     return r;
   return compare_list(a->arg_types, b->arg_types);
 }
@@ -153,15 +153,25 @@ s8 compare_fact_osp (const s_fact *a, const s_fact *b)
 s8 compare_fn (const s_fn *a, const s_fn *b)
 {
   s8 r;
-  if (a == b)
-    return 0;
-  if (!a)
-    return -1;
-  if (!b)
-    return 1;
-  if ((r = compare_ident(&a->ident, &b->ident)))
-    return r;
-  return compare_list(a->arguments, b->arguments);
+  assert(a);
+  assert(b);
+  while (1) {
+    if (a == b)
+      return 0;
+    if (!a)
+      return -1;
+    if (!b)
+      return 1;
+    if ((r = compare_list(a->pattern, b->pattern)))
+      return r;
+    if ((r = compare_list(a->algo, b->algo)))
+      return r;
+    a = a->next_clause;
+    b = b->next_clause;
+  }
+  assert(! "compare_fn");
+  err(1, "compare_fn");
+  return 0;
 }
 
 s8 compare_ident (const s_ident *a, const s_ident *b)
