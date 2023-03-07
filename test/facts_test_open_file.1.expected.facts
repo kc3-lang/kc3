@@ -26,7 +26,7 @@
 {{:a, :b}, {:a, :b}, {:a, :b}}
 {{{a, b}, {c, d}}, {{a, b}, {c, d}}, {{a, b}, {c, d}}}
 {{{:a, :b}, {:c, :d}}, {{:a, :b}, {:c, :d}}, {{:a, :b}, {:c, :d}}}
-%{hash: 0x12B617E8ED748848}
+%{hash: 0xF8C5A41402BC491F}
 remove {"a", "a", "a"}
 remove {:a, :a, :a}
 remove {A, A, A}

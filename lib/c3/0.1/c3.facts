@@ -7,7 +7,8 @@
 {C3, :symbol, C3.first}
 {C3.first, :fn, fn {
  ([a | _b]) { a }
- ({a, b}) { a }
- ({a, b, c}) { a }
+ ({a, _b}) { a }
+ ({a, _b, _c}) { a }
+ ({a, _b, _c, _d}) { a }
 }}
-%{hash: 0xED618BE2629E5F67}
+%{hash: 0xEB60A3EFBF9FC908}

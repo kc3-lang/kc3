@@ -144,6 +144,7 @@ struct cfn {
   const s_sym *name;
   void *p;
   u8 arity;
+  const s_sym *result_type;
   s_list *arg_types;
   ffi_cif cif;
 };
