@@ -73,4 +73,3 @@ if [ "x$TEST_KO" = "x0" ]; then
 fi
 
 exit 1
-
