@@ -140,15 +140,6 @@ struct buf_save {
   uw wpos;
 };
 
-struct cfn {
-  const s_sym *name;
-  void *p;
-  u8 arity;
-  const s_sym *result_type;
-  s_list *arg_types;
-  ffi_cif cif;
-};
-
 struct fact {
   const s_tag *subject;
   const s_tag *predicate;
@@ -286,6 +277,15 @@ struct call {
   s_list_map *keyword;
   /* value */
   s_fn *fn;
+};
+
+struct cfn {
+  s_str name;
+  void *p;
+  u8 arity;
+  const s_sym *result_type;
+  s_list *arg_types;
+  ffi_cif cif;
 };
 
 struct log {

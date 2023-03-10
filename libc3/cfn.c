@@ -122,7 +122,6 @@ s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_type,
 
 ffi_type * cfn_sym_to_ffi_type (const s_sym *sym)
 {
-  assert(tag);
   if (sym == sym_1("s8"))
     return &ffi_type_sint8;
   if (sym == sym_1("s16"))
@@ -150,7 +149,6 @@ ffi_type * cfn_sym_to_ffi_type (const s_sym *sym)
 
 e_tag_type cfn_sym_to_tag_type (const s_sym *sym)
 {
-  assert(tag);
   if (sym == sym_1("void"))
     return TAG_VOID;
   if (sym == sym_1("bool"))

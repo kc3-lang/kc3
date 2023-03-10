@@ -32,6 +32,7 @@
  */
 
 sw buf_parse_bool (s_buf *buf, bool *dest);
+sw buf_parse_cfn (s_buf *buf, s_cfn *dest);
 sw buf_parse_character (s_buf *buf, character *dest);
 sw buf_parse_digit_bin(s_buf *buf, u8 *dest);
 sw buf_parse_digit_hex (s_buf *buf, u8 *dest);
@@ -46,6 +47,9 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest);
 sw buf_parse_fn_pattern (s_buf *buf, s_list **dest);
 sw buf_parse_call (s_buf *buf, s_call *dest);
 sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);
+sw buf_parse_call_op (s_buf *buf, s_call *dest);
+sw buf_parse_call_op_precedence (s_buf *buf, s_call *dest, s_tag *left,
+                                 u8 min_precedence);
 sw buf_parse_comments (s_buf *buf);
 sw buf_parse_integer (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_unsigned_bin (s_buf *buf, s_integer *dest);
@@ -65,6 +69,7 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest);
 sw buf_parse_tag (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_bool (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call (s_buf *buf, s_tag *dest);
+sw buf_parse_tag_cfn (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_character (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_fn (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_ident (s_buf *buf, s_tag *dest);

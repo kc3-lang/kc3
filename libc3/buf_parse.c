@@ -18,6 +18,8 @@
 #include "../libtommath/tommath.h"
 #include "c3.h"
 
+sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest);
+
 sw buf_parse_bool (s_buf *buf, bool *p)
 {
   character c;
@@ -60,6 +62,10 @@ sw buf_parse_call (s_buf *buf, s_call *dest)
   s_buf_save save;
   assert(buf);
   assert(dest);
+  if ((r = buf_parse_call_op(buf, dest)) < 0)
+    return r;
+  if (r > 0)
+    return r;
   buf_save_init(buf, &save);
   if ((r = buf_parse_ident(buf, &dest->ident)) <= 0)
     goto clean;
@@ -163,6 +169,129 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
     }
     goto restore;
   }
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_call_op (s_buf *buf, s_call *dest)
+{
+  s_tag *left;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  left = tag_new();
+  if ((r = buf_parse_tag(buf, left)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_parse_call_op_precedence(buf, dest, left, 0)) < 0)
+    return r;
+  result += r;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_call_op_precedence (s_buf *buf, s_call *dest, s_tag *left,
+                                 u8 min_precedence)
+{
+  s_ident op;
+  sw r;
+  sw result = 0;
+  s_tag right;
+  if ((r = buf_parse_ident(buf, &op)) < 0)
+    
+}
+
+sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_cfn tmp;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "cfn")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_sym(buf, &tmp.result_type)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_str(buf, &tmp.name)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_cfn_arg_types(buf, &tmp.arg_types)) <= 0)
+    goto restore;
+  result += r;
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_list **tail;
+  s_list *tmp;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  tail = &tmp;
+  while (1) {
+    *tail = list_new(NULL);
+    if ((r = buf_parse_tag_sym(buf, &(*tail)->tag)) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, ",")) < 0)
+      goto restore;
+    if (! r)
+      break;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
+  if ((r = buf_read_1(buf, ")")) <= 0)
+    goto restore;
+  result += r;
+  *dest = tmp;
+  r = result;
+  goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
@@ -1344,6 +1473,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_str(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
+      (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_ident(buf, dest)) != 0 ||
@@ -1380,6 +1510,14 @@ sw buf_parse_tag_call (s_buf *buf, s_tag *dest)
   sw r;
   if ((r = buf_parse_call(buf, &dest->data.call)) > 0)
     dest->type.type = TAG_CALL;
+  return r;
+}
+
+sw buf_parse_tag_cfn (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_cfn(buf, &dest->data.cfn)) > 0)
+    dest->type.type = TAG_CFN;
   return r;
 }
 

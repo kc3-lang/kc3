@@ -1,9 +1,26 @@
 %{module: C3.Facts.Dump,
   version: 0x0000000000000001,
-  count: 0x0000000000000005}
+  count: 0x000000000000000A}
 {C3, :is-a, :module}
 {C3, :name, "C3"}
 {C3, :path, "c3.facts"}
+{C3, :symbol, C3.+}
+{C3.+, :cfn, cfn :tag "tag_add" (:tag, :tag)}
+{C3.+, :is_a, :operator}
+{C3.+, :operator_precedence, 1}
+{C3.+, :operator_associativity, :left}
+{C3.-, :cfn, cfn :tag "tag_sub" (:tag, :tag)}
+{C3.-, :is_a, :operator}
+{C3.-, :operator_precedence, 1}
+{C3.-, :operator_associativity, :left}
+{C3.*, :cfn, cfn :tag "tag_mul" (:tag, :tag)}
+{C3.*, :is_a, :operator}
+{C3.*, :operator_precedence, 2}
+{C3.*, :operator_associativity, :left}
+{C3./, :cfn, cfn :tag "tag_div" (:tag, :tag)}
+{C3./, :is_a, :operator}
+{C3./, :operator_precedence, 2}
+{C3./, :operator_associativity, :left}
 {C3, :symbol, C3.first}
 {C3.first, :fn, fn {
  ([a | _b]) { a }
@@ -11,4 +28,4 @@
  ({a, _b, _c}) { a }
  ({a, _b, _c, _d}) { a }
 }}
-%{hash: 0xEB60A3EFBF9FC908}
+%{hash: 0xC73C2E069FEA6136}
