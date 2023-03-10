@@ -93,7 +93,7 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   ident_resolve_module(&c.ident, env);
   tag_init_1(    &tag_fn,       ":fn");
   tag_init_ident(&tag_ident, &c.ident);
-  tag_init_1(    &tag_is_a,     ":is-a");
+  tag_init_1(    &tag_is_a,     ":is_a");
   tag_init_1(    &tag_macro,    ":macro");
   tag_init_1(    &tag_module,   ":module");
   tag_init_sym(  &tag_module_name, c.ident.module_name);
@@ -484,6 +484,33 @@ s_module * env_module_load (s_env *env, s_module *module,
   }
   str_clean(&path);
   return module;
+}
+
+s8 env_operator_precedence (const s_env *env, const s_ident *op)
+{
+  s_facts_with_cursor cursor;
+  s_tag tag_ident;
+  s_tag tag_operator_precedence;
+  s_tag tag_var;
+  assert(env);
+  assert(call);
+  assert(dest);
+  ident_resolve_module(op, env);
+  tag_init_ident(&tag_ident, op);
+  tag_init_1(    &tag_operator_precedence, ":operator_precedence");
+  tag_init_var(  &tag_var);
+  facts_with(&env->facts, &cursor, (t_facts_spec) {
+      &tag_ident, &tag_operator_precedence, &tag_var,
+      NULL, NULL });
+  if (! facts_with_cursor_next(&cursor))
+    errx(1, "operator %s not found in module %s",
+         op->sym->str.ptr.ps8,
+         op->module_name->str.ptr.ps8);
+  if (tag_var.type.type != TAG_U8)
+    errx(1, "%s.%s: invalid operator_precedence type",
+         op->module_name->str.ptr.ps8,
+         op->sym->str.ptr.ps8);
+  return tag_var.data.u8;
 }
 
 void env_pop_error_handler (s_env *env)

@@ -35,6 +35,7 @@ C3_C_SOURCES = \
 	ic3/linenoise.c \
 	libc3/set__tag.c \
 	libc3/set_item__tag.c \
+	libc3/cfn.c \
 	libc3/arg.c \
 	libc3/arg.h \
 	libc3/skiplist_node__fact.c \
@@ -62,8 +63,8 @@ C3_C_SOURCES = \
 	libc3/buf_parse_c.c \
 	libc3/buf_parse_c.h \
 	libc3/buf_save.c \
-	libc3/buf_parse.c \
 	libc3/buf_parse.h \
+	libc3/compare.c \
 	libc3/buf_save.h \
 	libc3/fact.h \
 	libc3/c_types.h \
@@ -72,9 +73,9 @@ C3_C_SOURCES = \
 	libc3/bool.h \
 	libc3/c3.h \
 	libc3/character.h \
-	libc3/compare.c \
 	libc3/compare.h \
 	libc3/env.c \
+	libc3/operator.h \
 	libc3/ident.c \
 	libc3/error.c \
 	libc3/error.h \
@@ -91,7 +92,7 @@ C3_C_SOURCES = \
 	libc3/fn.h \
 	libc3/types.h \
 	libc3/call.c \
-	libc3/cfn.c \
+	libc3/buf_parse.c \
 	libc3/facts_cursor.h \
 	libc3/facts_spec.c \
 	libc3/frame.h \
@@ -126,6 +127,7 @@ C3_C_SOURCES = \
 	libc3/set_cursor__fact.h \
 	libc3/set_cursor__tag.h \
 	libc3/set.h.in \
+	libc3/operator.c \
 	libc3/set_cursor.c.in \
 	libc3/str.h \
 	libc3/tuple.h \

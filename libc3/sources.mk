@@ -36,6 +36,7 @@ HEADERS = \
 	list.h \
 	log.h \
 	module.h \
+	operator.h \
 	quote.h \
 	set__fact.h \
 	set__tag.h \
@@ -88,6 +89,7 @@ SOURCES = \
 	list.c \
 	log.c \
 	module.c \
+	operator.c \
 	quote.c \
 	set__fact.c \
 	set__tag.c \
@@ -138,6 +140,7 @@ LO_SOURCES = \
 	list.c \
 	log.c \
 	module.c \
+	operator.c \
 	quote.c \
 	set__fact.c \
 	set__tag.c \

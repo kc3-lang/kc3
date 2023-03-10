@@ -48,8 +48,8 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest);
 sw buf_parse_call (s_buf *buf, s_call *dest);
 sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);
 sw buf_parse_call_op (s_buf *buf, s_call *dest);
-sw buf_parse_call_op_precedence (s_buf *buf, s_call *dest, s_tag *left,
-                                 u8 min_precedence);
+sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, s_tag *left,
+                          u8 min_precedence);
 sw buf_parse_comments (s_buf *buf);
 sw buf_parse_integer (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_unsigned_bin (s_buf *buf, s_integer *dest);

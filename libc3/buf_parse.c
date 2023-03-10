@@ -187,10 +187,10 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   buf_save_init(buf, &save);
   left = tag_new();
   if ((r = buf_parse_tag(buf, left)) <= 0)
-    return r;
+    goto clean;
   result += r;
-  if ((r = buf_parse_call_op_precedence(buf, dest, left, 0)) < 0)
-    return r;
+  if ((r = buf_parse_call_op_rec(buf, dest, left, 0)) < 0)
+    goto restore;
   result += r;
   r = result;
   goto clean;
@@ -201,8 +201,8 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   return r;
 }
 
-sw buf_parse_call_op_precedence (s_buf *buf, s_call *dest, s_tag *left,
-                                 u8 min_precedence)
+sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, s_tag *left,
+                          u8 min_precedence)
 {
   s_ident op;
   sw r;
