@@ -486,6 +486,31 @@ s_module * env_module_load (s_env *env, s_module *module,
   return module;
 }
 
+bool env_operator_is_right_associative (const s_env *env, const s_ident *op)
+{
+  s_facts_with_cursor cursor;
+  s_tag tag_ident;
+  s_tag tag_operator_assoc;
+  s_tag tag_right;
+  assert(env);
+  assert(call);
+  assert(dest);
+  ident_resolve_module(op, env);
+  tag_init_ident(&tag_ident, op);
+  tag_init_1(    &tag_operator_assoc, ":operator_associativity");
+  tag_init_1(    &tag_right, ":right");
+  facts_with(&env->facts, &cursor, (t_facts_spec) {
+      &tag_ident, &tag_operator_assoc, &tag_right,
+      NULL, NULL });
+  if (! facts_with_cursor_next(&cursor))
+    return false;
+  if (tag_var.type.type != TAG_U8)
+    errx(1, "%s.%s: invalid operator_precedence type",
+         op->module_name->str.ptr.ps8,
+         op->sym->str.ptr.ps8);
+  return tag_var.data.u8;
+}
+
 s8 env_operator_precedence (const s_env *env, const s_ident *op)
 {
   s_facts_with_cursor cursor;

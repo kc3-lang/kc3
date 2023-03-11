@@ -11,12 +11,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef BOOL_H
-#define BOOL_H
+#ifndef OPERATOR_H
+#define OPERATOR_H
 
 #include "types.h"
 
 /* Observers */
-s8 operator_precedence (const s_ident *op);
+bool operator_is_right_associative (const s_ident *op);
+s8   operator_precedence (const s_ident *op);
 
-#endif /* SYM_H */
+#endif /* OPERATOR_H */

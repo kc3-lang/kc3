@@ -647,6 +647,26 @@ s_tag * tag_new_1 (const s8 *p)
   return tag_init_1(tag, p);
 }
 
+s_tag * tag_new_call_op (const s_ident *ident, s_tag *left,
+                         s_tag *right)
+{
+  s_list *args;
+  s_tag *tag;
+  assert(ident);
+  assert(left);
+  assert(right);
+  if (! (tag = malloc(sizeof(s_tag))))
+    err(1, "tag_new_call_op");
+  tag->type.type = TAG_CALL;
+  tag->data.call.ident = *ident;
+  args = list_new(NULL);
+  tag_copy(right, &args->tag);
+  args = list_new(args);
+  tag_copy(left, &args->tag);
+  tag->data.call.arguments = args;
+  return tag;
+}
+
 s_tag * tag_new_copy (const s_tag *src)
 {
   s_tag *dest;

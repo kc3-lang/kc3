@@ -40,6 +40,7 @@
 #include "io.h"
 #include "list.h"
 #include "module.h"
+#include "operator.h"
 #include "quote.h"
 #include "str.h"
 #include "tag.h"

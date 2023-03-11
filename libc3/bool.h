@@ -25,4 +25,4 @@
 /* Observers */
 s_str * bool_inspect (e_bool b, s_str *dest);
 
-#endif /* SYM_H */
+#endif /* BOOL_H */
