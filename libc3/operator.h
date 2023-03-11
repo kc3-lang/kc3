@@ -17,7 +17,7 @@
 #include "types.h"
 
 /* Observers */
-bool operator_is_right_associative (const s_ident *op);
-s8   operator_precedence (const s_ident *op);
+bool operator_is_right_associative (s_ident *op);
+s8   operator_precedence (s_ident *op);
 
 #endif /* OPERATOR_H */

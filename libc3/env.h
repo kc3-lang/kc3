@@ -45,8 +45,10 @@ bool       env_eval_progn (s_env *env, const s_list *program,
 bool       env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
 s_module * env_module_load (s_env *env, s_module *module,
                             const s_sym *name, s_facts *facts);
+bool       env_operator_is_right_associative (const s_env *env,
+                                              s_ident *op);
 s8         env_operator_precedence (const s_env *env,
-                                    const s_ident *op);
+                                    s_ident *op);
 
 /* control structures */
 void env_error_f (s_env *env, const char *fmt, ...);

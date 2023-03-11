@@ -207,6 +207,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, s_tag *left,
   sw r;
   sw result = 0;
   s_tag *right;
+  s_tag *right_left;
   s_buf_save save;
   assert(buf);
   assert(dest);
@@ -217,21 +218,23 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, s_tag *left,
          >= min_precedence) {
     result += r;
     op = next_op;
-    if ((r = buf_parse_tag_primary(buf, &right)) <= 0)
+    if ((r = buf_parse_tag_primary(buf, right)) <= 0)
       goto restore;
     result += r;
     if ((r = buf_parse_ident(buf, &next_op)) < 0)
       goto restore;
     result += r;
-    while (r && (next_op_precedence = operator_precedence(&next_op))
-           >= op_precedence ||
-           (operator_is_right_associative(&next_op) &&
-            next_op_precedence == op_precedence)) {
+    while (r && ((next_op_precedence = operator_precedence(&next_op))
+                 >= op_precedence ||
+                 (operator_is_right_associative(&next_op) &&
+                  next_op_precedence == op_precedence))) {
       result += r;
       if (next_op_precedence > op_precedence)
         op_precedence++;
-      if ((r = buf_parse_call_op_rec(buf, (right = tag_new()), right,
-                                     op_precedence)) <= 0)
+      right_left = right;
+      right = tag_new();
+      if ((r = buf_parse_call_op_rec(buf, &right->data.call,
+                                     right_left, op_precedence)) <= 0)
         goto restore;
       result += r;
       if ((r = buf_parse_ident(buf, &next_op)) < 0)
@@ -239,6 +242,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, s_tag *left,
       left = tag_new_call_op(&op, left, right);
     }
   }
+  *dest = left->data.call;
   r = result;
   goto clean;
  restore:
@@ -1498,7 +1502,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_call_op(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_call_op(buf, dest)) != 0 ||
       (r = buf_parse_tag_primary(buf, dest)) != 0)
     goto end;
  end:
@@ -1530,6 +1534,14 @@ sw buf_parse_tag_call (s_buf *buf, s_tag *dest)
 {
   sw r;
   if ((r = buf_parse_call(buf, &dest->data.call)) > 0)
+    dest->type.type = TAG_CALL;
+  return r;
+}
+
+sw buf_parse_tag_call_op (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  if ((r = buf_parse_call_op(buf, &dest->data.call)) > 0)
     dest->type.type = TAG_CALL;
   return r;
 }

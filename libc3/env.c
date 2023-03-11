@@ -486,7 +486,7 @@ s_module * env_module_load (s_env *env, s_module *module,
   return module;
 }
 
-bool env_operator_is_right_associative (const s_env *env, const s_ident *op)
+bool env_operator_is_right_associative (const s_env *env, s_ident *op)
 {
   s_facts_with_cursor cursor;
   s_tag tag_ident;
@@ -504,14 +504,11 @@ bool env_operator_is_right_associative (const s_env *env, const s_ident *op)
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor))
     return false;
-  if (tag_var.type.type != TAG_U8)
-    errx(1, "%s.%s: invalid operator_precedence type",
-         op->module_name->str.ptr.ps8,
-         op->sym->str.ptr.ps8);
-  return tag_var.data.u8;
+  facts_with_cursor_clean(&cursor);
+  return true;
 }
 
-s8 env_operator_precedence (const s_env *env, const s_ident *op)
+s8 env_operator_precedence (const s_env *env, s_ident *op)
 {
   s_facts_with_cursor cursor;
   s_tag tag_ident;
@@ -535,6 +532,7 @@ s8 env_operator_precedence (const s_env *env, const s_ident *op)
     errx(1, "%s.%s: invalid operator_precedence type",
          op->module_name->str.ptr.ps8,
          op->sym->str.ptr.ps8);
+  facts_with_cursor_clean(&cursor);
   return tag_var.data.u8;
 }
 
