@@ -185,6 +185,8 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   if ((r = buf_parse_tag_primary(buf, left)) <= 0)
     goto restore;
   result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
   if ((r = buf_parse_call_op_rec(buf, dest, left, 0)) <= 0)
     goto restore;
   result += r;
@@ -218,10 +220,14 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, s_tag *left,
   while (r && (op_precedence = operator_precedence(&next_op))
          >= min_precedence) {
     result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
     op = next_op;
     if ((r = buf_parse_tag_primary(buf, right)) <= 0)
       goto restore;
     result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
     if ((r = buf_parse_ident(buf, &next_op)) < 0)
       goto restore;
     result += r;
@@ -238,6 +244,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, s_tag *left,
                                      right_left, op_precedence)) <= 0)
         goto restore;
       result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
       if ((r = buf_parse_ident(buf, &next_op)) < 0)
         goto restore;
       left = tag_new_call_op(&op, left, right);
@@ -1205,8 +1213,11 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "quote ")) <= 0)
+  if ((r = buf_read_1(buf, "quote")) <= 0)
     goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
   result += r;
   quote.tag = tag_new();
   if ((r = buf_parse_tag(buf, quote.tag)) <= 0)
