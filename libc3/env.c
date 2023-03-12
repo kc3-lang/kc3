@@ -489,6 +489,7 @@ s_module * env_module_load (s_env *env, s_module *module,
 bool env_operator_is_right_associative (const s_env *env, s_ident *op)
 {
   s_facts_with_cursor cursor;
+  s8 r;
   s_tag tag_ident;
   s_tag tag_operator_assoc;
   s_tag tag_right;
@@ -501,10 +502,9 @@ bool env_operator_is_right_associative (const s_env *env, s_ident *op)
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_ident, &tag_operator_assoc, &tag_right,
       NULL, NULL });
-  if (! facts_with_cursor_next(&cursor))
-    return false;
+  r = facts_with_cursor_next(&cursor) ? true : false;
   facts_with_cursor_clean(&cursor);
-  return true;
+  return r;
 }
 
 s8 env_operator_precedence (const s_env *env, s_ident *op)
@@ -523,15 +523,18 @@ s8 env_operator_precedence (const s_env *env, s_ident *op)
       &tag_ident, &tag_operator_precedence, &tag_var,
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor))
-    return -1;
+    goto ko;
   if (tag_var.type.type != TAG_U8) {
     warnx("%s.%s: invalid operator_precedence type",
           op->module_name->str.ptr.ps8,
           op->sym->str.ptr.ps8);
-    return -1;
+    goto ko;
   }
   facts_with_cursor_clean(&cursor);
   return tag_var.data.u8;
+ ko:
+  facts_with_cursor_clean(&cursor);
+  return -1;
 }
 
 void env_pop_error_handler (s_env *env)
