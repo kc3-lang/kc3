@@ -67,8 +67,6 @@ s_tag * tag_new ();
 s_tag * tag_new_1 (const s8 *p);
 s_tag * tag_new_str (s8 *free, uw size, const s8 *p);
 s_tag * tag_new_bool (bool p);
-s_tag * tag_new_call_op (const s_ident *ident, s_tag *left,
-                         s_tag *right);
 s_tag * tag_new_character (character c);
 s_tag * tag_new_copy (const s_tag *src);
 s_tag * tag_new_sym (const s_sym *sym);

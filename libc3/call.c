@@ -43,6 +43,16 @@ s_call * call_init_1 (s_call *call, const s8 *p)
   return call;
 }
 
+s_call * call_init_op (s_call *call)
+{
+  s_list *args;
+  assert(call);
+  assert(op);
+  call->ident = NULL;
+  call->arguments = list_new(list_new(NULL));
+  return call;
+}
+
 s_str * call_inspect (const s_call *call, s_str *dest)
 {
   sw size;
