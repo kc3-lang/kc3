@@ -182,15 +182,16 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   assert(dest);
   buf_save_init(buf, &save);
   left = tag_new();
-  if ((r = buf_parse_tag(buf, left)) <= 0)
-    goto clean;
+  if ((r = buf_parse_tag_primary(buf, left)) <= 0)
+    goto restore;
   result += r;
-  if ((r = buf_parse_call_op_rec(buf, dest, left, 0)) < 0)
+  if ((r = buf_parse_call_op_rec(buf, dest, left, 0)) <= 0)
     goto restore;
   result += r;
   r = result;
   goto clean;
  restore:
+  r = 0;
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);

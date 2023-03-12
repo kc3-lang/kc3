@@ -437,10 +437,10 @@ s_env * env_init (s_env *env)
     assert(! "env_init: module path not found");
     err(1, "env_init: module_path not found");
   }
+  env->current_module = &env->c3_module;
   if (! module_load(&env->c3_module, sym_1("C3"), &env->facts)) {
     return NULL;
   }
-  env->current_module = &env->c3_module;
   return env;
 }
 
@@ -493,8 +493,7 @@ bool env_operator_is_right_associative (const s_env *env, s_ident *op)
   s_tag tag_operator_assoc;
   s_tag tag_right;
   assert(env);
-  assert(call);
-  assert(dest);
+  assert(op);
   ident_resolve_module(op, env);
   tag_init_ident(&tag_ident, op);
   tag_init_1(    &tag_operator_assoc, ":operator_associativity");
@@ -515,8 +514,7 @@ s8 env_operator_precedence (const s_env *env, s_ident *op)
   s_tag tag_operator_precedence;
   s_tag tag_var;
   assert(env);
-  assert(call);
-  assert(dest);
+  assert(op);
   ident_resolve_module(op, env);
   tag_init_ident(&tag_ident, op);
   tag_init_1(    &tag_operator_precedence, ":operator_precedence");
@@ -525,13 +523,13 @@ s8 env_operator_precedence (const s_env *env, s_ident *op)
       &tag_ident, &tag_operator_precedence, &tag_var,
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor))
-    errx(1, "operator %s not found in module %s",
-         op->sym->str.ptr.ps8,
-         op->module_name->str.ptr.ps8);
-  if (tag_var.type.type != TAG_U8)
-    errx(1, "%s.%s: invalid operator_precedence type",
-         op->module_name->str.ptr.ps8,
-         op->sym->str.ptr.ps8);
+    return -1;
+  if (tag_var.type.type != TAG_U8) {
+    warnx("%s.%s: invalid operator_precedence type",
+          op->module_name->str.ptr.ps8,
+          op->sym->str.ptr.ps8);
+    return -1;
+  }
   facts_with_cursor_clean(&cursor);
   return tag_var.data.u8;
 }
