@@ -223,6 +223,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, s_tag *left,
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     op = next_op;
+    right = tag_new();
     if ((r = buf_parse_tag_primary(buf, right)) <= 0)
       goto restore;
     result += r;
