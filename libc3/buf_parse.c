@@ -879,6 +879,7 @@ sw buf_parse_ident_peek (s_buf *buf, s_ident *dest)
   buf_save_init(buf, &save);
   r = buf_parse_ident(buf, dest);
   buf_save_restore_rpos(buf, &save);
+  buf_save_clean(buf, &save);
   return r;
 }
 
