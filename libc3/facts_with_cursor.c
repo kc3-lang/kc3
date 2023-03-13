@@ -43,7 +43,7 @@ s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
     return NULL;
   if (cursor->level == cursor->facts_count) {
     level = &cursor->levels[cursor->facts_count - 1];
-#ifdef DEBUG
+#ifdef DEBUG_FACTS
     buf_write_1(&g_c3_env.err, "[debug] cursor->level=");
     buf_inspect_u64(&g_c3_env.err, cursor->level);
     buf_write_1(&g_c3_env.err, " level->spec=");
@@ -52,7 +52,7 @@ s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
     buf_inspect_fact(&g_c3_env.err, level->fact);
 #endif
     level->fact = facts_cursor_next(&level->cursor);
-#ifdef DEBUG
+#ifdef DEBUG_FACTS
     buf_write_1(&g_c3_env.err, " -> ");
     buf_inspect_fact(&g_c3_env.err, level->fact);
     buf_write_1(&g_c3_env.err, "\n");
@@ -81,7 +81,7 @@ s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
                       level->spec[0], level->spec[1],
                       level->spec[2]);
     }
-#ifdef DEBUG
+#ifdef DEBUG_FACTS
     buf_write_1(&g_c3_env.err, "[debug] cursor->level=");
     buf_inspect_u64(&g_c3_env.err, cursor->level);
     buf_write_1(&g_c3_env.err, " level->spec=");
@@ -91,7 +91,7 @@ s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
 #endif
     fact = facts_cursor_next(&level->cursor);
     level->fact = fact;
-#ifdef DEBUG
+#ifdef DEBUG_FACTS
     buf_write_1(&g_c3_env.err, " -> ");
     buf_inspect_fact(&g_c3_env.err, level->fact);
     buf_write_1(&g_c3_env.err, "\n");

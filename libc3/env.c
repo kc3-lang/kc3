@@ -425,6 +425,7 @@ s_env * env_init (s_env *env)
   buf_init_alloc(&env->err, BUF_SIZE);
   buf_file_open_w(&env->err, stderr);
   facts_init(&env->facts);
+  /* TODO: module path */
   if (! access("lib/c3/0.1", X_OK))
     str_init_1(&env->module_path, NULL, "lib/c3/0.1");
   else if (! access("../lib/c3/0.1", X_OK))
