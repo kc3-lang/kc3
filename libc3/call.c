@@ -12,6 +12,7 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
+#include <string.h>
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
@@ -45,10 +46,9 @@ s_call * call_init_1 (s_call *call, const s8 *p)
 
 s_call * call_init_op (s_call *call)
 {
-  s_list *args;
   assert(call);
   assert(op);
-  call->ident = NULL;
+  bzero(&call->ident, sizeof(s_ident));
   call->arguments = list_new(list_new(NULL));
   return call;
 }

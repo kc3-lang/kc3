@@ -56,6 +56,7 @@ sw buf_parse_integer_unsigned_dec (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_unsigned_hex (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_unsigned_oct (s_buf *buf, s_integer *dest);
 sw buf_parse_ident (s_buf *buf, s_ident *dest);
+sw buf_parse_ident_peek (s_buf *buf, s_ident *dest);
 sw buf_parse_integer (s_buf *buf, s_integer *dest);
 sw buf_parse_list (s_buf *buf, s_list **dest);
 sw buf_parse_module_name (s_buf *buf, const s_sym **dest);

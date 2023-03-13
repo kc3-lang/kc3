@@ -290,6 +290,16 @@ s_tag * tag_init_bool (s_tag *tag, bool b)
   return tag;
 }
 
+s_tag * tag_init_call (s_tag *tag, const s_call *call)
+{
+  assert(tag);
+  assert(call);
+  bzero(tag, sizeof(s_tag));
+  tag->type.type = TAG_CALL;
+  tag->data.call = *call;
+  return tag;
+}
+
 s_tag * tag_init_character (s_tag *tag, character c)
 {
   assert(tag);
