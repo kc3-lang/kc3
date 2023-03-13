@@ -221,11 +221,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   buf_save_init(buf, &save);
   call_init_op(&tmp);
   left = &tmp.arguments->tag;
-  printf("tmp.arguments=%p\n", (void *) tmp.arguments);
   next_arg = list_next(tmp.arguments);
-  printf("next_arg=%p\n", (void *) next_arg);
   right = &next_arg->tag;
-  printf("right=%p\n", (void *) right);
   *left = dest->arguments->tag;
   if ((r = buf_parse_ident_peek(buf, &next_op)) <= 0)
     goto clean;
@@ -233,42 +230,40 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     r = 0;
     goto restore;
   }
-  while (r && op_precedence >= min_precedence) {
+  while (r > 0 && op_precedence >= min_precedence) {
     if ((r = buf_parse_ident(buf, &next_op)) <= 0)
       goto restore;
     result += r;
     op = next_op;
+    tmp.ident = op;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     if ((r = buf_parse_tag_primary(buf, right)) <= 0)
       goto restore;
     result += r;
     if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    if ((r = buf_parse_ident_peek(buf, &next_op)) < 0)
-      goto restore;
-    if (r) {
+      break;
+    r = buf_parse_ident_peek(buf, &next_op);
+    if (r <= 0)
+      break;
+    next_op_precedence = operator_precedence(&next_op);
+    while (r > 0 && (next_op_precedence >= op_precedence ||
+                     (operator_is_right_associative(&next_op) &&
+                      next_op_precedence == op_precedence))) {
+      call_init_op(&tmp2);
+      tmp2.arguments->tag = *right;
+      if ((r = buf_parse_call_op_rec(buf, &tmp2, (next_op_precedence > op_precedence) ? op_precedence + 1 : op_precedence)) <= 0)
+        goto restore;
+      bzero(right, sizeof(s_tag));
+      right->type.type = TAG_CALL;
+      right->data.call = tmp2;
       result += r;
-      next_op_precedence = operator_precedence(&next_op);
-      while (r && (next_op_precedence >= op_precedence ||
-                   (operator_is_right_associative(&next_op) &&
-                    next_op_precedence == op_precedence))) {
-        result += r;
-        call_init_op(&tmp2);
-        tmp2.arguments->tag = *right;
-        if ((r = buf_parse_call_op_rec(buf, &tmp2, (next_op_precedence > op_precedence) ? op_precedence + 1 : op_precedence)) <= 0)
-          goto restore;
-        bzero(right, sizeof(s_tag));
-        right->type.type = TAG_CALL;
-        right->data.call = tmp2;
-        result += r;
-        if ((r = buf_ignore_spaces(buf)) < 0)
-          goto restore;
-        result += r;
-        if ((r = buf_parse_ident_peek(buf, &next_op)) < 0)
-          goto restore;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      r = buf_parse_ident_peek(buf, &next_op);
+      if (r > 0)
         next_op_precedence = operator_precedence(&next_op);
-      }
     }
     if ((op_precedence = next_op_precedence) < 0)
       break;
