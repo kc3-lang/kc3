@@ -248,7 +248,9 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       tmp2.arguments->tag = *right;
       if ((r = buf_parse_call_op_rec(buf, &tmp2, (next_op_precedence > op_precedence) ? op_precedence + 1 : op_precedence)) <= 0)
         goto restore;
-      tag_init_call(right, &tmp2);
+      bzero(right, sizeof(s_tag));
+      right->type.type = TAG_CALL;
+      right->data.call = tmp2;
       result += r;
       if ((r = buf_ignore_spaces(buf)) < 0)
         goto restore;
