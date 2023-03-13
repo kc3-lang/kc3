@@ -218,13 +218,16 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  tmp = *dest;
+  call_init_op(&tmp);
   left = &tmp.arguments->tag;
   right = &list_next(tmp.arguments)->tag;
+  *left = dest->arguments->tag;
   if ((r = buf_parse_ident_peek(buf, &next_op)) <= 0)
     goto clean;
-  if ((op_precedence = operator_precedence(&next_op)) < 0)
+  if ((op_precedence = operator_precedence(&next_op)) < 0) {
+    r = 0;
     goto restore;
+  }
   while (r && op_precedence >= min_precedence) {
     if ((r = buf_parse_ident(buf, &next_op)) <= 0)
       goto clean;
@@ -262,8 +265,11 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     }
     if ((op_precedence = operator_precedence(&next_op)) < 0)
       goto restore;
-    tmp.ident = op;
-    tag_init_call(left, &tmp);
+    call_init_op(&tmp2);
+    tmp2.ident = op;
+    tmp2.arguments->tag = *left;
+    list_next(tmp2.arguments)->tag = *right;
+    tag_init_call(left, &tmp2);
   }
   *dest = tmp;
   r = result;

@@ -438,6 +438,7 @@ s_env * env_init (s_env *env)
     err(1, "env_init: module_path not found");
   }
   env->current_module = &env->c3_module;
+  env->c3_module.name = sym_1("C3");
   if (! module_load(&env->c3_module, sym_1("C3"), &env->facts)) {
     return NULL;
   }

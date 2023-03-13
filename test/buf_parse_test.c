@@ -631,10 +631,10 @@ void buf_parse_test ()
   buf_parse_test_integer();
   buf_parse_test_str();
   buf_parse_test_sym();
-  buf_parse_test_ident();
   buf_parse_test_list();
   buf_parse_test_tag();
   buf_parse_test_tuple();
+  buf_parse_test_ident();
 }
 
 void buf_parse_test_bool ()
