@@ -32,8 +32,13 @@
  */
 
 sw buf_parse_bool (s_buf *buf, bool *dest);
+sw buf_parse_call (s_buf *buf, s_call *dest);
+sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);
+sw buf_parse_call_op (s_buf *buf, s_call *dest);
+sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence);
 sw buf_parse_cfn (s_buf *buf, s_cfn *dest);
 sw buf_parse_character (s_buf *buf, character *dest);
+sw buf_parse_comments (s_buf *buf);
 sw buf_parse_digit_bin(s_buf *buf, u8 *dest);
 sw buf_parse_digit_hex (s_buf *buf, u8 *dest);
 sw buf_parse_digit_oct (s_buf *buf, u8 *dest);
@@ -45,12 +50,6 @@ sw buf_parse_fn (s_buf *buf, s_fn **dest);
 sw buf_parse_fn_clause (s_buf *buf, s_fn *dest);
 sw buf_parse_fn_algo (s_buf *buf, s_list **dest);
 sw buf_parse_fn_pattern (s_buf *buf, s_list **dest);
-sw buf_parse_call (s_buf *buf, s_call *dest);
-sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);
-sw buf_parse_call_op (s_buf *buf, s_call *dest);
-sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, s_tag *left,
-                          u8 min_precedence);
-sw buf_parse_comments (s_buf *buf);
 sw buf_parse_integer (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_unsigned_bin (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_unsigned_dec (s_buf *buf, s_integer *dest);

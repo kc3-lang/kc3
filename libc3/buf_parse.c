@@ -178,12 +178,11 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_tag tag;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
   call_init_op(&tmp);
-  if ((r = buf_parse_tag_primary(buf, &tmp->arguments->tag)) <= 0)
+  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
     goto restore;
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
@@ -203,7 +202,7 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   return r;
 }
 
-sw buf_parse_call_op_rec (s_buf *buf, s_call *tmp, u8 min_precedence)
+sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
 {
   s_tag *new_left = NULL;
   s_ident next_op;
@@ -216,6 +215,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *tmp, u8 min_precedence)
   s_tag *right_first = NULL;
   s_tag *right_left = NULL;
   s_buf_save save;
+  s_call tmp;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -227,7 +227,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *tmp, u8 min_precedence)
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     op = next_op;
-    right = right_first = tag_new();
+    right = tag_new();
     if ((r = buf_parse_tag_primary(buf, right)) <= 0)
       goto restore;
     result += r;
@@ -246,7 +246,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *tmp, u8 min_precedence)
       right_left = right;
       right = tag_new();
       if ((r = buf_parse_call_op_rec(buf, &right->data.call,
-                                     right_left, op_precedence)) <= 0)
+                                     op_precedence)) <= 0)
         goto restore;
       free(right_left);
       result += r;
