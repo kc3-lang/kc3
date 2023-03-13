@@ -50,7 +50,7 @@ s_list * list_copy (const s_list *src, s_list **dest)
   s_list *result = NULL;
   *dest = NULL;
   while (src) {
-    *dest = list_new();
+    *dest = list_new(NULL);
     if (! result)
       result = *dest;
     tag_copy(&src->tag, &(*dest)->tag);
@@ -83,11 +83,11 @@ void list_delete_all (s_list *list)
     list = list_delete(list);
 }
 
-s_list * list_init (s_list *list)
+s_list * list_init (s_list *list, s_list *next)
 {
   assert(list);
   tag_init_void(&list->tag);
-  tag_init_list(&list->next, NULL);
+  tag_init_list(&list->next, next);
   return list;
 }
 
@@ -128,11 +128,11 @@ s_list * list_next (const s_list *list)
   }
 }
 
-s_list * list_new ()
+s_list * list_new (s_list *next)
 {
   s_list *list;
   list = calloc(1, sizeof(s_list));
   if (! list)
     errx(1, "list_new: out of memory");
-  return list_init(list);
+  return list_init(list, next);
 }

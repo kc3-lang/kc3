@@ -110,7 +110,7 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
     if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
-    *args = list_new();
+    *args = list_new(NULL);
     (*args)->tag = tag; 
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
@@ -205,6 +205,7 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
 sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
 {
   s_tag *left;
+  s_list *next_arg;
   s_ident next_op;
   s8 next_op_precedence;
   s_ident op;
@@ -220,7 +221,11 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   buf_save_init(buf, &save);
   call_init_op(&tmp);
   left = &tmp.arguments->tag;
-  right = &list_next(tmp.arguments)->tag;
+  printf("tmp.arguments=%p\n", (void *) tmp.arguments);
+  next_arg = list_next(tmp.arguments);
+  printf("next_arg=%p\n", (void *) next_arg);
+  right = &next_arg->tag;
+  printf("right=%p\n", (void *) right);
   *left = dest->arguments->tag;
   if ((r = buf_parse_ident_peek(buf, &next_op)) <= 0)
     goto clean;
@@ -230,7 +235,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   }
   while (r && op_precedence >= min_precedence) {
     if ((r = buf_parse_ident(buf, &next_op)) <= 0)
-      goto clean;
+      goto restore;
     result += r;
     op = next_op;
     if ((r = buf_ignore_spaces(buf)) < 0)
@@ -242,29 +247,31 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       goto restore;
     if ((r = buf_parse_ident_peek(buf, &next_op)) < 0)
       goto restore;
-    result += r;
-    next_op_precedence = operator_precedence(&next_op);
-    while (r && (next_op_precedence >= op_precedence ||
-                 (operator_is_right_associative(&next_op) &&
-                  next_op_precedence == op_precedence))) {
+    if (r) {
       result += r;
-      call_init_op(&tmp2);
-      tmp2.arguments->tag = *right;
-      if ((r = buf_parse_call_op_rec(buf, &tmp2, (next_op_precedence > op_precedence) ? op_precedence + 1 : op_precedence)) <= 0)
-        goto restore;
-      bzero(right, sizeof(s_tag));
-      right->type.type = TAG_CALL;
-      right->data.call = tmp2;
-      result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
-      result += r;
-      if ((r = buf_parse_ident_peek(buf, &next_op)) < 0)
-        goto restore;
       next_op_precedence = operator_precedence(&next_op);
+      while (r && (next_op_precedence >= op_precedence ||
+                   (operator_is_right_associative(&next_op) &&
+                    next_op_precedence == op_precedence))) {
+        result += r;
+        call_init_op(&tmp2);
+        tmp2.arguments->tag = *right;
+        if ((r = buf_parse_call_op_rec(buf, &tmp2, (next_op_precedence > op_precedence) ? op_precedence + 1 : op_precedence)) <= 0)
+          goto restore;
+        bzero(right, sizeof(s_tag));
+        right->type.type = TAG_CALL;
+        right->data.call = tmp2;
+        result += r;
+        if ((r = buf_ignore_spaces(buf)) < 0)
+          goto restore;
+        result += r;
+        if ((r = buf_parse_ident_peek(buf, &next_op)) < 0)
+          goto restore;
+        next_op_precedence = operator_precedence(&next_op);
+      }
     }
-    if ((op_precedence = operator_precedence(&next_op)) < 0)
-      goto restore;
+    if ((op_precedence = next_op_precedence) < 0)
+      break;
     call_init_op(&tmp2);
     tmp2.ident = op;
     tmp2.arguments->tag = *left;
@@ -738,7 +745,7 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
     if (! r)
       break;
     result += r;
-    *tail = list_new();
+    *tail = list_new(NULL);
     (*tail)->tag = tag;
     tail = &(*tail)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
@@ -787,7 +794,7 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
     if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
-    *tail = list_new();
+    *tail = list_new(NULL);
     (*tail)->tag = tag;
     tail = &(*tail)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
@@ -1124,7 +1131,7 @@ sw buf_parse_list (s_buf *buf, s_list **list)
   }
   *i = NULL;
   while (1) {
-    *i = list_new();
+    *i = list_new(NULL);
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
     result += r;
@@ -1742,7 +1749,7 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
-    *i = list_new();
+    *i = list_new(NULL);
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
     result += r;
