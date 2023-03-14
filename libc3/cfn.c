@@ -65,7 +65,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
 void cfn_clean (s_cfn *cfn)
 {
   assert(cfn);
-  str_clean(cfn->name);
+  str_clean(&cfn->name);
   list_delete_all(cfn->arg_types);
 }
 
