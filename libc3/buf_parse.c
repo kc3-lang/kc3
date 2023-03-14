@@ -76,6 +76,7 @@ sw buf_parse_call (s_buf *buf, s_call *dest)
   goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
+  call_clean(&tmp);
  clean:
   buf_save_clean(buf, &save);
   return r;
@@ -226,7 +227,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   right = &list_next(tmp.arguments)->tag;
   tag_copy(&dest->arguments->tag, left);
   if ((r = buf_parse_ident_peek(buf, &next_op)) <= 0)
-    goto clean;
+    goto restore;
   if ((op_precedence = operator_precedence(&next_op)) < 0) {
     r = 0;
     goto restore;
