@@ -18,6 +18,7 @@
 #include "../libc3/buf.h"
 #include "../libc3/buf_parse.h"
 #include "../libc3/call.h"
+#include "../libc3/cfn.h"
 #include "../libc3/fn.h"
 #include "../libc3/list.h"
 #include "../libc3/str.h"
@@ -46,6 +47,18 @@
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_call(&buf, &dest), strlen(test));                \
     call_clean(&dest);                                                 \
+    buf_clean(&buf);                                                   \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define BUF_PARSE_TEST_CFN(test)                                       \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_cfn dest;                                                        \
+    test_context("buf_parse_cfn(" # test ")");                         \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_cfn(&buf, &dest), strlen(test));                 \
+    cfn_clean(&dest);                                                  \
     buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
@@ -279,6 +292,19 @@
     test_context("buf_parse_call(" # test ") -> 0");                   \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_call(&buf, &dest), 0);                           \
+    TEST_EQ(buf.rpos, 0);                                              \
+    buf_clean(&buf);                                                   \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define BUF_PARSE_TEST_NOT_CFN(test)                                   \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_cfn dest;                                                        \
+    bzero(&dest, sizeof(dest));                                        \
+    test_context("buf_parse_cfn(" # test ") -> 0");                    \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_cfn(&buf, &dest), 0);                            \
     TEST_EQ(buf.rpos, 0);                                              \
     buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
@@ -588,6 +614,7 @@
 
 void buf_parse_test_bool ();
 void buf_parse_test_call ();
+void buf_parse_test_cfn ();
 void buf_parse_test_character ();
 void buf_parse_test_digit_bin ();
 void buf_parse_test_digit_hex ();
@@ -635,6 +662,7 @@ void buf_parse_test ()
   buf_parse_test_tag();
   buf_parse_test_tuple();
   buf_parse_test_ident();
+  buf_parse_test_cfn();
 }
 
 void buf_parse_test_bool ()
@@ -680,6 +708,20 @@ void buf_parse_test_call ()
   BUF_PARSE_TEST_CALL("a(b(c), d)");
   BUF_PARSE_TEST_CALL("a(B.c(d))");
   BUF_PARSE_TEST_CALL("a(B.c(D.e(f, g), H.i(j, k)))");
+}
+
+void buf_parse_test_cfn ()
+{
+  BUF_PARSE_TEST_NOT_CFN("0");
+  BUF_PARSE_TEST_NOT_CFN("9");
+  BUF_PARSE_TEST_NOT_CFN("A");
+  BUF_PARSE_TEST_NOT_CFN("Z");
+  BUF_PARSE_TEST_NOT_CFN("a");
+  BUF_PARSE_TEST_NOT_CFN("z");
+  BUF_PARSE_TEST_NOT_CFN("cfn 0 1 (2)");
+  BUF_PARSE_TEST_CFN("cfn :tag \"test\" (:tag)");
+  BUF_PARSE_TEST_CFN("cfn :tag \"test\" (:tag, :tag)");
+  BUF_PARSE_TEST_CFN("cfn :tag \"test\" (:tag, :tag, :tag)");
 }
 
 void buf_parse_test_character ()

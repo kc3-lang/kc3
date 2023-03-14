@@ -32,14 +32,15 @@ s_call * call_copy (const s_call *src, s_call *dest)
   assert(dest);
   ident_copy(&src->ident, &dest->ident);
   list_copy(src->arguments, &dest->arguments);
+  dest->cfn = src->cfn;
+  dest->fn = src->fn;
   return dest;
 }
 
 s_call * call_init (s_call *call)
 {
   assert(call);
-  call->cfn = NULL;
-  call->fn = NULL;
+  bzero(call, sizeof(s_call));
   return call;
 }
 
@@ -47,7 +48,8 @@ s_call * call_init_1 (s_call *call, const s8 *p)
 {
   s_buf buf;
   buf_init_1(&buf, p);
-  buf_parse_call(&buf, call);
+  if (buf_parse_call(&buf, call) != (sw) strlen(p))
+    errx(1, "invalid call: %s", p);
   buf_clean(&buf);
   return call;
 }

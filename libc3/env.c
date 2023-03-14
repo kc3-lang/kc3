@@ -90,7 +90,7 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
-  c = *call;
+  call_copy(call, &c);
   ident_resolve_module(&c.ident, env);
   tag_init_1(    &tag_cfn,      ":cfn");
   tag_init_1(    &tag_fn,       ":fn");
@@ -141,6 +141,7 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   else
     result = env_eval_call_fn(env, &c, dest);
   facts_with_cursor_clean(&cursor);
+  call_clean(&c);
   return result;
 }
 

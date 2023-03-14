@@ -60,15 +60,18 @@ sw buf_parse_call (s_buf *buf, s_call *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_call tmp;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_parse_ident(buf, &dest->ident)) <= 0)
+  call_init(&tmp);
+  if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0)
     goto clean;
   result += r;
-  if ((r = buf_parse_call_args_paren(buf, dest)) <= 0)
+  if ((r = buf_parse_call_args_paren(buf, &tmp)) <= 0)
     goto restore;
   result += r;
+  *dest = tmp;
   r = result;
   goto clean;
  restore:
