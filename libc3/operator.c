@@ -14,12 +14,12 @@
 #include <assert.h>
 #include "c3.h"
 
-bool operator_is_right_associative (s_ident *op)
+bool operator_is_right_associative (const s_ident *op)
 {
   return env_operator_is_right_associative(&g_c3_env, op);
 }
 
-s8 operator_precedence (s_ident *op)
+s8 operator_precedence (const s_ident *op)
 {
   return env_operator_precedence(&g_c3_env, op);
 }

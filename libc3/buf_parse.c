@@ -253,19 +253,19 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
       if ((r = buf_parse_call_op_rec(buf, &tmp2, (next_op_precedence > op_precedence) ? op_precedence + 1 : op_precedence)) <= 0)
-        goto restore;
+        break;
       bzero(right, sizeof(s_tag));
       right->type.type = TAG_CALL;
       right->data.call = tmp2;
       result += r;
       if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
+        break;
       result += r;
       r = buf_parse_ident_peek(buf, &next_op);
       if (r > 0)
         next_op_precedence = operator_precedence(&next_op);
     }
-    if ((op_precedence = next_op_precedence) < 0)
+    if (r <= 0 || (op_precedence = next_op_precedence) < min_precedence)
       break;
     call_init_op(&tmp2);
     tmp2.ident = op;
@@ -278,6 +278,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
+  call_clean(&tmp);
  clean:
   buf_save_clean(buf, &save);
   return r;

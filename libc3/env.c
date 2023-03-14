@@ -488,17 +488,19 @@ s_module * env_module_load (s_env *env, s_module *module,
   return module;
 }
 
-bool env_operator_is_right_associative (const s_env *env, s_ident *op)
+bool env_operator_is_right_associative (const s_env *env, const s_ident *op)
 {
   s_facts_with_cursor cursor;
   s8 r;
   s_tag tag_ident;
   s_tag tag_operator_assoc;
   s_tag tag_right;
+  s_ident tmp;
   assert(env);
   assert(op);
-  ident_resolve_module(op, env);
-  tag_init_ident(&tag_ident, op);
+  tmp = *op;
+  ident_resolve_module(&tmp, env);
+  tag_init_ident(&tag_ident, &tmp);
   tag_init_1(    &tag_operator_assoc, ":operator_associativity");
   tag_init_1(    &tag_right, ":right");
   facts_with(&env->facts, &cursor, (t_facts_spec) {
@@ -509,16 +511,18 @@ bool env_operator_is_right_associative (const s_env *env, s_ident *op)
   return r;
 }
 
-s8 env_operator_precedence (const s_env *env, s_ident *op)
+s8 env_operator_precedence (const s_env *env, const s_ident *op)
 {
   s_facts_with_cursor cursor;
   s_tag tag_ident;
   s_tag tag_operator_precedence;
   s_tag tag_var;
+  s_ident tmp;
   assert(env);
   assert(op);
-  ident_resolve_module(op, env);
-  tag_init_ident(&tag_ident, op);
+  tmp = *op;
+  ident_resolve_module(&tmp, env);
+  tag_init_ident(&tag_ident, &tmp);
   tag_init_1(    &tag_operator_precedence, ":operator_precedence");
   tag_init_var(  &tag_var);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
@@ -528,8 +532,8 @@ s8 env_operator_precedence (const s_env *env, s_ident *op)
     goto ko;
   if (tag_var.type.type != TAG_U8) {
     warnx("%s.%s: invalid operator_precedence type",
-          op->module_name->str.ptr.ps8,
-          op->sym->str.ptr.ps8);
+          tmp.module_name->str.ptr.ps8,
+          tmp.sym->str.ptr.ps8);
     goto ko;
   }
   facts_with_cursor_clean(&cursor);

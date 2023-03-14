@@ -41,14 +41,75 @@ sw buf_inspect_bool_size (e_bool x)
 
 sw buf_inspect_call (s_buf *buf, const s_call *call)
 {
+  s8 op_precedence;
   sw r;
   sw result = 0;
+  if ((op_precedence = operator_precedence(&call->ident)) > 0)
+    return buf_inspect_call_op(buf, call, op_precedence);
   if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_call_args(buf, call->arguments)) < 0)
     return r;
   result += r;
+  return result;
+}
+
+sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
+{
+  s_tag *left;
+  bool paren;
+  s8 precedence;
+  sw r;
+  sw result = 0;
+  s_tag *right;
+  left = &call->arguments->tag;
+  right = &list_next(call->arguments)->tag;
+  if (left->type.type == TAG_CALL && 
+      (precedence = operator_precedence(&left->data.call.ident))
+      < op_precedence) {
+    paren = true;
+    if ((r = buf_write_1(buf, "(")) < 0)
+      return r;
+    result += r;
+  }
+  else
+    paren = false;
+  if ((r = buf_inspect_tag(buf, left)) < 0)
+    return r;
+  result += r;
+  if (paren) {
+    if ((r = buf_write_1(buf, ")")) < 0)
+      return r;
+    result += r;
+  }
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  if (right->type.type == TAG_CALL && 
+      (precedence = operator_precedence(&right->data.call.ident))
+      < op_precedence) {
+    paren = true;
+    if ((r = buf_write_1(buf, "(")) < 0)
+      return r;
+    result += r;
+  }
+  else
+    paren = false;
+  if ((r = buf_inspect_tag(buf, right)) < 0)
+    return r;
+  result += r;
+  if (paren) {
+    if ((r = buf_write_1(buf, ")")) < 0)
+      return r;
+    result += r;
+  }
   return result;
 }
 
