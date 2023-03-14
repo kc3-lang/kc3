@@ -17,6 +17,7 @@
 #include <string.h>
 #include "cfn.h"
 #include "list.h"
+#include "str.h"
 #include "sym.h"
 
 ffi_type * cfn_sym_to_ffi_type (const s_sym *sym);
@@ -71,7 +72,8 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
 {
   assert(cfn);
   assert(dest);
-  dest->name = cfn->name;
+  str_copy(&cfn->name, &dest->name);
+  dest->arity = cfn->arity;
   list_copy(cfn->arg_types, &dest->arg_types);
   return dest;
 }
@@ -200,10 +202,12 @@ e_tag_type cfn_sym_to_tag_type (const s_sym *sym)
     return TAG_STR;
   if (sym == sym_1("sym"))
     return TAG_SYM;
+  if (sym == sym_1("tag"))
+    return TAG_VOID;
   if (sym == sym_1("tuple"))
     return TAG_TUPLE;
   assert(! "cfn_sym_to_tag_type: unknown type");
-  errx(1, "cfn_sym_to_tag_type: unknown type");
+  errx(1, "cfn_sym_to_tag_type: unknown type: %s", sym->str.ptr.ps8);
   return TAG_VOID;
 }
 
