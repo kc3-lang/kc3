@@ -205,7 +205,6 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
 sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
 {
   s_tag *left;
-  s_list *next_arg;
   s_ident next_op;
   s8 next_op_precedence;
   s_ident op;
@@ -221,9 +220,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   buf_save_init(buf, &save);
   call_init_op(&tmp);
   left = &tmp.arguments->tag;
-  next_arg = list_next(tmp.arguments);
-  right = &next_arg->tag;
-  *left = dest->arguments->tag;
+  right = &list_next(tmp.arguments)->tag;
+  tag_copy(&dest->arguments->tag, left);
   if ((r = buf_parse_ident_peek(buf, &next_op)) <= 0)
     goto clean;
   if ((op_precedence = operator_precedence(&next_op)) < 0) {
