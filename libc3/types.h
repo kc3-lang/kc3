@@ -276,6 +276,7 @@ struct call {
   s_list *arguments;
   s_list_map *keyword;
   /* value */
+  s_cfn *cfn;
   s_fn *fn;
 };
 

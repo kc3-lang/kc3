@@ -77,6 +77,7 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   s_call c;
   s_facts_with_cursor cursor;
   bool result;
+  s_tag tag_cfn;
   s_tag tag_fn;
   s_tag tag_ident;
   s_tag tag_is_a;
@@ -85,12 +86,13 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   s_tag tag_module_name;
   s_tag tag_sym;
   s_tag tag_symbol;
-  s_tag tag_var_fn;
+  s_tag tag_var;
   assert(env);
   assert(call);
   assert(dest);
   c = *call;
   ident_resolve_module(&c.ident, env);
+  tag_init_1(    &tag_cfn,      ":cfn");
   tag_init_1(    &tag_fn,       ":fn");
   tag_init_ident(&tag_ident, &c.ident);
   tag_init_1(    &tag_is_a,     ":is_a");
@@ -99,22 +101,38 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   tag_init_sym(  &tag_module_name, c.ident.module_name);
   tag_init_sym(  &tag_sym, call->ident.sym);
   tag_init_1(    &tag_symbol,   ":symbol");
-  tag_init_var(  &tag_var_fn);
+  tag_init_var(  &tag_var);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_module_name,
-      &tag_is_a, &tag_module,           /* module exists */
-      &tag_symbol, &tag_ident, NULL,    /* module exports symbol */
-      &tag_ident, &tag_fn, &tag_var_fn,
+      &tag_is_a, &tag_module,     /* module exists */
+      &tag_symbol, &tag_ident,    /* module exports symbol */
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor))
     errx(1, "symbol %s not found in module %s",
          c.ident.sym->str.ptr.ps8,
          c.ident.module_name->str.ptr.ps8);
-  if (tag_var_fn.type.type != TAG_FN)
-    errx(1, "%s.%s is not a function",
-         c.ident.module_name->str.ptr.ps8,
-         c.ident.sym->str.ptr.ps8);
-  c.fn = tag_var_fn.data.fn;
+  facts_with_cursor_clean(&cursor);
+  facts_with(&env->facts, &cursor, (t_facts_spec) {
+      &tag_ident, &tag_fn, &tag_var,
+      NULL, NULL });
+  if (facts_with_cursor_next(&cursor)) {
+    if (tag_var.type.type != TAG_FN)
+      errx(1, "%s.%s is not a function",
+           c.ident.module_name->str.ptr.ps8,
+           c.ident.sym->str.ptr.ps8);
+    c.fn = tag_var.data.fn;
+  }
+  facts_with_cursor_clean(&cursor);
+  facts_with(&env->facts, &cursor, (t_facts_spec) {
+      &tag_ident, &tag_cfn, &tag_var,
+      NULL, NULL });
+  if (facts_with_cursor_next(&cursor)) {
+    if (tag_var.type.type != TAG_CFN)
+      errx(1, "%s.%s is not a C function",
+           c.ident.module_name->str.ptr.ps8,
+           c.ident.sym->str.ptr.ps8);
+    c.cfn = &tag_var.data.cfn;
+  }
   facts_with_cursor_clean(&cursor);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });
@@ -147,6 +165,36 @@ bool env_eval_call_arguments (s_env *env, s_list *args, s_list **dest)
   return true;
 }
 
+bool env_eval_call_cfn (s_env *env, const s_call *call, s_tag *dest)
+{
+  s_list *args = NULL;
+  s_cfn *cfn;
+  s_frame frame;
+  s_tag tag;
+  assert(env);
+  assert(call);
+  assert(dest);
+  cfn = call->cfn;
+  assert(cfn);
+  frame_init(&frame, env->frame);
+  env->frame = &frame;
+  if (call->arguments) {
+    if (! env_eval_call_arguments(env, call->arguments, &args)) {
+      env->frame = frame_clean(&frame);
+      return false;
+    }
+  }
+  if (! cfn_apply(cfn, args, &tag)) {
+    list_delete_all(args);
+    env->frame = frame_clean(&frame);
+    return false;
+  }
+  *dest = tag;
+  list_delete_all(args);
+  env->frame = frame_clean(&frame);
+  return true;
+}
+
 bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
 {
   s_list *args = NULL;
@@ -157,6 +205,8 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
+  if (call->cfn)
+    return env_eval_call_cfn(env, call, dest);
   fn = call->fn;
   assert(fn);
   frame_init(&frame, env->frame);

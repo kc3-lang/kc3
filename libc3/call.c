@@ -35,6 +35,14 @@ s_call * call_copy (const s_call *src, s_call *dest)
   return dest;
 }
 
+s_call * call_init (s_call *call)
+{
+  assert(call);
+  call->cfn = NULL;
+  call->fn = NULL;
+  return call;
+}
+
 s_call * call_init_1 (s_call *call, const s8 *p)
 {
   s_buf buf;
@@ -47,7 +55,7 @@ s_call * call_init_1 (s_call *call, const s8 *p)
 s_call * call_init_op (s_call *call)
 {
   assert(call);
-  bzero(&call->ident, sizeof(s_ident));
+  bzero(call, sizeof(s_call));
   call->arguments = list_new(list_new(NULL));
   return call;
 }

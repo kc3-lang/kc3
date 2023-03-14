@@ -312,6 +312,7 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   if ((r = buf_parse_cfn_arg_types(buf, &tmp.arg_types)) <= 0)
     goto restore;
   result += r;
+  tmp.arity = list_length(tmp.arg_types);
   *dest = tmp;
   r = result;
   goto clean;
@@ -344,6 +345,7 @@ sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest)
     if ((r = buf_parse_tag_sym(buf, &(*tail)->tag)) <= 0)
       goto restore;
     result += r;
+    tail = &(*tail)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;

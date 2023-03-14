@@ -23,7 +23,8 @@ ffi_type * cfn_sym_to_ffi_type (const s_sym *sym);
 s_tag * cfn_tag_init (s_tag *tag, const s_sym *type);
 void * cfn_tag_to_ffi_value (s_tag *tag, const s_sym *type);
 
-s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest) {
+s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
+{
   void **arg_values = NULL;
   s_list *cfn_arg_type;
   sw i;
