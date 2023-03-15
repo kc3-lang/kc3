@@ -19,7 +19,7 @@ CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.h config.mk
 
-build: libc3.la libc3.a
+build: libc3.la
 
 all:
 	${MAKE} build
@@ -27,7 +27,7 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: libc3_asan.la libc3_asan.a
+asan: libc3_asan.la
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -35,9 +35,9 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
-cov: libc3_cov.la libc3_cov.a
+cov: libc3_cov.la
 
-debug: libc3_debug.la libc3_debug.a
+debug: libc3_debug.la
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
