@@ -92,7 +92,7 @@ s_cfn * cfn_link (s_cfn *cfn)
 {
   assert(cfn);
   if (! (cfn->p = (void (*) (void)) dlsym(RTLD_DEFAULT, cfn->name.ptr.ps8)))
-    errx(1, "cfn_link: %s: %s", cfn->name.ptr.ps8, dlerror());
+    warnx("cfn_link: %s: %s", cfn->name.ptr.ps8, dlerror());
   return cfn;
 }
 
