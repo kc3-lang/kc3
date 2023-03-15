@@ -146,6 +146,8 @@ s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_type,
 
 ffi_type * cfn_sym_to_ffi_type (const s_sym *sym)
 {
+  if (sym == sym_1("tag"))
+    return &ffi_type_pointer;
   if (sym == sym_1("s8"))
     return &ffi_type_sint8;
   if (sym == sym_1("s16"))
@@ -156,8 +158,6 @@ ffi_type * cfn_sym_to_ffi_type (const s_sym *sym)
     return &ffi_type_sint64;
   if (sym == sym_1("sw"))
     return &ffi_type_sint;
-  if (sym == sym_1("tag"))
-    return &ffi_type_pointer;
   if (sym == sym_1("u8"))
     return &ffi_type_uint8;
   if (sym == sym_1("u16"))
