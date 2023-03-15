@@ -317,6 +317,7 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
     goto restore;
   result += r;
   tmp.arity = list_length(tmp.arg_types);
+  cfn_link(&tmp);
   *dest = tmp;
   r = result;
   goto clean;

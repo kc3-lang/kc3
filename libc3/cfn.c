@@ -12,6 +12,7 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
+#include <dlfcn.h>
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
@@ -84,6 +85,14 @@ s_cfn * cfn_init (s_cfn *cfn)
 {
   assert(cfn);
   bzero(cfn, sizeof(s_cfn));
+  return cfn;
+}
+
+s_cfn * cfn_link (s_cfn *cfn)
+{
+  assert(cfn);
+  if (! (cfn->p = (void (*) (void)) dlsym(RTLD_DEFAULT, cfn->name.ptr.ps8)))
+    errx(1, "cfn_link: %s: %s", cfn->name.ptr.ps8, dlerror());
   return cfn;
 }
 

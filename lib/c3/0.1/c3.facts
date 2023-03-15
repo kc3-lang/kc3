@@ -9,19 +9,19 @@
 {C3, :symbol, C3.*}
 {C3, :symbol, C3./}
 {C3, :symbol, C3.first}
-{C3.+, :cfn, cfn :tag "tag_add" (:tag, :tag)}
+{C3.+, :cfn, cfn :tag "tag_add" (:tag, :tag, :tag)}
 {C3.+, :is_a, :operator}
 {C3.+, :operator_precedence, 1}
 {C3.+, :operator_associativity, :left}
-{C3.-, :cfn, cfn :tag "tag_sub" (:tag, :tag)}
+{C3.-, :cfn, cfn :tag "tag_sub" (:tag, :tag, :tag)}
 {C3.-, :is_a, :operator}
 {C3.-, :operator_precedence, 1}
 {C3.-, :operator_associativity, :left}
-{C3.*, :cfn, cfn :tag "tag_mul" (:tag, :tag)}
+{C3.*, :cfn, cfn :tag "tag_mul" (:tag, :tag, :tag)}
 {C3.*, :is_a, :operator}
 {C3.*, :operator_precedence, 2}
 {C3.*, :operator_associativity, :left}
-{C3./, :cfn, cfn :tag "tag_div" (:tag, :tag)}
+{C3./, :cfn, cfn :tag "tag_div" (:tag, :tag, :tag)}
 {C3./, :is_a, :operator}
 {C3./, :operator_precedence, 2}
 {C3./, :operator_associativity, :left}

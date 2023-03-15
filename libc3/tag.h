@@ -97,6 +97,7 @@ e_bool  tag_is_unbound_var (const s_tag *tag);
 s8      tag_number_compare (const s_tag *a, const s_tag *b);
 sw      tag_size (const s_tag *tag);
 sw      tag_type_size (e_tag_type type);
+s8 *    tag_type_to_string (e_tag_type type);
 
 /* Modifiers */
 s_tag * tag_1 (s_tag *tag, const s8 *p);
@@ -135,5 +136,8 @@ s_tag * tag_u8 (s_tag *tag, u8 i);
 s_tag * tag_var (s_tag *tag);
 s_tag * tag_void (s_tag *tag);
 ffi_type tag_to_ffi_type(const s_tag *tag);
+
+/* operators */
+s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest);
 
 #endif /* STR_H */

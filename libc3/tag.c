@@ -27,6 +27,271 @@ s_tag * tag_1 (s_tag *tag, const s8 *p)
   return tag_init_1(tag, p);
 }
 
+s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
+{
+  assert(a);
+  assert(b);
+  assert(dest);
+  switch (a->type.type) {
+  case TAG_F32:
+    switch (b->type.type) {
+    case TAG_F32:
+      return tag_init_f32(dest, a->data.f32 + b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, a->data.f32 + b->data.f64);
+    case TAG_S8:
+      return tag_init_f32(dest, a->data.f32 + b->data.s8);
+    case TAG_S16:
+      return tag_init_f32(dest, a->data.f32 + b->data.s16);
+    case TAG_S32:
+      return tag_init_f32(dest, a->data.f32 + b->data.s32);
+    case TAG_S64:
+      return tag_init_f32(dest, a->data.f32 + b->data.s64);
+    case TAG_U8:
+      return tag_init_f32(dest, a->data.f32 + b->data.u8);
+    case TAG_U16:
+      return tag_init_f32(dest, a->data.f32 + b->data.u16);
+    case TAG_U32:
+      return tag_init_f32(dest, a->data.f32 + b->data.u32);
+    case TAG_U64:
+      return tag_init_f32(dest, a->data.f32 + b->data.u64);
+    default:
+      goto ko;
+  }
+  case TAG_F64:
+    switch (b->type.type) {
+    case TAG_F32:
+      return tag_init_f64(dest, a->data.f64 + b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, a->data.f64 + b->data.f64);
+    case TAG_S8:
+      return tag_init_f64(dest, a->data.f64 + b->data.s8);
+    case TAG_S16:
+      return tag_init_f64(dest, a->data.f64 + b->data.s16);
+    case TAG_S32:
+      return tag_init_f64(dest, a->data.f64 + b->data.s32);
+    case TAG_S64:
+      return tag_init_f64(dest, a->data.f64 + b->data.s64);
+    case TAG_U8:
+      return tag_init_f64(dest, a->data.f64 + b->data.u8);
+    case TAG_U16:
+      return tag_init_f64(dest, a->data.f64 + b->data.u16);
+    case TAG_U32:
+      return tag_init_f64(dest, a->data.f64 + b->data.u32);
+    case TAG_U64:
+      return tag_init_f64(dest, a->data.f64 + b->data.u64);
+    default:
+      goto ko;
+  }
+  case TAG_S8:
+    switch (b->type.type) {
+    case TAG_F32:
+      return tag_init_f32(dest, a->data.s8 + b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, a->data.s8 + b->data.f64);
+    case TAG_S8:
+      return tag_init_s8(dest, a->data.s8 + b->data.s8);
+    case TAG_S16:
+      return tag_init_s16(dest, a->data.s8 + b->data.s16);
+    case TAG_S32:
+      return tag_init_s32(dest, a->data.s8 + b->data.s32);
+    case TAG_S64:
+      return tag_init_s64(dest, a->data.s8 + b->data.s64);
+    case TAG_U8:
+      return tag_init_s8(dest, a->data.s8 + b->data.u8);
+    case TAG_U16:
+      return tag_init_s16(dest, a->data.s8 + b->data.u16);
+    case TAG_U32:
+      return tag_init_s32(dest, a->data.s8 + b->data.u32);
+    case TAG_U64:
+      return tag_init_s64(dest, a->data.s8 + b->data.u64);
+    default:
+      goto ko;
+  }
+  case TAG_S16:
+    switch (b->type.type) {
+    case TAG_F32:
+      return tag_init_f32(dest, a->data.s16 + b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, a->data.s16 + b->data.f64);
+    case TAG_S8:
+      return tag_init_s16(dest, a->data.s16 + b->data.s8);
+    case TAG_S16:
+      return tag_init_s16(dest, a->data.s16 + b->data.s16);
+    case TAG_S32:
+      return tag_init_s32(dest, a->data.s16 + b->data.s32);
+    case TAG_S64:
+      return tag_init_s64(dest, a->data.s16 + b->data.s64);
+    case TAG_U8:
+      return tag_init_s16(dest, a->data.s16 + b->data.u8);
+    case TAG_U16:
+      return tag_init_s16(dest, a->data.s16 + b->data.u16);
+    case TAG_U32:
+      return tag_init_s32(dest, a->data.s16 + b->data.u32);
+    case TAG_U64:
+      return tag_init_s64(dest, a->data.s16 + b->data.u64);
+    default:
+      goto ko;
+  }
+  case TAG_S32:
+    switch (b->type.type) {
+    case TAG_F32:
+      return tag_init_f32(dest, a->data.s32 + b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, a->data.s32 + b->data.f64);
+    case TAG_S8:
+      return tag_init_s32(dest, a->data.s32 + b->data.s8);
+    case TAG_S16:
+      return tag_init_s32(dest, a->data.s32 + b->data.s16);
+    case TAG_S32:
+      return tag_init_s32(dest, a->data.s32 + b->data.s32);
+    case TAG_S64:
+      return tag_init_s64(dest, a->data.s32 + b->data.s64);
+    case TAG_U8:
+      return tag_init_s32(dest, a->data.s32 + b->data.u8);
+    case TAG_U16:
+      return tag_init_s32(dest, a->data.s32 + b->data.u16);
+    case TAG_U32:
+      return tag_init_s32(dest, a->data.s32 + b->data.u32);
+    case TAG_U64:
+      return tag_init_s64(dest, a->data.s32 + b->data.u64);
+    default:
+      goto ko;
+  }
+  case TAG_S64:
+    switch (b->type.type) {
+    case TAG_F32:
+      return tag_init_f32(dest, a->data.s64 + b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, a->data.s64 + b->data.f64);
+    case TAG_S8:
+      return tag_init_s32(dest, a->data.s64 + b->data.s8);
+    case TAG_S16:
+      return tag_init_s32(dest, a->data.s64 + b->data.s16);
+    case TAG_S32:
+      return tag_init_s32(dest, a->data.s64 + b->data.s32);
+    case TAG_S64:
+      return tag_init_s64(dest, a->data.s64 + b->data.s64);
+    case TAG_U8:
+      return tag_init_s32(dest, a->data.s64 + b->data.u8);
+    case TAG_U16:
+      return tag_init_s32(dest, a->data.s64 + b->data.u16);
+    case TAG_U32:
+      return tag_init_s32(dest, a->data.s64 + b->data.u32);
+    case TAG_U64:
+      return tag_init_s64(dest, a->data.s64 + b->data.u64);
+    default:
+      goto ko;
+  }
+  case TAG_U8:
+    switch (b->type.type) {
+    case TAG_F32:
+      return tag_init_f32(dest, a->data.u8 + b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, a->data.u8 + b->data.f64);
+    case TAG_S8:
+      return tag_init_s8(dest, a->data.u8 + b->data.s8);
+    case TAG_S16:
+      return tag_init_s16(dest, a->data.u8 + b->data.s16);
+    case TAG_S32:
+      return tag_init_s32(dest, a->data.u8 + b->data.s32);
+    case TAG_S64:
+      return tag_init_s64(dest, a->data.u8 + b->data.s64);
+    case TAG_U8:
+      return tag_init_u8(dest, a->data.u8 + b->data.u8);
+    case TAG_U16:
+      return tag_init_u16(dest, a->data.u8 + b->data.u16);
+    case TAG_U32:
+      return tag_init_u32(dest, a->data.u8 + b->data.u32);
+    case TAG_U64:
+      return tag_init_u64(dest, a->data.u8 + b->data.u64);
+    default:
+      goto ko;
+  }
+  case TAG_U16:
+    switch (b->type.type) {
+    case TAG_F32:
+      return tag_init_f32(dest, a->data.u16 + b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, a->data.u16 + b->data.f64);
+    case TAG_S8:
+      return tag_init_s16(dest, a->data.u16 + b->data.s8);
+    case TAG_S16:
+      return tag_init_s16(dest, a->data.u16 + b->data.s16);
+    case TAG_S32:
+      return tag_init_s32(dest, a->data.u16 + b->data.s32);
+    case TAG_S64:
+      return tag_init_s64(dest, a->data.u16 + b->data.s64);
+    case TAG_U8:
+      return tag_init_u16(dest, a->data.u16 + b->data.u8);
+    case TAG_U16:
+      return tag_init_u16(dest, a->data.u16 + b->data.u16);
+    case TAG_U32:
+      return tag_init_u32(dest, a->data.u16 + b->data.u32);
+    case TAG_U64:
+      return tag_init_u64(dest, a->data.u16 + b->data.u64);
+    default:
+      goto ko;
+  }
+  case TAG_U32:
+    switch (b->type.type) {
+    case TAG_F32:
+      return tag_init_f32(dest, a->data.u32 + b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, a->data.u32 + b->data.f64);
+    case TAG_S8:
+      return tag_init_s32(dest, a->data.u32 + b->data.s8);
+    case TAG_S16:
+      return tag_init_s32(dest, a->data.u32 + b->data.s16);
+    case TAG_S32:
+      return tag_init_s32(dest, a->data.u32 + b->data.s32);
+    case TAG_S64:
+      return tag_init_s64(dest, a->data.u32 + b->data.s64);
+    case TAG_U8:
+      return tag_init_u32(dest, a->data.u32 + b->data.u8);
+    case TAG_U16:
+      return tag_init_u32(dest, a->data.u32 + b->data.u16);
+    case TAG_U32:
+      return tag_init_u32(dest, a->data.u32 + b->data.u32);
+    case TAG_U64:
+      return tag_init_u64(dest, a->data.u32 + b->data.u64);
+    default:
+      goto ko;
+  }
+  case TAG_U64:
+    switch (b->type.type) {
+    case TAG_F32:
+      return tag_init_f32(dest, a->data.u64 + b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, a->data.u64 + b->data.f64);
+    case TAG_S8:
+      return tag_init_s64(dest, a->data.u64 + b->data.s8);
+    case TAG_S16:
+      return tag_init_s64(dest, a->data.u64 + b->data.s16);
+    case TAG_S32:
+      return tag_init_s64(dest, a->data.u64 + b->data.s32);
+    case TAG_S64:
+      return tag_init_s64(dest, a->data.u64 + b->data.s64);
+    case TAG_U8:
+      return tag_init_u64(dest, a->data.u64 + b->data.u8);
+    case TAG_U16:
+      return tag_init_u64(dest, a->data.u64 + b->data.u16);
+    case TAG_U32:
+      return tag_init_u64(dest, a->data.u64 + b->data.u32);
+    case TAG_U64:
+      return tag_init_u64(dest, a->data.u64 + b->data.u64);
+    default:
+      goto ko;
+    }
+  default:
+    goto ko;
+  }
+ ko:
+  errx(1, "cannot add %s to %s",
+       tag_type_to_string(a->type.type),
+       tag_type_to_string(b->type.type));
+}
+
 s_tag * tag_bool (s_tag *tag, bool b)
 {
   assert(tag);
@@ -757,6 +1022,39 @@ ffi_type tag_to_ffi_type(const s_tag *tag)
   assert(! "tag_to_ffi_type: unknown type");
   errx(1, "tag_to_ffi_type: unknown type");
   return ffi_type_void;
+}
+
+s8 * tag_type_to_string (e_tag_type type)
+{
+  switch (type) {
+  case TAG_VOID: return "void";
+  case TAG_BOOL: return "bool";
+  case TAG_CALL: return "call";
+  case TAG_CALL_FN: return "call_fn";
+  case TAG_CALL_MACRO: return "call_macro";
+  case TAG_CFN: return "cfn";
+  case TAG_CHARACTER: return "character";
+  case TAG_F32: return "f32";
+  case TAG_F64: return "f64";
+  case TAG_FN: return "fn";
+  case TAG_IDENT: return "ident";
+  case TAG_INTEGER: return "integer";
+  case TAG_S64: return "s64";
+  case TAG_S32: return "s32";
+  case TAG_S16: return "s16";
+  case TAG_S8: return "s8";
+  case TAG_U8: return "u8";
+  case TAG_U16: return "u16";
+  case TAG_U32: return "u32";
+  case TAG_U64: return "u64";
+  case TAG_LIST: return "list";
+  case TAG_PTAG: return "ptag";
+  case TAG_QUOTE: return "quote";
+  case TAG_STR: return "str";
+  case TAG_SYM: return "sym";
+  case TAG_TUPLE: return "tuple";
+  case TAG_VAR: return "var";
+  }
 }
 
 s_tag * tag_u8 (s_tag *tag, u8 x)

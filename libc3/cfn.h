@@ -24,4 +24,7 @@ void    cfn_clean (s_cfn *cfn);
 s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest);
 s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest);
 
+/* modifiers */
+s_cfn * cfn_link (s_cfn *cfn);
+
 #endif /* CFN_H */
