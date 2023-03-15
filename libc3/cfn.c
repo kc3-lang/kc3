@@ -20,6 +20,7 @@
 #include "list.h"
 #include "str.h"
 #include "sym.h"
+#include "tag.h"
 
 ffi_type * cfn_sym_to_ffi_type (const s_sym *sym);
 s_tag * cfn_tag_init (s_tag *tag, const s_sym *type);
@@ -59,9 +60,15 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     arg_values[i] = cfn_tag_to_ffi_value(&tmp,
                                          cfn_arg_type->tag.data.sym);
   }
-  ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
+  if (cfn->ptr.f) {
+    ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
+    *dest = tmp;
+  }
+  else {
+    warnx("cfn_apply: NULL function pointer");
+    tag_init_void(dest);
+  }
   free(arg_values);
-  *dest = tmp;
   return dest;
 }
 
