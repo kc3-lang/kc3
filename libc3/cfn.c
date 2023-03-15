@@ -87,6 +87,7 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
   list_copy(cfn->arg_types, &dest->arg_types);
   dest->arity = cfn->arity;
   dest->result_type = cfn->result_type;
+  dest->ptr = cfn->ptr;
   return dest;
 }
 
