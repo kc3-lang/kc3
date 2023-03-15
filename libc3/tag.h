@@ -139,5 +139,8 @@ ffi_type tag_to_ffi_type(const s_tag *tag);
 
 /* operators */
 s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest);
 
 #endif /* STR_H */

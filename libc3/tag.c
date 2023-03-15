@@ -476,6 +476,14 @@ void tag_delete (s_tag *tag)
   free(tag);
 }
 
+s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
+{
+  (void) a;
+  (void) b;
+  (void) dest;
+  return NULL;
+}
+
 s_tag * tag_f32 (s_tag *tag, f32 x)
 {
   assert(tag);
@@ -908,6 +916,14 @@ s_tag * tag_list_1 (s_tag *tag, const s8 *p)
   return tag_init_list_1(tag, p);
 }
 
+s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
+{
+  (void) a;
+  (void) b;
+  (void) dest;
+  return NULL;
+}
+
 s_tag * tag_new ()
 {
   s_tag *tag;
@@ -970,6 +986,14 @@ s_tag * tag_str_1 (s_tag *tag, s8 *free, const s8 *p)
   assert(tag);
   tag_clean(tag);
   return tag_init_str_1(tag, free, p);
+}
+
+s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
+{
+  (void) a;
+  (void) b;
+  (void) dest;
+  return NULL;
 }
 
 s_tag * tag_sym (s_tag *tag, const s_sym *x)

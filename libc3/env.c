@@ -170,29 +170,23 @@ bool env_eval_call_cfn (s_env *env, const s_call *call, s_tag *dest)
 {
   s_list *args = NULL;
   s_cfn *cfn;
-  s_frame frame;
   s_tag tag;
   assert(env);
   assert(call);
   assert(dest);
   cfn = call->cfn;
   assert(cfn);
-  frame_init(&frame, env->frame);
-  env->frame = &frame;
   if (call->arguments) {
     if (! env_eval_call_arguments(env, call->arguments, &args)) {
-      env->frame = frame_clean(&frame);
       return false;
     }
   }
   if (! cfn_apply(cfn, args, &tag)) {
     list_delete_all(args);
-    env->frame = frame_clean(&frame);
     return false;
   }
   *dest = tag;
   list_delete_all(args);
-  env->frame = frame_clean(&frame);
   return true;
 }
 

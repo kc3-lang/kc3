@@ -35,16 +35,16 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   s_tag tmp;
   assert(cfn);
   num_args = list_length(args);
-  if (cfn->arity != num_args) {
+  if (cfn->arity != num_args + 1) {
     warnx("cfn_apply: invalid number of arguments, expected %d, have %ld",
-          cfn->arity, num_args);
+          cfn->arity - 1, num_args);
     return NULL;
   }
   cfn_tag_init(&tmp, cfn->result_type);
   /* make result point to tmp value */
   result = cfn_tag_to_ffi_value(&tmp, cfn->result_type);
   if (args) {
-    if (! (arg_values = malloc(sizeof(void *) * num_args)))
+    if (! (arg_values = malloc(sizeof(void *) * (num_args + 1))))
       err(1, "cfn_apply");
     cfn_arg_type = cfn->arg_types;
     i = 0;
@@ -56,6 +56,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       cfn_arg_type = list_next(cfn_arg_type);
       i++;
     }
+    arg_values[i] = cfn_tag_to_ffi_value(&tmp,
+                                         cfn_arg_type->tag.data.sym);
   }
   ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
   free(arg_values);
