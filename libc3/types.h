@@ -282,7 +282,10 @@ struct call {
 
 struct cfn {
   s_str name;
-  void (*p) (void);
+  union {
+    void (*f) (void);
+    void *p;
+  } ptr;
   u8 arity;
   const s_sym *result_type;
   s_list *arg_types;

@@ -57,7 +57,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       i++;
     }
   }
-  ffi_call(&cfn->cif, FFI_FN(cfn->p), result, arg_values);
+  ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
   free(arg_values);
   *dest = tmp;
   return dest;
@@ -91,7 +91,7 @@ s_cfn * cfn_init (s_cfn *cfn)
 s_cfn * cfn_link (s_cfn *cfn)
 {
   assert(cfn);
-  if (! (cfn->p = (void (*) (void)) dlsym(RTLD_DEFAULT, cfn->name.ptr.ps8)))
+  if (! (cfn->ptr.p = dlsym(RTLD_DEFAULT, cfn->name.ptr.ps8)))
     warnx("cfn_link: %s: %s", cfn->name.ptr.ps8, dlerror());
   return cfn;
 }
