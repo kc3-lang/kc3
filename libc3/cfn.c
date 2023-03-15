@@ -74,8 +74,9 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
   assert(cfn);
   assert(dest);
   str_copy(&cfn->name, &dest->name);
-  dest->arity = cfn->arity;
   list_copy(cfn->arg_types, &dest->arg_types);
+  dest->arity = cfn->arity;
+  dest->result_type = cfn->result_type;
   return dest;
 }
 
@@ -258,6 +259,8 @@ const s_sym * cfn_tag_type_to_sym (e_tag_type tag_type)
 
 void * cfn_tag_to_ffi_value (s_tag *tag, const s_sym *type)
 {
+  if (type == sym_1("tag"))
+    return tag;
   switch (tag->type.type) {
   case TAG_VOID:
     if (type == sym_1("void"))
