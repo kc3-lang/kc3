@@ -264,6 +264,7 @@ sw facts_load (s_facts *facts, s_buf *buf)
     warnx("facts_load: invalid hash line %lu: 0x%s",
           (unsigned long) i + 4,
           tmp.ptr.ps8);
+    buf_clean(&tmp);
     return -1;
   }
   return result;
