@@ -34,12 +34,12 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 # Default config
 CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
-DEFAULT_CFLAGS="-O2 -pipe -fPIC"
-LDFLAGS="${LDFLAGS:-} -shared"
+DEFAULT_CFLAGS="-O2 -pipe"
+LDFLAGS="${LDFLAGS:-} --shared"
 LIBS="${LIBS:=-lm}"
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
