@@ -1055,6 +1055,9 @@ s8 * tag_type_to_string (e_tag_type type)
   case TAG_TUPLE: return "tuple";
   case TAG_VAR: return "var";
   }
+  assert(! "tag_type_to_string: unknown tag type");
+  errx(1, "tag_type_to_string: unknown tag type");
+  return NULL;
 }
 
 s_tag * tag_u8 (s_tag *tag, u8 x)
