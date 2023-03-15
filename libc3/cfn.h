@@ -26,5 +26,7 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest);
 
 /* modifiers */
 s_cfn * cfn_link (s_cfn *cfn);
+s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_types,
+                      const s_sym *result_type);
 
 #endif /* CFN_H */

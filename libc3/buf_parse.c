@@ -288,8 +288,10 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
 
 sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
 {
+  s_list *arg_types = NULL;
   sw r;
   sw result = 0;
+  const s_sym *result_type;
   s_buf_save save;
   s_cfn tmp;
   assert(buf);
@@ -301,7 +303,7 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_sym(buf, &tmp.result_type)) <= 0)
+  if ((r = buf_parse_sym(buf, &result_type)) <= 0)
     goto restore;
   result += r;
   if ((r = buf_ignore_spaces(buf)) <= 0)
@@ -313,10 +315,11 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_cfn_arg_types(buf, &tmp.arg_types)) <= 0)
+  if ((r = buf_parse_cfn_arg_types(buf, &arg_types)) <= 0)
     goto restore;
   result += r;
-  tmp.arity = list_length(tmp.arg_types);
+  tmp.arity = list_length(arg_types);
+  cfn_set_type(&tmp, arg_types, result_type);
   cfn_link(&tmp);
   *dest = tmp;
   r = result;
