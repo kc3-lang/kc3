@@ -36,7 +36,7 @@ CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe"
 LDFLAGS="-shared ${LDFLAGS:-}"
-LIBS="${LIBS:=-lm} -rpath ${PREFIX}"
+LIBS="${LIBS:=-lm} -rpath ${PWD}"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
@@ -46,6 +46,7 @@ pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd
+config_lib dl -ldl
 config_include sha_h sys/types.h sha.h HAVE_SHA_H
 config_include sha1_h sys/types.h sha1.h HAVE_SHA1_H
 config_define PREFIX "\"${PREFIX}\""

@@ -43,7 +43,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe -fPIC"
-LDFLAGS="${LDFLAGS:=}"
+LDFLAGS="${LDFLAGS:-}"
 LIBS="${LIBS:=-lm}"
 
 # Common config for all targets
