@@ -58,7 +58,7 @@ s_call * call_init_op (s_call *call)
 {
   assert(call);
   bzero(call, sizeof(s_call));
-  call->arguments = list_new(list_new(list_new(NULL)));
+  call->arguments = list_new(list_new(NULL));
   return call;
 }
 

@@ -22,7 +22,8 @@
 #include "sym.h"
 #include "tag.h"
 
-ffi_type * cfn_sym_to_ffi_type (const s_sym *sym);
+ffi_type * cfn_sym_to_ffi_type (const s_sym *sym,
+                                ffi_type *result_type);
 s_tag * cfn_tag_init (s_tag *tag, const s_sym *type);
 void * cfn_tag_to_ffi_value (s_tag *tag, const s_sym *type);
 
@@ -30,19 +31,24 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
 {
   s_list *a;
   void **arg_values = NULL;
+  u8 arity;
   s_list *cfn_arg_type;
   sw i = 0;
   sw num_args;
   void* result;
   s_tag tmp;
+  s_tag tmp2;
   assert(cfn);
   num_args = list_length(args);
-  if (cfn->arity != num_args) {
+  arity = cfn->arity - (cfn->arg_result ? 1 : 0);
+  if (arity != num_args) {
     warnx("cfn_apply: invalid number of arguments, expected %d, have %ld",
-          cfn->arity, num_args);
+          arity, num_args);
     return NULL;
   }
   cfn_tag_init(&tmp, cfn->result_type);
+  if (cfn->arg_result)
+    cfn_tag_init(&tmp2, cfn->result_type);
   /* make result point to tmp value */
   result = cfn_tag_to_ffi_value(&tmp, cfn->result_type);
   if (cfn->arity) {
@@ -52,9 +58,13 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     a = args;
     while (a) {
       assert(cfn_arg_type->tag.type.type == TAG_SYM);
-      arg_values[i] = cfn_tag_to_ffi_value(&a->tag,
-                                           cfn_arg_type->tag.data.sym);
-      a = list_next(a);
+      if (cfn_arg_type->tag.data.sym == sym_1("&result"))
+        arg_values[i] = cfn_tag_to_ffi_value(&tmp2, cfn->result_type);
+      else {
+        arg_values[i] = cfn_tag_to_ffi_value(&a->tag,
+                                             cfn_arg_type->tag.data.sym);
+        a = list_next(a);
+      }
       cfn_arg_type = list_next(cfn_arg_type);
       i++;
     }
@@ -83,6 +93,7 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
   assert(cfn);
   assert(dest);
   str_copy(&cfn->name, &dest->name);
+  dest->arg_result = cfn->arg_result;
   list_copy(cfn->arg_types, &dest->arg_types);
   dest->arity = cfn->arity;
   dest->result_type = cfn->result_type;
@@ -115,7 +126,8 @@ s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_type,
   u8 i = 0;
   ffi_type *result_ffi_type;
   assert(cfn);
-  result_ffi_type = cfn_sym_to_ffi_type(result_type);
+  if (! (result_ffi_type = cfn_sym_to_ffi_type(result_type, NULL)))
+    return NULL;
   if ((arity = list_length(arg_type))) {
     if (arity > 255) {
       assert(arity <= 255);
@@ -130,7 +142,12 @@ s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_type,
         assert(! "cfn_set_type: invalid type");
         errx(1, "cfn_set_type: invalid type");
       }
-      arg_ffi_type[i] = cfn_sym_to_ffi_type(a->tag.data.sym);
+      if (! (arg_ffi_type[i] = cfn_sym_to_ffi_type(a->tag.data.sym, result_ffi_type))) {
+        free(arg_ffi_type);
+        return NULL;
+      }
+      if (a->tag.data.sym == sym_1("&result"))
+        cfn->arg_result = true;
       i++;
       a = list_next(a);
     }
@@ -143,10 +160,15 @@ s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_type,
   return cfn;
 }
 
-ffi_type * cfn_sym_to_ffi_type (const s_sym *sym)
+ffi_type * cfn_sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
 {
   if (sym == sym_1("tag"))
     return &ffi_type_pointer;
+  if (sym == sym_1("&result")) {
+    if (! result_type)
+      warnx("invalid result type: &result");
+    return result_type;
+  }
   if (sym == sym_1("s8"))
     return &ffi_type_sint8;
   if (sym == sym_1("s16"))

@@ -288,6 +288,7 @@ struct cfn {
   } ptr;
   u8 arity;
   const s_sym *result_type;
+  bool arg_result;
   s_list *arg_types;
   ffi_cif cif;
 };

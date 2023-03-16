@@ -45,7 +45,7 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details test.html
 
 gdb_test: debug
-	if [ -f libc3_test_debug.core ]; then gdb libc3_test_debug libc3_test_debug.core; else gdb libc3_test_debug; fi
+	if [ -f libc3_test_debug.core ]; then gdb .libs/libc3_test_debug libc3_test_debug.core; else gdb .libs/libc3_test_debug; fi
 
 ic3_test_cov:
 	IC3=${SRC_TOP}/ic3/ic3_cov time ./ic3_test
