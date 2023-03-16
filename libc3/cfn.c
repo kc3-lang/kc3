@@ -157,6 +157,7 @@ s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_type,
   cfn->arity = arity;
   cfn->cif = cif;
   cfn->result_type = result_type;
+  free(arg_ffi_type);
   return cfn;
 }
 
