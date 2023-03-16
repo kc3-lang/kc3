@@ -56,7 +56,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       err(1, "cfn_apply");
     cfn_arg_type = cfn->arg_types;
     a = args;
-    while (a) {
+    while (cfn_arg_type) {
       assert(cfn_arg_type->tag.type.type == TAG_SYM);
       if (cfn_arg_type->tag.data.sym == sym_1("&result"))
         arg_values[i] = cfn_tag_to_ffi_value(&tmp2, cfn->result_type);
@@ -71,7 +71,10 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   }
   if (cfn->ptr.f) {
     ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
-    *dest = tmp;
+    if (cfn->arg_result)
+      *dest = tmp2;
+    else
+      *dest = tmp;
   }
   else {
     warnx("cfn_apply: NULL function pointer");
