@@ -35,7 +35,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   s_list *cfn_arg_type;
   sw i = 0;
   sw num_args;
-  void* result;
+  void *result;
   s_tag tmp;
   s_tag tmp2;
   assert(cfn);
@@ -71,8 +71,10 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   }
   if (cfn->ptr.f) {
     ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
-    if (cfn->arg_result)
+    if (cfn->arg_result) {
       *dest = tmp2;
+      tag_clean(&tmp);
+    }
     else
       *dest = tmp;
   }
