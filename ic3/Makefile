@@ -45,7 +45,7 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ic3.html
 
 gdb_ic3: debug
-	if [ -f ic3_debug.core ]; then gdb ic3_debug ic3_debug.core; else gdb ic3_debug; fi
+	if [ -f ic3_debug.core ]; then gdb .libs/ic3_debug ic3_debug.core; else gdb .libs/ic3_debug; fi
 
 install:
 	mkdir -p ${prefix}/bin
