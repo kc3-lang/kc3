@@ -107,6 +107,8 @@ void cfn_clean (s_cfn *cfn)
   assert(cfn);
   str_clean(&cfn->name);
   list_delete_all(cfn->arg_types);
+  if (cfn->cif.nargs)
+    free(cfn->cif.arg_types);
 }
 
 s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
@@ -118,6 +120,9 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
   list_copy(cfn->arg_types, &dest->arg_types);
   dest->arity = cfn->arity;
   dest->cif = cfn->cif;
+  dest->cif.arg_types = calloc(cfn->cif.nargs + 1, sizeof(ffi_type *));
+  memcpy(dest->cif.arg_types, cfn->cif.arg_types,
+         (cfn->cif.nargs + 1) * sizeof(ffi_type *));
   dest->result_type = cfn->result_type;
   dest->ptr = cfn->ptr;
   return dest;
