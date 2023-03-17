@@ -30,6 +30,7 @@ void * cfn_tag_to_ffi_value (s_tag *tag, const s_sym *type);
 s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
 {
   s_list *a;
+  void **arg_pointers = NULL;
   void **arg_values = NULL;
   u8 arity;
   s_list *cfn_arg_type;
@@ -39,6 +40,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   s_tag tmp;
   s_tag tmp2;
   assert(cfn);
+  assert(cfn->arity == cfn->cif.nargs);
   num_args = list_length(args);
   arity = cfn->arity - (cfn->arg_result ? 1 : 0);
   if (arity != num_args) {
@@ -52,6 +54,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   /* make result point to tmp value */
   result = cfn_tag_to_ffi_value(&tmp, cfn->result_type);
   if (cfn->arity) {
+    if (! (arg_pointers = calloc(sizeof(void *), cfn->arity + 1)))
+      err(1, "cfn_apply");
     if (! (arg_values = calloc(sizeof(void *), cfn->arity + 1)))
       err(1, "cfn_apply");
     cfn_arg_type = cfn->arg_types;
@@ -59,10 +63,21 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     while (cfn_arg_type) {
       assert(cfn_arg_type->tag.type.type == TAG_SYM);
       if (cfn_arg_type->tag.data.sym == sym_1("&result"))
-        arg_values[i] = cfn_tag_to_ffi_value(&tmp2, cfn->result_type);
+        if (cfn->cif.rtype == &ffi_type_pointer) {
+          arg_pointers[i] = cfn_tag_to_ffi_value(&tmp2, cfn->result_type);
+          arg_values[i] = &arg_pointers[i];
+        }
+        else
+          arg_values[i] = cfn_tag_to_ffi_value(&tmp2, cfn->result_type);
       else {
-        arg_values[i] = cfn_tag_to_ffi_value(&a->tag,
-                                             cfn_arg_type->tag.data.sym);
+        if (cfn->cif.arg_types[i] == &ffi_type_pointer) {
+          arg_pointers[i] = cfn_tag_to_ffi_value(&a->tag,
+                                                cfn_arg_type->tag.data.sym);
+          arg_values[i] = &arg_pointers[i];
+        }
+        else
+          arg_values[i] = cfn_tag_to_ffi_value(&a->tag,
+                                               cfn_arg_type->tag.data.sym);
         a = list_next(a);
       }
       cfn_arg_type = list_next(cfn_arg_type);
@@ -82,6 +97,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     warnx("cfn_apply: NULL function pointer");
     tag_init_void(dest);
   }
+  free(arg_pointers);
   free(arg_values);
   return dest;
 }
@@ -101,6 +117,7 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
   dest->arg_result = cfn->arg_result;
   list_copy(cfn->arg_types, &dest->arg_types);
   dest->arity = cfn->arity;
+  dest->cif = cfn->cif;
   dest->result_type = cfn->result_type;
   dest->ptr = cfn->ptr;
   return dest;
@@ -129,6 +146,7 @@ s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_type,
   sw arity;
   u8 i = 0;
   ffi_type *result_ffi_type;
+  ffi_status status;
   assert(cfn);
   if (! (result_ffi_type = cfn_sym_to_ffi_type(result_type, NULL)))
     return NULL;
@@ -159,9 +177,20 @@ s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_type,
   cfn->arg_types = arg_type;
   cfn->arity = arity;
   cfn->result_type = result_type;
-  ffi_prep_cif(&cfn->cif, FFI_DEFAULT_ABI, cfn->arity, result_ffi_type,
-               arg_ffi_type);  
-  free(arg_ffi_type);
+  status = ffi_prep_cif(&cfn->cif, FFI_DEFAULT_ABI, cfn->arity, result_ffi_type,
+                        arg_ffi_type);
+  if (status == FFI_BAD_TYPEDEF) {
+    warnx("cfn_set_type: ffi_prep_cif: FFI_BAD_TYPEDEF");
+    return NULL;
+  }
+  if (status == FFI_BAD_ABI) {
+    warnx("cfn_set_type: ffi_prep_cif: FFI_BAD_ABI");
+    return NULL;
+  }
+  if (status != FFI_OK) {
+    warnx("cfn_set_type: ffi_prep_cif: unknown error");
+    return NULL;
+  }
   return cfn;
 }
 
@@ -252,7 +281,7 @@ e_tag_type cfn_sym_to_tag_type (const s_sym *sym)
   if (sym == sym_1("sym"))
     return TAG_SYM;
   if (sym == sym_1("tag"))
-    return TAG_PTAG;
+    return TAG_VOID;
   if (sym == sym_1("tuple"))
     return TAG_TUPLE;
   assert(! "cfn_sym_to_tag_type: unknown type");
