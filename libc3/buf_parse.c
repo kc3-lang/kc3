@@ -223,6 +223,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   assert(dest);
   buf_save_init(buf, &save);
   call_init_op(&tmp);
+  bzero(&tmp2, sizeof(s_call));
   left = &tmp.arguments->tag;
   right = &list_next(tmp.arguments)->tag;
   tag_copy(&dest->arguments->tag, left);
@@ -281,6 +282,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
  restore:
   buf_save_restore_rpos(buf, &save);
   call_clean(&tmp);
+  call_clean(&tmp2);
  clean:
   buf_save_clean(buf, &save);
   return r;
