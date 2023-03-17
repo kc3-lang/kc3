@@ -52,7 +52,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   /* make result point to tmp value */
   result = cfn_tag_to_ffi_value(&tmp, cfn->result_type);
   if (cfn->arity) {
-    if (! (arg_values = malloc(sizeof(void *) * cfn->arity)))
+    if (! (arg_values = calloc(sizeof(void *), cfn->arity + 1)))
       err(1, "cfn_apply");
     cfn_arg_type = cfn->arg_types;
     a = args;
@@ -127,7 +127,6 @@ s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_type,
   s_list *a;
   ffi_type **arg_ffi_type = NULL;
   sw arity;
-  ffi_cif cif;
   u8 i = 0;
   ffi_type *result_ffi_type;
   assert(cfn);
@@ -138,7 +137,7 @@ s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_type,
       assert(arity <= 255);
       errx(1, "cfn_set_arg_types: arity > 255");
     }
-    if (! (arg_ffi_type = malloc(sizeof(ffi_type *) * arity)))
+    if (! (arg_ffi_type = calloc(sizeof(ffi_type *), arity + 1)))
       err(1, "cfn_set_arg_types");
     a = arg_type;
     while (a) {
@@ -157,11 +156,11 @@ s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_type,
       a = list_next(a);
     }
   }
-  ffi_prep_cif(&cif, FFI_DEFAULT_ABI, arity, result_ffi_type, arg_ffi_type);  
   cfn->arg_types = arg_type;
   cfn->arity = arity;
-  cfn->cif = cif;
   cfn->result_type = result_type;
+  ffi_prep_cif(&cfn->cif, FFI_DEFAULT_ABI, cfn->arity, result_ffi_type,
+               arg_ffi_type);  
   free(arg_ffi_type);
   return cfn;
 }
@@ -253,7 +252,7 @@ e_tag_type cfn_sym_to_tag_type (const s_sym *sym)
   if (sym == sym_1("sym"))
     return TAG_SYM;
   if (sym == sym_1("tag"))
-    return TAG_VOID;
+    return TAG_PTAG;
   if (sym == sym_1("tuple"))
     return TAG_TUPLE;
   assert(! "cfn_sym_to_tag_type: unknown type");
