@@ -219,11 +219,13 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   s_buf_save save;
   s_call tmp;
   s_call tmp2;
+  s_call tmp3;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
   call_init_op(&tmp);
   bzero(&tmp2, sizeof(s_call));
+  bzero(&tmp3, sizeof(s_call));
   left = &tmp.arguments->tag;
   right = &list_next(tmp.arguments)->tag;
   tag_copy(&dest->arguments->tag, left);
@@ -270,11 +272,11 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     }
     if (r <= 0 || (op_precedence = next_op_precedence) < min_precedence)
       break;
-    call_init_op(&tmp2);
-    tmp2.ident = op;
-    tmp2.arguments->tag = *left;
-    list_next(tmp2.arguments)->tag = *right;
-    tag_init_call(left, &tmp2);
+    call_init_op(&tmp3);
+    tmp3.ident = op;
+    tmp3.arguments->tag = *left;
+    list_next(tmp3.arguments)->tag = *right;
+    tag_init_call(left, &tmp3);
   }
   *dest = tmp;
   r = result;
@@ -283,6 +285,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   buf_save_restore_rpos(buf, &save);
   call_clean(&tmp);
   call_clean(&tmp2);
+  call_clean(&tmp3);
  clean:
   buf_save_clean(buf, &save);
   return r;
