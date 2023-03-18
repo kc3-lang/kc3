@@ -257,8 +257,10 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
                       next_op_precedence == op_precedence))) {
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
-      if ((r = buf_parse_call_op_rec(buf, &tmp2, (next_op_precedence > op_precedence) ? op_precedence + 1 : op_precedence)) <= 0)
+      if ((r = buf_parse_call_op_rec(buf, &tmp2, (next_op_precedence > op_precedence) ? op_precedence + 1 : op_precedence)) <= 0) {
+        call_clean(&tmp2);
         break;
+      }
       bzero(right, sizeof(s_tag));
       right->type.type = TAG_CALL;
       right->data.call = tmp2;
