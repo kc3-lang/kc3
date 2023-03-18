@@ -51,6 +51,19 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_CALL_OP(test)                                   \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_call dest;                                                       \
+    test_context("buf_parse_call_op(" # test ")");                     \
+    buf_init_1(&buf, (test));                                          \
+    bzero(&dest, sizeof(s_call));                                      \
+    TEST_EQ(buf_parse_call_op(&buf, &dest), strlen(test));             \
+    call_clean(&dest);                                                 \
+    buf_clean(&buf);                                                   \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_PARSE_TEST_CFN(test)                                       \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -614,6 +627,7 @@
 
 void buf_parse_test_bool ();
 void buf_parse_test_call ();
+void buf_parse_test_call_op ();
 void buf_parse_test_cfn ();
 void buf_parse_test_character ();
 void buf_parse_test_digit_bin ();
@@ -641,6 +655,7 @@ void buf_parse_test ()
 {
   buf_parse_test_bool();
   buf_parse_test_call();
+  buf_parse_test_call_op();
   buf_parse_test_digit_bin();
   buf_parse_test_digit_hex();
   buf_parse_test_digit_oct();
@@ -708,6 +723,15 @@ void buf_parse_test_call ()
   BUF_PARSE_TEST_CALL("a(b(c), d)");
   BUF_PARSE_TEST_CALL("a(B.c(d))");
   BUF_PARSE_TEST_CALL("a(B.c(D.e(f, g), H.i(j, k)))");
+}
+
+void buf_parse_test_call_op ()
+{
+  BUF_PARSE_TEST_CALL_OP("1 + 2");
+  BUF_PARSE_TEST_CALL_OP("1 + 2 + 3");
+  BUF_PARSE_TEST_CALL_OP("1 + 2 / 3");
+  BUF_PARSE_TEST_CALL_OP("1 + 2 / 3 * 4");
+  BUF_PARSE_TEST_CALL_OP("1 + 2 / 3 * 4 - 5");
 }
 
 void buf_parse_test_cfn ()
