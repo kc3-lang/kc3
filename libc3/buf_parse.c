@@ -191,6 +191,7 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
+  result += r;
   if ((r = buf_parse_call_op_rec(buf, &tmp, 0)) <= 0)
     goto restore;
   result += r;
@@ -243,11 +244,13 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     tmp.ident = op;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
+    result += r;
     if ((r = buf_parse_tag_primary(buf, right)) <= 0)
       goto restore;
     result += r;
     if ((r = buf_ignore_spaces(buf)) < 0)
       break;
+    result += r;
     r = buf_parse_ident_peek(buf, &next_op);
     if (r <= 0)
       break;
