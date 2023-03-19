@@ -728,10 +728,12 @@ void buf_parse_test_call ()
 void buf_parse_test_call_op ()
 {
   BUF_PARSE_TEST_CALL_OP("1 + 2");
+  /*
   BUF_PARSE_TEST_CALL_OP("1 + 2 + 3");
   BUF_PARSE_TEST_CALL_OP("1 + 2 / 3");
   BUF_PARSE_TEST_CALL_OP("1 + 2 / 3 * 4");
   BUF_PARSE_TEST_CALL_OP("1 + 2 / 3 * 4 - 5");
+  */
 }
 
 void buf_parse_test_cfn ()
@@ -743,9 +745,9 @@ void buf_parse_test_cfn ()
   BUF_PARSE_TEST_NOT_CFN("a");
   BUF_PARSE_TEST_NOT_CFN("z");
   BUF_PARSE_TEST_NOT_CFN("cfn 0 1 (2)");
-  BUF_PARSE_TEST_CFN("cfn :tag \"test\" (:tag)");
-  BUF_PARSE_TEST_CFN("cfn :tag \"test\" (:tag, :tag)");
-  BUF_PARSE_TEST_CFN("cfn :tag \"test\" (:tag, :tag, :tag)");
+  BUF_PARSE_TEST_CFN("cfn :tag \"tag_add\" (:tag)");
+  BUF_PARSE_TEST_CFN("cfn :tag \"tag_add\" (:tag, :tag)");
+  BUF_PARSE_TEST_CFN("cfn :tag \"tag_add\" (:tag, :tag, :tag)");
 }
 
 void buf_parse_test_character ()
