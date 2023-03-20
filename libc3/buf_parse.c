@@ -282,6 +282,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     list_next(tmp3.arguments)->tag = *right;
     tag_init_call(left, &tmp3);
   }
+  call_clean(dest);
   *dest = tmp;
   r = result;
   goto clean;
