@@ -248,6 +248,12 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     if ((r = buf_parse_tag_primary(buf, right)) <= 0)
       goto restore;
     result += r;
+    if ((r = buf_ignore_newline(buf)) < 0)
+      break;
+    if (r > 0) {
+      result += r;
+      break;
+    }
     if ((r = buf_ignore_spaces(buf)) < 0)
       break;
     result += r;

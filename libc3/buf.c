@@ -119,6 +119,33 @@ sw buf_ignore_line (s_buf *buf)
   return result;
 }
 
+sw buf_ignore_newline (s_buf *buf)
+{
+  character c;
+  sw csize;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  assert(buf);
+  buf_save_init(buf, &save);
+  while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
+         character_is_space(c)) {
+    csize = r;
+    if ((r = buf_ignore(buf, csize)) < 0)
+      goto clean;
+    result += csize;
+    if (c == '\n') {
+      r = result;
+      goto clean;
+    }
+  }
+  buf_save_restore_rpos(buf, &save);
+  r = 0;
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_ignore_spaces (s_buf *buf)
 {
   character c;
