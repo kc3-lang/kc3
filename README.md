@@ -73,9 +73,6 @@ Script interpreter. Under development.
 ## TODO
 
  - libc3
-   - DONE ci
-   - DONE c function call
-   - DONE infix operators
    - atomic operations
    - triple serial id
    - arrays
@@ -83,16 +80,18 @@ Script interpreter. Under development.
    - structs
    - errors (setjmp, longjmp)
      - stacktrace
-   - load
-   - `test_file_compare`
-   - ffi
-     - types
-     - funcall
    - functions
-     - DONE fn () {}
      - & &1
-     - defmodule
+     - def
      - funcall
+     - DONE fn () {}
   - buf_sha256
   - buf_popen
-
+  - DONE ci
+  - DONE c function call
+  - DONE infix operators
+  - DONE load
+  - DONE `test_file_compare`
+  - DONE ffi
+    - DONE types
+    - DONE funcall
