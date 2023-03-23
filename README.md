@@ -75,16 +75,20 @@ Script interpreter. Under development.
  - libc3
    - atomic operations
    - triple serial id
+   - with ignore variables
+   - boolean operators
    - arrays
    - defmodule
    - structs
    - errors (setjmp, longjmp)
      - stacktrace
    - functions
-     - & &1
      - def
      - funcall
+     - & &1
      - DONE fn () {}
+  - livebook
+    - gaussian
   - buf_sha256
   - buf_popen
   - DONE ci
