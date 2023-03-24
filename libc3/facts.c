@@ -73,6 +73,7 @@ void facts_clean (s_facts *facts)
   skiplist_delete__fact(facts->index_spo);
   set_clean__fact(&facts->facts);
   set_clean__tag(&facts->tags);
+  pthread_rwlock_destroy(&facts->rwlock);
 }
 
 void facts_close (s_facts *facts)
@@ -201,6 +202,8 @@ s_facts * facts_init (s_facts *facts)
   assert(facts->index_osp);
   facts->index_osp->compare = compare_fact_osp;
   facts->log = NULL;
+  if (pthread_rwlock_init(&facts->rwlock, NULL))
+    errx(1, "pthread_rwlock_init");
   return facts;
 }
 

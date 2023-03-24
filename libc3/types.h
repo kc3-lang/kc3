@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <ffi.h>
+#include <pthread.h>
 #include "config.h"
 #include "sha1.h"
 #include "../libtommath/tommath.h"
@@ -409,6 +410,7 @@ struct facts {
   s_skiplist__fact *index_pos;
   s_skiplist__fact *index_osp;
   s_log            *log;
+  pthread_rwlock_t  rwlock;
 };
 
 struct facts_cursor {
