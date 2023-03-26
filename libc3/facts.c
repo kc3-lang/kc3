@@ -45,7 +45,7 @@ s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
   tmp.predicate = facts_ref_tag(facts, fact->predicate);
   tmp.object    = facts_ref_tag(facts, fact->object);
   if ((item = set_get__fact(&facts->facts, &tmp))) {
-    facts_lock_unlock(facts);
+    facts_lock_unlock_w(facts);
     return &item->data;
   }
   if (facts->log)
@@ -55,7 +55,7 @@ s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
   skiplist_insert__fact(facts->index_spo, f);
   skiplist_insert__fact(facts->index_pos, f);
   skiplist_insert__fact(facts->index_osp, f);
-  facts_lock_unlock(facts);
+  facts_lock_unlock_w(facts);
   return f;
 }
 
@@ -134,7 +134,7 @@ sw facts_dump (s_facts *facts, s_buf *buf)
       goto ko;
     result += r;
   }
-  facts_lock_unlock(facts);
+  facts_lock_unlock_r(facts);
   if ((r = buf_write_1(buf, "%{hash: 0x")) < 0)
     return r;
   result += r;
@@ -146,7 +146,7 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   result += r;
   return result;
  ko:
-  facts_lock_unlock(facts);
+  facts_lock_unlock_r(facts);
   return r;
 }
 
@@ -183,7 +183,7 @@ s_fact * facts_find_fact (s_facts *facts, const s_fact *fact)
       (f.object    = facts_find_tag(facts, fact->object))    &&
       (item = set_get__fact((const s_set__fact *) &facts->facts, &f)))
     result = &item->data;
-  facts_lock_unlock(facts);
+  facts_lock_unlock_r(facts);
   return result;
 }
 
@@ -196,7 +196,7 @@ s_tag * facts_find_tag (s_facts *facts, const s_tag *tag)
   facts_lock_r(facts);
   if ((item = set_get__tag(&facts->tags, tag)))
     result = &item->data;
-  facts_lock_unlock(facts);
+  facts_lock_unlock_r(facts);
   return result;
 }
 
@@ -262,7 +262,7 @@ sw facts_load (s_facts *facts, s_buf *buf)
     }
     result += r;
   }
-  facts_lock_unlock(facts);
+  facts_lock_unlock_w(facts);
   hash_u64 = hash_to_u64(&hash);
   if ((r = buf_read_1(buf, "%{hash: 0x")) <= 0)
     goto ko_hash;
@@ -290,6 +290,7 @@ sw facts_load (s_facts *facts, s_buf *buf)
   warnx("facts_load: invalid or missing header");
   return -1;
  ko_fact:
+  facts_lock_unlock_w(facts);
   warnx("facts_load: %s fact line %lu", r ? "invalid" : "missing",
         (unsigned long) i + 4);
   return -1;
@@ -331,27 +332,50 @@ void facts_lock_init (s_facts *facts)
   assert(facts);
   if (pthread_rwlock_init(&facts->rwlock, NULL))
     errx(1, "facts_lock_init: pthread_rwlock_init");
+  facts->rwlock_count = 0;
+  facts->rwlock_thread = 0;
 }
 
 void facts_lock_r (s_facts *facts)
 {
+  pthread_t thread;
   assert(facts);
+  thread = pthread_self();
+  if (facts->rwlock_thread == thread)
+    return;
   if (pthread_rwlock_rdlock(&facts->rwlock))
     errx(1, "facts_lock_r: pthread_rwlock_rdlock");
 }
 
-void facts_lock_unlock (s_facts *facts)
+void facts_lock_unlock_r (s_facts *facts)
 {
   assert(facts);
   if (pthread_rwlock_unlock(&facts->rwlock))
-    errx(1, "facts_lock_unlock: pthread_rwlock_unlock");
+    errx(1, "facts_lock_unlock_r: pthread_rwlock_unlock");
+}
+
+void facts_lock_unlock_w (s_facts *facts)
+{
+  assert(facts);
+  facts->rwlock_count--;
+  if (! facts->rwlock_count) {
+    facts->rwlock_thread = NULL;
+    if (pthread_rwlock_unlock(&facts->rwlock))
+      errx(1, "facts_lock_unlock_w: pthread_rwlock_unlock");
+  }
 }
 
 void facts_lock_w (s_facts *facts)
 {
+  pthread_t thread;
   assert(facts);
-  if (pthread_rwlock_wrlock(&facts->rwlock))
-    errx(1, "facts_lock_w: pthread_rwlock_wrlock");
+  thread = pthread_self();
+  if (facts->rwlock_thread != thread) {
+    if (pthread_rwlock_wrlock(&facts->rwlock))
+      errx(1, "facts_lock_w: pthread_rwlock_wrlock");
+    facts->rwlock_thread = thread;
+  }
+  facts->rwlock_count++;
 }
 
 sw facts_log_add (s_log *log, const s_fact *fact)
@@ -550,7 +574,7 @@ e_bool facts_remove_fact (s_facts *facts, const s_fact *fact)
     facts_unref_tag(facts, f.object);
     result = true;
   }
-  facts_lock_unlock(facts);
+  facts_lock_unlock_w(facts);
   return result;
 }
 

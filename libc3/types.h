@@ -411,6 +411,8 @@ struct facts {
   s_skiplist__fact *index_osp;
   s_log            *log;
   pthread_rwlock_t  rwlock;
+  sw                rwlock_count;
+  pthread_t         rwlock_thread;
 };
 
 struct facts_cursor {
