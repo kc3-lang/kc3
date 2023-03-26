@@ -40,11 +40,14 @@ s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
   s_set_item__fact *item;
   assert(facts);
   assert(fact);
+  facts_lock_w(facts);
   tmp.subject   = facts_ref_tag(facts, fact->subject);
   tmp.predicate = facts_ref_tag(facts, fact->predicate);
   tmp.object    = facts_ref_tag(facts, fact->object);
-  if ((item = set_get__fact(&facts->facts, &tmp)))
+  if ((item = set_get__fact(&facts->facts, &tmp))) {
+    facts_lock_unlock(facts);
     return &item->data;
+  }
   if (facts->log)
     facts_log_add(facts->log, &tmp);
   item = set_add__fact(&facts->facts, &tmp);
@@ -52,6 +55,7 @@ s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
   skiplist_insert__fact(facts->index_spo, f);
   skiplist_insert__fact(facts->index_pos, f);
   skiplist_insert__fact(facts->index_osp, f);
+  facts_lock_unlock(facts);
   return f;
 }
 
@@ -73,7 +77,7 @@ void facts_clean (s_facts *facts)
   skiplist_delete__fact(facts->index_spo);
   set_clean__fact(&facts->facts);
   set_clean__tag(&facts->tags);
-  pthread_rwlock_destroy(&facts->rwlock);
+  facts_lock_clean(facts);
 }
 
 void facts_close (s_facts *facts)
@@ -91,7 +95,7 @@ void facts_delete (s_facts *facts)
   free(facts);
 }
 
-sw facts_dump (const s_facts *facts, s_buf *buf)
+sw facts_dump (s_facts *facts, s_buf *buf)
 {
   s_facts_cursor cursor;
   s_fact *fact;
@@ -112,23 +116,25 @@ sw facts_dump (const s_facts *facts, s_buf *buf)
                        "  count: 0x")) < 0)
     return r;
   result += r;
+  facts_lock_r(facts);
   if ((r = buf_inspect_u64_hex(buf, facts_count(facts))) < 0)
-    return r;
+    goto ko;
   result += r;
   if ((r = buf_write_1(buf, "}\n")) < 0)
-    return r;
+    goto ko;
   result += r;
   hash_init(&hash);
   facts_with_0(facts, &cursor, &subject, &predicate, &object);
   while ((fact = facts_cursor_next(&cursor))) {
     hash_update_fact(&hash, fact);
     if ((r = buf_inspect_fact(buf, fact)) < 0)
-      return r;
+      goto ko;
     result += r;
     if ((r = buf_write_1(buf, "\n")) < 0)
-      return r;
+      goto ko;
     result += r;
   }
+  facts_lock_unlock(facts);
   if ((r = buf_write_1(buf, "%{hash: 0x")) < 0)
     return r;
   result += r;
@@ -139,9 +145,12 @@ sw facts_dump (const s_facts *facts, s_buf *buf)
     return r;
   result += r;
   return result;
+ ko:
+  facts_lock_unlock(facts);
+  return r;
 }
 
-sw facts_dump_file (const s_facts *facts, const s8 *path)
+sw facts_dump_file (s_facts *facts, const s8 *path)
 {
   s8 b[BUF_SIZE];
   s_buf buf;
@@ -161,28 +170,34 @@ sw facts_dump_file (const s_facts *facts, const s8 *path)
   return r;
 }
 
-s_fact * facts_find_fact (const s_facts *facts, const s_fact *fact)
+s_fact * facts_find_fact (s_facts *facts, const s_fact *fact)
 {
   s_fact f;
   s_set_item__fact *item;
+  s_fact *result = NULL;
   assert(facts);
   assert(fact);
+  facts_lock_r(facts);
   if ((f.subject   = facts_find_tag(facts, fact->subject))   &&
       (f.predicate = facts_find_tag(facts, fact->predicate)) &&
       (f.object    = facts_find_tag(facts, fact->object))    &&
       (item = set_get__fact((const s_set__fact *) &facts->facts, &f)))
-    return &item->data;
-  return NULL;
+    result = &item->data;
+  facts_lock_unlock(facts);
+  return result;
 }
 
-s_tag * facts_find_tag (const s_facts *facts, const s_tag *tag)
+s_tag * facts_find_tag (s_facts *facts, const s_tag *tag)
 {
   s_set_item__tag *item;
+  s_tag *result = NULL;
   assert(facts);
   assert(tag);
+  facts_lock_r(facts);
   if ((item = set_get__tag(&facts->tags, tag)))
-    return &item->data;
-  return NULL;
+    result = &item->data;
+  facts_lock_unlock(facts);
+  return result;
 }
 
 s_facts * facts_init (s_facts *facts)
@@ -202,8 +217,7 @@ s_facts * facts_init (s_facts *facts)
   assert(facts->index_osp);
   facts->index_osp->compare = compare_fact_osp;
   facts->log = NULL;
-  if (pthread_rwlock_init(&facts->rwlock, NULL))
-    errx(1, "pthread_rwlock_init");
+  facts_lock_init(facts);
   return facts;
 }
 
@@ -233,6 +247,7 @@ sw facts_load (s_facts *facts, s_buf *buf)
     goto ko_header;
   result += r;
   hash_init(&hash);
+  facts_lock_w(facts);
   for (i = 0; i < count; i++) {
     if ((r = buf_parse_fact(buf, &fact)) <= 0)
       goto ko_fact;
@@ -247,6 +262,7 @@ sw facts_load (s_facts *facts, s_buf *buf)
     }
     result += r;
   }
+  facts_lock_unlock(facts);
   hash_u64 = hash_to_u64(&hash);
   if ((r = buf_read_1(buf, "%{hash: 0x")) <= 0)
     goto ko_hash;
@@ -301,6 +317,41 @@ sw facts_load_file (s_facts *facts, const s8 *path)
   buf_file_close(&buf);
   fclose(fp);
   return result;
+}
+
+void facts_lock_clean (s_facts *facts)
+{
+  assert(facts);
+  if (pthread_rwlock_destroy(&facts->rwlock))
+    errx(1, "facts_lock_clean: pthread_rwlock_destroy");
+}
+
+void facts_lock_init (s_facts *facts)
+{
+  assert(facts);
+  if (pthread_rwlock_init(&facts->rwlock, NULL))
+    errx(1, "facts_lock_init: pthread_rwlock_init");
+}
+
+void facts_lock_r (s_facts *facts)
+{
+  assert(facts);
+  if (pthread_rwlock_rdlock(&facts->rwlock))
+    errx(1, "facts_lock_r: pthread_rwlock_rdlock");
+}
+
+void facts_lock_unlock (s_facts *facts)
+{
+  assert(facts);
+  if (pthread_rwlock_unlock(&facts->rwlock))
+    errx(1, "facts_lock_unlock: pthread_rwlock_unlock");
+}
+
+void facts_lock_w (s_facts *facts)
+{
+  assert(facts);
+  if (pthread_rwlock_wrlock(&facts->rwlock))
+    errx(1, "facts_lock_w: pthread_rwlock_wrlock");
 }
 
 sw facts_log_add (s_log *log, const s_fact *fact)
@@ -481,8 +532,10 @@ e_bool facts_remove_fact (s_facts *facts, const s_fact *fact)
 {
   s_fact f;
   s_fact *found;
+  e_bool result = false;
   assert(facts);
   assert(fact);
+  facts_lock_w(facts);
   found = facts_find_fact(facts, fact);
   if (found) {
     if (facts->log)
@@ -495,9 +548,10 @@ e_bool facts_remove_fact (s_facts *facts, const s_fact *fact)
     facts_unref_tag(facts, f.subject);
     facts_unref_tag(facts, f.predicate);
     facts_unref_tag(facts, f.object);
-    return true;
+    result = true;
   }
-  return false;
+  facts_lock_unlock(facts);
+  return result;
 }
 
 sw facts_save_file (s_facts *facts, const s8 *path)

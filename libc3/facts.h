@@ -37,6 +37,11 @@ s_fact * facts_add_tags (s_facts *facts, const s_tag *subject,
 void     facts_close (s_facts *facts);
 sw       facts_load (s_facts *facts, s_buf *buf);
 sw       facts_load_file (s_facts *facts, const s8 *path);
+void     facts_lock_clean (s_facts *facts);
+void     facts_lock_init (s_facts *facts);
+void     facts_lock_r (s_facts *facts);
+void     facts_lock_unlock (s_facts *facts);
+void     facts_lock_w (s_facts *facts);
 sw       facts_open_file (s_facts *facts, const s8 *path);
 s_tag *  facts_ref_tag (s_facts *facts, const s_tag *tag);
 e_bool   facts_remove_fact (s_facts *facts, const s_fact *fact);
@@ -44,10 +49,10 @@ sw       facts_save_file (s_facts *facts, const s8 *path);
 e_bool   facts_unref_tag (s_facts *facts, const s_tag *tag);
 
 /* Observers */
-sw       facts_dump (const s_facts *facts, s_buf *buf);
-sw       facts_dump_file (const s_facts *facts, const s8 *path);
-s_fact * facts_find_fact (const s_facts *facts, const s_fact *fact);
-s_tag *  facts_find_tag (const s_facts *facts, const s_tag *tag);
+sw       facts_dump (s_facts *facts, s_buf *buf);
+sw       facts_dump_file (s_facts *facts, const s8 *path);
+s_fact * facts_find_fact (s_facts *facts, const s_fact *fact);
+s_tag *  facts_find_tag (s_facts *facts, const s_tag *tag);
 sw       facts_log_add (s_log *log, const s_fact *fact);
 sw       facts_log_remove (s_log *log, const s_fact *fact);
 sw       facts_save_header (s_buf *buf);
