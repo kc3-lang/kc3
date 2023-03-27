@@ -456,6 +456,7 @@ struct facts_with_cursor {
   s_facts_with_cursor_level *levels;
   size_t level;
   p_facts_spec spec;
+  pthread_mutex_t mutex;
 };
 
 #endif /* TYPES_H */

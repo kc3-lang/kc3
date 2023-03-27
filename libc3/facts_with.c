@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
+#include <err.h>
 #include <stdlib.h>
 #include "facts_cursor.h"
 #include "facts_spec.h"
@@ -39,6 +40,8 @@ s_facts_with_cursor * facts_with (s_facts *facts,
     cursor->spec = NULL;
   }
   cursor->level = 0;
+  if (pthread_mutex_init(&cursor->mutex, NULL))
+    errx(1, "facts_with: pthread_mutex_init");
   return cursor;
 }
 
