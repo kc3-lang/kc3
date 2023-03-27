@@ -13,12 +13,20 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include "facts.h"
 #include "facts_cursor.h"
 #include "skiplist__fact.h"
 #include "skiplist_node__fact.h"
 #include "tag.h"
 
-s_facts_cursor * facts_cursor_init (s_facts_cursor *cursor,
+void facts_cursor_clean (s_facts_cursor *cursor)
+{
+  assert(cursor);
+  facts_cursor_lock_clean(cursor);
+}
+
+s_facts_cursor * facts_cursor_init (s_facts *facts,
+                                    s_facts_cursor *cursor,
                                     s_skiplist__fact *index,
                                     s_fact *start,
                                     s_fact *end)
@@ -48,12 +56,48 @@ s_facts_cursor * facts_cursor_init (s_facts_cursor *cursor,
   cursor->var_subject   = NULL;
   cursor->var_predicate = NULL;
   cursor->var_object    = NULL;
+  cursor->facts = facts;
+  facts_cursor_lock_init(cursor);
+  return cursor;
+}
+
+s_facts_cursor * facts_cursor_lock (s_facts_cursor *cursor)
+{
+  assert(cursor);
+  if (pthread_mutex_lock(&cursor->mutex))
+    errx(1, "facts_cursor_lock: pthread_mutex_lock");
+  return cursor;
+}
+
+s_facts_cursor * facts_cursor_lock_clean (s_facts_cursor *cursor)
+{
+  assert(cursor);
+  if (pthread_mutex_destroy(&cursor->mutex))
+    errx(1, "facts_cursor_lock_clean: pthread_mutex_destroy");
+  return cursor;
+}
+
+s_facts_cursor * facts_cursor_lock_init (s_facts_cursor *cursor)
+{
+  assert(cursor);
+  if (pthread_mutex_init(&cursor->mutex, NULL))
+    errx(1, "facts_cursor_lock_init: pthread_mutex_init");
+  return cursor;
+}
+
+s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor)
+{
+  assert(cursor);
+  if (pthread_mutex_unlock(&cursor->mutex))
+    errx(1, "facts_cursor_lock_unlock: pthread_mutex_unlock");
   return cursor;
 }
 
 s_fact * facts_cursor_next (s_facts_cursor *cursor)
 {
   assert(cursor);
+  facts_lock_r(cursor->facts);
+  facts_cursor_lock(cursor);
   if (cursor->node) {
     cursor->node = SKIPLIST_NODE_NEXT__fact(cursor->node, 0);
     if (cursor->node &&
@@ -68,6 +112,8 @@ s_fact * facts_cursor_next (s_facts_cursor *cursor)
       *cursor->var_predicate = *fact->predicate;
     if (cursor->var_object)
       *cursor->var_object = *fact->object;
+    facts_cursor_lock_unlock(cursor);
+    facts_lock_unlock_r(cursor->facts);
     return fact;
   }
   if (cursor->var_subject)
@@ -76,5 +122,7 @@ s_fact * facts_cursor_next (s_facts_cursor *cursor)
     tag_init_var(cursor->var_predicate);
   if (cursor->var_object)
     tag_init_var(cursor->var_object);
+  facts_cursor_lock_unlock(cursor);
+  facts_lock_unlock_r(cursor->facts);
   return NULL;
 }

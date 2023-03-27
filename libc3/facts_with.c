@@ -17,7 +17,7 @@
 #include "facts_with.h"
 #include "tag.h"
 
-s_facts_with_cursor * facts_with (const s_facts *facts,
+s_facts_with_cursor * facts_with (s_facts *facts,
                                   s_facts_with_cursor *cursor,
                                   p_facts_spec spec)
 {
@@ -42,7 +42,7 @@ s_facts_with_cursor * facts_with (const s_facts *facts,
   return cursor;
 }
 
-s_facts_cursor * facts_with_0 (const s_facts *facts,
+s_facts_cursor * facts_with_0 (s_facts *facts,
                                s_facts_cursor *cursor,
                                s_tag *var_subject,
                                s_tag *var_predicate,
@@ -50,14 +50,14 @@ s_facts_cursor * facts_with_0 (const s_facts *facts,
 {
   assert(facts);
   assert(cursor);
-  facts_cursor_init(cursor, facts->index_spo, NULL, NULL);
+  facts_cursor_init(facts, cursor, facts->index_spo, NULL, NULL);
   cursor->var_subject = var_subject;
   cursor->var_predicate = var_predicate;
   cursor->var_object = var_object;
   return cursor;
 }
 
-s_facts_cursor * facts_with_1_2 (const s_facts *facts,
+s_facts_cursor * facts_with_1_2 (s_facts *facts,
                                  s_facts_cursor *cursor,
                                  const s_tag *subject,
                                  const s_tag *predicate,
@@ -87,14 +87,14 @@ s_facts_cursor * facts_with_1_2 (const s_facts *facts,
     tree = facts->index_pos;
   else
     tree = facts->index_osp;
-  facts_cursor_init(cursor, tree, &start, &end);
+  facts_cursor_init(facts, cursor, tree, &start, &end);
   cursor->var_subject = var_subject;
   cursor->var_predicate = var_predicate;
   cursor->var_object = var_object;
   return cursor;
 }
 
-s_facts_cursor * facts_with_3 (const s_facts *facts,
+s_facts_cursor * facts_with_3 (s_facts *facts,
                                s_facts_cursor *cursor,
                                const s_tag *subject,
                                const s_tag *predicate,
@@ -109,10 +109,10 @@ s_facts_cursor * facts_with_3 (const s_facts *facts,
   fact.subject = subject;
   fact.predicate = predicate;
   fact.object = object;
-  return facts_cursor_init(cursor, facts->index_spo, &fact, &fact);
+  return facts_cursor_init(facts, cursor, facts->index_spo, &fact, &fact);
 }
 
-s_facts_cursor * facts_with_tags (const s_facts *facts,
+s_facts_cursor * facts_with_tags (s_facts *facts,
                                   s_facts_cursor *cursor,
                                   s_tag *subject,
                                   s_tag *predicate,

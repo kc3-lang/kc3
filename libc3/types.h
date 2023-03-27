@@ -416,6 +416,7 @@ struct facts {
 };
 
 struct facts_cursor {
+  s_facts *facts;
   s_skiplist__fact *index;
   s_skiplist_node__fact *node;
   s_fact start;
@@ -423,6 +424,7 @@ struct facts_cursor {
   s_tag *var_subject;
   s_tag *var_predicate;
   s_tag *var_object;
+  pthread_mutex_t mutex;
 };
 
 /* 6 */
@@ -448,7 +450,7 @@ struct facts_with_cursor_level {
 
 /* 7 */
 struct facts_with_cursor {
-  const s_facts *facts;
+  s_facts *facts;
   s_binding *bindings;
   size_t facts_count;
   s_facts_with_cursor_level *levels;

@@ -532,7 +532,7 @@ s_module * env_module_load (s_env *env, s_module *module,
   return module;
 }
 
-bool env_operator_is_right_associative (const s_env *env, const s_ident *op)
+bool env_operator_is_right_associative (s_env *env, const s_ident *op)
 {
   s_facts_with_cursor cursor;
   s8 r;
@@ -555,7 +555,7 @@ bool env_operator_is_right_associative (const s_env *env, const s_ident *op)
   return r;
 }
 
-s8 env_operator_precedence (const s_env *env, const s_ident *op)
+s8 env_operator_precedence (s_env *env, const s_ident *op)
 {
   s_facts_with_cursor cursor;
   s_tag tag_ident;

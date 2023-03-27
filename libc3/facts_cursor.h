@@ -16,12 +16,18 @@
 #include "types.h"
 
 /* Stack allocation compatible functions */
-s_facts_cursor * facts_cursor_init (s_facts_cursor *cursor,
+void             facts_cursor_clean (s_facts_cursor *cursor);
+s_facts_cursor * facts_cursor_init (s_facts *facts,
+                                    s_facts_cursor *cursor,
                                     s_skiplist__fact *tree,
                                     s_fact *start,
                                     s_fact *end);
 
 /* Modifiers */
-s_fact * facts_cursor_next (s_facts_cursor *cursor);
+s_facts_cursor * facts_cursor_lock (s_facts_cursor *cursor);
+s_facts_cursor * facts_cursor_lock_clean (s_facts_cursor *cursor);
+s_facts_cursor * facts_cursor_lock_init (s_facts_cursor *cursor);
+s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor);
+s_fact *         facts_cursor_next (s_facts_cursor *cursor);
 
 #endif /* FACTS_H */

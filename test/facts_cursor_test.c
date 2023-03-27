@@ -64,30 +64,42 @@ void facts_cursor_test_init ()
     facts_add_fact(&facts, fact + i);
     i++;
   }
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_spo, NULL, NULL),
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_spo, NULL, NULL),
           &cursor);
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_pos, NULL, NULL),
+  facts_cursor_clean(&cursor);
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_pos, NULL, NULL),
           &cursor);
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_osp, NULL, NULL),
+  facts_cursor_clean(&cursor);
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_osp, NULL, NULL),
           &cursor);
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_spo, fact, fact),
+  facts_cursor_clean(&cursor);
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_spo, fact, fact),
           &cursor);
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_pos, fact, fact),
+  facts_cursor_clean(&cursor);
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_pos, fact, fact),
           &cursor);
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_osp, fact, fact),
+  facts_cursor_clean(&cursor);
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_osp, fact, fact),
           &cursor);
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_spo, fact + 1,
+  facts_cursor_clean(&cursor);
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_spo, fact + 1,
                             fact + 1), &cursor);
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_pos, fact + 1,
+  facts_cursor_clean(&cursor);
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_pos, fact + 1,
                             fact + 1), &cursor);
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_osp, fact + 1,
+  facts_cursor_clean(&cursor);
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_osp, fact + 1,
                             fact + 1), &cursor);
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_spo, fact,
+  facts_cursor_clean(&cursor);
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_spo, fact,
                             fact + 6), &cursor);
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_pos, fact,
+  facts_cursor_clean(&cursor);
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_pos, fact,
                             fact + 6), &cursor);
-  TEST_EQ(facts_cursor_init(&cursor, facts.index_osp, fact,
+  facts_cursor_clean(&cursor);
+  TEST_EQ(facts_cursor_init(&facts, &cursor, facts.index_osp, fact,
                             fact + 6), &cursor);
+  facts_cursor_clean(&cursor);
   i = 0;
   while (p[i]) {
     fact_test_clean_1(fact + i);
@@ -134,46 +146,55 @@ void facts_cursor_test_next ()
     facts_add_fact(&facts, fact + i);
     i++;
   }
-  facts_cursor_init(&cursor, facts.index_spo, NULL, NULL);
+  facts_cursor_init(&facts, &cursor, facts.index_spo, NULL, NULL);
   i = 0;
   while (p[i]) {
     FACT_TEST_EQ(facts_cursor_next(&cursor), fact + i);
     i++;
   }
   TEST_EQ(facts_cursor_next(&cursor), NULL);
-  facts_cursor_init(&cursor, facts.index_pos, NULL, NULL);
+  facts_cursor_clean(&cursor);
+  facts_cursor_init(&facts, &cursor, facts.index_pos, NULL, NULL);
   i = 0;
   while (p[i]) {
     FACT_TEST_EQ(facts_cursor_next(&cursor), fact + i);
     i++;
   }
   TEST_EQ(facts_cursor_next(&cursor), NULL);
-  facts_cursor_init(&cursor, facts.index_osp, NULL, NULL);
+  facts_cursor_clean(&cursor);
+  facts_cursor_init(&facts, &cursor, facts.index_osp, NULL, NULL);
   i = 0;
   while (p[i]) {
     FACT_TEST_EQ(facts_cursor_next(&cursor), fact + i);
     i++;
   }
   TEST_EQ(facts_cursor_next(&cursor), NULL);
-  facts_cursor_init(&cursor, facts.index_spo, fact, fact);
+  facts_cursor_clean(&cursor);
+  facts_cursor_init(&facts, &cursor, facts.index_spo, fact, fact);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact);
   TEST_EQ(facts_cursor_next(&cursor), NULL);
-  facts_cursor_init(&cursor, facts.index_pos, fact, fact);
+  facts_cursor_clean(&cursor);
+  facts_cursor_init(&facts, &cursor, facts.index_pos, fact, fact);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact);
   TEST_EQ(facts_cursor_next(&cursor), NULL);
-  facts_cursor_init(&cursor, facts.index_osp, fact, fact);
+  facts_cursor_clean(&cursor);
+  facts_cursor_init(&facts, &cursor, facts.index_osp, fact, fact);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact);
   TEST_EQ(facts_cursor_next(&cursor), NULL);
-  facts_cursor_init(&cursor, facts.index_spo, fact + 1, fact + 1);
+  facts_cursor_clean(&cursor);
+  facts_cursor_init(&facts, &cursor, facts.index_spo, fact + 1, fact + 1);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 1);
   TEST_EQ(facts_cursor_next(&cursor), NULL);
-  facts_cursor_init(&cursor, facts.index_pos, fact + 1, fact + 1);
+  facts_cursor_clean(&cursor);
+  facts_cursor_init(&facts, &cursor, facts.index_pos, fact + 1, fact + 1);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 1);
   TEST_EQ(facts_cursor_next(&cursor), NULL);
-  facts_cursor_init(&cursor, facts.index_osp, fact + 1, fact + 1);
+  facts_cursor_clean(&cursor);
+  facts_cursor_init(&facts, &cursor, facts.index_osp, fact + 1, fact + 1);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 1);
   TEST_EQ(facts_cursor_next(&cursor), NULL);
-  facts_cursor_init(&cursor, facts.index_spo, fact, fact + 6);
+  facts_cursor_clean(&cursor);
+  facts_cursor_init(&facts, &cursor, facts.index_spo, fact, fact + 6);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 1);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 2);
@@ -182,7 +203,8 @@ void facts_cursor_test_next ()
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 5);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 6);
   TEST_EQ(facts_cursor_next(&cursor), NULL);
-  facts_cursor_init(&cursor, facts.index_pos, fact, fact + 6);
+  facts_cursor_clean(&cursor);
+  facts_cursor_init(&facts, &cursor, facts.index_pos, fact, fact + 6);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 1);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 2);
@@ -191,7 +213,8 @@ void facts_cursor_test_next ()
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 5);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 6);
   TEST_EQ(facts_cursor_next(&cursor), NULL);
-  facts_cursor_init(&cursor, facts.index_osp, fact, fact + 6);
+  facts_cursor_clean(&cursor);
+  facts_cursor_init(&facts, &cursor, facts.index_osp, fact, fact + 6);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 1);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 2);
@@ -200,6 +223,7 @@ void facts_cursor_test_next ()
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 5);
   FACT_TEST_EQ(facts_cursor_next(&cursor), fact + 6);
   TEST_EQ(facts_cursor_next(&cursor), NULL);
+  facts_cursor_clean(&cursor);
   i = 0;
   while (p[i]) {
     fact_test_clean_1(fact + i);

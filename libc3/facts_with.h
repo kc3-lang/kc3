@@ -15,17 +15,17 @@
 
 #include "types.h"
 
-s_facts_with_cursor * facts_with (const s_facts *facts,
+s_facts_with_cursor * facts_with (s_facts *facts,
                                   s_facts_with_cursor *cursor,
                                   p_facts_spec spec);
 
-s_facts_cursor * facts_with_0 (const s_facts *facts,
+s_facts_cursor * facts_with_0 (s_facts *facts,
                                s_facts_cursor *cursor,
                                s_tag *var_subject,
                                s_tag *var_predicate,
                                s_tag *var_object);
 
-s_facts_cursor * facts_with_1_2 (const s_facts *facts,
+s_facts_cursor * facts_with_1_2 (s_facts *facts,
                                  s_facts_cursor *cursor,
                                  const s_tag *subject,
                                  const s_tag *predicate,
@@ -34,13 +34,13 @@ s_facts_cursor * facts_with_1_2 (const s_facts *facts,
                                  s_tag *var_predicate,
                                  s_tag *var_object);
 
-s_facts_cursor * facts_with_3 (const s_facts *facts,
+s_facts_cursor * facts_with_3 (s_facts *facts,
                                s_facts_cursor *cursor,
                                const s_tag *subject,
                                const s_tag *predicate,
                                const s_tag *object);
 
-s_facts_cursor * facts_with_tags (const s_facts *facts,
+s_facts_cursor * facts_with_tags (s_facts *facts,
                                   s_facts_cursor *cursor,
                                   s_tag *subject,
                                   s_tag *predicate,

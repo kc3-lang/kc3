@@ -25,7 +25,10 @@ void facts_with_cursor_clean (s_facts_with_cursor *cursor)
   uw i = 0;
   assert(cursor);
   while (i < cursor->facts_count) {
-    free(cursor->levels[i].spec);
+    if (cursor->levels[i].spec) {
+      free(cursor->levels[i].spec);
+      facts_cursor_clean(&cursor->levels[i].cursor);
+    }
     i++;
   }
   free(cursor->levels);
