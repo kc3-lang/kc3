@@ -37,7 +37,9 @@ typedef uint64_t      u64;
 
 #define S32_MAX LONG_MAX
 #define S64_MAX LLONG_MAX
+#define SW_MAX  LONG_MAX
 #define U64_MAX ULLONG_MAX
+#define UW_MAX  ULONG_MAX
 
 /* IEEE 754 floating point numbers. */
 typedef float               f32;
@@ -152,14 +154,14 @@ struct fact {
   const s_tag *subject;
   const s_tag *predicate;
   const s_tag *object;
-  uw id; /* XXX random without collision */
+  uw id; /* serial id */
 };
 
 struct fact_w {
   s_tag *subject;
   s_tag *predicate;
   s_tag *object;
-  uw id; /* XXX random without collision */
+  uw id; /* serial id */
 };
 
 struct frame {
@@ -421,6 +423,7 @@ struct facts {
   pthread_rwlock_t  rwlock;
   sw                rwlock_count;
   pthread_t         rwlock_thread;
+  uw                next_id;
 };
 
 struct facts_cursor {

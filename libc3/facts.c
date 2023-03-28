@@ -48,6 +48,12 @@ s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
     facts_lock_unlock_w(facts);
     return &item->data;
   }
+  tmp.id = facts->next_id;
+  if (facts->next_id == UW_MAX) {
+    errx(1, "facts serial id exhausted");
+    return NULL;
+  }
+  facts->next_id++;
   if (facts->log)
     facts_log_add(facts->log, &tmp);
   item = set_add__fact(&facts->facts, &tmp);
