@@ -91,16 +91,16 @@ Script interpreter. Under development.
      - funcall
      - & &1
      - DONE fn () {}
-  - macros
-  - livebook
-    - gaussian
-  - buf_sha256
-  - buf_popen
-  - DONE ci
-  - DONE c function call
-  - DONE infix operators
-  - DONE load
-  - DONE `test_file_compare`
-  - DONE ffi
-    - DONE types
-    - DONE funcall
+   - macros
+   - livebook
+     - gaussian
+   - buf_sha256
+   - buf_popen
+   - DONE ci
+   - DONE c function call
+   - DONE infix operators
+   - DONE load
+   - DONE `test_file_compare`
+   - DONE ffi
+     - DONE types
+     - DONE funcall
