@@ -66,6 +66,7 @@ s_facts_cursor * facts_cursor_lock (s_facts_cursor *cursor)
   assert(cursor);
   if (pthread_mutex_lock(&cursor->mutex))
     errx(1, "facts_cursor_lock: pthread_mutex_lock");
+  facts_lock_r(cursor->facts);
   return cursor;
 }
 
@@ -88,6 +89,7 @@ s_facts_cursor * facts_cursor_lock_init (s_facts_cursor *cursor)
 s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor)
 {
   assert(cursor);
+  facts_lock_unlock_r(cursor->facts);
   if (pthread_mutex_unlock(&cursor->mutex))
     errx(1, "facts_cursor_lock_unlock: pthread_mutex_unlock");
   return cursor;
@@ -97,7 +99,6 @@ s_fact * facts_cursor_next (s_facts_cursor *cursor)
 {
   assert(cursor);
   facts_cursor_lock(cursor);
-  facts_lock_r(cursor->facts);
   if (cursor->node) {
     cursor->node = SKIPLIST_NODE_NEXT__fact(cursor->node, 0);
     if (cursor->node &&
@@ -112,7 +113,6 @@ s_fact * facts_cursor_next (s_facts_cursor *cursor)
       *cursor->var_predicate = *fact->predicate;
     if (cursor->var_object)
       *cursor->var_object = *fact->object;
-    facts_lock_unlock_r(cursor->facts);
     facts_cursor_lock_unlock(cursor);
     return fact;
   }
@@ -122,7 +122,6 @@ s_fact * facts_cursor_next (s_facts_cursor *cursor)
     tag_init_var(cursor->var_predicate);
   if (cursor->var_object)
     tag_init_var(cursor->var_object);
-  facts_lock_unlock_r(cursor->facts);
   facts_cursor_lock_unlock(cursor);
   return NULL;
 }
