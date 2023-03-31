@@ -84,6 +84,7 @@ typedef enum {
 
 /* structs */
 typedef struct arg                     s_arg;
+typedef struct array                   s_array;
 typedef struct binding                 s_binding;
 typedef struct buf                     s_buf;
 typedef struct buf_save                s_buf_save;
@@ -134,6 +135,13 @@ typedef u64          t_skiplist_height;
 #define SKIPLIST_HEIGHT_MAX U64_MAX
 
 /* 1 */
+struct array {
+  uw dimension;
+  uw *sizes;
+  uw size;
+  void *data;
+};
+
 struct buf_save {
   s_buf_save *next;
   uw rpos;
