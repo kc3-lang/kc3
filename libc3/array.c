@@ -11,6 +11,8 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 #include "array.h"
 
 void array_clean (s_array *a)
@@ -30,7 +32,7 @@ s_array * array_init (s_array *a, uw dimension, uw *sizes)
     a->data = NULL;
     return a;
   }
-  sizeof_sizes = dimension * sizeof(uw *)
+  sizeof_sizes = dimension * sizeof(uw *);
   a->sizes = malloc(sizeof_sizes);
   memcpy(a->sizes, sizes, sizeof_sizes);
   a->size = 1;
@@ -51,5 +53,5 @@ void * array_data (s_array *a, uw *address)
     size *= a->sizes[i];
     offset += size * address[i];
   }
-  return a->data + offset;
+  return (s8 *) a->data + offset;
 }

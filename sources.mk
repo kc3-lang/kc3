@@ -38,12 +38,12 @@ C3_C_SOURCES = \
 	libc3/binding.h \
 	libc3/bool.c \
 	libc3/bool.h \
-	libc3/set__tag.c \
-	libc3/set_cursor__tag.h \
 	libc3/set_item__tag.c \
-	libc3/set_item__tag.h \
-	libc3/skiplist_node__fact.h \
 	libc3/skiplist_node__fact.c \
+	libc3/set__tag.c \
+	libc3/set_item__tag.h \
+	libc3/set__tag.h \
+	libc3/set_cursor__tag.h \
 	libc3/set_cursor__tag.c \
 	libc3/buf.c \
 	libc3/buf.h \
@@ -55,15 +55,14 @@ C3_C_SOURCES = \
 	libc3/buf_parse_c.h \
 	libc3/buf_save.c \
 	libc3/log.h \
-	libc3/set__tag.h \
+	libc3/skiplist_node__fact.h \
 	libc3/skiplist__fact.c \
 	libc3/skiplist__fact.h \
 	libc3/set_item__fact.h \
-	libc3/set__fact.h \
 	libc3/set_item__fact.c \
-	libc3/set_cursor__fact.h \
-	libc3/set_cursor__fact.c \
+	libc3/set__fact.h \
 	libc3/set__fact.c \
+	libc3/set_cursor__fact.h \
 	libc3/compare.c \
 	libc3/compare.h \
 	libc3/buf_save.h \
@@ -73,6 +72,7 @@ C3_C_SOURCES = \
 	libc3/call.c \
 	libc3/call.h \
 	libc3/log.c \
+	libc3/array.h \
 	libc3/error.c \
 	libc3/error.h \
 	libc3/error_handler.c \
@@ -81,6 +81,7 @@ C3_C_SOURCES = \
 	libc3/io.h \
 	libc3/fact.h \
 	libc3/character.c \
+	libc3/array.c \
 	libc3/facts.h \
 	libc3/facts_cursor.c \
 	libc3/facts_cursor.h \
@@ -89,6 +90,7 @@ C3_C_SOURCES = \
 	libc3/facts_spec_cursor.c \
 	libc3/facts_spec_cursor.h \
 	libc3/character.h \
+	libc3/set_cursor__fact.c \
 	libc3/c3.c \
 	libc3/facts_with.c \
 	libc3/facts_with.h \

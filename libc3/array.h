@@ -16,7 +16,7 @@
 #include "types.h"
 
 void      array_clean (s_array *a);
-s_array * array_init (s_array *a, s_list *dimensions);
-void *    array_data (s_array *a, s_list *address);
+s_array * array_init (s_array *a, uw dimension, uw *sizes);
+void *    array_data (s_array *a, uw *address);
 
 #endif /* ARRAY_H */
