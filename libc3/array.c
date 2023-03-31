@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <err.h>
 #include "array.h"
 
 void array_clean (s_array *a)
@@ -27,11 +28,12 @@ s_array * array_init (s_array *a, uw dimension, uw *sizes)
   uw i = 0;
   uw sizeof_sizes;
   assert(a);
-  if (! (a->dimension = dimension)) {
-    a->sizes = NULL;
-    a->data = NULL;
-    return a;
+  assert(dimension);
+  if (! dimension) {
+    errx(1, "zero dimension");
+    return NULL;
   }
+  a->dimension = dimension;
   sizeof_sizes = dimension * sizeof(uw *);
   a->sizes = malloc(sizeof_sizes);
   memcpy(a->sizes, sizes, sizeof_sizes);
