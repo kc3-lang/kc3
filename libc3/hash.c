@@ -23,7 +23,6 @@
   {                                                                    \
     const s8 t[] = #type;                                              \
     assert(hash);                                                      \
-    assert(x);                                                         \
     hash_update(hash, t, sizeof(t));                                   \
     hash_update(hash, &x, sizeof(x));                                  \
   }

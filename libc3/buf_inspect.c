@@ -33,7 +33,70 @@ sw buf_inspect_array (s_buf *buf, const s_array *a)
   sw result = 0;
   assert(a);
   assert(buf);
-  address = calloc(a->dimension, sizeof(uw));
+  switch (a->type) {
+  case TAG_VOID:
+    assert(! "void array");
+    errx(1, "void array");
+    return -1;
+  case TAG_ARRAY:
+    inspect = (f_buf_inspect) buf_inspect_array;
+    break;
+  case TAG_BOOL:
+    inspect = (f_buf_inspect) buf_inspect_bool;
+    break;
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO:
+    inspect = (f_buf_inspect) buf_inspect_call;
+  case TAG_CFN:
+    inspect = (f_buf_inspect) buf_inspect_cfn;
+  case TAG_CHARACTER:
+    inspect = (f_buf_inspect) buf_inspect_character;
+  case TAG_F32:
+    inspect = (f_buf_inspect) buf_inspect_f32;
+  case TAG_F64:
+    inspect = (f_buf_inspect) buf_inspect_f64;
+  case TAG_FN:
+    inspect = (f_buf_inspect) buf_inspect_fn;
+  case TAG_IDENT:
+    inspect = (f_buf_inspect) buf_inspect_ident;
+  case TAG_INTEGER:
+    inspect = (f_buf_inspect) buf_inspect_integer;
+  case TAG_S64:
+    inspect = (f_buf_inspect) buf_inspect_s64;
+  case TAG_S32:
+    inspect = (f_buf_inspect) buf_inspect_s32;
+  case TAG_S16:
+    inspect = (f_buf_inspect) buf_inspect_s16;
+  case TAG_S8:
+    inspect = (f_buf_inspect) buf_inspect_s8;
+  case TAG_U8:
+    inspect = (f_buf_inspect) buf_inspect_u8;
+  case TAG_U16:
+    inspect = (f_buf_inspect) buf_inspect_u16;
+  case TAG_U32:
+    inspect = (f_buf_inspect) buf_inspect_u32;
+  case TAG_U64:
+    inspect = (f_buf_inspect) buf_inspect_u64;
+  case TAG_LIST:
+    inspect = (f_buf_inspect) buf_inspect_list;
+  case TAG_PTAG:
+    inspect = (f_buf_inspect) buf_inspect_ptag;
+  case TAG_QUOTE:
+    inspect = (f_buf_inspect) buf_inspect_quote;
+  case TAG_STR:
+    inspect = (f_buf_inspect) buf_inspect_str;
+  case TAG_SYM:
+    inspect = (f_buf_inspect) buf_inspect_sym;
+  case TAG_TUPLE:
+    inspect = (f_buf_inspect) buf_inspect_tuple;
+  case TAG_VAR:
+    inspect = (f_buf_inspect) buf_inspect_var;
+  }
+  if (! (address = calloc(a->dimension, sizeof(uw)))) {
+    err(1, "buf_inspect_array");
+    return -1;
+  }
   while (i < a->dimension) {
     if (i < a->dimension - 1) {
       if (! address[i]) {
@@ -43,66 +106,6 @@ sw buf_inspect_array (s_buf *buf, const s_array *a)
       }
     }
     if (i == a->dimension - 1) {
-      switch (a->type) {
-      case TAG_VOID:
-        assert(! "void array");
-        errx(1, "void array");
-        return -1;
-      case TAG_ARRAY:
-        inspect = (f_buf_inspect) buf_inspect_array;
-        break;
-      case TAG_BOOL:
-        inspect = (f_buf_inspect) buf_inspect_bool;
-        break;
-      case TAG_CALL:
-      case TAG_CALL_FN:
-      case TAG_CALL_MACRO:
-        inspect = (f_buf_inspect) buf_inspect_call;
-      case TAG_CFN:
-        inspect = (f_buf_inspect) buf_inspect_cfn;
-      case TAG_CHARACTER:
-        inspect = (f_buf_inspect) buf_inspect_character;
-      case TAG_F32:
-        inspect = (f_buf_inspect) buf_inspect_f32;
-      case TAG_F64:
-        inspect = (f_buf_inspect) buf_inspect_f64;
-      case TAG_FN:
-        inspect = (f_buf_inspect) buf_inspect_fn;
-      case TAG_IDENT:
-        inspect = (f_buf_inspect) buf_inspect_ident;
-      case TAG_INTEGER:
-        inspect = (f_buf_inspect) buf_inspect_integer;
-      case TAG_S64:
-        inspect = (f_buf_inspect) buf_inspect_s64;
-      case TAG_S32:
-        inspect = (f_buf_inspect) buf_inspect_s32;
-      case TAG_S16:
-        inspect = (f_buf_inspect) buf_inspect_s16;
-      case TAG_S8:
-        inspect = (f_buf_inspect) buf_inspect_s8;
-      case TAG_U8:
-        inspect = (f_buf_inspect) buf_inspect_u8;
-      case TAG_U16:
-        inspect = (f_buf_inspect) buf_inspect_u16;
-      case TAG_U32:
-        inspect = (f_buf_inspect) buf_inspect_u32;
-      case TAG_U64:
-        inspect = (f_buf_inspect) buf_inspect_u64;
-      case TAG_LIST:
-        inspect = (f_buf_inspect) buf_inspect_list;
-      case TAG_PTAG:
-        inspect = (f_buf_inspect) buf_inspect_ptag;
-      case TAG_QUOTE:
-        inspect = (f_buf_inspect) buf_inspect_quote;
-      case TAG_STR:
-        inspect = (f_buf_inspect) buf_inspect_str;
-      case TAG_SYM:
-        inspect = (f_buf_inspect) buf_inspect_sym;
-      case TAG_TUPLE:
-        inspect = (f_buf_inspect) buf_inspect_tuple;
-      case TAG_VAR:
-        inspect = (f_buf_inspect) buf_inspect_var;
-      }
       if ((r = inspect(buf, array_data(a, address))) < 0)
         return r;
       result += r;

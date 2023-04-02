@@ -19,6 +19,156 @@
 
 sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest);
 
+sw buf_parse_array (s_buf *buf, s_array *a)
+{
+  uw *address;
+  uw i = 0;
+  void *item;
+  sw item_size;
+  f_buf_parse parse = 0;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_array tmp;
+  const s_sym *type;
+  assert(buf);
+  assert(a);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(")) < 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto clean;
+  result += r;
+  if ((r = buf_parse_sym(buf, &type)) < 0)
+    goto restore;
+  result += r;
+  tmp.type = sym_to_e_tag_type(type);
+  item_size = tag_type_size(tmp.type);
+  if (! (item = calloc(1, item_size))) {
+    buf_save_clean(buf, &save);
+    err(1, "buf_parse_array");
+    return -1;
+  }
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto clean;
+  result += r;
+  if ((r = buf_read_1(buf, ")")) < 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto clean;
+  result += r;
+  tmp.dimension = 0;
+  while ((r = buf_read_1(buf, "[")) > 0) {
+    result += r;
+    tmp.dimension++;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
+  if (r < 0)
+    goto restore;
+  i = tmp.dimension;
+  tmp.dimension++;
+  if (! (address = calloc(tmp.dimension, sizeof(uw))))
+    err(1, "buf_parse_array");
+  if (! (tmp.sizes = calloc(tmp.dimension, sizeof(uw))))
+    err(1, "buf_parse_array");
+  switch (tmp.type) {
+  case TAG_VOID:
+    buf_save_clean(buf, &save);
+    errx(1, "void array element type");
+    return -1;
+  case TAG_ARRAY:
+    parse = (f_buf_parse) buf_parse_array;
+    break;
+  case TAG_BOOL:
+    parse = (f_buf_parse) buf_parse_bool;
+    break;
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO:
+    parse = (f_buf_parse) buf_parse_call;
+    break;
+  case TAG_CFN:
+    parse = (f_buf_parse) buf_parse_cfn;
+    break;
+  case TAG_CHARACTER:
+    parse = (f_buf_parse) buf_parse_character;
+    break;
+  case TAG_F32:
+    parse = (f_buf_parse) buf_parse_f32;
+    break;
+  case TAG_F64:
+    parse = (f_buf_parse) buf_parse_f64;
+    break;
+  case TAG_FN:
+    parse = (f_buf_parse) buf_parse_fn;
+    break;
+  case TAG_IDENT:
+    parse = (f_buf_parse) buf_parse_ident;
+    break;
+  case TAG_INTEGER:
+    parse = (f_buf_parse) buf_parse_integer;
+    break;
+  case TAG_S64:
+    parse = (f_buf_parse) buf_parse_s64;
+    break;
+  case TAG_S32:
+    parse = (f_buf_parse) buf_parse_s32;
+    break;
+  case TAG_S16:
+    parse = (f_buf_parse) buf_parse_s16;
+    break;
+  case TAG_S8:
+    parse = (f_buf_parse) buf_parse_s8;
+    break;
+  case TAG_U8:
+    parse = (f_buf_parse) buf_parse_u8;
+    break;
+  case TAG_U16:
+    parse = (f_buf_parse) buf_parse_u16;
+    break;
+  case TAG_U32:
+    parse = (f_buf_parse) buf_parse_32;
+    break;
+  case TAG_U64:
+    parse = (f_buf_parse) buf_parse_u64;
+    break;
+  case TAG_LIST:
+    parse = (f_buf_parse) buf_parse_list;
+    break;
+  case TAG_PTAG:
+    parse = (f_buf_parse) buf_parse_ptag;
+    break;
+  case TAG_QUOTE:
+    parse = (f_buf_parse) buf_parse_quote;
+    break;
+  case TAG_STR:
+    parse = (f_buf_parse) buf_parse_str;
+    break;
+  case TAG_SYM:
+    parse = (f_buf_parse) buf_parse_sym;
+    break;
+  case TAG_TUPLE:
+    parse = (f_buf_parse) buf_parse_tuple;
+    break;
+  case TAG_VAR:
+    parse = (f_buf_parse) buf_parse_var;
+    break;
+  while (i < tmp.dimension) {
+    if (i == tmp.dimension - 1) {
+      if ((r = parse(buf, 
+    i++;
+  }
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_bool (s_buf *buf, bool *p)
 {
   character c;
@@ -1286,6 +1436,21 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
  clean:
   buf_save_clean(buf, &save);
   return r;
+}
+
+sw buf_parse_s (s_buf *buf, void *s, u8 size, const s_str *base)
+{
+  character c;
+  sw i;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  assert(buf);
+  assert(s);
+  assert(size);
+  buf_save_init(buf, &save);
+  while ((r = buf_parse_character_from_str(buf, base, &c)) > 0)
+    i = str_character_index(base, c);
 }
 
 sw buf_parse_str (s_buf *buf, s_str *dest)

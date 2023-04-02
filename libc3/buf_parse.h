@@ -30,6 +30,8 @@
  * dest is untouched.
  */
 
+typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
+
 sw buf_parse_bool (s_buf *buf, bool *dest);
 sw buf_parse_call (s_buf *buf, s_call *dest);
 sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);
