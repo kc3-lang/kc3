@@ -305,6 +305,7 @@ const s_sym * cfn_tag_type_to_sym (e_tag_type tag_type)
 {
   switch (tag_type) {
   case TAG_VOID:       return sym_1("void");
+  case TAG_ARRAY:      return sym_1("array");
   case TAG_BOOL:       return sym_1("bool");
   case TAG_CALL:       return sym_1("call");
   case TAG_CALL_FN:    return sym_1("call_fn");
@@ -345,6 +346,10 @@ void * cfn_tag_to_ffi_value (s_tag *tag, const s_sym *type)
   case TAG_VOID:
     if (type == sym_1("void"))
       return NULL;
+    goto invalid_type;
+  case TAG_ARRAY:
+    if (type == sym_1("array"))
+      return tag->data.array.data;
     goto invalid_type;
   case TAG_BOOL:
     if (type == sym_1("bool"))

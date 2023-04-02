@@ -27,6 +27,33 @@
     return 0;                                   \
   }                                             \
 
+s8 compare_array (const s_array *a, const s_array *b)
+{
+  uw i = 0;
+  sw r;
+  assert(a);
+  assert(b);
+  if (a == b)
+    return 0;
+  if (a->dimension < b->dimension)
+    return -1;
+  if (a->dimension > b->dimension)
+    return 1;
+  while (i < a->dimension) {
+    if (a->sizes[i] < b->sizes[i])
+      return -1;
+    if (a->sizes[i] > b->sizes[i])
+      return 1;
+    i++;
+  }
+  assert(a->size == b->size);
+  if ((r = memcmp(a->data, b->data, a->size)) < 0)
+    return -1;
+  if (r > 0)
+    return 1;
+  return 0;
+}
+
 s8 compare_bool (e_bool a, e_bool b)
 {
   if (! a && b)
@@ -345,6 +372,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     return 1;
   switch (a->type.type) {
   case TAG_VOID: return 0;
+  case TAG_ARRAY: return compare_array(&a->data.array, &b->data.array);
   case TAG_BOOL: return compare_bool(a->data.bool, b->data.bool);
   case TAG_CALL:
   case TAG_CALL_FN:

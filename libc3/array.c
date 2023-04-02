@@ -23,7 +23,7 @@ void array_clean (s_array *a)
   free(a->data);
 }
 
-s_array * array_init (s_array *a, uw dimension, uw *sizes)
+s_array * array_init (s_array *a, uw dimension, const uw *sizes)
 {
   uw i = 0;
   uw sizeof_sizes;
@@ -44,7 +44,7 @@ s_array * array_init (s_array *a, uw dimension, uw *sizes)
   return a;
 }
 
-void * array_data (s_array *a, uw *address)
+void * array_data (const s_array *a, const uw *address)
 {
   uw i = 0;
   uw offset = 0;

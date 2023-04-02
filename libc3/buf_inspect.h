@@ -25,7 +25,10 @@
 #define BUF_INSPECT_UW_HEX_SIZE (sizeof(uw) / 4)
 #define BUF_INSPECT_VAR_SIZE (BUF_INSPECT_UW_HEX_SIZE + 7)
 
-sw buf_inspect_array (s_buf *buf, s_array *a);
+typedef sw (* f_buf_inspect) (s_buf *buf, void *x);
+
+sw buf_inspect_array (s_buf *buf, const s_array *a);
+sw buf_inspect_array_size (const s_array *a);
 sw buf_inspect_bool (s_buf *buf, e_bool b);
 sw buf_inspect_bool_size (e_bool b);
 sw buf_inspect_call (s_buf *buf, const s_call *call);

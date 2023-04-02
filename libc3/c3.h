@@ -14,6 +14,7 @@
 #define C3_H
 
 #include "arg.h"
+#include "array.h"
 #include "bool.h"
 #include "buf.h"
 #include "buf_file.h"

@@ -27,14 +27,14 @@ sw buf_inspect_sym_reserved_size (const s_sym *x);
 sw buf_inspect_array (s_buf *buf, const s_array *a)
 {
   uw *address;
-  sw (* buf_inspect) (s_buf *buf, void *x);
-  sw i = 0;
+  uw i = 0;
+  f_buf_inspect inspect;
   sw r;
-  sw result;
+  sw result = 0;
   assert(a);
   assert(buf);
   address = calloc(a->dimension, sizeof(uw));
-  while (i >= 0 && i < a->dimension && address[i] < a->sizes[i]) {
+  while (i < a->dimension) {
     if (i < a->dimension - 1) {
       if (! address[i]) {
         if ((r = buf_write_1(buf, "[")) < 0)
@@ -49,11 +49,59 @@ sw buf_inspect_array (s_buf *buf, const s_array *a)
         errx(1, "void array");
         return -1;
       case TAG_ARRAY:
-        inspect = buf_inspect_array;
+        inspect = (f_buf_inspect) buf_inspect_array;
         break;
       case TAG_BOOL:
-        inspect = buf_inspect_bool;
+        inspect = (f_buf_inspect) buf_inspect_bool;
         break;
+      case TAG_CALL:
+      case TAG_CALL_FN:
+      case TAG_CALL_MACRO:
+        inspect = (f_buf_inspect) buf_inspect_call;
+      case TAG_CFN:
+        inspect = (f_buf_inspect) buf_inspect_cfn;
+      case TAG_CHARACTER:
+        inspect = (f_buf_inspect) buf_inspect_character;
+      case TAG_F32:
+        inspect = (f_buf_inspect) buf_inspect_f32;
+      case TAG_F64:
+        inspect = (f_buf_inspect) buf_inspect_f64;
+      case TAG_FN:
+        inspect = (f_buf_inspect) buf_inspect_fn;
+      case TAG_IDENT:
+        inspect = (f_buf_inspect) buf_inspect_ident;
+      case TAG_INTEGER:
+        inspect = (f_buf_inspect) buf_inspect_integer;
+      case TAG_S64:
+        inspect = (f_buf_inspect) buf_inspect_s64;
+      case TAG_S32:
+        inspect = (f_buf_inspect) buf_inspect_s32;
+      case TAG_S16:
+        inspect = (f_buf_inspect) buf_inspect_s16;
+      case TAG_S8:
+        inspect = (f_buf_inspect) buf_inspect_s8;
+      case TAG_U8:
+        inspect = (f_buf_inspect) buf_inspect_u8;
+      case TAG_U16:
+        inspect = (f_buf_inspect) buf_inspect_u16;
+      case TAG_U32:
+        inspect = (f_buf_inspect) buf_inspect_u32;
+      case TAG_U64:
+        inspect = (f_buf_inspect) buf_inspect_u64;
+      case TAG_LIST:
+        inspect = (f_buf_inspect) buf_inspect_list;
+      case TAG_PTAG:
+        inspect = (f_buf_inspect) buf_inspect_ptag;
+      case TAG_QUOTE:
+        inspect = (f_buf_inspect) buf_inspect_quote;
+      case TAG_STR:
+        inspect = (f_buf_inspect) buf_inspect_str;
+      case TAG_SYM:
+        inspect = (f_buf_inspect) buf_inspect_sym;
+      case TAG_TUPLE:
+        inspect = (f_buf_inspect) buf_inspect_tuple;
+      case TAG_VAR:
+        inspect = (f_buf_inspect) buf_inspect_var;
       }
       if ((r = inspect(buf, array_data(a, address))) < 0)
         return r;
@@ -64,12 +112,23 @@ sw buf_inspect_array (s_buf *buf, const s_array *a)
         if ((r = buf_write_1(buf, "],\n")) < 0)
           return r;
         result += r;
+        if (! i)
+          return result;
         i--;
       }
       break;
     }
+    address[i]++;
     i++;
   }
+  return result;
+}
+
+sw buf_inspect_array_size (const s_array *a)
+{
+  assert(a);
+  (void) a;
+  return -1;
 }
 
 sw buf_inspect_bool (s_buf *buf, e_bool x)
@@ -635,7 +694,7 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
   sw r;
   sw result = 0;
   assert(buf);
-  if ((r = buf_write_u8(buf, '[')) <= 0)
+  if ((r = buf_write_u8(buf, '(')) <= 0)
     return r;
   result++;
   i = x;
@@ -662,7 +721,7 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
       i = NULL;
     }
   }
-  if ((r = buf_write_1(buf, "]")) < 0)
+  if ((r = buf_write_1(buf, ")")) < 0)
     return r;
   result += r;
   return result;
@@ -673,7 +732,7 @@ sw buf_inspect_list_size (const s_list *list)
   const s_list *i;
   sw r;
   sw result = 0;
-  result += strlen("[");
+  result += strlen("(");
   i = list;
   while (i) {
     if ((r = buf_inspect_tag_size(&i->tag)) < 0)
@@ -693,7 +752,7 @@ sw buf_inspect_list_size (const s_list *list)
       break;
     }
   }
-  result += strlen("]");
+  result += strlen(")");
   return result;
 }
 
@@ -1068,6 +1127,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
     return buf_write_1(buf, "NULL");
   switch(tag->type.type) {
   case TAG_VOID:    return 0;
+  case TAG_ARRAY:   return buf_inspect_array(buf, &tag->data.array);
   case TAG_BOOL:    return buf_inspect_bool(buf, tag->data.bool);
   case TAG_CALL:
   case TAG_CALL_FN:
@@ -1106,6 +1166,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   assert(tag);
   switch(tag->type.type) {
   case TAG_VOID:     return 0;
+  case TAG_ARRAY:    return buf_inspect_array_size(&tag->data.array);
   case TAG_BOOL:     return buf_inspect_bool_size(tag->data.bool);
   case TAG_CALL:
   case TAG_CALL_FN:

@@ -316,6 +316,7 @@ struct sym {
 };
 
 union tag_data {
+  s_array      array;
   bool         bool;
   s_call       call;
   s_cfn        cfn;

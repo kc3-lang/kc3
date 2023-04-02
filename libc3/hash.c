@@ -21,8 +21,12 @@
 #define HASH_UPDATE_DEF(type)                                          \
   void hash_update_##type (t_hash *hash, type x)                       \
   {                                                                    \
+    const s8 t[] = #type;                                              \
+    assert(hash);                                                      \
+    assert(x);                                                         \
+    hash_update(hash, t, sizeof(t));                                   \
     hash_update(hash, &x, sizeof(x));                                  \
-  }                                                                    \
+  }
 
 void hash_clean (t_hash *hash)
 {
@@ -58,9 +62,23 @@ void hash_update (t_hash *hash, const void *data, uw size)
 
 void hash_update_1 (t_hash *hash, const s8 *p)
 {
+  uw len;
+  const s8 type[] = "s8*";
   assert(hash);
   assert(p);
+  hash_update(hash, type, sizeof(type));
+  len = strlen(p);
+  hash_update(hash, &len, sizeof(len));
   hash_update(hash, p, strlen(p));
+}
+
+void hash_update_array (t_hash *hash, const s_array *a)
+{
+  const s8 type[] = "array";
+  assert(hash);
+  assert(a);
+  hash_update(hash, type, sizeof(type));
+  
 }
 
 void hash_update_bool (t_hash *hash, e_bool x)

@@ -323,6 +323,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     dest->type.type = TAG_TUPLE;
     return env_eval_equal_tuple(env, &a->data.tuple, &b->data.tuple,
                                 &dest->data.tuple);
+  case TAG_ARRAY:
   case TAG_BOOL:
   case TAG_CALL:
   case TAG_CALL_FN:
@@ -427,6 +428,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_call_macro(env, &tag->data.call, dest);
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
+  case TAG_ARRAY:
   case TAG_BOOL:
   case TAG_CFN:
   case TAG_CHARACTER:
