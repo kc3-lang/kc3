@@ -78,6 +78,7 @@ Script interpreter. Under development.
    - with ignore variables
    - boolean operators
    - arrays
+   - lists
    - defmodule
    - structs
    - errors (setjmp, longjmp)
