@@ -291,12 +291,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
        tag_type_to_string(b->type.type));
 }
 
-s_tag * tag_array (s_tag *tag, s_array *a)
+s_tag * tag_array (s_tag *tag, const s_array *a)
 {
   assert(tag);
   assert(a);
   tag_clean(tag);
-  return tag_init_array(a);
+  return tag_init_array(tag, a);
 }
 
 s_tag * tag_bool (s_tag *tag, bool b)
@@ -389,6 +389,7 @@ void tag_clean (s_tag *tag)
 {
   assert(tag);
   switch (tag->type.type) {
+  case TAG_ARRAY:      array_clean(&tag->data.array);     break;
   case TAG_CALL:
   case TAG_CALL_FN:
   case TAG_CALL_MACRO: call_clean(&tag->data.call);       break;
@@ -426,8 +427,12 @@ s_tag * tag_copy (const s_tag *src, s_tag *dest)
   assert(dest);
   switch (src->type.type) {
   case TAG_VAR:
-    error("tag_copy: TAG_VAR");
+    tag_init_var(dest);
+    break;
   case TAG_VOID:
+    break;
+  case TAG_ARRAY:
+    array_copy(&src->data.array, &dest->data.array);
     break;
   case TAG_CALL:
   case TAG_CALL_FN:
@@ -1468,7 +1473,7 @@ s_tag * tag_new_1 (const s8 *p)
   return tag_init_1(tag, p);
 }
 
-s_tag * tag_new_array (s_array *a)
+s_tag * tag_new_array (const s_array *a)
 {
   s_tag *dest;
   assert(a);
@@ -1848,6 +1853,7 @@ s8 * tag_type_to_string (e_tag_type type)
 {
   switch (type) {
   case TAG_VOID: return "void";
+  case TAG_ARRAY: return "array";
   case TAG_BOOL: return "bool";
   case TAG_CALL: return "call";
   case TAG_CALL_FN: return "call_fn";

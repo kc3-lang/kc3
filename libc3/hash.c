@@ -78,11 +78,17 @@ void hash_update_array (t_hash *hash, const s_array *a)
   assert(hash);
   assert(a);
   hash_update(hash, type, sizeof(type));
-  
+  hash_update(hash, &a->dimension, sizeof(a->dimension));
+  hash_update(hash, &a->type, sizeof(a->type));
+  hash_update(hash, &a->sizes, a->dimension * sizeof(uw));
+  hash_update(hash, a->data, a->size);
 }
 
 void hash_update_bool (t_hash *hash, e_bool x)
 {
+  const s8 type[] = "bool";
+  assert(hash);
+  hash_update(hash, type, sizeof(type));
   bool b = x ? 1 : 0;
   hash_update(hash, &b, sizeof(b));
 }
@@ -90,8 +96,10 @@ void hash_update_bool (t_hash *hash, e_bool x)
 
 void hash_update_call (t_hash *hash, const s_call *call)
 {
+  const s8 type[] = "call";
   assert(hash);
   assert(call);
+  hash_update(hash, type, sizeof(type));
   hash_update_ident(hash, &call->ident);
   hash_update_list(hash, call->arguments);
 }
@@ -114,10 +122,10 @@ HASH_UPDATE_DEF(f64)
 
 void hash_update_fact (t_hash *hash, const s_fact *fact)
 {
-  const u8 type = 3;
+  const s8 type[] = "fact";
   assert(hash);
   assert(fact);
-  hash_update(hash, &type, sizeof(type));
+  hash_update(hash, type, sizeof(type));
   hash_update_tag(hash, fact->subject);
   hash_update_tag(hash, fact->predicate);
   hash_update_tag(hash, fact->object);
@@ -125,10 +133,18 @@ void hash_update_fact (t_hash *hash, const s_fact *fact)
 
 void hash_update_fn (t_hash *hash, const s_fn *fn)
 {
+  uw count = 0;
+  const s_fn *f;
   const s8 type[] = "fn";
   assert(hash);
   assert(fn);
   hash_update(hash, type, sizeof(type));
+  f = fn;
+  while (f) {
+    count++;
+    f = f->next_clause;
+  }
+  hash_update_uw(hash, count);
   while (fn) {
     hash_update_list(hash, fn->pattern);
     hash_update_list(hash, fn->algo);
@@ -164,9 +180,12 @@ void hash_update_integer (t_hash *hash, const s_integer *i)
 /* FIXME: circular lists */
 void hash_update_list (t_hash *hash, const s_list *list)
 {
+  uw count;
   const s_list *last;
   const s8 type[] = "list";
   hash_update(hash, type, sizeof(type));
+  count = list_length(list);
+  hash_update_uw(hash, count);
   if (list) {
     while (list) {
       hash_update_tag(hash, &list->tag);
@@ -224,6 +243,7 @@ void hash_update_tag (t_hash *hash, const s_tag *tag)
   hash_update_u64(hash, tag->type.type);
   switch (tag->type.type) {
   case TAG_VOID: break;
+  case TAG_ARRAY: hash_update_array(hash, &tag->data.array);   break;
   case TAG_BOOL: hash_update_bool(hash, tag->data.bool);       break;
   case TAG_CALL:
   case TAG_CALL_FN:
@@ -273,3 +293,4 @@ HASH_UPDATE_DEF(u8)
 HASH_UPDATE_DEF(u16)
 HASH_UPDATE_DEF(u32)
 HASH_UPDATE_DEF(u64)
+HASH_UPDATE_DEF(uw)
