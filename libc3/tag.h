@@ -33,6 +33,7 @@ extern s_tag g_tag_last;
 /* Stack allocation compatible functions */
 s_tag * tag_init (s_tag *tag);
 s_tag * tag_init_1 (s_tag *tag, const s8 *p);
+s_tag * tag_init_array (s_tag *tag, s_array *a);
 s_tag * tag_init_bool (s_tag *tag, bool p);
 s_tag * tag_init_call (s_tag *tag, const s_call *call);
 s_tag * tag_init_character (s_tag *tag, character c);
@@ -65,7 +66,7 @@ void    tag_clean (s_tag *tag);
 /* Constructors, call tag_delete after use */
 s_tag * tag_new ();
 s_tag * tag_new_1 (const s8 *p);
-s_tag * tag_new_str (s8 *free, uw size, const s8 *p);
+s_tag * tag_new_array (s_array *a);
 s_tag * tag_new_bool (bool p);
 s_tag * tag_new_character (character c);
 s_tag * tag_new_copy (const s_tag *src);
@@ -76,6 +77,7 @@ s_tag * tag_new_s8 (s8 i);
 s_tag * tag_new_s16 (s16 i);
 s_tag * tag_new_s32 (s32 i);
 s_tag * tag_new_s64 (s64 i);
+s_tag * tag_new_str (s8 *free, uw size, const s8 *p);
 s_tag * tag_new_tuple_2 (s_tag *a, s_tag *b);
 s_tag * tag_new_u8 (u8 i);
 s_tag * tag_new_u16 (u16 i);
@@ -100,6 +102,7 @@ s8 *    tag_type_to_string (e_tag_type type);
 
 /* Modifiers */
 s_tag * tag_1 (s_tag *tag, const s8 *p);
+s_tag * tag_array (s_tag *tag, s_array *a);
 s_tag * tag_bool (s_tag *tag, bool p);
 s_tag * tag_cast_integer_to_s16 (s_tag *tag);
 s_tag * tag_cast_integer_to_s32 (s_tag *tag);

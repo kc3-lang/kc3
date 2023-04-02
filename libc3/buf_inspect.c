@@ -24,6 +24,54 @@ sw buf_inspect_str_reserved_size (const s_str *x);
 sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *x);
 sw buf_inspect_sym_reserved_size (const s_sym *x);
 
+sw buf_inspect_array (s_buf *buf, const s_array *a)
+{
+  uw *address;
+  sw (* buf_inspect) (s_buf *buf, void *x);
+  sw i = 0;
+  sw r;
+  sw result;
+  assert(a);
+  assert(buf);
+  address = calloc(a->dimension, sizeof(uw));
+  while (i >= 0 && i < a->dimension && address[i] < a->sizes[i]) {
+    if (i < a->dimension - 1) {
+      if (! address[i]) {
+        if ((r = buf_write_1(buf, "[")) < 0)
+          return r;
+        result += r;
+      }
+    }
+    if (i == a->dimension - 1) {
+      switch (a->type) {
+      case TAG_VOID:
+        assert(! "void array");
+        errx(1, "void array");
+        return -1;
+      case TAG_ARRAY:
+        inspect = buf_inspect_array;
+        break;
+      case TAG_BOOL:
+        inspect = buf_inspect_bool;
+        break;
+      }
+      if ((r = inspect(buf, array_data(a, address))) < 0)
+        return r;
+      result += r;
+    }
+    if (i == a->dimension - 1) {
+      while (i >= 0 && address[i] == a->sizes[i]) {
+        if ((r = buf_write_1(buf, "],\n")) < 0)
+          return r;
+        result += r;
+        i--;
+      }
+      break;
+    }
+    i++;
+  }
+}
+
 sw buf_inspect_bool (s_buf *buf, e_bool x)
 {
   if (x)

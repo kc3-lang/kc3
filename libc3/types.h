@@ -56,7 +56,8 @@ typedef enum {
 
 typedef enum {
   TAG_VOID = 0,
-  TAG_BOOL = 1,
+  TAG_ARRAY,
+  TAG_BOOL,
   TAG_CALL,
   TAG_CALL_FN,
   TAG_CALL_MACRO,
@@ -139,6 +140,7 @@ typedef u64          t_skiplist_height;
 /* 1 */
 struct array {
   uw dimension;
+  e_tag_type type;
   uw *sizes;
   uw size;
   void *data;

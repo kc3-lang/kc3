@@ -291,6 +291,14 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
        tag_type_to_string(b->type.type));
 }
 
+s_tag * tag_array (s_tag *tag, s_array *a)
+{
+  assert(tag);
+  assert(a);
+  tag_clean(tag);
+  return tag_init_array(a);
+}
+
 s_tag * tag_bool (s_tag *tag, bool b)
 {
   assert(tag);
@@ -807,6 +815,15 @@ s_tag * tag_init_1 (s_tag *tag, const s8 *p)
     return NULL;
   }
   buf_clean(&buf);
+  return tag;
+}
+
+s_tag * tag_init_array (s_tag *tag, const s_array *a)
+{
+  assert(tag);
+  assert(a);
+  tag->type.type = TAG_ARRAY;
+  array_copy(a, &tag->data.array);
   return tag;
 }
 
@@ -1450,6 +1467,15 @@ s_tag * tag_new_1 (const s8 *p)
   tag = calloc(1, sizeof(s_tag));
   return tag_init_1(tag, p);
 }
+
+s_tag * tag_new_array (s_array *a)
+{
+  s_tag *dest;
+  assert(a);
+  if (! (dest = malloc(sizeof(s_tag))))
+    errx(1, "tag_new_array: out of memory");
+  return tag_init_array(dest, a);
+} 
 
 s_tag * tag_new_copy (const s_tag *src)
 {
