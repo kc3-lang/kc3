@@ -26,9 +26,9 @@
 {C3./, :operator_precedence, 2}
 {C3./, :operator_associativity, :left}
 {C3.first, :fn, fn {
- ([a | _b]) { a }
+ ((a | _b)) { a }
  ({a, _b}) { a }
  ({a, _b, _c}) { a }
  ({a, _b, _c, _d}) { a }
 }}
-%{hash: 0xE5824A30B59B37EB}
+%{hash: 0x375C2B0E1EE24CD3}
