@@ -1438,23 +1438,50 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
   return r;
 }
 
-sw buf_parse_s (s_buf *buf, void *s, u8 size, const s_str *base)
+sw buf_parse_s (s_buf *buf, void *s, u8 size)
+{
+  e_bool negative = false;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "-")) < 0)
+    goto clean;
+  result += r;
+  if (r > 0)
+    negative = true;
+  if ((r = buf_read_1(buf, "0x")) < 0)
+    goto restore;
+  result += r;
+  if (r > 0) {
+    if ((r = buf_parse_s_hex(buf, s, size, negative)) <= 0)
+      goto restore;
+    result += r;
+    goto ok;
+  }
+ ok:
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_s_base (s_buf *buf, void *s, u8 size, const s_str *base,
+                     bool negative)
 {
   character c;
   sw i;
   sw r;
   sw result = 0;
   s_buf_save save;
-  e_bool negative = false;
   s64 tmp = 0;
   assert(buf);
   assert(s);
   assert(size);
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "-")) < 0)
-    goto clean;
-  if (r > 0)
-    negative = true;
   while ((r = buf_parse_character_from_str(buf, base, &c)) > 0) {
     i = str_character_index(base, c);
     if (tmp > (((1 << 64) - 1) + base->size - 1) / base->size) {
@@ -1462,8 +1489,10 @@ sw buf_parse_s (s_buf *buf, void *s, u8 size, const s_str *base)
       goto restore;
     }
     tmp *= base->size;
-    if (tmp > (1 << 64) - 1 - i)
+    if (tmp > (1 << 64) - 1 - i) {
+      warnx("buf_parse_s: integer overflow");
       goto restore;
+    }
     tmp += i;
   }
   if (negative)
@@ -1475,6 +1504,43 @@ sw buf_parse_s (s_buf *buf, void *s, u8 size, const s_str *base)
   buf_save_clean(buf, &save);
   return r;
 }
+
+sw buf_parse_u_base (s_buf *buf, void *s, u8 size, const s_str *base)
+{
+  character c;
+  sw i;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s64 tmp = 0;
+  assert(buf);
+  assert(s);
+  assert(size);
+  buf_save_init(buf, &save);
+  while ((r = buf_parse_character_from_str(buf, base, &c)) > 0) {
+    i = str_character_index(base, c);
+    if (tmp > (((1 << 65) - 1) + base->size - 1) / base->size) {
+      warnx("buf_parse_u: integer overflow");
+      goto restore;
+    }
+    tmp *= base->size;
+    if (tmp > (1 << 65) - 1 - i) {
+      warnx("buf_parse_u: integer overflow");
+      goto restore;
+    }
+    tmp += i;
+  }
+  memcpy(s, &tmp + 8 - size, size);
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_s8 (s_buf *buf, s8 *dest)
+{
+  return buf_parse_s(buf, dest, 1, "
 
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {
