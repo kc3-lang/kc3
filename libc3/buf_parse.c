@@ -1445,14 +1445,35 @@ sw buf_parse_s (s_buf *buf, void *s, u8 size, const s_str *base)
   sw r;
   sw result = 0;
   s_buf_save save;
+  e_bool negative = false;
   s64 tmp = 0;
   assert(buf);
   assert(s);
   assert(size);
   buf_save_init(buf, &save);
-  while ((r = buf_parse_character_from_str(buf, base, &c)) > 0)
+  if ((r = buf_read_1(buf, "-")) < 0)
+    goto clean;
+  if (r > 0)
+    negative = true;
+  while ((r = buf_parse_character_from_str(buf, base, &c)) > 0) {
     i = str_character_index(base, c);
-  tmp *= base->size;
+    if (tmp > (((1 << 64) - 1) + base->size - 1) / base->size) {
+      warnx("buf_parse_s: integer overflow");
+      goto restore;
+    }
+    tmp *= base->size;
+    if (tmp > (1 << 64) - 1 - i)
+      goto restore;
+    tmp += i;
+  }
+  if (negative)
+    tmp = -tmp;
+  memcpy(s, &tmp + 8 - size, size);
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_str (s_buf *buf, s_str *dest)
