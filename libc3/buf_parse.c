@@ -1440,8 +1440,11 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
 
 sw buf_parse_s (s_buf *buf, void *s, u8 size)
 {
-  s_str bases[] = {{NULL, 16, "01234567890abcdef"},
-                   {NULL, 16, "01234567890ABCDEF"}};
+  const s_str bases_bin[] = {{NULL, 2, "01"}};
+  const s_str bases_oct[] = {{NULL, 8, "01234567"}};
+  const s_str bases_dec[] = {{NULL, 10, "0123456789"}};
+  const s_str bases_hex[] = {{NULL, 16, "01234567890abcdef"},
+                             {NULL, 16, "01234567890ABCDEF"}};
   e_bool negative = false;
   sw r;
   sw result = 0;
@@ -1452,15 +1455,36 @@ sw buf_parse_s (s_buf *buf, void *s, u8 size)
   result += r;
   if (r > 0)
     negative = true;
-  if ((r = buf_read_1(buf, "0x")) < 0)
+  if ((r = buf_read_1(buf, "0b")) < 0)
     goto restore;
   result += r;
   if (r > 0) {
-    if ((r = buf_parse_s_base(buf, s, size, bases, negative)) <= 0)
+    if ((r = buf_parse_s_bases(buf, s, size, bases_bin, negative)) <= 0)
       goto restore;
     result += r;
     goto ok;
   }
+  if ((r = buf_read_1(buf, "0o")) < 0)
+    goto restore;
+  result += r;
+  if (r > 0) {
+    if ((r = buf_parse_s_bases(buf, s, size, bases_oct, negative)) <= 0)
+      goto restore;
+    result += r;
+    goto ok;
+  }
+  if ((r = buf_read_1(buf, "0x")) < 0)
+    goto restore;
+  result += r;
+  if (r > 0) {
+    if ((r = buf_parse_s_bases(buf, s, size, bases_hex, negative)) <= 0)
+      goto restore;
+    result += r;
+    goto ok;
+  }
+  if ((r = buf_parse_s_bases(buf, s, size, bases_dec, negative)) <= 0)
+    goto restore;
+  result += r;
  ok:
   r = result;
   goto clean;
@@ -1484,13 +1508,13 @@ sw buf_parse_s_bases (s_buf *buf, void *s, u8 size, const s_str *bases,
   assert(s);
   assert(size);
   buf_save_init(buf, &save);
-  while ((r = buf_parse_s_bases_digit(buf, bases, bases_count)) >= 0) {
-    if (tmp > (((1 << 64) - 1) + base->size - 1) / base->size) {
+  while ((r = buf_parse_digit(buf, bases, bases_count)) >= 0) {
+    if (tmp > (((1 << (size * 8)) - 1) + base->size - 1) / base->size) {
       warnx("buf_parse_s: integer overflow");
       goto restore;
     }
     tmp *= base->size;
-    if (tmp > (1 << 64) - 1 - r) {
+    if (tmp > (1 << (size * 8)) - 1 - r) {
       warnx("buf_parse_s: integer overflow");
       goto restore;
     }
@@ -1506,12 +1530,25 @@ sw buf_parse_s_bases (s_buf *buf, void *s, u8 size, const s_str *bases,
   return r;
 }
 
-sw buf_parse_s_bases_digit (s_buf *buf, s_str *bases, uw bases_count)
+sw buf_parse_digit (s_buf *buf, s_str *bases, uw bases_count)
 {
   character c;
-  uw i;
+  sw digit;
+  uw i = 0;
+  uw j;
   sw r;
-  if ((r = buf_parse_character_utf8(buf, &c)) < 0)
+  assert(buf);
+  assert(bases);
+  assert(bases_count);
+  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
+    return r;
+  while (i < bases_count &&
+         (digit = str_character_position(bases[i], c)) < 0)
+    i++;
+  if (digit >= 0)
+    if ((r = buf_parse_character_utf8(buf, &c)) <= 0)
+      return r;
+  return digit;
 }
 
 sw buf_parse_u_base (s_buf *buf, void *s, u8 size, const s_str *base)
