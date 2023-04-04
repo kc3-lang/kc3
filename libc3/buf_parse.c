@@ -1484,8 +1484,7 @@ sw buf_parse_s_bases (s_buf *buf, void *s, u8 size, const s_str *bases,
   assert(s);
   assert(size);
   buf_save_init(buf, &save);
-  while ((r = buf_parse_s_bases_character(buf, bases, bases_count,
-                                          &c)) >= 0) {
+  while ((r = buf_parse_s_bases_digit(buf, bases, bases_count)) >= 0) {
     if (tmp > (((1 << 64) - 1) + base->size - 1) / base->size) {
       warnx("buf_parse_s: integer overflow");
       goto restore;
@@ -1505,6 +1504,14 @@ sw buf_parse_s_bases (s_buf *buf, void *s, u8 size, const s_str *bases,
  clean:
   buf_save_clean(buf, &save);
   return r;
+}
+
+sw buf_parse_s_bases_digit (s_buf *buf, s_str *bases, uw bases_count)
+{
+  character c;
+  uw i;
+  sw r;
+  if ((r = buf_parse_character_utf8(buf, &c)) < 0)
 }
 
 sw buf_parse_u_base (s_buf *buf, void *s, u8 size, const s_str *base)
