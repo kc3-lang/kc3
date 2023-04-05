@@ -1849,6 +1849,228 @@ ffi_type tag_to_ffi_type(const s_tag *tag)
   return ffi_type_void;
 }
 
+void * tag_to_pointer (s_tag *tag, const s_sym *type)
+{
+  if (type == sym_1("tag"))
+    return tag;
+  switch (tag->type.type) {
+  case TAG_VOID:
+    if (type == sym_1("void"))
+      return NULL;
+    goto invalid_type;
+  case TAG_ARRAY:
+    if (type == sym_1("array"))
+      return tag->data.array.data;
+    goto invalid_type;
+  case TAG_BOOL:
+    if (type == sym_1("bool"))
+      return &tag->data.bool;
+    goto invalid_type;
+  case TAG_CALL:
+    if (type == sym_1("call"))
+      return &tag->data.call;
+    goto invalid_type;
+  case TAG_CALL_FN:
+    if (type == sym_1("call_fn"))
+      return &tag->data.call;
+    goto invalid_type;
+  case TAG_CALL_MACRO:
+    if (type == sym_1("call_macro"))
+      return &tag->data.call;
+    goto invalid_type;
+  case TAG_CFN:
+    if (type == sym_1("cfn"))
+      return &tag->data.cfn;
+    goto invalid_type;
+  case TAG_CHARACTER:
+    if (type == sym_1("character"))
+      return &tag->data.character;
+    goto invalid_type;
+  case TAG_F32:
+    if (type == sym_1("f32"))
+      return &tag->data.f32;
+    goto invalid_type;
+  case TAG_F64:
+    if (type == sym_1("f64"))
+      return &tag->data.f64;
+    goto invalid_type;
+  case TAG_FN:
+    if (type == sym_1("fn"))
+      return tag->data.fn;
+    goto invalid_type;
+  case TAG_IDENT:
+    if (type == sym_1("ident"))
+      return &tag->data.ident;
+    goto invalid_type;
+  case TAG_INTEGER:
+    if (type == sym_1("integer"))
+      return &tag->data.integer;
+    goto invalid_type;
+  case TAG_S64:
+    if (type == sym_1("s64"))
+      return &tag->data.s64;
+    goto invalid_type;
+  case TAG_S32:
+    if (type == sym_1("s32"))
+      return &tag->data.s32;
+    goto invalid_type;
+  case TAG_S16:
+    if (type == sym_1("s16"))
+      return &tag->data.s16;
+    goto invalid_type;
+  case TAG_S8:
+    if (type == sym_1("s8"))
+      return &tag->data.s8;
+    goto invalid_type;
+  case TAG_U8:
+    if (type == sym_1("u8"))
+      return &tag->data.u8;
+    goto invalid_type;
+  case TAG_U16:
+    if (type == sym_1("u16"))
+      return &tag->data.u16;
+    goto invalid_type;
+  case TAG_U32:
+    if (type == sym_1("u32"))
+      return &tag->data.u32;
+    goto invalid_type;
+  case TAG_U64:
+    if (type == sym_1("u64"))
+      return &tag->data.u64;
+    goto invalid_type;
+  case TAG_LIST:
+    if (type == sym_1("list"))
+      return tag->data.list;
+    goto invalid_type;
+  case TAG_PTAG:
+    if (type == sym_1("ptag"))
+      return (void *) tag->data.ptag;
+    goto invalid_type;
+  case TAG_QUOTE:
+    if (type == sym_1("quote"))
+      return &tag->data.quote;
+    goto invalid_type;
+  case TAG_STR:
+    if (type == sym_1("str"))
+      return &tag->data.str;
+    if (type == sym_1("char*"))
+      return (void *) tag->data.str.ptr.ps8;
+    goto invalid_type;
+  case TAG_SYM:
+    if (type == sym_1("sym"))
+      return (void *) tag->data.sym;
+    if (type == sym_1("str"))
+      return (void *) &tag->data.sym->str;
+    if (type == sym_1("char*"))
+      return (void *) tag->data.sym->str.ptr.ps8;
+    goto invalid_type;
+  case TAG_TUPLE:
+    if (type == sym_1("tuple"))
+      return &tag->data.tuple;
+    goto invalid_type;
+  case TAG_VAR:
+    goto invalid_type;
+  }
+  assert(! "cfn_tag_to_ffi_value: invalid tag type");
+  errx(1, "cfn_tag_to_ffi_value: invalid tag type");
+  return NULL;
+ invalid_type:
+  warnx("cfn_tag_to_ffi_value: cannot cast %s to %s",
+        cfn_tag_type_to_sym(tag->type.type)->str.ptr.ps8,
+        type->str.ptr.ps8);
+  return NULL;  
+}
+
+f_buf_parse tag_type_to_buf_parse (e_tag_type type)
+{
+  switch (type) {
+  case TAG_VOID:
+    buf_save_clean(buf, &save);
+    errx(1, "void array element type");
+    return -1;
+  case TAG_ARRAY:
+    parse = (f_buf_parse) buf_parse_array;
+    break;
+  case TAG_BOOL:
+    parse = (f_buf_parse) buf_parse_bool;
+    break;
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO:
+    parse = (f_buf_parse) buf_parse_call;
+    break;
+  case TAG_CFN:
+    parse = (f_buf_parse) buf_parse_cfn;
+    break;
+  case TAG_CHARACTER:
+    parse = (f_buf_parse) buf_parse_character;
+    break;
+  case TAG_F32:
+    parse = (f_buf_parse) buf_parse_f32;
+    break;
+  case TAG_F64:
+    parse = (f_buf_parse) buf_parse_f64;
+    break;
+  case TAG_FN:
+    parse = (f_buf_parse) buf_parse_fn;
+    break;
+  case TAG_IDENT:
+    parse = (f_buf_parse) buf_parse_ident;
+    break;
+  case TAG_INTEGER:
+    parse = (f_buf_parse) buf_parse_integer;
+    break;
+  case TAG_S64:
+    parse = (f_buf_parse) buf_parse_s64;
+    break;
+  case TAG_S32:
+    parse = (f_buf_parse) buf_parse_s32;
+    break;
+  case TAG_S16:
+    parse = (f_buf_parse) buf_parse_s16;
+    break;
+  case TAG_S8:
+    parse = (f_buf_parse) buf_parse_s8;
+    break;
+  case TAG_U8:
+    parse = (f_buf_parse) buf_parse_u8;
+    break;
+  case TAG_U16:
+    parse = (f_buf_parse) buf_parse_u16;
+    break;
+  case TAG_U32:
+    parse = (f_buf_parse) buf_parse_u32;
+    break;
+  case TAG_U64:
+    parse = (f_buf_parse) buf_parse_u64;
+    break;
+  case TAG_LIST:
+    parse = (f_buf_parse) buf_parse_list;
+    break;
+  case TAG_PTAG:
+    parse = (f_buf_parse) buf_parse_ptag;
+    break;
+  case TAG_QUOTE:
+    parse = (f_buf_parse) buf_parse_quote;
+    break;
+  case TAG_STR:
+    parse = (f_buf_parse) buf_parse_str;
+    break;
+  case TAG_SYM:
+    parse = (f_buf_parse) buf_parse_sym;
+    break;
+  case TAG_TUPLE:
+    parse = (f_buf_parse) buf_parse_tuple;
+    break;
+  case TAG_VAR:
+    parse = (f_buf_parse) buf_parse_var;
+    break;
+  }
+  assert(! "tag_type_to_buf_parse: invalid tag type");
+  err(1, "tag_type_to_buf_parse: invalid tag type");
+  return NULL;
+}
+
 s8 * tag_type_to_string (e_tag_type type)
 {
   switch (type) {

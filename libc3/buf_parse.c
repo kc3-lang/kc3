@@ -19,7 +19,7 @@
 
 sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest);
 
-sw buf_parse_array (s_buf *buf, s_array *a)
+sw buf_parse_array (s_buf *buf, s_array *dest)
 {
   uw *address;
   uw i = 0;
@@ -29,6 +29,7 @@ sw buf_parse_array (s_buf *buf, s_array *a)
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_tag tag;
   s_array tmp;
   const s_sym *type;
   assert(buf);
@@ -45,11 +46,7 @@ sw buf_parse_array (s_buf *buf, s_array *a)
   result += r;
   tmp.type = sym_to_e_tag_type(type);
   item_size = tag_type_size(tmp.type);
-  if (! (item = calloc(1, item_size))) {
-    buf_save_clean(buf, &save);
-    err(1, "buf_parse_array");
-    return -1;
-  }
+  item = tag_to_pointer(&tag, type);
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto clean;
   result += r;
@@ -75,91 +72,47 @@ sw buf_parse_array (s_buf *buf, s_array *a)
     err(1, "buf_parse_array");
   if (! (tmp.sizes = calloc(tmp.dimension, sizeof(uw))))
     err(1, "buf_parse_array");
-  switch (tmp.type) {
-  case TAG_VOID:
-    buf_save_clean(buf, &save);
-    errx(1, "void array element type");
-    return -1;
-  case TAG_ARRAY:
-    parse = (f_buf_parse) buf_parse_array;
-    break;
-  case TAG_BOOL:
-    parse = (f_buf_parse) buf_parse_bool;
-    break;
-  case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
-    parse = (f_buf_parse) buf_parse_call;
-    break;
-  case TAG_CFN:
-    parse = (f_buf_parse) buf_parse_cfn;
-    break;
-  case TAG_CHARACTER:
-    parse = (f_buf_parse) buf_parse_character;
-    break;
-  case TAG_F32:
-    parse = (f_buf_parse) buf_parse_f32;
-    break;
-  case TAG_F64:
-    parse = (f_buf_parse) buf_parse_f64;
-    break;
-  case TAG_FN:
-    parse = (f_buf_parse) buf_parse_fn;
-    break;
-  case TAG_IDENT:
-    parse = (f_buf_parse) buf_parse_ident;
-    break;
-  case TAG_INTEGER:
-    parse = (f_buf_parse) buf_parse_integer;
-    break;
-  case TAG_S64:
-    parse = (f_buf_parse) buf_parse_s64;
-    break;
-  case TAG_S32:
-    parse = (f_buf_parse) buf_parse_s32;
-    break;
-  case TAG_S16:
-    parse = (f_buf_parse) buf_parse_s16;
-    break;
-  case TAG_S8:
-    parse = (f_buf_parse) buf_parse_s8;
-    break;
-  case TAG_U8:
-    parse = (f_buf_parse) buf_parse_u8;
-    break;
-  case TAG_U16:
-    parse = (f_buf_parse) buf_parse_u16;
-    break;
-  case TAG_U32:
-    parse = (f_buf_parse) buf_parse_32;
-    break;
-  case TAG_U64:
-    parse = (f_buf_parse) buf_parse_u64;
-    break;
-  case TAG_LIST:
-    parse = (f_buf_parse) buf_parse_list;
-    break;
-  case TAG_PTAG:
-    parse = (f_buf_parse) buf_parse_ptag;
-    break;
-  case TAG_QUOTE:
-    parse = (f_buf_parse) buf_parse_quote;
-    break;
-  case TAG_STR:
-    parse = (f_buf_parse) buf_parse_str;
-    break;
-  case TAG_SYM:
-    parse = (f_buf_parse) buf_parse_sym;
-    break;
-  case TAG_TUPLE:
-    parse = (f_buf_parse) buf_parse_tuple;
-    break;
-  case TAG_VAR:
-    parse = (f_buf_parse) buf_parse_var;
-    break;
+  parse = tag_type_to_buf_parse(tmp.type);
   while (i < tmp.dimension) {
     if (i == tmp.dimension - 1) {
-      if ((r = parse(buf, 
+      if ((r = parse(buf, item)) <= 0)
+        goto restore;
+      result += r;
+      address[i]++;
+      while ((r = buf_read_1(buf, "]")) > 0) {
+        result += r;
+        if (! tmp.sizes[i])
+          tmp.sizes[i] = address[i];
+        else
+          if (tmp.sizes[i] != address[i]) {
+            assert(! "dimension size mismatch");
+            errx(1, "dimension size mismatch");
+            return -1;
+          }
+        if (! i) {
+          dest = tmp;
+          r = result;
+          goto clean;
+        }
+        i--;
+      }
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_read_1(buf, ",")) <= 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      while (i < (tmp.dimension - 1) && (r = buf_read_1(buf, "[")) > 0) {
+        result += r;
+        i++;
+      }
+      if (r < 0)
+        goto restore;
+    }
+
     i++;
   }
  restore:
@@ -662,6 +615,27 @@ sw buf_parse_digit_hex (s_buf *buf, u8 *dest)
     return 0;
   r = buf_ignore(buf, r);
   return r;
+}
+
+sw buf_parse_digit (s_buf *buf, s_str *bases, uw bases_count)
+{
+  character c;
+  sw digit;
+  uw i = 0;
+  uw j;
+  sw r;
+  assert(buf);
+  assert(bases);
+  assert(bases_count);
+  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
+    return r;
+  while (i < bases_count &&
+         (digit = str_character_position(bases[i], c)) < 0)
+    i++;
+  if (digit >= 0)
+    if ((r = buf_parse_character_utf8(buf, &c)) <= 0)
+      return r;
+  return digit;
 }
 
 sw buf_parse_digit_oct (s_buf *buf, u8 *dest)
@@ -1495,8 +1469,8 @@ sw buf_parse_s (s_buf *buf, void *s, u8 size)
   return r;
 }
 
-sw buf_parse_s_bases (s_buf *buf, void *s, u8 size, const s_str *bases,
-                      uw bases_count, bool negative)
+sw buf_parse_s_bases (s_buf *buf, void *dest, u8 size,
+                      const s_str *bases, uw bases_count, bool negative)
 {
   character c;
   sw i;
@@ -1530,25 +1504,9 @@ sw buf_parse_s_bases (s_buf *buf, void *s, u8 size, const s_str *bases,
   return r;
 }
 
-sw buf_parse_digit (s_buf *buf, s_str *bases, uw bases_count)
+sw buf_parse_s8 (s_buf *buf, s8 *dest)
 {
-  character c;
-  sw digit;
-  uw i = 0;
-  uw j;
-  sw r;
-  assert(buf);
-  assert(bases);
-  assert(bases_count);
-  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
-    return r;
-  while (i < bases_count &&
-         (digit = str_character_position(bases[i], c)) < 0)
-    i++;
-  if (digit >= 0)
-    if ((r = buf_parse_character_utf8(buf, &c)) <= 0)
-      return r;
-  return digit;
+  return buf_parse_s(buf, dest, 1);
 }
 
 sw buf_parse_u_base (s_buf *buf, void *s, u8 size, const s_str *base)

@@ -63,6 +63,15 @@ sw buf_parse_integer (s_buf *buf, s_integer *dest);
 sw buf_parse_list (s_buf *buf, s_list **dest);
 sw buf_parse_module_name (s_buf *buf, const s_sym **dest);
 sw buf_parse_new_tag (s_buf *buf, s_tag **dest);
+sw buf_parse_quote (s_buf *buf, s_quote *dest);
+sw buf_parse_s (s_buf *buf, void *dest, u8 size);
+sw buf_parse_s_bases (s_buf *buf, void *dest, u8 size,
+                      const s_str *bases, uw bases_count,
+                      bool negative);
+sw buf_parse_s8 (s_buf *buf, s8 *dest);
+sw buf_parse_s16 (s_buf *buf, s16 *dest);
+sw buf_parse_s32 (s_buf *buf, s32 *dest);
+sw buf_parse_s64 (s_buf *buf, s64 *dest);
 sw buf_parse_str (s_buf *buf, s_str *dest);
 sw buf_parse_str_character (s_buf *buf, character *dest);
 sw buf_parse_str_character_unicode (s_buf *buf, character *dest);
@@ -86,6 +95,13 @@ sw buf_parse_tag_str_u8 (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_sym (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest);
 sw buf_parse_tuple (s_buf *buf, s_tuple *dest);
+sw buf_parse_u (s_buf *buf, void *dest, u8 size);
+sw buf_parse_u_bases (s_buf *buf, void *dest, u8 size,
+                      const s_str *bases, uw bases_count);
+sw buf_parse_u8 (s_buf *buf, u8 *dest);
+sw buf_parse_u16 (s_buf *buf, u16 *dest);
+sw buf_parse_u32 (s_buf *buf, u32 *dest);
+sw buf_parse_u64 (s_buf *buf, u64 *dest);
 sw buf_parse_u64_hex (s_buf *buf, u64 *dest);
 
 #endif /* BUF_PARSE_H */
