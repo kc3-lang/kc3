@@ -77,6 +77,7 @@ sw buf_parse_str_character_unicode (s_buf *buf, character *dest);
 sw buf_parse_str_u8 (s_buf *buf, u8 *dest);
 sw buf_parse_sym (s_buf *buf, const s_sym **dest);
 sw buf_parse_tag (s_buf *buf, s_tag *dest);
+sw buf_parse_tag_array (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_bool (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call_op (s_buf *buf, s_tag *dest);
@@ -94,9 +95,9 @@ sw buf_parse_tag_str_u8 (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_sym (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest);
 sw buf_parse_tuple (s_buf *buf, s_tuple *dest);
-sw buf_parse_u (s_buf *buf, void *dest, u8 size);
-sw buf_parse_u_bases (s_buf *buf, void *dest, u8 size,
-                      const s_str *bases, uw bases_count);
+sw buf_parse_u (s_buf *buf, u8 size, void *dest);
+sw buf_parse_u_bases (s_buf *buf, const s_str *bases, uw bases_count,
+                      u8 size, void *dest);
 sw buf_parse_u8 (s_buf *buf, u8 *dest);
 sw buf_parse_u16 (s_buf *buf, u16 *dest);
 sw buf_parse_u32 (s_buf *buf, u32 *dest);

@@ -1,16 +1,16 @@
 quote fn (x) { x }
 quote fn (x, _y) { x }
-quote fn ([x | _y]) { x }
+quote fn ((x | _y)) { x }
 quote fn {
-  ([]) { :error }
-  ([x | _y]) { x }
+  (()) { :error }
+  ((x | _y)) { x }
   (_) { :error }
 }
 fn (x) { x }
 fn (x, _y) { x }
-fn ([x | _y]) { x }
+fn ((x | _y)) { x }
 fn {
-  ([]) { :error }
-  ([x | _y]) { x }
+  (()) { :error }
+  ((x | _y)) { x }
   (_) { :error }
 }

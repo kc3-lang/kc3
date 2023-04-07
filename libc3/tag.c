@@ -1971,11 +1971,11 @@ void * tag_to_pointer (s_tag *tag, const s_sym *type)
   case TAG_VAR:
     goto invalid_type;
   }
-  assert(! "cfn_tag_to_ffi_value: invalid tag type");
-  errx(1, "cfn_tag_to_ffi_value: invalid tag type");
+  assert(! "tag_to_pointer: invalid tag type");
+  errx(1, "tag_to_pointer: invalid tag type");
   return NULL;
  invalid_type:
-  warnx("cfn_tag_to_ffi_value: cannot cast %s to %s",
+  warnx("tag_to_pointer: cannot cast %s to %s",
         tag_type_to_sym(tag->type.type)->str.ptr.ps8,
         type->str.ptr.ps8);
   return NULL;  

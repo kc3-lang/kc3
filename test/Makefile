@@ -69,6 +69,9 @@ test_debug: libc3_test_debug
 test_ic3:
 	IC3=${SRC_TOP}/ic3/ic3 time ./ic3_test
 
+test_ic3_debug:
+	IC3=${SRC_TOP}/ic3/ic3_debug time ./ic3_test
+
 test_valgrind: libc3_test
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./libc3_test
 

@@ -142,3 +142,98 @@ const s_sym * sym_new (const s_str *src)
   g_sym_list = sym_list_new(sym, g_sym_list);
   return sym;
 }
+
+ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
+{
+  if (sym == sym_1("tag"))
+    return &ffi_type_pointer;
+  if (sym == sym_1("&result")) {
+    if (! result_type)
+      warnx("invalid result type: &result");
+    return result_type;
+  }
+  if (sym == sym_1("s8"))
+    return &ffi_type_sint8;
+  if (sym == sym_1("s16"))
+    return &ffi_type_sint16;
+  if (sym == sym_1("s32"))
+    return &ffi_type_sint32;
+  if (sym == sym_1("s64"))
+    return &ffi_type_sint64;
+  if (sym == sym_1("sw"))
+    return &ffi_type_sint;
+  if (sym == sym_1("u8"))
+    return &ffi_type_uint8;
+  if (sym == sym_1("u16"))
+    return &ffi_type_uint16;
+  if (sym == sym_1("u32"))
+    return &ffi_type_uint32;
+  if (sym == sym_1("u64"))
+    return &ffi_type_uint64;
+  if (sym == sym_1("uw"))
+    return &ffi_type_uint;
+  assert(! "sym_to_ffi_type: unknown type");
+  errx(1, "sym_to_ffi_type: unknown type");
+  return NULL;
+}
+
+e_tag_type sym_to_tag_type (const s_sym *sym)
+{
+  if (sym == sym_1("void"))
+    return TAG_VOID;
+  if (sym == sym_1("bool"))
+    return TAG_BOOL;
+  if (sym == sym_1("call"))
+    return TAG_CALL;
+  if (sym == sym_1("call_fn"))
+    return TAG_CALL_FN;
+  if (sym == sym_1("call_macro"))
+    return TAG_CALL_MACRO;
+  if (sym == sym_1("cfn"))
+    return TAG_CFN;
+  if (sym == sym_1("character"))
+    return TAG_CHARACTER;
+  if (sym == sym_1("f32"))
+    return TAG_F32;
+  if (sym == sym_1("f64"))
+    return TAG_F64;
+  if (sym == sym_1("fn"))
+    return TAG_FN;
+  if (sym == sym_1("ident"))
+    return TAG_IDENT;
+  if (sym == sym_1("integer"))
+    return TAG_INTEGER;
+  if (sym == sym_1("s64"))
+    return TAG_S64;
+  if (sym == sym_1("s32"))
+    return TAG_S32;
+  if (sym == sym_1("s16"))
+    return TAG_S16;
+  if (sym == sym_1("s8"))
+    return TAG_S8;
+  if (sym == sym_1("u8"))
+    return TAG_U8;
+  if (sym == sym_1("u16"))
+    return TAG_U16;
+  if (sym == sym_1("u32"))
+    return TAG_U32;
+  if (sym == sym_1("u64"))
+    return TAG_U64;
+  if (sym == sym_1("list"))
+    return TAG_LIST;
+  if (sym == sym_1("ptag"))
+    return TAG_PTAG;
+  if (sym == sym_1("quote"))
+    return TAG_QUOTE;
+  if (sym == sym_1("str"))
+    return TAG_STR;
+  if (sym == sym_1("sym"))
+    return TAG_SYM;
+  if (sym == sym_1("tag"))
+    return TAG_VOID;
+  if (sym == sym_1("tuple"))
+    return TAG_TUPLE;
+  assert(! "sym_to_tag_type: unknown type");
+  errx(1, "sym_to_tag_type: unknown type: %s", sym->str.ptr.ps8);
+  return -1;
+}
