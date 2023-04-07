@@ -29,6 +29,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_buf_save save_data;
   s_tag tag;
   s_array tmp;
   const s_sym *type;
@@ -57,6 +58,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
     goto clean;
   result += r;
   tmp.dimension = 0;
+  buf_save_init(buf, &save_data);
   while ((r = buf_read_1(buf, "[")) > 0) {
     result += r;
     tmp.dimension++;
@@ -69,52 +71,117 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   i = tmp.dimension;
   tmp.dimension++;
   if (! (address = calloc(tmp.dimension, sizeof(uw))))
-    err(1, "buf_parse_array");
-  if (! (tmp.sizes = calloc(tmp.dimension, sizeof(uw))))
-    err(1, "buf_parse_array");
+    err(1, "buf_parse_array: address");
+  if (! (tmp.dimensions = calloc(tmp.dimension, sizeof(s_array_dimension))))
+    err(1, "buf_parse_array: tmp.dimensions");
   parse = tag_type_to_buf_parse(tmp.type);
-  while (i < tmp.dimension) {
-    if (i == tmp.dimension - 1) {
-      if ((r = parse(buf, item)) <= 0)
-        goto restore;
-      result += r;
-      address[i]++;
-      while ((r = buf_read_1(buf, "]")) > 0) {
-        result += r;
-        if (! tmp.sizes[i])
-          tmp.sizes[i] = address[i];
+  while (i == tmp.dimension - 1) {
+    if ((r = parse(buf, item)) <= 0)
+      goto restore;
+    address[i]++;
+    while ((r = buf_read_1(buf, "]")) > 0) {
+      if (! tmp.dimensions[i].count) {
+        tmp.dimensions[i].count = address[i];
+        if (i == tmp.dimension - 1)
+          tmp.dimensions[i].item_size = item_size;
         else
-          if (tmp.sizes[i] != address[i]) {
-            assert(! "dimension size mismatch");
-            errx(1, "dimension size mismatch");
-            return -1;
-          }
-        if (! i) {
-          dest = tmp;
-          r = result;
-          goto clean;
+          tmp.dimensions[i].item_size = tmp.dimensions[i + 1].count *
+            tmp.dimensions[i + 1].item_size;
+      }
+      else
+        if (tmp.dimensions[i].count != address[i]) {
+          assert(! "buf_parse_array: dimension size mismatch");
+          errx(1, "buf_parse_array: dimension size mismatch");
+          return -1;
         }
-        i--;
-      }
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
-      result += r;
-      if ((r = buf_read_1(buf, ",")) <= 0)
-        goto restore;
-      result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
-      result += r;
-      while (i < (tmp.dimension - 1) && (r = buf_read_1(buf, "[")) > 0) {
-        result += r;
-        i++;
-      }
-      if (r < 0)
-        goto restore;
+      if (! i)
+        goto parse_data;
+      i--;
     }
-
-    i++;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    if ((r = buf_read_1(buf, ",")) <= 0)
+      goto restore;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    while (i < (tmp.dimension - 1) && (r = buf_read_1(buf, "[")) > 0) {
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      i++;
+    }
+    if (r < 0)
+      goto restore;
   }
+ parse_data:
+  i = 0;
+  tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
+  if (! (tmp.data = calloc(1, tmp.size))) {
+    buf_save_clean(buf, &save_data);
+    buf_save_clean(buf, &save);
+    err(1, "buf_parse_array: tmp.data");
+    return -1;
+  }
+  buf_save_restore_rpos(buf, &save_data);
+  i = 0;
+  while ((r = buf_read_1(buf, "[")) > 0) {
+    result += r;
+    i++;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
+  if (r < 0)
+    goto restore;
+  if (i != tmp.dimension - 1) {
+    buf_save_clean(buf, &save);
+    buf_save_clean(buf, &save_data);
+    assert(! "buf_parse_array: parse_data: dimension mismatch");
+    errx(1, "buf_parse_array: parse_data: dimension mismatch");
+    return -1;
+  }
+  while (i == tmp.dimension - 1) {
+    if ((r = parse(buf, item)) <= 0)
+      goto restore;
+    result += r;
+    address[i]++;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    while ((r = buf_read_1(buf, "]")) > 0) {
+      result += r;
+      if (tmp.dimensions[i].count != address[i]) {
+        assert(! "buf_parse_array: dimension size mismatch");
+        errx(1, "buf_parse_array: dimension size mismatch");
+        return -1;
+      }
+      if (! i) {
+        *dest = tmp;
+        r = result;
+        goto clean;
+      }
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      i--;
+    }
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, ",")) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    while (i < (tmp.dimension - 1) && (r = buf_read_1(buf, "[")) > 0) {
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      i++;
+    }
+    if (r < 0)
+      goto restore;
+  }
+  
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
@@ -617,12 +684,11 @@ sw buf_parse_digit_hex (s_buf *buf, u8 *dest)
   return r;
 }
 
-sw buf_parse_digit (s_buf *buf, s_str *bases, uw bases_count)
+sw buf_parse_digit (s_buf *buf, const s_str *bases, uw bases_count)
 {
   character c;
   sw digit;
   uw i = 0;
-  uw j;
   sw r;
   assert(buf);
   assert(bases);
@@ -630,10 +696,10 @@ sw buf_parse_digit (s_buf *buf, s_str *bases, uw bases_count)
   if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
     return r;
   while (i < bases_count &&
-         (digit = str_character_position(bases[i], c)) < 0)
+         (digit = str_character_position(bases + i, c)) < 0)
     i++;
   if (digit >= 0)
-    if ((r = buf_parse_character_utf8(buf, &c)) <= 0)
+    if ((r = buf_read_character_utf8(buf, &c)) <= 0)
       return r;
   return digit;
 }
@@ -1412,13 +1478,13 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
   return r;
 }
 
-sw buf_parse_s (s_buf *buf, void *s, u8 size)
+sw buf_parse_s (s_buf *buf, u8 size, void *dest)
 {
-  const s_str bases_bin[] = {{NULL, 2, "01"}};
-  const s_str bases_oct[] = {{NULL, 8, "01234567"}};
-  const s_str bases_dec[] = {{NULL, 10, "0123456789"}};
-  const s_str bases_hex[] = {{NULL, 16, "01234567890abcdef"},
-                             {NULL, 16, "01234567890ABCDEF"}};
+  const s_str bases_bin[] = {{{NULL}, 2, {"01"}}};
+  const s_str bases_oct[] = {{{NULL}, 8, {"01234567"}}};
+  const s_str bases_dec[] = {{{NULL}, 10, {"0123456789"}}};
+  const s_str bases_hex[] = {{{NULL}, 16, {"01234567890abcdef"}},
+                             {{NULL}, 16, {"01234567890ABCDEF"}}};
   e_bool negative = false;
   sw r;
   sw result = 0;
@@ -1433,7 +1499,8 @@ sw buf_parse_s (s_buf *buf, void *s, u8 size)
     goto restore;
   result += r;
   if (r > 0) {
-    if ((r = buf_parse_s_bases(buf, s, size, bases_bin, negative)) <= 0)
+    if ((r = buf_parse_s_bases(buf, bases_bin, 1, negative, size,
+                               dest)) <= 0)
       goto restore;
     result += r;
     goto ok;
@@ -1442,7 +1509,8 @@ sw buf_parse_s (s_buf *buf, void *s, u8 size)
     goto restore;
   result += r;
   if (r > 0) {
-    if ((r = buf_parse_s_bases(buf, s, size, bases_oct, negative)) <= 0)
+    if ((r = buf_parse_s_bases(buf, bases_oct, 1, negative, size,
+                               dest)) <= 0)
       goto restore;
     result += r;
     goto ok;
@@ -1451,12 +1519,14 @@ sw buf_parse_s (s_buf *buf, void *s, u8 size)
     goto restore;
   result += r;
   if (r > 0) {
-    if ((r = buf_parse_s_bases(buf, s, size, bases_hex, negative)) <= 0)
+    if ((r = buf_parse_s_bases(buf, bases_hex, 2, negative, size,
+                               dest)) <= 0)
       goto restore;
     result += r;
     goto ok;
   }
-  if ((r = buf_parse_s_bases(buf, s, size, bases_dec, negative)) <= 0)
+  if ((r = buf_parse_s_bases(buf, bases_dec, 1, negative, size,
+                             dest)) <= 0)
     goto restore;
   result += r;
  ok:
@@ -1469,26 +1539,28 @@ sw buf_parse_s (s_buf *buf, void *s, u8 size)
   return r;
 }
 
-sw buf_parse_s_bases (s_buf *buf, void *dest, u8 size,
-                      const s_str *bases, uw bases_count, bool negative)
+sw buf_parse_s_bases (s_buf *buf, const s_str *bases, uw bases_count,
+                      bool negative, u8 size, void *dest)
 {
-  character c;
-  sw i;
   sw r;
   sw result = 0;
   s_buf_save save;
   s64 tmp = 0;
   assert(buf);
-  assert(s);
+  assert(bases);
+  assert(bases_count);
   assert(size);
+  assert(dest);
   buf_save_init(buf, &save);
   while ((r = buf_parse_digit(buf, bases, bases_count)) >= 0) {
-    if (tmp > (((1 << (size * 8)) - 1) + base->size - 1) / base->size) {
+    result += r;
+    if (tmp > ((((s64) 1 << (size * 8)) - 1) +
+               (s64) bases[0].size - 1) / (s64) bases[0].size) {
       warnx("buf_parse_s: integer overflow");
       goto restore;
     }
-    tmp *= base->size;
-    if (tmp > (1 << (size * 8)) - 1 - r) {
+    tmp *= bases[0].size;
+    if (tmp > (s64) (1 << (size * 8)) - 1 - r) {
       warnx("buf_parse_s: integer overflow");
       goto restore;
     }
@@ -1496,7 +1568,9 @@ sw buf_parse_s_bases (s_buf *buf, void *dest, u8 size,
   }
   if (negative)
     tmp = -tmp;
-  memcpy(s, &tmp + 8 - size, size);
+  memcpy(dest, &tmp + 8 - size, size);
+  r = result;
+  goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
@@ -1506,45 +1580,8 @@ sw buf_parse_s_bases (s_buf *buf, void *dest, u8 size,
 
 sw buf_parse_s8 (s_buf *buf, s8 *dest)
 {
-  return buf_parse_s(buf, dest, 1);
+  return buf_parse_s(buf, 1, dest);
 }
-
-sw buf_parse_u_base (s_buf *buf, void *s, u8 size, const s_str *base)
-{
-  character c;
-  sw i;
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s64 tmp = 0;
-  assert(buf);
-  assert(s);
-  assert(size);
-  buf_save_init(buf, &save);
-  while ((r = buf_parse_character_from_str(buf, base, &c)) > 0) {
-    i = str_character_index(base, c);
-    if (tmp > (((1 << 65) - 1) + base->size - 1) / base->size) {
-      warnx("buf_parse_u: integer overflow");
-      goto restore;
-    }
-    tmp *= base->size;
-    if (tmp > (1 << 65) - 1 - i) {
-      warnx("buf_parse_u: integer overflow");
-      goto restore;
-    }
-    tmp += i;
-  }
-  memcpy(s, &tmp + 8 - size, size);
- restore:
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
-sw buf_parse_s8 (s_buf *buf, s8 *dest)
-{
-  return buf_parse_s(buf, dest, 1, "
 
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {

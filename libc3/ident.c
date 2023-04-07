@@ -53,10 +53,10 @@ e_bool ident_has_reserved_characters (const s_ident *ident)
   sw r;
   s_str stra;
   str_init(&stra, NULL, ident->sym->str.size, ident->sym->str.ptr.p);
-  if ((r = str_read_character(&stra, &c)) > 0) {
+  if ((r = str_read_character_utf8(&stra, &c)) > 0) {
     if (ident_first_character_is_reserved(c))
       return true;
-    while ((r = str_read_character(&stra, &c)) > 0) {
+    while ((r = str_read_character_utf8(&stra, &c)) > 0) {
       if (ident_character_is_reserved(c))
         return true;
     }

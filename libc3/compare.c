@@ -40,9 +40,9 @@ s8 compare_array (const s_array *a, const s_array *b)
   if (a->dimension > b->dimension)
     return 1;
   while (i < a->dimension) {
-    if (a->sizes[i] < b->sizes[i])
+    if (a->dimensions[i].count < b->dimensions[i].count)
       return -1;
-    if (a->sizes[i] > b->sizes[i])
+    if (a->dimensions[i].count > b->dimensions[i].count)
       return 1;
     i++;
   }

@@ -88,6 +88,7 @@ typedef enum {
 /* structs */
 typedef struct arg                     s_arg;
 typedef struct array                   s_array;
+typedef struct array_dimension         s_array_dimension;
 typedef struct binding                 s_binding;
 typedef struct buf                     s_buf;
 typedef struct buf_save                s_buf_save;
@@ -134,16 +135,16 @@ typedef SHA1_CTX     t_hash;
 typedef const s_tag *p_tag;
 typedef u64          t_skiplist_height;
 
+/* function typedefs */
+typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
+
 #define CHARACTER_MAX S32_MAX
 #define SKIPLIST_HEIGHT_MAX U64_MAX
 
 /* 1 */
-struct array {
-  uw dimension;
-  e_tag_type type;
-  uw *sizes;
-  uw size;
-  void *data;
+struct array_dimension {
+  uw count;
+  uw item_size;
 };
 
 struct buf_save {
@@ -232,6 +233,14 @@ struct unwind_protect {
 };
 
 /* 2 */
+struct array {
+  uw dimension;
+  e_tag_type type;
+  s_array_dimension *dimensions;
+  uw size;
+  void *data;
+};
+
 struct binding {
   const s_sym *name;
   const s_tag *value;

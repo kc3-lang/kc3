@@ -35,11 +35,12 @@ sw buf_inspect_array (s_buf *buf, const s_array *a)
   assert(buf);
   switch (a->type) {
   case TAG_VOID:
-    assert(! "void array");
-    errx(1, "void array");
+    assert(! "buf_inspect_array: void array");
+    errx(1, "buf_inspect_array: void array");
     return -1;
   case TAG_ARRAY:
-    inspect = (f_buf_inspect) buf_inspect_array;
+    assert(! "buf_inspect_array: array of array");
+    errx(1, "buf_inspect_array: array of array");
     break;
   case TAG_BOOL:
     inspect = (f_buf_inspect) buf_inspect_bool;
@@ -111,7 +112,7 @@ sw buf_inspect_array (s_buf *buf, const s_array *a)
       result += r;
     }
     if (i == a->dimension - 1) {
-      while (i >= 0 && address[i] == a->sizes[i]) {
+      while (i >= 0 && address[i] == a->dimensions[i].count) {
         if ((r = buf_write_1(buf, "],\n")) < 0)
           return r;
         result += r;
@@ -1014,11 +1015,11 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *x)
     return r;
   str_init_str(&s, x);
   while (1) {
-    if ((r = str_read_character(&s, &c)) > 0) {
+    if ((r = str_read_character_utf8(&s, &c)) > 0) {
       if ((r = buf_inspect_str_character(buf, c)) < 0)
         return r;
     }
-    else if ((r = str_read(&s, &b)) == 1) {
+    else if ((r = str_read_u8(&s, &b)) == 1) {
       if ((r = buf_inspect_str_byte(buf, b)) < 0)
         return r;
     }
@@ -1044,9 +1045,9 @@ sw buf_inspect_str_reserved_size (const s_str *x)
   size = 2 * quote_size;
   str_init_str(&s, x);
   while (1) {
-    if ((r = str_read_character(&s, &c)) > 0)
+    if ((r = str_read_character_utf8(&s, &c)) > 0)
       size += buf_inspect_str_character_size(c);
-    else if (r && (r = str_read(&s, &b)) == 1)
+    else if (r && (r = str_read_u8(&s, &b)) == 1)
       size += buf_inspect_str_byte_size;
     else if (r < 0)
       return -1;

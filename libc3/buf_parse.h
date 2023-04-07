@@ -30,8 +30,7 @@
  * dest is untouched.
  */
 
-typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
-
+sw buf_parse_array (s_buf *buf, s_array *dest);
 sw buf_parse_bool (s_buf *buf, bool *dest);
 sw buf_parse_call (s_buf *buf, s_call *dest);
 sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);
@@ -63,11 +62,11 @@ sw buf_parse_integer (s_buf *buf, s_integer *dest);
 sw buf_parse_list (s_buf *buf, s_list **dest);
 sw buf_parse_module_name (s_buf *buf, const s_sym **dest);
 sw buf_parse_new_tag (s_buf *buf, s_tag **dest);
+sw buf_parse_ptag (s_buf *buf, p_tag *dest);
 sw buf_parse_quote (s_buf *buf, s_quote *dest);
-sw buf_parse_s (s_buf *buf, void *dest, u8 size);
-sw buf_parse_s_bases (s_buf *buf, void *dest, u8 size,
-                      const s_str *bases, uw bases_count,
-                      bool negative);
+sw buf_parse_s (s_buf *buf, u8 size, void *dest);
+sw buf_parse_s_bases (s_buf *buf, const s_str *bases, uw bases_count,
+                      bool negative, u8 size, void *dest);
 sw buf_parse_s8 (s_buf *buf, s8 *dest);
 sw buf_parse_s16 (s_buf *buf, s16 *dest);
 sw buf_parse_s32 (s_buf *buf, s32 *dest);
@@ -103,5 +102,7 @@ sw buf_parse_u16 (s_buf *buf, u16 *dest);
 sw buf_parse_u32 (s_buf *buf, u32 *dest);
 sw buf_parse_u64 (s_buf *buf, u64 *dest);
 sw buf_parse_u64_hex (s_buf *buf, u64 *dest);
+sw buf_parse_var (s_buf *buf, void *dest);
+sw buf_parse_void (s_buf *buf, void *dest);
 
 #endif /* BUF_PARSE_H */

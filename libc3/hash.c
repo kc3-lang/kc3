@@ -73,13 +73,18 @@ void hash_update_1 (t_hash *hash, const s8 *p)
 
 void hash_update_array (t_hash *hash, const s_array *a)
 {
+  uw i = 0;
   const s8 type[] = "array";
   assert(hash);
   assert(a);
   hash_update(hash, type, sizeof(type));
   hash_update(hash, &a->dimension, sizeof(a->dimension));
   hash_update(hash, &a->type, sizeof(a->type));
-  hash_update(hash, &a->sizes, a->dimension * sizeof(uw));
+  while (i < a->dimension) {
+    hash_update(hash, &a->dimensions[i].count,
+                sizeof(a->dimensions[i].count));
+    i++;
+  }
   hash_update(hash, a->data, a->size);
 }
 

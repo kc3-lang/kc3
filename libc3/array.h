@@ -17,7 +17,8 @@
 
 void      array_clean (s_array *a);
 s_array * array_copy (const s_array *src, s_array *dest);
-s_array * array_init (s_array *a, uw dimension, const uw *sizes);
+s_array * array_init (s_array *a, e_tag_type type, uw dimension,
+                      const uw *sizes);
 void *    array_data (const s_array *a, const uw *address);
 
 #endif /* ARRAY_H */

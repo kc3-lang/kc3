@@ -30,6 +30,26 @@ e_bool str_character_is_reserved (character c)
     c == '\\';
 }
 
+sw str_character_position (const s_str *str, character c)
+{
+  uw i = 0;
+  sw r;
+  s_str tmp;
+  character tmp_c;
+  assert(str);
+  tmp = *str;
+  while (tmp.size && (r = str_read_character_utf8(&tmp, &tmp_c)) > 0) {
+    if (c == tmp_c)
+      return i;
+    i++;
+  }
+  if (r < 0) {
+    assert(! "str_character_position: invalid str character utf8");
+    errx(1, "str_character_position: invalid str character utf8");
+  }
+  return -1;
+}
+
 void str_clean (s_str *str)
 {
   assert(str);
@@ -54,7 +74,7 @@ e_bool str_has_reserved_characters (const s_str *src)
   sw r;
   s_str stra;
   str_init(&stra, NULL, src->size, src->ptr.p);
-  while ((r = str_read_character(&stra, &c)) > 0) {
+  while ((r = str_read_character_utf8(&stra, &c)) > 0) {
     if (str_character_is_reserved(c))
       return true;
   }
@@ -301,7 +321,7 @@ sw str_peek_character (const s_str *str, character *c)
   return -1;
 }
 
-sw str_read (s_str *str, u8 *c)
+sw str_read_u8 (s_str *str, u8 *c)
 {
   if (str->size <= 0)
     return 0;
@@ -311,7 +331,7 @@ sw str_read (s_str *str, u8 *c)
   return 1;
 }
 
-sw str_read_character (s_str *str, character *c)
+sw str_read_character_utf8 (s_str *str, character *c)
 {
   sw size;
   if (str->size == 0)

@@ -89,17 +89,18 @@ s_tag * tag_new_var ();
 void tag_delete (s_tag *tag);
 
 /* Observers */
-u64         tag_hash_u64 (const s_tag *tag);
-uw          tag_hash_uw (const s_tag *tag);
-s_str *     tag_inspect (const s_tag *tag, s_str *dest);
-e_bool      tag_is_bound_var (const s_tag *tag);
-e_bool      tag_is_number (const s_tag *tag);
-e_bool      tag_is_unbound_var (const s_tag *tag);
-s8          tag_number_compare (const s_tag *a, const s_tag *b);
-sw          tag_size (const s_tag *tag);
-sw          tag_type_size (e_tag_type type);
-f_buf_parse tag_type_to_buf_parse (e_tag_type type);
-s8 *        tag_type_to_string (e_tag_type type);
+u64           tag_hash_u64 (const s_tag *tag);
+uw            tag_hash_uw (const s_tag *tag);
+s_str *       tag_inspect (const s_tag *tag, s_str *dest);
+e_bool        tag_is_bound_var (const s_tag *tag);
+e_bool        tag_is_number (const s_tag *tag);
+e_bool        tag_is_unbound_var (const s_tag *tag);
+s8            tag_number_compare (const s_tag *a, const s_tag *b);
+sw            tag_size (const s_tag *tag);
+sw            tag_type_size (e_tag_type type);
+f_buf_parse   tag_type_to_buf_parse (e_tag_type type);
+s8 *          tag_type_to_string (e_tag_type type);
+const s_sym * tag_type_to_sym (e_tag_type tag_type);
 
 /* Modifiers */
 s_tag *  tag_1 (s_tag *tag, const s8 *p);

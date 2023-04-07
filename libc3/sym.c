@@ -89,7 +89,7 @@ e_bool sym_has_reserved_characters (const s_sym *sym)
   sw r;
   s_str stra;
   str_init(&stra, NULL, sym->str.size, sym->str.ptr.p);
-  while ((r = str_read_character(&stra, &c)) > 0) {
+  while ((r = str_read_character_utf8(&stra, &c)) > 0) {
     if (sym_character_is_reserved(c))
       return true;
   }

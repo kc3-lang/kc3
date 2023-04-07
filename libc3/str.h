@@ -53,6 +53,7 @@ void str_delete (s_str *str);
 /* Observers */
 character     str_character_escape (character c);
 e_bool        str_character_is_reserved (character c);
+sw            str_character_position (const s_str *str, character c);
 s_str *       str_copy (const s_str *src, s_str *dest);
 e_bool        str_has_reserved_characters (const s_str *str);
 s_str *       str_inspect (const s_str *x, s_str *dest);
@@ -75,7 +76,7 @@ s_ident *     str_to_ident (const s_str *src, s_ident *dest);
 const s_sym * str_to_sym (const s_str *src);
 
 /* Modifiers */
-sw str_read (s_str *str, u8 *p);
-sw str_read_character (s_str *str, character *c);
+sw str_read_u8 (s_str *str, u8 *p);
+sw str_read_character_utf8 (s_str *str, character *c);
 
 #endif /* STR_H */
