@@ -177,63 +177,117 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
   return NULL;
 }
 
-e_tag_type sym_to_tag_type (const s_sym *sym)
+bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 {
-  if (sym == sym_1("void"))
-    return TAG_VOID;
-  if (sym == sym_1("bool"))
-    return TAG_BOOL;
-  if (sym == sym_1("call"))
-    return TAG_CALL;
-  if (sym == sym_1("call_fn"))
-    return TAG_CALL_FN;
-  if (sym == sym_1("call_macro"))
-    return TAG_CALL_MACRO;
-  if (sym == sym_1("cfn"))
-    return TAG_CFN;
-  if (sym == sym_1("character"))
-    return TAG_CHARACTER;
-  if (sym == sym_1("f32"))
-    return TAG_F32;
-  if (sym == sym_1("f64"))
-    return TAG_F64;
-  if (sym == sym_1("fn"))
-    return TAG_FN;
-  if (sym == sym_1("ident"))
-    return TAG_IDENT;
-  if (sym == sym_1("integer"))
-    return TAG_INTEGER;
-  if (sym == sym_1("s64"))
-    return TAG_S64;
-  if (sym == sym_1("s32"))
-    return TAG_S32;
-  if (sym == sym_1("s16"))
-    return TAG_S16;
-  if (sym == sym_1("s8"))
-    return TAG_S8;
-  if (sym == sym_1("u8"))
-    return TAG_U8;
-  if (sym == sym_1("u16"))
-    return TAG_U16;
-  if (sym == sym_1("u32"))
-    return TAG_U32;
-  if (sym == sym_1("u64"))
-    return TAG_U64;
-  if (sym == sym_1("list"))
-    return TAG_LIST;
-  if (sym == sym_1("ptag"))
-    return TAG_PTAG;
-  if (sym == sym_1("quote"))
-    return TAG_QUOTE;
-  if (sym == sym_1("str"))
-    return TAG_STR;
-  if (sym == sym_1("sym"))
-    return TAG_SYM;
-  if (sym == sym_1("tag"))
-    return TAG_VOID;
-  if (sym == sym_1("tuple"))
-    return TAG_TUPLE;
+  if (sym == sym_1("void")) {
+    *dest = TAG_VOID;
+    return true;
+  }
+  if (sym == sym_1("bool")) {
+    *dest = TAG_BOOL;
+    return true;
+  }
+  if (sym == sym_1("call")) {
+    *dest = TAG_CALL;
+    return true;
+  }
+  if (sym == sym_1("call_fn")) {
+    *dest = TAG_CALL_FN;
+    return true;
+  }
+  if (sym == sym_1("call_macro")) {
+    *dest = TAG_CALL_MACRO;
+    return true;
+  }
+  if (sym == sym_1("cfn")) {
+    *dest = TAG_CFN;
+    return true;
+  }
+  if (sym == sym_1("character")) {
+    *dest = TAG_CHARACTER;
+    return true;
+  }
+  if (sym == sym_1("f32")) {
+    *dest = TAG_F32;
+    return true;
+  }
+  if (sym == sym_1("f64")) {
+    *dest = TAG_F64;
+    return true;
+  }
+  if (sym == sym_1("fn")) {
+    *dest = TAG_FN;
+    return true;
+  }
+  if (sym == sym_1("ident")) {
+    *dest = TAG_IDENT;
+    return true;
+  }
+  if (sym == sym_1("integer")) {
+    *dest = TAG_INTEGER;
+    return true;
+  }
+  if (sym == sym_1("s64")) {
+    *dest = TAG_S64;
+    return true;
+  }
+  if (sym == sym_1("s32")) {
+    *dest = TAG_S32;
+    return true;
+  }
+  if (sym == sym_1("s16")) {
+    *dest = TAG_S16;
+    return true;
+  }
+  if (sym == sym_1("s8")) {
+    *dest = TAG_S8;
+    return true;
+  }
+  if (sym == sym_1("u8")) {
+    *dest = TAG_U8;
+    return true;
+  }
+  if (sym == sym_1("u16")) {
+    *dest = TAG_U16;
+    return true;
+  }
+  if (sym == sym_1("u32")) {
+    *dest = TAG_U32;
+    return true;
+  }
+  if (sym == sym_1("u64")) {
+    *dest = TAG_U64;
+    return true;
+  }
+  if (sym == sym_1("list")) {
+    *dest = TAG_LIST;
+    return true;
+  }
+  if (sym == sym_1("ptag")) {
+    *dest = TAG_PTAG;
+    return true;
+  }
+  if (sym == sym_1("quote")) {
+    *dest = TAG_QUOTE;
+    return true;
+  }
+  if (sym == sym_1("str")) {
+    *dest = TAG_STR;
+    return true;
+  }
+  if (sym == sym_1("sym")) {
+    *dest = TAG_SYM;
+    return true;
+  }
+  if (sym == sym_1("tag")) {
+    *dest = TAG_VOID;
+    return true;
+  }
+  if (sym == sym_1("tuple")) {
+    *dest = TAG_TUPLE;
+    return true;
+  }
   assert(! "sym_to_tag_type: unknown type");
   errx(1, "sym_to_tag_type: unknown type: %s", sym->str.ptr.ps8);
-  return -1;
+  return false;
 }

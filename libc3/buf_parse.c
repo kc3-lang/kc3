@@ -45,7 +45,8 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   if ((r = buf_parse_sym(buf, &type)) <= 0)
     goto restore;
   result += r;
-  tmp.type = sym_to_tag_type(type);
+  if (! sym_to_tag_type(type, &tmp.type))
+    goto restore;
   item_size = tag_type_size(tmp.type);
   item = tag_to_pointer(&tag, type);
   if ((r = buf_ignore_spaces(buf)) < 0)
@@ -473,6 +474,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
 sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
 {
   s_list *arg_types = NULL;
+  s_str name_str;
+  const s_sym *name_sym;
   sw r;
   sw result = 0;
   const s_sym *result_type;
@@ -493,17 +496,19 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_str(buf, &tmp.name)) <= 0)
+  if ((r = buf_parse_str(buf, &name_str)) <= 0)
     goto restore;
   result += r;
+  if (! (name_sym = str_to_sym(&name_str)))
+    goto restore;
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
   if ((r = buf_parse_cfn_arg_types(buf, &arg_types)) <= 0)
     goto restore;
   result += r;
-  tmp.arity = list_length(arg_types);
-  cfn_set_type(&tmp, arg_types, result_type);
+  cfn_init(&tmp, name_sym, arg_types, result_type);
+  cfn_prep_cif(&tmp);
   cfn_link(&tmp);
   *dest = tmp;
   r = result;

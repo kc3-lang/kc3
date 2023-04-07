@@ -49,7 +49,11 @@
 
 #define C3_EXT ".c3"
 
+/* stack-allocation compatible functions */
 void c3_init (s_env *env);
 void c3_clean (s_env *env);
+
+/* debug */
+void c3_break ();
 
 #endif /* C3_H */

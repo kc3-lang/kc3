@@ -114,7 +114,7 @@ void hash_update_cfn (t_hash *hash, const s_cfn *cfn)
   assert(hash);
   assert(cfn);
   hash_update(hash, type, sizeof(type));
-  hash_update_str(hash, &cfn->name);
+  hash_update_sym(hash, cfn->name);
   hash_update_list(hash, cfn->arg_types);
 }
 

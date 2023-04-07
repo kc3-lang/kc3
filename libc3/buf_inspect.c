@@ -270,7 +270,7 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
   sw r;
   sw result = 0;
   assert(cfn);
-  if ((r = buf_inspect_str(buf, &cfn->name)) < 0)
+  if ((r = buf_inspect_str(buf, &cfn->name->str)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "(")) < 0)
@@ -299,7 +299,7 @@ sw buf_inspect_cfn_size (const s_cfn *cfn)
   sw r;
   sw result = 0;
   assert(cfn);
-  if ((r = buf_inspect_str_size(&cfn->name)) < 0)
+  if ((r = buf_inspect_str_size(&cfn->name->str)) < 0)
     return r;
   result += r;
   result += strlen("(");

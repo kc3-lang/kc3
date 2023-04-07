@@ -10,9 +10,18 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <assert.h>
+#include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "c3.h"
+
+void c3_break ()
+{
+  assert(! "break");
+  errx(1, "break");
+  exit(1);
+}
 
 void c3_init (s_env *env)
 {

@@ -16,7 +16,8 @@
 #include "types.h"
 
 /* stack-allocation compatible functions */
-s_cfn * cfn_init (s_cfn *cfn);
+s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
+                  const s_sym *result_type);
 void    cfn_clean (s_cfn *cfn);
 
 /* observers */
@@ -25,7 +26,6 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest);
 
 /* modifiers */
 s_cfn * cfn_link (s_cfn *cfn);
-s_cfn * cfn_set_type (s_cfn *cfn, s_list *arg_types,
-                      const s_sym *result_type);
+s_cfn * cfn_prep_cif (s_cfn *cfn);
 
 #endif /* CFN_H */

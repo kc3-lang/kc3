@@ -302,7 +302,7 @@ struct call {
 };
 
 struct cfn {
-  s_str name;
+  const s_sym *name;
   union {
     void (*f) (void);
     void *p;
