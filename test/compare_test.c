@@ -135,8 +135,8 @@ void compare_test_f64 ()
 void compare_test_list ()
 {
   COMPARE_TEST_LIST(NULL, NULL, 0);
-  COMPARE_TEST_LIST(list_1("[A, B]"), list_1("[A, C]"), -1);
-  COMPARE_TEST_LIST(list_1("[A, C]"), list_1("[A, B]"), 1);
+  COMPARE_TEST_LIST(list_1("(A, B)"), list_1("(A, C)"), -1);
+  COMPARE_TEST_LIST(list_1("(A, C)"), list_1("(A, B)"), 1);
 }
 
 void compare_test_str ()

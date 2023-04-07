@@ -55,8 +55,8 @@ void facts_test_add ()
     ":a",
     "A",
     "a",
-    "[]",
-    "[[], []]",
+    "()",
+    "((), ())",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -108,8 +108,8 @@ void facts_test_dump_file ()
     ":a",
     "A",
     "a",
-    "[]",
-    "[[], []]",
+    "()",
+    "((), ())",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -158,8 +158,8 @@ void facts_test_find ()
     ":a",
     "A",
     "a",
-    "[]",
-    "[[], []]",
+    "()",
+    "((), ())",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -228,8 +228,8 @@ void facts_test_load ()
     ":a",
     "A",
     "a",
-    "[]",
-    "[[], []]",
+    "()",
+    "((), ())",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -251,10 +251,10 @@ void facts_test_load ()
   };
   s_fact fact;
   s_facts facts;
+  s_str path;
   facts_init(&facts);
-  TEST_EQ(facts_load_file(&facts,
-                          "facts_test_load_file.facts"),
-          742);
+  str_init_1(&path, NULL, "facts_test_load_file.facts");
+  TEST_EQ(facts_load_file(&facts, &path), 742);
   TEST_EQ(facts_count(&facts), 23);
   while (p[i]) {
     fact_test_init_1(&fact, p[i]);
@@ -273,8 +273,8 @@ void facts_test_log_add ()
     ":a",
     "A",
     "a",
-    "[]",
-    "[[], []]",
+    "()",
+    "((), ())",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -323,8 +323,8 @@ void facts_test_log_remove ()
     ":a",
     "A",
     "a",
-    "[]",
-    "[[], []]",
+    "()",
+    "((), ())",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -402,8 +402,8 @@ void facts_test_open_file ()
     ":a",
     "A",
     "a",
-    "[]",
-    "[[], []]",
+    "()",
+    "((), ())",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -428,8 +428,8 @@ void facts_test_open_file ()
     ":b",
     "B",
     "b",
-    "[[]]",
-    "[[[]], []]",
+    "(())",
+    "((()), ())",
     "{:b, :b}",
     "{{:b, :b}, {:c, :d}}",
     "{b, b}",
@@ -452,14 +452,14 @@ void facts_test_open_file ()
   sw r;
   s_fact fact;
   s_facts facts;
+  s_str path;
   if ((r = system("cp facts_test_open_file.1.in.facts facts_test_open_file.1.facts")) < 0)
     err(1, "%s:%i: cp", __FILE__, __LINE__);
   if (r > 0)
     errx(1, "%s:%i: cp", __FILE__, __LINE__);
   facts_init(&facts);
-  TEST_EQ(facts_open_file(&facts,
-                          "facts_test_open_file.1.facts"),
-          798);
+  str_init_1(&path, NULL, "facts_test_open_file.1.facts");
+  TEST_EQ(facts_open_file(&facts, &path), 798);
   TEST_EQ(facts_count(&facts), 23);
   i = 0;
   while (p[i]) {
@@ -488,9 +488,8 @@ void facts_test_open_file ()
     err(1, "%s:%i: cp", __FILE__, __LINE__);
   if (r > 0)
     errx(1, "%s:%i: cp", __FILE__, __LINE__);
-  TEST_EQ(facts_open_file(&facts,
-                          "facts_test_open_file.2.facts"),
-          1531);
+  str_init_1(&path, NULL, "facts_test_open_file.2.facts");
+  TEST_EQ(facts_open_file(&facts, &path), 1531);
   TEST_EQ(facts_count(&facts), 46);
   i = 0;
   while (p[i]) {
@@ -517,9 +516,8 @@ void facts_test_open_file ()
     err(1, "%s:%i: cp", __FILE__, __LINE__);
   if (r > 0)
     errx(1, "%s:%i: cp", __FILE__, __LINE__);
-  TEST_EQ(facts_open_file(&facts,
-                          "facts_test_open_file.3.facts"),
-          1588);
+  str_init_1(&path, NULL, "facts_test_open_file.3.facts");
+  TEST_EQ(facts_open_file(&facts, &path), 1588);
   TEST_EQ(facts_count(&facts), 0);
   i = 0;
   while (p[i]) {
@@ -553,8 +551,8 @@ void facts_test_remove ()
     ":a",
     "A",
     "a",
-    "[]",
-    "[[], []]",
+    "()",
+    "((), ())",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -602,8 +600,8 @@ void facts_test_save ()
     ":a",
     "A",
     "a",
-    "[]",
-    "[[], []]",
+    "()",
+    "((), ())",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",

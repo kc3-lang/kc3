@@ -49,6 +49,7 @@ e_bool sym_is_module (const s_sym *sym);
 const s_sym * sym_new (const s_str *src);
 
 ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type);
-bool       sym_to_tag_type (const s_sym *sym, e_tag_type *dest);
+
+bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest);
 
 #endif /* SYM_H */

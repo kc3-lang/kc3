@@ -70,8 +70,8 @@
     TEST_ASSERT(set_get__tag(&set, tag_1(&tag, ":a")));                \
     TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "A")));                 \
     TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "a")));                 \
-    TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "[]")));                \
-    TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "[[], []]")));          \
+    TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "()")));                \
+    TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "((), ())")));          \
     TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "{:a, :b}")));          \
     TEST_ASSERT(set_get__tag(&set, tag_1(&tag,                         \
                                          "{{:a, :b}, {:c, :d}}")));    \
@@ -126,8 +126,8 @@ void set__tag_test_add ()
     "A.a(b, c)",
     "B.a(b, c)",
     "A.b(b, c)",
-    "[]",
-    "[[], []]",
+    "()",
+    "((), ())",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -175,9 +175,9 @@ void set__tag_test_cursor ()
   SET__TAG_TEST_CURSOR(++i);
   set_add__tag(&set, tag_1(&tag, "a"));
   SET__TAG_TEST_CURSOR(++i);
-  set_add__tag(&set, tag_1(&tag, "[]"));
+  set_add__tag(&set, tag_1(&tag, "()"));
   SET__TAG_TEST_CURSOR(++i);
-  set_add__tag(&set, tag_1(&tag, "[[], []]"));
+  set_add__tag(&set, tag_1(&tag, "((), ())"));
   SET__TAG_TEST_CURSOR(++i);
   set_add__tag(&set, tag_1(&tag, "{:a, :b}"));
   SET__TAG_TEST_CURSOR(++i);
@@ -222,9 +222,9 @@ void set__tag_test_cursor ()
   SET__TAG_TEST_CURSOR(--i);
   set_remove__tag(&set, tag_1(&tag, "a"));
   SET__TAG_TEST_CURSOR(--i);
-  set_remove__tag(&set, tag_1(&tag, "[]"));
+  set_remove__tag(&set, tag_1(&tag, "()"));
   SET__TAG_TEST_CURSOR(--i);
-  set_remove__tag(&set, tag_1(&tag, "[[], []]"));
+  set_remove__tag(&set, tag_1(&tag, "((), ())"));
   SET__TAG_TEST_CURSOR(--i);
   set_remove__tag(&set, tag_1(&tag, "{:a, :b}"));
   SET__TAG_TEST_CURSOR(--i);
@@ -309,8 +309,8 @@ void set__tag_test_remove ()
   set_add__tag(&set, tag_1(&tag, ":a"));
   set_add__tag(&set, tag_1(&tag, "A"));
   set_add__tag(&set, tag_1(&tag, "a"));
-  set_add__tag(&set, tag_1(&tag, "[]"));
-  set_add__tag(&set, tag_1(&tag, "[[], []]"));
+  set_add__tag(&set, tag_1(&tag, "()"));
+  set_add__tag(&set, tag_1(&tag, "((), ())"));
   set_add__tag(&set, tag_1(&tag, "{:a, :b}"));
   set_add__tag(&set, tag_1(&tag, "{{:a, :b}, {:c, :d}}"));
   set_add__tag(&set, tag_1(&tag, "{a, b}"));
@@ -337,10 +337,10 @@ void set__tag_test_remove ()
   SET__TAG_TEST_REMOVE(tag_1(&tag, "A"), i);
   SET__TAG_TEST_REMOVE(tag_1(&tag, "a"), --i);
   SET__TAG_TEST_REMOVE(tag_1(&tag, "a"), i);
-  SET__TAG_TEST_REMOVE(tag_1(&tag, "[]"), --i);
-  SET__TAG_TEST_REMOVE(tag_1(&tag, "[]"), i);
-  SET__TAG_TEST_REMOVE(tag_1(&tag, "[[], []]"), --i);
-  SET__TAG_TEST_REMOVE(tag_1(&tag, "[[], []]"), i);
+  SET__TAG_TEST_REMOVE(tag_1(&tag, "()"), --i);
+  SET__TAG_TEST_REMOVE(tag_1(&tag, "()"), i);
+  SET__TAG_TEST_REMOVE(tag_1(&tag, "((), ())"), --i);
+  SET__TAG_TEST_REMOVE(tag_1(&tag, "((), ())"), i);
   SET__TAG_TEST_REMOVE(tag_1(&tag, "{:a, :b}"), --i);
   SET__TAG_TEST_REMOVE(tag_1(&tag, "{:a, :b}"), i);
   SET__TAG_TEST_REMOVE(tag_1(&tag, "{{:a, :b}, {:c, :d}}"), --i);
@@ -392,10 +392,10 @@ void set__tag_test_resize ()
   set_add__tag(&set, tag_1(&tag, "A"));
   set_add__tag(&set, tag_1(&tag, "a"));
   set_add__tag(&set, tag_1(&tag, "a"));
-  set_add__tag(&set, tag_1(&tag, "[]"));
-  set_add__tag(&set, tag_1(&tag, "[]"));
-  set_add__tag(&set, tag_1(&tag, "[[], []]"));
-  set_add__tag(&set, tag_1(&tag, "[[], []]"));
+  set_add__tag(&set, tag_1(&tag, "()"));
+  set_add__tag(&set, tag_1(&tag, "()"));
+  set_add__tag(&set, tag_1(&tag, "((), ())"));
+  set_add__tag(&set, tag_1(&tag, "((), ())"));
   set_add__tag(&set, tag_1(&tag, "{:a, :b}"));
   set_add__tag(&set, tag_1(&tag, "{:a, :b}"));
   set_add__tag(&set, tag_1(&tag, "{{:a, :b}, {:c, :d}}"));

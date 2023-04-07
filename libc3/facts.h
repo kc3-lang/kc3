@@ -35,15 +35,15 @@ s_fact * facts_add_tags (s_facts *facts, const s_tag *subject,
                          const s_tag *predicate,
                          const s_tag *object);
 void     facts_close (s_facts *facts);
-sw       facts_load (s_facts *facts, s_buf *buf);
-sw       facts_load_file (s_facts *facts, const s8 *path);
+sw       facts_load (s_facts *facts, s_buf *buf, const s_str *path);
+sw       facts_load_file (s_facts *facts, const s_str *path);
 void     facts_lock_clean (s_facts *facts);
 void     facts_lock_init (s_facts *facts);
 void     facts_lock_r (s_facts *facts);
 void     facts_lock_unlock_r (s_facts *facts);
 void     facts_lock_unlock_w (s_facts *facts);
 void     facts_lock_w (s_facts *facts);
-sw       facts_open_file (s_facts *facts, const s8 *path);
+sw       facts_open_file (s_facts *facts, const s_str *path);
 s_tag *  facts_ref_tag (s_facts *facts, const s_tag *tag);
 e_bool   facts_remove_fact (s_facts *facts, const s_fact *fact);
 sw       facts_save_file (s_facts *facts, const s8 *path);

@@ -115,9 +115,12 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
   list_copy(cfn->arg_types, &dest->arg_types);
   dest->arity = cfn->arity;
   dest->cif = cfn->cif;
-  dest->cif.arg_types = calloc(cfn->cif.nargs + 1, sizeof(ffi_type *));
-  memcpy(dest->cif.arg_types, cfn->cif.arg_types,
-         (cfn->cif.nargs + 1) * sizeof(ffi_type *));
+  if (cfn->arity) {
+    dest->cif.arg_types = calloc(cfn->cif.nargs + 1,
+                                 sizeof(ffi_type *));
+    memcpy(dest->cif.arg_types, cfn->cif.arg_types,
+           (cfn->cif.nargs + 1) * sizeof(ffi_type *));
+  }
   dest->result_type = cfn->result_type;
   dest->ptr = cfn->ptr;
   return dest;
@@ -165,8 +168,11 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
     return NULL;
   }
   if (cfn->arity) {
-    if (! (arg_ffi_type = calloc(sizeof(ffi_type *), cfn->arity + 1)))
-      err(1, "cfn_prep_cif");
+    if (! (arg_ffi_type = calloc(sizeof(ffi_type *), cfn->arity + 1))) {
+      assert(! "cfn_prep_cif: arg_ffi_type");
+      err(1, "cfn_prep_cif: arg_ffi_type");
+      return NULL;
+    }
     a = cfn->arg_types;
     while (a) {
       assert(i < cfn->arity);

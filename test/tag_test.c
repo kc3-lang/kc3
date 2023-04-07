@@ -50,7 +50,7 @@ void tag_test_hash_u64 ()
 void tag_test_init_1 ()
 {
   s_tag a;
-  TEST_ASSERT(tag_init_1(&a, "fn () { [] }"));
+  TEST_ASSERT(tag_init_1(&a, "fn () { () }"));
   tag_clean(&a);
   TEST_ASSERT(tag_init_1(&a, "fn (x) { x }"));
   tag_clean(&a);

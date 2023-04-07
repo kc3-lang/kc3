@@ -145,8 +145,6 @@ const s_sym * sym_new (const s_str *src)
 
 ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
 {
-  if (sym == sym_1("tag"))
-    return &ffi_type_pointer;
   if (sym == sym_1("&result")) {
     if (! result_type)
       warnx("invalid result type: &result");
@@ -162,6 +160,8 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
     return &ffi_type_sint64;
   if (sym == sym_1("sw"))
     return &ffi_type_sint;
+  if (sym == sym_1("tag"))
+    return &ffi_type_pointer;
   if (sym == sym_1("u8"))
     return &ffi_type_uint8;
   if (sym == sym_1("u16"))
@@ -172,8 +172,10 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
     return &ffi_type_uint64;
   if (sym == sym_1("uw"))
     return &ffi_type_uint;
+  if (sym == sym_1("void"))
+    return &ffi_type_void;
   assert(! "sym_to_ffi_type: unknown type");
-  errx(1, "sym_to_ffi_type: unknown type");
+  errx(1, "sym_to_ffi_type: unknown type: %s", sym->str.ptr.ps8);
   return NULL;
 }
 

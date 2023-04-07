@@ -88,8 +88,10 @@
     s_list *list_test;                                                 \
     test_context("buf_inspect_list(" # test ") -> " # expected);       \
     buf_init_1(&buf_test, (test));                                     \
-    if (buf_parse_list(&buf_test, &list_test) != strlen(test))         \
-      errx(1, "buf_parse_list");                                       \
+    if (buf_parse_list(&buf_test, &list_test) != strlen(test)) {       \
+      assert(! "BUF_INSPECT_TEST_LIST: buf_parse_list");               \
+      errx(1, "BUF_INSPECT_TEST_LIST: buf_parse_list");                \
+    }                                                                  \
     buf_init_alloc(&buf, 1024 * 1024);                                 \
     TEST_EQ(buf_inspect_list(&buf, list_test), strlen(expected));      \
     TEST_EQ(buf.wpos, strlen(expected));                               \
@@ -251,7 +253,7 @@ void buf_inspect_test_integer ()
 
 void buf_inspect_test_list ()
 {
-  BUF_INSPECT_TEST_LIST("[]", "[]");
+  BUF_INSPECT_TEST_LIST("()", "()");
 }
  
 void buf_inspect_test_str ()
@@ -342,10 +344,10 @@ void buf_inspect_test_tag ()
   BUF_INSPECT_TEST_TAG(tag_ident_1(&tag, "ident"), "ident");
   BUF_INSPECT_TEST_TAG(tag_integer_1(&tag, "-0x10000000000000000"), "-18446744073709551616");
   BUF_INSPECT_TEST_TAG(tag_integer_1(&tag, "0x10000000000000000"), "18446744073709551616");
-  BUF_INSPECT_TEST_TAG(tag_list(&tag, NULL), "[]");
-  BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "[[] | []]"), "[[]]");
-  BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "[[]]"), "[[]]");
-  BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "[]"), "[]");
+  BUF_INSPECT_TEST_TAG(tag_list(&tag, NULL), "()");
+  BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "(() | ())"), "(())");
+  BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "(())"), "(())");
+  BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "()"), "()");
   BUF_INSPECT_TEST_TAG(tag_s16(&tag, -0x100), "-256");
   BUF_INSPECT_TEST_TAG(tag_s32(&tag, -0x10000), "-65536");
   BUF_INSPECT_TEST_TAG(tag_s64(&tag, -0x100000000), "-4294967296");

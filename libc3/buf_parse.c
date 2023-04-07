@@ -504,7 +504,7 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_cfn_arg_types(buf, &arg_types)) <= 0)
+  if ((r = buf_parse_list(buf, &arg_types)) <= 0)
     goto restore;
   result += r;
   cfn_init(&tmp, name_sym, arg_types, result_type);
@@ -1003,6 +1003,12 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
+  if ((r = buf_read_1(buf, ")")) < 0)
+    goto restore;
+  if (r) {
+    result += r;
+    goto ok;
+  }
   while (1) {
     if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
@@ -1019,13 +1025,16 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
     if (! r) {
       if ((r = buf_read_1(buf, ")")) < 0)
         goto restore;
-      result += r;
-      break;
+      if (r) {
+        result += r;
+        goto ok;
+      }
     }
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
   }
+ ok:
   *dest = tmp;
   r = result;
   goto clean;

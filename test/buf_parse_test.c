@@ -904,7 +904,7 @@ void buf_parse_test_f64()
 
 void buf_parse_test_fn ()
 {
-  BUF_PARSE_TEST_FN("fn () { [] }");
+  BUF_PARSE_TEST_FN("fn () { () }");
   BUF_PARSE_TEST_FN("fn (x) { x }");
   BUF_PARSE_TEST_FN("fn (x, y) { x }");
 }
@@ -1060,14 +1060,14 @@ void buf_parse_test_integer_oct()
 
 void buf_parse_test_list ()
 {
-  BUF_PARSE_TEST_LIST("[]");
-  BUF_PARSE_TEST_LIST("[[], []]");
-  BUF_PARSE_TEST_LIST("[[] | []]");
-  BUF_PARSE_TEST_LIST("[[], [], []]");
-  BUF_PARSE_TEST_LIST("[[], [] | []]");
-  BUF_PARSE_TEST_LIST("[a | b]");
-  BUF_PARSE_TEST_LIST("[a, b | c]");
-  BUF_PARSE_TEST_LIST("[a, b, c | d]");
+  BUF_PARSE_TEST_LIST("()");
+  BUF_PARSE_TEST_LIST("((), ())");
+  BUF_PARSE_TEST_LIST("(() | ())");
+  BUF_PARSE_TEST_LIST("((), (), ())");
+  BUF_PARSE_TEST_LIST("((), () | ())");
+  BUF_PARSE_TEST_LIST("(a | b)");
+  BUF_PARSE_TEST_LIST("(a, b | c)");
+  BUF_PARSE_TEST_LIST("(a, b, c | d)");
 }
 
 void buf_parse_test_str ()
@@ -1215,7 +1215,7 @@ void buf_parse_test_tag ()
 {
   BUF_PARSE_TEST_TAG("x");
   BUF_PARSE_TEST_TAG("_x");
-  BUF_PARSE_TEST_TAG("[x | _y]");
+  BUF_PARSE_TEST_TAG("(x | _y)");
 }
 
 void buf_parse_test_tuple ()

@@ -46,9 +46,9 @@ void env_test_eval_equal_tag ()
   env_clean(&env);
   env_init(&env);
   env.frame = frame_init(&frame, env.frame);
-  test_context("x = [1, 2]");
+  test_context("x = (1, 2)");
   TEST_ASSERT(env_eval_equal_tag(&env, tag_1(&x, "x"),
-                                 tag_1(&y, "[1, 2]"), &z));
+                                 tag_1(&y, "(1, 2)"), &z));
   TEST_ASSERT(frame_get(&frame, x.data.ident.sym));
   TEST_EQ(compare_tag(&z, &y), 0);
   tag_clean(&z);
@@ -56,18 +56,18 @@ void env_test_eval_equal_tag ()
   env_clean(&env);
   env_init(&env);
   env.frame = frame_init(&frame, env.frame);
-  test_context("[] = []");
-  TEST_ASSERT(env_eval_equal_tag(&env, tag_1(&x, "[]"),
-                                 tag_1(&y, "[]"), &z));
+  test_context("() = ()");
+  TEST_ASSERT(env_eval_equal_tag(&env, tag_1(&x, "()"),
+                                 tag_1(&y, "()"), &z));
   TEST_EQ(compare_tag(&z, &y), 0);
   tag_clean(&z);
   env.frame = frame_clean(&frame);
   env_clean(&env);
   env_init(&env);
   env.frame = frame_init(&frame, env.frame);
-  test_context("x = [1, 2]");
-  TEST_ASSERT(env_eval_equal_tag(&env, tag_1(&x, "[a, b]"),
-                                 tag_1(&y, "[1, 2]"), &z));
+  test_context("x = (1, 2)");
+  TEST_ASSERT(env_eval_equal_tag(&env, tag_1(&x, "(a, b)"),
+                                 tag_1(&y, "(1, 2)"), &z));
   TEST_ASSERT(frame_get(&frame, sym_1("a")));
   TEST_ASSERT(frame_get(&frame, sym_1("b")));
   TEST_EQ(compare_tag(&z, &y), 0);
@@ -76,9 +76,9 @@ void env_test_eval_equal_tag ()
   env_clean(&env);
   env_init(&env);
   env.frame = frame_init(&frame, env.frame);
-  test_context("x = [1, 2]");
-  TEST_ASSERT(env_eval_equal_tag(&env, tag_1(&x, "[a | b]"),
-                                 tag_1(&y, "[1, 2]"), &z));
+  test_context("x = (1, 2)");
+  TEST_ASSERT(env_eval_equal_tag(&env, tag_1(&x, "(a | b)"),
+                                 tag_1(&y, "(1, 2)"), &z));
   TEST_ASSERT(frame_get(&frame, sym_1("a")));
   TEST_ASSERT(frame_get(&frame, sym_1("b")));
   TEST_EQ(compare_tag(&z, &y), 0);
