@@ -33,7 +33,7 @@ e_bool str_character_is_reserved (character c)
 sw str_character_position (const s_str *str, character c)
 {
   uw i = 0;
-  sw r;
+  sw r = 0;
   s_str tmp;
   character tmp_c;
   assert(str);
@@ -186,6 +186,20 @@ s_str * str_inspect (const s_str *src, s_str *dest)
   buf_inspect_str(&buf, src);
   assert(buf.wpos == (uw) size);
   return buf_to_str(&buf, dest);
+}
+
+sw str_length_utf8 (const s_str *str)
+{
+  character c;
+  sw r;
+  sw result = 0;
+  s_str tmp;
+  tmp = *str;
+  while ((r = str_read_character_utf8(&tmp, &c)) > 0)
+    result++;
+  if (r < 0)
+    return r;
+  return result;
 }
 
 s_str * str_new (s8 *free, uw size, const s8 *p)

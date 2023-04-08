@@ -57,6 +57,7 @@ sw            str_character_position (const s_str *str, character c);
 s_str *       str_copy (const s_str *src, s_str *dest);
 e_bool        str_has_reserved_characters (const s_str *str);
 s_str *       str_inspect (const s_str *x, s_str *dest);
+sw            str_length_utf8 (const s_str *str);
 sw            str_peek_bool (const s_str *src, bool *p);
 sw            str_peek_character (const s_str *src, character *p);
 sw            str_peek_f32 (const s_str *src, f32 *p);

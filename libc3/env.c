@@ -389,7 +389,8 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   assert(ident);
   if (! (tag = frame_get(env->frame, ident->sym))) {
     assert(! "env_eval_ident: unbound variable");
-    errx(1, "env_eval_ident: unbound variable");
+    errx(1, "env_eval_ident: %s: unbound variable",
+         ident->sym->str.ptr.ps8);
   }
   tag_copy(tag, dest);
   return true;

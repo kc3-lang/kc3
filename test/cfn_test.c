@@ -42,6 +42,7 @@ void cfn_test_apply ()
 {
   s_cfn tmp;
   cfn_init(&tmp);
+  
   cfn_clean(&tmp);
 }
 
@@ -55,6 +56,10 @@ void cfn_test_copy ()
 
 void cfn_test_link ()
 {
+  s_cfn tmp;
+  cfn_init(&tmp);
+  tmp.name
+  cfn_clean(&tmp);
 }
 
 void cfn_test_set_type ()

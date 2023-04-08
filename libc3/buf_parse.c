@@ -141,7 +141,8 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
     errx(1, "buf_parse_array: parse_data: dimension mismatch");
     return -1;
   }
-  while (i == tmp.dimension - 1) {
+  while (i == tmp.dimension - 1 &&
+         address[i] < tmp.dimensions[i].count) {
     if ((r = parse(buf, item)) <= 0)
       goto restore;
     result += r;
@@ -670,6 +671,35 @@ sw buf_parse_comments (s_buf *buf)
   return r;
 }
 
+sw buf_parse_digit (s_buf *buf, const s_str *bases, uw bases_count,
+                    u8 *dest)
+{
+  character c;
+  sw digit;
+  uw i = 0;
+  sw r;
+  assert(buf);
+  assert(bases);
+  assert(bases_count);
+  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
+    return r;
+  while (i < bases_count) {
+    if ((digit = str_character_position(bases + i, c)) >= 0) {
+      if (digit > 255) {
+        assert(! "buf_parse_digit: digit overflow");
+        errx(1, "buf_parse_digit: digit overflow: %ld", digit);
+        return -1;
+      }
+      if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+        return r;
+      *dest = digit;
+      return r;
+    }
+    i++;
+  }
+  return 0;
+}
+
 sw buf_parse_digit_hex (s_buf *buf, u8 *dest)
 {
   character c;
@@ -688,26 +718,6 @@ sw buf_parse_digit_hex (s_buf *buf, u8 *dest)
     return 0;
   r = buf_ignore(buf, r);
   return r;
-}
-
-sw buf_parse_digit (s_buf *buf, const s_str *bases, uw bases_count)
-{
-  character c;
-  sw digit;
-  uw i = 0;
-  sw r;
-  assert(buf);
-  assert(bases);
-  assert(bases_count);
-  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
-    return r;
-  while (i < bases_count &&
-         (digit = str_character_position(bases + i, c)) < 0)
-    i++;
-  if (digit >= 0)
-    if ((r = buf_read_character_utf8(buf, &c)) <= 0)
-      return r;
-  return digit;
 }
 
 sw buf_parse_digit_oct (s_buf *buf, u8 *dest)
@@ -1566,7 +1576,9 @@ sw buf_parse_s (s_buf *buf, u8 size, void *dest)
 sw buf_parse_s_bases (s_buf *buf, const s_str *bases, uw bases_count,
                       bool negative, u8 size, void *dest)
 {
+  u8 digit;
   sw r;
+  sw radix;
   sw result = 0;
   s_buf_save save;
   s64 tmp = 0;
@@ -1577,23 +1589,34 @@ sw buf_parse_s_bases (s_buf *buf, const s_str *bases, uw bases_count,
   assert(size <= 8);
   assert(dest);
   if (size > 8) {
+    assert(! "buf_parse_s_bases: unsupported integer size");
     errx(1, "buf_parse_s_bases: unsupported integer size: %u", size);
     return -1;
   }
   buf_save_init(buf, &save);
-  while ((r = buf_parse_digit(buf, bases, bases_count)) >= 0) {
+  if ((radix = str_length_utf8(bases)) < 2) {
+    assert(! "buf_parse_s_bases: invalid radix");
+    errx(1, "buf_parse_s_bases: invalid radix: %ld", radix);
+    return -1;
+  }
+  while ((r = buf_parse_digit(buf, bases, bases_count, &digit)) > 0) {
     result += r;
+    if (digit >= radix) {
+      assert(! "buf_parse_s_bases: digit not in radix");
+      errx(1, "buf_parse_s_bases: digit not in radix: %u", digit);
+      return -1;
+    }
     if (tmp > ((((s64) 1 << (size * 8 - 1)) - 1) +
-               (s64) bases[0].size - 1) / (s64) bases[0].size) {
+               (s64) radix - 1) / (s64) radix) {
       warnx("buf_parse_s_bases: integer overflow");
       goto restore;
     }
-    tmp *= bases[0].size;
-    if (tmp > (s64) (1 << (size * 8 - 1)) - 1 - r) {
+    tmp *= radix;
+    if (tmp > (s64) (1 << (size * 8 - 1)) - 1 - digit) {
       warnx("buf_parse_s_bases: integer overflow");
       goto restore;
     }
-    tmp += r;
+    tmp += digit;
   }
   if (negative)
     tmp = -tmp;
@@ -2212,8 +2235,8 @@ sw buf_parse_u (s_buf *buf, u8 size, void *dest)
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "0b")) < 0)
     goto restore;
-  result += r;
   if (r > 0) {
+    result += r;
     if ((r = buf_parse_u_bases(buf, bases_bin, 1, size,
                                dest)) <= 0)
       goto restore;
@@ -2257,7 +2280,9 @@ sw buf_parse_u (s_buf *buf, u8 size, void *dest)
 sw buf_parse_u_bases (s_buf *buf, const s_str *bases, uw bases_count,
                       u8 size, void *dest)
 {
+  u8 digit;
   sw r;
+  sw radix;
   sw result = 0;
   s_buf_save save;
   u64 tmp = 0;
@@ -2268,23 +2293,34 @@ sw buf_parse_u_bases (s_buf *buf, const s_str *bases, uw bases_count,
   assert(size <= 8);
   assert(dest);
   if (size > 8) {
+    assert(! "buf_parse_u_bases: unsupported integer size");
     errx(1, "buf_parse_u_bases: unsupported integer size: %u", size);
     return -1;
   }
   buf_save_init(buf, &save);
-  while ((r = buf_parse_digit(buf, bases, bases_count)) >= 0) {
+  if ((radix = str_length_utf8(bases)) < 2) {
+    assert(! "buf_parse_u_bases: invalid radix");
+    errx(1, "buf_parse_u_bases: invalid radix: %ld", radix);
+    return -1;
+  }
+  while ((r = buf_parse_digit(buf, bases, bases_count, &digit)) > 0) {
     result += r;
+    if (digit >= radix) {
+      assert(! "buf_parse_u_bases: digit not in radix");
+      errx(1, "buf_parse_u_bases: digit not in radix: %u", digit);
+      return -1;
+    }
     if (tmp > ((((u64) 1 << (size * 8)) - 1) +
-               (u64) bases[0].size - 1) / (u64) bases[0].size) {
+               (u64) radix - 1) / (u64) radix) {
       warnx("buf_parse_u_bases: integer overflow");
       goto restore;
     }
-    tmp *= bases[0].size;
-    if (tmp > (u64) (1 << (size * 8)) - 1 - r) {
+    tmp *= radix;
+    if (tmp > (u64) (1 << (size * 8)) - 1 - digit) {
       warnx("buf_parse_u_bases: integer overflow");
       goto restore;
     }
-    tmp += r;
+    tmp += digit;
   }
   memcpy(dest, &tmp + 8 - size, size);
   r = result;
