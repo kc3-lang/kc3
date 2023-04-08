@@ -1618,9 +1618,11 @@ sw buf_parse_s_bases (s_buf *buf, const s_str *bases, uw bases_count,
     }
     tmp += digit;
   }
-  if (negative)
-    tmp = -tmp;
-  memcpy(dest, &tmp + 8 - size, size);
+  if (negative && tmp)
+    tmp = ! tmp - 1;
+  /* XXX: lsb/msb */
+  /* XXX: byte order */
+  xxx;
   r = result;
   goto clean;
  restore:
@@ -2322,7 +2324,9 @@ sw buf_parse_u_bases (s_buf *buf, const s_str *bases, uw bases_count,
     }
     tmp += digit;
   }
-  memcpy(dest, &tmp + 8 - size, size);
+  /* XXX: lsb/msb */
+  /* XXX: byte order */
+  xxx;
   r = result;
   goto clean;
  restore:
