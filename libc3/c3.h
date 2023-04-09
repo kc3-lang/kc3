@@ -22,6 +22,7 @@
 #include "buf_parse.h"
 #include "buf_save.h"
 #include "call.h"
+#include "ceiling.h"
 #include "cfn.h"
 #include "character.h"
 #include "compare.h"
@@ -48,6 +49,11 @@
 #include "ucd.h"
 
 #define C3_EXT ".c3"
+
+extern const s_str g_c3_base_bin;
+extern const s_str g_c3_base_oct;
+extern const s_str g_c3_base_dec;
+extern const s_str g_c3_bases_hex[2];
 
 /* stack-allocation compatible functions */
 void c3_init (s_env *env);

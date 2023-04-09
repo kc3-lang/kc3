@@ -6,6 +6,7 @@ SOURCES = \
 	buf_parse_test.c \
 	buf_test.c \
 	call_test.c \
+	cfn_test.c \
 	character_test.c \
 	compare_test.c \
 	env_test.c \

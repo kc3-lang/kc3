@@ -25,12 +25,12 @@
 #include "types.h"
 
 /* Stack allocation compatible functions, do not use */
-s_list * list_init (s_list *list, s_list *next);
+s_list * list_init (s_list *list, const s_tag *tag, s_list *next);
 void     list_clean (s_list *list);
 
 /* Constructors, call list_delete after use */
 s_list * list_1 (const s8 *p);
-s_list * list_new (s_list *next);
+s_list * list_new (const s_tag *tag, s_list *next);
 
 /* Destructor */
 s_list * list_delete (s_list *list);

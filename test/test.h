@@ -32,8 +32,8 @@
 
 #define TEST_EQ(test, expected)                                        \
   do {                                                                 \
-    long long signed tmp = (long long signed) (test);                  \
-    if (tmp == (long long signed) (expected)) {                        \
+    long long signed TEST_EQ_tmp = (long long signed) (test);          \
+    if (TEST_EQ_tmp == (long long signed) (expected)) {                \
       test_ok();                                                       \
     }                                                                  \
     else {                                                             \
@@ -43,15 +43,15 @@
              "Expected %s got %lld.%s\n",                              \
              TEST_COLOR_KO,                                            \
              __FILE__, __LINE__, __func__,                             \
-             # test, # expected, # expected, tmp,                      \
+             # test, # expected, # expected, TEST_EQ_tmp,              \
              TEST_COLOR_RESET);                                        \
     }                                                                  \
   } while (0)
 
 #define TEST_FLOAT_EQ(test, expected)                                  \
   do {                                                                 \
-    f32 tmp = (f32) (test);                                            \
-    if (fabsf(tmp - (f32) (expected)) <= FLT_EPSILON)                  \
+    float TEST_FLOAT_EQ_tmp = (float) (test);                          \
+    if (fabsf(TEST_FLOAT_EQ_tmp - (float) (expected)) <= FLT_EPSILON)  \
       test_ok();                                                       \
     else {                                                             \
       test_ko();                                                       \
@@ -60,16 +60,18 @@
              "Expected %s got %.16g.%s\n",                             \
              TEST_COLOR_KO,                                            \
              __FILE__, __LINE__, __func__,                             \
-             # test, # expected, # expected, tmp,                      \
+             # test, # expected, # expected, TEST_FLOAT_EQ_tmp,        \
              TEST_COLOR_RESET);                                        \
     }                                                                  \
   } while (0)
 
 #define TEST_FLOAT_EQ2(test, expected1, expected2)                     \
   do {                                                                 \
-    f32 tmp = (f32) (test);                                            \
-    if (fabsf(tmp - (f32) (expected1)) <= FLT_EPSILON ||               \
-        fabsf(tmp - (f32) (expected2)) <= FLT_EPSILON)                 \
+    float TEST_FLOAT_EQ2_tmp = (float) (test);                         \
+    if (fabsf(TEST_FLOAT_EQ2_tmp -                                     \
+              (float) (expected1)) <= FLT_EPSILON ||                   \
+        fabsf(TEST_FLOAT_EQ2_tmp -                                     \
+              (float) (expected2)) <= FLT_EPSILON)                     \
       test_ok();                                                       \
     else {                                                             \
       test_ko();                                                       \
@@ -78,32 +80,32 @@
              "Expected %s got %.16g.%s\n",                             \
              TEST_COLOR_KO,                                            \
              __FILE__, __LINE__, __func__,                             \
-             # test, # expected1, # expected1, tmp,                    \
+             # test, # expected1, # expected1, TEST_FLOAT_EQ2_tmp,     \
              TEST_COLOR_RESET);                                        \
     }                                                                  \
   } while (0)
 
 #define TEST_DOUBLE_EQ(test, expected)                                 \
   do {                                                                 \
-    f64 tmp = (f64) (test);                                            \
-    if (fabs(tmp - (expected)) <= DBL_EPSILON)                         \
+    f64 TEST_DOUBLE_EQ_tmp = (double) (test);                          \
+    if (fabs(TEST_DOUBLE_EQ_tmp - (expected)) <= DBL_EPSILON)          \
       test_ok();                                                       \
     else {                                                             \
       test_ko();                                                       \
       printf("\n%sAssertion failed in %s:%d %s\n"                      \
              "%s == %s\n"                                              \
-             "Expected %s got %lf.%s\n",                                \
+             "Expected %s got %lf.%s\n",                               \
              TEST_COLOR_KO,                                            \
              __FILE__, __LINE__, __func__,                             \
-             # test, # expected, # expected, tmp,                      \
+             # test, # expected, # expected, TEST_DOUBLE_EQ_tmp,       \
              TEST_COLOR_RESET);                                        \
     }                                                                  \
   } while (0)
 
-#define TEST_STR_CMP(a, b, expected)			               \
+#define TEST_STR_COMPARE(a, b, expected)                               \
   do {                                                                 \
-    sw tmp = str_compare(a, b);                                        \
-    if (tmp == expected) {                                             \
+    sw TEST_STR_COMPARE_tmp = str_compare(a, b);                       \
+    if (TEST_STR_COMPARE_tmp == expected) {                            \
       test_ok();                                                       \
     }                                                                  \
     else {                                                             \
@@ -113,15 +115,15 @@
              "Expected %s got %ld.%s\n",                               \
              TEST_COLOR_KO,                                            \
              __FILE__, __LINE__, __func__,                             \
-             # a, # b, # expected, # expected, tmp,                    \
+             # a, # b, # expected, # expected, TEST_STR_COMPARE_tmp,   \
              TEST_COLOR_RESET);                                        \
     }                                                                  \
   } while (0)
 
 #define TEST_STRNCMP(test, result, bytes)                              \
   do {                                                                 \
-    const char *tmp = (test);                                          \
-    if (strncmp(tmp, (result), (bytes)) == 0) {                        \
+    const char *TEST_STRNCMP_tmp = (test);                             \
+    if (strncmp(TEST_STRNCMP_tmp, (result), (bytes)) == 0) {           \
       test_ok();                                                       \
     }                                                                  \
     else {                                                             \
@@ -133,7 +135,7 @@
              # test, # result, (long) (bytes));                        \
       printf("Expected %s got \"",                                     \
              # result);                                                \
-      fwrite(tmp, (bytes), 1, stdout);                                 \
+      fwrite(TEST_STRNCMP_tmp, (bytes), 1, stdout);                    \
       printf("\".%s\n", TEST_COLOR_RESET);                             \
     }                                                                  \
   } while (0)

@@ -16,6 +16,12 @@
 #include <stdlib.h>
 #include "c3.h"
 
+const s_str g_c3_base_bin = {{NULL}, 2, {"01"}};
+const s_str g_c3_base_oct = {{NULL}, 8, {"01234567"}};
+const s_str g_c3_base_dec = {{NULL}, 10, {"0123456789"}};
+const s_str g_c3_bases_hex[2] = {{{NULL}, 16, {"01234567890abcdef"}},
+                                 {{NULL}, 16, {"01234567890ABCDEF"}}};
+
 void c3_break ()
 {
   assert(! "break");

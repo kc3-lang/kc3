@@ -286,8 +286,8 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
     if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
-    *args = list_new(NULL);
-    (*args)->tag = tag; 
+    *args = list_new(NULL, NULL);
+    (*args)->tag = tag;
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
@@ -539,7 +539,7 @@ sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest)
   result += r;
   tail = &tmp;
   while (1) {
-    *tail = list_new(NULL);
+    *tail = list_new(NULL, NULL);
     if ((r = buf_parse_tag_sym(buf, &(*tail)->tag)) <= 0)
       goto restore;
     result += r;
@@ -671,31 +671,26 @@ sw buf_parse_comments (s_buf *buf)
   return r;
 }
 
-sw buf_parse_digit (s_buf *buf, const s_str *bases, uw bases_count,
-                    u8 *dest)
+sw buf_parse_digit (s_buf *buf, const s_str *base, u8 *dest)
 {
   character c;
   sw digit;
-  uw i = 0;
   sw r;
   assert(buf);
   assert(bases);
   assert(bases_count);
   if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
     return r;
-  while (i < bases_count) {
-    if ((digit = str_character_position(bases + i, c)) >= 0) {
-      if (digit > 255) {
-        assert(! "buf_parse_digit: digit overflow");
-        errx(1, "buf_parse_digit: digit overflow: %ld", digit);
-        return -1;
-      }
-      if ((r = buf_read_character_utf8(buf, &c)) <= 0)
-        return r;
-      *dest = digit;
-      return r;
+  if ((digit = str_character_position(base, c)) >= 0) {
+    if (digit > 255) {
+      assert(! "buf_parse_digit: digit overflow");
+      errx(1, "buf_parse_digit: digit overflow: %ld", digit);
+      return -1;
     }
-    i++;
+    if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+      return r;
+    *dest = digit;
+    return r;
   }
   return 0;
 }
@@ -968,7 +963,7 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
     if (! r)
       break;
     result += r;
-    *tail = list_new(NULL);
+    *tail = list_new(NULL, NULL);
     (*tail)->tag = tag;
     tail = &(*tail)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
@@ -1023,7 +1018,7 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
     if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
-    *tail = list_new(NULL);
+    *tail = list_new(NULL, NULL);
     (*tail)->tag = tag;
     tail = &(*tail)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
@@ -1363,7 +1358,7 @@ sw buf_parse_list (s_buf *buf, s_list **list)
   }
   *i = NULL;
   while (1) {
-    *i = list_new(NULL);
+    *i = list_new(NULL, NULL);
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
     result += r;
@@ -1512,13 +1507,8 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
   return r;
 }
 
-sw buf_parse_s (s_buf *buf, u8 size, void *dest)
+sw buf_parse_s8 (s_buf *buf, s8 *dest)
 {
-  const s_str bases_bin[] = {{{NULL}, 2, {"01"}}};
-  const s_str bases_oct[] = {{{NULL}, 8, {"01234567"}}};
-  const s_str bases_dec[] = {{{NULL}, 10, {"0123456789"}}};
-  const s_str bases_hex[] = {{{NULL}, 16, {"01234567890abcdef"}},
-                             {{NULL}, 16, {"01234567890ABCDEF"}}};
   e_bool negative = false;
   sw r;
   sw result = 0;
@@ -1533,7 +1523,7 @@ sw buf_parse_s (s_buf *buf, u8 size, void *dest)
     goto restore;
   result += r;
   if (r > 0) {
-    if ((r = buf_parse_s_bases(buf, bases_bin, 1, negative, size,
+    if ((r = buf_parse_s8_base(buf, &g_c3_base_bin, negative,
                                dest)) <= 0)
       goto restore;
     result += r;
@@ -1543,7 +1533,7 @@ sw buf_parse_s (s_buf *buf, u8 size, void *dest)
     goto restore;
   result += r;
   if (r > 0) {
-    if ((r = buf_parse_s_bases(buf, bases_oct, 1, negative, size,
+    if ((r = buf_parse_s8_base(buf, &g_c3_base_oct, negative,
                                dest)) <= 0)
       goto restore;
     result += r;
@@ -1553,13 +1543,16 @@ sw buf_parse_s (s_buf *buf, u8 size, void *dest)
     goto restore;
   result += r;
   if (r > 0) {
-    if ((r = buf_parse_s_bases(buf, bases_hex, 2, negative, size,
-                               dest)) <= 0)
+    if ((r = buf_parse_s8_base(buf, g_c3_bases_hex, negative,
+                               dest)) < 0)
+      goto restore;
+    if (! r && (r = buf_parse_s8_base(buf, g_c3_bases_hex + 1, negative,
+                                      dest)) <= 0)
       goto restore;
     result += r;
     goto ok;
   }
-  if ((r = buf_parse_s_bases(buf, bases_dec, 1, negative, size,
+  if ((r = buf_parse_s8_base(buf, &g_c3_base_dec, negative,
                              dest)) <= 0)
     goto restore;
   result += r;
@@ -1573,56 +1566,46 @@ sw buf_parse_s (s_buf *buf, u8 size, void *dest)
   return r;
 }
 
-sw buf_parse_s_bases (s_buf *buf, const s_str *bases, uw bases_count,
-                      bool negative, u8 size, void *dest)
+sw buf_parse_s8_base (s_buf *buf, const s_str *base, bool negative,
+                      s8 *dest)
 {
   u8 digit;
   sw r;
   sw radix;
   sw result = 0;
   s_buf_save save;
-  s64 tmp = 0;
+  s8 tmp = 0;
   assert(buf);
-  assert(bases);
-  assert(bases_count);
-  assert(size);
-  assert(size <= 8);
+  assert(base);
   assert(dest);
-  if (size > 8) {
-    assert(! "buf_parse_s_bases: unsupported integer size");
-    errx(1, "buf_parse_s_bases: unsupported integer size: %u", size);
-    return -1;
-  }
   buf_save_init(buf, &save);
-  if ((radix = str_length_utf8(bases)) < 2) {
-    assert(! "buf_parse_s_bases: invalid radix");
-    errx(1, "buf_parse_s_bases: invalid radix: %ld", radix);
+  radix = str_length_utf8(base);
+  if (radix < 2 || radix > S8_MAX) {
+    assert(! "buf_parse_s8_base: invalid radix");
+    errx(1, "buf_parse_s8_base: invalid radix: %ld", radix);
     return -1;
   }
-  while ((r = buf_parse_digit(buf, bases, bases_count, &digit)) > 0) {
+  while ((r = buf_parse_digit(buf, base, &digit)) > 0) {
     result += r;
     if (digit >= radix) {
-      assert(! "buf_parse_s_bases: digit not in radix");
-      errx(1, "buf_parse_s_bases: digit not in radix: %u", digit);
+      assert(! "buf_parse_s8_base: digit not in radix");
+      errx(1, "buf_parse_s8_base: digit not in radix: %u", digit);
       return -1;
     }
-    if (tmp > ((((s64) 1 << (size * 8 - 1)) - 1) +
-               (s64) radix - 1) / (s64) radix) {
-      warnx("buf_parse_s_bases: integer overflow");
+    if (tmp > ceiling_s8(S8_MAX, radix)) {
+      warnx("buf_parse_s8_base: integer overflow");
       goto restore;
     }
     tmp *= radix;
-    if (tmp > (s64) (1 << (size * 8 - 1)) - 1 - digit) {
-      warnx("buf_parse_s_bases: integer overflow");
+    if (tmp > (s8) (S8_MAX - digit)) {
+      warnx("buf_parse_s8_base: integer overflow");
       goto restore;
     }
     tmp += digit;
   }
-  if (negative && tmp)
-    tmp = ! tmp - 1;
-  /* XXX: lsb/msb */
-  /* XXX: byte order */
-  xxx;
+  if (negative)
+    tmp = -tmp;
+  *dest = tmp;
   r = result;
   goto clean;
  restore:
@@ -1630,26 +1613,6 @@ sw buf_parse_s_bases (s_buf *buf, const s_str *bases, uw bases_count,
  clean:
   buf_save_clean(buf, &save);
   return r;
-}
-
-sw buf_parse_s8 (s_buf *buf, s8 *dest)
-{
-  return buf_parse_s(buf, 1, dest);
-}
-
-sw buf_parse_s16 (s_buf *buf, s16 *dest)
-{
-  return buf_parse_s(buf, 2, dest);
-}
-
-sw buf_parse_s32 (s_buf *buf, s32 *dest)
-{
-  return buf_parse_s(buf, 4, dest);
-}
-
-sw buf_parse_s64 (s_buf *buf, s64 *dest)
-{
-  return buf_parse_s(buf, 8, dest);
 }
 
 sw buf_parse_str (s_buf *buf, s_str *dest)
@@ -2167,7 +2130,7 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
-    *i = list_new(NULL);
+    *i = list_new(NULL, NULL);
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
     result += r;
@@ -2221,26 +2184,17 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
   return r;
 }
 
-sw buf_parse_u (s_buf *buf, u8 size, void *dest)
+sw buf_parse_u8 (s_buf *buf, u8 *dest)
 {
-  const s_str bases_bin[] = {{{NULL}, 2, {"01"}}};
-  const s_str bases_oct[] = {{{NULL}, 8, {"01234567"}}};
-  const s_str bases_dec[] = {{{NULL}, 10, {"0123456789"}}};
-  const s_str bases_hex[] = {{{NULL}, 16, {"01234567890abcdef"}},
-                             {{NULL}, 16, {"01234567890ABCDEF"}}};
   sw r;
   sw result = 0;
   s_buf_save save;
-  assert(buf);
-  assert(dest);
-  assert(size);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "0b")) < 0)
     goto restore;
+  result += r;
   if (r > 0) {
-    result += r;
-    if ((r = buf_parse_u_bases(buf, bases_bin, 1, size,
-                               dest)) <= 0)
+    if ((r = buf_parse_u8_base(buf, &g_c3_base_bin, dest)) <= 0)
       goto restore;
     result += r;
     goto ok;
@@ -2249,8 +2203,7 @@ sw buf_parse_u (s_buf *buf, u8 size, void *dest)
     goto restore;
   result += r;
   if (r > 0) {
-    if ((r = buf_parse_u_bases(buf, bases_oct, 1, size,
-                               dest)) <= 0)
+    if ((r = buf_parse_u8_base(buf, &g_c3_base_oct, dest)) <= 0)
       goto restore;
     result += r;
     goto ok;
@@ -2259,14 +2212,15 @@ sw buf_parse_u (s_buf *buf, u8 size, void *dest)
     goto restore;
   result += r;
   if (r > 0) {
-    if ((r = buf_parse_u_bases(buf, bases_hex, 2, size,
-                               dest)) <= 0)
+    if ((r = buf_parse_u8_base(buf, g_c3_bases_hex, dest)) < 0)
+      goto restore;
+    if (! r && (r = buf_parse_u8_base(buf, g_c3_bases_hex + 1,
+                                      dest)) <= 0)
       goto restore;
     result += r;
     goto ok;
   }
-  if ((r = buf_parse_u_bases(buf, bases_dec, 1, size,
-                             dest)) <= 0)
+  if ((r = buf_parse_u8_base(buf, &g_c3_base_dec, dest)) <= 0)
     goto restore;
   result += r;
  ok:
@@ -2279,54 +2233,43 @@ sw buf_parse_u (s_buf *buf, u8 size, void *dest)
   return r;
 }
 
-sw buf_parse_u_bases (s_buf *buf, const s_str *bases, uw bases_count,
-                      u8 size, void *dest)
+sw buf_parse_u8_base (s_buf *buf, const s_str *base, u8 *dest)
 {
   u8 digit;
   sw r;
   sw radix;
   sw result = 0;
   s_buf_save save;
-  u64 tmp = 0;
+  u8 tmp = 0;
   assert(buf);
-  assert(bases);
-  assert(bases_count);
-  assert(size);
-  assert(size <= 8);
+  assert(base);
   assert(dest);
-  if (size > 8) {
-    assert(! "buf_parse_u_bases: unsupported integer size");
-    errx(1, "buf_parse_u_bases: unsupported integer size: %u", size);
-    return -1;
-  }
   buf_save_init(buf, &save);
-  if ((radix = str_length_utf8(bases)) < 2) {
-    assert(! "buf_parse_u_bases: invalid radix");
-    errx(1, "buf_parse_u_bases: invalid radix: %ld", radix);
+  radix = str_length_utf8(base);
+  if (radix < 2 || radix > U8_MAX) {
+    assert(! "buf_parse_u8_base: invalid radix");
+    errx(1, "buf_parse_u8_base: invalid radix: %ld", radix);
     return -1;
   }
-  while ((r = buf_parse_digit(buf, bases, bases_count, &digit)) > 0) {
+  while ((r = buf_parse_digit(buf, base, &digit)) > 0) {
     result += r;
     if (digit >= radix) {
-      assert(! "buf_parse_u_bases: digit not in radix");
-      errx(1, "buf_parse_u_bases: digit not in radix: %u", digit);
+      assert(! "buf_parse_u8_base: digit not in radix");
+      errx(1, "buf_parse_u8_base: digit not in radix: %u", digit);
       return -1;
     }
-    if (tmp > ((((u64) 1 << (size * 8)) - 1) +
-               (u64) radix - 1) / (u64) radix) {
-      warnx("buf_parse_u_bases: integer overflow");
+    if (tmp > ceiling_u8(U8_MAX, radix)) {
+      warnx("buf_parse_u8_base: integer overflow");
       goto restore;
     }
     tmp *= radix;
-    if (tmp > (u64) (1 << (size * 8)) - 1 - digit) {
-      warnx("buf_parse_u_bases: integer overflow");
+    if (tmp > (u8) (U8_MAX - digit)) {
+      warnx("buf_parse_u8_base: integer overflow");
       goto restore;
     }
     tmp += digit;
   }
-  /* XXX: lsb/msb */
-  /* XXX: byte order */
-  xxx;
+  *dest = tmp;
   r = result;
   goto clean;
  restore:
@@ -2334,26 +2277,6 @@ sw buf_parse_u_bases (s_buf *buf, const s_str *bases, uw bases_count,
  clean:
   buf_save_clean(buf, &save);
   return r;
-}
-
-sw buf_parse_u8 (s_buf *buf, u8 *dest)
-{
-  return buf_parse_u(buf, 1, dest);
-}
-
-sw buf_parse_u16 (s_buf *buf, u16 *dest)
-{
-  return buf_parse_u(buf, 2, dest);
-}
-
-sw buf_parse_u32 (s_buf *buf, u32 *dest)
-{
-  return buf_parse_u(buf, 4, dest);
-}
-
-sw buf_parse_u64 (s_buf *buf, u64 *dest)
-{
-  return buf_parse_u(buf, 8, dest);
 }
 
 sw buf_parse_u64_dec (s_buf *buf, u64 *dest)

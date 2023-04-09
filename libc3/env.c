@@ -150,7 +150,7 @@ bool env_eval_call_arguments (s_env *env, s_list *args, s_list **dest)
   s_list *tmp;
   tail = &tmp;
   while (args) {
-    *tail = list_new(NULL);
+    *tail = list_new(NULL, NULL);
     if (! env_eval_tag(env, &args->tag, &(*tail)->tag)) {
       list_delete_all(tmp);
       err_puts("env_eval_call_arguments: invalid argument: ");
@@ -264,7 +264,7 @@ bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
       goto ko;
     if (! b)
       goto ko;
-    *t = list_new(NULL);
+    *t = list_new(NULL, NULL);
     if (! env_eval_equal_tag(env, &a->tag, &b->tag, &(*t)->tag))
       goto ko;
     a_next = list_next(a);

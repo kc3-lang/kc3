@@ -49,8 +49,6 @@ C3_C_SOURCES = \
 	libc3/buf.h \
 	libc3/buf_file.c \
 	libc3/buf_file.h \
-	libc3/buf_inspect.c \
-	libc3/buf_inspect.h \
 	libc3/buf_parse_c.c \
 	libc3/buf_parse_c.h \
 	libc3/buf_save.c \
@@ -63,7 +61,6 @@ C3_C_SOURCES = \
 	libc3/set__fact.h \
 	libc3/set__fact.c \
 	libc3/set_cursor__fact.h \
-	libc3/compare.c \
 	libc3/compare.h \
 	libc3/buf_save.h \
 	libc3/env.c \
@@ -113,7 +110,6 @@ C3_C_SOURCES = \
 	libc3/quote.h \
 	libc3/types.h \
 	libc3/eval.h \
-	libc3/buf_parse.h \
 	libc3/cfn.c \
 	libc3/set.c.in \
 	libc3/set.h.in \
@@ -121,12 +117,16 @@ C3_C_SOURCES = \
 	libc3/set_cursor.h.in \
 	libc3/str.c \
 	libc3/eval.c \
+	libc3/buf_inspect.h \
+	libc3/ceiling.h \
+	libc3/ceiling.c \
 	libc3/set_item.c.in \
 	libc3/set_item.h.in \
 	libc3/fact.c \
 	libc3/skiplist.c.in \
 	libc3/operator.c \
 	libc3/operator.h \
+	libc3/buf_parse.c \
 	libc3/skiplist.h.in \
 	libc3/skiplist_node.c.in \
 	libc3/skiplist_node.h.in \
@@ -136,13 +136,15 @@ C3_C_SOURCES = \
 	libc3/tag.c \
 	libc3/c3.h \
 	libc3/facts.c \
+	libc3/buf_inspect.c \
+	libc3/buf_parse.h \
 	libc3/tuple.c \
 	libc3/tuple.h \
 	libc3/ucd.c \
 	libc3/ucd.h \
 	libc3/tag.h \
 	libc3/module.c \
-	libc3/buf_parse.c \
+	libc3/compare.c \
 	libc3/cfn.h \
 	libc3/sha1.h \
 	test/bool_test.c \
@@ -175,6 +177,7 @@ C3_C_SOURCES = \
 	test/tag_test.h \
 	test/types_test.c \
 	test/compare_test.c \
+	test/cfn_test.c \
 	ucd2c/ucd.h \
 	ucd2c/ucd2c.c \
 

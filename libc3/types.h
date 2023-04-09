@@ -35,11 +35,23 @@ typedef uint32_t      u32;
 typedef unsigned long uw;
 typedef uint64_t      u64;
 
-#define S32_MAX LONG_MAX
-#define S64_MAX LLONG_MAX
-#define SW_MAX  LONG_MAX
-#define U64_MAX ULLONG_MAX
-#define UW_MAX  ULONG_MAX
+#define S8_MAX ((s8) ((1 << (8 * sizeof(s8) - 1)) - 1))
+#define S16_MAX ((s16) ((1 << (8 * sizeof(s16) - 1)) - 1))
+#define S32_MAX ((s32) ((1 << (8 * sizeof(s32) - 1)) - 1))
+#define S64_MAX ((s64) ((1 << (8 * sizeof(s64) - 1)) - 1))
+#define SW_MAX ((sw) ((1 << (8 * sizeof(sw) - 1)) - 1))
+
+#define S8_MIN ((s8) (1 << (8 * sizeof(s8))))
+#define S16_MIN ((s16) (1 << (8 * sizeof(s16))))
+#define S32_MIN ((s32) (1 << (8 * sizeof(s32))))
+#define S64_MIN ((s64) (1 << (8 * sizeof(s64))))
+#define SW_MIN ((sw) (1 << (8 * sizeof(sw))))
+
+#define U8_MAX ((u8) ((1 << 8 * sizeof(u8)) - 1))
+#define U16_MAX ((u16) ((1 << 8 * sizeof(u16)) - 1))
+#define U32_MAX ((u32) ((1 << 8 * sizeof(u32)) - 1))
+#define U64_MAX ((u64) ((1 << 8 * sizeof(u64)) - 1))
+#define UW_MAX ((uw) -1)
 
 /* IEEE 754 floating point numbers. */
 typedef float               f32;
