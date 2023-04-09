@@ -47,10 +47,10 @@ typedef uint64_t      u64;
 #define S64_MIN ((s64) (1 << (8 * sizeof(s64))))
 #define SW_MIN ((sw) (1 << (8 * sizeof(sw))))
 
-#define U8_MAX ((u8) ((1 << 8 * sizeof(u8)) - 1))
-#define U16_MAX ((u16) ((1 << 8 * sizeof(u16)) - 1))
-#define U32_MAX ((u32) ((1 << 8 * sizeof(u32)) - 1))
-#define U64_MAX ((u64) ((1 << 8 * sizeof(u64)) - 1))
+#define U8_MAX ((u8) -1)
+#define U16_MAX ((u16) -1)
+#define U32_MAX ((u32) -1)
+#define U64_MAX ((u64) -1)
 #define UW_MAX ((uw) -1)
 
 /* IEEE 754 floating point numbers. */
@@ -58,7 +58,7 @@ typedef float               f32;
 typedef double              f64;
 
 /* Boolean : true or false. */
-typedef s8 bool;
+typedef u8 bool;
 
 /* enums */
 typedef enum {

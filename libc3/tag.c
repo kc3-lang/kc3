@@ -1811,44 +1811,6 @@ s_tag * tag_sym_1 (s_tag *tag, const s8 *p)
   return tag_init_sym_1(tag, p);
 }
 
-ffi_type tag_to_ffi_type(const s_tag *tag)
-{
-  switch (tag->type.type) {
-    case TAG_S8:
-      return ffi_type_sint8;
-    case TAG_S16:
-      return ffi_type_sint16;
-    case TAG_S32:
-      return ffi_type_sint32;
-    case TAG_S64:
-      return ffi_type_sint64;
-    case TAG_U8:
-      return ffi_type_uint8;
-    case TAG_U16:
-      return ffi_type_uint16;
-    case TAG_U32:
-      return ffi_type_uint32;
-    case TAG_U64:
-      return ffi_type_uint64;
-    case TAG_F32:
-      return ffi_type_float;
-    case TAG_F64:
-      return ffi_type_double;
-    case TAG_VOID:
-      return ffi_type_void;
-    case TAG_INTEGER:
-      return ffi_type_sint;
-    case TAG_STR:
-      return ffi_type_pointer;
-    case TAG_CHARACTER:
-      return ffi_type_schar;
-    default: ;
-  }
-  assert(! "tag_to_ffi_type: unknown type");
-  errx(1, "tag_to_ffi_type: unknown type");
-  return ffi_type_void;
-}
-
 void * tag_to_pointer (s_tag *tag, const s_sym *type)
 {
   if (type == sym_1("tag"))
@@ -2068,6 +2030,69 @@ f_buf_parse tag_type_to_buf_parse (e_tag_type type)
   assert(! "tag_type_to_buf_parse: invalid tag type");
   err(1, "tag_type_to_buf_parse: invalid tag type");
   return NULL;
+}
+
+ffi_type * tag_type_to_ffi_type (e_tag_type type)
+{
+  switch (type) {
+  case TAG_ARRAY:
+    return &ffi_type_pointer;
+  case TAG_BOOL:
+    return &ffi_type_uint8;
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO:
+    return &ffi_type_pointer;
+  case TAG_CFN:
+    return &ffi_type_pointer;
+  case TAG_CHARACTER:
+    return &ffi_type_schar;
+  case TAG_F32:
+    return &ffi_type_float;
+  case TAG_F64:
+    return &ffi_type_double;
+  case TAG_FN:
+    return &ffi_type_pointer;
+  case TAG_IDENT:
+    return &ffi_type_pointer;
+  case TAG_INTEGER:
+    return &ffi_type_sint;
+  case TAG_LIST:
+    return &ffi_type_pointer;
+  case TAG_PTAG:
+    return &ffi_type_pointer;
+  case TAG_QUOTE:
+    return &ffi_type_pointer;
+  case TAG_S8:
+    return &ffi_type_sint8;
+  case TAG_S16:
+    return &ffi_type_sint16;
+  case TAG_S32:
+    return &ffi_type_sint32;
+  case TAG_S64:
+    return &ffi_type_sint64;
+  case TAG_STR:
+    return &ffi_type_pointer;
+  case TAG_SYM:
+    return &ffi_type_pointer;
+  case TAG_TUPLE:
+    return &ffi_type_pointer;
+  case TAG_U8:
+    return &ffi_type_uint8;
+  case TAG_U16:
+    return &ffi_type_uint16;
+  case TAG_U32:
+    return &ffi_type_uint32;
+  case TAG_U64:
+    return &ffi_type_uint64;
+  case TAG_VAR:
+    return &ffi_type_pointer;
+  case TAG_VOID:
+    return &ffi_type_void;
+  }
+  assert(! "tag_type_to_ffi_type: unknown tag type");
+  errx(1, "tag_type_to_ffi_type: unknown tag type");
+  return &ffi_type_void;
 }
 
 s8 * tag_type_to_string (e_tag_type type)

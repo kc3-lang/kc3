@@ -286,12 +286,12 @@
 #define BUF_PARSE_TEST_NOT_BOOL(test)                                  \
   do {                                                                 \
     s_buf buf;                                                         \
-    bool dest = -1;                                                    \
+    bool dest = 2;                                                    \
     test_context("buf_parse_bool(" # test ") -> 0");                   \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_bool(&buf, &dest), 0);                           \
     TEST_EQ(buf.rpos, 0);                                              \
-    TEST_EQ(dest, -1);                                                 \
+    TEST_EQ(dest, 2);                                                 \
     buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
@@ -498,6 +498,17 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_S(bits, test, expected)                         \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s ## bits s;                                                       \
+    test_context("buf_parse_s" # bits "(" # test ")");                 \
+    buf_init_1(&buf, (test));                                          \
+    TEST_EQ(buf_parse_s ## bits(&buf, &s), strlen(test));              \
+    TEST_EQ(s, (expected));                                            \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_PARSE_TEST_STR(test, expected)                             \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -637,13 +648,13 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define BUF_PARSE_TEST_U8(test, expected)                              \
+#define BUF_PARSE_TEST_U(bits, test, expected)                         \
   do {                                                                 \
     s_buf buf;                                                         \
-    u8 u;                                                              \
-    test_context("buf_parse_u8(" # test ")");                          \
+    u ## bits u;                                                       \
+    test_context("buf_parse_u" # bits "(" # test ")");                 \
     buf_init_1(&buf, (test));                                          \
-    TEST_EQ(buf_parse_u8(&buf, &u), strlen(test));                     \
+    TEST_EQ(buf_parse_u ## bits(&buf, &u), strlen(test));              \
     TEST_EQ(u, (expected));                                            \
     test_context(NULL);                                                \
   } while (0)
@@ -667,6 +678,7 @@ void buf_parse_test_integer_oct ();
 void buf_parse_test_integer_bin ();
 void buf_parse_test_ident ();
 void buf_parse_test_list ();
+void buf_parse_test_s8 ();
 void buf_parse_test_str ();
 void buf_parse_test_str_character ();
 void buf_parse_test_str_u8 ();
@@ -695,6 +707,7 @@ void buf_parse_test ()
   buf_parse_test_integer_hex();
   buf_parse_test_integer_oct();
   buf_parse_test_integer();
+  buf_parse_test_s8();
   buf_parse_test_str();
   buf_parse_test_sym();
   buf_parse_test_list();
@@ -1096,6 +1109,170 @@ void buf_parse_test_list ()
   BUF_PARSE_TEST_LIST("(a, b, c | d)");
 }
 
+void buf_parse_test_s8 ()
+{
+  BUF_PARSE_TEST_S(8, "-0b0", 0);
+  BUF_PARSE_TEST_S(8, "-0b1", -1);
+  BUF_PARSE_TEST_S(8, "-0b00", 0);
+  BUF_PARSE_TEST_S(8, "-0b01", -1);
+  BUF_PARSE_TEST_S(8, "-0b10", -2);
+  BUF_PARSE_TEST_S(8, "-0b11", -3);
+  BUF_PARSE_TEST_S(8, "-0b000", 0);
+  BUF_PARSE_TEST_S(8, "-0b001", -1);
+  BUF_PARSE_TEST_S(8, "-0b010", -2);
+  BUF_PARSE_TEST_S(8, "-0b011", -3);
+  BUF_PARSE_TEST_S(8, "-0b100", -4);
+  BUF_PARSE_TEST_S(8, "-0b101", -5);
+  BUF_PARSE_TEST_S(8, "-0b110", -6);
+  BUF_PARSE_TEST_S(8, "-0b111", -7);
+  BUF_PARSE_TEST_S(8, "-0b10000000", -128);
+  BUF_PARSE_TEST_S(8, "-0b010000000", -128);
+  BUF_PARSE_TEST_S(8, "-0o0", 0);
+  BUF_PARSE_TEST_S(8, "-0o1", -1);
+  BUF_PARSE_TEST_S(8, "-0o2", -2);
+  BUF_PARSE_TEST_S(8, "-0o3", -3);
+  BUF_PARSE_TEST_S(8, "-0o4", -4);
+  BUF_PARSE_TEST_S(8, "-0o5", -5);
+  BUF_PARSE_TEST_S(8, "-0o6", -6);
+  BUF_PARSE_TEST_S(8, "-0o7", -7);
+  BUF_PARSE_TEST_S(8, "-0o00", 0);
+  BUF_PARSE_TEST_S(8, "-0o01", -1);
+  BUF_PARSE_TEST_S(8, "-0o10", -8);
+  BUF_PARSE_TEST_S(8, "-0o11", -9);
+  BUF_PARSE_TEST_S(8, "-0o000", 0);
+  BUF_PARSE_TEST_S(8, "-0o200", -128);
+  BUF_PARSE_TEST_S(8, "-0o0200", -128);
+  BUF_PARSE_TEST_S(8, "-0x0", 0);
+  BUF_PARSE_TEST_S(8, "-0x1", -1);
+  BUF_PARSE_TEST_S(8, "-0x2", -2);
+  BUF_PARSE_TEST_S(8, "-0x3", -3);
+  BUF_PARSE_TEST_S(8, "-0x4", -4);
+  BUF_PARSE_TEST_S(8, "-0x5", -5);
+  BUF_PARSE_TEST_S(8, "-0x6", -6);
+  BUF_PARSE_TEST_S(8, "-0x7", -7);
+  BUF_PARSE_TEST_S(8, "-0x8", -8);
+  BUF_PARSE_TEST_S(8, "-0x9", -9);
+  BUF_PARSE_TEST_S(8, "-0xA", -10);
+  BUF_PARSE_TEST_S(8, "-0xB", -11);
+  BUF_PARSE_TEST_S(8, "-0xC", -12);
+  BUF_PARSE_TEST_S(8, "-0xD", -13);
+  BUF_PARSE_TEST_S(8, "-0xE", -14);
+  BUF_PARSE_TEST_S(8, "-0xF", -15);
+  BUF_PARSE_TEST_S(8, "-0x00", 0);
+  BUF_PARSE_TEST_S(8, "-0x01", -1);
+  BUF_PARSE_TEST_S(8, "-0x10", -16);
+  BUF_PARSE_TEST_S(8, "-0x11", -17);
+  BUF_PARSE_TEST_S(8, "-0x000", 0);
+  BUF_PARSE_TEST_S(8, "-0x80", -128);
+  BUF_PARSE_TEST_S(8, "-0x080", -128);
+  BUF_PARSE_TEST_S(8, "-0", 0);
+  BUF_PARSE_TEST_S(8, "-1", -1);
+  BUF_PARSE_TEST_S(8, "-2", -2);
+  BUF_PARSE_TEST_S(8, "-3", -3);
+  BUF_PARSE_TEST_S(8, "-4", -4);
+  BUF_PARSE_TEST_S(8, "-5", -5);
+  BUF_PARSE_TEST_S(8, "-6", -6);
+  BUF_PARSE_TEST_S(8, "-7", -7);
+  BUF_PARSE_TEST_S(8, "-8", -8);
+  BUF_PARSE_TEST_S(8, "-9", -9);
+  BUF_PARSE_TEST_S(8, "-00", 0);
+  BUF_PARSE_TEST_S(8, "-10", -10);
+  BUF_PARSE_TEST_S(8, "-11", -11);
+  BUF_PARSE_TEST_S(8, "-12", -12);
+  BUF_PARSE_TEST_S(8, "-20", -20);
+  BUF_PARSE_TEST_S(8, "-21", -21);
+  BUF_PARSE_TEST_S(8, "-22", -22);
+  BUF_PARSE_TEST_S(8, "-000", 0);
+  BUF_PARSE_TEST_S(8, "-010", -10);
+  BUF_PARSE_TEST_S(8, "-011", -11);
+  BUF_PARSE_TEST_S(8, "-012", -12);
+  BUF_PARSE_TEST_S(8, "-020", -20);
+  BUF_PARSE_TEST_S(8, "-021", -21);
+  BUF_PARSE_TEST_S(8, "-022", -22);
+  BUF_PARSE_TEST_S(8, "-128", 128);
+  BUF_PARSE_TEST_S(8, "-0128", 128);
+  BUF_PARSE_TEST_S(8, "0b0", 0);
+  BUF_PARSE_TEST_S(8, "0b1", 1);
+  BUF_PARSE_TEST_S(8, "0b00", 0);
+  BUF_PARSE_TEST_S(8, "0b01", 1);
+  BUF_PARSE_TEST_S(8, "0b10", 2);
+  BUF_PARSE_TEST_S(8, "0b11", 3);
+  BUF_PARSE_TEST_S(8, "0b000", 0);
+  BUF_PARSE_TEST_S(8, "0b001", 1);
+  BUF_PARSE_TEST_S(8, "0b010", 2);
+  BUF_PARSE_TEST_S(8, "0b011", 3);
+  BUF_PARSE_TEST_S(8, "0b100", 4);
+  BUF_PARSE_TEST_S(8, "0b101", 5);
+  BUF_PARSE_TEST_S(8, "0b110", 6);
+  BUF_PARSE_TEST_S(8, "0b111", 7);
+  BUF_PARSE_TEST_S(8, "0b1111111", 127);
+  BUF_PARSE_TEST_S(8, "0b01111111", 127);
+  BUF_PARSE_TEST_S(8, "0o0", 0);
+  BUF_PARSE_TEST_S(8, "0o1", 1);
+  BUF_PARSE_TEST_S(8, "0o2", 2);
+  BUF_PARSE_TEST_S(8, "0o3", 3);
+  BUF_PARSE_TEST_S(8, "0o4", 4);
+  BUF_PARSE_TEST_S(8, "0o5", 5);
+  BUF_PARSE_TEST_S(8, "0o6", 6);
+  BUF_PARSE_TEST_S(8, "0o7", 7);
+  BUF_PARSE_TEST_S(8, "0o00", 0);
+  BUF_PARSE_TEST_S(8, "0o01", 1);
+  BUF_PARSE_TEST_S(8, "0o10", 8);
+  BUF_PARSE_TEST_S(8, "0o11", 9);
+  BUF_PARSE_TEST_S(8, "0o000", 0);
+  BUF_PARSE_TEST_S(8, "0o177", 127);
+  BUF_PARSE_TEST_S(8, "0o0177", 127);
+  BUF_PARSE_TEST_S(8, "0x0", 0);
+  BUF_PARSE_TEST_S(8, "0x1", 1);
+  BUF_PARSE_TEST_S(8, "0x2", 2);
+  BUF_PARSE_TEST_S(8, "0x3", 3);
+  BUF_PARSE_TEST_S(8, "0x4", 4);
+  BUF_PARSE_TEST_S(8, "0x5", 5);
+  BUF_PARSE_TEST_S(8, "0x6", 6);
+  BUF_PARSE_TEST_S(8, "0x7", 7);
+  BUF_PARSE_TEST_S(8, "0x8", 8);
+  BUF_PARSE_TEST_S(8, "0x9", 9);
+  BUF_PARSE_TEST_S(8, "0xA", 10);
+  BUF_PARSE_TEST_S(8, "0xB", 11);
+  BUF_PARSE_TEST_S(8, "0xC", 12);
+  BUF_PARSE_TEST_S(8, "0xD", 13);
+  BUF_PARSE_TEST_S(8, "0xE", 14);
+  BUF_PARSE_TEST_S(8, "0xF", 15);
+  BUF_PARSE_TEST_S(8, "0x00", 0);
+  BUF_PARSE_TEST_S(8, "0x01", 1);
+  BUF_PARSE_TEST_S(8, "0x10", 16);
+  BUF_PARSE_TEST_S(8, "0x11", 17);
+  BUF_PARSE_TEST_S(8, "0x000", 0);
+  BUF_PARSE_TEST_S(8, "0x7F", 127);
+  BUF_PARSE_TEST_S(8, "0x07F", 127);
+  BUF_PARSE_TEST_S(8, "0", 0);
+  BUF_PARSE_TEST_S(8, "1", 1);
+  BUF_PARSE_TEST_S(8, "2", 2);
+  BUF_PARSE_TEST_S(8, "3", 3);
+  BUF_PARSE_TEST_S(8, "4", 4);
+  BUF_PARSE_TEST_S(8, "5", 5);
+  BUF_PARSE_TEST_S(8, "6", 6);
+  BUF_PARSE_TEST_S(8, "7", 7);
+  BUF_PARSE_TEST_S(8, "8", 8);
+  BUF_PARSE_TEST_S(8, "9", 9);
+  BUF_PARSE_TEST_S(8, "00", 0);
+  BUF_PARSE_TEST_S(8, "10", 10);
+  BUF_PARSE_TEST_S(8, "11", 11);
+  BUF_PARSE_TEST_S(8, "12", 12);
+  BUF_PARSE_TEST_S(8, "20", 20);
+  BUF_PARSE_TEST_S(8, "21", 21);
+  BUF_PARSE_TEST_S(8, "22", 22);
+  BUF_PARSE_TEST_S(8, "000", 0);
+  BUF_PARSE_TEST_S(8, "010", 10);
+  BUF_PARSE_TEST_S(8, "011", 11);
+  BUF_PARSE_TEST_S(8, "012", 12);
+  BUF_PARSE_TEST_S(8, "020", 20);
+  BUF_PARSE_TEST_S(8, "021", 21);
+  BUF_PARSE_TEST_S(8, "022", 22);
+  BUF_PARSE_TEST_S(8, "127", 127);
+  BUF_PARSE_TEST_S(8, "0127", 127);
+}
+
 void buf_parse_test_str ()
 {
   BUF_PARSE_TEST_NOT_STR("");
@@ -1257,66 +1434,84 @@ void buf_parse_test_tuple ()
 
 void buf_parse_test_u8 ()
 {
-  BUF_PARSE_TEST_U8("0b0", 0);
-  BUF_PARSE_TEST_U8("0b1", 1);
-  BUF_PARSE_TEST_U8("0b00", 0);
-  BUF_PARSE_TEST_U8("0b01", 1);
-  BUF_PARSE_TEST_U8("0b10", 2);
-  BUF_PARSE_TEST_U8("0b11", 3);
-  BUF_PARSE_TEST_U8("0b000", 0);
-  BUF_PARSE_TEST_U8("0b001", 1);
-  BUF_PARSE_TEST_U8("0b010", 2);
-  BUF_PARSE_TEST_U8("0b011", 3);
-  BUF_PARSE_TEST_U8("0b100", 4);
-  BUF_PARSE_TEST_U8("0b101", 5);
-  BUF_PARSE_TEST_U8("0b110", 6);
-  BUF_PARSE_TEST_U8("0b111", 7);
-  BUF_PARSE_TEST_U8("0o0", 0);
-  BUF_PARSE_TEST_U8("0o1", 1);
-  BUF_PARSE_TEST_U8("0o2", 2);
-  BUF_PARSE_TEST_U8("0o3", 3);
-  BUF_PARSE_TEST_U8("0o4", 4);
-  BUF_PARSE_TEST_U8("0o5", 5);
-  BUF_PARSE_TEST_U8("0o6", 6);
-  BUF_PARSE_TEST_U8("0o7", 7);
-  BUF_PARSE_TEST_U8("0o00", 0);
-  BUF_PARSE_TEST_U8("0o01", 1);
-  BUF_PARSE_TEST_U8("0o10", 8);
-  BUF_PARSE_TEST_U8("0o11", 9);
-  BUF_PARSE_TEST_U8("0o000", 0);
-  BUF_PARSE_TEST_U8("0x0", 0);
-  BUF_PARSE_TEST_U8("0x1", 1);
-  BUF_PARSE_TEST_U8("0x2", 2);
-  BUF_PARSE_TEST_U8("0x3", 2);
-  BUF_PARSE_TEST_U8("0x4", 2);
-  BUF_PARSE_TEST_U8("0x5", 2);
-  BUF_PARSE_TEST_U8("0x6", 2);
-  BUF_PARSE_TEST_U8("0x7", 2);
-  BUF_PARSE_TEST_U8("0x8", 2);
-  BUF_PARSE_TEST_U8("0x9", 2);
-  BUF_PARSE_TEST_U8("0xA", 2);
-  BUF_PARSE_TEST_U8("0xB", 2);
-  BUF_PARSE_TEST_U8("0xC", 2);
-  BUF_PARSE_TEST_U8("0xD", 2);
-  BUF_PARSE_TEST_U8("0xE", 2);
-  BUF_PARSE_TEST_U8("0xF", 2);
-  BUF_PARSE_TEST_U8("0x00", 0);
-  BUF_PARSE_TEST_U8("0x01", 1);
-  BUF_PARSE_TEST_U8("0x10", 16);
-  BUF_PARSE_TEST_U8("0x11", 17);
-  BUF_PARSE_TEST_U8("0x000", 0);
-  BUF_PARSE_TEST_U8("0", 0);
-  BUF_PARSE_TEST_U8("1", 1);
-  BUF_PARSE_TEST_U8("2", 2);
-  BUF_PARSE_TEST_U8("3", 3);
-  BUF_PARSE_TEST_U8("4", 4);
-  BUF_PARSE_TEST_U8("5", 5);
-  BUF_PARSE_TEST_U8("6", 6);
-  BUF_PARSE_TEST_U8("7", 7);
-  BUF_PARSE_TEST_U8("8", 8);
-  BUF_PARSE_TEST_U8("9", 9);
-  BUF_PARSE_TEST_U8("00", 0);
-  BUF_PARSE_TEST_U8("10", 10);
-  BUF_PARSE_TEST_U8("11", 11);
-  BUF_PARSE_TEST_U8("000", 0);
+  BUF_PARSE_TEST_U(8, "0b0", 0);
+  BUF_PARSE_TEST_U(8, "0b1", 1);
+  BUF_PARSE_TEST_U(8, "0b00", 0);
+  BUF_PARSE_TEST_U(8, "0b01", 1);
+  BUF_PARSE_TEST_U(8, "0b10", 2);
+  BUF_PARSE_TEST_U(8, "0b11", 3);
+  BUF_PARSE_TEST_U(8, "0b000", 0);
+  BUF_PARSE_TEST_U(8, "0b001", 1);
+  BUF_PARSE_TEST_U(8, "0b010", 2);
+  BUF_PARSE_TEST_U(8, "0b011", 3);
+  BUF_PARSE_TEST_U(8, "0b100", 4);
+  BUF_PARSE_TEST_U(8, "0b101", 5);
+  BUF_PARSE_TEST_U(8, "0b110", 6);
+  BUF_PARSE_TEST_U(8, "0b111", 7);
+  BUF_PARSE_TEST_U(8, "0b1111111", 127);
+  BUF_PARSE_TEST_U(8, "0b01111111", 127);
+  BUF_PARSE_TEST_U(8, "0o0", 0);
+  BUF_PARSE_TEST_U(8, "0o1", 1);
+  BUF_PARSE_TEST_U(8, "0o2", 2);
+  BUF_PARSE_TEST_U(8, "0o3", 3);
+  BUF_PARSE_TEST_U(8, "0o4", 4);
+  BUF_PARSE_TEST_U(8, "0o5", 5);
+  BUF_PARSE_TEST_U(8, "0o6", 6);
+  BUF_PARSE_TEST_U(8, "0o7", 7);
+  BUF_PARSE_TEST_U(8, "0o00", 0);
+  BUF_PARSE_TEST_U(8, "0o01", 1);
+  BUF_PARSE_TEST_U(8, "0o10", 8);
+  BUF_PARSE_TEST_U(8, "0o11", 9);
+  BUF_PARSE_TEST_U(8, "0o000", 0);
+  BUF_PARSE_TEST_U(8, "0o177", 127);
+  BUF_PARSE_TEST_U(8, "0o0177", 127);
+  BUF_PARSE_TEST_U(8, "0x0", 0);
+  BUF_PARSE_TEST_U(8, "0x1", 1);
+  BUF_PARSE_TEST_U(8, "0x2", 2);
+  BUF_PARSE_TEST_U(8, "0x3", 3);
+  BUF_PARSE_TEST_U(8, "0x4", 4);
+  BUF_PARSE_TEST_U(8, "0x5", 5);
+  BUF_PARSE_TEST_U(8, "0x6", 6);
+  BUF_PARSE_TEST_U(8, "0x7", 7);
+  BUF_PARSE_TEST_U(8, "0x8", 8);
+  BUF_PARSE_TEST_U(8, "0x9", 9);
+  BUF_PARSE_TEST_U(8, "0xA", 10);
+  BUF_PARSE_TEST_U(8, "0xB", 11);
+  BUF_PARSE_TEST_U(8, "0xC", 12);
+  BUF_PARSE_TEST_U(8, "0xD", 13);
+  BUF_PARSE_TEST_U(8, "0xE", 14);
+  BUF_PARSE_TEST_U(8, "0xF", 15);
+  BUF_PARSE_TEST_U(8, "0x00", 0);
+  BUF_PARSE_TEST_U(8, "0x01", 1);
+  BUF_PARSE_TEST_U(8, "0x10", 16);
+  BUF_PARSE_TEST_U(8, "0x11", 17);
+  BUF_PARSE_TEST_U(8, "0x000", 0);
+  BUF_PARSE_TEST_U(8, "0x7F", 127);
+  BUF_PARSE_TEST_U(8, "0x07F", 127);
+  BUF_PARSE_TEST_U(8, "0", 0);
+  BUF_PARSE_TEST_U(8, "1", 1);
+  BUF_PARSE_TEST_U(8, "2", 2);
+  BUF_PARSE_TEST_U(8, "3", 3);
+  BUF_PARSE_TEST_U(8, "4", 4);
+  BUF_PARSE_TEST_U(8, "5", 5);
+  BUF_PARSE_TEST_U(8, "6", 6);
+  BUF_PARSE_TEST_U(8, "7", 7);
+  BUF_PARSE_TEST_U(8, "8", 8);
+  BUF_PARSE_TEST_U(8, "9", 9);
+  BUF_PARSE_TEST_U(8, "00", 0);
+  BUF_PARSE_TEST_U(8, "10", 10);
+  BUF_PARSE_TEST_U(8, "11", 11);
+  BUF_PARSE_TEST_U(8, "12", 12);
+  BUF_PARSE_TEST_U(8, "20", 20);
+  BUF_PARSE_TEST_U(8, "21", 21);
+  BUF_PARSE_TEST_U(8, "22", 22);
+  BUF_PARSE_TEST_U(8, "000", 0);
+  BUF_PARSE_TEST_U(8, "010", 10);
+  BUF_PARSE_TEST_U(8, "011", 11);
+  BUF_PARSE_TEST_U(8, "012", 12);
+  BUF_PARSE_TEST_U(8, "020", 20);
+  BUF_PARSE_TEST_U(8, "021", 21);
+  BUF_PARSE_TEST_U(8, "022", 22);
+  BUF_PARSE_TEST_U(8, "127", 127);
+  BUF_PARSE_TEST_U(8, "0127", 127);
 }

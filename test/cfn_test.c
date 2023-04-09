@@ -17,52 +17,45 @@
 #include "../libc3/tag.h"
 #include "test.h"
 
-void cfn_test ();
+/* 1 */
+bool cfn_test_not (bool a);
+
+/* 2 */
 void cfn_test_apply ();
 void cfn_test_copy ();
 void cfn_test_init_clean ();
 void cfn_test_link ();
-bool cfn_test_not (bool a);
-void cfn_test_set_type ();
+void cfn_test_prep_cif ();
+
+/* 3 */
+void cfn_test ();
 
 void cfn_test ()
 {
   cfn_test_init_clean();
-  cfn_test_apply();
   cfn_test_copy();
   cfn_test_link();
-  cfn_test_set_type();
-}
-
-bool cfn_test_not (bool a)
-{
-  return a ? false : true;
-}
-
-void cfn_test_init_clean ()
-{
-  s_cfn tmp;
-  TEST_EQ(cfn_init(&tmp, sym_1("cfn_test_not"),
-                   list_1("(:bool)"),
-                   sym_1("bool")), &tmp);
-  cfn_clean(&tmp);
-  test_ok();
+  cfn_test_prep_cif();
+  cfn_test_apply();
 }
 
 void cfn_test_apply ()
 {
   s_list *args;
   s_tag result;
-  s_cfn tmp;
-  cfn_init(&tmp, sym_1("cfn_test_not"),
+  s_cfn a;
+  cfn_init(&a, sym_1("cfn_test_not"),
            list_1("(:bool)"),
            sym_1("bool"));
+  cfn_link(&a);
+  cfn_prep_cif(&a);
   args = list_new(NULL, NULL);
   tag_init_bool(&args->tag, false);
-  TEST_EQ(cfn_apply(&tmp, args, &result), &result);
+  TEST_EQ(cfn_apply(&a, args, &result), &result);
+  TEST_EQ(result.type.type, TAG_BOOL);
   TEST_EQ(result.data.bool, true);
   list_delete_all(args);
-  cfn_clean(&tmp);
+  cfn_clean(&a);
 }
 
 void cfn_test_copy ()
@@ -89,19 +82,91 @@ void cfn_test_copy ()
     a_arg_types = list_next(a_arg_types);
     b_arg_types = list_next(b_arg_types);
   }
-  TEST_EQ(a.cif, b.cif);
+  TEST_EQ(a.cif.abi, b.cif.abi);
+  TEST_EQ(a.cif.nargs, b.cif.nargs);
+  TEST_EQ(memcmp(a.cif.arg_types, b.cif.arg_types,
+                 a.cif.nargs * sizeof(ffi_type *)), 0);
+  TEST_EQ(a.cif.rtype, b.cif.rtype);
+  TEST_EQ(a.cif.bytes, b.cif.bytes);
+  TEST_EQ(a.cif.flags, b.cif.flags);
   cfn_clean(&b);
   cfn_clean(&a);
 }
 
-void cfn_test_link ()
+void cfn_test_init_clean ()
 {
-  s_cfn tmp;
-  cfn_init(&tmp);
-  tmp.name
-  cfn_clean(&tmp);
+  s_cfn a;
+  TEST_EQ(cfn_init(&a, sym_1("cfn_test_not"),
+                   list_1("(:bool)"),
+                   sym_1("bool")), &a);
+  TEST_EQ(a.name, sym_1("cfn_test_not"));
+  TEST_EQ(a.ptr.f, 0);
+  TEST_EQ(a.ptr.p, 0);
+  TEST_EQ(a.arity, 1);
+  TEST_EQ(a.result_type, sym_1("bool"));
+  TEST_EQ(a.arg_result, false);
+  TEST_EQ(a.arg_types->tag.type.type, TAG_SYM);
+  TEST_EQ(a.arg_types->tag.data.sym, sym_1("bool"));
+  TEST_EQ(a.arg_types->next.type.type, TAG_LIST);
+  TEST_EQ(a.arg_types->next.data.list, NULL);
+  TEST_EQ(a.cif.abi, 0);
+  TEST_EQ(a.cif.nargs, 0);
+  TEST_EQ(a.cif.arg_types, 0);
+  TEST_EQ(a.cif.rtype, 0);
+  TEST_EQ(a.cif.bytes, 0);
+  TEST_EQ(a.cif.flags, 0);
+  cfn_clean(&a);
+  test_ok();
 }
 
-void cfn_test_set_type ()
+void cfn_test_link ()
 {
+  s_cfn a;
+  s_cfn b;
+  cfn_init(&a, sym_1("cfn_test_not"),
+           list_1("(:bool)"),
+           sym_1("bool"));
+  b = a;
+  TEST_EQ(cfn_link(&a), &a);
+  TEST_EQ(a.name, b.name);
+  TEST_EQ(a.ptr.f, &cfn_test_not);
+  TEST_EQ(a.arity, b.arity);
+  TEST_EQ(a.result_type, b.result_type);
+  TEST_EQ(a.arg_result, b.arg_result);
+  TEST_EQ(a.arg_types, b.arg_types);
+  TEST_EQ(a.cif.abi, b.cif.abi);
+  TEST_EQ(a.cif.nargs, b.cif.nargs);
+  TEST_EQ(a.cif.arg_types, b.cif.arg_types);
+  TEST_EQ(a.cif.rtype, b.cif.rtype);
+  TEST_EQ(a.cif.bytes, b.cif.bytes);
+  TEST_EQ(a.cif.flags, b.cif.flags);
+  cfn_clean(&a);
+}
+
+bool cfn_test_not (bool a)
+{
+  return a ? false : true;
+}
+
+void cfn_test_prep_cif ()
+{
+  s_cfn a;
+  s_cfn b;
+  cfn_init(&a, sym_1("cfn_test_not"),
+           list_1("(:bool)"),
+           sym_1("bool"));
+  b = a;
+  TEST_EQ(cfn_prep_cif(&a), &a);
+  TEST_EQ(a.name, b.name);
+  TEST_EQ(a.ptr.f, b.ptr.f);
+  TEST_EQ(a.ptr.p, b.ptr.p);
+  TEST_EQ(a.arity, b.arity);
+  TEST_EQ(a.result_type, b.result_type);
+  TEST_EQ(a.arg_result, b.arg_result);
+  TEST_EQ(a.arg_types, b.arg_types);
+  TEST_EQ(a.cif.nargs, 1);
+  TEST_ASSERT(a.cif.arg_types);
+  TEST_EQ(a.cif.arg_types[0], &ffi_type_uint8);
+  TEST_EQ(a.cif.rtype, &ffi_type_uint8);
+  cfn_clean(&a);
 }
