@@ -10,21 +10,29 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "abs.h"
 #include "ceiling.h"
+#include "sign.h"
 
-#define DEF_CEILING(type)                                              \
-  type ceiling_ ## type (type a, type b)                               \
+#define DEF_CEILING_S(bits, bits2)                                     \
+  s ## bits ceiling_s ## bits (s ## bits a, s ## bits b)               \
   {                                                                    \
-    return (a + (b - 1)) / b;                                          \
-  }                                                                    \
+    s ## bits sign;                                                    \
+    sign = sign_s ## bits (a) * sign_s ## bits (b);                    \
+    a = abs_s ## bits (a);                                             \
+    b = abs_s ## bits (b);                                             \
+    return (s ## bits) (sign * ((s ## bits2) a + (b - 1)) / b);        \
+  }
 
-DEF_CEILING(s8)
-DEF_CEILING(s16)
-DEF_CEILING(s32)
-DEF_CEILING(s64)
-DEF_CEILING(sw)
-DEF_CEILING(u8)
-DEF_CEILING(u16)
-DEF_CEILING(u32)
-DEF_CEILING(u64)
-DEF_CEILING(uw)
+#define DEF_CEILING_U(bits, bits2)                                     \
+  u ## bits ceiling_u ## bits (u ## bits a, u ## bits b)               \
+  {                                                                    \
+    return (u ## bits) (((u ## bits2) a + (b - 1)) / b);               \
+  }
+
+DEF_CEILING_S(8, 16)
+DEF_CEILING_S(16, 32)
+DEF_CEILING_S(32, 64)
+DEF_CEILING_U(8, 16)
+DEF_CEILING_U(16, 32)
+DEF_CEILING_U(32, 64)
