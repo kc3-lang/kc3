@@ -677,8 +677,8 @@ sw buf_parse_digit (s_buf *buf, const s_str *base, u8 *dest)
   sw digit;
   sw r;
   assert(buf);
-  assert(bases);
-  assert(bases_count);
+  assert(base);
+  assert(dest);
   if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
     return r;
   if ((digit = str_character_position(base, c)) >= 0) {
@@ -2224,8 +2224,7 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
       if ((r = buf_parse_u ## bits ## _base(buf, g_c3_bases_hex,       \
                                             &tmp)) < 0)                \
         goto restore;                                                  \
-      if ((r1 = buf_parse_u ## bits ## _base(buf,                      \
-                                             g_c3_bases_hex + 1,       \
+      if ((r1 = buf_parse_u ## bits ## _base(buf, g_c3_bases_hex + 1,  \
                                              &tmp1)) < 0) {            \
         r = r1;                                                        \
         goto restore;                                                  \
