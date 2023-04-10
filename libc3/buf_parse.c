@@ -1556,6 +1556,7 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
         goto restore;                                                  \
       }                                                                \
       buf_save_restore_rpos(buf, &digits);                             \
+      buf_save_clean(buf, &digits);                                    \
       if ((r1 = buf_parse_s ## bits ## _base(buf, g_c3_bases_hex + 1,  \
                                              negative, &tmp1)) < 0) {  \
         r = r1;                                                        \
@@ -2265,6 +2266,7 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
         goto restore;                                                  \
       }                                                                \
       buf_save_restore_rpos(buf, &digits);                             \
+      buf_save_clean(buf, &digits);                                    \
       if ((r1 = buf_parse_u ## bits ## _base(buf, g_c3_bases_hex + 1,  \
                                              &tmp1)) < 0) {            \
         r = r1;                                                        \
@@ -2399,6 +2401,7 @@ sw buf_parse_uw (s_buf *buf, uw *dest)
       goto restore;
     }
     buf_save_restore_rpos(buf, &digits);
+    buf_save_clean(buf, &digits);
     if ((r1 = buf_parse_uw_base(buf, g_c3_bases_hex + 1,
                                 &tmp1)) < 0) {
       r = r1;
