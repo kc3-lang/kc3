@@ -651,7 +651,7 @@
 #define BUF_PARSE_TEST_U(bits, test, expected)                         \
   do {                                                                 \
     s_buf buf;                                                         \
-    u ## bits u;                                                       \
+    u ## bits u = 0;                                                   \
     test_context("buf_parse_u" # bits "(" # test ")");                 \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_u ## bits(&buf, &u), strlen(test));              \
@@ -707,14 +707,14 @@ void buf_parse_test ()
   buf_parse_test_integer_hex();
   buf_parse_test_integer_oct();
   buf_parse_test_integer();
-  buf_parse_test_s8();
   buf_parse_test_str();
   buf_parse_test_sym();
+  buf_parse_test_ident();
   buf_parse_test_list();
   buf_parse_test_tag();
   buf_parse_test_tuple();
   buf_parse_test_u8();
-  buf_parse_test_ident();
+  buf_parse_test_s8();
   buf_parse_test_cfn();
 }
 
@@ -1189,8 +1189,8 @@ void buf_parse_test_s8 ()
   BUF_PARSE_TEST_S(8, "-020", -20);
   BUF_PARSE_TEST_S(8, "-021", -21);
   BUF_PARSE_TEST_S(8, "-022", -22);
-  BUF_PARSE_TEST_S(8, "-128", 128);
-  BUF_PARSE_TEST_S(8, "-0128", 128);
+  BUF_PARSE_TEST_S(8, "-128", -128);
+  BUF_PARSE_TEST_S(8, "-0128", -128);
   BUF_PARSE_TEST_S(8, "0b0", 0);
   BUF_PARSE_TEST_S(8, "0b1", 1);
   BUF_PARSE_TEST_S(8, "0b00", 0);
@@ -1450,6 +1450,8 @@ void buf_parse_test_u8 ()
   BUF_PARSE_TEST_U(8, "0b111", 7);
   BUF_PARSE_TEST_U(8, "0b1111111", 127);
   BUF_PARSE_TEST_U(8, "0b01111111", 127);
+  BUF_PARSE_TEST_U(8, "0b11111111", 255);
+  BUF_PARSE_TEST_U(8, "0b011111111", 255);
   BUF_PARSE_TEST_U(8, "0o0", 0);
   BUF_PARSE_TEST_U(8, "0o1", 1);
   BUF_PARSE_TEST_U(8, "0o2", 2);
@@ -1465,6 +1467,8 @@ void buf_parse_test_u8 ()
   BUF_PARSE_TEST_U(8, "0o000", 0);
   BUF_PARSE_TEST_U(8, "0o177", 127);
   BUF_PARSE_TEST_U(8, "0o0177", 127);
+  BUF_PARSE_TEST_U(8, "0o377", 255);
+  BUF_PARSE_TEST_U(8, "0o0377", 255);
   BUF_PARSE_TEST_U(8, "0x0", 0);
   BUF_PARSE_TEST_U(8, "0x1", 1);
   BUF_PARSE_TEST_U(8, "0x2", 2);
@@ -1488,6 +1492,8 @@ void buf_parse_test_u8 ()
   BUF_PARSE_TEST_U(8, "0x000", 0);
   BUF_PARSE_TEST_U(8, "0x7F", 127);
   BUF_PARSE_TEST_U(8, "0x07F", 127);
+  BUF_PARSE_TEST_U(8, "0xFF", 255);
+  BUF_PARSE_TEST_U(8, "0x0FF", 255);
   BUF_PARSE_TEST_U(8, "0", 0);
   BUF_PARSE_TEST_U(8, "1", 1);
   BUF_PARSE_TEST_U(8, "2", 2);
