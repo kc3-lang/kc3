@@ -2334,7 +2334,10 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
         return -1;                                                     \
       }                                                                \
       if (u > ceiling_u ## bits (U ## BITS ## _MAX, radix)) {          \
-        warnx("buf_parse_u" # bits "_base: *: integer overflow");      \
+        warnx("buf_parse_u" # bits                                     \
+              "_base: %llu * %llu: integer overflow",                  \
+              (unsigned long long) u,                                  \
+              (unsigned long long) radix);                             \
         r = -1;                                                        \
         goto restore;                                                  \
       }                                                                \

@@ -11,7 +11,14 @@
 ## THIS SOFTWARE.
 
 def one(out, su, bits, base_prefix, negative, digits, result)
-  r = if result != 0 then "#{negative}#{result}" else result end
+  r = if result != 0 then "#{negative}#{result}" else "#{result}" end
+  if r == "-9223372036854775808"
+    # XXX bug in clang integer litterals
+    r = "-9223372036854775807 - 1"
+  end
+  if su == "U"
+    r = "#{r}U"
+  end
   output = Proc.new do |digits|
     zeros = 0
     spaces = ""
@@ -86,25 +93,33 @@ licence = File.read("../licence.h")
 ["S", "U"].each do |su|
   BITS.each do |bits|
     su_downcase = su.downcase
-    File.open("buf_parse_test_#{su_downcase}#{bits}.c", "w") do |out|
+    filename = "buf_parse_test_#{su_downcase}#{bits}.c"
+    filename_tmp = "#{filename}.tmp"
+    File.open(filename_tmp, "w") do |out|
       out.puts licence
-      out.puts ""
-      out.puts "void buf_parse_test_#{su_downcase}#{bits} ()"
-      out.puts "{"
-      [[[0, 1], "0b"],
-       [[0, 1, 2, 3, 4, 5, 6, 7], "0o"],
+      out.puts '#include "buf_parse_test.h"'
+      [[[0, 1], "0b", "binary"],
+       [[0, 1, 2, 3, 4, 5, 6, 7], "0o", "octal"],
        [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "a", "b", "c", "d", "e", "f"],
-        "0x"],
-       [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], ""]].each do |b|
+        "0x", "hexadecimal"],
+       [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], "", "decimal"]].each do |b|
         base = b[0]
         base_prefix = b[1]
+        base_name = b[2]
         radix = base.count
         signs = if (su == "S")
-                  ["-", ""]
+                  ["", "-"]
                 else
                   [""]
                 end
         signs.each do |negative|
+          function_name = "buf_parse_test_#{su_downcase}#{bits}_#{base_name}"
+          if negative == "-"
+            function_name += "_negative"
+          end
+          out.puts ''
+          out.puts "void #{function_name} ()"
+          out.puts '{'
           max = integer_max(su, bits, negative)
           result = count(out, su, bits, base, base_prefix, negative,
                          max)
@@ -121,9 +136,11 @@ licence = File.read("../licence.h")
               end
             end
           end
+          out.puts "}"
         end
       end
-      out.puts "}"
-    end
+    end # File.open
+    cmd = "if ! cmp #{filename} #{filename_tmp}; then mv #{filename_tmp} #{filename}; echo #{filename}; else rm #{filename_tmp}; fi"
+    raise "command failed" unless system(cmd)
   end
 end

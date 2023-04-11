@@ -19,6 +19,8 @@
 #define TARGET_NAME_MAX 32
 #define TARGETS_MAX     1000
 
+#define TEST_KO_MAX     10
+
 const char  *g_test_context = NULL;
 long         g_test_count = 0;
 long         g_test_ko = 0;
@@ -129,6 +131,10 @@ void test_ko ()
     printf("\n%s%s%s", TEST_COLOR_KO, g_test_context,
            TEST_COLOR_RESET);
   g_test_last_ok = 0;
+  if (g_test_ko >= TEST_KO_MAX) {
+    printf("\nMaximum number of errors reached, exiting.\n");
+    exit(1);
+  }
 }
 
 void test_ok ()
