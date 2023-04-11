@@ -1,3 +1,14 @@
+## c3
+## Copyright 2022,2023 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
 
 def one(out, su, bits, base_prefix, negative, digits, result)
   r = if result != 0 then "#{negative}#{result}" else result end
@@ -70,11 +81,15 @@ end
 
 BITS = [8, 16, 32, 64]
 
-File.open("buf_parse_test_s.out", "w") do |out|
-  ["S", "U"].each do |su|
-    BITS.each do |bits|
+licence = File.read("../licence.h")
+
+["S", "U"].each do |su|
+  BITS.each do |bits|
+    su_downcase = su.downcase
+    File.open("buf_parse_test_#{su_downcase}#{bits}.c", "w") do |out|
+      out.puts licence
       out.puts ""
-      out.puts "void buf_parse_test_#{su.downcase}#{bits} ()"
+      out.puts "void buf_parse_test_#{su_downcase}#{bits} ()"
       out.puts "{"
       [[[0, 1], "0b"],
        [[0, 1, 2, 3, 4, 5, 6, 7], "0o"],

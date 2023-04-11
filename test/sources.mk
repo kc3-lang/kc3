@@ -4,6 +4,14 @@ SOURCES = \
 	buf_file_test.c \
 	buf_inspect_test.c \
 	buf_parse_test.c \
+	buf_parse_test_s16.c \
+	buf_parse_test_s32.c \
+	buf_parse_test_s64.c \
+	buf_parse_test_s8.c \
+	buf_parse_test_u16.c \
+	buf_parse_test_u32.c \
+	buf_parse_test_u64.c \
+	buf_parse_test_u8.c \
 	buf_test.c \
 	call_test.c \
 	cfn_test.c \
