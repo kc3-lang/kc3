@@ -33,12 +33,12 @@ Under development.
 
 ### ic3
 
-Interactive shell. Under development.
+Interactive shell.
 
 
 ### c3s
 
-Script interpreter. Under development.
+Script interpreter.
 
 
 ## TODO
