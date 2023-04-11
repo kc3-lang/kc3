@@ -5,8 +5,6 @@ Common Lisp. It could be described as C with Elixir macros, pattern
 matching, and a semantic object system. The idea is to plug macros and
 pattern matching into C99 and use them to implement the graph database.
 
-There is no garbage collector.
-
 ```
 defmodule C3 do
   
