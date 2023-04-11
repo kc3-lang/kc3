@@ -11,12 +11,12 @@ def one(out, su, bits, base_prefix, negative, digits, result)
       zeros += 1
     end
     i = zeros
-    while i > 0
+    while i >= 0
       test_digits = digits[i..(digits.count - 1)]
       test_digits = test_digits.join
-      i -= 1
       spaces = " " * (i + ((result.zero? && negative == "-") ? 1 : 0))
       out.puts "  BUF_PARSE_TEST_#{su}(#{bits}, \"#{negative}#{base_prefix}#{test_digits}\", #{spaces}#{r});"
+      i -= 1
     end
   end
   output.(digits)
@@ -50,26 +50,37 @@ def count(out, su, bits, base, base_prefix, negative, max)
   return result
 end
 
-def number_to_base(m, radix)
+def number_to_base(m, base)
   digits = []
+  radix = base.count
   while m > 0
-    digits.push(m % radix)
+    digits.push(base[m % radix])
     m = m / radix
   end
-  digits
+  digits.reverse
 end
+
+def integer_max(su, bits, negative)
+  if negative == "-"
+    2 ** (if su == "S" then bits - 1; else bits; end)
+  else
+    2 ** (if su == "S" then bits - 1; else bits; end) - 1
+  end
+end
+
+BITS = [8, 16, 32, 64]
 
 File.open("buf_parse_test_s.out", "w") do |out|
   ["S", "U"].each do |su|
-    [8, 16].each do |bits|
+    BITS.each do |bits|
       out.puts ""
       out.puts "void buf_parse_test_#{su.downcase}#{bits} ()"
       out.puts "{"
-      [[0..1, "0b"],
-       [0..7, "0o"],
+      [[[0, 1], "0b"],
+       [[0, 1, 2, 3, 4, 5, 6, 7], "0o"],
        [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "a", "b", "c", "d", "e", "f"],
         "0x"],
-       [0..9, ""]].each do |b|
+       [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], ""]].each do |b|
         base = b[0]
         base_prefix = b[1]
         radix = base.count
@@ -79,20 +90,21 @@ File.open("buf_parse_test_s.out", "w") do |out|
                   [""]
                 end
         signs.each do |negative|
-          max = if negative == "-"
-                  2 ** (if su == "S" then bits - 1; else bits; end)
-                else
-                  2 ** (if su == "S" then bits - 1; else bits; end) - 1
-                end
+          max = integer_max(su, bits, negative)
           result = count(out, su, bits, base, base_prefix, negative,
                          max)
-          if result < max - 1
-            digits = number_to_base(max - 1, radix)
-            one(out, su, bits, base_prefix, negative, digits, max - 1)
-          end
-          if result < max
-            digits = number_to_base(max, radix)
-            one(out, su, bits, base_prefix, negative, digits, max)
+          BITS.each do |b|
+            if b <= bits
+              max = integer_max(su, b, negative)
+              if result < max - 1
+                digits = number_to_base(max - 1, base)
+                one(out, su, bits, base_prefix, negative, digits, max - 1)
+              end
+              if result < max
+                digits = number_to_base(max, base)
+                one(out, su, bits, base_prefix, negative, digits, max)
+              end
+            end
           end
         end
       end
