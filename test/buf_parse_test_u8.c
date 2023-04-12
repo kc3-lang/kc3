@@ -12,7 +12,7 @@
  */
 #include "buf_parse_test.h"
 
-TEST_CASE(test__buf_parse_u8_binary)
+TEST_CASE(buf_parse_u8_binary)
 {
   BUF_PARSE_TEST_U(8, "0b0",   0U);
   BUF_PARSE_TEST_U(8, "0b00",  0U);
@@ -32,7 +32,7 @@ TEST_CASE(test__buf_parse_u8_binary)
   BUF_PARSE_TEST_U(8, "0b11111111", 255U);
 }
 
-TEST_CASE(test__buf_parse_u8_octal)
+TEST_CASE(buf_parse_u8_octal)
 {
   BUF_PARSE_TEST_U(8, "0o0",   0U);
   BUF_PARSE_TEST_U(8, "0o00",  0U);
@@ -364,7 +364,7 @@ TEST_CASE(test__buf_parse_u8_octal)
   BUF_PARSE_TEST_U(8, "0o377", 255U);
 }
 
-TEST_CASE(test__buf_parse_u8_hexadecimal)
+TEST_CASE(buf_parse_u8_hexadecimal)
 {
   BUF_PARSE_TEST_U(8, "0x0",   0U);
   BUF_PARSE_TEST_U(8, "0x00",  0U);
@@ -1214,7 +1214,7 @@ TEST_CASE(test__buf_parse_u8_hexadecimal)
   BUF_PARSE_TEST_U(8, "0x0FF", 255U);
 }
 
-TEST_CASE(test__buf_parse_u8_decimal)
+TEST_CASE(buf_parse_u8_decimal)
 {
   BUF_PARSE_TEST_U(8, "0",   0U);
   BUF_PARSE_TEST_U(8, "00",  0U);

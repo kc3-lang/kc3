@@ -12,7 +12,7 @@
  */
 #include "buf_parse_test.h"
 
-TEST_CASE(test__buf_parse_s8_binary)
+TEST_CASE(buf_parse_s8_binary)
 {
   BUF_PARSE_TEST_S(8, "0b0",   0);
   BUF_PARSE_TEST_S(8, "0b00",  0);
@@ -32,7 +32,7 @@ TEST_CASE(test__buf_parse_s8_binary)
   BUF_PARSE_TEST_S(8, "0b1111111", 127);
 }
 
-TEST_CASE(test__buf_parse_s8_binary_negative)
+TEST_CASE(buf_parse_s8_binary_negative)
 {
   BUF_PARSE_TEST_S(8, "-0b0",    0);
   BUF_PARSE_TEST_S(8, "-0b00",   0);
@@ -52,7 +52,7 @@ TEST_CASE(test__buf_parse_s8_binary_negative)
   BUF_PARSE_TEST_S(8, "-0b10000000", -128);
 }
 
-TEST_CASE(test__buf_parse_s8_octal)
+TEST_CASE(buf_parse_s8_octal)
 {
   BUF_PARSE_TEST_S(8, "0o0",   0);
   BUF_PARSE_TEST_S(8, "0o00",  0);
@@ -256,7 +256,7 @@ TEST_CASE(test__buf_parse_s8_octal)
   BUF_PARSE_TEST_S(8, "0o177", 127);
 }
 
-TEST_CASE(test__buf_parse_s8_octal_negative)
+TEST_CASE(buf_parse_s8_octal_negative)
 {
   BUF_PARSE_TEST_S(8, "-0o0",    0);
   BUF_PARSE_TEST_S(8, "-0o00",   0);
@@ -461,7 +461,7 @@ TEST_CASE(test__buf_parse_s8_octal_negative)
   BUF_PARSE_TEST_S(8, "-0o200", -128);
 }
 
-TEST_CASE(test__buf_parse_s8_hexadecimal)
+TEST_CASE(buf_parse_s8_hexadecimal)
 {
   BUF_PARSE_TEST_S(8, "0x0",   0);
   BUF_PARSE_TEST_S(8, "0x00",  0);
@@ -839,7 +839,7 @@ TEST_CASE(test__buf_parse_s8_hexadecimal)
   BUF_PARSE_TEST_S(8, "0x07F", 127);
 }
 
-TEST_CASE(test__buf_parse_s8_hexadecimal_negative)
+TEST_CASE(buf_parse_s8_hexadecimal_negative)
 {
   BUF_PARSE_TEST_S(8, "-0x0",    0);
   BUF_PARSE_TEST_S(8, "-0x00",   0);
@@ -1219,7 +1219,7 @@ TEST_CASE(test__buf_parse_s8_hexadecimal_negative)
   BUF_PARSE_TEST_S(8, "-0x080", -128);
 }
 
-TEST_CASE(test__buf_parse_s8_decimal)
+TEST_CASE(buf_parse_s8_decimal)
 {
   BUF_PARSE_TEST_S(8, "0",   0);
   BUF_PARSE_TEST_S(8, "00",  0);
@@ -1461,7 +1461,7 @@ TEST_CASE(test__buf_parse_s8_decimal)
   BUF_PARSE_TEST_S(8, "127", 127);
 }
 
-TEST_CASE(test__buf_parse_s8_decimal_negative)
+TEST_CASE(buf_parse_s8_decimal_negative)
 {
   BUF_PARSE_TEST_S(8, "-0",    0);
   BUF_PARSE_TEST_S(8, "-00",   0);

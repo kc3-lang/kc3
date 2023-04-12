@@ -26,7 +26,7 @@ void facts_cursor_test ()
   facts_cursor_test_next();
 }
 
-TEST_CASE(test__facts_cursor_init)
+TEST_CASE(facts_cursor_init)
 {
   s_facts_cursor cursor;
   uw i = 0;
@@ -108,7 +108,7 @@ TEST_CASE(test__facts_cursor_init)
   facts_clean(&facts);
 }
 
-TEST_CASE(test__facts_cursor_next)
+TEST_CASE(facts_cursor_next)
 {
   s_facts_cursor cursor;
   uw i = 0;

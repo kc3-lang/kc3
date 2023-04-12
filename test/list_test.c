@@ -49,7 +49,7 @@ void list_test ()
   list_test_inspect();
 }
 
-TEST_CASE(test__list_1)
+TEST_CASE(list_1)
 {
   TEST_ASSERT(! list_1("()"));
   LIST_TEST_1("(() | ())");
@@ -63,7 +63,7 @@ TEST_CASE(test__list_1)
   LIST_TEST_1("(A, B, C | D)");
 }
 
-TEST_CASE(test__list_inspect)
+TEST_CASE(list_inspect)
 {
   LIST_TEST_INSPECT("()", "()");
   LIST_TEST_INSPECT("(() | ())", "(())");

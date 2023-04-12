@@ -33,7 +33,7 @@ void tag_test ()
   tag_test_hash_u64();
 }
 
-TEST_CASE(test__tag_hash_u64)
+TEST_CASE(tag_hash_u64)
 {
   s_tag a;
   s_tag b;
@@ -47,7 +47,7 @@ TEST_CASE(test__tag_hash_u64)
   tag_clean(&b);
 }
 
-TEST_CASE(test__tag_init_1)
+TEST_CASE(tag_init_1)
 {
   s_tag a;
   TEST_ASSERT(tag_init_1(&a, "fn () { () }"));

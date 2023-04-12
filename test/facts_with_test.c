@@ -28,7 +28,7 @@ void facts_with_test ()
   facts_with_test_();
 }
 
-TEST_CASE(test__facts_with_)
+TEST_CASE(facts_with_)
 {
   s_facts_with_cursor cursor;
   s_fact fact;
@@ -178,7 +178,7 @@ TEST_CASE(test__facts_with_)
   facts_clean(&facts);
 }
 
-TEST_CASE(test__facts_with_tags)
+TEST_CASE(facts_with_tags)
 {
   s_facts_cursor cursor;
   s_fact fact;

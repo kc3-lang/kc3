@@ -90,7 +90,7 @@ void set__fact_test ()
   set__fact_test_cursor();
 }
 
-TEST_CASE(test__set__fact_add)
+TEST_CASE(set__fact_add)
 {
   s_fact fact[24];
   sw i;
@@ -138,7 +138,7 @@ TEST_CASE(test__set__fact_add)
   set_clean__fact(&set);
 }
 
-TEST_CASE(test__set__fact_cursor)
+TEST_CASE(set__fact_cursor)
 {
   sw i;
   s8 *p[24] = {
@@ -187,7 +187,7 @@ TEST_CASE(test__set__fact_cursor)
   set_clean__fact(&set);
 }
 
-TEST_CASE(test__set__fact_init_clean)
+TEST_CASE(set__fact_init_clean)
 {
   SET__FACT_TEST_INIT_CLEAN(1);
   SET__FACT_TEST_INIT_CLEAN(8);
@@ -221,7 +221,7 @@ TEST_CASE(test__set__fact_init_clean)
   SET__FACT_TEST_INIT_CLEAN(1024 * 1024);
 }
 
-TEST_CASE(test__set__fact_remove)
+TEST_CASE(set__fact_remove)
 {
   sw i;
   s8 *p[24] = {
@@ -267,7 +267,7 @@ TEST_CASE(test__set__fact_remove)
   set_clean__fact(&set);
 }
 
-TEST_CASE(test__set__fact_resize)
+TEST_CASE(set__fact_resize)
 {
   sw i;
   s8 *p[24] = {

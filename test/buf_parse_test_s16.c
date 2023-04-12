@@ -12,7 +12,7 @@
  */
 #include "buf_parse_test.h"
 
-TEST_CASE(test__buf_parse_s16_binary)
+TEST_CASE(buf_parse_s16_binary)
 {
   BUF_PARSE_TEST_S(16, "0b0",   0);
   BUF_PARSE_TEST_S(16, "0b00",  0);
@@ -34,7 +34,7 @@ TEST_CASE(test__buf_parse_s16_binary)
   BUF_PARSE_TEST_S(16, "0b111111111111111", 32767);
 }
 
-TEST_CASE(test__buf_parse_s16_binary_negative)
+TEST_CASE(buf_parse_s16_binary_negative)
 {
   BUF_PARSE_TEST_S(16, "-0b0",    0);
   BUF_PARSE_TEST_S(16, "-0b00",   0);
@@ -56,7 +56,7 @@ TEST_CASE(test__buf_parse_s16_binary_negative)
   BUF_PARSE_TEST_S(16, "-0b1000000000000000", -32768);
 }
 
-TEST_CASE(test__buf_parse_s16_octal)
+TEST_CASE(buf_parse_s16_octal)
 {
   BUF_PARSE_TEST_S(16, "0o0",   0);
   BUF_PARSE_TEST_S(16, "0o00",  0);
@@ -646,7 +646,7 @@ TEST_CASE(test__buf_parse_s16_octal)
   BUF_PARSE_TEST_S(16, "0o77777", 32767);
 }
 
-TEST_CASE(test__buf_parse_s16_octal_negative)
+TEST_CASE(buf_parse_s16_octal_negative)
 {
   BUF_PARSE_TEST_S(16, "-0o0",    0);
   BUF_PARSE_TEST_S(16, "-0o00",   0);
@@ -1236,7 +1236,7 @@ TEST_CASE(test__buf_parse_s16_octal_negative)
   BUF_PARSE_TEST_S(16, "-0o100000", -32768);
 }
 
-TEST_CASE(test__buf_parse_s16_hexadecimal)
+TEST_CASE(buf_parse_s16_hexadecimal)
 {
   BUF_PARSE_TEST_S(16, "0x0",   0);
   BUF_PARSE_TEST_S(16, "0x00",  0);
@@ -8870,7 +8870,7 @@ TEST_CASE(test__buf_parse_s16_hexadecimal)
   BUF_PARSE_TEST_S(16, "0x7FFF", 32767);
 }
 
-TEST_CASE(test__buf_parse_s16_hexadecimal_negative)
+TEST_CASE(buf_parse_s16_hexadecimal_negative)
 {
   BUF_PARSE_TEST_S(16, "-0x0",    0);
   BUF_PARSE_TEST_S(16, "-0x00",   0);
@@ -16503,7 +16503,7 @@ TEST_CASE(test__buf_parse_s16_hexadecimal_negative)
   BUF_PARSE_TEST_S(16, "-0x8000", -32768);
 }
 
-TEST_CASE(test__buf_parse_s16_decimal)
+TEST_CASE(buf_parse_s16_decimal)
 {
   BUF_PARSE_TEST_S(16, "0",   0);
   BUF_PARSE_TEST_S(16, "00",  0);
@@ -17619,7 +17619,7 @@ TEST_CASE(test__buf_parse_s16_decimal)
   BUF_PARSE_TEST_S(16, "32767", 32767);
 }
 
-TEST_CASE(test__buf_parse_s16_decimal_negative)
+TEST_CASE(buf_parse_s16_decimal_negative)
 {
   BUF_PARSE_TEST_S(16, "-0",    0);
   BUF_PARSE_TEST_S(16, "-00",   0);

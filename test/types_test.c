@@ -21,7 +21,7 @@ void types_test ()
   types_test_sizeof();
 }
 
-TEST_CASE(test__types_sizeof)
+TEST_CASE(types_sizeof)
 {
   TEST_EQ(sizeof(s8), 1);
   TEST_EQ(sizeof(s16), 2);

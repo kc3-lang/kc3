@@ -12,7 +12,7 @@
  */
 #include "buf_parse_test.h"
 
-TEST_CASE(test__buf_parse_u32_binary)
+TEST_CASE(buf_parse_u32_binary)
 {
   BUF_PARSE_TEST_U(32, "0b0",   0U);
   BUF_PARSE_TEST_U(32, "0b00",  0U);
@@ -36,7 +36,7 @@ TEST_CASE(test__buf_parse_u32_binary)
   BUF_PARSE_TEST_U(32, "0b11111111111111111111111111111111", 4294967295U);
 }
 
-TEST_CASE(test__buf_parse_u32_octal)
+TEST_CASE(buf_parse_u32_octal)
 {
   BUF_PARSE_TEST_U(32, "0o0",   0U);
   BUF_PARSE_TEST_U(32, "0o00",  0U);
@@ -628,7 +628,7 @@ TEST_CASE(test__buf_parse_u32_octal)
   BUF_PARSE_TEST_U(32, "0o37777777777", 4294967295U);
 }
 
-TEST_CASE(test__buf_parse_u32_hexadecimal)
+TEST_CASE(buf_parse_u32_hexadecimal)
 {
   BUF_PARSE_TEST_U(32, "0x0",   0U);
   BUF_PARSE_TEST_U(32, "0x00",  0U);
@@ -8266,7 +8266,7 @@ TEST_CASE(test__buf_parse_u32_hexadecimal)
   BUF_PARSE_TEST_U(32, "0xFFFFFFFF", 4294967295U);
 }
 
-TEST_CASE(test__buf_parse_u32_decimal)
+TEST_CASE(buf_parse_u32_decimal)
 {
   BUF_PARSE_TEST_U(32, "0",   0U);
   BUF_PARSE_TEST_U(32, "00",  0U);

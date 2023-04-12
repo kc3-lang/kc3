@@ -50,7 +50,7 @@ void fact_test_clean_3 (s_fact *fact)
   tag_delete((s_tag *) fact->object);
 }
 
-TEST_CASE(test__fact_init)
+TEST_CASE(fact_init)
 {
   s_tag sym[3];
   s_fact fact;
@@ -80,7 +80,7 @@ s_fact * fact_test_init_3 (s_fact *fact, const s8 *subject,
   return fact;
 }
 
-TEST_CASE(test__fact_inspect)
+TEST_CASE(fact_inspect)
 {
   s_tag tag[3];
   s_fact fact;

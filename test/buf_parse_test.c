@@ -768,7 +768,7 @@ void buf_parse_test ()
   buf_parse_test_cfn();
 }
 
-TEST_CASE(test__buf_parse_bool)
+TEST_CASE(buf_parse_bool)
 {
   BUF_PARSE_TEST_NOT_BOOL("0");
   BUF_PARSE_TEST_NOT_BOOL("1");
@@ -787,7 +787,7 @@ TEST_CASE(test__buf_parse_bool)
   BUF_PARSE_TEST_BOOL("true", 1);
 }
 
-TEST_CASE(test__buf_parse_call)
+TEST_CASE(buf_parse_call)
 {
   BUF_PARSE_TEST_NOT_CALL("0");
   BUF_PARSE_TEST_NOT_CALL("9");
@@ -813,7 +813,7 @@ TEST_CASE(test__buf_parse_call)
   BUF_PARSE_TEST_CALL("a(B.c(D.e(f, g), H.i(j, k)))");
 }
 
-TEST_CASE(test__buf_parse_call_op)
+TEST_CASE(buf_parse_call_op)
 {
   BUF_PARSE_TEST_CALL_OP("1 + 2");
   /*
@@ -824,7 +824,7 @@ TEST_CASE(test__buf_parse_call_op)
   */
 }
 
-TEST_CASE(test__buf_parse_cfn)
+TEST_CASE(buf_parse_cfn)
 {
   BUF_PARSE_TEST_NOT_CFN("0");
   BUF_PARSE_TEST_NOT_CFN("9");
@@ -838,7 +838,7 @@ TEST_CASE(test__buf_parse_cfn)
   BUF_PARSE_TEST_CFN("cfn :tag \"tag_add\" (:tag, :tag, :tag)");
 }
 
-TEST_CASE(test__buf_parse_character)
+TEST_CASE(buf_parse_character)
 {
   BUF_PARSE_TEST_NOT_CHARACTER("\x01");
   BUF_PARSE_TEST_NOT_CHARACTER("\xFF");
@@ -908,7 +908,7 @@ TEST_CASE(test__buf_parse_character)
   BUF_PARSE_TEST_CHARACTER("'𐅀'", 65856);
 }
 
-TEST_CASE(test__buf_parse_digit_bin)
+TEST_CASE(buf_parse_digit_bin)
 {
   BUF_PARSE_TEST_NOT_DIGIT_BIN("\x01");
   BUF_PARSE_TEST_NOT_DIGIT_BIN("\x02");
@@ -925,7 +925,7 @@ TEST_CASE(test__buf_parse_digit_bin)
   BUF_PARSE_TEST_DIGIT_BIN("1", 1);
 }
 
-TEST_CASE(test__buf_parse_digit_hex)
+TEST_CASE(buf_parse_digit_hex)
 {
   BUF_PARSE_TEST_NOT_DIGIT_HEX("\x01");
   BUF_PARSE_TEST_NOT_DIGIT_HEX("\x02");
@@ -946,7 +946,7 @@ TEST_CASE(test__buf_parse_digit_hex)
   BUF_PARSE_TEST_DIGIT_HEX("f", 0x0F);
 }
 
-TEST_CASE(test__buf_parse_digit_oct)
+TEST_CASE(buf_parse_digit_oct)
 {
   BUF_PARSE_TEST_NOT_DIGIT_OCT("\x01");
   BUF_PARSE_TEST_NOT_DIGIT_OCT("\x02");
@@ -963,7 +963,7 @@ TEST_CASE(test__buf_parse_digit_oct)
   BUF_PARSE_TEST_DIGIT_OCT("7", 7);
 }
 
-TEST_CASE(test__buf_parse_digit_dec)
+TEST_CASE(buf_parse_digit_dec)
 {
   BUF_PARSE_TEST_NOT_DIGIT_DEC("\x01");
   BUF_PARSE_TEST_NOT_DIGIT_DEC("\x02");
@@ -991,14 +991,14 @@ void buf_parse_test_f64()
 {
 }
 
-TEST_CASE(test__buf_parse_fn)
+TEST_CASE(buf_parse_fn)
 {
   BUF_PARSE_TEST_FN("fn () { () }");
   BUF_PARSE_TEST_FN("fn (x) { x }");
   BUF_PARSE_TEST_FN("fn (x, y) { x }");
 }
 
-TEST_CASE(test__buf_parse_ident)
+TEST_CASE(buf_parse_ident)
 {
   BUF_PARSE_TEST_NOT_IDENT("0");
   BUF_PARSE_TEST_NOT_IDENT("9");
@@ -1053,7 +1053,7 @@ TEST_CASE(test__buf_parse_ident)
   BUF_PARSE_TEST_IDENT("Module.ident_az09AZ", "ident_az09AZ");
 }
 
-TEST_CASE(test__buf_parse_integer)
+TEST_CASE(buf_parse_integer)
 {
   BUF_PARSE_TEST_NOT_INTEGER("-");
   BUF_PARSE_TEST_NOT_INTEGER("A");
@@ -1101,7 +1101,7 @@ TEST_CASE(test__buf_parse_integer)
   BUF_PARSE_TEST_INTEGER("0O100");
 }
 
-TEST_CASE(test__buf_parse_integer_bin)
+TEST_CASE(buf_parse_integer_bin)
 {
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_BIN("A");
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_BIN("STR");
@@ -1147,7 +1147,7 @@ void buf_parse_test_integer_oct()
   BUF_PARSE_TEST_INTEGER_UNSIGNED_OCT("777");
 }
 
-TEST_CASE(test__buf_parse_list)
+TEST_CASE(buf_parse_list)
 {
   BUF_PARSE_TEST_LIST("()");
   BUF_PARSE_TEST_LIST("((), ())");
@@ -1159,12 +1159,12 @@ TEST_CASE(test__buf_parse_list)
   BUF_PARSE_TEST_LIST("(a, b, c | d)");
 }
 
-TEST_CASE(test__buf_parse_sw)
+TEST_CASE(buf_parse_sw)
 {
 }
 
 
-TEST_CASE(test__buf_parse_str)
+TEST_CASE(buf_parse_str)
 {
   BUF_PARSE_TEST_NOT_STR("");
   BUF_PARSE_TEST_NOT_STR("\x00");
@@ -1212,7 +1212,7 @@ TEST_CASE(test__buf_parse_str)
   BUF_PARSE_TEST_STR("\"ꇤ\"", "ꇤ");
 }
 
-TEST_CASE(test__buf_parse_str_character)
+TEST_CASE(buf_parse_str_character)
 {
   BUF_PARSE_TEST_STR_CHARACTER("0", '0');
   BUF_PARSE_TEST_STR_CHARACTER("9", '9');
@@ -1239,7 +1239,7 @@ TEST_CASE(test__buf_parse_str_character)
   BUF_PARSE_TEST_STR_CHARACTER("🤩", 129321);
 }
 
-TEST_CASE(test__buf_parse_str_u8)
+TEST_CASE(buf_parse_str_u8)
 {
   BUF_PARSE_TEST_STR_U8_EOF("");
   BUF_PARSE_TEST_STR_U8("\x01", 1, 0x01);
@@ -1278,7 +1278,7 @@ TEST_CASE(test__buf_parse_str_u8)
   BUF_PARSE_TEST_STR_U8("\\xFF8", 4, 0xFF);
 }
 
-TEST_CASE(test__buf_parse_sym)
+TEST_CASE(buf_parse_sym)
 {
   BUF_PARSE_TEST_NOT_SYM("0");
   BUF_PARSE_TEST_NOT_SYM("9");
@@ -1305,14 +1305,14 @@ TEST_CASE(test__buf_parse_sym)
   BUF_PARSE_TEST_SYM(":az09AZ", "az09AZ");
 }
 
-TEST_CASE(test__buf_parse_tag)
+TEST_CASE(buf_parse_tag)
 {
   BUF_PARSE_TEST_TAG("x");
   BUF_PARSE_TEST_TAG("_x");
   BUF_PARSE_TEST_TAG("(x | _y)");
 }
 
-TEST_CASE(test__buf_parse_tuple)
+TEST_CASE(buf_parse_tuple)
 {
   BUF_PARSE_TEST_TUPLE("{a, b}");
   BUF_PARSE_TEST_TUPLE("{a, b, c}");
@@ -1323,10 +1323,10 @@ TEST_CASE(test__buf_parse_tuple)
   BUF_PARSE_TEST_TUPLE("{{a, b}, {c, d}}");
 }
 
-TEST_CASE(test__buf_parse_u)
+TEST_CASE(buf_parse_u)
 {
 }
 
-TEST_CASE(test__buf_parse_uw)
+TEST_CASE(buf_parse_uw)
 {
 }

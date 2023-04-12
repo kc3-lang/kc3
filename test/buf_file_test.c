@@ -27,7 +27,7 @@ void buf_file_test ()
   buf_file_test_open_w_close();
 }
 
-TEST_CASE(test__buf_file_open_r_close)
+TEST_CASE(buf_file_open_r_close)
 {
   s8 b[16];
   s_buf buf;
@@ -41,7 +41,7 @@ TEST_CASE(test__buf_file_open_r_close)
   fclose(fp);
 }
 
-TEST_CASE(test__buf_file_open_r_refill)
+TEST_CASE(buf_file_open_r_refill)
 {
   u8 b = 0x80;
   s8 bu[16];
@@ -62,6 +62,6 @@ TEST_CASE(test__buf_file_open_r_refill)
   test_context(NULL);
 }
 
-TEST_CASE(test__buf_file_open_w_close)
+TEST_CASE(buf_file_open_w_close)
 {
 }

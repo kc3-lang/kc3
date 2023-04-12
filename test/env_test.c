@@ -27,7 +27,7 @@ void env_test ()
   env_test_eval_equal_tag();
 }
 
-TEST_CASE(test__env_eval_equal_tag)
+TEST_CASE(env_eval_equal_tag)
 {
   s_env env;
   s_frame frame;
@@ -90,7 +90,7 @@ TEST_CASE(test__env_eval_equal_tag)
   test_context(NULL);
 }
 
-TEST_CASE(test__env_init_clean)
+TEST_CASE(env_init_clean)
 {
   s_env env;
   env_init(&env);

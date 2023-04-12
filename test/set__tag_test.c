@@ -111,7 +111,7 @@ void set__tag_test ()
   set__tag_test_cursor();
 }
 
-TEST_CASE(test__set__tag_add)
+TEST_CASE(set__tag_add)
 {
   uw i = 0;
   const s8 *p[] = {
@@ -160,7 +160,7 @@ TEST_CASE(test__set__tag_add)
   set_clean__tag(&set);
 }
 
-TEST_CASE(test__set__tag_cursor)
+TEST_CASE(set__tag_cursor)
 {
   sw i = 0;
   s_tag tag;
@@ -265,7 +265,7 @@ TEST_CASE(test__set__tag_cursor)
   set_clean__tag(&set);
 }
 
-TEST_CASE(test__set__tag_init_clean)
+TEST_CASE(set__tag_init_clean)
 {
   SET__TAG_TEST_INIT_CLEAN(1);
   SET__TAG_TEST_INIT_CLEAN(8);
@@ -299,7 +299,7 @@ TEST_CASE(test__set__tag_init_clean)
   SET__TAG_TEST_INIT_CLEAN(1024 * 1024);
 }
 
-TEST_CASE(test__set__tag_remove)
+TEST_CASE(set__tag_remove)
 {
   sw i;
   s_tag tag;
@@ -379,7 +379,7 @@ TEST_CASE(test__set__tag_remove)
   set_clean__tag(&set);
 }
 
-TEST_CASE(test__set__tag_resize)
+TEST_CASE(set__tag_resize)
 {
   s_tag tag;
   s_set__tag set;

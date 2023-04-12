@@ -41,7 +41,7 @@ void sym_test ()
   sym_test_1();
   sym_test_inspect();
 }
-TEST_CASE(test__sym_1)
+TEST_CASE(sym_1)
 {
   const s_sym *mod;
   const s_sym *mod_t;
@@ -104,7 +104,7 @@ const s_sym * sym_test_1_test (const s8 *p)
   return sym;
 }
 
-TEST_CASE(test__sym_inspect)
+TEST_CASE(sym_inspect)
 {
   SYM_TEST_INSPECT("", ":\"\"");
   SYM_TEST_INSPECT(" ", ":\" \"");

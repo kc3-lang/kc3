@@ -45,7 +45,7 @@ void call_test ()
   call_test_inspect();
 }
 
-TEST_CASE(test__call_init_1)
+TEST_CASE(call_init_1)
 {
   CALL_TEST_INIT_1("a()");
   CALL_TEST_INIT_1("a(b)");
@@ -57,7 +57,7 @@ TEST_CASE(test__call_init_1)
   CALL_TEST_INIT_1("A.b(c, d, e)");
 }
 
-TEST_CASE(test__call_inspect)
+TEST_CASE(call_inspect)
 {
   CALL_TEST_INSPECT("a()");
   CALL_TEST_INSPECT("a(b)");

@@ -12,7 +12,7 @@
  */
 #include "buf_parse_test.h"
 
-TEST_CASE(test__buf_parse_s32_binary)
+TEST_CASE(buf_parse_s32_binary)
 {
   BUF_PARSE_TEST_S(32, "0b0",   0);
   BUF_PARSE_TEST_S(32, "0b00",  0);
@@ -36,7 +36,7 @@ TEST_CASE(test__buf_parse_s32_binary)
   BUF_PARSE_TEST_S(32, "0b1111111111111111111111111111111", 2147483647);
 }
 
-TEST_CASE(test__buf_parse_s32_binary_negative)
+TEST_CASE(buf_parse_s32_binary_negative)
 {
   BUF_PARSE_TEST_S(32, "-0b0",    0);
   BUF_PARSE_TEST_S(32, "-0b00",   0);
@@ -60,7 +60,7 @@ TEST_CASE(test__buf_parse_s32_binary_negative)
   BUF_PARSE_TEST_S(32, "-0b10000000000000000000000000000000", -2147483648);
 }
 
-TEST_CASE(test__buf_parse_s32_octal)
+TEST_CASE(buf_parse_s32_octal)
 {
   BUF_PARSE_TEST_S(32, "0o0",   0);
   BUF_PARSE_TEST_S(32, "0o00",  0);
@@ -652,7 +652,7 @@ TEST_CASE(test__buf_parse_s32_octal)
   BUF_PARSE_TEST_S(32, "0o17777777777", 2147483647);
 }
 
-TEST_CASE(test__buf_parse_s32_octal_negative)
+TEST_CASE(buf_parse_s32_octal_negative)
 {
   BUF_PARSE_TEST_S(32, "-0o0",    0);
   BUF_PARSE_TEST_S(32, "-0o00",   0);
@@ -1244,7 +1244,7 @@ TEST_CASE(test__buf_parse_s32_octal_negative)
   BUF_PARSE_TEST_S(32, "-0o20000000000", -2147483648);
 }
 
-TEST_CASE(test__buf_parse_s32_hexadecimal)
+TEST_CASE(buf_parse_s32_hexadecimal)
 {
   BUF_PARSE_TEST_S(32, "0x0",   0);
   BUF_PARSE_TEST_S(32, "0x00",  0);
@@ -8882,7 +8882,7 @@ TEST_CASE(test__buf_parse_s32_hexadecimal)
   BUF_PARSE_TEST_S(32, "0x7FFFFFFF", 2147483647);
 }
 
-TEST_CASE(test__buf_parse_s32_hexadecimal_negative)
+TEST_CASE(buf_parse_s32_hexadecimal_negative)
 {
   BUF_PARSE_TEST_S(32, "-0x0",    0);
   BUF_PARSE_TEST_S(32, "-0x00",   0);
@@ -16518,7 +16518,7 @@ TEST_CASE(test__buf_parse_s32_hexadecimal_negative)
   BUF_PARSE_TEST_S(32, "-0x80000000", -2147483648);
 }
 
-TEST_CASE(test__buf_parse_s32_decimal)
+TEST_CASE(buf_parse_s32_decimal)
 {
   BUF_PARSE_TEST_S(32, "0",   0);
   BUF_PARSE_TEST_S(32, "00",  0);
@@ -17636,7 +17636,7 @@ TEST_CASE(test__buf_parse_s32_decimal)
   BUF_PARSE_TEST_S(32, "2147483647", 2147483647);
 }
 
-TEST_CASE(test__buf_parse_s32_decimal_negative)
+TEST_CASE(buf_parse_s32_decimal_negative)
 {
   BUF_PARSE_TEST_S(32, "-0",    0);
   BUF_PARSE_TEST_S(32, "-00",   0);

@@ -64,7 +64,7 @@ void skiplist__fact_test ()
   skiplist__fact_test_find();
 }
 
-TEST_CASE(test__skiplist__fact_find)
+TEST_CASE(skiplist__fact_find)
 {
   s_fact fact[24];
   const u8 *h;
@@ -120,7 +120,7 @@ TEST_CASE(test__skiplist__fact_find)
   }
 }
 
-TEST_CASE(test__skiplist__fact_insert)
+TEST_CASE(skiplist__fact_insert)
 {
   sw i;
   const u8 *h;
@@ -178,7 +178,7 @@ TEST_CASE(test__skiplist__fact_insert)
   }
 }
 
-TEST_CASE(test__skiplist__fact_new_delete)
+TEST_CASE(skiplist__fact_new_delete)
 {
   const u8 *h;
   const u8  height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 0};
@@ -191,7 +191,7 @@ TEST_CASE(test__skiplist__fact_new_delete)
   }
 }
 
-TEST_CASE(test__skiplist__fact_remove)
+TEST_CASE(skiplist__fact_remove)
 {
   s_fact fact[24];
   const u8 *h;
