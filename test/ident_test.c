@@ -47,7 +47,7 @@ void ident_test_character_is_reserved ();
 void ident_test_first_character_is_reserved ();
 void ident_test_inspect ();
 
-void ident_test_character_is_reserved ()
+TEST_CASE(test__ident_character_is_reserved)
 {
   IDENT_TEST_CHARACTER_IS_RESERVED('_', false);
   IDENT_TEST_CHARACTER_IS_RESERVED('0', false);
@@ -71,7 +71,7 @@ void ident_test_character_is_reserved ()
   IDENT_TEST_CHARACTER_IS_RESERVED(character_1("🤩"), false);
 }
 
-void ident_test_first_character_is_reserved ()
+TEST_CASE(test__ident_first_character_is_reserved)
 {
   IDENT_TEST_FIRST_CHARACTER_IS_RESERVED('_', false);
   IDENT_TEST_FIRST_CHARACTER_IS_RESERVED('0', true);
@@ -102,7 +102,7 @@ void ident_test ()
   ident_test_character_is_reserved();
 }
 
-void ident_test_inspect ()
+TEST_CASE(test__ident_inspect)
 {
   IDENT_TEST_INSPECT("", "_\"\"");
   IDENT_TEST_INSPECT(" ", "_\" \"");

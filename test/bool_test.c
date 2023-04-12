@@ -36,7 +36,7 @@ void bool_test ()
   bool_test_inspect();
 }
 
-void bool_test_compat ()
+TEST_CASE(test__bool_compat)
 {
   TEST_EQ(true, 1);
   TEST_EQ(false, 0);
@@ -46,7 +46,7 @@ void bool_test_compat ()
   TEST_ASSERT(! (bool) false);
 }
 
-void bool_test_inspect ()
+TEST_CASE(test__bool_inspect)
 {
   BOOL_TEST_INSPECT(true, "true");
   BOOL_TEST_INSPECT(false, "false");

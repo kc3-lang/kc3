@@ -91,7 +91,7 @@ void str_test ()
   str_test_to_sym();
 }
 
-void str_test_character_is_reserved ()
+TEST_CASE(test__str_character_is_reserved)
 {
   TEST_ASSERT(str_character_is_reserved('\0'));
   TEST_ASSERT(str_character_is_reserved('\x01'));
@@ -125,7 +125,7 @@ void str_test_character_is_reserved ()
   TEST_ASSERT(str_character_is_reserved('\\'));
 }
 
-void str_test_init_clean ()
+TEST_CASE(test__str_init_clean)
 {
   size_t len;
   char *m;
@@ -147,7 +147,7 @@ void str_test_init_clean ()
   test_ok();
 }
 
-void str_test_init_dup ()
+TEST_CASE(test__str_init_dup)
 {
   size_t len;
   char *m;
@@ -174,7 +174,7 @@ void str_test_init_dup ()
   test_ok();
 }
 
-void str_test_init_dup_1 ()
+TEST_CASE(test__str_init_dup_1)
 {
   size_t len;
   char *m;
@@ -197,7 +197,7 @@ void str_test_init_dup_1 ()
   test_ok();
 }
 
-void str_test_inspect ()
+TEST_CASE(test__str_inspect)
 {
   s8 zero[16];
   bzero(zero, sizeof(zero));
@@ -279,21 +279,21 @@ void str_test_inspect ()
                    "\\0\"");
 }
 
-void str_test_new_1 ()
+TEST_CASE(test__str_new_1)
 {
   s_str *str;
   TEST_ASSERT((str = str_new_1(NULL, "test")));
   str_delete(str);
 }
 
-void str_test_new_cpy ()
+TEST_CASE(test__str_new_cpy)
 {
   s_str *str;
   TEST_ASSERT((str = str_new_cpy(4, "test")));
   str_delete(str);
 }
 
-void str_test_new_delete ()
+TEST_CASE(test__str_new_delete)
 {
   size_t len;
   char *m;
@@ -314,7 +314,7 @@ void str_test_new_delete ()
   test_ok();
 }
 
-void str_test_new_dup ()
+TEST_CASE(test__str_new_dup)
 {
   size_t len;
   char *m;
@@ -340,7 +340,7 @@ void str_test_new_dup ()
   test_ok();
 }
 
-void str_test_new_f ()
+TEST_CASE(test__str_new_f)
 {
   s_str *str;
   TEST_ASSERT((str = str_new_f("test%d", 42)));
@@ -351,7 +351,7 @@ void str_test_new_f ()
   str_delete(str);
 }
 
-void str_test_to_hex ()
+TEST_CASE(test__str_to_hex)
 {
   s8 zero[32];
   bzero(zero, sizeof(zero));
@@ -431,7 +431,7 @@ void str_test_to_hex ()
                   "7172737475767778797A");
 }
 
-void str_test_to_sym ()
+TEST_CASE(test__str_to_sym)
 {
   STR_TEST_TO_SYM("");
   STR_TEST_TO_SYM("0");

@@ -37,7 +37,7 @@ void character_test ()
 #define CHARACTER_TEST_1_ASCII(string)        \
   TEST_EQ(character_1(string), string[0])
 
-void character_test_1 ()
+TEST_CASE(test__character_1)
 {
   CHARACTER_TEST_1_ASCII("_");
   CHARACTER_TEST_1_ASCII("0");
@@ -73,7 +73,7 @@ void character_test_1 ()
   TEST_EQ(character_1("ꝝ"), 42845);
 }
 
-void character_test_is_digit ()
+TEST_CASE(test__character_is_digit)
 {
   character c;
   for (c = -10; c < 40; c++)
@@ -118,7 +118,7 @@ void character_test_is_digit ()
   TEST_ASSERT(! character_is_digit(character_1("ꝝ")));
 }
 
-void character_test_is_lowercase ()
+TEST_CASE(test__character_is_lowercase)
 {
   character c;
   for (c = -10; c < 40; c++)
@@ -157,7 +157,7 @@ void character_test_is_lowercase ()
   TEST_ASSERT(character_is_lowercase(character_1("ꝝ")));
 }
 
-void character_test_is_space ()
+TEST_CASE(test__character_is_space)
 {
   TEST_ASSERT(character_is_space('\n'));
   TEST_ASSERT(character_is_space('\r'));
@@ -193,7 +193,7 @@ void character_test_is_space ()
   TEST_ASSERT(! character_is_space(character_1("Ꝝ")));
 }
 
-void character_test_is_uppercase ()
+TEST_CASE(test__character_is_uppercase)
 {
   character c;
   for (c = -10; c < 40; c++)
@@ -228,11 +228,11 @@ void character_test_is_uppercase ()
   TEST_ASSERT(character_is_uppercase(character_1("Ꝝ")));
 }
 
-void character_test_utf8 ()
+TEST_CASE(test__character_utf8)
 {
 }
 
-void character_test_utf8_size ()
+TEST_CASE(test__character_utf8_size)
 {
   character c;
   for (c = -10; c < 0; c++)

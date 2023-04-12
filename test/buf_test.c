@@ -211,7 +211,7 @@ void buf_test ()
   buf_test_ignore();
 }
 
-void buf_test_f ()
+TEST_CASE(test__buf_f)
 {
   s8 b[32];
   s_buf buf;
@@ -228,7 +228,7 @@ void buf_test_f ()
              "ÉoàΠ꒴𐅀 \n\r\t\v\\\"");
 }
 
-void buf_test_ignore ()
+TEST_CASE(test__buf_ignore)
 {
   BUF_TEST_IGNORE("", 0, 0);
   BUF_TEST_IGNORE("", 1, -1);
@@ -248,7 +248,7 @@ void buf_test_ignore ()
   BUF_TEST_IGNORE("1234567890", 10, 10);
 }
 
-void buf_test_init_clean ()
+TEST_CASE(test__buf_init_clean)
 {
   char a[4] = "test";
   size_t len;
@@ -272,7 +272,7 @@ void buf_test_init_clean ()
   BUF_TEST_CLEAN(buf);
 }
 
-void buf_test_new_delete ()
+TEST_CASE(test__buf_new_delete)
 {
   char a[4] = "test";
   size_t len;
@@ -296,7 +296,7 @@ void buf_test_new_delete ()
   BUF_TEST_DELETE(buf);
 }
 
-void buf_test_new_alloc_delete ()
+TEST_CASE(test__buf_new_alloc_delete)
 {
   size_t len;
   s_buf *buf;
@@ -311,7 +311,7 @@ void buf_test_new_alloc_delete ()
   }
 }
 
-void buf_test_peek_1 ()
+TEST_CASE(test__buf_peek_1)
 {
   BUF_TEST_PEEK_1("");
   BUF_TEST_PEEK_1("\x01");
@@ -336,12 +336,12 @@ void buf_test_peek_1 ()
   BUF_TEST_PEEK_1("\x01\x02\x03" "ABCabcÀÉΠꝜ꒴𐅀àéπꝝ");
 }
 
-void buf_test_peek_character_utf8 ()
+TEST_CASE(test__buf_peek_character_utf8)
 {
   BUF_TEST_PEEK_CHARACTER_UTF8("0", 1, '0');
 }
 
-void buf_test_peek_s8 ()
+TEST_CASE(test__buf_peek_s8)
 {
   char a[4] = "ABCD";
   s_buf buf;
@@ -357,7 +357,7 @@ void buf_test_peek_s8 ()
   TEST_EQ(buf.wpos, 1);
 }
 
-void buf_test_peek_s16 ()
+TEST_CASE(test__buf_peek_s16)
 {
   s8 b[8];
   s_buf buf;
@@ -371,7 +371,7 @@ void buf_test_peek_s16 ()
   TEST_EQ(buf.rpos, 0);
 }
 
-void buf_test_peek_u8 ()
+TEST_CASE(test__buf_peek_u8)
 {
   char a[4] = "ABCD";
   s_buf buf;
@@ -387,7 +387,7 @@ void buf_test_peek_u8 ()
   TEST_EQ(buf.wpos, 1);
 }
 
-void buf_test_read_1 ()
+TEST_CASE(test__buf_read_1)
 {
   BUF_TEST_READ_1("");
   BUF_TEST_READ_1("\x01");
@@ -417,7 +417,7 @@ void buf_test_read_1 ()
   BUF_TEST_READ_1_("abc", "", 0);
 }
 
-void buf_test_read_character_utf8 ()
+TEST_CASE(test__buf_read_character_utf8)
 {
   BUF_TEST_READ_CHARACTER_UTF8("0", '0');
   BUF_TEST_READ_CHARACTER_UTF8("9", '9');
@@ -459,7 +459,7 @@ void buf_test_read_f32()
   buf_clean(&buf);
 }
 
-void buf_test_read_f64 ()
+TEST_CASE(test__buf_read_f64)
 {
   s8 b[32];
   s_buf buf;
@@ -487,7 +487,7 @@ void buf_test_read_f64 ()
   TEST_DOUBLE_EQ(f, DBL_MAX);
 }
 
-void buf_test_read_s8 ()
+TEST_CASE(test__buf_read_s8)
 {
   char a[8] = "ABCDEFGH";
   s_buf buf;
@@ -530,7 +530,7 @@ void buf_test_read_s8 ()
   buf_clean(&buf);
 }
 
-void buf_test_read_s16 ()
+TEST_CASE(test__buf_read_s16)
 {
   s8 b[8];
   s_buf buf;
@@ -612,7 +612,7 @@ void buf_test_read_s64()
   buf_clean(&buf);
 }
 
-void buf_test_read_to_str ()
+TEST_CASE(test__buf_read_to_str)
 {
   BUF_TEST_READ_TO_STR("");
   BUF_TEST_READ_TO_STR("0");
@@ -628,7 +628,7 @@ void buf_test_read_to_str ()
   BUF_TEST_READ_TO_STR("09AZÀÉazàé");
 }
 
-void buf_test_read_u8 ()
+TEST_CASE(test__buf_read_u8)
 {
   s_buf buf;
   u8 byte;
@@ -740,7 +740,7 @@ void buf_test_read_u64()
   buf_clean(&buf);
 }
 
-void buf_test_write_s8 ()
+TEST_CASE(test__buf_write_s8)
 {
   s8 b[4];
   s_buf buf;
@@ -763,7 +763,7 @@ void buf_test_write_s8 ()
   TEST_EQ(buf.ptr.ps8[3], -1);
 }
 
-void buf_test_write_s16 ()
+TEST_CASE(test__buf_write_s16)
 {
   s8 b[8];
   s_buf buf;
@@ -786,7 +786,7 @@ void buf_test_write_s16 ()
   TEST_EQ(*((s16 *) (buf.ptr.ps8 + 6)), -1);
 }
 
-void buf_test_write_s32 ()
+TEST_CASE(test__buf_write_s32)
 {
   s8 b[16];
   s_buf buf;
@@ -809,7 +809,7 @@ void buf_test_write_s32 ()
   TEST_EQ(*((s32 *) (buf.ptr.ps8 + 12)), -1);
 }
 
-void buf_test_write_s64 ()
+TEST_CASE(test__buf_write_s64)
 {
   s8 b[32];
   s_buf buf;
@@ -832,7 +832,7 @@ void buf_test_write_s64 ()
   TEST_EQ(*((s64 *) (buf.ptr.ps8 + 24)), -1);
 }
 
-void buf_test_write_u8 ()
+TEST_CASE(test__buf_write_u8)
 {
   s8 b[4];
   s_buf buf;
@@ -855,7 +855,7 @@ void buf_test_write_u8 ()
   TEST_EQ(buf.ptr.pu8[3], 0xFF);
 }
 
-void buf_test_write_u16 ()
+TEST_CASE(test__buf_write_u16)
 {
   s8 b[8];
   s_buf buf;
@@ -878,7 +878,7 @@ void buf_test_write_u16 ()
   TEST_EQ(*((u16 *) (buf.ptr.pu8 + 6)), 0xFFFF);
 }
 
-void buf_test_write_u32 ()
+TEST_CASE(test__buf_write_u32)
 {
   s8 b[16];
   s_buf buf;
@@ -901,7 +901,7 @@ void buf_test_write_u32 ()
   TEST_EQ(*((u32 *) (buf.ptr.pu8 + 12)), 0xFFFFFFFF);
 }
 
-void buf_test_write_u64 ()
+TEST_CASE(test__buf_write_u64)
 {
   s8 b[32];
   s_buf buf;
@@ -924,11 +924,11 @@ void buf_test_write_u64 ()
   TEST_EQ(*((u64 *) (buf.ptr.pu8 + 24)), 0xFFFFFFFFFFFFFFFF);
 }
 
-void buf_test_write_str ()
+TEST_CASE(test__buf_write_str)
 {
 }
 
-void buf_test_xfer ()
+TEST_CASE(test__buf_xfer)
 {
   s8 d[16];
   s_buf dest;

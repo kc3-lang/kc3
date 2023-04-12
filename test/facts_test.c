@@ -47,7 +47,7 @@ void facts_test ()
   facts_test_open_file();
 }
 
-void facts_test_add ()
+TEST_CASE(test__facts_add)
 {
   uw i = 0;
   s8 *p[24] = {
@@ -100,7 +100,7 @@ void facts_test_add ()
   facts_clean(&facts);
 }
 
-void facts_test_dump_file ()
+TEST_CASE(test__facts_dump_file)
 {
   uw i = 0;
   s8 *p[24] = {
@@ -150,7 +150,7 @@ void facts_test_dump_file ()
   facts_clean(&facts);
 }
 
-void facts_test_find ()
+TEST_CASE(test__facts_find)
 {
   uw i = 0;
   s8 *p[24] = {
@@ -203,7 +203,7 @@ void facts_test_find ()
   facts_clean(&facts);
 }
 
-void facts_test_init_clean ()
+TEST_CASE(test__facts_init_clean)
 {
   s_facts facts;
   TEST_EQ(facts_init(&facts), &facts);
@@ -220,7 +220,7 @@ void facts_test_init_clean ()
   test_ok();
 }
 
-void facts_test_load ()
+TEST_CASE(test__facts_load)
 {
   uw i = 0;
   s8 *p[24] = {
@@ -265,7 +265,7 @@ void facts_test_load ()
   facts_clean(&facts);
 }
 
-void facts_test_log_add ()
+TEST_CASE(test__facts_log_add)
 {
   uw i = 0;
   s8 *p[24] = {
@@ -315,7 +315,7 @@ void facts_test_log_add ()
     unlink("facts_test_log_add.facts");
 }
 
-void facts_test_log_remove ()
+TEST_CASE(test__facts_log_remove)
 {
   uw i = 0;
   s8 *p[24] = {
@@ -372,7 +372,7 @@ void facts_test_log_remove ()
     unlink("facts_test_log_remove.facts");
 }
 
-void facts_test_new_delete ()
+TEST_CASE(test__facts_new_delete)
 {
   s_facts *facts;
   s_buf buf;
@@ -394,7 +394,7 @@ void facts_test_new_delete ()
   }
 }
 
-void facts_test_open_file ()
+TEST_CASE(test__facts_open_file)
 {
   uw i = 0;
   s8 *p[24] = {
@@ -543,7 +543,7 @@ void facts_test_open_file ()
     unlink("facts_test_open_file.3.facts");
 }
 
-void facts_test_remove ()
+TEST_CASE(test__facts_remove)
 {
   uw i = 0;
   s8 *p[24] = {
@@ -592,7 +592,7 @@ void facts_test_remove ()
   facts_clean(&facts);
 }
 
-void facts_test_save ()
+TEST_CASE(test__facts_save)
 {
   uw i = 0;
   s8 *p[24] = {

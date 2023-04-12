@@ -39,7 +39,7 @@ void cfn_test ()
   cfn_test_apply();
 }
 
-void cfn_test_apply ()
+TEST_CASE(test__cfn_apply)
 {
   s_list *args;
   s_tag result;
@@ -58,7 +58,7 @@ void cfn_test_apply ()
   cfn_clean(&a);
 }
 
-void cfn_test_copy ()
+TEST_CASE(test__cfn_copy)
 {
   s_cfn a;
   s_list *a_arg_types;
@@ -93,7 +93,7 @@ void cfn_test_copy ()
   cfn_clean(&a);
 }
 
-void cfn_test_init_clean ()
+TEST_CASE(test__cfn_init_clean)
 {
   s_cfn a;
   TEST_EQ(cfn_init(&a, sym_1("cfn_test_not"),
@@ -119,7 +119,7 @@ void cfn_test_init_clean ()
   test_ok();
 }
 
-void cfn_test_link ()
+TEST_CASE(test__cfn_link)
 {
   s_cfn a;
   s_cfn b;
@@ -148,7 +148,7 @@ bool cfn_test_not (bool a)
   return a ? false : true;
 }
 
-void cfn_test_prep_cif ()
+TEST_CASE(test__cfn_prep_cif)
 {
   s_cfn a;
   s_cfn b;

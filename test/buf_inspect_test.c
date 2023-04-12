@@ -179,13 +179,13 @@ void buf_inspect_test ()
   buf_inspect_test_tag();
 }
 
-void buf_inspect_test_bool ()
+TEST_CASE(test__buf_inspect_bool)
 {
   BUF_INSPECT_TEST_BOOL(true, "true");
   BUF_INSPECT_TEST_BOOL(false, "false");
 }
 
-void buf_inspect_test_character ()
+TEST_CASE(test__buf_inspect_character)
 {
   BUF_INSPECT_TEST_CHARACTER(0, "'\\0'");
   BUF_INSPECT_TEST_CHARACTER(1, "'\\x01'");
@@ -206,7 +206,7 @@ void buf_inspect_test_character ()
   BUF_INSPECT_TEST_CHARACTER(129321, "'🤩'");
 }
 
-void buf_inspect_test_f32 ()
+TEST_CASE(test__buf_inspect_f32)
 {
   BUF_INSPECT_TEST_F32(0.0, "0");
   BUF_INSPECT_TEST_F32(0.1, "0.1");
@@ -219,7 +219,7 @@ void buf_inspect_test_f32 ()
   BUF_INSPECT_TEST_F32(-123456789.0, "-1.23457e+08");
 }
 
-void buf_inspect_test_f64 ()
+TEST_CASE(test__buf_inspect_f64)
 {
   BUF_INSPECT_TEST_F64(0.0, "0");
   BUF_INSPECT_TEST_F64(0.1, "0.1");
@@ -232,7 +232,7 @@ void buf_inspect_test_f64 ()
   BUF_INSPECT_TEST_F64(-123456789.0, "-1.23457e+08");
 }
 
-void buf_inspect_test_integer ()
+TEST_CASE(test__buf_inspect_integer)
 {
   BUF_INSPECT_TEST_INTEGER("0", "0");
   BUF_INSPECT_TEST_INTEGER("1234", "1234");
@@ -251,12 +251,12 @@ void buf_inspect_test_integer ()
 			   "123456789012345678901234567890123321321311234567890123456789012345678901233213213112345678901234567890123456789012332132131123456789012345678901234567890123321321311234567890123456789012345678901233213213112345678901234567890123456789012332132131123456789012345678901234567890123321321311234567890123456789012345678901233213213112345678901234567890123456789012332132131123456789012345678901234567890123321321311234567890123456789012345678901233213213112345678901234567890123456789012332132131123456789012345678901234567890123321321311234567890123456789012345678901233213213112345678901234567890123456789012332132131123456789012345678901234567890123321321311234567890123456789012345678901233213213112345678901234567890123456789012332132131123456789012345678901234567890123321321311234567890123456789012345678901233213213112345678901234567890123456789012332132131");
 }
 
-void buf_inspect_test_list ()
+TEST_CASE(test__buf_inspect_list)
 {
   BUF_INSPECT_TEST_LIST("()", "()");
 }
  
-void buf_inspect_test_str ()
+TEST_CASE(test__buf_inspect_str)
 {
   BUF_INSPECT_TEST_STR("", "\"\"");
   BUF_INSPECT_TEST_STR(" ", "\" \"");
@@ -294,7 +294,7 @@ void buf_inspect_test_str ()
   BUF_INSPECT_TEST_STR("éoπꝝ꒴𐅀🎳😄🟣🤩", "\"éoπꝝ꒴𐅀🎳😄🟣🤩\"");
 }
 
-void buf_inspect_test_str_character ()
+TEST_CASE(test__buf_inspect_str_character)
 {
   BUF_INSPECT_TEST_STR_CHARACTER(0, "\\0");
   BUF_INSPECT_TEST_STR_CHARACTER(1, "\\x01");
@@ -315,7 +315,7 @@ void buf_inspect_test_str_character ()
   BUF_INSPECT_TEST_STR_CHARACTER(129321, "🤩");
 }
 
-void buf_inspect_test_str_character_size ()
+TEST_CASE(test__buf_inspect_str_character_size)
 {
   BUF_INSPECT_TEST_STR_CHARACTER_SIZE(0, 2);
   BUF_INSPECT_TEST_STR_CHARACTER_SIZE(1, 4);
@@ -332,7 +332,7 @@ void buf_inspect_test_str_character_size ()
   BUF_INSPECT_TEST_STR_CHARACTER_SIZE(65856, 4);
 }
 
-void buf_inspect_test_tag ()
+TEST_CASE(test__buf_inspect_tag)
 {
   s_tag tag;
   tag_init(&tag);

@@ -672,7 +672,6 @@ void buf_parse_test_integer_oct ();
 void buf_parse_test_integer_bin ();
 void buf_parse_test_ident ();
 void buf_parse_test_list ();
-void buf_parse_test_s ();
 BUF_PARSE_TEST_S_PROTOTYPE(8);
 BUF_PARSE_TEST_S_PROTOTYPE(16);
 BUF_PARSE_TEST_S_PROTOTYPE(32);
@@ -684,7 +683,6 @@ void buf_parse_test_str_u8 ();
 void buf_parse_test_sym ();
 void buf_parse_test_tag ();
 void buf_parse_test_tuple ();
-void buf_parse_test_u ();
 BUF_PARSE_TEST_U_PROTOTYPE(8);
 BUF_PARSE_TEST_U_PROTOTYPE(16);
 BUF_PARSE_TEST_U_PROTOTYPE(32);
@@ -717,14 +715,60 @@ void buf_parse_test ()
   buf_parse_test_list();
   buf_parse_test_tag();
   buf_parse_test_tuple();
-  buf_parse_test_u();
+  buf_parse_test_u8_binary();
+  buf_parse_test_u8_octal();
+  buf_parse_test_u8_hexadecimal();
+  buf_parse_test_u8_decimal();
+  buf_parse_test_u16_binary();
+  buf_parse_test_u16_octal();
+  buf_parse_test_u16_hexadecimal();
+  buf_parse_test_u16_decimal();
+  buf_parse_test_u32_binary();
+  buf_parse_test_u32_octal();
+  buf_parse_test_u32_hexadecimal();
+  buf_parse_test_u32_decimal();
+  buf_parse_test_u64_binary();
+  buf_parse_test_u64_octal();
+  buf_parse_test_u64_hexadecimal();
+  buf_parse_test_u64_decimal();
   buf_parse_test_uw();
-  buf_parse_test_s();
+  buf_parse_test_s16_binary();
+  buf_parse_test_s16_binary_negative();
+  buf_parse_test_s16_octal();
+  buf_parse_test_s16_octal_negative();
+  buf_parse_test_s16_hexadecimal();
+  buf_parse_test_s16_hexadecimal_negative();
+  buf_parse_test_s16_decimal();
+  buf_parse_test_s16_decimal_negative();
+  buf_parse_test_s32_binary();
+  buf_parse_test_s32_binary_negative();
+  buf_parse_test_s32_octal();
+  buf_parse_test_s32_octal_negative();
+  buf_parse_test_s32_hexadecimal();
+  buf_parse_test_s32_hexadecimal_negative();
+  buf_parse_test_s32_decimal();
+  buf_parse_test_s32_decimal_negative();
+  buf_parse_test_s64_binary();
+  buf_parse_test_s64_binary_negative();
+  buf_parse_test_s64_octal();
+  buf_parse_test_s64_octal_negative();
+  buf_parse_test_s64_hexadecimal();
+  buf_parse_test_s64_hexadecimal_negative();
+  buf_parse_test_s64_decimal();
+  buf_parse_test_s64_decimal_negative();
+  buf_parse_test_s8_binary();
+  buf_parse_test_s8_binary_negative();
+  buf_parse_test_s8_octal();
+  buf_parse_test_s8_octal_negative();
+  buf_parse_test_s8_hexadecimal();
+  buf_parse_test_s8_hexadecimal_negative();
+  buf_parse_test_s8_decimal();
+  buf_parse_test_s8_decimal_negative();
   buf_parse_test_sw();
   buf_parse_test_cfn();
 }
 
-void buf_parse_test_bool ()
+TEST_CASE(test__buf_parse_bool)
 {
   BUF_PARSE_TEST_NOT_BOOL("0");
   BUF_PARSE_TEST_NOT_BOOL("1");
@@ -743,7 +787,7 @@ void buf_parse_test_bool ()
   BUF_PARSE_TEST_BOOL("true", 1);
 }
 
-void buf_parse_test_call ()
+TEST_CASE(test__buf_parse_call)
 {
   BUF_PARSE_TEST_NOT_CALL("0");
   BUF_PARSE_TEST_NOT_CALL("9");
@@ -769,7 +813,7 @@ void buf_parse_test_call ()
   BUF_PARSE_TEST_CALL("a(B.c(D.e(f, g), H.i(j, k)))");
 }
 
-void buf_parse_test_call_op ()
+TEST_CASE(test__buf_parse_call_op)
 {
   BUF_PARSE_TEST_CALL_OP("1 + 2");
   /*
@@ -780,7 +824,7 @@ void buf_parse_test_call_op ()
   */
 }
 
-void buf_parse_test_cfn ()
+TEST_CASE(test__buf_parse_cfn)
 {
   BUF_PARSE_TEST_NOT_CFN("0");
   BUF_PARSE_TEST_NOT_CFN("9");
@@ -794,7 +838,7 @@ void buf_parse_test_cfn ()
   BUF_PARSE_TEST_CFN("cfn :tag \"tag_add\" (:tag, :tag, :tag)");
 }
 
-void buf_parse_test_character ()
+TEST_CASE(test__buf_parse_character)
 {
   BUF_PARSE_TEST_NOT_CHARACTER("\x01");
   BUF_PARSE_TEST_NOT_CHARACTER("\xFF");
@@ -864,7 +908,7 @@ void buf_parse_test_character ()
   BUF_PARSE_TEST_CHARACTER("'𐅀'", 65856);
 }
 
-void buf_parse_test_digit_bin ()
+TEST_CASE(test__buf_parse_digit_bin)
 {
   BUF_PARSE_TEST_NOT_DIGIT_BIN("\x01");
   BUF_PARSE_TEST_NOT_DIGIT_BIN("\x02");
@@ -881,7 +925,7 @@ void buf_parse_test_digit_bin ()
   BUF_PARSE_TEST_DIGIT_BIN("1", 1);
 }
 
-void buf_parse_test_digit_hex ()
+TEST_CASE(test__buf_parse_digit_hex)
 {
   BUF_PARSE_TEST_NOT_DIGIT_HEX("\x01");
   BUF_PARSE_TEST_NOT_DIGIT_HEX("\x02");
@@ -902,7 +946,7 @@ void buf_parse_test_digit_hex ()
   BUF_PARSE_TEST_DIGIT_HEX("f", 0x0F);
 }
 
-void buf_parse_test_digit_oct ()
+TEST_CASE(test__buf_parse_digit_oct)
 {
   BUF_PARSE_TEST_NOT_DIGIT_OCT("\x01");
   BUF_PARSE_TEST_NOT_DIGIT_OCT("\x02");
@@ -919,7 +963,7 @@ void buf_parse_test_digit_oct ()
   BUF_PARSE_TEST_DIGIT_OCT("7", 7);
 }
 
-void buf_parse_test_digit_dec ()
+TEST_CASE(test__buf_parse_digit_dec)
 {
   BUF_PARSE_TEST_NOT_DIGIT_DEC("\x01");
   BUF_PARSE_TEST_NOT_DIGIT_DEC("\x02");
@@ -947,14 +991,14 @@ void buf_parse_test_f64()
 {
 }
 
-void buf_parse_test_fn ()
+TEST_CASE(test__buf_parse_fn)
 {
   BUF_PARSE_TEST_FN("fn () { () }");
   BUF_PARSE_TEST_FN("fn (x) { x }");
   BUF_PARSE_TEST_FN("fn (x, y) { x }");
 }
 
-void buf_parse_test_ident ()
+TEST_CASE(test__buf_parse_ident)
 {
   BUF_PARSE_TEST_NOT_IDENT("0");
   BUF_PARSE_TEST_NOT_IDENT("9");
@@ -1009,7 +1053,7 @@ void buf_parse_test_ident ()
   BUF_PARSE_TEST_IDENT("Module.ident_az09AZ", "ident_az09AZ");
 }
 
-void buf_parse_test_integer ()
+TEST_CASE(test__buf_parse_integer)
 {
   BUF_PARSE_TEST_NOT_INTEGER("-");
   BUF_PARSE_TEST_NOT_INTEGER("A");
@@ -1057,7 +1101,7 @@ void buf_parse_test_integer ()
   BUF_PARSE_TEST_INTEGER("0O100");
 }
 
-void buf_parse_test_integer_bin ()
+TEST_CASE(test__buf_parse_integer_bin)
 {
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_BIN("A");
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_BIN("STR");
@@ -1103,7 +1147,7 @@ void buf_parse_test_integer_oct()
   BUF_PARSE_TEST_INTEGER_UNSIGNED_OCT("777");
 }
 
-void buf_parse_test_list ()
+TEST_CASE(test__buf_parse_list)
 {
   BUF_PARSE_TEST_LIST("()");
   BUF_PARSE_TEST_LIST("((), ())");
@@ -1115,48 +1159,12 @@ void buf_parse_test_list ()
   BUF_PARSE_TEST_LIST("(a, b, c | d)");
 }
 
-void buf_parse_test_s ()
-{
-  buf_parse_test_s16_binary();
-  buf_parse_test_s16_binary_negative();
-  buf_parse_test_s16_octal();
-  buf_parse_test_s16_octal_negative();
-  buf_parse_test_s16_hexadecimal();
-  buf_parse_test_s16_hexadecimal_negative();
-  buf_parse_test_s16_decimal();
-  buf_parse_test_s16_decimal_negative();
-  buf_parse_test_s32_binary();
-  buf_parse_test_s32_binary_negative();
-  buf_parse_test_s32_octal();
-  buf_parse_test_s32_octal_negative();
-  buf_parse_test_s32_hexadecimal();
-  buf_parse_test_s32_hexadecimal_negative();
-  buf_parse_test_s32_decimal();
-  buf_parse_test_s32_decimal_negative();
-  buf_parse_test_s64_binary();
-  buf_parse_test_s64_binary_negative();
-  buf_parse_test_s64_octal();
-  buf_parse_test_s64_octal_negative();
-  buf_parse_test_s64_hexadecimal();
-  buf_parse_test_s64_hexadecimal_negative();
-  buf_parse_test_s64_decimal();
-  buf_parse_test_s64_decimal_negative();
-  buf_parse_test_s8_binary();
-  buf_parse_test_s8_binary_negative();
-  buf_parse_test_s8_octal();
-  buf_parse_test_s8_octal_negative();
-  buf_parse_test_s8_hexadecimal();
-  buf_parse_test_s8_hexadecimal_negative();
-  buf_parse_test_s8_decimal();
-  buf_parse_test_s8_decimal_negative();
-}
-
-void buf_parse_test_sw ()
+TEST_CASE(test__buf_parse_sw)
 {
 }
 
 
-void buf_parse_test_str ()
+TEST_CASE(test__buf_parse_str)
 {
   BUF_PARSE_TEST_NOT_STR("");
   BUF_PARSE_TEST_NOT_STR("\x00");
@@ -1204,7 +1212,7 @@ void buf_parse_test_str ()
   BUF_PARSE_TEST_STR("\"ꇤ\"", "ꇤ");
 }
 
-void buf_parse_test_str_character ()
+TEST_CASE(test__buf_parse_str_character)
 {
   BUF_PARSE_TEST_STR_CHARACTER("0", '0');
   BUF_PARSE_TEST_STR_CHARACTER("9", '9');
@@ -1231,7 +1239,7 @@ void buf_parse_test_str_character ()
   BUF_PARSE_TEST_STR_CHARACTER("🤩", 129321);
 }
 
-void buf_parse_test_str_u8 ()
+TEST_CASE(test__buf_parse_str_u8)
 {
   BUF_PARSE_TEST_STR_U8_EOF("");
   BUF_PARSE_TEST_STR_U8("\x01", 1, 0x01);
@@ -1270,7 +1278,7 @@ void buf_parse_test_str_u8 ()
   BUF_PARSE_TEST_STR_U8("\\xFF8", 4, 0xFF);
 }
 
-void buf_parse_test_sym ()
+TEST_CASE(test__buf_parse_sym)
 {
   BUF_PARSE_TEST_NOT_SYM("0");
   BUF_PARSE_TEST_NOT_SYM("9");
@@ -1297,14 +1305,14 @@ void buf_parse_test_sym ()
   BUF_PARSE_TEST_SYM(":az09AZ", "az09AZ");
 }
 
-void buf_parse_test_tag ()
+TEST_CASE(test__buf_parse_tag)
 {
   BUF_PARSE_TEST_TAG("x");
   BUF_PARSE_TEST_TAG("_x");
   BUF_PARSE_TEST_TAG("(x | _y)");
 }
 
-void buf_parse_test_tuple ()
+TEST_CASE(test__buf_parse_tuple)
 {
   BUF_PARSE_TEST_TUPLE("{a, b}");
   BUF_PARSE_TEST_TUPLE("{a, b, c}");
@@ -1315,26 +1323,10 @@ void buf_parse_test_tuple ()
   BUF_PARSE_TEST_TUPLE("{{a, b}, {c, d}}");
 }
 
-void buf_parse_test_u ()
+TEST_CASE(test__buf_parse_u)
 {
-  buf_parse_test_u8_binary();
-  buf_parse_test_u8_octal();
-  buf_parse_test_u8_hexadecimal();
-  buf_parse_test_u8_decimal();
-  buf_parse_test_u16_binary();
-  buf_parse_test_u16_octal();
-  buf_parse_test_u16_hexadecimal();
-  buf_parse_test_u16_decimal();
-  buf_parse_test_u32_binary();
-  buf_parse_test_u32_octal();
-  buf_parse_test_u32_hexadecimal();
-  buf_parse_test_u32_decimal();
-  buf_parse_test_u64_binary();
-  buf_parse_test_u64_octal();
-  buf_parse_test_u64_hexadecimal();
-  buf_parse_test_u64_decimal();
 }
 
-void buf_parse_test_uw ()
+TEST_CASE(test__buf_parse_uw)
 {
 }

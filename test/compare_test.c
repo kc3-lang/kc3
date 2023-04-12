@@ -58,7 +58,7 @@ void compare_test ()
   compare_test_tuple();
 }
 
-void compare_test_bool ()
+TEST_CASE(test__compare_bool)
 {
   TEST_EQ(compare_bool(false, false), 0);
   TEST_EQ(compare_bool(false, true), -1);
@@ -66,7 +66,7 @@ void compare_test_bool ()
   TEST_EQ(compare_bool(true, true), 0);
 }
 
-void compare_test_character ()
+TEST_CASE(test__compare_character)
 {
   TEST_EQ(compare_character('0', '0'), 0);
   TEST_EQ(compare_character('0', '1'), -1);
@@ -81,7 +81,7 @@ void compare_test_character ()
   TEST_EQ(compare_character('a', 'A'), 1);
 }
 
-void compare_test_f32 ()
+TEST_CASE(test__compare_f32)
 {
   TEST_EQ(compare_f32('0', '0'), 0);
   TEST_EQ(compare_f32('0', '1'), -1);
@@ -109,7 +109,7 @@ void compare_test_f32 ()
           1);
 }
 
-void compare_test_f64 ()
+TEST_CASE(test__compare_f64)
 {
   TEST_EQ(compare_f64(0.0, 0.0), 0);
   TEST_EQ(compare_f64(0.0, 1.0), -1);
@@ -132,14 +132,14 @@ void compare_test_f64 ()
           1);
 }
 
-void compare_test_list ()
+TEST_CASE(test__compare_list)
 {
   COMPARE_TEST_LIST(NULL, NULL, 0);
   COMPARE_TEST_LIST(list_1("(A, B)"), list_1("(A, C)"), -1);
   COMPARE_TEST_LIST(list_1("(A, C)"), list_1("(A, B)"), 1);
 }
 
-void compare_test_str ()
+TEST_CASE(test__compare_str)
 {
   s_str *p;
   s_str a;
@@ -167,7 +167,7 @@ void compare_test_str ()
   COMPARE_TEST_STR(str_init_1(&a, NULL, "012"), str_init_1(&b, NULL, "ABC"), -1);
 }
 
-void compare_test_tag ()
+TEST_CASE(test__compare_tag)
 {
   s_tag a;
   s_tag b;
@@ -358,7 +358,7 @@ void compare_test_tag ()
   tag_clean(&b);
 }
 
-void compare_test_tuple ()
+TEST_CASE(test__compare_tuple)
 {
   s_tuple a;
   s_tuple b;
