@@ -1,3 +1,4 @@
+require 'fileutils'
 Dir["*.c"].each do |file|
   file_tmp = file + ".tmp"
   File.open(file_tmp, "w") do |out|
