@@ -31,6 +31,13 @@
     }                                                                  \
   } while(0)
 
+#define TEST_CASE(name)                                                \
+  void test_case_ ## name ()                                           \
+  {
+
+#define TEST_CASE_END(name)                                            \
+  }
+
 #define TEST_EQ(test, expected)                                        \
   do {                                                                 \
     long long signed TEST_EQ_tmp = (long long signed) (test);          \
