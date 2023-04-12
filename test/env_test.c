@@ -89,6 +89,7 @@ TEST_CASE(env_eval_equal_tag)
   tag_clean(&y);
   test_context(NULL);
 }
+TEST_CASE_END(env_eval_equal_tag)
 
 TEST_CASE(env_init_clean)
 {
@@ -98,3 +99,4 @@ TEST_CASE(env_init_clean)
   env_clean(&env);
   test_ok();
 }
+TEST_CASE_END(env_init_clean)

@@ -57,6 +57,7 @@ TEST_CASE(cfn_apply)
   list_delete_all(args);
   cfn_clean(&a);
 }
+TEST_CASE_END(cfn_apply)
 
 TEST_CASE(cfn_copy)
 {
@@ -92,6 +93,7 @@ TEST_CASE(cfn_copy)
   cfn_clean(&b);
   cfn_clean(&a);
 }
+TEST_CASE_END(cfn_copy)
 
 TEST_CASE(cfn_init_clean)
 {
@@ -118,6 +120,7 @@ TEST_CASE(cfn_init_clean)
   cfn_clean(&a);
   test_ok();
 }
+TEST_CASE_END(cfn_init_clean)
 
 TEST_CASE(cfn_link)
 {
@@ -142,11 +145,13 @@ TEST_CASE(cfn_link)
   TEST_EQ(a.cif.flags, b.cif.flags);
   cfn_clean(&a);
 }
+TEST_CASE_END(cfn_link)
 
 bool cfn_test_not (bool a)
 {
   return a ? false : true;
 }
+TEST_CASE_END(cfn_link)
 
 TEST_CASE(cfn_prep_cif)
 {
@@ -170,3 +175,4 @@ TEST_CASE(cfn_prep_cif)
   TEST_EQ(a.cif.rtype, &ffi_type_uint8);
   cfn_clean(&a);
 }
+TEST_CASE_END(cfn_prep_cif)

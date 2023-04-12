@@ -177,6 +177,7 @@ TEST_CASE(facts_with_)
   facts_with_cursor_clean(&cursor);
   facts_clean(&facts);
 }
+TEST_CASE_END(facts_with_)
 
 TEST_CASE(facts_with_tags)
 {
@@ -241,3 +242,4 @@ TEST_CASE(facts_with_tags)
   FACT_TEST_EQ(NULL, facts_cursor_next(&cursor));
   facts_clean(&facts);
 }
+TEST_CASE_END(facts_with_tags)

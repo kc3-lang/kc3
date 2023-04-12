@@ -31,6 +31,7 @@ TEST_CASE(buf_parse_u8_binary)
   BUF_PARSE_TEST_U(8, "0b11111110", 254U);
   BUF_PARSE_TEST_U(8, "0b11111111", 255U);
 }
+TEST_CASE_END(buf_parse_u8_binary)
 
 TEST_CASE(buf_parse_u8_octal)
 {
@@ -363,6 +364,7 @@ TEST_CASE(buf_parse_u8_octal)
   BUF_PARSE_TEST_U(8, "0o376", 254U);
   BUF_PARSE_TEST_U(8, "0o377", 255U);
 }
+TEST_CASE_END(buf_parse_u8_octal)
 
 TEST_CASE(buf_parse_u8_hexadecimal)
 {
@@ -1213,6 +1215,7 @@ TEST_CASE(buf_parse_u8_hexadecimal)
   BUF_PARSE_TEST_U(8, "0xFF",  255U);
   BUF_PARSE_TEST_U(8, "0x0FF", 255U);
 }
+TEST_CASE_END(buf_parse_u8_hexadecimal)
 
 TEST_CASE(buf_parse_u8_decimal)
 {
@@ -1583,3 +1586,4 @@ TEST_CASE(buf_parse_u8_decimal)
   BUF_PARSE_TEST_U(8, "254", 254U);
   BUF_PARSE_TEST_U(8, "255", 255U);
 }
+TEST_CASE_END(buf_parse_u8_decimal)

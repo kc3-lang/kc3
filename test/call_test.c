@@ -56,6 +56,7 @@ TEST_CASE(call_init_1)
   CALL_TEST_INIT_1("A.b(c, d)");
   CALL_TEST_INIT_1("A.b(c, d, e)");
 }
+TEST_CASE_END(call_init_1)
 
 TEST_CASE(call_inspect)
 {
@@ -68,3 +69,4 @@ TEST_CASE(call_inspect)
   CALL_TEST_INSPECT("A.b(c, d)");
   CALL_TEST_INSPECT("A.b(c, d, e)");
 }
+TEST_CASE_END(call_inspect)

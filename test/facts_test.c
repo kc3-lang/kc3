@@ -99,6 +99,7 @@ TEST_CASE(facts_add)
   }
   facts_clean(&facts);
 }
+TEST_CASE_END(facts_add)
 
 TEST_CASE(facts_dump_file)
 {
@@ -149,6 +150,7 @@ TEST_CASE(facts_dump_file)
   }
   facts_clean(&facts);
 }
+TEST_CASE_END(facts_dump_file)
 
 TEST_CASE(facts_find)
 {
@@ -202,6 +204,7 @@ TEST_CASE(facts_find)
   }
   facts_clean(&facts);
 }
+TEST_CASE_END(facts_find)
 
 TEST_CASE(facts_init_clean)
 {
@@ -219,6 +222,7 @@ TEST_CASE(facts_init_clean)
   facts_clean(&facts);
   test_ok();
 }
+TEST_CASE_END(facts_init_clean)
 
 TEST_CASE(facts_load)
 {
@@ -264,6 +268,7 @@ TEST_CASE(facts_load)
   }
   facts_clean(&facts);
 }
+TEST_CASE_END(facts_load)
 
 TEST_CASE(facts_log_add)
 {
@@ -314,6 +319,7 @@ TEST_CASE(facts_log_add)
   if (g_test_last_ok)
     unlink("facts_test_log_add.facts");
 }
+TEST_CASE_END(facts_log_add)
 
 TEST_CASE(facts_log_remove)
 {
@@ -371,6 +377,7 @@ TEST_CASE(facts_log_remove)
   if (g_test_last_ok)
     unlink("facts_test_log_remove.facts");
 }
+TEST_CASE_END(facts_log_remove)
 
 TEST_CASE(facts_new_delete)
 {
@@ -393,6 +400,7 @@ TEST_CASE(facts_new_delete)
     test_ok();
   }
 }
+TEST_CASE_END(facts_new_delete)
 
 TEST_CASE(facts_open_file)
 {
@@ -542,6 +550,7 @@ TEST_CASE(facts_open_file)
   if (g_test_last_ok)
     unlink("facts_test_open_file.3.facts");
 }
+TEST_CASE_END(facts_open_file)
 
 TEST_CASE(facts_remove)
 {
@@ -591,6 +600,7 @@ TEST_CASE(facts_remove)
   }
   facts_clean(&facts);
 }
+TEST_CASE_END(facts_remove)
 
 TEST_CASE(facts_save)
 {
@@ -641,3 +651,4 @@ TEST_CASE(facts_save)
   }
   facts_clean(&facts);
 }
+TEST_CASE_END(facts_save)

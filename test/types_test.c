@@ -36,3 +36,4 @@ TEST_CASE(types_sizeof)
   TEST_EQ(sizeof(bool), sizeof(u8));
   TEST_EQ(sizeof(u_ptr), sizeof(void *));
 }
+TEST_CASE_END(types_sizeof)

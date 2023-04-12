@@ -65,6 +65,7 @@ TEST_CASE(compare_bool)
   TEST_EQ(compare_bool(true, false), 1);
   TEST_EQ(compare_bool(true, true), 0);
 }
+TEST_CASE_END(compare_bool)
 
 TEST_CASE(compare_character)
 {
@@ -80,6 +81,7 @@ TEST_CASE(compare_character)
   TEST_EQ(compare_character('A', 'a'), -1);
   TEST_EQ(compare_character('a', 'A'), 1);
 }
+TEST_CASE_END(compare_character)
 
 TEST_CASE(compare_f32)
 {
@@ -108,6 +110,7 @@ TEST_CASE(compare_f32)
                       1.597693134862315708145274237317043567981e+38),
           1);
 }
+TEST_CASE_END(compare_f32)
 
 TEST_CASE(compare_f64)
 {
@@ -131,6 +134,7 @@ TEST_CASE(compare_f64)
                       1.597693134862315708145274237317043567981e+308),
           1);
 }
+TEST_CASE_END(compare_f64)
 
 TEST_CASE(compare_list)
 {
@@ -138,6 +142,7 @@ TEST_CASE(compare_list)
   COMPARE_TEST_LIST(list_1("(A, B)"), list_1("(A, C)"), -1);
   COMPARE_TEST_LIST(list_1("(A, C)"), list_1("(A, B)"), 1);
 }
+TEST_CASE_END(compare_list)
 
 TEST_CASE(compare_str)
 {
@@ -166,6 +171,7 @@ TEST_CASE(compare_str)
   COMPARE_TEST_STR(str_init_1(&a, NULL, "012"), str_init_1(&b, NULL, "0134"), -1);
   COMPARE_TEST_STR(str_init_1(&a, NULL, "012"), str_init_1(&b, NULL, "ABC"), -1);
 }
+TEST_CASE_END(compare_str)
 
 TEST_CASE(compare_tag)
 {
@@ -357,6 +363,7 @@ TEST_CASE(compare_tag)
   tag_clean(&a);
   tag_clean(&b);
 }
+TEST_CASE_END(compare_tag)
 
 TEST_CASE(compare_tuple)
 {
@@ -384,3 +391,4 @@ TEST_CASE(compare_tuple)
   tuple_clean(&a);
   tuple_clean(&b);
 }
+TEST_CASE_END(compare_tuple)

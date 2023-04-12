@@ -159,6 +159,7 @@ TEST_CASE(set__tag_add)
   tag_clean(&tag);
   set_clean__tag(&set);
 }
+TEST_CASE_END(set__tag_add)
 
 TEST_CASE(set__tag_cursor)
 {
@@ -264,6 +265,7 @@ TEST_CASE(set__tag_cursor)
   tag_clean(&tag);
   set_clean__tag(&set);
 }
+TEST_CASE_END(set__tag_cursor)
 
 TEST_CASE(set__tag_init_clean)
 {
@@ -298,6 +300,7 @@ TEST_CASE(set__tag_init_clean)
   SET__TAG_TEST_INIT_CLEAN(1000000);
   SET__TAG_TEST_INIT_CLEAN(1024 * 1024);
 }
+TEST_CASE_END(set__tag_init_clean)
 
 TEST_CASE(set__tag_remove)
 {
@@ -378,6 +381,7 @@ TEST_CASE(set__tag_remove)
   tag_clean(&tag);
   set_clean__tag(&set);
 }
+TEST_CASE_END(set__tag_remove)
 
 TEST_CASE(set__tag_resize)
 {
@@ -454,3 +458,4 @@ TEST_CASE(set__tag_resize)
   tag_clean(&tag);
   set_clean__tag(&set);
 }
+TEST_CASE_END(set__tag_resize)

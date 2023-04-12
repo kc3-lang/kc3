@@ -45,9 +45,11 @@ TEST_CASE(bool_compat)
   TEST_ASSERT((bool) true);
   TEST_ASSERT(! (bool) false);
 }
+TEST_CASE_END(bool_compat)
 
 TEST_CASE(bool_inspect)
 {
   BOOL_TEST_INSPECT(true, "true");
   BOOL_TEST_INSPECT(false, "false");
 }
+TEST_CASE_END(bool_inspect)

@@ -70,6 +70,7 @@ TEST_CASE(ident_character_is_reserved)
   IDENT_TEST_CHARACTER_IS_RESERVED(character_1("🟣"), false);
   IDENT_TEST_CHARACTER_IS_RESERVED(character_1("🤩"), false);
 }
+TEST_CASE_END(ident_character_is_reserved)
 
 TEST_CASE(ident_first_character_is_reserved)
 {
@@ -94,6 +95,7 @@ TEST_CASE(ident_first_character_is_reserved)
   IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("🟣"), false);
   IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("🤩"), false);
 }
+TEST_CASE_END(ident_first_character_is_reserved)
 
 void ident_test ()
 {
@@ -101,6 +103,7 @@ void ident_test ()
   ident_test_first_character_is_reserved();
   ident_test_character_is_reserved();
 }
+TEST_CASE_END(ident_first_character_is_reserved)
 
 TEST_CASE(ident_inspect)
 {
@@ -139,3 +142,4 @@ TEST_CASE(ident_inspect)
   IDENT_TEST_INSPECT("é", "é");
   IDENT_TEST_INSPECT("éoπꝝ꒴", "éoπꝝ꒴");
 }
+TEST_CASE_END(ident_inspect)

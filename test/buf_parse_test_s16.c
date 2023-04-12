@@ -33,6 +33,7 @@ TEST_CASE(buf_parse_s16_binary)
   BUF_PARSE_TEST_S(16, "0b111111111111110", 32766);
   BUF_PARSE_TEST_S(16, "0b111111111111111", 32767);
 }
+TEST_CASE_END(buf_parse_s16_binary)
 
 TEST_CASE(buf_parse_s16_binary_negative)
 {
@@ -55,6 +56,7 @@ TEST_CASE(buf_parse_s16_binary_negative)
   BUF_PARSE_TEST_S(16, "-0b111111111111111", -32767);
   BUF_PARSE_TEST_S(16, "-0b1000000000000000", -32768);
 }
+TEST_CASE_END(buf_parse_s16_binary_negative)
 
 TEST_CASE(buf_parse_s16_octal)
 {
@@ -645,6 +647,7 @@ TEST_CASE(buf_parse_s16_octal)
   BUF_PARSE_TEST_S(16, "0o77776", 32766);
   BUF_PARSE_TEST_S(16, "0o77777", 32767);
 }
+TEST_CASE_END(buf_parse_s16_octal)
 
 TEST_CASE(buf_parse_s16_octal_negative)
 {
@@ -1235,6 +1238,7 @@ TEST_CASE(buf_parse_s16_octal_negative)
   BUF_PARSE_TEST_S(16, "-0o77777", -32767);
   BUF_PARSE_TEST_S(16, "-0o100000", -32768);
 }
+TEST_CASE_END(buf_parse_s16_octal_negative)
 
 TEST_CASE(buf_parse_s16_hexadecimal)
 {
@@ -8869,6 +8873,7 @@ TEST_CASE(buf_parse_s16_hexadecimal)
   BUF_PARSE_TEST_S(16, "0x7fff", 32767);
   BUF_PARSE_TEST_S(16, "0x7FFF", 32767);
 }
+TEST_CASE_END(buf_parse_s16_hexadecimal)
 
 TEST_CASE(buf_parse_s16_hexadecimal_negative)
 {
@@ -16502,6 +16507,7 @@ TEST_CASE(buf_parse_s16_hexadecimal_negative)
   BUF_PARSE_TEST_S(16, "-0x7FFF", -32767);
   BUF_PARSE_TEST_S(16, "-0x8000", -32768);
 }
+TEST_CASE_END(buf_parse_s16_hexadecimal_negative)
 
 TEST_CASE(buf_parse_s16_decimal)
 {
@@ -17618,6 +17624,7 @@ TEST_CASE(buf_parse_s16_decimal)
   BUF_PARSE_TEST_S(16, "32766", 32766);
   BUF_PARSE_TEST_S(16, "32767", 32767);
 }
+TEST_CASE_END(buf_parse_s16_decimal)
 
 TEST_CASE(buf_parse_s16_decimal_negative)
 {
@@ -18734,3 +18741,4 @@ TEST_CASE(buf_parse_s16_decimal_negative)
   BUF_PARSE_TEST_S(16, "-32767", -32767);
   BUF_PARSE_TEST_S(16, "-32768", -32768);
 }
+TEST_CASE_END(buf_parse_s16_decimal_negative)

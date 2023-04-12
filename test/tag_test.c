@@ -46,6 +46,7 @@ TEST_CASE(tag_hash_u64)
   tag_clean(&a);
   tag_clean(&b);
 }
+TEST_CASE_END(tag_hash_u64)
 
 TEST_CASE(tag_init_1)
 {
@@ -57,3 +58,4 @@ TEST_CASE(tag_init_1)
   TEST_ASSERT(tag_init_1(&a, "fn (x, y) { x }"));
   tag_clean(&a);
 }
+TEST_CASE_END(tag_init_1)

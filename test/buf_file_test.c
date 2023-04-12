@@ -40,6 +40,7 @@ TEST_CASE(buf_file_open_r_close)
   test_ok();
   fclose(fp);
 }
+TEST_CASE_END(buf_file_open_r_close)
 
 TEST_CASE(buf_file_open_r_refill)
 {
@@ -61,7 +62,9 @@ TEST_CASE(buf_file_open_r_refill)
   fclose(fp);
   test_context(NULL);
 }
+TEST_CASE_END(buf_file_open_r_refill)
 
 TEST_CASE(buf_file_open_w_close)
 {
 }
+TEST_CASE_END(buf_file_open_w_close)

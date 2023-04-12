@@ -62,6 +62,7 @@ TEST_CASE(fact_init)
   TEST_EQ(fact.predicate, sym + 1);
   TEST_EQ(fact.object, sym + 2);
 }
+TEST_CASE_END(fact_init)
 
 s_fact * fact_test_init_1 (s_fact *fact, const s8 *tag)
 {
@@ -69,6 +70,7 @@ s_fact * fact_test_init_1 (s_fact *fact, const s8 *tag)
   fact->subject = fact->predicate = fact->object = tag_new_1(tag);
   return fact;
 }
+TEST_CASE_END(fact_init)
 
 s_fact * fact_test_init_3 (s_fact *fact, const s8 *subject,
                            const s8 *predicate, const s8 *object)
@@ -79,6 +81,7 @@ s_fact * fact_test_init_3 (s_fact *fact, const s8 *subject,
   fact->object    = tag_new_1(object);
   return fact;
 }
+TEST_CASE_END(fact_init)
 
 TEST_CASE(fact_inspect)
 {
@@ -90,3 +93,4 @@ TEST_CASE(fact_inspect)
   fact_init(&fact, tag, tag + 1, tag + 2);
   FACT_TEST_INSPECT(&fact, "{A, B, C}");
 }
+TEST_CASE_END(fact_inspect)

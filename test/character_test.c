@@ -72,6 +72,7 @@ TEST_CASE(character_1)
   TEST_EQ(character_1("Ꝝ"), 42844);
   TEST_EQ(character_1("ꝝ"), 42845);
 }
+TEST_CASE_END(character_1)
 
 TEST_CASE(character_is_digit)
 {
@@ -117,6 +118,7 @@ TEST_CASE(character_is_digit)
   TEST_ASSERT(! character_is_digit(character_1("π")));
   TEST_ASSERT(! character_is_digit(character_1("ꝝ")));
 }
+TEST_CASE_END(character_is_digit)
 
 TEST_CASE(character_is_lowercase)
 {
@@ -156,6 +158,7 @@ TEST_CASE(character_is_lowercase)
   TEST_ASSERT(character_is_lowercase(character_1("π")));
   TEST_ASSERT(character_is_lowercase(character_1("ꝝ")));
 }
+TEST_CASE_END(character_is_lowercase)
 
 TEST_CASE(character_is_space)
 {
@@ -192,6 +195,7 @@ TEST_CASE(character_is_space)
   TEST_ASSERT(! character_is_space(character_1("Π")));
   TEST_ASSERT(! character_is_space(character_1("Ꝝ")));
 }
+TEST_CASE_END(character_is_space)
 
 TEST_CASE(character_is_uppercase)
 {
@@ -227,10 +231,12 @@ TEST_CASE(character_is_uppercase)
   TEST_ASSERT(character_is_uppercase(character_1("Π")));
   TEST_ASSERT(character_is_uppercase(character_1("Ꝝ")));
 }
+TEST_CASE_END(character_is_uppercase)
 
 TEST_CASE(character_utf8)
 {
 }
+TEST_CASE_END(character_utf8)
 
 TEST_CASE(character_utf8_size)
 {
@@ -265,3 +271,4 @@ TEST_CASE(character_utf8_size)
   TEST_EQ(character_utf8_size(character_1("꒴")), 3);
   TEST_EQ(character_utf8_size(character_1("𐅀")), 4);
 }
+TEST_CASE_END(character_utf8_size)

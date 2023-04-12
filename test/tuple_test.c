@@ -110,6 +110,7 @@ TEST_CASE(tuple_init_clean)
   TUPLE_TEST_INIT_CLEAN(19);
   TUPLE_TEST_INIT_CLEAN(20);
 }
+TEST_CASE_END(tuple_init_clean)
 
 TEST_CASE(tuple_init_1)
 {
@@ -121,6 +122,7 @@ TEST_CASE(tuple_init_1)
   TUPLE_TEST_INIT_1("{{:a, :b}, {:c, :d}, {:e, :f}, {:g, :h}}");
   TUPLE_TEST_INIT_1("{{:a, :b}, {:c, :d}, {:e, :f}, {:g, :h}, {:i, :j}}");
 }
+TEST_CASE_END(tuple_init_1)
 
 TEST_CASE(tuple_inspect)
 {
@@ -129,6 +131,7 @@ TEST_CASE(tuple_inspect)
   TUPLE_TEST_INSPECT("{{:a, :b}, {:c, :d}, {:e, :f}}",
                      "{{:a, :b}, {:c, :d}, {:e, :f}}");
 }
+TEST_CASE_END(tuple_inspect)
 
 TEST_CASE(tuple_new_1)
 {
@@ -140,6 +143,7 @@ TEST_CASE(tuple_new_1)
   TUPLE_TEST_NEW_1("{{:a, :b}, {:c, :d}, {:e, :f}, {:g, :h}}");
   TUPLE_TEST_NEW_1("{{:a, :b}, {:c, :d}, {:e, :f}, {:g, :h}, {:i, :j}}");
 }
+TEST_CASE_END(tuple_new_1)
 
 TEST_CASE(tuple_new_delete)
 {
@@ -163,3 +167,4 @@ TEST_CASE(tuple_new_delete)
   TUPLE_TEST_NEW_DELETE(19);
   TUPLE_TEST_NEW_DELETE(20);
 }
+TEST_CASE_END(tuple_new_delete)

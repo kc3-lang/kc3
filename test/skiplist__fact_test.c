@@ -119,6 +119,7 @@ TEST_CASE(skiplist__fact_find)
     }
   }
 }
+TEST_CASE_END(skiplist__fact_find)
 
 TEST_CASE(skiplist__fact_insert)
 {
@@ -177,6 +178,7 @@ TEST_CASE(skiplist__fact_insert)
     i++;
   }
 }
+TEST_CASE_END(skiplist__fact_insert)
 
 TEST_CASE(skiplist__fact_new_delete)
 {
@@ -190,6 +192,7 @@ TEST_CASE(skiplist__fact_new_delete)
     }
   }
 }
+TEST_CASE_END(skiplist__fact_new_delete)
 
 TEST_CASE(skiplist__fact_remove)
 {
@@ -244,3 +247,4 @@ TEST_CASE(skiplist__fact_remove)
     }
   }
 }
+TEST_CASE_END(skiplist__fact_remove)

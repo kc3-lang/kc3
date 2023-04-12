@@ -91,6 +91,7 @@ TEST_CASE(sym_1)
   sym_test_1_test("éo");
   sym_test_1_test("éoà \n\r\t\v\"");
 }
+TEST_CASE_END(sym_1)
 
 const s_sym * sym_test_1_test (const s8 *p)
 {
@@ -103,6 +104,7 @@ const s_sym * sym_test_1_test (const s8 *p)
   TEST_EQ(sym_1(p), sym_1(p));
   return sym;
 }
+TEST_CASE_END(sym_1)
 
 TEST_CASE(sym_inspect)
 {
@@ -141,3 +143,4 @@ TEST_CASE(sym_inspect)
   SYM_TEST_INSPECT("éoà \n\r\t\v\"",
                    ":\"éoà \\n\\r\\t\\v\\\"\"");
 }
+TEST_CASE_END(sym_inspect)

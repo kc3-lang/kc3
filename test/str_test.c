@@ -124,6 +124,7 @@ TEST_CASE(str_character_is_reserved)
   TEST_ASSERT(str_character_is_reserved('"'));
   TEST_ASSERT(str_character_is_reserved('\\'));
 }
+TEST_CASE_END(str_character_is_reserved)
 
 TEST_CASE(str_init_clean)
 {
@@ -146,6 +147,7 @@ TEST_CASE(str_init_clean)
   str_clean(&stra);
   test_ok();
 }
+TEST_CASE_END(str_init_clean)
 
 TEST_CASE(str_init_dup)
 {
@@ -173,6 +175,7 @@ TEST_CASE(str_init_dup)
   str_clean(&str);
   test_ok();
 }
+TEST_CASE_END(str_init_dup)
 
 TEST_CASE(str_init_dup_1)
 {
@@ -196,6 +199,7 @@ TEST_CASE(str_init_dup_1)
   str_clean(&str);
   test_ok();
 }
+TEST_CASE_END(str_init_dup_1)
 
 TEST_CASE(str_inspect)
 {
@@ -278,6 +282,7 @@ TEST_CASE(str_inspect)
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0"
                    "\\0\"");
 }
+TEST_CASE_END(str_inspect)
 
 TEST_CASE(str_new_1)
 {
@@ -285,6 +290,7 @@ TEST_CASE(str_new_1)
   TEST_ASSERT((str = str_new_1(NULL, "test")));
   str_delete(str);
 }
+TEST_CASE_END(str_new_1)
 
 TEST_CASE(str_new_cpy)
 {
@@ -292,6 +298,7 @@ TEST_CASE(str_new_cpy)
   TEST_ASSERT((str = str_new_cpy(4, "test")));
   str_delete(str);
 }
+TEST_CASE_END(str_new_cpy)
 
 TEST_CASE(str_new_delete)
 {
@@ -313,6 +320,7 @@ TEST_CASE(str_new_delete)
   str_delete(str);
   test_ok();
 }
+TEST_CASE_END(str_new_delete)
 
 TEST_CASE(str_new_dup)
 {
@@ -339,6 +347,7 @@ TEST_CASE(str_new_dup)
   str_delete(str);
   test_ok();
 }
+TEST_CASE_END(str_new_dup)
 
 TEST_CASE(str_new_f)
 {
@@ -350,6 +359,7 @@ TEST_CASE(str_new_f)
   TEST_STRNCMP(str->ptr.p, "test42", str->size);
   str_delete(str);
 }
+TEST_CASE_END(str_new_f)
 
 TEST_CASE(str_to_hex)
 {
@@ -430,6 +440,7 @@ TEST_CASE(str_to_hex)
                   "6162636465666768696A6B6C6D6E6F70"
                   "7172737475767778797A");
 }
+TEST_CASE_END(str_to_hex)
 
 TEST_CASE(str_to_sym)
 {
@@ -445,3 +456,4 @@ TEST_CASE(str_to_sym)
   STR_TEST_TO_SYM("à");
   STR_TEST_TO_SYM("é");
 }
+TEST_CASE_END(str_to_sym)

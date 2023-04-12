@@ -35,6 +35,7 @@ TEST_CASE(buf_parse_u32_binary)
   BUF_PARSE_TEST_U(32, "0b11111111111111111111111111111110", 4294967294U);
   BUF_PARSE_TEST_U(32, "0b11111111111111111111111111111111", 4294967295U);
 }
+TEST_CASE_END(buf_parse_u32_binary)
 
 TEST_CASE(buf_parse_u32_octal)
 {
@@ -627,6 +628,7 @@ TEST_CASE(buf_parse_u32_octal)
   BUF_PARSE_TEST_U(32, "0o37777777776", 4294967294U);
   BUF_PARSE_TEST_U(32, "0o37777777777", 4294967295U);
 }
+TEST_CASE_END(buf_parse_u32_octal)
 
 TEST_CASE(buf_parse_u32_hexadecimal)
 {
@@ -8265,6 +8267,7 @@ TEST_CASE(buf_parse_u32_hexadecimal)
   BUF_PARSE_TEST_U(32, "0xffffffff", 4294967295U);
   BUF_PARSE_TEST_U(32, "0xFFFFFFFF", 4294967295U);
 }
+TEST_CASE_END(buf_parse_u32_hexadecimal)
 
 TEST_CASE(buf_parse_u32_decimal)
 {
@@ -9383,3 +9386,4 @@ TEST_CASE(buf_parse_u32_decimal)
   BUF_PARSE_TEST_U(32, "4294967294", 4294967294U);
   BUF_PARSE_TEST_U(32, "4294967295", 4294967295U);
 }
+TEST_CASE_END(buf_parse_u32_decimal)

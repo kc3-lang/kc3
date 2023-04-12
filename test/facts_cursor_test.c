@@ -107,6 +107,7 @@ TEST_CASE(facts_cursor_init)
   }
   facts_clean(&facts);
 }
+TEST_CASE_END(facts_cursor_init)
 
 TEST_CASE(facts_cursor_next)
 {
@@ -231,3 +232,4 @@ TEST_CASE(facts_cursor_next)
   }
   facts_clean(&facts);
 }
+TEST_CASE_END(facts_cursor_next)

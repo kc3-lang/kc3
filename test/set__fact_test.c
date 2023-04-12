@@ -137,6 +137,7 @@ TEST_CASE(set__fact_add)
   }
   set_clean__fact(&set);
 }
+TEST_CASE_END(set__fact_add)
 
 TEST_CASE(set__fact_cursor)
 {
@@ -186,6 +187,7 @@ TEST_CASE(set__fact_cursor)
   }
   set_clean__fact(&set);
 }
+TEST_CASE_END(set__fact_cursor)
 
 TEST_CASE(set__fact_init_clean)
 {
@@ -220,6 +222,7 @@ TEST_CASE(set__fact_init_clean)
   SET__FACT_TEST_INIT_CLEAN(1000000);
   SET__FACT_TEST_INIT_CLEAN(1024 * 1024);
 }
+TEST_CASE_END(set__fact_init_clean)
 
 TEST_CASE(set__fact_remove)
 {
@@ -266,6 +269,7 @@ TEST_CASE(set__fact_remove)
   }
   set_clean__fact(&set);
 }
+TEST_CASE_END(set__fact_remove)
 
 TEST_CASE(set__fact_resize)
 {
@@ -347,3 +351,4 @@ TEST_CASE(set__fact_resize)
   }
   set_clean__fact(&set);
 }
+TEST_CASE_END(set__fact_resize)
