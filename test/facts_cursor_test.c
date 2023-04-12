@@ -17,8 +17,8 @@
 #include "test.h"
 
 void facts_cursor_test ();
-void facts_cursor_test_init ();
-void facts_cursor_test_next ();
+TEST_CASE_PROTOTYPE(facts_cursor_init);
+TEST_CASE_PROTOTYPE(facts_cursor_next);
 
 void facts_cursor_test ()
 {

@@ -19,8 +19,8 @@
 #include "test.h"
 
 void facts_with_test ();
-void facts_with_test_ ();
-void facts_with_test_tags ();
+TEST_CASE_PROTOTYPE(facts_with_);
+TEST_CASE_PROTOTYPE(facts_with_tags);
 
 void facts_with_test ()
 {

@@ -14,7 +14,7 @@
 #include "test.h"
 
 void types_test ();
-void types_test_sizeof ();
+TEST_CASE_PROTOTYPE(types_sizeof);
 
 void types_test ()
 {

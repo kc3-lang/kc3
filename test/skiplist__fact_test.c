@@ -51,10 +51,10 @@
   } while (0)
 
 void skiplist__fact_test ();
-void skiplist__fact_test_find ();
-void skiplist__fact_test_insert ();
-void skiplist__fact_test_new_delete ();
-void skiplist__fact_test_remove ();
+TEST_CASE_PROTOTYPE(skiplist__fact_find);
+TEST_CASE_PROTOTYPE(skiplist__fact_insert);
+TEST_CASE_PROTOTYPE(skiplist__fact_new_delete);
+TEST_CASE_PROTOTYPE(skiplist__fact_remove);
 
 void skiplist__fact_test ()
 {

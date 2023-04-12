@@ -21,11 +21,11 @@
 bool cfn_test_not (bool a);
 
 /* 2 */
-void cfn_test_apply ();
-void cfn_test_copy ();
-void cfn_test_init_clean ();
-void cfn_test_link ();
-void cfn_test_prep_cif ();
+TEST_CASE_PROTOTYPE(cfn_apply);
+TEST_CASE_PROTOTYPE(cfn_copy);
+TEST_CASE_PROTOTYPE(cfn_init_clean);
+TEST_CASE_PROTOTYPE(cfn_link);
+TEST_CASE_PROTOTYPE(cfn_prep_cif);
 
 /* 3 */
 void cfn_test ();

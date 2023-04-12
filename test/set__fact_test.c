@@ -75,11 +75,11 @@
   } while (0)
 
 void set__fact_test ();
-void set__fact_test_add ();
-void set__fact_test_cursor ();
-void set__fact_test_init_clean ();
-void set__fact_test_remove ();
-void set__fact_test_resize ();
+TEST_CASE_PROTOTYPE(set__fact_add);
+TEST_CASE_PROTOTYPE(set__fact_cursor);
+TEST_CASE_PROTOTYPE(set__fact_init_clean);
+TEST_CASE_PROTOTYPE(set__fact_remove);
+TEST_CASE_PROTOTYPE(set__fact_resize);
 
 void set__fact_test ()
 {

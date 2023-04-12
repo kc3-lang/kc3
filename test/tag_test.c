@@ -24,8 +24,8 @@
   } while (0)
 
 void tag_test ();
-void tag_test_hash_u64 ();
-void tag_test_init_1 ();
+TEST_CASE_PROTOTYPE(tag_hash_u64);
+TEST_CASE_PROTOTYPE(tag_init_1);
 
 void tag_test ()
 {

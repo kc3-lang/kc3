@@ -27,8 +27,8 @@
   } while (0)
 
 void bool_test ();
-void bool_test_compat ();
-void bool_test_inspect ();
+TEST_CASE_PROTOTYPE(bool_compat);
+TEST_CASE_PROTOTYPE(bool_inspect);
 
 void bool_test ()
 {

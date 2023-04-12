@@ -37,14 +37,14 @@
     test_context(NULL);                                                \
   } while (0)
 
-void compare_test_bool ();
-void compare_test_character ();
-void compare_test_f32 ();
-void compare_test_f64 ();
-void compare_test_list ();
-void compare_test_str ();
-void compare_test_tag ();
-void compare_test_tuple ();
+TEST_CASE_PROTOTYPE(compare_bool);
+TEST_CASE_PROTOTYPE(compare_character);
+TEST_CASE_PROTOTYPE(compare_f32);
+TEST_CASE_PROTOTYPE(compare_f64);
+TEST_CASE_PROTOTYPE(compare_list);
+TEST_CASE_PROTOTYPE(compare_str);
+TEST_CASE_PROTOTYPE(compare_tag);
+TEST_CASE_PROTOTYPE(compare_tuple);
 
 void compare_test ()
 {

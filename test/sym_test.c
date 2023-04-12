@@ -31,9 +31,9 @@
     test_context(NULL);                                                \
   } while (0)
 
-void          sym_test_1 ();
+TEST_CASE_PROTOTYPE(sym_1);
 const s_sym * sym_test_1_test (const s8 *p);
-void          sym_test_inspect ();
+TEST_CASE_PROTOTYPE(sym_inspect);
 
 
 void sym_test ()

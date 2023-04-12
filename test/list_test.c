@@ -40,8 +40,8 @@
   } while (0)
 
 void list_test ();
-void list_test_1 ();
-void list_test_inspect ();
+TEST_CASE_PROTOTYPE(list_1);
+TEST_CASE_PROTOTYPE(list_inspect);
 
 void list_test ()
 {

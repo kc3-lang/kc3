@@ -32,10 +32,12 @@
   } while(0)
 
 #define TEST_CASE(name)                                                \
-  void test_case_ ## name ()                                           \
-  {
+  char test_case_ ## name ()                                           \
+  {                                                                    \
+    g_test_case_name = # name;                                         \
 
 #define TEST_CASE_END(name)                                            \
+    return 0;                                                          \
   }
 
 #define TEST_EQ(test, expected)                                        \
@@ -153,6 +155,7 @@ extern long         g_test_ko;
 extern long         g_test_last_ok;
 extern long         g_test_ok;
 extern const char **g_test_targets;
+extern const char  *g_test_case_name;
 
 void test_clean ();
 void test_context (const char *context);

@@ -20,17 +20,17 @@
 #include "test.h"
 
 void facts_test ();
-void facts_test_add ();
-void facts_test_dump_file ();
-void facts_test_find ();
-void facts_test_init_clean ();
-void facts_test_load ();
-void facts_test_log_add ();
-void facts_test_log_remove ();
-void facts_test_new_delete ();
-void facts_test_open_file ();
-void facts_test_remove ();
-void facts_test_save ();
+TEST_CASE_PROTOTYPE(facts_add);
+TEST_CASE_PROTOTYPE(facts_dump_file);
+TEST_CASE_PROTOTYPE(facts_find);
+TEST_CASE_PROTOTYPE(facts_init_clean);
+TEST_CASE_PROTOTYPE(facts_load);
+TEST_CASE_PROTOTYPE(facts_log_add);
+TEST_CASE_PROTOTYPE(facts_log_remove);
+TEST_CASE_PROTOTYPE(facts_new_delete);
+TEST_CASE_PROTOTYPE(facts_open_file);
+TEST_CASE_PROTOTYPE(facts_remove);
+TEST_CASE_PROTOTYPE(facts_save);
 
 void facts_test ()
 {

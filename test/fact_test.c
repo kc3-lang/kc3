@@ -27,8 +27,8 @@
   } while (0)
 
 void fact_test ();
-void fact_test_init ();
-void fact_test_inspect ();
+TEST_CASE_PROTOTYPE(fact_init);
+TEST_CASE_PROTOTYPE(fact_inspect);
 
 void fact_test ()
 {

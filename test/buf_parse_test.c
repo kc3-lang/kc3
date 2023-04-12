@@ -653,41 +653,41 @@
   void buf_parse_test_u ## bits ## _hexadecimal ();                    \
   void buf_parse_test_u ## bits ## _octal ()
 
-void buf_parse_test_bool ();
-void buf_parse_test_call ();
-void buf_parse_test_call_op ();
-void buf_parse_test_cfn ();
-void buf_parse_test_character ();
-void buf_parse_test_digit_bin ();
-void buf_parse_test_digit_hex ();
-void buf_parse_test_digit_oct ();
-void buf_parse_test_digit_dec ();
-void buf_parse_test_f32 ();
-void buf_parse_test_f64 ();
-void buf_parse_test_fn ();
-void buf_parse_test_integer ();
-void buf_parse_test_integer_dec ();
-void buf_parse_test_integer_hex ();
-void buf_parse_test_integer_oct ();
-void buf_parse_test_integer_bin ();
-void buf_parse_test_ident ();
-void buf_parse_test_list ();
+TEST_CASE_PROTOTYPE(buf_parse_bool);
+TEST_CASE_PROTOTYPE(buf_parse_call);
+TEST_CASE_PROTOTYPE(buf_parse_call_op);
+TEST_CASE_PROTOTYPE(buf_parse_cfn);
+TEST_CASE_PROTOTYPE(buf_parse_character);
+TEST_CASE_PROTOTYPE(buf_parse_digit_bin);
+TEST_CASE_PROTOTYPE(buf_parse_digit_hex);
+TEST_CASE_PROTOTYPE(buf_parse_digit_oct);
+TEST_CASE_PROTOTYPE(buf_parse_digit_dec);
+TEST_CASE_PROTOTYPE(buf_parse_f32);
+TEST_CASE_PROTOTYPE(buf_parse_f64);
+TEST_CASE_PROTOTYPE(buf_parse_fn);
+TEST_CASE_PROTOTYPE(buf_parse_integer);
+TEST_CASE_PROTOTYPE(buf_parse_integer_dec);
+TEST_CASE_PROTOTYPE(buf_parse_integer_hex);
+TEST_CASE_PROTOTYPE(buf_parse_integer_oct);
+TEST_CASE_PROTOTYPE(buf_parse_integer_bin);
+TEST_CASE_PROTOTYPE(buf_parse_ident);
+TEST_CASE_PROTOTYPE(buf_parse_list);
 BUF_PARSE_TEST_S_PROTOTYPE(8);
 BUF_PARSE_TEST_S_PROTOTYPE(16);
 BUF_PARSE_TEST_S_PROTOTYPE(32);
 BUF_PARSE_TEST_S_PROTOTYPE(64);
-void buf_parse_test_sw ();
-void buf_parse_test_str ();
-void buf_parse_test_str_character ();
-void buf_parse_test_str_u8 ();
-void buf_parse_test_sym ();
-void buf_parse_test_tag ();
-void buf_parse_test_tuple ();
+TEST_CASE_PROTOTYPE(buf_parse_sw);
+TEST_CASE_PROTOTYPE(buf_parse_str);
+TEST_CASE_PROTOTYPE(buf_parse_str_character);
+TEST_CASE_PROTOTYPE(buf_parse_str_u8);
+TEST_CASE_PROTOTYPE(buf_parse_sym);
+TEST_CASE_PROTOTYPE(buf_parse_tag);
+TEST_CASE_PROTOTYPE(buf_parse_tuple);
 BUF_PARSE_TEST_U_PROTOTYPE(8);
 BUF_PARSE_TEST_U_PROTOTYPE(16);
 BUF_PARSE_TEST_U_PROTOTYPE(32);
 BUF_PARSE_TEST_U_PROTOTYPE(64);
-void buf_parse_test_uw ();
+TEST_CASE_PROTOTYPE(buf_parse_uw);
 
 void buf_parse_test ()
 {

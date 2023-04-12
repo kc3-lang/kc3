@@ -43,9 +43,9 @@
   } while (0)
 
 void ident_test ();
-void ident_test_character_is_reserved ();
-void ident_test_first_character_is_reserved ();
-void ident_test_inspect ();
+TEST_CASE_PROTOTYPE(ident_character_is_reserved);
+TEST_CASE_PROTOTYPE(ident_first_character_is_reserved);
+TEST_CASE_PROTOTYPE(ident_inspect);
 
 TEST_CASE(ident_character_is_reserved)
 {

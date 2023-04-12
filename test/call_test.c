@@ -36,8 +36,8 @@
   } while (0)
 
 void call_test ();
-void call_test_init_1 ();
-void call_test_inspect ();
+TEST_CASE_PROTOTYPE(call_init_1);
+TEST_CASE_PROTOTYPE(call_inspect);
 
 void call_test ()
 {

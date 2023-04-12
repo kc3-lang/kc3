@@ -154,16 +154,16 @@
   } while (0)
 
 void buf_inspect_test ();
-void buf_inspect_test_bool ();
-void buf_inspect_test_character ();
-void buf_inspect_test_f32 ();
-void buf_inspect_test_f64 ();
-void buf_inspect_test_integer ();
-void buf_inspect_test_list ();
-void buf_inspect_test_str ();
-void buf_inspect_test_str_character ();
-void buf_inspect_test_str_character_size ();
-void buf_inspect_test_tag ();
+TEST_CASE_PROTOTYPE(buf_inspect_bool);
+TEST_CASE_PROTOTYPE(buf_inspect_character);
+TEST_CASE_PROTOTYPE(buf_inspect_f32);
+TEST_CASE_PROTOTYPE(buf_inspect_f64);
+TEST_CASE_PROTOTYPE(buf_inspect_integer);
+TEST_CASE_PROTOTYPE(buf_inspect_list);
+TEST_CASE_PROTOTYPE(buf_inspect_str);
+TEST_CASE_PROTOTYPE(buf_inspect_str_character);
+TEST_CASE_PROTOTYPE(buf_inspect_str_character_size);
+TEST_CASE_PROTOTYPE(buf_inspect_tag);
 
 void buf_inspect_test ()
 {

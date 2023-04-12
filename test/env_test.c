@@ -18,8 +18,8 @@
 #include "test.h"
 
 void env_test ();
-void env_test_eval_equal_tag ();
-void env_test_init_clean ();
+TEST_CASE_PROTOTYPE(env_eval_equal_tag);
+TEST_CASE_PROTOTYPE(env_init_clean);
 
 void env_test ()
 {

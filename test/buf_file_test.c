@@ -15,10 +15,10 @@
 #include "test.h"
 
 void buf_file_test ();
-void buf_file_test_open_r_close ();
-void buf_file_test_open_r_refill ();
-void buf_file_test_open_w_close ();
-void buf_file_test_open_w_flush ();
+TEST_CASE_PROTOTYPE(buf_file_open_r_close);
+TEST_CASE_PROTOTYPE(buf_file_open_r_refill);
+TEST_CASE_PROTOTYPE(buf_file_open_w_close);
+TEST_CASE_PROTOTYPE(buf_file_open_w_flush);
 
 void buf_file_test ()
 {

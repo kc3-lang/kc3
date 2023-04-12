@@ -60,19 +60,19 @@
     COMPARE_TEST_STR(&result->str, &str, 0);                           \
   } while (0)
 
-void str_test_character_is_reserved ();
-void str_test_init_clean ();
-void str_test_init_dup ();
-void str_test_init_dup_1 ();
-void str_test_inspect ();
-void str_test_new_1 ();
-void str_test_new_cpy ();
-void str_test_new_delete ();
-void str_test_new_dup ();
-void str_test_new_f ();
-void str_test_to_hex ();
-void str_test_to_ident ();
-void str_test_to_sym ();
+TEST_CASE_PROTOTYPE(str_character_is_reserved);
+TEST_CASE_PROTOTYPE(str_init_clean);
+TEST_CASE_PROTOTYPE(str_init_dup);
+TEST_CASE_PROTOTYPE(str_init_dup_1);
+TEST_CASE_PROTOTYPE(str_inspect);
+TEST_CASE_PROTOTYPE(str_new_1);
+TEST_CASE_PROTOTYPE(str_new_cpy);
+TEST_CASE_PROTOTYPE(str_new_delete);
+TEST_CASE_PROTOTYPE(str_new_dup);
+TEST_CASE_PROTOTYPE(str_new_f);
+TEST_CASE_PROTOTYPE(str_to_hex);
+TEST_CASE_PROTOTYPE(str_to_ident);
+TEST_CASE_PROTOTYPE(str_to_sym);
 
 
 void str_test ()

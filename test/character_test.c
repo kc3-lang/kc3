@@ -15,13 +15,13 @@
 #include "../libc3/character.h"
 #include "test.h"
 
-void character_test_1 ();
-void character_test_is_digit ();
-void character_test_is_lowercase ();
-void character_test_is_space ();
-void character_test_is_uppercase ();
-void character_test_utf8 ();
-void character_test_utf8_size ();
+TEST_CASE_PROTOTYPE(character_1);
+TEST_CASE_PROTOTYPE(character_is_digit);
+TEST_CASE_PROTOTYPE(character_is_lowercase);
+TEST_CASE_PROTOTYPE(character_is_space);
+TEST_CASE_PROTOTYPE(character_is_uppercase);
+TEST_CASE_PROTOTYPE(character_utf8);
+TEST_CASE_PROTOTYPE(character_utf8_size);
 
 void character_test ()
 {

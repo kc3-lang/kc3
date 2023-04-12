@@ -96,11 +96,11 @@
   } while (0)
 
 void set__tag_test ();
-void set__tag_test_add ();
-void set__tag_test_cursor ();
-void set__tag_test_init_clean ();
-void set__tag_test_remove ();
-void set__tag_test_resize ();
+TEST_CASE_PROTOTYPE(set__tag_add);
+TEST_CASE_PROTOTYPE(set__tag_cursor);
+TEST_CASE_PROTOTYPE(set__tag_init_clean);
+TEST_CASE_PROTOTYPE(set__tag_remove);
+TEST_CASE_PROTOTYPE(set__tag_resize);
 
 void set__tag_test ()
 {
