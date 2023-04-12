@@ -989,7 +989,7 @@ TEST_CASE(buf_parse_digit_dec)
 }
 TEST_CASE_END(buf_parse_digit_dec)
 
-void buf_parse_test_f32()
+TEST_CASE(buf_parse_f32)
 {
   BUF_PARSE_TEST_F32("123.123", 123.123, 123.1229934692383);
   BUF_PARSE_TEST_F32("3.14159", 3.14159, 3.141589641571045);
@@ -997,7 +997,7 @@ void buf_parse_test_f32()
 }
 TEST_CASE_END(buf_parse_digit_dec)
 
-void buf_parse_test_f64()
+TEST_CASE(buf_parse_f64)
 {
 }
 TEST_CASE_END(buf_parse_digit_dec)
@@ -1127,7 +1127,7 @@ TEST_CASE(buf_parse_integer_bin)
 }
 TEST_CASE_END(buf_parse_integer_bin)
 
-void buf_parse_test_integer_dec()
+TEST_CASE(buf_parse_test_integer_dec)
 {
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_DEC("A");
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_DEC("STR");
@@ -1138,7 +1138,7 @@ void buf_parse_test_integer_dec()
 }
 TEST_CASE_END(buf_parse_integer_bin)
 
-void buf_parse_test_integer_hex()
+TEST_CASE(buf_parse_test_integer_hex)
 {
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_HEX(" ");
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_HEX("H");
@@ -1151,7 +1151,7 @@ void buf_parse_test_integer_hex()
 }
 TEST_CASE_END(buf_parse_integer_bin)
 
-void buf_parse_test_integer_oct()
+TEST_CASE(buf_parse_test_integer_oct)
 {
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_OCT("8");
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_OCT("A");
