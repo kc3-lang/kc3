@@ -32,8 +32,8 @@ TEST_CASE_PROTOTYPE(fact_inspect);
 
 void fact_test ()
 {
-  fact_test_init();
-  fact_test_inspect();
+  TEST_CASE_RUN(fact_init);
+  TEST_CASE_RUN(fact_inspect);
 }
 
 void fact_test_clean_1 (s_fact *fact)

@@ -25,13 +25,13 @@ TEST_CASE_PROTOTYPE(character_utf8_size);
 
 void character_test ()
 {
-  character_test_1();
-  character_test_is_digit();
-  character_test_is_lowercase();
-  character_test_is_space();
-  character_test_is_uppercase();
-  character_test_utf8_size();
-  character_test_utf8();
+  TEST_CASE_RUN(character_1);
+  TEST_CASE_RUN(character_is_digit);
+  TEST_CASE_RUN(character_is_lowercase);
+  TEST_CASE_RUN(character_is_space);
+  TEST_CASE_RUN(character_is_uppercase);
+  TEST_CASE_RUN(character_utf8_size);
+  TEST_CASE_RUN(character_utf8);
 }
 
 #define CHARACTER_TEST_1_ASCII(string)        \

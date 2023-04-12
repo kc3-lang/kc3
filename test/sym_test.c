@@ -38,8 +38,8 @@ TEST_CASE_PROTOTYPE(sym_inspect);
 
 void sym_test ()
 {
-  sym_test_1();
-  sym_test_inspect();
+  TEST_CASE_RUN(sym_1);
+  TEST_CASE_RUN(sym_inspect);
 }
 TEST_CASE(sym_1)
 {

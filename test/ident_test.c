@@ -99,9 +99,9 @@ TEST_CASE_END(ident_first_character_is_reserved)
 
 void ident_test ()
 {
-  ident_test_inspect();
-  ident_test_first_character_is_reserved();
-  ident_test_character_is_reserved();
+  TEST_CASE_RUN(ident_inspect);
+  TEST_CASE_RUN(ident_first_character_is_reserved);
+  TEST_CASE_RUN(ident_character_is_reserved);
 }
 TEST_CASE_END(ident_first_character_is_reserved)
 

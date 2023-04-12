@@ -22,8 +22,8 @@ TEST_CASE_PROTOTYPE(facts_cursor_next);
 
 void facts_cursor_test ()
 {
-  facts_cursor_test_init();
-  facts_cursor_test_next();
+  TEST_CASE_RUN(facts_cursor_init);
+  TEST_CASE_RUN(facts_cursor_next);
 }
 
 TEST_CASE(facts_cursor_init)

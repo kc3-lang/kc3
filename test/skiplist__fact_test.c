@@ -58,10 +58,10 @@ TEST_CASE_PROTOTYPE(skiplist__fact_remove);
 
 void skiplist__fact_test ()
 {
-  skiplist__fact_test_new_delete();
-  skiplist__fact_test_insert();
-  skiplist__fact_test_remove();
-  skiplist__fact_test_find();
+  TEST_CASE_RUN(skiplist__fact_new_delete);
+  TEST_CASE_RUN(skiplist__fact_insert);
+  TEST_CASE_RUN(skiplist__fact_remove);
+  TEST_CASE_RUN(skiplist__fact_find);
 }
 
 TEST_CASE(skiplist__fact_find)

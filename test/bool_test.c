@@ -32,8 +32,8 @@ TEST_CASE_PROTOTYPE(bool_inspect);
 
 void bool_test ()
 {
-  bool_test_compat();
-  bool_test_inspect();
+  TEST_CASE_RUN(bool_compat);
+  TEST_CASE_RUN(bool_inspect);
 }
 
 TEST_CASE(bool_compat)

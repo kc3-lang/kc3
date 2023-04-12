@@ -22,9 +22,9 @@ TEST_CASE_PROTOTYPE(buf_file_open_w_flush);
 
 void buf_file_test ()
 {
-  buf_file_test_open_r_close();
-  buf_file_test_open_r_refill();
-  buf_file_test_open_w_close();
+  TEST_CASE_RUN(buf_file_open_r_close);
+  TEST_CASE_RUN(buf_file_open_r_refill);
+  TEST_CASE_RUN(buf_file_open_w_close);
 }
 
 TEST_CASE(buf_file_open_r_close)

@@ -18,7 +18,7 @@ TEST_CASE_PROTOTYPE(types_sizeof);
 
 void types_test ()
 {
-  types_test_sizeof();
+  TEST_CASE_RUN(types_sizeof);
 }
 
 TEST_CASE(types_sizeof)

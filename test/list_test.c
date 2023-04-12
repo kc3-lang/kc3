@@ -45,8 +45,8 @@ TEST_CASE_PROTOTYPE(list_inspect);
 
 void list_test ()
 {
-  list_test_1();
-  list_test_inspect();
+  TEST_CASE_RUN(list_1);
+  TEST_CASE_RUN(list_inspect);
 }
 
 TEST_CASE(list_1)

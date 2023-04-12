@@ -81,11 +81,11 @@ TEST_CASE_PROTOTYPE(tuple_new_delete);
 
 void tuple_test ()
 {
-  tuple_test_init_clean();
-  tuple_test_new_delete();
-  tuple_test_init_1();
-  tuple_test_new_1();
-  tuple_test_inspect();
+  TEST_CASE_RUN(tuple_init_clean);
+  TEST_CASE_RUN(tuple_new_delete);
+  TEST_CASE_RUN(tuple_init_1);
+  TEST_CASE_RUN(tuple_new_1);
+  TEST_CASE_RUN(tuple_inspect);
 }
 
 TEST_CASE(tuple_init_clean)

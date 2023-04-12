@@ -32,11 +32,11 @@ void cfn_test ();
 
 void cfn_test ()
 {
-  cfn_test_init_clean();
-  cfn_test_copy();
-  cfn_test_link();
-  cfn_test_prep_cif();
-  cfn_test_apply();
+  TEST_CASE_RUN(cfn_init_clean);
+  TEST_CASE_RUN(cfn_copy);
+  TEST_CASE_RUN(cfn_link);
+  TEST_CASE_RUN(cfn_prep_cif);
+  TEST_CASE_RUN(cfn_apply);
 }
 
 TEST_CASE(cfn_apply)

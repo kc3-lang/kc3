@@ -48,14 +48,14 @@ TEST_CASE_PROTOTYPE(compare_tuple);
 
 void compare_test ()
 {
-  compare_test_bool();
-  compare_test_character();
-  compare_test_f32();
-  compare_test_f64();
-  compare_test_list();
-  compare_test_str();
-  compare_test_tag();
-  compare_test_tuple();
+  TEST_CASE_RUN(compare_bool);
+  TEST_CASE_RUN(compare_character);
+  TEST_CASE_RUN(compare_f32);
+  TEST_CASE_RUN(compare_f64);
+  TEST_CASE_RUN(compare_list);
+  TEST_CASE_RUN(compare_str);
+  TEST_CASE_RUN(compare_tag);
+  TEST_CASE_RUN(compare_tuple);
 }
 
 TEST_CASE(compare_bool)

@@ -29,8 +29,8 @@ TEST_CASE_PROTOTYPE(tag_init_1);
 
 void tag_test ()
 {
-  tag_test_init_1();
-  tag_test_hash_u64();
+  TEST_CASE_RUN(tag_init_1);
+  TEST_CASE_RUN(tag_hash_u64);
 }
 
 TEST_CASE(tag_hash_u64)

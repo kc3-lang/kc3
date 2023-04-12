@@ -83,11 +83,11 @@ TEST_CASE_PROTOTYPE(set__fact_resize);
 
 void set__fact_test ()
 {
-  set__fact_test_init_clean();
-  set__fact_test_add();
-  set__fact_test_remove();
-  set__fact_test_resize();
-  set__fact_test_cursor();
+  TEST_CASE_RUN(set__fact_init_clean);
+  TEST_CASE_RUN(set__fact_add);
+  TEST_CASE_RUN(set__fact_remove);
+  TEST_CASE_RUN(set__fact_resize);
+  TEST_CASE_RUN(set__fact_cursor);
 }
 
 TEST_CASE(set__fact_add)

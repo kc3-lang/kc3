@@ -23,8 +23,8 @@ TEST_CASE_PROTOTYPE(env_init_clean);
 
 void env_test ()
 {
-  env_test_init_clean();
-  env_test_eval_equal_tag();
+  TEST_CASE_RUN(env_init_clean);
+  TEST_CASE_RUN(env_eval_equal_tag);
 }
 
 TEST_CASE(env_eval_equal_tag)

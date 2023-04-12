@@ -77,18 +77,18 @@ TEST_CASE_PROTOTYPE(str_to_sym);
 
 void str_test ()
 {
-  str_test_init_clean();
-  str_test_init_dup();
-  str_test_init_dup_1();
-  str_test_new_delete();
-  str_test_new_1();
-  str_test_new_dup();
-  str_test_new_cpy();
-  str_test_new_f();
-  str_test_character_is_reserved();
-  str_test_inspect();
-  str_test_to_hex();
-  str_test_to_sym();
+  TEST_CASE_RUN(str_init_clean);
+  TEST_CASE_RUN(str_init_dup);
+  TEST_CASE_RUN(str_init_dup_1);
+  TEST_CASE_RUN(str_new_delete);
+  TEST_CASE_RUN(str_new_1);
+  TEST_CASE_RUN(str_new_dup);
+  TEST_CASE_RUN(str_new_cpy);
+  TEST_CASE_RUN(str_new_f);
+  TEST_CASE_RUN(str_character_is_reserved);
+  TEST_CASE_RUN(str_inspect);
+  TEST_CASE_RUN(str_to_hex);
+  TEST_CASE_RUN(str_to_sym);
 }
 
 TEST_CASE(str_character_is_reserved)

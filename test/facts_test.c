@@ -34,17 +34,17 @@ TEST_CASE_PROTOTYPE(facts_save);
 
 void facts_test ()
 {
-  facts_test_init_clean();
-  facts_test_new_delete();
-  facts_test_add();
-  facts_test_remove();
-  facts_test_find();
-  facts_test_log_add();
-  facts_test_log_remove();
-  facts_test_dump_file();
-  facts_test_load();
-  facts_test_save();
-  facts_test_open_file();
+  TEST_CASE_RUN(facts_init_clean);
+  TEST_CASE_RUN(facts_new_delete);
+  TEST_CASE_RUN(facts_add);
+  TEST_CASE_RUN(facts_remove);
+  TEST_CASE_RUN(facts_find);
+  TEST_CASE_RUN(facts_log_add);
+  TEST_CASE_RUN(facts_log_remove);
+  TEST_CASE_RUN(facts_dump_file);
+  TEST_CASE_RUN(facts_load);
+  TEST_CASE_RUN(facts_save);
+  TEST_CASE_RUN(facts_open_file);
 }
 
 TEST_CASE(facts_add)

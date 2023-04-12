@@ -41,8 +41,8 @@ TEST_CASE_PROTOTYPE(call_inspect);
 
 void call_test ()
 {
-  call_test_init_1();
-  call_test_inspect();
+  TEST_CASE_RUN(call_init_1);
+  TEST_CASE_RUN(call_inspect);
 }
 
 TEST_CASE(call_init_1)

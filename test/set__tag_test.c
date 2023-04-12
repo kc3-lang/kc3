@@ -104,11 +104,11 @@ TEST_CASE_PROTOTYPE(set__tag_resize);
 
 void set__tag_test ()
 {
-  set__tag_test_init_clean();
-  set__tag_test_add();
-  set__tag_test_remove();
-  set__tag_test_resize();
-  set__tag_test_cursor();
+  TEST_CASE_RUN(set__tag_init_clean);
+  TEST_CASE_RUN(set__tag_add);
+  TEST_CASE_RUN(set__tag_remove);
+  TEST_CASE_RUN(set__tag_resize);
+  TEST_CASE_RUN(set__tag_cursor);
 }
 
 TEST_CASE(set__tag_add)

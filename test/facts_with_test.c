@@ -24,8 +24,8 @@ TEST_CASE_PROTOTYPE(facts_with_tags);
 
 void facts_with_test ()
 {
-  facts_with_test_tags();
-  facts_with_test_();
+  TEST_CASE_RUN(facts_with_tags);
+  TEST_CASE_RUN(facts_with_);
 }
 
 TEST_CASE(facts_with_)
