@@ -21,6 +21,7 @@
 
 #define TEST_KO_MAX     10
 
+const char  *g_test_case_name = NULL;
 const char  *g_test_context = NULL;
 long         g_test_count = 0;
 long         g_test_ko = 0;

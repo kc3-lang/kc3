@@ -638,20 +638,20 @@
   } while (0)
 
 #define BUF_PARSE_TEST_S_PROTOTYPE(bits)                               \
-  void buf_parse_test_s ## bits ## _binary ();                         \
-  void buf_parse_test_s ## bits ## _binary_negative ();                \
-  void buf_parse_test_s ## bits ## _decimal ();                        \
-  void buf_parse_test_s ## bits ## _decimal_negative ();               \
-  void buf_parse_test_s ## bits ## _hexadecimal ();                    \
-  void buf_parse_test_s ## bits ## _hexadecimal_negative ();           \
-  void buf_parse_test_s ## bits ## _octal ();                          \
-  void buf_parse_test_s ## bits ## _octal_negative ()
+  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _binary);                 \
+  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _binary_negative);        \
+  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _decimal);                \
+  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _decimal_negative);       \
+  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _hexadecimal);            \
+  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _hexadecimal_negative);   \
+  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _octal);                  \
+  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _octal_negative)
 
 #define BUF_PARSE_TEST_U_PROTOTYPE(bits)                               \
-  void buf_parse_test_u ## bits ## _binary ();                         \
-  void buf_parse_test_u ## bits ## _decimal ();                        \
-  void buf_parse_test_u ## bits ## _hexadecimal ();                    \
-  void buf_parse_test_u ## bits ## _octal ()
+  TEST_CASE_PROTOTYPE(buf_parse_u ## bits ## _binary);                 \
+  TEST_CASE_PROTOTYPE(buf_parse_u ## bits ## _decimal);                \
+  TEST_CASE_PROTOTYPE(buf_parse_u ## bits ## _hexadecimal);            \
+  TEST_CASE_PROTOTYPE(buf_parse_u ## bits ## _octal)
 
 TEST_CASE_PROTOTYPE(buf_parse_bool);
 TEST_CASE_PROTOTYPE(buf_parse_call);
@@ -1127,7 +1127,7 @@ TEST_CASE(buf_parse_integer_bin)
 }
 TEST_CASE_END(buf_parse_integer_bin)
 
-TEST_CASE(buf_parse_test_integer_dec)
+TEST_CASE(buf_parse_integer_dec)
 {
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_DEC("A");
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_DEC("STR");
@@ -1138,7 +1138,7 @@ TEST_CASE(buf_parse_test_integer_dec)
 }
 TEST_CASE_END(buf_parse_integer_bin)
 
-TEST_CASE(buf_parse_test_integer_hex)
+TEST_CASE(buf_parse_integer_hex)
 {
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_HEX(" ");
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_HEX("H");
@@ -1151,7 +1151,7 @@ TEST_CASE(buf_parse_test_integer_hex)
 }
 TEST_CASE_END(buf_parse_integer_bin)
 
-TEST_CASE(buf_parse_test_integer_oct)
+TEST_CASE(buf_parse_integer_oct)
 {
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_OCT("8");
   BUF_PARSE_TEST_NOT_INTEGER_UNSIGNED_OCT("A");

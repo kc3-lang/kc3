@@ -35,12 +35,24 @@ TEST_CASE_PROTOTYPE(sym_1);
 const s_sym * sym_test_1_test (const s8 *p);
 TEST_CASE_PROTOTYPE(sym_inspect);
 
-
 void sym_test ()
 {
   TEST_CASE_RUN(sym_1);
   TEST_CASE_RUN(sym_inspect);
 }
+
+const s_sym * sym_test_1_test (const s8 *p)
+{
+  uw len;
+  const s_sym *sym;
+  len = strlen(p);
+  TEST_ASSERT((sym = sym_1(p)));
+  TEST_EQ(sym->str.size, len);
+  TEST_EQ(strncmp(p, sym->str.ptr.p, len), 0);
+  TEST_EQ(sym_1(p), sym_1(p));
+  return sym;
+}
+
 TEST_CASE(sym_1)
 {
   const s_sym *mod;
@@ -90,19 +102,6 @@ TEST_CASE(sym_1)
   sym_test_1_test("é");
   sym_test_1_test("éo");
   sym_test_1_test("éoà \n\r\t\v\"");
-}
-TEST_CASE_END(sym_1)
-
-const s_sym * sym_test_1_test (const s8 *p)
-{
-  uw len;
-  const s_sym *sym;
-  len = strlen(p);
-  TEST_ASSERT((sym = sym_1(p)));
-  TEST_EQ(sym->str.size, len);
-  TEST_EQ(strncmp(p, sym->str.ptr.p, len), 0);
-  TEST_EQ(sym_1(p), sym_1(p));
-  return sym;
 }
 TEST_CASE_END(sym_1)
 

@@ -50,6 +50,23 @@ void fact_test_clean_3 (s_fact *fact)
   tag_delete((s_tag *) fact->object);
 }
 
+s_fact * fact_test_init_1 (s_fact *fact, const s8 *tag)
+{
+  assert(fact);
+  fact->subject = fact->predicate = fact->object = tag_new_1(tag);
+  return fact;
+}
+
+s_fact * fact_test_init_3 (s_fact *fact, const s8 *subject,
+                           const s8 *predicate, const s8 *object)
+{
+  assert(fact);
+  fact->subject   = tag_new_1(subject);
+  fact->predicate = tag_new_1(predicate);
+  fact->object    = tag_new_1(object);
+  return fact;
+}
+
 TEST_CASE(fact_init)
 {
   s_tag sym[3];
@@ -61,25 +78,6 @@ TEST_CASE(fact_init)
   TEST_EQ(fact.subject, sym);
   TEST_EQ(fact.predicate, sym + 1);
   TEST_EQ(fact.object, sym + 2);
-}
-TEST_CASE_END(fact_init)
-
-s_fact * fact_test_init_1 (s_fact *fact, const s8 *tag)
-{
-  assert(fact);
-  fact->subject = fact->predicate = fact->object = tag_new_1(tag);
-  return fact;
-}
-TEST_CASE_END(fact_init)
-
-s_fact * fact_test_init_3 (s_fact *fact, const s8 *subject,
-                           const s8 *predicate, const s8 *object)
-{
-  assert(fact);
-  fact->subject   = tag_new_1(subject);
-  fact->predicate = tag_new_1(predicate);
-  fact->object    = tag_new_1(object);
-  return fact;
 }
 TEST_CASE_END(fact_init)
 

@@ -190,8 +190,8 @@ void buf_test ()
   TEST_CASE_RUN(buf_write_str);
   TEST_CASE_RUN(buf_peek_1);
   TEST_CASE_RUN(buf_peek_character_utf8);
-  buf_test_peek_s8 ();
-  buf_test_peek_s16 ();
+  TEST_CASE_RUN(buf_peek_s8);
+  TEST_CASE_RUN(buf_peek_s16);
   TEST_CASE_RUN(buf_peek_u8);
   TEST_CASE_RUN(buf_read_1);
   TEST_CASE_RUN(buf_read_f32);
@@ -442,7 +442,7 @@ TEST_CASE(buf_read_character_utf8)
 }
 TEST_CASE_END(buf_read_character_utf8)
 
-void buf_test_read_f32()
+TEST_CASE(buf_read_f32)
 {
   s8 b[16];
   s_buf buf;
@@ -570,7 +570,7 @@ TEST_CASE(buf_read_s16)
 }
 TEST_CASE_END(buf_read_s16)
 
-void buf_test_read_s32()
+TEST_CASE(buf_read_s32)
 {
   s8 b[16];
   s_buf buf;
@@ -600,7 +600,7 @@ void buf_test_read_s32()
 }
 TEST_CASE_END(buf_read_s16)
 
-void buf_test_read_s64()
+TEST_CASE(buf_read_s64)
 {
   s8 b[32];
   s_buf buf;
@@ -673,7 +673,7 @@ TEST_CASE(buf_read_u8)
 }
 TEST_CASE_END(buf_read_u8)
 
-void buf_test_read_u16()
+TEST_CASE(buf_read_u16)
 {
   s8 b[8];
   s_buf buf;
@@ -703,7 +703,7 @@ void buf_test_read_u16()
 }
 TEST_CASE_END(buf_read_u8)
 
-void buf_test_read_u32()
+TEST_CASE(buf_read_u32)
 {
   s8 b[16];
   s_buf buf;
@@ -733,7 +733,7 @@ void buf_test_read_u32()
 }
 TEST_CASE_END(buf_read_u8)
 
-void buf_test_read_u64()
+TEST_CASE(buf_read_u64)
 {
   s8 b[32];
   s_buf buf;

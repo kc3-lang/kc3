@@ -39,6 +39,11 @@ void cfn_test ()
   TEST_CASE_RUN(cfn_apply);
 }
 
+bool cfn_test_not (bool a)
+{
+  return a ? false : true;
+}
+
 TEST_CASE(cfn_apply)
 {
   s_list *args;
@@ -144,12 +149,6 @@ TEST_CASE(cfn_link)
   TEST_EQ(a.cif.bytes, b.cif.bytes);
   TEST_EQ(a.cif.flags, b.cif.flags);
   cfn_clean(&a);
-}
-TEST_CASE_END(cfn_link)
-
-bool cfn_test_not (bool a)
-{
-  return a ? false : true;
 }
 TEST_CASE_END(cfn_link)
 

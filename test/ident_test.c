@@ -47,6 +47,13 @@ TEST_CASE_PROTOTYPE(ident_character_is_reserved);
 TEST_CASE_PROTOTYPE(ident_first_character_is_reserved);
 TEST_CASE_PROTOTYPE(ident_inspect);
 
+void ident_test ()
+{
+  TEST_CASE_RUN(ident_inspect);
+  TEST_CASE_RUN(ident_first_character_is_reserved);
+  TEST_CASE_RUN(ident_character_is_reserved);
+}
+
 TEST_CASE(ident_character_is_reserved)
 {
   IDENT_TEST_CHARACTER_IS_RESERVED('_', false);
@@ -94,14 +101,6 @@ TEST_CASE(ident_first_character_is_reserved)
   IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("😄"), false);
   IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("🟣"), false);
   IDENT_TEST_FIRST_CHARACTER_IS_RESERVED(character_1("🤩"), false);
-}
-TEST_CASE_END(ident_first_character_is_reserved)
-
-void ident_test ()
-{
-  TEST_CASE_RUN(ident_inspect);
-  TEST_CASE_RUN(ident_first_character_is_reserved);
-  TEST_CASE_RUN(ident_character_is_reserved);
 }
 TEST_CASE_END(ident_first_character_is_reserved)
 
