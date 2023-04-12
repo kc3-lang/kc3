@@ -40,6 +40,12 @@
     return 0;                                                          \
   }
 
+#define TEST_CASE_PROTOTYPE(name)                                      \
+  char test_case_ ## name ()
+
+#define TEST_CASE_RUN(name)                                            \
+  test_case_ ## name ()
+
 #define TEST_EQ(test, expected)                                        \
   do {                                                                 \
     long long signed TEST_EQ_tmp = (long long signed) (test);          \
