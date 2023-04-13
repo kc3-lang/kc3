@@ -17,6 +17,14 @@
 #include "../libc3/sym.h"
 #include "test.h"
 
+#define SYM_TEST_1(test)                                               \
+  do {                                                                 \
+    TEST_ASSERT((sym = sym_1(test)));                                  \
+    TEST_EQ(sym->str.size, strlen(test));                              \
+    TEST_EQ(strncmp((test), sym->str.ptr.p, strlen(test)), 0);         \
+    TEST_EQ(sym_1(test), sym_1(test));                                 \
+  } while (0)
+
 #define SYM_TEST_INSPECT(test, result)                                 \
   do {                                                                 \
     const s_sym *sym;                                                  \
@@ -41,18 +49,6 @@ void sym_test ()
   TEST_CASE_RUN(sym_inspect);
 }
 
-const s_sym * sym_test_1_test (const s8 *p)
-{
-  uw len;
-  const s_sym *sym;
-  len = strlen(p);
-  TEST_ASSERT((sym = sym_1(p)));
-  TEST_EQ(sym->str.size, len);
-  TEST_EQ(strncmp(p, sym->str.ptr.p, len), 0);
-  TEST_EQ(sym_1(p), sym_1(p));
-  return sym;
-}
-
 TEST_CASE(sym_1)
 {
   const s_sym *mod;
@@ -61,47 +57,59 @@ TEST_CASE(sym_1)
   const s_sym *mod_test123;
   const s_sym *sym;
   const s_sym *sym_123;
+  const s_sym *sym_ident;
   const s_sym *sym_empty;
   const s_sym *sym_t;
   const s_sym *sym_test;
   const s_sym *sym_test123;
-  sym_empty = sym_test_1_test("");
-  TEST_EQ(sym_test_1_test(""), sym_empty);
-  sym_test_1_test(" ");
-  sym_test_1_test(".");
-  sym_test_1_test("..");
-  sym_test_1_test("...");
-  sym_t = sym_test_1_test("t");
+  SYM_TEST_1("");
+  sym_empty = sym;
+  SYM_TEST_1("");
+  TEST_EQ(sym, sym_empty);
+  SYM_TEST_1(" ");
+  SYM_TEST_1(".");
+  SYM_TEST_1("..");
+  SYM_TEST_1("...");
+  SYM_TEST_1("t");
+  sym_t = sym;
   TEST_ASSERT(sym_t != sym_empty);
-  mod_t = sym_test_1_test("T");
+  SYM_TEST_1("T");
+  mod_t = sym;
   TEST_ASSERT(mod_t != sym_empty);
   TEST_ASSERT(mod_t != sym_t);
-  sym_test = sym_test_1_test("test");
-  mod_test = sym_test_1_test("Test");
+  SYM_TEST_1("test");
+  sym_test = sym;
+  SYM_TEST_1("Test");
+  mod_test = sym;
   TEST_ASSERT(mod_test != sym_empty);
   TEST_ASSERT(mod_test != sym_t);
   TEST_ASSERT(mod_test != mod_t);
   TEST_ASSERT(mod_test != sym_test);
-  sym_123 = sym_test_1_test("123");
-  sym_test123 = sym_test_1_test("test123");
-  mod_test123 = sym_test_1_test("Test123");
+  SYM_TEST_1("123");
+  sym_123 = sym;
+  SYM_TEST_1("test123");
+  sym_test123 = sym;
+  SYM_TEST_1("Test123");
+  mod_test123 = sym;
   TEST_ASSERT(sym_test123 != mod_test123);
-  sym = sym_test_1_test("123.456");
+  SYM_TEST_1("123.456");
   TEST_ASSERT(sym != sym_empty);
   TEST_ASSERT(sym != sym_123);
-  sym = sym_test_1_test("test123.test456");
-  TEST_ASSERT(sym != sym_test123);
-  mod = sym_test_1_test("Test123.Test456");
+  SYM_TEST_1("test123.test456");
+  sym_ident = sym;
+  TEST_ASSERT(sym_ident != sym_test123);
+  SYM_TEST_1("Test123.Test456");
+  mod = sym;
   TEST_ASSERT(mod != mod_test123);
-  TEST_ASSERT(mod != sym);
-  sym_test_1_test("A");
-  sym_test_1_test("É");
-  sym_test_1_test("Éo");
-  sym_test_1_test("Éoà \n\r\t\v\"");
-  sym_test_1_test("a");
-  sym_test_1_test("é");
-  sym_test_1_test("éo");
-  sym_test_1_test("éoà \n\r\t\v\"");
+  TEST_ASSERT(mod != sym_ident);
+  SYM_TEST_1("A");
+  SYM_TEST_1("É");
+  SYM_TEST_1("Éo");
+  SYM_TEST_1("Éoà \n\r\t\v\"");
+  SYM_TEST_1("a");
+  SYM_TEST_1("é");
+  SYM_TEST_1("éo");
+  SYM_TEST_1("éoà \n\r\t\v\"");
 }
 TEST_CASE_END(sym_1)
 
