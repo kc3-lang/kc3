@@ -21,6 +21,9 @@
 
 #define TEST_KO_MAX     10
 
+long         g_test_assert_count = 0;
+long         g_test_assert_ko = 0;
+long         g_test_assert_ok = 0;
 const char  *g_test_case_name = NULL;
 const char  *g_test_context = NULL;
 long         g_test_count = 0;
@@ -125,6 +128,8 @@ void test_init (int argc, char **argv)
 
 void test_ko ()
 {
+  g_test_assert_count++;
+  g_test_assert_ko++;
   g_test_count++;
   g_test_ko++;
   fprintf(stderr, "%sF%s", TEST_COLOR_KO, TEST_COLOR_RESET);
