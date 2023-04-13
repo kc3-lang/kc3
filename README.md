@@ -71,6 +71,7 @@ Script interpreter.
    - tests
      - `(-S8_MIN - S8_MAX) == 1`
      - `UW_MAX == ((1 << 8 * sizeof(uw)) - 1)`
+     - DONE group tests by test case
    - DONE ci
    - DONE c function call
    - DONE infix operators
