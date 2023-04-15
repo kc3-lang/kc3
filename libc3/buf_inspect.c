@@ -1028,18 +1028,24 @@ sw buf_inspect_str_byte (s_buf *buf, const u8 *byte)
   sw r;
   sw result = 0;
   s_buf_save save;
-  if ((r = buf_write_u8(buf, '\\')) < 0)
-    return r;
+  buf_save_init(buf, &save);
+  if ((r = buf_write_u8(buf, '\\')) <= 0) {
+    if (! r)
+      r = -1;
+    goto clean;
+  }
   result += r;
-  if ((r = buf_write_u8(buf, 'x')) < 0)
+  if ((r = buf_write_u8(buf, 'x')) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_u8_to_hex(buf, *byte)) < 0)
+  if ((r = buf_u8_to_hex(buf, *byte)) <= 0)
     goto restore;
   result += r;
   r = result;
   goto clean;
  restore:
+  if (! r)
+    r = -1;
   buf_save_restore_wpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -1140,69 +1146,82 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str)
   s_str s;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_write_u8(buf, '"')) < 0)
-    return r;
+  if ((r = buf_write_u8(buf, '"')) <= 0) {
+    if (! r)
+      r = -1;
+    goto clean;
+  }
   result += r;
   str_init_str(&s, str);
   while (r) {
     if ((r = str_read_character_utf8(&s, &c)) < 0)
       goto restore;
     if (r) {
-      if ((r = buf_inspect_str_character(buf, &c)) < 0)
+      if ((r = buf_inspect_str_character(buf, &c)) <= 0)
         goto restore;
       result += r;
     }
     else if ((r = str_read_u8(&s, &byte)) < 0)
       goto restore;
     else if (r) {
-      if ((r = buf_inspect_str_byte(buf, &byte)) < 0)
+      if ((r = buf_inspect_str_byte(buf, &byte)) <= 0)
         goto restore;
       result += r;
     }
   }
-  if ((r = buf_write_u8(buf, '"')) < 0)
+  if ((r = buf_write_u8(buf, '"')) <= 0)
     goto restore;
   result += r;
   r = result;
   goto clean;
  restore:
+  if (! r)
+    r = -1;
   buf_save_restore_wpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
   return r;
 }
 
-/* XXX keep in sync with buf_inspect_str_reserved */
+/* keep in sync with buf_inspect_str_reserved */
 sw buf_inspect_str_reserved_size (const s_str *str)
 {
-  u8 b;
+  u8 byte;
   character c;
-  const sw quote_size = 1;
   sw r;
+  sw result = 0;
   s_str s;
-  sw size;
-  size = 2 * quote_size;
+  result += sizeof('"');
   str_init_str(&s, str);
-  while (1) {
-    if ((r = str_read_character_utf8(&s, &c)) > 0)
-      size += buf_inspect_str_character_size(&c);
-    else if (r && (r = str_read_u8(&s, &b)) == 1)
-      size += buf_inspect_str_byte_size;
-    else if (r < 0)
-      return -1;
-    else if (r == 0)
-      break;
+  r = 1;
+  while (r) {
+    if ((r = str_read_character_utf8(&s, &c)) < 0)
+      return r;
+    if (r) {
+      if ((r = buf_inspect_str_character_size(&c)) <= 0)
+        goto ko;
+      result += r;
+    }
+    else if ((r = str_read_u8(&s, &byte)) < 0)
+      return r;
+    else if (r)
+      result += buf_inspect_str_byte_size;
   }
-  return size;
+  result += sizeof('"');
+  return result;
+ ko:
+  if (! r)
+    r = -1;
+  return r;
 }
 
-sw buf_inspect_str_size (const s_str *x)
+sw buf_inspect_str_size (const s_str *str)
 {
   const sw quote_size = 1;
   sw size;
-  if (str_has_reserved_characters(x))
-    return buf_inspect_str_reserved_size(x);
-  size = x->size + 2 * quote_size;
+  if (str_has_reserved_characters(str))
+    return buf_inspect_str_reserved_size(str);
+  size = str->size + 2 * quote_size;
   return size;
 }
 

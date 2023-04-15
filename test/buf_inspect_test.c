@@ -274,6 +274,11 @@ TEST_CASE(buf_inspect_str)
   BUF_INSPECT_TEST_STR("\t", "\"\\t\"");
   BUF_INSPECT_TEST_STR("\v", "\"\\v\"");
   BUF_INSPECT_TEST_STR("\"", "\"\\\"\"");
+  BUF_INSPECT_TEST_STR("\x00", "\"\\x00\"");
+  BUF_INSPECT_TEST_STR("\x01", "\"\\x01\"");
+  BUF_INSPECT_TEST_STR("\x02", "\"\\x02\"");
+  BUF_INSPECT_TEST_STR("\xff", "\"\\xFF\"");
+  BUF_INSPECT_TEST_STR("\xFF", "\"\\xFF\"");
   BUF_INSPECT_TEST_STR(".", "\".\"");
   BUF_INSPECT_TEST_STR("..", "\"..\"");
   BUF_INSPECT_TEST_STR("...", "\"...\"");

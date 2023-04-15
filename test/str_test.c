@@ -28,21 +28,26 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define STR_TEST_INSPECT_1(test, result)                               \
+#define STR_TEST_INSPECT_1(test, expected)                               \
   do {                                                                 \
+    s_str result;                                                      \
     s_str str;                                                         \
     str_init_1(&str, NULL, (test));                                    \
-    STR_TEST_INSPECT(&str, (result));                                  \
+    test_context("str_inspect(" # test ") -> " # expected);            \
+    TEST_EQ(str_inspect(&str, &result), &result);                      \
+    TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
+    str_clean(&result);                                                \
+    test_context(NULL);                                                \
   } while (0)
 
-#define STR_TEST_TO_HEX(test, result)                                  \
+#define STR_TEST_TO_HEX(test, expected)                                  \
   do {                                                                 \
     s_str str;                                                         \
     s_str *test_;                                                      \
-    test_context("str_to_hex(" # test ") -> " # result);               \
+    test_context("str_to_hex(" # test ") -> " # expected);               \
     test_ = (test);                                                    \
     TEST_EQ(str_to_hex(test_, &str), &str);                            \
-    TEST_STRNCMP(str.ptr.p, (result), str.size);                       \
+    TEST_STRNCMP(str.ptr.p, (expected), str.size);                       \
     str_clean(&str);                                                   \
     str_delete(test_);                                                 \
     test_context(NULL);                                                \

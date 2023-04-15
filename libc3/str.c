@@ -185,9 +185,7 @@ s_str * str_init_str (s_str *str, const s_str *src)
 {
   assert(str);
   assert(src);
-  str->free = src->free;
-  str->size = src->size;
-  str->ptr = src->ptr;
+  *str = *src;
   return str;
 }
 
