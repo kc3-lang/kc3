@@ -16,13 +16,232 @@
 #include "../libtommath/tommath.h"
 #include "c3.h"
 
+#define DEF_BUF_INSPECT_S_BASE(bits, base)                             \
+  sw buf_inspect_s ## bits ## _ ## base (s_buf *buf,                   \
+                                         const s ## bits *s)           \
+  {                                                                    \
+    sw r;                                                              \
+    sw result = 0;                                                     \
+    u ## bits u;                                                       \
+    u = *s;                                                            \
+    if (*s < 0) {                                                      \
+      if ((r = buf_write_1(buf, "-")) < 0)                             \
+        return r;                                                      \
+      result += r;                                                     \
+      u = -*s;                                                         \
+    }                                                                  \
+    if ((r = buf_inspect_u ## bits ## _ ## base (buf, &u)) < 0)        \
+      return r;                                                        \
+    result += r;                                                       \
+    return result;                                                     \
+  }                                                                    \
+                                                                       \
+  sw buf_inspect_s ## bits ## _ ## base ## _size (const s ## bits *s)  \
+  {                                                                    \
+    sw result = 0;                                                     \
+    u ## bits u;                                                       \
+    u = *s;                                                            \
+    if (*s < 0) {                                                      \
+      result += strlen("-");                                           \
+      u = -*s;                                                         \
+    }                                                                  \
+    result += buf_inspect_u ## bits ## _ ## base ## _size(&u);         \
+    return result;                                                     \
+  }
+
+#define DEF_BUF_INSPECT_S(bits)                                        \
+  sw buf_inspect_s ## bits (s_buf *buf, const s ## bits *s)            \
+  {                                                                    \
+    sw r;                                                              \
+    sw result = 0;                                                     \
+    u ## bits u;                                                       \
+    u = *s;                                                            \
+    if (*s < 0) {                                                      \
+      if ((r = buf_write_1(buf, "-")) < 0)                             \
+        return r;                                                      \
+      result += r;                                                     \
+      u = -*s;                                                         \
+    }                                                                  \
+    if ((r = buf_inspect_u ## bits (buf, &u)) < 0)                     \
+      return r;                                                        \
+    result += r;                                                       \
+    return result;                                                     \
+  }                                                                    \
+                                                                       \
+  sw buf_inspect_s ## bits ## _size (const s ## bits *s)               \
+  {                                                                    \
+    sw result = 0;                                                     \
+    u ## bits u;                                                       \
+    u = *s;                                                            \
+    if (*s < 0) {                                                      \
+      result += strlen("-");                                           \
+      u = -*s;                                                         \
+    }                                                                  \
+    result += buf_inspect_u ## bits ## _size(&u);                      \
+    return result;                                                     \
+  }                                                                    \
+                                                                       \
+  DEF_BUF_INSPECT_S_BASE(bits, binary)                                 \
+  DEF_BUF_INSPECT_S_BASE(bits, hexadecimal)                            \
+  DEF_BUF_INSPECT_S_BASE(bits, octal)
+
+#define DEF_BUF_INSPECT_U_BASE(bits, base)                             \
+  sw buf_inspect_u ## bits ## _ ## base (s_buf *buf,                   \
+                                         const u ## bits *u)           \
+  {                                                                    \
+    return buf_inspect_u ## bits ## _base(buf, &g_c3_base_ ## base,    \
+                                          u);                          \
+  }                                                                    \
+                                                                       \
+  sw buf_inspect_u ## bits ## _ ## base ## _size (const u ## bits *u)  \
+  {                                                                    \
+    return buf_inspect_u ## bits ## _base_size(&g_c3_base_ ## base,    \
+                                               u);                     \
+  }
+
+#define DEF_BUF_INSPECT_U(bits)                                        \
+  sw buf_inspect_u ## bits (s_buf *buf, const u ## bits *u)            \
+  {                                                                    \
+    return buf_inspect_u ## bits ## _base(buf, &g_c3_base_decimal, u); \
+  }                                                                    \
+                                                                       \
+  sw buf_inspect_u ## bits ## _base (s_buf *buf,                       \
+                                     const s_str *base,                \
+                                     const u ## bits *u)               \
+  {                                                                    \
+    character *c;                                                      \
+    u8 digit;                                                          \
+    sw i;                                                              \
+    sw r;                                                              \
+    uw radix;                                                          \
+    s_buf_save save;                                                   \
+    sw size;                                                           \
+    character zero;                                                    \
+    u ## bits u_;                                                      \
+    u_ = *u;                                                           \
+    if (u_ == 0) {                                                     \
+      if (str_character(base, 0, &zero) < 0)                           \
+        return -1;                                                     \
+      return buf_write_character_utf8(buf, zero);                      \
+    }                                                                  \
+    size = buf_inspect_u ## bits ## _base_size(base, u);               \
+    c = calloc(size, sizeof(character));                               \
+    buf_save_init(buf, &save);                                         \
+    radix = base->size;                                                \
+    i = 0;                                                             \
+    while (u_ > 0) {                                                   \
+      digit = u_ % radix;                                              \
+      u_ /= radix;                                                     \
+      if (str_character(base, digit, c + i) < 0) {                     \
+        r = -1;                                                        \
+        goto restore;                                                  \
+      }                                                                \
+      i++;                                                             \
+    }                                                                  \
+    while (i--)                                                        \
+      if ((r = buf_write_character_utf8(buf, c[i])) < 0)               \
+        goto restore;                                                  \
+    r = size;                                                          \
+    goto clean;                                                        \
+   restore:                                                            \
+    buf_save_restore_wpos(buf, &save);                                 \
+   clean:                                                              \
+    buf_save_clean(buf, &save);                                        \
+    return r;                                                          \
+  }                                                                    \
+                                                                       \
+  sw buf_inspect_u ## bits ## _base_size (const s_str *base,           \
+                                          const u ## bits *u)          \
+  {                                                                    \
+    uw radix;                                                          \
+    sw size = 0;                                                       \
+    u ## bits u_;                                                      \
+    u_ = *u;                                                           \
+    if (u_ == 0)                                                       \
+      return 1;                                                        \
+    radix = base->size;                                                \
+    while (u_ > 0) {                                                   \
+      u_ /= radix;                                                     \
+      size++;                                                          \
+    }                                                                  \
+    return size;                                                       \
+  }                                                                    \
+                                                                       \
+  sw buf_inspect_u ## bits ## _size (const u ## bits *u)               \
+  {                                                                    \
+    return buf_inspect_u ## bits ## _base_size(&g_c3_base_decimal, u); \
+  }                                                                    \
+                                                                       \
+  DEF_BUF_INSPECT_U_BASE(bits, binary)                                 \
+  DEF_BUF_INSPECT_U_BASE(bits, hexadecimal)                            \
+  DEF_BUF_INSPECT_U_BASE(bits, octal)
+
 sw buf_inspect_ident_reserved (s_buf *buf, const s_ident *x);
 sw buf_inspect_ident_reserved_size (const s_ident *x);
-sw buf_inspect_str_byte (s_buf *buf, u8 x);
+sw buf_inspect_str_byte (s_buf *buf, const u8 *byte);
 sw buf_inspect_str_reserved (s_buf *buf, const s_str *x);
 sw buf_inspect_str_reserved_size (const s_str *x);
 sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *x);
 sw buf_inspect_sym_reserved_size (const s_sym *x);
+
+f_buf_inspect buf_inspect (e_tag_type type)
+{
+  switch (type) {
+  case TAG_VOID:
+    return (f_buf_inspect) buf_inspect_void;
+  case TAG_ARRAY:
+  case TAG_BOOL:
+    return (f_buf_inspect) buf_inspect_bool;
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO:
+    return (f_buf_inspect) buf_inspect_call;
+  case TAG_CFN:
+    return (f_buf_inspect) buf_inspect_cfn;
+  case TAG_CHARACTER:
+    return (f_buf_inspect) buf_inspect_character;
+  case TAG_F32:
+    return (f_buf_inspect) buf_inspect_f32;
+  case TAG_F64:
+    return (f_buf_inspect) buf_inspect_f64;
+  case TAG_FN:
+    return (f_buf_inspect) buf_inspect_fn;
+  case TAG_IDENT:
+    return (f_buf_inspect) buf_inspect_ident;
+  case TAG_INTEGER:
+    return (f_buf_inspect) buf_inspect_integer;
+  case TAG_S64:
+    return (f_buf_inspect) buf_inspect_s64;
+  case TAG_S32:
+    return (f_buf_inspect) buf_inspect_s32;
+  case TAG_S16:
+    return (f_buf_inspect) buf_inspect_s16;
+  case TAG_S8:
+    return (f_buf_inspect) buf_inspect_s8;
+  case TAG_U8:
+    return (f_buf_inspect) buf_inspect_u8;
+  case TAG_U16:
+    return (f_buf_inspect) buf_inspect_u16;
+  case TAG_U32:
+    return (f_buf_inspect) buf_inspect_u32;
+  case TAG_U64:
+    return (f_buf_inspect) buf_inspect_u64;
+  case TAG_LIST:
+    return (f_buf_inspect) buf_inspect_list;
+  case TAG_PTAG:
+    return (f_buf_inspect) buf_inspect_ptag;
+  case TAG_QUOTE:
+    return (f_buf_inspect) buf_inspect_quote;
+  case TAG_STR:
+    return (f_buf_inspect) buf_inspect_str;
+  case TAG_SYM:
+    return (f_buf_inspect) buf_inspect_sym;
+  case TAG_TUPLE:
+    return (f_buf_inspect) buf_inspect_tuple;
+  case TAG_VAR:
+    return (f_buf_inspect) buf_inspect_var;
+  }
+}
 
 sw buf_inspect_array (s_buf *buf, const s_array *a)
 {
@@ -33,67 +252,12 @@ sw buf_inspect_array (s_buf *buf, const s_array *a)
   sw result = 0;
   assert(a);
   assert(buf);
-  switch (a->type) {
-  case TAG_VOID:
-    assert(! "buf_inspect_array: void array");
-    errx(1, "buf_inspect_array: void array");
-    return -1;
-  case TAG_ARRAY:
+  if (a->type == TAG_ARRAY) {
     assert(! "buf_inspect_array: array of array");
     errx(1, "buf_inspect_array: array of array");
-    break;
-  case TAG_BOOL:
-    inspect = (f_buf_inspect) buf_inspect_bool;
-    break;
-  case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
-    inspect = (f_buf_inspect) buf_inspect_call;
-  case TAG_CFN:
-    inspect = (f_buf_inspect) buf_inspect_cfn;
-  case TAG_CHARACTER:
-    inspect = (f_buf_inspect) buf_inspect_character;
-  case TAG_F32:
-    inspect = (f_buf_inspect) buf_inspect_f32;
-  case TAG_F64:
-    inspect = (f_buf_inspect) buf_inspect_f64;
-  case TAG_FN:
-    inspect = (f_buf_inspect) buf_inspect_fn;
-  case TAG_IDENT:
-    inspect = (f_buf_inspect) buf_inspect_ident;
-  case TAG_INTEGER:
-    inspect = (f_buf_inspect) buf_inspect_integer;
-  case TAG_S64:
-    inspect = (f_buf_inspect) buf_inspect_s64;
-  case TAG_S32:
-    inspect = (f_buf_inspect) buf_inspect_s32;
-  case TAG_S16:
-    inspect = (f_buf_inspect) buf_inspect_s16;
-  case TAG_S8:
-    inspect = (f_buf_inspect) buf_inspect_s8;
-  case TAG_U8:
-    inspect = (f_buf_inspect) buf_inspect_u8;
-  case TAG_U16:
-    inspect = (f_buf_inspect) buf_inspect_u16;
-  case TAG_U32:
-    inspect = (f_buf_inspect) buf_inspect_u32;
-  case TAG_U64:
-    inspect = (f_buf_inspect) buf_inspect_u64;
-  case TAG_LIST:
-    inspect = (f_buf_inspect) buf_inspect_list;
-  case TAG_PTAG:
-    inspect = (f_buf_inspect) buf_inspect_ptag;
-  case TAG_QUOTE:
-    inspect = (f_buf_inspect) buf_inspect_quote;
-  case TAG_STR:
-    inspect = (f_buf_inspect) buf_inspect_str;
-  case TAG_SYM:
-    inspect = (f_buf_inspect) buf_inspect_sym;
-  case TAG_TUPLE:
-    inspect = (f_buf_inspect) buf_inspect_tuple;
-  case TAG_VAR:
-    inspect = (f_buf_inspect) buf_inspect_var;
+    return -1;
   }
+  inspect = buf_inspect(a->type);
   if (! (address = calloc(a->dimension, sizeof(uw)))) {
     err(1, "buf_inspect_array");
     return -1;
@@ -112,7 +276,7 @@ sw buf_inspect_array (s_buf *buf, const s_array *a)
       result += r;
     }
     if (i == a->dimension - 1) {
-      while (i >= 0 && address[i] == a->dimensions[i].count) {
+      while (address[i] == a->dimensions[i].count) {
         if ((r = buf_write_1(buf, "],\n")) < 0)
           return r;
         result += r;
@@ -135,16 +299,16 @@ sw buf_inspect_array_size (const s_array *a)
   return -1;
 }
 
-sw buf_inspect_bool (s_buf *buf, e_bool x)
+sw buf_inspect_bool (s_buf *buf, const bool *b)
 {
-  if (x)
+  if (*b)
     return buf_write_1(buf, "true");
   return buf_write_1(buf, "false");
 }
 
-sw buf_inspect_bool_size (e_bool x)
+sw buf_inspect_bool_size (const bool *b)
 {
-  if (x)
+  if (*b)
     return strlen("true");
   return strlen("false");
 }
@@ -315,54 +479,66 @@ sw buf_inspect_cfn_size (const s_cfn *cfn)
   return result;
 }
 
-sw buf_inspect_character (s_buf *buf, character x)
+sw buf_inspect_character (s_buf *buf, const character *c)
 {
   sw r;
-  sw size;
-  size = buf_inspect_character_size(x);
-  if ((r = buf_write_u8(buf, '\'')) < 0 ||
-      (r = buf_inspect_str_character(buf, x)) < 0 ||
-      (r = buf_write_u8(buf, '\'')) < 0)
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_write_1(buf, "'")) < 0)
     return r;
-  return size;
+  result += r;
+  if ((r = buf_inspect_str_character(buf, c)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_write_1(buf, "'")) < 0)
+    goto restore;
+  result += r;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_wpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return result;
 }
 
-sw buf_inspect_character_size (character c)
+sw buf_inspect_character_size (const character *c)
 {
-  sw size;
-  size = buf_inspect_str_character_size(c);
-  if (size < 0)
-    return size;
-  if (size == 0)
-    return -1;
-  size += 2;
-  return size;
+  sw r;
+  sw result = 0;
+  result += strlen("'");
+  if ((r = buf_inspect_str_character_size(c)) <= 0)
+    return r;
+  result += r;
+  result += strlen("'");
+  return result;
 }
 
-sw buf_inspect_f32 (s_buf *buf, f32 x)
+sw buf_inspect_f32 (s_buf *buf, const f32 *f)
 {
-  return buf_f(buf, "%g", x);
+  return buf_f(buf, "%g", *f);
 }
 
-sw buf_inspect_f32_size (f32 x)
+sw buf_inspect_f32_size (const f32 *f)
 {
   s8 b[16];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
-  return buf_inspect_f32(&buf, x);
+  return buf_inspect_f32(&buf, f);
 }
 
-sw buf_inspect_f64 (s_buf *buf, f64 x)
+sw buf_inspect_f64 (s_buf *buf, const f64 *f)
 {
-  return buf_f(buf, "%g", x);
+  return buf_f(buf, "%g", *f);
 }
 
-sw buf_inspect_f64_size (f64 x)
+sw buf_inspect_f64_size (const f64 *f)
 {
   s8 b[16];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
-  return buf_inspect_f64(&buf, x);
+  return buf_inspect_f64(&buf, f);
 }
 
 sw buf_inspect_fact (s_buf *buf, const s_fact *fact)
@@ -768,7 +944,7 @@ sw buf_inspect_ptag (s_buf *buf, p_tag ptag)
   if ((r = buf_write_1(buf, "@0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hex(buf, (uw) ptag)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) &ptag)) < 0)
     return r;
   result += r;
   return result;
@@ -787,200 +963,147 @@ sw buf_inspect_quote (s_buf *buf, const s_quote *quote)
 {
   sw r;
   sw result = 0;
+  s_buf_save save;
   if ((r = buf_write_1(buf, "quote ")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_tag(buf, quote->tag)) < 0)
-    return r;
-  result += r;
-  return result;
+    goto restore;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_wpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_inspect_quote_size (const s_quote *quote)
 {
-  sw result = 0;
-  result += strlen("'");
-  result += buf_inspect_tag_size(quote->tag);
-  return result;
-}
-
-sw buf_inspect_s8 (s_buf *buf, s8 x)
-{
   sw r;
   sw result = 0;
-  if (x < 0) {
-    if ((r = buf_write_1(buf, "-")) < 0)
-      return r;
-    result += r;
-    x = -x;
-  }
-  if ((r = buf_inspect_u8(buf, x)) < 0)
+  result += strlen("quote ");
+  if ((r = buf_inspect_tag_size(quote->tag)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_s8_size (s8 x)
-{
-  sw result = 0;
-  if (x < 0) {
-    result += strlen("-");
-    x = -x;
-  }
-  result += buf_inspect_u8_size(x);
-  return result;
-}
+DEF_BUF_INSPECT_S(8)
+DEF_BUF_INSPECT_S(16)
+DEF_BUF_INSPECT_S(32)
+DEF_BUF_INSPECT_S(64)
+DEF_BUF_INSPECT_S(w)
 
-sw buf_inspect_s16 (s_buf *buf, s16 x)
+sw buf_inspect_str (s_buf *buf, const s_str *str)
 {
   sw r;
-  sw r1;
-  if (x >= 0)
-    return buf_inspect_u16(buf, (u16) x);
-  if ((r = buf_write_1(buf, "-")) < 0)
-    return r;
-  if ((r1 = buf_inspect_u16(buf, (u16) -x)) < 0)
-    return r1;
-  return r + r1;
-}
-
-sw buf_inspect_s16_size (s16 x)
-{
   sw result = 0;
-  if (x < 0) {
-    result += strlen("-");
-    x = -x;
-  }
-  result += buf_inspect_u16_size(x);
-  return result;
-}
-
-sw buf_inspect_s32 (s_buf *buf, s32 x)
-{
-  sw r;
-  sw r1;
-  if (x >= 0)
-    return buf_inspect_u32(buf, (u32) x);
-  if ((r = buf_write_1(buf, "-")) < 0)
-    return r;
-  if ((r1 = buf_inspect_u32(buf, (u32) -x)) < 0)
-    return r1;
-  return r + r1;
-}
-
-sw buf_inspect_s32_size (s32 x)
-{
-  sw result = 0;
-  if (x < 0) {
-    result += strlen("-");
-    x = -x;
-  }
-  result += buf_inspect_u32_size(x);
-  return result;
-}
-
-sw buf_inspect_s64 (s_buf *buf, s64 x)
-{
-  sw r;
-  sw r1;
-  if (x >= 0)
-    return buf_inspect_u64(buf, (u64) x);
-  if ((r = buf_write_1(buf, "-")) < 0)
-    return r;
-  if ((r1 = buf_inspect_u64(buf, (u64) -x)) < 0)
-    return r1;
-  return r + r1;
-}
-
-sw buf_inspect_s64_size (s64 x)
-{
-  sw result = 0;
-  if (x < 0) {
-    result += strlen("-");
-    x = -x;
-  }
-  result += buf_inspect_u64_size(x);
-  return result;
-}
-
-sw buf_inspect_str (s_buf *buf, const s_str *x)
-{
-  sw r;
-  sw size;
+  s_buf_save save;
   assert(buf);
-  assert(x);
-  if (str_has_reserved_characters(x))
-    return buf_inspect_str_reserved(buf, x);
-  size = x->size + 2;
-  if ((r = buf_write_u8(buf, '"')) < 0 ||
-      (r = buf_write_str(buf, x)) < 0 ||
-      (r = buf_write_u8(buf, '"') < 0))
+  assert(str);
+  if (str_has_reserved_characters(str))
+    return buf_inspect_str_reserved(buf, str);
+  buf_save_init(buf, &save);
+  if ((r = buf_write_u8(buf, '"')) < 0)
     return r;
-  return size;
+  result += r;
+  if ((r = buf_write_str(buf, str)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_write_u8(buf, '"')) < 0)
+    goto restore;
+  result += r;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_wpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
-sw buf_inspect_str_byte (s_buf *buf, u8 x)
+sw buf_inspect_str_byte (s_buf *buf, const u8 *byte)
 {
   sw r;
-  const sw size = 4;
-  if ((r = buf_write_u8(buf, '\\')) < 0 ||
-      (r = buf_write_u8(buf, 'x')) < 0 ||
-      (r = buf_u8_to_hex(buf, x)) < 0)
+  sw result = 0;
+  s_buf_save save;
+  if ((r = buf_write_u8(buf, '\\')) < 0)
     return r;
-  return size;
+  result += r;
+  if ((r = buf_write_u8(buf, 'x')) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_u8_to_hex(buf, *byte)) < 0)
+    goto restore;
+  result += r;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_wpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
-sw buf_inspect_str_character (s_buf *buf, character x)
+sw buf_inspect_str_character (s_buf *buf, const character *c)
 {
   s8 b[4];
   s_buf char_buf;
   int i;
   int j;
   sw r;
-  sw size;
-  size = buf_inspect_str_character_size(x);
-  if (size <= 0)
-    return size;
-  if (! str_character_is_reserved(x))
-    return buf_write_character_utf8(buf, x);
-  buf_write_u8(buf, '\\');
-  switch (x) {
-  case '\0': if ((r = buf_write_u8(buf, '0')) < 0) return r; break;
-  case '\n': if ((r = buf_write_u8(buf, 'n')) < 0) return r; break;
-  case '\r': if ((r = buf_write_u8(buf, 'r')) < 0) return r; break;
-  case '\t': if ((r = buf_write_u8(buf, 't')) < 0) return r; break;
-  case '\v': if ((r = buf_write_u8(buf, 'v')) < 0) return r; break;
-  case '\"': if ((r = buf_write_u8(buf, '"')) < 0) return r; break;
-  case '\'': if ((r = buf_write_u8(buf, '\'')) < 0) return r; break;
-  case '\\': if ((r = buf_write_u8(buf, '\\')) < 0) return r; break;
+  sw result = 0;
+  s_buf_save save;
+  if (! str_character_is_reserved(*c))
+    return buf_write_character_utf8(buf, *c);
+  buf_save_init(buf, &save);
+  if ((r = buf_write_u8(buf, '\\')) < 0)
+    goto restore;
+  switch (*c) {
+  case '\0': if ((r = buf_write_u8(buf, '0')) < 0) goto restore; break;
+  case '\n': if ((r = buf_write_u8(buf, 'n')) < 0) goto restore; break;
+  case '\r': if ((r = buf_write_u8(buf, 'r')) < 0) goto restore; break;
+  case '\t': if ((r = buf_write_u8(buf, 't')) < 0) goto restore; break;
+  case '\v': if ((r = buf_write_u8(buf, 'v')) < 0) goto restore; break;
+  case '\"': if ((r = buf_write_u8(buf, '"')) < 0) goto restore; break;
+  case '\'': if ((r = buf_write_u8(buf, '\'')) < 0) goto restore; break;
+  case '\\': if ((r = buf_write_u8(buf, '\\')) < 0) goto restore; break;
   default:
     buf_init(&char_buf, false, sizeof(b), b);
-    if ((i = buf_write_character_utf8(&char_buf, x)) < 0)
-      return i;
+    if ((r = buf_write_character_utf8(&char_buf, *c)) < 0)
+      goto restore;
+    i = r;
     j = 0;
     if (i-- > 0) {
       if ((r = buf_write_u8(buf, 'x')) < 0)
-        return r;
+        goto restore;
       if ((r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) < 0)
-        return r;
+        goto restore;
       while (i--) {
         if ((r = buf_write_1(buf, "\\x")) < 0 ||
             (r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) < 0)
-          return r;
+          goto restore;
       }
     }
   }
-  return size;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_wpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
-sw buf_inspect_str_character_size (character x)
+sw buf_inspect_str_character_size (const character *c)
 {
   sw csize;
   sw size;
-  if (! str_character_is_reserved(x))
-    return character_utf8_size(x);
+  if (! str_character_is_reserved(*c))
+    return character_utf8_size(*c);
   size = 0;
-  switch (x) {
+  switch (*c) {
   case '\0':
   case '\n':
   case '\r':
@@ -992,7 +1115,7 @@ sw buf_inspect_str_character_size (character x)
     size += 2;
     break;
   default:
-    csize = character_utf8_size(x);
+    csize = character_utf8_size(*c);
     if (csize <= 0)
       return -1;
     size += csize * 4;
@@ -1001,40 +1124,48 @@ sw buf_inspect_str_character_size (character x)
 }
 
 /* XXX keep in sync with buf_inspect_str_reserved_size */
-sw buf_inspect_str_reserved (s_buf *buf, const s_str *x)
+sw buf_inspect_str_reserved (s_buf *buf, const s_str *str)
 {
-  u8 b;
+  u8 byte;
   character c;
   sw r;
-  sw size;
+  sw result = 0;
   s_str s;
-  size = buf_inspect_str_reserved_size(x);
-  if (size <= 0)
-    return size;
+  s_buf_save save;
+  buf_save_init(buf, &save);
   if ((r = buf_write_u8(buf, '"')) < 0)
     return r;
-  str_init_str(&s, x);
-  while (1) {
-    if ((r = str_read_character_utf8(&s, &c)) > 0) {
-      if ((r = buf_inspect_str_character(buf, c)) < 0)
-        return r;
+  result += r;
+  str_init_str(&s, str);
+  while (r) {
+    if ((r = str_read_character_utf8(&s, &c)) < 0)
+      goto restore;
+    if (r) {
+      if ((r = buf_inspect_str_character(buf, &c)) < 0)
+        goto restore;
+      result += r;
     }
-    else if ((r = str_read_u8(&s, &b)) == 1) {
-      if ((r = buf_inspect_str_byte(buf, b)) < 0)
-        return r;
+    else if ((r = str_read_u8(&s, &byte)) < 0)
+      goto restore;
+    else if (r) {
+      if ((r = buf_inspect_str_byte(buf, &byte)) < 0)
+        goto restore;
+      result += r;
     }
-    else if (r < 0)
-      return r;
-    else if (r == 0)
-      break;
   }
   if ((r = buf_write_u8(buf, '"')) < 0)
-    return r;
-  return size;
+    goto restore;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_wpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 /* XXX keep in sync with buf_inspect_str_reserved */
-sw buf_inspect_str_reserved_size (const s_str *x)
+sw buf_inspect_str_reserved_size (const s_str *str)
 {
   u8 b;
   character c;
@@ -1043,10 +1174,10 @@ sw buf_inspect_str_reserved_size (const s_str *x)
   s_str s;
   sw size;
   size = 2 * quote_size;
-  str_init_str(&s, x);
+  str_init_str(&s, str);
   while (1) {
     if ((r = str_read_character_utf8(&s, &c)) > 0)
-      size += buf_inspect_str_character_size(c);
+      size += buf_inspect_str_character_size(&c);
     else if (r && (r = str_read_u8(&s, &b)) == 1)
       size += buf_inspect_str_byte_size;
     else if (r < 0)
@@ -1130,38 +1261,39 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   if (! tag)
     return buf_write_1(buf, "NULL");
   switch(tag->type.type) {
-  case TAG_VOID:    return 0;
+  case TAG_VOID:    return buf_inspect_void(buf, &tag);
   case TAG_ARRAY:   return buf_inspect_array(buf, &tag->data.array);
-  case TAG_BOOL:    return buf_inspect_bool(buf, tag->data.bool);
+  case TAG_BOOL:    return buf_inspect_bool(buf, &tag->data.bool);
   case TAG_CALL:
   case TAG_CALL_FN:
   case TAG_CALL_MACRO:
                     return buf_inspect_call(buf, &tag->data.call);
   case TAG_CFN:     return buf_inspect_cfn(buf, &tag->data.cfn);
   case TAG_CHARACTER:
-    return buf_inspect_character(buf, tag->data.character);
-  case TAG_F32:     return buf_inspect_f32(buf, tag->data.f32);
-  case TAG_F64:     return buf_inspect_f64(buf, tag->data.f64);
+    return buf_inspect_character(buf, &tag->data.character);
+  case TAG_F32:     return buf_inspect_f32(buf, &tag->data.f32);
+  case TAG_F64:     return buf_inspect_f64(buf, &tag->data.f64);
   case TAG_FN:      return buf_inspect_fn(buf, tag->data.fn);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
   case TAG_LIST:    return buf_inspect_list(buf, tag->data.list);
   case TAG_PTAG:    return buf_inspect_ptag(buf, tag->data.ptag);
   case TAG_QUOTE:   return buf_inspect_quote(buf, &tag->data.quote);
-  case TAG_S8:      return buf_inspect_s8(buf, tag->data.s8);
-  case TAG_S16:     return buf_inspect_s16(buf, tag->data.s16);
-  case TAG_S32:     return buf_inspect_s32(buf, tag->data.s32);
-  case TAG_S64:     return buf_inspect_s64(buf, tag->data.s64);
+  case TAG_S8:      return buf_inspect_s8(buf, &tag->data.s8);
+  case TAG_S16:     return buf_inspect_s16(buf, &tag->data.s16);
+  case TAG_S32:     return buf_inspect_s32(buf, &tag->data.s32);
+  case TAG_S64:     return buf_inspect_s64(buf, &tag->data.s64);
   case TAG_STR:     return buf_inspect_str(buf, &tag->data.str);
   case TAG_SYM:     return buf_inspect_sym(buf, tag->data.sym);
   case TAG_TUPLE:   return buf_inspect_tuple(buf, &tag->data.tuple);
-  case TAG_U8:      return buf_inspect_u8(buf, tag->data.u8);
-  case TAG_U16:     return buf_inspect_u16(buf, tag->data.u16);
-  case TAG_U32:     return buf_inspect_u32(buf, tag->data.u32);
-  case TAG_U64:     return buf_inspect_u64(buf, tag->data.u64);
+  case TAG_U8:      return buf_inspect_u8(buf, &tag->data.u8);
+  case TAG_U16:     return buf_inspect_u16(buf, &tag->data.u16);
+  case TAG_U32:     return buf_inspect_u32(buf, &tag->data.u32);
+  case TAG_U64:     return buf_inspect_u64(buf, &tag->data.u64);
   case TAG_VAR:     return buf_inspect_var(buf, tag);
   }
-  assert(! "unknown tag type");
+  assert(! "buf_inspect_tag: unknown tag type");
+  errx(1, "buf_inspect_tag: unknown tag_type");
   return -1;
 }
 
@@ -1169,39 +1301,40 @@ sw buf_inspect_tag_size (const s_tag *tag)
 {
   assert(tag);
   switch(tag->type.type) {
-  case TAG_VOID:     return 0;
+  case TAG_VOID:     return buf_inspect_void_size(tag);
   case TAG_ARRAY:    return buf_inspect_array_size(&tag->data.array);
-  case TAG_BOOL:     return buf_inspect_bool_size(tag->data.bool);
+  case TAG_BOOL:     return buf_inspect_bool_size(&tag->data.bool);
   case TAG_CALL:
   case TAG_CALL_FN:
   case TAG_CALL_MACRO:
     return buf_inspect_call_size(&tag->data.call);
   case TAG_CFN:      return buf_inspect_cfn_size(&tag->data.cfn);
   case TAG_CHARACTER:
-    return buf_inspect_character_size(tag->data.character);
-  case TAG_F32:      return buf_inspect_f32_size(tag->data.f32);
-  case TAG_F64:      return buf_inspect_f64_size(tag->data.f64);
-  case TAG_FN:       return BUF_INSPECT_UW_HEX_SIZE;
+    return buf_inspect_character_size(&tag->data.character);
+  case TAG_F32:      return buf_inspect_f32_size(&tag->data.f32);
+  case TAG_F64:      return buf_inspect_f64_size(&tag->data.f64);
+  case TAG_FN:       return buf_inspect_fn_size(tag->data.fn);
   case TAG_IDENT:    return buf_inspect_ident_size(&tag->data.ident);
   case TAG_INTEGER:
     return buf_inspect_integer_size(&tag->data.integer);
   case TAG_LIST:     return buf_inspect_list_size(tag->data.list);
   case TAG_PTAG:     return buf_inspect_ptag_size(tag->data.ptag);
   case TAG_QUOTE:    return buf_inspect_quote_size(&tag->data.quote);
-  case TAG_S8:       return buf_inspect_s8_size(tag->data.s8);
-  case TAG_S16:      return buf_inspect_s16_size(tag->data.s16);
-  case TAG_S32:      return buf_inspect_s32_size(tag->data.s32);
-  case TAG_S64:      return buf_inspect_s64_size(tag->data.s64);
+  case TAG_S8:       return buf_inspect_s8_size(&tag->data.s8);
+  case TAG_S16:      return buf_inspect_s16_size(&tag->data.s16);
+  case TAG_S32:      return buf_inspect_s32_size(&tag->data.s32);
+  case TAG_S64:      return buf_inspect_s64_size(&tag->data.s64);
   case TAG_STR:      return buf_inspect_str_size(&tag->data.str);
   case TAG_SYM:      return buf_inspect_sym_size(tag->data.sym);
   case TAG_TUPLE:    return buf_inspect_tuple_size(&tag->data.tuple);
-  case TAG_U8:       return buf_inspect_u8_size(tag->data.u8);
-  case TAG_U16:      return buf_inspect_u16_size(tag->data.u16);
-  case TAG_U32:      return buf_inspect_u32_size(tag->data.u32);
-  case TAG_U64:      return buf_inspect_u64_size(tag->data.u64);
-  case TAG_VAR:      return BUF_INSPECT_VAR_SIZE;
+  case TAG_U8:       return buf_inspect_u8_size(&tag->data.u8);
+  case TAG_U16:      return buf_inspect_u16_size(&tag->data.u16);
+  case TAG_U32:      return buf_inspect_u32_size(&tag->data.u32);
+  case TAG_U64:      return buf_inspect_u64_size(&tag->data.u64);
+  case TAG_VAR:      return buf_inspect_var_size(tag);
   }
-  assert(! "unknown tag type");
+  assert(! "buf_inspect_tag_size: unknown tag type");
+  errx(1, "buf_inspect_tag_size: unknown tag type");
   return -1;
 }
 
@@ -1255,189 +1388,11 @@ sw buf_inspect_tuple_size (const s_tuple *tuple)
   return result;
 }
 
-sw buf_inspect_u8 (s_buf *buf, u8 x)
-{
-  u8 digit;
-  sw i;
-  sw r;
-  sw size = 0;
-  s8 t[3];
-  s_buf tmp;
-  buf_init(&tmp, false, sizeof(t), t);
-  if (x == 0)
-    return buf_write_u8(buf, '0');
-  while (x > 0) {
-    digit = x % 10;
-    x /= 10;
-    if (buf_write_u8(&tmp, '0' + digit) != 1) {
-      return -1;
-    }
-    size++;
-  }
-  i = size;
-  while (i--)
-    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) < 0)
-      return r;
-  return size;
-}
-
-sw buf_inspect_u8_size (u8 x)
-{
-  sw size = 0;
-  if (x == 0)
-    return 1;
-  while (x > 0) {
-    x /= 10;
-    size++;
-  }
-  return size;
-}
-
-sw buf_inspect_u16 (s_buf *buf, u16 x)
-{
-  u8 digit;
-  sw i;
-  sw r;
-  sw size = 0;
-  s8 t[5];
-  s_buf tmp;
-  buf_init(&tmp, false, sizeof(t), t);
-  if (x == 0)
-    return buf_write_u8(buf, '0');
-  while (x > 0) {
-    digit = x % 10;
-    x /= 10;
-    if (buf_write_u8(&tmp, '0' + digit) != 1) {
-      return -1;
-    }
-    size++;
-  }
-  i = size;
-  while (i--)
-    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) < 0)
-      return r;
-  return size;
-}
-
-sw buf_inspect_u16_size (u16 x)
-{
-  sw size = 0;
-  if (x == 0)
-    return 1;
-  while (x > 0) {
-    x /= 10;
-    size++;
-  }
-  return size;
-}
-
-sw buf_inspect_u32 (s_buf *buf, u32 x)
-{
-  u8 digit;
-  sw i;
-  sw r;
-  sw size = 0;
-  s8 t[10];
-  s_buf tmp;
-  buf_init(&tmp, false, sizeof(t), t);
-  if (x == 0)
-    return buf_write_u8(buf, '0');
-  while (x > 0) {
-    digit = x % 10;
-    x /= 10;
-    if (buf_write_u8(&tmp, '0' + digit) != 1) {
-      return -1;
-    }
-    size++;
-  }
-  i = size;
-  while (i--)
-    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) < 0)
-      return r;
-  return size;
-}
-
-sw buf_inspect_u32_size (u32 x)
-{
-  sw size = 0;
-  if (x == 0)
-    return 1;
-  while (x > 0) {
-    x /= 10;
-    size++;
-  }
-  return size;
-}
-
-sw buf_inspect_u64 (s_buf *buf, u64 x)
-{
-  u8 digit;
-  sw i;
-  sw r;
-  sw size = 0;
-  s8 t[20];
-  s_buf tmp;
-  buf_init(&tmp, false, sizeof(t), t);
-  if (x == 0)
-    return buf_write_u8(buf, '0');
-  while (x > 0) {
-    digit = x % 10;
-    x /= 10;
-    if (buf_write_u8(&tmp, '0' + digit) != 1) {
-      return -1;
-    }
-    size++;
-  }
-  i = size;
-  while (i--)
-    if ((r = buf_write_u8(buf, tmp.ptr.pu8[i])) < 0)
-      return r;
-  return size;
-}
-
-sw buf_inspect_u32_hex (s_buf *buf, u32 i)
-{
-  const s8 basis[] = "0123456789ABCDEF";
-  uw shift = 32;
-  while (shift) {
-    shift -= 4;
-    buf_write_s8(buf, basis[(i >> shift) & 0xF]);
-  }
-  return 8;
-}
-
-sw buf_inspect_u64_hex (s_buf *buf, u64 i)
-{
-  const s8 basis[] = "0123456789ABCDEF";
-  uw shift = 64;
-  while (shift) {
-    shift -= 4;
-    buf_write_s8(buf, basis[(i >> shift) & 0xF]);
-  }
-  return 16;
-}
-
-sw buf_inspect_u64_size (u64 i)
-{
-  sw size = 0;
-  if (i == 0)
-    return 1;
-  while (i > 0) {
-    i /= 10;
-    size++;
-  }
-  return size;
-}
-
-sw buf_inspect_uw_hex (s_buf *buf, uw i)
-{
-  if (sizeof(uw) == 8)
-    return buf_inspect_u64_hex(buf, i);
-  if (sizeof(uw) == 4)
-    return buf_inspect_u32_hex(buf, i);
-  assert(! "unknown word size");
-  return -1;
-}
+DEF_BUF_INSPECT_U(8)
+DEF_BUF_INSPECT_U(16)
+DEF_BUF_INSPECT_U(32)
+DEF_BUF_INSPECT_U(64)
+DEF_BUF_INSPECT_U(w)
 
 sw buf_inspect_var (s_buf *buf, const s_tag *var)
 {
@@ -1446,10 +1401,22 @@ sw buf_inspect_var (s_buf *buf, const s_tag *var)
   if ((r = buf_write_1(buf, "var(0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hex(buf, (uw) var)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) &var)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, ")")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_void (s_buf *buf, const void *_)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  (void) _;
+  if ((r = buf_write_1(buf, "void")) < 0)
     return r;
   result += r;
   return result;

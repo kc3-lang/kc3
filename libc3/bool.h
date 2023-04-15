@@ -22,6 +22,6 @@
 #include "types.h"
 
 /* Observers */
-s_str * bool_inspect (e_bool b, s_str *dest);
+s_str * bool_inspect (bool *b, s_str *dest);
 
 #endif /* BOOL_H */

@@ -48,6 +48,7 @@ Script interpreter.
    - DONE triple serial id
    - with ignore variables
    - boolean operators
+   - comparison operators
    - arrays
    - lists
    - defmodule
@@ -69,6 +70,7 @@ Script interpreter.
    - buf_sha256
    - buf_popen
    - tests
+     - sizeof(sw) == sizeof(void *)
      - `(-S8_MIN - S8_MAX) == 1`
      - `UW_MAX == ((1 << 8 * sizeof(uw)) - 1)`
      - DONE group tests by test case

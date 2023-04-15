@@ -51,6 +51,9 @@ s_str * str_new_vf (const char *fmt, va_list ap);
 void str_delete (s_str *str);
 
 /* Observers */
+
+sw            str_character (const s_str *str, uw position,
+                             character *dest);
 character     str_character_escape (character c);
 e_bool        str_character_is_reserved (character c);
 sw            str_character_position (const s_str *str, character c);

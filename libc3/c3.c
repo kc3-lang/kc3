@@ -16,11 +16,12 @@
 #include <stdlib.h>
 #include "c3.h"
 
-const s_str g_c3_base_bin = {{NULL}, 2, {"01"}};
-const s_str g_c3_base_oct = {{NULL}, 8, {"01234567"}};
-const s_str g_c3_base_dec = {{NULL}, 10, {"0123456789"}};
-const s_str g_c3_bases_hex[2] = {{{NULL}, 16, {"0123456789abcdef"}},
-                                 {{NULL}, 16, {"0123456789ABCDEF"}}};
+const s_str g_c3_base_binary = {{NULL}, 2, {"01"}};
+const s_str g_c3_base_octal = {{NULL}, 8, {"01234567"}};
+const s_str g_c3_base_decimal = {{NULL}, 10, {"0123456789"}};
+const s_str g_c3_base_hexadecimal = {{NULL}, 16, {"0123456789abcdef"}};
+const s_str g_c3_bases_hexadecimal[2] = {{{NULL}, 16, {"0123456789abcdef"}},
+                                         {{NULL}, 16, {"0123456789ABCDEF"}}};
 
 void c3_break ()
 {

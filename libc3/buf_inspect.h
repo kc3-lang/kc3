@@ -21,16 +21,42 @@
 
 #include "types.h"
 
-#define BUF_INSPECT_U64_HEX_SIZE 16
-#define BUF_INSPECT_UW_HEX_SIZE (sizeof(uw) / 4)
-#define BUF_INSPECT_VAR_SIZE (BUF_INSPECT_UW_HEX_SIZE + 7)
+#define BUF_INSPECT_S_BASE_PROTOTYPES(bits, base)                      \
+  sw buf_inspect_s ## bits ## _ ## base (s_buf *buf,                   \
+                                         const s ## bits *s);          \
+  sw buf_inspect_s ## bits ## _ ## base ## _size (const s ## bits *s)
 
-typedef sw (* f_buf_inspect) (s_buf *buf, void *x);
+#define BUF_INSPECT_S_PROTOTYPES(bits)                                 \
+  sw buf_inspect_s ## bits (s_buf *buf, const s ## bits *s);           \
+  sw buf_inspect_s ## bits ## _size (const s ## bits *s);              \
+  BUF_INSPECT_S_BASE_PROTOTYPES(bits, binary);                         \
+  BUF_INSPECT_S_BASE_PROTOTYPES(bits, hexadecimal);                    \
+  BUF_INSPECT_S_BASE_PROTOTYPES(bits, octal)
+
+#define BUF_INSPECT_U_BASE_PROTOTYPES(bits, base)                      \
+  sw buf_inspect_u ## bits ## _ ## base (s_buf *buf,                   \
+                                         const u ## bits *s);          \
+  sw buf_inspect_u ## bits ## _ ## base ## _size (const u ## bits *s)
+
+#define BUF_INSPECT_U_PROTOTYPES(bits)                                 \
+  sw buf_inspect_u ## bits (s_buf *buf, const u ## bits *u);           \
+  sw buf_inspect_u ## bits ## _size (const u ## bits *u);              \
+  sw buf_inspect_u ## bits ## _base (s_buf *buf, const s_str *base,    \
+                                     const u ## bits *u);              \
+  sw buf_inspect_u ## bits ## _base_size (const s_str *base,           \
+                                          const u ## bits *u);         \
+  BUF_INSPECT_U_BASE_PROTOTYPES(bits, binary);                         \
+  BUF_INSPECT_U_BASE_PROTOTYPES(bits, hexadecimal);                    \
+  BUF_INSPECT_U_BASE_PROTOTYPES(bits, octal)
+
+typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
+
+f_buf_inspect buf_inspect (e_tag_type type);
 
 sw buf_inspect_array (s_buf *buf, const s_array *a);
 sw buf_inspect_array_size (const s_array *a);
-sw buf_inspect_bool (s_buf *buf, e_bool b);
-sw buf_inspect_bool_size (e_bool b);
+sw buf_inspect_bool (s_buf *buf, const bool *b);
+sw buf_inspect_bool_size (const bool *b);
 sw buf_inspect_call (s_buf *buf, const s_call *call);
 sw buf_inspect_call_args (s_buf *buf, const s_list *args);
 sw buf_inspect_call_op (s_buf *buf, const s_call *call,
@@ -38,14 +64,14 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call,
 sw buf_inspect_call_size (const s_call *call);
 sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn);
 sw buf_inspect_cfn_size (const s_cfn *cfn);
-sw buf_inspect_character (s_buf *buf, character c);
-sw buf_inspect_character_size (character c);
+sw buf_inspect_character (s_buf *buf, const character *c);
+sw buf_inspect_character_size (const character *c);
 sw buf_inspect_error_handler (s_buf *buf,
                               const s_error_handler *error_handler);
-sw buf_inspect_f32 (s_buf *buf, f32 x);
-sw buf_inspect_f32_size (f32 x);
-sw buf_inspect_f64 (s_buf *buf, f64 x);
-sw buf_inspect_f64_size (f64 x);
+sw buf_inspect_f32 (s_buf *buf, const f32 *x);
+sw buf_inspect_f32_size (const f32 *x);
+sw buf_inspect_f64 (s_buf *buf, const f64 *x);
+sw buf_inspect_f64_size (const f64 *x);
 sw buf_inspect_fact (s_buf *buf, const s_fact *fact);
 sw buf_inspect_fact_size (const s_fact *fact);
 sw buf_inspect_fact_spec (s_buf *buf, p_facts_spec spec);
@@ -64,37 +90,29 @@ sw buf_inspect_ptag (s_buf *buf, p_tag ptag);
 sw buf_inspect_ptag_size (p_tag ptag);
 sw buf_inspect_quote (s_buf *buf, const s_quote *quote);
 sw buf_inspect_quote_size (const s_quote *quote);
-sw buf_inspect_s8 (s_buf *buf, s8 i);
-sw buf_inspect_s8_size (s8 i);
-sw buf_inspect_s16 (s_buf *buf, s16 i);
-sw buf_inspect_s16_size (s16 i);
-sw buf_inspect_s32 (s_buf *buf, s32 i);
-sw buf_inspect_s32_size (s32 i);
-sw buf_inspect_s64 (s_buf *buf, s64 i);
-sw buf_inspect_s64_size (s64 i);
+BUF_INSPECT_S_PROTOTYPES(8);
+BUF_INSPECT_S_PROTOTYPES(16);
+BUF_INSPECT_S_PROTOTYPES(32);
+BUF_INSPECT_S_PROTOTYPES(64);
+BUF_INSPECT_S_PROTOTYPES(w);
 sw buf_inspect_str (s_buf *buf, const s_str *str);
 sw buf_inspect_str_size (const s_str *str);
-sw buf_inspect_str_character (s_buf *buf, character c);
-sw buf_inspect_str_character_size (character c);
+sw buf_inspect_str_character (s_buf *buf, const character *c);
+sw buf_inspect_str_character_size (const character *c);
 sw buf_inspect_sym (s_buf *buf, const s_sym *sym);
 sw buf_inspect_sym_size (const s_sym *sym);
 sw buf_inspect_tag (s_buf *buf, const s_tag *tag);
 sw buf_inspect_tag_size (const s_tag *tag);
 sw buf_inspect_tuple (s_buf *buf, const s_tuple *tuple);
 sw buf_inspect_tuple_size (const s_tuple *tuple);
-sw buf_inspect_u8 (s_buf *buf, u8 i);
-sw buf_inspect_u8_size (u8 i);
-sw buf_inspect_u16 (s_buf *buf, u16 i);
-sw buf_inspect_u16_size (u16 i);
-sw buf_inspect_u32 (s_buf *buf, u32 i);
-sw buf_inspect_u32_size (u32 i);
-sw buf_inspect_u32_hex (s_buf *buf, u32 i);
-sw buf_inspect_u32_hex_size (u32 i);
-sw buf_inspect_u64_hex (s_buf *buf, u64 i);
-sw buf_inspect_u64_hex_size (u64 i);
-sw buf_inspect_u64 (s_buf *buf, u64 i);
-sw buf_inspect_u64_size (u64 i);
-sw buf_inspect_uw_hex (s_buf *buf, uw i);
+BUF_INSPECT_U_PROTOTYPES(8);
+BUF_INSPECT_U_PROTOTYPES(16);
+BUF_INSPECT_U_PROTOTYPES(32);
+BUF_INSPECT_U_PROTOTYPES(64);
+BUF_INSPECT_U_PROTOTYPES(w);
 sw buf_inspect_var (s_buf *buf, const s_tag *var);
+sw buf_inspect_var_size (const s_tag *var);
+sw buf_inspect_void (s_buf *buf, const void *_);
+sw buf_inspect_void_size (const void *_);
 
 #endif /* BUF_INSPECT_H */

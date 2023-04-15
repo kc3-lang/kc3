@@ -23,6 +23,21 @@
 #include "str.h"
 #include "sym.h"
 
+sw str_character (const s_str *str, uw position, character *dest)
+{
+  character c;
+  uw i = 0;
+  s_str s;
+  s = *str;
+  while (s->size && i <= position) {
+    if ((r = str_read_character_utf8(&s, &c)) <= 0)
+      return -1;
+    i++;
+  }
+  *dest = c;
+  return r;
+}
+
 e_bool str_character_is_reserved (character c)
 {
   return ! character_is_printable(c) ||
