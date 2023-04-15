@@ -1005,13 +1005,13 @@ sw buf_inspect_str (s_buf *buf, const s_str *str)
   if (str_has_reserved_characters(str))
     return buf_inspect_str_reserved(buf, str);
   buf_save_init(buf, &save);
-  if ((r = buf_write_u8(buf, '"')) < 0)
-    return r;
+  if ((r = buf_write_u8(buf, '"')) <= 0)
+    goto clean;
   result += r;
   if ((r = buf_write_str(buf, str)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_write_u8(buf, '"')) < 0)
+  if ((r = buf_write_u8(buf, '"')) <= 0)
     goto restore;
   result += r;
   r = result;
@@ -1054,39 +1054,46 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
   int j;
   sw r;
   sw result = 0;
+  sw result1 = 0;
   s_buf_save save;
   if (! str_character_is_reserved(*c))
     return buf_write_character_utf8(buf, *c);
   buf_save_init(buf, &save);
-  if ((r = buf_write_u8(buf, '\\')) < 0)
+  if ((r = buf_write_u8(buf, '\\')) <= 0)
     goto restore;
+  result += r;
   switch (*c) {
-  case '\0': if ((r = buf_write_u8(buf, '0')) < 0) goto restore; break;
-  case '\n': if ((r = buf_write_u8(buf, 'n')) < 0) goto restore; break;
-  case '\r': if ((r = buf_write_u8(buf, 'r')) < 0) goto restore; break;
-  case '\t': if ((r = buf_write_u8(buf, 't')) < 0) goto restore; break;
-  case '\v': if ((r = buf_write_u8(buf, 'v')) < 0) goto restore; break;
-  case '\"': if ((r = buf_write_u8(buf, '"')) < 0) goto restore; break;
-  case '\'': if ((r = buf_write_u8(buf, '\'')) < 0) goto restore; break;
-  case '\\': if ((r = buf_write_u8(buf, '\\')) < 0) goto restore; break;
+  case '\0': if ((r = buf_write_u8(buf, '0')) <= 0) goto restore; break;
+  case '\n': if ((r = buf_write_u8(buf, 'n')) <= 0) goto restore; break;
+  case '\r': if ((r = buf_write_u8(buf, 'r')) <= 0) goto restore; break;
+  case '\t': if ((r = buf_write_u8(buf, 't')) <= 0) goto restore; break;
+  case '\v': if ((r = buf_write_u8(buf, 'v')) <= 0) goto restore; break;
+  case '\"': if ((r = buf_write_u8(buf, '"')) <= 0) goto restore; break;
+  case '\'': if ((r = buf_write_u8(buf, '\'')) <= 0) goto restore; break;
+  case '\\': if ((r = buf_write_u8(buf, '\\')) <= 0) goto restore; break;
   default:
     buf_init(&char_buf, false, sizeof(b), b);
-    if ((r = buf_write_character_utf8(&char_buf, *c)) < 0)
+    if ((r = buf_write_character_utf8(&char_buf, *c)) <= 0)
       goto restore;
-    i = r;
+    i = r - 1;
     j = 0;
-    if (i-- > 0) {
-      if ((r = buf_write_u8(buf, 'x')) < 0)
+    if ((r = buf_write_u8(buf, 'x')) <= 0)
+      goto restore;
+    result1 += r;
+    if ((r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) <= 0)
+      goto restore;
+    result1 += r;
+    while (i--) {
+      if ((r = buf_write_1(buf, "\\x")) <= 0)
         goto restore;
-      if ((r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) < 0)
+      result1 += r;
+      if ((r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) <= 0)
         goto restore;
-      while (i--) {
-        if ((r = buf_write_1(buf, "\\x")) < 0 ||
-            (r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) < 0)
-          goto restore;
-      }
+      result1 += r;
     }
+    r = result1;
   }
+  result += r;
   r = result;
   goto clean;
  restore:
@@ -1123,7 +1130,7 @@ sw buf_inspect_str_character_size (const character *c)
   return size;
 }
 
-/* XXX keep in sync with buf_inspect_str_reserved_size */
+/* keep in sync with buf_inspect_str_reserved_size */
 sw buf_inspect_str_reserved (s_buf *buf, const s_str *str)
 {
   u8 byte;
@@ -1155,6 +1162,7 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str)
   }
   if ((r = buf_write_u8(buf, '"')) < 0)
     goto restore;
+  result += r;
   r = result;
   goto clean;
  restore:
@@ -1420,4 +1428,10 @@ sw buf_inspect_void (s_buf *buf, const void *_)
     return r;
   result += r;
   return result;
+}
+
+sw buf_inspect_void_size (const void *_)
+{
+  (void) _;
+  return strlen("void");
 }

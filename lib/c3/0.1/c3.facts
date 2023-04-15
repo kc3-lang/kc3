@@ -1,6 +1,6 @@
 %{module: C3.Facts.Dump,
-  version: 0x0000000000000001,
-  count: 0x000000000000001B}
+  version: 1,
+  count: 27}
 {C3, :is_a, :module}
 {C3, :name, "C3"}
 {C3, :path, "c3.facts"}

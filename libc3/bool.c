@@ -14,18 +14,18 @@
 #include "buf.h"
 #include "buf_inspect.h"
 
-s_str * bool_inspect (bool *x, s_str *dest)
+s_str * bool_inspect (bool *b, s_str *dest)
 {
   sw size;
   s_buf tmp;
-  size = buf_inspect_bool_size(x);
+  size = buf_inspect_bool_size(b);
   if (size < 0) {
     assert(! "bool_inspect: error");
-    errx(1, "bool_inspect: error: %d", *x);
+    errx(1, "bool_inspect: error: %d", *b);
     return NULL;
   }
   buf_init_alloc(&tmp, size);
-  buf_inspect_bool(&tmp, x);
+  buf_inspect_bool(&tmp, b);
   assert(tmp.wpos == tmp.size);
   if (tmp.wpos != tmp.size) {
     buf_clean(&tmp);

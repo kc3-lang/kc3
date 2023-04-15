@@ -17,6 +17,288 @@
 #include "../libtommath/tommath.h"
 #include "c3.h"
 
+#define DEF_BUF_PARSE_S(BITS, bits)                                    \
+  sw buf_parse_s ## bits (s_buf *buf, s ## bits *dest)                 \
+  {                                                                    \
+    s_buf_save digits;                                                 \
+    e_bool negative = false;                                           \
+    sw r;                                                              \
+    sw r1;                                                             \
+    sw result = 0;                                                     \
+    s_buf_save save;                                                   \
+    s ## bits tmp;                                                     \
+    s ## bits tmp1;                                                    \
+    buf_save_init(buf, &save);                                         \
+    if ((r = buf_read_1(buf, "-")) < 0)                                \
+      goto clean;                                                      \
+    if (r > 0) {                                                       \
+      result += r;                                                     \
+      negative = true;                                                 \
+    }                                                                  \
+    if ((r = buf_read_1(buf, "0b")) < 0)                               \
+      goto restore;                                                    \
+    if (r > 0) {                                                       \
+      result += r;                                                     \
+      if ((r = buf_parse_s ## bits ## _base(buf, &g_c3_base_binary,    \
+                                            negative, dest)) <= 0)     \
+        goto restore;                                                  \
+      result += r;                                                     \
+      goto ok;                                                         \
+    }                                                                  \
+    if ((r = buf_read_1(buf, "0o")) < 0)                               \
+      goto restore;                                                    \
+    if (r > 0) {                                                       \
+      result += r;                                                     \
+      if ((r = buf_parse_s ## bits ## _base(buf, &g_c3_base_octal,     \
+                                            negative, dest)) <= 0)     \
+        goto restore;                                                  \
+      result += r;                                                     \
+      goto ok;                                                         \
+    }                                                                  \
+    if ((r = buf_read_1(buf, "0x")) < 0)                               \
+      goto restore;                                                    \
+    if (r > 0) {                                                       \
+      result += r;                                                     \
+      buf_save_init(buf, &digits);                                     \
+      if ((r = buf_parse_s ## bits ## _base(buf,                       \
+                                            g_c3_bases_hexadecimal,    \
+                                            negative, &tmp)) < 0) {    \
+        buf_save_clean(buf, &digits);                                  \
+        goto restore;                                                  \
+      }                                                                \
+      buf_save_restore_rpos(buf, &digits);                             \
+      buf_save_clean(buf, &digits);                                    \
+      if ((r1 = buf_parse_s ## bits ## _base(buf,                      \
+                                             g_c3_bases_hexadecimal +  \
+                                             1,                        \
+                                             negative, &tmp1)) < 0) {  \
+        r = r1;                                                        \
+        goto restore;                                                  \
+      }                                                                \
+      if (r == 0 && r1 == 0) {                                         \
+        if (negative)                                                  \
+          warnx("invalid number: -0x");                                \
+        else                                                           \
+          warnx("invalid number: 0x");                                 \
+        goto restore;                                                  \
+      }                                                                \
+      if (r > r1) {                                                    \
+        result += r;                                                   \
+        *dest = tmp;                                                   \
+      }                                                                \
+      else {                                                           \
+        result += r1;                                                  \
+        *dest = tmp1;                                                  \
+      }                                                                \
+      goto ok;                                                         \
+    }                                                                  \
+    if ((r = buf_parse_s ## bits ## _base(buf, &g_c3_base_decimal,     \
+                                          negative, dest)) <= 0)       \
+      goto restore;                                                    \
+    result += r;                                                       \
+   ok:                                                                 \
+    r = result;                                                        \
+    goto clean;                                                        \
+   restore:                                                            \
+    buf_save_restore_rpos(buf, &save);                                 \
+   clean:                                                              \
+    buf_save_clean(buf, &save);                                        \
+    return r;                                                          \
+  }                                                                    \
+                                                                       \
+  sw buf_parse_s ## bits ## _base (s_buf *buf, const s_str *base,      \
+                                   bool negative, s ## bits *dest)     \
+  {                                                                    \
+    u8 digit;                                                          \
+    sw r;                                                              \
+    sw radix;                                                          \
+    sw result = 0;                                                     \
+    s_buf_save save;                                                   \
+    u ## bits u = 0;                                                   \
+    assert(buf);                                                       \
+    assert(base);                                                      \
+    assert(dest);                                                      \
+    buf_save_init(buf, &save);                                         \
+    radix = str_length_utf8(base);                                     \
+    if (radix < 2 || radix > S ## BITS ## _MAX) {                      \
+      buf_save_clean(buf, &save);                                      \
+      assert(! "buf_parse_s" # bits "_base: invalid radix");           \
+      errx(1, "buf_parse_s" # bits "_base: invalid radix: %ld",        \
+           radix);                                                     \
+      return -1;                                                       \
+    }                                                                  \
+    while ((r = buf_parse_digit(buf, base, &digit)) > 0) {             \
+      result += r;                                                     \
+      if (digit >= radix) {                                            \
+        buf_save_clean(buf, &save);                                    \
+        assert(! "buf_parse_s" # bits                                  \
+               "_base: digit greater than or equal to radix");         \
+        errx(1, "buf_parse_s" # bits                                   \
+             "_base: digit greater than or equal to radix: %u",        \
+             digit);                                                   \
+        return -1;                                                     \
+      }                                                                \
+      if (u > (u ## bits) ceiling_s ## bits (S ## BITS ## _MAX,        \
+                                             radix)) {                 \
+        warnx("buf_parse_s" # bits "_base: *: integer overflow");      \
+        r = -1;                                                        \
+        goto restore;                                                  \
+      }                                                                \
+      u *= radix;                                                      \
+      if (negative ? u > (u ## bits) -S ## BITS ## _MIN - digit :      \
+          u > (u ## bits) (S ## BITS ## _MAX - digit)) {               \
+        warnx("buf_parse_s" # bits "_base: +: integer overflow");      \
+        r = -1;                                                        \
+        goto restore;                                                  \
+      }                                                                \
+      u += digit;                                                      \
+    }                                                                  \
+    *dest = negative ? -u : u;                                         \
+    r = result;                                                        \
+    goto clean;                                                        \
+   restore:                                                            \
+    buf_save_restore_rpos(buf, &save);                                 \
+   clean:                                                              \
+    buf_save_clean(buf, &save);                                        \
+    return r;                                                          \
+  }
+
+#define DEF_BUF_PARSE_U(BITS, bits)                                    \
+  sw buf_parse_u ## bits (s_buf *buf, u ## bits *dest)                 \
+  {                                                                    \
+    s_buf_save digits;                                                 \
+    sw r;                                                              \
+    sw r1;                                                             \
+    sw result = 0;                                                     \
+    s_buf_save save;                                                   \
+    u ## bits tmp;                                                     \
+    u ## bits tmp1;                                                    \
+    buf_save_init(buf, &save);                                         \
+    if ((r = buf_read_1(buf, "0b")) < 0)                               \
+      goto restore;                                                    \
+    if (r > 0) {                                                       \
+      result += r;                                                     \
+      if ((r = buf_parse_u ## bits ## _base(buf, &g_c3_base_binary,    \
+                                            dest)) <= 0)               \
+        goto restore;                                                  \
+      result += r;                                                     \
+      goto ok;                                                         \
+    }                                                                  \
+    if ((r = buf_read_1(buf, "0o")) < 0)                               \
+      goto restore;                                                    \
+    if (r > 0) {                                                       \
+      result += r;                                                     \
+      if ((r = buf_parse_u ## bits ## _base(buf, &g_c3_base_octal,     \
+                                            dest)) <= 0)               \
+        goto restore;                                                  \
+      result += r;                                                     \
+      goto ok;                                                         \
+    }                                                                  \
+    if ((r = buf_read_1(buf, "0x")) < 0)                               \
+      goto restore;                                                    \
+    if (r > 0) {                                                       \
+      result += r;                                                     \
+      buf_save_init(buf, &digits);                                     \
+      if ((r = buf_parse_u ## bits ## _base(buf,                       \
+                                            g_c3_bases_hexadecimal,    \
+                                            &tmp)) < 0) {              \
+        buf_save_clean(buf, &digits);                                  \
+        goto restore;                                                  \
+      }                                                                \
+      buf_save_restore_rpos(buf, &digits);                             \
+      buf_save_clean(buf, &digits);                                    \
+      if ((r1 = buf_parse_u ## bits ## _base(buf,                      \
+                                             g_c3_bases_hexadecimal +  \
+                                             1, &tmp1)) < 0) {         \
+        r = r1;                                                        \
+        goto restore;                                                  \
+      }                                                                \
+      if (r == 0 && r1 == 0) {                                         \
+        warnx("invalid number: 0x");                                   \
+        goto restore;                                                  \
+      }                                                                \
+      if (r > r1) {                                                    \
+        result += r;                                                   \
+        *dest = tmp;                                                   \
+      }                                                                \
+      else {                                                           \
+        result += r1;                                                  \
+        *dest = tmp1;                                                  \
+      }                                                                \
+      goto ok;                                                         \
+    }                                                                  \
+    if ((r = buf_parse_u ## bits ## _base(buf, &g_c3_base_decimal,     \
+                                          dest)) <= 0)                 \
+      goto restore;                                                    \
+    result += r;                                                       \
+   ok:                                                                 \
+    r = result;                                                        \
+    goto clean;                                                        \
+   restore:                                                            \
+    buf_save_restore_rpos(buf, &save);                                 \
+   clean:                                                              \
+    buf_save_clean(buf, &save);                                        \
+    return r;                                                          \
+  }                                                                    \
+                                                                       \
+  sw buf_parse_u ## bits ## _base (s_buf *buf, const s_str *base,      \
+                                   u ## bits *dest)                    \
+  {                                                                    \
+    u8 digit;                                                          \
+    sw r;                                                              \
+    sw radix;                                                          \
+    sw result = 0;                                                     \
+    s_buf_save save;                                                   \
+    u ## bits u = 0;                                                   \
+    assert(buf);                                                       \
+    assert(base);                                                      \
+    assert(dest);                                                      \
+    buf_save_init(buf, &save);                                         \
+    radix = str_length_utf8(base);                                     \
+    if (radix < 2 || (uw) radix > U ## BITS ## _MAX) {                 \
+      buf_save_clean(buf, &save);                                      \
+      assert(! "buf_parse_u" # bits "_base: invalid radix");           \
+      errx(1, "buf_parse_u" # bits "_base: invalid radix: %ld",        \
+           radix);                                                     \
+      return -1;                                                       \
+    }                                                                  \
+    while ((r = buf_parse_digit(buf, base, &digit)) > 0) {             \
+      result += r;                                                     \
+      if (digit >= radix) {                                            \
+        buf_save_clean(buf, &save);                                    \
+        assert(! "buf_parse_u" # bits                                  \
+               "_base: digit greater than or equal to radix");         \
+        errx(1, "buf_parse_u" # bits                                   \
+             "_base: digit greater than or equal to radix: %u",        \
+             digit);                                                   \
+        return -1;                                                     \
+      }                                                                \
+      if (u > ceiling_u ## bits (U ## BITS ## _MAX, radix)) {          \
+        warnx("buf_parse_u" # bits                                     \
+              "_base: %llu * %llu: integer overflow",                  \
+              (unsigned long long) u,                                  \
+              (unsigned long long) radix);                             \
+        r = -1;                                                        \
+        goto restore;                                                  \
+      }                                                                \
+      u *= radix;                                                      \
+      if (u > (u ## bits) (U ## BITS ## _MAX - digit)) {               \
+        warnx("buf_parse_u" # bits "_base: +: integer overflow");      \
+        r = -1;                                                        \
+        goto restore;                                                  \
+      }                                                                \
+      u += digit;                                                      \
+    }                                                                  \
+    *dest = u;                                                         \
+    r = result;                                                        \
+    goto clean;                                                        \
+   restore:                                                            \
+    buf_save_restore_rpos(buf, &save);                                 \
+   clean:                                                              \
+    buf_save_clean(buf, &save);                                        \
+    return r;                                                          \
+  }
+
 sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest);
 
 sw buf_parse_array (s_buf *buf, s_array *dest)
@@ -1507,149 +1789,6 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
   return r;
 }
 
-#define DEF_BUF_PARSE_S(BITS, bits)                                    \
-  sw buf_parse_s ## bits (s_buf *buf, s ## bits *dest)                 \
-  {                                                                    \
-    s_buf_save digits;                                                 \
-    e_bool negative = false;                                           \
-    sw r;                                                              \
-    sw r1;                                                             \
-    sw result = 0;                                                     \
-    s_buf_save save;                                                   \
-    s ## bits tmp;                                                     \
-    s ## bits tmp1;                                                    \
-    buf_save_init(buf, &save);                                         \
-    if ((r = buf_read_1(buf, "-")) < 0)                                \
-      goto clean;                                                      \
-    if (r > 0) {                                                       \
-      result += r;                                                     \
-      negative = true;                                                 \
-    }                                                                  \
-    if ((r = buf_read_1(buf, "0b")) < 0)                               \
-      goto restore;                                                    \
-    if (r > 0) {                                                       \
-      result += r;                                                     \
-      if ((r = buf_parse_s ## bits ## _base(buf, &g_c3_base_bin,       \
-                                            negative, dest)) <= 0)     \
-        goto restore;                                                  \
-      result += r;                                                     \
-      goto ok;                                                         \
-    }                                                                  \
-    if ((r = buf_read_1(buf, "0o")) < 0)                               \
-      goto restore;                                                    \
-    if (r > 0) {                                                       \
-      result += r;                                                     \
-      if ((r = buf_parse_s ## bits ## _base(buf, &g_c3_base_oct,       \
-                                            negative, dest)) <= 0)     \
-        goto restore;                                                  \
-      result += r;                                                     \
-      goto ok;                                                         \
-    }                                                                  \
-    if ((r = buf_read_1(buf, "0x")) < 0)                               \
-      goto restore;                                                    \
-    if (r > 0) {                                                       \
-      result += r;                                                     \
-      buf_save_init(buf, &digits);                                     \
-      if ((r = buf_parse_s ## bits ## _base(buf, g_c3_bases_hex,       \
-                                            negative, &tmp)) < 0) {    \
-        buf_save_clean(buf, &digits);                                  \
-        goto restore;                                                  \
-      }                                                                \
-      buf_save_restore_rpos(buf, &digits);                             \
-      buf_save_clean(buf, &digits);                                    \
-      if ((r1 = buf_parse_s ## bits ## _base(buf, g_c3_bases_hex + 1,  \
-                                             negative, &tmp1)) < 0) {  \
-        r = r1;                                                        \
-        goto restore;                                                  \
-      }                                                                \
-      if (r == 0 && r1 == 0) {                                         \
-        if (negative)                                                  \
-          warnx("invalid number: -0x");                                \
-        else                                                           \
-          warnx("invalid number: 0x");                                 \
-        goto restore;                                                  \
-      }                                                                \
-      if (r > r1) {                                                    \
-        result += r;                                                   \
-        *dest = tmp;                                                   \
-      }                                                                \
-      else {                                                           \
-        result += r1;                                                  \
-        *dest = tmp1;                                                  \
-      }                                                                \
-      goto ok;                                                         \
-    }                                                                  \
-    if ((r = buf_parse_s ## bits ## _base(buf, &g_c3_base_dec,         \
-                                          negative, dest)) <= 0)       \
-      goto restore;                                                    \
-    result += r;                                                       \
-   ok:                                                                 \
-    r = result;                                                        \
-    goto clean;                                                        \
-   restore:                                                            \
-    buf_save_restore_rpos(buf, &save);                                 \
-   clean:                                                              \
-    buf_save_clean(buf, &save);                                        \
-    return r;                                                          \
-  }                                                                    \
-                                                                       \
-  sw buf_parse_s ## bits ## _base (s_buf *buf, const s_str *base,      \
-                                   bool negative, s ## bits *dest)     \
-  {                                                                    \
-    u8 digit;                                                          \
-    sw r;                                                              \
-    sw radix;                                                          \
-    sw result = 0;                                                     \
-    s_buf_save save;                                                   \
-    u ## bits u = 0;                                                   \
-    assert(buf);                                                       \
-    assert(base);                                                      \
-    assert(dest);                                                      \
-    buf_save_init(buf, &save);                                         \
-    radix = str_length_utf8(base);                                     \
-    if (radix < 2 || radix > S ## BITS ## _MAX) {                      \
-      buf_save_clean(buf, &save);                                      \
-      assert(! "buf_parse_s" # bits "_base: invalid radix");           \
-      errx(1, "buf_parse_s" # bits "_base: invalid radix: %ld",        \
-           radix);                                                     \
-      return -1;                                                       \
-    }                                                                  \
-    while ((r = buf_parse_digit(buf, base, &digit)) > 0) {             \
-      result += r;                                                     \
-      if (digit >= radix) {                                            \
-        buf_save_clean(buf, &save);                                    \
-        assert(! "buf_parse_s" # bits                                  \
-               "_base: digit greater than or equal to radix");         \
-        errx(1, "buf_parse_s" # bits                                   \
-             "_base: digit greater than or equal to radix: %u",        \
-             digit);                                                   \
-        return -1;                                                     \
-      }                                                                \
-      if (u > (u ## bits) ceiling_s ## bits (S ## BITS ## _MAX,        \
-                                             radix)) {                 \
-        warnx("buf_parse_s" # bits "_base: *: integer overflow");      \
-        r = -1;                                                        \
-        goto restore;                                                  \
-      }                                                                \
-      u *= radix;                                                      \
-      if (negative ? u > (u ## bits) -S ## BITS ## _MIN - digit :      \
-          u > (u ## bits) (S ## BITS ## _MAX - digit)) {               \
-        warnx("buf_parse_s" # bits "_base: +: integer overflow");      \
-        r = -1;                                                        \
-        goto restore;                                                  \
-      }                                                                \
-      u += digit;                                                      \
-    }                                                                  \
-    *dest = negative ? -u : u;                                         \
-    r = result;                                                        \
-    goto clean;                                                        \
-   restore:                                                            \
-    buf_save_restore_rpos(buf, &save);                                 \
-   clean:                                                              \
-    buf_save_clean(buf, &save);                                        \
-    return r;                                                          \
-  }
-
 DEF_BUF_PARSE_S(8, 8)
 DEF_BUF_PARSE_S(16, 16)
 DEF_BUF_PARSE_S(32, 32)
@@ -2224,140 +2363,6 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
     list_delete_all(list);
   return r;
 }
-
-#define DEF_BUF_PARSE_U(BITS, bits)                                    \
-  sw buf_parse_u ## bits (s_buf *buf, u ## bits *dest)                 \
-  {                                                                    \
-    s_buf_save digits;                                                 \
-    sw r;                                                              \
-    sw r1;                                                             \
-    sw result = 0;                                                     \
-    s_buf_save save;                                                   \
-    u ## bits tmp;                                                     \
-    u ## bits tmp1;                                                    \
-    buf_save_init(buf, &save);                                         \
-    if ((r = buf_read_1(buf, "0b")) < 0)                               \
-      goto restore;                                                    \
-    if (r > 0) {                                                       \
-      result += r;                                                     \
-      if ((r = buf_parse_u ## bits ## _base(buf, &g_c3_base_bin,       \
-                                            dest)) <= 0)               \
-        goto restore;                                                  \
-      result += r;                                                     \
-      goto ok;                                                         \
-    }                                                                  \
-    if ((r = buf_read_1(buf, "0o")) < 0)                               \
-      goto restore;                                                    \
-    if (r > 0) {                                                       \
-      result += r;                                                     \
-      if ((r = buf_parse_u ## bits ## _base(buf, &g_c3_base_oct,       \
-                                            dest)) <= 0)               \
-        goto restore;                                                  \
-      result += r;                                                     \
-      goto ok;                                                         \
-    }                                                                  \
-    if ((r = buf_read_1(buf, "0x")) < 0)                               \
-      goto restore;                                                    \
-    if (r > 0) {                                                       \
-      result += r;                                                     \
-      buf_save_init(buf, &digits);                                     \
-      if ((r = buf_parse_u ## bits ## _base(buf, g_c3_bases_hex,       \
-                                            &tmp)) < 0) {              \
-        buf_save_clean(buf, &digits);                                  \
-        goto restore;                                                  \
-      }                                                                \
-      buf_save_restore_rpos(buf, &digits);                             \
-      buf_save_clean(buf, &digits);                                    \
-      if ((r1 = buf_parse_u ## bits ## _base(buf, g_c3_bases_hex + 1,  \
-                                             &tmp1)) < 0) {            \
-        r = r1;                                                        \
-        goto restore;                                                  \
-      }                                                                \
-      if (r == 0 && r1 == 0) {                                         \
-        warnx("invalid number: 0x");                                   \
-        goto restore;                                                  \
-      }                                                                \
-      if (r > r1) {                                                    \
-        result += r;                                                   \
-        *dest = tmp;                                                   \
-      }                                                                \
-      else {                                                           \
-        result += r1;                                                  \
-        *dest = tmp1;                                                  \
-      }                                                                \
-      goto ok;                                                         \
-    }                                                                  \
-    if ((r = buf_parse_u ## bits ## _base(buf, &g_c3_base_dec,         \
-                                          dest)) <= 0)                 \
-      goto restore;                                                    \
-    result += r;                                                       \
-   ok:                                                                 \
-    r = result;                                                        \
-    goto clean;                                                        \
-   restore:                                                            \
-    buf_save_restore_rpos(buf, &save);                                 \
-   clean:                                                              \
-    buf_save_clean(buf, &save);                                        \
-    return r;                                                          \
-  }                                                                    \
-                                                                       \
-  sw buf_parse_u ## bits ## _base (s_buf *buf, const s_str *base,      \
-                                   u ## bits *dest)                    \
-  {                                                                    \
-    u8 digit;                                                          \
-    sw r;                                                              \
-    sw radix;                                                          \
-    sw result = 0;                                                     \
-    s_buf_save save;                                                   \
-    u ## bits u = 0;                                                   \
-    assert(buf);                                                       \
-    assert(base);                                                      \
-    assert(dest);                                                      \
-    buf_save_init(buf, &save);                                         \
-    radix = str_length_utf8(base);                                     \
-    if (radix < 2 || (uw) radix > U ## BITS ## _MAX) {                 \
-      buf_save_clean(buf, &save);                                      \
-      assert(! "buf_parse_u" # bits "_base: invalid radix");           \
-      errx(1, "buf_parse_u" # bits "_base: invalid radix: %ld",        \
-           radix);                                                     \
-      return -1;                                                       \
-    }                                                                  \
-    while ((r = buf_parse_digit(buf, base, &digit)) > 0) {             \
-      result += r;                                                     \
-      if (digit >= radix) {                                            \
-        buf_save_clean(buf, &save);                                    \
-        assert(! "buf_parse_u" # bits                                  \
-               "_base: digit greater than or equal to radix");         \
-        errx(1, "buf_parse_u" # bits                                   \
-             "_base: digit greater than or equal to radix: %u",        \
-             digit);                                                   \
-        return -1;                                                     \
-      }                                                                \
-      if (u > ceiling_u ## bits (U ## BITS ## _MAX, radix)) {          \
-        warnx("buf_parse_u" # bits                                     \
-              "_base: %llu * %llu: integer overflow",                  \
-              (unsigned long long) u,                                  \
-              (unsigned long long) radix);                             \
-        r = -1;                                                        \
-        goto restore;                                                  \
-      }                                                                \
-      u *= radix;                                                      \
-      if (u > (u ## bits) (U ## BITS ## _MAX - digit)) {               \
-        warnx("buf_parse_u" # bits "_base: +: integer overflow");      \
-        r = -1;                                                        \
-        goto restore;                                                  \
-      }                                                                \
-      u += digit;                                                      \
-    }                                                                  \
-    *dest = u;                                                         \
-    r = result;                                                        \
-    goto clean;                                                        \
-   restore:                                                            \
-    buf_save_restore_rpos(buf, &save);                                 \
-   clean:                                                              \
-    buf_save_clean(buf, &save);                                        \
-    return r;                                                          \
-  }
 
 DEF_BUF_PARSE_U(8, 8)
 DEF_BUF_PARSE_U(16, 16)

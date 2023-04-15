@@ -18,11 +18,12 @@
 #define BOOL_TEST_INSPECT(test, expected)                              \
   do {                                                                 \
     s_str str;                                                         \
+    bool tmp;                                                          \
     test_context("bool_inspect(" # test ") -> " # expected);           \
-    TEST_EQ(bool_inspect(test, &str), &str);                           \
+    tmp = (test);                                                      \
+    TEST_EQ(bool_inspect(&tmp, &str), &str);                           \
     TEST_EQ(str.size, strlen(expected));                               \
-    if (g_test_last_ok)                                                \
-      TEST_STRNCMP(str.ptr.p, (expected), str.size);                   \
+    TEST_STRNCMP(str.ptr.p, (expected), str.size);                     \
     str_clean(&str);						       \
   } while (0)
 

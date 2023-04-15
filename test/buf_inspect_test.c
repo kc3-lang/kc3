@@ -19,9 +19,12 @@
   do {                                                                 \
     s8 b[16];                                                          \
     s_buf buf;                                                         \
+    bool tmp;                                                          \
     test_context("buf_inspect_bool(" # test ") -> " # expected);       \
     buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_EQ(buf_inspect_bool(&buf, (test)), strlen(expected));         \
+    tmp = (test);                                                      \
+    TEST_EQ(buf_inspect_bool_size(&tmp), strlen(expected));      \
+    TEST_EQ(buf_inspect_bool(&buf, &tmp), strlen(expected));           \
     TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
     test_context(NULL);                                                \
   } while (0)
@@ -30,9 +33,12 @@
   do {                                                                 \
     s8 b[32];                                                          \
     s_buf buf;                                                         \
+    character tmp;                                                     \
     test_context("buf_inspect_character(" # test ") -> " # expected);  \
     buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_EQ(buf_inspect_character(&buf, test), strlen(expected));      \
+    tmp = (test);                                                      \
+    TEST_EQ(buf_inspect_character_size(&tmp), strlen(expected)); \
+    TEST_EQ(buf_inspect_character(&buf, &tmp), strlen(expected));      \
     TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
     test_context(NULL);                                                \
   } while (0)
@@ -41,10 +47,12 @@
   do {                                                                 \
     s8 b[32];                                                          \
     s_buf buf;                                                         \
+    f32 tmp;                                                           \
     test_context("buf_inspect_f32(" # test ") -> " # expected);        \
     buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_EQ(buf_inspect_f32_size(test), strlen(expected));             \
-    TEST_EQ(buf_inspect_f32(&buf, test), strlen(expected));            \
+    tmp = (test);                                                      \
+    TEST_EQ(buf_inspect_f32_size(&tmp), strlen(expected));             \
+    TEST_EQ(buf_inspect_f32(&buf, &tmp), strlen(expected));            \
     TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
     test_context(NULL);                                                \
   } while (0)
@@ -53,10 +61,12 @@
   do {                                                                 \
     s8 b[64];                                                          \
     s_buf buf;                                                         \
+    f64 tmp;                                                           \
     test_context("buf_inspect_f64(" # test ") -> " # expected);        \
     buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_EQ(buf_inspect_f64_size(test), strlen(expected));             \
-    TEST_EQ(buf_inspect_f64(&buf, test), strlen(expected));            \
+    tmp = (test);                                                      \
+    TEST_EQ(buf_inspect_f64_size(&tmp), strlen(expected));             \
+    TEST_EQ(buf_inspect_f64(&buf, &tmp), strlen(expected));            \
     TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
     test_context(NULL);                                                \
   } while (0)
@@ -72,6 +82,7 @@
     buf_parse_integer(&buf_test, &i);                                  \
     buf_clean(&buf_test);                                              \
     buf_init(&buf_result, false, sizeof(b), b);                        \
+    TEST_EQ(buf_inspect_integer_size(&i), strlen(test));               \
     TEST_EQ(buf_inspect_integer(&buf_result, &i), strlen(test));       \
     if (g_test_last_ok)                                                \
       integer_clean(&i);					       \
@@ -93,6 +104,7 @@
       errx(1, "BUF_INSPECT_TEST_LIST: buf_parse_list");                \
     }                                                                  \
     buf_init_alloc(&buf, 1024 * 1024);                                 \
+    TEST_EQ(buf_inspect_list_size(list_test), strlen(expected));       \
     TEST_EQ(buf_inspect_list(&buf, list_test), strlen(expected));      \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     if (g_test_last_ok)                                                \
@@ -102,39 +114,32 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define BUF_INSPECT_TEST_STR_CHARACTER(test, expected)                 \
-  do {                                                                 \
-    s8 b[32];                                                          \
-    s_buf buf;                                                         \
-    test_context("buf_inspect_str_character(" # test ") -> "           \
-                 # expected);                                          \
-    buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_EQ(buf_inspect_str_character(&buf, test), strlen(expected));  \
-    TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
-    test_context(NULL);                                                \
-  } while (0)
-
-#define BUF_INSPECT_TEST_STR_CHARACTER_SIZE(test, expected)            \
-  do {                                                                 \
-    s8 b[32];                                                          \
-    s_buf buf;                                                         \
-    test_context("buf_inspect_str_character_size("                     \
-                 # test ") -> " # expected);                           \
-    buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_EQ(buf_inspect_str_character_size(test), expected);           \
-    test_context(NULL);                                                \
-  } while (0)
-
 #define BUF_INSPECT_TEST_STR(test, expected)                           \
   do {                                                                 \
     s8 b[1024];                                                        \
     s_buf buf;                                                         \
     s_str str;                                                         \
     test_context("buf_inspect_str(" # test ") -> " # expected);        \
-    str_init_1(&str, NULL, (test));                                   \
+    str_init_1(&str, NULL, (test));                                    \
     buf_init(&buf, false, sizeof(b), b);                               \
+    TEST_EQ(buf_inspect_str_size(&str), strlen(expected));             \
     TEST_EQ(buf_inspect_str(&buf, &str), strlen(expected));            \
     TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define BUF_INSPECT_TEST_STR_CHARACTER(test, expected)                 \
+  do {                                                                 \
+    s8 b[32];                                                          \
+    s_buf buf;                                                         \
+    character tmp;                                                     \
+    test_context("buf_inspect_str_character(" # test ") -> "           \
+                 # expected);                                          \
+    buf_init(&buf, false, sizeof(b), b);                               \
+    tmp = (test);                                                      \
+    TEST_EQ(buf_inspect_str_character_size(&tmp), strlen(expected));   \
+    TEST_EQ(buf_inspect_str_character(&buf, &tmp), strlen(expected));  \
+    TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -162,13 +167,11 @@ TEST_CASE_PROTOTYPE(buf_inspect_integer);
 TEST_CASE_PROTOTYPE(buf_inspect_list);
 TEST_CASE_PROTOTYPE(buf_inspect_str);
 TEST_CASE_PROTOTYPE(buf_inspect_str_character);
-TEST_CASE_PROTOTYPE(buf_inspect_str_character_size);
 TEST_CASE_PROTOTYPE(buf_inspect_tag);
 
 void buf_inspect_test ()
 {
   TEST_CASE_RUN(buf_inspect_bool);
-  TEST_CASE_RUN(buf_inspect_str_character_size);
   TEST_CASE_RUN(buf_inspect_str_character);
   TEST_CASE_RUN(buf_inspect_character);
   TEST_CASE_RUN(buf_inspect_f32);
@@ -323,24 +326,6 @@ TEST_CASE(buf_inspect_str_character)
 }
 TEST_CASE_END(buf_inspect_str_character)
 
-TEST_CASE(buf_inspect_str_character_size)
-{
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE(0, 2);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE(1, 4);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE(2, 4);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE('0', 1);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE('9', 1);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE('A', 1);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE('Z', 1);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE('a', 1);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE('z', 1);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE(928, 2);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE(0xFF, 2);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE(42164, 3);
-  BUF_INSPECT_TEST_STR_CHARACTER_SIZE(65856, 4);
-}
-TEST_CASE_END(buf_inspect_str_character_size)
-
 TEST_CASE(buf_inspect_tag)
 {
   s_tag tag;
@@ -373,7 +358,7 @@ TEST_CASE(buf_inspect_tag)
   BUF_INSPECT_TEST_TAG(tag_u8(&tag, 0), "0");
   BUF_INSPECT_TEST_TAG(tag_u8(&tag, 1), "1");
   BUF_INSPECT_TEST_TAG(tag_u8(&tag, 10), "10");
-  BUF_INSPECT_TEST_TAG(tag_void(&tag), "");
+  BUF_INSPECT_TEST_TAG(tag_void(&tag), "void");
   tag_clean(&tag);
 }
 TEST_CASE_END(buf_inspect_tag)

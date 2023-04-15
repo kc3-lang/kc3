@@ -19,21 +19,20 @@
 
 #define STR_TEST_INSPECT(test, expected)                               \
   do {                                                                 \
-    s_str *str_test;                                                   \
     s_str result;                                                      \
-    str_test = (test);						       \
-    assert(str_test);                                                  \
+    assert(test);                                                      \
     test_context("str_inspect(" # test ") -> " # expected);            \
-    TEST_EQ(str_inspect(str_test, &result), &result);                  \
+    TEST_EQ(str_inspect((test), &result), &result);                    \
     TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
     str_clean(&result);                                                \
-    str_delete(str_test);                                              \
     test_context(NULL);                                                \
   } while (0)
 
 #define STR_TEST_INSPECT_1(test, result)                               \
   do {                                                                 \
-    STR_TEST_INSPECT(str_new_1(NULL, (test)), (result));               \
+    s_str str;                                                         \
+    str_init_1(&str, NULL, (test));                                    \
+    STR_TEST_INSPECT(&str, (result));                                  \
   } while (0)
 
 #define STR_TEST_TO_HEX(test, result)                                  \
@@ -203,6 +202,7 @@ TEST_CASE_END(str_init_dup_1)
 
 TEST_CASE(str_inspect)
 {
+  s_str str;
   s8 zero[16];
   bzero(zero, sizeof(zero));
   STR_TEST_INSPECT_1("", "\"\"");
@@ -254,31 +254,31 @@ TEST_CASE(str_inspect)
                      "\"\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\"");
   STR_TEST_INSPECT_1("\xff\xff\xff\xff\xff\xff\xff\xff",
                      "\"\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\"");
-  STR_TEST_INSPECT(str_new(NULL,  1, zero), "\"\\0\"");
-  STR_TEST_INSPECT(str_new(NULL,  2, zero), "\"\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL,  3, zero), "\"\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL,  4, zero), "\"\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL,  5, zero), "\"\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL,  6, zero), "\"\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL,  7, zero),
+  STR_TEST_INSPECT(str_init(&str, NULL,  1, zero), "\"\\0\"");
+  STR_TEST_INSPECT(str_init(&str, NULL,  2, zero), "\"\\0\\0\"");
+  STR_TEST_INSPECT(str_init(&str, NULL,  3, zero), "\"\\0\\0\\0\"");
+  STR_TEST_INSPECT(str_init(&str, NULL,  4, zero), "\"\\0\\0\\0\\0\"");
+  STR_TEST_INSPECT(str_init(&str, NULL,  5, zero), "\"\\0\\0\\0\\0\\0\"");
+  STR_TEST_INSPECT(str_init(&str, NULL,  6, zero), "\"\\0\\0\\0\\0\\0\\0\"");
+  STR_TEST_INSPECT(str_init(&str, NULL,  7, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL,  8, zero),
+  STR_TEST_INSPECT(str_init(&str, NULL,  8, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL,  9, zero),
+  STR_TEST_INSPECT(str_init(&str, NULL,  9, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL, 10, zero),
+  STR_TEST_INSPECT(str_init(&str, NULL, 10, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL, 11, zero),
+  STR_TEST_INSPECT(str_init(&str, NULL, 11, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL, 12, zero),
+  STR_TEST_INSPECT(str_init(&str, NULL, 12, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL, 13, zero),
+  STR_TEST_INSPECT(str_init(&str, NULL, 13, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL, 14, zero),
+  STR_TEST_INSPECT(str_init(&str, NULL, 14, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL, 15, zero),
+  STR_TEST_INSPECT(str_init(&str, NULL, 15, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_new(NULL, 16, zero),
+  STR_TEST_INSPECT(str_init(&str, NULL, 16, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0"
                    "\\0\"");
 }

@@ -111,6 +111,7 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   sw r;
   sw result = 0;
   s_tag subject;
+  u64 u;
   assert(facts);
   assert(buf);
   tag_init_var(&subject);
@@ -118,12 +119,13 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   tag_init_var(&object);
   if ((r = buf_write_1(buf,
                        "%{module: C3.Facts.Dump,\n"
-                       "  version: 0x0000000000000001,\n"
-                       "  count: 0x")) < 0)
+                       "  version: 1,\n"
+                       "  count: ")) < 0)
     return r;
   result += r;
   facts_lock_r(facts);
-  if ((r = buf_inspect_u64_hex(buf, facts_count(facts))) < 0)
+  u = facts_count(facts);
+  if ((r = buf_inspect_u64(buf, &u)) < 0)
     goto ko;
   result += r;
   if ((r = buf_write_1(buf, "}\n")) < 0)
@@ -144,7 +146,8 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   if ((r = buf_write_1(buf, "%{hash: 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_u64_hex(buf, hash_to_u64(&hash))) < 0)
+  u = hash_to_u64(&hash);
+  if ((r = buf_inspect_u64_hexadecimal(buf, &u)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "}\n")) < 0)
@@ -242,11 +245,11 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   assert(buf);
   if ((r = buf_read_1(buf,
                       "%{module: C3.Facts.Dump,\n"
-                      "  version: 0x0000000000000001,\n"
-                      "  count: 0x")) <= 0)
+                      "  version: 1,\n"
+                      "  count: ")) <= 0)
     goto ko_header;
   result += r;
-  if ((r = buf_parse_u64_hex(buf, &count)) <= 0)
+  if ((r = buf_parse_u64(buf, &count)) <= 0)
     goto ko_header;
   result += r;
   if ((r = buf_read_1(buf, "}\n")) <= 0)
@@ -283,7 +286,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   if (hash_u64_buf != hash_u64) {
     s_buf tmp;
     buf_init_alloc(&tmp, 16);
-    buf_inspect_u64_hex(&tmp, hash_u64);
+    buf_inspect_u64_hexadecimal(&tmp, &hash_u64);
     buf_write_s8(&tmp, 0);
     warnx("facts_load: %s: invalid hash line %lu: 0x%s",
           path->ptr.ps8,
@@ -440,7 +443,7 @@ sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path)
   sw result = 0;
   if ((r = buf_read_1(buf,
                       "%{module: C3.Facts.Save,\n"
-                      "  version: 0x0000000000000001}\n")) <= 0) {
+                      "  version: 1}\n")) <= 0) {
     warnx("facts_open_buf: %s: invalid or missing header",
           path->ptr.ps8);
     return -1;
@@ -630,7 +633,7 @@ sw facts_save_header (s_buf *buf)
   sw result = 0;
   if ((r = buf_write_1(buf,
                        "%{module: C3.Facts.Save,\n"
-                       "  version: 0x0000000000000001}\n")) < 0)
+                       "  version: 1}\n")) < 0)
     return r;
   result += r;
   return result;

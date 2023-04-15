@@ -506,10 +506,8 @@
     test_context("buf_parse_str(" # test ") -> " # expected);          \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_str(&buf, &dest), strlen(test));                 \
-    if (g_test_last_ok)                                                \
-      TEST_EQ(dest.size, strlen(expected));                            \
-    if (g_test_last_ok)                                                \
-      TEST_STRNCMP(dest.ptr.p, (expected), dest.size);                 \
+    TEST_EQ(dest.size, strlen(expected));                              \
+    TEST_STRNCMP(dest.ptr.p, (expected), dest.size);                   \
     buf_clean(&buf);                                                   \
     str_clean(&dest);                                                  \
     test_context(NULL);                                                \
@@ -1213,6 +1211,7 @@ TEST_CASE(buf_parse_str)
   BUF_PARSE_TEST_STR("\"\\s\"", " ");
   BUF_PARSE_TEST_STR("\"\\x01\"", "\x01");
   BUF_PARSE_TEST_STR("\"\\x02\"", "\x02");
+  BUF_PARSE_TEST_STR("\"\\xff\"", "\xFF");
   BUF_PARSE_TEST_STR("\"\\xFF\"", "\xFF");
   BUF_PARSE_TEST_STR("\"0\"", "0");
   BUF_PARSE_TEST_STR("\"9\"", "9");
