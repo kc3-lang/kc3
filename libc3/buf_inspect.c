@@ -176,13 +176,14 @@
   DEF_BUF_INSPECT_U_BASE(bits, hexadecimal)                            \
   DEF_BUF_INSPECT_U_BASE(bits, octal)
 
-sw buf_inspect_ident_reserved (s_buf *buf, const s_ident *x);
-sw buf_inspect_ident_reserved_size (const s_ident *x);
+sw buf_inspect_ident_reserved (s_buf *buf, const s_ident *ident);
+sw buf_inspect_ident_reserved_size (const s_ident *ident);
 sw buf_inspect_str_byte (s_buf *buf, const u8 *byte);
-sw buf_inspect_str_reserved (s_buf *buf, const s_str *x);
-sw buf_inspect_str_reserved_size (const s_str *x);
-sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *x);
-sw buf_inspect_sym_reserved_size (const s_sym *x);
+static const sw buf_inspect_str_byte_size = 4;
+sw buf_inspect_str_reserved (s_buf *buf, const s_str *str);
+sw buf_inspect_str_reserved_size (const s_str *str);
+sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym);
+sw buf_inspect_sym_reserved_size (const s_sym *sym);
 
 f_buf_inspect buf_inspect (e_tag_type type)
 {
@@ -1029,22 +1030,22 @@ sw buf_inspect_str_byte (s_buf *buf, const u8 *byte)
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_write_u8(buf, '\\')) <= 0) {
-    if (! r)
+  if ((r = buf_write_u8(buf, '\\')) != 1) {
+    if (r >= 0)
       r = -1;
     goto clean;
   }
   result += r;
-  if ((r = buf_write_u8(buf, 'x')) <= 0)
+  if ((r = buf_write_u8(buf, 'x')) != 1)
     goto restore;
   result += r;
-  if ((r = buf_u8_to_hex(buf, *byte)) <= 0)
+  if ((r = buf_u8_to_hex(buf, *byte)) != 2)
     goto restore;
   result += r;
   r = result;
   goto clean;
  restore:
-  if (! r)
+  if (r >= 0)
     r = -1;
   buf_save_restore_wpos(buf, &save);
  clean:
@@ -1065,7 +1066,7 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
   if (! str_character_is_reserved(*c))
     return buf_write_character_utf8(buf, *c);
   buf_save_init(buf, &save);
-  if ((r = buf_write_u8(buf, '\\')) <= 0)
+  if ((r = buf_write_u8(buf, '\\')) != 1)
     goto restore;
   result += r;
   switch (*c) {
@@ -1083,17 +1084,17 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
       goto restore;
     i = r - 1;
     j = 0;
-    if ((r = buf_write_u8(buf, 'x')) <= 0)
+    if ((r = buf_write_u8(buf, 'x')) != 1)
       goto restore;
     result1 += r;
-    if ((r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) <= 0)
+    if ((r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) != 2)
       goto restore;
     result1 += r;
     while (i--) {
-      if ((r = buf_write_1(buf, "\\x")) <= 0)
+      if ((r = buf_write_1(buf, "\\x")) != 2)
         goto restore;
       result1 += r;
-      if ((r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) <= 0)
+      if ((r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) != 2)
         goto restore;
       result1 += r;
     }
@@ -1103,6 +1104,8 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
   r = result;
   goto clean;
  restore:
+  if (r >= 0)
+    r = -1;
   buf_save_restore_wpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -1198,8 +1201,11 @@ sw buf_inspect_str_reserved_size (const s_str *str)
     if ((r = str_read_character_utf8(&s, &c)) < 0)
       return r;
     if (r) {
-      if ((r = buf_inspect_str_character_size(&c)) <= 0)
-        goto ko;
+      if ((r = buf_inspect_str_character_size(&c)) <= 0) {
+        if (! r)
+          r = -1;
+        return r;
+      }
       result += r;
     }
     else if ((r = str_read_u8(&s, &byte)) < 0)
@@ -1209,10 +1215,6 @@ sw buf_inspect_str_reserved_size (const s_str *str)
   }
   result += sizeof('"');
   return result;
- ko:
-  if (! r)
-    r = -1;
-  return r;
 }
 
 sw buf_inspect_str_size (const s_str *str)
