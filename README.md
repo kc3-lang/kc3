@@ -53,6 +53,7 @@ Script interpreter.
    - lists
    - defmodule
    - structs
+   - negative facts : 4 + 2n = not 3 + 2n
    - errors (setjmp, longjmp)
      - stacktrace
        - ffi ?
