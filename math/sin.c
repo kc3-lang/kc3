@@ -23,7 +23,7 @@ s8 sin_u8 (u8 x)
   switch (x >> side_bits) {
   case 0:
     i = x & n;
-    y = (S16_MAX) i * S8_MAX / n * S8_MAX / sqrt(n * n + i * i / n / n) / S8_MAX;
+    y = i * S8_MAX / n * S8_MAX / sqrt(n * n + i * i / n / n) / S8_MAX;
     return y;
   case 1:
     return 1;

@@ -13,7 +13,7 @@
 #ifndef SIN_H
 #define SIN_H
 
-#include "types.h"
+#include "../libc3/c3.h"
 
 s8 sin_s8 (s8 x);
 
