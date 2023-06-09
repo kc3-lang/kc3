@@ -242,6 +242,9 @@ f_buf_inspect buf_inspect (e_tag_type type)
   case TAG_VAR:
     return (f_buf_inspect) buf_inspect_var;
   }
+  assert(! "buf_inspect: unknown tag type");
+  errx(1, "buf_inspect: unknown tag type");
+  return NULL;
 }
 
 sw buf_inspect_array (s_buf *buf, const s_array *a)

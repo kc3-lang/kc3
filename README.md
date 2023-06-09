@@ -44,16 +44,19 @@ Script interpreter.
 ## TODO
 
  - libc3
-   - atomic operations
-   - DONE triple serial id
-   - with ignore variables
+   - facts
+     - atomic operations
+     - DONE triple serial id
+     - negative facts : 4 + 2n = not 3 + 2n
+     - with ignore variables
+   - math
+     - floating point numbers
    - boolean operators
    - comparison operators
    - arrays
    - lists
    - defmodule
    - structs
-   - negative facts : 4 + 2n = not 3 + 2n
    - errors (setjmp, longjmp)
      - stacktrace
        - ffi ?

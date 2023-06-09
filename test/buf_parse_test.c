@@ -25,6 +25,7 @@
 #include "../libc3/tag.h"
 #include "../libc3/tuple.h"
 #include "test.h"
+#include "buf_parse_test_su.h"
 
 #define BUF_PARSE_TEST_BOOL(test, expected)                            \
   do {                                                                 \
@@ -635,22 +636,6 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define BUF_PARSE_TEST_S_PROTOTYPE(bits)                               \
-  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _binary);                 \
-  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _binary_negative);        \
-  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _decimal);                \
-  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _decimal_negative);       \
-  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _hexadecimal);            \
-  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _hexadecimal_negative);   \
-  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _octal);                  \
-  TEST_CASE_PROTOTYPE(buf_parse_s ## bits ## _octal_negative)
-
-#define BUF_PARSE_TEST_U_PROTOTYPE(bits)                               \
-  TEST_CASE_PROTOTYPE(buf_parse_u ## bits ## _binary);                 \
-  TEST_CASE_PROTOTYPE(buf_parse_u ## bits ## _decimal);                \
-  TEST_CASE_PROTOTYPE(buf_parse_u ## bits ## _hexadecimal);            \
-  TEST_CASE_PROTOTYPE(buf_parse_u ## bits ## _octal)
-
 TEST_CASE_PROTOTYPE(buf_parse_bool);
 TEST_CASE_PROTOTYPE(buf_parse_call);
 TEST_CASE_PROTOTYPE(buf_parse_call_op);
@@ -670,22 +655,12 @@ TEST_CASE_PROTOTYPE(buf_parse_integer_oct);
 TEST_CASE_PROTOTYPE(buf_parse_integer_bin);
 TEST_CASE_PROTOTYPE(buf_parse_ident);
 TEST_CASE_PROTOTYPE(buf_parse_list);
-BUF_PARSE_TEST_S_PROTOTYPE(8);
-BUF_PARSE_TEST_S_PROTOTYPE(16);
-BUF_PARSE_TEST_S_PROTOTYPE(32);
-BUF_PARSE_TEST_S_PROTOTYPE(64);
-TEST_CASE_PROTOTYPE(buf_parse_sw);
 TEST_CASE_PROTOTYPE(buf_parse_str);
 TEST_CASE_PROTOTYPE(buf_parse_str_character);
 TEST_CASE_PROTOTYPE(buf_parse_str_u8);
 TEST_CASE_PROTOTYPE(buf_parse_sym);
 TEST_CASE_PROTOTYPE(buf_parse_tag);
 TEST_CASE_PROTOTYPE(buf_parse_tuple);
-BUF_PARSE_TEST_U_PROTOTYPE(8);
-BUF_PARSE_TEST_U_PROTOTYPE(16);
-BUF_PARSE_TEST_U_PROTOTYPE(32);
-BUF_PARSE_TEST_U_PROTOTYPE(64);
-TEST_CASE_PROTOTYPE(buf_parse_uw);
 
 void buf_parse_test ()
 {
@@ -713,6 +688,7 @@ void buf_parse_test ()
   TEST_CASE_RUN(buf_parse_list);
   TEST_CASE_RUN(buf_parse_tag);
   TEST_CASE_RUN(buf_parse_tuple);
+#ifdef C3_TEST_BUF_PARSE_SU
   TEST_CASE_RUN(buf_parse_u8_binary);
   TEST_CASE_RUN(buf_parse_u8_octal);
   TEST_CASE_RUN(buf_parse_u8_hexadecimal);
@@ -763,6 +739,7 @@ void buf_parse_test ()
   TEST_CASE_RUN(buf_parse_s8_decimal);
   TEST_CASE_RUN(buf_parse_s8_decimal_negative);
   TEST_CASE_RUN(buf_parse_sw);
+#endif /* C3_TEST_BUF_PARSE_SU */
   TEST_CASE_RUN(buf_parse_cfn);
 }
 

@@ -29,20 +29,18 @@
 
 extern const sw buf_u8_to_hex_size;
 
-/* Stack constructors, call buf_clean after use. */
+/* Stack-allocation compatible functions, call buf_clean after use. */
+void    buf_clean (s_buf *buf);
 s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p);
 s_buf * buf_init_1 (s_buf *buf, const s8 *p);
 s_buf * buf_init_alloc (s_buf *buf, uw size);
 s_buf * buf_init_str (s_buf *buf, const s_str *src);
 
-/* Constructors, call buf_delete after use. */
+/* Heap-allocation compatible functions, call buf_delete after use. */
+void    buf_delete (s_buf *buf);
 s_buf * buf_new (bool free, uw size, s8 *p);
 s_buf * buf_new_alloc (uw bytes);
 s_buf * buf_new_str (s_str *str);
-
-/* Destructors */
-void buf_clean (s_buf *buf);
-void buf_delete (s_buf *buf);
 
 /* Modifiers */
 sw      buf_f (s_buf *buf, const char *fmt, ...);

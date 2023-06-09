@@ -115,6 +115,7 @@ typedef struct facts_cursor            s_facts_cursor;
 typedef struct facts_spec_cursor       s_facts_spec_cursor;
 typedef struct facts_with_cursor       s_facts_with_cursor;
 typedef struct facts_with_cursor_level s_facts_with_cursor_level;
+typedef struct float_                  s_float;
 typedef struct fn                      s_fn;
 typedef struct frame                   s_frame;
 typedef struct ident                   s_ident;
@@ -177,6 +178,11 @@ struct fact_w {
   s_tag *predicate;
   s_tag *object;
   uw id; /* serial id */
+};
+
+struct float_ {
+  sw integer;
+  sw bit_shift;
 };
 
 struct frame {

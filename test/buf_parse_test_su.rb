@@ -98,6 +98,7 @@ licence = File.read("../licence.h")
     File.open(filename_tmp, "w") do |out|
       out.puts licence
       out.puts '#include "buf_parse_test.h"'
+      out.puts "#ifdef C3_TEST_BUF_PARSE_SU"
       [[[0, 1], "0b", "binary"],
        [[0, 1, 2, 3, 4, 5, 6, 7], "0o", "octal"],
        [[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, "a", "b", "c", "d", "e", "f"],
@@ -113,12 +114,12 @@ licence = File.read("../licence.h")
                   [""]
                 end
         signs.each do |negative|
-          function_name = "buf_parse_test_#{su_downcase}#{bits}_#{base_name}"
+          function_name = "buf_parse_#{su_downcase}#{bits}_#{base_name}"
           if negative == "-"
             function_name += "_negative"
           end
           out.puts ''
-          out.puts "void #{function_name} ()"
+          out.puts "TEST_CASE(#{function_name})"
           out.puts '{'
           max = integer_max(su, bits, negative)
           result = count(out, su, bits, base, base_prefix, negative,
@@ -137,10 +138,12 @@ licence = File.read("../licence.h")
             end
           end
           out.puts "}"
+          out.puts "TEST_CASE_END(#{function_name})"
         end
       end
+      out.puts "#endif /* ifdef C3_TEST_BUF_PARSE_SU */"
     end # File.open
-    cmd = "if ! cmp #{filename} #{filename_tmp}; then mv #{filename_tmp} #{filename}; echo #{filename}; else rm #{filename_tmp}; fi"
+    cmd = "if ! diff -u #{filename} #{filename_tmp}; then mv #{filename_tmp} #{filename}; echo #{filename}; else rm #{filename_tmp}; fi"
     raise "command failed" unless system(cmd)
   end
 end

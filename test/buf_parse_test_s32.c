@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include "buf_parse_test.h"
+#ifdef C3_TEST_BUF_PARSE_SU
 
 TEST_CASE(buf_parse_s32_binary)
 {
@@ -18761,3 +18762,4 @@ TEST_CASE(buf_parse_s32_decimal_negative)
   BUF_PARSE_TEST_S(32, "-2147483648", -2147483648);
 }
 TEST_CASE_END(buf_parse_s32_decimal_negative)
+#endif /* ifdef C3_TEST_BUF_PARSE_SU */

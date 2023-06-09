@@ -30,6 +30,7 @@ HEADERS = \
 	facts_spec_cursor.h \
 	facts_with.h \
 	facts_with_cursor.h \
+	float.h \
 	fn.h \
 	frame.h \
 	hash.h \
