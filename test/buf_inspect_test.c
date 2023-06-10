@@ -122,9 +122,9 @@
     test_context("buf_inspect_str(" # test ") -> " # expected);        \
     str_init_1(&str, NULL, (test));                                    \
     buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_EQ(buf_inspect_str_size(&str), strlen(expected));             \
-    TEST_EQ(buf_inspect_str(&buf, &str), strlen(expected));            \
     TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
+    TEST_EQ(buf_inspect_str(&buf, &str), strlen(expected));            \
+    TEST_EQ(buf_inspect_str_size(&str), strlen(expected));             \
     test_context(NULL);                                                \
   } while (0)
 

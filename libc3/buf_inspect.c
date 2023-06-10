@@ -176,15 +176,6 @@
   DEF_BUF_INSPECT_U_BASE(bits, hexadecimal)                            \
   DEF_BUF_INSPECT_U_BASE(bits, octal)
 
-sw buf_inspect_ident_reserved (s_buf *buf, const s_ident *ident);
-sw buf_inspect_ident_reserved_size (const s_ident *ident);
-sw buf_inspect_str_byte (s_buf *buf, const u8 *byte);
-static const sw buf_inspect_str_byte_size = 4;
-sw buf_inspect_str_reserved (s_buf *buf, const s_str *str);
-sw buf_inspect_str_reserved_size (const s_str *str);
-sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym);
-sw buf_inspect_sym_reserved_size (const s_sym *sym);
-
 f_buf_inspect buf_inspect (e_tag_type type)
 {
   switch (type) {
@@ -1006,8 +997,10 @@ sw buf_inspect_str (s_buf *buf, const s_str *str)
   s_buf_save save;
   assert(buf);
   assert(str);
-  if (str_has_reserved_characters(str))
+  if (str_has_reserved_characters(str)) {
+    printf("\nstr_has_reserver_characters\n");
     return buf_inspect_str_reserved(buf, str);
+  }
   buf_save_init(buf, &save);
   if ((r = buf_write_u8(buf, '"')) <= 0)
     goto clean;
@@ -1069,7 +1062,7 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
   if (! str_character_is_reserved(*c))
     return buf_write_character_utf8(buf, *c);
   buf_save_init(buf, &save);
-  if ((r = buf_write_u8(buf, '\\')) != 1)
+  if ((r = buf_write_1(buf, "\\")) <= 0)
     goto restore;
   result += r;
   switch (*c) {
@@ -1222,7 +1215,7 @@ sw buf_inspect_str_reserved_size (const s_str *str)
 
 sw buf_inspect_str_size (const s_str *str)
 {
-  const sw quote_size = 1;
+  const sw quote_size = strlen("\"");
   sw size;
   if (str_has_reserved_characters(str))
     return buf_inspect_str_reserved_size(str);

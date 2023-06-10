@@ -10,9 +10,29 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a *.css *.gcno *.html ic3/*.diff ic3/*.err ic3/*.out ic3/*.ret *.o libc3_test libc3_test_asan libc3_test_cov libc3_test_debug .libs *.lo
+CLEANFILES = \
+	*.a \
+	*.css \
+	*.gcno \
+	*.html \
+	*.lo \
+	*.o \
+	.libs \
+	ic3/*.diff \
+	ic3/*.err \
+	ic3/*.out \
+	ic3/*.ret \
+	test_libc3 \
+	test_libc3_asan \
+	test_libc3_cov \
+	test_libc3_debug
 
-CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+CLEANFILES_COV = \
+	*.css \
+	*.gcda \
+	*.html \
+	.libs/*.gcda
+
 CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.mk

@@ -143,6 +143,9 @@ test_ic3: build
 test_ic3_debug: debug
 	${MAKE} -C test test_ic3_debug
 
+test_libc3: test
+	${MAKE} -C test test_libc3
+
 .PHONY: all asan c3s cov clean clean_cov debug gcovr ic3 install libc3 libtommath license test test_asan test_cov test_debug test_gcovr test_ic3
 
 include config.mk
