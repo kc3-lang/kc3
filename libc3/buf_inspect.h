@@ -99,7 +99,7 @@ BUF_INSPECT_S_PROTOTYPES(64);
 BUF_INSPECT_S_PROTOTYPES(w);
 sw buf_inspect_str (s_buf *buf, const s_str *str);
 sw buf_inspect_str_byte (s_buf *buf, const u8 *byte);
-static const sw buf_inspect_str_byte_size = 4;
+sw buf_inspect_str_byte_size (const u8 *byte);
 sw buf_inspect_str_character (s_buf *buf, const character *c);
 sw buf_inspect_str_character_size (const character *c);
 sw buf_inspect_str_reserved (s_buf *buf, const s_str *str);

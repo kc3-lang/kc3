@@ -1145,7 +1145,7 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str)
   s_str s;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_write_u8(buf, '"')) <= 0) {
+  if ((r = buf_write_1(buf, "\"")) <= 0) {
     if (! r)
       r = -1;
     goto clean;
@@ -1190,27 +1190,29 @@ sw buf_inspect_str_reserved_size (const s_str *str)
   sw r;
   sw result = 0;
   s_str s;
-  result += sizeof('"');
+  r = strlen("\"");
+  result += r;
   str_init_str(&s, str);
-  r = 1;
   while (r) {
     if ((r = str_read_character_utf8(&s, &c)) < 0)
-      return r;
+      goto restore;
     if (r) {
-      if ((r = buf_inspect_str_character_size(&c)) <= 0) {
-        if (! r)
-          r = -1;
-        return r;
-      }
+      if ((r = buf_inspect_str_character_size(&c)) <= 0)
+        goto restore;
       result += r;
     }
     else if ((r = str_read_u8(&s, &byte)) < 0)
-      return r;
-    else if (r)
-      result += buf_inspect_str_byte_size;
+      goto restore;
+    else if (r) {
+      r = buf_inspect_str_byte_size;
+      result += r;
+    }
   }
-  result += sizeof('"');
+  r = strlen("\"");
+  result += r;
   return result;
+ restore:
+  return -1;
 }
 
 sw buf_inspect_str_size (const s_str *str)

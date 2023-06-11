@@ -23,7 +23,7 @@
     test_context("buf_inspect_bool(" # test ") -> " # expected);       \
     buf_init(&buf, false, sizeof(b), b);                               \
     tmp = (test);                                                      \
-    TEST_EQ(buf_inspect_bool_size(&tmp), strlen(expected));      \
+    TEST_EQ(buf_inspect_bool_size(&tmp), strlen(expected));            \
     TEST_EQ(buf_inspect_bool(&buf, &tmp), strlen(expected));           \
     TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
     test_context(NULL);                                                \
@@ -122,9 +122,9 @@
     test_context("buf_inspect_str(" # test ") -> " # expected);        \
     str_init_1(&str, NULL, (test));                                    \
     buf_init(&buf, false, sizeof(b), b);                               \
-    TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
-    TEST_EQ(buf_inspect_str(&buf, &str), strlen(expected));            \
     TEST_EQ(buf_inspect_str_size(&str), strlen(expected));             \
+    TEST_EQ(buf_inspect_str(&buf, &str), strlen(expected));            \
+    TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
     test_context(NULL);                                                \
   } while (0)
 
@@ -314,6 +314,7 @@ TEST_CASE(buf_inspect_str_character)
   BUF_INSPECT_TEST_STR_CHARACTER(0, "\\0");
   BUF_INSPECT_TEST_STR_CHARACTER(1, "\\x01");
   BUF_INSPECT_TEST_STR_CHARACTER(2, "\\x02");
+  BUF_INSPECT_TEST_STR_CHARACTER(10, "\\n");
   BUF_INSPECT_TEST_STR_CHARACTER('0', "0");
   BUF_INSPECT_TEST_STR_CHARACTER('9', "9");
   BUF_INSPECT_TEST_STR_CHARACTER('A', "A");
