@@ -20,9 +20,6 @@
 #include "str.h"
 #include "sym.h"
 
-const sw buf_u8_to_hex_size = 2;
-const sw buf_inspect_str_byte_size = 4;
-
 void buf_clean (s_buf *buf)
 {
   assert(buf);
@@ -748,7 +745,7 @@ sw buf_str_to_hex (s_buf *buf, const s_str *src)
   b = src->ptr.pu8;
   i = 0;
   while (i++ < src->size)
-    buf_u8_to_hex(buf, *(b++));
+    buf_u8_to_hex(buf, b++);
   return size;
 }
 
@@ -761,24 +758,41 @@ s_str * buf_to_str (const s_buf *buf, s_str *str)
   return str_init(str, free, buf->size, buf->ptr.p);
 }
 
-sw buf_u8_to_hex (s_buf *buf, u8 x)
+sw buf_u8_to_hex (s_buf *buf, const u8 *x)
 {
   u8 digit;
-  if (buf->wpos + buf_u8_to_hex_size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  digit = x >> 4;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  digit = *x >> 4;
   if (digit < 10)
-    buf_write_u8(buf, digit + '0');
+    r = buf_write_u8(buf, digit + '0');
   else
-    buf_write_u8(buf, digit - 10 + 'A');
-  digit = x & 0xF;
+    r = buf_write_u8(buf, digit - 10 + 'A');
+  if (r <= 0)
+    goto clean;
+  result += r;
+  digit = *x & 0xF;
   if (digit < 10)
-    buf_write_u8(buf, digit + '0');
+    r = buf_write_u8(buf, digit + '0');
   else
-    buf_write_u8(buf, digit - 10 + 'A');
-  return buf_u8_to_hex_size;
+    r = buf_write_u8(buf, digit - 10 + 'A');
+  if (r <= 0)
+    goto restore;
+  result += r;
+  r = result;
+ restore:
+  buf_save_restore_wpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_u8_to_hex_size(const u8 *u)
+{
+  (void) u;
+  return 2;
 }
 
 sw buf_vf (s_buf *buf, const char *fmt, va_list ap)

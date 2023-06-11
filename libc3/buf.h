@@ -27,8 +27,6 @@
 
 #define BUF_SIZE 10240
 
-extern const sw buf_u8_to_hex_size;
-
 /* Stack-allocation compatible functions, call buf_clean after use. */
 void    buf_clean (s_buf *buf);
 s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p);
@@ -84,7 +82,8 @@ s_buf * buf_restore (s_buf *buf, const s_buf *save);
 sw      buf_seek (s_buf *buf, sw offset, u8 whence);
 sw      buf_str_to_hex (s_buf *buf, const s_str *src);
 sw      buf_str_to_hex_size (const s_str *src);
-sw      buf_u8_to_hex (s_buf *buf, u8 x);
+sw      buf_u8_to_hex (s_buf *buf, const u8 *x);
+sw      buf_u8_to_hex_size (const u8 *x);
 sw      buf_vf (s_buf *buf, const char *fmt, va_list ap);
 sw      buf_write_1 (s_buf *buf, const s8 *p);
 sw      buf_write_character_utf8 (s_buf *buf, character c);

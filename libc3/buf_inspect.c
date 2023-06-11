@@ -1026,16 +1026,15 @@ sw buf_inspect_str_byte (s_buf *buf, const u8 *byte)
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_write_u8(buf, '\\')) != 1) {
-    if (r >= 0)
-      r = -1;
+  if ((r = buf_write_1(buf, "\\")) <= 0) {
+    r = -1;
     goto clean;
   }
   result += r;
-  if ((r = buf_write_u8(buf, 'x')) != 1)
+  if ((r = buf_write_1(buf, "x")) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_u8_to_hex(buf, *byte)) != 2)
+  if ((r = buf_u8_to_hex(buf, byte)) != 2)
     goto restore;
   result += r;
   r = result;
@@ -1047,6 +1046,20 @@ sw buf_inspect_str_byte (s_buf *buf, const u8 *byte)
  clean:
   buf_save_clean(buf, &save);
   return r;
+}
+
+sw buf_inspect_str_byte_size (const u8 *byte)
+{
+  sw r;
+  sw result = 0;
+  (void) byte;
+  r = strlen("\\");
+  result += r;
+  r = strlen("x");
+  result += r;
+  r = 2;
+  result += r;
+  return result;
 }
 
 sw buf_inspect_str_character (s_buf *buf, const character *c)
@@ -1083,14 +1096,14 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
     if ((r = buf_write_u8(buf, 'x')) != 1)
       goto restore;
     result1 += r;
-    if ((r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) != 2)
+    if ((r = buf_u8_to_hex(buf, &char_buf.ptr.pu8[j++])) != 2)
       goto restore;
     result1 += r;
     while (i--) {
       if ((r = buf_write_1(buf, "\\x")) != 2)
         goto restore;
       result1 += r;
-      if ((r = buf_u8_to_hex(buf, char_buf.ptr.pu8[j++])) != 2)
+      if ((r = buf_u8_to_hex(buf, &char_buf.ptr.pu8[j++])) != 2)
         goto restore;
       result1 += r;
     }
@@ -1204,7 +1217,7 @@ sw buf_inspect_str_reserved_size (const s_str *str)
     else if ((r = str_read_u8(&s, &byte)) < 0)
       goto restore;
     else if (r) {
-      r = buf_inspect_str_byte_size;
+      r = buf_inspect_str_byte_size(&byte);
       result += r;
     }
   }
