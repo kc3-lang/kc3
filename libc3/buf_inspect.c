@@ -737,6 +737,34 @@ sw buf_inspect_fn_pattern (s_buf *buf, const s_list *pattern)
   return result;
 }
 
+sw buf_inspect_fn_size (const s_fn *fn)
+{
+  sw r;
+  sw result = 0;
+  r = strlen("fn ");
+  result += r;
+  if (fn->next_clause) {
+    r = strlen("{\n");
+    result += r;
+    while (fn) {
+      r = strlen("  ");
+      result += r;
+      r = buf_inspect_fn_clause_size(fn);
+      result += r;
+      r = strlen("\n");
+      result += r;
+      fn = fn->next_clause;
+    }
+    r = strlen("}\n");
+    result += r;
+  }
+  else {
+    r = buf_inspect_fn_clause_size(fn);
+    result += r;
+  }
+  return result;
+}
+
 sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
 {
   sw r;
@@ -1441,11 +1469,24 @@ sw buf_inspect_var (s_buf *buf, const s_tag *var)
   if ((r = buf_write_1(buf, "var(0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) &var)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) var)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, ")")) < 0)
     return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_var_size (const s_tag *var)
+{
+  sw r;
+  sw result = 0;
+  r = strlen("var(0x");
+  result += r;
+  r = buf_inspect_uw_hexadecimal_size((uw *) var);
+  result += r;
+  r = strlen(")");
   result += r;
   return result;
 }

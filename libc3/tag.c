@@ -1943,6 +1943,11 @@ void * tag_to_pointer (s_tag *tag, const s_sym *type)
   return NULL;  
 }
 
+sw tag_type_size (e_tag_type type)
+{
+  return sizeof(type);
+}
+
 f_buf_parse tag_type_to_buf_parse (e_tag_type type)
 {
   switch (type) {
