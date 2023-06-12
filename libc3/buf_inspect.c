@@ -1334,8 +1334,10 @@ sw buf_inspect_str_size (const s_str *str)
 {
   const sw quote_size = strlen("\"");
   sw size;
-  if (str_has_reserved_characters(str))
+  if (str_has_reserved_characters(str)) {
+    printf("\nstr_has_reserver_characters\n");
     return buf_inspect_str_reserved_size(str);
+  }
   size = str->size + 2 * quote_size;
   return size;
 }

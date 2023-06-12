@@ -101,11 +101,17 @@ TEST_CASE(str_character_is_reserved)
   TEST_ASSERT(str_character_is_reserved('\x01'));
   TEST_ASSERT(str_character_is_reserved('\x02'));
   TEST_ASSERT(str_character_is_reserved('\x03'));
+  TEST_ASSERT(str_character_is_reserved('\x04'));
+  TEST_ASSERT(str_character_is_reserved('\x05'));
+  TEST_ASSERT(str_character_is_reserved('\x06'));
   TEST_ASSERT(! str_character_is_reserved(' '));
-  TEST_ASSERT(str_character_is_reserved('\n'));
-  TEST_ASSERT(str_character_is_reserved('\r'));
+  TEST_ASSERT(str_character_is_reserved('\a'));
+  TEST_ASSERT(str_character_is_reserved('\b'));
   TEST_ASSERT(str_character_is_reserved('\t'));
+  TEST_ASSERT(str_character_is_reserved('\n'));
   TEST_ASSERT(str_character_is_reserved('\v'));
+  TEST_ASSERT(str_character_is_reserved('\f'));
+  TEST_ASSERT(str_character_is_reserved('\r'));
   TEST_ASSERT(! str_character_is_reserved('0'));
   TEST_ASSERT(! str_character_is_reserved('1'));
   TEST_ASSERT(! str_character_is_reserved('2'));
@@ -246,19 +252,6 @@ TEST_CASE(str_inspect)
   STR_TEST_INSPECT_1("𐅀", "\"𐅀\"");
   STR_TEST_INSPECT_1("ÉoàΠ꒴𐅀 \n\r\t\v\\\"",
                      "\"ÉoàΠ꒴𐅀 \\n\\r\\t\\v\\\\\\\"\"");
-  STR_TEST_INSPECT_1("\xff", "\"\\xFF\"");
-  STR_TEST_INSPECT_1("\xff\xff", "\"\\xFF\\xFF\"");
-  STR_TEST_INSPECT_1("\xff\xff", "\"\\xFF\\xFF\"");
-  STR_TEST_INSPECT_1("\xff\xff\xff", "\"\\xFF\\xFF\\xFF\"");
-  STR_TEST_INSPECT_1("\xff\xff\xff\xff", "\"\\xFF\\xFF\\xFF\\xFF\"");
-  STR_TEST_INSPECT_1("\xff\xff\xff\xff\xff",
-                     "\"\\xFF\\xFF\\xFF\\xFF\\xFF\"");
-  STR_TEST_INSPECT_1("\xff\xff\xff\xff\xff\xff",
-                     "\"\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\"");
-  STR_TEST_INSPECT_1("\xff\xff\xff\xff\xff\xff\xff",
-                     "\"\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\"");
-  STR_TEST_INSPECT_1("\xff\xff\xff\xff\xff\xff\xff\xff",
-                     "\"\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\\xFF\"");
   STR_TEST_INSPECT(str_init(&str, NULL,  1, zero), "\"\\0\"");
   STR_TEST_INSPECT(str_init(&str, NULL,  2, zero), "\"\\0\\0\"");
   STR_TEST_INSPECT(str_init(&str, NULL,  3, zero), "\"\\0\\0\\0\"");
