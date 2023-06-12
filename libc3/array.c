@@ -24,6 +24,33 @@ void array_clean (s_array *a)
   free(a->data);
 }
 
+s_array * array_copy (const s_array *src, s_array *dest)
+{
+  assert(dest);
+  assert(src);
+  assert(src->dimension);
+  assert(src->dimensions);
+  if (! src->dimension) {
+    assert(! "array_copy: zero dimension");
+    errx(1, "array_copy: zero dimension");
+    return NULL;
+  }
+#ifdef DEBUG
+  while (i < src->dimension) {
+    assert(src->dimensions[i].count);
+    i++;
+  }
+#endif
+  dest->dimension = src->dimension;
+  dest->dimensions = calloc(src->dimension, sizeof(s_array_dimension));
+  memcpy(dest->dimensions, src->dimensions,
+         src->dimension * sizeof(s_array_dimension));
+  dest->size = src->size;
+  dest->data = calloc(1, src->size);
+  memcpy(dest->data, src->data, dest->size);
+  return dest;
+}
+
 s_array * array_init (s_array *a, e_tag_type type, uw dimension,
                       const uw *dimensions)
 {
@@ -32,7 +59,8 @@ s_array * array_init (s_array *a, e_tag_type type, uw dimension,
   assert(dimension);
   assert(dimensions);
   if (! dimension) {
-    errx(1, "zero dimension");
+    assert(! "array_init: zero dimension");
+    errx(1, "array_init: zero dimension");
     return NULL;
   }
 #ifdef DEBUG
