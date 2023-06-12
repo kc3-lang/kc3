@@ -1099,10 +1099,8 @@ sw buf_inspect_str (s_buf *buf, const s_str *str)
   s_buf_save save;
   assert(buf);
   assert(str);
-  if (str_has_reserved_characters(str)) {
-    printf("\nstr_has_reserver_characters\n");
+  if (str_has_reserved_characters(str))
     return buf_inspect_str_reserved(buf, str);
-  }
   buf_save_init(buf, &save);
   if ((r = buf_write_u8(buf, '"')) <= 0)
     goto clean;
@@ -1334,10 +1332,8 @@ sw buf_inspect_str_size (const s_str *str)
 {
   const sw quote_size = strlen("\"");
   sw size;
-  if (str_has_reserved_characters(str)) {
-    printf("\nstr_has_reserver_characters\n");
+  if (str_has_reserved_characters(str))
     return buf_inspect_str_reserved_size(str);
-  }
   size = str->size + 2 * quote_size;
   return size;
 }
