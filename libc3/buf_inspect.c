@@ -694,6 +694,42 @@ sw buf_inspect_fn_algo (s_buf *buf, const s_list *algo)
   return result;
 }
 
+sw buf_inspect_fn_algo_size (const s_list *algo)
+{
+  sw r;
+  sw result = 0;
+  if (! algo) {
+    r = strlen("{}");
+    result += r;
+    return result;
+  }
+  if (! list_next(algo)) {
+    r = strlen("{ ");
+    result += r;
+    if ((r = buf_inspect_tag_size(&algo->tag)) < 0)
+      return r;
+    result += r;
+    r = strlen(" }");
+    result += r;
+    return result;
+  }
+  r = strlen("{\n  ");
+  result += r;
+  while (algo) {
+    if ((r = buf_inspect_tag_size(&algo->tag)) < 0)
+      return r;
+    result += r;
+    algo = list_next(algo);
+    if (algo) {
+      r = strlen(";\n  ");
+      result += r;
+    }
+  }
+  r = strlen("\n}");
+  result += r;
+  return result;
+}
+
 sw buf_inspect_fn_clause (s_buf *buf, const s_fn *fn)
 {
   sw r;
@@ -703,10 +739,26 @@ sw buf_inspect_fn_clause (s_buf *buf, const s_fn *fn)
   if ((r = buf_inspect_fn_pattern(buf, fn->pattern)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_u8(buf, ' ')) < 0)
+  if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_fn_algo(buf, fn->algo)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_fn_clause_size (const s_fn *fn)
+{
+  sw r;
+  sw result = 0;
+  assert(fn);
+  if ((r = buf_inspect_fn_pattern_size(fn->pattern)) < 0)
+    return r;
+  result += r;
+  r = strlen(" ");
+  result += r;
+  if ((r = buf_inspect_fn_algo_size(fn->algo)) < 0)
     return r;
   result += r;
   return result;
@@ -733,6 +785,28 @@ sw buf_inspect_fn_pattern (s_buf *buf, const s_list *pattern)
   }
   if ((r = buf_write_u8(buf, ')')) < 0)
     return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_fn_pattern_size (const s_list *pattern)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  r = strlen("(");
+  result += r;
+  while (pattern) {
+    if ((r = buf_inspect_tag_size(&pattern->tag)) < 0)
+      return r;
+    result += r;
+    pattern = list_next(pattern);
+    if (pattern) {
+      r = strlen(", ");
+      result += r;
+    }
+  }
+  r = strlen(")");
   result += r;
   return result;
 }
