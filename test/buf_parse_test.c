@@ -14,18 +14,28 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../libc3/buf.h"
-#include "../libc3/buf_parse.h"
-#include "../libc3/call.h"
-#include "../libc3/cfn.h"
-#include "../libc3/fn.h"
-#include "../libc3/list.h"
-#include "../libc3/str.h"
-#include "../libc3/integer.h"
-#include "../libc3/tag.h"
-#include "../libc3/tuple.h"
+#include "../libc3/c3.h"
 #include "test.h"
 #include "buf_parse_test_su.h"
+
+#define BUF_PARSE_TEST_ARRAY(test, expected)                           \
+  do {                                                                 \
+    s_buf buf_result;                                                  \
+    s_buf buf_test;                                                    \
+    s_array dest;                                                      \
+    test_context("buf_parse_array(" # test ") -> " # expected);        \
+    buf_init_1(&buf_test, (test));                                     \
+    TEST_EQ(buf_parse_array(&buf_test, &dest), strlen(test));          \
+    TEST_EQ(buf_inspect_array_size(&dest), strlen(expected));          \
+    TEST_EQ(buf_inspect_array(&buf_result, &dest), &buf_result);       \
+    TEST_EQ(buf_result.wpos, strlen(expected));                        \
+    TEST_STRNCMP(buf_result.ptr.p, (expected),                         \
+                 buf_result.wpos);                                     \
+    buf_clean(&buf_test);                                              \
+    array_clean(&dest);                                                \
+    buf_clean(&buf_result);                                            \
+    test_context(NULL);                                                \
+  } while (0)
 
 #define BUF_PARSE_TEST_BOOL(test, expected)                            \
   do {                                                                 \
@@ -636,6 +646,7 @@
     test_context(NULL);                                                \
   } while (0)
 
+TEST_CASE_PROTOTYPE(buf_parse_array);
 TEST_CASE_PROTOTYPE(buf_parse_bool);
 TEST_CASE_PROTOTYPE(buf_parse_call);
 TEST_CASE_PROTOTYPE(buf_parse_call_op);
@@ -664,6 +675,7 @@ TEST_CASE_PROTOTYPE(buf_parse_tuple);
 
 void buf_parse_test ()
 {
+  TEST_CASE_RUN(buf_parse_array);
   TEST_CASE_RUN(buf_parse_bool);
   TEST_CASE_RUN(buf_parse_call);
   TEST_CASE_RUN(buf_parse_call_op);
@@ -742,6 +754,15 @@ void buf_parse_test ()
 #endif /* C3_TEST_BUF_PARSE_SU */
   TEST_CASE_RUN(buf_parse_cfn);
 }
+
+TEST_CASE(buf_parse_array)
+{
+  BUF_PARSE_TEST_ARRAY("(u8)[0]", "(u8) [0]");
+  BUF_PARSE_TEST_ARRAY("(u8) [0]", "(u8) [0]");
+  BUF_PARSE_TEST_ARRAY("(u8) [[0], [0]]", "(u8) [[0], [0]]");
+  BUF_PARSE_TEST_ARRAY("(u8)[ [ 0 ],[ 0 ] ]", "(u8) [[0], [0]]");
+}
+TEST_CASE_END(buf_parse_array)
 
 TEST_CASE(buf_parse_bool)
 {
