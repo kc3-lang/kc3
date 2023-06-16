@@ -130,8 +130,9 @@ typedef struct struct_                 s_struct;
 typedef struct sym                     s_sym;
 typedef struct sym_list                s_sym_list;
 typedef struct tag                     s_tag;
+typedef struct tag_type_list           s_tag_type_list;
 typedef struct tuple                   s_tuple;
-typedef struct type_list               s_type_list;
+typedef struct type                    s_type;
 typedef struct unwind_protect          s_unwind_protect;
 
 /* unions */
@@ -230,18 +231,14 @@ struct sym_list {
   s_sym_list *next;
 };
 
-union tag_type {
+struct tag_type_list {
   e_tag_type type;
+  s_tag_type_list *next;
 };
 
 struct tuple {
   uw count;
   s_tag *tag;
-};
-
-struct type_list {
-  e_tag_type type;
-  s_type_list *next;
 };
 
 struct unwind_protect {
@@ -251,14 +248,6 @@ struct unwind_protect {
 };
 
 /* 2 */
-struct array {
-  uw dimension;
-  e_tag_type type;
-  s_array_dimension *dimensions;
-  uw size;
-  void *data;
-};
-
 struct binding {
   const s_sym *name;
   const s_tag *value;
@@ -303,12 +292,6 @@ struct str {
 };
 
 /* 3 */
-struct arg {
-  const s_sym *name;
-  s_ident type;
-  s_arg *next;
-};
-
 struct call {
   /* key */
   s_ident ident;
@@ -342,6 +325,21 @@ struct sym {
   s_str str;
 };
 
+struct type {
+  s_ident ident;
+};
+
+/* 4 */
+struct array {
+  uw dimension;
+  s_type type;
+  s_array_dimension *dimensions;
+  uw size;
+  void *data;
+};
+
+
+/* 5 */
 union tag_data {
   s_array      array;
   bool         bool;
@@ -369,13 +367,19 @@ union tag_data {
   u64          u64;
 };
 
-/* 4 */
+/* 6 */
 struct tag {
-  u_tag_type type;
+  e_tag_type type;
   u_tag_data data;
 };
 
-/* 5 */
+/* 7 */
+struct arg {
+  const s_sym *name;
+  s_type type;
+  s_arg *next;
+};
+
 struct error_handler
 {
   s_list *backtrace;
@@ -442,7 +446,7 @@ TYPEDEF_SKIPLIST_NODE(fact, s_fact *);
 
 TYPEDEF_SKIPLIST(fact, s_fact *);
   
-/* 5 */
+/* 8 */
 struct facts {
   s_set__tag        tags;
   s_set__fact       facts;
@@ -468,7 +472,7 @@ struct facts_cursor {
   pthread_mutex_t mutex;
 };
 
-/* 6 */
+/* 9 */
 struct env {
   s_list           *backtrace;
   const s_module   *current_module;
@@ -489,7 +493,7 @@ struct facts_with_cursor_level {
   p_facts_spec spec;
 };
 
-/* 7 */
+/* 10 */
 struct facts_with_cursor {
   s_facts *facts;
   s_binding *bindings;
