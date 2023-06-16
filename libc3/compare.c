@@ -366,11 +366,11 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       a == TAG_LAST ||
       b == TAG_FIRST)
     return 1;
-  if (a->type.type < b->type.type)
+  if (a->type < b->type)
     return -1;
-  if (a->type.type > b->type.type)
+  if (a->type > b->type)
     return 1;
-  switch (a->type.type) {
+  switch (a->type) {
   case TAG_VOID: return 0;
   case TAG_ARRAY: return compare_array(&a->data.array, &b->data.array);
   case TAG_BOOL: return compare_bool(a->data.bool, b->data.bool);
@@ -413,9 +413,9 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
 {
   assert(a);
   assert(b);
-  switch (a->type.type) {
+  switch (a->type) {
   case TAG_INTEGER:
-    switch (b->type.type) {
+    switch (b->type) {
     case TAG_INTEGER:
       return compare_integer(&a->data.integer, &b->data.integer);
     case TAG_S8:
@@ -438,7 +438,7 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
     }
     break;
   case TAG_S8:
-    switch (b->type.type) {
+    switch (b->type) {
     case TAG_INTEGER:
       return -compare_integer_s64(&b->data.integer, a->data.s8);
     case TAG_S8:
@@ -461,7 +461,7 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
     }
     break;
   case TAG_S16:
-    switch (b->type.type) {
+    switch (b->type) {
     case TAG_INTEGER:
       return -compare_integer_s64(&b->data.integer, a->data.s16);
     case TAG_S8:
@@ -484,7 +484,7 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
     }
     break;
   case TAG_S32:
-    switch (b->type.type) {
+    switch (b->type) {
     case TAG_INTEGER:
       return -compare_integer_s64(&b->data.integer, a->data.s32);
     case TAG_S8:
@@ -507,7 +507,7 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
     }
     break;
   case TAG_S64:
-    switch (b->type.type) {
+    switch (b->type) {
     case TAG_INTEGER:
       return -compare_integer_s64(&b->data.integer, a->data.s64);
     case TAG_S8:
@@ -530,7 +530,7 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
     }
     break;
   case TAG_U8:
-    switch (b->type.type) {
+    switch (b->type) {
     case TAG_INTEGER:
       return -compare_integer_u64(&b->data.integer, a->data.u8);
     case TAG_S8:
@@ -553,7 +553,7 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
     }
     break;
   case TAG_U16:
-    switch (b->type.type) {
+    switch (b->type) {
     case TAG_INTEGER:
       return -compare_integer_u64(&b->data.integer, a->data.u16);
     case TAG_S8:
@@ -576,7 +576,7 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
     }
     break;
   case TAG_U32:
-    switch (b->type.type) {
+    switch (b->type) {
     case TAG_INTEGER:
       return -compare_integer_u64(&b->data.integer, a->data.u32);
     case TAG_S8:
@@ -599,7 +599,7 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
     }
     break;
   case TAG_U64:
-    switch (b->type.type) {
+    switch (b->type) {
     case TAG_INTEGER:
       return -compare_integer_u64(&b->data.integer, a->data.u64);
     case TAG_S8:

@@ -46,6 +46,7 @@
 #include "str.h"
 #include "tag.h"
 #include "tuple.h"
+#include "type.h"
 #include "ucd.h"
 
 #define C3_EXT ".c3"

@@ -10,15 +10,24 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef ARRAY_H
-#define ARRAY_H
+/**
+ * @file type.h
+ * @brief C3 types.
+ *
+ * Structure to manipulate C3 type.
+ */
+#ifndef TYPE_H
+#define TYPE_H
 
 #include "types.h"
 
-void      array_clean (s_array *a);
-s_array * array_copy (const s_array *src, s_array *dest);
-s_array * array_init (s_array *a, e_tag_type type, uw dimension,
-                      const uw *dimensions);
-void *    array_data (const s_array *a, const uw *address);
+/* Stack allocation compatible functions, call type_clean after use. */
+void     type_clean (s_type *t);
+s_type * type_init (s_type *t, const s_ident *ident);
 
-#endif /* ARRAY_H */
+/* Observers */
+s_type * type_copy (const s_type *t, s_type *dest);
+sw       type_size (const s_type *t);
+bool     type_to_tag_type (const s_type *t, e_tag_type *tag_type);
+
+#endif /* TYPE_H */

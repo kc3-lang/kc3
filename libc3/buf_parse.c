@@ -301,6 +301,41 @@
 
 sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest);
 
+sw buf_parse_array_type (s_buf *buf, e_tag_type *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  e_tag_type tmp;
+  s_ident type_ident;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_ident(buf, &type_ident)) <= 0)
+    goto restore;
+  result += r;
+  if (! ident_to_tag_type(&type_ident, &tmp))
+    goto restore;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto clean;
+  result += r;
+  if ((r = buf_read_1(buf, ")")) <= 0)
+    goto clean;
+  result += r;
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_array (s_buf *buf, s_array *dest)
 {
   uw *address;
@@ -314,32 +349,18 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   s_buf_save save_data;
   s_tag tag;
   s_array tmp;
-  const s_sym *type;
+  e_tag_type type;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "(")) <= 0)
+  if ((r = buf_parse_array_type(buf, &type)) < 0)
     goto clean;
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
-    goto clean;
-  result += r;
-  if ((r = buf_parse_sym(buf, &type)) <= 0)
     goto restore;
   result += r;
-  if (! sym_to_tag_type(type, &tmp.type))
-    goto restore;
-  item_size = tag_type_size(tmp.type);
+  item_size = tag_type_size(type);
   item = tag_to_pointer(&tag, type);
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto clean;
-  result += r;
-  if ((r = buf_read_1(buf, ")")) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto clean;
-  result += r;
   tmp.dimension = 0;
   buf_save_init(buf, &save_data);
   while ((r = buf_read_1(buf, "[")) > 0) {
@@ -721,7 +742,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
       if ((r = buf_parse_call_op_rec(buf, &tmp2, (next_op_precedence > op_precedence) ? op_precedence + 1 : op_precedence)) <= 0) {
-        tmp2.arguments->tag.type.type = TAG_VOID;
+        tmp2.arguments->tag.type = TAG_VOID;
         call_clean(&tmp2);
         break;
       }
@@ -2102,7 +2123,7 @@ sw buf_parse_tag_array (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_array(buf, &dest->data.array)) > 0)
-    dest->type.type = TAG_ARRAY;
+    dest->type = TAG_ARRAY;
   return r;
 }
 
@@ -2112,7 +2133,7 @@ sw buf_parse_tag_bool (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_bool(buf, &dest->data.bool)) > 0)
-    dest->type.type = TAG_BOOL;
+    dest->type = TAG_BOOL;
   return r;
 }
 
@@ -2122,7 +2143,7 @@ sw buf_parse_tag_call (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_call(buf, &dest->data.call)) > 0)
-    dest->type.type = TAG_CALL;
+    dest->type = TAG_CALL;
   return r;
 }
 
@@ -2132,7 +2153,7 @@ sw buf_parse_tag_call_op (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_call_op(buf, &dest->data.call)) > 0)
-    dest->type.type = TAG_CALL;
+    dest->type = TAG_CALL;
   return r;
 }
 
@@ -2142,7 +2163,7 @@ sw buf_parse_tag_cfn (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_cfn(buf, &dest->data.cfn)) > 0)
-    dest->type.type = TAG_CFN;
+    dest->type = TAG_CFN;
   return r;
 }
 
@@ -2152,7 +2173,7 @@ sw buf_parse_tag_character (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_character(buf, &dest->data.character)) > 0)
-    dest->type.type = TAG_CHARACTER;
+    dest->type = TAG_CHARACTER;
   return r;
 }
 
@@ -2162,7 +2183,7 @@ sw buf_parse_tag_fn (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_fn(buf, &dest->data.fn)) > 0)
-    dest->type.type = TAG_FN;
+    dest->type = TAG_FN;
   return r;
 }
 
@@ -2172,7 +2193,7 @@ sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_ident(buf, &dest->data.ident)) > 0)
-    dest->type.type = TAG_IDENT;
+    dest->type = TAG_IDENT;
   return r;
 }
 
@@ -2182,7 +2203,7 @@ sw buf_parse_tag_integer (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_integer(buf, &dest->data.integer)) > 0)
-    dest->type.type = TAG_INTEGER;
+    dest->type = TAG_INTEGER;
   return r;
 }
 
@@ -2192,7 +2213,7 @@ sw buf_parse_tag_list (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_list(buf, &dest->data.list)) > 0)
-    dest->type.type = TAG_LIST;
+    dest->type = TAG_LIST;
   return r;
 }
 
@@ -2254,7 +2275,7 @@ sw buf_parse_tag_quote (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_quote(buf, &dest->data.quote)) > 0)
-    dest->type.type = TAG_QUOTE;
+    dest->type = TAG_QUOTE;
   return r;
 }
 
@@ -2264,7 +2285,7 @@ sw buf_parse_tag_str (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_str(buf, &dest->data.str)) > 0)
-    dest->type.type = TAG_STR;
+    dest->type = TAG_STR;
   return r;
 }
 
@@ -2274,7 +2295,7 @@ sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_sym(buf, &dest->data.sym)) > 0)
-    dest->type.type = TAG_SYM;
+    dest->type = TAG_SYM;
   return r;
 }
 
@@ -2284,7 +2305,7 @@ sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_tuple(buf, &dest->data.tuple)) > 0)
-    dest->type.type = TAG_TUPLE;
+    dest->type = TAG_TUPLE;
   return r;
 }
 

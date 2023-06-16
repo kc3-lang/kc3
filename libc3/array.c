@@ -16,6 +16,7 @@
 #include <err.h>
 #include "array.h"
 #include "tag.h"
+#include "type.h"
 
 void array_clean (s_array *a)
 {
@@ -26,10 +27,12 @@ void array_clean (s_array *a)
 
 s_array * array_copy (const s_array *src, s_array *dest)
 {
+  uw i = 0;
   assert(dest);
   assert(src);
   assert(src->dimension);
   assert(src->dimensions);
+  (void) i;
   if (! src->dimension) {
     assert(! "array_copy: zero dimension");
     errx(1, "array_copy: zero dimension");

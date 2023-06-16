@@ -37,7 +37,7 @@ void list_clean (s_list *list)
 {
   if (list) {
     tag_clean(&list->tag);
-    if (list->next.type.type != TAG_LIST)
+    if (list->next.type != TAG_LIST)
       tag_clean(&list->next);
   }
 }
@@ -124,7 +124,7 @@ sw list_length (const s_list *list)
 s_list * list_next (const s_list *list)
 {
   assert(list);
-  switch (list->next.type.type) {
+  switch (list->next.type) {
   case TAG_LIST: return list->next.data.list;
   default: return NULL;
   }

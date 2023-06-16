@@ -44,7 +44,7 @@ void env_error_f (s_env *env, const char *fmt, ...)
   assert(env);
   assert(fmt);
   va_start(ap, fmt);
-  tag.type.type = TAG_STR;
+  tag.type = TAG_STR;
   str_init_vf(&tag.data.str, fmt, ap);
   va_end(ap);
   env_error_tag(env, &tag);
@@ -115,7 +115,7 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
       &tag_ident, &tag_fn, &tag_var,
       NULL, NULL });
   if (facts_with_cursor_next(&cursor)) {
-    if (tag_var.type.type != TAG_FN)
+    if (tag_var.type != TAG_FN)
       errx(1, "%s.%s is not a function",
            c.ident.module_name->str.ptr.ps8,
            c.ident.sym->str.ptr.ps8);
@@ -126,7 +126,7 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
       &tag_ident, &tag_cfn, &tag_var,
       NULL, NULL });
   if (facts_with_cursor_next(&cursor)) {
-    if (tag_var.type.type != TAG_CFN)
+    if (tag_var.type != TAG_CFN)
       errx(1, "%s.%s is not a C function",
            c.ident.module_name->str.ptr.ps8,
            c.ident.sym->str.ptr.ps8);
@@ -293,23 +293,23 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   assert(a);
   assert(b);
   assert(dest);
-  if (a->type.type == TAG_IDENT) {
-    if (b->type.type == TAG_IDENT)
+  if (a->type == TAG_IDENT) {
+    if (b->type == TAG_IDENT)
       warnx("TAG_IDENT = TAG_IDENT");
     tag_copy(b, dest);
     frame_binding_new(env->frame, a->data.ident.sym, b);
     return true;
   }
-  if (b->type.type == TAG_IDENT) {
+  if (b->type == TAG_IDENT) {
     tag_copy(a, dest);
     frame_binding_new(env->frame, b->data.ident.sym, a);
     return true;
   }
-  if (a->type.type != b->type.type) {
+  if (a->type != b->type) {
     warnx("env_eval_equal_tag: type mismatch");
     return false;
   }
-  switch (a->type.type) {
+  switch (a->type) {
   case TAG_VOID:
     tag_init_void(dest);
     return true;
@@ -320,7 +320,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     return env_eval_equal_list(env, a->data.list, b->data.list,
                                &dest->data.list);
   case TAG_TUPLE:
-    dest->type.type = TAG_TUPLE;
+    dest->type = TAG_TUPLE;
     return env_eval_equal_tuple(env, &a->data.tuple, &b->data.tuple,
                                 &dest->data.tuple);
   case TAG_ARRAY:
@@ -417,7 +417,7 @@ bool env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
 
 bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
 {
-  switch (tag->type.type) {
+  switch (tag->type) {
   case TAG_VOID:
     tag_init_void(dest);
     return true;
@@ -577,7 +577,7 @@ s8 env_operator_precedence (s_env *env, const s_ident *op)
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor))
     goto ko;
-  if (tag_var.type.type != TAG_U8) {
+  if (tag_var.type != TAG_U8) {
     warnx("%s.%s: invalid operator_precedence type",
           tmp.module_name->str.ptr.ps8,
           tmp.sym->str.ptr.ps8);

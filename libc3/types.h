@@ -223,7 +223,7 @@ struct struct_ {
   void *data;
   uw count;
   s_module *module;
-  s_ident *type;
+  e_tag_type type;
 };
 
 struct sym_list {
@@ -332,7 +332,7 @@ struct type {
 /* 4 */
 struct array {
   uw dimension;
-  s_type type;
+  e_tag_type type;
   s_array_dimension *dimensions;
   uw size;
   void *data;

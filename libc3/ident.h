@@ -42,4 +42,6 @@ s_ident * ident_init (s_ident *ident, const s_sym *sym);
 
 s_str * ident_inspect (const s_ident *ident, s_str *dest);
 
+bool ident_to_tag_type (const s_ident *ident, e_tag_type *dest);
+
 #endif

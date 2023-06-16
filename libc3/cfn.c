@@ -48,7 +48,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   if (cfn->arg_result)
     cfn_tag_init(&tmp2, cfn->result_type);
   /* make result point to tmp value */
-  result = tag_to_pointer(&tmp, cfn->result_type);
+  result = tag_to_ffi_pointer(&tmp, cfn->result_type);
   if (cfn->arity) {
     if (! (arg_pointers = calloc(sizeof(void *), cfn->arity + 1)))
       err(1, "cfn_apply");
@@ -57,23 +57,23 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     cfn_arg_types = cfn->arg_types;
     a = args;
     while (cfn_arg_types) {
-      assert(cfn_arg_types->tag.type.type == TAG_SYM);
+      assert(cfn_arg_types->tag.type == TAG_SYM);
       if (cfn_arg_types->tag.data.sym == sym_1("&result"))
         if (cfn->cif.rtype == &ffi_type_pointer) {
-          arg_pointers[i] = tag_to_pointer(&tmp2, cfn->result_type);
+          arg_pointers[i] = tag_to_ffi_pointer(&tmp2, cfn->result_type);
           arg_values[i] = &arg_pointers[i];
         }
         else
-          arg_values[i] = tag_to_pointer(&tmp2, cfn->result_type);
+          arg_values[i] = tag_to_ffi_pointer(&tmp2, cfn->result_type);
       else {
         if (cfn->cif.arg_types[i] == &ffi_type_pointer) {
-          arg_pointers[i] = tag_to_pointer(&a->tag,
-                                           cfn_arg_types->tag.data.sym);
+          arg_pointers[i] =
+            tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.sym);
           arg_values[i] = &arg_pointers[i];
         }
         else
-          arg_values[i] = tag_to_pointer(&a->tag,
-                                         cfn_arg_types->tag.data.sym);
+          arg_values[i] =
+            tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.sym);
         a = list_next(a);
       }
       cfn_arg_types = list_next(cfn_arg_types);
@@ -176,7 +176,7 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
     a = cfn->arg_types;
     while (a) {
       assert(i < cfn->arity);
-      if (a->tag.type.type != TAG_SYM) {
+      if (a->tag.type != TAG_SYM) {
         assert(! "cfn_prep_cif: invalid type");
         errx(1, "cfn_prep_cif: invalid type");
       }
@@ -211,7 +211,7 @@ s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
 {
   assert(tag);
   bzero(tag, sizeof(s_tag));
-  if (! sym_to_tag_type(type, &tag->type.type)) {
+  if (! sym_to_tag_type(type, &tag->type)) {
     assert(! "cfn_tag_init: invalid type");
     errx(1, "cfn_tag_init: invalid type: %s", type->str.ptr.ps8);
     return NULL;

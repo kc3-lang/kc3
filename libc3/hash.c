@@ -244,8 +244,8 @@ void hash_update_tag (t_hash *hash, const s_tag *tag)
 {
   assert(hash);
   assert(tag);
-  hash_update_u64(hash, tag->type.type);
-  switch (tag->type.type) {
+  hash_update_u64(hash, tag->type);
+  switch (tag->type) {
   case TAG_VOID: break;
   case TAG_ARRAY: hash_update_array(hash, &tag->data.array);   break;
   case TAG_BOOL: hash_update_bool(hash, tag->data.bool);       break;

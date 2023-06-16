@@ -41,6 +41,7 @@
                                    u ## bits *dest)
 
 sw buf_parse_array (s_buf *buf, s_array *dest);
+sw buf_parse_array_type (s_buf *buf, e_tag_type *type);
 sw buf_parse_bool (s_buf *buf, bool *dest);
 sw buf_parse_call (s_buf *buf, s_call *dest);
 sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);

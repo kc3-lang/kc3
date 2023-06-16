@@ -10,15 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef ARRAY_H
-#define ARRAY_H
+#include "type.h"
 
-#include "types.h"
-
-void      array_clean (s_array *a);
-s_array * array_copy (const s_array *src, s_array *dest);
-s_array * array_init (s_array *a, e_tag_type type, uw dimension,
-                      const uw *dimensions);
-void *    array_data (const s_array *a, const uw *address);
-
-#endif /* ARRAY_H */
+void     type_clean (s_type *t);
+s_type * type_copy (const s_type *t, s_type *dest);
+s_type * type_init (s_type *t, const s_ident *ident);
+sw       type_size (const s_type *t);
+bool     type_to_tag_type (const s_type *t, e_tag_type *tag_type);

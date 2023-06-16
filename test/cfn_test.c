@@ -57,7 +57,7 @@ TEST_CASE(cfn_apply)
   args = list_new(NULL, NULL);
   tag_init_bool(&args->tag, false);
   TEST_EQ(cfn_apply(&a, args, &result), &result);
-  TEST_EQ(result.type.type, TAG_BOOL);
+  TEST_EQ(result.type, TAG_BOOL);
   TEST_EQ(result.data.bool, true);
   list_delete_all(args);
   cfn_clean(&a);
@@ -82,8 +82,8 @@ TEST_CASE(cfn_copy)
   a_arg_types = a.arg_types;
   b_arg_types = b.arg_types;
   while (a_arg_types && b_arg_types) {
-    TEST_EQ(a_arg_types->tag.type.type, TAG_SYM);
-    TEST_EQ(a_arg_types->tag.type.type, b_arg_types->tag.type.type);
+    TEST_EQ(a_arg_types->tag.type, TAG_SYM);
+    TEST_EQ(a_arg_types->tag.type, b_arg_types->tag.type);
     TEST_EQ(a_arg_types->tag.data.sym, b_arg_types->tag.data.sym);
     a_arg_types = list_next(a_arg_types);
     b_arg_types = list_next(b_arg_types);
@@ -112,9 +112,9 @@ TEST_CASE(cfn_init_clean)
   TEST_EQ(a.arity, 1);
   TEST_EQ(a.result_type, sym_1("bool"));
   TEST_EQ(a.arg_result, false);
-  TEST_EQ(a.arg_types->tag.type.type, TAG_SYM);
+  TEST_EQ(a.arg_types->tag.type, TAG_SYM);
   TEST_EQ(a.arg_types->tag.data.sym, sym_1("bool"));
-  TEST_EQ(a.arg_types->next.type.type, TAG_LIST);
+  TEST_EQ(a.arg_types->next.type, TAG_LIST);
   TEST_EQ(a.arg_types->next.data.list, NULL);
   TEST_EQ(a.cif.abi, 0);
   TEST_EQ(a.cif.nargs, 0);

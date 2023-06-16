@@ -334,7 +334,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   s_tag *right;
   left = &call->arguments->tag;
   right = &list_next(call->arguments)->tag;
-  if (left->type.type == TAG_CALL && 
+  if (left->type == TAG_CALL && 
       (precedence = operator_precedence(&left->data.call.ident))
       < op_precedence) {
     paren = true;
@@ -361,7 +361,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if (right->type.type == TAG_CALL && 
+  if (right->type == TAG_CALL && 
       (precedence = operator_precedence(&right->data.call.ident))
       < op_precedence) {
     paren = true;
@@ -793,7 +793,6 @@ sw buf_inspect_fn_pattern_size (const s_list *pattern)
 {
   sw r;
   sw result = 0;
-  assert(buf);
   r = strlen("(");
   result += r;
   while (pattern) {
@@ -979,7 +978,7 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
     if ((r = buf_inspect_tag(buf, &i->tag)) < 0)
       return r;
     result += r;
-    switch (i->next.type.type) {
+    switch (i->next.type) {
     case TAG_LIST:
       if (i->next.data.list) {
         if ((r = buf_write_1(buf, ", ")) < 0)
@@ -1015,7 +1014,7 @@ sw buf_inspect_list_size (const s_list *list)
     if ((r = buf_inspect_tag_size(&i->tag)) < 0)
       return r;
     result += r;
-    switch (i->next.type.type) {
+    switch (i->next.type) {
     case TAG_LIST:
       if (i->next.data.list)
         result += strlen(", ");
@@ -1400,7 +1399,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
 {
   if (! tag)
     return buf_write_1(buf, "NULL");
-  switch(tag->type.type) {
+  switch(tag->type) {
   case TAG_VOID:    return buf_inspect_void(buf, &tag);
   case TAG_ARRAY:   return buf_inspect_array(buf, &tag->data.array);
   case TAG_BOOL:    return buf_inspect_bool(buf, &tag->data.bool);
@@ -1440,7 +1439,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
 sw buf_inspect_tag_size (const s_tag *tag)
 {
   assert(tag);
-  switch(tag->type.type) {
+  switch(tag->type) {
   case TAG_VOID:     return buf_inspect_void_size(tag);
   case TAG_ARRAY:    return buf_inspect_array_size(&tag->data.array);
   case TAG_BOOL:     return buf_inspect_bool_size(&tag->data.bool);
