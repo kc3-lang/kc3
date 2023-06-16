@@ -42,8 +42,10 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe"
-LDFLAGS="-Wl,--allow-shlib-undefined ${LDFLAGS:=}"
-#LDFLAGS="${LDFLAGS:=}"
+LDFLAGS="${LDFLAGS}"
+if [ "x$CC" != "xtcc" ]; then
+    LDFLAGS="-Wl,--allow-shlib-undefined ${LDFLAGS}"
+fi
 LIBS="${LIBS:=} -lm"
 
 # Common config for all targets

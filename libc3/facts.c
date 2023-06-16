@@ -302,13 +302,15 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   return -1;
  ko_fact:
   facts_lock_unlock_w(facts);
-  warnx("facts_load: %s: %s fact line %lu", r ? "invalid" : "missing",
+  warnx("facts_load: %s: %s fact line %lu",
         path->ptr.ps8,
+        r ? "invalid" : "missing",
         (unsigned long) i + 5);
   return -1;
  ko_hash:
-  warnx("facts_load: %s: %s hash line %lu", r ? "invalid" : "missing",
+  warnx("facts_load: %s: %s hash line %lu",
         path->ptr.ps8,
+        r ? "invalid" : "missing",
         (unsigned long) i + 5);
   return -1;
 }

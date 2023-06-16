@@ -1933,14 +1933,91 @@ void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
   case TAG_VAR:
     goto invalid_type;
   }
+  assert(! "tag_to_ffi_pointer: invalid tag type");
+  errx(1, "tag_to_ffi_pointer: invalid tag type");
+  return NULL;
+ invalid_type:
+  warnx("tag_to_ffi_pointer: cannot cast %s to %s",
+        tag_type_to_sym(tag->type)->str.ptr.ps8,
+        type->str.ptr.ps8);
+  return NULL;
+}
+
+void * tag_to_pointer (s_tag *tag, e_tag_type type)
+{
+  if (tag->type != type) {
+    warnx("tag_to_pointer: cannot cast %s to %s",
+          tag_type_to_sym(tag->type)->str.ptr.ps8,
+          tag_type_to_sym(type)->str.ptr.ps8);
+    return NULL;
+  }
+  switch (tag->type) {
+  case TAG_VOID:
+    return NULL;
+  case TAG_ARRAY:
+    return tag->data.array.data;
+  case TAG_BOOL:
+    return &tag->data.bool;
+  case TAG_CALL:
+    return &tag->data.call;
+  case TAG_CALL_FN:
+    return &tag->data.call;
+  case TAG_CALL_MACRO:
+    return &tag->data.call;
+  case TAG_CFN:
+    return &tag->data.cfn;
+  case TAG_CHARACTER:
+    return &tag->data.character;
+  case TAG_F32:
+    return &tag->data.f32;
+  case TAG_F64:
+    return &tag->data.f64;
+  case TAG_FN:
+    return tag->data.fn;
+  case TAG_IDENT:
+    return &tag->data.ident;
+  case TAG_INTEGER:
+    return &tag->data.integer;
+  case TAG_S64:
+    return &tag->data.s64;
+  case TAG_S32:
+    return &tag->data.s32;
+  case TAG_S16:
+    return &tag->data.s16;
+  case TAG_S8:
+    return &tag->data.s8;
+  case TAG_U8:
+    return &tag->data.u8;
+  case TAG_U16:
+    return &tag->data.u16;
+  case TAG_U32:
+    return &tag->data.u32;
+  case TAG_U64:
+    return &tag->data.u64;
+  case TAG_LIST:
+    return tag->data.list;
+  case TAG_PTAG:
+    return (void *) tag->data.ptag;
+  case TAG_QUOTE:
+    return &tag->data.quote;
+  case TAG_STR:
+    return &tag->data.str;
+  case TAG_SYM:
+    return (void *) tag->data.sym;
+  case TAG_TUPLE:
+    return &tag->data.tuple;
+  case TAG_VAR:
+    goto invalid_type;
+  }
   assert(! "tag_to_pointer: invalid tag type");
   errx(1, "tag_to_pointer: invalid tag type");
   return NULL;
  invalid_type:
   warnx("tag_to_pointer: cannot cast %s to %s",
         tag_type_to_sym(tag->type)->str.ptr.ps8,
-        type->str.ptr.ps8);
-  return NULL;  
+        tag_type_to_sym(type)->str.ptr.ps8);
+  return NULL;
+  
 }
 
 sw tag_type_size (e_tag_type type)
@@ -2169,8 +2246,8 @@ const s_sym * tag_type_to_sym (e_tag_type tag_type)
   case TAG_TUPLE:      return sym_1("tuple");
   case TAG_VAR:        return sym_1("var");
   }
-  assert(! "cfn_tag_type_to_sym: invalid tag type");
-  errx(1, "cfn_tag_type_to_sym: invalid tag type");
+  assert(! "tag_type_to_sym: invalid tag type");
+  errx(1, "tag_type_to_sym: invalid tag type: %d", tag_type);
   return NULL;
 }
 

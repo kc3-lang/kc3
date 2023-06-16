@@ -72,6 +72,9 @@ ic3_test_cov:
 libc3_test_cov: libc3_test_cov
 	time ./libc3_test_cov
 
+lldb_test: debug
+	if [ -f libc3_test_debug.core ]; then lldb .libs/libc3_test_debug libc3_test_debug.core; else lldb .libs/libc3_test_debug; fi
+
 test: libc3_test
 	time ./libc3_test
 	IC3=${SRC_TOP}/ic3/ic3 time ./ic3_test

@@ -118,3 +118,9 @@ void ident_resolve_module (s_ident *ident, const s_env *env)
   }
 }
 
+bool ident_to_tag_type (const s_ident *ident, e_tag_type *dest)
+{
+  assert(ident);
+  assert(dest);
+  return sym_to_tag_type(ident->sym, dest);
+}

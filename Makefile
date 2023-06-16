@@ -119,6 +119,12 @@ licence:
 	update_header Makefile ${C3_MAKEFILES}
 	update_header libc3/c3.h ${C3_C_SOURCES}
 
+lldb_ic3: debug
+	${MAKE} -C ic3 lldb_ic3
+
+lldb_test: debug
+	${MAKE} -C test lldb_test
+
 test: build
 	${MAKE} -C test test
 

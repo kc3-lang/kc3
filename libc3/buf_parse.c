@@ -321,15 +321,16 @@ sw buf_parse_array_type (s_buf *buf, e_tag_type *dest)
   if (! ident_to_tag_type(&type_ident, &tmp))
     goto restore;
   if ((r = buf_ignore_spaces(buf)) < 0)
-    goto clean;
+    goto restore;
   result += r;
   if ((r = buf_read_1(buf, ")")) <= 0)
-    goto clean;
+    goto restore;
   result += r;
-  *dest = tmp;
   r = result;
+  *dest = tmp;
   goto clean;
  restore:
+  r = 0;
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -349,20 +350,22 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   s_buf_save save_data;
   s_tag tag;
   s_array tmp;
-  e_tag_type type;
+  e_tag_type tag_type;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_parse_array_type(buf, &type)) < 0)
+  if ((r = buf_parse_array_type(buf, &tag_type)) <= 0)
     goto clean;
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  item_size = tag_type_size(type);
-  item = tag_to_pointer(&tag, type);
+  item_size = tag_type_size(tag_type);
+  tag_init(&tag);
+  tag.type = tag_type;
+  tmp.type = tag_type;
+  item = tag_to_pointer(&tag, tag_type);
   tmp.dimension = 0;
-  buf_save_init(buf, &save_data);
   while ((r = buf_read_1(buf, "[")) > 0) {
     result += r;
     tmp.dimension++;
@@ -372,8 +375,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   }
   if (r < 0)
     goto restore;
-  if (! (i = tmp.dimension))
-    goto restore;
+  i = tmp.dimension;
   tmp.dimension++;
   if (! (address = calloc(tmp.dimension, sizeof(uw))))
     err(1, "buf_parse_array: address");
@@ -426,7 +428,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
     err(1, "buf_parse_array: tmp.data");
     return -1;
   }
-  buf_save_restore_rpos(buf, &save_data);
+  buf_save_restore_rpos(buf, &save);
   i = 0;
   while ((r = buf_read_1(buf, "[")) > 0) {
     result += r;
@@ -487,8 +489,8 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
     if (r < 0)
       goto restore;
   }
-
  restore:
+  r = 0;
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -1140,9 +1142,12 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
   goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
-  tag_delete(subject);
-  tag_delete(predicate);
-  tag_delete(object);
+  if (subject)
+    tag_delete(subject);
+  if (predicate)
+    tag_delete(predicate);
+  if (object)
+    tag_delete(object);
  clean:
   buf_save_clean(buf, &save);
   return r;
