@@ -760,6 +760,8 @@ TEST_CASE(buf_parse_array)
   BUF_PARSE_TEST_ARRAY("(u8)[0]", "(u8) [0]");
   BUF_PARSE_TEST_ARRAY("(u8) [0]", "(u8) [0]");
   BUF_PARSE_TEST_ARRAY("(u8) [[0], [0]]", "(u8) [[0], [0]]");
+  BUF_PARSE_TEST_ARRAY("(u8) [[[0, 1], [2, 3]], [[4, 5], [6, 7]]]",
+                       "(u8) [[[0, 1], [2, 3]], [[4, 5], [6, 7]]]");
   BUF_PARSE_TEST_ARRAY("(u8)[ [ 0 ],[ 0 ] ]", "(u8) [[0], [0]]");
 }
 TEST_CASE_END(buf_parse_array)

@@ -341,7 +341,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
 {
   uw *address;
   uw i = 0;
-  void *item;
+  u8 *item;
   sw item_size;
   f_buf_parse parse = 0;
   sw r;
@@ -375,20 +375,42 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   }
   if (r < 0)
     goto restore;
-  i = tmp.dimension;
-  tmp.dimension++;
+  printf("\narray dimension: %lu\n", tmp.dimension);
   if (! (address = calloc(tmp.dimension, sizeof(uw))))
     err(1, "buf_parse_array: address");
   if (! (tmp.dimensions = calloc(tmp.dimension, sizeof(s_array_dimension))))
     err(1, "buf_parse_array: tmp.dimensions");
   parse = tag_type_to_buf_parse(tmp.type);
-  while (i == tmp.dimension - 1) {
-    if ((r = parse(buf, item)) <= 0)
-      goto restore;
-    address[i]++;
+  i = tmp.dimension - 1;
+  buf_save_init(buf, &save_data);
+  /* read dimensions */
+  while (i > 0) {
+    while (i < tmp.dimension - 1 &&
+           (r = buf_read_1(buf, "[")) > 0) {
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore_data;
+      i++;
+    }
+    if (r < 0)
+      goto restore_data;
+    while (i == tmp.dimension - 1) {
+      if ((r = parse(buf, item)) <= 0) {
+        warnx("buf_parse_array: invalid item");
+        r = -1;
+        goto clean;
+      }
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore_data;
+      if ((r = buf_read_1(buf, ",")) < 0)
+        goto restore_data;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore_data;
+      address[i]++;
+    }
     while ((r = buf_read_1(buf, "]")) > 0) {
       if (! tmp.dimensions[i].count) {
         tmp.dimensions[i].count = address[i];
+        printf("\ndimension %lu = %lu\n", i, address[i]);
         if (i == tmp.dimension - 1)
           tmp.dimensions[i].item_size = item_size;
         else
@@ -401,26 +423,13 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
           errx(1, "buf_parse_array: dimension size mismatch");
           return -1;
         }
-      if (! i)
-        goto parse_data;
       i--;
     }
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    if ((r = buf_read_1(buf, ",")) <= 0)
-      goto restore;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    while (i < (tmp.dimension - 1) && (r = buf_read_1(buf, "[")) > 0) {
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
-      i++;
-    }
     if (r < 0)
-      goto restore;
+      goto restore_data;
   }
- parse_data:
-  i = 0;
+  i = tmp.dimension - 1;
+  buf_save_restore_rpos(buf, &save_data);
   tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
   if (! (tmp.data = calloc(1, tmp.size))) {
     buf_save_clean(buf, &save_data);
@@ -428,32 +437,38 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
     err(1, "buf_parse_array: tmp.data");
     return -1;
   }
-  buf_save_restore_rpos(buf, &save);
-  i = 0;
-  while ((r = buf_read_1(buf, "[")) > 0) {
-    result += r;
-    i++;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-  }
-  if (r < 0)
-    goto restore;
-  if (i != tmp.dimension - 1) {
-    buf_save_clean(buf, &save);
-    buf_save_clean(buf, &save_data);
-    assert(! "buf_parse_array: parse_data: dimension mismatch");
-    errx(1, "buf_parse_array: parse_data: dimension mismatch");
-    return -1;
-  }
-  while (i == tmp.dimension - 1 &&
-         address[i] < tmp.dimensions[i].count) {
-    if ((r = parse(buf, item)) <= 0)
-      goto restore;
-    result += r;
-    address[i]++;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
+  /* read data */
+  item = tmp.data;
+  while (i > 0) {
+    while (i < tmp.dimension - 1 &&
+           (r = buf_read_1(buf, "[")) > 0) {
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore_data;
+      result += r;
+      i++;
+    }
+    if (r < 0)
+      goto restore_data;
+    while (i == tmp.dimension - 1) {
+      if ((r = parse(buf, item)) <= 0) {
+        warnx("buf_parse_array: invalid item");
+        r = -1;
+        goto clean;
+      }
+      result += r;
+      item += item_size;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore_data;
+      result += r;
+      if ((r = buf_read_1(buf, ",")) < 0)
+        goto restore_data;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore_data;
+      result += r;
+      address[i]++;
+    }
     while ((r = buf_read_1(buf, "]")) > 0) {
       result += r;
       if (tmp.dimensions[i].count != address[i]) {
@@ -461,36 +476,18 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
         errx(1, "buf_parse_array: dimension size mismatch");
         return -1;
       }
-      if (! i) {
-        *dest = tmp;
-        r = result;
-        goto clean;
-      }
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
       i--;
     }
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-    if ((r = buf_read_1(buf, ",")) <= 0)
-      goto restore;
-    result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-    while (i < (tmp.dimension - 1) && (r = buf_read_1(buf, "[")) > 0) {
-      result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
-      result += r;
-      i++;
-    }
     if (r < 0)
-      goto restore;
+      goto restore_data;
   }
+  buf_save_clean(buf, &save_data);
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore_data:
+  buf_save_clean(buf, &save_data);
  restore:
-  r = 0;
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
