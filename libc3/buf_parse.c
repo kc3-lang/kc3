@@ -389,6 +389,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
            (r = buf_read_1(buf, "[")) > 0) {
       if ((r = buf_ignore_spaces(buf)) < 0)
         goto restore_data;
+      printf("dim %lu [\n", i);
       i++;
     }
     if (r < 0)
@@ -399,18 +400,32 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
         r = -1;
         goto clean;
       }
+      address[i]++;
+      printf("dim %lu addr %lu\n", i, address[i]);
       if ((r = buf_ignore_spaces(buf)) < 0)
         goto restore_data;
       if ((r = buf_read_1(buf, ",")) < 0)
         goto restore_data;
-      if ((r = buf_ignore_spaces(buf)) < 0)
+      if (r > 0) {
+        if ((r = buf_ignore_spaces(buf)) < 0)
+          goto restore_data;
+        printf("dim %lu ,", i);
+        continue;
+      }
+      if ((r = buf_peek_1(buf, "]")) < 0)
         goto restore_data;
-      address[i]++;
+      if (r > 0) {
+        printf("dim %lu ] peek\n", i);
+        goto backtrack;
+      }
     }
+  backtrack:
+    printf("backtrack:\n");
     while ((r = buf_read_1(buf, "]")) > 0) {
+      printf("dim %lu ]\n", i);
       if (! tmp.dimensions[i].count) {
-        tmp.dimensions[i].count = address[i];
-        printf("\ndimension %lu = %lu\n", i, address[i]);
+        tmp.dimensions[i].count = address[i] + 1;
+        printf("\ndim %lu addr %lu\n", i, address[i]);
         if (i == tmp.dimension - 1)
           tmp.dimensions[i].item_size = item_size;
         else
@@ -423,10 +438,18 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
           errx(1, "buf_parse_array: dimension size mismatch");
           return -1;
         }
+      if (! i)
+        goto read_data;
       i--;
     }
     if (r < 0)
       goto restore_data;
+  }
+ read_data:
+  i = 0;
+  while (i < tmp.dimension) {
+    address[i] = 0;
+    i++;
   }
   i = tmp.dimension - 1;
   buf_save_restore_rpos(buf, &save_data);
@@ -439,7 +462,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   }
   /* read data */
   item = tmp.data;
-  while (i > 0) {
+  while (1) {
     while (i < tmp.dimension - 1 &&
            (r = buf_read_1(buf, "[")) > 0) {
       result += r;
@@ -457,18 +480,26 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
         goto clean;
       }
       result += r;
+      address[i]++;
       item += item_size;
       if ((r = buf_ignore_spaces(buf)) < 0)
         goto restore_data;
       result += r;
       if ((r = buf_read_1(buf, ",")) < 0)
         goto restore_data;
-      result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
+      if (r > 0) {
+        result += r;
+        if ((r = buf_ignore_spaces(buf)) < 0)
+          goto restore_data;
+        result += r;
+        continue;
+      }
+      if ((r = buf_peek_1(buf, "]")) < 0)
         goto restore_data;
-      result += r;
-      address[i]++;
+      if (r > 0)
+        goto backtrack_data;
     }
+  backtrack_data:
     while ((r = buf_read_1(buf, "]")) > 0) {
       result += r;
       if (tmp.dimensions[i].count != address[i]) {
@@ -476,11 +507,14 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
         errx(1, "buf_parse_array: dimension size mismatch");
         return -1;
       }
+      if (i == 0)
+        goto ok;
       i--;
     }
     if (r < 0)
       goto restore_data;
   }
+ ok:
   buf_save_clean(buf, &save_data);
   *dest = tmp;
   r = result;
@@ -2235,8 +2269,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_array(buf, dest)) != 0 ||
-      (r = buf_parse_tag_bool(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_bool(buf, dest)) != 0 ||
       (r = buf_parse_tag_character(buf, dest)) != 0)
     goto end;
   if ((r = buf_parse_tag_integer(buf, dest)) != 0) {
@@ -2251,7 +2284,9 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_ident(buf, dest)) != 0 ||
-      (r = buf_parse_tag_sym(buf, dest)) != 0)
+      (r = buf_parse_tag_sym(buf, dest)) != 0 ||
+      (r = buf_parse_tag_array(buf, dest)) != 0)
+      
     goto end;
   goto restore;
  end:

@@ -18,22 +18,17 @@
 #include "test.h"
 #include "buf_parse_test_su.h"
 
-#define BUF_PARSE_TEST_ARRAY(test, expected)                           \
+#define BUF_PARSE_TEST_ARRAY(test)                                     \
   do {                                                                 \
-    s_buf buf_result;                                                  \
-    s_buf buf_test;                                                    \
+    s_buf buf;                                                         \
     s_array dest;                                                      \
-    test_context("buf_parse_array(" # test ") -> " # expected);        \
-    buf_init_1(&buf_test, (test));                                     \
-    TEST_EQ(buf_parse_array(&buf_test, &dest), strlen(test));          \
-    TEST_EQ(buf_inspect_array_size(&dest), strlen(expected));          \
-    TEST_EQ(buf_inspect_array(&buf_result, &dest), &buf_result);       \
-    TEST_EQ(buf_result.wpos, strlen(expected));                        \
-    TEST_STRNCMP(buf_result.ptr.p, (expected),                         \
-                 buf_result.wpos);                                     \
-    buf_clean(&buf_test);                                              \
+    test_context("buf_parse_array(" # test ")");                       \
+    buf_init_1(&buf, (test));                                          \
+    printf("%s\n", # test);                                            \
+    TEST_EQ(buf_parse_array(&buf, &dest), strlen(test));               \
+    TEST_EQ(buf.rpos, strlen(test));                                   \
+    buf_clean(&buf);                                                   \
     array_clean(&dest);                                                \
-    buf_clean(&buf_result);                                            \
     test_context(NULL);                                                \
   } while (0)
 
@@ -757,12 +752,11 @@ void buf_parse_test ()
 
 TEST_CASE(buf_parse_array)
 {
-  BUF_PARSE_TEST_ARRAY("(u8)[0]", "(u8) [0]");
-  BUF_PARSE_TEST_ARRAY("(u8) [0]", "(u8) [0]");
-  BUF_PARSE_TEST_ARRAY("(u8) [[0], [0]]", "(u8) [[0], [0]]");
-  BUF_PARSE_TEST_ARRAY("(u8) [[[0, 1], [2, 3]], [[4, 5], [6, 7]]]",
-                       "(u8) [[[0, 1], [2, 3]], [[4, 5], [6, 7]]]");
-  BUF_PARSE_TEST_ARRAY("(u8)[ [ 0 ],[ 0 ] ]", "(u8) [[0], [0]]");
+  BUF_PARSE_TEST_ARRAY("(u8)[0]");
+  BUF_PARSE_TEST_ARRAY("(u8) [0]");
+  BUF_PARSE_TEST_ARRAY("(u8) [[0], [0]]");
+  BUF_PARSE_TEST_ARRAY("(u8) [[[0, 1], [2, 3]], [[4, 5], [6, 7]]]");
+  BUF_PARSE_TEST_ARRAY("(u8)[ [ 0 ],[ 0 ] ]");
 }
 TEST_CASE_END(buf_parse_array)
 

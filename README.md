@@ -1,10 +1,19 @@
 # C3 v0.1
 
-C3 is a programming language project, inspired by C, Elixir and
-Common Lisp. It could be described as C with Elixir modules,
+C3 is a programming language with meta-programmation and a graph
+database embedded into the language. It aims to be the language
+for semantic programming, and programming the semantic web.
+
+We are currently fundraising for the project to become real and
+there is a working prototype available at
+[https://git.kmx.io/c3-lang/c3/](https://git.kmx.io/c3-lang/c3/),
+please see the [donations](donations.html) page for donations.
+
+C3 is currently a programming language project, inspired by C, Elixir
+and Common Lisp. It could be described as C with Elixir modules,
 pattern matching, and a semantic object system. The idea is to plug
-modules, closures, pattern matching, cl-facts and metaprogramming
-into C99 with a very small set of dependencies.
+modules, closures, pattern matching, a graph database and
+metaprogramming into C99 with an extremely small set of dependencies.
 
 
 ## Structure
@@ -45,10 +54,10 @@ Script interpreter.
 
  - libc3
    - facts
-     - atomic operations
-     - DONE triple serial id
      - negative facts : 4 + 2n = not 3 + 2n
      - with ignore variables
+     - DONE atomic operations
+     - DONE triple serial id
    - math
      - floating point numbers
    - boolean operators
