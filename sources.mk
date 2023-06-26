@@ -5,12 +5,12 @@ C3_CONFIGURES = \
 	c3s/update_sources \
 	ic3/configure \
 	ic3/update_sources \
-	libc3/configure \
 	libc3/update_sources \
+	libc3/configure \
 	libtommath/configure \
 	libtommath/update_sources \
-	test/update_sources \
 	test/configure \
+	test/update_sources \
 	ucd2c/configure \
 
 C3_MAKEFILES = \
@@ -34,14 +34,10 @@ C3_C_SOURCES = \
 	ic3/linenoise.c \
 	libc3/arg.c \
 	libc3/arg.h \
-	libc3/set__fact.c \
-	libc3/set__fact.h \
-	libc3/set__tag.c \
-	libc3/set__tag.h \
-	libc3/set_cursor__fact.c \
-	libc3/set_cursor__fact.h \
-	libc3/set_cursor__tag.c \
-	libc3/set_cursor__tag.h \
+	libc3/skiplist__fact.c \
+	libc3/skiplist__fact.h \
+	libc3/skiplist_node__fact.c \
+	libc3/skiplist_node__fact.h \
 	libc3/binding.c \
 	libc3/binding.h \
 	libc3/facts.c \
@@ -49,12 +45,20 @@ C3_C_SOURCES = \
 	libc3/array.c \
 	libc3/array.h \
 	libc3/buf.c \
+	libc3/buf_parse.c \
+	libc3/integer.h \
+	libc3/types.h \
+	libc3/type.c \
+	libc3/set__fact.c \
+	libc3/set__fact.h \
+	libc3/set__tag.c \
+	libc3/set__tag.h \
+	libc3/set_cursor__fact.c \
 	libc3/buf_file.c \
 	libc3/buf_file.h \
 	libc3/bool.c \
 	libc3/io.h \
 	libc3/io.c \
-	libc3/buf_parse.c \
 	libc3/abs.h \
 	libc3/ceiling.c \
 	libc3/buf_parse_c.c \
@@ -63,14 +67,6 @@ C3_C_SOURCES = \
 	libc3/buf_parse.h \
 	libc3/compare.c \
 	libc3/buf_inspect.c \
-	libc3/set_item__fact.c \
-	libc3/set_item__fact.h \
-	libc3/set_item__tag.c \
-	libc3/set_item__tag.h \
-	libc3/skiplist__fact.c \
-	libc3/skiplist__fact.h \
-	libc3/skiplist_node__fact.c \
-	libc3/skiplist_node__fact.h \
 	libc3/call.c \
 	libc3/bool.h \
 	libc3/buf_save.h \
@@ -88,6 +84,13 @@ C3_C_SOURCES = \
 	libc3/tag.h \
 	libc3/sign.h \
 	libc3/buf.h \
+	libc3/set_cursor__fact.h \
+	libc3/set_cursor__tag.c \
+	libc3/set_cursor__tag.h \
+	libc3/set_item__fact.c \
+	libc3/set_item__fact.h \
+	libc3/set_item__tag.c \
+	libc3/set_item__tag.h \
 	libc3/ident.c \
 	libc3/error_handler.c \
 	libc3/frame.c \
@@ -131,9 +134,7 @@ C3_C_SOURCES = \
 	libc3/module.c \
 	libc3/quote.c \
 	libc3/quote.h \
-	libc3/integer.h \
 	libc3/character.c \
-	libc3/types.h \
 	libc3/cfn.c \
 	libc3/fn.c \
 	libc3/module.h \
@@ -151,6 +152,31 @@ C3_C_SOURCES = \
 	libc3/tuple.h \
 	libc3/ucd.c \
 	libc3/ucd.h \
+	libc3/buf_parse_s8.h \
+	libc3/type.h \
+	libc3/buf_parse_s.h.in \
+	libc3/buf_parse_u.h.in \
+	libc3/buf_parse_s16.h \
+	libc3/buf_parse_s32.h \
+	libc3/buf_parse_s64.h \
+	libc3/buf_parse_sw.h \
+	libc3/buf_parse_u8.h \
+	libc3/buf_parse_u16.h \
+	libc3/buf_parse_u32.h \
+	libc3/buf_parse_u64.h \
+	libc3/buf_parse_uw.h \
+	libc3/buf_parse_s8.c \
+	libc3/buf_parse_s16.c \
+	libc3/buf_parse_s.c.in \
+	libc3/buf_parse_s32.c \
+	libc3/buf_parse_s64.c \
+	libc3/buf_parse_sw.c \
+	libc3/buf_parse_u8.c \
+	libc3/buf_parse_u16.c \
+	libc3/buf_parse_u.c.in \
+	libc3/buf_parse_u32.c \
+	libc3/buf_parse_u64.c \
+	libc3/buf_parse_uw.c \
 	libc3/float.h \
 	test/facts_cursor_test.c \
 	test/facts_test.c \
@@ -178,7 +204,6 @@ C3_C_SOURCES = \
 	test/test.h \
 	test/bool_test.c \
 	test/cfn_test.c \
-	test/buf_parse_test.c \
 	test/buf_parse_test_s8.c \
 	test/buf_parse_test_s32.c \
 	test/buf_parse_test_s64.c \
@@ -191,6 +216,7 @@ C3_C_SOURCES = \
 	test/env_test.c \
 	test/buf_parse_test_su.h \
 	test/character_test.c \
+	test/buf_parse_test.c \
 	test/buf_parse_test_s16.c \
 	test/buf_file_test.c \
 	ucd2c/ucd.h \

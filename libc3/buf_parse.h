@@ -19,7 +19,16 @@
 #ifndef BUF_PARSE_H
 #define BUF_PARSE_H
 
-#include "types.h"
+#include "buf_parse_s8.h"
+#include "buf_parse_s16.h"
+#include "buf_parse_s32.h"
+#include "buf_parse_s64.h"
+#include "buf_parse_sw.h"
+#include "buf_parse_u8.h"
+#include "buf_parse_u16.h"
+#include "buf_parse_u32.h"
+#include "buf_parse_u64.h"
+#include "buf_parse_uw.h"
 
 /**
  * # buf_parse_
@@ -29,16 +38,6 @@
  * Returns number of bytes read in buf, possibly zero in which case
  * dest is untouched.
  */
-
-#define BUF_PARSE_S_PROTOTYPES(bits)                                   \
-  sw buf_parse_s ## bits (s_buf *buf, s ## bits *dest);                \
-  sw buf_parse_s ## bits ## _base (s_buf *buf, const s_str *base,      \
-                                   bool negative, s ## bits *dest)
-
-#define BUF_PARSE_U_PROTOTYPES(bits)                                   \
-  sw buf_parse_u ## bits (s_buf *buf, u ## bits *dest);                \
-  sw buf_parse_u ## bits ## _base (s_buf *buf, const s_str *base,      \
-                                   u ## bits *dest)
 
 sw buf_parse_array (s_buf *buf, s_array *dest);
 sw buf_parse_array_type (s_buf *buf, e_tag_type *type);
@@ -75,11 +74,6 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest);
 sw buf_parse_new_tag (s_buf *buf, s_tag **dest);
 sw buf_parse_ptag (s_buf *buf, p_tag *dest);
 sw buf_parse_quote (s_buf *buf, s_quote *dest);
-BUF_PARSE_S_PROTOTYPES(8);
-BUF_PARSE_S_PROTOTYPES(16);
-BUF_PARSE_S_PROTOTYPES(32);
-BUF_PARSE_S_PROTOTYPES(64);
-BUF_PARSE_S_PROTOTYPES(w);
 sw buf_parse_str (s_buf *buf, s_str *dest);
 sw buf_parse_str_character (s_buf *buf, character *dest);
 sw buf_parse_str_character_unicode (s_buf *buf, character *dest);
@@ -104,12 +98,7 @@ sw buf_parse_tag_str_u8 (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_sym (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest);
 sw buf_parse_tuple (s_buf *buf, s_tuple *dest);
-BUF_PARSE_U_PROTOTYPES(8);
-BUF_PARSE_U_PROTOTYPES(16);
-BUF_PARSE_U_PROTOTYPES(32);
-BUF_PARSE_U_PROTOTYPES(64);
 sw buf_parse_u64_hex (s_buf *buf, u64 *dest);
-BUF_PARSE_U_PROTOTYPES(w);
 sw buf_parse_var (s_buf *buf, void *dest);
 sw buf_parse_void (s_buf *buf, void *dest);
 

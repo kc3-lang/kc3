@@ -10,6 +10,16 @@ HEADERS = \
 	buf_inspect.h \
 	buf_parse.h \
 	buf_parse_c.h \
+	buf_parse_s16.h \
+	buf_parse_s32.h \
+	buf_parse_s64.h \
+	buf_parse_s8.h \
+	buf_parse_sw.h \
+	buf_parse_u16.h \
+	buf_parse_u32.h \
+	buf_parse_u64.h \
+	buf_parse_u8.h \
+	buf_parse_uw.h \
 	buf_save.h \
 	c3.h \
 	c_types.h \
@@ -56,6 +66,7 @@ HEADERS = \
 	sym.h \
 	tag.h \
 	tuple.h \
+	type.h \
 	types.h \
 	ucd.h \
 
@@ -70,6 +81,16 @@ SOURCES = \
 	buf_inspect.c \
 	buf_parse.c \
 	buf_parse_c.c \
+	buf_parse_s16.c \
+	buf_parse_s32.c \
+	buf_parse_s64.c \
+	buf_parse_s8.c \
+	buf_parse_sw.c \
+	buf_parse_u16.c \
+	buf_parse_u32.c \
+	buf_parse_u64.c \
+	buf_parse_u8.c \
+	buf_parse_uw.c \
 	buf_save.c \
 	c3.c \
 	call.c \
@@ -112,6 +133,7 @@ SOURCES = \
 	sym.c \
 	tag.c \
 	tuple.c \
+	type.c \
 	ucd.c \
 
 LO_SOURCES = \
@@ -125,6 +147,16 @@ LO_SOURCES = \
 	buf_inspect.c \
 	buf_parse.c \
 	buf_parse_c.c \
+	buf_parse_s16.c \
+	buf_parse_s32.c \
+	buf_parse_s64.c \
+	buf_parse_s8.c \
+	buf_parse_sw.c \
+	buf_parse_u16.c \
+	buf_parse_u32.c \
+	buf_parse_u64.c \
+	buf_parse_u8.c \
+	buf_parse_uw.c \
 	buf_save.c \
 	c3.c \
 	call.c \
@@ -167,6 +199,7 @@ LO_SOURCES = \
 	sym.c \
 	tag.c \
 	tuple.c \
+	type.c \
 	ucd.c \
 	../libtommath/bn_cutoffs.c \
 	../libtommath/bn_mp_2expt.c \
