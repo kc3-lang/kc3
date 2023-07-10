@@ -31,7 +31,8 @@ sw str_character (const s_str *str, uw position, character *dest)
   s_str s;
   s = *str;
   while (s.size > 0 && i <= position) {
-    if ((r = str_read_character_utf8(&s, &c)) <= 0)
+    r = str_read_character_utf8(&s, &c);
+    if (r <= 0)
       return -1;
     i++;
   }
