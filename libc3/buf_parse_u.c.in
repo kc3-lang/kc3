@@ -126,7 +126,7 @@ sw buf_parse_u_bits$_base (s_buf *buf, const s_str *base,
       goto restore;
     }
     u *= radix;
-    if (u > (u_bits$) (U_BITS$_MAX - digit)) {
+    if (u > ((u_bits$) (U_BITS$_MAX - digit))) {
       warnx("buf_parse_u_bits$_base: +: integer overflow");
       r = -1;
       goto restore;
