@@ -138,7 +138,7 @@ sw buf_parse_s32_base (s_buf *buf, const s_str *base,
       goto restore;
     }
     u *= radix;
-    if (negative ? u > (u32) -S32_MIN - digit :
+    if (negative ? -u < (u32) S32_MIN + digit :
         u > (u32) (S32_MAX - digit)) {
       warnx("buf_parse_s32_base: +: integer overflow");
       r = -1;

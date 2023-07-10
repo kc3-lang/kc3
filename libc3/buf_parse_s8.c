@@ -138,7 +138,7 @@ sw buf_parse_s8_base (s_buf *buf, const s_str *base,
       goto restore;
     }
     u *= radix;
-    if (negative ? u > (u8) -S8_MIN - digit :
+    if (negative ? -u < (u8) S8_MIN + digit :
         u > (u8) (S8_MAX - digit)) {
       warnx("buf_parse_s8_base: +: integer overflow");
       r = -1;

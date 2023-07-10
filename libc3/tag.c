@@ -2022,7 +2022,67 @@ void * tag_to_pointer (s_tag *tag, e_tag_type type)
 
 sw tag_type_size (e_tag_type type)
 {
-  return sizeof(type);
+  switch (type) {
+  case TAG_VOID:
+    return 0;
+  case TAG_ARRAY:
+    assert(! "tag_type_size: TAG_ARRAY: not implemented");
+    errx(1, "tag_type_size: TAG_ARRAY: not implemented");
+    return -1;
+  case TAG_BOOL:
+    return sizeof(bool);
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO:
+    return sizeof(s_call);
+  case TAG_CFN:
+    return sizeof(s_cfn);
+  case TAG_CHARACTER:
+    return sizeof(character);
+  case TAG_F32:
+    return sizeof(f32);
+  case TAG_F64:
+    return sizeof(f64);
+  case TAG_FN:
+    return sizeof(s_fn);
+  case TAG_IDENT:
+    return sizeof(s_ident);
+  case TAG_INTEGER:
+    return sizeof(s_integer);
+  case TAG_S64:
+    return sizeof(s64);
+  case TAG_S32:
+    return sizeof(s32);
+  case TAG_S16:
+    return sizeof(s16);
+  case TAG_S8:
+    return sizeof(s8);
+  case TAG_U8:
+    return sizeof(u8);
+  case TAG_U16:
+    return sizeof(u16);
+  case TAG_U32:
+    return sizeof(u32);
+  case TAG_U64:
+    return sizeof(u64);
+  case TAG_LIST:
+    return sizeof(s_list *);
+  case TAG_PTAG:
+    return sizeof(p_tag);
+  case TAG_QUOTE:
+    return sizeof(s_quote);
+  case TAG_STR:
+    return sizeof(s_str);
+  case TAG_SYM:
+    return sizeof(s_sym *);
+  case TAG_TUPLE:
+    return sizeof(s_tuple);
+  case TAG_VAR:
+    return sizeof(s_tag);
+  }
+  assert(! "tag_type_size: invalid tag type");
+  err(1, "tag_type_size: invalid tag type");
+  return -1;
 }
 
 f_buf_parse tag_type_to_buf_parse (e_tag_type type)

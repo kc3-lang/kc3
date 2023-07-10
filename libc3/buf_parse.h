@@ -40,7 +40,10 @@
  */
 
 sw buf_parse_array (s_buf *buf, s_array *dest);
-sw buf_parse_array_type (s_buf *buf, e_tag_type *type);
+sw buf_parse_array_data (s_buf *buf, s_array *dest);
+sw buf_parse_array_dimension_count (s_buf *buf, s_array *dest);
+sw buf_parse_array_dimensions (s_buf *buf, s_array *dest);
+sw buf_parse_array_type (s_buf *buf, s_array *dest);
 sw buf_parse_bool (s_buf *buf, bool *dest);
 sw buf_parse_call (s_buf *buf, s_call *dest);
 sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);
@@ -101,5 +104,7 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *dest);
 sw buf_parse_u64_hex (s_buf *buf, u64 *dest);
 sw buf_parse_var (s_buf *buf, void *dest);
 sw buf_parse_void (s_buf *buf, void *dest);
+
+sw buf_peek_array_dimensions (s_buf *buf, s_array *dest);
 
 #endif /* BUF_PARSE_H */

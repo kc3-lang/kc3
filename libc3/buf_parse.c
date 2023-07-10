@@ -17,9 +17,154 @@
 #include "../libtommath/tommath.h"
 #include "c3.h"
 
+sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
+                                   uw dimension, uw *address,
+                                   f_buf_parse parse, void *data);
 sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest);
 
-sw buf_parse_array_type (s_buf *buf, e_tag_type *dest)
+sw buf_parse_array_dimension_count (s_buf *buf, s_array *dest)
+{
+  uw r = 1;
+  uw result = 0;
+  s_buf_save save;
+  s_array tmp;
+  assert(buf);
+  assert(dest);
+  tmp = *dest;
+  buf_save_init(buf, &save);
+  tmp.dimensions = 0;
+  if ((r = buf_read_1(buf, "[")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  while ((r = buf_read_1(buf, "[")) > 0) {
+    result += r;
+    tmp.dimensions++;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
+  r = result;
+  *dest = tmp;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
+                                   uw dimension, uw *address,
+                                   f_buf_parse parse, void *data)
+{
+  sw r = 0;
+  sw result = 0;
+  s_buf_save save;
+  s_array tmp;
+  assert(buf);
+  assert(dest);
+  assert(dimension);
+  assert(address);
+  tmp = *dest;
+  buf_save_init(buf, &save);
+ start:
+  if (dimension == dest->dimension - 1) {
+    if ((r = parse(buf, data)) < 0)
+      goto clean;
+    result += r;
+    goto ok;
+  }
+  if ((r = buf_read_1(buf, "[")) < 0)
+    goto clean;
+  if (r) {
+    result += r;
+    dimension++;
+    address[dimension] = 0;
+    if ((r = buf_parse_array_dimensions_rec(buf, &tmp, dimension,
+                                            address, parse,
+                                            data)) <= 0)
+      goto clean;
+    result += r;
+    goto ok;
+  }
+  if (! dimension)
+    goto ok;
+  if ((r = buf_read_1(buf, "]")) < 0)
+    goto clean;
+  if (r) {
+    result += r;
+    dimension--;
+    if (! tmp.dimensions[dimension].count) {
+      tmp.dimensions[dimension].count = address[dimension];
+      tmp.dimensions[dimension].item_size = tmp.dimensions[dimension + 1].count * tmp.dimensions[dimension + 1].item_size;
+    }
+    else if (tmp.dimensions[dimension].count != address[dimension]) {
+      assert(! "buf_parse_array_dimensions_rec: dimension mismatch");
+      errx(1, "buf_parse_array_dimensions_rec: dimension mismatch"
+             ": %lu", dimension);
+      r = -1;
+      goto clean;
+    }
+    goto ok;
+  }
+  if ((r = buf_read_1(buf, ",")) <= 0)
+    goto clean;
+  result += r;
+  address[dimension]++;
+  goto start;
+ ok:
+  r = result;
+  goto clean;
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
+{
+  uw *address;
+  u8 *data;
+  f_buf_parse parse;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  uw size;
+  s_array tmp;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  tmp = *dest;
+  address = calloc(tmp.dimension, sizeof(sw));
+  tmp.dimensions = calloc(tmp.dimension, sizeof(s_array_dimension));
+  size = tag_type_size(tmp.type);
+  parse = tag_type_to_buf_parse(tmp.type);
+  data = calloc(1, size);
+  tmp.dimensions[tmp.dimension - 1].item_size = size;
+  if ((r = buf_parse_array_dimensions_rec(buf, dest,
+                                          dest->dimension - 1,
+                                          address, parse, data)) <= 0)
+    goto clean;
+  r = result;
+  *dest = tmp;
+ clean:
+  buf_save_restore_rpos(buf, &save);
+  return r;
+}
+
+sw buf_peek_array_dimensions (s_buf *buf, s_array *dest)
+{
+  sw r;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  r = buf_parse_array_dimensions(buf, dest);
+  buf_save_restore_rpos(buf, &save);
+  return r;
+}
+
+sw buf_parse_array_type (s_buf *buf, s_array *dest)
 {
   sw r;
   sw result = 0;
@@ -45,7 +190,7 @@ sw buf_parse_array_type (s_buf *buf, e_tag_type *dest)
     goto restore;
   result += r;
   r = result;
-  *dest = tmp;
+  dest->type = tmp;
   goto clean;
  restore:
   r = 0;
@@ -57,188 +202,24 @@ sw buf_parse_array_type (s_buf *buf, e_tag_type *dest)
 
 sw buf_parse_array (s_buf *buf, s_array *dest)
 {
-  uw *address;
-  uw i = 0;
-  u8 *item;
-  sw item_size;
-  f_buf_parse parse = 0;
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_buf_save save_data;
-  s_tag tag;
   s_array tmp;
-  e_tag_type tag_type;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_parse_array_type(buf, &tag_type)) <= 0)
+  tmp = *dest;
+  if ((r = buf_parse_array_type(buf, &tmp)) <= 0)
     goto clean;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
+  if ((r = buf_peek_array_dimensions(buf, &tmp)) < 0)
     goto restore;
-  result += r;
-  item_size = tag_type_size(tag_type);
-  tag_init(&tag);
-  tag.type = tag_type;
-  tmp.type = tag_type;
-  item = tag_to_pointer(&tag, tag_type);
-  tmp.dimension = 0;
-  while ((r = buf_read_1(buf, "[")) > 0) {
-    result += r;
-    tmp.dimension++;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-  }
-  if (r < 0)
+  if ((r = buf_parse_array_data(buf, &tmp)) < 0)
     goto restore;
-  printf("\narray dimension: %lu\n", tmp.dimension);
-  if (! (address = calloc(tmp.dimension, sizeof(uw))))
-    err(1, "buf_parse_array: address");
-  if (! (tmp.dimensions = calloc(tmp.dimension, sizeof(s_array_dimension))))
-    err(1, "buf_parse_array: tmp.dimensions");
-  parse = tag_type_to_buf_parse(tmp.type);
-  i = tmp.dimension - 1;
-  buf_save_init(buf, &save_data);
-  /* read dimensions */
-  while (i > 0) {
-    while (i < tmp.dimension - 1 &&
-           (r = buf_read_1(buf, "[")) > 0) {
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore_data;
-      printf("dim %lu [\n", i);
-      i++;
-    }
-    if (r < 0)
-      goto restore_data;
-    while (i == tmp.dimension - 1) {
-      if ((r = parse(buf, item)) <= 0) {
-        warnx("buf_parse_array: invalid item");
-        r = -1;
-        goto clean;
-      }
-      address[i]++;
-      printf("dim %lu addr %lu\n", i, address[i]);
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore_data;
-      if ((r = buf_read_1(buf, ",")) < 0)
-        goto restore_data;
-      if (r > 0) {
-        if ((r = buf_ignore_spaces(buf)) < 0)
-          goto restore_data;
-        printf("dim %lu ,", i);
-        continue;
-      }
-      if ((r = buf_peek_1(buf, "]")) < 0)
-        goto restore_data;
-      if (r > 0) {
-        printf("dim %lu ] peek\n", i);
-        goto backtrack;
-      }
-    }
-  backtrack:
-    printf("backtrack:\n");
-    while ((r = buf_read_1(buf, "]")) > 0) {
-      printf("dim %lu ]\n", i);
-      if (! tmp.dimensions[i].count) {
-        tmp.dimensions[i].count = address[i] + 1;
-        printf("\ndim %lu addr %lu\n", i, address[i]);
-        if (i == tmp.dimension - 1)
-          tmp.dimensions[i].item_size = item_size;
-        else
-          tmp.dimensions[i].item_size = tmp.dimensions[i + 1].count *
-            tmp.dimensions[i + 1].item_size;
-      }
-      else
-        if (tmp.dimensions[i].count != address[i]) {
-          assert(! "buf_parse_array: dimension size mismatch");
-          errx(1, "buf_parse_array: dimension size mismatch");
-          return -1;
-        }
-      if (! i)
-        goto read_data;
-      i--;
-    }
-    if (r < 0)
-      goto restore_data;
-  }
- read_data:
-  i = 0;
-  while (i < tmp.dimension) {
-    address[i] = 0;
-    i++;
-  }
-  i = tmp.dimension - 1;
-  buf_save_restore_rpos(buf, &save_data);
-  tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
-  if (! (tmp.data = calloc(1, tmp.size))) {
-    buf_save_clean(buf, &save_data);
-    buf_save_clean(buf, &save);
-    err(1, "buf_parse_array: tmp.data");
-    return -1;
-  }
-  /* read data */
-  item = tmp.data;
-  while (1) {
-    while (i < tmp.dimension - 1 &&
-           (r = buf_read_1(buf, "[")) > 0) {
-      result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore_data;
-      result += r;
-      i++;
-    }
-    if (r < 0)
-      goto restore_data;
-    while (i == tmp.dimension - 1) {
-      if ((r = parse(buf, item)) <= 0) {
-        warnx("buf_parse_array: invalid item");
-        r = -1;
-        goto clean;
-      }
-      result += r;
-      address[i]++;
-      item += item_size;
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore_data;
-      result += r;
-      if ((r = buf_read_1(buf, ",")) < 0)
-        goto restore_data;
-      if (r > 0) {
-        result += r;
-        if ((r = buf_ignore_spaces(buf)) < 0)
-          goto restore_data;
-        result += r;
-        continue;
-      }
-      if ((r = buf_peek_1(buf, "]")) < 0)
-        goto restore_data;
-      if (r > 0)
-        goto backtrack_data;
-    }
-  backtrack_data:
-    while ((r = buf_read_1(buf, "]")) > 0) {
-      result += r;
-      if (tmp.dimensions[i].count != address[i]) {
-        assert(! "buf_parse_array: dimension size mismatch");
-        errx(1, "buf_parse_array: dimension size mismatch");
-        return -1;
-      }
-      if (i == 0)
-        goto ok;
-      i--;
-    }
-    if (r < 0)
-      goto restore_data;
-  }
- ok:
-  buf_save_clean(buf, &save_data);
   *dest = tmp;
   r = result;
   goto clean;
- restore_data:
-  buf_save_clean(buf, &save_data);
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:

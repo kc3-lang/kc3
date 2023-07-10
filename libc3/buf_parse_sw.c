@@ -138,7 +138,7 @@ sw buf_parse_sw_base (s_buf *buf, const s_str *base,
       goto restore;
     }
     u *= radix;
-    if (negative ? u > (uw) -SW_MIN - digit :
+    if (negative ? -u < (uw) SW_MIN + digit :
         u > (uw) (SW_MAX - digit)) {
       warnx("buf_parse_sw_base: +: integer overflow");
       r = -1;

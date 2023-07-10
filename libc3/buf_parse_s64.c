@@ -138,7 +138,7 @@ sw buf_parse_s64_base (s_buf *buf, const s_str *base,
       goto restore;
     }
     u *= radix;
-    if (negative ? u > (u64) -S64_MIN - digit :
+    if (negative ? -u < (u64) S64_MIN + digit :
         u > (u64) (S64_MAX - digit)) {
       warnx("buf_parse_s64_base: +: integer overflow");
       r = -1;
