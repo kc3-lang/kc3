@@ -95,6 +95,7 @@ sw buf_parse_uw_base (s_buf *buf, const s_str *base,
   sw result = 0;
   s_buf_save save;
   uw u = 0;
+  uw u2 = 0;
   assert(buf);
   assert(base);
   assert(dest);
@@ -126,7 +127,8 @@ sw buf_parse_uw_base (s_buf *buf, const s_str *base,
       goto restore;
     }
     u *= radix;
-    if (u > ((uw) (UW_MAX - digit))) {
+    u2 = UW_MAX - digit;
+    if (u > u2) {
       warnx("buf_parse_uw_base: +: integer overflow");
       r = -1;
       goto restore;

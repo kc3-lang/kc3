@@ -95,6 +95,7 @@ sw buf_parse_u32_base (s_buf *buf, const s_str *base,
   sw result = 0;
   s_buf_save save;
   u32 u = 0;
+  u32 u2 = 0;
   assert(buf);
   assert(base);
   assert(dest);
@@ -126,7 +127,8 @@ sw buf_parse_u32_base (s_buf *buf, const s_str *base,
       goto restore;
     }
     u *= radix;
-    if (u > ((u32) (U32_MAX - digit))) {
+    u2 = U32_MAX - digit;
+    if (u > u2) {
       warnx("buf_parse_u32_base: +: integer overflow");
       r = -1;
       goto restore;
