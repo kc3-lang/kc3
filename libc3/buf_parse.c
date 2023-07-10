@@ -24,8 +24,8 @@ sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest);
 
 sw buf_parse_array_dimension_count (s_buf *buf, s_array *dest)
 {
-  uw r = 1;
-  uw result = 0;
+  sw r = 1;
+  sw result = 0;
   s_buf_save save;
   s_array tmp;
   assert(buf);
