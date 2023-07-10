@@ -27,12 +27,11 @@ sw str_character (const s_str *str, uw position, character *dest)
 {
   character c;
   uw i = 0;
-  sw r;
+  sw r = 0;
   s_str s;
   s = *str;
   while (s.size > 0 && i <= position) {
-    r = str_read_character_utf8(&s, &c);
-    if (r <= 0)
+    if ((r = str_read_character_utf8(&s, &c)) <= 0)
       return -1;
     i++;
   }
