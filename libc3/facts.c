@@ -366,7 +366,7 @@ void facts_lock_unlock_r (s_facts *facts)
 {
   assert(facts);
   if (pthread_rwlock_unlock(&facts->rwlock))
-    errx(1, "facts_lock_unlock_r: pthread_rwlock_unlock");
+    err(1, "facts_lock_unlock_r: pthread_rwlock_unlock");
 }
 
 void facts_lock_unlock_w (s_facts *facts)
@@ -376,7 +376,7 @@ void facts_lock_unlock_w (s_facts *facts)
   if (! facts->rwlock_count) {
     facts->rwlock_thread = NULL;
     if (pthread_rwlock_unlock(&facts->rwlock))
-      errx(1, "facts_lock_unlock_w: pthread_rwlock_unlock");
+      err(1, "facts_lock_unlock_w: pthread_rwlock_unlock");
   }
 }
 
