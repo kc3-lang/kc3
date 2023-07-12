@@ -37,7 +37,6 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
   assert(buf);
   assert(dest);
   tmp = *dest;
-  buf_save_init(buf, &save);
   if (! (address = calloc(tmp.dimension, sizeof(sw)))) {
     err(1, "buf_parse_array_data: address: %lu %lu",
         tmp.dimension, sizeof(sw));
@@ -54,10 +53,10 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
                                     tmp.dimension - 1,
                                     address, parse, &data)) <= 0)
     goto clean;
-  r = result;
   *dest = tmp;
+  r = result;
+  goto clean;
  clean:
-  buf_save_restore_rpos(buf, &save);
   buf_save_clean(buf, &save);
   return r;
 }
@@ -150,9 +149,13 @@ sw buf_parse_array_dimension_count (s_buf *buf, s_array *dest)
       goto restore;
     result += r;
   }
-  r = result;
-  tmp.dimensions = calloc(tmp.dimension, sizeof(s_array_dimension));
+  if (! (tmp.dimensions = calloc(tmp.dimension,
+                                 sizeof(s_array_dimension)))) {
+    err(1, "tmp.dimensions");
+    return -1;
+  }
   *dest = tmp;
+  r = result;
   goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
