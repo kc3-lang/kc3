@@ -24,6 +24,43 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
                                    uw dimension, uw *address,
                                    f_buf_parse parse, void *data);
 sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest);
+sw buf_peek_array_dimension_count (s_buf *buf, s_array *dest);
+
+sw buf_parse_array (s_buf *buf, s_array *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_array tmp;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  tmp = *dest;
+  if ((r = buf_parse_array_type(buf, &tmp)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_peek_array_dimension_count(buf, &tmp)) <= 0) {
+    warnx("buf_parse_array: buf_peek_array_dimension_count");
+    goto restore;
+  }
+  if ((r = buf_peek_array_dimensions(buf, &tmp)) <= 0) {
+    warnx("buf_parse_array: buf_peek_array_dimensions");
+    goto restore;
+  }
+  if ((r = buf_parse_array_data(buf, &tmp)) < 0) {
+    warnx("buf_parse_array: buf_peek_array_data");
+    goto restore;
+  }
+  result += r;
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
 
 sw buf_parse_array_data (s_buf *buf, s_array *dest)
 {
@@ -183,14 +220,16 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
   parse = tag_type_to_buf_parse(tmp.type);
   data = calloc(1, size);
   tmp.dimensions[tmp.dimension - 1].item_size = size;
-  if ((r = buf_parse_array_dimensions_rec(buf, dest,
-                                          tmp.dimension - 1,
-                                          address, parse, data)) <= 0)
+  if ((r = buf_parse_array_dimensions_rec(buf, dest, 0,
+                                          address, parse, data)) <= 0) {
+    warnx("buf_parse_array_dimensions: buf_parse_array_dimensions_rec");
     goto clean;
-  r = result;
+  }
   *dest = tmp;
- clean:
+  r = result;
+  goto clean;
   buf_save_restore_rpos(buf, &save);
+ clean:
   buf_save_clean(buf, &save);
   return r;
 }
@@ -208,33 +247,59 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   assert(address);
   tmp = *dest;
   buf_save_init(buf, &save);
- start:
   if (dimension == dest->dimension - 1) {
-    if ((r = parse(buf, data)) < 0)
+    if ((r = parse(buf, data)) < 0) {
+      warnx("buf_parse_array_dimensions_rec: parse");
       goto clean;
+    }
     result += r;
     goto ok;
   }
-  if ((r = buf_read_1(buf, "[")) < 0)
-    goto clean;
-  if (r) {
+  else {
+    if ((r = buf_read_1(buf, "{")) <= 0) {
+      warnx("buf_parse_array_dimensions_rec: {");
+      goto clean;
+    }
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0) {
+      warnx("buf_parse_array_dimensions_rec: 1");
+      goto restore;
+    }
     result += r;
     dimension++;
     address[dimension] = 0;
-    if ((r = buf_parse_array_dimensions_rec(buf, &tmp, dimension,
-                                            address, parse,
-                                            data)) <= 0)
-      goto clean;
+    while (1) {
+      if ((r = buf_parse_array_dimensions_rec(buf, &tmp, dimension,
+                                              address, parse,
+                                              data)) <= 0) {
+        warnx("buf_parse_array_dimensions_rec: buf_parse_array_dimensions_rec");
+        goto restore;
+      }
+      address[dimension]++;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0) {
+        warnx("buf_parse_array_dimensions_rec: 2");
+        goto restore;
+      }
+      result += r;
+      if ((r = buf_read_1(buf, ",")) < 0) {
+        warnx("buf_parse_array_dimensions_rec: 3");
+        goto restore;
+      }
+      result += r;
+      if (! r)
+        break;
+      if ((r = buf_ignore_spaces(buf)) < 0) {
+        warnx("buf_parse_array_dimensions_rec: 4");
+        goto restore;
+      }
+      result += r;
+    }
+    if ((r = buf_read_1(buf, "}")) <= 0) {
+      warnx("buf_parse_array_dimensions_rec: }");
+      goto restore;
+    }
     result += r;
-    goto ok;
-  }
-  if (! dimension)
-    goto ok;
-  if ((r = buf_read_1(buf, "]")) < 0)
-    goto clean;
-  if (r) {
-    result += r;
-    dimension--;
     if (! tmp.dimensions[dimension].count) {
       tmp.dimensions[dimension].count = address[dimension];
       tmp.dimensions[dimension].item_size = tmp.dimensions[dimension + 1].count * tmp.dimensions[dimension + 1].item_size;
@@ -242,21 +307,22 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
     else if (tmp.dimensions[dimension].count != address[dimension]) {
       assert(! "buf_parse_array_dimensions_rec: dimension mismatch");
       errx(1, "buf_parse_array_dimensions_rec: dimension mismatch"
-             ": %lu", dimension);
+           ": %lu", dimension);
       r = -1;
-      goto clean;
+      goto restore;
     }
+    if ((r = buf_ignore_spaces(buf)) < 0) {
+      warnx("buf_parse_array_dimensions_rec: 5");
+      goto restore;
+    }
+    result += r;
     goto ok;
   }
-  if ((r = buf_read_1(buf, ",")) <= 0)
-    goto clean;
-  result += r;
-  address[dimension]++;
-  if (dimension)
-    goto start;
  ok:
   r = result;
   goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
   return r;
@@ -292,35 +358,6 @@ sw buf_parse_array_type (s_buf *buf, s_array *dest)
   goto clean;
  restore:
   r = 0;
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
-sw buf_parse_array (s_buf *buf, s_array *dest)
-{
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s_array tmp;
-  assert(buf);
-  assert(dest);
-  buf_save_init(buf, &save);
-  tmp = *dest;
-  if ((r = buf_parse_array_type(buf, &tmp)) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_parse_array_dimension_count(buf, &tmp)) <= 0)
-    goto restore;
-  if ((r = buf_peek_array_dimensions(buf, &tmp)) < 0)
-    goto restore;
-  if ((r = buf_parse_array_data(buf, &tmp)) < 0)
-    goto restore;
-  *dest = tmp;
-  r = result;
-  goto clean;
- restore:
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -2428,6 +2465,17 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest) {
   return r;
 }
 
+sw buf_peek_array_dimension_count (s_buf *buf, s_array *dest)
+{
+  sw r;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  r = buf_parse_array_dimension_count(buf, dest);
+  buf_save_restore_rpos(buf, &save);
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_peek_array_dimensions (s_buf *buf, s_array *dest)
 {
   sw r;
@@ -2435,5 +2483,6 @@ sw buf_peek_array_dimensions (s_buf *buf, s_array *dest)
   buf_save_init(buf, &save);
   r = buf_parse_array_dimensions(buf, dest);
   buf_save_restore_rpos(buf, &save);
+  buf_save_clean(buf, &save);
   return r;
 }
