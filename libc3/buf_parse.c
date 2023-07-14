@@ -172,14 +172,14 @@ sw buf_parse_array_dimension_count (s_buf *buf, s_array *dest)
   assert(dest);
   tmp = *dest;
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "[")) <= 0)
+  if ((r = buf_read_1(buf, "{")) <= 0)
     goto clean;
   result += r;
   tmp.dimension = 1;
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  while ((r = buf_read_1(buf, "[")) > 0) {
+  while ((r = buf_read_1(buf, "{")) > 0) {
     result += r;
     tmp.dimension++;
     if ((r = buf_ignore_spaces(buf)) < 0)
