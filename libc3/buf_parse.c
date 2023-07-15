@@ -220,9 +220,10 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
   parse = tag_type_to_buf_parse(tmp.type);
   data = calloc(1, size);
   tmp.dimensions[tmp.dimension - 1].item_size = size;
-  if ((r = buf_parse_array_dimensions_rec(buf, dest, 0,
-                                          address, parse, data)) <= 0) {
-    warnx("buf_parse_array_dimensions: buf_parse_array_dimensions_rec");
+  if ((r = buf_parse_array_dimensions_rec(buf, &tmp, 0, address,
+                                          parse, data)) <= 0) {
+    warnx("buf_parse_array_dimensions: buf_parse_array_dimensions_rec:"
+          " %ld", r);
     goto clean;
   }
   *dest = tmp;
@@ -230,6 +231,8 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
   goto clean;
   buf_save_restore_rpos(buf, &save);
  clean:
+  free(data);
+  free(address);
   buf_save_clean(buf, &save);
   return r;
 }
@@ -238,7 +241,7 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
                                    uw dimension, uw *address,
                                    f_buf_parse parse, void *data)
 {
-  sw r = 0;
+  sw r;
   sw result = 0;
   s_buf_save save;
   s_array tmp;
@@ -247,81 +250,79 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   assert(address);
   tmp = *dest;
   buf_save_init(buf, &save);
-  if (dimension == dest->dimension - 1) {
-    if ((r = parse(buf, data)) < 0) {
-      warnx("buf_parse_array_dimensions_rec: parse");
-      goto clean;
-    }
-    result += r;
-    goto ok;
+  if ((r = buf_read_1(buf, "{")) <= 0) {
+    warnx("buf_parse_array_dimensions_rec: {");
+    goto clean;
   }
-  else {
-    if ((r = buf_read_1(buf, "{")) <= 0) {
-      warnx("buf_parse_array_dimensions_rec: {");
-      goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0) {
+    warnx("buf_parse_array_dimensions_rec: 1");
+    goto restore;
+  }
+  result += r;
+  dimension++;
+  address[dimension] = 0;
+  while (1) {
+    if (dimension == dest->dimension - 1) {
+      if ((r = parse(buf, data)) < 0) {
+        warnx("buf_parse_array_dimensions_rec: parse");
+        goto clean;
+      }
+      result += r;
     }
-    result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0) {
-      warnx("buf_parse_array_dimensions_rec: 1");
-      goto restore;
-    }
-    result += r;
-    dimension++;
-    address[dimension] = 0;
-    while (1) {
+    else {
       if ((r = buf_parse_array_dimensions_rec(buf, &tmp, dimension,
                                               address, parse,
                                               data)) <= 0) {
         warnx("buf_parse_array_dimensions_rec: buf_parse_array_dimensions_rec");
         goto restore;
       }
-      address[dimension]++;
-      result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0) {
-        warnx("buf_parse_array_dimensions_rec: 2");
-        goto restore;
-      }
-      result += r;
-      if ((r = buf_read_1(buf, ",")) < 0) {
-        warnx("buf_parse_array_dimensions_rec: 3");
-        goto restore;
-      }
-      result += r;
-      if (! r)
-        break;
-      if ((r = buf_ignore_spaces(buf)) < 0) {
-        warnx("buf_parse_array_dimensions_rec: 4");
-        goto restore;
-      }
       result += r;
     }
-    if ((r = buf_read_1(buf, "}")) <= 0) {
-      warnx("buf_parse_array_dimensions_rec: }");
-      goto restore;
-    }
-    result += r;
-    if (! tmp.dimensions[dimension].count) {
-      tmp.dimensions[dimension].count = address[dimension];
-      tmp.dimensions[dimension].item_size = tmp.dimensions[dimension + 1].count * tmp.dimensions[dimension + 1].item_size;
-    }
-    else if (tmp.dimensions[dimension].count != address[dimension]) {
-      assert(! "buf_parse_array_dimensions_rec: dimension mismatch");
-      errx(1, "buf_parse_array_dimensions_rec: dimension mismatch"
-           ": %lu", dimension);
-      r = -1;
-      goto restore;
-    }
+    address[dimension]++;
     if ((r = buf_ignore_spaces(buf)) < 0) {
-      warnx("buf_parse_array_dimensions_rec: 5");
+      warnx("buf_parse_array_dimensions_rec: 2");
       goto restore;
     }
     result += r;
-    goto ok;
+    if ((r = buf_read_1(buf, ",")) < 0) {
+      warnx("buf_parse_array_dimensions_rec: 3");
+      goto restore;
+    }
+    result += r;
+    if (! r)
+      break;
+    if ((r = buf_ignore_spaces(buf)) < 0) {
+      warnx("buf_parse_array_dimensions_rec: 4");
+      goto restore;
+    }
+    result += r;
   }
- ok:
+  if ((r = buf_read_1(buf, "}")) <= 0) {
+    warnx("buf_parse_array_dimensions_rec: }");
+    goto restore;
+  }
+  result += r;
+  if (! tmp.dimensions[dimension].count) {
+    tmp.dimensions[dimension].count = address[dimension];
+    tmp.dimensions[dimension].item_size = tmp.dimensions[dimension + 1].count * tmp.dimensions[dimension + 1].item_size;
+  }
+  else if (tmp.dimensions[dimension].count != address[dimension]) {
+    assert(! "buf_parse_array_dimensions_rec: dimension mismatch");
+    errx(1, "buf_parse_array_dimensions_rec: dimension mismatch"
+         ": %lu", dimension);
+    r = -1;
+    goto restore;
+  }
+  if ((r = buf_ignore_spaces(buf)) < 0) {
+    warnx("buf_parse_array_dimensions_rec: 5");
+    goto restore;
+  }
+  result += r;
   r = result;
   goto clean;
  restore:
+  warnx("buf_parse_array_dimensions_rec: restore");
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
