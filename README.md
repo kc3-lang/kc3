@@ -16,6 +16,30 @@ modules, closures, pattern matching, a graph database and
 metaprogramming into C99 with an extremely small set of dependencies.
 
 
+## Usage
+
+### Compilation
+```sh
+git clone https://git.kmx.io/c3-lang/c3.git
+cd c3
+git submodule init
+git submodule update
+./configure
+make
+```
+
+### Running the tests
+```sh
+make test
+make test_asan
+```
+
+### Running gdb
+```sh
+make gdb_test
+```
+
+
 ## Structure
 
 ### libc3
