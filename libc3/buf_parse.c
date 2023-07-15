@@ -39,6 +39,9 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   if ((r = buf_parse_array_type(buf, &tmp)) <= 0)
     goto clean;
   result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
   if ((r = buf_peek_array_dimension_count(buf, &tmp)) <= 0) {
     warnx("buf_parse_array: buf_peek_array_dimension_count");
     goto restore;
@@ -68,31 +71,29 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
   u8 *data;
   f_buf_parse parse;
   sw r;
-  uw size;
   s_array tmp;
   assert(buf);
   assert(dest);
   tmp = *dest;
   address = calloc(tmp.dimension, sizeof(sw));
-  size = tag_type_size(tmp.type);
   parse = tag_type_to_buf_parse(tmp.type);
-  tmp.data = calloc(tmp.dimensions[0].count * tmp.dimensions[0].item_size;
+  tmp.data = calloc(tmp.dimensions[0].count, tmp.dimensions[0].item_size);
+  data = tmp.data;
   if ((r = buf_parse_array_data_rec(buf, &tmp, 0, address,
-                                    parse, data)) <= 0) {
+                                    parse, &data)) <= 0) {
     warnx("buf_parse_array_data: buf_parse_array_data_rec:"
           " %ld", r);
     goto clean;
   }
   *dest = tmp;
  clean:
-  free(data);
   free(address);
   return r;
 }
 
 sw buf_parse_array_data_rec (s_buf *buf, s_array *dest,
-                                   uw dimension, uw *address,
-                                   f_buf_parse parse, void *data)
+                             uw dimension, uw *address,
+                             f_buf_parse parse, u8 **data)
 {
   sw r;
   sw result = 0;
