@@ -356,8 +356,6 @@ void facts_lock_r (s_facts *facts)
   pthread_t thread;
   assert(facts);
   thread = pthread_self();
-  if (facts->rwlock_thread == thread)
-    return;
   if (pthread_rwlock_rdlock(&facts->rwlock))
     errx(1, "facts_lock_r: pthread_rwlock_rdlock");
 }
@@ -374,9 +372,9 @@ void facts_lock_unlock_w (s_facts *facts)
   assert(facts);
   facts->rwlock_count--;
   if (! facts->rwlock_count) {
+    facts->rwlock_thread = 0;
     if (pthread_rwlock_unlock(&facts->rwlock))
       errx(1, "facts_lock_unlock_w: pthread_rwlock_unlock");
-    facts->rwlock_thread = 0;
   }
 }
 
