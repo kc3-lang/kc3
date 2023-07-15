@@ -302,7 +302,8 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   result += r;
   if (! tmp.dimensions[dimension].count) {
     tmp.dimensions[dimension].count = address[dimension];
-    tmp.dimensions[dimension].item_size = tmp.dimensions[dimension + 1].count * tmp.dimensions[dimension + 1].item_size;
+    if (dimension < tmp.dimension - 1)
+      tmp.dimensions[dimension].item_size = tmp.dimensions[dimension + 1].count * tmp.dimensions[dimension + 1].item_size;
   }
   else if (tmp.dimensions[dimension].count != address[dimension]) {
     assert(! "buf_parse_array_dimensions_rec: dimension mismatch");
