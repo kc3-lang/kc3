@@ -228,8 +228,6 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
   }
   *dest = tmp;
   r = result;
-  goto clean;
-  buf_save_restore_rpos(buf, &save);
  clean:
   free(data);
   free(address);
@@ -260,7 +258,6 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
     goto restore;
   }
   result += r;
-  dimension++;
   address[dimension] = 0;
   while (1) {
     if (dimension == dest->dimension - 1) {
@@ -271,7 +268,7 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
       result += r;
     }
     else {
-      if ((r = buf_parse_array_dimensions_rec(buf, &tmp, dimension,
+      if ((r = buf_parse_array_dimensions_rec(buf, &tmp, dimension + 1,
                                               address, parse,
                                               data)) <= 0) {
         warnx("buf_parse_array_dimensions_rec: buf_parse_array_dimensions_rec");
@@ -314,11 +311,6 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
     r = -1;
     goto restore;
   }
-  if ((r = buf_ignore_spaces(buf)) < 0) {
-    warnx("buf_parse_array_dimensions_rec: 5");
-    goto restore;
-  }
-  result += r;
   r = result;
   goto clean;
  restore:
@@ -2472,7 +2464,8 @@ sw buf_peek_array_dimension_count (s_buf *buf, s_array *dest)
   s_buf_save save;
   buf_save_init(buf, &save);
   r = buf_parse_array_dimension_count(buf, dest);
-  buf_save_restore_rpos(buf, &save);
+  if (r > 0)
+    buf_save_restore_rpos(buf, &save);
   buf_save_clean(buf, &save);
   return r;
 }
@@ -2483,7 +2476,8 @@ sw buf_peek_array_dimensions (s_buf *buf, s_array *dest)
   s_buf_save save;
   buf_save_init(buf, &save);
   r = buf_parse_array_dimensions(buf, dest);
-  buf_save_restore_rpos(buf, &save);
+  if (r > 0)
+    buf_save_restore_rpos(buf, &save);
   buf_save_clean(buf, &save);
   return r;
 }
