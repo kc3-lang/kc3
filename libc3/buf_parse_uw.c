@@ -87,7 +87,7 @@ sw buf_parse_uw (s_buf *buf, uw *dest)
 }
 
 sw buf_parse_uw_base (s_buf *buf, const s_str *base,
-                                 uw *dest)
+                           uw *dest)
 {
   u8 digit;
   sw r;

@@ -78,6 +78,10 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
   address = calloc(tmp.dimension, sizeof(sw));
   parse = tag_type_to_buf_parse(tmp.type);
   tmp.data = calloc(tmp.dimensions[0].count, tmp.dimensions[0].item_size);
+  printf("tmp.data: %lu * %lu = %lu\n",
+         tmp.dimensions[0].count,
+         tmp.dimensions[0].item_size,
+         tmp.dimensions[0].count * tmp.dimensions[0].item_size);
   data = tmp.data;
   if ((r = buf_parse_array_data_rec(buf, &tmp, 0, address,
                                     parse, &data)) <= 0) {
