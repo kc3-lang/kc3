@@ -504,4 +504,7 @@ struct facts_with_cursor {
   pthread_mutex_t mutex;
 };
 
+/* Functions */
+typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
+
 #endif /* TYPES_H */

@@ -49,10 +49,6 @@
   BUF_INSPECT_U_BASE_PROTOTYPES(bits, hexadecimal);                    \
   BUF_INSPECT_U_BASE_PROTOTYPES(bits, octal)
 
-typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
-
-f_buf_inspect buf_inspect (e_tag_type type);
-
 sw buf_inspect_array (s_buf *buf, const s_array *a);
 sw buf_inspect_array_size (const s_array *a);
 sw buf_inspect_bool (s_buf *buf, const bool *b);

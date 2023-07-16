@@ -97,11 +97,12 @@ e_bool        tag_is_number (const s_tag *tag);
 e_bool        tag_is_unbound_var (const s_tag *tag);
 s8            tag_number_compare (const s_tag *a, const s_tag *b);
 sw            tag_size (const s_tag *tag);
-sw            tag_type_size (e_tag_type type);
-f_buf_parse   tag_type_to_buf_parse (e_tag_type type);
 void *        tag_to_ffi_pointer (s_tag *tag, const s_sym *type);
 ffi_type      tag_to_ffi_type(const s_tag *tag);
 void *        tag_to_pointer (s_tag *tag, e_tag_type type);
+sw            tag_type_size (e_tag_type type);
+f_buf_inspect tag_type_to_buf_inspect (e_tag_type type);
+f_buf_parse   tag_type_to_buf_parse (e_tag_type type);
 s8 *          tag_type_to_string (e_tag_type type);
 const s_sym * tag_type_to_sym (e_tag_type tag_type);
 

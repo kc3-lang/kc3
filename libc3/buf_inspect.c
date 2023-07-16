@@ -176,68 +176,6 @@
   DEF_BUF_INSPECT_U_BASE(bits, hexadecimal)                            \
   DEF_BUF_INSPECT_U_BASE(bits, octal)
 
-f_buf_inspect buf_inspect (e_tag_type type)
-{
-  switch (type) {
-  case TAG_VOID:
-    return (f_buf_inspect) buf_inspect_void;
-  case TAG_ARRAY:
-  case TAG_BOOL:
-    return (f_buf_inspect) buf_inspect_bool;
-  case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
-    return (f_buf_inspect) buf_inspect_call;
-  case TAG_CFN:
-    return (f_buf_inspect) buf_inspect_cfn;
-  case TAG_CHARACTER:
-    return (f_buf_inspect) buf_inspect_character;
-  case TAG_F32:
-    return (f_buf_inspect) buf_inspect_f32;
-  case TAG_F64:
-    return (f_buf_inspect) buf_inspect_f64;
-  case TAG_FN:
-    return (f_buf_inspect) buf_inspect_fn;
-  case TAG_IDENT:
-    return (f_buf_inspect) buf_inspect_ident;
-  case TAG_INTEGER:
-    return (f_buf_inspect) buf_inspect_integer;
-  case TAG_S64:
-    return (f_buf_inspect) buf_inspect_s64;
-  case TAG_S32:
-    return (f_buf_inspect) buf_inspect_s32;
-  case TAG_S16:
-    return (f_buf_inspect) buf_inspect_s16;
-  case TAG_S8:
-    return (f_buf_inspect) buf_inspect_s8;
-  case TAG_U8:
-    return (f_buf_inspect) buf_inspect_u8;
-  case TAG_U16:
-    return (f_buf_inspect) buf_inspect_u16;
-  case TAG_U32:
-    return (f_buf_inspect) buf_inspect_u32;
-  case TAG_U64:
-    return (f_buf_inspect) buf_inspect_u64;
-  case TAG_LIST:
-    return (f_buf_inspect) buf_inspect_list;
-  case TAG_PTAG:
-    return (f_buf_inspect) buf_inspect_ptag;
-  case TAG_QUOTE:
-    return (f_buf_inspect) buf_inspect_quote;
-  case TAG_STR:
-    return (f_buf_inspect) buf_inspect_str;
-  case TAG_SYM:
-    return (f_buf_inspect) buf_inspect_sym;
-  case TAG_TUPLE:
-    return (f_buf_inspect) buf_inspect_tuple;
-  case TAG_VAR:
-    return (f_buf_inspect) buf_inspect_var;
-  }
-  assert(! "buf_inspect: unknown tag type");
-  errx(1, "buf_inspect: unknown tag type");
-  return NULL;
-}
-
 sw buf_inspect_array (s_buf *buf, const s_array *a)
 {
   uw *address;
@@ -252,15 +190,15 @@ sw buf_inspect_array (s_buf *buf, const s_array *a)
     errx(1, "buf_inspect_array: array of array");
     return -1;
   }
-  inspect = buf_inspect(a->type);
+  inspect = tag_type_to_buf_inspect(a->type);
   if (! (address = calloc(a->dimension, sizeof(uw)))) {
-    err(1, "buf_inspect_array");
+    err(1, "buf_inspect_array: calloc");
     return -1;
   }
   while (i < a->dimension) {
     if (i < a->dimension - 1) {
       if (! address[i]) {
-        if ((r = buf_write_1(buf, "[")) < 0)
+        if ((r = buf_write_1(buf, "{")) < 0)
           return r;
         result += r;
       }
@@ -272,7 +210,7 @@ sw buf_inspect_array (s_buf *buf, const s_array *a)
     }
     if (i == a->dimension - 1) {
       while (address[i] == a->dimensions[i].count) {
-        if ((r = buf_write_1(buf, "],\n")) < 0)
+        if ((r = buf_write_1(buf, "}")) < 0)
           return r;
         result += r;
         if (! i)
