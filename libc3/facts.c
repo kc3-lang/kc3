@@ -365,6 +365,8 @@ void facts_lock_r (s_facts *facts)
 void facts_lock_unlock_r (s_facts *facts)
 {
   assert(facts);
+  if (facts->rwlock_thread == thread)
+    return;
   if (pthread_rwlock_unlock(&facts->rwlock))
     errx(1, "facts_lock_unlock_r: pthread_rwlock_unlock");
 }
