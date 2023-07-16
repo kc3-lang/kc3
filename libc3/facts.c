@@ -393,7 +393,7 @@ void facts_lock_w (s_facts *facts)
     if (pthread_rwlock_wrlock(&facts->rwlock))
       errx(1, "facts_lock_w: pthread_rwlock_wrlock");
     facts->rwlock_thread = thread;
-    facts->rwlock_count = 1;
+    facts->rwlock_count = 0;
   }
   facts->rwlock_count++;
 }
