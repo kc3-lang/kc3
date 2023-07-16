@@ -121,12 +121,12 @@ sw buf_parse_array_data_rec (s_buf *buf, s_array *dest,
   address[dimension] = 0;
   while (1) {
     if (dimension == tmp.dimension - 1) {
-      if ((r = parse(buf, data)) < 0) {
+      if ((r = parse(buf, *data)) < 0) {
         warnx("buf_parse_array_data_rec: parse");
         goto clean;
       }
       result += r;
-      data += tmp.dimensions[dimension].item_size;
+      *data += tmp.dimensions[dimension].item_size;
     }
     else {
       if ((r = buf_parse_array_data_rec(buf, &tmp, dimension + 1,
