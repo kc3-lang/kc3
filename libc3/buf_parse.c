@@ -120,13 +120,13 @@ sw buf_parse_array_data_rec (s_buf *buf, s_array *dest,
   result += r;
   address[dimension] = 0;
   while (1) {
-    if (dimension == dest->dimension - 1) {
+    if (dimension == tmp.dimension - 1) {
       if ((r = parse(buf, data)) < 0) {
         warnx("buf_parse_array_data_rec: parse");
         goto clean;
       }
       result += r;
-      data += tmp.dimensions[tmp.dimension - 1].item_size;
+      data += tmp.dimensions[dimension].item_size;
     }
     else {
       if ((r = buf_parse_array_data_rec(buf, &tmp, dimension + 1,
@@ -156,6 +156,11 @@ sw buf_parse_array_data_rec (s_buf *buf, s_array *dest,
     }
     result += r;
   }
+  if ((r = buf_ignore_spaces(buf)) < 0) {
+    warnx("buf_parse_array_data_rec: 4");
+    goto restore;
+  }
+  result += r;
   if ((r = buf_read_1(buf, "}")) <= 0) {
     warnx("buf_parse_array_data_rec: }");
     goto restore;
