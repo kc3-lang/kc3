@@ -364,7 +364,9 @@ void facts_lock_r (s_facts *facts)
 
 void facts_lock_unlock_r (s_facts *facts)
 {
+  pthread_t thread;
   assert(facts);
+  thread = pthread_self();
   if (facts->rwlock_thread == thread)
     return;
   if (pthread_rwlock_unlock(&facts->rwlock))
