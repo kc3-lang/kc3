@@ -24,7 +24,6 @@
     s_array dest;                                                      \
     test_context("buf_parse_array(" # test ")");                       \
     buf_init_1(&buf, (test));                                          \
-    printf("%s\n", # test);                                            \
     TEST_EQ(buf_parse_array(&buf, &dest), strlen(test));               \
     TEST_EQ(buf.rpos, strlen(test));                                   \
     buf_clean(&buf);                                                   \

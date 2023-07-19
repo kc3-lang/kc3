@@ -176,53 +176,110 @@
   DEF_BUF_INSPECT_U_BASE(bits, hexadecimal)                            \
   DEF_BUF_INSPECT_U_BASE(bits, octal)
 
-sw buf_inspect_array (s_buf *buf, const s_array *a)
+sw buf_inspect_array_data (s_buf *buf, const s_array *array);
+sw buf_inspect_array_type (s_buf *buf, const s_array *array);
+
+sw buf_inspect_array_data (s_buf *buf, const s_array *array);
+sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
+                               uw dimension, uw *address,
+                               f_buf_inspect inspect, u8 **data);
+sw buf_inspect_tag_type (s_buf *buf, e_tag_type type);
+
+sw buf_inspect_array_data (s_buf *buf, const s_array *array)
 {
   uw *address;
-  uw i = 0;
+  u8 *data;
   f_buf_inspect inspect;
   sw r;
-  sw result = 0;
-  assert(a);
   assert(buf);
-  if (a->type == TAG_ARRAY) {
-    assert(! "buf_inspect_array: array of array");
-    errx(1, "buf_inspect_array: array of array");
-    return -1;
-  }
-  inspect = tag_type_to_buf_inspect(a->type);
-  if (! (address = calloc(a->dimension, sizeof(uw)))) {
-    err(1, "buf_inspect_array: calloc");
-    return -1;
-  }
-  while (i < a->dimension) {
-    if (i < a->dimension - 1) {
-      if (! address[i]) {
-        if ((r = buf_write_1(buf, "{")) < 0)
-          return r;
-        result += r;
-      }
+  assert(array);
+  address = calloc(array->dimension, sizeof(uw));
+  inspect = tag_type_to_buf_inspect(array->type);
+  data = array->data;
+  r = buf_inspect_array_data_rec(buf, array, 0, address,
+                                 inspect, &data);
+  return r;
+}
+
+sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
+                               uw dimension, uw *address,
+                               f_buf_inspect inspect, u8 **data)
+{
+  sw r;
+  sw result = 0;
+  if ((r = buf_write_1(buf, "{")) <= 0)
+    goto clean;
+  result += r;
+  address[dimension] = 0;
+  while (1) {
+    if (dimension == array->dimension - 1) {
+      if ((r = inspect(buf, *data)) <= 0)
+        goto clean;
+      result += r;
+      *data += array->dimensions[dimension].item_size;
     }
-    if (i == a->dimension - 1) {
-      if ((r = inspect(buf, array_data(a, address))) < 0)
-        return r;
+    else {
+      if ((r = buf_inspect_array_data_rec(buf, array, dimension + 1,
+                                          address, inspect, data)) <= 0)
+        goto clean;
       result += r;
     }
-    if (i == a->dimension - 1) {
-      while (address[i] == a->dimensions[i].count) {
-        if ((r = buf_write_1(buf, "}")) < 0)
-          return r;
-        result += r;
-        if (! i)
-          return result;
-        i--;
-      }
+    address[dimension]++;
+    if (address[dimension] == array->dimensions[dimension].count)
       break;
-    }
-    address[i]++;
-    i++;
+    if ((r = buf_write_1(buf, ", ")) <= 0)
+      goto clean;
+    result += r;
   }
-  return result;
+  if ((r = buf_write_1(buf, "}")) <= 0)
+    goto clean;
+  result += r;
+  r = result;
+ clean:
+  return r;
+}
+
+sw buf_inspect_array_type (s_buf *buf, const s_array *array)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(array);
+  if ((r = buf_write_1(buf, "(")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_inspect_tag_type(buf, array->type)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_write_1(buf, ")")) <= 0)
+    goto clean;
+  result += r;
+  r = result;
+ clean:
+  return r;
+}
+
+sw buf_inspect_array (s_buf *buf, const s_array *array)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(array);
+  if ((r = buf_inspect_array_type(buf, array)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    goto clean;
+  result += r;
+  if ((r = buf_inspect_array_data(buf, array)) < 0) {
+    warnx("buf_inspect_array: buf_inspect_array_data");
+    goto clean;
+  }
+  result += r;
+  r = result;
+ clean:
+  return r;
+
 }
 
 sw buf_inspect_array_size (const s_array *a)
@@ -1412,6 +1469,69 @@ sw buf_inspect_tag_size (const s_tag *tag)
   }
   assert(! "buf_inspect_tag_size: unknown tag type");
   errx(1, "buf_inspect_tag_size: unknown tag type");
+  return -1;
+}
+
+sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
+{
+  switch(type) {
+  case TAG_VOID:
+    return buf_write_1(buf, "void");
+  case TAG_ARRAY:
+    return buf_write_1(buf, "array");
+  case TAG_BOOL:
+    return buf_write_1(buf, "bool");
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO:
+    return buf_write_1(buf, "call");    
+  case TAG_CFN:
+    return buf_write_1(buf, "cfn");
+  case TAG_CHARACTER:
+    return buf_write_1(buf, "character");
+  case TAG_F32:
+    return buf_write_1(buf, "f32");
+  case TAG_F64:
+    return buf_write_1(buf, "f64");
+  case TAG_FN:
+    return buf_write_1(buf, "fn");
+  case TAG_IDENT:
+    return buf_write_1(buf, "ident");
+  case TAG_INTEGER:
+    return buf_write_1(buf, "integer");
+  case TAG_LIST:
+    return buf_write_1(buf, "list");
+  case TAG_PTAG:
+    return buf_write_1(buf, "ptag");
+  case TAG_QUOTE:
+    return buf_write_1(buf, "quote");
+  case TAG_S8:
+    return buf_write_1(buf, "s8");
+  case TAG_S16:
+    return buf_write_1(buf, "s16");
+  case TAG_S32:
+    return buf_write_1(buf, "s32");
+  case TAG_S64:
+    return buf_write_1(buf, "s64");
+  case TAG_STR:
+    return buf_write_1(buf, "str");
+  case TAG_SYM:
+    return buf_write_1(buf, "sym");
+  case TAG_TUPLE:
+    return buf_write_1(buf, "tuple");
+  case TAG_U8:
+    return buf_write_1(buf, "u8");
+  case TAG_U16:
+    return buf_write_1(buf, "u16");
+  case TAG_U32:
+    return buf_write_1(buf, "u32");
+  case TAG_U64:
+    return buf_write_1(buf, "u64");
+  case TAG_VAR:
+    return buf_write_1(buf, "var");
+  }
+  assert(! "buf_inspect_tag_type: unknown tag type");
+  errx(1, "buf_inspect_tag_type: unknown tag type");
   return -1;
 }
 
