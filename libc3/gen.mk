@@ -11,6 +11,16 @@
 ## THIS SOFTWARE.
 
 GENERATED_FILES = \
+	buf_inspect_s8.c buf_inspect_s8.h \
+	buf_inspect_s16.c buf_inspect_s16.h \
+	buf_inspect_s32.c buf_inspect_s32.h \
+	buf_inspect_s64.c buf_inspect_s64.h \
+	buf_inspect_sw.c buf_inspect_sw.h \
+	buf_inspect_u8.c buf_inspect_u8.h \
+	buf_inspect_u16.c buf_inspect_u16.h \
+	buf_inspect_u32.c buf_inspect_u32.h \
+	buf_inspect_u64.c buf_inspect_u64.h \
+	buf_inspect_uw.c buf_inspect_uw.h \
 	buf_parse_s8.c buf_parse_s8.h \
 	buf_parse_s16.c buf_parse_s16.h \
 	buf_parse_s32.c buf_parse_s32.h \
@@ -36,6 +46,18 @@ SED_BITS_8 = sed \
 	-e 's/_BITS[$$]/8/g' \
 	-e 's/_bits[$$]/8/g'
 
+buf_inspect_s8.c: buf_inspect_s.c.in gen.mk
+	${SED_BITS_8} < buf_inspect_s.c.in > buf_inspect_s8.c
+
+buf_inspect_s8.h: buf_inspect_s.h.in gen.mk
+	${SED_BITS_8} < buf_inspect_s.h.in > buf_inspect_s8.h
+
+buf_inspect_u8.c: buf_inspect_u.c.in gen.mk
+	${SED_BITS_8} < buf_inspect_u.c.in > buf_inspect_u8.c
+
+buf_inspect_u8.h: buf_inspect_u.h.in gen.mk
+	${SED_BITS_8} < buf_inspect_u.h.in > buf_inspect_u8.h
+
 buf_parse_s8.c: buf_parse_s.c.in gen.mk
 	${SED_BITS_8} < buf_parse_s.c.in > buf_parse_s8.c
 
@@ -51,6 +73,18 @@ buf_parse_u8.h: buf_parse_u.h.in gen.mk
 SED_BITS_16 = sed \
 	-e 's/_BITS[$$]/16/g' \
 	-e 's/_bits[$$]/16/g'
+
+buf_inspect_s16.c: buf_inspect_s.c.in gen.mk
+	${SED_BITS_16} < buf_inspect_s.c.in > buf_inspect_s16.c
+
+buf_inspect_s16.h: buf_inspect_s.h.in gen.mk
+	${SED_BITS_16} < buf_inspect_s.h.in > buf_inspect_s16.h
+
+buf_inspect_u16.c: buf_inspect_u.c.in gen.mk
+	${SED_BITS_16} < buf_inspect_u.c.in > buf_inspect_u16.c
+
+buf_inspect_u16.h: buf_inspect_u.h.in gen.mk
+	${SED_BITS_16} < buf_inspect_u.h.in > buf_inspect_u16.h
 
 buf_parse_s16.c: buf_parse_s.c.in gen.mk
 	${SED_BITS_16} < buf_parse_s.c.in > buf_parse_s16.c
@@ -68,6 +102,18 @@ SED_BITS_32 = sed \
 	-e 's/_BITS[$$]/32/g' \
 	-e 's/_bits[$$]/32/g'
 
+buf_inspect_s32.c: buf_inspect_s.c.in gen.mk
+	${SED_BITS_32} < buf_inspect_s.c.in > buf_inspect_s32.c
+
+buf_inspect_s32.h: buf_inspect_s.h.in gen.mk
+	${SED_BITS_32} < buf_inspect_s.h.in > buf_inspect_s32.h
+
+buf_inspect_u32.c: buf_inspect_u.c.in gen.mk
+	${SED_BITS_32} < buf_inspect_u.c.in > buf_inspect_u32.c
+
+buf_inspect_u32.h: buf_inspect_u.h.in gen.mk
+	${SED_BITS_32} < buf_inspect_u.h.in > buf_inspect_u32.h
+
 buf_parse_s32.c: buf_parse_s.c.in gen.mk
 	${SED_BITS_32} < buf_parse_s.c.in > buf_parse_s32.c
 
@@ -84,6 +130,18 @@ SED_BITS_64 = sed \
 	-e 's/_BITS[$$]/64/g' \
 	-e 's/_bits[$$]/64/g'
 
+buf_inspect_s64.c: buf_inspect_s.c.in gen.mk
+	${SED_BITS_64} < buf_inspect_s.c.in > buf_inspect_s64.c
+
+buf_inspect_s64.h: buf_inspect_s.h.in gen.mk
+	${SED_BITS_64} < buf_inspect_s.h.in > buf_inspect_s64.h
+
+buf_inspect_u64.c: buf_inspect_u.c.in gen.mk
+	${SED_BITS_64} < buf_inspect_u.c.in > buf_inspect_u64.c
+
+buf_inspect_u64.h: buf_inspect_u.h.in gen.mk
+	${SED_BITS_64} < buf_inspect_u.h.in > buf_inspect_u64.h
+
 buf_parse_s64.c: buf_parse_s.c.in gen.mk
 	${SED_BITS_64} < buf_parse_s.c.in > buf_parse_s64.c
 
@@ -99,6 +157,18 @@ buf_parse_u64.h: buf_parse_u.h.in gen.mk
 SED_BITS_W = sed \
 	-e 's/_BITS[$$]/W/g' \
 	-e 's/_bits[$$]/w/g'
+
+buf_inspect_sw.c: buf_inspect_s.c.in gen.mk
+	${SED_BITS_W} < buf_inspect_s.c.in > buf_inspect_sw.c
+
+buf_inspect_sw.h: buf_inspect_s.h.in gen.mk
+	${SED_BITS_W} < buf_inspect_s.h.in > buf_inspect_sw.h
+
+buf_inspect_uw.c: buf_inspect_u.c.in gen.mk
+	${SED_BITS_W} < buf_inspect_u.c.in > buf_inspect_uw.c
+
+buf_inspect_uw.h: buf_inspect_u.h.in gen.mk
+	${SED_BITS_W} < buf_inspect_u.h.in > buf_inspect_uw.h
 
 buf_parse_sw.c: buf_parse_s.c.in gen.mk
 	${SED_BITS_W} < buf_parse_s.c.in > buf_parse_sw.c

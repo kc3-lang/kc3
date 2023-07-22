@@ -21,12 +21,12 @@
     s_buf buf_test;                                                    \
     s_buf buf_result;                                                  \
     s_array tmp;                                                       \
-    test_context("buf_inspect_array(" # test ") -> " # expected);    \
+    test_context("buf_inspect_array(" # test ") -> " # expected);      \
     buf_init_1(&buf_test, (test));                                     \
     buf_parse_array(&buf_test, &tmp);                                  \
     buf_clean(&buf_test);                                              \
     buf_init(&buf_result, false, sizeof(b), b);                        \
-    /*    TEST_EQ(buf_inspect_array_size(&tmp), strlen(expected));    */ \
+    TEST_EQ(buf_inspect_array_size(&tmp), strlen(expected));           \
     TEST_EQ(buf_inspect_array(&buf_result, &tmp), strlen(expected));   \
     array_clean(&tmp);                                                 \
     TEST_EQ(buf_result.wpos, strlen(expected));                        \
@@ -208,6 +208,8 @@ TEST_CASE(buf_inspect_array)
   BUF_INSPECT_TEST_ARRAY("(u8){0}", "(u8) {0}");
   BUF_INSPECT_TEST_ARRAY("(u8){{0, 1}, {2, 3}}",
                          "(u8) {{0, 1}, {2, 3}}");
+  BUF_INSPECT_TEST_ARRAY("(u8) { { { 0 , 1 } , {2 , 3 } } , { { 4 , 5 } , { 6 , 7 } } } }",
+                         "(u8) {{{0, 1}, {2, 3}}, {{4, 5}, {6, 7}}}}");
 }
 TEST_CASE_END(buf_inspect_array)
 

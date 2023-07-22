@@ -16,173 +16,16 @@
 #include "../libtommath/tommath.h"
 #include "c3.h"
 
-#define DEF_BUF_INSPECT_S_BASE(bits, base)                             \
-  sw buf_inspect_s ## bits ## _ ## base (s_buf *buf,                   \
-                                         const s ## bits *s)           \
-  {                                                                    \
-    sw r;                                                              \
-    sw result = 0;                                                     \
-    u ## bits u;                                                       \
-    u = *s;                                                            \
-    if (*s < 0) {                                                      \
-      if ((r = buf_write_1(buf, "-")) < 0)                             \
-        return r;                                                      \
-      result += r;                                                     \
-      u = -*s;                                                         \
-    }                                                                  \
-    if ((r = buf_inspect_u ## bits ## _ ## base (buf, &u)) < 0)        \
-      return r;                                                        \
-    result += r;                                                       \
-    return result;                                                     \
-  }                                                                    \
-                                                                       \
-  sw buf_inspect_s ## bits ## _ ## base ## _size (const s ## bits *s)  \
-  {                                                                    \
-    sw result = 0;                                                     \
-    u ## bits u;                                                       \
-    u = *s;                                                            \
-    if (*s < 0) {                                                      \
-      result += strlen("-");                                           \
-      u = -*s;                                                         \
-    }                                                                  \
-    result += buf_inspect_u ## bits ## _ ## base ## _size(&u);         \
-    return result;                                                     \
-  }
-
-#define DEF_BUF_INSPECT_S(bits)                                        \
-  sw buf_inspect_s ## bits (s_buf *buf, const s ## bits *s)            \
-  {                                                                    \
-    sw r;                                                              \
-    sw result = 0;                                                     \
-    u ## bits u;                                                       \
-    u = *s;                                                            \
-    if (*s < 0) {                                                      \
-      if ((r = buf_write_1(buf, "-")) < 0)                             \
-        return r;                                                      \
-      result += r;                                                     \
-      u = -*s;                                                         \
-    }                                                                  \
-    if ((r = buf_inspect_u ## bits (buf, &u)) < 0)                     \
-      return r;                                                        \
-    result += r;                                                       \
-    return result;                                                     \
-  }                                                                    \
-                                                                       \
-  sw buf_inspect_s ## bits ## _size (const s ## bits *s)               \
-  {                                                                    \
-    sw result = 0;                                                     \
-    u ## bits u;                                                       \
-    u = *s;                                                            \
-    if (*s < 0) {                                                      \
-      result += strlen("-");                                           \
-      u = -*s;                                                         \
-    }                                                                  \
-    result += buf_inspect_u ## bits ## _size(&u);                      \
-    return result;                                                     \
-  }                                                                    \
-                                                                       \
-  DEF_BUF_INSPECT_S_BASE(bits, binary)                                 \
-  DEF_BUF_INSPECT_S_BASE(bits, hexadecimal)                            \
-  DEF_BUF_INSPECT_S_BASE(bits, octal)
-
-#define DEF_BUF_INSPECT_U_BASE(bits, base)                             \
-  sw buf_inspect_u ## bits ## _ ## base (s_buf *buf,                   \
-                                         const u ## bits *u)           \
-  {                                                                    \
-    return buf_inspect_u ## bits ## _base(buf, &g_c3_base_ ## base,    \
-                                          u);                          \
-  }                                                                    \
-                                                                       \
-  sw buf_inspect_u ## bits ## _ ## base ## _size (const u ## bits *u)  \
-  {                                                                    \
-    return buf_inspect_u ## bits ## _base_size(&g_c3_base_ ## base,    \
-                                               u);                     \
-  }
-
-#define DEF_BUF_INSPECT_U(bits)                                        \
-  sw buf_inspect_u ## bits (s_buf *buf, const u ## bits *u)            \
-  {                                                                    \
-    return buf_inspect_u ## bits ## _base(buf, &g_c3_base_decimal, u); \
-  }                                                                    \
-                                                                       \
-  sw buf_inspect_u ## bits ## _base (s_buf *buf,                       \
-                                     const s_str *base,                \
-                                     const u ## bits *u)               \
-  {                                                                    \
-    character *c;                                                      \
-    u8 digit;                                                          \
-    sw i;                                                              \
-    sw r;                                                              \
-    uw radix;                                                          \
-    s_buf_save save;                                                   \
-    sw size;                                                           \
-    character zero;                                                    \
-    u ## bits u_;                                                      \
-    u_ = *u;                                                           \
-    if (u_ == 0) {                                                     \
-      if (str_character(base, 0, &zero) < 0)                           \
-        return -1;                                                     \
-      return buf_write_character_utf8(buf, zero);                      \
-    }                                                                  \
-    size = buf_inspect_u ## bits ## _base_size(base, u);               \
-    c = calloc(size, sizeof(character));                               \
-    buf_save_init(buf, &save);                                         \
-    radix = base->size;                                                \
-    i = 0;                                                             \
-    while (u_ > 0) {                                                   \
-      digit = u_ % radix;                                              \
-      u_ /= radix;                                                     \
-      if (str_character(base, digit, c + i) < 0) {                     \
-        r = -1;                                                        \
-        goto restore;                                                  \
-      }                                                                \
-      i++;                                                             \
-    }                                                                  \
-    while (i--)                                                        \
-      if ((r = buf_write_character_utf8(buf, c[i])) < 0)               \
-        goto restore;                                                  \
-    r = size;                                                          \
-    goto clean;                                                        \
-   restore:                                                            \
-    buf_save_restore_wpos(buf, &save);                                 \
-   clean:                                                              \
-    buf_save_clean(buf, &save);                                        \
-    return r;                                                          \
-  }                                                                    \
-                                                                       \
-  sw buf_inspect_u ## bits ## _base_size (const s_str *base,           \
-                                          const u ## bits *u)          \
-  {                                                                    \
-    uw radix;                                                          \
-    sw size = 0;                                                       \
-    u ## bits u_;                                                      \
-    u_ = *u;                                                           \
-    if (u_ == 0)                                                       \
-      return 1;                                                        \
-    radix = base->size;                                                \
-    while (u_ > 0) {                                                   \
-      u_ /= radix;                                                     \
-      size++;                                                          \
-    }                                                                  \
-    return size;                                                       \
-  }                                                                    \
-                                                                       \
-  sw buf_inspect_u ## bits ## _size (const u ## bits *u)               \
-  {                                                                    \
-    return buf_inspect_u ## bits ## _base_size(&g_c3_base_decimal, u); \
-  }                                                                    \
-                                                                       \
-  DEF_BUF_INSPECT_U_BASE(bits, binary)                                 \
-  DEF_BUF_INSPECT_U_BASE(bits, hexadecimal)                            \
-  DEF_BUF_INSPECT_U_BASE(bits, octal)
-
-sw buf_inspect_array_data (s_buf *buf, const s_array *array);
-sw buf_inspect_array_type (s_buf *buf, const s_array *array);
-
 sw buf_inspect_array_data (s_buf *buf, const s_array *array);
 sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
                                uw dimension, uw *address,
                                f_buf_inspect inspect, u8 **data);
+sw buf_inspect_array_data_size (const s_array *array);
+sw buf_inspect_array_data_size_rec (s_buf *buf, const s_array *array,
+                               uw dimension, uw *address,
+                               f_buf_inspect inspect, u8 **data);
+sw buf_inspect_array_type (s_buf *buf, const s_array *array);
+sw buf_inspect_array_type_size (const s_array *array);
 sw buf_inspect_tag_type (s_buf *buf, e_tag_type type);
 
 sw buf_inspect_array_data (s_buf *buf, const s_array *array)
@@ -1080,12 +923,6 @@ sw buf_inspect_quote_size (const s_quote *quote)
   return result;
 }
 
-DEF_BUF_INSPECT_S(8)
-DEF_BUF_INSPECT_S(16)
-DEF_BUF_INSPECT_S(32)
-DEF_BUF_INSPECT_S(64)
-DEF_BUF_INSPECT_S(w)
-
 sw buf_inspect_str (s_buf *buf, const s_str *str)
 {
   sw r;
@@ -1584,12 +1421,6 @@ sw buf_inspect_tuple_size (const s_tuple *tuple)
   result += strlen("}");
   return result;
 }
-
-DEF_BUF_INSPECT_U(8)
-DEF_BUF_INSPECT_U(16)
-DEF_BUF_INSPECT_U(32)
-DEF_BUF_INSPECT_U(64)
-DEF_BUF_INSPECT_U(w)
 
 sw buf_inspect_var (s_buf *buf, const s_tag *var)
 {

@@ -34,13 +34,9 @@ C3_C_SOURCES = \
 	ic3/linenoise.c \
 	libc3/arg.c \
 	libc3/arg.h \
-	libc3/skiplist__fact.c \
-	libc3/skiplist__fact.h \
-	libc3/skiplist_node__fact.c \
-	libc3/skiplist_node__fact.h \
+	libc3/facts.c \
 	libc3/binding.c \
 	libc3/binding.h \
-	libc3/facts.c \
 	libc3/facts_with_cursor.c \
 	libc3/array.c \
 	libc3/array.h \
@@ -49,11 +45,13 @@ C3_C_SOURCES = \
 	libc3/integer.h \
 	libc3/types.h \
 	libc3/type.c \
-	libc3/set__fact.c \
-	libc3/set__fact.h \
-	libc3/set__tag.c \
-	libc3/set__tag.h \
-	libc3/set_cursor__fact.c \
+	libc3/buf_parse_s8.c \
+	libc3/buf_parse_s8.h \
+	libc3/buf_parse_s16.c \
+	libc3/buf_parse_s16.h \
+	libc3/buf_parse_s32.c \
+	libc3/buf_parse_s32.h \
+	libc3/buf_parse_s64.c \
 	libc3/buf_file.c \
 	libc3/buf_file.h \
 	libc3/bool.c \
@@ -67,6 +65,14 @@ C3_C_SOURCES = \
 	libc3/buf_parse.h \
 	libc3/compare.c \
 	libc3/buf_inspect.c \
+	libc3/set_cursor__fact.c \
+	libc3/set_cursor__fact.h \
+	libc3/set_cursor__tag.c \
+	libc3/set_cursor__tag.h \
+	libc3/set_item__fact.c \
+	libc3/set_item__fact.h \
+	libc3/set_item__tag.c \
+	libc3/set_item__tag.h \
 	libc3/call.c \
 	libc3/bool.h \
 	libc3/buf_save.h \
@@ -75,6 +81,7 @@ C3_C_SOURCES = \
 	libc3/list.h \
 	libc3/c3.c \
 	libc3/c3.h \
+	libc3/tag.c \
 	libc3/error.h \
 	libc3/env.h \
 	libc3/character.h \
@@ -84,13 +91,14 @@ C3_C_SOURCES = \
 	libc3/tag.h \
 	libc3/sign.h \
 	libc3/buf.h \
-	libc3/set_cursor__fact.h \
-	libc3/set_cursor__tag.c \
-	libc3/set_cursor__tag.h \
-	libc3/set_item__fact.c \
-	libc3/set_item__fact.h \
-	libc3/set_item__tag.c \
-	libc3/set_item__tag.h \
+	libc3/buf_parse_s64.h \
+	libc3/buf_parse_sw.c \
+	libc3/buf_parse_sw.h \
+	libc3/buf_parse_u8.c \
+	libc3/buf_parse_u8.h \
+	libc3/buf_parse_u16.c \
+	libc3/buf_parse_u16.h \
+	libc3/buf_parse_u32.c \
 	libc3/ident.c \
 	libc3/error_handler.c \
 	libc3/frame.c \
@@ -107,6 +115,15 @@ C3_C_SOURCES = \
 	libc3/fn.h \
 	libc3/ceiling.h \
 	libc3/buf_inspect.h \
+	libc3/buf_parse_u32.h \
+	libc3/buf_parse_u64.c \
+	libc3/buf_parse_u64.h \
+	libc3/buf_parse_uw.c \
+	libc3/buf_parse_uw.h \
+	libc3/set__fact.c \
+	libc3/set__fact.h \
+	libc3/set__tag.c \
+	libc3/set__tag.h \
 	libc3/env.c \
 	libc3/facts_cursor.h \
 	libc3/facts_spec.c \
@@ -120,12 +137,17 @@ C3_C_SOURCES = \
 	libc3/facts_with.h \
 	libc3/hash.h \
 	libc3/cfn.h \
-	libc3/tag.c \
+	libc3/buf_parse_u.c.in \
 	libc3/abs.c \
 	libc3/facts_with_cursor.h \
 	libc3/ident.h \
 	libc3/str.c \
 	libc3/c_types.h \
+	libc3/skiplist__fact.c \
+	libc3/skiplist__fact.h \
+	libc3/skiplist_node__fact.c \
+	libc3/skiplist_node__fact.h \
+	libc3/buf_parse_s.c.in \
 	libc3/integer.c \
 	libc3/list.c \
 	libc3/log.c \
@@ -152,32 +174,36 @@ C3_C_SOURCES = \
 	libc3/tuple.h \
 	libc3/ucd.c \
 	libc3/ucd.h \
-	libc3/buf_parse_s8.h \
 	libc3/type.h \
 	libc3/buf_parse_s.h.in \
 	libc3/buf_parse_u.h.in \
-	libc3/buf_parse_s16.h \
-	libc3/buf_parse_s32.h \
-	libc3/buf_parse_s64.h \
-	libc3/buf_parse_sw.h \
-	libc3/buf_parse_u8.h \
-	libc3/buf_parse_u16.h \
-	libc3/buf_parse_u32.h \
-	libc3/buf_parse_u64.h \
-	libc3/buf_parse_uw.h \
-	libc3/buf_parse_s8.c \
-	libc3/buf_parse_s16.c \
-	libc3/buf_parse_s.c.in \
-	libc3/buf_parse_s32.c \
-	libc3/buf_parse_s64.c \
-	libc3/buf_parse_sw.c \
-	libc3/buf_parse_u8.c \
-	libc3/buf_parse_u16.c \
-	libc3/buf_parse_u.c.in \
-	libc3/buf_parse_u32.c \
-	libc3/buf_parse_u64.c \
-	libc3/buf_parse_uw.c \
 	libc3/float.h \
+	libc3/buf_inspect_s_base.c.in \
+	libc3/buf_inspect_s.c.in \
+	libc3/buf_inspect_s8.c \
+	libc3/buf_inspect_s.h.in \
+	libc3/buf_inspect_s8.h \
+	libc3/buf_inspect_s16.c \
+	libc3/buf_inspect_s16.h \
+	libc3/buf_inspect_s64.c \
+	libc3/buf_inspect_u.c.in \
+	libc3/buf_inspect_s32.c \
+	libc3/buf_inspect_u8.c \
+	libc3/buf_inspect_s32.h \
+	libc3/buf_inspect_s64.h \
+	libc3/buf_inspect_sw.c \
+	libc3/buf_inspect_sw.h \
+	libc3/buf_inspect_u_base.c.in \
+	libc3/buf_inspect_u8.h \
+	libc3/buf_inspect_u.h.in \
+	libc3/buf_inspect_u16.c \
+	libc3/buf_inspect_u16.h \
+	libc3/buf_inspect_u32.c \
+	libc3/buf_inspect_u32.h \
+	libc3/buf_inspect_u64.c \
+	libc3/buf_inspect_u64.h \
+	libc3/buf_inspect_uw.c \
+	libc3/buf_inspect_uw.h \
 	test/facts_cursor_test.c \
 	test/facts_test.c \
 	test/facts_with_test.c \

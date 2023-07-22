@@ -8,6 +8,16 @@ HEADERS = \
 	buf.h \
 	buf_file.h \
 	buf_inspect.h \
+	buf_inspect_s16.h \
+	buf_inspect_s32.h \
+	buf_inspect_s64.h \
+	buf_inspect_s8.h \
+	buf_inspect_sw.h \
+	buf_inspect_u16.h \
+	buf_inspect_u32.h \
+	buf_inspect_u64.h \
+	buf_inspect_u8.h \
+	buf_inspect_uw.h \
 	buf_parse.h \
 	buf_parse_c.h \
 	buf_parse_s16.h \
@@ -79,6 +89,16 @@ SOURCES = \
 	buf.c \
 	buf_file.c \
 	buf_inspect.c \
+	buf_inspect_s16.c \
+	buf_inspect_s32.c \
+	buf_inspect_s64.c \
+	buf_inspect_s8.c \
+	buf_inspect_sw.c \
+	buf_inspect_u16.c \
+	buf_inspect_u32.c \
+	buf_inspect_u64.c \
+	buf_inspect_u8.c \
+	buf_inspect_uw.c \
 	buf_parse.c \
 	buf_parse_c.c \
 	buf_parse_s16.c \
@@ -145,6 +165,16 @@ LO_SOURCES = \
 	buf.c \
 	buf_file.c \
 	buf_inspect.c \
+	buf_inspect_s16.c \
+	buf_inspect_s32.c \
+	buf_inspect_s64.c \
+	buf_inspect_s8.c \
+	buf_inspect_sw.c \
+	buf_inspect_u16.c \
+	buf_inspect_u32.c \
+	buf_inspect_u64.c \
+	buf_inspect_u8.c \
+	buf_inspect_uw.c \
 	buf_parse.c \
 	buf_parse_c.c \
 	buf_parse_s16.c \
