@@ -65,7 +65,7 @@ sw buf_inspect_uw_base (s_buf *buf,
 }
 
 sw buf_inspect_uw_base_size (const s_str *base,
-                                      const uw *u)
+                                  const uw *u)
 {
   uw radix;
   sw size = 0;

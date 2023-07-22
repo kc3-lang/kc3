@@ -204,6 +204,9 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_u64.h \
 	libc3/buf_inspect_uw.c \
 	libc3/buf_inspect_uw.h \
+	libc3/buf_inspect_u64_hex.c \
+	libc3/buf_inspect_u64_hex.h \
+	libc3/buf_inspect_u_base.h.in \
 	test/facts_cursor_test.c \
 	test/facts_test.c \
 	test/facts_with_test.c \

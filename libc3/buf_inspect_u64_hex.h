@@ -10,16 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_u_base.c.in BITS=_BITS$ bits=_bits$ BASE=_BASE$ */
-#include "c3.h"
+/* Gen from buf_inspect_u_base.h.in BITS=64 bits=64 BASE=_BASE$ */
 
-sw buf_inspect_u_bits$__BASE$ (s_buf *buf, const u_bits$ *u)
-{
-  return buf_inspect_u_bits$_base(buf, &g_c3_base__BASE$, u);
-}
-
-sw buf_inspect_u_bits$__BASE$_size (const u_bits$ *u)
-{
-  return buf_inspect_u_bits$_base_size(&g_c3_base__BASE$,
-                                       u);
-}
+sw buf_inspect_u64__BASE$ (s_buf *buf, const u64 *u);
+sw buf_inspect_u64__BASE$_size (const u64 *u);
