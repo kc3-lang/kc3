@@ -258,7 +258,7 @@ TEST_CASE(facts_load)
   s_str path;
   facts_init(&facts);
   str_init_1(&path, NULL, "facts_test_load_file.facts");
-  TEST_EQ(facts_load_file(&facts, &path), 708);
+  TEST_EQ(facts_load_file(&facts, &path), 681);
   TEST_EQ(facts_count(&facts), 23);
   while (p[i]) {
     fact_test_init_1(&fact, p[i]);
@@ -467,7 +467,7 @@ TEST_CASE(facts_open_file)
     errx(1, "%s:%i: cp", __FILE__, __LINE__);
   facts_init(&facts);
   str_init_1(&path, NULL, "facts_test_open_file.1.facts");
-  TEST_EQ(facts_open_file(&facts, &path), 747);
+  TEST_EQ(facts_open_file(&facts, &path), 720);
   TEST_EQ(facts_count(&facts), 23);
   i = 0;
   while (p[i]) {
@@ -497,7 +497,7 @@ TEST_CASE(facts_open_file)
   if (r > 0)
     errx(1, "%s:%i: cp", __FILE__, __LINE__);
   str_init_1(&path, NULL, "facts_test_open_file.2.facts");
-  TEST_EQ(facts_open_file(&facts, &path), 1480);
+  TEST_EQ(facts_open_file(&facts, &path), 1453);
   TEST_EQ(facts_count(&facts), 46);
   i = 0;
   while (p[i]) {
@@ -525,7 +525,7 @@ TEST_CASE(facts_open_file)
   if (r > 0)
     errx(1, "%s:%i: cp", __FILE__, __LINE__);
   str_init_1(&path, NULL, "facts_test_open_file.3.facts");
-  TEST_EQ(facts_open_file(&facts, &path), 1537);
+  TEST_EQ(facts_open_file(&facts, &path), 1510);
   TEST_EQ(facts_count(&facts), 0);
   i = 0;
   while (p[i]) {

@@ -23,7 +23,6 @@
 #include "facts.h"
 #include "facts_cursor.h"
 #include "facts_with.h"
-#include "hash.h"
 #include "log.h"
 #include "set__fact.h"
 #include "set__tag.h"
@@ -105,7 +104,6 @@ sw facts_dump (s_facts *facts, s_buf *buf)
 {
   s_facts_cursor cursor;
   s_fact *fact;
-  t_hash hash;
   s_tag predicate;
   s_tag object;
   sw r;
@@ -131,10 +129,8 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   if ((r = buf_write_1(buf, "}\n")) < 0)
     goto ko;
   result += r;
-  hash_init(&hash);
   facts_with_0(facts, &cursor, &subject, &predicate, &object);
   while ((fact = facts_cursor_next(&cursor))) {
-    hash_update_fact(&hash, fact);
     if ((r = buf_inspect_fact(buf, fact)) < 0)
       goto ko;
     result += r;
@@ -142,18 +138,7 @@ sw facts_dump (s_facts *facts, s_buf *buf)
       goto ko;
     result += r;
   }
-  facts_lock_unlock_r(facts);
-  if ((r = buf_write_1(buf, "%{hash: 0x")) < 0)
-    return r;
-  result += r;
-  u = hash_to_u64(&hash);
-  if ((r = buf_inspect_u64_hexadecimal(buf, &u)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, "}\n")) < 0)
-    return r;
-  result += r;
-  return result;
+  r = result;
  ko:
   facts_lock_unlock_r(facts);
   return r;
@@ -235,9 +220,6 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   u64 count;
   s_fact_w fact;
   s_fact *factp;
-  t_hash hash;
-  u64 hash_u64;
-  u64 hash_u64_buf;
   u64 i;
   sw r;
   sw result = 0;
@@ -255,14 +237,12 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   if ((r = buf_read_1(buf, "}\n")) <= 0)
     goto ko_header;
   result += r;
-  hash_init(&hash);
   facts_lock_w(facts);
   for (i = 0; i < count; i++) {
     if ((r = buf_parse_fact(buf, &fact)) <= 0)
       goto ko_fact;
     result += r;
     factp = fact_r(&fact);
-    hash_update_fact(&hash, factp);
     facts_add_fact(facts, factp);
     fact_w_clean(&fact);
     if ((r = buf_read_1(buf, "\n")) <= 0) {
@@ -272,29 +252,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
     result += r;
   }
   facts_lock_unlock_w(facts);
-  hash_u64 = hash_to_u64(&hash);
-  if ((r = buf_read_1(buf, "%{hash: 0x")) <= 0)
-    goto ko_hash;
-  result += r;
-  if ((r = buf_parse_u64_hex(buf, &hash_u64_buf)) <= 0)
-    goto ko_hash;
-  result += r;
-  if ((r = buf_read_1(buf, "}\n")) <= 0)
-    goto ko_hash;
-  result += r;
   i++;
-  if (hash_u64_buf != hash_u64) {
-    s_buf tmp;
-    buf_init_alloc(&tmp, 16);
-    buf_inspect_u64_hexadecimal(&tmp, &hash_u64);
-    buf_write_s8(&tmp, 0);
-    warnx("facts_load: %s: invalid hash line %lu: 0x%s",
-          path->ptr.ps8,
-          (unsigned long) i + 5,
-          tmp.ptr.ps8);
-    buf_clean(&tmp);
-    return -1;
-  }
   return result;
  ko_header:
   warnx("facts_load: %s: invalid or missing header",
@@ -303,12 +261,6 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
  ko_fact:
   facts_lock_unlock_w(facts);
   warnx("facts_load: %s: %s fact line %lu",
-        path->ptr.ps8,
-        r ? "invalid" : "missing",
-        (unsigned long) i + 5);
-  return -1;
- ko_hash:
-  warnx("facts_load: %s: %s hash line %lu",
         path->ptr.ps8,
         r ? "invalid" : "missing",
         (unsigned long) i + 5);
@@ -407,11 +359,9 @@ sw facts_log_add (s_log *log, const s_fact *fact)
   if ((r = buf_write_1(&log->buf, "add ")) < 0)
     return r;
   result += r;
-  hash_update_1(&log->hash, "add");
   if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
     return r;
   result += r;
-  hash_update_fact(&log->hash, fact);
   if ((r = buf_write_1(&log->buf, "\n")) < 0)
     return r;
   result += r;
@@ -425,11 +375,9 @@ sw facts_log_remove (s_log *log, const s_fact *fact)
   if ((r = buf_write_1(&log->buf, "remove ")) < 0)
     return r;
   result += r;
-  hash_update_1(&log->hash, "remove");
   if ((r = buf_inspect_fact(&log->buf, fact)) < 0)
     return r;
   result += r;
-  hash_update_fact(&log->hash, fact);
   if ((r = buf_write_1(&log->buf, "\n")) < 0)
     return r;
   result += r;
