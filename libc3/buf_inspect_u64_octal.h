@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_u_base.h.in BITS=64 bits=64 BASE=_BASE$ */
+/* Gen from buf_inspect_u_base.h.in BITS=64 bits=64 BASE=octal */
 
-sw buf_inspect_u64__BASE$ (s_buf *buf, const u64 *u);
-sw buf_inspect_u64__BASE$_size (const u64 *u);
+sw buf_inspect_u64_octal (s_buf *buf, const u64 *u);
+sw buf_inspect_u64_octal_size (const u64 *u);
