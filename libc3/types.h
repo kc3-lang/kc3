@@ -17,10 +17,10 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <ffi.h>
 #include <pthread.h>
 #include "config.h"
 #include "sha1.h"
+#include "../ffi.h"
 #include "../libtommath/tommath.h"
 
 /* Basic integer types. */
