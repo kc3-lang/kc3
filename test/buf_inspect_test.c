@@ -28,9 +28,9 @@
     buf_init(&buf_result, false, sizeof(b), b);                        \
     TEST_EQ(buf_inspect_array_size(&tmp), strlen(expected));           \
     TEST_EQ(buf_inspect_array(&buf_result, &tmp), strlen(expected));   \
-    array_clean(&tmp);                                                 \
     TEST_EQ(buf_result.wpos, strlen(expected));                        \
     TEST_STRNCMP(buf_result.ptr.ps8, (expected), buf_result.wpos);     \
+    array_clean(&tmp);                                                 \
     buf_clean(&buf_result);                                            \
   } while (0)
 

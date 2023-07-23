@@ -506,5 +506,6 @@ struct facts_with_cursor {
 
 /* Functions */
 typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
+typedef sw (* f_buf_inspect_size) (const void *x);
 
 #endif /* TYPES_H */

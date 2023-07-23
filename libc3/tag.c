@@ -2147,6 +2147,68 @@ f_buf_inspect tag_type_to_buf_inspect (e_tag_type type)
   return NULL;
 }
 
+f_buf_inspect_size tag_type_to_buf_inspect_size (e_tag_type type)
+{
+  switch (type) {
+  case TAG_VOID:
+    return (f_buf_inspect_size) buf_inspect_void_size;
+  case TAG_ARRAY:
+  case TAG_BOOL:
+    return (f_buf_inspect_size) buf_inspect_bool_size;
+  case TAG_CALL:
+  case TAG_CALL_FN:
+  case TAG_CALL_MACRO:
+    return (f_buf_inspect_size) buf_inspect_call_size;
+  case TAG_CFN:
+    return (f_buf_inspect_size) buf_inspect_cfn_size;
+  case TAG_CHARACTER:
+    return (f_buf_inspect_size) buf_inspect_character_size;
+  case TAG_F32:
+    return (f_buf_inspect_size) buf_inspect_f32_size;
+  case TAG_F64:
+    return (f_buf_inspect_size) buf_inspect_f64_size;
+  case TAG_FN:
+    return (f_buf_inspect_size) buf_inspect_fn_size;
+  case TAG_IDENT:
+    return (f_buf_inspect_size) buf_inspect_ident_size;
+  case TAG_INTEGER:
+    return (f_buf_inspect_size) buf_inspect_integer_size;
+  case TAG_S64:
+    return (f_buf_inspect_size) buf_inspect_s64_size;
+  case TAG_S32:
+    return (f_buf_inspect_size) buf_inspect_s32_size;
+  case TAG_S16:
+    return (f_buf_inspect_size) buf_inspect_s16_size;
+  case TAG_S8:
+    return (f_buf_inspect_size) buf_inspect_s8_size;
+  case TAG_U8:
+    return (f_buf_inspect_size) buf_inspect_u8_size;
+  case TAG_U16:
+    return (f_buf_inspect_size) buf_inspect_u16_size;
+  case TAG_U32:
+    return (f_buf_inspect_size) buf_inspect_u32_size;
+  case TAG_U64:
+    return (f_buf_inspect_size) buf_inspect_u64_size;
+  case TAG_LIST:
+    return (f_buf_inspect_size) buf_inspect_list_size;
+  case TAG_PTAG:
+    return (f_buf_inspect_size) buf_inspect_ptag_size;
+  case TAG_QUOTE:
+    return (f_buf_inspect_size) buf_inspect_quote_size;
+  case TAG_STR:
+    return (f_buf_inspect_size) buf_inspect_str_size;
+  case TAG_SYM:
+    return (f_buf_inspect_size) buf_inspect_sym_size;
+  case TAG_TUPLE:
+    return (f_buf_inspect_size) buf_inspect_tuple_size;
+  case TAG_VAR:
+    return (f_buf_inspect_size) buf_inspect_var_size;
+  }
+  assert(! "tag_type_to_buf_inspect_size: unknown tag type");
+  errx(1, "tag_type_to_buf_inspect_size: unknown tag type");
+  return NULL;
+}
+
 f_buf_parse tag_type_to_buf_parse (e_tag_type type)
 {
   switch (type) {
