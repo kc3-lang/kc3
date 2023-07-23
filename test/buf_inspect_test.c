@@ -209,7 +209,7 @@ TEST_CASE(buf_inspect_array)
   BUF_INSPECT_TEST_ARRAY("(u8){{0, 1}, {2, 3}}",
                          "(u8) {{0, 1}, {2, 3}}");
   BUF_INSPECT_TEST_ARRAY("(u8) { { { 0 , 1 } , {2 , 3 } } , { { 4 , 5 } , { 6 , 7 } } } }",
-                         "(u8) {{{0, 1}, {2, 3}}, {{4, 5}, {6, 7}}}}");
+                         "(u8) {{{0, 1}, {2, 3}}, {{4, 5}, {6, 7}}}");
 }
 TEST_CASE_END(buf_inspect_array)
 
