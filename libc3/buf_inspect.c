@@ -981,8 +981,9 @@ sw buf_inspect_quote (s_buf *buf, const s_quote *quote)
   sw r;
   sw result = 0;
   s_buf_save save;
+  buf_save_init(buf, &save);
   if ((r = buf_write_1(buf, "quote ")) < 0)
-    return r;
+    goto clean;
   result += r;
   if ((r = buf_inspect_tag(buf, quote->tag)) < 0)
     goto restore;

@@ -78,6 +78,7 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
   address = calloc(tmp.dimension, sizeof(sw));
   parse = tag_type_to_buf_parse(tmp.type);
   tmp.data = calloc(tmp.dimensions[0].count, tmp.dimensions[0].item_size);
+  tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
   data = tmp.data;
   if ((r = buf_parse_array_data_rec(buf, &tmp, 0, address,
                                     parse, &data)) <= 0) {
@@ -835,7 +836,7 @@ sw buf_parse_comments (s_buf *buf)
          c != '\n') {
     csize = r;
     if ((r = buf_ignore(buf, csize)) < 0)
-      return r;
+      goto clean;
     r1 += csize;
   }
   if ((r = buf_parse_comment(buf)) <= 0)
@@ -2112,7 +2113,8 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
     tag_integer_reduce(dest);
     goto end;
   }
-  if ((r = buf_parse_tag_list(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_array(buf, dest)) != 0 ||
+      (r = buf_parse_tag_list(buf, dest)) != 0 ||
       (r = buf_parse_tag_str(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
@@ -2120,9 +2122,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_ident(buf, dest)) != 0 ||
-      (r = buf_parse_tag_sym(buf, dest)) != 0 ||
-      (r = buf_parse_tag_array(buf, dest)) != 0)
-      
+      (r = buf_parse_tag_sym(buf, dest)) != 0)
     goto end;
   goto restore;
  end:

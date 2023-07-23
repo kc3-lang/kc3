@@ -49,6 +49,7 @@ s_array * array_copy (const s_array *src, s_array *dest)
   memcpy(dest->dimensions, src->dimensions,
          src->dimension * sizeof(s_array_dimension));
   dest->size = src->size;
+  dest->type = src->type;
   dest->data = calloc(1, src->size);
   memcpy(dest->data, src->data, dest->size);
   return dest;
