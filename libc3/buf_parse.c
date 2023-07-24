@@ -681,6 +681,7 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   result += r;
   if (! (name_sym = str_to_sym(&name_str)))
     goto restore;
+  str_clean(&name_str);
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
