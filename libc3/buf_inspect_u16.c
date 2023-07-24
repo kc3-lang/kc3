@@ -60,6 +60,7 @@ sw buf_inspect_u16_base (s_buf *buf,
  restore:
   buf_save_restore_wpos(buf, &save);
  clean:
+  free(c);
   buf_save_clean(buf, &save);
   return r;
 }
