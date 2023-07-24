@@ -7,7 +7,9 @@ for semantic programming, and programming the semantic web.
 We are currently fundraising for the project to become real and
 there is a working prototype available at
 [https://git.kmx.io/c3-lang/c3/](https://git.kmx.io/c3-lang/c3/),
-please see the [donations](donations.html) page for donations.
+please see the
+[https://www.kmx.io/en/donations.html](https://www.kmx.io/en/donations.html)
+page for helping out.
 
 C3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
