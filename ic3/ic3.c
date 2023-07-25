@@ -34,6 +34,30 @@ sw buf_ignore_character (s_buf *buf)
   return csize;
 }
 
+sw ic3_buf_ignore_spaces (s_buf *out, s_buf *in)
+{
+  character c;
+  sw csize;
+  sw r;
+  sw result = 0;
+  assert(in);
+  assert(out);
+  while ((r = buf_peek_character_utf8(in, &c)) > 0 &&
+         c >= 0 &&
+         c < UCD_MAX &&
+         g_ucd[c].flags & (UCD_OTHER_CONTROL | UCD_SEPARATOR_SPACE)) {
+    csize = r;
+    if ((r = buf_ignore(in, csize)) != csize)
+      return -1;
+    result += csize;
+    if ((r = buf_flush(out)) < 0)
+      return -1;
+  }
+  if (r < 0)
+    return r;
+  return result;
+}
+
 sw buf_xfer_spaces (s_buf *out, s_buf *in)
 {
   character c;
@@ -75,7 +99,7 @@ int main (int argc, char **argv)
   in.line = 0;
   buf_init(&out, false, sizeof(o), o);
   buf_file_open_w(&out, stdout);
-  while ((r = buf_xfer_spaces(&out, &in)) >= 0) {
+  while ((r = ic3_buf_ignore_spaces(&out, &in)) >= 0) {
     if ((r = buf_parse_tag(&in, &input)) > 0) {
       if (! eval_tag(&input, &result)) {
         tag_clean(&input);
