@@ -53,6 +53,7 @@ add {C3.>, :cfn, cfn :bool "tag_gt" (:tag, :tag)}
 add {C3.>, :is_a, :operator}
 add {C3.>, :operator_precedence, 3}
 add {C3.>, :operator_associativity, :left}
+add {C3.!, :arity, 1}
 add {C3.!, :cfn, cfn :bool "tag_not" (:tag)}
 add {C3.!, :is_a, :operator}
 add {C3.!, :operator_precedence, 4}
