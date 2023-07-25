@@ -560,7 +560,7 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
       result += r;
       fn = fn->next_clause;
     }
-    if ((r = buf_write_1(buf, "}\n")) < 0)
+    if ((r = buf_write_1(buf, "}")) < 0)
       return r;
     result += r;
   }
@@ -749,7 +749,7 @@ sw buf_inspect_fn_size (const s_fn *fn)
       result += r;
       fn = fn->next_clause;
     }
-    r = strlen("}\n");
+    r = strlen("}");
     result += r;
   }
   else {
