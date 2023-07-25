@@ -535,6 +535,8 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   s_buf_save save;
   assert(buf);
   assert(dest);
+  if ((r = buf_parse_call_op_unary(buf, dest)) > 0)
+    return r;
   buf_save_init(buf, &save);
   call_init_op(&tmp);
   if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
@@ -640,6 +642,38 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     tag_init_call(left, &tmp3);
   }
   call_clean(dest);
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+  call_clean(&tmp);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_call tmp;
+  assert(buf);
+  assert(dest);
+  call_init_op_unary(&tmp);
+  buf_save_init(buf, &save);
+  if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0)
+    goto restore;
+  result += r;
+  if (! operator_is_unary(&tmp.ident))
+    goto restore;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
+    goto restore;
+  result += r;
   *dest = tmp;
   r = result;
   goto clean;

@@ -56,6 +56,5 @@ s_fact * facts_find_fact (s_facts *facts, const s_fact *fact);
 s_tag *  facts_find_tag (s_facts *facts, const s_tag *tag);
 sw       facts_log_add (s_log *log, const s_fact *fact);
 sw       facts_log_remove (s_log *log, const s_fact *fact);
-sw       facts_save_header (s_buf *buf);
 
 #endif /* FACTS_H */

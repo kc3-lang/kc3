@@ -291,6 +291,13 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
        tag_type_to_string(b->type));
 }
 
+bool tag_and (const s_tag *a, const s_tag *b)
+{
+  s_tag f;
+  tag_init_1(&f, "false");
+  return compare_tag(a, &f) != 0 && compare_tag(b, &f) != 0;
+}
+
 s_tag * tag_array (s_tag *tag, const s_array *a)
 {
   assert(tag);
@@ -753,6 +760,11 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
        tag_type_to_string(b->type));
 }
 
+bool tag_eq (const s_tag *a, const s_tag *b)
+{
+  return compare_tag(a, b) == 0;
+}
+
 s_tag * tag_f32 (s_tag *tag, f32 x)
 {
   assert(tag);
@@ -765,6 +777,16 @@ s_tag * tag_f64 (s_tag *tag, f64 x)
   assert(tag);
   tag_clean(tag);
   return tag_init_f64(tag, x);
+}
+
+bool tag_gt (const s_tag *a, const s_tag *b)
+{
+  return compare_tag(a, b) > 0;
+}
+
+bool tag_gte (const s_tag *a, const s_tag *b)
+{
+  return compare_tag(a, b) >= 0;
 }
 
 u64 tag_hash_u64 (const s_tag *tag)
@@ -1194,6 +1216,16 @@ s_tag * tag_list_1 (s_tag *tag, const s8 *p)
   return tag_init_list_1(tag, p);
 }
 
+bool tag_lt (const s_tag *a, const s_tag *b)
+{
+  return compare_tag(a, b) < 0;
+}
+
+bool tag_lte (const s_tag *a, const s_tag *b)
+{
+  return compare_tag(a, b) <= 0;
+}
+
 s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
 {
   assert(a);
@@ -1488,6 +1520,20 @@ s_tag * tag_new_copy (const s_tag *src)
   if (! (dest = malloc(sizeof(s_tag))))
     errx(1, "tag_new_copy: out of memory");
   return tag_copy(src, dest);
+}
+
+bool tag_not (const s_tag *a)
+{
+  s_tag f;
+  tag_init_1(&f, "false");
+  return compare_tag(a, &f) == 0;
+}
+
+bool tag_or (const s_tag *a, const s_tag *b)
+{
+  s_tag f;
+  tag_init_1(&f, "false");
+  return compare_tag(a, &f) != 0 || compare_tag(b, &f) != 0;
 }
 
 s_tag * tag_s8 (s_tag *tag, s8 x)

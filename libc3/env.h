@@ -46,6 +46,7 @@ s_module * env_module_load (s_env *env, s_module *module,
                             const s_sym *name, s_facts *facts);
 bool       env_operator_is_right_associative (s_env *env,
                                               const s_ident *op);
+bool       env_operator_is_unary(s_env *env, const s_ident *op);
 s8         env_operator_precedence (s_env *env,
                                     const s_ident *op);
 

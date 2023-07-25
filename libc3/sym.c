@@ -162,7 +162,8 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
     return &ffi_type_sint;
   if (sym == sym_1("tag"))
     return &ffi_type_pointer;
-  if (sym == sym_1("u8"))
+  if (sym == sym_1("u8") ||
+      sym == sym_1("bool"))
     return &ffi_type_uint8;
   if (sym == sym_1("u16"))
     return &ffi_type_uint16;

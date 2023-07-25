@@ -61,6 +61,14 @@ s_call * call_init_op (s_call *call)
   return call;
 }
 
+s_call * call_init_op_unary (s_call *call)
+{
+  assert(call);
+  bzero(call, sizeof(s_call));
+  call->arguments = list_new(NULL, NULL);
+  return call;
+}
+
 s_str * call_inspect (const s_call *call, s_str *dest)
 {
   sw size;

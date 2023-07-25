@@ -109,7 +109,6 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   sw r;
   sw result = 0;
   s_tag subject;
-  u64 u;
   assert(facts);
   assert(buf);
   tag_init_var(&subject);
@@ -117,29 +116,24 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   tag_init_var(&object);
   if ((r = buf_write_1(buf,
                        "%{module: C3.Facts.Dump,\n"
-                       "  version: 1,\n"
-                       "  count: ")) < 0)
+                       "  version: 1}\n")) < 0)
     return r;
   result += r;
   facts_lock_r(facts);
-  u = facts_count(facts);
-  if ((r = buf_inspect_u64(buf, &u)) < 0)
-    goto ko;
-  result += r;
-  if ((r = buf_write_1(buf, "}\n")) < 0)
-    goto ko;
-  result += r;
   facts_with_0(facts, &cursor, &subject, &predicate, &object);
   while ((fact = facts_cursor_next(&cursor))) {
+    if ((r = buf_write_1(buf, "add ")) < 0)
+      goto clean;
+    result += r;
     if ((r = buf_inspect_fact(buf, fact)) < 0)
-      goto ko;
+      goto clean;
     result += r;
     if ((r = buf_write_1(buf, "\n")) < 0)
-      goto ko;
+      goto clean;
     result += r;
   }
   r = result;
- ko:
+ clean:
   facts_lock_unlock_r(facts);
   return r;
 }
@@ -217,28 +211,22 @@ s_facts * facts_init (s_facts *facts)
 
 sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 {
-  u64 count;
   s_fact_w fact;
   s_fact *factp;
-  u64 i;
+  u64 line;
   sw r;
   sw result = 0;
   assert(facts);
   assert(buf);
   if ((r = buf_read_1(buf,
                       "%{module: C3.Facts.Dump,\n"
-                      "  version: 1,\n"
-                      "  count: ")) <= 0)
-    goto ko_header;
-  result += r;
-  if ((r = buf_parse_u64(buf, &count)) <= 0)
-    goto ko_header;
-  result += r;
-  if ((r = buf_read_1(buf, "}\n")) <= 0)
+                      "  version: 1}\n")) <= 0)
     goto ko_header;
   result += r;
   facts_lock_w(facts);
-  for (i = 0; i < count; i++) {
+  line = 3;
+  while ((r = buf_read_1(buf, "add ")) > 0) {
+    result += r;
     if ((r = buf_parse_fact(buf, &fact)) <= 0)
       goto ko_fact;
     result += r;
@@ -250,9 +238,9 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       goto ko_fact;
     }
     result += r;
+    line++;
   }
   facts_lock_unlock_w(facts);
-  i++;
   return result;
  ko_header:
   warnx("facts_load: %s: invalid or missing header",
@@ -263,7 +251,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   warnx("facts_load: %s: %s fact line %lu",
         path->ptr.ps8,
         r ? "invalid" : "missing",
-        (unsigned long) i + 5);
+        (unsigned long) line);
   return -1;
 }
 
@@ -396,14 +384,6 @@ sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_read_1(buf,
-                      "%{module: C3.Facts.Save,\n"
-                      "  version: 1}\n")) <= 0) {
-    warnx("facts_open_buf: %s: invalid or missing header",
-          path->ptr.ps8);
-    return -1;
-  }
-  result += r;
   if ((r = facts_load(facts, buf, path)) <= 0)
     return r;
   result += r;
@@ -461,9 +441,6 @@ sw facts_open_file_create (s_facts *facts, const s_str *path)
   }
   out = buf_new_alloc(BUF_SIZE);
   buf_file_open_w(out, fp);
-  if ((r = facts_save_header(out)) < 0)
-    return r;
-  result += r;
   if ((r = facts_dump(facts, out)) < 0)
     return r;
   result += r;
@@ -563,9 +540,6 @@ sw facts_save_file (s_facts *facts, const s8 *path)
     return -1;
   }
   buf_file_open_w(&buf, fp);
-  if ((r = facts_save_header(&buf)) < 0)
-    goto ko;
-  result += r;
   if ((r = facts_dump(facts, &buf)) < 0)
     goto ko;
   result += r;
@@ -580,18 +554,6 @@ sw facts_save_file (s_facts *facts, const s8 *path)
  ko:
   fclose(fp);
   return r;
-}
-
-sw facts_save_header (s_buf *buf)
-{
-  sw r;
-  sw result = 0;
-  if ((r = buf_write_1(buf,
-                       "%{module: C3.Facts.Save,\n"
-                       "  version: 1}\n")) < 0)
-    return r;
-  result += r;
-  return result;
 }
 
 e_bool facts_unref_tag (s_facts *facts, const s_tag *tag)
