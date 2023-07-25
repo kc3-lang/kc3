@@ -161,7 +161,10 @@ void hash_update_ident (t_hash *hash, const s_ident *ident)
   assert(hash);
   assert(ident);
   hash_update_u8(hash, '_');
-  hash_update_sym(hash, ident->module_name);
+  if (ident->module_name) {
+    hash_update_sym(hash, ident->module_name);
+    hash_update_u8(hash, '.');
+  }
   hash_update_sym(hash, ident->sym);
 }
 

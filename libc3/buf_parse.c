@@ -680,6 +680,7 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
  restore:
   buf_save_restore_rpos(buf, &save);
   call_clean(&tmp);
+  r = 0;
  clean:
   buf_save_clean(buf, &save);
   return r;
