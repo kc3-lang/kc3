@@ -671,7 +671,7 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
+  if ((r = buf_parse_tag(buf, &tmp.arguments->tag)) <= 0)
     goto restore;
   result += r;
   *dest = tmp;
