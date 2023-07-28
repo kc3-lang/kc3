@@ -535,6 +535,34 @@ s_module * env_module_load (s_env *env, s_module *module,
   return module;
 }
 
+bool env_operator_is_binary (s_env *env, const s_ident *op)
+{
+  s_facts_with_cursor cursor;
+  s8 r;
+  s_tag tag_ident;
+  s_tag tag_is_a;
+  s_tag tag_arity;
+  s_tag tag_operator;
+  s_tag tag_two;
+  s_ident tmp;
+  assert(env);
+  assert(op);
+  tmp = *op;
+  ident_resolve_module(&tmp, env);
+  tag_init_ident(&tag_ident, &tmp);
+  tag_init_1(    &tag_is_a, ":is_a");
+  tag_init_1(    &tag_operator, ":operator");
+  tag_init_1(    &tag_arity, ":arity");
+  tag_init_1(    &tag_two, "2");
+  facts_with(&env->facts, &cursor, (t_facts_spec) {
+      &tag_ident, &tag_is_a, &tag_operator,
+                  &tag_arity, &tag_two,
+                  NULL, NULL });
+  r = facts_with_cursor_next(&cursor) ? true : false;
+  facts_with_cursor_clean(&cursor);
+  return r;
+}
+
 bool env_operator_is_right_associative (s_env *env, const s_ident *op)
 {
   s_facts_with_cursor cursor;
@@ -558,7 +586,7 @@ bool env_operator_is_right_associative (s_env *env, const s_ident *op)
   return r;
 }
 
-bool env_operator_is_unary(s_env *env, const s_ident *op)
+bool env_operator_is_unary (s_env *env, const s_ident *op)
 {
   s_facts_with_cursor cursor;
   s8 r;

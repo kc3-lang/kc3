@@ -535,14 +535,12 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   s_buf_save save;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_call_op_unary(buf, dest)) > 0)
-    return r;
   buf_save_init(buf, &save);
   call_init_op(&tmp);
   if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
+  if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
     goto restore;
   result += r;
   if ((r = buf_parse_call_op_rec(buf, &tmp, 0)) <= 0)
@@ -589,13 +587,15 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     r = 0;
     goto restore;
   }
+  if (! operator_is_binary(&next_op))
+    goto restore;
   while (r > 0 && op_precedence >= min_precedence) {
     if ((r = buf_parse_ident(buf, &next_op)) <= 0)
       goto restore;
     result += r;
     op = next_op;
     tmp.ident = op;
-    if ((r = buf_ignore_spaces(buf)) < 0)
+    if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
       goto restore;
     result += r;
     if ((r = buf_parse_tag_primary(buf, right)) <= 0)
@@ -616,7 +616,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     next_op_precedence = operator_precedence(&next_op);
     while (r > 0 && (next_op_precedence >= op_precedence ||
                      (operator_is_right_associative(&next_op) &&
-                      next_op_precedence == op_precedence))) {
+                      next_op_precedence == op_precedence)) &&
+           operator_is_binary(&next_op)) {
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
       if ((r = buf_parse_call_op_rec(buf, &tmp2, (next_op_precedence > op_precedence) ? op_precedence + 1 : op_precedence)) <= 0) {
@@ -641,6 +642,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     list_next(tmp3.arguments)->tag = *right;
     tag_init_call(left, &tmp3);
   }
+ ok:
   call_clean(dest);
   *dest = tmp;
   r = result;
@@ -2066,6 +2068,16 @@ sw buf_parse_tag_call_op (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_call_op_unary (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_call_op_unary(buf, &dest->data.call)) > 0)
+    dest->type = TAG_CALL;
+  return r;
+}
+
 sw buf_parse_tag_cfn (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -2142,7 +2154,8 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_bool(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
+      (r = buf_parse_tag_bool(buf, dest)) != 0 ||
       (r = buf_parse_tag_character(buf, dest)) != 0)
     goto end;
   if ((r = buf_parse_tag_integer(buf, dest)) != 0) {
