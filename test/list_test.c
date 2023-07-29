@@ -67,7 +67,7 @@ TEST_CASE_END(list_1)
 TEST_CASE(list_inspect)
 {
   LIST_TEST_INSPECT("()", "()");
-  LIST_TEST_INSPECT("(() | ())", "(())");
+  LIST_TEST_INSPECT("(() | ())", "(() | ())");
   LIST_TEST_INSPECT("((), () | ())", "((), ())");
 }
 TEST_CASE_END(list_inspect)

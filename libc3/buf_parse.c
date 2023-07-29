@@ -1342,6 +1342,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
       goto restore;
     result += r;
     str_to_ident(&str, dest);
+    dest->module_name = module_name;
     str_clean(&str);
     r = result;
     goto clean;
@@ -2203,7 +2204,8 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_array(buf, dest)) != 0 ||
+      (r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
       (r = buf_parse_tag_bool(buf, dest)) != 0 ||
       (r = buf_parse_tag_character(buf, dest)) != 0)
@@ -2212,15 +2214,14 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
     tag_integer_reduce(dest);
     goto end;
   }
-  if ((r = buf_parse_tag_array(buf, dest)) != 0 ||
-      (r = buf_parse_tag_list(buf, dest)) != 0 ||
-      (r = buf_parse_tag_str(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_str(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
-      (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_ident(buf, dest)) != 0 ||
+      (r = buf_parse_tag_list(buf, dest)) != 0 ||
+      (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_sym(buf, dest)) != 0)
     goto end;
   goto restore;

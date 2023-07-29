@@ -389,8 +389,7 @@ TEST_CASE(buf_inspect_tag)
   BUF_INSPECT_TEST_TAG(tag_integer_1(&tag, "-0x10000000000000000"), "-18446744073709551616");
   BUF_INSPECT_TEST_TAG(tag_integer_1(&tag, "0x10000000000000000"), "18446744073709551616");
   BUF_INSPECT_TEST_TAG(tag_list(&tag, NULL), "()");
-  BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "(() | ())"), "(())");
-  BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "(())"), "(())");
+  BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "(() | ())"), "(() | ())");
   BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "()"), "()");
   BUF_INSPECT_TEST_TAG(tag_s16(&tag, -0x100), "-256");
   BUF_INSPECT_TEST_TAG(tag_s32(&tag, -0x10000), "-65536");

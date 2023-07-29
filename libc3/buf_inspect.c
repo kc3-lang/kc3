@@ -887,6 +887,7 @@ sw buf_inspect_integer_size (const s_integer *x)
 
 sw buf_inspect_list (s_buf *buf, const s_list *x)
 {
+  uw count = 0;
   const s_list *i;
   sw r;
   sw result = 0;
@@ -899,6 +900,7 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
     if ((r = buf_inspect_tag(buf, &i->tag)) < 0)
       return r;
     result += r;
+    count++;
     switch (i->next.type) {
     case TAG_LIST:
       if (i->next.data.list) {
@@ -907,6 +909,11 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
         result += r;
       }
       i = i->next.data.list;
+      if (! i && count == 1) {
+        if ((r = buf_write_1(buf, " | ()")) < 0)
+          return r;
+        result += r;
+      }
       continue;
     default:
       if ((r = buf_write_1(buf, " | ")) < 0)
@@ -926,6 +933,7 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
 
 sw buf_inspect_list_size (const s_list *list)
 {
+  uw count = 0;
   const s_list *i;
   sw r;
   sw result = 0;
@@ -935,11 +943,14 @@ sw buf_inspect_list_size (const s_list *list)
     if ((r = buf_inspect_tag_size(&i->tag)) < 0)
       return r;
     result += r;
+    count++;
     switch (i->next.type) {
     case TAG_LIST:
       if (i->next.data.list)
         result += strlen(", ");
       i = i->next.data.list;
+      if (! i && count == 1)
+        result += strlen(" | ()");
       continue;
     default:
       result += strlen(" | ");
