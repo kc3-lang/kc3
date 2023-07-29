@@ -595,7 +595,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     result += r;
     op = next_op;
     tmp.ident = op;
-    if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
+    if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
     if ((r = buf_parse_tag_primary(buf, right)) <= 0)
@@ -614,10 +614,10 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     if (r <= 0)
       break;
     next_op_precedence = operator_precedence(&next_op);
-    while (r > 0 && (next_op_precedence >= op_precedence ||
-                     (operator_is_right_associative(&next_op) &&
-                      next_op_precedence == op_precedence)) &&
-           operator_is_binary(&next_op)) {
+    while (r > 0 && operator_is_binary(&next_op) &&
+           (next_op_precedence >= op_precedence ||
+            (operator_is_right_associative(&next_op) &&
+             next_op_precedence == op_precedence))) {
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
       if ((r = buf_parse_call_op_rec(buf, &tmp2, (next_op_precedence > op_precedence) ? op_precedence + 1 : op_precedence)) <= 0) {
