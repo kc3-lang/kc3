@@ -560,6 +560,7 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
 
 sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
 {
+  character c;
   s_tag *left;
   s_ident next_op;
   s8 next_op_precedence;
@@ -601,12 +602,13 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     if ((r = buf_parse_tag_primary(buf, right)) <= 0)
       goto restore;
     result += r;
-    if ((r = buf_ignore_newline(buf)) < 0)
+    if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
       break;
-    if (r > 0) {
-      result += r;
+    result += r;
+    if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
       break;
-    }
+    if (r > 0 && c == '\n')
+      break;
     if ((r = buf_ignore_spaces(buf)) < 0)
       break;
     result += r;
@@ -642,7 +644,6 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     list_next(tmp3.arguments)->tag = *right;
     tag_init_call(left, &tmp3);
   }
- ok:
   call_clean(dest);
   *dest = tmp;
   r = result;
