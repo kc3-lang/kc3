@@ -609,9 +609,6 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       break;
     if (r > 0 && c == '\n')
       break;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      break;
-    result += r;
     r = buf_parse_ident_peek(buf, &next_op);
     if (r <= 0)
       break;
@@ -629,9 +626,15 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       }
       result += r;
       tag_init_call(right, &tmp2);
-      if ((r = buf_ignore_spaces(buf)) < 0)
+      if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
         break;
       result += r;
+      if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
+        break;
+      if (r > 0 && c == '\n') {
+        r = -1;
+        break;
+      }
       r = buf_parse_ident_peek(buf, &next_op);
       if (r > 0)
         next_op_precedence = operator_precedence(&next_op);
@@ -684,6 +687,41 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
   buf_save_restore_rpos(buf, &save);
   call_clean(&tmp);
   r = 0;
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_call_paren (s_buf *buf, s_call *dest)
+{
+  sw r;
+  sw result = 0;
+  s_call tmp;
+  s_buf_save save;
+  call_init_op_unary(&tmp);
+  ident_init_1(&tmp.ident, "()");
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(")) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_tag(buf, &tmp.arguments->tag)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, ")")) <= 0)
+    goto restore;
+  result += r;
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  call_clean(&tmp);
+  buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
   return r;
@@ -2069,6 +2107,16 @@ sw buf_parse_tag_call_op (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_call_paren (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_call_paren(buf, &dest->data.call)) > 0)
+    dest->type = TAG_CALL;
+  return r;
+}
+
 sw buf_parse_tag_call_op_unary (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -2155,7 +2203,8 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
+      (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
       (r = buf_parse_tag_bool(buf, dest)) != 0 ||
       (r = buf_parse_tag_character(buf, dest)) != 0)
     goto end;

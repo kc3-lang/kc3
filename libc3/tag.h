@@ -96,6 +96,7 @@ e_bool             tag_is_bound_var (const s_tag *tag);
 e_bool             tag_is_number (const s_tag *tag);
 e_bool             tag_is_unbound_var (const s_tag *tag);
 s8                 tag_number_compare (const s_tag *a, const s_tag *b);
+s_tag *            tag_paren (s_tag *a);
 sw                 tag_size (const s_tag *tag);
 void *             tag_to_ffi_pointer (s_tag *tag, const s_sym *type);
 ffi_type           tag_to_ffi_type(const s_tag *tag);

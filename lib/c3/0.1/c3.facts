@@ -14,6 +14,7 @@ add {C3, :symbol, C3.<}
 add {C3, :symbol, C3.==}
 add {C3, :symbol, C3.>=}
 add {C3, :symbol, C3.>}
+add {C3, :symbol, C3._"()"}
 add {C3, :symbol, C3.break}
 add {C3, :symbol, C3.first}
 add {C3, :symbol, C3.||}
@@ -66,7 +67,10 @@ add {C3.!, :arity, 1}
 add {C3.!, :cfn, cfn :bool "tag_not" (:tag)}
 add {C3.!, :is_a, :operator}
 add {C3.!, :operator_precedence, 4}
-add {C3.!, :operator_associativity, :left}
+add {C3._"()", :arity, 1}
+add {C3._"()", :cfn, cfn :tag "tag_paren" (:tag)}
+add {C3._"()", :is_a, :operator}
+add {C3._"()", :operator_precedence, 4}
 add {C3.&&, :arity, 2}
 add {C3.&&, :cfn, cfn :bool "tag_and" (:tag, :tag)}
 add {C3.&&, :is_a, :operator}
