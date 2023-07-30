@@ -27,8 +27,8 @@
     }                                                                  \
     else {                                                             \
       test_ko();                                                       \
-      printf("\nAssertion failed in %s:%d %s\n%s\n",                   \
-             __FILE__, __LINE__, __func__, # test);                    \
+      fprintf(stderr, "\nAssertion failed in %s:%d %s\n%s\n",          \
+              __FILE__, __LINE__, __func__, # test);                   \
       return 1;                                                        \
     }                                                                  \
   } while(0)
@@ -58,13 +58,13 @@
     }                                                                  \
     else {                                                             \
       test_ko();                                                       \
-      printf("\n%sAssertion failed in %s:%d %s\n"                      \
-             "%s == %s\n"                                              \
-             "Expected %s got %lld.%s\n",                              \
-             TEST_COLOR_KO,                                            \
-             __FILE__, __LINE__, __func__,                             \
-             # test, # expected, # expected, TEST_EQ_tmp,              \
-             TEST_COLOR_RESET);                                        \
+      fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
+              "%s == %s\n"                                             \
+              "Expected %s got %lld.%s\n",                             \
+              TEST_COLOR_KO,                                           \
+              __FILE__, __LINE__, __func__,                            \
+              # test, # expected, # expected, TEST_EQ_tmp,             \
+              TEST_COLOR_RESET);                                       \
       return 1;                                                        \
     }                                                                  \
   } while (0)
@@ -79,13 +79,13 @@
     }                                                                  \
     else {                                                             \
       test_ko();                                                       \
-      printf("\n%sAssertion failed in %s:%d %s\n"                      \
-             "%s == %s\n"                                              \
-             "Expected %s got %.16g.%s\n",                             \
-             TEST_COLOR_KO,                                            \
-             __FILE__, __LINE__, __func__,                             \
-             # test, # expected, # expected, TEST_FLOAT_EQ_tmp,        \
-             TEST_COLOR_RESET);                                        \
+      fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
+              "%s == %s\n"                                             \
+              "Expected %s got %.16g.%s\n",                            \
+              TEST_COLOR_KO,                                           \
+              __FILE__, __LINE__, __func__,                            \
+              # test, # expected, # expected, TEST_FLOAT_EQ_tmp,       \
+              TEST_COLOR_RESET);                                       \
       return 1;                                                        \
     }                                                                  \
   } while (0)
@@ -102,13 +102,13 @@
     }                                                                  \
     else {                                                             \
       test_ko();                                                       \
-      printf("\n%sAssertion failed in %s:%d %s\n"                      \
-             "%s == %s\n"                                              \
-             "Expected %s got %.16g.%s\n",                             \
-             TEST_COLOR_KO,                                            \
-             __FILE__, __LINE__, __func__,                             \
-             # test, # expected1, # expected1, TEST_FLOAT_EQ2_tmp,     \
-             TEST_COLOR_RESET);                                        \
+      fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
+              "%s == %s\n"                                             \
+              "Expected %s got %.16g.%s\n",                            \
+              TEST_COLOR_KO,                                           \
+              __FILE__, __LINE__, __func__,                            \
+              # test, # expected1, # expected1, TEST_FLOAT_EQ2_tmp,    \
+              TEST_COLOR_RESET);                                       \
       return 1;                                                        \
     }                                                                  \
   } while (0)
@@ -122,13 +122,13 @@
     }                                                                  \
     else {                                                             \
       test_ko();                                                       \
-      printf("\n%sAssertion failed in %s:%d %s\n"                      \
-             "%s == %s\n"                                              \
-             "Expected %s got %lf.%s\n",                               \
-             TEST_COLOR_KO,                                            \
-             __FILE__, __LINE__, __func__,                             \
-             # test, # expected, # expected, TEST_DOUBLE_EQ_tmp,       \
-             TEST_COLOR_RESET);                                        \
+      fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
+              "%s == %s\n"                                             \
+              "Expected %s got %lf.%s\n",                              \
+              TEST_COLOR_KO,                                           \
+              __FILE__, __LINE__, __func__,                            \
+              # test, # expected, # expected, TEST_DOUBLE_EQ_tmp,      \
+              TEST_COLOR_RESET);                                       \
       return 1;                                                        \
     }                                                                  \
   } while (0)
@@ -142,13 +142,13 @@
     }                                                                  \
     else {                                                             \
       test_ko();                                                       \
-      printf("\n%sAssertion failed in %s:%d %s\n"                      \
-             "str_compare(%s, %s) == %s\n"                             \
-             "Expected %s got %ld.%s\n",                               \
-             TEST_COLOR_KO,                                            \
-             __FILE__, __LINE__, __func__,                             \
-             # a, # b, # expected, # expected, TEST_STR_COMPARE_tmp,   \
-             TEST_COLOR_RESET);                                        \
+      fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
+              "str_compare(%s, %s) == %s\n"                            \
+              "Expected %s got %ld.%s\n",                              \
+              TEST_COLOR_KO,                                           \
+              __FILE__, __LINE__, __func__,                            \
+              # a, # b, # expected, # expected, TEST_STR_COMPARE_tmp,  \
+              TEST_COLOR_RESET);                                       \
       return 1;                                                        \
     }                                                                  \
   } while (0)
@@ -162,15 +162,15 @@
     }                                                                  \
     else {                                                             \
       test_ko();                                                       \
-      printf("\n%sAssertion failed in %s:%d %s\n"                      \
-             "strncmp(%s, %s, %ld) == 0\n",                            \
-             TEST_COLOR_KO,                                            \
-             __FILE__, __LINE__, __func__,                             \
-             # test, # result, (long) (bytes));                        \
-      printf("Expected %s got \"",                                     \
-             # result);                                                \
-      fwrite(TEST_STRNCMP_tmp, (bytes), 1, stdout);                    \
-      printf("\".%s\n", TEST_COLOR_RESET);                             \
+      fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
+              "strncmp(%s, %s, %ld) == 0\n",                           \
+              TEST_COLOR_KO,                                           \
+              __FILE__, __LINE__, __func__,                            \
+              # test, # result, (long) (bytes));                       \
+      fprintf(stderr, "Expected %s got \"",                            \
+              # result);                                               \
+      fwrite(TEST_STRNCMP_tmp, (bytes), 1, stderr);                    \
+      fprintf(stderr, "\".%s\n", TEST_COLOR_RESET);                    \
       return 1;                                                        \
     }                                                                  \
   } while (0)

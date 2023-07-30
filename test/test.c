@@ -71,10 +71,10 @@ int test_file_compare (const char *path_a, const char *path_b)
   }
   /* never reached */
  ko:
-  printf("\n%sFiles %s and %s differ line %u.%s",
-         TEST_COLOR_KO,
-         path_a, path_b, lineno,
-         TEST_COLOR_RESET);
+  fprintf(stderr, "\n%sFiles %s and %s differ line %u.%s",
+          TEST_COLOR_KO,
+          path_a, path_b, lineno,
+          TEST_COLOR_RESET);
   test_ko();
   return 1;
  ok:
@@ -134,11 +134,11 @@ void test_ko ()
   g_test_ko++;
   fprintf(stderr, "%sF%s", TEST_COLOR_KO, TEST_COLOR_RESET);
   if (g_test_context)
-    printf("\n%s%s%s", TEST_COLOR_KO, g_test_context,
-           TEST_COLOR_RESET);
+    fprintf(stderr, "\n%s%s%s", TEST_COLOR_KO, g_test_context,
+            TEST_COLOR_RESET);
   g_test_last_ok = 0;
   if (g_test_ko >= TEST_KO_MAX) {
-    printf("\nMaximum number of errors reached, exiting.\n");
+    fprintf(stderr, "\nMaximum number of errors reached, exiting.\n");
     exit(1);
   }
 }
