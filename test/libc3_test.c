@@ -42,95 +42,95 @@ int main (int argc, char **argv)
   test_init(argc, argv);
   c3_init(NULL);
   if (test_target("types")) {
-    printf("\ntypes\n");
+    fprintf(stderr, "\ntypes\n");
     types_test();
   }
   if (test_target("bool")) {
-    printf("\nbool\n");
+    fprintf(stderr, "\nbool\n");
     bool_test();
   }
   if (test_target("character")) {
-    printf("\ncharacter\n");
+    fprintf(stderr, "\ncharacter\n");
     character_test();
   }
   if (test_target("buf")) {
-    printf("\nbuf\n");
+    fprintf(stderr, "\nbuf\n");
     buf_test();
   }
   if (test_target("buf_parse")) {
-    printf("\nbuf_parse\n");
+    fprintf(stderr, "\nbuf_parse\n");
     buf_parse_test();
   }
   if (test_target("buf_inspect")) {
-    printf("\nbuf_inspect\n");
+    fprintf(stderr, "\nbuf_inspect\n");
     buf_inspect_test();
   }
   if (test_target("buf_file")) {
-    printf("\nbuf_file\n");
+    fprintf(stderr, "\nbuf_file\n");
     buf_file_test();
   }
   if (test_target("str")) {
-    printf("\nstr\n");
+    fprintf(stderr, "\nstr\n");
     str_test();
   }
   if (test_target("sym")) {
-    printf("\nsym\n");
+    fprintf(stderr, "\nsym\n");
     sym_test();
   }
   if (test_target("ident")) {
-    printf("\nident\n");
+    fprintf(stderr, "\nident\n");
     ident_test();
   }
   if (test_target("list")) {
-    printf("\nlist\n");
+    fprintf(stderr, "\nlist\n");
     list_test();
   }
   if (test_target("tuple")) {
-    printf("\ntuple\n");
+    fprintf(stderr, "\ntuple\n");
     tuple_test();
   }
   if (test_target("call")) {
-    printf("\ncall\n");
+    fprintf(stderr, "\ncall\n");
     call_test();
   }
   if (test_target("tag")) {
-    printf("\ntag\n");
+    fprintf(stderr, "\ntag\n");
     tag_test();
   }
   if (test_target("fact")) {
-    printf("\nfact\n");
+    fprintf(stderr, "\nfact\n");
     fact_test();
   }
   if (test_target("compare")) {
-      printf("\ncompare\n");
+      fprintf(stderr, "\ncompare\n");
       compare_test();
   }
   if (test_target("set__tag")) {
-    printf("\nset__tag\n");
+    fprintf(stderr, "\nset__tag\n");
     set__tag_test();
   }
   if (test_target("set__fact")) {
-    printf("\nset__fact\n");
+    fprintf(stderr, "\nset__fact\n");
     set__fact_test();
   }
   if (test_target("skiplist__fact")) {
-    printf("\nskiplist__fact\n");
+    fprintf(stderr, "\nskiplist__fact\n");
     skiplist__fact_test();
   }
   if (test_target("facts")) {
-    printf("\nfacts\n");
+    fprintf(stderr, "\nfacts\n");
     facts_test();
   }
   if (test_target("facts_cursor")) {
-    printf("\nfacts_cursor\n");
+    fprintf(stderr, "\nfacts_cursor\n");
     facts_cursor_test();
   }
   if (test_target("facts_with")) {
-    printf("\nfacts_with\n");
+    fprintf(stderr, "\nfacts_with\n");
     facts_with_test();
   }
   if (test_target("env")) {
-    printf("\nenv\n");
+    fprintf(stderr, "\nenv\n");
     env_test();
   }
   test_summary();
