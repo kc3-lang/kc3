@@ -234,6 +234,8 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   s8 op_precedence;
   sw r;
   sw result = 0;
+  if (operator_is_unary(&call->ident))
+    return buf_inspect_call_op_unary(buf, call);
   if ((op_precedence = operator_precedence(&call->ident)) > 0)
     return buf_inspect_call_op(buf, call, op_precedence);
   if ((r = buf_inspect_ident(buf, &call->ident)) < 0)

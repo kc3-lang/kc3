@@ -9,12 +9,40 @@ HEADERS = \
 	buf_file.h \
 	buf_inspect.h \
 	buf_inspect_s16.h \
+	buf_inspect_s16_binary.h \
+	buf_inspect_s16_decimal.h \
+	buf_inspect_s16_hexadecimal.h \
+	buf_inspect_s16_octal.h \
 	buf_inspect_s32.h \
+	buf_inspect_s32_binary.h \
+	buf_inspect_s32_decimal.h \
+	buf_inspect_s32_hexadecimal.h \
+	buf_inspect_s32_octal.h \
 	buf_inspect_s64.h \
+	buf_inspect_s64_binary.h \
+	buf_inspect_s64_decimal.h \
+	buf_inspect_s64_hexadecimal.h \
+	buf_inspect_s64_octal.h \
 	buf_inspect_s8.h \
+	buf_inspect_s8_binary.h \
+	buf_inspect_s8_decimal.h \
+	buf_inspect_s8_hexadecimal.h \
+	buf_inspect_s8_octal.h \
 	buf_inspect_sw.h \
+	buf_inspect_sw_binary.h \
+	buf_inspect_sw_decimal.h \
+	buf_inspect_sw_hexadecimal.h \
+	buf_inspect_sw_octal.h \
 	buf_inspect_u16.h \
+	buf_inspect_u16_binary.h \
+	buf_inspect_u16_decimal.h \
+	buf_inspect_u16_hexadecimal.h \
+	buf_inspect_u16_octal.h \
 	buf_inspect_u32.h \
+	buf_inspect_u32_binary.h \
+	buf_inspect_u32_decimal.h \
+	buf_inspect_u32_hexadecimal.h \
+	buf_inspect_u32_octal.h \
 	buf_inspect_u64.h \
 	buf_inspect_u64_binary.h \
 	buf_inspect_u64_decimal.h \
@@ -22,6 +50,10 @@ HEADERS = \
 	buf_inspect_u64_octal.h \
 	buf_inspect_u8.h \
 	buf_inspect_uw.h \
+	buf_inspect_uw_binary.h \
+	buf_inspect_uw_decimal.h \
+	buf_inspect_uw_hexadecimal.h \
+	buf_inspect_uw_octal.h \
 	buf_parse.h \
 	buf_parse_c.h \
 	buf_parse_s16.h \
@@ -94,12 +126,40 @@ SOURCES = \
 	buf_file.c \
 	buf_inspect.c \
 	buf_inspect_s16.c \
+	buf_inspect_s16_binary.c \
+	buf_inspect_s16_decimal.c \
+	buf_inspect_s16_hexadecimal.c \
+	buf_inspect_s16_octal.c \
 	buf_inspect_s32.c \
+	buf_inspect_s32_binary.c \
+	buf_inspect_s32_decimal.c \
+	buf_inspect_s32_hexadecimal.c \
+	buf_inspect_s32_octal.c \
 	buf_inspect_s64.c \
+	buf_inspect_s64_binary.c \
+	buf_inspect_s64_decimal.c \
+	buf_inspect_s64_hexadecimal.c \
+	buf_inspect_s64_octal.c \
 	buf_inspect_s8.c \
+	buf_inspect_s8_binary.c \
+	buf_inspect_s8_decimal.c \
+	buf_inspect_s8_hexadecimal.c \
+	buf_inspect_s8_octal.c \
 	buf_inspect_sw.c \
+	buf_inspect_sw_binary.c \
+	buf_inspect_sw_decimal.c \
+	buf_inspect_sw_hexadecimal.c \
+	buf_inspect_sw_octal.c \
 	buf_inspect_u16.c \
+	buf_inspect_u16_binary.c \
+	buf_inspect_u16_decimal.c \
+	buf_inspect_u16_hexadecimal.c \
+	buf_inspect_u16_octal.c \
 	buf_inspect_u32.c \
+	buf_inspect_u32_binary.c \
+	buf_inspect_u32_decimal.c \
+	buf_inspect_u32_hexadecimal.c \
+	buf_inspect_u32_octal.c \
 	buf_inspect_u64.c \
 	buf_inspect_u64_binary.c \
 	buf_inspect_u64_decimal.c \
@@ -107,6 +167,10 @@ SOURCES = \
 	buf_inspect_u64_octal.c \
 	buf_inspect_u8.c \
 	buf_inspect_uw.c \
+	buf_inspect_uw_binary.c \
+	buf_inspect_uw_decimal.c \
+	buf_inspect_uw_hexadecimal.c \
+	buf_inspect_uw_octal.c \
 	buf_parse.c \
 	buf_parse_c.c \
 	buf_parse_s16.c \
@@ -174,12 +238,40 @@ LO_SOURCES = \
 	buf_file.c \
 	buf_inspect.c \
 	buf_inspect_s16.c \
+	buf_inspect_s16_binary.c \
+	buf_inspect_s16_decimal.c \
+	buf_inspect_s16_hexadecimal.c \
+	buf_inspect_s16_octal.c \
 	buf_inspect_s32.c \
+	buf_inspect_s32_binary.c \
+	buf_inspect_s32_decimal.c \
+	buf_inspect_s32_hexadecimal.c \
+	buf_inspect_s32_octal.c \
 	buf_inspect_s64.c \
+	buf_inspect_s64_binary.c \
+	buf_inspect_s64_decimal.c \
+	buf_inspect_s64_hexadecimal.c \
+	buf_inspect_s64_octal.c \
 	buf_inspect_s8.c \
+	buf_inspect_s8_binary.c \
+	buf_inspect_s8_decimal.c \
+	buf_inspect_s8_hexadecimal.c \
+	buf_inspect_s8_octal.c \
 	buf_inspect_sw.c \
+	buf_inspect_sw_binary.c \
+	buf_inspect_sw_decimal.c \
+	buf_inspect_sw_hexadecimal.c \
+	buf_inspect_sw_octal.c \
 	buf_inspect_u16.c \
+	buf_inspect_u16_binary.c \
+	buf_inspect_u16_decimal.c \
+	buf_inspect_u16_hexadecimal.c \
+	buf_inspect_u16_octal.c \
 	buf_inspect_u32.c \
+	buf_inspect_u32_binary.c \
+	buf_inspect_u32_decimal.c \
+	buf_inspect_u32_hexadecimal.c \
+	buf_inspect_u32_octal.c \
 	buf_inspect_u64.c \
 	buf_inspect_u64_binary.c \
 	buf_inspect_u64_decimal.c \
@@ -187,6 +279,10 @@ LO_SOURCES = \
 	buf_inspect_u64_octal.c \
 	buf_inspect_u8.c \
 	buf_inspect_uw.c \
+	buf_inspect_uw_binary.c \
+	buf_inspect_uw_decimal.c \
+	buf_inspect_uw_hexadecimal.c \
+	buf_inspect_uw_octal.c \
 	buf_parse.c \
 	buf_parse_c.c \
 	buf_parse_s16.c \
