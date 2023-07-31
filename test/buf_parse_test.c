@@ -792,13 +792,13 @@ TEST_CASE(buf_parse_call)
   BUF_PARSE_TEST_CALL("A.b(c)");
   BUF_PARSE_TEST_CALL("A.b(c, d)");
   BUF_PARSE_TEST_CALL("A.b(c, d, e)");
-  BUF_PARSE_TEST_CALL("A.b(c(d), e)");
-  BUF_PARSE_TEST_CALL("A.b(C.d(e))");
-  BUF_PARSE_TEST_CALL("A.b(C.d(E.f(g, h), I.j(k, l)))");
   BUF_PARSE_TEST_CALL("a()");
   BUF_PARSE_TEST_CALL("a()");
   BUF_PARSE_TEST_CALL("a(b)");
   BUF_PARSE_TEST_CALL("a(b, c)");
+  BUF_PARSE_TEST_CALL("A.b(c(d), e)");
+  BUF_PARSE_TEST_CALL("A.b(C.d(e))");
+  BUF_PARSE_TEST_CALL("A.b(C.d(E.f(g, h), I.j(k, l)))");
   BUF_PARSE_TEST_CALL("a(b, c, d)");
   BUF_PARSE_TEST_CALL("a(b(c), d)");
   BUF_PARSE_TEST_CALL("a(B.c(d))");
