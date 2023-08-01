@@ -2204,17 +2204,16 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_array(buf, dest)) != 0 ||
-      (r = buf_parse_tag_call(buf, dest)) != 0 ||
-      (r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
-      (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
-      (r = buf_parse_tag_bool(buf, dest)) != 0)
-    goto end;
   if ((r = buf_parse_tag_integer(buf, dest)) != 0) {
     tag_integer_reduce(dest);
     goto end;
   }
-  if ((r = buf_parse_tag_character(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_array(buf, dest)) != 0 ||
+      (r = buf_parse_tag_call(buf, dest)) != 0 ||
+      (r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
+      (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
+      (r = buf_parse_tag_bool(buf, dest)) != 0 ||
+      (r = buf_parse_tag_character(buf, dest)) != 0 ||
       (r = buf_parse_tag_str(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||

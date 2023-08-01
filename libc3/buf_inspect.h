@@ -57,6 +57,7 @@ sw buf_inspect_call (s_buf *buf, const s_call *call);
 sw buf_inspect_call_args (s_buf *buf, const s_list *args);
 sw buf_inspect_call_op (s_buf *buf, const s_call *call,
                         s8 op_precedence);
+sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call);
 sw buf_inspect_call_size (const s_call *call);
 sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn);
 sw buf_inspect_cfn_size (const s_cfn *cfn);

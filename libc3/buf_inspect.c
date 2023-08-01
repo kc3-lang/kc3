@@ -305,6 +305,13 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   return result;
 }
 
+sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
+{
+  (void) buf;
+  (void) call;
+  return 0;
+}
+
 sw buf_inspect_call_args (s_buf *buf, const s_list *args)
 {
   sw r;
