@@ -67,7 +67,7 @@ add {C3.!, :arity, 1}
 add {C3.!, :cfn, cfn :bool "tag_not" (:tag)}
 add {C3.!, :is_a, :operator}
 add {C3._"()", :arity, 1}
-add {C3._"()", :cfn, cfn :tag "tag_paren" (:tag)}
+add {C3._"()", :cfn, cfn :tag "tag_paren" (:tag, :&result)}
 add {C3._"()", :is_a, :operator}
 add {C3.&&, :arity, 2}
 add {C3.&&, :cfn, cfn :bool "tag_and" (:tag, :tag)}

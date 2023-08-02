@@ -1536,9 +1536,9 @@ bool tag_or (const s_tag *a, const s_tag *b)
   return compare_tag(a, &f) != 0 || compare_tag(b, &f) != 0;
 }
 
-s_tag * tag_paren (s_tag *a)
+s_tag * tag_paren (const s_tag *tag, s_tag *dest)
 {
-  return a;
+  return tag_copy(tag, dest);
 }
 
 s_tag * tag_s8 (s_tag *tag, s8 x)
