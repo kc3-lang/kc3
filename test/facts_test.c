@@ -497,7 +497,7 @@ TEST_CASE(facts_open_file)
   if (r > 0)
     errx(1, "%s:%i: cp", __FILE__, __LINE__);
   str_init_1(&path, NULL, "facts_test_open_file.2.facts");
-  TEST_EQ(facts_open_file(&facts, &path), 1493);
+  TEST_EQ(facts_open_file(&facts, &path), 1523);
   TEST_EQ(facts_count(&facts), 46);
   i = 0;
   while (p[i]) {
