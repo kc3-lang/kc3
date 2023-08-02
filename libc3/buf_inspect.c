@@ -337,13 +337,30 @@ sw buf_inspect_call_args (s_buf *buf, const s_list *args)
 
 sw buf_inspect_call_args_size (const s_list *args)
 {
-  return buf_inspect_list_size(args);
+  sw r;
+  sw result = 0;
+  result += strlen("(");
+  while (args) {
+    if ((r = buf_inspect_tag_size(&args->tag)) < 0)
+      return r;
+    result += r;
+    if ((args = list_next(args))) {
+      result += strlen(", ");
+    }
+  }
+  result += strlen(")");
+  return result;
 }
 
 sw buf_inspect_call_size (const s_call *call)
 {
+  s8 op_precedence;
   sw r;
   sw result = 0;
+  if (operator_is_unary(&call->ident))
+    return buf_inspect_call_op_unary_size(call);
+  if ((op_precedence = operator_precedence(&call->ident)) > 0)
+    return buf_inspect_call_op_size(call, op_precedence);
   if ((r = buf_inspect_ident_size(&call->ident)) < 0)
     return r;
   result += r;

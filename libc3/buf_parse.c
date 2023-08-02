@@ -1370,7 +1370,6 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
     goto clean;
   }
   r = 0;
-  goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
