@@ -6,3 +6,6 @@
 	path = linenoise
 	url = https://git.kmx.io/c3-lang/linenoise.git
         branch = 1.0
+[submodule "libffi"]
+	path = libffi
+	url = https://git.kmx.io/c3-lang/libffi.git
