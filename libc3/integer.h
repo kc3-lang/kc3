@@ -28,8 +28,24 @@
 /* Stack allocation compatible functions */
 s_integer * integer_init (s_integer *i);
 s_integer * integer_init_1 (s_integer *i, const s8 *p);
+s_integer * integer_init_double (s_integer *a, double x);
+s_integer * integer_init_s32 (s_integer *a, s32 x);
+s_integer * integer_init_s64 (s_integer *a, s64 x);
+s_integer * integer_init_sw (s_integer *a, sw x);
+s_integer * integer_init_u32 (s_integer *a, u32 x);
+s_integer * integer_init_u64 (s_integer *a, u64 x);
+s_integer * integer_init_uw (s_integer *a, uw x);
 s_integer * integer_init_zero (s_integer *i);
 void        integer_clean (s_integer *i);
+
+/* Setters */
+s_integer * integer_set_double (s_integer *a, double x);
+s_integer * integer_set_s32 (s_integer *a, s32 x);
+s_integer * integer_set_s64 (s_integer *a, s64 x);
+s_integer * integer_set_sw (s_integer *a, sw x);
+s_integer * integer_set_u32 (s_integer *a, u32 x);
+s_integer * integer_set_u64 (s_integer *a, u64 x);
+s_integer * integer_set_uw (s_integer *a, uw x);
 
 /* Modifiers */
 s_integer * integer_abs (const s_integer *a, s_integer *dest);
@@ -70,6 +86,7 @@ uw               integer_bits (const s_integer *i);
 uw               integer_bytes (const s_integer *i);
 e_bool           integer_is_negative (const s_integer *i);
 e_bool           integer_is_zero (const s_integer *i);
+f64              integer_to_f64 (const s_integer *i);
 s8               integer_to_s8 (const s_integer *i);
 s16              integer_to_s16 (const s_integer *i);
 s32              integer_to_s32 (const s_integer *i);

@@ -28,6 +28,7 @@ s_tag * tag_1 (s_tag *tag, const s8 *p)
 
 s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
 {
+  s_integer tmp;
   assert(a);
   assert(b);
   assert(dest);
@@ -38,6 +39,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.f32 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.f32 + b->data.f64);
+    case TAG_INTEGER:
+      integer_init_double(&tmp, a->data.f32);
+      integer_add(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_f32(dest, a->data.f32 + b->data.s8);
     case TAG_S16:
@@ -82,6 +89,39 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
     default:
       goto ko;
   }
+  case TAG_INTEGER:
+    switch (b->type) {
+    case TAG_F32:
+      return tag_init_f32(dest, integer_to_f64(&a->data.integer) +
+                          b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, integer_to_f64(&a->data.integer) +
+                          b->data.f64);
+    case TAG_INTEGER:
+      tag_init_integer_zero(dest);
+      integer_add(&a->data.integer, &b->data.integer,
+                  &dest->data.integer);
+      return dest;
+    case TAG_S8:
+      tag_init_integer_zero(dest);
+      integer_init_s32(&tmp, b->data.s8);
+    case TAG_S16:
+      return tag_init_f32(dest, a->data.f32 + b->data.s16);
+    case TAG_S32:
+      return tag_init_f32(dest, a->data.f32 + b->data.s32);
+    case TAG_S64:
+      return tag_init_f32(dest, a->data.f32 + b->data.s64);
+    case TAG_U8:
+      return tag_init_f32(dest, a->data.f32 + b->data.u8);
+    case TAG_U16:
+      return tag_init_f32(dest, a->data.f32 + b->data.u16);
+    case TAG_U32:
+      return tag_init_f32(dest, a->data.f32 + b->data.u32);
+    case TAG_U64:
+      return tag_init_f32(dest, a->data.f32 + b->data.u64);
+    default:
+      goto ko;
+    }
   case TAG_S8:
     switch (b->type) {
     case TAG_F32:
@@ -945,6 +985,15 @@ s_tag * tag_init_integer_1 (s_tag *tag, const s8 *p)
   return tag;
 }
 
+s_tag * tag_init_integer_zero (s_tag *tag)
+{
+  assert(tag);
+  bzero(tag, sizeof(s_tag));
+  tag->type = TAG_INTEGER;
+  integer_init_zero(&tag->data.integer);
+  return tag;
+}
+
 s_tag * tag_init_list (s_tag *tag, s_list *list)
 {
   assert(tag);
@@ -1512,7 +1561,7 @@ s_tag * tag_new_array (const s_array *a)
   if (! (dest = malloc(sizeof(s_tag))))
     errx(1, "tag_new_array: out of memory");
   return tag_init_array(dest, a);
-} 
+}
 
 s_tag * tag_new_copy (const s_tag *src)
 {
@@ -2068,7 +2117,7 @@ void * tag_to_pointer (s_tag *tag, e_tag_type type)
         tag_type_to_sym(tag->type)->str.ptr.ps8,
         tag_type_to_sym(type)->str.ptr.ps8);
   return NULL;
-  
+
 }
 
 sw tag_type_size (e_tag_type type)
@@ -2500,4 +2549,11 @@ s_tag * tag_void (s_tag *tag)
   assert(tag);
   tag_clean(tag);
   return tag_init_void(tag);
+}
+
+bool tag_xor (const s_tag *a, const s_tag *b)
+{
+  s_tag f;
+  tag_init_1(&f, "false");
+  return (compare_tag(a, &f) != 0) != (compare_tag(b, &f) != 0);
 }

@@ -163,6 +163,55 @@ s_integer * integer_init_1 (s_integer *i, const s8 *p)
   return i;
 }
 
+s_integer * integer_init_double (s_integer *a, double x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_double(a, x);
+}
+
+s_integer * integer_init_s32 (s_integer *a, s32 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_s32(a, x);
+}
+
+s_integer * integer_init_s64 (s_integer *a, s64 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_s64(a, x);
+}
+
+s_integer * integer_init_sw (s_integer *a, sw x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_sw(a, x);
+}
+
+s_integer * integer_init_u32 (s_integer *a, u32 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_u32(a, x);
+}
+
+s_integer * integer_init_u64 (s_integer *a, u64 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_u64(a, x);
+}
+
+s_integer * integer_init_uw (s_integer *a, uw x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_uw(a, x);
+}
+
 s_integer * integer_init_zero (s_integer *dest)
 {
   assert(dest);
@@ -262,6 +311,57 @@ s_integer * integer_pow (const s_integer *a, const s_integer *b,
   return dest;
 }
 
+s_integer * integer_set_double (s_integer *a, double x)
+{
+  sw r;
+  assert(a);
+  if ((r = mp_set_double(&a->mp_int, x)) != MP_OKAY)
+    errx(1, "integer_set_double: %s", mp_error_to_string(r));
+  return a;
+}
+
+s_integer * integer_set_s32 (s_integer *a, s32 x)
+{
+  assert(a);
+  mp_set_i32(&a->mp_int, x);
+  return a;
+}
+
+s_integer * integer_set_s64 (s_integer *a, s64 x)
+{
+  assert(a);
+  mp_set_i64(&a->mp_int, x);
+  return a;
+}
+
+s_integer * integer_set_sw (s_integer *a, sw x)
+{
+  assert(a);
+  mp_set_l(&a->mp_int, x);
+  return a;
+}
+
+s_integer * integer_set_u32 (s_integer *a, u32 x)
+{
+  assert(a);
+  mp_set_u32(&a->mp_int, x);
+  return a;
+}
+
+s_integer * integer_set_u64 (s_integer *a, u64 x)
+{
+  assert(a);
+  mp_set_u64(&a->mp_int, x);
+  return a;
+}
+
+s_integer * integer_set_uw (s_integer *a, uw x)
+{
+  assert(a);
+  mp_set_ul(&a->mp_int, x);
+  return a;
+}
+
 s_integer * integer_sqrt (const s_integer *a, s_integer *dest)
 {
   sw r;
@@ -282,6 +382,12 @@ s_integer * integer_sub (const s_integer *a, const s_integer *b,
   if ((r = mp_sub(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_sub: %s", mp_error_to_string(r));
   return dest;
+}
+
+f64 integer_to_f64 (const s_integer *i)
+{
+  assert(i);
+  return mp_get_double(&i->mp_int);
 }
 
 s8 integer_to_s8 (const s_integer *i)

@@ -43,6 +43,7 @@ s_tag * tag_init_ident (s_tag *tag, const s_ident *ident);
 s_tag * tag_init_ident_1 (s_tag *tag, const s8 *p);
 s_tag * tag_init_integer (s_tag *tag, const s_integer *i);
 s_tag * tag_init_integer_1 (s_tag *tag, const s8 *p);
+s_tag * tag_init_integer_zero (s_tag *tag);
 s_tag * tag_init_list (s_tag *tag, s_list *list);
 s_tag * tag_init_list_1 (s_tag *tag, const s8 *p);
 s_tag * tag_init_s8 (s_tag *tag, s8 i);
