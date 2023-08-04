@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u_base.h.in BITS=32 bits=32 BASE=octal */
+#include "types.h"
 
 sw buf_inspect_u32_octal (s_buf *buf, const u32 *u);
 sw buf_inspect_u32_octal_size (const u32 *u);

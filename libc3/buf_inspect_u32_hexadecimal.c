@@ -15,7 +15,9 @@
 
 sw buf_inspect_u32_hexadecimal (s_buf *buf, const u32 *u)
 {
-  return buf_inspect_u32_base(buf, &g_c3_base_hexadecimal, u);
+  return buf_inspect_u32_base(buf,
+                                  &g_c3_base_hexadecimal,
+                                  u);
 }
 
 sw buf_inspect_u32_hexadecimal_size (const u32 *u)

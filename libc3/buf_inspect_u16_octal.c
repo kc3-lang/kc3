@@ -15,7 +15,9 @@
 
 sw buf_inspect_u16_octal (s_buf *buf, const u16 *u)
 {
-  return buf_inspect_u16_base(buf, &g_c3_base_octal, u);
+  return buf_inspect_u16_base(buf,
+                                  &g_c3_base_octal,
+                                  u);
 }
 
 sw buf_inspect_u16_octal_size (const u16 *u)

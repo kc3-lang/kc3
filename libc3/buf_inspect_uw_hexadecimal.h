@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u_base.h.in BITS=W bits=w BASE=hexadecimal */
+#include "types.h"
 
 sw buf_inspect_uw_hexadecimal (s_buf *buf, const uw *u);
 sw buf_inspect_uw_hexadecimal_size (const uw *u);

@@ -10,7 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_u_base.h.in BITS=32 bits=32 BASE=octal */
+/* Gen from buf_inspect_s_base.c.in BITS=32 bits=32 base=octal */
+#include "types.h"
 
-sw buf_inspect_u32_octal (s_buf *buf, const u32 *u);
-sw buf_inspect_u32_octal_size (const u32 *u);
+sw buf_inspect_s32_octal (s_buf *buf, const s32 *s);
+sw buf_inspect_s32_octal_size (const s32 *s);

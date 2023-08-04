@@ -49,6 +49,10 @@ HEADERS = \
 	buf_inspect_u64_hexadecimal.h \
 	buf_inspect_u64_octal.h \
 	buf_inspect_u8.h \
+	buf_inspect_u8_binary.h \
+	buf_inspect_u8_decimal.h \
+	buf_inspect_u8_hexadecimal.h \
+	buf_inspect_u8_octal.h \
 	buf_inspect_uw.h \
 	buf_inspect_uw_binary.h \
 	buf_inspect_uw_decimal.h \
@@ -166,6 +170,10 @@ SOURCES = \
 	buf_inspect_u64_hexadecimal.c \
 	buf_inspect_u64_octal.c \
 	buf_inspect_u8.c \
+	buf_inspect_u8_binary.c \
+	buf_inspect_u8_decimal.c \
+	buf_inspect_u8_hexadecimal.c \
+	buf_inspect_u8_octal.c \
 	buf_inspect_uw.c \
 	buf_inspect_uw_binary.c \
 	buf_inspect_uw_decimal.c \
@@ -278,6 +286,10 @@ LO_SOURCES = \
 	buf_inspect_u64_hexadecimal.c \
 	buf_inspect_u64_octal.c \
 	buf_inspect_u8.c \
+	buf_inspect_u8_binary.c \
+	buf_inspect_u8_decimal.c \
+	buf_inspect_u8_hexadecimal.c \
+	buf_inspect_u8_octal.c \
 	buf_inspect_uw.c \
 	buf_inspect_uw_binary.c \
 	buf_inspect_uw_decimal.c \

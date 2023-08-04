@@ -10,16 +10,38 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_u_base.c.in BITS=16 bits=16 BASE=hexadecimal */
-#include "c3.h"
+/* Gen from buf_inspect_s_base.c.in BITS=16 bits=16 base=hexadecimal */
+#include <string.h>
+#include "buf.h"
+#include "buf_inspect_u16_hexadecimal.h"
 
-sw buf_inspect_u16_hexadecimal (s_buf *buf, const u16 *u)
+sw buf_inspect_s16_hexadecimal (s_buf *buf, const s16 *s)
 {
-  return buf_inspect_u16_base(buf, &g_c3_base_hexadecimal, u);
+  sw r;
+  sw result = 0;
+  u16 u;
+  u = *s;
+  if (*s < 0) {
+    if ((r = buf_write_1(buf, "-")) < 0)
+      return r;
+    result += r;
+    u = -*s;
+  }
+  if ((r = buf_inspect_u16_hexadecimal(buf, &u)) < 0)
+    return r;
+  result += r;
+  return result;
 }
 
-sw buf_inspect_u16_hexadecimal_size (const u16 *u)
+sw buf_inspect_s16_hexadecimal_size (const s16 *s)
 {
-  return buf_inspect_u16_base_size(&g_c3_base_hexadecimal,
-                                       u);
+  sw result = 0;
+  u16 u;
+  u = *s;
+  if (*s < 0) {
+    result += strlen("-");
+    u = -*s;
+  }
+  result += buf_inspect_u16_hexadecimal_size(&u);
+  return result;
 }

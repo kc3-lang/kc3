@@ -11,6 +11,7 @@
 ## THIS SOFTWARE.
 
 build: gen
+	${GMAKE} -C libffi all
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c build
 	${MAKE} -C libc3 build
@@ -19,6 +20,7 @@ build: gen
 	${MAKE} -C test build
 
 all: gen
+	${GMAKE} -C libffi all
 	${MAKE} -C libtommath all
 	${MAKE} -C ucd2c all
 	${MAKE} -C libc3 all
@@ -27,6 +29,7 @@ all: gen
 	${MAKE} -C test all
 
 asan:
+	${GMAKE} -C libffi asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C libc3 asan
 	${MAKE} -C ic3 asan
@@ -34,6 +37,7 @@ asan:
 	${MAKE} -C test asan
 
 cov:
+	${GMAKE} -C libffi cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C libc3 cov
 	${MAKE} -C ic3 cov
@@ -41,6 +45,7 @@ cov:
 	${MAKE} -C test cov
 
 clean:
+	${GMAKE} -C libffi clean
 	${MAKE} -C libtommath clean
 	${MAKE} -C ucd2c clean
 	${MAKE} -C libc3 clean
@@ -49,6 +54,7 @@ clean:
 	${MAKE} -C test clean
 
 clean_cov:
+	${GMAKE} -C libffi clean_cov
 	${MAKE} -C libtommath clean_cov
 	${MAKE} -C libc3 clean_cov
 	${MAKE} -C ic3 clean_cov
@@ -56,6 +62,7 @@ clean_cov:
 	${MAKE} -C test clean_cov
 
 debug:
+	${GMAKE} -C libffi debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C libc3 debug
 	${MAKE} -C ic3 debug

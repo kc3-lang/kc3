@@ -210,6 +210,15 @@ if ${HAVE_GCOV}; then
     echo "GCOV = $GCOV" >> ${CONFIG_MK}
 fi
 
+if [ "x$GMAKE" = "x" ]; then
+    if test -n $(which gmake); then
+        GMAKE=gmake
+    else
+        GMAKE=make
+    fi
+fi
+echo "GMAKE = $GMAKE" >> ${CONFIG_MK}
+
 if [ "x$INSTALL" = "x" ]; then
     if test -x "$(which install)"; then
         INSTALL=install

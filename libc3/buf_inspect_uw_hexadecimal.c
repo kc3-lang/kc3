@@ -15,7 +15,9 @@
 
 sw buf_inspect_uw_hexadecimal (s_buf *buf, const uw *u)
 {
-  return buf_inspect_uw_base(buf, &g_c3_base_hexadecimal, u);
+  return buf_inspect_uw_base(buf,
+                                  &g_c3_base_hexadecimal,
+                                  u);
 }
 
 sw buf_inspect_uw_hexadecimal_size (const uw *u)

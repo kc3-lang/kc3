@@ -15,7 +15,9 @@
 
 sw buf_inspect_u64_binary (s_buf *buf, const u64 *u)
 {
-  return buf_inspect_u64_base(buf, &g_c3_base_binary, u);
+  return buf_inspect_u64_base(buf,
+                                  &g_c3_base_binary,
+                                  u);
 }
 
 sw buf_inspect_u64_binary_size (const u64 *u)

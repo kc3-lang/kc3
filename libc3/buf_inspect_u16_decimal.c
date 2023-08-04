@@ -15,7 +15,9 @@
 
 sw buf_inspect_u16_decimal (s_buf *buf, const u16 *u)
 {
-  return buf_inspect_u16_base(buf, &g_c3_base_decimal, u);
+  return buf_inspect_u16_base(buf,
+                                  &g_c3_base_decimal,
+                                  u);
 }
 
 sw buf_inspect_u16_decimal_size (const u16 *u)

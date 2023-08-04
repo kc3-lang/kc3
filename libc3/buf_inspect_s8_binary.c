@@ -10,16 +10,38 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_u_base.c.in BITS=8 bits=8 BASE=binary */
-#include "c3.h"
+/* Gen from buf_inspect_s_base.c.in BITS=8 bits=8 base=binary */
+#include <string.h>
+#include "buf.h"
+#include "buf_inspect_u8_binary.h"
 
-sw buf_inspect_u8_binary (s_buf *buf, const u8 *u)
+sw buf_inspect_s8_binary (s_buf *buf, const s8 *s)
 {
-  return buf_inspect_u8_base(buf, &g_c3_base_binary, u);
+  sw r;
+  sw result = 0;
+  u8 u;
+  u = *s;
+  if (*s < 0) {
+    if ((r = buf_write_1(buf, "-")) < 0)
+      return r;
+    result += r;
+    u = -*s;
+  }
+  if ((r = buf_inspect_u8_binary(buf, &u)) < 0)
+    return r;
+  result += r;
+  return result;
 }
 
-sw buf_inspect_u8_binary_size (const u8 *u)
+sw buf_inspect_s8_binary_size (const s8 *s)
 {
-  return buf_inspect_u8_base_size(&g_c3_base_binary,
-                                       u);
+  sw result = 0;
+  u8 u;
+  u = *s;
+  if (*s < 0) {
+    result += strlen("-");
+    u = -*s;
+  }
+  result += buf_inspect_u8_binary_size(&u);
+  return result;
 }

@@ -11,6 +11,9 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_s_base.c.in BITS=_BITS$ bits=_bits$ base=_BASE$ */
+#include <string.h>
+#include "buf.h"
+#include "buf_inspect_u_bits$__BASE$.h"
 
 sw buf_inspect_s_bits$__BASE$ (s_buf *buf, const s_bits$ *s)
 {

@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u_base.h.in BITS=64 bits=64 BASE=decimal */
+#include "types.h"
 
 sw buf_inspect_u64_decimal (s_buf *buf, const u64 *u);
 sw buf_inspect_u64_decimal_size (const u64 *u);

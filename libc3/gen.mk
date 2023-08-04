@@ -37,6 +37,10 @@ GENERATED_FILES = \
 	buf_inspect_sw_decimal.c buf_inspect_sw_decimal.h \
 	buf_inspect_sw_hexadecimal.c buf_inspect_sw_hexadecimal.h \
 	buf_inspect_u8.c buf_inspect_u8.h \
+	buf_inspect_u8_binary.c buf_inspect_u8_binary.h \
+	buf_inspect_u8_octal.c buf_inspect_u8_octal.h \
+	buf_inspect_u8_decimal.c buf_inspect_u8_decimal.h \
+	buf_inspect_u8_hexadecimal.c buf_inspect_u8_hexadecimal.h \
 	buf_inspect_u16.c buf_inspect_u16.h \
 	buf_inspect_u16_binary.c buf_inspect_u16_binary.h \
 	buf_inspect_u16_octal.c buf_inspect_u16_octal.h \
@@ -100,29 +104,29 @@ buf_inspect_s8.c: buf_inspect_s.c.in gen.mk
 buf_inspect_s8.h: buf_inspect_s.h.in gen.mk
 	${SED_BITS_8} < buf_inspect_s.h.in > buf_inspect_s8.h
 
-buf_inspect_s8_binary.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_8_BINARY} < buf_inspect_u_base.c.in > buf_inspect_s8_binary.c
+buf_inspect_s8_binary.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_8_BINARY} < buf_inspect_s_base.c.in > buf_inspect_s8_binary.c
 
-buf_inspect_s8_binary.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_8_BINARY} < buf_inspect_u_base.h.in > buf_inspect_s8_binary.h
+buf_inspect_s8_binary.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_8_BINARY} < buf_inspect_s_base.h.in > buf_inspect_s8_binary.h
 
-buf_inspect_s8_octal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_8_OCTAL} < buf_inspect_u_base.c.in > buf_inspect_s8_octal.c
+buf_inspect_s8_octal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_8_OCTAL} < buf_inspect_s_base.c.in > buf_inspect_s8_octal.c
 
-buf_inspect_s8_octal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_8_OCTAL} < buf_inspect_u_base.h.in > buf_inspect_s8_octal.h
+buf_inspect_s8_octal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_8_OCTAL} < buf_inspect_s_base.h.in > buf_inspect_s8_octal.h
 
-buf_inspect_s8_decimal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_8_DECIMAL} < buf_inspect_u_base.c.in > buf_inspect_s8_decimal.c
+buf_inspect_s8_decimal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_8_DECIMAL} < buf_inspect_s_base.c.in > buf_inspect_s8_decimal.c
 
-buf_inspect_s8_decimal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_8_DECIMAL} < buf_inspect_u_base.h.in > buf_inspect_s8_decimal.h
+buf_inspect_s8_decimal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_8_DECIMAL} < buf_inspect_s_base.h.in > buf_inspect_s8_decimal.h
 
-buf_inspect_s8_hexadecimal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_8_HEXADECIMAL} < buf_inspect_u_base.c.in > buf_inspect_s8_hexadecimal.c
+buf_inspect_s8_hexadecimal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_8_HEXADECIMAL} < buf_inspect_s_base.c.in > buf_inspect_s8_hexadecimal.c
 
-buf_inspect_s8_hexadecimal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_8_HEXADECIMAL} < buf_inspect_u_base.h.in > buf_inspect_s8_hexadecimal.h
+buf_inspect_s8_hexadecimal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_8_HEXADECIMAL} < buf_inspect_s_base.h.in > buf_inspect_s8_hexadecimal.h
 
 buf_inspect_u8.c: buf_inspect_u.c.in gen.mk
 	${SED_BITS_8} < buf_inspect_u.c.in > buf_inspect_u8.c
@@ -188,29 +192,29 @@ buf_inspect_s16.c: buf_inspect_s.c.in gen.mk
 buf_inspect_s16.h: buf_inspect_s.h.in gen.mk
 	${SED_BITS_16} < buf_inspect_s.h.in > buf_inspect_s16.h
 
-buf_inspect_s16_binary.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_16_BINARY} < buf_inspect_u_base.c.in > buf_inspect_s16_binary.c
+buf_inspect_s16_binary.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_16_BINARY} < buf_inspect_s_base.c.in > buf_inspect_s16_binary.c
 
-buf_inspect_s16_binary.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_16_BINARY} < buf_inspect_u_base.h.in > buf_inspect_s16_binary.h
+buf_inspect_s16_binary.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_16_BINARY} < buf_inspect_s_base.h.in > buf_inspect_s16_binary.h
 
-buf_inspect_s16_octal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_16_OCTAL} < buf_inspect_u_base.c.in > buf_inspect_s16_octal.c
+buf_inspect_s16_octal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_16_OCTAL} < buf_inspect_s_base.c.in > buf_inspect_s16_octal.c
 
-buf_inspect_s16_octal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_16_OCTAL} < buf_inspect_u_base.h.in > buf_inspect_s16_octal.h
+buf_inspect_s16_octal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_16_OCTAL} < buf_inspect_s_base.h.in > buf_inspect_s16_octal.h
 
-buf_inspect_s16_decimal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_16_DECIMAL} < buf_inspect_u_base.c.in > buf_inspect_s16_decimal.c
+buf_inspect_s16_decimal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_16_DECIMAL} < buf_inspect_s_base.c.in > buf_inspect_s16_decimal.c
 
-buf_inspect_s16_decimal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_16_DECIMAL} < buf_inspect_u_base.h.in > buf_inspect_s16_decimal.h
+buf_inspect_s16_decimal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_16_DECIMAL} < buf_inspect_s_base.h.in > buf_inspect_s16_decimal.h
 
-buf_inspect_s16_hexadecimal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_16_HEXADECIMAL} < buf_inspect_u_base.c.in > buf_inspect_s16_hexadecimal.c
+buf_inspect_s16_hexadecimal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_16_HEXADECIMAL} < buf_inspect_s_base.c.in > buf_inspect_s16_hexadecimal.c
 
-buf_inspect_s16_hexadecimal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_16_HEXADECIMAL} < buf_inspect_u_base.h.in > buf_inspect_s16_hexadecimal.h
+buf_inspect_s16_hexadecimal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_16_HEXADECIMAL} < buf_inspect_s_base.h.in > buf_inspect_s16_hexadecimal.h
 
 buf_inspect_u16.c: buf_inspect_u.c.in gen.mk
 	${SED_BITS_16} < buf_inspect_u.c.in > buf_inspect_u16.c
@@ -276,29 +280,29 @@ buf_inspect_s32.c: buf_inspect_s.c.in gen.mk
 buf_inspect_s32.h: buf_inspect_s.h.in gen.mk
 	${SED_BITS_32} < buf_inspect_s.h.in > buf_inspect_s32.h
 
-buf_inspect_s32_binary.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_32_BINARY} < buf_inspect_u_base.c.in > buf_inspect_s32_binary.c
+buf_inspect_s32_binary.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_32_BINARY} < buf_inspect_s_base.c.in > buf_inspect_s32_binary.c
 
-buf_inspect_s32_binary.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_32_BINARY} < buf_inspect_u_base.h.in > buf_inspect_s32_binary.h
+buf_inspect_s32_binary.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_32_BINARY} < buf_inspect_s_base.h.in > buf_inspect_s32_binary.h
 
-buf_inspect_s32_octal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_32_OCTAL} < buf_inspect_u_base.c.in > buf_inspect_s32_octal.c
+buf_inspect_s32_octal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_32_OCTAL} < buf_inspect_s_base.c.in > buf_inspect_s32_octal.c
 
-buf_inspect_s32_octal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_32_OCTAL} < buf_inspect_u_base.h.in > buf_inspect_s32_octal.h
+buf_inspect_s32_octal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_32_OCTAL} < buf_inspect_s_base.h.in > buf_inspect_s32_octal.h
 
-buf_inspect_s32_decimal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_32_DECIMAL} < buf_inspect_u_base.c.in > buf_inspect_s32_decimal.c
+buf_inspect_s32_decimal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_32_DECIMAL} < buf_inspect_s_base.c.in > buf_inspect_s32_decimal.c
 
-buf_inspect_s32_decimal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_32_DECIMAL} < buf_inspect_u_base.h.in > buf_inspect_s32_decimal.h
+buf_inspect_s32_decimal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_32_DECIMAL} < buf_inspect_s_base.h.in > buf_inspect_s32_decimal.h
 
-buf_inspect_s32_hexadecimal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_32_HEXADECIMAL} < buf_inspect_u_base.c.in > buf_inspect_s32_hexadecimal.c
+buf_inspect_s32_hexadecimal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_32_HEXADECIMAL} < buf_inspect_s_base.c.in > buf_inspect_s32_hexadecimal.c
 
-buf_inspect_s32_hexadecimal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_32_HEXADECIMAL} < buf_inspect_u_base.h.in > buf_inspect_s32_hexadecimal.h
+buf_inspect_s32_hexadecimal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_32_HEXADECIMAL} < buf_inspect_s_base.h.in > buf_inspect_s32_hexadecimal.h
 
 buf_inspect_u32.c: buf_inspect_u.c.in gen.mk
 	${SED_BITS_32} < buf_inspect_u.c.in > buf_inspect_u32.c
@@ -364,29 +368,29 @@ buf_inspect_s64.c: buf_inspect_s.c.in gen.mk
 buf_inspect_s64.h: buf_inspect_s.h.in gen.mk
 	${SED_BITS_64} < buf_inspect_s.h.in > buf_inspect_s64.h
 
-buf_inspect_s64_binary.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_64_BINARY} < buf_inspect_u_base.c.in > buf_inspect_s64_binary.c
+buf_inspect_s64_binary.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_64_BINARY} < buf_inspect_s_base.c.in > buf_inspect_s64_binary.c
 
-buf_inspect_s64_binary.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_64_BINARY} < buf_inspect_u_base.h.in > buf_inspect_s64_binary.h
+buf_inspect_s64_binary.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_64_BINARY} < buf_inspect_s_base.h.in > buf_inspect_s64_binary.h
 
-buf_inspect_s64_octal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_64_OCTAL} < buf_inspect_u_base.c.in > buf_inspect_s64_octal.c
+buf_inspect_s64_octal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_64_OCTAL} < buf_inspect_s_base.c.in > buf_inspect_s64_octal.c
 
-buf_inspect_s64_octal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_64_OCTAL} < buf_inspect_u_base.h.in > buf_inspect_s64_octal.h
+buf_inspect_s64_octal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_64_OCTAL} < buf_inspect_s_base.h.in > buf_inspect_s64_octal.h
 
-buf_inspect_s64_decimal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_64_DECIMAL} < buf_inspect_u_base.c.in > buf_inspect_s64_decimal.c
+buf_inspect_s64_decimal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_64_DECIMAL} < buf_inspect_s_base.c.in > buf_inspect_s64_decimal.c
 
-buf_inspect_s64_decimal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_64_DECIMAL} < buf_inspect_u_base.h.in > buf_inspect_s64_decimal.h
+buf_inspect_s64_decimal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_64_DECIMAL} < buf_inspect_s_base.h.in > buf_inspect_s64_decimal.h
 
-buf_inspect_s64_hexadecimal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_64_HEXADECIMAL} < buf_inspect_u_base.c.in > buf_inspect_s64_hexadecimal.c
+buf_inspect_s64_hexadecimal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_64_HEXADECIMAL} < buf_inspect_s_base.c.in > buf_inspect_s64_hexadecimal.c
 
-buf_inspect_s64_hexadecimal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_64_HEXADECIMAL} < buf_inspect_u_base.h.in > buf_inspect_s64_hexadecimal.h
+buf_inspect_s64_hexadecimal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_64_HEXADECIMAL} < buf_inspect_s_base.h.in > buf_inspect_s64_hexadecimal.h
 
 buf_inspect_u64.c: buf_inspect_u.c.in gen.mk
 	${SED_BITS_64} < buf_inspect_u.c.in > buf_inspect_u64.c
@@ -452,29 +456,29 @@ buf_inspect_sw.c: buf_inspect_s.c.in gen.mk
 buf_inspect_sw.h: buf_inspect_s.h.in gen.mk
 	${SED_BITS_W} < buf_inspect_s.h.in > buf_inspect_sw.h
 
-buf_inspect_sw_binary.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_W_BINARY} < buf_inspect_u_base.c.in > buf_inspect_sw_binary.c
+buf_inspect_sw_binary.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_W_BINARY} < buf_inspect_s_base.c.in > buf_inspect_sw_binary.c
 
-buf_inspect_sw_binary.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_W_BINARY} < buf_inspect_u_base.h.in > buf_inspect_sw_binary.h
+buf_inspect_sw_binary.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_W_BINARY} < buf_inspect_s_base.h.in > buf_inspect_sw_binary.h
 
-buf_inspect_sw_octal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_W_OCTAL} < buf_inspect_u_base.c.in > buf_inspect_sw_octal.c
+buf_inspect_sw_octal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_W_OCTAL} < buf_inspect_s_base.c.in > buf_inspect_sw_octal.c
 
-buf_inspect_sw_octal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_W_OCTAL} < buf_inspect_u_base.h.in > buf_inspect_sw_octal.h
+buf_inspect_sw_octal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_W_OCTAL} < buf_inspect_s_base.h.in > buf_inspect_sw_octal.h
 
-buf_inspect_sw_decimal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_W_DECIMAL} < buf_inspect_u_base.c.in > buf_inspect_sw_decimal.c
+buf_inspect_sw_decimal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_W_DECIMAL} < buf_inspect_s_base.c.in > buf_inspect_sw_decimal.c
 
-buf_inspect_sw_decimal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_W_DECIMAL} < buf_inspect_u_base.h.in > buf_inspect_sw_decimal.h
+buf_inspect_sw_decimal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_W_DECIMAL} < buf_inspect_s_base.h.in > buf_inspect_sw_decimal.h
 
-buf_inspect_sw_hexadecimal.c: buf_inspect_u_base.c.in gen.mk
-	${SED_BITS_W_HEXADECIMAL} < buf_inspect_u_base.c.in > buf_inspect_sw_hexadecimal.c
+buf_inspect_sw_hexadecimal.c: buf_inspect_s_base.c.in gen.mk
+	${SED_BITS_W_HEXADECIMAL} < buf_inspect_s_base.c.in > buf_inspect_sw_hexadecimal.c
 
-buf_inspect_sw_hexadecimal.h: buf_inspect_u_base.h.in gen.mk
-	${SED_BITS_W_HEXADECIMAL} < buf_inspect_u_base.h.in > buf_inspect_sw_hexadecimal.h
+buf_inspect_sw_hexadecimal.h: buf_inspect_s_base.h.in gen.mk
+	${SED_BITS_W_HEXADECIMAL} < buf_inspect_s_base.h.in > buf_inspect_sw_hexadecimal.h
 
 buf_inspect_uw.c: buf_inspect_u.c.in gen.mk
 	${SED_BITS_W} < buf_inspect_u.c.in > buf_inspect_uw.c

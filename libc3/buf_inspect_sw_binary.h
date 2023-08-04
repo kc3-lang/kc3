@@ -10,7 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_u_base.h.in BITS=W bits=w BASE=binary */
+/* Gen from buf_inspect_s_base.c.in BITS=W bits=w base=binary */
+#include "types.h"
 
-sw buf_inspect_uw_binary (s_buf *buf, const uw *u);
-sw buf_inspect_uw_binary_size (const uw *u);
+sw buf_inspect_sw_binary (s_buf *buf, const sw *s);
+sw buf_inspect_sw_binary_size (const sw *s);

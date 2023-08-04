@@ -10,7 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_u_base.h.in BITS=8 bits=8 BASE=hexadecimal */
+/* Gen from buf_inspect_s_base.c.in BITS=8 bits=8 base=hexadecimal */
+#include "types.h"
 
-sw buf_inspect_u8_hexadecimal (s_buf *buf, const u8 *u);
-sw buf_inspect_u8_hexadecimal_size (const u8 *u);
+sw buf_inspect_s8_hexadecimal (s_buf *buf, const s8 *s);
+sw buf_inspect_s8_hexadecimal_size (const s8 *s);

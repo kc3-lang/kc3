@@ -15,7 +15,9 @@
 
 sw buf_inspect_uw_binary (s_buf *buf, const uw *u)
 {
-  return buf_inspect_uw_base(buf, &g_c3_base_binary, u);
+  return buf_inspect_uw_base(buf,
+                                  &g_c3_base_binary,
+                                  u);
 }
 
 sw buf_inspect_uw_binary_size (const uw *u)

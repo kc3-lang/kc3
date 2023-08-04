@@ -10,7 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_u_base.h.in BITS=64 bits=64 BASE=binary */
+/* Gen from buf_inspect_s_base.c.in BITS=64 bits=64 base=binary */
+#include "types.h"
 
-sw buf_inspect_u64_binary (s_buf *buf, const u64 *u);
-sw buf_inspect_u64_binary_size (const u64 *u);
+sw buf_inspect_s64_binary (s_buf *buf, const s64 *s);
+sw buf_inspect_s64_binary_size (const s64 *s);

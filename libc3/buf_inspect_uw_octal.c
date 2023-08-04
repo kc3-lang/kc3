@@ -15,7 +15,9 @@
 
 sw buf_inspect_uw_octal (s_buf *buf, const uw *u)
 {
-  return buf_inspect_uw_base(buf, &g_c3_base_octal, u);
+  return buf_inspect_uw_base(buf,
+                                  &g_c3_base_octal,
+                                  u);
 }
 
 sw buf_inspect_uw_octal_size (const uw *u)

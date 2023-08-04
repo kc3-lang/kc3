@@ -294,7 +294,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
 bool tag_and (const s_tag *a, const s_tag *b)
 {
   s_tag f;
-  tag_init_1(&f, "false");
+  tag_init_bool(&f, false);
   return compare_tag(a, &f) != 0 && compare_tag(b, &f) != 0;
 }
 
@@ -1525,14 +1525,14 @@ s_tag * tag_new_copy (const s_tag *src)
 bool tag_not (const s_tag *a)
 {
   s_tag f;
-  tag_init_1(&f, "false");
+  tag_init_bool(&f, false);
   return compare_tag(a, &f) == 0;
 }
 
 bool tag_or (const s_tag *a, const s_tag *b)
 {
   s_tag f;
-  tag_init_1(&f, "false");
+  tag_init_bool(&f, false);
   return compare_tag(a, &f) != 0 || compare_tag(b, &f) != 0;
 }
 

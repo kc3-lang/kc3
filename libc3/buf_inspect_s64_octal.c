@@ -10,16 +10,38 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_u_base.c.in BITS=64 bits=64 BASE=octal */
-#include "c3.h"
+/* Gen from buf_inspect_s_base.c.in BITS=64 bits=64 base=octal */
+#include <string.h>
+#include "buf.h"
+#include "buf_inspect_u64_octal.h"
 
-sw buf_inspect_u64_octal (s_buf *buf, const u64 *u)
+sw buf_inspect_s64_octal (s_buf *buf, const s64 *s)
 {
-  return buf_inspect_u64_base(buf, &g_c3_base_octal, u);
+  sw r;
+  sw result = 0;
+  u64 u;
+  u = *s;
+  if (*s < 0) {
+    if ((r = buf_write_1(buf, "-")) < 0)
+      return r;
+    result += r;
+    u = -*s;
+  }
+  if ((r = buf_inspect_u64_octal(buf, &u)) < 0)
+    return r;
+  result += r;
+  return result;
 }
 
-sw buf_inspect_u64_octal_size (const u64 *u)
+sw buf_inspect_s64_octal_size (const s64 *s)
 {
-  return buf_inspect_u64_base_size(&g_c3_base_octal,
-                                       u);
+  sw result = 0;
+  u64 u;
+  u = *s;
+  if (*s < 0) {
+    result += strlen("-");
+    u = -*s;
+  }
+  result += buf_inspect_u64_octal_size(&u);
+  return result;
 }

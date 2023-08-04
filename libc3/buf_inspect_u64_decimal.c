@@ -15,7 +15,9 @@
 
 sw buf_inspect_u64_decimal (s_buf *buf, const u64 *u)
 {
-  return buf_inspect_u64_base(buf, &g_c3_base_decimal, u);
+  return buf_inspect_u64_base(buf,
+                                  &g_c3_base_decimal,
+                                  u);
 }
 
 sw buf_inspect_u64_decimal_size (const u64 *u)

@@ -15,7 +15,9 @@
 
 sw buf_inspect_u64_hexadecimal (s_buf *buf, const u64 *u)
 {
-  return buf_inspect_u64_base(buf, &g_c3_base_hexadecimal, u);
+  return buf_inspect_u64_base(buf,
+                                  &g_c3_base_hexadecimal,
+                                  u);
 }
 
 sw buf_inspect_u64_hexadecimal_size (const u64 *u)
