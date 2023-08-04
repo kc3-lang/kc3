@@ -165,6 +165,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s8 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s8 + b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s8);
+      integer_add(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s8(dest, a->data.s8 + b->data.s8);
     case TAG_S16:
@@ -190,6 +196,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s16 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s16 + b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s16);
+      integer_add(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s16(dest, a->data.s16 + b->data.s8);
     case TAG_S16:
@@ -215,6 +227,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s32 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s32 + b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s32);
+      integer_add(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s32(dest, a->data.s32 + b->data.s8);
     case TAG_S16:
@@ -240,6 +258,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s64 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s64 + b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s64(&tmp, a->data.s64);
+      integer_add(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s32(dest, a->data.s64 + b->data.s8);
     case TAG_S16:
@@ -265,6 +289,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u8 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u8 + b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u8);
+      integer_add(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s8(dest, a->data.u8 + b->data.s8);
     case TAG_S16:
@@ -290,6 +320,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u16 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u16 + b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u16);
+      integer_add(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s16(dest, a->data.u16 + b->data.s8);
     case TAG_S16:
@@ -315,6 +351,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u32 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u32 + b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u32);
+      integer_add(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s32(dest, a->data.u32 + b->data.s8);
     case TAG_S16:
@@ -340,6 +382,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u64 + b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u64 + b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u64(&tmp, a->data.u64);
+      integer_add(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s64(dest, a->data.u64 + b->data.s8);
     case TAG_S16:
