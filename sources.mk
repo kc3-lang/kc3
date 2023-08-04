@@ -7,8 +7,8 @@ C3_CONFIGURES = \
 	ic3/update_sources \
 	libc3/configure \
 	libc3/update_sources \
-	libtommath/configure \
 	libtommath/update_sources \
+	libtommath/configure \
 	test/configure \
 	test/update_sources \
 	ucd2c/configure \

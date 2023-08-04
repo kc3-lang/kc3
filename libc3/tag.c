@@ -265,19 +265,19 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       return dest;
     case TAG_S8:
-      return tag_init_s32(dest, a->data.s64 + b->data.s8);
+      return tag_init_s64(dest, a->data.s64 + b->data.s8);
     case TAG_S16:
-      return tag_init_s32(dest, a->data.s64 + b->data.s16);
+      return tag_init_s64(dest, a->data.s64 + b->data.s16);
     case TAG_S32:
-      return tag_init_s32(dest, a->data.s64 + b->data.s32);
+      return tag_init_s64(dest, a->data.s64 + b->data.s32);
     case TAG_S64:
       return tag_init_s64(dest, a->data.s64 + b->data.s64);
     case TAG_U8:
-      return tag_init_s32(dest, a->data.s64 + b->data.u8);
+      return tag_init_s64(dest, a->data.s64 + b->data.u8);
     case TAG_U16:
-      return tag_init_s32(dest, a->data.s64 + b->data.u16);
+      return tag_init_s64(dest, a->data.s64 + b->data.u16);
     case TAG_U32:
-      return tag_init_s32(dest, a->data.s64 + b->data.u32);
+      return tag_init_s64(dest, a->data.s64 + b->data.u32);
     case TAG_U64:
       return tag_init_s64(dest, a->data.s64 + b->data.u64);
     default:
