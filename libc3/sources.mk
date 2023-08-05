@@ -421,6 +421,7 @@ LO_SOURCES = \
 	../libtommath/bn_mp_set_l.c \
 	../libtommath/bn_mp_set_u32.c \
 	../libtommath/bn_mp_set_u64.c \
+	../libtommath/bn_mp_set_ul.c \
 	../libtommath/bn_mp_sqr.c \
 	../libtommath/bn_mp_sqrt.c \
 	../libtommath/bn_mp_sub.c \
