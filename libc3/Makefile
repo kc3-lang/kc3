@@ -66,6 +66,9 @@ libc3_cov.a: libc3_cov.la
 libc3_debug.a: libc3_debug.la
 	cp .libs/libc3_debug.a ./
 
+libffi:
+	ln -sf "../libffi/${CC_TARGET}" libffi
+
 test:
 
 update_sources:
