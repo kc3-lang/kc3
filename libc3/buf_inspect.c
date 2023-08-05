@@ -247,6 +247,46 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   return result;
 }
 
+sw buf_inspect_call_args (s_buf *buf, const s_list *args)
+{
+  sw r;
+  sw result = 0;
+  if ((r = buf_write_1(buf, "(")) < 0)
+    return r;
+  result += r;
+  while (args) {
+    if ((r = buf_inspect_tag(buf, &args->tag)) < 0)
+      return r;
+    result += r;
+    if ((args = list_next(args))) {
+      if ((r = buf_write_1(buf, ", ")) < 0)
+        return r;
+      result += r;
+    }
+  }
+  if ((r = buf_write_1(buf, ")")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_call_args_size (const s_list *args)
+{
+  sw r;
+  sw result = 0;
+  result += strlen("(");
+  while (args) {
+    if ((r = buf_inspect_tag_size(&args->tag)) < 0)
+      return r;
+    result += r;
+    if ((args = list_next(args))) {
+      result += strlen(", ");
+    }
+  }
+  result += strlen(")");
+  return result;
+}
+
 sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
 {
   s_tag *left;
@@ -307,48 +347,43 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
 
 sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
 {
-  (void) buf;
-  (void) call;
-  return 0;
-}
-
-sw buf_inspect_call_args (s_buf *buf, const s_list *args)
-{
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(buf, "(")) < 0)
+  if (call->ident.sym == sym_1("()"))
+    return buf_inspect_call_paren(buf, call);
+  if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
     return r;
   result += r;
-  while (args) {
-    if ((r = buf_inspect_tag(buf, &args->tag)) < 0)
-      return r;
-    result += r;
-    if ((args = list_next(args))) {
-      if ((r = buf_write_1(buf, ", ")) < 0)
-        return r;
-      result += r;
-    }
-  }
-  if ((r = buf_write_1(buf, ")")) < 0)
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_tag(buf, &call->arguments->tag)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_call_args_size (const s_list *args)
+sw buf_inspect_call_op_unary_size (const s_call *call)
+{
+  (void) call;
+  return -1;
+}
+
+sw buf_inspect_call_paren (s_buf *buf, const s_call *call)
 {
   sw r;
   sw result = 0;
-  result += strlen("(");
-  while (args) {
-    if ((r = buf_inspect_tag_size(&args->tag)) < 0)
-      return r;
-    result += r;
-    if ((args = list_next(args))) {
-      result += strlen(", ");
-    }
-  }
-  result += strlen(")");
+  assert(buf);
+  assert(call);
+  if ((r = buf_write_1(buf, "(")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_tag(buf, &call->arguments->tag)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ")")) < 0)
+    return r;
+  result += r;
   return result;
 }
 
