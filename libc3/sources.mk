@@ -379,6 +379,7 @@ LO_SOURCES = \
 	../libtommath/bn_mp_exch.c \
 	../libtommath/bn_mp_exptmod.c \
 	../libtommath/bn_mp_gcd.c \
+	../libtommath/bn_mp_get_double.c \
 	../libtommath/bn_mp_get_i32.c \
 	../libtommath/bn_mp_get_i64.c \
 	../libtommath/bn_mp_get_mag_u32.c \
