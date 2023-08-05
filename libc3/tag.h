@@ -21,7 +21,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include "../ffi.h"
 #include "types.h"
 
 #define TAG_FIRST (&g_tag_first)

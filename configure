@@ -32,7 +32,7 @@ echo "c3-${C3_VERSION}.tar.gz: $(tr '\n' ' ' < c3.index)" >> ${CONFIG_MK}
 
 update_config_mk
 
-( cd libffi && sh autogen.sh || true; MAKE=gmake ./configure; )
+( cd libffi && sh autogen.sh && MAKE=gmake ./configure --disable-multi-os-directory; )
 ( cd libtommath && ./configure; )
 ( cd ucd2c && ./configure; )
 ( cd libc3 && ./configure; )

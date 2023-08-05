@@ -20,7 +20,7 @@
 #include <pthread.h>
 #include "config.h"
 #include "sha1.h"
-#include "../ffi.h"
+#include "../libffi/include/ffi.h"
 #include "../libtommath/tommath.h"
 
 /* Basic integer types. */
