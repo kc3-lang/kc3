@@ -345,6 +345,12 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   return result;
 }
 
+sw buf_inspect_call_op_size (const s_call *call)
+{
+  (void) call;
+  return -1;
+}
+
 sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
 {
   sw r;
