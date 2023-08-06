@@ -13,6 +13,7 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <ffi.h>
 #include <limits.h>
 #include <setjmp.h>
 #include <stdio.h>
@@ -20,7 +21,6 @@
 #include <pthread.h>
 #include "config.h"
 #include "sha1.h"
-#include "../libffi/include/ffi.h"
 #include "../libtommath/tommath.h"
 
 /* Basic integer types. */
