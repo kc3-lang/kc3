@@ -86,8 +86,9 @@ Script interpreter.
      - DONE triple serial id
    - math
      - floating point numbers
-   - boolean operators
-   - comparison operators
+   - variables
+   - DONE boolean operators
+   - DONE comparison operators
    - arrays
    - lists
    - defmodule

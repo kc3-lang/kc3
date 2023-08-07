@@ -89,12 +89,15 @@ s_tag * tag_new_var ();
 void tag_delete (s_tag *tag);
 
 /* Observers */
+s_tag *            tag_equal (const s_tag *a, const s_tag *b,
+                              s_tag *dest);
 u64                tag_hash_u64 (const s_tag *tag);
 uw                 tag_hash_uw (const s_tag *tag);
 s_str *            tag_inspect (const s_tag *tag, s_str *dest);
-e_bool             tag_is_bound_var (const s_tag *tag);
-e_bool             tag_is_number (const s_tag *tag);
-e_bool             tag_is_unbound_var (const s_tag *tag);
+bool               tag_ident_is_unbound (const s_tag *tag);
+bool               tag_is_bound_var (const s_tag *tag);
+bool               tag_is_number (const s_tag *tag);
+bool               tag_is_unbound_var (const s_tag *tag);
 s8                 tag_number_compare (const s_tag *a, const s_tag *b);
 s_tag *            tag_paren (const s_tag *tag, s_tag *dest);
 sw                 tag_size (const s_tag *tag);

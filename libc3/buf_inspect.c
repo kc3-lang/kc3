@@ -418,7 +418,19 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
   sw r;
   sw result = 0;
   assert(cfn);
+  if ((r = buf_write_1(buf, "cfn ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_sym(buf, cfn->result_type)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
   if ((r = buf_inspect_str(buf, &cfn->name->str)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "(")) < 0)
@@ -428,6 +440,7 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
   while (arg_type) {
     if ((r = buf_inspect_tag(buf, &arg_type->tag)) < 0)
       return r;
+    result += r;
     arg_type = list_next(arg_type);
     if (arg_type) {
       if ((r = buf_write_1(buf, ", ")) < 0)

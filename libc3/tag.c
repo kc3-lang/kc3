@@ -16,6 +16,7 @@
 #include <string.h>
 #include <strings.h>
 #include "c3.h"
+#include "frame.h"
 
 s_tag g_tag_first;
 s_tag g_tag_last;
@@ -1015,6 +1016,16 @@ bool tag_eq (const s_tag *a, const s_tag *b)
   return compare_tag(a, b) == 0;
 }
 
+s_tag * tag_equal (const s_tag *a, const s_tag *b, s_tag *dest)
+{
+  assert(a);
+  assert(b);
+  assert(dest);
+  if (! env_eval_equal_tag (&g_c3_env, a, b, dest))
+    return NULL;
+  return dest;
+}
+
 s_tag * tag_f32 (s_tag *tag, f32 x)
 {
   assert(tag);
@@ -1069,6 +1080,17 @@ s_tag * tag_ident_1 (s_tag *tag, const s8 *p)
   assert(tag);
   tag_clean(tag);
   return tag_init_ident_1(tag, p);
+}
+
+bool tag_ident_is_unbound (const s_tag *tag)
+{
+  s_tag tmp;
+  assert(tag);
+  assert(tag->type == TAG_IDENT);
+  return tag->type == TAG_IDENT &&
+    ! (frame_get(g_c3_env.frame, tag->data.ident.sym) ||
+       module_get(g_c3_env.current_module, tag->data.ident.sym,
+                  &tmp));
 }
 
 s_tag * tag_init (s_tag *tag)
@@ -1430,13 +1452,13 @@ s_tag * tag_integer_reduce (s_tag *tag)
   return tag;
 }
 
-e_bool tag_is_bound_var (const s_tag *tag)
+bool tag_is_bound_var (const s_tag *tag)
 {
   return (tag &&
           tag->type != TAG_VAR);
 }
 
-e_bool tag_is_number (const s_tag *tag)
+bool tag_is_number (const s_tag *tag)
 {
   assert(tag);
   switch (tag->type) {
@@ -1455,7 +1477,7 @@ e_bool tag_is_number (const s_tag *tag)
   return false;
 }
 
-e_bool tag_is_unbound_var (const s_tag *tag)
+bool tag_is_unbound_var (const s_tag *tag)
 {
   return (tag &&
           tag->type == TAG_VAR);

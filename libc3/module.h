@@ -29,4 +29,10 @@ s_str *    module_name_path (const s_str *prefix, const s_sym *name,
 sw         module_name_path_size (const s_str *prefix,
                                   const s_sym *name);
 
+/* Observers */
+s_tag * module_get (const s_module *module, const s_sym *sym,
+                    s_tag *dest);
+s_tag * module_is_bound (const s_module *module, const s_sym *sym,
+                         s_tag *dest);
+
 #endif /* MODULE_H */

@@ -62,7 +62,7 @@ clean_cov:
 	${MAKE} -C test clean_cov
 
 debug:
-	${GMAKE} -C libffi debug
+	${GMAKE} -C libffi all
 	${MAKE} -C libtommath debug
 	${MAKE} -C libc3 debug
 	${MAKE} -C ic3 debug

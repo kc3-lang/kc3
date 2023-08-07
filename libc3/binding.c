@@ -31,7 +31,7 @@ void binding_delete_all (s_binding *binding)
   }
 }
 
-const s_tag * binding_get (s_binding *binding, const s_sym *name)
+const s_tag * binding_get (const s_binding *binding, const s_sym *name)
 {
   while (binding) {
     if (binding->name == name)

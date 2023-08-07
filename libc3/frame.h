@@ -31,6 +31,6 @@ void frame_binding_new(s_frame *frame, const s_sym *name,
                        const s_tag *value);
 
 /* observers */
-const s_tag * frame_get (s_frame *frame, const s_sym *sym);
+const s_tag * frame_get (const s_frame *frame, const s_sym *sym);
 
 #endif /* FRAME_H */

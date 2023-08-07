@@ -48,7 +48,7 @@ void frame_delete_all (s_frame *frame)
     frame = frame_delete(frame);
 }
 
-const s_tag * frame_get (s_frame *frame, const s_sym *sym)
+const s_tag * frame_get (const s_frame *frame, const s_sym *sym)
 {
   const s_tag *tag;
   while (frame) {

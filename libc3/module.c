@@ -14,6 +14,51 @@
 #include <string.h>
 #include "c3.h"
 
+s_tag * module_get (const s_module *module, const s_sym *sym,
+                    s_tag *dest)
+{
+  s_ident ident;
+  s_tag tag_cfn;
+  s_tag tag_fn;
+  s_tag tag_ident;
+  s_tag tag_is_a;
+  s_tag tag_module;
+  s_tag tag_name;
+  s_tag tag_symbol;
+  s_tag tag_tmp;
+  assert(module);
+  assert(sym);
+  s_facts_with_cursor cursor;
+  tag_init_sym(&tag_name, module->name);
+  tag_init_1(  &tag_is_a, ":is_a");
+  tag_init_1(  &tag_module, ":module");
+  tag_init_1(  &tag_symbol, ":symbol");
+  ident_init(&ident, sym);
+  ident.module_name = module->name;
+  tag_init_ident(&tag_ident, &ident);
+  facts_with(module->facts, &cursor, (t_facts_spec) {
+      &tag_name, &tag_is_a, &tag_module,
+      &tag_symbol, &tag_ident, NULL, NULL});
+  if (! facts_with_cursor_next(&cursor))
+    return NULL;
+  facts_with_cursor_clean(&cursor);
+  tag_init_1(&tag_cfn, ":cfn");
+  tag_init_1(&tag_fn, ":fn");
+  tag_init_var(&tag_tmp);
+  facts_with(module->facts, &cursor, (t_facts_spec) {
+      &tag_ident, &tag_cfn, &tag_tmp, NULL, NULL});
+  if (! facts_with_cursor_next(&cursor)) {
+    facts_with_cursor_clean(&cursor);
+    facts_with(module->facts, &cursor, (t_facts_spec) {
+        &tag_ident, &tag_fn, &tag_tmp, NULL, NULL});
+    if (! facts_with_cursor_next(&cursor))
+      tag_init_void(&tag_tmp);
+  }
+  facts_with_cursor_clean(&cursor);
+  *dest = tag_tmp;
+  return dest;
+}
+
 s_module * module_load (s_module *module, const s_sym *name,
                         s_facts *facts)
 {

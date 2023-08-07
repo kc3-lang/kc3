@@ -293,14 +293,17 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   assert(a);
   assert(b);
   assert(dest);
-  if (a->type == TAG_IDENT) {
-    if (b->type == TAG_IDENT)
-      warnx("TAG_IDENT = TAG_IDENT");
+  if (a->type == TAG_IDENT && tag_ident_is_unbound(a) &&
+      b->type == TAG_IDENT && tag_ident_is_unbound(b)) {
+    warnx("TAG_IDENT = TAG_IDENT");
+    return false;
+  }
+  if (a->type == TAG_IDENT && tag_ident_is_unbound(a)) {
     tag_copy(b, dest);
-    frame_binding_new(env->frame, a->data.ident.sym, b);
+    frame_binding_new(env->frame, b->data.ident.sym, a);
     return true;
   }
-  if (b->type == TAG_IDENT) {
+  if (b->type == TAG_IDENT && tag_ident_is_unbound(b)) {
     tag_copy(a, dest);
     frame_binding_new(env->frame, b->data.ident.sym, a);
     return true;
@@ -323,11 +326,12 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     dest->type = TAG_TUPLE;
     return env_eval_equal_tuple(env, &a->data.tuple, &b->data.tuple,
                                 &dest->data.tuple);
-  case TAG_ARRAY:
-  case TAG_BOOL:
   case TAG_CALL:
   case TAG_CALL_FN:
   case TAG_CALL_MACRO:
+  case TAG_QUOTE:
+  case TAG_ARRAY:
+  case TAG_BOOL:
   case TAG_CFN:
   case TAG_CHARACTER:
   case TAG_F32:
@@ -335,7 +339,6 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   case TAG_FN:
   case TAG_INTEGER:
   case TAG_PTAG:
-  case TAG_QUOTE:
   case TAG_S16:
   case TAG_S32:
   case TAG_S64:
@@ -385,12 +388,14 @@ bool env_eval_equal_tuple (s_env *env, const s_tuple *a,
 bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
 {
   const s_tag *tag;
+  s_tag tmp;
   assert(env);
   assert(ident);
-  if (! (tag = frame_get(env->frame, ident->sym))) {
-    assert(! "env_eval_ident: unbound variable");
-    errx(1, "env_eval_ident: %s: unbound variable",
-         ident->sym->str.ptr.ps8);
+  if (! ((tag = frame_get(env->frame, ident->sym)) ||
+         (tag = module_get(env->current_module, ident->sym, &tmp)))) {
+    tag_init_var(dest);
+    frame_binding_new(env->frame, ident->sym, dest);
+    return true;
   }
   tag_copy(tag, dest);
   return true;
@@ -464,7 +469,7 @@ s_env * env_init (s_env *env)
 {
   assert(env);
   env->error_handler = NULL;
-  env->frame = NULL;
+  env->frame = frame_new(NULL);
   buf_init_alloc(&env->in, BUF_SIZE);
   buf_file_open_r(&env->in, stdin);
   buf_init_alloc(&env->out, BUF_SIZE);

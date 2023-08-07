@@ -29,6 +29,8 @@ void binding_delete (s_binding *binding);
 void binding_delete_all (s_binding *binding);
 
 /* observers */
-const s_tag * binding_get (s_binding *binding, const s_sym *name);
+const s_tag * binding_get (const s_binding *binding, const s_sym *name);
+const s_tag * binding_is_bound (const s_binding *binding,
+                                const s_sym *name);
 
 #endif /* BINDING_H */
