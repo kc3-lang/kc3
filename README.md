@@ -1,4 +1,4 @@
-# C3 v0.1.1
+# C3 v0.1.2
 
 C3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language

@@ -622,6 +622,7 @@ void tag_delete (s_tag *tag)
 
 s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
 {
+  s_integer tmp;
   assert(a);
   assert(b);
   assert(dest);
@@ -632,6 +633,12 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.f32 / b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.f32 / b->data.f64);
+    case TAG_INTEGER:
+      integer_init_double(&tmp, a->data.f32);
+      integer_div(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_f32(dest, a->data.f32 / b->data.s8);
     case TAG_S16:
@@ -657,6 +664,12 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, a->data.f64 / b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.f64 / b->data.f64);
+    case TAG_INTEGER:
+      integer_init_double(&tmp, a->data.f64);
+      integer_div(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_f64(dest, a->data.f64 / b->data.s8);
     case TAG_S16:
@@ -676,12 +689,82 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
     default:
       goto ko;
   }
+  case TAG_INTEGER:
+    switch (b->type) {
+    case TAG_F32:
+      return tag_init_f32(dest, integer_to_f64(&a->data.integer) -
+                          b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, integer_to_f64(&a->data.integer) -
+                          b->data.f64);
+    case TAG_INTEGER:
+      tag_init_integer_zero(dest);
+      integer_div(&a->data.integer, &b->data.integer,
+                  &dest->data.integer);
+      return dest;
+    case TAG_S8:
+      integer_init_s32(&tmp, b->data.s8);
+      integer_div(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_S16:
+      integer_init_s32(&tmp, b->data.s16);
+      integer_div(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_S32:
+      integer_init_s32(&tmp, b->data.s32);
+      integer_div(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_S64:
+      integer_init_s64(&tmp, b->data.s64);
+      integer_div(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U8:
+      integer_init_u32(&tmp, b->data.u8);
+      integer_div(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U16:
+      integer_init_u32(&tmp, b->data.u16);
+      integer_div(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U32:
+      integer_init_u32(&tmp, b->data.u32);
+      integer_div(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U64:
+      integer_init_u64(&tmp, b->data.u64);
+      integer_div(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    default:
+      goto ko;
+    }
   case TAG_S8:
     switch (b->type) {
     case TAG_F32:
       return tag_init_f32(dest, a->data.s8 / b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s8 / b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s8);
+      integer_div(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s8(dest, a->data.s8 / b->data.s8);
     case TAG_S16:
@@ -707,6 +790,12 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s16 / b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s16 / b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s16);
+      integer_div(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s16(dest, a->data.s16 / b->data.s8);
     case TAG_S16:
@@ -732,6 +821,12 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s32 / b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s32 / b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s32);
+      integer_div(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s32(dest, a->data.s32 / b->data.s8);
     case TAG_S16:
@@ -757,20 +852,26 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s64 / b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s64 / b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s64(&tmp, a->data.s64);
+      integer_div(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
-      return tag_init_s32(dest, a->data.s64 / b->data.s8);
+      return tag_init_s64(dest, a->data.s64 / b->data.s8);
     case TAG_S16:
-      return tag_init_s32(dest, a->data.s64 / b->data.s16);
+      return tag_init_s64(dest, a->data.s64 / b->data.s16);
     case TAG_S32:
-      return tag_init_s32(dest, a->data.s64 / b->data.s32);
+      return tag_init_s64(dest, a->data.s64 / b->data.s32);
     case TAG_S64:
       return tag_init_s64(dest, a->data.s64 / b->data.s64);
     case TAG_U8:
-      return tag_init_s32(dest, a->data.s64 / b->data.u8);
+      return tag_init_s64(dest, a->data.s64 / b->data.u8);
     case TAG_U16:
-      return tag_init_s32(dest, a->data.s64 / b->data.u16);
+      return tag_init_s64(dest, a->data.s64 / b->data.u16);
     case TAG_U32:
-      return tag_init_s32(dest, a->data.s64 / b->data.u32);
+      return tag_init_s64(dest, a->data.s64 / b->data.u32);
     case TAG_U64:
       return tag_init_s64(dest, a->data.s64 / b->data.u64);
     default:
@@ -782,6 +883,12 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u8 / b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u8 / b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u8);
+      integer_div(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s8(dest, a->data.u8 / b->data.s8);
     case TAG_S16:
@@ -807,6 +914,12 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u16 / b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u16 / b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u16);
+      integer_div(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s16(dest, a->data.u16 / b->data.s8);
     case TAG_S16:
@@ -832,6 +945,12 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u32 / b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u32 / b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u32);
+      integer_div(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s32(dest, a->data.u32 / b->data.s8);
     case TAG_S16:
@@ -857,6 +976,12 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u64 / b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u64 / b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u64(&tmp, a->data.u64);
+      integer_div(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s64(dest, a->data.u64 / b->data.s8);
     case TAG_S16:
@@ -1362,6 +1487,7 @@ bool tag_lte (const s_tag *a, const s_tag *b)
 
 s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
 {
+  s_integer tmp;
   assert(a);
   assert(b);
   assert(dest);
@@ -1372,6 +1498,12 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.f32 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.f32 * b->data.f64);
+    case TAG_INTEGER:
+      integer_init_double(&tmp, a->data.f32);
+      integer_mul(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_f32(dest, a->data.f32 * b->data.s8);
     case TAG_S16:
@@ -1397,6 +1529,12 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, a->data.f64 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.f64 * b->data.f64);
+    case TAG_INTEGER:
+      integer_init_double(&tmp, a->data.f64);
+      integer_mul(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_f64(dest, a->data.f64 * b->data.s8);
     case TAG_S16:
@@ -1416,12 +1554,82 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
     default:
       goto ko;
   }
+  case TAG_INTEGER:
+    switch (b->type) {
+    case TAG_F32:
+      return tag_init_f32(dest, integer_to_f64(&a->data.integer) -
+                          b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, integer_to_f64(&a->data.integer) -
+                          b->data.f64);
+    case TAG_INTEGER:
+      tag_init_integer_zero(dest);
+      integer_mul(&a->data.integer, &b->data.integer,
+                  &dest->data.integer);
+      return dest;
+    case TAG_S8:
+      integer_init_s32(&tmp, b->data.s8);
+      integer_mul(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_S16:
+      integer_init_s32(&tmp, b->data.s16);
+      integer_mul(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_S32:
+      integer_init_s32(&tmp, b->data.s32);
+      integer_mul(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_S64:
+      integer_init_s64(&tmp, b->data.s64);
+      integer_mul(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U8:
+      integer_init_u32(&tmp, b->data.u8);
+      integer_mul(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U16:
+      integer_init_u32(&tmp, b->data.u16);
+      integer_mul(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U32:
+      integer_init_u32(&tmp, b->data.u32);
+      integer_mul(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U64:
+      integer_init_u64(&tmp, b->data.u64);
+      integer_mul(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    default:
+      goto ko;
+    }
   case TAG_S8:
     switch (b->type) {
     case TAG_F32:
       return tag_init_f32(dest, a->data.s8 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s8 * b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s8);
+      integer_mul(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s8(dest, a->data.s8 * b->data.s8);
     case TAG_S16:
@@ -1447,6 +1655,12 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s16 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s16 * b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s16);
+      integer_mul(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s16(dest, a->data.s16 * b->data.s8);
     case TAG_S16:
@@ -1472,6 +1686,12 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s32 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s32 * b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s32);
+      integer_mul(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s32(dest, a->data.s32 * b->data.s8);
     case TAG_S16:
@@ -1497,20 +1717,26 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s64 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s64 * b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s64(&tmp, a->data.s64);
+      integer_mul(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
-      return tag_init_s32(dest, a->data.s64 * b->data.s8);
+      return tag_init_s64(dest, a->data.s64 * b->data.s8);
     case TAG_S16:
-      return tag_init_s32(dest, a->data.s64 * b->data.s16);
+      return tag_init_s64(dest, a->data.s64 * b->data.s16);
     case TAG_S32:
-      return tag_init_s32(dest, a->data.s64 * b->data.s32);
+      return tag_init_s64(dest, a->data.s64 * b->data.s32);
     case TAG_S64:
       return tag_init_s64(dest, a->data.s64 * b->data.s64);
     case TAG_U8:
-      return tag_init_s32(dest, a->data.s64 * b->data.u8);
+      return tag_init_s64(dest, a->data.s64 * b->data.u8);
     case TAG_U16:
-      return tag_init_s32(dest, a->data.s64 * b->data.u16);
+      return tag_init_s64(dest, a->data.s64 * b->data.u16);
     case TAG_U32:
-      return tag_init_s32(dest, a->data.s64 * b->data.u32);
+      return tag_init_s64(dest, a->data.s64 * b->data.u32);
     case TAG_U64:
       return tag_init_s64(dest, a->data.s64 * b->data.u64);
     default:
@@ -1522,6 +1748,12 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u8 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u8 * b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u8);
+      integer_mul(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s8(dest, a->data.u8 * b->data.s8);
     case TAG_S16:
@@ -1547,6 +1779,12 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u16 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u16 * b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u16);
+      integer_mul(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s16(dest, a->data.u16 * b->data.s8);
     case TAG_S16:
@@ -1572,6 +1810,12 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u32 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u32 * b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u32);
+      integer_mul(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s32(dest, a->data.u32 * b->data.s8);
     case TAG_S16:
@@ -1597,6 +1841,12 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u64 * b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u64 * b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u64(&tmp, a->data.u64);
+      integer_mul(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s64(dest, a->data.u64 * b->data.s8);
     case TAG_S16:
@@ -1719,6 +1969,7 @@ s_tag * tag_str_1 (s_tag *tag, s8 *free, const s8 *p)
 
 s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
 {
+  s_integer tmp;
   assert(a);
   assert(b);
   assert(dest);
@@ -1729,6 +1980,12 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.f32 - b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.f32 - b->data.f64);
+    case TAG_INTEGER:
+      integer_init_double(&tmp, a->data.f32);
+      integer_sub(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_f32(dest, a->data.f32 - b->data.s8);
     case TAG_S16:
@@ -1754,6 +2011,12 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, a->data.f64 - b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.f64 - b->data.f64);
+    case TAG_INTEGER:
+      integer_init_double(&tmp, a->data.f64);
+      integer_sub(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_f64(dest, a->data.f64 - b->data.s8);
     case TAG_S16:
@@ -1773,12 +2036,82 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
     default:
       goto ko;
   }
+  case TAG_INTEGER:
+    switch (b->type) {
+    case TAG_F32:
+      return tag_init_f32(dest, integer_to_f64(&a->data.integer) -
+                          b->data.f32);
+    case TAG_F64:
+      return tag_init_f64(dest, integer_to_f64(&a->data.integer) -
+                          b->data.f64);
+    case TAG_INTEGER:
+      tag_init_integer_zero(dest);
+      integer_sub(&a->data.integer, &b->data.integer,
+                  &dest->data.integer);
+      return dest;
+    case TAG_S8:
+      integer_init_s32(&tmp, b->data.s8);
+      integer_sub(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_S16:
+      integer_init_s32(&tmp, b->data.s16);
+      integer_sub(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_S32:
+      integer_init_s32(&tmp, b->data.s32);
+      integer_sub(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_S64:
+      integer_init_s64(&tmp, b->data.s64);
+      integer_sub(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U8:
+      integer_init_u32(&tmp, b->data.u8);
+      integer_sub(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U16:
+      integer_init_u32(&tmp, b->data.u16);
+      integer_sub(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U32:
+      integer_init_u32(&tmp, b->data.u32);
+      integer_sub(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    case TAG_U64:
+      integer_init_u64(&tmp, b->data.u64);
+      integer_sub(&a->data.integer, &tmp, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
+    default:
+      goto ko;
+    }
   case TAG_S8:
     switch (b->type) {
     case TAG_F32:
       return tag_init_f32(dest, a->data.s8 - b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s8 - b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s8);
+      integer_sub(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s8(dest, a->data.s8 - b->data.s8);
     case TAG_S16:
@@ -1804,6 +2137,12 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s16 - b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s16 - b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s16);
+      integer_sub(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s16(dest, a->data.s16 - b->data.s8);
     case TAG_S16:
@@ -1829,6 +2168,12 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s32 - b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s32 - b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s32(&tmp, a->data.s32);
+      integer_sub(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s32(dest, a->data.s32 - b->data.s8);
     case TAG_S16:
@@ -1854,20 +2199,26 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.s64 - b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.s64 - b->data.f64);
+    case TAG_INTEGER:
+      integer_init_s64(&tmp, a->data.s64);
+      integer_sub(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
-      return tag_init_s32(dest, a->data.s64 - b->data.s8);
+      return tag_init_s64(dest, a->data.s64 - b->data.s8);
     case TAG_S16:
-      return tag_init_s32(dest, a->data.s64 - b->data.s16);
+      return tag_init_s64(dest, a->data.s64 - b->data.s16);
     case TAG_S32:
-      return tag_init_s32(dest, a->data.s64 - b->data.s32);
+      return tag_init_s64(dest, a->data.s64 - b->data.s32);
     case TAG_S64:
       return tag_init_s64(dest, a->data.s64 - b->data.s64);
     case TAG_U8:
-      return tag_init_s32(dest, a->data.s64 - b->data.u8);
+      return tag_init_s64(dest, a->data.s64 - b->data.u8);
     case TAG_U16:
-      return tag_init_s32(dest, a->data.s64 - b->data.u16);
+      return tag_init_s64(dest, a->data.s64 - b->data.u16);
     case TAG_U32:
-      return tag_init_s32(dest, a->data.s64 - b->data.u32);
+      return tag_init_s64(dest, a->data.s64 - b->data.u32);
     case TAG_U64:
       return tag_init_s64(dest, a->data.s64 - b->data.u64);
     default:
@@ -1879,6 +2230,12 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u8 - b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u8 - b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u8);
+      integer_sub(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s8(dest, a->data.u8 - b->data.s8);
     case TAG_S16:
@@ -1904,6 +2261,12 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u16 - b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u16 - b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u16);
+      integer_sub(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s16(dest, a->data.u16 - b->data.s8);
     case TAG_S16:
@@ -1929,6 +2292,12 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u32 - b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u32 - b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u32(&tmp, a->data.u32);
+      integer_sub(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s32(dest, a->data.u32 - b->data.s8);
     case TAG_S16:
@@ -1954,6 +2323,12 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, a->data.u64 - b->data.f32);
     case TAG_F64:
       return tag_init_f64(dest, a->data.u64 - b->data.f64);
+    case TAG_INTEGER:
+      integer_init_u64(&tmp, a->data.u64);
+      integer_sub(&tmp, &b->data.integer, &tmp);
+      tag_init_integer(dest, &tmp);
+      integer_clean(&tmp);
+      return dest;
     case TAG_S8:
       return tag_init_s64(dest, a->data.u64 - b->data.s8);
     case TAG_S16:
