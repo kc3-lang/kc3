@@ -29,7 +29,7 @@ all: gen
 	${MAKE} -C test all
 
 asan:
-	${GMAKE} -C libffi asan
+	${GMAKE} -C libffi all
 	${MAKE} -C libtommath asan
 	${MAKE} -C libc3 asan
 	${MAKE} -C ic3 asan

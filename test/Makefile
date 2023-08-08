@@ -78,6 +78,7 @@ lldb_test: debug
 test: libc3_test
 	time ./libc3_test
 	IC3=${SRC_TOP}/ic3/ic3 time ./ic3_test
+	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
 
 test_asan: libc3_test_asan
 	time ./libc3_test_asan
