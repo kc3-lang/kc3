@@ -30,6 +30,9 @@ bool       env_eval_call_fn (s_env *env, const s_call *call,
                              s_tag *dest);
 bool       env_eval_call_macro (s_env *env, const s_call *call,
                                 s_tag *dest);
+bool       env_eval_call_special_operator (s_env *env,
+                                           const s_call *call,
+                                           s_tag *dest);
 bool       env_eval_equal_list (s_env *env, const s_list *a,
                                 const s_list *b, s_list **dest);
 bool       env_eval_equal_tag (s_env *env, const s_tag *a,

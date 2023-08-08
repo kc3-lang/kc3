@@ -53,6 +53,7 @@ add {C3.<=, :operator_associativity, :left}
 add {C3.=, :arity, 2}
 add {C3.=, :cfn, cfn :tag "tag_equal" (:tag, :tag, :&result)}
 add {C3.=, :is_a, :operator}
+add {C3.=, :is_a, :special_operator}
 add {C3.=, :operator_precedence, 5}
 add {C3.=, :operator_associativity, :left}
 add {C3.==, :arity, 2}
