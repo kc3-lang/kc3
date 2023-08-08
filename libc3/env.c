@@ -298,14 +298,14 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     warnx("TAG_IDENT = TAG_IDENT");
     return false;
   }
-  if (a->type == TAG_IDENT && tag_ident_is_unbound(a)) {
+  if (a->type == TAG_IDENT) {
     tag_copy(b, dest);
-    frame_binding_new(env->frame, b->data.ident.sym, a);
+    frame_binding_new(env->frame, a->data.ident.sym, dest);
     return true;
   }
-  if (b->type == TAG_IDENT && tag_ident_is_unbound(b)) {
+  if (b->type == TAG_IDENT) {
     tag_copy(a, dest);
-    frame_binding_new(env->frame, b->data.ident.sym, a);
+    frame_binding_new(env->frame, b->data.ident.sym, dest);
     return true;
   }
   if (a->type != b->type) {
