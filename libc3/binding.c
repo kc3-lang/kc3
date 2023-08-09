@@ -15,9 +15,12 @@
 #include <stdlib.h>
 #include "binding.h"
 #include "list.h"
+#include "tag.h"
 
 void binding_delete (s_binding *binding)
 {
+  assert(binding);
+  tag_clean(&binding->value);
   free(binding);
 }
 
@@ -35,7 +38,7 @@ const s_tag * binding_get (const s_binding *binding, const s_sym *name)
 {
   while (binding) {
     if (binding->name == name)
-      return binding->value;
+      return &binding->value;
     binding = binding->next;
   }
   return NULL;
@@ -46,7 +49,7 @@ s_binding * binding_init (s_binding *binding, const s_sym *name,
 {
   assert(binding);
   binding->name = name;
-  binding->value = value;
+  tag_copy(value, &binding->value);
   binding->next = next;
   return binding;
 }

@@ -248,12 +248,6 @@ struct unwind_protect {
 };
 
 /* 2 */
-struct binding {
-  const s_sym *name;
-  const s_tag *value;
-  s_binding *next;
-};
-
 struct buf {
   sw          column;
   sw        (*flush) (s_buf *buf);
@@ -378,6 +372,12 @@ struct arg {
   const s_sym *name;
   s_type type;
   s_arg *next;
+};
+
+struct binding {
+  const s_sym *name;
+  s_tag value;
+  s_binding *next;
 };
 
 struct error_handler
