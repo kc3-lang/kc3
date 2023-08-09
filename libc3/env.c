@@ -334,8 +334,8 @@ bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
 bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
                          s_tag *dest)
 {
-  e_tag_type type_a;
-  e_tag_type type_b;
+  bool is_unbound_a;
+  bool is_unbound_b;
   s_tag tmp_a;
   s_tag tmp_b;
   assert(env);
@@ -344,29 +344,40 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   assert(dest);
   tag_init_void(&tmp_a);
   tag_init_void(&tmp_b);
-  type_a = a->type;
-  type_b = b->type;
-  if (type_a == TAG_IDENT &&
-      b->type == TAG_IDENT) {
-    warnx("TAG_IDENT = TAG_IDENT");
+  is_unbound_a = a->type == TAG_IDENT && ! tag_ident_is_bound(a);
+  is_unbound_b = b->type == TAG_IDENT && ! tag_ident_is_bound(b);
+  if (is_unbound_a && is_unbound_b) {
+    warnx("unbound equal on both sides: %s = %s",
+          a->data.ident.sym->str.ptr.ps8,
+          b->data.ident.sym->str.ptr.ps8);
     return false;
   }
-  if (type_a == TAG_CALL) {
+  if (a->type == TAG_IDENT && tag_ident_is_bound(a)) {
+    if (! env_eval_ident(env, &a->data.ident, &tmp_a))
+      return false;
+    a = &tmp_a;
+  }
+  if (b->type == TAG_IDENT && tag_ident_is_bound(b)) {
+    if (! env_eval_ident(env, &b->data.ident, &tmp_b))
+      return false;
+    b = &tmp_b;
+  }
+  if (a->type == TAG_CALL) {
     if (! env_eval_call(env, &a->data.call, &tmp_a))
       return false;
     a = &tmp_a;
   }
-  if (type_b == TAG_CALL) {
+  if (b->type == TAG_CALL) {
     if (! env_eval_call(env, &b->data.call, &tmp_b))
       return false;
     b = &tmp_b;
   }
-  if (type_a == TAG_IDENT) {
+  if (is_unbound_a) {
     tag_copy(b, dest);
     frame_binding_new(env->frame, a->data.ident.sym, dest);
     return true;
   }
-  if (type_b == TAG_IDENT) {
+  if (is_unbound_b) {
     tag_copy(a, dest);
     frame_binding_new(env->frame, b->data.ident.sym, dest);
     return true;
@@ -379,8 +390,6 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   case TAG_VOID:
     tag_init_void(dest);
     return true;
-  case TAG_IDENT:
-    error("env_eval_equal_tag: TAG_IDENT");
   case TAG_LIST:
     tag_init_list(dest, NULL);
     return env_eval_equal_list(env, a->data.list, b->data.list,
@@ -400,6 +409,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   case TAG_F32:
   case TAG_F64:
   case TAG_FN:
+  case TAG_IDENT:
   case TAG_INTEGER:
   case TAG_PTAG:
   case TAG_S16:
@@ -456,9 +466,8 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   assert(ident);
   if (! ((tag = frame_get(env->frame, ident->sym)) ||
          (tag = module_get(env->current_module, ident->sym, &tmp)))) {
-    tag_init_var(dest);
-    frame_binding_new(env->frame, ident->sym, dest);
-    return true;
+    warnx("unbound ident: %s", ident->sym->str.ptr.ps8);
+    return false;
   }
   tag_copy(tag, dest);
   return true;
