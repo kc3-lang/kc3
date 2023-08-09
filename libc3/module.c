@@ -39,8 +39,10 @@ s_tag * module_get (const s_module *module, const s_sym *sym,
   facts_with(module->facts, &cursor, (t_facts_spec) {
       &tag_name, &tag_is_a, &tag_module,
       &tag_symbol, &tag_ident, NULL, NULL});
-  if (! facts_with_cursor_next(&cursor))
+  if (! facts_with_cursor_next(&cursor)) {
+    facts_with_cursor_clean(&cursor);
     return NULL;
+  }
   facts_with_cursor_clean(&cursor);
   tag_init_1(&tag_cfn, ":cfn");
   tag_init_1(&tag_fn, ":fn");
