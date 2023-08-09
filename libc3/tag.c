@@ -618,8 +618,6 @@ void tag_delete (s_tag *tag)
 s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
 {
   s_integer tmp;
-  s_integer tmp2;
-  s_integer tmp3;
   assert(a);
   assert(b);
   assert(dest);
@@ -780,7 +778,7 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       if (b->data.u64 > S8_MAX)
         return tag_init_s8(dest, 0);
       else
-        return tag_init_s8(dest, a->data.s8 / (s8) b->data.u64));
+        return tag_init_s8(dest, a->data.s8 / (s8) b->data.u64);
     default:
       goto ko;
   }
@@ -807,14 +805,14 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_U8:
       return tag_init_s16(dest, a->data.s16 / (s16) b->data.u8);
     case TAG_U16:
-      return tag_init_s16(dest, (s16) ((s32) a->data.s16 / (s32) b->data.u16);
+      return tag_init_s16(dest, (s16) ((s32) a->data.s16 / (s32) b->data.u16));
     case TAG_U32:
-      return tag_init_s16(dest, (s16) ((s64) a->data.s16 / (s64) b->data.u32)));
+      return tag_init_s16(dest, (s16) ((s64) a->data.s16 / (s64) b->data.u32));
     case TAG_U64:
       if (b->data.u64 > S16_MAX)
         return tag_init_s16(dest, 0);
       else
-        return tag_init_s16(dest, (s16) a->data.s16 / (s16) b->data.u64)));
+        return tag_init_s16(dest, (s16) a->data.s16 / (s16) b->data.u64);
     default:
       goto ko;
   }
@@ -848,7 +846,7 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       if (b->data.u64 > S32_MAX)
         return tag_init_s32(dest, 0);
       else
-        return tag_init_s32(dest, a->data.s32 / (s32) b->data.u64));
+        return tag_init_s32(dest, a->data.s32 / (s32) b->data.u64);
     default:
       goto ko;
   }
