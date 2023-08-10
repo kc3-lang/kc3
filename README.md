@@ -54,7 +54,7 @@ structures.
 
 #### Parser
 
-The parser is recursive descent for now.
+The parser is recursive descent.
 
 #### AST
 
@@ -87,6 +87,8 @@ Script interpreter.
    - math
      - floating point numbers
    - variables
+      - DONE = equal
+      - funcall
    - DONE boolean operators
    - DONE comparison operators
    - arrays

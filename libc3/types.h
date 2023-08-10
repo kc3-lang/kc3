@@ -294,6 +294,8 @@ struct call {
   /* value */
   s_cfn *cfn;
   s_fn *fn;
+  bool macro;
+  bool special_operator;
 };
 
 struct cfn {

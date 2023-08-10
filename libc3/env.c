@@ -71,7 +71,7 @@ void env_error_tag (s_env *env, const s_tag *tag)
   }
 }
 
-bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
+bool env_resolve_ident (s_env *env, const s_call *call, s_tag *dest)
 {
   s_call c;
   s_facts_with_cursor cursor;
@@ -151,6 +151,10 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   facts_with_cursor_clean(&cursor);
   call_clean(&c);
   return result;
+}
+
+bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
+{
 }
 
 bool env_eval_call_arguments (s_env *env, s_list *args, s_list **dest)
