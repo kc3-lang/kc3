@@ -374,12 +374,12 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   }
   if (is_unbound_a) {
     tag_copy(b, dest);
-    frame_binding_new(env->frame, a->data.ident.sym, tag_new_copy(b));
+    frame_binding_new(env->frame, a->data.ident.sym, b);
     return true;
   }
   if (is_unbound_b) {
     tag_copy(a, dest);
-    frame_binding_new(env->frame, b->data.ident.sym, tag_new_copy(a));
+    frame_binding_new(env->frame, b->data.ident.sym, a);
     return true;
   }
   if (a->type != b->type) {
