@@ -33,6 +33,8 @@ s_call * call_copy (const s_call *src, s_call *dest)
   list_copy(src->arguments, &dest->arguments);
   dest->cfn = src->cfn;
   dest->fn = src->fn;
+  dest->macro = src->macro;
+  dest->special_operator = src->special_operator;
   return dest;
 }
 

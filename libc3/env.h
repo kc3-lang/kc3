@@ -26,6 +26,8 @@ bool       env_eval_call (s_env *env, const s_call *call,
                           s_tag *dest);
 bool       env_eval_call_arguments (s_env *env, s_list *args,
                                     s_list **dest);
+bool       env_eval_call_cfn (s_env *env, const s_call *call,
+                              s_tag *dest);
 bool       env_eval_call_fn (s_env *env, const s_call *call,
                              s_tag *dest);
 bool       env_eval_call_macro (s_env *env, const s_call *call,
