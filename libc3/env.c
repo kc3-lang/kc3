@@ -71,7 +71,7 @@ void env_error_tag (s_env *env, const s_tag *tag)
   }
 }
 
-bool env_resolve_ident (s_env *env, const s_call *call, s_tag *dest)
+bool env_resolve_call (s_env *env, s_call *call)
 {
   s_call c;
   s_facts_with_cursor cursor;
@@ -138,7 +138,7 @@ bool env_resolve_ident (s_env *env, const s_call *call, s_tag *dest)
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });
   if (facts_with_cursor_next(&cursor))
-    result = env_eval_call_macro(env, &c, dest);
+    result = call->macro = true;
   else {
     facts_with_cursor_clean(&cursor);
     facts_with(&env->facts, &cursor, (t_facts_spec) {
