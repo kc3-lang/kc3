@@ -16,6 +16,7 @@
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "call.h"
+#include "cfn.h"
 #include "ident.h"
 #include "list.h"
 
@@ -23,6 +24,8 @@ void call_clean (s_call *call)
 {
   assert(call);
   list_delete_all(call->arguments);
+  if (call->cfn)
+    cfn_delete(call->cfn);
 }
 
 s_call * call_copy (const s_call *src, s_call *dest)
