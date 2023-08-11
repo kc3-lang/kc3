@@ -32,6 +32,7 @@ bool       env_eval_call_fn (s_env *env, const s_call *call,
                              s_tag *dest);
 bool       env_eval_call_macro (s_env *env, const s_call *call,
                                 s_tag *dest);
+bool       env_eval_call_resolve (s_env *env, s_call *call);
 bool       env_eval_call_special_operator (s_env *env,
                                            const s_call *call,
                                            s_tag *dest);
@@ -55,7 +56,6 @@ bool       env_operator_is_right_associative (s_env *env,
 bool       env_operator_is_unary (s_env *env, const s_ident *op);
 s8         env_operator_precedence (s_env *env,
                                     const s_ident *op);
-bool       env_resolve_call (s_env *env, s_call *call);
 
 /* control structures */
 void env_error_f (s_env *env, const char *fmt, ...);
