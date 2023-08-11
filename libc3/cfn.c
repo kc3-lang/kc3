@@ -153,6 +153,17 @@ s_cfn * cfn_link (s_cfn *cfn)
   return cfn;
 }
 
+s_cfn * cfn_new_copy (const s_cfn *src)
+{
+  s_cfn *cfn;
+  if (! (cfn = calloc(1, sizeof(s_cfn)))) {
+    errx(1, "cfn_new_copy: out of memory");
+    return NULL;
+  }
+  cfn_copy(src, cfn);
+  return cfn;
+}
+
 s_cfn * cfn_prep_cif (s_cfn *cfn)
 {
   s_list *a;

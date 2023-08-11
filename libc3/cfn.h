@@ -20,6 +20,9 @@ s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
                   const s_sym *result_type);
 void    cfn_clean (s_cfn *cfn);
 
+/* constructor */
+s_cfn * cfn_new_copy (const s_cfn *src);
+
 /* observers */
 s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest);
 s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest);
