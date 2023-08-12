@@ -134,6 +134,7 @@ lldb_test: debug
 
 test: build
 	${MAKE} -C test test
+	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
 
 test_asan: asan
 	${MAKE} -C test test_asan
