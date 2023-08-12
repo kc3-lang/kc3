@@ -23,6 +23,14 @@ sw err_inspect (const s_tag *tag)
   return r;
 }
 
+sw err_inspect_fn_pattern (const s_list *list)
+{
+  sw r;
+  r = buf_inspect_fn_pattern(&g_c3_env.err, list);
+  buf_flush(&g_c3_env.err);
+  return r;
+}
+
 sw err_inspect_list (const s_list *list)
 {
   sw r;

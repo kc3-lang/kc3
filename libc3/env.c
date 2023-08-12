@@ -147,6 +147,7 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   s_list *args = NULL;
   s_frame frame;
   s_fn *fn;
+  s_fn *fn2;
   s_tag tag;
   s_list *tmp = NULL;
   assert(env);
@@ -156,23 +157,30 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   assert(fn);
   frame_init(&frame, env->frame);
   env->frame = &frame;
+  fn2 = fn;
   if (call->arguments) {
     if (! env_eval_call_arguments(env, call->arguments, &args)) {
       env->frame = frame_clean(&frame);
       return false;
     }
-    if (! env_eval_equal_list(env, fn->pattern, args, &tmp)) {
+    while (fn2 && ! env_eval_equal_list(env, fn2->pattern, args, &tmp))
+      fn2 = fn2->next_clause;
+    if (! fn2) {
       err_puts("env_eval_call_fn: no clause matching.\nTried clauses :\n");
-      err_inspect_list(fn->pattern);
+      fn2 = fn;
+      while (fn2) {
+        err_inspect_fn_pattern(fn2->pattern);
+        fn2 = fn2->next_clause;
+      }
       err_puts("\nArguments :\n");
-      err_inspect_list(args);
+      err_inspect_fn_pattern(args);
       err_puts("\n");
       list_delete_all(args);
       env->frame = frame_clean(&frame);
       return false;
     }
   }
-  if (! env_eval_progn(env, fn->algo, &tag)) {
+  if (! env_eval_progn(env, fn2->algo, &tag)) {
     list_delete_all(args);
     list_delete_all(tmp);
     env->frame = frame_clean(&frame);
@@ -300,9 +308,9 @@ bool env_eval_call_special_operator (s_env *env, const s_call *call,
   env->frame = &frame;
   if (! env_eval_equal_list(env, fn->pattern, call->arguments, &tmp)) {
     err_puts("env_eval_call_fn: no clause matching.\nTried clauses :\n");
-    err_inspect_list(fn->pattern);
+    err_inspect_fn_pattern(fn->pattern);
     err_puts("\nArguments :\n");
-    err_inspect_list(call->arguments);
+    err_inspect_fn_pattern(call->arguments);
     err_puts("\n");
     env->frame = frame_clean(&frame);
     return false;

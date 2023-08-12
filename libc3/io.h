@@ -17,6 +17,7 @@
 
 /* error output */
 sw err_inspect (const s_tag *tag);
+sw err_inspect_fn_pattern (const s_list *list);
 sw err_inspect_list (const s_list *list);
 sw err_puts (const s8 *s);
 

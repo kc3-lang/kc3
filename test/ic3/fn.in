@@ -6,11 +6,15 @@ quote fn {
   ((x | _y)) { x }
   (_) { :error }
 }
-fn (x) { x }
-fn (x, _y) { x }
-fn ((x | _y)) { x }
-fn {
+a = fn (x) { x }
+a(1)
+b = fn (x, _y) { x }
+b(1, 2)
+c = fn ((x | _y)) { x }
+c((1, 2))
+d = fn {
   (()) { :error }
   ((x | _y)) { x }
-  (_) { :error }
+  (_) { :error2 }
 }
+d((1, 2))
