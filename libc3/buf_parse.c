@@ -1228,14 +1228,6 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
-    if ((r = buf_read_1(buf, ";")) < 0)
-      goto restore;
-    if (! r)
-      break;
-    result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
   }
   if ((r = buf_read_1(buf, "}")) <= 0)
     goto restore;

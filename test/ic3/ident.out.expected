@@ -1,27 +1,27 @@
-quote _" "
-quote _"\n"
-quote _"\0"
-quote _"\n"
-quote _"\r"
-quote _" "
-quote _"\t"
-quote _"\v"
-quote _0
-quote _9
-quote _A
-quote _Z
-quote a
-quote z
-quote _À
-quote _É
-quote _Ÿ
-quote à
-quote é
-quote ÿ
-quote _Π
-quote ꒴
-quote 𐅀
-quote 🎳
-quote 😄
-quote 🟣
-quote 🤩
+_" "
+_"\n"
+_"\0"
+_"\n"
+_"\r"
+_" "
+_"\t"
+_"\v"
+_0
+_9
+_A
+_Z
+a
+z
+_À
+_É
+_Ÿ
+à
+é
+ÿ
+_Π
+꒴
+𐅀
+🎳
+😄
+🟣
+🤩

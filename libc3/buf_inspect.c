@@ -685,7 +685,7 @@ sw buf_inspect_fn_algo (s_buf *buf, const s_list *algo)
     result += r;
     algo = list_next(algo);
     if (algo) {
-      if ((r = buf_write_1(buf, ";\n  ")) < 0)
+      if ((r = buf_write_1(buf, "\n  ")) < 0)
         return r;
       result += r;
     }

@@ -526,6 +526,17 @@ bool env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
   return true;
 }
 
+bool env_eval_quote(s_env *env, const s_quote *quote, s_tag *dest)
+{
+  assert(env);
+  assert(quote);
+  assert(dest);
+  (void) env;
+  if (! tag_copy(quote->tag, dest))
+    return false;
+  return true;
+}
+
 bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
 {
   switch (tag->type) {
@@ -540,6 +551,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_call_macro(env, &tag->data.call, dest);
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
+  case TAG_QUOTE:
+    return env_eval_quote(env, &tag->data.quote, dest);
   case TAG_ARRAY:
   case TAG_BOOL:
   case TAG_CFN:
@@ -550,7 +563,6 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_INTEGER:
   case TAG_LIST:
   case TAG_PTAG:
-  case TAG_QUOTE:
   case TAG_S16:
   case TAG_S32:
   case TAG_S64:

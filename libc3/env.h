@@ -47,6 +47,8 @@ bool       env_eval_ident (s_env *env, const s_ident *ident,
                            s_tag *dest);
 bool       env_eval_progn (s_env *env, const s_list *program,
                            s_tag *dest);
+bool       env_eval_quote(s_env *env, const s_quote *quote,
+                          s_tag *dest);
 bool       env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
 s_module * env_module_load (s_env *env, s_module *module,
                             const s_sym *name, s_facts *facts);
