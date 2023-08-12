@@ -1,10 +1,14 @@
-quote fn (x) { x }
-quote fn (x, _y) { x }
-quote fn ((x | _y)) { x }
-quote fn {
+fn (x) { x }
+fn (x, _y) { x }
+fn ((x | _y)) { x }
+fn {
   (()) { :error }
   ((x | _y)) { x }
   (_) { :error }
+}
+fn (x) {
+  "Hello, world !"
+  x * 2
 }
 fn (x) { x }
 1
@@ -18,3 +22,8 @@ fn {
   (_) { :error2 }
 }
 1
+fn (x) {
+  "Hello, world !"
+  x * 2
+}
+4

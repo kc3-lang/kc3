@@ -4,7 +4,7 @@
                      :direction :output
                      :element-type 'character
                      :if-exists :supersede)
-  (dolist (op (list #'/))
+  (dolist (op (list #'+ #'- #'* #'/))
     (format out "~A~%" (truncate (funcall op -18446744073709551616 -18446744073709551616)))
     (format out "~A~%" (truncate (funcall op -18446744073709551616 -4294967296)))
     (format out "~A~%" (truncate (funcall op -18446744073709551616 -32769)))
