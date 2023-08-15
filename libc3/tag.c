@@ -167,21 +167,67 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       return dest;
     case TAG_S8:
-      return tag_init_s8(dest, a->data.s8 + b->data.s8);
+      if (a->data.s8 < S8_MIN - b->data.s8 ||
+          a->data.s8 > S8_MAX - b->data.s8)
+        return tag_init_s16(dest, (s16) a->data.s8 + (s16) b->data.s8);
+      else
+        return tag_init_s8(dest, a->data.s8 + b->data.s8);
     case TAG_S16:
-      return tag_init_s16(dest, (s16) a->data.s8 + b->data.s16);
+      if (a->data.s8 < S16_MIN - b->data.s16 ||
+          a->data.s8 > S16_MAX - b->data.s16)
+        return tag_init_s32(dest, (s32) a->data.s8 + (s32) b->data.s16);
+      else
+        return tag_init_s16(dest, (s16) a->data.s8 + b->data.s16);
     case TAG_S32:
-      return tag_init_s32(dest, (s32) a->data.s8 + b->data.s32);
+      if (a->data.s8 < S32_MIN - b->data.s32 ||
+          a->data.s8 > S32_MAX - b->data.s32)
+        return tag_init_s64(dest, (s64) a->data.s8 + (s64) b->data.s32);
+      else
+        return tag_init_s32(dest, (s32) a->data.s8 + b->data.s32);
     case TAG_S64:
-      return tag_init_s64(dest, (s64) a->data.s8 + b->data.s64);
+      if (a->data.s8 < S64_MIN - b->data.s64 ||
+          a->data.s8 > S64_MAX - b->data.s64) {
+        integer_init_s32(&tmp, (s32) a->data.s8);
+        integer_init_s64(&tmp2, b->data.s64);
+        tag_integer_init_zero(dest);
+        integer_sub(&tmp, &tmp2, &dest->data.integer);
+        integer_clean(&tmp);
+        integer_clean(&tmp2);
+        return dest;
+      }
+      else
+        return tag_init_s64(dest, (s64) a->data.s8 + b->data.s64);
     case TAG_U8:
-      return tag_init_s8(dest, a->data.s8 + (s8) b->data.u8);
+      if (a->data.s8 < S8_MIN - b->data.u8 ||
+          a->data.s8 > S8_MAX - b->data.u8)
+        return tag_init_s16(dest, (s16) a->data.s8 + (s16) b->data.u8);
+      else
+        return tag_init_s8(dest, a->data.s8 + (s8) b->data.u8);
     case TAG_U16:
-      return tag_init_s16(dest, (s16) a->data.s8 + (s16) b->data.u16);
+      if (a->data.s8 < S16_MIN - b->data.u16 ||
+          a->data.s8 > S16_MAX - b->data.u16)
+        return tag_init_s32(dest, (s32) a->data.s8 + (s32) b->data.u16);
+      else
+        return tag_init_s16(dest, (s16) a->data.s8 + (s16) b->data.u16);
     case TAG_U32:
-      return tag_init_s32(dest, (s32) a->data.s8 + (s32) b->data.u32);
+      if (a->data.s8 < S32_MIN - b->data.u32 ||
+          a->data.s8 > S32_MAX - b->data.u32)
+        return tag_init_s64(dest, (s64) a->data.s8 + (s64) b->data.u32);
+      else
+        return tag_init_s32(dest, (s32) a->data.s8 + (s32) b->data.u32);
     case TAG_U64:
-      return tag_init_s64(dest, (s64) a->data.s8 + (s64) b->data.u64);
+      if (a->data.s8 < S64_MIN - b->data.u64 ||
+          a->data.s8 > S64_MAX - b->data.u64) {
+        integer_init_s32(&tmp, (s32) a->data.s8);
+        integer_init_u64(&tmp2, b->data.u64);
+        tag_integer_init_zero(dest);
+        integer_sub(&tmp, &tmp2, &dest->data.integer);
+        integer_clean(&tmp);
+        integer_clean(&tmp2);
+        return dest;
+      }
+      else
+        return tag_init_s64(dest, (s64) a->data.s8 + (s64) b->data.u64);
     default:
       goto ko;
   }
@@ -198,13 +244,36 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       integer_clean(&tmp);
       return dest;
     case TAG_S8:
-      return tag_init_s16(dest, a->data.s16 + (s16) b->data.s8);
+      if (a->data.s16 < S16_MIN - b->data.s8 ||
+          a->data.s16 > S16_MAX - b->data.s8)
+        return tag_init_s32(dest, (s32) a->data.s16 + (s32) b->data.s8);
+      else
+        return tag_init_s16(dest, a->data.s16 + (s16) b->data.s8);
     case TAG_S16:
-      return tag_init_s16(dest, a->data.s16 + b->data.s16);
+      if (a->data.s16 < S16_MIN - b->data.s16 ||
+          a->data.s16 > S16_MAX - b->data.s16)
+        return tag_init_s32(dest, (s32) a->data.s16 + (s32) b->data.s16);
+      else
+        return tag_init_s16(dest, a->data.s16 + b->data.s16);
     case TAG_S32:
-      return tag_init_s32(dest, (s32) a->data.s16 + b->data.s32);
+      if (a->data.s16 < S32_MIN - b->data.s32 ||
+          a->data.s16 > S32_MAX - b->data.s32)
+        return tag_init_s64(dest, (s64) a->data.s16 + (s32) b->data.s16);
+      else
+        return tag_init_s32(dest, (s32) a->data.s16 + b->data.s32);
     case TAG_S64:
-      return tag_init_s64(dest, (s64) a->data.s16 + b->data.s64);
+      if (a->data.s16 < S64_MIN - b->data.s64 ||
+          a->data.s16 > S64_MAX - b->data.s64)
+        integer_init_s32(&tmp, (s32) a->data.s8);
+        integer_init_s64(&tmp2, b->data.s64);
+        tag_integer_init_zero(dest);
+        integer_sub(&tmp, &tmp2, &dest->data.integer);
+        integer_clean(&tmp);
+        integer_clean(&tmp2);
+        return dest;
+      }
+      else
+        return tag_init_s64(dest, (s64) a->data.s16 + b->data.s64);
     case TAG_U8:
       return tag_init_s16(dest, a->data.s16 + (s16) b->data.u8);
     case TAG_U16:
@@ -212,6 +281,17 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_U32:
       return tag_init_s32(dest, (s32) a->data.s16 + (s32) b->data.u32);
     case TAG_U64:
+      if (a->data.s16 < S64_MIN - b->data.u64 ||
+          a->data.s16 > S64_MAX - b->data.u64) {
+        integer_init_s32(&tmp, (s32) a->data.s8);
+        integer_init_u64(&tmp2, b->data.u64);
+        tag_integer_init_zero(dest);
+        integer_sub(&tmp, &tmp2, &dest->data.integer);
+        integer_clean(&tmp);
+        integer_clean(&tmp2);
+        return dest;
+      }
+      else
       return tag_init_s64(dest, (s64) a->data.s16 + (s64) b->data.u64);
     default:
       goto ko;
