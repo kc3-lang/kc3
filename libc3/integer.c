@@ -220,13 +220,13 @@ s_integer * integer_init_zero (s_integer *dest)
   return dest;
 }
 
-e_bool integer_is_negative (const s_integer *i)
+bool integer_is_negative (const s_integer *i)
 {
   assert(i);
   return i->mp_int.sign == MP_NEG;
 }
 
-e_bool integer_is_zero (const s_integer *i)
+bool integer_is_zero (const s_integer *i)
 {
   assert(i);
   return (i->mp_int.used == 0);

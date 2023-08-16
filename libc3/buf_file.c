@@ -36,7 +36,7 @@ void buf_file_close (s_buf *buf)
   buf->user_ptr = NULL;
 }
 
-e_bool buf_file_is_open (s_buf *buf)
+bool buf_file_is_open (s_buf *buf)
 {
   s_buf_file *buf_file;
   assert(buf);

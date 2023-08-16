@@ -35,7 +35,7 @@ const s_sym * sym_1 (const s8 *p)
   return str_to_sym(&stra);
 }
 
-e_bool sym_character_is_reserved (character c)
+bool sym_character_is_reserved (character c)
 {
   return (character_is_space(c) ||
           c == '#' ||
@@ -83,7 +83,7 @@ const s_sym * sym_find (const s_str *str)
   return NULL;
 }
 
-e_bool sym_has_reserved_characters (const s_sym *sym)
+bool sym_has_reserved_characters (const s_sym *sym)
 {
   character c;
   sw r;
@@ -113,7 +113,7 @@ s_str * sym_inspect (const s_sym *sym, s_str *dest)
   return buf_to_str(&tmp, dest);
 }
 
-e_bool sym_is_module (const s_sym *sym)
+bool sym_is_module (const s_sym *sym)
 {
   character c;
   if (str_peek_character(&sym->str, &c) > 0)

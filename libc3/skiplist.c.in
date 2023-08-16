@@ -191,7 +191,7 @@ skiplist_random_height___NAME$ (s_skiplist___NAME$ *skiplist)
   return height;
 }
 
-e_bool
+bool
 skiplist_remove___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ _NAME$)
 {
   uw level;

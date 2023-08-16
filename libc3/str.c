@@ -39,7 +39,7 @@ sw str_character (const s_str *str, uw position, character *dest)
   return r;
 }
 
-e_bool str_character_is_reserved (character c)
+bool str_character_is_reserved (character c)
 {
   return ! character_is_printable(c) ||
     c == '"' ||
@@ -84,7 +84,7 @@ void str_delete (s_str *str)
   free(str);
 }
 
-e_bool str_has_reserved_characters (const s_str *src)
+bool str_has_reserved_characters (const s_str *src)
 {
   character c;
   sw r;

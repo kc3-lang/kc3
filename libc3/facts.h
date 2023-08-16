@@ -45,9 +45,9 @@ void     facts_lock_unlock_w (s_facts *facts);
 void     facts_lock_w (s_facts *facts);
 sw       facts_open_file (s_facts *facts, const s_str *path);
 s_tag *  facts_ref_tag (s_facts *facts, const s_tag *tag);
-e_bool   facts_remove_fact (s_facts *facts, const s_fact *fact);
+bool     facts_remove_fact (s_facts *facts, const s_fact *fact);
 sw       facts_save_file (s_facts *facts, const s8 *path);
-e_bool   facts_unref_tag (s_facts *facts, const s_tag *tag);
+bool     facts_unref_tag (s_facts *facts, const s_tag *tag);
 
 /* Observers */
 sw       facts_dump (s_facts *facts, s_buf *buf);

@@ -43,10 +43,10 @@ set_get_hash_next__tag (const s_set_item__tag *item);
 s_set__tag *
 set_init__tag (s_set__tag *set, uw max);
 
-e_bool
+bool
 set_remove__tag (s_set__tag *set, const s_tag *data);
 
-e_bool
+bool
 set_remove_item__tag (s_set__tag *set, s_set_item__tag *item);
 
 s_set__tag *

@@ -43,10 +43,10 @@ set_get_hash_next__fact (const s_set_item__fact *item);
 s_set__fact *
 set_init__fact (s_set__fact *set, uw max);
 
-e_bool
+bool
 set_remove__fact (s_set__fact *set, const s_fact *data);
 
-e_bool
+bool
 set_remove_item__fact (s_set__fact *set, s_set_item__fact *item);
 
 s_set__fact *

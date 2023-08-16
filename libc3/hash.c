@@ -88,7 +88,7 @@ void hash_update_array (t_hash *hash, const s_array *a)
   hash_update(hash, a->data, a->size);
 }
 
-void hash_update_bool (t_hash *hash, e_bool x)
+void hash_update_bool (t_hash *hash, bool x)
 {
   const s8 type[] = "bool";
   assert(hash);

@@ -191,7 +191,7 @@ skiplist_random_height__fact (s_skiplist__fact *skiplist)
   return height;
 }
 
-e_bool
+bool
 skiplist_remove__fact (s_skiplist__fact *skiplist, s_fact * fact)
 {
   uw level;

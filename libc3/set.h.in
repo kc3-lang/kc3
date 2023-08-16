@@ -43,10 +43,10 @@ set_get_hash_next___NAME$ (const s_set_item___NAME$ *item);
 s_set___NAME$ *
 set_init___NAME$ (s_set___NAME$ *set, uw max);
 
-e_bool
+bool
 set_remove___NAME$ (s_set___NAME$ *set, const _TYPE$ *data);
 
-e_bool
+bool
 set_remove_item___NAME$ (s_set___NAME$ *set, s_set_item___NAME$ *item);
 
 s_set___NAME$ *

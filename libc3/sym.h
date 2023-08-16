@@ -31,7 +31,7 @@
  */
 const s_sym * sym_1 (const s8 *p);
 
-e_bool sym_character_is_reserved (character c);
+bool sym_character_is_reserved (character c);
 
 /** @brief Call when exiting program. */
 void sym_delete_all ();
@@ -39,12 +39,12 @@ void sym_delete_all ();
 /** @brief Find an existing symbol. */
 const s_sym * sym_find (const s_str *src);
 
-e_bool sym_has_reserved_characters (const s_sym *sym);
+bool sym_has_reserved_characters (const s_sym *sym);
 
 s_str * sym_inspect (const s_sym *sym, s_str *dest);
 
 /** @brief True iff sym is a module name (starts with a capital). */
-e_bool sym_is_module (const s_sym *sym);
+bool sym_is_module (const s_sym *sym);
 
 const s_sym * sym_new (const s_str *src);
 

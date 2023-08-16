@@ -55,10 +55,10 @@ void str_delete (s_str *str);
 sw            str_character (const s_str *str, uw position,
                              character *dest);
 character     str_character_escape (character c);
-e_bool        str_character_is_reserved (character c);
+bool          str_character_is_reserved (character c);
 sw            str_character_position (const s_str *str, character c);
 s_str *       str_copy (const s_str *src, s_str *dest);
-e_bool        str_has_reserved_characters (const s_str *str);
+bool          str_has_reserved_characters (const s_str *str);
 s_str *       str_inspect (const s_str *x, s_str *dest);
 sw            str_length_utf8 (const s_str *str);
 sw            str_peek_bool (const s_str *src, bool *p);

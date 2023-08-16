@@ -498,7 +498,7 @@ s_tag * facts_ref_tag (s_facts *facts, const s_tag *tag)
   return &item->data;
 }
 
-e_bool facts_remove_fact (s_facts *facts, const s_fact *fact)
+bool facts_remove_fact (s_facts *facts, const s_fact *fact)
 {
   s_fact f;
   s_fact *found;
@@ -556,7 +556,7 @@ sw facts_save_file (s_facts *facts, const s8 *path)
   return r;
 }
 
-e_bool facts_unref_tag (s_facts *facts, const s_tag *tag)
+bool facts_unref_tag (s_facts *facts, const s_tag *tag)
 {
   s_set_item__tag *item;
   assert(facts);

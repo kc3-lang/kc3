@@ -53,7 +53,7 @@ skiplist_pred__fact (s_skiplist__fact *skiplist, s_fact * value);
 u8
 skiplist_random_height__fact (s_skiplist__fact *skiplist);
 
-e_bool
+bool
 skiplist_remove__fact (s_skiplist__fact *skiplist, s_fact * value);
 
 #endif /* SKIPLIST__fact_H */

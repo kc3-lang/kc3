@@ -28,15 +28,15 @@ s_ident * ident_resolve_module (s_ident *ident, const s_env *env);
 /* Observers */
 
 /* Returns true iff c is an ident reserved character. */
-e_bool ident_character_is_reserved (character c);
+bool ident_character_is_reserved (character c);
 
 s_ident * ident_copy (const s_ident *src, s_ident *dest);
 
 /* Returns true iff c is an ident reserved character as first. */
-e_bool ident_first_character_is_reserved (character c);
+bool ident_first_character_is_reserved (character c);
 
 /* Returns true iff ident contains reserved characters. */
-e_bool ident_has_reserved_characters (const s_ident *ident);
+bool ident_has_reserved_characters (const s_ident *ident);
 
 s_ident * ident_init (s_ident *ident, const s_sym *sym);
 

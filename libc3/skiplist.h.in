@@ -53,7 +53,7 @@ skiplist_pred___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ value);
 u8
 skiplist_random_height___NAME$ (s_skiplist___NAME$ *skiplist);
 
-e_bool
+bool
 skiplist_remove___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ value);
 
 #endif /* SKIPLIST___NAME$_H */

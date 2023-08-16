@@ -129,7 +129,7 @@ set_init___NAME$ (s_set___NAME$ *set, uw max)
   return set;
 }
 
-e_bool
+bool
 set_remove___NAME$ (s_set___NAME$ *set, const _TYPE$ *data)
 {
   s_set_item___NAME$ *item;
@@ -138,7 +138,7 @@ set_remove___NAME$ (s_set___NAME$ *set, const _TYPE$ *data)
   return false;
 }
 
-e_bool
+bool
 set_remove_item___NAME$ (s_set___NAME$ *set, s_set_item___NAME$ *item)
 {
   sw h;

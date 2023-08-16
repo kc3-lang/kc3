@@ -18,11 +18,11 @@
 
 character character_1 (const s8 *p);
 void      character_hash_update (character c, t_hash *hash);
-e_bool    character_is_digit (character c);
-e_bool    character_is_lowercase (character c);
-e_bool    character_is_printable (character c);
-e_bool    character_is_space (character c);
-e_bool    character_is_uppercase (character c);
+bool      character_is_digit (character c);
+bool      character_is_lowercase (character c);
+bool      character_is_printable (character c);
+bool      character_is_space (character c);
+bool      character_is_uppercase (character c);
 sw        character_read (s_buf *buf, character *c);
 character character_switch_case (character c);
 character character_to_lower (character c);

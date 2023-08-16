@@ -21,7 +21,7 @@
 #include "types.h"
 
 /* observers */
-e_bool    buf_file_is_open (s_buf *buf);
+bool    buf_file_is_open (s_buf *buf);
 
 /* modifiers */
 s_buf * buf_file_open_r (s_buf *buf, FILE *fp);

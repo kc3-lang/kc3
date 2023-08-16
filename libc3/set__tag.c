@@ -129,7 +129,7 @@ set_init__tag (s_set__tag *set, uw max)
   return set;
 }
 
-e_bool
+bool
 set_remove__tag (s_set__tag *set, const s_tag *data)
 {
   s_set_item__tag *item;
@@ -138,7 +138,7 @@ set_remove__tag (s_set__tag *set, const s_tag *data)
   return false;
 }
 
-e_bool
+bool
 set_remove_item__tag (s_set__tag *set, s_set_item__tag *item)
 {
   sw h;

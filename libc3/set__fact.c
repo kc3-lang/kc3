@@ -129,7 +129,7 @@ set_init__fact (s_set__fact *set, uw max)
   return set;
 }
 
-e_bool
+bool
 set_remove__fact (s_set__fact *set, const s_fact *data)
 {
   s_set_item__fact *item;
@@ -138,7 +138,7 @@ set_remove__fact (s_set__fact *set, const s_fact *data)
   return false;
 }
 
-e_bool
+bool
 set_remove_item__fact (s_set__fact *set, s_set_item__fact *item)
 {
   sw h;
