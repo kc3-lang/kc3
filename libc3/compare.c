@@ -54,7 +54,7 @@ s8 compare_array (const s_array *a, const s_array *b)
   return 0;
 }
 
-s8 compare_bool (e_bool a, e_bool b)
+s8 compare_bool (bool a, bool b)
 {
   if (! a && b)
     return -1;
