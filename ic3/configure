@@ -51,8 +51,7 @@ LIBS="${LIBS:=-lm}"
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 CPPFLAGS="$CPPFLAGS -I../libffi/include"
-LDFLAGS="-L../libffi/.libs/ $LDFLAGS"
-LIBS="$LIBS -lffi"
+LIBS="$LIBS ../libffi/.libs/libffi.a"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
