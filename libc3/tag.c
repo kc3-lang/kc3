@@ -707,6 +707,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       integer_add(&tmp, &tmp2, &tmp);
       tag_init_integer(dest, &tmp);
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_S16:
       integer_init_u64(&tmp, a->data.u64);
@@ -728,6 +729,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       integer_add(&tmp, &tmp2, &tmp);
       tag_init_integer(dest, &tmp);
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_U8:
       if (a->data.u64 > U64_MAX - b->data.u8) {
@@ -736,6 +738,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
         integer_add(&tmp, &tmp2, &tmp);
         tag_init_integer(dest, &tmp);
         integer_clean(&tmp);
+        integer_clean(&tmp2);
         return dest;
       }
       else
@@ -747,6 +750,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
         integer_add(&tmp, &tmp2, &tmp);
         tag_init_integer(dest, &tmp);
         integer_clean(&tmp);
+        integer_clean(&tmp2);
         return dest;
       }
       else
@@ -758,6 +762,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
         integer_add(&tmp, &tmp2, &tmp);
         tag_init_integer(dest, &tmp);
         integer_clean(&tmp);
+        integer_clean(&tmp2);
         return dest;
       }
       else
@@ -769,6 +774,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
         integer_add(&tmp, &tmp2, &tmp);
         tag_init_integer(dest, &tmp);
         integer_clean(&tmp);
+        integer_clean(&tmp2);
         return dest;
       }
       else
