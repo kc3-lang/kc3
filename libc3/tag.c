@@ -286,22 +286,15 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       else
         return tag_init_s16(dest, a->data.s16 + (s16) b->data.u16);
     case TAG_U32:
-      if (a->data.s16 > (s32) (S32_MAX - b->data.u32))
-        return tag_init_s64(dest, (s64) a->data.s16 + (s64) b->data.u8);
-      else
-        return tag_init_s32(dest, (s32) a->data.s16 + (s32) b->data.u32);
+        return tag_init_s64(dest, (s64) a->data.s16 + (s64) b->data.u32);
     case TAG_U64:
-      if (a->data.s16 > (s64) (S64_MAX - b->data.u64)) {
-        integer_init_s32(&tmp, (s32) a->data.s16);
-        integer_init_u64(&tmp2, b->data.u64);
-        tag_init_integer_zero(dest);
-        integer_add(&tmp, &tmp2, &dest->data.integer);
-        integer_clean(&tmp);
-        integer_clean(&tmp2);
-        return dest;
-      }
-      else
-        return tag_init_s64(dest, (s64) a->data.s16 + (s64) b->data.u64);
+      integer_init_s32(&tmp, (s32) a->data.s16);
+      integer_init_u64(&tmp2, b->data.u64);
+      tag_init_integer_zero(dest);
+      integer_add(&tmp, &tmp2, &dest->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return dest;
     default:
       goto ko;
     }
@@ -479,17 +472,13 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       else
         return tag_init_s64(dest, a->data.s64 + (s64) b->data.u32);
     case TAG_U64:
-      if (a->data.s64 > (s64) (S64_MAX - b->data.u64)) {
-        integer_init_s64(&tmp, a->data.s64);
-        integer_init_u64(&tmp2, b->data.u64);
-        tag_init_integer_zero(dest);
-        integer_add(&tmp, &tmp2, &dest->data.integer);
-        integer_clean(&tmp);
-        integer_clean(&tmp2);
-        return dest;
-      }
-      else
-        return tag_init_s64(dest, a->data.s64 + (s64) b->data.u64);
+      integer_init_s64(&tmp, a->data.s64);
+      integer_init_u64(&tmp2, b->data.u64);
+      tag_init_integer_zero(dest);
+      integer_add(&tmp, &tmp2, &dest->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return dest;
     default:
       goto ko;
   }
@@ -715,28 +704,28 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_S8:
       integer_init_u64(&tmp, a->data.u64);
       integer_init_s8(&tmp2, b->data.s8);
-      integer_add(&tmp, &b->data.integer, &tmp);
+      integer_add(&tmp, &tmp2, &tmp);
       tag_init_integer(dest, &tmp);
       integer_clean(&tmp);
       return dest;
     case TAG_S16:
       integer_init_u64(&tmp, a->data.u64);
       integer_init_s16(&tmp2, b->data.s16);
-      integer_add(&tmp, &b->data.integer, &tmp);
+      integer_add(&tmp, &tmp2, &tmp);
       tag_init_integer(dest, &tmp);
       integer_clean(&tmp);
       return dest;
     case TAG_S32:
       integer_init_u64(&tmp, a->data.u64);
       integer_init_s32(&tmp2, b->data.s32);
-      integer_add(&tmp, &b->data.integer, &tmp);
+      integer_add(&tmp, &tmp2, &tmp);
       tag_init_integer(dest, &tmp);
       integer_clean(&tmp);
       return dest;
     case TAG_S64:
       integer_init_u64(&tmp, a->data.u64);
       integer_init_s64(&tmp2, b->data.s64);
-      integer_add(&tmp, &b->data.integer, &tmp);
+      integer_add(&tmp, &tmp2, &tmp);
       tag_init_integer(dest, &tmp);
       integer_clean(&tmp);
       return dest;
@@ -744,7 +733,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       if (a->data.u64 > U64_MAX - b->data.u8) {
         integer_init_u64(&tmp, a->data.u64);
         integer_init_u8(&tmp2, b->data.u8);
-        integer_add(&tmp, &b->data.integer, &tmp);
+        integer_add(&tmp, &tmp2, &tmp);
         tag_init_integer(dest, &tmp);
         integer_clean(&tmp);
         return dest;
@@ -755,7 +744,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       if (a->data.u64 > U64_MAX - b->data.u16) {
         integer_init_u64(&tmp, a->data.u64);
         integer_init_u16(&tmp2, b->data.u16);
-        integer_add(&tmp, &b->data.integer, &tmp);
+        integer_add(&tmp, &tmp2, &tmp);
         tag_init_integer(dest, &tmp);
         integer_clean(&tmp);
         return dest;
@@ -766,7 +755,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       if (a->data.u64 > U64_MAX - b->data.u32) {
         integer_init_u64(&tmp, a->data.u64);
         integer_init_u32(&tmp2, b->data.u32);
-        integer_add(&tmp, &b->data.integer, &tmp);
+        integer_add(&tmp, &tmp2, &tmp);
         tag_init_integer(dest, &tmp);
         integer_clean(&tmp);
         return dest;
@@ -777,7 +766,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       if (a->data.u64 > U64_MAX - b->data.u64) {
         integer_init_u64(&tmp, a->data.u64);
         integer_init_u64(&tmp2, b->data.u64);
-        integer_add(&tmp, &b->data.integer, &tmp);
+        integer_add(&tmp, &tmp2, &tmp);
         tag_init_integer(dest, &tmp);
         integer_clean(&tmp);
         return dest;
