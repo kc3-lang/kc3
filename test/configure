@@ -51,7 +51,7 @@ LIBS="${LIBS:=} -lm"
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 CPPFLAGS="$CPPFLAGS -I../libffi/include"
-LIBS="$LIBS ../libffi/.libs/libffi.so"
+LIBS="$LIBS ../libffi/libffi.la"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
@@ -62,7 +62,7 @@ config_lib dl -ldl
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBC3_ASAN=../libc3/libc3_asan.so
+LIBC3_ASAN=../libc3/libc3_asan.la
 LIBS_ASAN="$LIBC3_ASAN $LIBS"
 
 # Coverage config
