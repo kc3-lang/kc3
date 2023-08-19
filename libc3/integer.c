@@ -170,6 +170,20 @@ s_integer * integer_init_double (s_integer *a, double x)
   return integer_set_double(a, x);
 }
 
+s_integer * integer_init_s8 (s_integer *a, s8 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_s32(a, x);
+}
+
+s_integer * integer_init_s16 (s_integer *a, s16 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_s32(a, x);
+}
+
 s_integer * integer_init_s32 (s_integer *a, s32 x)
 {
   assert(a);
@@ -189,6 +203,20 @@ s_integer * integer_init_sw (s_integer *a, sw x)
   assert(a);
   integer_init(a);
   return integer_set_sw(a, x);
+}
+
+s_integer * integer_init_u8 (s_integer *a, u8 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_u32(a, x);
+}
+
+s_integer * integer_init_u16 (s_integer *a, u16 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_u32(a, x);
 }
 
 s_integer * integer_init_u32 (s_integer *a, u32 x)

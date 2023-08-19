@@ -29,9 +29,13 @@
 s_integer * integer_init (s_integer *i);
 s_integer * integer_init_1 (s_integer *i, const s8 *p);
 s_integer * integer_init_double (s_integer *a, double x);
+s_integer * integer_init_s8 (s_integer *a, s8 x);
+s_integer * integer_init_s16 (s_integer *a, s16 x);
 s_integer * integer_init_s32 (s_integer *a, s32 x);
 s_integer * integer_init_s64 (s_integer *a, s64 x);
 s_integer * integer_init_sw (s_integer *a, sw x);
+s_integer * integer_init_u8 (s_integer *a, u8 x);
+s_integer * integer_init_u16 (s_integer *a, u16 x);
 s_integer * integer_init_u32 (s_integer *a, u32 x);
 s_integer * integer_init_u64 (s_integer *a, u64 x);
 s_integer * integer_init_uw (s_integer *a, uw x);
