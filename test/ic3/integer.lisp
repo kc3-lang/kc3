@@ -25,6 +25,19 @@
                       :direction :output
                       :element-type 'character
                       :if-exists :supersede)
+    (do-numbers
+        (lambda (a)
+          (flet ((output-base (prefix base)
+                   (format expected "~A~A~%"
+                           (if (< a 0) "-" "")
+                           (positional:positional (abs a) 10))
+                   (format in "~A~A~A~%"
+                           (if (< a 0) "-" "")
+                           prefix
+                           (positional:positional (abs a) base))))
+            (output-base "0b" 2)
+            (output-base "0o" 8)
+            (output-base "0x" 16))))
     (dolist (op *ops*)
       (do-numbers
           (lambda (a)
