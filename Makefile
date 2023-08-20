@@ -109,6 +109,7 @@ ic3_test_cov: cov
 	${MAKE} -C test ic3_test_cov
 
 install:
+	${GMAKE} -C libffi install
 	${MAKE} -C libc3 install
 	${MAKE} -C ic3 install
 	${MAKE} -C c3s install
