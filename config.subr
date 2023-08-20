@@ -258,11 +258,11 @@ fi
 echo "GROUP = $GROUP" >> ${CONFIG_MK}
 
 if [ "x$BINDIR" = "x" ]; then
-    BINDIR=${PREFIX}/bin
+    BINDIR="${PREFIX}/bin"
 fi
 echo "BINDIR = $BINDIR" >> ${CONFIG_MK}
 
 if [ "x$LIBDIR" = "x" ]; then
-    LIBDIR=${PREFIX}/lib
+    LIBDIR="${PREFIX}/lib"
 fi
 echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
