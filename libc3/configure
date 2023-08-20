@@ -40,7 +40,6 @@ LIBS="${LIBS} -lm -pthread -rpath ${PREFIX}/lib"
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
 CPPFLAGS="$CPPFLAGS -I../libffi/include"
-LIBS="../libffi/libffi.la"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
@@ -51,6 +50,7 @@ config_include sha_h sys/types.h sha.h HAVE_SHA_H
 config_include sha1_h sys/types.h sha1.h HAVE_SHA1_H
 config_define PREFIX "\"${PREFIX}\""
 update_config_h
+LIBS="$LIBS ../libffi/libffi.la"
 
 if ! [ -f ../ucd2c/ucd.c ]; then
     touch ../ucd2c/ucd.c
