@@ -108,15 +108,15 @@ echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS} ${OBJECTS} \${LIBS} -o
 
 echo >> ${CONFIG_MK}
 echo "$LIB_ASAN: $LIBTOMMATH_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} -o ${LIB_ASAN}" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} -o ${LIB_ASAN} -rpath ${LIBDIR}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$LIB_COV: $LIBTOMMATH_COV $OBJECTS_COV" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} -o ${LIB_COV}" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} -o ${LIB_COV} -rpath ${LIBDIR}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$LIB_DEBUG: $LIBTOMMATH_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} -o ${LIB_DEBUG}" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} -o ${LIB_DEBUG} -rpath ${LIBDIR}" >> ${CONFIG_MK}
 
 for SRC in $SOURCES; do
     echo >> ${CONFIG_MK}
