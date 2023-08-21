@@ -13,6 +13,7 @@
 #include "../libc3/c3.h"
 #include "test.h"
 
+void array_test ();
 void bool_test ();
 void buf_file_test ();
 void buf_inspect_test ();
@@ -44,6 +45,10 @@ int main (int argc, char **argv)
   if (test_target("types")) {
     fprintf(stderr, "\ntypes\n");
     types_test();
+  }
+  if (test_target("array")) {
+    fprintf(stderr, "\narray\n");
+    array_test();
   }
   if (test_target("bool")) {
     fprintf(stderr, "\nbool\n");
