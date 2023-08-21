@@ -80,7 +80,9 @@ test_asan: libc3_test_asan
 	time ./libc3_test_asan
 	IC3=${SRC_TOP}/ic3/ic3_asan time ./ic3_test
 
-test_cov: libc3_test_cov ic3_test_cov
+test_cov:
+	time ./libc3_test_cov
+	IC3=${SRC_TOP}/ic3/ic3_cov time ./ic3_test
 
 test_debug: libc3_test_debug
 	time ./libc3_test_debug
