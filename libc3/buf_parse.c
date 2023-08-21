@@ -23,7 +23,6 @@ sw buf_parse_array_data_rec (s_buf *buf, s_array *dest,
 sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
                                    uw dimension, uw *address,
                                    f_buf_parse parse, void *data);
-sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest);
 sw buf_peek_array_dimension_count (s_buf *buf, s_array *dest);
 
 sw buf_parse_array (s_buf *buf, s_array *dest)
@@ -767,54 +766,6 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   cfn_init(&tmp, name_sym, arg_types, result_type);
   cfn_prep_cif(&tmp);
   cfn_link(&tmp);
-  *dest = tmp;
-  r = result;
-  goto clean;
- restore:
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
-sw buf_parse_cfn_arg_types (s_buf *buf, s_list **dest)
-{
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s_list **tail;
-  s_list *tmp;
-  assert(buf);
-  assert(dest);
-  buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "(")) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto restore;
-  result += r;
-  tail = &tmp;
-  while (1) {
-    *tail = list_new(NULL, NULL);
-    if ((r = buf_parse_tag_sym(buf, &(*tail)->tag)) <= 0)
-      goto restore;
-    result += r;
-    tail = &(*tail)->next.data.list;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-    if ((r = buf_read_1(buf, ",")) < 0)
-      goto restore;
-    if (! r)
-      break;
-    result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-  }
-  if ((r = buf_read_1(buf, ")")) <= 0)
-    goto restore;
-  result += r;
   *dest = tmp;
   r = result;
   goto clean;
