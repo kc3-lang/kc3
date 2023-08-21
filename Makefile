@@ -36,8 +36,8 @@ asan:
 	${MAKE} -C c3s asan
 	${MAKE} -C test asan
 
-cov:
-	${GMAKE} -C libffi cov
+cov: gen
+	${GMAKE} -C libffi all
 	${MAKE} -C libtommath cov
 	${MAKE} -C libc3 cov
 	${MAKE} -C ic3 cov
@@ -54,7 +54,6 @@ clean:
 	${MAKE} -C test clean
 
 clean_cov:
-	${GMAKE} -C libffi clean_cov
 	${MAKE} -C libtommath clean_cov
 	${MAKE} -C libc3 clean_cov
 	${MAKE} -C ic3 clean_cov
@@ -122,6 +121,9 @@ libc3_gcovr:
 libc3_test_cov: cov
 	${MAKE} -C test libc3_test_cov
 
+libffi:
+	${GMAKE} -C libffi all
+
 licence:
 	update_header config.subr ${C3_CONFIGURES}
 	update_header Makefile ${C3_MAKEFILES}
@@ -161,7 +163,7 @@ test_ic3_debug: debug
 test_libc3: build
 	${MAKE} -C test test_libc3
 
-.PHONY: all asan c3s cov clean clean_cov debug gcovr ic3 install libc3 libtommath license test test_asan test_cov test_debug test_gcovr test_ic3
+.PHONY: all asan c3s cov clean clean_cov debug gcovr ic3 install libc3 libtommath libffi license test test_asan test_cov test_debug test_gcovr test_ic3
 
 include config.mk
 include sources.mk

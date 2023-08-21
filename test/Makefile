@@ -53,7 +53,7 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
-cov:   libc3_test_cov
+cov: libc3_test_cov
 
 debug: libc3_test_debug
 
@@ -68,9 +68,6 @@ gdb_test: debug
 
 ic3_test_cov:
 	IC3=${SRC_TOP}/ic3/ic3_cov time ./ic3_test
-
-libc3_test_cov: libc3_test_cov
-	time ./libc3_test_cov
 
 lldb_test: debug
 	if [ -f libc3_test_debug.core ]; then lldb .libs/libc3_test_debug libc3_test_debug.core; else lldb .libs/libc3_test_debug; fi
@@ -97,6 +94,9 @@ test_ic3_debug:
 
 test_libc3: libc3_test
 	time ./libc3_test
+
+test_libc3_cov: libc3_test_cov
+	time ./libc3_test_cov
 
 test_valgrind: libc3_test
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./libc3_test

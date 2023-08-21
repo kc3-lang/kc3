@@ -43,9 +43,6 @@ CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe -fPIC"
 LDFLAGS="${LDFLAGS}"
-if [ "x$CC" != "xtcc" ]; then
-    LDFLAGS="-Wl,--allow-shlib-undefined ${LDFLAGS}"
-fi
 LIBS="${LIBS:=-lm}"
 
 # Common config for all targets
@@ -68,10 +65,10 @@ LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
-LDFLAGS_COV="$LDFLAGS"
+LDFLAGS_COV="$LDFLAGS --coverage"
 LIBC3_COV=../libc3/libc3_cov.la
 LOCAL_LIBS_COV="$LIBC3_COV"
-LIBS_COV="$LOCAL_LIBS_COV $LIBS"
+LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"

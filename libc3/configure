@@ -34,7 +34,7 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe"
-LDFLAGS="-shared -Wl,--allow-shlib-undefined ${LDFLAGS:-}"
+LDFLAGS="-shared ${LDFLAGS:-}"
 LIBS="${LIBS} -lm -pthread -rpath ${PREFIX}/lib"
 
 # Common config for all targets
@@ -57,14 +57,14 @@ if ! [ -f ../ucd2c/ucd.c ]; then
 fi
 
 # Address Sanitizer config
-CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
+CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
 LIBS_ASAN="$LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
-LDFLAGS_COV="$LDFLAGS"
-LIBS_COV="$LIBS"
+LDFLAGS_COV="$LDFLAGS --coverage"
+LIBS_COV="$LIBS -lgcov"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
