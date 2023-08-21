@@ -66,9 +66,6 @@ gcovr:
 gdb_test: debug
 	if [ -f libc3_test_debug.core ]; then gdb .libs/libc3_test_debug libc3_test_debug.core; else gdb .libs/libc3_test_debug; fi
 
-ic3_test_cov:
-	IC3=${SRC_TOP}/ic3/ic3_cov time ./ic3_test
-
 lldb_test: debug
 	if [ -f libc3_test_debug.core ]; then lldb .libs/libc3_test_debug libc3_test_debug.core; else lldb .libs/libc3_test_debug; fi
 
@@ -90,6 +87,9 @@ test_debug: libc3_test_debug
 
 test_ic3:
 	IC3=${SRC_TOP}/ic3/ic3 time ./ic3_test
+
+test_ic3_cov:
+	IC3=${SRC_TOP}/ic3/ic3_cov time ./ic3_test
 
 test_ic3_debug:
 	IC3=${SRC_TOP}/ic3/ic3_debug time ./ic3_test

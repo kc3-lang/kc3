@@ -104,9 +104,6 @@ ic3_gcovr:
 	${MAKE} ic3_test_cov
 	${MAKE} gcovr
 
-ic3_test_cov: cov
-	${MAKE} -C test ic3_test_cov
-
 install:
 	${GMAKE} -C libffi install
 	${MAKE} -C libc3 install
@@ -117,9 +114,6 @@ libc3_gcovr:
 	${MAKE} clean_cov
 	${MAKE} libc3_test_cov
 	${MAKE} gcovr
-
-libc3_test_cov: cov
-	${MAKE} -C test libc3_test_cov
 
 libffi:
 	${GMAKE} -C libffi all
@@ -150,18 +144,27 @@ test_debug: debug
 
 test_gcovr:
 	${MAKE} clean_cov
-	${MAKE} libc3_test_cov
-	${MAKE} ic3_test_cov
+	${MAKE} test_libc3_cov
+	${MAKE} test_ic3_cov
 	${MAKE} gcovr
 
 test_ic3: build
 	${MAKE} -C test test_ic3
+
+test_ic3_cov: cov
+	${MAKE} -C test test_ic3_cov
 
 test_ic3_debug: debug
 	${MAKE} -C test test_ic3_debug
 
 test_libc3: build
 	${MAKE} -C test test_libc3
+
+test_libc3_cov: cov
+	${MAKE} -C test test_libc3_cov
+
+test_libc3_debug: debug
+	${MAKE} -C test test_libc3_debug
 
 .PHONY: all asan c3s cov clean clean_cov debug gcovr ic3 install libc3 libtommath libffi license test test_asan test_cov test_debug test_gcovr test_ic3
 
