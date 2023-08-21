@@ -15,6 +15,8 @@
 #include <string.h>
 #include <err.h>
 #include "array.h"
+#include "buf.h"
+#include "buf_parse.h"
 #include "tag.h"
 #include "type.h"
 
@@ -55,6 +57,19 @@ s_array * array_copy (const s_array *src, s_array *dest)
   return dest;
 }
 
+void * array_data (const s_array *a, const uw *address)
+{
+  uw i = 0;
+  uw offset = 0;
+  assert(a);
+  assert(address);
+  while (i < a->dimension) {
+    offset += address[i] * a->dimensions[i].item_size;
+    i++;
+  }
+  return (s8 *) a->data + offset;
+}
+
 s_array * array_init (s_array *a, e_tag_type type, uw dimension,
                       const uw *dimensions)
 {
@@ -93,14 +108,18 @@ s_array * array_init (s_array *a, e_tag_type type, uw dimension,
   return a;
 }
 
-void * array_data (const s_array *a, const uw *address)
+s_array * array_init_1 (s_array *a, s8 *p)
 {
-  uw i = 0;
-  uw offset = 0;
-  assert(a);
-  assert(address);
-  while (i < a->dimension) {
-    offset += address[i] * a->dimensions[i].item_size;
+  s_buf buf;
+  sw r;
+  s_array tmp;
+  buf_init_1(&buf, p);
+  if ((r = buf_parse_array(&buf, &tmp)) != (sw) strlen(p)) {
+    warnx("buf_parse_array(%s) => %ld != %ld", p, r, strlen(p));
+    buf_clean(&buf);
+    return NULL;
   }
-  return (s8 *) a->data + offset;
+  *a = tmp;
+  buf_clean(&buf);
+  return a;
 }

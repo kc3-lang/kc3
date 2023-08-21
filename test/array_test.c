@@ -21,13 +21,34 @@
     array_clean(&a);                                                   \
   } while(0)
 
+#define ARRAY_TEST_INIT_1_CLEAN(test)                                  \
+  do {                                                                 \
+    s_array a;                                                         \
+    TEST_EQ(array_init_1(&a, (test)), &a);                             \
+    array_clean(&a);                                                   \
+  } while(0)
+
 void array_test ();
+TEST_CASE_PROTOTYPE(array_data);
 TEST_CASE_PROTOTYPE(array_init_clean);
+TEST_CASE_PROTOTYPE(array_init_1_clean);
 
 void array_test ()
 {
   TEST_CASE_RUN(array_init_clean);
+  TEST_CASE_RUN(array_init_1_clean);
+  TEST_CASE_RUN(array_data);
 }
+
+TEST_CASE(array_data)
+{
+  s_array a;
+  TEST_EQ(array_init_1(&a, "(u8) {1, 2, 3}"), &a);
+  TEST_EQ(* (u8 *) array_data(&a, (uw []) {0}), 1);
+  TEST_EQ(* (u8 *) array_data(&a, (uw []) {1}), 2);
+  TEST_EQ(* (u8 *) array_data(&a, (uw []) {2}), 3);
+}
+TEST_CASE_END(array_data)
 
 TEST_CASE(array_init_clean)
 {
@@ -42,3 +63,15 @@ TEST_CASE(array_init_clean)
   ARRAY_TEST_INIT_CLEAN(TAG_U8, 3, ((uw []) {100, 100, 100}));
 }
 TEST_CASE_END(array_init_clean)
+
+TEST_CASE(array_init_1_clean)
+{
+  ARRAY_TEST_INIT_1_CLEAN("(u8) {0}");
+  ARRAY_TEST_INIT_1_CLEAN("(u8) {0, 0}");
+  ARRAY_TEST_INIT_1_CLEAN("(u8) {0, 0, 0}");
+  ARRAY_TEST_INIT_1_CLEAN("(u8) {{0}, {0}}");
+  ARRAY_TEST_INIT_1_CLEAN("(u8) {{0, 0}, {0, 0}}");
+  ARRAY_TEST_INIT_1_CLEAN("(u8) {{0, 0}, {0, 0}, {0, 0}}");
+  ARRAY_TEST_INIT_1_CLEAN("(u8) {{{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}}");
+}
+TEST_CASE_END(array_init_1_clean)
