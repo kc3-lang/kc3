@@ -47,6 +47,7 @@ TEST_CASE(array_data)
   TEST_EQ(* (u8 *) array_data(&a, (uw []) {0}), 1);
   TEST_EQ(* (u8 *) array_data(&a, (uw []) {1}), 2);
   TEST_EQ(* (u8 *) array_data(&a, (uw []) {2}), 3);
+  array_clean(&a);
 }
 TEST_CASE_END(array_data)
 
