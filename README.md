@@ -98,6 +98,9 @@ Script interpreter.
    - DONE boolean operators
    - DONE comparison operators
    - arrays
+     - DONE parse
+     - DONE inspect
+     - \[]\[]\[] data
    - lists
    - defmodule
    - structs
