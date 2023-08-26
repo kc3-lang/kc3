@@ -33,12 +33,18 @@ make
 ### Running the tests
 ```sh
 make test
-make test_asan
 ```
 
 ### Running gdb
 ```sh
+make gdb_ic3
 make gdb_test
+```
+
+### Running ic3
+```sh
+export LD_LIBRARY_PATH=$PWD/libc3/.libs:$PWD/libffi/.libs
+ic3/.libs/ic3
 ```
 
 
