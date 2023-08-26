@@ -62,6 +62,9 @@ of the language.
 The library includes a parser and an interpreter for C3 code in C
 structures.
 
+Support for large integers provided by
+[libtommath](https://github.com/libtom/libtommath).
+
 #### Parser
 
 The parser is recursive descent.
@@ -78,7 +81,8 @@ Under development.
 
 ### ic3
 
-Interactive shell.
+Interactive shell. Terminal I/O provided by
+[linenoise](https://github.com/antirez/linenoise/tree/1.0).
 
 
 ### c3s
