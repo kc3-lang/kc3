@@ -30,21 +30,25 @@ git submodule update
 make
 ```
 
+### Add the sources to LD_LIBRARY_PATH
+```sh
+export LD_LIBRARY_PATH=$PWD/libc3/.libs:$PWD/libffi/.libs
+```
+
 ### Running the tests
 ```sh
 make test
+```
+
+### Running ic3
+```sh
+ic3/.libs/ic3
 ```
 
 ### Running gdb
 ```sh
 make gdb_ic3
 make gdb_test
-```
-
-### Running ic3
-```sh
-export LD_LIBRARY_PATH=$PWD/libc3/.libs:$PWD/libffi/.libs
-ic3/.libs/ic3
 ```
 
 
