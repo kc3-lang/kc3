@@ -65,6 +65,9 @@ structures.
 Support for large integers provided by
 [libtommath](https://github.com/libtom/libtommath).
 
+Support for C function calls provided by
+[libffi](https://github.com/libffi/libffi).
+
 #### Parser
 
 The parser is recursive descent.
