@@ -100,7 +100,7 @@ Script interpreter.
    - arrays
      - DONE parse
      - DONE inspect
-     - \[]\[]\[] data
+     - [][][] data
    - lists
    - defmodule
    - structs
