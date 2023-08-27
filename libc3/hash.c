@@ -226,6 +226,8 @@ HASH_UPDATE_DEF(s32)
 
 HASH_UPDATE_DEF(s64)
 
+HASH_UPDATE_DEF(sw)
+
 void hash_update_str (t_hash *hash, const s_str *str)
 {
   s8 type[] = "str";
@@ -273,6 +275,7 @@ void hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_S16: hash_update_s16(hash, tag->data.s16);          break;
   case TAG_S32: hash_update_s32(hash, tag->data.s32);          break;
   case TAG_S64: hash_update_s64(hash, tag->data.s64);          break;
+  case TAG_SW: hash_update_sw(hash, tag->data.sw);             break;
   case TAG_STR: hash_update_str(hash, &tag->data.str);         break;
   case TAG_SYM: hash_update_sym(hash, tag->data.sym);          break;
   case TAG_TUPLE: hash_update_tuple(hash, &tag->data.tuple);   break;
@@ -280,6 +283,7 @@ void hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_U16: hash_update_u16(hash, tag->data.u16);          break;
   case TAG_U32: hash_update_u32(hash, tag->data.u32);          break;
   case TAG_U64: hash_update_u64(hash, tag->data.u64);          break;
+  case TAG_UW: hash_update_uw(hash, tag->data.uw);             break;
   case TAG_VAR:
     assert(! "var hash update");
     errx(1, "var hash update");

@@ -89,8 +89,9 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   else if (c.fn)
     result = env_eval_call_fn(env, &c, dest);
   else {
-    warnx("env_eval_call: could not resolve call %s.",
-          call->ident.sym->str.ptr.ps8);
+    warnx("env_eval_call: could not resolve call %s.%s.",
+          c.ident.module_name->str.ptr.ps8,
+          c.ident.sym->str.ptr.ps8);
     result = false;
   }
   call_clean(&c);
@@ -209,6 +210,7 @@ bool env_eval_call_macro (s_env *env, const s_call *call, s_tag *dest)
 bool env_eval_call_resolve (s_env *env, s_call *call)
 {
   s_facts_with_cursor cursor;
+  s_module module;
   s_tag tag_cfn;
   s_tag tag_fn;
   s_tag tag_ident;
@@ -248,12 +250,27 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_module_name,
       &tag_is_a, &tag_module,     /* module exists */
+      NULL, NULL });
+  if (! facts_with_cursor_next(&cursor)) {
+    if (! module_load(&module, call->ident.module_name, &env->facts)) {
+      warnx("module not found: %s",
+            call->ident.module_name->str.ptr.ps8);
+      facts_with_cursor_clean(&cursor);
+      return false;
+    }
+  }
+  facts_with_cursor_clean(&cursor);
+  facts_with(&env->facts, &cursor, (t_facts_spec) {
+      &tag_module_name,
       &tag_symbol, &tag_ident,    /* module exports symbol */
       NULL, NULL });
-  if (! facts_with_cursor_next(&cursor))
-    errx(1, "symbol %s not found in module %s",
-         call->ident.sym->str.ptr.ps8,
-         call->ident.module_name->str.ptr.ps8);
+  if (! facts_with_cursor_next(&cursor)) {
+    warnx("symbol %s not found in module %s",
+          call->ident.sym->str.ptr.ps8,
+          call->ident.module_name->str.ptr.ps8);
+    facts_with_cursor_clean(&cursor);
+    return false;
+  }
   facts_with_cursor_clean(&cursor);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_ident, &tag_fn, &tag_var,
@@ -416,6 +433,44 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     frame_binding_new(env->frame, b->data.ident.sym, a);
     return true;
   }
+  switch (a->type) {
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_SW:
+  case TAG_U8:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_UW:
+    switch (b->type) {
+    case TAG_F32:
+    case TAG_F64:
+    case TAG_S8:
+    case TAG_S16:
+    case TAG_S32:
+    case TAG_S64:
+    case TAG_SW:
+    case TAG_U8:
+    case TAG_U16:
+    case TAG_U32:
+    case TAG_U64:
+    case TAG_UW:
+      if (compare_tag(a, b)) {
+        warnx("env_eval_compare_tag: value mismatch");
+        return false;
+      }
+      tag_copy(a, dest);
+      return true;
+    default:
+      break;
+    }
+  default:
+    break;
+  }
   if (a->type != b->type) {
     warnx("env_eval_equal_tag: type mismatch");
     return false;
@@ -440,22 +495,12 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   case TAG_BOOL:
   case TAG_CFN:
   case TAG_CHARACTER:
-  case TAG_F32:
-  case TAG_F64:
   case TAG_FN:
   case TAG_IDENT:
   case TAG_INTEGER:
   case TAG_PTAG:
-  case TAG_S16:
-  case TAG_S32:
-  case TAG_S64:
-  case TAG_S8:
   case TAG_STR:
   case TAG_SYM:
-  case TAG_U16:
-  case TAG_U32:
-  case TAG_U64:
-  case TAG_U8:
   case TAG_VAR:
     if (compare_tag(a, b)) {
       warnx("env_eval_compare_tag: value mismatch");
@@ -463,6 +508,8 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     }
     tag_copy(a, dest);
     return true;
+  default:
+    break;
   }
   error("env_eval_equal_tag: invalid tag");
   return false;
@@ -500,7 +547,9 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   assert(ident);
   if (! ((tag = frame_get(env->frame, ident->sym)) ||
          (tag = module_get(env->current_module, ident->sym, &tmp)))) {
-    warnx("unbound ident: %s", ident->sym->str.ptr.ps8);
+    warnx("unbound ident: %s.%s",
+          ident->module_name->str.ptr.ps8,
+          ident->sym->str.ptr.ps8);
     return false;
   }
   tag_copy(tag, dest);
@@ -563,17 +612,19 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_INTEGER:
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_S8:
   case TAG_S16:
   case TAG_S32:
   case TAG_S64:
-  case TAG_S8:
+  case TAG_SW:
   case TAG_STR:
   case TAG_SYM:
   case TAG_TUPLE:
+  case TAG_U8:
   case TAG_U16:
   case TAG_U32:
   case TAG_U64:
-  case TAG_U8:
+  case TAG_UW:
   case TAG_VAR:
     tag_copy(tag, dest);
     return true;
@@ -640,8 +691,11 @@ s_module * env_module_load (s_env *env, s_module *module,
   assert(facts);
   module->name = name;
   module->facts = facts;
-  if (! module_name_path(&env->module_path, name, &path))
+  if (! module_name_path(&env->module_path, name, &path)) {
+    warnx("env_module_load: %s: module_name_path",
+          name->str.ptr.ps8);
     return 0;
+  }
   /*
   buf_write_1(&env->out, "module_load ");
   buf_write_str(&env->out, &name->str);
@@ -651,6 +705,8 @@ s_module * env_module_load (s_env *env, s_module *module,
   buf_flush(&env->out);
   */
   if (facts_load_file(facts, &path) < 0) {
+    warnx("env_module_load: %s: facts_load_file",
+          path.ptr.ps8);
     str_clean(&path);
     return 0;
   }

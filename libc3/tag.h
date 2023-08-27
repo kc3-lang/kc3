@@ -30,14 +30,13 @@ extern s_tag g_tag_first;
 extern s_tag g_tag_last;
 
 /* Stack allocation compatible functions */
+void    tag_clean (s_tag *tag);
 s_tag * tag_init (s_tag *tag);
 s_tag * tag_init_1 (s_tag *tag, const s8 *p);
 s_tag * tag_init_array (s_tag *tag, const s_array *a);
 s_tag * tag_init_bool (s_tag *tag, bool p);
 s_tag * tag_init_call (s_tag *tag, const s_call *call);
 s_tag * tag_init_character (s_tag *tag, character c);
-s_tag * tag_init_f32 (s_tag *tag, f32 f);
-s_tag * tag_init_f64 (s_tag *tag, f64 f);
 s_tag * tag_init_ident (s_tag *tag, const s_ident *ident);
 s_tag * tag_init_ident_1 (s_tag *tag, const s8 *p);
 s_tag * tag_init_integer (s_tag *tag, const s_integer *i);
@@ -45,23 +44,28 @@ s_tag * tag_init_integer_1 (s_tag *tag, const s8 *p);
 s_tag * tag_init_integer_zero (s_tag *tag);
 s_tag * tag_init_list (s_tag *tag, s_list *list);
 s_tag * tag_init_list_1 (s_tag *tag, const s8 *p);
-s_tag * tag_init_s8 (s_tag *tag, s8 i);
-s_tag * tag_init_s16 (s_tag *tag, s16 i);
-s_tag * tag_init_s32 (s_tag *tag, s32 i);
-s_tag * tag_init_s64 (s_tag *tag, s64 i);
 s_tag * tag_init_str (s_tag *tag, s8 *free, uw size, const s8 *p);
 s_tag * tag_init_str_1 (s_tag *tag, s8 *free, const s8 *p);
 s_tag * tag_init_sym (s_tag *tag, const s_sym *p);
 s_tag * tag_init_sym_1 (s_tag *tag, const s8 *p);
 s_tag * tag_init_tuple (s_tag *tag, uw count);
 s_tag * tag_init_tuple_2 (s_tag *tag, s_tag *a, s_tag *b);
+s_tag * tag_init_var (s_tag *tag);
+s_tag * tag_init_void (s_tag *tag);
+
+/* Numbers */
+s_tag * tag_init_f32 (s_tag *tag, f32 f);
+s_tag * tag_init_f64 (s_tag *tag, f64 f);
+s_tag * tag_init_s8 (s_tag *tag, s8 i);
+s_tag * tag_init_s16 (s_tag *tag, s16 i);
+s_tag * tag_init_s32 (s_tag *tag, s32 i);
+s_tag * tag_init_s64 (s_tag *tag, s64 i);
+s_tag * tag_init_sw (s_tag *tag, sw i);
 s_tag * tag_init_u8 (s_tag *tag, u8 i);
 s_tag * tag_init_u16 (s_tag *tag, u16 i);
 s_tag * tag_init_u32 (s_tag *tag, u32 i);
 s_tag * tag_init_u64 (s_tag *tag, u64 i);
-s_tag * tag_init_var (s_tag *tag);
-s_tag * tag_init_void (s_tag *tag);
-void    tag_clean (s_tag *tag);
+s_tag * tag_init_uw (s_tag *tag, uw i);
 
 /* Constructors, call tag_delete after use */
 s_tag * tag_new ();

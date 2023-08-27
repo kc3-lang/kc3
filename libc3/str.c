@@ -390,7 +390,7 @@ s_ident * str_to_ident (const s_str *src, s_ident *ident)
 {
   const s_sym *sym;
   sym = str_to_sym(src);
-  return ident_init(ident, sym);
+  return ident_init(ident, NULL, sym);
 }
 
 const s_sym * str_to_sym (const s_str *src)

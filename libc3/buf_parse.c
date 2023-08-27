@@ -405,6 +405,65 @@ sw buf_parse_bool (s_buf *buf, bool *p)
   return r;
 }
 
+sw buf_parse_brackets (s_buf *buf, s_call *dest)
+{
+  s_tag *arg_dimensions;
+  uw d;
+  uw dimension = 0;
+  s_list *dimensions = NULL;
+  s_list **dimensions_last = &dimensions;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_call tmp;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  call_init(&tmp);
+  ident_init(&tmp.ident, sym_1("Array"), sym_1("data"));
+  tmp.arguments = list_new(NULL, list_new(NULL, NULL));
+  arg_dimensions = &(list_next(tmp.arguments)->tag);
+  if ((r = buf_parse_tag(buf, &tmp.arguments->tag)) < 0)
+    goto restore;
+  result += r;
+  while (1) {
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "[")) < 0)
+      goto restore;
+    if (! r)
+      break;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_parse_uw(buf, &d)) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "]")) <= 0)
+      goto restore;
+    result += r;
+    *dimensions_last = list_new(NULL, NULL);
+    tag_init_uw(&(*dimensions_last)->tag, d);
+    dimensions_last = &(*dimensions_last)->next.data.list;
+    dimension++;
+  }
+  arg_dimensions->type = TAG_ARRAY;
+  list_to_array(dimensions, TAG_UW, &arg_dimensions->data.array);
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_call (s_buf *buf, s_call *dest)
 {
   sw r;

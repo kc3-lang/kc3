@@ -1,10 +1,29 @@
 (in-package :cl-user)
 
-(defparameter *ops* '(+ - * /))
+(require :positional)
+
+(defparameter *ops* '(+ - * / < == >))
 
 (defparameter *su* '(s u))
 
 (defparameter *bits* '(8 16 32 64 128))
+
+(defun == (a b)
+  (= a b))
+
+(defgeneric translate (x))
+
+(defmethod translate ((x integer))
+  x)
+
+(defmethod translate ((x number))
+  (truncate x))
+
+(defmethod translate ((x (eql 't)))
+  "true")
+
+(defmethod translate ((x null))
+  "false")
 
 (defun do-numbers (fn)
   (dolist (su *su*)
@@ -43,5 +62,5 @@
           (lambda (a)
             (do-numbers
                 (lambda (b)
-                  (format expected "~A~%" (truncate (funcall op a b)))
+                  (format expected "~A~%" (translate (funcall op a b)))
                   (format in "~A ~A ~A~%" a op b))))))))

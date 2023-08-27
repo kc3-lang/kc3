@@ -21,8 +21,9 @@
     s_list *tmp_b = (b);                                               \
     test_context("compare_list(" # a ", " # b ") -> " # expected);     \
     TEST_EQ(compare_list(tmp_a, tmp_b), (expected));                   \
-    list_delete_all(tmp_a);                                                \
-    list_delete_all(tmp_b);                                                \
+    list_delete_all(tmp_a);                                            \
+    list_delete_all(tmp_b);                                            \
+    test_context(NULL);                                                \
   } while (0)
 
 #define COMPARE_TEST_TAG(a, b, expected)                               \
@@ -204,24 +205,24 @@ TEST_CASE(compare_tag)
                    tag_1(&b, "-0x10000000000000000"), 1);
   /* integer <> u8 */
   COMPARE_TEST_TAG(tag_1(&a, "0xFF"),
-                   tag_1(&b, "0x10000000000000000"), 1);
+                   tag_1(&b, "0x10000000000000000"), -1);
   COMPARE_TEST_TAG(tag_1(&a, "0x10000000000000000"),
-                   tag_1(&b, "0xFF"), -1);
+                   tag_1(&b, "0xFF"), 1);
   /* integer <> u16 */
   COMPARE_TEST_TAG(tag_1(&a, "0xFFFF"),
-                   tag_1(&b, "0x10000000000000000"), 1);
+                   tag_1(&b, "0x10000000000000000"), -1);
   COMPARE_TEST_TAG(tag_1(&a, "0x10000000000000000"),
-                   tag_1(&b, "0xFFFF"), -1);
+                   tag_1(&b, "0xFFFF"), 1);
   /* integer <> u32 */
   COMPARE_TEST_TAG(tag_1(&a, "0xFFFFFFFF"),
-                   tag_1(&b, "0x10000000000000000"), 1);
+                   tag_1(&b, "0x10000000000000000"), -1);
   COMPARE_TEST_TAG(tag_1(&a, "0x10000000000000000"),
-                   tag_1(&b, "0xFFFFFFFF"), -1);
+                   tag_1(&b, "0xFFFFFFFF"), 1);
   /* integer <> u64 */
   COMPARE_TEST_TAG(tag_1(&a, "0xFFFFFFFFFFFFFFFF"),
-                   tag_1(&b, "0x10000000000000000"), 1);
+                   tag_1(&b, "0x10000000000000000"), -1);
   COMPARE_TEST_TAG(tag_1(&a, "0x10000000000000000"),
-                   tag_1(&b, "0xFFFFFFFFFFFFFFFF"), -1);
+                   tag_1(&b, "0xFFFFFFFFFFFFFFFF"), 1);
   /* s8 <> s8 */
   COMPARE_TEST_TAG(tag_1(&a, "-0x7F"), tag_1(&b, "-0x7F"), 0);
   COMPARE_TEST_TAG(tag_1(&a, "-0x7F"), tag_1(&b, "-1"), -1);

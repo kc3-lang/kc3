@@ -80,6 +80,7 @@ typedef enum {
   TAG_FN,
   TAG_IDENT,
   TAG_INTEGER,
+  TAG_SW,
   TAG_S64,
   TAG_S32,
   TAG_S16,
@@ -88,6 +89,7 @@ typedef enum {
   TAG_U16,
   TAG_U32,
   TAG_U64,
+  TAG_UW,
   TAG_LIST,
   TAG_PTAG,
   TAG_QUOTE,
@@ -356,11 +358,13 @@ union tag_data {
   s16          s16;
   s32          s32;
   s64          s64;
+  sw           sw;
   s_tuple      tuple;
   u8           u8;
   u16          u16;
   u32          u32;
   u64          u64;
+  uw           uw;
 };
 
 /* 6 */

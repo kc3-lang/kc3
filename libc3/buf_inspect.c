@@ -1430,6 +1430,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_S16:     return buf_inspect_s16(buf, &tag->data.s16);
   case TAG_S32:     return buf_inspect_s32(buf, &tag->data.s32);
   case TAG_S64:     return buf_inspect_s64(buf, &tag->data.s64);
+  case TAG_SW:      return buf_inspect_sw(buf, &tag->data.sw);
   case TAG_STR:     return buf_inspect_str(buf, &tag->data.str);
   case TAG_SYM:     return buf_inspect_sym(buf, tag->data.sym);
   case TAG_TUPLE:   return buf_inspect_tuple(buf, &tag->data.tuple);
@@ -1437,6 +1438,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_U16:     return buf_inspect_u16(buf, &tag->data.u16);
   case TAG_U32:     return buf_inspect_u32(buf, &tag->data.u32);
   case TAG_U64:     return buf_inspect_u64(buf, &tag->data.u64);
+  case TAG_UW:      return buf_inspect_uw(buf, &tag->data.uw);
   case TAG_VAR:     return buf_inspect_var(buf, tag);
   }
   assert(! "buf_inspect_tag: unknown tag type");
@@ -1471,6 +1473,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_S16:      return buf_inspect_s16_size(&tag->data.s16);
   case TAG_S32:      return buf_inspect_s32_size(&tag->data.s32);
   case TAG_S64:      return buf_inspect_s64_size(&tag->data.s64);
+  case TAG_SW:       return buf_inspect_sw_size(&tag->data.sw);
   case TAG_STR:      return buf_inspect_str_size(&tag->data.str);
   case TAG_SYM:      return buf_inspect_sym_size(tag->data.sym);
   case TAG_TUPLE:    return buf_inspect_tuple_size(&tag->data.tuple);
@@ -1478,6 +1481,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_U16:      return buf_inspect_u16_size(&tag->data.u16);
   case TAG_U32:      return buf_inspect_u32_size(&tag->data.u32);
   case TAG_U64:      return buf_inspect_u64_size(&tag->data.u64);
+  case TAG_UW:       return buf_inspect_uw_size(&tag->data.uw);
   case TAG_VAR:      return buf_inspect_var_size(tag);
   }
   assert(! "buf_inspect_tag_size: unknown tag type");
@@ -1526,6 +1530,8 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
     return buf_write_1(buf, "s32");
   case TAG_S64:
     return buf_write_1(buf, "s64");
+  case TAG_SW:
+    return buf_write_1(buf, "sw");
   case TAG_STR:
     return buf_write_1(buf, "str");
   case TAG_SYM:
@@ -1540,6 +1546,8 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
     return buf_write_1(buf, "u32");
   case TAG_U64:
     return buf_write_1(buf, "u64");
+  case TAG_UW:
+    return buf_write_1(buf, "uw");
   case TAG_VAR:
     return buf_write_1(buf, "var");
   }
@@ -1589,6 +1597,8 @@ sw buf_inspect_tag_type_size (e_tag_type type)
     return strlen("s32");
   case TAG_S64:
     return strlen("s64");
+  case TAG_SW:
+    return strlen("sw");
   case TAG_STR:
     return strlen("str");
   case TAG_SYM:
@@ -1603,6 +1613,8 @@ sw buf_inspect_tag_type_size (e_tag_type type)
     return strlen("u32");
   case TAG_U64:
     return strlen("u64");
+  case TAG_UW:
+    return strlen("uw");
   case TAG_VAR:
     return strlen("var");
   }

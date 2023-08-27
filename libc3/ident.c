@@ -73,11 +73,12 @@ bool ident_has_reserved_characters (const s_ident *ident)
   return false;
 }
 
-s_ident * ident_init (s_ident *ident, const s_sym *sym)
+s_ident * ident_init (s_ident *ident, const s_sym *module_name,
+                      const s_sym *sym)
 {
   assert(ident);
   assert(sym);
-  ident->module_name = NULL;
+  ident->module_name = module_name;
   ident->sym = sym;
   return ident;
 }

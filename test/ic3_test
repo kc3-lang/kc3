@@ -36,13 +36,9 @@ fi
 
 for TARGET in $TARGETS; do
     RESULT=test_ok
-    $IC3 < ${TARGET}.in > ${TARGET}.out 2> ${TARGET}.err
+    $IC3 < ${TARGET}.in > ${TARGET}.out 2>&1
     echo $? > ${TARGET}.ret
     if ! diff -au ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff
-    then
-        RESULT=test_ko
-    fi
-    if ! diff -au ${TARGET}.err.expected ${TARGET}.err >> ${TARGET}.diff
     then
         RESULT=test_ko
     fi

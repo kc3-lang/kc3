@@ -1,0 +1,7 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+add {Array, :is_a, :module}
+add {Array, :name, "Array"}
+add {Array, :path, "array.facts"}
+add {Array, :symbol, Array.data}
+add {Array.data, :cfn, cfn :tag "array_data_tag" (:tag, :tag, :&result)}

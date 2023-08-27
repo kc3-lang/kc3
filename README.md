@@ -68,6 +68,9 @@ Support for large integers provided by
 Support for C function calls provided by
 [libffi](https://github.com/libffi/libffi).
 
+Modules are saved as facts databases.
+
+
 #### Parser
 
 The parser is recursive descent.

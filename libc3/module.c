@@ -33,8 +33,7 @@ s_tag * module_get (const s_module *module, const s_sym *sym,
   tag_init_1(  &tag_is_a, ":is_a");
   tag_init_1(  &tag_module, ":module");
   tag_init_1(  &tag_symbol, ":symbol");
-  ident_init(&ident, sym);
-  ident.module_name = module->name;
+  ident_init(&ident, module->name, sym);
   tag_init_ident(&tag_ident, &ident);
   facts_with(module->facts, &cursor, (t_facts_spec) {
       &tag_name, &tag_is_a, &tag_module,

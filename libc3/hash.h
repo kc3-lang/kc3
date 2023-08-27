@@ -41,6 +41,7 @@ HASH_UPDATE_PROTOTYPE(s8);
 HASH_UPDATE_PROTOTYPE(s16);
 HASH_UPDATE_PROTOTYPE(s32);
 HASH_UPDATE_PROTOTYPE(s64);
+HASH_UPDATE_PROTOTYPE(sw);
 void hash_update_str (t_hash *hash, const s_str *src);
 void hash_update_sym (t_hash *hash, const s_sym *sym);
 void hash_update_tag (t_hash *hash, const s_tag *tag);

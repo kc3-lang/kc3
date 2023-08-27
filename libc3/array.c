@@ -70,6 +70,23 @@ void * array_data (const s_array *a, const uw *address)
   return (s8 *) a->data + offset;
 }
 
+s_tag * array_data_tag (s_tag *a, s_tag *address, s_tag *dest)
+{
+  void *a_data;
+  void *dest_data;
+  sw size;
+  assert(a->type == TAG_ARRAY);
+  assert(address->type == TAG_ARRAY);
+  a_data = array_data(&a->data.array,
+                      address->data.array.data);
+  tag_init(dest);
+  dest->type = a->data.array.type;
+  dest_data = tag_to_pointer(dest, dest->type);
+  size = tag_type_size(dest->type);
+  memcpy(dest_data, a_data, size);
+  return dest;
+}
+
 s_array * array_init (s_array *a, e_tag_type type, uw dimension,
                       const uw *dimensions)
 {

@@ -159,7 +159,7 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
   if (sym == sym_1("s64"))
     return &ffi_type_sint64;
   if (sym == sym_1("sw"))
-    return &ffi_type_sint;
+    return &ffi_type_slong;
   if (sym == sym_1("tag"))
     return &ffi_type_pointer;
   if (sym == sym_1("u8") ||
@@ -172,7 +172,7 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
   if (sym == sym_1("u64"))
     return &ffi_type_uint64;
   if (sym == sym_1("uw"))
-    return &ffi_type_uint;
+    return &ffi_type_ulong;
   if (sym == sym_1("void"))
     return &ffi_type_void;
   assert(! "sym_to_ffi_type: unknown type");
@@ -230,6 +230,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_INTEGER;
     return true;
   }
+  if (sym == sym_1("sw")) {
+    *dest = TAG_SW;
+    return true;
+  }
   if (sym == sym_1("s64")) {
     *dest = TAG_S64;
     return true;
@@ -260,6 +264,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   }
   if (sym == sym_1("u64")) {
     *dest = TAG_U64;
+    return true;
+  }
+  if (sym == sym_1("uw")) {
+    *dest = TAG_UW;
     return true;
   }
   if (sym == sym_1("list")) {
