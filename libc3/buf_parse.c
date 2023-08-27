@@ -464,6 +464,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
  restore:
   r = 0;
   buf_save_restore_rpos(buf, &save);
+  call_clean(&tmp);
  clean:
   buf_save_clean(buf, &save);
   return r;
