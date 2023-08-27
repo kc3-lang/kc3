@@ -423,7 +423,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   ident_init(&tmp.ident, sym_1("Array"), sym_1("data"));
   tmp.arguments = list_new(NULL, list_new(NULL, NULL));
   arg_dimensions = &(list_next(tmp.arguments)->tag);
-  if ((r = buf_parse_tag(buf, &tmp.arguments->tag)) < 0)
+  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
     goto restore;
   result += r;
   while (1) {
@@ -452,12 +452,17 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
     dimensions_last = &(*dimensions_last)->next.data.list;
     dimension++;
   }
+  if (! dimension) {
+    goto restore;
+  }
   arg_dimensions->type = TAG_ARRAY;
-  list_to_array(dimensions, TAG_UW, &arg_dimensions->data.array);
+  if (! list_to_array(dimensions, TAG_UW, &arg_dimensions->data.array))
+    goto restore;
   *dest = tmp;
   r = result;
   goto clean;
  restore:
+  r = 0;
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -2050,6 +2055,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
     result += r;
   }
   if ((r = buf_parse_tag_call_op(buf, dest)) != 0 ||
+      (r = buf_parse_tag_brackets(buf, dest)) != 0 ||
       (r = buf_parse_tag_primary(buf, dest)) != 0)
     goto end;
  end:
@@ -2086,6 +2092,16 @@ sw buf_parse_tag_bool (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_bool(buf, &dest->data.bool)) > 0)
     dest->type = TAG_BOOL;
+  return r;
+}
+
+sw buf_parse_tag_brackets (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_brackets(buf, &dest->data.call)) > 0)
+    dest->type = TAG_CALL;
   return r;
 }
 

@@ -144,7 +144,7 @@ s_array * list_to_array (s_list *list, e_tag_type type,
                          s_array *dest)
 {
   s8 *data;
-  s8 *data_list;
+  void *data_list;
   s_list *l;
   uw len;
   uw size;
@@ -153,13 +153,14 @@ s_array * list_to_array (s_list *list, e_tag_type type,
   len = list_length(list);
   size = tag_type_size(type);
   dest->dimension = 1;
+  dest->type = type;
   if (! (dest->dimensions = calloc(1, sizeof(s_array_dimension))))
     errx(1, "list_to_array: out of memory: 1");
   dest->dimensions[0].count = len;
   dest->dimensions[0].item_size = size;
+  dest->size = len * size;
   if (! (data = dest->data = calloc(len, size)))
     errx(1, "list_to_array: out of memory: 2");
-  data = dest->data;
   l = list;
   while (l) {
     data_list = tag_to_pointer(&l->tag, type);

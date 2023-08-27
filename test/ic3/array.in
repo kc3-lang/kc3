@@ -1,6 +1,8 @@
 a = (u8) {0, 1}
 Array.data(a, (uw) {0})
 Array.data(a, (uw) {1})
+quote a[0]
+quote a[1]
 a[0]
 a[1]
 b = (u8) {{0, 1},

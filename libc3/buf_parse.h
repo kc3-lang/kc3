@@ -39,12 +39,15 @@
  * dest is untouched.
  */
 
+#define BUF_PARSE_TAG_NO_BRACKETS 1
+
 sw buf_parse_array (s_buf *buf, s_array *dest);
 sw buf_parse_array_data (s_buf *buf, s_array *dest);
 sw buf_parse_array_dimension_count (s_buf *buf, s_array *dest);
 sw buf_parse_array_dimensions (s_buf *buf, s_array *dest);
 sw buf_parse_array_type (s_buf *buf, s_array *dest);
 sw buf_parse_bool (s_buf *buf, bool *dest);
+sw buf_parse_brackets (s_buf *buf, s_call *dest);
 sw buf_parse_call (s_buf *buf, s_call *dest);
 sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);
 sw buf_parse_call_op (s_buf *buf, s_call *dest);
@@ -87,6 +90,7 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest);
 sw buf_parse_tag (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_array (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_bool (s_buf *buf, s_tag *dest);
+sw buf_parse_tag_brackets (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call_op (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call_paren (s_buf *buf, s_tag *dest);
