@@ -466,6 +466,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   buf_save_restore_rpos(buf, &save);
   call_clean(&tmp);
  clean:
+  list_delete(dimensions);
   buf_save_clean(buf, &save);
   return r;
 }
