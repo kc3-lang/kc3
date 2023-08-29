@@ -444,9 +444,6 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
     goto restore;
   result += r;
   while (1) {
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
     if ((r = buf_read_1(buf, "[")) < 0)
       goto restore;
     if (! r)

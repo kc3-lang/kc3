@@ -68,7 +68,6 @@ bool call_get (s_call *call, s_facts *facts)
   tag_init_sym(  &tag_sym, call->ident.sym);
   tag_init_1(    &tag_symbol,   ":symbol");
   tag_init_var(  &tag_var);
-  facts_with_cursor_clean(&cursor);
   facts_with(facts, &cursor, (t_facts_spec) {
       &tag_module_name,
       &tag_symbol, &tag_ident,    /* module exports symbol */
