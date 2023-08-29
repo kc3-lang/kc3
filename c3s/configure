@@ -55,8 +55,8 @@ config_asan
 config_gnu
 pkg_config libbsd-overlay
 pkg_config libmd
-config_lib libmd -lmd
-config_lib dl -ldl
+config_lib libmd -lmd 2>/dev/null
+config_lib dl -ldl 2>/dev/null
 LIBS="$LIBS ../libffi/.libs/libffi.la -pthread"
 
 # Asan config

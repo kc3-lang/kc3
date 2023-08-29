@@ -15,11 +15,17 @@
 
 #include "types.h"
 
+/* Stack-allocation compatible functions */
 void     call_clean (s_call *call);
 s_call * call_init (s_call *call);
 s_call * call_init_1 (s_call *call, const s8 *p);
 s_call * call_init_op (s_call *call);
 s_call * call_init_op_unary (s_call *call);
+
+/* Modifiers */
+bool     call_get (s_call *call, s_facts *facts);
+
+/* Observers */
 s_call * call_copy (const s_call *src, s_call *dest);
 s_str *  call_inspect (const s_call *call, s_str *dest);
 

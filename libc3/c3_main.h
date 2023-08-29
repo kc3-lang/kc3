@@ -10,19 +10,24 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_u_base.c.in BITS=8 bits=8 BASE=decimal */
-#include "buf_inspect.h"
-#include "c3_main.h"
+#ifndef C3_MAIN_H
+#define C3_MAIN_H
 
-sw buf_inspect_u8_decimal (s_buf *buf, const u8 *u)
-{
-  return buf_inspect_u8_base(buf,
-                                  &g_c3_base_decimal,
-                                  u);
-}
+#include "types.h"
 
-sw buf_inspect_u8_decimal_size (const u8 *u)
-{
-  return buf_inspect_u8_base_size(&g_c3_base_decimal,
-                                       u);
-}
+#define C3_EXT ".c3"
+
+extern const s_str g_c3_base_binary;
+extern const s_str g_c3_base_octal;
+extern const s_str g_c3_base_decimal;
+extern const s_str g_c3_base_hexadecimal;
+extern const s_str g_c3_bases_hexadecimal[2];
+
+/* stack-allocation compatible functions */
+void c3_init (s_env *env);
+void c3_clean (s_env *env);
+
+/* debug */
+void c3_break ();
+
+#endif /* C3_MAIN_H */

@@ -1332,17 +1332,15 @@ void tag_clean (s_tag *tag)
 {
   assert(tag);
   switch (tag->type) {
-  case TAG_ARRAY:      array_clean(&tag->data.array);     break;
-  case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO: call_clean(&tag->data.call);       break;
-  case TAG_CFN:        cfn_clean(&tag->data.cfn);         break;
-  case TAG_FN:         fn_delete_all(tag->data.fn);       break;
-  case TAG_INTEGER:    integer_clean(&tag->data.integer); break;
-  case TAG_LIST:       list_delete_all(tag->data.list);   break;
-  case TAG_QUOTE:      quote_clean(&tag->data.quote);     break;
-  case TAG_STR:        str_clean(&tag->data.str);         break;
-  case TAG_TUPLE:      tuple_clean(&tag->data.tuple);     break;
+  case TAG_ARRAY:   array_clean(&tag->data.array);     break;
+  case TAG_CALL:    call_clean(&tag->data.call);       break;
+  case TAG_CFN:     cfn_clean(&tag->data.cfn);         break;
+  case TAG_FN:      fn_clean(&tag->data.fn);           break;
+  case TAG_INTEGER: integer_clean(&tag->data.integer); break;
+  case TAG_LIST:    list_delete_all(tag->data.list);   break;
+  case TAG_QUOTE:   quote_clean(&tag->data.quote);     break;
+  case TAG_STR:     str_clean(&tag->data.str);         break;
+  case TAG_TUPLE:   tuple_clean(&tag->data.tuple);     break;
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:
@@ -1380,15 +1378,13 @@ s_tag * tag_copy (const s_tag *src, s_tag *dest)
     array_copy(&src->data.array, &dest->data.array);
     break;
   case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
     call_copy(&src->data.call, &dest->data.call);
     break;
   case TAG_CFN:
     cfn_copy(&src->data.cfn, &dest->data.cfn);
     break;
   case TAG_FN:
-    fn_copy(src->data.fn, &dest->data.fn);
+    fn_copy(&src->data.fn, &dest->data.fn);
     break;
   case TAG_INTEGER:
     integer_init(&dest->data.integer);
@@ -1954,13 +1950,7 @@ s_tag * tag_ident_1 (s_tag *tag, const s8 *p)
 
 bool tag_ident_is_bound (const s_tag *tag)
 {
-  s_tag tmp;
-  assert(tag);
-  assert(tag->type == TAG_IDENT);
-  return tag->type == TAG_IDENT &&
-    (frame_get(g_c3_env.frame, tag->data.ident.sym) ||
-     module_get(g_c3_env.current_module, tag->data.ident.sym,
-                &tmp));
+  return env_tag_ident_is_bound(&g_c3_env, tag, &g_c3_env.facts);
 }
 
 s_tag * tag_init (s_tag *tag)
@@ -3641,14 +3631,6 @@ void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
     if (type == sym_1("call"))
       return &tag->data.call;
     goto invalid_type;
-  case TAG_CALL_FN:
-    if (type == sym_1("call_fn"))
-      return &tag->data.call;
-    goto invalid_type;
-  case TAG_CALL_MACRO:
-    if (type == sym_1("call_macro"))
-      return &tag->data.call;
-    goto invalid_type;
   case TAG_CFN:
     if (type == sym_1("cfn"))
       return &tag->data.cfn;
@@ -3667,7 +3649,7 @@ void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
     goto invalid_type;
   case TAG_FN:
     if (type == sym_1("fn"))
-      return tag->data.fn;
+      return &tag->data.fn;
     goto invalid_type;
   case TAG_IDENT:
     if (type == sym_1("ident"))
@@ -3777,10 +3759,6 @@ void * tag_to_pointer (s_tag *tag, e_tag_type type)
     return &tag->data.bool;
   case TAG_CALL:
     return &tag->data.call;
-  case TAG_CALL_FN:
-    return &tag->data.call;
-  case TAG_CALL_MACRO:
-    return &tag->data.call;
   case TAG_CFN:
     return &tag->data.cfn;
   case TAG_CHARACTER:
@@ -3790,7 +3768,7 @@ void * tag_to_pointer (s_tag *tag, e_tag_type type)
   case TAG_F64:
     return &tag->data.f64;
   case TAG_FN:
-    return tag->data.fn;
+    return &tag->data.fn;
   case TAG_IDENT:
     return &tag->data.ident;
   case TAG_INTEGER:
@@ -3853,8 +3831,6 @@ sw tag_type_size (e_tag_type type)
   case TAG_BOOL:
     return sizeof(bool);
   case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
     return sizeof(s_call);
   case TAG_CFN:
     return sizeof(s_cfn);
@@ -3919,8 +3895,6 @@ f_buf_inspect tag_type_to_buf_inspect (e_tag_type type)
   case TAG_BOOL:
     return (f_buf_inspect) buf_inspect_bool;
   case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
     return (f_buf_inspect) buf_inspect_call;
   case TAG_CFN:
     return (f_buf_inspect) buf_inspect_cfn;
@@ -3985,8 +3959,6 @@ f_buf_inspect_size tag_type_to_buf_inspect_size (e_tag_type type)
   case TAG_BOOL:
     return (f_buf_inspect_size) buf_inspect_bool_size;
   case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
     return (f_buf_inspect_size) buf_inspect_call_size;
   case TAG_CFN:
     return (f_buf_inspect_size) buf_inspect_cfn_size;
@@ -4052,8 +4024,6 @@ f_buf_parse tag_type_to_buf_parse (e_tag_type type)
   case TAG_BOOL:
     return (f_buf_parse) buf_parse_bool;
   case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
     return (f_buf_parse) buf_parse_call;
   case TAG_CFN:
     return (f_buf_parse) buf_parse_cfn;
@@ -4117,8 +4087,6 @@ ffi_type * tag_type_to_ffi_type (e_tag_type type)
   case TAG_BOOL:
     return &ffi_type_uint8;
   case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
     return &ffi_type_pointer;
   case TAG_CFN:
     return &ffi_type_pointer;
@@ -4183,8 +4151,6 @@ s8 * tag_type_to_string (e_tag_type type)
   case TAG_ARRAY: return "array";
   case TAG_BOOL: return "bool";
   case TAG_CALL: return "call";
-  case TAG_CALL_FN: return "call_fn";
-  case TAG_CALL_MACRO: return "call_macro";
   case TAG_CFN: return "cfn";
   case TAG_CHARACTER: return "character";
   case TAG_F32: return "f32";
@@ -4222,8 +4188,6 @@ const s_sym * tag_type_to_sym (e_tag_type tag_type)
   case TAG_ARRAY:      return sym_1("array");
   case TAG_BOOL:       return sym_1("bool");
   case TAG_CALL:       return sym_1("call");
-  case TAG_CALL_FN:    return sym_1("call_fn");
-  case TAG_CALL_MACRO: return sym_1("call_macro");
   case TAG_CFN:        return sym_1("cfn");
   case TAG_CHARACTER:  return sym_1("character");
   case TAG_F32:        return sym_1("f32");

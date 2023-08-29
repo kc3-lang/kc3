@@ -14,7 +14,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../libtommath/tommath.h"
-#include "c3.h"
+#include "buf.h"
+#include "buf_inspect.h"
+#include "buf_save.h"
+#include "character.h"
+#include "ident.h"
+#include "integer.h"
+#include "list.h"
+#include "operator.h"
+#include "str.h"
+#include "tag.h"
 
 sw buf_inspect_array_data (s_buf *buf, const s_array *array);
 sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
@@ -620,12 +629,17 @@ sw buf_inspect_fact_spec (s_buf *buf, p_facts_spec spec)
 
 sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
 {
+  const s_fn_clause *clause;
   sw r;
   sw result = 0;
+  assert(buf);
+  assert(fn);
   if ((r = buf_write_1(buf, "fn ")) < 0)
     return r;
   result += r;
-  if (fn->next_clause) {
+  clause = fn->clauses;
+  assert(clause);
+  if (clause->next_clause) {
     if ((r = buf_write_1(buf, "{\n")) < 0)
       return r;
     result += r;
@@ -633,20 +647,20 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
       if ((r = buf_write_1(buf, "  ")) < 0)
         return r;
       result += r;
-      if ((r = buf_inspect_fn_clause(buf, fn)) < 0)
+      if ((r = buf_inspect_fn_clause(buf, clause)) < 0)
         return r;
       result += r;
       if ((r = buf_write_1(buf, "\n")) < 0)
         return r;
       result += r;
-      fn = fn->next_clause;
+      clause = clause->next_clause;
     }
     if ((r = buf_write_1(buf, "}")) < 0)
       return r;
     result += r;
   }
   else {
-    if ((r = buf_inspect_fn_clause(buf, fn)) < 0)
+    if ((r = buf_inspect_fn_clause(buf, clause)) < 0)
       return r;
     result += r;
   }
@@ -732,35 +746,35 @@ sw buf_inspect_fn_algo_size (const s_list *algo)
   return result;
 }
 
-sw buf_inspect_fn_clause (s_buf *buf, const s_fn *fn)
+sw buf_inspect_fn_clause (s_buf *buf, const s_fn_clause *clause)
 {
   sw r;
   sw result = 0;
   assert(buf);
-  assert(fn);
-  if ((r = buf_inspect_fn_pattern(buf, fn->pattern)) < 0)
+  assert(clause);
+  if ((r = buf_inspect_fn_pattern(buf, clause->pattern)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_fn_algo(buf, fn->algo)) < 0)
+  if ((r = buf_inspect_fn_algo(buf, clause->algo)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_fn_clause_size (const s_fn *fn)
+sw buf_inspect_fn_clause_size (const s_fn_clause *clause)
 {
   sw r;
   sw result = 0;
-  assert(fn);
-  if ((r = buf_inspect_fn_pattern_size(fn->pattern)) < 0)
+  assert(clause);
+  if ((r = buf_inspect_fn_pattern_size(clause->pattern)) < 0)
     return r;
   result += r;
   r = strlen(" ");
   result += r;
-  if ((r = buf_inspect_fn_algo_size(fn->algo)) < 0)
+  if ((r = buf_inspect_fn_algo_size(clause->algo)) < 0)
     return r;
   result += r;
   return result;
@@ -814,27 +828,31 @@ sw buf_inspect_fn_pattern_size (const s_list *pattern)
 
 sw buf_inspect_fn_size (const s_fn *fn)
 {
+  const s_fn_clause *clause;
   sw r;
   sw result = 0;
+  assert(fn);
   r = strlen("fn ");
   result += r;
-  if (fn->next_clause) {
+  clause = fn->clauses;
+  assert(clause);
+  if (clause->next_clause) {
     r = strlen("{\n");
     result += r;
     while (fn) {
       r = strlen("  ");
       result += r;
-      r = buf_inspect_fn_clause_size(fn);
+      r = buf_inspect_fn_clause_size(clause);
       result += r;
       r = strlen("\n");
       result += r;
-      fn = fn->next_clause;
+      clause = clause->next_clause;
     }
     r = strlen("}");
     result += r;
   }
   else {
-    r = buf_inspect_fn_clause_size(fn);
+    r = buf_inspect_fn_clause_size(clause);
     result += r;
   }
   return result;
@@ -1411,16 +1429,13 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_VOID:    return buf_inspect_void(buf, &tag);
   case TAG_ARRAY:   return buf_inspect_array(buf, &tag->data.array);
   case TAG_BOOL:    return buf_inspect_bool(buf, &tag->data.bool);
-  case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
-                    return buf_inspect_call(buf, &tag->data.call);
+  case TAG_CALL:    return buf_inspect_call(buf, &tag->data.call);
   case TAG_CFN:     return buf_inspect_cfn(buf, &tag->data.cfn);
   case TAG_CHARACTER:
     return buf_inspect_character(buf, &tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, &tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, &tag->data.f64);
-  case TAG_FN:      return buf_inspect_fn(buf, tag->data.fn);
+  case TAG_FN:      return buf_inspect_fn(buf, &tag->data.fn);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
   case TAG_LIST:    return buf_inspect_list(buf, tag->data.list);
@@ -1453,16 +1468,13 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_VOID:     return buf_inspect_void_size(tag);
   case TAG_ARRAY:    return buf_inspect_array_size(&tag->data.array);
   case TAG_BOOL:     return buf_inspect_bool_size(&tag->data.bool);
-  case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
-    return buf_inspect_call_size(&tag->data.call);
+  case TAG_CALL:     return buf_inspect_call_size(&tag->data.call);
   case TAG_CFN:      return buf_inspect_cfn_size(&tag->data.cfn);
   case TAG_CHARACTER:
     return buf_inspect_character_size(&tag->data.character);
   case TAG_F32:      return buf_inspect_f32_size(&tag->data.f32);
   case TAG_F64:      return buf_inspect_f64_size(&tag->data.f64);
-  case TAG_FN:       return buf_inspect_fn_size(tag->data.fn);
+  case TAG_FN:       return buf_inspect_fn_size(&tag->data.fn);
   case TAG_IDENT:    return buf_inspect_ident_size(&tag->data.ident);
   case TAG_INTEGER:
     return buf_inspect_integer_size(&tag->data.integer);
@@ -1499,8 +1511,6 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
   case TAG_BOOL:
     return buf_write_1(buf, "bool");
   case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
     return buf_write_1(buf, "call");    
   case TAG_CFN:
     return buf_write_1(buf, "cfn");
@@ -1566,8 +1576,6 @@ sw buf_inspect_tag_type_size (e_tag_type type)
   case TAG_BOOL:
     return strlen("bool");
   case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
     return strlen("call");    
   case TAG_CFN:
     return strlen("cfn");

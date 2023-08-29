@@ -43,9 +43,6 @@ CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe"
 LDFLAGS="${LDFLAGS}"
-if [ "x$CC" != "xtcc" ]; then
-    LDFLAGS="-Wl,--allow-shlib-undefined ${LDFLAGS}"
-fi
 LIBS="${LIBS:=} -lm"
 
 # Common config for all targets
@@ -55,8 +52,8 @@ config_asan
 config_gnu
 pkg_config libbsd-overlay
 pkg_config libmd
-config_lib libmd -lmd
-config_lib dl -ldl
+config_lib libmd -lmd 2>/dev/null
+config_lib dl -ldl 2>/dev/null
 LIBS="$LIBS ../libffi/libffi.la -pthread"
 
 # Asan config
@@ -82,7 +79,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBC3=../libc3/libc3.la
+LIBC3=../libc3/.libs/libc3.so
 LIBS="$LIBC3 $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

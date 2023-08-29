@@ -11,7 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u_base.c.in BITS=W bits=w BASE=hexadecimal */
-#include "c3.h"
+#include "buf_inspect.h"
+#include "c3_main.h"
 
 sw buf_inspect_uw_hexadecimal (s_buf *buf, const uw *u)
 {

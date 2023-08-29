@@ -71,8 +71,6 @@ typedef enum {
   TAG_ARRAY,
   TAG_BOOL,
   TAG_CALL,
-  TAG_CALL_FN,
-  TAG_CALL_MACRO,
   TAG_CFN,
   TAG_CHARACTER,
   TAG_F32,
@@ -119,13 +117,13 @@ typedef struct facts_with_cursor       s_facts_with_cursor;
 typedef struct facts_with_cursor_level s_facts_with_cursor_level;
 typedef struct float_                  s_float;
 typedef struct fn                      s_fn;
+typedef struct fn_clause               s_fn_clause;
 typedef struct frame                   s_frame;
 typedef struct ident                   s_ident;
 typedef struct integer                 s_integer;
 typedef struct list                    s_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
-typedef struct module                  s_module;
 typedef struct quote                   s_quote;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
@@ -188,21 +186,16 @@ struct float_ {
   sw bit_shift;
 };
 
-struct frame {
-  s_binding *bindings;
-  s_frame *next;
-};
-
-struct fn {
+struct fn_clause {
   uw arity;
   s_list *pattern;
   s_list *algo;
-  s_fn *next_clause;
+  s_fn_clause *next_clause;
 };
 
-struct module {
-  const s_sym *name;
-  s_facts *facts;
+struct frame {
+  s_binding *bindings;
+  s_frame *next;
 };
 
 union ptr {
@@ -224,7 +217,6 @@ struct quote {
 struct struct_ {
   void *data;
   uw count;
-  s_module *module;
   e_tag_type type;
 };
 
@@ -271,8 +263,13 @@ struct facts_spec_cursor {
   uw pos;
 };
 
+struct fn {
+  s_fn_clause *clauses;
+  bool macro;
+  bool special_operator;
+};
+
 struct ident {
-  /*const s_module *module;*/
   const s_sym *module_name;
   const s_sym *sym;
 };
@@ -296,8 +293,6 @@ struct call {
   /* value */
   s_cfn *cfn;
   s_fn *fn;
-  bool macro;
-  bool special_operator;
 };
 
 struct cfn {
@@ -311,6 +306,8 @@ struct cfn {
   bool arg_result;
   s_list *arg_types;
   ffi_cif cif;
+  bool macro;
+  bool special_operator;
 };
 
 struct log {
@@ -346,7 +343,7 @@ union tag_data {
   character    character;
   f32          f32;
   f64          f64;
-  s_fn        *fn;
+  s_fn         fn;
   s_ident      ident;
   s_integer    integer;
   s_list      *list;
@@ -481,8 +478,7 @@ struct facts_cursor {
 /* 9 */
 struct env {
   s_list           *backtrace;
-  const s_module   *current_module;
-  s_module          c3_module;
+  const s_sym      *current_module;
   s_buf             err;
   s_error_handler  *error_handler;
   s_facts           facts;

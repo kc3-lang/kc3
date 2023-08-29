@@ -36,13 +36,13 @@ C3_C_SOURCES = \
 	libc3/abs.h \
 	libc3/buf.c \
 	libc3/buf.h \
-	libc3/buf_inspect_s8_decimal.c \
 	libc3/buf_inspect_s8_decimal.h \
 	libc3/buf_inspect_s8_hexadecimal.c \
 	libc3/buf_inspect_s8_hexadecimal.h \
 	libc3/buf_inspect_s16.c \
 	libc3/buf_inspect_s16.h \
 	libc3/buf_inspect_s16_binary.c \
+	libc3/buf_inspect_s16_binary.h \
 	libc3/buf_parse_s8.c \
 	libc3/call.c \
 	libc3/arg.c \
@@ -51,23 +51,22 @@ C3_C_SOURCES = \
 	libc3/array.h \
 	libc3/binding.c \
 	libc3/c3.c \
-	libc3/buf_inspect_s16_binary.h \
 	libc3/buf_inspect_s16_octal.c \
 	libc3/buf_inspect_s16_octal.h \
 	libc3/buf_inspect_s16_decimal.c \
-	libc3/binding.h \
 	libc3/buf_inspect_s16_decimal.h \
+	libc3/binding.h \
 	libc3/buf_inspect_s16_hexadecimal.c \
 	libc3/buf_inspect_s16_hexadecimal.h \
 	libc3/buf_inspect_s32.c \
 	libc3/buf_inspect_s32.h \
 	libc3/buf_inspect_s32_binary.c \
 	libc3/buf_inspect_s32_binary.h \
+	libc3/buf_inspect_s32_octal.c \
 	libc3/bool.c \
 	libc3/bool.h \
 	libc3/buf_file.c \
 	libc3/buf_file.h \
-	libc3/buf_inspect_s32_octal.c \
 	libc3/buf_inspect_s32_octal.h \
 	libc3/buf_inspect_s32_decimal.c \
 	libc3/buf_inspect_s32_decimal.h \
@@ -79,12 +78,12 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_s64_binary.h \
 	libc3/buf_inspect_s64_octal.c \
 	libc3/buf_inspect_s64_octal.h \
+	libc3/buf_inspect_s64_decimal.c \
 	libc3/buf_parse.h \
 	libc3/buf_parse_c.c \
 	libc3/buf_save.c \
-	libc3/buf_inspect_s64_decimal.c \
-	libc3/facts_spec_cursor.c \
 	libc3/buf_inspect_s64_decimal.h \
+	libc3/facts_spec_cursor.c \
 	libc3/buf_inspect_s64_hexadecimal.c \
 	libc3/buf_inspect_s64_hexadecimal.h \
 	libc3/buf_inspect_sw.c \
@@ -95,12 +94,12 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_sw_octal.h \
 	libc3/buf_inspect_sw_decimal.c \
 	libc3/buf_inspect_sw_decimal.h \
+	libc3/buf_inspect_sw_hexadecimal.c \
 	libc3/buf_parse_c.h \
 	libc3/buf_save.h \
 	libc3/c3.h \
 	libc3/c_types.h \
 	libc3/call.h \
-	libc3/buf_inspect_sw_hexadecimal.c \
 	libc3/buf_inspect_sw_hexadecimal.h \
 	libc3/buf_inspect_u8.c \
 	libc3/buf_inspect_u8.h \
@@ -112,13 +111,13 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_u8_decimal.h \
 	libc3/buf_inspect_u8_hexadecimal.c \
 	libc3/buf_inspect_u8_hexadecimal.h \
+	libc3/buf_inspect_u16.c \
 	libc3/ceiling.c \
 	libc3/ceiling.h \
 	libc3/cfn.c \
 	libc3/cfn.h \
 	libc3/character.c \
 	libc3/character.h \
-	libc3/buf_inspect_u16.c \
 	libc3/buf_inspect_u16.h \
 	libc3/buf_inspect_u16_binary.c \
 	libc3/buf_inspect_u16_binary.h \
@@ -130,6 +129,7 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_u16_hexadecimal.h \
 	libc3/buf_inspect_u32.c \
 	libc3/buf_inspect_u32.h \
+	libc3/buf_inspect_u64.c \
 	libc3/compare.c \
 	libc3/buf_inspect.c \
 	libc3/compare.h \
@@ -149,6 +149,7 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_s8_binary.h \
 	libc3/buf_inspect_s8_octal.c \
 	libc3/buf_inspect_s8_octal.h \
+	libc3/buf_inspect_s8_decimal.c \
 	libc3/error.c \
 	libc3/error.h \
 	libc3/error_handler.c \
@@ -163,14 +164,12 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_u32_decimal.h \
 	libc3/buf_inspect_u32_hexadecimal.c \
 	libc3/buf_inspect_u32_hexadecimal.h \
-	libc3/buf_inspect_u64.c \
 	libc3/buf_inspect_u64.h \
 	libc3/buf_inspect_u64_binary.c \
-	libc3/set__fact.c \
+	libc3/buf_inspect_u64_binary.h \
 	libc3/fact.c \
 	libc3/fact.h \
 	libc3/facts_cursor.c \
-	libc3/buf_inspect_u64_binary.h \
 	libc3/buf_inspect_u64_octal.c \
 	libc3/buf_inspect_u64_octal.h \
 	libc3/buf_inspect_u64_decimal.c \
@@ -183,12 +182,12 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_uw_binary.h \
 	libc3/buf_inspect_uw_octal.c \
 	libc3/buf_inspect_uw_octal.h \
-	libc3/set__fact.h \
+	libc3/buf_inspect_uw_decimal.c \
+	libc3/set__fact.c \
 	libc3/facts_cursor.h \
 	libc3/facts_spec.c \
 	libc3/facts_spec.h \
 	libc3/facts_spec_cursor.h \
-	libc3/buf_inspect_uw_decimal.c \
 	libc3/buf_inspect_uw_decimal.h \
 	libc3/buf_inspect_uw_hexadecimal.c \
 	libc3/buf_inspect_uw_hexadecimal.h \
@@ -202,12 +201,11 @@ C3_C_SOURCES = \
 	libc3/buf_parse_sw.c \
 	libc3/buf_parse_sw.h \
 	libc3/buf_parse_u8.c \
-	libc3/set__tag.c \
+	libc3/buf_parse_u8.h \
+	libc3/buf_parse_u16.c \
 	libc3/facts_with.c \
 	libc3/facts_with.h \
 	libc3/facts_with_cursor.c \
-	libc3/buf_parse_u8.h \
-	libc3/buf_parse_u16.c \
 	libc3/buf_parse_u16.h \
 	libc3/buf_parse_u32.c \
 	libc3/buf_parse_u32.h \
@@ -215,6 +213,8 @@ C3_C_SOURCES = \
 	libc3/buf_parse_u64.h \
 	libc3/buf_parse_uw.c \
 	libc3/buf_parse_uw.h \
+	libc3/set__fact.h \
+	libc3/set__tag.c \
 	libc3/set__tag.h \
 	libc3/set_cursor__fact.c \
 	libc3/set_cursor__fact.h \
@@ -286,6 +286,9 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_u_base.h.in \
 	libc3/tag.h \
 	libc3/tag.c \
+	libc3/fn_clause.h \
+	libc3/fn_clause.c \
+	libc3/c3_main.h \
 	test/buf_inspect_test.c \
 	test/bool_test.c \
 	test/buf_parse_test.c \

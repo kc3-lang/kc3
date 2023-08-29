@@ -37,6 +37,8 @@ s_ident * ident_copy (const s_ident *src, s_ident *dest);
 /* Returns true iff c is an ident reserved character as first. */
 bool ident_first_character_is_reserved (character c);
 
+s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest);
+
 /* Returns true iff ident contains reserved characters. */
 bool ident_has_reserved_characters (const s_ident *ident);
 

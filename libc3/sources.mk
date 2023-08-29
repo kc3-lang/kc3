@@ -72,6 +72,7 @@ HEADERS = \
 	buf_parse_uw.h \
 	buf_save.h \
 	c3.h \
+	c3_main.h \
 	c_types.h \
 	call.h \
 	ceiling.h \
@@ -92,6 +93,7 @@ HEADERS = \
 	facts_with_cursor.h \
 	float.h \
 	fn.h \
+	fn_clause.h \
 	frame.h \
 	hash.h \
 	ident.h \
@@ -210,6 +212,7 @@ SOURCES = \
 	facts_with.c \
 	facts_with_cursor.c \
 	fn.c \
+	fn_clause.c \
 	frame.c \
 	hash.c \
 	ident.c \
@@ -326,6 +329,7 @@ LO_SOURCES = \
 	facts_with.c \
 	facts_with_cursor.c \
 	fn.c \
+	fn_clause.c \
 	frame.c \
 	hash.c \
 	ident.c \

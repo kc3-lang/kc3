@@ -15,7 +15,24 @@
 #include <string.h>
 #include <math.h>
 #include "../libtommath/tommath.h"
-#include "c3.h"
+#include "buf.h"
+#include "buf_inspect.h"
+#include "buf_parse.h"
+#include "buf_save.h"
+#include "call.h"
+#include "cfn.h"
+#include "character.h"
+#include "env.h"
+#include "fn.h"
+#include "fn_clause.h"
+#include "ident.h"
+#include "integer.h"
+#include "list.h"
+#include "operator.h"
+#include "str.h"
+#include "sym.h"
+#include "tag.h"
+#include "tuple.h"
 
 sw buf_parse_array_data_rec (s_buf *buf, s_array *dest,
                              uw dimension, uw *address,
@@ -1121,19 +1138,21 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
   return r;
 }
 
-sw buf_parse_fn (s_buf *buf, s_fn **dest)
+sw buf_parse_fn (s_buf *buf, s_fn *dest)
 {
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_fn *tmp = NULL;
-  s_fn **tail = &tmp;
+  s_fn tmp;
+  s_fn_clause **tail;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "fn")) <= 0)
     goto clean;
   result += r;
+  fn_init(&tmp);
+  tail = &tmp.clauses;
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
@@ -1145,7 +1164,7 @@ sw buf_parse_fn (s_buf *buf, s_fn **dest)
       goto restore;
     result += r;
     while (1) {
-      *tail = fn_new(NULL);
+      *tail = fn_clause_new(NULL);
       if ((r = buf_parse_fn_clause(buf, *tail)) <= 0)
         goto restore;
       tail = &(*tail)->next_clause;
@@ -1161,8 +1180,8 @@ sw buf_parse_fn (s_buf *buf, s_fn **dest)
     }
   }
   else {
-    tmp = fn_new(NULL);
-    if ((r = buf_parse_fn_clause(buf, tmp)) <= 0)
+    tmp.clauses = fn_clause_new(NULL);
+    if ((r = buf_parse_fn_clause(buf, tmp.clauses)) <= 0)
       goto restore;
     result += r;
   }
@@ -1171,23 +1190,23 @@ sw buf_parse_fn (s_buf *buf, s_fn **dest)
   r = result;
   goto clean;
  restore:
-  fn_delete_all(tmp);
+  fn_clean(&tmp);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
   return r;
 }
 
-sw buf_parse_fn_clause (s_buf *buf, s_fn *dest)
+sw buf_parse_fn_clause (s_buf *buf, s_fn_clause *dest)
 {
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_fn tmp;
+  s_fn_clause tmp;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  fn_init(&tmp, NULL);
+  fn_clause_init(&tmp, NULL);
   if ((r = buf_parse_fn_pattern(buf, &tmp.pattern)) <= 0) {
     warnx("buf_parse_fn: invalid pattern");
     goto restore;
@@ -1198,7 +1217,7 @@ sw buf_parse_fn_clause (s_buf *buf, s_fn *dest)
     goto restore;
   result += r;
   if ((r = buf_parse_fn_algo(buf, &tmp.algo)) <= 0) {
-    buf_inspect_fn(&g_c3_env.err, &tmp);
+    buf_inspect_fn_clause(&g_c3_env.err, &tmp);
     buf_flush(&g_c3_env.err);
     warnx("buf_parse_fn: invalid program");
     goto restore;
@@ -1208,7 +1227,7 @@ sw buf_parse_fn_clause (s_buf *buf, s_fn *dest)
   r = result;
   goto clean;
  restore:
-  fn_clean(&tmp);
+  fn_clause_clean(&tmp);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);

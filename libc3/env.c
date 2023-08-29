@@ -80,11 +80,7 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   assert(dest);
   call_copy(call, &c);
   env_eval_call_resolve(env, &c);
-  if (c.macro)
-    result = env_eval_call_macro(env, &c, dest);
-  else if (c.special_operator)
-    result = env_eval_call_special_operator(env, &c, dest);
-  else if (c.cfn)
+  if (c.cfn)
     result = env_eval_call_cfn(env, &c, dest);
   else if (c.fn)
     result = env_eval_call_fn(env, &c, dest);
@@ -122,6 +118,7 @@ bool env_eval_call_arguments (s_env *env, s_list *args, s_list **dest)
 bool env_eval_call_cfn (s_env *env, const s_call *call, s_tag *dest)
 {
   s_list *args = NULL;
+  s_list *args_final = NULL;
   s_cfn *cfn;
   s_tag tag;
   assert(env);
@@ -130,11 +127,15 @@ bool env_eval_call_cfn (s_env *env, const s_call *call, s_tag *dest)
   cfn = call->cfn;
   assert(cfn);
   if (call->arguments) {
-    if (! env_eval_call_arguments(env, call->arguments, &args)) {
-      return false;
+    if (cfn->macro || cfn->special_operator)
+      args_final = call->arguments;
+    else {
+      if (! env_eval_call_arguments(env, call->arguments, &args))
+        return false;
+      args_final = args;
     }
   }
-  if (! cfn_apply(cfn, args, &tag)) {
+  if (! cfn_apply(cfn, args_final, &tag)) {
     list_delete_all(args);
     return false;
   }
@@ -146,9 +147,10 @@ bool env_eval_call_cfn (s_env *env, const s_call *call, s_tag *dest)
 bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
 {
   s_list *args = NULL;
+  s_list *args_final = NULL;
   s_frame frame;
   s_fn *fn;
-  s_fn *fn2;
+  s_fn_clause *clause;
   s_tag tag;
   s_list *tmp = NULL;
   assert(env);
@@ -158,20 +160,26 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   assert(fn);
   frame_init(&frame, env->frame);
   env->frame = &frame;
-  fn2 = fn;
+  clause = fn->clauses;
   if (call->arguments) {
-    if (! env_eval_call_arguments(env, call->arguments, &args)) {
-      env->frame = frame_clean(&frame);
-      return false;
+    if (fn->macro || fn->special_operator)
+      args_final = call->arguments;
+    else {
+      if (! env_eval_call_arguments(env, call->arguments, &args)) {
+        env->frame = frame_clean(&frame);
+        return false;
+      }
+      args_final = args;
     }
-    while (fn2 && ! env_eval_equal_list(env, fn2->pattern, args, &tmp))
-      fn2 = fn2->next_clause;
-    if (! fn2) {
+    while (clause && ! env_eval_equal_list(env, clause->pattern,
+                                           args_final, &tmp))
+      clause = clause->next_clause;
+    if (! clause) {
       err_puts("env_eval_call_fn: no clause matching.\nTried clauses :\n");
-      fn2 = fn;
-      while (fn2) {
-        err_inspect_fn_pattern(fn2->pattern);
-        fn2 = fn2->next_clause;
+      clause = fn->clauses;
+      while (clause) {
+        err_inspect_fn_pattern(clause->pattern);
+        clause = clause->next_clause;
       }
       err_puts("\nArguments :\n");
       err_inspect_fn_pattern(args);
@@ -181,7 +189,7 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
       return false;
     }
   }
-  if (! env_eval_progn(env, fn2->algo, &tag)) {
+  if (! env_eval_progn(env, clause->algo, &tag)) {
     list_delete_all(args);
     list_delete_all(tmp);
     env->frame = frame_clean(&frame);
@@ -194,34 +202,8 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   return true;
 }
 
-bool env_eval_call_macro (s_env *env, const s_call *call, s_tag *dest)
-{
-  s_tag *expanded;
-  assert(env);
-  assert(call);
-  assert(dest);
-  (void) env;
-  (void) call;
-  (void) expanded;
-  (void) dest;
-  return false;
-}
-
 bool env_eval_call_resolve (s_env *env, s_call *call)
 {
-  s_facts_with_cursor cursor;
-  s_module module;
-  s_tag tag_cfn;
-  s_tag tag_fn;
-  s_tag tag_ident;
-  s_tag tag_is_a;
-  s_tag tag_macro;
-  s_tag tag_module;
-  s_tag tag_module_name;
-  s_tag tag_special_operator;
-  s_tag tag_sym;
-  s_tag tag_symbol;
-  s_tag tag_var;
   const s_tag *value;
   assert(env);
   assert(call);
@@ -231,116 +213,14 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
       return true;
     }
     else if (value->type == TAG_FN) {
-      call->fn = value->data.fn;
+      call->fn = fn_new_copy(&value->data.fn);
       return true;
     }
   }
   ident_resolve_module(&call->ident, env);
-  tag_init_1(    &tag_cfn,      ":cfn");
-  tag_init_1(    &tag_fn,       ":fn");
-  tag_init_ident(&tag_ident, &call->ident);
-  tag_init_1(    &tag_is_a,     ":is_a");
-  tag_init_1(    &tag_macro,    ":macro");
-  tag_init_1(    &tag_module,   ":module");
-  tag_init_sym(  &tag_module_name, call->ident.module_name);
-  tag_init_1(    &tag_special_operator, ":special_operator");
-  tag_init_sym(  &tag_sym, call->ident.sym);
-  tag_init_1(    &tag_symbol,   ":symbol");
-  tag_init_var(  &tag_var);
-  facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_module_name,
-      &tag_is_a, &tag_module,     /* module exists */
-      NULL, NULL });
-  if (! facts_with_cursor_next(&cursor)) {
-    if (! module_load(&module, call->ident.module_name, &env->facts)) {
-      warnx("module not found: %s",
-            call->ident.module_name->str.ptr.ps8);
-      facts_with_cursor_clean(&cursor);
-      return false;
-    }
-  }
-  facts_with_cursor_clean(&cursor);
-  facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_module_name,
-      &tag_symbol, &tag_ident,    /* module exports symbol */
-      NULL, NULL });
-  if (! facts_with_cursor_next(&cursor)) {
-    warnx("symbol %s not found in module %s",
-          call->ident.sym->str.ptr.ps8,
-          call->ident.module_name->str.ptr.ps8);
-    facts_with_cursor_clean(&cursor);
+  if (! module_ensure_loaded(call->ident.module_name, &env->facts))
     return false;
-  }
-  facts_with_cursor_clean(&cursor);
-  facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_fn, &tag_var,
-      NULL, NULL });
-  if (facts_with_cursor_next(&cursor)) {
-    if (tag_var.type != TAG_FN)
-      errx(1, "%s.%s is not a function",
-           call->ident.module_name->str.ptr.ps8,
-           call->ident.sym->str.ptr.ps8);
-    call->fn = tag_var.data.fn;
-  }
-  facts_with_cursor_clean(&cursor);
-  facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_cfn, &tag_var,
-      NULL, NULL });
-  if (facts_with_cursor_next(&cursor)) {
-    if (tag_var.type != TAG_CFN)
-      errx(1, "%s.%s is not a C function",
-           call->ident.module_name->str.ptr.ps8,
-           call->ident.sym->str.ptr.ps8);
-    call->cfn = cfn_new_copy(&tag_var.data.cfn);
-  }
-  facts_with_cursor_clean(&cursor);
-  facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });
-  if (facts_with_cursor_next(&cursor))
-    call->macro = true;
-  facts_with_cursor_clean(&cursor);
-  facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_is_a, &tag_special_operator, NULL, NULL});
-  if (facts_with_cursor_next(&cursor))
-    call->special_operator = true;
-  facts_with_cursor_clean(&cursor);
-  return true;
-}
-
-bool env_eval_call_special_operator (s_env *env, const s_call *call,
-                                     s_tag *dest)
-{
-  s_frame frame;
-  s_fn *fn;
-  s_tag tag;
-  s_list *tmp = NULL;
-  assert(env);
-  assert(call);
-  assert(dest);
-  if (call->cfn)
-    return cfn_apply(call->cfn, call->arguments, dest) != NULL;
-  fn = call->fn;
-  assert(fn);
-  frame_init(&frame, env->frame);
-  env->frame = &frame;
-  if (! env_eval_equal_list(env, fn->pattern, call->arguments, &tmp)) {
-    err_puts("env_eval_call_fn: no clause matching.\nTried clauses :\n");
-    err_inspect_fn_pattern(fn->pattern);
-    err_puts("\nArguments :\n");
-    err_inspect_fn_pattern(call->arguments);
-    err_puts("\n");
-    env->frame = frame_clean(&frame);
-    return false;
-  }
-  if (! env_eval_progn(env, fn->algo, &tag)) {
-    list_delete_all(tmp);
-    env->frame = frame_clean(&frame);
-    return false;
-  }
-  *dest = tag;
-  list_delete_all(tmp);
-  env->frame = frame_clean(&frame);
-  return true;
+  return call_get(call, &env->facts);
 }
 
 bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
@@ -488,8 +368,6 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     return env_eval_equal_tuple(env, &a->data.tuple, &b->data.tuple,
                                 &dest->data.tuple);
   case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
   case TAG_QUOTE:
   case TAG_ARRAY:
   case TAG_BOOL:
@@ -543,13 +421,16 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
 {
   const s_tag *tag;
   s_tag tmp;
+  s_ident tmp_ident;
   assert(env);
   assert(ident);
-  if (! ((tag = frame_get(env->frame, ident->sym)) ||
-         (tag = module_get(env->current_module, ident->sym, &tmp)))) {
+  ident_copy(ident, &tmp_ident);
+  ident_resolve_module(&tmp_ident, env);
+  if (! ((tag = frame_get(env->frame, tmp_ident.sym)) ||
+         (tag = ident_get(&tmp_ident, &env->facts, &tmp)))) {
     warnx("unbound ident: %s.%s",
-          ident->module_name->str.ptr.ps8,
-          ident->sym->str.ptr.ps8);
+          tmp_ident.module_name->str.ptr.ps8,
+          tmp_ident.sym->str.ptr.ps8);
     return false;
   }
   tag_copy(tag, dest);
@@ -594,10 +475,6 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return true;
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
-  case TAG_CALL_FN:
-    return env_eval_call_fn(env, &tag->data.call, dest);
-  case TAG_CALL_MACRO:
-    return env_eval_call_macro(env, &tag->data.call, dest);
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
   case TAG_QUOTE:
@@ -659,9 +536,9 @@ s_env * env_init (s_env *env)
     assert(! "env_init: module path not found");
     err(1, "env_init: module_path not found");
   }
-  env->current_module = &env->c3_module;
-  env->c3_module.name = sym_1("C3");
-  if (! module_load(&env->c3_module, sym_1("C3"), &env->facts)) {
+  env->current_module = sym_1("C3");
+  if (! module_load(sym_1("C3"), &env->facts)) {
+    env_clean(env);
     return NULL;
   }
   return env;
@@ -681,20 +558,17 @@ void env_longjmp (s_env *env, jmp_buf *jmp_buf)
   longjmp(*jmp_buf, 1);
 }
 
-s_module * env_module_load (s_env *env, s_module *module,
-                            const s_sym *name, s_facts *facts)
+bool env_module_load (s_env *env, const s_sym *name,
+                      s_facts *facts)
 {
   s_str path;
   assert(env);
-  assert(module);
   assert(name);
   assert(facts);
-  module->name = name;
-  module->facts = facts;
   if (! module_name_path(&env->module_path, name, &path)) {
     warnx("env_module_load: %s: module_name_path",
           name->str.ptr.ps8);
-    return 0;
+    return false;
   }
   /*
   buf_write_1(&env->out, "module_load ");
@@ -708,10 +582,10 @@ s_module * env_module_load (s_env *env, s_module *module,
     warnx("env_module_load: %s: facts_load_file",
           path.ptr.ps8);
     str_clean(&path);
-    return 0;
+    return false;
   }
   str_clean(&path);
-  return module;
+  return true;
 }
 
 bool env_operator_is_binary (s_env *env, const s_ident *op)
@@ -849,6 +723,17 @@ void env_push_unwind_protect (s_env *env,
 {
   unwind_protect->next = env->unwind_protect;
   env->unwind_protect = unwind_protect;
+}
+
+bool env_tag_ident_is_bound (const s_env *env, const s_tag *tag,
+                             s_facts *facts)
+{
+  s_tag tmp;
+  assert(tag);
+  assert(tag->type == TAG_IDENT);
+  return tag->type == TAG_IDENT &&
+    (frame_get(env->frame, tag->data.ident.sym) ||
+     ident_get(&tag->data.ident, facts, &tmp));
 }
 
 s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_list *cleanup,

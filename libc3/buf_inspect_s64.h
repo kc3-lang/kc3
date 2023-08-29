@@ -11,7 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_s.h.in BITS=64 bits=64 */
+#ifndef BUF_INSPECT_S64_H
+#define BUF_INSPECT_S64_H
+
+#include "types.h"
 
 sw buf_inspect_s64 (s_buf *buf, const s64 *s);
 sw buf_inspect_s64_size (const s64 *s);
 
+#endif /* ndef BUF_INSPECT_S64_H */

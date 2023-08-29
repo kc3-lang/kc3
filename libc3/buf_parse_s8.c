@@ -11,8 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_parse_s.c.in BITS=8 bits=8 */
-
-#include "c3.h"
+#include "buf.h"
+#include "buf_parse.h"
+#include "buf_save.h"
+#include "c3_main.h"
+#include "ceiling.h"
+#include "str.h"
 
 sw buf_parse_s8 (s_buf *buf, s8 *dest)
 {

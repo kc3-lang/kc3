@@ -182,6 +182,26 @@ s8 compare_fn (const s_fn *a, const s_fn *b)
   s8 r;
   assert(a);
   assert(b);
+  if (a == b)
+    return 0;
+  if (!a)
+    return -1;
+  if (!b)
+    return 1;
+  if ((r = compare_bool(a->special_operator, b->special_operator)))
+    return r;
+  if ((r = compare_bool(a->macro, b->macro)))
+    return r;
+  if ((r = compare_fn_clause(a->clauses, b->clauses)))
+    return r;
+  return 0;
+}
+
+s8 compare_fn_clause (const s_fn_clause *a, const s_fn_clause *b)
+{
+  s8 r;
+  assert(a);
+  assert(b);
   while (1) {
     if (a == b)
       return 0;
@@ -749,14 +769,11 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_VOID: return 0;
   case TAG_ARRAY: return compare_array(&a->data.array, &b->data.array);
   case TAG_BOOL: return compare_bool(a->data.bool, b->data.bool);
-  case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
-    return compare_call(&a->data.call, &b->data.call);
+  case TAG_CALL: return compare_call(&a->data.call, &b->data.call);
   case TAG_CFN: return compare_cfn(&a->data.cfn, &b->data.cfn);
   case TAG_CHARACTER: return compare_character(a->data.character,
                                                b->data.character);
-  case TAG_FN: return compare_fn(a->data.fn, b->data.fn);
+  case TAG_FN: return compare_fn(&a->data.fn, &b->data.fn);
   case TAG_IDENT: return compare_ident(&a->data.ident, &b->data.ident);
   case TAG_LIST: return compare_list(a->data.list, b->data.list);
   case TAG_PTAG: return compare_ptag(a->data.ptag, b->data.ptag);

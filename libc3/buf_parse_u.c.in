@@ -11,8 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_parse_u.c.in BITS=_BITS$ bits=_bits$ */
-
-#include "c3.h"
+#include "buf.h"
+#include "buf_parse.h"
+#include "buf_save.h"
+#include "c3_main.h"
+#include "ceiling.h"
+#include "str.h"
 
 sw buf_parse_u_bits$ (s_buf *buf, u_bits$ *dest)
 {

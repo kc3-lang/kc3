@@ -22,17 +22,15 @@
 
 #include "types.h"
 
-s_module * module_load (s_module *module, const s_sym *name,
-                        s_facts *facts);
-s_str *    module_name_path (const s_str *prefix, const s_sym *name,
-                             s_str *dest);
-sw         module_name_path_size (const s_str *prefix,
-                                  const s_sym *name);
+/* Modifiers */
+bool    module_ensure_loaded (const s_sym *name, s_facts *facts);
+bool    module_load (const s_sym *name, s_facts *facts);
 
 /* Observers */
-s_tag * module_get (const s_module *module, const s_sym *sym,
-                    s_tag *dest);
-s_tag * module_is_bound (const s_module *module, const s_sym *sym,
-                         s_tag *dest);
+s_str * module_name_path (const s_str *prefix, const s_sym *name,
+                          s_str *dest);
+sw      module_name_path_size (const s_str *prefix,
+                               const s_sym *name);
+
 
 #endif /* MODULE_H */

@@ -32,6 +32,7 @@ HASH_UPDATE_PROTOTYPE(f32);
 HASH_UPDATE_PROTOTYPE(f64);
 void hash_update_fact (t_hash *hash, const s_fact *fact);
 void hash_update_fn (t_hash *hash, const s_fn *fn);
+void hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses);
 void hash_update_ident (t_hash *hash, const s_ident *ident);
 void hash_update_integer (t_hash *hash, const s_integer *i);
 void hash_update_list (t_hash *hash, const s_list *list);

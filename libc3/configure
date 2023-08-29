@@ -34,8 +34,11 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe"
-LDFLAGS="-shared ${LDFLAGS:-}"
-LIBS="${LIBS} -lm -pthread -rpath ${PREFIX}/lib"
+LDFLAGS="${LDFLAGS:-}"
+if [ "x$CC" != "xtcc" ]; then
+    LDFLAGS="-Wl,--allow-shlib-undefined ${LDFLAGS}"
+fi
+LIBS="${LIBS} -lm -pthread"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
@@ -44,8 +47,8 @@ config_asan
 config_gnu
 pkg_config libbsd-overlay
 pkg_config libmd
-config_lib libmd -lmd
-config_lib dl -ldl
+config_lib libmd -lmd 2>/dev/null
+config_lib dl -ldl 2>/dev/null
 config_include sha_h sys/types.h sha.h HAVE_SHA_H
 config_include sha1_h sys/types.h sha1.h HAVE_SHA1_H
 config_define PREFIX "\"${PREFIX}\""
@@ -104,19 +107,19 @@ echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$LIB: $LIBTOMMATH $OBJECTS" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS} ${OBJECTS} \${LIBS} -o ${LIB} -rpath ${LIBDIR}" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} ${OBJECTS} \${LIBS} --rpath ${LIBDIR} -o ${LIB}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$LIB_ASAN: $LIBTOMMATH_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} -o ${LIB_ASAN} -rpath ${LIBDIR}" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} --rpath ${LIBDIR} -o ${LIB_ASAN}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$LIB_COV: $LIBTOMMATH_COV $OBJECTS_COV" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} -o ${LIB_COV} -rpath ${LIBDIR}" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} --rpath ${LIBDIR} -o ${LIB_COV}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$LIB_DEBUG: $LIBTOMMATH_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} -o ${LIB_DEBUG} -rpath ${LIBDIR}" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} --rpath ${LIBDIR} -o ${LIB_DEBUG}" >> ${CONFIG_MK}
 
 for SRC in $SOURCES; do
     echo >> ${CONFIG_MK}

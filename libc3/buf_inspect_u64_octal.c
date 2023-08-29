@@ -11,7 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u_base.c.in BITS=64 bits=64 BASE=octal */
-#include "c3.h"
+#include "buf_inspect.h"
+#include "c3_main.h"
 
 sw buf_inspect_u64_octal (s_buf *buf, const u64 *u)
 {

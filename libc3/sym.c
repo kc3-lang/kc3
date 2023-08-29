@@ -194,14 +194,6 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_CALL;
     return true;
   }
-  if (sym == sym_1("call_fn")) {
-    *dest = TAG_CALL_FN;
-    return true;
-  }
-  if (sym == sym_1("call_macro")) {
-    *dest = TAG_CALL_MACRO;
-    return true;
-  }
   if (sym == sym_1("cfn")) {
     *dest = TAG_CFN;
     return true;

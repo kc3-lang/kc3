@@ -30,6 +30,7 @@ s8 compare_fact_osp (const s_fact *a, const s_fact *b);
 s8 compare_fact_unbound_var_count (const s_fact *a,
                                    const s_fact *b);
 s8 compare_fn (const s_fn *a, const s_fn *b);
+s8 compare_fn_clause (const s_fn_clause *a, const s_fn_clause *b);
 s8 compare_ident (const s_ident *a, const s_ident *b);
 s8 compare_integer (const s_integer *a, const s_integer *b);
 s8 compare_integer_s64 (const s_integer *a, s64 b);

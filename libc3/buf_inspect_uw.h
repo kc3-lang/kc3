@@ -11,6 +11,10 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u.h.in BITS=W bits=w */
+#ifndef BUF_INSPECT_UW_H
+#define BUF_INSPECT_UW_H
+
+#include "types.h"
 
 sw buf_inspect_uw (s_buf *buf, const uw *u);
 sw buf_inspect_uw_base (s_buf *buf,
@@ -19,3 +23,5 @@ sw buf_inspect_uw_base (s_buf *buf,
 sw buf_inspect_uw_base_size (const s_str *base,
                                   const uw *u);
 sw buf_inspect_uw_size (const uw *u);
+
+#endif /* ndef BUF_INSPECT_UW_H */

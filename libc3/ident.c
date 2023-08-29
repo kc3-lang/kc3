@@ -14,8 +14,12 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "character.h"
+#include "facts_with.h"
+#include "facts_with_cursor.h"
+#include "module.h"
 #include "str.h"
 #include "sym.h"
+#include "tag.h"
 
 bool ident_character_is_reserved (character c)
 {
@@ -52,6 +56,95 @@ bool ident_first_character_is_reserved (character c)
           c == ']' ||
           c == '{' ||
           c == '}');
+}
+
+s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
+{
+  s_facts_with_cursor cursor;
+  s_tag tag_cfn;
+  s_tag tag_fn;
+  s_tag tag_ident;
+  s_tag tag_is_a;
+  s_tag tag_macro;
+  s_tag tag_module_name;
+  s_tag tag_special_operator;
+  s_tag tag_sym;
+  s_tag tag_symbol;
+  s_tag tag_var;
+  if (! module_ensure_loaded(ident->module_name, facts))
+    return NULL;
+  tag_init_1(    &tag_cfn,      ":cfn");
+  tag_init_1(    &tag_fn,       ":fn");
+  tag_init_ident(&tag_ident, ident);
+  tag_init_1(    &tag_is_a,     ":is_a");
+  tag_init_1(    &tag_macro,    ":macro");
+  tag_init_1(    &tag_special_operator, ":special_operator");
+  tag_init_sym(  &tag_sym, ident->sym);
+  tag_init_1(    &tag_symbol,   ":symbol");
+  tag_init_var(  &tag_var);
+  facts_with_cursor_clean(&cursor);
+  facts_with(facts, &cursor, (t_facts_spec) {
+      &tag_module_name,
+      &tag_symbol, &tag_ident,    /* module exports symbol */
+      NULL, NULL });
+  if (! facts_with_cursor_next(&cursor)) {
+    warnx("symbol %s not found in module %s",
+          ident->sym->str.ptr.ps8,
+          ident->module_name->str.ptr.ps8);
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  facts_with_cursor_clean(&cursor);
+  facts_with(facts, &cursor, (t_facts_spec) {
+      &tag_ident, &tag_cfn, &tag_var,
+      NULL, NULL });
+  if (facts_with_cursor_next(&cursor)) {
+    if (tag_var.type != TAG_CFN) {
+      warnx("%s.%s is not a C function",
+            ident->module_name->str.ptr.ps8,
+            ident->sym->str.ptr.ps8);
+      facts_with_cursor_clean(&cursor);
+      return NULL;
+    }
+  }
+  facts_with_cursor_clean(&cursor);
+  if (tag_var.type == TAG_VAR) {
+    facts_with(facts, &cursor, (t_facts_spec) {
+        &tag_ident, &tag_fn, &tag_var,
+        NULL, NULL });
+    if (facts_with_cursor_next(&cursor)) {
+      if (tag_var.type != TAG_FN) {
+        warnx("%s.%s is not a function",
+              ident->module_name->str.ptr.ps8,
+              ident->sym->str.ptr.ps8);
+        facts_with_cursor_clean(&cursor);
+        return NULL;
+      }
+      facts_with_cursor_clean(&cursor);
+    }
+  }
+  if (tag_var.type == TAG_VAR)
+    return NULL;
+  facts_with(facts, &cursor, (t_facts_spec) {
+      &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });
+  if (facts_with_cursor_next(&cursor)) {
+    if (tag_var.type == TAG_CFN)
+      tag_var.data.cfn.macro = true;
+    else if (tag_var.type == TAG_FN)
+      tag_var.data.fn.macro = true;
+  }
+  facts_with_cursor_clean(&cursor);
+  facts_with(facts, &cursor, (t_facts_spec) {
+      &tag_ident, &tag_is_a, &tag_special_operator, NULL, NULL});
+  if (facts_with_cursor_next(&cursor)) {
+    if (tag_var.type == TAG_CFN)
+      tag_var.data.cfn.special_operator = true;
+    else if (tag_var.type == TAG_FN)
+      tag_var.data.fn.special_operator = true;
+  }
+  facts_with_cursor_clean(&cursor);
+  *dest = tag_var;
+  return dest;
 }
 
 bool ident_has_reserved_characters (const s_ident *ident)
@@ -114,7 +207,7 @@ void ident_resolve_module (s_ident *ident, const s_env *env)
   assert(ident);
   if (! ident->module_name) {
     assert(env->current_module);
-    ident->module_name = env->current_module->name;
+    ident->module_name = env->current_module;
   }
 }
 

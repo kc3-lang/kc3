@@ -185,12 +185,11 @@
 #define BUF_PARSE_TEST_FN(test)                                        \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_fn *dest = NULL;                                                 \
+    s_fn dest;                                                         \
     test_context("buf_parse_fn(" # test ")");                          \
     buf_init_1(&buf, (test));                                          \
     TEST_EQ(buf_parse_fn(&buf, &dest), strlen(test));                  \
-    TEST_ASSERT(dest);                                                 \
-    fn_delete_all(dest);                                               \
+    fn_clean(&dest);                                                   \
     buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)

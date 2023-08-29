@@ -11,59 +11,45 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
+#include <err.h>
 #include <string.h>
-#include "c3.h"
+#include "buf.h"
+#include "character.h"
+#include "env.h"
+#include "facts.h"
+#include "facts_with.h"
+#include "facts_with_cursor.h"
+#include "module.h"
+#include "tag.h"
 
-s_tag * module_get (const s_module *module, const s_sym *sym,
-                    s_tag *dest)
+bool module_ensure_loaded (const s_sym *name, s_facts *facts)
 {
-  s_ident ident;
-  s_tag tag_cfn;
-  s_tag tag_fn;
-  s_tag tag_ident;
+  s_facts_with_cursor cursor;
+  s_tag tag_module_name;
   s_tag tag_is_a;
   s_tag tag_module;
-  s_tag tag_name;
-  s_tag tag_symbol;
-  s_tag tag_tmp;
-  assert(module);
-  assert(sym);
-  s_facts_with_cursor cursor;
-  tag_init_sym(&tag_name, module->name);
-  tag_init_1(  &tag_is_a, ":is_a");
-  tag_init_1(  &tag_module, ":module");
-  tag_init_1(  &tag_symbol, ":symbol");
-  ident_init(&ident, module->name, sym);
-  tag_init_ident(&tag_ident, &ident);
-  facts_with(module->facts, &cursor, (t_facts_spec) {
-      &tag_name, &tag_is_a, &tag_module,
-      &tag_symbol, &tag_ident, NULL, NULL});
+  tag_init_sym(&tag_module_name, name);
+  tag_init_1(  &tag_is_a,     ":is_a");
+  tag_init_1(  &tag_module,   ":module");
+  facts_with(facts, &cursor, (t_facts_spec) {
+      &tag_module_name,
+      &tag_is_a, &tag_module,     /* module exists */
+      NULL, NULL });
   if (! facts_with_cursor_next(&cursor)) {
-    facts_with_cursor_clean(&cursor);
-    return NULL;
+    if (! module_load(name, facts)) {
+      warnx("module not found: %s",
+            name->str.ptr.ps8);
+      facts_with_cursor_clean(&cursor);
+      return false;
+    }
   }
   facts_with_cursor_clean(&cursor);
-  tag_init_1(&tag_cfn, ":cfn");
-  tag_init_1(&tag_fn, ":fn");
-  tag_init_var(&tag_tmp);
-  facts_with(module->facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_cfn, &tag_tmp, NULL, NULL});
-  if (! facts_with_cursor_next(&cursor)) {
-    facts_with_cursor_clean(&cursor);
-    facts_with(module->facts, &cursor, (t_facts_spec) {
-        &tag_ident, &tag_fn, &tag_tmp, NULL, NULL});
-    if (! facts_with_cursor_next(&cursor))
-      tag_init_void(&tag_tmp);
-  }
-  facts_with_cursor_clean(&cursor);
-  *dest = tag_tmp;
-  return dest;
+  return true;
 }
 
-s_module * module_load (s_module *module, const s_sym *name,
-                        s_facts *facts)
+bool module_load (const s_sym *name, s_facts *facts)
 {
-  return env_module_load(&g_c3_env, module, name, facts);
+  return env_module_load(&g_c3_env, name, facts);
 }
 
 s_str * module_name_path (const s_str *prefix, const s_sym *name,

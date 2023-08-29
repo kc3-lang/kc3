@@ -11,8 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_parse_u.c.in BITS=64 bits=64 */
-
-#include "c3.h"
+#include "buf.h"
+#include "buf_parse.h"
+#include "buf_save.h"
+#include "c3_main.h"
+#include "ceiling.h"
+#include "str.h"
 
 sw buf_parse_u64 (s_buf *buf, u64 *dest)
 {

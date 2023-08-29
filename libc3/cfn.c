@@ -123,6 +123,8 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
   }
   dest->result_type = cfn->result_type;
   dest->ptr = cfn->ptr;
+  dest->macro = cfn->macro;
+  dest->special_operator = cfn->special_operator;
   return dest;
 }
 
@@ -155,7 +157,7 @@ s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
 s_cfn * cfn_link (s_cfn *cfn)
 {
   assert(cfn);
-  if (! (cfn->ptr.p = dlsym(RTLD_DEFAULT, cfn->name->str.ptr.ps8))) {
+  if (! (cfn->ptr.p = dlsym(NULL, cfn->name->str.ptr.ps8))) {
     warnx("cfn_link: %s: %s", cfn->name->str.ptr.ps8, dlerror());
     return NULL;
   }

@@ -11,8 +11,11 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u.c.in BITS=W bits=w */
-#include "c3.h"
-#include "buf_inspect_uw.h"
+#include "buf.h"
+#include "buf_inspect.h"
+#include "buf_save.h"
+#include "c3_main.h"
+#include "str.h"
 
 sw buf_inspect_uw (s_buf *buf, const uw *u)
 {

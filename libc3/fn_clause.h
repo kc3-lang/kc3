@@ -11,28 +11,28 @@
  * THIS SOFTWARE.
  */
 /**
- * @file fn.h
- * Function type.
+ * @file fn_clause.h
+ * Function clause type.
  *
  * Syntax : "fn" (type? "(" ((type space)? sym ","?)* ")" "{" prog "}")+
  */
-#ifndef FN_H
-#define FN_H
+#ifndef FN_CLAUSE_H
+#define FN_CLAUSE_H
 
 #include "types.h"
 
 /* stack-allocation compatible functions */
-void   fn_clean (s_fn *fn);
-s_fn * fn_init (s_fn *fn);
+void          fn_clause_clean (s_fn_clause *clause);
+s_fn_clause * fn_clause_init (s_fn_clause *clause, s_fn_clause *next_clause);
 
 /* constructors */
-s_fn * fn_new ();
-s_fn * fn_new_copy (const s_fn *fn);
+s_fn_clause * fn_clause_new (s_fn_clause *next_clause);
 
 /* destructors */
-void   fn_delete (s_fn *fn);
+s_fn_clause * fn_clause_delete (s_fn_clause *clause);
+void          fn_clause_delete_all (s_fn_clause *clause);
 
-/* observers */
-s_fn * fn_copy (const s_fn *src, s_fn *dest);
+/* modifiers */
+s_fn_clause * fn_clause_copy (const s_fn_clause *src, s_fn_clause **dest);
 
 #endif /* FN_H */

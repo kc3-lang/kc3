@@ -11,7 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_s.h.in BITS=_BITS$ bits=_bits$ */
+#ifndef BUF_INSPECT_S_BITS$_H
+#define BUF_INSPECT_S_BITS$_H
+
+#include "types.h"
 
 sw buf_inspect_s_bits$ (s_buf *buf, const s_bits$ *s);
 sw buf_inspect_s_bits$_size (const s_bits$ *s);
 
+#endif /* ndef BUF_INSPECT_S_BITS$_H */

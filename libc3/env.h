@@ -30,12 +30,7 @@ bool       env_eval_call_cfn (s_env *env, const s_call *call,
                               s_tag *dest);
 bool       env_eval_call_fn (s_env *env, const s_call *call,
                              s_tag *dest);
-bool       env_eval_call_macro (s_env *env, const s_call *call,
-                                s_tag *dest);
 bool       env_eval_call_resolve (s_env *env, s_call *call);
-bool       env_eval_call_special_operator (s_env *env,
-                                           const s_call *call,
-                                           s_tag *dest);
 bool       env_eval_equal_list (s_env *env, const s_list *a,
                                 const s_list *b, s_list **dest);
 bool       env_eval_equal_tag (s_env *env, const s_tag *a,
@@ -50,14 +45,16 @@ bool       env_eval_progn (s_env *env, const s_list *program,
 bool       env_eval_quote(s_env *env, const s_quote *quote,
                           s_tag *dest);
 bool       env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
-s_module * env_module_load (s_env *env, s_module *module,
-                            const s_sym *name, s_facts *facts);
+bool       env_module_load (s_env *env, const s_sym *name,
+                            s_facts *facts);
 bool       env_operator_is_binary (s_env *env, const s_ident *op);
 bool       env_operator_is_right_associative (s_env *env,
                                               const s_ident *op);
 bool       env_operator_is_unary (s_env *env, const s_ident *op);
 s8         env_operator_precedence (s_env *env,
                                     const s_ident *op);
+bool       env_tag_ident_is_bound (const s_env *env, const s_tag *tag,
+                                   s_facts *facts);
 
 /* Control structures. */
 void env_error_f (s_env *env, const char *fmt, ...);

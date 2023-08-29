@@ -14,7 +14,9 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "c3.h"
+#include "c3_main.h"
+#include "env.h"
+#include "sym.h"
 
 const s_str g_c3_base_binary = {{NULL}, 2, {"01"}};
 const s_str g_c3_base_octal = {{NULL}, 8, {"01234567"}};

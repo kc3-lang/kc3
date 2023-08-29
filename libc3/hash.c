@@ -137,22 +137,34 @@ void hash_update_fact (t_hash *hash, const s_fact *fact)
 
 void hash_update_fn (t_hash *hash, const s_fn *fn)
 {
-  uw count = 0;
-  const s_fn *f;
   const s8 type[] = "fn";
   assert(hash);
   assert(fn);
   hash_update(hash, type, sizeof(type));
-  f = fn;
+  hash_update_bool(hash, fn->macro);
+  hash_update_bool(hash, fn->macro);
+  hash_update_fn_clauses(hash, fn->clauses);
+}
+
+void hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses)
+{
+  uw count = 0;
+  const s_fn_clause *f;
+  const s8 type[] = "fn_clauses";
+  assert(hash);
+  assert(clauses);
+  hash_update(hash, type, sizeof(type));
+  f = clauses;
   while (f) {
     count++;
     f = f->next_clause;
   }
   hash_update_uw(hash, count);
-  while (fn) {
-    hash_update_list(hash, fn->pattern);
-    hash_update_list(hash, fn->algo);
-    fn = fn->next_clause;
+  f = clauses;
+  while (f) {
+    hash_update_list(hash, f->pattern);
+    hash_update_list(hash, f->algo);
+    f = f->next_clause;
   }
 }
 
@@ -255,16 +267,13 @@ void hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_VOID: break;
   case TAG_ARRAY: hash_update_array(hash, &tag->data.array);   break;
   case TAG_BOOL: hash_update_bool(hash, tag->data.bool);       break;
-  case TAG_CALL:
-  case TAG_CALL_FN:
-  case TAG_CALL_MACRO:
-    hash_update_call(hash, &tag->data.call);                   break;
+  case TAG_CALL: hash_update_call(hash, &tag->data.call);      break;
   case TAG_CFN: hash_update_cfn(hash, &tag->data.cfn);         break;
   case TAG_CHARACTER:
     hash_update_character(hash, tag->data.character);          break;
   case TAG_F32: hash_update_f32(hash, tag->data.f32);          break;
   case TAG_F64: hash_update_f64(hash, tag->data.f64);          break;
-  case TAG_FN: hash_update_fn(hash, tag->data.fn);             break;
+  case TAG_FN: hash_update_fn(hash, &tag->data.fn);            break;
   case TAG_IDENT: hash_update_ident(hash, &tag->data.ident);   break;
   case TAG_INTEGER:
     hash_update_integer(hash, &tag->data.integer);             break;

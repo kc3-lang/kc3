@@ -42,6 +42,7 @@
 #include "buf_parse_u64.h"
 #include "buf_parse_uw.h"
 #include "buf_save.h"
+#include "c3_main.h"
 #include "call.h"
 #include "ceiling.h"
 #include "cfn.h"
@@ -56,6 +57,7 @@
 #include "facts_with.h"
 #include "facts_with_cursor.h"
 #include "fn.h"
+#include "fn_clause.h"
 #include "hash.h"
 #include "ident.h"
 #include "integer.h"
@@ -69,20 +71,5 @@
 #include "tuple.h"
 #include "type.h"
 #include "ucd.h"
-
-#define C3_EXT ".c3"
-
-extern const s_str g_c3_base_binary;
-extern const s_str g_c3_base_octal;
-extern const s_str g_c3_base_decimal;
-extern const s_str g_c3_base_hexadecimal;
-extern const s_str g_c3_bases_hexadecimal[2];
-
-/* stack-allocation compatible functions */
-void c3_init (s_env *env);
-void c3_clean (s_env *env);
-
-/* debug */
-void c3_break ();
 
 #endif /* C3_H */
