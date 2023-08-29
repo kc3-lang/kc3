@@ -79,7 +79,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBC3=../libc3/.libs/libc3.so
+LIBC3=../libc3/libc3.la
 LIBS="$LIBC3 $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

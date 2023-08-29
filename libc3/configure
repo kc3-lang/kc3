@@ -34,11 +34,11 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe"
-LDFLAGS="${LDFLAGS:-}"
+LDFLAGS="--shared ${LDFLAGS:-}"
 if [ "x$CC" != "xtcc" ]; then
     LDFLAGS="-Wl,--allow-shlib-undefined ${LDFLAGS}"
 fi
-LIBS="${LIBS} -lm -pthread"
+LIBS="${LIBS} -lm -pthread -rpath ${PREFIX}/lib"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
@@ -107,19 +107,19 @@ echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$LIB: $LIBTOMMATH $OBJECTS" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} ${OBJECTS} \${LIBS} --rpath ${LIBDIR} -o ${LIB}" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} ${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o ${LIB}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$LIB_ASAN: $LIBTOMMATH_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} --rpath ${LIBDIR} -o ${LIB_ASAN}" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} -rpath ${LIBDIR} -o ${LIB_ASAN}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$LIB_COV: $LIBTOMMATH_COV $OBJECTS_COV" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} --rpath ${LIBDIR} -o ${LIB_COV}" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} -rpath ${LIBDIR} -o ${LIB_COV}" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
 echo "$LIB_DEBUG: $LIBTOMMATH_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} --rpath ${LIBDIR} -o ${LIB_DEBUG}" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} -rpath ${LIBDIR} -o ${LIB_DEBUG}" >> ${CONFIG_MK}
 
 for SRC in $SOURCES; do
     echo >> ${CONFIG_MK}
