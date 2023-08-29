@@ -23,6 +23,7 @@ SOURCES = \
 	facts_cursor_test.c \
 	facts_test.c \
 	facts_with_test.c \
+	fn_test.c \
 	hash_test.c \
 	ident_test.c \
 	libc3_test.c \

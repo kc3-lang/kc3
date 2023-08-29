@@ -27,6 +27,7 @@ void fact_test ();
 void facts_test ();
 void facts_cursor_test ();
 void facts_with_test ();
+void fn_test ();
 void ident_test ();
 void list_test ();
 void set__fact_test ();
@@ -93,6 +94,10 @@ int main (int argc, char **argv)
   if (test_target("tuple")) {
     fprintf(stderr, "\ntuple\n");
     tuple_test();
+  }
+  if (test_target("fn")) {
+    fprintf(stderr, "\nfn\n");
+    fn_test();
   }
   if (test_target("call")) {
     fprintf(stderr, "\ncall\n");

@@ -643,7 +643,7 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
     if ((r = buf_write_1(buf, "{\n")) < 0)
       return r;
     result += r;
-    while (fn) {
+    while (clause) {
       if ((r = buf_write_1(buf, "  ")) < 0)
         return r;
       result += r;

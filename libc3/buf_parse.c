@@ -1164,6 +1164,7 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
       *tail = fn_clause_new(NULL);
       if ((r = buf_parse_fn_clause(buf, *tail)) <= 0)
         goto restore;
+      result += r;
       tail = &(*tail)->next_clause;
       if ((r = buf_ignore_spaces(buf)) < 0)
         goto restore;

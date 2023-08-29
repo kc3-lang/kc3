@@ -13,9 +13,12 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include <string.h>
 #include <strings.h>
 #include "arg.h"
 #include "binding.h"
+#include "buf.h"
+#include "buf_parse.h"
 #include "fn.h"
 #include "fn_clause.h"
 #include "list.h"
@@ -44,6 +47,18 @@ s_fn * fn_init (s_fn *fn)
 {
   assert(fn);
   bzero(fn, sizeof(s_fn));
+  return fn;
+}
+
+s_fn * fn_init_1 (s_fn *fn, s8 *p)
+{
+  s_buf buf;
+  sw r;
+  assert(fn);
+  buf_init_1(&buf, p);
+  if ((r = buf_parse_fn(&buf, fn)) != (sw) strlen(p))
+    errx(1, "fn_init_1: buf_parse_fn(%s) %ld != %lu", p, r, strlen(p));
+  buf_clean(&buf);
   return fn;
 }
 

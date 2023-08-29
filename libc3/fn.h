@@ -24,6 +24,7 @@
 /* stack-allocation compatible functions */
 void   fn_clean (s_fn *fn);
 s_fn * fn_init (s_fn *fn);
+s_fn * fn_init_1 (s_fn *fn, s8 *p);
 
 /* constructors */
 s_fn * fn_new ();
