@@ -108,13 +108,13 @@ Script interpreter.
      - floating point numbers
    - variables
       - DONE = equal
-      - funcall
+      - DONE funcall
    - DONE boolean operators
    - DONE comparison operators
    - arrays
      - DONE parse
      - DONE inspect
-     - [][][] data
+     - DONE [][][] data
    - lists
    - defmodule
    - structs
@@ -135,9 +135,6 @@ Script interpreter.
    - buf_sha256
    - buf_popen
    - tests
-     - sizeof(sw) == sizeof(void *)
-     - `(-S8_MIN - S8_MAX) == 1`
-     - `UW_MAX == ((1 << 8 * sizeof(uw)) - 1)`
      - DONE group tests by test case
    - DONE ci
    - DONE c function call

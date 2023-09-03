@@ -71,6 +71,17 @@ void env_error_tag (s_env *env, const s_tag *tag)
   }
 }
 
+bool env_eval_array (s_env *env, const s_array *array, s_tag *dest)
+{
+  assert(env);
+  assert(array);
+  assert(dest);
+  (void) env;
+  dest->type = TAG_ARRAY;
+  array_copy(array, &dest->data.array);
+  return true;
+}
+
 bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
 {
   s_call c;
@@ -179,6 +190,7 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
       clause = fn->clauses;
       while (clause) {
         err_inspect_fn_pattern(clause->pattern);
+        err_puts("\n");
         clause = clause->next_clause;
       }
       err_puts("\nArguments :\n");
@@ -316,6 +328,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   switch (a->type) {
   case TAG_F32:
   case TAG_F64:
+  case TAG_INTEGER:
   case TAG_S8:
   case TAG_S16:
   case TAG_S32:
@@ -329,6 +342,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     switch (b->type) {
     case TAG_F32:
     case TAG_F64:
+    case TAG_INTEGER:
     case TAG_S8:
     case TAG_S16:
     case TAG_S32:
@@ -340,7 +354,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     case TAG_U64:
     case TAG_UW:
       if (compare_tag(a, b)) {
-        warnx("env_eval_compare_tag: value mismatch");
+        warnx("env_eval_equal_tag: numeric value mismatch");
         return false;
       }
       tag_copy(a, dest);
@@ -437,6 +451,29 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   return true;
 }
 
+bool env_eval_list (s_env *env, const s_list *list, s_tag *dest)
+{
+  s_list *next;
+  s_list *tmp = NULL;
+  s_list **tail = &tmp;
+  assert(env);
+  assert(dest);
+  while (list) {
+    *tail = list_new(NULL, NULL);
+    if (! env_eval_tag(env, &list->tag, &(*tail)->tag))
+      return false;
+    next = list_next(list);
+    if (! next)
+      if (! env_eval_tag(env, &list->next, &(*tail)->next))
+        return false;
+    tail = &(*tail)->next.data.list;
+    list = next;
+  }
+  dest->type = TAG_LIST;
+  dest->data.list = tmp;
+  return true;
+}
+
 bool env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
 {
   const s_list *next;
@@ -473,13 +510,18 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_VOID:
     tag_init_void(dest);
     return true;
+  case TAG_ARRAY:
+    return env_eval_array(env, &tag->data.array, dest);
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
+  case TAG_LIST:
+    return env_eval_list(env, tag->data.list, dest);
   case TAG_QUOTE:
     return env_eval_quote(env, &tag->data.quote, dest);
-  case TAG_ARRAY:
+  case TAG_TUPLE:
+    return env_eval_tuple(env, &tag->data.tuple, dest);
   case TAG_BOOL:
   case TAG_CFN:
   case TAG_CHARACTER:
@@ -487,7 +529,6 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_F64:
   case TAG_FN:
   case TAG_INTEGER:
-  case TAG_LIST:
   case TAG_PTAG:
   case TAG_S8:
   case TAG_S16:
@@ -496,7 +537,6 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_SW:
   case TAG_STR:
   case TAG_SYM:
-  case TAG_TUPLE:
   case TAG_U8:
   case TAG_U16:
   case TAG_U32:
@@ -509,6 +549,24 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   assert(! "env_eval_tag: invalid tag");
   errx(1, "env_eval_tag: invalid tag");
   return false;
+}
+
+bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
+{
+  uw i = 0;
+  s_tuple tmp;
+  assert(env);
+  assert(tuple);
+  assert(dest);
+  tuple_init(&tmp, tuple->count);
+  while (i < tuple->count) {
+    if (! env_eval_tag(env, &tuple->tag[i], &tmp.tag[i]))
+      return false;
+    i++;
+  }
+  dest->type = TAG_TUPLE;
+  dest->data.tuple = tmp;
+  return true;
 }
 
 s_env * env_init (s_env *env)

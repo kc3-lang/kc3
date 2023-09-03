@@ -22,6 +22,8 @@ void    env_clean (s_env *env);
 s_env * env_init (s_env *env);
 
 /* Modifiers. */
+bool       env_eval_array(s_env *env, const s_array *array,
+                          s_tag *dest);
 bool       env_eval_call (s_env *env, const s_call *call,
                           s_tag *dest);
 bool       env_eval_call_arguments (s_env *env, s_list *args,
@@ -40,11 +42,15 @@ bool       env_eval_equal_tuple (s_env *env, const s_tuple *a,
 bool       env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest);
 bool       env_eval_ident (s_env *env, const s_ident *ident,
                            s_tag *dest);
+bool       env_eval_list (s_env *env, const s_list *list,
+                          s_tag *dest);
 bool       env_eval_progn (s_env *env, const s_list *program,
                            s_tag *dest);
-bool       env_eval_quote(s_env *env, const s_quote *quote,
-                          s_tag *dest);
+bool       env_eval_quote (s_env *env, const s_quote *quote,
+                           s_tag *dest);
 bool       env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
+bool       env_eval_tuple (s_env *env, const s_tuple *tuple,
+                           s_tag *dest);
 bool       env_module_load (s_env *env, const s_sym *name,
                             s_facts *facts);
 bool       env_operator_is_binary (s_env *env, const s_ident *op);

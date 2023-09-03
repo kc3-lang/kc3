@@ -35,9 +35,9 @@
 
 # comment 10
 { # comment 11
-  a # comment 12
+  :a # comment 12
   , # comment 13
-  b ## comment 14
+  :b ## comment 14
   , ## comment 15
-  c ## comment 16
+  :c ## comment 16
   } ## comment 17
