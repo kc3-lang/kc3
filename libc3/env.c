@@ -182,6 +182,7 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
       }
       args_final = args;
     }
+    /* FIXME: bindings go through clauses */
     while (clause && ! env_eval_equal_list(env, clause->pattern,
                                            args_final, &tmp))
       clause = clause->next_clause;
@@ -260,7 +261,7 @@ bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
     if (! a_next || ! b_next) {
       if (! env_eval_equal_tag(env, &a->next, &b->next, &(*t)->next))
         goto ko;
-      break;
+      goto ok;
     }
     a = a_next;
     b = b_next;
@@ -287,31 +288,21 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   assert(dest);
   tag_init_void(&tmp_a);
   tag_init_void(&tmp_b);
-  is_unbound_a = a->type == TAG_IDENT && ! tag_ident_is_bound(a);
-  is_unbound_b = b->type == TAG_IDENT && ! tag_ident_is_bound(b);
+  is_unbound_a = a->type == TAG_IDENT;
+  is_unbound_b = b->type == TAG_IDENT;
   if (is_unbound_a && is_unbound_b) {
     warnx("unbound equal on both sides: %s = %s",
           a->data.ident.sym->str.ptr.ps8,
           b->data.ident.sym->str.ptr.ps8);
     return false;
   }
-  if (a->type == TAG_IDENT && tag_ident_is_bound(a)) {
-    if (! env_eval_ident(env, &a->data.ident, &tmp_a))
+  if (! is_unbound_a) {
+    if (! env_eval_tag(env, a, &tmp_a))
       return false;
     a = &tmp_a;
   }
-  if (b->type == TAG_IDENT && tag_ident_is_bound(b)) {
-    if (! env_eval_ident(env, &b->data.ident, &tmp_b))
-      return false;
-    b = &tmp_b;
-  }
-  if (a->type == TAG_CALL) {
-    if (! env_eval_call(env, &a->data.call, &tmp_a))
-      return false;
-    a = &tmp_a;
-  }
-  if (b->type == TAG_CALL) {
-    if (! env_eval_call(env, &b->data.call, &tmp_b))
+  if (! is_unbound_b) {
+    if (! env_eval_tag(env, b, &tmp_b))
       return false;
     b = &tmp_b;
   }
@@ -461,17 +452,20 @@ bool env_eval_list (s_env *env, const s_list *list, s_tag *dest)
   while (list) {
     *tail = list_new(NULL, NULL);
     if (! env_eval_tag(env, &list->tag, &(*tail)->tag))
-      return false;
+      goto ko;
     next = list_next(list);
     if (! next)
       if (! env_eval_tag(env, &list->next, &(*tail)->next))
-        return false;
+        goto ko;
     tail = &(*tail)->next.data.list;
     list = next;
   }
   dest->type = TAG_LIST;
   dest->data.list = tmp;
   return true;
+ ko:
+  list_delete_all(tmp);
+  return false;
 }
 
 bool env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
