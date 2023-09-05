@@ -47,6 +47,8 @@ TEST_CASE(env_eval_equal_tag)
   env_init(&env);
   env.frame = frame_init(&frame, env.frame);
   test_context("x = (1, 2)");
+  TEST_ASSERT(env_eval_equal_tag(&env, tag_init_1(&x, "x"),
+                                 tag_init_1(&y, "(1, 2)"), &z));
   TEST_ASSERT(frame_get(&frame, sym_1("x")));
   env.frame = frame_clean(&frame);
   env_clean(&env);

@@ -296,16 +296,6 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
           b->data.ident.sym->str.ptr.ps8);
     return false;
   }
-  if (! is_unbound_a) {
-    if (! env_eval_tag(env, a, &tmp_a))
-      return false;
-    a = &tmp_a;
-  }
-  if (! is_unbound_b) {
-    if (! env_eval_tag(env, b, &tmp_b))
-      return false;
-    b = &tmp_b;
-  }
   if (is_unbound_a) {
     tag_copy(b, dest);
     frame_binding_new(env->frame, a->data.ident.sym, b);
