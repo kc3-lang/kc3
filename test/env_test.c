@@ -50,6 +50,8 @@ TEST_CASE(env_eval_equal_tag)
   TEST_ASSERT(env_eval_equal_tag(&env, tag_init_1(&x, "x"),
                                  tag_init_1(&y, "(1, 2)"), &z));
   TEST_ASSERT(frame_get(&frame, sym_1("x")));
+  TEST_EQ(compare_tag(&z, &y), 0);
+  tag_clean(&z);
   env.frame = frame_clean(&frame);
   env_clean(&env);
   env_init(&env);
