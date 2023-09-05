@@ -4,6 +4,7 @@ add {List, :is_a, :module}
 add {List, :name, "List"}
 add {List, :path, "list.facts"}
 add {List, :symbol, List.map}
+add {List, :symbol, List.reverse}
 add {List.map, :fn, fn {
   ((), _) {
     ()
@@ -11,4 +12,9 @@ add {List.map, :fn, fn {
   ((a | b), f) {
     (f(a) | List.map(b, f))
   }
+}}
+add {List.reverse, :fn, fn {
+  (x) { List.reverse(x, ()) }
+  ((), acc) { acc }
+  ((a | b), acc) { List.reverse(b, (a | acc)) }
 }}
