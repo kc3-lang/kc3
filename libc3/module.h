@@ -25,8 +25,11 @@
 /* Modifiers */
 bool    module_ensure_loaded (const s_sym *name, s_facts *facts);
 bool    module_load (const s_sym *name, s_facts *facts);
+bool    module_maybe_reload (const s_sym *name, s_facts *facts);
 
 /* Observers */
+s_tag * module_load_time (const s_sym *name, s_facts *facts,
+                          s_tag *dest);
 s_str * module_name_path (const s_str *prefix, const s_sym *name,
                           s_str *dest);
 sw      module_name_path_size (const s_str *prefix,

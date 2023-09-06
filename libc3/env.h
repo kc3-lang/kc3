@@ -53,6 +53,8 @@ bool       env_eval_tuple (s_env *env, const s_tuple *tuple,
                            s_tag *dest);
 bool       env_module_load (s_env *env, const s_sym *name,
                             s_facts *facts);
+bool       env_module_maybe_reload (s_env *env, const s_sym *name,
+                                    s_facts *facts);
 bool       env_operator_is_binary (s_env *env, const s_ident *op);
 bool       env_operator_is_right_associative (s_env *env,
                                               const s_ident *op);

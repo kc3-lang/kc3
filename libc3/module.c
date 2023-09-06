@@ -15,10 +15,12 @@
 #include <string.h>
 #include "buf.h"
 #include "character.h"
+#include "compare.h"
 #include "env.h"
 #include "facts.h"
 #include "facts_with.h"
 #include "facts_with_cursor.h"
+#include "file.h"
 #include "module.h"
 #include "tag.h"
 
@@ -44,12 +46,38 @@ bool module_ensure_loaded (const s_sym *name, s_facts *facts)
     }
   }
   facts_with_cursor_clean(&cursor);
-  return true;
+  return module_maybe_reload(name, facts);
 }
 
 bool module_load (const s_sym *name, s_facts *facts)
 {
   return env_module_load(&g_c3_env, name, facts);
+}
+
+s_tag * module_load_time (const s_sym *name, s_facts *facts,
+                          s_tag *dest)
+{
+  s_facts_with_cursor cursor;
+  s_tag tag_name;
+  s_tag tag_load_time;
+  s_tag tag_time;
+  tag_init_sym(&tag_name, name);
+  tag_init_1(  &tag_load_time, ":load_time");
+  tag_init_var(&tag_time);
+  facts_with(facts, &cursor, (t_facts_spec) {
+      &tag_name, &tag_load_time, &tag_time, NULL, NULL });
+  if (! facts_with_cursor_next(&cursor)) {
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  facts_with_cursor_clean(&cursor);
+  *dest = tag_time;
+  return dest;
+}
+
+bool module_maybe_reload (const s_sym *name, s_facts *facts)
+{
+  return env_module_maybe_reload(&g_c3_env, name, facts);
 }
 
 s_str * module_name_path (const s_str *prefix, const s_sym *name,

@@ -73,6 +73,37 @@ s_fact * facts_add_tags (s_facts *facts, const s_tag *subject,
   return facts_add_fact(facts, &fact);
 }
 
+s_fact * facts_replace_fact (s_facts *facts, const s_fact *fact)
+{
+  assert(facts);
+  assert(fact);
+  return facts_replace_tags(facts, fact->subject, fact->predicate,
+                            fact->object);
+}
+
+s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
+                             const s_tag *predicate,
+                             const s_tag *object)
+{
+  s_facts_cursor cursor;
+  s_fact *f;
+  s_tag var;
+  assert(facts);
+  assert(subject);
+  assert(predicate);
+  assert(object);
+  tag_init_var(&var);
+  facts_lock_w(facts);
+  facts_with_tags(facts, &cursor, (s_tag *) subject,
+                  (s_tag *) predicate, &var);
+  while ((f = facts_cursor_next(&cursor)))
+    facts_remove_fact(facts, f);
+  facts_cursor_clean(&cursor);
+  f = facts_add_tags(facts, subject, predicate, object);
+  facts_lock_unlock_w(facts);
+  return f;
+}
+
 void facts_clean (s_facts *facts)
 {
   if (facts->log)
@@ -215,6 +246,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   s_fact *factp;
   u64 line;
   sw r;
+  bool replace;
   sw result = 0;
   assert(facts);
   assert(buf);
@@ -225,13 +257,25 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   result += r;
   facts_lock_w(facts);
   line = 3;
-  while ((r = buf_read_1(buf, "add ")) > 0) {
+  while (1) {
+    if ((r = buf_read_1(buf, "replace ")) < 0)
+      break;
+    if (r)
+      replace = true;
+    else {
+      replace = false;
+      if ((r = buf_read_1(buf, "add ")) <= 0)
+        break;
+    }
     result += r;
     if ((r = buf_parse_fact(buf, &fact)) <= 0)
       goto ko_fact;
     result += r;
     factp = fact_r(&fact);
-    facts_add_fact(facts, factp);
+    if (replace)
+      facts_replace_fact(facts, factp);
+    else
+      facts_add_fact(facts, factp);
     fact_w_clean(&fact);
     if ((r = buf_read_1(buf, "\n")) <= 0) {
       r = -1;

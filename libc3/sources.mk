@@ -91,6 +91,7 @@ HEADERS = \
 	facts_spec_cursor.h \
 	facts_with.h \
 	facts_with_cursor.h \
+	file.h \
 	float.h \
 	fn.h \
 	fn_clause.h \
@@ -117,6 +118,7 @@ HEADERS = \
 	str.h \
 	sym.h \
 	tag.h \
+	timespec.h \
 	tuple.h \
 	type.h \
 	types.h \
@@ -211,6 +213,7 @@ SOURCES = \
 	facts_spec_cursor.c \
 	facts_with.c \
 	facts_with_cursor.c \
+	file.c \
 	fn.c \
 	fn_clause.c \
 	frame.c \
@@ -235,6 +238,7 @@ SOURCES = \
 	str.c \
 	sym.c \
 	tag.c \
+	timespec.c \
 	tuple.c \
 	type.c \
 	ucd.c \
@@ -328,6 +332,7 @@ LO_SOURCES = \
 	facts_spec_cursor.c \
 	facts_with.c \
 	facts_with_cursor.c \
+	file.c \
 	fn.c \
 	fn_clause.c \
 	frame.c \
@@ -352,6 +357,7 @@ LO_SOURCES = \
 	str.c \
 	sym.c \
 	tag.c \
+	timespec.c \
 	tuple.c \
 	type.c \
 	ucd.c \

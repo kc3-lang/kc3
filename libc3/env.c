@@ -16,11 +16,31 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include "array.h"
 #include "binding.h"
-#include "c3.h"
+#include "buf.h"
+#include "buf_file.h"
+#include "buf_inspect.h"
+#include "buf_save.h"
+#include "call.h"
+#include "cfn.h"
+#include "compare.h"
+#include "env.h"
 #include "error.h"
 #include "error_handler.h"
+#include "facts.h"
+#include "facts_with.h"
+#include "facts_with_cursor.h"
+#include "file.h"
+#include "fn.h"
 #include "frame.h"
+#include "ident.h"
+#include "io.h"
+#include "list.h"
+#include "module.h"
+#include "str.h"
+#include "tag.h"
+#include "tuple.h"
 
 s_env g_c3_env;
 
@@ -611,7 +631,8 @@ void env_longjmp (s_env *env, jmp_buf *jmp_buf)
 bool env_module_load (s_env *env, const s_sym *name,
                       s_facts *facts)
 {
-  s_fact fact;
+  s_facts_with_cursor cursor;
+  s_fact *found;
   s_str path;
   s_tag tag_name;
   s_tag tag_load_time;
@@ -624,14 +645,6 @@ bool env_module_load (s_env *env, const s_sym *name,
           name->str.ptr.ps8);
     return false;
   }
-  /*
-  buf_write_1(&env->out, "module_load ");
-  buf_write_str(&env->out, &name->str);
-  buf_write_1(&env->out, " -> ");
-  buf_write_str(&env->out, &path);
-  buf_write_s8(&env->out, '\n');
-  buf_flush(&env->out);
-  */
   if (facts_load_file(facts, &path) < 0) {
     warnx("env_module_load: %s: facts_load_file",
           path.ptr.ps8);
@@ -639,12 +652,34 @@ bool env_module_load (s_env *env, const s_sym *name,
     return false;
   }
   str_clean(&path);
-  fact.subject = tag_init_sym(&tag_name, name);
-  fact.predicate = tag_init_sym(&tag_load_time, sym_1("load_time"));
-  fact.object = tag_init_time(&tag_time);
-  facts_add_fact(facts, &fact);
+  tag_init_sym(&tag_name, name);
+  tag_init_sym(&tag_load_time, sym_1("load_time"));
+  tag_init_var(&tag_time);
+  facts_with(facts, &cursor, (t_facts_spec) {
+      &tag_name, &tag_load_time, &tag_time, NULL, NULL });
+  while ((found = facts_with_cursor_next(&cursor)))
+    facts_remove_fact(facts, found);
+  tag_init_time(&tag_time);
+  facts_add_tags(facts, &tag_name, &tag_load_time, &tag_time);
   return true;
 }
+
+bool env_module_maybe_reload (s_env *env, const s_sym *name,
+                              s_facts *facts)
+{
+  s_str path;
+  s_tag tag_load_time;
+  s_tag tag_mtime;
+  if (! module_load_time(name, facts, &tag_load_time))
+    return false;
+  if (! module_name_path(&env->module_path, name, &path))
+    return false;
+  if (! file_mtime(&path, &tag_mtime))
+    return false;
+  if (compare_tag(&tag_load_time, &tag_mtime) < 0)
+    return module_load(name, facts);
+  return true;
+      }
 
 bool env_operator_is_binary (s_env *env, const s_ident *op)
 {

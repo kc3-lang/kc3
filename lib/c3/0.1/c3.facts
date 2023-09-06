@@ -1,8 +1,6 @@
 %{module: C3.Facts.Dump,
   version: 1}
 add {C3, :is_a, :module}
-add {C3, :name, "C3"}
-add {C3, :path, "c3.facts"}
 add {C3, :symbol, C3.!}
 add {C3, :symbol, C3.&&}
 add {C3, :symbol, C3.*}
@@ -20,80 +18,80 @@ add {C3, :symbol, C3.break}
 add {C3, :symbol, C3.first}
 add {C3, :symbol, C3.xor}
 add {C3, :symbol, C3.||}
-add {C3.+, :arity, 2}
-add {C3.+, :cfn, cfn :tag "tag_add" (:tag, :tag, :&result)}
-add {C3.+, :is_a, :operator}
-add {C3.+, :operator_precedence, 1}
-add {C3.+, :operator_associativity, :left}
-add {C3.-, :arity, 2}
-add {C3.-, :cfn, cfn :tag "tag_sub" (:tag, :tag, :&result)}
-add {C3.-, :is_a, :operator}
-add {C3.-, :operator_precedence, 1}
-add {C3.-, :operator_associativity, :left}
-add {C3.*, :arity, 2}
-add {C3.*, :cfn, cfn :tag "tag_mul" (:tag, :tag, :&result)}
-add {C3.*, :is_a, :operator}
-add {C3.*, :operator_precedence, 2}
-add {C3.*, :operator_associativity, :left}
-add {C3./, :arity, 2}
-add {C3./, :cfn, cfn :tag "tag_div" (:tag, :tag, :&result)}
-add {C3./, :is_a, :operator}
-add {C3./, :operator_precedence, 2}
-add {C3./, :operator_associativity, :left}
-add {C3.<, :arity, 2}
-add {C3.<, :cfn, cfn :bool "tag_lt" (:tag, :tag)}
-add {C3.<, :is_a, :operator}
-add {C3.<, :operator_precedence, 3}
-add {C3.<, :operator_associativity, :left}
-add {C3.<=, :arity, 2}
-add {C3.<=, :cfn, cfn :bool "tag_lte" (:tag, :tag)}
-add {C3.<=, :is_a, :operator}
-add {C3.<=, :operator_precedence, 3}
-add {C3.<=, :operator_associativity, :left}
-add {C3.=, :arity, 2}
-add {C3.=, :cfn, cfn :tag "tag_equal" (:tag, :tag, :&result)}
-add {C3.=, :is_a, :operator}
-add {C3.=, :is_a, :special_operator}
-add {C3.=, :operator_precedence, 5}
-add {C3.=, :operator_associativity, :left}
-add {C3.==, :arity, 2}
-add {C3.==, :cfn, cfn :bool "tag_eq" (:tag, :tag)}
-add {C3.==, :is_a, :operator}
-add {C3.==, :operator_precedence, 3}
-add {C3.==, :operator_associativity, :left}
-add {C3.>=, :arity, 2}
-add {C3.>=, :cfn, cfn :bool "tag_gte" (:tag, :tag)}
-add {C3.>=, :is_a, :operator}
-add {C3.>=, :operator_precedence, 3}
-add {C3.>=, :operator_associativity, :left}
-add {C3.>, :arity, 2}
-add {C3.>, :cfn, cfn :bool "tag_gt" (:tag, :tag)}
-add {C3.>, :is_a, :operator}
-add {C3.>, :operator_precedence, 3}
-add {C3.>, :operator_associativity, :left}
-add {C3.!, :arity, 1}
-add {C3.!, :cfn, cfn :bool "tag_not" (:tag)}
-add {C3.!, :is_a, :operator}
-add {C3._"()", :arity, 1}
-add {C3._"()", :cfn, cfn :tag "tag_paren" (:tag, :&result)}
-add {C3._"()", :is_a, :operator}
-add {C3.&&, :arity, 2}
-add {C3.&&, :cfn, cfn :bool "tag_and" (:tag, :tag)}
-add {C3.&&, :is_a, :operator}
-add {C3.&&, :operator_precedence, 4}
-add {C3.&&, :operator_associativity, :left}
-add {C3.||, :arity, 2}
-add {C3.||, :cfn, cfn :bool "tag_or" (:tag, :tag)}
-add {C3.||, :is_a, :operator}
-add {C3.||, :operator_precedence, 4}
-add {C3.||, :operator_associativity, :left}
-add {C3.xor, :arity, 2}
-add {C3.xor, :cfn, cfn :bool "tag_xor" (:tag, :tag)}
-add {C3.xor, :is_a, :operator}
-add {C3.xor, :operator_precedence, 4}
-add {C3.xor, :operator_associativity, :left}
-add {C3.break, :cfn, cfn :void "c3_break" ()}
-add {C3.first, :fn, fn {
+replace {C3.+, :arity, 2}
+replace {C3.+, :cfn, cfn :tag "tag_add" (:tag, :tag, :&result)}
+replace {C3.+, :is_a, :operator}
+replace {C3.+, :operator_precedence, 1}
+replace {C3.+, :operator_associativity, :left}
+replace {C3.-, :arity, 2}
+replace {C3.-, :cfn, cfn :tag "tag_sub" (:tag, :tag, :&result)}
+replace {C3.-, :is_a, :operator}
+replace {C3.-, :operator_precedence, 1}
+replace {C3.-, :operator_associativity, :left}
+replace {C3.*, :arity, 2}
+replace {C3.*, :cfn, cfn :tag "tag_mul" (:tag, :tag, :&result)}
+replace {C3.*, :is_a, :operator}
+replace {C3.*, :operator_precedence, 2}
+replace {C3.*, :operator_associativity, :left}
+replace {C3./, :arity, 2}
+replace {C3./, :cfn, cfn :tag "tag_div" (:tag, :tag, :&result)}
+replace {C3./, :is_a, :operator}
+replace {C3./, :operator_precedence, 2}
+replace {C3./, :operator_associativity, :left}
+replace {C3.<, :arity, 2}
+replace {C3.<, :cfn, cfn :bool "tag_lt" (:tag, :tag)}
+replace {C3.<, :is_a, :operator}
+replace {C3.<, :operator_precedence, 3}
+replace {C3.<, :operator_associativity, :left}
+replace {C3.<=, :arity, 2}
+replace {C3.<=, :cfn, cfn :bool "tag_lte" (:tag, :tag)}
+replace {C3.<=, :is_a, :operator}
+replace {C3.<=, :operator_precedence, 3}
+replace {C3.<=, :operator_associativity, :left}
+replace {C3.=, :arity, 2}
+replace {C3.=, :cfn, cfn :tag "tag_equal" (:tag, :tag, :&result)}
+replace {C3.=, :is_a, :operator}
+replace {C3.=, :is_a, :special_operator}
+replace {C3.=, :operator_precedence, 5}
+replace {C3.=, :operator_associativity, :left}
+replace {C3.==, :arity, 2}
+replace {C3.==, :cfn, cfn :bool "tag_eq" (:tag, :tag)}
+replace {C3.==, :is_a, :operator}
+replace {C3.==, :operator_precedence, 3}
+replace {C3.==, :operator_associativity, :left}
+replace {C3.>=, :arity, 2}
+replace {C3.>=, :cfn, cfn :bool "tag_gte" (:tag, :tag)}
+replace {C3.>=, :is_a, :operator}
+replace {C3.>=, :operator_precedence, 3}
+replace {C3.>=, :operator_associativity, :left}
+replace {C3.>, :arity, 2}
+replace {C3.>, :cfn, cfn :bool "tag_gt" (:tag, :tag)}
+replace {C3.>, :is_a, :operator}
+replace {C3.>, :operator_precedence, 3}
+replace {C3.>, :operator_associativity, :left}
+replace {C3.!, :arity, 1}
+replace {C3.!, :cfn, cfn :bool "tag_not" (:tag)}
+replace {C3.!, :is_a, :operator}
+replace {C3._"()", :arity, 1}
+replace {C3._"()", :cfn, cfn :tag "tag_paren" (:tag, :&result)}
+replace {C3._"()", :is_a, :operator}
+replace {C3.&&, :arity, 2}
+replace {C3.&&, :cfn, cfn :bool "tag_and" (:tag, :tag)}
+replace {C3.&&, :is_a, :operator}
+replace {C3.&&, :operator_precedence, 4}
+replace {C3.&&, :operator_associativity, :left}
+replace {C3.||, :arity, 2}
+replace {C3.||, :cfn, cfn :bool "tag_or" (:tag, :tag)}
+replace {C3.||, :is_a, :operator}
+replace {C3.||, :operator_precedence, 4}
+replace {C3.||, :operator_associativity, :left}
+replace {C3.xor, :arity, 2}
+replace {C3.xor, :cfn, cfn :bool "tag_xor" (:tag, :tag)}
+replace {C3.xor, :is_a, :operator}
+replace {C3.xor, :operator_precedence, 4}
+replace {C3.xor, :operator_associativity, :left}
+replace {C3.break, :cfn, cfn :void "c3_break" ()}
+replace {C3.first, :fn, fn {
  ((a | _b)) { a }
  ({a, _b}) { a }
  ({a, _b, _c}) { a }

@@ -15,8 +15,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include "c3.h"
+#include "array.h"
+#include "buf.h"
+#include "buf_inspect.h"
+#include "buf_parse.h"
+#include "call.h"
+#include "cfn.h"
+#include "compare.h"
+#include "env.h"
+#include "fn.h"
 #include "frame.h"
+#include "hash.h"
+#include "ident.h"
+#include "integer.h"
+#include "list.h"
+#include "quote.h"
+#include "str.h"
+#include "tag.h"
+#include "timespec.h"
+#include "tuple.h"
 
 s_tag g_tag_first;
 s_tag g_tag_last;
@@ -2206,13 +2223,8 @@ s_tag * tag_init_sym_1 (s_tag *tag, const s8 *p)
 s_tag * tag_init_time (s_tag *tag)
 {
   struct timespec time;
-  s_tag tmp;
-  tag_init_tuple(&tmp, 2);
   clock_gettime(CLOCK_REALTIME, &time);
-  tag_init_s64(&tmp.data.tuple.tag[0], time.tv_sec);
-  tag_init_s64(&tmp.data.tuple.tag[1], time.tv_nsec);
-  *tag = tmp;
-  return tag;
+  return timespec_to_tag(&time, tag);
 }
 
 s_tag * tag_init_tuple (s_tag *tag, uw count)
