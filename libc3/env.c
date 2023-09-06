@@ -14,6 +14,7 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 #include "binding.h"
 #include "c3.h"
@@ -553,6 +554,13 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
   return true;
 }
 
+s64 env_gettime ()
+{
+  struct timespec time;
+  clock_gettime(CLOCK_REALTIME, &time);
+  return time.tv_sec;
+}
+
 s_env * env_init (s_env *env)
 {
   assert(env);
@@ -603,7 +611,11 @@ void env_longjmp (s_env *env, jmp_buf *jmp_buf)
 bool env_module_load (s_env *env, const s_sym *name,
                       s_facts *facts)
 {
+  s_fact fact;
   s_str path;
+  s_tag tag_name;
+  s_tag tag_load_time;
+  s_tag tag_time;
   assert(env);
   assert(name);
   assert(facts);
@@ -627,6 +639,10 @@ bool env_module_load (s_env *env, const s_sym *name,
     return false;
   }
   str_clean(&path);
+  fact.subject = tag_init_sym(&tag_name, name);
+  fact.predicate = tag_init_sym(&tag_load_time, sym_1("load_time"));
+  fact.object = tag_init_time(&tag_time);
+  facts_add_fact(facts, &fact);
   return true;
 }
 

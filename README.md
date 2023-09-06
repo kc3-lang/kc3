@@ -112,7 +112,7 @@ Script interpreter.
    - DONE boolean operators
    - DONE comparison operators
    - arrays
-     - DONE parse
+     - parse
      - DONE inspect
      - DONE [][][] data
    - lists
@@ -123,6 +123,10 @@ Script interpreter.
        - ffi ?
          - libdwarf
    - control structures
+   - modules
+     - DONE symbols
+     - DONE as facts
+     - autoload (remember load time, compare with file time)
    - functions
      - return
      - def

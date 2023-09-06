@@ -42,3 +42,5 @@
      ## comment 9b
 
 List.map((1, 2, 3, 4), fn (x) { x * 2 })
+
+List.reverse((1, 2, 3, 4))

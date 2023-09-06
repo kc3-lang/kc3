@@ -2203,6 +2203,27 @@ s_tag * tag_init_sym_1 (s_tag *tag, const s8 *p)
   return tag;
 }
 
+s_tag * tag_init_time (s_tag *tag)
+{
+  struct timespec time;
+  s_tag tmp;
+  tag_init_tuple(&tmp, 2);
+  clock_gettime(CLOCK_REALTIME, &time);
+  tag_init_s64(&tmp.data.tuple.tag[0], time.tv_sec);
+  tag_init_s64(&tmp.data.tuple.tag[1], time.tv_nsec);
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_tuple (s_tag *tag, uw count)
+{
+  assert(tag);
+  assert(count);
+  tag->type = TAG_TUPLE;
+  tuple_init(&tag->data.tuple, count);
+  return tag;
+}
+
 s_tag * tag_init_u8 (s_tag *tag, u8 i)
 {
   assert(tag);

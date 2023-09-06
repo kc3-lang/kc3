@@ -48,6 +48,7 @@ s_tag * tag_init_str (s_tag *tag, s8 *free, uw size, const s8 *p);
 s_tag * tag_init_str_1 (s_tag *tag, s8 *free, const s8 *p);
 s_tag * tag_init_sym (s_tag *tag, const s_sym *p);
 s_tag * tag_init_sym_1 (s_tag *tag, const s8 *p);
+s_tag * tag_init_time (s_tag *tag);
 s_tag * tag_init_tuple (s_tag *tag, uw count);
 s_tag * tag_init_tuple_2 (s_tag *tag, s_tag *a, s_tag *b);
 s_tag * tag_init_var (s_tag *tag);
