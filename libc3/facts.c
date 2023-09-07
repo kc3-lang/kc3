@@ -87,7 +87,7 @@ s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
                              const s_tag *object)
 {
   s_facts_cursor cursor;
-  s_list *list;
+  s_list *list = NULL;
   s_fact *f;
   s_tag var;
   assert(facts);
