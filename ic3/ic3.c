@@ -101,6 +101,11 @@ int main (int argc, char **argv)
   buf_file_open_w(&out, stdout);
   while ((r = ic3_buf_ignore_spaces(&out, &in)) >= 0) {
     if ((r = buf_parse_tag(&in, &input)) > 0) {
+      if (buf_inspect_tag(&out, &input) < 0)
+        break;
+      buf_write_u8(&out, '\n');
+      if ((r = buf_flush(&out)) < 0)
+        break;
       if (! eval_tag(&input, &result)) {
         tag_clean(&input);
         continue;

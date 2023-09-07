@@ -110,6 +110,7 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
+  assert(NULL);
   call_copy(call, &c);
   env_eval_call_resolve(env, &c);
   if (c.cfn)
