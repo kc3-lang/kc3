@@ -656,6 +656,7 @@ bool env_module_load (s_env *env, const s_sym *name,
   tag_init_sym(&tag_load_time, sym_1("load_time"));
   tag_init_time(&tag_time);
   facts_replace_tags(facts, &tag_name, &tag_load_time, &tag_time);
+  tag_clean(&tag_time);
   return true;
 }
 
@@ -674,7 +675,7 @@ bool env_module_maybe_reload (s_env *env, const s_sym *name,
   if (compare_tag(&tag_load_time, &tag_mtime) < 0)
     return module_load(name, facts);
   return true;
-      }
+}
 
 bool env_operator_is_binary (s_env *env, const s_ident *op)
 {
