@@ -670,18 +670,17 @@ bool env_module_maybe_reload (s_env *env, const s_sym *name,
   if (! module_load_time(name, facts, &tag_load_time))
     return false;
   if (! module_name_path(&env->module_path, name, &path)) {
-    tag_clean(&tag_load_time);
     return false;
   }
   if (! file_mtime(&path, &tag_mtime)) {
-    r = false;
-    goto clean;
+    str_clean(&path);
+    return false;
   }
   if (compare_tag(&tag_load_time, &tag_mtime) < 0)
     r = module_load(name, facts);
  clean:
   str_clean(&path);
-  tag_clean(&tag_load_time);
+  tag_clean(&tag_mtime);
   return r;
 }
 
