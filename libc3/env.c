@@ -664,17 +664,25 @@ bool env_module_maybe_reload (s_env *env, const s_sym *name,
                               s_facts *facts)
 {
   s_str path;
+  bool r = true;
   s_tag tag_load_time;
   s_tag tag_mtime;
   if (! module_load_time(name, facts, &tag_load_time))
     return false;
-  if (! module_name_path(&env->module_path, name, &path))
+  if (! module_name_path(&env->module_path, name, &path)) {
+    tag_clean(&tag_load_time);
     return false;
-  if (! file_mtime(&path, &tag_mtime))
-    return false;
+  }
+  if (! file_mtime(&path, &tag_mtime)) {
+    r = false;
+    goto clean;
+  }
   if (compare_tag(&tag_load_time, &tag_mtime) < 0)
-    return module_load(name, facts);
-  return true;
+    r = module_load(name, facts);
+ clean:
+  str_clean(&path);
+  tag_clean(&tag_load_time);
+  return r;
 }
 
 bool env_operator_is_binary (s_env *env, const s_ident *op)
