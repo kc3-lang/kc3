@@ -773,6 +773,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_CFN: return compare_cfn(&a->data.cfn, &b->data.cfn);
   case TAG_CHARACTER: return compare_character(a->data.character,
                                                b->data.character);
+  case TAG_FACT: return compare_fact(&a->data.fact, &b->data.fact);
   case TAG_FN: return compare_fn(&a->data.fn, &b->data.fn);
   case TAG_IDENT: return compare_ident(&a->data.ident, &b->data.ident);
   case TAG_LIST: return compare_list(a->data.list, b->data.list);

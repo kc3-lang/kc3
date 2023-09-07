@@ -74,44 +74,6 @@ s_fact * facts_add_tags (s_facts *facts, const s_tag *subject,
   return facts_add_fact(facts, &fact);
 }
 
-s_fact * facts_replace_fact (s_facts *facts, const s_fact *fact)
-{
-  assert(facts);
-  assert(fact);
-  return facts_replace_tags(facts, fact->subject, fact->predicate,
-                            fact->object);
-}
-
-s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
-                             const s_tag *predicate,
-                             const s_tag *object)
-{
-  s_facts_cursor cursor;
-  s_list *list = NULL;
-  s_fact *f;
-  s_tag var;
-  assert(facts);
-  assert(subject);
-  assert(predicate);
-  assert(object);
-  tag_init_var(&var);
-  facts_lock_w(facts);
-  facts_with_tags(facts, &cursor, (s_tag *) subject,
-                  (s_tag *) predicate, &var);
-  while ((f = facts_cursor_next(&cursor))) {
-    list = list_new(NULL, list);
-    list->tag.data.fact = *f;
-  }
-  facts_cursor_clean(&cursor);
-  while (list) {
-    facts_remove_fact(facts, &list->tag.data.fact);
-    list = list_delete(list);
-  }
-  f = facts_add_tags(facts, subject, predicate, object);
-  facts_lock_unlock_w(facts);
-  return f;
-}
-
 void facts_clean (s_facts *facts)
 {
   if (facts->log)
@@ -574,6 +536,45 @@ bool facts_remove_fact (s_facts *facts, const s_fact *fact)
   }
   facts_lock_unlock_w(facts);
   return result;
+}
+
+
+s_fact * facts_replace_fact (s_facts *facts, const s_fact *fact)
+{
+  assert(facts);
+  assert(fact);
+  return facts_replace_tags(facts, fact->subject, fact->predicate,
+                            fact->object);
+}
+
+s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
+                             const s_tag *predicate,
+                             const s_tag *object)
+{
+  s_facts_cursor cursor;
+  s_list *list = NULL;
+  s_fact *f;
+  s_tag var;
+  assert(facts);
+  assert(subject);
+  assert(predicate);
+  assert(object);
+  tag_init_var(&var);
+  facts_lock_w(facts);
+  facts_with_tags(facts, &cursor, (s_tag *) subject,
+                  (s_tag *) predicate, &var);
+  while ((f = facts_cursor_next(&cursor))) {
+    list = list_new(NULL, list);
+    list->tag.data.fact = *f;
+  }
+  while (list) {
+    facts_remove_fact(facts, &list->tag.data.fact);
+    list = list_delete(list);
+  }
+  facts_cursor_clean(&cursor);
+  f = facts_add_tags(facts, subject, predicate, object);
+  facts_lock_unlock_w(facts);
+  return f;
 }
 
 sw facts_save_file (s_facts *facts, const s8 *path)
