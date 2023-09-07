@@ -678,7 +678,6 @@ bool env_module_maybe_reload (s_env *env, const s_sym *name,
   }
   if (compare_tag(&tag_load_time, &tag_mtime) < 0)
     r = module_load(name, facts);
- clean:
   str_clean(&path);
   tag_clean(&tag_mtime);
   return r;
