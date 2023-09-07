@@ -75,6 +75,7 @@ typedef enum {
   TAG_CHARACTER,
   TAG_F32,
   TAG_F64,
+  TAG_FACT,
   TAG_FN,
   TAG_IDENT,
   TAG_INTEGER,
@@ -343,6 +344,7 @@ union tag_data {
   character    character;
   f32          f32;
   f64          f64;
+  s_fact       fact;
   s_fn         fn;
   s_ident      ident;
   s_integer    integer;

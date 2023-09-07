@@ -389,6 +389,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   case TAG_BOOL:
   case TAG_CFN:
   case TAG_CHARACTER:
+  case TAG_FACT:
   case TAG_FN:
   case TAG_IDENT:
   case TAG_INTEGER:
@@ -532,6 +533,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
+  case TAG_FACT:
   case TAG_FN:
   case TAG_INTEGER:
   case TAG_PTAG:
@@ -631,8 +633,6 @@ void env_longjmp (s_env *env, jmp_buf *jmp_buf)
 bool env_module_load (s_env *env, const s_sym *name,
                       s_facts *facts)
 {
-  s_facts_with_cursor cursor;
-  s_fact *found;
   s_str path;
   s_tag tag_name;
   s_tag tag_load_time;
@@ -654,13 +654,8 @@ bool env_module_load (s_env *env, const s_sym *name,
   str_clean(&path);
   tag_init_sym(&tag_name, name);
   tag_init_sym(&tag_load_time, sym_1("load_time"));
-  tag_init_var(&tag_time);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_name, &tag_load_time, &tag_time, NULL, NULL });
-  while ((found = facts_with_cursor_next(&cursor)))
-    facts_remove_fact(facts, found);
   tag_init_time(&tag_time);
-  facts_add_tags(facts, &tag_name, &tag_load_time, &tag_time);
+  facts_replace_tags(facts, &tag_name, &tag_load_time, &tag_time);
   return true;
 }
 

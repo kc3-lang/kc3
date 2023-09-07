@@ -129,6 +129,9 @@ void hash_update_fact (t_hash *hash, const s_fact *fact)
   const s8 type[] = "fact";
   assert(hash);
   assert(fact);
+  assert(fact->subject);
+  assert(fact->predicate);
+  assert(fact->object);
   hash_update(hash, type, sizeof(type));
   hash_update_tag(hash, fact->subject);
   hash_update_tag(hash, fact->predicate);
@@ -273,6 +276,7 @@ void hash_update_tag (t_hash *hash, const s_tag *tag)
     hash_update_character(hash, tag->data.character);          break;
   case TAG_F32: hash_update_f32(hash, tag->data.f32);          break;
   case TAG_F64: hash_update_f64(hash, tag->data.f64);          break;
+  case TAG_FACT: hash_update_fact(hash, &tag->data.fact);      break;
   case TAG_FN: hash_update_fn(hash, &tag->data.fn);            break;
   case TAG_IDENT: hash_update_ident(hash, &tag->data.ident);   break;
   case TAG_INTEGER:

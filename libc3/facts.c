@@ -23,6 +23,7 @@
 #include "facts.h"
 #include "facts_cursor.h"
 #include "facts_with.h"
+#include "list.h"
 #include "log.h"
 #include "set__fact.h"
 #include "set__tag.h"
@@ -86,6 +87,7 @@ s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
                              const s_tag *object)
 {
   s_facts_cursor cursor;
+  s_list *list;
   s_fact *f;
   s_tag var;
   assert(facts);
@@ -96,9 +98,15 @@ s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
   facts_lock_w(facts);
   facts_with_tags(facts, &cursor, (s_tag *) subject,
                   (s_tag *) predicate, &var);
-  while ((f = facts_cursor_next(&cursor)))
-    facts_remove_fact(facts, f);
+  while ((f = facts_cursor_next(&cursor))) {
+    list = list_new(NULL, list);
+    list->tag.data.fact = *f;
+  }
   facts_cursor_clean(&cursor);
+  while (list) {
+    facts_remove_fact(facts, &list->tag.data.fact);
+    list = list_delete(list);
+  }
   f = facts_add_tags(facts, subject, predicate, object);
   facts_lock_unlock_w(facts);
   return f;

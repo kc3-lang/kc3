@@ -1435,6 +1435,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
     return buf_inspect_character(buf, &tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, &tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, &tag->data.f64);
+  case TAG_FACT:    return buf_inspect_fact(buf, &tag->data.fact);
   case TAG_FN:      return buf_inspect_fn(buf, &tag->data.fn);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
@@ -1474,6 +1475,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
     return buf_inspect_character_size(&tag->data.character);
   case TAG_F32:      return buf_inspect_f32_size(&tag->data.f32);
   case TAG_F64:      return buf_inspect_f64_size(&tag->data.f64);
+  case TAG_FACT:     return buf_inspect_fact_size(&tag->data.fact);
   case TAG_FN:       return buf_inspect_fn_size(&tag->data.fn);
   case TAG_IDENT:    return buf_inspect_ident_size(&tag->data.ident);
   case TAG_INTEGER:
@@ -1520,6 +1522,8 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
     return buf_write_1(buf, "f32");
   case TAG_F64:
     return buf_write_1(buf, "f64");
+  case TAG_FACT:
+    return buf_write_1(buf, "fact");
   case TAG_FN:
     return buf_write_1(buf, "fn");
   case TAG_IDENT:
@@ -1585,6 +1589,8 @@ sw buf_inspect_tag_type_size (e_tag_type type)
     return strlen("f32");
   case TAG_F64:
     return strlen("f64");
+  case TAG_FACT:
+    return strlen("fact");
   case TAG_FN:
     return strlen("fn");
   case TAG_IDENT:
@@ -1626,8 +1632,8 @@ sw buf_inspect_tag_type_size (e_tag_type type)
   case TAG_VAR:
     return strlen("var");
   }
-  assert(! "buf_inspect_tag_type: unknown tag type");
-  errx(1, "buf_inspect_tag_type: unknown tag type");
+  assert(! "buf_inspect_tag_type_size: unknown tag type");
+  errx(1, "buf_inspect_tag_type_size: unknown tag type");
   return -1;
 }
 

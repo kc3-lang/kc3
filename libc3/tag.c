@@ -1362,6 +1362,7 @@ void tag_clean (s_tag *tag)
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
+  case TAG_FACT:
   case TAG_IDENT:
   case TAG_PTAG:
   case TAG_S8:
@@ -1423,6 +1424,7 @@ s_tag * tag_copy (const s_tag *src, s_tag *dest)
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
+  case TAG_FACT:
   case TAG_IDENT:
   case TAG_PTAG:
   case TAG_S8:
@@ -3680,6 +3682,10 @@ void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
     if (type == sym_1("f64"))
       return &tag->data.f64;
     goto invalid_type;
+  case TAG_FACT:
+    if (type == sym_1("fact"))
+      return &tag->data.fact;
+    goto invalid_type;
   case TAG_FN:
     if (type == sym_1("fn"))
       return &tag->data.fn;
@@ -3800,6 +3806,8 @@ void * tag_to_pointer (s_tag *tag, e_tag_type type)
     return &tag->data.f32;
   case TAG_F64:
     return &tag->data.f64;
+  case TAG_FACT:
+    return &tag->data.fact;
   case TAG_FN:
     return &tag->data.fn;
   case TAG_IDENT:
@@ -3873,6 +3881,8 @@ sw tag_type_size (e_tag_type type)
     return sizeof(f32);
   case TAG_F64:
     return sizeof(f64);
+  case TAG_FACT:
+    return sizeof(s_fact);
   case TAG_FN:
     return sizeof(s_fn);
   case TAG_IDENT:
@@ -3937,6 +3947,8 @@ f_buf_inspect tag_type_to_buf_inspect (e_tag_type type)
     return (f_buf_inspect) buf_inspect_f32;
   case TAG_F64:
     return (f_buf_inspect) buf_inspect_f64;
+  case TAG_FACT:
+    return (f_buf_inspect) buf_inspect_fact;
   case TAG_FN:
     return (f_buf_inspect) buf_inspect_fn;
   case TAG_IDENT:
@@ -4001,6 +4013,8 @@ f_buf_inspect_size tag_type_to_buf_inspect_size (e_tag_type type)
     return (f_buf_inspect_size) buf_inspect_f32_size;
   case TAG_F64:
     return (f_buf_inspect_size) buf_inspect_f64_size;
+  case TAG_FACT:
+    return (f_buf_inspect_size) buf_inspect_fact_size;
   case TAG_FN:
     return (f_buf_inspect_size) buf_inspect_fn_size;
   case TAG_IDENT:
@@ -4066,6 +4080,8 @@ f_buf_parse tag_type_to_buf_parse (e_tag_type type)
     return (f_buf_parse) buf_parse_f32;
   case TAG_F64:
     return (f_buf_parse) buf_parse_f64;
+  case TAG_FACT:
+    return (f_buf_parse) buf_parse_fact;
   case TAG_FN:
     return (f_buf_parse) buf_parse_fn;
   case TAG_IDENT:
@@ -4129,6 +4145,8 @@ ffi_type * tag_type_to_ffi_type (e_tag_type type)
     return &ffi_type_float;
   case TAG_F64:
     return &ffi_type_double;
+  case TAG_FACT:
+    return &ffi_type_pointer;
   case TAG_FN:
     return &ffi_type_pointer;
   case TAG_IDENT:
@@ -4188,6 +4206,7 @@ s8 * tag_type_to_string (e_tag_type type)
   case TAG_CHARACTER: return "character";
   case TAG_F32: return "f32";
   case TAG_F64: return "f64";
+  case TAG_FACT: return "fact";
   case TAG_FN: return "fn";
   case TAG_IDENT: return "ident";
   case TAG_INTEGER: return "integer";
@@ -4225,6 +4244,7 @@ const s_sym * tag_type_to_sym (e_tag_type tag_type)
   case TAG_CHARACTER:  return sym_1("character");
   case TAG_F32:        return sym_1("f32");
   case TAG_F64:        return sym_1("f64");
+  case TAG_FACT:       return sym_1("fact");
   case TAG_FN:         return sym_1("fn");
   case TAG_IDENT:      return sym_1("ident");
   case TAG_INTEGER:    return sym_1("integer");
