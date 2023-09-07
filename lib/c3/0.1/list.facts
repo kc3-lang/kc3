@@ -13,6 +13,6 @@ replace {List.map, :fn, fn {
 }}
 replace {List.reverse, :fn, fn {
   (x) { List.reverse(x, ()) }
-  ((), acc) { (:reversed | acc) }
+  ((), acc) { acc }
   ((a | b), acc) { List.reverse(b, (a | acc)) }
 }}
