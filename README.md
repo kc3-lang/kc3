@@ -126,7 +126,8 @@ Script interpreter.
    - modules
      - DONE symbols
      - DONE as facts
-     - autoload (remember load time, compare with file time)
+     - DONE autoload (remember load time, compare with file time)
+     - defmodule
    - functions
      - return
      - def
