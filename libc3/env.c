@@ -322,18 +322,10 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     frame_binding_new(env->frame, a->data.ident.sym, dest);
     return true;
   }
-  else {
-    env_eval_tag(env, a, &tmp_a);
-    a = &tmp_a;
-  }
   if (is_unbound_b) {
     env_eval_tag(env, a, dest);
     frame_binding_new(env->frame, b->data.ident.sym, dest);
     return true;
-  }
-  else {
-    env_eval_tag(env, b, &tmp_b);
-    b = &tmp_b;
   }
   switch (a->type) {
   case TAG_F32:
