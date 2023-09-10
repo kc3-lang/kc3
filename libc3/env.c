@@ -318,12 +318,12 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     return false;
   }
   if (is_unbound_a) {
-    tag_copy(b, dest);
+    env_eval_tag(env, b, dest);
     frame_binding_new(env->frame, a->data.ident.sym, b);
     return true;
   }
   if (is_unbound_b) {
-    tag_copy(a, dest);
+    env_eval_tag(env, a, dest);
     frame_binding_new(env->frame, b->data.ident.sym, a);
     return true;
   }
