@@ -68,7 +68,7 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_macro;
-  s_tag tag_module_name;
+  s_tag tag_module;
   s_tag tag_special_operator;
   s_tag tag_sym;
   s_tag tag_symbol;
@@ -85,16 +85,19 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
   tag_init_1(    &tag_macro,    ":macro");
   tag_init_1(    &tag_special_operator, ":special_operator");
   tag_init_sym(  &tag_sym, ident->sym);
+  tag_init_sym(  &tag_module, module);
   tag_init_1(    &tag_symbol,   ":symbol");
   tag_init_var(  &tag_var);
   facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_module_name,
+      &tag_module,
       &tag_symbol, &tag_ident,    /* module exports symbol */
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor)) {
-    /*warnx("symbol %s not found in module %s",
+    /*
+    warnx("symbol %s not found in module %s",
           ident->sym->str.ptr.ps8,
-          module->str.ptr.ps8);*/
+          module->str.ptr.ps8);
+    */
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
@@ -104,7 +107,7 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
       NULL, NULL });
   if (facts_with_cursor_next(&cursor)) {
     if (tag_var.type != TAG_CFN) {
-      warnx("%s.%s is not a C function",
+      warnx("%s.%s :cfn is not a C function",
             module->str.ptr.ps8,
             ident->sym->str.ptr.ps8);
       facts_with_cursor_clean(&cursor);
@@ -118,7 +121,7 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
         NULL, NULL });
     if (facts_with_cursor_next(&cursor)) {
       if (tag_var.type != TAG_FN) {
-        warnx("%s.%s is not a function",
+        warnx("%s.%s :fn is not a function",
               module->str.ptr.ps8,
               ident->sym->str.ptr.ps8);
         facts_with_cursor_clean(&cursor);
@@ -127,8 +130,12 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
       facts_with_cursor_clean(&cursor);
     }
   }
-  if (tag_var.type == TAG_VAR)
+  if (tag_var.type == TAG_VAR) {
+    /*
+    warnx("Neither fn nor cfn");
+    */
     return NULL;
+  }
   facts_with(facts, &cursor, (t_facts_spec) {
       &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });
   if (facts_with_cursor_next(&cursor)) {

@@ -3020,6 +3020,8 @@ bool tag_or (const s_tag *a, const s_tag *b)
 
 s_tag * tag_paren (const s_tag *tag, s_tag *dest)
 {
+  assert(tag);
+  assert(dest);
   return tag_copy(tag, dest);
 }
 
