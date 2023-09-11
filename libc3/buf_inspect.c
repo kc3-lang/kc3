@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../libtommath/tommath.h"
+#include "array.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_save.h"
@@ -243,6 +244,8 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   s8 op_precedence;
   sw r;
   sw result = 0;
+  if (call->ident.sym == sym_1("[]"))
+    return buf_inspect_call_brackets(buf, call);
   if (operator_is_unary(&call->ident))
     return buf_inspect_call_op_unary(buf, call);
   if ((op_precedence = operator_precedence(&call->ident)) > 0)
@@ -293,6 +296,43 @@ sw buf_inspect_call_args_size (const s_list *args)
     }
   }
   result += strlen(")");
+  return result;
+}
+
+sw buf_inspect_call_brackets (s_buf *buf, const s_call *call)
+{
+  s_array *address;
+  s_tag *array;
+  uw i = 0;
+  s_list *next;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(call);
+  assert(call->arguments);
+  next = list_next(call->arguments);
+  assert(next);
+  assert(! list_next(next));
+  assert(next->tag.type == TAG_ARRAY);
+  address = &next->tag.data.array;
+  assert(address->dimension == 1);
+  array = &call->arguments->tag;
+  if ((r = buf_inspect_tag(buf, array)) < 0)
+    return r;
+  result += r;
+  while (i < address->dimensions[0].count) {
+    if ((r = buf_write_1(buf, "[")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_uw(buf, ((uw *) address->data)
+                            + i)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, "]")) < 0)
+      return r;
+    result += r;
+    i++;
+  }
   return result;
 }
 

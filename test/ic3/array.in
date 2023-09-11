@@ -1,9 +1,5 @@
 (u8) {0, 1}
-Array.data((u8) {0, 1}, (uw) {0})
-Array.data((u8) {0, 1}, (uw) {1})
 a = (u8) {0, 1}
-Array.data(a, (uw) {0})
-Array.data(a, (uw) {1})
 quote a[0]
 quote a[1]
 a[0]
@@ -12,10 +8,10 @@ a[1]
       {2, 3}}
 b = (u8) {{0, 1},
           {2, 3}}
-Array.data(b, (uw) {0, 0})
-Array.data(b, (uw) {0, 1})
-Array.data(b, (uw) {1, 0})
-Array.data(b, (uw) {1, 1})
+quote b[0][0]
+quote b[0][1]
+quote b[1][0]
+quote b[1][1]
 b[0][0]
 b[0][1]
 b[1][0]
@@ -24,14 +20,14 @@ c = (u8) {{{0, 1},
            {2, 3}},
           {{4, 5},
            {6, 7}}}
-Array.data(c, (uw) {0, 0, 0})
-Array.data(c, (uw) {0, 0, 1})
-Array.data(c, (uw) {0, 1, 0})
-Array.data(c, (uw) {0, 1, 1})
-Array.data(c, (uw) {1, 0, 0})
-Array.data(c, (uw) {1, 0, 1})
-Array.data(c, (uw) {1, 1, 0})
-Array.data(c, (uw) {1, 1, 1})
+quote c[0][0][0]
+quote c[0][0][1]
+quote c[0][1][0]
+quote c[0][1][1]
+quote c[1][0][0]
+quote c[1][0][1]
+quote c[1][1][0]
+quote c[1][1][1]
 c[0][0][0]
 c[0][0][1]
 c[0][1][0]
@@ -48,22 +44,22 @@ d = (u8) {{{{0, 1},
             {10, 11}},
            {{12, 13},
             {14, 15}}}}
-Array.data(d, (uw) {0, 0, 0, 0})
-Array.data(d, (uw) {0, 0, 0, 1})
-Array.data(d, (uw) {0, 0, 1, 0})
-Array.data(d, (uw) {0, 0, 1, 1})
-Array.data(d, (uw) {0, 1, 0, 0})
-Array.data(d, (uw) {0, 1, 0, 1})
-Array.data(d, (uw) {0, 1, 1, 0})
-Array.data(d, (uw) {0, 1, 1, 1})
-Array.data(d, (uw) {1, 0, 0, 0})
-Array.data(d, (uw) {1, 0, 0, 1})
-Array.data(d, (uw) {1, 0, 1, 0})
-Array.data(d, (uw) {1, 0, 1, 1})
-Array.data(d, (uw) {1, 1, 0, 0})
-Array.data(d, (uw) {1, 1, 0, 1})
-Array.data(d, (uw) {1, 1, 1, 0})
-Array.data(d, (uw) {1, 1, 1, 1})
+quote d[0][0][0][0]
+quote d[0][0][0][1]
+quote d[0][0][1][0]
+quote d[0][0][1][1]
+quote d[0][1][0][0]
+quote d[0][1][0][1]
+quote d[0][1][1][0]
+quote d[0][1][1][1]
+quote d[1][0][0][0]
+quote d[1][0][0][1]
+quote d[1][0][1][0]
+quote d[1][0][1][1]
+quote d[1][1][0][0]
+quote d[1][1][0][1]
+quote d[1][1][1][0]
+quote d[1][1][1][1]
 d[0][0][0][0]
 d[0][0][0][1]
 d[0][0][1][0]

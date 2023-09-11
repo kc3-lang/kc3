@@ -21,6 +21,6 @@ s_array * array_init (s_array *a, e_tag_type type, uw dimension,
                       const uw *dimensions);
 s_array * array_init_1 (s_array *a, s8 *p);
 void *    array_data (const s_array *a, const uw *address);
-s_tag *   array_data_tag (s_tag *a, s_tag *address, s_tag *dest);
+s_tag *   array_data_tag (s_tag *a, const s_tag *address, s_tag *dest);
 
 #endif /* ARRAY_H */

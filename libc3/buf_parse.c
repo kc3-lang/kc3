@@ -437,7 +437,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   assert(dest);
   buf_save_init(buf, &save);
   call_init(&tmp);
-  ident_init(&tmp.ident, sym_1("Array"), sym_1("data"));
+  ident_init(&tmp.ident, NULL, sym_1("[]"));
   tmp.arguments = list_new(NULL, list_new(NULL, NULL));
   arg_dimensions = &(list_next(tmp.arguments)->tag);
   if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)

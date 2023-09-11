@@ -1382,6 +1382,27 @@ void tag_clean (s_tag *tag)
   }
 }
 
+s_tag * tag_brackets (s_tag *tag, const s_tag *address,
+                      s_tag *dest)
+{
+  assert(tag);
+  assert(address);
+  assert(dest);
+  switch (tag->type) {
+  case TAG_ARRAY:
+    switch (address->type) {
+    case TAG_ARRAY:
+      return array_data_tag(tag, address, dest);
+    default:
+      break;
+    }
+  default:
+    break;
+  }
+  warnx("tag_brackets: invalid arguments");
+  return NULL;
+}
+
 s_tag * tag_copy (const s_tag *src, s_tag *dest)
 {
   assert(src);

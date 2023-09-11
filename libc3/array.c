@@ -64,13 +64,18 @@ void * array_data (const s_array *a, const uw *address)
   assert(a);
   assert(address);
   while (i < a->dimension) {
+    if (address[i] >= a->dimensions[i].count) {
+      errx(1, "array address overflow");
+      return NULL;
+    }
     offset += address[i] * a->dimensions[i].item_size;
     i++;
   }
+  assert(offset < a->size);
   return (s8 *) a->data + offset;
 }
 
-s_tag * array_data_tag (s_tag *a, s_tag *address, s_tag *dest)
+s_tag * array_data_tag (s_tag *a, const s_tag *address, s_tag *dest)
 {
   void *a_data;
   void *dest_data;

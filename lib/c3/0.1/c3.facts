@@ -14,6 +14,7 @@ add {C3, :symbol, C3.==}
 add {C3, :symbol, C3.>=}
 add {C3, :symbol, C3.>}
 add {C3, :symbol, C3._"()"}
+add {C3, :symbol, C3._"[]"}
 add {C3, :symbol, C3.break}
 add {C3, :symbol, C3.first}
 add {C3, :symbol, C3.xor}
@@ -75,6 +76,8 @@ add {C3.!, :is_a, :operator}
 replace {C3._"()", :arity, 1}
 replace {C3._"()", :cfn, cfn :tag "tag_paren" (:tag, :&result)}
 add {C3._"()", :is_a, :operator}
+replace {C3._"[]", :arity, 2}
+replace {C3._"[]", :cfn, cfn :tag "tag_brackets" (:tag, :tag, :&result)}
 replace {C3.&&, :arity, 2}
 replace {C3.&&, :cfn, cfn :bool "tag_and" (:tag, :tag)}
 add {C3.&&, :is_a, :operator}

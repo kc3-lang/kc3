@@ -94,6 +94,8 @@ s_tag * tag_new_var ();
 void tag_delete (s_tag *tag);
 
 /* Observers */
+s_tag *            tag_brackets (s_tag *tag, const s_tag *address,
+                                 s_tag *dest);
 s_tag *            tag_equal (const s_tag *a, const s_tag *b,
                               s_tag *dest);
 u64                tag_hash_u64 (const s_tag *tag);
