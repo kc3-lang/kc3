@@ -90,10 +90,74 @@ Under development.
 Interactive shell. Terminal I/O provided by
 [linenoise](https://github.com/antirez/linenoise/tree/1.0).
 
+Example :
+```
+$ make test
+$ ic3/ic3
+ic3> ic3> 1 + 1
+2
+ic3> 2 + 2
+4
+ic3> 3 + 3
+6
+ic3> 1 +
+ic3> 1
+2
+ic3> double = fn (x) { x * 2 }
+fn (x) { x * 2 }
+ic3> double
+fn (x) { x * 2 }
+ic3> double(1)
+2
+ic3> double(2)
+4
+ic3> double(3)
+6
+ic3> double(4)
+8
+ic3> List.map((1, 2, 3, 4), double)
+(2, 4, 6, 8)
+ic3> List.reverse(List.map((1, 2, 3, 4), double))
+(8, 6, 4, 2)
+```
+
+The `List.map` and `List.reverse` functions are defined in
+`lib/c3/0.1/list.facts` and can be modified in real time.
+
+For example, without closing ic3 let's redefine `List.reverse`,
+open an editor and change the line in `lib/c3/0.1/list.facts` from
+
+```
+replace {List.reverse, :fn, fn {
+  (x) { List.reverse(x, ()) }
+  ((), acc) { acc }
+  ((a | b), acc) { List.reverse(b, (a | acc)) }
+}}
+```
+
+to
+
+```
+replace {List.reverse, :fn, fn {
+  (x) { List.reverse(x, ()) }
+  ((), acc) { (:reversed | acc) }
+  ((a | b), acc) { List.reverse(b, (a | acc)) }
+}}
+```
+
+and check the results of the last command (up key) in ic3/ic3 :
+
+```
+ic3> List.reverse(List.map((1, 2, 3, 4), double))
+(:reversed, 8, 6, 4, 2)
+```
+
+Don't forget to revert the changes to `list.facts`.
+
 
 ### c3s
 
-Script interpreter.
+Script interpreter. Works the same as ic3 but is not interactive.
 
 
 ## TODO
