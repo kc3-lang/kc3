@@ -48,26 +48,25 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   sw result = 0;
   s_buf_save save;
   s_array tmp;
+  const s_sym *type;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
   tmp = *dest;
-  if ((r = buf_parse_array_type(buf, &tmp)) <= 0)
+  if ((r = buf_parse_paren_sym(buf, &type)) <= 0)
     goto clean;
   result += r;
+  sym_to_tag_type(type, &tmp.type);
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
   if ((r = buf_peek_array_dimension_count(buf, &tmp)) <= 0) {
-    warnx("buf_parse_array: buf_peek_array_dimension_count");
     goto restore;
   }
   if ((r = buf_peek_array_dimensions(buf, &tmp)) <= 0) {
-    warnx("buf_parse_array: buf_peek_array_dimensions");
     goto restore;
   }
   if ((r = buf_parse_array_data(buf, &tmp)) < 0) {
-    warnx("buf_parse_array: buf_peek_array_data");
     goto restore;
   }
   result += r;
@@ -345,42 +344,6 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   goto clean;
  restore:
   warnx("buf_parse_array_dimensions_rec: restore");
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
-sw buf_parse_array_type (s_buf *buf, s_array *dest)
-{
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  e_tag_type tmp;
-  s_ident type_ident;
-  buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "(")) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto restore;
-  result += r;
-  if ((r = buf_parse_ident(buf, &type_ident)) <= 0)
-    goto restore;
-  result += r;
-  if (! ident_to_tag_type(&type_ident, &tmp))
-    goto restore;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto restore;
-  result += r;
-  if ((r = buf_read_1(buf, ")")) <= 0)
-    goto restore;
-  result += r;
-  r = result;
-  dest->type = tmp;
-  goto clean;
- restore:
-  r = 0;
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -794,6 +757,36 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
   result += r;
   if ((r = buf_read_1(buf, ")")) <= 0)
     goto restore;
+  result += r;
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  call_clean(&tmp);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_cast (s_buf *buf, s_call *dest)
+{
+  const s_sym *module = NULL;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_call tmp;
+  buf_save_init(buf, &save);
+  if ((r = buf_parse_paren_sym(buf, &module)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  call_init_op_unary(&tmp);
+  ident_init(&tmp.ident, module, sym_1("cast"));
+  if ((r = buf_parse_tag(buf, &tmp.arguments->tag)) <= 0)
+    goto clean;
   result += r;
   *dest = tmp;
   r = result;
@@ -1756,6 +1749,39 @@ sw buf_parse_new_tag (s_buf *buf, s_tag **dest)
   return r;
 }
 
+sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  const s_sym *tmp;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_sym(buf, &tmp)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, ")")) <= 0)
+    goto restore;
+  result += r;
+  r = result;
+  *dest = tmp;
+  goto clean;
+ restore:
+  r = 0;
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_ptag (s_buf *buf, p_tag *ptag)
 {
   (void) buf;
@@ -2164,6 +2190,16 @@ sw buf_parse_tag_call_op_unary (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_cast (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_cast(buf, &dest->data.call)) > 0)
+    dest->type = TAG_CALL;
+  return r;
+}
+
 sw buf_parse_tag_cfn (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -2245,6 +2281,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
     goto end;
   }
   if ((r = buf_parse_tag_array(buf, dest)) != 0 ||
+      (r = buf_parse_tag_cast(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||

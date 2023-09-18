@@ -246,6 +246,8 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   sw result = 0;
   if (call->ident.sym == sym_1("[]"))
     return buf_inspect_call_brackets(buf, call);
+  if (call->ident.sym == sym_1("cast"))
+    return buf_inspect_cast(buf, call);
   if (operator_is_unary(&call->ident))
     return buf_inspect_call_op_unary(buf, call);
   if ((op_precedence = operator_precedence(&call->ident)) > 0)
@@ -459,6 +461,87 @@ sw buf_inspect_call_size (const s_call *call)
     return r;
   result += r;
   return result;
+}
+
+sw buf_inspect_cast (s_buf *buf, const s_call *call)
+{
+  s_tag *arg;
+  const s_sym *module;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(call);
+  assert(call->arguments);
+  assert(! list_next(call->arguments));
+  module = call->ident.module_name;
+  if ((r = buf_inspect_paren_sym(buf, module)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  arg = &call->arguments->tag;
+  if ((r = buf_inspect_tag(buf, arg)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_cast_size (const s_call *call)
+{
+  s_tag *arg;
+  const s_sym *module;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(call);
+  assert(call->arguments);
+  assert(! list_next(call->arguments));
+  module = call->ident.module_name;
+  if ((r = buf_inspect_paren_sym_size(module)) < 0)
+    return r;
+  result += r;
+  result += strlen(" ");
+  arg = &call->arguments->tag;
+  if ((r = buf_inspect_tag_size(arg)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(sym);
+  if ((r = buf_write_1(buf, "(")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_inspect_sym(buf, sym)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_write_1(buf, ")")) <= 0)
+    goto clean;
+  result += r;
+  r = result;
+ clean:
+  return r;
+}
+
+sw buf_inspect_paren_sym_size (const s_sym *sym)
+{
+  sw r;
+  sw result = 0;
+  assert(sym);
+  result += strlen("(");
+  if ((r = buf_inspect_sym_size(sym)) <= 0)
+    goto clean;
+  result += r;
+  result += strlen(")");
+  r = result;
+ clean:
+  return r;
 }
 
 sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)

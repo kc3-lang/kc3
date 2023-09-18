@@ -3948,7 +3948,7 @@ sw tag_type_size (e_tag_type type)
     return sizeof(s_tag);
   }
   assert(! "tag_type_size: invalid tag type");
-  err(1, "tag_type_size: invalid tag type");
+  errx(1, "tag_type_size: invalid tag type");
   return -1;
 }
 
@@ -4216,6 +4216,44 @@ ffi_type * tag_type_to_ffi_type (e_tag_type type)
   assert(! "tag_type_to_ffi_type: unknown tag type");
   errx(1, "tag_type_to_ffi_type: unknown tag type");
   return &ffi_type_void;
+}
+
+const s_sym * tag_type_to_module (e_tag_type tag_type)
+{
+  switch (tag_type) {
+  case TAG_VOID:       return sym_1("Void");
+  case TAG_ARRAY:      return sym_1("Array");
+  case TAG_BOOL:       return sym_1("Bool");
+  case TAG_CALL:       return sym_1("Call");
+  case TAG_CFN:        return sym_1("Cfn");
+  case TAG_CHARACTER:  return sym_1("Character");
+  case TAG_F32:        return sym_1("F32");
+  case TAG_F64:        return sym_1("F64");
+  case TAG_FACT:       return sym_1("Fact");
+  case TAG_FN:         return sym_1("Fn");
+  case TAG_IDENT:      return sym_1("Ident");
+  case TAG_INTEGER:    return sym_1("Integer");
+  case TAG_SW:         return sym_1("Sw");
+  case TAG_S64:        return sym_1("S64");
+  case TAG_S32:        return sym_1("S32");
+  case TAG_S16:        return sym_1("S16");
+  case TAG_S8:         return sym_1("S8");
+  case TAG_U8:         return sym_1("U8");
+  case TAG_U16:        return sym_1("U16");
+  case TAG_U32:        return sym_1("U32");
+  case TAG_U64:        return sym_1("U64");
+  case TAG_UW:         return sym_1("Uw");
+  case TAG_LIST:       return sym_1("List");
+  case TAG_PTAG:       return sym_1("Ptag");
+  case TAG_QUOTE:      return sym_1("Quote");
+  case TAG_STR:        return sym_1("Str");
+  case TAG_SYM:        return sym_1("Sym");
+  case TAG_TUPLE:      return sym_1("Tuple");
+  case TAG_VAR:        return sym_1("Var");
+  }
+  assert(! "tag_type_to_module: invalid tag type");
+  errx(1, "tag_type_to_module: invalid tag type: %d", tag_type);
+  return NULL;
 }
 
 s8 * tag_type_to_string (e_tag_type type)
