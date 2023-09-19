@@ -167,14 +167,18 @@ s_array * array_init_1 (s_array *array, s8 *p)
   buf_init_1(&buf, p);
   if ((r = buf_parse_array(&buf, &tmp)) != (sw) strlen(p)) {
     warnx("array_init_1: buf_parse_array(%s) => %ld != %ld", p, r, strlen(p));
+    if (r > 0)
+      array_clean(&tmp);
     buf_clean(&buf);
     return NULL;
   }
   buf_clean(&buf);
   if (! env_eval_array(&g_c3_env, &tmp, array)) {
     warnx("array_init_1: env_eval_array");
+    array_clean(&tmp);
     return NULL;
   }
+  array_clean(&tmp);
   return array;
 }
 
