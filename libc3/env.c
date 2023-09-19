@@ -96,7 +96,7 @@ void env_error_tag (s_env *env, const s_tag *tag)
   }
 }
 
-bool env_eval_array (s_env *env, const s_array *array, s_tag *dest)
+bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
 {
   u8 *data;
   uw i;
@@ -577,7 +577,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     tag_init_void(dest);
     return true;
   case TAG_ARRAY:
-    return env_eval_array(env, &tag->data.array, dest);
+    return env_eval_array_tag(env, &tag->data.array, dest);
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
   case TAG_IDENT:

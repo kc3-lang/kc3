@@ -22,8 +22,10 @@ void    env_clean (s_env *env);
 s_env * env_init (s_env *env);
 
 /* Modifiers. */
-bool       env_eval_array(s_env *env, const s_array *array,
-                          s_tag *dest);
+bool       env_eval_array (s_env *env, const s_array *array,
+                           s_array *dest);
+bool       env_eval_array_tag (s_env *env, const s_array *array,
+                               s_tag *dest);
 bool       env_eval_call (s_env *env, const s_call *call,
                           s_tag *dest);
 bool       env_eval_call_arguments (s_env *env, s_list *args,

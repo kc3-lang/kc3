@@ -18,6 +18,7 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
+#include "env.h"
 #include "sym.h"
 #include "tag.h"
 #include "type.h"
@@ -60,6 +61,8 @@ s_array * array_copy (const s_array *src, s_array *dest)
     dest->data = calloc(1, src->size);
     memcpy(dest->data, src->data, dest->size);
   }
+  else
+    dest->data = NULL;
   if (src->tags) {
     dest->tags = calloc(src->count, sizeof(s_tag));
     i = 0;
@@ -68,6 +71,8 @@ s_array * array_copy (const s_array *src, s_array *dest)
       i++;
     }
   }
+  else
+    dest->tags = NULL;
   return dest;
 }
 
@@ -148,20 +153,23 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
   return a;
 }
 
-s_array * array_init_1 (s_array *a, s8 *p)
+s_array * array_init_1 (s_array *array, s8 *p)
 {
   s_buf buf;
   sw r;
   s_array tmp;
   buf_init_1(&buf, p);
   if ((r = buf_parse_array(&buf, &tmp)) != (sw) strlen(p)) {
-    warnx("buf_parse_array(%s) => %ld != %ld", p, r, strlen(p));
+    warnx("array_init_1: buf_parse_array(%s) => %ld != %ld", p, r, strlen(p));
     buf_clean(&buf);
     return NULL;
   }
-  *a = tmp;
   buf_clean(&buf);
-  return a;
+  if (! env_eval_array(&g_c3_env, &tmp, array)) {
+    warnx("array_init_1: env_eval_array");
+    return NULL;
+  }
+  return array;
 }
 
 uw array_type_size (const s_sym *type)

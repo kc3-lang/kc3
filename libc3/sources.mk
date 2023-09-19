@@ -122,6 +122,7 @@ HEADERS = \
 	tuple.h \
 	type.h \
 	types.h \
+	u8.h \
 	ucd.h \
 
 SOURCES = \
@@ -459,4 +460,5 @@ LO_SOURCES = \
 	../libtommath/bn_s_mp_sub.c \
 	../libtommath/bn_s_mp_toom_mul.c \
 	../libtommath/bn_s_mp_toom_sqr.c \
+	 \
 
