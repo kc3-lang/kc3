@@ -295,6 +295,7 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
         goto clean;
       }
       result += r;
+      tag_clean(&tag);
     }
     else {
       if ((r = buf_parse_array_dimensions_rec(buf, &tmp, address,
