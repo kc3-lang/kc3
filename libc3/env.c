@@ -45,7 +45,7 @@
 
 s_env g_c3_env;
 
-bool env_eval_array_cast (s_env *env, s_array *tmp, s_tag *tag,
+bool env_eval_array_cast (s_env *env, s_array *tmp, const s_tag *tag,
                           u8 *data, uw size);
 
 void env_clean (s_env *env)
@@ -99,26 +99,30 @@ void env_error_tag (s_env *env, const s_tag *tag)
 bool env_eval_array (s_env *env, const s_array *array, s_tag *dest)
 {
   u8 *data;
-  uw i = 0;
-  uw size;
+  uw i;
+  uw item_size;
   s_tag *tag;
   s_array tmp;
   assert(env);
   assert(array);
   assert(dest);
   array_copy(array, &tmp);
-  size = tmp.dimensions[tmp.dimension - 1].item_size;
+  item_size = tmp.dimensions[tmp.dimension - 1].item_size;
   if (! tmp.data &&
       ! (tmp.data = calloc(tmp.dimensions[0].count,
                            tmp.dimensions[0].item_size))) {
-    assert(! "env_eval_array: out of memory");
-    errx(1, "env_eval_array: out of memory");
+    assert(! "env_eval_array: out of memory: data");
+    errx(1, "env_eval_array: out of memory: data");
   }
   data = tmp.data;
   tag = tmp.tags;
+  i = 0;
   while (i < tmp.count) {
-    env_eval_array_cast(env, &tmp, tag, data, size);
-    data += size;
+    if (! env_eval_array_cast(env, &tmp, tag, data, item_size)) {
+      array_clean(&tmp);
+      return false;
+    }
+    data += item_size;
     tag++;
     i++;
   }
@@ -127,11 +131,12 @@ bool env_eval_array (s_env *env, const s_array *array, s_tag *dest)
   return true;
 }
 
-bool env_eval_array_cast (s_env *env, s_array *tmp, s_tag *tag,
+bool env_eval_array_cast (s_env *env, s_array *tmp, const s_tag *tag,
                           u8 *data, uw size)
 {
   s_call call;
   s_tag tag_eval;
+  e_tag_type tag_type;
   void *data_eval;
   assert(env);
   assert(tmp);
@@ -142,8 +147,8 @@ bool env_eval_array_cast (s_env *env, s_array *tmp, s_tag *tag,
     return false;
   if (! env_eval_call(env, &call, &tag_eval))
     return false;
-  data_eval = tag_to_pointer(&tag_eval,
-                             array_type_to_tag_type(tmp->type));
+  tag_type = array_type_to_tag_type(tmp->type);
+  data_eval = tag_to_pointer(&tag_eval, tag_type);
   memcpy(data, data_eval, size);
   return true;
 }
@@ -598,8 +603,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     tag_copy(tag, dest);
     return true;
   }
-  assert(! "env_eval_tag: invalid tag");
-  errx(1, "env_eval_tag: invalid tag");
+  assert(! "env_eval_tag: unknown tag type");
+  errx(1, "env_eval_tag: unknown tag type: %d", tag->type);
   return false;
 }
 

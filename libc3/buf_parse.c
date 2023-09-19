@@ -50,7 +50,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  tmp = *dest;
+  bzero(&tmp, sizeof(tmp));
   if ((r = buf_parse_paren_sym(buf, &tmp.type)) <= 0)
     goto clean;
   result += r;
@@ -86,10 +86,18 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
   assert(buf);
   assert(dest);
   tmp = *dest;
-  address = calloc(tmp.dimension, sizeof(sw));
+  if (! (address = calloc(tmp.dimension, sizeof(sw)))) {
+    warnx("buf_parse_array_data: out of memory: address");
+    return -1;
+  }
   tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
   tmp.count = tmp.size / tmp.dimensions[tmp.dimension - 1].item_size;
-  tmp.tags = calloc(tmp.count, sizeof(s_tag));
+  assert(tmp.count);
+  if (! (tmp.tags = calloc(tmp.count, sizeof(s_tag)))) {
+    free(address);
+    warnx("buf_parse_array_data: out of memory: tags");
+    return -1;
+  }
   tag = tmp.tags;
   if ((r = buf_parse_array_data_rec(buf, &tmp, address, &tag,
                                     0)) <= 0) {

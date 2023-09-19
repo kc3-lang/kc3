@@ -140,7 +140,8 @@ s_call * call_init_1 (s_call *call, const s8 *p)
   return call;
 }
 
-s_call * call_init_cast (s_call *call, const s_sym *type, s_tag *tag)
+s_call * call_init_cast (s_call *call, const s_sym *type,
+                         const s_tag *tag)
 {
   assert(call);
   bzero(call, sizeof(s_call));

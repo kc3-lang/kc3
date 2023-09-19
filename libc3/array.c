@@ -53,6 +53,7 @@ s_array * array_copy (const s_array *src, s_array *dest)
   dest->dimensions = calloc(src->dimension, sizeof(s_array_dimension));
   memcpy(dest->dimensions, src->dimensions,
          src->dimension * sizeof(s_array_dimension));
+  dest->count = src->count;
   dest->size = src->size;
   dest->type = src->type;
   if (src->data) {
