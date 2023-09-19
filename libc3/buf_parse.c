@@ -71,6 +71,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   r = result;
   goto clean;
  restore:
+  array_clean(&tmp);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
