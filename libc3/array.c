@@ -25,10 +25,18 @@
 
 void array_clean (s_array *a)
 {
+  uw i;
   assert(a);
   free(a->dimensions);
   free(a->data);
-  free(a->tags);
+  if (a->tags) {
+    i = 0;
+    while (i < a->count) {
+      tag_clean(a->tags + i);
+      i++;
+    }
+    free(a->tags);
+  }
 }
 
 s_array * array_copy (const s_array *src, s_array *dest)
