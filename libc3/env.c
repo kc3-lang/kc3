@@ -113,6 +113,7 @@ bool env_eval_array (s_env *env, const s_array *array, s_tag *dest)
                            tmp.dimensions[0].item_size))) {
     assert(! "env_eval_array: out of memory: data");
     errx(1, "env_eval_array: out of memory: data");
+    return false;
   }
   data = tmp.data;
   tag = tmp.tags;
@@ -126,6 +127,15 @@ bool env_eval_array (s_env *env, const s_array *array, s_tag *dest)
     tag++;
     i++;
   }
+  *dest = tmp;
+  return true;
+}
+
+bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
+{
+  s_array tmp;
+  if (! env_eval_array(env, array, &tmp))
+    return false;
   dest->type = TAG_ARRAY;
   dest->data.array = tmp;
   return true;
