@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include "array.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
@@ -140,7 +141,7 @@ s_list * list_new (const s_tag *tag, s_list *next)
   return list_init(list, tag, next);
 }
 
-s_array * list_to_array (s_list *list, e_tag_type type,
+s_array * list_to_array (s_list *list, const s_sym *type,
                          s_array *dest)
 {
   s8 *data;
@@ -151,7 +152,7 @@ s_array * list_to_array (s_list *list, e_tag_type type,
   assert(list);
   assert(dest);
   len = list_length(list);
-  size = tag_type_size(type);
+  size = array_type_size(type);
   dest->dimension = 1;
   dest->type = type;
   if (! (dest->dimensions = calloc(1, sizeof(s_array_dimension))))
@@ -163,7 +164,7 @@ s_array * list_to_array (s_list *list, e_tag_type type,
     errx(1, "list_to_array: out of memory: 2");
   l = list;
   while (l) {
-    data_list = tag_to_pointer(&l->tag, type);
+    data_list = tag_to_pointer(&l->tag, array_type_to_tag_type(type));
     memcpy(data, data_list, size);
     data += size;
     l = list_next(l);

@@ -241,6 +241,7 @@ SOURCES = \
 	timespec.c \
 	tuple.c \
 	type.c \
+	u8.c \
 	ucd.c \
 
 LO_SOURCES = \
@@ -360,6 +361,7 @@ LO_SOURCES = \
 	timespec.c \
 	tuple.c \
 	type.c \
+	u8.c \
 	ucd.c \
 	../libtommath/bn_cutoffs.c \
 	../libtommath/bn_mp_2expt.c \

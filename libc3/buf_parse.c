@@ -15,6 +15,7 @@
 #include <string.h>
 #include <math.h>
 #include "../libtommath/tommath.h"
+#include "array.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
@@ -34,12 +35,10 @@
 #include "tag.h"
 #include "tuple.h"
 
-sw buf_parse_array_data_rec (s_buf *buf, s_array *dest,
-                             uw dimension, uw *address,
-                             f_buf_parse parse, u8 **data);
+sw buf_parse_array_data_rec (s_buf *buf, s_array *dest, uw *address,
+                             s_tag **tag, uw dimension);
 sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
-                                   uw dimension, uw *address,
-                                   f_buf_parse parse, void *data);
+                                   uw *address,uw dimension);
 sw buf_peek_array_dimension_count (s_buf *buf, s_array *dest);
 
 sw buf_parse_array (s_buf *buf, s_array *dest)
@@ -48,15 +47,13 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   sw result = 0;
   s_buf_save save;
   s_array tmp;
-  const s_sym *type;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
   tmp = *dest;
-  if ((r = buf_parse_paren_sym(buf, &type)) <= 0)
+  if ((r = buf_parse_paren_sym(buf, &tmp.type)) <= 0)
     goto clean;
   result += r;
-  sym_to_tag_type(type, &tmp.type);
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
@@ -83,20 +80,19 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
 sw buf_parse_array_data (s_buf *buf, s_array *dest)
 {
   uw *address;
-  u8 *data;
-  f_buf_parse parse;
   sw r;
+  s_tag *tag;
   s_array tmp;
   assert(buf);
   assert(dest);
   tmp = *dest;
   address = calloc(tmp.dimension, sizeof(sw));
-  parse = tag_type_to_buf_parse(tmp.type);
-  tmp.data = calloc(tmp.dimensions[0].count, tmp.dimensions[0].item_size);
   tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
-  data = tmp.data;
-  if ((r = buf_parse_array_data_rec(buf, &tmp, 0, address,
-                                    parse, &data)) <= 0) {
+  tmp.count = tmp.size / tmp.dimensions[tmp.dimension - 1].item_size;
+  tmp.tags = calloc(tmp.count, sizeof(s_tag));
+  tag = tmp.tags;
+  if ((r = buf_parse_array_data_rec(buf, &tmp, address, &tag,
+                                    0)) <= 0) {
     warnx("buf_parse_array_data: buf_parse_array_data_rec:"
           " %ld", r);
     goto clean;
@@ -107,9 +103,8 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
   return r;
 }
 
-sw buf_parse_array_data_rec (s_buf *buf, s_array *dest,
-                             uw dimension, uw *address,
-                             f_buf_parse parse, u8 **data)
+sw buf_parse_array_data_rec (s_buf *buf, s_array *dest, uw *address,
+                             s_tag **tag, uw dimension)
 {
   sw r;
   sw result = 0;
@@ -133,17 +128,16 @@ sw buf_parse_array_data_rec (s_buf *buf, s_array *dest,
   address[dimension] = 0;
   while (1) {
     if (dimension == tmp.dimension - 1) {
-      if ((r = parse(buf, *data)) < 0) {
+      if ((r = buf_parse_tag(buf, *tag)) < 0) {
         warnx("buf_parse_array_data_rec: parse");
         goto clean;
       }
       result += r;
-      *data += tmp.dimensions[dimension].item_size;
+      (*tag)++;
     }
     else {
-      if ((r = buf_parse_array_data_rec(buf, &tmp, dimension + 1,
-                                              address, parse,
-                                              data)) <= 0) {
+      if ((r = buf_parse_array_data_rec(buf, &tmp, address, tag,
+                                        dimension + 1)) <= 0) {
         warnx("buf_parse_array_data_rec: buf_parse_array_data_rec");
         goto restore;
       }
@@ -237,8 +231,6 @@ sw buf_parse_array_dimension_count (s_buf *buf, s_array *dest)
 sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
 {
   uw *address;
-  u8 *data;
-  f_buf_parse parse;
   sw r;
   uw size;
   s_array tmp;
@@ -246,30 +238,27 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
   assert(dest);
   tmp = *dest;
   address = calloc(tmp.dimension, sizeof(sw));
-  size = tag_type_size(tmp.type);
-  parse = tag_type_to_buf_parse(tmp.type);
-  data = calloc(1, size);
+  size = array_type_size(tmp.type);
   tmp.dimensions[tmp.dimension - 1].item_size = size;
-  if ((r = buf_parse_array_dimensions_rec(buf, &tmp, 0, address,
-                                          parse, data)) <= 0) {
+  if ((r = buf_parse_array_dimensions_rec(buf, &tmp, address,
+                                          0)) <= 0) {
     warnx("buf_parse_array_dimensions: buf_parse_array_dimensions_rec:"
           " %ld", r);
     goto clean;
   }
   *dest = tmp;
  clean:
-  free(data);
   free(address);
   return r;
 }
 
 sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
-                                   uw dimension, uw *address,
-                                   f_buf_parse parse, void *data)
+                                   uw *address, uw dimension)
 {
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_tag tag;
   s_array tmp;
   assert(buf);
   assert(dest);
@@ -289,17 +278,17 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   address[dimension] = 0;
   while (1) {
     if (dimension == dest->dimension - 1) {
-      if ((r = parse(buf, data)) < 0) {
-        warnx("buf_parse_array_dimensions_rec: parse");
+      if ((r = buf_parse_tag(buf, &tag)) <= 0) {
+        warnx("buf_parse_array_dimensions_rec: buf_parse_tag");
         goto clean;
       }
       result += r;
     }
     else {
-      if ((r = buf_parse_array_dimensions_rec(buf, &tmp, dimension + 1,
-                                              address, parse,
-                                              data)) <= 0) {
-        warnx("buf_parse_array_dimensions_rec: buf_parse_array_dimensions_rec");
+      if ((r = buf_parse_array_dimensions_rec(buf, &tmp, address,
+                                              dimension + 1)) <= 0) {
+        warnx("buf_parse_array_dimensions_rec:"
+              " buf_parse_array_dimensions_rec");
         goto restore;
       }
       result += r;
@@ -433,7 +422,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
     goto restore;
   }
   arg_dimensions->type = TAG_ARRAY;
-  if (! list_to_array(dimensions, TAG_UW, &arg_dimensions->data.array))
+  if (! list_to_array(dimensions, sym_1("Uw"), &arg_dimensions->data.array))
     goto restore;
   *dest = tmp;
   r = result;

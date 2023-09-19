@@ -3948,7 +3948,7 @@ sw tag_type_size (e_tag_type type)
     return sizeof(s_tag);
   }
   assert(! "tag_type_size: invalid tag type");
-  errx(1, "tag_type_size: invalid tag type");
+  errx(1, "tag_type_size: invalid tag type: %d", type);
   return -1;
 }
 

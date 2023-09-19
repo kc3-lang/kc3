@@ -14,6 +14,7 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <unistd.h>
 #include "array.h"
@@ -43,6 +44,9 @@
 #include "tuple.h"
 
 s_env g_c3_env;
+
+bool env_eval_array_cast (s_env *env, s_array *tmp, s_tag *tag,
+                          u8 *data, uw size);
 
 void env_clean (s_env *env)
 {
@@ -94,12 +98,52 @@ void env_error_tag (s_env *env, const s_tag *tag)
 
 bool env_eval_array (s_env *env, const s_array *array, s_tag *dest)
 {
+  u8 *data;
+  uw i = 0;
+  uw size;
+  s_tag *tag;
+  s_array tmp;
   assert(env);
   assert(array);
   assert(dest);
-  (void) env;
+  array_copy(array, &tmp);
+  size = tmp.dimensions[tmp.dimension - 1].item_size;
+  if (! tmp.data &&
+      ! (data = tmp.data = calloc(tmp.dimensions[0].count,
+                                  tmp.dimensions[0].item_size))) {
+    assert(! "env_eval_array: out of memory");
+    errx(1, "env_eval_array: out of memory");
+  }
+  tag = tmp.tags;
+  while (i < tmp.count) {
+    env_eval_array_cast(env, &tmp, tag, data, size);
+    data += size;
+    tag++;
+    i++;
+  }
   dest->type = TAG_ARRAY;
-  array_copy(array, &dest->data.array);
+  dest->data.array = tmp;
+  return true;
+}
+
+bool env_eval_array_cast (s_env *env, s_array *tmp, s_tag *tag,
+                          u8 *data, uw size)
+{
+  s_call call;
+  s_tag tag_eval;
+  void *data_eval;
+  assert(env);
+  assert(tmp);
+  assert(tag);
+  assert(data);
+  assert(size);
+  if (! call_init_cast(&call, tmp->type, tag))
+    return false;
+  if (! env_eval_call(env, &call, &tag_eval))
+    return false;
+  data_eval = tag_to_pointer(&tag_eval,
+                             array_type_to_tag_type(tmp->type));
+  memcpy(data, data_eval, size);
   return true;
 }
 

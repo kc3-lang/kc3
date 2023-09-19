@@ -327,11 +327,13 @@ struct type {
 
 /* 4 */
 struct array {
+  uw count;
   uw dimension;
-  e_tag_type type;
   s_array_dimension *dimensions;
-  uw size;
   void *data;
+  uw size;
+  s_tag *tags;
+  const s_sym *type;
 };
 
 

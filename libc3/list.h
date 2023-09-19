@@ -40,7 +40,7 @@ void     list_delete_all (s_list *list);
 s_list *  list_copy (const s_list *src, s_list **dest);
 sw        list_length (const s_list *list);
 s_list *  list_next (const s_list *list);
-s_array * list_to_array (s_list *list, e_tag_type type,
+s_array * list_to_array (s_list *list, const s_sym *type,
                          s_array *dest);
 s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *dest);
 /* Call str_delete after use. */

@@ -140,6 +140,15 @@ s_call * call_init_1 (s_call *call, const s8 *p)
   return call;
 }
 
+s_call * call_init_cast (s_call *call, const s_sym *type, s_tag *tag)
+{
+  assert(call);
+  bzero(call, sizeof(s_call));
+  ident_init(&call->ident, type, sym_1("cast"));
+  call->arguments = list_new(tag, NULL);
+  return call;
+}
+
 s_call * call_init_op (s_call *call)
 {
   assert(call);

@@ -15,12 +15,17 @@
 
 #include "types.h"
 
-void      array_clean (s_array *a);
-s_array * array_copy (const s_array *src, s_array *dest);
-s_array * array_init (s_array *a, e_tag_type type, uw dimension,
-                      const uw *dimensions);
-s_array * array_init_1 (s_array *a, s8 *p);
-void *    array_data (const s_array *a, const uw *address);
-s_tag *   array_data_tag (s_tag *a, const s_tag *address, s_tag *dest);
+void               array_clean (s_array *a);
+s_array *          array_copy (const s_array *src, s_array *dest);
+s_array *          array_init (s_array *a, const s_sym *type,
+                               uw dimension, const uw *dimensions);
+s_array *          array_init_1 (s_array *a, s8 *p);
+void *             array_data (const s_array *a, const uw *address);
+s_tag *            array_data_tag (s_tag *a, const s_tag *address,
+                                   s_tag *dest);
+uw                 array_type_size (const s_sym *type);
+f_buf_inspect      array_type_to_buf_inspect (const s_sym *type);
+f_buf_inspect_size array_type_to_buf_inspect_size (const s_sym *type);
+e_tag_type         array_type_to_tag_type (const s_sym *type);
 
 #endif /* ARRAY_H */

@@ -12,6 +12,7 @@
  */
 #include <string.h>
 #include "../libc3/array.h"
+#include "../libc3/sym.h"
 #include "test.h"
 
 #define ARRAY_TEST_INIT_CLEAN(type, dimension, dimensions)             \
@@ -53,15 +54,15 @@ TEST_CASE_END(array_data)
 
 TEST_CASE(array_init_clean)
 {
-  ARRAY_TEST_INIT_CLEAN(TAG_U8, 1, (uw []) {1});
-  ARRAY_TEST_INIT_CLEAN(TAG_U8, 1, (uw []) {10});
-  ARRAY_TEST_INIT_CLEAN(TAG_U8, 1, (uw []) {100});
-  ARRAY_TEST_INIT_CLEAN(TAG_U8, 2, ((uw []) {1, 1}));
-  ARRAY_TEST_INIT_CLEAN(TAG_U8, 2, ((uw []) {10, 10}));
-  ARRAY_TEST_INIT_CLEAN(TAG_U8, 2, ((uw []) {100, 100}));
-  ARRAY_TEST_INIT_CLEAN(TAG_U8, 3, ((uw []) {1, 1, 1}));
-  ARRAY_TEST_INIT_CLEAN(TAG_U8, 3, ((uw []) {10, 10, 10}));
-  ARRAY_TEST_INIT_CLEAN(TAG_U8, 3, ((uw []) {100, 100, 100}));
+  ARRAY_TEST_INIT_CLEAN(sym_1("U8"), 1, (uw []) {1});
+  ARRAY_TEST_INIT_CLEAN(sym_1("U8"), 1, (uw []) {10});
+  ARRAY_TEST_INIT_CLEAN(sym_1("U8"), 1, (uw []) {100});
+  ARRAY_TEST_INIT_CLEAN(sym_1("U8"), 2, ((uw []) {1, 1}));
+  ARRAY_TEST_INIT_CLEAN(sym_1("U8"), 2, ((uw []) {10, 10}));
+  ARRAY_TEST_INIT_CLEAN(sym_1("U8"), 2, ((uw []) {100, 100}));
+  ARRAY_TEST_INIT_CLEAN(sym_1("U8"), 3, ((uw []) {1, 1, 1}));
+  ARRAY_TEST_INIT_CLEAN(sym_1("U8"), 3, ((uw []) {10, 10, 10}));
+  ARRAY_TEST_INIT_CLEAN(sym_1("U8"), 3, ((uw []) {100, 100, 100}));
 }
 TEST_CASE_END(array_init_clean)
 

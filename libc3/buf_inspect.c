@@ -35,8 +35,6 @@ sw buf_inspect_array_data_size_rec (const s_array *array,
                                     uw dimension, uw *address,
                                     f_buf_inspect_size inspect,
                                     u8 **data);
-sw buf_inspect_array_type (s_buf *buf, const s_array *array);
-sw buf_inspect_array_type_size (const s_array *array);
 sw buf_inspect_tag_type (s_buf *buf, e_tag_type type);
 
 sw buf_inspect_array (s_buf *buf, const s_array *array)
@@ -45,7 +43,7 @@ sw buf_inspect_array (s_buf *buf, const s_array *array)
   sw result = 0;
   assert(buf);
   assert(array);
-  if ((r = buf_inspect_array_type(buf, array)) <= 0)
+  if ((r = buf_inspect_paren_sym(buf, array->type)) <= 0)
     goto clean;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
@@ -70,7 +68,7 @@ sw buf_inspect_array_data (s_buf *buf, const s_array *array)
   assert(buf);
   assert(array);
   address = calloc(array->dimension, sizeof(uw));
-  inspect = tag_type_to_buf_inspect(array->type);
+  inspect = array_type_to_buf_inspect(array->type);
   data = array->data;
   r = buf_inspect_array_data_rec(buf, array, 0, address,
                                  inspect, &data);
@@ -124,7 +122,7 @@ sw buf_inspect_array_data_size (const s_array *array)
   sw r;
   assert(array);
   address = calloc(array->dimension, sizeof(uw));
-  inspect = tag_type_to_buf_inspect_size(array->type);
+  inspect = array_type_to_buf_inspect_size(array->type);
   data = array->data;
   r = buf_inspect_array_data_size_rec(array, 0, address,
                                       inspect, &data);
@@ -173,7 +171,7 @@ sw buf_inspect_array_size (const s_array *array)
   sw r;
   sw result = 0;
   assert(array);
-  if ((r = buf_inspect_array_type_size(array)) <= 0)
+  if ((r = buf_inspect_paren_sym_size(array->type)) <= 0)
     goto clean;
   result += r;
   r = strlen(" ");
@@ -182,43 +180,6 @@ sw buf_inspect_array_size (const s_array *array)
     warnx("buf_inspect_array_size: buf_inspect_array_data");
     goto clean;
   }
-  result += r;
-  r = result;
- clean:
-  return r;
-}
-
-sw buf_inspect_array_type (s_buf *buf, const s_array *array)
-{
-  sw r;
-  sw result = 0;
-  assert(buf);
-  assert(array);
-  if ((r = buf_write_1(buf, "(")) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_inspect_tag_type(buf, array->type)) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_write_1(buf, ")")) <= 0)
-    goto clean;
-  result += r;
-  r = result;
- clean:
-  return r;
-}
-
-sw buf_inspect_array_type_size (const s_array *array)
-{
-  sw r;
-  sw result = 0;
-  assert(array);
-  r = strlen("(");
-  result += r;
-  if ((r = buf_inspect_tag_type_size(array->type)) <= 0)
-    goto clean;
-  result += r;
-  r = strlen(")");
   result += r;
   r = result;
  clean:
@@ -493,17 +454,16 @@ sw buf_inspect_cast_size (const s_call *call)
   const s_sym *module;
   sw r;
   sw result = 0;
-  assert(buf);
   assert(call);
   assert(call->arguments);
   assert(! list_next(call->arguments));
   module = call->ident.module_name;
-  if ((r = buf_inspect_paren_sym_size(module)) < 0)
+  if ((r = buf_inspect_paren_sym_size(module)) <= 0)
     return r;
   result += r;
   result += strlen(" ");
   arg = &call->arguments->tag;
-  if ((r = buf_inspect_tag_size(arg)) < 0)
+  if ((r = buf_inspect_tag_size(arg)) <= 0)
     return r;
   result += r;
   return result;
