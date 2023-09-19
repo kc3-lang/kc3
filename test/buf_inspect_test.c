@@ -205,11 +205,11 @@ void buf_inspect_test ()
 
 TEST_CASE(buf_inspect_array)
 {
-  BUF_INSPECT_TEST_ARRAY("(u8){0}", "(u8) {0}");
-  BUF_INSPECT_TEST_ARRAY("(u8){{0, 1}, {2, 3}}",
-                         "(u8) {{0, 1}, {2, 3}}");
-  BUF_INSPECT_TEST_ARRAY("(u8) { { { 0 , 1 } , {2 , 3 } } , { { 4 , 5 } , { 6 , 7 } } } }",
-                         "(u8) {{{0, 1}, {2, 3}}, {{4, 5}, {6, 7}}}");
+  BUF_INSPECT_TEST_ARRAY("(U8){0}", "(U8) {0}");
+  BUF_INSPECT_TEST_ARRAY("(U8){{0, 1}, {2, 3}}",
+                         "(U8) {{0, 1}, {2, 3}}");
+  BUF_INSPECT_TEST_ARRAY("(U8) { { { 0 , 1 } , {2 , 3 } } , { { 4 , 5 } , { 6 , 7 } } } }",
+                         "(U8) {{{0, 1}, {2, 3}}, {{4, 5}, {6, 7}}}");
 }
 TEST_CASE_END(buf_inspect_array)
 
