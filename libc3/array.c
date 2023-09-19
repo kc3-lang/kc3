@@ -51,7 +51,12 @@ s_array * array_copy (const s_array *src, s_array *dest)
   }
 #endif
   dest->dimension = src->dimension;
-  dest->dimensions = calloc(src->dimension, sizeof(s_array_dimension));
+  if (! (dest->dimensions = calloc(src->dimension,
+                                   sizeof(s_array_dimension)))) {
+    assert(! "array_copy: out of memory: dimensions");
+    warnx("array_copy: out of memory: dimensions");
+    return NULL;
+  }
   memcpy(dest->dimensions, src->dimensions,
          src->dimension * sizeof(s_array_dimension));
   dest->count = src->count;
@@ -82,9 +87,10 @@ void * array_data (const s_array *a, const uw *address)
   uw offset = 0;
   assert(a);
   assert(address);
+  assert(a->data);
   while (i < a->dimension) {
     if (address[i] >= a->dimensions[i].count) {
-      errx(1, "array address overflow");
+      warnx("array_data: address overflow: %lu", i);
       return NULL;
     }
     offset += address[i] * a->dimensions[i].item_size;

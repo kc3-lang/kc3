@@ -3,5 +3,5 @@
 add {U8, :is_a, :module}
 add {U8, :symbol, U8.cast}
 add {U8, :symbol, U8.size}
-replace {U8.cast, :cfn, cfn :u8 "u8_cast" (:tag, :&result)}
+replace {U8.cast, :cfn, cfn :u8 "u8_cast" (:tag)}
 replace {U8.size, :value, 1}
