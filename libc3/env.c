@@ -109,11 +109,12 @@ bool env_eval_array (s_env *env, const s_array *array, s_tag *dest)
   array_copy(array, &tmp);
   size = tmp.dimensions[tmp.dimension - 1].item_size;
   if (! tmp.data &&
-      ! (data = tmp.data = calloc(tmp.dimensions[0].count,
-                                  tmp.dimensions[0].item_size))) {
+      ! (tmp.data = calloc(tmp.dimensions[0].count,
+                           tmp.dimensions[0].item_size))) {
     assert(! "env_eval_array: out of memory");
     errx(1, "env_eval_array: out of memory");
   }
+  data = tmp.data;
   tag = tmp.tags;
   while (i < tmp.count) {
     env_eval_array_cast(env, &tmp, tag, data, size);
