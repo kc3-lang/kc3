@@ -155,11 +155,15 @@ bool env_eval_array_cast (s_env *env, s_array *tmp, const s_tag *tag,
   assert(size);
   if (! call_init_cast(&call, tmp->type, tag))
     return false;
-  if (! env_eval_call(env, &call, &tag_eval))
+  if (! env_eval_call(env, &call, &tag_eval)) {
+    call_clean(&call);
     return false;
+  }
   tag_type = array_type_to_tag_type(tmp->type);
   data_eval = tag_to_pointer(&tag_eval, tag_type);
   memcpy(data, data_eval, size);
+  call_clean(&call);
+  tag_clean(&tag_eval);
   return true;
 }
 
