@@ -27,6 +27,7 @@ void array_clean (s_array *a)
   assert(a);
   free(a->dimensions);
   free(a->data);
+  free(a->tags);
 }
 
 s_array * array_copy (const s_array *src, s_array *dest)
@@ -108,6 +109,7 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
                       const uw *dimensions)
 {
   uw i = 0;
+  uw item_size;
   assert(a);
   assert(dimension);
   assert(dimensions);
@@ -131,14 +133,17 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
   }
   i--;
   a->type = type;
-  a->dimensions[i].item_size = array_type_size(type);
+  item_size = array_type_size(type);
+  a->dimensions[i].item_size = item_size;
   while (i > 0) {
     i--;
     a->dimensions[i].item_size = a->dimensions[i + 1].count *
       a->dimensions[i + 1].item_size;
   }
   a->size = a->dimensions[0].count * a->dimensions[0].item_size;
-  a->data = calloc(1, a->size);
+  a->count = a->size / item_size;
+  a->data = NULL;
+  a->tags = NULL;
   return a;
 }
 
