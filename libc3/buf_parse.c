@@ -103,9 +103,12 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
                                     0)) <= 0) {
     warnx("buf_parse_array_data: buf_parse_array_data_rec:"
           " %ld", r);
-    goto clean;
+    goto restore;
   }
   *dest = tmp;
+  goto clean;
+ restore:
+  free(tmp.tags);
  clean:
   free(address);
   return r;
