@@ -71,7 +71,8 @@ s_array * array_copy (const s_array *src, s_array *dest)
   dest->size = src->size;
   dest->type = src->type;
   if (src->data) {
-    dest->data = calloc(1, src->size);
+    if (! (dest->data = calloc(1, src->size)))
+      errx(1, "array_copy: out of memory");
     memcpy(dest->data, src->data, dest->size);
   }
   else
@@ -188,6 +189,27 @@ s_array * array_init_1 (s_array *array, s8 *p)
   }
   array_clean(&tmp);
   return array;
+}
+
+s_str * array_inspect (const s_array *array, s_str *dest)
+{
+  sw size;
+  s_buf tmp;
+  size = buf_inspect_array_size(array);
+  if (size < 0) {
+    assert(! "array_inspect: error");
+    errx(1, "array_inspect: error");
+    return NULL;
+  }
+  buf_init_alloc(&tmp, size);
+  buf_inspect_array(&tmp, array);
+  assert(tmp.wpos == tmp.size);
+  if (tmp.wpos != tmp.size) {
+    buf_clean(&tmp);
+    errx(1, "array_inspect: buf_inspect_array");
+    return NULL;
+  }
+  return buf_to_str(&tmp, dest);
 }
 
 uw array_type_size (const s_sym *type)

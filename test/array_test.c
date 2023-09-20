@@ -12,6 +12,7 @@
  */
 #include <string.h>
 #include "../libc3/array.h"
+#include "../libc3/str.h"
 #include "../libc3/sym.h"
 #include "test.h"
 
@@ -29,16 +30,30 @@
     array_clean(&a);                                                   \
   } while(0)
 
+#define ARRAY_TEST_INSPECT(test, expected)                             \
+  do {                                                                 \
+    s_str str;                                                         \
+    s_array tmp;                                                       \
+    test_context("array_inspect(" # test ") -> " # expected);          \
+    TEST_EQ(array_init_1(&tmp, (test)), &tmp);                         \
+    TEST_EQ(array_inspect(&tmp, &str), &str);                          \
+    TEST_STRNCMP(str.ptr.p, (expected), str.size);                     \
+    array_clean(&tmp);                                                 \
+    str_clean(&str);						       \
+  } while(0)
+
 void array_test ();
 TEST_CASE_PROTOTYPE(array_data);
 TEST_CASE_PROTOTYPE(array_init_clean);
 TEST_CASE_PROTOTYPE(array_init_1_clean);
+TEST_CASE_PROTOTYPE(array_inspect);
 
 void array_test ()
 {
   TEST_CASE_RUN(array_init_clean);
   TEST_CASE_RUN(array_init_1_clean);
   TEST_CASE_RUN(array_data);
+  TEST_CASE_RUN(array_inspect);
 }
 
 TEST_CASE(array_data)
@@ -48,6 +63,11 @@ TEST_CASE(array_data)
   TEST_EQ(* (u8 *) array_data(&a, (uw []) {0}), 1);
   TEST_EQ(* (u8 *) array_data(&a, (uw []) {1}), 2);
   TEST_EQ(* (u8 *) array_data(&a, (uw []) {2}), 3);
+  array_clean(&a);
+  TEST_EQ(array_init_1(&a, "(U8) {1 + 1, 2 + 2, 3 + 3}"), &a);
+  TEST_EQ(* (u8 *) array_data(&a, (uw []) {0}), 2);
+  TEST_EQ(* (u8 *) array_data(&a, (uw []) {1}), 4);
+  TEST_EQ(* (u8 *) array_data(&a, (uw []) {2}), 6);
   array_clean(&a);
 }
 TEST_CASE_END(array_data)
@@ -77,3 +97,24 @@ TEST_CASE(array_init_1_clean)
   ARRAY_TEST_INIT_1_CLEAN("(U8) {{{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}}");
 }
 TEST_CASE_END(array_init_1_clean)
+
+TEST_CASE(array_inspect)
+{
+  ARRAY_TEST_INSPECT("(U8) {0}",
+                     "(U8) {0}");
+  ARRAY_TEST_INSPECT("(U8) {0, 0}",
+                     "(U8) {0, 0}");
+  ARRAY_TEST_INSPECT("(U8) {0, 0, 0}",
+                     "(U8) {0, 0, 0}");
+  ARRAY_TEST_INSPECT("(U8) {{0}, {0}}",
+                     "(U8) {{0}, {0}}");
+  ARRAY_TEST_INSPECT("(U8) {{0, 0}, {0, 0}}",
+                     "(U8) {{0, 0}, {0, 0}}");
+  ARRAY_TEST_INSPECT("(U8) {{0, 0}, {0, 0}, {0, 0}}",
+                     "(U8) {{0, 0}, {0, 0}, {0, 0}}");
+  ARRAY_TEST_INSPECT("(U8) {{{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}}",
+                     "(U8) {{{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}}");
+  ARRAY_TEST_INSPECT("(U8) {1, 2, 3}", "(U8) {1, 2, 3}");
+  ARRAY_TEST_INSPECT("(U8) {1 + 1, 2 + 2, 3 + 3}", "(U8) {2, 4, 6}");
+}
+TEST_CASE_END(array_inspect)

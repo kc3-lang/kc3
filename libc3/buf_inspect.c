@@ -28,12 +28,15 @@
 
 sw buf_inspect_array_data (s_buf *buf, const s_array *array);
 sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
+                               const u8 **data, f_buf_inspect inspect,
                                const s_tag **tag, uw *address,
                                uw dimension);
 sw buf_inspect_array_data_size (const s_array *array);
 sw buf_inspect_array_data_size_rec (const s_array *array,
-                                    const s_tag **tag, uw *address,
-                                    uw dimension);
+                                    const u8 **data,
+                                    f_buf_inspect_size inspect_size,
+                                    const s_tag **tag,
+                                    uw *address, uw dimension);
 sw buf_inspect_tag_type (s_buf *buf, e_tag_type type);
 
 sw buf_inspect_array (s_buf *buf, const s_array *array)
@@ -61,19 +64,30 @@ sw buf_inspect_array (s_buf *buf, const s_array *array)
 sw buf_inspect_array_data (s_buf *buf, const s_array *array)
 {
   uw *address;
-  s_tag *tag;
+  u8 *data = NULL;
+  f_buf_inspect inspect = NULL;
+  s_tag *tag = NULL;
+  e_tag_type tag_type;
   sw r;
   assert(buf);
   assert(array);
   address = calloc(array->dimension, sizeof(uw));
-  tag = array->tags;
-  r = buf_inspect_array_data_rec(buf, array, (const s_tag **) &tag,
+  if (array->data) {
+    data = array->data;
+    tag_type = array_type_to_tag_type(array->type);
+    inspect = tag_type_to_buf_inspect(tag_type);
+  }
+  else 
+    tag = array->tags;
+  r = buf_inspect_array_data_rec(buf, array, (const u8 **) &data,
+                                 inspect, (const s_tag **) &tag,
                                  address, 0);
   free(address);
   return r;
 }
 
 sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
+                               const u8 **data, f_buf_inspect inspect,
                                const s_tag **tag, uw *address,
                                uw dimension)
 {
@@ -85,13 +99,22 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
   address[dimension] = 0;
   while (1) {
     if (dimension == array->dimension - 1) {
-      if ((r = buf_inspect_tag(buf, *tag)) <= 0)
-        goto clean;
-      result += r;
-      (*tag)++;
+      if (*data) {
+        if ((r = inspect(buf, *data)) <= 0)
+          goto clean;
+        result += r;
+        *data += array->dimensions[dimension].item_size;
+      }
+      else if (*tag) {
+        if ((r = buf_inspect_tag(buf, *tag)) <= 0)
+          goto clean;
+        result += r;
+        (*tag)++;
+      }
     }
     else {
-      if ((r = buf_inspect_array_data_rec(buf, array, tag, address,
+      if ((r = buf_inspect_array_data_rec(buf, array, data, inspect,
+                                          tag, address,
                                           dimension + 1)) <= 0)
         goto clean;
       result += r;
@@ -114,20 +137,33 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
 sw buf_inspect_array_data_size (const s_array *array)
 {
   uw *address;
-  s_tag *tag;
+  u8 *data = NULL;
+  f_buf_inspect_size inspect_size = NULL;
+  s_tag *tag = NULL;
+  e_tag_type tag_type;
   sw r;
   assert(array);
   address = calloc(array->dimension, sizeof(uw));
-  tag = array->tags;
-  r = buf_inspect_array_data_size_rec(array, (const s_tag **) &tag,
+  if (array->data) {
+    data = array->data;
+    tag_type = array_type_to_tag_type(array->type);
+    inspect_size = tag_type_to_buf_inspect_size(tag_type);
+  }
+  else 
+    tag = array->tags;
+  r = buf_inspect_array_data_size_rec(array, (const u8 **) &data,
+                                      inspect_size,
+                                      (const s_tag **) &tag,
                                       address, 0);
   free(address);
   return r;
 }
 
 sw buf_inspect_array_data_size_rec (const s_array *array,
-                                    const s_tag **tag, uw *address,
-                                    uw dimension)
+                                    const u8 **data,
+                                    f_buf_inspect_size inspect_size,
+                                    const s_tag **tag,
+                                    uw *address, uw dimension)
 {
   sw r;
   sw result = 0;
@@ -136,13 +172,23 @@ sw buf_inspect_array_data_size_rec (const s_array *array,
   address[dimension] = 0;
   while (1) {
     if (dimension == array->dimension - 1) {
-      if ((r = buf_inspect_tag_size(*tag)) <= 0)
-        goto clean;
-      result += r;
-      (*tag)++;
+      if (*data) {
+        if ((r = inspect_size(*data)) <= 0)
+          goto clean;
+        result += r;
+        *data += array->dimensions[dimension].item_size;
+      }
+      else if (*tag) {
+        if ((r = buf_inspect_tag_size(*tag)) <= 0)
+          goto clean;
+        result += r;
+        (*tag)++;
+      }
     }
     else {
-      if ((r = buf_inspect_array_data_size_rec(array, tag, address,
+      if ((r = buf_inspect_array_data_size_rec(array, data,
+                                               inspect_size,
+                                               tag, address,
                                                dimension + 1)) <= 0)
         goto clean;
       result += r;

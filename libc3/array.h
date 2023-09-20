@@ -20,6 +20,7 @@ s_array *          array_copy (const s_array *src, s_array *dest);
 s_array *          array_init (s_array *a, const s_sym *type,
                                uw dimension, const uw *dimensions);
 s_array *          array_init_1 (s_array *a, s8 *p);
+s_str *            array_inspect (const s_array *array, s_str *dest);
 void *             array_data (const s_array *a, const uw *address);
 s_tag *            array_data_tag (s_tag *a, const s_tag *address,
                                    s_tag *dest);
