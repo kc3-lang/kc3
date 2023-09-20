@@ -177,7 +177,7 @@ Script interpreter. Works the same as ic3 but is not interactive.
    - DONE comparison operators
    - cast
    - arrays
-     - parse
+     - DONE parse
      - DONE inspect
      - DONE [][][] data
    - lists
