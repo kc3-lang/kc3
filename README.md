@@ -40,6 +40,15 @@ export LD_LIBRARY_PATH=$PWD/libc3/.libs:$PWD/libffi/.libs
 make test
 ```
 
+All the tests will be run. More specific targets exist :
+```sh
+make test_libc3
+make test_ic3
+make test_libc3_asan
+make test_ic3_asan
+make test_asan
+```
+
 ### Running ic3
 ```sh
 ic3/.libs/ic3
