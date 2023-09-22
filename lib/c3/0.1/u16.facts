@@ -1,0 +1,7 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+add {U16, :is_a, :module}
+add {U16, :symbol, U16.cast}
+add {U16, :symbol, U16.size}
+replace {U16.cast, :cfn, cfn :u16 "u16_cast" (:tag)}
+replace {U16.size, :value, 2}

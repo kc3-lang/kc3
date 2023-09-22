@@ -116,14 +116,16 @@ s_tag * array_data_tag (s_tag *a, const s_tag *address, s_tag *dest)
   sw size;
   assert(a->type == TAG_ARRAY);
   assert(address->type == TAG_ARRAY);
-  a_data = array_data(&a->data.array,
-                      address->data.array.data);
-  tag_init(dest);
-  dest->type = array_type_to_tag_type(a->data.array.type);
-  dest_data = tag_to_pointer(dest, dest->type);
-  size = tag_type_size(dest->type);
-  memcpy(dest_data, a_data, size);
-  return dest;
+  if ((a_data = array_data(&a->data.array,
+                           address->data.array.data))) {
+    tag_init(dest);
+    dest->type = array_type_to_tag_type(a->data.array.type);
+    dest_data = tag_to_pointer(dest, dest->type);
+    size = tag_type_size(dest->type);
+    memcpy(dest_data, a_data, size);
+    return dest;
+  }
+  return NULL;
 }
 
 s_array * array_init (s_array *a, const s_sym *type, uw dimension,
