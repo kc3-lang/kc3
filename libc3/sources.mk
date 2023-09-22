@@ -105,6 +105,10 @@ HEADERS = \
 	module.h \
 	operator.h \
 	quote.h \
+	s16.h \
+	s32.h \
+	s64.h \
+	s8.h \
 	set__fact.h \
 	set__tag.h \
 	set_cursor__fact.h \
@@ -116,6 +120,7 @@ HEADERS = \
 	skiplist__fact.h \
 	skiplist_node__fact.h \
 	str.h \
+	sw.h \
 	sym.h \
 	tag.h \
 	timespec.h \
@@ -231,6 +236,10 @@ SOURCES = \
 	module.c \
 	operator.c \
 	quote.c \
+	s16.c \
+	s32.c \
+	s64.c \
+	s8.c \
 	set__fact.c \
 	set__tag.c \
 	set_cursor__fact.c \
@@ -241,6 +250,7 @@ SOURCES = \
 	skiplist__fact.c \
 	skiplist_node__fact.c \
 	str.c \
+	sw.c \
 	sym.c \
 	tag.c \
 	timespec.c \
@@ -355,6 +365,10 @@ LO_SOURCES = \
 	module.c \
 	operator.c \
 	quote.c \
+	s16.c \
+	s32.c \
+	s64.c \
+	s8.c \
 	set__fact.c \
 	set__tag.c \
 	set_cursor__fact.c \
@@ -365,6 +379,7 @@ LO_SOURCES = \
 	skiplist__fact.c \
 	skiplist_node__fact.c \
 	str.c \
+	sw.c \
 	sym.c \
 	tag.c \
 	timespec.c \

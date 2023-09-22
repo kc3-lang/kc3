@@ -246,6 +246,11 @@ C3_C_SOURCES = \
 	libc3/buf_parse_u.c.in \
 	libc3/quote.c \
 	libc3/quote.h \
+	libc3/s32.h \
+	libc3/s64.c \
+	libc3/s64.h \
+	libc3/sw.c \
+	libc3/sw.h \
 	libc3/set.c.in \
 	libc3/set.h.in \
 	libc3/buf_inspect_s_base.h.in \
@@ -255,6 +260,7 @@ C3_C_SOURCES = \
 	libc3/buf_inspect.h \
 	libc3/set_item.c.in \
 	libc3/set_item.h.in \
+	libc3/s.h.in \
 	libc3/sign.c \
 	libc3/sign.h \
 	libc3/skiplist.c.in \
@@ -263,6 +269,7 @@ C3_C_SOURCES = \
 	libc3/skiplist_node.c.in \
 	libc3/skiplist_node.h.in \
 	libc3/str.h \
+	libc3/s8.c \
 	libc3/ucd.c \
 	libc3/sym.h \
 	libc3/tuple.c \
@@ -279,9 +286,13 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_u.c.in \
 	libc3/buf_inspect_u.h.in \
 	libc3/env.h \
+	libc3/s8.h \
+	libc3/s16.c \
 	libc3/buf_inspect_u_base.c.in \
 	libc3/buf_inspect_u_base.h.in \
 	libc3/timespec.c \
+	libc3/s16.h \
+	libc3/s32.c \
 	libc3/u16.h \
 	libc3/u.c.in \
 	libc3/fn.c \
@@ -296,6 +307,7 @@ C3_C_SOURCES = \
 	libc3/u64.c \
 	libc3/uw.c \
 	libc3/fn_clause.h \
+	libc3/s.c.in \
 	libc3/fn_clause.c \
 	libc3/facts.c \
 	libc3/u8.c \
