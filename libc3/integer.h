@@ -95,9 +95,11 @@ s8   integer_to_s8 (const s_integer *i);
 s16  integer_to_s16 (const s_integer *i);
 s32  integer_to_s32 (const s_integer *i);
 s64  integer_to_s64 (const s_integer *i);
+sw   integer_to_sw (const s_integer *i);
 u8   integer_to_u8 (const s_integer *i);
 u16  integer_to_u16 (const s_integer *i);
 u32  integer_to_u32 (const s_integer *i);
 u64  integer_to_u64 (const s_integer *i);
+uw   integer_to_uw (const s_integer *i);
 
 #endif /* INTEGER_H */

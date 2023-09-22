@@ -78,7 +78,8 @@ GENERATED_FILES = \
 	set_item__fact.c set_item__fact.h \
 	set_item__tag.c set_item__tag.h \
 	skiplist__fact.c skiplist__fact.h \
-	skiplist_node__fact.c skiplist_node__fact.h
+	skiplist_node__fact.c skiplist_node__fact.h \
+	u8.c u8.h u16.c u16.h u32.c u32.h u64.c u64.h uw.c uw.h
 
 gen: ${GENERATED_FILES}
 
@@ -170,6 +171,12 @@ buf_parse_u8.c: buf_parse_u.c.in gen.mk
 buf_parse_u8.h: buf_parse_u.h.in gen.mk
 	${SED_BITS_8} < buf_parse_u.h.in > buf_parse_u8.h
 
+u8.c: u.c.in gen.mk
+	${SED_BITS_8} < u.c.in > u8.c
+
+u8.h: u.h.in gen.mk
+	${SED_BITS_8} < u.h.in > u8.h
+
 SED_BITS_16 = sed \
 	-e 's/_BITS[$$]/16/g' \
 	-e 's/_bits[$$]/16/g'
@@ -257,6 +264,12 @@ buf_parse_u16.c: buf_parse_u.c.in gen.mk
 
 buf_parse_u16.h: buf_parse_u.h.in gen.mk
 	${SED_BITS_16} < buf_parse_u.h.in > buf_parse_u16.h
+
+u16.c: u.c.in gen.mk
+	${SED_BITS_16} < u.c.in > u16.c
+
+u16.h: u.h.in gen.mk
+	${SED_BITS_16} < u.h.in > u16.h
 
 SED_BITS_32 = sed \
 	-e 's/_BITS[$$]/32/g' \
@@ -346,6 +359,12 @@ buf_parse_u32.c: buf_parse_u.c.in gen.mk
 buf_parse_u32.h: buf_parse_u.h.in gen.mk
 	${SED_BITS_32} < buf_parse_u.h.in > buf_parse_u32.h
 
+u32.c: u.c.in gen.mk
+	${SED_BITS_32} < u.c.in > u32.c
+
+u32.h: u.h.in gen.mk
+	${SED_BITS_32} < u.h.in > u32.h
+
 SED_BITS_64 = sed \
 	-e 's/_BITS[$$]/64/g' \
 	-e 's/_bits[$$]/64/g'
@@ -434,6 +453,12 @@ buf_parse_u64.c: buf_parse_u.c.in gen.mk
 buf_parse_u64.h: buf_parse_u.h.in gen.mk
 	${SED_BITS_64} < buf_parse_u.h.in > buf_parse_u64.h
 
+u64.c: u.c.in gen.mk
+	${SED_BITS_64} < u.c.in > u64.c
+
+u64.h: u.h.in gen.mk
+	${SED_BITS_64} < u.h.in > u64.h
+
 SED_BITS_W = sed \
 	-e 's/_BITS[$$]/W/g' \
 	-e 's/_bits[$$]/w/g'
@@ -521,6 +546,12 @@ buf_parse_uw.c: buf_parse_u.c.in gen.mk
 
 buf_parse_uw.h: buf_parse_u.h.in gen.mk
 	${SED_BITS_W} < buf_parse_u.h.in > buf_parse_uw.h
+
+uw.c: u.c.in gen.mk
+	${SED_BITS_W} < u.c.in > uw.c
+
+uw.h: u.h.in gen.mk
+	${SED_BITS_W} < u.h.in > uw.h
 
 SED_FACT = sed \
 	-e 's/_NAME[$$]/fact/g' \

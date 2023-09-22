@@ -10,14 +10,14 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from u.h.in BITS=8 bits=8 */
+/* Gen from u.h.in BITS=W bits=w */
 #include <assert.h>
 #include <err.h>
 #include "integer.h"
 #include "tag.h"
-#include "u8.h"
+#include "uw.h"
 
-u8 u8_cast (s_tag *tag)
+uw uw_cast (s_tag *tag)
 {
   switch (tag->type) {
   case TAG_VOID:
@@ -31,37 +31,37 @@ u8 u8_cast (s_tag *tag)
   case TAG_CFN:
     goto ko;
   case TAG_CHARACTER:
-    return (u8) tag->data.character;
+    return (uw) tag->data.character;
   case TAG_F32:
-    return (u8) tag->data.f32;
+    return (uw) tag->data.f32;
   case TAG_F64:
-    return (u8) tag->data.f64;
+    return (uw) tag->data.f64;
   case TAG_FACT:
   case TAG_FN:
   case TAG_IDENT:
     goto ko;
   case TAG_INTEGER:
-    return integer_to_u8(&tag->data.integer);
+    return integer_to_uw(&tag->data.integer);
   case TAG_SW:
-    return (u8) tag->data.sw;
+    return (uw) tag->data.sw;
   case TAG_S64:
-    return (u8) tag->data.s64;
+    return (uw) tag->data.s64;
   case TAG_S32:
-    return (u8) tag->data.s32;
+    return (uw) tag->data.s32;
   case TAG_S16:
-    return (u8) tag->data.s16;
+    return (uw) tag->data.s16;
   case TAG_S8:
-    return (u8) tag->data.s8;
+    return (uw) tag->data.s8;
   case TAG_U8:
-    return (u8) tag->data.u8;
+    return (uw) tag->data.u8;
   case TAG_U16:
-    return (u8) tag->data.u16;
+    return (uw) tag->data.u16;
   case TAG_U32:
-    return (u8) tag->data.u32;
+    return (uw) tag->data.u32;
   case TAG_U64:
-    return (u8) tag->data.u64;
+    return (uw) tag->data.u64;
   case TAG_UW:
-    return (u8) tag->data.uw;
+    return (uw) tag->data.uw;
   case TAG_LIST:
   case TAG_PTAG:
   case TAG_QUOTE:
@@ -71,11 +71,11 @@ u8 u8_cast (s_tag *tag)
   case TAG_VAR:
     goto ko;
   }
-  assert(! "u8_cast: unknown tag type");
-  errx(1, "u8_cast: unknown tag type: %d", tag->type);
+  assert(! "uw_cast: unknown tag type");
+  errx(1, "uw_cast: unknown tag type: %d", tag->type);
   return 0;
  ko:
-  warnx("u8_cast: cannot cast %s to u8",
+  warnx("uw_cast: cannot cast %s to uw",
         tag_type_to_sym(tag->type)->str.ptr.ps8);
   return 0;
 }

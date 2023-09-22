@@ -122,8 +122,12 @@ HEADERS = \
 	tuple.h \
 	type.h \
 	types.h \
+	u16.h \
+	u32.h \
+	u64.h \
 	u8.h \
 	ucd.h \
+	uw.h \
 
 SOURCES = \
 	abs.c \
@@ -242,8 +246,12 @@ SOURCES = \
 	timespec.c \
 	tuple.c \
 	type.c \
+	u16.c \
+	u32.c \
+	u64.c \
 	u8.c \
 	ucd.c \
+	uw.c \
 
 LO_SOURCES = \
 	abs.c \
@@ -362,8 +370,12 @@ LO_SOURCES = \
 	timespec.c \
 	tuple.c \
 	type.c \
+	u16.c \
+	u32.c \
+	u64.c \
 	u8.c \
 	ucd.c \
+	uw.c \
 	../libtommath/bn_cutoffs.c \
 	../libtommath/bn_mp_2expt.c \
 	../libtommath/bn_mp_abs.c \

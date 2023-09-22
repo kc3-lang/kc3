@@ -442,6 +442,12 @@ s64 integer_to_s64 (const s_integer *i)
   return mp_get_i64(&i->mp_int);
 }
 
+sw integer_to_sw (const s_integer *i)
+{
+  assert(i);
+  return (sw) mp_get_i64(&i->mp_int);
+}
+
 u8 integer_to_u8 (const s_integer *i)
 {
   assert(i);
@@ -464,4 +470,10 @@ u64 integer_to_u64 (const s_integer *i)
 {
   assert(i);
   return mp_get_u64(&i->mp_int);
+}
+
+uw integer_to_uw (const s_integer *i)
+{
+  assert(i);
+  return (uw) mp_get_u64(&i->mp_int);
 }

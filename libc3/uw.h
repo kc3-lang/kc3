@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from u.h.in BITS=8 bits=8 */
-#ifndef U8_H
-#define U8_H
+/* Gen from u.h.in BITS=W bits=w */
+#ifndef UW_H
+#define UW_H
 
 #include "types.h"
 
-u8 u8_cast (s_tag *tag);
+uw uw_cast (s_tag *tag);
 
 #endif /* U8_H */
