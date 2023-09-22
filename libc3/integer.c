@@ -17,6 +17,7 @@
 #include "buf_parse.h"
 #include "compare.h"
 #include "integer.h"
+#include "tag.h"
 
 s_integer * integer_abs (const s_integer *a, s_integer *dest)
 {
@@ -102,6 +103,69 @@ uw integer_bytes (const s_integer *i)
   return (integer_bits(i) + 7) / 8;
 }
 
+s_integer * integer_cast (const s_tag *tag, s_integer *dest)
+{
+  switch (tag->type) {
+  case TAG_VOID:
+    return integer_init_zero(dest);
+  case TAG_ARRAY:
+    goto ko;
+  case TAG_BOOL:
+    return integer_init_u8(dest, tag->data.bool ? 1 : 0);
+  case TAG_CALL:
+    goto ko;
+  case TAG_CFN:
+    goto ko;
+  case TAG_CHARACTER:
+    return integer_init_u64(dest, tag->data.character);
+  case TAG_F32:
+    return integer_init_f32(dest, tag->data.f32);
+  case TAG_F64:
+    return integer_init_f64(dest, tag->data.f64);
+  case TAG_FACT:
+  case TAG_FN:
+  case TAG_IDENT:
+    goto ko;
+  case TAG_INTEGER:
+    return integer_copy(&tag->data.integer, dest);
+  case TAG_SW:
+    return integer_init_sw(dest, tag->data.sw);
+  case TAG_S64:
+    return integer_init_s64(dest, tag->data.s64);
+  case TAG_S32:
+    return integer_init_s32(dest, tag->data.s32);
+  case TAG_S16:
+    return integer_init_s16(dest, tag->data.s16);
+  case TAG_S8:
+    return integer_init_s8(dest, tag->data.s8);
+  case TAG_U8:
+    return integer_init_u8(dest, tag->data.u8);
+  case TAG_U16:
+    return integer_init_u16(dest, tag->data.u16);
+  case TAG_U32:
+    return integer_init_u32(dest, tag->data.u32);
+  case TAG_U64:
+    return integer_init_u64(dest, tag->data.u64);
+  case TAG_UW:
+    return integer_init_uw(dest, tag->data.uw);
+  case TAG_LIST:
+  case TAG_PTAG:
+  case TAG_QUOTE:
+  case TAG_STR:
+  case TAG_SYM:
+  case TAG_TUPLE:
+  case TAG_VAR:
+    goto ko;
+  }
+  assert(! "u8_cast: unknown tag type");
+  errx(1, "u8_cast: unknown tag type: %d", tag->type);
+  return 0;
+ ko:
+  warnx("u8_cast: cannot cast %s to u8",
+        tag_type_to_sym(tag->type)->str.ptr.ps8);
+  return 0;
+}
+
 void integer_clean (s_integer *dest)
 {
   assert(dest);
@@ -163,7 +227,14 @@ s_integer * integer_init_1 (s_integer *i, const s8 *p)
   return i;
 }
 
-s_integer * integer_init_double (s_integer *a, double x)
+s_integer * integer_init_f64 (s_integer *a, f64 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_double(a, x);
+}
+
+s_integer * integer_init_f32 (s_integer *a, f32 x)
 {
   assert(a);
   integer_init(a);

@@ -28,7 +28,8 @@
 /* Stack allocation compatible functions */
 s_integer * integer_init (s_integer *i);
 s_integer * integer_init_1 (s_integer *i, const s8 *p);
-s_integer * integer_init_double (s_integer *a, double x);
+s_integer * integer_init_f32 (s_integer *a, f32 x);
+s_integer * integer_init_f64 (s_integer *a, f64 x);
 s_integer * integer_init_s8 (s_integer *a, s8 x);
 s_integer * integer_init_s16 (s_integer *a, s16 x);
 s_integer * integer_init_s32 (s_integer *a, s32 x);
@@ -62,6 +63,7 @@ s_integer * integer_bor (const s_integer *a, const s_integer *b,
                          s_integer *dest);
 s_integer * integer_bxor (const s_integer *a, const s_integer *b,
                           s_integer *dest);
+s_integer * integer_cast (const s_tag *tag, s_integer *dest);
 s_integer * integer_copy (const s_integer *a, s_integer *dest);
 s_integer * integer_div (const s_integer *a, const s_integer *b,
                          s_integer *dest);

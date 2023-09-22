@@ -2,6 +2,4 @@
   version: 1}
 add {U32, :is_a, :module}
 add {U32, :symbol, U32.cast}
-add {U32, :symbol, U32.size}
 replace {U32.cast, :cfn, cfn :u32 "u32_cast" (:tag)}
-replace {U32.size, :value, 4}
