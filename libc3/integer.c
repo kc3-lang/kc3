@@ -127,7 +127,7 @@ s_integer * integer_cast (const s_tag *tag, s_integer *dest)
   case TAG_IDENT:
     goto ko;
   case TAG_INTEGER:
-    return integer_copy(&tag->data.integer, dest);
+    return integer_init_copy(dest, &tag->data.integer);
   case TAG_SW:
     return integer_init_sw(dest, tag->data.sw);
   case TAG_S64:
@@ -180,6 +180,18 @@ s_integer * integer_copy (const s_integer *a, s_integer *dest)
   if ((r = mp_copy(&a->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_copy: %s", mp_error_to_string(r));
   return dest;
+}
+
+s_integer * integer_init_copy (s_integer *i, const s_integer *a)
+{
+  sw r;
+  assert(a);
+  assert(i);
+  if ((r = mp_init(&i->mp_int)) != MP_OKAY)
+    errx(1, "integer_init_copy: %s", mp_error_to_string(r));
+  if ((r = mp_copy(&a->mp_int, &i->mp_int)) != MP_OKAY)
+    errx(1, "integer_init_copy: %s", mp_error_to_string(r));
+  return i;
 }
 
 s_integer * integer_div (const s_integer *a, const s_integer *b,
