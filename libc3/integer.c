@@ -187,9 +187,7 @@ s_integer * integer_init_copy (s_integer *i, const s_integer *a)
   sw r;
   assert(a);
   assert(i);
-  if ((r = mp_init(&i->mp_int)) != MP_OKAY)
-    errx(1, "integer_init_copy: %s", mp_error_to_string(r));
-  if ((r = mp_copy(&a->mp_int, &i->mp_int)) != MP_OKAY)
+  if ((r = mp_init_copy(&i->mp_int, &a->mp_int)) != MP_OKAY)
     errx(1, "integer_init_copy: %s", mp_error_to_string(r));
   return i;
 }
