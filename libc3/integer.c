@@ -227,14 +227,14 @@ s_integer * integer_init_1 (s_integer *i, const s8 *p)
   return i;
 }
 
-s_integer * integer_init_copy (s_integer *i, const s_integer *a)
+s_integer * integer_init_copy (s_integer *a, const s_integer *src)
 {
   sw r;
   assert(a);
-  assert(i);
-  if ((r = mp_init_copy(&i->mp_int, &a->mp_int)) != MP_OKAY)
+  assert(src);
+  if ((r = mp_init_copy(&a->mp_int, &src->mp_int)) != MP_OKAY)
     errx(1, "integer_init_copy: %s", mp_error_to_string(r));
-  return i;
+  return a;
 }
 
 s_integer * integer_init_f64 (s_integer *a, f64 x)
