@@ -151,7 +151,10 @@ typedef const s_tag *p_tag;
 typedef u64          t_skiplist_height;
 
 /* function typedefs */
+typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
+typedef sw (* f_buf_inspect_size) (const void *x);
 typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
+typedef void * (* f_copy) (const void *a, void *b);
 
 #define CHARACTER_MAX S32_MAX
 #define SKIPLIST_HEIGHT_MAX U64_MAX
@@ -509,9 +512,5 @@ struct facts_with_cursor {
   p_facts_spec spec;
   pthread_mutex_t mutex;
 };
-
-/* Functions */
-typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
-typedef sw (* f_buf_inspect_size) (const void *x);
 
 #endif /* TYPES_H */

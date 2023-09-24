@@ -79,3 +79,11 @@ s32 s32_cast (s_tag *tag)
         tag_type_to_sym(tag->type)->str.ptr.ps8);
   return 0;
 }
+
+s32 * s32_copy (const s32 *src, s32 *dest)
+{
+  assert(src);
+  assert(dest);
+  *dest = *src;
+  return dest;
+}

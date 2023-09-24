@@ -25,6 +25,14 @@ character character_1 (const s8 *p)
   return c;
 }
 
+character * character_copy (const character *src, character *dest)
+{
+  assert(src);
+  assert(dest);
+  *dest = *src;
+  return dest;
+}
+
 bool character_is_digit (character c)
 {
   return ('0' <= c && c <= '9');

@@ -16,6 +16,7 @@
 
 #include "types.h"
 
-u32 u32_cast (s_tag *tag);
+u32   u32_cast (s_tag *tag);
+u32 * u32_copy (const u32 *src, u32 *dest);
 
 #endif /* U8_H */

@@ -44,9 +44,9 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
           arity, num_args);
     return NULL;
   }
-  cfn_tag_init(&tmp, cfn->result_type);
   if (cfn->arg_result)
     cfn_tag_init(&tmp2, cfn->result_type);
+  cfn_tag_init(&tmp, cfn->result_type);
   /* make result point to tmp value */
   result = tag_to_ffi_pointer(&tmp, cfn->result_type);
   if (cfn->arity) {
@@ -84,7 +84,6 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
     if (cfn->arg_result) {
       *dest = tmp2;
-      tag_clean(&tmp);
     }
     else
       *dest = tmp;

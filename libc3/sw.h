@@ -16,6 +16,7 @@
 
 #include "types.h"
 
-sw sw_cast (s_tag *tag);
+sw   sw_cast (s_tag *tag);
+sw * sw_copy (const sw *src, sw *dest);
 
 #endif /* S8_H */

@@ -16,6 +16,7 @@
 
 #include "types.h"
 
-s_bits$ s_bits$_cast (s_tag *tag);
+s_bits$   s_bits$_cast (s_tag *tag);
+s_bits$ * s_bits$_copy (const s_bits$ *src, s_bits$ *dest);
 
 #endif /* S8_H */

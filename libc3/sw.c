@@ -79,3 +79,11 @@ sw sw_cast (s_tag *tag)
         tag_type_to_sym(tag->type)->str.ptr.ps8);
   return 0;
 }
+
+sw * sw_copy (const sw *src, sw *dest)
+{
+  assert(src);
+  assert(dest);
+  *dest = *src;
+  return dest;
+}

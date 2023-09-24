@@ -33,6 +33,8 @@ const s_sym * sym_1 (const s8 *p);
 
 bool sym_character_is_reserved (character c);
 
+const s_sym ** sym_copy (const s_sym **src, const s_sym **dest);
+
 /** @brief Call when exiting program. */
 void sym_delete_all ();
 

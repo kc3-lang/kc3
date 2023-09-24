@@ -79,3 +79,11 @@ u16 u16_cast (s_tag *tag)
         tag_type_to_sym(tag->type)->str.ptr.ps8);
   return 0;
 }
+
+u16 * u16_copy (const u16 *src, u16 *dest)
+{
+  assert(src);
+  assert(dest);
+  *dest = *src;
+  return dest;
+}

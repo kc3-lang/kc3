@@ -27,6 +27,7 @@ s_tag *            array_data_tag (s_tag *a, const s_tag *address,
 uw                 array_type_size (const s_sym *type);
 f_buf_inspect      array_type_to_buf_inspect (const s_sym *type);
 f_buf_inspect_size array_type_to_buf_inspect_size (const s_sym *type);
+f_copy             array_type_to_copy (const s_sym *type);
 e_tag_type         array_type_to_tag_type (const s_sym *type);
 
 #endif /* ARRAY_H */

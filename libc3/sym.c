@@ -50,6 +50,14 @@ bool sym_character_is_reserved (character c)
           c == '}');
 }
 
+const s_sym ** sym_copy (const s_sym **src, const s_sym **dest)
+{
+  assert(src);
+  assert(dest);
+  *dest = *src;
+  return dest;
+}
+
 void sym_delete (s_sym *sym)
 {
   str_clean(&sym->str);

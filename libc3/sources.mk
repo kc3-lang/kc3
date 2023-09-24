@@ -84,6 +84,8 @@ HEADERS = \
 	error.h \
 	error_handler.h \
 	eval.h \
+	f32.h \
+	f64.h \
 	fact.h \
 	facts.h \
 	facts_cursor.h \
@@ -104,6 +106,7 @@ HEADERS = \
 	log.h \
 	module.h \
 	operator.h \
+	ptag.h \
 	quote.h \
 	s16.h \
 	s32.h \
@@ -133,6 +136,7 @@ HEADERS = \
 	u8.h \
 	ucd.h \
 	uw.h \
+	var.h \
 
 SOURCES = \
 	abs.c \
@@ -216,6 +220,8 @@ SOURCES = \
 	error.c \
 	error_handler.c \
 	eval.c \
+	f32.c \
+	f64.c \
 	fact.c \
 	facts.c \
 	facts_cursor.c \
@@ -235,6 +241,7 @@ SOURCES = \
 	log.c \
 	module.c \
 	operator.c \
+	ptag.c \
 	quote.c \
 	s16.c \
 	s32.c \
@@ -262,6 +269,7 @@ SOURCES = \
 	u8.c \
 	ucd.c \
 	uw.c \
+	var.c \
 
 LO_SOURCES = \
 	abs.c \
@@ -345,6 +353,8 @@ LO_SOURCES = \
 	error.c \
 	error_handler.c \
 	eval.c \
+	f32.c \
+	f64.c \
 	fact.c \
 	facts.c \
 	facts_cursor.c \
@@ -364,6 +374,7 @@ LO_SOURCES = \
 	log.c \
 	module.c \
 	operator.c \
+	ptag.c \
 	quote.c \
 	s16.c \
 	s32.c \
@@ -391,6 +402,7 @@ LO_SOURCES = \
 	u8.c \
 	ucd.c \
 	uw.c \
+	var.c \
 	../libtommath/bn_cutoffs.c \
 	../libtommath/bn_mp_2expt.c \
 	../libtommath/bn_mp_abs.c \

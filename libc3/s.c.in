@@ -79,3 +79,11 @@ s_bits$ s_bits$_cast (s_tag *tag)
         tag_type_to_sym(tag->type)->str.ptr.ps8);
   return 0;
 }
+
+s_bits$ * s_bits$_copy (const s_bits$ *src, s_bits$ *dest)
+{
+  assert(src);
+  assert(dest);
+  *dest = *src;
+  return dest;
+}

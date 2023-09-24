@@ -79,3 +79,11 @@ s64 s64_cast (s_tag *tag)
         tag_type_to_sym(tag->type)->str.ptr.ps8);
   return 0;
 }
+
+s64 * s64_copy (const s64 *src, s64 *dest)
+{
+  assert(src);
+  assert(dest);
+  *dest = *src;
+  return dest;
+}

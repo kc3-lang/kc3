@@ -177,7 +177,7 @@ s_integer * integer_copy (const s_integer *a, s_integer *dest)
   sw r;
   assert(a);
   assert(dest);
-  if ((r = mp_copy(&a->mp_int, &dest->mp_int)) != MP_OKAY)
+  if ((r = mp_init_copy(&dest->mp_int, &a->mp_int)) != MP_OKAY)
     errx(1, "integer_copy: %s", mp_error_to_string(r));
   return dest;
 }
@@ -491,6 +491,12 @@ s_integer * integer_sub (const s_integer *a, const s_integer *b,
   if ((r = mp_sub(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_sub: %s", mp_error_to_string(r));
   return dest;
+}
+
+f32 integer_to_f32 (const s_integer *i)
+{
+  assert(i);
+  return (f32) mp_get_double(&i->mp_int);
 }
 
 f64 integer_to_f64 (const s_integer *i)

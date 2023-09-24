@@ -10,13 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from u.h.in BITS=16 bits=16 */
-#ifndef U16_H
-#define U16_H
+#ifndef F64_H
+#define F64_H
 
 #include "types.h"
 
-u16   u16_cast (s_tag *tag);
-u16 * u16_copy (const u16 *src, u16 *dest);
+f64 f64_cast (s_tag *tag);
+f64 * f64_copy (const f64 *src, f64 *dest);
 
-#endif /* U8_H */
+#endif /* F64_H */

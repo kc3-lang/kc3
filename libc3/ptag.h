@@ -10,13 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from u.h.in BITS=16 bits=16 */
-#ifndef U16_H
-#define U16_H
+#ifndef PTAG_H
+#define PTAG_H
 
 #include "types.h"
 
-u16   u16_cast (s_tag *tag);
-u16 * u16_copy (const u16 *src, u16 *dest);
+p_tag * ptag_copy (const p_tag *src, p_tag *dest);
 
-#endif /* U8_H */
+#endif /* PTAG_H */

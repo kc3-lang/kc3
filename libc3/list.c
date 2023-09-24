@@ -144,6 +144,7 @@ s_list * list_new (const s_tag *tag, s_list *next)
 s_array * list_to_array (s_list *list, const s_sym *type,
                          s_array *dest)
 {
+  f_copy copy;
   s8 *data;
   void *data_list;
   s_list *l;
@@ -157,15 +158,17 @@ s_array * list_to_array (s_list *list, const s_sym *type,
   dest->type = type;
   if (! (dest->dimensions = calloc(1, sizeof(s_array_dimension))))
     errx(1, "list_to_array: out of memory: 1");
+  dest->count = len;
   dest->dimensions[0].count = len;
   dest->dimensions[0].item_size = size;
   dest->size = len * size;
   if (! (data = dest->data = calloc(len, size)))
     errx(1, "list_to_array: out of memory: 2");
+  copy = array_type_to_copy(type);
   l = list;
   while (l) {
     data_list = tag_to_pointer(&l->tag, array_type_to_tag_type(type));
-    memcpy(data, data_list, size);
+    copy(data_list, data);
     data += size;
     l = list_next(l);
   }

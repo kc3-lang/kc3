@@ -79,3 +79,11 @@ u32 u32_cast (s_tag *tag)
         tag_type_to_sym(tag->type)->str.ptr.ps8);
   return 0;
 }
+
+u32 * u32_copy (const u32 *src, u32 *dest)
+{
+  assert(src);
+  assert(dest);
+  *dest = *src;
+  return dest;
+}

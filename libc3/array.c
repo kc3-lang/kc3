@@ -15,13 +15,41 @@
 #include <string.h>
 #include <err.h>
 #include "array.h"
+#include "bool.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
+#include "call.h"
+#include "cfn.h"
+#include "character.h"
 #include "env.h"
+#include "f32.h"
+#include "f64.h"
+#include "fact.h"
+#include "fn.h"
+#include "ident.h"
+#include "integer.h"
+#include "list.h"
+#include "ptag.h"
+#include "quote.h"
+#include "s8.h"
+#include "s16.h"
+#include "s32.h"
+#include "s64.h"
+#include "str.h"
+#include "sw.h"
 #include "sym.h"
 #include "tag.h"
+#include "tuple.h"
 #include "type.h"
+#include "u8.h"
+#include "u16.h"
+#include "u32.h"
+#include "u64.h"
+#include "uw.h"
+#include "var.h"
+
+bool array_copy_data (f_copy copy, const u8 *src, u8 *dest);
 
 void array_clean (s_array *a)
 {
@@ -41,12 +69,18 @@ void array_clean (s_array *a)
 
 s_array * array_copy (const s_array *src, s_array *dest)
 {
+  f_copy copy;
+  u8 *data_dest;
+  u8 *data_src;
   uw i = 0;
+  uw item_size;
+  s_array tmp;
   assert(dest);
   assert(src);
   assert(src->dimension);
   assert(src->dimensions);
   (void) i;
+  bzero(&tmp, sizeof(s_array));
   if (! src->dimension) {
     assert(! "array_copy: zero dimension");
     errx(1, "array_copy: zero dimension");
@@ -58,35 +92,48 @@ s_array * array_copy (const s_array *src, s_array *dest)
     i++;
   }
 #endif
-  dest->dimension = src->dimension;
-  if (! (dest->dimensions = calloc(src->dimension,
-                                   sizeof(s_array_dimension)))) {
+  tmp.dimension = src->dimension;
+  if (! (tmp.dimensions = calloc(src->dimension,
+                                 sizeof(s_array_dimension)))) {
     assert(! "array_copy: out of memory: dimensions");
     warnx("array_copy: out of memory: dimensions");
     return NULL;
   }
-  memcpy(dest->dimensions, src->dimensions,
+  memcpy(tmp.dimensions, src->dimensions,
          src->dimension * sizeof(s_array_dimension));
-  dest->count = src->count;
-  dest->size = src->size;
-  dest->type = src->type;
+  tmp.count = src->count;
+  tmp.size = src->size;
+  tmp.type = src->type;
   if (src->data) {
-    if (! (dest->data = calloc(1, src->size)))
+    if (! (tmp.data = calloc(1, src->size)))
       errx(1, "array_copy: out of memory");
-    memcpy(dest->data, src->data, dest->size);
-  }
-  else
-    dest->data = NULL;
-  if (src->tags) {
-    dest->tags = calloc(src->count, sizeof(s_tag));
+    copy = array_type_to_copy(src->type);
+    data_dest = tmp.data;
+    data_src = src->data;
     i = 0;
+    item_size = src->dimensions[src->dimension - 1].item_size;
     while (i < src->count) {
-      tag_copy(src->tags + i, dest->tags + i);
+      if (copy(data_src, data_dest) != data_dest) {
+        return NULL;
+      }
+      data_dest += item_size;
+      data_src += item_size;
       i++;
     }
   }
   else
-    dest->tags = NULL;
+    tmp.data = NULL;
+  if (src->tags) {
+    tmp.tags = calloc(src->count, sizeof(s_tag));
+    i = 0;
+    while (i < src->count) {
+      tag_copy(src->tags + i, tmp.tags + i);
+      i++;
+    }
+  }
+  else
+    tmp.tags = NULL;
+  *dest = tmp;
   return dest;
 }
 
@@ -131,6 +178,7 @@ s_tag * array_data_tag (s_tag *a, const s_tag *address, s_tag *dest)
 s_array * array_init (s_array *a, const s_sym *type, uw dimension,
                       const uw *dimensions)
 {
+  uw count = 1;
   uw i = 0;
   uw item_size;
   assert(a);
@@ -152,6 +200,7 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
   i = 0;
   while (i < dimension) {
     a->dimensions[i].count = dimensions[i];
+    count *= dimensions[i];
     i++;
   }
   i--;
@@ -164,7 +213,7 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
       a->dimensions[i + 1].item_size;
   }
   a->size = a->dimensions[0].count * a->dimensions[0].item_size;
-  a->count = a->size / item_size;
+  a->count = count;
   a->data = NULL;
   a->tags = NULL;
   return a;
@@ -394,6 +443,67 @@ f_buf_inspect_size array_type_to_buf_inspect_size (const s_sym *type)
     return (f_buf_inspect_size) buf_inspect_var_size;
   assert(! "array_type_to_buf_inspect: unknown type");
   errx(1, "array_type_to_buf_inspect: unknown type");
+  return NULL;
+}
+
+f_copy array_type_to_copy (const s_sym *type)
+{
+  if (type == sym_1("Bool"))
+    return (f_copy) bool_copy;
+  if (type == sym_1("Call"))
+    return (f_copy) call_copy;
+  if (type == sym_1("Cfn"))
+    return (f_copy) cfn_copy;
+  if (type == sym_1("Character"))
+    return (f_copy) character_copy;
+  if (type == sym_1("F32"))
+    return (f_copy) f32_copy;
+  if (type == sym_1("F64"))
+    return (f_copy) f64_copy;
+  if (type == sym_1("Fact"))
+    return (f_copy) fact_copy;
+  if (type == sym_1("Fn"))
+    return (f_copy) fn_copy;
+  if (type == sym_1("Ident"))
+    return (f_copy) ident_copy;
+  if (type == sym_1("Integer"))
+    return (f_copy) integer_copy;
+  if (type == sym_1("Sw"))
+    return (f_copy) sw_copy;
+  if (type == sym_1("S64"))
+    return (f_copy) s64_copy;
+  if (type == sym_1("S32"))
+    return (f_copy) s32_copy;
+  if (type == sym_1("S16"))
+    return (f_copy) s16_copy;
+  if (type == sym_1("S8"))
+    return (f_copy) s8_copy;
+  if (type == sym_1("U8"))
+    return (f_copy) u8_copy;
+  if (type == sym_1("U16"))
+    return (f_copy) u16_copy;
+  if (type == sym_1("U32"))
+    return (f_copy) u32_copy;
+  if (type == sym_1("U64"))
+    return (f_copy) u64_copy;
+  if (type == sym_1("Uw"))
+    return (f_copy) uw_copy;
+  if (type == sym_1("List"))
+    return (f_copy) list_copy;
+  if (type == sym_1("Ptag"))
+    return (f_copy) ptag_copy;
+  if (type == sym_1("Quote"))
+    return (f_copy) quote_copy;
+  if (type == sym_1("Str"))
+    return (f_copy) str_copy;
+  if (type == sym_1("Sym"))
+    return (f_copy) sym_copy;
+  if (type == sym_1("Tuple"))
+    return (f_copy) tuple_copy;
+  if (type == sym_1("Var"))
+    return (f_copy) var_copy;
+  assert(! "array_type_to_copy: unknown type");
+  errx(1, "array_type_to_copy: unknown type");
   return NULL;
 }
 

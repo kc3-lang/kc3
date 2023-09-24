@@ -81,6 +81,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
 sw buf_parse_array_data (s_buf *buf, s_array *dest)
 {
   uw *address;
+  uw i = 0;
   sw r;
   s_tag *tag;
   s_array tmp;
@@ -91,8 +92,12 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
     warnx("buf_parse_array_data: out of memory: address");
     return -1;
   }
+  tmp.count = 1;
+  while (i < tmp.dimension) {
+    tmp.count *= tmp.dimensions[i].count;
+    i++;
+  }
   tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
-  tmp.count = tmp.size / tmp.dimensions[tmp.dimension - 1].item_size;
   assert(tmp.count);
   if (! (tmp.tags = calloc(tmp.count, sizeof(s_tag)))) {
     free(address);
@@ -389,11 +394,11 @@ sw buf_parse_bool (s_buf *buf, bool *p)
 
 sw buf_parse_brackets (s_buf *buf, s_call *dest)
 {
-  s_tag *arg_dimensions;
+  s_tag *arg_addr;
   uw d;
-  uw dimension = 0;
-  s_list *dimensions = NULL;
-  s_list **dimensions_last = &dimensions;
+  uw address = 0;
+  s_list *addr = NULL;
+  s_list **addr_last = &addr;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -404,7 +409,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   call_init(&tmp);
   ident_init(&tmp.ident, NULL, sym_1("[]"));
   tmp.arguments = list_new(NULL, list_new(NULL, NULL));
-  arg_dimensions = &(list_next(tmp.arguments)->tag);
+  arg_addr = &(list_next(tmp.arguments)->tag);
   if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
     goto restore;
   result += r;
@@ -426,16 +431,16 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
     if ((r = buf_read_1(buf, "]")) <= 0)
       goto restore;
     result += r;
-    *dimensions_last = list_new(NULL, NULL);
-    tag_init_uw(&(*dimensions_last)->tag, d);
-    dimensions_last = &(*dimensions_last)->next.data.list;
-    dimension++;
+    *addr_last = list_new(NULL, NULL);
+    tag_init_uw(&(*addr_last)->tag, d);
+    addr_last = &(*addr_last)->next.data.list;
+    address++;
   }
-  if (! dimension) {
+  if (! address) {
     goto restore;
   }
-  arg_dimensions->type = TAG_ARRAY;
-  if (! list_to_array(dimensions, sym_1("Uw"), &arg_dimensions->data.array))
+  arg_addr->type = TAG_ARRAY;
+  if (! list_to_array(addr, sym_1("Uw"), &arg_addr->data.array))
     goto restore;
   *dest = tmp;
   r = result;
@@ -445,7 +450,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   buf_save_restore_rpos(buf, &save);
   call_clean(&tmp);
  clean:
-  list_delete_all(dimensions);
+  list_delete_all(addr);
   buf_save_clean(buf, &save);
   return r;
 }

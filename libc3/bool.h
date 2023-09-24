@@ -22,6 +22,7 @@
 #include "types.h"
 
 /* Observers */
+bool *  bool_copy (const bool *src, bool *dest);
 s_str * bool_inspect (bool *b, s_str *dest);
 
 #endif /* BOOL_H */

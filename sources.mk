@@ -229,6 +229,9 @@ C3_C_SOURCES = \
 	libc3/skiplist_node__fact.c \
 	libc3/skiplist_node__fact.h \
 	libc3/types.h \
+	libc3/f64.h \
+	libc3/f32.c \
+	libc3/f64.c \
 	libc3/hash.h \
 	libc3/ident.h \
 	libc3/integer.c \
@@ -260,6 +263,7 @@ C3_C_SOURCES = \
 	libc3/buf_inspect.h \
 	libc3/set_item.c.in \
 	libc3/set_item.h.in \
+	libc3/tag.c \
 	libc3/s.h.in \
 	libc3/sign.c \
 	libc3/sign.h \
@@ -306,9 +310,14 @@ C3_C_SOURCES = \
 	libc3/u32.c \
 	libc3/u64.c \
 	libc3/uw.c \
+	libc3/ptag.h \
+	libc3/f32.h \
 	libc3/fn_clause.h \
 	libc3/s.c.in \
 	libc3/fn_clause.c \
+	libc3/ptag.c \
+	libc3/var.h \
+	libc3/var.c \
 	libc3/facts.c \
 	libc3/u8.c \
 	libc3/facts.h \
@@ -316,7 +325,6 @@ C3_C_SOURCES = \
 	libc3/c3_main.h \
 	libc3/file.h \
 	libc3/hash.c \
-	libc3/tag.c \
 	test/buf_inspect_test.c \
 	test/bool_test.c \
 	test/buf_parse_test.c \

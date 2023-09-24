@@ -93,6 +93,7 @@ uw   integer_bits (const s_integer *i);
 uw   integer_bytes (const s_integer *i);
 bool integer_is_negative (const s_integer *i);
 bool integer_is_zero (const s_integer *i);
+f32  integer_to_f32 (const s_integer *i);
 f64  integer_to_f64 (const s_integer *i);
 s8   integer_to_s8 (const s_integer *i);
 s16  integer_to_s16 (const s_integer *i);

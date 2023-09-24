@@ -16,6 +16,7 @@
 
 #include "types.h"
 
-uw uw_cast (s_tag *tag);
+uw   uw_cast (s_tag *tag);
+uw * uw_copy (const uw *src, uw *dest);
 
 #endif /* U8_H */

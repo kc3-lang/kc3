@@ -16,6 +16,7 @@
 
 #include "types.h"
 
-u8 u8_cast (s_tag *tag);
+u8   u8_cast (s_tag *tag);
+u8 * u8_copy (const u8 *src, u8 *dest);
 
 #endif /* U8_H */

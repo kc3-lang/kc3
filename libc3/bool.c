@@ -14,6 +14,12 @@
 #include "buf.h"
 #include "buf_inspect.h"
 
+bool *  bool_copy (const bool *src, bool *dest)
+{
+  *dest = *src;
+  return dest;
+}
+
 s_str * bool_inspect (bool *b, s_str *dest)
 {
   sw size;

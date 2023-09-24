@@ -108,6 +108,11 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   assert(dest);
   array_copy(array, &tmp);
   item_size = tmp.dimensions[tmp.dimension - 1].item_size;
+  if (tmp.data) {
+    *dest = tmp;
+    return true;
+  }
+  assert(array->tags);
   if (! tmp.data &&
       ! (tmp.data = calloc(tmp.dimensions[0].count,
                            tmp.dimensions[0].item_size))) {
@@ -131,17 +136,7 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   return true;
 }
 
-bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
-{
-  s_array tmp;
-  if (! env_eval_array(env, array, &tmp))
-    return false;
-  dest->type = TAG_ARRAY;
-  dest->data.array = tmp;
-  return true;
-}
-
-bool env_eval_array_cast (s_env *env, s_array *tmp, const s_tag *tag,
+bool env_eval_array_cast (s_env *env, s_array *array, const s_tag *tag,
                           u8 *data, uw size)
 {
   s_call call;
@@ -149,21 +144,31 @@ bool env_eval_array_cast (s_env *env, s_array *tmp, const s_tag *tag,
   e_tag_type tag_type;
   void *data_eval;
   assert(env);
-  assert(tmp);
+  assert(array);
   assert(tag);
   assert(data);
   assert(size);
-  if (! call_init_cast(&call, tmp->type, tag))
+  if (! call_init_cast(&call, array->type, tag))
     return false;
   if (! env_eval_call(env, &call, &tag_eval)) {
     call_clean(&call);
     return false;
   }
-  tag_type = array_type_to_tag_type(tmp->type);
+  tag_type = array_type_to_tag_type(array->type);
   data_eval = tag_to_pointer(&tag_eval, tag_type);
   memcpy(data, data_eval, size);
   call_clean(&call);
   tag_clean(&tag_eval);
+  return true;
+}
+
+bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
+{
+  s_array tmp;
+  if (! env_eval_array(env, array, &tmp))
+    return false;
+  dest->type = TAG_ARRAY;
+  dest->data.array = tmp;
   return true;
 }
 

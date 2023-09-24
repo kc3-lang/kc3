@@ -16,6 +16,7 @@
 
 #include "types.h"
 
-u_bits$ u_bits$_cast (s_tag *tag);
+u_bits$   u_bits$_cast (s_tag *tag);
+u_bits$ * u_bits$_copy (const u_bits$ *src, u_bits$ *dest);
 
 #endif /* U8_H */
