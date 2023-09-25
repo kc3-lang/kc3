@@ -127,7 +127,7 @@ s_integer * integer_cast (const s_tag *tag, s_integer *dest)
   case TAG_IDENT:
     goto ko;
   case TAG_INTEGER:
-    return integer_init_copy(dest, &tag->data.integer);
+    return integer_copy(&tag->data.integer, dest);
   case TAG_SW:
     return integer_init_sw(dest, tag->data.sw);
   case TAG_S64:
