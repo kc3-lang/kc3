@@ -53,10 +53,27 @@ bool array_copy_data (f_copy copy, const u8 *src, u8 *dest);
 
 void array_clean (s_array *a)
 {
+  u8 *data;
+  u8 *data_tag;
   uw i;
+  uw size;
+  s_tag tag;
   assert(a);
   free(a->dimensions);
-  free(a->data);
+  if (a->data) {
+    data = a->data;
+    size = array_type_size(a->type);
+    tag.type = array_type_to_tag_type(a->type);
+    i = 0;
+    while (i < a->count) {
+      data_tag = tag_to_pointer(&tag, tag.type);
+      memcpy(data_tag, data, size);
+      tag_clean(&tag);
+      data += size;
+      i++;
+    }
+    free(a->data);
+  }
   if (a->tags) {
     i = 0;
     while (i < a->count) {
