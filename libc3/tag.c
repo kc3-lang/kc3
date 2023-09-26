@@ -1426,7 +1426,6 @@ s_tag * tag_copy (const s_tag *src, s_tag *dest)
     fn_copy(&src->data.fn, &dest->data.fn);
     break;
   case TAG_INTEGER:
-    integer_init(&dest->data.integer);
     integer_copy(&src->data.integer, &dest->data.integer);
     break;
   case TAG_LIST:
