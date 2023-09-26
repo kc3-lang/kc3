@@ -36,6 +36,8 @@ s_integer * integer_add (const s_integer *a, const s_integer *b,
   assert(dest);
   assert(a);
   assert(b);
+  if ((r = mp_init(&dest->mp_int)) != MP_OKAY)
+    errx(1, "integer_add: %s", mp_error_to_string(r));
   if ((r = mp_add(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_add: %s", mp_error_to_string(r));
   return dest;
@@ -189,6 +191,8 @@ s_integer * integer_div (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
+  if ((r = mp_init(&dest->mp_int)) != MP_OKAY)
+    errx(1, "integer_div: %s", mp_error_to_string(r));
   if ((r = mp_div(&a->mp_int, &b->mp_int, &dest->mp_int,
                   NULL)) != MP_OKAY)
     errx(1, "integer_div: %s", mp_error_to_string(r));
@@ -382,6 +386,8 @@ s_integer * integer_mul (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
+  if ((r = mp_init(&dest->mp_int)) != MP_OKAY)
+    errx(1, "integer_mul: %s", mp_error_to_string(r));
   if ((r = mp_mul(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_mul: %s", mp_error_to_string(r));
   return dest;
@@ -392,6 +398,8 @@ s_integer * integer_neg (const s_integer *a, s_integer *dest)
   sw r;
   assert(a);
   assert(dest);
+  if ((r = mp_init(&dest->mp_int)) != MP_OKAY)
+    errx(1, "integer_neg: %s", mp_error_to_string(r));
   if ((r = mp_neg(&a->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_neg: %s", mp_error_to_string(r));
   return dest;
@@ -488,6 +496,8 @@ s_integer * integer_sub (const s_integer *a, const s_integer *b,
   assert(dest);
   assert(a);
   assert(b);
+  if ((r = mp_init(&dest->mp_int)) != MP_OKAY)
+    errx(1, "integer_sub: %s", mp_error_to_string(r));
   if ((r = mp_sub(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_sub: %s", mp_error_to_string(r));
   return dest;

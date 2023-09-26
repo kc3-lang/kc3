@@ -1420,6 +1420,8 @@ sw buf_parse_integer (s_buf *buf, s_integer *dest)
   sw result;
   s_buf_save save;
   e_bool negative;
+  s_integer tmp;
+  s_integer tmp2;
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "-")) < 0)
     goto clean;
@@ -1431,11 +1433,15 @@ sw buf_parse_integer (s_buf *buf, s_integer *dest)
     goto restore;
   if (r > 0) {
     result += r;
-    if ((r = buf_parse_integer_unsigned_bin(buf, dest)) <= 0)
+    if ((r = buf_parse_integer_unsigned_bin(buf, &tmp)) <= 0)
       goto restore;
     result += r;
-    if (negative)
-      integer_neg(dest, dest);
+    if (negative) {
+      integer_neg(&tmp, &tmp2);
+      integer_clean(&tmp);
+      tmp = tmp2;
+    }
+    *dest = tmp;
     r = result;
     goto clean;
   }
@@ -1445,11 +1451,15 @@ sw buf_parse_integer (s_buf *buf, s_integer *dest)
     goto clean;
   if (r > 0) {
     result += r;
-    if ((r = buf_parse_integer_unsigned_oct(buf, dest)) <= 0)
+    if ((r = buf_parse_integer_unsigned_oct(buf, &tmp)) <= 0)
       goto restore;
     result += r;
-    if (negative)
-      integer_neg(dest, dest);
+    if (negative) {
+      integer_neg(&tmp, &tmp2);
+      integer_clean(&tmp);
+      tmp = tmp2;
+    }
+    *dest = tmp;
     r = result;
     goto clean;
   }
@@ -1459,21 +1469,29 @@ sw buf_parse_integer (s_buf *buf, s_integer *dest)
     goto clean;
   if (r > 0) {
     result += r;
-    if ((r = buf_parse_integer_unsigned_hex(buf, dest)) <= 0)
+    if ((r = buf_parse_integer_unsigned_hex(buf, &tmp)) <= 0)
       goto restore;
     result += r;
-    if (negative)
-      integer_neg(dest, dest);
+    if (negative) {
+      integer_neg(&tmp, &tmp2);
+      integer_clean(&tmp);
+      tmp = tmp2;
+    }
+    *dest = tmp;
     r = result;
     goto clean;
   }
-  if ((r = buf_parse_integer_unsigned_dec(buf, dest)) <= 0) {
+  if ((r = buf_parse_integer_unsigned_dec(buf, &tmp)) <= 0) {
     r = 0;
     goto restore;
   }
   result += r;
-  if (negative)
-    integer_neg(dest, dest);
+  if (negative) {
+    integer_neg(&tmp, &tmp2);
+    integer_clean(&tmp);
+    tmp = tmp2;
+  }
+  *dest = tmp;
   r = result;
   goto clean;
  restore:
