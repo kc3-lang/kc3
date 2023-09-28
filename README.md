@@ -179,35 +179,36 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - DONE triple serial id
    - math
      - floating point numbers
-   - variables
+   - DONE variables
       - DONE = equal
       - DONE funcall
    - DONE boolean operators
    - DONE comparison operators
-   - cast
-   - arrays
+   - DONE cast
+   - DONE arrays
      - DONE parse
      - DONE inspect
      - DONE [][][] data
    - lists
-   - defmodule
    - structs
    - errors (setjmp, longjmp)
      - stacktrace
        - ffi ?
          - libdwarf
    - control structures
+     - while
    - modules
      - DONE symbols
      - DONE as facts
      - DONE autoload (remember load time, compare with file time)
      - defmodule
    - functions
+     - DONE fn () {}
+     - DONE fn { () {0} (x) {x} }
      - return
      - def
      - funcall
      - & &1
-     - DONE fn () {}
    - macros
    - livebook
      - gaussian
