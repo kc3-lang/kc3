@@ -60,6 +60,15 @@ make gdb_ic3
 make gdb_test
 ```
 
+### Adding or removing files from the source tree
+```sh
+make gen
+./update_sources
+```
+
+Don't forget to commit your files and the modified sources.mk and
+sources.sh files.
+
 
 ## Structure
 
