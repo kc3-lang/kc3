@@ -3851,9 +3851,9 @@ void * tag_to_pointer (s_tag *tag, e_tag_type type)
   case TAG_UW:
     return &tag->data.uw;
   case TAG_LIST:
-    return tag->data.list;
+    return &tag->data.list;
   case TAG_PTAG:
-    return (void *) tag->data.ptag;
+    return &tag->data.ptag;
   case TAG_QUOTE:
     return &tag->data.quote;
   case TAG_STR:

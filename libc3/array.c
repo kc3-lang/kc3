@@ -486,6 +486,8 @@ f_copy array_type_to_copy (const s_sym *type)
     return (f_copy) ident_copy;
   if (type == sym_1("Integer"))
     return (f_copy) integer_copy;
+  if (type == sym_1("List"))
+    return (f_copy) list_copy;
   if (type == sym_1("Sw"))
     return (f_copy) sw_copy;
   if (type == sym_1("S64"))
@@ -506,8 +508,6 @@ f_copy array_type_to_copy (const s_sym *type)
     return (f_copy) u64_copy;
   if (type == sym_1("Uw"))
     return (f_copy) uw_copy;
-  if (type == sym_1("List"))
-    return (f_copy) list_copy;
   if (type == sym_1("Ptag"))
     return (f_copy) ptag_copy;
   if (type == sym_1("Quote"))
