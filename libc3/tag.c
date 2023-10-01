@@ -3756,7 +3756,7 @@ void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
     goto invalid_type;
   case TAG_LIST:
     if (type == sym_1("list"))
-      return tag->data.list;
+      return &tag->data.list;
     goto invalid_type;
   case TAG_PTAG:
     if (type == sym_1("ptag"))

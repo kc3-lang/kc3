@@ -1107,7 +1107,7 @@ sw buf_inspect_integer_size (const s_integer *x)
   return size - 1;
 }
 
-sw buf_inspect_list (s_buf *buf, const s_list *x)
+sw buf_inspect_list (s_buf *buf, const s_list **x)
 {
   uw count = 0;
   const s_list *i;
@@ -1117,7 +1117,7 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
   if ((r = buf_write_u8(buf, '(')) <= 0)
     return r;
   result++;
-  i = x;
+  i = *x;
   while (i) {
     if ((r = buf_inspect_tag(buf, &i->tag)) < 0)
       return r;
@@ -1153,14 +1153,14 @@ sw buf_inspect_list (s_buf *buf, const s_list *x)
   return result;
 }
 
-sw buf_inspect_list_size (const s_list *list)
+sw buf_inspect_list_size (const s_list **list)
 {
   uw count = 0;
   const s_list *i;
   sw r;
   sw result = 0;
   result += strlen("(");
-  i = list;
+  i = *list;
   while (i) {
     if ((r = buf_inspect_tag_size(&i->tag)) < 0)
       return r;
@@ -1186,7 +1186,7 @@ sw buf_inspect_list_size (const s_list *list)
   return result;
 }
 
-sw buf_inspect_ptag (s_buf *buf, p_tag ptag)
+sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag)
 {
   sw r;
   sw result = 0;
@@ -1194,13 +1194,13 @@ sw buf_inspect_ptag (s_buf *buf, p_tag ptag)
   if ((r = buf_write_1(buf, "@0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) &ptag)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) ptag)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_ptag_size (p_tag ptag)
+sw buf_inspect_ptag_size (const p_tag *ptag)
 {
   sw result = 0;
   (void) ptag;
@@ -1562,8 +1562,10 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_FN:      return buf_inspect_fn(buf, &tag->data.fn);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
-  case TAG_LIST:    return buf_inspect_list(buf, tag->data.list);
-  case TAG_PTAG:    return buf_inspect_ptag(buf, tag->data.ptag);
+  case TAG_LIST:
+    return buf_inspect_list(buf, (const s_list **) &tag->data.list);
+  case TAG_PTAG:
+    return buf_inspect_ptag(buf, &tag->data.ptag);
   case TAG_QUOTE:   return buf_inspect_quote(buf, &tag->data.quote);
   case TAG_S8:      return buf_inspect_s8(buf, &tag->data.s8);
   case TAG_S16:     return buf_inspect_s16(buf, &tag->data.s16);
@@ -1603,8 +1605,9 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_IDENT:    return buf_inspect_ident_size(&tag->data.ident);
   case TAG_INTEGER:
     return buf_inspect_integer_size(&tag->data.integer);
-  case TAG_LIST:     return buf_inspect_list_size(tag->data.list);
-  case TAG_PTAG:     return buf_inspect_ptag_size(tag->data.ptag);
+  case TAG_LIST:
+    return buf_inspect_list_size((const s_list **) &tag->data.list);
+  case TAG_PTAG:     return buf_inspect_ptag_size(&tag->data.ptag);
   case TAG_QUOTE:    return buf_inspect_quote_size(&tag->data.quote);
   case TAG_S8:       return buf_inspect_s8_size(&tag->data.s8);
   case TAG_S16:      return buf_inspect_s16_size(&tag->data.s16);

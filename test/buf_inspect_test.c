@@ -123,8 +123,10 @@
       errx(1, "BUF_INSPECT_TEST_LIST: buf_parse_list");                \
     }                                                                  \
     buf_init_alloc(&buf, 1024 * 1024);                                 \
-    TEST_EQ(buf_inspect_list_size(list_test), strlen(expected));       \
-    TEST_EQ(buf_inspect_list(&buf, list_test), strlen(expected));      \
+    TEST_EQ(buf_inspect_list_size((const s_list **) &list_test),       \
+            strlen(expected));                                         \
+    TEST_EQ(buf_inspect_list(&buf, (const s_list **) &list_test),      \
+            strlen(expected));                                         \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     if (g_test_last_ok)                                                \
       TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                   \

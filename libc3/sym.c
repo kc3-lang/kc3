@@ -160,6 +160,8 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
   }
   if (sym == sym_1("integer"))
     return &ffi_type_pointer;
+  if (sym == sym_1("list"))
+    return &ffi_type_pointer;
   if (sym == sym_1("s8"))
     return &ffi_type_sint8;
   if (sym == sym_1("s16"))

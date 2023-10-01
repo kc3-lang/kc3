@@ -1,8 +1,10 @@
 %{module: C3.Facts.Dump,
   version: 1}
 add {List, :is_a, :module}
+add {List, :symbol, List.cast}
 add {List, :symbol, List.map}
 add {List, :symbol, List.reverse}
+replace {List.cast, :cfn, cfn :list "list_cast" (:tag, :&result)}
 replace {List.map, :fn, fn {
   ((), _) {
     ()

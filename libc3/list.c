@@ -44,6 +44,16 @@ void list_clean (s_list *list)
   }
 }
 
+s_list ** list_cast (const s_tag *tag, s_list **list)
+{
+  assert(tag);
+  if (tag->type == TAG_LIST) {
+    list_copy(tag->data.list, list);
+    return list;
+  }
+  return NULL;
+}
+
 /* FIXME: does not work on circular lists */
 s_list * list_copy (const s_list *src, s_list **dest)
 {
@@ -100,9 +110,9 @@ s_str * list_inspect (const s_list *x, s_str *dest)
   s_buf buf;
   sw r;
   sw size;
-  size = buf_inspect_list_size(x);
+  size = buf_inspect_list_size(&x);
   buf_init_alloc(&buf, size);
-  if ((r = buf_inspect_list(&buf, x)) < 0)
+  if ((r = buf_inspect_list(&buf, &x)) < 0)
     goto error;
   assert(r == size);
   if (r != size)

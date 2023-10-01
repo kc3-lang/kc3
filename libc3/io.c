@@ -34,7 +34,7 @@ sw err_inspect_fn_pattern (const s_list *list)
 sw err_inspect_list (const s_list *list)
 {
   sw r;
-  r = buf_inspect_list(&g_c3_env.err, list);
+  r = buf_inspect_list(&g_c3_env.err, &list);
   buf_flush(&g_c3_env.err);
   return r;
 }
