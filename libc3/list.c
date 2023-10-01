@@ -55,26 +55,28 @@ s_list ** list_cast (const s_tag *tag, s_list **list)
 }
 
 /* FIXME: does not work on circular lists */
-s_list * list_copy (const s_list *src, s_list **dest)
+s_list ** list_copy (const s_list **src, s_list **dest)
 {
+  s_list **i = dest;
   s_list *next;
-  s_list *result = NULL;
-  *dest = NULL;
-  while (src) {
-    *dest = list_new(NULL, NULL);
-    tag_copy(&src->tag, &(*dest)->tag);
-    if (! result)
-      result = *dest;
-    if ((next = list_next(src))) {
-      src = next;
-      dest = &(*dest)->next.data.list;
+  const s_list *s;
+  assert(src);
+  assert(dest);
+  s = *src;
+  *i = NULL;
+  while (s) {
+    *i = list_new(NULL, NULL);
+    tag_copy(&s->tag, &(*i)->tag);
+    if ((next = list_next(s))) {
+      s = next;
+      i = &(*i)->next.data.list;
     }
     else {
-      tag_copy(&src->next, &(*dest)->next);
+      tag_copy(&s->next, &(*i)->next);
       break;
     }
   }
-  return result;
+  return dest;
 }
 
 s_list * list_delete (s_list *list)
