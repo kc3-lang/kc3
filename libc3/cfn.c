@@ -111,7 +111,7 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
   assert(dest);
   dest->name = cfn->name;
   dest->arg_result = cfn->arg_result;
-  list_copy(cfn->arg_types, &dest->arg_types);
+  list_copy((const s_list **) &cfn->arg_types, &dest->arg_types);
   dest->arity = cfn->arity;
   dest->cif = cfn->cif;
   if (cfn->arity) {

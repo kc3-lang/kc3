@@ -26,7 +26,7 @@
 
 /* Stack allocation compatible functions, do not use */
 s_list * list_init (s_list *list, const s_tag *tag, s_list *next);
-void     list_clean (s_list *list);
+void     list_clean (s_list **list);
 
 /* Constructors, call list_delete after use */
 s_list * list_1 (const s8 *p);
@@ -37,7 +37,7 @@ s_list * list_delete (s_list *list);
 void     list_delete_all (s_list *list);
 
 /* Observers */
-s_list *  list_copy (const s_list *src, s_list **dest);
+s_list **  list_copy (const s_list **src, s_list **dest);
 sw        list_length (const s_list *list);
 s_list *  list_next (const s_list *list);
 s_array * list_to_array (s_list *list, const s_sym *type,

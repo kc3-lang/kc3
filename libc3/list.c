@@ -35,12 +35,19 @@ s_list * list_1 (const char *p)
   return list;
 }
 
-void list_clean (s_list *list)
+void list_clean (s_list **list)
 {
-  if (list) {
-    tag_clean(&list->tag);
-    if (list->next.type != TAG_LIST)
-      tag_clean(&list->next);
+  s_list *l;
+  s_list *next;
+  assert(list);
+  l = *list;
+  while (l) {
+    tag_clean(&l->tag);
+    next = list_next(l);
+    if (l->next.type != TAG_LIST)
+      tag_clean(&l->next);
+    free(l);
+    l = next;
   }
 }
 
@@ -48,7 +55,7 @@ s_list ** list_cast (const s_tag *tag, s_list **list)
 {
   assert(tag);
   if (tag->type == TAG_LIST) {
-    list_copy(tag->data.list, list);
+    list_copy((const s_list **) &tag->data.list, list);
     return list;
   }
   return NULL;
@@ -57,13 +64,14 @@ s_list ** list_cast (const s_tag *tag, s_list **list)
 /* FIXME: does not work on circular lists */
 s_list ** list_copy (const s_list **src, s_list **dest)
 {
-  s_list **i = dest;
+  s_list **i;
   s_list *next;
   const s_list *s;
   assert(src);
   assert(dest);
-  s = *src;
+  i = dest;
   *i = NULL;
+  s = *src;
   while (s) {
     *i = list_new(NULL, NULL);
     tag_copy(&s->tag, &(*i)->tag);
@@ -84,7 +92,10 @@ s_list * list_delete (s_list *list)
   s_list *next = NULL;
   if (list) {
     next = list_next(list);
-    list_clean(list);
+    tag_clean(&list->tag);
+    next = list_next(list);
+    if (list->next.type != TAG_LIST)
+      tag_clean(&list->next);
     free(list);
   }
   return next;

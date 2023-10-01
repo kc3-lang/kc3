@@ -1429,7 +1429,7 @@ s_tag * tag_copy (const s_tag *src, s_tag *dest)
     integer_copy(&src->data.integer, &dest->data.integer);
     break;
   case TAG_LIST:
-    list_copy(src->data.list, &dest->data.list);
+    list_copy((const s_list **) &src->data.list, &dest->data.list);
     break;
   case TAG_QUOTE:
     quote_copy(&src->data.quote, &dest->data.quote);

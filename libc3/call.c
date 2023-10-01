@@ -39,7 +39,7 @@ s_call * call_copy (const s_call *src, s_call *dest)
   assert(src);
   assert(dest);
   ident_copy(&src->ident, &dest->ident);
-  list_copy(src->arguments, &dest->arguments);
+  list_copy((const s_list **) &src->arguments, &dest->arguments);
   dest->cfn = src->cfn;
   dest->fn = src->fn;
   return dest;
