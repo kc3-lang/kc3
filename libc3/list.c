@@ -65,7 +65,6 @@ s_list ** list_cast (const s_tag *tag, s_list **list)
 s_list ** list_copy (const s_list **src, s_list **dest)
 {
   s_list **i;
-  s_list *next;
   const s_list *s;
   assert(src);
   assert(dest);
@@ -75,8 +74,7 @@ s_list ** list_copy (const s_list **src, s_list **dest)
   while (s) {
     *i = list_new(NULL, NULL);
     tag_copy(&s->tag, &(*i)->tag);
-    if ((next = list_next(s))) {
-      s = next;
+    if ((s = list_next(s))) {
       i = &(*i)->next.data.list;
     }
     else {
