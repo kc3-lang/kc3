@@ -43,9 +43,7 @@ CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe"
 LDFLAGS="${LDFLAGS}"
-if [ "x$CC" != "xtcc" ]; then
-    LDFLAGS="-Wl,--allow-shlib-undefined ${LDFLAGS}"
-fi
+LDFLAGS="-no-undefined ${LDFLAGS}"
 LIBS="${LIBS:=} -lm"
 
 # Common config for all targets

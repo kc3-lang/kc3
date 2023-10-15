@@ -35,9 +35,7 @@ CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe"
 LDFLAGS="--shared ${LDFLAGS:-}"
-if [ "x$CC" != "xtcc" ]; then
-    LDFLAGS="-Wl,--allow-shlib-undefined ${LDFLAGS}"
-fi
+LDFLAGS="-no-undefined ${LDFLAGS}"
 LIBS="${LIBS} -lm -pthread -rpath ${PREFIX}/lib"
 
 # Common config for all targets
