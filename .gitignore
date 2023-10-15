@@ -1,6 +1,6 @@
 *.a
-c3-*/
-c3-*.tar.gz
+/c3-*/
+/c3-*.tar.gz
 c3c/c3c
 c3c/c3c_asan
 c3c/c3c_cov

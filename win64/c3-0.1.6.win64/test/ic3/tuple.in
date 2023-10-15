@@ -1,0 +1,43 @@
+{(), ()}
+{"", ""}
+{(), ""}
+{"", ()}
+{:a, :b}
+{:a, :b, :c}
+{:a, :b, :c, :d}
+{:a, :b, :c, :d, :e}
+{:a, :b, :c, :d, :e, :f}
+{:a, :b, :c, :d, :e, :f, :g}
+{:a, :b, :c, :d, :e, :f, :g, :h}
+{:a, :b, :c, :d, :e, :f, :g, :h, :i}
+{:a, :b, :c, :d, :e, :f, :g, :h, :i, :j}
+{{:a, :b}, {:c, :d}}
+{{:a, :b}, {:c, :d}, {:e, :f}}
+{{:a, :b}, {:c, :d}, {:e, :f}, {:g, :h}}
+{{:a, :b}, {:c, :d}, {:e, :f}, {:g, :h}, {:i, :j}}
+
+# comment 0
+# comment 0b
+{ # comment 1
+  # comment 1b
+  :a # comment 2
+     # comment 2b
+  , # comment 3
+    # comment 3b
+  :b ## comment 4
+     ## comment 4b
+  , ## comment 5
+    ## comment 5b
+  :c ## comment 6
+     ## comment 6b
+  } ## comment 7
+    ## comment 7b
+
+# comment 10
+{ # comment 11
+  :a # comment 12
+  , # comment 13
+  :b ## comment 14
+  , ## comment 15
+  :c ## comment 16
+  } ## comment 17
