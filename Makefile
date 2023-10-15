@@ -118,10 +118,10 @@ libc3_gcovr:
 libffi:
 	${GMAKE} -C libffi all
 
-licence:
+license:
 	update_header config.subr ${C3_CONFIGURES}
 	update_header Makefile ${C3_MAKEFILES}
-	update_header libc3/c3.h ${C3_C_SOURCES}
+	update_header license.h ${C3_C_SOURCES}
 
 lldb_ic3: debug
 	${MAKE} -C ic3 lldb_ic3

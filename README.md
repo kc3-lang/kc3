@@ -234,7 +234,7 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - DONE types
      - DONE funcall
 
-# Licence
+# License
 
 ## C3
 
