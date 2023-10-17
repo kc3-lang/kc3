@@ -199,7 +199,8 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
       assert(i < cfn->arity);
       if (a->tag.type != TAG_SYM) {
         assert(! "cfn_prep_cif: invalid type");
-        errx(1, "cfn_prep_cif: invalid type");
+        errx(1, "cfn_prep_cif: invalid type: %s",
+             tag_type_to_string(a->tag.type));
       }
       if (! (arg_ffi_type[i] = sym_to_ffi_type(a->tag.data.sym, result_ffi_type))) {
         free(arg_ffi_type);

@@ -153,39 +153,55 @@ const s_sym * sym_new (const s_str *src)
 
 ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
 {
-  if (sym == sym_1("&result")) {
+  if (sym == sym_1("Result") ||
+      sym == sym_1("&result")) {
     if (! result_type)
       warnx("invalid result type: &result");
     return result_type;
   }
-  if (sym == sym_1("integer"))
+  if (sym == sym_1("Integer") ||
+      sym == sym_1("integer"))
     return &ffi_type_pointer;
-  if (sym == sym_1("list"))
+  if (sym == sym_1("List") ||
+      sym == sym_1("list"))
     return &ffi_type_pointer;
-  if (sym == sym_1("s8"))
+  if (sym == sym_1("S8") ||
+      sym == sym_1("s8"))
     return &ffi_type_sint8;
-  if (sym == sym_1("s16"))
+  if (sym == sym_1("S16") ||
+      sym == sym_1("s16"))
     return &ffi_type_sint16;
-  if (sym == sym_1("s32"))
+  if (sym == sym_1("S32") ||
+      sym == sym_1("s32"))
     return &ffi_type_sint32;
-  if (sym == sym_1("s64"))
+  if (sym == sym_1("S64") ||
+      sym == sym_1("s64"))
     return &ffi_type_sint64;
-  if (sym == sym_1("sw"))
+  if (sym == sym_1("Sw") ||
+      sym == sym_1("sw"))
     return &ffi_type_slong;
-  if (sym == sym_1("tag"))
+  if (sym == sym_1("Tag") ||
+      sym == sym_1("tag"))
     return &ffi_type_pointer;
-  if (sym == sym_1("u8") ||
+  if (sym == sym_1("U8") ||
+      sym == sym_1("u8") ||
+      sym == sym_1("Bool") ||
       sym == sym_1("bool"))
     return &ffi_type_uint8;
-  if (sym == sym_1("u16"))
+  if (sym == sym_1("U16") ||
+      sym == sym_1("u16"))
     return &ffi_type_uint16;
-  if (sym == sym_1("u32"))
+  if (sym == sym_1("U32") ||
+      sym == sym_1("u32"))
     return &ffi_type_uint32;
-  if (sym == sym_1("u64"))
+  if (sym == sym_1("U64") ||
+      sym == sym_1("u64"))
     return &ffi_type_uint64;
-  if (sym == sym_1("uw"))
+  if (sym == sym_1("Uw") ||
+      sym == sym_1("uw"))
     return &ffi_type_ulong;
-  if (sym == sym_1("void"))
+  if (sym == sym_1("Void") ||
+      sym == sym_1("void"))
     return &ffi_type_void;
   assert(! "sym_to_ffi_type: unknown type");
   errx(1, "sym_to_ffi_type: unknown type: %s", sym->str.ptr.ps8);
