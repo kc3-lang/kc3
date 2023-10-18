@@ -1727,6 +1727,7 @@ sw buf_parse_list (s_buf *buf, s_list **list)
     goto restore;
   }
  restore:
+  list_delete_all(*list);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
