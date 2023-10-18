@@ -357,7 +357,7 @@ s_integer * integer_lcm (const s_integer *a, const s_integer *b,
   return dest;
 }
 
-s_integer * integer_lshift (s_integer *a, sw b, s_integer *dest)
+s_integer * integer_lshift (const s_integer *a, sw b, s_integer *dest)
 {
   sw r;
   assert(a);

@@ -751,15 +751,15 @@ bool env_module_maybe_reload (s_env *env, const s_sym *name,
   return r;
 }
 
-bool env_operator_is_binary (s_env *env, const s_ident *op)
+s8 env_operator_arity (s_env *env, const s_ident *op)
 {
   s_facts_with_cursor cursor;
   s8 r;
   s_tag tag_ident;
   s_tag tag_is_a;
-  s_tag tag_arity;
   s_tag tag_operator;
-  s_tag tag_two;
+  s_tag tag_arity;
+  s_tag tag_var;
   s_ident tmp;
   assert(env);
   assert(op);

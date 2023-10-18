@@ -57,12 +57,10 @@ bool       env_module_load (s_env *env, const s_sym *name,
                             s_facts *facts);
 bool       env_module_maybe_reload (s_env *env, const s_sym *name,
                                     s_facts *facts);
-bool       env_operator_is_binary (s_env *env, const s_ident *op);
+s8         env_operator_arity (s_env *env, const s_ident *op);
 bool       env_operator_is_right_associative (s_env *env,
                                               const s_ident *op);
-bool       env_operator_is_unary (s_env *env, const s_ident *op);
-s8         env_operator_precedence (s_env *env,
-                                    const s_ident *op);
+s8         env_operator_precedence (s_env *env, const s_ident *op);
 bool       env_tag_ident_is_bound (const s_env *env, const s_tag *tag,
                                    s_facts *facts);
 

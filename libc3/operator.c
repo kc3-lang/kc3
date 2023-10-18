@@ -13,19 +13,14 @@
 #include <assert.h>
 #include "c3.h"
 
-bool operator_is_binary (const s_ident *op)
+s8 operator_arity (const s_ident *op)
 {
-  return env_operator_is_binary(&g_c3_env, op);
+  return env_operator_arity(&g_c3_env, op);
 }
 
 bool operator_is_right_associative (const s_ident *op)
 {
   return env_operator_is_right_associative(&g_c3_env, op);
-}
-
-bool operator_is_unary (const s_ident *op)
-{
-  return env_operator_is_unary(&g_c3_env, op);
 }
 
 s8 operator_precedence (const s_ident *op)
