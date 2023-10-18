@@ -24,13 +24,13 @@
 #include "module.h"
 #include "tag.h"
 
-bool module_ensure_loaded (const s_sym *name, s_facts *facts)
+bool module_ensure_loaded (const s_sym *module, s_facts *facts)
 {
   s_facts_with_cursor cursor;
   s_tag tag_module_name;
   s_tag tag_is_a;
   s_tag tag_module;
-  tag_init_sym(&tag_module_name, name);
+  tag_init_sym(&tag_module_name, module);
   tag_init_1(  &tag_is_a,     ":is_a");
   tag_init_1(  &tag_module,   ":module");
   facts_with(facts, &cursor, (t_facts_spec) {
@@ -38,50 +38,50 @@ bool module_ensure_loaded (const s_sym *name, s_facts *facts)
       &tag_is_a, &tag_module,     /* module exists */
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor)) {
-    if (! module_load(name, facts)) {
+    if (! module_load(module, facts)) {
       warnx("module not found: %s",
-            name->str.ptr.ps8);
+            module->str.ptr.ps8);
       facts_with_cursor_clean(&cursor);
       return false;
     }
   }
   facts_with_cursor_clean(&cursor);
-  return module_maybe_reload(name, facts);
+  return module_maybe_reload(module, facts);
 }
 
-bool module_load (const s_sym *name, s_facts *facts)
+bool module_load (const s_sym *module, s_facts *facts)
 {
-  return env_module_load(&g_c3_env, name, facts);
+  return env_module_load(module, &g_c3_env, facts);
 }
 
-s_tag * module_load_time (const s_sym *name, s_facts *facts,
+s_tag * module_load_time (const s_sym *module, s_facts *facts,
                           s_tag *dest)
 {
   s_facts_with_cursor cursor;
-  s_tag tag_name;
+  s_tag tag_module_name;
   s_tag tag_load_time;
-  s_tag tag_time;
-  tag_init_sym(&tag_name, name);
+  s_tag tag_time_var;
+  tag_init_sym(&tag_module_name, module);
   tag_init_1(  &tag_load_time, ":load_time");
-  tag_init_var(&tag_time);
+  tag_init_var(&tag_time_var);
   facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_name, &tag_load_time, &tag_time, NULL, NULL });
+      &tag_module_name, &tag_load_time, &tag_time_var, NULL, NULL });
   if (! facts_with_cursor_next(&cursor)) {
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
   facts_with_cursor_clean(&cursor);
-  *dest = tag_time;
+  *dest = tag_time_var;
   return dest;
 }
 
-bool module_maybe_reload (const s_sym *name, s_facts *facts)
+bool module_maybe_reload (const s_sym *module, s_facts *facts)
 {
-  return env_module_maybe_reload(&g_c3_env, name, facts);
+  return env_module_maybe_reload(module, &g_c3_env, facts);
 }
 
-s_str * module_name_path (const s_str *prefix, const s_sym *name,
-                          s_str *dest)
+s_str * module_path (const s_sym *module, const s_str *prefix,
+                     s_str *dest)
 {
   character b = -1;
   character c;
@@ -90,9 +90,9 @@ s_str * module_name_path (const s_str *prefix, const s_sym *name,
   sw out_size;
   sw r;
   assert(dest);
-  assert(name);
-  buf_init_str(&in, &name->str);
-  out_size = module_name_path_size(prefix, name);
+  assert(module);
+  buf_init_str(&in, &module->str);
+  out_size = module_path_size(module, prefix);
   buf_init_alloc(&out, out_size);
   if ((r = buf_write_str(&out, prefix)) < 0)
     goto error;
@@ -122,7 +122,7 @@ s_str * module_name_path (const s_str *prefix, const s_sym *name,
   return NULL;
 }
 
-sw module_name_path_size (const s_str *prefix, const s_sym *name)
+sw module_path_size (const s_sym *module, const s_str *prefix)
 {
   character b = 0;
   character c;
@@ -130,8 +130,8 @@ sw module_name_path_size (const s_str *prefix, const s_sym *name)
   sw r;
   sw result = 0;
   assert(prefix);
-  assert(name);
-  buf_init_str(&in, &name->str);
+  assert(module);
+  buf_init_str(&in, &module->str);
   result += prefix->size;
   result++;
   while ((r = buf_read_character_utf8(&in, &c)) > 0) {

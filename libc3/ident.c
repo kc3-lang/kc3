@@ -39,7 +39,7 @@ bool ident_character_is_reserved (character c)
 
 s_ident * ident_copy (const s_ident *src, s_ident *dest)
 {
-  dest->module_name = src->module_name;
+  dest->module = src->module;
   dest->sym = src->sym;
   return dest;
 }
@@ -73,7 +73,7 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
   s_tag tag_sym;
   s_tag tag_symbol;
   s_tag tag_var;
-  module = ident->module_name;
+  module = ident->module;
   if (! module)
     module = g_c3_env.current_module;
   if (! module_ensure_loaded(module, facts))
@@ -177,12 +177,12 @@ bool ident_has_reserved_characters (const s_ident *ident)
   return false;
 }
 
-s_ident * ident_init (s_ident *ident, const s_sym *module_name,
+s_ident * ident_init (s_ident *ident, const s_sym *module,
                       const s_sym *sym)
 {
   assert(ident);
   assert(sym);
-  ident->module_name = module_name;
+  ident->module = module;
   ident->sym = sym;
   return ident;
 }
@@ -216,9 +216,9 @@ void ident_resolve_module (s_ident *ident, const s_env *env)
 {
   assert(env);
   assert(ident);
-  if (! ident->module_name) {
+  if (! ident->module) {
     assert(env->current_module);
-    ident->module_name = env->current_module;
+    ident->module = env->current_module;
   }
 }
 

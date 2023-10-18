@@ -274,7 +274,7 @@ struct fn {
 };
 
 struct ident {
-  const s_sym *module_name;
+  const s_sym *module;
   const s_sym *sym;
 };
 

@@ -230,7 +230,7 @@ s8 compare_ident (const s_ident *a, const s_ident *b)
     return -1;
   if (!b)
     return 1;
-  if ((r = compare_sym(a->module_name, b->module_name)))
+  if ((r = compare_sym(a->module, b->module)))
     return r;
   return compare_sym(a->sym, b->sym);
 }

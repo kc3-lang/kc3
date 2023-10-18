@@ -249,7 +249,7 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
     return buf_inspect_call_brackets(buf, call);
   if (call->ident.sym == sym_1("cast"))
     return buf_inspect_cast(buf, call);
-  if (operator_is_unary(&call->ident))
+  if (operator_find(&call->ident, 1))
     return buf_inspect_call_op_unary(buf, call);
   if ((op_precedence = operator_precedence(&call->ident)) > 0)
     return buf_inspect_call_op(buf, call, op_precedence);
@@ -451,7 +451,7 @@ sw buf_inspect_call_size (const s_call *call)
   s8 op_precedence;
   sw r;
   sw result = 0;
-  if (operator_is_unary(&call->ident))
+  if (operator_find(&call->ident, 1))
     return buf_inspect_call_op_unary_size(call);
   if ((op_precedence = operator_precedence(&call->ident)) > 0)
     return buf_inspect_call_op_size(call, op_precedence);
@@ -474,7 +474,7 @@ sw buf_inspect_cast (s_buf *buf, const s_call *call)
   assert(call);
   assert(call->arguments);
   assert(! list_next(call->arguments));
-  module = call->ident.module_name;
+  module = call->ident.module;
   if ((r = buf_inspect_paren_sym(buf, module)) < 0)
     return r;
   result += r;
@@ -497,7 +497,7 @@ sw buf_inspect_cast_size (const s_call *call)
   assert(call);
   assert(call->arguments);
   assert(! list_next(call->arguments));
-  module = call->ident.module_name;
+  module = call->ident.module;
   if ((r = buf_inspect_paren_sym_size(module)) <= 0)
     return r;
   result += r;
@@ -988,8 +988,8 @@ sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
   assert(buf);
   assert(ident);
   result = 0;
-  if (ident->module_name) {
-    if ((r = buf_inspect_sym(buf, ident->module_name)) < 0)
+  if (ident->module) {
+    if ((r = buf_inspect_sym(buf, ident->module)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, ".")) < 0)
@@ -1043,8 +1043,8 @@ sw buf_inspect_ident_size (const s_ident *ident)
   sw r;
   sw result = 0;
   assert(ident);
-  if (ident->module_name) {
-    if ((r = buf_inspect_sym_size(ident->module_name)) < 0)
+  if (ident->module) {
+    if ((r = buf_inspect_sym_size(ident->module)) < 0)
       return r;
     result += r;
     result += strlen(".");

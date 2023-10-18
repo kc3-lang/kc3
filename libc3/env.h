@@ -53,11 +53,13 @@ bool       env_eval_quote (s_env *env, const s_quote *quote,
 bool       env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
 bool       env_eval_tuple (s_env *env, const s_tuple *tuple,
                            s_tag *dest);
-bool       env_module_load (s_env *env, const s_sym *name,
+bool       env_module_load (const s_sym *module, s_env *env,
                             s_facts *facts);
-bool       env_module_maybe_reload (s_env *env, const s_sym *name,
+bool       env_module_maybe_reload (const s_sym *module, s_env *env,
                                     s_facts *facts);
-s8         env_operator_arity (s_env *env, const s_ident *op);
+s_ident *  env_operator_call_ident (s_env *env, const s_ident *op,
+                                    s_ident *dest, u8 arity);
+bool       env_operator_find (s_env *env, const s_ident *op, u8 arity);
 bool       env_operator_is_right_associative (s_env *env,
                                               const s_ident *op);
 s8         env_operator_precedence (s_env *env, const s_ident *op);

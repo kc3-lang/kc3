@@ -13,9 +13,15 @@
 #include <assert.h>
 #include "c3.h"
 
-s8 operator_arity (const s_ident *op)
+s_ident * operator_call_ident (const s_ident *op, u8 arity,
+                               s_ident *dest)
 {
-  return env_operator_arity(&g_c3_env, op);
+  return env_operator_call_ident(&g_c3_env, op, dest, arity);
+}
+
+bool operator_find (const s_ident *op, u8 arity)
+{
+  return env_operator_find(&g_c3_env, op, arity);
 }
 
 bool operator_is_right_associative (const s_ident *op)

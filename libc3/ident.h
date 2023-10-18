@@ -20,7 +20,7 @@
 #define IDENT_MAX SYM_MAX
 
 /* Stack-allocation compatible functions */
-s_ident * ident_init (s_ident *ident, const s_sym *module_name,
+s_ident * ident_init (s_ident *ident, const s_sym *module,
                       const s_sym *sym);
 s_ident * ident_init_1 (s_ident *ident, const s8 *p);
 

@@ -578,6 +578,7 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
 
 sw buf_parse_call_op (s_buf *buf, s_call *dest)
 {
+  s_ident next_op;
   s_call tmp;
   sw r;
   sw result = 0;
@@ -592,6 +593,13 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
     goto restore;
   result += r;
+  if ((r = buf_parse_ident_peek(buf, &next_op)) <= 0)
+    goto restore;
+  if (! operator_find(&next_op, 2) ||
+      operator_precedence(&next_op) < 0) {
+    r = 0;
+    goto restore;
+  }
   if ((r = buf_parse_call_op_rec(buf, &tmp, 0)) <= 0)
     goto restore;
   result += r;
@@ -633,18 +641,17 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   tag_copy(&dest->arguments->tag, left);
   if ((r = buf_parse_ident_peek(buf, &next_op)) <= 0)
     goto restore;
-  if ((op_precedence = operator_precedence(&next_op)) < 0) {
+  if (! operator_find(&next_op, 2) ||
+      (op_precedence = operator_precedence(&next_op)) < 0) {
     r = 0;
     goto restore;
   }
-  if (! operator_is_binary(&next_op))
-    goto restore;
   while (r > 0 && op_precedence >= min_precedence) {
     if ((r = buf_parse_ident(buf, &next_op)) <= 0)
       goto restore;
     result += r;
     op = next_op;
-    tmp.ident = op;
+    operator_call_ident(&op, 2, &tmp.ident);
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
@@ -662,7 +669,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     if (r <= 0)
       break;
     next_op_precedence = operator_precedence(&next_op);
-    while (r > 0 && operator_is_binary(&next_op) &&
+    while (r > 0 && operator_find(&next_op, 2) &&
            (next_op_precedence >= op_precedence ||
             (operator_is_right_associative(&next_op) &&
              next_op_precedence == op_precedence))) {
@@ -691,7 +698,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     if (r <= 0 || (op_precedence = next_op_precedence) < min_precedence)
       break;
     call_init_op(&tmp3);
-    tmp3.ident = op;
+    operator_call_ident(&op, 2, &tmp3.ident);
     tmp3.arguments->tag = *left;
     list_next(tmp3.arguments)->tag = *right;
     tag_init_call(left, &tmp3);
@@ -721,7 +728,7 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
   if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0)
     goto restore;
   result += r;
-  if (! operator_is_unary(&tmp.ident))
+  if (! operator_find(&tmp.ident, 1))
     goto restore;
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
@@ -730,6 +737,7 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
     goto restore;
   result += r;
   *dest = tmp;
+  operator_call_ident(&tmp.ident, 1, &dest->ident);
   r = result;
   goto clean;
  restore:
@@ -1340,7 +1348,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
 {
   character c;
   sw csize;
-  const s_sym *module_name = NULL;
+  const s_sym *module = NULL;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -1350,7 +1358,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_parse_module_name(buf, &module_name)) < 0)
+  if ((r = buf_parse_module_name(buf, &module)) < 0)
     goto clean;
   if (r > 0) {
     result += r;
@@ -1368,7 +1376,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
       goto restore;
     result += r;
     str_to_ident(&str, dest);
-    dest->module_name = module_name;
+    dest->module = module;
     str_clean(&str);
     r = result;
     goto clean;
@@ -1390,7 +1398,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
     }
     buf_read_to_str(&tmp, &str);
     str_to_ident(&str, dest);
-    dest->module_name = module_name;
+    dest->module = module;
     str_clean(&str);
     r = result;
     goto clean;
