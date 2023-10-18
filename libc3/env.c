@@ -754,27 +754,37 @@ bool env_module_maybe_reload (s_env *env, const s_sym *name,
 s8 env_operator_arity (s_env *env, const s_ident *op)
 {
   s_facts_with_cursor cursor;
-  s8 r;
-  s_tag tag_ident;
+  s8 r = -1;
+  s_tag tag_operator_var;
   s_tag tag_is_a;
   s_tag tag_operator;
+  s_tag tag_symbol;
+  s_tag tag_sym;
   s_tag tag_arity;
-  s_tag tag_var;
+  s_tag tag_arity_var;
   s_ident tmp;
   assert(env);
   assert(op);
   tmp = *op;
   ident_resolve_module(&tmp, env);
-  tag_init_ident(&tag_ident, &tmp);
-  tag_init_1(    &tag_is_a, ":is_a");
-  tag_init_1(    &tag_operator, ":operator");
-  tag_init_1(    &tag_arity, ":arity");
-  tag_init_1(    &tag_two, "2");
+  tag_init_var(&tag_operator_var);
+  tag_init_1(  &tag_is_a, ":is_a");
+  tag_init_1(  &tag_operator, ":operator");
+  tag_init_1(  &tag_symbol, ":symbol");
+  tag_init_sym(&tag_sym, tmp.sym);
+  tag_init_1(  &tag_arity, ":arity");
+  tag_init_var(&tag_arity_var);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_is_a, &tag_operator,
-                  &tag_arity, &tag_two,
-                  NULL, NULL });
-  r = facts_with_cursor_next(&cursor) ? true : false;
+      &tag_operator_var, &tag_is_a, &tag_operator,
+      &tag_symbol, &tag_sym,
+      &tag_arity, &tag_arity_var,
+      NULL, NULL });
+  if (facts_with_cursor_next(&cursor)) {
+    if (tag_operator_var.type == TAG_IDENT &&
+        tag_operator_var.data.ident.module == tmp.module &&
+        tag_arity_var.type == TAG_U8)
+      r = tag_arity.data.u8;
+  }
   facts_with_cursor_clean(&cursor);
   return r;
 }
