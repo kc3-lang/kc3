@@ -826,8 +826,8 @@ bool env_operator_find (s_env *env, const s_ident *op, u8 arity)
     return true;
   }
   warnx("operator %s not found in module %s",
-        op->sym->str.ptr.ps8,
-        op->module->str.ptr.ps8);
+        tmp.sym->str.ptr.ps8,
+        tmp.module->str.ptr.ps8);
   facts_with_cursor_clean(&cursor);
   return false;
 }
