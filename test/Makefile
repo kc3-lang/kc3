@@ -88,6 +88,9 @@ test_debug: libc3_test_debug
 test_ic3:
 	IC3=${SRC_TOP}/ic3/ic3 time ./ic3_test
 
+test_ic3_asan:
+	IC3=${SRC_TOP}/ic3/ic3_asan time ./ic3_test
+
 test_ic3_cov:
 	IC3=${SRC_TOP}/ic3/ic3_cov time ./ic3_test
 

@@ -151,6 +151,9 @@ test_gcovr:
 test_ic3: build
 	${MAKE} -C test test_ic3
 
+test_ic3_asan: asan
+	${MAKE} -C test test_ic3_asan
+
 test_ic3_cov: cov
 	${MAKE} -C test test_ic3_cov
 
