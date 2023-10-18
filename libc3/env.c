@@ -825,9 +825,10 @@ bool env_operator_find (s_env *env, const s_ident *op, u8 arity)
     facts_with_cursor_clean(&cursor);
     return true;
   }
-  warnx("operator %s not found in module %s",
-        tmp.sym->str.ptr.ps8,
-        tmp.module->str.ptr.ps8);
+  if (false)
+    warnx("operator %s not found in module %s",
+          tmp.sym->str.ptr.ps8,
+          tmp.module->str.ptr.ps8);
   facts_with_cursor_clean(&cursor);
   return false;
 }
