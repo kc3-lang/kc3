@@ -43,7 +43,6 @@ CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe -fPIC"
 LDFLAGS="${LDFLAGS}"
-LDFLAGS="-no-undefined ${LDFLAGS}"
 LIBS="${LIBS:=-lm}"
 
 # Common config for all targets

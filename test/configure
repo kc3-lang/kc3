@@ -39,11 +39,10 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Default config
-CPPFLAGS="${CPPFLAGS:=}"
-ENV_CFLAGS="${CFLAGS:=}"
+CPPFLAGS="${CPPFLAGS}"
+ENV_CFLAGS="${CFLAGS}"
 DEFAULT_CFLAGS="-O2 -pipe"
 LDFLAGS="${LDFLAGS}"
-LDFLAGS="-no-undefined ${LDFLAGS}"
 LIBS="${LIBS:=} -lm"
 
 # Common config for all targets
@@ -70,7 +69,7 @@ LIBC3_COV=../libc3/libc3_cov.la
 LIBS_COV="$LIBC3_COV $LIBS"
 
 # Debug config
-CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
+CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
 LIBC3_DEBUG=../libc3/libc3_debug.la
 LIBS_DEBUG="$LIBC3_DEBUG $LIBS"
