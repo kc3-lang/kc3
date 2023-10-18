@@ -1319,6 +1319,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_CHARACTER:
     switch (b->type) {
     case TAG_BOOL:
@@ -1371,6 +1372,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_INTEGER:
     switch (b->type) {
     case TAG_BOOL:
@@ -1468,6 +1470,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_SW:
     switch (b->type) {
     case TAG_BOOL:
@@ -1520,6 +1523,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S64:
     switch (b->type) {
     case TAG_BOOL:
@@ -1572,6 +1576,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S32:
     switch (b->type) {
     case TAG_BOOL:
@@ -1624,6 +1629,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S16:
     switch (b->type) {
     case TAG_BOOL:
@@ -1676,6 +1682,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S8:
     switch (b->type) {
     case TAG_BOOL:
@@ -1728,6 +1735,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U8:
     switch (b->type) {
     case TAG_BOOL:
@@ -1780,6 +1788,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U16:
     switch (b->type) {
     case TAG_BOOL:
@@ -1832,6 +1841,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U32:
     switch (b->type) {
     case TAG_BOOL:
@@ -1884,6 +1894,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U64:
     switch (b->type) {
     case TAG_BOOL:
@@ -1936,6 +1947,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_UW:
     switch (b->type) {
     case TAG_BOOL:
@@ -1988,6 +2000,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_VOID:
   case TAG_ARRAY:
   case TAG_CALL:
@@ -2132,6 +2145,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_CHARACTER:
     switch (b->type) {
     case TAG_BOOL:
@@ -2184,6 +2198,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_INTEGER:
     switch (b->type) {
     case TAG_BOOL:
@@ -2281,6 +2296,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_SW:
     switch (b->type) {
     case TAG_BOOL:
@@ -2333,6 +2349,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S64:
     switch (b->type) {
     case TAG_BOOL:
@@ -2385,6 +2402,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S32:
     switch (b->type) {
     case TAG_BOOL:
@@ -2437,6 +2455,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S16:
     switch (b->type) {
     case TAG_BOOL:
@@ -2489,6 +2508,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S8:
     switch (b->type) {
     case TAG_BOOL:
@@ -2541,6 +2561,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U8:
     switch (b->type) {
     case TAG_BOOL:
@@ -2593,6 +2614,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U16:
     switch (b->type) {
     case TAG_BOOL:
@@ -2645,6 +2667,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U32:
     switch (b->type) {
     case TAG_BOOL:
@@ -2697,6 +2720,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U64:
     switch (b->type) {
     case TAG_BOOL:
@@ -2749,6 +2773,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_UW:
     switch (b->type) {
     case TAG_BOOL:
@@ -2801,6 +2826,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_VOID:
   case TAG_ARRAY:
   case TAG_CALL:
@@ -2885,6 +2911,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_CHARACTER:
     switch (b->type) {
     case TAG_BOOL:
@@ -2937,6 +2964,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_INTEGER:
     switch (b->type) {
     case TAG_BOOL:
@@ -3034,6 +3062,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_SW:
     switch (b->type) {
     case TAG_BOOL:
@@ -3086,6 +3115,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S64:
     switch (b->type) {
     case TAG_BOOL:
@@ -3138,6 +3168,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S32:
     switch (b->type) {
     case TAG_BOOL:
@@ -3190,6 +3221,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S16:
     switch (b->type) {
     case TAG_BOOL:
@@ -3242,6 +3274,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_S8:
     switch (b->type) {
     case TAG_BOOL:
@@ -3294,6 +3327,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U8:
     switch (b->type) {
     case TAG_BOOL:
@@ -3346,6 +3380,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U16:
     switch (b->type) {
     case TAG_BOOL:
@@ -3398,6 +3433,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U32:
     switch (b->type) {
     case TAG_BOOL:
@@ -3450,6 +3486,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_U64:
     switch (b->type) {
     case TAG_BOOL:
@@ -3502,6 +3539,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_UW:
     switch (b->type) {
     case TAG_BOOL:
@@ -3554,6 +3592,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_VAR:
       goto error;
     }
+    goto error;
   case TAG_VOID:
   case TAG_ARRAY:
   case TAG_CALL:
