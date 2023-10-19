@@ -76,6 +76,7 @@ s_fact * facts_add_tags (s_facts *facts, const s_tag *subject,
 
 void facts_clean (s_facts *facts)
 {
+  facts_dump_file(facts, "debug.facts");
   if (facts->log)
     facts_close(facts);
   skiplist_delete__fact(facts->index_osp);

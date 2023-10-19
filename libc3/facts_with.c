@@ -13,6 +13,9 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include "buf.h"
+#include "buf_inspect.h"
+#include "env.h"
 #include "facts_cursor.h"
 #include "facts_spec.h"
 #include "facts_with.h"
@@ -33,6 +36,13 @@ s_facts_with_cursor * facts_with (s_facts *facts,
     cursor->levels = calloc(facts_count,
                             sizeof(s_facts_with_cursor_level));
     cursor->spec = facts_spec_new_expand(spec);
+    /*
+    buf_inspect_facts_spec(&g_c3_env.err, spec);
+    buf_write_1(&g_c3_env.err, "\n");
+    buf_inspect_facts_spec(&g_c3_env.err, cursor->spec);
+    buf_write_1(&g_c3_env.err, "\n");
+    buf_flush(&g_c3_env.err);
+    */
     /* facts_spec_sort(cursor->spec); */
   }
   else {

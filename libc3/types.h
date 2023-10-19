@@ -77,7 +77,6 @@ typedef enum {
   TAG_F64,
   TAG_FACT,
   TAG_FN,
-  TAG_IDENT,
   TAG_INTEGER,
   TAG_SW,
   TAG_S64,
@@ -95,7 +94,8 @@ typedef enum {
   TAG_STR,
   TAG_SYM,
   TAG_TUPLE,
-  TAG_VAR
+  TAG_VAR,
+  TAG_IDENT
 } e_tag_type;
 
 /* structs */
@@ -506,9 +506,9 @@ struct facts_with_cursor_level {
 struct facts_with_cursor {
   s_facts *facts;
   s_binding *bindings;
-  size_t facts_count;
+  uw facts_count;
   s_facts_with_cursor_level *levels;
-  size_t level;
+  uw level;
   p_facts_spec spec;
   pthread_mutex_t mutex;
 };

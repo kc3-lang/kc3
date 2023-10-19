@@ -791,6 +791,7 @@ s_ident * env_operator_call_ident (s_env *env, const s_ident *op,
 bool env_operator_find (s_env *env, const s_ident *op, u8 arity)
 {
   s_facts_with_cursor cursor;
+  p_facts_spec spec;
   s_tag tag_arity;
   s_tag tag_arity_u8;
   s_tag tag_is_a;
@@ -814,22 +815,23 @@ bool env_operator_find (s_env *env, const s_ident *op, u8 arity)
   tag_init_var(&tag_operator_var);
   tag_init_1(  &tag_symbol, ":symbol");
   tag_init_sym(&tag_sym, tmp.sym);
-  facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_module_name, &tag_is_a, &tag_module,
-      &tag_operator, &tag_operator_var, NULL,
-      &tag_operator_var, &tag_is_a, &tag_operator,
-      &tag_symbol, &tag_sym,
-      &tag_arity, &tag_arity_u8,
-      NULL, NULL });
+  spec = (p_facts_spec) & (t_facts_spec) {
+    &tag_module_name, &tag_is_a, &tag_module,
+    &tag_operator, &tag_operator_var, NULL,
+    &tag_operator_var, &tag_is_a, &tag_operator,
+    &tag_symbol, &tag_sym,
+    &tag_arity, &tag_arity_u8,
+    NULL, NULL };
+  facts_with(&env->facts, &cursor, spec);
   if (facts_with_cursor_next(&cursor)) {
     facts_with_cursor_clean(&cursor);
     return true;
   }
-  if (false)
-    warnx("operator %s not found in module %s",
-          tmp.sym->str.ptr.ps8,
-          tmp.module->str.ptr.ps8);
-  facts_with_cursor_clean(&cursor);
+#ifdef DEBUG_OPERATOR_FIND
+  warnx("env_operator_find: operator %s not found in module %s",
+        tmp.sym->str.ptr.ps8,
+        tmp.module->str.ptr.ps8);
+#endif
   return false;
 }
 
@@ -875,9 +877,10 @@ bool env_operator_is_right_associative (s_env *env, const s_ident *op)
     facts_with_cursor_clean(&cursor);
     return false;
   }
-  warnx("operator %s not found in module %s",
-        op->sym->str.ptr.ps8,
-        op->module->str.ptr.ps8);
+  warnx("env_operator_is_right_associative: "
+        "operator %s not found in module %s",
+        tmp.sym->str.ptr.ps8,
+        tmp.module->str.ptr.ps8);
   facts_with_cursor_clean(&cursor);
   return false;
 }
@@ -920,6 +923,11 @@ s8 env_operator_precedence (s_env *env, const s_ident *op)
       tag_operator_precedence_var.type == TAG_U8) {
     r = tag_operator_precedence_var.data.u8;
   }
+  else
+    warnx("env_operator_precedence: "
+          "operator %s not found in module %s",
+          tmp.sym->str.ptr.ps8,
+          tmp.module->str.ptr.ps8);
   facts_with_cursor_clean(&cursor);
   return r;
 }

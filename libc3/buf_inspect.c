@@ -723,7 +723,7 @@ sw buf_inspect_fact_size (const s_fact *fact)
   return result;
 }
 
-sw buf_inspect_fact_spec (s_buf *buf, p_facts_spec spec)
+sw buf_inspect_facts_spec (s_buf *buf, p_facts_spec spec)
 {
   sw r;
   sw result = 0;
@@ -743,6 +743,12 @@ sw buf_inspect_fact_spec (s_buf *buf, p_facts_spec spec)
         return r;
       result += r;
     }
+    if ((r = buf_write_1(buf, ", ")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_tag(buf, spec[1])) < 0)
+      return r;
+    result += r;
     if ((r = buf_write_1(buf, "}")) < 0)
       return r;
     result += r;

@@ -4784,8 +4784,7 @@ bool tag_is_number (const s_tag *tag)
 
 bool tag_is_unbound_var (const s_tag *tag)
 {
-  return (tag &&
-          tag->type == TAG_VAR);
+  return (tag && tag->type == TAG_VAR);
 }
 
 s_tag * tag_list (s_tag *tag, s_list *x)

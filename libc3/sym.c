@@ -318,9 +318,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_TUPLE;
     return true;
   }
-  /*
+  warnx("sym_to_tag_type: unknown type: %s", sym->str.ptr.ps8);
   assert(! "sym_to_tag_type: unknown type");
-  errx(1, "sym_to_tag_type: unknown type: %s", sym->str.ptr.ps8);
-  */
   return false;
 }
