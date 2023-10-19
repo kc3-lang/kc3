@@ -757,19 +757,25 @@ s_ident * env_operator_call_ident (s_env *env, const s_ident *op,
   s_tag tag_arity;
   s_tag tag_arity_u8;
   s_tag tag_ident;
+  s_tag tag_is_a;
+  s_tag tag_module;
   s_tag tag_module_name;
   s_tag tag_operator;
   s_tag tag_sym;
   s_tag tag_symbol;
-  dest->module = op->module;
+  s_ident tmp;
+  tmp = *op;
+  ident_resolve_module(&tmp, env);
   tag_init_1(  &tag_arity, ":arity");
   tag_init_u8( &tag_arity_u8, arity);
   tag_init_var(&tag_ident);
-  tag_init_sym(&tag_module_name, op->module);
-  tag_init_sym(&tag_sym, op->sym);
+  tag_init_1(  &tag_is_a, ":is_a");
+  tag_init_1(  &tag_module, ":module");
+  tag_init_sym(&tag_module_name, tmp.module);
+  tag_init_sym(&tag_sym, tmp.sym);
   tag_init_1(  &tag_symbol, ":symbol");
   facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_module_name,
+      &tag_module_name, &tag_is_a, &tag_module,
       &tag_operator, &tag_ident, NULL,   /* module exports operator */
       &tag_ident, &tag_symbol, &tag_sym,
       &tag_arity, &tag_arity_u8,
@@ -781,9 +787,10 @@ s_ident * env_operator_call_ident (s_env *env, const s_ident *op,
       return dest;
     }
   }
-  warnx("operator %s not found in module %s",
-        op->sym->str.ptr.ps8,
-        op->module->str.ptr.ps8);
+  warnx("env_operator_call_ident: operator %s/%d not found in module %s",
+        tmp.sym->str.ptr.ps8,
+        arity,
+        tmp.module->str.ptr.ps8);
   facts_with_cursor_clean(&cursor);
   return NULL;
 }
