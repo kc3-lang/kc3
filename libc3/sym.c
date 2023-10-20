@@ -210,111 +210,138 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
 
 bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 {
-  if (sym == sym_1("void")) {
+  if (sym == sym_1("Void") ||
+      sym == sym_1("void")) {
     *dest = TAG_VOID;
     return true;
   }
-  if (sym == sym_1("bool")) {
+  if (sym == sym_1("Bool") ||
+      sym == sym_1("bool")) {
     *dest = TAG_BOOL;
     return true;
   }
-  if (sym == sym_1("call")) {
+  if (sym == sym_1("Call") ||
+      sym == sym_1("call")) {
     *dest = TAG_CALL;
     return true;
   }
-  if (sym == sym_1("cfn")) {
+  if (sym == sym_1("Cfn") ||
+      sym == sym_1("cfn")) {
     *dest = TAG_CFN;
     return true;
   }
-  if (sym == sym_1("character")) {
+  if (sym == sym_1("Character") ||
+      sym == sym_1("character")) {
     *dest = TAG_CHARACTER;
     return true;
   }
-  if (sym == sym_1("f32")) {
+  if (sym == sym_1("F32") ||
+      sym == sym_1("f32")) {
     *dest = TAG_F32;
     return true;
   }
-  if (sym == sym_1("f64")) {
+  if (sym == sym_1("F64") ||
+      sym == sym_1("f64")) {
     *dest = TAG_F64;
     return true;
   }
-  if (sym == sym_1("fn")) {
+  if (sym == sym_1("Fn") ||
+      sym == sym_1("fn")) {
     *dest = TAG_FN;
     return true;
   }
-  if (sym == sym_1("ident")) {
+  if (sym == sym_1("Ident") ||
+      sym == sym_1("ident")) {
     *dest = TAG_IDENT;
     return true;
   }
-  if (sym == sym_1("integer")) {
+  if (sym == sym_1("Integer") ||
+      sym == sym_1("integer")) {
     *dest = TAG_INTEGER;
     return true;
   }
-  if (sym == sym_1("sw")) {
+  if (sym == sym_1("Sw") ||
+      sym == sym_1("sw")) {
     *dest = TAG_SW;
     return true;
   }
-  if (sym == sym_1("s64")) {
+  if (sym == sym_1("S64") ||
+      sym == sym_1("s64")) {
     *dest = TAG_S64;
     return true;
   }
-  if (sym == sym_1("s32")) {
+  if (sym == sym_1("S32") ||
+      sym == sym_1("s32")) {
     *dest = TAG_S32;
     return true;
   }
-  if (sym == sym_1("s16")) {
+  if (sym == sym_1("S16") ||
+      sym == sym_1("s16")) {
     *dest = TAG_S16;
     return true;
   }
-  if (sym == sym_1("s8")) {
+  if (sym == sym_1("S8") ||
+      sym == sym_1("s8")) {
     *dest = TAG_S8;
     return true;
   }
-  if (sym == sym_1("u8")) {
+  if (sym == sym_1("U8") ||
+      sym == sym_1("u8")) {
     *dest = TAG_U8;
     return true;
   }
-  if (sym == sym_1("u16")) {
+  if (sym == sym_1("U16") ||
+      sym == sym_1("u16")) {
     *dest = TAG_U16;
     return true;
   }
-  if (sym == sym_1("u32")) {
+  if (sym == sym_1("U32") ||
+      sym == sym_1("u32")) {
     *dest = TAG_U32;
     return true;
   }
-  if (sym == sym_1("u64")) {
+  if (sym == sym_1("U64") ||
+      sym == sym_1("u64")) {
     *dest = TAG_U64;
     return true;
   }
-  if (sym == sym_1("uw")) {
+  if (sym == sym_1("Uw") ||
+      sym == sym_1("uw")) {
     *dest = TAG_UW;
     return true;
   }
-  if (sym == sym_1("list")) {
+  if (sym == sym_1("List") ||
+      sym == sym_1("list")) {
     *dest = TAG_LIST;
     return true;
   }
-  if (sym == sym_1("ptag")) {
+  if (sym == sym_1("Ptag") ||
+      sym == sym_1("ptag")) {
     *dest = TAG_PTAG;
     return true;
   }
-  if (sym == sym_1("quote")) {
+  if (sym == sym_1("Quote") ||
+      sym == sym_1("quote")) {
     *dest = TAG_QUOTE;
     return true;
   }
-  if (sym == sym_1("str")) {
+  if (sym == sym_1("Str") ||
+      sym == sym_1("str")) {
     *dest = TAG_STR;
     return true;
   }
-  if (sym == sym_1("sym")) {
+  if (sym == sym_1("Sym") ||
+      sym == sym_1("sym")) {
     *dest = TAG_SYM;
     return true;
   }
-  if (sym == sym_1("tag")) {
+  if (sym == sym_1("Tag") ||
+      sym == sym_1("tag")) {
     *dest = TAG_VOID;
     return true;
   }
-  if (sym == sym_1("tuple")) {
+  if (sym == sym_1("Tuple") ||
+      sym == sym_1("tuple")) {
     *dest = TAG_TUPLE;
     return true;
   }
