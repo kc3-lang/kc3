@@ -791,6 +791,17 @@ bool env_operator_find (s_env *env, const s_ident *op)
                                  &tag_operator) ? 1 : 0;
 }
 
+s_ident * env_operator_ident (s_env *env, const s_ident *op,
+                              s_ident *dest)
+{
+  assert(env);
+  assert(op);
+  assert(dest);
+  dest->module = op->module;
+  dest->sym = env_operator_symbol(env, op);
+  return dest;
+}
+
 bool env_operator_is_right_associative (s_env *env, const s_ident *op)
 {
   s_tag tag_assoc;
@@ -877,6 +888,32 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
           tmp.module->str.ptr.ps8);
   facts_with_cursor_clean(&cursor);
   return NULL;
+}
+
+const s_sym * env_operator_symbol (s_env *env, const s_ident *op)
+{
+  s_facts_cursor cursor;
+  const s_sym *r = NULL;
+  s_tag tag_op;
+  s_tag tag_symbol;
+  s_tag tag_var;
+  assert(env);
+  assert(op);
+  tag_init_ident(&tag_op, op);
+  tag_init_1(    &tag_symbol, ":symbol");
+  tag_init_var(  &tag_var);
+  facts_with_tags(&env->facts, &cursor, &tag_op, &tag_symbol, &tag_var);
+  if (facts_cursor_next(&cursor) &&
+      tag_var.type == TAG_SYM) {
+    r = tag_var.data.sym;
+  }
+  else
+    warnx("env_operator_symbol: "
+          "symbol for operator %s not found in module %s",
+          op->sym->str.ptr.ps8,
+          op->module->str.ptr.ps8);
+  facts_cursor_clean(&cursor);
+  return r;
 }
 
 void env_pop_error_handler (s_env *env)

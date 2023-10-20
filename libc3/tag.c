@@ -8120,125 +8120,157 @@ s_tag * tag_sym_1 (s_tag *tag, const s8 *p)
 
 void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
 {
-  if (type == sym_1("tag"))
+  if (type == sym_1("Tag") ||
+      type == sym_1("tag"))
     return tag;
   switch (tag->type) {
   case TAG_VOID:
-    if (type == sym_1("void"))
+    if (type == sym_1("Void") ||
+        type == sym_1("void"))
       return NULL;
     goto invalid_type;
   case TAG_ARRAY:
-    if (type == sym_1("array"))
+    if (type == sym_1("Array") ||
+        type == sym_1("array"))
       return tag->data.array.data;
     goto invalid_type;
   case TAG_BOOL:
-    if (type == sym_1("bool"))
+    if (type == sym_1("Bool") ||
+        type == sym_1("bool"))
       return &tag->data.bool;
     goto invalid_type;
   case TAG_CALL:
-    if (type == sym_1("call"))
+    if (type == sym_1("Call") ||
+        type == sym_1("call"))
       return &tag->data.call;
     goto invalid_type;
   case TAG_CFN:
-    if (type == sym_1("cfn"))
+    if (type == sym_1("Cfn") ||
+        type == sym_1("cfn"))
       return &tag->data.cfn;
     goto invalid_type;
   case TAG_CHARACTER:
-    if (type == sym_1("character"))
+    if (type == sym_1("Character") ||
+        type == sym_1("character"))
       return &tag->data.character;
     goto invalid_type;
   case TAG_F32:
-    if (type == sym_1("f32"))
+    if (type == sym_1("F32") ||
+        type == sym_1("f32"))
       return &tag->data.f32;
     goto invalid_type;
   case TAG_F64:
-    if (type == sym_1("f64"))
+    if (type == sym_1("f64") ||
+        type == sym_1("F64"))
       return &tag->data.f64;
     goto invalid_type;
   case TAG_FACT:
-    if (type == sym_1("fact"))
+    if (type == sym_1("Fact") ||
+        type == sym_1("fact"))
       return &tag->data.fact;
     goto invalid_type;
   case TAG_FN:
-    if (type == sym_1("fn"))
+    if (type == sym_1("Fn") ||
+        type == sym_1("fn"))
       return &tag->data.fn;
     goto invalid_type;
   case TAG_IDENT:
-    if (type == sym_1("ident"))
+    if (type == sym_1("Ident") ||
+        type == sym_1("ident"))
       return &tag->data.ident;
     goto invalid_type;
   case TAG_INTEGER:
-    if (type == sym_1("integer"))
+    if (type == sym_1("Integer") ||
+        type == sym_1("integer"))
       return &tag->data.integer;
     goto invalid_type;
   case TAG_SW:
-    if (type == sym_1("sw"))
+    if (type == sym_1("Sw") ||
+        type == sym_1("sw"))
       return &tag->data.sw;
     goto invalid_type;
   case TAG_S64:
-    if (type == sym_1("s64"))
+    if (type == sym_1("S64") ||
+        type == sym_1("s64"))
       return &tag->data.s64;
     goto invalid_type;
   case TAG_S32:
-    if (type == sym_1("s32"))
+    if (type == sym_1("S32") ||
+        type == sym_1("s32"))
       return &tag->data.s32;
     goto invalid_type;
   case TAG_S16:
-    if (type == sym_1("s16"))
+    if (type == sym_1("S16") ||
+        type == sym_1("s16"))
       return &tag->data.s16;
     goto invalid_type;
   case TAG_S8:
-    if (type == sym_1("s8"))
+    if (type == sym_1("S8") ||
+        type == sym_1("s8"))
       return &tag->data.s8;
     goto invalid_type;
   case TAG_U8:
-    if (type == sym_1("u8"))
+    if (type == sym_1("U8") ||
+        type == sym_1("u8"))
       return &tag->data.u8;
     goto invalid_type;
   case TAG_U16:
-    if (type == sym_1("u16"))
+    if (type == sym_1("U16") ||
+        type == sym_1("u16"))
       return &tag->data.u16;
     goto invalid_type;
   case TAG_U32:
-    if (type == sym_1("u32"))
+    if (type == sym_1("U32") ||
+        type == sym_1("u32"))
       return &tag->data.u32;
     goto invalid_type;
   case TAG_U64:
-    if (type == sym_1("u64"))
+    if (type == sym_1("U64") ||
+        type == sym_1("u64"))
       return &tag->data.u64;
     goto invalid_type;
   case TAG_UW:
-    if (type == sym_1("uw"))
+    if (type == sym_1("Uw") ||
+        type == sym_1("uw"))
       return &tag->data.uw;
     goto invalid_type;
   case TAG_LIST:
-    if (type == sym_1("list"))
+    if (type == sym_1("List") ||
+        type == sym_1("list"))
       return &tag->data.list;
     goto invalid_type;
   case TAG_PTAG:
-    if (type == sym_1("ptag"))
+    if (type == sym_1("Ptag") ||
+        type == sym_1("ptag"))
       return (void *) tag->data.ptag;
     goto invalid_type;
   case TAG_QUOTE:
-    if (type == sym_1("quote"))
+    if (type == sym_1("Quote") ||
+        type == sym_1("quote"))
       return &tag->data.quote;
     goto invalid_type;
   case TAG_STR:
-    if (type == sym_1("str"))
+    if (type == sym_1("Str") ||
+        type == sym_1("str"))
       return &tag->data.str;
-    if (type == sym_1("char*"))
+    if (type == sym_1("Char*") ||
+        type == sym_1("char*"))
       return (void *) tag->data.str.ptr.ps8;
     goto invalid_type;
   case TAG_SYM:
-    if (type == sym_1("sym"))
+    if (type == sym_1("Sym") ||
+        type == sym_1("sym"))
       return (void *) tag->data.sym;
-    if (type == sym_1("str"))
+    if (type == sym_1("Str") ||
+        type == sym_1("str"))
       return (void *) &tag->data.sym->str;
-    if (type == sym_1("char*"))
+    if (type == sym_1("Char*") ||
+        type == sym_1("char*"))
       return (void *) tag->data.sym->str.ptr.ps8;
     goto invalid_type;
   case TAG_TUPLE:
-    if (type == sym_1("tuple"))
+    if (type == sym_1("Tuple") ||
+        type == sym_1("tuple"))
       return &tag->data.tuple;
     goto invalid_type;
   case TAG_VAR:

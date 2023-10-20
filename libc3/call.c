@@ -17,6 +17,8 @@
 #include "buf_parse.h"
 #include "call.h"
 #include "cfn.h"
+#include "facts.h"
+#include "facts_cursor.h"
 #include "facts_with.h"
 #include "facts_with_cursor.h"
 #include "fn.h"
@@ -47,13 +49,14 @@ s_call * call_copy (const s_call *src, s_call *dest)
 
 bool call_get (s_call *call, s_facts *facts)
 {
-  s_facts_with_cursor cursor;
+  s_facts_cursor cursor;
   s_tag tag_cfn;
   s_tag tag_fn;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_macro;
   s_tag tag_module_name;
+  s_tag tag_operator;
   s_tag tag_special_operator;
   s_tag tag_sym;
   s_tag tag_symbol;
@@ -64,62 +67,54 @@ bool call_get (s_call *call, s_facts *facts)
   tag_init_1(    &tag_is_a,     ":is_a");
   tag_init_1(    &tag_macro,    ":macro");
   tag_init_sym(  &tag_module_name, call->ident.module);
+  tag_init_1(    &tag_operator, ":operator");
   tag_init_1(    &tag_special_operator, ":special_operator");
   tag_init_sym(  &tag_sym, call->ident.sym);
   tag_init_1(    &tag_symbol,   ":symbol");
   tag_init_var(  &tag_var);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_module_name,
-      &tag_symbol, &tag_ident,    /* module exports symbol */
-      NULL, NULL });
-  if (! facts_with_cursor_next(&cursor)) {
-    warnx("symbol %s not found in module %s",
+  if (! facts_find_fact_by_tags(facts, &tag_module_name,
+                                &tag_symbol, &tag_ident) &&
+      ! facts_find_fact_by_tags(facts, &tag_module_name,
+                                &tag_operator, &tag_ident)) {
+    warnx("call_get: symbol %s not found in module %s",
           call->ident.sym->str.ptr.ps8,
           call->ident.module->str.ptr.ps8);
-    facts_with_cursor_clean(&cursor);
     return false;
   }
-  facts_with_cursor_clean(&cursor);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_fn, &tag_var,
-      NULL, NULL });
-  if (facts_with_cursor_next(&cursor)) {
-    if (tag_var.type != TAG_FN)
-      errx(1, "%s.%s is not a function",
-           call->ident.module->str.ptr.ps8,
-           call->ident.sym->str.ptr.ps8);
-    call->fn = fn_new_copy(&tag_var.data.fn);
+  facts_with_tags(facts, &cursor, &tag_ident, &tag_fn, &tag_var);
+  if (facts_cursor_next(&cursor)) {
+    if (tag_var.type == TAG_FN)
+      call->fn = fn_new_copy(&tag_var.data.fn);
+    else
+      warnx("call_get: %s.%s is not a function",
+            call->ident.module->str.ptr.ps8,
+            call->ident.sym->str.ptr.ps8);
   }
-  facts_with_cursor_clean(&cursor);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_cfn, &tag_var,
-      NULL, NULL });
-  if (facts_with_cursor_next(&cursor)) {
-    if (tag_var.type != TAG_CFN)
+  facts_cursor_clean(&cursor);
+  facts_with_tags(facts, &cursor, &tag_ident, &tag_cfn, &tag_var);
+  if (facts_cursor_next(&cursor)) {
+    if (tag_var.type == TAG_CFN)
+      call->cfn = cfn_new_copy(&tag_var.data.cfn);
+    else
       errx(1, "%s.%s is not a C function",
            call->ident.module->str.ptr.ps8,
            call->ident.sym->str.ptr.ps8);
-    call->cfn = cfn_new_copy(&tag_var.data.cfn);
   }
-  facts_with_cursor_clean(&cursor);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });
-  if (facts_with_cursor_next(&cursor)) {
+  facts_cursor_clean(&cursor);
+  if (facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
+                              &tag_macro)) {
     if (call->fn)
       call->fn->macro = true;
     if (call->cfn)
       call->cfn->macro = true;
   }
-  facts_with_cursor_clean(&cursor);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_is_a, &tag_special_operator, NULL, NULL});
-  if (facts_with_cursor_next(&cursor)) {
+  if (facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
+                              &tag_special_operator)) {
     if (call->fn)
       call->fn->special_operator = true;
     if (call->cfn)
       call->cfn->special_operator = true;
   }
-  facts_with_cursor_clean(&cursor);
   return true;
 }
 

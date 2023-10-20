@@ -176,8 +176,6 @@ sw buf_ignore_spaces_but_newline (s_buf *buf)
       return r;
     result += csize;
   }
-  if (! result && r < 0)
-    return r;
   return result;
 }
 

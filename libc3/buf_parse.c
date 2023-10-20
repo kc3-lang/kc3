@@ -653,6 +653,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     if (! operator_resolve(&next_op, 2, &next_op))
       goto restore;
     op = next_op;
+    tmp.ident = op;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;

@@ -10,22 +10,51 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "../libc3/call.h"
 #include "../libc3/compare.h"
 #include "../libc3/env.h"
 #include "../libc3/frame.h"
+#include "../libc3/list.h"
 #include "../libc3/sym.h"
 #include "../libc3/tag.h"
 #include "test.h"
 
 void env_test ();
+TEST_CASE_PROTOTYPE(env_eval_call);
 TEST_CASE_PROTOTYPE(env_eval_equal_tag);
+TEST_CASE_PROTOTYPE(env_eval_tag);
 TEST_CASE_PROTOTYPE(env_init_clean);
 
 void env_test ()
 {
   TEST_CASE_RUN(env_init_clean);
   TEST_CASE_RUN(env_eval_equal_tag);
+  TEST_CASE_RUN(env_eval_call);
+  TEST_CASE_RUN(env_eval_tag);
 }
+
+TEST_CASE(env_eval_call)
+{
+  s_env env;
+  s_call call;
+  s_tag result;
+  s_tag expected;
+  env_init(&env);
+  test_context("env_eval_call(1 + 2) -> 3");
+  call_init_op(&call);
+  call.ident.module = sym_1("C3");
+  call.ident.sym = sym_1("operator08");
+  call.arguments = list_1("(1, 2)");
+  tag_init_u8(&expected, 3);
+  TEST_ASSERT(env_eval_call(&env, &call, &result));
+  TEST_EQ(compare_tag(&result, &expected), 0);
+  call_clean(&call);
+  tag_clean(&result);
+  tag_clean(&expected);
+  env_clean(&env);
+  test_context(NULL);
+}
+TEST_CASE_END(env_eval_call)
 
 TEST_CASE(env_eval_equal_tag)
 {
@@ -90,6 +119,26 @@ TEST_CASE(env_eval_equal_tag)
   test_context(NULL);
 }
 TEST_CASE_END(env_eval_equal_tag)
+
+TEST_CASE(env_eval_tag)
+{
+  s_env env;
+  s_tag x;
+  s_tag y;
+  s_tag expected;
+  env_init(&env);
+  test_context("env_eval_tag(1 + 2) -> 3");
+  TEST_EQ(tag_init_1(&x, "1 + 2"), &x);
+  TEST_EQ(tag_init_1(&expected, "3"), &expected);
+  TEST_ASSERT(env_eval_tag(&env, &x, &y));
+  TEST_EQ(compare_tag(&y, &expected), 0);
+  tag_clean(&x);
+  tag_clean(&y);
+  tag_clean(&expected);
+  env_clean(&env);
+  test_context(NULL);
+}
+TEST_CASE_END(env_eval_tag)
 
 TEST_CASE(env_init_clean)
 {
