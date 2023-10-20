@@ -13,23 +13,28 @@
 #include <assert.h>
 #include "c3.h"
 
-s_ident * operator_call_ident (const s_ident *op, u8 arity,
-                               s_ident *dest)
+s8 operator_arity (const s_ident *op)
 {
-  return env_operator_call_ident(&g_c3_env, op, arity, dest);
+  return env_operator_arity(&g_c3_env, op);
 }
 
-bool operator_find (const s_ident *op, u8 arity)
+bool operator_find (const s_ident *op)
 {
-  return env_operator_find(&g_c3_env, op, arity);
+  return env_operator_find(&g_c3_env, op);
 }
 
-bool operator_is_right_associative (const s_ident *op, u8 arity)
+bool operator_is_right_associative (const s_ident *op)
 {
-  return env_operator_is_right_associative(&g_c3_env, op, arity);
+  return env_operator_is_right_associative(&g_c3_env, op);
 }
 
-s8 operator_precedence (const s_ident *op, u8 arity)
+s8 operator_precedence (const s_ident *op)
 {
-  return env_operator_precedence(&g_c3_env, op, arity);
+  return env_operator_precedence(&g_c3_env, op);
+}
+
+s_ident * operator_resolve (const s_ident *op, u8 arity,
+                            s_ident *dest)
+{
+  return env_operator_resolve(&g_c3_env, op, arity, dest);
 }

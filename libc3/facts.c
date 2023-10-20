@@ -177,6 +177,14 @@ s_fact * facts_find_fact (s_facts *facts, const s_fact *fact)
   return result;
 }
 
+s_fact * facts_find_fact_by_tags (s_facts *facts, const s_tag *subject,
+                                  const s_tag *predicate,
+                                  const s_tag *object)
+{
+  s_fact f = {subject, predicate, object, 0};
+  return facts_find_fact(facts, &f);
+}
+
 s_tag * facts_find_tag (s_facts *facts, const s_tag *tag)
 {
   s_set_item__tag *item;

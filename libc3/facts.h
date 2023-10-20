@@ -57,6 +57,9 @@ bool     facts_unref_tag (s_facts *facts, const s_tag *tag);
 sw       facts_dump (s_facts *facts, s_buf *buf);
 sw       facts_dump_file (s_facts *facts, const s8 *path);
 s_fact * facts_find_fact (s_facts *facts, const s_fact *fact);
+s_fact * facts_find_fact_by_tags (s_facts *facts, const s_tag *subject,
+                                  const s_tag *predicate,
+                                  const s_tag *object);
 s_tag *  facts_find_tag (s_facts *facts, const s_tag *tag);
 sw       facts_log_add (s_log *log, const s_fact *fact);
 sw       facts_log_remove (s_log *log, const s_fact *fact);

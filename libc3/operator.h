@@ -16,10 +16,11 @@
 #include "types.h"
 
 /* Observers */
-s_ident * operator_call_ident (const s_ident *op, u8 arity,
-                               s_ident *dest);
-bool      operator_find (const s_ident *op, u8 arity);
-bool      operator_is_right_associative (const s_ident *op, u8 arity);
-s8        operator_precedence (const s_ident *op, u8 arity);
+s8        operator_arity (const s_ident *op);
+bool      operator_find (const s_ident *op);
+bool      operator_is_right_associative (const s_ident *op);
+s8        operator_precedence (const s_ident *op);
+s_ident * operator_resolve (const s_ident *ident, u8 arity,
+                            s_ident *dest);
 
 #endif /* OPERATOR_H */

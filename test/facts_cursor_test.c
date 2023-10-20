@@ -114,7 +114,6 @@ TEST_CASE(facts_cursor_next)
   s_facts_cursor cursor;
   uw i = 0;
   s8 *p[24] = {
-    "a",
     "-0x10000000000000000",
     "-0x100000000",
     "-0x10000",
@@ -133,10 +132,11 @@ TEST_CASE(facts_cursor_next)
     "\"a\"",
     "A",
     ":a",
-    "{a, b}",
     "{:a, :b}",
-    "{{a, b}, {c, d}}",
     "{{:a, :b}, {:c, :d}}",
+    "{{a, b}, {c, d}}",
+    "{a, b}",
+    "a",
     NULL
   };
   s_fact fact[24];
