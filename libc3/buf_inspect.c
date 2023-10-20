@@ -344,6 +344,7 @@ sw buf_inspect_call_brackets (s_buf *buf, const s_call *call)
 
 sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
 {
+  s_ident ident;
   s_tag *left;
   bool paren;
   s8 precedence;
@@ -375,7 +376,9 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
+  if (! operator_ident(&call->ident, &ident))
+    return -1;
+  if ((r = buf_inspect_ident(buf, &ident)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
