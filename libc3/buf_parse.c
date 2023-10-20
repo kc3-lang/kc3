@@ -596,7 +596,7 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   if ((r = buf_parse_ident_peek(buf, &next_op)) <= 0)
     goto restore;
   if (! operator_find(&next_op, 2) ||
-      operator_precedence(&next_op) < 0) {
+      operator_precedence(&next_op, 2) < 0) {
     r = 0;
     goto restore;
   }
@@ -642,7 +642,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   if ((r = buf_parse_ident_peek(buf, &next_op)) <= 0)
     goto restore;
   if (! operator_find(&next_op, 2) ||
-      (op_precedence = operator_precedence(&next_op)) < 0) {
+      (op_precedence = operator_precedence(&next_op, 2)) < 0) {
     r = 0;
     goto restore;
   }
@@ -668,10 +668,10 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     r = buf_parse_ident_peek(buf, &next_op);
     if (r <= 0)
       break;
-    next_op_precedence = operator_precedence(&next_op);
+    next_op_precedence = operator_precedence(&next_op, 2);
     while (r > 0 && operator_find(&next_op, 2) &&
            (next_op_precedence >= op_precedence ||
-            (operator_is_right_associative(&next_op) &&
+            (operator_is_right_associative(&next_op, 2) &&
              next_op_precedence == op_precedence))) {
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
@@ -693,7 +693,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       }
       r = buf_parse_ident_peek(buf, &next_op);
       if (r > 0)
-        next_op_precedence = operator_precedence(&next_op);
+        next_op_precedence = operator_precedence(&next_op, 2);
     }
     if (r <= 0 || (op_precedence = next_op_precedence) < min_precedence)
       break;

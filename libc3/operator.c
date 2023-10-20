@@ -16,7 +16,7 @@
 s_ident * operator_call_ident (const s_ident *op, u8 arity,
                                s_ident *dest)
 {
-  return env_operator_call_ident(&g_c3_env, op, dest, arity);
+  return env_operator_call_ident(&g_c3_env, op, arity, dest);
 }
 
 bool operator_find (const s_ident *op, u8 arity)
@@ -24,12 +24,12 @@ bool operator_find (const s_ident *op, u8 arity)
   return env_operator_find(&g_c3_env, op, arity);
 }
 
-bool operator_is_right_associative (const s_ident *op)
+bool operator_is_right_associative (const s_ident *op, u8 arity)
 {
-  return env_operator_is_right_associative(&g_c3_env, op);
+  return env_operator_is_right_associative(&g_c3_env, op, arity);
 }
 
-s8 operator_precedence (const s_ident *op)
+s8 operator_precedence (const s_ident *op, u8 arity)
 {
-  return env_operator_precedence(&g_c3_env, op);
+  return env_operator_precedence(&g_c3_env, op, arity);
 }

@@ -143,7 +143,7 @@ replace {C3.operator19, :operator_precedence, 9}
 replace {C3.operator19, :operator_associativity, :left}
 add {C3, :operator, C3.operator20}
 replace {C3.operator20, :is_a, :operator}
-replace {C3.operator20, :symbol, :|}
+replace {C3.operator20, :symbol, :bor}
 replace {C3.operator20, :arity, 2}
 replace {C3.operator20, :cfn, cfn :bool "tag_bor" (Tag, Tag)}
 replace {C3.operator20, :operator_precedence, 10}

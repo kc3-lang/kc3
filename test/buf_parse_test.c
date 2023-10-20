@@ -808,12 +808,10 @@ TEST_CASE_END(buf_parse_call)
 TEST_CASE(buf_parse_call_op)
 {
   BUF_PARSE_TEST_CALL_OP("1 + 2");
-  /*
   BUF_PARSE_TEST_CALL_OP("1 + 2 + 3");
   BUF_PARSE_TEST_CALL_OP("1 + 2 / 3");
   BUF_PARSE_TEST_CALL_OP("1 + 2 / 3 * 4");
   BUF_PARSE_TEST_CALL_OP("1 + 2 / 3 * 4 - 5");
-  */
 }
 TEST_CASE_END(buf_parse_call_op)
 

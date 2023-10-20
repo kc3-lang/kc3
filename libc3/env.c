@@ -751,7 +751,7 @@ bool env_module_maybe_reload (const s_sym *module, s_env *env,
 }
 
 s_ident * env_operator_call_ident (s_env *env, const s_ident *op,
-                                   s_ident *dest, u8 arity)
+                                   u8 arity, s_ident *dest)
 {
   s_facts_with_cursor cursor;
   s_tag tag_arity;
@@ -843,9 +843,12 @@ bool env_operator_find (s_env *env, const s_ident *op, u8 arity)
   return false;
 }
 
-bool env_operator_is_right_associative (s_env *env, const s_ident *op)
+bool env_operator_is_right_associative (s_env *env, const s_ident *op,
+                                        u8 arity)
 {
   s_facts_with_cursor cursor;
+  s_tag tag_arity;
+  s_tag tag_arity_u8;
   s_tag tag_is_a;
   s_tag tag_module;
   s_tag tag_module_name;
@@ -860,6 +863,8 @@ bool env_operator_is_right_associative (s_env *env, const s_ident *op)
   assert(op);
   tmp = *op;
   ident_resolve_module(&tmp, env);
+  tag_init_1(  &tag_arity, ":arity");
+  tag_init_u8( &tag_arity_u8, arity);
   tag_init_1(  &tag_is_a, ":is_a");
   tag_init_1(  &tag_module, ":module");
   tag_init_sym(&tag_module_name, tmp.module);
@@ -874,6 +879,7 @@ bool env_operator_is_right_associative (s_env *env, const s_ident *op)
       &tag_operator, &tag_operator_var, NULL,
       &tag_operator_var, &tag_is_a, &tag_operator,
       &tag_symbol, &tag_sym,
+      &tag_arity, &tag_arity_u8,
       &tag_operator_assoc, &tag_operator_assoc_var,
       NULL, NULL });
   if (facts_with_cursor_next(&cursor)) {
@@ -893,10 +899,12 @@ bool env_operator_is_right_associative (s_env *env, const s_ident *op)
   return false;
 }
 
-s8 env_operator_precedence (s_env *env, const s_ident *op)
+s8 env_operator_precedence (s_env *env, const s_ident *op, u8 arity)
 {
   s_facts_with_cursor cursor;
   s8 r = -1;
+  s_tag tag_arity;
+  s_tag tag_arity_u8;
   s_tag tag_is_a;
   s_tag tag_module;
   s_tag tag_module_name;
@@ -911,6 +919,8 @@ s8 env_operator_precedence (s_env *env, const s_ident *op)
   assert(op);
   tmp = *op;
   ident_resolve_module(&tmp, env);
+  tag_init_1(  &tag_arity, ":arity");
+  tag_init_u8( &tag_arity_u8, arity);
   tag_init_1(  &tag_is_a, ":is_a");
   tag_init_1(  &tag_module, ":module");
   tag_init_sym(&tag_module_name, tmp.module);
@@ -933,8 +943,9 @@ s8 env_operator_precedence (s_env *env, const s_ident *op)
   }
   else
     warnx("env_operator_precedence: "
-          "operator %s not found in module %s",
+          "operator %s/%d not found in module %s",
           tmp.sym->str.ptr.ps8,
+          arity,
           tmp.module->str.ptr.ps8);
   facts_with_cursor_clean(&cursor);
   return r;

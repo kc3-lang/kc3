@@ -251,7 +251,7 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
     return buf_inspect_cast(buf, call);
   if (operator_find(&call->ident, 1))
     return buf_inspect_call_op_unary(buf, call);
-  if ((op_precedence = operator_precedence(&call->ident)) > 0)
+  if ((op_precedence = operator_precedence(&call->ident, 2)) > 0)
     return buf_inspect_call_op(buf, call, op_precedence);
   if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
     return r;
@@ -350,7 +350,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   left = &call->arguments->tag;
   right = &list_next(call->arguments)->tag;
   if (left->type == TAG_CALL && 
-      (precedence = operator_precedence(&left->data.call.ident))
+      (precedence = operator_precedence(&left->data.call.ident, 2))
       < op_precedence) {
     paren = true;
     if ((r = buf_write_1(buf, "(")) < 0)
@@ -377,7 +377,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
     return r;
   result += r;
   if (right->type == TAG_CALL && 
-      (precedence = operator_precedence(&right->data.call.ident))
+      (precedence = operator_precedence(&right->data.call.ident, 2))
       < op_precedence) {
     paren = true;
     if ((r = buf_write_1(buf, "(")) < 0)
@@ -453,7 +453,7 @@ sw buf_inspect_call_size (const s_call *call)
   sw result = 0;
   if (operator_find(&call->ident, 1))
     return buf_inspect_call_op_unary_size(call);
-  if ((op_precedence = operator_precedence(&call->ident)) > 0)
+  if ((op_precedence = operator_precedence(&call->ident, 2)) > 0)
     return buf_inspect_call_op_size(call, op_precedence);
   if ((r = buf_inspect_ident_size(&call->ident)) < 0)
     return r;
