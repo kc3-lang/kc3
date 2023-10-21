@@ -1,3 +1,4 @@
+*~
 *.a
 /c3-*/
 /c3-*.tar.gz
@@ -12,6 +13,8 @@ c3s/c3s_debug
 config.mk
 *.core
 *.css
+*.dll
+*.exe
 *.gcno
 *.html
 ic3/ic3

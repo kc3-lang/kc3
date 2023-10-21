@@ -13,6 +13,8 @@
 #ifndef LIBC3_SHA1_H
 #define LIBC3_SHA1_H
 
+#include "config.h"
+
 #if HAVE_SHA1_H
 # include <sha1.h>
 #else
