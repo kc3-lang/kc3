@@ -674,11 +674,12 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     r = buf_parse_ident_peek(buf, &next_op);
     if (r <= 0)
       break;
-    if (! operator_resolve(&next_op, 2, &next_op))
+    if (! operator_resolve(&next_op, 2, &next_op) &&
+        ! operator_resolve(&next_op, 1, &next_op))
       break;
     next_op_precedence = operator_precedence(&next_op);
     while (r > 0 && operator_arity(&next_op) == 2 &&
-           (next_op_precedence >= op_precedence ||
+           (next_op_precedence > op_precedence ||
             (operator_is_right_associative(&next_op) &&
              next_op_precedence == op_precedence))) {
       call_init_op(&tmp2);

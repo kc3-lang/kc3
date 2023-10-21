@@ -356,7 +356,6 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   right = &list_next(call->arguments)->tag;
   if (left->type == TAG_CALL &&
       operator_find(&left->data.call.ident) &&
-      operator_arity(&left->data.call.ident) == 2 &&
       (precedence = operator_precedence(&left->data.call.ident))
       < op_precedence) {
     paren = true;
@@ -387,7 +386,6 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   result += r;
   if (right->type == TAG_CALL &&
       operator_find(&right->data.call.ident) &&
-      operator_arity(&right->data.call.ident) == 2 &&
       (precedence = operator_precedence(&right->data.call.ident))
       < op_precedence) {
     paren = true;
