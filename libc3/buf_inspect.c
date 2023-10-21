@@ -245,7 +245,8 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   s8 op_precedence;
   sw r;
   sw result = 0;
-  if (call->ident.sym == sym_1("[]"))
+  if (operator_find(&call->ident) &&
+      operator_symbol(&call->ident) == sym_1("[]"))
     return buf_inspect_call_brackets(buf, call);
   if (call->ident.sym == sym_1("cast"))
     return buf_inspect_cast(buf, call);

@@ -407,7 +407,6 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   assert(dest);
   buf_save_init(buf, &save);
   call_init(&tmp);
-  ident_init(&tmp.ident, NULL, sym_1("[]"));
   tmp.arguments = list_new(NULL, list_new(NULL, NULL));
   arg_addr = &(list_next(tmp.arguments)->tag);
   if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
@@ -442,6 +441,11 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   arg_addr->type = TAG_ARRAY;
   if (! list_to_array(addr, sym_1("Uw"), &arg_addr->data.array))
     goto restore;
+  ident_init(&tmp.ident, NULL, sym_1("[]"));
+  if (! operator_resolve(&tmp.ident, 2, &tmp.ident)) {
+    warnx("buf_parse_brackets: could not resolve operator []");
+    goto restore;
+  }
   *dest = tmp;
   r = result;
   goto clean;
