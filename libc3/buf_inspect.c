@@ -418,7 +418,7 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
 {
   sw r;
   sw result = 0;
-  if (call->ident.sym == sym_1("()"))
+  if (operator_symbol(&call->ident) == sym_1("()"))
     return buf_inspect_call_paren(buf, call);
   if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
     return r;

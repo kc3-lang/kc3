@@ -171,3 +171,10 @@ replace {C3.operator23, :cfn, cfn Tag "tag_equal" (Tag, Tag, Result)}
 replace {C3.operator23, :operator_precedence, 13}
 replace {C3.operator23, :operator_associativity, :right}
 replace {C3.break, :cfn, cfn Void "c3_break" ()}
+replace {C3, :symbol, C3.first}
+replace {C3.first, :fn, fn {
+ ((a | _b)) { a }
+ ({a, _b}) { a }
+ ({a, _b, _c}) { a }
+ ({a, _b, _c, _d}) { a }
+}}

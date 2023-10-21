@@ -797,7 +797,10 @@ s_ident * env_operator_ident (s_env *env, const s_ident *op,
   assert(env);
   assert(op);
   assert(dest);
-  dest->module = op->module;
+  if (env->current_module == op->module)
+    dest->module = NULL;
+  else
+    dest->module = op->module;
   dest->sym = env_operator_symbol(env, op);
   return dest;
 }

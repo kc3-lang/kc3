@@ -699,14 +699,14 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
         break;
       }
       r = buf_parse_ident_peek(buf, &next_op);
-      if (r > 0) {
-        if (! operator_resolve(&next_op, 2, &next_op))
-          break;
-        if ((next_op_precedence = operator_precedence(&next_op)) < 0)
-          break;
+      if (r > 0 &&
+          (! operator_resolve(&next_op, 2, &next_op) ||
+           (next_op_precedence = operator_precedence(&next_op)) < 0)) {
+        r = 0;
+        break;
       }
     }
-    if (r <= 0 || (op_precedence = next_op_precedence) < min_precedence)
+    if (r <= 0)
       break;
     call_init_op(&tmp3);
     tmp3.ident = op;
@@ -766,11 +766,16 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
   s_call tmp;
   s_buf_save save;
   call_init_op_unary(&tmp);
-  ident_init_1(&tmp.ident, "()");
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "(")) <= 0)
     goto restore;
   result += r;
+  ident_init_1(&tmp.ident, "()");
+  if (! operator_resolve(&tmp.ident, 1, &tmp.ident)) {
+    assert(! "buf_parse_call_paren: could not resolve operator ()");
+    r = -1;
+    goto restore;
+  }
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
