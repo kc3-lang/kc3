@@ -9,7 +9,11 @@ TEST_KO=0
 TEST_OK=0
 
 if [ "x$IC3" = "x" ]; then
-    IC3=../../ic3/ic3
+    if [ -f ../../ic3/ic3 ]; then
+	IC3=../../ic3/ic3
+    elif [ -f ../../ic3 ]; then
+	IC3=../../ic3
+    fi
 fi
 
 test_ko() {
