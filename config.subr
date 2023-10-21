@@ -90,8 +90,8 @@ config_include() {
         echo "#define $1 0" >> "${CONFIG_H}"
         eval "$1=No"
     fi
-    rm "$OUT_C"
-    rm "$OUT"
+    rm -f "$OUT_C"
+    rm -f "$OUT"
 }
 
 config_lib() {
@@ -216,7 +216,7 @@ if ${HAVE_GCOV}; then
 fi
 
 if [ "x$GMAKE" = "x" ]; then
-    if which gmake 2>/dev/null; then
+    if which gmake >/dev/null 2>&1; then
         GMAKE=gmake
     else
         GMAKE=make

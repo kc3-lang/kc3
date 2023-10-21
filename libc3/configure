@@ -34,7 +34,7 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 CPPFLAGS="${CPPFLAGS:=}"
 ENV_CFLAGS="${CFLAGS:=}"
 DEFAULT_CFLAGS="-O2 -pipe"
-LDFLAGS="--shared ${LDFLAGS}"
+LDFLAGS="--shared -no-undefined ${LDFLAGS}"
 LIBS="${LIBS} -lm -pthread -rpath ${PREFIX}/lib"
 
 # Common config for all targets
