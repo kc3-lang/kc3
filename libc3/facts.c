@@ -49,7 +49,7 @@ s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
     return &item->data;
   }
   tmp.id = facts->next_id;
-  if (facts->next_id == UW_MAX) {
+  if (facts->next_id == U64_MAX) {
     errx(1, "facts serial id exhausted");
     return NULL;
   }

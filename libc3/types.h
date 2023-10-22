@@ -467,7 +467,7 @@ struct facts {
   pthread_rwlock_t  rwlock;
   sw                rwlock_count;
   pthread_t         rwlock_thread;
-  uw                next_id;
+  u64               next_id;
 };
 
 struct facts_cursor {
