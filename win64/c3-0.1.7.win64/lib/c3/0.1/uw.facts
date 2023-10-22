@@ -1,0 +1,5 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+add {Uw, :is_a, :module}
+add {Uw, :symbol, Uw.cast}
+replace {Uw.cast, :cfn, cfn :uw "uw_cast" (:tag)}

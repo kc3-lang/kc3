@@ -1,0 +1,5 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+add {S8, :is_a, :module}
+add {S8, :symbol, S8.cast}
+replace {S8.cast, :cfn, cfn :s8 "s8_cast" (:tag)}
