@@ -215,6 +215,7 @@ s_facts * facts_init (s_facts *facts)
   facts->index_osp->compare = compare_fact_osp;
   facts->log = NULL;
   facts_lock_init(facts);
+  facts->next_id = 0;
   return facts;
 }
 
