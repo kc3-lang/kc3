@@ -74,9 +74,9 @@ int main (int argc, char **argv)
   buf_file_open_r(&in, stdin);
   buf_init(&out, false, sizeof(o), o);
   buf_file_open_w(&out, stdout);
-  while ((r = buf_xfer_spaces(&out, &in)) >= 0) {
+  while ((r = buf_ignore_spaces(&in)) >= 0) {
     if ((r = buf_parse_tag(&in, &input)) > 0) {
-      if (! eval_tag(&result, &input)) {
+      if (! eval_tag(&input, &result)) {
         tag_clean(&input);
         continue;
       }
@@ -94,8 +94,6 @@ int main (int argc, char **argv)
     if (r < 0 ||
         (r == 0 &&
          (r = buf_ignore_character(&in)) <= 0))
-      break;
-    if ((r = buf_refill_compact(&in)) < 0)
       break;
   }
   buf_readline_close(&in);
