@@ -71,6 +71,8 @@ debug:
 dist: c3-${C3_VERSION}.tar.gz
 
 c3-${C3_VERSION}.tar.gz:
+	rm -rf c3-${C3_VERSION}.old
+	-mv c3-${C3_VERSION} c3-${C3_VERSION}.old
 	mkdir c3-${C3_VERSION}
 	pax -rw < c3.index c3-${C3_VERSION}
 	pax -wz c3-${C3_VERSION} > c3-${C3_VERSION}.tar.gz
