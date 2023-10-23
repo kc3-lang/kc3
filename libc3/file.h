@@ -22,6 +22,7 @@
 #include "types.h"
 
 /* Observers */
+int     file_copy (const char *from, const char *to);
 s_tag * file_mtime (const s_str *path, s_tag *dest);
 
 #endif /* FILE_H */

@@ -15,6 +15,7 @@
 #include "../libc3/buf.h"
 #include "../libc3/compare.h"
 #include "../libc3/facts.h"
+#include "../libc3/file.h"
 #include "../libc3/log.h"
 #include "fact_test.h"
 #include "test.h"
@@ -457,14 +458,12 @@ TEST_CASE(facts_open_file)
     "-0x10000000000000001",
     NULL
   };
-  sw r;
   s_fact fact;
   s_facts facts;
   s_str path;
-  if ((r = system("cp facts_test_open_file.1.in.facts facts_test_open_file.1.facts")) < 0)
-    err(1, "%s:%i: cp", __FILE__, __LINE__);
-  if (r > 0)
-    errx(1, "%s:%i: cp", __FILE__, __LINE__);
+  if (file_copy("facts_test_open_file.1.in.facts",
+                "facts_test_open_file.1.facts"))
+    err(1, "%s:%i: file_copy", __FILE__, __LINE__);
   facts_init(&facts);
   str_init_1(&path, NULL, "facts_test_open_file.1.facts");
   TEST_EQ(facts_open_file(&facts, &path), 760);
@@ -492,10 +491,9 @@ TEST_CASE(facts_open_file)
   if (g_test_last_ok)
     unlink("facts_test_open_file.1.facts");
   facts_init(&facts);
-  if ((r = system("cp facts_test_open_file.2.in.facts facts_test_open_file.2.facts")) < 0)
-    err(1, "%s:%i: cp", __FILE__, __LINE__);
-  if (r > 0)
-    errx(1, "%s:%i: cp", __FILE__, __LINE__);
+  if (file_copy("facts_test_open_file.2.in.facts",
+                "facts_test_open_file.2.facts"))
+    err(1, "%s:%i: file_copy", __FILE__, __LINE__);
   str_init_1(&path, NULL, "facts_test_open_file.2.facts");
   TEST_EQ(facts_open_file(&facts, &path), 1523);
   TEST_EQ(facts_count(&facts), 46);
@@ -520,10 +518,9 @@ TEST_CASE(facts_open_file)
   if (g_test_last_ok)
     unlink("facts_test_open_file.2.facts");
   facts_init(&facts);
-  if ((r = system("cp facts_test_open_file.3.in.facts facts_test_open_file.3.facts")) < 0)
-    err(1, "%s:%i: cp", __FILE__, __LINE__);
-  if (r > 0)
-    errx(1, "%s:%i: cp", __FILE__, __LINE__);
+  if (file_copy("facts_test_open_file.3.in.facts",
+                "facts_test_open_file.3.facts"))
+    err(1, "%s:%i: file_copy", __FILE__, __LINE__);
   str_init_1(&path, NULL, "facts_test_open_file.3.facts");
   TEST_EQ(facts_open_file(&facts, &path), 1550);
   TEST_EQ(facts_count(&facts), 0);
