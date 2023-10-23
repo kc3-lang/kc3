@@ -83,7 +83,7 @@ config_include() {
         shift
     done
     echo "int main () { return 0; }" >> "$OUT_C"
-    if ${CC} ${CPPFLAGS} ${CFLAGS} "$OUT_C" -o "$OUT"; then
+    if ${CC} ${CPPFLAGS} ${CFLAGS} "$OUT_C" -o "$OUT" >/dev/null 2>&1; then
         echo "#define $1 1" >> "${CONFIG_H}"
         eval "$1=Yes"
     else
