@@ -1,4 +1,4 @@
-# C3 v0.1.7
+# C3 v0.1.8
 
 C3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
@@ -184,20 +184,8 @@ Script interpreter. Works the same as ic3 but is not interactive.
    - facts
      - negative facts : 4 + 2n = not 3 + 2n
      - with ignore variables
-     - DONE atomic operations
-     - DONE triple serial id
    - math
      - floating point numbers
-   - DONE variables
-      - DONE = equal
-      - DONE funcall
-   - DONE boolean operators
-   - DONE comparison operators
-   - DONE cast
-   - DONE arrays
-     - DONE parse
-     - DONE inspect
-     - DONE [][][] data
    - lists
    - structs
    - errors (setjmp, longjmp)
@@ -207,13 +195,8 @@ Script interpreter. Works the same as ic3 but is not interactive.
    - control structures
      - while
    - modules
-     - DONE symbols
-     - DONE as facts
-     - DONE autoload (remember load time, compare with file time)
      - defmodule
    - functions
-     - DONE fn () {}
-     - DONE fn { () {0} (x) {x} }
      - return
      - def
      - funcall
@@ -224,15 +207,6 @@ Script interpreter. Works the same as ic3 but is not interactive.
    - buf_sha256
    - buf_popen
    - tests
-     - DONE group tests by test case
-   - DONE ci
-   - DONE c function call
-   - DONE infix operators
-   - DONE load
-   - DONE `test_file_compare`
-   - DONE ffi
-     - DONE types
-     - DONE funcall
 
 # License
 
