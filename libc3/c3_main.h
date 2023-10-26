@@ -22,6 +22,7 @@ extern const s_str g_c3_base_octal;
 extern const s_str g_c3_base_decimal;
 extern const s_str g_c3_base_hexadecimal;
 extern const s_str g_c3_bases_hexadecimal[2];
+extern const s8 *g_c3_license;
 
 /* stack-allocation compatible functions */
 void c3_init (s_env *env);
