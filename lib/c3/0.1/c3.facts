@@ -178,3 +178,5 @@ replace {C3.first, :fn, fn {
  ({a, _b, _c}) { a }
  ({a, _b, _c, _d}) { a }
 }}
+add {C3, :symbol, C3.license}
+replace {C3.license, :cfn, cfn Void "c3_license" ()}
