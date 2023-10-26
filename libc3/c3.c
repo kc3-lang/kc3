@@ -49,8 +49,8 @@ void c3_init (s_env *env)
     exit(1);
 }
 
-s_tag * c3_license (s_tag *dest)
+void c3_license ()
 {
-  return sym_1(g_c3_license);
+  buf_write_1(&g_c3_env.out, g_c3_license);
   buf_flush(&g_c3_env.out);
 }
