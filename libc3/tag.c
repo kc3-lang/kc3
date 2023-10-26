@@ -1245,11 +1245,15 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
        tag_type_to_string(b->type));
 }
 
-bool tag_and (const s_tag *a, const s_tag *b)
+bool * tag_and (const s_tag *a, const s_tag *b, bool *dest)
 {
   s_tag f;
+  assert(a);
+  assert(b);
+  assert(dest);
   tag_init_bool(&f, false);
-  return compare_tag(a, &f) != 0 && compare_tag(b, &f) != 0;
+  *dest = compare_tag(a, &f) != 0 && compare_tag(b, &f) != 0 ? 1 : 0;
+  return dest;
 }
 
 s_tag * tag_array (s_tag *tag, const s_array *a)
@@ -1265,6 +1269,9 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
   s_integer tmp;
   s_integer tmp2;
   s_tag tmp_a;
+  assert(a);
+  assert(b);
+  assert(result);
   switch (a->type) {
   case TAG_BOOL:
     tmp_a.data.bool = a->data.bool ? 1 : 0;
@@ -1312,6 +1319,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1365,6 +1373,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1463,6 +1472,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1516,6 +1526,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1569,6 +1580,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1622,6 +1634,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1675,6 +1688,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1728,6 +1742,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1781,6 +1796,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1834,6 +1850,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1887,6 +1904,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1940,6 +1958,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -1993,6 +2012,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2012,6 +2032,7 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
   case TAG_IDENT:
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
@@ -2028,6 +2049,8 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
 
 s_tag * tag_bnot (const s_tag *tag, s_tag *result)
 {
+  assert(tag);
+  assert(result);
   switch (tag->type) {
   case TAG_BOOL:
     return tag_init_u8(result, ~(tag->data.bool ? 1 : 0));
@@ -2067,6 +2090,7 @@ s_tag * tag_bnot (const s_tag *tag, s_tag *result)
   case TAG_IDENT:
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
@@ -2091,6 +2115,9 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
   s_integer tmp;
   s_integer tmp2;
   s_tag tmp_a;
+  assert(a);
+  assert(b);
+  assert(result);
   switch (a->type) {
   case TAG_BOOL:
     tmp_a.data.bool = a->data.bool ? 1 : 0;
@@ -2138,6 +2165,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2191,6 +2219,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2216,7 +2245,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_INTEGER:
       result->type = TAG_INTEGER;
       integer_bor(&a->data.integer, &b->data.integer,
-                   &result->data.integer);
+                  &result->data.integer);
       return result;
     case TAG_SW:
       integer_init_sw(&tmp, b->data.sw);
@@ -2289,6 +2318,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2342,6 +2372,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2395,6 +2426,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2448,6 +2480,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2501,6 +2534,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2554,6 +2588,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2607,6 +2642,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2660,6 +2696,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2713,6 +2750,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2766,6 +2804,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2819,6 +2858,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2838,6 +2878,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
   case TAG_IDENT:
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
@@ -2904,6 +2945,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -2957,6 +2999,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3055,6 +3098,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3108,6 +3152,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3161,6 +3206,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3214,6 +3260,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3267,6 +3314,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3320,6 +3368,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3373,6 +3422,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3426,6 +3476,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3479,6 +3530,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3532,6 +3584,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3585,6 +3638,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -3604,6 +3658,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
   case TAG_IDENT:
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
@@ -3717,6 +3772,7 @@ void tag_clean (s_tag *tag)
   case TAG_FACT:
   case TAG_IDENT:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_S8:
   case TAG_S16:
   case TAG_S32:
@@ -3799,6 +3855,7 @@ s_tag * tag_copy (const s_tag *src, s_tag *dest)
   case TAG_FACT:
   case TAG_IDENT:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_S8:
   case TAG_S16:
   case TAG_S32:
@@ -4270,9 +4327,13 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
   return NULL;
 }
 
-bool tag_eq (const s_tag *a, const s_tag *b)
+bool * tag_eq (const s_tag *a, const s_tag *b, bool *dest)
 {
-  return compare_tag(a, b) == 0;
+  assert(a);
+  assert(b);
+  assert(dest);
+  *dest = compare_tag(a, b) == 0 ? 1 : 0;
+  return dest;
 }
 
 s_tag * tag_equal (const s_tag *a, const s_tag *b, s_tag *dest)
@@ -4299,14 +4360,22 @@ s_tag * tag_f64 (s_tag *tag, f64 x)
   return tag_init_f64(tag, x);
 }
 
-bool tag_gt (const s_tag *a, const s_tag *b)
+bool * tag_gt (const s_tag *a, const s_tag *b, bool *dest)
 {
-  return compare_tag(a, b) > 0;
+  assert(a);
+  assert(b);
+  assert(dest);
+  *dest = compare_tag(a, b) >= 0 ? 1 : 0;
+  return dest;
 }
 
-bool tag_gte (const s_tag *a, const s_tag *b)
+bool * tag_gte (const s_tag *a, const s_tag *b, bool *dest)
 {
-  return compare_tag(a, b) >= 0;
+  assert(a);
+  assert(b);
+  assert(dest);
+  *dest = compare_tag(a, b) >= 0 ? 1 : 0;
+  return dest;
 }
 
 u64 tag_hash_u64 (const s_tag *tag)
@@ -4695,6 +4764,8 @@ s_str * tag_inspect (const s_tag *tag, s_str *dest)
 {
   s_buf buf;
   sw size;
+  assert(tag);
+  assert(dest);
   if ((size = buf_inspect_tag_size(tag)) < 0) {
     assert(! "tag_inspect: size error");
     errx(1, "tag_inspect: size error");
@@ -4801,14 +4872,22 @@ s_tag * tag_list_1 (s_tag *tag, const s8 *p)
   return tag_init_list_1(tag, p);
 }
 
-bool tag_lt (const s_tag *a, const s_tag *b)
+bool * tag_lt (const s_tag *a, const s_tag *b, bool *dest)
 {
-  return compare_tag(a, b) < 0;
+  assert(a);
+  assert(b);
+  assert(dest);
+  *dest = compare_tag(a, b) < 0 ? 1 : 0;
+  return dest;
 }
 
-bool tag_lte (const s_tag *a, const s_tag *b)
+bool * tag_lte (const s_tag *a, const s_tag *b, bool *dest)
 {
-  return compare_tag(a, b) <= 0;
+  assert(a);
+  assert(b);
+  assert(dest);
+  *dest = compare_tag(a, b) <= 0 ? 1 : 0;
+  return dest;
 }
 
 s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
@@ -4899,35 +4978,35 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_S8:
       integer_init_s8(&tmp, b->data.s8);
       integer_mod(&a->data.integer, &tmp, &tmp2);
-      tag_init_u8(dest, integer_to_u8(&tmp2));
+      tag_init_s8(dest, integer_to_s8(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return dest;
     case TAG_S16:
       integer_init_s16(&tmp, b->data.s16);
       integer_mod(&a->data.integer, &tmp, &tmp2);
-      tag_init_u16(dest, integer_to_u16(&tmp2));
+      tag_init_s16(dest, integer_to_s16(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return dest;
     case TAG_S32:
       integer_init_s32(&tmp, b->data.s32);
       integer_mod(&a->data.integer, &tmp, &tmp2);
-      tag_init_u32(dest, integer_to_u32(&tmp2));
+      tag_init_s32(dest, integer_to_s32(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return dest;
     case TAG_S64:
       integer_init_s64(&tmp, b->data.s64);
       integer_mod(&a->data.integer, &tmp, &tmp2);
-      tag_init_u64(dest, integer_to_u64(&tmp2));
+      tag_init_s64(dest, integer_to_s64(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return dest;
     case TAG_SW:
       integer_init_sw(&tmp, b->data.sw);
       integer_mod(&a->data.integer, &tmp, &tmp2);
-      tag_init_uw(dest, integer_to_uw(&tmp2));
+      tag_init_sw(dest, integer_to_sw(&tmp2));
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return dest;
@@ -4977,30 +5056,31 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod((f64) a->data.s8, b->data.f64));
     case TAG_INTEGER:
       integer_init_s8(&tmp, a->data.s8);
-      dest->type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &dest->data.integer);
+      integer_mod(&tmp, &b->data.integer, &tmp2);
+      tag_init_s8(dest, integer_to_s8(&tmp2));
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_S8:
-      return tag_init_u8(dest, a->data.s8 % b->data.s8);
+      return tag_init_s8(dest, a->data.s8 % b->data.s8);
     case TAG_S16:
-      return tag_init_u8(dest, a->data.s8 % b->data.s16);
+      return tag_init_s8(dest, a->data.s8 % b->data.s16);
     case TAG_S32:
-      return tag_init_u8(dest, a->data.s8 % b->data.s32);
+      return tag_init_s8(dest, a->data.s8 % b->data.s32);
     case TAG_S64:
-      return tag_init_u8(dest, a->data.s8 % b->data.s64);
+      return tag_init_s8(dest, a->data.s8 % b->data.s64);
     case TAG_SW:
-      return tag_init_u8(dest, a->data.s8 % b->data.sw);
+      return tag_init_s8(dest, a->data.s8 % b->data.sw);
     case TAG_U8:
-      return tag_init_u8(dest, a->data.s8 % b->data.u8);
+      return tag_init_s8(dest, a->data.s8 % b->data.u8);
     case TAG_U16:
-      return tag_init_u8(dest, a->data.s8 % b->data.u16);
+      return tag_init_s8(dest, a->data.s8 % b->data.u16);
     case TAG_U32:
-      return tag_init_u8(dest, a->data.s8 % b->data.u32);
+      return tag_init_s8(dest, a->data.s8 % b->data.u32);
     case TAG_U64:
-      return tag_init_u8(dest, a->data.s8 % b->data.u64);
+      return tag_init_s8(dest, a->data.s8 % b->data.u64);
     case TAG_UW:
-      return tag_init_u8(dest, a->data.s8 % b->data.uw);
+      return tag_init_s8(dest, a->data.s8 % b->data.uw);
     default:
       goto ko;
     }
@@ -5012,30 +5092,31 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod((f64) a->data.s16, b->data.f64));
     case TAG_INTEGER:
       integer_init_s16(&tmp, a->data.s16);
-      dest->type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &dest->data.integer);
+      integer_mod(&tmp, &b->data.integer, &tmp2);
+      tag_init_s16(dest, integer_to_s16(&tmp2));
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_S8:
-      return tag_init_u8(dest, a->data.s16 % b->data.s8);
+      return tag_init_s8(dest, a->data.s16 % b->data.s8);
     case TAG_S16:
-      return tag_init_u16(dest, a->data.s16 % b->data.s16);
+      return tag_init_s16(dest, a->data.s16 % b->data.s16);
     case TAG_S32:
-      return tag_init_u16(dest, a->data.s16 % b->data.s32);
+      return tag_init_s16(dest, a->data.s16 % b->data.s32);
     case TAG_S64:
-      return tag_init_u16(dest, a->data.s16 % b->data.s64);
+      return tag_init_s16(dest, a->data.s16 % b->data.s64);
     case TAG_SW:
-      return tag_init_u16(dest, a->data.s16 % b->data.sw);
+      return tag_init_s16(dest, a->data.s16 % b->data.sw);
     case TAG_U8:
-      return tag_init_u8(dest, a->data.s16 % b->data.u8);
+      return tag_init_s16(dest, a->data.s16 % b->data.u8);
     case TAG_U16:
-      return tag_init_u16(dest, a->data.s16 % b->data.u16);
+      return tag_init_s16(dest, a->data.s16 % b->data.u16);
     case TAG_U32:
-      return tag_init_u16(dest, a->data.s16 % b->data.u32);
+      return tag_init_s16(dest, a->data.s16 % b->data.u32);
     case TAG_U64:
-      return tag_init_u16(dest, a->data.s16 % b->data.u64);
+      return tag_init_s16(dest, a->data.s16 % b->data.u64);
     case TAG_UW:
-      return tag_init_u16(dest, a->data.s16 % b->data.uw);
+      return tag_init_s16(dest, a->data.s16 % b->data.uw);
     default:
       goto ko;
     }
@@ -5047,30 +5128,31 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod((f64) a->data.s32, b->data.f64));
     case TAG_INTEGER:
       integer_init_s32(&tmp, a->data.s32);
-      dest->type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &dest->data.integer);
+      integer_mod(&tmp, &b->data.integer, &tmp2);
+      tag_init_s32(dest, integer_to_s32(&tmp2));
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_S8:
-      return tag_init_u8(dest, a->data.s32 % b->data.s8);
+      return tag_init_s8(dest, a->data.s32 % b->data.s8);
     case TAG_S16:
-      return tag_init_u16(dest, a->data.s32 % b->data.s16);
+      return tag_init_s16(dest, a->data.s32 % b->data.s16);
     case TAG_S32:
-      return tag_init_u32(dest, a->data.s32 % b->data.s32);
+      return tag_init_s32(dest, a->data.s32 % b->data.s32);
     case TAG_S64:
-      return tag_init_u32(dest, a->data.s32 % b->data.s64);
+      return tag_init_s32(dest, a->data.s32 % b->data.s64);
     case TAG_SW:
-      return tag_init_u32(dest, a->data.s32 % b->data.sw);
+      return tag_init_s32(dest, a->data.s32 % b->data.sw);
     case TAG_U8:
-      return tag_init_u8(dest, a->data.s32 % b->data.u8);
+      return tag_init_s32(dest, a->data.s32 % b->data.u8);
     case TAG_U16:
-      return tag_init_u16(dest, a->data.s32 % b->data.u16);
+      return tag_init_s32(dest, a->data.s32 % b->data.u16);
     case TAG_U32:
-      return tag_init_u32(dest, a->data.s32 % b->data.u32);
+      return tag_init_s32(dest, a->data.s32 % b->data.u32);
     case TAG_U64:
-      return tag_init_u32(dest, a->data.s32 % b->data.u64);
+      return tag_init_s32(dest, a->data.s32 % b->data.u64);
     case TAG_UW:
-      return tag_init_u32(dest, a->data.s32 % b->data.uw);
+      return tag_init_s32(dest, a->data.s32 % b->data.uw);
     default:
       goto ko;
     }
@@ -5082,30 +5164,31 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod((f64) a->data.s64, b->data.f64));
     case TAG_INTEGER:
       integer_init_s64(&tmp, a->data.s64);
-      dest->type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &dest->data.integer);
+      integer_mod(&tmp, &b->data.integer, &tmp2);
+      tag_init_s64(dest, integer_to_s64(&tmp2));
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_S8:
-      return tag_init_u8(dest, a->data.s64 % b->data.s8);
+      return tag_init_s8(dest, a->data.s64 % b->data.s8);
     case TAG_S16:
-      return tag_init_u16(dest, a->data.s64 % b->data.s16);
+      return tag_init_s16(dest, a->data.s64 % b->data.s16);
     case TAG_S32:
-      return tag_init_u32(dest, a->data.s64 % b->data.s32);
+      return tag_init_s32(dest, a->data.s64 % b->data.s32);
     case TAG_S64:
-      return tag_init_u64(dest, a->data.s64 % b->data.s64);
+      return tag_init_s64(dest, a->data.s64 % b->data.s64);
     case TAG_SW:
-      return tag_init_uw(dest, a->data.s64 % b->data.sw);
+      return tag_init_sw(dest, a->data.s64 % b->data.sw);
     case TAG_U8:
-      return tag_init_u8(dest, a->data.s64 % b->data.u8);
+      return tag_init_s16(dest, a->data.s64 % b->data.u8);
     case TAG_U16:
-      return tag_init_u16(dest, a->data.s64 % b->data.u16);
+      return tag_init_s32(dest, a->data.s64 % b->data.u16);
     case TAG_U32:
-      return tag_init_u32(dest, a->data.s64 % b->data.u32);
+      return tag_init_s64(dest, a->data.s64 % b->data.u32);
     case TAG_U64:
-      return tag_init_u64(dest, a->data.s64 % b->data.u64);
+      return tag_init_s64(dest, a->data.s64 % b->data.u64);
     case TAG_UW:
-      return tag_init_uw(dest, a->data.s64 % b->data.uw);
+      return tag_init_s64(dest, a->data.s64 % b->data.uw);
     default:
       goto ko;
     }
@@ -5117,30 +5200,31 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod((f64) a->data.sw, b->data.f64));
     case TAG_INTEGER:
       integer_init_sw(&tmp, a->data.sw);
-      dest->type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &dest->data.integer);
+      integer_mod(&tmp, &b->data.integer, &tmp2);
+      tag_init_sw(dest, integer_to_sw(&tmp2));
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_S8:
-      return tag_init_u8(dest, a->data.sw % b->data.s8);
+      return tag_init_s8(dest, a->data.sw % b->data.s8);
     case TAG_S16:
-      return tag_init_u16(dest, a->data.sw % b->data.s16);
+      return tag_init_s16(dest, a->data.sw % b->data.s16);
     case TAG_S32:
-      return tag_init_u32(dest, a->data.sw % b->data.s32);
+      return tag_init_s32(dest, a->data.sw % b->data.s32);
     case TAG_S64:
-      return tag_init_uw(dest, a->data.sw % b->data.s64);
+      return tag_init_sw(dest, a->data.sw % b->data.s64);
     case TAG_SW:
-      return tag_init_uw(dest, a->data.sw % b->data.sw);
+      return tag_init_sw(dest, a->data.sw % b->data.sw);
     case TAG_U8:
-      return tag_init_u8(dest, a->data.sw % b->data.u8);
+      return tag_init_s16(dest, a->data.sw % b->data.u8);
     case TAG_U16:
-      return tag_init_u16(dest, a->data.sw % b->data.u16);
+      return tag_init_s32(dest, a->data.sw % b->data.u16);
     case TAG_U32:
-      return tag_init_u32(dest, a->data.sw % b->data.u32);
+      return tag_init_sw(dest, a->data.sw % b->data.u32);
     case TAG_U64:
-      return tag_init_uw(dest, a->data.sw % b->data.u64);
+      return tag_init_sw(dest, a->data.sw % b->data.u64);
     case TAG_UW:
-      return tag_init_uw(dest, a->data.sw % b->data.uw);
+      return tag_init_sw(dest, a->data.sw % b->data.uw);
     default:
       goto ko;
     }
@@ -5151,21 +5235,22 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.u8, b->data.f64));
     case TAG_INTEGER:
-      integer_init_s8(&tmp, a->data.u8);
-      dest->type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &dest->data.integer);
+      integer_init_u8(&tmp, a->data.u8);
+      integer_mod(&tmp, &b->data.integer, &tmp2);
+      tag_init_u8(dest, integer_to_u8(&tmp2));
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_S8:
-      return tag_init_u8(dest, a->data.u8 % b->data.s8);
+      return tag_init_s8(dest, a->data.u8 % b->data.s8);
     case TAG_S16:
-      return tag_init_u8(dest, a->data.u8 % b->data.s16);
+      return tag_init_s16(dest, a->data.u8 % b->data.s16);
     case TAG_S32:
-      return tag_init_u8(dest, a->data.u8 % b->data.s32);
+      return tag_init_s16(dest, a->data.u8 % b->data.s32);
     case TAG_S64:
-      return tag_init_u8(dest, a->data.u8 % b->data.s64);
+      return tag_init_s16(dest, a->data.u8 % b->data.s64);
     case TAG_SW:
-      return tag_init_u8(dest, a->data.u8 % b->data.sw);
+      return tag_init_s16(dest, a->data.u8 % b->data.sw);
     case TAG_U8:
       return tag_init_u8(dest, a->data.u8 % b->data.u8);
     case TAG_U16:
@@ -5186,21 +5271,22 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.u16, b->data.f64));
     case TAG_INTEGER:
-      integer_init_s16(&tmp, a->data.u16);
-      dest->type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &dest->data.integer);
+      integer_init_u16(&tmp, a->data.u16);
+      integer_mod(&tmp, &b->data.integer, &tmp2);
+      tag_init_u16(dest, integer_to_u16(&tmp2));
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_S8:
-      return tag_init_u8(dest, a->data.u16 % b->data.s8);
+      return tag_init_s8(dest, a->data.u16 % b->data.s8);
     case TAG_S16:
-      return tag_init_u16(dest, a->data.u16 % b->data.s16);
+      return tag_init_s16(dest, a->data.u16 % b->data.s16);
     case TAG_S32:
-      return tag_init_u16(dest, a->data.u16 % b->data.s32);
+      return tag_init_s32(dest, a->data.u16 % b->data.s32);
     case TAG_S64:
-      return tag_init_u16(dest, a->data.u16 % b->data.s64);
+      return tag_init_s32(dest, a->data.u16 % b->data.s64);
     case TAG_SW:
-      return tag_init_u16(dest, a->data.u16 % b->data.sw);
+      return tag_init_s32(dest, a->data.u16 % b->data.sw);
     case TAG_U8:
       return tag_init_u8(dest, a->data.u16 % b->data.u8);
     case TAG_U16:
@@ -5221,21 +5307,22 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.u32, b->data.f64));
     case TAG_INTEGER:
-      integer_init_s32(&tmp, a->data.u32);
-      dest->type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &dest->data.integer);
+      integer_init_u32(&tmp, a->data.u32);
+      integer_mod(&tmp, &b->data.integer, &tmp2);
+      tag_init_u32(dest, integer_to_u32(&tmp2));
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_S8:
-      return tag_init_u8(dest, a->data.u32 % b->data.s8);
+      return tag_init_s8(dest, a->data.u32 % b->data.s8);
     case TAG_S16:
-      return tag_init_u16(dest, a->data.u32 % b->data.s16);
+      return tag_init_s16(dest, a->data.u32 % b->data.s16);
     case TAG_S32:
-      return tag_init_u32(dest, a->data.u32 % b->data.s32);
+      return tag_init_s32(dest, a->data.u32 % b->data.s32);
     case TAG_S64:
-      return tag_init_u32(dest, a->data.u32 % b->data.s64);
+      return tag_init_s64(dest, a->data.u32 % b->data.s64);
     case TAG_SW:
-      return tag_init_u32(dest, a->data.u32 % b->data.sw);
+      return tag_init_sw(dest, a->data.u32 % b->data.sw);
     case TAG_U8:
       return tag_init_u8(dest, a->data.u32 % b->data.u8);
     case TAG_U16:
@@ -5256,21 +5343,54 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.u64, b->data.f64));
     case TAG_INTEGER:
-      integer_init_s64(&tmp, a->data.u64);
-      dest->type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &dest->data.integer);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_mod(&tmp, &b->data.integer, &tmp2);
+      tag_init_u64(dest, integer_to_u64(&tmp2));
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_S8:
-      return tag_init_u8(dest, a->data.u64 % b->data.s8);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_s8(&tmp2, b->data.s8);
+      dest->type = TAG_INTEGER;
+      integer_mod(&tmp, &tmp2, &dest->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return dest;
     case TAG_S16:
-      return tag_init_u16(dest, a->data.u64 % b->data.s16);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_s16(&tmp2, b->data.s16);
+      dest->type = TAG_INTEGER;
+      integer_mod(&tmp, &tmp2, &dest->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return dest;
+      return tag_init_s16(dest, a->data.u64 % b->data.s16);
     case TAG_S32:
-      return tag_init_u32(dest, a->data.u64 % b->data.s32);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_s32(&tmp2, b->data.s32);
+      dest->type = TAG_INTEGER;
+      integer_mod(&tmp, &tmp2, &dest->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return dest;
+      return tag_init_s32(dest, a->data.u64 % b->data.s32);
     case TAG_S64:
-      return tag_init_u64(dest, a->data.u64 % b->data.s64);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_s64(&tmp2, b->data.s64);
+      dest->type = TAG_INTEGER;
+      integer_mod(&tmp, &tmp2, &dest->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return dest;
     case TAG_SW:
-      return tag_init_uw(dest, a->data.u64 % b->data.sw);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_sw(&tmp2, b->data.sw);
+      dest->type = TAG_INTEGER;
+      integer_mod(&tmp, &tmp2, &dest->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return dest;
     case TAG_U8:
       return tag_init_u8(dest, a->data.u64 % b->data.u8);
     case TAG_U16:
@@ -5291,21 +5411,22 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.uw, b->data.f64));
     case TAG_INTEGER:
-      integer_init_sw(&tmp, a->data.uw);
-      dest->type = TAG_INTEGER;
-      integer_mod(&tmp, &b->data.integer, &dest->data.integer);
+      integer_init_uw(&tmp, a->data.uw);
+      integer_mod(&tmp, &b->data.integer, &tmp2);
+      tag_init_uw(dest, integer_to_uw(&tmp2));
       integer_clean(&tmp);
+      integer_clean(&tmp2);
       return dest;
     case TAG_S8:
-      return tag_init_u8(dest, a->data.uw % b->data.s8);
+      return tag_init_s8(dest, a->data.uw % b->data.s8);
     case TAG_S16:
-      return tag_init_u16(dest, a->data.uw % b->data.s16);
+      return tag_init_s16(dest, a->data.uw % b->data.s16);
     case TAG_S32:
-      return tag_init_u32(dest, a->data.uw % b->data.s32);
+      return tag_init_s32(dest, a->data.uw % b->data.s32);
     case TAG_S64:
-      return tag_init_uw(dest, a->data.uw % b->data.s64);
+      return tag_init_s64(dest, a->data.uw % b->data.s64);
     case TAG_SW:
-      return tag_init_uw(dest, a->data.uw % b->data.sw);
+      return tag_init_sw(dest, a->data.uw % b->data.sw);
     case TAG_U8:
       return tag_init_u8(dest, a->data.uw % b->data.u8);
     case TAG_U16:
@@ -5944,6 +6065,7 @@ s_tag * tag_neg (const s_tag *tag, s_tag *result)
   case TAG_IDENT:
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
@@ -5986,23 +6108,34 @@ s_tag * tag_new_copy (const s_tag *src)
   return tag_copy(src, dest);
 }
 
-bool tag_not (const s_tag *a)
+bool * tag_not (const s_tag *tag, bool *dest)
 {
   s_tag f;
+  assert(tag);
+  assert(dest);
   tag_init_bool(&f, false);
-  return compare_tag(a, &f) == 0;
+  *dest = compare_tag(tag, &f) == 0 ? 1 : 0;
+  return dest;
 }
 
-bool tag_not_eq (const s_tag *a, const s_tag *b)
+bool * tag_not_eq (const s_tag *a, const s_tag *b, bool *dest)
 {
-  return compare_tag(a, b) != 0;
+  assert(a);
+  assert(b);
+  assert(dest);
+  *dest = compare_tag(a, b) != 0 ? 1 : 0;
+  return dest;
 }
 
-bool tag_or (const s_tag *a, const s_tag *b)
+bool * tag_or (const s_tag *a, const s_tag *b, bool *dest)
 {
   s_tag f;
+  assert(a);
+  assert(b);
+  assert(dest);
   tag_init_bool(&f, false);
-  return compare_tag(a, &f) != 0 || compare_tag(b, &f) != 0;
+  *dest = compare_tag(a, &f) != 0 || compare_tag(b, &f) != 0 ? 1 : 0;
+  return dest;
 }
 
 s_tag * tag_paren (const s_tag *tag, s_tag *dest)
@@ -6092,6 +6225,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6145,6 +6279,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6222,6 +6357,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6275,6 +6411,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6328,6 +6465,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6381,6 +6519,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6434,6 +6573,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6487,6 +6627,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6540,6 +6681,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6593,6 +6735,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6646,6 +6789,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6699,6 +6843,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6752,6 +6897,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6771,6 +6917,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
   case TAG_IDENT:
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
@@ -6837,6 +6984,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6890,6 +7038,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -6967,6 +7116,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -7020,6 +7170,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -7073,6 +7224,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -7126,6 +7278,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -7179,6 +7332,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -7232,6 +7386,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -7285,6 +7440,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -7338,6 +7494,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -7391,6 +7548,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -7444,6 +7602,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -7497,6 +7656,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_IDENT:
     case TAG_LIST:
     case TAG_PTAG:
+    case TAG_PTR:
     case TAG_QUOTE:
     case TAG_STR:
     case TAG_SYM:
@@ -7516,6 +7676,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
   case TAG_IDENT:
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
@@ -8244,6 +8405,10 @@ void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
         type == sym_1("ptag"))
       return (void *) tag->data.ptag;
     goto invalid_type;
+  case TAG_PTR:
+    if (type->str.ptr.ps8[type->str.size - 1] == '*')
+      return &tag->data.ptr.p;
+    goto invalid_type;
   case TAG_QUOTE:
     if (type == sym_1("Quote") ||
         type == sym_1("quote"))
@@ -8343,6 +8508,8 @@ void * tag_to_pointer (s_tag *tag, e_tag_type type)
     return &tag->data.list;
   case TAG_PTAG:
     return &tag->data.ptag;
+  case TAG_PTR:
+    return &tag->data.ptr.p;
   case TAG_QUOTE:
     return &tag->data.quote;
   case TAG_STR:
@@ -8418,6 +8585,8 @@ sw tag_type_size (e_tag_type type)
     return sizeof(s_list *);
   case TAG_PTAG:
     return sizeof(p_tag);
+  case TAG_PTR:
+    return sizeof(void *);
   case TAG_QUOTE:
     return sizeof(s_quote);
   case TAG_STR:
@@ -8484,6 +8653,8 @@ f_buf_inspect tag_type_to_buf_inspect (e_tag_type type)
     return (f_buf_inspect) buf_inspect_list;
   case TAG_PTAG:
     return (f_buf_inspect) buf_inspect_ptag;
+  case TAG_PTR:
+    return (f_buf_inspect) buf_inspect_ptr;
   case TAG_QUOTE:
     return (f_buf_inspect) buf_inspect_quote;
   case TAG_STR:
@@ -8550,6 +8721,8 @@ f_buf_inspect_size tag_type_to_buf_inspect_size (e_tag_type type)
     return (f_buf_inspect_size) buf_inspect_list_size;
   case TAG_PTAG:
     return (f_buf_inspect_size) buf_inspect_ptag_size;
+  case TAG_PTR:
+    return (f_buf_inspect_size) buf_inspect_ptr_size;
   case TAG_QUOTE:
     return (f_buf_inspect_size) buf_inspect_quote_size;
   case TAG_STR:
@@ -8617,6 +8790,8 @@ f_buf_parse tag_type_to_buf_parse (e_tag_type type)
     return (f_buf_parse) buf_parse_list;
   case TAG_PTAG:
     return (f_buf_parse) buf_parse_ptag;
+  case TAG_PTR:
+    return (f_buf_parse) buf_parse_ptr;
   case TAG_QUOTE:
     return (f_buf_parse) buf_parse_quote;
   case TAG_STR:
@@ -8661,6 +8836,8 @@ ffi_type * tag_type_to_ffi_type (e_tag_type type)
   case TAG_LIST:
     return &ffi_type_pointer;
   case TAG_PTAG:
+    return &ffi_type_pointer;
+  case TAG_PTR:
     return &ffi_type_pointer;
   case TAG_QUOTE:
     return &ffi_type_pointer;
@@ -8727,6 +8904,7 @@ const s_sym * tag_type_to_module (e_tag_type tag_type)
   case TAG_UW:         return sym_1("Uw");
   case TAG_LIST:       return sym_1("List");
   case TAG_PTAG:       return sym_1("Ptag");
+  case TAG_PTR:        return sym_1("Ptr");
   case TAG_QUOTE:      return sym_1("Quote");
   case TAG_STR:        return sym_1("Str");
   case TAG_SYM:        return sym_1("Sym");
@@ -8741,35 +8919,36 @@ const s_sym * tag_type_to_module (e_tag_type tag_type)
 s8 * tag_type_to_string (e_tag_type type)
 {
   switch (type) {
-  case TAG_VOID: return "void";
-  case TAG_ARRAY: return "array";
-  case TAG_BOOL: return "bool";
-  case TAG_CALL: return "call";
-  case TAG_CFN: return "cfn";
-  case TAG_CHARACTER: return "character";
-  case TAG_F32: return "f32";
-  case TAG_F64: return "f64";
-  case TAG_FACT: return "fact";
-  case TAG_FN: return "fn";
-  case TAG_IDENT: return "ident";
-  case TAG_INTEGER: return "integer";
-  case TAG_SW: return "sw";
-  case TAG_S64: return "s64";
-  case TAG_S32: return "s32";
-  case TAG_S16: return "s16";
-  case TAG_S8: return "s8";
-  case TAG_U8: return "u8";
-  case TAG_U16: return "u16";
-  case TAG_U32: return "u32";
-  case TAG_U64: return "u64";
-  case TAG_UW: return "uw";
-  case TAG_LIST: return "list";
-  case TAG_PTAG: return "ptag";
-  case TAG_QUOTE: return "quote";
-  case TAG_STR: return "str";
-  case TAG_SYM: return "sym";
-  case TAG_TUPLE: return "tuple";
-  case TAG_VAR: return "var";
+  case TAG_VOID: return "Void";
+  case TAG_ARRAY: return "Array";
+  case TAG_BOOL: return "Bool";
+  case TAG_CALL: return "Call";
+  case TAG_CFN: return "Cfn";
+  case TAG_CHARACTER: return "Character";
+  case TAG_F32: return "F32";
+  case TAG_F64: return "F64";
+  case TAG_FACT: return "Fact";
+  case TAG_FN: return "Fn";
+  case TAG_IDENT: return "Ident";
+  case TAG_INTEGER: return "Integer";
+  case TAG_SW: return "Sw";
+  case TAG_S64: return "S64";
+  case TAG_S32: return "S32";
+  case TAG_S16: return "S16";
+  case TAG_S8: return "S8";
+  case TAG_U8: return "U8";
+  case TAG_U16: return "U16";
+  case TAG_U32: return "U32";
+  case TAG_U64: return "U64";
+  case TAG_UW: return "Uw";
+  case TAG_LIST: return "List";
+  case TAG_PTAG: return "Ptag";
+  case TAG_PTR: return "Void*";
+  case TAG_QUOTE: return "Quote";
+  case TAG_STR: return "Str";
+  case TAG_SYM: return "Sym";
+  case TAG_TUPLE: return "Tuple";
+  case TAG_VAR: return "Var";
   }
   assert(! "tag_type_to_string: unknown tag type");
   errx(1, "tag_type_to_string: unknown tag type");
@@ -8779,35 +8958,36 @@ s8 * tag_type_to_string (e_tag_type type)
 const s_sym * tag_type_to_sym (e_tag_type tag_type)
 {
   switch (tag_type) {
-  case TAG_VOID:       return sym_1("void");
-  case TAG_ARRAY:      return sym_1("array");
-  case TAG_BOOL:       return sym_1("bool");
-  case TAG_CALL:       return sym_1("call");
-  case TAG_CFN:        return sym_1("cfn");
-  case TAG_CHARACTER:  return sym_1("character");
-  case TAG_F32:        return sym_1("f32");
-  case TAG_F64:        return sym_1("f64");
-  case TAG_FACT:       return sym_1("fact");
-  case TAG_FN:         return sym_1("fn");
-  case TAG_IDENT:      return sym_1("ident");
-  case TAG_INTEGER:    return sym_1("integer");
-  case TAG_SW:         return sym_1("sw");
-  case TAG_S64:        return sym_1("s64");
-  case TAG_S32:        return sym_1("s32");
-  case TAG_S16:        return sym_1("s16");
-  case TAG_S8:         return sym_1("s8");
-  case TAG_U8:         return sym_1("u8");
-  case TAG_U16:        return sym_1("u16");
-  case TAG_U32:        return sym_1("u32");
-  case TAG_U64:        return sym_1("u64");
-  case TAG_UW:         return sym_1("uw");
-  case TAG_LIST:       return sym_1("list");
-  case TAG_PTAG:       return sym_1("ptag");
-  case TAG_QUOTE:      return sym_1("quote");
-  case TAG_STR:        return sym_1("str");
-  case TAG_SYM:        return sym_1("sym");
-  case TAG_TUPLE:      return sym_1("tuple");
-  case TAG_VAR:        return sym_1("var");
+  case TAG_VOID:       return sym_1("Void");
+  case TAG_ARRAY:      return sym_1("Array");
+  case TAG_BOOL:       return sym_1("Bool");
+  case TAG_CALL:       return sym_1("Call");
+  case TAG_CFN:        return sym_1("Cfn");
+  case TAG_CHARACTER:  return sym_1("Character");
+  case TAG_F32:        return sym_1("F32");
+  case TAG_F64:        return sym_1("F64");
+  case TAG_FACT:       return sym_1("Fact");
+  case TAG_FN:         return sym_1("Fn");
+  case TAG_IDENT:      return sym_1("Ident");
+  case TAG_INTEGER:    return sym_1("Integer");
+  case TAG_SW:         return sym_1("Sw");
+  case TAG_S64:        return sym_1("S64");
+  case TAG_S32:        return sym_1("S32");
+  case TAG_S16:        return sym_1("S16");
+  case TAG_S8:         return sym_1("S8");
+  case TAG_U8:         return sym_1("U8");
+  case TAG_U16:        return sym_1("U16");
+  case TAG_U32:        return sym_1("U32");
+  case TAG_U64:        return sym_1("U64");
+  case TAG_UW:         return sym_1("Uw");
+  case TAG_LIST:       return sym_1("List");
+  case TAG_PTAG:       return sym_1("Ptag");
+  case TAG_PTR:        return sym_1("Void*");
+  case TAG_QUOTE:      return sym_1("Quote");
+  case TAG_STR:        return sym_1("Str");
+  case TAG_SYM:        return sym_1("Sym");
+  case TAG_TUPLE:      return sym_1("Tuple");
+  case TAG_VAR:        return sym_1("Var");
   }
   assert(! "tag_type_to_sym: invalid tag type");
   errx(1, "tag_type_to_sym: invalid tag type: %d", tag_type);

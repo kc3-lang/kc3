@@ -417,9 +417,14 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
 {
   sw r;
   sw result = 0;
+  s_ident tmp;
+  assert(buf);
+  assert(call);
   if (operator_symbol(&call->ident) == sym_1("()"))
     return buf_inspect_call_paren(buf, call);
-  if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
+  if (operator_ident(&call->ident, &tmp) != &tmp)
+    return -1;
+  if ((r = buf_inspect_ident(buf, &tmp)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
@@ -1227,6 +1232,40 @@ sw buf_inspect_ptag_size (const p_tag *ptag)
   return result;
 }
 
+sw buf_inspect_ptr (s_buf *buf, const s_ptr *ptr)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  if ((r = buf_write_1(buf, "(")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_sym(buf, tag_type_to_sym(ptr->type))) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " *) ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) ptr->p)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_ptr_size (const s_ptr *ptr)
+{
+  sw r;
+  sw result = 0;
+  (void) ptr;
+  result += strlen("(");
+  if ((r = buf_inspect_sym_size(tag_type_to_sym(ptr->type))) < 0)
+    return r;
+  result += r;
+  result += strlen(" *) ");
+  result += sizeof(uw) / 4;
+  return result;
+}
+
 sw buf_inspect_quote (s_buf *buf, const s_quote *quote)
 {
   sw r;
@@ -1567,7 +1606,6 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   if (! tag)
     return buf_write_1(buf, "NULL");
   switch(tag->type) {
-  case TAG_VOID:    return buf_inspect_void(buf, &tag);
   case TAG_ARRAY:   return buf_inspect_array(buf, &tag->data.array);
   case TAG_BOOL:    return buf_inspect_bool(buf, &tag->data.bool);
   case TAG_CALL:    return buf_inspect_call(buf, &tag->data.call);
@@ -1582,8 +1620,8 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
   case TAG_LIST:
     return buf_inspect_list(buf, (const s_list **) &tag->data.list);
-  case TAG_PTAG:
-    return buf_inspect_ptag(buf, &tag->data.ptag);
+  case TAG_PTAG:    return buf_inspect_ptag(buf, &tag->data.ptag);
+  case TAG_PTR:     return buf_inspect_ptr(buf, &tag->data.ptr);
   case TAG_QUOTE:   return buf_inspect_quote(buf, &tag->data.quote);
   case TAG_S8:      return buf_inspect_s8(buf, &tag->data.s8);
   case TAG_S16:     return buf_inspect_s16(buf, &tag->data.s16);
@@ -1599,6 +1637,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_U64:     return buf_inspect_u64(buf, &tag->data.u64);
   case TAG_UW:      return buf_inspect_uw(buf, &tag->data.uw);
   case TAG_VAR:     return buf_inspect_var(buf, tag);
+  case TAG_VOID:    return buf_inspect_void(buf, &tag);
   }
   assert(! "buf_inspect_tag: unknown tag type");
   errx(1, "buf_inspect_tag: unknown tag_type");
@@ -1609,7 +1648,6 @@ sw buf_inspect_tag_size (const s_tag *tag)
 {
   assert(tag);
   switch(tag->type) {
-  case TAG_VOID:     return buf_inspect_void_size(tag);
   case TAG_ARRAY:    return buf_inspect_array_size(&tag->data.array);
   case TAG_BOOL:     return buf_inspect_bool_size(&tag->data.bool);
   case TAG_CALL:     return buf_inspect_call_size(&tag->data.call);
@@ -1626,6 +1664,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_LIST:
     return buf_inspect_list_size((const s_list **) &tag->data.list);
   case TAG_PTAG:     return buf_inspect_ptag_size(&tag->data.ptag);
+  case TAG_PTR:      return buf_inspect_ptr_size(&tag->data.ptr);
   case TAG_QUOTE:    return buf_inspect_quote_size(&tag->data.quote);
   case TAG_S8:       return buf_inspect_s8_size(&tag->data.s8);
   case TAG_S16:      return buf_inspect_s16_size(&tag->data.s16);
@@ -1641,6 +1680,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_U64:      return buf_inspect_u64_size(&tag->data.u64);
   case TAG_UW:       return buf_inspect_uw_size(&tag->data.uw);
   case TAG_VAR:      return buf_inspect_var_size(tag);
+  case TAG_VOID:     return buf_inspect_void_size(tag);
   }
   assert(! "buf_inspect_tag_size: unknown tag type");
   errx(1, "buf_inspect_tag_size: unknown tag type");
@@ -1651,63 +1691,65 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
 {
   switch(type) {
   case TAG_VOID:
-    return buf_write_1(buf, "void");
+    return buf_write_1(buf, "Void");
   case TAG_ARRAY:
-    return buf_write_1(buf, "array");
+    return buf_write_1(buf, "Array");
   case TAG_BOOL:
-    return buf_write_1(buf, "bool");
+    return buf_write_1(buf, "Bool");
   case TAG_CALL:
-    return buf_write_1(buf, "call");    
+    return buf_write_1(buf, "Call");
   case TAG_CFN:
-    return buf_write_1(buf, "cfn");
+    return buf_write_1(buf, "Cfn");
   case TAG_CHARACTER:
-    return buf_write_1(buf, "character");
+    return buf_write_1(buf, "Character");
   case TAG_F32:
-    return buf_write_1(buf, "f32");
+    return buf_write_1(buf, "F32");
   case TAG_F64:
-    return buf_write_1(buf, "f64");
+    return buf_write_1(buf, "F64");
   case TAG_FACT:
-    return buf_write_1(buf, "fact");
+    return buf_write_1(buf, "Fact");
   case TAG_FN:
-    return buf_write_1(buf, "fn");
+    return buf_write_1(buf, "Fn");
   case TAG_IDENT:
-    return buf_write_1(buf, "ident");
+    return buf_write_1(buf, "Ident");
   case TAG_INTEGER:
-    return buf_write_1(buf, "integer");
+    return buf_write_1(buf, "Integer");
   case TAG_LIST:
-    return buf_write_1(buf, "list");
+    return buf_write_1(buf, "List");
   case TAG_PTAG:
-    return buf_write_1(buf, "ptag");
+    return buf_write_1(buf, "Ptag");
+  case TAG_PTR:
+    return buf_write_1(buf, "Void*");
   case TAG_QUOTE:
-    return buf_write_1(buf, "quote");
+    return buf_write_1(buf, "Quote");
   case TAG_S8:
-    return buf_write_1(buf, "s8");
+    return buf_write_1(buf, "S8");
   case TAG_S16:
-    return buf_write_1(buf, "s16");
+    return buf_write_1(buf, "S16");
   case TAG_S32:
-    return buf_write_1(buf, "s32");
+    return buf_write_1(buf, "S32");
   case TAG_S64:
-    return buf_write_1(buf, "s64");
+    return buf_write_1(buf, "S64");
   case TAG_SW:
-    return buf_write_1(buf, "sw");
+    return buf_write_1(buf, "Sw");
   case TAG_STR:
-    return buf_write_1(buf, "str");
+    return buf_write_1(buf, "Str");
   case TAG_SYM:
-    return buf_write_1(buf, "sym");
+    return buf_write_1(buf, "Sym");
   case TAG_TUPLE:
-    return buf_write_1(buf, "tuple");
+    return buf_write_1(buf, "Tuple");
   case TAG_U8:
-    return buf_write_1(buf, "u8");
+    return buf_write_1(buf, "U8");
   case TAG_U16:
-    return buf_write_1(buf, "u16");
+    return buf_write_1(buf, "U16");
   case TAG_U32:
-    return buf_write_1(buf, "u32");
+    return buf_write_1(buf, "U32");
   case TAG_U64:
-    return buf_write_1(buf, "u64");
+    return buf_write_1(buf, "U64");
   case TAG_UW:
-    return buf_write_1(buf, "uw");
+    return buf_write_1(buf, "Uw");
   case TAG_VAR:
-    return buf_write_1(buf, "var");
+    return buf_write_1(buf, "Var");
   }
   assert(! "buf_inspect_tag_type: unknown tag type");
   errx(1, "buf_inspect_tag_type: unknown tag type");
@@ -1718,63 +1760,65 @@ sw buf_inspect_tag_type_size (e_tag_type type)
 {
   switch(type) {
   case TAG_VOID:
-    return strlen("void");
+    return strlen("Void");
   case TAG_ARRAY:
-    return strlen("array");
+    return strlen("Array");
   case TAG_BOOL:
-    return strlen("bool");
+    return strlen("Bool");
   case TAG_CALL:
-    return strlen("call");    
+    return strlen("Call");
   case TAG_CFN:
-    return strlen("cfn");
+    return strlen("Cfn");
   case TAG_CHARACTER:
-    return strlen("character");
+    return strlen("Character");
   case TAG_F32:
-    return strlen("f32");
+    return strlen("F32");
   case TAG_F64:
-    return strlen("f64");
+    return strlen("F64");
   case TAG_FACT:
-    return strlen("fact");
+    return strlen("Fact");
   case TAG_FN:
-    return strlen("fn");
+    return strlen("Fn");
   case TAG_IDENT:
-    return strlen("ident");
+    return strlen("Ident");
   case TAG_INTEGER:
-    return strlen("integer");
+    return strlen("Integer");
   case TAG_LIST:
-    return strlen("list");
+    return strlen("List");
   case TAG_PTAG:
-    return strlen("ptag");
+    return strlen("Ptag");
+  case TAG_PTR:
+    return strlen("Void*");
   case TAG_QUOTE:
-    return strlen("quote");
+    return strlen("Quote");
   case TAG_S8:
-    return strlen("s8");
+    return strlen("S8");
   case TAG_S16:
-    return strlen("s16");
+    return strlen("S16");
   case TAG_S32:
-    return strlen("s32");
+    return strlen("S32");
   case TAG_S64:
-    return strlen("s64");
+    return strlen("S64");
   case TAG_SW:
-    return strlen("sw");
+    return strlen("Sw");
   case TAG_STR:
-    return strlen("str");
+    return strlen("Str");
   case TAG_SYM:
-    return strlen("sym");
+    return strlen("Sym");
   case TAG_TUPLE:
-    return strlen("tuple");
+    return strlen("Tuple");
   case TAG_U8:
-    return strlen("u8");
+    return strlen("U8");
   case TAG_U16:
-    return strlen("u16");
+    return strlen("U16");
   case TAG_U32:
-    return strlen("u32");
+    return strlen("U32");
   case TAG_U64:
-    return strlen("u64");
+    return strlen("U64");
   case TAG_UW:
-    return strlen("uw");
+    return strlen("Uw");
   case TAG_VAR:
-    return strlen("var");
+    return strlen("Var");
   }
   assert(! "buf_inspect_tag_type_size: unknown tag type");
   errx(1, "buf_inspect_tag_type_size: unknown tag type");

@@ -208,8 +208,11 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
         return NULL;
       }
       if (a->tag.data.sym == sym_1("Result") ||
-          a->tag.data.sym == sym_1("&result"))
+          a->tag.data.sym == sym_1("&result")) {
         cfn->arg_result = true;
+        arg_ffi_type[i] = &ffi_type_pointer;
+        result_ffi_type = &ffi_type_pointer;
+      }
       i++;
       a = list_next(a);
     }

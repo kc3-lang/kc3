@@ -99,6 +99,8 @@ sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym);
 sw buf_inspect_paren_sym_size (const s_sym *sym);
 sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag);
 sw buf_inspect_ptag_size (const p_tag *ptag);
+sw buf_inspect_ptr (s_buf *buf, const s_ptr *ptr);
+sw buf_inspect_ptr_size (const s_ptr *ptr);
 sw buf_inspect_quote (s_buf *buf, const s_quote *quote);
 sw buf_inspect_quote_size (const s_quote *quote);
 BUF_INSPECT_S_PROTOTYPES(8);

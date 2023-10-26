@@ -90,6 +90,7 @@ typedef enum {
   TAG_UW,
   TAG_LIST,
   TAG_PTAG,
+  TAG_PTR,
   TAG_QUOTE,
   TAG_STR,
   TAG_SYM,
@@ -125,6 +126,7 @@ typedef struct integer                 s_integer;
 typedef struct list                    s_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
+typedef struct ptr                     s_ptr;
 typedef struct quote                   s_quote;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
@@ -137,7 +139,7 @@ typedef struct type                    s_type;
 typedef struct unwind_protect          s_unwind_protect;
 
 /* unions */
-typedef union ptr      u_ptr;
+typedef union ptr_     u_ptr;
 typedef union ptr_w    u_ptr_w;
 typedef union tag_data u_tag_data;
 typedef union tag_type u_tag_type;
@@ -202,7 +204,12 @@ struct frame {
   s_frame *next;
 };
 
-union ptr {
+struct ptr {
+  e_tag_type type;
+  void *p;
+};
+
+union ptr_ {
   const void *p;
   const s8   *ps8;
   const u8   *pu8;
@@ -355,6 +362,7 @@ union tag_data {
   s_integer    integer;
   s_list      *list;
   p_tag        ptag;
+  s_ptr        ptr;
   s_quote      quote;
   s_str        str;
   const s_sym *sym;

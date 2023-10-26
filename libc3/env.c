@@ -463,6 +463,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   case TAG_IDENT:
   case TAG_INTEGER:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_STR:
   case TAG_SYM:
   case TAG_VAR:
@@ -606,6 +607,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_FN:
   case TAG_INTEGER:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_S8:
   case TAG_S16:
   case TAG_S32:

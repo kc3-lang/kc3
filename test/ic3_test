@@ -58,11 +58,12 @@ for TARGET in $TARGETS; do
     fi
 done
 echo
-for TARGET in $TARGETS; do
+DIFFS="$(for TARGET in $TARGETS; do
     if [ -f "${TARGET}.diff" ]; then
-        cat "${TARGET}.diff"
+        echo -n "${TARGET}.diff "
     fi
-done
+done)"
+less $DIFFS
 echo
 echo -n "Total $TEST_COUNT tests. "
 echo -n "${TEST_COLOR_OK}OK $TEST_OK ($(($TEST_OK * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}. "
