@@ -64,7 +64,6 @@ u8 u8_cast (s_tag *tag)
     return (u8) tag->data.uw;
   case TAG_LIST:
   case TAG_PTAG:
-  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:

@@ -10,10 +10,27 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <assert.h>
+#include <err.h>
+#include <stdlib.h>
+#include <string.h>
+#include "str.h"
 #include "type.h"
 
-void     type_clean (s_type *t);
-s_type * type_copy (const s_type *t, s_type *dest);
-s_type * type_init (s_type *t, const s_ident *ident);
-sw       type_size (const s_type *t);
-bool     type_to_tag_type (const s_type *t, e_tag_type *tag_type);
+const s_sym * type_pointer (const s_sym *type)
+{
+  uw len;
+  s8 *mem;
+  s_str str;
+  const s_sym *tmp;
+  assert(type);
+  len = type->str.size + 2;
+  if (! (mem = malloc(len)))
+    errx(1, "type_pointer: out of memory");
+  memcpy(mem, type->str.ptr.ps8, type->str.size);
+  memcpy(mem + type->str.size, "*", 2);
+  str_init(&str, mem, len, mem);
+  tmp = str_to_sym(&str);
+  str_clean(&str);
+  return tmp;
+}

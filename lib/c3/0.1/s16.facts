@@ -1,5 +1,5 @@
 %{module: C3.Facts.Dump,
   version: 1}
-add {S16, :is_a, :module}
-add {S16, :symbol, S16.cast}
-replace {S16.cast, :cfn, cfn :s16 "s16_cast" (:tag)}
+replace {S16, :is_a, :module}
+replace {S16, :symbol, S16.cast}
+replace {S16.cast, :cfn, cfn S16 "s16_cast" (Tag, Result)}

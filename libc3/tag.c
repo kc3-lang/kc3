@@ -8406,7 +8406,7 @@ void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
       return (void *) tag->data.ptag;
     goto invalid_type;
   case TAG_PTR:
-    if (type->str.ptr.ps8[type->str.size - 1] == '*')
+    if (type->str.ptr.ps8[type->str.size - 2] == '*')
       return &tag->data.ptr.p;
     goto invalid_type;
   case TAG_QUOTE:
@@ -8451,12 +8451,14 @@ void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
   return NULL;
 }
 
-void * tag_to_pointer (s_tag *tag, e_tag_type type)
+void * tag_to_pointer (s_tag *tag, const s_sym *type)
 {
-  if (tag->type != type) {
+  e_tag_type tag_type;
+  sym_to_tag_type(type, &tag_type);
+  if (tag->type != tag_type) {
     warnx("tag_to_pointer: cannot cast %s to %s",
           tag_type_to_sym(tag->type)->str.ptr.ps8,
-          tag_type_to_sym(type)->str.ptr.ps8);
+          type->str.ptr.ps8);
     return NULL;
   }
   switch (tag->type) {
@@ -8527,7 +8529,7 @@ void * tag_to_pointer (s_tag *tag, e_tag_type type)
  invalid_type:
   warnx("tag_to_pointer: cannot cast %s to %s",
         tag_type_to_sym(tag->type)->str.ptr.ps8,
-        tag_type_to_sym(type)->str.ptr.ps8);
+        type->str.ptr.ps8);
   return NULL;
 
 }

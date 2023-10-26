@@ -205,7 +205,7 @@ struct frame {
 };
 
 struct ptr {
-  e_tag_type type;
+  const s_sym *type;
   void *p;
 };
 

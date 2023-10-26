@@ -21,13 +21,6 @@
 
 #include "types.h"
 
-/* Stack allocation compatible functions, call type_clean after use. */
-void     type_clean (s_type *t);
-s_type * type_init (s_type *t, const s_ident *ident);
-
-/* Observers */
-s_type * type_copy (const s_type *t, s_type *dest);
-sw       type_size (const s_type *t);
-bool     type_to_tag_type (const s_type *t, e_tag_type *tag_type);
+const s_sym * type_pointer (const s_sym *type);
 
 #endif /* TYPE_H */

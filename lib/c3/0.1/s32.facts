@@ -1,5 +1,5 @@
 %{module: C3.Facts.Dump,
   version: 1}
-add {S32, :is_a, :module}
-add {S32, :symbol, S32.cast}
-replace {S32.cast, :cfn, cfn :s32 "s32_cast" (:tag)}
+replace {S32, :is_a, :module}
+replace {S32, :symbol, S32.cast}
+replace {S32.cast, :cfn, cfn S32 "s32_cast" (Tag, Result)}

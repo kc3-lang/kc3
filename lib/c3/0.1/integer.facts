@@ -1,5 +1,5 @@
 %{module: C3.Facts.Dump,
   version: 1}
-add {Integer, :is_a, :module}
-add {Integer, :symbol, Integer.cast}
-replace {Integer.cast, :cfn, cfn :integer "integer_cast" (:tag, :&result)}
+replace {Integer, :is_a, :module}
+replace {Integer, :symbol, Integer.cast}
+replace {Integer.cast, :cfn, cfn Integer "integer_cast" (Tag, Result)}

@@ -190,7 +190,7 @@ s_array * list_to_array (s_list *list, const s_sym *type,
   copy = array_type_to_copy(type);
   l = list;
   while (l) {
-    data_list = tag_to_pointer(&l->tag, array_type_to_tag_type(type));
+    data_list = tag_to_pointer(&l->tag, type);
     copy(data_list, data);
     data += size;
     l = list_next(l);
