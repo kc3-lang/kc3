@@ -1836,12 +1836,21 @@ sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest)
   return r;
 }
 
-sw buf_parse_ptag (s_buf *buf, p_tag *ptag)
+sw buf_parse_ptag (s_buf *buf, p_tag *dest)
 {
   (void) buf;
-  (void) ptag;
+  (void) dest;
   assert(! "buf_parse_ptag: not implemented");
   errx(1, "buf_parse_ptag: not implemented");
+  return -1;
+}
+
+sw buf_parse_ptr (s_buf *buf, s_ptr *dest)
+{
+  (void) buf;
+  (void) dest;
+  assert(! "buf_parse_ptr: not implemented");
+  errx(1, "buf_parse_ptr: not implemented");
   return -1;
 }
 

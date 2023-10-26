@@ -94,10 +94,6 @@ s_tag * tag_new_var ();
 void tag_delete (s_tag *tag);
 
 /* Observers */
-s_tag *            tag_brackets (s_tag *tag, const s_tag *address,
-                                 s_tag *dest);
-s_tag *            tag_equal (const s_tag *a, const s_tag *b,
-                              s_tag *dest);
 u64                tag_hash_u64 (const s_tag *tag);
 uw                 tag_hash_uw (const s_tag *tag);
 s_str *            tag_inspect (const s_tag *tag, s_str *dest);
@@ -106,7 +102,6 @@ bool               tag_is_bound_var (const s_tag *tag);
 bool               tag_is_number (const s_tag *tag);
 bool               tag_is_unbound_var (const s_tag *tag);
 s8                 tag_number_compare (const s_tag *a, const s_tag *b);
-s_tag *            tag_paren (const s_tag *tag, s_tag *dest);
 sw                 tag_size (const s_tag *tag);
 void *             tag_to_ffi_pointer (s_tag *tag, const s_sym *type);
 ffi_type           tag_to_ffi_type(const s_tag *tag);
@@ -159,8 +154,28 @@ s_tag *  tag_void (s_tag *tag);
 
 /* operators */
 s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest);
-s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest);
-s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest);
+bool *  tag_and (const s_tag *a, const s_tag *b, bool *dest);
+s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_bnot (const s_tag *tag, s_tag *dest);
+s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_brackets (s_tag *tag, const s_tag *address, s_tag *dest);
+s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *dest);
 s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest);
+bool *  tag_lt (const s_tag *a, const s_tag *b, bool *dest);
+bool *  tag_lte (const s_tag *a, const s_tag *b, bool *dest);
+bool *  tag_gt (const s_tag *a, const s_tag *b, bool *dest);
+bool *  tag_gte (const s_tag *a, const s_tag *b, bool *dest);
+bool *  tag_eq (const s_tag *a, const s_tag *b, bool *dest);
+s_tag * tag_equal (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_neg (const s_tag *tag, s_tag *dest);
+bool *  tag_not (const s_tag *tag, bool *dest);
+bool *  tag_not_eq (const s_tag *a, const s_tag *b, bool *dest);
+bool *  tag_or (const s_tag *a, const s_tag *b, bool *dest);
+s_tag * tag_paren (const s_tag *tag, s_tag *dest);
+s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest);
 
 #endif /* STR_H */

@@ -82,6 +82,7 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest);
 sw buf_parse_new_tag (s_buf *buf, s_tag **dest);
 sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest);
 sw buf_parse_ptag (s_buf *buf, p_tag *dest);
+sw buf_parse_ptr (s_buf *buf, s_ptr *dest);
 sw buf_parse_quote (s_buf *buf, s_quote *dest);
 sw buf_parse_str (s_buf *buf, s_str *dest);
 sw buf_parse_str_character (s_buf *buf, character *dest);

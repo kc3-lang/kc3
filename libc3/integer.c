@@ -24,6 +24,7 @@ s_integer * integer_abs (const s_integer *a, s_integer *dest)
   sw r;
   assert(a);
   assert(dest);
+  integer_init(dest);
   if ((r = mp_abs(&a->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_abs: %s", mp_error_to_string(r));
   return dest;
@@ -36,8 +37,7 @@ s_integer * integer_add (const s_integer *a, const s_integer *b,
   assert(dest);
   assert(a);
   assert(b);
-  if ((r = mp_init(&dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_add: %s", mp_error_to_string(r));
+  integer_init(dest);
   if ((r = mp_add(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_add: %s", mp_error_to_string(r));
   return dest;
@@ -50,6 +50,7 @@ s_integer * integer_band (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
+  integer_init(dest);
   if ((r = mp_and(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_band: %s", mp_error_to_string(r));
   return dest;
@@ -71,6 +72,7 @@ s_integer * integer_bnot (const s_integer *a, s_integer *dest)
   sw r;
   assert(a);
   assert(dest);
+  integer_init(dest);
   if ((r = mp_complement(&a->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_bnot: %s", mp_error_to_string(r));
   return dest;
@@ -83,6 +85,7 @@ s_integer * integer_bor (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
+  integer_init(dest);
   if ((r = mp_or(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_bor: %s", mp_error_to_string(r));
   return dest;
@@ -95,6 +98,7 @@ s_integer * integer_bxor (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
+  integer_init(dest);
   if ((r = mp_xor(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_bxor: %s", mp_error_to_string(r));
   return dest;
@@ -152,6 +156,7 @@ s_integer * integer_cast (const s_tag *tag, s_integer *dest)
     return integer_init_uw(dest, tag->data.uw);
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
@@ -191,8 +196,7 @@ s_integer * integer_div (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
-  if ((r = mp_init(&dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_div: %s", mp_error_to_string(r));
+  integer_init(dest);
   if ((r = mp_div(&a->mp_int, &b->mp_int, &dest->mp_int,
                   NULL)) != MP_OKAY)
     errx(1, "integer_div: %s", mp_error_to_string(r));
@@ -206,6 +210,7 @@ s_integer * integer_gcd (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
+  integer_init(dest);
   if ((r = mp_gcd(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_gcd: %s", mp_error_to_string(r));
   return dest;
@@ -352,6 +357,7 @@ s_integer * integer_lcm (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
+  integer_init(dest);
   if ((r = mp_lcm(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_lcm: %s", mp_error_to_string(r));
   return dest;
@@ -362,6 +368,7 @@ s_integer * integer_lshift (const s_integer *a, sw b, s_integer *dest)
   sw r;
   assert(a);
   assert(dest);
+  integer_init(dest);
   if ((r = mp_mul_2d(&a->mp_int, b, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_lshift: %s", mp_error_to_string(r));
   return dest;
@@ -374,6 +381,7 @@ s_integer * integer_mod (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
+  integer_init(dest);
   if ((r = mp_mod(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_mod: %s", mp_error_to_string(r));
   return dest;
@@ -386,8 +394,7 @@ s_integer * integer_mul (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
-  if ((r = mp_init(&dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_mul: %s", mp_error_to_string(r));
+  integer_init(dest);
   if ((r = mp_mul(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_mul: %s", mp_error_to_string(r));
   return dest;
@@ -398,8 +405,7 @@ s_integer * integer_neg (const s_integer *a, s_integer *dest)
   sw r;
   assert(a);
   assert(dest);
-  if ((r = mp_init(&dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_neg: %s", mp_error_to_string(r));
+  integer_init(dest);
   if ((r = mp_neg(&a->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_neg: %s", mp_error_to_string(r));
   return dest;
@@ -422,6 +428,7 @@ s_integer * integer_pow (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   assert(dest);
+  integer_init(dest);
   if ((r = mp_exptmod(&a->mp_int, &b->mp_int, &dest->mp_int, &dest->mp_int))
       != MP_OKAY)
     errx(1, "integer_pow: %s", mp_error_to_string(r));
@@ -484,6 +491,7 @@ s_integer * integer_sqrt (const s_integer *a, s_integer *dest)
   sw r;
   assert(a);
   assert(dest);
+  integer_init(dest);
   if ((r = mp_sqrt(&a->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_sqrt: %s", mp_error_to_string(r));
   return dest;
@@ -496,8 +504,7 @@ s_integer * integer_sub (const s_integer *a, const s_integer *b,
   assert(dest);
   assert(a);
   assert(b);
-  if ((r = mp_init(&dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_sub: %s", mp_error_to_string(r));
+  integer_init(dest);
   if ((r = mp_sub(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
     errx(1, "integer_sub: %s", mp_error_to_string(r));
   return dest;

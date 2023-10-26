@@ -64,6 +64,7 @@ u16 u16_cast (s_tag *tag)
     return (u16) tag->data.uw;
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
