@@ -66,7 +66,7 @@ void array_clean (s_array *a)
     tag.type = array_type_to_tag_type(a->type);
     i = 0;
     while (i < a->count) {
-      data_tag = tag_to_pointer(&tag, tag.type);
+      data_tag = tag_to_pointer(&tag, a->type);
       memcpy(data_tag, data, size);
       tag_clean(&tag);
       data += size;
@@ -184,8 +184,7 @@ s_tag * array_data_tag (s_tag *a, const s_tag *address, s_tag *dest)
                            address->data.array.data))) {
     tag_init(dest);
     copy = array_type_to_copy(a->data.array.type);
-    dest->type = array_type_to_tag_type(a->data.array.type);
-    dest_data = tag_to_pointer(dest, dest->type);
+    dest_data = tag_to_pointer(dest, a->data.array.type);
     if (copy(a_data, dest_data) != dest_data)
       return NULL;
     return dest;

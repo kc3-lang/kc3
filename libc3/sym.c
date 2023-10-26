@@ -153,12 +153,15 @@ const s_sym * sym_new (const s_str *src)
 
 ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
 {
+  assert(sym);
   if (sym == sym_1("Result") ||
       sym == sym_1("&result")) {
     if (! result_type)
       warnx("invalid result type: &result");
     return result_type;
   }
+  if (sym->str.ptr.ps8[sym->str.size - 1] == '*')
+    return &ffi_type_pointer;
   if (sym == sym_1("Integer") ||
       sym == sym_1("integer"))
     return &ffi_type_pointer;
@@ -210,6 +213,10 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
 
 bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 {
+  if (sym->str.ptr.ps8[sym->str.size - 2] == '*') {
+    *dest = TAG_PTR;
+    return true;
+  }
   if (sym == sym_1("Void") ||
       sym == sym_1("void")) {
     *dest = TAG_VOID;

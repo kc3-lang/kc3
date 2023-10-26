@@ -1240,7 +1240,7 @@ sw buf_inspect_ptr (s_buf *buf, const s_ptr *ptr)
   if ((r = buf_write_1(buf, "(")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sym(buf, tag_type_to_sym(ptr->type))) < 0)
+  if ((r = buf_inspect_sym(buf, ptr->type)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " *) ")) < 0)
@@ -1258,7 +1258,7 @@ sw buf_inspect_ptr_size (const s_ptr *ptr)
   sw result = 0;
   (void) ptr;
   result += strlen("(");
-  if ((r = buf_inspect_sym_size(tag_type_to_sym(ptr->type))) < 0)
+  if ((r = buf_inspect_sym_size(ptr->type)) < 0)
     return r;
   result += r;
   result += strlen(" *) ");

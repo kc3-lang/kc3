@@ -20,6 +20,7 @@
 #include "str.h"
 #include "sym.h"
 #include "tag.h"
+#include "type.h"
 
 s_tag * cfn_tag_init (s_tag *tag, const s_sym *type);
 
@@ -44,8 +45,10 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
           arity, num_args);
     return NULL;
   }
-  if (cfn->arg_result)
+  if (cfn->arg_result) {
     cfn_tag_init(&tmp2, cfn->result_type);
+    cfn->result_type = type_pointer(cfn->result_type);
+  }
   cfn_tag_init(&tmp, cfn->result_type);
   /* make result point to tmp value */
   result = tag_to_ffi_pointer(&tmp, cfn->result_type);
@@ -237,6 +240,7 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
 s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
 {
   assert(tag);
+  assert(type);
   bzero(tag, sizeof(s_tag));
   if (! sym_to_tag_type(type, &tag->type)) {
     assert(! "cfn_tag_init: invalid type");
