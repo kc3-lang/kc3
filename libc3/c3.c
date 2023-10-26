@@ -14,6 +14,7 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "buf.h"
 #include "c3_main.h"
 #include "env.h"
 #include "sym.h"
@@ -32,6 +33,14 @@ void c3_break ()
   exit(1);
 }
 
+void c3_clean (s_env *env)
+{
+  if (! env)
+    env = &g_c3_env;
+  env_clean(env);
+  sym_delete_all();
+}
+
 void c3_init (s_env *env)
 {
   if (! env)
@@ -40,10 +49,7 @@ void c3_init (s_env *env)
     exit(1);
 }
 
-void c3_clean (s_env *env)
+void c3_license ()
 {
-  if (! env)
-    env = &g_c3_env;
-  env_clean(env);
-  sym_delete_all();
+  buf_write_1(&g_c3_env.out, g_c3_license);
 }

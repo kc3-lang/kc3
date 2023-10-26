@@ -237,6 +237,7 @@ SOURCES = \
 	ident.c \
 	integer.c \
 	io.c \
+	license.c \
 	list.c \
 	log.c \
 	module.c \
@@ -370,6 +371,7 @@ LO_SOURCES = \
 	ident.c \
 	integer.c \
 	io.c \
+	license.c \
 	list.c \
 	log.c \
 	module.c \
