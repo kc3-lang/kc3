@@ -29,6 +29,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   s_list *a;
   void **arg_pointers = NULL;
   void **arg_values = NULL;
+  void **result_pointer = NULL;
   u8 arity;
   s_list *cfn_arg_types;
   sw i = 0;
@@ -45,13 +46,18 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
           arity, num_args);
     return NULL;
   }
-  if (cfn->arg_result) {
+  if (cfn->cif.rtype == &ffi_type_pointer) {
     cfn_tag_init(&tmp2, cfn->result_type);
-    cfn->result_type = type_pointer(cfn->result_type);
+    cfn_tag_init(&tmp, cfn->result_type);
+    /* make result point to result_pointer */
+    result_pointer = tag_to_ffi_pointer(&tmp, cfn->result_type);
+    result = &result_pointer;
   }
-  cfn_tag_init(&tmp, cfn->result_type);
-  /* make result point to tmp value */
-  result = tag_to_ffi_pointer(&tmp, cfn->result_type);
+  else {
+    cfn_tag_init(&tmp, cfn->result_type);
+    /* make result point to tmp value */
+    result = tag_to_ffi_pointer(&tmp, cfn->result_type);
+  }
   if (cfn->arity) {
     if (! (arg_pointers = calloc(sizeof(void *), cfn->arity + 1)))
       err(1, "cfn_apply");

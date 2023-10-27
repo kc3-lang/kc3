@@ -16,7 +16,7 @@
 
 #include "types.h"
 
-s16   s16_cast (s_tag *tag);
+s16 * s16_cast (s_tag *tag, s16 *dest);
 s16 * s16_copy (const s16 *src, s16 *dest);
 
 #endif /* S8_H */

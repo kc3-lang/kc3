@@ -17,53 +17,70 @@
 #include "tag.h"
 #include "s16.h"
 
-s16 s16_cast (s_tag *tag)
+s16 * s16_cast (s_tag *tag, s16 *dest)
 {
   switch (tag->type) {
   case TAG_VOID:
-    return 0;
+    *dest = 0;
+    return dest;
   case TAG_ARRAY:
     goto ko;
   case TAG_BOOL:
-    return tag->data.bool ? 1 : 0;
+    *dest = tag->data.bool ? 1 : 0;
+    return dest;
   case TAG_CALL:
     goto ko;
   case TAG_CFN:
     goto ko;
   case TAG_CHARACTER:
-    return (s16) tag->data.character;
+    *dest = (s16) tag->data.character;
+    return dest;
   case TAG_F32:
-    return (s16) tag->data.f32;
+    *dest = (s16) tag->data.f32;
+    return dest;
   case TAG_F64:
-    return (s16) tag->data.f64;
+    *dest = (s16) tag->data.f64;
+    return dest;
   case TAG_FACT:
   case TAG_FN:
   case TAG_IDENT:
     goto ko;
   case TAG_INTEGER:
-    return integer_to_s16(&tag->data.integer);
+    *dest = integer_to_s16(&tag->data.integer);
+    return dest;
   case TAG_SW:
-    return (s16) tag->data.sw;
+    *dest = (s16) tag->data.sw;
+    return dest;
   case TAG_S64:
-    return (s16) tag->data.s64;
+    *dest = (s16) tag->data.s64;
+    return dest;
   case TAG_S32:
-    return (s16) tag->data.s32;
+    *dest = (s16) tag->data.s32;
+    return dest;
   case TAG_S16:
-    return (s16) tag->data.s16;
+    *dest = (s16) tag->data.s16;
+    return dest;
   case TAG_S8:
-    return (s16) tag->data.s8;
+    *dest = (s16) tag->data.s8;
+    return dest;
   case TAG_U8:
-    return (s16) tag->data.u8;
+    *dest = (s16) tag->data.u8;
+    return dest;
   case TAG_U16:
-    return (s16) tag->data.u16;
+    *dest = (s16) tag->data.u16;
+    return dest;
   case TAG_U32:
-    return (s16) tag->data.u32;
+    *dest = (s16) tag->data.u32;
+    return dest;
   case TAG_U64:
-    return (s16) tag->data.u64;
+    *dest = (s16) tag->data.u64;
+    return dest;
   case TAG_UW:
-    return (s16) tag->data.uw;
+    *dest = (s16) tag->data.uw;
+    return dest;
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:

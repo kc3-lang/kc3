@@ -16,7 +16,7 @@
 
 #include "types.h"
 
-s32   s32_cast (s_tag *tag);
+s32 * s32_cast (s_tag *tag, s32 *dest);
 s32 * s32_copy (const s32 *src, s32 *dest);
 
 #endif /* S8_H */
