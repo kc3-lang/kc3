@@ -1544,10 +1544,9 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s64(result, a->data.s64 & b->data.character);
     case TAG_INTEGER:
       integer_init_s64(&tmp, a->data.s64);
-      integer_band(&tmp, &b->data.integer, &tmp2);
-      tag_init_s64(result, integer_to_s64(&tmp2));
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &b->data.integer, &result->data.integer);
       integer_clean(&tmp);
-      integer_clean(&tmp2);
       return result;
     case TAG_SW:
       return tag_init_s64(result, a->data.s64 & b->data.sw);
@@ -1566,9 +1565,21 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_U32:
       return tag_init_s64(result, a->data.s64 & b->data.u32);
     case TAG_U64:
-      return tag_init_s64(result, a->data.s64 & b->data.u64);
+      integer_init_s64(&tmp, a->data.s64);
+      integer_init_u64(&tmp2, b->data.u64);
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &tmp2, &result->data.integer); 
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_UW:
-      return tag_init_s64(result, a->data.s64 & b->data.uw);
+      integer_init_s64(&tmp, a->data.s64);
+      integer_init_uw(&tmp2, b->data.uw);
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &tmp2, &result->data.integer); 
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_VOID:
     case TAG_ARRAY:
     case TAG_CALL:
@@ -1598,15 +1609,14 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s32(result, a->data.s32 & b->data.character);
     case TAG_INTEGER:
       integer_init_s32(&tmp, a->data.s32);
-      integer_band(&tmp, &b->data.integer, &tmp2);
-      tag_init_s32(result, integer_to_s32(&tmp2));
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &b->data.integer, &result->data.integer);
       integer_clean(&tmp);
-      integer_clean(&tmp2);
       return result;
     case TAG_SW:
-      return tag_init_s32(result, a->data.s32 & b->data.sw);
+      return tag_init_sw(result, a->data.s32 & b->data.sw);
     case TAG_S64:
-      return tag_init_s32(result, a->data.s32 & b->data.s64);
+      return tag_init_s64(result, a->data.s32 & b->data.s64);
     case TAG_S32:
       return tag_init_s32(result, a->data.s32 & b->data.s32);
     case TAG_S16:
@@ -1618,11 +1628,23 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_U16:
       return tag_init_s32(result, a->data.s32 & b->data.u16);
     case TAG_U32:
-      return tag_init_s32(result, a->data.s32 & b->data.u32);
+      return tag_init_s64(result, a->data.s32 & b->data.u32);
     case TAG_U64:
-      return tag_init_s32(result, a->data.s32 & b->data.u64);
+      integer_init_s32(&tmp, a->data.s32);
+      integer_init_u64(&tmp2, b->data.u64);
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &tmp2, &result->data.integer); 
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_UW:
-      return tag_init_s32(result, a->data.s32 & b->data.uw);
+      integer_init_s32(&tmp, a->data.s32);
+      integer_init_uw(&tmp2, b->data.uw);
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &tmp2, &result->data.integer); 
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_VOID:
     case TAG_ARRAY:
     case TAG_CALL:
@@ -1652,17 +1674,16 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s16(result, a->data.s16 & b->data.character);
     case TAG_INTEGER:
       integer_init_s16(&tmp, a->data.s16);
-      integer_band(&tmp, &b->data.integer, &tmp2);
-      tag_init_s16(result, integer_to_s16(&tmp2));
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &b->data.integer, &result->data.integer);
       integer_clean(&tmp);
-      integer_clean(&tmp2);
       return result;
     case TAG_SW:
-      return tag_init_s16(result, a->data.s16 & b->data.sw);
+      return tag_init_sw(result, a->data.s16 & b->data.sw);
     case TAG_S64:
-      return tag_init_s16(result, a->data.s16 & b->data.s64);
+      return tag_init_s64(result, a->data.s16 & b->data.s64);
     case TAG_S32:
-      return tag_init_s16(result, a->data.s16 & b->data.s32);
+      return tag_init_s32(result, a->data.s16 & b->data.s32);
     case TAG_S16:
       return tag_init_s16(result, a->data.s16 & b->data.s16);
     case TAG_S8:
@@ -1670,13 +1691,25 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
     case TAG_U8:
       return tag_init_s16(result, a->data.s16 & b->data.u8);
     case TAG_U16:
-      return tag_init_s16(result, a->data.s16 & b->data.u16);
+      return tag_init_s32(result, a->data.s16 & b->data.u16);
     case TAG_U32:
-      return tag_init_s16(result, a->data.s16 & b->data.u32);
+      return tag_init_s64(result, a->data.s16 & b->data.u32);
     case TAG_U64:
-      return tag_init_s16(result, a->data.s16 & b->data.u64);
+      integer_init_s16(&tmp, a->data.s16);
+      integer_init_u64(&tmp2, b->data.u64);
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &tmp2, &result->data.integer); 
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_UW:
-      return tag_init_s16(result, a->data.s16 & b->data.uw);
+      integer_init_s16(&tmp, a->data.s16);
+      integer_init_uw(&tmp2, b->data.uw);
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &tmp2, &result->data.integer); 
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_VOID:
     case TAG_ARRAY:
     case TAG_CALL:
@@ -1706,31 +1739,42 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s8(result, a->data.s8 & b->data.character);
     case TAG_INTEGER:
       integer_init_s8(&tmp, a->data.s8);
-      integer_band(&tmp, &b->data.integer, &tmp2);
-      tag_init_s8(result, integer_to_s8(&tmp2));
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &b->data.integer, &result->data.integer);
       integer_clean(&tmp);
-      integer_clean(&tmp2);
       return result;
     case TAG_SW:
-      return tag_init_s8(result, a->data.s8 & b->data.sw);
+      return tag_init_sw(result, a->data.s8 & b->data.sw);
     case TAG_S64:
-      return tag_init_s8(result, a->data.s8 & b->data.s64);
+      return tag_init_s64(result, a->data.s8 & b->data.s64);
     case TAG_S32:
-      return tag_init_s8(result, a->data.s8 & b->data.s32);
+      return tag_init_s32(result, a->data.s8 & b->data.s32);
     case TAG_S16:
-      return tag_init_s8(result, a->data.s8 & b->data.s16);
+      return tag_init_s16(result, a->data.s8 & b->data.s16);
     case TAG_S8:
       return tag_init_s8(result, a->data.s8 & b->data.s8);
     case TAG_U8:
-      return tag_init_s8(result, a->data.s8 & b->data.u8);
+      return tag_init_s16(result, a->data.s8 & b->data.u8);
     case TAG_U16:
-      return tag_init_s8(result, a->data.s8 & b->data.u16);
+      return tag_init_s32(result, a->data.s8 & b->data.u16);
     case TAG_U32:
-      return tag_init_s8(result, a->data.s8 & b->data.u32);
+      return tag_init_s64(result, a->data.s8 & b->data.u32);
     case TAG_U64:
-      return tag_init_s8(result, a->data.s8 & b->data.u64);
+      integer_init_s8(&tmp, a->data.s8);
+      integer_init_u64(&tmp2, b->data.u64);
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &tmp2, &result->data.integer); 
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_UW:
-      return tag_init_s8(result, a->data.s8 & b->data.uw);
+      integer_init_s8(&tmp, a->data.s8);
+      integer_init_uw(&tmp2, b->data.uw);
+      result->type = TAG_INTEGER;
+      integer_band(&tmp, &tmp2, &result->data.integer); 
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_VOID:
     case TAG_ARRAY:
     case TAG_CALL:
@@ -2129,31 +2173,30 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_bool(result, tmp_a.data.bool | b->data.character);
     case TAG_INTEGER:
       integer_init_u8(&tmp, tmp_a.data.bool);
-      integer_bor(&tmp, &b->data.integer, &tmp2);
-      tag_init_bool(result, integer_to_u8(&tmp2));
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &b->data.integer, &result->data.integer);
       integer_clean(&tmp);
-      integer_clean(&tmp2);
       return result;
     case TAG_SW:
-      return tag_init_bool(result, tmp_a.data.bool | b->data.sw);
+      return tag_init_sw(result, tmp_a.data.bool | b->data.sw);
     case TAG_S64:
-      return tag_init_bool(result, tmp_a.data.bool | b->data.s64);
+      return tag_init_s64(result, tmp_a.data.bool | b->data.s64);
     case TAG_S32:
-      return tag_init_bool(result, tmp_a.data.bool | b->data.s32);
+      return tag_init_s32(result, tmp_a.data.bool | b->data.s32);
     case TAG_S16:
-      return tag_init_bool(result, tmp_a.data.bool | b->data.s16);
+      return tag_init_s16(result, tmp_a.data.bool | b->data.s16);
     case TAG_S8:
-      return tag_init_bool(result, tmp_a.data.bool | b->data.s8);
+      return tag_init_s16(result, tmp_a.data.bool | b->data.s8);
     case TAG_U8:
-      return tag_init_bool(result, tmp_a.data.bool | b->data.u8);
+      return tag_init_u8(result, tmp_a.data.bool | b->data.u8);
     case TAG_U16:
-      return tag_init_bool(result, tmp_a.data.bool | b->data.u16);
+      return tag_init_u16(result, tmp_a.data.bool | b->data.u16);
     case TAG_U32:
-      return tag_init_bool(result, tmp_a.data.bool | b->data.u32);
+      return tag_init_u32(result, tmp_a.data.bool | b->data.u32);
     case TAG_U64:
-      return tag_init_bool(result, tmp_a.data.bool | b->data.u64);
+      return tag_init_u64(result, tmp_a.data.bool | b->data.u64);
     case TAG_UW:
-      return tag_init_bool(result, tmp_a.data.bool | b->data.uw);
+      return tag_init_uw(result, tmp_a.data.bool | b->data.uw);
     case TAG_VOID:
     case TAG_ARRAY:
     case TAG_CALL:
@@ -2390,10 +2433,9 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s64(result, a->data.s64 | b->data.character);
     case TAG_INTEGER:
       integer_init_s64(&tmp, a->data.s64);
-      integer_bor(&tmp, &b->data.integer, &tmp2);
-      tag_init_s64(result, integer_to_s64(&tmp2));
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &b->data.integer, &result->data.integer);
       integer_clean(&tmp);
-      integer_clean(&tmp2);
       return result;
     case TAG_SW:
       return tag_init_s64(result, a->data.s64 | b->data.sw);
@@ -2603,34 +2645,33 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u8(result, a->data.u8 |
                          (b->data.bool ? 1 : 0));
     case TAG_CHARACTER:
-      return tag_init_u8(result, a->data.u8 | b->data.character);
+      return tag_init_u32(result, a->data.u8 | b->data.character);
     case TAG_INTEGER:
       integer_init_u8(&tmp, a->data.u8);
-      integer_bor(&tmp, &b->data.integer, &tmp2);
-      tag_init_u8(result, integer_to_u8(&tmp2));
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &b->data.integer, &result->data.integer);
       integer_clean(&tmp);
-      integer_clean(&tmp2);
       return result;
     case TAG_SW:
-      return tag_init_u8(result, a->data.u8 | b->data.sw);
+      return tag_init_sw(result, (sw) a->data.u8 | b->data.sw);
     case TAG_S64:
-      return tag_init_u8(result, a->data.u8 | b->data.s64);
+      return tag_init_s64(result, (s64) a->data.u8 | b->data.s64);
     case TAG_S32:
-      return tag_init_u8(result, a->data.u8 | b->data.s32);
+      return tag_init_s32(result, (s32) a->data.u8 | b->data.s32);
     case TAG_S16:
-      return tag_init_u8(result, a->data.u8 | b->data.s16);
+      return tag_init_s16(result, (s16) a->data.u8 | b->data.s16);
     case TAG_S8:
-      return tag_init_u8(result, a->data.u8 | b->data.s8);
+      return tag_init_s16(result, (s16) a->data.u8 | b->data.s8);
     case TAG_U8:
       return tag_init_u8(result, a->data.u8 | b->data.u8);
     case TAG_U16:
-      return tag_init_u8(result, a->data.u8 | b->data.u16);
+      return tag_init_u16(result, (u16) a->data.u8 | b->data.u16);
     case TAG_U32:
-      return tag_init_u8(result, a->data.u8 | b->data.u32);
+      return tag_init_u32(result, (u32) a->data.u8 | b->data.u32);
     case TAG_U64:
-      return tag_init_u8(result, a->data.u8 | b->data.u64);
+      return tag_init_u64(result, (u64) a->data.u8 | b->data.u64);
     case TAG_UW:
-      return tag_init_u8(result, a->data.u8 | b->data.uw);
+      return tag_init_uw(result, (uw) a->data.u8 | b->data.uw);
     case TAG_VOID:
     case TAG_ARRAY:
     case TAG_CALL:
@@ -2657,34 +2698,33 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u16(result, a->data.u16 |
                          (b->data.bool ? 1 : 0));
     case TAG_CHARACTER:
-      return tag_init_u16(result, a->data.u16 | b->data.character);
+      return tag_init_u32(result, a->data.u16 | b->data.character);
     case TAG_INTEGER:
       integer_init_u16(&tmp, a->data.u16);
-      integer_bor(&tmp, &b->data.integer, &tmp2);
-      tag_init_u16(result, integer_to_u16(&tmp2));
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &b->data.integer, &result->data.integer);
       integer_clean(&tmp);
-      integer_clean(&tmp2);
       return result;
     case TAG_SW:
-      return tag_init_u16(result, a->data.u16 | b->data.sw);
+      return tag_init_sw(result, (sw) a->data.u16 | b->data.sw);
     case TAG_S64:
-      return tag_init_u16(result, a->data.u16 | b->data.s64);
+      return tag_init_s64(result, (s64) a->data.u16 | b->data.s64);
     case TAG_S32:
-      return tag_init_u16(result, a->data.u16 | b->data.s32);
+      return tag_init_s32(result, (s32) a->data.u16 | b->data.s32);
     case TAG_S16:
-      return tag_init_u16(result, a->data.u16 | b->data.s16);
+      return tag_init_s32(result, (s32) a->data.u16 | b->data.s16);
     case TAG_S8:
-      return tag_init_u16(result, a->data.u16 | b->data.s8);
+      return tag_init_s32(result, (s32) a->data.u16 | b->data.s8);
     case TAG_U8:
       return tag_init_u16(result, a->data.u16 | b->data.u8);
     case TAG_U16:
-      return tag_init_u16(result, a->data.u16 | b->data.u16);
+      return tag_init_u16(result, (u16) a->data.u16 | b->data.u16);
     case TAG_U32:
-      return tag_init_u16(result, a->data.u16 | b->data.u32);
+      return tag_init_u32(result, (u32) a->data.u16 | b->data.u32);
     case TAG_U64:
-      return tag_init_u16(result, a->data.u16 | b->data.u64);
+      return tag_init_u64(result, (u64) a->data.u16 | b->data.u64);
     case TAG_UW:
-      return tag_init_u16(result, a->data.u16 | b->data.uw);
+      return tag_init_uw(result, (uw) a->data.u16 | b->data.uw);
     case TAG_VOID:
     case TAG_ARRAY:
     case TAG_CALL:
@@ -2709,36 +2749,35 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
     switch (b->type) {
     case TAG_BOOL:
       return tag_init_u32(result, a->data.u32 |
-                          (b->data.bool ? 1 : 0));
+                         (b->data.bool ? 1 : 0));
     case TAG_CHARACTER:
       return tag_init_u32(result, a->data.u32 | b->data.character);
     case TAG_INTEGER:
       integer_init_u32(&tmp, a->data.u32);
-      integer_bor(&tmp, &b->data.integer, &tmp2);
-      tag_init_u32(result, integer_to_u32(&tmp2));
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &b->data.integer, &result->data.integer);
       integer_clean(&tmp);
-      integer_clean(&tmp2);
       return result;
     case TAG_SW:
-      return tag_init_u32(result, a->data.u32 | b->data.sw);
+      return tag_init_s64(result, (s64) a->data.u32 | b->data.sw);
     case TAG_S64:
-      return tag_init_u32(result, a->data.u32 | b->data.s64);
+      return tag_init_s64(result, (s64) a->data.u32 | b->data.s64);
     case TAG_S32:
-      return tag_init_u32(result, a->data.u32 | b->data.s32);
+      return tag_init_s64(result, (s64) a->data.u32 | b->data.s32);
     case TAG_S16:
-      return tag_init_u32(result, a->data.u32 | b->data.s16);
+      return tag_init_s64(result, (s64) a->data.u32 | b->data.s16);
     case TAG_S8:
-      return tag_init_u32(result, a->data.u32 | b->data.s8);
+      return tag_init_s64(result, (s64) a->data.u32 | b->data.s8);
     case TAG_U8:
       return tag_init_u32(result, a->data.u32 | b->data.u8);
     case TAG_U16:
-      return tag_init_u32(result, a->data.u32 | b->data.u16);
+      return tag_init_u32(result, (u32) a->data.u32 | b->data.u16);
     case TAG_U32:
-      return tag_init_u32(result, a->data.u32 | b->data.u32);
+      return tag_init_u32(result, (u32) a->data.u32 | b->data.u32);
     case TAG_U64:
-      return tag_init_u32(result, a->data.u32 | b->data.u64);
+      return tag_init_u64(result, (u64) a->data.u32 | b->data.u64);
     case TAG_UW:
-      return tag_init_u32(result, a->data.u32 | b->data.uw);
+      return tag_init_uw(result, (uw) a->data.u32 | b->data.uw);
     case TAG_VOID:
     case TAG_ARRAY:
     case TAG_CALL:
@@ -2768,31 +2807,90 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u64(result, a->data.u64 | b->data.character);
     case TAG_INTEGER:
       integer_init_u64(&tmp, a->data.u64);
-      integer_bor(&tmp, &b->data.integer, &tmp2);
-      tag_init_u64(result, integer_to_u64(&tmp2));
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &b->data.integer, &result->data.integer);
+      integer_clean(&tmp);
+      return result;
+    case TAG_SW:
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_sw(&tmp, b->data.sw);
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &tmp2, &result->data.integer);
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_SW:
-      return tag_init_u64(result, a->data.u64 | b->data.sw);
     case TAG_S64:
-      return tag_init_u64(result, a->data.u64 | b->data.s64);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_s64(&tmp, b->data.s64);
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &tmp2, &result->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_S32:
-      return tag_init_u64(result, a->data.u64 | b->data.s32);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_s32(&tmp, b->data.s32);
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &tmp2, &result->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_S16:
-      return tag_init_u64(result, a->data.u64 | b->data.s16);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_s16(&tmp, b->data.s16);
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &tmp2, &result->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_S8:
-      return tag_init_u64(result, a->data.u64 | b->data.s8);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_s8(&tmp, b->data.s8);
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &tmp2, &result->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_U8:
-      return tag_init_u64(result, a->data.u64 | b->data.u8);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_u8(&tmp, b->data.u8);
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &tmp2, &result->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_U16:
-      return tag_init_u64(result, a->data.u64 | b->data.u16);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_u16(&tmp, b->data.u16);
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &tmp2, &result->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_U32:
-      return tag_init_u64(result, a->data.u64 | b->data.u32);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_u32(&tmp, b->data.u32);
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &tmp2, &result->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_U64:
-      return tag_init_u64(result, a->data.u64 | b->data.u64);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_u64(&tmp, b->data.u64);
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &tmp2, &result->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_UW:
-      return tag_init_u64(result, a->data.u64 | b->data.uw);
+      integer_init_u64(&tmp, a->data.u64);
+      integer_init_uw(&tmp, b->data.uw);
+      result->type = TAG_INTEGER;
+      integer_bor(&tmp, &tmp2, &result->data.integer);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return result;
     case TAG_VOID:
     case TAG_ARRAY:
     case TAG_CALL:
