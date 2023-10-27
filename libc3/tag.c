@@ -8456,9 +8456,10 @@ void * tag_to_pointer (s_tag *tag, const s_sym *type)
   e_tag_type tag_type;
   sym_to_tag_type(type, &tag_type);
   if (tag->type != tag_type) {
-    warnx("tag_to_pointer: cannot cast %s to %s",
-          tag_type_to_sym(tag->type)->str.ptr.ps8,
-          type->str.ptr.ps8);
+    assert(! "tag_to_pointer: cannot cast");
+    errx(1, "tag_to_pointer: cannot cast %s to %s",
+         tag_type_to_sym(tag->type)->str.ptr.ps8,
+         type->str.ptr.ps8);
     return NULL;
   }
   switch (tag->type) {

@@ -184,6 +184,7 @@ s_tag * array_data_tag (s_tag *a, const s_tag *address, s_tag *dest)
                            address->data.array.data))) {
     tag_init(dest);
     copy = array_type_to_copy(a->data.array.type);
+    sym_to_tag_type(a->data.array.type, &dest->type);
     dest_data = tag_to_pointer(dest, a->data.array.type);
     if (copy(a_data, dest_data) != dest_data)
       return NULL;
