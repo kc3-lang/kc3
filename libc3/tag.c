@@ -5183,15 +5183,15 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_SW:
       return tag_init_sw(dest, a->data.s64 % b->data.sw);
     case TAG_U8:
-      return tag_init_s16(dest, a->data.s64 % b->data.u8);
+      return tag_init_s16(dest, a->data.s64 % (s64) b->data.u8);
     case TAG_U16:
-      return tag_init_s32(dest, a->data.s64 % b->data.u16);
+      return tag_init_s32(dest, a->data.s64 % (s64) b->data.u16);
     case TAG_U32:
-      return tag_init_s64(dest, a->data.s64 % b->data.u32);
+      return tag_init_s64(dest, a->data.s64 % (s64) b->data.u32);
     case TAG_U64:
-      return tag_init_s64(dest, a->data.s64 % b->data.u64);
+      return tag_init_s64(dest, a->data.s64 % (s64) b->data.u64);
     case TAG_UW:
-      return tag_init_s64(dest, a->data.s64 % b->data.uw);
+      return tag_init_s64(dest, a->data.s64 % (s64) b->data.uw);
     default:
       goto ko;
     }
