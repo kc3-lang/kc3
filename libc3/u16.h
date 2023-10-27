@@ -16,7 +16,7 @@
 
 #include "types.h"
 
-u16   u16_cast (s_tag *tag);
+u16 * u16_cast (s_tag *tag, u16 *dest);
 u16 * u16_copy (const u16 *src, u16 *dest);
 
 #endif /* U8_H */

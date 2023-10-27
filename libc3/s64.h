@@ -16,7 +16,7 @@
 
 #include "types.h"
 
-s64   s64_cast (s_tag *tag);
+s64 * s64_cast (s_tag *tag, s64 *dest);
 s64 * s64_copy (const s64 *src, s64 *dest);
 
 #endif /* S8_H */

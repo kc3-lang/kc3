@@ -17,53 +17,70 @@
 #include "tag.h"
 #include "sw.h"
 
-sw sw_cast (s_tag *tag)
+sw * sw_cast (s_tag *tag, sw *dest)
 {
   switch (tag->type) {
   case TAG_VOID:
-    return 0;
+    *dest = 0;
+    return dest;
   case TAG_ARRAY:
     goto ko;
   case TAG_BOOL:
-    return tag->data.bool ? 1 : 0;
+    *dest = tag->data.bool ? 1 : 0;
+    return dest;
   case TAG_CALL:
     goto ko;
   case TAG_CFN:
     goto ko;
   case TAG_CHARACTER:
-    return (sw) tag->data.character;
+    *dest = (sw) tag->data.character;
+    return dest;
   case TAG_F32:
-    return (sw) tag->data.f32;
+    *dest = (sw) tag->data.f32;
+    return dest;
   case TAG_F64:
-    return (sw) tag->data.f64;
+    *dest = (sw) tag->data.f64;
+    return dest;
   case TAG_FACT:
   case TAG_FN:
   case TAG_IDENT:
     goto ko;
   case TAG_INTEGER:
-    return integer_to_sw(&tag->data.integer);
+    *dest = integer_to_sw(&tag->data.integer);
+    return dest;
   case TAG_SW:
-    return (sw) tag->data.sw;
+    *dest = (sw) tag->data.sw;
+    return dest;
   case TAG_S64:
-    return (sw) tag->data.s64;
+    *dest = (sw) tag->data.s64;
+    return dest;
   case TAG_S32:
-    return (sw) tag->data.s32;
+    *dest = (sw) tag->data.s32;
+    return dest;
   case TAG_S16:
-    return (sw) tag->data.s16;
+    *dest = (sw) tag->data.s16;
+    return dest;
   case TAG_S8:
-    return (sw) tag->data.s8;
+    *dest = (sw) tag->data.s8;
+    return dest;
   case TAG_U8:
-    return (sw) tag->data.u8;
+    *dest = (sw) tag->data.u8;
+    return dest;
   case TAG_U16:
-    return (sw) tag->data.u16;
+    *dest = (sw) tag->data.u16;
+    return dest;
   case TAG_U32:
-    return (sw) tag->data.u32;
+    *dest = (sw) tag->data.u32;
+    return dest;
   case TAG_U64:
-    return (sw) tag->data.u64;
+    *dest = (sw) tag->data.u64;
+    return dest;
   case TAG_UW:
-    return (sw) tag->data.uw;
+    *dest = (sw) tag->data.uw;
+    return dest;
   case TAG_LIST:
   case TAG_PTAG:
+  case TAG_PTR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
