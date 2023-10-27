@@ -51,13 +51,10 @@
 (defgeneric mod (a b))
 
 (defmethod mod (a b)
-  (let* ((c (* (floor (/ a b)) b))
-         (d (if (zerop c)
-                a
-                (- a c))))
-    (if (< d 0)
-        (+ d b)
-        d)))
+  (let ((c (* (floor (/ a b)) b)))
+    (- a c)))
+
+(mod -170141183460469231731687303715884105728 -170141183460469231731687303715884105727)
 
 (defgeneric translate (x))
 
