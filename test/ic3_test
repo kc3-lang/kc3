@@ -63,7 +63,9 @@ DIFFS="$(for TARGET in $TARGETS; do
         echo -n "${TARGET}.diff "
     fi
 done)"
-less $DIFFS
+if [ "x$DIFFS" != "x" ]; then
+    less $DIFFS
+fi
 echo
 echo -n "Total $TEST_COUNT tests. "
 echo -n "${TEST_COLOR_OK}OK $TEST_OK ($(($TEST_OK * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}. "
