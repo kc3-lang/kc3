@@ -6247,17 +6247,17 @@ s_tag * tag_neg (const s_tag *tag, s_tag *result)
     }
     return tag_init_s64(result, -tag->data.s64);
   case TAG_S32:
-    return tag_init_s64(result, -tag->data.s32);
+    return tag_init_s64(result, - (s64) tag->data.s32);
   case TAG_S16:
-    return tag_init_s32(result, -tag->data.s16);
+    return tag_init_s32(result, - (s32) tag->data.s16);
   case TAG_S8:
-    return tag_init_s16(result, -tag->data.s8);
+    return tag_init_s16(result, - (s16) tag->data.s8);
   case TAG_U8:
-    return tag_init_s16(result, -tag->data.u8);
+    return tag_init_s16(result, - (s16) tag->data.u8);
   case TAG_U16:
-    return tag_init_s32(result, -tag->data.u16);
+    return tag_init_s32(result, - (s32) tag->data.u16);
   case TAG_U32:
-    return tag_init_s64(result, -tag->data.u32);
+    return tag_init_s64(result, - (s64) tag->data.u32);
   case TAG_U64:
     integer_init_u64(&tmp, tag->data.u64);
     result->type = TAG_INTEGER;
