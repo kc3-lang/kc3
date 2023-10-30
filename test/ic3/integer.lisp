@@ -22,11 +22,17 @@
 
 (setf *print-case* :downcase)
 
-(defparameter *ops* '(+ - * / mod < == > ^ & bor))
+(defparameter *ops1* '(-))
+(defparameter *ops2* '(+ - * / mod < == > ^ & bor))
 
 (defparameter *su* '(s u))
 
 (defparameter *bits* '(8 16 32 64 128))
+
+(defgeneric ~ (a))
+
+(defmethod ~ (a)
+  (lognot a))
 
 (defgeneric == (a b))
 
@@ -122,6 +128,9 @@
 
 (defgeneric op-to-str (op))
 
+(defmethod op-to-str ((op (eql '~)))
+  "bnot")
+
 (defmethod op-to-str ((op (eql '+)))
   "add")
 
@@ -161,23 +170,50 @@
 (defmethod op-to-str (op)
   (string-downcase (symbol-name op)))
 
-(dolist (op *ops*)
+(dolist (op *ops1*)
   (with-open-file (ret (pathname
                         (concatenate
-                         'string "integer_" (op-to-str op) ".ret.expected"))
+                         'string "integer_" (op-to-str op) "_1.ret.expected"))
                        :direction :output
                        :element-type 'character
                        :if-exists :supersede)
     (format ret "0~%"))
   (with-open-file (expected (pathname
                              (concatenate
-                              'string "integer_" (op-to-str op) ".out.expected"))
+                              'string "integer_" (op-to-str op) "_1.out.expected"))
                           :direction :output
                           :element-type 'character
                           :if-exists :supersede)
   (with-open-file (in (pathname
                        (concatenate
-                        'string "integer_" (op-to-str op) ".in"))
+                        'string "integer_" (op-to-str op) "_1.in"))
+                      :direction :output
+                      :element-type 'character
+                      :if-exists :supersede)
+      (do-numbers
+          (lambda (a)
+            (format expected "~A ~A~%" op a)
+            (format expected "~A~%" (translate (funcall op a)))
+            (format in "quote ~A ~A~%" op a)
+            (format in "~A ~A~%" op a))))))
+
+(dolist (op *ops2*)
+  (with-open-file (ret (pathname
+                        (concatenate
+                         'string "integer_" (op-to-str op) "_2.ret.expected"))
+                       :direction :output
+                       :element-type 'character
+                       :if-exists :supersede)
+    (format ret "0~%"))
+  (with-open-file (expected (pathname
+                             (concatenate
+                              'string "integer_" (op-to-str op) "_2.out.expected"))
+                          :direction :output
+                          :element-type 'character
+                          :if-exists :supersede)
+  (with-open-file (in (pathname
+                       (concatenate
+                        'string "integer_" (op-to-str op) "_2.in"))
                       :direction :output
                       :element-type 'character
                       :if-exists :supersede)
