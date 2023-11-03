@@ -26,6 +26,12 @@
 #ifdef bool
 # undef bool
 #endif
+#ifdef false
+# undef false
+#endif
+#ifdef true
+# undef true
+#endif
 
 /* Basic integer types. */
 typedef char          s8;
