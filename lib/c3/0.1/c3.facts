@@ -180,3 +180,5 @@ replace {C3.first, :fn, fn {
 }}
 add {C3, :symbol, C3.license}
 replace {C3.license, :cfn, cfn Void "c3_license" ()}
+add {C3, :symbol, C3.type}
+replace {C3.type, :cfn, cfn Sym "tag_type" (Tag, Result)}
