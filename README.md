@@ -17,6 +17,18 @@ pattern matching, and a semantic object system. The idea is to plug
 modules, closures, pattern matching, a graph database and
 metaprogramming into C99 with an extremely small set of dependencies.
 
+Supported operating systems (additionnal dependencies) :
+ - BSD
+ - Linux (libbsd, libmd)
+ - MacOS X (libmd)
+ - Windows (MSys2)
+
+Supported architectures :
+ - aarch64 (arm64, Apple M1, Apple M2)
+ - amd64
+ - i386
+ - sparc64
+
 
 ## Usage
 

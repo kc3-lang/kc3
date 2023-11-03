@@ -38,14 +38,12 @@
 (defgeneric ~ (a))
 
 (defmethod ~ ((a integer))
-  (mod (lognot a) (expt 2 (find (integer-length (abs a))
-                                *~bits*
-                                :test (lambda (a b)
-                                        (<= a b))))))
-
-(~ 255)
-(~ 256)
-(~ 4294967295)
+  (if (< a (expt 2 64))
+      (cl:mod (lognot a) (expt 2 (find (integer-length (abs a))
+                                       *~bits*
+                                       :test (lambda (a b)
+                                               (<= a b)))))
+      (lognot a)))
 
 (defgeneric == (a b))
 
