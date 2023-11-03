@@ -34,7 +34,7 @@
   } while(0)
 
 #define TEST_CASE(name)                                                \
-  char test_case_ ## name ()                                           \
+  char test_case_ ## name (void)                                       \
   {                                                                    \
     g_test_case_name = # name;                                         \
 
@@ -44,10 +44,10 @@
   }
 
 #define TEST_CASE_PROTOTYPE(name)                                      \
-  char test_case_ ## name ()
+  char test_case_ ## name (void)
 
 #define TEST_CASE_RUN(name)                                            \
-  test_case_ ## name ()
+  test_case_ ## name()
 
 #define TEST_EQ(test, expected)                                        \
   do {                                                                 \
@@ -185,13 +185,13 @@ extern long         g_test_last_ok;
 extern long         g_test_ok;
 extern const char **g_test_targets;
 
-void test_clean ();
+void test_clean (void);
 void test_context (const char *context);
 int  test_file_compare (const char *path_a, const char *path_b);
 void test_init (int argc, char **argv);
-void test_ko ();
-void test_ok ();
-void test_summary ();
+void test_ko (void);
+void test_ok (void);
+void test_summary (void);
 int  test_target (const char *target);
 
 #endif /* TEST_H */

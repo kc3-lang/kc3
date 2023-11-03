@@ -25,27 +25,14 @@
 (defparameter *ops1* '(~ -))
 (defparameter *ops2* '(+ - * / mod < == > ^ & bor))
 
-(defparameter *ops1* '(~))
-(defparameter *ops2* '())
-
 (defparameter *su* '(s u))
 
-(defparameter *bits*  '(8 16 32 64 128))
-(defparameter *~bits* '(8 16 32 64 128 256))
-
-(defparameter a 4294967296)
+(defparameter *bits* '(8 16 32 64 128))
 
 (defgeneric ~ (a))
 
 (defmethod ~ ((a integer))
-  (mod (lognot a) (expt 2 (find (integer-length (abs a))
-                                *~bits*
-                                :test (lambda (a b)
-                                        (<= a b))))))
-
-(~ 255)
-(~ 256)
-(~ 4294967295)
+  (mod (lognot a) (expt 2 (ceiling (log (abs (1+ a)) 2)))))
 
 (defgeneric == (a b))
 
@@ -139,70 +126,67 @@
             (output-base "" 10)
             (output-base "0x" 16))))))
 
-(defgeneric op-to-str (op arity))
+(defgeneric op-to-str (op))
 
-(defmethod op-to-str ((op (eql '~)) (arity (eql 1)))
+(defmethod op-to-str ((op (eql '~)))
   "bnot")
 
-(defmethod op-to-str ((op (eql '-)) (arity (eql 1)))
-  "neg")
-
-(defmethod op-to-str ((op (eql '+)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '+)))
   "add")
 
-(defmethod op-to-str ((op (eql '-)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '-)))
   "sub")
 
-(defmethod op-to-str ((op (eql '*)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '*)))
   "mul")
 
-(defmethod op-to-str ((op (eql '/)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '/)))
   "div")
 
-(defmethod op-to-str ((op (eql '%)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '%)))
   "mod")
 
-(defmethod op-to-str ((op (eql '&)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '&)))
   "band")
 
-(defmethod op-to-str ((op (eql '^)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '^)))
   "bxor")
 
-(defmethod op-to-str ((op (eql '<)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '<)))
   "lt")
 
-(defmethod op-to-str ((op (eql '<=)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '<=)))
   "lte")
 
-(defmethod op-to-str ((op (eql '==)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '==)))
   "eq")
 
-(defmethod op-to-str ((op (eql '>)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '>)))
   "gt")
 
-(defmethod op-to-str ((op (eql '>=)) (arity (eql 2)))
+(defmethod op-to-str ((op (eql '>=)))
   "gte")
 
-(defmethod op-to-str (op arity)
+(defmethod op-to-str (op)
   (string-downcase (symbol-name op)))
 
 (dolist (op *ops1*)
   (with-open-file (ret (pathname
                         (concatenate
-                         'string "integer_" (op-to-str op 1) ".ret.expected"))
+                         'string "integer_" (op-to-str op) "_1.ret.expected"))
                        :direction :output
                        :element-type 'character
                        :if-exists :supersede)
     (format ret "0~%"))
   (with-open-file (expected (pathname
                              (concatenate
-                              'string "integer_" (op-to-str op 1) ".out.expected"))
+                              'string "integer_" (op-to-str op) "_1.out.expected"))
                           :direction :output
                           :element-type 'character
                           :if-exists :supersede)
   (with-open-file (in (pathname
                        (concatenate
-                        'string "integer_" (op-to-str op 1) ".in"))
+                        'string "integer_" (op-to-str op) "_1.in"))
                       :direction :output
                       :element-type 'character
                       :if-exists :supersede)
@@ -216,20 +200,20 @@
 (dolist (op *ops2*)
   (with-open-file (ret (pathname
                         (concatenate
-                         'string "integer_" (op-to-str op 2) ".ret.expected"))
+                         'string "integer_" (op-to-str op) "_2.ret.expected"))
                        :direction :output
                        :element-type 'character
                        :if-exists :supersede)
     (format ret "0~%"))
   (with-open-file (expected (pathname
                              (concatenate
-                              'string "integer_" (op-to-str op 2) ".out.expected"))
+                              'string "integer_" (op-to-str op) "_2.out.expected"))
                           :direction :output
                           :element-type 'character
                           :if-exists :supersede)
   (with-open-file (in (pathname
                        (concatenate
-                        'string "integer_" (op-to-str op 2) ".in"))
+                        'string "integer_" (op-to-str op) "_2.in"))
                       :direction :output
                       :element-type 'character
                       :if-exists :supersede)

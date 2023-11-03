@@ -35,7 +35,7 @@ char         g_test_targets_env[TARGETS_MAX * TARGET_NAME_MAX];
 char        *g_test_targets_env_v[TARGETS_MAX + 1];
 const char **g_test_targets = {NULL};
 
-void test_clean ()
+void test_clean (void)
 {
 }
 
@@ -126,7 +126,7 @@ void test_init (int argc, char **argv)
   printf("\n");
 }
 
-void test_ko ()
+void test_ko (void)
 {
   g_test_assert_count++;
   g_test_assert_ko++;
@@ -143,7 +143,7 @@ void test_ko ()
   }
 }
 
-void test_ok ()
+void test_ok (void)
 {
   g_test_count++;
   g_test_ok++;
@@ -151,7 +151,7 @@ void test_ok ()
   g_test_last_ok = 1;
 }
 
-void test_summary ()
+void test_summary (void)
 {
   fprintf(stderr, "\n");
   printf("Total %ld tests. "

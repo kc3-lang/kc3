@@ -383,23 +383,11 @@ TEST_CASE_END(facts_log_remove)
 TEST_CASE(facts_new_delete)
 {
   s_facts *facts;
-  s_buf buf;
-  TEST_ASSERT((facts = facts_new(NULL)));
-  if (g_test_last_ok) {
-    TEST_EQ(facts->tags.count, 0);
-    TEST_EQ(facts->facts.count, 0);
-    TEST_EQ(facts->log, NULL);
-    facts_delete(facts);
-    test_ok();
-  }
-  TEST_ASSERT((facts = facts_new(&buf)));
-  if (g_test_last_ok) {
-    TEST_EQ(facts->tags.count, 0);
-    TEST_EQ(facts->facts.count, 0);
-    TEST_EQ(facts->log, NULL);
-    facts_delete(facts);
-    test_ok();
-  }
+  TEST_ASSERT((facts = facts_new()));
+  TEST_EQ(facts->tags.count, 0);
+  TEST_EQ(facts->facts.count, 0);
+  TEST_EQ(facts->log, NULL);
+  facts_delete(facts);
 }
 TEST_CASE_END(facts_new_delete)
 

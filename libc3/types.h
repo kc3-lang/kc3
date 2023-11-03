@@ -33,6 +33,10 @@
 # undef true
 #endif
 
+#ifdef __APPLE__
+# define st_mtim st_mtimespec
+#endif
+
 /* Basic integer types. */
 typedef char          s8;
 typedef int16_t       s16;
