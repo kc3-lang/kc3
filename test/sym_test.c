@@ -43,7 +43,7 @@ TEST_CASE_PROTOTYPE(sym_1);
 const s_sym * sym_test_1_test (const s8 *p);
 TEST_CASE_PROTOTYPE(sym_inspect);
 
-void sym_test ()
+void sym_test (void)
 {
   TEST_CASE_RUN(sym_1);
   TEST_CASE_RUN(sym_inspect);

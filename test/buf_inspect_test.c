@@ -179,7 +179,7 @@
     buf_clean(&buf);                                                   \
   } while (0)
 
-void buf_inspect_test ();
+void buf_inspect_test (void);
 TEST_CASE_PROTOTYPE(buf_inspect_array);
 TEST_CASE_PROTOTYPE(buf_inspect_bool);
 TEST_CASE_PROTOTYPE(buf_inspect_character);
@@ -191,7 +191,7 @@ TEST_CASE_PROTOTYPE(buf_inspect_str);
 TEST_CASE_PROTOTYPE(buf_inspect_str_character);
 TEST_CASE_PROTOTYPE(buf_inspect_tag);
 
-void buf_inspect_test ()
+void buf_inspect_test (void)
 {
   TEST_CASE_RUN(buf_inspect_array);
   TEST_CASE_RUN(buf_inspect_bool);

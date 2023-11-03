@@ -22,9 +22,9 @@
 
 TEST_CASE_PROTOTYPE(fn_init_1);
 
-void fn_test ();
+void fn_test (void);
 
-void fn_test ()
+void fn_test (void)
 {
   TEST_CASE_RUN(fn_init_1);
 }

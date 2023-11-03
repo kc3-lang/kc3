@@ -23,7 +23,7 @@ TEST_CASE_PROTOTYPE(character_is_uppercase);
 TEST_CASE_PROTOTYPE(character_utf8);
 TEST_CASE_PROTOTYPE(character_utf8_size);
 
-void character_test ()
+void character_test (void)
 {
   TEST_CASE_RUN(character_1);
   TEST_CASE_RUN(character_is_digit);

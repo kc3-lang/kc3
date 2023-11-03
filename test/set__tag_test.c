@@ -95,14 +95,14 @@
     test_context(NULL);                                                \
   } while (0)
 
-void set__tag_test ();
+void set__tag_test (void);
 TEST_CASE_PROTOTYPE(set__tag_add);
 TEST_CASE_PROTOTYPE(set__tag_cursor);
 TEST_CASE_PROTOTYPE(set__tag_init_clean);
 TEST_CASE_PROTOTYPE(set__tag_remove);
 TEST_CASE_PROTOTYPE(set__tag_resize);
 
-void set__tag_test ()
+void set__tag_test (void)
 {
   TEST_CASE_RUN(set__tag_init_clean);
   TEST_CASE_RUN(set__tag_add);

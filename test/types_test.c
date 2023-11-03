@@ -13,10 +13,10 @@
 #include "../libc3/types.h"
 #include "test.h"
 
-void types_test ();
+void types_test (void);
 TEST_CASE_PROTOTYPE(types_sizeof);
 
-void types_test ()
+void types_test (void)
 {
   TEST_CASE_RUN(types_sizeof);
 }

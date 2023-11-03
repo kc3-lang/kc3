@@ -42,12 +42,12 @@
     test_context(NULL);                                                \
   } while (0)
 
-void ident_test ();
+void ident_test (void);
 TEST_CASE_PROTOTYPE(ident_character_is_reserved);
 TEST_CASE_PROTOTYPE(ident_first_character_is_reserved);
 TEST_CASE_PROTOTYPE(ident_inspect);
 
-void ident_test ()
+void ident_test (void)
 {
   TEST_CASE_RUN(ident_inspect);
   TEST_CASE_RUN(ident_first_character_is_reserved);

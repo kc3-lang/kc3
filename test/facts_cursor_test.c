@@ -16,11 +16,11 @@
 #include "fact_test.h"
 #include "test.h"
 
-void facts_cursor_test ();
+void facts_cursor_test (void);
 TEST_CASE_PROTOTYPE(facts_cursor_init);
 TEST_CASE_PROTOTYPE(facts_cursor_next);
 
-void facts_cursor_test ()
+void facts_cursor_test (void)
 {
   TEST_CASE_RUN(facts_cursor_init);
   TEST_CASE_RUN(facts_cursor_next);

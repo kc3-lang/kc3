@@ -27,11 +27,11 @@
     str_clean(&str);						       \
   } while (0)
 
-void bool_test ();
+void bool_test (void);
 TEST_CASE_PROTOTYPE(bool_compat);
 TEST_CASE_PROTOTYPE(bool_inspect);
 
-void bool_test ()
+void bool_test (void)
 {
   TEST_CASE_RUN(bool_compat);
   TEST_CASE_RUN(bool_inspect);

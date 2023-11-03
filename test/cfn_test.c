@@ -28,9 +28,9 @@ TEST_CASE_PROTOTYPE(cfn_link);
 TEST_CASE_PROTOTYPE(cfn_prep_cif);
 
 /* 3 */
-void cfn_test ();
+void cfn_test (void);
 
-void cfn_test ()
+void cfn_test (void)
 {
   TEST_CASE_RUN(cfn_init_clean);
   TEST_CASE_RUN(cfn_copy);

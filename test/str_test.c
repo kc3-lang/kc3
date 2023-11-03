@@ -79,7 +79,7 @@ TEST_CASE_PROTOTYPE(str_to_ident);
 TEST_CASE_PROTOTYPE(str_to_sym);
 
 
-void str_test ()
+void str_test (void)
 {
   TEST_CASE_RUN(str_init_clean);
   TEST_CASE_RUN(str_init_dup);
