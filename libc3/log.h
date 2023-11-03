@@ -20,7 +20,7 @@ void log_init (s_log *log);
 void log_clean (s_log *log);
 
 /* constructor */
-s_log * log_new ();
+s_log * log_new (void);
 
 /* destructor */
 void log_delete (s_log *log);

@@ -43,7 +43,7 @@ s_str * str_new (s8 *free, uw size, const s8 *p);
 s_str * str_new_1 (s8 *free, const s8 *p);
 s_str * str_new_cpy (uw size, const s8 *p);
 s_str * str_new_dup (const s_str *src);
-s_str * str_new_empty ();
+s_str * str_new_empty (void);
 s_str * str_new_f (const char *fmt, ...);
 s_str * str_new_vf (const char *fmt, va_list ap);
 

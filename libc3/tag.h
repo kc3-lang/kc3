@@ -69,7 +69,7 @@ s_tag * tag_init_u64 (s_tag *tag, u64 i);
 s_tag * tag_init_uw (s_tag *tag, uw i);
 
 /* Constructors, call tag_delete after use */
-s_tag * tag_new ();
+s_tag * tag_new (void);
 s_tag * tag_new_1 (const s8 *p);
 s_tag * tag_new_array (const s_array *a);
 s_tag * tag_new_bool (bool p);
@@ -88,7 +88,7 @@ s_tag * tag_new_u8 (u8 i);
 s_tag * tag_new_u16 (u16 i);
 s_tag * tag_new_u32 (u32 i);
 s_tag * tag_new_u64 (u64 i);
-s_tag * tag_new_var ();
+s_tag * tag_new_var (void);
 
 /* Destructor */
 void tag_delete (s_tag *tag);
@@ -106,6 +106,7 @@ sw                 tag_size (const s_tag *tag);
 void *             tag_to_ffi_pointer (s_tag *tag, const s_sym *type);
 ffi_type           tag_to_ffi_type(const s_tag *tag);
 void *             tag_to_pointer (s_tag *tag, const s_sym *type);
+const s_sym **     tag_type (const s_tag *tag, const s_sym **type);
 sw                 tag_type_size (e_tag_type type);
 f_buf_inspect      tag_type_to_buf_inspect (e_tag_type type);
 f_buf_inspect_size tag_type_to_buf_inspect_size (e_tag_type type);

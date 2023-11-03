@@ -62,7 +62,7 @@ s_fn * fn_init_1 (s_fn *fn, s8 *p)
   return fn;
 }
 
-s_fn * fn_new ()
+s_fn * fn_new (void)
 {
   s_fn *fn;
   if (! (fn = calloc(1, sizeof(s_fn))))

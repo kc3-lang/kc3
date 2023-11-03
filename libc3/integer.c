@@ -411,6 +411,15 @@ s_integer * integer_neg (const s_integer *a, s_integer *dest)
   return dest;
 }
 
+s_integer * integer_new (void)
+{
+  s_integer *i = NULL;
+  if (! (i = malloc(sizeof(s_integer)))) {
+    err(1, "integer_new: out of memory");
+  }
+  return integer_init(i);
+}
+
 s_integer * integer_new_copy (const s_integer *a)
 {
   s_integer *dest;

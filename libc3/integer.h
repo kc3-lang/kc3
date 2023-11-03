@@ -85,7 +85,7 @@ s_integer * integer_sub (const s_integer *a, const s_integer *b,
                          s_integer *dest);
 
 /* Constructors, call integer_delete after use. */
-s_integer * integer_new ();
+s_integer * integer_new (void);
 s_integer * integer_new_copy (const s_integer *a);
 
 /* Observers */

@@ -19,7 +19,7 @@
 s_arg * arg_init (s_arg *arg);
 
 /* constructors */
-s_arg * arg_new ();
+s_arg * arg_new (void);
 
 /* destructors */
 s_arg * arg_delete (s_arg *arg);

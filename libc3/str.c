@@ -256,7 +256,7 @@ s_str * str_new_dup (const s_str *src)
   return str;
 }
 
-s_str * str_new_empty ()
+s_str * str_new_empty (void)
 {
   s_str *str;
   str = str_new(NULL, 0, NULL);

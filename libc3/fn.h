@@ -27,7 +27,7 @@ s_fn * fn_init (s_fn *fn);
 s_fn * fn_init_1 (s_fn *fn, s8 *p);
 
 /* constructors */
-s_fn * fn_new ();
+s_fn * fn_new (void);
 s_fn * fn_new_copy (const s_fn *fn);
 
 /* destructors */
