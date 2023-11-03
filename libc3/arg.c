@@ -49,7 +49,7 @@ uw arg_length (s_arg *arg)
   return length;
 }
 
-s_arg * arg_new ()
+s_arg * arg_new (void)
 {
   s_arg *arg;
   if (! (arg = malloc(sizeof(s_arg))))

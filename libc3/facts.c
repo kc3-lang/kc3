@@ -395,7 +395,7 @@ sw facts_log_remove (s_log *log, const s_fact *fact)
   return result;
 }
 
-s_facts * facts_new ()
+s_facts * facts_new (void)
 {
   s_facts *n;
   if (! (n = malloc(sizeof(s_facts))))
@@ -438,7 +438,7 @@ sw facts_open_file (s_facts *facts, const s_str *path)
     warn("facts_open_file: fopen: %s", path->ptr.ps8);
     return -1;
   }
-  if (! (facts->log = log_new(BUF_SIZE)))
+  if (! (facts->log = log_new()))
     return -1;
   log_open(facts->log, fp);
   return result;

@@ -20,7 +20,7 @@ s_frame * frame_clean (s_frame *frame);
 s_frame * frame_init (s_frame *frame, s_frame *next);
 
 /* constructors */
-s_frame * frame_new ();
+s_frame * frame_new (s_frame *next);
 
 /* destructors */
 s_frame * frame_delete (s_frame *frame);

@@ -42,7 +42,7 @@ void log_init (s_log *log)
   hash_init(&log->hash);
 }
 
-s_log * log_new ()
+s_log * log_new (void)
 {
   s_log *log;
   if (! (log = malloc(sizeof(s_log)))) {

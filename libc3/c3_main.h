@@ -29,6 +29,6 @@ void c3_init (s_env *env);
 void c3_clean (s_env *env);
 
 /* debug */
-void c3_break ();
+void c3_break (void);
 
 #endif /* C3_MAIN_H */

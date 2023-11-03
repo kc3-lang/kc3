@@ -24,7 +24,7 @@ void      facts_clean (s_facts *facts);
 s_facts * facts_init (s_facts *facts);
 
 /* Constructors */
-s_facts * facts_new ();
+s_facts * facts_new (void);
 
 /* Destructor */
 void     facts_delete (s_facts *facts);

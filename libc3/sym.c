@@ -64,7 +64,7 @@ void sym_delete (s_sym *sym)
   free(sym);
 }
   
-void sym_delete_all ()
+void sym_delete_all (void)
 {
   s_sym_list *sym_list;
   sym_list = g_sym_list;
@@ -180,6 +180,8 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
   if (sym == sym_1("S64") ||
       sym == sym_1("s64"))
     return &ffi_type_sint64;
+  if (sym == sym_1("Sym"))
+    return &ffi_type_pointer;
   if (sym == sym_1("Sw") ||
       sym == sym_1("sw"))
     return &ffi_type_slong;

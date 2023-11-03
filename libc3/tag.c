@@ -2096,10 +2096,6 @@ s_tag * tag_bnot (const s_tag *tag, s_tag *result)
   assert(tag);
   assert(result);
   switch (tag->type) {
-  case TAG_BOOL:
-    return tag_init_u8(result, ~(tag->data.bool ? 1 : 0));
-  case TAG_CHARACTER:
-    return tag_init_u32(result, ~tag->data.character);
   case TAG_INTEGER:
     result->type = TAG_INTEGER;
     integer_bnot(&tag->data.integer, &result->data.integer);
@@ -2125,8 +2121,10 @@ s_tag * tag_bnot (const s_tag *tag, s_tag *result)
   case TAG_UW:
     return tag_init_uw(result, ~tag->data.uw);
   case TAG_ARRAY:
+  case TAG_BOOL:
   case TAG_CALL:
   case TAG_CFN:
+  case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
   case TAG_FACT:
@@ -6291,7 +6289,7 @@ s_tag * tag_neg (const s_tag *tag, s_tag *result)
   return NULL;
 }
 
-s_tag * tag_new ()
+s_tag * tag_new (void)
 {
   s_tag *tag;
   tag = calloc(1, sizeof(s_tag));
@@ -6320,6 +6318,13 @@ s_tag * tag_new_copy (const s_tag *src)
   if (! (dest = malloc(sizeof(s_tag))))
     errx(1, "tag_new_copy: out of memory");
   return tag_copy(src, dest);
+}
+
+s_tag * tag_new_var (void)
+{
+  s_tag *tag;
+  tag = calloc(1, sizeof(s_tag));
+  return tag_init_var(tag);
 }
 
 bool * tag_not (const s_tag *tag, bool *dest)
@@ -8747,6 +8752,14 @@ void * tag_to_pointer (s_tag *tag, const s_sym *type)
         type->str.ptr.ps8);
   return NULL;
 
+}
+
+const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
+{
+  assert(tag);
+  assert(dest);
+  *dest = tag_type_to_sym(tag->type);
+  return dest;
 }
 
 sw tag_type_size (e_tag_type type)

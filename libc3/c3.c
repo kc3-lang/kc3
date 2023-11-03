@@ -26,7 +26,7 @@ const s_str g_c3_base_hexadecimal = {{NULL}, 16, {"0123456789abcdef"}};
 const s_str g_c3_bases_hexadecimal[2] = {{{NULL}, 16, {"0123456789abcdef"}},
                                          {{NULL}, 16, {"0123456789ABCDEF"}}};
 
-void c3_break ()
+void c3_break (void)
 {
   assert(! "break");
   errx(1, "break");
@@ -49,7 +49,7 @@ void c3_init (s_env *env)
     exit(1);
 }
 
-void c3_license ()
+void c3_license (void)
 {
   buf_write_1(&g_c3_env.out, g_c3_license);
   buf_flush(&g_c3_env.out);
