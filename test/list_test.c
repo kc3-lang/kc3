@@ -39,11 +39,11 @@
     test_context(NULL);                                                \
   } while (0)
 
-void list_test ();
+void list_test (void);
 TEST_CASE_PROTOTYPE(list_1);
 TEST_CASE_PROTOTYPE(list_inspect);
 
-void list_test ()
+void list_test (void)
 {
   TEST_CASE_RUN(list_1);
   TEST_CASE_RUN(list_inspect);

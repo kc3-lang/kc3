@@ -20,7 +20,7 @@
 #include "fact_test.h"
 #include "test.h"
 
-void facts_test ();
+void facts_test (void);
 TEST_CASE_PROTOTYPE(facts_add);
 TEST_CASE_PROTOTYPE(facts_dump_file);
 TEST_CASE_PROTOTYPE(facts_find);
@@ -33,7 +33,7 @@ TEST_CASE_PROTOTYPE(facts_open_file);
 TEST_CASE_PROTOTYPE(facts_remove);
 TEST_CASE_PROTOTYPE(facts_save);
 
-void facts_test ()
+void facts_test (void)
 {
   TEST_CASE_RUN(facts_init_clean);
   TEST_CASE_RUN(facts_new_delete);

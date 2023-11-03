@@ -42,13 +42,13 @@
     str_clean(&str);						       \
   } while(0)
 
-void array_test ();
+void array_test (void);
 TEST_CASE_PROTOTYPE(array_data);
 TEST_CASE_PROTOTYPE(array_init_clean);
 TEST_CASE_PROTOTYPE(array_init_1_clean);
 TEST_CASE_PROTOTYPE(array_inspect);
 
-void array_test ()
+void array_test (void)
 {
   TEST_CASE_RUN(array_init_clean);
   TEST_CASE_RUN(array_init_1_clean);

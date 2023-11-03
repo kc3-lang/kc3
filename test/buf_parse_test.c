@@ -666,7 +666,7 @@ TEST_CASE_PROTOTYPE(buf_parse_sym);
 TEST_CASE_PROTOTYPE(buf_parse_tag);
 TEST_CASE_PROTOTYPE(buf_parse_tuple);
 
-void buf_parse_test ()
+void buf_parse_test (void)
 {
   TEST_CASE_RUN(buf_parse_array);
   TEST_CASE_RUN(buf_parse_bool);

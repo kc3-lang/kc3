@@ -47,7 +47,7 @@ TEST_CASE_PROTOTYPE(compare_str);
 TEST_CASE_PROTOTYPE(compare_tag);
 TEST_CASE_PROTOTYPE(compare_tuple);
 
-void compare_test ()
+void compare_test (void)
 {
   TEST_CASE_RUN(compare_bool);
   TEST_CASE_RUN(compare_character);

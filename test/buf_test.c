@@ -174,7 +174,7 @@ TEST_CASE_PROTOTYPE(buf_write_u32);
 TEST_CASE_PROTOTYPE(buf_write_u64);
 TEST_CASE_PROTOTYPE(buf_xfer);
 
-void buf_test ()
+void buf_test (void)
 {
   TEST_CASE_RUN(buf_init_clean);
   TEST_CASE_RUN(buf_new_delete);

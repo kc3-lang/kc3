@@ -13,31 +13,31 @@
 #include "../libc3/c3.h"
 #include "test.h"
 
-void array_test ();
-void bool_test ();
-void buf_file_test ();
-void buf_inspect_test ();
-void buf_parse_test ();
-void buf_test ();
-void call_test ();
-void character_test ();
-void compare_test ();
-void env_test ();
-void fact_test ();
-void facts_test ();
-void facts_cursor_test ();
-void facts_with_test ();
-void fn_test ();
-void ident_test ();
-void list_test ();
-void set__fact_test ();
-void set__tag_test ();
-void skiplist__fact_test ();
-void str_test ();
-void sym_test ();
-void tag_test ();
-void tuple_test ();
-void types_test ();
+void array_test (void);
+void bool_test (void);
+void buf_file_test (void);
+void buf_inspect_test (void);
+void buf_parse_test (void);
+void buf_test (void);
+void call_test (void);
+void character_test (void);
+void compare_test (void);
+void env_test (void);
+void fact_test (void);
+void facts_test (void);
+void facts_cursor_test (void);
+void facts_with_test (void);
+void fn_test (void);
+void ident_test (void);
+void list_test (void);
+void set__fact_test (void);
+void set__tag_test (void);
+void skiplist__fact_test (void);
+void str_test (void);
+void sym_test (void);
+void tag_test (void);
+void tuple_test (void);
+void types_test (void);
 
 int main (int argc, char **argv)
 {

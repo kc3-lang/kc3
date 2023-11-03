@@ -72,14 +72,14 @@
     test_context(NULL);                                                \
   } while (0)
 
-void tuple_test ();
+void tuple_test (void);
 TEST_CASE_PROTOTYPE(tuple_init_1);
 TEST_CASE_PROTOTYPE(tuple_init_clean);
 TEST_CASE_PROTOTYPE(tuple_inspect);
 TEST_CASE_PROTOTYPE(tuple_new_1);
 TEST_CASE_PROTOTYPE(tuple_new_delete);
 
-void tuple_test ()
+void tuple_test (void)
 {
   TEST_CASE_RUN(tuple_init_clean);
   TEST_CASE_RUN(tuple_new_delete);

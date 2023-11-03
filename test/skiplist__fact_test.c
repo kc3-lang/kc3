@@ -50,13 +50,13 @@
     test_context(NULL);                                                \
   } while (0)
 
-void skiplist__fact_test ();
+void skiplist__fact_test (void);
 TEST_CASE_PROTOTYPE(skiplist__fact_find);
 TEST_CASE_PROTOTYPE(skiplist__fact_insert);
 TEST_CASE_PROTOTYPE(skiplist__fact_new_delete);
 TEST_CASE_PROTOTYPE(skiplist__fact_remove);
 
-void skiplist__fact_test ()
+void skiplist__fact_test (void)
 {
   TEST_CASE_RUN(skiplist__fact_new_delete);
   TEST_CASE_RUN(skiplist__fact_insert);
