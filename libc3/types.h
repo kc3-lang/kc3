@@ -23,6 +23,10 @@
 #include "sha1.h"
 #include "../libtommath/tommath.h"
 
+#ifdef bool
+# undef bool
+#endif
+
 /* Basic integer types. */
 typedef char          s8;
 typedef int16_t       s16;
