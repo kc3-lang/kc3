@@ -645,13 +645,6 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
   return true;
 }
 
-s64 env_gettime ()
-{
-  struct timespec time;
-  clock_gettime(CLOCK_REALTIME, &time);
-  return time.tv_sec;
-}
-
 s_env * env_init (s_env *env)
 {
   assert(env);
