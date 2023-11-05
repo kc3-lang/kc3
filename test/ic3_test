@@ -64,7 +64,7 @@ DIFFS="$(for TARGET in $TARGETS; do
     fi
 done)"
 if [ "x$DIFFS" != "x" ]; then
-    less $DIFFS
+    less $DIFFS || cat $DIFFS
 fi
 echo
 echo -n "Total $TEST_COUNT tests. "
