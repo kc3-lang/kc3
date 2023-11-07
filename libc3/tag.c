@@ -6223,7 +6223,7 @@ s_tag * tag_neg (const s_tag *tag, s_tag *result)
   case TAG_CHARACTER:
     return tag_init_s64(result, -tag->data.character);
   case TAG_INTEGER:
-    tag_init_integer_zero(result);
+    result->type = TAG_INTEGER;
     integer_neg(&tag->data.integer, &result->data.integer);
     return result;
   case TAG_SW:
