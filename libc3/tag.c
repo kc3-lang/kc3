@@ -6260,11 +6260,13 @@ s_tag * tag_neg (const s_tag *tag, s_tag *result)
     integer_init_u64(&tmp, tag->data.u64);
     result->type = TAG_INTEGER;
     integer_neg(&tmp, &result->data.integer);
+    integer_clean(&tmp);
     return result;
   case TAG_UW:
     integer_init_uw(&tmp, tag->data.uw);
     result->type = TAG_INTEGER;
     integer_neg(&tmp, &result->data.integer);
+    integer_clean(&tmp);
     return result;
   case TAG_VOID:
   case TAG_ARRAY:
