@@ -25,21 +25,21 @@
 (defparameter *ops1* '(~ -))
 (defparameter *ops2* '(+ - * / mod < == > ^ & bor))
 
-(defparameter *ops1* '(~))
-(defparameter *ops2* '())
+;;(defparameter *ops1* '(~))
+;;(defparameter *ops2* '())
 
 (defparameter *su* '(s u))
 
 (defparameter *bits*  '(8 16 32 64 128))
 (defparameter *~bits* '(8 16 32 64 128 256))
 
-(defparameter a 4294967296)
+;;(defparameter a 256)
 
 (defgeneric ~ (a))
 
 (defmethod ~ ((a integer))
   (if (< a (expt 2 64))
-      (cl:mod (lognot a) (expt 2 (find (integer-length (abs a))
+      (cl:mod (lognot a) (expt 2 (find (integer-length a)
                                        *~bits*
                                        :test (lambda (a b)
                                                (<= a b)))))
@@ -182,7 +182,7 @@
   "gte")
 
 (defmethod op-to-str (op arity)
-  (string-downcase (symbol-name op)))
+  (format nil "~A-~A" (string-downcase (symbol-name op)) arity))
 
 (dolist (op *ops1*)
   (with-open-file (ret (pathname
