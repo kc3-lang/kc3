@@ -184,10 +184,47 @@ ic3> List.reverse(List.map((1, 2, 3, 4), double))
 
 Don't forget to revert the changes to `list.facts`.
 
+#### Unicode characters
+
+`ic3` fully supports Unicode :
+
+Some unicode characters :
+```
+ic3> '\U+1B2FB'
+'𛋻'
+ic3> '𐅀'
+'𐅀'
+ic3> '🤩'
+'🤩'
+ic3>
+```
+
+#### Large integers
+
+```
+ic3> a = 1 + 100000000000000000000000000000000
+100000000000000000000000000000001
+ic3> a * a
+10000000000000000000000000000000200000000000000000000000000000001
+ic3>
+```
+
 
 ### c3s
 
 Script interpreter. Works the same as ic3 but is not interactive.
+
+
+## New in this release
+
+ - Support for additional platforms : arm64, sparc64
+ - libc3
+   - functions
+     - funcall
+ - tests
+   - added many tests for integer operations (s8, s16, s32, s64, sw,
+     integer, u8, u16, u32, u64, uw, and all their combinations for
+     binary operators)
 
 
 ## TODO
@@ -211,7 +248,6 @@ Script interpreter. Works the same as ic3 but is not interactive.
    - functions
      - return
      - def
-     - funcall
      - & &1
    - macros
    - livebook
@@ -512,3 +548,6 @@ You should also get your employer (if you work as a programmer) or school, if an
                                                                 
 The GNU General Public License does not permit incorporating your program into proprietary programs. If your program is a subroutine library, you may consider it more useful to permit linking proprietary applications with the library. If this is what you want to do, use the GNU Lesser General Public License instead of this License. But first, please read <https://www.gnu.org/licenses/why-not-lgpl.html>.
 
+## Others
+
+See the LICENSE file in subdirectories.
