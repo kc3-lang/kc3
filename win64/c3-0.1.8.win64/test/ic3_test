@@ -1,0 +1,78 @@
+#!/bin/sh
+cd "$(dirname $0)/ic3" || exit
+
+TEST_COLOR_KO="[0;91m"
+TEST_COLOR_OK="[0;92m"
+TEST_COLOR_RESET="[0m"
+TEST_COUNT=0
+TEST_KO=0
+TEST_OK=0
+
+if [ "x$IC3" = "x" ]; then
+    if [ -f ../../ic3/ic3 ]; then
+	IC3=../../ic3/ic3
+    elif [ -f ../../ic3 ]; then
+	IC3=../../ic3
+    fi
+fi
+
+test_ko() {
+    echo -n "${TEST_COLOR_KO}F${TEST_COLOR_RESET}"
+    TEST_KO=$(($TEST_KO + 1))
+    TEST_COUNT=$(($TEST_COUNT + 1))
+}
+
+test_ok() {
+    echo -n "${TEST_COLOR_OK}.${TEST_COLOR_RESET}"
+    TEST_OK=$(($TEST_OK + 1))
+    TEST_COUNT=$(($TEST_COUNT + 1))
+}
+
+if [ $# = 0 ]; then
+    if [ "x${IC3_TEST_TARGETS}" = "x" ]; then
+        TARGETS="$(ls -1 *.in | sed -e 's/[.]in$//')"
+    else
+        TARGETS="${IC3_TEST_TARGETS}"
+    fi
+else
+    TARGETS="$@"
+fi
+
+for TARGET in $TARGETS; do
+    RESULT=test_ok
+    $IC3 < ${TARGET}.in > ${TARGET}.out 2>&1
+    echo $? > ${TARGET}.ret
+    if ! diff -au ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff
+    then
+        RESULT=test_ko
+    fi
+    if ! diff -au ${TARGET}.ret.expected ${TARGET}.ret >> ${TARGET}.diff
+    then
+        RESULT=test_ko
+    fi
+    if [ "x$RESULT" = "xtest_ok" ]; then
+        rm ${TARGET}.diff
+        test_ok
+    else
+        test_ko
+    fi
+done
+echo
+DIFFS="$(for TARGET in $TARGETS; do
+    if [ -f "${TARGET}.diff" ]; then
+        echo -n "${TARGET}.diff "
+    fi
+done)"
+if [ "x$DIFFS" != "x" ]; then
+    less $DIFFS || cat $DIFFS
+fi
+echo
+echo -n "Total $TEST_COUNT tests. "
+echo -n "${TEST_COLOR_OK}OK $TEST_OK ($(($TEST_OK * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}. "
+echo "${TEST_COLOR_KO}KO $TEST_KO ($(($TEST_KO * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}."
+
+if [ "x$TEST_KO" = "x0" ]; then
+    exit 0
+fi
+
+exit 1

@@ -1,0 +1,29 @@
+quote fn (x) { x }
+quote fn (x, _y) { x }
+quote fn ((x | _y)) { x }
+quote fn {
+  (()) { :error }
+  ((x | _y)) { x }
+  (_) { :error }
+}
+quote fn (x) {
+  "Hello, world !"
+  x * 2
+}
+a = fn (x) { x }
+a(1)
+b = fn (x, _y) { x }
+b(1, 2)
+c = fn ((x | _y)) { x }
+c((1, 2))
+d = fn {
+  (()) { :error }
+  ((x | _y)) { x }
+  (_) { :error2 }
+}
+d((1, 2))
+e = fn (x) {
+  "Hello, world !"
+  x * 2
+}
+e(2)
