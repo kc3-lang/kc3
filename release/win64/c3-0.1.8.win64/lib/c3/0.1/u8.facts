@@ -1,5 +1,0 @@
-%{module: C3.Facts.Dump,
-  version: 1}
-replace {U8, :is_a, :module}
-replace {U8, :symbol, U8.cast}
-replace {U8.cast, :cfn, cfn U8 "u8_cast" (Tag, Result)}

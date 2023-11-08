@@ -1,5 +1,0 @@
-%{module: C3.Facts.Dump,
-  version: 1}
-add {S64, :is_a, :module}
-add {S64, :symbol, S64.cast}
-replace {S64.cast, :cfn, cfn :s64 "s64_cast" (:tag)}
