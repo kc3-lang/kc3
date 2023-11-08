@@ -277,6 +277,7 @@ libc3/integer.c
 libc3/integer.h
 libc3/io.c
 libc3/io.h
+libc3/license.c
 libc3/list.c
 libc3/list.h
 libc3/log.c
