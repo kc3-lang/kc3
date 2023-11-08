@@ -1,0 +1,20 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+add {List, :is_a, :module}
+add {List, :symbol, List.cast}
+add {List, :symbol, List.map}
+add {List, :symbol, List.reverse}
+replace {List.cast, :cfn, cfn :list "list_cast" (:tag, :&result)}
+replace {List.map, :fn, fn {
+  ((), _) {
+    ()
+  }
+  ((a | b), f) {
+    (f(a) | List.map(b, f))
+  }
+}}
+replace {List.reverse, :fn, fn {
+  (x) { List.reverse(x, ()) }
+  ((), acc) { acc }
+  ((a | b), acc) { List.reverse(b, (a | acc)) }
+}}
