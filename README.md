@@ -145,10 +145,10 @@ ic3> double(3)
 6
 ic3> double(4)
 8
-ic3> List.map((1, 2, 3, 4), double)
-(2, 4, 6, 8)
-ic3> List.reverse(List.map((1, 2, 3, 4), double))
-(8, 6, 4, 2)
+ic3> List.map([1, 2, 3, 4], double)
+[2, 4, 6, 8]
+ic3> List.reverse(List.map([1, 2, 3, 4], double))
+[8, 6, 4, 2]
 ```
 
 The `List.map` and `List.reverse` functions are defined in
@@ -183,6 +183,7 @@ ic3> List.reverse(List.map((1, 2, 3, 4), double))
 ```
 
 Don't forget to revert the changes to `list.facts`.
+
 
 #### Unicode characters
 
