@@ -36,6 +36,6 @@ TEST_CASE(fn_init_1)
   FN_TEST_INIT_1("fn (x) { x * 2 }");
   FN_TEST_INIT_1("fn (x, y) { x + y }");
   FN_TEST_INIT_1("fn { (x) { x } (x, y) { x + y } }");
-  FN_TEST_INIT_1("fn { (()) { :error } ((x | _y)) { x } (_) { :error } }");
+  FN_TEST_INIT_1("fn { ([]) { :error } ([x | _y]) { x } (_) { :error } }");
 }
 TEST_CASE_END(fn_init_1)

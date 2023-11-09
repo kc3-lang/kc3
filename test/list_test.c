@@ -51,23 +51,23 @@ void list_test (void)
 
 TEST_CASE(list_1)
 {
-  TEST_ASSERT(! list_1("()"));
-  LIST_TEST_1("(() | ())");
-  LIST_TEST_1("((), () | ())");
-  LIST_TEST_1("((), (), () | ())");
-  LIST_TEST_1("(A)");
-  LIST_TEST_1("(A | B)");
-  LIST_TEST_1("(A, B)");
-  LIST_TEST_1("(A, B | C)");
-  LIST_TEST_1("(A, B, C)");
-  LIST_TEST_1("(A, B, C | D)");
+  TEST_ASSERT(! list_1("[]"));
+  LIST_TEST_1("[[] | []]");
+  LIST_TEST_1("[[], [] | []]");
+  LIST_TEST_1("[[], [], [] | []]");
+  LIST_TEST_1("[A]");
+  LIST_TEST_1("[A | B]");
+  LIST_TEST_1("[A, B]");
+  LIST_TEST_1("[A, B | C]");
+  LIST_TEST_1("[A, B, C]");
+  LIST_TEST_1("[A, B, C | D]");
 }
 TEST_CASE_END(list_1)
 
 TEST_CASE(list_inspect)
 {
-  LIST_TEST_INSPECT("()", "()");
-  LIST_TEST_INSPECT("(() | ())", "(() | ())");
-  LIST_TEST_INSPECT("((), () | ())", "((), ())");
+  LIST_TEST_INSPECT("[]", "[]");
+  LIST_TEST_INSPECT("[[] | []]", "[[]]");
+  LIST_TEST_INSPECT("[[], [] | []]", "[[], []]");
 }
 TEST_CASE_END(list_inspect)

@@ -996,7 +996,7 @@ TEST_CASE_END(buf_parse_digit_dec)
 
 TEST_CASE(buf_parse_fn)
 {
-  BUF_PARSE_TEST_FN("fn () { () }");
+  BUF_PARSE_TEST_FN("fn () { [] }");
   BUF_PARSE_TEST_FN("fn (x) { x }");
   BUF_PARSE_TEST_FN("fn (x, y) { x }");
 }
@@ -1159,14 +1159,14 @@ TEST_CASE_END(buf_parse_integer_bin)
 
 TEST_CASE(buf_parse_list)
 {
-  BUF_PARSE_TEST_LIST("()");
-  BUF_PARSE_TEST_LIST("((), ())");
-  BUF_PARSE_TEST_LIST("(() | ())");
-  BUF_PARSE_TEST_LIST("((), (), ())");
-  BUF_PARSE_TEST_LIST("((), () | ())");
-  BUF_PARSE_TEST_LIST("(a | b)");
-  BUF_PARSE_TEST_LIST("(a, b | c)");
-  BUF_PARSE_TEST_LIST("(a, b, c | d)");
+  BUF_PARSE_TEST_LIST("[]");
+  BUF_PARSE_TEST_LIST("[[], []]");
+  BUF_PARSE_TEST_LIST("[[] | []]");
+  BUF_PARSE_TEST_LIST("[[], [], []]");
+  BUF_PARSE_TEST_LIST("[[], [] | []]");
+  BUF_PARSE_TEST_LIST("[a | b]");
+  BUF_PARSE_TEST_LIST("[a, b | c]");
+  BUF_PARSE_TEST_LIST("[a, b, c | d]");
 }
 TEST_CASE_END(buf_parse_list)
 
@@ -1326,7 +1326,7 @@ TEST_CASE(buf_parse_tag)
 {
   BUF_PARSE_TEST_TAG("x");
   BUF_PARSE_TEST_TAG("_x");
-  BUF_PARSE_TEST_TAG("(x | _y)");
+  BUF_PARSE_TEST_TAG("[x | _y]");
 }
 TEST_CASE_END(buf_parse_tag)
 

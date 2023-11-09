@@ -423,7 +423,6 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     case TAG_U64:
     case TAG_UW:
       if (compare_tag(a, b)) {
-        warnx("env_eval_equal_tag: numeric value mismatch");
         return false;
       }
       tag_copy(a, dest);
@@ -435,7 +434,6 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     break;
   }
   if (a->type != b->type) {
-    warnx("env_eval_equal_tag: type mismatch");
     return false;
   }
   switch (a->type) {

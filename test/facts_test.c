@@ -56,8 +56,8 @@ TEST_CASE(facts_add)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -110,8 +110,8 @@ TEST_CASE(facts_dump_file)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -161,8 +161,8 @@ TEST_CASE(facts_find)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -215,13 +215,11 @@ TEST_CASE(facts_init_clean)
   TEST_EQ(facts.facts.count, 0);
   TEST_EQ(facts.log, NULL);
   facts_clean(&facts);
-  test_ok();
   TEST_EQ(facts_init(&facts), &facts);
   TEST_EQ(facts.tags.count, 0);
   TEST_EQ(facts.facts.count, 0);
   TEST_EQ(facts.log, NULL);
   facts_clean(&facts);
-  test_ok();
 }
 TEST_CASE_END(facts_init_clean)
 
@@ -233,8 +231,8 @@ TEST_CASE(facts_load)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -279,8 +277,8 @@ TEST_CASE(facts_log_add)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -330,8 +328,8 @@ TEST_CASE(facts_log_remove)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -399,8 +397,8 @@ TEST_CASE(facts_open_file)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -425,8 +423,8 @@ TEST_CASE(facts_open_file)
     ":b",
     "B",
     "b",
-    "(() | ())",
-    "((() | ()), ())",
+    "[[]]",
+    "[[[]], []]",
     "{:b, :b}",
     "{{:b, :b}, {:c, :d}}",
     "{b, b}",
@@ -545,8 +543,8 @@ TEST_CASE(facts_remove)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -595,8 +593,8 @@ TEST_CASE(facts_save)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",

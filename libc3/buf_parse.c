@@ -868,7 +868,7 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_list(buf, &arg_types)) <= 0)
+  if ((r = buf_parse_list_paren(buf, &arg_types)) <= 0)
     goto restore;
   result += r;
   cfn_init(&tmp, name_sym, arg_types, result_type);
@@ -1663,6 +1663,98 @@ sw buf_parse_integer_unsigned_oct (s_buf *buf, s_integer *dest)
 }
 
 sw buf_parse_list (s_buf *buf, s_list **list)
+{
+  s_list **i;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  i = list;
+  if ((r = buf_read_1(buf, "[")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "]")) < 0)
+    goto restore;
+  if (r > 0) {
+    result += r;
+    *list = NULL;
+    r = result;
+    goto clean;
+  }
+  *i = NULL;
+  while (1) {
+    *i = list_new(NULL, NULL);
+    if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "]")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      r = result;
+      goto clean;
+    }
+    if ((r = buf_read_1(buf, ",")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      i = &(*i)->next.data.list;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      continue;
+    }
+    if ((r = buf_read_1(buf, "|")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_parse_tag(buf, &(*i)->next)) <= 0)
+        goto restore;
+      result += r;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_read_1(buf, "]")) <= 0)
+        goto restore;
+      result += r;
+      r = result;
+      goto clean;
+    }
+    goto restore;
+  }
+ restore:
+  list_delete_all(*list);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_list_paren (s_buf *buf, s_list **list)
 {
   s_list **i;
   sw r;

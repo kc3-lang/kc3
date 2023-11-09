@@ -563,7 +563,6 @@ sw buf_inspect_paren_sym_size (const s_sym *sym)
 
 sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
 {
-  s_list *arg_type;
   sw r;
   sw result = 0;
   assert(cfn);
@@ -582,22 +581,7 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1(buf, "(")) < 0)
-    return r;
-  result += r;
-  arg_type = cfn->arg_types;
-  while (arg_type) {
-    if ((r = buf_inspect_tag(buf, &arg_type->tag)) < 0)
-      return r;
-    result += r;
-    arg_type = list_next(arg_type);
-    if (arg_type) {
-      if ((r = buf_write_1(buf, ", ")) < 0)
-        return r;
-      result += r;
-    }
-  }
-  if ((r = buf_write_1(buf, ")")) < 0)
+  if ((r = buf_inspect_list_paren(buf, (const s_list **) &cfn->arg_types)) < 0)
     return r;
   result += r;
   return result;
@@ -1132,12 +1116,11 @@ sw buf_inspect_integer_size (const s_integer *x)
 
 sw buf_inspect_list (s_buf *buf, const s_list **x)
 {
-  uw count = 0;
   const s_list *i;
   sw r;
   sw result = 0;
   assert(buf);
-  if ((r = buf_write_u8(buf, '(')) <= 0)
+  if ((r = buf_write_1(buf, "[")) <= 0)
     return r;
   result++;
   i = *x;
@@ -1145,7 +1128,6 @@ sw buf_inspect_list (s_buf *buf, const s_list **x)
     if ((r = buf_inspect_tag(buf, &i->tag)) < 0)
       return r;
     result += r;
-    count++;
     switch (i->next.type) {
     case TAG_LIST:
       if (i->next.data.list) {
@@ -1154,11 +1136,45 @@ sw buf_inspect_list (s_buf *buf, const s_list **x)
         result += r;
       }
       i = i->next.data.list;
-      if (! i && count == 1) {
-        if ((r = buf_write_1(buf, " | ()")) < 0)
+      continue;
+    default:
+      if ((r = buf_write_1(buf, " | ")) < 0)
+        return r;
+      result += r;
+      if ((r = buf_inspect_tag(buf, &i->next)) < 0)
+        return r;
+      result += r;
+      i = NULL;
+    }
+  }
+  if ((r = buf_write_1(buf, "]")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_list_paren (s_buf *buf, const s_list **x)
+{
+  const s_list *i;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  if ((r = buf_write_1(buf, "(")) <= 0)
+    return r;
+  result++;
+  i = *x;
+  while (i) {
+    if ((r = buf_inspect_tag(buf, &i->tag)) < 0)
+      return r;
+    result += r;
+    switch (i->next.type) {
+    case TAG_LIST:
+      if (i->next.data.list) {
+        if ((r = buf_write_1(buf, ", ")) < 0)
           return r;
         result += r;
       }
+      i = i->next.data.list;
       continue;
     default:
       if ((r = buf_write_1(buf, " | ")) < 0)
@@ -1178,24 +1194,20 @@ sw buf_inspect_list (s_buf *buf, const s_list **x)
 
 sw buf_inspect_list_size (const s_list **list)
 {
-  uw count = 0;
   const s_list *i;
   sw r;
   sw result = 0;
-  result += strlen("(");
+  result += strlen("[");
   i = *list;
   while (i) {
     if ((r = buf_inspect_tag_size(&i->tag)) < 0)
       return r;
     result += r;
-    count++;
     switch (i->next.type) {
     case TAG_LIST:
       if (i->next.data.list)
         result += strlen(", ");
       i = i->next.data.list;
-      if (! i && count == 1)
-        result += strlen(" | ()");
       continue;
     default:
       result += strlen(" | ");
@@ -1205,7 +1217,7 @@ sw buf_inspect_list_size (const s_list **list)
       break;
     }
   }
-  result += strlen(")");
+  result += strlen("]");
   return result;
 }
 

@@ -6,15 +6,15 @@ add {List, :symbol, List.map}
 add {List, :symbol, List.reverse}
 replace {List.cast, :cfn, cfn :list "list_cast" (:tag, :&result)}
 replace {List.map, :fn, fn {
-  ((), _) {
-    ()
+  ([], _) {
+    []
   }
-  ((a | b), f) {
-    (f(a) | List.map(b, f))
+  ([a | b], f) {
+    [f(a) | List.map(b, f)]
   }
 }}
 replace {List.reverse, :fn, fn {
-  (x) { List.reverse(x, ()) }
-  ((), acc) { acc }
-  ((a | b), acc) { List.reverse(b, (a | acc)) }
+  (x) { List.reverse(x, []) }
+  ([], acc) { acc }
+  ([a | b], acc) { List.reverse(b, [a | acc]) }
 }}

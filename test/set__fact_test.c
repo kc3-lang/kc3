@@ -51,7 +51,6 @@
     TEST_EQ(set.count, 0);                                             \
     TEST_EQ(set.max, max_);                                            \
     set_clean__fact(&set);					       \
-    test_ok();                                                         \
     test_context(NULL);                                                \
   } while (0)
 
@@ -99,8 +98,8 @@ TEST_CASE(set__fact_add)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -147,8 +146,8 @@ TEST_CASE(set__fact_cursor)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -232,8 +231,8 @@ TEST_CASE(set__fact_remove)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -279,8 +278,8 @@ TEST_CASE(set__fact_resize)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
