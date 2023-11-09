@@ -38,7 +38,6 @@
     TEST_EQ(skiplist->max_height, max_height_);                        \
     TEST_EQ(skiplist->head->height, max_height_);                      \
     skiplist_delete__fact(skiplist);                                   \
-    test_ok();                                                         \
   } while (0)
 
 #define SKIPLIST__FACT_TEST_REMOVE(test, expected_length)              \
@@ -75,8 +74,8 @@ TEST_CASE(skiplist__fact_find)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -133,8 +132,8 @@ TEST_CASE(skiplist__fact_insert)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -205,8 +204,8 @@ TEST_CASE(skiplist__fact_remove)
     ":a",
     "A",
     "a",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",

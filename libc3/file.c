@@ -31,7 +31,7 @@ int file_copy (const char *from, const char *to)
     warn("cp: %s", from);
     return -1;
   }
-  if ((fd_to = open(to, O_WRONLY | O_CREAT | O_EXCL, 0666)) < 0) {
+  if ((fd_to = open(to, O_WRONLY | O_CREAT | O_TRUNC, 0666)) < 0) {
     warn("cp: %s", to);
     goto error;
   }

@@ -50,7 +50,6 @@
     TEST_EQ(set.count, 0);                                             \
     TEST_EQ(set.max, max_);                                            \
     set_clean__tag(&set);					       \
-    test_ok();                                                         \
     test_context(NULL);                                                \
   } while (0)
 
@@ -70,8 +69,8 @@
     TEST_ASSERT(set_get__tag(&set, tag_1(&tag, ":a")));                \
     TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "A")));                 \
     TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "a")));                 \
-    TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "()")));                \
-    TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "((), ())")));          \
+    TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "[]")));                \
+    TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "[[], []]")));          \
     TEST_ASSERT(set_get__tag(&set, tag_1(&tag, "{:a, :b}")));          \
     TEST_ASSERT(set_get__tag(&set, tag_1(&tag,                         \
                                          "{{:a, :b}, {:c, :d}}")));    \
@@ -126,8 +125,8 @@ TEST_CASE(set__tag_add)
     "A.a(b, c)",
     "B.a(b, c)",
     "A.b(b, c)",
-    "()",
-    "((), ())",
+    "[]",
+    "[[], []]",
     "{:a, :b}",
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
@@ -176,9 +175,9 @@ TEST_CASE(set__tag_cursor)
   SET__TAG_TEST_CURSOR(++i);
   set_add__tag(&set, tag_1(&tag, "a"));
   SET__TAG_TEST_CURSOR(++i);
-  set_add__tag(&set, tag_1(&tag, "()"));
+  set_add__tag(&set, tag_1(&tag, "[]"));
   SET__TAG_TEST_CURSOR(++i);
-  set_add__tag(&set, tag_1(&tag, "((), ())"));
+  set_add__tag(&set, tag_1(&tag, "[[], []]"));
   SET__TAG_TEST_CURSOR(++i);
   set_add__tag(&set, tag_1(&tag, "{:a, :b}"));
   SET__TAG_TEST_CURSOR(++i);
@@ -223,9 +222,9 @@ TEST_CASE(set__tag_cursor)
   SET__TAG_TEST_CURSOR(--i);
   set_remove__tag(&set, tag_1(&tag, "a"));
   SET__TAG_TEST_CURSOR(--i);
-  set_remove__tag(&set, tag_1(&tag, "()"));
+  set_remove__tag(&set, tag_1(&tag, "[]"));
   SET__TAG_TEST_CURSOR(--i);
-  set_remove__tag(&set, tag_1(&tag, "((), ())"));
+  set_remove__tag(&set, tag_1(&tag, "[[], []]"));
   SET__TAG_TEST_CURSOR(--i);
   set_remove__tag(&set, tag_1(&tag, "{:a, :b}"));
   SET__TAG_TEST_CURSOR(--i);
@@ -312,8 +311,8 @@ TEST_CASE(set__tag_remove)
   set_add__tag(&set, tag_1(&tag, ":a"));
   set_add__tag(&set, tag_1(&tag, "A"));
   set_add__tag(&set, tag_1(&tag, "a"));
-  set_add__tag(&set, tag_1(&tag, "()"));
-  set_add__tag(&set, tag_1(&tag, "((), ())"));
+  set_add__tag(&set, tag_1(&tag, "[]"));
+  set_add__tag(&set, tag_1(&tag, "[[], []]"));
   set_add__tag(&set, tag_1(&tag, "{:a, :b}"));
   set_add__tag(&set, tag_1(&tag, "{{:a, :b}, {:c, :d}}"));
   set_add__tag(&set, tag_1(&tag, "{a, b}"));
@@ -340,10 +339,10 @@ TEST_CASE(set__tag_remove)
   SET__TAG_TEST_REMOVE(tag_1(&tag, "A"), i);
   SET__TAG_TEST_REMOVE(tag_1(&tag, "a"), --i);
   SET__TAG_TEST_REMOVE(tag_1(&tag, "a"), i);
-  SET__TAG_TEST_REMOVE(tag_1(&tag, "()"), --i);
-  SET__TAG_TEST_REMOVE(tag_1(&tag, "()"), i);
-  SET__TAG_TEST_REMOVE(tag_1(&tag, "((), ())"), --i);
-  SET__TAG_TEST_REMOVE(tag_1(&tag, "((), ())"), i);
+  SET__TAG_TEST_REMOVE(tag_1(&tag, "[]"), --i);
+  SET__TAG_TEST_REMOVE(tag_1(&tag, "[]"), i);
+  SET__TAG_TEST_REMOVE(tag_1(&tag, "[[], []]"), --i);
+  SET__TAG_TEST_REMOVE(tag_1(&tag, "[[], []]"), i);
   SET__TAG_TEST_REMOVE(tag_1(&tag, "{:a, :b}"), --i);
   SET__TAG_TEST_REMOVE(tag_1(&tag, "{:a, :b}"), i);
   SET__TAG_TEST_REMOVE(tag_1(&tag, "{{:a, :b}, {:c, :d}}"), --i);
@@ -396,10 +395,10 @@ TEST_CASE(set__tag_resize)
   set_add__tag(&set, tag_1(&tag, "A"));
   set_add__tag(&set, tag_1(&tag, "a"));
   set_add__tag(&set, tag_1(&tag, "a"));
-  set_add__tag(&set, tag_1(&tag, "()"));
-  set_add__tag(&set, tag_1(&tag, "()"));
-  set_add__tag(&set, tag_1(&tag, "((), ())"));
-  set_add__tag(&set, tag_1(&tag, "((), ())"));
+  set_add__tag(&set, tag_1(&tag, "[]"));
+  set_add__tag(&set, tag_1(&tag, "[]"));
+  set_add__tag(&set, tag_1(&tag, "[[], []]"));
+  set_add__tag(&set, tag_1(&tag, "[[], []]"));
   set_add__tag(&set, tag_1(&tag, "{:a, :b}"));
   set_add__tag(&set, tag_1(&tag, "{:a, :b}"));
   set_add__tag(&set, tag_1(&tag, "{{:a, :b}, {:c, :d}}"));

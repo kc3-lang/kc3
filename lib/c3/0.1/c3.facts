@@ -173,7 +173,7 @@ replace {C3.operator23, :operator_associativity, :right}
 replace {C3.break, :cfn, cfn Void "c3_break" ()}
 replace {C3, :symbol, C3.first}
 replace {C3.first, :fn, fn {
- ((a | _b)) { a }
+ ([a | _b]) { a }
  ({a, _b}) { a }
  ({a, _b, _c}) { a }
  ({a, _b, _c, _d}) { a }
@@ -182,3 +182,7 @@ add {C3, :symbol, C3.license}
 replace {C3.license, :cfn, cfn Void "c3_license" ()}
 add {C3, :symbol, C3.type}
 replace {C3.type, :cfn, cfn Sym "tag_type" (Tag, Result)}
+add {C3, :symbol, C3.fib}
+replace {C3.fib, :fn, fn { (0) { 1 }
+                           (1) { 1 }
+                           (x) { fib(x - 1) + fib(x - 2) } }}

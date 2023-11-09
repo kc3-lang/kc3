@@ -51,7 +51,7 @@ TEST_CASE_END(tag_hash_u64)
 TEST_CASE(tag_init_1)
 {
   s_tag a;
-  TEST_ASSERT(tag_init_1(&a, "fn () { () }"));
+  TEST_ASSERT(tag_init_1(&a, "fn () { [] }"));
   tag_clean(&a);
   TEST_ASSERT(tag_init_1(&a, "fn (x) { x }"));
   tag_clean(&a);

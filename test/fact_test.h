@@ -22,12 +22,12 @@
     fact_expected = (expected);                                        \
     fact_test = (test);                                                \
     if (compare_fact(fact_test, fact_expected) == 0) {                 \
-      test_ok();                                                       \
+      g_test_assert_count++;                                           \
+      g_test_assert_ok++;                                              \
     }                                                                  \
     else {                                                             \
       s_str str_expected;                                              \
       s_str str_test;                                                  \
-      test_ko();                                                       \
       fact_inspect(fact_expected, &str_expected);                      \
       fact_inspect(fact_test, &str_test);                              \
       printf("\n%sAssertion failed in %s:%d %s\n"                      \
@@ -40,6 +40,7 @@
              TEST_COLOR_RESET);                                        \
       str_clean(&str_expected);                                        \
       str_clean(&str_test);                                            \
+      test_ko();                                                       \
     }                                                                  \
   } while (0)
 
