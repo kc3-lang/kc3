@@ -215,17 +215,21 @@ ic3>
 
 Script interpreter. Works the same as ic3 but is not interactive.
 
-
 ## New in this release
 
- - Support for additional platforms : arm64, sparc64
- - libc3
-   - functions
-     - funcall
- - tests
-   - added many tests for integer operations (s8, s16, s32, s64, sw,
-     integer, u8, u16, u32, u64, uw, and all their combinations for
-     binary operators)
+   - lists are now marked with brackets `[]`.
+     Regular lists can be :
+     - an element and a list : `[element | list]`
+     - multiple elements : `[e0, e1, e2]`
+     - multiple elements and a list : `[e0, e1, e2 | list]`
+     - the empty list : `[]`
+     Regular lists end with the empty list : `[e0] == [e0 | []]`
+     You can also contruct dotted lists like in Common Lisp where
+     the next list pointer is a arbitrary form. E.g. :
+     - an element and an element : `[e0 | e1]`
+     - multiple elements and an element : `[e0, e1, e2 | e3]`
+     - the empty list and an element : `[[], element]`
+    All list formats are supported in pattern matching.
 
 
 ## TODO
@@ -236,7 +240,6 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - with ignore variables
    - math
      - floating point numbers
-   - lists
    - structs
    - errors (setjmp, longjmp)
      - stacktrace
