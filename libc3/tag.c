@@ -8646,7 +8646,7 @@ void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
   case TAG_SYM:
     if (type == sym_1("Sym") ||
         type == sym_1("sym"))
-      return (void *) tag->data.sym;
+      return (void *) &tag->data.sym;
     if (type == sym_1("Str") ||
         type == sym_1("str"))
       return (void *) &tag->data.sym->str;

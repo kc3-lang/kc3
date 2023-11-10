@@ -239,6 +239,8 @@ All these list formats are supported in pattern matching.
 ## TODO
 
  - libc3
+   - c3
+     - [DONE] tag_type
    - facts
      - negative facts : 4 + 2n = not 3 + 2n
      - with ignore variables
