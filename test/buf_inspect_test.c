@@ -130,6 +130,7 @@
     TEST_EQ(buf.wpos, strlen(expected));                               \
     if (g_test_last_ok)                                                \
       TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                   \
+    list_delete_all(list_test);                                        \
     buf_clean(&buf_test);                                              \
     buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
