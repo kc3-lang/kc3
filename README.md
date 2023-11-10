@@ -160,8 +160,8 @@ open an editor and change the line in `lib/c3/0.1/list.facts` from
 ```
 replace {List.reverse, :fn, fn {
   (x) { List.reverse(x, ()) }
-  ((), acc) { acc }
-  ((a | b), acc) { List.reverse(b, (a | acc)) }
+  ([], acc) { acc }
+  ([a | b], acc) { List.reverse(b, [a | acc]) }
 }}
 ```
 
@@ -170,16 +170,16 @@ to
 ```
 replace {List.reverse, :fn, fn {
   (x) { List.reverse(x, ()) }
-  ((), acc) { (:reversed | acc) }
-  ((a | b), acc) { List.reverse(b, (a | acc)) }
+  ([], acc) { [:reversed | acc] }
+  ([a | b], acc) { List.reverse(b, [a | acc]) }
 }}
 ```
 
 and check the results of the last command (up key) in ic3/ic3 :
 
 ```
-ic3> List.reverse(List.map((1, 2, 3, 4), double))
-(:reversed, 8, 6, 4, 2)
+ic3> List.reverse(List.map([1, 2, 3, 4], double))
+[:reversed, 8, 6, 4, 2]
 ```
 
 Don't forget to revert the changes to `list.facts`.
