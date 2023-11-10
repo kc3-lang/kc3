@@ -217,19 +217,23 @@ Script interpreter. Works the same as ic3 but is not interactive.
 
 ## New in this release
 
-   - lists are now marked with brackets `[]`.
-     Regular lists can be :
-     - an element and a list : `[element | list]`
-     - multiple elements : `[e0, e1, e2]`
-     - multiple elements and a list : `[e0, e1, e2 | list]`
-     - the empty list : `[]`
-     Regular lists end with the empty list : `[e0] == [e0 | []]`
-     You can also contruct dotted lists like in Common Lisp where
-     the next list pointer is a arbitrary form. E.g. :
-     - an element and an element : `[e0 | e1]`
-     - multiple elements and an element : `[e0, e1, e2 | e3]`
-     - the empty list and an element : `[[], element]`
-    All list formats are supported in pattern matching.
+### Lists are now marked with brackets `[]`
+
+Regular lists can be :
+ - an element and a list : `[element | list]`
+ - multiple elements : `[e0, e1, e2]`
+ - multiple elements and a list : `[e0, e1, e2 | list]`
+ - the empty list : `[]`
+
+Regular lists end with the empty list : `[e0] == [e0 | []]`.
+
+You can also contruct dotted lists like in Common Lisp where
+the next list pointer is a arbitrary form. E.g. :
+ - an element and an element : `[e0 | e1]`
+ - multiple elements and an element : `[e0, e1, e2 | e3]`
+ - the empty list and an element : `[[], element]`
+
+All these list formats are supported in pattern matching.
 
 
 ## TODO
