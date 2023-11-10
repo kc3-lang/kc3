@@ -47,7 +47,6 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     return NULL;
   }
   if (cfn->cif.rtype == &ffi_type_pointer) {
-    cfn_tag_init(&tmp2, cfn->result_type);
     cfn_tag_init(&tmp, cfn->result_type);
     /* make result point to result_pointer */
     result_pointer = tag_to_ffi_pointer(&tmp, cfn->result_type);
@@ -68,13 +67,15 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     while (cfn_arg_types) {
       assert(cfn_arg_types->tag.type == TAG_SYM);
       if (cfn_arg_types->tag.data.sym == sym_1("Result") ||
-          cfn_arg_types->tag.data.sym == sym_1("&result"))
+          cfn_arg_types->tag.data.sym == sym_1("&result")) {
+        cfn_tag_init(&tmp2, cfn->result_type);
         if (cfn->cif.rtype == &ffi_type_pointer) {
           arg_pointers[i] = tag_to_ffi_pointer(&tmp2, cfn->result_type);
           arg_values[i] = &arg_pointers[i];
         }
         else
           arg_values[i] = tag_to_ffi_pointer(&tmp2, cfn->result_type);
+      }
       else {
         if (cfn->cif.arg_types[i] == &ffi_type_pointer) {
           arg_pointers[i] =
