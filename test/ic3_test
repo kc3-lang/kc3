@@ -17,13 +17,13 @@ if [ "x$IC3" = "x" ]; then
 fi
 
 test_ko() {
-    echo -n "${TEST_COLOR_KO}F${TEST_COLOR_RESET}"
+    printf "%s" "${TEST_COLOR_KO}F${TEST_COLOR_RESET}"
     TEST_KO=$(($TEST_KO + 1))
     TEST_COUNT=$(($TEST_COUNT + 1))
 }
 
 test_ok() {
-    echo -n "${TEST_COLOR_OK}.${TEST_COLOR_RESET}"
+    printf "%s" "${TEST_COLOR_OK}.${TEST_COLOR_RESET}"
     TEST_OK=$(($TEST_OK + 1))
     TEST_COUNT=$(($TEST_COUNT + 1))
 }
@@ -60,7 +60,7 @@ done
 echo
 DIFFS="$(for TARGET in $TARGETS; do
     if [ -f "${TARGET}.diff" ]; then
-        echo -n "${TARGET}.diff "
+        printf "%s " "${TARGET}.diff"
     fi
 done)"
 if [ "x$DIFFS" != "x" ]; then

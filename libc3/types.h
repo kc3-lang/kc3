@@ -131,12 +131,13 @@ typedef struct facts_cursor            s_facts_cursor;
 typedef struct facts_spec_cursor       s_facts_spec_cursor;
 typedef struct facts_with_cursor       s_facts_with_cursor;
 typedef struct facts_with_cursor_level s_facts_with_cursor_level;
-typedef struct float_                  s_float;
+typedef struct float_s                 s_float;
 typedef struct fn                      s_fn;
 typedef struct fn_clause               s_fn_clause;
 typedef struct frame                   s_frame;
 typedef struct ident                   s_ident;
 typedef struct integer                 s_integer;
+typedef struct integer_fraction        s_integer_fraction;
 typedef struct list                    s_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
@@ -199,11 +200,6 @@ struct fact_w {
   s_tag *predicate;
   s_tag *object;
   uw id; /* serial id */
-};
-
-struct float_ {
-  sw integer;
-  sw bit_shift;
 };
 
 struct fn_clause {
@@ -335,6 +331,11 @@ struct cfn {
   bool special_operator;
 };
 
+struct integer_fraction {
+  s_integer num;
+  s_integer div;
+};
+
 struct log {
   s_buf  buf;
   u64    count;
@@ -358,6 +359,10 @@ struct array {
   uw size;
   s_tag *tags;
   const s_sym *type;
+};
+
+struct float_s {
+  s_integer_fraction f; /* divisor is always 10^n */
 };
 
 

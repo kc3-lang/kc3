@@ -2415,6 +2415,17 @@ sw buf_parse_tag_list (s_buf *buf, s_tag *dest)
   return r;
 }
 
+
+sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_tag_integer(buf, dest)) > 0)
+    tag_integer_reduce(dest);
+  return r;
+}
+
 sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -2431,11 +2442,8 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_integer(buf, dest)) != 0) {
-    tag_integer_reduce(dest);
-    goto end;
-  }
-  if ((r = buf_parse_tag_array(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_number(buf, dest)) != 0 ||
+      (r = buf_parse_tag_array(buf, dest)) != 0 ||
       (r = buf_parse_tag_cast(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_paren(buf, dest)) != 0 ||

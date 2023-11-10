@@ -245,8 +245,11 @@ All these list formats are supported in pattern matching.
      - negative facts : 4 + 2n = not 3 + 2n
      - with ignore variables
    - math
-     - floating point numbers
+     - fractions
+     - floating point numbers (decimals)
    - structs
+   - unions
+   - enums
    - errors (setjmp, longjmp)
      - stacktrace
        - ffi ?
