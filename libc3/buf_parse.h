@@ -103,6 +103,7 @@ sw buf_parse_tag_fn (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_ident (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_integer (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_list (s_buf *buf, s_tag *dest);
+sw buf_parse_tag_number (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_primary (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_quote (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_str (s_buf *buf, s_tag *dest);
