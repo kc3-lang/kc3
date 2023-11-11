@@ -35,4 +35,9 @@ s_str *       module_path (const s_sym *module, const s_str *prefix,
 sw            module_path_size (const s_sym *module, const s_str *prefix);
 const s_sym * module_to_sym (const s_sym *module);
 
+/* Operations */
+bool          module_defmodule (const s_sym *name, const s_quote *block);
+bool          module_def (const s_sym *module, const s_sym *name,
+                          const s_quote *block);
+
 #endif /* MODULE_H */
