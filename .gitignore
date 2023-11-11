@@ -10,6 +10,7 @@ c3s/c3s
 c3s/c3s_asan
 c3s/c3s_cov
 c3s/c3s_debug
+config.h
 config.mk
 *.core
 *.css
@@ -22,7 +23,7 @@ ic3/ic3_asan
 ic3/ic3_cov
 ic3/ic3_debug
 *.la
-libc3/config.h
+libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo
 .libs/
 *.lo
 *.o
