@@ -241,28 +241,41 @@ All these list formats are supported in pattern matching.
  - libc3
    - c3
      - [DONE] tag_type
+   - macros
+   - modules
+     - defmodule
+     - def
+   - gui
+     - cairo graphics
    - facts
      - negative facts : 4 + 2n = not 3 + 2n
      - with ignore variables
    - math
      - fractions
      - floating point numbers (decimals)
+   - maps (anonymous struct)
+     - access
+     - get
+     - put
+     - machine word alignment (from rtbuf)
    - structs
-   - unions
+     - as tagged maps
    - enums
+   - unions
    - errors (setjmp, longjmp)
      - stacktrace
        - ffi ?
          - libdwarf
    - control structures
+     - if / when / unless
+     - switch/case/cond
      - while
-   - modules
-     - defmodule
+   - quote
+     - unquote
    - functions
      - return
      - def
      - & &1
-   - macros
    - livebook
      - gaussian
    - buf_sha256
