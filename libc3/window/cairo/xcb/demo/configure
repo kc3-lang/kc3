@@ -15,7 +15,7 @@ set -e
 
 export SRC_TOP="$(dirname "$PWD")"
 
-. ../../../../config.subr
+. ../../../../../config.subr
 
 PROG=c3_window_cairo_xcb_demo
 PROG_ASAN=c3_window_cairo_xcb_demo_asan
@@ -24,7 +24,7 @@ PROG_DEBUG=c3_window_cairo_xcb_demo_debug
 
 . ./sources.sh
 
-OBJECTS="$(c2lo "$SOURCES")"
+OBJECTS="$(c2ext .main.lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 
 OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
@@ -47,10 +47,11 @@ LIBS="${LIBS:-}"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-CPPFLAGS="$CPPFLAGS -I../../../../libffi/include -I../../../.."
+CPPFLAGS="$CPPFLAGS -I../../../../../libffi/include -I../../../../.."
 config_asan
 config_gnu
 pkg_config xcb
+pkg_config cairo
 LIBS="$LIBS"
 
 # Asan config
@@ -118,8 +119,8 @@ echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_DEBUG} \${LDFLAGS_DEBUG}
 
 for SRC in $SOURCES; do
     echo >> ${CONFIG_MK}
-    SRC_LO="$(c2lo "$SRC")"
-    lo_rule "$SRC" >> ${CONFIG_MK}
+    SRC_LO="$(c2ext .main.lo "$SRC")"
+    ext_rule .main.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}

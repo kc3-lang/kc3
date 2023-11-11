@@ -10,14 +10,29 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <stdio.h>
 #include <libc3/c3.h>
 #include <cairo/cairo.h>
 #include "c3_window_cairo_demo.h"
+#include "types.h"
 
-bool c3_window_cairo_demo_render (cairo_t *cr)
+bool c3_window_cairo_demo_render (s_window_cairo *window,
+                                  cairo_t *cr)
 {
-  cairo_set_source_rgb(cr, 0, 0, 1);
-  cairo_rectangle(cr, 20, 20, 100, 100);
+  assert(window);
+  assert(cr);
+  (void) window;
+  cairo_set_source_rgb(cr, 1, 1, 1);
+  cairo_rectangle(cr, 0, 0, window->w, window->h);
   cairo_fill(cr);
+  return true;
+}
+
+bool c3_window_cairo_demo_resize (s_window_cairo *window,
+                                  uw w, uw h)
+{
+  assert(window);
+  window->w = w;
+  window->h = h;
   return true;
 }

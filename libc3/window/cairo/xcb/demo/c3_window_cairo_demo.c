@@ -10,13 +10,4 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef C3_WINDOW_CAIRO_DEMO_H
-#define C3_WINDOW_CAIRO_DEMO_H
-
-#include <libc3/types.h>
-#include "types.h"
-
-bool c3_window_cairo_demo_render (s_window_cairo *window, cairo_t *cr);
-bool c3_window_cairo_demo_resize (s_window_cairo *window, uw w, uw h);
-
-#endif /* C3_WINDOW_CAIRO_DEMO_H */
+#include "../../c3_window_cairo_demo.c"

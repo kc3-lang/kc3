@@ -15,7 +15,7 @@ set -e
 
 export SRC_TOP="$(dirname "$PWD")"
 
-. ../../../config.subr
+. ../../../../config.subr
 
 LIB=libc3_window_cairo_xcb.la
 LIB_ASAN=libc3_window_cairo_xcb_asan.la
@@ -39,7 +39,7 @@ LIBS="${LIBS} -rpath ${PREFIX}/lib"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
-CPPFLAGS="$CPPFLAGS -I../../../libffi/include -I../../.."
+CPPFLAGS="$CPPFLAGS -I../../../../libffi/include -I../../../.."
 config_asan
 config_gnu
 pkg_config xcb
@@ -51,24 +51,24 @@ LIBS="$LIBS"
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_ASAN="../../../libc3/libc3_asan.la $LIBS"
+LIBS_ASAN="../../../libc3_asan.la $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBS_COV="../../../libc3/libc3_cov.la $LIBS"
+LIBS_COV="../../../libc3_cov.la $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_DEBUG="../../../libc3/libc3_debug.la $LIBS"
+LIBS_DEBUG="../../../libc3_debug.la $LIBS"
 
 # Main config
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS="../../../libc3/libc3.la $LIBS"
+LIBS="../../../libc3.la $LIBS"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

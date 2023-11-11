@@ -19,9 +19,12 @@
 
 int main ()
 {
-  if (! window_cairo_xcb(0, 0, 800, 600,
-                         "C3.Window.Cairo.XCB demo",
-                         c3_window_cairo_demo_render))
+  s_window_cairo window;
+  window_cairo_init(&window, 0, 0, 800, 600,
+                    "C3.Window.Cairo.XCB demo");
+  window.render = c3_window_cairo_demo_render;
+  window.resize = c3_window_cairo_demo_resize;
+  if (! window_cairo_xcb_run(&window))
     return 1;
   return 0;
 }
