@@ -17,25 +17,20 @@
 #include <xcb/xcb.h>
 #include "window_cairo_xcb.h"
 
-bool window_cairo (sw x, sw y, sw w, sw h,
-                   const s8 *title,
-                   f_window_cairo_render render
-                   f_window_cairo_resize resize)
+bool window_cairo_run (s_window_cairo *window)
 {
-  return window_cairo_xcb(x, y, w, h, title, render, resize);
+  return window_cairo_xcb_run(window);
 }
 
-bool window_cairo_xcb (sw x, sw y, sw w, sw h,
-                       const s8 *title,
-                       f_window_cairo_render render,
-                       f_window_cairo_resize resize)
+bool window_cairo_xcb_run (s_window_cairo *window)
 {
+  xcb_configure_notify_event_t *configure_event;
   xcb_connection_t *conn;
   cairo_t *cr;
   xcb_screen_t *screen;
   xcb_visualtype_t *screen_visual;
   cairo_surface_t *surface;
-  xcb_window_t window;
+  xcb_window_t xcb_window;
   xcb_generic_event_t *event;
   conn = xcb_connect(NULL, NULL);
   if (xcb_connection_has_error(conn)) {
@@ -44,30 +39,53 @@ bool window_cairo_xcb (sw x, sw y, sw w, sw h,
   }
   screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
   screen_visual = xcb_screen_visual_type(screen);
-  window = xcb_generate_id(conn);
-  xcb_create_window(conn, XCB_COPY_FROM_PARENT, window, screen->root, x, y, w, h, 0, XCB_WINDOW_CLASS_INPUT_OUTPUT, screen->root_visual, 0, NULL);
-  xcb_change_property(conn, XCB_PROP_MODE_REPLACE, window, XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, 12, title);
-  xcb_map_window(conn, window);
+  xcb_window = xcb_generate_id(conn);
+  uint32_t value_mask = XCB_CW_EVENT_MASK;
+  uint32_t value_list[1] = {XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_STRUCTURE_NOTIFY};
+  xcb_create_window(conn, XCB_COPY_FROM_PARENT, xcb_window, screen->root,
+                    window->x, window->y, window->w, window->h, 0,
+                    XCB_WINDOW_CLASS_INPUT_OUTPUT,
+                    screen->root_visual,
+                    value_mask, value_list);
+  xcb_change_property(conn, XCB_PROP_MODE_REPLACE, xcb_window,
+                      XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, 12,
+                      window->title);
+  xcb_map_window(conn, xcb_window);
   xcb_flush(conn);
-  surface = cairo_xcb_surface_create(conn, window, screen_visual, 800, 600);
+  surface = cairo_xcb_surface_create(conn, xcb_window, screen_visual, 800, 600);
   cr = cairo_create(surface);
-  if (render(cr)) {
+  window->cr = cr;
+  if (window->render(window, cr)) {
     cairo_surface_flush(surface);
     xcb_flush(conn);
     while ((event = xcb_wait_for_event(conn))) {
-      if ((event->response_type & ~0x80) == XCB_EXPOSE) {
-        if (! render(cr))
-          break;
+      switch (event->response_type & ~0x80) {
+      case XCB_EXPOSE:
+        if (! window->render(window, cr)) {
+          free(event);
+          goto exit_loop;
+        }
         cairo_surface_flush(surface);
-        xcb_flush(conn);
+        break;
+      case XCB_CONFIGURE_NOTIFY:
+        configure_event = (xcb_configure_notify_event_t *) event;
+        cairo_xcb_surface_set_size(surface, configure_event->width, configure_event->height);
+        if (! window->resize(window, configure_event->width,
+                             configure_event->height)) {
+          free(event);
+          goto exit_loop;
+        }
+        break;
       }
       free(event);
+      xcb_flush(conn);
     }
   }
+ exit_loop:
   cairo_destroy(cr);
   cairo_surface_destroy(surface);
   xcb_disconnect(conn);
-  return 0;
+  return true;
 }
 
 xcb_visualtype_t * xcb_screen_visual_type (xcb_screen_t *screen)

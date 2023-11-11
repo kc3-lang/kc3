@@ -15,11 +15,10 @@
 
 #include <libc3/types.h>
 #include <xcb/xcb.h>
+#include "../types.h"
 #include "../window_cairo.h"
 
-bool window_cairo_xcb (sw x, sw y, sw w, sw h,
-                       const s8 *title,
-                       f_window_cairo_render render);
+bool window_cairo_xcb_run (s_window_cairo *window);
 
 xcb_visualtype_t * xcb_screen_visual_type (xcb_screen_t *screen);
 

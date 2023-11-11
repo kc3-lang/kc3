@@ -35,6 +35,7 @@ struct window {
   sw y;
   uw w;
   uw h;
+  const s8 *title;
   f_window_render render;
   f_window_resize resize;
   void *render_context;

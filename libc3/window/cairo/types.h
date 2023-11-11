@@ -25,11 +25,11 @@
 typedef struct window_cairo s_window_cairo;
 
 /* return false to break event loop */
-typedef bool (*f_window_cairo_render) (s_cairo_window *window,
+typedef bool (*f_window_cairo_render) (s_window_cairo *window,
                                        cairo_t *cr);
 
 /* return false to break event loop */
-typedef bool (*f_window_cairo_resize) (s_cairo_window *window,
+typedef bool (*f_window_cairo_resize) (s_window_cairo *window,
                                        uw w, uw h);
 
 struct window_cairo {
@@ -38,8 +38,9 @@ struct window_cairo {
   sw y;
   uw w;
   uw h;
-  f_cairo_window_render render;
-  f_cairo_window_resize resize;
+  const s8 *title;
+  f_window_cairo_render render;
+  f_window_cairo_resize resize;
   cairo_t *cr;
 };
 

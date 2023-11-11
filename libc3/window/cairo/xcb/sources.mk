@@ -4,5 +4,5 @@ HEADERS = \
 	window_cairo_xcb.h ../window_cairo.h \
 
 SOURCES = \
-	window_cairo_xcb.c \
+	window_cairo_xcb.c ../window_cairo.c \
 

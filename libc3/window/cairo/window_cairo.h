@@ -15,11 +15,15 @@
 
 #include <libc3/types.h>
 #include <cairo/cairo.h>
+#include "types.h"
 
-typedef bool (*f_window_cairo_render) (cairo_t *cr);
+s_window_cairo * window_cairo_init (s_window_cairo *window,
+                                    sw x, sw y, uw w, uw h,
+                                    const s8 *title);
+bool             window_cairo_run (s_window_cairo *window);
 
-bool window_cairo (sw x, sw y, sw w, sw h,
-                   const s8 *title,
-                   f_window_cairo_render render);
+/* callbacks */
+bool window_cairo_render_default (s_window_cairo *window, cairo_t *cr);
+bool window_cairo_resize_default (s_window_cairo *window, uw w, uw h);
 
 #endif /* WINDOW_CAIRO_H */
