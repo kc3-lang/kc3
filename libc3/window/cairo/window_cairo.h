@@ -19,10 +19,15 @@
 
 s_window_cairo * window_cairo_init (s_window_cairo *window,
                                     sw x, sw y, uw w, uw h,
-                                    const s8 *title);
+                                    const s8 *title,
+                                    uw sequence_count);
 bool             window_cairo_run (s_window_cairo *window);
 
 /* callbacks */
+bool window_cairo_button_default (s_window_cairo *window, u8 button,
+                                  sw x, sw y);
+bool window_cairo_key_default (s_window_cairo *window, uw key);
+bool window_cairo_load_default (s_window_cairo *window);
 bool window_cairo_render_default (s_window_cairo *window, cairo_t *cr);
 bool window_cairo_resize_default (s_window_cairo *window, uw w, uw h);
 

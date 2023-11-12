@@ -10,16 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBC3_WINDOW_CAIRO_DEMO_H
-#define LIBC3_WINDOW_CAIRO_DEMO_H
+#ifndef SEQUENCE_H
+#define SEQUENCE_H
 
-#include <libc3/types.h>
 #include "types.h"
 
-#define LIBC3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT 1
+s_sequence * sequence_init (s_sequence *sequence, f64 duration,
+                            const s8 *title);
 
-bool c3_window_cairo_demo_load (s_window_cairo *window);
-bool c3_window_cairo_demo_render (s_window_cairo *window, cairo_t *cr);
-bool c3_window_cairo_demo_resize (s_window_cairo *window, uw w, uw h);
-
-#endif /* LIBC3_WINDOW_CAIRO_DEMO_H */
+#endif /* ndef SEQUENCE_H */

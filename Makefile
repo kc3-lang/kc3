@@ -75,6 +75,9 @@ debug:
 	${MAKE} -C c3s debug
 	${MAKE} -C test debug
 
+demo: build
+	${MAKE} -C libc3/window demo
+
 dist: c3-${C3_VERSION}.tar.gz
 
 c3-${C3_VERSION}.tar.gz:
@@ -100,6 +103,9 @@ gcovr:
 	${MAKE} -C c3s gcovr
 	${MAKE} -C test gcovr
 	if [ -d "$$HOME/Downloads/c3_gcovr" ]; then bin/gcovr-to-downloads; fi
+
+gdb_demo: debug
+	${MAKE} -C libc3/window gdb_demo
 
 gdb_ic3: debug
 	${MAKE} -C ic3 gdb_ic3
@@ -181,7 +187,29 @@ test_libc3_cov: cov
 test_libc3_debug: debug
 	${MAKE} -C test test_libc3_debug
 
-.PHONY: all asan c3s cov clean clean_cov debug gcovr ic3 install libc3 libtommath libffi license test test_asan test_cov test_debug test_gcovr test_ic3
+.PHONY: \
+	all \
+	asan \
+	c3s \
+	cov \
+	clean \
+	clean_cov \
+	debug \
+	demo \
+	dist \
+	gcovr \
+	ic3 \
+	install \
+	libc3 \
+	libtommath \
+	libffi \
+	license \
+	test \
+	test_asan \
+	test_cov \
+	test_debug \
+	test_gcovr \
+	test_ic3
 
 include config.mk
 include sources.mk

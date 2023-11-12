@@ -23,6 +23,16 @@
 typedef struct window s_window;
 
 /* return false to break event loop */
+typedef bool (*f_window_button) (s_window *window, u8 button,
+                                 uw x, uw y);
+
+/* return false to break event loop */
+typedef bool (*f_window_key) (s_window *window, uw key);
+
+/* return false to break event loop */
+typedef bool (*f_window_load) (s_window *window);
+
+/* return false to break event loop */
 typedef bool (*f_window_render) (s_window *window,
                                  void *render_context);
 
@@ -30,15 +40,25 @@ typedef bool (*f_window_render) (s_window *window,
 typedef bool (*f_window_resize) (s_window *window,
                                  uw w, uw h);
 
+/* To subtype make a copy of this struct while replacing
+ * pointer types (including pointer to function types).
+ * E.g. see libc3/window/cairo/types.h
+ */
 struct window {
-  sw x;
-  sw y;
-  uw w;
-  uw h;
-  const s8 *title;
+  sw              x;
+  sw              y;
+  uw              w;
+  uw              h;
+  f_window_button button;
+  f_window_key    key;
+  f_window_load   load;
   f_window_render render;
+  void           *render_context;
   f_window_resize resize;
-  void *render_context;
+  s_sequence     *sequence;
+  uw              sequence_count;
+  uw              sequence_pos;
+  const s8       *title;
 };
 
 #endif /* LIBC3_WINDOW_TYPES_H */

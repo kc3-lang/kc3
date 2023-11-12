@@ -22,6 +22,11 @@ PROG_ASAN=c3_window_cairo_xcb_demo_asan
 PROG_COV=c3_window_cairo_xcb_demo_cov
 PROG_DEBUG=c3_window_cairo_xcb_demo_debug
 
+echo "PROG = $PROG" >> ${CONFIG_MK}
+echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}
+echo "PROG_COV = $PROG_COV" >> ${CONFIG_MK}
+echo "PROG_DEBUG = $PROG_DEBUG" >> ${CONFIG_MK}
+
 . ./sources.sh
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"

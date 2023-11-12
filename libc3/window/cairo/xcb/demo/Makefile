@@ -9,15 +9,18 @@
 ## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
+include config.mk
+include sources.mk
 
-CLEANFILES = *.a c3_window_cairo_xcb_demo c3_window_cairo_xcb_demo_asan c3_window_cairo_xcb_demo_cov c3_window_cairo_xcb_demo_debug *.css *.gcno *.html *.o .libs *.lo
+CLEANFILES = *.a ${PROG} ${PROG_ASAN} ${PROG_COV} ${PROG_DEBUG} *.css \
+	*.gcno *.html *.o .libs *.lo
 
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.mk
 
-build: c3_window_cairo_xcb_demo
+build: ${PROG}
 
 all:
 	${MAKE} build
@@ -25,7 +28,7 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: c3_window_cairo_xcb_demo_asan
+asan: ${PROG_ASAN}
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -33,24 +36,33 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
-cov:   c3_window_cairo_xcb_demo_cov
+cov:   ${PROG_COV}
 
-debug: c3_window_cairo_xcb_demo_debug
+debug: ${PROG_DEBUG}
+
+demo: ${PROG}
+	time ./${PROG}
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
 
 gcovr:
-	gcovr --gcov-executable ${GCOV} --html-details c3_window_cairo_xcb_demo.html
+	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
 
-gdb_c3_window_cairo_xcb_demo: debug
-	if [ -f c3_window_cairo_xcb_demo_debug.core ]; then gdb .libs/c3_window_cairo_xcb_demo_debug c3_window_cairo_xcb_demo_debug.core; else gdb .libs/c3_window_cairo_xcb_demo_debug; fi
+gdb_demo: debug
+	if [ -f ${PROG_DEBUG}.core ]; then gdb .libs/${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb .libs/${PROG_DEBUG}; fi
 
 install:
-	mkdir -p ${prefix}/bin
-	install -m 755 c3_window_cairo_xcb_demo ${prefix}/bin/c3_window_cairo_xcb_demo
+	install -m 755 -d ${prefix}/bin
+	install -m 755 ${PROG} ${prefix}/bin/${PROG}
 
-.PHONY: all asan cov debug clean clean_cov distclean
-
-include config.mk
-include sources.mk
+.PHONY: \
+	all \
+	asan \
+	clean \
+	clean_cov \
+	cov \
+	debug \
+	demo \
+	distclean \
+	gdb_demo

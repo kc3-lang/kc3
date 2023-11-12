@@ -46,7 +46,18 @@ test:
 update_sources:
 	./update_sources
 
-.PHONY: all asan build clean cov debug distclean gen install test update_sources
+.PHONY: \
+	all \
+	asan \
+	build \
+	clean \
+	cov \
+	debug \
+	distclean \
+	gen \
+	install \
+	test \
+	update_sources
 
 include config.mk
 include sources.mk

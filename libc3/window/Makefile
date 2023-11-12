@@ -40,6 +40,9 @@ debug:
 	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb debug; fi
 	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb/demo debug; fi
 
+demo:
+	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb/demo demo; fi
+
 distclean:
 	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb distclean; fi
 	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb/demo distclean; fi
@@ -47,6 +50,9 @@ distclean:
 gcovr:
 	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb gcovr; fi
 	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb/demo gcovr; fi
+
+gdb_demo: debug
+	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb/demo gdb_demo; fi
 
 install:
 	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb install; fi
@@ -60,6 +66,17 @@ update_sources:
 	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb update_sources; fi
 	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb/demo update_sources; fi
 
-.PHONY: all asan build clean cov debug distclean install test update_sources
+.PHONY: \
+	all \
+	asan \
+	build \
+	clean \
+	cov \
+	debug \
+	demo \
+	distclean \
+	install \
+	test \
+	update_sources
 
 include config.mk

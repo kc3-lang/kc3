@@ -10,26 +10,21 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef C3_MAIN_H
-#define C3_MAIN_H
+/**
+ * @file time.h
+ * @brief operations on s_time
+ *
+ */
+#ifndef LIBC3_TIME_H
+#define LIBC3_TIME_H
 
 #include "types.h"
 
-#define C3_EXT ".c3"
+/* Observers */
+f64 *   time_to_f64 (const s_time *time, f64 *dest);
+s_tag * time_to_tag (const s_time *time, s_tag *dest);
 
-extern const s_str g_c3_base_binary;
-extern const s_str g_c3_base_octal;
-extern const s_str g_c3_base_decimal;
-extern const s_str g_c3_base_hexadecimal;
-extern const s_str g_c3_bases_hexadecimal[2];
-extern const s8   *g_c3_license;
-extern sw          g_c3_exit_code;
+/* Operators */
+s_time * time_sub (const s_time *a, const s_time *b, s_time *dest);
 
-/* stack-allocation compatible functions */
-void c3_init (s_env *env);
-void c3_clean (s_env *env);
-
-/* debug */
-void c3_break (void);
-
-#endif /* C3_MAIN_H */
+#endif /* LIBC3_TIME_H */

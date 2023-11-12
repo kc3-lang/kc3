@@ -297,6 +297,8 @@ C3_C_SOURCES = \
 	libc3/buf_parse_s.h.in \
 	libc3/buf_parse_u.h.in \
 	libc3/cfn.c \
+	libc3/sequence.h \
+	libc3/sequence.c \
 	libc3/operator.h \
 	libc3/float.h \
 	libc3/f64.c \
@@ -323,6 +325,7 @@ C3_C_SOURCES = \
 	libc3/s.h.in \
 	libc3/u.c.in \
 	libc3/u.h.in \
+	libc3/time.h \
 	libc3/ptag.c \
 	libc3/ptag.h \
 	libc3/ident.c \
@@ -335,12 +338,16 @@ C3_C_SOURCES = \
 	libc3/window/cairo/types.h \
 	libc3/window/cairo/window_cairo.h \
 	libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo.c \
+	libc3/window/cairo/xcb/demo/window.c \
 	libc3/window/cairo/xcb/demo/c3_window_cairo_demo.c \
 	libc3/window/cairo/xcb/window_cairo_xcb.c \
 	libc3/window/cairo/xcb/window_cairo_xcb.h \
 	libc3/window/cairo/xcb/config.h \
 	libc3/window/cairo/window_cairo.c \
 	libc3/window/types.h \
+	libc3/window/window.h \
+	libc3/window/window.c \
+	libc3/time.c \
 	libc3/var.c \
 	libc3/f64.h \
 	libc3/bool.h \

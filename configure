@@ -40,8 +40,6 @@ update_config_mk
 ( cd ucd2c && ./configure; )
 ( cd libc3 && ./configure; )
 ( cd libc3/window && ./configure; )
-( cd libc3/window/cairo/xcb && ./configure; )
-( cd libc3/window/cairo/xcb/demo && ./configure; )
 ( cd ic3 && ./configure; )
 ( cd c3s && ./configure; )
 ( cd test && ./configure; )

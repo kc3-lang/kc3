@@ -25,6 +25,7 @@ const s_str g_c3_base_decimal = {{NULL}, 10, {"0123456789"}};
 const s_str g_c3_base_hexadecimal = {{NULL}, 16, {"0123456789abcdef"}};
 const s_str g_c3_bases_hexadecimal[2] = {{{NULL}, 16, {"0123456789abcdef"}},
                                          {{NULL}, 16, {"0123456789ABCDEF"}}};
+sw          g_c3_exit_code = 1;
 
 void c3_break (void)
 {
