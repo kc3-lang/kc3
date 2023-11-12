@@ -25,6 +25,16 @@
 typedef struct window_cairo s_window_cairo;
 
 /* return false to break event loop */
+typedef bool (*f_window_cairo_button) (s_window_cairo *window,
+                                       u8 button, sw x, sw y);
+
+/* return false to break event loop */
+typedef bool (*f_window_cairo_key) (s_window_cairo *window, uw key);
+
+/* return false to break event loop */
+typedef bool (*f_window_cairo_load) (s_window_cairo *window);
+
+/* return false to break event loop */
 typedef bool (*f_window_cairo_render) (s_window_cairo *window,
                                        cairo_t *cr);
 
@@ -32,16 +42,22 @@ typedef bool (*f_window_cairo_render) (s_window_cairo *window,
 typedef bool (*f_window_cairo_resize) (s_window_cairo *window,
                                        uw w, uw h);
 
+/* Subtype of s_window. See libc3/window/types.h */
 struct window_cairo {
-  /* compatible with s_window */
-  sw x;
-  sw y;
-  uw w;
-  uw h;
-  const s8 *title;
+  sw                    x;
+  sw                    y;
+  uw                    w;
+  uw                    h;
+  f_window_cairo_button button;
+  f_window_cairo_key    key;
+  f_window_cairo_load   load;
   f_window_cairo_render render;
+  cairo_t              *cr;
   f_window_cairo_resize resize;
-  cairo_t *cr;
+  s_sequence           *sequence;
+  uw                    sequence_count;
+  uw                    sequence_pos;
+  const s8             *title;
 };
 
 #endif /* LIBC3_WINDOW_CAIRO_TYPES_H */

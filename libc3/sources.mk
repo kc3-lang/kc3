@@ -112,6 +112,7 @@ HEADERS = \
 	s32.h \
 	s64.h \
 	s8.h \
+	sequence.h \
 	set__fact.h \
 	set__tag.h \
 	set_cursor__fact.h \
@@ -126,6 +127,7 @@ HEADERS = \
 	sw.h \
 	sym.h \
 	tag.h \
+	time.h \
 	timespec.h \
 	tuple.h \
 	type.h \
@@ -248,6 +250,7 @@ SOURCES = \
 	s32.c \
 	s64.c \
 	s8.c \
+	sequence.c \
 	set__fact.c \
 	set__tag.c \
 	set_cursor__fact.c \
@@ -261,6 +264,7 @@ SOURCES = \
 	sw.c \
 	sym.c \
 	tag.c \
+	time.c \
 	timespec.c \
 	tuple.c \
 	type.c \
@@ -382,6 +386,7 @@ LO_SOURCES = \
 	s32.c \
 	s64.c \
 	s8.c \
+	sequence.c \
 	set__fact.c \
 	set__tag.c \
 	set_cursor__fact.c \
@@ -395,6 +400,7 @@ LO_SOURCES = \
 	sw.c \
 	sym.c \
 	tag.c \
+	time.c \
 	timespec.c \
 	tuple.c \
 	type.c \

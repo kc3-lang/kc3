@@ -11,22 +11,59 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
+#include <stdlib.h>
 #include "window_cairo.h"
 
 s_window_cairo * window_cairo_init (s_window_cairo *window,
                                     sw x, sw y, uw w, uw h,
-                                    const s8 *title)
+                                    const s8 *title,
+                                    uw sequence_count)
 {
   assert(window);
   window->x = x;
   window->y = y;
   window->w = w;
   window->h = h;
-  window->title = title ? title : "C3.Window.Cairo";
+  window->button = window_cairo_button_default;
+  window->key = window_cairo_key_default;
+  window->load = window_cairo_load_default;
   window->render = window_cairo_render_default;
   window->resize = window_cairo_resize_default;
   window->cr = NULL;
+  window->sequence = calloc(sequence_count, sizeof(s_sequence));
+  window->sequence_count = sequence_count;
+  window->sequence_pos = 0;
+  window->title = title ? title : "C3.Window.Cairo";
   return window;
+}
+
+bool window_cairo_button_default (s_window_cairo *window, u8 button,
+                                  sw x, sw y)
+{
+  assert(window);
+  (void) window;
+  (void) button;
+  (void) x;
+  (void) y;
+  printf("window_cairo_button_default: %lu (%ld, %ld)\n", (uw) button, x, y);
+  return true;
+}
+
+bool window_cairo_key_default (s_window_cairo *window, uw key)
+{
+  assert(window);
+  (void) window;
+  (void) key;
+  printf("window_cairo_key_default: %lu\n", key);
+  return true;
+}
+
+bool window_cairo_load_default (s_window_cairo *window)
+{
+  assert(window);
+  (void) window;
+  printf("window_cairo_load_default\n");
+  return true;
 }
 
 bool window_cairo_render_default (s_window_cairo *window, cairo_t *cr)
@@ -36,12 +73,16 @@ bool window_cairo_render_default (s_window_cairo *window, cairo_t *cr)
   cairo_set_source_rgb(cr, 1, 1, 1);
   cairo_rectangle(cr, 0, 0, window->w, window->h);
   cairo_fill(cr);
+  printf("window_cairo_render_default\n");
   return true;
 }
 
 bool window_cairo_resize_default (s_window_cairo *window, uw w, uw h)
 {
-  window->w = w;
-  window->h = h;
+  assert(window);
+  (void) window;
+  (void) w;
+  (void) h;
+  printf("window_cairo_resize_default: %lu x %lu\n", w, h);
   return true;
 }

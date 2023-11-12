@@ -18,6 +18,7 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <time.h>
 #include <pthread.h>
 #include "config.h"
 #include "sha1.h"
@@ -143,12 +144,14 @@ typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct ptr                     s_ptr;
 typedef struct quote                   s_quote;
+typedef struct sequence                s_sequence;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
 typedef struct sym                     s_sym;
 typedef struct sym_list                s_sym_list;
 typedef struct tag                     s_tag;
 typedef struct tag_type_list           s_tag_type_list;
+typedef struct timespec                s_time;
 typedef struct tuple                   s_tuple;
 typedef struct type                    s_type;
 typedef struct unwind_protect          s_unwind_protect;
@@ -233,6 +236,14 @@ union ptr_w {
 
 struct quote {
   s_tag *tag;
+};
+
+struct sequence {
+  f64 t;
+  f64 duration;
+  s_time t0;
+  const s8 *title;
+  void *data;
 };
 
 struct struct_ {
