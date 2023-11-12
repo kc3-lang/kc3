@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+include config.mk
+
 build:
 	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb build; fi
 	if ${HAVE_CAIRO} && ${HAVE_XCB}; then ${MAKE} -C cairo/xcb/demo build; fi
@@ -78,5 +80,3 @@ update_sources:
 	install \
 	test \
 	update_sources
-
-include config.mk
