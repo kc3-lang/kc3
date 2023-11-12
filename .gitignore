@@ -24,6 +24,9 @@ ic3/ic3_cov
 ic3/ic3_debug
 *.la
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo
+libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_asan
+libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_cov
+libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_debug
 .libs/
 *.lo
 *.o

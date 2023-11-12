@@ -32,11 +32,13 @@ bool c3_window_cairo_demo_render (s_window_cairo *window,
                                   cairo_t *cr)
 {
   s_sequence *seq;
+  cairo_text_extents_t te;
   assert(window);
   assert(cr);
   if (! window_animate((s_window *) window))
     return false;
   seq = window->sequence + window->sequence_pos;
+  /* background */
   switch (window->sequence_pos) {
   case 0:
     if (seq->t < 1.0)
@@ -60,6 +62,19 @@ bool c3_window_cairo_demo_render (s_window_cairo *window,
     cairo_set_source_rgb(cr, 1, 1, 1);
   }
   cairo_rectangle(cr, 0, 0, window->w, window->h);
+  cairo_fill(cr);
+  /* text */
+  cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+  cairo_select_font_face (cr, "CourierNew",
+                          CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  cairo_set_font_size (cr, 20);
+  cairo_text_extents (cr, seq->title, &te);
+  cairo_move_to (cr, 20, window->h - te.height - te.y_bearing - 20);
+  cairo_show_text (cr, seq->title);
+  /* progress bar */
+  cairo_rectangle(cr, 20, window->h - 11,
+                  (window->w - 40.0) * seq->t / seq->duration,
+                  2);
   cairo_fill(cr);
   return true;
 }

@@ -34,7 +34,7 @@ bool window_animate (s_window *window)
   time_sub(&clock_monotonic, &seq->t0, &delta);
   time_to_f64(&delta, &t);
   seq->t = t;
-  printf("window_animate: %f\n", t);
+  /* printf("window_animate: %f\n", t); */
   if (t > seq->duration &&
       ! window_set_sequence_pos(window, (window->sequence_pos + 1) %
                                 window->sequence_count))

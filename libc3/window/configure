@@ -17,6 +17,9 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . ../../config.subr
 
+config_asan
+echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
+
 if pkg-config cairo; then
     HAVE_CAIRO=true
     if pkg-config xcb; then

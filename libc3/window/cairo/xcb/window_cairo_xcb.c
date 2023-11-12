@@ -127,7 +127,7 @@ bool window_cairo_xcb_run (s_window_cairo *window)
     }
     else {
       sleep.tv_sec = 0;
-      sleep.tv_nsec = 1000000000 / 6;
+      sleep.tv_nsec = 1000000000 / 120;
       nanosleep(&sleep, NULL);
       if (! (r = window->render(window, cr)))
         goto clean;
