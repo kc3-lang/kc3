@@ -31,15 +31,17 @@ s_window_cairo * window_cairo_init (s_window_cairo *window,
 
 bool window_cairo_render_default (s_window_cairo *window, cairo_t *cr)
 {
-  (void) window;
-  (void) cr;
+  assert(window);
+  assert(cr);
+  cairo_set_source_rgb(cr, 1, 1, 1);
+  cairo_rectangle(cr, 0, 0, window->w, window->h);
+  cairo_fill(cr);
   return true;
 }
 
 bool window_cairo_resize_default (s_window_cairo *window, uw w, uw h)
 {
-  (void) window;
-  (void) w;
-  (void) h;
+  window->w = w;
+  window->h = h;
   return true;
 }
