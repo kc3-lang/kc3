@@ -1961,6 +1961,15 @@ sw buf_parse_map_key (s_buf *buf, s_tag *dest)
     dest->data.str = str;
     goto ok;
   }
+  if ((r = buf_parse_sym_str(buf, &str)) < 0)
+    goto clean;
+  if (r > 0) {
+    result += r;
+    dest->type = TAG_SYM;
+    dest->data.sym = str_to_sym(&str);
+    str_clean(&str);
+    goto ok;
+  }
   if ((r = buf_parse_tag(buf, &tag)) <= 0)
     goto restore;
   if ((r = buf_parse_comments(buf)) < 0)

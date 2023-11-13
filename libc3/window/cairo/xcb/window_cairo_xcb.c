@@ -31,6 +31,7 @@ bool window_cairo_xcb_event (s_window_cairo *window,
   xcb_button_press_event_t     *event_button;
   xcb_configure_notify_event_t *event_config;
   xcb_key_press_event_t        *event_key;
+  xcb_motion_notify_event_t    *event_motion;
   switch (event->response_type & ~0x80) {
   case XCB_BUTTON_PRESS:
     event_button = (xcb_button_press_event_t *) event;
@@ -68,6 +69,10 @@ bool window_cairo_xcb_event (s_window_cairo *window,
       return false;
     }
     break;
+  case XCB_MOTION_NOTIFY:
+    event_motion = (xcb_motion_notify_event_t *) event;
+    if (! window->motion(window, event_motion->event_x,
+                         event_motion->event_y)
   default:
     printf("event type %d\n", event->response_type & ~0x80);
   }
@@ -98,6 +103,7 @@ bool window_cairo_xcb_run (s_window_cairo *window)
   uint32_t value_list[1] = {XCB_EVENT_MASK_BUTTON_PRESS |
                             XCB_EVENT_MASK_EXPOSURE |
                             XCB_EVENT_MASK_KEY_PRESS |
+                            XCB_EVENT_MASK_POINTER_MOTION |
                             XCB_EVENT_MASK_STRUCTURE_NOTIFY};
   xcb_create_window(conn, XCB_COPY_FROM_PARENT, xcb_window,
                     screen->root, window->x, window->y,
