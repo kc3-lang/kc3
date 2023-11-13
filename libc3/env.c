@@ -562,6 +562,7 @@ bool env_eval_map (s_env *env, const s_map *map, s_tag *dest)
       goto ko;
     i++;
   }
+  map_sort(&tmp);
   dest->type = TAG_MAP;
   dest->data.map = tmp;
   return true;
