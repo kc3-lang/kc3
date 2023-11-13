@@ -210,19 +210,15 @@ ic3> a * a
 ic3>
 ```
 
+#### Lists
 
-### c3s
 
-Script interpreter. Works the same as ic3 but is not interactive.
-
-## New in this release
-
-### Lists are now marked with brackets `[]`
+Lists are marked with brackets `[]`.
 
 Regular lists can be :
- - an element and a list : `[1 | [2]]`
+ - an element and a list : `[1 | [2]]` → `[1, 2]`
  - multiple elements : `[1, 2, 3]`
- - multiple elements and a list : `[1, 2 | [3, 4]]`
+ - multiple elements and a list : `[1, 2 | [3, 4]]` → `[1, 2, 3, 4]`
  - the empty list : `[]`
 
 Regular lists end with the empty list : `[1] == [1 | []]`.
@@ -234,6 +230,11 @@ the next list pointer is an arbitrary form. E.g. :
  - the empty list and an element : `[[] | 1]`
 
 All these list formats are supported in pattern matching.
+
+
+### c3s
+
+Script interpreter. Works the same as ic3 but is not interactive.
 
 
 ## TODO
@@ -253,13 +254,21 @@ All these list formats are supported in pattern matching.
    - math
      - fractions
      - floating point numbers (decimals)
-   - maps (anonymous struct)
-     - access
+   - maps
+     - A map maps keys to values according to an internal hash table.
+     - `%{a: 1, 2 => 3}`
+     - access (get symbol)
      - get
      - put
      - machine word alignment (from rtbuf)
    - structs
-     - as tagged maps
+     - structs are a special kind of map with their fields sorted according to a spec.
+     - as a `s_map` and `s_struct_spec` accessible through their module name.
+     - `defstruct`
+     - `%Module{a: 1, b: 2}`
+     - access
+     - get
+     - put
    - enums
    - unions
    - errors (setjmp, longjmp)

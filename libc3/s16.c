@@ -79,6 +79,7 @@ s16 * s16_cast (s_tag *tag, s16 *dest)
     *dest = (s16) tag->data.uw;
     return dest;
   case TAG_LIST:
+  case TAG_MAP:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_QUOTE:

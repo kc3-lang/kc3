@@ -30,6 +30,7 @@
 #include "ident.h"
 #include "integer.h"
 #include "list.h"
+#include "map.h"
 #include "quote.h"
 #include "str.h"
 #include "tag.h"
@@ -1268,134 +1269,12 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
 {
   s_integer tmp;
   s_integer tmp2;
-  s_tag tmp_a;
   assert(a);
   assert(b);
   assert(result);
   switch (a->type) {
-  case TAG_BOOL:
-    tmp_a.data.bool = a->data.bool ? 1 : 0;
-    switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_bool(result, tmp_a.data.bool &
-                           (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_bool(result, tmp_a.data.bool & b->data.character);
-    case TAG_INTEGER:
-      integer_init_u8(&tmp, tmp_a.data.bool);
-      integer_band(&tmp, &b->data.integer, &tmp2);
-      tag_init_bool(result, integer_to_u8(&tmp2));
-      integer_clean(&tmp);
-      integer_clean(&tmp2);
-      return result;
-    case TAG_SW:
-      return tag_init_bool(result, tmp_a.data.bool & b->data.sw);
-    case TAG_S64:
-      return tag_init_bool(result, tmp_a.data.bool & b->data.s64);
-    case TAG_S32:
-      return tag_init_bool(result, tmp_a.data.bool & b->data.s32);
-    case TAG_S16:
-      return tag_init_bool(result, tmp_a.data.bool & b->data.s16);
-    case TAG_S8:
-      return tag_init_bool(result, tmp_a.data.bool & b->data.s8);
-    case TAG_U8:
-      return tag_init_bool(result, tmp_a.data.bool & b->data.u8);
-    case TAG_U16:
-      return tag_init_bool(result, tmp_a.data.bool & b->data.u16);
-    case TAG_U32:
-      return tag_init_bool(result, tmp_a.data.bool & b->data.u32);
-    case TAG_U64:
-      return tag_init_bool(result, tmp_a.data.bool & b->data.u64);
-    case TAG_UW:
-      return tag_init_bool(result, tmp_a.data.bool & b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-      goto error;
-    }
-    goto error;
-  case TAG_CHARACTER:
-    switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_character(result, a->data.character &
-                                (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_character(result, a->data.character & b->data.character);
-    case TAG_INTEGER:
-      integer_init_u32(&tmp, a->data.character);
-      integer_band(&tmp, &b->data.integer, &tmp2);
-      tag_init_character(result, integer_to_u32(&tmp2));
-      integer_clean(&tmp);
-      integer_clean(&tmp2);
-      return result;
-    case TAG_SW:
-      return tag_init_character(result, a->data.character & b->data.sw);
-    case TAG_S64:
-      return tag_init_character(result, a->data.character & b->data.s64);
-    case TAG_S32:
-      return tag_init_character(result, a->data.character & b->data.s32);
-    case TAG_S16:
-      return tag_init_character(result, a->data.character & b->data.s16);
-    case TAG_S8:
-      return tag_init_character(result, a->data.character & b->data.s8);
-    case TAG_U8:
-      return tag_init_character(result, a->data.character & b->data.u8);
-    case TAG_U16:
-      return tag_init_character(result, a->data.character & b->data.u16);
-    case TAG_U32:
-      return tag_init_character(result, a->data.character & b->data.u32);
-    case TAG_U64:
-      return tag_init_character(result, a->data.character & b->data.u64);
-    case TAG_UW:
-      return tag_init_character(result, a->data.character & b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-      goto error;
-    }
-    goto error;
   case TAG_INTEGER:
     switch (b->type) {
-    case TAG_BOOL:
-      integer_init_u8(&tmp, b->data.bool ? 1 : 0);
-      result->type = TAG_INTEGER;
-      integer_band(&a->data.integer, &tmp, &result->data.integer);
-      integer_clean(&tmp);
-      return result;
-    case TAG_CHARACTER:
-      integer_init_u32(&tmp, b->data.character);
-      result->type = TAG_INTEGER;
-      integer_band(&a->data.integer, &tmp, &result->data.integer);
-      integer_clean(&tmp);
-      return result;
     case TAG_INTEGER:
       result->type = TAG_INTEGER;
       integer_band(&a->data.integer, &b->data.integer,
@@ -1461,33 +1340,12 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       integer_band(&a->data.integer, &tmp, &result->data.integer);
       integer_clean(&tmp);
       return result;
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
   case TAG_SW:
     switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_sw(result, a->data.sw &
-                         (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_sw(result, a->data.sw & b->data.character);
     case TAG_INTEGER:
       integer_init_sw(&tmp, a->data.sw);
       integer_band(&tmp, &b->data.integer, &tmp2);
@@ -1515,33 +1373,12 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_sw(result, a->data.sw & b->data.u64);
     case TAG_UW:
       return tag_init_sw(result, a->data.sw & b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
   case TAG_S64:
     switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_s64(result, a->data.s64 &
-                          (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_s64(result, a->data.s64 & b->data.character);
     case TAG_INTEGER:
       integer_init_s64(&tmp, a->data.s64);
       result->type = TAG_INTEGER;
@@ -1580,33 +1417,12 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
   case TAG_S32:
     switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_s32(result, a->data.s32 &
-                         (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_s32(result, a->data.s32 & b->data.character);
     case TAG_INTEGER:
       integer_init_s32(&tmp, a->data.s32);
       result->type = TAG_INTEGER;
@@ -1645,33 +1461,12 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
   case TAG_S16:
     switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_s16(result, a->data.s16 &
-                         (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_s16(result, a->data.s16 & b->data.character);
     case TAG_INTEGER:
       integer_init_s16(&tmp, a->data.s16);
       result->type = TAG_INTEGER;
@@ -1710,33 +1505,12 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
   case TAG_S8:
     switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_s8(result, a->data.s8 &
-                         (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_s8(result, a->data.s8 & b->data.character);
     case TAG_INTEGER:
       integer_init_s8(&tmp, a->data.s8);
       result->type = TAG_INTEGER;
@@ -1775,33 +1549,12 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
   case TAG_U8:
     switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_u8(result, a->data.u8 &
-                         (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_u8(result, a->data.u8 & b->data.character);
     case TAG_INTEGER:
       integer_init_u8(&tmp, a->data.u8);
       integer_band(&tmp, &b->data.integer, &tmp2);
@@ -1829,33 +1582,12 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u8(result, a->data.u8 & b->data.u64);
     case TAG_UW:
       return tag_init_u8(result, a->data.u8 & b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
   case TAG_U16:
     switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_u16(result, a->data.u16 &
-                         (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_u16(result, a->data.u16 & b->data.character);
     case TAG_INTEGER:
       integer_init_u16(&tmp, a->data.u16);
       integer_band(&tmp, &b->data.integer, &tmp2);
@@ -1883,33 +1615,12 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u16(result, a->data.u16 & b->data.u64);
     case TAG_UW:
       return tag_init_u16(result, a->data.u16 & b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
   case TAG_U32:
     switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_u32(result, a->data.u32 &
-                          (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_u32(result, a->data.u32 & b->data.character);
     case TAG_INTEGER:
       integer_init_u32(&tmp, a->data.u32);
       integer_band(&tmp, &b->data.integer, &tmp2);
@@ -1937,33 +1648,12 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u32(result, a->data.u32 & b->data.u64);
     case TAG_UW:
       return tag_init_u32(result, a->data.u32 & b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
   case TAG_U64:
     switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_u64(result, a->data.u64 &
-                         (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_u64(result, a->data.u64 & b->data.character);
     case TAG_INTEGER:
       integer_init_u64(&tmp, a->data.u64);
       integer_band(&tmp, &b->data.integer, &tmp2);
@@ -1991,33 +1681,12 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u64(result, a->data.u64 & b->data.u64);
     case TAG_UW:
       return tag_init_u64(result, a->data.u64 & b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
   case TAG_UW:
     switch (b->type) {
-    case TAG_BOOL:
-      return tag_init_uw(result, a->data.uw &
-                         (b->data.bool ? 1 : 0));
-    case TAG_CHARACTER:
-      return tag_init_uw(result, a->data.uw & b->data.character);
     case TAG_INTEGER:
       integer_init_uw(&tmp, a->data.uw);
       integer_band(&tmp, &b->data.integer, &tmp2);
@@ -2045,43 +1714,11 @@ s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_uw(result, a->data.uw & b->data.u64);
     case TAG_UW:
       return tag_init_uw(result, a->data.uw & b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
-  case TAG_VOID:
-  case TAG_ARRAY:
-  case TAG_CALL:
-  case TAG_CFN:
-  case TAG_F32:
-  case TAG_F64:
-  case TAG_FACT:
-  case TAG_FN:
-  case TAG_IDENT:
-  case TAG_LIST:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_QUOTE:
-  case TAG_STR:
-  case TAG_SYM:
-  case TAG_TUPLE:
-  case TAG_VAR:
+  default:
     goto error;
   }
  error:
@@ -2120,25 +1757,7 @@ s_tag * tag_bnot (const s_tag *tag, s_tag *result)
     return tag_init_u64(result, ~tag->data.u64);
   case TAG_UW:
     return tag_init_uw(result, ~tag->data.uw);
-  case TAG_ARRAY:
-  case TAG_BOOL:
-  case TAG_CALL:
-  case TAG_CFN:
-  case TAG_CHARACTER:
-  case TAG_F32:
-  case TAG_F64:
-  case TAG_FACT:
-  case TAG_FN:
-  case TAG_IDENT:
-  case TAG_LIST:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_QUOTE:
-  case TAG_STR:
-  case TAG_SYM:
-  case TAG_TUPLE:
-  case TAG_VAR:
-  case TAG_VOID:
+  default:
     warnx("tag_bnot: invalid tag type: %s",
           tag_type_to_string(tag->type));
   }
@@ -2227,25 +1846,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_bor(&a->data.integer, &tmp, &result->data.integer);
       integer_clean(&tmp);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -2289,25 +1890,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -2351,25 +1934,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -2413,25 +1978,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -2475,25 +2022,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -2537,25 +2066,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -2592,23 +2103,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u64(result, (u64) a->data.u8 | b->data.u64);
     case TAG_UW:
       return tag_init_uw(result, (uw) a->data.u8 | b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -2645,23 +2140,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u64(result, (u64) a->data.u16 | b->data.u64);
     case TAG_UW:
       return tag_init_uw(result, (uw) a->data.u16 | b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -2698,23 +2177,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u64(result, (u64) a->data.u32 | b->data.u64);
     case TAG_UW:
       return tag_init_uw(result, (uw) a->data.u32 | b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -2811,23 +2274,7 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -2865,45 +2312,11 @@ s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_uw(result, a->data.uw | b->data.u64);
     case TAG_UW:
       return tag_init_uw(result, a->data.uw | b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
-  case TAG_ARRAY:
-  case TAG_BOOL:
-  case TAG_CALL:
-  case TAG_CFN:
-  case TAG_CHARACTER:
-  case TAG_F32:
-  case TAG_F64:
-  case TAG_FACT:
-  case TAG_FN:
-  case TAG_IDENT:
-  case TAG_LIST:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_QUOTE:
-  case TAG_STR:
-  case TAG_SYM:
-  case TAG_TUPLE:
-  case TAG_VAR:
-  case TAG_VOID:
+  default:
     goto error;
   }
  error:
@@ -2988,25 +2401,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_bxor(&a->data.integer, &tmp, &result->data.integer);
       integer_clean(&tmp);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -3050,25 +2445,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -3112,25 +2489,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -3174,25 +2533,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -3236,25 +2577,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -3298,25 +2621,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_ARRAY:
-    case TAG_BOOL:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_CHARACTER:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
-    case TAG_VOID:
+    default:
       goto error;
     }
     goto error;
@@ -3353,23 +2658,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u64(result, (u64) a->data.u8 ^ b->data.u64);
     case TAG_UW:
       return tag_init_uw(result, (uw) a->data.u8 ^ b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -3406,23 +2695,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u64(result, (u64) a->data.u16 ^ b->data.u64);
     case TAG_UW:
       return tag_init_uw(result, (uw) a->data.u16 ^ b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -3459,23 +2732,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u64(result, (u64) a->data.u32 ^ b->data.u64);
     case TAG_UW:
       return tag_init_uw(result, (uw) a->data.u32 ^ b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -3572,23 +2829,7 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
       integer_clean(&tmp);
       integer_clean(&tmp2);
       return result;
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -3626,45 +2867,11 @@ s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_uw(result, a->data.uw ^ b->data.u64);
     case TAG_UW:
       return tag_init_uw(result, a->data.uw ^ b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
-  case TAG_ARRAY:
-  case TAG_BOOL:
-  case TAG_CALL:
-  case TAG_CFN:
-  case TAG_CHARACTER:
-  case TAG_F32:
-  case TAG_F64:
-  case TAG_FACT:
-  case TAG_FN:
-  case TAG_IDENT:
-  case TAG_LIST:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_QUOTE:
-  case TAG_STR:
-  case TAG_SYM:
-  case TAG_TUPLE:
-  case TAG_VAR:
-  case TAG_VOID:
+  default:
     goto error;
   }
  error:
@@ -3763,6 +2970,7 @@ void tag_clean (s_tag *tag)
   case TAG_FN:      fn_clean(&tag->data.fn);           break;
   case TAG_INTEGER: integer_clean(&tag->data.integer); break;
   case TAG_LIST:    list_delete_all(tag->data.list);   break;
+  case TAG_MAP:     map_clean(&tag->data.map);         break;
   case TAG_QUOTE:   quote_clean(&tag->data.quote);     break;
   case TAG_STR:     str_clean(&tag->data.str);         break;
   case TAG_TUPLE:   tuple_clean(&tag->data.tuple);     break;
@@ -3839,6 +3047,9 @@ s_tag * tag_copy (const s_tag *src, s_tag *dest)
     break;
   case TAG_LIST:
     list_copy((const s_list **) &src->data.list, &dest->data.list);
+    break;
+  case TAG_MAP:
+    map_copy(&src->data.map, &dest->data.map);
     break;
   case TAG_QUOTE:
     quote_copy(&src->data.quote, &dest->data.quote);
@@ -6268,23 +5479,7 @@ s_tag * tag_neg (const s_tag *tag, s_tag *result)
     integer_neg(&tmp, &result->data.integer);
     integer_clean(&tmp);
     return result;
-  case TAG_VOID:
-  case TAG_ARRAY:
-  case TAG_CALL:
-  case TAG_CFN:
-  case TAG_F32:
-  case TAG_F64:
-  case TAG_FACT:
-  case TAG_FN:
-  case TAG_IDENT:
-  case TAG_LIST:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_QUOTE:
-  case TAG_STR:
-  case TAG_SYM:
-  case TAG_TUPLE:
-  case TAG_VAR:
+  default:
     warnx("tag_neg: invalid tag type: %s",
           tag_type_to_string(tag->type));
   }
@@ -6435,23 +5630,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_bool(result, tmp_a.data.bool << b->data.u64);
     case TAG_UW:
       return tag_init_bool(result, tmp_a.data.bool << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -6489,23 +5668,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_character(result, a->data.character << b->data.u64);
     case TAG_UW:
       return tag_init_character(result, a->data.character << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -6567,23 +5730,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       result->type = TAG_INTEGER;
       integer_lshift(&a->data.integer, b->data.uw, &result->data.integer);
       return result;
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -6621,23 +5768,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_sw(result, a->data.sw << b->data.u64);
     case TAG_UW:
       return tag_init_sw(result, a->data.sw << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -6675,23 +5806,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s64(result, a->data.s64 << b->data.u64);
     case TAG_UW:
       return tag_init_s64(result, a->data.s64 << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -6729,23 +5844,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s32(result, a->data.s32 << b->data.u64);
     case TAG_UW:
       return tag_init_s32(result, a->data.s32 << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -6783,23 +5882,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s16(result, a->data.s16 << b->data.u64);
     case TAG_UW:
       return tag_init_s16(result, a->data.s16 << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -6837,23 +5920,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s8(result, a->data.s8 << b->data.u64);
     case TAG_UW:
       return tag_init_s8(result, a->data.s8 << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -6891,23 +5958,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u8(result, a->data.u8 << b->data.u64);
     case TAG_UW:
       return tag_init_u8(result, a->data.u8 << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -6945,23 +5996,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u16(result, a->data.u16 << b->data.u64);
     case TAG_UW:
       return tag_init_u16(result, a->data.u16 << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -6999,23 +6034,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u32(result, a->data.u32 << b->data.u64);
     case TAG_UW:
       return tag_init_u32(result, a->data.u32 << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7053,23 +6072,7 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u64(result, a->data.u64 << b->data.u64);
     case TAG_UW:
       return tag_init_u64(result, a->data.u64 << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7107,43 +6110,11 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_uw(result, a->data.uw << b->data.u64);
     case TAG_UW:
       return tag_init_uw(result, a->data.uw << b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
-  case TAG_VOID:
-  case TAG_ARRAY:
-  case TAG_CALL:
-  case TAG_CFN:
-  case TAG_F32:
-  case TAG_F64:
-  case TAG_FACT:
-  case TAG_FN:
-  case TAG_IDENT:
-  case TAG_LIST:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_QUOTE:
-  case TAG_STR:
-  case TAG_SYM:
-  case TAG_TUPLE:
-  case TAG_VAR:
+  default:
     goto error;
   }
  error:
@@ -7194,23 +6165,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_bool(result, tmp_a.data.bool >> b->data.u64);
     case TAG_UW:
       return tag_init_bool(result, tmp_a.data.bool >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7248,23 +6203,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_character(result, a->data.character >> b->data.u64);
     case TAG_UW:
       return tag_init_character(result, a->data.character >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7326,23 +6265,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       result->type = TAG_INTEGER;
       integer_lshift(&a->data.integer, -b->data.uw, &result->data.integer);
       return result;
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7380,23 +6303,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_sw(result, a->data.sw >> b->data.u64);
     case TAG_UW:
       return tag_init_sw(result, a->data.sw >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7434,23 +6341,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s64(result, a->data.s64 >> b->data.u64);
     case TAG_UW:
       return tag_init_s64(result, a->data.s64 >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7488,23 +6379,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s32(result, a->data.s32 >> b->data.u64);
     case TAG_UW:
       return tag_init_s32(result, a->data.s32 >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7542,23 +6417,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s16(result, a->data.s16 >> b->data.u64);
     case TAG_UW:
       return tag_init_s16(result, a->data.s16 >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7596,23 +6455,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_s8(result, a->data.s8 >> b->data.u64);
     case TAG_UW:
       return tag_init_s8(result, a->data.s8 >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7650,23 +6493,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u8(result, a->data.u8 >> b->data.u64);
     case TAG_UW:
       return tag_init_u8(result, a->data.u8 >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7704,23 +6531,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u16(result, a->data.u16 >> b->data.u64);
     case TAG_UW:
       return tag_init_u16(result, a->data.u16 >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7758,23 +6569,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u32(result, a->data.u32 >> b->data.u64);
     case TAG_UW:
       return tag_init_u32(result, a->data.u32 >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7812,23 +6607,7 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_u64(result, a->data.u64 >> b->data.u64);
     case TAG_UW:
       return tag_init_u64(result, a->data.u64 >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
@@ -7866,43 +6645,11 @@ s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
       return tag_init_uw(result, a->data.uw >> b->data.u64);
     case TAG_UW:
       return tag_init_uw(result, a->data.uw >> b->data.uw);
-    case TAG_VOID:
-    case TAG_ARRAY:
-    case TAG_CALL:
-    case TAG_CFN:
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_FACT:
-    case TAG_FN:
-    case TAG_IDENT:
-    case TAG_LIST:
-    case TAG_PTAG:
-    case TAG_PTR:
-    case TAG_QUOTE:
-    case TAG_STR:
-    case TAG_SYM:
-    case TAG_TUPLE:
-    case TAG_VAR:
+    default:
       goto error;
     }
     goto error;
-  case TAG_VOID:
-  case TAG_ARRAY:
-  case TAG_CALL:
-  case TAG_CFN:
-  case TAG_F32:
-  case TAG_F64:
-  case TAG_FACT:
-  case TAG_FN:
-  case TAG_IDENT:
-  case TAG_LIST:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_QUOTE:
-  case TAG_STR:
-  case TAG_SYM:
-  case TAG_TUPLE:
-  case TAG_VAR:
+  default:
     goto error;
   }
  error:
@@ -8621,6 +7368,11 @@ void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
         type == sym_1("list"))
       return &tag->data.list;
     goto invalid_type;
+  case TAG_MAP:
+    if (type == sym_1("Map") ||
+        type == sym_1("map"))
+      return &tag->data.map;
+    goto invalid_type;
   case TAG_PTAG:
     if (type == sym_1("Ptag") ||
         type == sym_1("ptag"))
@@ -8730,6 +7482,8 @@ void * tag_to_pointer (s_tag *tag, const s_sym *type)
     return &tag->data.uw;
   case TAG_LIST:
     return &tag->data.list;
+  case TAG_MAP:
+    return &tag->data.map;
   case TAG_PTAG:
     return &tag->data.ptag;
   case TAG_PTR:
@@ -8815,6 +7569,8 @@ sw tag_type_size (e_tag_type type)
     return sizeof(uw);
   case TAG_LIST:
     return sizeof(s_list *);
+  case TAG_MAP:
+    return sizeof(s_map);
   case TAG_PTAG:
     return sizeof(p_tag);
   case TAG_PTR:
@@ -8883,6 +7639,8 @@ f_buf_inspect tag_type_to_buf_inspect (e_tag_type type)
     return (f_buf_inspect) buf_inspect_uw;
   case TAG_LIST:
     return (f_buf_inspect) buf_inspect_list;
+  case TAG_MAP:
+    return (f_buf_inspect) buf_inspect_map;
   case TAG_PTAG:
     return (f_buf_inspect) buf_inspect_ptag;
   case TAG_PTR:
@@ -8909,6 +7667,7 @@ f_buf_inspect_size tag_type_to_buf_inspect_size (e_tag_type type)
   case TAG_VOID:
     return (f_buf_inspect_size) buf_inspect_void_size;
   case TAG_ARRAY:
+    return (f_buf_inspect_size) buf_inspect_array_size;
   case TAG_BOOL:
     return (f_buf_inspect_size) buf_inspect_bool_size;
   case TAG_CALL:
@@ -8951,6 +7710,8 @@ f_buf_inspect_size tag_type_to_buf_inspect_size (e_tag_type type)
     return (f_buf_inspect_size) buf_inspect_uw_size;
   case TAG_LIST:
     return (f_buf_inspect_size) buf_inspect_list_size;
+  case TAG_MAP:
+    return (f_buf_inspect_size) buf_inspect_map_size;
   case TAG_PTAG:
     return (f_buf_inspect_size) buf_inspect_ptag_size;
   case TAG_PTR:
@@ -9020,6 +7781,8 @@ f_buf_parse tag_type_to_buf_parse (e_tag_type type)
     return (f_buf_parse) buf_parse_uw;
   case TAG_LIST:
     return (f_buf_parse) buf_parse_list;
+  case TAG_MAP:
+    return (f_buf_parse) buf_parse_map;
   case TAG_PTAG:
     return (f_buf_parse) buf_parse_ptag;
   case TAG_PTR:
@@ -9066,6 +7829,8 @@ ffi_type * tag_type_to_ffi_type (e_tag_type type)
   case TAG_INTEGER:
     return &ffi_type_sint;
   case TAG_LIST:
+    return &ffi_type_pointer;
+  case TAG_MAP:
     return &ffi_type_pointer;
   case TAG_PTAG:
     return &ffi_type_pointer;
@@ -9135,6 +7900,7 @@ const s_sym * tag_type_to_module (e_tag_type tag_type)
   case TAG_U64:        return sym_1("U64");
   case TAG_UW:         return sym_1("Uw");
   case TAG_LIST:       return sym_1("List");
+  case TAG_MAP:        return sym_1("Map");
   case TAG_PTAG:       return sym_1("Ptag");
   case TAG_PTR:        return sym_1("Ptr");
   case TAG_QUOTE:      return sym_1("Quote");
@@ -9174,6 +7940,7 @@ s8 * tag_type_to_string (e_tag_type type)
   case TAG_U64: return "U64";
   case TAG_UW: return "Uw";
   case TAG_LIST: return "List";
+  case TAG_MAP: return "Map";
   case TAG_PTAG: return "Ptag";
   case TAG_PTR: return "Void*";
   case TAG_QUOTE: return "Quote";
@@ -9213,6 +7980,7 @@ const s_sym * tag_type_to_sym (e_tag_type tag_type)
   case TAG_U64:        return sym_1("U64");
   case TAG_UW:         return sym_1("Uw");
   case TAG_LIST:       return sym_1("List");
+  case TAG_MAP:        return sym_1("Map");
   case TAG_PTAG:       return sym_1("Ptag");
   case TAG_PTR:        return sym_1("Void*");
   case TAG_QUOTE:      return sym_1("Quote");

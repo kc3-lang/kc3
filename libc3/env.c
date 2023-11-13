@@ -39,6 +39,7 @@
 #include "ident.h"
 #include "io.h"
 #include "list.h"
+#include "map.h"
 #include "module.h"
 #include "str.h"
 #include "tag.h"
@@ -546,6 +547,29 @@ bool env_eval_list (s_env *env, const s_list *list, s_tag *dest)
   return false;
 }
 
+bool env_eval_map (s_env *env, const s_map *map, s_tag *dest)
+{
+  s_map tmp;
+  uw i = 0;
+  assert(env);
+  assert(map);
+  assert(dest);
+  if (! map_copy(map, &tmp))
+    return false;
+  while (i < map->count) {
+    if (! env_eval_tag(env, map->keys + i, tmp.keys + i) ||
+        ! env_eval_tag(env, map->values + i, tmp.values + i))
+      goto ko;
+    i++;
+  }
+  dest->type = TAG_MAP;
+  dest->data.map = tmp;
+  return true;
+ ko:
+  map_clean(&tmp);
+  return false;
+}
+
 bool env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
 {
   const s_list *next;
@@ -590,6 +614,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_ident(env, &tag->data.ident, dest);
   case TAG_LIST:
     return env_eval_list(env, tag->data.list, dest);
+  case TAG_MAP:
+    return env_eval_map(env, &tag->data.map, dest);
   case TAG_QUOTE:
     return env_eval_quote(env, &tag->data.quote, dest);
   case TAG_TUPLE:

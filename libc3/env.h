@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef ENV_H
-#define ENV_H
+#ifndef LIBC3_ENV_H
+#define LIBC3_ENV_H
 
 #include "types.h"
 
@@ -46,6 +46,7 @@ bool          env_eval_ident (s_env *env, const s_ident *ident,
                               s_tag *dest);
 bool          env_eval_list (s_env *env, const s_list *list,
                              s_tag *dest);
+bool          env_eval_map (s_env *env, const s_map *map, s_tag *dest);
 bool          env_eval_progn (s_env *env, const s_list *program,
                               s_tag *dest);
 bool          env_eval_quote (s_env *env, const s_quote *quote,
@@ -75,4 +76,4 @@ void env_error_f (s_env *env, const char *fmt, ...);
 void env_error_tag (s_env *env, const s_tag *tag);
 void env_longjmp (s_env *env, jmp_buf *jmp_buf);
 
-#endif /* ENV_H */
+#endif /* LIBC3_ENV_H */

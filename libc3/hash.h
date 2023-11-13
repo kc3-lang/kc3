@@ -36,6 +36,7 @@ void hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses);
 void hash_update_ident (t_hash *hash, const s_ident *ident);
 void hash_update_integer (t_hash *hash, const s_integer *i);
 void hash_update_list (t_hash *hash, const s_list *list);
+void hash_update_map (t_hash *hash, const s_map *map);
 void hash_update_ptag (t_hash *hash, const p_tag ptag);
 void hash_update_ptr (t_hash *hash, const s_ptr *ptr);
 void hash_update_quote (t_hash *hash, const s_quote *x);

@@ -79,6 +79,7 @@ s64 * s64_cast (s_tag *tag, s64 *dest)
     *dest = (s64) tag->data.uw;
     return dest;
   case TAG_LIST:
+  case TAG_MAP:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_QUOTE:
