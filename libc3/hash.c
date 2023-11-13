@@ -219,6 +219,19 @@ void hash_update_list (t_hash *hash, const s_list *list)
   }
 }
 
+void hash_update_map (t_hash *hash, const s_map *map)
+{
+  uw i = 0;
+  const s8 type[] = "map";
+  hash_update(hash, type, strlen(type));
+  hash_update(hash, &map->count, sizeof(map->count));
+  while (i < map->count) {
+    hash_update_tag(hash, map->keys + i);
+    hash_update_tag(hash, map->values + i);
+    i++;
+  }
+}
+
 void hash_update_ptag (t_hash *hash, const p_tag ptag)
 {
   const s8 type[] = "ptag";
@@ -290,6 +303,7 @@ void hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_INTEGER:
     hash_update_integer(hash, &tag->data.integer);             break;
   case TAG_LIST: hash_update_list(hash, tag->data.list);       break;
+  case TAG_MAP: hash_update_map(hash, &tag->data.map);         break;
   case TAG_PTAG: hash_update_ptag(hash, tag->data.ptag);       break;
   case TAG_PTR: hash_update_ptr(hash, &tag->data.ptr);         break;
   case TAG_QUOTE: hash_update_quote(hash, &tag->data.quote);   break;

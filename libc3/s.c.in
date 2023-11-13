@@ -79,6 +79,7 @@ s_bits$ * s_bits$_cast (s_tag *tag, s_bits$ *dest)
     *dest = (s_bits$) tag->data.uw;
     return dest;
   case TAG_LIST:
+  case TAG_MAP:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_QUOTE:

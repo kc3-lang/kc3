@@ -1221,6 +1221,59 @@ sw buf_inspect_list_size (const s_list **list)
   return result;
 }
 
+sw buf_inspect_map (s_buf *buf, const s_map *map)
+{
+  uw i = 0;
+  s_tag *k;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(map);
+  if ((r = buf_write_1(buf, "%{")) < 0)
+    return r;
+  result += r;
+  while (i < map->count) {
+    k = map->keys + i;
+    if (k->type == TAG_SYM) {
+      if ((r = buf_write_1(buf, k->data.sym->str.ptr.ps8)) < 0)
+        return r;
+      result += r;
+      if ((r = buf_write_1(buf, ": ")) < 0)
+        return r;
+      result += r;
+    }
+    else {
+      if ((r = buf_inspect_tag(buf, map->keys + i)) < 0)
+        return r;
+      result += r;
+      if ((r = buf_write_1(buf, " => ")) < 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_inspect_tag(buf, map->values + i)) < 0)
+      return r;
+    result += r;
+    i++;
+    if (i < map->count) {
+      if ((r = buf_write_1(buf, ", ")) < 0)
+        return r;
+      result += r;
+    }
+  }
+  if ((r = buf_write_1(buf, "}")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_map_size (const s_map *map)
+{
+  assert(map);
+  assert(! "buf_inspect_map_size: not implemented");
+  (void) map;
+  return -1;
+}
+
 sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag)
 {
   sw r;
@@ -1632,6 +1685,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
   case TAG_LIST:
     return buf_inspect_list(buf, (const s_list **) &tag->data.list);
+  case TAG_MAP:     return buf_inspect_map(buf, &tag->data.map);
   case TAG_PTAG:    return buf_inspect_ptag(buf, &tag->data.ptag);
   case TAG_PTR:     return buf_inspect_ptr(buf, &tag->data.ptr);
   case TAG_QUOTE:   return buf_inspect_quote(buf, &tag->data.quote);
@@ -1675,6 +1729,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
     return buf_inspect_integer_size(&tag->data.integer);
   case TAG_LIST:
     return buf_inspect_list_size((const s_list **) &tag->data.list);
+  case TAG_MAP:      return buf_inspect_map_size(&tag->data.map);
   case TAG_PTAG:     return buf_inspect_ptag_size(&tag->data.ptag);
   case TAG_PTR:      return buf_inspect_ptr_size(&tag->data.ptr);
   case TAG_QUOTE:    return buf_inspect_quote_size(&tag->data.quote);
@@ -1728,6 +1783,8 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
     return buf_write_1(buf, "Integer");
   case TAG_LIST:
     return buf_write_1(buf, "List");
+  case TAG_MAP:
+    return buf_write_1(buf, "Map");
   case TAG_PTAG:
     return buf_write_1(buf, "Ptag");
   case TAG_PTR:
@@ -1797,6 +1854,8 @@ sw buf_inspect_tag_type_size (e_tag_type type)
     return strlen("Integer");
   case TAG_LIST:
     return strlen("List");
+  case TAG_MAP:
+    return strlen("Map");
   case TAG_PTAG:
     return strlen("Ptag");
   case TAG_PTR:

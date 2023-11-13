@@ -20,11 +20,11 @@ f32 f32_cast (s_tag *tag)
 {
   switch (tag->type) {
   case TAG_VOID:
-    return 0;
+    return 0.0f;
   case TAG_ARRAY:
     goto ko;
   case TAG_BOOL:
-    return tag->data.bool ? 1 : 0;
+    return tag->data.bool ? 1.0f : 0.0f;
   case TAG_CALL:
     goto ko;
   case TAG_CFN:
@@ -32,7 +32,7 @@ f32 f32_cast (s_tag *tag)
   case TAG_CHARACTER:
     return (f32) tag->data.character;
   case TAG_F32:
-    return (f32) tag->data.f32;
+    return tag->data.f32;
   case TAG_F64:
     return (f32) tag->data.f64;
   case TAG_FACT:
@@ -62,6 +62,7 @@ f32 f32_cast (s_tag *tag)
   case TAG_UW:
     return (f32) tag->data.uw;
   case TAG_LIST:
+  case TAG_MAP:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_QUOTE:

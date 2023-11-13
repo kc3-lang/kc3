@@ -79,6 +79,7 @@ u8 * u8_cast (s_tag *tag, u8 *dest)
     *dest = (u8) tag->data.uw;
     return dest;
   case TAG_LIST:
+  case TAG_MAP:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_QUOTE:

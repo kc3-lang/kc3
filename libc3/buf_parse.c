@@ -29,6 +29,7 @@
 #include "ident.h"
 #include "integer.h"
 #include "list.h"
+#include "map.h"
 #include "operator.h"
 #include "str.h"
 #include "sym.h"
@@ -1846,6 +1847,142 @@ sw buf_parse_list_paren (s_buf *buf, s_list **list)
   return r;
 }
 
+sw buf_parse_map (s_buf *buf, s_map *dest)
+{
+  s_list  *keys;
+  s_list **keys_end;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_list  *values;
+  s_list **values_end;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "%{")) <= 0)
+    goto clean;
+  keys = NULL;
+  keys_end = &keys;
+  values = NULL;
+  values_end = &values;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "}")) < 0)
+    goto restore;
+  result += r;
+  while (r == 0) {
+    *keys_end = list_new(NULL, NULL);
+    if ((r = buf_parse_map_key(buf, &(*keys_end)->tag)) <= 0)
+      goto restore;
+    result += r;
+    keys_end = &(*keys_end)->next.data.list;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    *values_end = list_new(NULL, NULL);
+    if ((r = buf_parse_tag(buf, &(*values_end)->tag)) <= 0)
+      goto restore;
+    result += r;
+    values_end = &(*values_end)->next.data.list;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "}")) < 0)
+      goto restore;
+    result += r;
+    if (r == 0) {
+      if ((r = buf_read_1(buf, ",")) <= 0)
+        goto restore;
+      result += r;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      r = 0;
+    }
+  }
+  if (! map_init_from_lists(dest, keys, values)) {
+    r = 0;
+    goto restore;
+  }
+  r = result;
+  list_delete_all(keys);
+  list_delete_all(values);
+  goto clean;
+ restore:
+  list_delete_all(keys);
+  list_delete_all(values);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_map_key (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_str str;
+  s_tag tag;
+  buf_save_init(buf, &save);
+  if ((r = buf_parse_str(buf, &str)) < 0)
+    goto clean;
+  if (r > 0) {
+    result += r;
+    if ((r = buf_read_1(buf, ":")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      dest->type = TAG_SYM;
+      dest->data.sym = str_to_sym(&str);
+      str_clean(&str);
+      goto ok;
+    }
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "=>")) <= 0)
+      goto restore;
+    dest->type = TAG_STR;
+    dest->data.str = str;
+    goto ok;
+  }
+  if ((r = buf_parse_tag(buf, &tag)) <= 0)
+    goto restore;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "=>")) <= 0)
+    goto restore;
+  result += r;
+  *dest = tag;
+ ok:
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
 {
   sw r;
@@ -2415,6 +2552,15 @@ sw buf_parse_tag_list (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_map (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_map(buf, &dest->data.map)) > 0)
+    dest->type = TAG_MAP;
+  return r;
+}
 
 sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
 {
@@ -2450,6 +2596,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
       (r = buf_parse_tag_bool(buf, dest)) != 0 ||
       (r = buf_parse_tag_character(buf, dest)) != 0 ||
+      (r = buf_parse_tag_map(buf, dest)) != 0 ||
       (r = buf_parse_tag_str(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||

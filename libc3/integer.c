@@ -155,6 +155,7 @@ s_integer * integer_cast (const s_tag *tag, s_integer *dest)
   case TAG_UW:
     return integer_init_uw(dest, tag->data.uw);
   case TAG_LIST:
+  case TAG_MAP:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_QUOTE:

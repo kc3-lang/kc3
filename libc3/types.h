@@ -104,6 +104,7 @@ typedef enum {
   TAG_U64,
   TAG_UW,
   TAG_LIST,
+  TAG_MAP,
   TAG_PTAG,
   TAG_PTR,
   TAG_QUOTE,
@@ -142,6 +143,7 @@ typedef struct integer_fraction        s_integer_fraction;
 typedef struct list                    s_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
+typedef struct map                     s_map;
 typedef struct ptr                     s_ptr;
 typedef struct quote                   s_quote;
 typedef struct sequence                s_sequence;
@@ -215,6 +217,17 @@ struct fn_clause {
 struct frame {
   s_binding *bindings;
   s_frame *next;
+};
+
+/* TODO: perfect hashing of keys with cookie */
+struct map {
+  uw count;
+  s_tag *keys; /* sorted (see tag_compare) */
+  s_tag *values;
+  /*
+    uw *key_hash_table;
+    uw key_hash_cookie;
+  */
 };
 
 struct ptr {
@@ -391,6 +404,7 @@ union tag_data {
   s_ident      ident;
   s_integer    integer;
   s_list      *list;
+  s_map        map;
   p_tag        ptag;
   s_ptr        ptr;
   s_quote      quote;

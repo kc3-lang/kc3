@@ -96,6 +96,8 @@ sw buf_inspect_integer_size (const s_integer *x);
 sw buf_inspect_list (s_buf *buf, const s_list **list);
 sw buf_inspect_list_paren (s_buf *buf, const s_list **list);
 sw buf_inspect_list_size (const s_list **list);
+sw buf_inspect_map (s_buf *buf, const s_map *map);
+sw buf_inspect_map_size (const s_map *map);
 sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym);
 sw buf_inspect_paren_sym_size (const s_sym *sym);
 sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag);

@@ -20,11 +20,11 @@ f64 f64_cast (s_tag *tag)
 {
   switch (tag->type) {
   case TAG_VOID:
-    return 0;
+    return 0.0;
   case TAG_ARRAY:
     goto ko;
   case TAG_BOOL:
-    return tag->data.bool ? 1 : 0;
+    return tag->data.bool ? 1.0 : 0.0;
   case TAG_CALL:
     goto ko;
   case TAG_CFN:
@@ -34,7 +34,7 @@ f64 f64_cast (s_tag *tag)
   case TAG_F32:
     return (f64) tag->data.f32;
   case TAG_F64:
-    return (f64) tag->data.f64;
+    return tag->data.f64;
   case TAG_FACT:
   case TAG_FN:
   case TAG_IDENT:
@@ -62,6 +62,7 @@ f64 f64_cast (s_tag *tag)
   case TAG_UW:
     return (f64) tag->data.uw;
   case TAG_LIST:
+  case TAG_MAP:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_QUOTE:

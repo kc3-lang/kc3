@@ -79,6 +79,7 @@ sw * sw_cast (s_tag *tag, sw *dest)
     *dest = (sw) tag->data.uw;
     return dest;
   case TAG_LIST:
+  case TAG_MAP:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_QUOTE:

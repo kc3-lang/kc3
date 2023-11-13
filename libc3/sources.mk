@@ -104,6 +104,7 @@ HEADERS = \
 	io.h \
 	list.h \
 	log.h \
+	map.h \
 	module.h \
 	operator.h \
 	ptag.h \
@@ -242,6 +243,7 @@ SOURCES = \
 	license.c \
 	list.c \
 	log.c \
+	map.c \
 	module.c \
 	operator.c \
 	ptag.c \
@@ -378,6 +380,7 @@ LO_SOURCES = \
 	license.c \
 	list.c \
 	log.c \
+	map.c \
 	module.c \
 	operator.c \
 	ptag.c \
