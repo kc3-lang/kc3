@@ -19,6 +19,7 @@ CLEANFILES += ${CLEANFILES_COV}
 DISTCLEANFILES = ${CLEANFILES} config.h config.mk
 
 build: libc3_window_cairo_quartz.la
+	${MAKE} -C demo build
 
 all:
 	${MAKE} build
@@ -27,21 +28,34 @@ all:
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
 asan: libc3_window_cairo_quartz_asan.la
+	${MAKE} -C demo asan
 
 clean:
 	rm -rf ${CLEANFILES}
+	${MAKE} -C demo clean
 
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
+	${MAKE} -C demo clean_cov
 
 cov: libc3_window_cairo_quartz_cov.la
+	${MAKE} -C demo cov
 
 debug: libc3_window_cairo_quartz_debug.la
+	${MAKE} -C demo debug
+
+demo: build
+	${MAKE} -C demo demo
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
+	${MAKE} -C demo distclean
 
-test:
+gdb_demo: debug
+	${MAKE} -C demo gdb_demo
+
+test: build
+	${MAKE} -C demo test
 
 update_sources:
 	./update_sources
@@ -53,7 +67,9 @@ update_sources:
 	clean \
 	cov \
 	debug \
+	demo \
 	distclean \
+	gdb_demo \
 	gen \
 	install \
 	test \
