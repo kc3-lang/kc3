@@ -37,16 +37,12 @@ bool window_cairo_xcb_event (s_window_cairo *window,
     event_button = (xcb_button_press_event_t *) event;
     if (! window->button(window, event_button->detail,
                          event_button->event_x,
-                         event_button->event_y)) {
-      free(event);
-      return false;
-    }
+                         event_button->event_y))
+      goto ko;
     break;
   case XCB_EXPOSE:
-    if (! window->render(window, cr)) {
-      free(event);
-      return false;
-    }
+    if (! window->render(window, cr))
+      goto ko;
     cairo_surface_flush(surface);
     xcb_flush(conn);
     break;
@@ -55,29 +51,30 @@ bool window_cairo_xcb_event (s_window_cairo *window,
     cairo_xcb_surface_set_size(surface, event_config->width,
                                event_config->height);
     if (! window->resize(window, event_config->width,
-                         event_config->height)) {
-      free(event);
-      return false;
-    }
+                         event_config->height))
+      goto ko;
     window->w = event_config->width;
     window->h = event_config->height;
     break;
   case XCB_KEY_PRESS:
     event_key = (xcb_key_press_event_t *) event;
-    if (! window->key(window, event_key->detail)) {
-      free(event);
-      return false;
-    }
+    if (! window->key(window, event_key->detail))
+      goto ko;
     break;
   case XCB_MOTION_NOTIFY:
     event_motion = (xcb_motion_notify_event_t *) event;
     if (! window->motion(window, event_motion->event_x,
-                         event_motion->event_y)
+                         event_motion->event_y))
+      goto ko;
+    break;
   default:
     printf("event type %d\n", event->response_type & ~0x80);
   }
   free(event);
   return true;
+ ko:
+  free(event);
+  return false;
 }
 
 bool window_cairo_xcb_run (s_window_cairo *window)

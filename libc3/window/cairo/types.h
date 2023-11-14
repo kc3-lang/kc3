@@ -35,6 +35,10 @@ typedef bool (*f_window_cairo_key) (s_window_cairo *window, uw key);
 typedef bool (*f_window_cairo_load) (s_window_cairo *window);
 
 /* return false to break event loop */
+typedef bool (*f_window_cairo_motion) (s_window_cairo *window, sw x,
+                                       sw y);
+
+/* return false to break event loop */
 typedef bool (*f_window_cairo_render) (s_window_cairo *window,
                                        cairo_t *cr);
 
@@ -51,6 +55,7 @@ struct window_cairo {
   f_window_cairo_button button;
   f_window_cairo_key    key;
   f_window_cairo_load   load;
+  f_window_cairo_motion motion;
   f_window_cairo_render render;
   cairo_t              *cr;
   f_window_cairo_resize resize;

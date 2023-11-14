@@ -27,6 +27,7 @@ s_window_cairo * window_cairo_init (s_window_cairo *window,
   window->button = window_cairo_button_default;
   window->key = window_cairo_key_default;
   window->load = window_cairo_load_default;
+  window->motion = window_cairo_motion_default;
   window->render = window_cairo_render_default;
   window->resize = window_cairo_resize_default;
   window->cr = NULL;
@@ -63,6 +64,14 @@ bool window_cairo_load_default (s_window_cairo *window)
   assert(window);
   (void) window;
   printf("window_cairo_load_default\n");
+  return true;
+}
+
+bool window_cairo_motion_default (s_window_cairo *window, sw x, sw y)
+{
+  assert(window);
+  (void) window;
+  printf("window_cairo_motion_default (%ld, %ld)\n", x, y);
   return true;
 }
 

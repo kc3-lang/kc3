@@ -33,6 +33,9 @@ typedef bool (*f_window_key) (s_window *window, uw key);
 typedef bool (*f_window_load) (s_window *window);
 
 /* return false to break event loop */
+typedef bool (*f_window_motion) (s_window *window, sw x, sw y);
+
+/* return false to break event loop */
 typedef bool (*f_window_render) (s_window *window,
                                  void *render_context);
 
@@ -52,6 +55,7 @@ struct window {
   f_window_button button;
   f_window_key    key;
   f_window_load   load;
+  f_window_motion motion;
   f_window_render render;
   void           *render_context;
   f_window_resize resize;

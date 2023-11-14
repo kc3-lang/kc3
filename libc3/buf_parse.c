@@ -2384,6 +2384,34 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
   return r;
 }
 
+sw buf_parse_sym_str (s_buf *buf, s_str *str)
+{
+  character c = 0;
+  sw csize;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s8 t[SYM_MAX];
+  s_buf tmp;
+  buf_save_init(buf, &save);
+  buf_init(&tmp, false, sizeof(t), t);
+  while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
+         ! sym_character_is_reserved(c)) {
+    csize = r;
+    if ((r = buf_xfer(&tmp, buf, csize)) < 0)
+      goto restore;
+    result += csize;
+  }
+  buf_read_to_str(&tmp, str);
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_tag (s_buf *buf, s_tag *dest)
 {
   sw r;
