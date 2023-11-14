@@ -11,7 +11,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-set -e
+set -e -v
 
 export SRC_TOP="$(pwd)"
 
@@ -35,10 +35,10 @@ echo "HAVE_ASAN = ${HAVE_ASAN}" >> ${CONFIG_MK}
 
 update_config_mk
 
-( set -ev; cd libffi; sh autogen.sh; MAKE="${GMAKE}" ./configure --prefix "${PREFIX}" --disable-multi-os-directory --disable-dependency-tracking; )
-( set -ev; cd libtommath && ./configure; )
-( set -ev; cd ucd2c      && ./configure; )
-( set -ev; cd libc3      && ./configure; )
-( set -ev; cd ic3        && ./configure; )
-( set -ev; cd c3s        && ./configure; )
-( set -ev; cd test       && ./configure; )
+( cd libffi; sh autogen.sh; MAKE="${GMAKE}" ./configure --prefix "${PREFIX}" --disable-multi-os-directory --disable-dependency-tracking; )
+( cd libtommath; ./configure; )
+( cd ucd2c     ; ./configure; )
+( cd libc3     ; ./configure; )
+( cd ic3       ; ./configure; )
+( cd c3s       ; ./configure; )
+( cd test      ; ./configure; )
