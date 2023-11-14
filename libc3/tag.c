@@ -34,7 +34,7 @@
 #include "quote.h"
 #include "str.h"
 #include "tag.h"
-#include "timespec.h"
+#include "time.h"
 #include "tuple.h"
 
 s_tag g_tag_first;
@@ -3897,9 +3897,9 @@ s_tag * tag_init_sym_1 (s_tag *tag, const s8 *p)
 
 s_tag * tag_init_time (s_tag *tag)
 {
-  struct timespec time;
+  s_time time;
   clock_gettime(CLOCK_REALTIME, &time);
-  return timespec_to_tag(&time, tag);
+  return time_to_tag(&time, tag);
 }
 
 s_tag * tag_init_tuple (s_tag *tag, uw count)
