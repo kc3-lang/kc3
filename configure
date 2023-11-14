@@ -39,7 +39,6 @@ update_config_mk
 ( cd libtommath && ./configure; )
 ( cd ucd2c && ./configure; )
 ( cd libc3 && ./configure; )
-( cd libc3/window && ./configure; )
 ( cd ic3 && ./configure; )
 ( cd c3s && ./configure; )
 ( cd test && ./configure; )

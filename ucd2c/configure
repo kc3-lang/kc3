@@ -49,7 +49,7 @@ echo >> ${CONFIG_MK}
 for SRC in $SOURCES; do
     echo >> ${CONFIG_MK}
     SRC_LO="$(c2lo "$SRC")"
-    lo_rule "$SRC" >> ${CONFIG_MK}
+    c_lo_rule "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
 done
 

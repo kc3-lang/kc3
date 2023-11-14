@@ -16,25 +16,21 @@ set -e
 cd "$(dirname "$0")"
 echo "$PWD/$(basename "$0")"
 
-o_rule() {
+c_o_rule() {
     "$CC" $CPPFLAGS $CFLAGS -M "$1" || { echo "$1" | sed -e 's/^\(.*\)\.c$/\1.o: \1.c/'; }
     echo "$1" | sed -e 's/^\(.*\)\.c$/\1.o: Makefile config.mk/'
 }
 
-ext_rule() {
-    o_rule "$2" | sed -e "s/[.]o:/$1:/"
+c_ext_rule() {
+    c_o_rule "$2" | sed -e "s/[.]o:/$1:/"
 }
 
-lo_rule() {
-    ext_rule .lo "$1"
+c_lo_rule() {
+    c_ext_rule .lo "$1"
 }
 
-prog_rule() {
-    { o_rule "$1" || exit 1; } | sed -e 's/[.]o:/:/'
-}
-
-c2prog() {
-    echo "$@" | sed -e 's/[.]c$//' -e 's/[.]c / /g'
+c_prog_rule() {
+    { c_o_rule "$1" || exit 1; } | sed -e 's/[.]o:/:/'
 }
 
 c2ext() {
@@ -42,16 +38,20 @@ c2ext() {
     echo "$@" | sed -e "s/[.]c$/${EXT}/" -e "s/[.]c /${EXT} /g"
 }
 
-c2o() {
-    c2ext .o "$@"
+c2la() {
+    c2ext .la "$@"
 }
 
 c2lo() {
     c2ext .lo "$@"
 }
 
-c2la() {
-    c2ext .la "$@"
+c2o() {
+    c2ext .o "$@"
+}
+
+c2prog() {
+    echo "$@" | sed -e 's/[.]c$//' -e 's/[.]c / /g'
 }
 
 config_asan() {
@@ -62,6 +62,7 @@ config_asan() {
         HAVE_ASAN=false
     fi
     rm .config_asan.c
+    echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 }
 
 config_define () {
@@ -110,6 +111,20 @@ config_lib() {
     rm "$OUT"
 }
 
+objc_o_rule() {
+    echo "$1" | sed -e 's/^\(.*\)\.m$/\1.o: \1.c/'
+    echo "$1" | sed -e 's/^\(.*\)\.m$/\1.o: Makefile config.mk/'
+}
+
+objc_ext_rule() {
+    objc_o_rule "$2" | sed -e "s/[.]o:/$1:/"
+}
+
+objc2ext() {
+    EXT="$1"; shift
+    echo "$@" | sed -e "s/[.]m$/${EXT}/" -e "s/[.]m /${EXT} /g"
+}
+
 pkg_config() {
     if pkg-config "$1"; then
 	CFLAGS="$CFLAGS $(pkg-config --cflags "$1")"
@@ -129,6 +144,20 @@ sources() {
 $(echo "$2" | sed -e 's/^\(.*\)$/	\1 \\\\/')
 " >> ${SOURCES_MK}
     echo "$1='$(echo "$2" | tr '\n' ' ')'" >> ${SOURCES_SH}
+}
+
+swift_o_rule() {
+    echo "$1" | sed -e 's/^\(.*\)\.swift$/\1.o: \1.c/'
+    echo "$1" | sed -e 's/^\(.*\)\.swift$/\1.o: Makefile config.mk/'
+}
+
+swift_ext_rule() {
+    swift_o_rule "$2" | sed -e "s/[.]o:/$1:/"
+}
+
+swift2ext() {
+    EXT="$1"; shift
+    echo "$@" | sed -e "s/[.]swift$/${EXT}/" -e "s/[.]swift /${EXT} /g"
 }
 
 update_config_h() {
@@ -244,6 +273,28 @@ if [ "x$LIBTOOL" = "x" ]; then
     fi
 fi
 echo "LIBTOOL = $LIBTOOL" >> ${CONFIG_MK}
+
+if [ "x$SWIFTC" = "x" ]; then
+    if test -x "$(which swiftc 2>/dev/null)"; then
+        SWIFTC="$(which swiftc)"
+	HAVE_SWIFT=true
+    else
+	HAVE_SWIFT=false
+    fi
+else
+    HAVE_SWIFT=true
+fi
+echo "SWIFTC = $SWIFTC" >> ${CONFIG_MK}
+echo "HAVE_SWIFT = $HAVE_SWIFT" >> ${CONFIG_MK}
+
+if [ "x$OBJCC" = "x" ]; then
+    if test -x "$(which clang 2>/dev/null)"; then
+        OBJCC="$(which clang)"
+    else
+        OBJCC=clang
+    fi
+fi
+echo "OBJCC = $OBJCC" >> ${CONFIG_MK}
 
 PREFIX="${PREFIX:-/usr/local}"
 echo "PREFIX = $PREFIX" >> ${CONFIG_MK}

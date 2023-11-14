@@ -23,6 +23,7 @@ ic3/ic3_asan
 ic3/ic3_cov
 ic3/ic3_debug
 *.la
+libc3/window/cairo/quartz/build
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_asan
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_cov

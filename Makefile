@@ -15,7 +15,6 @@ build: gen
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c build
 	${MAKE} -C libc3 build
-	${MAKE} -C libc3/window build
 	${MAKE} -C ic3 build
 	${MAKE} -C c3s build
 	${MAKE} -C test build
@@ -25,7 +24,6 @@ all: gen
 	${MAKE} -C libtommath all
 	${MAKE} -C ucd2c all
 	${MAKE} -C libc3 all
-	${MAKE} -C libc3/window all
 	${MAKE} -C ic3 all
 	${MAKE} -C c3s all
 	${MAKE} -C test all
@@ -34,26 +32,15 @@ asan:
 	${GMAKE} -C libffi all
 	${MAKE} -C libtommath asan
 	${MAKE} -C libc3 asan
-	${MAKE} -C libc3/window asan
 	${MAKE} -C ic3 asan
 	${MAKE} -C c3s asan
 	${MAKE} -C test asan
-
-cov: gen
-	${GMAKE} -C libffi all
-	${MAKE} -C libtommath cov
-	${MAKE} -C libc3 cov
-	${MAKE} -C libc3/window cov
-	${MAKE} -C ic3 cov
-	${MAKE} -C c3s cov
-	${MAKE} -C test cov
 
 clean:
 	${GMAKE} -C libffi clean
 	${MAKE} -C libtommath clean
 	${MAKE} -C ucd2c clean
 	${MAKE} -C libc3 clean
-	${MAKE} -C libc3/window clean
 	${MAKE} -C ic3 clean
 	${MAKE} -C c3s clean
 	${MAKE} -C test clean
@@ -61,22 +48,28 @@ clean:
 clean_cov:
 	${MAKE} -C libtommath clean_cov
 	${MAKE} -C libc3 clean_cov
-	${MAKE} -C libc3/window clean_cov
 	${MAKE} -C ic3 clean_cov
 	${MAKE} -C c3s clean_cov
 	${MAKE} -C test clean_cov
+
+cov: gen
+	${GMAKE} -C libffi all
+	${MAKE} -C libtommath cov
+	${MAKE} -C libc3 cov
+	${MAKE} -C ic3 cov
+	${MAKE} -C c3s cov
+	${MAKE} -C test cov
 
 debug:
 	${GMAKE} -C libffi all
 	${MAKE} -C libtommath debug
 	${MAKE} -C libc3 debug
-	${MAKE} -C libc3/window debug
 	${MAKE} -C ic3 debug
 	${MAKE} -C c3s debug
 	${MAKE} -C test debug
 
 demo: build
-	${MAKE} -C libc3/window demo
+	${MAKE} -C libc3 demo
 
 dist: c3-${C3_VERSION}.tar.gz
 
@@ -91,21 +84,19 @@ distclean:
 	${MAKE} -C libtommath distclean
 	${MAKE} -C ucd2c distclean
 	${MAKE} -C libc3 distclean
-	${MAKE} -C libc3/window distclean
 	${MAKE} -C ic3 distclean
 	${MAKE} -C c3s distclean
 	${MAKE} -C test distclean
 
 gcovr:
 	${MAKE} -C libc3 gcovr
-	${MAKE} -C libc3/window gcovr
 	${MAKE} -C ic3 gcovr
 	${MAKE} -C c3s gcovr
 	${MAKE} -C test gcovr
 	if [ -d "$$HOME/Downloads/c3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
 gdb_demo: debug
-	${MAKE} -C libc3/window gdb_demo
+	${MAKE} -C libc3 gdb_demo
 
 gdb_ic3: debug
 	${MAKE} -C ic3 gdb_ic3
@@ -124,7 +115,6 @@ ic3_gcovr:
 install:
 	${GMAKE} -C libffi install
 	${MAKE} -C libc3 install
-	${MAKE} -C libc3/window install
 	${MAKE} -C ic3 install
 	${MAKE} -C c3s install
 
