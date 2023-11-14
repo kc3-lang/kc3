@@ -41,11 +41,12 @@ OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
 # Default config
-CPPFLAGS="${CPPFLAGS:=}"
-ENV_CFLAGS="${CFLAGS:=}"
-DEFAULT_CFLAGS="-O2 -pipe"
+ENV_CPPFLAGS="$CPPFLAGS"
+ENV_CFLAGS="$CFLAGS"
+ENV_LDFLAGS="$LDFLAGS"
+ENV_LIBS="$LIBS"
 LDFLAGS="--shared --no-undefined ${LDFLAGS}"
-LIBS="${LIBS} -rpath ${PREFIX}/lib"
+LIBS="$LIBS -rpath ${PREFIX}/lib"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
@@ -77,6 +78,7 @@ LIBS_LOCAL_DEBUG="$LIBC3_DEBUG"
 LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
 
 # Main config
+DEFAULT_CFLAGS="-O2 -pipe"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
@@ -145,5 +147,10 @@ for SRC in $SOURCES; do
 done
 
 update_config_mk
+
+CPPFLAGS="$ENV_CPPFLAGS"
+CFLAGS="$ENV_CFLAGS"
+LDFLAGS="$ENV_LDFLAGS"
+LIBS="$ENV_LIBS"
 
 ( cd demo && ./configure; )

@@ -44,11 +44,10 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Default config
-CPPFLAGS="${CPPFLAGS:-}"
-ENV_CFLAGS="${CFLAGS:-}"
-DEFAULT_CFLAGS="-O2 -pipe -fPIC"
-LDFLAGS="${LDFLAGS:-}"
-LIBS="${LIBS:-}"
+ENV_CPPFLAGS="${CPPFLAGS}"
+ENV_CFLAGS="${CFLAGS}"
+ENV_LDFLAGS="${LDFLAGS}"
+ENV_LIBS="${LIBS}"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
@@ -78,11 +77,11 @@ LOCAL_LIBS_DEBUG="../libc3_window_cairo_xcb_debug.la"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
+DEFAULT_CFLAGS="-O2 -pipe -fPIC"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBC3=../libc3/libc3.la
 LOCAL_LIBS="../libc3_window_cairo_xcb.la"
 LIBS="$LOCAL_LIBS $LIBS"
 
