@@ -17,8 +17,8 @@
  *
  * Data structure for set items containing s_fact.
  */
-#ifndef SET_ITEM__fact_H
-#define SET_ITEM__fact_H
+#ifndef LIBC3_SET_ITEM__fact_H
+#define LIBC3_SET_ITEM__fact_H
 
 #include "types.h"
 
@@ -31,4 +31,4 @@ set_item_delete__fact (s_set_item__fact *x);
 void
 set_item_delete_all__fact (s_set_item__fact *x);
 
-#endif /* SET_ITEM__fact_H */
+#endif /* LIBC3_SET_ITEM__fact_H */

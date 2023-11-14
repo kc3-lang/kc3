@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from s.h.in BITS=64 bits=64 */
-#ifndef S64_H
-#define S64_H
+#ifndef LIBC3_S64_H
+#define LIBC3_S64_H
 
 #include "types.h"
 
 s64 * s64_cast (s_tag *tag, s64 *dest);
 s64 * s64_copy (const s64 *src, s64 *dest);
 
-#endif /* S8_H */
+#endif /* LIBC3_S64_H */

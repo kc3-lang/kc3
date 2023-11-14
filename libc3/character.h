@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef CHARACTER_H
-#define CHARACTER_H
+#ifndef LIBC3_CHARACTER_H
+#define LIBC3_CHARACTER_H
 
 #include "hash.h"
 #include "types.h"
@@ -32,4 +32,4 @@ sw          character_write (s_buf *buf, character c);
 sw          character_utf8 (character c, s8 *dest);
 sw          character_utf8_size (character c);
 
-#endif /* CHARACTER_H */
+#endif /* LIBC3_CHARACTER_H */

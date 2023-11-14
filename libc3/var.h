@@ -10,11 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef VAR_H
-#define VAR_H
+#ifndef LIBC3_VAR_H
+#define LIBC3_VAR_H
 
 #include "types.h"
 
 s_tag * var_copy (const s_tag *src, s_tag *dest);
 
-#endif /* VAR_H */
+#endif /* LIBC3_VAR_H */

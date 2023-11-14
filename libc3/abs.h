@@ -16,8 +16,8 @@
  *
  * Functions that return the absolute value of a number.
  */
-#ifndef ABS_H
-#define ABS_H
+#ifndef LIBC3_ABS_H
+#define LIBC3_ABS_H
 
 #include "types.h"
 
@@ -35,4 +35,4 @@ DEF_ABS_PROTOTYPE(u32);
 DEF_ABS_PROTOTYPE(u64);
 DEF_ABS_PROTOTYPE(uw);
 
-#endif /* ABS_H */
+#endif /* LIBC3_ABS_H */

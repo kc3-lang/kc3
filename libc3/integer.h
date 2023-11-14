@@ -16,8 +16,8 @@
  *
  * Structure to manipulate byte strings.
  */
-#ifndef INTEGER_H
-#define INTEGER_H
+#ifndef LIBC3_INTEGER_H
+#define LIBC3_INTEGER_H
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -106,4 +106,4 @@ u32  integer_to_u32 (const s_integer *i);
 u64  integer_to_u64 (const s_integer *i);
 uw   integer_to_uw (const s_integer *i);
 
-#endif /* INTEGER_H */
+#endif /* LIBC3_INTEGER_H */

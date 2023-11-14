@@ -10,11 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef PTAG_H
-#define PTAG_H
+#ifndef LIBC3_PTAG_H
+#define LIBC3_PTAG_H
 
 #include "types.h"
 
 p_tag * ptag_copy (const p_tag *src, p_tag *dest);
 
-#endif /* PTAG_H */
+#endif /* LIBC3_PTAG_H */

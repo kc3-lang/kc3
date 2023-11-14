@@ -17,8 +17,8 @@
  *
  * Data structure for skiplist nodes containing _TYPE$.
  */
-#ifndef SKIPLIST_NODE___NAME$_H
-#define SKIPLIST_NODE___NAME$_H
+#ifndef LIBC3_SKIPLIST_NODE___NAME$_H
+#define LIBC3_SKIPLIST_NODE___NAME$_H
 
 #include "types.h"
 
@@ -43,4 +43,4 @@ skiplist_node_delete___NAME$ (s_skiplist_node___NAME$ *node);
 void
 skiplist_node_insert___NAME$ (s_skiplist_node___NAME$ *node, s_skiplist_node___NAME$ *pred);
 
-#endif /* SKIPLIST_NODE___NAME$_H */
+#endif /* LIBC3_SKIPLIST_NODE___NAME$_H */

@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef ARRAY_H
-#define ARRAY_H
+#ifndef LIBC3_ARRAY_H
+#define LIBC3_ARRAY_H
 
 #include "types.h"
 
@@ -30,4 +30,4 @@ f_buf_inspect_size array_type_to_buf_inspect_size (const s_sym *type);
 f_copy             array_type_to_copy (const s_sym *type);
 e_tag_type         array_type_to_tag_type (const s_sym *type);
 
-#endif /* ARRAY_H */
+#endif /* LIBC3_ARRAY_H */

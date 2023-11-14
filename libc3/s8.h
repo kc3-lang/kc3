@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from s.h.in BITS=8 bits=8 */
-#ifndef S8_H
-#define S8_H
+#ifndef LIBC3_S8_H
+#define LIBC3_S8_H
 
 #include "types.h"
 
 s8 * s8_cast (s_tag *tag, s8 *dest);
 s8 * s8_copy (const s8 *src, s8 *dest);
 
-#endif /* S8_H */
+#endif /* LIBC3_S8_H */

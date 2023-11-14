@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef OPERATOR_H
-#define OPERATOR_H
+#ifndef LIBC3_OPERATOR_H
+#define LIBC3_OPERATOR_H
 
 #include "types.h"
 
@@ -25,4 +25,4 @@ s_ident *     operator_resolve (const s_ident *ident, u8 arity,
                                 s_ident *dest);
 const s_sym * operator_symbol (const s_ident *op);
 
-#endif /* OPERATOR_H */
+#endif /* LIBC3_OPERATOR_H */

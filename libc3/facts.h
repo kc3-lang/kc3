@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef FACTS_H
-#define FACTS_H
+#ifndef LIBC3_FACTS_H
+#define LIBC3_FACTS_H
 
 #include "types.h"
 
@@ -64,4 +64,4 @@ s_tag *  facts_find_tag (s_facts *facts, const s_tag *tag);
 sw       facts_log_add (s_log *log, const s_fact *fact);
 sw       facts_log_remove (s_log *log, const s_fact *fact);
 
-#endif /* FACTS_H */
+#endif /* LIBC3_FACTS_H */

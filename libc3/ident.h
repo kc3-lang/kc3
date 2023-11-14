@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef IDENT_H
-#define IDENT_H
+#ifndef LIBC3_IDENT_H
+#define LIBC3_IDENT_H
 
 #include "sym.h"
 #include "types.h"
@@ -46,4 +46,4 @@ s_str * ident_inspect (const s_ident *ident, s_str *dest);
 
 bool ident_to_tag_type (const s_ident *ident, e_tag_type *dest);
 
-#endif
+#endif /* LIBC3_IDENT_H */

@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef ARG_H
-#define ARG_H
+#ifndef LIBC3_ARG_H
+#define LIBC3_ARG_H
 
 #include "types.h"
 
@@ -28,4 +28,4 @@ void    arg_delete_all (s_arg *arg);
 /* observers */
 uw arg_length (s_arg *args);
 
-#endif /* ARG_H */
+#endif /* LIBC3_ARG_H */

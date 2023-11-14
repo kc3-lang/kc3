@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef F64_H
-#define F64_H
+#ifndef LIBC3_F64_H
+#define LIBC3_F64_H
 
 #include "types.h"
 
 f64 f64_cast (s_tag *tag);
 f64 * f64_copy (const f64 *src, f64 *dest);
 
-#endif /* F64_H */
+#endif /* LIBC3_F64_H */

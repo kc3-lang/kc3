@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef F32_H
-#define F32_H
+#ifndef LIBC3_F32_H
+#define LIBC3_F32_H
 
 #include "types.h"
 
 f32 f32_cast (s_tag *tag);
 f32 * f32_copy (const f32 *src, f32 *dest);
 
-#endif /* F32_H */
+#endif /* LIBC3_F32_H */

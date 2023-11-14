@@ -17,8 +17,8 @@
  *
  * Skiplist containing _TYPE$.
  */
-#ifndef SKIPLIST___NAME$_H
-#define SKIPLIST___NAME$_H
+#ifndef LIBC3_SKIPLIST___NAME$_H
+#define LIBC3_SKIPLIST___NAME$_H
 
 #include "types.h"
 
@@ -56,4 +56,4 @@ skiplist_random_height___NAME$ (s_skiplist___NAME$ *skiplist);
 bool
 skiplist_remove___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ value);
 
-#endif /* SKIPLIST___NAME$_H */
+#endif /* LIBC3_SKIPLIST___NAME$_H */

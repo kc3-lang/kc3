@@ -16,8 +16,8 @@
  *
  * Linked list of tags.
  */
-#ifndef LIST_H
-#define LIST_H
+#ifndef LIBC3_LIST_H
+#define LIBC3_LIST_H
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -46,4 +46,4 @@ s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *dest);
 /* Call str_delete after use. */
 s_str *   list_inspect (const s_list *list, s_str *dest);
 
-#endif /* STR_H */
+#endif /* LIBC3_LIST_H */

@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from set_cursor.h.in NAME=fact TYPE=s_fact */
-#ifndef SET_CURSOR__fact_H
-#define SET_CURSOR__fact_H
+#ifndef LIBC3_SET_CURSOR__fact_H
+#define LIBC3_SET_CURSOR__fact_H
 
 #include "types.h"
 
@@ -22,4 +22,4 @@ set_cursor_init__fact (s_set__fact *set, s_set_cursor__fact *c);
 s_set_item__fact *
 set_cursor_next__fact (s_set_cursor__fact *c);
 
-#endif /* SET_CURSOR__fact_H */
+#endif /* LIBC3_SET_CURSOR__fact_H */

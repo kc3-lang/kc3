@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef CFN_H
-#define CFN_H
+#ifndef LIBC3_CFN_H
+#define LIBC3_CFN_H
 
 #include "types.h"
 
@@ -32,4 +32,4 @@ s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest);
 s_cfn * cfn_link (s_cfn *cfn);
 s_cfn * cfn_prep_cif (s_cfn *cfn);
 
-#endif /* CFN_H */
+#endif /* LIBC3_CFN_H */

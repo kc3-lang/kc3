@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_parse_s.h.in BITS=_BITS$ bits=_bits$ */
-#ifndef BUF_PARSE_S_BITS$_H
-#define BUF_PARSE_S_BITS$_H
+#ifndef LIBC3_BUF_PARSE_S_BITS$_H
+#define LIBC3_BUF_PARSE_S_BITS$_H
 
 #include "types.h"
 
@@ -20,4 +20,4 @@ sw buf_parse_s_bits$ (s_buf *buf, s_bits$ *dest);
 sw buf_parse_s_bits$_base (s_buf *buf, const s_str *base,
                            bool negative, s_bits$ *dest);
 
-#endif /* #ifndef BUF_PARSE_S_BITS$_H */
+#endif /* LIBC3_BUF_PARSE_S_BITS$_H */

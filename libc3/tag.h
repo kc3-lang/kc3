@@ -16,8 +16,8 @@
  *
  * Structure to add a type tag to data.
  */
-#ifndef TAG_H
-#define TAG_H
+#ifndef LIBC3_TAG_H
+#define LIBC3_TAG_H
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -179,4 +179,4 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *dest);
 s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *dest);
 s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest);
 
-#endif /* STR_H */
+#endif /* LIBC3_TAG_H */

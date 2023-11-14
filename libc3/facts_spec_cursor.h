@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef FACTS_SPEC_CURSOR_H
-#define FACTS_SPEC_CURSOR_H
+#ifndef LIBC3_FACTS_SPEC_CURSOR_H
+#define LIBC3_FACTS_SPEC_CURSOR_H
 
 #include "types.h"
 
@@ -22,4 +22,4 @@ facts_spec_cursor_init (s_facts_spec_cursor *cursor,
 bool facts_spec_cursor_next (s_facts_spec_cursor *cursor,
                              s_fact *fact);
 
-#endif /* FACTS_SPEC_CURSOR_H */
+#endif /* LIBC3_FACTS_SPEC_CURSOR_H */

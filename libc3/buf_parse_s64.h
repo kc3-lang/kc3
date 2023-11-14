@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_parse_s.h.in BITS=64 bits=64 */
-#ifndef BUF_PARSE_S64_H
-#define BUF_PARSE_S64_H
+#ifndef LIBC3_BUF_PARSE_S64_H
+#define LIBC3_BUF_PARSE_S64_H
 
 #include "types.h"
 
@@ -20,4 +20,4 @@ sw buf_parse_s64 (s_buf *buf, s64 *dest);
 sw buf_parse_s64_base (s_buf *buf, const s_str *base,
                            bool negative, s64 *dest);
 
-#endif /* #ifndef BUF_PARSE_S64_H */
+#endif /* LIBC3_BUF_PARSE_S64_H */

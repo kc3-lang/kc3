@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_s.h.in BITS=8 bits=8 */
-#ifndef BUF_INSPECT_S8_H
-#define BUF_INSPECT_S8_H
+#ifndef LIBC3_BUF_INSPECT_S8_H
+#define LIBC3_BUF_INSPECT_S8_H
 
 #include "types.h"
 
 sw buf_inspect_s8 (s_buf *buf, const s8 *s);
 sw buf_inspect_s8_size (const s8 *s);
 
-#endif /* ndef BUF_INSPECT_S8_H */
+#endif /* LIBC3_BUF_INSPECT_S8_H */

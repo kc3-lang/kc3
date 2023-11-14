@@ -17,8 +17,8 @@
  *
  * Data structure for set items containing _TYPE$.
  */
-#ifndef SET_ITEM___NAME$_H
-#define SET_ITEM___NAME$_H
+#ifndef LIBC3_SET_ITEM___NAME$_H
+#define LIBC3_SET_ITEM___NAME$_H
 
 #include "types.h"
 
@@ -31,4 +31,4 @@ set_item_delete___NAME$ (s_set_item___NAME$ *x);
 void
 set_item_delete_all___NAME$ (s_set_item___NAME$ *x);
 
-#endif /* SET_ITEM___NAME$_H */
+#endif /* LIBC3_SET_ITEM___NAME$_H */

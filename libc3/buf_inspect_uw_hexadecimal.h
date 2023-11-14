@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u_base.h.in BITS=W bits=w BASE=hexadecimal */
-#ifndef BUF_INSPECT_UW_hexadecimal_H
-#define BUF_INSPECT_UW_hexadecimal_H
+#ifndef LIBC3_BUF_INSPECT_UW_hexadecimal_H
+#define LIBC3_BUF_INSPECT_UW_hexadecimal_H
 
 #include "types.h"
 
 sw buf_inspect_uw_hexadecimal (s_buf *buf, const uw *u);
 sw buf_inspect_uw_hexadecimal_size (const uw *u);
 
-#endif /* ndef BUF_INSPECT_UW_hexadecimal_H */
+#endif /* LIBC3_BUF_INSPECT_UW_hexadecimal_H */

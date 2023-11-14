@@ -16,8 +16,8 @@
  *
  * Syntax : "fn" (type? "(" ((type space)? sym ","?)* ")" "{" prog "}")+
  */
-#ifndef FN_H
-#define FN_H
+#ifndef LIBC3_FN_H
+#define LIBC3_FN_H
 
 #include "types.h"
 
@@ -36,4 +36,4 @@ void   fn_delete (s_fn *fn);
 /* observers */
 s_fn * fn_copy (const s_fn *src, s_fn *dest);
 
-#endif /* FN_H */
+#endif /* LIBC3_FN_H */

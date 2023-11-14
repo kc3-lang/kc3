@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from u.h.in BITS=32 bits=32 */
-#ifndef U32_H
-#define U32_H
+#ifndef LIBC3_U32_H
+#define LIBC3_U32_H
 
 #include "types.h"
 
 u32 * u32_cast (s_tag *tag, u32 *dest);
 u32 * u32_copy (const u32 *src, u32 *dest);
 
-#endif /* U8_H */
+#endif /* LIBC3_U32_H */

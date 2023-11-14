@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u_base.h.in BITS=64 bits=64 BASE=octal */
-#ifndef BUF_INSPECT_U64_octal_H
-#define BUF_INSPECT_U64_octal_H
+#ifndef LIBC3_BUF_INSPECT_U64_octal_H
+#define LIBC3_BUF_INSPECT_U64_octal_H
 
 #include "types.h"
 
 sw buf_inspect_u64_octal (s_buf *buf, const u64 *u);
 sw buf_inspect_u64_octal_size (const u64 *u);
 
-#endif /* ndef BUF_INSPECT_U64_octal_H */
+#endif /* LIBC3_BUF_INSPECT_U64_octal_H */

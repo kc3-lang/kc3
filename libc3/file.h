@@ -16,8 +16,8 @@
  *
  * Structure to manipulate files.
  */
-#ifndef FILE_H
-#define FILE_H
+#ifndef LIBC3_FILE_H
+#define LIBC3_FILE_H
 
 #include "types.h"
 
@@ -25,4 +25,4 @@
 int     file_copy (const char *from, const char *to);
 s_tag * file_mtime (const s_str *path, s_tag *dest);
 
-#endif /* FILE_H */
+#endif /* LIBC3_FILE_H */

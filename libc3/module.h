@@ -17,8 +17,8 @@
  * Structure to manipulate modules.
  * A module contains symbols which have a type and an optional value.
  */
-#ifndef MODULE_H
-#define MODULE_H
+#ifndef LIBC3_MODULE_H
+#define LIBC3_MODULE_H
 
 #include "types.h"
 
@@ -40,4 +40,4 @@ bool          module_defmodule (const s_sym *name, const s_quote *block);
 bool          module_def (const s_sym *module, const s_sym *name,
                           const s_quote *block);
 
-#endif /* MODULE_H */
+#endif /* LIBC3_MODULE_H */

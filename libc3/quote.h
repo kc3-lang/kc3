@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef QUOTE_H
-#define QUOTE_H
+#ifndef LIBC3_QUOTE_H
+#define LIBC3_QUOTE_H
 
 #include "types.h"
 
 void      quote_clean (s_quote *quote);
 s_quote * quote_copy (const s_quote *src, s_quote *dest);
 
-#endif /* QUOTE_H */
+#endif /* LIBC3_QUOTE_H */

@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef HASH_H
-#define HASH_H
+#ifndef LIBC3_HASH_H
+#define LIBC3_HASH_H
 
 #include "types.h"
 
@@ -55,4 +55,4 @@ HASH_UPDATE_PROTOTYPE(u32);
 HASH_UPDATE_PROTOTYPE(u64);
 HASH_UPDATE_PROTOTYPE(uw);
 
-#endif /* HASH_H */
+#endif /* LIBC3_HASH_H */

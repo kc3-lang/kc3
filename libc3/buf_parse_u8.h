@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_parse_u.h.in BITS=8 bits=8 */
-#ifndef BUF_PARSE_U8_H
-#define BUF_PARSE_U8_H
+#ifndef LIBC3_BUF_PARSE_U8_H
+#define LIBC3_BUF_PARSE_U8_H
 
 #include "types.h"
 
@@ -20,4 +20,4 @@ sw buf_parse_u8 (s_buf *buf, u8 *dest);
 sw buf_parse_u8_base (s_buf *buf, const s_str *base,
                            u8 *dest);
 
-#endif /* #ifndef BUF_PARSE_U8_H */
+#endif /* LIBC3_BUF_PARSE_U8_H */

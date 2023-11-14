@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef FRAME_H
-#define FRAME_H
+#ifndef LIBC3_FRAME_H
+#define LIBC3_FRAME_H
 
 #include "types.h"
 
@@ -33,4 +33,4 @@ void frame_binding_new(s_frame *frame, const s_sym *name,
 /* observers */
 const s_tag * frame_get (const s_frame *frame, const s_sym *sym);
 
-#endif /* FRAME_H */
+#endif /* LIBC3_FRAME_H */
