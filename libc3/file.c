@@ -17,7 +17,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "file.h"
-#include "timespec.h"
+#include "time.h"
 
 int file_copy (const char *from, const char *to)
 {
@@ -73,5 +73,5 @@ s_tag * file_mtime (const s_str *path, s_tag *dest)
     warn("file_mtime: %s", path->ptr.ps8);
     return NULL;
   }
-  return timespec_to_tag(&sb.st_mtim, dest);
+  return time_to_tag(&sb.st_mtim, dest);
 }

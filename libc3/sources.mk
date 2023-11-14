@@ -59,7 +59,6 @@ HEADERS = \
 	buf_inspect_uw_hexadecimal.h \
 	buf_inspect_uw_octal.h \
 	buf_parse.h \
-	buf_parse_c.h \
 	buf_parse_s16.h \
 	buf_parse_s32.h \
 	buf_parse_s64.h \
@@ -73,7 +72,6 @@ HEADERS = \
 	buf_save.h \
 	c3.h \
 	c3_main.h \
-	c_types.h \
 	call.h \
 	ceiling.h \
 	cfn.h \
@@ -129,7 +127,6 @@ HEADERS = \
 	sym.h \
 	tag.h \
 	time.h \
-	timespec.h \
 	tuple.h \
 	type.h \
 	types.h \
@@ -201,7 +198,6 @@ SOURCES = \
 	buf_inspect_uw_hexadecimal.c \
 	buf_inspect_uw_octal.c \
 	buf_parse.c \
-	buf_parse_c.c \
 	buf_parse_s16.c \
 	buf_parse_s32.c \
 	buf_parse_s64.c \
@@ -267,7 +263,6 @@ SOURCES = \
 	sym.c \
 	tag.c \
 	time.c \
-	timespec.c \
 	tuple.c \
 	type.c \
 	u16.c \
@@ -338,7 +333,6 @@ LO_SOURCES = \
 	buf_inspect_uw_hexadecimal.c \
 	buf_inspect_uw_octal.c \
 	buf_parse.c \
-	buf_parse_c.c \
 	buf_parse_s16.c \
 	buf_parse_s32.c \
 	buf_parse_s64.c \
@@ -404,7 +398,6 @@ LO_SOURCES = \
 	sym.c \
 	tag.c \
 	time.c \
-	timespec.c \
 	tuple.c \
 	type.c \
 	u16.c \
