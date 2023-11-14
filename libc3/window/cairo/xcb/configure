@@ -40,17 +40,11 @@ OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
 OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
-# Default config
-ENV_CPPFLAGS="$CPPFLAGS"
-ENV_CFLAGS="$CFLAGS"
-ENV_LDFLAGS="$LDFLAGS"
-ENV_LIBS="$LIBS"
+# Common config for all targets
+CPPFLAGS="$CPPFLAGS -I../../../../libffi/include -I../../../.."
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
 LDFLAGS="--shared --no-undefined ${LDFLAGS}"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
-
-# Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
-CPPFLAGS="$CPPFLAGS -I../../../../libffi/include -I../../../.."
 config_asan
 config_gnu
 pkg_config xcb
@@ -147,10 +141,5 @@ for SRC in $SOURCES; do
 done
 
 update_config_mk
-
-CPPFLAGS="$ENV_CPPFLAGS"
-CFLAGS="$ENV_CFLAGS"
-LDFLAGS="$ENV_LDFLAGS"
-LIBS="$ENV_LIBS"
-
+env_reset
 ( cd demo && ./configure; )

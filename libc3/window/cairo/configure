@@ -40,12 +40,6 @@ OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
 OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
-# Default config
-ENV_CPPFLAGS="$CPPFLAGS"
-ENV_CFLAGS="$CFLAGS"
-ENV_LDFLAGS="$LDFLAGS"
-ENV_LIBS="$LIBS"
-
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -I../../../libffi/include -I../../.."
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
@@ -151,11 +145,7 @@ fi
 echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
 
 update_config_mk
-
-CPPFLAGS="$ENV_CPPFLAGS"
-CFLAGS="$ENV_CFLAGS"
-LDFLAGS="$ENV_LDFLAGS"
-LIBS="$ENV_LIBS"
+env_reset
 
 if ${HAVE_SWIFT}; then
     ( cd quartz && ./configure; )

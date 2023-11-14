@@ -146,7 +146,6 @@ TEST_CASE(str_init_clean)
   TEST_EQ(stra.size, len);
   TEST_STRNCMP(stra.ptr.p, "test", len);
   str_clean(&stra);
-  test_ok();
   len = 4;
   m = malloc(len);
   assert(m);
@@ -155,7 +154,6 @@ TEST_CASE(str_init_clean)
   TEST_EQ(stra.size, len);
   TEST_STRNCMP(stra.ptr.p, "test", len);
   str_clean(&stra);
-  test_ok();
 }
 TEST_CASE_END(str_init_clean)
 
@@ -172,7 +170,6 @@ TEST_CASE(str_init_dup)
   TEST_EQ(str.size, len);
   TEST_STRNCMP(str.ptr.p, "test", len);
   str_clean(&str);
-  test_ok();
   len = 4;
   m = malloc(len);
   assert(m);
@@ -183,7 +180,6 @@ TEST_CASE(str_init_dup)
   TEST_EQ(str.size, len);
   TEST_STRNCMP(str.ptr.p, "test", len);
   str_clean(&str);
-  test_ok();
 }
 TEST_CASE_END(str_init_dup)
 
@@ -197,7 +193,6 @@ TEST_CASE(str_init_dup_1)
   TEST_EQ(str.size, len);
   TEST_STRNCMP(str.ptr.p, "test", len);
   str_clean(&str);
-  test_ok();
   len = 4;
   m = malloc(len + 1);
   assert(m);
@@ -207,7 +202,6 @@ TEST_CASE(str_init_dup_1)
   TEST_EQ(str.size, len);
   TEST_STRNCMP(str.ptr.p, "test", len);
   str_clean(&str);
-  test_ok();
 }
 TEST_CASE_END(str_init_dup_1)
 
@@ -308,7 +302,6 @@ TEST_CASE(str_new_delete)
   TEST_EQ(str->size, len);
   TEST_STRNCMP(str->ptr.p, "test", len);
   str_delete(str);
-  test_ok();
   len = 4;
   m = malloc(len);
   memcpy(m, "test", len);
@@ -316,7 +309,6 @@ TEST_CASE(str_new_delete)
   TEST_EQ(str->size, len);
   TEST_STRNCMP(str->ptr.p, "test", len);
   str_delete(str);
-  test_ok();
 }
 TEST_CASE_END(str_new_delete)
 
@@ -333,7 +325,6 @@ TEST_CASE(str_new_dup)
   TEST_EQ(str->size, len);
   TEST_STRNCMP(str->ptr.p, "test", len);
   str_delete(str);
-  test_ok();
   len = 4;
   m = malloc(len);
   memcpy(m, "test", len);
@@ -343,7 +334,6 @@ TEST_CASE(str_new_dup)
   TEST_EQ(str->size, len);
   TEST_STRNCMP(str->ptr.p, "test", len);
   str_delete(str);
-  test_ok();
 }
 TEST_CASE_END(str_new_dup)
 

@@ -30,12 +30,6 @@ OBJECTS_ASAN="$(c2ext .asan.lo "$LO_SOURCES")"
 OBJECTS_COV="$(c2ext .cov.lo "$LO_SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 
-# Default config
-ENV_CPPFLAGS="$CPPFLAGS"
-ENV_CFLAGS="$CFLAGS"
-ENV_LDFLAGS="$LDFLAGS"
-ENV_LIBS="$LIBS"
-
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -I../libffi/include"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
@@ -143,10 +137,5 @@ for SRC in $SOURCES; do
 done
 
 update_config_mk
-
-CPPFLAGS="$ENV_CPPFLAGS"
-CFLAGS="$ENV_CFLAGS"
-LDFLAGS="$ENV_LDFLAGS"
-LIBS="$ENV_LIBS"
-
+env_reset
 ( cd window && ./configure; )
