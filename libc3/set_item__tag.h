@@ -17,8 +17,8 @@
  *
  * Data structure for set items containing s_tag.
  */
-#ifndef SET_ITEM__tag_H
-#define SET_ITEM__tag_H
+#ifndef LIBC3_SET_ITEM__tag_H
+#define LIBC3_SET_ITEM__tag_H
 
 #include "types.h"
 
@@ -31,4 +31,4 @@ set_item_delete__tag (s_set_item__tag *x);
 void
 set_item_delete_all__tag (s_set_item__tag *x);
 
-#endif /* SET_ITEM__tag_H */
+#endif /* LIBC3_SET_ITEM__tag_H */

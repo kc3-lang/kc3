@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef FACTS_CURSOR_H
-#define FACTS_CURSOR_H
+#ifndef LIBC3_FACTS_CURSOR_H
+#define LIBC3_FACTS_CURSOR_H
 
 #include "types.h"
 
@@ -30,4 +30,4 @@ s_facts_cursor * facts_cursor_lock_init (s_facts_cursor *cursor);
 s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor);
 s_fact *         facts_cursor_next (s_facts_cursor *cursor);
 
-#endif /* FACTS_H */
+#endif /* LIBC3_FACTS_H */

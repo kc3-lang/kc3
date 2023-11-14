@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from set.h.in NAME=tag TYPE=s_tag */
-#ifndef SET__tag_H
-#define SET__tag_H
+#ifndef LIBC3_SET__tag_H
+#define LIBC3_SET__tag_H
 
 #include "types.h"
 
@@ -52,4 +52,4 @@ set_remove_item__tag (s_set__tag *set, s_set_item__tag *item);
 s_set__tag *
 set_resize__tag (s_set__tag *set, uw max);
 
-#endif /* SET__tag_H */
+#endif /* LIBC3_SET__tag_H */

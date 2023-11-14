@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef ERROR_HANDLER_H
-#define ERROR_HANDLER_H
+#ifndef LIBC3_ERROR_HANDLER_H
+#define LIBC3_ERROR_HANDLER_H
 
 #include "types.h"
 
@@ -27,4 +27,4 @@ s_error_handler * error_handler_new (s_error_handler *next);
 s_error_handler * error_handler_delete (s_error_handler *error_handler);
 void              error_handler_delete_all (s_error_handler *error_handler);
 
-#endif /* ERROR_HANDLER_H */
+#endif /* LIBC3_ERROR_HANDLER_H */

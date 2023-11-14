@@ -16,8 +16,8 @@
  *
  * A tuple is a static array of tags.
  */
-#ifndef TUPLE_H
-#define TUPLE_H
+#ifndef LIBC3_TUPLE_H
+#define LIBC3_TUPLE_H
 
 #include "hash.h"
 #include "types.h"
@@ -44,4 +44,4 @@ s_list *         tuple_to_list (const s_tuple *tuple, s_list **list);
 /* Call str_delete after use. */
 s_str *          tuple_inspect (const s_tuple *x, s_str *dest);
 
-#endif /* STR_H */
+#endif /* LIBC3_TUPLE_H */

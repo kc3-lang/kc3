@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from set.h.in NAME=_NAME$ TYPE=_TYPE$ */
-#ifndef SET___NAME$_H
-#define SET___NAME$_H
+#ifndef LIBC3_SET___NAME$_H
+#define LIBC3_SET___NAME$_H
 
 #include "types.h"
 
@@ -52,4 +52,4 @@ set_remove_item___NAME$ (s_set___NAME$ *set, s_set_item___NAME$ *item);
 s_set___NAME$ *
 set_resize___NAME$ (s_set___NAME$ *set, uw max);
 
-#endif /* SET___NAME$_H */
+#endif /* LIBC3_SET___NAME$_H */

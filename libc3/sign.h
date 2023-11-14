@@ -16,8 +16,8 @@
  *
  * Functions that return the sign of a number.
  */
-#ifndef SIGN_H
-#define SIGN_H
+#ifndef LIBC3_SIGN_H
+#define LIBC3_SIGN_H
 
 #include "types.h"
 
@@ -35,4 +35,4 @@ DEF_SIGN_PROTOTYPE(u32);
 DEF_SIGN_PROTOTYPE(u64);
 DEF_SIGN_PROTOTYPE(uw);
 
-#endif /* SIGN_H */
+#endif /* LIBC3_SIGN_H */

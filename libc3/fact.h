@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef FACT_H
-#define FACT_H
+#ifndef LIBC3_FACT_H
+#define LIBC3_FACT_H
 
 #include "types.h"
 
@@ -29,4 +29,4 @@ s_fact * fact_r (const s_fact_w *fact);
 /* Modifiers */
 void fact_w_clean (s_fact_w *fact);
 
-#endif /* FACT_H */
+#endif /* LIBC3_FACT_H */

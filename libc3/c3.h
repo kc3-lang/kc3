@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef C3_H
-#define C3_H
+#ifndef LIBC3_C3_H
+#define LIBC3_C3_H
 
 #include "arg.h"
 #include "array.h"
@@ -74,4 +74,4 @@
 #include "type.h"
 #include "ucd.h"
 
-#endif /* C3_H */
+#endif /* LIBC3_C3_H */

@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef WINDOW_CAIRO_XCB_H
-#define WINDOW_CAIRO_XCB_H
+#ifndef LIBC3_WINDOW_CAIRO_XCB_H
+#define LIBC3_WINDOW_CAIRO_XCB_H
 
 #include <libc3/types.h>
 #include <xcb/xcb.h>
@@ -22,4 +22,4 @@ bool window_cairo_xcb_run (s_window_cairo *window);
 
 xcb_visualtype_t * xcb_screen_visual_type (xcb_screen_t *screen);
 
-#endif /* ndef WINDOW_CAIRO_XCB_H */
+#endif /* LIBC3_WINDOW_CAIRO_XCB_H */

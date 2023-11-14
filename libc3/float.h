@@ -22,8 +22,8 @@
  * All operations are supported in tag_add, tag_mul, tag_neg etc.
  *
  */
-#ifndef FLOAT_H
-#define FLOAT_H
+#ifndef LIBC3_FLOAT_H
+#define LIBC3_FLOAT_H
 
 #include "types.h"
 
@@ -50,4 +50,4 @@ s_float * float_sq (const s_float *f, s_float *result);
 s_float * float_sqrt (const s_float *f, s_float *result);
 s_float * float_sub (const s_float *a, s_float *b, s_float *result);
 
-#endif /* FLOAT_H */
+#endif /* LIBC3_FLOAT_H */

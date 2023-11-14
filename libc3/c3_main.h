@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef C3_MAIN_H
-#define C3_MAIN_H
+#ifndef LIBC3_C3_MAIN_H
+#define LIBC3_C3_MAIN_H
 
 #include "types.h"
 
@@ -32,4 +32,4 @@ void c3_clean (s_env *env);
 /* debug */
 void c3_break (void);
 
-#endif /* C3_MAIN_H */
+#endif /* LIBC3_C3_MAIN_H */

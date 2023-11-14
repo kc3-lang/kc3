@@ -17,8 +17,8 @@
  *
  * Skiplist containing s_fact *.
  */
-#ifndef SKIPLIST__fact_H
-#define SKIPLIST__fact_H
+#ifndef LIBC3_SKIPLIST__fact_H
+#define LIBC3_SKIPLIST__fact_H
 
 #include "types.h"
 
@@ -56,4 +56,4 @@ skiplist_random_height__fact (s_skiplist__fact *skiplist);
 bool
 skiplist_remove__fact (s_skiplist__fact *skiplist, s_fact * value);
 
-#endif /* SKIPLIST__fact_H */
+#endif /* LIBC3_SKIPLIST__fact_H */

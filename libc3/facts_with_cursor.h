@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef FACTS_WITH_CURSOR_H
-#define FACTS_WITH_CURSOR_H
+#ifndef LIBC3_FACTS_WITH_CURSOR_H
+#define LIBC3_FACTS_WITH_CURSOR_H
 
 #include "types.h"
 
 void facts_with_cursor_clean (s_facts_with_cursor *cursor);
 s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor);
 
-#endif /* FACTS_WITH_CURSOR_H */
+#endif /* LIBC3_FACTS_WITH_CURSOR_H */

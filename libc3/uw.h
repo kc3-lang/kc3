@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from u.h.in BITS=W bits=w */
-#ifndef UW_H
-#define UW_H
+#ifndef LIBC3_UW_H
+#define LIBC3_UW_H
 
 #include "types.h"
 
 uw * uw_cast (s_tag *tag, uw *dest);
 uw * uw_copy (const uw *src, uw *dest);
 
-#endif /* U8_H */
+#endif /* LIBC3_UW_H */

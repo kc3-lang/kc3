@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef FACTS_WITH_H
-#define FACTS_WITH_H
+#ifndef LIBC3_FACTS_WITH_H
+#define LIBC3_FACTS_WITH_H
 
 #include "types.h"
 
@@ -46,4 +46,4 @@ s_facts_cursor * facts_with_tags (s_facts *facts,
                                   s_tag *predicate,
                                   s_tag *object);
 
-#endif /* FACTS_WITH_H */
+#endif /* LIBC3_FACTS_WITH_H */

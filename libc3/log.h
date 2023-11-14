@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LOG_H
-#define LOG_H
+#ifndef LIBC3_LOG_H
+#define LIBC3_LOG_H
 
 #include "types.h"
 
@@ -29,4 +29,4 @@ void log_delete (s_log *log);
 void log_close (s_log *log);
 sw log_open (s_log *log, FILE *fp);
 
-#endif /* C3_H */
+#endif /* LIBC3_LOG_H */

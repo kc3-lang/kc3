@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from set_cursor.h.in NAME=tag TYPE=s_tag */
-#ifndef SET_CURSOR__tag_H
-#define SET_CURSOR__tag_H
+#ifndef LIBC3_SET_CURSOR__tag_H
+#define LIBC3_SET_CURSOR__tag_H
 
 #include "types.h"
 
@@ -22,4 +22,4 @@ set_cursor_init__tag (s_set__tag *set, s_set_cursor__tag *c);
 s_set_item__tag *
 set_cursor_next__tag (s_set_cursor__tag *c);
 
-#endif /* SET_CURSOR__tag_H */
+#endif /* LIBC3_SET_CURSOR__tag_H */

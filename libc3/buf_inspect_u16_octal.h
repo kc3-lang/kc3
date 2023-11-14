@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u_base.h.in BITS=16 bits=16 BASE=octal */
-#ifndef BUF_INSPECT_U16_octal_H
-#define BUF_INSPECT_U16_octal_H
+#ifndef LIBC3_BUF_INSPECT_U16_octal_H
+#define LIBC3_BUF_INSPECT_U16_octal_H
 
 #include "types.h"
 
 sw buf_inspect_u16_octal (s_buf *buf, const u16 *u);
 sw buf_inspect_u16_octal_size (const u16 *u);
 
-#endif /* ndef BUF_INSPECT_U16_octal_H */
+#endif /* LIBC3_BUF_INSPECT_U16_octal_H */

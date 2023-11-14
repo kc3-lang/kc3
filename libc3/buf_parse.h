@@ -16,8 +16,8 @@
  *
  * Structure to manipulate byte buffers.
  */
-#ifndef BUF_PARSE_H
-#define BUF_PARSE_H
+#ifndef LIBC3_BUF_PARSE_H
+#define LIBC3_BUF_PARSE_H
 
 #include "buf_parse_s8.h"
 #include "buf_parse_s16.h"
@@ -122,4 +122,4 @@ sw buf_parse_void (s_buf *buf, void *dest);
 
 sw buf_peek_array_dimensions (s_buf *buf, s_array *dest);
 
-#endif /* BUF_PARSE_H */
+#endif /* LIBC3_BUF_PARSE_H */

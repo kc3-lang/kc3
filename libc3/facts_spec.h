@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef FACTS_SPEC_H
-#define FACTS_SPEC_H
+#ifndef LIBC3_FACTS_SPEC_H
+#define LIBC3_FACTS_SPEC_H
 
 #include "types.h"
 
@@ -39,4 +39,4 @@ uw facts_spec_count_facts (p_facts_spec spec);
 /* Modifiers */
 p_facts_spec facts_spec_sort (p_facts_spec spec);
 
-#endif /* FACTS_SPEC_H */
+#endif /* LIBC3_FACTS_SPEC_H */

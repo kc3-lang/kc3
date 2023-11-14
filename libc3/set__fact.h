@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from set.h.in NAME=fact TYPE=s_fact */
-#ifndef SET__fact_H
-#define SET__fact_H
+#ifndef LIBC3_SET__fact_H
+#define LIBC3_SET__fact_H
 
 #include "types.h"
 
@@ -52,4 +52,4 @@ set_remove_item__fact (s_set__fact *set, s_set_item__fact *item);
 s_set__fact *
 set_resize__fact (s_set__fact *set, uw max);
 
-#endif /* SET__fact_H */
+#endif /* LIBC3_SET__fact_H */

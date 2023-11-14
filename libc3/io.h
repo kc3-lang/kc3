@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef IO_H
-#define IO_H
+#ifndef LIBC3_IO_H
+#define LIBC3_IO_H
 
 #include "types.h"
 
@@ -25,4 +25,4 @@ sw err_puts (const s8 *s);
 sw io_inspect (const s_tag *tag);
 sw io_puts (const s8 *s);
 
-#endif /* IO_H */
+#endif /* LIBC3_IO_H */

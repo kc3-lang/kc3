@@ -257,9 +257,9 @@ Script interpreter. Works the same as ic3 but is not interactive.
    - maps
      - A map maps keys to values according to an internal hash table.
      - `%{a: 1, 2 => 3}`
-     - access (get symbol)
-     - get
-     - put
+     - access (get symbol key value)
+     - get (get key value)
+     - put (return a new map)
      - machine word alignment (from rtbuf)
    - structs
      - structs are a special kind of map with their fields sorted according to a spec.

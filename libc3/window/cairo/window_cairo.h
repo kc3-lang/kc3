@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef WINDOW_CAIRO_H
-#define WINDOW_CAIRO_H
+#ifndef LIBC3_WINDOW_CAIRO_H
+#define LIBC3_WINDOW_CAIRO_H
 
 #include <libc3/types.h>
 #include <cairo/cairo.h>
@@ -32,4 +32,4 @@ bool window_cairo_motion_default (s_window_cairo *window, sw x, sw y);
 bool window_cairo_render_default (s_window_cairo *window, cairo_t *cr);
 bool window_cairo_resize_default (s_window_cairo *window, uw w, uw h);
 
-#endif /* WINDOW_CAIRO_H */
+#endif /* LIBC3_WINDOW_CAIRO_H */

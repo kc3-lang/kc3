@@ -16,8 +16,8 @@
  *
  * Structure to manipulate byte buffers.
  */
-#ifndef BUF_H
-#define BUF_H
+#ifndef LIBC3_BUF_H
+#define LIBC3_BUF_H
 
 #include <assert.h>
 #include <err.h>
@@ -105,4 +105,4 @@ sw      buf_xfer_reverse(s_buf *src, s_buf *dest);
 /* Observers. */
 s_str * buf_to_str (const s_buf *buf, s_str *dest);
 
-#endif /* BUF_H */
+#endif /* LIBC3_BUF_H */

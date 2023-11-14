@@ -17,8 +17,8 @@
  * Functions that return the ceiling of a number divided by another
  * number.
  */
-#ifndef CEILING_H
-#define CEILING_H
+#ifndef LIBC3_CEILING_H
+#define LIBC3_CEILING_H
 
 #include "types.h"
 
@@ -36,4 +36,4 @@ DEF_CEILING_PROTOTYPE(u32);
 DEF_CEILING_PROTOTYPE(u64);
 DEF_CEILING_PROTOTYPE(uw);
 
-#endif /* CEILING_H */
+#endif /* LIBC3_CEILING_H */

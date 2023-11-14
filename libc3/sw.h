@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from s.h.in BITS=W bits=w */
-#ifndef SW_H
-#define SW_H
+#ifndef LIBC3_SW_H
+#define LIBC3_SW_H
 
 #include "types.h"
 
 sw * sw_cast (s_tag *tag, sw *dest);
 sw * sw_copy (const sw *src, sw *dest);
 
-#endif /* S8_H */
+#endif /* LIBC3_SW_H */

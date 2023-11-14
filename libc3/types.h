@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef TYPES_H
-#define TYPES_H
+#ifndef LIBC3_TYPES_H
+#define LIBC3_TYPES_H
 
 #include <ffi.h>
 #include <limits.h>
@@ -565,4 +565,4 @@ struct facts_with_cursor {
   pthread_mutex_t mutex;
 };
 
-#endif /* TYPES_H */
+#endif /* LIBC3_TYPES_H */

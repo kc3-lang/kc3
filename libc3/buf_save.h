@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef BUF_SAVE_H
-#define BUF_SAVE_H
+#ifndef LIBC3_BUF_SAVE_H
+#define LIBC3_BUF_SAVE_H
 
 #include "types.h"
 
@@ -22,4 +22,4 @@ uw      buf_save_min_wpos (const s_buf *buf);
 s_buf * buf_save_restore_rpos (s_buf *buf, const s_buf_save *save);
 s_buf * buf_save_restore_wpos (s_buf *buf, const s_buf_save *save);
 
-#endif /* BUF_SAVE */
+#endif /* LIBC3_BUF_SAVE */

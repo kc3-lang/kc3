@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_parse_u.h.in BITS=W bits=w */
-#ifndef BUF_PARSE_UW_H
-#define BUF_PARSE_UW_H
+#ifndef LIBC3_BUF_PARSE_UW_H
+#define LIBC3_BUF_PARSE_UW_H
 
 #include "types.h"
 
@@ -20,4 +20,4 @@ sw buf_parse_uw (s_buf *buf, uw *dest);
 sw buf_parse_uw_base (s_buf *buf, const s_str *base,
                            uw *dest);
 
-#endif /* #ifndef BUF_PARSE_UW_H */
+#endif /* LIBC3_BUF_PARSE_UW_H */

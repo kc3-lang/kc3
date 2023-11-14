@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u_base.h.in BITS=_BITS$ bits=_bits$ BASE=_BASE$ */
-#ifndef BUF_INSPECT_U_BITS$__BASE$_H
-#define BUF_INSPECT_U_BITS$__BASE$_H
+#ifndef LIBC3_BUF_INSPECT_U_BITS$__BASE$_H
+#define LIBC3_BUF_INSPECT_U_BITS$__BASE$_H
 
 #include "types.h"
 
 sw buf_inspect_u_bits$__BASE$ (s_buf *buf, const u_bits$ *u);
 sw buf_inspect_u_bits$__BASE$_size (const u_bits$ *u);
 
-#endif /* ndef BUF_INSPECT_U_BITS$__BASE$_H */
+#endif /* LIBC3_BUF_INSPECT_U_BITS$__BASE$_H */

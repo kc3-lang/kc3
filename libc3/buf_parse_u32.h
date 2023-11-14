@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_parse_u.h.in BITS=32 bits=32 */
-#ifndef BUF_PARSE_U32_H
-#define BUF_PARSE_U32_H
+#ifndef LIBC3_BUF_PARSE_U32_H
+#define LIBC3_BUF_PARSE_U32_H
 
 #include "types.h"
 
@@ -20,4 +20,4 @@ sw buf_parse_u32 (s_buf *buf, u32 *dest);
 sw buf_parse_u32_base (s_buf *buf, const s_str *base,
                            u32 *dest);
 
-#endif /* #ifndef BUF_PARSE_U32_H */
+#endif /* LIBC3_BUF_PARSE_U32_H */

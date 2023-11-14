@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from s.h.in BITS=_BITS$ bits=_bits$ */
-#ifndef S_BITS$_H
-#define S_BITS$_H
+#ifndef LIBC3_S_BITS$_H
+#define LIBC3_S_BITS$_H
 
 #include "types.h"
 
 s_bits$ * s_bits$_cast (s_tag *tag, s_bits$ *dest);
 s_bits$ * s_bits$_copy (const s_bits$ *src, s_bits$ *dest);
 
-#endif /* S8_H */
+#endif /* LIBC3_S_BITS$_H */

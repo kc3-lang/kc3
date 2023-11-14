@@ -19,8 +19,8 @@
  * They are allocated once and only free'd at the end of the program.
  * Comparing symbols is fast : it's a pointer comparison.
  */
-#ifndef SYM_H
-#define SYM_H
+#ifndef LIBC3_SYM_H
+#define LIBC3_SYM_H
 
 #include "types.h"
 
@@ -54,4 +54,4 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type);
 
 bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest);
 
-#endif /* SYM_H */
+#endif /* LIBC3_SYM_H */

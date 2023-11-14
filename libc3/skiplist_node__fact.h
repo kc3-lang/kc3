@@ -17,8 +17,8 @@
  *
  * Data structure for skiplist nodes containing s_fact *.
  */
-#ifndef SKIPLIST_NODE__fact_H
-#define SKIPLIST_NODE__fact_H
+#ifndef LIBC3_SKIPLIST_NODE__fact_H
+#define LIBC3_SKIPLIST_NODE__fact_H
 
 #include "types.h"
 
@@ -43,4 +43,4 @@ skiplist_node_delete__fact (s_skiplist_node__fact *node);
 void
 skiplist_node_insert__fact (s_skiplist_node__fact *node, s_skiplist_node__fact *pred);
 
-#endif /* SKIPLIST_NODE__fact_H */
+#endif /* LIBC3_SKIPLIST_NODE__fact_H */

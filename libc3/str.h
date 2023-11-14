@@ -16,8 +16,8 @@
  *
  * Structure to manipulate byte strings.
  */
-#ifndef STR_H
-#define STR_H
+#ifndef LIBC3_STR_H
+#define LIBC3_STR_H
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -83,4 +83,4 @@ const s_sym * str_to_sym (const s_str *src);
 sw str_read_u8 (s_str *str, u8 *p);
 sw str_read_character_utf8 (s_str *str, character *c);
 
-#endif /* STR_H */
+#endif /* LIBC3_STR_H */

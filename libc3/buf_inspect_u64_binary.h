@@ -11,12 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u_base.h.in BITS=64 bits=64 BASE=binary */
-#ifndef BUF_INSPECT_U64_binary_H
-#define BUF_INSPECT_U64_binary_H
+#ifndef LIBC3_BUF_INSPECT_U64_binary_H
+#define LIBC3_BUF_INSPECT_U64_binary_H
 
 #include "types.h"
 
 sw buf_inspect_u64_binary (s_buf *buf, const u64 *u);
 sw buf_inspect_u64_binary_size (const u64 *u);
 
-#endif /* ndef BUF_INSPECT_U64_binary_H */
+#endif /* LIBC3_BUF_INSPECT_U64_binary_H */

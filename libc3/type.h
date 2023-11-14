@@ -16,11 +16,11 @@
  *
  * Structure to manipulate C3 type.
  */
-#ifndef TYPE_H
-#define TYPE_H
+#ifndef LIBC3_TYPE_H
+#define LIBC3_TYPE_H
 
 #include "types.h"
 
 const s_sym * type_pointer (const s_sym *type);
 
-#endif /* TYPE_H */
+#endif /* LIBC3_TYPE_H */

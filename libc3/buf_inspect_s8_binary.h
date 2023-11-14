@@ -11,7 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_s_base.c.in BITS=8 bits=8 base=binary */
+#ifndef LIBC3_BUF_INSPECT_S8_binary_H
+#define LIBC3_BUF_INSPECT_S8_binary_H
+
 #include "types.h"
 
 sw buf_inspect_s8_binary (s_buf *buf, const s8 *s);
 sw buf_inspect_s8_binary_size (const s8 *s);
+
+#endif /* LIBC3_BUF_INSPECT_S8_binary_H */

@@ -16,8 +16,8 @@
  *
  * Structure to inspect data into UTF-8.
  */
-#ifndef BUF_INSPECT_H
-#define BUF_INSPECT_H
+#ifndef LIBC3_BUF_INSPECT_H
+#define LIBC3_BUF_INSPECT_H
 
 #include "types.h"
 
@@ -139,4 +139,4 @@ sw buf_inspect_var_size (const s_tag *var);
 sw buf_inspect_void (s_buf *buf, const void *_);
 sw buf_inspect_void_size (const void *_);
 
-#endif /* BUF_INSPECT_H */
+#endif /* LIBC3_BUF_INSPECT_H */

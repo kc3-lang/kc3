@@ -16,8 +16,8 @@
  *
  * Structure to manipulate booleans.
  */
-#ifndef BOOL_H
-#define BOOL_H
+#ifndef LIBC3_BOOL_H
+#define LIBC3_BOOL_H
 
 #include "types.h"
 
@@ -25,4 +25,4 @@
 bool *  bool_copy (const bool *src, bool *dest);
 s_str * bool_inspect (bool *b, s_str *dest);
 
-#endif /* BOOL_H */
+#endif /* LIBC3_BOOL_H */

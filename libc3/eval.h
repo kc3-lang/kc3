@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef EVAL_H
-#define EVAL_H
+#ifndef LIBC3_EVAL_H
+#define LIBC3_EVAL_H
 
 #include "types.h"
 
@@ -23,4 +23,4 @@ bool eval_ident (const s_ident *ident, s_tag *dest);
 bool eval_progn (const s_list *program, s_tag *dest);
 bool eval_tag (const s_tag *tag, s_tag *dest);
 
-#endif /* EVAL_H */
+#endif /* LIBC3_EVAL_H */

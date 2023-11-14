@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef SEQUENCE_H
-#define SEQUENCE_H
+#ifndef LIBC3_SEQUENCE_H
+#define LIBC3_SEQUENCE_H
 
 #include "types.h"
 
 s_sequence * sequence_init (s_sequence *sequence, f64 duration,
                             const s8 *title);
 
-#endif /* ndef SEQUENCE_H */
+#endif /* LIBC3_SEQUENCE_H */

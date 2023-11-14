@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef ERROR_H
-#define ERROR_H
+#ifndef LIBC3_ERROR_H
+#define LIBC3_ERROR_H
 
 #include "types.h"
 
@@ -24,4 +24,4 @@
 void error_print (s_buf *buf, const s_error_handler *error_handler);
 void error_print_backtrace (s_buf *buf, const s_list *backtrace);
 
-#endif /* ERROR_H */
+#endif /* LIBC3_ERROR_H */

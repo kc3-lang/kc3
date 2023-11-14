@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef CALL_H
-#define CALL_H
+#ifndef LIBC3_CALL_H
+#define LIBC3_CALL_H
 
 #include "types.h"
 
@@ -31,4 +31,4 @@ bool     call_get (s_call *call, s_facts *facts);
 s_call * call_copy (const s_call *src, s_call *dest);
 s_str *  call_inspect (const s_call *call, s_str *dest);
 
-#endif /* CALL_H */
+#endif /* LIBC3_CALL_H */

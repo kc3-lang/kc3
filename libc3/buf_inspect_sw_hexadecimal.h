@@ -11,7 +11,12 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_s_base.c.in BITS=W bits=w base=hexadecimal */
+#ifndef LIBC3_BUF_INSPECT_SW_hexadecimal_H
+#define LIBC3_BUF_INSPECT_SW_hexadecimal_H
+
 #include "types.h"
 
 sw buf_inspect_sw_hexadecimal (s_buf *buf, const sw *s);
 sw buf_inspect_sw_hexadecimal_size (const sw *s);
+
+#endif /* LIBC3_BUF_INSPECT_SW_hexadecimal_H */
