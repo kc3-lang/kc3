@@ -22,18 +22,21 @@ echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 
 if pkg-config cairo; then
     HAVE_CAIRO=true
-    if pkg-config xcb; then
-        HAVE_XCB=true
-        ( cd cairo/xcb && ./configure; )
-        ( cd cairo/xcb/demo && ./configure; )
-    else
-        HAVE_XCB=false
-    fi
 else
     HAVE_CAIRO=false
 fi
-
 echo "HAVE_CAIRO = $HAVE_CAIRO" >> ${CONFIG_MK}
+
+if pkg-config xcb; then
+    HAVE_XCB=true
+else
+    HAVE_XCB=false
+fi
 echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
 
 update_config_mk
+
+if ${HAVE_CAIRO} && ${HAVE_XCB}; then
+    ( cd cairo/xcb && ./configure; )
+    ( cd cairo/xcb/demo && ./configure; )
+fi
