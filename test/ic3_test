@@ -67,9 +67,9 @@ if [ "x$DIFFS" != "x" ]; then
     less $DIFFS || cat $DIFFS
 fi
 echo
-echo -n "Total $TEST_COUNT tests. "
-echo -n "${TEST_COLOR_OK}OK $TEST_OK ($(($TEST_OK * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}. "
-echo "${TEST_COLOR_KO}KO $TEST_KO ($(($TEST_KO * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}."
+printf "%s" "Total $TEST_COUNT tests. "
+printf "%s" "${TEST_COLOR_OK}OK $TEST_OK ($(($TEST_OK * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}. "
+echo "%s" "${TEST_COLOR_KO}KO $TEST_KO ($(($TEST_KO * 100 / $TEST_COUNT))%)${TEST_COLOR_RESET}."
 
 if [ "x$TEST_KO" = "x0" ]; then
     exit 0
