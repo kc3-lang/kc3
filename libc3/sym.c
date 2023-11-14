@@ -43,6 +43,7 @@ bool sym_character_is_reserved (character c)
           c == ')' ||
           c == ',' ||
           c == '.' ||
+          c == ':' ||
           c == ';' ||
           c == '[' ||
           c == ']' ||
