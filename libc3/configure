@@ -31,15 +31,16 @@ OBJECTS_COV="$(c2ext .cov.lo "$LO_SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 
 # Default config
-CPPFLAGS="${CPPFLAGS:=}"
-ENV_CFLAGS="${CFLAGS:=}"
-DEFAULT_CFLAGS="-O2 -pipe"
-LDFLAGS="--shared --no-undefined ${LDFLAGS}"
-LIBS="${LIBS} -lm -pthread -rpath ${PREFIX}/lib"
+ENV_CPPFLAGS="$CPPFLAGS"
+ENV_CFLAGS="$CFLAGS"
+ENV_LDFLAGS="$LDFLAGS"
+ENV_LIBS="$LIBS"
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
 CPPFLAGS="$CPPFLAGS -I../libffi/include"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
+LDFLAGS="--shared --no-undefined ${LDFLAGS}"
+LIBS="${LIBS} -lm -pthread -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
@@ -72,6 +73,7 @@ LDFLAGS_DEBUG="$LDFLAGS"
 LIBS_DEBUG="$LIBS"
 
 # Main config
+DEFAULT_CFLAGS="-O2 -pipe"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
@@ -141,5 +143,10 @@ for SRC in $SOURCES; do
 done
 
 update_config_mk
+
+CPPFLAGS="$ENV_CPPFLAGS"
+CFLAGS="$ENV_CFLAGS"
+LDFLAGS="$ENV_LDFLAGS"
+LIBS="$ENV_LIBS"
 
 ( cd window && ./configure; )

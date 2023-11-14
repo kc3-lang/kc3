@@ -41,20 +41,20 @@ OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
 # Default config
-CPPFLAGS="${CPPFLAGS:=}"
-ENV_CFLAGS="${CFLAGS:=}"
-DEFAULT_CFLAGS="-O2 -pipe"
-LDFLAGS="--shared --no-undefined ${LDFLAGS}"
-LIBS="${LIBS} -rpath ${PREFIX}/lib"
+ENV_CPPFLAGS="$CPPFLAGS"
+ENV_CFLAGS="$CFLAGS"
+ENV_LDFLAGS="$LDFLAGS"
+ENV_LIBS="$LIBS"
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
 CPPFLAGS="$CPPFLAGS -I../../../libffi/include -I../../.."
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
+LDFLAGS="--shared --no-undefined ${LDFLAGS}"
+LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 pkg_config cairo
 config_define PREFIX "\"${PREFIX}\""
-LIBS="$LIBS"
 
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
@@ -75,6 +75,7 @@ LIBS_LOCAL_DEBUG="$LIBC3_DEBUG"
 LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
 
 # Main config
+DEFAULT_CFLAGS="-O2 -pipe"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
@@ -150,6 +151,11 @@ fi
 echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
 
 update_config_mk
+
+CPPFLAGS="$ENV_CPPFLAGS"
+CFLAGS="$ENV_CFLAGS"
+LDFLAGS="$ENV_LDFLAGS"
+LIBS="$ENV_LIBS"
 
 if ${HAVE_SWIFT}; then
     ( cd quartz && ./configure; )
