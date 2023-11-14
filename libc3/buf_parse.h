@@ -92,6 +92,7 @@ sw buf_parse_str_character (s_buf *buf, character *dest);
 sw buf_parse_str_character_unicode (s_buf *buf, character *dest);
 sw buf_parse_str_u8 (s_buf *buf, u8 *dest);
 sw buf_parse_sym (s_buf *buf, const s_sym **dest);
+sw buf_parse_sym_str (s_buf *buf, s_str *dest);
 sw buf_parse_tag (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_array (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_bool (s_buf *buf, s_tag *dest);
