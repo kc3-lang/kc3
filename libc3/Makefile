@@ -19,30 +19,45 @@ CLEANFILES += ${CLEANFILES_COV}
 DISTCLEANFILES = ${CLEANFILES} config.h config.mk
 
 build: libc3.la
+	${MAKE} -C window build
 
 all:
 	${MAKE} build
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+	${MAKE} -C window all
 
 asan: libc3_asan.la
+	${MAKE} -C window asan
 
 clean:
 	rm -rf ${CLEANFILES}
+	${MAKE} -C window clean
 
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
+	${MAKE} -C window clean_cov
 
 cov: libc3_cov.la
+	${MAKE} -C window cov
 
 debug: libc3_debug.la
+	${MAKE} -C window debug
+
+demo: build
+	${MAKE} -C window demo
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
+	${MAKE} -C window distclean
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libc3.html
+	${MAKE} -C window gcovr
+
+gdb_demo: debug
+	${MAKE} -C window gdb_demo
 
 include gen.mk
 CLEANFILES += ${GENERATED_FILES}
@@ -53,18 +68,7 @@ install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/lib
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
 	${LIBTOOL} --finish ${prefix}/lib
-
-libc3.a: libc3.la
-	cp .libs/libc3.a ./
-
-libc3_asan.a: libc3_asan.la
-	cp .libs/libc3_asan.a ./
-
-libc3_cov.a: libc3_cov.la
-	cp .libs/libc3_cov.a ./
-
-libc3_debug.a: libc3_debug.la
-	cp .libs/libc3_debug.a ./
+	${MAKE} -C window install
 
 libffi:
 	ln -sf "../libffi/${CC_TARGET}" libffi

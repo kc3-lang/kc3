@@ -15,16 +15,21 @@ set -e
 
 export SRC_TOP="$(dirname "$PWD")"
 
-. ../config.subr
+. ../../../../../config.subr
 
-PROG=libc3_test
-PROG_ASAN=libc3_test_asan
-PROG_COV=libc3_test_cov
-PROG_DEBUG=libc3_test_debug
+PROG=c3_window_cairo_quartz_demo
+PROG_ASAN=c3_window_cairo_quartz_demo_asan
+PROG_COV=c3_window_cairo_quartz_demo_cov
+PROG_DEBUG=c3_window_cairo_quartz_demo_debug
+
+echo "PROG = $PROG" >> ${CONFIG_MK}
+echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}
+echo "PROG_COV = $PROG_COV" >> ${CONFIG_MK}
+echo "PROG_DEBUG = $PROG_DEBUG" >> ${CONFIG_MK}
 
 . ./sources.sh
 
-OBJECTS="$(c2lo "$SOURCES")"
+OBJECTS="$(c2ext .main.lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 
 OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
@@ -39,40 +44,36 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Default config
-CPPFLAGS="${CPPFLAGS}"
-ENV_CFLAGS="${CFLAGS}"
-DEFAULT_CFLAGS="-O2 -pipe"
-LDFLAGS="${LDFLAGS}"
-LIBS="${LIBS:=} -lm"
+CPPFLAGS="${CPPFLAGS:-}"
+ENV_CFLAGS="${CFLAGS:-}"
+DEFAULT_CFLAGS="-O2 -pipe -fPIC"
+LDFLAGS="${LDFLAGS:-}"
+LIBS="${LIBS:-}"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-CPPFLAGS="$CPPFLAGS -I../libffi/include"
+CPPFLAGS="$CPPFLAGS -I../../../../../libffi/include -I../../../../.."
 config_asan
 config_gnu
-pkg_config libbsd-overlay
-pkg_config libmd
-config_lib libmd -lmd 2>/dev/null
-config_lib dl -ldl 2>/dev/null
-LIBS="$LIBS ../libffi/libffi.la -pthread"
+LIBS="$LIBS"
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBC3_ASAN=../libc3/libc3_asan.la
-LIBS_ASAN="$LIBC3_ASAN $LIBS"
+LOCAL_LIBS_ASAN="../libc3_window_cairo_quartz_asan.la"
+LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
-LDFLAGS_COV="$LDFLAGS"
-LIBC3_COV=../libc3/libc3_cov.la
-LIBS_COV="$LIBC3_COV $LIBS"
+LDFLAGS_COV="$LDFLAGS --coverage"
+LOCAL_LIBS_COV="../libc3_window_cairo_quartz_cov.la"
+LIBS_COV="$LOCAL_LIBS_COV $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBC3_DEBUG=../libc3/libc3_debug.la
-LIBS_DEBUG="$LIBC3_DEBUG $LIBS"
+LOCAL_LIBS_DEBUG="../libc3_window_cairo_quartz_debug.la"
+LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
 if [ "x$ENV_CFLAGS" = "x" ]; then
@@ -80,7 +81,8 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
 LIBC3=../libc3/libc3.la
-LIBS="$LIBC3 $LIBS"
+LOCAL_LIBS="../libc3_window_cairo_quartz.la"
+LIBS="$LOCAL_LIBS $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
@@ -91,33 +93,31 @@ echo >> ${CONFIG_MK}
 echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
-if $HAVE_GCOV; then
-    echo >> ${CONFIG_MK}
-    echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
-    echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
-    echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
-fi
+echo >> ${CONFIG_MK}
+echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
+echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
+echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
-echo "$PROG: $LIBC3 $OBJECTS" >> ${CONFIG_MK}
+echo "$PROG: $LOCAL_LIBS $OBJECTS" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} ${OBJECTS} ${LIBS} -o $PROG" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
-echo "$PROG_ASAN: $LIBC3_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
+echo "$PROG_ASAN: $LOCAL_LIBS_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_ASAN} \${LDFLAGS_ASAN} ${OBJECTS_ASAN} ${LIBS_ASAN} -o $PROG_ASAN" >> ${CONFIG_MK}
 
 if $HAVE_GCOV; then
     echo >> ${CONFIG_MK}
-    echo "$PROG_COV: $LIBC3_COV $OBJECTS_COV" >> ${CONFIG_MK}
+    echo "$PROG_COV: $LOCAL_LIBS_COV $OBJECTS_COV" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_COV} \${LDFLAGS_COV} ${OBJECTS_COV} ${LIBS_COV} -o $PROG_COV" >> ${CONFIG_MK}
 fi
 
 echo >> ${CONFIG_MK}
-echo "$PROG_DEBUG: $LIBC3_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
+echo "$PROG_DEBUG: $LOCAL_LIBS_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
 echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_DEBUG} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} ${LIBS_DEBUG} -o $PROG_DEBUG" >> ${CONFIG_MK}
 
 for SRC in $SOURCES; do
@@ -142,6 +142,20 @@ for SRC in $SOURCES; do
     SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
     c_ext_rule .debug.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
+done
+
+for SRC in $SWIFT_SOURCES; do
+    echo >> ${CONFIG_MK}
+    SRC_LO="$(swift2ext .main.lo "$SRC")"
+    swift_ext_rule .main.lo "$SRC" >> ${CONFIG_MK}
+    echo "	\${SWIFTC} \${SWIFT_CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
+done
+
+for SRC in $OBJC_SOURCES; do
+    echo >> ${CONFIG_MK}
+    SRC_LO="$(objc2ext .main.lo "$SRC")"
+    objc_ext_rule .main.lo "$SRC" >> ${CONFIG_MK}
+    echo "	${LIBTOOL} --tag=OBJCC --mode=compile \${OBJCC} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
 done
 
 update_config_mk

@@ -121,23 +121,25 @@ echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_DEBUG} ${OBJECT
 for SRC in $SOURCES; do
     echo >> ${CONFIG_MK}
     SRC_LO="$(c2ext .main.lo "$SRC")"
-    ext_rule .main.lo "$SRC" >> ${CONFIG_MK}
+    c_ext_rule .main.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
     SRC_ASAN_LO="$(c2ext .asan.lo "$SRC")"
-    ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
+    c_ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
     SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
-    ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
+    c_ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
     SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
-    ext_rule .debug.lo "$SRC" >> ${CONFIG_MK}
+    c_ext_rule .debug.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
 done
 
 update_config_mk
+
+( cd window && ./configure; )

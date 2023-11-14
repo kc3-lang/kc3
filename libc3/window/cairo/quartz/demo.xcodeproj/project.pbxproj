@@ -7,27 +7,44 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2A5416C72B038F6100E42968 /* libc3_window_cairo_quartzApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5416C62B038F6100E42968 /* libc3_window_cairo_quartzApp.swift */; };
-		2A5416CB2B038F6200E42968 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A5416CA2B038F6200E42968 /* Assets.xcassets */; };
-		2A5416CF2B038F6200E42968 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A5416CE2B038F6200E42968 /* Preview Assets.xcassets */; };
-		2A5416D72B03900E00E42968 /* custom_cairo_view.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A5416D62B03900E00E42968 /* custom_cairo_view.m */; };
-		2A5416DA2B039BAE00E42968 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5416D92B039BAE00E42968 /* ContentView.swift */; };
-		2A5416DC2B039C0000E42968 /* custom_cairo_swiftui_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5416DB2B039C0000E42968 /* custom_cairo_swiftui_view.swift */; };
-		2A5416DF2B03B3C900E42968 /* libcairo.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5416DE2B03B3C900E42968 /* libcairo.2.dylib */; };
+		2A5416E32B03D3E100E42968 /* c3_window_cairo_quartz_demo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5416E02B03D3E100E42968 /* c3_window_cairo_quartz_demo.swift */; };
+		2A5416F02B03E86C00E42968 /* c3_window_cairo_quartz_demo_bridging_header.h in Sources */ = {isa = PBXBuildFile; fileRef = 2A5416E12B03D3E100E42968 /* c3_window_cairo_quartz_demo_bridging_header.h */; };
+		2A5416F12B03E86C00E42968 /* content_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5416E52B03D43200E42968 /* content_view.swift */; };
+		2A5416F22B03E86C00E42968 /* custom_cairo_swiftui_view.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5416E62B03D43200E42968 /* custom_cairo_swiftui_view.swift */; };
+		2A5416F32B03E86C00E42968 /* custom_cairo_view.h in Sources */ = {isa = PBXBuildFile; fileRef = 2A5416E72B03D43200E42968 /* custom_cairo_view.h */; };
+		2A5416F42B03E86C00E42968 /* custom_cairo_view.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A5416E42B03D43200E42968 /* custom_cairo_view.m */; };
+		2A5416F92B03E88E00E42968 /* libc3_window_cairo_quartz.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A5416F82B03E88E00E42968 /* libc3_window_cairo_quartz.0.dylib */; };
+		2A5416FB2B03E95B00E42968 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2A5416FA2B03E95B00E42968 /* Assets.xcassets */; };
+		2A5416FC2B03F73D00E42968 /* libc3_window_cairo_quartz.0.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 2A5416F82B03E88E00E42968 /* libc3_window_cairo_quartz.0.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		2A5417002B0403FB00E42968 /* Preview Content in Resources */ = {isa = PBXBuildFile; fileRef = 2A5416FE2B0403FB00E42968 /* Preview Content */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		2A5416FD2B03F73D00E42968 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2A5416FC2B03F73D00E42968 /* libc3_window_cairo_quartz.0.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		2A5416C32B038F6100E42968 /* libc3_window_cairo_quartz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = libc3_window_cairo_quartz.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		2A5416C62B038F6100E42968 /* libc3_window_cairo_quartzApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = libc3_window_cairo_quartzApp.swift; sourceTree = "<group>"; };
-		2A5416CA2B038F6200E42968 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		2A5416CC2B038F6200E42968 /* libc3_window_cairo_quartz.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = libc3_window_cairo_quartz.entitlements; sourceTree = "<group>"; };
-		2A5416CE2B038F6200E42968 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		2A5416D52B03900E00E42968 /* libc3_window_cairo_quartz-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "libc3_window_cairo_quartz-Bridging-Header.h"; sourceTree = "<group>"; };
-		2A5416D62B03900E00E42968 /* custom_cairo_view.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = custom_cairo_view.m; sourceTree = "<group>"; };
-		2A5416D82B03907E00E42968 /* custom_cairo_view.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = custom_cairo_view.h; sourceTree = "<group>"; };
-		2A5416D92B039BAE00E42968 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		2A5416DB2B039C0000E42968 /* custom_cairo_swiftui_view.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = custom_cairo_swiftui_view.swift; sourceTree = "<group>"; };
-		2A5416DE2B03B3C900E42968 /* libcairo.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcairo.2.dylib; path = ../../../../../../../../../../../opt/homebrew/Cellar/cairo/1.18.0/lib/libcairo.2.dylib; sourceTree = "<group>"; };
+		2A5416C32B038F6100E42968 /* c3_window_cairo_quartz_demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = c3_window_cairo_quartz_demo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A5416E02B03D3E100E42968 /* c3_window_cairo_quartz_demo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = c3_window_cairo_quartz_demo.swift; path = demo/c3_window_cairo_quartz_demo.swift; sourceTree = "<group>"; };
+		2A5416E12B03D3E100E42968 /* c3_window_cairo_quartz_demo_bridging_header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = c3_window_cairo_quartz_demo_bridging_header.h; path = demo/c3_window_cairo_quartz_demo_bridging_header.h; sourceTree = "<group>"; };
+		2A5416E22B03D3E100E42968 /* c3_window_cairo_quartz_demo.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; name = c3_window_cairo_quartz_demo.entitlements; path = demo/c3_window_cairo_quartz_demo.entitlements; sourceTree = "<group>"; };
+		2A5416E42B03D43200E42968 /* custom_cairo_view.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = custom_cairo_view.m; sourceTree = "<group>"; };
+		2A5416E52B03D43200E42968 /* content_view.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = content_view.swift; sourceTree = "<group>"; };
+		2A5416E62B03D43200E42968 /* custom_cairo_swiftui_view.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = custom_cairo_swiftui_view.swift; sourceTree = "<group>"; };
+		2A5416E72B03D43200E42968 /* custom_cairo_view.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = custom_cairo_view.h; sourceTree = "<group>"; };
+		2A5416F82B03E88E00E42968 /* libc3_window_cairo_quartz.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libc3_window_cairo_quartz.0.dylib; path = .libs/libc3_window_cairo_quartz.0.dylib; sourceTree = "<group>"; };
+		2A5416FA2B03E95B00E42968 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = demo/Assets.xcassets; sourceTree = "<group>"; };
+		2A5416FE2B0403FB00E42968 /* Preview Content */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "Preview Content"; path = "demo/Preview Content"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,7 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A5416DF2B03B3C900E42968 /* libcairo.2.dylib in Frameworks */,
+				2A5416F92B03E88E00E42968 /* libc3_window_cairo_quartz.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,7 +62,15 @@
 		2A5416BA2B038F6100E42968 = {
 			isa = PBXGroup;
 			children = (
-				2A5416C52B038F6100E42968 /* libc3_window_cairo_quartz */,
+				2A5416FA2B03E95B00E42968 /* Assets.xcassets */,
+				2A5416FE2B0403FB00E42968 /* Preview Content */,
+				2A5416E12B03D3E100E42968 /* c3_window_cairo_quartz_demo_bridging_header.h */,
+				2A5416E52B03D43200E42968 /* content_view.swift */,
+				2A5416E62B03D43200E42968 /* custom_cairo_swiftui_view.swift */,
+				2A5416E72B03D43200E42968 /* custom_cairo_view.h */,
+				2A5416E42B03D43200E42968 /* custom_cairo_view.m */,
+				2A5416E22B03D3E100E42968 /* c3_window_cairo_quartz_demo.entitlements */,
+				2A5416E02B03D3E100E42968 /* c3_window_cairo_quartz_demo.swift */,
 				2A5416C42B038F6100E42968 /* Products */,
 				2A5416DD2B03B3C900E42968 /* Frameworks */,
 			);
@@ -54,39 +79,15 @@
 		2A5416C42B038F6100E42968 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2A5416C32B038F6100E42968 /* libc3_window_cairo_quartz.app */,
+				2A5416C32B038F6100E42968 /* c3_window_cairo_quartz_demo.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		2A5416C52B038F6100E42968 /* libc3_window_cairo_quartz */ = {
-			isa = PBXGroup;
-			children = (
-				2A5416C62B038F6100E42968 /* libc3_window_cairo_quartzApp.swift */,
-				2A5416D92B039BAE00E42968 /* ContentView.swift */,
-				2A5416DB2B039C0000E42968 /* custom_cairo_swiftui_view.swift */,
-				2A5416CA2B038F6200E42968 /* Assets.xcassets */,
-				2A5416CC2B038F6200E42968 /* libc3_window_cairo_quartz.entitlements */,
-				2A5416CD2B038F6200E42968 /* Preview Content */,
-				2A5416D62B03900E00E42968 /* custom_cairo_view.m */,
-				2A5416D82B03907E00E42968 /* custom_cairo_view.h */,
-				2A5416D52B03900E00E42968 /* libc3_window_cairo_quartz-Bridging-Header.h */,
-			);
-			path = libc3_window_cairo_quartz;
-			sourceTree = "<group>";
-		};
-		2A5416CD2B038F6200E42968 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				2A5416CE2B038F6200E42968 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		2A5416DD2B03B3C900E42968 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2A5416DE2B03B3C900E42968 /* libcairo.2.dylib */,
+				2A5416F82B03E88E00E42968 /* libc3_window_cairo_quartz.0.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -94,21 +95,22 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2A5416C22B038F6100E42968 /* libc3_window_cairo_quartz */ = {
+		2A5416C22B038F6100E42968 /* c3_window_cairo_quartz_demo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2A5416D22B038F6200E42968 /* Build configuration list for PBXNativeTarget "libc3_window_cairo_quartz" */;
+			buildConfigurationList = 2A5416D22B038F6200E42968 /* Build configuration list for PBXNativeTarget "c3_window_cairo_quartz_demo" */;
 			buildPhases = (
 				2A5416BF2B038F6100E42968 /* Sources */,
 				2A5416C02B038F6100E42968 /* Frameworks */,
 				2A5416C12B038F6100E42968 /* Resources */,
+				2A5416FD2B03F73D00E42968 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = libc3_window_cairo_quartz;
+			name = c3_window_cairo_quartz_demo;
 			productName = libc3_window_cairo_quartz;
-			productReference = 2A5416C32B038F6100E42968 /* libc3_window_cairo_quartz.app */;
+			productReference = 2A5416C32B038F6100E42968 /* c3_window_cairo_quartz_demo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -127,7 +129,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 2A5416BE2B038F6100E42968 /* Build configuration list for PBXProject "libc3_window_cairo_quartz" */;
+			buildConfigurationList = 2A5416BE2B038F6100E42968 /* Build configuration list for PBXProject "demo" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -140,7 +142,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2A5416C22B038F6100E42968 /* libc3_window_cairo_quartz */,
+				2A5416C22B038F6100E42968 /* c3_window_cairo_quartz_demo */,
 			);
 		};
 /* End PBXProject section */
@@ -150,8 +152,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A5416CF2B038F6200E42968 /* Preview Assets.xcassets in Resources */,
-				2A5416CB2B038F6200E42968 /* Assets.xcassets in Resources */,
+				2A5417002B0403FB00E42968 /* Preview Content in Resources */,
+				2A5416FB2B03E95B00E42968 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,10 +164,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A5416D72B03900E00E42968 /* custom_cairo_view.m in Sources */,
-				2A5416C72B038F6100E42968 /* libc3_window_cairo_quartzApp.swift in Sources */,
-				2A5416DC2B039C0000E42968 /* custom_cairo_swiftui_view.swift in Sources */,
-				2A5416DA2B039BAE00E42968 /* ContentView.swift in Sources */,
+				2A5416F02B03E86C00E42968 /* c3_window_cairo_quartz_demo_bridging_header.h in Sources */,
+				2A5416F12B03E86C00E42968 /* content_view.swift in Sources */,
+				2A5416F22B03E86C00E42968 /* custom_cairo_swiftui_view.swift in Sources */,
+				2A5416F32B03E86C00E42968 /* custom_cairo_view.h in Sources */,
+				2A5416F42B03E86C00E42968 /* custom_cairo_view.m in Sources */,
+				2A5416E32B03D3E100E42968 /* c3_window_cairo_quartz_demo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,10 +296,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = libc3_window_cairo_quartz/libc3_window_cairo_quartz.entitlements;
+				CODE_SIGN_ENTITLEMENTS = demo/c3_window_cairo_quartz_demo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"libc3_window_cairo_quartz/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = demo;
+				DEVELOPMENT_TEAM = W4AD54MQ5Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = /opt/homebrew/include;
@@ -315,15 +320,17 @@
 				LIBRARY_SEARCH_PATHS = (
 					/opt/homebrew/lib,
 					/opt/homebrew/Cellar/cairo/1.18.0/lib,
+					"$(PROJECT_DIR)/.libs",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "kmx.io.libc3-window-cairo-quartz";
+				PRODUCT_BUNDLE_IDENTIFIER = "kmx.io.c3-window-cairo-quartz-demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
+				STRIP_INSTALLED_PRODUCT = NO;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "libc3_window_cairo_quartz/libc3_window_cairo_quartz-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = demo/c3_window_cairo_quartz_demo_bridging_header.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -336,10 +343,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = libc3_window_cairo_quartz/libc3_window_cairo_quartz.entitlements;
+				CODE_SIGN_ENTITLEMENTS = demo/c3_window_cairo_quartz_demo.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"libc3_window_cairo_quartz/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = demo;
+				DEVELOPMENT_TEAM = W4AD54MQ5Q;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = /opt/homebrew/include;
@@ -359,15 +367,17 @@
 				LIBRARY_SEARCH_PATHS = (
 					/opt/homebrew/lib,
 					/opt/homebrew/Cellar/cairo/1.18.0/lib,
+					"$(PROJECT_DIR)/.libs",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "kmx.io.libc3-window-cairo-quartz";
+				PRODUCT_BUNDLE_IDENTIFIER = "kmx.io.c3-window-cairo-quartz-demo";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
+				STRIP_INSTALLED_PRODUCT = NO;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "libc3_window_cairo_quartz/libc3_window_cairo_quartz-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = demo/c3_window_cairo_quartz_demo_bridging_header.h;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -376,7 +386,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2A5416BE2B038F6100E42968 /* Build configuration list for PBXProject "libc3_window_cairo_quartz" */ = {
+		2A5416BE2B038F6100E42968 /* Build configuration list for PBXProject "demo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2A5416D02B038F6200E42968 /* Debug */,
@@ -385,7 +395,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2A5416D22B038F6200E42968 /* Build configuration list for PBXNativeTarget "libc3_window_cairo_quartz" */ = {
+		2A5416D22B038F6200E42968 /* Build configuration list for PBXNativeTarget "c3_window_cairo_quartz_demo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2A5416D32B038F6200E42968 /* Debug */,

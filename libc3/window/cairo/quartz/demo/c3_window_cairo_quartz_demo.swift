@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct libc3_window_cairo_quartzApp: App {
+struct appApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

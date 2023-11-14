@@ -10,10 +10,15 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-include config.mk
+CLEANFILES = *.a *.gcno *.la .libs *.lo *.o
 
-build:
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo build; fi
+CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+
+CLEANFILES += ${CLEANFILES_COV}
+
+DISTCLEANFILES = ${CLEANFILES} config.h config.mk
+
+build: libc3_window_cairo_quartz.la
 
 all:
 	${MAKE} build
@@ -21,38 +26,22 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan:
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo asan; fi
+asan: libc3_window_cairo_quartz_asan.la
 
 clean:
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo clean; fi
+	rm -rf ${CLEANFILES}
 
 clean_cov:
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo clean_cov; fi
+	rm -rf ${CLEANFILES_COV}
 
-cov:
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo cov; fi
+cov: libc3_window_cairo_quartz_cov.la
 
-debug:
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo debug; fi
-
-demo: build
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo demo; fi
+debug: libc3_window_cairo_quartz_debug.la
 
 distclean:
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo distclean; fi
-
-gcovr:
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo gcovr; fi
-
-gdb_demo: debug
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo gdb_demo; fi
-
-install:
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo install; fi
+	rm -rf ${DISTCLEANFILES}
 
 test:
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo test; fi
 
 update_sources:
 	./update_sources
@@ -64,8 +53,11 @@ update_sources:
 	clean \
 	cov \
 	debug \
-	demo \
 	distclean \
+	gen \
 	install \
 	test \
 	update_sources
+
+include config.mk
+include sources.mk
