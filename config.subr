@@ -111,6 +111,13 @@ config_lib() {
     rm "$OUT"
 }
 
+env_reset() {
+    CPPFLAGS="$ENV_CPPFLAGS"
+    CFLAGS="$ENV_CFLAGS"
+    LDFLAGS="$ENV_LDFLAGS"
+    LIBS="$ENV_LIBS"
+}
+
 objc_o_rule() {
     echo "$1" | sed -e 's/^\(.*\)\.m$/\1.o: \1.c/'
     echo "$1" | sed -e 's/^\(.*\)\.m$/\1.o: Makefile config.mk/'
@@ -215,6 +222,11 @@ SOURCES_SH=".sources.sh.tmp"
 VER=0.1
 echo "VER = $VER" >> ${CONFIG_MK}
 echo "SRC_TOP = $SRC_TOP" >> ${CONFIG_MK}
+
+ENV_CPPFLAGS="$CPPFLAGS"
+ENV_CFLAGS="$CFLAGS"
+ENV_LDFLAGS="$LDFLAGS"
+ENV_LIBS="$LIBS"
 
 if [ "x$CC" = "x" ]; then
     if test -n $(which cc); then

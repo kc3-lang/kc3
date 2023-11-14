@@ -43,12 +43,6 @@ fi
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
-# Default config
-ENV_CPPFLAGS="${CPPFLAGS}"
-ENV_CFLAGS="${CFLAGS}"
-ENV_LDFLAGS="${LDFLAGS}"
-ENV_LIBS="${LIBS}"
-
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 CPPFLAGS="$CPPFLAGS -I../../../../../libffi/include -I../../../../.."

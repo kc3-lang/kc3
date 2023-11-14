@@ -22,13 +22,11 @@
 #define BUF_TEST_CLEAN(bufa)                                           \
   do {                                                                 \
     buf_clean(&bufa);                                                  \
-    test_ok();                                                         \
   } while(0)
 
 #define BUF_TEST_DELETE(buf)                                           \
   do {                                                                 \
     buf_delete(buf);                                                   \
-    test_ok();                                                         \
   } while(0)
 
 #define BUF_TEST_F(test, expected)                                     \
@@ -370,7 +368,7 @@ TEST_CASE(buf_peek_s16)
   s8 b[8];
   s_buf buf;
   s16 val;
-  buf_init(&buf, false, sizeof(b), b);          \
+  buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s16(&buf, 0), 2);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf.wpos, 2);

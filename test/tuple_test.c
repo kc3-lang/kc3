@@ -23,7 +23,6 @@
     test_context("tuple_init(" # test ")");                            \
     TEST_EQ(tuple_init(&tuple_test, (test)), &tuple_test);             \
     tuple_clean(&tuple_test);                                          \
-    test_ok();                                                         \
     test_context(NULL);                                                \
   } while (0)
 
@@ -68,7 +67,6 @@
     test_context("tuple_new(" # test ")");                             \
     TEST_ASSERT((tuple_test = tuple_new((test))));                     \
     tuple_delete(tuple_test);                                          \
-    test_ok();                                                         \
     test_context(NULL);                                                \
   } while (0)
 
