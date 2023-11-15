@@ -27,11 +27,6 @@ echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
 echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
 echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
-LIBC3=../../../libc3.la
-LIBC3_ASAN=../../../libc3_asan.la
-LIBC3_COV=../../../libc3_cov.la
-LIBC3_DEBUG=../../../libc3_debug.la
-
 . ./sources.sh
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
@@ -66,19 +61,19 @@ LIBS="$LIBS"
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LOCAL_LIBS_ASAN="$LIBC3_ASAN"
+LOCAL_LIBS_ASAN="../libc3_window_cairo_asan.la"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LOCAL_LIBS_COV="$LIBC3_COV"
+LOCAL_LIBS_COV="../libc3_window_cairo_cov.la"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LOCAL_LIBS_DEBUG="$LIBC3_DEBUG"
+LOCAL_LIBS_DEBUG="../libc3_window_cairo_debug.la"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
@@ -86,7 +81,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LOCAL_LIBS="$LIBC3"
+LOCAL_LIBS="../libc3_window_cairo.la"
 LIBS="$LOCAL_LIBS $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
@@ -160,5 +155,5 @@ for SRC in $OBJC_SOURCES; do
 done
 
 update_config_mk
-
+env_reset
 ( cd demo && ./configure; )
