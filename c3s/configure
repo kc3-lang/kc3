@@ -24,7 +24,7 @@ PROG_DEBUG=c3s_debug
 
 . ./sources.sh
 
-OBJECTS="$(c2lo "$SOURCES")"
+OBJECTS="$(c2ext .main.lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 
 OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
