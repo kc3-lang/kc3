@@ -64,6 +64,7 @@ DIFFS="$(for TARGET in $TARGETS; do
     fi
 done)"
 if [ "x$DIFFS" != "x" ]; then
+    ls $DIFFS
     less $DIFFS || cat $DIFFS
 fi
 echo

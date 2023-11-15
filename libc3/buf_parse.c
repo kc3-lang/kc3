@@ -1957,6 +1957,7 @@ sw buf_parse_map_key (s_buf *buf, s_tag *dest)
     result += r;
     if ((r = buf_read_1(buf, "=>")) <= 0)
       goto restore;
+    result += r;
     dest->type = TAG_STR;
     dest->data.str = str;
     goto ok;
@@ -1964,6 +1965,9 @@ sw buf_parse_map_key (s_buf *buf, s_tag *dest)
   if ((r = buf_parse_sym_str(buf, &str)) < 0)
     goto clean;
   if (r > 0) {
+    result += r;
+    if ((r = buf_read_1(buf, ":")) <= 0)
+      goto restore;
     result += r;
     dest->type = TAG_SYM;
     dest->data.sym = str_to_sym(&str);
