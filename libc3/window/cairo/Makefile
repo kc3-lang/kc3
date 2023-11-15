@@ -12,7 +12,7 @@
 
 include config.mk
 
-build:
+build: ${LIB}
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz build; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
 
@@ -22,7 +22,7 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan:
+asan: ${LIB_ASAN}
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
@@ -34,11 +34,11 @@ clean_cov:
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz clean_cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi
 
-cov:
+cov: ${LIB_COV}
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb cov; fi
 
-debug:
+debug: ${LIB_DEBUG}
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz debug; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi
 
@@ -78,6 +78,7 @@ update_sources:
 	debug \
 	demo \
 	distclean \
+	gdb_demo \
 	install \
 	test \
 	update_sources
