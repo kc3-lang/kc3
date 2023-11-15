@@ -12,7 +12,7 @@
 
 include config.mk
 
-build:
+build: ${LIB}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo build; fi
 
 all:
@@ -21,7 +21,7 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan:
+asan: ${LIB_ASAN}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo asan; fi
 
 clean:
@@ -30,10 +30,10 @@ clean:
 clean_cov:
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo clean_cov; fi
 
-cov:
+cov: ${LIB_COV}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo cov; fi
 
-debug:
+debug: ${LIB_DEBUG}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo debug; fi
 
 demo: build
