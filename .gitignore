@@ -25,6 +25,10 @@ ic3/ic3_debug
 *.la
 libc3/window/cairo/quartz/build
 libc3/window/cairo/quartz/demo/demo.xcodeproj/project.xcworkspace/xcuserdata
+libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo.app/Contents/MacOS/c3_window_cairo_quartz_demo
+libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo.app/Contents/Frameworks
+libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_debug.app/Contents/MacOS/c3_window_cairo_quartz_demo_debug
+libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_debug.app/Contents/Frameworks
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_asan
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_cov
