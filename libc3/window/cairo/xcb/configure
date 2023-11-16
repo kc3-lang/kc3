@@ -48,10 +48,11 @@ LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 pkg_config xcb
+pkg_config xkbcommon
 pkg_config cairo
 config_define PREFIX "\"${PREFIX}\""
 update_config_h
-LIBS="$LIBS"
+LIBS="$LIBS -lxkbcommon -lxkbcommon-x11"
 
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
