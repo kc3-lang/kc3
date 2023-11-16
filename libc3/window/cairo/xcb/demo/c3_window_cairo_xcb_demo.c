@@ -22,7 +22,7 @@ static bool on_button (s_window_cairo *window, u8 button,
                        sw x, sw y);
 static bool on_key (s_window_cairo *window, uw key);
 
-int main ()
+int main (void)
 {
   s_window_cairo window;
   window_cairo_init(&window, 0, 0, 800, 600,

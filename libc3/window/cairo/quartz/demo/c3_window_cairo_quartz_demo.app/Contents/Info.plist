@@ -7,6 +7,6 @@
     <key>CFBundleIconFile</key>
     <string>c3</string> <!-- No extension needed -->
     <key>CFBundleIdentifier</key>
-    <string>io.kmx.c3_window_cairo_quartz_demo</string>
+    <string>io.kmx.c3-window-cairo-quartz-demo</string>
   </dict>
 </plist>
