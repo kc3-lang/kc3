@@ -21,7 +21,7 @@ DISTCLEANFILES = ${CLEANFILES} config.mk
 
 build:
 	${MAKE} ${APP_PROG}
-	${MAKE} ${APP_PROG_FRAMEWORKS}
+	${MAKE} ${APP}/Contents/Frameworks
 
 all:
 	${MAKE} build
@@ -31,6 +31,7 @@ all:
 
 asan:
 	${MAKE} ${APP_PROG_ASAN}
+	${MAKE} ${APP_ASAN}/Contents/Frameworks
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -40,12 +41,14 @@ clean_cov:
 
 cov:
 	${MAKE} ${APP_PROG_COV}
+	${MAKE} ${APP_COV}/Contents/Frameworks
 
 debug:
 	${MAKE} ${APP_PROG_DEBUG}
+	${MAKE} ${APP_DEBUG}/Contents/Frameworks
 
-demo: ${APP_PROG}
-	time open ${APP}
+demo: build
+	time ${APP_PROG}
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
@@ -62,7 +65,6 @@ install:
 
 .PHONY: \
 	all \
-	${APP_PROG} \
 	asan \
 	clean \
 	clean_cov \
