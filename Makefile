@@ -11,6 +11,7 @@
 ## THIS SOFTWARE.
 
 build: gen
+build:
 	${GMAKE} -C libffi all
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c build
@@ -20,6 +21,7 @@ build: gen
 	${MAKE} -C test build
 
 all: gen
+all:
 	${GMAKE} -C libffi all
 	${MAKE} -C libtommath all
 	${MAKE} -C ucd2c all
@@ -53,6 +55,7 @@ clean_cov:
 	${MAKE} -C test clean_cov
 
 cov: gen
+cov:
 	${GMAKE} -C libffi all
 	${MAKE} -C libtommath cov
 	${MAKE} -C libc3 cov
@@ -69,6 +72,7 @@ debug:
 	${MAKE} -C test debug
 
 demo: build
+demo:
 	${MAKE} -C libc3 demo
 
 dist: c3-${C3_VERSION}.tar.gz
@@ -96,12 +100,15 @@ gcovr:
 	if [ -d "$$HOME/Downloads/c3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
 gdb_demo: debug
+gdb_demo:
 	${MAKE} -C libc3 gdb_demo
 
 gdb_ic3: debug
+gdb_ic3:
 	${MAKE} -C ic3 gdb_ic3
 
 gdb_test: debug
+gdb_test:
 	${MAKE} -C test gdb_test
 
 gen:
@@ -132,22 +139,28 @@ license:
 	update_header license.h ${C3_C_SOURCES}
 
 lldb_ic3: debug
+lldb_ic3:
 	${MAKE} -C ic3 lldb_ic3
 
 lldb_test: debug
+lldb_test:
 	${MAKE} -C test lldb_test
 
 test: build
+test:
 	${MAKE} -C test test
 	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
 
 test_asan: asan
+test_asan:
 	${MAKE} -C test test_asan
 
 test_cov: cov clean_cov
+test_cov:
 	${MAKE} -C test test_cov
 
 test_debug: debug
+test_debug:
 	${MAKE} -C test test_debug
 
 test_gcovr:
@@ -157,24 +170,31 @@ test_gcovr:
 	${MAKE} gcovr
 
 test_ic3: build
+test_ic3:
 	${MAKE} -C test test_ic3
 
 test_ic3_asan: asan
+test_ic3_asan:
 	${MAKE} -C test test_ic3_asan
 
 test_ic3_cov: cov
+test_ic3_cov:
 	${MAKE} -C test test_ic3_cov
 
 test_ic3_debug: debug
+test_ic3_debug:
 	${MAKE} -C test test_ic3_debug
 
 test_libc3: build
+test_libc3:
 	${MAKE} -C test test_libc3
 
 test_libc3_cov: cov
+test_libc3_cov:
 	${MAKE} -C test test_libc3_cov
 
 test_libc3_debug: debug
+test_libc3_debug:
 	${MAKE} -C test test_libc3_debug
 
 .PHONY: \

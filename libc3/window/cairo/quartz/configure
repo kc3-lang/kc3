@@ -30,17 +30,21 @@ echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 . ./sources.sh
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
+OBJECTS="$OBJECTS $(objc2ext .main.lo "$OBJC_SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 
 OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
+OBJECTS_ASAN="$OBJECTS_ASAN $(objc2ext .asan.lo "$OBJC_SOURCES")"
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 
 if $HAVE_GCOV; then
     OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
+    OBJECTS_COV="$OBJECTS_COV $(objc2ext .cov.lo "$OBJC_SOURCES")"
     echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 fi
 
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
+OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.lo "$OBJC_SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Default config
@@ -151,7 +155,7 @@ for SRC in $OBJC_SOURCES; do
     echo >> ${CONFIG_MK}
     SRC_LO="$(objc2ext .main.lo "$SRC")"
     objc_ext_rule .main.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=OBJCC --mode=compile \${OBJCC} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
+    echo "	${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
 done
 
 update_config_mk

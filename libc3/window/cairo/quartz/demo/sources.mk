@@ -3,11 +3,8 @@ HEADERS = \
 	c3_window_cairo_quartz_demo_bridging_header.h \
 
 SOURCES = \
-	 \
+	c3_window_cairo_quartz_demo.c \
 
 OBJC_SOURCES = \
 	 \
-
-SWIFT_SOURCES = \
-	c3_window_cairo_quartz_demo.swift \
 

@@ -26,9 +26,6 @@ sources SOURCES "$SOURCES"
 OBJC_SOURCES="$(ls *.m | sort)"
 sources OBJC_SOURCES "$OBJC_SOURCES"
 
-SWIFT_SOURCES="$(ls *.swift | sort)"
-sources SWIFT_SOURCES "$SWIFT_SOURCES"
-
 update_sources_mk
 update_sources_sh
 
