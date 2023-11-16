@@ -10,4 +10,18 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "../../c3_window_cairo_demo.c"
+#ifndef LIBC3_WINDOW_CAIRO_QUARTZ_VIEW_H
+#define LIBC3_WINDOW_CAIRO_QUARTZ_VIEW_H
+
+#import <Cocoa/Cocoa.h>
+#import "../window_cairo.h"
+
+@interface WindowCairoQuartzView : NSView
+
+@property (nonatomic, assign) s_window_cairo *window_cairo;
+
+- (instancetype) initWithWindowCairo:(s_window_cairo *) window_cairo;
+
+@end
+
+#endif /* LIBC3_WINDOW_CAIRO_QUARTZ_VIEW_H */

@@ -17,45 +17,52 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . ../../../../../config.subr
 
-PROG=c3_window_cairo_quartz_demo
-PROG_ASAN=c3_window_cairo_quartz_demo_asan
-PROG_COV=c3_window_cairo_quartz_demo_cov
-PROG_DEBUG=c3_window_cairo_quartz_demo_debug
+PROG=c3_window_cairo_quartz_demo.app/Contents/MacOS/c3_window_cairo_quartz_demo
+PROG_ASAN=c3_window_cairo_quartz_demo.app/Contents/MacOS/c3_window_cairo_quartz_demo_asan
+PROG_COV=c3_window_cairo_quartz_demo.app/Contents/MacOS/c3_window_cairo_quartz_demo_cov
+PROG_DEBUG=c3_window_cairo_quartz_demo.app/Contents/MacOS/c3_window_cairo_quartz_demo_debug
 
 echo "PROG = $PROG" >> ${CONFIG_MK}
 echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}
 echo "PROG_COV = $PROG_COV" >> ${CONFIG_MK}
 echo "PROG_DEBUG = $PROG_DEBUG" >> ${CONFIG_MK}
 
+APP=c3_window_cairo_quartz_demo.app
+APP_ASAN=c3_window_cairo_quartz_demo_asan.app
+APP_COV=c3_window_cairo_quartz_demo_cov.app
+APP_DEBUG=c3_window_cairo_quartz_demo_debug.app
+
 . ./sources.sh
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
+OBJECTS="$OBJECTS $(objc2ext .main.lo "$OBJ_SOURCES")"
+OBJECTS="$OBJECTS $(swift2ext .main.lo "$SWIFT_SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 
 OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
+OBJECTS_ASAN="$OBJECTS_ASAN $(objc2ext .asan.lo "$OBJ_SOURCES")"
+OBJECTS_ASAN="$OBJECTS_ASAN $(swift2ext .asan.lo "$SWIFT_SOURCES")"
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 
 if $HAVE_GCOV; then
     OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
+    OBJECTS_COV="$OBJECTS_COV $(objc2ext .cov.lo "$OBJ_SOURCES")"
+    OBJECTS_COV="$OBJECTS_COV $(swift2ext .cov.lo "$SWIFT_SOURCES")"
     echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 fi
 
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
+OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.lo "$OBJ_SOURCES")"
+OBJECTS_DEBUG="$OBJECTS_DEBUG $(swift2ext .debug.lo "$SWIFT_SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
-# Default config
-CPPFLAGS="${CPPFLAGS:-}"
-ENV_CFLAGS="${CFLAGS:-}"
-DEFAULT_CFLAGS="-O2 -pipe -fPIC"
-LDFLAGS="${LDFLAGS:-}"
-LIBS="${LIBS:-}"
-
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 CPPFLAGS="$CPPFLAGS -I../../../../../libffi/include -I../../../../.."
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+LDFLAGS="$LDFLAGS -framework Cocoa"
+LIBS="$LIBS"
 config_asan
 config_gnu
-LIBS="$LIBS"
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
@@ -76,6 +83,7 @@ LOCAL_LIBS_DEBUG="../libc3_window_cairo_quartz_debug.la"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
+DEFAULT_CFLAGS="-O2 -pipe -fPIC"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
