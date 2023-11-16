@@ -21,6 +21,7 @@ DISTCLEANFILES = ${CLEANFILES} config.mk
 
 build:
 	${MAKE} ${APP_PROG}
+	${MAKE} ${APP_PROG_FRAMEWORKS}
 
 all:
 	${MAKE} build
