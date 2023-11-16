@@ -197,4 +197,20 @@ echo >> ${CONFIG_MK}
 echo "${APP_PROG_DEBUG}: ${PROG_DEBUG}" >> ${CONFIG_MK}
 echo "	cp .libs/${PROG_DEBUG} ${APP_PROG_DEBUG}" >> ${CONFIG_MK}
 
+BUNDLE_LIBS="
+../../../../.libs/libc3.0.dylib
+../../../.libs/libc3_window.0.dylib
+../../.libs/libc3_window_cairo.0.dylib
+../.libs/libc3_window_cairo_quartz.dylib
+"
+
+echo "${APP_PROG_FRAMEWORKS}: ${BUNDLE_LIBS}" >> ${CONFIG_MK}
+echo "	mkdir -p ${APP}/Contents/Frameworks" >> ${CONFIG_MK}
+echo "	cp ${BUNDLE_LIBS} ${APP}/Contents/Frameworks/" >> ${CONFIG_MK}
+for BUNDLE_LIB in ${BUNDLE_LIBS}; do
+    L=$(basename $BUNDLE_LIB)
+    echo "	install_name_tool -id @executable_path/../Frameworks/ ${APP}/Contents/Frameworks/$L"
+    echo "	install_name_tool -change ${LIBDIR}/$L @executable_path/../Frameworks/$L ${APP}/Contents/MacOS/${PROG}"
+done
+
 update_config_mk
