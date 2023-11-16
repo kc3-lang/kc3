@@ -10,8 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-build: ${LIB}
 build:
+	${MAKE} ${LIB}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo build; fi
 
 all:
@@ -20,8 +20,8 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: ${LIB_ASAN}
 asan:
+	${MAKE} ${LIB_ASAN}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo asan; fi
 
 clean:
@@ -30,16 +30,15 @@ clean:
 clean_cov:
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo clean_cov; fi
 
-cov: ${LIB_COV}
 cov:
+	${MAKE} ${LIB_COV}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo cov; fi
 
-debug: ${LIB_DEBUG}
 debug:
+	${MAKE} ${LIB_DEBUG}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo debug; fi
 
 demo: build
-demo:
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo demo; fi
 
 distclean:
@@ -49,7 +48,6 @@ gcovr:
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo gcovr; fi
 
 gdb_demo: debug
-gdb_demo:
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo gdb_demo; fi
 
 install:
