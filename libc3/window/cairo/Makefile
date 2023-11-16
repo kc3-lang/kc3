@@ -10,8 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-build: ${LIB}
 build:
+	${MAKE} ${LIB}
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz build; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
 
@@ -21,8 +21,8 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: ${LIB_ASAN}
 asan:
+	${MAKE} ${LIB_ASAN}
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
@@ -34,18 +34,17 @@ clean_cov:
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz clean_cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi
 
-cov: ${LIB_COV}
 cov:
+	${MAKE} ${LIB_COV}
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb cov; fi
 
-debug: ${LIB_DEBUG}
 debug:
+	${MAKE} ${LIB_DEBUG}
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz debug; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi
 
 demo: build
-demo:
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz demo; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi
 
@@ -58,7 +57,6 @@ gcovr:
 	if ${HAVE_XCB}; then ${MAKE} -C xcb gcovr; fi
 
 gdb_demo: debug
-gdb_demo:
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz gdb_demo; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb gdb_demo; fi
 

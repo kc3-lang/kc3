@@ -17,10 +17,10 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . ../../../../../config.subr
 
-PROG=c3_window_cairo_quartz_demo.app/Contents/MacOS/c3_window_cairo_quartz_demo
-PROG_ASAN=c3_window_cairo_quartz_demo.app/Contents/MacOS/c3_window_cairo_quartz_demo_asan
-PROG_COV=c3_window_cairo_quartz_demo.app/Contents/MacOS/c3_window_cairo_quartz_demo_cov
-PROG_DEBUG=c3_window_cairo_quartz_demo.app/Contents/MacOS/c3_window_cairo_quartz_demo_debug
+PROG=c3_window_cairo_quartz_demo
+PROG_ASAN=c3_window_cairo_quartz_demo_asan
+PROG_COV=c3_window_cairo_quartz_demo_cov
+PROG_DEBUG=c3_window_cairo_quartz_demo_debug
 
 echo "PROG = $PROG" >> ${CONFIG_MK}
 echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}
@@ -31,6 +31,21 @@ APP=c3_window_cairo_quartz_demo.app
 APP_ASAN=c3_window_cairo_quartz_demo_asan.app
 APP_COV=c3_window_cairo_quartz_demo_cov.app
 APP_DEBUG=c3_window_cairo_quartz_demo_debug.app
+
+echo "APP = $APP" >> ${CONFIG_MK}
+echo "APP_ASAN = $APP_ASAN" >> ${CONFIG_MK}
+echo "APP_COV = $APP_COV" >> ${CONFIG_MK}
+echo "APP_DEBUG = $APP_DEBUG" >> ${CONFIG_MK}
+
+APP_PROG=${APP}/Contents/MacOS/${PROG}
+APP_PROG_ASAN=${APP_ASAN}/Contents/MacOS/${PROG_ASAN}
+APP_PROG_COV=${APP_COV}/Contents/MacOS/${PROG_COV}
+APP_PROG_DEBUG=${APP_DEBUG}/Contents/MacOS/${PROG_DEBUG}
+
+echo "APP_PROG = $APP_PROG" >> ${CONFIG_MK}
+echo "APP_PROG_ASAN = $APP_PROG_ASAN" >> ${CONFIG_MK}
+echo "APP_PROG_COV = $APP_PROG_COV" >> ${CONFIG_MK}
+echo "APP_PROG_DEBUG = $APP_PROG_DEBUG" >> ${CONFIG_MK}
 
 . ./sources.sh
 
@@ -165,5 +180,21 @@ for SRC in $OBJC_SOURCES; do
     objc_ext_rule .main.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=OBJCC --mode=compile \${OBJCC} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
 done
+
+echo >> ${CONFIG_MK}
+echo "${APP_PROG}: ${PROG}" >> ${CONFIG_MK}
+echo "	cp .libs/${PROG} ${APP_PROG}" >> ${CONFIG_MK}
+
+echo >> ${CONFIG_MK}
+echo "${APP_PROG_ASAN}: ${PROG_ASAN}" >> ${CONFIG_MK}
+echo "	cp .libs/${PROG_ASAN} ${APP_PROG_ASAN}" >> ${CONFIG_MK}
+
+echo >> ${CONFIG_MK}
+echo "${APP_PROG_COV}: ${PROG_COV}" >> ${CONFIG_MK}
+echo "	cp .libs/${PROG_COV} ${APP_PROG_COV}" >> ${CONFIG_MK}
+
+echo >> ${CONFIG_MK}
+echo "${APP_PROG_DEBUG}: ${PROG_DEBUG}" >> ${CONFIG_MK}
+echo "	cp .libs/${PROG_DEBUG} ${APP_PROG_DEBUG}" >> ${CONFIG_MK}
 
 update_config_mk

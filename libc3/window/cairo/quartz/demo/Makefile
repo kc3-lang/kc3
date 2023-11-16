@@ -10,18 +10,17 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-include config.mk
-include sources.mk
-
-CLEANFILES = *.a ${PROG} ${PROG_ASAN} ${PROG_COV} ${PROG_DEBUG} *.css \
-	*.gcno *.html *.o .libs *.lo
+CLEANFILES = *.a ${APP_PROG} ${APP_PROG_ASAN} ${APP_PROG_COV} \
+	${APP_PROG_DEBUG} ${PROG} ${PROG_ASAN} ${PROG_COV} ${PROG_DEBUG} \
+	*.css *.gcno *.html *.o .libs *.lo
 
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.mk
 
-build: ${PROG}
+build:
+	${MAKE} ${APP_PROG}
 
 all:
 	${MAKE} build
@@ -29,7 +28,8 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: ${PROG_ASAN}
+asan:
+	${MAKE} ${APP_PROG_ASAN}
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -37,12 +37,14 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
-cov:   ${PROG_COV}
+cov:
+	${MAKE} ${APP_PROG_COV}
 
-debug: ${PROG_DEBUG}
+debug:
+	${MAKE} ${APP_PROG_DEBUG}
 
-demo: ${PROG}
-	time ./${PROG}
+demo: ${APP_PROG}
+	time open ${APP}
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
@@ -59,6 +61,7 @@ install:
 
 .PHONY: \
 	all \
+	${APP_PROG} \
 	asan \
 	clean \
 	clean_cov \
@@ -67,3 +70,6 @@ install:
 	demo \
 	distclean \
 	gdb_demo
+
+include config.mk
+include sources.mk
