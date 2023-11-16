@@ -3,6 +3,7 @@ HEADERS = \
 	window_cairo_quartz.h \
 	window_cairo_quartz_app_delegate.h \
 	window_cairo_quartz_view.h \
+	window_cairo_quartz_view_controller.h \
 
 SOURCES = \
 	 \
@@ -11,4 +12,5 @@ OBJC_SOURCES = \
 	window_cairo_quartz.m \
 	window_cairo_quartz_app_delegate.m \
 	window_cairo_quartz_view.m \
+	window_cairo_quartz_view_controller.m \
 

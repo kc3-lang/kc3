@@ -12,6 +12,7 @@
  */
 #import "window_cairo_quartz_app_delegate.h"
 #import "window_cairo_quartz_view.h"
+#import "window_cairo_quartz_view_controller.h"
 
 @implementation WindowCairoQuartzAppDelegate
 
@@ -41,7 +42,10 @@
   WindowCairoQuartzView *view =
     [[WindowCairoQuartzView alloc]
       initWithWindowCairo:self.window_cairo];
-  [self.window setContentView:view];
+  WindowCairoQuartzViewController *view_controller =
+    [[WindowCairoQuartzViewController alloc]
+      initWithCairoView:view];
+  [self.window setContentView:view_controller.view];
 }
 
 @end

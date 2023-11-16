@@ -10,24 +10,27 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBC3_WINDOW_CAIRO_QUARTZ_VIEW_H
-#define LIBC3_WINDOW_CAIRO_QUARTZ_VIEW_H
-
 #import <Cocoa/Cocoa.h>
-#import "../window_cairo.h"
+#import "window_cairo_quartz_view_controller.h"
 
-@interface WindowCairoQuartzView : NSView
+@implementation WindowCairoQuartzViewController
 
-@property (nonatomic, assign) s_window_cairo *window_cairo;
+- (instancetype) initWithCairoView:(WindowCairoQuartzView *)cairo_view {
+  self = [super init];
+  if (self) {
+    self.cairo_view = cairo_view;
+  }
+  return self;
+}
 
-- (BOOL)acceptsFirstResponder;
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self.view addSubview:self.cairo_view];
+}
 
-- (void) drawRect:(NSRect)dirtyRect;
-
-- (instancetype)initWithWindowCairo:(s_window_cairo *) window_cairo;
-
-- (void)keyDown:(NSEvent *)event;
+- (void)viewDidAppear {
+    [super viewDidAppear];
+    [self.view.window makeFirstResponder:self.cairo_view];
+}
 
 @end
-
-#endif /* LIBC3_WINDOW_CAIRO_QUARTZ_VIEW_H */

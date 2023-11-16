@@ -25,6 +25,16 @@
   return self;
 }
 
+- (BOOL)acceptsFirstResponder {
+    return YES;
+}
+
+- (void)keyDown:(NSEvent *)event {
+  NSString *characters = [event characters];
+  unichar character = [characters characterAtIndex:0];
+  NSLog(@"Key pressed: %d", character);
+}
+
 - (void) drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
     cairo_surface_t *surface =
