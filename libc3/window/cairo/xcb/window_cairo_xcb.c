@@ -15,6 +15,8 @@
 #include <cairo/cairo-xcb.h>
 #include <libc3/c3.h>
 #include <xcb/xcb.h>
+#include <xkbcommon/xkbcommon.h>
+#include <xkbcommon/xkbcommon-x11.h>
 #include "window_cairo_xcb.h"
 
 bool window_cairo_run (s_window_cairo *window)
@@ -26,7 +28,8 @@ bool window_cairo_xcb_event (s_window_cairo *window,
                              cairo_t *cr,
                              xcb_connection_t *conn,
                              cairo_surface_t *surface,
-                             xcb_generic_event_t *event)
+                             xcb_generic_event_t *event,
+                             struct xkb_state *xkb_state)
 {
   xcb_button_press_event_t     *event_button;
   xcb_configure_notify_event_t *event_config;
@@ -58,6 +61,8 @@ bool window_cairo_xcb_event (s_window_cairo *window,
     break;
   case XCB_KEY_PRESS:
     event_key = (xcb_key_press_event_t *) event;
+    xkb_keysym_t sym = xkb_state_key_get_one_sym(xkb_state, event_key->detail);
+    printf("KEY PRESS %d\n", sym);
     if (! window->key(window, event_key->detail))
       goto ko;
     break;
@@ -88,11 +93,31 @@ bool window_cairo_xcb_run (s_window_cairo *window)
   s_time sleep;
   cairo_surface_t *surface;
   xcb_window_t xcb_window;
+  struct xkb_context *xkb_ctx;
+  int32_t xkb_device_id;
+  struct xkb_keymap *xkb_keymap;
+  struct xkb_state *xkb_state;
   conn = xcb_connect(NULL, NULL);
   if (xcb_connection_has_error(conn)) {
     fprintf(stderr, "Error opening display.\n");
     return false;
   }
+  xkb_ctx = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
+  if (!xkb_ctx) {
+    fprintf(stderr, "Failed to create XKB context\n");
+    return false;
+  }
+  xkb_x11_setup_xkb_extension(conn, 1, 0, 0, NULL, NULL, NULL, NULL);
+  xkb_device_id = xkb_x11_get_core_keyboard_device_id(conn);
+  if (xkb_device_id == -1) {
+    fprintf(stderr, "Failed to get XKB device ID\n");
+    return false;
+  }
+  xkb_keymap =
+    xkb_x11_keymap_new_from_device(xkb_ctx, conn, xkb_device_id,
+                                   XKB_KEYMAP_COMPILE_NO_FLAGS);
+  xkb_state = xkb_x11_state_new_from_device(xkb_keymap, conn,
+                                            xkb_device_id);
   screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
   screen_visual = xcb_screen_visual_type(screen);
   xcb_window = xcb_generate_id(conn);
@@ -125,7 +150,7 @@ bool window_cairo_xcb_run (s_window_cairo *window)
   while (1) {
     if ((event = xcb_poll_for_event(conn))) {
       if (! (r = window_cairo_xcb_event(window, cr, conn, surface,
-                                        event)))
+                                        event, xkb_state)))
         goto clean;
     }
     else {
