@@ -59,6 +59,9 @@ gcovr:
 gdb_demo: debug
 	if [ -f ${PROG_DEBUG}.core ]; then gdb .libs/${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb .libs/${PROG_DEBUG}; fi
 
+lldb_demo: debug
+	lldb ${APP_PROG_DEBUG}
+
 install:
 	install -m 755 -d ${prefix}/bin
 	install -m 755 ${PROG} ${prefix}/bin/${PROG}

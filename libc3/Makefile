@@ -73,12 +73,15 @@ install:
 libffi:
 	ln -sf "../libffi/${CC_TARGET}" libffi
 
+lldb_demo: debug
+	${MAKE} -C window lldb_demo
+
 test:
 
 update_sources:
 	./update_sources
 
-.PHONY: all asan build clean cov debug distclean gen install test update_sources
+.PHONY: all asan build clean cov debug distclean gdb_demo gen install lldb_demo test update_sources
 
 include config.mk
 include sources.mk

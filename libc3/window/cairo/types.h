@@ -29,7 +29,7 @@ typedef bool (*f_window_cairo_button) (s_window_cairo *window,
                                        u8 button, sw x, sw y);
 
 /* return false to break event loop */
-typedef bool (*f_window_cairo_key) (s_window_cairo *window, uw key);
+typedef bool (*f_window_cairo_key) (s_window_cairo *window, uw keysym);
 
 /* return false to break event loop */
 typedef bool (*f_window_cairo_load) (s_window_cairo *window);

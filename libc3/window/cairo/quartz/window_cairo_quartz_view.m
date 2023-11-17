@@ -12,6 +12,8 @@
  */
 #import <Foundation/Foundation.h>
 #import <cairo/cairo-quartz.h>
+#import <xkbcommon/xkbcommon.h>
+#import "quartz_to_xkbcommon.h"
 #import "window_cairo_quartz_view.h"
 
 @implementation WindowCairoQuartzView
@@ -32,7 +34,12 @@
 - (void)keyDown:(NSEvent *)event {
   NSString *characters = [event characters];
   unichar character = [characters characterAtIndex:0];
-  NSLog(@"Key pressed: %d", character);
+  u32 keysym = quartz_to_xkbcommon(character);
+  if (! self.window_cairo->key(self.window_cairo, keysym)) {
+    [self.window close];
+    [self.window release];
+    [[NSApplication sharedApplication] stop:nil];
+  }
 }
 
 - (void) drawRect:(NSRect)dirtyRect {
@@ -41,8 +48,9 @@
     cairo_quartz_surface_create_for_cg_context([[NSGraphicsContext currentContext] CGContext], self.bounds.size.width, self.bounds.size.height);
     cairo_t *cr = cairo_create(surface);
     if (! self.window_cairo->render(self.window_cairo, cr)) {
-      /* close window */
-      (void) 0;
+      [self.window close];
+      [self.window release];
+      [[NSApplication sharedApplication] stop:nil];
     }
     cairo_surface_flush(surface);
     cairo_destroy(cr);

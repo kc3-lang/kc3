@@ -257,8 +257,14 @@ C3_C_SOURCES = \
 	libc3/window/cairo/window_cairo.c \
 	libc3/window/cairo/c3_window_cairo_demo.h \
 	libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_bridging_header.h \
-	libc3/window/cairo/quartz/demo/main.c \
-	libc3/window/cairo/quartz/custom_cairo_view.h \
+	libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo.c \
+	libc3/window/cairo/quartz/window_cairo_quartz_view_controller.h \
+	libc3/window/cairo/quartz/quartz_to_xkbcommon.c \
+	libc3/window/cairo/quartz/window_cairo_quartz.h \
+	libc3/window/cairo/quartz/window_cairo_quartz_app_delegate.h \
+	libc3/window/cairo/quartz/quartz_to_xkbcommon.h \
+	libc3/window/cairo/quartz/xkbquartz.h \
+	libc3/window/cairo/quartz/window_cairo_quartz_view.h \
 	libc3/window/cairo/window_cairo.h \
 	libc3/window/cairo/c3_window_cairo_demo.c \
 	libc3/window/window.c \

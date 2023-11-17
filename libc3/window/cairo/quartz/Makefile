@@ -54,6 +54,9 @@ distclean:
 gdb_demo: debug
 	${MAKE} -C demo gdb_demo
 
+lldb_demo: debug
+	${MAKE} -C demo lldb_demo
+
 test: build
 	${MAKE} -C demo test
 

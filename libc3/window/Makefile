@@ -53,6 +53,9 @@ gdb_demo: debug
 install:
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo install; fi
 
+lldb_demo: debug
+	if ${HAVE_CAIRO}; then ${MAKE} -C cairo lldb_demo; fi
+
 test:
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo test; fi
 
