@@ -1931,56 +1931,19 @@ sw buf_parse_map (s_buf *buf, s_map *dest)
 sw buf_parse_map_key (s_buf *buf, s_tag *dest)
 {
   sw r;
+  if ((r = buf_parse_map_key_str(buf, dest)) ||
+      (r = buf_parse_map_key_sym(buf, dest)) ||
+      (r = buf_parse_map_key_tag(buf, dest)))
+    return r;
+  return 0;
+}
+
+sw buf_parse_map_key_str (s_buf *buf, s_tag *dest)
+{
+  sw r;
   sw result = 0;
   s_buf_save save;
   s_str str;
-  s_tag tag;
-  buf_save_init(buf, &save);
-  if ((r = buf_parse_map_key_str(buf, &tag)) ||
-      (r = buf_parse_map_key_sym(buf, &tag)) ||
-      (r = buf_parse_map_key_tag(buf, &tag)))
-    
-  if ((r = buf_parse_sym_str(buf, &str)) < 0)
-    goto clean;
-  if (r > 0) {
-    result += r;
-    if ((r = buf_read_1(buf, ":")) <= 0)
-      buf_save_restore_rpos(buf, &save);
-    else {
-      result += r;
-      dest->type = TAG_SYM;
-      dest->data.sym = str_to_sym(&str);
-      str_clean(&str);
-      goto ok;
-    }
-  }
-  if ((r = buf_parse_tag(buf, &tag)) <= 0)
-    goto restore;
-  if ((r = buf_parse_comments(buf)) < 0)
-    goto restore;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) <= 0)
-    goto restore;
-  result += r;
-  if ((r = buf_read_1(buf, "=>")) <= 0)
-    goto restore;
-  result += r;
-  *dest = tag;
- ok:
-  r = result;
-  goto clean;
- restore:
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
-buf_parse_map_key_str (s_buf *buf, s_tag *dest)
-{
-  s_buf_save save;
-  s_str str;
-  s_tag tag;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -2011,6 +1974,65 @@ buf_parse_map_key_str (s_buf *buf, s_tag *dest)
     goto ok;
   }
  ok:
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_map_key_sym (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_str str;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_parse_sym_str(buf, &str)) < 0)
+    goto clean;
+  if (r > 0) {
+    result += r;
+    if ((r = buf_read_1(buf, ":")) <= 0)
+      goto restore;
+    result += r;
+    dest->type = TAG_SYM;
+    dest->data.sym = str_to_sym(&str);
+    str_clean(&str);
+  }
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_map_key_tag (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_tag tag;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_parse_tag(buf, &tag)) <= 0)
+    goto restore;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "=>")) <= 0)
+    goto restore;
+  result += r;
+  *dest = tag;
   r = result;
   goto clean;
  restore:
