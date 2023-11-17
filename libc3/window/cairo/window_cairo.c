@@ -12,6 +12,7 @@
  */
 #include <assert.h>
 #include <stdlib.h>
+#include <xkbcommon/xkbcommon.h>
 #include "window_cairo.h"
 
 s_window_cairo * window_cairo_init (s_window_cairo *window,
@@ -46,16 +47,18 @@ bool window_cairo_button_default (s_window_cairo *window, u8 button,
   (void) button;
   (void) x;
   (void) y;
-  printf("window_cairo_button_default: %lu (%ld, %ld)\n", (uw) button, x, y);
+  printf("window_cairo_button_default: %d (%ld, %ld)\n",
+         (int) button, x, y);
   return true;
 }
 
-bool window_cairo_key_default (s_window_cairo *window, uw key)
+bool window_cairo_key_default (s_window_cairo *window, uw keysym)
 {
+  char keysym_name[64];
   assert(window);
   (void) window;
-  (void) key;
-  printf("window_cairo_key_default: %lu\n", key);
+  xkb_keysym_get_name(keysym, keysym_name, sizeof(keysym_name));
+  printf("window_cairo_key_default: %lu %s\n", keysym, keysym_name);
   return true;
 }
 

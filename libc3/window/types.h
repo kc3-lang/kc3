@@ -27,7 +27,7 @@ typedef bool (*f_window_button) (s_window *window, u8 button,
                                  uw x, uw y);
 
 /* return false to break event loop */
-typedef bool (*f_window_key) (s_window *window, uw key);
+typedef bool (*f_window_key) (s_window *window, uw sym);
 
 /* return false to break event loop */
 typedef bool (*f_window_load) (s_window *window);

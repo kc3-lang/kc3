@@ -64,6 +64,9 @@ install:
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz install; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb install; fi
 
+lldb_demo: debug
+	if ${HAVE_SWIFT}; then ${MAKE} -C quartz lldb_demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb lldb_demo; fi; fi
+
 test:
 	if ${HAVE_SWIFT}; then ${MAKE} -C quartz test; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb test; fi

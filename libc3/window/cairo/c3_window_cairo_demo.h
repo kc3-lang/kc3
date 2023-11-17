@@ -18,6 +18,9 @@
 
 #define LIBC3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT 1
 
+bool c3_window_cairo_demo_button (s_window_cairo *window, u8 button,
+                                  sw x, sw y);
+bool c3_window_cairo_demo_key (s_window_cairo *window, uw keysym);
 bool c3_window_cairo_demo_load (s_window_cairo *window);
 bool c3_window_cairo_demo_render (s_window_cairo *window, cairo_t *cr);
 bool c3_window_cairo_demo_resize (s_window_cairo *window, uw w, uw h);
