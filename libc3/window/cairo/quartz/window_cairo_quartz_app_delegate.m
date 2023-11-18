@@ -34,6 +34,7 @@
                                        NSWindowStyleMaskResizable)
                               backing:NSBackingStoreBuffered
                                 defer:NO];
+  self.window.delegate = self;
   [self.window makeKeyAndOrderFront:nil];
   [self.window
       setTitle:[NSString
@@ -63,6 +64,10 @@
 
 - (void)redrawWindow {
   [self.view setNeedsDisplay:YES];
+}
+
+- (void)windowWillClose:(NSNotification *)notification {
+  [NSApp stop:nil];
 }
 
 @end
