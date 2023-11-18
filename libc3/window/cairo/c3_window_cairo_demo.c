@@ -90,11 +90,16 @@ bool c3_window_cairo_demo_render (s_window_cairo *window,
     cairo_fill(cr);
   }
   /* text */
-  cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
   cairo_set_font_size (cr, 20);
-  cairo_select_font_face (cr, "CourierNew",
+  cairo_select_font_face (cr, "Courier New",
                           CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
   cairo_text_extents (cr, seq->title, &te);
+  cairo_move_to (cr, 20, window->h - te.height - te.y_bearing - 20);
+  cairo_show_text (cr, seq->title);
+  cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+  cairo_select_font_face (cr, "Courier New",
+                          CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
   cairo_move_to (cr, 20, window->h - te.height - te.y_bearing - 20);
   cairo_show_text (cr, seq->title);
   /* progress bar */
