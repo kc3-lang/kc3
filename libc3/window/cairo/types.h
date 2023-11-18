@@ -22,6 +22,8 @@
 #include <libc3/types.h>
 #include "../types.h"
 
+typedef struct rgb          s_rgb;
+typedef struct rgba         s_rgba;
 typedef struct window_cairo s_window_cairo;
 
 /* return false to break event loop */
@@ -45,6 +47,19 @@ typedef bool (*f_window_cairo_render) (s_window_cairo *window,
 /* return false to break event loop */
 typedef bool (*f_window_cairo_resize) (s_window_cairo *window,
                                        uw w, uw h);
+
+struct rgb {
+  double r;
+  double g;
+  double b;
+};
+
+struct rgba {
+  double r;
+  double g;
+  double b;
+  double a;
+};
 
 /* Subtype of s_window. See libc3/window/types.h */
 struct window_cairo {
