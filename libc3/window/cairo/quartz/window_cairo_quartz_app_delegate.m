@@ -45,7 +45,24 @@
   WindowCairoQuartzViewController *view_controller =
     [[WindowCairoQuartzViewController alloc]
       initWithCairoView:view];
+  self.view = view;
   [self.window setContentView:view_controller.view];
+
+  if (! self.window_cairo->load(self.window_cairo)) {
+    [self.window close];
+    [self.window release];
+    [[NSApplication sharedApplication] stop:nil];
+  }
+
+  [NSTimer scheduledTimerWithTimeInterval:0.01
+                                   target:self
+                                 selector:@selector(redrawWindow)
+                                 userInfo:nil
+                                  repeats:YES];
+}
+
+- (void)redrawWindow {
+  [self.view setNeedsDisplay:YES];
 }
 
 @end

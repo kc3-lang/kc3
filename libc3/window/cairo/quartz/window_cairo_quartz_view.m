@@ -44,8 +44,14 @@
 
 - (void) drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
+    struct CGContext *cg_context = [[NSGraphicsContext currentContext]
+                                     CGContext];
+    CGContextTranslateCTM(cg_context, 0.0, self.bounds.size.height);
+    CGContextScaleCTM(cg_context, 1.0, -1.0);
     cairo_surface_t *surface =
-    cairo_quartz_surface_create_for_cg_context([[NSGraphicsContext currentContext] CGContext], self.bounds.size.width, self.bounds.size.height);
+      cairo_quartz_surface_create_for_cg_context(cg_context,
+                                                 self.bounds.size.width,
+                                                 self.bounds.size.height);
     cairo_t *cr = cairo_create(surface);
     if (! self.window_cairo->render(self.window_cairo, cr)) {
       [self.window close];
