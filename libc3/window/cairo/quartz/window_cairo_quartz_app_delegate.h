@@ -14,7 +14,8 @@
 #import "../window_cairo.h"
 #import "window_cairo_quartz_view.h"
 
-@interface WindowCairoQuartzAppDelegate : NSObject <NSApplicationDelegate>
+@interface WindowCairoQuartzAppDelegate : NSObject <NSApplicationDelegate,
+  NSWindowDelegate>
 
 @property (strong, nonatomic) NSView *view;
 @property (strong, nonatomic) NSWindow *window;

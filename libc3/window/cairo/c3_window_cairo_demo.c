@@ -25,10 +25,7 @@ bool c3_window_cairo_demo_button (s_window_cairo *window, u8 button,
 {
   assert(window);
   (void) window;
-  (void) button;
-  (void) x;
-  (void) y;
-  printf("on_button: %lu (%ld, %ld)\n", (uw) button, x, y);
+  printf("c3_window_cairo_demo_button: %lu (%ld, %ld)\n", (uw) button, x, y);
   return true;
 }
 

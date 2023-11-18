@@ -31,17 +31,6 @@
     return YES;
 }
 
-- (void)keyDown:(NSEvent *)event {
-  NSString *characters = [event characters];
-  unichar character = [characters characterAtIndex:0];
-  u32 keysym = quartz_to_xkbcommon(character);
-  if (! self.window_cairo->key(self.window_cairo, keysym)) {
-    [self.window close];
-    [self.window release];
-    [[NSApplication sharedApplication] stop:nil];
-  }
-}
-
 - (void) drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
     struct CGContext *cg_context = [[NSGraphicsContext currentContext]
@@ -61,6 +50,35 @@
     cairo_surface_flush(surface);
     cairo_destroy(cr);
     cairo_surface_destroy(surface);
+}
+
+- (void)keyDown:(NSEvent *)event {
+  NSString *characters = [event characters];
+  unichar character = [characters characterAtIndex:0];
+  u32 keysym = quartz_to_xkbcommon(character);
+  if (! self.window_cairo->key(self.window_cairo, keysym)) {
+    [self.window close];
+    [self.window release];
+    [[NSApplication sharedApplication] stop:nil];
+  }
+}
+
+- (void)mouseDown:(NSEvent *)event {
+  NSPoint p = [event locationInWindow];
+  if (! self.window_cairo->button(self.window_cairo, 0, p.x, p.y)) {
+    [self.window close];
+    [self.window release];
+    [[NSApplication sharedApplication] stop:nil];
+  }
+}
+
+- (void)rightMouseDown:(NSEvent *)event {
+  NSPoint p = [event locationInWindow];
+  if (! self.window_cairo->button(self.window_cairo, 2, p.x, p.y)) {
+    [self.window close];
+    [self.window release];
+    [[NSApplication sharedApplication] stop:nil];
+  }
 }
 
 @end
