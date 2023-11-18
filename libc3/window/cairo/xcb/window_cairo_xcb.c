@@ -62,7 +62,6 @@ bool window_cairo_xcb_event (s_window_cairo *window,
   case XCB_KEY_PRESS:
     event_key = (xcb_key_press_event_t *) event;
     xkb_keysym_t sym = xkb_state_key_get_one_sym(xkb_state, event_key->detail);
-    printf("KEY PRESS %d\n", sym);
     if (! window->key(window, sym))
       goto ko;
     break;
