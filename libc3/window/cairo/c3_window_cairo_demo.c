@@ -90,19 +90,39 @@ bool c3_window_cairo_demo_render (s_window_cairo *window,
     cairo_fill(cr);
   }
   /* text */
-  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-  cairo_set_font_size (cr, 20);
-  cairo_select_font_face (cr, "Courier New",
+  cairo_set_font_size(cr, 20);
+  cairo_select_font_face(cr, "Courier New",
                           CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  cairo_text_extents (cr, seq->title, &te);
-  cairo_move_to (cr, 20, window->h - te.height - te.y_bearing - 20);
-  cairo_show_text (cr, seq->title);
-  cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-  cairo_select_font_face (cr, "Courier New",
-                          CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-  cairo_move_to (cr, 20, window->h - te.height - te.y_bearing - 20);
-  cairo_show_text (cr, seq->title);
+  cairo_text_extents(cr, seq->title, &te);
+  /* text bg */
+  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  cairo_move_to(cr, 18, window->h - te.height - te.y_bearing - 20);
+  cairo_show_text(cr, seq->title);
+  cairo_move_to(cr, 19, window->h - te.height - te.y_bearing - 21);
+  cairo_show_text(cr, seq->title);
+  cairo_move_to(cr, 19, window->h - te.height - te.y_bearing - 19);
+  cairo_show_text(cr, seq->title);
+  cairo_move_to(cr, 20, window->h - te.height - te.y_bearing - 22);
+  cairo_show_text(cr, seq->title);
+  cairo_move_to(cr, 20, window->h - te.height - te.y_bearing - 18);
+  cairo_show_text(cr, seq->title);
+  cairo_move_to(cr, 21, window->h - te.height - te.y_bearing - 19);
+  cairo_show_text(cr, seq->title);
+  cairo_move_to(cr, 21, window->h - te.height - te.y_bearing - 21);
+  cairo_show_text(cr, seq->title);
+  cairo_move_to(cr, 22, window->h - te.height - te.y_bearing - 20);
+  cairo_show_text(cr, seq->title);
+  /* text */
+  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  cairo_move_to(cr, 20, window->h - te.height - te.y_bearing - 20);
+  cairo_show_text(cr, seq->title);
   /* progress bar */
+  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  cairo_rectangle(cr, 19, window->h - 12,
+                  (window->w - 40.0) * seq->t / seq->duration + 2,
+                  4);
+  cairo_fill(cr);
+  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
   cairo_rectangle(cr, 20, window->h - 11,
                   (window->w - 40.0) * seq->t / seq->duration,
                   2);
