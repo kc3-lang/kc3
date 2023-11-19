@@ -19,21 +19,22 @@
 
 #define COMPARE_TEST_STR(a, b, expected)                               \
   do {                                                                 \
-    const s_str *a_ = (a);                                                   \
-    const s_str *b_ = (b);                                                   \
+    const s_str *a_ = (a);                                             \
+    const s_str *b_ = (b);                                             \
     sw tmp = compare_str(a_, b_);                                      \
     if (tmp == expected) {                                             \
-      test_ok();                                                       \
+      g_test_assert_count++;                                           \
+      g_test_assert_ok++;                                              \
     }                                                                  \
     else {                                                             \
       test_ko();                                                       \
-      printf("\n%sAssertion failed in %s:%d %s\n"                      \
-             "compare_str(%s, %s) == %s\n"                             \
-             "Expected %s got %ld.%s\n",                               \
-             TEST_COLOR_KO,                                            \
-             __FILE__, __LINE__, __func__,                             \
-             # a, # b, # expected, # expected, tmp,                    \
-             TEST_COLOR_RESET);                                        \
+      fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
+              "compare_str(%s, %s) == %s\n"                            \
+              "Expected %s got %ld.%s\n",                              \
+              TEST_COLOR_KO,                                           \
+              __FILE__, __LINE__, __func__,                            \
+              # a, # b, # expected, # expected, tmp,                   \
+              TEST_COLOR_RESET);                                       \
     }                                                                  \
   } while (0)
 

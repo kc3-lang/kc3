@@ -298,6 +298,27 @@ s8 compare_list (const s_list *a, const s_list *b)
   }
 }
 
+s8 compare_map (const s_map *a, const s_map *b)
+{
+  uw i = 0;
+  s8 r;
+  assert(a);
+  assert(b);
+  if (a == b)
+    return 0;
+  if (a->count < b->count)
+    return -1;
+  if (a->count > b->count)
+    return 1;
+  while (i < a->count) {
+    if ((r = compare_tag(a->keys + i, b->keys + i)) ||
+        (r = compare_tag(a->values + i, b->values + i)))
+      return r;
+    i++;
+  }
+  return 0;
+}
+
 s8 compare_ptag (const p_tag a, const p_tag b)
 {
   if (a < b)
@@ -777,6 +798,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_FN: return compare_fn(&a->data.fn, &b->data.fn);
   case TAG_IDENT: return compare_ident(&a->data.ident, &b->data.ident);
   case TAG_LIST: return compare_list(a->data.list, b->data.list);
+  case TAG_MAP: return compare_map(&a->data.map, &b->data.map);
   case TAG_PTAG: return compare_ptag(a->data.ptag, b->data.ptag);
   case TAG_QUOTE: return compare_quote(&a->data.quote, &b->data.quote);
   case TAG_STR: return compare_str(&a->data.str, &b->data.str);

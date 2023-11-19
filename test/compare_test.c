@@ -12,6 +12,7 @@
  */
 #include "compare_test.h"
 #include "../libc3/list.h"
+#include "../libc3/map.h"
 #include "../libc3/tag.h"
 #include "../libc3/tuple.h"
 
@@ -23,6 +24,13 @@
     TEST_EQ(compare_list(tmp_a, tmp_b), (expected));                   \
     list_delete_all(tmp_a);                                            \
     list_delete_all(tmp_b);                                            \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define COMPARE_TEST_MAP(a, b, expected)                               \
+  do {                                                                 \
+    test_context("compare_map(" # a ", " # b ") -> " # expected);      \
+    TEST_EQ(compare_map((a), (b)), (expected));                        \
     test_context(NULL);                                                \
   } while (0)
 
@@ -43,6 +51,7 @@ TEST_CASE_PROTOTYPE(compare_character);
 TEST_CASE_PROTOTYPE(compare_f32);
 TEST_CASE_PROTOTYPE(compare_f64);
 TEST_CASE_PROTOTYPE(compare_list);
+TEST_CASE_PROTOTYPE(compare_map);
 TEST_CASE_PROTOTYPE(compare_str);
 TEST_CASE_PROTOTYPE(compare_tag);
 TEST_CASE_PROTOTYPE(compare_tuple);
@@ -54,6 +63,7 @@ void compare_test (void)
   TEST_CASE_RUN(compare_f32);
   TEST_CASE_RUN(compare_f64);
   TEST_CASE_RUN(compare_list);
+  TEST_CASE_RUN(compare_map);
   TEST_CASE_RUN(compare_str);
   TEST_CASE_RUN(compare_tag);
   TEST_CASE_RUN(compare_tuple);
@@ -144,6 +154,34 @@ TEST_CASE(compare_list)
   COMPARE_TEST_LIST(list_1("[A, C]"), list_1("[A, B]"), 1);
 }
 TEST_CASE_END(compare_list)
+
+TEST_CASE(compare_map)
+{
+  s_map a;
+  s_map b;
+  COMPARE_TEST_MAP(map_init_1(&a, "%{a: A, b: B}"),
+                   map_init_1(&b, "%{a: A, b: B}"), 0);
+  COMPARE_TEST_MAP(&a, &a, 0);
+  map_clean(&a);
+  map_clean(&b);
+  COMPARE_TEST_MAP(map_init_1(&a, "%{a: A, b: A}"),
+                   map_init_1(&b, "%{a: A, b: B}"), -1);
+  map_clean(&a);
+  map_clean(&b);
+  COMPARE_TEST_MAP(map_init_1(&a, "%{a: A, b: B}"),
+                   map_init_1(&b, "%{a: A, b: A}"), 1);
+  map_clean(&a);
+  map_clean(&b);
+  COMPARE_TEST_MAP(map_init_1(&a, "%{a: A, b: B}"),
+                   map_init_1(&b, "%{a: A, b: B, c: C}"), -1);
+  map_clean(&a);
+  map_clean(&b);
+  COMPARE_TEST_MAP(map_init_1(&a, "%{a: A, b: B, c: C}"),
+                   map_init_1(&b, "%{a: A, b: B}"), 1);
+  map_clean(&a);
+  map_clean(&b);
+}
+TEST_CASE_END(compare_map)
 
 TEST_CASE(compare_str)
 {

@@ -50,3 +50,33 @@ quote %{b: b} = %{a: 1, b: 2}
 %{b: b} = %{a: 1, b: 2}
 quote b
 b
+quote %{a: A, b: A} < %{a: A, b: A}
+%{a: A, b: A} < %{a: A, b: A}
+quote %{a: A, b: A} < %{a: A, c: A}
+%{a: A, b: A} < %{a: A, c: A}
+quote %{a: A, c: A} < %{a: A, b: A}
+%{a: A, c: A} < %{a: A, b: A}
+quote %{a: A, b: A} < %{a: A, b: B}
+%{a: A, b: A} < %{a: A, b: B}
+quote %{a: B, b: A} < %{a: A, b: A}
+%{a: B, b: A} < %{a: A, b: A}
+quote %{a: A, b: A} == %{a: A, b: A}
+%{a: A, b: A} == %{a: A, b: A}
+quote %{a: A, b: A} == %{a: A, c: A}
+%{a: A, b: A} == %{a: A, c: A}
+quote %{a: A, c: A} == %{a: A, b: A}
+%{a: A, c: A} == %{a: A, b: A}
+quote %{a: A, b: A} == %{a: A, b: B}
+%{a: A, b: A} == %{a: A, b: B}
+quote %{a: B, b: A} == %{a: A, b: A}
+%{a: B, b: A} == %{a: A, b: A}
+quote %{a: A, b: A} > %{a: A, b: A}
+%{a: A, b: A} > %{a: A, b: A}
+quote %{a: A, b: A} > %{a: A, c: A}
+%{a: A, b: A} > %{a: A, c: A}
+quote %{a: A, c: A} > %{a: A, b: A}
+%{a: A, c: A} > %{a: A, b: A}
+quote %{a: A, b: A} > %{a: A, b: B}
+%{a: A, b: A} > %{a: A, b: B}
+quote %{a: B, b: A} > %{a: A, b: A}
+%{a: B, b: A} > %{a: A, b: A}
