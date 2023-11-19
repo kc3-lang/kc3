@@ -40,3 +40,13 @@ quote %{a: 1, b: 2, c: 3}
 %{a: 1, b: 2, c: 3}
 quote %{c: 1, b: 2, a: 3}
 %{a: 3, b: 2, c: 1}
+quote %{} = %{a: 1, b: 2}
+%{} = %{a: 1, b: 2}
+quote %{a: a} = %{a: 1, b: 2}
+%{a: a} = %{a: 1, b: 2}
+quote a
+a
+quote %{b: b} = %{a: 1, b: 2}
+%{b: b} = %{a: 1, b: 2}
+quote b
+b
