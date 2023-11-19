@@ -48,7 +48,7 @@
       initWithCairoView:view];
   self.view = view;
   [self.window setContentView:view_controller.view];
-
+  [self.window setAcceptsMouseMovedEvents:YES];
   if (! self.window_cairo->load(self.window_cairo)) {
     [self.window close];
     [self.window release];
