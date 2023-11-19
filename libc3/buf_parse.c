@@ -2023,10 +2023,11 @@ sw buf_parse_map_key_tag (s_buf *buf, s_tag *dest)
   buf_save_init(buf, &save);
   if ((r = buf_parse_tag(buf, &tag)) <= 0)
     goto restore;
+  result += r;
   if ((r = buf_parse_comments(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) <= 0)
+  if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
   if ((r = buf_read_1(buf, "=>")) <= 0)
