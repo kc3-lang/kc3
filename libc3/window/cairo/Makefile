@@ -58,6 +58,11 @@ gdb_demo: debug
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz gdb_demo; else	if ${HAVE_XCB}; then ${MAKE} -C xcb gdb_demo; fi; fi
 
 install:
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libc3/
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libc3
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
+	${LIBTOOL} --finish ${prefix}/lib
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz install; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb install; fi
 

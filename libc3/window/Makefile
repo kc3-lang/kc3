@@ -51,6 +51,11 @@ gdb_demo: debug
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo gdb_demo; fi
 
 install:
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libc3/
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libc3
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/lib
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
+	${LIBTOOL} --finish ${prefix}/lib
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo install; fi
 
 lldb_demo: debug
