@@ -60,6 +60,7 @@ CPPFLAGS="$CPPFLAGS -I../../../../libffi/include -I../../../.."
 config_asan
 config_gnu
 pkg_config cairo
+config_lib COCOA -framework Cocoa
 pkg_config xkbcommon
 LIBS="$LIBS"
 

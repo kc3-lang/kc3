@@ -43,6 +43,8 @@ LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 pkg_config cairo
+config_lib_have COCOA -framework Cocoa
+pkg_config xkbcommon
 config_define PREFIX "\"${PREFIX}\""
 
 # Address Sanitizer config
@@ -142,7 +144,7 @@ echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
 update_config_mk
 env_reset
 
-if ${HAVE_SWIFT}; then
+if ${HAVE_COCOA}; then
     ( cd quartz && ./configure; )
 fi
 

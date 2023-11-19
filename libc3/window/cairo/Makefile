@@ -12,7 +12,7 @@
 
 build:
 	${MAKE} ${LIB}
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz build; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz build; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
 
 all:
@@ -23,52 +23,49 @@ all:
 
 asan:
 	${MAKE} ${LIB_ASAN}
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz asan; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
 clean:
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz clean; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz clean; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean; fi
 
 clean_cov:
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz clean_cov; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz clean_cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi
 
 cov:
 	${MAKE} ${LIB_COV}
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz cov; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb cov; fi
 
 debug:
 	${MAKE} ${LIB_DEBUG}
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz debug; fi
-	if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz debug; else if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi; fi
 
 demo: build
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz demo; fi
-	if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi; fi
 
 distclean:
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz distclean; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz distclean; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb distclean; fi
 
 gcovr:
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz gcovr; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz gcovr; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb gcovr; fi
 
 gdb_demo: debug
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz gdb_demo; fi
-	if ${HAVE_XCB}; then ${MAKE} -C xcb gdb_demo; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz gdb_demo; else	if ${HAVE_XCB}; then ${MAKE} -C xcb gdb_demo; fi; fi
 
 install:
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz install; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz install; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb install; fi
 
 lldb_demo: debug
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz lldb_demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb lldb_demo; fi; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz lldb_demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb lldb_demo; fi; fi
 
 test:
-	if ${HAVE_SWIFT}; then ${MAKE} -C quartz test; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz test; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb test; fi
 
 update_sources:
