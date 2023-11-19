@@ -72,6 +72,16 @@
   }
 }
 
+- (void)mouseMoved:(NSEvent *)event {
+  NSPoint p = [event locationInWindow];
+  p.y = self.window_cairo->h - p.y;
+  if (! self.window_cairo->motion(self.window_cairo, p.x, p.y)) {
+    [self.window close];
+    [self.window release];
+    [[NSApplication sharedApplication] stop:nil];
+  }
+}
+
 - (void)rightMouseDown:(NSEvent *)event {
   NSPoint p = [event locationInWindow];
   if (! self.window_cairo->button(self.window_cairo, 2, p.x, p.y)) {
