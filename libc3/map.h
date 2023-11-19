@@ -18,12 +18,14 @@
 /* Stack allocation compatible functions, call map_clean after use. */
 void    map_clean (s_map *map);
 s_map * map_init (s_map *map, uw size);
+s_map * map_init_1 (s_map *map, const s8 *p);
 s_map * map_init_from_lists (s_map *map, const s_list *keys,
                              const s_list *values);
 
 /* Heap allocation functions, call map_delete after use. */
 void    map_delete (s_map *map);
 s_map * map_new (uw size);
+s_map * map_new_1 (const s8 *p);
 s_map * map_new_from_lists (const s_list *keys, const s_list *values);
 
 /* Modifiers */

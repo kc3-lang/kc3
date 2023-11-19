@@ -26,7 +26,7 @@ s_list * list_1 (const char *p)
   s_buf buf;
   s_list *list;
   buf_init_1(&buf, p);
-  if (buf_parse_list(&buf, &list) <= 0) {
+  if (buf_parse_list(&buf, &list) != (sw) strlen(p)) {
     assert(! "invalid list");
     buf_clean(&buf);
     return NULL;

@@ -1859,6 +1859,7 @@ sw buf_parse_map (s_buf *buf, s_map *dest)
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "%{")) <= 0)
     goto clean;
+  result += r;
   keys = NULL;
   keys_end = &keys;
   values = NULL;

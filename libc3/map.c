@@ -13,6 +13,9 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include <string.h>
+#include "buf.h"
+#include "buf_parse.h"
 #include "compare.h"
 #include "list.h"
 #include "map.h"
@@ -78,6 +81,23 @@ s_map * map_init (s_map *map, uw count)
   return map;
 }
 
+s_map * map_init_1 (s_map *map, const s8 *p)
+{
+  s_buf buf;
+  sw r;
+  assert(map);
+  assert(p);
+  buf_init_1(&buf, p);
+  if ((r = buf_parse_map(&buf, map)) != (sw) strlen(p)) {
+    assert(! "invalid map");
+    warnx("invalid map: \"%s\" (%ld)", p, r);
+    buf_clean(&buf);
+    return NULL;
+  }
+  buf_clean(&buf);
+  return map;
+}
+
 s_map * map_init_from_lists (s_map *map, const s_list *keys,
                              const s_list *values)
 {
@@ -117,6 +137,16 @@ s_map * map_new (uw count)
     return NULL;
   }
   return map_init(map, count);
+}
+
+s_map * map_new_1 (const s8 *p)
+{
+  s_map *map;
+  if (! (map = malloc(sizeof(s_map)))) {
+    warn("map_new");
+    return NULL;
+  }
+  return map_init_1(map, p);
 }
 
 s_map * map_new_from_lists (const s_list *keys, const s_list *values)

@@ -50,3 +50,33 @@ a
 %{a: 1, b: 2}
 b
 2
+%{a: A, b: A} < %{a: A, b: A}
+false
+%{a: A, b: A} < %{a: A, c: A}
+true
+%{a: A, c: A} < %{a: A, b: A}
+false
+%{a: A, b: A} < %{a: A, b: B}
+true
+%{a: B, b: A} < %{a: A, b: A}
+false
+%{a: A, b: A} == %{a: A, b: A}
+true
+%{a: A, b: A} == %{a: A, c: A}
+false
+%{a: A, c: A} == %{a: A, b: A}
+false
+%{a: A, b: A} == %{a: A, b: B}
+false
+%{a: B, b: A} == %{a: A, b: A}
+false
+%{a: A, b: A} > %{a: A, b: A}
+false
+%{a: A, b: A} > %{a: A, c: A}
+false
+%{a: A, c: A} > %{a: A, b: A}
+true
+%{a: A, b: A} > %{a: A, b: B}
+false
+%{a: B, b: A} > %{a: A, b: A}
+true
