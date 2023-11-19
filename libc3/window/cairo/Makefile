@@ -91,3 +91,4 @@ update_sources:
 	update_sources
 
 include config.mk
+include sources.mk
