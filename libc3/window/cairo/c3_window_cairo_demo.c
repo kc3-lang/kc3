@@ -96,21 +96,21 @@ bool c3_window_cairo_demo_render (s_window_cairo *window,
   cairo_text_extents(cr, seq->title, &te);
   /* text bg */
   cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-  cairo_move_to(cr, 18, window->h - te.height - te.y_bearing - 20);
-  cairo_show_text(cr, seq->title);
   cairo_move_to(cr, 19, window->h - te.height - te.y_bearing - 21);
+  cairo_show_text(cr, seq->title);
+  cairo_move_to(cr, 19, window->h - te.height - te.y_bearing - 20);
   cairo_show_text(cr, seq->title);
   cairo_move_to(cr, 19, window->h - te.height - te.y_bearing - 19);
   cairo_show_text(cr, seq->title);
-  cairo_move_to(cr, 20, window->h - te.height - te.y_bearing - 22);
+  cairo_move_to(cr, 20, window->h - te.height - te.y_bearing - 21);
   cairo_show_text(cr, seq->title);
-  cairo_move_to(cr, 20, window->h - te.height - te.y_bearing - 18);
+  cairo_move_to(cr, 20, window->h - te.height - te.y_bearing - 19);
   cairo_show_text(cr, seq->title);
   cairo_move_to(cr, 21, window->h - te.height - te.y_bearing - 19);
   cairo_show_text(cr, seq->title);
-  cairo_move_to(cr, 21, window->h - te.height - te.y_bearing - 21);
+  cairo_move_to(cr, 21, window->h - te.height - te.y_bearing - 20);
   cairo_show_text(cr, seq->title);
-  cairo_move_to(cr, 22, window->h - te.height - te.y_bearing - 20);
+  cairo_move_to(cr, 21, window->h - te.height - te.y_bearing - 21);
   cairo_show_text(cr, seq->title);
   /* text */
   cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
