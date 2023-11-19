@@ -332,6 +332,8 @@ bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
   s_list *b_next;
   s_list *tmp = NULL;
   s_list **t;
+  assert(env);
+  assert(dest);
   t = &tmp;
   while (1) {
     if (! a && ! b) {
@@ -343,18 +345,21 @@ bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
     if (! b)
       goto ko;
     *t = list_new(NULL, NULL);
-    if (! env_eval_equal_tag(env, &a->tag, &b->tag, &(*t)->tag))
+    if (! env_eval_equal_tag(env, &a->tag, &b->tag,
+                             &(*t)->tag))
       goto ko;
     a_next = list_next(a);
     b_next = list_next(b);
     if (! a_next || ! b_next) {
-      if (! env_eval_equal_tag(env, &a->next, &b->next, &(*t)->next))
+      if (! env_eval_equal_tag(env, &a->next, &b->next,
+                               &(*t)->next))
         goto ko;
       goto ok;
     }
     a = a_next;
     b = b_next;
-    t = &(*t)->next.data.list;
+    if (dest)
+      t = &(*t)->next.data.list;
   }
  ok:
   *dest = tmp;
@@ -362,6 +367,53 @@ bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
  ko:
   list_delete_all(tmp);
   return false;
+}
+
+bool env_eval_equal_map (s_env *env, const s_map *a,
+                         const s_map *b, s_map *dest)
+{
+  const s_map *c;
+  uw i;
+  uw j;
+  s_tag tmp;
+  assert(env);
+  assert(a);
+  assert(b);
+  assert(dest);
+  if (! a->count) {
+    map_copy(b, dest);
+    return true;
+  }
+  if (! b->count) {
+    map_copy(a, dest);
+    return true;
+  }
+  if (a->count > b->count) {
+    c = a;
+    a = b;
+    b = c;
+  }
+  i = 0;
+  while (i < a->count) {
+    j = 0;
+    while (j < b->count) {
+      if (! compare_tag(a->keys + i, b->keys + j)) {
+        if (! env_eval_equal_tag(env, a->values + i, b->values + j,
+                                 &tmp)) {
+          return false;
+        }
+        tag_clean(&tmp);
+        goto next;
+      }
+      j++;
+    }
+    return false;
+  next:
+    i++;
+  }
+  if (dest)
+    map_copy(b, dest);
+  return true;
 }
 
 bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
@@ -445,6 +497,10 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     tag_init_list(dest, NULL);
     return env_eval_equal_list(env, a->data.list, b->data.list,
                                &dest->data.list);
+  case TAG_MAP:
+    dest->type = TAG_MAP;
+    return env_eval_equal_map(env, &a->data.map, &b->data.map,
+                              &dest->data.map);
   case TAG_TUPLE:
     dest->type = TAG_TUPLE;
     return env_eval_equal_tuple(env, &a->data.tuple, &b->data.tuple,
