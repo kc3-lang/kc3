@@ -15,102 +15,105 @@ set -e
 
 export SRC_TOP="$(dirname "$PWD")"
 
-. ../../../config.subr
+. ../../../../../config.subr
 
-LIB=libc3_window_cairo.la
-LIB_ASAN=libc3_window_cairo_asan.la
-LIB_COV=libc3_window_cairo_cov.la
-LIB_DEBUG=libc3_window_cairo_debug.la
+PROG=c3_window_cairo_xcb_demo
+PROG_ASAN=c3_window_cairo_xcb_demo_asan
+PROG_COV=c3_window_cairo_xcb_demo_cov
+PROG_DEBUG=c3_window_cairo_xcb_demo_debug
 
-echo "LIB = $LIB" >> ${CONFIG_MK}
-echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
-echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
-echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
+echo "PROG = $PROG" >> ${CONFIG_MK}
+echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}
+echo "PROG_COV = $PROG_COV" >> ${CONFIG_MK}
+echo "PROG_DEBUG = $PROG_DEBUG" >> ${CONFIG_MK}
 
 . ./sources.sh
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
+
 OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
-OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
+echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
+
+if $HAVE_GCOV; then
+    OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
+    echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
+fi
+
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
+echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CPPFLAGS="$CPPFLAGS -I../../../libffi/include -I../../.."
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
-LDFLAGS="--shared -no-undefined ${LDFLAGS}"
-LIBS="$LIBS -rpath ${PREFIX}/lib"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+CPPFLAGS="$CPPFLAGS -I../../../../../libffi/include -I../../../../.."
 config_asan
 config_gnu
+pkg_config xcb
 pkg_config cairo
-pkg_config xkbcommon
-config_lib_have COCOA -framework Cocoa
-config_define PREFIX "\"${PREFIX}\""
+LIBS="$LIBS"
 
-# Address Sanitizer config
-CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
+# Asan config
+CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../libc3_window_asan.la"
-LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
+LOCAL_LIBS_ASAN="../libc3_window_cairo_xcb_asan.la"
+LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBS_LOCAL_COV="../libc3_window_cov.la"
-LIBS_COV="$LIBS_LOCAL_COV $LIBS"
+LOCAL_LIBS_COV="../libc3_window_cairo_xcb_cov.la"
+LIBS_COV="$LOCAL_LIBS_COV $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../libc3_window_debug.la"
-LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
+LOCAL_LIBS_DEBUG="../libc3_window_cairo_xcb_debug.la"
+LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
-DEFAULT_CFLAGS="-O2 -pipe"
+DEFAULT_CFLAGS="-O2 -pipe -fPIC"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS_LOCAL="../libc3_window.la"
-LIBS="$LIBS_LOCAL $LIBS"
+LOCAL_LIBS="../libc3_window_cairo_xcb.la"
+LIBS="$LOCAL_LIBS $LIBS"
 
-echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
 echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
 echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
-echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
 echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
-echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
 echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
 echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
 echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
-echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
-echo "$LIB: $LIBS_LOCAL $OBJECTS" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} ${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o ${LIB}" >> ${CONFIG_MK}
+echo "$PROG: $LOCAL_LIBS $OBJECTS" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} ${OBJECTS} ${LIBS} -o $PROG" >> ${CONFIG_MK}
 
 echo >> ${CONFIG_MK}
-echo "$LIB_ASAN: $LIBS_LOCAL_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} -rpath ${LIBDIR} -o ${LIB_ASAN}" >> ${CONFIG_MK}
+echo "$PROG_ASAN: $LOCAL_LIBS_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_ASAN} \${LDFLAGS_ASAN} ${OBJECTS_ASAN} ${LIBS_ASAN} -o $PROG_ASAN" >> ${CONFIG_MK}
+
+if $HAVE_GCOV; then
+    echo >> ${CONFIG_MK}
+    echo "$PROG_COV: $LOCAL_LIBS_COV $OBJECTS_COV" >> ${CONFIG_MK}
+    echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_COV} \${LDFLAGS_COV} ${OBJECTS_COV} ${LIBS_COV} -o $PROG_COV" >> ${CONFIG_MK}
+fi
 
 echo >> ${CONFIG_MK}
-echo "$LIB_COV: $LIBS_LOCAL_COV $OBJECTS_COV" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} -rpath ${LIBDIR} -o ${LIB_COV}" >> ${CONFIG_MK}
-
-echo >> ${CONFIG_MK}
-echo "$LIB_DEBUG: $LIBS_LOCAL_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} -rpath ${LIBDIR} -o ${LIB_DEBUG}" >> ${CONFIG_MK}
+echo "$PROG_DEBUG: $LOCAL_LIBS_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
+echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS_DEBUG} \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} ${LIBS_DEBUG} -o $PROG_DEBUG" >> ${CONFIG_MK}
 
 for SRC in $SOURCES; do
     echo >> ${CONFIG_MK}
@@ -123,10 +126,12 @@ for SRC in $SOURCES; do
     c_ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
 
-    echo >> ${CONFIG_MK}
-    SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
-    c_ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
+    if $HAVE_GCOV; then
+        echo >> ${CONFIG_MK}
+        SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
+        c_ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
+        echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
+    fi
 
     echo >> ${CONFIG_MK}
     SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
@@ -134,20 +139,4 @@ for SRC in $SOURCES; do
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
 done
 
-if pkg-config xcb; then
-    HAVE_XCB=true
-else
-    HAVE_XCB=false
-fi
-echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
-
 update_config_mk
-env_reset
-
-if ${HAVE_COCOA}; then
-    ( cd quartz && ./configure; )
-fi
-
-if ${HAVE_XCB}; then
-    ( cd xcb && ./configure; )
-fi
