@@ -35,7 +35,13 @@ s_tag * map_access (const s_map *map, const s_tag *key, s_tag *value)
 
 void map_clean (s_map *map)
 {
+  uw i = 0;
   assert(map);
+  while (i < map->count) {
+    tag_clean(map->keys + i);
+    tag_clean(map->values + i);
+    i++;
+  }
   free(map->keys);
   free(map->values);
 }
