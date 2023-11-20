@@ -12,7 +12,6 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <cairo/cairo.h>
 #include <libc3/c3.h>
 #include "../../../window.h"
 #include "../../c3_window_cairo_demo.h"
