@@ -18,7 +18,8 @@ CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.h config.mk
 
-build: libc3_window_cairo_xcb.la
+build:
+	${MAKE} ${LIB}
 	${MAKE} -C demo build
 
 all:
@@ -27,7 +28,8 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: libc3_window_cairo_xcb_asan.la
+asan:
+	${MAKE} ${LIB_ASAN}
 	${MAKE} -C demo asan
 
 clean:
@@ -38,10 +40,12 @@ clean_cov:
 	rm -rf ${CLEANFILES_COV}
 	${MAKE} -C demo clean_cov
 
-cov: libc3_window_cairo_xcb_cov.la
+cov:
+	${MAKE} ${LIB_COV}
 	${MAKE} -C demo cov
 
-debug: libc3_window_cairo_xcb_debug.la
+debug:
+	${MAKE} ${LIB_DEBUG}
 	${MAKE} -C demo debug
 
 demo: build
