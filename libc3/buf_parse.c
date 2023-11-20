@@ -2007,6 +2007,7 @@ sw buf_parse_map_key_sym (s_buf *buf, s_tag *dest)
   r = result;
   goto clean;
  restore:
+  str_clean(&str);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
