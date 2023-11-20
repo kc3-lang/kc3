@@ -610,9 +610,9 @@ bool env_eval_map (s_env *env, const s_map *map, s_tag *dest)
   assert(env);
   assert(map);
   assert(dest);
-  if (! map_copy(map, &tmp))
+  if (! map_init(&tmp, map->count))
     return false;
-  while (i < map->count) {
+  while (i < tmp.count) {
     if (! env_eval_tag(env, map->keys + i, tmp.keys + i) ||
         ! env_eval_tag(env, map->values + i, tmp.values + i))
       goto ko;
