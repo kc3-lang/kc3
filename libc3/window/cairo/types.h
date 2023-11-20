@@ -18,7 +18,7 @@
 #ifndef LIBC3_WINDOW_CAIRO_TYPES_H
 #define LIBC3_WINDOW_CAIRO_TYPES_H
 
-#include <cairo/cairo.h>
+#include <cairo.h>
 #include <libc3/types.h>
 #include "../types.h"
 

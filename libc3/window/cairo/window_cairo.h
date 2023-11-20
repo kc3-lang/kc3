@@ -13,8 +13,6 @@
 #ifndef LIBC3_WINDOW_CAIRO_H
 #define LIBC3_WINDOW_CAIRO_H
 
-#include <libc3/types.h>
-#include <cairo/cairo.h>
 #include "types.h"
 
 s_window_cairo * window_cairo_init (s_window_cairo *window,
