@@ -23,12 +23,8 @@ bool window_cairo_run (s_window_cairo *window)
   return window_cairo_win32_run(window);
 }
 
-bool window_cairo_win32_run (s_window_cairo *window)
-{
-  return true;
-}
-
-LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK window_cairo_win32_proc(HWND hwnd, UINT message,
+                                         WPARAM wParam, LPARAM lParam) {
   switch (message) {
   case WM_DESTROY:
     PostQuitMessage(0);
@@ -39,27 +35,44 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
   return 0;
 }
 
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdshow) {
-  WNDCLASSW wc = {0};
-
-  wc.hbrBackground = (HBRUSH)COLOR_BACKGROUND;
-  wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-  wc.hInstance = hInst;
-  wc.lpszClassName = L"MyWindowClass";
-  wc.lpfnWndProc = WindowProcedure;
-
-  if (!RegisterClassW(&wc)) {
-    return -1;
+bool window_cairo_win32_run (s_window_cairo *window)
+{
+  WNDCLASSEX wc;
+  HWND hwnd;
+  MSG Msg;
+  wc.cbSize        = sizeof(WNDCLASSEX);
+  wc.style         = 0;
+  wc.lpfnWndProc   = window_cairo_win32_proc;
+  wc.cbClsExtra    = 0;
+  wc.cbWndExtra    = 0;
+  wc.hInstance     = GetModuleHandle(NULL);
+  wc.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
+  wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+  wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
+  wc.lpszMenuName  = NULL;
+  wc.lpszClassName = L"Libc3WindowCairoWin32";
+  wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
+  if (!RegisterClassEx(&wc)) {
+    MessageBox(NULL, "Window Registration Failed!", "Error!",
+               MB_ICONEXCLAMATION | MB_OK);
+    return 0;
   }
-
-  CreateWindowW(L"MyWindowClass", L"My Window", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 
-		100, 100, 500, 500, NULL, NULL, NULL, NULL);
-
-  MSG msg = {0};
-  while ( GetMessage(&msg, NULL, 0, 0) ) {
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
+  hwnd = CreateWindowEx(WS_EX_CLIENTEDGE,
+                        L"Libc3WindowCairoWin32",
+                        "The title of my window",
+                        WS_OVERLAPPEDWINDOW,
+                        CW_USEDEFAULT, CW_USEDEFAULT, 240, 120,
+                        NULL, NULL, GetModuleHandle(NULL), NULL);
+  if (hwnd == NULL) {
+    MessageBox(NULL, "Window Creation Failed!", "Error!",
+               MB_ICONEXCLAMATION | MB_OK);
+    return 0;
   }
-  return 0;
+  ShowWindow(hwnd, SW_SHOWDEFAULT);
+  UpdateWindow(hwnd);
+  while (GetMessage(&Msg, NULL, 0, 0) > 0) {
+    TranslateMessage(&Msg);
+    DispatchMessage(&Msg);
+  }
+  return Msg.wParam ? false : true;
 }
-

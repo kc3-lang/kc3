@@ -17,10 +17,10 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . ../../../../config.subr
 
-LIB=libc3_window_cairo_xcb.la
-LIB_ASAN=libc3_window_cairo_xcb_asan.la
-LIB_COV=libc3_window_cairo_xcb_cov.la
-LIB_DEBUG=libc3_window_cairo_xcb_debug.la
+LIB=libc3_window_cairo_win32.la
+LIB_ASAN=libc3_window_cairo_win32_asan.la
+LIB_COV=libc3_window_cairo_win32_cov.la
+LIB_DEBUG=libc3_window_cairo_win32_debug.la
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
@@ -41,23 +41,23 @@ OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
 # Common config for all targets
-CPPFLAGS="$CPPFLAGS -I../../../../libffi/include -I../../../.."
+CPPFLAGS="-I../../../../libffi/include -I../../../.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
 LDFLAGS="--shared -no-undefined ${LDFLAGS}"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
-pkg_config xcb
 pkg_config xkbcommon
 pkg_config cairo
+pkg_config cairo-win32
 config_define PREFIX "\"${PREFIX}\""
 update_config_h
-LIBS="$LIBS -lxkbcommon -lxkbcommon-x11"
+LIBS="$LIBS -lxkbcommon"
 
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../libc3_window_cairo_.la"
+LIBS_LOCAL_ASAN="../libc3_window_cairo_asan.la"
 LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
 
 # Coverage config
