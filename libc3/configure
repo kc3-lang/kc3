@@ -36,7 +36,7 @@ OBJECTS_COV="$(c2ext .cov.lo "$LO_SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 
 # Common config for all targets
-CPPFLAGS="$CPPFLAGS -I../libffi/include"
+CPPFLAGS="-I../libffi/include $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
 LDFLAGS="--shared -no-undefined ${LDFLAGS}"
 LIBS="${LIBS} -lm -pthread -rpath ${PREFIX}/lib"

@@ -47,14 +47,14 @@ LIBS="${LIBS:=-lm}"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-CPPFLAGS="$CPPFLAGS -I../libffi/include"
+CPPFLAGS="-I../libffi/include $CPPFLAGS"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
-LIBS="$LIBS ../libffi/.libs/libffi.la -pthread"
+LIBS="$LIBS ../libffi/libffi.la -pthread"
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
