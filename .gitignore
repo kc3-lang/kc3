@@ -50,6 +50,7 @@ test/facts_test_log_remove.facts
 test/facts_test_open_file.1.facts
 test/facts_test_open_file.3.facts
 test/facts_test_save.facts
+test/ic3/.ic3_history
 test/ic3/*.diff
 test/ic3/*.err
 test/ic3/*.out
