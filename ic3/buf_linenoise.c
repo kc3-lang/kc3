@@ -20,17 +20,19 @@
 #include "../linenoise/linenoise.h"
 
 typedef struct buf_linenoise {
-  s_buf       buf;
-  bool        eof;
-  const char *prompt;
+  s_buf     buf;
+  bool      eof;
+  const s8 *prompt;
 } s_buf_linenoise;
 
 sw buf_linenoise_refill_fgets (s_buf *buf);
 sw buf_linenoise_refill_linenoise (s_buf *buf);
 
-void buf_linenoise_close (s_buf *buf)
+void buf_linenoise_close (s_buf *buf, const s8 *history_path)
 {
   assert(buf);
+  if (history_path)
+    linenoiseHistorySave(history_path);
   buf->refill = NULL;
   free(buf->user_ptr);
   buf->user_ptr = NULL;
@@ -38,7 +40,8 @@ void buf_linenoise_close (s_buf *buf)
     puts("");
 }
 
-s_buf * buf_linenoise_open_r (s_buf *buf, const char *prompt)
+s_buf * buf_linenoise_open_r (s_buf *buf, const s8 *prompt,
+                              const s8 *history_path)
 {
   s_buf_linenoise *buf_linenoise;
   assert(buf);
@@ -52,6 +55,8 @@ s_buf * buf_linenoise_open_r (s_buf *buf, const char *prompt)
   else
     buf->refill = buf_linenoise_refill_fgets;
   buf_linenoise->prompt = prompt;
+  if (history_path)
+    linenoiseHistoryLoad(history_path);
   buf->user_ptr = buf_linenoise;
   return buf;
 }

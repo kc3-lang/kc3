@@ -17,10 +17,10 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . ../../../../../config.subr
 
-PROG=c3_window_cairo_xcb_demo
-PROG_ASAN=c3_window_cairo_xcb_demo_asan
-PROG_COV=c3_window_cairo_xcb_demo_cov
-PROG_DEBUG=c3_window_cairo_xcb_demo_debug
+PROG=c3_window_cairo_win32_demo
+PROG_ASAN=c3_window_cairo_win32_demo_asan
+PROG_COV=c3_window_cairo_win32_demo_cov
+PROG_DEBUG=c3_window_cairo_win32_demo_debug
 
 echo "PROG = $PROG" >> ${CONFIG_MK}
 echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}
@@ -45,38 +45,39 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-CPPFLAGS="$CPPFLAGS -I../../../../../libffi/include -I../../../../.."
+CPPFLAGS="-I../../../../../libffi/include -I../../../../.. $CPPFLAGS"
 config_asan
 config_gnu
-pkg_config xcb
 pkg_config cairo
+pkg_config cairo-win32
+pkg_config libbsd-overlay
 LIBS="$LIBS"
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LOCAL_LIBS_ASAN="../libc3_window_cairo_xcb_asan.la"
+LOCAL_LIBS_ASAN="../libc3_window_cairo_win32_asan.la"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LOCAL_LIBS_COV="../libc3_window_cairo_xcb_cov.la"
+LOCAL_LIBS_COV="../libc3_window_cairo_win32_cov.la"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LOCAL_LIBS_DEBUG="../libc3_window_cairo_xcb_debug.la"
+LOCAL_LIBS_DEBUG="../libc3_window_cairo_win32_debug.la"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
-DEFAULT_CFLAGS="-O2 -pipe -fPIC"
+DEFAULT_CFLAGS="-O2 -pipe"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LOCAL_LIBS="../libc3_window_cairo_xcb.la"
+LOCAL_LIBS="../libc3_window_cairo_win32.la"
 LIBS="$LOCAL_LIBS $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

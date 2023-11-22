@@ -95,7 +95,7 @@ int main (int argc, char **argv)
   if (argc < 1)
     return usage(argv[0]);
   buf_init(&in, false, sizeof(i), i);
-  buf_linenoise_open_r(&in, "ic3> ");
+  buf_linenoise_open_r(&in, "ic3> ", ".ic3_history");
   in.line = 0;
   buf_init(&out, false, sizeof(o), o);
   buf_file_open_w(&out, stdout);
@@ -121,7 +121,7 @@ int main (int argc, char **argv)
          (r = buf_ignore_character(&in)) <= 0))
       break;
   }
-  buf_linenoise_close(&in);
+  buf_linenoise_close(&in, ".ic3_history");
   buf_file_close(&out);
   c3_clean(NULL);
   return 0;

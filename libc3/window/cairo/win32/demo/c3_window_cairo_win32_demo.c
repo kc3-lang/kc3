@@ -22,14 +22,14 @@ int main (void)
 {
   s_window_cairo window;
   window_cairo_init(&window, 0, 0, 800, 600,
-                    "C3.Window.Cairo.XCB demo",
+                    "C3.Window.Cairo.Win32 demo",
                     LIBC3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
   window.button = c3_window_cairo_demo_button;
   window.key    = c3_window_cairo_demo_key;
   window.load   = c3_window_cairo_demo_load;
   window.render = c3_window_cairo_demo_render;
   window.resize = c3_window_cairo_demo_resize;
-  if (! window_cairo_xcb_run(&window))
+  if (! window_cairo_win32_run(&window))
     return g_c3_exit_code;
   return 0;
 }

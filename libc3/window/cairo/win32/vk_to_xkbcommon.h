@@ -10,15 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/**
- * @file buf_linenoise.h
- * @brief Linenoise backend for s_buf.
- */
-#ifndef IC3_BUF_LINENOISE_H
-#define IC3_BUF_LINENOISE_H
+#ifndef LIBC3_WINDOW_CAIRO_WIN32_VK_TO_XKBCOMMON_H
+#define LIBC3_WINDOW_CAIRO_WIN32_VK_TO_XKBCOMMON_H
 
-void    buf_linenoise_close (s_buf *buf, const s8 *history_path);
-s_buf * buf_linenoise_open_r (s_buf *buf, const s8 *prompt,
-                              const s8 *history_path);
+#include <libc3/types.h>
 
-#endif /* IC3_BUF_LINENOISE_H */
+u32 vk_to_xkbcommon (u32 vk_key);
+
+#endif /* LIBC3_WINDOW_CAIRO_WIN32_VK_TO_XKBCOMMON_H */

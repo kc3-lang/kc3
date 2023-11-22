@@ -50,6 +50,10 @@ typedef uint32_t      u32;
 typedef unsigned long uw;
 typedef uint64_t      u64;
 
+#ifdef SW_MAX
+#undef SW_MAX
+#endif
+
 #define S8_MAX  ((s8)  (((u8)  1 << (8 * sizeof(s8)  - 1)) - 1))
 #define S16_MAX ((s16) (((u16) 1 << (8 * sizeof(s16) - 1)) - 1))
 #define S32_MAX ((s32) (((u32) 1 << (8 * sizeof(s32) - 1)) - 1))

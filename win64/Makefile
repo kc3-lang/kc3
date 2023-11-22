@@ -11,18 +11,22 @@ c3-${C3_VERSION}.win64:
 	rm -rf ${DEST}
 	mkdir -p ${DEST}/test/ic3
 	cp -a ../README.md ${DEST}
-	cp -a /bin/msys-2.0.dll ${DEST}
-	cp -a /bin/msys-2.0.dll ${DEST}/test
-	cp -a /bin/msys-bsd-0.dll ${DEST}
-	cp -a /bin/msys-bsd-0.dll ${DEST}/test
-	cp -a /bin/msys-gcc_s-seh-1.dll ${DEST}
-	cp -a /bin/msys-gcc_s-seh-1.dll ${DEST}/test
-	cp -a /bin/msys-md-0.dll ${DEST}
-	cp -a /bin/msys-md-0.dll ${DEST}/test
+	cp -a /ucrt64/bin/libbsd-0.dll ${DEST}
+	cp -a /ucrt64/bin/libbsd-0.dll ${DEST}/test
+	cp -a /ucrt64/bin/libmd-0.dll ${DEST}
+	cp -a /ucrt64/bin/libmd-0.dll ${DEST}/test
 	cp -a ../libffi/.libs/libffi*.dll ${DEST}
 	cp -a ../libffi/.libs/libffi*.dll ${DEST}/test
-	cp -a ../libc3/.libs/msys-c3*.dll ${DEST}
-	cp -a ../libc3/.libs/msys-c3*.dll ${DEST}/test
+	cp -a ../libc3/.libs/libc3*.dll ${DEST}
+	cp -a ../libc3/.libs/libc3*.dll ${DEST}/test
+	cp -a ../libc3/window/.libs/libc3_window*.dll ${DEST}
+	cp -a ../libc3/window/.libs/libc3_window*.dll ${DEST}/test
+	cp -a ../libc3/window/cairo/.libs/libc3_window_cairo*.dll ${DEST}
+	cp -a ../libc3/window/cairo/.libs/libc3_window_cairo*.dll ${DEST}/test
+	cp -a ../libc3/window/cairo/win32/.libs/libc3_window_cairo_win32*.dll ${DEST}
+	cp -a ../libc3/window/cairo/win32/.libs/libc3_window_cairo_win32*.dll ${DEST}/test
+	cp -a ../libc3/window/cairo/win32/demo/.libs/c3_window_cairo_win32_demo.exe ${DEST}
+	cp -a ../libc3/window/cairo/win32/demo/.libs/c3_window_cairo_win32_demo.exe ${DEST}/test
 	cp -a ../lib ${DEST}/
 	cp -a ../c3s/.libs/c3s*.exe ${DEST}
 	cp -a ../ic3/.libs/ic3*.exe ${DEST}
