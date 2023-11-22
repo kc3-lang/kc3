@@ -1,4 +1,4 @@
-# C3 v0.1.8
+# C3 v0.1.9
 
 C3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
@@ -183,6 +183,23 @@ ic3> List.reverse(List.map([1, 2, 3, 4], double))
 ```
 
 Don't forget to revert the changes to `list.facts`.
+
+
+#### Maps
+
+C3 maps are like Elixir maps :
+```
+ic3> a = %{id: 1, title: "My title", message: "Hello, world !"}
+%{id: 1, title: "My title", message: "Hello, world !"}
+ic3> a = %{}
+%{id: 1, title: "My title", message: "Hello, world !"}
+ic3> %{id: id, title: "My title", message: message} = a
+%{id: 1, title: "My title", message: "Hello, world !"}
+ic3> id
+1
+ic3> message
+"Hello, world !"
+```
 
 
 #### Unicode characters
