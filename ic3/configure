@@ -38,13 +38,6 @@ fi
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
-# Default config
-CPPFLAGS="${CPPFLAGS:=}"
-ENV_CFLAGS="${CFLAGS:=}"
-DEFAULT_CFLAGS="-O2 -pipe"
-LDFLAGS="${LDFLAGS}"
-LIBS="${LIBS:=-lm}"
-
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 CPPFLAGS="-I../libffi/include $CPPFLAGS"
@@ -78,6 +71,7 @@ LOCAL_LIBS_DEBUG="$LIBC3_DEBUG"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
+DEFAULT_CFLAGS="-O2 -pipe"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
