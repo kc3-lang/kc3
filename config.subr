@@ -255,17 +255,21 @@ echo "CC = $CC" >> ${CONFIG_MK}
 CC_TARGET=$(LC_ALL=C cc -v 2>&1 | grep 'Target: ' | cut -c 9-)
 echo "CC_TARGET = $CC_TARGET" >> ${CONFIG_MK}
 
-if [ "x$GCOV" = "x" ]; then
-    if which gcov >/dev/null 2>&1; then
-	GCOV=gcov
-        HAVE_GCOV=true
-    elif which egcov >/dev/null 2>&1; then
-	GCOV=egcov
-        HAVE_GCOV=true
-    fi
+if [ "x$GCOV" = "xfalse" ]; then
     HAVE_GCOV=false
 else
-    HAVE_GCOV=true
+    if [ "x$GCOV" = "x" ]; then
+        if which gcov >/dev/null 2>&1; then
+	    GCOV=gcov
+            HAVE_GCOV=true
+        elif which egcov >/dev/null 2>&1; then
+	    GCOV=egcov
+            HAVE_GCOV=true
+        fi
+        HAVE_GCOV=false
+    else
+        HAVE_GCOV=true
+    fi
 fi
 echo "HAVE_GCOV = $HAVE_GCOV" >> ${CONFIG_MK}
 if ${HAVE_GCOV}; then
