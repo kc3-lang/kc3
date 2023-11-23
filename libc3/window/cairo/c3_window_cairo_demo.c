@@ -64,8 +64,7 @@ bool c3_window_cairo_demo_key (s_window_cairo *window, uw keysym)
 
 bool c3_window_cairo_demo_load (s_window_cairo *window)
 {
-  assert(window->sequence_count ==
-         LIBC3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
+  assert(window->sequence_count == C3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
   window_cairo_sequence_init(window->sequence, 8.0,
                              "01. Background rectangles",
                              c3_window_cairo_demo_render_bg_rect);
