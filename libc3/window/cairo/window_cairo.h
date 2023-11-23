@@ -21,6 +21,10 @@ s_window_cairo * window_cairo_init (s_window_cairo *window,
                                     uw sequence_count);
 bool             window_cairo_run (s_window_cairo *window);
 
+s_sequence *     window_cairo_sequence_init
+(s_sequence *sequence, f64 duration, const s8 *title,
+ f_window_cairo_render_sequence render);
+
 /* callbacks */
 bool window_cairo_button_default (s_window_cairo *window, u8 button,
                                   sw x, sw y);

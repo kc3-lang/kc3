@@ -98,3 +98,15 @@ bool window_cairo_resize_default (s_window_cairo *window, uw w, uw h)
   printf("window_cairo_resize_default: %lu x %lu\n", w, h);
   return true;
 }
+
+s_sequence * window_cairo_sequence_init
+(s_sequence *sequence, f64 duration, const s8 *title,
+ f_window_cairo_render_sequence render)
+{
+  assert(sequence);
+  sequence->t = 0.0;
+  sequence->duration = duration;
+  sequence->title = title;
+  sequence->render = (f_sequence_render) render;
+  return sequence;
+}

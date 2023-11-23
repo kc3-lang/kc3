@@ -181,6 +181,8 @@ typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
 typedef sw (* f_buf_inspect_size) (const void *x);
 typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
 typedef void * (* f_copy) (const void *a, void *b);
+typedef void (* f_sequence_render) (void *window, void *render_context,
+                                    s_sequence *seq);
 
 #define CHARACTER_MAX S32_MAX
 #define SKIPLIST_HEIGHT_MAX U64_MAX
@@ -253,14 +255,6 @@ union ptr_w {
 
 struct quote {
   s_tag *tag;
-};
-
-struct sequence {
-  f64 t;
-  f64 duration;
-  s_time t0;
-  const s8 *title;
-  void *data;
 };
 
 struct struct_ {
@@ -457,6 +451,16 @@ struct error_handler
 struct list {
   s_tag tag;
   s_tag next;
+};
+
+struct sequence {
+  s_tag data;
+  f64 dt;
+  f64 duration;
+  f_sequence_render render;
+  f64 t;
+  s_time t0;
+  const s8 *title;
 };
 
 #define TYPEDEF_SET_ITEM(name, type)                                   \

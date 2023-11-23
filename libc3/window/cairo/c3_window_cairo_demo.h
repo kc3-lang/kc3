@@ -16,7 +16,8 @@
 #include <libc3/types.h>
 #include "types.h"
 
-#define LIBC3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT 1
+#define C3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT 2
+#define C3_WINDOW_CAIRO_DEMO_LIGHTSPEED_STARS 100
 
 bool c3_window_cairo_demo_button (s_window_cairo *window, u8 button,
                                   sw x, sw y);
@@ -26,6 +27,9 @@ bool c3_window_cairo_demo_render (s_window_cairo *window, cairo_t *cr);
 void c3_window_cairo_demo_render_bg_rect (s_window_cairo *window,
                                           cairo_t *cr,
                                           s_sequence *seq);
+void c3_window_cairo_demo_render_lightspeed (s_window_cairo *window,
+                                             cairo_t *cr,
+                                             s_sequence *seq);
 bool c3_window_cairo_demo_resize (s_window_cairo *window, uw w, uw h);
 
 #endif /* LIBC3_WINDOW_CAIRO_DEMO_H */

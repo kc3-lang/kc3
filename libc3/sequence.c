@@ -14,11 +14,13 @@
 #include "sequence.h"
 
 s_sequence * sequence_init (s_sequence *sequence, f64 duration,
-                            const s8 *title)
+                            const s8 *title,
+                            f_sequence_render render)
 {
   assert(sequence);
   sequence->t = 0.0;
   sequence->duration = duration;
   sequence->title = title;
+  sequence->render = render;
   return sequence;
 }
