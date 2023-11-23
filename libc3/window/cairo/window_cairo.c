@@ -74,7 +74,11 @@ bool window_cairo_motion_default (s_window_cairo *window, sw x, sw y)
 {
   assert(window);
   (void) window;
+  (void) x;
+  (void) y;
+  /*
   printf("window_cairo_motion_default (%ld, %ld)\n", x, y);
+  */
   return true;
 }
 
