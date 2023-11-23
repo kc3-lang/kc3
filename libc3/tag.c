@@ -3804,6 +3804,24 @@ s_tag * tag_init_list_1 (s_tag *tag, const s8 *p)
   return tag;
 }
 
+s_tag * tag_init_map (s_tag *tag, uw count)
+{
+  assert(tag);
+  tag->type = TAG_MAP;
+  if (! map_init(&tag->data.map, count))
+    return NULL;
+  return tag;
+}
+
+s_tag * tag_init_map_1 (s_tag *tag, const s8 *p)
+{
+  assert(tag);
+  tag->type = TAG_MAP;
+  if (! map_init_1(&tag->data.map, p))
+    return NULL;
+  return tag;
+}
+
 s_tag * tag_init_s8 (s_tag *tag, s8 i)
 {
   assert(tag);

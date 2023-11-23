@@ -44,6 +44,8 @@ s_tag * tag_init_integer_1 (s_tag *tag, const s8 *p);
 s_tag * tag_init_integer_zero (s_tag *tag);
 s_tag * tag_init_list (s_tag *tag, s_list *list);
 s_tag * tag_init_list_1 (s_tag *tag, const s8 *p);
+s_tag * tag_init_map (s_tag *tag, uw count);
+s_tag * tag_init_map_1 (s_tag *tag, const s8 *p);
 s_tag * tag_init_str (s_tag *tag, s8 *free, uw size, const s8 *p);
 s_tag * tag_init_str_1 (s_tag *tag, s8 *free, const s8 *p);
 s_tag * tag_init_sym (s_tag *tag, const s_sym *p);

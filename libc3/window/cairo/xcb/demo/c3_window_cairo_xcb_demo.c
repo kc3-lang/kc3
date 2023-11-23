@@ -22,7 +22,7 @@ int main (void)
   s_window_cairo window;
   window_cairo_init(&window, 0, 0, 800, 600,
                     "C3.Window.Cairo.XCB demo",
-                    LIBC3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
+                    C3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
   window.button = c3_window_cairo_demo_button;
   window.key    = c3_window_cairo_demo_key;
   window.load   = c3_window_cairo_demo_load;

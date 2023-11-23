@@ -42,6 +42,11 @@ void c3_clean (s_env *env)
   sym_delete_all();
 }
 
+void c3_exit (sw code)
+{
+  exit((int) code);
+}
+
 void c3_init (s_env *env)
 {
   if (! env)
