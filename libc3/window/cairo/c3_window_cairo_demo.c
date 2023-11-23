@@ -193,8 +193,7 @@ static void star_render (s_tag *star, s_window_cairo *window,
   q = (1 + *speed / 10);
   cairo_line_to(cr, *x * q, *y * q);
   cairo_stroke(cr);
-  q = (1 + *speed / 1000);
-  printf("%%{speed: %f, x: %f, y: %f}\n", *speed, *x, *y); 
+  q = (1 + *speed / 100);
   *x = *x * q;
   *y = *y * q;
   *speed += seq->dt;

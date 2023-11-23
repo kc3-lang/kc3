@@ -34,7 +34,7 @@
                                        NSWindowStyleMaskResizable)
                               backing:NSBackingStoreBuffered
                                 defer:NO];
-  self.window.delegate = self;
+  [self.window setDelegate:self];
   [self.window makeKeyAndOrderFront:nil];
   [self.window
       setTitle:[NSString
@@ -64,6 +64,18 @@
 
 - (void)redrawWindow {
   [self.view setNeedsDisplay:YES];
+}
+
+- (void)windowDidResize:(NSNotification *)notification {
+  printf("windowDidResize\n");
+  NSWindow *window = (NSWindow *)notification.object;
+  NSSize size = window.frame.size;
+  [self.view setFrameSize:size];
+  if (! self.window_cairo->resize(self.window_cairo, (uw) size.width,
+                                  size.height))
+    [NSApp stop:nil];
+  self.window_cairo->w = size.width;
+  self.window_cairo->h = size.height;
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
