@@ -181,7 +181,9 @@ typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
 typedef sw (* f_buf_inspect_size) (const void *x);
 typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
 typedef void * (* f_copy) (const void *a, void *b);
-typedef void (* f_sequence_render) (void *window, void *render_context,
+typedef bool (* f_sequence_load) (s_sequence *seq);
+typedef void (* f_sequence_render) (void *window,
+                                    void *render_context,
                                     s_sequence *seq);
 
 #define CHARACTER_MAX S32_MAX
@@ -454,9 +456,10 @@ struct list {
 };
 
 struct sequence {
-  s_tag data;
+  s_tag tag;
   f64 dt;
   f64 duration;
+  f_sequence_load load;
   f_sequence_render render;
   f64 t;
   s_time t0;

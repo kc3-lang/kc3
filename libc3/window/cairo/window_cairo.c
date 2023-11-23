@@ -105,12 +105,13 @@ bool window_cairo_resize_default (s_window_cairo *window, uw w, uw h)
 
 s_sequence * window_cairo_sequence_init
 (s_sequence *sequence, f64 duration, const s8 *title,
- f_window_cairo_render_sequence render)
+ f_sequence_load load, f_window_cairo_sequence_render render)
 {
   assert(sequence);
   sequence->t = 0.0;
   sequence->duration = duration;
   sequence->title = title;
+  sequence->load = load;
   sequence->render = (f_sequence_render) render;
   return sequence;
 }

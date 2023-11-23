@@ -16,7 +16,7 @@
 #include "types.h"
 
 s_sequence * sequence_init (s_sequence *sequence, f64 duration,
-                            const s8 *title,
+                            const s8 *title, f_sequence_load load,
                             f_sequence_render render);
 
 #endif /* LIBC3_SEQUENCE_H */

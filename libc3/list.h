@@ -37,7 +37,8 @@ s_list * list_delete (s_list *list);
 void     list_delete_all (s_list *list);
 
 /* Observers */
-s_list **  list_copy (const s_list **src, s_list **dest);
+s_list ** list_cast (const s_tag *tag, s_list **list);
+s_list ** list_copy (const s_list **src, s_list **dest);
 sw        list_length (const s_list *list);
 s_list *  list_next (const s_list *list);
 s_array * list_to_array (s_list *list, const s_sym *type,

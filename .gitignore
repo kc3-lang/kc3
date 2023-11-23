@@ -44,6 +44,7 @@ libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_debug
 .libs/
 *.lo
 *.o
+osx/c3-v*
 test/facts_test_dump_file.facts
 test/facts_test_log_add.facts
 test/facts_test_log_remove.facts

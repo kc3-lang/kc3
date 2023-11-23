@@ -12,6 +12,7 @@
 
 build:
 	${MAKE} ${LIB}
+	${MAKE} -C demo build
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz build; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 build; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb build; fi
@@ -24,39 +25,47 @@ all:
 
 asan:
 	${MAKE} ${LIB_ASAN}
+	${MAKE} -C demo asan
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz asan; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 asan; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb asan; fi
 
 clean:
+	${MAKE} -C demo clean
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz clean; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 clean; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean; fi
 
 clean_cov:
+	${MAKE} -C demo clean_cov
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz clean_cov; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 clean_cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb clean_cov; fi
 
 cov:
 	${MAKE} ${LIB_COV}
+	${MAKE} -C demo cov
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz cov; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 cov; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb cov; fi
 
 debug:
 	${MAKE} ${LIB_DEBUG}
+	${MAKE} -C demo debug
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz debug; else if ${HAVE_WIN32}; then ${MAKE} -C win32 debug; else if ${HAVE_XCB}; then ${MAKE} -C xcb debug; fi; fi; fi
 
 demo: build
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz demo; else if ${HAVE_WIN32}; then ${MAKE} -C win32 demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi; fi; fi
 
 distclean:
+	rm -rf ${DISTCLEANFILES}
+	${MAKE} -C demo distclean
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz distclean; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 distclean; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb distclean; fi
 
 gcovr:
+	${MAKE} -C demo gcovr
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz gcovr; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 gcovr; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb gcovr; fi
@@ -78,6 +87,7 @@ lldb_demo: debug
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz lldb_demo; else if ${HAVE_WIN32}; then ${MAKE} -C win32 lldb_demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb lldb_demo; fi; fi
 
 test:
+	${MAKE} -C demo test
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz test; fi
 	if ${HAVE_WIN32}; then ${MAKE} -C win32 test; fi
 	if ${HAVE_XCB}; then ${MAKE} -C xcb test; fi

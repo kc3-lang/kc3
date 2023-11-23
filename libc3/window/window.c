@@ -58,5 +58,7 @@ bool window_set_sequence_pos (s_window *window, uw sequence_pos)
   }
   window->sequence_pos = sequence_pos;
   printf("%s\n", seq->title);
+  if (! seq->load(seq))
+    return false;
   return true;
 }

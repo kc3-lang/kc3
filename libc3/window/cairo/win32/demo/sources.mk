@@ -3,6 +3,5 @@ HEADERS = \
 	 \
 
 SOURCES = \
-	c3_window_cairo_win32_demo.c \
-	window.c \
+	window_cairo_win32_demo.c \
 
