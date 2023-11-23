@@ -15,7 +15,7 @@
 #include <cairo/cairo.h>
 #include <libc3/c3.h>
 #include "../../../window.h"
-#include "../../c3_window_cairo_demo.h"
+#include "../../demo/window_cairo_demo.h"
 #include "../window_cairo_quartz.h"
 
 int main (void)
@@ -23,12 +23,12 @@ int main (void)
   s_window_cairo window;
   window_cairo_init(&window, 0, 0, 800, 600,
                     "C3.Window.Cairo.Quartz demo",
-                    C3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
-  window.button = c3_window_cairo_demo_button;
-  window.key    = c3_window_cairo_demo_key;
-  window.load   = c3_window_cairo_demo_load;
-  window.render = c3_window_cairo_demo_render;
-  window.resize = c3_window_cairo_demo_resize;
+                    WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
+  window.button = window_cairo_demo_button;
+  window.key    = window_cairo_demo_key;
+  window.load   = window_cairo_demo_load;
+  window.render = window_cairo_demo_render;
+  window.resize = window_cairo_demo_resize;
   if (! window_cairo_quartz_run(&window))
     return g_c3_exit_code;
   return 0;

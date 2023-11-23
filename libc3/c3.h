@@ -51,6 +51,8 @@
 #include "env.h"
 #include "error.h"
 #include "eval.h"
+#include "f32.h"
+#include "f64.h"
 #include "fact.h"
 #include "facts.h"
 #include "facts_cursor.h"

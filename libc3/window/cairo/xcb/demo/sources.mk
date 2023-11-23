@@ -3,6 +3,6 @@ HEADERS = \
 	 \
 
 SOURCES = \
-	c3_window_cairo_xcb_demo.c \
 	window.c \
+	window_cairo_xcb_demo.c \
 

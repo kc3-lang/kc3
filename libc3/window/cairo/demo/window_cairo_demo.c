@@ -14,16 +14,16 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <libc3/c3.h>
-#include <cairo/cairo.h>
 #include <xkbcommon/xkbcommon.h>
-#include "../window.h"
-#include "window_cairo.h"
-#include "c3_window_cairo_demo.h"
-#include "types.h"
+#include "../../window.h"
+#include "../window_cairo.h"
+#include "window_cairo_demo.h"
+#include "../types.h"
+#include "bg_rect.h"
+#include "lightspeed.h"
 
-bool c3_window_cairo_demo_button (s_window_cairo *window, u8 button,
+bool window_cairo_demo_button (s_window_cairo *window, u8 button,
                                   sw x, sw y)
 {
   assert(window);
@@ -32,7 +32,7 @@ bool c3_window_cairo_demo_button (s_window_cairo *window, u8 button,
   return true;
 }
 
-bool c3_window_cairo_demo_key (s_window_cairo *window, uw keysym)
+bool window_cairo_demo_key (s_window_cairo *window, uw keysym)
 {
   char keysym_name[64];
   assert(window);
@@ -62,20 +62,20 @@ bool c3_window_cairo_demo_key (s_window_cairo *window, uw keysym)
   return true;
 }
 
-bool c3_window_cairo_demo_load (s_window_cairo *window)
+bool window_cairo_demo_load (s_window_cairo *window)
 {
   assert(window->sequence_count == C3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
   window_cairo_sequence_init(window->sequence, 8.0,
                              "01. Background rectangles",
-                             c3_window_cairo_demo_render_bg_rect);
+                             bg_rect_load, bg_rect_render);
   window_cairo_sequence_init(window->sequence + 1, 30.0,
                              "02. Lightspeed",
-                             c3_window_cairo_demo_render_lightspeed);
+                             lightspeed_load, lightspeed_render);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }
 
-bool c3_window_cairo_demo_render (s_window_cairo *window,
+bool window_cairo_demo_render (s_window_cairo *window,
                                   cairo_t *cr)
 {
   s_sequence *seq;
@@ -127,108 +127,7 @@ bool c3_window_cairo_demo_render (s_window_cairo *window,
   return true;
 }
 
-void c3_window_cairo_demo_render_bg_rect (s_window_cairo *window,
-                                          cairo_t *cr,
-                                          s_sequence *seq)
-{
-#define C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX 8
-  const s_rgb color[C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX] = {
-    {1, 1, 1},
-    {1, 0, 0},
-    {1, 1, 0},
-    {0, 1, 0},
-    {0, 1, 1},
-    {0, 0, 1},
-    {1, 0, 1},
-    {0, 0, 0}
-  };
-  u8 c1;
-  u8 c2;
-  double p;
-  double q;
-  s_rgb rgb;
-  c1 = (u8) trunc(seq->t) % C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX;
-  c2 = (u8) trunc(seq->t + 1.0) % C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX;
-  p = fmod(seq->t, 1.0);
-  q = 1.0 - p;
-  rgb.r = color[c1].r * q + color[c2].r * p;
-  rgb.g = color[c1].g * q + color[c2].g * p;
-  rgb.b = color[c1].b * q + color[c2].b * p;
-  cairo_set_source_rgb(cr, rgb.r, rgb.g, rgb.b);
-  cairo_rectangle(cr, 0, 0, window->w, window->h);
-  cairo_fill(cr);
-}
-
-f64 frandom (void)
-{
-  return (double) random() / (((sw) 1 << 31) - 1);
-}
-
-static void star_init (s_tag *star)
-{
-  tag_init_map(star, 3);
-  tag_init_sym(star->data.map.keys, sym_1("speed"));
-  tag_init_f64(star->data.map.values, 0.0);
-  tag_init_sym(star->data.map.keys + 1, sym_1("x"));
-  tag_init_f64(star->data.map.values + 1, 2.0 * frandom() - 1.0);
-  tag_init_sym(star->data.map.keys + 2, sym_1("y"));
-  tag_init_f64(star->data.map.values + 2, 2.0 * frandom() - 1.0);
-}
-
-static void star_render (s_tag *star, s_window_cairo *window,
-                         cairo_t *cr, s_sequence *seq)
-{
-  f64 q;
-  f64 *speed;
-  f64 *x;
-  f64 *y;
-  (void) window;
-  speed = &star->data.map.values[0].data.f64;
-  x = &star->data.map.values[1].data.f64;
-  y = &star->data.map.values[2].data.f64;
-  cairo_set_line_width(cr, 0.01);
-  cairo_set_source_rgb(cr, 1, 1, 1);
-  cairo_move_to(cr, *x, *y);
-  q = (1 + *speed / 10);
-  cairo_line_to(cr, *x * q, *y * q);
-  cairo_stroke(cr);
-  q = (1 + *speed / 100);
-  *x = *x * q;
-  *y = *y * q;
-  *speed += seq->dt;
-  if (*x < -1.0 || *x > 1.0 || *y < -1.0 || *y > 1.0)
-    star_init(star);
-}
-
-void c3_window_cairo_demo_render_lightspeed (s_window_cairo *window,
-                                             cairo_t *cr,
-                                             s_sequence *seq)
-{
-  uw i;
-  cairo_matrix_t matrix;
-  cairo_get_matrix(cr, &matrix);
-  cairo_scale(cr, window->w / 2.0, window->h / 2.0);
-  cairo_translate(cr, 1.0, 1.0);
-  cairo_set_source_rgb(cr, 0, 0, 0);
-  cairo_rectangle(cr, -1, -1, 2, 2);
-  cairo_fill(cr);
-  if (seq->data.type == TAG_VOID) {
-    tag_init_tuple(&seq->data, C3_WINDOW_CAIRO_DEMO_LIGHTSPEED_STARS);
-    i = 0;
-    while (i < C3_WINDOW_CAIRO_DEMO_LIGHTSPEED_STARS) {
-      star_init(seq->data.data.tuple.tag + i);
-      i++;
-    }
-  }
-  i = 0;
-  while (i < C3_WINDOW_CAIRO_DEMO_LIGHTSPEED_STARS) {
-    star_render(seq->data.data.tuple.tag + i, window, cr, seq);
-    i++;
-  }
-  cairo_set_matrix(cr, &matrix);
-}
-
-bool c3_window_cairo_demo_resize (s_window_cairo *window,
+bool window_cairo_demo_resize (s_window_cairo *window,
                                   uw w, uw h)
 {
   assert(window);

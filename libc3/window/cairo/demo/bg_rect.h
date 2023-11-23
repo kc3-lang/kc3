@@ -10,13 +10,14 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBC3_F64_H
-#define LIBC3_F64_H
+#ifndef BG_RECT_H
+#define BG_RECT_H
 
-#include "types.h"
+#include "../types.h"
 
-f64   f64_cast (s_tag *tag);
-f64 * f64_copy (const f64 *src, f64 *dest);
-f64 * f64_random (f64 *dest);
+bool bg_rect_load (s_sequence *seq);
+void bg_rect_render (s_window_cairo *window,
+                     cairo_t *cr,
+                     s_sequence *seq);
 
-#endif /* LIBC3_F64_H */
+#endif /* BG_RECT_H */

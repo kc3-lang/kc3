@@ -84,19 +84,19 @@ pkg_config xkbcommon
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LOCAL_LIBS_ASAN="../libc3_window_cairo_quartz_asan.la"
+LOCAL_LIBS_ASAN="../../demo/libc3_window_cairo_demo_asan.la ../libc3_window_cairo_quartz_asan.la"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LOCAL_LIBS_COV="../libc3_window_cairo_quartz_cov.la"
+LOCAL_LIBS_COV="../../demo/libc3_window_cairo_demo_cov.la ../libc3_window_cairo_quartz_cov.la"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LOCAL_LIBS_DEBUG="../libc3_window_cairo_quartz_debug.la"
+LOCAL_LIBS_DEBUG="../../demo/libc3_window_cairo_demo_debug.la ../libc3_window_cairo_quartz_debug.la"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
@@ -106,7 +106,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
 LIBC3=../libc3/libc3.la
-LOCAL_LIBS="../libc3_window_cairo_quartz.la"
+LOCAL_LIBS="../../demo/libc3_window_cairo_demo.la ../libc3_window_cairo_quartz.la"
 LIBS="$LOCAL_LIBS $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
@@ -203,7 +203,7 @@ echo "${APP_PROG_DEBUG}: ${PROG_DEBUG}" >> ${CONFIG_MK}
 echo "	mkdir -p $(dirname $APP_PROG_DEBUG)" >> ${CONFIG_MK}
 echo "	cp .libs/${PROG_DEBUG} ${APP_PROG_DEBUG}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS="../../../../../libffi/.libs/libffi.8.dylib ../../../../.libs/libc3.0.dylib ../../../.libs/libc3_window.0.dylib ../../.libs/libc3_window_cairo.0.dylib ../.libs/libc3_window_cairo_quartz.0.dylib"
+BUNDLE_LIBS="../../../../../libffi/.libs/libffi.8.dylib ../../../../.libs/libc3.0.dylib ../../../.libs/libc3_window.0.dylib ../../.libs/libc3_window_cairo.0.dylib ../../demo/.libs/libc3_window_cairo_demo.0.dylib ../.libs/libc3_window_cairo_quartz.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP}/Contents/Frameworks: ${BUNDLE_LIBS}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP}/Contents/Frameworks" >> ${CONFIG_MK}
@@ -219,7 +219,7 @@ echo ".PHONY: \\" >> ${CONFIG_MK}
 echo "	${APP}/Contents/Frameworks \\" >> ${CONFIG_MK}
 echo "	${APP_PROG}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_ASAN="../../../../../libffi/.libs/libffi.8.dylib ../../../../.libs/libc3_asan.0.dylib ../../../.libs/libc3_window_asan.0.dylib ../../.libs/libc3_window_cairo_asan.0.dylib ../.libs/libc3_window_cairo_quartz_asan.0.dylib"
+BUNDLE_LIBS_ASAN="../../../../../libffi/.libs/libffi.8.dylib ../../../../.libs/libc3_asan.0.dylib ../../../.libs/libc3_window_asan.0.dylib ../../.libs/libc3_window_cairo_asan.0.dylib ../../demo/.libs/libc3_window_cairo_demo_asan.0.dylib ../.libs/libc3_window_cairo_quartz_asan.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP_ASAN}/Contents/Frameworks: ${BUNDLE_LIBS_ASAN}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_ASAN}/Contents/Frameworks" >> ${CONFIG_MK}
@@ -235,7 +235,7 @@ echo ".PHONY: \\" >> ${CONFIG_MK}
 echo "	${APP_ASAN}/Contents/Frameworks \\" >> ${CONFIG_MK}
 echo "	${APP_PROG_ASAN}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_COV="../../../../../libffi/.libs/libffi.8.dylib ../../../../.libs/libc3_cov.0.dylib ../../../.libs/libc3_window_cov.0.dylib ../../.libs/libc3_window_cairo_cov.0.dylib ../.libs/libc3_window_cairo_quartz_cov.0.dylib"
+BUNDLE_LIBS_COV="../../../../../libffi/.libs/libffi.8.dylib ../../../../.libs/libc3_cov.0.dylib ../../../.libs/libc3_window_cov.0.dylib ../../.libs/libc3_window_cairo_cov.0.dylib ../../demo/.libs/libc3_window_cairo_demo_cov.0.dylib ../.libs/libc3_window_cairo_quartz_cov.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP_COV}/Contents/Frameworks: ${BUNDLE_LIBS_COV}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_COV}/Contents/Frameworks" >> ${CONFIG_MK}
@@ -251,7 +251,7 @@ echo ".PHONY: \\" >> ${CONFIG_MK}
 echo "	${APP_COV}/Contents/Frameworks \\" >> ${CONFIG_MK}
 echo "	${APP_PROG}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_DEBUG="../../../../../libffi/.libs/libffi.8.dylib ../../../../.libs/libc3_debug.0.dylib ../../../.libs/libc3_window_debug.0.dylib ../../.libs/libc3_window_cairo_debug.0.dylib ../.libs/libc3_window_cairo_quartz_debug.0.dylib"
+BUNDLE_LIBS_DEBUG="../../../../../libffi/.libs/libffi.8.dylib ../../../../.libs/libc3_debug.0.dylib ../../../.libs/libc3_window_debug.0.dylib ../../.libs/libc3_window_cairo_debug.0.dylib ../../demo/.libs/libc3_window_cairo_demo_debug.0.dylib ../.libs/libc3_window_cairo_quartz_debug.0.dylib"
 echo >> ${CONFIG_MK}
 echo "${APP_DEBUG}/Contents/Frameworks: ${BUNDLE_LIBS_DEBUG}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP_DEBUG}/Contents/Frameworks" >> ${CONFIG_MK}

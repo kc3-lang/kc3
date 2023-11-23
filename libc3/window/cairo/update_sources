@@ -25,6 +25,7 @@ sources SOURCES "$SOURCES"
 update_sources_mk
 update_sources_sh
 
+( cd demo && ./update_sources; )
 ( cd quartz && ./update_sources; )
 ( cd win32 && ./update_sources; )
 ( cd xcb && ./update_sources; )

@@ -44,13 +44,13 @@ typedef bool (*f_window_cairo_motion) (s_window_cairo *window, sw x,
 typedef bool (*f_window_cairo_render) (s_window_cairo *window,
                                        cairo_t *cr);
 
-typedef void (*f_window_cairo_render_sequence) (s_window_cairo *window,
-                                                cairo_t *cr,
-                                                s_sequence *seq);
-
 /* return false to break event loop */
 typedef bool (*f_window_cairo_resize) (s_window_cairo *window,
                                        uw w, uw h);
+
+typedef void (*f_window_cairo_sequence_render) (s_window_cairo *window,
+                                                cairo_t *cr,
+                                                s_sequence *seq);
 
 struct rgb {
   double r;

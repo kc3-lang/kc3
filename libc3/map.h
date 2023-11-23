@@ -37,6 +37,7 @@ s_map * map_copy (const s_map *src, s_map *dest);
 
 /* Operators */
 s_tag * map_access (const s_map *map, const s_tag *key, s_tag *value);
+s_map * map_cast (const s_tag *tag, s_map *map);
 s_tag * map_get (const s_map *map, const s_tag *key, s_tag *dest);
 s_map * map_update (const s_map *map, const s_tag *key,
                     const s_tag *value, s_map *dest);

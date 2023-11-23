@@ -12,6 +12,7 @@
  */
 #include <assert.h>
 #include <err.h>
+#include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
 #include "f64.h"
@@ -86,5 +87,11 @@ f64 * f64_copy (const f64 *src, f64 *dest)
   assert(src);
   assert(dest);
   *dest = *src;
+  return dest;
+}
+
+f64 * f64_random (f64 *dest)
+{
+  *dest = (f64) random() / (((u32) 1 << 31) - 1);
   return dest;
 }

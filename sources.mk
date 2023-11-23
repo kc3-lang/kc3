@@ -9,6 +9,8 @@ C3_CONFIGURES = \
 	libc3/update_sources \
 	libc3/window/configure \
 	libc3/window/update_sources \
+	libc3/window/cairo/demo/configure \
+	libc3/window/cairo/demo/update_sources \
 	libc3/window/cairo/xcb/demo/configure \
 	libc3/window/cairo/xcb/demo/update_sources \
 	libc3/window/cairo/xcb/configure \
@@ -19,6 +21,10 @@ C3_CONFIGURES = \
 	libc3/window/cairo/quartz/demo/update_sources \
 	libc3/window/cairo/quartz/configure \
 	libc3/window/cairo/quartz/update_sources \
+	libc3/window/cairo/win32/demo/configure \
+	libc3/window/cairo/win32/demo/update_sources \
+	libc3/window/cairo/win32/configure \
+	libc3/window/cairo/win32/update_sources \
 	libtommath/configure \
 	libtommath/update_sources \
 	test/configure \
@@ -32,11 +38,14 @@ C3_MAKEFILES = \
 	libc3/Makefile \
 	libc3/gen.mk \
 	libc3/window/Makefile \
+	libc3/window/cairo/demo/Makefile \
 	libc3/window/cairo/xcb/demo/Makefile \
 	libc3/window/cairo/xcb/Makefile \
 	libc3/window/cairo/Makefile \
 	libc3/window/cairo/quartz/demo/Makefile \
 	libc3/window/cairo/quartz/Makefile \
+	libc3/window/cairo/win32/demo/Makefile \
+	libc3/window/cairo/win32/Makefile \
 	libtommath/Makefile \
 	test/Makefile \
 	ucd2c/Makefile \
@@ -248,16 +257,20 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_s64_hexadecimal.h \
 	libc3/window/types.h \
 	libc3/window/window.h \
-	libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo.c \
+	libc3/window/cairo/demo/window_cairo_demo.c \
+	libc3/window/cairo/demo/lightspeed.h \
+	libc3/window/cairo/demo/bg_rect.h \
+	libc3/window/cairo/demo/window_cairo_demo.h \
+	libc3/window/cairo/demo/lightspeed.c \
+	libc3/window/cairo/demo/bg_rect.c \
+	libc3/window/cairo/xcb/demo/window_cairo_xcb_demo.c \
 	libc3/window/cairo/xcb/demo/window.c \
 	libc3/window/cairo/xcb/window_cairo_xcb.h \
 	libc3/window/cairo/xcb/config.h \
 	libc3/window/cairo/xcb/window_cairo_xcb.c \
 	libc3/window/cairo/types.h \
 	libc3/window/cairo/window_cairo.c \
-	libc3/window/cairo/c3_window_cairo_demo.h \
-	libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_bridging_header.h \
-	libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo.c \
+	libc3/window/cairo/quartz/demo/window_cairo_quartz_demo.c \
 	libc3/window/cairo/quartz/window_cairo_quartz_view_controller.h \
 	libc3/window/cairo/quartz/quartz_to_xkbcommon.c \
 	libc3/window/cairo/quartz/window_cairo_quartz.h \
@@ -266,7 +279,11 @@ C3_C_SOURCES = \
 	libc3/window/cairo/quartz/xkbquartz.h \
 	libc3/window/cairo/quartz/window_cairo_quartz_view.h \
 	libc3/window/cairo/window_cairo.h \
-	libc3/window/cairo/c3_window_cairo_demo.c \
+	libc3/window/cairo/win32/demo/window_cairo_win32_demo.c \
+	libc3/window/cairo/win32/vk_to_xkbcommon.c \
+	libc3/window/cairo/win32/window_cairo_win32.h \
+	libc3/window/cairo/win32/vk_to_xkbcommon.h \
+	libc3/window/cairo/win32/window_cairo_win32.c \
 	libc3/window/window.c \
 	libc3/ident.h \
 	libc3/buf_inspect_s64_decimal.c \

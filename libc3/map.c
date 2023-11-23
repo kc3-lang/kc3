@@ -33,6 +33,16 @@ s_tag * map_access (const s_map *map, const s_tag *key, s_tag *value)
   return map_get(map, key, value);
 }
 
+s_map * map_cast (const s_tag *tag, s_map *map)
+{
+  assert(tag);
+  if (tag->type == TAG_MAP) {
+    map_copy(&tag->data.map, map);
+    return map;
+  }
+  return NULL;
+}
+
 void map_clean (s_map *map)
 {
   uw i = 0;
@@ -132,6 +142,19 @@ s_map * map_init_from_lists (s_map *map, const s_list *keys,
   return map;
  ko:
   map_clean(map);
+  return NULL;
+}
+
+s_list ** map_map (const s_map *map, const s_fn *fn, s_list **result)
+{
+  assert(map);
+  assert(fn);
+  assert(result);
+  (void) map;
+  (void) fn;
+  (void) result;
+  assert(! "not implemented");
+  errx(1, "not implemented");
   return NULL;
 }
 

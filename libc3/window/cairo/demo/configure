@@ -15,12 +15,12 @@ set -e
 
 export SRC_TOP="$(dirname "$PWD")"
 
-. ../../../config.subr
+. ../../../../config.subr
 
-LIB=libc3_window_cairo.la
-LIB_ASAN=libc3_window_cairo_asan.la
-LIB_COV=libc3_window_cairo_cov.la
-LIB_DEBUG=libc3_window_cairo_debug.la
+LIB=libc3_window_cairo_demo.la
+LIB_ASAN=libc3_window_cairo_demo_asan.la
+LIB_COV=libc3_window_cairo_demo_cov.la
+LIB_DEBUG=libc3_window_cairo_demo_debug.la
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
@@ -36,7 +36,7 @@ OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
 # Common config for all targets
-CPPFLAGS="-I../../../libffi/include -I../../.. $CPPFLAGS"
+CPPFLAGS="-I../../../../libffi/include -I../../../.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 LDFLAGS="--shared -no-undefined ${LDFLAGS}"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
@@ -45,25 +45,24 @@ config_gnu
 pkg_config cairo
 pkg_config libbsd-overlay
 pkg_config xkbcommon
-config_lib_have COCOA -framework Cocoa
 config_define PREFIX "\"${PREFIX}\""
 
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../libc3_window_asan.la"
+LIBS_LOCAL_ASAN="../libc3_window_cairo_asan.la"
 LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBS_LOCAL_COV="../libc3_window_cov.la"
+LIBS_LOCAL_COV="../libc3_window_cairo_cov.la"
 LIBS_COV="$LIBS_LOCAL_COV $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../libc3_window_debug.la"
+LIBS_LOCAL_DEBUG="../libc3_window_cairo_debug.la"
 LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
 
 # Main config
@@ -72,7 +71,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS_LOCAL="../libc3_window.la"
+LIBS_LOCAL="../libc3_window_cairo.la"
 LIBS="$LIBS_LOCAL $LIBS"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
@@ -135,33 +134,4 @@ for SRC in $SOURCES; do
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
 done
 
-if pkg-config cairo-xcb; then
-    HAVE_XCB=true
-else
-    HAVE_XCB=false
-fi
-echo "HAVE_XCB = $HAVE_XCB" >> ${CONFIG_MK}
-
-if pkg-config cairo-win32; then
-    HAVE_WIN32=true
-else
-    HAVE_WIN32=false
-fi
-echo "HAVE_WIN32 = $HAVE_WIN32" >> ${CONFIG_MK}
-
 update_config_mk
-env_reset
-
-( cd demo && ./configure; )
-
-if ${HAVE_COCOA}; then
-    ( cd quartz && ./configure; )
-fi
-
-if ${HAVE_WIN32}; then
-    ( cd win32 && ./configure; )
-fi
-
-if ${HAVE_XCB}; then
-    ( cd xcb && ./configure; )
-fi
