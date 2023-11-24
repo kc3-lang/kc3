@@ -194,7 +194,8 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   return result;
 }
 
-bool env_eval_call_arguments (s_env *env, s_list *args, s_list **dest)
+bool env_eval_call_arguments (s_env *env, const s_list *args,
+                              s_list **dest)
 {
   s_list **tail;
   s_list *tmp;
@@ -246,62 +247,10 @@ bool env_eval_call_cfn (s_env *env, const s_call *call, s_tag *dest)
 
 bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
 {
-  s_list *args = NULL;
-  s_list *args_final = NULL;
-  s_frame frame;
-  s_fn *fn;
-  s_fn_clause *clause;
-  s_tag tag;
-  s_list *tmp = NULL;
   assert(env);
   assert(call);
   assert(dest);
-  fn = call->fn;
-  assert(fn);
-  frame_init(&frame, env->frame);
-  env->frame = &frame;
-  clause = fn->clauses;
-  if (call->arguments) {
-    if (fn->macro || fn->special_operator)
-      args_final = call->arguments;
-    else {
-      if (! env_eval_call_arguments(env, call->arguments, &args)) {
-        env->frame = frame_clean(&frame);
-        return false;
-      }
-      args_final = args;
-    }
-    /* FIXME: bindings go through clauses */
-    while (clause && ! env_eval_equal_list(env, clause->pattern,
-                                           args_final, &tmp))
-      clause = clause->next_clause;
-    if (! clause) {
-      err_puts("env_eval_call_fn: no clause matching.\nTried clauses :\n");
-      clause = fn->clauses;
-      while (clause) {
-        err_inspect_fn_pattern(clause->pattern);
-        err_puts("\n");
-        clause = clause->next_clause;
-      }
-      err_puts("\nArguments :\n");
-      err_inspect_fn_pattern(args);
-      err_puts("\n");
-      list_delete_all(args);
-      env->frame = frame_clean(&frame);
-      return false;
-    }
-  }
-  if (! env_eval_progn(env, clause->algo, &tag)) {
-    list_delete_all(args);
-    list_delete_all(tmp);
-    env->frame = frame_clean(&frame);
-    return false;
-  }
-  *dest = tag;
-  list_delete_all(args);
-  list_delete_all(tmp);
-  env->frame = frame_clean(&frame);
-  return true;
+  return env_eval_fn_call(env, call->fn, call->arguments, dest);
 }
 
 bool env_eval_call_resolve (s_env *env, s_call *call)
@@ -554,6 +503,64 @@ bool env_eval_equal_tuple (s_env *env, const s_tuple *a,
     i++;
   }
   *dest = tmp;
+  return true;
+}
+
+bool env_eval_fn_call (s_env *env, const s_fn *fn,
+                       const s_list *arguments, s_tag *dest)
+{
+  s_list *args = NULL;
+  const s_list *args_final = NULL;
+  s_fn_clause *clause;
+  s_frame frame;
+  s_tag tag;
+  s_list *tmp = NULL;
+  assert(env);
+  assert(fn);
+  assert(dest);
+  frame_init(&frame, env->frame);
+  env->frame = &frame;
+  clause = fn->clauses;
+  if (arguments) {
+    if (fn->macro || fn->special_operator)
+      args_final = arguments;
+    else {
+      if (! env_eval_call_arguments(env, arguments, &args)) {
+        env->frame = frame_clean(&frame);
+        return false;
+      }
+      args_final = args;
+    }
+    /* FIXME: bindings go through clauses */
+    while (clause && ! env_eval_equal_list(env, clause->pattern,
+                                           args_final, &tmp))
+      clause = clause->next_clause;
+    if (! clause) {
+      err_puts("env_eval_call_fn: no clause matching.\nTried clauses :\n");
+      clause = fn->clauses;
+      while (clause) {
+        err_inspect_fn_pattern(clause->pattern);
+        err_puts("\n");
+        clause = clause->next_clause;
+      }
+      err_puts("\nArguments :\n");
+      err_inspect_fn_pattern(args);
+      err_puts("\n");
+      list_delete_all(args);
+      env->frame = frame_clean(&frame);
+      return false;
+    }
+  }
+  if (! env_eval_progn(env, clause->algo, &tag)) {
+    list_delete_all(args);
+    list_delete_all(tmp);
+    env->frame = frame_clean(&frame);
+    return false;
+  }
+  *dest = tag;
+  list_delete_all(args);
+  list_delete_all(tmp);
+  env->frame = frame_clean(&frame);
   return true;
 }
 
