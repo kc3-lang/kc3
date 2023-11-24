@@ -25,16 +25,20 @@ bool window_cairo_run (s_window_cairo *window)
 }
 
 bool window_cairo_xcb_event (s_window_cairo *window,
-                             cairo_t *cr,
                              xcb_connection_t *conn,
-                             cairo_surface_t *surface,
+                             xcb_screen_t *screen,
+                             xcb_visualtype_t *visual,
+                             xcb_window_t xcb_window,
                              xcb_generic_event_t *event,
                              struct xkb_state *xkb_state)
 {
+  cairo_t *cr;
   xcb_button_press_event_t     *event_button;
   xcb_configure_notify_event_t *event_config;
   xcb_key_press_event_t        *event_key;
   xcb_motion_notify_event_t    *event_motion;
+  xcb_pixmap_t pixmap;
+  cairo_surface_t *surface;
   switch (event->response_type & ~0x80) {
   case XCB_BUTTON_PRESS:
     event_button = (xcb_button_press_event_t *) event;
@@ -44,15 +48,28 @@ bool window_cairo_xcb_event (s_window_cairo *window,
       goto ko;
     break;
   case XCB_EXPOSE:
+    pixmap = xcb_generate_id(conn);
+    xcb_create_pixmap(conn, screen->root_depth, pixmap, xcb_window,
+                      window->w, window->h);
+    surface = cairo_xcb_surface_create(conn, pixmap, visual, window->w,
+                                       window->h);
+    cr = cairo_create(surface);
     if (! window->render(window, cr))
       goto ko;
     cairo_surface_flush(surface);
+    cairo_destroy(cr);
+    cairo_surface_destroy(surface);
+    xcb_gcontext_t gc = xcb_generate_id(conn);
+    u32 gc_mask = XCB_GC_GRAPHICS_EXPOSURES;
+    u32 gc_values[1] = {0};
+    xcb_create_gc(conn, gc, xcb_window, gc_mask, gc_values);
+    xcb_copy_area(conn, pixmap, xcb_window, gc,
+                  0, 0, 0, 0, window->w, window->h);
     xcb_flush(conn);
+    xcb_free_pixmap(conn, pixmap);
     break;
   case XCB_CONFIGURE_NOTIFY:
     event_config = (xcb_configure_notify_event_t *) event;
-    cairo_xcb_surface_set_size(surface, event_config->width,
-                               event_config->height);
     if (! window->resize(window, event_config->width,
                          event_config->height))
       goto ko;
@@ -84,13 +101,13 @@ bool window_cairo_xcb_event (s_window_cairo *window,
 bool window_cairo_xcb_run (s_window_cairo *window)
 {
   xcb_connection_t *conn;
-  cairo_t *cr;
   xcb_generic_event_t *event;
   bool r;
   xcb_screen_t *screen;
   xcb_visualtype_t *screen_visual;
   s_time sleep;
-  cairo_surface_t *surface;
+  u32 value_mask;
+  u32 *value_list;
   xcb_window_t xcb_window;
   struct xkb_context *xkb_ctx;
   int32_t xkb_device_id;
@@ -120,12 +137,12 @@ bool window_cairo_xcb_run (s_window_cairo *window)
   screen = xcb_setup_roots_iterator(xcb_get_setup(conn)).data;
   screen_visual = xcb_screen_visual_type(screen);
   xcb_window = xcb_generate_id(conn);
-  uint32_t value_mask = XCB_CW_EVENT_MASK;
-  uint32_t value_list[1] = {XCB_EVENT_MASK_BUTTON_PRESS |
-                            XCB_EVENT_MASK_EXPOSURE |
-                            XCB_EVENT_MASK_KEY_PRESS |
-                            XCB_EVENT_MASK_POINTER_MOTION |
-                            XCB_EVENT_MASK_STRUCTURE_NOTIFY};
+  value_mask = XCB_CW_EVENT_MASK;
+  value_list = (u32[]) {XCB_EVENT_MASK_BUTTON_PRESS |
+                        XCB_EVENT_MASK_EXPOSURE |
+                        XCB_EVENT_MASK_KEY_PRESS |
+                        XCB_EVENT_MASK_POINTER_MOTION |
+                        XCB_EVENT_MASK_STRUCTURE_NOTIFY};
   xcb_create_window(conn, XCB_COPY_FROM_PARENT, xcb_window,
                     screen->root, window->x, window->y,
                     window->w, window->h, 0,
@@ -137,18 +154,12 @@ bool window_cairo_xcb_run (s_window_cairo *window)
                       window->title);
   xcb_map_window(conn, xcb_window);
   xcb_flush(conn);
-  surface = cairo_xcb_surface_create(conn, xcb_window, screen_visual,
-                                     window->w, window->h);
-  cr = cairo_create(surface);
-  window->cr = cr;
-  if (! (r = window->load(window)) ||
-      ! (r = window->render(window, cr)))
+  if (! (r = window->load(window)))
     goto clean;
-  cairo_surface_flush(surface);
-  xcb_flush(conn);
   while (1) {
     if ((event = xcb_poll_for_event(conn))) {
-      if (! (r = window_cairo_xcb_event(window, cr, conn, surface,
+      if (! (r = window_cairo_xcb_event(window, conn, screen,
+                                        screen_visual, xcb_window,
                                         event, xkb_state)))
         goto clean;
     }
@@ -156,15 +167,19 @@ bool window_cairo_xcb_run (s_window_cairo *window)
       sleep.tv_sec = 0;
       sleep.tv_nsec = 1000000000 / 120;
       nanosleep(&sleep, NULL);
-      if (! (r = window->render(window, cr)))
-        goto clean;
-      cairo_surface_flush(surface);
+      xcb_expose_event_t event = {0};
+      event.response_type = XCB_EXPOSE;
+      event.window = xcb_window;
+      event.x = 0;
+      event.y = 0;
+      event.width = window->w;
+      event.height = window->h;
+      event.count = 0;
+      xcb_send_event(conn, false, xcb_window, XCB_EVENT_MASK_EXPOSURE, (const char *)&event);
       xcb_flush(conn);
     }
   }
  clean:
-  cairo_destroy(cr);
-  cairo_surface_destroy(surface);
   xcb_disconnect(conn);
   return r;
 }
