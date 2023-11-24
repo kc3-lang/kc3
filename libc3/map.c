@@ -17,6 +17,7 @@
 #include "buf.h"
 #include "buf_parse.h"
 #include "compare.h"
+#include "eval.h"
 #include "list.h"
 #include "map.h"
 #include "tag.h"
@@ -147,15 +148,30 @@ s_map * map_init_from_lists (s_map *map, const s_list *keys,
 
 s_list ** map_map (const s_map *map, const s_fn *fn, s_list **result)
 {
+  s_list *args;
+  uw i = 0;
+  s_list **t;
+  s_list *tmp;
   assert(map);
   assert(fn);
   assert(result);
-  (void) map;
-  (void) fn;
-  (void) result;
-  assert(! "not implemented");
-  errx(1, "not implemented");
-  return NULL;
+  t = &tmp;
+  *t = NULL;
+  while (i < map->count) {
+    args = list_new(map->keys + i,
+                    list_new(map->values + i, NULL));
+    *t = list_new(NULL, NULL);
+    if (! eval_fn_call(fn, args, &(*t)->tag)) {
+      list_delete_all(args);
+      list_delete_all(tmp);
+      return NULL;
+    }
+    t = &(*t)->next.data.list;
+    list_delete_all(args);
+    i++;
+  }
+  *result = tmp;
+  return result;
 }
 
 s_map * map_new (uw count)

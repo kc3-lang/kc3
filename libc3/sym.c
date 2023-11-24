@@ -166,9 +166,6 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
   if (sym == sym_1("Integer") ||
       sym == sym_1("integer"))
     return &ffi_type_pointer;
-  if (sym == sym_1("List") ||
-      sym == sym_1("list"))
-    return &ffi_type_pointer;
   if (sym == sym_1("S8") ||
       sym == sym_1("s8"))
     return &ffi_type_sint8;
@@ -206,6 +203,18 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
   if (sym == sym_1("Uw") ||
       sym == sym_1("uw"))
     return &ffi_type_ulong;
+  if (sym == sym_1("Bool") ||
+      sym == sym_1("bool"))
+    return &ffi_type_uchar;
+  if (sym == sym_1("Fn") ||
+      sym == sym_1("fn"))
+    return &ffi_type_pointer;
+  if (sym == sym_1("List") ||
+      sym == sym_1("list"))
+    return &ffi_type_pointer;
+  if (sym == sym_1("Map") ||
+      sym == sym_1("map"))
+    return &ffi_type_pointer;
   if (sym == sym_1("Void") ||
       sym == sym_1("void"))
     return &ffi_type_void;

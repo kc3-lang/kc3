@@ -19,6 +19,8 @@ bool eval_call_function (const s_call *call,
                          s_tag *dest);
 bool eval_call_macro (const s_call *call, s_tag *dest);
 bool eval_fn (const s_fn *fn, s_tag *dest);
+bool eval_fn_call (const s_fn *fn, const s_list *arguments,
+                   s_tag *dest);
 bool eval_ident (const s_ident *ident, s_tag *dest);
 bool eval_progn (const s_list *program, s_tag *dest);
 bool eval_tag (const s_tag *tag, s_tag *dest);
