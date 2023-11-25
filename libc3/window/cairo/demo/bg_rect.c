@@ -16,15 +16,15 @@
 #include "../types.h"
 #include "bg_rect.h"
 
-bool bg_rect_load (s_sequence *seq)
+bool bg_rect_load (s_sequence *seq, s_window_cairo *window)
 {
   (void) seq;
+  (void) window;
   return true;
 }
 
-void bg_rect_render (s_window_cairo *window,
-                     cairo_t *cr,
-                     s_sequence *seq)
+bool bg_rect_render (s_sequence *seq, s_window_cairo *window,
+                     cairo_t *cr)
 {
 #define C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX 8
   const s_rgb color[C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX] = {
@@ -52,4 +52,5 @@ void bg_rect_render (s_window_cairo *window,
   cairo_set_source_rgb(cr, rgb.r, rgb.g, rgb.b);
   cairo_rectangle(cr, 0, 0, window->w, window->h);
   cairo_fill(cr);
+  return true;
 }

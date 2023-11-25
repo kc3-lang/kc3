@@ -17,9 +17,8 @@
 
 #define LIGHTSPEED_STARS 1000
 
-bool lightspeed_load (s_sequence *seq);
-void lightspeed_render (s_window_cairo *window,
-                        cairo_t *cr,
-                        s_sequence *seq);
+bool lightspeed_load (s_sequence *seq, s_window_cairo *window);
+bool lightspeed_render (s_sequence *seq, s_window_cairo *window,
+                        cairo_t *cr);
 
 #endif /* LIGHTSPEED_H */

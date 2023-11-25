@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <xkbcommon/xkbcommon.h>
+#include <libc3/tag.h>
 #include "window_cairo.h"
 
 s_window_cairo * window_cairo_init (s_window_cairo *window,
@@ -104,14 +105,16 @@ bool window_cairo_resize_default (s_window_cairo *window, uw w, uw h)
 }
 
 s_sequence * window_cairo_sequence_init
-(s_sequence *sequence, f64 duration, const s8 *title,
- f_sequence_load load, f_window_cairo_sequence_render render)
+(s_sequence *seq, f64 duration, const s8 *title,
+ f_window_cairo_sequence_load load,
+ f_window_cairo_sequence_render render)
 {
-  assert(sequence);
-  sequence->t = 0.0;
-  sequence->duration = duration;
-  sequence->title = title;
-  sequence->load = load;
-  sequence->render = (f_sequence_render) render;
-  return sequence;
+  assert(seq);
+  seq->t = 0.0;
+  seq->duration = duration;
+  seq->title = title;
+  seq->load = (f_sequence_load) load;
+  seq->render = (f_sequence_render) render;
+  tag_init_void(&seq->tag);
+  return seq;
 }

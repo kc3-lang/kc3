@@ -54,7 +54,7 @@ TEST_CASE(cfn_apply)
            sym_1("bool"));
   cfn_link(&a);
   cfn_prep_cif(&a);
-  args = list_new(NULL, NULL);
+  args = list_new(NULL);
   tag_init_bool(&args->tag, false);
   TEST_EQ(cfn_apply(&a, args, &result), &result);
   TEST_EQ(result.type, TAG_BOOL);

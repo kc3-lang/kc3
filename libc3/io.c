@@ -50,9 +50,29 @@ sw err_puts (const s8 *s)
 sw io_inspect (const s_tag *tag)
 {
   sw r;
-  r = buf_inspect_tag(&g_c3_env.out, tag);
+  sw result = 0;
+  if ((r = buf_inspect_tag(&g_c3_env.out, tag)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_u8(&g_c3_env.out, '\n')) < 0)
+    return r;
+  result += r;
   buf_flush(&g_c3_env.out);
-  return r;
+  return result;
+}
+
+sw io_inspect_str (const s_str *str)
+{
+  sw r;
+  sw result = 0;
+  if ((r = buf_inspect_str(&g_c3_env.out, str)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_u8(&g_c3_env.out, '\n')) < 0)
+    return r;
+  result += r;
+  buf_flush(&g_c3_env.out);
+  return result;
 }
 
 sw io_puts (const s8 *s)

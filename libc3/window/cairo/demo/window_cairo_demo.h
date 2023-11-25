@@ -15,7 +15,7 @@
 
 #include "../types.h"
 
-#define WINDOW_CAIRO_DEMO_SEQUENCE_COUNT 2
+#define WINDOW_CAIRO_DEMO_SEQUENCE_COUNT 3
 
 bool window_cairo_demo_button (s_window_cairo *window, u8 button,
                                   sw x, sw y);

@@ -22,6 +22,7 @@ DISTCLEANFILES = ${CLEANFILES} config.mk
 build:
 	${MAKE} ${APP_PROG}
 	${MAKE} ${APP}/Contents/Frameworks
+	rsync -aP --delete ../../../../../lib ${APP}/Contents/
 
 all:
 	${MAKE} build
@@ -32,6 +33,7 @@ all:
 asan:
 	${MAKE} ${APP_PROG_ASAN}
 	${MAKE} ${APP_ASAN}/Contents/Frameworks
+	rsync -aP --delete ../../../../../lib ${APP_ASAN}/Contents/
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -42,10 +44,12 @@ clean_cov:
 cov:
 	${MAKE} ${APP_PROG_COV}
 	${MAKE} ${APP_COV}/Contents/Frameworks
+	rsync -aP --delete ../../../../../lib ${APP_COV}/Contents/
 
 debug:
 	${MAKE} ${APP_PROG_DEBUG}
 	${MAKE} ${APP_DEBUG}/Contents/Frameworks
+	rsync -aP --delete ../../../../../lib ${APP_DEBUG}/Contents/
 
 demo: build
 	time ${APP_PROG}

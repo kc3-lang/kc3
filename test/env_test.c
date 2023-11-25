@@ -39,7 +39,7 @@ TEST_CASE(env_eval_call)
   s_call call;
   s_tag result;
   s_tag expected;
-  env_init(&env);
+  env_init(&env, 0, NULL);
   test_context("env_eval_call(1 + 2) -> 3");
   call_init(&call);
   call.ident.module = sym_1("C3");
@@ -63,7 +63,7 @@ TEST_CASE(env_eval_equal_tag)
   s_tag x;
   s_tag y;
   s_tag z;
-  env_init(&env);
+  env_init(&env, 0, NULL);
   env.frame = frame_init(&frame, env.frame);
   test_context("x = 1");
   TEST_ASSERT(env_eval_equal_tag(&env, tag_init_1(&x, "x"),
@@ -73,7 +73,7 @@ TEST_CASE(env_eval_equal_tag)
   tag_clean(&z);
   env.frame = frame_clean(&frame);
   env_clean(&env);
-  env_init(&env);
+  env_init(&env, 0, NULL);
   env.frame = frame_init(&frame, env.frame);
   test_context("x = (1, 2]");
   TEST_ASSERT(env_eval_equal_tag(&env, tag_init_1(&x, "x"),
@@ -83,7 +83,7 @@ TEST_CASE(env_eval_equal_tag)
   tag_clean(&z);
   env.frame = frame_clean(&frame);
   env_clean(&env);
-  env_init(&env);
+  env_init(&env, 0, NULL);
   env.frame = frame_init(&frame, env.frame);
   test_context("[] = []");
   TEST_ASSERT(env_eval_equal_tag(&env, tag_1(&x, "[]"),
@@ -92,7 +92,7 @@ TEST_CASE(env_eval_equal_tag)
   tag_clean(&z);
   env.frame = frame_clean(&frame);
   env_clean(&env);
-  env_init(&env);
+  env_init(&env, 0, NULL);
   env.frame = frame_init(&frame, env.frame);
   test_context("[a, b] = [1, 2]");
   TEST_ASSERT(env_eval_equal_tag(&env, tag_1(&x, "[a, b]"),
@@ -103,7 +103,7 @@ TEST_CASE(env_eval_equal_tag)
   tag_clean(&z);
   env.frame = frame_clean(&frame);
   env_clean(&env);
-  env_init(&env);
+  env_init(&env, 0, NULL);
   env.frame = frame_init(&frame, env.frame);
   test_context("x = [1, 2]");
   TEST_ASSERT(env_eval_equal_tag(&env, tag_1(&x, "[a | b]"),
@@ -126,7 +126,7 @@ TEST_CASE(env_eval_tag)
   s_tag x;
   s_tag y;
   s_tag expected;
-  env_init(&env);
+  env_init(&env, 0, NULL);
   test_context("env_eval_tag(1 + 2) -> 3");
   TEST_EQ(tag_init_1(&x, "1 + 2"), &x);
   TEST_EQ(tag_init_1(&expected, "3"), &expected);
@@ -143,7 +143,7 @@ TEST_CASE_END(env_eval_tag)
 TEST_CASE(env_init_clean)
 {
   s_env env;
-  env_init(&env);
+  env_init(&env, 0, NULL);
   env_clean(&env);
 }
 TEST_CASE_END(env_init_clean)

@@ -181,10 +181,9 @@ typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
 typedef sw (* f_buf_inspect_size) (const void *x);
 typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
 typedef void * (* f_copy) (const void *a, void *b);
-typedef bool (* f_sequence_load) (s_sequence *seq);
-typedef void (* f_sequence_render) (void *window,
-                                    void *render_context,
-                                    s_sequence *seq);
+typedef bool (* f_sequence_load) (s_sequence *seq, void *window);
+typedef bool (* f_sequence_render) (s_sequence *seq, void *window,
+                                    void *context);
 
 #define CHARACTER_MAX S32_MAX
 #define SKIPLIST_HEIGHT_MAX U64_MAX
@@ -547,6 +546,9 @@ struct facts_cursor {
 
 /* 9 */
 struct env {
+  sw                argc;
+  s8              **argv;
+  s_str             argv0_dir;
   s_list           *backtrace;
   const s_sym      *current_module;
   s_buf             err;
@@ -556,6 +558,7 @@ struct env {
   s_buf             in;
   s_str             module_path;
   s_buf             out;
+  s_list           *path;
   s_unwind_protect *unwind_protect;
 };
 

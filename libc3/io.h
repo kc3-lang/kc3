@@ -23,6 +23,7 @@ sw err_puts (const s8 *s);
 
 /* standard output */
 sw io_inspect (const s_tag *tag);
+sw io_inspect_str (const s_str *str);
 sw io_puts (const s8 *s);
 
 #endif /* LIBC3_IO_H */

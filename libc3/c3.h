@@ -58,6 +58,7 @@
 #include "facts_cursor.h"
 #include "facts_with.h"
 #include "facts_with_cursor.h"
+#include "file.h"
 #include "fn.h"
 #include "fn_clause.h"
 #include "hash.h"

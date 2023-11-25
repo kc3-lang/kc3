@@ -67,7 +67,8 @@ int main (int argc, char **argv)
   s_buf out;
   sw r;
   s_tag result;
-  c3_init(NULL);
+  if (! c3_init(NULL, argc, argv))
+    return 1;
   if (argc < 1)
     return usage(argv[0]);
   buf_init(&in, false, sizeof(i), i);

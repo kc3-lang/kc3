@@ -18,13 +18,14 @@
 #include <xkbcommon/xkbcommon.h>
 #include "../../window.h"
 #include "../window_cairo.h"
+#include "../cairo_png.h"
 #include "window_cairo_demo.h"
-#include "../types.h"
 #include "bg_rect.h"
 #include "lightspeed.h"
+#include "toasters.h"
 
 bool window_cairo_demo_button (s_window_cairo *window, u8 button,
-                                  sw x, sw y)
+                               sw x, sw y)
 {
   assert(window);
   (void) window;
@@ -77,12 +78,17 @@ bool window_cairo_demo_load (s_window_cairo *window)
   window_cairo_sequence_init(window->sequence + 1, 30.0,
                              "02. Lightspeed",
                              lightspeed_load, lightspeed_render);
+  g_toaster_sprite.surface = cairo_png_1("img/flaps.png");
+  g_toast_sprite.surface = cairo_png_1("img/toast.png");
+  window_cairo_sequence_init(window->sequence + 2, 30.0,
+                             "03. Toasters",
+                             toasters_load, toasters_render);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }
 
 bool window_cairo_demo_render (s_window_cairo *window,
-                                  cairo_t *cr)
+                               cairo_t *cr)
 {
   s_sequence *seq;
   cairo_text_extents_t te;
@@ -91,7 +97,7 @@ bool window_cairo_demo_render (s_window_cairo *window,
   if (! window_animate((s_window *) window))
     return false;
   seq = window->sequence + window->sequence_pos;
-  seq->render(window, cr, seq);
+  seq->render(seq, window, cr);
   /* text */
   cairo_set_font_size(cr, 20);
   cairo_select_font_face(cr, "Courier New",
