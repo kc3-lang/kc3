@@ -16,17 +16,49 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "buf.h"
+#include "buf_save.h"
+#include "env.h"
 #include "file.h"
+#include "io.h"
+#include "list.h"
+#include "str.h"
+#include "sym.h"
 #include "time.h"
 
-int file_copy (const char *from, const char *to)
+bool * file_access (const s_str *path, const s_sym *mode,
+                    bool *dest)
 {
-  char buf[4096];
-  int fd_from = -1;
-  int fd_to = -1;
-  ssize_t r;
-  int saved_errno;
+  sw m;
+  if (mode == sym_1("r"))
+    m = R_OK;
+  else if (mode == sym_1("rw"))
+    m = R_OK | W_OK;
+  else if (mode == sym_1("rwx"))
+    m = R_OK | W_OK | X_OK;
+  else if (mode == sym_1("rx"))
+    m = R_OK | X_OK;
+  else if (mode == sym_1("w"))
+    m = W_OK;
+  else if (mode == sym_1("wx"))
+    m = W_OK | X_OK;
+  else if (mode == sym_1("x"))
+    m = X_OK;
+  else
+    m = F_OK;
+  *dest = access(path->ptr.ps8, m) ? false : true;
+  return dest;
+}
 
+sw file_copy_1 (const char *from, const char *to)
+{
+  s8 buf[4096];
+  sw fd_from = -1;
+  sw fd_to = -1;
+  s8 *out;
+  sw r;
+  sw saved_errno;
+  sw w;
   if ((fd_from = open(from, O_RDONLY)) < 0) {
     warn("cp: %s", from);
     return -1;
@@ -36,8 +68,7 @@ int file_copy (const char *from, const char *to)
     goto error;
   }
   while ((r = read(fd_from, buf, sizeof buf)) > 0) {
-    char *out = buf;
-    ssize_t w;
+    out = buf;
     do {
       if ((w = write(fd_to, out, r)) >= 0) {
         r -= w;
@@ -74,4 +105,42 @@ s_tag * file_mtime (const s_str *path, s_tag *dest)
     return NULL;
   }
   return time_to_tag(&sb.st_mtim, dest);
+}
+
+s_str * file_search (const s_str *suffix, const s_sym *mode,
+                     s_str *dest)
+{
+  bool access;
+  s8 buf_s[PATH_MAX];
+  s_buf buf;
+  const s_list *path;
+  sw r;
+  s_buf_save save;
+  s_str tmp;
+  buf_init(&buf, false, PATH_MAX, buf_s);
+  if ((r = buf_write_str(&buf, &g_c3_env.argv0_dir)) < 0)
+    return NULL;
+  buf_save_init(&buf, &save);
+  path = g_c3_env.path;
+  while (path) {
+    if (path->tag.type == TAG_STR) {
+      buf_save_restore_rpos(&buf, &save);
+      buf_save_restore_wpos(&buf, &save);
+      if ((r = buf_write_str(&buf, &path->tag.data.str)) < 0 ||
+          (buf.ptr.ps8[buf.wpos - 1] != '/' &&
+           (r = buf_write_u8(&buf, '/')) < 0) ||
+          (r = buf_write_str(&buf, suffix)) < 0)
+        return NULL;
+      buf_read_to_str(&buf, &tmp);
+      io_inspect_str(&tmp);
+      file_access(&tmp, mode, &access);
+      if (access) {
+        *dest = tmp;
+        return dest;
+      }
+      str_clean(&tmp);
+    }
+    path = list_next(path);
+  }
+  return NULL;
 }

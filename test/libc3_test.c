@@ -42,7 +42,7 @@ void types_test (void);
 int main (int argc, char **argv)
 {
   test_init(argc, argv);
-  c3_init(NULL);
+  c3_init(NULL, argc, argv);
   if (test_target("types")) {
     fprintf(stderr, "\ntypes\n");
     types_test();

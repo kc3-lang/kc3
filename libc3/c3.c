@@ -47,12 +47,11 @@ void c3_exit (sw code)
   exit((int) code);
 }
 
-void c3_init (s_env *env)
+s_env * c3_init (s_env *env, sw argc, s8 **argv)
 {
   if (! env)
     env = &g_c3_env;
-  if (! env_init(env))
-    exit(1);
+  return env_init(env, argc, argv);
 }
 
 void c3_license (void)

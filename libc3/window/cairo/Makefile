@@ -84,7 +84,7 @@ install:
 	if ${HAVE_XCB}; then ${MAKE} -C xcb install; fi
 
 lldb_demo: debug
-	if ${HAVE_COCOA}; then ${MAKE} -C quartz lldb_demo; else if ${HAVE_WIN32}; then ${MAKE} -C win32 lldb_demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb lldb_demo; fi; fi
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz lldb_demo; else if ${HAVE_WIN32}; then ${MAKE} -C win32 lldb_demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb lldb_demo; fi; fi; fi
 
 test:
 	${MAKE} -C demo test

@@ -26,7 +26,7 @@ extern const s8   *g_c3_license;
 extern sw          g_c3_exit_code;
 
 /* stack-allocation compatible functions */
-void c3_init (s_env *env);
+s_env * c3_init (s_env *env, sw argc, s8 **argv);
 void c3_clean (s_env *env);
 
 /* debug */

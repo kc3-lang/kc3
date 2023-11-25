@@ -15,6 +15,9 @@
  * @brief file operations.
  *
  * Structure to manipulate files.
+ *
+ * Arguments :
+ *  - mode: one of `[:r, :rw, :rwx, :rx, :w, :wx, :x]`
  */
 #ifndef LIBC3_FILE_H
 #define LIBC3_FILE_H
@@ -22,7 +25,11 @@
 #include "types.h"
 
 /* Observers */
-int     file_copy (const char *from, const char *to);
+bool *  file_access (const s_str *path, const s_sym *mode,
+                     bool *dest);
+sw      file_copy_1 (const char *from, const char *to);
 s_tag * file_mtime (const s_str *path, s_tag *dest);
+s_str * file_search (const s_str *suffix, const s_sym *mode,
+                     s_str *dest);
 
 #endif /* LIBC3_FILE_H */

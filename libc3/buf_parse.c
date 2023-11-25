@@ -408,7 +408,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   assert(dest);
   buf_save_init(buf, &save);
   call_init(&tmp);
-  tmp.arguments = list_new(NULL, list_new(NULL, NULL));
+  tmp.arguments = list_new(list_new(NULL));
   arg_addr = &(list_next(tmp.arguments)->tag);
   if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
     goto restore;
@@ -431,7 +431,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
     if ((r = buf_read_1(buf, "]")) <= 0)
       goto restore;
     result += r;
-    *addr_last = list_new(NULL, NULL);
+    *addr_last = list_new(NULL);
     tag_init_uw(&(*addr_last)->tag, d);
     addr_last = &(*addr_last)->next.data.list;
     address++;
@@ -519,7 +519,7 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
     if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
-    *args = list_new(NULL, NULL);
+    *args = list_new(NULL);
     (*args)->tag = tag;
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
@@ -1285,7 +1285,7 @@ sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
     if (! r)
       break;
     result += r;
-    *tail = list_new(NULL, NULL);
+    *tail = list_new(NULL);
     (*tail)->tag = tag;
     tail = &(*tail)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
@@ -1332,7 +1332,7 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
     if ((r = buf_parse_tag(buf, &tag)) <= 0)
       goto restore;
     result += r;
-    *tail = list_new(NULL, NULL);
+    *tail = list_new(NULL);
     (*tail)->tag = tag;
     tail = &(*tail)->next.data.list;
     if ((r = buf_ignore_spaces(buf)) < 0)
@@ -1690,7 +1690,7 @@ sw buf_parse_list (s_buf *buf, s_list **list)
   }
   *i = NULL;
   while (1) {
-    *i = list_new(NULL, NULL);
+    *i = list_new(NULL);
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
     result += r;
@@ -1782,7 +1782,7 @@ sw buf_parse_list_paren (s_buf *buf, s_list **list)
   }
   *i = NULL;
   while (1) {
-    *i = list_new(NULL, NULL);
+    *i = list_new(NULL);
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
     result += r;
@@ -1874,7 +1874,7 @@ sw buf_parse_map (s_buf *buf, s_map *dest)
     goto restore;
   result += r;
   while (r == 0) {
-    *keys_end = list_new(NULL, NULL);
+    *keys_end = list_new(NULL);
     if ((r = buf_parse_map_key(buf, &(*keys_end)->tag)) <= 0)
       goto restore;
     result += r;
@@ -1885,7 +1885,7 @@ sw buf_parse_map (s_buf *buf, s_map *dest)
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
-    *values_end = list_new(NULL, NULL);
+    *values_end = list_new(NULL);
     if ((r = buf_parse_tag(buf, &(*values_end)->tag)) <= 0)
       goto restore;
     result += r;
@@ -2776,7 +2776,7 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
-    *i = list_new(NULL, NULL);
+    *i = list_new(NULL);
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
     result += r;

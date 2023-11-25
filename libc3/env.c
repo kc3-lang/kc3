@@ -12,6 +12,7 @@
  */
 #include <assert.h>
 #include <err.h>
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,8 +48,9 @@
 
 s_env g_c3_env;
 
-bool env_eval_array_cast (s_env *env, s_array *tmp, const s_tag *tag,
-                          u8 *data, uw size);
+static bool env_eval_array_cast (s_env *env, s_array *tmp,
+                                 const s_tag *tag, u8 *data, uw size);
+static s_env * env_init_args (s_env *env, sw argc, s8 **argv);
 
 void env_clean (s_env *env)
 {
@@ -62,6 +64,8 @@ void env_clean (s_env *env)
   buf_clean(&env->out);
   buf_file_close(&env->err);
   buf_clean(&env->err);
+  str_clean(&env->argv0_dir);
+  list_delete_all(env->path);
 }
 
 void env_error_f (s_env *env, const char *fmt, ...)
@@ -201,7 +205,7 @@ bool env_eval_call_arguments (s_env *env, const s_list *args,
   s_list *tmp;
   tail = &tmp;
   while (args) {
-    *tail = list_new(NULL, NULL);
+    *tail = list_new(NULL);
     if (! env_eval_tag(env, &args->tag, &(*tail)->tag)) {
       list_delete_all(tmp);
       err_puts("env_eval_call_arguments: invalid argument: ");
@@ -293,7 +297,7 @@ bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
       goto ko;
     if (! b)
       goto ko;
-    *t = list_new(NULL, NULL);
+    *t = list_new(NULL);
     if (! env_eval_equal_tag(env, &a->tag, &b->tag,
                              &(*t)->tag))
       goto ko;
@@ -592,7 +596,7 @@ bool env_eval_list (s_env *env, const s_list *list, s_tag *dest)
   assert(env);
   assert(dest);
   while (list) {
-    *tail = list_new(NULL, NULL);
+    *tail = list_new(NULL);
     if (! env_eval_tag(env, &list->tag, &(*tail)->tag))
       goto ko;
     next = list_next(list);
@@ -733,9 +737,12 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
   return true;
 }
 
-s_env * env_init (s_env *env)
+s_env * env_init (s_env *env, sw argc, s8 **argv)
 {
+  s_str path;
   assert(env);
+  if (! env_init_args(env, argc, argv))
+    return NULL;
   env->error_handler = NULL;
   env->frame = frame_new(NULL);
   buf_init_alloc(&env->in, BUF_SIZE);
@@ -745,23 +752,49 @@ s_env * env_init (s_env *env)
   buf_init_alloc(&env->err, BUF_SIZE);
   buf_file_open_w(&env->err, stderr);
   facts_init(&env->facts);
-  /* TODO: module path */
-  if (! access("lib/c3/0.1", X_OK))
-    str_init_1(&env->module_path, NULL, "lib/c3/0.1");
-  else if (! access("../lib/c3/0.1", X_OK))
-    str_init_1(&env->module_path, NULL, "../lib/c3/0.1");
-  else if (! access("../../lib/c3/0.1", X_OK))
-    str_init_1(&env->module_path, NULL, "../../lib/c3/0.1");
-  else if (! access(PREFIX "/lib/c3/0.1", X_OK))
-    str_init_1(&env->module_path, NULL, PREFIX "/lib/c3/0.1");
-  else {
+  env->path = list_new_str_1
+    (NULL, "./", list_new_str_1
+     (NULL, "../", list_new_str_1
+      (NULL, "../Resources/", list_new_str_1
+       (NULL, "../../", list_new_str_1
+        (NULL, "../../../", list_new_str_1
+         (NULL, "../../../../", list_new_str_1
+          (NULL, "../../../../../", list_new_str_1
+           (NULL, "../../../../../../", NULL))))))));
+  str_init_1(&path, NULL, "lib/c3/0.1");
+  if (! file_search(&path, sym_1("x"), &env->module_path)) {
     assert(! "env_init: module path not found");
-    err(1, "env_init: module_path not found");
+    warn("env_init: module_path not found");
+    return NULL;
   }
   env->current_module = sym_1("C3");
   if (! module_load(sym_1("C3"), &env->facts)) {
     env_clean(env);
     return NULL;
+  }
+  return env;
+}
+
+s_env * env_init_args (s_env *env, sw argc, s8 **argv)
+{
+  s8 *dir;
+  uw len;
+  assert(env);
+  if (argv) {
+    env->argc = argc;
+    env->argv = argv;
+    dir = malloc(strlen(argv[0]) + 1);
+    dirname_r(argv[0], dir);
+    len = strlen(dir);
+    assert(len);
+    dir[len + 1] = '\0';
+    dir[len] = '/';
+    str_init_1(&env->argv0_dir, dir, dir);
+  }
+  else {
+    env->argc = 0;
+    env->argv = NULL;
+    str_init_1(&env->argv0_dir, NULL, "./");
   }
   return env;
 }

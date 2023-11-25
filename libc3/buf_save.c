@@ -78,6 +78,6 @@ s_buf * buf_save_restore_wpos (s_buf *buf, const s_buf_save *save)
   assert(buf);
   assert(save);
   assert(buf->save == save);
-  buf->rpos = save->wpos;
+  buf->wpos = save->wpos;
   return buf;
 }

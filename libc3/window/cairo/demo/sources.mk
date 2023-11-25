@@ -2,10 +2,12 @@
 HEADERS = \
 	bg_rect.h \
 	lightspeed.h \
+	toasters.h \
 	window_cairo_demo.h \
 
 SOURCES = \
 	bg_rect.c \
 	lightspeed.c \
+	toasters.c \
 	window_cairo_demo.c \
 

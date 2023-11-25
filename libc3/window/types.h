@@ -57,7 +57,7 @@ struct window {
   f_window_load   load;
   f_window_motion motion;
   f_window_render render;
-  void           *render_context;
+  void           *context;
   f_window_resize resize;
   s_sequence     *sequence;
   uw              sequence_count;

@@ -573,7 +573,7 @@ s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
   facts_with_tags(facts, &cursor, (s_tag *) subject,
                   (s_tag *) predicate, &var);
   while ((f = facts_cursor_next(&cursor))) {
-    list = list_new(NULL, list);
+    list = list_new(list);
     list->tag.data.fact = *f;
   }
   while (list) {

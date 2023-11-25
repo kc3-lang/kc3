@@ -73,7 +73,7 @@ s_list ** list_copy (const s_list **src, s_list **dest)
   *i = NULL;
   s = *src;
   while (s) {
-    *i = list_new(NULL, NULL);
+    *i = list_new(NULL);
     tag_copy(&s->tag, &(*i)->tag);
     if ((next = list_next(s))) {
       s = next;
@@ -107,14 +107,20 @@ void list_delete_all (s_list *list)
     list = list_delete(list);
 }
 
-s_list * list_init (s_list *list, const s_tag *tag, s_list *next)
+s_list * list_init (s_list *list, s_list *next)
 {
   assert(list);
-  if (tag)
-    tag_copy(tag, &list->tag);
-  else
-    tag_init_void(&list->tag);
+  tag_init_void(&list->tag);
   tag_init_list(&list->next, next);
+  return list;
+}
+
+s_list * list_init_copy (s_list *list, const s_tag *tag, s_list *next)
+{
+  assert(list);
+  assert(tag);
+  list_init(list, next);
+  tag_copy(tag, &list->tag);
   return list;
 }
 
@@ -155,13 +161,50 @@ s_list * list_next (const s_list *list)
   }
 }
 
-s_list * list_new (const s_tag *tag, s_list *next)
+s_list * list_new (s_list *next)
 {
   s_list *list;
-  list = calloc(1, sizeof(s_list));
-  if (! list)
-    errx(1, "list_new: out of memory");
-  return list_init(list, tag, next);
+  if (! (list = calloc(1, sizeof(s_list)))) {
+    warnx("list_new: out of memory");
+    return NULL;
+  }
+  return list_init(list, next);
+}
+
+s_list * list_new_copy (const s_tag *tag, s_list *next)
+{
+  s_list *list;
+  if ((list = list_new(next))) {
+    if (! tag_copy(tag, &list->tag)) {
+      free(list);
+      return NULL;
+    }
+  }
+  return list;
+}
+
+s_list * list_new_f64 (f64 x, s_list *next)
+{
+  s_list *list;
+  if ((list = list_new(next))) {
+    if (! tag_init_f64(&list->tag, x)) {
+      free(list);
+      return NULL;
+    }
+  }
+  return list;
+}
+
+s_list * list_new_str_1 (s8 *free_, const s8 *p, s_list *next)
+{
+  s_list *list;
+  if ((list = list_new(next))) {
+    if (! tag_init_str_1(&list->tag, free_, p)) {
+      free(list);
+      return NULL;
+    }
+  }
+  return list;
 }
 
 s_array * list_to_array (s_list *list, const s_sym *type,

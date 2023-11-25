@@ -22,6 +22,7 @@
 #include <libc3/types.h>
 #include "../types.h"
 
+typedef struct cairo_sprite s_cairo_sprite;
 typedef struct rgb          s_rgb;
 typedef struct rgba         s_rgba;
 typedef struct window_cairo s_window_cairo;
@@ -48,9 +49,23 @@ typedef bool (*f_window_cairo_render) (s_window_cairo *window,
 typedef bool (*f_window_cairo_resize) (s_window_cairo *window,
                                        uw w, uw h);
 
-typedef void (*f_window_cairo_sequence_render) (s_window_cairo *window,
-                                                cairo_t *cr,
-                                                s_sequence *seq);
+typedef bool (*f_window_cairo_sequence_load) (s_sequence *seq,
+                                              s_window_cairo *window);
+
+typedef bool (*f_window_cairo_sequence_render) (s_sequence *seq,
+                                                s_window_cairo *window,
+                                                cairo_t *cr);
+
+struct cairo_sprite {
+  uw surface_w;
+  uw surface_h;
+  uw dim_x;
+  uw dim_y;
+  uw frame_count;
+  uw w;
+  uw h;
+  cairo_surface_t *surface;
+};
 
 struct rgb {
   double r;

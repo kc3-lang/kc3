@@ -1,0 +1,188 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {C3, :is_a, :module}
+replace {C3, :operator, C3.operator00}
+replace {C3.operator00, :is_a, :operator}
+replace {C3.operator00, :symbol, :"()"}
+replace {C3.operator00, :arity, 1}
+replace {C3.operator00, :cfn, cfn Tag "tag_paren" (Tag, Result)}
+replace {C3.operator00, :operator_precedence, 13}
+replace {C3.operator00, :operator_associativity, :left}
+add {C3, :operator, C3.operator01}
+replace {C3.operator01, :is_a, :operator}
+replace {C3.operator01, :symbol, :"[]"}
+replace {C3.operator01, :arity, 2}
+replace {C3.operator01, :cfn, cfn Tag "tag_brackets" (Tag, Tag, Result)}
+replace {C3.operator01, :operator_precedence, 13}
+replace {C3.operator01, :operator_associativity, :left}
+add {C3, :operator, C3.operator02}
+replace {C3.operator02, :is_a, :operator}
+replace {C3.operator02, :symbol, :!}
+replace {C3.operator02, :arity, 1}
+replace {C3.operator02, :cfn, cfn Bool "tag_not" (Tag, Result)}
+replace {C3.operator02, :operator_precedence, 12}
+replace {C3.operator02, :operator_associativity, :right}
+add {C3, :operator, C3.operator03}
+replace {C3.operator03, :is_a, :operator}
+replace {C3.operator03, :symbol, :~}
+replace {C3.operator03, :arity, 1}
+replace {C3.operator03, :cfn, cfn Tag "tag_bnot" (Tag, Result)}
+replace {C3.operator03, :operator_precedence, 12}
+replace {C3.operator03, :operator_associativity, :right}
+add {C3, :operator, C3.operator04}
+replace {C3.operator04, :is_a, :operator}
+replace {C3.operator04, :symbol, :-}
+replace {C3.operator04, :arity, 1}
+replace {C3.operator04, :cfn, cfn Tag "tag_neg" (Tag, Result)}
+replace {C3.operator04, :operator_precedence, 12}
+replace {C3.operator04, :operator_associativity, :right}
+add {C3, :operator, C3.operator05}
+replace {C3.operator05, :is_a, :operator}
+replace {C3.operator05, :symbol, :*}
+replace {C3.operator05, :arity, 2}
+replace {C3.operator05, :cfn, cfn Tag "tag_mul" (Tag, Tag, Result)}
+replace {C3.operator05, :operator_precedence, 11}
+replace {C3.operator05, :operator_associativity, :left}
+add {C3, :operator, C3.operator06}
+replace {C3.operator06, :is_a, :operator}
+replace {C3.operator06, :symbol, :/}
+replace {C3.operator06, :arity, 2}
+replace {C3.operator06, :cfn, cfn Tag "tag_div" (Tag, Tag, Result)}
+replace {C3.operator06, :operator_precedence, 11}
+replace {C3.operator06, :operator_associativity, :left}
+add {C3, :operator, C3.operator07}
+replace {C3.operator07, :is_a, :operator}
+replace {C3.operator07, :symbol, :mod}
+replace {C3.operator07, :arity, 2}
+replace {C3.operator07, :cfn, cfn Tag "tag_mod" (Tag, Tag, Result)}
+replace {C3.operator07, :operator_precedence, 11}
+replace {C3.operator07, :operator_associativity, :left}
+add {C3, :operator, C3.operator08}
+replace {C3.operator08, :is_a, :operator}
+replace {C3.operator08, :symbol, :+}
+replace {C3.operator08, :arity, 2}
+replace {C3.operator08, :cfn, cfn Tag "tag_add" (Tag, Tag, Result)}
+replace {C3.operator08, :operator_precedence, 10}
+replace {C3.operator08, :operator_associativity, :left}
+add {C3, :operator, C3.operator09}
+replace {C3.operator09, :is_a, :operator}
+replace {C3.operator09, :symbol, :-}
+replace {C3.operator09, :arity, 2}
+replace {C3.operator09, :cfn, cfn Tag "tag_sub" (Tag, Tag, Result)}
+replace {C3.operator09, :operator_precedence, 10}
+replace {C3.operator09, :operator_associativity, :left}
+add {C3, :operator, C3.operator10}
+replace {C3.operator10, :is_a, :operator}
+replace {C3.operator10, :symbol, :<<}
+replace {C3.operator10, :arity, 2}
+replace {C3.operator10, :cfn, cfn Tag "tag_shift_left" (Tag, Tag, Result)}
+replace {C3.operator10, :operator_precedence, 9}
+replace {C3.operator10, :operator_associativity, :left}
+add {C3, :operator, C3.operator11}
+replace {C3.operator11, :is_a, :operator}
+replace {C3.operator11, :symbol, :>>}
+replace {C3.operator11, :arity, 2}
+replace {C3.operator11, :cfn, cfn Tag "tag_shift_right" (Tag, Tag, Result)}
+replace {C3.operator11, :operator_precedence, 9}
+replace {C3.operator11, :operator_associativity, :left}
+add {C3, :operator, C3.operator12}
+replace {C3.operator12, :is_a, :operator}
+replace {C3.operator12, :symbol, :<}
+replace {C3.operator12, :arity, 2}
+replace {C3.operator12, :cfn, cfn Bool "tag_lt" (Tag, Tag, Result)}
+replace {C3.operator12, :operator_precedence, 8}
+replace {C3.operator12, :operator_associativity, :left}
+add {C3, :operator, C3.operator13}
+replace {C3.operator13, :symbol, :<=}
+replace {C3.operator13, :is_a, :operator}
+replace {C3.operator13, :arity, 2}
+replace {C3.operator13, :cfn, cfn Bool "tag_lte" (Tag, Tag, Result)}
+replace {C3.operator13, :operator_precedence, 8}
+replace {C3.operator13, :operator_associativity, :left}
+add {C3, :operator, C3.operator14}
+replace {C3.operator14, :symbol, :>}
+replace {C3.operator14, :is_a, :operator}
+replace {C3.operator14, :arity, 2}
+replace {C3.operator14, :cfn, cfn Bool "tag_gt" (Tag, Tag, Result)}
+replace {C3.operator14, :operator_precedence, 8}
+replace {C3.operator14, :operator_associativity, :left}
+add {C3, :operator, C3.operator15}
+replace {C3.operator15, :symbol, :>=}
+replace {C3.operator15, :is_a, :operator}
+replace {C3.operator15, :arity, 2}
+replace {C3.operator15, :cfn, cfn Bool "tag_gte" (Tag, Tag, Result)}
+replace {C3.operator15, :operator_precedence, 8}
+replace {C3.operator15, :operator_associativity, :left}
+add {C3, :operator, C3.operator16}
+replace {C3.operator16, :is_a, :operator}
+replace {C3.operator16, :symbol, :==}
+replace {C3.operator16, :arity, 2}
+replace {C3.operator16, :cfn, cfn Bool "tag_eq" (Tag, Tag, Result)}
+replace {C3.operator16, :operator_precedence, 7}
+replace {C3.operator16, :operator_associativity, :left}
+add {C3, :operator, C3.operator17}
+replace {C3.operator17, :is_a, :operator}
+replace {C3.operator17, :symbol, :!=}
+replace {C3.operator17, :arity, 2}
+replace {C3.operator17, :cfn, cfn Bool "tag_not_eq" (Tag, Tag, Result)}
+replace {C3.operator17, :operator_precedence, 7}
+replace {C3.operator17, :operator_associativity, :left}
+add {C3, :operator, C3.operator18}
+replace {C3.operator18, :is_a, :operator}
+replace {C3.operator18, :symbol, :&}
+replace {C3.operator18, :arity, 2}
+replace {C3.operator18, :cfn, cfn Tag "tag_band" (Tag, Tag, Result)}
+replace {C3.operator18, :operator_precedence, 6}
+replace {C3.operator18, :operator_associativity, :left}
+add {C3, :operator, C3.operator19}
+replace {C3.operator19, :is_a, :operator}
+replace {C3.operator19, :symbol, :^}
+replace {C3.operator19, :arity, 2}
+replace {C3.operator19, :cfn, cfn Tag "tag_bxor" (Tag, Tag, Result)}
+replace {C3.operator19, :operator_precedence, 5}
+replace {C3.operator19, :operator_associativity, :left}
+add {C3, :operator, C3.operator20}
+replace {C3.operator20, :is_a, :operator}
+replace {C3.operator20, :symbol, :bor}
+replace {C3.operator20, :arity, 2}
+replace {C3.operator20, :cfn, cfn Tag "tag_bor" (Tag, Tag, Result)}
+replace {C3.operator20, :operator_precedence, 4}
+replace {C3.operator20, :operator_associativity, :left}
+add {C3, :operator, C3.operator21}
+replace {C3.operator21, :is_a, :operator}
+replace {C3.operator21, :symbol, :&&}
+replace {C3.operator21, :arity, 2}
+replace {C3.operator21, :cfn, cfn Bool "tag_and" (Tag, Tag, Result)}
+replace {C3.operator21, :operator_precedence, 3}
+replace {C3.operator21, :operator_associativity, :left}
+add {C3, :operator, C3.operator22}
+replace {C3.operator22, :is_a, :operator}
+replace {C3.operator22, :symbol, :||}
+replace {C3.operator22, :arity, 2}
+replace {C3.operator22, :cfn, cfn Bool "tag_or" (Tag, Tag, Result)}
+replace {C3.operator22, :operator_precedence, 2}
+replace {C3.operator22, :operator_associativity, :left}
+add {C3, :operator, C3.operator23}
+replace {C3.operator23, :is_a, :operator}
+add {C3.operator23, :is_a, :special_operator}
+replace {C3.operator23, :symbol, :=}
+replace {C3.operator23, :arity, 2}
+replace {C3.operator23, :cfn, cfn Tag "tag_equal" (Tag, Tag, Result)}
+replace {C3.operator23, :operator_precedence, 1}
+replace {C3.operator23, :operator_associativity, :right}
+replace {C3.break, :cfn, cfn Void "c3_break" ()}
+replace {C3, :symbol, C3.first}
+replace {C3.first, :fn, fn {
+ ([a | _b]) { a }
+ ({a, _b}) { a }
+ ({a, _b, _c}) { a }
+ ({a, _b, _c, _d}) { a }
+}}
+add {C3, :symbol, C3.license}
+replace {C3.license, :cfn, cfn Void "c3_license" ()}
+add {C3, :symbol, C3.type}
+replace {C3.type, :cfn, cfn Sym "tag_type" (Tag, Result)}
+add {C3, :symbol, C3.fib}
+replace {C3.fib, :fn, fn { (0) { 1 }
+                           (1) { 1 }
+                           (x) { fib(x - 1) + fib(x - 2) } }}

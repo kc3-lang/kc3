@@ -219,7 +219,7 @@ s_call * call_init_cast (s_call *call, const s_sym *type,
   assert(call);
   bzero(call, sizeof(s_call));
   ident_init(&call->ident, type, sym_1("cast"));
-  call->arguments = list_new(tag, NULL);
+  call->arguments = list_new_copy(tag, NULL);
   return call;
 }
 
@@ -227,7 +227,7 @@ s_call * call_init_op (s_call *call)
 {
   assert(call);
   bzero(call, sizeof(s_call));
-  call->arguments = list_new(NULL, list_new(NULL, NULL));
+  call->arguments = list_new(list_new(NULL));
   return call;
 }
 
@@ -235,7 +235,7 @@ s_call * call_init_op_unary (s_call *call)
 {
   assert(call);
   bzero(call, sizeof(s_call));
-  call->arguments = list_new(NULL, NULL);
+  call->arguments = list_new(NULL);
   return call;
 }
 
