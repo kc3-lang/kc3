@@ -21,20 +21,6 @@
 #include "tag.h"
 #include "tuple.h"
 
-s_list * list_1 (const char *p)
-{
-  s_buf buf;
-  s_list *list;
-  buf_init_1(&buf, p);
-  if (buf_parse_list(&buf, &list) != (sw) strlen(p)) {
-    assert(! "invalid list");
-    buf_clean(&buf);
-    return NULL;
-  }
-  buf_clean(&buf);
-  return list;
-}
-
 void list_clean (s_list **list)
 {
   s_list *l;
@@ -172,6 +158,20 @@ s_list * list_new (s_list *next)
   return list_init(dest, next);
 }
 
+s_list * list_new_1 (const char *p)
+{
+  s_buf buf;
+  s_list *list;
+  buf_init_1(&buf, p);
+  if (buf_parse_list(&buf, &list) != (sw) strlen(p)) {
+    assert(! "invalid list");
+    buf_clean(&buf);
+    return NULL;
+  }
+  buf_clean(&buf);
+  return list;
+}
+
 s_list * list_new_copy (const s_tag *x, s_list *next)
 {
   s_list *dest;
@@ -252,4 +252,25 @@ s_array * list_to_array (s_list *list, const s_sym *type,
     l = list_next(l);
   }
   return dest;
+}
+
+s_list ** list_remove_void (s_list **list)
+{
+  s_list *tmp;
+  s_list **l;
+  assert(list);
+  tmp = *list;
+  l = &tmp;
+  while (l && *l) {
+    if ((*l)->tag.type == TAG_VOID)
+      *l = list_delete(*l);
+    else {
+      if ((*l)->next.type == TAG_LIST)
+        l = &(*l)->next.data.list;
+      else
+        l = NULL;
+    }
+  }
+  *list = tmp;
+  return list;
 }

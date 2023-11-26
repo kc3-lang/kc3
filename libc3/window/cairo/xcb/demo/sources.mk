@@ -3,6 +3,5 @@ HEADERS = \
 	 \
 
 SOURCES = \
-	window.c \
 	window_cairo_xcb_demo.c \
 

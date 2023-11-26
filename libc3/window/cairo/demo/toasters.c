@@ -36,6 +36,7 @@ static s_tag * toaster_init (s_tag *toaster, f64 y)
 static void toaster_render (s_tag *toaster, s_window_cairo *window,
                             cairo_t *cr, s_sequence *seq)
 {
+  cairo_matrix_t matrix;
   f64 *size;
   f64 *speed;
   f64 *x;
@@ -46,7 +47,7 @@ static void toaster_render (s_tag *toaster, s_window_cairo *window,
     x     = &toaster->data.map.values[2].data.f64;
     y     = &toaster->data.map.values[3].data.f64;
     *speed += seq->dt;
-    *size += *speed * 10.0;
+    *size += *speed * 0.01;
     *x += *speed * g_speed_x;
     *y += *speed * g_speed_y;
     if (*x > window->w || *y < 0.0) {
@@ -54,9 +55,13 @@ static void toaster_render (s_tag *toaster, s_window_cairo *window,
       toaster->type = TAG_VOID;
       return;
     }
+    cairo_get_matrix(cr, &matrix);
+    cairo_translate(cr, *x, *y);
+    cairo_scale(cr, *size, *size);
     cairo_sprite_blit(&g_toaster_sprite,
                       ((uw) seq->t) % g_toaster_sprite.frame_count,
-                      cr, *x, *y);
+                      cr, 0, 0);
+    cairo_set_matrix(cr, &matrix);
   }
 }
 
@@ -86,7 +91,7 @@ bool toasters_render (s_sequence *seq, s_window_cairo *window,
   cairo_set_source_rgb(cr, 0.7, 0.95, 1.0);
   cairo_rectangle(cr, 0, 0, window->w, window->h);
   cairo_fill(cr);
-  io_inspect(&seq->tag);
+  /*io_inspect(&seq->tag);*/
   if (seq->tag.type == TAG_LIST) {
     i = seq->tag.data.list;
     while (i) {
@@ -103,6 +108,7 @@ bool toasters_render (s_sequence *seq, s_window_cairo *window,
           first = j->next.data.list = list_new(j->next.data.list);
           toaster_init(&first->tag, y);
         }
+        list_remove_void(&j->next.data.list);
         j = list_next(j);
         while (j) {
           toaster_render(&j->tag, window, cr, seq);

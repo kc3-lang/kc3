@@ -44,7 +44,7 @@ TEST_CASE(env_eval_call)
   call_init(&call);
   call.ident.module = sym_1("C3");
   call.ident.sym = sym_1("operator08");
-  call.arguments = list_1("[1, 2]");
+  call.arguments = list_new_1("[1, 2]");
   tag_init_u8(&expected, 3);
   TEST_ASSERT(env_eval_call(&env, &call, &result));
   TEST_EQ(compare_tag(&result, &expected), 0);

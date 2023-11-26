@@ -50,7 +50,7 @@ TEST_CASE(cfn_apply)
   s_tag result;
   s_cfn a;
   cfn_init(&a, sym_1("cfn_test_not"),
-           list_1("(:bool)"),
+           list_new_1("(:bool)"),
            sym_1("bool"));
   cfn_link(&a);
   cfn_prep_cif(&a);
@@ -71,7 +71,7 @@ TEST_CASE(cfn_init_copy)
   s_cfn b;
   s_list *b_arg_types;
   cfn_init(&a, sym_1("cfn_test_not"),
-           list_1("(:bool)"),
+           list_new_1("(:bool)"),
            sym_1("bool"));
   TEST_EQ(cfn_init_copy(&b, &a), &b);
   TEST_EQ(a.name, b.name);
@@ -104,7 +104,7 @@ TEST_CASE(cfn_init_clean)
 {
   s_cfn a;
   TEST_EQ(cfn_init(&a, sym_1("cfn_test_not"),
-                   list_1("(:bool)"),
+                   list_new_1("(:bool)"),
                    sym_1("bool")), &a);
   TEST_EQ(a.name, sym_1("cfn_test_not"));
   TEST_EQ(a.ptr.f, 0);
@@ -132,7 +132,7 @@ TEST_CASE(cfn_link)
   s_cfn a;
   s_cfn b;
   cfn_init(&a, sym_1("cfn_test_not"),
-           list_1("(:bool)"),
+           list_new_1("(:bool)"),
            sym_1("bool"));
   b = a;
   TEST_EQ(cfn_link(&a), &a);
@@ -157,7 +157,7 @@ TEST_CASE(cfn_prep_cif)
   s_cfn a;
   s_cfn b;
   cfn_init(&a, sym_1("cfn_test_not"),
-           list_1("(:bool)"),
+           list_new_1("(:bool)"),
            sym_1("bool"));
   b = a;
   TEST_EQ(cfn_prep_cif(&a), &a);
