@@ -64,6 +64,14 @@ s_tuple * tuple_init_1 (s_tuple *tuple, const s8 *p)
   return tuple;
 }
 
+s_tuple * tuple_init_2 (s_tuple *tuple, const s_tag *a, const s_tag *b)
+{
+  tuple_init(tuple, 2);
+  tag_init_copy(tuple->tag + 0, a);
+  tag_init_copy(tuple->tag + 1, b);
+  return tuple;
+}
+
 s_tuple * tuple_init_copy (s_tuple *tuple, const s_tuple *src)
 {
   uw i = 0;

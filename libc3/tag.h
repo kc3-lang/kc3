@@ -54,7 +54,7 @@ s_tag * tag_init_sym (s_tag *tag, const s_sym *p);
 s_tag * tag_init_sym_1 (s_tag *tag, const s8 *p);
 s_tag * tag_init_time (s_tag *tag);
 s_tag * tag_init_tuple (s_tag *tag, uw count);
-s_tag * tag_init_tuple_2 (s_tag *tag, s_tag *a, s_tag *b);
+s_tag * tag_init_tuple_2 (s_tag *tag, const s_tag *a, const s_tag *b);
 s_tag * tag_init_var (s_tag *tag);
 s_tag * tag_init_void (s_tag *tag);
 
