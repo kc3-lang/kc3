@@ -116,8 +116,7 @@ sw                 tag_type_size (e_tag_type type);
 f_buf_inspect      tag_type_to_buf_inspect (e_tag_type type);
 f_buf_inspect_size tag_type_to_buf_inspect_size (e_tag_type type);
 f_buf_parse        tag_type_to_buf_parse (e_tag_type type);
-const s_sym *      tag_type_to_module (e_tag_type type);
-s8 *               tag_type_to_string (e_tag_type type);
+const s8 *         tag_type_to_string (e_tag_type type);
 const s_sym *      tag_type_to_sym (e_tag_type tag_type);
 
 /* Modifiers */
