@@ -18,6 +18,7 @@
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "list.h"
+#include "sym.h"
 #include "tag.h"
 #include "tuple.h"
 
@@ -244,7 +245,7 @@ s_array * list_to_array (s_list *list, const s_sym *type,
   assert(list);
   assert(dest);
   len = list_length(list);
-  size = array_type_size(type);
+  size = sym_type_size(type);
   dest->dimension = 1;
   dest->type = type;
   if (! (dest->dimensions = calloc(1, sizeof(s_array_dimension))))
@@ -255,7 +256,7 @@ s_array * list_to_array (s_list *list, const s_sym *type,
   dest->size = len * size;
   if (! (data = dest->data = calloc(len, size)))
     errx(1, "list_to_array: out of memory: 2");
-  init_copy = array_type_to_init_copy(type);
+  init_copy = sym_to_init_copy(type);
   l = list;
   while (l) {
     data_list = tag_to_pointer(&l->tag, type);

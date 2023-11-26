@@ -67,15 +67,13 @@ sw buf_inspect_array_data (s_buf *buf, const s_array *array)
   u8 *data = NULL;
   f_buf_inspect inspect = NULL;
   s_tag *tag = NULL;
-  e_tag_type tag_type;
   sw r;
   assert(buf);
   assert(array);
   address = calloc(array->dimension, sizeof(uw));
   if (array->data) {
     data = array->data;
-    tag_type = array_type_to_tag_type(array->type);
-    inspect = tag_type_to_buf_inspect(tag_type);
+    inspect = sym_to_buf_inspect(array->type);
   }
   else 
     tag = array->tags;
@@ -140,14 +138,12 @@ sw buf_inspect_array_data_size (const s_array *array)
   u8 *data = NULL;
   f_buf_inspect_size inspect_size = NULL;
   s_tag *tag = NULL;
-  e_tag_type tag_type;
   sw r;
   assert(array);
   address = calloc(array->dimension, sizeof(uw));
   if (array->data) {
     data = array->data;
-    tag_type = array_type_to_tag_type(array->type);
-    inspect_size = tag_type_to_buf_inspect_size(tag_type);
+    inspect_size = sym_to_buf_inspect_size(array->type);
   }
   else 
     tag = array->tags;

@@ -266,6 +266,11 @@ SOURCES = \
 	tag_band.c \
 	tag_bor.c \
 	tag_bxor.c \
+	tag_mod.c \
+	tag_mul.c \
+	tag_shift_left.c \
+	tag_shift_right.c \
+	tag_sub.c \
 	time.c \
 	tuple.c \
 	type.c \
@@ -405,6 +410,11 @@ LO_SOURCES = \
 	tag_band.c \
 	tag_bor.c \
 	tag_bxor.c \
+	tag_mod.c \
+	tag_mul.c \
+	tag_shift_left.c \
+	tag_shift_right.c \
+	tag_sub.c \
 	time.c \
 	tuple.c \
 	type.c \

@@ -27,10 +27,9 @@ s_str *            array_inspect (const s_array *array, s_str *dest);
 void *             array_data (const s_array *a, const uw *address);
 s_tag *            array_data_tag (s_tag *a, const s_tag *address,
                                    s_tag *dest);
-uw                 array_type_size (const s_sym *type);
-f_buf_inspect      array_type_to_buf_inspect (const s_sym *type);
-f_buf_inspect_size array_type_to_buf_inspect_size (const s_sym *type);
-f_init_copy        array_type_to_init_copy (const s_sym *type);
-e_tag_type         array_type_to_tag_type (const s_sym *type);
+
+/* Operators */
+s_array * array_data_set (s_array *a, const uw *address,
+                          const void *data);
 
 #endif /* LIBC3_ARRAY_H */
