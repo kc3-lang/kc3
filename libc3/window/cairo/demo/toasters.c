@@ -124,7 +124,7 @@ bool toasters_render (s_sequence *seq, s_window_cairo *window,
   cairo_set_source_rgb(cr, 0.7, 0.95, 1.0);
   cairo_rectangle(cr, 0, 0, window->w, window->h);
   cairo_fill(cr);
-  io_inspect(&seq->tag);
+  /* io_inspect(&seq->tag); */
   if (seq->tag.type == TAG_MAP) {
     toasters = &seq->tag.data.map.values[0].data.list;
     toasts   = &seq->tag.data.map.values[1].data.list;
@@ -147,13 +147,13 @@ bool toasters_render_toasts (s_list **toasts, s_window_cairo *window,
   assert(window);
   assert(cr);
   assert(seq);
-  y = window->w * g_speed_y / g_speed_x - 200;
+  y = window->w * g_speed_y / g_speed_x - 210;
   if (*toasts && (*toasts)->tag.type == TAG_MAP) {
     t = &(*toasts)->tag.data.map.values[0].data.list;
     y =  (*toasts)->tag.data.map.values[1].data.f64;
   }
   while (y < window->h - 100) {
-    y += 150.0;
+    y += 170.0;
     *toasts = list_new_map(2, *toasts);
     map = &(*toasts)->tag.data.map;
     tag_init_sym_1(map->keys  + 0, "toasts");
@@ -169,7 +169,7 @@ bool toasters_render_toasts (s_list **toasts, s_window_cairo *window,
       x = 0.0;
       if (*t && (*t)->tag.type == TAG_MAP)
         x = (*t)->tag.data.map.values[0].data.f64;
-      if (x < window->w - 150.0) {
+      if (x < window->w - 160.0) {
         *t = list_new(*t);
         toast_init(&(*t)->tag, window->w, y);
       }
@@ -206,7 +206,7 @@ bool toasters_render_toasters (s_list **toasters,
     y =  (*toasters)->tag.data.map.values[1].data.f64;
   }
   while (y < window->h - window->w * g_speed_y / g_speed_x) {
-    y += 150.0;
+    y += 170.0;
     *toasters = list_new_map(2, *toasters);
     map = &(*toasters)->tag.data.map;
     tag_init_sym_1(map->keys  + 0, "toasters");
@@ -222,7 +222,7 @@ bool toasters_render_toasters (s_list **toasters,
       x = 1000.0;
       if (*t && (*t)->tag.type == TAG_MAP)
         x = (*t)->tag.data.map.values[0].data.f64;
-      if (x > 50.0) {
+      if (x > 60.0) {
         *t = list_new(*t);
         toaster_init(&(*t)->tag, y);
       }
