@@ -18,6 +18,8 @@ void cairo_sprite_blit (const s_cairo_sprite *sprite, uw frame,
 {
   uw frame_x;
   uw frame_y;
+  cairo_matrix_t matrix;
+  cairo_pattern_t *pattern;
   assert(sprite);
   assert(frame < sprite->frame_count);
   assert(cr);
@@ -29,12 +31,15 @@ void cairo_sprite_blit (const s_cairo_sprite *sprite, uw frame,
   frame_x *= sprite->w;
   frame_y *= sprite->h;
   /* printf("%lu %lu\n", frame_x, frame_y); */
-  cairo_set_source_surface(cr, sprite->surface,
-                           (f64) frame_x, (f64) frame_y);
-  /* printf("x y %lu %lu\n", x, y); */
-  cairo_rectangle(cr, (f64) x, (f64) y,
-                  (f64) sprite->w, (f64) sprite->h);
+  pattern = cairo_pattern_create_for_surface(sprite->surface);
+  cairo_matrix_init_translate(&matrix, frame_x, frame_y);
+  cairo_pattern_set_matrix(pattern, &matrix);
+  cairo_set_source(cr, pattern);
+  /* printf("x y w h %lu %lu %lu %lu\n", x, y, sprite->w,
+         sprite->h); */
+  cairo_rectangle(cr, x, y, sprite->w, sprite->h);
   cairo_fill(cr);
+  cairo_pattern_destroy(pattern);
 }
 
 void cairo_sprite_clean (s_cairo_sprite *sprite)
