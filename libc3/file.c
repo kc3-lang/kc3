@@ -132,7 +132,6 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
           (r = buf_write_str(&buf, suffix)) < 0)
         return NULL;
       buf_read_to_str(&buf, &tmp);
-      io_inspect_str(&tmp);
       file_access(&tmp, mode, &access);
       if (access) {
         *dest = tmp;

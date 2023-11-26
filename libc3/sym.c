@@ -99,7 +99,8 @@ bool sym_has_reserved_characters (const s_sym *sym)
   return false;
 }
 
-const s_sym ** sym_init_copy (const s_sym **sym, const s_sym **src)
+const s_sym ** sym_init_copy (const s_sym **sym,
+                              const s_sym * const *src)
 {
   assert(src);
   assert(sym);

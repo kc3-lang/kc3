@@ -40,14 +40,15 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define STR_TEST_TO_HEX(test, expected)                                  \
+#define STR_TEST_TO_HEX(test, expected)                                \
   do {                                                                 \
     s_str str;                                                         \
     s_str *test_;                                                      \
-    test_context("str_to_hex(" # test ") -> " # expected);               \
+    test_context("str_to_hex(" # test ") -> " # expected);             \
     test_ = (test);                                                    \
     TEST_EQ(str_to_hex(test_, &str), &str);                            \
-    TEST_STRNCMP(str.ptr.p, (expected), str.size);                       \
+    TEST_EQ(str.size, strlen(expected));                               \
+    TEST_STRNCMP(str.ptr.p, (expected), str.size);                     \
     str_clean(&str);                                                   \
     str_delete(test_);                                                 \
     test_context(NULL);                                                \
