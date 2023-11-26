@@ -60,8 +60,8 @@ C3_C_SOURCES = \
 	ic3/buf_linenoise.h \
 	ic3/linenoise.c \
 	libc3/abs.c \
-	libc3/buf_inspect_s8.c \
 	libc3/buf.c \
+	libc3/buf_inspect_s8.c \
 	libc3/buf_inspect_s8.h \
 	libc3/buf_inspect_s8_binary.c \
 	libc3/buf_inspect_s8_binary.h \
@@ -69,8 +69,8 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_s8_octal.h \
 	libc3/buf_inspect_s8_decimal.c \
 	libc3/buf_inspect_s8_decimal.h \
-	libc3/buf_inspect_s8_hexadecimal.c \
 	libc3/array.h \
+	libc3/buf_inspect_s8_hexadecimal.c \
 	libc3/buf_inspect_s16.c \
 	libc3/call.c \
 	libc3/arg.c \
@@ -89,6 +89,7 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_s16_hexadecimal.h \
 	libc3/buf_inspect_s32.c \
 	libc3/buf_inspect_s32.h \
+	libc3/s8.c \
 	libc3/env.c \
 	libc3/bool.c \
 	libc3/bool.h \
@@ -207,7 +208,7 @@ C3_C_SOURCES = \
 	libc3/buf_parse_s16.h \
 	libc3/buf_parse_s32.c \
 	libc3/buf_parse_s32.h \
-	libc3/s8.c \
+	libc3/s8.h \
 	libc3/list.c \
 	libc3/facts_cursor.h \
 	libc3/facts_spec.c \
@@ -246,18 +247,17 @@ C3_C_SOURCES = \
 	libc3/skiplist__fact.h \
 	libc3/skiplist_node__fact.c \
 	libc3/skiplist_node__fact.h \
-	libc3/s8.h \
 	libc3/s16.c \
 	libc3/s16.h \
 	libc3/s32.c \
 	libc3/s32.h \
+	libc3/s64.c \
 	libc3/facts_with_cursor.h \
 	libc3/float.h \
 	libc3/frame.c \
 	libc3/frame.h \
-	libc3/s64.c \
-	libc3/s64.h \
 	libc3/types.h \
+	libc3/s64.h \
 	libc3/sw.c \
 	libc3/sw.h \
 	libc3/u8.c \
@@ -335,7 +335,6 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_u_base.h.in \
 	libc3/window/cairo/xcb/config.h \
 	libc3/window/cairo/xcb/window_cairo_xcb.c \
-	libc3/window/cairo/xcb/demo/window.c \
 	libc3/window/cairo/xcb/demo/window_cairo_xcb_demo.c \
 	libc3/window/cairo/xcb/window_cairo_xcb.h \
 	libc3/window/cairo/types.h \
