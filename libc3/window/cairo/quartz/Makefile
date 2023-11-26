@@ -47,6 +47,9 @@ debug: libc3_window_cairo_quartz_debug.la
 demo: build
 	${MAKE} -C demo demo
 
+demo_debug: debug
+	${MAKE} -C demo demo_debug
+
 distclean:
 	rm -rf ${DISTCLEANFILES}
 	${MAKE} -C demo distclean

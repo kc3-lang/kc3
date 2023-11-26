@@ -21,10 +21,19 @@ void cairo_sprite_blit (const s_cairo_sprite *sprite, uw frame,
   assert(sprite);
   assert(frame < sprite->frame_count);
   assert(cr);
-  frame_x = sprite->w * (frame % sprite->dim_x);
-  frame_y = sprite->h * (frame / sprite->dim_x);
-  cairo_set_source_surface(cr, sprite->surface, frame_x, frame_y);
-  cairo_rectangle(cr, x, y, sprite->w, sprite->h);
+  frame %= sprite->frame_count;
+  /* printf("cairo_sprite_blit: %lu\n", frame); */
+  frame_x = frame % sprite->dim_x;
+  frame_y = frame / sprite->dim_x;
+  /* printf("%lu %lu\n", frame_x, frame_y); */
+  frame_x *= sprite->w;
+  frame_y *= sprite->h;
+  /* printf("%lu %lu\n", frame_x, frame_y); */
+  cairo_set_source_surface(cr, sprite->surface,
+                           (f64) frame_x, (f64) frame_y);
+  /* printf("x y %lu %lu\n", x, y); */
+  cairo_rectangle(cr, (f64) x, (f64) y,
+                  (f64) sprite->w, (f64) sprite->h);
   cairo_fill(cr);
 }
 
@@ -50,6 +59,6 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
   sprite->dim_y = dim_y;
   sprite->w = sprite->surface_w / dim_x;
   sprite->h = sprite->surface_h / dim_y;
-  sprite->frame_count = frame_count ? frame_count : dim_x * dim_y;
+  sprite->frame_count = frame_count ? frame_count : (dim_x * dim_y);
   return sprite;
 }

@@ -62,6 +62,9 @@ debug:
 demo: build
 	time ${APP_PROG}
 
+demo_debug: debug
+	time ${APP_PROG_DEBUG}
+
 distclean:
 	rm -rf ${DISTCLEANFILES}
 

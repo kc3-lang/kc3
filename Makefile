@@ -72,8 +72,10 @@ debug:
 	${MAKE} -C test debug
 
 demo: build
-demo:
 	${MAKE} -C libc3 demo
+
+demo_debug: debug
+	${MAKE} -C libc3 demo_debug
 
 dist: c3-${C3_VERSION}.tar.gz
 

@@ -208,6 +208,18 @@ s_list * list_new_list (s_list *x, s_list *next)
   return dest;
 }
 
+s_list * list_new_map (uw count, s_list *next)
+{
+  s_list *dest;
+  if ((dest = list_new(next))) {
+    if (! tag_init_map(&dest->tag, count)) {
+      free(dest);
+      return NULL;
+    }
+  }
+  return dest;
+}
+
 s_list * list_new_str_1 (s8 *x_free, const s8 *x, s_list *next)
 {
   s_list *dest;
@@ -261,15 +273,13 @@ s_list ** list_remove_void (s_list **list)
   assert(list);
   tmp = *list;
   l = &tmp;
-  while (l && *l) {
+  while (*l) {
     if ((*l)->tag.type == TAG_VOID)
       *l = list_delete(*l);
-    else {
-      if ((*l)->next.type == TAG_LIST)
-        l = &(*l)->next.data.list;
-      else
-        l = NULL;
-    }
+    else if ((*l)->next.type == TAG_LIST)
+      l = &(*l)->next.data.list;
+    else
+      break;
   }
   *list = tmp;
   return list;

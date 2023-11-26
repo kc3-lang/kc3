@@ -15,22 +15,28 @@
 
 #include "types.h"
 
-#define ERR_INSPECT(name, type)                                        \
+#define PROTOTYPE_ERR_INSPECT(name, type)                              \
   sw err_inspect_ ## name (const type *x)                              \
 
-#define IO_INSPECT(name, type)                                         \
+#define PROTOTYPE_IO_INSPECT(name, type)                               \
   sw io_inspect_ ## name (const type *x)                               \
+
+#define PROTOTYPES_ERR_IO_INSPECT(name, type)                          \
+  PROTOTYPE_ERR_INSPECT(name, type);                                   \
+  PROTOTYPE_IO_INSPECT(name, type)
 
 /* error output */
 sw err_inspect (const s_tag *x);
-sw err_inspect_fn_pattern (const s_list *x);
-ERR_INSPECT(list, s_list);
 sw err_puts (const s8 *x);
 
 /* standard output */
 sw io_inspect (const s_tag *x);
-IO_INSPECT(fact, s_fact);
-IO_INSPECT(str,  s_str);
 sw io_puts (const s8 *x);
+
+PROTOTYPES_ERR_IO_INSPECT(fact,       s_fact);
+PROTOTYPES_ERR_IO_INSPECT(fn_pattern, s_list);
+PROTOTYPES_ERR_IO_INSPECT(list,       s_list *);
+PROTOTYPES_ERR_IO_INSPECT(str,        s_str);
+PROTOTYPES_ERR_IO_INSPECT(tag,        s_tag);
 
 #endif /* LIBC3_IO_H */
