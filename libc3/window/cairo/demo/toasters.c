@@ -15,8 +15,8 @@
 #include "../cairo_sprite.h"
 #include "toasters.h"
 
-static const f64 g_speed_x = 40.0;
-static const f64 g_speed_y = -20.0;
+static const f64 g_speed_x =  80.0;
+static const f64 g_speed_y = -40.0;
 s_cairo_sprite   g_toast_sprite = {0};
 s_cairo_sprite   g_toaster_sprite = {0};
 
@@ -92,7 +92,8 @@ static void toaster_render (s_tag *toaster, s_window_cairo *window,
     cairo_get_matrix(cr, &matrix);
     cairo_translate(cr, *x, *y);
     cairo_sprite_blit(&g_toaster_sprite,
-                      (uw) 0 * fmod(seq->t, g_toaster_sprite.frame_count),
+                      fmod(seq->t * g_toaster_sprite.frame_count,
+                           g_toaster_sprite.frame_count),
                       cr, 0, 0);
     cairo_set_matrix(cr, &matrix);
   }
