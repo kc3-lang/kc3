@@ -44,6 +44,7 @@ s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
   tmp.subject   = facts_ref_tag(facts, fact->subject);
   tmp.predicate = facts_ref_tag(facts, fact->predicate);
   tmp.object    = facts_ref_tag(facts, fact->object);
+  tmp.id        = 0;
   if ((item = set_get__fact(&facts->facts, &tmp))) {
     facts_lock_unlock_w(facts);
     return &item->data;

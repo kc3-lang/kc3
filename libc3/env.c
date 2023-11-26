@@ -782,13 +782,12 @@ s_env * env_init_args (s_env *env, sw argc, s8 **argv)
   if (argv) {
     env->argc = argc;
     env->argv = argv;
-    dir = malloc(strlen(argv[0]) + 1);
-    dirname_r(argv[0], dir);
+    dir = dirname(argv[0]);
     len = strlen(dir);
     assert(len);
     dir[len + 1] = '\0';
     dir[len] = '/';
-    str_init_1(&env->argv0_dir, dir, dir);
+    str_init_copy_1(&env->argv0_dir, dir);
   }
   else {
     env->argc = 0;
