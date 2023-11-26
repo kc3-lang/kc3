@@ -776,24 +776,26 @@ s_env * env_init (s_env *env, sw argc, s8 **argv)
 
 s_env * env_init_args (s_env *env, sw argc, s8 **argv)
 {
+  s8 a[PATH_MAX];
+  s_buf buf;
   s8 *dir;
-  uw len;
+  sw r;
   assert(env);
-  if (argv) {
+  if (argc && argv) {
     env->argc = argc;
     env->argv = argv;
+    buf_init(&buf, false, sizeof(a), a);
     dir = dirname(argv[0]);
-    len = strlen(dir);
-    assert(len);
-    dir[len + 1] = '\0';
-    dir[len] = '/';
-    str_init_copy_1(&env->argv0_dir, dir);
+    if ((r = buf_write_1(&buf, dir)) < 0 ||
+        (r = buf_write_u8(&buf, '/') < 0))
+      goto ko;
+    buf_read_to_str(&buf, &env->argv0_dir);
+    return env;
   }
-  else {
-    env->argc = 0;
-    env->argv = NULL;
-    str_init_1(&env->argv0_dir, NULL, "./");
-  }
+ ko:
+  env->argc = 0;
+  env->argv = NULL;
+  str_init_1(&env->argv0_dir, NULL, "./");
   return env;
 }
 

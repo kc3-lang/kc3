@@ -17,6 +17,8 @@
 #include "hash.h"
 #include "list.h"
 #include "str.h"
+/* debug */
+#include "io.h"
 
 #define HASH_UPDATE_DEF(type)                                          \
   void hash_update_##type (t_hash *hash, type x)                       \
@@ -132,6 +134,8 @@ void hash_update_fact (t_hash *hash, const s_fact *fact)
   assert(fact->subject);
   assert(fact->predicate);
   assert(fact->object);
+  io_puts("hash_update_fact");
+  io_inspect_fact(fact);
   hash_update(hash, type, sizeof(type));
   hash_update_tag(hash, fact->subject);
   hash_update_tag(hash, fact->predicate);

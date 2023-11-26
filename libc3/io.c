@@ -15,43 +15,79 @@
 #include "env.h"
 #include "io.h"
 
-sw err_inspect (const s_tag *tag)
-{
-  sw r;
-  r = buf_inspect_tag(&g_c3_env.err, tag);
-  buf_flush(&g_c3_env.err);
-  return r;
-}
+#define DEF_ERR_INSPECT(name, type)                                    \
+  sw err_inspect_ ## name (const type *x)                              \
+  {                                                                    \
+    sw r;                                                              \
+    sw result = 0;                                                     \
+    if ((r = buf_inspect_ ## name(&g_c3_env.err, x)) < 0)              \
+      return r;                                                        \
+    result += r;                                                       \
+    if ((r = buf_write_u8(&g_c3_env.err, '\n')) < 0)                   \
+      return r;                                                        \
+    result += r;                                                       \
+    buf_flush(&g_c3_env.err);                                          \
+    return result;                                                     \
+  }
 
-sw err_inspect_fn_pattern (const s_list *list)
-{
-  sw r;
-  r = buf_inspect_fn_pattern(&g_c3_env.err, list);
-  buf_flush(&g_c3_env.err);
-  return r;
-}
+#define DEF_IO_INSPECT(name, type)                                     \
+  sw io_inspect_ ## name (const type *x)                               \
+  {                                                                    \
+    sw r;                                                              \
+    sw result = 0;                                                     \
+    if ((r = buf_inspect_ ## name(&g_c3_env.out, x)) < 0)              \
+      return r;                                                        \
+    result += r;                                                       \
+    if ((r = buf_write_u8(&g_c3_env.out, '\n')) < 0)                   \
+      return r;                                                        \
+    result += r;                                                       \
+    buf_flush(&g_c3_env.out);                                          \
+    return result;                                                     \
+  }
 
-sw err_inspect_list (const s_list *list)
-{
-  sw r;
-  r = buf_inspect_list(&g_c3_env.err, &list);
-  buf_flush(&g_c3_env.err);
-  return r;
-}
-
-sw err_puts (const s8 *s)
-{
-  sw r;
-  r = buf_write_1(&g_c3_env.err, s);
-  buf_flush(&g_c3_env.err);
-  return r;
-}
-
-sw io_inspect (const s_tag *tag)
+sw err_inspect (const s_tag *x)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_inspect_tag(&g_c3_env.out, tag)) < 0)
+  if ((r = buf_inspect_tag(&g_c3_env.err, x)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_u8(&g_c3_env.err, '\n')) < 0)
+    return r;
+  result += r;
+  buf_flush(&g_c3_env.err);
+  return result;
+}
+
+sw err_inspect_fn_pattern (const s_list *x)
+{
+  sw r;
+  r = buf_inspect_fn_pattern(&g_c3_env.err, x);
+  buf_flush(&g_c3_env.err);
+  return r;
+}
+
+sw err_inspect_list (const s_list *x)
+{
+  sw r;
+  r = buf_inspect_list(&g_c3_env.err, &x);
+  buf_flush(&g_c3_env.err);
+  return r;
+}
+
+sw err_puts (const s8 *x)
+{
+  sw r;
+  r = buf_write_1(&g_c3_env.err, x);
+  buf_flush(&g_c3_env.err);
+  return r;
+}
+
+sw io_inspect (const s_tag *x)
+{
+  sw r;
+  sw result = 0;
+  if ((r = buf_inspect_tag(&g_c3_env.out, x)) < 0)
     return r;
   result += r;
   if ((r = buf_write_u8(&g_c3_env.out, '\n')) < 0)
@@ -61,11 +97,14 @@ sw io_inspect (const s_tag *tag)
   return result;
 }
 
-sw io_inspect_str (const s_str *str)
+DEF_IO_INSPECT(fact, s_fact)
+DEF_IO_INSPECT(str,  s_str)
+
+sw io_puts (const s8 *x)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_inspect_str(&g_c3_env.out, str)) < 0)
+  if ((r = buf_write_1(&g_c3_env.out, x)) < 0)
     return r;
   result += r;
   if ((r = buf_write_u8(&g_c3_env.out, '\n')) < 0)
@@ -73,12 +112,4 @@ sw io_inspect_str (const s_str *str)
   result += r;
   buf_flush(&g_c3_env.out);
   return result;
-}
-
-sw io_puts (const s8 *s)
-{
-  sw r;
-  r = buf_write_1(&g_c3_env.out, s);
-  buf_flush(&g_c3_env.out);
-  return r;
 }
