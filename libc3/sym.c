@@ -51,14 +51,6 @@ bool sym_character_is_reserved (character c)
           c == '}');
 }
 
-const s_sym ** sym_copy (const s_sym **src, const s_sym **dest)
-{
-  assert(src);
-  assert(dest);
-  *dest = *src;
-  return dest;
-}
-
 void sym_delete (s_sym *sym)
 {
   str_clean(&sym->str);
@@ -107,6 +99,14 @@ bool sym_has_reserved_characters (const s_sym *sym)
   return false;
 }
 
+const s_sym ** sym_init_copy (const s_sym **sym, const s_sym **src)
+{
+  assert(src);
+  assert(sym);
+  *sym = *src;
+  return sym;
+}
+
 s_str * sym_inspect (const s_sym *sym, s_str *dest)
 {
   sw size;
@@ -147,7 +147,7 @@ const s_sym * sym_new (const s_str *src)
   sym = malloc(sizeof(s_sym));
   if (! sym)
     err(1, "out of memory");
-  str_init_dup(&sym->str, src);
+  str_init_copy(&sym->str, src);
   g_sym_list = sym_list_new(sym, g_sym_list);
   return sym;
 }

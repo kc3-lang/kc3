@@ -15,6 +15,6 @@
 
 #include "types.h"
 
-p_tag * ptag_copy (const p_tag *src, p_tag *dest);
+p_tag * ptag_init_copy (p_tag *dest, const p_tag *src);
 
 #endif /* LIBC3_PTAG_H */

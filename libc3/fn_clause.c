@@ -33,8 +33,8 @@ s_fn_clause * fn_clause_copy (const s_fn_clause *src, s_fn_clause **dest)
   while (src) {
     *tail = fn_clause_new(NULL);
     (*tail)->arity = src->arity;
-    list_copy((const s_list **) &src->pattern, &(*tail)->pattern);
-    list_copy((const s_list **) &src->algo, &(*tail)->algo);
+    list_init_copy(&(*tail)->pattern, (const s_list **) &src->pattern);
+    list_init_copy(&(*tail)->algo, (const s_list **) &src->algo);
     src = src->next_clause;
     tail = &(*tail)->next_clause;
   }

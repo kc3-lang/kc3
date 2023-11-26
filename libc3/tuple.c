@@ -28,19 +28,6 @@ void tuple_clean (s_tuple *tuple)
   free(tuple->tag);
 }
 
-s_tuple * tuple_copy (const s_tuple *src, s_tuple *dest)
-{
-  uw i = 0;
-  assert(src);
-  assert(dest);
-  tuple_init(dest, src->count);
-  while (i < src->count) {
-    tag_copy(src->tag + i, dest->tag + i);
-    i++;
-  }
-  return dest;
-}
-
 void tuple_delete (s_tuple *tuple)
 {
   tuple_clean(tuple);
@@ -74,6 +61,19 @@ s_tuple * tuple_init_1 (s_tuple *tuple, const s8 *p)
     return NULL;
   }
   buf_clean(&buf);
+  return tuple;
+}
+
+s_tuple * tuple_init_copy (s_tuple *tuple, const s_tuple *src)
+{
+  uw i = 0;
+  assert(src);
+  assert(tuple);
+  tuple_init(tuple, src->count);
+  while (i < src->count) {
+    tag_init_copy(tuple->tag + i, src->tag + i);
+    i++;
+  }
   return tuple;
 }
 

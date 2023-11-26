@@ -40,10 +40,10 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
                                     uw frame_count)
 {
   assert(sprite);
-  assert(surface);
   assert(dim_x);
   assert(dim_y);
-  sprite->surface = surface;
+  if (! (sprite->surface = surface))
+    return NULL;
   sprite->surface_w = cairo_image_surface_get_width(surface);
   sprite->surface_h = cairo_image_surface_get_height(surface);
   sprite->dim_x = dim_x;

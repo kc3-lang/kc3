@@ -73,11 +73,6 @@ void str_clean (s_str *str)
     free(str->free.p);
 }
 
-s_str * str_copy (const s_str *src, s_str *dest)
-{
-  return str_init_dup(dest, src);
-}
-
 void str_delete (s_str *str)
 {
   str_clean(str);
@@ -129,7 +124,7 @@ s_str * str_init_alloc (s_str *str, uw size, const s8 *p)
   return str;
 }
 
-s_str * str_init_dup (s_str *str, const s_str *src)
+s_str * str_init_copy (s_str *str, const s_str *src)
 {
   assert(str);
   assert(src);
@@ -140,7 +135,7 @@ s_str * str_init_dup (s_str *str, const s_str *src)
   return str;
 }
 
-s_str * str_init_dup_1 (s_str *str, const s8 *src)
+s_str * str_init_copy_1 (s_str *str, const s8 *src)
 {
   uw len;
   assert(str);
@@ -179,14 +174,6 @@ s_str * str_init_vf (s_str *str, const char *fmt, va_list ap)
   if (len < 0)
     err(1, "vasprintf");
   return str_init(str, s, len, s);
-}
-
-s_str * str_init_str (s_str *str, const s_str *src)
-{
-  assert(str);
-  assert(src);
-  *str = *src;
-  return str;
 }
 
 s_str * str_inspect (const s_str *src, s_str *dest)
@@ -233,56 +220,60 @@ s_str * str_new_1 (s8 *free, const s8 *s)
   return str;
 }
 
-s_str * str_new_cpy (uw size, const s8 *p)
+s_str * str_new_cpy (const s8 *p, uw size)
 {
   s8 *a;
   s_str *str;
-  a = malloc(size);
-  if (! a)
-    err(1, "out of memory");
+  if (! (a = malloc(size))) {
+    warn("str_new_cpy");
+    return NULL;
+  }
   memcpy(a, p, size);
   str = str_new(a, size, a);
   return str;
 }
 
-s_str * str_new_dup (const s_str *src)
+s_str * str_new_copy (const s_str *src)
 {
-  s8 *n;
-  s_str *str;
+  s8 *a;
+  s_str *dest;
   assert(src);
-  n = malloc(src->size);
-  memcpy(n, src->ptr.p, src->size);
-  str = str_new(n, src->size, n);
-  return str;
+  if (! (a = malloc(src->size))) {
+    warn("str_new_copy");
+    return NULL;
+  }
+  memcpy(a, src->ptr.p, src->size);
+  dest = str_new(a, src->size, a);
+  return dest;
 }
 
 s_str * str_new_empty (void)
 {
-  s_str *str;
-  str = str_new(NULL, 0, NULL);
-  return str;
+  s_str *dest;
+  dest = str_new(NULL, 0, "");
+  return dest;
 }
 
 s_str * str_new_f (const char *fmt, ...)
 {
   va_list ap;
-  s_str *str;
+  s_str *dest;
   va_start(ap, fmt);
-  str = str_new_vf(fmt, ap);
+  dest = str_new_vf(fmt, ap);
   va_end(ap);
-  return str;
+  return dest;
 }
 
 s_str * str_new_vf (const char *fmt, va_list ap)
 {
   int len;
   char *s;
-  s_str *str;
+  s_str *dest;
   len = vasprintf(&s, fmt, ap);
   if (len < 0)
     err(1, "vasprintf");
-  str = str_new(s, len, s);
-  return str;
+  dest = str_new(s, len, s);
+  return dest;
 }
 
 sw str_peek_character (const s_str *str, character *c)

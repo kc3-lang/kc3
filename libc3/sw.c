@@ -98,7 +98,7 @@ sw * sw_cast (s_tag *tag, sw *dest)
   return 0;
 }
 
-sw * sw_copy (const sw *src, sw *dest)
+sw * sw_init_copy (sw *dest, const sw *src)
 {
   assert(src);
   assert(dest);

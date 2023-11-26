@@ -31,18 +31,17 @@ void    str_clean (s_str *str);
 s_str * str_init (s_str *str, s8 *free, uw size, const s8 *p);
 s_str * str_init_1 (s_str *str, s8 *free, const s8 *p);
 s_str * str_init_alloc (s_str *str, uw size, const s8 *p);
-s_str * str_init_dup (s_str *str, const s_str *src);
-s_str * str_init_dup_1 (s_str *str, const s8 *p);
+s_str * str_init_copy (s_str *str, const s_str *src);
+s_str * str_init_copy_1 (s_str *str, const s8 *p);
 s_str * str_init_empty (s_str *str);
 s_str * str_init_f (s_str *str, const char *fmt, ...);
-s_str * str_init_str (s_str *str, const s_str *src);
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap);
 
 /* Constructors, call str_delete after use */
 s_str * str_new (s8 *free, uw size, const s8 *p);
 s_str * str_new_1 (s8 *free, const s8 *p);
-s_str * str_new_cpy (uw size, const s8 *p);
-s_str * str_new_dup (const s_str *src);
+s_str * str_new_cpy (const s8 *p, uw size);
+s_str * str_new_copy (const s_str *src);
 s_str * str_new_empty (void);
 s_str * str_new_f (const char *fmt, ...);
 s_str * str_new_vf (const char *fmt, va_list ap);
@@ -51,13 +50,11 @@ s_str * str_new_vf (const char *fmt, va_list ap);
 void str_delete (s_str *str);
 
 /* Observers */
-
 sw            str_character (const s_str *str, uw position,
                              character *dest);
 character     str_character_escape (character c);
 bool          str_character_is_reserved (character c);
 sw            str_character_position (const s_str *str, character c);
-s_str *       str_copy (const s_str *src, s_str *dest);
 bool          str_has_reserved_characters (const s_str *str);
 s_str *       str_inspect (const s_str *x, s_str *dest);
 sw            str_length_utf8 (const s_str *str);

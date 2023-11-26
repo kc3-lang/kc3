@@ -98,7 +98,7 @@ u32 * u32_cast (s_tag *tag, u32 *dest)
   return 0;
 }
 
-u32 * u32_copy (const u32 *src, u32 *dest)
+u32 * u32_init_copy (u32 *dest, const u32 *src)
 {
   assert(src);
   assert(dest);

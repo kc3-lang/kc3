@@ -15,7 +15,10 @@
 
 #include "types.h"
 
+/* Stack-allocation compatible functions, call quote_clean after use. */
 void      quote_clean (s_quote *quote);
-s_quote * quote_copy (const s_quote *src, s_quote *dest);
+s_quote * quote_init (s_quote *quote, const s_tag *tag);
+s_quote * quote_init_1 (s_quote *quote, const s8 *p);
+s_quote * quote_init_copy (s_quote *quote, const s_quote *src);
 
 #endif /* LIBC3_QUOTE_H */

@@ -116,26 +116,26 @@ void cfn_clean (s_cfn *cfn)
     free(cfn->cif.arg_types);
 }
 
-s_cfn * cfn_copy (const s_cfn *cfn, s_cfn *dest)
+s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
 {
+  assert(src);
   assert(cfn);
-  assert(dest);
-  dest->name = cfn->name;
-  dest->arg_result = cfn->arg_result;
-  list_copy((const s_list **) &cfn->arg_types, &dest->arg_types);
-  dest->arity = cfn->arity;
-  dest->cif = cfn->cif;
-  if (cfn->arity) {
-    dest->cif.arg_types = calloc(cfn->cif.nargs + 1,
+  cfn->name = src->name;
+  cfn->arg_result = src->arg_result;
+  list_init_copy(&cfn->arg_types, (const s_list **) &src->arg_types);
+  cfn->arity = src->arity;
+  cfn->cif = src->cif;
+  if (src->arity) {
+    cfn->cif.arg_types = calloc(src->cif.nargs + 1,
                                  sizeof(ffi_type *));
-    memcpy(dest->cif.arg_types, cfn->cif.arg_types,
-           (cfn->cif.nargs + 1) * sizeof(ffi_type *));
+    memcpy(cfn->cif.arg_types, src->cif.arg_types,
+           (src->cif.nargs + 1) * sizeof(ffi_type *));
   }
-  dest->result_type = cfn->result_type;
-  dest->ptr = cfn->ptr;
-  dest->macro = cfn->macro;
-  dest->special_operator = cfn->special_operator;
-  return dest;
+  cfn->result_type = src->result_type;
+  cfn->ptr = src->ptr;
+  cfn->macro = src->macro;
+  cfn->special_operator = src->special_operator;
+  return cfn;
 }
 
 void cfn_delete (s_cfn *cfn)
@@ -181,7 +181,7 @@ s_cfn * cfn_new_copy (const s_cfn *src)
     errx(1, "cfn_new_copy: out of memory");
     return NULL;
   }
-  cfn_copy(src, cfn);
+  cfn_init_copy(cfn, src);
   return cfn;
 }
 

@@ -98,7 +98,7 @@ u64 * u64_cast (s_tag *tag, u64 *dest)
   return 0;
 }
 
-u64 * u64_copy (const u64 *src, u64 *dest)
+u64 * u64_init_copy (u64 *dest, const u64 *src)
 {
   assert(src);
   assert(dest);

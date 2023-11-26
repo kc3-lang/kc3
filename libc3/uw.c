@@ -98,7 +98,7 @@ uw * uw_cast (s_tag *tag, uw *dest)
   return 0;
 }
 
-uw * uw_copy (const uw *src, uw *dest)
+uw * uw_init_copy (uw *dest, const uw *src)
 {
   assert(src);
   assert(dest);

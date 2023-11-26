@@ -17,8 +17,8 @@
 #include "types.h"
 
 character   character_1 (const s8 *p);
-character * character_copy (const character *src, character *dest);
 void        character_hash_update (character c, t_hash *hash);
+character * character_init_copy (character *c, const character *src);
 bool        character_is_digit (character c);
 bool        character_is_lowercase (character c);
 bool        character_is_printable (character c);

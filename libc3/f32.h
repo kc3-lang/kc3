@@ -15,7 +15,7 @@
 
 #include "types.h"
 
-f32 f32_cast (s_tag *tag);
-f32 * f32_copy (const f32 *src, f32 *dest);
+f32   f32_cast (s_tag *tag);
+f32 * f32_init_copy (f32 *x, const f32 *src);
 
 #endif /* LIBC3_F32_H */

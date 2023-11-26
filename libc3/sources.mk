@@ -262,6 +262,10 @@ SOURCES = \
 	sw.c \
 	sym.c \
 	tag.c \
+	tag_add.c \
+	tag_band.c \
+	tag_bor.c \
+	tag_bxor.c \
 	time.c \
 	tuple.c \
 	type.c \
@@ -397,6 +401,10 @@ LO_SOURCES = \
 	sw.c \
 	sym.c \
 	tag.c \
+	tag_add.c \
+	tag_band.c \
+	tag_bor.c \
+	tag_bxor.c \
 	time.c \
 	tuple.c \
 	type.c \

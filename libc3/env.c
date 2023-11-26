@@ -88,7 +88,7 @@ void env_error_tag (s_env *env, const s_tag *tag)
   assert(tag);
   error_handler = env->error_handler;
   if (error_handler) {
-    tag_copy(tag, &error_handler->tag);
+    tag_init_copy(&error_handler->tag, tag);
     error_handler->backtrace = env->backtrace;
     env_longjmp(env, &error_handler->jmp_buf);
     /* never reached */
@@ -112,7 +112,7 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   assert(env);
   assert(array);
   assert(dest);
-  array_copy(array, &tmp);
+  array_init_copy(&tmp, array);
   item_size = tmp.dimensions[tmp.dimension - 1].item_size;
   if (tmp.data) {
     *dest = tmp;
@@ -182,7 +182,7 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
-  call_copy(call, &c);
+  call_init_copy(&c, call);
   env_eval_call_resolve(env, &c);
   if (c.cfn)
     result = env_eval_call_cfn(env, &c, dest);
@@ -334,11 +334,11 @@ bool env_eval_equal_map (s_env *env, const s_map *a,
   assert(b);
   assert(dest);
   if (! a->count) {
-    map_copy(b, dest);
+    map_init_copy(dest, b);
     return true;
   }
   if (! b->count) {
-    map_copy(a, dest);
+    map_init_copy(dest, a);
     return true;
   }
   if (a->count > b->count) {
@@ -364,8 +364,7 @@ bool env_eval_equal_map (s_env *env, const s_map *a,
   next:
     i++;
   }
-  if (dest)
-    map_copy(b, dest);
+  map_init_copy(dest, b);
   return true;
 }
 
@@ -431,7 +430,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
       if (compare_tag(a, b)) {
         return false;
       }
-      tag_copy(a, dest);
+      tag_init_copy(dest, a);
       return true;
     default:
       break;
@@ -477,7 +476,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
       warnx("env_eval_compare_tag: value mismatch");
       return false;
     }
-    tag_copy(a, dest);
+    tag_init_copy(dest, a);
     return true;
   default:
     break;
@@ -575,7 +574,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   s_ident tmp_ident;
   assert(env);
   assert(ident);
-  ident_copy(ident, &tmp_ident);
+  ident_init_copy(&tmp_ident, ident);
   ident_resolve_module(&tmp_ident, env);
   if (! ((tag = frame_get(env->frame, tmp_ident.sym)) ||
          (tag = ident_get(&tmp_ident, &env->facts, &tmp)))) {
@@ -584,7 +583,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
           tmp_ident.sym->str.ptr.ps8);
     return false;
   }
-  tag_copy(tag, dest);
+  tag_init_copy(dest, tag);
   return true;
 }
 
@@ -663,7 +662,7 @@ bool env_eval_quote(s_env *env, const s_quote *quote, s_tag *dest)
   assert(quote);
   assert(dest);
   (void) env;
-  if (! tag_copy(quote->tag, dest))
+  if (! tag_init_copy(dest, quote->tag))
     return false;
   return true;
 }
@@ -711,7 +710,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_U64:
   case TAG_UW:
   case TAG_VAR:
-    tag_copy(tag, dest);
+    tag_init_copy(dest, tag);
     return true;
   }
   assert(! "env_eval_tag: unknown tag type");

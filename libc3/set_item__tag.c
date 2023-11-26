@@ -23,7 +23,7 @@ set_item_new__tag (const s_tag *data, uw hash, s_set_item__tag *next)
   s_set_item__tag *item;
   if (! (item = malloc(sizeof(s_set_item__tag))))
     errx(1, "set_item_new__tag: out of memory");
-  tag_copy(data, &item->data);
+  tag_init_copy(&item->data, data);
   item->hash = hash;
   item->next = next;
   item->usage = 0;

@@ -15,6 +15,6 @@
 
 #include "types.h"
 
-s_tag * var_copy (const s_tag *src, s_tag *dest);
+s_tag * var_init_copy (s_tag *var, const s_tag *src);
 
 #endif /* LIBC3_VAR_H */

@@ -643,7 +643,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   bzero(&tmp3, sizeof(s_call));
   left = &tmp.arguments->tag;
   right = &list_next(tmp.arguments)->tag;
-  tag_copy(&dest->arguments->tag, left);
+  tag_init_copy(left, &dest->arguments->tag);
   if ((r = buf_parse_ident_peek(buf, &next_op)) <= 0)
     goto restore;
   if (! operator_resolve(&next_op, 2, &next_op) ||

@@ -19,10 +19,15 @@ CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.mk
 
+IMG_SOURCES = \
+	../../../../../img/flaps.png \
+	../../../../../img/toast.png \
+
 build:
 	${MAKE} ${APP_PROG}
 	${MAKE} ${APP}/Contents/Frameworks
 	rsync -aP --delete ../../../../../lib ${APP}/Contents/
+	rsync -aP ${IMG_SOURCES} ${APP}/Contents/img/
 
 all:
 	${MAKE} build
@@ -34,6 +39,7 @@ asan:
 	${MAKE} ${APP_PROG_ASAN}
 	${MAKE} ${APP_ASAN}/Contents/Frameworks
 	rsync -aP --delete ../../../../../lib ${APP_ASAN}/Contents/
+	rsync -aP ${IMG_SOURCES} ${APP_ASAN}/Contents/img/
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -45,11 +51,13 @@ cov:
 	${MAKE} ${APP_PROG_COV}
 	${MAKE} ${APP_COV}/Contents/Frameworks
 	rsync -aP --delete ../../../../../lib ${APP_COV}/Contents/
+	rsync -aP ${IMG_SOURCES} ${APP_COV}/Contents/img/
 
 debug:
 	${MAKE} ${APP_PROG_DEBUG}
 	${MAKE} ${APP_DEBUG}/Contents/Frameworks
 	rsync -aP --delete ../../../../../lib ${APP_DEBUG}/Contents/
+	rsync -aP ${IMG_SOURCES} ${APP_DEBUG}/Contents/img/
 
 demo: build
 	time ${APP_PROG}

@@ -29,14 +29,6 @@ void fn_clean (s_fn *fn)
   fn_clause_delete_all(fn->clauses);
 }
 
-s_fn * fn_copy (const s_fn *src, s_fn *dest)
-{
-  fn_clause_copy(src->clauses, &dest->clauses);
-  dest->macro = src->macro;
-  dest->special_operator = src->special_operator;
-  return dest;
-}
-
 void fn_delete (s_fn *fn)
 {
   fn_clean(fn);
@@ -62,6 +54,14 @@ s_fn * fn_init_1 (s_fn *fn, s8 *p)
   return fn;
 }
 
+s_fn * fn_init_copy (s_fn *fn, const s_fn *src)
+{
+  fn_clause_copy(src->clauses, &fn->clauses);
+  fn->macro = src->macro;
+  fn->special_operator = src->special_operator;
+  return fn;
+}
+
 s_fn * fn_new (void)
 {
   s_fn *fn;
@@ -71,11 +71,11 @@ s_fn * fn_new (void)
   return fn;
 }
 
-s_fn * fn_new_copy (const s_fn *fn)
+s_fn * fn_new_copy (const s_fn *src)
 {
-  s_fn *tmp;
-  assert(fn);
-  tmp = fn_new();
-  fn_copy(fn, tmp);
-  return tmp;
+  s_fn *fn;
+  assert(src);
+  if (! (fn = calloc(1, sizeof(s_fn))))
+    err(1, "fn_new_copy: calloc");
+  return fn_init_copy(fn, src);
 }

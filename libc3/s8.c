@@ -98,7 +98,7 @@ s8 * s8_cast (s_tag *tag, s8 *dest)
   return 0;
 }
 
-s8 * s8_copy (const s8 *src, s8 *dest)
+s8 * s8_init_copy (s8 *dest, const s8 *src)
 {
   assert(src);
   assert(dest);

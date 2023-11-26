@@ -98,7 +98,7 @@ u_bits$ * u_bits$_cast (s_tag *tag, u_bits$ *dest)
   return 0;
 }
 
-u_bits$ * u_bits$_copy (const u_bits$ *src, u_bits$ *dest)
+u_bits$ * u_bits$_init_copy (u_bits$ *dest, const u_bits$ *src)
 {
   assert(src);
   assert(dest);
