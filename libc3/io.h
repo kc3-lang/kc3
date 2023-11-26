@@ -15,15 +15,22 @@
 
 #include "types.h"
 
+#define ERR_INSPECT(name, type)                                        \
+  sw err_inspect_ ## name (const type *x)                              \
+
+#define IO_INSPECT(name, type)                                         \
+  sw io_inspect_ ## name (const type *x)                               \
+
 /* error output */
-sw err_inspect (const s_tag *tag);
-sw err_inspect_fn_pattern (const s_list *list);
-sw err_inspect_list (const s_list *list);
-sw err_puts (const s8 *s);
+sw err_inspect (const s_tag *x);
+sw err_inspect_fn_pattern (const s_list *x);
+ERR_INSPECT(list, s_list);
+sw err_puts (const s8 *x);
 
 /* standard output */
-sw io_inspect (const s_tag *tag);
-sw io_inspect_str (const s_str *str);
-sw io_puts (const s8 *s);
+sw io_inspect (const s_tag *x);
+IO_INSPECT(fact, s_fact);
+IO_INSPECT(str,  s_str);
+sw io_puts (const s8 *x);
 
 #endif /* LIBC3_IO_H */

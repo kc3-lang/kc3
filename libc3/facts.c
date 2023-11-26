@@ -29,6 +29,9 @@
 #include "set__tag.h"
 #include "skiplist__fact.h"
 #include "tag.h"
+/* debug */
+#include "env.h"
+#include "io.h"
 
 sw facts_open_file_create (s_facts *facts, const s_str *path);
 sw facts_open_log (s_facts *facts, s_buf *buf);
@@ -252,6 +255,8 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       goto ko_fact;
     result += r;
     factp = fact_r(&fact);
+    buf_write_1(&g_c3_env.out, replace ? "replace " : "add ");
+    io_inspect_fact(factp);
     if (replace)
       facts_replace_fact(facts, factp);
     else
