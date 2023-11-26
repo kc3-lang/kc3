@@ -14,7 +14,7 @@
 #include "buf.h"
 #include "buf_inspect.h"
 
-bool *  bool_copy (const bool *src, bool *dest)
+bool * bool_init_copy (bool *dest, const bool *src)
 {
   *dest = *src;
   return dest;

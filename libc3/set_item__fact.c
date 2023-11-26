@@ -23,7 +23,7 @@ set_item_new__fact (const s_fact *data, uw hash, s_set_item__fact *next)
   s_set_item__fact *item;
   if (! (item = malloc(sizeof(s_set_item__fact))))
     errx(1, "set_item_new__fact: out of memory");
-  fact_copy(data, &item->data);
+  fact_init_copy(&item->data, data);
   item->hash = hash;
   item->next = next;
   item->usage = 0;

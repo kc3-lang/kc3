@@ -67,7 +67,9 @@ bool toasters_load (s_sequence *seq,
   tag_clean(&seq->tag);
   tag_init_list(&seq->tag, NULL);
   while (y < window->h - window->w * g_speed_y / g_speed_x) {
-    tag_init_list(&seq->tag, list_new_f64(y, seq->tag.data.list));
+    tag_init_list(&seq->tag,
+                  list_new_list(list_new_f64(y, NULL),
+                                seq->tag.data.list));
     y += 100.0;
   }
   return true;
@@ -96,10 +98,10 @@ bool toasters_render (s_sequence *seq, s_window_cairo *window,
         first = list_next(j);
         x = 1000.0;
         if (first && first->tag.type == TAG_MAP)
-          x = j->tag.data.map.values[2].data.f64;
-        if (x > 100) {
-          i->tag.data.list = list_new(i->tag.data.list);
-          toaster_init(&i->tag.data.list->tag, y);
+          x = first->tag.data.map.values[2].data.f64;
+        if (x > 100.0) {
+          first = j->next.data.list = list_new(j->next.data.list);
+          toaster_init(&first->tag, y);
         }
         j = list_next(j);
         while (j) {

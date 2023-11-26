@@ -53,8 +53,8 @@
     [self.window close];
     [self.window release];
     [[NSApplication sharedApplication] stop:nil];
+    exit(1);
   }
-
   [NSTimer scheduledTimerWithTimeInterval:0.01
                                    target:self
                                  selector:@selector(redrawWindow)

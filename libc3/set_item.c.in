@@ -23,7 +23,7 @@ set_item_new___NAME$ (const _TYPE$ *data, uw hash, s_set_item___NAME$ *next)
   s_set_item___NAME$ *item;
   if (! (item = malloc(sizeof(s_set_item___NAME$))))
     errx(1, "set_item_new___NAME$: out of memory");
-  _NAME$_copy(data, &item->data);
+  _NAME$_init_copy(&item->data, data);
   item->hash = hash;
   item->next = next;
   item->usage = 0;

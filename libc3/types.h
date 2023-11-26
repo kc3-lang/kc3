@@ -180,7 +180,7 @@ typedef u64          t_skiplist_height;
 typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
 typedef sw (* f_buf_inspect_size) (const void *x);
 typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
-typedef void * (* f_copy) (const void *a, void *b);
+typedef void * (* f_init_copy) (void *x, const void *src);
 typedef bool (* f_sequence_load) (s_sequence *seq, void *window);
 typedef bool (* f_sequence_render) (s_sequence *seq, void *window,
                                     void *context);

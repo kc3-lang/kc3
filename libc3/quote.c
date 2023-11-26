@@ -21,14 +21,14 @@ void quote_clean (s_quote *quote)
   tag_delete(quote->tag);
 }
 
-s_quote * quote_copy (const s_quote *src, s_quote *dest)
-{
-  dest->tag = tag_new_copy(src->tag);
-  return dest;
-}
-
 s_quote * quote_init (s_quote *quote, const s_tag *tag)
 {
   quote->tag = tag_new_copy(tag);
+  return quote;
+}
+
+s_quote * quote_init_copy (s_quote *quote, const s_quote *src)
+{
+  quote->tag = tag_new_copy(src->tag);
   return quote;
 }

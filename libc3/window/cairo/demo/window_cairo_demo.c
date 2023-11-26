@@ -19,6 +19,7 @@
 #include "../../window.h"
 #include "../window_cairo.h"
 #include "../cairo_png.h"
+#include "../cairo_sprite.h"
 #include "window_cairo_demo.h"
 #include "bg_rect.h"
 #include "lightspeed.h"
@@ -78,8 +79,12 @@ bool window_cairo_demo_load (s_window_cairo *window)
   window_cairo_sequence_init(window->sequence + 1, 30.0,
                              "02. Lightspeed",
                              lightspeed_load, lightspeed_render);
-  g_toaster_sprite.surface = cairo_png_1("img/flaps.png");
-  g_toast_sprite.surface = cairo_png_1("img/toast.png");
+  if (! cairo_sprite_init(&g_toaster_sprite,
+                          cairo_png_1("img/flaps.png"), 4, 1, 4))
+    return false;
+  if (! cairo_sprite_init(&g_toast_sprite, cairo_png_1("img/toast.png"),
+                          1, 1, 1))
+    return false;
   window_cairo_sequence_init(window->sequence + 2, 30.0,
                              "03. Toasters",
                              toasters_load, toasters_render);

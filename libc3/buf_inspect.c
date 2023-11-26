@@ -1534,7 +1534,7 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str)
     goto clean;
   }
   result += r;
-  str_init_str(&s, str);
+  s = *str;
   while (r) {
     if ((r = str_read_character_utf8(&s, &c)) < 0)
       goto restore;
@@ -1575,7 +1575,7 @@ sw buf_inspect_str_reserved_size (const s_str *str)
   s_str s;
   r = strlen("\"");
   result += r;
-  str_init_str(&s, str);
+  s = *str;
   while (r) {
     if ((r = str_read_character_utf8(&s, &c)) < 0)
       goto restore;

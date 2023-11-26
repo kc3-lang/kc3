@@ -21,8 +21,10 @@
 
 #include "types.h"
 
+/* Stack-allocation compatible functions */
+bool * bool_init_copy (bool *dest, const bool *src);
+
 /* Observers */
-bool *  bool_copy (const bool *src, bool *dest);
 s_str * bool_inspect (bool *b, s_str *dest);
 
 #endif /* LIBC3_BOOL_H */

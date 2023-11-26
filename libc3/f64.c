@@ -82,12 +82,12 @@ f64 f64_cast (s_tag *tag)
   return 0;
 }
 
-f64 * f64_copy (const f64 *src, f64 *dest)
+f64 * f64_init_copy (f64 *x, const f64 *src)
 {
   assert(src);
-  assert(dest);
-  *dest = *src;
-  return dest;
+  assert(x);
+  *x = *src;
+  return x;
 }
 
 f64 * f64_random (f64 *dest)

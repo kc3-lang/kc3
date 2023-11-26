@@ -15,11 +15,12 @@
 #include "tag.h"
 #include "var.h"
 
-s_tag * var_copy (const s_tag *src, s_tag *dest)
+s_tag * var_init_copy (s_tag *dest, const s_tag *src)
 {
   assert(src);
   assert(dest);
   (void) src;
+  /* ?? */
   tag_init_void(dest);
   return dest;
 }

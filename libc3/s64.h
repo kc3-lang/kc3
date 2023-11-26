@@ -17,6 +17,6 @@
 #include "types.h"
 
 s64 * s64_cast (s_tag *tag, s64 *dest);
-s64 * s64_copy (const s64 *src, s64 *dest);
+s64 * s64_init_copy (s64 *dest, const s64 *src);
 
 #endif /* LIBC3_S64_H */

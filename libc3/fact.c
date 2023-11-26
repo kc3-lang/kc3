@@ -18,14 +18,6 @@
 #include "fact.h"
 #include "tag.h"
 
-s_fact * fact_copy (const s_fact *src, s_fact *dest)
-{
-  assert(src);
-  assert(dest);
-  *dest = *src;
-  return dest;
-}
-
 uw fact_hash_uw (const s_fact *fact)
 {
   t_hash hash;
@@ -43,6 +35,14 @@ s_fact * fact_init (s_fact *fact, const s_tag *subject,
   fact->predicate = predicate;
   fact->object = object;
   fact->id = 0;
+  return fact;
+}
+
+s_fact * fact_init_copy (s_fact *fact, const s_fact *src)
+{
+  assert(src);
+  assert(fact);
+  *fact = *src;
   return fact;
 }
 

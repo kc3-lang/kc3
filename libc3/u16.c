@@ -98,7 +98,7 @@ u16 * u16_cast (s_tag *tag, u16 *dest)
   return 0;
 }
 
-u16 * u16_copy (const u16 *src, u16 *dest)
+u16 * u16_init_copy (u16 *dest, const u16 *src)
 {
   assert(src);
   assert(dest);

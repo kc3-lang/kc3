@@ -22,8 +22,8 @@ bool cfn_test_not (bool a);
 
 /* 2 */
 TEST_CASE_PROTOTYPE(cfn_apply);
-TEST_CASE_PROTOTYPE(cfn_copy);
 TEST_CASE_PROTOTYPE(cfn_init_clean);
+TEST_CASE_PROTOTYPE(cfn_init_copy);
 TEST_CASE_PROTOTYPE(cfn_link);
 TEST_CASE_PROTOTYPE(cfn_prep_cif);
 
@@ -33,7 +33,7 @@ void cfn_test (void);
 void cfn_test (void)
 {
   TEST_CASE_RUN(cfn_init_clean);
-  TEST_CASE_RUN(cfn_copy);
+  TEST_CASE_RUN(cfn_init_copy);
   TEST_CASE_RUN(cfn_link);
   TEST_CASE_RUN(cfn_prep_cif);
   TEST_CASE_RUN(cfn_apply);
@@ -64,7 +64,7 @@ TEST_CASE(cfn_apply)
 }
 TEST_CASE_END(cfn_apply)
 
-TEST_CASE(cfn_copy)
+TEST_CASE(cfn_init_copy)
 {
   s_cfn a;
   s_list *a_arg_types;
@@ -73,7 +73,7 @@ TEST_CASE(cfn_copy)
   cfn_init(&a, sym_1("cfn_test_not"),
            list_1("(:bool)"),
            sym_1("bool"));
-  TEST_EQ(cfn_copy(&a, &b), &b);
+  TEST_EQ(cfn_init_copy(&b, &a), &b);
   TEST_EQ(a.name, b.name);
   TEST_EQ(a.ptr.p, b.ptr.p);
   TEST_EQ(a.arity, b.arity);
@@ -98,7 +98,7 @@ TEST_CASE(cfn_copy)
   cfn_clean(&b);
   cfn_clean(&a);
 }
-TEST_CASE_END(cfn_copy)
+TEST_CASE_END(cfn_init_copy)
 
 TEST_CASE(cfn_init_clean)
 {

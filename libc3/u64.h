@@ -17,6 +17,6 @@
 #include "types.h"
 
 u64 * u64_cast (s_tag *tag, u64 *dest);
-u64 * u64_copy (const u64 *src, u64 *dest);
+u64 * u64_init_copy (u64 *u, const u64 *src);
 
 #endif /* LIBC3_U64_H */

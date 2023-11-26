@@ -81,10 +81,10 @@ f32 f32_cast (s_tag *tag)
   return 0;
 }
 
-f32 * f32_copy (const f32 *src, f32 *dest)
+f32 * f32_init_copy (f32 *x, const f32 *src)
 {
   assert(src);
-  assert(dest);
-  *dest = *src;
-  return dest;
+  assert(x);
+  *x = *src;
+  return x;
 }

@@ -17,6 +17,6 @@
 #include "types.h"
 
 u8 * u8_cast (s_tag *tag, u8 *dest);
-u8 * u8_copy (const u8 *src, u8 *dest);
+u8 * u8_init_copy (u8 *u, const u8 *src);
 
 #endif /* LIBC3_U8_H */

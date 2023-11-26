@@ -55,36 +55,10 @@ s_list ** list_cast (const s_tag *tag, s_list **list)
 {
   assert(tag);
   if (tag->type == TAG_LIST) {
-    list_copy((const s_list **) &tag->data.list, list);
+    list_init_copy(list, (const s_list **) &tag->data.list);
     return list;
   }
   return NULL;
-}
-
-/* FIXME: does not work on circular lists */
-s_list ** list_copy (const s_list **src, s_list **dest)
-{
-  s_list **i;
-  s_list *next;
-  const s_list *s;
-  assert(src);
-  assert(dest);
-  i = dest;
-  *i = NULL;
-  s = *src;
-  while (s) {
-    *i = list_new(NULL);
-    tag_copy(&s->tag, &(*i)->tag);
-    if ((next = list_next(s))) {
-      s = next;
-      i = &(*i)->next.data.list;
-    }
-    else {
-      tag_copy(&s->next, &(*i)->next);
-      break;
-    }
-  }
-  return dest;
 }
 
 s_list * list_delete (s_list *list)
@@ -115,12 +89,39 @@ s_list * list_init (s_list *list, s_list *next)
   return list;
 }
 
-s_list * list_init_copy (s_list *list, const s_tag *tag, s_list *next)
+/* FIXME: does not work on circular lists */
+s_list ** list_init_copy (s_list **list, const s_list **src)
+{
+  s_list **i;
+  s_list *next;
+  const s_list *s;
+  assert(src);
+  assert(list);
+  i = list;
+  *i = NULL;
+  s = *src;
+  while (s) {
+    *i = list_new(NULL);
+    tag_init_copy(&(*i)->tag, &s->tag);
+    if ((next = list_next(s))) {
+      s = next;
+      i = &(*i)->next.data.list;
+    }
+    else {
+      tag_init_copy(&(*i)->next, &s->next);
+      break;
+    }
+  }
+  return list;
+}
+
+s_list * list_init_copy_tag (s_list *list, const s_tag *tag, s_list *next)
 {
   assert(list);
   assert(tag);
   list_init(list, next);
-  tag_copy(tag, &list->tag);
+  if (! tag_init_copy(&list->tag, tag))
+    return NULL;
   return list;
 }
 
@@ -163,54 +164,66 @@ s_list * list_next (const s_list *list)
 
 s_list * list_new (s_list *next)
 {
-  s_list *list;
-  if (! (list = calloc(1, sizeof(s_list)))) {
+  s_list *dest;
+  if (! (dest = calloc(1, sizeof(s_list)))) {
     warnx("list_new: out of memory");
     return NULL;
   }
-  return list_init(list, next);
+  return list_init(dest, next);
 }
 
-s_list * list_new_copy (const s_tag *tag, s_list *next)
+s_list * list_new_copy (const s_tag *x, s_list *next)
 {
-  s_list *list;
-  if ((list = list_new(next))) {
-    if (! tag_copy(tag, &list->tag)) {
-      free(list);
+  s_list *dest;
+  if ((dest = list_new(next))) {
+    if (! tag_init_copy(&dest->tag, x)) {
+      free(dest);
       return NULL;
     }
   }
-  return list;
+  return dest;
 }
 
 s_list * list_new_f64 (f64 x, s_list *next)
 {
-  s_list *list;
-  if ((list = list_new(next))) {
-    if (! tag_init_f64(&list->tag, x)) {
-      free(list);
+  s_list *dest;
+  if ((dest = list_new(next))) {
+    if (! tag_init_f64(&dest->tag, x)) {
+      free(dest);
       return NULL;
     }
   }
-  return list;
+  return dest;
 }
 
-s_list * list_new_str_1 (s8 *free_, const s8 *p, s_list *next)
+s_list * list_new_list (s_list *x, s_list *next)
 {
-  s_list *list;
-  if ((list = list_new(next))) {
-    if (! tag_init_str_1(&list->tag, free_, p)) {
-      free(list);
+  s_list *dest;
+  if ((dest = list_new(next))) {
+    if (! tag_init_list(&dest->tag, x)) {
+      free(dest);
       return NULL;
     }
   }
-  return list;
+  return dest;
+}
+
+s_list * list_new_str_1 (s8 *x_free, const s8 *x, s_list *next)
+{
+  s_list *dest;
+  if ((dest = list_new(next))) {
+    if (! tag_init_str_1(&dest->tag, x_free, x)) {
+      free(dest);
+      return NULL;
+    }
+  }
+  return dest;
 }
 
 s_array * list_to_array (s_list *list, const s_sym *type,
                          s_array *dest)
 {
-  f_copy copy;
+  f_init_copy init_copy;
   s8 *data;
   void *data_list;
   s_list *l;
@@ -230,11 +243,11 @@ s_array * list_to_array (s_list *list, const s_sym *type,
   dest->size = len * size;
   if (! (data = dest->data = calloc(len, size)))
     errx(1, "list_to_array: out of memory: 2");
-  copy = array_type_to_copy(type);
+  init_copy = array_type_to_init_copy(type);
   l = list;
   while (l) {
     data_list = tag_to_pointer(&l->tag, type);
-    copy(data_list, data);
+    init_copy(data, data_list);
     data += size;
     l = list_next(l);
   }

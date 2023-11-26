@@ -66,13 +66,13 @@
 
 TEST_CASE_PROTOTYPE(str_character_is_reserved);
 TEST_CASE_PROTOTYPE(str_init_clean);
-TEST_CASE_PROTOTYPE(str_init_dup);
-TEST_CASE_PROTOTYPE(str_init_dup_1);
+TEST_CASE_PROTOTYPE(str_init_copy);
+TEST_CASE_PROTOTYPE(str_init_copy_1);
 TEST_CASE_PROTOTYPE(str_inspect);
 TEST_CASE_PROTOTYPE(str_new_1);
 TEST_CASE_PROTOTYPE(str_new_cpy);
 TEST_CASE_PROTOTYPE(str_new_delete);
-TEST_CASE_PROTOTYPE(str_new_dup);
+TEST_CASE_PROTOTYPE(str_new_copy);
 TEST_CASE_PROTOTYPE(str_new_f);
 TEST_CASE_PROTOTYPE(str_to_hex);
 TEST_CASE_PROTOTYPE(str_to_ident);
@@ -82,11 +82,11 @@ TEST_CASE_PROTOTYPE(str_to_sym);
 void str_test (void)
 {
   TEST_CASE_RUN(str_init_clean);
-  TEST_CASE_RUN(str_init_dup);
-  TEST_CASE_RUN(str_init_dup_1);
+  TEST_CASE_RUN(str_init_copy);
+  TEST_CASE_RUN(str_init_copy_1);
   TEST_CASE_RUN(str_new_delete);
   TEST_CASE_RUN(str_new_1);
-  TEST_CASE_RUN(str_new_dup);
+  TEST_CASE_RUN(str_new_copy);
   TEST_CASE_RUN(str_new_cpy);
   TEST_CASE_RUN(str_new_f);
   TEST_CASE_RUN(str_character_is_reserved);
@@ -157,7 +157,7 @@ TEST_CASE(str_init_clean)
 }
 TEST_CASE_END(str_init_clean)
 
-TEST_CASE(str_init_dup)
+TEST_CASE(str_init_copy)
 {
   size_t len;
   char *m;
@@ -165,7 +165,7 @@ TEST_CASE(str_init_dup)
   s_str test;
   len = 4;
   str_init(&test, NULL, len, "test");
-  str_init_dup(&str, &test);
+  str_init_copy(&str, &test);
   str_clean(&test);
   TEST_EQ(str.size, len);
   TEST_STRNCMP(str.ptr.p, "test", len);
@@ -175,21 +175,21 @@ TEST_CASE(str_init_dup)
   assert(m);
   memcpy(m, "test", len);
   str_init(&test, m, len, m);
-  str_init_dup(&str, &test);
+  str_init_copy(&str, &test);
   str_clean(&test);
   TEST_EQ(str.size, len);
   TEST_STRNCMP(str.ptr.p, "test", len);
   str_clean(&str);
 }
-TEST_CASE_END(str_init_dup)
+TEST_CASE_END(str_init_copy)
 
-TEST_CASE(str_init_dup_1)
+TEST_CASE(str_init_copy_1)
 {
   size_t len;
   char *m;
   s_str str;
   len = 4;
-  str_init_dup_1(&str, "test");
+  str_init_copy_1(&str, "test");
   TEST_EQ(str.size, len);
   TEST_STRNCMP(str.ptr.p, "test", len);
   str_clean(&str);
@@ -197,13 +197,13 @@ TEST_CASE(str_init_dup_1)
   m = malloc(len + 1);
   assert(m);
   memcpy(m, "test", len + 1);
-  str_init_dup_1(&str, m);
+  str_init_copy_1(&str, m);
   free(m);
   TEST_EQ(str.size, len);
   TEST_STRNCMP(str.ptr.p, "test", len);
   str_clean(&str);
 }
-TEST_CASE_END(str_init_dup_1)
+TEST_CASE_END(str_init_copy_1)
 
 TEST_CASE(str_inspect)
 {
@@ -287,7 +287,7 @@ TEST_CASE_END(str_new_1)
 TEST_CASE(str_new_cpy)
 {
   s_str *str;
-  TEST_ASSERT((str = str_new_cpy(4, "test")));
+  TEST_ASSERT((str = str_new_cpy("test", 4)));
   str_delete(str);
 }
 TEST_CASE_END(str_new_cpy)
@@ -312,7 +312,7 @@ TEST_CASE(str_new_delete)
 }
 TEST_CASE_END(str_new_delete)
 
-TEST_CASE(str_new_dup)
+TEST_CASE(str_new_copy)
 {
   size_t len;
   char *m;
@@ -320,7 +320,7 @@ TEST_CASE(str_new_dup)
   s_str test;
   len = 4;
   str_init(&test, NULL, len, "test");
-  TEST_ASSERT((str = str_new_dup(&test)));
+  TEST_ASSERT((str = str_new_copy(&test)));
   str_clean(&test);
   TEST_EQ(str->size, len);
   TEST_STRNCMP(str->ptr.p, "test", len);
@@ -329,13 +329,13 @@ TEST_CASE(str_new_dup)
   m = malloc(len);
   memcpy(m, "test", len);
   str_init(&test, m, len, m);
-  TEST_ASSERT((str = str_new_dup(&test)));
+  TEST_ASSERT((str = str_new_copy(&test)));
   str_clean(&test);
   TEST_EQ(str->size, len);
   TEST_STRNCMP(str->ptr.p, "test", len);
   str_delete(str);
 }
-TEST_CASE_END(str_new_dup)
+TEST_CASE_END(str_new_copy)
 
 TEST_CASE(str_new_f)
 {

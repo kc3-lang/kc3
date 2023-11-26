@@ -19,6 +19,7 @@
 void    map_clean (s_map *map);
 s_map * map_init (s_map *map, uw size);
 s_map * map_init_1 (s_map *map, const s8 *p);
+s_map * map_init_copy (s_map *map, const s_map *src);
 s_map * map_init_from_lists (s_map *map, const s_list *keys,
                              const s_list *values);
 
@@ -31,9 +32,6 @@ s_map * map_new_from_lists (const s_list *keys, const s_list *values);
 /* Modifiers */
 s_map * map_set (s_map *map, const s_tag *key, const s_tag *value);
 s_map * map_sort (s_map *map);
-
-/* Observers */
-s_map * map_copy (const s_map *src, s_map *dest);
 
 /* Operators */
 s_tag * map_access (const s_map *map, const s_tag *key, s_tag *value);

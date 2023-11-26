@@ -17,6 +17,6 @@
 #include "types.h"
 
 u16 * u16_cast (s_tag *tag, u16 *dest);
-u16 * u16_copy (const u16 *src, u16 *dest);
+u16 * u16_init_copy (u16 *u, const u16 *src);
 
 #endif /* LIBC3_U16_H */

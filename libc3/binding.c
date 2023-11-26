@@ -49,7 +49,7 @@ s_binding * binding_init (s_binding *binding, const s_sym *name,
 {
   assert(binding);
   binding->name = name;
-  tag_copy(value, &binding->value);
+  tag_init_copy(&binding->value, value);
   binding->next = next;
   return binding;
 }

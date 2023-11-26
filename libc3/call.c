@@ -36,17 +36,6 @@ void call_clean (s_call *call)
     fn_delete(call->fn);
 }
 
-s_call * call_copy (const s_call *src, s_call *dest)
-{
-  assert(src);
-  assert(dest);
-  ident_copy(&src->ident, &dest->ident);
-  list_copy((const s_list **) &src->arguments, &dest->arguments);
-  dest->cfn = src->cfn;
-  dest->fn = src->fn;
-  return dest;
-}
-
 bool call_get (s_call *call, s_facts *facts)
 {
   s_facts_cursor cursor;
@@ -220,6 +209,17 @@ s_call * call_init_cast (s_call *call, const s_sym *type,
   bzero(call, sizeof(s_call));
   ident_init(&call->ident, type, sym_1("cast"));
   call->arguments = list_new_copy(tag, NULL);
+  return call;
+}
+
+s_call * call_init_copy (s_call *call, const s_call *src)
+{
+  assert(src);
+  assert(call);
+  ident_init_copy(&call->ident, &src->ident);
+  list_init_copy(&call->arguments, (const s_list **) &src->arguments);
+  call->cfn = src->cfn;
+  call->fn = src->fn;
   return call;
 }
 

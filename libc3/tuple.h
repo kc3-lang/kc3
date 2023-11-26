@@ -25,6 +25,7 @@
 /* Stack allocation compatible functions */
 s_tuple * tuple_init (s_tuple *tuple, uw count);
 s_tuple * tuple_init_1 (s_tuple *tuple, const s8 *p);
+s_tuple * tuple_init_copy (s_tuple *tuple, const s_tuple *src);
 void      tuple_clean (s_tuple *tuple);
 
 /* Constructors, call tuple_delete after use */
@@ -38,7 +39,6 @@ void tuple_delete (s_tuple *tuple);
 s_tuple * tuple_1 (s_tuple *tuple, const s8 *p);
 
 /* Observers */
-s_tuple *        tuple_copy (const s_tuple *src, s_tuple *dest);
 s_list *         tuple_to_list (const s_tuple *tuple, s_list **list);
 
 /* Call str_delete after use. */

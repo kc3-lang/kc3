@@ -49,8 +49,6 @@
 #include "uw.h"
 #include "var.h"
 
-bool array_copy_data (f_copy copy, const u8 *src, u8 *dest);
-
 void array_clean (s_array *a)
 {
   u8 *data;
@@ -84,76 +82,6 @@ void array_clean (s_array *a)
   }
 }
 
-s_array * array_copy (const s_array *src, s_array *dest)
-{
-  f_copy copy;
-  u8 *data_dest;
-  u8 *data_src;
-  uw i = 0;
-  uw item_size;
-  s_array tmp;
-  assert(dest);
-  assert(src);
-  assert(src->dimension);
-  assert(src->dimensions);
-  (void) i;
-  bzero(&tmp, sizeof(s_array));
-  if (! src->dimension) {
-    assert(! "array_copy: zero dimension");
-    errx(1, "array_copy: zero dimension");
-    return NULL;
-  }
-#ifdef DEBUG
-  while (i < src->dimension) {
-    assert(src->dimensions[i].count);
-    i++;
-  }
-#endif
-  tmp.dimension = src->dimension;
-  if (! (tmp.dimensions = calloc(src->dimension,
-                                 sizeof(s_array_dimension)))) {
-    assert(! "array_copy: out of memory: dimensions");
-    warnx("array_copy: out of memory: dimensions");
-    return NULL;
-  }
-  memcpy(tmp.dimensions, src->dimensions,
-         src->dimension * sizeof(s_array_dimension));
-  tmp.count = src->count;
-  tmp.size = src->size;
-  tmp.type = src->type;
-  if (src->data) {
-    if (! (tmp.data = calloc(1, src->size)))
-      errx(1, "array_copy: out of memory");
-    copy = array_type_to_copy(src->type);
-    data_dest = tmp.data;
-    data_src = src->data;
-    i = 0;
-    item_size = src->dimensions[src->dimension - 1].item_size;
-    while (i < src->count) {
-      if (copy(data_src, data_dest) != data_dest) {
-        return NULL;
-      }
-      data_dest += item_size;
-      data_src += item_size;
-      i++;
-    }
-  }
-  else
-    tmp.data = NULL;
-  if (src->tags) {
-    tmp.tags = calloc(src->count, sizeof(s_tag));
-    i = 0;
-    while (i < src->count) {
-      tag_copy(src->tags + i, tmp.tags + i);
-      i++;
-    }
-  }
-  else
-    tmp.tags = NULL;
-  *dest = tmp;
-  return dest;
-}
-
 void * array_data (const s_array *a, const uw *address)
 {
   uw i = 0;
@@ -176,17 +104,17 @@ void * array_data (const s_array *a, const uw *address)
 s_tag * array_data_tag (s_tag *a, const s_tag *address, s_tag *dest)
 {
   void *a_data;
-  f_copy copy;
+  f_init_copy init_copy;
   void *dest_data;
   assert(a->type == TAG_ARRAY);
   assert(address->type == TAG_ARRAY);
   if ((a_data = array_data(&a->data.array,
                            address->data.array.data))) {
     tag_init(dest);
-    copy = array_type_to_copy(a->data.array.type);
+    init_copy = array_type_to_init_copy(a->data.array.type);
     sym_to_tag_type(a->data.array.type, &dest->type);
     dest_data = tag_to_pointer(dest, a->data.array.type);
-    if (copy(a_data, dest_data) != dest_data)
+    if (init_copy(dest_data, a_data) != dest_data)
       return NULL;
     return dest;
   }
@@ -258,6 +186,76 @@ s_array * array_init_1 (s_array *array, s8 *p)
   }
   array_clean(&tmp);
   return array;
+}
+
+s_array * array_init_copy (s_array *a, const s_array *src)
+{
+  f_init_copy init_copy;
+  u8 *data_a;
+  u8 *data_src;
+  uw i = 0;
+  uw item_size;
+  s_array tmp;
+  assert(a);
+  assert(src);
+  assert(src->dimension);
+  assert(src->dimensions);
+  (void) i;
+  bzero(&tmp, sizeof(s_array));
+  if (! src->dimension) {
+    assert(! "array_init_copy: zero dimension");
+    errx(1, "array_init_copy: zero dimension");
+    return NULL;
+  }
+#ifdef DEBUG
+  while (i < src->dimension) {
+    assert(src->dimensions[i].count);
+    i++;
+  }
+#endif
+  tmp.dimension = src->dimension;
+  if (! (tmp.dimensions = calloc(src->dimension,
+                                 sizeof(s_array_dimension)))) {
+    assert(! "array_init_copy: out of memory: dimensions");
+    warnx("array_init_copy: out of memory: dimensions");
+    return NULL;
+  }
+  memcpy(tmp.dimensions, src->dimensions,
+         src->dimension * sizeof(s_array_dimension));
+  tmp.count = src->count;
+  tmp.size = src->size;
+  tmp.type = src->type;
+  if (src->data) {
+    if (! (tmp.data = calloc(1, src->size)))
+      errx(1, "array_init_copy: out of memory");
+    init_copy = array_type_to_init_copy(src->type);
+    data_a = tmp.data;
+    data_src = src->data;
+    i = 0;
+    item_size = src->dimensions[src->dimension - 1].item_size;
+    while (i < src->count) {
+      if (init_copy(data_src, data_a) != data_a) {
+        return NULL;
+      }
+      data_a += item_size;
+      data_src += item_size;
+      i++;
+    }
+  }
+  else
+    tmp.data = NULL;
+  if (src->tags) {
+    tmp.tags = calloc(src->count, sizeof(s_tag));
+    i = 0;
+    while (i < src->count) {
+      tag_init_copy(tmp.tags + i, src->tags + i);
+      i++;
+    }
+  }
+  else
+    tmp.tags = NULL;
+  *a = tmp;
+  return a;
 }
 
 s_str * array_inspect (const s_array *array, s_str *dest)
@@ -464,64 +462,64 @@ f_buf_inspect_size array_type_to_buf_inspect_size (const s_sym *type)
   return NULL;
 }
 
-f_copy array_type_to_copy (const s_sym *type)
+f_init_copy array_type_to_init_copy (const s_sym *type)
 {
   if (type == sym_1("Bool"))
-    return (f_copy) bool_copy;
+    return (f_init_copy) bool_init_copy;
   if (type == sym_1("Call"))
-    return (f_copy) call_copy;
+    return (f_init_copy) call_init_copy;
   if (type == sym_1("Cfn"))
-    return (f_copy) cfn_copy;
+    return (f_init_copy) cfn_init_copy;
   if (type == sym_1("Character"))
-    return (f_copy) character_copy;
+    return (f_init_copy) character_init_copy;
   if (type == sym_1("F32"))
-    return (f_copy) f32_copy;
+    return (f_init_copy) f32_init_copy;
   if (type == sym_1("F64"))
-    return (f_copy) f64_copy;
+    return (f_init_copy) f64_init_copy;
   if (type == sym_1("Fact"))
-    return (f_copy) fact_copy;
+    return (f_init_copy) fact_init_copy;
   if (type == sym_1("Fn"))
-    return (f_copy) fn_copy;
+    return (f_init_copy) fn_init_copy;
   if (type == sym_1("Ident"))
-    return (f_copy) ident_copy;
+    return (f_init_copy) ident_init_copy;
   if (type == sym_1("Integer"))
-    return (f_copy) integer_copy;
+    return (f_init_copy) integer_init_copy;
   if (type == sym_1("List"))
-    return (f_copy) list_copy;
+    return (f_init_copy) list_init_copy;
   if (type == sym_1("Sw"))
-    return (f_copy) sw_copy;
+    return (f_init_copy) sw_init_copy;
   if (type == sym_1("S64"))
-    return (f_copy) s64_copy;
+    return (f_init_copy) s64_init_copy;
   if (type == sym_1("S32"))
-    return (f_copy) s32_copy;
+    return (f_init_copy) s32_init_copy;
   if (type == sym_1("S16"))
-    return (f_copy) s16_copy;
+    return (f_init_copy) s16_init_copy;
   if (type == sym_1("S8"))
-    return (f_copy) s8_copy;
+    return (f_init_copy) s8_init_copy;
   if (type == sym_1("U8"))
-    return (f_copy) u8_copy;
+    return (f_init_copy) u8_init_copy;
   if (type == sym_1("U16"))
-    return (f_copy) u16_copy;
+    return (f_init_copy) u16_init_copy;
   if (type == sym_1("U32"))
-    return (f_copy) u32_copy;
+    return (f_init_copy) u32_init_copy;
   if (type == sym_1("U64"))
-    return (f_copy) u64_copy;
+    return (f_init_copy) u64_init_copy;
   if (type == sym_1("Uw"))
-    return (f_copy) uw_copy;
+    return (f_init_copy) uw_init_copy;
   if (type == sym_1("Ptag"))
-    return (f_copy) ptag_copy;
+    return (f_init_copy) ptag_init_copy;
   if (type == sym_1("Quote"))
-    return (f_copy) quote_copy;
+    return (f_init_copy) quote_init_copy;
   if (type == sym_1("Str"))
-    return (f_copy) str_copy;
+    return (f_init_copy) str_init_copy;
   if (type == sym_1("Sym"))
-    return (f_copy) sym_copy;
+    return (f_init_copy) sym_init_copy;
   if (type == sym_1("Tuple"))
-    return (f_copy) tuple_copy;
+    return (f_init_copy) tuple_init_copy;
   if (type == sym_1("Var"))
-    return (f_copy) var_copy;
-  assert(! "array_type_to_copy: unknown type");
-  errx(1, "array_type_to_copy: unknown type");
+    return (f_init_copy) var_init_copy;
+  assert(! "array_type_to_init_copy: unknown type");
+  errx(1, "array_type_to_init_copy: unknown type");
   return NULL;
 }
 

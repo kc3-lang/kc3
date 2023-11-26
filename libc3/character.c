@@ -25,12 +25,12 @@ character character_1 (const s8 *p)
   return c;
 }
 
-character * character_copy (const character *src, character *dest)
+character * character_init_copy (character *c, const character *src)
 {
+  assert(c);
   assert(src);
-  assert(dest);
-  *dest = *src;
-  return dest;
+  *c = *src;
+  return c;
 }
 
 bool character_is_digit (character c)

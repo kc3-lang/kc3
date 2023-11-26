@@ -37,13 +37,6 @@ bool ident_character_is_reserved (character c)
           c == '}');
 }
 
-s_ident * ident_copy (const s_ident *src, s_ident *dest)
-{
-  dest->module = src->module;
-  dest->sym = src->sym;
-  return dest;
-}
-
 bool ident_first_character_is_reserved (character c)
 {
   return (character_is_digit(c) ||
@@ -192,6 +185,13 @@ s_ident * ident_init_1 (s_ident *ident, const s8 *p)
   s_str tmp;
   str_init_1(&tmp, NULL, p);
   str_to_ident(&tmp, ident);
+  return ident;
+}
+
+s_ident * ident_init_copy (s_ident *ident, const s_ident *src)
+{
+  ident->module = src->module;
+  ident->sym = src->sym;
   return ident;
 }
 

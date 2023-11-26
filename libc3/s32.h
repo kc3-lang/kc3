@@ -17,6 +17,6 @@
 #include "types.h"
 
 s32 * s32_cast (s_tag *tag, s32 *dest);
-s32 * s32_copy (const s32 *src, s32 *dest);
+s32 * s32_init_copy (s32 *dest, const s32 *src);
 
 #endif /* LIBC3_S32_H */
