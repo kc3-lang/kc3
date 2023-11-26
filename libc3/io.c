@@ -45,42 +45,27 @@
     return result;                                                     \
   }
 
+#define DEF_ERR_IO_INSPECT(name, type)                                 \
+  DEF_ERR_INSPECT(name, type)                                          \
+  DEF_IO_INSPECT(name, type)
+
 sw err_inspect (const s_tag *x)
 {
-  sw r;
-  sw result = 0;
-  if ((r = buf_inspect_tag(&g_c3_env.err, x)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_u8(&g_c3_env.err, '\n')) < 0)
-    return r;
-  result += r;
-  buf_flush(&g_c3_env.err);
-  return result;
-}
-
-sw err_inspect_fn_pattern (const s_list *x)
-{
-  sw r;
-  r = buf_inspect_fn_pattern(&g_c3_env.err, x);
-  buf_flush(&g_c3_env.err);
-  return r;
-}
-
-sw err_inspect_list (const s_list *x)
-{
-  sw r;
-  r = buf_inspect_list(&g_c3_env.err, &x);
-  buf_flush(&g_c3_env.err);
-  return r;
+  return err_inspect_tag(x);
 }
 
 sw err_puts (const s8 *x)
 {
   sw r;
-  r = buf_write_1(&g_c3_env.err, x);
-  buf_flush(&g_c3_env.err);
-  return r;
+  sw result = 0;
+  if ((r = buf_write_1(&g_c3_env.err, x)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_u8(&g_c3_env.err, '\n')) < 0)
+    return r;
+  result += r;
+  buf_flush(&g_c3_env.out);
+  return result;
 }
 
 sw io_inspect (const s_tag *x)
@@ -97,9 +82,6 @@ sw io_inspect (const s_tag *x)
   return result;
 }
 
-DEF_IO_INSPECT(fact, s_fact)
-DEF_IO_INSPECT(str,  s_str)
-
 sw io_puts (const s8 *x)
 {
   sw r;
@@ -113,3 +95,9 @@ sw io_puts (const s8 *x)
   buf_flush(&g_c3_env.out);
   return result;
 }
+
+DEF_ERR_IO_INSPECT(fact,       s_fact)
+DEF_ERR_IO_INSPECT(fn_pattern, s_list)
+DEF_ERR_IO_INSPECT(list,       s_list *)
+DEF_ERR_IO_INSPECT(str,        s_str)
+DEF_ERR_IO_INSPECT(tag,        s_tag)

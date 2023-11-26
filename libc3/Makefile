@@ -52,6 +52,9 @@ debug:
 demo: build
 	${MAKE} -C window demo
 
+demo_debug: debug
+	${MAKE} -C window demo_debug
+
 distclean:
 	rm -rf ${DISTCLEANFILES}
 	${MAKE} -C window distclean

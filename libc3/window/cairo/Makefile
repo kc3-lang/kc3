@@ -57,6 +57,9 @@ debug:
 demo: build
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz demo; else if ${HAVE_WIN32}; then ${MAKE} -C win32 demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi; fi; fi
 
+demo_debug: debug
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz demo_debug; else if ${HAVE_WIN32}; then ${MAKE} -C win32 demo_debug; else if ${HAVE_XCB}; then ${MAKE} -C xcb demo_debug; fi; fi; fi
+
 distclean:
 	rm -rf ${DISTCLEANFILES}
 	${MAKE} -C demo distclean

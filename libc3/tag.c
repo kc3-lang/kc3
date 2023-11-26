@@ -1124,19 +1124,11 @@ s_tag * tag_init_sym (s_tag *tag, const s_sym *p)
 
 s_tag * tag_init_sym_1 (s_tag *tag, const s8 *p)
 {
-  s_buf buf;
   assert(tag);
   assert(p);
   bzero(tag, sizeof(s_tag));
   tag->type = TAG_SYM;
-  buf_init_1(&buf, p);
-  if (buf_parse_sym(&buf, &tag->data.sym) != (sw) strlen(p)) {
-    assert(! "tag_init_sym_1: invalid symbol");
-    errx(1, "tag_init_sym_1: invalid symbol");
-    buf_clean(&buf);
-    return NULL;
-  }
-  buf_clean(&buf);
+  tag->data.sym = sym_1(p);
   return tag;
 }
 

@@ -41,6 +41,9 @@ debug:
 demo: build
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo demo; fi
 
+demo_debug: debug
+	if ${HAVE_CAIRO}; then ${MAKE} -C cairo demo_debug; fi
+
 distclean:
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo distclean; fi
 
