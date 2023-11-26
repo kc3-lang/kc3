@@ -31,12 +31,16 @@ libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_cov
 libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_debug
 libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo.app/Contents/MacOS
 libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo.app/Contents/Frameworks
+libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo.app/Contents/img
 libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_asan.app/Contents/MacOS
 libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_asan.app/Contents/Frameworks
+libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_asan.app/Contents/img
 libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_cov.app/Contents/MacOS
 libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_cov.app/Contents/Frameworks
+libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_cov.app/Contents/img
 libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_debug.app/Contents/MacOS
 libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_debug.app/Contents/Frameworks
+libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_debug.app/Contents/img
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_asan
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_cov
