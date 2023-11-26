@@ -33,9 +33,11 @@ sw err_puts (const s8 *x);
 sw io_inspect (const s_tag *x);
 sw io_puts (const s8 *x);
 
+PROTOTYPES_ERR_IO_INSPECT(array,      s_array);
 PROTOTYPES_ERR_IO_INSPECT(fact,       s_fact);
 PROTOTYPES_ERR_IO_INSPECT(fn_pattern, s_list);
 PROTOTYPES_ERR_IO_INSPECT(list,       s_list *);
+PROTOTYPES_ERR_IO_INSPECT(map,        s_map);
 PROTOTYPES_ERR_IO_INSPECT(str,        s_str);
 PROTOTYPES_ERR_IO_INSPECT(tag,        s_tag);
 

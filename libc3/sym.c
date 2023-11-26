@@ -14,12 +14,7 @@
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
-#include "buf.h"
-#include "buf_inspect.h"
-#include "character.h"
-#include "compare.h"
-#include "str.h"
-#include "sym.h"
+#include "c3.h"
 
 void         sym_delete (s_sym *sym);
 s_str *      sym_inspect_reserved (const s_sym *sym, s_str *dest);
@@ -153,6 +148,128 @@ const s_sym * sym_new (const s_str *src)
   return sym;
 }
 
+f_buf_inspect sym_to_buf_inspect (const s_sym *type)
+{
+  if (type == sym_1("Bool"))
+    return (f_buf_inspect) buf_inspect_bool;
+  if (type == sym_1("Call"))
+    return (f_buf_inspect) buf_inspect_call;
+  if (type == sym_1("Cfn"))
+    return (f_buf_inspect) buf_inspect_cfn;
+  if (type == sym_1("Character"))
+    return (f_buf_inspect) buf_inspect_character;
+  if (type == sym_1("F32"))
+    return (f_buf_inspect) buf_inspect_f32;
+  if (type == sym_1("F64"))
+    return (f_buf_inspect) buf_inspect_f64;
+  if (type == sym_1("Fact"))
+    return (f_buf_inspect) buf_inspect_fact;
+  if (type == sym_1("Fn"))
+    return (f_buf_inspect) buf_inspect_fn;
+  if (type == sym_1("Ident"))
+    return (f_buf_inspect) buf_inspect_ident;
+  if (type == sym_1("Integer"))
+    return (f_buf_inspect) buf_inspect_integer;
+  if (type == sym_1("Sw"))
+    return (f_buf_inspect) buf_inspect_sw;
+  if (type == sym_1("S64"))
+    return (f_buf_inspect) buf_inspect_s64;
+  if (type == sym_1("S32"))
+    return (f_buf_inspect) buf_inspect_s32;
+  if (type == sym_1("S16"))
+    return (f_buf_inspect) buf_inspect_s16;
+  if (type == sym_1("S8"))
+    return (f_buf_inspect) buf_inspect_s8;
+  if (type == sym_1("U8"))
+    return (f_buf_inspect) buf_inspect_u8;
+  if (type == sym_1("U16"))
+    return (f_buf_inspect) buf_inspect_u16;
+  if (type == sym_1("U32"))
+    return (f_buf_inspect) buf_inspect_u32;
+  if (type == sym_1("U64"))
+    return (f_buf_inspect) buf_inspect_u64;
+  if (type == sym_1("Uw"))
+    return (f_buf_inspect) buf_inspect_uw;
+  if (type == sym_1("List"))
+    return (f_buf_inspect) buf_inspect_list;
+  if (type == sym_1("Ptag"))
+    return (f_buf_inspect) buf_inspect_ptag;
+  if (type == sym_1("Quote"))
+    return (f_buf_inspect) buf_inspect_quote;
+  if (type == sym_1("Str"))
+    return (f_buf_inspect) buf_inspect_str;
+  if (type == sym_1("Sym"))
+    return (f_buf_inspect) buf_inspect_sym;
+  if (type == sym_1("Tuple"))
+    return (f_buf_inspect) buf_inspect_tuple;
+  if (type == sym_1("Var"))
+    return (f_buf_inspect) buf_inspect_var;
+  assert(! "sym_to_buf_inspect: unknown type");
+  errx(1, "sym_to_buf_inspect: unknown type");
+  return NULL;
+}
+
+f_buf_inspect_size sym_to_buf_inspect_size (const s_sym *type)
+{
+  if (type == sym_1("Bool"))
+    return (f_buf_inspect_size) buf_inspect_bool_size;
+  if (type == sym_1("Call"))
+    return (f_buf_inspect_size) buf_inspect_call_size;
+  if (type == sym_1("Cfn"))
+    return (f_buf_inspect_size) buf_inspect_cfn_size;
+  if (type == sym_1("Character"))
+    return (f_buf_inspect_size) buf_inspect_character_size;
+  if (type == sym_1("F32"))
+    return (f_buf_inspect_size) buf_inspect_f32_size;
+  if (type == sym_1("F64"))
+    return (f_buf_inspect_size) buf_inspect_f64_size;
+  if (type == sym_1("Fact"))
+    return (f_buf_inspect_size) buf_inspect_fact_size;
+  if (type == sym_1("Fn"))
+    return (f_buf_inspect_size) buf_inspect_fn_size;
+  if (type == sym_1("Ident"))
+    return (f_buf_inspect_size) buf_inspect_ident_size;
+  if (type == sym_1("Integer"))
+    return (f_buf_inspect_size) buf_inspect_integer_size;
+  if (type == sym_1("Sw"))
+    return (f_buf_inspect_size) buf_inspect_sw_size;
+  if (type == sym_1("S64"))
+    return (f_buf_inspect_size) buf_inspect_s64_size;
+  if (type == sym_1("S32"))
+    return (f_buf_inspect_size) buf_inspect_s32_size;
+  if (type == sym_1("S16"))
+    return (f_buf_inspect_size) buf_inspect_s16_size;
+  if (type == sym_1("S8"))
+    return (f_buf_inspect_size) buf_inspect_s8_size;
+  if (type == sym_1("U8"))
+    return (f_buf_inspect_size) buf_inspect_u8_size;
+  if (type == sym_1("U16"))
+    return (f_buf_inspect_size) buf_inspect_u16_size;
+  if (type == sym_1("U32"))
+    return (f_buf_inspect_size) buf_inspect_u32_size;
+  if (type == sym_1("U64"))
+    return (f_buf_inspect_size) buf_inspect_u64_size;
+  if (type == sym_1("Uw"))
+    return (f_buf_inspect_size) buf_inspect_uw_size;
+  if (type == sym_1("List"))
+    return (f_buf_inspect_size) buf_inspect_list_size;
+  if (type == sym_1("Ptag"))
+    return (f_buf_inspect_size) buf_inspect_ptag_size;
+  if (type == sym_1("Quote"))
+    return (f_buf_inspect_size) buf_inspect_quote_size;
+  if (type == sym_1("Str"))
+    return (f_buf_inspect_size) buf_inspect_str_size;
+  if (type == sym_1("Sym"))
+    return (f_buf_inspect_size) buf_inspect_sym_size;
+  if (type == sym_1("Tuple"))
+    return (f_buf_inspect_size) buf_inspect_tuple_size;
+  if (type == sym_1("Var"))
+    return (f_buf_inspect_size) buf_inspect_var_size;
+  assert(! "sym_to_buf_inspect: unknown type");
+  errx(1, "sym_to_buf_inspect: unknown type");
+  return NULL;
+}
+
 ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
 {
   assert(sym);
@@ -221,6 +338,67 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
     return &ffi_type_void;
   assert(! "sym_to_ffi_type: unknown type");
   errx(1, "sym_to_ffi_type: unknown type: %s", sym->str.ptr.ps8);
+  return NULL;
+}
+
+f_init_copy sym_to_init_copy (const s_sym *type)
+{
+  if (type == sym_1("Bool"))
+    return (f_init_copy) bool_init_copy;
+  if (type == sym_1("Call"))
+    return (f_init_copy) call_init_copy;
+  if (type == sym_1("Cfn"))
+    return (f_init_copy) cfn_init_copy;
+  if (type == sym_1("Character"))
+    return (f_init_copy) character_init_copy;
+  if (type == sym_1("F32"))
+    return (f_init_copy) f32_init_copy;
+  if (type == sym_1("F64"))
+    return (f_init_copy) f64_init_copy;
+  if (type == sym_1("Fact"))
+    return (f_init_copy) fact_init_copy;
+  if (type == sym_1("Fn"))
+    return (f_init_copy) fn_init_copy;
+  if (type == sym_1("Ident"))
+    return (f_init_copy) ident_init_copy;
+  if (type == sym_1("Integer"))
+    return (f_init_copy) integer_init_copy;
+  if (type == sym_1("List"))
+    return (f_init_copy) list_init_copy;
+  if (type == sym_1("Sw"))
+    return (f_init_copy) sw_init_copy;
+  if (type == sym_1("S64"))
+    return (f_init_copy) s64_init_copy;
+  if (type == sym_1("S32"))
+    return (f_init_copy) s32_init_copy;
+  if (type == sym_1("S16"))
+    return (f_init_copy) s16_init_copy;
+  if (type == sym_1("S8"))
+    return (f_init_copy) s8_init_copy;
+  if (type == sym_1("U8"))
+    return (f_init_copy) u8_init_copy;
+  if (type == sym_1("U16"))
+    return (f_init_copy) u16_init_copy;
+  if (type == sym_1("U32"))
+    return (f_init_copy) u32_init_copy;
+  if (type == sym_1("U64"))
+    return (f_init_copy) u64_init_copy;
+  if (type == sym_1("Uw"))
+    return (f_init_copy) uw_init_copy;
+  if (type == sym_1("Ptag"))
+    return (f_init_copy) ptag_init_copy;
+  if (type == sym_1("Quote"))
+    return (f_init_copy) quote_init_copy;
+  if (type == sym_1("Str"))
+    return (f_init_copy) str_init_copy;
+  if (type == sym_1("Sym"))
+    return (f_init_copy) sym_init_copy;
+  if (type == sym_1("Tuple"))
+    return (f_init_copy) tuple_init_copy;
+  if (type == sym_1("Var"))
+    return (f_init_copy) var_init_copy;
+  assert(! "sym_to_init_copy: unknown type");
+  errx(1, "sym_to_init_copy: unknown type");
   return NULL;
 }
 
@@ -368,4 +546,65 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   warnx("sym_to_tag_type: unknown type: %s", sym->str.ptr.ps8);
   assert(! "sym_to_tag_type: unknown type");
   return false;
+}
+
+uw sym_type_size (const s_sym *type)
+{
+  if (type == sym_1("Bool"))
+    return sizeof(bool);
+  if (type == sym_1("Call"))
+    return sizeof(s_call);
+  if (type == sym_1("Cfn"))
+    return sizeof(s_cfn);
+  if (type == sym_1("Character"))
+    return sizeof(character);
+  if (type == sym_1("F32"))
+    return sizeof(f32);
+  if (type == sym_1("F64"))
+    return sizeof(f64);
+  if (type == sym_1("Fact"))
+    return sizeof(s_fact);
+  if (type == sym_1("Fn"))
+    return sizeof(s_fn);
+  if (type == sym_1("Ident"))
+    return sizeof(s_ident);
+  if (type == sym_1("Integer"))
+    return sizeof(s_integer);
+  if (type == sym_1("Sw"))
+    return sizeof(sw);
+  if (type == sym_1("S64"))
+    return sizeof(s64);
+  if (type == sym_1("S32"))
+    return sizeof(s32);
+  if (type == sym_1("S16"))
+    return sizeof(s16);
+  if (type == sym_1("S8"))
+    return sizeof(s8);
+  if (type == sym_1("U8"))
+    return sizeof(u8);
+  if (type == sym_1("U16"))
+    return sizeof(u16);
+  if (type == sym_1("U32"))
+    return sizeof(u32);
+  if (type == sym_1("U64"))
+    return sizeof(u64);
+  if (type == sym_1("Uw"))
+    return sizeof(uw);
+  if (type == sym_1("List"))
+    return sizeof(s_list *);
+  if (type == sym_1("Ptag"))
+    return sizeof(p_tag);
+  if (type == sym_1("Quote"))
+    return sizeof(s_quote);
+  if (type == sym_1("Str"))
+    return sizeof(s_str);
+  if (type == sym_1("Sym"))
+    return sizeof(s_sym *);
+  if (type == sym_1("Tuple"))
+    return sizeof(s_tuple);
+  if (type == sym_1("Var"))
+    return sizeof(s_tag);
+  assert(! "sym_type_size: unknown type");
+  errx(1, "sym_type_size: unknown type: %s", type->str.ptr.ps8);
+  return 0;
 }

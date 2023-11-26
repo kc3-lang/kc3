@@ -26,33 +26,27 @@
 
 #define SYM_MAX 1024
 
-/** @brief Make symbol from C string.
- *  @sa str_to_sym
- */
-const s_sym * sym_1 (const s8 *p);
-
-bool sym_character_is_reserved (character c);
-
+const s_sym  * sym_1 (const s8 *p);
 const s_sym ** sym_init_copy (const s_sym **sym,
                               const s_sym * const *src);
 
-/** @brief Call when exiting program. */
-void sym_delete_all (void);
 
-/** @brief Find an existing symbol. */
-const s_sym * sym_find (const s_str *src);
-
-bool sym_has_reserved_characters (const s_sym *sym);
-
-s_str * sym_inspect (const s_sym *sym, s_str *dest);
-
-/** @brief True iff sym is a module name (starts with a capital). */
-bool sym_is_module (const s_sym *sym);
-
+/* Heap-allocation functions, call sym_delete_all at exit. */
+void          sym_delete_all (void);
 const s_sym * sym_new (const s_str *src);
 
-ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type);
-
-bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest);
+/* Observers */
+bool               sym_character_is_reserved (character c);
+const s_sym      * sym_find (const s_str *src);
+bool               sym_has_reserved_characters (const s_sym *sym);
+s_str            * sym_inspect (const s_sym *sym, s_str *dest);
+bool               sym_is_module (const s_sym *sym);
+f_buf_inspect      sym_to_buf_inspect (const s_sym *type);
+f_buf_inspect_size sym_to_buf_inspect_size (const s_sym *type);
+ffi_type         * sym_to_ffi_type (const s_sym *sym,
+                                    ffi_type *result_type);
+f_init_copy        sym_to_init_copy (const s_sym *type);
+bool               sym_to_tag_type (const s_sym *sym, e_tag_type *dest);
+uw                 sym_type_size (const s_sym *type);
 
 #endif /* LIBC3_SYM_H */

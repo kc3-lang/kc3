@@ -104,8 +104,7 @@ bool toasters_load (s_sequence *seq,
 {
   s_map *map;
   (void) window;
-  tag_clean(&seq->tag);
-  tag_init_map(&seq->tag, 2);
+  tag_map(&seq->tag, 2);
   map = &seq->tag.data.map;
   tag_init_sym_1( map->keys + 0, "toasters");
   tag_init_list(map->values + 0, NULL);

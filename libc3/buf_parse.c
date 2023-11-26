@@ -256,7 +256,7 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
   assert(dest);
   tmp = *dest;
   address = calloc(tmp.dimension, sizeof(sw));
-  size = array_type_size(tmp.type);
+  size = sym_type_size(tmp.type);
   tmp.dimensions[tmp.dimension - 1].item_size = size;
   if ((r = buf_parse_array_dimensions_rec(buf, &tmp, address,
                                           0)) <= 0) {

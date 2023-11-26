@@ -57,8 +57,7 @@ bool lightspeed_load (s_sequence *seq, s_window_cairo *window)
 {
   uw i;
   (void) window;
-  tag_clean(&seq->tag);
-  tag_init_tuple(&seq->tag, LIGHTSPEED_STARS);
+  tag_tuple(&seq->tag, LIGHTSPEED_STARS);
   i = 0;
   while (i < LIGHTSPEED_STARS) {
     star_init(seq->tag.data.tuple.tag + i);
