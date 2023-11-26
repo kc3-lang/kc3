@@ -214,7 +214,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   }
 #endif
   tmp.dimension = src->dimension;
-  if (! (tmp.dimensions = calloc(src->dimension,
+  if (! (tmp.dimensions = calloc(tmp.dimension,
                                  sizeof(s_array_dimension)))) {
     assert(! "array_init_copy: out of memory: dimensions");
     warnx("array_init_copy: out of memory: dimensions");
@@ -234,7 +234,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
     i = 0;
     item_size = src->dimensions[src->dimension - 1].item_size;
     while (i < src->count) {
-      if (init_copy(data_src, data_a) != data_a) {
+      if (init_copy(data_a, data_src) != data_a) {
         return NULL;
       }
       data_a += item_size;

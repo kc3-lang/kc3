@@ -37,7 +37,7 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 
 # Common config for all targets
 CPPFLAGS="-I../libffi/include $CPPFLAGS"
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
 LDFLAGS="--shared -no-undefined ${LDFLAGS}"
 LIBS="${LIBS} -lm -pthread -rpath ${PREFIX}/lib"
 config_asan

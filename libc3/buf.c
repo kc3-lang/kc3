@@ -800,6 +800,7 @@ sw buf_u8_to_hex (s_buf *buf, const u8 *x)
     goto restore;
   result += r;
   r = result;
+  goto clean;
  restore:
   buf_save_restore_wpos(buf, &save);
  clean:

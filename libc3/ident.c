@@ -43,6 +43,7 @@ bool ident_first_character_is_reserved (character c)
           character_is_uppercase(c) ||
           character_is_space(c) ||
           c == '"' ||
+          c == '\'' ||
           c == '(' ||
           c == ')' ||
           c == ':' ||

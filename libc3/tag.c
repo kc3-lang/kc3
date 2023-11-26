@@ -252,7 +252,7 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
 {
   assert(tag);
   assert(src);
-  switch (tag->type) {
+  switch (src->type) {
   case TAG_VAR:
     tag_init_var(tag);
     break;

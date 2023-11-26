@@ -56,8 +56,9 @@
     test_context("buf_inspect_character(" # test ") -> " # expected);  \
     buf_init(&buf, false, sizeof(b), b);                               \
     tmp = (test);                                                      \
-    TEST_EQ(buf_inspect_character_size(&tmp), strlen(expected)); \
+    TEST_EQ(buf_inspect_character_size(&tmp), strlen(expected));       \
     TEST_EQ(buf_inspect_character(&buf, &tmp), strlen(expected));      \
+    TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
     test_context(NULL);                                                \
   } while (0)
