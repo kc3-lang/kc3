@@ -181,6 +181,13 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
       x = board_x;
       cairo_move_to(cr, x, y);
       cairo_show_text(cr, buf.ptr.ps8);
+      buf_init(&buf, false, sizeof(a), a);
+      buf_write_1(&buf, "Out ");
+      buf_inspect_uw(&buf, fly_out);
+      buf_write_u8(&buf, 0);
+      x = board_x + board_item_w * (BOARD_SIZE / 2 + 1);
+      cairo_move_to(cr, x, y);
+      cairo_show_text(cr, buf.ptr.ps8);
       address[1] = 0;
       while (address[1] < BOARD_SIZE) {
         y = board_item_h * address[1];
@@ -210,6 +217,7 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
             cairo_fill(cr);
             if (address[0] == BOARD_SIZE / 2 &&
                 address[1] == BOARD_SIZE - 1) {
+              array_data_set(board, address, &g_board_item_space);
               (*fly_out)++;
               fly_init(map);
               break;
@@ -254,8 +262,8 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
               fly_address[0] = address[0];
               fly_address[1] = address[1];
             }
-            *fly_time += seq->dt;
-            if (*fly_time > 1) {
+            *fly_time += 1;
+            if (*fly_time > 200) {
               array_data_set(board, fly_address, &g_board_item_dead_fly);
               fly_init(map);
             }
