@@ -162,11 +162,14 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
       fly_in   = &map->values[1].data.uw;
       fly_out  = &map->values[2].data.uw;
       fly_time = &map->values[3].data.f64;
-      board_item_h = (f64) (window->h - 60) / BOARD_SIZE;
+      board_item_h = (f64) (window->h - 60) / (BOARD_SIZE + 1);
       board_item_w = board_item_h * g_xy_ratio;
       board_w = board_item_w * BOARD_SIZE;
       board_h = board_item_h * BOARD_SIZE;
       board_x = (window->w - board_w) / 2.0;
+      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+      cairo_rectangle(cr, board_x, 0, board_w, board_h);
+      cairo_fill(cr);
       cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
       cairo_set_font_size(cr, board_item_h);
       cairo_select_font_face(cr, "Courier New",
@@ -199,21 +202,17 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
           assert(board_item);
           switch (*board_item) {
           case BOARD_ITEM_SPACE:
-            cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-            cairo_rectangle(cr, 0, 0, board_item_w + 0.5,
-                            board_item_h + 0.5);
-            cairo_fill(cr);
             break;
           case BOARD_ITEM_BLOCK:
             cairo_set_source_rgb(cr, 0.0, 0.0, 1.0);
-            cairo_rectangle(cr, 0, 0, board_item_w + 0.5,
-                            board_item_h + 0.5);
+            cairo_rectangle(cr, 0, 0, board_item_w + 1.0,
+                            board_item_h + 1.0);
             cairo_fill(cr);
             break;
           case BOARD_ITEM_FLY:
             cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
-            cairo_rectangle(cr, 0, 0, board_item_w + 0.5,
-                            board_item_h + 0.5);
+            cairo_rectangle(cr, 0, 0, board_item_w + 1.0,
+                            board_item_h + 1.0);
             cairo_fill(cr);
             if (address[0] == BOARD_SIZE / 2 &&
                 address[1] == BOARD_SIZE - 1) {
@@ -270,8 +269,8 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
             break;
           case BOARD_ITEM_DEAD_FLY:
             cairo_set_source_rgb(cr, 0.5, 0.5, 0.5);
-            cairo_rectangle(cr, 0, 0, board_item_w + 0.5,
-                            board_item_h + 0.5);
+            cairo_rectangle(cr, 0, 0, board_item_w + 1.0,
+                            board_item_h + 1.0);
             cairo_fill(cr);
             break;
           }
