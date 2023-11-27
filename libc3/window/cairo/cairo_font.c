@@ -60,3 +60,8 @@ s_cairo_font * cairo_font_init (s_cairo_font *font, s_str *path)
     (font->ft_face, 0);
   return font;
 }
+
+void cairo_font_set (const s_cairo_font *font, cairo_t *cr)
+{
+  cairo_set_font_face(cr, font->cairo_font_face);
+}
