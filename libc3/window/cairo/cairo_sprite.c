@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
+#include <err.h>
 #include "cairo_sprite.h"
 
 void cairo_sprite_blit (const s_cairo_sprite *sprite, uw frame,
@@ -51,8 +52,10 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
   assert(sprite);
   assert(dim_x);
   assert(dim_y);
-  if (! (sprite->surface = surface))
+  if (! (sprite->surface = surface)) {
+    warnx("cairo_sprite_init: NULL surface");
     return NULL;
+  }
   sprite->surface_w = cairo_image_surface_get_width(surface);
   sprite->surface_h = cairo_image_surface_get_height(surface);
   sprite->dim_x = dim_x;

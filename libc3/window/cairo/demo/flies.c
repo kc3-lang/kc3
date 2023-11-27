@@ -17,9 +17,35 @@
 
 #define BOARD_SIZE 25
 
-static const character g_block =  0x2588;
-static const character g_fly   = 0x1FAB0;
-static const character g_space =     ' ';
+typedef enum {
+  BOARD_ITEM_SPACE    = 0,
+  BOARD_ITEM_BLOCK    = 1,
+  BOARD_ITEM_FLY      = 2,
+  BOARD_ITEM_DEAD_FLY = 3
+} e_board_item_type;
+
+static const u8  g_board_item_space    = BOARD_ITEM_SPACE;
+static const u8  g_board_item_block    = BOARD_ITEM_BLOCK;
+static const u8  g_board_item_fly      = BOARD_ITEM_FLY;
+static const u8  g_board_item_dead_fly = BOARD_ITEM_DEAD_FLY;
+s_cairo_sprite   g_dead_fly_sprite     = {0};
+s_cairo_sprite   g_fly_sprite          = {0};
+static const f64 g_xy_ratio            = 0.6;
+
+static void fly_init (s_map *map)
+{
+  uw address[2] = { BOARD_SIZE / 2,
+                    0 };
+  s_array *board;
+  uw *in;
+  f64 *t;
+  board = &map->values[0].data.array;
+  in    = &map->values[1].data.uw;
+  t     = &map->values[3].data.f64;
+  array_data_set(board, address, &g_board_item_fly);
+  *t = 0.0;
+  (*in)++;
+}
 
 bool flies_load (s_sequence *seq,
                  s_window_cairo *window)
@@ -30,19 +56,26 @@ bool flies_load (s_sequence *seq,
   uw j;
   s_map *map;
   (void) window;
-  tag_map(&seq->tag, 1);
+  tag_map(&seq->tag, 4);
   map = &seq->tag.data.map;
   tag_init_sym_1( map->keys  + 0, "board");
-  tag_init_array(map->values + 0, sym_1("Character"),
+  tag_init_array(map->values + 0, sym_1("U8"),
                  2, (uw[]) {BOARD_SIZE, BOARD_SIZE});
+  tag_init_sym_1( map->keys  + 1, "in");
+  tag_init_uw(map->values    + 1, 0);
+  tag_init_sym_1( map->keys  + 2, "out");
+  tag_init_uw(map->values    + 2, 0);
+  tag_init_sym_1( map->keys  + 3, "t");
+  tag_init_f64(map->values   + 3, 0.0);
   board = &map->values[0].data.array;
+  board->data = malloc(board->size);
   i = 0;
   while (i < BOARD_SIZE) {
     address[0] = i;
     j = 0;
     while (j < BOARD_SIZE) {
       address[1] = j;
-      array_data_set(board, address, &g_space);
+      array_data_set(board, address, &g_board_item_space);
       j++;
     }
     i++;
@@ -51,90 +84,194 @@ bool flies_load (s_sequence *seq,
   while (i < BOARD_SIZE) {
     address[0] = i;
     address[1] = 0;
-    array_data_set(board, address, &g_block);
+    array_data_set(board, address, &g_board_item_block);
     address[1] = BOARD_SIZE - 1;
-    array_data_set(board, address, &g_block);
+    array_data_set(board, address, &g_board_item_block);
     address[0] = 0;
     address[1] = i;
-    array_data_set(board, address, &g_block);
+    array_data_set(board, address, &g_board_item_block);
     address[0] = BOARD_SIZE - 1;
-    array_data_set(board, address, &g_block);
+    array_data_set(board, address, &g_board_item_block);
     i++;
   }
   address[0] = BOARD_SIZE / 2;
   address[1] = 0;
-  array_data_set(board, address, &g_space);
+  array_data_set(board, address, &g_board_item_space);
   address[1] = BOARD_SIZE - 1;
-  array_data_set(board, address, &g_space);
+  array_data_set(board, address, &g_board_item_space);
   address[1] = BOARD_SIZE / 2;
   i = 1;
-  while (i < BOARD_SIZE * 3 / 4) {
+  while (i <= BOARD_SIZE / 2) {
     address[0] = i;
-    array_data_set(board, address, &g_block);
+    array_data_set(board, address, &g_board_item_block);
     i++;
   }
-  address[0] = BOARD_SIZE * 3 / 4 - 1;
+  address[0] = BOARD_SIZE / 2;
   j = BOARD_SIZE / 4;
-  while (j < BOARD_SIZE / 2 - 1) {
+  while (j < BOARD_SIZE / 2) {
     address[1] = j;
-    array_data_set(board, address, &g_block);
+    array_data_set(board, address, &g_board_item_block);
     j++;
   }
   address[1] = BOARD_SIZE * 3 / 4;
   i = BOARD_SIZE / 4;
   while (i < BOARD_SIZE - 1) {
     address[0] = i;
-    array_data_set(board, address, &g_block);
+    array_data_set(board, address, &g_board_item_block);
     i++;
   }
+  fly_init(map);
   return true;
 }
 
 bool flies_render (s_sequence *seq, s_window_cairo *window,
                    cairo_t *cr)
 {
+  s8 a[BOARD_SIZE];
   uw address[2];
   s_array *board;
+  f64 board_w;
+  f64 board_h;
+  f64 board_x;
+  u8 *board_item;
+  f64 board_item_w;
+  f64 board_item_h;
   s_buf buf;
-  character *c;
+  u8   direction;
+  bool directions[9];
+  uw   fly_address[2];
+  uw  *fly_in;
+  uw  *fly_out;
+  f64 *fly_time;
   uw i;
-  s8 line[BOARD_SIZE * 4 + 1];
   s_map *map;
+  uw r;
   cairo_text_extents_t te;
+  f64 x;
+  f64 y;
   cairo_set_source_rgb(cr, 0.5, 0.5, 0.5);
   cairo_rectangle(cr, 0, 0, window->w, window->h);
   cairo_fill(cr);
-  cairo_set_font_size(cr, window->h / BOARD_SIZE);
-  cairo_select_font_face(cr, "Courier New",
-                         CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-  i = 0;
-  while (i < BOARD_SIZE) {
-    line[i] = ' ';
-    i++;
-  }
-  line[i] = 0;
-  cairo_text_extents(cr, line, &te);
   /* io_inspect(&seq->tag); */
   if (seq->tag.type == TAG_MAP) {
     map = &seq->tag.data.map;
-    if (map->count > 0 && map->values[0].type == TAG_ARRAY) {
-      board = &map->values[0].data.array;
+    if (map->count == 4 &&
+        map->values[0].type == TAG_ARRAY &&
+        map->values[3].type == TAG_F64) {
+      board    = &map->values[0].data.array;
+      fly_in   = &map->values[1].data.uw;
+      fly_out  = &map->values[2].data.uw;
+      fly_time = &map->values[3].data.f64;
+      board_item_h = (f64) (window->h - 60) / BOARD_SIZE;
+      board_item_w = board_item_h * g_xy_ratio;
+      board_w = board_item_w * BOARD_SIZE;
+      board_h = board_item_h * BOARD_SIZE;
+      board_x = (window->w - board_w) / 2.0;
+      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+      cairo_set_font_size(cr, board_item_h);
+      cairo_select_font_face(cr, "Courier New",
+                             CAIRO_FONT_SLANT_NORMAL,
+                             CAIRO_FONT_WEIGHT_BOLD);
+      buf_init(&buf, false, sizeof(a), a);
+      buf_write_1(&buf, "In ");
+      buf_inspect_uw(&buf, fly_in);
+      buf_write_u8(&buf, 0);
+      cairo_text_extents(cr, buf.ptr.ps8, &te);
+      y = board_h + board_item_h + te.height + te.y_bearing;
+      x = board_x;
+      cairo_move_to(cr, x, y);
+      cairo_show_text(cr, buf.ptr.ps8);
       address[1] = 0;
       while (address[1] < BOARD_SIZE) {
+        y = board_item_h * address[1];
         address[0] = 0;
-        buf_init(&buf, false, sizeof(line), line);
         while (address[0] < BOARD_SIZE) {
-          c = (character *) array_data(board, address);
-          buf_write_character_utf8(&buf, *c);
+          x = board_x + board_item_w * address[0];
+          cairo_translate(cr, x, y);
+          board_item = (u8 *) array_data(board, address);
+          assert(board_item);
+          switch (*board_item) {
+          case BOARD_ITEM_SPACE:
+            cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+            cairo_rectangle(cr, 0, 0, board_item_w + 0.5,
+                            board_item_h + 0.5);
+            cairo_fill(cr);
+            break;
+          case BOARD_ITEM_BLOCK:
+            cairo_set_source_rgb(cr, 0.0, 0.0, 1.0);
+            cairo_rectangle(cr, 0, 0, board_item_w + 0.5,
+                            board_item_h + 0.5);
+            cairo_fill(cr);
+            break;
+          case BOARD_ITEM_FLY:
+            cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
+            cairo_rectangle(cr, 0, 0, board_item_w + 0.5,
+                            board_item_h + 0.5);
+            cairo_fill(cr);
+            if (address[0] == BOARD_SIZE / 2 &&
+                address[1] == BOARD_SIZE - 1) {
+              (*fly_out)++;
+              fly_init(map);
+              break;
+            }
+            i = 0;
+            while (i < 9) {
+              directions[i] = true;
+              i++;
+            }
+            fly_address[0] = address[0];
+            fly_address[1] = address[1];
+            while (directions[0] || directions[1] || directions[2] ||
+                   directions[3] || directions[4] || directions[5] ||
+                   directions[6] || directions[7] || directions[8]) {
+              fly_address[0] = address[0];
+              fly_address[1] = address[1];
+              r = random() % 12;
+              direction = r;
+              if (direction >= 9)
+                direction = (direction - 6) % 3 + 6;
+              switch (direction) {
+              case 0: fly_address[0]--; fly_address[1]--; break;
+              case 1:                   fly_address[1]--; break;
+              case 2: fly_address[0]++; fly_address[1]--; break;
+              case 3: fly_address[0]--;                 ; break;
+              case 4:                                   ; break;
+              case 5: fly_address[0]++;                 ; break;
+              case 6: fly_address[0]--; fly_address[1]++; break;
+              case 7:                   fly_address[1]++; break;
+              case 8: fly_address[0]++; fly_address[1]++; break;
+              }
+              if (fly_address[0] < BOARD_SIZE &&
+                  fly_address[1] < BOARD_SIZE &&
+                  (board_item = (u8 *) array_data(board,
+                                                  fly_address)) &&
+                  *board_item == g_board_item_space) {
+                array_data_set(board, address, &g_board_item_space);
+                array_data_set(board, fly_address, &g_board_item_fly);
+                break;
+              }
+              directions[direction] = false;
+              fly_address[0] = address[0];
+              fly_address[1] = address[1];
+            }
+            *fly_time += seq->dt;
+            if (*fly_time > 1) {
+              array_data_set(board, fly_address, &g_board_item_dead_fly);
+              fly_init(map);
+            }
+            break;
+          case BOARD_ITEM_DEAD_FLY:
+            cairo_set_source_rgb(cr, 0.5, 0.5, 0.5);
+            cairo_rectangle(cr, 0, 0, board_item_w + 0.5,
+                            board_item_h + 0.5);
+            cairo_fill(cr);
+            break;
+          }
+          cairo_identity_matrix(cr);
           address[0]++;
         }
-        buf_write_u8(&buf, 0);
-        
         address[1]++;
       }
-      address[0] = BOARD_SIZE / 2;
-      address[1] = 0;
-      array_data_set(board, address, &g_fly);
     }
   }
   return true;

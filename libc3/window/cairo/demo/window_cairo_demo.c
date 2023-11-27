@@ -24,6 +24,7 @@
 #include "bg_rect.h"
 #include "lightspeed.h"
 #include "toasters.h"
+#include "flies.h"
 
 bool window_cairo_demo_button (s_window_cairo *window, u8 button,
                                sw x, sw y)
@@ -90,6 +91,17 @@ bool window_cairo_demo_load (s_window_cairo *window)
   window_cairo_sequence_init(window->sequence + 2, 60.0,
                              "03. Toasters",
                              toasters_load, toasters_render);
+  if (! cairo_sprite_init(&g_fly_sprite,
+                          cairo_png_1("img/fly-noto.png"),
+                          1, 1, 1))
+    return false;
+  if (! cairo_sprite_init(&g_dead_fly_sprite,
+                          cairo_png_1("img/fly-dead.png"),
+                          1, 1, 1))
+    return false;
+  window_cairo_sequence_init(window->sequence + 3, 60.0,
+                             "04. Flies",
+                             flies_load, flies_render);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }

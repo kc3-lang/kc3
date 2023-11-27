@@ -21,6 +21,8 @@ DISTCLEANFILES = ${CLEANFILES} config.mk
 
 IMG_SOURCES = \
 	../../../../../img/flaps.png \
+	../../../../../img/fly-dead.png \
+	../../../../../img/fly-noto.png \
 	../../../../../img/toast.png \
 
 build:
