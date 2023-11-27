@@ -61,12 +61,12 @@ bool flies_load (s_sequence *seq,
   tag_init_sym_1( map->keys  + 0, "board");
   tag_init_array(map->values + 0, sym_1("U8"),
                  2, (uw[]) {BOARD_SIZE, BOARD_SIZE});
-  tag_init_sym_1( map->keys  + 1, "in");
-  tag_init_uw(map->values    + 1, 0);
-  tag_init_sym_1( map->keys  + 2, "out");
-  tag_init_uw(map->values    + 2, 0);
-  tag_init_sym_1( map->keys  + 3, "t");
-  tag_init_f64(map->values   + 3, 0.0);
+  tag_init_sym_1(map->keys + 1, "in");
+  tag_init_uw( map->values + 1, 0);
+  tag_init_sym_1(map->keys + 2, "out");
+  tag_init_uw( map->values + 2, 0);
+  tag_init_sym_1(map->keys + 3, "t");
+  tag_init_uw( map->values + 3, 0);
   board = &map->values[0].data.array;
   board->data = malloc(board->size);
   i = 0;
@@ -139,10 +139,10 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
   s_buf buf;
   u8   direction;
   bool directions[9];
-  uw   fly_address[2];
-  uw  *fly_in;
-  uw  *fly_out;
-  f64 *fly_time;
+  uw  fly_address[2];
+  uw *fly_in;
+  uw *fly_out;
+  uw *fly_time;
   uw i;
   s_map *map;
   uw r;
@@ -157,11 +157,13 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
     map = &seq->tag.data.map;
     if (map->count == 4 &&
         map->values[0].type == TAG_ARRAY &&
-        map->values[3].type == TAG_F64) {
+        map->values[1].type == TAG_UW &&
+        map->values[2].type == TAG_UW &&
+        map->values[3].type == TAG_UW) {
       board    = &map->values[0].data.array;
       fly_in   = &map->values[1].data.uw;
       fly_out  = &map->values[2].data.uw;
-      fly_time = &map->values[3].data.f64;
+      fly_time = &map->values[3].data.uw;
       board_item_h = (f64) (window->h - 60) / (BOARD_SIZE + 1);
       board_item_w = board_item_h * g_xy_ratio;
       board_w = board_item_w * BOARD_SIZE;
