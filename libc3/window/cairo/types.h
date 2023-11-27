@@ -64,6 +64,7 @@ struct cairo_font {
   cairo_font_face_t *cairo_font_face;
   FT_Face ft_face;
   s_str path;
+  s_str real_path;
 };
 
 struct cairo_sprite {
