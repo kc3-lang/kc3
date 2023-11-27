@@ -19,9 +19,13 @@
 #define LIBC3_WINDOW_CAIRO_TYPES_H
 
 #include <cairo.h>
+#include <cairo-ft.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include <libc3/types.h>
 #include "../types.h"
 
+typedef struct cairo_font   s_cairo_font;
 typedef struct cairo_sprite s_cairo_sprite;
 typedef struct rgb          s_rgb;
 typedef struct rgba         s_rgba;
@@ -55,6 +59,12 @@ typedef bool (*f_window_cairo_sequence_load) (s_sequence *seq,
 typedef bool (*f_window_cairo_sequence_render) (s_sequence *seq,
                                                 s_window_cairo *window,
                                                 cairo_t *cr);
+
+struct cairo_font {
+  cairo_font_face_t *cairo_font_face;
+  FT_Face ft_face;
+  s_str path;
+};
 
 struct cairo_sprite {
   uw surface_w;
