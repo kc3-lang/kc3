@@ -25,6 +25,7 @@ void cairo_font_clean (s_cairo_font *font)
   cairo_font_face_destroy(font->cairo_font_face);
   FT_Done_Face(font->ft_face);
   str_clean(&font->path);
+  str_clean(&font->real_path);
 }
 
 static FT_Library * cairo_font_ft (void)
@@ -44,7 +45,7 @@ static FT_Library * cairo_font_ft (void)
   return g_cairo_font_ft;
 }
 
-s_cairo_font * cairo_font_init (s_cairo_font *font, s_str *path)
+s_cairo_font * cairo_font_init (s_cairo_font *font, const s_str *path)
 {
   FT_Library *ft;
   assert(font);
@@ -52,8 +53,16 @@ s_cairo_font * cairo_font_init (s_cairo_font *font, s_str *path)
   if (! (ft = cairo_font_ft()))
     return NULL;
   str_init_copy(&font->path, path);
-  if (FT_New_Face(*ft, path->ptr.ps8, 0, &font->ft_face)) {
-    warnx("cairo_font_init(%s): Error loading font", path->ptr.ps8);
+  if (! file_search(path, sym_1("r"), &font->real_path)) {
+    warnx("cairo_font_init(%s): file not found", path->ptr.ps8);
+    str_clean(&font->path);
+    return NULL;
+  }
+  if (FT_New_Face(*ft, font->real_path.ptr.ps8, 0, &font->ft_face)) {
+    warnx("cairo_font_init(%s): Error loading font",
+          font->real_path.ptr.ps8);
+    str_clean(&font->path);
+    str_clean(&font->real_path);
     return NULL;
   }
   font->cairo_font_face = cairo_ft_font_face_create_for_ft_face
