@@ -91,7 +91,8 @@ void * array_data (const s_array *a, const uw *address)
   assert(a->data);
   while (i < a->dimension) {
     if (address[i] >= a->dimensions[i].count) {
-      warnx("array_data: address overflow: %lu", i);
+      warnx("array_data: address overflow: %lu: [%lu >= %lu]",
+            i, address[i], a->dimensions[i].count);
       return NULL;
     }
     offset += address[i] * a->dimensions[i].item_size;

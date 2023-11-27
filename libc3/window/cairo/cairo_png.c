@@ -10,6 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <assert.h>
+#include <err.h>
 #include <unistd.h>
 #include <cairo.h>
 #include <libc3/c3.h>
@@ -20,10 +22,16 @@ cairo_surface_t * cairo_png_1 (const s8 *path)
   s_str found_str;
   s_str path_str;
   cairo_surface_t *surface = NULL;
+  assert(path);
   str_init_1(&path_str, NULL, path);
   if (file_search(&path_str, sym_1("r"), &found_str)) {
     surface = cairo_image_surface_create_from_png(found_str.ptr.ps8);
+    if (! surface)
+      warnx("cairo_png_1: cairo_image_surface_create_from_png: %s",
+            found_str.ptr.ps8);
     str_clean(&found_str);
   }
+  else
+    warnx("cairo_png_1: file not found: %s", path);
   return surface;
 }
