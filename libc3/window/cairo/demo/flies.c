@@ -13,9 +13,11 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "../window_cairo.h"
+#include "../cairo_sprite.h"
 #include "flies.h"
 
-#define BOARD_SIZE 25
+#define BOARD_SIZE    25
+#define FLY_TIME_MAX 300
 
 typedef enum {
   BOARD_ITEM_SPACE    = 0,
@@ -137,11 +139,13 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
   f64 board_item_w;
   f64 board_item_h;
   s_buf buf;
+  f64 dead_fly_scale;
   u8   direction;
   bool directions[9];
   uw  fly_address[2];
   uw *fly_in;
   uw *fly_out;
+  f64 fly_scale;
   uw *fly_time;
   uw i;
   s_map *map;
@@ -169,6 +173,8 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
       board_w = board_item_w * BOARD_SIZE;
       board_h = board_item_h * BOARD_SIZE;
       board_x = (window->w - board_w) / 2.0;
+      fly_scale = (f64) board_item_w / g_fly_sprite.w;
+      dead_fly_scale = (f64) board_item_w / g_dead_fly_sprite.w;
       cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
       cairo_rectangle(cr, board_x, 0, board_w, board_h);
       cairo_fill(cr);
@@ -212,10 +218,13 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
             cairo_fill(cr);
             break;
           case BOARD_ITEM_FLY:
-            cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
-            cairo_rectangle(cr, 0, 0, board_item_w + 1.0,
-                            board_item_h + 1.0);
-            cairo_fill(cr);
+            cairo_scale(cr, fly_scale, fly_scale);
+            cairo_sprite_blit(&g_fly_sprite, 0,
+                              cr, 0, 0);
+            /*cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
+              cairo_rectangle(cr, 0, 0, board_item_w + 1.0,
+                              board_item_h + 1.0);
+              cairo_fill(cr);*/
             if (address[0] == BOARD_SIZE / 2 &&
                 address[1] == BOARD_SIZE - 1) {
               array_data_set(board, address, &g_board_item_space);
@@ -264,16 +273,15 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
               fly_address[1] = address[1];
             }
             *fly_time += 1;
-            if (*fly_time > 200) {
+            if (*fly_time > FLY_TIME_MAX) {
               array_data_set(board, fly_address, &g_board_item_dead_fly);
               fly_init(map);
             }
             break;
           case BOARD_ITEM_DEAD_FLY:
-            cairo_set_source_rgb(cr, 0.5, 0.5, 0.5);
-            cairo_rectangle(cr, 0, 0, board_item_w + 1.0,
-                            board_item_h + 1.0);
-            cairo_fill(cr);
+            cairo_scale(cr, dead_fly_scale, dead_fly_scale);
+            cairo_sprite_blit(&g_dead_fly_sprite, 0,
+                              cr, 0, 0);
             break;
           }
           cairo_identity_matrix(cr);
