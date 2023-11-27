@@ -17,7 +17,7 @@
 #include "flies.h"
 
 #define BOARD_SIZE    25
-#define FLY_TIME_MAX 300
+#define FLY_TIME_MAX 200
 
 typedef enum {
   BOARD_ITEM_SPACE    = 0,
@@ -141,15 +141,19 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
   s_buf buf;
   f64 dead_fly_scale;
   u8   direction;
+  u8   direction_prev = 4;
   bool directions[9];
   uw  fly_address[2];
   uw *fly_in;
+  uw  fly_prev_address[2];
   uw *fly_out;
   f64 fly_scale;
   uw *fly_time;
   uw i;
+  uw j;
   s_map *map;
   uw r;
+  uw random_bits = 0;
   cairo_text_extents_t te;
   f64 x;
   f64 y;
@@ -173,9 +177,9 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
       board_w = board_item_w * BOARD_SIZE;
       board_h = board_item_h * BOARD_SIZE;
       board_x = (window->w - board_w) / 2.0;
-      fly_scale = (f64) board_item_w / g_fly_sprite.w;
-      dead_fly_scale = (f64) board_item_w / g_dead_fly_sprite.w;
-      cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+      fly_scale = 2.0 * board_item_w / g_fly_sprite.w;
+      dead_fly_scale = 2.0 * board_item_w / g_dead_fly_sprite.w;
+      cairo_set_source_rgb(cr, 0.6, 0.7, 0.9);
       cairo_rectangle(cr, board_x, 0, board_w, board_h);
       cairo_fill(cr);
       cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
@@ -218,13 +222,11 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
             cairo_fill(cr);
             break;
           case BOARD_ITEM_FLY:
+            cairo_translate(cr, -board_item_w / 2.0,
+                            -board_item_h / 2.0);
             cairo_scale(cr, fly_scale, fly_scale);
             cairo_sprite_blit(&g_fly_sprite, 0,
                               cr, 0, 0);
-            /*cairo_set_source_rgb(cr, 1.0, 0.0, 0.0);
-              cairo_rectangle(cr, 0, 0, board_item_w + 1.0,
-                              board_item_h + 1.0);
-              cairo_fill(cr);*/
             if (address[0] == BOARD_SIZE / 2 &&
                 address[1] == BOARD_SIZE - 1) {
               array_data_set(board, address, &g_board_item_space);
@@ -232,45 +234,58 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
               fly_init(map);
               break;
             }
-            i = 0;
-            while (i < 9) {
-              directions[i] = true;
-              i++;
-            }
             fly_address[0] = address[0];
             fly_address[1] = address[1];
-            while (directions[0] || directions[1] || directions[2] ||
-                   directions[3] || directions[4] || directions[5] ||
-                   directions[6] || directions[7] || directions[8]) {
-              fly_address[0] = address[0];
-              fly_address[1] = address[1];
-              r = random() % 12;
-              direction = r;
-              if (direction >= 9)
-                direction = (direction - 6) % 3 + 6;
-              switch (direction) {
-              case 0: fly_address[0]--; fly_address[1]--; break;
-              case 1:                   fly_address[1]--; break;
-              case 2: fly_address[0]++; fly_address[1]--; break;
-              case 3: fly_address[0]--;                 ; break;
-              case 4:                                   ; break;
-              case 5: fly_address[0]++;                 ; break;
-              case 6: fly_address[0]--; fly_address[1]++; break;
-              case 7:                   fly_address[1]++; break;
-              case 8: fly_address[0]++; fly_address[1]++; break;
+            i = 0;
+            while (i < 3) {
+              j = 0;
+              while (j < 9) {
+                directions[j] = true;
+                j++;
               }
-              if (fly_address[0] < BOARD_SIZE &&
-                  fly_address[1] < BOARD_SIZE &&
-                  (board_item = (u8 *) array_data(board,
-                                                  fly_address)) &&
-                  *board_item == g_board_item_space) {
-                array_data_set(board, address, &g_board_item_space);
-                array_data_set(board, fly_address, &g_board_item_fly);
-                break;
+              while (directions[0] | directions[1] | directions[2] |
+                     directions[3] | directions[4] | directions[5] |
+                     directions[6] | directions[7] | directions[8]) {
+                if (random_bits < 4) {
+                  r = random();
+                  random_bits = 31;
+                }
+                direction = r % 16;
+                r >>= 4;
+                random_bits -= 4;
+                if (direction >= 12)
+                  direction = direction_prev;
+                if (direction >= 9)
+                  direction = (direction - 6) % 3 + 6;
+                fly_prev_address[0] = fly_address[0];
+                fly_prev_address[1] = fly_address[1];
+                switch (direction) {
+                case 0: fly_address[0]--; fly_address[1]--; break;
+                case 1:                   fly_address[1]--; break;
+                case 2: fly_address[0]++; fly_address[1]--; break;
+                case 3: fly_address[0]--;                 ; break;
+                case 4:                                   ; break;
+                case 5: fly_address[0]++;                 ; break;
+                case 6: fly_address[0]--; fly_address[1]++; break;
+                case 7:                   fly_address[1]++; break;
+                case 8: fly_address[0]++; fly_address[1]++; break;
+                }
+                if (fly_address[0] < BOARD_SIZE &&
+                    fly_address[1] < BOARD_SIZE &&
+                    (board_item = (u8 *) array_data(board,
+                                                    fly_address)) &&
+                    *board_item == g_board_item_space) {
+                  array_data_set(board, fly_prev_address,
+                                 &g_board_item_space);
+                  array_data_set(board, fly_address, &g_board_item_fly);
+                  direction_prev = direction;
+                  break;
+                }
+                directions[direction] = false;
+                fly_address[0] = fly_prev_address[0];
+                fly_address[1] = fly_prev_address[1];
               }
-              directions[direction] = false;
-              fly_address[0] = address[0];
-              fly_address[1] = address[1];
+              i++;
             }
             *fly_time += 1;
             if (*fly_time > FLY_TIME_MAX) {
@@ -279,6 +294,8 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
             }
             break;
           case BOARD_ITEM_DEAD_FLY:
+            cairo_translate(cr, -board_item_w / 2.0,
+                            -board_item_h / 2.0);
             cairo_scale(cr, dead_fly_scale, dead_fly_scale);
             cairo_sprite_blit(&g_dead_fly_sprite, 0,
                               cr, 0, 0);
