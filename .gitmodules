@@ -10,3 +10,6 @@
 	path = libffi
 	url = https://git.kmx.io/c3-lang/libffi.git
 	branch = master
+[submodule "fonts"]
+	path = fonts
+	url = git@git.kmx.io:c3-lang/fonts.git
