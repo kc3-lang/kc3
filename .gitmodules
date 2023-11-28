@@ -12,4 +12,4 @@
 	branch = master
 [submodule "fonts"]
 	path = fonts
-	url = git@git.kmx.io:c3-lang/fonts.git
+	url = https://git.kmx.io/c3-lang/fonts.git
