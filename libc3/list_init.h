@@ -33,7 +33,6 @@ s_list * list_init_integer_copy (s_list *list, const s_integer *i,
                                  s_list *next);
 s_list * list_init_integer_zero (s_list *list, s_list *next);
 
-
 s_list * list_init_map (s_list *list, uw count, s_list *next);
 s_list * list_init_map_1 (s_list *list, const s8 *p, s_list *next);
 s_list * list_init_s8 (s_list *list, s8 i, s_list *next);
@@ -74,7 +73,6 @@ s_list * list_new_integer_1 (const s8 *p, s_list *next);
 s_list * list_new_integer_copy (const s_integer *i, s_list *next);
 s_list * list_new_integer_zero (s_list *next);
 
-
 s_list * list_new_map (uw count, s_list *next);
 s_list * list_new_map_1 (const s8 *p, s_list *next);
 s_list * list_new_s8 (s8 i, s_list *next);
@@ -112,7 +110,6 @@ s_list * list_ident_1 (s_list *list, const s8 *p);
 s_list * list_integer_1 (s_list *list, const s8 *p);
 s_list * list_integer_copy (s_list *list, const s_integer *i);
 s_list * list_integer_zero (s_list *list);
-
 
 s_list * list_map (s_list *list, uw count);
 s_list * list_map_1 (s_list *list, const s8 *p);

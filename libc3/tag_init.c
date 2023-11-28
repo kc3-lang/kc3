@@ -141,23 +141,23 @@ s_tag * tag_init_integer_copy (s_tag *tag, const s_integer *i)
   return tag;
 }
 
+s_tag * tag_init_integer_zero (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_INTEGER;
+  if (! integer_init_zero(&tmp.data.integer))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_list (s_tag *tag, s_list *list)
 {
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_LIST;
   tmp.data.list = list;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_init_list_1 (s_tag *tag, const s8 *p, s_list *next)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_LIST;
-  if (! list_init_1(tmp.data.list, p, next))
-    return NULL;
   *tag = tmp;
   return tag;
 }
@@ -503,6 +503,21 @@ s_tag * tag_new_integer_copy (const s_integer *i)
   return tag;
 }
 
+s_tag * tag_new_integer_zero (void)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_integer_zero: calloc");
+    return NULL;
+  }
+  tag->type = TAG_INTEGER;
+  if (! integer_init_zero(&tag->data.integer)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_list (s_list *list)
 {
   s_tag *tag;
@@ -512,21 +527,6 @@ s_tag * tag_new_list (s_list *list)
   }
   tag->type = TAG_LIST;
   tag->data.list = list;
-  return tag;
-}
-
-s_tag * tag_new_list_1 (const s8 *p, s_list *next)
-{
-  s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_list_1: calloc");
-    return NULL;
-  }
-  tag->type = TAG_LIST;
-  if (! list_init_1(tag->data.list, p, next)) {
-    free(tag);
-    return NULL;
-  }
   return tag;
 }
 
@@ -905,6 +905,18 @@ s_tag * tag_integer_copy (s_tag *tag, const s_integer *i)
   return tag;
 }
 
+s_tag * tag_integer_zero (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_INTEGER;
+  if (! integer_init_zero(&tmp.data.integer))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_list (s_tag *tag, s_list *list)
 {
   s_tag tmp = {0};
@@ -912,18 +924,6 @@ s_tag * tag_list (s_tag *tag, s_list *list)
   tag_clean(tag);
   tmp.type = TAG_LIST;
   tmp.data.list = list;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_list_1 (s_tag *tag, const s8 *p, s_list *next)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_LIST;
-  if (! list_init_1(tmp.data.list, p, next))
-    return NULL;
   *tag = tmp;
   return tag;
 }

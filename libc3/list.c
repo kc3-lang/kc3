@@ -167,7 +167,7 @@ s_list * list_new (s_list *next)
   return list_init(dest, next);
 }
 
-s_list * list_new_eval (const s8 *p)
+s_list * list_new_1 (const s8 *p)
 {
   s_buf buf;
   s_list *list;
