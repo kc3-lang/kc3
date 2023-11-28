@@ -86,8 +86,8 @@ GENERATED_FILES = \
 
 gen: ${GENERATED_FILES}
 
-list_init.h tag_init.h: tag_init.h.rb
-	ruby tag_init.h.rb
+list_init.h tag_init.h: tag_init.rb
+	ruby tag_init.rb
 
 SED_BITS_8 = sed \
 	-e 's/_BITS[$$]/8/g' \
