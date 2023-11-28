@@ -389,6 +389,7 @@ uw tag_hash_uw (const s_tag *tag)
   return hash_to_uw(&hash);
 }
 
+/*
 s_tag * tag_ident (s_tag *tag, const s_ident *x)
 {
   assert(tag);
@@ -402,6 +403,7 @@ s_tag * tag_ident_1 (s_tag *tag, const s8 *p)
   tag_clean(tag);
   return tag_init_ident_1(tag, p);
 }
+*/
 
 bool tag_ident_is_bound (const s_tag *tag)
 {
@@ -450,6 +452,7 @@ s_tag * tag_init_bool (s_tag *tag, bool b)
   return tag;
 }
 
+/*
 s_tag * tag_init_character (s_tag *tag, character c)
 {
   assert(tag);
@@ -494,7 +497,7 @@ s_tag * tag_init_ident_1 (s_tag *tag, const s8 *p)
   ident_init_1(&tag->data.ident, p);
   return tag;
 }
-/*
+
 s_tag * tag_init_integer (s_tag *tag, const s_integer *i)
 {
   assert(tag);
@@ -505,6 +508,7 @@ s_tag * tag_init_integer (s_tag *tag, const s_integer *i)
 }
 */
 
+/*
 s_tag * tag_init_integer_1 (s_tag *tag, const s8 *p)
 {
   s_buf buf;
@@ -521,6 +525,7 @@ s_tag * tag_init_integer_1 (s_tag *tag, const s8 *p)
   buf_clean(&buf);
   return tag;
 }
+*/
 
 s_tag * tag_init_integer_s64 (s_tag *tag, s64 s)
 {
@@ -575,7 +580,6 @@ s_tag * tag_init_list_1 (s_tag *tag, const s8 *p)
   buf_clean(&buf);
   return tag;
 }
-*/
 
 s_tag * tag_init_map (s_tag *tag, uw count)
 {
@@ -677,6 +681,7 @@ s_tag * tag_init_sym_1 (s_tag *tag, const s8 *p)
   tag->data.sym = sym_1(p);
   return tag;
 }
+*/
 
 s_tag * tag_init_time (s_tag *tag)
 {
@@ -704,6 +709,7 @@ s_tag * tag_init_tuple_2 (s_tag *tag, const s_tag *a, const s_tag *b)
   return tag;
 }
 
+/*
 s_tag * tag_init_u8 (s_tag *tag, u8 i)
 {
   assert(tag);
@@ -764,6 +770,7 @@ s_tag * tag_init_void (s_tag *tag)
   tag->type = TAG_VOID;
   return tag;
 }
+*/
 
 s_str * tag_inspect (const s_tag *tag, s_str *dest)
 {
@@ -988,6 +995,7 @@ s_tag * tag_new_1 (const s8 *p)
   return tag_init_1(tag, p);
 }
 
+/*
 s_tag * tag_new_array (const s_sym *type, uw dimension,
                        const uw *dimensions)
 {
@@ -1002,6 +1010,7 @@ s_tag * tag_new_array (const s_sym *type, uw dimension,
   }
   return dest;
 }
+*/
 
 s_tag * tag_new_copy (const s_tag *src)
 {
@@ -1055,6 +1064,7 @@ s_tag * tag_paren (const s_tag *tag, s_tag *dest)
   return tag_init_copy(dest, tag);
 }
 
+/*
 s_tag * tag_s8 (s_tag *tag, s8 x)
 {
   assert(tag);
@@ -1103,7 +1113,7 @@ s_tag * tag_str_1 (s_tag *tag, s8 *free, const s8 *p)
   tag_clean(tag);
   return tag_init_str_1(tag, free, p);
 }
-
+*/
 s_tag * tag_sym (s_tag *tag, const s_sym *x)
 {
   assert(tag);
@@ -1381,6 +1391,7 @@ void * tag_to_pointer (s_tag *tag, const s_sym *type)
 
 }
 
+/*
 s_tag * tag_tuple (s_tag *tag, uw count)
 {
   assert(tag);
@@ -1394,6 +1405,7 @@ s_tag * tag_tuple_2 (s_tag *tag, const s_tag *a, const s_tag *b)
   tag_clean(tag);
   return tag_init_tuple_2(tag, a, b);
 }
+*/
 
 const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
 {
@@ -1403,6 +1415,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   return dest;
 }
 
+/*
 s_tag * tag_u8 (s_tag *tag, u8 x)
 {
   assert(tag);
@@ -1451,6 +1464,7 @@ s_tag * tag_void (s_tag *tag)
   tag_clean(tag);
   return tag_init_void(tag);
 }
+*/
 
 bool tag_xor (const s_tag *a, const s_tag *b)
 {
