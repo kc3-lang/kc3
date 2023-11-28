@@ -94,7 +94,7 @@ u16 * u16_cast (s_tag *tag, u16 *dest)
   return 0;
  ko:
   warnx("u16_cast: cannot cast %s to u16",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

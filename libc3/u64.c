@@ -94,7 +94,7 @@ u64 * u64_cast (s_tag *tag, u64 *dest)
   return 0;
  ko:
   warnx("u64_cast: cannot cast %s to u64",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

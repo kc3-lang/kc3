@@ -226,15 +226,10 @@ struct frame {
   s_frame *next;
 };
 
-/* TODO: perfect hashing of keys with cookie */
 struct map {
   uw count;
   s_tag *keys; /* sorted (see tag_compare) */
   s_tag *values;
-  /*
-    uw *key_hash_table;
-    uw key_hash_cookie;
-  */
 };
 
 struct ptr {
@@ -256,12 +251,6 @@ union ptr_w {
 
 struct quote {
   s_tag *tag;
-};
-
-struct struct_ {
-  void *data;
-  uw count;
-  e_tag_type type;
 };
 
 struct sym_list {
@@ -326,6 +315,12 @@ struct str {
   u_ptr_w free;        /**< Pointer to free or NULL. */
   uw      size;        /**< Size in bytes. */
   u_ptr   ptr;         /**< Pointer to memory. */
+};
+
+struct struct_ {
+  s_map map;
+  const s_sym *module;
+  void **data;
 };
 
 /* 3 */

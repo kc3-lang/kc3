@@ -15,6 +15,7 @@
 #include <err.h>
 #include "integer.h"
 #include "tag.h"
+#include "tag_type.h"
 #include "s32.h"
 
 s32 * s32_cast (s_tag *tag, s32 *dest)
@@ -94,7 +95,7 @@ s32 * s32_cast (s_tag *tag, s32 *dest)
   return 0;
  ko:
   warnx("s32_cast: cannot cast %s to s32",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

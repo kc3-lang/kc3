@@ -77,7 +77,7 @@ bool window_cairo_demo_load (s_window_cairo *window)
   window_cairo_sequence_init(window->sequence, 8.0,
                              "01. Background rectangles",
                              bg_rect_load, bg_rect_render);
-  window_cairo_sequence_init(window->sequence + 1, 30.0,
+  window_cairo_sequence_init(window->sequence + 1, 20.0,
                              "02. Lightspeed",
                              lightspeed_load, lightspeed_render);
   if (! cairo_sprite_init(&g_toaster_sprite,

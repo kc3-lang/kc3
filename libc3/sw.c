@@ -15,6 +15,7 @@
 #include <err.h>
 #include "integer.h"
 #include "tag.h"
+#include "tag_type.h"
 #include "sw.h"
 
 sw * sw_cast (s_tag *tag, sw *dest)
@@ -94,7 +95,7 @@ sw * sw_cast (s_tag *tag, sw *dest)
   return 0;
  ko:
   warnx("sw_cast: cannot cast %s to sw",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

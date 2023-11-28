@@ -101,6 +101,7 @@ HEADERS = \
 	integer.h \
 	io.h \
 	list.h \
+	list_init.h \
 	log.h \
 	map.h \
 	module.h \
@@ -123,9 +124,12 @@ HEADERS = \
 	skiplist__fact.h \
 	skiplist_node__fact.h \
 	str.h \
+	struct.h \
 	sw.h \
 	sym.h \
 	tag.h \
+	tag_init.h \
+	tag_type.h \
 	time.h \
 	tuple.h \
 	type.h \
@@ -267,11 +271,13 @@ SOURCES = \
 	tag_bor.c \
 	tag_bxor.c \
 	tag_div.c \
+	tag_init.c \
 	tag_mod.c \
 	tag_mul.c \
 	tag_shift_left.c \
 	tag_shift_right.c \
 	tag_sub.c \
+	tag_type.c \
 	time.c \
 	tuple.c \
 	type.c \
@@ -412,11 +418,13 @@ LO_SOURCES = \
 	tag_bor.c \
 	tag_bxor.c \
 	tag_div.c \
+	tag_init.c \
 	tag_mod.c \
 	tag_mul.c \
 	tag_shift_left.c \
 	tag_shift_right.c \
 	tag_sub.c \
+	tag_type.c \
 	time.c \
 	tuple.c \
 	type.c \

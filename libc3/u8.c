@@ -94,7 +94,7 @@ u8 * u8_cast (s_tag *tag, u8 *dest)
   return 0;
  ko:
   warnx("u8_cast: cannot cast %s to u8",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

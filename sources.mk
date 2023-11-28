@@ -95,6 +95,7 @@ C3_C_SOURCES = \
 	libc3/list.c \
 	libc3/buf_inspect_u64.c \
 	libc3/facts.h \
+	libc3/tag_type.h \
 	libc3/buf_inspect_u16_decimal.c \
 	libc3/tag_sub.c \
 	libc3/facts_with_cursor.c \
@@ -175,6 +176,7 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_uw_binary.c \
 	libc3/buf_inspect_uw_decimal.h \
 	libc3/facts_spec_cursor.c \
+	libc3/tag_init.c \
 	libc3/u64.h \
 	libc3/buf_inspect_u_base.h.in \
 	libc3/buf_inspect_s32_octal.h \
@@ -211,6 +213,7 @@ C3_C_SOURCES = \
 	libc3/u32.c \
 	libc3/hash.c \
 	libc3/buf_file.h \
+	libc3/struct.h \
 	libc3/integer.c \
 	libc3/buf_inspect_u8.c \
 	libc3/facts_spec.c \
@@ -219,6 +222,7 @@ C3_C_SOURCES = \
 	libc3/tag_bxor.c \
 	libc3/s64.h \
 	libc3/buf_inspect_u16_decimal.h \
+	libc3/tag_type.c \
 	libc3/facts.c \
 	libc3/buf_inspect_u64.h \
 	libc3/buf_inspect_sw_decimal.h \
@@ -280,6 +284,7 @@ C3_C_SOURCES = \
 	libc3/window/cairo/xcb/window_cairo_xcb.c \
 	libc3/window/cairo/types.h \
 	libc3/window/cairo/window_cairo.c \
+	libc3/window/cairo/cairo_font.h \
 	libc3/window/cairo/cairo_png.h \
 	libc3/window/cairo/cairo_sprite.h \
 	libc3/window/cairo/quartz/demo/window_cairo_quartz_demo.c \
@@ -291,6 +296,7 @@ C3_C_SOURCES = \
 	libc3/window/cairo/quartz/xkbquartz.h \
 	libc3/window/cairo/quartz/window_cairo_quartz_view.h \
 	libc3/window/cairo/window_cairo.h \
+	libc3/window/cairo/cairo_font.c \
 	libc3/window/cairo/win32/demo/window_cairo_win32_demo.c \
 	libc3/window/cairo/win32/vk_to_xkbcommon.c \
 	libc3/window/cairo/win32/window_cairo_win32.h \
@@ -336,6 +342,7 @@ C3_C_SOURCES = \
 	libc3/error_handler.h \
 	libc3/u64.c \
 	libc3/buf_inspect_s32_octal.c \
+	libc3/tag_init.h \
 	libc3/tag_mul.c \
 	libc3/facts_spec_cursor.h \
 	libc3/buf_inspect_uw_decimal.c \
@@ -386,6 +393,7 @@ C3_C_SOURCES = \
 	libc3/set_cursor__tag.c \
 	libc3/set_cursor__fact.h \
 	libc3/buf.c \
+	libc3/list_init.h \
 	libc3/abs.c \
 	libc3/buf_parse_s64.h \
 	libc3/buf_inspect_s.c.in \

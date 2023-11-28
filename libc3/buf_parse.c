@@ -694,7 +694,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
         break;
       }
       result += r;
-      tag_init_call(right, &tmp2);
+      tag_init_call(right);
+      right->data.call = tmp2;
       if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
         break;
       result += r;
@@ -718,7 +719,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     tmp3.ident = op;
     tmp3.arguments->tag = *left;
     list_next(tmp3.arguments)->tag = *right;
-    tag_init_call(left, &tmp3);
+    tag_init_call(left);
+    left->data.call = tmp3;
   }
   call_clean(dest);
   *dest = tmp;

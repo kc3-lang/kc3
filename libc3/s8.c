@@ -15,6 +15,7 @@
 #include <err.h>
 #include "integer.h"
 #include "tag.h"
+#include "tag_type.h"
 #include "s8.h"
 
 s8 * s8_cast (s_tag *tag, s8 *dest)
@@ -94,7 +95,7 @@ s8 * s8_cast (s_tag *tag, s8 *dest)
   return 0;
  ko:
   warnx("s8_cast: cannot cast %s to s8",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

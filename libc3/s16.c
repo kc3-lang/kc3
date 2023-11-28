@@ -15,6 +15,7 @@
 #include <err.h>
 #include "integer.h"
 #include "tag.h"
+#include "tag_type.h"
 #include "s16.h"
 
 s16 * s16_cast (s_tag *tag, s16 *dest)
@@ -94,7 +95,7 @@ s16 * s16_cast (s_tag *tag, s16 *dest)
   return 0;
  ko:
   warnx("s16_cast: cannot cast %s to s16",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

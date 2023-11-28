@@ -71,6 +71,7 @@ GENERATED_FILES = \
 	buf_parse_u32.c buf_parse_u32.h \
 	buf_parse_u64.c buf_parse_u64.h \
 	buf_parse_uw.c buf_parse_uw.h \
+	list_init.h \
 	set__fact.c set__fact.h \
 	set__tag.c set__tag.h \
 	set_cursor__fact.c set_cursor__fact.h \
@@ -80,9 +81,13 @@ GENERATED_FILES = \
 	skiplist__fact.c skiplist__fact.h \
 	skiplist_node__fact.c skiplist_node__fact.h \
 	s8.c s8.h s16.c s16.h s32.c s32.h s64.c s64.h sw.c sw.h \
+	tag_init.h \
 	u8.c u8.h u16.c u16.h u32.c u32.h u64.c u64.h uw.c uw.h
 
 gen: ${GENERATED_FILES}
+
+list_init.h tag_init.h: tag_init.h.rb
+	ruby tag_init.h.rb
 
 SED_BITS_8 = sed \
 	-e 's/_BITS[$$]/8/g' \
