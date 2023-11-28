@@ -59,6 +59,7 @@ bool * tag_and (const s_tag *a, const s_tag *b, bool *dest)
   return dest;
 }
 
+/*
 s_tag * tag_array (s_tag *tag, const s_sym *type, uw dimension,
                    const uw *dimensions)
 {
@@ -66,6 +67,7 @@ s_tag * tag_array (s_tag *tag, const s_sym *type, uw dimension,
   tag_clean(tag);
   return tag_init_array(tag, type, dimension, dimensions);
 }
+*/
 
 s_tag * tag_bnot (const s_tag *tag, s_tag *result)
 {
@@ -103,12 +105,14 @@ s_tag * tag_bnot (const s_tag *tag, s_tag *result)
   return NULL;
 }
 
+/*
 s_tag * tag_bool (s_tag *tag, bool b)
 {
   assert(tag);
   tag_clean(tag);
   return tag_init_bool(tag, b);
 }
+*/
 
 s_tag * tag_cast_integer_to_s8 (s_tag *tag)
 {
@@ -182,12 +186,14 @@ s_tag * tag_cast_integer_to_u64 (s_tag *tag)
   return tag_u64(tag, i);
 }
 
+/*
 s_tag * tag_character (s_tag *tag, character x)
 {
   assert(tag);
   tag_clean(tag);
   return tag_init_character(tag, x);
 }
+*/
 
 void tag_clean (s_tag *tag)
 {
@@ -339,6 +345,7 @@ s_tag * tag_equal (const s_tag *a, const s_tag *b, s_tag *dest)
   return dest;
 }
 
+/*
 s_tag * tag_f32 (s_tag *tag, f32 x)
 {
   assert(tag);
@@ -352,6 +359,7 @@ s_tag * tag_f64 (s_tag *tag, f64 x)
   tag_clean(tag);
   return tag_init_f64(tag, x);
 }
+*/
 
 bool * tag_gt (const s_tag *a, const s_tag *b, bool *dest)
 {
@@ -434,6 +442,7 @@ s_tag * tag_init_1 (s_tag *tag, const s8 *p)
   return tag;
 }
 
+/*
 s_tag * tag_init_array (s_tag *tag, const s_sym *type,
                         uw dimension, const uw *dimensions)
 {
@@ -452,7 +461,6 @@ s_tag * tag_init_bool (s_tag *tag, bool b)
   return tag;
 }
 
-/*
 s_tag * tag_init_character (s_tag *tag, character c)
 {
   assert(tag);
@@ -545,6 +553,7 @@ s_tag * tag_init_integer_u64 (s_tag *tag, u64 u)
   return tag;
 }
 
+/*
 s_tag * tag_init_integer_zero (s_tag *tag)
 {
   assert(tag);
@@ -563,7 +572,6 @@ s_tag * tag_init_list (s_tag *tag, s_list *list)
   return tag;
 }
 
-/*
 s_tag * tag_init_list_1 (s_tag *tag, const s8 *p)
 {
   s_buf buf;
@@ -690,6 +698,7 @@ s_tag * tag_init_time (s_tag *tag)
   return time_to_tag(&time, tag);
 }
 
+/*
 s_tag * tag_init_tuple (s_tag *tag, uw count)
 {
   assert(tag);
@@ -709,7 +718,6 @@ s_tag * tag_init_tuple_2 (s_tag *tag, const s_tag *a, const s_tag *b)
   return tag;
 }
 
-/*
 s_tag * tag_init_u8 (s_tag *tag, u8 i)
 {
   assert(tag);
@@ -792,6 +800,7 @@ s_str * tag_inspect (const s_tag *tag, s_str *dest)
   return buf_to_str(&buf, dest);
 }
 
+/*
 s_tag * tag_integer_1 (s_tag *tag, const s8 *p)
 {
   assert(tag);
@@ -805,6 +814,7 @@ s_tag * tag_integer_copy (s_tag *tag, const s_integer *x)
   tag_clean(tag);
   return tag_init_integer_copy(tag, x);
 }
+*/
 
 s_tag * tag_integer_reduce (s_tag *tag)
 {
@@ -870,21 +880,25 @@ bool tag_is_unbound_var (const s_tag *tag)
   return (tag && tag->type == TAG_VAR);
 }
 
+/*
 s_tag * tag_list (s_tag *tag, s_list *x)
 {
   assert(tag);
   tag_clean(tag);
   return tag_init_list(tag, x);
 }
+*/
 
-/*
 s_tag * tag_list_1 (s_tag *tag, const s8 *p)
 {
+  s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  return tag_init_list_1(tag, p);
+  tmp.type = TAG_LIST;
+  tmp.data.list = list_new_1(p);
+  *tag = tmp;
+  return tag;
 }
-*/
 
 bool * tag_lt (const s_tag *a, const s_tag *b, bool *dest)
 {
@@ -903,6 +917,8 @@ bool * tag_lte (const s_tag *a, const s_tag *b, bool *dest)
   *dest = compare_tag(a, b) <= 0 ? 1 : 0;
   return dest;
 }
+
+/*
 s_tag * tag_map (s_tag *tag, uw count)
 {
   assert(tag);
@@ -910,7 +926,6 @@ s_tag * tag_map (s_tag *tag, uw count)
   return tag_init_map(tag, count);
 }
 
-/*
 s_tag * tag_map_1 (s_tag *tag, const s8 *p)
 {
   assert(tag);
@@ -1020,12 +1035,14 @@ s_tag * tag_new_copy (const s_tag *src)
   return tag_init_copy(dest, src);
 }
 
+/*
 s_tag * tag_new_var (void)
 {
   s_tag *tag;
   tag = calloc(1, sizeof(s_tag));
   return tag_init_var(tag);
 }
+*/
 
 bool * tag_not (const s_tag *tag, bool *dest)
 {
@@ -1113,7 +1130,7 @@ s_tag * tag_str_1 (s_tag *tag, s8 *free, const s8 *p)
   tag_clean(tag);
   return tag_init_str_1(tag, free, p);
 }
-*/
+
 s_tag * tag_sym (s_tag *tag, const s_sym *x)
 {
   assert(tag);
@@ -1127,6 +1144,7 @@ s_tag * tag_sym_1 (s_tag *tag, const s8 *p)
   tag_clean(tag);
   return tag_init_sym_1(tag, p);
 }
+*/
 
 void * tag_to_ffi_pointer (s_tag *tag, const s_sym *type)
 {

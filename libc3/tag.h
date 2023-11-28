@@ -64,6 +64,7 @@ s_tag * tag_integer_cast_to_u32 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_cast_to_u64 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_cast_to_u8 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_reduce (s_tag *tag);
+s_tag * tag_list_1 (s_tag *tag, const s8 *p);
 void  * tag_to_ffi_pointer (s_tag *tag, const s_sym *type);
 void  * tag_to_pointer (s_tag *tag, const s_sym *type);
 

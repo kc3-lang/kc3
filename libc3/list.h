@@ -37,7 +37,7 @@ s_list  * list_init_eval (s_list *list, const s8 *p);
 s_list * list_delete (s_list *list);
 void     list_delete_all (s_list *list);
 s_list * list_new (s_list *next);
-s_list * list_new_eval (const s8 *p);
+s_list * list_new_1 (const s8 *p);
 s_list * list_new_f64 (f64 x, s_list *next);
 s_list * list_new_copy (const s_tag *tag, s_list *next);
 s_list * list_new_list (s_list *list, s_list *next);
