@@ -14,6 +14,7 @@
 #include <err.h>
 #include "integer.h"
 #include "tag.h"
+#include "tag_type.h"
 #include "f32.h"
 
 f32 f32_cast (s_tag *tag)
@@ -77,7 +78,7 @@ f32 f32_cast (s_tag *tag)
   return 0;
  ko:
   warnx("f32_cast: cannot cast %s to f32",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

@@ -94,7 +94,7 @@ u32 * u32_cast (s_tag *tag, u32 *dest)
   return 0;
  ko:
   warnx("u32_cast: cannot cast %s to u32",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

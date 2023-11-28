@@ -15,6 +15,7 @@
 #include <err.h>
 #include "integer.h"
 #include "tag.h"
+#include "tag_type.h"
 #include "s_bits$.h"
 
 s_bits$ * s_bits$_cast (s_tag *tag, s_bits$ *dest)
@@ -94,7 +95,7 @@ s_bits$ * s_bits$_cast (s_tag *tag, s_bits$ *dest)
   return 0;
  ko:
   warnx("s_bits$_cast: cannot cast %s to s_bits$",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

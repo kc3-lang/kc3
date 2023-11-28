@@ -76,6 +76,14 @@ s_list * list_init (s_list *list, s_list *next)
   return list;
 }
 
+s_list * list_init_1 (s_list *list, const s8 *p, s_list *next)
+{
+  assert(list);
+  tag_init_1(&list->tag, p);
+  tag_init_list(&list->next, next);
+  return list;
+}
+
 /* FIXME: does not work on circular lists */
 s_list ** list_init_copy (s_list **list, const s_list **src)
 {
@@ -159,7 +167,7 @@ s_list * list_new (s_list *next)
   return list_init(dest, next);
 }
 
-s_list * list_new_1 (const char *p)
+s_list * list_new_eval (const s8 *p)
 {
   s_buf buf;
   s_list *list;

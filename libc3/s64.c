@@ -15,6 +15,7 @@
 #include <err.h>
 #include "integer.h"
 #include "tag.h"
+#include "tag_type.h"
 #include "s64.h"
 
 s64 * s64_cast (s_tag *tag, s64 *dest)
@@ -94,7 +95,7 @@ s64 * s64_cast (s_tag *tag, s64 *dest)
   return 0;
  ko:
   warnx("s64_cast: cannot cast %s to s64",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

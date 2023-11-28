@@ -94,7 +94,7 @@ u_bits$ * u_bits$_cast (s_tag *tag, u_bits$ *dest)
   return 0;
  ko:
   warnx("u_bits$_cast: cannot cast %s to u_bits$",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

@@ -94,7 +94,7 @@ uw * uw_cast (s_tag *tag, uw *dest)
   return 0;
  ko:
   warnx("uw_cast: cannot cast %s to uw",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

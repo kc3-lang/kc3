@@ -20,6 +20,7 @@
 #include "str.h"
 #include "sym.h"
 #include "tag.h"
+#include "tag_type.h"
 #include "type.h"
 
 s_tag * cfn_tag_init (s_tag *tag, const s_sym *type);

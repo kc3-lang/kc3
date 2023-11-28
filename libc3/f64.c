@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
+#include "tag_type.h"
 #include "f64.h"
 
 f64 f64_cast (s_tag *tag)
@@ -78,7 +79,7 @@ f64 f64_cast (s_tag *tag)
   return 0;
  ko:
   warnx("f64_cast: cannot cast %s to f64",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+        tag_type_to_string(tag->type));
   return 0;
 }
 

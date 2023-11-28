@@ -18,6 +18,7 @@
 #include "compare.h"
 #include "integer.h"
 #include "tag.h"
+#include "tag_type.h"
 
 s_integer * integer_abs (const s_integer *a, s_integer *dest)
 {
@@ -165,12 +166,12 @@ s_integer * integer_cast (const s_tag *tag, s_integer *dest)
   case TAG_VAR:
     goto ko;
   }
-  assert(! "u8_cast: unknown tag type");
-  errx(1, "u8_cast: unknown tag type: %d", tag->type);
+  assert(! "integer_cast: unknown tag type");
+  errx(1, "integer_cast: unknown tag type: %d", tag->type);
   return 0;
  ko:
-  warnx("u8_cast: cannot cast %s to u8",
-        tag_type_to_sym(tag->type)->str.ptr.ps8);
+  warnx("integer_cast: cannot cast %s to integer",
+        tag_type_to_string(tag->type));
   return 0;
 }
 
