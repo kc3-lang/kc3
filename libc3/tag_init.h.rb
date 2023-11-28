@@ -43,6 +43,7 @@ class TagInit
 
     @args_list.each do |arg|
       @first_arg_deref ||= arg.type != "const s_sym *" &&
+                           arg.type != "s_list *" &&
                            arg.type.match?(/\*$/) ?
                              "*#{arg.name}" : arg.name
       @args = @args == "" ? arg.name : "#{@args}, #{arg.name}"
@@ -110,7 +111,6 @@ end
   assert(tag);
   tag_clean(tag);
   #{tag_type ? "tmp.type = #{tag_type};\n" : ""}#{def_tag_init_init}  *tag = tmp;
-  *tag = tmp;
   return tag;
 }
 EOF
@@ -169,7 +169,7 @@ EOF
     warn("tag_new_#{name_suffix}: calloc");
     return NULL;
   }
-#{def_tag_new_init}  return tag;
+  #{tag_type ? "tag->type = #{tag_type};\n" : ""}#{def_tag_new_init}  return tag;
 }
 EOF
   end
@@ -287,13 +287,14 @@ class TagInitList
        TagInit.new("ident", "TAG_IDENT", :init_mode_direct,
                    [Arg.new("const s_ident *", "ident")]),
        TagInit1.new("ident", "1", "TAG_IDENT", :init_mode_init),
+#       TagInit.new("integer", "TAG_INTEGER", :init_mode_init, []),
+       TagInit1.new("integer", "1", "TAG_INTEGER", :init_mode_init),
        TagInit.new("integer", "copy", "TAG_INTEGER", :init_mode_init,
                    [Arg.new("const s_integer *", "i")]),
-       TagInit1.new("integer", "1", "TAG_INTEGER", :init_mode_init),
        TagInitProto.new("integer_zero", "TAG_INTEGER", :init_mode_init,
                         []),
-       TagInitProto.new("list", "TAG_LIST", :init_mode_init,
-                        [Arg.new("s_list *", "next")]),
+       TagInit.new("list", "TAG_LIST", :init_mode_direct,
+                   [Arg.new("s_list *", "list")]),
        TagInit1.new("list", "1", "TAG_LIST", :init_mode_init,
                     [Arg.new("const s8 *", "p"),
                      Arg.new("s_list *", "next")]),
@@ -319,13 +320,14 @@ class TagInitList
                    [Arg.new("sw", "i")]),
        TagInit.new("sym", "TAG_SYM", :init_mode_direct,
                    [Arg.new("const s_sym *", "sym")]),
+       TagInit1.new("sym", "1", "TAG_SYM", :init_mode_init),
        TagInit.new("tuple", "TAG_TUPLE", :init_mode_init,
                    [Arg.new("uw", "count")]),
        TagInit.new("tuple", "2", "TAG_TUPLE", :init_mode_init,
                    [Arg.new("const s_tag *", "a"),
                     Arg.new("const s_tag *", "b")]),
        TagInitProto.new("time", "TAG_TIME", :init_mode_none, []),
-       TagInit.new("u8 ", "TAG_U8", :init_mode_direct,
+       TagInit.new("u8", "TAG_U8", :init_mode_direct,
                    [Arg.new("u8", "i")]),
        TagInit.new("u16", "TAG_U16", :init_mode_direct,
                    [Arg.new("u16", "i")]),
@@ -335,7 +337,7 @@ class TagInitList
                    [Arg.new("u64", "i")]),
        TagInit.new("uw", "TAG_UW", :init_mode_direct,
                    [Arg.new("uw", "i")]),
-       TagInitProto.new("var", "TAG_VAR", :init_mode_none, []),
+       TagInit.new("var", "TAG_VAR", :init_mode_none, []),
        TagInit.new("void", "TAG_VOID", :init_mode_none, [])])
   end
 
