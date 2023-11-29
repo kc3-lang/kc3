@@ -65,6 +65,7 @@ void env_clean (s_env *env)
   buf_file_close(&env->err);
   buf_clean(&env->err);
   str_clean(&env->argv0_dir);
+  str_clean(&env->module_path);
   list_delete_all(env->path);
 }
 
