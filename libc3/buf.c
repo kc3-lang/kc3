@@ -230,7 +230,11 @@ s_buf * buf_init_alloc (s_buf *buf, uw size)
 
 s_buf * buf_init_str (s_buf *buf, bool p_free, s_str *p)
 {
-  return buf_init(buf, p_free, p->size, (s8 *) p->ptr.ps8);
+  assert(buf);
+  assert(p);
+  buf_init(buf, p_free, p->size, (s8 *) p->ptr.ps8);
+  buf->wpos = p->size;
+  return buf;
 }
 
 s_buf * buf_init_str_copy (s_buf *buf, const s_str *str)
