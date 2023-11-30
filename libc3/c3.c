@@ -47,7 +47,7 @@ void c3_exit (sw code)
   exit((int) code);
 }
 
-s_env * c3_init (s_env *env, sw argc, s8 **argv)
+s_env * c3_init (s_env *env, int argc, s8 **argv)
 {
   if (! env)
     env = &g_c3_env;
