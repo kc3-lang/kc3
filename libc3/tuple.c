@@ -59,6 +59,7 @@ s_tuple * tuple_init_1 (s_tuple *tuple, const s8 *p)
   assert(p);
   len = strlen(p);
   buf_init(&buf, false, len, (s8 *) p);
+  buf.wpos = len;
   r = buf_parse_tuple(&buf, tuple);
   if (r < 0 || (uw) r != len) {
     warnx("tuple_init_1: invalid tuple: \"%s\", %lu != %ld",
