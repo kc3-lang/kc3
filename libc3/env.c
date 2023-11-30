@@ -50,7 +50,7 @@ s_env g_c3_env;
 
 static bool env_eval_array_cast (s_env *env, s_array *tmp,
                                  const s_tag *tag, u8 *data, uw size);
-static s_env * env_init_args (s_env *env, sw argc, s8 **argv);
+static s_env * env_init_args (s_env *env, int argc, s8 **argv);
 
 void env_clean (s_env *env)
 {
@@ -737,7 +737,7 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
   return true;
 }
 
-s_env * env_init (s_env *env, sw argc, s8 **argv)
+s_env * env_init (s_env *env, int argc, s8 **argv)
 {
   s_str path;
   assert(env);
@@ -775,7 +775,7 @@ s_env * env_init (s_env *env, sw argc, s8 **argv)
   return env;
 }
 
-s_env * env_init_args (s_env *env, sw argc, s8 **argv)
+s_env * env_init_args (s_env *env, int argc, s8 **argv)
 {
   s8 a[PATH_MAX];
   s_buf buf;
