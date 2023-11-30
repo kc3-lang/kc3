@@ -198,9 +198,13 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, s8 *p)
 
 s_buf * buf_init_1 (s_buf *buf, bool p_free, s8 *p)
 {
+  uw len;
   assert(buf);
   assert(p);
-  return buf_init(buf, p_free, strlen(p), p);
+  len = strlen(p);
+  buf_init(buf, p_free, len, p);
+  buf->wpos = len;
+  return buf;
 }
 
 s_buf * buf_init_1_copy (s_buf *buf, const s8 *p)

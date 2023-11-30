@@ -114,10 +114,8 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
   }
   if ((r = buf_write_1(&out, FACTS_EXT)) < 0)
     goto error;
-  buf_clean(&in);
   return buf_to_str(&out, dest);
  error:
-  buf_clean(&in);
   buf_clean(&out);
   return NULL;
 }
