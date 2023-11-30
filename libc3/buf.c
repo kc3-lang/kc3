@@ -23,7 +23,8 @@
 void buf_clean (s_buf *buf)
 {
   assert(buf);
-  free(buf->ptr.p);
+  if (buf->free)
+    free(buf->ptr.p);
 }
 
 void buf_delete (s_buf *buf)
@@ -181,7 +182,7 @@ sw buf_ignore_spaces_but_newline (s_buf *buf)
 s_buf * buf_init (s_buf *buf, bool p_free, uw size, s8 *p)
 {
   assert(buf);
-  assert((!size || p) && (size || !p));
+  assert(p);
   buf->column = 0;
   buf->flush = NULL;
   buf->free = p_free;
