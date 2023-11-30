@@ -46,9 +46,11 @@ s_buf * buf_linenoise_open_r (s_buf *buf, const s8 *prompt,
   s_buf_linenoise *buf_linenoise;
   assert(buf);
   buf_linenoise = malloc(sizeof(s_buf_linenoise));
-  if (! buf_linenoise)
-    errx(1, "buf_linenoise_open_r: out of memory");
-  buf_init_1(&buf_linenoise->buf, "");
+  if (! buf_linenoise) {
+    warn("buf_linenoise_open_r: malloc");
+    return NULL;
+  }
+  buf_init(&buf_linenoise->buf, false, 1, "");
   buf_linenoise->eof = false;
   if (isatty(STDIN_FILENO))
     buf->refill = buf_linenoise_refill_linenoise;

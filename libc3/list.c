@@ -171,13 +171,11 @@ s_list * list_new_1 (const s8 *p)
 {
   s_buf buf;
   s_list *list;
-  buf_init_1(&buf, p);
+  buf_init_1(&buf, false, (s8 *) p);
   if (buf_parse_list(&buf, &list) != (sw) strlen(p)) {
     assert(! "invalid list");
-    buf_clean(&buf);
     return NULL;
   }
-  buf_clean(&buf);
   return list;
 }
 

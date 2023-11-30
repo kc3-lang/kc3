@@ -427,18 +427,20 @@ s_tag * tag_init (s_tag *tag)
 s_tag * tag_init_1 (s_tag *tag, const s8 *p)
 {
   s_buf buf;
+  uw len;
+  sw r;
   assert(tag);
   tag_init_void(tag);
   if (! p)
     return tag;
-  buf_init_1(&buf, p);
-  if (buf_parse_tag(&buf, tag) != (sw) strlen(p)) {
+  buf_init_1(&buf, false, (s8 *) p);
+  len = strlen(p);
+  r = buf_parse_tag(&buf, tag);
+  if (r < 0 || (uw) r != len) {
+    warnx("invalid tag: \"%s\", %lu != %ld", p, len, r);
     assert(! "invalid tag");
-    errx(1, "invalid tag");
-    buf_clean(&buf);
     return NULL;
   }
-  buf_clean(&buf);
   return tag;
 }
 

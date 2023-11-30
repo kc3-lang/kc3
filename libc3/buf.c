@@ -23,8 +23,7 @@
 void buf_clean (s_buf *buf)
 {
   assert(buf);
-  if (buf->free)
-    free(buf->ptr.p);
+  free(buf->ptr.p);
 }
 
 void buf_delete (s_buf *buf)
@@ -179,13 +178,13 @@ sw buf_ignore_spaces_but_newline (s_buf *buf)
   return result;
 }
 
-s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p)
+s_buf * buf_init (s_buf *buf, bool p_free, uw size, s8 *p)
 {
   assert(buf);
   assert((!size || p) && (size || !p));
   buf->column = 0;
   buf->flush = NULL;
-  buf->free = free;
+  buf->free = p_free;
   buf->line = -1;
   buf->ptr.ps8 = p;
   buf->refill = NULL;
@@ -197,23 +196,21 @@ s_buf * buf_init (s_buf *buf, bool free, uw size, s8 *p)
   return buf;
 }
 
-s_buf * buf_init_str (s_buf *buf, const s_str *str)
+s_buf * buf_init_1 (s_buf *buf, bool p_free, s8 *p)
 {
   assert(buf);
-  assert(str);
-  buf_init_alloc(buf, str->size);
-  memcpy(buf->ptr.p, str->ptr.p, str->size);
-  buf->wpos = str->size;
-  return buf;
+  assert(p);
+  return buf_init(buf, p_free, strlen(p), p);
 }
 
-s_buf * buf_init_1 (s_buf *buf, const s8 *p)
+s_buf * buf_init_1_copy (s_buf *buf, const s8 *p)
 {
   uw size;
   assert(buf);
   assert(p);
   size = strlen(p);
-  buf_init_alloc(buf, size);
+  if (! buf_init_alloc(buf, size))
+    return NULL;
   memcpy(buf->ptr.p, p, size);
   buf->wpos = size;
   return buf;
@@ -231,13 +228,28 @@ s_buf * buf_init_alloc (s_buf *buf, uw size)
   return buf_init(buf, true, size, p);
 }
 
-s_buf * buf_new (bool free, uw size, s8 *p)
+s_buf * buf_init_str (s_buf *buf, bool p_free, s_str *p)
+{
+  return buf_init(buf, p_free, p->size, (s8 *) p->ptr.ps8);
+}
+
+s_buf * buf_init_str_copy (s_buf *buf, const s_str *str)
+{
+  assert(buf);
+  assert(str);
+  buf_init_alloc(buf, str->size);
+  memcpy(buf->ptr.p, str->ptr.p, str->size);
+  buf->wpos = str->size;
+  return buf;
+}
+
+s_buf * buf_new (bool p_free, uw size, s8 *p)
 {
   s_buf *buf;
   buf = malloc(sizeof(s_buf));
   if (! buf)
     err(1, "out of memory");
-  buf_init(buf, free, size, p);
+  buf_init(buf, p_free, size, p);
   return buf;
 }
 
@@ -769,11 +781,11 @@ sw buf_str_to_hex (s_buf *buf, const s_str *src)
 
 s_str * buf_to_str (const s_buf *buf, s_str *str)
 {
-  void *free;
+  void *p_free;
   assert(buf);
   assert(str);
-  free = buf->free ? buf->ptr.p : NULL;
-  return str_init(str, free, buf->size, buf->ptr.p);
+  p_free = buf->free ? buf->ptr.p : NULL;
+  return str_init(str, p_free, buf->size, buf->ptr.p);
 }
 
 sw buf_u8_to_hex (s_buf *buf, const u8 *x)

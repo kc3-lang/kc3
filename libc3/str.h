@@ -35,6 +35,9 @@ s_str * str_init_copy (s_str *str, const s_str *src);
 s_str * str_init_copy_1 (s_str *str, const s8 *p);
 s_str * str_init_empty (s_str *str);
 s_str * str_init_f (s_str *str, const char *fmt, ...);
+s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end);
+s_str * str_init_slice_utf8 (s_str *str, const s_str *src, sw start,
+                             sw end);
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap);
 
 /* Constructors, call str_delete after use */
@@ -72,6 +75,9 @@ sw            str_peek_u8 (const s_str *src, u8 *p);
 sw            str_peek_u16 (const s_str *src, u16 *p);
 sw            str_peek_u32 (const s_str *src, u32 *p);
 sw            str_peek_u64 (const s_str *src, u64 *p);
+uw *          str_rindex_character (const s_str *str, character c,
+                                    uw *dest);
+uw *          str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest);
 s_str *       str_to_hex (const s_str *src, s_str *dest);
 s_ident *     str_to_ident (const s_str *src, s_ident *dest);
 const s_sym * str_to_sym (const s_str *src);

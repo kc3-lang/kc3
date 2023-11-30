@@ -195,10 +195,9 @@ s_call * call_init (s_call *call)
 s_call * call_init_1 (s_call *call, const s8 *p)
 {
   s_buf buf;
-  buf_init_1(&buf, p);
+  buf_init_1(&buf, false, (s8 *) p);
   if (buf_parse_call(&buf, call) != (sw) strlen(p))
     errx(1, "invalid call: %s", p);
-  buf_clean(&buf);
   return call;
 }
 

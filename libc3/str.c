@@ -166,6 +166,51 @@ s_str * str_init_f (s_str *str, const char *fmt, ...)
   return str;
 }
 
+s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
+{
+  s_buf buf;
+  assert(str);
+  assert(src);
+  buf_init(&buf, false, src->size, (s8 *) src->ptr.ps8);
+  if (! str_sw_pos_to_uw(start, src->size, &buf.rpos) ||
+      ! str_sw_pos_to_uw(end, src->size, &buf.wpos))
+    return NULL;
+  if (buf.rpos > buf.wpos) {
+    warnx("str_init_slice: invalid positions: %lu > %lu",
+          buf.rpos, buf.wpos);
+    assert(! "str_init_slice: invalid positions");
+    return NULL;
+  }
+  if (! buf_read_to_str(&buf, str))
+    return NULL;
+  return str;
+}
+
+uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
+{
+  assert(dest);
+  if (pos >= 0) {
+    if ((uw) pos > max_pos) {
+      warnx("str_sw_pos_to_uw: index out of bounds: %ld > %lu",
+            pos, max_pos);
+      assert(! "str_sw_pos_to_uw: index too large");
+      return NULL;
+    }
+    *dest = (uw) pos;
+  }
+  else {
+    if (max_pos > SW_MAX || pos >= (sw) -max_pos)
+      *dest = max_pos - pos;
+    else {
+      warnx("str_sw_pos_to_uw: index out of bounds: %ld < -%lu",
+            pos, max_pos);
+      assert(! "str_sw_pos_to_uw: index too low");
+      return NULL;
+    }
+  }
+  return dest;
+}
+
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap)
 {
   int len;
@@ -361,6 +406,25 @@ sw str_read_character_utf8 (s_str *str, character *c)
   str->size -= size;
   str->ptr.p = str->ptr.ps8 + size;
   return size;
+}
+
+uw * str_rindex_character (const s_str *str, character c, uw *dest)
+{
+  uw i = 0;
+  sw result = -1;
+  s_str s;
+  character tmp;
+  s = *str;
+  while (str_read_character_utf8(&s, &tmp) > 0) {
+    if (c == tmp)
+      result = i;
+    i++;
+  }
+  if (result >= 0) {
+    *dest = result;
+    return dest;
+  }
+  return NULL;
 }
 
 s_str * str_to_hex (const s_str *src, s_str *dest)

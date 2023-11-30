@@ -26,7 +26,7 @@ static s_sym_list * g_sym_list = NULL;
 const s_sym * sym_1 (const s8 *p)
 {
   s_str stra;
-  str_init_1(&stra, NULL, p);
+  str_init_copy_1(&stra, NULL, p);
   return str_to_sym(&stra);
 }
 

@@ -232,9 +232,8 @@ s_integer * integer_init_1 (s_integer *i, const s8 *p)
   s_buf buf;
   assert(i);
   assert(p);
-  buf_init_1(&buf, p);
+  buf_init_1(&buf, false, (s8 *) p);
   buf_parse_integer(&buf, i);
-  buf_clean(&buf);
   return i;
 }
 

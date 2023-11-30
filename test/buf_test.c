@@ -43,9 +43,8 @@
   do {                                                                 \
     s_buf buf;                                                         \
     test_context("buf_ignore(" # test ", " # count ")");               \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_ignore(&buf, (count)), expected);                      \
-    buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)  
   
@@ -53,10 +52,9 @@
   do {                                                                 \
     s_buf buf;                                                         \
     test_context("buf_peek_1(" # test ")");                            \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_peek_1(&buf, (test)), strlen(test));                   \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);						       \
     test_context(NULL);                                                \
   } while (0)
 
@@ -65,7 +63,7 @@
     character dest;                                                    \
     s_buf buf;                                                         \
     test_context("buf_peek_character_utf8(" # test ")");               \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_peek_character_utf8(&buf, &dest), (expected));         \
     TEST_EQ(buf.rpos, 0);                                              \
     TEST_EQ(dest, (c));                                                \
@@ -77,10 +75,9 @@
   do {                                                                 \
     s_buf buf;                                                         \
     test_context("buf_read_1(" # test ")");                            \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_read_1(&buf, (test)), strlen(test));                   \
     TEST_EQ(buf.rpos, strlen(test));                                   \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -88,9 +85,8 @@
   do {                                                                 \
     s_buf buf;                                                         \
     test_context("buf_read_1(" # data ", " # test ") -> " # result);   \
-    buf_init_1(&buf, (data));                                          \
+    buf_init_1(&buf, false, (data));                                   \
     TEST_EQ(buf_read_1(&buf, (test)), (result));                       \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -99,7 +95,7 @@
     character c;                                                       \
     s_buf buf;                                                         \
     test_context("buf_read_character_utf8(" # test ") -> " # result);  \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_ASSERT(buf_read_character_utf8(&buf, &c) >= 0);               \
     TEST_EQ(c, result);                                                \
     buf_clean(&buf);						       \
@@ -111,7 +107,7 @@
     character c;                                                       \
     s_buf buf;                                                         \
     test_context("buf_read_n(" # test ", " # n ") -> " # result);      \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_ASSERT(buf_read_n(&buf, &c) >= 0);                            \
     TEST_EQ(c, result);                                                \
   } while (0)
@@ -121,10 +117,9 @@
     s_buf buf;                                                         \
     s_str result;                                                      \
     test_context("buf_read_to_str(" # test ")");                       \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_read_to_str(&buf, &result), strlen(test));             \
     TEST_EQ(buf.rpos, strlen(test));                                   \
-    buf_clean(&buf);                                                   \
     str_clean(&result);                                                \
     test_context(NULL);                                                \
   } while (0)
@@ -649,7 +644,7 @@ TEST_CASE(buf_read_u8)
 {
   s_buf buf;
   u8 byte;
-  buf_init_1(&buf, "ABCDEFGH");
+  buf_init_1(&buf, false, "ABCDEFGH");
   TEST_EQ(buf_read_u8(&buf, &byte), 1);
   TEST_EQ(byte, 'A');
   TEST_EQ(buf_read_u8(&buf, &byte), 1);

@@ -287,7 +287,7 @@ struct buf {
   sw        (*seek) (s_buf *buf, sw offset, u8 whence);
   uw          size;
   void       *user_ptr;
-  u64         wpos;
+  uw          wpos;
 };
 
 struct facts_spec_cursor {
