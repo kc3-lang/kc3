@@ -91,7 +91,7 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
   sw r;
   assert(dest);
   assert(module);
-  buf_init_str(&in, &module->str);
+  buf_init_str(&in, false, (s_str *) &module->str);
   out_size = module_path_size(module, prefix);
   buf_init_alloc(&out, out_size);
   if ((r = buf_write_str(&out, prefix)) < 0)
@@ -131,7 +131,7 @@ sw module_path_size (const s_sym *module, const s_str *prefix)
   sw result = 0;
   assert(prefix);
   assert(module);
-  buf_init_str(&in, &module->str);
+  buf_init_str(&in, false, (s_str *) &module->str);
   result += prefix->size;
   result++;
   while ((r = buf_read_character_utf8(&in, &c)) > 0) {
@@ -142,6 +142,5 @@ sw module_path_size (const s_sym *module, const s_str *prefix)
     b = c;
   }
   result += strlen(FACTS_EXT);
-  buf_clean(&in);
   return result;
 }

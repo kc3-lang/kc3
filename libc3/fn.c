@@ -47,10 +47,9 @@ s_fn * fn_init_1 (s_fn *fn, s8 *p)
   s_buf buf;
   sw r;
   assert(fn);
-  buf_init_1(&buf, p);
+  buf_init_1(&buf, false, (s8 *) p);
   if ((r = buf_parse_fn(&buf, fn)) != (sw) strlen(p))
     errx(1, "fn_init_1: buf_parse_fn(%s) %ld != %lu", p, r, strlen(p));
-  buf_clean(&buf);
   return fn;
 }
 

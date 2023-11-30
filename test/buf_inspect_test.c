@@ -18,13 +18,10 @@
 #define BUF_INSPECT_TEST_ARRAY(test, expected)                         \
   do {                                                                 \
     s8 b[1024];                                                        \
-    s_buf buf_test;                                                    \
     s_buf buf_result;                                                  \
     s_array tmp;                                                       \
     test_context("buf_inspect_array(" # test ") -> " # expected);      \
-    buf_init_1(&buf_test, (test));                                     \
-    buf_parse_array(&buf_test, &tmp);                                  \
-    buf_clean(&buf_test);                                              \
+    array_init_1(&tmp, (test));                                        \
     buf_init(&buf_result, false, sizeof(b), b);                        \
     TEST_EQ(buf_inspect_array_size(&tmp), strlen(expected));           \
     TEST_EQ(buf_inspect_array(&buf_result, &tmp), strlen(expected));   \
@@ -94,45 +91,33 @@
 #define BUF_INSPECT_TEST_INTEGER(test, expected)                       \
   do {                                                                 \
     s8 b[1024];                                                        \
-    s_buf buf_test;                                                    \
     s_buf buf_result;                                                  \
     s_integer i;                                                       \
     test_context("buf_inspect_integer(" # test ") -> " # expected);    \
-    buf_init_1(&buf_test, (test));                                     \
-    buf_parse_integer(&buf_test, &i);                                  \
-    buf_clean(&buf_test);                                              \
+    integer_init_1(&i, (test));                                        \
     buf_init(&buf_result, false, sizeof(b), b);                        \
     TEST_EQ(buf_inspect_integer_size(&i), strlen(test));               \
     TEST_EQ(buf_inspect_integer(&buf_result, &i), strlen(test));       \
-    if (g_test_last_ok)                                                \
-      integer_clean(&i);					       \
+    integer_clean(&i);                                                 \
     TEST_EQ(buf_result.wpos, strlen(test));                            \
-    if (g_test_last_ok)                                                \
-      TEST_STRNCMP(buf_result.ptr.ps8, (expected), buf_result.wpos);   \
+    TEST_STRNCMP(buf_result.ptr.ps8, (expected), buf_result.wpos);     \
     buf_clean(&buf_result);                                            \
   } while (0)
 
 #define BUF_INSPECT_TEST_LIST(test, expected)                          \
   do {                                                                 \
     s_buf buf;                                                         \
-    s_buf buf_test;                                                    \
     s_list *list_test;                                                 \
     test_context("buf_inspect_list(" # test ") -> " # expected);       \
-    buf_init_1(&buf_test, (test));                                     \
-    if (buf_parse_list(&buf_test, &list_test) != strlen(test)) {       \
-      assert(! "BUF_INSPECT_TEST_LIST: buf_parse_list");               \
-      errx(1, "BUF_INSPECT_TEST_LIST: buf_parse_list");                \
-    }                                                                  \
+    list_test = list_new_1(test);                                      \
     buf_init_alloc(&buf, 1024 * 1024);                                 \
     TEST_EQ(buf_inspect_list_size((const s_list **) &list_test),       \
             strlen(expected));                                         \
     TEST_EQ(buf_inspect_list(&buf, (const s_list **) &list_test),      \
             strlen(expected));                                         \
     TEST_EQ(buf.wpos, strlen(expected));                               \
-    if (g_test_last_ok)                                                \
-      TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                   \
+    TEST_STRNCMP(buf.ptr.p, (expected), buf.wpos);                     \
     list_delete_all(list_test);                                        \
-    buf_clean(&buf_test);                                              \
     buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)

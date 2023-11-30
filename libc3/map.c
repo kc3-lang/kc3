@@ -90,14 +90,12 @@ s_map * map_init_1 (s_map *map, const s8 *p)
   sw r;
   assert(map);
   assert(p);
-  buf_init_1(&buf, p);
+  buf_init_1(&buf, false, (s8 *) p);
   if ((r = buf_parse_map(&buf, map)) != (sw) strlen(p)) {
     assert(! "invalid map");
     warnx("invalid map: \"%s\" (%ld)", p, r);
-    buf_clean(&buf);
     return NULL;
   }
-  buf_clean(&buf);
   return map;
 }
 

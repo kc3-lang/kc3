@@ -95,6 +95,18 @@ sw file_copy_1 (const char *from, const char *to)
   return -1;
 }
 
+s_str * file_dirname (const s_str *path, s_str *dest)
+{
+  uw dirsep_pos;
+  assert(path);
+  assert(dest);
+  if (! str_rindex_character(path, '/', &dirsep_pos))
+    return str_init(dest, NULL, 1, ".");
+  if (! dirsep_pos)
+    return str_init(dest, NULL, 1, "/");
+  return str_init_slice(dest, path, 0, dirsep_pos);
+}
+
 s_tag * file_mtime (const s_str *path, s_tag *dest)
 {
   struct stat sb;
@@ -132,7 +144,7 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
           (r = buf_write_str(&buf, suffix)) < 0)
         return NULL;
       buf_read_to_str(&buf, &tmp);
-      /* io_inspect_str(&tmp); */
+      io_inspect_str(&tmp);
       file_access(&tmp, mode, &access);
       if (access) {
         *dest = tmp;

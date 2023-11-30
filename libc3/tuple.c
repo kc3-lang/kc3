@@ -12,6 +12,7 @@
  */
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
@@ -52,15 +53,19 @@ s_tuple * tuple_init (s_tuple *tuple, uw count)
 s_tuple * tuple_init_1 (s_tuple *tuple, const s8 *p)
 {
   s_buf buf;
+  uw len;
+  sw r;
   assert(tuple);
   assert(p);
-  buf_init_1(&buf, p);
-  if (buf_parse_tuple(&buf, tuple) <= 0) {
-    assert(! "invalid tuple");
-    buf_clean(&buf);
+  len = strlen(p);
+  buf_init(&buf, false, len, (s8 *) p);
+  r = buf_parse_tuple(&buf, tuple);
+  if (r < 0 || (uw) r != len) {
+    warnx("tuple_init_1: invalid tuple: \"%s\", %lu != %ld",
+          p, len, r);
+    assert(! "tuple_init_1: invalid tuple");
     return NULL;
   }
-  buf_clean(&buf);
   return tuple;
 }
 

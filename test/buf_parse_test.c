@@ -23,10 +23,9 @@
     s_buf buf;                                                         \
     s_array dest;                                                      \
     test_context("buf_parse_array(" # test ")");                       \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_array(&buf, &dest), strlen(test));               \
     TEST_EQ(buf.rpos, strlen(test));                                   \
-    buf_clean(&buf);                                                   \
     array_clean(&dest);                                                \
     test_context(NULL);                                                \
   } while (0)
@@ -36,10 +35,9 @@
     s_buf buf;                                                         \
     bool dest = -1;                                                    \
     test_context("buf_parse_bool(" # test ") -> " # expected);         \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_bool(&buf, &dest), strlen(test));                \
     TEST_EQ(dest, (expected));                                         \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -48,10 +46,9 @@
     s_buf buf;                                                         \
     s_call dest;                                                       \
     test_context("buf_parse_call(" # test ")");                        \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_call(&buf, &dest), strlen(test));                \
     call_clean(&dest);                                                 \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -60,11 +57,10 @@
     s_buf buf;                                                         \
     s_call dest;                                                       \
     test_context("buf_parse_call_op(" # test ")");                     \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     bzero(&dest, sizeof(s_call));                                      \
     TEST_EQ(buf_parse_call_op(&buf, &dest), strlen(test));             \
     call_clean(&dest);                                                 \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -73,10 +69,9 @@
     s_buf buf;                                                         \
     s_cfn dest;                                                        \
     test_context("buf_parse_cfn(" # test ")");                         \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_cfn(&buf, &dest), strlen(test));                 \
     cfn_clean(&dest);                                                  \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -85,11 +80,10 @@
     s_buf buf;                                                         \
     character dest = -1;                                               \
     test_context("buf_parse_character(" # test ") -> " # expected);    \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_character(&buf, &dest), strlen(test));           \
     TEST_EQ(buf.wpos, strlen(test));                                   \
     TEST_EQ(dest, (expected));                                         \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -98,11 +92,10 @@
     s_buf buf;                                                         \
     character dest = -1;                                               \
     test_context("buf_parse_character(" # test ") -> -1");             \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_character(&buf, &dest), -1);                     \
     TEST_EQ(buf.rpos, 0);                                              \
     TEST_EQ(dest, -1);                                                 \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -111,11 +104,10 @@
     s_buf buf;                                                         \
     u8 dest = 0x80;                                                    \
     test_context("buf_parse_digit_bin(" # test ") -> " # expected);    \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_digit_bin(&buf, &dest), 1);                      \
     TEST_EQ(buf.rpos, 1);                                              \
     TEST_EQ(dest, (expected));                                         \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -124,11 +116,10 @@
     s_buf buf;                                                         \
     u8 dest = 0x80;                                                    \
     test_context("buf_parse_digit_dec(" # test ") -> " # expected);    \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_digit_dec(&buf, &dest), 1);                      \
     TEST_EQ(buf.rpos, 1);                                              \
     TEST_EQ(dest, (expected));                                         \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -137,11 +128,10 @@
     s_buf buf;                                                         \
     u8 dest = 0x80;                                                    \
     test_context("buf_parse_digit_hex(" # test ") -> " # expected);    \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_digit_hex(&buf, &dest), 1);                      \
     TEST_EQ(buf.rpos, 1);                                              \
     TEST_EQ(dest, (expected));                                         \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -150,11 +140,10 @@
     s_buf buf;                                                         \
     u8 dest = 0x80;                                                    \
     test_context("buf_parse_digit_oct(" # test ") -> " # expected);    \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_digit_oct(&buf, &dest), 1);                      \
     TEST_EQ(buf.rpos, 1);                                              \
     TEST_EQ(dest, (expected));                                         \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -163,23 +152,21 @@
     s_buf buf;                                                         \
     f32 dest = -1;                                                     \
     test_context("buf_parse_f32(" # test ") -> " # expected1);         \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_f32(&buf, &dest), strlen(test));                 \
     TEST_FLOAT_EQ2(dest, (expected1), (expected2));                    \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
-#define BUF_PARSE_TEST_F64(test, expected) \
-  do { \
-    s_buf buf; \
-    f64 f64_tmp; \
-    test_context("buf_parse_f64(" # test ") -> " # expected); \
-    buf_init_1(&buf, (test)); \
-    TEST_EQ(buf_parse_f64(&buf, &f64_tmp), strlen(test)); \
-    TEST_DOUBLE_EQ(f64_tmp, (expected)); \
-    buf_clean(&buf); \
-    test_context(NULL); \
+#define BUF_PARSE_TEST_F64(test, expected)                             \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    f64 f64_tmp;                                                       \
+    test_context("buf_parse_f64(" # test ") -> " # expected);          \
+    buf_init_1(&buf, false, (test));                                   \
+    TEST_EQ(buf_parse_f64(&buf, &f64_tmp), strlen(test));              \
+    TEST_DOUBLE_EQ(f64_tmp, (expected));                               \
+    test_context(NULL);                                                \
   } while (0)
 
 #define BUF_PARSE_TEST_FN(test)                                        \
@@ -187,10 +174,9 @@
     s_buf buf;                                                         \
     s_fn dest;                                                         \
     test_context("buf_parse_fn(" # test ")");                          \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_fn(&buf, &dest), strlen(test));                  \
     fn_clean(&dest);                                                   \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -199,14 +185,13 @@
     s_buf buf;                                                         \
     s_ident dest;                                                      \
     test_context("buf_parse_ident(" # test ") -> " # expected);        \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_ident(&buf, &dest), strlen(test));               \
     if (g_test_last_ok)                                                \
       TEST_EQ(dest.sym->str.size, strlen(expected));                   \
     if (g_test_last_ok)                                                \
       TEST_STRNCMP(dest.sym->str.ptr.p, (expected),                    \
                    dest.sym->str.size);                                \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -215,11 +200,10 @@
     s_buf buf;                                                         \
     s_integer i;                                                       \
     test_context("buf_parse_integer(" # test ")");                     \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_integer(&buf, &i), strlen(test));                \
     if (g_test_last_ok)                                                \
       integer_clean(&i);                                               \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -228,10 +212,9 @@
     s_buf buf;                                                         \
     s_integer i;                                                       \
     test_context("buf_parse_integer_unsigned_bin(" # test ")");        \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_integer_unsigned_bin(&buf, &i),                  \
             strlen(test));                                             \
-    buf_clean(&buf);                                                   \
     integer_clean(&i);                                                 \
     test_context(NULL);                                                \
   } while (0)
@@ -241,10 +224,9 @@
     s_buf buf;                                                         \
     s_integer i;                                                       \
     test_context("buf_parse_integer_unsigned_dec(" # test ")");        \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_integer_unsigned_dec(&buf, &i),                  \
             strlen(test));                                             \
-    buf_clean(&buf);                                                   \
     integer_clean(&i);                                                 \
     test_context(NULL);                                                \
   } while (0)
@@ -254,10 +236,9 @@
     s_buf buf;                                                         \
     s_integer i;                                                       \
     test_context("buf_parse_integer_unsigned_hex(" # test ")");        \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_integer_unsigned_hex(&buf, &i),                  \
             strlen(test));                                             \
-    buf_clean(&buf);                                                   \
     integer_clean(&i);                                                 \
     test_context(NULL);                                                \
   } while (0)
@@ -267,10 +248,9 @@
     s_buf buf;                                                         \
     s_integer i;                                                       \
     test_context("buf_parse_integer_unsigned_oct(" # test ")");        \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_integer_unsigned_oct(&buf, &i),                  \
             strlen(test));                                             \
-    buf_clean(&buf);                                                   \
     integer_clean(&i);                                                 \
     test_context(NULL);                                                \
   } while (0)
@@ -280,23 +260,21 @@
     s_buf buf;                                                         \
     s_list *dest = NULL;                                               \
     test_context("buf_parse_list(" # test ")");                        \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_list(&buf, &dest), strlen(test));                \
-    buf_clean(&buf);                                                   \
-    list_delete_all(dest);                                                 \
+    list_delete_all(dest);                                             \
     test_context(NULL);                                                \
   } while (0)
 
 #define BUF_PARSE_TEST_NOT_BOOL(test)                                  \
   do {                                                                 \
     s_buf buf;                                                         \
-    bool dest = 2;                                                    \
+    bool dest = 2;                                                     \
     test_context("buf_parse_bool(" # test ") -> 0");                   \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_bool(&buf, &dest), 0);                           \
     TEST_EQ(buf.rpos, 0);                                              \
-    TEST_EQ(dest, 2);                                                 \
-    buf_clean(&buf);                                                   \
+    TEST_EQ(dest, 2);                                                  \
     test_context(NULL);                                                \
   } while (0)
 
@@ -306,10 +284,9 @@
     s_call dest;                                                       \
     bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_call(" # test ") -> 0");                   \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_call(&buf, &dest), 0);                           \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -319,10 +296,9 @@
     s_cfn dest;                                                        \
     bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_cfn(" # test ") -> 0");                    \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_cfn(&buf, &dest), 0);                            \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -331,11 +307,10 @@
     s_buf buf;                                                         \
     character dest = -1;                                               \
     test_context("buf_parse_character(" # test ") -> 0");              \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_character(&buf, &dest), 0);                      \
     TEST_EQ(buf.rpos, 0);                                              \
     TEST_EQ(dest, -1);                                                 \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -344,11 +319,10 @@
     s_buf buf;                                                         \
     u8 dest = 0;                                                       \
     test_context("buf_parse_digit_bin(" # test ") -> 0");              \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_digit_bin(&buf, &dest), 0);                      \
     TEST_EQ(buf.rpos, 0);                                              \
     TEST_EQ(dest, 0);                                                  \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -357,11 +331,10 @@
     s_buf buf;                                                         \
     u8 dest = 0;                                                       \
     test_context("buf_parse_digit_dec(" # test ") -> 0");              \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_digit_dec(&buf, &dest), 0);                      \
     TEST_EQ(buf.rpos, 0);                                              \
     TEST_EQ(dest, 0);                                                  \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -370,11 +343,10 @@
     s_buf buf;                                                         \
     u8 dest = 0;                                                       \
     test_context("buf_parse_digit_hex(" # test ") -> 0");              \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_digit_hex(&buf, &dest), 0);                      \
     TEST_EQ(buf.rpos, 0);                                              \
     TEST_EQ(dest, 0);                                                  \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -383,11 +355,10 @@
     s_buf buf;                                                         \
     u8 dest = 0;                                                       \
     test_context("buf_parse_digit_oct(" # test ") -> 0");              \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_digit_oct(&buf, &dest), 0);                      \
     TEST_EQ(buf.rpos, 0);                                              \
     TEST_EQ(dest, 0);                                                  \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -397,10 +368,9 @@
     s_ident dest;                                                      \
     bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_ident(" # test ") -> 0");                  \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_ident(&buf, &dest), 0);                          \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -409,10 +379,9 @@
     s_buf buf;                                                         \
     s_integer i;                                                       \
     test_context("buf_parse_integer(" # test ") -> 0");                \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_integer(&buf, &i), 0);                           \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -421,10 +390,9 @@
     s_buf buf;                                                         \
     s_integer i;                                                       \
     test_context("buf_parse_integer_unsigned_bin(" # test ") -> 0");   \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_integer_unsigned_bin(&buf, &i), 0);              \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -433,10 +401,9 @@
     s_buf buf;                                                         \
     s_integer i;                                                       \
     test_context("buf_parse_integer_unsigned_dec(" # test ") -> 0");   \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_integer_unsigned_dec(&buf, &i), 0);              \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -445,10 +412,9 @@
     s_buf buf;                                                         \
     s_integer i;                                                       \
     test_context("buf_parse_integer_unsigned_hex(" # test ") -> 0");   \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_integer_unsigned_hex(&buf, &i), 0);              \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -457,10 +423,9 @@
     s_buf buf;                                                         \
     s_integer i;                                                       \
     test_context("buf_parse_integer_unsigned_oct(" # test ") -> 0");   \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_integer_unsigned_oct(&buf, &i), 0);              \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
 } while (0)
 
@@ -470,10 +435,9 @@
     s_str dest;                                                        \
     bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_str(" # test ") -> 0");                    \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_str(&buf, &dest), 0);                            \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -482,11 +446,10 @@
     s_buf buf;                                                         \
     u8 dest = 0;                                                       \
     test_context("buf_parse_str_u8(" # test ") -> 0");                 \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_str_u8(&buf, &dest), 0);                         \
     TEST_EQ(buf.rpos, 0);                                              \
     TEST_EQ(dest, 0);                                                  \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -495,10 +458,9 @@
     s_buf buf;                                                         \
     const s_sym *dest = NULL;                                          \
     test_context("buf_parse_sym(" # test ") -> 0");                    \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_sym(&buf, &dest), 0);                            \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -508,11 +470,10 @@
     s_str dest;                                                        \
     bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_str(" # test ") -> " # expected);          \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_str(&buf, &dest), strlen(test));                 \
     TEST_EQ(dest.size, strlen(expected));                              \
     TEST_STRNCMP(dest.ptr.p, (expected), dest.size);                   \
-    buf_clean(&buf);                                                   \
     str_clean(&dest);                                                  \
     test_context(NULL);                                                \
   } while (0)
@@ -523,10 +484,9 @@
     s_str dest;                                                        \
     bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_str(" # test ") -> EOF");                  \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_str(&buf, &dest), -1);                           \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -535,10 +495,9 @@
     s_buf buf;                                                         \
     character dest = -1;                                               \
     test_context("buf_parse_str_character(" # test ") -> " # expected);\
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_str_character(&buf, &dest), strlen(test));       \
     TEST_EQ(dest, (expected));                                         \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -547,13 +506,12 @@
     s_buf buf;                                                         \
     s_str dest;                                                        \
     test_context("buf_parse_str(" # test ") -> " # expected);          \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_str(&buf, &dest), strlen(test));                 \
     if (g_test_last_ok)                                                \
       TEST_EQ(dest.size, n);                                           \
     if (g_test_last_ok)                                                \
       TEST_EQ(memcmp(dest.ptr.p, expected, n), 0);                     \
-    buf_clean(&buf);                                                   \
     str_clean(&dest);						       \
     test_context(NULL);                                                \
   } while (0)
@@ -563,11 +521,10 @@
     s_buf buf;                                                         \
     u8 dest = 0x80;                                                    \
     test_context("buf_parse_str_u8(" # test ") -> " # expected);       \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_str_u8(&buf, &dest), (size));                    \
     TEST_EQ(buf.rpos, (size));                                         \
     TEST_EQ(dest, (expected));                                         \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -576,11 +533,10 @@
     s_buf buf;                                                         \
     u8 dest = 0x80;                                                    \
     test_context("buf_parse_str_u8(" # test ") -> -1");                \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_str_u8(&buf, &dest), -1);                        \
     TEST_EQ(buf.rpos, 0);                                              \
     TEST_EQ(dest, 0x80);                                               \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -589,7 +545,7 @@
     s_buf buf;                                                         \
     const s_sym *dest = NULL;                                          \
     test_context("buf_parse_sym(" # test ") -> " # expected);          \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_sym(&buf, &dest), strlen(test));                 \
     if (g_test_last_ok)                                                \
       TEST_ASSERT(dest);                                               \
@@ -597,7 +553,6 @@
       TEST_EQ(dest->str.size, strlen(expected));                       \
     if (g_test_last_ok)                                                \
       TEST_STRNCMP(dest->str.ptr.p, (expected), dest->str.size);       \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -606,10 +561,9 @@
     s_buf buf;                                                         \
     const s_sym *dest = NULL;                                          \
     test_context("buf_parse_sym(" # test ") -> -1");                   \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_sym(&buf, &dest), -1);                           \
     TEST_EQ(buf.rpos, 0);                                              \
-    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -619,9 +573,8 @@
     s_tag dest;                                                        \
     bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_tag(" # test ")");                         \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_tag(&buf, &dest), strlen(test));                 \
-    buf_clean(&buf);                                                   \
     tag_clean(&dest);                                                  \
     test_context(NULL);                                                \
   } while (0)
@@ -632,9 +585,8 @@
     s_tuple dest;						       \
     bzero(&dest, sizeof(dest));                                        \
     test_context("buf_parse_tuple(" # test ")");                       \
-    buf_init_1(&buf, (test));                                          \
+    buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_tuple(&buf, &dest), strlen(test));               \
-    buf_clean(&buf);                                                   \
     tuple_clean(&dest);                                                \
     test_context(NULL);                                                \
   } while (0)

@@ -17,30 +17,19 @@
 #include <unistd.h>
 #include "../libc3/c3.h"
 
-typedef struct buf_readline {
-  s_buf       buf;
-} s_buf_readline;
-
 sw buf_readline_refill_fgets (s_buf *buf);
 
 void buf_readline_close (s_buf *buf)
 {
   assert(buf);
   buf->refill = NULL;
-  free(buf->user_ptr);
   buf->user_ptr = NULL;
 }
 
 s_buf * buf_readline_open_r (s_buf *buf)
 {
-  s_buf_readline *buf_readline;
   assert(buf);
-  buf_readline = malloc(sizeof(s_buf_readline));
-  if (! buf_readline)
-    errx(1, "buf_readline_open_r: out of memory");
-  buf_init_1(&buf_readline->buf, "");
   buf->refill = buf_readline_refill_fgets;
-  buf->user_ptr = buf_readline;
   return buf;
 }
 
