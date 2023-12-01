@@ -191,6 +191,7 @@ s_list * list_new_copy (const s_tag *x, s_list *next)
   return dest;
 }
 
+/*
 s_list * list_new_f64 (f64 x, s_list *next)
 {
   s_list *dest;
@@ -202,6 +203,7 @@ s_list * list_new_f64 (f64 x, s_list *next)
   }
   return dest;
 }
+*/
 
 s_list * list_new_list (s_list *x, s_list *next)
 {
@@ -215,6 +217,7 @@ s_list * list_new_list (s_list *x, s_list *next)
   return dest;
 }
 
+/*
 s_list * list_new_map (uw count, s_list *next)
 {
   s_list *dest;
@@ -238,6 +241,7 @@ s_list * list_new_str_1 (s8 *x_free, const s8 *x, s_list *next)
   }
   return dest;
 }
+*/
 
 s_array * list_to_array (s_list *list, const s_sym *type,
                          s_array *dest)
