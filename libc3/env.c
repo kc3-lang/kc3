@@ -790,8 +790,11 @@ s_env * env_init_args (s_env *env, int argc, s8 **argv)
     file_dirname(&argv0, &dir);
     buf_init(&buf, false, sizeof(a), a);
     if ((r = buf_write_str(&buf, &dir)) < 0 ||
-        (r = buf_write_u8(&buf, '/') < 0))
+        (r = buf_write_u8(&buf, '/') < 0)) {
+      str_clean(&dir);
       goto ko;
+    }
+    str_clean(&dir);
     buf_read_to_str(&buf, &env->argv0_dir);
     return env;
   }
