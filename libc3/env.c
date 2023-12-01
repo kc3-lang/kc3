@@ -787,7 +787,7 @@ s_env * env_init_args (s_env *env, int argc, s8 **argv)
     env->argc = argc;
     env->argv = argv;
     str_init_1(&argv0, NULL, argv[0]);
-    file_dirname(&dir, &argv0);
+    file_dirname(&argv0, &dir);
     buf_init(&buf, false, sizeof(a), a);
     if ((r = buf_write_str(&buf, &dir)) < 0 ||
         (r = buf_write_u8(&buf, '/') < 0))
