@@ -207,16 +207,45 @@ EOF
   end
 
   def def_list_init
-    """
-"""
-  end  
+    if with_list?
+      <<EOF
+
+#{list_init_proto[0..-2]}
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_#{name_suffix}(&tmp.tag#{comma_args}))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+EOF
+    end
+  end
+
+  def def_list_new
+    if with_list?
+      <<EOF
+
+#{list_new_proto[0..-2]}
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_#{name_suffix}(&list->tag#{comma_args})) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+EOF
+    end
+  end
 end
 
 class TagInitProto < TagInit
-  def def_tag
-    ""
-  end
-
   def def_tag_init
     ""
   end
@@ -225,7 +254,7 @@ class TagInitProto < TagInit
     ""
   end
 
-  def def_list
+  def def_tag
     ""
   end
 
@@ -390,11 +419,6 @@ class TagInitList
     protos.join
   end
 
-  def def_list
-    protos = @items.map &:def_list
-    protos.join
-  end
-
   def def_list_init
     protos = @items.map &:def_list_init
     protos.join
@@ -496,13 +520,45 @@ tag_init_h.content = """#{h_header("LIBC3_TAG_INIT_H")}
 """
 tag_init_h.commit
 
+list_init_c = FileUpdate.new("list_init.c")
+list_init_c.content = <<EOF
+#{$license}
+#include <assert.h>
+#include <err.h>
+#include <string.h>
+#include "array.h"
+#include "buf.h"
+#include "buf_inspect.h"
+#include "buf_parse.h"
+#include "call.h"
+#include "cfn.h"
+#include "compare.h"
+#include "env.h"
+#include "fn.h"
+#include "frame.h"
+#include "hash.h"
+#include "ident.h"
+#include "integer.h"
+#include "list.h"
+#include "map.h"
+#include "quote.h"
+#include "str.h"
+#include "tag.h"
+#include "list_init.h"
+#include "time.h"
+#include "tuple.h"
+#{inits.def_list_init.c_word_wrap}
+#{inits.def_list_new.c_word_wrap}
+EOF
+list_init_c.commit
+
 list_init_h = FileUpdate.new("list_init.h")
 list_init_h.content = """#{h_header("LIBC3_LIST_INIT_H")}
 
 /* Stack-allocation compatible functions, call list_clean after use. */
 #{inits.list_init_proto.c_word_wrap}
 
-/* Heap-allocation functions, call tag_delete after use. */
+/* Heap-allocation functions, call list_delete after use. */
 #{inits.list_new_proto.c_word_wrap}
 
 /* Setters. */

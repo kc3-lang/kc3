@@ -242,6 +242,7 @@ SOURCES = \
 	io.c \
 	license.c \
 	list.c \
+	list_init.c \
 	log.c \
 	map.c \
 	module.c \
@@ -389,6 +390,7 @@ LO_SOURCES = \
 	io.c \
 	license.c \
 	list.c \
+	list_init.c \
 	log.c \
 	map.c \
 	module.c \

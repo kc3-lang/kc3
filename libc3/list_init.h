@@ -58,7 +58,7 @@ s_list * list_init_uw (s_list *list, uw i, s_list *next);
 s_list * list_init_var (s_list *list, s_list *next);
 s_list * list_init_void (s_list *list, s_list *next);
 
-/* Heap-allocation functions, call tag_delete after use. */
+/* Heap-allocation functions, call list_delete after use. */
 s_list * list_new_array (const s_sym *type, uw dimension, 
                          const uw *dimensions, s_list *next);
 s_list * list_new_bool (bool b, s_list *next);
