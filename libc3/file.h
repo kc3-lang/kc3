@@ -28,6 +28,7 @@
 bool *  file_access (const s_str *path, const s_sym *mode,
                      bool *dest);
 sw      file_copy_1 (const char *from, const char *to);
+s_str * file_dirname (const s_str *path, s_str *dest);
 s_tag * file_mtime (const s_str *path, s_tag *dest);
 s_str * file_search (const s_str *suffix, const s_sym *mode,
                      s_str *dest);
