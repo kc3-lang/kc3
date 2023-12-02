@@ -122,7 +122,8 @@ bool window_sdl2_run (s_window_sdl2 *window)
   window->sdl_window = SDL_CreateWindow(window->title,
                                         window->x, window->y,
                                         window->w, window->h,
-                                        SDL_WINDOW_OPENGL);
+                                        SDL_WINDOW_OPENGL |
+                                        SDL_WINDOW_RESIZABLE);
   if (! window->sdl_window) {
     warnx("window_sdl2_run: failed to create window: %s",
           SDL_GetError());
@@ -137,8 +138,46 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_GL_SetSwapInterval(1);
   while (! quit) {
     while (SDL_PollEvent(&sdl_event) != 0) {
-      if (sdl_event.type == SDL_QUIT) {
+      switch (sdl_event.type) {
+      case SDL_QUIT:
+        warnx("window_sdl2_run: SDL_QUIT");
         quit = 1;
+        break;
+      case SDL_KEYDOWN:
+        if (! window->key(window, &sdl_event.key.keysym)) {
+          warnx("window_sdl2_run: window->key -> false");
+          quit = 1;
+        }
+        break;
+      case SDL_MOUSEBUTTONDOWN:
+        if (! window->button(window, sdl_event.button.button,
+                             sdl_event.button.x, sdl_event.button.y)) {
+          warnx("window_sdl2_run: window->button -> false");
+          quit = 1;
+        }
+        break;
+      case SDL_MOUSEMOTION:
+        //int relativeX = sdl_event.motion.xrel;
+        //int relativeY = sdl_event.motion.yrel;
+        if (! window->motion(window, sdl_event.motion.x,
+                             sdl_event.motion.y)) {
+          warnx("window_sdl2_run: window->motion -> false");
+          quit = 1;
+        }
+        break;
+      case SDL_WINDOWEVENT:
+        if (sdl_event.window.event == SDL_WINDOWEVENT_RESIZED) {
+          if (! window->resize(window, sdl_event.window.data1,
+                               sdl_event.window.data2)) {
+            warnx("window_sdl2_run: window->resize -> false");
+            quit = 1;
+          }
+          window->w = sdl_event.window.data1;
+          window->h = sdl_event.window.data2;
+        }
+        break;
+      default:
+        break;
       }
     }
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
