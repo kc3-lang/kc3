@@ -146,7 +146,6 @@ bool window_sdl2_demo_render (s_window_sdl2 *window,
   if (! seq->render(seq, window, context))
     return false;
   /* progress bar */
-  /*
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, window->w, window->h, 0, -1, 1);
@@ -160,7 +159,6 @@ bool window_sdl2_demo_render (s_window_sdl2 *window,
   glRectd(20, window->h - 11,
           20 + (window->w - 40.0) * seq->t / seq->duration,
           window->h - 11 + 2);
-  */
   return true;
 }
 

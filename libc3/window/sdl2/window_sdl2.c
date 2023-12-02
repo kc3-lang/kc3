@@ -111,7 +111,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
 {
   int quit = 0;
   SDL_Event sdl_event;
-  //SDL_GLContext context;
+  SDL_GLContext context;
   assert(window);
   if (! g_window_sdl2_initialized) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -139,14 +139,12 @@ bool window_sdl2_run (s_window_sdl2 *window)
           SDL_GetError());
     return false;
   }
-  /*
   context = SDL_GL_CreateContext(window->sdl_window);
   if (! context) {
     warnx("window_sdl2_run: failed to create OpenGL context: %s",
           SDL_GetError());
     return false;
   }
-  */
   GLenum error = glGetError();
   if (error != GL_NO_ERROR) {
     fprintf(stderr, "OpenGL initialization error: %s\n", gluErrorString(error));
@@ -215,7 +213,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
     }
     SDL_GL_SwapWindow(window->sdl_window);
   }
-  //SDL_GL_DeleteContext(context);
+  SDL_GL_DeleteContext(context);
   SDL_DestroyWindow(window->sdl_window);
   return true;
 }
