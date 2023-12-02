@@ -43,6 +43,7 @@ LDFLAGS="--shared -no-undefined ${LDFLAGS}"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
+pkg_config ftgl
 pkg_config gl
 pkg_config glu
 pkg_config sdl2

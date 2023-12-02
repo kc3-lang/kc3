@@ -15,9 +15,13 @@
 #include <libc3/c3.h>
 #include "../../window.h"
 #include "../window_sdl2.h"
+#include "../sdl2_font.h"
 #include "bg_rect.h"
 
 #define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 1
+
+//static s_sdl2_font g_font_computer_modern;
+static s_sdl2_font g_font_courier_new;
 
 static bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
                                      sw x, sw y);
@@ -26,8 +30,8 @@ static bool window_sdl2_demo_key (s_window_sdl2 *window,
 static bool window_sdl2_demo_load (s_window_sdl2 *window);
 static bool window_sdl2_demo_render (s_window_sdl2 *window,
                                      void *context);
-bool window_sdl2_demo_resize (s_window_sdl2 *window,
-                              uw w, uw h);
+static bool window_sdl2_demo_resize (s_window_sdl2 *window,
+                                     uw w, uw h);
 
 int main (int argc, char **argv)
 {
@@ -101,6 +105,9 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
     assert(window->sequence_count == WINDOW_SDL2_DEMO_SEQUENCE_COUNT);
     return false;
   }
+  if (! sdl2_font_init(&g_font_courier_new,
+                       "fonts/Courier New/Courier New.ttf"))
+    return false;
   window_sdl2_sequence_init(window->sequence, 8.0,
                             "01. Background rectangles",
                             bg_rect_load, bg_rect_render);
@@ -145,20 +152,39 @@ bool window_sdl2_demo_render (s_window_sdl2 *window,
   seq = window->sequence + window->sequence_pos;
   if (! seq->render(seq, window, context))
     return false;
-  /* progress bar */
+  /* 2D */
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(0, window->w, window->h, 0, -1, 1);
+  glOrtho(0, window->w, 0, window->h, -1, 1);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
+  glDisable(GL_DEPTH_TEST);
+  sdl2_font_set_size(&g_font_courier_new, 20);
   glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-  glRectd(19, window->h - 12,
-          19 + (window->w - 40.0) * seq->t / seq->duration + 2,
-          window->h - 12 + 4);
+  glPushMatrix();
+  glTranslatef(19.0f, 29.0f, 0.0f);
+  sdl2_font_render_text(&g_font_courier_new, seq->title);
+  glTranslatef( 2.0f, 0.0f, 0.0f);
+  sdl2_font_render_text(&g_font_courier_new, seq->title);
+  glTranslatef( 0.0f, 2.0f, 0.0f);
+  sdl2_font_render_text(&g_font_courier_new, seq->title);
+  glTranslatef(-2.0f, 0.0f, 0.0f);
+  sdl2_font_render_text(&g_font_courier_new, seq->title);
+  glPopMatrix();
   glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-  glRectd(20, window->h - 11,
+  glPushMatrix();
+  glTranslatef(20.0f, 30.0f, 0.0f);
+  sdl2_font_render_text(&g_font_courier_new, seq->title);
+  glPopMatrix();
+  /* progress bar */
+  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+  glRectd(19, 11,
+          19 + (window->w - 40.0) * seq->t / seq->duration + 2,
+          11 + 4);
+  glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+  glRectd(20, 12,
           20 + (window->w - 40.0) * seq->t / seq->duration,
-          window->h - 11 + 2);
+          12 + 2);
   return true;
 }
 

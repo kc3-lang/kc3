@@ -125,10 +125,12 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+  /*
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                      SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+                      SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  */
   window->sdl_window = SDL_CreateWindow(window->title,
                                         window->x, window->y,
                                         window->w, window->h,
@@ -150,13 +152,11 @@ bool window_sdl2_run (s_window_sdl2 *window)
     fprintf(stderr, "OpenGL initialization error: %s\n", gluErrorString(error));
     return false;
   }
-  /*
   if (SDL_GL_MakeCurrent(window->sdl_window, context) < 0) {
     warnx("window_sdl2_run: failed to make OpenGL context current: %s",
           SDL_GetError());
     return false;
   }
-  */
   SDL_GL_SetSwapInterval(1);
   if (! window->load(window)) {
     warnx("window_sdl2_run: window->load => false");

@@ -116,7 +116,8 @@ bool window_cairo_demo_render (s_window_cairo *window,
   if (! window_animate((s_window *) window))
     return false;
   seq = window->sequence + window->sequence_pos;
-  seq->render(seq, window, cr);
+  if (! seq->render(seq, window, cr))
+    return false;
   /* text */
   cairo_set_font_size(cr, 20);
   cairo_select_font_face(cr, "Courier New",
