@@ -25,6 +25,11 @@ C3_CONFIGURES = \
 	libc3/window/cairo/win32/demo/update_sources \
 	libc3/window/cairo/win32/configure \
 	libc3/window/cairo/win32/update_sources \
+	libc3/window/sdl2/demo/macos/configure \
+	libc3/window/sdl2/demo/configure \
+	libc3/window/sdl2/demo/update_sources \
+	libc3/window/sdl2/configure \
+	libc3/window/sdl2/update_sources \
 	libtommath/configure \
 	libtommath/update_sources \
 	test/configure \
@@ -46,6 +51,9 @@ C3_MAKEFILES = \
 	libc3/window/cairo/quartz/Makefile \
 	libc3/window/cairo/win32/demo/Makefile \
 	libc3/window/cairo/win32/Makefile \
+	libc3/window/sdl2/demo/macos/Makefile \
+	libc3/window/sdl2/demo/Makefile \
+	libc3/window/sdl2/Makefile \
 	libtommath/Makefile \
 	test/Makefile \
 	ucd2c/Makefile \
@@ -92,6 +100,7 @@ C3_C_SOURCES = \
 	libc3/tag_add.c \
 	libc3/buf_inspect_s32_hexadecimal.h \
 	libc3/ceiling.h \
+	libc3/struct_type.h \
 	libc3/list.c \
 	libc3/buf_inspect_u64.c \
 	libc3/facts.h \
@@ -305,6 +314,12 @@ C3_C_SOURCES = \
 	libc3/window/cairo/win32/window_cairo_win32.c \
 	libc3/window/cairo/cairo_sprite.c \
 	libc3/window/cairo/cairo_png.c \
+	libc3/window/sdl2/demo/window_sdl2_demo.c \
+	libc3/window/sdl2/demo/bg_rect.h \
+	libc3/window/sdl2/demo/bg_rect.c \
+	libc3/window/sdl2/window_sdl2.c \
+	libc3/window/sdl2/types.h \
+	libc3/window/sdl2/window_sdl2.h \
 	libc3/window/window.c \
 	libc3/ident.h \
 	libc3/buf_inspect_s64_decimal.c \
@@ -374,6 +389,7 @@ C3_C_SOURCES = \
 	libc3/buf_inspect_s16.h \
 	libc3/integer.h \
 	libc3/buf_file.c \
+	libc3/struct.c \
 	libc3/s64.c \
 	libc3/buf_inspect_s32_binary.c \
 	libc3/buf_inspect_u8.h \

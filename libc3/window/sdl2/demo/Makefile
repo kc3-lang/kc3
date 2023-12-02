@@ -20,6 +20,7 @@ DISTCLEANFILES = ${CLEANFILES} config.mk
 
 build:
 	${MAKE} ${PROG}
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos build; fi
 
 all:
 	${MAKE} build
@@ -27,33 +28,51 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: ${PROG_ASAN}
+asan:
+	${MAKE} ${PROG_ASAN}
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos asan; fi
 
 clean:
 	rm -rf ${CLEANFILES}
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos clean; fi
 
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos clean_cov; fi
 
-cov:   ${PROG_COV}
+cov:
+	${MAKE} ${PROG_COV}
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos cov; fi
 
-debug: ${PROG_DEBUG}
+debug:
+	${MAKE} ${PROG_DEBUG}
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos debug; fi
 
-demo: ${PROG}
-	time ./${PROG}
+demo:
+	${MAKE} ${PROG}
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo; else time ./${PROG}; fi
+
+demo_debug:
+	${MAKE} debug
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_debug; else time ./${PROG_DEBUG}; fi
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos distclean; fi
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details ${PROG}.html
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos gcovr; fi
 
 gdb_demo: debug
-	if [ -f ${PROG_DEBUG}.core ]; then gdb .libs/${PROG_DEBUG} ${PROG_DEBUG}.core; else gdb .libs/${PROG_DEBUG}; fi
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos gdb_demo; else gdb .libs/${PROG_DEBUG}; fi
 
 install:
 	install -m 755 -d ${prefix}/bin
 	install -m 755 ${PROG} ${prefix}/bin/${PROG}
+
+lldb_demo: debug
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos lldb_demo; else lldb .libs/${PROG_DEBUG}; fi
 
 .PHONY: \
 	all \
@@ -66,7 +85,8 @@ install:
 	demo \
 	distclean \
 	gdb_demo \
-	install
+	install \
+	lldb_demo
 
 include config.mk
 include sources.mk

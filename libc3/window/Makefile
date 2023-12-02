@@ -44,6 +44,12 @@ demo: build
 demo_debug: debug
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo demo_debug; fi
 
+demo_gl: build
+	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 demo; fi
+
+demo_gl_debug: debug
+	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 demo_debug; fi
+
 distclean:
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo distclean; fi
 
@@ -52,6 +58,9 @@ gcovr:
 
 gdb_demo: debug
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo gdb_demo; fi
+
+gdb_demo_gl: debug
+	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 gdb_demo; fi
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libc3/window
@@ -63,6 +72,9 @@ install:
 
 lldb_demo: debug
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo lldb_demo; fi
+
+lldb_demo_gl: debug
+	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 lldb_demo; fi
 
 test:
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo test; fi

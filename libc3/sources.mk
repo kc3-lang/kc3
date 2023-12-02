@@ -125,6 +125,7 @@ HEADERS = \
 	skiplist_node__fact.h \
 	str.h \
 	struct.h \
+	struct_type.h \
 	sw.h \
 	sym.h \
 	tag.h \
@@ -264,6 +265,7 @@ SOURCES = \
 	skiplist__fact.c \
 	skiplist_node__fact.c \
 	str.c \
+	struct.c \
 	sw.c \
 	sym.c \
 	tag.c \
@@ -412,6 +414,7 @@ LO_SOURCES = \
 	skiplist__fact.c \
 	skiplist_node__fact.c \
 	str.c \
+	struct.c \
 	sw.c \
 	sym.c \
 	tag.c \

@@ -86,7 +86,7 @@ GENERATED_FILES = \
 
 gen: ${GENERATED_FILES}
 
-list_init.c, list_init.h, tag_init.c, tag_init.h: tag_init.rb
+list_init.c list_init.h tag_init.c tag_init.h: tag_init.rb
 	ruby tag_init.rb
 
 SED_BITS_8 = sed \

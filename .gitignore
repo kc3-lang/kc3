@@ -45,6 +45,14 @@ libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_asan
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_cov
 libc3/window/cairo/xcb/demo/c3_window_cairo_xcb_demo_debug
+libc3/window/sdl2/demo/c3_window_sdl2_demo
+libc3/window/sdl2/demo/c3_window_sdl2_demo_asan
+libc3/window/sdl2/demo/c3_window_sdl2_demo_cov
+libc3/window/sdl2/demo/c3_window_sdl2_demo_debug
+libc3/window/sdl2/demo/macos/c3_window_sdl2_demo.app/
+libc3/window/sdl2/demo/macos/c3_window_sdl2_demo_asan.app/
+libc3/window/sdl2/demo/macos/c3_window_sdl2_demo_cov.app/
+libc3/window/sdl2/demo/macos/c3_window_sdl2_demo_debug.app/
 .libs/
 *.lo
 *.o

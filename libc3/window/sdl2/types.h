@@ -46,18 +46,18 @@ typedef bool (*f_window_sdl2_motion) (s_window_sdl2 *window, sw x,
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_render) (s_window_sdl2 *window,
-                                      SDL_GLContext context);
+                                      void *context);
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_resize) (s_window_sdl2 *window,
                                        uw w, uw h);
 
 typedef bool (*f_window_sdl2_sequence_load) (s_sequence *seq,
-                                              s_window_sdl2 *window);
+                                             s_window_sdl2 *window);
 
 typedef bool (*f_window_sdl2_sequence_render) (s_sequence *seq,
                                                s_window_sdl2 *window,
-                                               SDL_GLContext context);
+                                               void *context);
 
 struct rgb {
   double r;
@@ -83,7 +83,7 @@ struct window_sdl2 {
   f_window_sdl2_load   load;
   f_window_sdl2_motion motion;
   f_window_sdl2_render render;
-  SDL_GLContext        context;
+  void                *context;
   f_window_sdl2_resize resize;
   s_sequence          *sequence;
   uw                   sequence_count;
