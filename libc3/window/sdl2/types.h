@@ -21,6 +21,7 @@
 #include <SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <FTGL/ftgl.h>
 #include <libc3/types.h>
 #include "../types.h"
 
@@ -59,6 +60,14 @@ typedef bool (*f_window_sdl2_sequence_load) (s_sequence *seq,
 typedef bool (*f_window_sdl2_sequence_render) (s_sequence *seq,
                                                s_window_sdl2 *window,
                                                void *context);
+
+struct sdl2_font {
+  FTGLfont *ftgl_font;
+  u32 size;
+  u32 resolution;
+  s_str path;
+  s_str real_path;
+};
 
 struct rgb {
   double r;
