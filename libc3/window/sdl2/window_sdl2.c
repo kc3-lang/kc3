@@ -121,6 +121,10 @@ bool window_sdl2_run (s_window_sdl2 *window)
     }
     g_window_sdl2_initialized = true;
   }
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                      SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
   window->sdl_window = SDL_CreateWindow(window->title,
                                         window->x, window->y,
                                         window->w, window->h,
@@ -134,6 +138,16 @@ bool window_sdl2_run (s_window_sdl2 *window)
   context = SDL_GL_CreateContext(window->sdl_window);
   if (! context) {
     warnx("window_sdl2_run: failed to create OpenGL context: %s",
+          SDL_GetError());
+    return false;
+  }
+  GLenum error = glGetError();
+  if (error != GL_NO_ERROR) {
+    fprintf(stderr, "OpenGL initialization error: %s\n", gluErrorString(error));
+    return false;
+  }
+  if (SDL_GL_MakeCurrent(window->sdl_window, context) < 0) {
+    warnx("window_sdl2_run: failed to make OpenGL context current: %s",
           SDL_GetError());
     return false;
   }
@@ -186,13 +200,14 @@ bool window_sdl2_run (s_window_sdl2 *window)
         break;
       }
     }
-    if (! window->render(window, window->context)) {
+    glDrawBuffer(GL_BACK);
+    if (! window->render(window, NULL)) {
       warnx("window_sdl2_run: window->render -> false");
       quit = 1;
     }
     SDL_GL_SwapWindow(window->sdl_window);
   }
-  SDL_GL_DeleteContext(window->context);
+  SDL_GL_DeleteContext(context);
   SDL_DestroyWindow(window->sdl_window);
   return true;
 }

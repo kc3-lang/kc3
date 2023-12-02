@@ -50,6 +50,7 @@ CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 config_asan
 config_gnu
 pkg_config gl
+pkg_config glu
 pkg_config sdl2
 LIBS="$LIBS"
 
