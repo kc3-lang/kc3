@@ -146,6 +146,12 @@ bool window_sdl2_demo_render (s_window_sdl2 *window,
   if (! seq->render(seq, window, context))
     return false;
   /* progress bar */
+  /*
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, window->w, window->h, 0, -1, 1);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
   glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
   glRectd(19, window->h - 12,
           19 + (window->w - 40.0) * seq->t / seq->duration + 2,
@@ -154,6 +160,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window,
   glRectd(20, window->h - 11,
           20 + (window->w - 40.0) * seq->t / seq->duration,
           window->h - 11 + 2);
+  */
   return true;
 }
 
@@ -164,5 +171,6 @@ bool window_sdl2_demo_resize (s_window_sdl2 *window,
   (void) window;
   (void) w;
   (void) h;
+  glViewport(0, 0, w, h);
   return true;
 }

@@ -20,6 +20,7 @@
 
 #include <SDL.h>
 #include <GL/gl.h>
+#include <GL/glu.h>
 #include <libc3/types.h>
 #include "../types.h"
 
