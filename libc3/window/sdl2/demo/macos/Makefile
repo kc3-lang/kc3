@@ -92,8 +92,6 @@ install:
 	debug \
 	demo \
 	distclean \
-	gdb_demo \
-	lldb_demo
+	gdb_demo
 
 include config.mk
-include sources.mk

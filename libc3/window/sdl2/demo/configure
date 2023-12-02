@@ -140,4 +140,14 @@ for SRC in $SOURCES; do
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
 done
 
+echo "" >> ${CONFIG_MK}
+
+if [ "x$(uname)" = "xDarwin" ]; then
+    HAVE_DARWIN=true
+    (cd macos && ./configure; )
+else
+    HAVE_DARWIN=false
+fi
+echo "HAVE_DARWIN = $HAVE_DARWIN" >> ${CONFIG_MK}
+
 update_config_mk

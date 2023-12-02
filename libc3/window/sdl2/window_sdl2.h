@@ -33,7 +33,7 @@ bool window_sdl2_key_default (s_window_sdl2 *window, SDL_Keysym *keysym);
 bool window_sdl2_load_default (s_window_sdl2 *window);
 bool window_sdl2_motion_default (s_window_sdl2 *window, sw x, sw y);
 bool window_sdl2_render_default (s_window_sdl2 *window,
-                                 SDL_GLContext context);
+                                 void *context);
 bool window_sdl2_resize_default (s_window_sdl2 *window, uw w, uw h);
 
 #endif /* LIBC3_WINDOW_SDL2_H */

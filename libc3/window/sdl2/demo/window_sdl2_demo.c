@@ -17,7 +17,7 @@
 #include "../window_sdl2.h"
 #include "bg_rect.h"
 
-#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 0
+#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 1
 
 static bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
                                      sw x, sw y);
@@ -25,7 +25,7 @@ static bool window_sdl2_demo_key (s_window_sdl2 *window,
                                   SDL_Keysym *keysym);
 static bool window_sdl2_demo_load (s_window_sdl2 *window);
 static bool window_sdl2_demo_render (s_window_sdl2 *window,
-                                     SDL_GLContext context);
+                                     void *context);
 bool window_sdl2_demo_resize (s_window_sdl2 *window,
                               uw w, uw h);
 
@@ -37,8 +37,8 @@ int main (int argc, char **argv)
     return 1;
   }
   window_sdl2_init(&window, 0, 0, 800, 600,
-                    "C3.Window.SDL2 demo",
-                    WINDOW_SDL2_DEMO_SEQUENCE_COUNT);
+                   "C3.Window.SDL2 demo",
+                   WINDOW_SDL2_DEMO_SEQUENCE_COUNT);
   window.button = window_sdl2_demo_button;
   window.key    = window_sdl2_demo_key;
   window.load   = window_sdl2_demo_load;
@@ -102,8 +102,8 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
     return false;
   }
   window_sdl2_sequence_init(window->sequence, 8.0,
-                             "01. Background rectangles",
-                             bg_rect_load, bg_rect_render);
+                            "01. Background rectangles",
+                            bg_rect_load, bg_rect_render);
   /*
   window_sdl2_sequence_init(window->sequence + 1, 20.0,
                             "02. Lightspeed",
@@ -136,7 +136,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
 }
 
 bool window_sdl2_demo_render (s_window_sdl2 *window,
-                              SDL_GLContext context)
+                              void *context)
 {
   s_sequence *seq;
   assert(window);

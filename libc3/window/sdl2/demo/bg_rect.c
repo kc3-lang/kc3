@@ -27,6 +27,7 @@ bool bg_rect_render (s_sequence *seq, s_window_sdl2 *window,
                      SDL_GLContext context)
 {
   (void) context;
+  (void) window;
 #define BG_RECT_COLOR_MAX 8
   const s_rgb color[BG_RECT_COLOR_MAX] = {
     {1, 1, 1},
@@ -50,7 +51,7 @@ bool bg_rect_render (s_sequence *seq, s_window_sdl2 *window,
   rgb.r = color[c1].r * q + color[c2].r * p;
   rgb.g = color[c1].g * q + color[c2].g * p;
   rgb.b = color[c1].b * q + color[c2].b * p;
-  glColor3d(rgb.r, rgb.g, rgb.b);
-  glRectd(0, 0, window->w, window->h);
+  glClearColor(rgb.r, rgb.g, rgb.b, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
   return true;
 }

@@ -36,6 +36,7 @@ s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
   window->render = window_sdl2_render_default;
   window->resize = window_sdl2_resize_default;
   window->context = NULL;
+  window->sdl_window = NULL;
   window->sequence = calloc(sequence_count, sizeof(s_sequence));
   window->sequence_count = sequence_count;
   window->sequence_pos = 0;
@@ -87,7 +88,7 @@ bool window_sdl2_motion_default (s_window_sdl2 *window, sw x, sw y)
 }
 
 bool window_sdl2_render_default (s_window_sdl2 *window,
-                                 SDL_GLContext context)
+                                 void *context)
 {
   (void) window;
   (void) context;
@@ -110,6 +111,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
 {
   int quit = 0;
   SDL_Event sdl_event;
+  SDL_GLContext context;
   assert(window);
   if (! g_window_sdl2_initialized) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -129,13 +131,17 @@ bool window_sdl2_run (s_window_sdl2 *window)
           SDL_GetError());
     return false;
   }
-  window->context = SDL_GL_CreateContext(window->sdl_window);
-  if (! window->context) {
+  context = SDL_GL_CreateContext(window->sdl_window);
+  if (! context) {
     warnx("window_sdl2_run: failed to create OpenGL context: %s",
           SDL_GetError());
     return false;
   }
   SDL_GL_SetSwapInterval(1);
+  if (! window->load(window)) {
+    warnx("window_sdl2_run: window->load => false");
+    quit = 1;
+  }
   while (! quit) {
     while (SDL_PollEvent(&sdl_event) != 0) {
       switch (sdl_event.type) {
@@ -180,8 +186,10 @@ bool window_sdl2_run (s_window_sdl2 *window)
         break;
       }
     }
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    if (! window->render(window, window->context)) {
+      warnx("window_sdl2_run: window->render -> false");
+      quit = 1;
+    }
     SDL_GL_SwapWindow(window->sdl_window);
   }
   SDL_GL_DeleteContext(window->context);
