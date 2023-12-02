@@ -93,13 +93,12 @@ struct window_sdl2 {
   f_window_sdl2_load   load;
   f_window_sdl2_motion motion;
   f_window_sdl2_render render;
-  void                *context;
+  SDL_Window          *sdl_window;
   f_window_sdl2_resize resize;
   s_sequence          *sequence;
   uw                   sequence_count;
   uw                   sequence_pos;
   const s8            *title;
-  SDL_Window          *sdl_window;
 };
 
 #endif /* LIBC3_WINDOW_SDL2_TYPES_H */

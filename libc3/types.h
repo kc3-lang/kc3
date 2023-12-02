@@ -462,6 +462,7 @@ struct sequence {
   s_tag tag;
   f64 dt;
   f64 duration;
+  u64 frame;
   f_sequence_load load;
   f_sequence_render render;
   f64 t;
