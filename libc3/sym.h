@@ -44,6 +44,7 @@ s_str            * sym_inspect (const s_sym *sym, s_str *dest);
 bool               sym_is_module (const s_sym *sym);
 f_buf_inspect      sym_to_buf_inspect (const s_sym *type);
 f_buf_inspect_size sym_to_buf_inspect_size (const s_sym *type);
+f_clean            sym_to_clean (const s_sym *type);
 ffi_type         * sym_to_ffi_type (const s_sym *sym,
                                     ffi_type *result_type);
 f_init_copy        sym_to_init_copy (const s_sym *type);

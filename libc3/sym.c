@@ -278,6 +278,67 @@ f_buf_inspect_size sym_to_buf_inspect_size (const s_sym *type)
   return NULL;
 }
 
+f_clean sym_to_clean (const s_sym *type)
+{
+  if (type == sym_1("Bool"))
+    return NULL;
+  if (type == sym_1("Call"))
+    return (f_clean) call_clean;
+  if (type == sym_1("Cfn"))
+    return (f_clean) cfn_clean;
+  if (type == sym_1("Character"))
+    return NULL;
+  if (type == sym_1("F32"))
+    return NULL;
+  if (type == sym_1("F64"))
+    return NULL;
+  if (type == sym_1("Fact"))
+    return NULL;
+  if (type == sym_1("Fn"))
+    return (f_clean) fn_clean;
+  if (type == sym_1("Ident"))
+    return NULL;
+  if (type == sym_1("Integer"))
+    return (f_clean) integer_clean;
+  if (type == sym_1("Sw"))
+    return NULL;
+  if (type == sym_1("S64"))
+    return NULL;
+  if (type == sym_1("S32"))
+    return NULL;
+  if (type == sym_1("S16"))
+    return NULL;
+  if (type == sym_1("S8"))
+    return NULL;
+  if (type == sym_1("U8"))
+    return NULL;
+  if (type == sym_1("U16"))
+    return NULL;
+  if (type == sym_1("U32"))
+    return NULL;
+  if (type == sym_1("U64"))
+    return NULL;
+  if (type == sym_1("Uw"))
+    return NULL;
+  if (type == sym_1("List"))
+    return (f_clean) list_clean;
+  if (type == sym_1("Ptag"))
+    return NULL;
+  if (type == sym_1("Quote"))
+    return (f_clean) quote_clean;
+  if (type == sym_1("Str"))
+    return (f_clean) str_clean;
+  if (type == sym_1("Sym"))
+    return NULL;
+  if (type == sym_1("Tuple"))
+    return (f_clean) tuple_clean;
+  if (type == sym_1("Var"))
+    return NULL;
+  assert(! "sym_to_clean: unknown type");
+  errx(1, "sym_to_clean: unknown type");
+  return NULL;
+}
+
 ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
 {
   assert(sym);

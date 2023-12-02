@@ -245,6 +245,7 @@ C3_C_SOURCES = \
 	libc3/s8.c \
 	libc3/buf_parse_s16.h \
 	libc3/list.h \
+	libc3/struct_type.c \
 	libc3/ceiling.c \
 	libc3/buf_inspect_s.h.in \
 	libc3/buf_inspect_s32_hexadecimal.c \
