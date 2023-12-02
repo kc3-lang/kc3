@@ -173,8 +173,7 @@ static void render_text (s_sdl2_font *font, double x, double y,
   glPopMatrix();
 }
 
-bool window_sdl2_demo_render (s_window_sdl2 *window,
-                              void *context)
+bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
 {
   s_sequence *seq;
   assert(window);
