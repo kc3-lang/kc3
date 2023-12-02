@@ -266,6 +266,7 @@ SOURCES = \
 	skiplist_node__fact.c \
 	str.c \
 	struct.c \
+	struct_type.c \
 	sw.c \
 	sym.c \
 	tag.c \
@@ -415,6 +416,7 @@ LO_SOURCES = \
 	skiplist_node__fact.c \
 	str.c \
 	struct.c \
+	struct_type.c \
 	sw.c \
 	sym.c \
 	tag.c \

@@ -10,8 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-build: gen
 build:
+	${MAKE} gen
 	${GMAKE} -C libffi all
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c build
@@ -20,8 +20,8 @@ build:
 	${MAKE} -C c3s build
 	${MAKE} -C test build
 
-all: gen
 all:
+	${MAKE} gen
 	${GMAKE} -C libffi all
 	${MAKE} -C libtommath all
 	${MAKE} -C ucd2c all
@@ -54,8 +54,8 @@ clean_cov:
 	${MAKE} -C c3s clean_cov
 	${MAKE} -C test clean_cov
 
-cov: gen
 cov:
+	${MAKE} gen
 	${GMAKE} -C libffi all
 	${MAKE} -C libtommath cov
 	${MAKE} -C libc3 cov
@@ -76,6 +76,12 @@ demo: build
 
 demo_debug: debug
 	${MAKE} -C libc3 demo_debug
+
+demo_gl: build
+	${MAKE} -C libc3 demo_gl
+
+demo_gl_debug: debug
+	${MAKE} -C libc3 demo_gl_debug
 
 dist: c3-${C3_VERSION}.tar.gz
 
@@ -101,16 +107,20 @@ gcovr:
 	${MAKE} -C test gcovr
 	if [ -d "$$HOME/Downloads/c3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
-gdb_demo: debug
 gdb_demo:
+	${MAKE} debug
 	${MAKE} -C libc3 gdb_demo
 
-gdb_ic3: debug
+gdb_demo_gl:
+	${MAKE} debug
+	${MAKE} -C libc3 gdb_demo_gl
+
 gdb_ic3:
+	${MAKE} debug
 	${MAKE} -C ic3 gdb_ic3
 
-gdb_test: debug
 gdb_test:
+	${MAKE} debug
 	${MAKE} -C test gdb_test
 
 gen:
@@ -140,13 +150,20 @@ license:
 	update_header Makefile ${C3_MAKEFILES}
 	update_header license.h ${C3_C_SOURCES}
 
-lldb_demo: debug
+lldb_demo:
+	${MAKE} debug
 	${MAKE} -C libc3 lldb_demo
 
-lldb_ic3: debug
+lldb_demo_gl:
+	${MAKE} debug
+	${MAKE} -C libc3 lldb_demo_gl
+
+lldb_ic3:
+	${MAKE} debug
 	${MAKE} -C ic3 lldb_ic3
 
-lldb_test: debug
+lldb_test:
+	${MAKE} debug
 	${MAKE} -C test lldb_test
 
 test: build
@@ -162,8 +179,8 @@ test_cov: cov clean_cov
 test_cov:
 	${MAKE} -C test test_cov
 
-test_debug: debug
 test_debug:
+	${MAKE} debug
 	${MAKE} -C test test_debug
 
 test_gcovr:
@@ -196,8 +213,8 @@ test_libc3_cov: cov
 test_libc3_cov:
 	${MAKE} -C test test_libc3_cov
 
-test_libc3_debug: debug
 test_libc3_debug:
+	${MAKE} debug
 	${MAKE} -C test test_libc3_debug
 
 .PHONY: \

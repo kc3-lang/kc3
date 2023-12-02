@@ -27,7 +27,7 @@ s_struct * struct_init_1 (s_struct *s, const s8 *p);
 
 /* Heap-allocation functions, call struct_delete after use. */
 void       struct_delete (s_struct *s);
-s_struct * struct_new (uw count);
+s_struct * struct_new (const s_sym *module);
 s_struct * struct_new_1 (const s8 *p);
 
 #endif /* LIBC3_STRUCT_H */

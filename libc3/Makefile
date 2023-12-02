@@ -55,6 +55,12 @@ demo: build
 demo_debug: debug
 	${MAKE} -C window demo_debug
 
+demo_gl: build
+	${MAKE} -C window demo_gl
+
+demo_gl_debug: debug
+	${MAKE} -C window demo_gl_debug
+
 distclean:
 	rm -rf ${DISTCLEANFILES}
 	${MAKE} -C window distclean
@@ -65,6 +71,9 @@ gcovr:
 
 gdb_demo: debug
 	${MAKE} -C window gdb_demo
+
+gdb_demo_gl: debug
+	${MAKE} -C window gdb_demo_gl
 
 include gen.mk
 CLEANFILES += ${GENERATED_FILES}
@@ -77,11 +86,11 @@ install:
 	${LIBTOOL} --finish ${prefix}/lib
 	${MAKE} -C window install
 
-libffi:
-	ln -sf "../libffi/${CC_TARGET}" libffi
-
 lldb_demo: debug
 	${MAKE} -C window lldb_demo
+
+lldb_demo_gl: debug
+	${MAKE} -C window lldb_demo_gl
 
 test:
 

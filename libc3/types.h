@@ -153,6 +153,7 @@ typedef struct quote                   s_quote;
 typedef struct sequence                s_sequence;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
+typedef struct struct_type             s_struct_type;
 typedef struct sym                     s_sym;
 typedef struct sym_list                s_sym_list;
 typedef struct tag                     s_tag;
@@ -180,6 +181,7 @@ typedef u64          t_skiplist_height;
 typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
 typedef sw (* f_buf_inspect_size) (const void *x);
 typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
+typedef void (* f_clean) (void *x);
 typedef void * (* f_init_copy) (void *x, const void *src);
 typedef bool (* f_sequence_load) (s_sequence *seq, void *window);
 typedef bool (* f_sequence_render) (s_sequence *seq, void *window,
@@ -253,6 +255,19 @@ struct quote {
   s_tag *tag;
 };
 
+struct struct_ {
+  void *data;
+  bool free;
+  s_struct_type *type;
+};
+
+struct struct_type {
+  const s_sym *module;
+  s_map map;
+  uw *offsets;
+  uw size;
+};
+
 struct sym_list {
   s_sym *sym;
   s_sym_list *next;
@@ -315,12 +330,6 @@ struct str {
   u_ptr_w free;        /**< Pointer to free or NULL. */
   uw      size;        /**< Size in bytes. */
   u_ptr   ptr;         /**< Pointer to memory. */
-};
-
-struct struct_ {
-  s_map map;
-  const s_sym *module;
-  void **data;
 };
 
 /* 3 */

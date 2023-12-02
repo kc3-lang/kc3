@@ -28,11 +28,9 @@
    use. */
 void            struct_type_clean (s_struct_type *s);
 s_struct_type * struct_type_init (s_struct_type *s, const s_sym *module);
-s_struct_type * struct_type_init_1 (s_struct_type *s, const s8 *p);
 
 /* Heap-allocation functions, call struct_type_delete after use. */
 void            struct_type_delete (s_struct_type *s);
 s_struct_type * struct_type_new (const s_sym *module);
-s_struct_type * struct_type_new_1 (const s8 *p);
 
 #endif /* LIBC3_STRUCT_TYPE_H */
