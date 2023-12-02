@@ -53,6 +53,7 @@ pkg_config ftgl
 pkg_config gl
 pkg_config glu
 pkg_config sdl2
+config_lib OPENGL -framework OpenGL
 LIBS="$LIBS"
 
 # Asan config
