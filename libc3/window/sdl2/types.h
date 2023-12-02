@@ -19,7 +19,7 @@
 #define LIBC3_WINDOW_SDL2_TYPES_H
 
 #include <SDL.h>
-#include <OpenGL/gl.h>
+#include <GL/gl.h>
 #include <libc3/types.h>
 #include "../types.h"
 
