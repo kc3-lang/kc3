@@ -35,7 +35,6 @@ s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
   window->motion = window_sdl2_motion_default;
   window->render = window_sdl2_render_default;
   window->resize = window_sdl2_resize_default;
-  window->context = NULL;
   window->sdl_window = NULL;
   window->sequence = calloc(sequence_count, sizeof(s_sequence));
   window->sequence_count = sequence_count;
@@ -88,10 +87,10 @@ bool window_sdl2_motion_default (s_window_sdl2 *window, sw x, sw y)
 }
 
 bool window_sdl2_render_default (s_window_sdl2 *window,
-                                 void *context)
+                                 void *sdl_window)
 {
   (void) window;
-  (void) context;
+  (void) sdl_window;
   assert(window);
   printf("window_sdl2_render_default\n");
   return true;
@@ -226,6 +225,7 @@ s_sequence * window_sdl2_sequence_init
   assert(seq);
   seq->t = 0.0;
   seq->duration = duration;
+  seq->frame = 0;
   seq->title = title;
   seq->load = (f_sequence_load) load;
   seq->render = (f_sequence_render) render;

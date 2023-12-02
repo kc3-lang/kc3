@@ -142,6 +142,37 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   return true;
 }
 
+static void render_text (s_sdl2_font *font, double x, double y,
+                         const s8 *p)
+{
+  glPushMatrix();
+  glTranslated(x, y, 0.0);
+  glPushMatrix();
+  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+  glTranslatef(-1.0f, -1.0f, 0.0f);
+  sdl2_font_render_text(font, p);
+  glTranslatef( 1.0f,  0.0f, 0.0f);
+  sdl2_font_render_text(font, p);
+  glTranslatef( 1.0f,  0.0f, 0.0f);
+  sdl2_font_render_text(font, p);
+  glTranslatef( 0.0f,  1.0f, 0.0f);
+  sdl2_font_render_text(font, p);
+  glTranslatef(-1.0f,  0.0f, 0.0f);
+  sdl2_font_render_text(font, p);
+  glTranslatef(-1.0f,  0.0f, 0.0f);
+  sdl2_font_render_text(font, p);
+  glTranslatef( 0.0f,  1.0f, 0.0f);
+  sdl2_font_render_text(font, p);
+  glTranslatef( 1.0f,  0.0f, 0.0f);
+  sdl2_font_render_text(font, p);
+  glTranslatef( 1.0f,  0.0f, 0.0f);
+  sdl2_font_render_text(font, p);
+  glPopMatrix();
+  glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+  sdl2_font_render_text(font, p);
+  glPopMatrix();
+}
+
 bool window_sdl2_demo_render (s_window_sdl2 *window,
                               void *context)
 {
@@ -160,22 +191,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window,
   glLoadIdentity();
   glDisable(GL_DEPTH_TEST);
   sdl2_font_set_size(&g_font_courier_new, 20);
-  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-  glPushMatrix();
-  glTranslatef(19.0f, 29.0f, 0.0f);
-  sdl2_font_render_text(&g_font_courier_new, seq->title);
-  glTranslatef( 2.0f, 0.0f, 0.0f);
-  sdl2_font_render_text(&g_font_courier_new, seq->title);
-  glTranslatef( 0.0f, 2.0f, 0.0f);
-  sdl2_font_render_text(&g_font_courier_new, seq->title);
-  glTranslatef(-2.0f, 0.0f, 0.0f);
-  sdl2_font_render_text(&g_font_courier_new, seq->title);
-  glPopMatrix();
-  glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-  glPushMatrix();
-  glTranslatef(20.0f, 30.0f, 0.0f);
-  sdl2_font_render_text(&g_font_courier_new, seq->title);
-  glPopMatrix();
+  render_text(&g_font_courier_new, 20.0f, 30.0f, seq->title);
   /* progress bar */
   glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
   glRectd(19, 11,
@@ -185,6 +201,10 @@ bool window_sdl2_demo_render (s_window_sdl2 *window,
   glRectd(20, 12,
           20 + (window->w - 40.0) * seq->t / seq->duration,
           12 + 2);
+  /* fps */
+  s8 fps[32];
+  snprintf(fps, sizeof(fps), "%f", (f64) seq->frame / seq->t);
+  render_text(&g_font_courier_new, 20, window->h - 30, fps);
   return true;
 }
 
