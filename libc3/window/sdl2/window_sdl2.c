@@ -29,6 +29,7 @@ s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
   window->y = y;
   window->w = w;
   window->h = h;
+  window->fullscreen = false;
   window->button = window_sdl2_button_default;
   window->key = window_sdl2_key_default;
   window->load = window_sdl2_load_default;
