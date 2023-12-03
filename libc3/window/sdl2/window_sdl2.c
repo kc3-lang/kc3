@@ -116,6 +116,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_Event sdl_event;
   assert(window);
   if (! g_window_sdl2_initialized) {
+    //SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
     if (SDL_Init(SDL_INIT_VIDEO)) {
       warnx("window_sdl2_run: SDL initialization failed: %s",
             SDL_GetError());
@@ -168,19 +169,18 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_Renderer *renderer = SDL_GetRenderer(window->sdl_window);
   gl_w = window->w;
   gl_h = window->h;
-  SDL_GetRendererOutputSize(renderer,
-                            &gl_w, &gl_h);
+  SDL_GetRendererOutputSize(renderer, &gl_w, &gl_h);
   window->gl_w = gl_w;
   window->gl_h = gl_h;
   if (window->gl_w != window->w) {
-    double scale_w = (double) gl_w / (double) window->w;
-    double scale_h = (double) gl_h / (double) window->h;
-    if (fabs(scale_w - scale_h) > DBL_EPSILON)
+    float scale_w = (float) gl_w / (float) window->w;
+    float scale_h = (float) gl_h / (float) window->h;
+    if (fabsf(scale_w - scale_h) > FLT_EPSILON)
       warnx("window_sdl2_run: width scale != height scale\n");
     printf("window_sdl2_run: scale_w %f scale_h %f\n", scale_w,
            scale_h);
-    SDL_RenderSetScale(renderer, scale_w, scale_h);
-}
+    //SDL_RenderSetScale(renderer, scale_w, scale_h);
+  }
   SDL_GL_SetSwapInterval(1);
   if (! window->load(window)) {
     warnx("window_sdl2_run: window->load => false");
@@ -222,10 +222,9 @@ bool window_sdl2_run (s_window_sdl2 *window)
             warnx("window_sdl2_run: window->resize -> false");
             quit = 1;
           }
-          window->w = sdl_event.window.data1;
-          window->h = sdl_event.window.data2;
-          SDL_GetRendererOutputSize(SDL_GetRenderer(window->sdl_window),
-                                    &gl_w, &gl_h);
+          window->w = gl_w = sdl_event.window.data1;
+          window->h = gl_h = sdl_event.window.data2;
+          SDL_GetRendererOutputSize(renderer, &gl_w, &gl_h);
           window->gl_w = gl_w;
           window->gl_h = gl_h;
           glViewport(0, 0, gl_w, gl_h);
