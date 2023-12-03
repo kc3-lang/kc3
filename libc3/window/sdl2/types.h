@@ -100,6 +100,8 @@ struct window_sdl2 {
   uw                   sequence_count;
   uw                   sequence_pos;
   const s8            *title;
+  uw gl_w;
+  uw gl_h;
 };
 
 #endif /* LIBC3_WINDOW_SDL2_TYPES_H */

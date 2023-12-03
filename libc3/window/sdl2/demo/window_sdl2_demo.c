@@ -79,14 +79,14 @@ bool window_sdl2_demo_key (s_window_sdl2 *window, SDL_Keysym *keysym)
                                   SDL_WINDOW_FULLSCREEN_DESKTOP)) {
         warnx("window_sdl2_demo_key: SDL_SetWindowFullscreen(:desktop): %s",
               SDL_GetError());
-        return true;
+        SDL_MaximizeWindow(window->sdl_window);
       }
     }
     else {
       if (SDL_SetWindowFullscreen(window->sdl_window, 0)) {
         warnx("window_sdl2_demo_key: SDL_SetWindowFullscreen(0): %s",
               SDL_GetError());
-        return true;
+        SDL_RestoreWindow(window->sdl_window);
       }
     }
     window->fullscreen = ! window->fullscreen;
@@ -203,7 +203,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   /* 2D */
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(0, window->w, 0, window->h, -1, 1);
+  glOrtho(0, window->gl_w, 0, window->gl_h, -1, 1);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glDisable(GL_DEPTH_TEST);
@@ -232,6 +232,5 @@ bool window_sdl2_demo_resize (s_window_sdl2 *window,
   (void) window;
   (void) w;
   (void) h;
-  glViewport(0, 0, w, h);
   return true;
 }

@@ -109,9 +109,11 @@ bool window_sdl2_resize_default (s_window_sdl2 *window, uw w, uw h)
 
 bool window_sdl2_run (s_window_sdl2 *window)
 {
+  SDL_GLContext context;
+  s32 gl_w;
+  s32 gl_h;
   int quit = 0;
   SDL_Event sdl_event;
-  SDL_GLContext context;
   assert(window);
   if (! g_window_sdl2_initialized) {
     if (SDL_Init(SDL_INIT_VIDEO)) {
@@ -139,6 +141,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
   window->sdl_window = SDL_CreateWindow(window->title,
                                         window->x, window->y,
                                         window->w, window->h,
+                                        SDL_WINDOW_ALLOW_HIGHDPI |
                                         SDL_WINDOW_OPENGL |
                                         SDL_WINDOW_RESIZABLE);
   if (! window->sdl_window) {
@@ -162,6 +165,22 @@ bool window_sdl2_run (s_window_sdl2 *window)
           SDL_GetError());
     return false;
   }
+  SDL_Renderer *renderer = SDL_GetRenderer(window->sdl_window);
+  gl_w = window->w;
+  gl_h = window->h;
+  SDL_GetRendererOutputSize(renderer,
+                            &gl_w, &gl_h);
+  window->gl_w = gl_w;
+  window->gl_h = gl_h;
+  if (window->gl_w != window->w) {
+    double scale_w = (double) gl_w / (double) window->w;
+    double scale_h = (double) gl_h / (double) window->h;
+    if (fabs(scale_w - scale_h) > DBL_EPSILON)
+      warnx("window_sdl2_run: width scale != height scale\n");
+    printf("window_sdl2_run: scale_w %f scale_h %f\n", scale_w,
+           scale_h);
+    SDL_RenderSetScale(renderer, scale_w, scale_h);
+}
   SDL_GL_SetSwapInterval(1);
   if (! window->load(window)) {
     warnx("window_sdl2_run: window->load => false");
@@ -205,6 +224,11 @@ bool window_sdl2_run (s_window_sdl2 *window)
           }
           window->w = sdl_event.window.data1;
           window->h = sdl_event.window.data2;
+          SDL_GetRendererOutputSize(SDL_GetRenderer(window->sdl_window),
+                                    &gl_w, &gl_h);
+          window->gl_w = gl_w;
+          window->gl_h = gl_h;
+          glViewport(0, 0, gl_w, gl_h);
         }
         break;
       default:
