@@ -102,6 +102,9 @@ struct window_sdl2 {
   const s8            *title;
   uw gl_w;
   uw gl_h;
+  float dpi;
+  float dpi_w;
+  float dpi_h;
 };
 
 #endif /* LIBC3_WINDOW_SDL2_TYPES_H */
