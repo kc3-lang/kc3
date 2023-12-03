@@ -49,6 +49,7 @@ pkg_config glu
 pkg_config sdl2
 pkg_config libbsd-overlay
 config_lib OPENGL -framework OpenGL
+config_lib SDL2 -framework SDL2
 config_define PREFIX "\"${PREFIX}\""
 
 # Address Sanitizer config
