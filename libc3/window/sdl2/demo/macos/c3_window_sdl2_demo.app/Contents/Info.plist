@@ -8,5 +8,7 @@
 	<string>c3</string>
 	<key>CFBundleIdentifier</key>
 	<string>io.kmx.c3-window-sdl2-demo</string>
+        <key>NSHighResolutionCapable</key>
+        <true/>
 </dict>
 </plist>
