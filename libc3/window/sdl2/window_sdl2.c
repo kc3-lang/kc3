@@ -114,12 +114,17 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_GLContext context;
   assert(window);
   if (! g_window_sdl2_initialized) {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO)) {
       warnx("window_sdl2_run: SDL initialization failed: %s",
             SDL_GetError());
       return false;
     }
     g_window_sdl2_initialized = true;
+  }
+  if (SDL_VideoInit(NULL)) {
+    warnx("window_sdl2_run: SDL_VideoInit failed: %s",
+          SDL_GetError());
+    return false;
   }
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
