@@ -73,6 +73,14 @@ bool window_sdl2_demo_key (s_window_sdl2 *window, SDL_Keysym *keysym)
   assert(keysym);
   (void) window;
   switch (keysym->sym) {
+  case SDLK_f:
+    if (! window->fullscreen)
+      SDL_SetWindowFullscreen(window->sdl_window,
+                              SDL_WINDOW_FULLSCREEN_DESKTOP);
+    else
+      SDL_SetWindowFullscreen(window->sdl_window, 0);
+    window->fullscreen = ! window->fullscreen;
+    return true;
   case SDLK_ESCAPE:
   case SDLK_q:
     g_c3_exit_code = 0;

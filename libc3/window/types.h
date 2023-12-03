@@ -52,6 +52,7 @@ struct window {
   sw              y;
   uw              w;
   uw              h;
+  bool            fullscreen;
   f_window_button button;
   f_window_key    key;
   f_window_load   load;

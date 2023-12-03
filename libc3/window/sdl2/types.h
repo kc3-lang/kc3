@@ -88,6 +88,7 @@ struct window_sdl2 {
   sw                   y;
   uw                   w;
   uw                   h;
+  bool                 fullscreen;
   f_window_sdl2_button button;
   f_window_sdl2_key    key;
   f_window_sdl2_load   load;

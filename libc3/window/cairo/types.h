@@ -97,6 +97,7 @@ struct window_cairo {
   sw                    y;
   uw                    w;
   uw                    h;
+  bool                  fullscreen;
   f_window_cairo_button button;
   f_window_cairo_key    key;
   f_window_cairo_load   load;
