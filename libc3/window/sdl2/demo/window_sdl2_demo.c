@@ -74,11 +74,21 @@ bool window_sdl2_demo_key (s_window_sdl2 *window, SDL_Keysym *keysym)
   (void) window;
   switch (keysym->sym) {
   case SDLK_f:
-    if (! window->fullscreen)
-      SDL_SetWindowFullscreen(window->sdl_window,
-                              SDL_WINDOW_FULLSCREEN_DESKTOP);
-    else
-      SDL_SetWindowFullscreen(window->sdl_window, 0);
+    if (! window->fullscreen) {
+      if (SDL_SetWindowFullscreen(window->sdl_window,
+                                  SDL_WINDOW_FULLSCREEN_DESKTOP)) {
+        warnx("window_sdl2_demo_key: SDL_SetWindowFullscreen(:desktop): %s",
+              SDL_GetError());
+        return true;
+      }
+    }
+    else {
+      if (SDL_SetWindowFullscreen(window->sdl_window, 0)) {
+        warnx("window_sdl2_demo_key: SDL_SetWindowFullscreen(0): %s",
+              SDL_GetError());
+        return true;
+      }
+    }
     window->fullscreen = ! window->fullscreen;
     return true;
   case SDLK_ESCAPE:
