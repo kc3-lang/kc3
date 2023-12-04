@@ -52,6 +52,7 @@ config_gnu
 pkg_config ftgl
 pkg_config gl
 pkg_config glu
+config_lib IL -lIL -lILU
 pkg_config sdl2
 config_lib OPENGL -framework OpenGL
 #config_lib SDL2 -framework SDL2
