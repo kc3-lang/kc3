@@ -22,18 +22,20 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <FTGL/ftgl.h>
+#include <IL/il.h>
+#include <IL/ilu.h>
 #include <libc3/types.h>
 #include "../types.h"
 
 typedef struct sdl2_font   s_sdl2_font;
 typedef struct sdl2_sprite s_sdl2_sprite;
-typedef struct rgb          s_rgb;
-typedef struct rgba         s_rgba;
+typedef struct rgb         s_rgb;
+typedef struct rgba        s_rgba;
 typedef struct window_sdl2 s_window_sdl2;
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_button) (s_window_sdl2 *window,
-                                       u8 button, sw x, sw y);
+                                      u8 button, sw x, sw y);
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_key) (s_window_sdl2 *window,
@@ -44,7 +46,7 @@ typedef bool (*f_window_sdl2_load) (s_window_sdl2 *window);
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_motion) (s_window_sdl2 *window, sw x,
-                                       sw y);
+                                      sw y);
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_render) (s_window_sdl2 *window,
@@ -52,7 +54,7 @@ typedef bool (*f_window_sdl2_render) (s_window_sdl2 *window,
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_resize) (s_window_sdl2 *window,
-                                       uw w, uw h);
+                                      uw w, uw h);
 
 typedef bool (*f_window_sdl2_sequence_load) (s_sequence *seq,
                                              s_window_sdl2 *window);
@@ -67,6 +69,19 @@ struct sdl2_font {
   u32 dpi;
   s_str path;
   s_str real_path;
+};
+
+struct sdl2_sprite {
+  s_str path;
+  s_str real_path;
+  uw total_w;
+  uw total_h;
+  uw dim_x;
+  uw dim_y;
+  uw frame_count;
+  uw w;
+  uw h;
+  GLuint *gl_textures;
 };
 
 struct rgb {
