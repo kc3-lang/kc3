@@ -203,7 +203,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   /* 2D */
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(0, window->gl_w, 0, window->gl_h, -1, 1);
+  glOrtho(0, window->w, 0, window->h, -1, 1);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glDisable(GL_DEPTH_TEST);
@@ -212,16 +212,16 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   /* progress bar */
   glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
   glRectd(19, 11,
-          19 + (window->gl_w - 40.0) * seq->t / seq->duration + 2,
+          19 + (window->w - 40.0) * seq->t / seq->duration + 2,
           11 + 4);
   glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
   glRectd(20, 12,
-          20 + (window->gl_w - 40.0) * seq->t / seq->duration,
+          20 + (window->w - 40.0) * seq->t / seq->duration,
           12 + 2);
   /* fps */
   s8 fps[32];
   snprintf(fps, sizeof(fps), "%f", (f64) seq->frame / seq->t);
-  render_text(&g_font_courier_new, 20, window->gl_h - 30, fps);
+  render_text(&g_font_courier_new, 20, window->h - 30, fps);
   return true;
 }
 
