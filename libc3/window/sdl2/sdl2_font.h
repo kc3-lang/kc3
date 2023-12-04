@@ -23,7 +23,7 @@ void          sdl2_font_clean (s_sdl2_font *font);
 s_sdl2_font * sdl2_font_init (s_sdl2_font *font, const s8 *path);
 
 /* Operators. */
-void sdl2_font_set_size (const s_sdl2_font *font, uw size);
+void sdl2_font_set_size (s_sdl2_font *font, u32 size, u32 dpi);
 
 /* Observers */
 void sdl2_font_render_text (const s_sdl2_font *font, const s8 *p);
