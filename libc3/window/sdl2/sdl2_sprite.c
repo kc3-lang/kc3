@@ -29,10 +29,13 @@ static void ilEnsureInit (void)
 
 void ilClean (void)
 {
+  /*
   if (g_il_is_loaded) {
-    iluInit();
-    ilInit();
+    iluDestroy();
+    ilDestroy();
+    g_il_is_loaded = false;
   }
+  */
 }
 
 void sdl2_sprite_clean (s_sdl2_sprite *sprite)
@@ -82,6 +85,15 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   sprite->w = sprite->total_w / dim_x;
   sprite->h = sprite->total_h / dim_y;
   sprite->frame_count = frame_count ? frame_count : (dim_x * dim_y);
+  sprite->gl_textures = malloc(frame_count * sizeof(GLuint));
+  if (! sprite->gl_textures) {
+    warn("sdl2_sprite: sprite->gl_textures");
+    ilDeleteImages(2, il_images);
+    str_clean(&sprite->path);
+    str_clean(&sprite->real_path);
+    return NULL;
+  }
+  glGenTextures(frame_count, sprite->gl_textures);
   ilBindImage(il_images[1]);
   ilTexImage(sprite->w, sprite->h, 1, 32, IL_RGBA, IL_UNSIGNED_BYTE,
              NULL);
@@ -95,7 +107,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
       ilCopyPixels(x * sprite->w, y * sprite->h, 0,
                    sprite->w, sprite->h, 1, IL_RGBA, IL_UNSIGNED_BYTE,
                    data);
-
+      glTexImage2D(
       i++;
       x++;
     }

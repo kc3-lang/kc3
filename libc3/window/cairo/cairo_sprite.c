@@ -56,12 +56,12 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
     warnx("cairo_sprite_init: NULL surface");
     return NULL;
   }
-  sprite->surface_w = cairo_image_surface_get_width(surface);
-  sprite->surface_h = cairo_image_surface_get_height(surface);
+  sprite->total_w = cairo_image_surface_get_width(surface);
+  sprite->total_h = cairo_image_surface_get_height(surface);
   sprite->dim_x = dim_x;
   sprite->dim_y = dim_y;
-  sprite->w = sprite->surface_w / dim_x;
-  sprite->h = sprite->surface_h / dim_y;
+  sprite->w = sprite->total_w / dim_x;
+  sprite->h = sprite->total_h / dim_y;
   sprite->frame_count = frame_count ? frame_count : (dim_x * dim_y);
   return sprite;
 }

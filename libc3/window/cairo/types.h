@@ -68,8 +68,8 @@ struct cairo_font {
 };
 
 struct cairo_sprite {
-  uw surface_w;
-  uw surface_h;
+  uw total_w;
+  uw total_h;
   uw dim_x;
   uw dim_y;
   uw frame_count;

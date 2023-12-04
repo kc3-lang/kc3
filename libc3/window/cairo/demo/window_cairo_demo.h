@@ -18,7 +18,7 @@
 #define WINDOW_CAIRO_DEMO_SEQUENCE_COUNT 4
 
 bool window_cairo_demo_button (s_window_cairo *window, u8 button,
-                                  sw x, sw y);
+                               sw x, sw y);
 bool window_cairo_demo_key (s_window_cairo *window, uw keysym);
 bool window_cairo_demo_load (s_window_cairo *window);
 bool window_cairo_demo_render (s_window_cairo *window, cairo_t *cr);
