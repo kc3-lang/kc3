@@ -110,10 +110,11 @@ bool window_sdl2_resize_default (s_window_sdl2 *window, uw w, uw h)
 bool window_sdl2_run (s_window_sdl2 *window)
 {
   SDL_GLContext context;
-  s32 gl_w;
-  s32 gl_h;
+  //s32 gl_w;
+  //s32 gl_h;
   int quit = 0;
   SDL_Event sdl_event;
+  SDL_Window *sdl_window;
   assert(window);
   if (! g_window_sdl2_initialized) {
     //SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
@@ -139,52 +140,59 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
   */
-  window->sdl_window = SDL_CreateWindow(window->title,
-                                        window->x, window->y,
-                                        window->w, window->h,
-                                        SDL_WINDOW_ALLOW_HIGHDPI |
-                                        SDL_WINDOW_OPENGL |
-                                        SDL_WINDOW_RESIZABLE);
-  if (! window->sdl_window) {
+  sdl_window = SDL_CreateWindow(window->title,
+                                window->x, window->y,
+                                window->w, window->h,
+                                SDL_WINDOW_ALLOW_HIGHDPI |
+                                SDL_WINDOW_OPENGL |
+                                SDL_WINDOW_RESIZABLE);
+  if (! sdl_window) {
     warnx("window_sdl2_run: failed to create window: %s",
           SDL_GetError());
     return false;
   }
-  context = SDL_GL_CreateContext(window->sdl_window);
+  window->sdl_window = sdl_window;
+  context = SDL_GL_CreateContext(sdl_window);
   if (! context) {
     warnx("window_sdl2_run: failed to create OpenGL context: %s",
           SDL_GetError());
     return false;
   }
-  GLenum error = glGetError();
-  if (error != GL_NO_ERROR) {
-    fprintf(stderr, "OpenGL initialization error: %s\n", gluErrorString(error));
-    return false;
+  GLenum gl_error = glGetError();
+  if (gl_error != GL_NO_ERROR) {
+    warnx("OpenGL initialization error: %s\n",
+          gluErrorString(gl_error));
+    goto ko;
   }
-  if (SDL_GL_MakeCurrent(window->sdl_window, context) < 0) {
+  if (SDL_GL_MakeCurrent(sdl_window, context) < 0) {
     warnx("window_sdl2_run: failed to make OpenGL context current: %s",
           SDL_GetError());
-    return false;
+    goto ko;
   }
-  SDL_Renderer *renderer = SDL_GetRenderer(window->sdl_window);
-  gl_w = window->w;
-  gl_h = window->h;
-  SDL_GetRendererOutputSize(renderer, &gl_w, &gl_h);
+  int gl_w = window->w;
+  int gl_h = window->h;
+  SDL_GL_GetDrawableSize(sdl_window, &gl_w, &gl_h);
   window->gl_w = gl_w;
   window->gl_h = gl_h;
-  if (window->gl_w != window->w) {
-    float scale_w = (float) gl_w / (float) window->w;
-    float scale_h = (float) gl_h / (float) window->h;
-    if (fabsf(scale_w - scale_h) > FLT_EPSILON)
-      warnx("window_sdl2_run: width scale != height scale\n");
-    printf("window_sdl2_run: scale_w %f scale_h %f\n", scale_w,
-           scale_h);
-    //SDL_RenderSetScale(renderer, scale_w, scale_h);
+  int display_index;
+  display_index = SDL_GetWindowDisplayIndex(sdl_window);
+  if (display_index < 0) {
+    fprintf(stderr, "window_sdl2_run: failed to get display DPI: %s\n",
+            SDL_GetError());
+    goto ko;
   }
+  if (SDL_GetDisplayDPI(display_index, &window->dpi, &window->dpi_w,
+                        &window->dpi_h) != 0) {
+    fprintf(stderr, "window_sdl2_run: failed to get display DPI: %s\n",
+            SDL_GetError());
+    goto ko;
+  }
+  printf("Window DPI: dpi=%.2f, dpi_w=%.2f, dpi_h=%.2f\n", window->dpi,
+         window->dpi_w, window->dpi_h);
   SDL_GL_SetSwapInterval(1);
   if (! window->load(window)) {
     warnx("window_sdl2_run: window->load => false");
-    quit = 1;
+    goto ko;
   }
   while (! quit) {
     while (SDL_PollEvent(&sdl_event) != 0) {
@@ -222,12 +230,12 @@ bool window_sdl2_run (s_window_sdl2 *window)
             warnx("window_sdl2_run: window->resize -> false");
             quit = 1;
           }
-          window->w = gl_w = sdl_event.window.data1;
-          window->h = gl_h = sdl_event.window.data2;
-          SDL_GetRendererOutputSize(renderer, &gl_w, &gl_h);
+          window->w = sdl_event.window.data1;
+          window->h = sdl_event.window.data2;
+          SDL_GL_GetDrawableSize(sdl_window, &gl_w, &gl_h);
           window->gl_w = gl_w;
           window->gl_h = gl_h;
-          glViewport(0, 0, gl_w, gl_h);
+          glViewport(0, 0, window->gl_w, window->gl_h);
         }
         break;
       default:
@@ -239,11 +247,15 @@ bool window_sdl2_run (s_window_sdl2 *window)
       warnx("window_sdl2_run: window->render -> false");
       quit = 1;
     }
-    SDL_GL_SwapWindow(window->sdl_window);
+    SDL_GL_SwapWindow(sdl_window);
   }
   SDL_GL_DeleteContext(context);
-  SDL_DestroyWindow(window->sdl_window);
+  SDL_DestroyWindow(sdl_window);
   return true;
+ ko:
+  SDL_GL_DeleteContext(context);
+  SDL_DestroyWindow(sdl_window);
+  return false;
 }
 
 s_sequence * window_sdl2_sequence_init

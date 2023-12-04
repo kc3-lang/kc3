@@ -64,7 +64,7 @@ typedef bool (*f_window_sdl2_sequence_render) (s_sequence *seq,
 struct sdl2_font {
   FTGLfont *ftgl_font;
   u32 size;
-  u32 resolution;
+  u32 dpi;
   s_str path;
   s_str real_path;
 };

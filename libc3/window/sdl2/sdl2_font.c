@@ -42,15 +42,17 @@ s_sdl2_font * sdl2_font_init (s_sdl2_font *font, const s8 *path)
     return NULL;
   }
   font->size = 0;
-  font->resolution = 72;
+  font->dpi = 72;
   return font;
 }
 
-void sdl2_font_set_size (const s_sdl2_font *font, uw size)
+void sdl2_font_set_size (s_sdl2_font *font, u32 size, u32 dpi)
 {
   assert(font);
   assert(size);
-  ftglSetFontFaceSize(font->ftgl_font, size, font->resolution);
+  ftglSetFontFaceSize(font->ftgl_font, size, dpi);
+  font->size = size;
+  font->dpi = dpi;
 }
 
 void sdl2_font_render_text (const s_sdl2_font *font, const s8 *p)
