@@ -17,8 +17,9 @@
 #include "../window_sdl2.h"
 #include "../sdl2_font.h"
 #include "bg_rect.h"
+#include "lightspeed.h"
 
-#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 1
+#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 2
 
 //static s_sdl2_font g_font_computer_modern;
 static s_sdl2_font g_font_courier_new;
@@ -129,10 +130,10 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   window_sdl2_sequence_init(window->sequence, 8.0,
                             "01. Background rectangles",
                             bg_rect_load, bg_rect_render);
-  /*
   window_sdl2_sequence_init(window->sequence + 1, 20.0,
                             "02. Lightspeed",
                             lightspeed_load, lightspeed_render);
+  /*
   if (! sdl2_sprite_init(&g_toaster_sprite,
                          sdl2_png_1("img/flaps.png"),
                          4, 1, 4))
@@ -220,7 +221,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
           12 + 2);
   /* fps */
   s8 fps[32];
-  snprintf(fps, sizeof(fps), "%f", (f64) seq->frame / seq->t);
+  snprintf(fps, sizeof(fps), "%.2f", (f64) seq->frame / seq->t);
   render_text(&g_font_courier_new, 20, window->h - 30, fps);
   return true;
 }
