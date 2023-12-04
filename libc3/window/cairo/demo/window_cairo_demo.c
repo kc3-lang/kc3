@@ -18,8 +18,8 @@
 #include <xkbcommon/xkbcommon.h>
 #include "../../window.h"
 #include "../window_cairo.h"
-#include "../cairo_png.h"
 #include "../cairo_sprite.h"
+#include "../cairo_surface.h"
 #include "window_cairo_demo.h"
 #include "bg_rect.h"
 #include "lightspeed.h"
