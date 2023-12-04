@@ -38,12 +38,13 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="-I../../../libffi/include -I../../.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-LDFLAGS="--shared -no-undefined ${LDFLAGS}"
+LDFLAGS="--shared ${LDFLAGS}"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 pkg_config cairo
 pkg_config freetype2
+config_lib IL -lIL -lILU
 pkg_config libbsd-overlay
 pkg_config xkbcommon
 config_lib_have COCOA -framework Cocoa

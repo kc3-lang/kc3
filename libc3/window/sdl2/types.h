@@ -81,7 +81,9 @@ struct sdl2_sprite {
   uw frame_count;
   uw w;
   uw h;
-  GLuint *gl_textures;
+  uw tex_w;
+  uw tex_h;
+  GLuint *texture;
 };
 
 struct rgb {

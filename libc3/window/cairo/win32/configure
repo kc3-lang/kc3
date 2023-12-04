@@ -43,7 +43,7 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="-I../../../../libffi/include -I../../../.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-LDFLAGS="--shared -no-undefined ${LDFLAGS}"
+LDFLAGS="--shared $LDFLAGS"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu

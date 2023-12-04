@@ -47,16 +47,11 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.lo "$OBJC_SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
-# Default config
-CPPFLAGS="${CPPFLAGS:-}"
-ENV_CFLAGS="${CFLAGS:-}"
-DEFAULT_CFLAGS="-O2 -pipe -fPIC"
-LDFLAGS="${LDFLAGS:-}"
-LIBS="${LIBS:-}"
-
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 CPPFLAGS="$CPPFLAGS -I../../../../libffi/include -I../../../.."
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+LDFLAGS="--shared $LDFLAGS"
+LIBS="$LIBS"
 config_asan
 config_gnu
 pkg_config cairo
@@ -83,6 +78,7 @@ LOCAL_LIBS_DEBUG="../libc3_window_cairo_debug.la"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
+DEFAULT_CFLAGS="-O2 -pipe"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
