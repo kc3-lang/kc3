@@ -19,7 +19,7 @@
 /* stack allocation compatible functions */
 void             cairo_sprite_clean (s_cairo_sprite *sprite);
 s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
-                                    cairo_surface_t *surface,
+                                    const s8 *path,
                                     uw dim_x, uw dim_y,
                                     uw frame_count);
 

@@ -22,6 +22,8 @@
 #include <cairo-ft.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include <IL/il.h>
+#include <IL/ilu.h>
 #include <libc3/types.h>
 #include "../types.h"
 
@@ -68,6 +70,8 @@ struct cairo_font {
 };
 
 struct cairo_sprite {
+  s_str path;
+  s_str real_path;
   uw total_w;
   uw total_h;
   uw dim_x;
@@ -75,7 +79,7 @@ struct cairo_sprite {
   uw frame_count;
   uw w;
   uw h;
-  cairo_surface_t *surface;
+  cairo_surface_t **surface;
 };
 
 struct rgb {

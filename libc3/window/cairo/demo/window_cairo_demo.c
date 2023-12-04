@@ -19,7 +19,6 @@
 #include "../../window.h"
 #include "../window_cairo.h"
 #include "../cairo_sprite.h"
-#include "../cairo_surface.h"
 #include "window_cairo_demo.h"
 #include "bg_rect.h"
 #include "lightspeed.h"
@@ -80,23 +79,19 @@ bool window_cairo_demo_load (s_window_cairo *window)
   window_cairo_sequence_init(window->sequence + 1, 20.0,
                              "02. Lightspeed",
                              lightspeed_load, lightspeed_render);
-  if (! cairo_sprite_init(&g_toaster_sprite,
-                          cairo_png_1("img/flaps.png"),
+  if (! cairo_sprite_init(&g_toaster_sprite, "img/flaps.png",
                           4, 1, 4))
     return false;
-  if (! cairo_sprite_init(&g_toast_sprite,
-                          cairo_png_1("img/toast.png"),
+  if (! cairo_sprite_init(&g_toast_sprite, "img/toast.png",
                           1, 1, 1))
     return false;
   window_cairo_sequence_init(window->sequence + 2, 60.0,
                              "03. Toasters",
                              toasters_load, toasters_render);
-  if (! cairo_sprite_init(&g_fly_sprite,
-                          cairo_png_1("img/fly-noto.png"),
+  if (! cairo_sprite_init(&g_fly_sprite, "img/fly-noto.png",
                           1, 1, 1))
     return false;
-  if (! cairo_sprite_init(&g_dead_fly_sprite,
-                          cairo_png_1("img/fly-dead.png"),
+  if (! cairo_sprite_init(&g_dead_fly_sprite, "img/fly-dead.png",
                           1, 1, 1))
     return false;
   window_cairo_sequence_init(window->sequence + 3, 60.0,

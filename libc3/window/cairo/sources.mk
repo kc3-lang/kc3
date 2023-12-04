@@ -2,13 +2,11 @@
 HEADERS = \
 	cairo_font.h \
 	cairo_sprite.h \
-	cairo_surface.h \
 	types.h \
 	window_cairo.h \
 
 SOURCES = \
 	cairo_font.c \
 	cairo_sprite.c \
-	cairo_surface.c \
 	window_cairo.c \
 

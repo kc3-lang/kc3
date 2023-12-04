@@ -41,8 +41,10 @@ void ilClean (void)
 void sdl2_sprite_clean (s_sdl2_sprite *sprite)
 {
   assert(sprite);
-  (void) sprite;
-  // TODO
+  str_clean(&sprite->path);
+  str_clean(&sprite->real_path);
+  glDeleteTextures(sprite->frame_count, sprite->texture);
+  free(sprite->texture);
 }
 
 s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
@@ -51,9 +53,9 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
                                   uw frame_count)
 {
   //ILint bpp;
-  ILubyte *data;
+  ILubyte *data[3];
   uw i;
-  ILuint il_images[2];
+  ILuint il_image[3];
   uw x;
   uw y;
   assert(sprite);
@@ -68,8 +70,8 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
     return NULL;
   }
   ilEnsureInit();
-  ilGenImages(2, il_images);
-  ilBindImage(il_images[0]);
+  ilGenImages(3, il_image);
+  ilBindImage(il_image[0]);
   if (! ilLoadImage(sprite->path.ptr.ps8)) {
     warnx("sdl2_sprite_init: error loading image: %s",
           iluErrorString(ilGetError()));
@@ -85,20 +87,30 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   sprite->w = sprite->total_w / dim_x;
   sprite->h = sprite->total_h / dim_y;
   sprite->frame_count = frame_count ? frame_count : (dim_x * dim_y);
-  sprite->gl_textures = malloc(frame_count * sizeof(GLuint));
-  if (! sprite->gl_textures) {
-    warn("sdl2_sprite: sprite->gl_textures");
-    ilDeleteImages(2, il_images);
+  sprite->texture = malloc(frame_count * sizeof(GLuint));
+  if (! sprite->texture) {
+    warn("sdl2_sprite_init: sprite->texture");
+    ilDeleteImages(2, il_image);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
   }
-  glGenTextures(frame_count, sprite->gl_textures);
-  ilBindImage(il_images[1]);
-  ilTexImage(sprite->w, sprite->h, 1, 32, IL_RGBA, IL_UNSIGNED_BYTE,
+  glGenTextures(frame_count, sprite->texture);
+  ilBindImage(il_image[1]);
+  ilTexImage(sprite->w, sprite->h, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE,
              NULL);
-  data = ilGetData();
-  ilBindImage(il_images[0]);
+  data[1] = ilGetData();
+  ilBindImage(il_image[2]);
+  sprite->tex_w = 1;
+  while (sprite->tex_w < sprite->w)
+    sprite->tex_w *= 2;
+  sprite->tex_h = 1;
+  while (sprite->tex_h < sprite->h)
+    sprite->tex_h *= 2;
+  ilTexImage(sprite->tex_w, sprite->tex_h, 1, 4, IL_RGBA,
+             IL_UNSIGNED_BYTE, NULL);
+  data[2] = ilGetData();
+  ilBindImage(il_image[0]);
   i = 0;
   y = 0;
   while (i < sprite->frame_count && y < dim_y) {
@@ -106,13 +118,19 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
     while (i < sprite->frame_count && x < dim_x) {
       ilCopyPixels(x * sprite->w, y * sprite->h, 0,
                    sprite->w, sprite->h, 1, IL_RGBA, IL_UNSIGNED_BYTE,
-                   data);
-      glTexImage2D(
+                   data[1]);
+      iluImageParameter(ILU_FILTER, ILU_SCALE_MITCHELL);
+      ilBlit(il_image[1], 0, 0, 0, 0, 0, 0,
+             sprite->tex_w, sprite->tex_h, 1);
+      glBindTexture(GL_TEXTURE_2D, sprite->texture[i]);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                   sprite->tex_w, sprite->tex_h, 0, GL_RGBA,
+                   GL_UNSIGNED_BYTE, data[2]);
       i++;
       x++;
     }
     y++;
   }
-  ilDeleteImages(2, il_images);
+  ilDeleteImages(3, il_image);
   return sprite;
 }
