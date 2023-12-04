@@ -75,8 +75,11 @@ bool lightspeed_render (s_sequence *seq, s_window_sdl2 *window,
   //glTranslatef(1.0f, 1.0f, 0.0f);
   glClearColor(0, 0, 0, 1);
   glClear(GL_COLOR_BUFFER_BIT);
-  glLineWidth(0.004);
-  glColor3f(1, 1, 1);
+  glLineWidth(2);
+  glColor4f(1, 1, 1, 0.7f);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_LINE_SMOOTH);
   glBegin(GL_LINES);
   i = 0;
   while (i < LIGHTSPEED_STARS) {
