@@ -24,6 +24,7 @@ int main (int argc, char **argv)
     err_puts("c3_init");
     return 1;
   }
+  c3_window_cairo_init();
   window_cairo_init(&window, 0, 0, 800, 600,
                     "C3.Window.Cairo.XCB demo",
                     WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
@@ -37,6 +38,7 @@ int main (int argc, char **argv)
     c3_clean(NULL);
     return g_c3_exit_code;
   }
+  c3_window_cairo_clean();
   c3_clean(NULL);
   return 0;
 }

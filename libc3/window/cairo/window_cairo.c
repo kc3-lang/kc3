@@ -16,6 +16,14 @@
 #include <libc3/tag.h>
 #include "window_cairo.h"
 
+void c3_window_cairo_clean (void)
+{
+}
+
+void c3_window_cairo_init (void)
+{
+}
+
 s_window_cairo * window_cairo_init (s_window_cairo *window,
                                     sw x, sw y, uw w, uw h,
                                     const s8 *title,

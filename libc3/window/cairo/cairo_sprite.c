@@ -15,28 +15,6 @@
 #include <libc3/c3.h>
 #include "cairo_sprite.h"
 
-bool g_il_is_loaded = false;
-
-static void ilEnsureInit (void)
-{
-  if (! g_il_is_loaded) {
-    ilInit();
-    iluInit();
-    g_il_is_loaded = true;
-  }
-}
-
-void ilClean (void)
-{
-  /*
-  if (g_il_is_loaded) {
-    iluDestroy();
-    ilDestroy();
-    g_il_is_loaded = false;
-  }
-  */
-}
-
 void cairo_sprite_blit (const s_cairo_sprite *sprite, uw frame,
                         cairo_t *cr, uw x, uw y)
 {
@@ -69,9 +47,14 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
   assert(sprite);
   assert(dim_x);
   assert(dim_y);
-    ILubyte *data;
+  u8 *dest_data;
+  uw  dest_stride;
   uw i;
-  ILuint il_image[2];
+  cairo_surface_t *src;
+  u8              *src_data;
+  uw               src_stride;
+  uw u;
+  uw v;
   uw x;
   uw y;
   assert(sprite);
@@ -84,18 +67,16 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
     str_clean(&sprite->path);
     return NULL;
   }
-  ilEnsureInit();
-  ilGenImages(2, il_image);
-  ilBindImage(il_image[0]);
-  if (! ilLoadImage(sprite->path.ptr.ps8)) {
+  src = cairo_image_surface_create_from_png(sprite->real_path.ptr.ps8);
+  if (! src) {
     warnx("cairo_sprite_init: error loading image: %s",
-          iluErrorString(ilGetError()));
+          sprite->real_path.ptr.ps8);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
   }
-  sprite->total_w = ilGetInteger(IL_IMAGE_WIDTH);
-  sprite->total_h = ilGetInteger(IL_IMAGE_HEIGHT);
+  sprite->total_w = cairo_image_surface_get_width(src);
+  sprite->total_h = cairo_image_surface_get_height(src);
   sprite->dim_x = dim_x;
   sprite->dim_y = dim_y;
   sprite->w = sprite->total_w / dim_x;
@@ -104,7 +85,7 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
   sprite->surface = calloc(frame_count, sizeof(cairo_surface_t *));
   if (! sprite->surface) {
     warn("cairo_sprite_init: sprite->surface");
-    ilDeleteImages(2, il_image);
+    cairo_surface_destroy(src);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
@@ -114,21 +95,39 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
   while (i < sprite->frame_count && y < dim_y) {
     x = 0;
     while (i < sprite->frame_count && x < dim_x) {
-      ilBindImage(il_image[1]);
-      ilTexImage(sprite->w, sprite->h, 1, 32, IL_RGBA, IL_UNSIGNED_BYTE,
-                 NULL);
-      data = ilGetData();
-      ilBindImage(il_image[0]);
-      ilCopyPixels(x * sprite->w, y * sprite->h, 0,
-                   sprite->w, sprite->h, 1, IL_RGBA, IL_UNSIGNED_BYTE,
-                   data);
-      sprite->surface[i] = cairo_image_surface_create_for_data
-        (data, CAIRO_FORMAT_ARGB32, sprite->w, sprite->h, sprite->w * 4);
+      src_data = cairo_image_surface_get_data(src);
+      src_stride = cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32,
+                                                 sprite->total_w);
+      dest_stride =
+        cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, sprite->w);
+      dest_data = malloc(sprite->h * dest_stride);
+      sprite->surface[i] =
+        cairo_image_surface_create_for_data(dest_data,
+                                            CAIRO_FORMAT_ARGB32,
+                                            sprite->w, sprite->h,
+                                            dest_stride);
+      v = 0;
+      while (v < sprite->h) {
+        u = 0;
+        while (u < sprite->w) {
+          u8 *dest_pixel = dest_data + v * dest_stride +
+            u * 4;
+          u8 *src_pixel = src_data +
+            (y * sprite->h + v) * src_stride +
+            (x * sprite->w + u) * 4;
+          dest_pixel[0] = src_pixel[0];
+          dest_pixel[1] = src_pixel[1];
+          dest_pixel[2] = src_pixel[2];
+          dest_pixel[3] = src_pixel[3];
+          u++;
+        }
+        v++;
+      }
       i++;
       x++;
     }
     y++;
   }
-  ilDeleteImages(2, il_image);
+  cairo_surface_destroy(src);
   return sprite;
 }
