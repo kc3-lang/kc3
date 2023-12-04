@@ -28,14 +28,14 @@ bool bg_rect_render (s_sequence *seq, s_window_cairo *window,
 {
 #define C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX 8
   const s_rgb color[C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX] = {
-    {1, 1, 1},
+    {0, 0, 0},
     {1, 0, 0},
     {1, 1, 0},
     {0, 1, 0},
     {0, 1, 1},
     {0, 0, 1},
     {1, 0, 1},
-    {0, 0, 0}
+    {1, 1, 1}
   };
   u8 c1;
   u8 c2;

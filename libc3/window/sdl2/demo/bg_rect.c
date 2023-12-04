@@ -30,14 +30,14 @@ bool bg_rect_render (s_sequence *seq, s_window_sdl2 *window,
   (void) window;
 #define BG_RECT_COLOR_MAX 8
   const s_rgb color[BG_RECT_COLOR_MAX] = {
-    {1, 1, 1},
+    {0, 0, 0},
     {1, 0, 0},
     {1, 1, 0},
     {0, 1, 0},
     {0, 1, 1},
     {0, 0, 1},
     {1, 0, 1},
-    {0, 0, 0}
+    {1, 1, 1}
   };
   u8 c1;
   u8 c2;
