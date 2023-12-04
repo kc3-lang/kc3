@@ -44,7 +44,8 @@ config_asan
 config_gnu
 pkg_config cairo
 pkg_config freetype2
-config_lib IL -lIL -lILU
+#config_lib IL -lIL -lILU
+config_lib FREEIMAGE -lfreeimage
 pkg_config libbsd-overlay
 pkg_config xkbcommon
 config_lib_have COCOA -framework Cocoa

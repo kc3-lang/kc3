@@ -24,6 +24,7 @@ int main (int argc, s8 **argv)
   s_window_cairo window;
   if (! c3_init(NULL, argc, argv))
     return 1;
+  c3_window_cairo_init();
   window_cairo_init(&window, 0, 0, 800, 600,
                     "C3.Window.Cairo.Quartz demo",
                     WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
@@ -34,6 +35,7 @@ int main (int argc, s8 **argv)
   window.resize = window_cairo_demo_resize;
   if (! window_cairo_quartz_run(&window))
     r = g_c3_exit_code;
+  c3_window_cairo_clean();
   c3_clean(NULL);
   return r;
 }

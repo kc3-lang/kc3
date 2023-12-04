@@ -18,9 +18,12 @@
 #include "../../c3_window_cairo_demo.h"
 #include "../window_cairo_win32.h"
 
-int main (void)
+int main (int argc, char **argv)
 {
   s_window_cairo window;
+  if (! c3_init(NULL, argc, argv))
+    return 1;
+  c3_window_cairo_init();
   window_cairo_init(&window, 0, 0, 800, 600,
                     "C3.Window.Cairo.Win32 demo",
                     LIBC3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
@@ -31,5 +34,7 @@ int main (void)
   window.resize = c3_window_cairo_demo_resize;
   if (! window_cairo_win32_run(&window))
     return g_c3_exit_code;
+  c3_window_cairo_clean();
+  c3_clean(NULL);
   return 0;
 }

@@ -15,6 +15,11 @@
 
 #include "types.h"
 
+/* Library functions, call c3_window_cairo_init at program start,
+   and c3_window_cairo_clean at program end. */
+void c3_window_cairo_clean (void);
+void c3_window_cairo_init (void);
+
 s_window_cairo * window_cairo_init (s_window_cairo *window,
                                     sw x, sw y, uw w, uw h,
                                     const s8 *title,
