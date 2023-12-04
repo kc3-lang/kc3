@@ -83,5 +83,6 @@ bool lightspeed_render (s_sequence *seq, s_window_sdl2 *window,
     star_render(seq->tag.data.tuple.tag + i, seq);
     i++;
   }
+  glEnd();
   return true;
 }
