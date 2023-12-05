@@ -268,7 +268,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexImage2D(GL_TEXTURE_2D, 0, gl_format, sprite->w, sprite->h,
                    0, gl_format, gl_type, data);
-      glGenerateMipmap(GL_TEXTURE_2D);
+      //glGenerateMipmap(GL_TEXTURE_2D);
       gl_error = glGetError();
       if (gl_error != GL_NO_ERROR) {
         warnx("sdl2_sprite_init: %s: glTexImage2D: %s\n",
