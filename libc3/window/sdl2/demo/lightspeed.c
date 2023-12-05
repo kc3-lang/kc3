@@ -14,7 +14,7 @@
 #include "lightspeed.h"
 
 #define LIGHTSPEED_STAR_MAX        1024 * 1024
-#define LIGHTSPEED_STAR_PROBABILITY       0.01
+#define LIGHTSPEED_STAR_PROBABILITY       0.005
 
 static void star_init (s_tag *star)
 {
