@@ -252,18 +252,23 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   while (i < sprite->frame_count && y < dim_y) {
     x = 0;
     while (i < sprite->frame_count && x < dim_x) {
-      sprite_data = data;
+      sprite_data = data + sprite_stride * sprite->h;
       v = 0;
       while (v < sprite->h) {
+        sprite_data -= sprite_stride;
         memcpy(sprite_data,
                png_row[y * sprite->h + v] + x * sprite_stride,
                sprite_stride);
-        sprite_data += sprite_stride;
         v++;
       }
       glBindTexture(GL_TEXTURE_2D, sprite->texture[i]);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexImage2D(GL_TEXTURE_2D, 0, gl_format, sprite->w, sprite->h,
                    0, gl_format, gl_type, data);
+      glGenerateMipmap(GL_TEXTURE_2D);
       gl_error = glGetError();
       if (gl_error != GL_NO_ERROR) {
         warnx("sdl2_sprite_init: %s: glTexImage2D: %s\n",
@@ -287,18 +292,19 @@ void sdl2_sprite_render (const s_sdl2_sprite *sprite,
   assert(sprite);
   assert(frame < sprite->frame_count);
   frame %= sprite->frame_count;
-  (void) frame;
   glColor4f(1, 1, 1, 1);
   glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, 0); //sprite->texture[frame]);
-  glBegin(GL_QUADS);
-  glTexCoord2f(0, 0);
-  glVertex2i(0, 0);
-  glTexCoord2f(0, 1);
-  glVertex2d(0, sprite->h);
-  glTexCoord2f(1, 1);
-  glVertex2d(sprite->w, sprite->h);  
-  glTexCoord2f(1, 0);
-  glVertex2i(sprite->w, 0);
-  glEnd();
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBindTexture(GL_TEXTURE_2D, sprite->texture[frame]);
+  glBegin(GL_QUADS); {
+    glTexCoord2f(0, 0);
+    glVertex2i(0, 0);
+    glTexCoord2f(0, 1);
+    glVertex2d(0, sprite->h);
+    glTexCoord2f(1, 1);
+    glVertex2d(sprite->w, sprite->h);  
+    glTexCoord2f(1, 0);
+    glVertex2i(sprite->w, 0);
+  } glEnd();
 }
