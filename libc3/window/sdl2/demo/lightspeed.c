@@ -67,6 +67,7 @@ bool lightspeed_render (s_sequence *seq, s_window_sdl2 *window,
   uw i;
   (void) window;
   (void) context;
+  glDisable(GL_TEXTURE_2D);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glMatrixMode(GL_MODELVIEW);

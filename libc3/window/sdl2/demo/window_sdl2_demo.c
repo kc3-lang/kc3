@@ -16,10 +16,12 @@
 #include "../../window.h"
 #include "../window_sdl2.h"
 #include "../sdl2_font.h"
+#include "../sdl2_sprite.h"
 #include "bg_rect.h"
 #include "lightspeed.h"
+#include "toasters.h"
 
-#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 2
+#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 3
 
 //static s_sdl2_font g_font_computer_modern;
 static s_sdl2_font g_font_courier_new;
@@ -133,29 +135,25 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   window_sdl2_sequence_init(window->sequence + 1, 20.0,
                             "02. Lightspeed",
                             lightspeed_load, lightspeed_render);
-  /*
-  if (! sdl2_sprite_init(&g_toaster_sprite,
-                         sdl2_png_1("img/flaps.png"),
+  if (! sdl2_sprite_init(&g_toaster_sprite, "img/flaps.png",
                          4, 1, 4))
     return false;
-  if (! sdl2_sprite_init(&g_toast_sprite,
-                          sdl2_png_1("img/toast.png"),
-                          1, 1, 1))
+  if (! sdl2_sprite_init(&g_toast_sprite, "img/toast.png",
+                         1, 1, 1))
     return false;
   window_sdl2_sequence_init(window->sequence + 2, 60.0,
-                             "03. Toasters",
-                             toasters_load, toasters_render);
-  if (! sdl2_sprite_init(&g_fly_sprite,
-                          sdl2_png_1("img/fly-noto.png"),
-                          1, 1, 1))
+                            "03. Toasters",
+                            toasters_load, toasters_render);
+  /*
+  if (! sdl2_sprite_init(&g_fly_sprite, "img/fly-noto.png",
+                         1, 1, 1))
     return false;
-  if (! sdl2_sprite_init(&g_dead_fly_sprite,
-                          sdl2_png_1("img/fly-dead.png"),
-                          1, 1, 1))
+  if (! sdl2_sprite_init(&g_dead_fly_sprite, "img/fly-dead.png",
+                         1, 1, 1))
     return false;
   window_sdl2_sequence_init(window->sequence + 3, 60.0,
-                             "04. Flies",
-                             flies_load, flies_render);
+                            "04. Flies",
+                            flies_load, flies_render);
   */
   window_set_sequence_pos((s_window *) window, 0);
   return true;
@@ -212,6 +210,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   render_text(&g_font_courier_new, 20.0f, 30.0f, seq->title);
   /* progress bar */
   glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+  glDisable(GL_TEXTURE_2D);
   glRectd(19, 11,
           19 + (window->w - 40.0) * seq->t / seq->duration + 2,
           11 + 4);

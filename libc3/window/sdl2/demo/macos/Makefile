@@ -25,11 +25,15 @@ IMG_SOURCES = \
 	../../../../../img/fly-noto.png \
 	../../../../../img/toast.png \
 
+FONT_SOURCES = \
+	../../../../../fonts/Courier\ New \
+
 build:
 	${MAKE} ${APP_PROG}
 	${MAKE} ${APP}/Contents/Frameworks
 	rsync -aP --delete ../../../../../lib ${APP}/Contents/
 	rsync -aP ${IMG_SOURCES} ${APP}/Contents/img/
+	rsync -aP ${FONT_SOURCES} ${APP}/Contents/fonts/
 
 all:
 	${MAKE} build
@@ -42,6 +46,7 @@ asan:
 	${MAKE} ${APP_ASAN}/Contents/Frameworks
 	rsync -aP --delete ../../../../../lib ${APP_ASAN}/Contents/
 	rsync -aP ${IMG_SOURCES} ${APP_ASAN}/Contents/img/
+	rsync -aP ${FONT_SOURCES} ${APP_ASAN}/Contents/fonts/
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -54,12 +59,14 @@ cov:
 	${MAKE} ${APP_COV}/Contents/Frameworks
 	rsync -aP --delete ../../../../../lib ${APP_COV}/Contents/
 	rsync -aP ${IMG_SOURCES} ${APP_COV}/Contents/img/
+	rsync -aP ${FONT_SOURCES} ${APP_COV}/Contents/fonts/
 
 debug:
 	${MAKE} ${APP_PROG_DEBUG}
 	${MAKE} ${APP_DEBUG}/Contents/Frameworks
 	rsync -aP --delete ../../../../../lib ${APP_DEBUG}/Contents/
 	rsync -aP ${IMG_SOURCES} ${APP_DEBUG}/Contents/img/
+	rsync -aP ${FONT_SOURCES} ${APP_DEBUG}/Contents/fonts/
 
 demo: build
 	time ${APP_PROG}
