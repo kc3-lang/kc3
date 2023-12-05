@@ -13,18 +13,23 @@
 #include <libc3/c3.h>
 #include "lightspeed.h"
 
+#define LIGHTSPEED_STAR_MAX        1024 * 1024
+#define LIGHTSPEED_STAR_PROBABILITY       0.01
+
 static void star_init (s_tag *star)
 {
   f64 x;
   f64 y;
   f64_random(&x);
   f64_random(&y);
-  tag_init_map(star, 3);
-  tag_init_sym(star->data.map.keys, sym_1("speed"));
-  tag_init_f64(star->data.map.values, 0.0);
-  tag_init_sym(star->data.map.keys + 1, sym_1("x"));
+  if (star->type != TAG_MAP || star->data.map.count != 3) {
+    tag_map(star, 3);
+    tag_init_sym(star->data.map.keys   + 0, sym_1("speed"));
+    tag_init_sym(star->data.map.keys   + 1, sym_1("x"));
+    tag_init_sym(star->data.map.keys   + 2, sym_1("y"));
+  }
+  tag_init_f64(star->data.map.values + 0, 0.0);
   tag_init_f64(star->data.map.values + 1, 2.0 * x - 1.0);
-  tag_init_sym(star->data.map.keys + 2, sym_1("y"));
   tag_init_f64(star->data.map.values + 2, 2.0 * y - 1.0);
 }
 
@@ -34,6 +39,8 @@ static void star_render (s_tag *star, s_sequence *seq)
   f64 *speed;
   f64 *x;
   f64 *y;
+  if (star->type != TAG_MAP || star->data.map.count < 3)
+    star_init(star);
   speed = &star->data.map.values[0].data.f64;
   x = &star->data.map.values[1].data.f64;
   y = &star->data.map.values[2].data.f64;
@@ -51,10 +58,14 @@ static void star_render (s_tag *star, s_sequence *seq)
 bool lightspeed_load (s_sequence *seq, s_window_sdl2 *window)
 {
   uw i;
+  uw star_count;
   (void) window;
-  tag_tuple(&seq->tag, LIGHTSPEED_STARS);
+  tag_tuple(&seq->tag, LIGHTSPEED_STAR_MAX);
+  star_count = window->w * window->h * LIGHTSPEED_STAR_PROBABILITY;
+  if (star_count > LIGHTSPEED_STAR_MAX)
+    star_count = LIGHTSPEED_STAR_MAX;
   i = 0;
-  while (i < LIGHTSPEED_STARS) {
+  while (i < star_count) {
     star_init(seq->tag.data.tuple.tag + i);
     i++;
   }
@@ -65,6 +76,7 @@ bool lightspeed_render (s_sequence *seq, s_window_sdl2 *window,
                         void *context)
 {
   uw i;
+  uw star_count;
   (void) window;
   (void) context;
   glDisable(GL_TEXTURE_2D);
@@ -82,8 +94,11 @@ bool lightspeed_render (s_sequence *seq, s_window_sdl2 *window,
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_LINE_SMOOTH);
   glBegin(GL_LINES);
+  star_count = window->w * window->h * LIGHTSPEED_STAR_PROBABILITY;
+  if (star_count > LIGHTSPEED_STAR_MAX)
+    star_count = LIGHTSPEED_STAR_MAX;
   i = 0;
-  while (i < LIGHTSPEED_STARS) {
+  while (i < star_count) {
     star_render(seq->tag.data.tuple.tag + i, seq);
     i++;
   }
