@@ -54,7 +54,8 @@ static void toast_render (s_tag *toast, s_window_sdl2 *window,
       return;
     }
     glPushMatrix();
-    glTranslated(*x, *y, 0.0);
+    glTranslated(*x, *y + g_toast_sprite.h, 0.0);
+    glScalef(1, -1, 1);
     sdl2_sprite_render(&g_toast_sprite, 0);
     glPopMatrix();
   }
@@ -86,7 +87,8 @@ static void toaster_render (s_tag *toaster, s_window_sdl2 *window,
       return;
     }
     glPushMatrix();
-    glTranslated(*x, *y, 0.0);
+    glTranslated(*x, *y + g_toaster_sprite.h, 0.0);
+    glScalef(1, -1, 1);
     sdl2_sprite_render(&g_toaster_sprite,
                        fmod(seq->t * g_toaster_sprite.frame_count,
                             g_toaster_sprite.frame_count));
@@ -116,7 +118,9 @@ bool toasters_render (s_sequence *seq, s_window_sdl2 *window,
   (void) context;
   glClearColor(0.7f, 0.95f, 1.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
-  glEnable(GL_TEXTURE_2D);
+  glPushMatrix();
+  glTranslated(0, window->h, 0);
+  glScalef(1, -1, 1);
   /* io_inspect(&seq->tag); */
   if (seq->tag.type == TAG_MAP) {
     toasters = &seq->tag.data.map.values[0].data.list;
@@ -124,6 +128,7 @@ bool toasters_render (s_sequence *seq, s_window_sdl2 *window,
     toasters_render_toasts(toasts, window, seq);
     toasters_render_toasters(toasters, window, seq);
   }
+  glPopMatrix();
   return true;
 }
 
