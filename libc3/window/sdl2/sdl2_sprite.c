@@ -16,28 +16,6 @@
 #include <libc3/c3.h>
 #include "sdl2_sprite.h"
 
-bool g_il_is_loaded = false;
-
-static void ilEnsureInit (void)
-{
-  if (! g_il_is_loaded) {
-    ilInit();
-    iluInit();
-    g_il_is_loaded = true;
-  }
-}
-
-void ilClean (void)
-{
-  /*
-  if (g_il_is_loaded) {
-    iluDestroy();
-    ilDestroy();
-    g_il_is_loaded = false;
-  }
-  */
-}
-
 void sdl2_sprite_clean (s_sdl2_sprite *sprite)
 {
   assert(sprite);
@@ -52,10 +30,10 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
                                   uw dim_x, uw dim_y,
                                   uw frame_count)
 {
-  //ILint bpp;
-  ILubyte *data[3];
+  FILE *fp;
   uw i;
-  ILuint il_image[3];
+  png_infop png_info;
+  png_structp png_read;
   uw x;
   uw y;
   assert(sprite);
@@ -64,21 +42,37 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   assert(dim_y);
   str_init_copy_1(&sprite->path, path);
   if (! file_search(&sprite->path, sym_1("r"), &sprite->real_path)) {
-    warnx("sdl2_sprite_init:"
-          " file not found: %s", path);
+    warnx("sdl2_sprite_init: file not found: %s", path);
     str_clean(&sprite->path);
     return NULL;
   }
-  ilEnsureInit();
-  ilGenImages(3, il_image);
-  ilBindImage(il_image[0]);
-  if (! ilLoadImage(sprite->path.ptr.ps8)) {
-    warnx("sdl2_sprite_init: error loading image: %s",
-          iluErrorString(ilGetError()));
+  fp = fopen(sprite->real_path.ptr.ps8, "rb");
+  if (! fp) {
+    warn("sdl2_sprite_init: %s", sprite->real_path.ptr.ps8);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
   }
+  if (fread(png_header, 1, sizeof(png_header), fp) !=
+      sizeof(png_header)) {
+    warn("sdl2_sprite_init: %s", sprite->real_path.ptr.ps8);
+    fclose(fp);
+    str_clean(&sprite->path);
+    str_clean(&sprite->real_path);
+    return NULL;
+  }
+  if (png_sig_cmp(png_header, 0, sizeof(png_header))) {
+    warn("sdl2_sprite_init: %s: not a png", sprite->real_path.ptr.ps8);
+    fclose(fp);
+    str_clean(&sprite->path);
+    str_clean(&sprite->real_path);
+    return NULL;
+  }
+  png_read = png_create_read_struct
+    (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+
+   if (!png_ptr)
+     return ERROR;
   sprite->total_w = ilGetInteger(IL_IMAGE_WIDTH);
   sprite->total_h = ilGetInteger(IL_IMAGE_HEIGHT);
   //bpp = ilGetInteger(IL_IMAGE_BPP);
