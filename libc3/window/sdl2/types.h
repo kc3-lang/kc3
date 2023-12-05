@@ -22,8 +22,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <FTGL/ftgl.h>
-#include <IL/il.h>
-#include <IL/ilu.h>
+#include <png.h>
 #include <libc3/types.h>
 #include "../types.h"
 
