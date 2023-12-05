@@ -110,8 +110,6 @@ bool window_sdl2_resize_default (s_window_sdl2 *window, uw w, uw h)
 bool window_sdl2_run (s_window_sdl2 *window)
 {
   SDL_GLContext context;
-  //s32 gl_w;
-  //s32 gl_h;
   int quit = 0;
   SDL_Event sdl_event;
   SDL_Window *sdl_window;

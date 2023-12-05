@@ -25,57 +25,62 @@ void sdl2_sprite_clean (s_sdl2_sprite *sprite)
   free(sprite->texture);
 }
 
-static GLenum png_info_to_gl_format (int png_color_type,
-                                     int png_bit_depth)
+static bool png_info_to_gl_info (s32 png_color_type,
+                                 s32 png_bit_depth,
+                                 GLenum *gl_format,
+                                 GLint  *gl_internal_format,
+                                 GLenum *gl_type,
+                                 u8 *components)
 {
+  switch (png_bit_depth) {
+  case 8:  *gl_type = GL_UNSIGNED_BYTE;  break;
+  case 16: *gl_type = GL_UNSIGNED_SHORT; break;
+  default: *gl_type = 0; return false;
+  }
   switch (png_color_type) {
   case PNG_COLOR_TYPE_GRAY:
+    *components = 1;
+    *gl_format = GL_LUMINANCE;
     switch (png_bit_depth) {
-    case 8:  return GL_LUMINANCE8;
-    case 16: return GL_LUMINANCE16;
+    case 8:  *gl_internal_format = GL_LUMINANCE8;  break;
+    case 16: *gl_internal_format = GL_LUMINANCE16; break;
+    default: *gl_internal_format = 0; return false;
     }
     break;
   case PNG_COLOR_TYPE_GRAY_ALPHA:
+    *components = 2;
+    *gl_format = GL_LUMINANCE_ALPHA;
     switch (png_bit_depth) {
-    case 8:  return GL_LUMINANCE8_ALPHA8;
-    case 16: return GL_LUMINANCE16_ALPHA16;
+    case 8:  *gl_internal_format = GL_LUMINANCE8_ALPHA8;  break;
+    case 16: *gl_internal_format = GL_LUMINANCE16_ALPHA16; break;
+    default: *gl_internal_format = 0; return false;
     }
     break;
   case PNG_COLOR_TYPE_RGB:
+    *components = 3;
+    *gl_format = GL_RGB;
     switch (png_bit_depth) {
-    case 8:
-      printf("GL_RGB8\n");
-      return GL_RGB8;
-    case 16:
-      printf("GL_RGB16\n");
-      return GL_RGB16;
+    case 8:  *gl_internal_format = GL_RGB8;  break;
+    case 16: *gl_internal_format = GL_RGB16; break;
+    default: *gl_internal_format = 0; return false;
     }
     break;
   case PNG_COLOR_TYPE_RGBA:
+    *components = 4;
+    *gl_format = GL_RGBA;
     switch (png_bit_depth) {
-    case 8:
-      printf("GL_RGBA8\n");
-      return GL_RGBA8;
-    case 16:
-      printf("GL_RGBA16\n");
-      return GL_RGBA16;
+    case 8:  *gl_internal_format = GL_RGBA8;  break;
+    case 16: *gl_internal_format = GL_RGBA16; break;
+    default: *gl_internal_format = 0; return false;
     }
     break;
+  default:
+    *components = 0;
+    *gl_format = 0;
+    *gl_internal_format = 0;
+    return false;
   }
-  return 0;
-}
-
-static GLenum png_info_to_gl_type (int png_bit_depth)
-{
-  switch (png_bit_depth) {
-  case 8:
-    printf("GL_UNSIGNED_BYTE\n");
-    return GL_UNSIGNED_BYTE;
-  case 16:
-    printf("GL_UNSIGNED_SHORT\n");
-    return GL_UNSIGNED_SHORT;
-  }
-  return 0;
+  return true;
 }
 
 s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
@@ -83,9 +88,11 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
                                   uw dim_x, uw dim_y,
                                   uw frame_count)
 {
+  u8 components;
   u8 *data;
   FILE *fp;
   GLenum gl_format;
+  GLint  gl_internal_format;
   GLenum gl_type;
   uw i;
   u8          png_header[8]; // maximum size is 8
@@ -203,10 +210,25 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
     str_clean(&sprite->real_path);
     return NULL;
   }
-  gl_format = png_info_to_gl_format(png_color_type, png_bit_depth);
-  if (! gl_format) {
-    warnx("sdl2_sprite_init: %s: unknown OpenGL format",
-          sprite->real_path.ptr.ps8);
+  glGenTextures(frame_count, sprite->texture);
+  GLenum gl_error = glGetError();
+  if (gl_error != GL_NO_ERROR) {
+    warnx("sdl2_sprite_init: %s: glGenTextures: %s\n",
+          sprite->real_path.ptr.ps8, gluErrorString(gl_error));
+    return NULL;
+  }
+  if (! png_info_to_gl_info(png_color_type, png_bit_depth, &gl_format,
+                            &gl_internal_format, &gl_type,
+                            &components)) {
+    if (! gl_format)
+      warnx("sdl2_sprite_init: %s: unknown PNG color type: %d",
+            sprite->real_path.ptr.ps8, png_color_type);
+    if (! gl_internal_format)
+      warnx("sdl2_sprite_init: %s: unknown OpenGL internal format",
+            sprite->real_path.ptr.ps8);
+    if (! gl_type)
+      warnx("sdl2_sprite_init: %s: unknown OpenGL type",
+            sprite->real_path.ptr.ps8);
     free(sprite->texture);
     png_destroy_read_struct(&png_read, &png_info, NULL);
     fclose(fp);
@@ -214,18 +236,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
     str_clean(&sprite->real_path);
     return NULL;
   }
-  gl_type = png_info_to_gl_type(png_bit_depth);
-  if (! gl_type) {
-    warnx("sdl2_sprite_init: %s: unknown OpenGL type",
-          sprite->real_path.ptr.ps8);
-    free(sprite->texture);
-    png_destroy_read_struct(&png_read, &png_info, NULL);
-    fclose(fp);
-    str_clean(&sprite->path);
-    str_clean(&sprite->real_path);
-    return NULL;
-  }
-  sprite_stride = sprite->w * (png_bit_depth / 8);
+  sprite_stride = sprite->w * (png_bit_depth / 8) * components;
   data = malloc(sprite->h * sprite_stride);
   if (! data) {
     warn("sdl2_sprite_init: %s", sprite->real_path.ptr.ps8);
@@ -253,6 +264,12 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
       glBindTexture(GL_TEXTURE_2D, sprite->texture[i]);
       glTexImage2D(GL_TEXTURE_2D, 0, gl_format, sprite->w, sprite->h,
                    0, gl_format, gl_type, data);
+      gl_error = glGetError();
+      if (gl_error != GL_NO_ERROR) {
+        warnx("sdl2_sprite_init: %s: glTexImage2D: %s\n",
+              sprite->real_path.ptr.ps8, gluErrorString(gl_error));
+        return NULL;
+      }
       i++;
       x++;
     }
@@ -270,9 +287,10 @@ void sdl2_sprite_render (const s_sdl2_sprite *sprite,
   assert(sprite);
   assert(frame < sprite->frame_count);
   frame %= sprite->frame_count;
+  (void) frame;
   glColor4f(1, 1, 1, 1);
   glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, sprite->texture[frame]);
+  glBindTexture(GL_TEXTURE_2D, 0); //sprite->texture[frame]);
   glBegin(GL_QUADS);
   glTexCoord2f(0, 0);
   glVertex2i(0, 0);
