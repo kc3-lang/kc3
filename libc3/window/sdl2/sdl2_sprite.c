@@ -293,18 +293,19 @@ void sdl2_sprite_render (const s_sdl2_sprite *sprite,
   assert(frame < sprite->frame_count);
   frame %= sprite->frame_count;
   glColor4f(1, 1, 1, 1);
-  glEnable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glDisable(GL_CULL_FACE);
+  glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, sprite->texture[frame]);
   glBegin(GL_QUADS); {
-    glTexCoord2f(0, 0);
-    glVertex2i(0, 0);
     glTexCoord2f(0, 1);
     glVertex2d(0, sprite->h);
-    glTexCoord2f(1, 1);
-    glVertex2d(sprite->w, sprite->h);  
+    glTexCoord2f(0, 0);
+    glVertex2i(0, 0);
     glTexCoord2f(1, 0);
     glVertex2i(sprite->w, 0);
+    glTexCoord2f(1, 1);
+    glVertex2d(sprite->w, sprite->h);  
   } glEnd();
 }
