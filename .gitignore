@@ -55,8 +55,8 @@ libc3/window/sdl2/demo/macos/c3_window_sdl2_demo_cov.app/
 libc3/window/sdl2/demo/macos/c3_window_sdl2_demo_debug.app/
 .libs/
 *.lo
+macos/c3-v*
 *.o
-osx/c3-v*
 test/facts_test_dump_file.facts
 test/facts_test_log_add.facts
 test/facts_test_log_remove.facts

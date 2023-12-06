@@ -14,7 +14,9 @@ all: dmg
 
 DMG_FILES = \
 	../libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo.app \
-	../libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_debug.app
+	../libc3/window/cairo/quartz/demo/c3_window_cairo_quartz_demo_debug.app \
+	../libc3/window/sdl2/demo/macos/c3_window_sdl2_demo.app \
+	../libc3/window/sdl2/demo/macos/c3_window_sdl2_demo_debug.app \
 
 DESTDIR = c3-v${C3_VERSION}
 DMG = ${DESTDIR}.dmg
