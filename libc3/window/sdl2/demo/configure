@@ -47,16 +47,16 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS="$CPPFLAGS -I../../../../libffi/include -I../../../.."
 CPPFLAGS="$CPPFLAGS -DGL_SILENCE_DEPRECATION=1"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+LIBS="$LIBS"
 config_asan
 config_gnu
 pkg_config ftgl
 pkg_config gl
 pkg_config glu
-config_lib IL -lIL -lILU
-pkg_config sdl2
+pkg_config libbsd-overlay
+pkg_config libpng
 config_lib OPENGL -framework OpenGL
-#config_lib SDL2 -framework SDL2
-LIBS="$LIBS"
+pkg_config sdl2
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
