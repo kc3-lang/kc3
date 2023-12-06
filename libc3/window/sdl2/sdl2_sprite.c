@@ -170,21 +170,14 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
     str_clean(&sprite->real_path);
     return NULL;
   }
-  png_init_io(png_read, fp);
   png_set_sig_bytes(png_read, sizeof(png_header));
+  png_init_io(png_read, fp);
   png_read_info(png_read, png_info);
   png_get_IHDR(png_read, png_info, &png_w, &png_h,
 	       &png_bit_depth, &png_color_type,
 	       NULL, NULL, NULL);
-  if (png_color_type == PNG_COLOR_TYPE_PALETTE) {
-    warnx("sdl2_sprite_init: %s: PNG_COLOR_TYPE_PALETTE",
-	  sprite->real_path.ptr.ps8);
-    png_destroy_read_struct(&png_read, &png_info, NULL);
-    fclose(fp);
-    str_clean(&sprite->path);
-    str_clean(&sprite->real_path);
-    return NULL;
-  }
+  if (png_color_type == PNG_COLOR_TYPE_PALETTE)
+    png_set_palette_to_rgb(png_read);
   if (! png_info_to_gl_info(png_color_type, png_bit_depth, &gl_format,
 			    &gl_internal_format, &gl_type,
 			    &png_components)) {
@@ -215,17 +208,11 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
     png_row[i] = png_data + i * png_w * png_pixel_size;
     i++;
   }
-  png_set_rows(png_read, png_info, png_row);
-  png_read_png(png_read, png_info, PNG_TRANSFORM_PACKING, NULL);
-  if (! png_row) {
-    warnx("sdl2_sprite_init: %s: png_get_rows => NULL",
-	  sprite->real_path.ptr.ps8);
-    png_destroy_read_struct(&png_read, &png_info, NULL);
-    fclose(fp);
-    str_clean(&sprite->path);
-    str_clean(&sprite->real_path);
-    return NULL;
-  }
+  if (png_bit_depth < 8)
+    png_set_packing(png_read);
+  png_read_image(png_read, png_row);
+  png_destroy_read_struct(&png_read, &png_info, NULL);
+  fclose(fp);
   sprite->total_w = png_w;
   sprite->total_h = png_h;
   sprite->dim_x = dim_x;
@@ -236,8 +223,6 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   sprite->texture = malloc(frame_count * sizeof(GLuint));
   if (! sprite->texture) {
     warn("sdl2_sprite_init: sprite->texture");
-    png_destroy_read_struct(&png_read, &png_info, NULL);
-    fclose(fp);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
@@ -247,6 +232,9 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   if (gl_error != GL_NO_ERROR) {
     warnx("sdl2_sprite_init: %s: glGenTextures: %s\n",
 	  sprite->real_path.ptr.ps8, gluErrorString(gl_error));
+    free(sprite->texture);
+    str_clean(&sprite->path);
+    str_clean(&sprite->real_path);
     return NULL;
   }
   sprite_stride = sprite->w * png_pixel_size;
@@ -254,8 +242,6 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   if (! data) {
     warn("sdl2_sprite_init: %s", sprite->real_path.ptr.ps8);
     free(sprite->texture);
-    png_destroy_read_struct(&png_read, &png_info, NULL);
-    fclose(fp);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
