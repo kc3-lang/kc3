@@ -19,8 +19,13 @@
 #define LIBC3_WINDOW_SDL2_TYPES_H
 
 #include <SDL.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#if defined(__APPLE__)
+# include <OpenGL/gl.h>
+# include <OpenGL/glu.h>
+#else
+# include <GL/gl.h>
+# include <GL/glu.h>
+#endif
 #include <FTGL/ftgl.h>
 #include <png.h>
 #include <libc3/types.h>
