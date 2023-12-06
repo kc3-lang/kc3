@@ -18,7 +18,7 @@ DMG_FILES = \
 	../libc3/window/sdl2/demo/macos/c3_window_sdl2_demo.app \
 	../libc3/window/sdl2/demo/macos/c3_window_sdl2_demo_debug.app \
 
-DESTDIR = c3-v${C3_VERSION}
+DESTDIR = c3-v${C3_VERSION}-${MACHINE}
 DMG = ${DESTDIR}.dmg
 
 CLEANFILES = ${DMG} ${DESTDIR} ${DESTDIR}.old
@@ -35,4 +35,4 @@ dmg:
 
 .PHONY: all clean dmg
 
-include ../config.mk
+include config.mk
