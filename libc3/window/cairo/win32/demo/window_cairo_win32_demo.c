@@ -26,12 +26,12 @@ int main (int argc, char **argv)
   c3_window_cairo_init();
   window_cairo_init(&window, 0, 0, 800, 600,
                     "C3.Window.Cairo.Win32 demo",
-                    LIBC3_WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
-  window.button = c3_window_cairo_demo_button;
-  window.key    = c3_window_cairo_demo_key;
-  window.load   = c3_window_cairo_demo_load;
-  window.render = c3_window_cairo_demo_render;
-  window.resize = c3_window_cairo_demo_resize;
+                    WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
+  window.button = window_cairo_demo_button;
+  window.key    = window_cairo_demo_key;
+  window.load   = window_cairo_demo_load;
+  window.render = window_cairo_demo_render;
+  window.resize = window_cairo_demo_resize;
   if (! window_cairo_win32_run(&window))
     return g_c3_exit_code;
   c3_window_cairo_clean();
