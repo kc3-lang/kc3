@@ -15,7 +15,7 @@
 #include <cairo/cairo.h>
 #include <libc3/c3.h>
 #include "../../../window.h"
-#include "../../c3_window_cairo_demo.h"
+#include "../../demo/window_cairo_demo.h"
 #include "../window_cairo_win32.h"
 
 int main (int argc, char **argv)
