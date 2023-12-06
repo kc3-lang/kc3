@@ -1,0 +1,26 @@
+#!/bin/sh
+## c3
+## Copyright 2022,2023 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
+
+set -e
+
+export SRC_TOP="$(dirname "$PWD")"
+
+. ../config.subr
+
+C3_VERSION="$(cat ../c3.version)"
+echo "C3_VERSION = $C3_VERSION" >> ${CONFIG_MK}
+
+MACHINE=$(uname -m)
+echo "MACHINE = $MACHINE" >> ${CONFIG_MK}
+
+update_config_mk
