@@ -15,6 +15,7 @@ config.mk
 *.core
 *.css
 *.dll
+.DS_Store
 *.exe
 *.gcno
 *.html
