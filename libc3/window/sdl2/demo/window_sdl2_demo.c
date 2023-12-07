@@ -20,11 +20,12 @@
 #include "bg_rect.h"
 #include "lightspeed.h"
 #include "toasters.h"
+#include "flies.h"
 
-#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 3
+#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 4
 
-//static s_sdl2_font g_font_computer_modern;
-static s_sdl2_font g_font_courier_new;
+//s_sdl2_font g_font_computer_modern;
+s_sdl2_font g_font_courier_new = {0};
 
 static bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
                                      sw x, sw y);
@@ -144,7 +145,6 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   window_sdl2_sequence_init(window->sequence + 2, 60.0,
                             "03. Toasters",
                             toasters_load, toasters_render);
-  /*
   if (! sdl2_sprite_init(&g_fly_sprite, "img/fly-noto.png",
                          1, 1, 1))
     return false;
@@ -154,7 +154,6 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   window_sdl2_sequence_init(window->sequence + 3, 60.0,
                             "04. Flies",
                             flies_load, flies_render);
-  */
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }
