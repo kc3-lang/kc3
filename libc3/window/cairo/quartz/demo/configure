@@ -74,6 +74,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -I../../../../../libffi/include -I../../../../.."
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+OBJCFLAGS="$CFLAGS -W -Wall -Werror"
 LDFLAGS="$LDFLAGS -framework Cocoa"
 LIBS="$LIBS"
 config_asan
