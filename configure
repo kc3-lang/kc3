@@ -11,7 +11,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-set -e -v
+set -e
 
 export SRC_TOP="$(pwd)"
 
