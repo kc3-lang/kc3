@@ -77,7 +77,7 @@ LOCAL_LIBS_DEBUG="../../../libc3_debug.la ../../libc3_window_debug.la ../libc3_w
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
-DEFAULT_CFLAGS="-O2 -pipe -fPIC"
+DEFAULT_CFLAGS="-O2 -pipe"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
