@@ -114,7 +114,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   assert(path);
   assert(dim_x);
   assert(dim_y);
-  frame_count = (frame_count > 0) ? frame_count : (dim_x * dim_y);
+  sprite->frame_count = (frame_count > 0) ? frame_count : (dim_x * dim_y);
   str_init_copy_1(&sprite->path, path);
   if (! file_search(&sprite->path, sym_1("r"), &sprite->real_path)) {
     warnx("sdl2_sprite_init: file not found: %s", path);
@@ -163,6 +163,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
     str_clean(&sprite->real_path);
     return NULL;
   }
+  gl_internal_format = 0;
   if (setjmp(png_jmpbuf(png_read))) {
     png_destroy_read_struct(&png_read, &png_info, NULL);
     fclose(fp);
@@ -219,15 +220,14 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   sprite->dim_y = dim_y;
   sprite->w = sprite->total_w / dim_x;
   sprite->h = sprite->total_h / dim_y;
-  sprite->frame_count = frame_count;
-  sprite->texture = malloc(frame_count * sizeof(GLuint));
+  sprite->texture = malloc(sprite->frame_count * sizeof(GLuint));
   if (! sprite->texture) {
     warn("sdl2_sprite_init: sprite->texture");
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
   }
-  glGenTextures(frame_count, sprite->texture);
+  glGenTextures(sprite->frame_count, sprite->texture);
   GLenum gl_error = glGetError();
   if (gl_error != GL_NO_ERROR) {
     warnx("sdl2_sprite_init: %s: glGenTextures: %s\n",
