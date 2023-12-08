@@ -158,6 +158,11 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
   f64 x;
   f64 y;
   (void) context;
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, window->w, 0, window->h, -1, 1);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
   glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   /* io_inspect(&seq->tag); */
@@ -197,6 +202,7 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
     x = board_item_w * (BOARD_SIZE / 2 + 1);
     glPushMatrix(); {
       glTranslated(x, 0.0, 0.0);
+      sdl2_font_set_size(&g_font_courier_new, board_item_h, 72);
       sdl2_font_render_text(&g_font_courier_new, buf.ptr.ps8);
     } glPopMatrix();
     glTranslated(0.0, board_item_h, 0.0);
