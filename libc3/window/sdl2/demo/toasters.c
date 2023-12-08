@@ -130,6 +130,8 @@ bool toasters_render (s_sequence *seq, s_window_sdl2 *window,
   if (seq->tag.type == TAG_MAP) {
     toasters = &seq->tag.data.map.value[0].data.list;
     toasts   = &seq->tag.data.map.value[1].data.list;
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
     toasters_render_toasts(toasts, window, seq);
     toasters_render_toasters(toasters, window, seq);
   }
