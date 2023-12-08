@@ -15,10 +15,15 @@
 #include "../sdl2_sprite.h"
 #include "toasters.h"
 
+#define TOASTERS_SCALE_TOAST 0.5
+#define TOASTERS_SCALE_TOASTER 0.4
+#define TOASTERS_SPACING \
+  (g_sprite_toaster.h * TOASTERS_SCALE_TOASTER * 2.0)
+
 static const f64 g_speed_x =  80.0;
 static const f64 g_speed_y = -40.0;
-s_sdl2_sprite   g_toast_sprite = {0};
-s_sdl2_sprite   g_toaster_sprite = {0};
+s_sdl2_sprite   g_sprite_toast = {0};
+s_sdl2_sprite   g_sprite_toaster = {0};
 
 static bool toasters_render_toasters (s_list **toasters,
                                       s_window_sdl2 *window,
@@ -54,9 +59,9 @@ static void toast_render (s_tag *toast, s_window_sdl2 *window,
       return;
     }
     glPushMatrix();
-    glTranslated(*x, *y + g_toast_sprite.h, 0.0);
-    glScalef(1, -1, 1);
-    sdl2_sprite_render(&g_toast_sprite, 0);
+    glTranslated(*x, *y + g_sprite_toast.h, 0.0);
+    glScalef(TOASTERS_SCALE_TOAST, -TOASTERS_SCALE_TOAST, 1);
+    sdl2_sprite_render(&g_sprite_toast, 0);
     glPopMatrix();
   }
 }
@@ -87,11 +92,11 @@ static void toaster_render (s_tag *toaster, s_window_sdl2 *window,
       return;
     }
     glPushMatrix();
-    glTranslated(*x, *y + g_toaster_sprite.h, 0.0);
-    glScalef(1, -1, 1);
-    sdl2_sprite_render(&g_toaster_sprite,
-                       fmod(seq->t * g_toaster_sprite.frame_count,
-                            g_toaster_sprite.frame_count));
+    glTranslated(*x, *y + g_sprite_toaster.h, 0.0);
+    glScalef(TOASTERS_SCALE_TOASTER, -TOASTERS_SCALE_TOASTER, 1);
+    sdl2_sprite_render(&g_sprite_toaster,
+                       fmod(seq->t * g_sprite_toaster.frame_count,
+                            g_sprite_toaster.frame_count));
     glPopMatrix();
   }
 }
@@ -144,13 +149,15 @@ bool toasters_render_toasts (s_list **toasts, s_window_sdl2 *window,
   assert(toasts);
   assert(window);
   assert(seq);
-  y = window->w * g_speed_y / g_speed_x - 210;
+  y = window->w * g_speed_y / g_speed_x -
+    TOASTERS_SPACING * 3.0 / 2.0 +
+    50;
   if (*toasts && (*toasts)->tag.type == TAG_MAP) {
     t = &(*toasts)->tag.data.map.value[0].data.list;
     y =  (*toasts)->tag.data.map.value[1].data.f64;
   }
-  while (y < window->h - 100) {
-    y += 170.0;
+  while (y < window->h - TOASTERS_SPACING / 2) {
+    y += TOASTERS_SPACING;
     *toasts = list_new_map(2, *toasts);
     map = &(*toasts)->tag.data.map;
     tag_init_sym_1(map->key  + 0, "toasts");
@@ -195,13 +202,14 @@ bool toasters_render_toasters (s_list **toasters, s_window_sdl2 *window,
   assert(window);
   assert(seq);
   /* io_inspect_list((const s_list **) toasters); */
-  y = -100.0;
+  y = -TOASTERS_SPACING - 40;
   if (*toasters && (*toasters)->tag.type == TAG_MAP) {
     t = &(*toasters)->tag.data.map.value[0].data.list;
     y =  (*toasters)->tag.data.map.value[1].data.f64;
   }
-  while (y < window->h - window->w * g_speed_y / g_speed_x) {
-    y += 170.0;
+  while (y < window->h - window->w * g_speed_y / g_speed_x +
+         TOASTERS_SPACING) {
+    y += TOASTERS_SPACING;
     *toasters = list_new_map(2, *toasters);
     map = &(*toasters)->tag.data.map;
     tag_init_sym_1(map->key  + 0, "toasters");

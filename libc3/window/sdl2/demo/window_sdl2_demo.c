@@ -137,10 +137,10 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   window_sdl2_sequence_init(window->sequence + 1, 20.0,
                             "02. Lightspeed",
                             lightspeed_load, lightspeed_render);
-  if (! sdl2_sprite_init(&g_toaster_sprite, "img/flaps.png",
+  if (! sdl2_sprite_init(&g_sprite_toaster, "img/flaps.256.png",
                          4, 1, 4))
     return false;
-  if (! sdl2_sprite_init(&g_toast_sprite, "img/toast.png",
+  if (! sdl2_sprite_init(&g_sprite_toast, "img/toast.128.png",
                          1, 1, 1))
     return false;
   window_sdl2_sequence_init(window->sequence + 2, 60.0,
