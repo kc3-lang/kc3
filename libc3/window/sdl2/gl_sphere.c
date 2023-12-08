@@ -105,6 +105,7 @@ void gl_sphere_render (const s_gl_sphere *sphere)
   assert(sphere);
   seg_u = sphere->segments_u;
   seg_v = sphere->segments_v;
+  glDisable(GL_CULL_FACE);
   // first row
   glBegin(GL_QUAD_STRIP);
   tex_coord[0].y = 0.0;
@@ -113,7 +114,7 @@ void gl_sphere_render (const s_gl_sphere *sphere)
   j = 0;
   while (j < seg_u + 1) {
     p[1] = sphere->vertex + j % seg_u;
-    tex_coord[0].x = tex_coord[1].x = (f64) j / seg_u;
+    tex_coord[0].x = tex_coord[1].x = (f64) (seg_u - j) / seg_u;
     gl_tex_coord_2d(tex_coord);
     gl_normal_3d(p[0]);
     gl_vertex_3d(p[0]);
@@ -133,7 +134,7 @@ void gl_sphere_render (const s_gl_sphere *sphere)
     while (j < seg_u + 1) {
       p[0] = sphere->vertex +  i      * seg_u + j % seg_u;
       p[1] = sphere->vertex + (i - 1) * seg_u + j % seg_u;
-      tex_coord[0].x = tex_coord[1].x = (f64) j / seg_u;
+      tex_coord[0].x = tex_coord[1].x = (f64) (seg_u - j) / seg_u;
       gl_tex_coord_2d(tex_coord);
       gl_normal_3d(p[0]);
       gl_vertex_3d(p[0]);
@@ -153,7 +154,7 @@ void gl_sphere_render (const s_gl_sphere *sphere)
   j = 0;
   while (j < seg_u + 1) {
     p[1] = sphere->vertex + (seg_v - 1) * seg_u + j % seg_u;
-    tex_coord[0].x = tex_coord[1].x = (f64) j / seg_u;
+    tex_coord[0].x = tex_coord[1].x = (f64) (seg_u - j) / seg_u;
     gl_tex_coord_2d(tex_coord);
     gl_normal_3d(p[0]);
     gl_vertex_3d(p[0]);
