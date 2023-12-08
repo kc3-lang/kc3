@@ -158,6 +158,8 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   if (! sdl2_sprite_init(&g_sprite_earth, "img/earth.png",
                          1, 1, 1))
     return false;
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   window_sdl2_sequence_init(window->sequence + 4, 60.0,
                             "05. Earth",
                             earth_load, earth_render);

@@ -100,22 +100,21 @@ bool earth_render (s_sequence *seq, s_window_sdl2 *window,
   glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.0f);
   glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0f);
   glEnable(GL_DEPTH_TEST);
-  glPushMatrix();
-  sphere_radius = 5.0;
-  glScalef(sphere_radius, sphere_radius, sphere_radius);
-  glEnable(GL_TEXTURE_2D);
-  sdl2_sprite_bind(&g_sprite_earth, 0);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-  gl_sphere_render(sphere);
-  /*
+  glPushMatrix(); {
+    sphere_radius = 5.0;
+    glScalef(sphere_radius, sphere_radius, sphere_radius);
+    glEnable(GL_TEXTURE_2D);
+    sdl2_sprite_bind(&g_sprite_earth, 0);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    gl_sphere_render(sphere);
+    /*
+      glDisable(GL_TEXTURE_2D);
+      glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+      gl_sphere_render_wireframe(sphere);
+    */
+  } glPopMatrix();
   glDisable(GL_TEXTURE_2D);
-  glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-  gl_sphere_render_wireframe(sphere);
-  */
-  glPopMatrix();
-  glDisable(GL_TEXTURE_2D);
+  glDisable(GL_DEPTH_TEST);
   glDisable(GL_LIGHT0);
   glDisable(GL_LIGHTING);
   return true;
