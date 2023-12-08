@@ -271,7 +271,8 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
       glBindTexture(GL_TEXTURE_2D, sprite->texture[i]);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                      GL_LINEAR_MIPMAP_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       //glTexImage2D(GL_TEXTURE_2D, 0, gl_format, sprite->w, sprite->h,
       //             0, gl_format, gl_type, data);
