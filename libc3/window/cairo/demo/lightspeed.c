@@ -20,12 +20,12 @@ static void star_init (s_tag *star)
   f64_random(&x);
   f64_random(&y);
   tag_init_map(star, 3);
-  tag_init_sym(star->data.map.keys, sym_1("speed"));
-  tag_init_f64(star->data.map.values, 0.0);
-  tag_init_sym(star->data.map.keys + 1, sym_1("x"));
-  tag_init_f64(star->data.map.values + 1, 2.0 * x - 1.0);
-  tag_init_sym(star->data.map.keys + 2, sym_1("y"));
-  tag_init_f64(star->data.map.values + 2, 2.0 * y - 1.0);
+  tag_init_sym(star->data.map.key, sym_1("speed"));
+  tag_init_f64(star->data.map.value, 0.0);
+  tag_init_sym(star->data.map.key + 1, sym_1("x"));
+  tag_init_f64(star->data.map.value + 1, 2.0 * x - 1.0);
+  tag_init_sym(star->data.map.key + 2, sym_1("y"));
+  tag_init_f64(star->data.map.value + 2, 2.0 * y - 1.0);
 }
 
 static void star_render (s_tag *star, s_window_cairo *window,
@@ -36,9 +36,9 @@ static void star_render (s_tag *star, s_window_cairo *window,
   f64 *x;
   f64 *y;
   (void) window;
-  speed = &star->data.map.values[0].data.f64;
-  x = &star->data.map.values[1].data.f64;
-  y = &star->data.map.values[2].data.f64;
+  speed = &star->data.map.value[0].data.f64;
+  x = &star->data.map.value[1].data.f64;
+  y = &star->data.map.value[2].data.f64;
   cairo_set_line_width(cr, 0.004);
   cairo_set_source_rgb(cr, 1, 1, 1);
   cairo_move_to(cr, *x, *y);

@@ -41,9 +41,9 @@ static void fly_init (s_map *map)
   s_array *board;
   uw *in;
   f64 *t;
-  board = &map->values[0].data.array;
-  in    = &map->values[1].data.uw;
-  t     = &map->values[3].data.f64;
+  board = &map->value[0].data.array;
+  in    = &map->value[1].data.uw;
+  t     = &map->value[3].data.f64;
   array_data_set(board, address, &g_board_item_fly);
   *t = 0.0;
   (*in)++;
@@ -60,16 +60,16 @@ bool flies_load (s_sequence *seq,
   (void) window;
   tag_map(&seq->tag, 4);
   map = &seq->tag.data.map;
-  tag_init_sym_1( map->keys  + 0, "board");
-  tag_init_array(map->values + 0, sym_1("U8"),
+  tag_init_sym_1( map->key  + 0, "board");
+  tag_init_array(map->value + 0, sym_1("U8"),
                  2, (uw[]) {BOARD_SIZE, BOARD_SIZE});
-  tag_init_sym_1(map->keys + 1, "in");
-  tag_init_uw( map->values + 1, 0);
-  tag_init_sym_1(map->keys + 2, "out");
-  tag_init_uw( map->values + 2, 0);
-  tag_init_sym_1(map->keys + 3, "t");
-  tag_init_uw( map->values + 3, 0);
-  board = &map->values[0].data.array;
+  tag_init_sym_1(map->key + 1, "in");
+  tag_init_uw( map->value + 1, 0);
+  tag_init_sym_1(map->key + 2, "out");
+  tag_init_uw( map->value + 2, 0);
+  tag_init_sym_1(map->key + 3, "t");
+  tag_init_uw( map->value + 3, 0);
+  board = &map->value[0].data.array;
   board->data = malloc(board->size);
   i = 0;
   while (i < BOARD_SIZE) {
@@ -164,14 +164,14 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
   if (seq->tag.type == TAG_MAP) {
     map = &seq->tag.data.map;
     if (map->count == 4 &&
-        map->values[0].type == TAG_ARRAY &&
-        map->values[1].type == TAG_UW &&
-        map->values[2].type == TAG_UW &&
-        map->values[3].type == TAG_UW) {
-      board    = &map->values[0].data.array;
-      fly_in   = &map->values[1].data.uw;
-      fly_out  = &map->values[2].data.uw;
-      fly_time = &map->values[3].data.uw;
+        map->value[0].type == TAG_ARRAY &&
+        map->value[1].type == TAG_UW &&
+        map->value[2].type == TAG_UW &&
+        map->value[3].type == TAG_UW) {
+      board    = &map->value[0].data.array;
+      fly_in   = &map->value[1].data.uw;
+      fly_out  = &map->value[2].data.uw;
+      fly_time = &map->value[3].data.uw;
       board_item_h = (f64) (window->h - 60) / (BOARD_SIZE + 1);
       board_item_w = board_item_h * g_xy_ratio;
       board_w = board_item_w * BOARD_SIZE;

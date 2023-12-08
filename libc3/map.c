@@ -49,12 +49,12 @@ void map_clean (s_map *map)
   uw i = 0;
   assert(map);
   while (i < map->count) {
-    tag_clean(map->keys + i);
-    tag_clean(map->values + i);
+    tag_clean(map->key + i);
+    tag_clean(map->value + i);
     i++;
   }
-  free(map->keys);
-  free(map->values);
+  free(map->key);
+  free(map->value);
 }
 
 void map_delete (s_map *map)
@@ -68,8 +68,8 @@ s_tag * map_get (const s_map *map, const s_tag *key, s_tag *value)
 {
   uw i = 0;
   while (i < map->count) {
-    if (compare_tag(key, map->keys + i) == 0)
-      return tag_init_copy(value, map->values + i);
+    if (compare_tag(key, map->key + i) == 0)
+      return tag_init_copy(value, map->value + i);
     i++;
   }
   return NULL;
@@ -79,8 +79,8 @@ s_map * map_init (s_map *map, uw count)
 {
   assert(map);
   map->count = count;
-  map->keys = calloc(count, sizeof(s_tag));
-  map->values = calloc(count, sizeof(s_tag));
+  map->key = calloc(count, sizeof(s_tag));
+  map->value = calloc(count, sizeof(s_tag));
   return map;
 }
 
@@ -106,8 +106,8 @@ s_map * map_init_copy (s_map *map, const s_map *src)
   assert(map);
   map_init(map, src->count);
   while (i < src->count) {
-    tag_init_copy(map->keys + i, src->keys + i);
-    tag_init_copy(map->values + i, src->values + i);
+    tag_init_copy(map->key + i, src->key + i);
+    tag_init_copy(map->value + i, src->value + i);
     i++;
   }
   return map;
@@ -129,8 +129,8 @@ s_map * map_init_from_lists (s_map *map, const s_list *keys,
   k = keys;
   v = values;
   while (i < len) {
-    if (! tag_init_copy(map->keys + i, &k->tag) ||
-        ! tag_init_copy(map->values + i, &v->tag))
+    if (! tag_init_copy(map->key + i, &k->tag) ||
+        ! tag_init_copy(map->value + i, &v->tag))
       goto ko;
     k = list_next(k);
     v = list_next(v);
@@ -156,8 +156,8 @@ s_list ** map_map (const s_map *map, const s_fn *fn, s_list **result)
   t = &tmp;
   *t = NULL;
   while (i < map->count) {
-    args = list_new_copy(map->keys + i,
-                         list_new_copy(map->values + i, NULL));
+    args = list_new_copy(map->key + i,
+                         list_new_copy(map->value + i, NULL));
     *t = list_new(NULL);
     if (! eval_fn_call(fn, args, &(*t)->tag)) {
       list_delete_all(args);
@@ -206,8 +206,8 @@ s_map * map_set (s_map *map, const s_tag *key, const s_tag *value)
 {
   uw i = 0;
   while (i < map->count) {
-    if (compare_tag(key, map->keys + i) == 0) {
-      if (! tag_init_copy(map->values + i, value))
+    if (compare_tag(key, map->key + i) == 0) {
+      if (! tag_init_copy(map->value + i, value))
         return NULL;
       return map;
     }
@@ -228,13 +228,13 @@ s_map * map_sort (s_map *map)
     i--;
     j = 1;
     while (j <= i) {
-      if (compare_tag(map->keys + j, map->keys + (j - 1)) < 0) {
-        k = map->keys[j];
-        v = map->values[j];
-        map->keys[j] = map->keys[j - 1];
-        map->values[j] = map->values[j - 1];
-        map->keys[j - 1] = k;
-        map->values[j - 1] = v;
+      if (compare_tag(map->key + j, map->key + (j - 1)) < 0) {
+        k = map->key[j];
+        v = map->value[j];
+        map->key[j] = map->key[j - 1];
+        map->value[j] = map->value[j - 1];
+        map->key[j - 1] = k;
+        map->value[j - 1] = v;
       }
       j++;
     }
@@ -249,8 +249,8 @@ s_map * map_update (const s_map *map, const s_tag *key,
   uw i = 0;
   map_init_copy(&tmp, map);
   while (i < map->count) {
-    if (compare_tag(key, map->keys + i) == 0) {
-      if (! tag_init_copy(map->values + i, value))
+    if (compare_tag(key, map->key + i) == 0) {
+      if (! tag_init_copy(map->value + i, value))
         goto ko;
       *dest = tmp;
       return dest;

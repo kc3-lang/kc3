@@ -21,8 +21,9 @@
 #include "lightspeed.h"
 #include "toasters.h"
 #include "flies.h"
+#include "earth.h"
 
-#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 4
+#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 5
 
 //s_sdl2_font g_font_computer_modern;
 s_sdl2_font g_font_courier_new = {0};
@@ -154,6 +155,9 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   window_sdl2_sequence_init(window->sequence + 3, 60.0,
                             "04. Flies",
                             flies_load, flies_render);
+  window_sdl2_sequence_init(window->sequence + 4, 60.0,
+                            "05. Earth",
+                            earth_load, earth_render);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }

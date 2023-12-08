@@ -23,6 +23,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
                                   uw frame_count);
 
 /* operations */
+void sdl2_sprite_bind (const s_sdl2_sprite *sprite, uw frame);
 void sdl2_sprite_render (const s_sdl2_sprite *sprite, uw frame);
 
 #endif /* CAIRO_SPRITE_H */

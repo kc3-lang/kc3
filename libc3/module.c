@@ -51,7 +51,7 @@ bool module_ensure_loaded (const s_sym *module, s_facts *facts)
 
 bool module_load (const s_sym *module, s_facts *facts)
 {
-  return env_module_load(module, &g_c3_env, facts);
+  return env_module_load(&g_c3_env, module, facts);
 }
 
 s_tag * module_load_time (const s_sym *module, s_facts *facts,
@@ -77,7 +77,7 @@ s_tag * module_load_time (const s_sym *module, s_facts *facts,
 
 bool module_maybe_reload (const s_sym *module, s_facts *facts)
 {
-  return env_module_maybe_reload(module, &g_c3_env, facts);
+  return env_module_maybe_reload(&g_c3_env, module, facts);
 }
 
 s_str * module_path (const s_sym *module, const s_str *prefix,

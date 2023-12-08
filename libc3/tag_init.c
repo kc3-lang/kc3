@@ -28,6 +28,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "ptr.h"
 #include "quote.h"
 #include "str.h"
 #include "tag.h"
@@ -179,6 +180,17 @@ s_tag * tag_init_map_1 (s_tag *tag, const s8 *p)
   assert(tag);
   tmp.type = TAG_MAP;
   if (! map_init_1(&tmp.data.map, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_ptr (s_tag *tag, const s_sym *type, void *p)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PTR;
+  if (! ptr_init(&tmp.data.ptr, type, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -554,6 +566,21 @@ s_tag * tag_new_map_1 (const s8 *p)
   }
   tag->type = TAG_MAP;
   if (! map_init_1(&tag->data.map, p)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_ptr (const s_sym *type, void *p)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_ptr: calloc");
+    return NULL;
+  }
+  tag->type = TAG_PTR;
+  if (! ptr_init(&tag->data.ptr, type, p)) {
     free(tag);
     return NULL;
   }
@@ -947,6 +974,18 @@ s_tag * tag_map_1 (s_tag *tag, const s8 *p)
   tag_clean(tag);
   tmp.type = TAG_MAP;
   if (! map_init_1(&tmp.data.map, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_ptr (s_tag *tag, const s_sym *type, void *p)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PTR;
+  if (! ptr_init(&tmp.data.ptr, type, p))
     return NULL;
   *tag = tmp;
   return tag;

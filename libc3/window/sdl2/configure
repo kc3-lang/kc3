@@ -46,6 +46,7 @@ config_gnu
 pkg_config ftgl
 pkg_config gl
 pkg_config glu
+pkg_config glut
 pkg_config libbsd-overlay
 pkg_config libpng
 config_lib OPENGL -framework OpenGL

@@ -1229,7 +1229,7 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
     return r;
   result += r;
   while (i < map->count) {
-    k = map->keys + i;
+    k = map->key + i;
     if (k->type == TAG_SYM) {
       if ((r = buf_write_1(buf, k->data.sym->str.ptr.ps8)) < 0)
         return r;
@@ -1239,14 +1239,14 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
       result += r;
     }
     else {
-      if ((r = buf_inspect_tag(buf, map->keys + i)) < 0)
+      if ((r = buf_inspect_tag(buf, map->key + i)) < 0)
         return r;
       result += r;
       if ((r = buf_write_1(buf, " => ")) < 0)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_tag(buf, map->values + i)) < 0)
+    if ((r = buf_inspect_tag(buf, map->value + i)) < 0)
       return r;
     result += r;
     i++;

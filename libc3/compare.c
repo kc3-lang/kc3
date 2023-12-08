@@ -311,8 +311,8 @@ s8 compare_map (const s_map *a, const s_map *b)
   if (a->count > b->count)
     return 1;
   while (i < a->count) {
-    if ((r = compare_tag(a->keys + i, b->keys + i)) ||
-        (r = compare_tag(a->values + i, b->values + i)))
+    if ((r = compare_tag(a->key + i, b->key + i)) ||
+        (r = compare_tag(a->value + i, b->value + i)))
       return r;
     i++;
   }

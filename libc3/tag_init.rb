@@ -330,6 +330,9 @@ class TagInitList
        TagInit.new("map", "TAG_MAP", :init_mode_init,
                    [Arg.new("uw", "count")]),
        TagInit1.new("map", "1", "TAG_MAP", :init_mode_init),
+       TagInit.new("ptr", "TAG_PTR", :init_mode_init,
+                   [Arg.new("const s_sym *", "type"),
+                    Arg.new("void *", "p")]),
        TagInit.new("s8", "TAG_S8", :init_mode_direct,
                    [Arg.new("s8", "i")]),
        TagInit.new("s16", "TAG_S16", :init_mode_direct,
@@ -492,6 +495,7 @@ tag_init_c.content = <<EOF
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "ptr.h"
 #include "quote.h"
 #include "str.h"
 #include "tag.h"
@@ -541,6 +545,7 @@ list_init_c.content = <<EOF
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "ptr.h"
 #include "quote.h"
 #include "str.h"
 #include "tag.h"

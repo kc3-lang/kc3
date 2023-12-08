@@ -107,6 +107,7 @@ HEADERS = \
 	module.h \
 	operator.h \
 	ptag.h \
+	ptr.h \
 	quote.h \
 	s16.h \
 	s32.h \
@@ -249,6 +250,7 @@ SOURCES = \
 	module.c \
 	operator.c \
 	ptag.c \
+	ptr.c \
 	quote.c \
 	s16.c \
 	s32.c \
@@ -399,6 +401,7 @@ LO_SOURCES = \
 	module.c \
 	operator.c \
 	ptag.c \
+	ptr.c \
 	quote.c \
 	s16.c \
 	s32.c \

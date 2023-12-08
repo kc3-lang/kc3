@@ -230,8 +230,8 @@ struct frame {
 
 struct map {
   uw count;
-  s_tag *keys; /* sorted (see tag_compare) */
-  s_tag *values;
+  s_tag *key; /* sorted (see tag_compare) */
+  s_tag *value;
 };
 
 struct ptr {
@@ -255,16 +255,10 @@ struct quote {
   s_tag *tag;
 };
 
-struct struct_ {
-  void *data;
-  bool free;
-  s_struct_type *type;
-};
-
 struct struct_type {
   const s_sym *module;
   s_map map;
-  uw *offsets;
+  uw *offset;
   uw size;
 };
 
@@ -330,6 +324,12 @@ struct str {
   u_ptr_w free;        /**< Pointer to free or NULL. */
   uw      size;        /**< Size in bytes. */
   u_ptr   ptr;         /**< Pointer to memory. */
+};
+
+struct struct_ {
+  void *data;
+  bool free;
+  s_struct_type type;
 };
 
 /* 3 */

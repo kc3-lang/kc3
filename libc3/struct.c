@@ -13,10 +13,12 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include "env.h"
 #include "map.h"
 #include "struct.h"
 #include "struct_type.h"
 #include "sym.h"
+#include "tag.h"
 #include "tag_type.h"
 
 void struct_clean (s_struct *s)
@@ -28,14 +30,16 @@ void struct_clean (s_struct *s)
   assert(s);
   assert(s->type);
   data = s->data;
-  while (i < s->type->map.count) {
-    sym = tag_type_to_sym(s->type->map.values[i].type);
-    clean = sym_to_clean(sym);
-    if (clean)
-      clean(data + s->type->offsets[i]);
-    i++;
+  while (i < s->type.map.count) {
+    if (tag_type(s->type.map.value + i, &sym)) {
+      clean = sym_to_clean(sym);
+      if (clean)
+        clean(data + s->type.offset[i]);
+      i++;
+    }
   }
   free(data);
+  struct_type_clean(&s->type);
 }
 
 void struct_delete (s_struct *s)
@@ -47,11 +51,11 @@ void struct_delete (s_struct *s)
 
 s_struct * struct_init (s_struct *s, const s_sym *module)
 {
-  s_struct_type struct_type;
   assert(s);
-  if (! struct_type_init(&struct_type, module))
+  assert(module);
+  if (! struct_type_init_from_env(&s->type, module, &g_c3_env))
     return NULL;
-  s->data = calloc(1, struct_type.size);
+  s->data = calloc(s->type.size, 1);
   return s;
 }
 
