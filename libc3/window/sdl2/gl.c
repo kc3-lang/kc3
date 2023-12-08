@@ -12,7 +12,17 @@
  */
 #include "gl.h"
 
-void gl_vertex_3d (const s_gl_3d *p)
+void gl_normal_3d (const s_gl_3d *normal)
 {
-  glVertex3dv(&p->x);
+  glNormal3dv(&normal->x);
+}
+
+void gl_tex_coord_2d (const s_gl_2d *tex_coord)
+{
+  glTexCoord2dv(&tex_coord->x);
+}
+
+void gl_vertex_3d (const s_gl_3d *vertex)
+{
+  glVertex3dv(&vertex->x);
 }

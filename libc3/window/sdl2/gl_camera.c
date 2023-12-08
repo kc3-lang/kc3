@@ -21,13 +21,16 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   assert(window);
   assert(window->w);
   assert(window->h);
+  gl_camera_set_aspect_ratio(camera, w, h);
+  camera->clip_z_far = 1000;
+  camera->clip_z_near = 0.1;
+  camera->fov_y = 90.0;
   camera->position.x = 0.0;
   camera->position.y = 0.0;
   camera->position.z = -10.0;
-  camera->fov_y = 90.0;
-  camera->clip_z_far = 1000;
-  camera->clip_z_near = 0.1;
-  gl_camera_set_aspect_ratio(camera, w, h);
+  camera->rotation.x = 90.0;
+  camera->rotation.y = 0.0;
+  camera->rotation.z = 0.0;
   return camera;
 }
 
@@ -60,8 +63,11 @@ void gl_camera_render (const s_gl_camera *camera)
                  camera->clip_z_near, camera->clip_z_far);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  glTranslated(-camera->position.x, -camera->position.y,
-               -camera->position.z);
+  glTranslated(camera->position.x, camera->position.y,
+               camera->position.z);
+  glRotated(camera->rotation.x, 1.0, 0.0, 0.0);
+  glRotated(camera->rotation.y, 0.0, 1.0, 0.0);
+  glRotated(camera->rotation.z, 0.0, 0.0, 1.0);
 }
 
 s_gl_camera * gl_camera_set_aspect_ratio (s_gl_camera *camera, uw w,

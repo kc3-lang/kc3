@@ -18,13 +18,15 @@
 /* Stack-allocation compatible functions, call gl_sphere_clean after
    use. */
 void          gl_sphere_clean (s_gl_sphere *sphere);
-s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw segments);
+s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw segments_u,
+                              uw segments_v);
 
 /* Heap-allocation functions, call gl_sphere_delete after use. */
 void          gl_sphere_delete (s_gl_sphere *sphere);
-s_gl_sphere * gl_sphere_new (uw segments);
+s_gl_sphere * gl_sphere_new (uw segments_u, uw segments_v);
 
 /* Observers. */
 void          gl_sphere_render (const s_gl_sphere *sphere);
+void          gl_sphere_render_wireframe (const s_gl_sphere *sphere);
 
 #endif /* GL_SPHERE_H */
