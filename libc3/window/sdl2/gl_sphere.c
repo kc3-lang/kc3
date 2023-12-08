@@ -39,10 +39,10 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw segments_u,
   s_gl_3d *p;
   f64 r;
   f64 z;
-  assert(s);
-  if (! segments_u)
+  assert(sphere);
+  if (segments_u < 3)
     segments_u = 3;
-  if (! segments_v)
+  if (segments_v < 2)
     segments_v = 2;
   sphere->segments_u = segments_u;
   sphere->segments_v = segments_v;

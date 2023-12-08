@@ -18,9 +18,6 @@
 s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
 {
   assert(camera);
-  assert(window);
-  assert(window->w);
-  assert(window->h);
   gl_camera_set_aspect_ratio(camera, w, h);
   camera->clip_z_far = 1000;
   camera->clip_z_near = 0.1;
