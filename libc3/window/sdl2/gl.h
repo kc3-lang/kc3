@@ -15,7 +15,8 @@
 
 #include "types.h"
 
-void gl_tex_coord_2d (const s_gl_2d *p);
-void gl_vertex_3d (const s_gl_3d *p);
+void gl_normal_3d (const s_gl_3d *normal);
+void gl_tex_coord_2d (const s_gl_2d *tex_coord);
+void gl_vertex_3d (const s_gl_3d *vertex);
 
 #endif /* LIBC3_WINDOW_SDL2_GL_H */

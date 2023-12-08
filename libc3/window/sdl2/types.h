@@ -73,10 +73,9 @@ typedef bool (*f_window_sdl2_sequence_render) (s_sequence *seq,
                                                void *context);
 
 /* 1 */
-struct gl_cylinder {
-  uw segments_u;
-  uw segments_v;
-  s_gl_3d *vertex;
+struct gl_2d {
+  f64 x;
+  f64 y;
 };
 
 struct gl_3d {
@@ -85,8 +84,15 @@ struct gl_3d {
   f64 z;
 };
 
+struct gl_cylinder {
+  uw segments_u;
+  uw segments_v;
+  s_gl_3d *vertex;
+};
+
 struct gl_sphere {
-  uw segments;
+  uw segments_u;
+  uw segments_v;
   s_gl_3d *vertex;
 };
 

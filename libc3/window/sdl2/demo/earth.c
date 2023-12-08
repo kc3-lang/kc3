@@ -19,7 +19,10 @@
 #include "../gl_sphere.h"
 #include "earth.h"
 
-#define EARTH_SEGMENTS 10
+#define EARTH_CAMERA_ROTATION_X_SPEED 0.01
+#define EARTH_CAMERA_ROTATION_Z_SPEED 0.1
+#define EARTH_SEGMENTS_U 20
+#define EARTH_SEGMENTS_V 10
 
 s_sdl2_sprite g_sprite_earth = {0};
 
@@ -34,7 +37,7 @@ bool earth_load (s_sequence *seq,
   camera = gl_camera_new(window->w, window->h);
   if (! camera)
     return false;
-  sphere = gl_sphere_new(EARTH_SEGMENTS);
+  sphere = gl_sphere_new(EARTH_SEGMENTS_U, EARTH_SEGMENTS_V);
   if (! sphere)
     return false;
   if (! tag_map(&seq->tag, 2))
@@ -53,6 +56,7 @@ bool earth_render (s_sequence *seq, s_window_sdl2 *window,
   s_gl_camera *camera;
   s_map *map;
   s_gl_sphere *sphere;
+  f64 sphere_radius;
   assert(seq);
   assert(window);
   (void) context;
@@ -70,13 +74,26 @@ bool earth_render (s_sequence *seq, s_window_sdl2 *window,
   camera = map->value[0].data.ptr.p;
   sphere = map->value[1].data.ptr.p;
   gl_camera_set_aspect_ratio(camera, window->w, window->h);
+  camera->rotation.x += seq->dt * EARTH_CAMERA_ROTATION_X_SPEED *
+    360.0;
+  camera->rotation.z += seq->dt * EARTH_CAMERA_ROTATION_Z_SPEED *
+    360.0;
   gl_camera_render(camera);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glEnable(GL_DEPTH_TEST);
+  glPushMatrix();
+  sphere_radius = 5.0;
+  glScalef(sphere_radius, sphere_radius, sphere_radius);
+  glEnable(GL_TEXTURE_2D);
+  sdl2_sprite_bind(&g_sprite_earth, 0);
   glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-  glDisable(GL_TEXTURE_2D);
-  //sdl2_sprite_bind(&g_sprite_earth, 0);
-  glPointSize(4.0);
   gl_sphere_render(sphere);
+  /*
+  glDisable(GL_TEXTURE_2D);
+  glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+  gl_sphere_render_wireframe(sphere);
+  */
+  glPopMatrix();
   return true;
 }

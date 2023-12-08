@@ -20,6 +20,7 @@ CLEANFILES += ${CLEANFILES_COV}
 DISTCLEANFILES = ${CLEANFILES} config.mk
 
 IMG_SOURCES = \
+	../../../../../img/earth.png \
 	../../../../../img/flaps.png \
 	../../../../../img/fly-dead.png \
 	../../../../../img/fly-noto.png \
