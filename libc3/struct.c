@@ -28,7 +28,6 @@ void struct_clean (s_struct *s)
   uw i = 0;
   const s_sym *sym;
   assert(s);
-  assert(s->type);
   data = s->data;
   while (i < s->type.map.count) {
     if (tag_type(s->type.map.value + i, &sym)) {
