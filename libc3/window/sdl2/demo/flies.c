@@ -193,7 +193,7 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
     buf_write_1(&buf, "In ");
     buf_inspect_uw(&buf, fly_in);
     buf_write_u8(&buf, 0);
-    sdl2_font_set_size(&g_font_courier_new, board_item_h, 72);
+    sdl2_font_set_size(&g_font_courier_new, board_item_h, window->dpi);
     sdl2_font_render_text(&g_font_courier_new, buf.ptr.ps8);
     buf_init(&buf, false, sizeof(a), a);
     buf_write_1(&buf, "Out ");
@@ -202,7 +202,7 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
     x = board_item_w * (BOARD_SIZE / 2 + 1);
     glPushMatrix(); {
       glTranslated(x, 0.0, 0.0);
-      sdl2_font_set_size(&g_font_courier_new, board_item_h, 72);
+      sdl2_font_set_size(&g_font_courier_new, board_item_h, window->dpi);
       sdl2_font_render_text(&g_font_courier_new, buf.ptr.ps8);
     } glPopMatrix();
     glTranslated(0.0, board_item_h, 0.0);
