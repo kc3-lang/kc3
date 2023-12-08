@@ -31,6 +31,11 @@
 #include <libc3/types.h>
 #include "../types.h"
 
+typedef struct gl_2d       s_gl_2d;
+typedef struct gl_3d       s_gl_3d;
+typedef struct gl_camera   s_gl_camera;
+typedef struct gl_cylinder s_gl_cylinder;
+typedef struct gl_sphere   s_gl_sphere;
 typedef struct sdl2_font   s_sdl2_font;
 typedef struct sdl2_sprite s_sdl2_sprite;
 typedef struct rgb         s_rgb;
@@ -67,6 +72,37 @@ typedef bool (*f_window_sdl2_sequence_render) (s_sequence *seq,
                                                s_window_sdl2 *window,
                                                void *context);
 
+/* 1 */
+struct gl_cylinder {
+  uw segments_u;
+  uw segments_v;
+  s_gl_3d *vertex;
+};
+
+struct gl_3d {
+  f64 x;
+  f64 y;
+  f64 z;
+};
+
+struct gl_sphere {
+  uw segments;
+  s_gl_3d *vertex;
+};
+
+struct rgb {
+  double r;
+  double g;
+  double b;
+};
+
+struct rgba {
+  double r;
+  double g;
+  double b;
+  double a;
+};
+
 struct sdl2_font {
   FTGLfont *ftgl_font;
   u32 size;
@@ -88,19 +124,6 @@ struct sdl2_sprite {
   uw tex_w;
   uw tex_h;
   GLuint *texture;
-};
-
-struct rgb {
-  double r;
-  double g;
-  double b;
-};
-
-struct rgba {
-  double r;
-  double g;
-  double b;
-  double a;
 };
 
 /* Subtype of s_window. See libc3/window/types.h */
@@ -126,6 +149,16 @@ struct window_sdl2 {
   float dpi;
   float dpi_w;
   float dpi_h;
+};
+
+/* 2 */
+struct gl_camera {
+  f64 aspect_ratio;
+  f64 clip_z_far;
+  f64 clip_z_near;
+  f64 fov_y;
+  s_gl_3d position;
+  s_gl_3d rotation;
 };
 
 #endif /* LIBC3_WINDOW_SDL2_TYPES_H */

@@ -226,8 +226,8 @@ void hash_update_map (t_hash *hash, const s_map *map)
   hash_update(hash, type, strlen(type));
   hash_update(hash, &map->count, sizeof(map->count));
   while (i < map->count) {
-    hash_update_tag(hash, map->keys + i);
-    hash_update_tag(hash, map->values + i);
+    hash_update_tag(hash, map->key + i);
+    hash_update_tag(hash, map->value + i);
     i++;
   }
 }

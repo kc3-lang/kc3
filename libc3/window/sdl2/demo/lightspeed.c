@@ -24,13 +24,13 @@ static void star_init (s_tag *star)
   f64_random(&y);
   if (star->type != TAG_MAP || star->data.map.count != 3) {
     tag_map(star, 3);
-    tag_init_sym(star->data.map.keys + 0, sym_1("speed"));
-    tag_init_sym(star->data.map.keys + 1, sym_1("x"));
-    tag_init_sym(star->data.map.keys + 2, sym_1("y"));
+    tag_init_sym(star->data.map.key + 0, sym_1("speed"));
+    tag_init_sym(star->data.map.key + 1, sym_1("x"));
+    tag_init_sym(star->data.map.key + 2, sym_1("y"));
   }
-  tag_init_f64(star->data.map.values + 0, 0.0);
-  tag_init_f64(star->data.map.values + 1, 2.0 * x - 1.0);
-  tag_init_f64(star->data.map.values + 2, 2.0 * y - 1.0);
+  tag_init_f64(star->data.map.value + 0, 0.0);
+  tag_init_f64(star->data.map.value + 1, 2.0 * x - 1.0);
+  tag_init_f64(star->data.map.value + 2, 2.0 * y - 1.0);
 }
 
 static void star_render (s_tag *star, s_sequence *seq)
@@ -41,9 +41,9 @@ static void star_render (s_tag *star, s_sequence *seq)
   f64 *y;
   if (star->type != TAG_MAP || star->data.map.count < 3)
     star_init(star);
-  speed = &star->data.map.values[0].data.f64;
-  x = &star->data.map.values[1].data.f64;
-  y = &star->data.map.values[2].data.f64;
+  speed = &star->data.map.value[0].data.f64;
+  x = &star->data.map.value[1].data.f64;
+  y = &star->data.map.value[2].data.f64;
   glVertex2d(*x, *y);
   q = (1 + *speed / 20);
   glVertex2d(*x * q, *y * q);

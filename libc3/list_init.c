@@ -28,6 +28,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "ptr.h"
 #include "quote.h"
 #include "str.h"
 #include "tag.h"
@@ -177,6 +178,18 @@ s_list * list_init_map_1 (s_list *list, const s8 *p, s_list *next)
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_map_1(&tmp.tag, p))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_ptr (s_list *list, const s_sym *type, void *p, 
+                        s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_ptr(&tmp.tag, type, p))
     return NULL;
   *list = tmp;
   return list;
@@ -547,6 +560,19 @@ s_list * list_new_map_1 (const s8 *p, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_map_1(&list->tag, p)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_ptr (const s_sym *type, void *p, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_ptr(&list->tag, type, p)) {
     free(list);
     return NULL;
   }

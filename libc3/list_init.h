@@ -35,6 +35,8 @@ s_list * list_init_integer_zero (s_list *list, s_list *next);
 
 s_list * list_init_map (s_list *list, uw count, s_list *next);
 s_list * list_init_map_1 (s_list *list, const s8 *p, s_list *next);
+s_list * list_init_ptr (s_list *list, const s_sym *type, void *p, 
+                        s_list *next);
 s_list * list_init_s8 (s_list *list, s8 i, s_list *next);
 s_list * list_init_s16 (s_list *list, s16 i, s_list *next);
 s_list * list_init_s32 (s_list *list, s32 i, s_list *next);
@@ -75,6 +77,7 @@ s_list * list_new_integer_zero (s_list *next);
 
 s_list * list_new_map (uw count, s_list *next);
 s_list * list_new_map_1 (const s8 *p, s_list *next);
+s_list * list_new_ptr (const s_sym *type, void *p, s_list *next);
 s_list * list_new_s8 (s8 i, s_list *next);
 s_list * list_new_s16 (s16 i, s_list *next);
 s_list * list_new_s32 (s32 i, s_list *next);
@@ -113,6 +116,7 @@ s_list * list_integer_zero (s_list *list);
 
 s_list * list_map (s_list *list, uw count);
 s_list * list_map_1 (s_list *list, const s8 *p);
+s_list * list_ptr (s_list *list, const s_sym *type, void *p);
 s_list * list_s8 (s_list *list, s8 i);
 s_list * list_s16 (s_list *list, s16 i);
 s_list * list_s32 (s_list *list, s32 i);

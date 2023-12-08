@@ -351,8 +351,8 @@ bool env_eval_equal_map (s_env *env, const s_map *a,
   while (i < a->count) {
     j = 0;
     while (j < b->count) {
-      if (! compare_tag(a->keys + i, b->keys + j)) {
-        if (! env_eval_equal_tag(env, a->values + i, b->values + j,
+      if (! compare_tag(a->key + i, b->key + j)) {
+        if (! env_eval_equal_tag(env, a->value + i, b->value + j,
                                  &tmp)) {
           return false;
         }
@@ -624,8 +624,8 @@ bool env_eval_map (s_env *env, const s_map *map, s_tag *dest)
   if (! map_init(&tmp, map->count))
     return false;
   while (i < tmp.count) {
-    if (! env_eval_tag(env, map->keys + i, tmp.keys + i) ||
-        ! env_eval_tag(env, map->values + i, tmp.values + i))
+    if (! env_eval_tag(env, map->key + i, tmp.key + i) ||
+        ! env_eval_tag(env, map->value + i, tmp.value + i))
       goto ko;
     i++;
   }
@@ -775,6 +775,34 @@ s_env * env_init (s_env *env, int argc, s8 **argv)
   return env;
 }
 
+const s_list * env_get_struct_type_spec (s_env *env,
+                                         const s_sym *module)
+{
+  s_facts_cursor cursor;
+  s_tag tag_defstruct;
+  s_tag tag_module;
+  s_tag tag_var;
+  tag_init_sym_1(&tag_defstruct, "defstruct");
+  tag_init_sym(&tag_module, module);
+  tag_init_var(&tag_var);
+  env_module_maybe_reload(env, module, &env->facts);
+  facts_with_tags(&env->facts, &cursor, &tag_module,
+                  &tag_defstruct, &tag_var);
+  if (! facts_cursor_next(&cursor)) {
+    warnx("env_get_struct_type_spec: module %s"
+          " does not use defstruct",
+          module->str.ptr.ps8);
+    return NULL;
+  }
+  if (tag_var.type != TAG_LIST) {
+    warnx("env_get_struct_type_spec: module %s"
+          " has a defstruct that is not a property list",
+          module->str.ptr.ps8);
+    return NULL;
+  }
+  return tag_var.data.list;
+}
+
 s_env * env_init_args (s_env *env, int argc, s8 **argv)
 {
   s8 a[PATH_MAX];
@@ -819,7 +847,7 @@ void env_longjmp (s_env *env, jmp_buf *jmp_buf)
   longjmp(*jmp_buf, 1);
 }
 
-bool env_module_load (const s_sym *module, s_env *env, s_facts *facts)
+bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
 {
   s_str path;
   s_tag tag_module_name;
@@ -848,7 +876,7 @@ bool env_module_load (const s_sym *module, s_env *env, s_facts *facts)
   return true;
 }
 
-bool env_module_maybe_reload (const s_sym *module, s_env *env,
+bool env_module_maybe_reload (s_env *env, const s_sym *module,
                               s_facts *facts)
 {
   s_str path;

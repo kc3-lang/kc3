@@ -16,6 +16,14 @@
 #include <libc3/c3.h>
 #include "sdl2_sprite.h"
 
+void sdl2_sprite_bind (const s_sdl2_sprite *sprite, uw frame)
+{
+  assert(sprite);
+  assert(frame < sprite->frame_count);
+  frame %= sprite->frame_count;
+  glBindTexture(GL_TEXTURE_2D, sprite->texture[frame]);
+}
+
 void sdl2_sprite_clean (s_sdl2_sprite *sprite)
 {
   assert(sprite);
@@ -285,8 +293,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   return sprite;
 }
 
-void sdl2_sprite_render (const s_sdl2_sprite *sprite,
-                         uw frame)
+void sdl2_sprite_render (const s_sdl2_sprite *sprite, uw frame)
 {
   assert(sprite);
   assert(frame < sprite->frame_count);

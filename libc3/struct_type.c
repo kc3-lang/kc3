@@ -13,46 +13,77 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include "env.h"
+#include "list.h"
 #include "map.h"
 #include "struct.h"
 #include "struct_type.h"
 #include "sym.h"
 #include "tag_type.h"
 
-void struct_type_clean (s_struct_type *s)
+void struct_type_clean (s_struct_type *st)
 {
-  assert(s);
-  map_clean(&s->map);
-  free(s->offsets);
+  assert(st);
+  map_clean(&st->map);
+  free(st->offset);
 }
 
-void struct_type_delete (s_struct_type *s)
+void struct_type_delete (s_struct_type *st)
 {
-  assert(s);
-  struct_type_clean(s);
-  free(s);
+  assert(st);
+  struct_type_clean(st);
+  free(st);
 }
 
-s_struct_type * struct_type_init (s_struct_type *s, const s_sym *module)
+s_struct_type * struct_type_init (s_struct_type *st, const s_sym *module,
+                                  const s_list *spec)
 {
-  assert(s);
+  uw count;
+  assert(st);
   assert(module);
-  (void) module;
-  return s;
+  assert(spec);
+  count = list_length(spec);
+  st->module = module;
+  if (! map_init(&st->map, count))
+    return NULL;
+  st->offset = calloc(count, sizeof(uw));
+  if (! st->offset) {
+    warn("struct_type_init: offset array of size %lu", count);
+    map_clean(&st->map);
+    return NULL;
+  }
+  return st;
 }
 
-s_struct_type * struct_type_new (const s_sym *module)
+s_struct_type * struct_type_init_from_env (s_struct_type *st,
+                                           const s_sym *module,
+                                           s_env *env)
 {
-  s_struct_type *s;
+  const s_list *spec;
+  assert(st);
   assert(module);
-  s = calloc(1, sizeof(s_struct_type));
-  if (! s) {
+  assert(env);
+  spec = env_get_struct_type_spec(env, module);
+  if (! spec)
+    return NULL;
+  if (! struct_type_init(st, module, spec))
+    return NULL;
+  return st;
+}
+
+s_struct_type * struct_type_new (const s_sym *module,
+                                 const s_list *spec)
+{
+  s_struct_type *st;
+  assert(module);
+  st = calloc(1, sizeof(s_struct_type));
+  if (! st) {
     warn("struct_type_new: %s: calloc", module->str.ptr.ps8);
     return NULL;
   }
-  if (! struct_type_init(s, module)) {
-    free(s);
+  if (! struct_type_init(st, module, spec)) {
+    free(st);
     return NULL;
   }
-  return s;
+  return st;
 }
