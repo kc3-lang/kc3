@@ -15,7 +15,7 @@
 #include "../sdl2_sprite.h"
 #include "toasters.h"
 
-#define TOASTERS_SCALE_TOAST 0.5
+#define TOASTERS_SCALE_TOAST   0.52
 #define TOASTERS_SCALE_TOASTER 0.4
 #define TOASTERS_SPACING \
   (g_sprite_toaster.h * TOASTERS_SCALE_TOASTER * 2.0)
