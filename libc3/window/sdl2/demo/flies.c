@@ -166,9 +166,9 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
   map = &seq->tag.data.map;
   if (map->count != 4 ||
       map->value[0].type != TAG_ARRAY ||
-        map->value[1].type != TAG_UW ||
-        map->value[2].type != TAG_UW ||
-        map->value[3].type != TAG_UW)
+      map->value[1].type != TAG_UW ||
+      map->value[2].type != TAG_UW ||
+      map->value[3].type != TAG_UW)
     return false;
   board    = &map->value[0].data.array;
   fly_in   = &map->value[1].data.uw;
@@ -184,13 +184,11 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
   glPushMatrix(); {
     glTranslated(board_x, 60.0, 0.0);
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    sdl2_font_set_size(&g_font_courier_new,
-                       board_item_h,
-                       window->dpi);
     buf_init(&buf, false, sizeof(a), a);
     buf_write_1(&buf, "In ");
     buf_inspect_uw(&buf, fly_in);
     buf_write_u8(&buf, 0);
+    sdl2_font_set_size(&g_font_courier_new, board_item_h, 72);
     sdl2_font_render_text(&g_font_courier_new, buf.ptr.ps8);
     buf_init(&buf, false, sizeof(a), a);
     buf_write_1(&buf, "Out ");
