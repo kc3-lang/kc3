@@ -115,5 +115,8 @@ bool earth_render (s_sequence *seq, s_window_sdl2 *window,
   gl_sphere_render_wireframe(sphere);
   */
   glPopMatrix();
+  glDisable(GL_TEXTURE_2D);
+  glDisable(GL_LIGHT0);
+  glDisable(GL_LIGHTING);
   return true;
 }
