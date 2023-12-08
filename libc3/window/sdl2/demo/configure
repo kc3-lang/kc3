@@ -47,7 +47,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 CPPFLAGS="-I../../../../libffi/include -I../../../.. $CPPFLAGS"
 CPPFLAGS="$CPPFLAGS -DGL_SILENCE_DEPRECATION=1"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-LIBS="$LIBS"
+LIBS="$LIBS -lm"
 config_asan
 config_gnu
 pkg_config ftgl
