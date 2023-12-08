@@ -161,52 +161,56 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
   glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   /* io_inspect(&seq->tag); */
-  if (seq->tag.type == TAG_MAP) {
-    map = &seq->tag.data.map;
-    if (map->count == 4 &&
-        map->value[0].type == TAG_ARRAY &&
-        map->value[1].type == TAG_UW &&
-        map->value[2].type == TAG_UW &&
-        map->value[3].type == TAG_UW) {
-      board    = &map->value[0].data.array;
-      fly_in   = &map->value[1].data.uw;
-      fly_out  = &map->value[2].data.uw;
-      fly_time = &map->value[3].data.uw;
-      board_item_h = (f64) (window->h - 60) / (BOARD_SIZE + 1);
-      board_item_w = board_item_h * g_xy_ratio;
-      board_w = board_item_w * BOARD_SIZE;
-      board_h = board_item_h * BOARD_SIZE;
-      board_x = (window->w - board_w) / 2.0;
-      fly_scale = 2.0 * board_item_w / g_fly_sprite.w;
-      dead_fly_scale = 2.0 * board_item_w / g_dead_fly_sprite.w;
-      glPushMatrix();
-      glTranslated(board_x, 60.0, 0.0);
-      glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-      sdl2_font_set_size(&g_font_courier_new, board_item_h, window->dpi);
-      buf_init(&buf, false, sizeof(a), a);
-      buf_write_1(&buf, "In ");
-      buf_inspect_uw(&buf, fly_in);
-      buf_write_u8(&buf, 0);
-      sdl2_font_render_text(&g_font_courier_new, buf.ptr.ps8);
-      buf_init(&buf, false, sizeof(a), a);
-      buf_write_1(&buf, "Out ");
-      buf_inspect_uw(&buf, fly_out);
-      buf_write_u8(&buf, 0);
-      x = board_item_w * (BOARD_SIZE / 2 + 1);
-      glPushMatrix();
+  if (!seq || seq->tag.type != TAG_MAP)
+    return false;
+  map = &seq->tag.data.map;
+  if (map->count != 4 ||
+      map->value[0].type != TAG_ARRAY ||
+        map->value[1].type != TAG_UW ||
+        map->value[2].type != TAG_UW ||
+        map->value[3].type != TAG_UW)
+    return false;
+  board    = &map->value[0].data.array;
+  fly_in   = &map->value[1].data.uw;
+  fly_out  = &map->value[2].data.uw;
+  fly_time = &map->value[3].data.uw;
+  board_item_h = (f64) (window->h - 60) / (BOARD_SIZE + 1);
+  board_item_w = board_item_h * g_xy_ratio;
+  board_w = board_item_w * BOARD_SIZE;
+  board_h = board_item_h * BOARD_SIZE;
+  board_x = (window->w - board_w) / 2.0;
+  fly_scale = 2.0 * board_item_w / g_fly_sprite.w;
+  dead_fly_scale = 2.0 * board_item_w / g_dead_fly_sprite.w;
+  glPushMatrix(); {
+    glTranslated(board_x, 60.0, 0.0);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    sdl2_font_set_size(&g_font_courier_new,
+                       board_item_h,
+                       window->dpi);
+    buf_init(&buf, false, sizeof(a), a);
+    buf_write_1(&buf, "In ");
+    buf_inspect_uw(&buf, fly_in);
+    buf_write_u8(&buf, 0);
+    sdl2_font_render_text(&g_font_courier_new, buf.ptr.ps8);
+    buf_init(&buf, false, sizeof(a), a);
+    buf_write_1(&buf, "Out ");
+    buf_inspect_uw(&buf, fly_out);
+    buf_write_u8(&buf, 0);
+    x = board_item_w * (BOARD_SIZE / 2 + 1);
+    glPushMatrix(); {
       glTranslated(x, 0.0, 0.0);
       sdl2_font_render_text(&g_font_courier_new, buf.ptr.ps8);
-      glPopMatrix();
-      glTranslated(0.0, board_item_h, 0.0);
-      glColor4f(0.6f, 0.7f, 0.9f, 1.0f);
-      glRectd(0, 0, board_w, board_h);
-      address[1] = 0;
-      while (address[1] < BOARD_SIZE) {
-        y = board_item_h * address[1];
-        address[0] = 0;
-        while (address[0] < BOARD_SIZE) {
-          x = board_item_w * address[0];
-          glPushMatrix();
+    } glPopMatrix();
+    glTranslated(0.0, board_item_h, 0.0);
+    glColor4f(0.6f, 0.7f, 0.9f, 1.0f);
+    glRectd(0, 0, board_w, board_h);
+    address[1] = 0;
+    while (address[1] < BOARD_SIZE) {
+      y = board_item_h * address[1];
+      address[0] = 0;
+      while (address[0] < BOARD_SIZE) {
+        x = board_item_w * address[0];
+        glPushMatrix(); {
           glTranslated(x, board_h - board_item_h - y, 0.0);
           board_item = (u8 *) array_data(board, address);
           assert(board_item);
@@ -219,11 +223,11 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
             glRectd(0, 0, board_item_w + 1.0, board_item_h + 1.0);
             break;
           case BOARD_ITEM_FLY:
-            glPushMatrix();
-            glTranslated(-board_item_w / 2.0, -board_item_h / 2.0, 0.0);
-            glScaled(fly_scale, fly_scale, 1.0);
-            sdl2_sprite_render(&g_fly_sprite, 0);
-            glPopMatrix();
+            glPushMatrix(); {
+              glTranslated(-board_item_w / 2.0, -board_item_h / 2.0, 0.0);
+              glScaled(fly_scale, fly_scale, 1.0);
+              sdl2_sprite_render(&g_fly_sprite, 0);
+            } glPopMatrix();
             if (address[0] == BOARD_SIZE / 2 &&
                 address[1] == BOARD_SIZE - 1) {
               array_data_set(board, address, &g_board_item_space);
@@ -291,20 +295,19 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
             }
             break;
           case BOARD_ITEM_DEAD_FLY:
-            glPushMatrix();
-            glTranslated(-board_item_w / 2.0, -board_item_h / 2.0, 0.0);
-            glScaled(dead_fly_scale, dead_fly_scale, 1.0);
-            sdl2_sprite_render(&g_dead_fly_sprite, 0);
-            glPopMatrix();
+            glPushMatrix(); {
+              glTranslated(-board_item_w / 2.0, -board_item_h / 2.0,
+                           0.0);
+              glScaled(dead_fly_scale, dead_fly_scale, 1.0);
+              sdl2_sprite_render(&g_dead_fly_sprite, 0);
+            } glPopMatrix();
             break;
           }
-          glPopMatrix();
-          address[0]++;
-        }
-        address[1]++;
+        } glPopMatrix();
+        address[0]++;
       }
-      glPopMatrix();
+      address[1]++;
     }
-  }
+  } glPopMatrix();
   return true;
 }
