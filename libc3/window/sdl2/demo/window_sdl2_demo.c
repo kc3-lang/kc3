@@ -146,10 +146,13 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   window_sdl2_sequence_init(window->sequence + 2, 60.0,
                             "03. Toasters",
                             toasters_load, toasters_render);
-  if (! sdl2_sprite_init(&g_fly_sprite, "img/fly-noto.png",
+  if (! sdl2_font_init(&g_font_flies,
+                       "fonts/Courier New/Courier New.ttf"))
+    return false;
+  if (! sdl2_sprite_init(&g_sprite_fly, "img/fly-noto.png",
                          1, 1, 1))
     return false;
-  if (! sdl2_sprite_init(&g_dead_fly_sprite, "img/fly-dead.png",
+  if (! sdl2_sprite_init(&g_sprite_dead_fly, "img/fly-dead.png",
                          1, 1, 1))
     return false;
   window_sdl2_sequence_init(window->sequence + 3, 60.0,
@@ -170,6 +173,8 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
 static void render_text (s_sdl2_font *font, double x, double y,
                          const s8 *p)
 {
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR);
   glPushMatrix();
   glTranslated(x, y, 0.0);
   glPushMatrix();
