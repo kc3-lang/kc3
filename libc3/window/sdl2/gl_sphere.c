@@ -115,8 +115,10 @@ void gl_sphere_render (const s_gl_sphere *sphere)
     p[1] = sphere->vertex + j % seg_u;
     tex_coord[0].x = tex_coord[1].x = (f64) j / seg_u;
     gl_tex_coord_2d(tex_coord);
+    gl_normal_3d(p[0]);
     gl_vertex_3d(p[0]);
     gl_tex_coord_2d(tex_coord + 1);
+    gl_normal_3d(p[1]);
     gl_vertex_3d(p[1]);
     j++;
   }
@@ -133,8 +135,10 @@ void gl_sphere_render (const s_gl_sphere *sphere)
       p[1] = sphere->vertex + (i - 1) * seg_u + j % seg_u;
       tex_coord[0].x = tex_coord[1].x = (f64) j / seg_u;
       gl_tex_coord_2d(tex_coord);
+      gl_normal_3d(p[0]);
       gl_vertex_3d(p[0]);
       gl_tex_coord_2d(tex_coord + 1);
+      gl_normal_3d(p[1]);
       gl_vertex_3d(p[1]);
       j++;
     }
@@ -151,8 +155,10 @@ void gl_sphere_render (const s_gl_sphere *sphere)
     p[1] = sphere->vertex + (seg_v - 1) * seg_u + j % seg_u;
     tex_coord[0].x = tex_coord[1].x = (f64) j / seg_u;
     gl_tex_coord_2d(tex_coord);
+    gl_normal_3d(p[0]);
     gl_vertex_3d(p[0]);
     gl_tex_coord_2d(tex_coord + 1);
+    gl_normal_3d(p[1]);
     gl_vertex_3d(p[1]);
     j++;
   }
