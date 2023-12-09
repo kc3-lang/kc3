@@ -173,6 +173,8 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
     return NULL;
   }
   gl_internal_format = 0;
+  gl_format = 0;
+  png_components = 0;
   if (setjmp(png_jmpbuf(png_read))) {
     png_destroy_read_struct(&png_read, &png_info, NULL);
     fclose(fp);
