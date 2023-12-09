@@ -22,9 +22,11 @@ DISTCLEANFILES = ${CLEANFILES} config.mk
 IMG_SOURCES = \
 	../../../../../img/earth.png \
 	../../../../../img/flaps.png \
+	../../../../../img/flaps.256.png \
 	../../../../../img/fly-dead.png \
 	../../../../../img/fly-noto.png \
 	../../../../../img/toast.png \
+	../../../../../img/toast.128.png \
 
 FONT_SOURCES = \
 	../../../../../fonts/Courier\ New \
