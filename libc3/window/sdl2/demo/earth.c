@@ -104,6 +104,8 @@ bool earth_render (s_sequence *seq, s_window_sdl2 *window,
     sphere_radius = 5.0;
     glScalef(sphere_radius, sphere_radius, sphere_radius);
     glEnable(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
     sdl2_sprite_bind(&g_sprite_earth, 0);
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     gl_sphere_render(sphere);

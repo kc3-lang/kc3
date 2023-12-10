@@ -29,6 +29,8 @@
 void            struct_type_clean (s_struct_type *s);
 s_struct_type * struct_type_init (s_struct_type *s, const s_sym *module,
                                   const s_list *spec);
+s_struct_type * struct_type_init_copy (s_struct_type *s,
+                                       const s_struct_type *src);
 s_struct_type * struct_type_init_from_env (s_struct_type *st,
                                            const s_sym *module,
                                            s_env *env);
@@ -37,5 +39,8 @@ s_struct_type * struct_type_init_from_env (s_struct_type *st,
 void            struct_type_delete (s_struct_type *s);
 s_struct_type * struct_type_new (const s_sym *module,
                                  const s_list *spec);
+
+/* Utility functions. */
+uw struct_type_padding (uw offset, uw size);
 
 #endif /* LIBC3_STRUCT_TYPE_H */
