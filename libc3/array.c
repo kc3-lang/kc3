@@ -51,24 +51,23 @@
 
 void array_clean (s_array *a)
 {
+  f_clean clean;
   u8 *data;
-  u8 *data_tag;
   uw i;
   uw size;
-  s_tag tag;
   assert(a);
   free(a->dimensions);
   if (a->data) {
-    data = a->data;
+    clean = sym_to_clean(a->type);
     size = sym_type_size(a->type);
-    sym_to_tag_type(a->type, &tag.type);
-    i = 0;
-    while (i < a->count) {
-      data_tag = tag_to_pointer(&tag, a->type);
-      memcpy(data_tag, data, size);
-      tag_clean(&tag);
-      data += size;
-      i++;
+    if (clean) {
+      data = a->data;
+      i = 0;
+      while (i < a->count) {
+        clean(data);
+        data += size;
+        i++;
+      }
     }
     free(a->data);
   }
