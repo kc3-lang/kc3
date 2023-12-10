@@ -13,12 +13,15 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include <string.h>
 #include "env.h"
 #include "list.h"
 #include "map.h"
 #include "struct.h"
 #include "struct_type.h"
 #include "sym.h"
+#include "tag.h"
+#include "tag_init.h"
 #include "tag_type.h"
 
 void struct_type_clean (s_struct_type *st)
@@ -39,6 +42,10 @@ s_struct_type * struct_type_init (s_struct_type *st, const s_sym *module,
                                   const s_list *spec)
 {
   uw count;
+  uw i;
+  uw offset;
+  const s_list *s;
+  uw size;
   assert(st);
   assert(module);
   assert(spec);
@@ -52,7 +59,50 @@ s_struct_type * struct_type_init (s_struct_type *st, const s_sym *module,
     map_clean(&st->map);
     return NULL;
   }
+  offset = 0;
+  i = 0;
+  s = spec;
+  while (s) {
+    if (s->tag.type != TAG_TUPLE || s->tag.data.tuple.count != 2) {
+      warn("struct_type_init: invalid spec");
+      map_clean(&st->map);
+      free(st->offset);
+      return NULL;
+    }
+    tag_init_copy(st->map.key + i,   s->tag.data.tuple.tag + 0);
+    tag_init_copy(st->map.value + i, s->tag.data.tuple.tag + 1);
+    size = tag_size(st->map.value + i);
+    offset = struct_type_padding(offset, size);
+    st->offset[i] = offset;
+    offset += size;
+    s = list_next(s);
+  }
+  st->size = offset;
   return st;
+}
+
+s_struct_type * struct_type_init_copy (s_struct_type *s,
+                                       const s_struct_type *src)
+{
+  s_struct_type tmp;
+  assert(s);
+  assert(src);
+  assert(src->module);
+  assert(src->map.count);
+  tmp.module = src->module;
+  if (! map_init_copy(&tmp.map, &src->map))
+    return NULL;
+  tmp.offset = calloc(tmp.map.count, sizeof(uw));
+  if (! tmp.offset) {
+    warn("struct_type_init_copy: offset array of size %lu",
+         tmp.map.count);
+    map_clean(&tmp.map);
+    return NULL;
+  }
+  memcpy(tmp.offset, src->offset, tmp.map.count * sizeof(uw));
+  tmp.size = src->size;
+  *s = tmp;
+  return s;
 }
 
 s_struct_type * struct_type_init_from_env (s_struct_type *st,
@@ -86,4 +136,18 @@ s_struct_type * struct_type_new (const s_sym *module,
     return NULL;
   }
   return st;
+}
+
+uw struct_type_padding (uw offset, uw size)
+{
+  unsigned int align = 1;
+  if (size == 2)
+    align = 2;
+  else if (size == 4)
+    align = 4;
+  else if (size == 8)
+    align = 8;
+  else if (size == 16)
+    align = 16;
+  return (offset + align - 1) / align * align;
 }

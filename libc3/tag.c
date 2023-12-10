@@ -1083,6 +1083,14 @@ s_tag * tag_paren (const s_tag *tag, s_tag *dest)
   return tag_init_copy(dest, tag);
 }
 
+sw tag_size (const s_tag *tag)
+{
+  const s_sym *type;
+  assert(tag);
+  type = tag_type_to_sym(tag->type);
+  return sym_type_size(type);
+}
+
 /*
 s_tag * tag_s8 (s_tag *tag, s8 x)
 {

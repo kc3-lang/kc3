@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include <string.h>
 #include "env.h"
 #include "map.h"
 #include "struct.h"
@@ -39,6 +40,52 @@ void struct_clean (s_struct *s)
   }
   free(data);
   struct_type_clean(&s->type);
+}
+
+s_struct * struct_init_copy (s_struct *s, const s_struct *src)
+{
+  f_clean clean;
+  f_init_copy init_copy;
+  uw i = 0;
+  uw size;
+  const s_sym *sym;
+  s_struct tmp;
+  assert(s);
+  assert(src);
+  if (! struct_type_init_copy(&tmp.type, &src->type))
+    return NULL;
+  tmp.free = true;
+  tmp.data = calloc(1, tmp.type.size);
+  while (i < tmp.type.map.count) {
+    if (tag_type(tmp.type.map.value + i, &sym)) {
+      init_copy = sym_to_init_copy(sym);
+      if (init_copy) {
+        if (! init_copy((s8 *) tmp.data + tmp.type.offset[i],
+                        (s8 *) src->data + tmp.type.offset[i]))
+          goto ko;
+      }
+      else {
+        size = tag_size(tmp.type.map.value + i);
+        memcpy((s8 *) tmp.data + tmp.type.offset[i],
+               (s8 *) src->data + tmp.type.offset[i],
+               size);
+      }
+    }
+    i++;
+  }
+  *s = tmp;
+  return s;
+ ko:
+  while (i > 0) {
+    i--;
+    tag_type(tmp.type.map.value + i, &sym);
+    clean = sym_to_clean(sym);
+    if (clean)
+      clean((s8 *) tmp.data + tmp.type.offset[i]);
+  }
+  free(tmp.data);
+  struct_type_clean(&tmp.type);
+  return NULL;
 }
 
 void struct_delete (s_struct *s)
