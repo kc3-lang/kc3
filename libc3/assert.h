@@ -13,17 +13,22 @@
 #ifndef LIBC3_ASSERT_H
 #define LIBC3_ASSERT_H
 
-#include "types.h"
+#include "env.h"
 #include "io.h"
 
 #ifdef DEBUG
 # define assert(test)                                                  \
   do {                                                                 \
+    sw assert_line = __LINE__;                                         \
     if (! (test)) {                                                    \
+      if (g_c3_env.argv && g_c3_env.argv[0]) {                         \
+        err_write_1(g_c3_env.argv[0]);                                 \
+        err_write_1(": ");                                             \
+      }                                                                \
       err_write_1("assertion failed: ");                               \
       err_write_1(__FILE__);                                           \
       err_write_1(":");                                                \
-      err_write_1(__LINE__);                                           \
+      err_inspect_sw(&assert_line);                                    \
       err_write_1(": ");                                               \
       err_write_1(__func__);                                           \
       err_write_1(": ");                                               \

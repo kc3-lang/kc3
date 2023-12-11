@@ -19,30 +19,22 @@
   sw err_inspect_ ## name (type x)                                     \
   {                                                                    \
     sw r;                                                              \
-    sw result = 0;                                                     \
-    if ((r = buf_inspect_ ## name(&g_c3_env.err, x)) < 0)              \
+    r = buf_inspect_ ## name(&g_c3_env.err, x);                        \
+    if (r < 0)                                                         \
       return r;                                                        \
-    result += r;                                                       \
-    if ((r = buf_write_u8(&g_c3_env.err, '\n')) < 0)                   \
-      return r;                                                        \
-    result += r;                                                       \
     buf_flush(&g_c3_env.err);                                          \
-    return result;                                                     \
+    return r;                                                          \
   }
 
 #define DEF_IO_INSPECT(name, type)                                     \
   sw io_inspect_ ## name (type x)                                      \
   {                                                                    \
     sw r;                                                              \
-    sw result = 0;                                                     \
-    if ((r = buf_inspect_ ## name(&g_c3_env.out, x)) < 0)              \
+    r = buf_inspect_ ## name(&g_c3_env.out, x);                        \
+    if (r < 0)                                                         \
       return r;                                                        \
-    result += r;                                                       \
-    if ((r = buf_write_u8(&g_c3_env.out, '\n')) < 0)                   \
-      return r;                                                        \
-    result += r;                                                       \
     buf_flush(&g_c3_env.out);                                          \
-    return result;                                                     \
+    return r;                                                          \
   }
 
 #define DEF_ERR_IO_INSPECT(name, type)                                 \
