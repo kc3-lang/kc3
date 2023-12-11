@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include "buf.h"
 #include "buf_file.h"
 #include "hash.h"
@@ -35,21 +35,27 @@ void log_delete (s_log *log)
   free(log);
 }
 
-void log_init (s_log *log)
+s_log * log_init (s_log *log)
 {
-  buf_init_alloc(&log->buf, BUF_SIZE);
+  if (! buf_init_alloc(&log->buf, BUF_SIZE))
+    return NULL;
   log->count = 0;
   hash_init(&log->hash);
+  return log;
 }
 
 s_log * log_new (void)
 {
   s_log *log;
-  if (! (log = malloc(sizeof(s_log)))) {
-    warnx("log_new: failed to allocate memory");
+  log = malloc(sizeof(s_log));
+  if (! log) {
+    err_puts("log_new: failed to allocate memory");
     return NULL;
   }
-  log_init(log);
+  if (! log_init(log)) {
+    free(log);
+    return NULL;
+  }
   return log;
 }
 

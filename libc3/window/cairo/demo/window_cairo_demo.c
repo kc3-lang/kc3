@@ -10,9 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <libc3/c3.h>
 #include <xkbcommon/xkbcommon.h>
@@ -30,7 +28,13 @@ bool window_cairo_demo_button (s_window_cairo *window, u8 button,
 {
   assert(window);
   (void) window;
-  printf("c3_window_cairo_demo_button: %lu (%ld, %ld)\n", (uw) button, x, y);
+  io_write_1("c3_window_cairo_demo_button: ");
+  io_inspect_u8(&button);
+  io_write_1(" (");
+  io_inspect_sw(&x);
+  io_write_1(", ");
+  io_inspect_sw(&y);
+  io_puts(")");
   return true;
 }
 
@@ -59,7 +63,10 @@ bool window_cairo_demo_key (s_window_cairo *window, uw keysym)
     break;
   default:
     xkb_keysym_get_name(keysym, keysym_name, sizeof(keysym_name));
-    printf("c3_window_cairo_demo_key: %lu %s\n", keysym, keysym_name);
+    io_write_1("c3_window_cairo_demo_key: ");
+    io_inspect_uw(&keysym);
+    io_write_1(" ");
+    io_puts(keysym_name);
   }
   return true;
 }
@@ -68,8 +75,9 @@ bool window_cairo_demo_load (s_window_cairo *window)
 {
   assert(window);
   if (window->sequence_count != WINDOW_CAIRO_DEMO_SEQUENCE_COUNT) {
-    fprintf(stderr, "window_cairo_demo_load: "
-            "window->sequence_count = %lu\n", window->sequence_count);
+    err_write_1("window_cairo_demo_load: window->sequence_count = ");
+    err_inspect_uw(&window->sequence_count);
+    err_write_1("\n");
     assert(window->sequence_count == WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
     return false;
   }

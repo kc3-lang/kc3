@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <string.h>
 #include "buf.h"
 #include "buf_inspect.h"
@@ -65,29 +65,39 @@ bool call_get (s_call *call, s_facts *facts)
                                 &tag_symbol, &tag_ident) &&
       ! facts_find_fact_by_tags(facts, &tag_module_name,
                                 &tag_operator, &tag_ident)) {
-    warnx("call_get: symbol %s not found in module %s",
-          call->ident.sym->str.ptr.ps8,
-          call->ident.module->str.ptr.ps8);
+    err_write_1("call_get: symbol ");
+    err_write_1(call->ident.sym->str.ptr.ps8);
+    err_write_1(" not found in module ");
+    err_write_1(call->ident.module->str.ptr.ps8);
+    err_write_1("\n");
     return false;
   }
   facts_with_tags(facts, &cursor, &tag_ident, &tag_fn, &tag_var);
   if (facts_cursor_next(&cursor)) {
     if (tag_var.type == TAG_FN)
       call->fn = fn_new_copy(&tag_var.data.fn);
-    else
-      warnx("call_get: %s.%s is not a function",
-            call->ident.module->str.ptr.ps8,
-            call->ident.sym->str.ptr.ps8);
+    else {
+      err_write_1("call_get: ");
+      err_write_1(call->ident.module->str.ptr.ps8);
+      err_write_1(".");
+      err_write_1(call->ident.sym->str.ptr.ps8);
+      err_puts(" is not a function");
+      return false;
+    }
   }
   facts_cursor_clean(&cursor);
   facts_with_tags(facts, &cursor, &tag_ident, &tag_cfn, &tag_var);
   if (facts_cursor_next(&cursor)) {
     if (tag_var.type == TAG_CFN)
       call->cfn = cfn_new_copy(&tag_var.data.cfn);
-    else
-      errx(1, "%s.%s is not a C function",
-           call->ident.module->str.ptr.ps8,
-           call->ident.sym->str.ptr.ps8);
+    else {
+      err_write_1("call_get: ");
+      err_write_1(call->ident.module->str.ptr.ps8);
+      err_write_1(".");
+      err_write_1(call->ident.sym->str.ptr.ps8);
+      err_puts(" is not a C function");
+      return false;
+    }
   }
   facts_cursor_clean(&cursor);
   if (facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
@@ -135,9 +145,11 @@ bool call_op_get (s_call *call, s_facts *facts)
       &tag_symbol, &tag_ident,    /* module exports symbol */
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor)) {
-    warnx("symbol %s not found in module %s",
-          call->ident.sym->str.ptr.ps8,
-          call->ident.module->str.ptr.ps8);
+    err_write_1("call_get: symbol ");
+    err_write_1(call->ident.sym->str.ptr.ps8);
+    err_write_1(" not found in module ");
+    err_write_1(call->ident.module->str.ptr.ps8);
+    err_write_1("\n");
     facts_with_cursor_clean(&cursor);
     return false;
   }
@@ -146,10 +158,15 @@ bool call_op_get (s_call *call, s_facts *facts)
       &tag_ident, &tag_fn, &tag_var,
       NULL, NULL });
   if (facts_with_cursor_next(&cursor)) {
-    if (tag_var.type != TAG_FN)
-      errx(1, "%s.%s is not a function",
-           call->ident.module->str.ptr.ps8,
-           call->ident.sym->str.ptr.ps8);
+    if (tag_var.type != TAG_FN) {
+      err_write_1("call_get: ");
+      err_write_1(call->ident.module->str.ptr.ps8);
+      err_write_1(".");
+      err_write_1(call->ident.sym->str.ptr.ps8);
+      err_puts(" is not a function");
+      facts_with_cursor_clean(&cursor);
+      return false;
+    }
     call->fn = fn_new_copy(&tag_var.data.fn);
   }
   facts_with_cursor_clean(&cursor);
@@ -157,10 +174,15 @@ bool call_op_get (s_call *call, s_facts *facts)
       &tag_ident, &tag_cfn, &tag_var,
       NULL, NULL });
   if (facts_with_cursor_next(&cursor)) {
-    if (tag_var.type != TAG_CFN)
-      errx(1, "%s.%s is not a C function",
-           call->ident.module->str.ptr.ps8,
-           call->ident.sym->str.ptr.ps8);
+    if (tag_var.type != TAG_CFN) {
+      err_write_1("call_get: ");
+      err_write_1(call->ident.module->str.ptr.ps8);
+      err_write_1(".");
+      err_write_1(call->ident.sym->str.ptr.ps8);
+      err_puts(" is not a C function");
+      facts_with_cursor_clean(&cursor);
+      return false;
+    }
     call->cfn = cfn_new_copy(&tag_var.data.cfn);
   }
   facts_with_cursor_clean(&cursor);
@@ -195,9 +217,21 @@ s_call * call_init (s_call *call)
 s_call * call_init_1 (s_call *call, const s8 *p)
 {
   s_buf buf;
-  buf_init_1(&buf, false, (s8 *) p);
-  if (buf_parse_call(&buf, call) != (sw) strlen(p))
-    errx(1, "invalid call: %s", p);
+  uw len;
+  sw r;
+  len = strlen(p);
+  buf_init(&buf, false, len, (s8 *) p);
+  r = buf_parse_call(&buf, call);
+  if (r < 0 || (uw) r != len) {
+    err_write_1("call_init_1: invalid call: ");
+    err_write_1(p);
+    err_write_1(": ");
+    err_inspect_sw(&r);
+    err_write_1(" != ");
+    err_inspect_uw(&len);
+    err_write_1("\n");
+    return NULL;
+  }
   return call;
 }
 

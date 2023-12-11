@@ -794,7 +794,8 @@ const s_list * env_get_struct_type_spec (s_env *env,
           module->str.ptr.ps8);
     return NULL;
   }
-  if (tag_var.type != TAG_LIST) {
+  if (tag_var.type != TAG_LIST ||
+      ! list_is_plist(tag_var.data.list)) {
     warnx("env_get_struct_type_spec: module %s"
           " has a defstruct that is not a property list",
           module->str.ptr.ps8);

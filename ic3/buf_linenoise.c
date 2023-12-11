@@ -10,8 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -47,7 +45,7 @@ s_buf * buf_linenoise_open_r (s_buf *buf, const s8 *prompt,
   assert(buf);
   buf_linenoise = malloc(sizeof(s_buf_linenoise));
   if (! buf_linenoise) {
-    warn("buf_linenoise_open_r: malloc");
+    err_puts("buf_linenoise_open_r: failed to allocate memory");
     return NULL;
   }
   buf_init(&buf_linenoise->buf, false, 1, "");

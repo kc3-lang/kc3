@@ -10,7 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
 #include <math.h>
 #include <libc3/c3.h>
 #include "gl.h"
@@ -48,8 +47,11 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw segments_u,
   sphere->segments_v = segments_v;
   p = calloc(segments_u * segments_v + 2, sizeof(s_gl_3d));
   if (! p) {
-    warn("gl_sphere_init(%lu, %lu): point array", segments_u,
-         segments_v);
+    err_write_1("gl_sphere_init(");
+    err_inspect_uw(&segments_u);
+    err_write_1(", ");
+    err_inspect_uw(&segments_v);
+    err_write_1("): failed to allocate memory");
     return NULL;
   }
   sphere->vertex = p;
@@ -84,7 +86,7 @@ s_gl_sphere * gl_sphere_new (uw segments_u, uw segments_w)
   s_gl_sphere *sphere;
   sphere = calloc(1, sizeof(s_gl_sphere));
   if (! sphere) {
-    warn("gl_sphere_new: sphere");
+    err_puts("gl_sphere_new: failed to allocate memory");
     return NULL;
   }
   if (! gl_sphere_init(sphere, segments_u, segments_w)) {

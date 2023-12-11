@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_parse_s.c.in BITS=16 bits=16 */
+#include "assert.h"
 #include "buf.h"
 #include "buf_parse.h"
 #include "buf_save.h"
@@ -28,6 +29,8 @@ sw buf_parse_s16 (s_buf *buf, s16 *dest)
   s_buf_save save;
   s16 tmp;
   s16 tmp1;
+  assert(buf);
+  assert(dest);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "-")) < 0)
     goto clean;
@@ -75,9 +78,9 @@ sw buf_parse_s16 (s_buf *buf, s16 *dest)
     }
     if (r == 0 && r1 == 0) {
       if (negative)
-        warnx("invalid number: -0x");
+        err_puts("invalid number: -0x");
       else
-        warnx("invalid number: 0x");
+        err_puts("invalid number: 0x");
       goto restore;
     }
     if (r > r1) {
@@ -120,31 +123,33 @@ sw buf_parse_s16_base (s_buf *buf, const s_str *base,
   radix = str_length_utf8(base);
   if (radix < 2 || radix > S16_MAX) {
     buf_save_clean(buf, &save);
+    err_write_1("buf_parse_s16_base: invalid radix: ");
+    err_inspect_sw(&radix);
+    err_write_1("\n");
     assert(! "buf_parse_s16_base: invalid radix");
-    errx(1, "buf_parse_s16_base: invalid radix: %ld",
-         radix);
     return -1;
   }
   while ((r = buf_parse_digit(buf, base, &digit)) > 0) {
     result += r;
     if (digit >= radix) {
       buf_save_clean(buf, &save);
+      err_write_1("buf_parse_s16_base:"
+                  " digit greater than or equal to radix: ");
+      err_inspect_u8(&digit);
+      err_write_1("\n");
       assert(! "buf_parse_s16_base: digit greater than or equal to"
              " radix");
-      errx(1, "buf_parse_s16_base: digit greater than or equal to"
-           " radix: %u",
-           digit);
       return -1;
     }
     if (u > (u16) ceiling_s16 (S16_MAX, radix)) {
-      warnx("buf_parse_s16_base: *: integer overflow");
+      err_puts("buf_parse_s16_base: *: integer overflow");
       r = -1;
       goto restore;
     }
     u *= radix;
     if (negative ? -u < (u16) S16_MIN + digit :
         u > (u16) (S16_MAX - digit)) {
-      warnx("buf_parse_s16_base: +: integer overflow");
+      err_puts("buf_parse_s16_base: +: integer overflow");
       r = -1;
       goto restore;
     }

@@ -16,10 +16,10 @@
 #include "types.h"
 
 #define PROTOTYPE_ERR_INSPECT(name, type)                              \
-  sw err_inspect_ ## name (const type *x)                              \
+  sw err_inspect_ ## name (type x)                                     \
 
 #define PROTOTYPE_IO_INSPECT(name, type)                               \
-  sw io_inspect_ ## name (const type *x)                               \
+  sw io_inspect_ ## name (type x)                                      \
 
 #define PROTOTYPES_ERR_IO_INSPECT(name, type)                          \
   PROTOTYPE_ERR_INSPECT(name, type);                                   \
@@ -28,17 +28,30 @@
 /* error output */
 sw err_inspect (const s_tag *x);
 sw err_puts (const s8 *x);
+sw err_write_1 (const s8 *x);
 
 /* standard output */
 sw io_inspect (const s_tag *x);
 sw io_puts (const s8 *x);
+sw io_write_1 (const s8 *x);
 
-PROTOTYPES_ERR_IO_INSPECT(array,      s_array);
-PROTOTYPES_ERR_IO_INSPECT(fact,       s_fact);
-PROTOTYPES_ERR_IO_INSPECT(fn_pattern, s_list);
-PROTOTYPES_ERR_IO_INSPECT(list,       s_list *);
-PROTOTYPES_ERR_IO_INSPECT(map,        s_map);
-PROTOTYPES_ERR_IO_INSPECT(str,        s_str);
-PROTOTYPES_ERR_IO_INSPECT(tag,        s_tag);
+PROTOTYPES_ERR_IO_INSPECT(array,      const s_array *);
+PROTOTYPES_ERR_IO_INSPECT(fact,       const s_fact *);
+PROTOTYPES_ERR_IO_INSPECT(facts_spec, const p_facts_spec);
+PROTOTYPES_ERR_IO_INSPECT(fn_pattern, const s_list *);
+PROTOTYPES_ERR_IO_INSPECT(list,       const s_list **);
+PROTOTYPES_ERR_IO_INSPECT(map,        const s_map *);
+PROTOTYPES_ERR_IO_INSPECT(str,        const s_str *);
+PROTOTYPES_ERR_IO_INSPECT(tag,        const s_tag *);
+PROTOTYPES_ERR_IO_INSPECT(s8,         const s8 *);
+PROTOTYPES_ERR_IO_INSPECT(s16,        const s16 *);
+PROTOTYPES_ERR_IO_INSPECT(s32,        const s32 *);
+PROTOTYPES_ERR_IO_INSPECT(s64,        const s64 *);
+PROTOTYPES_ERR_IO_INSPECT(sw,         const sw *);
+PROTOTYPES_ERR_IO_INSPECT(u8,         const u8 *);
+PROTOTYPES_ERR_IO_INSPECT(u16,        const u16 *);
+PROTOTYPES_ERR_IO_INSPECT(u32,        const u32 *);
+PROTOTYPES_ERR_IO_INSPECT(u64,        const u64 *);
+PROTOTYPES_ERR_IO_INSPECT(uw,         const uw *);
 
 #endif /* LIBC3_IO_H */

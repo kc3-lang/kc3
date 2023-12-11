@@ -11,11 +11,13 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_parse_u.c.in BITS=8 bits=8 */
+#include "assert.h"
 #include "buf.h"
 #include "buf_parse.h"
 #include "buf_save.h"
 #include "c3_main.h"
 #include "ceiling.h"
+#include "io.h"
 #include "str.h"
 
 sw buf_parse_u8 (s_buf *buf, u8 *dest)
@@ -27,6 +29,8 @@ sw buf_parse_u8 (s_buf *buf, u8 *dest)
   s_buf_save save;
   u8 tmp;
   u8 tmp1;
+  assert(buf);
+  assert(dest);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "0b")) < 0)
     goto restore;
@@ -64,7 +68,7 @@ sw buf_parse_u8 (s_buf *buf, u8 *dest)
       goto restore;
     }
     if (r == 0 && r1 == 0) {
-      warnx("invalid number: 0x");
+      err_write_1("invalid number: 0x");
       goto restore;
     }
     if (r > r1) {
@@ -107,33 +111,35 @@ sw buf_parse_u8_base (s_buf *buf, const s_str *base,
   radix = str_length_utf8(base);
   if (radix < 2 || (uw) radix > U8_MAX) {
     buf_save_clean(buf, &save);
+    err_write_1("buf_parse_u8_base: invalid radix: ");
+    err_inspect_sw(&radix);
     assert(! "buf_parse_u8_base: invalid radix");
-    errx(1, "buf_parse_u8_base: invalid radix: %ld",
-         radix);
     return -1;
   }
   while ((r = buf_parse_digit(buf, base, &digit)) > 0) {
     result += r;
     if (digit >= radix) {
       buf_save_clean(buf, &save);
+      err_write_1("buf_parse_u8_base:"
+                  " digit greater than or equal to radix: ");
+      err_inspect_u8(&digit);
       assert(! "buf_parse_u8_base: digit greater than or equal to"
              " radix");
-      errx(1, "buf_parse_u8_base: digit greater than or equal to"
-           " radix: %u",
-           digit);
       return -1;
     }
     if (u > ceiling_u8(U8_MAX, radix)) {
-      warnx("buf_parse_u8_base: %llu * %llu: integer overflow",
-            (unsigned long long) u,
-            (unsigned long long) radix);
+      err_write_1("buf_parse_u8_base: ");
+      err_inspect_u8(&u);
+      err_write_1(" * ");
+      err_inspect_sw(&radix);
+      err_write_1(": integer overflow");
       r = -1;
       goto restore;
     }
     u *= radix;
     u2 = U8_MAX - digit;
     if (u > u2) {
-      warnx("buf_parse_u8_base: +: integer overflow");
+      err_write_1("buf_parse_u8_base: +: integer overflow");
       r = -1;
       goto restore;
     }

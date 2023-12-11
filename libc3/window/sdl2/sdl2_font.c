@@ -10,8 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
 #include <libc3/c3.h>
 #include "sdl2_font.h"
 
@@ -29,14 +27,15 @@ s_sdl2_font * sdl2_font_init (s_sdl2_font *font, const s8 *path)
   assert(path);
   str_init_copy_1(&font->path, path);
   if (! file_search(&font->path, sym_1("r"), &font->real_path)) {
-    warnx("sdl2_font_init(%s): file not found", path);
+    err_write_1("sdl2_font_init: file not found: ");
+    err_puts(path);
     str_clean(&font->path);
     return NULL;
   }
   font->ftgl_font = ftglCreateTextureFont(font->real_path.ptr.ps8);
   if (! font->ftgl_font) {
-    warnx("sdl2_font_init(%s): Error loading font",
-          font->real_path.ptr.ps8);
+    err_write_1("sdl2_font_init: error loading font: ");
+    err_puts(font->real_path.ptr.ps8);
     str_clean(&font->path);
     str_clean(&font->real_path);
     return NULL;

@@ -16,7 +16,7 @@
 #include "io.h"
 
 #define DEF_ERR_INSPECT(name, type)                                    \
-  sw err_inspect_ ## name (const type *x)                              \
+  sw err_inspect_ ## name (type x)                                     \
   {                                                                    \
     sw r;                                                              \
     sw result = 0;                                                     \
@@ -31,7 +31,7 @@
   }
 
 #define DEF_IO_INSPECT(name, type)                                     \
-  sw io_inspect_ ## name (const type *x)                               \
+  sw io_inspect_ ## name (type x)                                      \
   {                                                                    \
     sw r;                                                              \
     sw result = 0;                                                     \
@@ -64,8 +64,16 @@ sw err_puts (const s8 *x)
   if ((r = buf_write_u8(&g_c3_env.err, '\n')) < 0)
     return r;
   result += r;
-  buf_flush(&g_c3_env.out);
+  buf_flush(&g_c3_env.err);
   return result;
+}
+
+sw err_write_1 (const s8 *x)
+{
+  sw r;
+  if ((r = buf_write_1(&g_c3_env.err, x)) > 0)
+    buf_flush(&g_c3_env.err);
+  return r;
 }
 
 sw io_inspect (const s_tag *x)
@@ -96,8 +104,28 @@ sw io_puts (const s8 *x)
   return result;
 }
 
-DEF_ERR_IO_INSPECT(fact,       s_fact)
-DEF_ERR_IO_INSPECT(fn_pattern, s_list)
-DEF_ERR_IO_INSPECT(list,       s_list *)
-DEF_ERR_IO_INSPECT(str,        s_str)
-DEF_ERR_IO_INSPECT(tag,        s_tag)
+sw io_write_1 (const s8 *x)
+{
+  sw r;
+  if ((r = buf_write_1(&g_c3_env.out, x)) > 0)
+    buf_flush(&g_c3_env.out);
+  return r;
+}
+
+DEF_ERR_IO_INSPECT(array,      const s_array *)
+DEF_ERR_IO_INSPECT(fact,       const s_fact *)
+DEF_ERR_IO_INSPECT(fn_pattern, const s_list *)
+DEF_ERR_IO_INSPECT(list,       const s_list **)
+DEF_ERR_IO_INSPECT(map,        const s_map *)
+DEF_ERR_IO_INSPECT(str,        const s_str *)
+DEF_ERR_IO_INSPECT(tag,        const s_tag *)
+DEF_ERR_IO_INSPECT(s8,         const s8 *)
+DEF_ERR_IO_INSPECT(s16,        const s16 *)
+DEF_ERR_IO_INSPECT(s32,        const s32 *)
+DEF_ERR_IO_INSPECT(s64,        const s64 *)
+DEF_ERR_IO_INSPECT(sw,         const sw *)
+DEF_ERR_IO_INSPECT(u8,         const u8 *)
+DEF_ERR_IO_INSPECT(u16,        const u16 *)
+DEF_ERR_IO_INSPECT(u32,        const u32 *)
+DEF_ERR_IO_INSPECT(u64,        const u64 *)
+DEF_ERR_IO_INSPECT(uw,         const uw *)

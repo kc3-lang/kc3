@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <stdlib.h>
 #include <string.h>
 #include "array.h"
@@ -138,6 +138,22 @@ s_str * list_inspect (const s_list *x, s_str *dest)
   return NULL;
 }
 
+bool list_is_plist (const s_list *list)
+{
+  const s_list *l;
+  if (! list)
+    return false;
+  l = list;
+  while (l) {
+    if (l->tag.type != TAG_TUPLE ||
+        l->tag.data.tuple.count != 2 ||
+        l->tag.data.tuple.tag[0].type != TAG_SYM)
+      return false;
+    l = list_next(l);
+  }
+  return true;
+}
+
 sw list_length (const s_list *list)
 {
   sw length = 0;
@@ -161,7 +177,7 @@ s_list * list_new (s_list *next)
 {
   s_list *dest;
   if (! (dest = calloc(1, sizeof(s_list)))) {
-    warnx("list_new: out of memory");
+    err_puts("list_new: failed to allocate memory");
     return NULL;
   }
   return list_init(dest, next);
@@ -258,14 +274,20 @@ s_array * list_to_array (s_list *list, const s_sym *type,
   size = sym_type_size(type);
   dest->dimension = 1;
   dest->type = type;
-  if (! (dest->dimensions = calloc(1, sizeof(s_array_dimension))))
-    errx(1, "list_to_array: out of memory: 1");
+  if (! (dest->dimensions = calloc(1, sizeof(s_array_dimension)))) {
+    err_puts("list_to_array: out of memory: 1");
+    assert(! "list_to_array: out of memory: 1");
+    return NULL;
+  }
   dest->count = len;
   dest->dimensions[0].count = len;
   dest->dimensions[0].item_size = size;
   dest->size = len * size;
-  if (! (data = dest->data = calloc(len, size)))
-    errx(1, "list_to_array: out of memory: 2");
+  if (! (data = dest->data = calloc(len, size))) {
+    err_puts("list_to_array: out of memory: 2");
+    assert(! "list_to_array: out of memory: 2");
+    return NULL;
+  }
   init_copy = sym_to_init_copy(type);
   l = list;
   while (l) {

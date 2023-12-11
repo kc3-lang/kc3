@@ -10,7 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
 #include <math.h>
 #include <libc3/c3.h>
 #include "gl_camera.h"
@@ -41,7 +40,7 @@ s_gl_camera * gl_camera_new (uw w, uw h)
   s_gl_camera *camera;
   camera = calloc(1, sizeof(s_gl_camera));
   if (! camera) {
-    warn("gl_camera_new: camera");
+    err_puts("gl_camera_new: failed to allocate memory");
     return NULL;
   }
   if (! gl_camera_init(camera, w, h)) {

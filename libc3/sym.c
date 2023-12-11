@@ -10,8 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
 #include <stdlib.h>
 #include <string.h>
 #include "c3.h"
@@ -138,8 +136,11 @@ s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next)
 {
   s_sym_list *sym_list;
   sym_list = malloc(sizeof(s_sym_list));
-  if (! sym_list)
-    err(1, "out of memory");
+  if (! sym_list) {
+    err_puts("sym_list_new: failed to allocate memory");
+    assert(! "sym_list_new: failed to allocate memory");
+    return NULL;
+  }
   sym_list->sym = sym;
   sym_list->next = next;
   return sym_list;
@@ -148,11 +149,24 @@ s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next)
 const s_sym * sym_new (const s_str *src)
 {
   s_sym *sym;
+  s_sym_list *tmp;
   sym = malloc(sizeof(s_sym));
-  if (! sym)
-    err(1, "out of memory");
-  str_init_copy(&sym->str, src);
-  g_sym_list = sym_list_new(sym, g_sym_list);
+  if (! sym) {
+    err_puts("sym_new: failed to allocate memory");
+    assert(! "sym_new: failed to allocate memory");
+    return NULL;
+  }
+  if (! str_init_copy(&sym->str, src)) {
+    free(sym);
+    return NULL;
+  }
+  tmp = sym_list_new(sym, g_sym_list);
+  if (! tmp) {
+    str_clean(&sym->str);
+    free(sym);
+    return NULL;
+  }
+  g_sym_list = tmp;
   return sym;
 }
 
@@ -212,8 +226,10 @@ f_buf_inspect sym_to_buf_inspect (const s_sym *type)
     return (f_buf_inspect) buf_inspect_tuple;
   if (type == sym_1("Var"))
     return (f_buf_inspect) buf_inspect_var;
+  err_write_1("sym_to_buf_inspect: unknown type: ");
+  err_write_1(type->str.ptr.ps8);
+  err_write_1("\n");
   assert(! "sym_to_buf_inspect: unknown type");
-  errx(1, "sym_to_buf_inspect: unknown type");
   return NULL;
 }
 
@@ -273,8 +289,10 @@ f_buf_inspect_size sym_to_buf_inspect_size (const s_sym *type)
     return (f_buf_inspect_size) buf_inspect_tuple_size;
   if (type == sym_1("Var"))
     return (f_buf_inspect_size) buf_inspect_var_size;
-  assert(! "sym_to_buf_inspect: unknown type");
-  errx(1, "sym_to_buf_inspect: unknown type");
+  err_write_1("sym_to_buf_inspect_size: unknown type: ");
+  err_write_1(type->str.ptr.ps8);
+  err_write_1("\n");
+  assert(! "sym_to_buf_inspect_size: unknown type");
   return NULL;
 }
 
@@ -334,8 +352,10 @@ f_clean sym_to_clean (const s_sym *type)
     return (f_clean) tuple_clean;
   if (type == sym_1("Var"))
     return NULL;
+  err_write_1("sym_to_clean: unknown type: ");
+  err_write_1(type->str.ptr.ps8);
+  err_write_1("\n");
   assert(! "sym_to_clean: unknown type");
-  errx(1, "sym_to_clean: unknown type");
   return NULL;
 }
 
@@ -344,8 +364,10 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
   assert(sym);
   if (sym == sym_1("Result") ||
       sym == sym_1("&result")) {
-    if (! result_type)
-      warnx("invalid result type: &result");
+    if (! result_type) {
+      err_puts("sym_to_ffi_type: invalid result type: Result");
+      return NULL;
+    }
     return result_type;
   }
   if (sym->str.ptr.ps8[sym->str.size - 2] == '*')
@@ -405,8 +427,10 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
   if (sym == sym_1("Void") ||
       sym == sym_1("void"))
     return &ffi_type_void;
+  err_write_1("sym_to_ffi_type: unknown type: ");
+  err_write_1(sym->str.ptr.ps8);
+  err_write_1("\n");
   assert(! "sym_to_ffi_type: unknown type");
-  errx(1, "sym_to_ffi_type: unknown type: %s", sym->str.ptr.ps8);
   return NULL;
 }
 
@@ -466,8 +490,10 @@ f_init_copy sym_to_init_copy (const s_sym *type)
     return (f_init_copy) tuple_init_copy;
   if (type == sym_1("Var"))
     return (f_init_copy) var_init_copy;
+  err_write_1("sym_to_init_copy: unknown type: ");
+  err_write_1(type->str.ptr.ps8);
+  err_write_1("\n");
   assert(! "sym_to_init_copy: unknown type");
-  errx(1, "sym_to_init_copy: unknown type");
   return NULL;
 }
 
@@ -612,7 +638,9 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_TUPLE;
     return true;
   }
-  warnx("sym_to_tag_type: unknown type: %s", sym->str.ptr.ps8);
+  err_write_1("sym_to_tag_type: unknown type: ");
+  err_write_1(sym->str.ptr.ps8);
+  err_write_1("\n");
   assert(! "sym_to_tag_type: unknown type");
   return false;
 }
@@ -673,7 +701,9 @@ uw sym_type_size (const s_sym *type)
     return sizeof(s_tuple);
   if (type == sym_1("Var"))
     return sizeof(s_tag);
+  err_write_1("sym_type_size: unknown type: ");
+  err_write_1(type->str.ptr.ps8);
+  err_write_1("\n");
   assert(! "sym_type_size: unknown type");
-  errx(1, "sym_type_size: unknown type: %s", type->str.ptr.ps8);
   return 0;
 }
