@@ -10,7 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
 #include <math.h>
 #include <libc3/c3.h>
 #include "gl.h"
@@ -31,8 +30,11 @@ s_gl_cylinder * gl_cylinder_init (s_gl_cylinder *cylinder,
   p = calloc(segments_u * segments_v + 2,
              sizeof(s_gl_3d));
   if (! p) {
-    warn("gl_cylinder_init(%lu, %lu): point array", segments_u,
-         segments_v);
+    err_write_1("gl_cylinder_init(");
+    err_inspect_uw(&segments_u);
+    err_write_1(", ");
+    err_inspect_uw(&segments_v);
+    err_puts("): failed to allocate memory");
     return NULL;
   }
   cylinder->vertex = p;

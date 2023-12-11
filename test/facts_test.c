@@ -448,8 +448,11 @@ TEST_CASE(facts_open_file)
   s_facts facts;
   s_str path;
   if (file_copy_1("facts_test_open_file.1.in.facts",
-                  "facts_test_open_file.1.facts"))
-    err(1, "%s:%i: file_copy_1", __FILE__, __LINE__);
+                  "facts_test_open_file.1.facts")) {
+    fprintf(stderr, "%s:%i: %s: file_copy_1", __FILE__, __LINE__,
+            __func__);
+    exit(1);
+  }
   facts_init(&facts);
   str_init_1(&path, NULL, "facts_test_open_file.1.facts");
   TEST_EQ(facts_open_file(&facts, &path), 760);
@@ -478,8 +481,11 @@ TEST_CASE(facts_open_file)
     unlink("facts_test_open_file.1.facts");
   facts_init(&facts);
   if (file_copy_1("facts_test_open_file.2.in.facts",
-                  "facts_test_open_file.2.facts"))
-    err(1, "%s:%i: file_copy_1", __FILE__, __LINE__);
+                  "facts_test_open_file.2.facts")) {
+    fprintf(stderr, "%s:%i: %s: file_copy_1", __FILE__, __LINE__,
+            __func__);
+    exit(1);
+  }
   str_init_1(&path, NULL, "facts_test_open_file.2.facts");
   TEST_EQ(facts_open_file(&facts, &path), 1523);
   TEST_EQ(facts_count(&facts), 46);
@@ -505,8 +511,11 @@ TEST_CASE(facts_open_file)
     unlink("facts_test_open_file.2.facts");
   facts_init(&facts);
   if (file_copy_1("facts_test_open_file.3.in.facts",
-                  "facts_test_open_file.3.facts"))
-    err(1, "%s:%i: file_copy_1", __FILE__, __LINE__);
+                  "facts_test_open_file.3.facts")) {
+    fprintf(stderr, "%s:%i: %s: file_copy_1", __FILE__, __LINE__,
+            __func__);
+    exit(1);
+  }
   str_init_1(&path, NULL, "facts_test_open_file.3.facts");
   TEST_EQ(facts_open_file(&facts, &path), 1550);
   TEST_EQ(facts_count(&facts), 0);

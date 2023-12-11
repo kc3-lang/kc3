@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <stdlib.h>
 #include <string.h>
 #include "../libtommath/tommath.h"
@@ -21,6 +21,7 @@
 #include "character.h"
 #include "ident.h"
 #include "integer.h"
+#include "io.h"
 #include "list.h"
 #include "operator.h"
 #include "str.h"
@@ -52,7 +53,7 @@ sw buf_inspect_array (s_buf *buf, const s_array *array)
     goto clean;
   result += r;
   if ((r = buf_inspect_array_data(buf, array)) < 0) {
-    warnx("buf_inspect_array: buf_inspect_array_data");
+    err_puts("buf_inspect_array: buf_inspect_array_data");
     goto clean;
   }
   result += r;
@@ -213,7 +214,7 @@ sw buf_inspect_array_size (const s_array *array)
   r = strlen(" ");
   result += r;
   if ((r = buf_inspect_array_data_size(array)) <= 0) {
-    warnx("buf_inspect_array_size: buf_inspect_array_data");
+    err_puts("buf_inspect_array_size: buf_inspect_array_data");
     goto clean;
   }
   result += r;
@@ -1701,8 +1702,8 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_VAR:     return buf_inspect_var(buf, tag);
   case TAG_VOID:    return buf_inspect_void(buf, &tag);
   }
+  err_puts("buf_inspect_tag: unknown tag_type");
   assert(! "buf_inspect_tag: unknown tag type");
-  errx(1, "buf_inspect_tag: unknown tag_type");
   return -1;
 }
 
@@ -1745,8 +1746,8 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_VAR:      return buf_inspect_var_size(tag);
   case TAG_VOID:     return buf_inspect_void_size(tag);
   }
+  err_puts("buf_inspect_tag_size: unknown tag type");
   assert(! "buf_inspect_tag_size: unknown tag type");
-  errx(1, "buf_inspect_tag_size: unknown tag type");
   return -1;
 }
 
@@ -1816,8 +1817,8 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
   case TAG_VAR:
     return buf_write_1(buf, "Var");
   }
+  err_puts("buf_inspect_tag_type: unknown tag type");
   assert(! "buf_inspect_tag_type: unknown tag type");
-  errx(1, "buf_inspect_tag_type: unknown tag type");
   return -1;
 }
 
@@ -1887,8 +1888,8 @@ sw buf_inspect_tag_type_size (e_tag_type type)
   case TAG_VAR:
     return strlen("Var");
   }
+  err_puts("buf_inspect_tag_type_size: unknown tag type");
   assert(! "buf_inspect_tag_type_size: unknown tag type");
-  errx(1, "buf_inspect_tag_type_size: unknown tag type");
   return -1;
 }
 

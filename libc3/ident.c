@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "character.h"
@@ -87,11 +87,6 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
       &tag_symbol, &tag_ident,    /* module exports symbol */
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor)) {
-    /*
-    warnx("symbol %s not found in module %s",
-          ident->sym->str.ptr.ps8,
-          module->str.ptr.ps8);
-    */
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
@@ -101,9 +96,11 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
       NULL, NULL });
   if (facts_with_cursor_next(&cursor)) {
     if (tag_var.type != TAG_CFN) {
-      warnx("%s.%s :cfn is not a C function",
-            module->str.ptr.ps8,
-            ident->sym->str.ptr.ps8);
+      err_write_1("call_get: ");
+      err_write_1(module->str.ptr.ps8);
+      err_write_1(".");
+      err_write_1(ident->sym->str.ptr.ps8);
+      err_puts(" is not a C function");
       facts_with_cursor_clean(&cursor);
       return NULL;
     }
@@ -115,9 +112,11 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
         NULL, NULL });
     if (facts_with_cursor_next(&cursor)) {
       if (tag_var.type != TAG_FN) {
-        warnx("%s.%s :fn is not a function",
-              module->str.ptr.ps8,
-              ident->sym->str.ptr.ps8);
+        err_write_1("call_get: ");
+        err_write_1(module->str.ptr.ps8);
+        err_write_1(".");
+        err_write_1(ident->sym->str.ptr.ps8);
+        err_puts(" is not a function");
         facts_with_cursor_clean(&cursor);
         return NULL;
       }

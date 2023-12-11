@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include "c3.h"
+#include "env.h"
+#include "operator.h"
 
 s8 operator_arity (const s_ident *op)
 {

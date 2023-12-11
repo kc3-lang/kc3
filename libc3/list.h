@@ -46,12 +46,12 @@ s_list * list_new_str_1 (s8 *free, const s8 *p, s_list *next);
 
 /* Observers */
 s_list ** list_cast (const s_tag *tag, s_list **list);
+bool      list_is_plist (const s_list *list);
 sw        list_length (const s_list *list);
 s_list  * list_next (const s_list *list);
 s_array * list_to_array (s_list *list, const s_sym *type,
                          s_array *dest);
 s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *dest);
-/* Call str_delete after use. */
 s_str   * list_inspect (const s_list *list, s_str *dest);
 
 /* Operators */

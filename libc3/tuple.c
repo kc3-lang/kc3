@@ -10,12 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <stdlib.h>
 #include <string.h>
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
+#include "io.h"
 #include "tuple.h"
 #include "tag.h"
 
@@ -38,15 +39,20 @@ void tuple_delete (s_tuple *tuple)
 s_tuple * tuple_init (s_tuple *tuple, uw count)
 {
   uw i;
+  s_tuple tmp;
   assert(tuple);
   assert(2 <= count);
-  tuple->count = count;
-  tuple->tag = calloc(count, sizeof(s_tag));
-  if (! tuple->tag)
-    err(1, "tuple_init: out of memory");
+  tmp.count = count;
+  tmp.tag = calloc(count, sizeof(s_tag));
+  if (! tmp.tag) {
+    err_puts("tuple_init: failed to allocate memory");
+    assert(! "tuple_init: failed to allocate memory");
+    return NULL;
+  }
   i = count;
   while (i--)
-    tag_init_void(tuple->tag + i);
+    tag_init_void(tmp.tag + i);
+  *tuple = tmp;
   return tuple;
 }
 
@@ -62,8 +68,13 @@ s_tuple * tuple_init_1 (s_tuple *tuple, const s8 *p)
   buf.wpos = len;
   r = buf_parse_tuple(&buf, tuple);
   if (r < 0 || (uw) r != len) {
-    warnx("tuple_init_1: invalid tuple: \"%s\", %lu != %ld",
-          p, len, r);
+    err_write_1("tuple_init_1: invalid tuple: \"");
+    err_write_1(p);
+    err_write_1("\", ");
+    err_inspect_uw(&len);
+    err_write_1(" != ");
+    err_inspect_sw(&r);
+    err_write_1("\n");
     assert(! "tuple_init_1: invalid tuple");
     return NULL;
   }
@@ -111,18 +122,32 @@ s_str * tuple_inspect (const s_tuple *x, s_str *dest)
 
 s_tuple * tuple_new (uw count)
 {
-  s_tuple *t;
-  t = malloc(sizeof(s_tuple));
-  if (! t)
-    errx(1, "tuple_new: out of memory");
-  return tuple_init(t, count);
+  s_tuple *tuple;
+  tuple = malloc(sizeof(s_tuple));
+  if (! tuple) {
+    err_puts("tuple_new: failed to allocate memory");
+    assert(! "tuple_new: failed to allocate memory");
+    return NULL;
+  }
+  if (! tuple_init(tuple, count)) {
+    free(tuple);
+    return NULL;
+  }
+  return tuple;
 }
 
 s_tuple * tuple_new_1 (const s8 *p)
 {
-  s_tuple *t;
-  t = malloc(sizeof(s_tuple));
-  if (! t)
-    errx(1, "tuple_new_1: out of memory");
-  return tuple_init_1(t, p);
+  s_tuple *tuple;
+  tuple = malloc(sizeof(s_tuple));
+  if (! tuple) {
+    err_puts("tuple_new_1: failed to allocate memory");
+    assert(! "tuple_new_1: failed to allocate memory");
+    return NULL;
+  }
+  if (! tuple_init_1(tuple, p)) {
+    free(tuple);
+    return NULL;
+  }
+  return tuple;
 }

@@ -10,9 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
-#include <unistd.h>
 #include <libc3/c3.h>
 #include "sdl2_sprite.h"
 
@@ -125,27 +122,31 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   sprite->frame_count = (frame_count > 0) ? frame_count : (dim_x * dim_y);
   str_init_copy_1(&sprite->path, path);
   if (! file_search(&sprite->path, sym_1("r"), &sprite->real_path)) {
-    warnx("sdl2_sprite_init: file not found: %s", path);
+    err_write_1("sdl2_sprite_init: file not found: ");
+    err_puts(path);
     str_clean(&sprite->path);
     return NULL;
   }
   fp = fopen(sprite->real_path.ptr.ps8, "rb");
   if (! fp) {
-    warn("sdl2_sprite_init: %s", sprite->real_path.ptr.ps8);
+    err_write_1("sdl2_sprite_init: fopen: ");
+    err_puts(sprite->real_path.ptr.ps8);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
   }
   if (fread(png_header, 1, sizeof(png_header), fp) !=
       sizeof(png_header)) {
-    warn("sdl2_sprite_init: %s", sprite->real_path.ptr.ps8);
+    err_write_1("sdl2_sprite_init: fread: ");
+    err_puts(sprite->real_path.ptr.ps8);
     fclose(fp);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
   }
   if (png_sig_cmp(png_header, 0, sizeof(png_header))) {
-    warn("sdl2_sprite_init: %s: not a png", sprite->real_path.ptr.ps8);
+    err_write_1("sdl2_sprite_init: not a png: ");
+    err_puts(sprite->real_path.ptr.ps8);
     fclose(fp);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
@@ -154,8 +155,8 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   png_read = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL,
 				    NULL);
   if (! png_read) {
-    warn("sdl2_sprite_init: %s: png_create_read_struct",
-	 sprite->real_path.ptr.ps8);
+    err_write_1("sdl2_sprite_init: png_create_read_struct: ");
+    err_puts(sprite->real_path.ptr.ps8);
     fclose(fp);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
@@ -163,8 +164,8 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   }
   png_info = png_create_info_struct(png_read);
   if (! png_info) {
-    warn("sdl2_sprite_init: %s: png_create_info_struct",
-	 sprite->real_path.ptr.ps8);
+    err_write_1("sdl2_sprite_init: png_create_info_struct: ");
+    err_puts(sprite->real_path.ptr.ps8);
     png_destroy_read_struct(&png_read, NULL, NULL);
     fclose(fp);
     str_clean(&sprite->path);
@@ -190,15 +191,20 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   if (! png_info_to_gl_info(png_color_type, png_bit_depth, &gl_format,
 			    &gl_internal_format, &gl_type,
 			    &png_components)) {
-    if (! gl_format || ! png_components)
-      warnx("sdl2_sprite_init: %s: unknown PNG color type: %d",
-	    sprite->real_path.ptr.ps8, png_color_type);
-    if (! gl_internal_format)
-      warnx("sdl2_sprite_init: %s: unknown OpenGL internal format",
-	    sprite->real_path.ptr.ps8);
-    if (! gl_type)
-      warnx("sdl2_sprite_init: %s: unknown OpenGL type",
-	    sprite->real_path.ptr.ps8);
+    if (! gl_format || ! png_components) {
+      err_write_1("sdl2_sprite_init: unknown PNG color type ");
+      err_inspect_s32(&png_color_type);
+      err_write_1(": ");
+      err_puts(sprite->real_path.ptr.ps8);
+    }
+    if (! gl_internal_format) {
+      err_write_1("sdl2_sprite_init: unknown OpenGL internal format: ");
+      err_puts(sprite->real_path.ptr.ps8);
+    }
+    if (! gl_type) {
+      err_write_1("sdl2_sprite_init: unknown OpenGL type: ");
+      err_puts(sprite->real_path.ptr.ps8);
+    }
     png_destroy_read_struct(&png_read, &png_info, NULL);
     fclose(fp);
     str_clean(&sprite->path);
@@ -230,7 +236,8 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   sprite->h = sprite->total_h / dim_y;
   sprite->texture = malloc(sprite->frame_count * sizeof(GLuint));
   if (! sprite->texture) {
-    warn("sdl2_sprite_init: sprite->texture");
+    err_puts("sdl2_sprite_init: sprite->texture:"
+             " failed to allocate memory");
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
@@ -238,8 +245,10 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   glGenTextures(sprite->frame_count, sprite->texture);
   GLenum gl_error = glGetError();
   if (gl_error != GL_NO_ERROR) {
-    warnx("sdl2_sprite_init: %s: glGenTextures: %s\n",
-	  sprite->real_path.ptr.ps8, gluErrorString(gl_error));
+    err_write_1("sdl2_sprite_init: glGenTextures: ");
+    err_write_1((const s8 *) gluErrorString(gl_error));
+    err_write_1(": ");
+    err_puts(sprite->real_path.ptr.ps8);
     free(sprite->texture);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
@@ -248,7 +257,8 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   sprite_stride = sprite->w * png_pixel_size;
   data = malloc(sprite->h * sprite_stride);
   if (! data) {
-    warn("sdl2_sprite_init: %s", sprite->real_path.ptr.ps8);
+    err_write_1("sdl2_sprite_init: failed to allocate memory: ");
+    err_puts(sprite->real_path.ptr.ps8);
     free(sprite->texture);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
@@ -280,8 +290,10 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
                         sprite->h, gl_format, gl_type, data);
       gl_error = glGetError();
       if (gl_error != GL_NO_ERROR) {
-	warnx("sdl2_sprite_init: %s: glTexImage2D: %s\n",
-	      sprite->real_path.ptr.ps8, gluErrorString(gl_error));
+	err_write_1("sdl2_sprite_init: glTexImage2D: ");
+        err_write_1((const s8 *) gluErrorString(gl_error));
+        err_write_1(": ");
+        err_puts(sprite->real_path.ptr.ps8);
 	return NULL;
       }
       i++;

@@ -29,6 +29,7 @@
 #include "fn.h"
 #include "ident.h"
 #include "integer.h"
+#include "io.h"
 #include "list.h"
 #include "ptag.h"
 #include "quote.h"
@@ -90,8 +91,13 @@ void * array_data (const s_array *a, const uw *address)
   assert(a->data);
   while (i < a->dimension) {
     if (address[i] >= a->dimensions[i].count) {
-      warnx("array_data: address overflow: %lu: [%lu >= %lu]",
-            i, address[i], a->dimensions[i].count);
+      err_write_1("array_data: address overflow: ");
+      err_inspect_uw(&i);
+      err_write_1(": [");
+      err_inspect_uw(&address[i]);
+      err_write_1(" >= ");
+      err_inspect_uw(&a->dimensions[i].count);
+      err_puts("]");
       return NULL;
     }
     offset += address[i] * a->dimensions[i].item_size;

@@ -10,8 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
 #include <libc3/c3.h>
 #include "window.h"
 
@@ -22,12 +20,12 @@ bool window_animate (s_window *window)
   s_sequence *seq;
   f64 t;
   if (clock_gettime(CLOCK_MONOTONIC, &clock_monotonic)) {
-    warn("window_animate");
+    err_puts("window_animate: clock_gettime");
     return false;
   }
   if (window->sequence_pos >= window->sequence_count) {
-    warnx("window_animate: window->sequence_pos >="
-          " window->sequence_count");
+    err_puts("window_animate: window->sequence_pos >="
+             " window->sequence_count");
     return false;
   }
   seq = window->sequence + window->sequence_pos;
@@ -56,11 +54,11 @@ bool window_set_sequence_pos (s_window *window, uw sequence_pos)
   seq->frame = 0;
   seq->t = 0.0;
   if (clock_gettime(CLOCK_MONOTONIC, &seq->t0)) {
-    warn("window_set_sequence_pos");
+    err_puts("window_set_sequence_pos: clock_gettime");
     return false;
   }
   window->sequence_pos = sequence_pos;
-  printf("%s\n", seq->title);
+  io_puts(seq->title);
   if (! seq->load(seq, window))
     return false;
   return true;

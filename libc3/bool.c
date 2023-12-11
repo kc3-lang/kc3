@@ -10,9 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "assert.h"
 #include "bool.h"
 #include "buf.h"
 #include "buf_inspect.h"
+#include "io.h"
 
 bool * bool_init_copy (bool *dest, const bool *src)
 {
@@ -26,8 +28,9 @@ s_str * bool_inspect (bool *b, s_str *dest)
   s_buf tmp;
   size = buf_inspect_bool_size(b);
   if (size < 0) {
+    err_write_1("bool_inspect: error: ");
+    err_inspect_u8(b);
     assert(! "bool_inspect: error");
-    errx(1, "bool_inspect: error: %d", *b);
     return NULL;
   }
   buf_init_alloc(&tmp, size);
@@ -35,7 +38,7 @@ s_str * bool_inspect (bool *b, s_str *dest)
   assert(tmp.wpos == tmp.size);
   if (tmp.wpos != tmp.size) {
     buf_clean(&tmp);
-    errx(1, "bool_inspect: buf_inspect_bool");
+    err_write_1("bool_inspect: buf_inspect_bool");
     return NULL;
   }
   return buf_to_str(&tmp, dest);

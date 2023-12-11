@@ -19,8 +19,6 @@
 #ifndef LIBC3_BUF_H
 #define LIBC3_BUF_H
 
-#include <assert.h>
-#include <err.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include "types.h"

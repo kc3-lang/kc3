@@ -15,18 +15,16 @@
 
 #include "types.h"
 
-/* stack-allocation compatible functions */
-void log_init (s_log *log);
-void log_clean (s_log *log);
+/* Stack-allocation compatible functions, call log_clean after use. */
+void    log_clean (s_log *log);
+s_log * log_init (s_log *log);
 
-/* constructor */
+/* Heap-allocation functions, call log_delete after use. */
+void    log_delete (s_log *log);
 s_log * log_new (void);
 
-/* destructor */
-void log_delete (s_log *log);
-
-/* modifiers */
+/* Operators. */
 void log_close (s_log *log);
-sw log_open (s_log *log, FILE *fp);
+sw   log_open (s_log *log, FILE *fp);
 
 #endif /* LIBC3_LOG_H */

@@ -10,8 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
 #include <libc3/c3.h>
 #include "cairo_font.h"
 
@@ -31,12 +29,13 @@ void cairo_font_clean (s_cairo_font *font)
 static FT_Library * cairo_font_ft (void)
 {
   if (! g_cairo_font_ft) {
-    if (! (g_cairo_font_ft = malloc(sizeof(FT_Library)))) {
-      warn("cairo_font_ft");
+    g_cairo_font_ft = malloc(sizeof(FT_Library));
+    if (! g_cairo_font_ft) {
+      err_puts("cairo_font_ft: failed to allocate memory");
       return NULL;
     }
     if (FT_Init_FreeType(g_cairo_font_ft)) {
-      warnx("cairo_font_ft: error initializing FreeType");
+      err_puts("cairo_font_ft: error initializing FreeType");
       free(g_cairo_font_ft);
       g_cairo_font_ft = NULL;
       return NULL;
@@ -54,13 +53,14 @@ s_cairo_font * cairo_font_init (s_cairo_font *font, const s_str *path)
     return NULL;
   str_init_copy(&font->path, path);
   if (! file_search(path, sym_1("r"), &font->real_path)) {
-    warnx("cairo_font_init(%s): file not found", path->ptr.ps8);
+    err_write_1("cairo_font_init: file not found: ");
+    err_puts(path->ptr.ps8);
     str_clean(&font->path);
     return NULL;
   }
   if (FT_New_Face(*ft, font->real_path.ptr.ps8, 0, &font->ft_face)) {
-    warnx("cairo_font_init(%s): Error loading font",
-          font->real_path.ptr.ps8);
+    err_write_1("cairo_font_init: error loading font: ");
+    err_puts(font->real_path.ptr.ps8);
     str_clean(&font->path);
     str_clean(&font->real_path);
     return NULL;

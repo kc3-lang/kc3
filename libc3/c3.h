@@ -15,6 +15,7 @@
 
 #include "arg.h"
 #include "array.h"
+#include "assert.h"
 #include "bool.h"
 #include "buf.h"
 #include "buf_file.h"

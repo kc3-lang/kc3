@@ -10,8 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
 #include <libc3/c3.h>
 #include "cairo_sprite.h"
 
@@ -63,14 +61,15 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
   assert(dim_y);
   str_init_copy_1(&sprite->path, path);
   if (! file_search(&sprite->path, sym_1("r"), &sprite->real_path)) {
-    warnx("cairo_sprite_init: file not found: %s", path);
+    err_write_1("cairo_sprite_init: file not found: ");
+    err_puts(path);
     str_clean(&sprite->path);
     return NULL;
   }
   src = cairo_image_surface_create_from_png(sprite->real_path.ptr.ps8);
   if (! src) {
-    warnx("cairo_sprite_init: error loading image: %s",
-          sprite->real_path.ptr.ps8);
+    err_write_1("cairo_sprite_init: error loading image: ");
+    err_puts(sprite->real_path.ptr.ps8);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;
@@ -84,7 +83,8 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
   sprite->frame_count = frame_count ? frame_count : (dim_x * dim_y);
   sprite->surface = calloc(frame_count, sizeof(cairo_surface_t *));
   if (! sprite->surface) {
-    warn("cairo_sprite_init: sprite->surface");
+    err_puts("cairo_sprite_init: sprite->surface:"
+             " failed to allocate memory");
     cairo_surface_destroy(src);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
