@@ -27,7 +27,7 @@
   do {                                                                 \
     s_call call;                                                       \
     s_str result;                                                      \
-    call_init_1(&call, (test));                                        \
+    TEST_EQ(call_init_1(&call, (test)), &call);                        \
     TEST_EQ(call_inspect(&call, &result), &result);                    \
     TEST_STRNCMP(result.ptr.p, (test), result.size);                   \
     TEST_EQ(result.size, strlen(test));                                \
