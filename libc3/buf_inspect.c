@@ -1122,7 +1122,7 @@ sw buf_inspect_list (s_buf *buf, const s_list **x)
   result++;
   i = *x;
   while (i) {
-    if ((r = buf_inspect_tag(buf, &i->tag)) < 0)
+    if ((r = buf_inspect_list_tag(buf, &i->tag)) < 0)
       return r;
     result += r;
     switch (i->next.type) {
@@ -1197,7 +1197,7 @@ sw buf_inspect_list_size (const s_list **list)
   result += strlen("[");
   i = *list;
   while (i) {
-    if ((r = buf_inspect_tag_size(&i->tag)) < 0)
+    if ((r = buf_inspect_list_tag_size(&i->tag)) < 0)
       return r;
     result += r;
     switch (i->next.type) {
@@ -1216,6 +1216,62 @@ sw buf_inspect_list_size (const s_list **list)
   }
   result += strlen("]");
   return result;
+}
+
+sw buf_inspect_list_tag (s_buf *buf, const s_tag *tag)
+{
+  sw r;
+  sw result = 0;
+  const s_sym *sym;
+  assert(buf);
+  assert(tag);
+  if (tag->type == TAG_TUPLE &&
+      tag->data.tuple.count == 2 &&
+      tag->data.tuple.tag[0].type == TAG_SYM) {
+    sym = tag->data.tuple.tag[0].data.sym;
+    if (sym_has_reserved_characters(sym)) {
+      if ((r = buf_inspect_str(buf, &sym->str)) < 0)
+        return r;
+    }
+    else
+      if ((r = buf_write_str(buf, &sym->str)) < 0)
+        return r;
+    result += r;
+    if ((r = buf_write_1(buf, ": ")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_tag(buf, tag->data.tuple.tag + 1)) < 0)
+      return r;
+    result += r;
+    return result;
+  }
+  return buf_inspect_tag(buf, tag);
+}
+
+sw buf_inspect_list_tag_size (const s_tag *tag)
+{
+  sw r;
+  sw result = 0;
+  const s_sym *sym;
+  assert(tag);
+  if (tag->type == TAG_TUPLE &&
+      tag->data.tuple.count == 2 &&
+      tag->data.tuple.tag[0].type == TAG_SYM) {
+    sym = tag->data.tuple.tag[0].data.sym;
+    if (sym_has_reserved_characters(sym)) {
+      if ((r = buf_inspect_str_size(&sym->str)) < 0)
+        return r;
+    }
+    else
+      r = sym->str.size;
+    result += r;
+    result += strlen(": ");
+    if ((r = buf_inspect_tag_size(tag->data.tuple.tag + 1)) < 0)
+      return r;
+    result += r;
+    return result;
+  }
+  return buf_inspect_tag_size(tag);
 }
 
 sw buf_inspect_map (s_buf *buf, const s_map *map)
@@ -1637,30 +1693,28 @@ sw buf_inspect_sym_size (const s_sym *x)
   return x->str.size + colon_size;
 }
 
-/* XXX keep in sync with buf_inspect_sym_reserved_size */
 sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *x)
 {
   sw r;
-  sw size;
-  size = buf_inspect_sym_reserved_size(x);
-  if (size <= 0)
-    return size;
-  if ((r = buf_write_u8(buf, ':')) < 0 ||
-      (r = buf_inspect_str(buf, &x->str)) < 0)
+  sw result = 0;
+  if ((r = buf_write_1(buf, ":")) < 0)
     return r;
-  return size;
+  result += r;
+  if ((r = buf_inspect_str(buf, &x->str)) < 0)
+    return r;
+  result += r;
+  return result;
 }
 
-/* XXX keep in sync with buf_inspect_sym_reserved */
 sw buf_inspect_sym_reserved_size (const s_sym *x)
 {
-  const sw colon_size = 1;
-  sw size;
-  size = buf_inspect_str_size(&x->str);
-  if (size < 0)
-    return size;
-  size += colon_size;
-  return size;
+  sw r;
+  sw result;
+  result = strlen(":");
+  if ((r = buf_inspect_str_size(&x->str)) < 0)
+    return r;
+  result += r;
+  return result; 
 }
 
 sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
