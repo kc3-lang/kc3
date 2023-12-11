@@ -1869,9 +1869,15 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
   buf_save_init(buf, &save);
   if ((r = buf_parse_tag_sym(buf, &key)) < 0)
     goto clean;
-  result += r;
   if (r > 0) {
+    result += r;
     if ((r = buf_read_1(buf, ":") <= 0))
+      goto tag;
+    result += r;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto tag;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
       goto tag;
     result += r;
     if ((r = buf_parse_tag(buf, &value)) <= 0)
