@@ -221,6 +221,7 @@ s_call * call_init_1 (s_call *call, const s8 *p)
   sw r;
   len = strlen(p);
   buf_init(&buf, false, len, (s8 *) p);
+  buf.wpos = len;
   r = buf_parse_call(&buf, call);
   if (r < 0 || (uw) r != len) {
     err_write_1("call_init_1: invalid call: ");

@@ -16,6 +16,8 @@
 #include "env.h"
 #include "io.h"
 
+void abort (void);
+
 #ifdef DEBUG
 # define assert(test)                                                  \
   do {                                                                 \
@@ -33,6 +35,7 @@
       err_write_1(__func__);                                           \
       err_write_1(": ");                                               \
       err_puts(# test);                                                \
+      abort();                                                         \
     }                                                                  \
   } while(0)
 #else
