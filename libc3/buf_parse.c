@@ -1862,12 +1862,13 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_str str;
   s_tag tmp;
   s_tag value;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_parse_tag_sym(buf, &key)) < 0)
+  if ((r = buf_parse_sym_str(buf, &str)) < 0)
     goto clean;
   if (r > 0) {
     result += r;
@@ -1887,6 +1888,8 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
       tag_clean(&value);
       return -2;
     }
+    key.type = TAG_SYM;
+    key.data.sym = str_to_sym(&str);
     tmp.data.tuple.tag[0] = key;
     tmp.data.tuple.tag[1] = value;
     goto ok;
