@@ -1869,24 +1869,34 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
     goto clean;
   if (r > 0) {
     result += r;
-    if ((r = buf_read_1(buf, ":") <= 0))
+    if ((r = buf_read_1(buf, ":") <= 0)) {
+      str_clean(&str);
       goto tag;
+    }
     result += r;
-    if ((r = buf_parse_comments(buf)) < 0)
+    if ((r = buf_parse_comments(buf)) < 0) {
+      str_clean(&str);
       goto tag;
+    }
     result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
+    if ((r = buf_ignore_spaces(buf)) < 0) {
+      str_clean(&str);
       goto tag;
+    }
     result += r;
-    if ((r = buf_parse_tag(buf, &value)) <= 0)
+    if ((r = buf_parse_tag(buf, &value)) <= 0) {
+      str_clean(&str);
       goto tag;
+    }
     result += r;
     if (! tag_init_tuple(&tmp, 2)) {
+      str_clean(&str);
       tag_clean(&value);
       return -2;
     }
     key.type = TAG_SYM;
     key.data.sym = str_to_sym(&str);
+    str_clean(&str);
     tmp.data.tuple.tag[0] = key;
     tmp.data.tuple.tag[1] = value;
     goto ok;
