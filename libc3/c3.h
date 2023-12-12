@@ -68,6 +68,7 @@
 #include "io.h"
 #include "list.h"
 #include "ptag.h"
+#include "ptr.h"
 #include "module.h"
 #include "operator.h"
 #include "quote.h"

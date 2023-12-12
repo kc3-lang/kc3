@@ -235,8 +235,9 @@ struct map {
 };
 
 struct ptr {
-  const s_sym *type;
   void *p;
+  const s_sym *type;
+  bool free;
 };
 
 union ptr_ {

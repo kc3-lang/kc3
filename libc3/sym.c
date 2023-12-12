@@ -342,6 +342,8 @@ f_clean sym_to_clean (const s_sym *type)
     return (f_clean) list_clean;
   if (type == sym_1("Ptag"))
     return NULL;
+  if (type == sym_1("Ptr"))
+    return (f_clean) ptr_clean;
   if (type == sym_1("Quote"))
     return (f_clean) quote_clean;
   if (type == sym_1("Str"))

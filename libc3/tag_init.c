@@ -185,12 +185,13 @@ s_tag * tag_init_map_1 (s_tag *tag, const s8 *p)
   return tag;
 }
 
-s_tag * tag_init_ptr (s_tag *tag, const s_sym *type, void *p)
+s_tag * tag_init_ptr (s_tag *tag, bool free_p, const s_sym *type, 
+                      void *p)
 {
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PTR;
-  if (! ptr_init(&tmp.data.ptr, type, p))
+  if (! ptr_init(&tmp.data.ptr, free_p, type, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -572,7 +573,7 @@ s_tag * tag_new_map_1 (const s8 *p)
   return tag;
 }
 
-s_tag * tag_new_ptr (const s_sym *type, void *p)
+s_tag * tag_new_ptr (bool free_p, const s_sym *type, void *p)
 {
   s_tag *tag;
   if (! (tag = calloc(1, sizeof(s_tag)))) {
@@ -580,7 +581,7 @@ s_tag * tag_new_ptr (const s_sym *type, void *p)
     return NULL;
   }
   tag->type = TAG_PTR;
-  if (! ptr_init(&tag->data.ptr, type, p)) {
+  if (! ptr_init(&tag->data.ptr, free_p, type, p)) {
     free(tag);
     return NULL;
   }
@@ -979,13 +980,13 @@ s_tag * tag_map_1 (s_tag *tag, const s8 *p)
   return tag;
 }
 
-s_tag * tag_ptr (s_tag *tag, const s_sym *type, void *p)
+s_tag * tag_ptr (s_tag *tag, bool free_p, const s_sym *type, void *p)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PTR;
-  if (! ptr_init(&tmp.data.ptr, type, p))
+  if (! ptr_init(&tmp.data.ptr, free_p, type, p))
     return NULL;
   *tag = tmp;
   return tag;

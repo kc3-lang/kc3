@@ -15,20 +15,32 @@
 #include <stdlib.h>
 #include "ptr.h"
 
+void ptr_clean (s_ptr *ptr)
+{
+  assert(ptr);
+  if (ptr->free)
+    free(ptr->p);
+}
+
 void ptr_delete (s_ptr *ptr)
 {
+  assert(ptr);
+  ptr_clean(ptr);
   free(ptr);
 }
 
-s_ptr * ptr_init (s_ptr *ptr, const s_sym *type, void *p)
+s_ptr * ptr_init (s_ptr *ptr, bool free_p, const s_sym *type, void *p)
 {
+  s_ptr tmp = {0};
   assert(ptr);
-  ptr->type = type;
-  ptr->p = p;
+  tmp.p = p;
+  tmp.type = type;
+  tmp.free = free_p;
+  *ptr = tmp;
   return ptr;
 }
 
-s_ptr * ptr_new (const s_sym *type, void *p)
+s_ptr * ptr_new (bool free_p, const s_sym *type, void *p)
 {
   s_ptr *ptr;
   ptr = calloc(1, sizeof(s_ptr));
@@ -36,7 +48,7 @@ s_ptr * ptr_new (const s_sym *type, void *p)
     warn("ptr_new: ptr");
     return NULL;
   }
-  if (! ptr_init(ptr, type, p)) {
+  if (! ptr_init(ptr, free_p, type, p)) {
     free(ptr);
     return NULL;
   }

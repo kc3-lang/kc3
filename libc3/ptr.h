@@ -15,11 +15,12 @@
 
 #include "types.h"
 
-/* Stack-allocation compatible functions. */
-s_ptr * ptr_init (s_ptr *ptr, const s_sym *type, void *p);
+/* Stack-allocation compatible functions, call ptr_clean after use. */
+void    ptr_clean (s_ptr *ptr);
+s_ptr * ptr_init (s_ptr *ptr, bool free, const s_sym *type, void *p);
 
 /* Heap-allocation functions, call ptr_delete after use. */
 void    ptr_delete (s_ptr *ptr);
-s_ptr * ptr_new (const s_sym *type, void *p);
+s_ptr * ptr_new (bool free, const s_sym *type, void *p);
 
 #endif /* LIBC3_PTR_H */
