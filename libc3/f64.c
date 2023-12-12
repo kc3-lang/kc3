@@ -93,6 +93,6 @@ f64 * f64_init_copy (f64 *x, const f64 *src)
 
 f64 * f64_random (f64 *dest)
 {
-  *dest = (f64) random() / (((u32) 1 << 31) - 1);
+  *dest = (f64) arc4random() / U32_MAX;
   return dest;
 }

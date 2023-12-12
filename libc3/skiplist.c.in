@@ -183,7 +183,7 @@ skiplist_random_height___NAME$ (s_skiplist___NAME$ *skiplist)
   assert(skiplist);
   height_table = SKIPLIST_HEIGHT_TABLE___NAME$(skiplist);
   max = height_table[skiplist->max_height - 1];
-  k = random() % max;
+  k = arc4random_uniform(max);
   for (i = 0; i < skiplist->max_height && k > height_table[i]; i++)
     ;
   height = skiplist->max_height - i;
