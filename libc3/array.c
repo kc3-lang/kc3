@@ -191,11 +191,18 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
 s_array * array_init_1 (s_array *array, s8 *p)
 {
   s_buf buf;
+  uw len;
   sw r;
   s_array tmp;
-  buf_init_1(&buf, false, p);
-  if ((r = buf_parse_array(&buf, &tmp)) != (sw) strlen(p)) {
-    warnx("array_init_1: buf_parse_array(%s) => %ld != %ld", p, r, strlen(p));
+  assert(array);
+  assert(p);
+  len = strlen(p);
+  buf_init(&buf, false, len, p);
+  buf.wpos = len;
+  r = buf_parse_array(&buf, &tmp);
+  if (r < 0 || (uw) r != len) {
+    warnx("array_init_1: buf_parse_array(%s) => %ld != %lu",
+	  p, r, len);
     if (r > 0)
       array_clean(&tmp);
     return NULL;
