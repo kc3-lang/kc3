@@ -38,7 +38,7 @@ void fn_delete (s_fn *fn)
 s_fn * fn_init (s_fn *fn)
 {
   assert(fn);
-  bzero(fn, sizeof(s_fn));
+  *fn = (s_fn) {0};
   return fn;
 }
 

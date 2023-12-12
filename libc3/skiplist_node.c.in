@@ -12,7 +12,7 @@
  */
 /* Gen from skiplist_node.c.in NAME=_NAME$ TYPE=_TYPE$ */
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 #include "skiplist_node___NAME$.h"
 
 s_skiplist_node___NAME$ *
@@ -20,8 +20,8 @@ skiplist_node_init (s_skiplist_node___NAME$ *node, _TYPE$ _NAME$, u8 height)
 {
   node->_NAME$ = _NAME$;
   node->height = height;
-  bzero(SKIPLIST_NODE_LINKS___NAME$(node),
-        height * sizeof(s_skiplist_node___NAME$ *));
+  memset(SKIPLIST_NODE_LINKS___NAME$(node), 0,
+         height * sizeof(s_skiplist_node___NAME$ *));
   return node;
 }
 

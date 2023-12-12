@@ -216,13 +216,12 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   u8 *data_src;
   uw i = 0;
   uw item_size;
-  s_array tmp;
+  s_array tmp = {0};
   assert(a);
   assert(src);
   assert(src->dimension);
   assert(src->dimensions);
   (void) i;
-  bzero(&tmp, sizeof(s_array));
   if (! src->dimension) {
     assert(! "array_init_copy: zero dimension");
     errx(1, "array_init_copy: zero dimension");

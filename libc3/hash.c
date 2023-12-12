@@ -29,7 +29,7 @@
 
 void hash_clean (t_hash *hash)
 {
-  bzero(hash, sizeof(t_hash));
+  *hash = (t_hash) {0};
 }
 
 void hash_init (t_hash *hash)
