@@ -255,8 +255,8 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
                      directions[3] | directions[4] | directions[5] |
                      directions[6] | directions[7] | directions[8]) {
                 if (random_bits < 4) {
-                  r = random();
-                  random_bits = 31;
+                  r = arc4random();
+                  random_bits = 32;
                 }
                 direction = r % 16;
                 r >>= 4;
