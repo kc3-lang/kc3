@@ -31,6 +31,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "ptr.h"
 #include "quote.h"
 #include "str.h"
 #include "tag.h"
@@ -178,6 +179,7 @@ void tag_clean (s_tag *tag)
   case TAG_INTEGER: integer_clean(&tag->data.integer); break;
   case TAG_LIST:    list_delete_all(tag->data.list);   break;
   case TAG_MAP:     map_clean(&tag->data.map);         break;
+  case TAG_PTR:     ptr_clean(&tag->data.ptr);         break;
   case TAG_QUOTE:   quote_clean(&tag->data.quote);     break;
   case TAG_STR:     str_clean(&tag->data.str);         break;
   case TAG_TUPLE:   tuple_clean(&tag->data.tuple);     break;
@@ -188,7 +190,6 @@ void tag_clean (s_tag *tag)
   case TAG_FACT:
   case TAG_IDENT:
   case TAG_PTAG:
-  case TAG_PTR:
   case TAG_S8:
   case TAG_S16:
   case TAG_S32:

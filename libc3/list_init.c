@@ -183,13 +183,13 @@ s_list * list_init_map_1 (s_list *list, const s8 *p, s_list *next)
   return list;
 }
 
-s_list * list_init_ptr (s_list *list, const s_sym *type, void *p, 
-                        s_list *next)
+s_list * list_init_ptr (s_list *list, bool free_p, const s_sym *type, 
+                        void *p, s_list *next)
 {
   s_list tmp;
   assert(list);
   list_init(&tmp, next);
-  if (! tag_init_ptr(&tmp.tag, type, p))
+  if (! tag_init_ptr(&tmp.tag, free_p, type, p))
     return NULL;
   *list = tmp;
   return list;
@@ -566,13 +566,14 @@ s_list * list_new_map_1 (const s8 *p, s_list *next)
   return list;
 }
 
-s_list * list_new_ptr (const s_sym *type, void *p, s_list *next)
+s_list * list_new_ptr (bool free_p, const s_sym *type, void *p, 
+                       s_list *next)
 {
   s_list *list;
   list = list_new(next);
   if (! list)
     return NULL;
-  if (! tag_init_ptr(&list->tag, type, p)) {
+  if (! tag_init_ptr(&list->tag, free_p, type, p)) {
     free(list);
     return NULL;
   }
