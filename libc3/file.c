@@ -25,6 +25,7 @@
 #include "str.h"
 #include "sym.h"
 #include "time.h"
+#include "config.h"
 
 bool * file_access (const s_str *path, const s_sym *mode,
                     bool *dest)
@@ -116,7 +117,14 @@ s_tag * file_mtime (const s_str *path, s_tag *dest)
     warn("file_mtime: %s", path->ptr.ps8);
     return NULL;
   }
+#if HAVE_STAT_MTIM
   return time_to_tag(&sb.st_mtim, dest);
+#else
+  s_time tmp;
+  tmp.tv_sec = sb.st_mtime;
+  tmp.tv_nsec = 0;
+  return time_to_tag(&tmp, dest);
+#endif
 }
 
 s_str * file_search (const s_str *suffix, const s_sym *mode,

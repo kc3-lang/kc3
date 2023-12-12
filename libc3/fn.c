@@ -45,11 +45,16 @@ s_fn * fn_init (s_fn *fn)
 s_fn * fn_init_1 (s_fn *fn, s8 *p)
 {
   s_buf buf;
+  uw len;
   sw r;
   assert(fn);
-  buf_init_1(&buf, false, (s8 *) p);
-  if ((r = buf_parse_fn(&buf, fn)) != (sw) strlen(p))
-    errx(1, "fn_init_1: buf_parse_fn(%s) %ld != %lu", p, r, strlen(p));
+  assert(p);
+  len = strlen(p);
+  buf_init(&buf, false, len, (s8 *) p);
+  buf.wpos = len;
+  r = buf_parse_fn(&buf, fn);
+  if (r < 0 || (uw) r != len)
+    errx(1, "fn_init_1: buf_parse_fn(%s): %ld != %lu", p, r, len);
   return fn;
 }
 

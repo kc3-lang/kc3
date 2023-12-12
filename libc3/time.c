@@ -36,7 +36,8 @@ s_tag * time_to_tag (const s_time *time, s_tag *dest)
 {
   s_tag tmp;
   assert(time);
-  tag_init_tuple(&tmp, 2);
+  if (! tag_init_tuple(&tmp, 2))
+    return NULL;
   tag_init_s64(&tmp.data.tuple.tag[0], time->tv_sec);
   tag_init_s64(&tmp.data.tuple.tag[1], time->tv_nsec);
   *dest = tmp;
