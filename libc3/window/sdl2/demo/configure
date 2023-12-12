@@ -57,6 +57,7 @@ pkg_config glu
 pkg_config glut
 pkg_config libpng
 config_lib OPENGL -framework OpenGL
+config_lib OPENGL -lopengl32 -lglu32
 pkg_config sdl2
 
 # Asan config
