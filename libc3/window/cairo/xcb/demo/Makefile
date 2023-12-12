@@ -27,7 +27,8 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: ${PROG_ASAN}
+asan:
+	${MAKE} ${PROG_ASAN}
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -35,12 +36,27 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
-cov:   ${PROG_COV}
+cov:
+	${MAKE} ${PROG_COV}
 
-debug: ${PROG_DEBUG}
+debug:
+	${MAKE} ${PROG_DEBUG}
 
-demo: ${PROG}
+demo:
+	${MAKE} ${PROG}
 	time ./${PROG}
+
+demo_asan:
+	${MAKE} ${PROG_ASAN}
+	time ./${PROG_ASAN}
+
+demo_cov:
+	${MAKE} ${PROG_COV}
+	time ./${PROG_COV}
+
+demo_debug:
+	${MAKE} ${PROG_DEBUG}
+	time ./${PROG_DEBUG}
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
@@ -55,6 +71,12 @@ install:
 	install -m 755 -d ${prefix}/bin
 	install -m 755 ${PROG} ${prefix}/bin/${PROG}
 
+lldb_demo: debug
+	if [ -f ${PROG_DEBUG}.core ]; then lldb .libs/${PROG_DEBUG} ${PROG_DEBUG}.core; else lldb .libs/${PROG_DEBUG}; fi
+
+update_sources:
+	./update_sources
+
 .PHONY: \
 	all \
 	asan \
@@ -64,9 +86,14 @@ install:
 	cov \
 	debug \
 	demo \
+	demo_asan \
+	demo_cov \
+	demo_debug \
 	distclean \
 	gdb_demo \
-	install
+	install \
+	lldb_demo \
+	update_sources \
 
 include config.mk
 include sources.mk

@@ -15,6 +15,9 @@
 
 #include "types.h"
 
+/* Stack-allocation compatible functions, call sequence_clean after
+   use. */
+void         sequence_clean (s_sequence *seq);
 s_sequence * sequence_init (s_sequence *sequence, f64 duration,
                             const s8 *title, f_sequence_load load,
                             f_sequence_render render);

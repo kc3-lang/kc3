@@ -12,16 +12,24 @@
  */
 #include <assert.h>
 #include "sequence.h"
+#include "tag.h"
 
-s_sequence * sequence_init (s_sequence *sequence, f64 duration,
+void sequence_clean (s_sequence *seq)
+{
+  tag_clean(&seq->tag);
+}
+
+s_sequence * sequence_init (s_sequence *seq, f64 duration,
                             const s8 *title, f_sequence_load load,
                             f_sequence_render render)
 {
-  assert(sequence);
-  sequence->t = 0.0;
-  sequence->duration = duration;
-  sequence->title = title;
-  sequence->load = load;
-  sequence->render = render;
-  return sequence;
+  assert(seq);
+  seq->dt = 0.0;
+  seq->t = 0.0;
+  seq->duration = duration;
+  seq->title = title;
+  seq->load = load;
+  seq->render = render;
+  tag_init_void(&seq->tag);
+  return seq;
 }

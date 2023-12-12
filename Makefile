@@ -74,11 +74,23 @@ debug:
 demo: build
 	${MAKE} -C libc3 demo
 
+demo_asan: asan
+	${MAKE} -C libc3 demo_asan
+
+demo_cov: cov
+	${MAKE} -C libc3 demo_cov
+
 demo_debug: debug
 	${MAKE} -C libc3 demo_debug
 
 demo_gl: build
 	${MAKE} -C libc3 demo_gl
+
+demo_gl_asan: asan
+	${MAKE} -C libc3 demo_gl_asan
+
+demo_gl_cov: cov
+	${MAKE} -C libc3 demo_gl_cov
 
 demo_gl_debug: debug
 	${MAKE} -C libc3 demo_gl_debug
@@ -190,27 +202,21 @@ test_gcovr:
 	${MAKE} gcovr
 
 test_ic3: build
-test_ic3:
 	${MAKE} -C test test_ic3
 
 test_ic3_asan: asan
-test_ic3_asan:
 	${MAKE} -C test test_ic3_asan
 
 test_ic3_cov: cov
-test_ic3_cov:
 	${MAKE} -C test test_ic3_cov
 
 test_ic3_debug: debug
-test_ic3_debug:
 	${MAKE} -C test test_ic3_debug
 
 test_libc3: build
-test_libc3:
 	${MAKE} -C test test_libc3
 
 test_libc3_cov: cov
-test_libc3_cov:
 	${MAKE} -C test test_libc3_cov
 
 test_libc3_debug:
@@ -220,12 +226,20 @@ test_libc3_debug:
 .PHONY: \
 	all \
 	asan \
+	build \
 	c3s \
 	cov \
 	clean \
 	clean_cov \
 	debug \
 	demo \
+	demo_asan \
+	demo_cov \
+	demo_debug \
+	demo_gl \
+	demo_gl_asan \
+	demo_gl_cov \
+	demo_gl_debug \
 	dist \
 	gcovr \
 	ic3 \

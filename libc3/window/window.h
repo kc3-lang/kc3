@@ -16,6 +16,10 @@
 #include <libc3/types.h>
 #include "types.h"
 
+/* Stack-allocation compatible functions, call window_clean
+   after use. */
+void window_clean (s_window *window);
+
 bool window_animate (s_window *window);
 bool window_set_sequence_pos (s_window *window, uw sequence_pos);
 

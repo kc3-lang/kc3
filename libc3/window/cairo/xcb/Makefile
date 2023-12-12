@@ -51,6 +51,15 @@ debug:
 demo: build
 	${MAKE} -C demo demo
 
+demo_asan: asan
+	${MAKE} -C demo demo_asan
+
+demo_cov: cov
+	${MAKE} -C demo demo_cov
+
+demo_debug: debug
+	${MAKE} -C demo demo_debug
+
 distclean:
 	rm -rf ${DISTCLEANFILES}
 	${MAKE} -C demo distclean
@@ -80,10 +89,14 @@ update_sources:
 	cov \
 	debug \
 	demo \
+	demo_asan \
+	demo_cov \
+	demo_debug \
 	distclean \
 	gdb_demo \
 	gen \
 	install \
+	lldb_demo \
 	test \
 	update_sources
 

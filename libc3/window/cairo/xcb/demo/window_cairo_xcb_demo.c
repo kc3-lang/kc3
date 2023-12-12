@@ -38,7 +38,7 @@ int main (int argc, char **argv)
     c3_clean(NULL);
     return g_c3_exit_code;
   }
-  c3_window_cairo_clean();
+  window_cairo_clean(&window);
   c3_clean(NULL);
   return 0;
 }

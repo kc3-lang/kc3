@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <xkbcommon/xkbcommon.h>
 #include <libc3/tag.h>
+#include "../window.h"
 #include "window_cairo.h"
 
 void c3_window_cairo_clean (void)
@@ -22,6 +23,11 @@ void c3_window_cairo_clean (void)
 
 void c3_window_cairo_init (void)
 {
+}
+
+void window_cairo_clean (s_window_cairo *window)
+{
+  window_clean((s_window *) window);
 }
 
 s_window_cairo * window_cairo_init (s_window_cairo *window,
@@ -118,6 +124,7 @@ s_sequence * window_cairo_sequence_init
  f_window_cairo_sequence_render render)
 {
   assert(seq);
+  seq->dt = 0.0;
   seq->t = 0.0;
   seq->duration = duration;
   seq->title = title;
