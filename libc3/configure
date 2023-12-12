@@ -49,6 +49,7 @@ config_lib dl -ldl 2>/dev/null
 config_include sha_h sys/types.h sha.h HAVE_SHA_H
 config_include sha1_h sys/types.h sha1.h HAVE_SHA1_H
 config_define PREFIX "\"${PREFIX}\""
+config_have_stat_mtim
 update_config_h
 LIBS="$LIBS ../libffi/libffi.la"
 
