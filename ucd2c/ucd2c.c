@@ -21,32 +21,24 @@
 
 #define BUFSZ 1024
 
-unsigned long long read_hex (const char **src) {
-  unsigned long long u64 = 0;
+unsigned long read_hex (const char **src) {
+  unsigned long result = 0;
   char c;
   while ((c = **src) != '\0' && c != ';') {
-    if ('0' <= c && c <= '9') {
-      u64 *= 16;
-      u64 += c - '0';
-      (*src)++;
-    }
-    else if ('A' <= c && c <= 'F') {
-      u64 *= 16;
-      u64 += c - 'A' + 10;
-      (*src)++;
-    }
-    else if ('a' <= c && c <= 'f') {
-      u64 *= 16;
-      u64 += c - 'a' + 10;
-      (*src)++;
-    }
-    else {
+    result *= 16;
+    if ('0' <= c && c <= '9')
+      result += c - '0';
+    else if ('A' <= c && c <= 'F')
+      result += c - 'A' + 10;
+    else if ('a' <= c && c <= 'f')
+      result += c - 'a' + 10;
+    else
       errx(1, "invalid character in index: %c", c);
-    }
+    (*src)++;
   }
   if (c == ';')
     (*src)++;
-  return u64;
+  return result;
 }
 
 void ucd_case (s_ucd ucd[UCD_MAX])
