@@ -210,7 +210,7 @@ bool call_op_get (s_call *call, s_facts *facts)
 s_call * call_init (s_call *call)
 {
   assert(call);
-  bzero(call, sizeof(s_call));
+  *call = (s_call) {0};
   return call;
 }
 
@@ -239,10 +239,11 @@ s_call * call_init_1 (s_call *call, const s8 *p)
 s_call * call_init_cast (s_call *call, const s_sym *type,
                          const s_tag *tag)
 {
+  s_call tmp = {0};
   assert(call);
-  bzero(call, sizeof(s_call));
-  ident_init(&call->ident, type, sym_1("cast"));
-  call->arguments = list_new_copy(tag, NULL);
+  ident_init(&tmp.ident, type, sym_1("cast"));
+  tmp.arguments = list_new_copy(tag, NULL);
+  *call = tmp;
   return call;
 }
 
@@ -259,17 +260,19 @@ s_call * call_init_copy (s_call *call, const s_call *src)
 
 s_call * call_init_op (s_call *call)
 {
+  s_call tmp = {0};
   assert(call);
-  bzero(call, sizeof(s_call));
-  call->arguments = list_new(list_new(NULL));
+  tmp.arguments = list_new(list_new(NULL));
+  *call = tmp;
   return call;
 }
 
 s_call * call_init_op_unary (s_call *call)
 {
+  s_call tmp = {0};
   assert(call);
-  bzero(call, sizeof(s_call));
-  call->arguments = list_new(NULL);
+  tmp.arguments = list_new(NULL);
+  *call = tmp;
   return call;
 }
 

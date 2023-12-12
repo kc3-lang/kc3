@@ -35,7 +35,7 @@ void arg_delete_all (s_arg *arg)
 s_arg * arg_init (s_arg *arg)
 {
   assert(arg);
-  bzero(arg, sizeof(s_arg));
+  *arg = (s_arg) {0};
   return arg;
 }
 

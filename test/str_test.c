@@ -209,8 +209,7 @@ TEST_CASE_END(str_init_copy_1)
 TEST_CASE(str_inspect)
 {
   s_str str;
-  s8 zero[16];
-  bzero(zero, sizeof(zero));
+  s8 zero[16] = {0};
   STR_TEST_INSPECT_1("", "\"\"");
   STR_TEST_INSPECT_1(" ", "\" \"");
   STR_TEST_INSPECT_1("\n", "\"\\n\"");
@@ -352,8 +351,7 @@ TEST_CASE_END(str_new_f)
 
 TEST_CASE(str_to_hex)
 {
-  s8 zero[32];
-  bzero(zero, sizeof(zero));
+  s8 zero[32] = {0};
   STR_TEST_TO_HEX(str_new_1(NULL, ""), "");
   STR_TEST_TO_HEX(str_new(NULL,  1, zero), "00");
   STR_TEST_TO_HEX(str_new(NULL,  2, zero), "0000");

@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <dlfcn.h>
 #include <err.h>
 #include <stdlib.h>
@@ -150,18 +150,19 @@ s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
                   const s_sym *result_type)
 {
   sw arity;
+  s_cfn tmp = {0};
   assert(cfn);
-  bzero(cfn, sizeof(s_cfn));
-  cfn->name = name;
-  cfn->arg_types = arg_types;
-  arity = list_length(arg_types);
+  tmp.name = name;
+  tmp.arg_types = arg_types;
+  arity = list_length(tmp.arg_types);
   if (arity > 255) {
     assert(arity <= 255);
-    errx(1, "cfn_init: arity > 255");
+    err_puts("cfn_init: arity > 255");
     return NULL;
   }
-  cfn->arity = arity;
-  cfn->result_type = result_type;
+  tmp.arity = arity;
+  tmp.result_type = result_type;
+  *cfn = tmp;
   return cfn;
 }
 
@@ -247,13 +248,15 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
 
 s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
 {
+  s_tag tmp = {0};
   assert(tag);
   assert(type);
-  bzero(tag, sizeof(s_tag));
-  if (! sym_to_tag_type(type, &tag->type)) {
+  if (! sym_to_tag_type(type, &tmp.type)) {
+    err_write_1("cfn_tag_init: invalid type: ");
+    err_puts(type->str.ptr.ps8);
     assert(! "cfn_tag_init: invalid type");
-    errx(1, "cfn_tag_init: invalid type: %s", type->str.ptr.ps8);
     return NULL;
   }
+  *tag = tmp;
   return tag;
 }

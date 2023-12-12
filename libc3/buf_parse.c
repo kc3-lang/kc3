@@ -47,11 +47,10 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_array tmp;
+  s_array tmp = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  bzero(&tmp, sizeof(tmp));
   if ((r = buf_parse_paren_sym(buf, &tmp.type)) <= 0)
     goto clean;
   result += r;
@@ -638,14 +637,12 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   s_tag *right;
   s_buf_save save;
   s_call tmp;
-  s_call tmp2;
-  s_call tmp3;
+  s_call tmp2 = {0};
+  s_call tmp3 = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
   call_init_op(&tmp);
-  bzero(&tmp2, sizeof(s_call));
-  bzero(&tmp3, sizeof(s_call));
   left = &tmp.arguments->tag;
   right = &list_next(tmp.arguments)->tag;
   tag_init_copy(left, &dest->arguments->tag);
