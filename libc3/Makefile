@@ -52,11 +52,23 @@ debug:
 demo: build
 	${MAKE} -C window demo
 
+demo_asan: asan
+	${MAKE} -C window demo_asan
+
+demo_cov: cov
+	${MAKE} -C window demo_cov
+
 demo_debug: debug
 	${MAKE} -C window demo_debug
 
 demo_gl: build
 	${MAKE} -C window demo_gl
+
+demo_gl_asan: asan
+	${MAKE} -C window demo_gl_asan
+
+demo_gl_cov: cov
+	${MAKE} -C window demo_gl_cov
 
 demo_gl_debug: debug
 	${MAKE} -C window demo_gl_debug
@@ -97,7 +109,30 @@ test:
 update_sources:
 	./update_sources
 
-.PHONY: all asan build clean cov debug distclean gdb_demo gen install lldb_demo test update_sources
+.PHONY: \
+	all \
+	asan \
+	build \
+	clean \
+	cov \
+	debug \
+	demo \
+	demo_asan \
+	demo_cov \
+	demo_debug \
+	demo_gl \
+	demo_gl_asan \
+	demo_gl_cov \
+	demo_gl_debug \
+	distclean \
+	gdb_demo \
+	gdb_demo_gl \
+	gen \
+	install \
+	lldb_demo \
+	lldb_demo_gl \
+	test \
+	update_sources \
 
 include config.mk
 include sources.mk

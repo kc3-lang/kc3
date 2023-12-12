@@ -42,6 +42,18 @@ bool window_animate (s_window *window)
   return true;
 }
 
+void window_clean (s_window *window)
+{
+  uw i;
+  assert(window);
+  i = 0;
+  while (i < window->sequence_count) {
+    sequence_clean(window->sequence + i);
+    i++;
+  }
+  free(window->sequence);
+}
+
 bool window_set_sequence_pos (s_window *window, uw sequence_pos)
 {
   s_sequence *seq;

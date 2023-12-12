@@ -57,6 +57,12 @@ debug:
 demo: build
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz demo; else if ${HAVE_WIN32}; then ${MAKE} -C win32 demo; else if ${HAVE_XCB}; then ${MAKE} -C xcb demo; fi; fi; fi
 
+demo_asan: asan
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz demo_asan; else if ${HAVE_WIN32}; then ${MAKE} -C win32 demo_asan; else if ${HAVE_XCB}; then ${MAKE} -C xcb demo_asan; fi; fi; fi
+
+demo_cov: cov
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz demo_cov; else if ${HAVE_WIN32}; then ${MAKE} -C win32 demo_cov; else if ${HAVE_XCB}; then ${MAKE} -C xcb demo_cov; fi; fi; fi
+
 demo_debug: debug
 	if ${HAVE_COCOA}; then ${MAKE} -C quartz demo_debug; else if ${HAVE_WIN32}; then ${MAKE} -C win32 demo_debug; else if ${HAVE_XCB}; then ${MAKE} -C xcb demo_debug; fi; fi; fi
 
@@ -106,9 +112,13 @@ update_sources:
 	cov \
 	debug \
 	demo \
+	demo_asan \
+	demo_cov \
+	demo_debug \
 	distclean \
 	gdb_demo \
 	install \
+	lldb_demo \
 	test \
 	update_sources
 

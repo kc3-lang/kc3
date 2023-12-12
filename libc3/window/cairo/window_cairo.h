@@ -20,18 +20,23 @@
 void c3_window_cairo_clean (void);
 void c3_window_cairo_init (void);
 
+/* Stack-allocation compatible functions, call window_cairo_clean
+   after use. */
+void             window_cairo_clean (s_window_cairo *window);
 s_window_cairo * window_cairo_init (s_window_cairo *window,
                                     sw x, sw y, uw w, uw h,
                                     const s8 *title,
                                     uw sequence_count);
 bool             window_cairo_run (s_window_cairo *window);
 
+/* Stack-allocation compatible functions, call sequence_clean
+   after use. */
 s_sequence *     window_cairo_sequence_init
 (s_sequence *sequence, f64 duration, const s8 *title,
  f_window_cairo_sequence_load load,
  f_window_cairo_sequence_render render);
 
-/* callbacks */
+/* Callbacks. */
 bool window_cairo_button_default (s_window_cairo *window, u8 button,
                                   sw x, sw y);
 bool window_cairo_key_default (s_window_cairo *window, uw keysym);

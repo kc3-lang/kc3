@@ -47,11 +47,23 @@ debug:
 demo: build
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo demo; fi
 
+demo_asan: asan
+	if ${HAVE_CAIRO}; then ${MAKE} -C cairo demo_asan; fi
+
+demo_cov: cov
+	if ${HAVE_CAIRO}; then ${MAKE} -C cairo demo_cov; fi
+
 demo_debug: debug
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo demo_debug; fi
 
 demo_gl: build
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 demo; fi
+
+demo_gl_asan: asan
+	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 demo_asan; fi
+
+demo_gl_cov: cov
+	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 demo_cov; fi
 
 demo_gl_debug: debug
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 demo_debug; fi
@@ -100,8 +112,19 @@ update_sources:
 	cov \
 	debug \
 	demo \
+	demo_asan \
+	demo_cov \
+	demo_debug \
+	demo_gl \
+	demo_gl_asan \
+	demo_gl_cov \
+	demo_gl_debug \
 	distclean \
+	gdb_demo \
+	gdb_demo_gl \
 	install \
+	lldb_demo \
+	lldb_demo_gl \
 	test \
 	update_sources
 
