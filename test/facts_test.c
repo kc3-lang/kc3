@@ -301,7 +301,7 @@ TEST_CASE(facts_log_add)
   s_fact fact[24];
   s_facts facts;
   FILE *fp;
-  fp = fopen("facts_test_log_add.facts", "w");
+  fp = fopen("facts_test_log_add.facts", "wb");
   facts_init(&facts);
   facts.log = log_new();
   log_open(facts.log, fp);
@@ -352,7 +352,7 @@ TEST_CASE(facts_log_remove)
   s_fact fact[24];
   s_facts facts;
   FILE *fp;
-  fp = fopen("facts_test_log_remove.facts", "w");
+  fp = fopen("facts_test_log_remove.facts", "wb");
   facts_init(&facts);
   facts.log = log_new();
   log_open(facts.log, fp);
@@ -449,7 +449,7 @@ TEST_CASE(facts_open_file)
   s_str path;
   if (file_copy_1("facts_test_open_file.1.in.facts",
                   "facts_test_open_file.1.facts")) {
-    fprintf(stderr, "%s:%i: %s: file_copy_1", __FILE__, __LINE__,
+    fprintf(stderr, "%s:%i: %s: file_copy_1\n", __FILE__, __LINE__,
             __func__);
     exit(1);
   }
