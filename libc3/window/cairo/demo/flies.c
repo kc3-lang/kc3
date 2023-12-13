@@ -12,8 +12,10 @@
  */
 #include <math.h>
 #include <libc3/c3.h>
-#include "../window_cairo.h"
+#include "../cairo_font.h"
 #include "../cairo_sprite.h"
+#include "../window_cairo.h"
+#include "window_cairo_demo.h"
 #include "flies.h"
 
 #define BOARD_SIZE    25
@@ -30,8 +32,8 @@ static const u8  g_board_item_space    = BOARD_ITEM_SPACE;
 static const u8  g_board_item_block    = BOARD_ITEM_BLOCK;
 static const u8  g_board_item_fly      = BOARD_ITEM_FLY;
 static const u8  g_board_item_dead_fly = BOARD_ITEM_DEAD_FLY;
-s_cairo_sprite   g_dead_fly_sprite     = {0};
-s_cairo_sprite   g_fly_sprite          = {0};
+s_cairo_sprite   g_sprite_dead_fly     = {0};
+s_cairo_sprite   g_sprite_fly          = {0};
 static const f64 g_xy_ratio            = 0.6;
 
 static void fly_init (s_map *map)
@@ -177,16 +179,14 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
       board_w = board_item_w * BOARD_SIZE;
       board_h = board_item_h * BOARD_SIZE;
       board_x = (window->w - board_w) / 2.0;
-      fly_scale = 2.0 * board_item_w / g_fly_sprite.w;
-      dead_fly_scale = 2.0 * board_item_w / g_dead_fly_sprite.w;
+      fly_scale = 2.0 * board_item_w / g_sprite_fly.w;
+      dead_fly_scale = 2.0 * board_item_w / g_sprite_dead_fly.w;
       cairo_set_source_rgb(cr, 0.6, 0.7, 0.9);
       cairo_rectangle(cr, board_x, 0, board_w, board_h);
       cairo_fill(cr);
       cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
       cairo_set_font_size(cr, board_item_h);
-      cairo_select_font_face(cr, "Courier New",
-                             CAIRO_FONT_SLANT_NORMAL,
-                             CAIRO_FONT_WEIGHT_BOLD);
+      cairo_set_font(cr, &g_font_courier_new);
       buf_init(&buf, false, sizeof(a), a);
       buf_write_1(&buf, "In ");
       buf_inspect_uw(&buf, fly_in);
@@ -225,7 +225,7 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
             cairo_translate(cr, -board_item_w / 2.0,
                             -board_item_h / 2.0);
             cairo_scale(cr, fly_scale, fly_scale);
-            cairo_sprite_blit(&g_fly_sprite, 0,
+            cairo_sprite_blit(&g_sprite_fly, 0,
                               cr, 0, 0);
             if (address[0] == BOARD_SIZE / 2 &&
                 address[1] == BOARD_SIZE - 1) {
@@ -297,7 +297,7 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
             cairo_translate(cr, -board_item_w / 2.0,
                             -board_item_h / 2.0);
             cairo_scale(cr, dead_fly_scale, dead_fly_scale);
-            cairo_sprite_blit(&g_dead_fly_sprite, 0,
+            cairo_sprite_blit(&g_sprite_dead_fly, 0,
                               cr, 0, 0);
             break;
           }

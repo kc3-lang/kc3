@@ -340,6 +340,8 @@ f_clean sym_to_clean (const s_sym *type)
     return NULL;
   if (type == sym_1("List"))
     return (f_clean) list_clean;
+  if (type == sym_1("Map"))
+    return (f_clean) map_clean;
   if (type == sym_1("Ptag"))
     return NULL;
   if (type == sym_1("Ptr"))

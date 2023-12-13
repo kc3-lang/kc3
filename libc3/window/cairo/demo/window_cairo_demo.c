@@ -15,13 +15,17 @@
 #include <libc3/c3.h>
 #include <xkbcommon/xkbcommon.h>
 #include "../../window.h"
-#include "../window_cairo.h"
+#include "../cairo_font.h"
 #include "../cairo_sprite.h"
+#include "../window_cairo.h"
 #include "window_cairo_demo.h"
 #include "bg_rect.h"
 #include "lightspeed.h"
 #include "toasters.h"
 #include "flies.h"
+
+s_cairo_font g_font_computer_modern = {0};
+s_cairo_font g_font_courier_new = {0};
 
 bool window_cairo_demo_button (s_window_cairo *window, u8 button,
                                sw x, sw y)
@@ -81,25 +85,28 @@ bool window_cairo_demo_load (s_window_cairo *window)
     assert(window->sequence_count == WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
     return false;
   }
+  if (! cairo_font_init(&g_font_courier_new,
+                        "fonts/Courier New/Courier New.ttf"))
+    return false;
   window_cairo_sequence_init(window->sequence, 8.0,
                              "01. Background rectangles",
                              bg_rect_load, bg_rect_render);
   window_cairo_sequence_init(window->sequence + 1, 20.0,
                              "02. Lightspeed",
                              lightspeed_load, lightspeed_render);
-  if (! cairo_sprite_init(&g_toaster_sprite, "img/flaps.png",
+  if (! cairo_sprite_init(&g_sprite_toaster, "img/flaps.png",
                           4, 1, 4))
     return false;
-  if (! cairo_sprite_init(&g_toast_sprite, "img/toast.png",
+  if (! cairo_sprite_init(&g_sprite_toast, "img/toast.png",
                           1, 1, 1))
     return false;
   window_cairo_sequence_init(window->sequence + 2, 60.0,
                              "03. Toasters",
                              toasters_load, toasters_render);
-  if (! cairo_sprite_init(&g_fly_sprite, "img/fly-noto.png",
+  if (! cairo_sprite_init(&g_sprite_fly, "img/fly-noto.png",
                           1, 1, 1))
     return false;
-  if (! cairo_sprite_init(&g_dead_fly_sprite, "img/fly-dead.png",
+  if (! cairo_sprite_init(&g_sprite_dead_fly, "img/fly-dead.png",
                           1, 1, 1))
     return false;
   window_cairo_sequence_init(window->sequence + 3, 60.0,
@@ -149,9 +156,7 @@ bool window_cairo_demo_render (s_window_cairo *window,
     return false;
   /* text */
   cairo_set_font_size(cr, 20);
-  cairo_select_font_face(cr, "Courier New",
-                         CAIRO_FONT_SLANT_NORMAL,
-                         CAIRO_FONT_WEIGHT_NORMAL);
+  cairo_set_font(cr, &g_font_courier_new);
   cairo_text_extents(cr, seq->title, &te);
   render_text(cr, 20.0, window->h - te.height - te.y_bearing - 20,
               seq->title);
@@ -182,4 +187,15 @@ bool window_cairo_demo_resize (s_window_cairo *window,
   (void) w;
   (void) h;
   return true;
+}
+
+void window_cairo_demo_unload (s_window_cairo *window)
+{
+  assert(window);
+  (void) window;
+  cairo_font_clean(&g_font_courier_new);
+  cairo_sprite_clean(&g_sprite_toaster);
+  cairo_sprite_clean(&g_sprite_toast);
+  cairo_sprite_clean(&g_sprite_fly);
+  cairo_sprite_clean(&g_sprite_dead_fly);
 }

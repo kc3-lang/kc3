@@ -17,8 +17,8 @@
 
 static const f64 g_speed_x =  80.0;
 static const f64 g_speed_y = -40.0;
-s_cairo_sprite   g_toast_sprite = {0};
-s_cairo_sprite   g_toaster_sprite = {0};
+s_cairo_sprite   g_sprite_toast = {0};
+s_cairo_sprite   g_sprite_toaster = {0};
 
 static bool toasters_render_toasters (s_list **toasters,
                                       s_window_cairo *window,
@@ -58,7 +58,7 @@ static void toast_render (s_tag *toast, s_window_cairo *window,
     }
     cairo_get_matrix(cr, &matrix);
     cairo_translate(cr, *x, *y);
-    cairo_sprite_blit(&g_toast_sprite, 0, cr, 0, 0);
+    cairo_sprite_blit(&g_sprite_toast, 0, cr, 0, 0);
     cairo_set_matrix(cr, &matrix);
   }
 }
@@ -91,9 +91,9 @@ static void toaster_render (s_tag *toaster, s_window_cairo *window,
     }
     cairo_get_matrix(cr, &matrix);
     cairo_translate(cr, *x, *y);
-    cairo_sprite_blit(&g_toaster_sprite,
-                      fmod(seq->t * g_toaster_sprite.frame_count,
-                           g_toaster_sprite.frame_count),
+    cairo_sprite_blit(&g_sprite_toaster,
+                      fmod(seq->t * g_sprite_toaster.frame_count,
+                           g_sprite_toaster.frame_count),
                       cr, 0, 0);
     cairo_set_matrix(cr, &matrix);
   }

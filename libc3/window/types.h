@@ -43,10 +43,11 @@ typedef bool (*f_window_render) (s_window *window,
 typedef bool (*f_window_resize) (s_window *window,
                                  uw w, uw h);
 
+typedef void (*f_window_unload) (s_window *window);
+
 /* To subtype make a copy of this struct while replacing
  * pointer types (including pointer to function types).
- * E.g. see libc3/window/cairo/types.h
- */
+ * E.g. see libc3/window/cairo/types.h */
 struct window {
   sw              x;
   sw              y;
@@ -63,7 +64,9 @@ struct window {
   s_sequence     *sequence;
   uw              sequence_count;
   uw              sequence_pos;
+  s_tag           tag; // TODO: move sequence to tag
   const s8       *title;
+  f_window_unload unload;
 };
 
 #endif /* LIBC3_WINDOW_TYPES_H */
