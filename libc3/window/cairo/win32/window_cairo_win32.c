@@ -75,6 +75,7 @@ LRESULT CALLBACK window_cairo_win32_proc(HWND hwnd, UINT message,
     EndPaint(hwnd, &ps);
     DeleteObject(buffer_hbitmap);
     DeleteDC(buffer_hdc);
+    DeleteDC(window_hdc);
     break;
   case WM_SIZE:
     if (! window->resize(window, LOWORD(lParam), HIWORD(lParam)))

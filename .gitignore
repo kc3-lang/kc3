@@ -75,3 +75,4 @@ test/libc3_test_cov
 test/libc3_test_debug
 *.tmp
 ucd2c/ucd2c
+win32/c3*
