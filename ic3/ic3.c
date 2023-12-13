@@ -11,7 +11,13 @@
  * THIS SOFTWARE.
  */
 #include "../libc3/c3.h"
-#include "buf_linenoise.h"
+#include "config.h"
+
+#if HAVE_WINEDITLINE
+# include "buf_wineditline.h"
+#else
+# include "buf_linenoise.h"
+#endif
 
 #define BUFSZ 0x10000
 
@@ -96,7 +102,11 @@ int main (int argc, char **argv)
   if (argc < 1)
     return usage(argv[0]);
   buf_init(&in, false, sizeof(i), i);
+#if HAVE_WINEDITLINE
+  buf_wineditline_open_r(&in, "ic3> ", ".ic3_history");
+#else
   buf_linenoise_open_r(&in, "ic3> ", ".ic3_history");
+#endif
   in.line = 0;
   buf_init(&out, false, sizeof(o), o);
   buf_file_open_w(&out, stdout);
@@ -122,7 +132,11 @@ int main (int argc, char **argv)
          (r = buf_ignore_character(&in)) <= 0))
       break;
   }
+#if HAVE_WINEDITLINE
+  buf_wineditline_close(&in, ".ic3_history");
+#else
   buf_linenoise_close(&in, ".ic3_history");
+#endif
   buf_file_close(&out);
   c3_clean(NULL);
   return 0;

@@ -14,6 +14,7 @@
 set -e
 
 export SRC_TOP="$(dirname "$PWD")"
+CONFIG_H_PREFIX=IC3_
 
 . ../config.subr
 
@@ -24,6 +25,31 @@ PROG_DEBUG=ic3_debug
 
 . ./sources.sh
 
+# Common config for all targets
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+CPPFLAGS="-I../libffi/include $CPPFLAGS"
+config_asan
+config_gnu
+pkg_config libbsd-overlay
+pkg_config libmd
+config_lib libmd -lmd 2>/dev/null
+config_lib dl -ldl 2>/dev/null
+pkg_config wineditline
+LIBS="$LIBS ../libffi/libffi.la -pthread"
+
+if pkg-config wineditline; then
+    echo "#define HAVE_WINEDITLINE 1" >> ${CONFIG_H}
+    HAVE_WINEDITLINE=true
+    SOURCES="$SOURCES $SOURCES_WINEDITLINE"
+else
+    echo "#define HAVE_WINEDITLINE 0" >> ${CONFIG_H}
+    HAVE_WINEDITLINE=false
+    SOURCES="$SOURCES $SOURCES_LINENOISE"
+fi
+
+update_config_h
+
+# Sources
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 
@@ -37,17 +63,6 @@ fi
 
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
-
-# Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-CPPFLAGS="-I../libffi/include $CPPFLAGS"
-config_asan
-config_gnu
-pkg_config libbsd-overlay
-pkg_config libmd
-config_lib libmd -lmd 2>/dev/null
-config_lib dl -ldl 2>/dev/null
-LIBS="$LIBS ../libffi/libffi.la -pthread"
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
