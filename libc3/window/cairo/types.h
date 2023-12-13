@@ -61,6 +61,8 @@ typedef bool (*f_window_cairo_sequence_render) (s_sequence *seq,
                                                 s_window_cairo *window,
                                                 cairo_t *cr);
 
+typedef void (*f_window_cairo_unload) (s_window_cairo *window);
+
 struct cairo_font {
   cairo_font_face_t *cairo_font_face;
   FT_Face ft_face;
@@ -112,7 +114,9 @@ struct window_cairo {
   s_sequence           *sequence;
   uw                    sequence_count;
   uw                    sequence_pos;
+  s_tag                 tag; // TODO: move sequence to tag
   const s8             *title;
+  f_window_cairo_unload unload;
 };
 
 #endif /* LIBC3_WINDOW_CAIRO_TYPES_H */

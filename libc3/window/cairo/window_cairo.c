@@ -35,22 +35,17 @@ s_window_cairo * window_cairo_init (s_window_cairo *window,
                                     const s8 *title,
                                     uw sequence_count)
 {
+  s_window_cairo tmp = {0};
   assert(window);
-  window->x = x;
-  window->y = y;
-  window->w = w;
-  window->h = h;
-  window->button = window_cairo_button_default;
-  window->key = window_cairo_key_default;
-  window->load = window_cairo_load_default;
-  window->motion = window_cairo_motion_default;
-  window->render = window_cairo_render_default;
-  window->resize = window_cairo_resize_default;
-  window->cr = NULL;
-  window->sequence = calloc(sequence_count, sizeof(s_sequence));
-  window->sequence_count = sequence_count;
-  window->sequence_pos = 0;
-  window->title = title ? title : "C3.Window.Cairo";
+  title = title ? title : "C3.Window.Cairo";
+  window_init((s_window *) &tmp, x, y, w, h, title, sequence_count);
+  tmp.button = window_cairo_button_default;
+  tmp.key    = window_cairo_key_default;
+  tmp.load   = window_cairo_load_default;
+  tmp.motion = window_cairo_motion_default;
+  tmp.render = window_cairo_render_default;
+  tmp.resize = window_cairo_resize_default;
+  *window = tmp;
   return window;
 }
 

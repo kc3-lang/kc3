@@ -33,8 +33,10 @@ int main (int argc, char **argv)
   window.load   = window_cairo_demo_load;
   window.render = window_cairo_demo_render;
   window.resize = window_cairo_demo_resize;
+  window.unload = window_cairo_demo_unload;
   if (! window_cairo_xcb_run(&window)) {
     err_puts("window_cairo_xcb_run -> false");
+    window_cairo_clean(&window);
     c3_clean(NULL);
     return g_c3_exit_code;
   }

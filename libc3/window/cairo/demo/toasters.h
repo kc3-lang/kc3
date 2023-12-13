@@ -15,8 +15,8 @@
 
 #include "../types.h"
 
-extern s_cairo_sprite g_toast_sprite;
-extern s_cairo_sprite g_toaster_sprite;
+extern s_cairo_sprite g_sprite_toast;
+extern s_cairo_sprite g_sprite_toaster;
 
 bool toasters_load (s_sequence *seq, s_window_cairo *window);
 bool toasters_render (s_sequence *seq, s_window_cairo *window,

@@ -19,7 +19,7 @@ static void star_init (s_tag *star)
   f64 y;
   f64_random(&x);
   f64_random(&y);
-  tag_init_map(star, 3);
+  tag_map(star, 3);
   tag_init_sym(star->data.map.key, sym_1("speed"));
   tag_init_f64(star->data.map.value, 0.0);
   tag_init_sym(star->data.map.key + 1, sym_1("x"));

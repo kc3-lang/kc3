@@ -150,8 +150,8 @@ bool window_cairo_xcb_run (s_window_cairo *window)
                     screen->root_visual,
                     value_mask, value_list);
   xcb_change_property(conn, XCB_PROP_MODE_REPLACE, xcb_window,
-                      XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8, 12,
-                      window->title);
+                      XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8,
+                      strlen(window->title), window->title);
   xcb_map_window(conn, xcb_window);
   pixmap = xcb_generate_id(conn);
   xcb_create_pixmap(conn, screen->root_depth, pixmap, xcb_window,
@@ -187,6 +187,11 @@ bool window_cairo_xcb_run (s_window_cairo *window)
     }
   }
  clean:
+  cairo_surface_destroy(surface);
+  cairo_destroy(window->cr);
+  xkb_state_unref(xkb_state);
+  xkb_keymap_unref(xkb_keymap);
+  xkb_context_unref(xkb_ctx);
   xcb_disconnect(conn);
   return r;
 }

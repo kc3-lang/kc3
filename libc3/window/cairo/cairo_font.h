@@ -20,9 +20,9 @@
 /* Stack-allocation compatible functions, call cairo_font_clean after
    use. */
 void           cairo_font_clean (s_cairo_font *font);
-s_cairo_font * cairo_font_init (s_cairo_font *font, const s_str *path);
+s_cairo_font * cairo_font_init (s_cairo_font *font, const s8 *path);
 
 /* Observers */
-void cairo_font_set (const s_cairo_font *font, cairo_t *cr);
+void cairo_set_font (cairo_t *cr, const s_cairo_font *font);
 
 #endif /* LIBC3_WINDOW_CAIRO_CAIRO_FONT_H */

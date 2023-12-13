@@ -52,6 +52,27 @@ void window_clean (s_window *window)
     i++;
   }
   free(window->sequence);
+  tag_clean(&window->tag);
+}
+
+s_window * window_init (s_window *window,
+                        sw x, sw y, uw w, uw h,
+                        const s8 *title,
+                        uw sequence_count)
+{
+  s_window tmp = {0};
+  assert(window);
+  tmp.x = x;
+  tmp.y = y;
+  tmp.w = w;
+  tmp.h = h;
+  tmp.sequence = calloc(sequence_count, sizeof(s_sequence));
+  tmp.sequence_count = sequence_count;
+  tmp.sequence_pos = 0;
+  tag_init_void(&tmp.tag);
+  tmp.title = title ? title : "C3.Window";
+  *window = tmp;
+  return window;
 }
 
 bool window_set_sequence_pos (s_window *window, uw sequence_pos)

@@ -17,6 +17,14 @@ static FT_Library *g_cairo_font_ft = NULL;
 
 static FT_Library * cairo_font_ft (void);
 
+void c3_window_cairo_font_clean (void)
+{
+  if (g_cairo_font_ft) {
+    FT_Done_FreeType(*g_cairo_font_ft);
+    free(g_cairo_font_ft);
+  }
+}
+
 void cairo_font_clean (s_cairo_font *font)
 {
   assert(font);
@@ -44,17 +52,17 @@ static FT_Library * cairo_font_ft (void)
   return g_cairo_font_ft;
 }
 
-s_cairo_font * cairo_font_init (s_cairo_font *font, const s_str *path)
+s_cairo_font * cairo_font_init (s_cairo_font *font, const s8 *path)
 {
   FT_Library *ft;
   assert(font);
   assert(path);
   if (! (ft = cairo_font_ft()))
     return NULL;
-  str_init_copy(&font->path, path);
-  if (! file_search(path, sym_1("r"), &font->real_path)) {
+  str_init_copy_1(&font->path, path);
+  if (! file_search(&font->path, sym_1("r"), &font->real_path)) {
     err_write_1("cairo_font_init: file not found: ");
-    err_puts(path->ptr.ps8);
+    err_puts(path);
     str_clean(&font->path);
     return NULL;
   }
@@ -70,7 +78,7 @@ s_cairo_font * cairo_font_init (s_cairo_font *font, const s_str *path)
   return font;
 }
 
-void cairo_font_set (const s_cairo_font *font, cairo_t *cr)
+void cairo_set_font (cairo_t *cr, const s_cairo_font *font)
 {
   cairo_set_font_face(cr, font->cairo_font_face);
 }

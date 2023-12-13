@@ -67,6 +67,7 @@
 #include "integer.h"
 #include "io.h"
 #include "list.h"
+#include "map.h"
 #include "ptag.h"
 #include "ptr.h"
 #include "module.h"
