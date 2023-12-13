@@ -52,6 +52,14 @@ demo:
 	${MAKE} ${PROG}
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo; else time ./${PROG}; fi
 
+demo_asan:
+	${MAKE} asan
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_asan; else time ./${PROG_ASAN}; fi
+
+demo_cov:
+	${MAKE} cov
+	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_cov; else time ./${PROG_COV}; fi
+
 demo_debug:
 	${MAKE} debug
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos demo_debug; else time ./${PROG_DEBUG}; fi
@@ -74,6 +82,9 @@ install:
 lldb_demo: debug
 	if ${HAVE_DARWIN}; then ${MAKE} -C macos lldb_demo; else lldb .libs/${PROG_DEBUG}; fi
 
+update_sources:
+	./update_sources
+
 .PHONY: \
 	all \
 	asan \
@@ -83,10 +94,14 @@ lldb_demo: debug
 	cov \
 	debug \
 	demo \
+	demo_asan \
+	demo_cov \
+	demo_debug \
 	distclean \
 	gdb_demo \
 	install \
-	lldb_demo
+	lldb_demo \
+	update_sources \
 
 include config.mk
 include sources.mk

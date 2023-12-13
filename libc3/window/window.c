@@ -53,6 +53,7 @@ void window_clean (s_window *window)
   }
   free(window->sequence);
   tag_clean(&window->tag);
+  window->unload(window);
 }
 
 s_window * window_init (s_window *window,
