@@ -27,11 +27,14 @@ void cairo_sprite_blit (const s_cairo_sprite *sprite, uw frame,
 
 void cairo_sprite_clean (s_cairo_sprite *sprite)
 {
+  void *data;
   uw i;
   assert(sprite);
   i = 0;
   while (i < sprite->frame_count) {
+    data = cairo_image_surface_get_data(sprite->surface[i]);
     cairo_surface_destroy(sprite->surface[i]);
+    free(data);
     i++;
   }
   free(sprite->surface);
