@@ -35,6 +35,8 @@ char         g_test_targets_env[TARGETS_MAX * TARGET_NAME_MAX];
 char        *g_test_targets_env_v[TARGETS_MAX + 1];
 const char **g_test_targets = {NULL};
 
+static char * test_strsep (char **p, const char *delim);
+
 void test_clean (void)
 {
 }
@@ -110,7 +112,7 @@ void test_init (int argc, char **argv)
       memcpy(target, env_target, len + 1);
       ap = g_test_targets_env_v;
       while (ap < g_test_targets_env_v + TARGETS_MAX &&
-             (*ap = strsep(&target, " \t")) != NULL)
+             (*ap = test_strsep(&target, " \t")) != NULL)
         if (**ap != '\0')
           ap++;
       *ap = NULL;
@@ -166,6 +168,24 @@ void test_summary (void)
          g_test_ko,
          g_test_ko * 100.0f / g_test_count,
          TEST_COLOR_RESET);
+}
+
+static char * test_strsep (char **p, const char *delim)
+{
+  char *d;
+  char *start;
+  if (! p || ! *p || ! delim)
+    return NULL;
+  d = start = *p;
+  while (*d && ! strchr(delim, *d))
+    d++;
+  if (*d) {
+    *d = 0;
+    *p = d + 1;
+  }
+  else
+    *p = d;
+  return start;
 }
 
 int test_target (const char *target)

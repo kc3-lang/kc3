@@ -50,8 +50,8 @@ TEST_CASE(buf_file_open_r_refill)
   s_buf buf;
   FILE *fp;
   sw i = 64;
-  test_context("buf_file_open_r_refill(/dev/zero)");
-  fp = fopen("/dev/zero", "r");
+  test_context("buf_file_open_r_refill(zero)");
+  fp = fopen("zero", "r");
   assert(fp);
   buf_init(&buf, false, sizeof(bu), bu);
   buf_file_open_r(&buf, fp);

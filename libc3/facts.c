@@ -288,7 +288,7 @@ sw facts_load_file (s_facts *facts, const s_str *path)
   assert(facts);
   assert(path);
   buf_init(&buf, false, sizeof(b), b);
-  if (! (fp = fopen(path->ptr.ps8, "r"))) {
+  if (! (fp = fopen(path->ptr.ps8, "rb"))) {
     warn("facts_load_file: %s", path->ptr.ps8);
     return -1;
   }

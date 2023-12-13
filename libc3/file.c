@@ -60,11 +60,11 @@ sw file_copy_1 (const char *from, const char *to)
   sw r;
   sw saved_errno;
   sw w;
-  if ((fd_from = open(from, O_RDONLY)) < 0) {
+  if ((fd_from = open(from, O_RDONLY | O_BINARY)) < 0) {
     warn("cp: %s", from);
     return -1;
   }
-  if ((fd_to = open(to, O_WRONLY | O_CREAT | O_TRUNC, 0666)) < 0) {
+  if ((fd_to = open(to, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0666)) < 0) {
     warn("cp: %s", to);
     goto error;
   }

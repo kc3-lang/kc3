@@ -86,7 +86,7 @@ config_have_stat_mtim() {
 
 config_gnu() {
     if grep -q _GNU_SOURCE /usr/include/features.h 2>/dev/null; then
-	CFLAGS="$CFLAGS -D_GNU_SOURCE"
+	CFLAGS="$CFLAGS -D_GNU_SOURCE -D_DEFAULT_SOURCE -D_BSD_SOURCE"
     fi
 }
 
