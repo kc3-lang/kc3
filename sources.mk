@@ -547,6 +547,7 @@ C3_OTHER_SOURCES = \
 	"c3.version" \
 	"config.subr" \
 	"configure" \
+	"license.h" \
 	"sources.mk" \
 	"sources.sh" \
 	"img/c3.1.xcf" \
@@ -722,6 +723,19 @@ C3_OTHER_SOURCES = \
 	"test/ic3/plist.out.expected" \
 	"test/ic3/plist.err.expected" \
 	"test/ic3/plist.ret.expected" \
+	"test/facts_test_dump_file.expected.facts" \
+	"test/facts_test_load_file.facts" \
+	"test/facts_test_open_file.1.expected.facts" \
+	"test/facts_test_open_file.1.in.facts" \
+	"test/facts_test_open_file.2.expected.facts" \
+	"test/facts_test_open_file.2.in.facts" \
+	"test/facts_test_open_file.3.expected.facts" \
+	"test/facts_test_open_file.3.in.facts" \
+	"test/facts_test_save.expected.facts" \
+	"test/facts_test_log_add.expected.facts" \
+	"test/facts_test_log_remove.expected.facts" \
+	"test/ic3_test" \
+	"test/zero" \
 
 C3_EXTERNAL_SOURCES = \
 	"libffi/aclocal.m4" \

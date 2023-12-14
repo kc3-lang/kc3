@@ -1198,6 +1198,7 @@ libtommath/tommath_cutoffs.h
 libtommath/tommath_private.h
 libtommath/tommath_superclass.h
 libtommath/update_sources
+license.h
 linenoise/LICENSE
 linenoise/Makefile
 linenoise/README.markdown
@@ -1235,6 +1236,17 @@ test/fact_test.c
 test/fact_test.h
 test/facts_cursor_test.c
 test/facts_test.c
+test/facts_test_dump_file.expected.facts
+test/facts_test_load_file.facts
+test/facts_test_log_add.expected.facts
+test/facts_test_log_remove.expected.facts
+test/facts_test_open_file.1.expected.facts
+test/facts_test_open_file.1.in.facts
+test/facts_test_open_file.2.expected.facts
+test/facts_test_open_file.2.in.facts
+test/facts_test_open_file.3.expected.facts
+test/facts_test_open_file.3.in.facts
+test/facts_test_save.expected.facts
 test/facts_with_test.c
 test/fn_test.c
 test/hash_test.c
@@ -1350,6 +1362,7 @@ test/ic3/tuple.err.expected
 test/ic3/tuple.in
 test/ic3/tuple.out.expected
 test/ic3/tuple.ret.expected
+test/ic3_test
 test/ident_test.c
 test/libc3_test.c
 test/list_test.c
@@ -1370,6 +1383,7 @@ test/test_case_end.rb
 test/tuple_test.c
 test/types_test.c
 test/update_sources
+test/zero
 ucd2c/Makefile
 ucd2c/UCD.zip
 ucd2c/UCD/ArabicShaping.txt
