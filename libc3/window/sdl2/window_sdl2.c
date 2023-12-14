@@ -141,6 +141,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
   /*
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
                       SDL_GL_CONTEXT_PROFILE_CORE);
@@ -152,12 +153,14 @@ bool window_sdl2_run (s_window_sdl2 *window)
                                 window->w, window->h,
                                 SDL_WINDOW_ALLOW_HIGHDPI |
                                 SDL_WINDOW_OPENGL |
-                                SDL_WINDOW_RESIZABLE);
+                                SDL_WINDOW_RESIZABLE |
+				SDL_WINDOW_SHOWN);
   if (! sdl_window) {
     warnx("window_sdl2_run: failed to create window: %s",
           SDL_GetError());
     return false;
   }
+  SDL_SetWindowBordered(sdl_window, SDL_TRUE);
   window->sdl_window = sdl_window;
   context = SDL_GL_CreateContext(sdl_window);
   if (! context) {
