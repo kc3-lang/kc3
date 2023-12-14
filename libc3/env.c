@@ -678,6 +678,9 @@ bool env_eval_quote(s_env *env, const s_quote *quote, s_tag *dest)
 
 bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
 {
+  assert(env);
+  assert(tag);
+  assert(dest);
   switch (tag->type) {
   case TAG_VOID:
     tag_init_void(dest);
@@ -728,8 +731,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     tag_init_copy(dest, tag);
     return true;
   }
+  warnx("env_eval_tag: unknown tag type: %d", tag->type);
   assert(! "env_eval_tag: unknown tag type");
-  errx(1, "env_eval_tag: unknown tag type: %d", tag->type);
   return false;
 }
 
@@ -810,10 +813,11 @@ s_list ** env_get_struct_type_spec (s_env *env, const s_sym *module,
     facts_cursor_clean(&cursor);
     return NULL;
   }
-  facts_cursor_clean(&cursor);
-  if (! env_eval_tag(env, &tag_var, &tmp))
+  if (! env_eval_tag(env, &tag_var, &tmp)) {
+    facts_cursor_clean(&cursor);
     return NULL;
-  tag_clean(&tag_var);
+  }
+  facts_cursor_clean(&cursor);
   if (tmp.type != TAG_LIST ||
       ! list_is_plist(tmp.data.list)) {
     warnx("env_get_struct_type_spec: module %s"
