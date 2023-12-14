@@ -789,13 +789,14 @@ s_env * env_init (s_env *env, int argc, s8 **argv)
   return env;
 }
 
-const s_list * env_get_struct_type_spec (s_env *env,
-                                         const s_sym *module)
+s_list ** env_get_struct_type_spec (s_env *env, const s_sym *module,
+                                    s_list **dest)
 {
   s_facts_cursor cursor;
   s_tag tag_defstruct;
   s_tag tag_module;
   s_tag tag_var;
+  s_tag tmp;
   tag_init_sym_1(&tag_defstruct, "defstruct");
   tag_init_sym(&tag_module, module);
   tag_init_var(&tag_var);
@@ -806,16 +807,23 @@ const s_list * env_get_struct_type_spec (s_env *env,
     warnx("env_get_struct_type_spec: module %s"
           " does not use defstruct",
           module->str.ptr.ps8);
+    facts_cursor_clean(&cursor);
     return NULL;
   }
-  if (tag_var.type != TAG_LIST ||
-      ! list_is_plist(tag_var.data.list)) {
+  facts_cursor_clean(&cursor);
+  if (! env_eval_tag(env, &tag_var, &tmp))
+    return NULL;
+  tag_clean(&tag_var);
+  if (tmp.type != TAG_LIST ||
+      ! list_is_plist(tmp.data.list)) {
     warnx("env_get_struct_type_spec: module %s"
           " has a defstruct that is not a property list",
           module->str.ptr.ps8);
+    tag_clean(&tmp);
     return NULL;
   }
-  return tag_var.data.list;
+  *dest = tmp.data.list;
+  return dest;
 }
 
 s_env * env_init_args (s_env *env, int argc, s8 **argv)

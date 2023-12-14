@@ -21,10 +21,6 @@ extern s_env g_c3_env;
 void    env_clean (s_env *env);
 s_env * env_init (s_env *env, int argc, s8 **argv);
 
-/* Observers. */
-const s_list * env_get_struct_type_spec (s_env *env,
-                                         const s_sym *module);
-
 /* Operators. */
 bool          env_eval_array (s_env *env, const s_array *array,
                               s_array *dest);
@@ -64,6 +60,8 @@ bool          env_eval_struct (s_env *env, const s_struct *s,
 bool          env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
 bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
                               s_tag *dest);
+s_list **     env_get_struct_type_spec (s_env *env, const s_sym *module,
+                                        s_list **dest);
 bool          env_module_load (s_env *env, const s_sym *module,
                                s_facts *facts);
 bool          env_module_maybe_reload (s_env *env, const s_sym *module,

@@ -109,15 +109,18 @@ s_struct_type * struct_type_init_from_env (s_struct_type *st,
                                            const s_sym *module,
                                            s_env *env)
 {
-  const s_list *spec;
+  s_list *spec;
   assert(st);
   assert(module);
   assert(env);
-  spec = env_get_struct_type_spec(env, module);
-  if (! spec)
+  if (! env_get_struct_type_spec(env, module, &spec) ||
+      ! spec)
     return NULL;
-  if (! struct_type_init(st, module, spec))
+  if (! struct_type_init(st, module, spec)) {
+    list_delete_all(spec);
     return NULL;
+  }
+  list_delete_all(spec);
   return st;
 }
 

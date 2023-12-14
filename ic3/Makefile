@@ -50,7 +50,21 @@ install:
 	mkdir -p ${prefix}/bin
 	install -m 755 ic3 ${prefix}/bin/ic3
 
-.PHONY: all asan cov debug clean clean_cov distclean
+lldb_ic3: debug
+	if [ -f ic3_debug.core ]; then lldb .libs/ic3_debug ic3_debug.core; else lldb .libs/ic3_debug; fi
+
+.PHONY: \
+	all \
+	asan \
+	clean \
+	clean_cov \
+	cov \
+	debug \
+	distclean \
+	gdb_ic3 \
+	install \
+	lldb_ic3 \
+	update_sources \
 
 include config.mk
 include sources.mk
