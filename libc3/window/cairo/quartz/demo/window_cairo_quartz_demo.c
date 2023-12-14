@@ -35,6 +35,7 @@ int main (int argc, s8 **argv)
   window.resize = window_cairo_demo_resize;
   if (! window_cairo_quartz_run(&window))
     r = g_c3_exit_code;
+  window_cairo_clean(&window);
   c3_window_cairo_clean();
   c3_clean(NULL);
   return r;

@@ -184,7 +184,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
   int display_index;
   display_index = SDL_GetWindowDisplayIndex(sdl_window);
   if (display_index < 0) {
-    fprintf(stderr, "window_sdl2_run: failed to get display DPI: %s\n",
+    fprintf(stderr, "window_sdl2_run: failed to get display index: %s\n",
             SDL_GetError());
     goto ko;
   }
