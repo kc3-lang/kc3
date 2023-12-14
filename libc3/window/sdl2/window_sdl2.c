@@ -15,96 +15,105 @@
 #include <stdlib.h>
 #include <xkbcommon/xkbcommon.h>
 #include <libc3/tag.h>
+#include "../window.h"
 #include "window_sdl2.h"
 
 static bool g_window_sdl2_initialized = false;
 
-s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
-                                    sw x, sw y, uw w, uw h,
-                                    const s8 *title,
-                                    uw sequence_count)
+void window_sdl2_clean (s_window_sdl2 *window)
 {
-  assert(window);
-  window->x = x;
-  window->y = y;
-  window->w = w;
-  window->h = h;
-  window->fullscreen = false;
-  window->button = window_sdl2_button_default;
-  window->key = window_sdl2_key_default;
-  window->load = window_sdl2_load_default;
-  window->motion = window_sdl2_motion_default;
-  window->render = window_sdl2_render_default;
-  window->resize = window_sdl2_resize_default;
-  window->sdl_window = NULL;
-  window->sequence = calloc(sequence_count, sizeof(s_sequence));
-  window->sequence_count = sequence_count;
-  window->sequence_pos = 0;
-  window->title = title ? title : "C3.Window.Sdl2";
-  return window;
+  window_clean((s_window *) window);
 }
 
-bool window_sdl2_button_default (s_window_sdl2 *window, u8 button,
-                                  sw x, sw y)
+bool window_sdl2_default_button_cb (s_window_sdl2 *window, u8 button,
+                                    sw x, sw y)
 {
   assert(window);
   (void) window;
   (void) button;
   (void) x;
   (void) y;
-  printf("window_sdl2_button_default: %d (%ld, %ld)\n",
+  printf("window_sdl2_default_button_cb: %d (%ld, %ld)\n",
          (int) button, x, y);
   return true;
 }
 
-bool window_sdl2_key_default (s_window_sdl2 *window, SDL_Keysym *keysym)
+bool window_sdl2_default_key_cb (s_window_sdl2 *window,
+                                 SDL_Keysym *keysym)
 {
   assert(window);
   assert(keysym);
   (void) window;
   (void) keysym;
-  printf("window_sdl2_key_default: %d\n", keysym->sym);
+  printf("window_sdl2_default_key_cb: %d\n", keysym->sym);
   return true;
 }
 
-bool window_sdl2_load_default (s_window_sdl2 *window)
+bool window_sdl2_default_load_cb (s_window_sdl2 *window)
 {
   assert(window);
   (void) window;
-  printf("window_sdl2_load_default\n");
+  printf("window_sdl2_default_load_cb\n");
   return true;
 }
 
-bool window_sdl2_motion_default (s_window_sdl2 *window, sw x, sw y)
+bool window_sdl2_default_motion_cb (s_window_sdl2 *window, sw x, sw y)
 {
   assert(window);
   (void) window;
   (void) x;
   (void) y;
   /*
-  printf("window_sdl2_motion_default (%ld, %ld)\n", x, y);
+  printf("window_sdl2_default_motion_cb (%ld, %ld)\n", x, y);
   */
   return true;
 }
 
-bool window_sdl2_render_default (s_window_sdl2 *window,
-                                 void *sdl_window)
+bool window_sdl2_default_render_cb (s_window_sdl2 *window,
+                                    void *sdl_window)
 {
   (void) window;
   (void) sdl_window;
   assert(window);
-  printf("window_sdl2_render_default\n");
+  printf("window_sdl2_default_render_cb\n");
   return true;
 }
 
-bool window_sdl2_resize_default (s_window_sdl2 *window, uw w, uw h)
+bool window_sdl2_default_resize_cb (s_window_sdl2 *window, uw w, uw h)
 {
   assert(window);
   (void) window;
   (void) w;
   (void) h;
-  printf("window_sdl2_resize_default: %lu x %lu\n", w, h);
+  printf("window_sdl2_default_resize_cb: %lu x %lu\n", w, h);
   return true;
+}
+
+void window_sdl2_default_unload_cb (s_window_sdl2 *window)
+{
+  assert(window);
+  (void) window;
+  printf("window_sdl2_default_unload_cb\n");
+}
+
+s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
+                                  sw x, sw y, uw w, uw h,
+                                  const s8 *title,
+                                  uw sequence_count)
+{
+  s_window_sdl2 tmp = {0};
+  assert(window);
+  title = title ? title : "C3.Window.Sdl2";
+  window_init((s_window *) &tmp, x, y, w, h, title, sequence_count);
+  tmp.button = window_sdl2_default_button_cb;
+  tmp.key    = window_sdl2_default_key_cb;
+  tmp.load   = window_sdl2_default_load_cb;
+  tmp.motion = window_sdl2_default_motion_cb;
+  tmp.render = window_sdl2_default_render_cb;
+  tmp.resize = window_sdl2_default_resize_cb;
+  tmp.unload = window_sdl2_default_unload_cb;
+  *window = tmp;
+  return window;
 }
 
 bool window_sdl2_run (s_window_sdl2 *window)

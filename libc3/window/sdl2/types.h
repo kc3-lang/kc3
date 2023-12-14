@@ -72,6 +72,8 @@ typedef bool (*f_window_sdl2_sequence_render) (s_sequence *seq,
                                                s_window_sdl2 *window,
                                                void *context);
 
+typedef void (*f_window_sdl2_unload) (s_window_sdl2 *window);
+
 /* 1 */
 struct gl_2d {
   f64 x;
@@ -149,7 +151,9 @@ struct window_sdl2 {
   s_sequence          *sequence;
   uw                   sequence_count;
   uw                   sequence_pos;
+  s_tag                tag; // TODO: move sequence to tag
   const s8            *title;
+  f_window_sdl2_unload unload;
   uw gl_w;
   uw gl_h;
   float dpi;

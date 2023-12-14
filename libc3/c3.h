@@ -70,6 +70,7 @@
 #include "map.h"
 #include "ptag.h"
 #include "ptr.h"
+#include "ptr_free.h"
 #include "module.h"
 #include "operator.h"
 #include "quote.h"
@@ -79,6 +80,7 @@
 #include "s64.h"
 #include "sequence.h"
 #include "str.h"
+#include "struct.h"
 #include "sw.h"
 #include "tag.h"
 #include "time.h"
@@ -91,5 +93,6 @@
 #include "uw.h"
 #include "ucd.h"
 #include "var.h"
+#include "void.h"
 
 #endif /* LIBC3_C3_H */

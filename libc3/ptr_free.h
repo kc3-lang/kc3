@@ -10,18 +10,19 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBC3_PTR_H
-#define LIBC3_PTR_H
+#ifndef LIBC3_PTR_FREE_H
+#define LIBC3_PTR_FREE_H
 
 #include "types.h"
 
-/* Stack-allocation compatible functions. */
-u_ptr_w * ptr_init (u_ptr_w *ptr, void *p);
-u_ptr_w * ptr_init_copy (u_ptr_w *ptr, const u_ptr_w *src);
+/* Stack-allocation compatible functions, call ptr_free_clean
+   after use. */
+void      ptr_free_clean (u_ptr_w *ptr_free);
+u_ptr_w * ptr_free_init (u_ptr_w *ptr_free, void *p);
+u_ptr_w * ptr_free_init_copy (u_ptr_w *ptr_free, const u_ptr_w *src);
 
-/* Heap-allocation functions, call ptr_delete after use. */
-void      ptr_delete (u_ptr_w *ptr);
-u_ptr_w * ptr_new (void *p);
-u_ptr_w * ptr_new_copy (const u_ptr_w *src);
+/* Heap-allocation functions, call ptr_free_delete after use. */
+void      ptr_free_delete (u_ptr_w *ptr_free);
+u_ptr_w * ptr_free_new (void *p);
 
-#endif /* LIBC3_PTR_H */
+#endif /* LIBC3_PTR_FREE_H */

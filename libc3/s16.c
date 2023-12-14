@@ -21,18 +21,9 @@
 s16 * s16_cast (s_tag *tag, s16 *dest)
 {
   switch (tag->type) {
-  case TAG_VOID:
-    *dest = 0;
-    return dest;
-  case TAG_ARRAY:
-    goto ko;
   case TAG_BOOL:
     *dest = tag->data.bool ? 1 : 0;
     return dest;
-  case TAG_CALL:
-    goto ko;
-  case TAG_CFN:
-    goto ko;
   case TAG_CHARACTER:
     *dest = (s16) tag->data.character;
     return dest;
@@ -42,10 +33,6 @@ s16 * s16_cast (s_tag *tag, s16 *dest)
   case TAG_F64:
     *dest = (s16) tag->data.f64;
     return dest;
-  case TAG_FACT:
-  case TAG_FN:
-  case TAG_IDENT:
-    goto ko;
   case TAG_INTEGER:
     *dest = integer_to_s16(&tag->data.integer);
     return dest;
@@ -79,23 +66,11 @@ s16 * s16_cast (s_tag *tag, s16 *dest)
   case TAG_UW:
     *dest = (s16) tag->data.uw;
     return dest;
-  case TAG_LIST:
-  case TAG_MAP:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_QUOTE:
-  case TAG_STR:
-  case TAG_SYM:
-  case TAG_TUPLE:
-  case TAG_VAR:
-    goto ko;
+  default:
+    break;
   }
-  assert(! "s16_cast: unknown tag type");
-  errx(1, "s16_cast: unknown tag type: %d", tag->type);
-  return 0;
- ko:
-  warnx("s16_cast: cannot cast %s to s16",
-        tag_type_to_string(tag->type));
+  errx(1, "s16_cast: cannot cast %s to s16",
+       tag_type_to_string(tag->type));
   return 0;
 }
 

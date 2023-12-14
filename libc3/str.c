@@ -321,7 +321,7 @@ s_str * str_new_vf (const char *fmt, va_list ap)
   return dest;
 }
 
-sw str_peek_character (const s_str *str, character *c)
+sw str_peek_character_utf8 (const s_str *str, character *c)
 {
   assert(str);
   assert(c);
@@ -400,7 +400,7 @@ sw str_read_character_utf8 (s_str *str, character *c)
   sw size;
   if (str->size == 0)
     return 0;
-  size = str_peek_character(str, c);
+  size = str_peek_character_utf8(str, c);
   if (size < 0)
     return size;
   str->size -= size;

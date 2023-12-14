@@ -1,0 +1,6 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {GL.Sphere, :is_a, :module}
+replace {GL.Sphere, :defstruct, [segments_u: (Uw) 3,
+                                 segments_v: (Uw) 2,
+                                 vertex: (PtrFree) 0 ]}

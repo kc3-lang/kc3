@@ -29,8 +29,10 @@
 #include "list.h"
 #include "map.h"
 #include "ptr.h"
+#include "ptr_free.h"
 #include "quote.h"
 #include "str.h"
+#include "struct.h"
 #include "tag.h"
 #include "tag_init.h"
 #include "time.h"
@@ -185,13 +187,23 @@ s_tag * tag_init_map_1 (s_tag *tag, const s8 *p)
   return tag;
 }
 
-s_tag * tag_init_ptr (s_tag *tag, bool free_p, const s_sym *type, 
-                      void *p)
+s_tag * tag_init_ptr (s_tag *tag, void *p)
 {
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_PTR;
-  if (! ptr_init(&tmp.data.ptr, free_p, type, p))
+  if (! ptr_init(&tmp.data.ptr, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_ptr_free (s_tag *tag, void *p)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PTR_FREE;
+  if (! ptr_free_init(&tmp.data.ptr_free, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -254,6 +266,30 @@ s_tag * tag_init_str_1 (s_tag *tag, s8 *p_free, const s8 *p)
   assert(tag);
   tmp.type = TAG_STR;
   if (! str_init_1(&tmp.data.str, p_free, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_struct (s_tag *tag, const s_sym *module)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_STRUCT;
+  if (! struct_init(&tmp.data.struct_, module))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_struct_with_data (s_tag *tag, const s_sym *module, 
+                                   bool free_data, void *data)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_STRUCT;
+  if (! struct_init_with_data(&tmp.data.struct_, module, free_data, 
+                              data))
     return NULL;
   *tag = tmp;
   return tag;
@@ -573,7 +609,7 @@ s_tag * tag_new_map_1 (const s8 *p)
   return tag;
 }
 
-s_tag * tag_new_ptr (bool free_p, const s_sym *type, void *p)
+s_tag * tag_new_ptr (void *p)
 {
   s_tag *tag;
   if (! (tag = calloc(1, sizeof(s_tag)))) {
@@ -581,7 +617,22 @@ s_tag * tag_new_ptr (bool free_p, const s_sym *type, void *p)
     return NULL;
   }
   tag->type = TAG_PTR;
-  if (! ptr_init(&tag->data.ptr, free_p, type, p)) {
+  if (! ptr_init(&tag->data.ptr, p)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_ptr_free (void *p)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_ptr_free: calloc");
+    return NULL;
+  }
+  tag->type = TAG_PTR_FREE;
+  if (! ptr_free_init(&tag->data.ptr_free, p)) {
     free(tag);
     return NULL;
   }
@@ -660,6 +711,38 @@ s_tag * tag_new_str_1 (s8 *p_free, const s8 *p)
   }
   tag->type = TAG_STR;
   if (! str_init_1(&tag->data.str, p_free, p)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_struct (const s_sym *module)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_struct: calloc");
+    return NULL;
+  }
+  tag->type = TAG_STRUCT;
+  if (! struct_init(&tag->data.struct_, module)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_struct_with_data (const s_sym *module, bool free_data, 
+                                  void *data)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_struct_with_data: calloc");
+    return NULL;
+  }
+  tag->type = TAG_STRUCT;
+  if (! struct_init_with_data(&tag->data.struct_, module, free_data, 
+                              data)) {
     free(tag);
     return NULL;
   }
@@ -980,13 +1063,25 @@ s_tag * tag_map_1 (s_tag *tag, const s8 *p)
   return tag;
 }
 
-s_tag * tag_ptr (s_tag *tag, bool free_p, const s_sym *type, void *p)
+s_tag * tag_ptr (s_tag *tag, void *p)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_PTR;
-  if (! ptr_init(&tmp.data.ptr, free_p, type, p))
+  if (! ptr_init(&tmp.data.ptr, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_ptr_free (s_tag *tag, void *p)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PTR_FREE;
+  if (! ptr_free_init(&tmp.data.ptr_free, p))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1055,6 +1150,32 @@ s_tag * tag_str_1 (s_tag *tag, s8 *p_free, const s8 *p)
   tag_clean(tag);
   tmp.type = TAG_STR;
   if (! str_init_1(&tmp.data.str, p_free, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_struct (s_tag *tag, const s_sym *module)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_STRUCT;
+  if (! struct_init(&tmp.data.struct_, module))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_struct_with_data (s_tag *tag, const s_sym *module, 
+                              bool free_data, void *data)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_STRUCT;
+  if (! struct_init_with_data(&tmp.data.struct_, module, free_data, 
+                              data))
     return NULL;
   *tag = tmp;
   return tag;

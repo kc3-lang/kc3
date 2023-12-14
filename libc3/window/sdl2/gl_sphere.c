@@ -37,14 +37,15 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw segments_u,
   uw j;
   s_gl_3d *p;
   f64 r;
+  s_gl_sphere tmp = {0};
   f64 z;
   assert(sphere);
   if (segments_u < 3)
     segments_u = 3;
   if (segments_v < 2)
     segments_v = 2;
-  sphere->segments_u = segments_u;
-  sphere->segments_v = segments_v;
+  tmp.segments_u = segments_u;
+  tmp.segments_v = segments_v;
   p = calloc(segments_u * segments_v + 2, sizeof(s_gl_3d));
   if (! p) {
     err_write_1("gl_sphere_init(");
@@ -54,7 +55,7 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw segments_u,
     err_write_1("): failed to allocate memory");
     return NULL;
   }
-  sphere->vertex = p;
+  tmp.vertex = p;
   i = 0;
   while (i < segments_v) {
     angle_i = (i + 1) * M_PI / (segments_v + 1);
@@ -78,6 +79,7 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw segments_u,
   p->x = 0.0;
   p->y = 0.0;
   p->z = -1.0;
+  *sphere = tmp;
   return sphere;
 }
 

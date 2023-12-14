@@ -241,6 +241,9 @@ s_call * call_init_cast (s_call *call, const s_sym *type,
 {
   s_call tmp = {0};
   assert(call);
+  assert(type);
+  assert(sym_is_module(type));
+  assert(tag);
   ident_init(&tmp.ident, type, sym_1("cast"));
   tmp.arguments = list_new_copy(tag, NULL);
   *call = tmp;

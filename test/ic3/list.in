@@ -41,6 +41,8 @@
   ]  ## comment 9
      ## comment 9b
 
+quote List.map([1, 2, 3, 4], fn (x) { x * 2 })
 List.map([1, 2, 3, 4], fn (x) { x * 2 })
 
+quote List.reverse([1, 2, 3, 4])
 List.reverse([1, 2, 3, 4])

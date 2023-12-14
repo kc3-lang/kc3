@@ -148,7 +148,7 @@ bool env_eval_array_cast (s_env *env, s_array *array, const s_tag *tag,
 {
   s_call call;
   s_tag tag_eval;
-  void *data_eval;
+  const void *data_eval;
   assert(env);
   assert(array);
   assert(tag);
@@ -160,7 +160,7 @@ bool env_eval_array_cast (s_env *env, s_array *array, const s_tag *tag,
     call_clean(&call);
     return false;
   }
-  data_eval = tag_to_pointer(&tag_eval, array->type);
+  data_eval = tag_to_const_pointer(&tag_eval, array->type);
   memcpy(data, data_eval, size);
   call_clean(&call);
   return true;
@@ -454,6 +454,12 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     dest->type = TAG_MAP;
     return env_eval_equal_map(env, &a->data.map, &b->data.map,
                               &dest->data.map);
+  /*
+  case TAG_STRUCT:
+    dest->type = TAG_STRUCT;
+    return env_eval_equal_struct(env, &a->data.struct_,
+                                 &b->data.struct_, &dest->data.struct_);
+  */
   case TAG_TUPLE:
     dest->type = TAG_TUPLE;
     return env_eval_equal_tuple(env, &a->data.tuple, &b->data.tuple,
@@ -470,7 +476,9 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   case TAG_INTEGER:
   case TAG_PTAG:
   case TAG_PTR:
+  case TAG_PTR_FREE:
   case TAG_STR:
+  case TAG_STRUCT:
   case TAG_SYM:
   case TAG_VAR:
     if (compare_tag(a, b)) {
@@ -686,6 +694,10 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_map(env, &tag->data.map, dest);
   case TAG_QUOTE:
     return env_eval_quote(env, &tag->data.quote, dest);
+  /*
+  case TAG_STRUCT:
+    return env_eval_struct(env, &tag->data.struct_, dest);
+  */
   case TAG_TUPLE:
     return env_eval_tuple(env, &tag->data.tuple, dest);
   case TAG_BOOL:
@@ -698,12 +710,14 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_INTEGER:
   case TAG_PTAG:
   case TAG_PTR:
+  case TAG_PTR_FREE:
   case TAG_S8:
   case TAG_S16:
   case TAG_S32:
   case TAG_S64:
   case TAG_SW:
   case TAG_STR:
+  case TAG_STRUCT:
   case TAG_SYM:
   case TAG_U8:
   case TAG_U16:
@@ -761,7 +775,7 @@ s_env * env_init (s_env *env, int argc, s8 **argv)
          (NULL, "../../../../", list_new_str_1
           (NULL, "../../../../../", list_new_str_1
            (NULL, "../../../../../../", NULL))))))));
-  str_init_1(&path, NULL, "lib/c3/0.1");
+  str_init_1(&path, NULL, "lib/c3/0.1/");
   if (! file_search(&path, sym_1("x"), &env->module_path)) {
     assert(! "env_init: module path not found");
     warn("env_init: module_path not found");
@@ -882,13 +896,13 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module,
 {
   s_str path;
   bool r = true;
-  s_tag tag_load_time;
+  s_tag tag_load_time = {0};
   s_tag tag_mtime;
-  if (! module_load_time(module, facts, &tag_load_time))
-    return false;
+  module_load_time(module, facts, &tag_load_time);
   if (! module_path(module, &env->module_path, &path)) {
     return false;
   }
+  //io_inspect_str(&path);
   if (! file_mtime(&path, &tag_mtime)) {
     str_clean(&path);
     return false;

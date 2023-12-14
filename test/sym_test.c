@@ -136,7 +136,7 @@ TEST_CASE(sym_inspect)
   SYM_TEST_INSPECT("test 123", ":\"test 123\"");
   SYM_TEST_INSPECT("Test 123", ":\"Test 123\"");
   SYM_TEST_INSPECT("test123.test456", ":\"test123.test456\"");
-  SYM_TEST_INSPECT("Test123.Test456", ":\"Test123.Test456\"");
+  SYM_TEST_INSPECT("Test123.Test456", "Test123.Test456");
   SYM_TEST_INSPECT("test123(test456)", ":\"test123(test456)\"");
   SYM_TEST_INSPECT("Test123(Test456)", ":\"Test123(Test456)\"");
   SYM_TEST_INSPECT("test123{test456}", ":\"test123{test456}\"");

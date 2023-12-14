@@ -37,6 +37,7 @@ static bool window_sdl2_demo_render (s_window_sdl2 *window,
                                      void *context);
 static bool window_sdl2_demo_resize (s_window_sdl2 *window,
                                      uw w, uw h);
+static void window_sdl2_demo_unload (s_window_sdl2 *window);
 
 int main (int argc, char **argv)
 {
@@ -53,11 +54,15 @@ int main (int argc, char **argv)
   window.load   = window_sdl2_demo_load;
   window.render = window_sdl2_demo_render;
   window.resize = window_sdl2_demo_resize;
+  window.unload = window_sdl2_demo_unload;
   if (! window_sdl2_run(&window)) {
     err_puts("window_sdl2_run -> false");
+    window_sdl2_clean(&window);
     c3_clean(NULL);
+    SDL_Quit();
     return g_c3_exit_code;
   }
+  window_sdl2_clean(&window);
   c3_clean(NULL);
   SDL_Quit();
   return 0;
@@ -246,4 +251,17 @@ bool window_sdl2_demo_resize (s_window_sdl2 *window,
   (void) w;
   (void) h;
   return true;
+}
+
+void window_sdl2_demo_unload (s_window_sdl2 *window)
+{
+  assert(window);
+  (void) window;
+  sdl2_font_clean(&g_font_courier_new);
+  sdl2_sprite_clean(&g_sprite_toaster);
+  sdl2_sprite_clean(&g_sprite_toast);
+  sdl2_font_clean(&g_font_flies);
+  sdl2_sprite_clean(&g_sprite_fly);
+  sdl2_sprite_clean(&g_sprite_dead_fly);
+  sdl2_sprite_clean(&g_sprite_earth);
 }
