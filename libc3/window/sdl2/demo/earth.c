@@ -63,20 +63,20 @@ bool earth_render (s_sequence *seq, s_window_sdl2 *window,
   assert(window);
   (void) context;
   if (! seq || seq->tag.type != TAG_MAP ||
-      seq->tag.data.map.count < 2) {
+      seq->tag.data.map.count != 3) {
     warnx("earth_render: invalid seq->tag");
     return false;
   }
   map = &seq->tag.data.map;
-  if (map->value[0].type != TAG_PTR ||
+  if (map->value[0].type != TAG_PTR_FREE ||
       map->value[1].type != TAG_F64 ||
-      map->value[2].type != TAG_PTR) {
+      map->value[2].type != TAG_STRUCT) {
     warnx("earth_render: invalid map");
     return false;
   }
-  camera             =  map->value[0].data.ptr.p;
+  camera             =  map->value[0].data.ptr_free.p;
   camera_rot_x_speed = &map->value[1].data.f64;
-  sphere             =  map->value[2].data.ptr.p;
+  sphere             =  map->value[2].data.struct_.data;
   gl_camera_set_aspect_ratio(camera, window->w, window->h);
   camera->rotation.x += seq->dt * (*camera_rot_x_speed) *
     360.0;

@@ -1,0 +1,5 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {PtrFree, :is_a, :module}
+replace {PtrFree, :symbol, PtrFree.cast}
+replace {PtrFree.cast, :cfn, cfn PtrFree "ptr_free_cast" (Tag, Result)}

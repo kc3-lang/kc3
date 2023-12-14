@@ -13,7 +13,37 @@
 #include <assert.h>
 #include <err.h>
 #include <stdlib.h>
+#include "integer.h"
 #include "ptr_free.h"
+#include "tag_type.h"
+
+u_ptr_w * ptr_free_cast (const s_tag *tag, u_ptr_w *dest)
+{
+  assert(tag);
+  assert(dest);
+  switch (tag->type) {
+  case TAG_F32: dest->p = (void *) ((uw) tag->data.f32);  return dest;
+  case TAG_F64: dest->p = (void *) ((uw) tag->data.f64);  return dest;
+  case TAG_INTEGER:
+    dest->p = (void *) integer_to_uw(&tag->data.integer); return dest;
+  case TAG_PTR: dest->p = tag->data.ptr.p;                return dest;
+  case TAG_PTR_FREE: dest->p = tag->data.ptr_free.p;      return dest;
+  case TAG_S8:  dest->p = (void *) ((uw) tag->data.s8);          return dest;
+  case TAG_S16: dest->p = (void *) ((uw) tag->data.s16);        return dest;
+  case TAG_S32: dest->p = (void *) ((uw) tag->data.s32);        return dest;
+  case TAG_S64: dest->p = (void *) ((uw) tag->data.s64);        return dest;
+  case TAG_SW:  dest->p = (void *) ((uw) tag->data.sw);         return dest;
+  case TAG_U8:  dest->p = (void *) ((uw) tag->data.u8);         return dest;
+  case TAG_U16: dest->p = (void *) ((uw) tag->data.u16);        return dest;
+  case TAG_U32: dest->p = (void *) ((uw) tag->data.u32);        return dest;
+  case TAG_U64: dest->p = (void *) ((uw) tag->data.u64);        return dest;
+  case TAG_UW:  dest->p = (void *) ((uw) tag->data.uw);         return dest;
+  default: break;
+  }
+  warnx("ptr_free_cast: cannot cast %s to PtrFree",
+        tag_type_to_string(tag->type));
+  return NULL;
+}
 
 void ptr_free_clean (u_ptr_w *ptr_free)
 {

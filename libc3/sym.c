@@ -374,6 +374,8 @@ f_clean sym_to_clean (const s_sym *type)
     return (f_clean) tuple_clean;
   if (type == sym_1("Var"))
     return NULL;
+  if (type == sym_1("Void"))
+    return NULL;
   err_write_1("sym_to_clean: unknown type: ");
   err_write_1(type->str.ptr.ps8);
   err_write_1("\n");
@@ -402,6 +404,10 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
   if (sym == sym_1("List"))
     return &ffi_type_pointer;
   if (sym == sym_1("Map"))
+    return &ffi_type_pointer;
+  if (sym == sym_1("Ptr"))
+    return &ffi_type_pointer;
+  if (sym == sym_1("PtrFree"))
     return &ffi_type_pointer;
   if (sym == sym_1("S8"))
     return &ffi_type_sint8;
@@ -482,6 +488,10 @@ f_init_copy sym_to_init_copy (const s_sym *type)
     return (f_init_copy) uw_init_copy;
   if (type == sym_1("Ptag"))
     return (f_init_copy) ptag_init_copy;
+  if (type == sym_1("Ptr"))
+    return (f_init_copy) ptr_init_copy;
+  if (type == sym_1("PtrFree"))
+    return (f_init_copy) ptr_free_init_copy;
   if (type == sym_1("Quote"))
     return (f_init_copy) quote_init_copy;
   if (type == sym_1("Str"))
@@ -501,10 +511,6 @@ f_init_copy sym_to_init_copy (const s_sym *type)
 
 bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 {
-  if (sym->str.ptr.ps8[sym->str.size - 2] == '*') {
-    *dest = TAG_PTR;
-    return true;
-  }
   if (sym == sym_1("Void")) {
     *dest = TAG_VOID;
     return true;
@@ -545,24 +551,60 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_INTEGER;
     return true;
   }
-  if (sym == sym_1("Sw")) {
-    *dest = TAG_SW;
+  if (sym == sym_1("List")) {
+    *dest = TAG_LIST;
     return true;
   }
-  if (sym == sym_1("S64")) {
-    *dest = TAG_S64;
+  if (sym == sym_1("Ptag")) {
+    *dest = TAG_PTAG;
     return true;
   }
-  if (sym == sym_1("S32")) {
-    *dest = TAG_S32;
+  if (sym == sym_1("Ptr")) {
+    *dest = TAG_PTR;
+    return true;
+  }
+  if (sym == sym_1("PtrFree")) {
+    *dest = TAG_PTR_FREE;
+    return true;
+  }
+  if (sym == sym_1("Quote")) {
+    *dest = TAG_QUOTE;
+    return true;
+  }
+  if (sym == sym_1("S8")) {
+    *dest = TAG_S8;
     return true;
   }
   if (sym == sym_1("S16")) {
     *dest = TAG_S16;
     return true;
   }
-  if (sym == sym_1("S8")) {
-    *dest = TAG_S8;
+  if (sym == sym_1("S32")) {
+    *dest = TAG_S32;
+    return true;
+  }
+  if (sym == sym_1("S64")) {
+    *dest = TAG_S64;
+    return true;
+  }
+  if (sym == sym_1("Str")) {
+    *dest = TAG_STR;
+    return true;
+  }
+  if (sym == sym_1("Sw")) {
+    *dest = TAG_SW;
+    return true;
+  }
+  if (sym == sym_1("Sym")) {
+    *dest = TAG_SYM;
+    return true;
+  }
+  if (sym == sym_1("Tag")) {
+    *dest = TAG_VOID;
+    return true;
+  }
+  if (sym == sym_1("Tuple")) {
+    *dest = TAG_TUPLE;
     return true;
   }
   if (sym == sym_1("U8")) {
@@ -583,34 +625,6 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   }
   if (sym == sym_1("Uw")) {
     *dest = TAG_UW;
-    return true;
-  }
-  if (sym == sym_1("List")) {
-    *dest = TAG_LIST;
-    return true;
-  }
-  if (sym == sym_1("Ptag")) {
-    *dest = TAG_PTAG;
-    return true;
-  }
-  if (sym == sym_1("Quote")) {
-    *dest = TAG_QUOTE;
-    return true;
-  }
-  if (sym == sym_1("Str")) {
-    *dest = TAG_STR;
-    return true;
-  }
-  if (sym == sym_1("Sym")) {
-    *dest = TAG_SYM;
-    return true;
-  }
-  if (sym == sym_1("Tag")) {
-    *dest = TAG_VOID;
-    return true;
-  }
-  if (sym == sym_1("Tuple")) {
-    *dest = TAG_TUPLE;
     return true;
   }
   err_write_1("sym_to_tag_type: unknown type: ");
@@ -642,16 +656,32 @@ uw sym_type_size (const s_sym *type)
     return sizeof(s_ident);
   if (type == sym_1("Integer"))
     return sizeof(s_integer);
-  if (type == sym_1("Sw"))
-    return sizeof(sw);
-  if (type == sym_1("S64"))
-    return sizeof(s64);
-  if (type == sym_1("S32"))
-    return sizeof(s32);
-  if (type == sym_1("S16"))
-    return sizeof(s16);
+  if (type == sym_1("List"))
+    return sizeof(s_list *);
+  if (type == sym_1("Ptag"))
+    return sizeof(p_tag);
+  if (type == sym_1("Ptr"))
+    return sizeof(void *);
+  if (type == sym_1("PtrFree"))
+    return sizeof(void *);
+  if (type == sym_1("Quote"))
+    return sizeof(s_quote);
   if (type == sym_1("S8"))
     return sizeof(s8);
+  if (type == sym_1("S16"))
+    return sizeof(s16);
+  if (type == sym_1("S32"))
+    return sizeof(s32);
+  if (type == sym_1("S64"))
+    return sizeof(s64);
+  if (type == sym_1("Str"))
+    return sizeof(s_str);
+  if (type == sym_1("Sw"))
+    return sizeof(sw);
+  if (type == sym_1("Sym"))
+    return sizeof(s_sym *);
+  if (type == sym_1("Tuple"))
+    return sizeof(s_tuple);
   if (type == sym_1("U8"))
     return sizeof(u8);
   if (type == sym_1("U16"))
@@ -662,20 +692,10 @@ uw sym_type_size (const s_sym *type)
     return sizeof(u64);
   if (type == sym_1("Uw"))
     return sizeof(uw);
-  if (type == sym_1("List"))
-    return sizeof(s_list *);
-  if (type == sym_1("Ptag"))
-    return sizeof(p_tag);
-  if (type == sym_1("Quote"))
-    return sizeof(s_quote);
-  if (type == sym_1("Str"))
-    return sizeof(s_str);
-  if (type == sym_1("Sym"))
-    return sizeof(s_sym *);
-  if (type == sym_1("Tuple"))
-    return sizeof(s_tuple);
   if (type == sym_1("Var"))
     return sizeof(s_tag);
+  if (type == sym_1("Void"))
+    return 0;
   err_write_1("sym_type_size: unknown type: ");
   err_write_1(type->str.ptr.ps8);
   err_write_1("\n");
