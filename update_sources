@@ -30,13 +30,16 @@ c3.index
 c3.version
 config.subr
 configure
+license.h
 sources.mk
 sources.sh
 $(find img -name '*.png' -or -name '*.jpg' -or -name '*.jpeg' -or -name '*.xcf')
 $(find lib -name '*.facts')
 $(find libc3 test -name '*.rb')
 $(find fonts -name '*.otf' -or -name '*.ttf')
-$(find test -name '*.expected' -or -name '*.in' -or -name '*.lisp')"
+$(find test -name '*.expected' -or -name '*.facts' -or -name '*.in' -or -name '*.lisp')
+test/ic3_test
+test/zero"
 sources C3_OTHER_SOURCES "$C3_OTHER_SOURCES"
 
 C3_EXTERNAL_SOURCES="$(find libffi linenoise ucd2c \( -name '.*' -prune \) -or -type f -print)

@@ -230,6 +230,7 @@ test_libc3_debug:
 	all \
 	asan \
 	build \
+	c3.index \
 	c3s \
 	cov \
 	clean \
