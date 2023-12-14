@@ -111,8 +111,10 @@ typedef enum {
   TAG_MAP,
   TAG_PTAG,
   TAG_PTR,
+  TAG_PTR_FREE,
   TAG_QUOTE,
   TAG_STR,
+  TAG_STRUCT,
   TAG_SYM,
   TAG_TUPLE,
   TAG_VAR,
@@ -148,7 +150,6 @@ typedef struct list                    s_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct map                     s_map;
-typedef struct ptr                     s_ptr;
 typedef struct quote                   s_quote;
 typedef struct sequence                s_sequence;
 typedef struct str                     s_str;
@@ -182,6 +183,7 @@ typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
 typedef sw (* f_buf_inspect_size) (const void *x);
 typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
 typedef void (* f_clean) (void *x);
+typedef void (* f_hash_update) (t_hash *hash, const void *x);
 typedef void * (* f_init_copy) (void *x, const void *src);
 typedef bool (* f_sequence_load) (s_sequence *seq, void *window);
 typedef bool (* f_sequence_render) (s_sequence *seq, void *window,
@@ -232,12 +234,6 @@ struct map {
   uw count;
   s_tag *key; /* sorted (see tag_compare) */
   s_tag *value;
-};
-
-struct ptr {
-  void *p;
-  const s_sym *type;
-  bool free;
 };
 
 union ptr_ {
@@ -410,9 +406,11 @@ union tag_data {
   s_list      *list;
   s_map        map;
   p_tag        ptag;
-  s_ptr        ptr;
+  u_ptr_w      ptr;
+  u_ptr_w      ptr_free;
   s_quote      quote;
   s_str        str;
+  s_struct     struct_;
   const s_sym *sym;
   s8           s8;
   s16          s16;

@@ -21,26 +21,14 @@
 f64 f64_cast (s_tag *tag)
 {
   switch (tag->type) {
-  case TAG_VOID:
-    return 0.0;
-  case TAG_ARRAY:
-    goto ko;
   case TAG_BOOL:
     return tag->data.bool ? 1.0 : 0.0;
-  case TAG_CALL:
-    goto ko;
-  case TAG_CFN:
-    goto ko;
   case TAG_CHARACTER:
     return (f64) tag->data.character;
   case TAG_F32:
     return (f64) tag->data.f32;
   case TAG_F64:
     return tag->data.f64;
-  case TAG_FACT:
-  case TAG_FN:
-  case TAG_IDENT:
-    goto ko;
   case TAG_INTEGER:
     return integer_to_f64(&tag->data.integer);
   case TAG_SW:
@@ -63,23 +51,11 @@ f64 f64_cast (s_tag *tag)
     return (f64) tag->data.u64;
   case TAG_UW:
     return (f64) tag->data.uw;
-  case TAG_LIST:
-  case TAG_MAP:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_QUOTE:
-  case TAG_STR:
-  case TAG_SYM:
-  case TAG_TUPLE:
-  case TAG_VAR:
-    goto ko;
+  default:
+    break;
   }
-  assert(! "f64_cast: unknown tag type");
-  errx(1, "f64_cast: unknown tag type: %d", tag->type);
-  return 0;
- ko:
-  warnx("f64_cast: cannot cast %s to f64",
-        tag_type_to_string(tag->type));
+  errx(1, "f64_cast: cannot cast %s to f64",
+       tag_type_to_string(tag->type));
   return 0;
 }
 

@@ -15,25 +15,33 @@
 
 #include "types.h"
 
+/* Stack-allocation compatible functions, call window_sdl2_clean
+   after use. */
+void            window_sdl2_clean (s_window_sdl2 *window);
 s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
                                   sw x, sw y, uw w, uw h,
                                   const s8 *title,
                                   uw sequence_count);
+
+/* Operators. */
 bool             window_sdl2_run (s_window_sdl2 *window);
 
+/* Sequences. */
 s_sequence *     window_sdl2_sequence_init
 (s_sequence *sequence, f64 duration, const s8 *title,
  f_window_sdl2_sequence_load load,
  f_window_sdl2_sequence_render render);
 
-/* callbacks */
-bool window_sdl2_button_default (s_window_sdl2 *window, u8 button,
-                                 sw x, sw y);
-bool window_sdl2_key_default (s_window_sdl2 *window, SDL_Keysym *keysym);
-bool window_sdl2_load_default (s_window_sdl2 *window);
-bool window_sdl2_motion_default (s_window_sdl2 *window, sw x, sw y);
-bool window_sdl2_render_default (s_window_sdl2 *window,
+/* Callbacks. */
+bool window_sdl2_default_button_cb (s_window_sdl2 *window, u8 button,
+                                    sw x, sw y);
+bool window_sdl2_default_key_cb (s_window_sdl2 *window,
+                                 SDL_Keysym *keysym);
+bool window_sdl2_default_load_cb (s_window_sdl2 *window);
+bool window_sdl2_default_motion_cb (s_window_sdl2 *window, sw x, sw y);
+bool window_sdl2_default_render_cb (s_window_sdl2 *window,
                                  void *context);
-bool window_sdl2_resize_default (s_window_sdl2 *window, uw w, uw h);
+bool window_sdl2_default_resize_cb (s_window_sdl2 *window, uw w, uw h);
+void window_sdl2_default_unload_cb (s_window_sdl2 *window);
 
 #endif /* LIBC3_WINDOW_SDL2_H */

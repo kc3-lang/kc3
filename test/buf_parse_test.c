@@ -767,9 +767,9 @@ TEST_CASE(buf_parse_cfn)
   BUF_PARSE_TEST_NOT_CFN("a");
   BUF_PARSE_TEST_NOT_CFN("z");
   BUF_PARSE_TEST_NOT_CFN("cfn 0 1 (2)");
-  BUF_PARSE_TEST_CFN("cfn :tag \"tag_add\" (:tag)");
-  BUF_PARSE_TEST_CFN("cfn :tag \"tag_add\" (:tag, :tag)");
-  BUF_PARSE_TEST_CFN("cfn :tag \"tag_add\" (:tag, :tag, :tag)");
+  BUF_PARSE_TEST_CFN("cfn Tag \"tag_add\" (Tag)");
+  BUF_PARSE_TEST_CFN("cfn Tag \"tag_add\" (Tag, Tag)");
+  BUF_PARSE_TEST_CFN("cfn Tag \"tag_add\" (Tag, Tag, Tag)");
 }
 TEST_CASE_END(buf_parse_cfn)
 
@@ -1262,6 +1262,7 @@ TEST_CASE(buf_parse_sym)
   BUF_PARSE_TEST_SYM("Z", "Z");
   BUF_PARSE_TEST_SYM("Az09az", "Az09az");
   BUF_PARSE_TEST_SYM(":az09AZ", "az09AZ");
+  BUF_PARSE_TEST_SYM("A.B.C", "A.B.C");
 }
 TEST_CASE_END(buf_parse_sym)
 

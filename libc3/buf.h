@@ -52,6 +52,7 @@ sw      buf_peek_1 (s_buf *buf, const s8 *p);
 sw      buf_peek_character_utf8 (s_buf *buf, character *p);
 sw      buf_peek_f32 (s_buf *buf, f32 *p);
 sw      buf_peek_f64 (s_buf *buf, f64 *p);
+sw      buf_peek_next_character_utf8 (s_buf *buf, character *p);
 sw      buf_peek_s8 (s_buf *buf, s8 *p);
 sw      buf_peek_s16 (s_buf *buf, s16 *p);
 sw      buf_peek_s32 (s_buf *buf, s32 *p);

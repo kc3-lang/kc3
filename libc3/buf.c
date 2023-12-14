@@ -280,6 +280,30 @@ sw buf_peek_1 (s_buf *buf, const s8 *p)
   return buf_peek_str(buf, &stra);
 }
 
+sw buf_peek_next_character_utf8 (s_buf *buf, character *c)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  character tmp;
+  assert(buf);
+  assert(c);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_character_utf8(buf, &tmp)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_peek_character_utf8(buf, &tmp)) <= 0)
+    goto restore;
+  result += r;
+  *c = tmp;
+  r = result;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_peek_character_utf8 (s_buf *buf, character *c)
 {
   assert(buf);

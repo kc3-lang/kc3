@@ -29,8 +29,10 @@
 #include "list.h"
 #include "map.h"
 #include "ptr.h"
+#include "ptr_free.h"
 #include "quote.h"
 #include "str.h"
+#include "struct.h"
 #include "tag.h"
 #include "list_init.h"
 #include "time.h"
@@ -183,13 +185,23 @@ s_list * list_init_map_1 (s_list *list, const s8 *p, s_list *next)
   return list;
 }
 
-s_list * list_init_ptr (s_list *list, bool free_p, const s_sym *type, 
-                        void *p, s_list *next)
+s_list * list_init_ptr (s_list *list, void *p, s_list *next)
 {
   s_list tmp;
   assert(list);
   list_init(&tmp, next);
-  if (! tag_init_ptr(&tmp.tag, free_p, type, p))
+  if (! tag_init_ptr(&tmp.tag, p))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_ptr_free (s_list *list, void *p, s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_ptr_free(&tmp.tag, p))
     return NULL;
   *list = tmp;
   return list;
@@ -258,6 +270,31 @@ s_list * list_init_str_1 (s_list *list, s8 *p_free, const s8 *p,
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_str_1(&tmp.tag, p_free, p))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_struct (s_list *list, const s_sym *module, 
+                           s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_struct(&tmp.tag, module))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_struct_with_data (s_list *list, const s_sym *module, 
+                                     bool free_data, void *data, 
+                                     s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_struct_with_data(&tmp.tag, module, free_data, data))
     return NULL;
   *list = tmp;
   return list;
@@ -566,14 +603,26 @@ s_list * list_new_map_1 (const s8 *p, s_list *next)
   return list;
 }
 
-s_list * list_new_ptr (bool free_p, const s_sym *type, void *p, 
-                       s_list *next)
+s_list * list_new_ptr (void *p, s_list *next)
 {
   s_list *list;
   list = list_new(next);
   if (! list)
     return NULL;
-  if (! tag_init_ptr(&list->tag, free_p, type, p)) {
+  if (! tag_init_ptr(&list->tag, p)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_ptr_free (void *p, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_ptr_free(&list->tag, p)) {
     free(list);
     return NULL;
   }
@@ -652,6 +701,35 @@ s_list * list_new_str_1 (s8 *p_free, const s8 *p, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_str_1(&list->tag, p_free, p)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_struct (const s_sym *module, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_struct(&list->tag, module)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_struct_with_data (const s_sym *module, 
+                                    bool free_data, void *data, 
+                                    s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_struct_with_data(&list->tag, module, free_data, 
+                                  data)) {
     free(list);
     return NULL;
   }

@@ -151,6 +151,8 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
   uw i = 0;
   uw item_size;
   assert(a);
+  assert(type);
+  assert(sym_is_module(type));
   assert(dimension);
   assert(dimensions);
   if (! dimension) {

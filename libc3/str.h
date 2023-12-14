@@ -62,7 +62,7 @@ bool          str_has_reserved_characters (const s_str *str);
 s_str *       str_inspect (const s_str *x, s_str *dest);
 sw            str_length_utf8 (const s_str *str);
 sw            str_peek_bool (const s_str *src, bool *p);
-sw            str_peek_character (const s_str *src, character *p);
+sw            str_peek_character_utf8 (const s_str *src, character *p);
 sw            str_peek_f32 (const s_str *src, f32 *p);
 sw            str_peek_f64 (const s_str *src, f64 *p);
 sw            str_peek_s8 (const s_str *src, s8 *p);

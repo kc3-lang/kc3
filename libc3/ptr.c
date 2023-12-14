@@ -15,40 +15,56 @@
 #include <stdlib.h>
 #include "ptr.h"
 
-void ptr_clean (s_ptr *ptr)
+void ptr_delete (u_ptr_w *ptr)
 {
   assert(ptr);
-  if (ptr->free)
-    free(ptr->p);
-}
-
-void ptr_delete (s_ptr *ptr)
-{
-  assert(ptr);
-  ptr_clean(ptr);
   free(ptr);
 }
 
-s_ptr * ptr_init (s_ptr *ptr, bool free_p, const s_sym *type, void *p)
+u_ptr_w * ptr_init (u_ptr_w *ptr, void *p)
 {
-  s_ptr tmp = {0};
+  u_ptr_w tmp = {0};
   assert(ptr);
   tmp.p = p;
-  tmp.type = type;
-  tmp.free = free_p;
   *ptr = tmp;
   return ptr;
 }
 
-s_ptr * ptr_new (bool free_p, const s_sym *type, void *p)
+u_ptr_w * ptr_init_copy (u_ptr_w *ptr, const u_ptr_w *src)
 {
-  s_ptr *ptr;
-  ptr = calloc(1, sizeof(s_ptr));
+  u_ptr_w tmp = {0};
+  assert(ptr);
+  assert(src);
+  tmp.p = src->p;
+  *ptr = tmp;
+  return ptr;
+}
+
+u_ptr_w * ptr_new (void *p)
+{
+  u_ptr_w *ptr;
+  ptr = calloc(1, sizeof(u_ptr_w));
   if (! ptr) {
     warn("ptr_new: ptr");
     return NULL;
   }
-  if (! ptr_init(ptr, free_p, type, p)) {
+  if (! ptr_init(ptr, p)) {
+    free(ptr);
+    return NULL;
+  }
+  return ptr;
+}
+
+u_ptr_w * ptr_new_copy (const u_ptr_w *src)
+{
+  u_ptr_w *ptr;
+  assert(src);
+  ptr = calloc(1, sizeof(u_ptr_w));
+  if (! ptr) {
+    warn("ptr_new: ptr");
+    return NULL;
+  }
+  if (! ptr_init_copy(ptr, src)) {
     free(ptr);
     return NULL;
   }

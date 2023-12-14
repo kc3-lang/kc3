@@ -10,18 +10,21 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBC3_PTR_H
-#define LIBC3_PTR_H
+/**
+ * @file void.h
+ * @brief Void operations. Be careful :)
+ *
+ * Structure to manipulate void. Nothing really.
+ */
+#ifndef LIBC3_VOID_H
+#define LIBC3_VOID_H
 
 #include "types.h"
 
-/* Stack-allocation compatible functions. */
-u_ptr_w * ptr_init (u_ptr_w *ptr, void *p);
-u_ptr_w * ptr_init_copy (u_ptr_w *ptr, const u_ptr_w *src);
+/* Stack-allocation compatible functions */
+void * void_init_copy (void *dest, const void *src);
 
-/* Heap-allocation functions, call ptr_delete after use. */
-void      ptr_delete (u_ptr_w *ptr);
-u_ptr_w * ptr_new (void *p);
-u_ptr_w * ptr_new_copy (const u_ptr_w *src);
+/* Observers */
+s_str * void_inspect (void *b, s_str *dest);
 
-#endif /* LIBC3_PTR_H */
+#endif /* LIBC3_VOID_H */

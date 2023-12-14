@@ -1288,8 +1288,13 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
   while (i < map->count) {
     k = map->key + i;
     if (k->type == TAG_SYM) {
-      if ((r = buf_write_1(buf, k->data.sym->str.ptr.ps8)) < 0)
-        return r;
+      if (sym_has_reserved_characters(k->data.sym)) {
+        if ((r = buf_write_str(buf, &k->data.sym->str)) < 0)
+          return r;
+      }
+      else
+        if ((r = buf_write_1(buf, k->data.sym->str.ptr.ps8)) < 0)
+          return r;
       result += r;
       if ((r = buf_write_1(buf, ": ")) < 0)
         return r;
@@ -1350,36 +1355,49 @@ sw buf_inspect_ptag_size (const p_tag *ptag)
   return result;
 }
 
-sw buf_inspect_ptr (s_buf *buf, const s_ptr *ptr)
+sw buf_inspect_ptr (s_buf *buf, const u_ptr_w *ptr)
 {
   sw r;
   sw result = 0;
   assert(buf);
-  if ((r = buf_write_1(buf, "(")) < 0)
+  if ((r = buf_write_1(buf, "(Ptr) ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sym(buf, ptr->type)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, " *) ")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) ptr->p)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) &ptr->p)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_ptr_size (const s_ptr *ptr)
+sw buf_inspect_ptr_free (s_buf *buf, const u_ptr_w *ptr_free)
 {
   sw r;
   sw result = 0;
-  (void) ptr;
-  result += strlen("(");
-  if ((r = buf_inspect_sym_size(ptr->type)) < 0)
+  assert(buf);
+  if ((r = buf_write_1(buf, "(PtrFree) ")) < 0)
     return r;
   result += r;
-  result += strlen(" *) ");
+  r = buf_inspect_uw_hexadecimal(buf, (uw *) &ptr_free->p);
+  if (r < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_ptr_free_size (const u_ptr_w *ptr)
+{
+  sw result;
+  (void) ptr;
+  result = strlen("(PtrFree) ");
+  result += sizeof(uw) / 4;
+  return result;
+}
+
+sw buf_inspect_ptr_size (const u_ptr_w *ptr)
+{
+  sw result;
+  (void) ptr;
+  result = strlen("(Ptr) ");
   result += sizeof(uw) / 4;
   return result;
 }
@@ -1661,6 +1679,71 @@ sw buf_inspect_str_size (const s_str *str)
   return size;
 }
 
+sw buf_inspect_struct (s_buf *buf, const s_struct *s)
+{
+  f_buf_inspect buf_inspect;
+  uw i = 0;
+  s_tag *k;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(s);
+  assert(sym_is_module(s->type.module));
+  if ((r = buf_write_1(buf, "%")) < 0)
+    return r;
+  result += r;
+  if (! sym_is_module(s->type.module))
+    return -1;
+  if (sym_has_reserved_characters(s->type.module)) {
+    if ((r = buf_write_str(buf, &s->type.module->str)) < 0)
+      return r;
+  }
+  else
+    if ((r = buf_write_1(buf, s->type.module->str.ptr.ps8)) < 0)
+      return r;
+  result += r;
+  if ((r = buf_write_1(buf, "{")) < 0)
+    return r;
+  result += r;
+  while (i < s->type.map.count) {
+    k = s->type.map.key + i;
+    assert(k->type == TAG_SYM);
+    if (sym_has_reserved_characters(k->data.sym)) {
+      if ((r = buf_write_str(buf, &k->data.sym->str)) < 0)
+        return r;
+    }
+    else
+      if ((r = buf_write_1(buf, k->data.sym->str.ptr.ps8)) < 0)
+        return r;
+    result += r;
+    if ((r = buf_write_1(buf, ": ")) < 0)
+      return r;
+    result += r;
+    buf_inspect = tag_type_to_buf_inspect(s->type.map.value[i].type);
+    if ((r = buf_inspect(buf, (s8 *) s->data + s->type.offset[i])) < 0)
+      return r;
+    result += r;
+    i++;
+    if (i < s->type.map.count) {
+      if ((r = buf_write_1(buf, ", ")) < 0)
+        return r;
+      result += r;
+    }
+  }
+  if ((r = buf_write_1(buf, "}")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_struct_size (const s_struct *s)
+{
+  assert(s);
+  assert(! "buf_inspect_struct_size: not implemented");
+  (void) s;
+  return -1;
+}
+
 sw buf_inspect_sym (s_buf *buf, const s_sym *x)
 {
   sw r;
@@ -1739,6 +1822,8 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_MAP:     return buf_inspect_map(buf, &tag->data.map);
   case TAG_PTAG:    return buf_inspect_ptag(buf, &tag->data.ptag);
   case TAG_PTR:     return buf_inspect_ptr(buf, &tag->data.ptr);
+  case TAG_PTR_FREE:
+    return buf_inspect_ptr_free(buf, &tag->data.ptr_free);
   case TAG_QUOTE:   return buf_inspect_quote(buf, &tag->data.quote);
   case TAG_S8:      return buf_inspect_s8(buf, &tag->data.s8);
   case TAG_S16:     return buf_inspect_s16(buf, &tag->data.s16);
@@ -1746,6 +1831,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_S64:     return buf_inspect_s64(buf, &tag->data.s64);
   case TAG_SW:      return buf_inspect_sw(buf, &tag->data.sw);
   case TAG_STR:     return buf_inspect_str(buf, &tag->data.str);
+  case TAG_STRUCT:  return buf_inspect_struct(buf, &tag->data.struct_);
   case TAG_SYM:     return buf_inspect_sym(buf, tag->data.sym);
   case TAG_TUPLE:   return buf_inspect_tuple(buf, &tag->data.tuple);
   case TAG_U8:      return buf_inspect_u8(buf, &tag->data.u8);
@@ -1783,6 +1869,8 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_MAP:      return buf_inspect_map_size(&tag->data.map);
   case TAG_PTAG:     return buf_inspect_ptag_size(&tag->data.ptag);
   case TAG_PTR:      return buf_inspect_ptr_size(&tag->data.ptr);
+  case TAG_PTR_FREE:
+    return buf_inspect_ptr_free_size(&tag->data.ptr_free);
   case TAG_QUOTE:    return buf_inspect_quote_size(&tag->data.quote);
   case TAG_S8:       return buf_inspect_s8_size(&tag->data.s8);
   case TAG_S16:      return buf_inspect_s16_size(&tag->data.s16);
@@ -1790,6 +1878,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_S64:      return buf_inspect_s64_size(&tag->data.s64);
   case TAG_SW:       return buf_inspect_sw_size(&tag->data.sw);
   case TAG_STR:      return buf_inspect_str_size(&tag->data.str);
+  case TAG_STRUCT:   return buf_inspect_struct_size(&tag->data.struct_);
   case TAG_SYM:      return buf_inspect_sym_size(tag->data.sym);
   case TAG_TUPLE:    return buf_inspect_tuple_size(&tag->data.tuple);
   case TAG_U8:       return buf_inspect_u8_size(&tag->data.u8);
@@ -1839,7 +1928,9 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
   case TAG_PTAG:
     return buf_write_1(buf, "Ptag");
   case TAG_PTR:
-    return buf_write_1(buf, "Void*");
+    return buf_write_1(buf, "Ptr");
+  case TAG_PTR_FREE:
+    return buf_write_1(buf, "PtrFree");
   case TAG_QUOTE:
     return buf_write_1(buf, "Quote");
   case TAG_S8:
@@ -1854,6 +1945,8 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
     return buf_write_1(buf, "Sw");
   case TAG_STR:
     return buf_write_1(buf, "Str");
+  case TAG_STRUCT:
+    return buf_write_1(buf, "Struct");
   case TAG_SYM:
     return buf_write_1(buf, "Sym");
   case TAG_TUPLE:
@@ -1910,7 +2003,9 @@ sw buf_inspect_tag_type_size (e_tag_type type)
   case TAG_PTAG:
     return strlen("Ptag");
   case TAG_PTR:
-    return strlen("Void*");
+    return strlen("Ptr");
+  case TAG_PTR_FREE:
+    return strlen("PtrFree");
   case TAG_QUOTE:
     return strlen("Quote");
   case TAG_S8:
@@ -1925,6 +2020,8 @@ sw buf_inspect_tag_type_size (e_tag_type type)
     return strlen("Sw");
   case TAG_STR:
     return strlen("Str");
+  case TAG_STRUCT:
+    return strlen("Struct");
   case TAG_SYM:
     return strlen("Sym");
   case TAG_TUPLE:

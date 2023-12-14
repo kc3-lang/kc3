@@ -32,6 +32,7 @@
 #include "map.h"
 #include "operator.h"
 #include "str.h"
+#include "struct.h"
 #include "sym.h"
 #include "tag.h"
 #include "tuple.h"
@@ -2128,24 +2129,31 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
   buf_init_alloc(&tmp, SYM_MAX);
   if ((r = buf_parse_sym(buf, &sym)) <= 0)
     goto clean;
+  if (! sym_is_module(sym)) {
+    r = 0;
+    goto restore;
+  }
   result += r;
   if ((r = buf_inspect_sym(&tmp, sym)) < 0)
     goto clean;
   save.rpos = buf->rpos;
   while ((r = buf_read_1(buf, ".")) > 0 &&
-         (r = buf_parse_sym(buf, &sym)) > 0) {
+         (r = buf_parse_sym(buf, &sym)) > 0 &&
+         sym_is_module(sym)) {
     result += r + 1;
     save.rpos = buf->rpos;
     if ((r = buf_write_1(&tmp, ".")) < 0 ||
         (r = buf_inspect_sym(&tmp, sym)) < 0)
       goto clean;
   }
-  if ((r = buf_peek_1(buf, ".")) <= 0)
-    buf_save_restore_rpos(buf, &save);
+  buf_save_restore_rpos(buf, &save);
   buf_read_to_str(&tmp, &str);
   *dest = str_to_sym(&str);
   str_clean(&str);
   r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
   buf_clean(&tmp);
@@ -2207,12 +2215,21 @@ sw buf_parse_ptag (s_buf *buf, p_tag *dest)
   return -1;
 }
 
-sw buf_parse_ptr (s_buf *buf, s_ptr *dest)
+sw buf_parse_ptr (s_buf *buf, u_ptr_w *dest)
 {
   (void) buf;
   (void) dest;
   assert(! "buf_parse_ptr: not implemented");
   err_puts("buf_parse_ptr: not implemented");
+  return -1;
+}
+
+sw buf_parse_ptr_free (s_buf *buf, u_ptr_w *dest)
+{
+  (void) buf;
+  (void) dest;
+  assert(! "buf_parse_ptr_free: not implemented");
+  err_puts("buf_parse_ptr_free: not implemented");
   return -1;
 }
 
@@ -2441,6 +2458,97 @@ sw buf_parse_str_u8 (s_buf *buf, u8 *dest)
   return r;
 }
 
+sw buf_parse_struct (s_buf *buf, s_struct *dest)
+{
+  s_list  *keys = NULL;
+  s_list **keys_end;
+  const s_sym *module;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_list  *values = NULL;
+  s_list **values_end;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "%")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_parse_module_name(buf, &module)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "{")) <= 0)
+    goto restore;
+  result += r;
+  keys = NULL;
+  keys_end = &keys;
+  values = NULL;
+  values_end = &values;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "}")) < 0)
+    goto restore;
+  result += r;
+  while (r == 0) {
+    *keys_end = list_new(NULL);
+    if ((r = buf_parse_map_key(buf, &(*keys_end)->tag)) <= 0)
+      goto restore;
+    result += r;
+    keys_end = &(*keys_end)->next.data.list;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    *values_end = list_new(NULL);
+    if ((r = buf_parse_tag(buf, &(*values_end)->tag)) <= 0)
+      goto restore;
+    result += r;
+    values_end = &(*values_end)->next.data.list;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "}")) < 0)
+      goto restore;
+    result += r;
+    if (r == 0) {
+      if ((r = buf_read_1(buf, ",")) <= 0)
+        goto restore;
+      result += r;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      r = 0;
+    }
+  }
+  if (! struct_init_from_lists(dest, module, keys, values)) {
+    r = 0;
+    goto restore;
+  }
+  r = result;
+  list_delete_all(keys);
+  list_delete_all(values);
+  goto clean;
+ restore:
+  list_delete_all(keys);
+  list_delete_all(values);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_sym (s_buf *buf, const s_sym **dest)
 {
   character c;
@@ -2485,8 +2593,18 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
         goto clean;
     }
     result += csize;
-    while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
-           ! sym_character_is_reserved(c)) {
+    while (1) {
+      if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
+        break;
+      if (c == '.') {
+        if ((r = buf_peek_next_character_utf8(buf, &c)) <= 0)
+          goto restore;
+        if (! character_is_uppercase(c))
+          break;
+        r = 1;
+      }
+      else if (sym_character_is_reserved(c))
+        break;
       csize = r;
       if ((r = buf_xfer(&tmp, buf, csize)) < 0)
         goto restore;
@@ -2723,6 +2841,16 @@ sw buf_parse_tag_map (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_module_name (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_module_name(buf, &dest->data.sym)) > 0)
+    dest->type = TAG_SYM;
+  return r;
+}
+
 sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -2763,6 +2891,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
+      //(r = buf_parse_tag_module_name(buf, dest)) != 0 ||
       (r = buf_parse_tag_ident(buf, dest)) != 0 ||
       (r = buf_parse_tag_list(buf, dest)) != 0 ||
       (r = buf_parse_tag_sym(buf, dest)) != 0)

@@ -113,26 +113,14 @@ uw integer_bytes (const s_integer *i)
 s_integer * integer_cast (const s_tag *tag, s_integer *dest)
 {
   switch (tag->type) {
-  case TAG_VOID:
-    return integer_init_zero(dest);
-  case TAG_ARRAY:
-    goto ko;
   case TAG_BOOL:
     return integer_init_u8(dest, tag->data.bool ? 1 : 0);
-  case TAG_CALL:
-    goto ko;
-  case TAG_CFN:
-    goto ko;
   case TAG_CHARACTER:
-    return integer_init_u64(dest, tag->data.character);
+    return integer_init_u32(dest, tag->data.character);
   case TAG_F32:
     return integer_init_f32(dest, tag->data.f32);
   case TAG_F64:
     return integer_init_f64(dest, tag->data.f64);
-  case TAG_FACT:
-  case TAG_FN:
-  case TAG_IDENT:
-    goto ko;
   case TAG_INTEGER:
     return integer_copy(&tag->data.integer, dest);
   case TAG_SW:
@@ -155,23 +143,11 @@ s_integer * integer_cast (const s_tag *tag, s_integer *dest)
     return integer_init_u64(dest, tag->data.u64);
   case TAG_UW:
     return integer_init_uw(dest, tag->data.uw);
-  case TAG_LIST:
-  case TAG_MAP:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_QUOTE:
-  case TAG_STR:
-  case TAG_SYM:
-  case TAG_TUPLE:
-  case TAG_VAR:
-    goto ko;
+  default:
+    break;
   }
-  assert(! "integer_cast: unknown tag type");
-  errx(1, "integer_cast: unknown tag type: %d", tag->type);
-  return 0;
- ko:
-  warnx("integer_cast: cannot cast %s to integer",
-        tag_type_to_string(tag->type));
+  errx(1, "integer_cast: cannot cast %s to integer",
+       tag_type_to_string(tag->type));
   return 0;
 }
 

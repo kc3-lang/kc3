@@ -41,6 +41,8 @@ bool          env_eval_call_fn (s_env *env, const s_call *call,
 bool          env_eval_call_resolve (s_env *env, s_call *call);
 bool          env_eval_equal_list (s_env *env, const s_list *a,
                                    const s_list *b, s_list **dest);
+bool          env_eval_equal_struct (s_env *env, const s_struct *a,
+                                     const s_struct *b, s_struct *dest);
 bool          env_eval_equal_tag (s_env *env, const s_tag *a,
                                   const s_tag *b, s_tag *dest);
 bool          env_eval_equal_tuple (s_env *env, const s_tuple *a,
@@ -57,6 +59,8 @@ bool          env_eval_progn (s_env *env, const s_list *program,
                               s_tag *dest);
 bool          env_eval_quote (s_env *env, const s_quote *quote,
                               s_tag *dest);
+bool          env_eval_struct (s_env *env, const s_struct *s,
+                               s_tag *dest);
 bool          env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
 bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
                               s_tag *dest);

@@ -21,7 +21,7 @@ character character_1 (const s8 *p)
   s_str stra;
   assert(p);
   str_init_1(&stra, NULL, p);
-  str_peek_character(&stra, &c);
+  str_peek_character_utf8(&stra, &c);
   return c;
 }
 

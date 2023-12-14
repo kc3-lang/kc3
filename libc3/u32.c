@@ -20,18 +20,9 @@
 u32 * u32_cast (s_tag *tag, u32 *dest)
 {
   switch (tag->type) {
-  case TAG_VOID:
-    *dest = 0;
-    return dest;
-  case TAG_ARRAY:
-    goto ko;
   case TAG_BOOL:
     *dest = tag->data.bool ? 1 : 0;
     return dest;
-  case TAG_CALL:
-    goto ko;
-  case TAG_CFN:
-    goto ko;
   case TAG_CHARACTER:
     *dest = (u32) tag->data.character;
     return dest;
@@ -41,10 +32,6 @@ u32 * u32_cast (s_tag *tag, u32 *dest)
   case TAG_F64:
     *dest = (u32) tag->data.f64;
     return dest;
-  case TAG_FACT:
-  case TAG_FN:
-  case TAG_IDENT:
-    goto ko;
   case TAG_INTEGER:
     *dest = integer_to_u32(&tag->data.integer);
     return dest;
@@ -78,23 +65,11 @@ u32 * u32_cast (s_tag *tag, u32 *dest)
   case TAG_UW:
     *dest = (u32) tag->data.uw;
     return dest;
-  case TAG_LIST:
-  case TAG_MAP:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_QUOTE:
-  case TAG_STR:
-  case TAG_SYM:
-  case TAG_TUPLE:
-  case TAG_VAR:
-    goto ko;
+  default:
+    break;
   }
-  assert(! "u32_cast: unknown tag type");
-  errx(1, "u32_cast: unknown tag type: %d", tag->type);
-  return 0;
- ko:
-  warnx("u32_cast: cannot cast %s to u32",
-        tag_type_to_string(tag->type));
+  errx(1, "u32_cast: cannot cast %s to u32",
+       tag_type_to_string(tag->type));
   return 0;
 }
 

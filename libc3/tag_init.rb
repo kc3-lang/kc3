@@ -20,6 +20,7 @@ class TagInit
   attr_reader :args_ptr
   attr_reader :comma_args
   attr_reader :comma_args_proto
+  attr_reader :data_name
   attr_reader :first_arg_deref
   attr_reader :init_mode
   attr_reader :name
@@ -37,9 +38,10 @@ class TagInit
     @args = ""
     @args_ptr = ""
     @args_proto = ""
+    @args_proto_comma = ""
     @comma_args = ""
     @comma_args_proto = ""
-    @args_proto_comma = ""
+    @data_name = @name == "struct" ? "struct_" : @name
 
     @args_list.each do |arg|
       @first_arg_deref ||= arg.type != "const s_sym *" &&
@@ -134,7 +136,7 @@ EOF
     when :init_mode_none
       ""
     when :init_mode_init
-      "  if (! #{name}_init#{suffix}(#{name == "list" ? "" : "&"}tmp.data.#{name}#{comma_args}))
+      "  if (! #{name}_init#{suffix}(#{name == "list" ? "" : "&"}tmp.data.#{data_name}#{comma_args}))
     return NULL;
 "
     when :init_mode_direct
@@ -147,7 +149,7 @@ EOF
   len = strlen(p);
   if (! buf_init(&buf, false, len, p))
     return NULL;
-  if ((r = buf_parse_#{name}(&buf, &tmp.data.#{name}) < 0)
+  if ((r = buf_parse_#{name}(&buf, &tmp.data.#{data_name}) < 0)
     return NULL;
   else if (r != len) {
     #{name}_clean(&tmp);
@@ -179,13 +181,13 @@ EOF
     when :init_mode_none
       ""
     when :init_mode_init
-      "  if (! #{name}_init#{suffix}(#{name == "list" ? "" : "&"}tag->data.#{name}#{comma_args})) {
+      "  if (! #{name}_init#{suffix}(#{name == "list" ? "" : "&"}tag->data.#{data_name}#{comma_args})) {
     free(tag);
     return NULL;
   }
 "
     when :init_mode_direct
-      "  tag->data.#{name} = #{first_arg_deref};
+      "  tag->data.#{data_name} = #{first_arg_deref};
 "
     when :init_mode_buf_parse
       "  s_buf buf;
@@ -194,7 +196,7 @@ EOF
   len = strlen(p);
   if (! buf_init(&buf, false, len, p))
     return NULL;
-  if ((r = buf_parse_#{name}(&buf, &tmp.data.#{name}) < 0)
+  if ((r = buf_parse_#{name}(&buf, &tmp.data.#{data_name}) < 0)
     return NULL;
   else if (r != len) {
     #{name}_clean(&tmp);
@@ -331,9 +333,9 @@ class TagInitList
                    [Arg.new("uw", "count")]),
        TagInit1.new("map", "1", "TAG_MAP", :init_mode_init),
        TagInit.new("ptr", "TAG_PTR", :init_mode_init,
-                   [Arg.new("bool", "free_p"),
-                    Arg.new("const s_sym *", "type"),
-                    Arg.new("void *", "p")]),
+                   [Arg.new("void *", "p")]),
+       TagInit.new("ptr_free", "TAG_PTR_FREE", :init_mode_init,
+                   [Arg.new("void *", "p")]),
        TagInit.new("s8", "TAG_S8", :init_mode_direct,
                    [Arg.new("s8", "i")]),
        TagInit.new("s16", "TAG_S16", :init_mode_direct,
@@ -349,6 +351,12 @@ class TagInitList
        TagInit.new("str", "1", "TAG_STR", :init_mode_init,
                    [Arg.new("s8 *", "p_free"),
                     Arg.new("const s8 *", "p")]),
+       TagInit.new("struct", "TAG_STRUCT", :init_mode_init,
+                   [Arg.new("const s_sym *", "module")]),
+       TagInit.new("struct", "with_data", "TAG_STRUCT", :init_mode_init,
+                   [Arg.new("const s_sym *", "module"),
+                    Arg.new("bool", "free_data"),
+                    Arg.new("void *", "data")]),
        TagInit.new("sw", "TAG_SW", :init_mode_direct,
                    [Arg.new("sw", "i")]),
        TagInit.new("sym", "TAG_SYM", :init_mode_direct,
@@ -497,8 +505,10 @@ tag_init_c.content = <<EOF
 #include "list.h"
 #include "map.h"
 #include "ptr.h"
+#include "ptr_free.h"
 #include "quote.h"
 #include "str.h"
+#include "struct.h"
 #include "tag.h"
 #include "tag_init.h"
 #include "time.h"
@@ -547,8 +557,10 @@ list_init_c.content = <<EOF
 #include "list.h"
 #include "map.h"
 #include "ptr.h"
+#include "ptr_free.h"
 #include "quote.h"
 #include "str.h"
+#include "struct.h"
 #include "tag.h"
 #include "list_init.h"
 #include "time.h"

@@ -136,6 +136,7 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
   const s_list *path;
   sw r;
   s_buf_save save;
+  const s_str *str;
   s_str tmp;
   buf_init(&buf, false, PATH_MAX, buf_s);
   if ((r = buf_write_str(&buf, &g_c3_env.argv0_dir)) < 0)
@@ -146,13 +147,14 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
     if (path->tag.type == TAG_STR) {
       buf_save_restore_rpos(&buf, &save);
       buf_save_restore_wpos(&buf, &save);
-      if ((r = buf_write_str(&buf, &path->tag.data.str)) < 0 ||
-          (buf.ptr.ps8[buf.wpos - 1] != '/' &&
-           (r = buf_write_u8(&buf, '/')) < 0) ||
+      str = &path->tag.data.str;
+      if ((r = buf_write_str(&buf, str)) < 0 ||
+          (str->ptr.ps8[str->size - 1] != '/' &&
+           (r = buf_write_1(&buf, "/")) < 0) ||
           (r = buf_write_str(&buf, suffix)) < 0)
         return NULL;
       buf_read_to_str(&buf, &tmp);
-      /* io_inspect_str(&tmp); */
+      //io_inspect_str(&tmp);
       file_access(&tmp, mode, &access);
       if (access) {
         *dest = tmp;

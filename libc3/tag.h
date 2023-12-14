@@ -54,19 +54,20 @@ ffi_type       tag_to_ffi_type(const s_tag *tag);
 const s_sym ** tag_type (const s_tag *tag, const s_sym **type);
 
 /* Operators. */
-s_tag * tag_1 (s_tag *tag, const s8 *p);
-s_tag * tag_integer_cast_to_s16 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_s32 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_s64 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_s8 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_u16 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_u32 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_u64 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_cast_to_u8 (const s_tag *tag, s_tag *dest);
-s_tag * tag_integer_reduce (s_tag *tag);
-s_tag * tag_list_1 (s_tag *tag, const s8 *p);
-void  * tag_to_ffi_pointer (s_tag *tag, const s_sym *type);
-void  * tag_to_pointer (s_tag *tag, const s_sym *type);
+s_tag *      tag_1 (s_tag *tag, const s8 *p);
+s_tag *      tag_integer_cast_to_s16 (const s_tag *tag, s_tag *dest);
+s_tag *      tag_integer_cast_to_s32 (const s_tag *tag, s_tag *dest);
+s_tag *      tag_integer_cast_to_s64 (const s_tag *tag, s_tag *dest);
+s_tag *      tag_integer_cast_to_s8 (const s_tag *tag, s_tag *dest);
+s_tag *      tag_integer_cast_to_u16 (const s_tag *tag, s_tag *dest);
+s_tag *      tag_integer_cast_to_u32 (const s_tag *tag, s_tag *dest);
+s_tag *      tag_integer_cast_to_u64 (const s_tag *tag, s_tag *dest);
+s_tag *      tag_integer_cast_to_u8 (const s_tag *tag, s_tag *dest);
+s_tag *      tag_integer_reduce (s_tag *tag);
+s_tag *      tag_list_1 (s_tag *tag, const s8 *p);
+const void * tag_to_const_pointer (const s_tag *tag, const s_sym *type);
+void *       tag_to_ffi_pointer (s_tag *tag, const s_sym *type);
+void *       tag_to_pointer (s_tag *tag, const s_sym *type);
 
 /* C3 operators. */
 s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest);
