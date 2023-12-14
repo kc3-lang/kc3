@@ -46,7 +46,7 @@ int main (int argc, char **argv)
     err_puts("c3_init");
     return 1;
   }
-  window_sdl2_init(&window, 0, 0, 800, 600,
+  window_sdl2_init(&window, 50, 50, 800, 600,
                    "C3.Window.SDL2 demo",
                    WINDOW_SDL2_DEMO_SEQUENCE_COUNT);
   window.button = window_sdl2_demo_button;
