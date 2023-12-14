@@ -27,6 +27,10 @@
 #include "time.h"
 #include "config.h"
 
+#ifndef O_BINARY
+# define O_BINARY 0
+#endif
+
 bool * file_access (const s_str *path, const s_sym *mode,
                     bool *dest)
 {

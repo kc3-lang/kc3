@@ -64,8 +64,11 @@ C3_C_SOURCES = \
 	c3s/c3s.c \
 	c3s/buf_readline.h \
 	ic3/buf_linenoise.h \
+	ic3/buf_wineditline.h \
 	ic3/linenoise.c \
 	ic3/buf_linenoise.c \
+	ic3/buf_wineditline.c \
+	ic3/config.h \
 	ic3/ic3.c \
 	libc3/buf_parse_s16.c \
 	libc3/tuple.h \
