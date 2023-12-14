@@ -330,4 +330,13 @@ void sdl2_sprite_render (const s_sdl2_sprite *sprite, uw frame)
     glTexCoord2f(1, 1);
     glVertex2d(sprite->w, sprite->h);  
   } glEnd();
+  /*
+  glDisable(GL_TEXTURE_2D);
+  glBegin(GL_LINE_LOOP); {
+    glVertex2d(0, sprite->h);
+    glVertex2i(0, 0);
+    glVertex2i(sprite->w, 0);
+    glVertex2d(sprite->w, sprite->h);  
+  } glEnd();
+  */
 }

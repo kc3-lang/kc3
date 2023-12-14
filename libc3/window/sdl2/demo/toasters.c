@@ -86,7 +86,7 @@ static void toaster_render (s_tag *toaster, s_window_sdl2 *window,
     y = &toaster->data.map.value[1].data.f64;
     *x += seq->dt * g_speed_x;
     *y += seq->dt * g_speed_y;
-    if (*x > window->w || *y < -g_sprite_toaster.h) {
+    if (*x > window->w || *y < -300) {
       tag_clean(toaster);
       toaster->type = TAG_VOID;
       return;
