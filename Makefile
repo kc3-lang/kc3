@@ -97,12 +97,15 @@ demo_gl_debug: debug
 
 dist: c3-${C3_VERSION}.tar.gz
 
-c3-${C3_VERSION}.tar.gz:
+c3-${C3_VERSION}.tar.gz: c3.index
 	rm -rf c3-${C3_VERSION}.old
 	-mv c3-${C3_VERSION} c3-${C3_VERSION}.old
 	mkdir c3-${C3_VERSION}
 	pax -rw < c3.index c3-${C3_VERSION}
 	pax -wz c3-${C3_VERSION} > c3-${C3_VERSION}.tar.gz
+
+c3.index: sources.mk Makefile
+	for F in ${C3_CONFIGURES} ${C3_MAKEFILES} ${C3_C_SOURCES} ${C3_OBJC_SOURCES} ${C3_OTHER_SOURCES} ${C3_EXTERNAL_SOURCES}; do echo "$$F"; done | sort -u > c3.index
 
 distclean:
 	${MAKE} -C libtommath distclean

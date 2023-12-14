@@ -255,7 +255,7 @@ require_pkg_config() {
 
 sources() {
     echo "$1 = \\
-$(echo "$2" | sed -e 's/^\(.*\)$/	\1 \\/')
+$(echo "$2" | sed -e 's/^\(.*\)$/	"\1" \\/')
 " >> ${SOURCES_MK}
     echo "$1='$(echo "$2" | tr '\n' ' ')'" >> ${SOURCES_SH}
 }
