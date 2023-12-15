@@ -13,6 +13,8 @@
 /* Gen from u.h.in BITS=_BITS$ bits=_bits$ */
 #include <assert.h>
 #include <err.h>
+#include <math.h>
+#include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
 #include "u_bits$.h"
@@ -68,8 +70,8 @@ u_bits$ * u_bits$_cast (s_tag *tag, u_bits$ *dest)
   default:
     break;
   }
-  errx(1, "u_bits$_cast: cannot cast %s to u_bits$",
-       tag_type_to_string(tag->type));
+  warnx("u_bits$_cast: cannot cast %s to u_bits$",
+        tag_type_to_string(tag->type));
   return 0;
 }
 
@@ -78,5 +80,26 @@ u_bits$ * u_bits$_init_copy (u_bits$ *dest, const u_bits$ *src)
   assert(src);
   assert(dest);
   *dest = *src;
+  return dest;
+}
+
+u_bits$ * u_bits$_random (u_bits$ *dest)
+{
+  arc4random_buf(dest, sizeof(u_bits$));
+  return dest;
+}
+
+u_bits$ * u_bits$_random_uniform (u_bits$ max, u_bits$ *dest)
+{
+  uw size = (uw) log2(max) / 8;
+  u_bits$ rest = (max - ((1 << size) - 1)) >> size;
+  u_bits$ result = 0;
+  u_bits$ tmp;
+  arc4random_buf(&result, size);
+  if (rest) {
+    tmp = arc4random_uniform(rest);
+    result += tmp;
+  }
+  *dest = result;
   return dest;
 }

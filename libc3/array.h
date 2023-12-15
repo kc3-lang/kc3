@@ -20,6 +20,7 @@ void      array_clean (s_array *a);
 s_array * array_init (s_array *a, const s_sym *type,
                       uw dimension, const uw *dimensions);
 s_array * array_init_1 (s_array *a, s8 *p);
+s_array * array_init_cast (s_array *a, const s_tag *tag);
 s_array * array_init_copy (s_array *a, const s_array *src);
 
 /* Observers */

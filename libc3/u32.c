@@ -13,6 +13,8 @@
 /* Gen from u.h.in BITS=32 bits=32 */
 #include <assert.h>
 #include <err.h>
+#include <math.h>
+#include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
 #include "u32.h"
@@ -68,8 +70,8 @@ u32 * u32_cast (s_tag *tag, u32 *dest)
   default:
     break;
   }
-  errx(1, "u32_cast: cannot cast %s to u32",
-       tag_type_to_string(tag->type));
+  warnx("u32_cast: cannot cast %s to u32",
+        tag_type_to_string(tag->type));
   return 0;
 }
 
@@ -78,5 +80,26 @@ u32 * u32_init_copy (u32 *dest, const u32 *src)
   assert(src);
   assert(dest);
   *dest = *src;
+  return dest;
+}
+
+u32 * u32_random (u32 *dest)
+{
+  arc4random_buf(dest, sizeof(u32));
+  return dest;
+}
+
+u32 * u32_random_uniform (u32 max, u32 *dest)
+{
+  uw size = (uw) log2(max) / 8;
+  u32 rest = (max - ((1 << size) - 1)) >> size;
+  u32 result = 0;
+  u32 tmp;
+  arc4random_buf(&result, size);
+  if (rest) {
+    tmp = arc4random_uniform(rest);
+    result += tmp;
+  }
+  *dest = result;
   return dest;
 }

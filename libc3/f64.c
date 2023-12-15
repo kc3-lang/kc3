@@ -17,46 +17,65 @@
 #include "tag.h"
 #include "tag_type.h"
 #include "f64.h"
+#include "u64.h"
 
-f64 f64_cast (s_tag *tag)
+f64 * f64_init_cast (f64 *x, const s_tag *tag)
 {
+  assert(tag);
+  assert(x);
   switch (tag->type) {
   case TAG_BOOL:
-    return tag->data.bool ? 1.0 : 0.0;
+    *x = tag->data.bool ? 1.0 : 0.0;
+    return x;
   case TAG_CHARACTER:
-    return (f64) tag->data.character;
+    *x = (f64) tag->data.character;
+    return x;
   case TAG_F32:
-    return (f64) tag->data.f32;
+    *x = (f64) tag->data.f32;
+    return x;
   case TAG_F64:
-    return tag->data.f64;
+    *x = tag->data.f64;
+    return x;
   case TAG_INTEGER:
-    return integer_to_f64(&tag->data.integer);
+    *x = integer_to_f64(&tag->data.integer);
+    return x;
   case TAG_SW:
-    return (f64) tag->data.sw;
+    *x = (f64) tag->data.sw;
+    return x;
   case TAG_S64:
-    return (f64) tag->data.s64;
+    *x = (f64) tag->data.s64;
+    return x;
   case TAG_S32:
-    return (f64) tag->data.s32;
+    *x = (f64) tag->data.s32;
+    return x;
   case TAG_S16:
-    return (f64) tag->data.s16;
+    *x = (f64) tag->data.s16;
+    return x;
   case TAG_S8:
-    return (f64) tag->data.s8;
+    *x = (f64) tag->data.s8;
+    return x;
   case TAG_U8:
-    return (f64) tag->data.u8;
+    *x = (f64) tag->data.u8;
+    return x;
   case TAG_U16:
-    return (f64) tag->data.u16;
+    *x = (f64) tag->data.u16;
+    return x;
   case TAG_U32:
-    return (f64) tag->data.u32;
+    *x = (f64) tag->data.u32;
+    return x;
   case TAG_U64:
-    return (f64) tag->data.u64;
+    *x = (f64) tag->data.u64;
+    return x;
   case TAG_UW:
-    return (f64) tag->data.uw;
+    *x = (f64) tag->data.uw;
+    return x;
   default:
     break;
   }
-  errx(1, "f64_cast: cannot cast %s to f64",
-       tag_type_to_string(tag->type));
-  return 0;
+  warnx("f64_init_cast: cannot cast %s to f64",
+        tag_type_to_string(tag->type));
+  assert(! "f64_init_cast: cannot cast to f64");
+  return NULL;
 }
 
 f64 * f64_init_copy (f64 *x, const f64 *src)
@@ -67,8 +86,11 @@ f64 * f64_init_copy (f64 *x, const f64 *src)
   return x;
 }
 
-f64 * f64_random (f64 *dest)
+f64 * f64_random (f64 *x)
 {
-  *dest = (f64) arc4random() / U32_MAX;
-  return dest;
+  u64 i;
+  const u64 max = ((u64) 1 << 53) - 1;
+  u64_random_uniform(max, &i);
+  *x = (f64) i / max;
+  return x;
 }

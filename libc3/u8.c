@@ -13,6 +13,8 @@
 /* Gen from u.h.in BITS=8 bits=8 */
 #include <assert.h>
 #include <err.h>
+#include <math.h>
+#include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
 #include "u8.h"
@@ -68,8 +70,8 @@ u8 * u8_cast (s_tag *tag, u8 *dest)
   default:
     break;
   }
-  errx(1, "u8_cast: cannot cast %s to u8",
-       tag_type_to_string(tag->type));
+  warnx("u8_cast: cannot cast %s to u8",
+        tag_type_to_string(tag->type));
   return 0;
 }
 
@@ -78,5 +80,26 @@ u8 * u8_init_copy (u8 *dest, const u8 *src)
   assert(src);
   assert(dest);
   *dest = *src;
+  return dest;
+}
+
+u8 * u8_random (u8 *dest)
+{
+  arc4random_buf(dest, sizeof(u8));
+  return dest;
+}
+
+u8 * u8_random_uniform (u8 max, u8 *dest)
+{
+  uw size = (uw) log2(max) / 8;
+  u8 rest = (max - ((1 << size) - 1)) >> size;
+  u8 result = 0;
+  u8 tmp;
+  arc4random_buf(&result, size);
+  if (rest) {
+    tmp = arc4random_uniform(rest);
+    result += tmp;
+  }
+  *dest = result;
   return dest;
 }

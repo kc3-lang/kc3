@@ -34,13 +34,13 @@ s_tag * map_access (const s_map *map, const s_tag *key, s_tag *value)
   return map_get(map, key, value);
 }
 
-s_map * map_cast (const s_tag *tag, s_map *map)
+s_map * map_init_cast (s_map *map, const s_tag *tag)
 {
   assert(tag);
-  if (tag->type == TAG_MAP) {
-    map_init_copy(map, &tag->data.map);
-    return map;
-  }
+  if (tag->type == TAG_MAP)
+    return map_init_copy(map, &tag->data.map);
+  warnx("map_init_cast: cannot cast %s to map",
+        tag_type_to_string(tag->type));
   return NULL;
 }
 

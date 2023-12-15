@@ -13,6 +13,8 @@
 /* Gen from u.h.in BITS=W bits=w */
 #include <assert.h>
 #include <err.h>
+#include <math.h>
+#include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
 #include "uw.h"
@@ -68,8 +70,8 @@ uw * uw_cast (s_tag *tag, uw *dest)
   default:
     break;
   }
-  errx(1, "uw_cast: cannot cast %s to uw",
-       tag_type_to_string(tag->type));
+  warnx("uw_cast: cannot cast %s to uw",
+        tag_type_to_string(tag->type));
   return 0;
 }
 
@@ -78,5 +80,26 @@ uw * uw_init_copy (uw *dest, const uw *src)
   assert(src);
   assert(dest);
   *dest = *src;
+  return dest;
+}
+
+uw * uw_random (uw *dest)
+{
+  arc4random_buf(dest, sizeof(uw));
+  return dest;
+}
+
+uw * uw_random_uniform (uw max, uw *dest)
+{
+  uw size = (uw) log2(max) / 8;
+  uw rest = (max - ((1 << size) - 1)) >> size;
+  uw result = 0;
+  uw tmp;
+  arc4random_buf(&result, size);
+  if (rest) {
+    tmp = arc4random_uniform(rest);
+    result += tmp;
+  }
+  *dest = result;
   return dest;
 }

@@ -116,6 +116,17 @@ s_struct * struct_init_1 (s_struct *s, const s8 *p)
   return s;
 }
 
+s_struct * struct_init_cast (s_struct *s, const s_tag *tag)
+{
+  assert(s);
+  assert(tag);
+  if (tag->type == TAG_STRUCT)
+    return struct_init_copy(s, &tag->data.struct_);
+  warnx("struct_init_cast: cannot cast %s to struct",
+        tag_type_to_string(tag->type));
+  return NULL;
+}
+
 s_struct * struct_init_copy (s_struct *s, const s_struct *src)
 {
   f_init_copy init_copy;

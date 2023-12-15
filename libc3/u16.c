@@ -13,6 +13,8 @@
 /* Gen from u.h.in BITS=16 bits=16 */
 #include <assert.h>
 #include <err.h>
+#include <math.h>
+#include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
 #include "u16.h"
@@ -68,8 +70,8 @@ u16 * u16_cast (s_tag *tag, u16 *dest)
   default:
     break;
   }
-  errx(1, "u16_cast: cannot cast %s to u16",
-       tag_type_to_string(tag->type));
+  warnx("u16_cast: cannot cast %s to u16",
+        tag_type_to_string(tag->type));
   return 0;
 }
 
@@ -78,5 +80,26 @@ u16 * u16_init_copy (u16 *dest, const u16 *src)
   assert(src);
   assert(dest);
   *dest = *src;
+  return dest;
+}
+
+u16 * u16_random (u16 *dest)
+{
+  arc4random_buf(dest, sizeof(u16));
+  return dest;
+}
+
+u16 * u16_random_uniform (u16 max, u16 *dest)
+{
+  uw size = (uw) log2(max) / 8;
+  u16 rest = (max - ((1 << size) - 1)) >> size;
+  u16 result = 0;
+  u16 tmp;
+  arc4random_buf(&result, size);
+  if (rest) {
+    tmp = arc4random_uniform(rest);
+    result += tmp;
+  }
+  *dest = result;
   return dest;
 }

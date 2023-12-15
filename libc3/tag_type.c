@@ -313,6 +313,81 @@ f_buf_parse tag_type_to_buf_parse (e_tag_type type)
   return NULL;
 }
 
+f_init_cast tag_type_to_init_cast (e_tag_type type)
+{
+  switch (type) {
+  case TAG_VOID:
+    return NULL;
+  case TAG_ARRAY:
+    return (f_init_cast) array_init_cast;
+  case TAG_BOOL:
+    return (f_init_cast) bool_init_cast;
+  case TAG_CALL:
+    return (f_init_cast) call_init_cast;
+  case TAG_CFN:
+    return (f_init_cast) cfn_init_cast;
+  case TAG_CHARACTER:
+    return (f_init_cast) character_init_cast;
+  case TAG_F32:
+    return (f_init_cast) f32_init_cast;
+  case TAG_F64:
+    return (f_init_cast) f64_init_cast;
+  case TAG_FACT:
+    return (f_init_cast) fact_init_cast;
+  case TAG_FN:
+    return (f_init_cast) fn_init_cast;
+  case TAG_IDENT:
+    return (f_init_cast) ident_init_cast;
+  case TAG_INTEGER:
+    return (f_init_cast) integer_init_cast;
+  case TAG_SW:
+    return (f_init_cast) sw_init_cast;
+  case TAG_S64:
+    return (f_init_cast) s64_init_cast;
+  case TAG_S32:
+    return (f_init_cast) s32_init_cast;
+  case TAG_S16:
+    return (f_init_cast) s16_init_cast;
+  case TAG_S8:
+    return (f_init_cast) s8_init_cast;
+  case TAG_U8:
+    return (f_init_cast) u8_init_cast;
+  case TAG_U16:
+    return (f_init_cast) u16_init_cast;
+  case TAG_U32:
+    return (f_init_cast) u32_init_cast;
+  case TAG_U64:
+    return (f_init_cast) u64_init_cast;
+  case TAG_UW:
+    return (f_init_cast) uw_init_cast;
+  case TAG_LIST:
+    return (f_init_cast) list_init_cast;
+  case TAG_MAP:
+    return (f_init_cast) map_init_cast;
+  case TAG_PTAG:
+    return (f_init_cast) ptag_init_cast;
+  case TAG_PTR:
+    return (f_init_cast) ptr_init_cast;
+  case TAG_PTR_FREE:
+    return (f_init_cast) ptr_free_init_cast;
+  case TAG_QUOTE:
+    return (f_init_cast) quote_init_cast;
+  case TAG_STR:
+    return (f_init_cast) str_init_cast;
+  case TAG_STRUCT:
+    return (f_init_cast) struct_init_cast;
+  case TAG_SYM:
+    return (f_init_cast) sym_init_cast;
+  case TAG_TUPLE:
+    return (f_init_cast) tuple_init_cast;
+  case TAG_VAR:
+    return NULL;
+  }
+  warnx("tag_type_to_init_cast: invalid tag type: %d", type);
+  assert(! "tag_type_to_init_cast: invalid tag type");
+  return NULL;
+}
+
 f_clean tag_type_to_clean (e_tag_type type)
 {
   switch (type) {

@@ -20,6 +20,8 @@
 #include "tag.h"
 #include "tag_type.h"
 
+// TODO: errx -> warnx
+
 s_integer * integer_abs (const s_integer *a, s_integer *dest)
 {
   sw r;
@@ -110,39 +112,39 @@ uw integer_bytes (const s_integer *i)
   return (integer_bits(i) + 7) / 8;
 }
 
-s_integer * integer_cast (const s_tag *tag, s_integer *dest)
+s_integer * integer_init_cast (s_integer *a, const s_tag *tag)
 {
   switch (tag->type) {
   case TAG_BOOL:
-    return integer_init_u8(dest, tag->data.bool ? 1 : 0);
+    return integer_init_u8(a, tag->data.bool ? 1 : 0);
   case TAG_CHARACTER:
-    return integer_init_u32(dest, tag->data.character);
+    return integer_init_u32(a, tag->data.character);
   case TAG_F32:
-    return integer_init_f32(dest, tag->data.f32);
+    return integer_init_f32(a, tag->data.f32);
   case TAG_F64:
-    return integer_init_f64(dest, tag->data.f64);
+    return integer_init_f64(a, tag->data.f64);
   case TAG_INTEGER:
-    return integer_copy(&tag->data.integer, dest);
+    return integer_init_copy(a, &tag->data.integer);
   case TAG_SW:
-    return integer_init_sw(dest, tag->data.sw);
+    return integer_init_sw(a, tag->data.sw);
   case TAG_S64:
-    return integer_init_s64(dest, tag->data.s64);
+    return integer_init_s64(a, tag->data.s64);
   case TAG_S32:
-    return integer_init_s32(dest, tag->data.s32);
+    return integer_init_s32(a, tag->data.s32);
   case TAG_S16:
-    return integer_init_s16(dest, tag->data.s16);
+    return integer_init_s16(a, tag->data.s16);
   case TAG_S8:
-    return integer_init_s8(dest, tag->data.s8);
+    return integer_init_s8(a, tag->data.s8);
   case TAG_U8:
-    return integer_init_u8(dest, tag->data.u8);
+    return integer_init_u8(a, tag->data.u8);
   case TAG_U16:
-    return integer_init_u16(dest, tag->data.u16);
+    return integer_init_u16(a, tag->data.u16);
   case TAG_U32:
-    return integer_init_u32(dest, tag->data.u32);
+    return integer_init_u32(a, tag->data.u32);
   case TAG_U64:
-    return integer_init_u64(dest, tag->data.u64);
+    return integer_init_u64(a, tag->data.u64);
   case TAG_UW:
-    return integer_init_uw(dest, tag->data.uw);
+    return integer_init_uw(a, tag->data.uw);
   default:
     break;
   }
@@ -151,20 +153,10 @@ s_integer * integer_cast (const s_tag *tag, s_integer *dest)
   return 0;
 }
 
-void integer_clean (s_integer *dest)
+void integer_clean (s_integer *a)
 {
-  assert(dest);
-  mp_clear(&dest->mp_int);
-}
-
-s_integer * integer_copy (const s_integer *a, s_integer *dest)
-{
-  sw r;
   assert(a);
-  assert(dest);
-  if ((r = mp_init_copy(&dest->mp_int, &a->mp_int)) != MP_OKAY)
-    errx(1, "integer_copy: %s", mp_error_to_string(r));
-  return dest;
+  mp_clear(&a->mp_int);
 }
 
 s_integer * integer_div (const s_integer *a, const s_integer *b,
@@ -216,10 +208,13 @@ s_integer * integer_init_1 (s_integer *i, const s8 *p)
 s_integer * integer_init_copy (s_integer *a, const s_integer *src)
 {
   sw r;
-  assert(a);
   assert(src);
-  if ((r = mp_init_copy(&a->mp_int, &src->mp_int)) != MP_OKAY)
-    errx(1, "integer_init_copy: %s", mp_error_to_string(r));
+  assert(a);
+  if ((r = mp_init_copy(&a->mp_int, &src->mp_int)) != MP_OKAY) {
+    warnx("integer_init_copy: %s", mp_error_to_string(r));
+    assert(! "integer_init_copy: mp_init_copy");
+    return NULL;
+  }
   return a;
 }
 
@@ -397,14 +392,21 @@ s_integer * integer_new (void)
   return integer_init(i);
 }
 
-s_integer * integer_new_copy (const s_integer *a)
+s_integer * integer_new_copy (const s_integer *src)
 {
-  s_integer *dest;
-  assert(a);
-  dest = malloc(sizeof(s_integer));
-  if (!dest)
-    errx(1, "integer_new_copy: out of memory");
-  return integer_copy(a, dest);
+  s_integer *a;
+  assert(src);
+  a = calloc(1, sizeof(s_integer));
+  if (! a) {
+    warn("integer_new_copy");
+    assert(! "integer_new_copy: failed to allocate memory");
+    return NULL;
+  }
+  if (! integer_init_copy(a, src)) {
+    free(a);
+    return NULL;
+  }
+  return a;
 }
 
 s_integer * integer_pow (const s_integer *a, const s_integer *b,

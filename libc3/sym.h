@@ -28,6 +28,7 @@
 
 const s_sym  * sym_1 (const s8 *p);
 const s_sym ** sym_init_1 (const s_sym **sym, const s8 *p);
+const s_sym ** sym_init_cast (const s_sym **sym, const s_tag *src);
 const s_sym ** sym_init_copy (const s_sym **sym,
                               const s_sym * const *src);
 
@@ -47,6 +48,7 @@ f_buf_inspect_size sym_to_buf_inspect_size (const s_sym *type);
 f_clean            sym_to_clean (const s_sym *type);
 ffi_type         * sym_to_ffi_type (const s_sym *sym,
                                     ffi_type *result_type);
+f_init_cast        sym_to_init_cast (const s_sym *type);
 f_init_copy        sym_to_init_copy (const s_sym *type);
 bool               sym_to_tag_type (const s_sym *sym, e_tag_type *dest);
 uw                 sym_type_size (const s_sym *type);
