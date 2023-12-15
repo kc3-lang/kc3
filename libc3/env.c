@@ -43,6 +43,8 @@
 #include "map.h"
 #include "module.h"
 #include "str.h"
+#include "struct.h"
+#include "struct_type.h"
 #include "tag.h"
 #include "tuple.h"
 
@@ -665,7 +667,7 @@ bool env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
   return true;
 }
 
-bool env_eval_quote(s_env *env, const s_quote *quote, s_tag *dest)
+bool env_eval_quote (s_env *env, const s_quote *quote, s_tag *dest)
 {
   assert(env);
   assert(quote);
@@ -676,6 +678,55 @@ bool env_eval_quote(s_env *env, const s_quote *quote, s_tag *dest)
   return true;
 }
 
+bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
+{
+  uw i;
+  s_struct *t;
+  s_tag tag = {0};
+  void *tag_data;
+  uw    tag_size;
+  s_tag tmp = {0};
+  assert(env);
+  assert(s);
+  assert(dest);
+  tmp.type = TAG_STRUCT;
+  t = &tmp.data.struct_;
+  if (s->data) {
+    if (! struct_init_copy(t, s))
+      return false;
+    *dest = tmp;
+    return true;
+  }
+  if (! struct_type_init_copy(&t->type, &s->type) ||
+      ! struct_allocate(t))
+    return false;
+  i = 0;
+  while (i < t->type.map.count) {
+    if (! env_eval_tag(env, s->tag + i, &tag))
+      goto ko;
+    if (tag.type != t->type.map.value[i].type) {
+      warnx("env_eval_struct:"
+            " invalid type %s for key %s, expected %s.",
+            tag_type_to_string(tag.type),
+            t->type.map.key[i].data.sym->str.ptr.ps8,
+            tag_type_to_string(t->type.map.value[i].type));
+      tag_clean(&tag);
+      goto ko;
+    }
+    tag_data = tag_to_pointer(&tag, tag_type_to_sym(tag.type));
+    tag_size = tag_type_size(tag.type);
+    if (tag_data && tag_size)
+      memcpy((s8 *) t->data + t->type.offset[i],
+             tag_data, tag_size);
+    i++;
+  }
+  *dest = tmp;
+  return true;
+ ko:
+  struct_clean(t);
+  return false;
+}
+
 bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
 {
   assert(env);
@@ -683,8 +734,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   assert(dest);
   switch (tag->type) {
   case TAG_VOID:
-    tag_init_void(dest);
-    return true;
+    return env_eval_void(env, NULL, dest);
   case TAG_ARRAY:
     return env_eval_array_tag(env, &tag->data.array, dest);
   case TAG_CALL:
@@ -697,10 +747,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_map(env, &tag->data.map, dest);
   case TAG_QUOTE:
     return env_eval_quote(env, &tag->data.quote, dest);
-  /*
   case TAG_STRUCT:
     return env_eval_struct(env, &tag->data.struct_, dest);
-  */
   case TAG_TUPLE:
     return env_eval_tuple(env, &tag->data.tuple, dest);
   case TAG_BOOL:
@@ -720,7 +768,6 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_S64:
   case TAG_SW:
   case TAG_STR:
-  case TAG_STRUCT:
   case TAG_SYM:
   case TAG_U8:
   case TAG_U16:
@@ -751,6 +798,16 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
   }
   dest->type = TAG_TUPLE;
   dest->data.tuple = tmp;
+  return true;
+}
+
+bool env_eval_void (s_env *env, const void *_, s_tag *dest)
+{
+  assert(env);
+  assert(dest);
+  (void) env;
+  (void) _;
+  tag_init_void(dest);
   return true;
 }
 

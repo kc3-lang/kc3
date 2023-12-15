@@ -40,6 +40,7 @@ s_struct * struct_new_with_data (const s_sym *module, bool free_data,
                                  void *data);
 
 /* Operators. */
+s_struct * struct_allocate (s_struct *s);
 s_struct * struct_set (s_struct *s, const s_sym *key,
                        const s_tag *value);
 

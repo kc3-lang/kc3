@@ -23,6 +23,23 @@
 #include "tag.h"
 #include "tag_type.h"
 
+s_struct * struct_allocate (s_struct *s)
+{
+  s_struct tmp;
+  assert(s);
+  assert(! s->data);
+  tmp = *s;
+  tmp.free_data = true;
+  tmp.data = calloc(1, tmp.type.size);
+  if (! tmp.data) {
+    warn("struct_allocate: data");
+    assert(! "struct_allocate: data: failed to allocate memory");
+    return NULL;
+  }
+  *s = tmp;
+  return s;
+}
+
 void struct_clean (s_struct *s)
 {
   f_clean clean;
@@ -86,23 +103,6 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
   assert(module);
   if (! struct_type_init_from_env(&tmp.type, module, &g_c3_env))
     return NULL;
-  *s = tmp;
-  return s;
-}
-
-s_struct * struct_allocate (s_struct *s)
-{
-  s_struct tmp;
-  assert(s);
-  assert(! s->data);
-  tmp = *s;
-  tmp.free_data = true;
-  tmp.data = calloc(1, tmp.type.size);
-  if (! tmp.data) {
-    warn("struct_allocate: data");
-    assert(! "struct_allocate: data: failed to allocate memory");
-    return NULL;
-  }
   *s = tmp;
   return s;
 }
