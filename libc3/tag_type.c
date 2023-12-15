@@ -375,6 +375,58 @@ f_clean tag_type_to_clean (e_tag_type type)
   return NULL;
 }
 
+f_env_eval tag_type_to_env_eval (e_tag_type type)
+{
+  switch (type) {
+  case TAG_VOID:
+    return (f_env_eval) env_eval_void;
+  case TAG_ARRAY:
+    return (f_env_eval) env_eval_array_tag;
+  case TAG_CALL:
+    return (f_env_eval) env_eval_call;
+  case TAG_IDENT:
+    return (f_env_eval) env_eval_ident;
+  case TAG_LIST:
+    return (f_env_eval) env_eval_list;
+  case TAG_MAP:
+    return (f_env_eval) env_eval_map;
+  case TAG_QUOTE:
+    return (f_env_eval) env_eval_quote;
+  case TAG_STRUCT:
+    return (f_env_eval) env_eval_struct;
+  case TAG_TUPLE:
+    return (f_env_eval) env_eval_tuple;
+  case TAG_BOOL:
+  case TAG_CFN:
+  case TAG_CHARACTER:
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_FACT:
+  case TAG_FN:
+  case TAG_INTEGER:
+  case TAG_PTAG:
+  case TAG_PTR:
+  case TAG_PTR_FREE:
+  case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_SW:
+  case TAG_STR:
+  case TAG_SYM:
+  case TAG_U8:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_UW:
+  case TAG_VAR:
+    return NULL;
+  }
+  warnx("tag_type_to_env_eval: unknown tag type: %d", type);
+  assert(! "tag_type_to_env_eval: unknown tag type");
+  return NULL;
+}
+
 ffi_type * tag_type_to_ffi_type (e_tag_type type)
 {
   switch (type) {

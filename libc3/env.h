@@ -60,6 +60,7 @@ bool          env_eval_struct (s_env *env, const s_struct *s,
 bool          env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest);
 bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
                               s_tag *dest);
+bool          env_eval_void (s_env *env, const void *_, s_tag *dest);
 s_list **     env_get_struct_type_spec (s_env *env, const s_sym *module,
                                         s_list **dest);
 bool          env_module_load (s_env *env, const s_sym *module,
