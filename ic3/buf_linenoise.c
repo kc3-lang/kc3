@@ -101,7 +101,8 @@ sw buf_linenoise_refill_linenoise (s_buf *buf)
     return -1;
   buf_linenoise_len = buf_linenoise->buf.wpos - buf_linenoise->buf.rpos;
   if (buf_linenoise_len == 0) {
-    free(buf_linenoise->buf.ptr.p);
+    if (buf_linenoise->buf.free)
+      free(buf_linenoise->buf.ptr.p);
     if (! (buf_linenoise->buf.ptr.p = linenoise(buf_linenoise->prompt))) {
       buf_linenoise->eof = true;
       buf_linenoise->buf.rpos =
