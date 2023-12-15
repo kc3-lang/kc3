@@ -13,6 +13,7 @@
 /* Gen from s.h.in BITS=16 bits=16 */
 #include <assert.h>
 #include <err.h>
+#include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
@@ -79,5 +80,11 @@ s16 * s16_init_copy (s16 *dest, const s16 *src)
   assert(src);
   assert(dest);
   *dest = *src;
+  return dest;
+}
+
+s16 * s16_random (s16 *dest)
+{
+  arc4random_buf(dest, sizeof(s16));
   return dest;
 }

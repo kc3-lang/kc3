@@ -13,6 +13,8 @@
 /* Gen from u.h.in BITS=64 bits=64 */
 #include <assert.h>
 #include <err.h>
+#include <math.h>
+#include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
 #include "u64.h"
@@ -68,8 +70,8 @@ u64 * u64_cast (s_tag *tag, u64 *dest)
   default:
     break;
   }
-  errx(1, "u64_cast: cannot cast %s to u64",
-       tag_type_to_string(tag->type));
+  warnx("u64_cast: cannot cast %s to u64",
+        tag_type_to_string(tag->type));
   return 0;
 }
 
@@ -78,5 +80,26 @@ u64 * u64_init_copy (u64 *dest, const u64 *src)
   assert(src);
   assert(dest);
   *dest = *src;
+  return dest;
+}
+
+u64 * u64_random (u64 *dest)
+{
+  arc4random_buf(dest, sizeof(u64));
+  return dest;
+}
+
+u64 * u64_random_uniform (u64 max, u64 *dest)
+{
+  uw size = (uw) log2(max) / 8;
+  u64 rest = (max - ((1 << size) - 1)) >> size;
+  u64 result = 0;
+  u64 tmp;
+  arc4random_buf(&result, size);
+  if (rest) {
+    tmp = arc4random_uniform(rest);
+    result += tmp;
+  }
+  *dest = result;
   return dest;
 }

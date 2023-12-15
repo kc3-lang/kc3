@@ -15,8 +15,8 @@
 
 #include "types.h"
 
-f64   f64_cast (s_tag *tag);
+f64 * f64_init_cast (f64 *x, const s_tag *tag);
 f64 * f64_init_copy (f64 *x, const f64 *src);
-f64 * f64_random (f64 *dest);
+f64 * f64_random (f64 *x);
 
 #endif /* LIBC3_F64_H */

@@ -22,12 +22,13 @@
 #include "types.h"
 
 sw                 tag_type_size (e_tag_type type);
-f_clean            tag_type_to_clean (e_tag_type type);
 f_buf_inspect      tag_type_to_buf_inspect (e_tag_type type);
 f_buf_inspect_size tag_type_to_buf_inspect_size (e_tag_type type);
 f_buf_parse        tag_type_to_buf_parse (e_tag_type type);
+f_clean            tag_type_to_clean (e_tag_type type);
 f_env_eval         tag_type_to_env_eval (e_tag_type type);
 f_hash_update      tag_type_to_hash_update (e_tag_type type);
+f_init_cast        tag_type_to_init_cast (e_tag_type type);
 f_init_copy        tag_type_to_init_copy (e_tag_type type);
 const s8 *         tag_type_to_string (e_tag_type type);
 const s_sym *      tag_type_to_sym (e_tag_type tag_type);

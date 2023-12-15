@@ -50,8 +50,6 @@
 
 s_env g_c3_env;
 
-static bool env_eval_array_cast (s_env *env, s_array *tmp,
-                                 const s_tag *tag, u8 *data, uw size);
 static s_env * env_init_args (s_env *env, int argc, s8 **argv);
 
 void env_clean (s_env *env)
@@ -109,6 +107,7 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
 {
   u8 *data;
   uw i;
+  f_init_cast init_cast;
   uw item_size;
   s_tag *tag;
   s_array tmp;
@@ -122,50 +121,32 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
     return true;
   }
   assert(array->tags);
-  if (! tmp.data &&
-      ! (tmp.data = calloc(tmp.dimensions[0].count,
-                           tmp.dimensions[0].item_size))) {
-    assert(! "env_eval_array: out of memory: data");
-    errx(1, "env_eval_array: out of memory: data");
+  tmp.data = calloc(tmp.dimensions[0].count,
+                    tmp.dimensions[0].item_size);
+  if (! tmp.data) {
+    warn("env_eval_array: failed to allocate memory");
+    assert(! "env_eval_array: failed to allocate memory");
     return false;
   }
+  init_cast = sym_to_init_cast(tmp.type);
   data = tmp.data;
   tag = tmp.tags;
   i = 0;
   while (i < tmp.count) {
-    if (! env_eval_array_cast(env, &tmp, tag, data, item_size)) {
-      array_clean(&tmp);
-      return false;
-    }
+    s_tag tag_eval;
+    if (! env_eval_tag(env, tag, &tag_eval))
+      goto ko;
+    if (! init_cast(data, &tag_eval))
+      goto ko;
     data += item_size;
     tag++;
     i++;
   }
   *dest = tmp;
   return true;
-}
-
-bool env_eval_array_cast (s_env *env, s_array *array, const s_tag *tag,
-                          u8 *data, uw size)
-{
-  s_call call;
-  s_tag tag_eval;
-  const void *data_eval;
-  assert(env);
-  assert(array);
-  assert(tag);
-  assert(data);
-  assert(size);
-  if (! call_init_cast(&call, array->type, tag))
-    return false;
-  if (! env_eval_call(env, &call, &tag_eval)) {
-    call_clean(&call);
-    return false;
-  }
-  data_eval = tag_to_const_pointer(&tag_eval, array->type);
-  memcpy(data, data_eval, size);
-  call_clean(&call);
-  return true;
+ ko:
+  array_clean(&tmp);
+  return false;
 }
 
 bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
@@ -681,10 +662,9 @@ bool env_eval_quote (s_env *env, const s_quote *quote, s_tag *dest)
 bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
 {
   uw i;
+  f_init_cast init_cast;
   s_struct *t;
   s_tag tag = {0};
-  void *tag_data;
-  uw    tag_size;
   s_tag tmp = {0};
   assert(env);
   assert(s);
@@ -704,24 +684,23 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
   while (i < t->type.map.count) {
     if (! env_eval_tag(env, s->tag + i, &tag))
       goto ko;
-    if (tag.type != t->type.map.value[i].type) {
+    init_cast = tag_type_to_init_cast(tag.type);
+    if (tag.type != t->type.map.value[i].type && ! init_cast) {
       warnx("env_eval_struct:"
             " invalid type %s for key %s, expected %s.",
             tag_type_to_string(tag.type),
             t->type.map.key[i].data.sym->str.ptr.ps8,
             tag_type_to_string(t->type.map.value[i].type));
-      tag_clean(&tag);
-      goto ko;
+      goto ko_tag;
     }
-    tag_data = tag_to_pointer(&tag, tag_type_to_sym(tag.type));
-    tag_size = tag_type_size(tag.type);
-    if (tag_data && tag_size)
-      memcpy((s8 *) t->data + t->type.offset[i],
-             tag_data, tag_size);
+    if (! init_cast((s8 *) t->data + t->type.offset[i], &tag))
+      goto ko_tag;
     i++;
   }
   *dest = tmp;
   return true;
+    ko_tag:
+  tag_clean(&tag);
  ko:
   struct_clean(t);
   return false;

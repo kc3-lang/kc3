@@ -19,6 +19,7 @@
 void      quote_clean (s_quote *quote);
 s_quote * quote_init (s_quote *quote, const s_tag *tag);
 s_quote * quote_init_1 (s_quote *quote, const s8 *p);
+s_quote * quote_init_cast (s_quote *quote, const s_tag *src);
 s_quote * quote_init_copy (s_quote *quote, const s_quote *src);
 
 #endif /* LIBC3_QUOTE_H */

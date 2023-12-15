@@ -19,6 +19,7 @@
 void    cfn_clean (s_cfn *cfn);
 s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
                   const s_sym *result_type);
+s_cfn * cfn_init_cast (s_cfn *cfn, const s_tag *tag);
 s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src);
 
 /* Heap-allocation functions, call cfn_delete after use. */

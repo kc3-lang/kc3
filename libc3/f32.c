@@ -16,46 +16,63 @@
 #include "tag.h"
 #include "tag_type.h"
 #include "f32.h"
+#include "u32.h"
 
-f32 f32_cast (s_tag *tag)
+f32 * f32_init_cast (f32 *x, const s_tag *tag)
 {
   switch (tag->type) {
   case TAG_BOOL:
-    return tag->data.bool ? 1.0f : 0.0f;
+    *x = tag->data.bool ? 1.0f : 0.0f;
+    return x;
   case TAG_CHARACTER:
-    return (f32) tag->data.character;
+    *x = (f32) tag->data.character;
+    return x;
   case TAG_F32:
-    return tag->data.f32;
+    *x = tag->data.f32;
+    return x;
   case TAG_F64:
-    return (f32) tag->data.f64;
+    *x = (f32) tag->data.f64;
+    return x;
   case TAG_INTEGER:
-    return integer_to_f32(&tag->data.integer);
+    *x = integer_to_f32(&tag->data.integer);
+    return x;
   case TAG_SW:
-    return (f32) tag->data.sw;
+    *x = (f32) tag->data.sw;
+    return x;
   case TAG_S64:
-    return (f32) tag->data.s64;
+    *x = (f32) tag->data.s64;
+    return x;
   case TAG_S32:
-    return (f32) tag->data.s32;
+    *x = (f32) tag->data.s32;
+    return x;
   case TAG_S16:
-    return (f32) tag->data.s16;
+    *x = (f32) tag->data.s16;
+    return x;
   case TAG_S8:
-    return (f32) tag->data.s8;
+    *x = (f32) tag->data.s8;
+    return x;
   case TAG_U8:
-    return (f32) tag->data.u8;
+    *x = (f32) tag->data.u8;
+    return x;
   case TAG_U16:
-    return (f32) tag->data.u16;
+    *x = (f32) tag->data.u16;
+    return x;
   case TAG_U32:
-    return (f32) tag->data.u32;
+    *x = (f32) tag->data.u32;
+    return x;
   case TAG_U64:
-    return (f32) tag->data.u64;
+    *x = (f32) tag->data.u64;
+    return x;
   case TAG_UW:
-    return (f32) tag->data.uw;
+    *x = (f32) tag->data.uw;
+    return x;
   default:
     break;
   }
-  errx(1, "f32_cast: cannot cast %s to f32",
-       tag_type_to_string(tag->type));
-  return 0;
+  warnx("f32_init_cast: cannot cast %s to f32",
+        tag_type_to_string(tag->type));
+  assert(! "f32_init_cast: cannot cast to f32");
+  return NULL;
 }
 
 f32 * f32_init_copy (f32 *x, const f32 *src)
@@ -63,5 +80,14 @@ f32 * f32_init_copy (f32 *x, const f32 *src)
   assert(src);
   assert(x);
   *x = *src;
+  return x;
+}
+
+f32 * f32_random (f32 *x)
+{
+  u32 i;
+  const u32 max = (1 << 24) - 1;
+  u32_random_uniform(max, &i);
+  *x = (f32) i / max;
   return x;
 }

@@ -185,6 +185,7 @@ typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
 typedef void (* f_clean) (void *x);
 typedef bool (* f_env_eval) (s_env *env, const void *x, s_tag *dest);
 typedef void (* f_hash_update) (t_hash *hash, const void *x);
+typedef void * (* f_init_cast) (void *x, const s_tag *tag);
 typedef void * (* f_init_copy) (void *x, const void *src);
 typedef bool (* f_sequence_load) (s_sequence *seq, void *window);
 typedef bool (* f_sequence_render) (s_sequence *seq, void *window,

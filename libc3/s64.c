@@ -13,6 +13,7 @@
 /* Gen from s.h.in BITS=64 bits=64 */
 #include <assert.h>
 #include <err.h>
+#include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
@@ -79,5 +80,11 @@ s64 * s64_init_copy (s64 *dest, const s64 *src)
   assert(src);
   assert(dest);
   *dest = *src;
+  return dest;
+}
+
+s64 * s64_random (s64 *dest)
+{
+  arc4random_buf(dest, sizeof(s64));
   return dest;
 }

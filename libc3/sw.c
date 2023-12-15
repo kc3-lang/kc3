@@ -13,6 +13,7 @@
 /* Gen from s.h.in BITS=W bits=w */
 #include <assert.h>
 #include <err.h>
+#include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
@@ -79,5 +80,11 @@ sw * sw_init_copy (sw *dest, const sw *src)
   assert(src);
   assert(dest);
   *dest = *src;
+  return dest;
+}
+
+sw * sw_random (sw *dest)
+{
+  arc4random_buf(dest, sizeof(sw));
   return dest;
 }

@@ -13,6 +13,7 @@
 /* Gen from s.h.in BITS=32 bits=32 */
 #include <assert.h>
 #include <err.h>
+#include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
@@ -79,5 +80,11 @@ s32 * s32_init_copy (s32 *dest, const s32 *src)
   assert(src);
   assert(dest);
   *dest = *src;
+  return dest;
+}
+
+s32 * s32_random (s32 *dest)
+{
+  arc4random_buf(dest, sizeof(s32));
   return dest;
 }

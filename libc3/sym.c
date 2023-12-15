@@ -305,6 +305,8 @@ f_buf_inspect_size sym_to_buf_inspect_size (const s_sym *type)
     return (f_buf_inspect_size) buf_inspect_tuple_size;
   if (type == sym_1("Var"))
     return (f_buf_inspect_size) buf_inspect_var_size;
+  if (type == sym_1("Void"))
+    return (f_buf_inspect_size) buf_inspect_void_size;
   err_write_1("sym_to_buf_inspect_size: unknown type: ");
   err_write_1(type->str.ptr.ps8);
   err_write_1("\n");
@@ -443,6 +445,74 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
   err_write_1(sym->str.ptr.ps8);
   err_write_1("\n");
   assert(! "sym_to_ffi_type: unknown type");
+  return NULL;
+}
+
+f_init_cast sym_to_init_cast (const s_sym *type)
+{
+  if (type == sym_1("Bool"))
+    return (f_init_cast) bool_init_cast;
+  if (type == sym_1("Call"))
+    return (f_init_cast) call_init_cast;
+  if (type == sym_1("Cfn"))
+    return (f_init_cast) cfn_init_cast;
+  if (type == sym_1("Character"))
+    return (f_init_cast) character_init_cast;
+  if (type == sym_1("F32"))
+    return (f_init_cast) f32_init_cast;
+  if (type == sym_1("F64"))
+    return (f_init_cast) f64_init_cast;
+  if (type == sym_1("Fact"))
+    return (f_init_cast) fact_init_cast;
+  if (type == sym_1("Fn"))
+    return (f_init_cast) fn_init_cast;
+  if (type == sym_1("Ident"))
+    return (f_init_cast) ident_init_cast;
+  if (type == sym_1("Integer"))
+    return (f_init_cast) integer_init_cast;
+  if (type == sym_1("List"))
+    return (f_init_cast) list_init_cast;
+  if (type == sym_1("Sw"))
+    return (f_init_cast) sw_init_cast;
+  if (type == sym_1("S64"))
+    return (f_init_cast) s64_init_cast;
+  if (type == sym_1("S32"))
+    return (f_init_cast) s32_init_cast;
+  if (type == sym_1("S16"))
+    return (f_init_cast) s16_init_cast;
+  if (type == sym_1("S8"))
+    return (f_init_cast) s8_init_cast;
+  if (type == sym_1("U8"))
+    return (f_init_cast) u8_init_cast;
+  if (type == sym_1("U16"))
+    return (f_init_cast) u16_init_cast;
+  if (type == sym_1("U32"))
+    return (f_init_cast) u32_init_cast;
+  if (type == sym_1("U64"))
+    return (f_init_cast) u64_init_cast;
+  if (type == sym_1("Uw"))
+    return (f_init_cast) uw_init_cast;
+  if (type == sym_1("Ptag"))
+    return (f_init_cast) ptag_init_cast;
+  if (type == sym_1("Ptr"))
+    return (f_init_cast) ptr_init_cast;
+  if (type == sym_1("PtrFree"))
+    return (f_init_cast) ptr_free_init_cast;
+  if (type == sym_1("Quote"))
+    return (f_init_cast) quote_init_cast;
+  if (type == sym_1("Str"))
+    return (f_init_cast) str_init_cast;
+  if (type == sym_1("Sym"))
+    return (f_init_cast) sym_init_cast;
+  if (type == sym_1("Tuple"))
+    return (f_init_cast) tuple_init_cast;
+  if (type == sym_1("Var"))
+    return NULL;
+  if (type == sym_1("Void"))
+    return NULL;
+  err_write_1("sym_to_init_cast: unknown type: ");
+  err_puts(type->str.ptr.ps8);
+  assert(! "sym_to_init_cast: unknown type");
   return NULL;
 }
 

@@ -31,6 +31,7 @@ void    str_clean (s_str *str);
 s_str * str_init (s_str *str, s8 *free, uw size, const s8 *p);
 s_str * str_init_1 (s_str *str, s8 *free, const s8 *p);
 s_str * str_init_alloc (s_str *str, uw size, const s8 *p);
+s_str * str_init_cast (s_str *str, const s_tag *tag);
 s_str * str_init_copy (s_str *str, const s_str *src);
 s_str * str_init_copy_1 (s_str *str, const s8 *p);
 s_str * str_init_empty (s_str *str);
