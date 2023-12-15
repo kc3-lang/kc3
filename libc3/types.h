@@ -325,7 +325,8 @@ struct str {
 
 struct struct_ {
   void *data;
-  bool free;
+  s_tag *tag;
+  bool free_data;
   s_struct_type type;
 };
 

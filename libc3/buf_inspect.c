@@ -1707,7 +1707,15 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
   result += r;
   while (i < s->type.map.count) {
     k = s->type.map.key + i;
-    assert(k->type == TAG_SYM);
+    if (k->type != TAG_SYM) {
+      err_write_1("buf_inspect_struct: key type is not a symbol: ");
+      err_inspect_tag(k);
+      err_write_1(" (");
+      err_write_1(tag_type_to_string(k->type));
+      err_puts(")");
+      assert(k->type == TAG_SYM);
+      return -1;
+    }
     if (sym_has_reserved_characters(k->data.sym)) {
       if ((r = buf_write_str(buf, &k->data.sym->str)) < 0)
         return r;
@@ -1719,10 +1727,22 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
     if ((r = buf_write_1(buf, ": ")) < 0)
       return r;
     result += r;
-    buf_inspect = tag_type_to_buf_inspect(s->type.map.value[i].type);
-    if ((r = buf_inspect(buf, (s8 *) s->data + s->type.offset[i])) < 0)
-      return r;
-    result += r;
+    if (s->data) {
+      buf_inspect = tag_type_to_buf_inspect(s->type.map.value[i].type);
+      if ((r = buf_inspect(buf, (s8 *) s->data + s->type.offset[i])) < 0)
+        return r;
+      result += r;
+    }
+    else if (s->tag) {
+      if ((r = buf_inspect_tag(buf, s->tag + i)) < 0)
+        return r;
+      result += r;
+    }
+    else {
+      if ((r = buf_inspect_tag(buf, s->type.map.value + i)) < 0)
+        return r;
+      result += r;
+    }
     i++;
     if (i < s->type.map.count) {
       if ((r = buf_write_1(buf, ", ")) < 0)

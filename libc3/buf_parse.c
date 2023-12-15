@@ -2493,33 +2493,35 @@ sw buf_parse_struct (s_buf *buf, s_struct *dest)
   if ((r = buf_read_1(buf, "}")) < 0)
     goto restore;
   result += r;
-  while (r == 0) {
-    *keys_end = list_new(NULL);
-    if ((r = buf_parse_map_key(buf, &(*keys_end)->tag)) <= 0)
-      goto restore;
-    result += r;
-    keys_end = &(*keys_end)->next.data.list;
-    if ((r = buf_parse_comments(buf)) < 0)
-      goto restore;
-    result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-    *values_end = list_new(NULL);
-    if ((r = buf_parse_tag(buf, &(*values_end)->tag)) <= 0)
-      goto restore;
-    result += r;
-    values_end = &(*values_end)->next.data.list;
-    if ((r = buf_parse_comments(buf)) < 0)
-      goto restore;
-    result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-    if ((r = buf_read_1(buf, "}")) < 0)
-      goto restore;
-    result += r;
-    if (r == 0) {
+  if (r == 0) {
+    while (1) {
+      *keys_end = list_new(NULL);
+      if ((r = buf_parse_map_key(buf, &(*keys_end)->tag)) <= 0)
+        goto restore;
+      result += r;
+      keys_end = &(*keys_end)->next.data.list;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      *values_end = list_new(NULL);
+      if ((r = buf_parse_tag(buf, &(*values_end)->tag)) <= 0)
+        goto restore;
+      result += r;
+      values_end = &(*values_end)->next.data.list;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_read_1(buf, "}")) < 0)
+        goto restore;
+      result += r;
+      if (r > 0)
+        break;
       if ((r = buf_read_1(buf, ",")) <= 0)
         goto restore;
       result += r;
@@ -2891,7 +2893,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
-      //(r = buf_parse_tag_module_name(buf, dest)) != 0 ||
+      (r = buf_parse_tag_struct(buf, dest)) != 0 ||
       (r = buf_parse_tag_ident(buf, dest)) != 0 ||
       (r = buf_parse_tag_list(buf, dest)) != 0 ||
       (r = buf_parse_tag_sym(buf, dest)) != 0)
@@ -2931,6 +2933,16 @@ sw buf_parse_tag_str (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_str(buf, &dest->data.str)) > 0)
     dest->type = TAG_STR;
+  return r;
+}
+
+sw buf_parse_tag_struct (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_struct(buf, &dest->data.struct_)) > 0)
+    dest->type = TAG_STRUCT;
   return r;
 }
 
