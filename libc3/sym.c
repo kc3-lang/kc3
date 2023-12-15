@@ -417,6 +417,10 @@ ffi_type * sym_to_ffi_type (const s_sym *sym, ffi_type *result_type)
     return &ffi_type_sint32;
   if (sym == sym_1("S64"))
     return &ffi_type_sint64;
+  if (sym == sym_1("Str"))
+    return &ffi_type_pointer;
+  if (sym == sym_1("Struct"))
+    return &ffi_type_pointer;
   if (sym == sym_1("Sym"))
     return &ffi_type_pointer;
   if (sym == sym_1("Sw"))
@@ -502,6 +506,8 @@ f_init_copy sym_to_init_copy (const s_sym *type)
     return (f_init_copy) tuple_init_copy;
   if (type == sym_1("Var"))
     return (f_init_copy) var_init_copy;
+  if (type == sym_1("Void"))
+    return (f_init_copy) void_init_copy;
   err_write_1("sym_to_init_copy: unknown type: ");
   err_write_1(type->str.ptr.ps8);
   err_write_1("\n");

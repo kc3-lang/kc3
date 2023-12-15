@@ -27,20 +27,31 @@ void struct_clean (s_struct *s)
 {
   f_clean clean;
   s8 *data;
-  uw i = 0;
+  uw i;
   const s_sym *sym;
   assert(s);
   data = s->data;
-  while (i < s->type.map.count) {
-    if (tag_type(s->type.map.value + i, &sym)) {
-      clean = sym_to_clean(sym);
-      if (clean)
-        clean(data + s->type.offset[i]);
+  if (data) {
+    i = 0;
+    while (i < s->type.map.count) {
+      if (tag_type(s->type.map.value + i, &sym)) {
+        clean = sym_to_clean(sym);
+        if (clean)
+          clean(data + s->type.offset[i]);
+        i++;
+      }
+    }
+    if (s->free_data)
+      free(data);
+  }
+  if (s->tag) {
+    i = 0;
+    while (i < s->type.map.count) {
+      tag_clean(s->tag + i);
       i++;
     }
+    free(s->tag);
   }
-  if (s->free)
-    free(data);
   struct_type_clean(&s->type);
 }
 
@@ -51,6 +62,23 @@ void struct_delete (s_struct *s)
   free(s);
 }
 
+bool struct_find_key_index (const s_struct *s, const s_sym *key,
+                            uw *dest)
+{
+  uw i = 0;
+  assert(s);
+  assert(key);
+  while (i < s->type.map.count) {
+    assert(s->type.map.key[i].type == TAG_SYM);
+    if (s->type.map.key[i].data.sym == key) {
+      *dest = i;
+      return true;
+    }
+    i++;
+  }
+  return false;
+}
+
 s_struct * struct_init (s_struct *s, const s_sym *module)
 {
   s_struct tmp = {0};
@@ -58,12 +86,21 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
   assert(module);
   if (! struct_type_init_from_env(&tmp.type, module, &g_c3_env))
     return NULL;
-  tmp.free = true;
+  *s = tmp;
+  return s;
+}
+
+s_struct * struct_allocate (s_struct *s)
+{
+  s_struct tmp;
+  assert(s);
+  assert(! s->data);
+  tmp = *s;
+  tmp.free_data = true;
   tmp.data = calloc(1, tmp.type.size);
   if (! tmp.data) {
-    warn("struct_init: data");
-    assert(! "struct_init: data: failed to allocate memory");
-    struct_type_clean(&tmp.type);
+    warn("struct_allocate: data");
+    assert(! "struct_allocate: data: failed to allocate memory");
     return NULL;
   }
   *s = tmp;
@@ -81,47 +118,50 @@ s_struct * struct_init_1 (s_struct *s, const s8 *p)
 
 s_struct * struct_init_copy (s_struct *s, const s_struct *src)
 {
-  f_clean clean;
   f_init_copy init_copy;
-  uw i = 0;
+  uw i;
   uw size;
   const s_sym *sym;
-  s_struct tmp;
+  s_struct tmp = {0};
   assert(s);
   assert(src);
   if (! struct_type_init_copy(&tmp.type, &src->type))
     return NULL;
-  tmp.free = true;
-  tmp.data = calloc(1, tmp.type.size);
-  while (i < tmp.type.map.count) {
-    if (tag_type(tmp.type.map.value + i, &sym)) {
-      init_copy = sym_to_init_copy(sym);
-      if (init_copy) {
-        if (! init_copy((s8 *) tmp.data + tmp.type.offset[i],
-                        (s8 *) src->data + tmp.type.offset[i]))
-          goto ko;
+  if (src->data) {
+    tmp.free_data = true;
+    tmp.data = calloc(1, tmp.type.size);
+    i = 0;
+    while (i < tmp.type.map.count) {
+      if (tag_type(tmp.type.map.value + i, &sym)) {
+        init_copy = sym_to_init_copy(sym);
+        if (init_copy) {
+          if (! init_copy((s8 *) tmp.data + tmp.type.offset[i],
+                          (s8 *) src->data + tmp.type.offset[i]))
+            goto ko;
+        }
+        else {
+          size = tag_size(tmp.type.map.value + i);
+          memcpy((s8 *) tmp.data + tmp.type.offset[i],
+                 (s8 *) src->data + tmp.type.offset[i],
+                 size);
+        }
       }
-      else {
-        size = tag_size(tmp.type.map.value + i);
-        memcpy((s8 *) tmp.data + tmp.type.offset[i],
-               (s8 *) src->data + tmp.type.offset[i],
-               size);
-      }
+      i++;
     }
-    i++;
+  }
+  if (src->tag) {
+    tmp.tag = calloc(tmp.type.map.count, sizeof(s_tag));
+    i = 0;
+    while (i < tmp.type.map.count) {
+      if (! tag_init_copy(tmp.tag + i, src->tag + i))
+        goto ko;
+      i++;
+    }
   }
   *s = tmp;
   return s;
  ko:
-  while (i > 0) {
-    i--;
-    tag_type(tmp.type.map.value + i, &sym);
-    clean = sym_to_clean(sym);
-    if (clean)
-      clean((s8 *) tmp.data + tmp.type.offset[i]);
-  }
-  free(tmp.data);
-  struct_type_clean(&tmp.type);
+  struct_clean(&tmp);
   return NULL;
 }
 
@@ -129,6 +169,7 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
                                    const s_list *keys,
                                    const s_list *values)
 {
+  uw i;
   const s_list *k;
   s_struct tmp = {0};
   const s_list *v;
@@ -137,21 +178,45 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
   assert(list_length(keys) == list_length(values));
   if (! struct_init(&tmp, module))
     return NULL;
+  tmp.tag = calloc(tmp.type.map.count, sizeof(s_tag));
+  if (! tmp.tag) {
+    warn("struct_init_from_lists: tag");
+    assert(! "struct_init_from_lists: failed to allocate memory");
+    return NULL;
+  }
   k = keys;
   v = values;
   while (k && v) {
     assert(k->tag.type == TAG_SYM);
-    if (k->tag.type != TAG_SYM)
-      errx(1, "struct_init_from_lists: key that is not a symbol: %s",
-           tag_type_to_string(k->tag.type));
-    if (! struct_set(&tmp, k->tag.data.sym, &v->tag))
-      errx(1, "struct_init_from_lists: struct_set(%s) failed",
-           k->tag.data.sym->str.ptr.ps8);
+    if (k->tag.type != TAG_SYM) {
+      warnx("struct_init_from_lists: key that is not a symbol: %s",
+            tag_type_to_string(k->tag.type));
+      assert(! "struct_init_from_lists: key that is not a symbol");
+      goto ko;
+    }
+    if (! struct_find_key_index(&tmp, k->tag.data.sym, &i)) {
+      warnx("struct_init_from_lists: cannot find key in defstruct: %s",
+            k->tag.data.sym->str.ptr.ps8);
+      assert(! "struct_init_from_lists: cannot find key in defstruct");
+      goto ko;
+    }
+    if (! tag_init_copy(tmp.tag + i, &v->tag))
+      goto ko;
     k = list_next(k);
     v = list_next(v);
   }
+  i = 0;
+  while (i < tmp.type.map.count) {
+    if (! tmp.tag[i].type)
+      if (! tag_init_copy(tmp.tag + i, tmp.type.map.value + i))
+        goto ko;
+    i++;
+  }
   *s = tmp;
   return s;
+ ko:
+  struct_clean(&tmp);
+  return NULL;
 }
 
 s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
@@ -162,7 +227,7 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
   assert(module);
   if (! struct_type_init_from_env(&tmp.type, module, &g_c3_env))
     return NULL;
-  tmp.free = free_data;
+  tmp.free_data = free_data;
   tmp.data = data;
   *s = tmp;
   return s;

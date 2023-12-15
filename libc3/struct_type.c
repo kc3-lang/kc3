@@ -75,6 +75,7 @@ s_struct_type * struct_type_init (s_struct_type *st, const s_sym *module,
     offset = struct_type_padding(offset, size);
     st->offset[i] = offset;
     offset += size;
+    i++;
     s = list_next(s);
   }
   st->size = offset;

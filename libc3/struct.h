@@ -43,4 +43,8 @@ s_struct * struct_new_with_data (const s_sym *module, bool free_data,
 s_struct * struct_set (s_struct *s, const s_sym *key,
                        const s_tag *value);
 
+/* Observers. */
+bool struct_find_key_index (const s_struct *s, const s_sym *key,
+                            uw *dest);
+
 #endif /* LIBC3_STRUCT_H */
