@@ -302,8 +302,9 @@ void hash_update_struct (t_hash *hash, const s_struct *s)
   hash_update(hash, &s->type.map.count, sizeof(s->type.map.count));
   while (i < s->type.map.count) {
     hash_update_tag(hash, s->type.map.key + i);
-    hash_update_value =
-      tag_type_to_hash_update(s->type.map.value[i].type);
+    if (! tag_type_to_hash_update(s->type.map.value[i].type,
+                                  &hash_update_value))
+      exit(1);
     hash_update_value(hash, (s8 *) s->data + s->type.offset[i]);
     i++;
   }

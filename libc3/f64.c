@@ -90,7 +90,7 @@ f64 * f64_random (f64 *x)
 {
   u64 i;
   const u64 max = ((u64) 1 << 53) - 1;
-  u64_random_uniform(max, &i);
+  u64_random_uniform(&i, max);
   *x = (f64) i / max;
   return x;
 }

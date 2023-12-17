@@ -13,403 +13,255 @@
 #include <err.h>
 #include "c3.h"
 
-sw tag_type_size (e_tag_type type)
+bool tag_type_size (e_tag_type type, uw *dest)
 {
   switch (type) {
-  case TAG_VOID:
-    return 0;
-  case TAG_ARRAY:
-    assert(! "tag_type_size: TAG_ARRAY: not implemented");
-    errx(1, "tag_type_size: TAG_ARRAY: not implemented");
-    return -1;
-  case TAG_BOOL:
-    return sizeof(bool);
-  case TAG_CALL:
-    return sizeof(s_call);
-  case TAG_CFN:
-    return sizeof(s_cfn);
-  case TAG_CHARACTER:
-    return sizeof(character);
-  case TAG_F32:
-    return sizeof(f32);
-  case TAG_F64:
-    return sizeof(f64);
-  case TAG_FACT:
-    return sizeof(s_fact);
-  case TAG_FN:
-    return sizeof(s_fn);
-  case TAG_IDENT:
-    return sizeof(s_ident);
-  case TAG_INTEGER:
-    return sizeof(s_integer);
-  case TAG_SW:
-    return sizeof(sw);
-  case TAG_S64:
-    return sizeof(s64);
-  case TAG_S32:
-    return sizeof(s32);
-  case TAG_S16:
-    return sizeof(s16);
-  case TAG_S8:
-    return sizeof(s8);
-  case TAG_U8:
-    return sizeof(u8);
-  case TAG_U16:
-    return sizeof(u16);
-  case TAG_U32:
-    return sizeof(u32);
-  case TAG_U64:
-    return sizeof(u64);
-  case TAG_UW:
-    return sizeof(uw);
-  case TAG_LIST:
-    return sizeof(s_list *);
-  case TAG_MAP:
-    return sizeof(s_map);
-  case TAG_PTAG:
-    return sizeof(p_tag);
+  case TAG_VOID:      *dest = 0;                 return true;
+  case TAG_ARRAY:     *dest = sizeof(s_array);   return true;
+  case TAG_BOOL:      *dest = sizeof(bool);      return true;
+  case TAG_CALL:      *dest = sizeof(s_call);    return true;
+  case TAG_CFN:       *dest = sizeof(s_cfn);     return true;
+  case TAG_CHARACTER: *dest = sizeof(character); return true;
+  case TAG_F32:       *dest = sizeof(f32);       return true;
+  case TAG_F64:       *dest = sizeof(f64);       return true;
+  case TAG_FACT:      *dest = sizeof(s_fact);    return true;
+  case TAG_FN:        *dest = sizeof(s_fn);      return true;
+  case TAG_IDENT:     *dest = sizeof(s_ident);   return true;
+  case TAG_INTEGER:   *dest = sizeof(s_integer); return true;
+  case TAG_SW:        *dest = sizeof(sw);        return true;
+  case TAG_S64:       *dest = sizeof(s64);       return true;
+  case TAG_S32:       *dest = sizeof(s32);       return true;
+  case TAG_S16:       *dest = sizeof(s16);       return true;
+  case TAG_S8:        *dest = sizeof(s8);        return true;
+  case TAG_U8:        *dest = sizeof(u8);        return true;
+  case TAG_U16:       *dest = sizeof(u16);       return true;
+  case TAG_U32:       *dest = sizeof(u32);       return true;
+  case TAG_U64:       *dest = sizeof(u64);       return true;
+  case TAG_UW:        *dest = sizeof(uw);        return true;
+  case TAG_LIST:      *dest = sizeof(s_list *);  return true;
+  case TAG_MAP:       *dest = sizeof(s_map);     return true;
+  case TAG_PTAG:      *dest = sizeof(p_tag);     return true;
   case TAG_PTR:
-  case TAG_PTR_FREE:
-    return sizeof(void *);
-  case TAG_QUOTE:
-    return sizeof(s_quote);
-  case TAG_STR:
-    return sizeof(s_str);
-  case TAG_STRUCT:
-    return sizeof(s_struct);
-  case TAG_SYM:
-    return sizeof(s_sym *);
-  case TAG_TUPLE:
-    return sizeof(s_tuple);
-  case TAG_VAR:
-    return sizeof(s_tag);
+  case TAG_PTR_FREE:  *dest = sizeof(void *);    return true;
+  case TAG_QUOTE:     *dest = sizeof(s_quote);   return true;
+  case TAG_STR:       *dest = sizeof(s_str);     return true;
+  case TAG_STRUCT:    *dest = sizeof(s_struct);  return true;
+  case TAG_SYM:       *dest = sizeof(s_sym *);   return true;
+  case TAG_TUPLE:     *dest = sizeof(s_tuple);   return true;
+  case TAG_VAR:       *dest = 0;                 return true;
   }
+  warnx("tag_type_size: invalid tag type: %d", type);
   assert(! "tag_type_size: invalid tag type");
-  errx(1, "tag_type_size: invalid tag type: %d", type);
-  return -1;
+  return false;
 }
 
-f_buf_inspect tag_type_to_buf_inspect (e_tag_type type)
+bool tag_type_to_buf_inspect (e_tag_type type, f_buf_inspect *dest)
 {
   switch (type) {
   case TAG_VOID:
-    return (f_buf_inspect) buf_inspect_void;
+    *dest = (f_buf_inspect) buf_inspect_void;      return true;
   case TAG_ARRAY:
+    *dest = (f_buf_inspect) buf_inspect_array;     return true;
   case TAG_BOOL:
-    return (f_buf_inspect) buf_inspect_bool;
+    *dest = (f_buf_inspect) buf_inspect_bool;      return true;
   case TAG_CALL:
-    return (f_buf_inspect) buf_inspect_call;
+    *dest = (f_buf_inspect) buf_inspect_call;      return true;
   case TAG_CFN:
-    return (f_buf_inspect) buf_inspect_cfn;
+    *dest = (f_buf_inspect) buf_inspect_cfn;       return true;
   case TAG_CHARACTER:
-    return (f_buf_inspect) buf_inspect_character;
+    *dest = (f_buf_inspect) buf_inspect_character; return true;
   case TAG_F32:
-    return (f_buf_inspect) buf_inspect_f32;
+    *dest = (f_buf_inspect) buf_inspect_f32;       return true;
   case TAG_F64:
-    return (f_buf_inspect) buf_inspect_f64;
+    *dest = (f_buf_inspect) buf_inspect_f64;       return true;
   case TAG_FACT:
-    return (f_buf_inspect) buf_inspect_fact;
+    *dest = (f_buf_inspect) buf_inspect_fact;      return true;
   case TAG_FN:
-    return (f_buf_inspect) buf_inspect_fn;
+    *dest = (f_buf_inspect) buf_inspect_fn;        return true;
   case TAG_IDENT:
-    return (f_buf_inspect) buf_inspect_ident;
+    *dest = (f_buf_inspect) buf_inspect_ident;     return true;
   case TAG_INTEGER:
-    return (f_buf_inspect) buf_inspect_integer;
+    *dest = (f_buf_inspect) buf_inspect_integer;   return true;
   case TAG_SW:
-    return (f_buf_inspect) buf_inspect_sw;
+    *dest = (f_buf_inspect) buf_inspect_sw;        return true;
   case TAG_S64:
-    return (f_buf_inspect) buf_inspect_s64;
+    *dest = (f_buf_inspect) buf_inspect_s64;       return true;
   case TAG_S32:
-    return (f_buf_inspect) buf_inspect_s32;
+    *dest = (f_buf_inspect) buf_inspect_s32;       return true;
   case TAG_S16:
-    return (f_buf_inspect) buf_inspect_s16;
+    *dest = (f_buf_inspect) buf_inspect_s16;       return true;
   case TAG_S8:
-    return (f_buf_inspect) buf_inspect_s8;
+    *dest = (f_buf_inspect) buf_inspect_s8;        return true;
   case TAG_U8:
-    return (f_buf_inspect) buf_inspect_u8;
+    *dest = (f_buf_inspect) buf_inspect_u8;        return true;
   case TAG_U16:
-    return (f_buf_inspect) buf_inspect_u16;
+    *dest = (f_buf_inspect) buf_inspect_u16;       return true;
   case TAG_U32:
-    return (f_buf_inspect) buf_inspect_u32;
+    *dest = (f_buf_inspect) buf_inspect_u32;       return true;
   case TAG_U64:
-    return (f_buf_inspect) buf_inspect_u64;
+    *dest = (f_buf_inspect) buf_inspect_u64;       return true;
   case TAG_UW:
-    return (f_buf_inspect) buf_inspect_uw;
+    *dest = (f_buf_inspect) buf_inspect_uw;        return true;
   case TAG_LIST:
-    return (f_buf_inspect) buf_inspect_list;
+    *dest = (f_buf_inspect) buf_inspect_list;      return true;
   case TAG_MAP:
-    return (f_buf_inspect) buf_inspect_map;
+    *dest = (f_buf_inspect) buf_inspect_map;       return true;
   case TAG_PTAG:
-    return (f_buf_inspect) buf_inspect_ptag;
+    *dest = (f_buf_inspect) buf_inspect_ptag;      return true;
   case TAG_PTR:
-    return (f_buf_inspect) buf_inspect_ptr;
+    *dest = (f_buf_inspect) buf_inspect_ptr;       return true;
   case TAG_PTR_FREE:
-    return (f_buf_inspect) buf_inspect_ptr_free;
+    *dest = (f_buf_inspect) buf_inspect_ptr_free;  return true;
   case TAG_QUOTE:
-    return (f_buf_inspect) buf_inspect_quote;
+    *dest = (f_buf_inspect) buf_inspect_quote;     return true;
   case TAG_STR:
-    return (f_buf_inspect) buf_inspect_str;
+    *dest = (f_buf_inspect) buf_inspect_str;       return true;
   case TAG_STRUCT:
-    return (f_buf_inspect) buf_inspect_struct;
+    *dest = (f_buf_inspect) buf_inspect_struct;    return true;
   case TAG_SYM:
-    return (f_buf_inspect) buf_inspect_sym;
+    *dest = (f_buf_inspect) buf_inspect_sym;       return true;
   case TAG_TUPLE:
-    return (f_buf_inspect) buf_inspect_tuple;
+    *dest = (f_buf_inspect) buf_inspect_tuple;     return true;
   case TAG_VAR:
-    return (f_buf_inspect) buf_inspect_var;
+    *dest = (f_buf_inspect) buf_inspect_var;       return true;
   }
+  warnx("buf_inspect: unknown tag type: %d", type);
   assert(! "buf_inspect: unknown tag type");
-  errx(1, "buf_inspect: unknown tag type");
-  return NULL;
+  return false;
 }
 
-f_buf_inspect_size tag_type_to_buf_inspect_size (e_tag_type type)
+bool tag_type_to_buf_inspect_size (e_tag_type type,
+                                   f_buf_inspect_size *p)
 {
   switch (type) {
   case TAG_VOID:
-    return (f_buf_inspect_size) buf_inspect_void_size;
+    *p = (f_buf_inspect_size) buf_inspect_void_size;        return true;
   case TAG_ARRAY:
-    return (f_buf_inspect_size) buf_inspect_array_size;
+    *p = (f_buf_inspect_size) buf_inspect_array_size;       return true;
   case TAG_BOOL:
-    return (f_buf_inspect_size) buf_inspect_bool_size;
+    *p = (f_buf_inspect_size) buf_inspect_bool_size;        return true;
   case TAG_CALL:
-    return (f_buf_inspect_size) buf_inspect_call_size;
+    *p = (f_buf_inspect_size) buf_inspect_call_size;        return true;
   case TAG_CFN:
-    return (f_buf_inspect_size) buf_inspect_cfn_size;
+     *p = (f_buf_inspect_size) buf_inspect_cfn_size;        return true;
   case TAG_CHARACTER:
-    return (f_buf_inspect_size) buf_inspect_character_size;
+    *p = (f_buf_inspect_size) buf_inspect_character_size;   return true;
   case TAG_F32:
-    return (f_buf_inspect_size) buf_inspect_f32_size;
+     *p = (f_buf_inspect_size) buf_inspect_f32_size;        return true;
   case TAG_F64:
-    return (f_buf_inspect_size) buf_inspect_f64_size;
+     *p = (f_buf_inspect_size) buf_inspect_f64_size;        return true;
   case TAG_FACT:
-    return (f_buf_inspect_size) buf_inspect_fact_size;
+    *p = (f_buf_inspect_size) buf_inspect_fact_size;        return true;
   case TAG_FN:
-    return (f_buf_inspect_size) buf_inspect_fn_size;
+      *p = (f_buf_inspect_size) buf_inspect_fn_size;        return true;
   case TAG_IDENT:
-    return (f_buf_inspect_size) buf_inspect_ident_size;
+   *p = (f_buf_inspect_size) buf_inspect_ident_size;        return true;
   case TAG_INTEGER:
-    return (f_buf_inspect_size) buf_inspect_integer_size;
+    *p = (f_buf_inspect_size) buf_inspect_integer_size;     return true;
   case TAG_SW:
-    return (f_buf_inspect_size) buf_inspect_sw_size;
+      *p = (f_buf_inspect_size) buf_inspect_sw_size;        return true;
   case TAG_S64:
-    return (f_buf_inspect_size) buf_inspect_s64_size;
+     *p = (f_buf_inspect_size) buf_inspect_s64_size;        return true;
   case TAG_S32:
-    return (f_buf_inspect_size) buf_inspect_s32_size;
+    *p = (f_buf_inspect_size) buf_inspect_s32_size;         return true;
   case TAG_S16:
-    return (f_buf_inspect_size) buf_inspect_s16_size;
+    *p = (f_buf_inspect_size) buf_inspect_s16_size;         return true;
   case TAG_S8:
-    return (f_buf_inspect_size) buf_inspect_s8_size;
+    *p = (f_buf_inspect_size) buf_inspect_s8_size;          return true;
   case TAG_U8:
-    return (f_buf_inspect_size) buf_inspect_u8_size;
+    *p = (f_buf_inspect_size) buf_inspect_u8_size;          return true;
   case TAG_U16:
-    return (f_buf_inspect_size) buf_inspect_u16_size;
+    *p = (f_buf_inspect_size) buf_inspect_u16_size;         return true;
   case TAG_U32:
-    return (f_buf_inspect_size) buf_inspect_u32_size;
+    *p = (f_buf_inspect_size) buf_inspect_u32_size;         return true;
   case TAG_U64:
-    return (f_buf_inspect_size) buf_inspect_u64_size;
+    *p = (f_buf_inspect_size) buf_inspect_u64_size;         return true;
   case TAG_UW:
-    return (f_buf_inspect_size) buf_inspect_uw_size;
+    *p = (f_buf_inspect_size) buf_inspect_uw_size;          return true;
   case TAG_LIST:
-    return (f_buf_inspect_size) buf_inspect_list_size;
+    *p = (f_buf_inspect_size) buf_inspect_list_size;        return true;
   case TAG_MAP:
-    return (f_buf_inspect_size) buf_inspect_map_size;
+    *p = (f_buf_inspect_size) buf_inspect_map_size;         return true;
   case TAG_PTAG:
-    return (f_buf_inspect_size) buf_inspect_ptag_size;
+    *p = (f_buf_inspect_size) buf_inspect_ptag_size;        return true;
   case TAG_PTR:
-    return (f_buf_inspect_size) buf_inspect_ptr_size;
+    *p = (f_buf_inspect_size) buf_inspect_ptr_size;         return true;
   case TAG_PTR_FREE:
-    return (f_buf_inspect_size) buf_inspect_ptr_free_size;
+    *p = (f_buf_inspect_size) buf_inspect_ptr_free_size;    return true;
   case TAG_QUOTE:
-    return (f_buf_inspect_size) buf_inspect_quote_size;
+    *p = (f_buf_inspect_size) buf_inspect_quote_size;       return true;
   case TAG_STR:
-    return (f_buf_inspect_size) buf_inspect_str_size;
+    *p = (f_buf_inspect_size) buf_inspect_str_size;         return true;
   case TAG_STRUCT:
-    return (f_buf_inspect_size) buf_inspect_struct_size;
+    *p = (f_buf_inspect_size) buf_inspect_struct_size;      return true;
   case TAG_SYM:
-    return (f_buf_inspect_size) buf_inspect_sym_size;
+    *p = (f_buf_inspect_size) buf_inspect_sym_size;         return true;
   case TAG_TUPLE:
-    return (f_buf_inspect_size) buf_inspect_tuple_size;
+    *p = (f_buf_inspect_size) buf_inspect_tuple_size;       return true;
   case TAG_VAR:
-    return (f_buf_inspect_size) buf_inspect_var_size;
+    *p = (f_buf_inspect_size) buf_inspect_var_size;         return true;
   }
+  warnx("tag_type_to_buf_inspect_size: unknown tag type: %d", type);
   assert(! "tag_type_to_buf_inspect_size: unknown tag type");
-  errx(1, "tag_type_to_buf_inspect_size: unknown tag type");
-  return NULL;
+  return false;
 }
 
-f_buf_parse tag_type_to_buf_parse (e_tag_type type)
+bool tag_type_to_buf_parse (e_tag_type type, f_buf_parse *p)
 {
   switch (type) {
-  case TAG_VOID:
-    return (f_buf_parse) buf_parse_void;
-  case TAG_ARRAY:
-    return (f_buf_parse) buf_parse_array;
-  case TAG_BOOL:
-    return (f_buf_parse) buf_parse_bool;
-  case TAG_CALL:
-    return (f_buf_parse) buf_parse_call;
-  case TAG_CFN:
-    return (f_buf_parse) buf_parse_cfn;
-  case TAG_CHARACTER:
-    return (f_buf_parse) buf_parse_character;
-  case TAG_F32:
-    return (f_buf_parse) buf_parse_f32;
-  case TAG_F64:
-    return (f_buf_parse) buf_parse_f64;
-  case TAG_FACT:
-    return (f_buf_parse) buf_parse_fact;
-  case TAG_FN:
-    return (f_buf_parse) buf_parse_fn;
-  case TAG_IDENT:
-    return (f_buf_parse) buf_parse_ident;
-  case TAG_INTEGER:
-    return (f_buf_parse) buf_parse_integer;
-  case TAG_SW:
-    return (f_buf_parse) buf_parse_sw;
-  case TAG_S64:
-    return (f_buf_parse) buf_parse_s64;
-  case TAG_S32:
-    return (f_buf_parse) buf_parse_s32;
-  case TAG_S16:
-    return (f_buf_parse) buf_parse_s16;
-  case TAG_S8:
-    return (f_buf_parse) buf_parse_s8;
-  case TAG_U8:
-    return (f_buf_parse) buf_parse_u8;
-  case TAG_U16:
-    return (f_buf_parse) buf_parse_u16;
-  case TAG_U32:
-    return (f_buf_parse) buf_parse_u32;
-  case TAG_U64:
-    return (f_buf_parse) buf_parse_u64;
-  case TAG_UW:
-    return (f_buf_parse) buf_parse_uw;
-  case TAG_LIST:
-    return (f_buf_parse) buf_parse_list;
-  case TAG_MAP:
-    return (f_buf_parse) buf_parse_map;
-  case TAG_PTAG:
-    return (f_buf_parse) buf_parse_ptag;
-  case TAG_PTR:
-    return (f_buf_parse) buf_parse_ptr;
-  case TAG_PTR_FREE:
-    return (f_buf_parse) buf_parse_ptr_free;
-  case TAG_QUOTE:
-    return (f_buf_parse) buf_parse_quote;
-  case TAG_STR:
-    return (f_buf_parse) buf_parse_str;
-  case TAG_STRUCT:
-    return (f_buf_parse) buf_parse_struct;
-  case TAG_SYM:
-    return (f_buf_parse) buf_parse_sym;
-  case TAG_TUPLE:
-    return (f_buf_parse) buf_parse_tuple;
-  case TAG_VAR:
-    return (f_buf_parse) buf_parse_var;
+  case TAG_VOID:      *p = (f_buf_parse) buf_parse_void;    return true;
+  case TAG_ARRAY:     *p = (f_buf_parse) buf_parse_array;   return true;
+  case TAG_BOOL:      *p = (f_buf_parse) buf_parse_bool;    return true;
+  case TAG_CALL:      *p = (f_buf_parse) buf_parse_call;    return true;
+  case TAG_CFN:       *p = (f_buf_parse) buf_parse_cfn;     return true;
+  case TAG_CHARACTER: *p = (f_buf_parse) buf_parse_character;  return 1;
+  case TAG_F32:       *p = (f_buf_parse) buf_parse_f32;     return true;
+  case TAG_F64:       *p = (f_buf_parse) buf_parse_f64;     return true;
+  case TAG_FACT:      *p = (f_buf_parse) buf_parse_fact;    return true;
+  case TAG_FN:        *p = (f_buf_parse) buf_parse_fn;      return true;
+  case TAG_IDENT:     *p = (f_buf_parse) buf_parse_ident;   return true;
+  case TAG_INTEGER:   *p = (f_buf_parse) buf_parse_integer; return true;
+  case TAG_SW:        *p = (f_buf_parse) buf_parse_sw;      return true;
+  case TAG_S64:       *p = (f_buf_parse) buf_parse_s64;     return true;
+  case TAG_S32:       *p = (f_buf_parse) buf_parse_s32;     return true;
+  case TAG_S16:       *p = (f_buf_parse) buf_parse_s16;     return true;
+  case TAG_S8:        *p = (f_buf_parse) buf_parse_s8;      return true;
+  case TAG_U8:        *p = (f_buf_parse) buf_parse_u8;      return true;
+  case TAG_U16:       *p = (f_buf_parse) buf_parse_u16;     return true;
+  case TAG_U32:       *p = (f_buf_parse) buf_parse_u32;     return true;
+  case TAG_U64:       *p = (f_buf_parse) buf_parse_u64;     return true;
+  case TAG_UW:        *p = (f_buf_parse) buf_parse_uw;      return true;
+  case TAG_LIST:      *p = (f_buf_parse) buf_parse_list;    return true;
+  case TAG_MAP:       *p = (f_buf_parse) buf_parse_map;     return true;
+  case TAG_PTAG:      *p = (f_buf_parse) buf_parse_ptag;    return true;
+  case TAG_PTR:       *p = (f_buf_parse) buf_parse_ptr;     return true;
+  case TAG_PTR_FREE:  *p = (f_buf_parse) buf_parse_ptr_free;   return 1;
+  case TAG_QUOTE:     *p = (f_buf_parse) buf_parse_quote;   return true;
+  case TAG_STR:       *p = (f_buf_parse) buf_parse_str;     return true;
+  case TAG_STRUCT:    *p = (f_buf_parse) buf_parse_struct;  return true;
+  case TAG_SYM:       *p = (f_buf_parse) buf_parse_sym;     return true;
+  case TAG_TUPLE:     *p = (f_buf_parse) buf_parse_tuple;   return true;
+  case TAG_VAR:       *p = (f_buf_parse) buf_parse_var;     return true;
   }
+  warnx("tag_type_to_buf_parse: invalid tag type: %d", type);
   assert(! "tag_type_to_buf_parse: invalid tag type");
-  err(1, "tag_type_to_buf_parse: invalid tag type");
-  return NULL;
+  return false;
 }
 
-f_init_cast tag_type_to_init_cast (e_tag_type type)
+bool tag_type_to_clean (e_tag_type type, f_clean *dest)
 {
   switch (type) {
-  case TAG_VOID:
-    return NULL;
-  case TAG_ARRAY:
-    return (f_init_cast) array_init_cast;
-  case TAG_BOOL:
-    return (f_init_cast) bool_init_cast;
-  case TAG_CALL:
-    return (f_init_cast) call_init_cast;
-  case TAG_CFN:
-    return (f_init_cast) cfn_init_cast;
-  case TAG_CHARACTER:
-    return (f_init_cast) character_init_cast;
-  case TAG_F32:
-    return (f_init_cast) f32_init_cast;
-  case TAG_F64:
-    return (f_init_cast) f64_init_cast;
-  case TAG_FACT:
-    return (f_init_cast) fact_init_cast;
-  case TAG_FN:
-    return (f_init_cast) fn_init_cast;
-  case TAG_IDENT:
-    return (f_init_cast) ident_init_cast;
-  case TAG_INTEGER:
-    return (f_init_cast) integer_init_cast;
-  case TAG_SW:
-    return (f_init_cast) sw_init_cast;
-  case TAG_S64:
-    return (f_init_cast) s64_init_cast;
-  case TAG_S32:
-    return (f_init_cast) s32_init_cast;
-  case TAG_S16:
-    return (f_init_cast) s16_init_cast;
-  case TAG_S8:
-    return (f_init_cast) s8_init_cast;
-  case TAG_U8:
-    return (f_init_cast) u8_init_cast;
-  case TAG_U16:
-    return (f_init_cast) u16_init_cast;
-  case TAG_U32:
-    return (f_init_cast) u32_init_cast;
-  case TAG_U64:
-    return (f_init_cast) u64_init_cast;
-  case TAG_UW:
-    return (f_init_cast) uw_init_cast;
-  case TAG_LIST:
-    return (f_init_cast) list_init_cast;
-  case TAG_MAP:
-    return (f_init_cast) map_init_cast;
-  case TAG_PTAG:
-    return (f_init_cast) ptag_init_cast;
-  case TAG_PTR:
-    return (f_init_cast) ptr_init_cast;
-  case TAG_PTR_FREE:
-    return (f_init_cast) ptr_free_init_cast;
-  case TAG_QUOTE:
-    return (f_init_cast) quote_init_cast;
-  case TAG_STR:
-    return (f_init_cast) str_init_cast;
-  case TAG_STRUCT:
-    return (f_init_cast) struct_init_cast;
-  case TAG_SYM:
-    return (f_init_cast) sym_init_cast;
-  case TAG_TUPLE:
-    return (f_init_cast) tuple_init_cast;
-  case TAG_VAR:
-    return NULL;
-  }
-  warnx("tag_type_to_init_cast: invalid tag type: %d", type);
-  assert(! "tag_type_to_init_cast: invalid tag type");
-  return NULL;
-}
-
-f_clean tag_type_to_clean (e_tag_type type)
-{
-  switch (type) {
-  case TAG_ARRAY:
-    return (f_clean) array_clean;
-  case TAG_BOOL:
-    return NULL;
-  case TAG_CALL:
-    return (f_clean) call_clean;
-  case TAG_CFN:
-    return (f_clean) cfn_clean;
+  case TAG_ARRAY:    *dest = (f_clean) array_clean;    return true;
+  case TAG_BOOL:     *dest = NULL;                     return true;
+  case TAG_CALL:     *dest = (f_clean) call_clean;     return true;
+  case TAG_CFN:      *dest = (f_clean) cfn_clean;      return true;
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
-  case TAG_FACT:
-    return NULL;
-  case TAG_FN:
-    return (f_clean) fn_clean;
-  case TAG_IDENT:
-    return NULL;
-  case TAG_INTEGER:
-    return (f_clean) integer_clean;
+  case TAG_FACT:     *dest = NULL;                     return true;
+  case TAG_FN:       *dest = (f_clean) fn_clean;       return true;
+  case TAG_IDENT:    *dest = NULL;                     return true;
+  case TAG_INTEGER:  *dest = (f_clean) integer_clean;  return true;
   case TAG_SW:
   case TAG_S64:
   case TAG_S32:
@@ -419,58 +271,37 @@ f_clean tag_type_to_clean (e_tag_type type)
   case TAG_U16:
   case TAG_U32:
   case TAG_U64:
-  case TAG_UW:
-    return NULL;
-  case TAG_LIST:
-    return (f_clean) list_clean;
-  case TAG_MAP:
-    return (f_clean) map_clean;
+  case TAG_UW:       *dest = NULL;                     return true;
+  case TAG_LIST:     *dest = (f_clean) list_clean;     return true;
+  case TAG_MAP:      *dest = (f_clean) map_clean;      return true;
   case TAG_PTAG:
-    return NULL;
-  case TAG_PTR:
-    return NULL;
-  case TAG_PTR_FREE:
-    return (f_clean) ptr_free_clean;
-  case TAG_QUOTE:
-    return (f_clean) quote_clean;
-  case TAG_STR:
-    return (f_clean) str_clean;
-  case TAG_STRUCT:
-    return (f_clean) struct_clean;
-  case TAG_SYM:
-    return NULL;
-  case TAG_TUPLE:
-    return (f_clean) tuple_clean;
+  case TAG_PTR:      *dest = NULL;                     return true;
+  case TAG_PTR_FREE: *dest = (f_clean) ptr_free_clean; return true;
+  case TAG_QUOTE:    *dest = (f_clean) quote_clean;    return true;
+  case TAG_STR:      *dest = (f_clean) str_clean;      return true;
+  case TAG_STRUCT:   *dest = (f_clean) struct_clean;   return true;
+  case TAG_SYM:      *dest = NULL;                     return true;
+  case TAG_TUPLE:    *dest = (f_clean) tuple_clean;    return true;
   case TAG_VAR:
-  case TAG_VOID:
-    return NULL;
+  case TAG_VOID:     *dest = NULL;                     return true;
   }
+  warnx("tag_type_to_clean: invalid tag type: %d", type);
   assert(! "tag_type_to_clean: invalid tag type");
-  err(1, "tag_type_to_clean: invalid tag type");
-  return NULL;
+  return false;
 }
 
-f_env_eval tag_type_to_env_eval (e_tag_type type)
+bool tag_type_to_env_eval (e_tag_type type, f_env_eval *dest)
 {
   switch (type) {
-  case TAG_VOID:
-    return (f_env_eval) env_eval_void;
-  case TAG_ARRAY:
-    return (f_env_eval) env_eval_array_tag;
-  case TAG_CALL:
-    return (f_env_eval) env_eval_call;
-  case TAG_IDENT:
-    return (f_env_eval) env_eval_ident;
-  case TAG_LIST:
-    return (f_env_eval) env_eval_list;
-  case TAG_MAP:
-    return (f_env_eval) env_eval_map;
-  case TAG_QUOTE:
-    return (f_env_eval) env_eval_quote;
-  case TAG_STRUCT:
-    return (f_env_eval) env_eval_struct;
-  case TAG_TUPLE:
-    return (f_env_eval) env_eval_tuple;
+  case TAG_VOID:   *dest = (f_env_eval) env_eval_void;      return true;
+  case TAG_ARRAY:  *dest = (f_env_eval) env_eval_array_tag; return true;
+  case TAG_CALL:   *dest = (f_env_eval) env_eval_call;      return true;
+  case TAG_IDENT:  *dest = (f_env_eval) env_eval_ident;     return true;
+  case TAG_LIST:   *dest = (f_env_eval) env_eval_list;      return true;
+  case TAG_MAP:    *dest = (f_env_eval) env_eval_map;       return true;
+  case TAG_QUOTE:  *dest = (f_env_eval) env_eval_quote;     return true;
+  case TAG_STRUCT: *dest = (f_env_eval) env_eval_struct;    return true;
+  case TAG_TUPLE:  *dest = (f_env_eval) env_eval_tuple;     return true;
   case TAG_BOOL:
   case TAG_CFN:
   case TAG_CHARACTER:
@@ -494,235 +325,183 @@ f_env_eval tag_type_to_env_eval (e_tag_type type)
   case TAG_U32:
   case TAG_U64:
   case TAG_UW:
-  case TAG_VAR:
-    return NULL;
+  case TAG_VAR:    *dest = NULL;                            return true;
   }
   warnx("tag_type_to_env_eval: unknown tag type: %d", type);
   assert(! "tag_type_to_env_eval: unknown tag type");
-  return NULL;
+  return false;
 }
 
-ffi_type * tag_type_to_ffi_type (e_tag_type type)
+bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
 {
   switch (type) {
-  case TAG_ARRAY:
-    return &ffi_type_pointer;
-  case TAG_BOOL:
-    return &ffi_type_uint8;
-  case TAG_CALL:
-    return &ffi_type_pointer;
-  case TAG_CFN:
-    return &ffi_type_pointer;
-  case TAG_CHARACTER:
-    return &ffi_type_schar;
-  case TAG_F32:
-    return &ffi_type_float;
-  case TAG_F64:
-    return &ffi_type_double;
-  case TAG_FACT:
-    return &ffi_type_pointer;
-  case TAG_FN:
-    return &ffi_type_pointer;
-  case TAG_IDENT:
-    return &ffi_type_pointer;
-  case TAG_INTEGER:
-    return &ffi_type_sint;
-  case TAG_LIST:
-    return &ffi_type_pointer;
-  case TAG_MAP:
-    return &ffi_type_pointer;
-  case TAG_PTAG:
-    return &ffi_type_pointer;
+  case TAG_ARRAY:     *dest = &ffi_type_pointer; return true;
+  case TAG_BOOL:      *dest = &ffi_type_uint8; return true;
+  case TAG_CALL:      *dest = &ffi_type_pointer; return true;
+  case TAG_CFN:       *dest = &ffi_type_pointer; return true;
+  case TAG_CHARACTER: *dest = &ffi_type_schar; return true;
+  case TAG_F32:       *dest = &ffi_type_float; return true;
+  case TAG_F64:       *dest = &ffi_type_double; return true;
+  case TAG_FACT:      *dest = &ffi_type_pointer; return true;
+  case TAG_FN:        *dest = &ffi_type_pointer; return true;
+  case TAG_IDENT:     *dest = &ffi_type_pointer; return true;
+  case TAG_INTEGER:   *dest = &ffi_type_sint; return true;
+  case TAG_LIST:      *dest = &ffi_type_pointer; return true;
+  case TAG_MAP:       *dest = &ffi_type_pointer; return true;
+  case TAG_PTAG:      *dest = &ffi_type_pointer; return true;
   case TAG_PTR:
-  case TAG_PTR_FREE:
-    return &ffi_type_pointer;
-  case TAG_QUOTE:
-    return &ffi_type_pointer;
-  case TAG_S8:
-    return &ffi_type_sint8;
-  case TAG_S16:
-    return &ffi_type_sint16;
-  case TAG_S32:
-    return &ffi_type_sint32;
-  case TAG_S64:
-    return &ffi_type_sint64;
-  case TAG_SW:
-    return &ffi_type_slong;
-  case TAG_STR:
-    return &ffi_type_pointer;
-  case TAG_STRUCT:
-    return &ffi_type_pointer;
-  case TAG_SYM:
-    return &ffi_type_pointer;
-  case TAG_TUPLE:
-    return &ffi_type_pointer;
-  case TAG_U8:
-    return &ffi_type_uint8;
-  case TAG_U16:
-    return &ffi_type_uint16;
-  case TAG_U32:
-    return &ffi_type_uint32;
-  case TAG_U64:
-    return &ffi_type_uint64;
-  case TAG_UW:
-    return &ffi_type_ulong;
-  case TAG_VAR:
-    return &ffi_type_pointer;
-  case TAG_VOID:
-    return &ffi_type_void;
+  case TAG_PTR_FREE:  *dest = &ffi_type_pointer; return true;
+  case TAG_QUOTE:     *dest = &ffi_type_pointer; return true;
+  case TAG_S8:        *dest = &ffi_type_sint8; return true;
+  case TAG_S16:       *dest = &ffi_type_sint16; return true;
+  case TAG_S32:       *dest = &ffi_type_sint32; return true;
+  case TAG_S64:       *dest = &ffi_type_sint64; return true;
+  case TAG_SW:        *dest = &ffi_type_slong; return true;
+  case TAG_STR:       *dest = &ffi_type_pointer; return true;
+  case TAG_STRUCT:    *dest = &ffi_type_pointer; return true;
+  case TAG_SYM:       *dest = &ffi_type_pointer; return true;
+  case TAG_TUPLE:     *dest = &ffi_type_pointer; return true;
+  case TAG_U8:        *dest = &ffi_type_uint8; return true;
+  case TAG_U16:       *dest = &ffi_type_uint16; return true;
+  case TAG_U32:       *dest = &ffi_type_uint32; return true;
+  case TAG_U64:       *dest = &ffi_type_uint64; return true;
+  case TAG_UW:        *dest = &ffi_type_ulong; return true;
+  case TAG_VAR:       *dest = &ffi_type_pointer; return true;
+  case TAG_VOID:      *dest = &ffi_type_void; return true;
   }
+  warnx("tag_type_to_ffi_type: unknown tag type: %d", type);
   assert(! "tag_type_to_ffi_type: unknown tag type");
-  errx(1, "tag_type_to_ffi_type: unknown tag type");
-  return &ffi_type_void;
+  return false;
 }
 
-f_hash_update tag_type_to_hash_update (e_tag_type type)
+bool tag_type_to_hash_update (e_tag_type type, f_hash_update *p)
 {
   switch (type) {
-  case TAG_VOID:
-    return (f_hash_update) hash_update_void;
-  case TAG_ARRAY:
-  case TAG_BOOL:
-    return (f_hash_update) hash_update_bool;
-  case TAG_CALL:
-    return (f_hash_update) hash_update_call;
-  case TAG_CFN:
-    return (f_hash_update) hash_update_cfn;
+  case TAG_VOID:   *p = (f_hash_update) hash_update_void;   return true;
+  case TAG_ARRAY:  *p = (f_hash_update) hash_update_array;  return true;
+  case TAG_BOOL:   *p = (f_hash_update) hash_update_bool;   return true;
+  case TAG_CALL:   *p = (f_hash_update) hash_update_call;   return true;
+  case TAG_CFN:    *p = (f_hash_update) hash_update_cfn;    return true;
   case TAG_CHARACTER:
-    return (f_hash_update) hash_update_character;
-  case TAG_F32:
-    return (f_hash_update) hash_update_f32;
-  case TAG_F64:
-    return (f_hash_update) hash_update_f64;
-  case TAG_FACT:
-    return (f_hash_update) hash_update_fact;
-  case TAG_FN:
-    return (f_hash_update) hash_update_fn;
-  case TAG_IDENT:
-    return (f_hash_update) hash_update_ident;
+    *p = (f_hash_update) hash_update_character;             return true;
+  case TAG_F32:    *p = (f_hash_update) hash_update_f32;    return true;
+  case TAG_F64:    *p = (f_hash_update) hash_update_f64;    return true;
+  case TAG_FACT:   *p = (f_hash_update) hash_update_fact;   return true;
+  case TAG_FN:     *p = (f_hash_update) hash_update_fn;     return true;
+  case TAG_IDENT:  *p = (f_hash_update) hash_update_ident;  return true;
   case TAG_INTEGER:
-    return (f_hash_update) hash_update_integer;
-  case TAG_SW:
-    return (f_hash_update) hash_update_sw;
-  case TAG_S64:
-    return (f_hash_update) hash_update_s64;
-  case TAG_S32:
-    return (f_hash_update) hash_update_s32;
-  case TAG_S16:
-    return (f_hash_update) hash_update_s16;
-  case TAG_S8:
-    return (f_hash_update) hash_update_s8;
-  case TAG_U8:
-    return (f_hash_update) hash_update_u8;
-  case TAG_U16:
-    return (f_hash_update) hash_update_u16;
-  case TAG_U32:
-    return (f_hash_update) hash_update_u32;
-  case TAG_U64:
-    return (f_hash_update) hash_update_u64;
-  case TAG_UW:
-    return (f_hash_update) hash_update_uw;
-  case TAG_LIST:
-    return (f_hash_update) hash_update_list;
-  case TAG_MAP:
-    return (f_hash_update) hash_update_map;
-  case TAG_PTAG:
-    return (f_hash_update) hash_update_ptag;
-  case TAG_PTR:
-    return (f_hash_update) hash_update_ptr;
+    *p = (f_hash_update) hash_update_integer;               return true;
+  case TAG_SW:     *p = (f_hash_update) hash_update_sw;     return true;
+  case TAG_S64:    *p = (f_hash_update) hash_update_s64;    return true;
+  case TAG_S32:    *p = (f_hash_update) hash_update_s32;    return true;
+  case TAG_S16:    *p = (f_hash_update) hash_update_s16;    return true;
+  case TAG_S8:     *p = (f_hash_update) hash_update_s8;     return true;
+  case TAG_U8:     *p = (f_hash_update) hash_update_u8;     return true;
+  case TAG_U16:    *p = (f_hash_update) hash_update_u16;    return true;
+  case TAG_U32:    *p = (f_hash_update) hash_update_u32;    return true;
+  case TAG_U64:    *p = (f_hash_update) hash_update_u64;    return true;
+  case TAG_UW:     *p = (f_hash_update) hash_update_uw;     return true;
+  case TAG_LIST:   *p = (f_hash_update) hash_update_list;   return true;
+  case TAG_MAP:    *p = (f_hash_update) hash_update_map;    return true;
+  case TAG_PTAG:   *p = (f_hash_update) hash_update_ptag;   return true;
+  case TAG_PTR:    *p = (f_hash_update) hash_update_ptr;    return true;
   case TAG_PTR_FREE:
-    return (f_hash_update) hash_update_ptr_free;
-  case TAG_QUOTE:
-    return (f_hash_update) hash_update_quote;
-  case TAG_STR:
-    return (f_hash_update) hash_update_str;
-  case TAG_STRUCT:
-    return (f_hash_update) hash_update_struct;
-  case TAG_SYM:
-    return (f_hash_update) hash_update_sym;
-  case TAG_TUPLE:
-    return (f_hash_update) hash_update_tuple;
-  case TAG_VAR:
-    return (f_hash_update) hash_update_var;
+    *p = (f_hash_update) hash_update_ptr_free;              return true;
+  case TAG_QUOTE:  *p = (f_hash_update) hash_update_quote;  return true;
+  case TAG_STR:    *p = (f_hash_update) hash_update_str;    return true;
+  case TAG_STRUCT: *p = (f_hash_update) hash_update_struct; return true;
+  case TAG_SYM:    *p = (f_hash_update) hash_update_sym;    return true;
+  case TAG_TUPLE:  *p = (f_hash_update) hash_update_tuple;  return true;
+  case TAG_VAR:    *p = (f_hash_update) hash_update_var;    return true;
   }
+  warnx("tag_type_to_hash_update: unknown tag type: %d", type);
   assert(! "tag_type_to_hash_update: unknown tag type");
-  errx(1, "tag_type_to_hash_update: unknown tag type");
-  return NULL;
+  return false;
 }
 
-f_init_copy tag_type_to_init_copy (e_tag_type type)
+bool tag_type_to_init_cast (e_tag_type type, f_init_cast *p)
 {
   switch (type) {
-  case TAG_ARRAY:
-    return (f_init_copy) array_init_copy;
-  case TAG_BOOL:
-    return (f_init_copy) bool_init_copy;
-  case TAG_CALL:
-    return (f_init_copy) call_init_copy;
-  case TAG_CFN:
-    return (f_init_copy) cfn_init_copy;
+  case TAG_VOID:     *p = NULL;                             return true;
+  case TAG_ARRAY:    *p = (f_init_cast) array_init_cast;    return true;
+  case TAG_BOOL:     *p = (f_init_cast) bool_init_cast;     return true;
+  case TAG_CALL:     *p = (f_init_cast) call_init_cast;     return true;
+  case TAG_CFN:      *p = (f_init_cast) cfn_init_cast;      return true;
   case TAG_CHARACTER:
-    return (f_init_copy) character_init_copy;
-  case TAG_F32:
-    return (f_init_copy) f32_init_copy;
-  case TAG_F64:
-    return (f_init_copy) f64_init_copy;
-  case TAG_FACT:
-    return (f_init_copy) fact_init_copy;
-  case TAG_FN:
-    return (f_init_copy) fn_init_copy;
-  case TAG_IDENT:
-    return (f_init_copy) ident_init_copy;
-  case TAG_INTEGER:
-    return (f_init_copy) integer_init_copy;
-  case TAG_SW:
-    return (f_init_copy) sw_init_copy;
-  case TAG_S64:
-    return (f_init_copy) s64_init_copy;
-  case TAG_S32:
-    return (f_init_copy) s32_init_copy;
-  case TAG_S16:
-    return (f_init_copy) s16_init_copy;
-  case TAG_S8:
-    return (f_init_copy) s8_init_copy;
-  case TAG_U8:
-    return (f_init_copy) u8_init_copy;
-  case TAG_U16:
-    return (f_init_copy) u16_init_copy;
-  case TAG_U32:
-    return (f_init_copy) u32_init_copy;
-  case TAG_U64:
-    return (f_init_copy) u64_init_copy;
-  case TAG_UW:
-    return (f_init_copy) uw_init_copy;
-  case TAG_LIST:
-    return (f_init_copy) list_init_copy;
-  case TAG_MAP:
-    return (f_init_copy) map_init_copy;
-  case TAG_PTAG:
-    return (f_init_copy) ptag_init_copy;
-  case TAG_PTR:
-    return (f_init_copy) ptr_init_copy;
-  case TAG_PTR_FREE:
-    return (f_init_copy) ptr_free_init_copy;
-  case TAG_QUOTE:
-    return (f_init_copy) quote_init_copy;
-  case TAG_STR:
-    return (f_init_copy) str_init_copy;
-  case TAG_STRUCT:
-    return (f_init_copy) struct_init_copy;
-  case TAG_SYM:
-    return (f_init_copy) sym_init_copy;
-  case TAG_TUPLE:
-    return (f_init_copy) tuple_init_copy;
-  case TAG_VAR:
-    return (f_init_copy) var_init_copy;
-  case TAG_VOID:
-    return (f_init_copy) void_init_copy;
+    *p = (f_init_cast) character_init_cast;                 return true;
+  case TAG_F32:      *p = (f_init_cast) f32_init_cast;      return true;
+  case TAG_F64:      *p = (f_init_cast) f64_init_cast;      return true;
+  case TAG_FACT:     *p = (f_init_cast) fact_init_cast;     return true;
+  case TAG_FN:       *p = (f_init_cast) fn_init_cast;       return true;
+  case TAG_IDENT:    *p = (f_init_cast) ident_init_cast;    return true;
+  case TAG_INTEGER:  *p = (f_init_cast) integer_init_cast;  return true;
+  case TAG_SW:       *p = (f_init_cast) sw_init_cast;       return true;
+  case TAG_S64:      *p = (f_init_cast) s64_init_cast;      return true;
+  case TAG_S32:      *p = (f_init_cast) s32_init_cast;      return true;
+  case TAG_S16:      *p = (f_init_cast) s16_init_cast;      return true;
+  case TAG_S8:       *p = (f_init_cast) s8_init_cast;       return true;
+  case TAG_U8:       *p = (f_init_cast) u8_init_cast;       return true;
+  case TAG_U16:      *p = (f_init_cast) u16_init_cast;      return true;
+  case TAG_U32:      *p = (f_init_cast) u32_init_cast;      return true;
+  case TAG_U64:      *p = (f_init_cast) u64_init_cast;      return true;
+  case TAG_UW:       *p = (f_init_cast) uw_init_cast;       return true;
+  case TAG_LIST:     *p = (f_init_cast) list_init_cast;     return true;
+  case TAG_MAP:      *p = (f_init_cast) map_init_cast;      return true;
+  case TAG_PTAG:     *p = (f_init_cast) ptag_init_cast;     return true;
+  case TAG_PTR:      *p = (f_init_cast) ptr_init_cast;      return true;
+  case TAG_PTR_FREE: *p = (f_init_cast) ptr_free_init_cast; return true;
+  case TAG_QUOTE:    *p = (f_init_cast) quote_init_cast;    return true;
+  case TAG_STR:      *p = (f_init_cast) str_init_cast;      return true;
+  case TAG_STRUCT:   *p = (f_init_cast) struct_init_cast;   return true;
+  case TAG_SYM:      *p = (f_init_cast) sym_init_cast;      return true;
+  case TAG_TUPLE:    *p = (f_init_cast) tuple_init_cast;    return true;
+  case TAG_VAR:      *p = NULL;                             return true;
   }
+  warnx("tag_type_to_init_cast: invalid tag type: %d", type);
+  assert(! "tag_type_to_init_cast: invalid tag type");
+  return false;
+}
+
+bool tag_type_to_init_copy (e_tag_type type, f_init_copy *p)
+{
+  switch (type) {
+  case TAG_ARRAY:     *p = (f_init_copy) array_init_copy;   return true;
+  case TAG_BOOL:      *p = (f_init_copy) bool_init_copy;    return true;
+  case TAG_CALL:      *p = (f_init_copy) call_init_copy;    return true;
+  case TAG_CFN:       *p = (f_init_copy) cfn_init_copy;     return true;
+  case TAG_CHARACTER: *p = (f_init_copy) character_init_copy;  return 1;
+  case TAG_F32:       *p = (f_init_copy) f32_init_copy;     return true;
+  case TAG_F64:       *p = (f_init_copy) f64_init_copy;     return true;
+  case TAG_FACT:      *p = (f_init_copy) fact_init_copy;    return true;
+  case TAG_FN:        *p = (f_init_copy) fn_init_copy;      return true;
+  case TAG_IDENT:     *p = (f_init_copy) ident_init_copy;   return true;
+  case TAG_INTEGER:   *p = (f_init_copy) integer_init_copy; return true;
+  case TAG_SW:        *p = (f_init_copy) sw_init_copy;      return true;
+  case TAG_S64:       *p = (f_init_copy) s64_init_copy;     return true;
+  case TAG_S32:       *p = (f_init_copy) s32_init_copy;     return true;
+  case TAG_S16:       *p = (f_init_copy) s16_init_copy;     return true;
+  case TAG_S8:        *p = (f_init_copy) s8_init_copy;      return true;
+  case TAG_U8:        *p = (f_init_copy) u8_init_copy;      return true;
+  case TAG_U16:       *p = (f_init_copy) u16_init_copy;     return true;
+  case TAG_U32:       *p = (f_init_copy) u32_init_copy;     return true;
+  case TAG_U64:       *p = (f_init_copy) u64_init_copy;     return true;
+  case TAG_UW:        *p = (f_init_copy) uw_init_copy;      return true;
+  case TAG_LIST:      *p = (f_init_copy) list_init_copy;    return true;
+  case TAG_MAP:       *p = (f_init_copy) map_init_copy;     return true;
+  case TAG_PTAG:      *p = (f_init_copy) ptag_init_copy;    return true;
+  case TAG_PTR:       *p = (f_init_copy) ptr_init_copy;     return true;
+  case TAG_PTR_FREE:  *p = (f_init_copy) ptr_free_init_copy;   return 1;
+  case TAG_QUOTE:     *p = (f_init_copy) quote_init_copy;   return true;
+  case TAG_STR:       *p = (f_init_copy) str_init_copy;     return true;
+  case TAG_STRUCT:    *p = (f_init_copy) struct_init_copy;  return true;
+  case TAG_SYM:       *p = (f_init_copy) sym_init_copy;     return true;
+  case TAG_TUPLE:     *p = (f_init_copy) tuple_init_copy;   return true;
+  case TAG_VAR:       *p = NULL;                            return true;
+  case TAG_VOID:      *p = NULL;                            return true;
+  }
+  warnx("tag_type_to_init_copy: invalid tag type: %d", type);
   assert(! "tag_type_to_init_copy: invalid tag type");
-  err(1, "tag_type_to_init_copy: invalid tag type");
-  return NULL;
+  return false;
 }
 
 const s8 * tag_type_to_string (e_tag_type type)

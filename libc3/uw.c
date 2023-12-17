@@ -19,77 +19,78 @@
 #include "tag.h"
 #include "uw.h"
 
-uw * uw_cast (s_tag *tag, uw *dest)
+uw * uw_init_cast (uw *u, const s_tag *tag)
 {
   switch (tag->type) {
   case TAG_BOOL:
-    *dest = tag->data.bool ? 1 : 0;
-    return dest;
+    *u = tag->data.bool ? 1 : 0;
+    return u;
   case TAG_CHARACTER:
-    *dest = (uw) tag->data.character;
-    return dest;
+    *u = (uw) tag->data.character;
+    return u;
   case TAG_F32:
-    *dest = (uw) tag->data.f32;
-    return dest;
+    *u = (uw) tag->data.f32;
+    return u;
   case TAG_F64:
-    *dest = (uw) tag->data.f64;
-    return dest;
+    *u = (uw) tag->data.f64;
+    return u;
   case TAG_INTEGER:
-    *dest = integer_to_uw(&tag->data.integer);
-    return dest;
+    *u = integer_to_uw(&tag->data.integer);
+    return u;
   case TAG_SW:
-    *dest = (uw) tag->data.sw;
-    return dest;
+    *u = (uw) tag->data.sw;
+    return u;
   case TAG_S64:
-    *dest = (uw) tag->data.s64;
-    return dest;
+    *u = (uw) tag->data.s64;
+    return u;
   case TAG_S32:
-    *dest = (uw) tag->data.s32;
-    return dest;
+    *u = (uw) tag->data.s32;
+    return u;
   case TAG_S16:
-    *dest = (uw) tag->data.s16;
-    return dest;
+    *u = (uw) tag->data.s16;
+    return u;
   case TAG_S8:
-    *dest = (uw) tag->data.s8;
-    return dest;
+    *u = (uw) tag->data.s8;
+    return u;
   case TAG_U8:
-    *dest = (uw) tag->data.u8;
-    return dest;
+    *u = (uw) tag->data.u8;
+    return u;
   case TAG_U16:
-    *dest = (uw) tag->data.u16;
-    return dest;
+    *u = (uw) tag->data.u16;
+    return u;
   case TAG_U32:
-    *dest = (uw) tag->data.u32;
-    return dest;
+    *u = (uw) tag->data.u32;
+    return u;
   case TAG_U64:
-    *dest = (uw) tag->data.u64;
-    return dest;
+    *u = (uw) tag->data.u64;
+    return u;
   case TAG_UW:
-    *dest = (uw) tag->data.uw;
-    return dest;
+    *u = (uw) tag->data.uw;
+    return u;
   default:
     break;
   }
   warnx("uw_cast: cannot cast %s to uw",
         tag_type_to_string(tag->type));
-  return 0;
+  assert(! "uw_cast: cannot cast to uw");
+  return NULL;
 }
 
-uw * uw_init_copy (uw *dest, const uw *src)
+uw * uw_init_copy (uw *u, const uw *src)
 {
   assert(src);
-  assert(dest);
-  *dest = *src;
-  return dest;
+  assert(u);
+  *u = *src;
+  return u;
 }
 
-uw * uw_random (uw *dest)
+uw * uw_random (uw *u)
 {
-  arc4random_buf(dest, sizeof(uw));
-  return dest;
+  arc4random_buf(u, sizeof(uw));
+  return u;
 }
 
-uw * uw_random_uniform (uw max, uw *dest)
+uw * uw_random_uniform (uw *u, uw max)
 {
   uw size = (uw) log2(max) / 8;
   uw rest = (max - ((1 << size) - 1)) >> size;
@@ -100,6 +101,6 @@ uw * uw_random_uniform (uw max, uw *dest)
     tmp = arc4random_uniform(rest);
     result += tmp;
   }
-  *dest = result;
-  return dest;
+  *u = result;
+  return u;
 }

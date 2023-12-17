@@ -257,8 +257,14 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
   assert(buf);
   assert(dest);
   tmp = *dest;
+  if (! sym_type_size(tmp.type, &size))
+    return -1;
+  if (! size) {
+    err_puts("buf_parse_array_dimensions: zero item size");
+    assert(! "buf_parse_array_dimensions: zero item size");
+    return -1;
+  }
   address = calloc(tmp.dimension, sizeof(sw));
-  size = sym_type_size(tmp.type);
   tmp.dimensions[tmp.dimension - 1].item_size = size;
   if ((r = buf_parse_array_dimensions_rec(buf, &tmp, address,
                                           0)) <= 0) {
@@ -2134,7 +2140,7 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
     goto restore;
   }
   result += r;
-  if ((r = buf_inspect_sym(&tmp, sym)) < 0)
+  if ((r = buf_inspect_sym(&tmp, &sym)) < 0)
     goto clean;
   save.rpos = buf->rpos;
   while ((r = buf_read_1(buf, ".")) > 0 &&
@@ -2143,7 +2149,7 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
     result += r + 1;
     save.rpos = buf->rpos;
     if ((r = buf_write_1(&tmp, ".")) < 0 ||
-        (r = buf_inspect_sym(&tmp, sym)) < 0)
+        (r = buf_inspect_sym(&tmp, &sym)) < 0)
       goto clean;
   }
   buf_save_restore_rpos(buf, &save);

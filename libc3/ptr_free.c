@@ -17,27 +17,27 @@
 #include "ptr_free.h"
 #include "tag_type.h"
 
-u_ptr_w * ptr_free_cast (const s_tag *tag, u_ptr_w *dest)
+u_ptr_w * ptr_free_init_cast (u_ptr_w *p, const s_tag *tag)
 {
   assert(tag);
-  assert(dest);
+  assert(p);
   switch (tag->type) {
-  case TAG_F32: dest->p = (void *) ((uw) tag->data.f32);  return dest;
-  case TAG_F64: dest->p = (void *) ((uw) tag->data.f64);  return dest;
+  case TAG_F32: p->p = (void *) ((uw) tag->data.f32);  return p;
+  case TAG_F64: p->p = (void *) ((uw) tag->data.f64);  return p;
   case TAG_INTEGER:
-    dest->p = (void *) integer_to_uw(&tag->data.integer); return dest;
-  case TAG_PTR: dest->p = tag->data.ptr.p;                return dest;
-  case TAG_PTR_FREE: dest->p = tag->data.ptr_free.p;      return dest;
-  case TAG_S8:  dest->p = (void *) ((uw) tag->data.s8);          return dest;
-  case TAG_S16: dest->p = (void *) ((uw) tag->data.s16);        return dest;
-  case TAG_S32: dest->p = (void *) ((uw) tag->data.s32);        return dest;
-  case TAG_S64: dest->p = (void *) ((uw) tag->data.s64);        return dest;
-  case TAG_SW:  dest->p = (void *) ((uw) tag->data.sw);         return dest;
-  case TAG_U8:  dest->p = (void *) ((uw) tag->data.u8);         return dest;
-  case TAG_U16: dest->p = (void *) ((uw) tag->data.u16);        return dest;
-  case TAG_U32: dest->p = (void *) ((uw) tag->data.u32);        return dest;
-  case TAG_U64: dest->p = (void *) ((uw) tag->data.u64);        return dest;
-  case TAG_UW:  dest->p = (void *) ((uw) tag->data.uw);         return dest;
+    p->p = (void *) integer_to_uw(&tag->data.integer); return p;
+  case TAG_PTR: p->p = tag->data.ptr.p;                return p;
+  case TAG_PTR_FREE: p->p = tag->data.ptr_free.p;      return p;
+  case TAG_S8:  p->p = (void *) ((uw) tag->data.s8);   return p;
+  case TAG_S16: p->p = (void *) ((uw) tag->data.s16);  return p;
+  case TAG_S32: p->p = (void *) ((uw) tag->data.s32);  return p;
+  case TAG_S64: p->p = (void *) ((uw) tag->data.s64);  return p;
+  case TAG_SW:  p->p = (void *) ((uw) tag->data.sw);   return p;
+  case TAG_U8:  p->p = (void *) ((uw) tag->data.u8);   return p;
+  case TAG_U16: p->p = (void *) ((uw) tag->data.u16);  return p;
+  case TAG_U32: p->p = (void *) ((uw) tag->data.u32);  return p;
+  case TAG_U64: p->p = (void *) ((uw) tag->data.u64);  return p;
+  case TAG_UW:  p->p = (void *) ((uw) tag->data.uw);   return p;
   default: break;
   }
   warnx("ptr_free_cast: cannot cast %s to PtrFree",

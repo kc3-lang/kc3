@@ -16,8 +16,8 @@
 
 #include "types.h"
 
-s16 * s16_init_cast (s16 *dest, const s_tag *tag);
-s16 * s16_init_copy (s16 *dest, const s16 *src);
-s16 * s16_random (s16 *dest);
+s16 * s16_init_cast (s16 *s, const s_tag *tag);
+s16 * s16_init_copy (s16 *s, const s16 *src);
+s16 * s16_random (s16 *s);
 
 #endif /* LIBC3_S16_H */

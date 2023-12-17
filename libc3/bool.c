@@ -14,7 +14,38 @@
 #include "bool.h"
 #include "buf.h"
 #include "buf_inspect.h"
+#include "integer.h"
 #include "io.h"
+#include "tag_type.h"
+
+bool * bool_init_cast (bool *b, const s_tag *tag)
+{
+  assert(b);
+  assert(tag);
+  switch (tag->type) {
+  case TAG_BOOL:      *b = tag->data.bool;                    return b;
+  case TAG_CHARACTER: *b = (bool) tag->data.character;        return b;
+  case TAG_F32:       *b = (bool) tag->data.f32;              return b;
+  case TAG_F64:       *b = (bool) tag->data.f64;              return b;
+  case TAG_INTEGER:   *b = integer_to_u8(&tag->data.integer); return b;
+  case TAG_S8:        *b = (bool) tag->data.s8;               return b;
+  case TAG_S16:       *b = (bool) tag->data.s16;              return b;
+  case TAG_S32:       *b = (bool) tag->data.s32;              return b;
+  case TAG_S64:       *b = (bool) tag->data.s64;              return b;
+  case TAG_SW:        *b = (bool) tag->data.sw;               return b;
+  case TAG_U8:        *b = (bool) tag->data.u8;               return b;
+  case TAG_U16:       *b = (bool) tag->data.u16;              return b;
+  case TAG_U32:       *b = (bool) tag->data.u32;              return b;
+  case TAG_U64:       *b = (bool) tag->data.u64;              return b;
+  case TAG_UW:        *b = (bool) tag->data.uw;               return b;
+  default: break;
+  }
+  err_write_1("bool_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Bool");
+  assert(! "bool_cast: cannot cast to Bool");
+  return NULL;
+}
 
 bool * bool_init_copy (bool *dest, const bool *src)
 {

@@ -46,6 +46,7 @@ s_struct_type * struct_type_init (s_struct_type *st, const s_sym *module,
   uw offset;
   const s_list *s;
   uw size;
+  const s_tuple *tuple;
   assert(st);
   assert(module);
   assert(spec);
@@ -69,9 +70,14 @@ s_struct_type * struct_type_init (s_struct_type *st, const s_sym *module,
       free(st->offset);
       return NULL;
     }
-    tag_init_copy(st->map.key + i,   s->tag.data.tuple.tag + 0);
-    tag_init_copy(st->map.value + i, s->tag.data.tuple.tag + 1);
-    size = tag_size(st->map.value + i);
+    tuple = &s->tag.data.tuple;
+    if (! tag_size(tuple->tag + 1, &size)) {
+      map_clean(&st->map);
+      free(st->offset);
+      return NULL;
+    }
+    tag_init_copy(st->map.key + i,   tuple->tag + 0);
+    tag_init_copy(st->map.value + i, tuple->tag + 1);
     offset = struct_type_padding(offset, size);
     st->offset[i] = offset;
     offset += size;

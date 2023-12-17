@@ -38,16 +38,6 @@ void list_clean (s_list **list)
   }
 }
 
-s_list ** list_cast (const s_tag *tag, s_list **list)
-{
-  assert(tag);
-  if (tag->type == TAG_LIST) {
-    list_init_copy(list, (const s_list **) &tag->data.list);
-    return list;
-  }
-  return NULL;
-}
-
 s_list * list_delete (s_list *list)
 {
   s_list *next = NULL;
@@ -84,8 +74,24 @@ s_list * list_init_1 (s_list *list, const s8 *p, s_list *next)
   return list;
 }
 
+s_list ** list_init_cast (s_list **list, const s_tag *tag)
+{
+  switch (tag->type) {
+  case TAG_LIST:
+    return list_init_copy(list,
+                          (const s_list * const *) &tag->data.list);
+  default:
+    break;
+  }
+  err_write_1("list_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to List");
+  assert(! "list_init_cast: cannot cast to List");
+  return NULL;
+}
+
 /* FIXME: does not work on circular lists */
-s_list ** list_init_copy (s_list **list, const s_list **src)
+s_list ** list_init_copy (s_list **list, const s_list * const *src)
 {
   s_list **i;
   s_list *next;
@@ -262,41 +268,62 @@ s_list * list_new_str_1 (s8 *x_free, const s8 *x, s_list *next)
 s_array * list_to_array (s_list *list, const s_sym *type,
                          s_array *dest)
 {
-  f_init_copy init_copy;
+  f_clean clean;
   s8 *data;
   void *data_list;
+  f_init_copy init_copy;
   s_list *l;
   uw len;
   uw size;
+  s_array tmp = {0};
   assert(list);
   assert(dest);
   len = list_length(list);
-  size = sym_type_size(type);
-  dest->dimension = 1;
-  dest->type = type;
-  if (! (dest->dimensions = calloc(1, sizeof(s_array_dimension)))) {
+  if (! sym_type_size(type, &size))
+    return NULL;
+  tmp.dimension = 1;
+  tmp.type = type;
+  if (! (tmp.dimensions = calloc(1, sizeof(s_array_dimension)))) {
     err_puts("list_to_array: out of memory: 1");
     assert(! "list_to_array: out of memory: 1");
     return NULL;
   }
-  dest->count = len;
-  dest->dimensions[0].count = len;
-  dest->dimensions[0].item_size = size;
-  dest->size = len * size;
-  if (! (data = dest->data = calloc(len, size))) {
+  tmp.count = len;
+  tmp.dimensions[0].count = len;
+  tmp.dimensions[0].item_size = size;
+  tmp.size = len * size;
+  tmp.data = data = calloc(len, size);
+  if (! tmp.data) {
     err_puts("list_to_array: out of memory: 2");
     assert(! "list_to_array: out of memory: 2");
+    free(tmp.dimensions);
     return NULL;
   }
-  init_copy = sym_to_init_copy(type);
+  if (! sym_to_init_copy(type, &init_copy)) {
+    free(tmp.data);
+    free(tmp.dimensions);
+    return NULL;
+  }
   l = list;
   while (l) {
-    data_list = tag_to_pointer(&l->tag, type);
-    init_copy(data, data_list);
+    if (! tag_to_pointer(&l->tag, type, &data_list) ||
+        ! data_list ||
+        ! init_copy(data, data_list))
+      goto ko;
     data += size;
     l = list_next(l);
   }
   return dest;
+ ko:
+  if (sym_to_clean(type, &clean) && clean) {
+    while (data > (s8 *) tmp.data) {
+      data -= size;
+      clean(data);
+    }
+  }
+  free(tmp.data);
+  free(tmp.dimensions);
+  return NULL;
 }
 
 s_list ** list_remove_void (s_list **list)

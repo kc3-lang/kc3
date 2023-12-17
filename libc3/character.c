@@ -10,9 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include "character.h"
+#include "integer.h"
 #include "str.h"
+#include "tag_type.h"
 #include "ucd.h"
 
 character character_1 (const s8 *p)
@@ -23,6 +25,34 @@ character character_1 (const s8 *p)
   str_init_1(&stra, NULL, p);
   str_peek_character_utf8(&stra, &c);
   return c;
+}
+
+character * character_init_cast (character *c, const s_tag *tag)
+{
+  assert(c);
+  assert(tag);
+  switch (tag->type) {
+  case TAG_CHARACTER: *c = tag->data.character;                return c;
+  case TAG_F32:       *c = (character) tag->data.f32;          return c;
+  case TAG_F64:       *c = (character) tag->data.f64;          return c;
+  case TAG_INTEGER:   *c = integer_to_u32(&tag->data.integer); return c;
+  case TAG_S8:        *c = (character) tag->data.s8;           return c;
+  case TAG_S16:       *c = (character) tag->data.s16;          return c;
+  case TAG_S32:       *c = (character) tag->data.s32;          return c;
+  case TAG_S64:       *c = (character) tag->data.s64;          return c;
+  case TAG_SW:        *c = (character) tag->data.sw;           return c;
+  case TAG_U8:        *c = (character) tag->data.u8;           return c;
+  case TAG_U16:       *c = (character) tag->data.u16;          return c;
+  case TAG_U32:       *c = (character) tag->data.u32;          return c;
+  case TAG_U64:       *c = (character) tag->data.u64;          return c;
+  case TAG_UW:        *c = (character) tag->data.uw;           return c;
+  default: break;
+  }
+  err_write_1("character_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Character");
+  assert(! "character_cast: cannot cast to Character");
+  return NULL;
 }
 
 character * character_init_copy (character *c, const character *src)

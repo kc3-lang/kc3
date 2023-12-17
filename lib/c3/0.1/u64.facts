@@ -2,4 +2,4 @@
   version: 1}
 replace {U64, :is_a, :module}
 replace {U64, :symbol, U64.cast}
-replace {U64.cast, :cfn, cfn U64 "u64_cast" (Tag, Result)}
+replace {U64.cast, :cfn, cfn U64 "u64_init_cast" (Result, Tag)}

@@ -110,9 +110,9 @@ bool earth_render (s_sequence *seq, s_window_sdl2 *window,
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     gl_sphere_render(sphere);
     /*
-      glDisable(GL_TEXTURE_2D);
-      glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-      gl_sphere_render_wireframe(sphere);
+    glDisable(GL_TEXTURE_2D);
+    glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+    gl_sphere_render_wireframe(sphere);
     */
   } glPopMatrix();
   glDisable(GL_TEXTURE_2D);

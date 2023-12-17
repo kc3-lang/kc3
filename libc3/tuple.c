@@ -89,6 +89,21 @@ s_tuple * tuple_init_2 (s_tuple *tuple, const s_tag *a, const s_tag *b)
   return tuple;
 }
 
+s_tuple * tuple_init_cast (s_tuple *tuple, const s_tag *tag)
+{
+  switch (tag->type) {
+  case TAG_TUPLE:
+    return tuple_init_copy(tuple, &tag->data.tuple);
+  default:
+    break;
+  }
+  err_write_1("tuple_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Tuple");
+  assert(! "tuple_init_cast: cannot cast to Tuple");
+  return NULL;
+}
+
 s_tuple * tuple_init_copy (s_tuple *tuple, const s_tuple *src)
 {
   uw i = 0;

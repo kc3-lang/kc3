@@ -18,7 +18,7 @@
 
 uw * uw_init_cast (uw *u, const s_tag *tag);
 uw * uw_init_copy (uw *u, const uw *src);
-uw * uw_random (uw *dest);
-uw * uw_random_uniform (uw max, uw *dest);
+uw * uw_random (uw *u);
+uw * uw_random_uniform (uw *u, uw max);
 
 #endif /* LIBC3_UW_H */

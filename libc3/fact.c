@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <err.h>
 #include "buf.h"
 #include "buf_inspect.h"
@@ -36,6 +36,21 @@ s_fact * fact_init (s_fact *fact, const s_tag *subject,
   fact->object = object;
   fact->id = 0;
   return fact;
+}
+
+s_fact * fact_init_cast (s_fact *fact, const s_tag *tag)
+{
+  switch (tag->type) {
+  case TAG_FACT:
+    return fact_init_copy(fact, &tag->data.fact);
+  default:
+    break;
+  }
+  err_write_1("fact_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Fact");
+  assert(! "fact_init_cast: cannot cast to Fact");
+  return NULL;
 }
 
 s_fact * fact_init_copy (s_fact *fact, const s_fact *src)

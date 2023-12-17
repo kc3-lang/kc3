@@ -16,8 +16,8 @@
 
 #include "types.h"
 
-sw * sw_init_cast (sw *dest, const s_tag *tag);
-sw * sw_init_copy (sw *dest, const sw *src);
-sw * sw_random (sw *dest);
+sw * sw_init_cast (sw *s, const s_tag *tag);
+sw * sw_init_copy (sw *s, const sw *src);
+sw * sw_random (sw *s);
 
 #endif /* LIBC3_SW_H */

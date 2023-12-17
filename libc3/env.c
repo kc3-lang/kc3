@@ -128,7 +128,8 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
     assert(! "env_eval_array: failed to allocate memory");
     return false;
   }
-  init_cast = sym_to_init_cast(tmp.type);
+  if (! sym_to_init_cast(tmp.type, &init_cast))
+    goto ko;
   data = tmp.data;
   tag = tmp.tags;
   i = 0;
@@ -684,7 +685,8 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
   while (i < t->type.map.count) {
     if (! env_eval_tag(env, s->tag + i, &tag))
       goto ko;
-    init_cast = tag_type_to_init_cast(tag.type);
+    if (! tag_type_to_init_cast(tag.type, &init_cast))
+      goto ko_tag;
     if (tag.type != t->type.map.value[i].type && ! init_cast) {
       warnx("env_eval_struct:"
             " invalid type %s for key %s, expected %s.",

@@ -28,9 +28,10 @@
 
 const s_sym  * sym_1 (const s8 *p);
 const s_sym ** sym_init_1 (const s_sym **sym, const s8 *p);
-const s_sym ** sym_init_cast (const s_sym **sym, const s_tag *src);
+const s_sym ** sym_init_cast (const s_sym **sym, const s_tag *tag);
 const s_sym ** sym_init_copy (const s_sym **sym,
                               const s_sym * const *src);
+const s_sym ** sym_init_str (const s_sym **sym, const s_str *src);
 
 
 /* Heap-allocation functions, call sym_delete_all at exit. */
@@ -38,19 +39,21 @@ void          sym_delete_all (void);
 const s_sym * sym_new (const s_str *src);
 
 /* Observers */
-bool               sym_character_is_reserved (character c);
-const s_sym      * sym_find (const s_str *src);
-bool               sym_has_reserved_characters (const s_sym *sym);
-s_str            * sym_inspect (const s_sym *sym, s_str *dest);
-bool               sym_is_module (const s_sym *sym);
-f_buf_inspect      sym_to_buf_inspect (const s_sym *type);
-f_buf_inspect_size sym_to_buf_inspect_size (const s_sym *type);
-f_clean            sym_to_clean (const s_sym *type);
-ffi_type         * sym_to_ffi_type (const s_sym *sym,
-                                    ffi_type *result_type);
-f_init_cast        sym_to_init_cast (const s_sym *type);
-f_init_copy        sym_to_init_copy (const s_sym *type);
-bool               sym_to_tag_type (const s_sym *sym, e_tag_type *dest);
-uw                 sym_type_size (const s_sym *type);
+bool          sym_character_is_reserved (character c);
+const s_sym * sym_find (const s_str *src);
+bool          sym_has_reserved_characters (const s_sym *sym);
+s_str *       sym_inspect (const s_sym *sym, s_str *dest);
+bool          sym_is_module (const s_sym *sym);
+bool          sym_to_buf_inspect (const s_sym *type,
+                                  f_buf_inspect *dest);
+bool          sym_to_buf_inspect_size (const s_sym *type,
+                                       f_buf_inspect_size *dest);
+bool          sym_to_clean (const s_sym *type, f_clean *dest);
+bool          sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
+                               ffi_type **dest);
+bool          sym_to_init_cast (const s_sym *type, f_init_cast *dest);
+bool          sym_to_init_copy (const s_sym *type, f_init_copy *dest);
+bool          sym_to_tag_type (const s_sym *sym, e_tag_type *dest);
+bool          sym_type_size (const s_sym *type, uw *size);
 
 #endif /* LIBC3_SYM_H */

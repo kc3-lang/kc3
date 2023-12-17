@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "quote.h"
 #include "tag.h"
@@ -25,6 +25,21 @@ s_quote * quote_init (s_quote *quote, const s_tag *tag)
 {
   quote->tag = tag_new_copy(tag);
   return quote;
+}
+
+s_quote * quote_init_cast (s_quote *quote, const s_tag *tag)
+{
+  switch (tag->type) {
+  case TAG_QUOTE:
+    return quote_init_copy(quote, &tag->data.quote);
+  default:
+    break;
+  }
+  err_write_1("quote_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Quote");
+  assert(! "quote_init_cast: cannot cast to Quote");
+  return NULL;
 }
 
 s_quote * quote_init_copy (s_quote *quote, const s_quote *src)

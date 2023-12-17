@@ -10,10 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <err.h>
 #include <stdlib.h>
+#include "integer.h"
 #include "ptr.h"
+#include "tag_type.h"
 
 void ptr_delete (u_ptr_w *ptr)
 {
@@ -28,6 +30,34 @@ u_ptr_w * ptr_init (u_ptr_w *ptr, void *p)
   tmp.p = p;
   *ptr = tmp;
   return ptr;
+}
+
+u_ptr_w * ptr_init_cast (u_ptr_w *p, const s_tag *tag)
+{
+  assert(tag);
+  assert(p);
+  switch (tag->type) {
+  case TAG_F32: p->p = (void *) ((uw) tag->data.f32);  return p;
+  case TAG_F64: p->p = (void *) ((uw) tag->data.f64);  return p;
+  case TAG_INTEGER:
+    p->p = (void *) integer_to_uw(&tag->data.integer); return p;
+  case TAG_PTR: p->p = tag->data.ptr.p;                return p;
+  case TAG_PTR_FREE: p->p = tag->data.ptr_free.p;      return p;
+  case TAG_S8:  p->p = (void *) ((uw) tag->data.s8);   return p;
+  case TAG_S16: p->p = (void *) ((uw) tag->data.s16);  return p;
+  case TAG_S32: p->p = (void *) ((uw) tag->data.s32);  return p;
+  case TAG_S64: p->p = (void *) ((uw) tag->data.s64);  return p;
+  case TAG_SW:  p->p = (void *) ((uw) tag->data.sw);   return p;
+  case TAG_U8:  p->p = (void *) ((uw) tag->data.u8);   return p;
+  case TAG_U16: p->p = (void *) ((uw) tag->data.u16);  return p;
+  case TAG_U32: p->p = (void *) ((uw) tag->data.u32);  return p;
+  case TAG_U64: p->p = (void *) ((uw) tag->data.u64);  return p;
+  case TAG_UW:  p->p = (void *) ((uw) tag->data.uw);   return p;
+  default: break;
+  }
+  warnx("ptr_cast: cannot cast %s to Ptr",
+        tag_type_to_string(tag->type));
+  return NULL;
 }
 
 u_ptr_w * ptr_init_copy (u_ptr_w *ptr, const u_ptr_w *src)
