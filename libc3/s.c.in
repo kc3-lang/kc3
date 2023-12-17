@@ -19,72 +19,73 @@
 #include "tag_type.h"
 #include "s_bits$.h"
 
-s_bits$ * s_bits$_cast (s_tag *tag, s_bits$ *dest)
+s_bits$ * s_bits$_init_cast (s_bits$ *s, const s_tag *tag)
 {
   switch (tag->type) {
   case TAG_BOOL:
-    *dest = tag->data.bool ? 1 : 0;
-    return dest;
+    *s = tag->data.bool ? 1 : 0;
+    return s;
   case TAG_CHARACTER:
-    *dest = (s_bits$) tag->data.character;
-    return dest;
+    *s = (s_bits$) tag->data.character;
+    return s;
   case TAG_F32:
-    *dest = (s_bits$) tag->data.f32;
-    return dest;
+    *s = (s_bits$) tag->data.f32;
+    return s;
   case TAG_F64:
-    *dest = (s_bits$) tag->data.f64;
-    return dest;
+    *s = (s_bits$) tag->data.f64;
+    return s;
   case TAG_INTEGER:
-    *dest = integer_to_s_bits$(&tag->data.integer);
-    return dest;
+    *s = integer_to_s_bits$(&tag->data.integer);
+    return s;
   case TAG_SW:
-    *dest = (s_bits$) tag->data.sw;
-    return dest;
+    *s = (s_bits$) tag->data.sw;
+    return s;
   case TAG_S64:
-    *dest = (s_bits$) tag->data.s64;
-    return dest;
+    *s = (s_bits$) tag->data.s64;
+    return s;
   case TAG_S32:
-    *dest = (s_bits$) tag->data.s32;
-    return dest;
+    *s = (s_bits$) tag->data.s32;
+    return s;
   case TAG_S16:
-    *dest = (s_bits$) tag->data.s16;
-    return dest;
+    *s = (s_bits$) tag->data.s16;
+    return s;
   case TAG_S8:
-    *dest = (s_bits$) tag->data.s8;
-    return dest;
+    *s = (s_bits$) tag->data.s8;
+    return s;
   case TAG_U8:
-    *dest = (s_bits$) tag->data.u8;
-    return dest;
+    *s = (s_bits$) tag->data.u8;
+    return s;
   case TAG_U16:
-    *dest = (s_bits$) tag->data.u16;
-    return dest;
+    *s = (s_bits$) tag->data.u16;
+    return s;
   case TAG_U32:
-    *dest = (s_bits$) tag->data.u32;
-    return dest;
+    *s = (s_bits$) tag->data.u32;
+    return s;
   case TAG_U64:
-    *dest = (s_bits$) tag->data.u64;
-    return dest;
+    *s = (s_bits$) tag->data.u64;
+    return s;
   case TAG_UW:
-    *dest = (s_bits$) tag->data.uw;
-    return dest;
+    *s = (s_bits$) tag->data.uw;
+    return s;
   default:
     break;
   }
-  errx(1, "s_bits$_cast: cannot cast %s to s_bits$",
-       tag_type_to_string(tag->type));
-  return 0;
+  warnx("s_bits$_cast: cannot cast %s to s_bits$",
+        tag_type_to_string(tag->type));
+  assert(! "s_bits$_cast: cannot cast to s_bits$");
+  return NULL;
 }
 
-s_bits$ * s_bits$_init_copy (s_bits$ *dest, const s_bits$ *src)
+s_bits$ * s_bits$_init_copy (s_bits$ *s, const s_bits$ *src)
 {
   assert(src);
-  assert(dest);
-  *dest = *src;
-  return dest;
+  assert(s);
+  *s = *src;
+  return s;
 }
 
-s_bits$ * s_bits$_random (s_bits$ *dest)
+s_bits$ * s_bits$_random (s_bits$ *s)
 {
-  arc4random_buf(dest, sizeof(s_bits$));
-  return dest;
+  arc4random_buf(s, sizeof(s_bits$));
+  return s;
 }

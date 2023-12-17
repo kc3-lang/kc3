@@ -16,8 +16,8 @@
 
 #include "types.h"
 
-s_bits$ * s_bits$_init_cast (s_bits$ *dest, const s_tag *tag);
-s_bits$ * s_bits$_init_copy (s_bits$ *dest, const s_bits$ *src);
-s_bits$ * s_bits$_random (s_bits$ *dest);
+s_bits$ * s_bits$_init_cast (s_bits$ *s, const s_tag *tag);
+s_bits$ * s_bits$_init_copy (s_bits$ *s, const s_bits$ *src);
+s_bits$ * s_bits$_random (s_bits$ *s);
 
 #endif /* LIBC3_S_BITS$_H */

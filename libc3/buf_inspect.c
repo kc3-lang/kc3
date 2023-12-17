@@ -71,13 +71,16 @@ sw buf_inspect_array_data (s_buf *buf, const s_array *array)
   sw r;
   assert(buf);
   assert(array);
-  address = calloc(array->dimension, sizeof(uw));
+  // TODO: buf_inspect_array_data_rec_data
+  // TODO: buf_inspect_array_data_rec_tags
   if (array->data) {
     data = array->data;
-    inspect = sym_to_buf_inspect(array->type);
+    if (! sym_to_buf_inspect(array->type, &inspect))
+      return -1;
   }
   else 
     tag = array->tags;
+  address = calloc(array->dimension, sizeof(uw));
   r = buf_inspect_array_data_rec(buf, array, (const u8 **) &data,
                                  inspect, (const s_tag **) &tag,
                                  address, 0);
@@ -141,13 +144,14 @@ sw buf_inspect_array_data_size (const s_array *array)
   s_tag *tag = NULL;
   sw r;
   assert(array);
-  address = calloc(array->dimension, sizeof(uw));
   if (array->data) {
     data = array->data;
-    inspect_size = sym_to_buf_inspect_size(array->type);
+    if (! sym_to_buf_inspect_size(array->type, &inspect_size))
+      return -1;
   }
   else 
     tag = array->tags;
+  address = calloc(array->dimension, sizeof(uw));
   r = buf_inspect_array_data_size_rec(array, (const u8 **) &data,
                                       inspect_size,
                                       (const s_tag **) &tag,
@@ -532,7 +536,7 @@ sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym)
   if ((r = buf_write_1(buf, "(")) <= 0)
     goto clean;
   result += r;
-  if ((r = buf_inspect_sym(buf, sym)) <= 0)
+  if ((r = buf_inspect_sym(buf, &sym)) <= 0)
     goto clean;
   result += r;
   if ((r = buf_write_1(buf, ")")) <= 0)
@@ -549,7 +553,7 @@ sw buf_inspect_paren_sym_size (const s_sym *sym)
   sw result = 0;
   assert(sym);
   result += strlen("(");
-  if ((r = buf_inspect_sym_size(sym)) <= 0)
+  if ((r = buf_inspect_sym_size(&sym)) <= 0)
     goto clean;
   result += r;
   result += strlen(")");
@@ -566,7 +570,7 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
   if ((r = buf_write_1(buf, "cfn ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sym(buf, cfn->result_type)) < 0)
+  if ((r = buf_inspect_sym(buf, &cfn->result_type)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
@@ -578,7 +582,8 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_list_paren(buf, (const s_list **) &cfn->arg_types)) < 0)
+  if ((r = buf_inspect_list_paren(buf, (const s_list * const *)
+                                  &cfn->arg_types)) < 0)
     return r;
   result += r;
   return result;
@@ -993,7 +998,7 @@ sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
   assert(ident);
   result = 0;
   if (ident->module) {
-    if ((r = buf_inspect_sym(buf, ident->module)) < 0)
+    if ((r = buf_inspect_sym(buf, &ident->module)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, ".")) < 0)
@@ -1048,7 +1053,7 @@ sw buf_inspect_ident_size (const s_ident *ident)
   sw result = 0;
   assert(ident);
   if (ident->module) {
-    if ((r = buf_inspect_sym_size(ident->module)) < 0)
+    if ((r = buf_inspect_sym_size(&ident->module)) < 0)
       return r;
     result += r;
     result += strlen(".");
@@ -1150,7 +1155,7 @@ sw buf_inspect_list (s_buf *buf, const s_list **x)
   return result;
 }
 
-sw buf_inspect_list_paren (s_buf *buf, const s_list **x)
+sw buf_inspect_list_paren (s_buf *buf, const s_list * const *x)
 {
   const s_list *i;
   sw r;
@@ -1189,7 +1194,7 @@ sw buf_inspect_list_paren (s_buf *buf, const s_list **x)
   return result;
 }
 
-sw buf_inspect_list_size (const s_list **list)
+sw buf_inspect_list_size (const s_list * const *list)
 {
   const s_list *i;
   sw r;
@@ -1728,7 +1733,8 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
       return r;
     result += r;
     if (s->data) {
-      buf_inspect = tag_type_to_buf_inspect(s->type.map.value[i].type);
+      if (! tag_type_to_buf_inspect(s->type.map.value[i].type, &buf_inspect))
+        return -1;
       if ((r = buf_inspect(buf, (s8 *) s->data + s->type.offset[i])) < 0)
         return r;
       result += r;
@@ -1764,11 +1770,14 @@ sw buf_inspect_struct_size (const s_struct *s)
   return -1;
 }
 
-sw buf_inspect_sym (s_buf *buf, const s_sym *x)
+sw buf_inspect_sym (s_buf *buf, const s_sym * const *sym)
 {
   sw r;
   sw size;
+  const s_sym *x;
   assert(buf);
+  assert(sym);
+  x = *sym;
   assert(x);
   if (x->str.size == 0)
     return buf_write_1(buf, ":\"\"");
@@ -1783,9 +1792,12 @@ sw buf_inspect_sym (s_buf *buf, const s_sym *x)
   return size;
 }
 
-sw buf_inspect_sym_size (const s_sym *x)
+sw buf_inspect_sym_size (const s_sym * const *sym)
 {
   const sw colon_size = 1;
+  const s_sym *x;
+  assert(sym);
+  x = *sym;
   assert(x);
   if (x->str.size == 0)
     return 3;
@@ -1852,15 +1864,15 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_SW:      return buf_inspect_sw(buf, &tag->data.sw);
   case TAG_STR:     return buf_inspect_str(buf, &tag->data.str);
   case TAG_STRUCT:  return buf_inspect_struct(buf, &tag->data.struct_);
-  case TAG_SYM:     return buf_inspect_sym(buf, tag->data.sym);
+  case TAG_SYM:     return buf_inspect_sym(buf, &tag->data.sym);
   case TAG_TUPLE:   return buf_inspect_tuple(buf, &tag->data.tuple);
   case TAG_U8:      return buf_inspect_u8(buf, &tag->data.u8);
   case TAG_U16:     return buf_inspect_u16(buf, &tag->data.u16);
   case TAG_U32:     return buf_inspect_u32(buf, &tag->data.u32);
   case TAG_U64:     return buf_inspect_u64(buf, &tag->data.u64);
   case TAG_UW:      return buf_inspect_uw(buf, &tag->data.uw);
-  case TAG_VAR:     return buf_inspect_var(buf, tag);
-  case TAG_VOID:    return buf_inspect_void(buf, &tag);
+  case TAG_VAR:     return buf_inspect_var(buf, NULL);
+  case TAG_VOID:    return buf_inspect_void(buf, NULL);
   }
   err_puts("buf_inspect_tag: unknown tag_type");
   assert(! "buf_inspect_tag: unknown tag type");
@@ -1899,15 +1911,15 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_SW:       return buf_inspect_sw_size(&tag->data.sw);
   case TAG_STR:      return buf_inspect_str_size(&tag->data.str);
   case TAG_STRUCT:   return buf_inspect_struct_size(&tag->data.struct_);
-  case TAG_SYM:      return buf_inspect_sym_size(tag->data.sym);
+  case TAG_SYM:      return buf_inspect_sym_size(&tag->data.sym);
   case TAG_TUPLE:    return buf_inspect_tuple_size(&tag->data.tuple);
   case TAG_U8:       return buf_inspect_u8_size(&tag->data.u8);
   case TAG_U16:      return buf_inspect_u16_size(&tag->data.u16);
   case TAG_U32:      return buf_inspect_u32_size(&tag->data.u32);
   case TAG_U64:      return buf_inspect_u64_size(&tag->data.u64);
   case TAG_UW:       return buf_inspect_uw_size(&tag->data.uw);
-  case TAG_VAR:      return buf_inspect_var_size(tag);
-  case TAG_VOID:     return buf_inspect_void_size(tag);
+  case TAG_VAR:      return buf_inspect_var_size(NULL);
+  case TAG_VOID:     return buf_inspect_void_size(NULL);
   }
   err_puts("buf_inspect_tag_size: unknown tag type");
   assert(! "buf_inspect_tag_size: unknown tag type");

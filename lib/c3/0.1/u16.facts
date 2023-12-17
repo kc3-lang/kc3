@@ -2,4 +2,4 @@
   version: 1}
 replace {U16, :is_a, :module}
 replace {U16, :symbol, U16.cast}
-replace {U16.cast, :cfn, cfn U16 "u16_cast" (Tag, Result)}
+replace {U16.cast, :cfn, cfn U16 "u16_init_cast" (Result, Tag)}

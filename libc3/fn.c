@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,6 +22,7 @@
 #include "fn.h"
 #include "fn_clause.h"
 #include "list.h"
+#include "tag_type.h"
 
 void fn_clean (s_fn *fn)
 {
@@ -56,6 +57,21 @@ s_fn * fn_init_1 (s_fn *fn, s8 *p)
   if (r < 0 || (uw) r != len)
     errx(1, "fn_init_1: buf_parse_fn(%s): %ld != %lu", p, r, len);
   return fn;
+}
+
+s_fn * fn_init_cast (s_fn *fn, const s_tag *tag)
+{
+  switch (tag->type) {
+  case TAG_FN:
+    return fn_init_copy(fn, &tag->data.fn);
+  default:
+    break;
+  }
+  err_write_1("fn_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Fn");
+  assert(! "fn_init_cast: cannot cast to Fn");
+  return NULL;
 }
 
 s_fn * fn_init_copy (s_fn *fn, const s_fn *src)

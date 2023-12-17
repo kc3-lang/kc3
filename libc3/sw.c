@@ -19,72 +19,73 @@
 #include "tag_type.h"
 #include "sw.h"
 
-sw * sw_cast (s_tag *tag, sw *dest)
+sw * sw_init_cast (sw *s, const s_tag *tag)
 {
   switch (tag->type) {
   case TAG_BOOL:
-    *dest = tag->data.bool ? 1 : 0;
-    return dest;
+    *s = tag->data.bool ? 1 : 0;
+    return s;
   case TAG_CHARACTER:
-    *dest = (sw) tag->data.character;
-    return dest;
+    *s = (sw) tag->data.character;
+    return s;
   case TAG_F32:
-    *dest = (sw) tag->data.f32;
-    return dest;
+    *s = (sw) tag->data.f32;
+    return s;
   case TAG_F64:
-    *dest = (sw) tag->data.f64;
-    return dest;
+    *s = (sw) tag->data.f64;
+    return s;
   case TAG_INTEGER:
-    *dest = integer_to_sw(&tag->data.integer);
-    return dest;
+    *s = integer_to_sw(&tag->data.integer);
+    return s;
   case TAG_SW:
-    *dest = (sw) tag->data.sw;
-    return dest;
+    *s = (sw) tag->data.sw;
+    return s;
   case TAG_S64:
-    *dest = (sw) tag->data.s64;
-    return dest;
+    *s = (sw) tag->data.s64;
+    return s;
   case TAG_S32:
-    *dest = (sw) tag->data.s32;
-    return dest;
+    *s = (sw) tag->data.s32;
+    return s;
   case TAG_S16:
-    *dest = (sw) tag->data.s16;
-    return dest;
+    *s = (sw) tag->data.s16;
+    return s;
   case TAG_S8:
-    *dest = (sw) tag->data.s8;
-    return dest;
+    *s = (sw) tag->data.s8;
+    return s;
   case TAG_U8:
-    *dest = (sw) tag->data.u8;
-    return dest;
+    *s = (sw) tag->data.u8;
+    return s;
   case TAG_U16:
-    *dest = (sw) tag->data.u16;
-    return dest;
+    *s = (sw) tag->data.u16;
+    return s;
   case TAG_U32:
-    *dest = (sw) tag->data.u32;
-    return dest;
+    *s = (sw) tag->data.u32;
+    return s;
   case TAG_U64:
-    *dest = (sw) tag->data.u64;
-    return dest;
+    *s = (sw) tag->data.u64;
+    return s;
   case TAG_UW:
-    *dest = (sw) tag->data.uw;
-    return dest;
+    *s = (sw) tag->data.uw;
+    return s;
   default:
     break;
   }
-  errx(1, "sw_cast: cannot cast %s to sw",
-       tag_type_to_string(tag->type));
-  return 0;
+  warnx("sw_cast: cannot cast %s to sw",
+        tag_type_to_string(tag->type));
+  assert(! "sw_cast: cannot cast to sw");
+  return NULL;
 }
 
-sw * sw_init_copy (sw *dest, const sw *src)
+sw * sw_init_copy (sw *s, const sw *src)
 {
   assert(src);
-  assert(dest);
-  *dest = *src;
-  return dest;
+  assert(s);
+  *s = *src;
+  return s;
 }
 
-sw * sw_random (sw *dest)
+sw * sw_random (sw *s)
 {
-  arc4random_buf(dest, sizeof(sw));
-  return dest;
+  arc4random_buf(s, sizeof(sw));
+  return s;
 }

@@ -87,7 +87,7 @@ f32 * f32_random (f32 *x)
 {
   u32 i;
   const u32 max = (1 << 24) - 1;
-  u32_random_uniform(max, &i);
+  u32_random_uniform(&i, max);
   *x = (f32) i / max;
   return x;
 }

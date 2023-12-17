@@ -19,72 +19,73 @@
 #include "tag_type.h"
 #include "s32.h"
 
-s32 * s32_cast (s_tag *tag, s32 *dest)
+s32 * s32_init_cast (s32 *s, const s_tag *tag)
 {
   switch (tag->type) {
   case TAG_BOOL:
-    *dest = tag->data.bool ? 1 : 0;
-    return dest;
+    *s = tag->data.bool ? 1 : 0;
+    return s;
   case TAG_CHARACTER:
-    *dest = (s32) tag->data.character;
-    return dest;
+    *s = (s32) tag->data.character;
+    return s;
   case TAG_F32:
-    *dest = (s32) tag->data.f32;
-    return dest;
+    *s = (s32) tag->data.f32;
+    return s;
   case TAG_F64:
-    *dest = (s32) tag->data.f64;
-    return dest;
+    *s = (s32) tag->data.f64;
+    return s;
   case TAG_INTEGER:
-    *dest = integer_to_s32(&tag->data.integer);
-    return dest;
+    *s = integer_to_s32(&tag->data.integer);
+    return s;
   case TAG_SW:
-    *dest = (s32) tag->data.sw;
-    return dest;
+    *s = (s32) tag->data.sw;
+    return s;
   case TAG_S64:
-    *dest = (s32) tag->data.s64;
-    return dest;
+    *s = (s32) tag->data.s64;
+    return s;
   case TAG_S32:
-    *dest = (s32) tag->data.s32;
-    return dest;
+    *s = (s32) tag->data.s32;
+    return s;
   case TAG_S16:
-    *dest = (s32) tag->data.s16;
-    return dest;
+    *s = (s32) tag->data.s16;
+    return s;
   case TAG_S8:
-    *dest = (s32) tag->data.s8;
-    return dest;
+    *s = (s32) tag->data.s8;
+    return s;
   case TAG_U8:
-    *dest = (s32) tag->data.u8;
-    return dest;
+    *s = (s32) tag->data.u8;
+    return s;
   case TAG_U16:
-    *dest = (s32) tag->data.u16;
-    return dest;
+    *s = (s32) tag->data.u16;
+    return s;
   case TAG_U32:
-    *dest = (s32) tag->data.u32;
-    return dest;
+    *s = (s32) tag->data.u32;
+    return s;
   case TAG_U64:
-    *dest = (s32) tag->data.u64;
-    return dest;
+    *s = (s32) tag->data.u64;
+    return s;
   case TAG_UW:
-    *dest = (s32) tag->data.uw;
-    return dest;
+    *s = (s32) tag->data.uw;
+    return s;
   default:
     break;
   }
-  errx(1, "s32_cast: cannot cast %s to s32",
-       tag_type_to_string(tag->type));
-  return 0;
+  warnx("s32_cast: cannot cast %s to s32",
+        tag_type_to_string(tag->type));
+  assert(! "s32_cast: cannot cast to s32");
+  return NULL;
 }
 
-s32 * s32_init_copy (s32 *dest, const s32 *src)
+s32 * s32_init_copy (s32 *s, const s32 *src)
 {
   assert(src);
-  assert(dest);
-  *dest = *src;
-  return dest;
+  assert(s);
+  *s = *src;
+  return s;
 }
 
-s32 * s32_random (s32 *dest)
+s32 * s32_random (s32 *s)
 {
-  arc4random_buf(dest, sizeof(s32));
-  return dest;
+  arc4random_buf(s, sizeof(s32));
+  return s;
 }

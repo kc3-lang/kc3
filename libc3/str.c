@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <err.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -22,6 +22,7 @@
 #include "ident.h"
 #include "str.h"
 #include "sym.h"
+#include "tag_type.h"
 
 sw str_character (const s_str *str, uw position, character *dest)
 {
@@ -122,6 +123,25 @@ s_str * str_init_alloc (s_str *str, uw size, const s8 *p)
     err(1, "out of memory");
   memcpy(str->free.p, p, size);
   return str;
+}
+
+s_str * str_init_cast (s_str *str, const s_tag *tag)
+{
+  assert(str);
+  assert(tag);
+  switch (tag->type) {
+  case TAG_STR:
+    return str_init_copy(str, &tag->data.str);
+  case TAG_SYM:
+    return str_init_copy(str, &tag->data.sym->str);
+  default:
+    break;
+  }
+  err_write_1("str_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Str");
+  assert(! "str_init_cast: cannot cast to Str");
+  return NULL;
 }
 
 s_str * str_init_copy (s_str *str, const s_str *src)

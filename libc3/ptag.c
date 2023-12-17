@@ -10,9 +10,25 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <err.h>
 #include "ptag.h"
+#include "tag_type.h"
+
+p_tag * ptag_init_cast (p_tag *ptag, const s_tag *tag)
+{
+  switch (tag->type) {
+  case TAG_PTAG:
+    return ptag_init_copy(ptag, &tag->data.ptag);
+  default:
+    break;
+  }
+  err_write_1("ptag_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Ptag");
+  assert(! "ptag_init_cast: cannot cast to Ptag");
+  return NULL;
+}
 
 p_tag * ptag_init_copy (p_tag *dest, const p_tag *src)
 {

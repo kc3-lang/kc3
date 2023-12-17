@@ -16,8 +16,8 @@
 
 #include "types.h"
 
-s8 * s8_init_cast (s8 *dest, const s_tag *tag);
-s8 * s8_init_copy (s8 *dest, const s8 *src);
-s8 * s8_random (s8 *dest);
+s8 * s8_init_cast (s8 *s, const s_tag *tag);
+s8 * s8_init_copy (s8 *s, const s8 *src);
+s8 * s8_random (s8 *s);
 
 #endif /* LIBC3_S8_H */

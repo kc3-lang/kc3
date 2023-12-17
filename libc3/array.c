@@ -59,9 +59,10 @@ void array_clean (s_array *a)
   assert(a);
   free(a->dimensions);
   if (a->data) {
-    clean = sym_to_clean(a->type);
-    size = sym_type_size(a->type);
-    if (clean) {
+    if (sym_to_clean(a->type, &clean) &&
+        clean &&
+        sym_type_size(a->type, &size) &&
+        size) {
       data = a->data;
       i = 0;
       while (i < a->count) {
@@ -115,9 +116,12 @@ s_array * array_data_set (s_array *a, const uw *address,
   assert(a);
   assert(address);
   assert(data);
-  if ((a_data = array_data(a, address))) {
-    init_copy = sym_to_init_copy(a->type);
-    if (init_copy(a_data, data) != a_data)
+  a_data = array_data(a, address);
+  if (a_data) {
+    if (! sym_to_init_copy(a->type, &init_copy))
+      return NULL;
+    if (init_copy &&
+        ! init_copy(a_data, data))
       return NULL;
     return a;
   }
@@ -128,16 +132,16 @@ s_tag * array_data_tag (s_tag *a, const s_tag *address, s_tag *dest)
 {
   void *a_data;
   f_init_copy init_copy;
-  void *dest_data;
+  void *tmp_data;
+  s_tag tmp = {0};
   assert(a->type == TAG_ARRAY);
   assert(address->type == TAG_ARRAY);
-  if ((a_data = array_data(&a->data.array,
-                           address->data.array.data))) {
-    tag_init(dest);
-    init_copy = sym_to_init_copy(a->data.array.type);
-    sym_to_tag_type(a->data.array.type, &dest->type);
-    dest_data = tag_to_pointer(dest, a->data.array.type);
-    if (init_copy(dest_data, a_data) != dest_data)
+  a_data = array_data(&a->data.array, address->data.array.data);
+  if (a_data) {
+    if (! sym_to_init_copy(a->data.array.type, &init_copy) ||
+        ! sym_to_tag_type(a->data.array.type, &tmp.type) ||
+        ! tag_to_pointer(&tmp, a->data.array.type, &tmp_data) ||
+        ! init_copy(tmp_data, a_data))
       return NULL;
     return dest;
   }
@@ -150,6 +154,7 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
   uw count = 1;
   uw i = 0;
   uw item_size;
+  s_array tmp = {0};
   assert(a);
   assert(type);
   assert(sym_is_module(type));
@@ -166,27 +171,36 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
     i++;
   }
 #endif
-  a->dimension = dimension;
-  a->dimensions = calloc(dimension, sizeof(s_array_dimension));
+  tmp.dimension = dimension;
+  tmp.dimensions = calloc(dimension, sizeof(s_array_dimension));
   i = 0;
   while (i < dimension) {
-    a->dimensions[i].count = dimensions[i];
+    tmp.dimensions[i].count = dimensions[i];
     count *= dimensions[i];
     i++;
   }
   i--;
-  a->type = type;
-  item_size = sym_type_size(type);
-  a->dimensions[i].item_size = item_size;
+  tmp.type = type;
+  if (! sym_type_size(type, &item_size)) {
+    free(tmp.dimensions);
+    return NULL;
+  }
+  if (! item_size) {
+    warnx("array_init: zero item size");
+    assert(! "array_init: zero item size");
+    return NULL;
+  }
+  tmp.dimensions[i].item_size = item_size;
   while (i > 0) {
     i--;
-    a->dimensions[i].item_size = a->dimensions[i + 1].count *
-      a->dimensions[i + 1].item_size;
+    tmp.dimensions[i].item_size = tmp.dimensions[i + 1].count *
+      tmp.dimensions[i + 1].item_size;
   }
-  a->size = a->dimensions[0].count * a->dimensions[0].item_size;
-  a->count = count;
-  a->data = NULL;
-  a->tags = NULL;
+  tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
+  tmp.count = count;
+  tmp.data = NULL;
+  tmp.tags = NULL;
+  *a = tmp;
   return a;
 }
 
@@ -218,10 +232,26 @@ s_array * array_init_1 (s_array *array, s8 *p)
   return array;
 }
 
+s_array * array_init_cast (s_array *array, const s_tag *tag)
+{
+  switch (tag->type) {
+  case TAG_ARRAY:
+    return array_init_copy(array, &tag->data.array);
+  default:
+    break;
+  }
+  err_write_1("array_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Array");
+  assert(! "array_init_cast: cannot cast to Array");
+  return NULL;
+}
+
 s_array * array_init_copy (s_array *a, const s_array *src)
 {
+  f_clean clean;
   f_init_copy init_copy;
-  u8 *data_a;
+  u8 *data_tmp;
   u8 *data_src;
   uw i = 0;
   uw item_size;
@@ -232,8 +262,8 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   assert(src->dimensions);
   (void) i;
   if (! src->dimension) {
+    err_puts("array_init_copy: zero dimension");
     assert(! "array_init_copy: zero dimension");
-    errx(1, "array_init_copy: zero dimension");
     return NULL;
   }
 #ifdef DEBUG
@@ -255,36 +285,61 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   tmp.size = src->size;
   tmp.type = src->type;
   if (src->data) {
-    if (! (tmp.data = calloc(1, src->size)))
-      errx(1, "array_init_copy: out of memory");
-    init_copy = sym_to_init_copy(src->type);
-    data_a = tmp.data;
+    tmp.data = calloc(1, src->size);
+    if (! tmp.data) {
+      warnx("array_init_copy: failed to allocate memory");
+      assert(! "array_init_copy: failed to allocate memory");
+      free(tmp.dimensions);
+      return NULL;
+    }
+    if (! sym_to_init_copy(src->type, &init_copy)) {
+      free(tmp.dimensions);
+      return NULL;
+    }
+    data_tmp = tmp.data;
     data_src = src->data;
     i = 0;
     item_size = src->dimensions[src->dimension - 1].item_size;
     while (i < src->count) {
-      if (init_copy(data_a, data_src) != data_a) {
-        return NULL;
-      }
-      data_a += item_size;
+      if (! init_copy(data_tmp, data_src))
+        goto ko_data;
+      data_tmp += item_size;
       data_src += item_size;
       i++;
     }
   }
-  else
-    tmp.data = NULL;
-  if (src->tags) {
+  else if (src->tags) {
     tmp.tags = calloc(src->count, sizeof(s_tag));
+    if (! tmp.tags) {
+      warn("array_init_copy: failed to allocate memory");
+      assert(! "array_init_copy: failed to allocate memory");
+      free(tmp.dimensions);
+      return NULL;
+    }
     i = 0;
     while (i < src->count) {
-      tag_init_copy(tmp.tags + i, src->tags + i);
+      if (! tag_init_copy(tmp.tags + i, src->tags + i))
+        goto ko_tags;
       i++;
     }
   }
-  else
-    tmp.tags = NULL;
   *a = tmp;
   return a;
+ ko_data:
+  if (i && sym_to_clean(src->type, &clean) && clean) {
+    while (--i) {
+      data_tmp -= item_size;
+      clean(data_tmp);
+    }
+  }
+  free(tmp.data);
+  free(tmp.dimensions);
+  return NULL;
+ ko_tags:
+  if (i)
+    while (--i)
+      tag_clean(tmp.tags + i);
+  return NULL;
 }
 
 s_str * array_inspect (const s_array *array, s_str *dest)

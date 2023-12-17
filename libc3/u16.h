@@ -18,7 +18,7 @@
 
 u16 * u16_init_cast (u16 *u, const s_tag *tag);
 u16 * u16_init_copy (u16 *u, const u16 *src);
-u16 * u16_random (u16 *dest);
-u16 * u16_random_uniform (u16 max, u16 *dest);
+u16 * u16_random (u16 *u);
+u16 * u16_random_uniform (u16 *u, u16 max);
 
 #endif /* LIBC3_U16_H */

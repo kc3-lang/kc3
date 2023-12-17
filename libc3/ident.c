@@ -188,6 +188,22 @@ s_ident * ident_init_1 (s_ident *ident, const s8 *p)
   return ident;
 }
 
+s_ident * ident_init_cast (s_ident *ident, const s_tag *tag)
+{
+  switch (tag->type) {
+  case TAG_IDENT:
+    *ident = tag->data.ident;
+    return ident;
+  default:
+    break;
+  }
+  err_write_1("ident_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Ident");
+  assert(! "ident_init_cast: cannot cast to Ident");
+  return NULL;
+}
+
 s_ident * ident_init_copy (s_ident *ident, const s_ident *src)
 {
   ident->module = src->module;
