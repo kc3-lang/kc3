@@ -211,6 +211,7 @@ s_cfn * cfn_link (s_cfn *cfn)
   assert(cfn);
   if (! (cfn->ptr.p = dlsym(RTLD_DEFAULT, cfn->name->str.ptr.ps8))) {
     warnx("cfn_link: %s: %s", cfn->name->str.ptr.ps8, dlerror());
+    assert(! "cfn_link: dlsym failed");
     return NULL;
   }
   return cfn;
