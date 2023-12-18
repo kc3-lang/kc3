@@ -334,6 +334,7 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
     data += size;
     l = list_next(l);
   }
+  *dest = tmp;
   return dest;
  ko:
   if (sym_to_clean(type, &clean) && clean) {
