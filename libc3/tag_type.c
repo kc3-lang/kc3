@@ -272,7 +272,7 @@ bool tag_type_to_clean (e_tag_type type, f_clean *dest)
   case TAG_U32:
   case TAG_U64:
   case TAG_UW:       *dest = NULL;                     return true;
-  case TAG_LIST:     *dest = (f_clean) list_clean;     return true;
+  case TAG_LIST:     *dest = (f_clean) list_f_clean;   return true;
   case TAG_MAP:      *dest = (f_clean) map_clean;      return true;
   case TAG_PTAG:
   case TAG_PTR:      *dest = NULL;                     return true;

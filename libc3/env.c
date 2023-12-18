@@ -110,7 +110,7 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   f_init_cast init_cast;
   uw item_size;
   s_tag *tag;
-  s_array tmp;
+  s_array tmp = {0};
   assert(env);
   assert(array);
   assert(dest);
@@ -139,6 +139,7 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
       goto ko;
     if (! init_cast(data, &tag_eval))
       goto ko;
+    tag_clean(&tag_eval);
     data += item_size;
     tag++;
     i++;
@@ -152,7 +153,7 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
 
 bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
 {
-  s_array tmp;
+  s_array tmp = {0};
   if (! env_eval_array(env, array, &tmp))
     return false;
   dest->type = TAG_ARRAY;

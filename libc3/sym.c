@@ -551,7 +551,7 @@ bool sym_to_clean (const s_sym *type, f_clean *dest)
     return true;
   }
   if (type == sym_1("List")) {
-    *dest = (f_clean) list_clean;
+    *dest = (f_clean) list_f_clean;
     return true;
   }
   if (type == sym_1("Map")) {
