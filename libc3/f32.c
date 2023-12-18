@@ -86,8 +86,9 @@ f32 * f32_init_copy (f32 *x, const f32 *src)
 f32 * f32_random (f32 *x)
 {
   u32 i;
-  const u32 max = (1 << 24) - 1;
-  u32_random_uniform(&i, max);
+  const u32 max = ((u32) 1 << 24) - 1;
+  u32_random(&i);
+  i &= max;
   *x = (f32) i / max;
   return x;
 }
