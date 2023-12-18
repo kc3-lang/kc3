@@ -47,6 +47,35 @@ make
 export LD_LIBRARY_PATH=$PWD/libc3/.libs:$PWD/libffi/.libs
 ```
 
+### Running the OpenGL demo
+```sh
+make demo_gl
+```
+
+Press Q to quit, F for fullscreen, Left and Right arrows to move
+through sequences.
+
+Other targets exist :
+```sh
+make demo_gl_asan
+make gdb_demo_gl
+make lldb_demo_gl
+```
+
+### Running the Cairo demo
+```sh
+make demo
+```
+
+Press Q to quit, Left and Right arrows to move through sequences.
+
+Other targets exist :
+```sh
+make demo_asan
+make gdb_demo
+make lldb_demo
+```
+
 ### Running the tests
 ```sh
 make test
