@@ -94,23 +94,12 @@ uw * uw_random (uw *u)
 
 uw * uw_random_uniform (uw *u, uw max)
 {
-  uw rest;
-  uw result;
-  assert(u);
-  assert(max);
-  rest = max;
-  result = 0;
-  while (rest > (u32) -1) {
-    rest >>= 32;
-    result <<= 32;
-    result += arc4random();
-  }
-  if (rest) {
-    result <<= 32;
-    result += arc4random_uniform(rest);
-  }
-  *u = result;
-  return u;
+  // TODO
+  (void) u;
+  (void) max;
+  err_puts("uw_random_uniform: not implemented");
+  assert(! "uw_random_uniform: not implemented");
+  return NULL;
 }
 
 #else
