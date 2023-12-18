@@ -20,7 +20,6 @@
 #define LIBC3_TAG_H
 
 #include <stdarg.h>
-#include <stdio.h>
 #include "tag_init.h"
 #include "tag_type.h"
 
@@ -76,7 +75,8 @@ bool *  tag_and (const s_tag *a, const s_tag *b, bool *dest);
 s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *dest);
 s_tag * tag_bnot (const s_tag *tag, s_tag *dest);
 s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *dest);
-s_tag * tag_brackets (s_tag *tag, const s_tag *address, s_tag *dest);
+s_tag * tag_brackets (const s_tag *tag, const s_tag *address,
+                      s_tag *dest);
 s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *dest);
 s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest);
 bool *  tag_lt (const s_tag *a, const s_tag *b, bool *dest);

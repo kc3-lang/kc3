@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <stdlib.h>
 #include <string.h>
 #include <err.h>
@@ -128,21 +128,47 @@ s_array * array_data_set (s_array *a, const uw *address,
   return NULL;
 }
 
-s_tag * array_data_tag (s_tag *a, const s_tag *address, s_tag *dest)
+s_tag * array_data_tag (const s_tag *a, const s_tag *address,
+                        s_tag *dest)
 {
   void *a_data;
   f_init_copy init_copy;
   void *tmp_data;
   s_tag tmp = {0};
-  assert(a->type == TAG_ARRAY);
-  assert(address->type == TAG_ARRAY);
+  if (a->type != TAG_ARRAY) {
+    err_puts("array_data_tag: not an array");
+    assert(! "array_data_tag: not an array");
+    return NULL;
+  }
+  if (address->type != TAG_ARRAY) {
+    err_puts("array_data_tag: address: not an array");
+    assert(! "array_data_tag: address: not an array");
+    return NULL;
+  }
+  if (address->data.array.dimension != 1) {
+    err_puts("array_data_tag: address dimension != 1");
+    assert(! "array_data_tag: address dimension != 1");
+    return NULL;
+  }
+  if (address->data.array.dimensions[0].count !=
+      a->data.array.dimension) {
+    err_write_1("array_data_tag: address dimension mismatch: ");
+    err_inspect_uw(&address->data.array.dimensions[0].count);
+    err_write_1(" != ");
+    err_inspect_uw(&a->data.array.dimension);
+    err_write_1("\n");
+    assert(! "array_data_tag: address dimension mismatch");
+    return NULL;
+  }
   a_data = array_data(&a->data.array, address->data.array.data);
   if (a_data) {
     if (! sym_to_init_copy(a->data.array.type, &init_copy) ||
         ! sym_to_tag_type(a->data.array.type, &tmp.type) ||
         ! tag_to_pointer(&tmp, a->data.array.type, &tmp_data) ||
-        ! init_copy(tmp_data, a_data))
+        (init_copy &&
+         ! init_copy(tmp_data, a_data)))
       return NULL;
+    *dest = tmp;
     return dest;
   }
   return NULL;
