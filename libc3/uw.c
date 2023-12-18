@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from u.h.in BITS=W bits=w */
-#include <assert.h>
+#include "assert.h"
 #include <err.h>
 #include <math.h>
 #include <stdlib.h>

@@ -414,11 +414,10 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_call tmp;
+  s_call tmp = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  call_init(&tmp);
   tmp.arguments = list_new(list_new(NULL));
   arg_addr = &(list_next(tmp.arguments)->tag);
   if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)

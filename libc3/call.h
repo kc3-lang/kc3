@@ -19,8 +19,7 @@
 void     call_clean (s_call *call);
 s_call * call_init (s_call *call);
 s_call * call_init_1 (s_call *call, const s8 *p);
-s_call * call_init_cast (s_call *call, const s_sym *type,
-                         const s_tag *tag);
+s_call * call_init_cast (s_call *call, const s_tag *tag);
 s_call * call_init_copy (s_call *call, const s_call *src);
 s_call * call_init_op (s_call *call);
 s_call * call_init_op_unary (s_call *call);

@@ -236,28 +236,34 @@ s_call * call_init_1 (s_call *call, const s8 *p)
   return call;
 }
 
-s_call * call_init_cast (s_call *call, const s_sym *type,
-                         const s_tag *tag)
+s_call * call_init_cast (s_call *call, const s_tag *tag)
 {
-  s_call tmp = {0};
-  assert(call);
-  assert(type);
-  assert(sym_is_module(type));
-  assert(tag);
-  ident_init(&tmp.ident, type, sym_1("cast"));
-  tmp.arguments = list_new_copy(tag, NULL);
-  *call = tmp;
-  return call;
+  switch (tag->type) {
+  case TAG_CALL:
+    return call_init_copy(call, &tag->data.call);
+  default:
+    break;
+  }
+  err_write_1("call_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Call");
+  assert(! "call_init_cast: cannot cast to Call");
+  return NULL;
 }
 
 s_call * call_init_copy (s_call *call, const s_call *src)
 {
+  s_call tmp = {0};
   assert(src);
   assert(call);
-  ident_init_copy(&call->ident, &src->ident);
-  list_init_copy(&call->arguments, (const s_list **) &src->arguments);
-  call->cfn = src->cfn;
-  call->fn = src->fn;
+  if (! ident_init_copy(&tmp.ident, &src->ident) ||
+      ! list_init_copy(&tmp.arguments,
+                       (const s_list * const *) &src->arguments))
+    return NULL;
+  // TODO: copy cfn and fn ?
+  tmp.cfn = src->cfn;
+  tmp.fn = src->fn;
+  *call = tmp;
   return call;
 }
 

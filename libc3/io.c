@@ -105,6 +105,7 @@ sw io_write_1 (const s8 *x)
 }
 
 DEF_ERR_IO_INSPECT(array,      const s_array *)
+DEF_ERR_IO_INSPECT(call,       const s_call *)
 DEF_ERR_IO_INSPECT(fact,       const s_fact *)
 DEF_ERR_IO_INSPECT(fn_pattern, const s_list *)
 DEF_ERR_IO_INSPECT(list,       const s_list **)
