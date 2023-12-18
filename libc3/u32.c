@@ -94,23 +94,12 @@ u32 * u32_random (u32 *u)
 
 u32 * u32_random_uniform (u32 *u, u32 max)
 {
-  u32 rest;
-  u32 result;
-  assert(u);
-  assert(max);
-  rest = max;
-  result = 0;
-  while (rest > (u32) -1) {
-    rest >>= 32;
-    result <<= 32;
-    result += arc4random();
-  }
-  if (rest) {
-    result <<= 32;
-    result += arc4random_uniform(rest);
-  }
-  *u = result;
-  return u;
+  // TODO
+  (void) u;
+  (void) max;
+  err_puts("u32_random_uniform: not implemented");
+  assert(! "u32_random_uniform: not implemented");
+  return NULL;
 }
 
 #else
