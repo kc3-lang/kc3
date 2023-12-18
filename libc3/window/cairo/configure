@@ -45,6 +45,7 @@ config_asan
 config_gnu
 pkg_config libbsd-overlay
 pkg_config cairo
+pkg_config cairo-ft
 pkg_config freetype2
 pkg_config xkbcommon
 config_lib_have COCOA -framework Cocoa
