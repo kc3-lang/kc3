@@ -17,6 +17,28 @@
 #include "ptr_free.h"
 #include "tag_type.h"
 
+void ptr_free_clean (u_ptr_w *ptr_free)
+{
+  assert(ptr_free);
+  free(ptr_free->p);
+}
+
+void ptr_free_delete (u_ptr_w *ptr_free)
+{
+  assert(ptr_free);
+  ptr_free_clean(ptr_free);
+  free(ptr_free);
+}
+
+u_ptr_w * ptr_free_init (u_ptr_w *ptr_free, void *p)
+{
+  u_ptr_w tmp = {0};
+  assert(ptr_free);
+  tmp.p = p;
+  *ptr_free = tmp;
+  return ptr_free;
+}
+
 u_ptr_w * ptr_free_init_cast (u_ptr_w *p, const s_tag *tag)
 {
   assert(tag);
@@ -40,31 +62,10 @@ u_ptr_w * ptr_free_init_cast (u_ptr_w *p, const s_tag *tag)
   case TAG_UW:  p->p = (void *) ((uw) tag->data.uw);   return p;
   default: break;
   }
-  warnx("ptr_free_cast: cannot cast %s to PtrFree",
+  warnx("ptr_free_init_cast: cannot cast %s to PtrFree",
         tag_type_to_string(tag->type));
+  assert(! "ptr_free_init_cast: cannot cast to PtrFree");
   return NULL;
-}
-
-void ptr_free_clean (u_ptr_w *ptr_free)
-{
-  assert(ptr_free);
-  free(ptr_free->p);
-}
-
-void ptr_free_delete (u_ptr_w *ptr_free)
-{
-  assert(ptr_free);
-  ptr_free_clean(ptr_free);
-  free(ptr_free);
-}
-
-u_ptr_w * ptr_free_init (u_ptr_w *ptr_free, void *p)
-{
-  u_ptr_w tmp = {0};
-  assert(ptr_free);
-  tmp.p = p;
-  *ptr_free = tmp;
-  return ptr_free;
 }
 
 u_ptr_w * ptr_free_init_copy (u_ptr_w *ptr_free, const u_ptr_w *src)
@@ -72,7 +73,7 @@ u_ptr_w * ptr_free_init_copy (u_ptr_w *ptr_free, const u_ptr_w *src)
   u_ptr_w tmp = {0};
   assert(ptr_free);
   assert(src);
-  tmp.p = src->p;
+  (void) src;
   *ptr_free = tmp;
   return ptr_free;
 }
