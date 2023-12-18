@@ -211,7 +211,7 @@ void tag_clean (s_tag *tag)
   }
 }
 
-s_tag * tag_brackets (s_tag *tag, const s_tag *address,
+s_tag * tag_brackets (const s_tag *tag, const s_tag *address,
                       s_tag *dest)
 {
   assert(tag);
