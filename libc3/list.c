@@ -96,24 +96,31 @@ s_list ** list_init_copy (s_list **list, const s_list * const *src)
   s_list **i;
   s_list *next;
   const s_list *s;
+  s_list *tmp;
   assert(src);
   assert(list);
-  i = list;
+  i = &tmp;
   *i = NULL;
   s = *src;
   while (s) {
     *i = list_new(NULL);
-    tag_init_copy(&(*i)->tag, &s->tag);
+    if (! tag_init_copy(&(*i)->tag, &s->tag))
+      goto ko;
     if ((next = list_next(s))) {
       s = next;
       i = &(*i)->next.data.list;
     }
     else {
-      tag_init_copy(&(*i)->next, &s->next);
+      if (! tag_init_copy(&(*i)->next, &s->next))
+        goto ko;
       break;
     }
   }
+  *list = tmp;
   return list;
+ ko:
+  list_delete_all(tmp);
+  return NULL;
 }
 
 s_list * list_init_copy_tag (s_list *list, const s_tag *tag, s_list *next)
@@ -265,25 +272,32 @@ s_list * list_new_str_1 (s8 *x_free, const s8 *x, s_list *next)
 }
 */
 
-s_array * list_to_array (s_list *list, const s_sym *type,
+s_array * list_to_array (const s_list *list, const s_sym *type,
                          s_array *dest)
 {
   f_clean clean;
   s8 *data;
-  void *data_list;
+  const void *data_list;
   f_init_copy init_copy;
-  s_list *l;
+  const s_list *l;
   uw len;
   uw size;
   s_array tmp = {0};
   assert(list);
+  assert(type);
   assert(dest);
   len = list_length(list);
   if (! sym_type_size(type, &size))
     return NULL;
+  if (! size) {
+    err_puts("list_to_array: zero item size");
+    assert(! "list_to_array: zero item size");
+    return NULL;
+  }
   tmp.dimension = 1;
   tmp.type = type;
-  if (! (tmp.dimensions = calloc(1, sizeof(s_array_dimension)))) {
+  tmp.dimensions = calloc(1, sizeof(s_array_dimension));
+  if (! tmp.dimensions) {
     err_puts("list_to_array: out of memory: 1");
     assert(! "list_to_array: out of memory: 1");
     return NULL;
@@ -292,7 +306,7 @@ s_array * list_to_array (s_list *list, const s_sym *type,
   tmp.dimensions[0].count = len;
   tmp.dimensions[0].item_size = size;
   tmp.size = len * size;
-  tmp.data = data = calloc(len, size);
+  tmp.data = calloc(len, size);
   if (! tmp.data) {
     err_puts("list_to_array: out of memory: 2");
     assert(! "list_to_array: out of memory: 2");
@@ -304,12 +318,19 @@ s_array * list_to_array (s_list *list, const s_sym *type,
     free(tmp.dimensions);
     return NULL;
   }
+  data = tmp.data;
   l = list;
   while (l) {
-    if (! tag_to_pointer(&l->tag, type, &data_list) ||
-        ! data_list ||
-        ! init_copy(data, data_list))
+    if (! tag_to_const_pointer(&l->tag, type, &data_list))
       goto ko;
+    if (data_list) {
+      if (init_copy) {
+        if (! init_copy(data, data_list))
+          goto ko;
+      }
+      else
+        memcpy(data, data_list, size);
+    }
     data += size;
     l = list_next(l);
   }

@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <err.h>
 #include <libgen.h>
 #include <stdio.h>
@@ -167,6 +167,9 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
+  (void) call;
+  io_inspect_call(call);
+  io_write_1("\n");
   call_init_copy(&c, call);
   env_eval_call_resolve(env, &c);
   if (c.cfn)
