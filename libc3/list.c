@@ -22,20 +22,12 @@
 #include "tag.h"
 #include "tuple.h"
 
-void list_clean (s_list **list)
+void list_clean (s_list *list)
 {
-  s_list *l;
-  s_list *next;
   assert(list);
-  l = *list;
-  while (l) {
-    tag_clean(&l->tag);
-    next = list_next(l);
-    if (l->next.type != TAG_LIST)
-      tag_clean(&l->next);
-    free(l);
-    l = next;
-  }
+  tag_clean(&list->tag);
+  if (list->next.type != TAG_LIST)
+    tag_clean(&list->next);
 }
 
 s_list * list_delete (s_list *list)
@@ -43,10 +35,7 @@ s_list * list_delete (s_list *list)
   s_list *next = NULL;
   if (list) {
     next = list_next(list);
-    tag_clean(&list->tag);
-    next = list_next(list);
-    if (list->next.type != TAG_LIST)
-      tag_clean(&list->next);
+    list_clean(list);
     free(list);
   }
   return next;
@@ -56,6 +45,15 @@ void list_delete_all (s_list *list)
 {
   while (list)
     list = list_delete(list);
+}
+
+void list_f_clean (s_list **list)
+{
+  s_list *l;
+  assert(list);
+  l = *list;
+  while (l)
+    l = list_delete(l);
 }
 
 s_list * list_init (s_list *list, s_list *next)
