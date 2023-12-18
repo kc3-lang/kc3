@@ -80,6 +80,7 @@ LIBS="$LIBS"
 config_asan
 config_gnu
 pkg_config cairo
+pkg_config cairo-ft
 pkg_config xkbcommon
 
 # Asan config
