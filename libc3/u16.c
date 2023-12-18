@@ -94,23 +94,17 @@ u16 * u16_random (u16 *u)
 
 u16 * u16_random_uniform (u16 *u, u16 max)
 {
-  u16 bits;
-  u8 i;
   u16 rest;
   u16 result;
-  u8 words;
   assert(u);
   assert(max);
-  bits = log2l(max) - 1;
-  words = bits / 32;
+  rest = max;
   result = 0;
-  i = 0;
-  while (i < words) {
+  while (rest > (u32) -1) {
+    rest >>= 32;
     result <<= 32;
     result += arc4random();
-    i++;
   }
-  rest = max >> (words * 32);
   if (rest) {
     result <<= 32;
     result += arc4random_uniform(rest);
