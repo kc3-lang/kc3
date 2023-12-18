@@ -90,17 +90,41 @@ u32 * u32_random (u32 *u)
   return u;
 }
 
+#if 32 > 32
+
 u32 * u32_random_uniform (u32 *u, u32 max)
 {
-  uw size = (uw) log2(max) / 8;
-  u32 rest = (max - ((1 << size) - 1)) >> size;
-  u32 result = 0;
-  u32 tmp;
-  arc4random_buf(&result, size);
+  u16 bits;
+  u8 i;
+  u32 rest;
+  u32 result;
+  u8 words;
+  assert(u);
+  assert(max);
+  bits = log2l(max) - 1;
+  words = bits / 32;
+  result = 0;
+  i = 0;
+  while (i < words) {
+    result <<= 32;
+    result += arc4random();
+    i++;
+  }
+  rest = max >> (words * 32);
   if (rest) {
-    tmp = arc4random_uniform(rest);
-    result += tmp;
+    result <<= 32;
+    result += arc4random_uniform(rest);
   }
   *u = result;
   return u;
 }
+
+#else
+
+u32 * u32_random_uniform (u32 *u, u32 max)
+{
+  *u = arc4random_uniform(max);
+  return u;
+}
+
+#endif
