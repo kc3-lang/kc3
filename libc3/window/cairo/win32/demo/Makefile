@@ -43,6 +43,15 @@ debug: ${PROG_DEBUG}
 demo: ${PROG}
 	time ./${PROG}
 
+demo_asan: ${PROG_ASAN}
+	time ./${PROG_ASAN}
+
+demo_cov: ${PROG_COV}
+	time ./${PROG_COV}
+
+demo_debug: ${PROG_DEBUG}
+	time ./${PROG_DEBUG}
+
 distclean:
 	rm -rf ${DISTCLEANFILES}
 

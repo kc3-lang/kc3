@@ -25,8 +25,8 @@ bool window_cairo_run (s_window_cairo *window)
   return window_cairo_win32_run(window);
 }
 
-LRESULT CALLBACK window_cairo_win32_proc(HWND hwnd, UINT message,
-                                         WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK window_cairo_win32_proc (HWND hwnd, UINT message,
+					  WPARAM wParam, LPARAM lParam)
 {
   HBITMAP buffer_hbitmap;
   HDC buffer_hdc;
@@ -39,7 +39,6 @@ LRESULT CALLBACK window_cairo_win32_proc(HWND hwnd, UINT message,
   s_window_cairo *window;
   HDC window_hdc;
   window = (s_window_cairo *) GetWindowLongPtr(hwnd, GWLP_USERDATA);
-  assert(window);
   switch (message) {
   case WM_DESTROY:
     printf("WM_DESTROY\n");
@@ -76,6 +75,7 @@ LRESULT CALLBACK window_cairo_win32_proc(HWND hwnd, UINT message,
     DeleteObject(buffer_hbitmap);
     DeleteDC(buffer_hdc);
     DeleteDC(window_hdc);
+    DeleteDC(hdc);
     break;
   case WM_SIZE:
     if (! window->resize(window, LOWORD(lParam), HIWORD(lParam)))
