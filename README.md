@@ -283,23 +283,14 @@ All these list formats are supported in pattern matching.
 Script interpreter. Works the same as ic3 but is not interactive.
 
 
-## TODO
+## New in this release
 
  - libc3
    - c3
-     - [DONE] tag_type
-   - macros
-   - modules
-     - defmodule
-     - def
+     - tag_type
    - gui
      - cairo graphics
-   - facts
-     - negative facts : 4 + 2n = not 3 + 2n
-     - with ignore variables
-   - math
-     - fractions
-     - floating point numbers (decimals)
+     - OpenGL graphics
    - maps
      - A map maps keys to values according to an internal hash table.
      - `%{a: 1, 2 => 3}`
@@ -312,6 +303,29 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - as a `s_map` and `s_struct_spec` accessible through their module name.
      - `defstruct`
      - `%Module{a: 1, b: 2}`
+     - access
+     - get
+     - put
+     - machine word alignment (from rtbuf)
+     
+
+## TODO
+
+ - libc3
+   - macros
+   - modules
+     - defmodule
+     - def
+   - facts
+     - negative facts : 4 + 2n = not 3 + 2n
+     - with ignore variables
+   - math
+     - fractions
+     - floating point numbers (decimals)
+   - maps
+     - get (get key value)
+     - put (return a new map)
+   - structs
      - access
      - get
      - put
