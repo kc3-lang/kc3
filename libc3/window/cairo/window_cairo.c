@@ -118,13 +118,15 @@ s_sequence * window_cairo_sequence_init
  f_window_cairo_sequence_load load,
  f_window_cairo_sequence_render render)
 {
+  s_sequence tmp = {0};
   assert(seq);
-  seq->dt = 0.0;
-  seq->t = 0.0;
-  seq->duration = duration;
-  seq->title = title;
-  seq->load = (f_sequence_load) load;
-  seq->render = (f_sequence_render) render;
-  tag_init_void(&seq->tag);
+  tmp.dt = 0.0;
+  tmp.t = 0.0;
+  tmp.duration = duration;
+  tmp.title = title;
+  tmp.load = (f_sequence_load) load;
+  tmp.render = (f_sequence_render) render;
+  tag_init_void(&tmp.tag);
+  *seq = tmp;
   return seq;
 }
