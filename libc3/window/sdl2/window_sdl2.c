@@ -179,6 +179,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
           SDL_GetError());
     goto ko;
   }
+  glewInit();
   int gl_w = window->w;
   int gl_h = window->h;
   SDL_GL_GetDrawableSize(sdl_window, &gl_w, &gl_h);

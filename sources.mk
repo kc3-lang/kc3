@@ -97,6 +97,7 @@ C3_C_SOURCES = \
 	"c3s/buf_readline.h" \
 	"ic3/ic3.c" \
 	"ic3/buf_linenoise.c" \
+	"ic3/config.h" \
 	"ic3/buf_linenoise.h" \
 	"ic3/linenoise.c" \
 	"ic3/buf_wineditline.c" \
@@ -105,82 +106,91 @@ C3_C_SOURCES = \
 	"libc3/struct.c" \
 	"libc3/abs.c" \
 	"libc3/buf.c" \
-	"libc3/buf_inspect_s8.c" \
-	"libc3/buf_inspect_s8.h" \
-	"libc3/buf_inspect_s8_binary.c" \
-	"libc3/buf_inspect_s8_binary.h" \
-	"libc3/buf_inspect_s8_octal.c" \
-	"libc3/buf_inspect_s8_octal.h" \
-	"libc3/buf_inspect_s8_decimal.c" \
-	"libc3/buf_inspect_s8_decimal.h" \
-	"libc3/buf_inspect_s8_hexadecimal.c" \
-	"libc3/buf_inspect_s16.c" \
+	"libc3/set__tag.c" \
+	"libc3/set_item__tag.c" \
+	"libc3/set__tag.h" \
+	"libc3/set_item__tag.h" \
+	"libc3/set_cursor__tag.h" \
+	"libc3/set_cursor__tag.c" \
+	"libc3/skiplist_node__fact.c" \
+	"libc3/skiplist_node__fact.h" \
+	"libc3/skiplist__fact.c" \
+	"libc3/skiplist__fact.h" \
+	"libc3/set_item__fact.h" \
+	"libc3/set__fact.c" \
 	"libc3/call.c" \
 	"libc3/buf_parse.c" \
 	"libc3/arg.c" \
 	"libc3/binding.c" \
 	"libc3/c3.c" \
-	"libc3/buf_inspect_s8_hexadecimal.h" \
-	"libc3/buf_inspect_s16.h" \
-	"libc3/buf_inspect_s16_binary.c" \
-	"libc3/buf_inspect_s16_binary.h" \
-	"libc3/buf_inspect_s16_octal.c" \
-	"libc3/buf_inspect_s16_octal.h" \
-	"libc3/buf_inspect_s16_decimal.c" \
-	"libc3/buf_inspect_s16_decimal.h" \
-	"libc3/buf_inspect_s16_hexadecimal.c" \
-	"libc3/buf_inspect_s16_hexadecimal.h" \
-	"libc3/buf_inspect_s32.c" \
-	"libc3/buf_inspect_s32.h" \
-	"libc3/ptr_free.c" \
+	"libc3/set_item__fact.c" \
+	"libc3/set__fact.h" \
+	"libc3/set_cursor__fact.c" \
+	"libc3/set_cursor__fact.h" \
+	"libc3/uw.c" \
+	"libc3/sw.h" \
+	"libc3/uw.h" \
+	"libc3/sw.c" \
+	"libc3/buf_parse_uw.h" \
+	"libc3/buf_parse_uw.c" \
+	"libc3/buf_parse_sw.h" \
+	"libc3/buf_parse_sw.c" \
+	"libc3/buf_inspect_uw_hexadecimal.h" \
+	"libc3/buf_inspect_uw_hexadecimal.c" \
+	"libc3/buf_inspect_uw_decimal.h" \
+	"libc3/buf_inspect_uw_decimal.c" \
+	"libc3/u64.h" \
 	"libc3/bool.c" \
 	"libc3/bool.h" \
 	"libc3/buf_file.c" \
-	"libc3/buf_inspect_s32_binary.c" \
-	"libc3/buf_inspect_s32_binary.h" \
-	"libc3/buf_inspect_s32_octal.c" \
-	"libc3/buf_inspect_s32_octal.h" \
-	"libc3/buf_inspect_s32_decimal.c" \
-	"libc3/buf_inspect_s32_decimal.h" \
-	"libc3/buf_inspect_s32_hexadecimal.c" \
-	"libc3/buf_inspect_s32_hexadecimal.h" \
-	"libc3/buf_inspect_s64.c" \
-	"libc3/buf_inspect_s64.h" \
-	"libc3/buf_inspect_s64_binary.c" \
-	"libc3/buf_inspect_s64_binary.h" \
-	"libc3/buf_inspect_sw.c" \
+	"libc3/buf_inspect_uw_octal.h" \
+	"libc3/buf_inspect_uw_octal.c" \
+	"libc3/buf_inspect_uw_binary.h" \
+	"libc3/buf_inspect_uw.h" \
+	"libc3/buf_inspect_uw_binary.c" \
+	"libc3/buf_inspect_uw.c" \
+	"libc3/buf_inspect_sw_hexadecimal.h" \
+	"libc3/buf_inspect_sw_hexadecimal.c" \
+	"libc3/buf_inspect_sw_decimal.h" \
+	"libc3/buf_inspect_sw_decimal.c" \
+	"libc3/buf_inspect_sw_octal.h" \
+	"libc3/buf_inspect_sw_octal.c" \
+	"libc3/buf_inspect_sw_binary.h" \
 	"libc3/buf_parse.h" \
 	"libc3/buf.h" \
 	"libc3/buf_save.c" \
 	"libc3/facts_spec_cursor.c" \
-	"libc3/buf_inspect_s64_octal.c" \
-	"libc3/buf_inspect_s64_octal.h" \
-	"libc3/buf_inspect_s64_decimal.c" \
-	"libc3/buf_inspect_s64_decimal.h" \
-	"libc3/buf_inspect_s64_hexadecimal.c" \
-	"libc3/buf_inspect_s64_hexadecimal.h" \
-	"libc3/buf_inspect_sw.h" \
 	"libc3/buf_inspect_sw_binary.c" \
-	"libc3/buf_inspect_sw_binary.h" \
-	"libc3/buf_inspect_sw_octal.c" \
-	"libc3/buf_inspect_sw_octal.h" \
-	"libc3/buf_inspect_sw_decimal.c" \
+	"libc3/buf_inspect_sw.h" \
+	"libc3/buf_inspect_sw.c" \
+	"libc3/u64.c" \
+	"libc3/s64.h" \
+	"libc3/s64.c" \
+	"libc3/buf_parse_u64.h" \
+	"libc3/buf_parse_u64.c" \
+	"libc3/buf_parse_s64.h" \
+	"libc3/buf_parse_s64.c" \
+	"libc3/buf_inspect_u64_hexadecimal.h" \
+	"libc3/buf_inspect_u64_hexadecimal.c" \
+	"libc3/buf_inspect_u64_decimal.h" \
+	"libc3/buf_inspect_u64_decimal.c" \
+	"libc3/u32.h" \
 	"libc3/buf_file.h" \
 	"libc3/buf_save.h" \
 	"libc3/call.h" \
-	"libc3/buf_inspect_sw_decimal.h" \
-	"libc3/buf_inspect_sw_hexadecimal.c" \
-	"libc3/buf_inspect_sw_hexadecimal.h" \
+	"libc3/buf_inspect_u64_octal.h" \
+	"libc3/buf_inspect_u64_octal.c" \
+	"libc3/buf_inspect_u64_binary.h" \
 	"libc3/buf_parse_s.c.in" \
-	"libc3/buf_inspect_u8.h" \
-	"libc3/buf_inspect_u8_binary.c" \
-	"libc3/buf_inspect_u8_binary.h" \
-	"libc3/buf_inspect_u8_octal.c" \
-	"libc3/buf_inspect_u8_octal.h" \
-	"libc3/buf_inspect_u8_decimal.c" \
-	"libc3/buf_inspect_u8_decimal.h" \
+	"libc3/buf_inspect_u64_binary.c" \
+	"libc3/buf_inspect_u64.h" \
+	"libc3/buf_inspect_u64.c" \
+	"libc3/buf_inspect_s64_hexadecimal.h" \
+	"libc3/buf_inspect_s64_hexadecimal.c" \
+	"libc3/buf_inspect_s64_decimal.h" \
 	"libc3/binding.h" \
 	"libc3/sequence.c" \
+	"libc3/buf_inspect_s64_decimal.c" \
 	"libc3/io.c" \
 	"libc3/ceiling.c" \
 	"libc3/ceiling.h" \
@@ -188,139 +198,129 @@ C3_C_SOURCES = \
 	"libc3/cfn.h" \
 	"libc3/character.c" \
 	"libc3/character.h" \
-	"libc3/buf_inspect_u8_hexadecimal.c" \
-	"libc3/buf_inspect_u8_hexadecimal.h" \
-	"libc3/buf_inspect_u16.c" \
-	"libc3/buf_inspect_u16.h" \
-	"libc3/buf_inspect_u16_binary.c" \
-	"libc3/buf_inspect_u16_binary.h" \
-	"libc3/buf_inspect_u16_octal.c" \
-	"libc3/buf_inspect_u16_octal.h" \
-	"libc3/buf_inspect_u16_decimal.c" \
-	"libc3/buf_inspect_u16_decimal.h" \
-	"libc3/buf_inspect_u16_hexadecimal.c" \
-	"libc3/s8.c" \
+	"libc3/buf_inspect_s64_octal.h" \
+	"libc3/buf_inspect_s64_octal.c" \
+	"libc3/buf_inspect_s64_binary.h" \
+	"libc3/buf_inspect_s64_binary.c" \
+	"libc3/buf_inspect_s64.h" \
+	"libc3/buf_inspect_s64.c" \
+	"libc3/u8.c" \
+	"libc3/s32.h" \
+	"libc3/s32.c" \
+	"libc3/buf_parse_u32.h" \
+	"libc3/buf_parse_u32.c" \
+	"libc3/buf_parse_s32.h" \
+	"libc3/buf_parse_s32.c" \
+	"libc3/buf_inspect_u32_hexadecimal.h" \
+	"libc3/u16.h" \
 	"libc3/compare.c" \
 	"libc3/buf_inspect.c" \
 	"libc3/compare.h" \
-	"libc3/buf_inspect_u16_hexadecimal.h" \
-	"libc3/buf_inspect_u32.c" \
-	"libc3/buf_inspect_u32.h" \
-	"libc3/buf_inspect_u32_binary.c" \
-	"libc3/buf_inspect_u32_binary.h" \
-	"libc3/buf_inspect_u32_octal.c" \
-	"libc3/buf_inspect_u32_octal.h" \
-	"libc3/buf_inspect_u32_decimal.c" \
-	"libc3/buf_inspect_u32_decimal.h" \
 	"libc3/buf_inspect_u32_hexadecimal.c" \
-	"libc3/buf_inspect_u64.c" \
+	"libc3/buf_inspect_u32_decimal.h" \
+	"libc3/buf_inspect_u32_decimal.c" \
+	"libc3/buf_inspect_u32_octal.h" \
+	"libc3/buf_inspect_u32_octal.c" \
+	"libc3/buf_inspect_u32_binary.h" \
+	"libc3/buf_inspect_u32_binary.c" \
+	"libc3/buf_inspect_u32.h" \
+	"libc3/buf_inspect_s32_hexadecimal.h" \
+	"libc3/buf_inspect_u32.c" \
+	"libc3/buf_inspect_s32.c" \
 	"libc3/error.c" \
 	"libc3/error.h" \
 	"libc3/error_handler.c" \
 	"libc3/eval.h" \
 	"libc3/eval.c" \
 	"libc3/facts.h" \
-	"libc3/buf_inspect_u32_hexadecimal.h" \
-	"libc3/buf_inspect_u64.h" \
-	"libc3/buf_inspect_u64_binary.c" \
-	"libc3/buf_inspect_u64_binary.h" \
-	"libc3/buf_inspect_u64_octal.c" \
-	"libc3/buf_inspect_u64_octal.h" \
-	"libc3/buf_inspect_u64_decimal.c" \
-	"libc3/buf_inspect_u64_decimal.h" \
-	"libc3/buf_inspect_u64_hexadecimal.c" \
-	"libc3/buf_inspect_u64_hexadecimal.h" \
-	"libc3/buf_inspect_uw.c" \
-	"libc3/buf_parse_s8.c" \
-	"libc3/fact.c" \
+	"libc3/buf_inspect_s32_hexadecimal.c" \
+	"libc3/buf_inspect_s32_decimal.h" \
+	"libc3/buf_inspect_s32_decimal.c" \
+	"libc3/buf_inspect_s32_octal.h" \
+	"libc3/buf_inspect_s32_octal.c" \
+	"libc3/buf_inspect_s32_binary.h" \
+	"libc3/buf_inspect_s32_binary.c" \
+	"libc3/buf_inspect_s32.h" \
+	"libc3/s16.h" \
+	"libc3/s16.c" \
+	"libc3/buf_parse_u16.h" \
+	"libc3/buf_parse_u16.c" \
+	"libc3/buf_parse_s16.h" \
+	"libc3/fn.c" \
 	"libc3/fact.h" \
 	"libc3/facts_cursor.c" \
-	"libc3/buf_inspect_uw.h" \
-	"libc3/buf_inspect_uw_binary.c" \
-	"libc3/buf_inspect_uw_binary.h" \
-	"libc3/buf_inspect_uw_octal.c" \
-	"libc3/buf_inspect_uw_octal.h" \
-	"libc3/buf_inspect_uw_decimal.c" \
-	"libc3/buf_inspect_uw_decimal.h" \
-	"libc3/buf_inspect_uw_hexadecimal.c" \
-	"libc3/buf_inspect_uw_hexadecimal.h" \
-	"libc3/buf_parse_s8.h" \
 	"libc3/buf_parse_s16.c" \
-	"libc3/buf_parse_s16.h" \
-	"libc3/buf_parse_s32.c" \
-	"libc3/buf_parse_s32.h" \
-	"libc3/list.c" \
+	"libc3/buf_inspect_u16_hexadecimal.h" \
+	"libc3/buf_inspect_u16_hexadecimal.c" \
+	"libc3/buf_inspect_u16_decimal.c" \
+	"libc3/buf_inspect_u16_decimal.h" \
+	"libc3/buf_inspect_u16_octal.h" \
+	"libc3/buf_inspect_u16_octal.c" \
+	"libc3/buf_inspect_u16_binary.h" \
+	"libc3/buf_inspect_u16_binary.c" \
+	"libc3/buf_inspect_u16.h" \
+	"libc3/buf_inspect_u16.c" \
+	"libc3/buf_inspect_s16_hexadecimal.h" \
+	"libc3/buf_inspect_s16_hexadecimal.c" \
 	"libc3/facts_cursor.h" \
 	"libc3/facts_spec.c" \
 	"libc3/facts_spec.h" \
 	"libc3/facts_spec_cursor.h" \
-	"libc3/buf_parse_s64.c" \
-	"libc3/buf_parse_s64.h" \
-	"libc3/buf_parse_sw.c" \
-	"libc3/buf_parse_sw.h" \
-	"libc3/buf_parse_u8.c" \
-	"libc3/buf_parse_u8.h" \
-	"libc3/buf_parse_u16.c" \
-	"libc3/buf_parse_u16.h" \
-	"libc3/buf_parse_u32.c" \
-	"libc3/buf_parse_u32.h" \
-	"libc3/buf_parse_u64.c" \
-	"libc3/buf_parse_u64.h" \
-	"libc3/buf_parse_uw.c" \
-	"libc3/buf_parse_uw.h" \
-	"libc3/tag_init.h" \
+	"libc3/buf_inspect_s16_decimal.h" \
+	"libc3/buf_inspect_s16_decimal.c" \
+	"libc3/buf_inspect_s16_octal.h" \
+	"libc3/buf_inspect_s16_octal.c" \
+	"libc3/buf_inspect_s16_binary.h" \
+	"libc3/buf_inspect_s16_binary.c" \
+	"libc3/buf_inspect_s16.h" \
+	"libc3/buf_inspect_s16.c" \
+	"libc3/u8.h" \
+	"libc3/s8.h" \
+	"libc3/s8.c" \
 	"libc3/ptr_free.h" \
+	"libc3/buf_parse_u8.h" \
 	"libc3/buf_parse_u.h.in" \
 	"libc3/facts_with.c" \
 	"libc3/facts_with.h" \
 	"libc3/facts_with_cursor.c" \
-	"libc3/set__fact.c" \
-	"libc3/set__fact.h" \
-	"libc3/set__tag.c" \
-	"libc3/set__tag.h" \
-	"libc3/set_cursor__fact.c" \
-	"libc3/set_cursor__fact.h" \
-	"libc3/set_cursor__tag.c" \
-	"libc3/set_cursor__tag.h" \
-	"libc3/set_item__fact.c" \
-	"libc3/set_item__fact.h" \
-	"libc3/set_item__tag.c" \
-	"libc3/set_item__tag.h" \
-	"libc3/skiplist__fact.c" \
-	"libc3/skiplist__fact.h" \
-	"libc3/skiplist_node__fact.c" \
-	"libc3/skiplist_node__fact.h" \
-	"libc3/s8.h" \
+	"libc3/buf_parse_u8.c" \
+	"libc3/buf_parse_s8.h" \
+	"libc3/buf_parse_s8.c" \
+	"libc3/buf_inspect_u8_hexadecimal.h" \
+	"libc3/buf_inspect_u8_decimal.h" \
+	"libc3/buf_inspect_u8_hexadecimal.c" \
+	"libc3/buf_inspect_u8_decimal.c" \
+	"libc3/buf_inspect_u8_octal.h" \
+	"libc3/buf_inspect_u8_octal.c" \
+	"libc3/buf_inspect_u8_binary.h" \
+	"libc3/buf_inspect_u8_binary.c" \
+	"libc3/buf_inspect_u8.h" \
+	"libc3/buf_inspect_u8.c" \
+	"libc3/buf_inspect_s8.h" \
 	"libc3/facts_with_cursor.h" \
 	"libc3/float.h" \
 	"libc3/frame.c" \
 	"libc3/frame.h" \
 	"libc3/types.h" \
-	"libc3/s16.c" \
-	"libc3/s16.h" \
-	"libc3/s32.c" \
-	"libc3/s32.h" \
+	"libc3/buf_inspect_s8_hexadecimal.h" \
 	"libc3/f64.h" \
-	"libc3/s64.c" \
-	"libc3/s64.h" \
-	"libc3/sw.c" \
-	"libc3/f32.c" \
-	"libc3/sw.h" \
-	"libc3/u8.c" \
-	"libc3/u8.h" \
-	"libc3/u16.c" \
-	"libc3/u16.h" \
-	"libc3/u32.c" \
-	"libc3/u32.h" \
-	"libc3/u64.c" \
-	"libc3/u64.h" \
-	"libc3/uw.c" \
-	"libc3/uw.h" \
+	"libc3/buf_inspect_s8_hexadecimal.c" \
+	"libc3/hash.c" \
+	"libc3/buf_inspect_s8_decimal.h" \
+	"libc3/buf_inspect_s8_decimal.c" \
+	"libc3/buf_inspect_s8_octal.h" \
+	"libc3/buf_inspect_s8_octal.c" \
+	"libc3/buf_inspect_s8_binary.h" \
+	"libc3/buf_inspect_s8_binary.c" \
+	"libc3/buf_inspect_s8.c" \
+	"libc3/tag_init.h" \
+	"libc3/list_init.h" \
 	"libc3/hash.h" \
 	"libc3/ident.h" \
 	"libc3/integer.c" \
 	"libc3/integer.h" \
-	"libc3/list.h" \
+	"libc3/point.h.in" \
+	"libc3/u.c.in" \
 	"libc3/log.c" \
 	"libc3/log.h" \
 	"libc3/buf_inspect_s.h.in" \
@@ -347,7 +347,6 @@ C3_C_SOURCES = \
 	"libc3/facts.c" \
 	"libc3/set_item.c.in" \
 	"libc3/set_item.h.in" \
-	"libc3/sym.c" \
 	"libc3/s.h.in" \
 	"libc3/sign.c" \
 	"libc3/sign.h" \
@@ -370,13 +369,14 @@ C3_C_SOURCES = \
 	"libc3/buf_inspect_s.c.in" \
 	"libc3/tag.h" \
 	"libc3/list_init.c" \
+	"libc3/env.c" \
 	"libc3/tag_shift_right.c" \
 	"libc3/error_handler.h" \
-	"libc3/buf_inspect_u8.c" \
+	"libc3/ptr_free.c" \
 	"libc3/ident.c" \
+	"libc3/tag_type.c" \
 	"libc3/assert.h" \
 	"libc3/tag_init.c" \
-	"libc3/list_init.h" \
 	"libc3/tag_bor.c" \
 	"libc3/tag_bxor.c" \
 	"libc3/buf_inspect_s_base.c.in" \
@@ -430,11 +430,11 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/demo/window_sdl2_demo.c" \
 	"libc3/window/sdl2/demo/lightspeed.c" \
 	"libc3/window/sdl2/demo/lightspeed.h" \
+	"libc3/window/sdl2/demo/earth.c" \
 	"libc3/window/sdl2/demo/flies.c" \
 	"libc3/window/sdl2/demo/toasters.c" \
 	"libc3/window/sdl2/demo/flies.h" \
 	"libc3/window/sdl2/demo/toasters.h" \
-	"libc3/window/sdl2/demo/earth.c" \
 	"libc3/window/sdl2/demo/earth.h" \
 	"libc3/window/sdl2/demo/window_sdl2_demo.h" \
 	"libc3/window/sdl2/types.h" \
@@ -444,26 +444,40 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/sdl2_font.c" \
 	"libc3/window/sdl2/sdl2_sprite.c" \
 	"libc3/window/sdl2/sdl2_sprite.h" \
-	"libc3/window/sdl2/gl.c" \
 	"libc3/window/sdl2/gl_camera.c" \
 	"libc3/window/sdl2/gl_sphere.c" \
-	"libc3/window/sdl2/gl.h" \
+	"libc3/window/sdl2/gl_point_3d.c" \
+	"libc3/window/sdl2/gl_point_2d.c" \
+	"libc3/window/sdl2/disabled/mandelbrot.c" \
+	"libc3/window/sdl2/disabled/mandelbrot.h" \
 	"libc3/window/sdl2/gl_camera.h" \
 	"libc3/window/sdl2/gl_cylinder.c" \
 	"libc3/window/sdl2/gl_cylinder.h" \
 	"libc3/window/sdl2/gl_sphere.h" \
+	"libc3/window/sdl2/gl_point_2d.h" \
+	"libc3/window/sdl2/gl_object.c" \
+	"libc3/window/sdl2/gl_object.h" \
+	"libc3/window/sdl2/gl_point_3d.h" \
+	"libc3/window/sdl2/gl_matrix_4d.h" \
+	"libc3/window/sdl2/gl_matrix_3d.h" \
+	"libc3/window/sdl2/gl_matrix_4d.c" \
 	"libc3/array.h" \
-	"libc3/u.c.in" \
+	"libc3/u16.c" \
+	"libc3/list.c" \
 	"libc3/u.h.in" \
 	"libc3/sha1.h" \
 	"libc3/file.h" \
-	"libc3/env.c" \
+	"libc3/fact.c" \
+	"libc3/list.h" \
 	"libc3/fn.h" \
 	"libc3/map.h" \
+	"libc3/sym.c" \
 	"libc3/struct_type.h" \
+	"libc3/u32.c" \
 	"libc3/license.c" \
 	"libc3/file.c" \
 	"libc3/operator.c" \
+	"libc3/f32.c" \
 	"libc3/ptr.c" \
 	"libc3/ptag.h" \
 	"libc3/tag_add.c" \
@@ -476,17 +490,14 @@ C3_C_SOURCES = \
 	"libc3/ptag.c" \
 	"libc3/var.h" \
 	"libc3/var.c" \
-	"libc3/fn.c" \
-	"libc3/time.h" \
 	"libc3/io.h" \
+	"libc3/time.h" \
 	"libc3/void.c" \
 	"libc3/void.h" \
-	"libc3/tag_type.c" \
 	"libc3/struct.h" \
 	"libc3/module.c" \
 	"libc3/tag_type.h" \
 	"libc3/time.c" \
-	"libc3/hash.c" \
 	"test/buf_inspect_test.c" \
 	"test/bool_test.c" \
 	"test/buf_parse_test.c" \
@@ -934,6 +945,14 @@ C3_EXTERNAL_SOURCES = \
 	"libffi/src/x86/win64_intel.S" \
 	"libffi/src/x86/unix64.S" \
 	"libffi/src/x86/win64.S" \
+	"libffi/src/x86/unix64.o" \
+	"libffi/src/x86/ffi64.o" \
+	"libffi/src/x86/ffi64.lo" \
+	"libffi/src/x86/win64.o" \
+	"libffi/src/x86/ffiw64.o" \
+	"libffi/src/x86/unix64.lo" \
+	"libffi/src/x86/ffiw64.lo" \
+	"libffi/src/x86/win64.lo" \
 	"libffi/src/xtensa/ffitarget.h" \
 	"libffi/src/xtensa/ffi.c" \
 	"libffi/src/xtensa/sysv.S" \
@@ -945,6 +964,18 @@ C3_EXTERNAL_SOURCES = \
 	"libffi/src/raw_api.c" \
 	"libffi/src/tramp.c" \
 	"libffi/src/types.c" \
+	"libffi/src/prep_cif.lo" \
+	"libffi/src/tramp.o" \
+	"libffi/src/types.o" \
+	"libffi/src/raw_api.o" \
+	"libffi/src/closures.o" \
+	"libffi/src/raw_api.lo" \
+	"libffi/src/tramp.lo" \
+	"libffi/src/prep_cif.o" \
+	"libffi/src/types.lo" \
+	"libffi/src/java_raw_api.o" \
+	"libffi/src/java_raw_api.lo" \
+	"libffi/src/closures.lo" \
 	"libffi/testsuite/config/default.exp" \
 	"libffi/testsuite/emscripten/build-tests.sh" \
 	"libffi/testsuite/emscripten/build.sh" \
@@ -1177,6 +1208,7 @@ C3_EXTERNAL_SOURCES = \
 	"libffi/testsuite/Makefile.am" \
 	"libffi/testsuite/Makefile.in" \
 	"libffi/testsuite/Makefile" \
+	"libffi/libffi_convenience.la" \
 	"libffi/LICENSE-BUILDTOOLS" \
 	"libffi/ChangeLog.old" \
 	"libffi/LICENSE" \
@@ -1203,6 +1235,7 @@ C3_EXTERNAL_SOURCES = \
 	"libffi/libtool-version" \
 	"libffi/ltmain.sh" \
 	"libffi/make_sunver.pl" \
+	"libffi/libffi.la" \
 	"libffi/missing" \
 	"libffi/msvcc.sh" \
 	"libffi/stamp-h.in" \
