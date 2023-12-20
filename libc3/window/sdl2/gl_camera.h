@@ -15,9 +15,9 @@
 
 #include "types.h"
 
-/* Stack-allocation compatible functions, call gl_camera_clean after
-   use. */
-//void          gl_camera_clean (s_gl_camera *camera);
+/* Stack-allocation compatible functions, call gl_camera_clean
+   after use. */
+void          gl_camera_clean (s_gl_camera *camera);
 s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h);
 
 /* Heap-allocation functions, call gl_camera_delete after use. */
@@ -25,10 +25,8 @@ void          gl_camera_delete (s_gl_camera *camera);
 s_gl_camera * gl_camera_new (uw w, uw h);
 
 /* Operators. */
+void          gl_camera_render (s_gl_camera *camera);
 s_gl_camera * gl_camera_set_aspect_ratio (s_gl_camera *camera, uw w,
                                           uw h);
-
-/* Observers. */
-void          gl_camera_render (const s_gl_camera *camera);
 
 #endif /* GL_CAMERA_H */

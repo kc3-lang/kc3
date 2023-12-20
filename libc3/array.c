@@ -71,8 +71,9 @@ void array_clean (s_array *a)
         i++;
       }
     }
-    free(a->data);
   }
+  if (a->data_free)
+    free(a->data_free);
   if (a->tags) {
     i = 0;
     while (i < a->count) {
@@ -224,6 +225,7 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
   }
   tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
   tmp.count = count;
+  tmp.data_free = NULL;
   tmp.data = NULL;
   tmp.tags = NULL;
   *a = tmp;
@@ -311,7 +313,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   tmp.size = src->size;
   tmp.type = src->type;
   if (src->data) {
-    tmp.data = calloc(1, src->size);
+    tmp.data = tmp.data_free = calloc(1, src->size);
     if (! tmp.data) {
       warnx("array_init_copy: failed to allocate memory");
       assert(! "array_init_copy: failed to allocate memory");

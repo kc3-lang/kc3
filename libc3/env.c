@@ -116,33 +116,30 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   assert(dest);
   array_init_copy(&tmp, array);
   item_size = tmp.dimensions[tmp.dimension - 1].item_size;
-  if (tmp.data) {
-    *dest = tmp;
-    return true;
-  }
-  assert(array->tags);
-  tmp.data = calloc(tmp.dimensions[0].count,
-                    tmp.dimensions[0].item_size);
-  if (! tmp.data) {
-    warn("env_eval_array: failed to allocate memory");
-    assert(! "env_eval_array: failed to allocate memory");
-    return false;
-  }
-  if (! sym_to_init_cast(tmp.type, &init_cast))
-    goto ko;
-  data = tmp.data;
-  tag = tmp.tags;
-  i = 0;
-  while (i < tmp.count) {
-    s_tag tag_eval;
-    if (! env_eval_tag(env, tag, &tag_eval))
+  if (! tmp.data && array->tags) {
+    tmp.data = tmp.data_free = calloc(tmp.dimensions[0].count,
+                                      tmp.dimensions[0].item_size);
+    if (! tmp.data) {
+      warn("env_eval_array: failed to allocate memory");
+      assert(! "env_eval_array: failed to allocate memory");
+      return false;
+    }
+    if (! sym_to_init_cast(tmp.type, &init_cast))
       goto ko;
-    if (! init_cast(data, &tag_eval))
-      goto ko;
-    tag_clean(&tag_eval);
-    data += item_size;
-    tag++;
-    i++;
+    data = tmp.data;
+    tag = tmp.tags;
+    i = 0;
+    while (i < tmp.count) {
+      s_tag tag_eval;
+      if (! env_eval_tag(env, tag, &tag_eval))
+        goto ko;
+      if (! init_cast(data, &tag_eval))
+        goto ko;
+      tag_clean(&tag_eval);
+      data += item_size;
+      tag++;
+      i++;
+    }
   }
   *dest = tmp;
   return true;

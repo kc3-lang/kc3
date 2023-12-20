@@ -12,7 +12,7 @@
  */
 #include <math.h>
 #include <libc3/c3.h>
-#include "gl.h"
+#include "gl_object.h"
 #include "gl_cylinder.h"
 
 s_gl_cylinder * gl_cylinder_init (s_gl_cylinder *cylinder,
@@ -21,31 +21,28 @@ s_gl_cylinder * gl_cylinder_init (s_gl_cylinder *cylinder,
   f64 angle;
   uw i;
   uw j;
-  s_gl_3d *p;
+  s_gl_point_3d *p;
+  f64 z;
   assert(cylinder);
   assert(segments_u);
   assert(segments_v);
   cylinder->segments_u = segments_u;
   cylinder->segments_v = segments_v;
-  p = calloc(segments_u * segments_v + 2,
-             sizeof(s_gl_3d));
-  if (! p) {
-    err_write_1("gl_cylinder_init(");
-    err_inspect_uw(&segments_u);
-    err_write_1(", ");
-    err_inspect_uw(&segments_v);
-    err_puts("): failed to allocate memory");
+  if (! gl_object_init(&cylinder->object) ||
+      ! gl_object_allocate(&cylinder->object,
+                           segments_u * segments_v + 2,
+                           6 * (segments_u + 1) * (segments_v + 2)))
     return NULL;
-  }
-  cylinder->vertex = p;
+  p = cylinder->object.vertex.data;
   i = 0;
   while (i < segments_v) {
+    z = (f64) i / segments_v;
     j = 0;
     while (j < segments_u) {
       angle = (f64) j / segments_u * M_PI * 2.0;
       p->x = cos(angle);
       p->y = sin(angle);
-      p->z = i / segments_v;
+      p->z = z;
       p++;
       j++;
     }
@@ -56,24 +53,8 @@ s_gl_cylinder * gl_cylinder_init (s_gl_cylinder *cylinder,
 
 void gl_cylinder_render (const s_gl_cylinder *cylinder)
 {
-  uw i;
-  uw j;
-  s_gl_3d *p;
   assert(cylinder);
+  (void) cylinder;
   glBegin(GL_POINTS);
-  p = cylinder->vertex;
-  i = 0;
-  while (i < cylinder->segments_v) {
-    j = 0;
-    while (j < cylinder->segments_u) {
-      gl_vertex_3d(p);
-      p++;
-      j++;
-    }
-    i++;
-  }
-  gl_vertex_3d(p);
-  p++;
-  gl_vertex_3d(p);
   glEnd();
 }
