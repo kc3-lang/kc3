@@ -18,13 +18,8 @@
 #ifndef LIBC3_WINDOW_SDL2_TYPES_H
 #define LIBC3_WINDOW_SDL2_TYPES_H
 
-#include <SDL.h>
 #include <GL/glew.h>
-#if defined(__APPLE__)
-# include <OpenGL/glcorearb.h>
-# include <OpenGL/glu.h>
-#else
-#endif
+#include <SDL.h>
 #include <FTGL/ftgl.h>
 #include <png.h>
 #include <libc3/types.h>
@@ -35,6 +30,7 @@ typedef struct gl_cylinder  s_gl_cylinder;
 typedef struct gl_matrix_3d s_gl_matrix_3d;
 typedef struct gl_matrix_4d s_gl_matrix_4d;
 typedef struct gl_object    s_gl_object;
+typedef struct gl_ortho     s_gl_ortho;
 typedef struct gl_point_2d  s_gl_point_2d;
 typedef struct gl_point_3d  s_gl_point_3d;
 typedef struct gl_sphere    s_gl_sphere;
@@ -201,6 +197,20 @@ struct gl_cylinder {
   s_gl_object object;
   uw segments_u;
   uw segments_v;
+};
+
+struct gl_ortho {
+  f64 x1;
+  f64 x2;
+  f64 y1;
+  f64 y2;
+  f64 clip_z_near;
+  f64 clip_z_far;
+  s_gl_point_3d position;
+  s_gl_point_3d rotation;
+  s_gl_matrix_4d matrix;
+  u32 gl_matrix_loc;
+  u32 gl_shader_program;
 };
 
 struct gl_sphere {

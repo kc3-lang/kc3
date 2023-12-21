@@ -33,6 +33,9 @@ s_gl_matrix_4d * gl_matrix_4d_new_matrix_mult (const s_gl_matrix_4d *a,
 s_gl_matrix_4d * gl_matrix_4d_new_zero (void);
 
 /* Operators. */
+s_gl_matrix_4d * gl_matrix_4d_ortho (s_gl_matrix_4d *m, f64 x1, f64 x2,
+                                     f64 y1, f64 y2, f64 clip_z_near,
+                                     f64 clip_z_far);
 s_gl_matrix_4d * gl_matrix_4d_perspective (s_gl_matrix_4d *m, f64 fov_y,
                                            f64 aspect_ratio,
                                            f64 clip_z_near,
