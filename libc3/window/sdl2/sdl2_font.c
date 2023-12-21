@@ -16,7 +16,8 @@
 void sdl2_font_clean (s_sdl2_font *font)
 {
   assert(font);
-  ftglDestroyFont(font->ftgl_font);
+  if (font->ftgl_font)
+    ftglDestroyFont(font->ftgl_font);
   str_clean(&font->path);
   str_clean(&font->real_path);
 }

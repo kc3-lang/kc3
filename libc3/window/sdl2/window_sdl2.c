@@ -196,40 +196,40 @@ bool window_sdl2_run (s_window_sdl2 *window)
   int display_index;
   display_index = SDL_GetWindowDisplayIndex(sdl_window);
   if (display_index < 0) {
-    fprintf(stderr, "window_sdl2_run: failed to get display index: %s\n",
-            SDL_GetError());
+    err_write_1("window_sdl2_run: failed to get display index: ");
+    err_puts(SDL_GetError());
     goto ko;
   }
   if (SDL_GetDisplayDPI(display_index, &window->dpi, &window->dpi_w,
                         &window->dpi_h) != 0) {
-    fprintf(stderr, "window_sdl2_run: failed to get display DPI: %s\n",
-            SDL_GetError());
+    err_write_1("window_sdl2_run: failed to get display DPI: ");
+    err_puts(SDL_GetError());
     goto ko;
   }
-  printf("Window DPI: dpi=%.2f, dpi_w=%.2f, dpi_h=%.2f\n", window->dpi,
-         window->dpi_w, window->dpi_h);
+  fprintf(stderr, "window_sdl2_run: dpi=%.2f, dpi_w=%.2f, dpi_h=%.2f\n",
+          window->dpi, window->dpi_w, window->dpi_h);
   SDL_GL_SetSwapInterval(1);
   if (! window->load(window)) {
-    warnx("window_sdl2_run: window->load => false");
+    err_puts("window_sdl2_run: window->load => false");
     goto ko;
   }
   while (! quit) {
     while (SDL_PollEvent(&sdl_event) != 0) {
       switch (sdl_event.type) {
       case SDL_QUIT:
-        warnx("window_sdl2_run: SDL_QUIT");
+        err_puts("window_sdl2_run: SDL_QUIT");
         quit = 1;
         break;
       case SDL_KEYDOWN:
         if (! window->key(window, &sdl_event.key.keysym)) {
-          warnx("window_sdl2_run: window->key -> false");
+          err_puts("window_sdl2_run: window->key -> false");
           quit = 1;
         }
         break;
       case SDL_MOUSEBUTTONDOWN:
         if (! window->button(window, sdl_event.button.button,
                              sdl_event.button.x, sdl_event.button.y)) {
-          warnx("window_sdl2_run: window->button -> false");
+          err_puts("window_sdl2_run: window->button -> false");
           quit = 1;
         }
         break;
@@ -238,7 +238,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
         //int relativeY = sdl_event.motion.yrel;
         if (! window->motion(window, sdl_event.motion.x,
                              sdl_event.motion.y)) {
-          warnx("window_sdl2_run: window->motion -> false");
+          err_puts("window_sdl2_run: window->motion -> false");
           quit = 1;
         }
         break;
@@ -246,7 +246,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
         if (sdl_event.window.event == SDL_WINDOWEVENT_RESIZED) {
           if (! window->resize(window, sdl_event.window.data1,
                                sdl_event.window.data2)) {
-            warnx("window_sdl2_run: window->resize -> false");
+            err_puts("window_sdl2_run: window->resize -> false");
             quit = 1;
           }
           window->w = sdl_event.window.data1;
@@ -263,7 +263,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
     }
     //glDrawBuffer(GL_BACK);
     if (! window->render(window, NULL)) {
-      warnx("window_sdl2_run: window->render -> false");
+      err_puts("window_sdl2_run: window->render -> false");
       quit = 1;
     }
     SDL_GL_SwapWindow(sdl_window);
