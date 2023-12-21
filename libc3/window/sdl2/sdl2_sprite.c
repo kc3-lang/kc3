@@ -45,19 +45,19 @@ static bool png_info_to_gl_info (s32 png_color_type,
   switch (png_color_type) {
   case PNG_COLOR_TYPE_GRAY:
     *components = 1;
-    *gl_format = GL_LUMINANCE;
+    *gl_format = GL_RED;
     switch (png_bit_depth) {
-    case 8:  *gl_internal_format = GL_LUMINANCE8;  break;
-    case 16: *gl_internal_format = GL_LUMINANCE16; break;
+    case 8:  *gl_internal_format = GL_RED;  break;
+    case 16: *gl_internal_format = GL_RED; break;
     default: *gl_internal_format = 0; return false;
     }
     break;
   case PNG_COLOR_TYPE_GRAY_ALPHA:
     *components = 2;
-    *gl_format = GL_LUMINANCE_ALPHA;
+    *gl_format = GL_RG;
     switch (png_bit_depth) {
-    case 8:  *gl_internal_format = GL_LUMINANCE8_ALPHA8;  break;
-    case 16: *gl_internal_format = GL_LUMINANCE16_ALPHA16; break;
+    case 8:  *gl_internal_format = GL_RG;  break;
+    case 16: *gl_internal_format = GL_RG; break;
     default: *gl_internal_format = 0; return false;
     }
     break;
@@ -65,8 +65,8 @@ static bool png_info_to_gl_info (s32 png_color_type,
     *components = 3;
     *gl_format = GL_RGB;
     switch (png_bit_depth) {
-    case 8:  *gl_internal_format = GL_RGB8;  break;
-    case 16: *gl_internal_format = GL_RGB16; break;
+    case 8:  *gl_internal_format = GL_RGB;  break;
+    case 16: *gl_internal_format = GL_RGB; break;
     default: *gl_internal_format = 0; return false;
     }
     break;
@@ -95,9 +95,9 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
 {
   u8 *data;
   FILE *fp;
-  GLenum gl_format;
-  GLint  gl_internal_format;
-  GLenum gl_type;
+  GLenum gl_format = 0;
+  GLint  gl_internal_format = 0;
+  GLenum gl_type = 0;
   uw i;
   s32         png_bit_depth;
   s32         png_color_type;
@@ -119,7 +119,8 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   assert(path);
   assert(dim_x);
   assert(dim_y);
-  sprite->frame_count = (frame_count > 0) ? frame_count : (dim_x * dim_y);
+  sprite->frame_count = (frame_count > 0) ? frame_count :
+    (dim_x * dim_y);
   str_init_copy_1(&sprite->path, path);
   if (! file_search(&sprite->path, sym_1("r"), &sprite->real_path)) {
     err_write_1("sdl2_sprite_init: file not found: ");
@@ -247,10 +248,10 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   glGenTextures(sprite->frame_count, sprite->texture);
   GLenum gl_error = glGetError();
   if (gl_error != GL_NO_ERROR) {
-    err_write_1("sdl2_sprite_init: glGenTextures: ");
-    err_write_1((const s8 *) gluErrorString(gl_error));
-    err_write_1(": ");
-    err_puts(sprite->real_path.ptr.ps8);
+    err_write_1("sdl2_sprite_init: ");
+    err_inspect_str(&sprite->real_path);
+    err_write_1(": glGenTextures: ");
+    err_puts((const s8 *) gluErrorString(gl_error));
     free(sprite->texture);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
@@ -286,18 +287,19 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                       GL_LINEAR_MIPMAP_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      //glTexImage2D(GL_TEXTURE_2D, 0, gl_format, sprite->w, sprite->h,
-      //             0, gl_format, gl_type, data);
-      gluBuild2DMipmaps(GL_TEXTURE_2D, gl_internal_format, sprite->w,
-                        sprite->h, gl_format, gl_type, data);
+      /*      glTexImage2D(GL_TEXTURE_2D, 0, gl_format, sprite->w, sprite->h,
+              0, gl_format, gl_type, data);*/
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sprite->w, sprite->h,
+                   0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       gl_error = glGetError();
       if (gl_error != GL_NO_ERROR) {
-	err_write_1("sdl2_sprite_init: glTexImage2D: ");
-        err_write_1((const s8 *) gluErrorString(gl_error));
-        err_write_1(": ");
-        err_puts(sprite->real_path.ptr.ps8);
+	err_write_1("sdl2_sprite_init: ");
+        err_inspect_str(&sprite->real_path);
+        err_write_1(": glTexImage2D: ");
+        err_puts((const s8 *) gluErrorString(gl_error));
 	return NULL;
       }
+      glGenerateMipmap(GL_TEXTURE_2D);
       i++;
       x++;
     }
@@ -330,8 +332,9 @@ void sdl2_sprite_render (const s_sdl2_sprite *sprite, uw frame)
     glTexCoord2f(1, 1);
     glVertex2d(sprite->w, sprite->h);  
   } glEnd();
-  /*
+  glBindTexture(GL_TEXTURE_2D, 0);
   glDisable(GL_TEXTURE_2D);
+  /*
   glBegin(GL_LINE_LOOP); {
     glVertex2d(0, sprite->h);
     glVertex2i(0, 0);
