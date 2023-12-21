@@ -20,7 +20,7 @@ static const s8 * g_gl_camera_vertex_shader_src = "#version 460 core\n"
 "uniform dmat4 matrix;\n"
 "\n"
 "void main() {\n"
-"  gl_Position = matrix * dvec4(aPos, 1.0);\n"
+"  gl_Position = vec4(matrix * dvec4(aPos, 1.0));\n"
 "}\n";
 
 void gl_camera_clean (s_gl_camera *camera)
@@ -37,6 +37,7 @@ void gl_camera_delete (s_gl_camera *camera)
 
 s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
 {
+  GLint success;
   u32 vertex_shader;
   assert(camera);
   gl_camera_set_aspect_ratio(camera, w, h);
@@ -53,6 +54,13 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   glShaderSource(vertex_shader, 1, &g_gl_camera_vertex_shader_src,
                  NULL);
   glCompileShader(vertex_shader);
+  glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+  if (! success) {
+    s8 info_log[512];
+    glGetShaderInfoLog(vertex_shader, sizeof(info_log), NULL, info_log);
+    err_write_1("gl_camera_init: shader compilation failed: ");
+    err_puts(info_log);
+  }
   camera->gl_shader_program = glCreateProgram();
   glAttachShader(camera->gl_shader_program, vertex_shader);
   glLinkProgram(camera->gl_shader_program);
@@ -95,6 +103,13 @@ void gl_camera_render (s_gl_camera *camera)
   glUseProgram(camera->gl_shader_program);
   glUniformMatrix4dv(camera->gl_matrix_loc, 1, GL_FALSE,
                      &camera->matrix.xx);
+}
+
+void gl_camera_render_end (s_gl_camera *camera)
+{
+  assert(camera);
+  (void) camera;
+  glUseProgram(0);
 }
 
 s_gl_camera * gl_camera_set_aspect_ratio (s_gl_camera *camera, uw w,

@@ -2,4 +2,4 @@
   version: 1}
 add {Array, :is_a, :module}
 add {Array, :symbol, Array.data}
-replace {Array.data, :cfn, cfn :tag "array_data_tag" (:tag, :tag, :&result)}
+replace {Array.data, :cfn, cfn Tag "array_data_tag" (Tag, Tag, Result)}
