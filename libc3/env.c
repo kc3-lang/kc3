@@ -116,35 +116,37 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   assert(array);
   assert(dest);
   array_init_copy(&tmp, array);
-  item_size = tmp.dimensions[tmp.dimension - 1].item_size;
-  if (! tmp.data && array->tags) {
-    if (! sym_to_init_cast(tmp.type, &init_cast))
-      return false;
-    tmp.data = tmp.data_free = calloc(tmp.dimensions[0].count,
-                                      tmp.dimensions[0].item_size);
-    if (! tmp.data) {
-      warn("env_eval_array: failed to allocate memory");
-      assert(! "env_eval_array: failed to allocate memory");
-      return false;
-    }
-    data = tmp.data;
-    tag = tmp.tags;
-    i = 0;
-    while (i < tmp.count) {
-      if (! env_eval_tag(env, tag, &tag_eval))
-        goto ko;
-      if (! init_cast(data, &tag_eval)) {
-        err_write_1("env_eval_array: cannot cast ");
-        err_inspect_tag(&tag_eval);
-        err_write_1(" to ");
-        err_inspect_sym(&tmp.type);
-        err_puts(".");
-        goto ko;
+  if (tmp.dimension) {
+    item_size = tmp.dimensions[tmp.dimension - 1].item_size;
+    if (! tmp.data && array->tags) {
+      if (! sym_to_init_cast(tmp.type, &init_cast))
+        return false;
+      tmp.data = tmp.data_free = calloc(tmp.dimensions[0].count,
+                                        tmp.dimensions[0].item_size);
+      if (! tmp.data) {
+        warn("env_eval_array: failed to allocate memory");
+        assert(! "env_eval_array: failed to allocate memory");
+        return false;
       }
-      tag_clean(&tag_eval);
-      data += item_size;
-      tag++;
-      i++;
+      data = tmp.data;
+      tag = tmp.tags;
+      i = 0;
+      while (i < tmp.count) {
+        if (! env_eval_tag(env, tag, &tag_eval))
+          goto ko;
+        if (! init_cast(data, &tag_eval)) {
+          err_write_1("env_eval_array: cannot cast ");
+          err_inspect_tag(&tag_eval);
+          err_write_1(" to ");
+          err_inspect_sym(&tmp.type);
+          err_puts(".");
+          goto ko;
+        }
+        tag_clean(&tag_eval);
+        data += item_size;
+        tag++;
+        i++;
+      }
     }
   }
   *dest = tmp;
