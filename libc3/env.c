@@ -109,7 +109,8 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   uw i;
   f_init_cast init_cast;
   uw item_size;
-  s_tag *tag;
+  s_tag       *tag;
+  s_tag        tag_eval;
   s_array tmp = {0};
   assert(env);
   assert(array);
@@ -125,16 +126,20 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
       return false;
     }
     if (! sym_to_init_cast(tmp.type, &init_cast))
-      goto ko;
     data = tmp.data;
     tag = tmp.tags;
     i = 0;
     while (i < tmp.count) {
-      s_tag tag_eval;
       if (! env_eval_tag(env, tag, &tag_eval))
         goto ko;
-      if (! init_cast(data, &tag_eval))
+      if (! init_cast(data, &tag_eval)) {
+        err_write_1("env_eval_array: cannot cast ");
+        err_inspect_tag(&tag_eval);
+        err_write_1(" to ");
+        err_inspect_sym(&tmp.type);
+        err_puts(".");
         goto ko;
+      }
       tag_clean(&tag_eval);
       data += item_size;
       tag++;

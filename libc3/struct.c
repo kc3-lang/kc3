@@ -127,6 +127,7 @@ s_struct * struct_init_cast (s_struct *s, const s_tag *tag)
   }
   warnx("struct_init_cast: cannot cast %s to Struct",
         tag_type_to_string(tag->type));
+  //assert(! "struct_init_cast: cannot cast to Struct");
   return NULL;
 }
 
