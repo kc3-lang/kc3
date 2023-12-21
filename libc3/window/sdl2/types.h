@@ -38,6 +38,7 @@ typedef struct gl_object    s_gl_object;
 typedef struct gl_point_2d  s_gl_point_2d;
 typedef struct gl_point_3d  s_gl_point_3d;
 typedef struct gl_sphere    s_gl_sphere;
+typedef struct gl_triangle  s_gl_triangle;
 typedef struct gl_vertex    s_gl_vertex;
 typedef struct sdl2_font    s_sdl2_font;
 typedef struct sdl2_sprite  s_sdl2_sprite;
@@ -120,6 +121,21 @@ struct gl_matrix_4d {
   f64 tt;
 };
 
+struct gl_object {
+  s_array vertex;
+  s_array triangle;
+  u32 gl_mode;
+  u32 gl_vao;
+  u32 gl_vbo;
+  u32 gl_ebo;
+};
+
+struct gl_triangle {
+  u32 a;
+  u32 b;
+  u32 c;
+};
+
 struct rgb {
   f64 r;
   f64 g;
@@ -139,21 +155,6 @@ struct sdl2_font {
   u32 dpi;
   s_str path;
   s_str real_path;
-};
-
-struct gl_vertex {
-  s_gl_point_3d position;
-  s_gl_point_3d normal;
-  s_gl_point_2d tex_coord;
-};
-
-struct gl_object {
-  s_array vertex;
-  s_array index;
-  u32 gl_mode;
-  u32 gl_vao;
-  u32 gl_vbo;
-  u32 gl_ebo;
 };
 
 /* Subtype of s_window. See libc3/window/types.h */
@@ -206,6 +207,12 @@ struct gl_sphere {
   s_gl_object object;
   uw segments_u;
   uw segments_v;
+};
+
+struct gl_vertex {
+  s_gl_point_3d position;
+  s_gl_point_3d normal;
+  s_gl_point_2d tex_coord;
 };
 
 struct sdl2_sprite {

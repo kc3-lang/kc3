@@ -307,7 +307,8 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
   uw i;
   f_init_copy init_copy;
   uw size;
-  e_tag_type type;
+  e_tag_type   type;
+  const s_sym *type_sym;
   assert(s);
   assert(s->type.map.count);
   assert(key);
@@ -318,10 +319,11 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
         s->type.map.key[i].data.sym == key) {
       type = s->type.map.value[i].type;
       if (! tag_type_to_clean(type, &clean) ||
-          ! tag_type_to_init_copy(type, &init_copy))
+          ! tag_type_to_init_copy(type, &init_copy) ||
+          ! tag_type(s->type.map.value + i, &type_sym))
         return NULL;
       data = (s8 *) s->data + s->type.offset[i];
-      if (! tag_to_const_pointer(value, tag_type_to_sym(type), &data_src))
+      if (! tag_to_const_pointer(value, type_sym, &data_src))
         return NULL;
       if (clean)
         clean(data);

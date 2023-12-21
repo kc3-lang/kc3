@@ -837,6 +837,9 @@ s_list ** env_get_struct_type_spec (s_env *env, const s_sym *module,
   s_tag tag_module;
   s_tag tag_var;
   s_tag tmp;
+  assert(env);
+  assert(module);
+  assert(dest);
   tag_init_sym_1(&tag_defstruct, "defstruct");
   tag_init_sym(&tag_module, module);
   tag_init_var(&tag_var);
@@ -1155,6 +1158,26 @@ void env_push_unwind_protect (s_env *env,
 {
   unwind_protect->next = env->unwind_protect;
   env->unwind_protect = unwind_protect;
+}
+
+bool env_struct_type_exists (s_env *env, const s_sym *module)
+{
+  s_facts_cursor cursor;
+  bool result;
+  s_tag tag_defstruct;
+  s_tag tag_module;
+  s_tag tag_var;
+  assert(env);
+  assert(module);
+  tag_init_sym_1(&tag_defstruct, "defstruct");
+  tag_init_sym(&tag_module, module);
+  tag_init_var(&tag_var);
+  env_module_maybe_reload(env, module, &env->facts);
+  facts_with_tags(&env->facts, &cursor, &tag_module,
+                  &tag_defstruct, &tag_var);
+  result = facts_cursor_next(&cursor) ? true : false;
+  facts_cursor_clean(&cursor);
+  return result;
 }
 
 bool env_tag_ident_is_bound (const s_env *env, const s_tag *tag,

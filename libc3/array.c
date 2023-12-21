@@ -187,47 +187,42 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
   assert(sym_is_module(type));
   assert(dimension);
   assert(dimensions);
-  if (! dimension) {
-    assert(! "array_init: zero dimension");
-    errx(1, "array_init: zero dimension");
-    return NULL;
-  }
-#ifdef DEBUG
-  while (i < dimension) {
-    assert(dimensions[i]);
-    i++;
-  }
-#endif
-  tmp.dimension = dimension;
-  tmp.dimensions = calloc(dimension, sizeof(s_array_dimension));
-  i = 0;
-  while (i < dimension) {
-    tmp.dimensions[i].count = dimensions[i];
-    count *= dimensions[i];
-    i++;
-  }
-  i--;
   tmp.type = type;
-  if (! sym_type_size(type, &item_size)) {
-    free(tmp.dimensions);
-    return NULL;
-  }
-  if (! item_size) {
-    warnx("array_init: zero item size");
-    assert(! "array_init: zero item size");
-    return NULL;
-  }
-  tmp.dimensions[i].item_size = item_size;
-  while (i > 0) {
+  if (dimension) {
+#ifdef DEBUG
+    while (i < dimension) {
+      assert(dimensions[i]);
+      i++;
+    }
+#endif
+    tmp.dimension = dimension;
+    tmp.dimensions = calloc(dimension, sizeof(s_array_dimension));
+    i = 0;
+    while (i < dimension) {
+      tmp.dimensions[i].count = dimensions[i];
+      count *= dimensions[i];
+      i++;
+    }
     i--;
-    tmp.dimensions[i].item_size = tmp.dimensions[i + 1].count *
-      tmp.dimensions[i + 1].item_size;
+    if (! sym_type_size(type, &item_size)) {
+      free(tmp.dimensions);
+      return NULL;
+    }
+    if (! item_size) {
+      warnx("array_init: zero item size");
+      assert(! "array_init: zero item size");
+      free(tmp.dimensions);
+      return NULL;
+    }
+    tmp.dimensions[i].item_size = item_size;
+    while (i > 0) {
+      i--;
+      tmp.dimensions[i].item_size = tmp.dimensions[i + 1].count *
+        tmp.dimensions[i + 1].item_size;
+    }
+    tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
+    tmp.count = count;
   }
-  tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
-  tmp.count = count;
-  tmp.data_free = NULL;
-  tmp.data = NULL;
-  tmp.tags = NULL;
   *a = tmp;
   return a;
 }

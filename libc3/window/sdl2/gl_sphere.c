@@ -37,6 +37,7 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw seg_u, uw seg_v)
   s_gl_vertex *vertex;
   f64 r;
   s_gl_sphere tmp = {0};
+  s_gl_triangle *triangle;
   f64 z;
   assert(sphere);
   if (seg_u < 3)
@@ -46,7 +47,7 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw seg_u, uw seg_v)
   tmp.segments_u = seg_u;
   tmp.segments_v = seg_v;
   if (! gl_object_allocate(&tmp.object, seg_u * (seg_v + 2),
-                           6 * (seg_u + 1) * (seg_v + 2)))
+                           2 * seg_u * (seg_v + 1)))
     return NULL;
   vertex = tmp.object.vertex.data;
   i = 0;
@@ -68,6 +69,24 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw seg_u, uw seg_v)
     }
     i++;
   }
+  triangle = tmp.object.triangle.data;
+  i = 0;
+  while (i < seg_v + 1) {
+    j = 0;
+    while (j < seg_u) {
+      triangle->a =  i      * seg_u +  j;
+      triangle->b = (i + 1) * seg_u +  j;
+      triangle->c = (i + 1) * seg_u + (j + 1) % seg_u;
+      triangle++;
+      triangle->a =  i      * seg_u +  j;
+      triangle->b = (i + 1) * seg_u + (j + 1) % seg_u;
+      triangle->c =  i      * seg_u + (j + 1) % seg_u;
+      triangle++;
+      j++;
+    }
+    i++;
+  }
+  
   *sphere = tmp;
   return sphere;
 }

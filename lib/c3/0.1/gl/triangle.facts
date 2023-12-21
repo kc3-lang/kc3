@@ -1,0 +1,6 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {GL.Triangle, :is_a, :module}
+replace {GL.Triangle, :defstruct, [a: (U32) 0,
+                                   b: (U32) 1,
+                                   c: (U32) 2]}

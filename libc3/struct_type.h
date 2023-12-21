@@ -41,6 +41,8 @@ s_struct_type * struct_type_new (const s_sym *module,
                                  const s_list *spec);
 
 /* Utility functions. */
-uw struct_type_padding (uw offset, uw size);
+bool struct_type_exists (const s_sym *module);
+uw   struct_type_padding (uw offset, uw size);
+
 
 #endif /* LIBC3_STRUCT_TYPE_H */

@@ -336,38 +336,38 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
 {
   switch (type) {
   case TAG_ARRAY:     *dest = &ffi_type_pointer; return true;
-  case TAG_BOOL:      *dest = &ffi_type_uint8; return true;
+  case TAG_BOOL:      *dest = &ffi_type_uint8;   return true;
   case TAG_CALL:      *dest = &ffi_type_pointer; return true;
   case TAG_CFN:       *dest = &ffi_type_pointer; return true;
-  case TAG_CHARACTER: *dest = &ffi_type_schar; return true;
-  case TAG_F32:       *dest = &ffi_type_float; return true;
-  case TAG_F64:       *dest = &ffi_type_double; return true;
+  case TAG_CHARACTER: *dest = &ffi_type_schar;   return true;
+  case TAG_F32:       *dest = &ffi_type_float;   return true;
+  case TAG_F64:       *dest = &ffi_type_double;  return true;
   case TAG_FACT:      *dest = &ffi_type_pointer; return true;
   case TAG_FN:        *dest = &ffi_type_pointer; return true;
   case TAG_IDENT:     *dest = &ffi_type_pointer; return true;
-  case TAG_INTEGER:   *dest = &ffi_type_sint; return true;
+  case TAG_INTEGER:   *dest = &ffi_type_sint;    return true;
   case TAG_LIST:      *dest = &ffi_type_pointer; return true;
   case TAG_MAP:       *dest = &ffi_type_pointer; return true;
   case TAG_PTAG:      *dest = &ffi_type_pointer; return true;
-  case TAG_PTR:
+  case TAG_PTR:       *dest = &ffi_type_pointer; return true;
   case TAG_PTR_FREE:  *dest = &ffi_type_pointer; return true;
   case TAG_QUOTE:     *dest = &ffi_type_pointer; return true;
-  case TAG_S8:        *dest = &ffi_type_sint8; return true;
-  case TAG_S16:       *dest = &ffi_type_sint16; return true;
-  case TAG_S32:       *dest = &ffi_type_sint32; return true;
-  case TAG_S64:       *dest = &ffi_type_sint64; return true;
-  case TAG_SW:        *dest = &ffi_type_slong; return true;
+  case TAG_S8:        *dest = &ffi_type_sint8;   return true;
+  case TAG_S16:       *dest = &ffi_type_sint16;  return true;
+  case TAG_S32:       *dest = &ffi_type_sint32;  return true;
+  case TAG_S64:       *dest = &ffi_type_sint64;  return true;
+  case TAG_SW:        *dest = &ffi_type_slong;   return true;
   case TAG_STR:       *dest = &ffi_type_pointer; return true;
   case TAG_STRUCT:    *dest = &ffi_type_pointer; return true;
   case TAG_SYM:       *dest = &ffi_type_pointer; return true;
   case TAG_TUPLE:     *dest = &ffi_type_pointer; return true;
-  case TAG_U8:        *dest = &ffi_type_uint8; return true;
-  case TAG_U16:       *dest = &ffi_type_uint16; return true;
-  case TAG_U32:       *dest = &ffi_type_uint32; return true;
-  case TAG_U64:       *dest = &ffi_type_uint64; return true;
-  case TAG_UW:        *dest = &ffi_type_ulong; return true;
+  case TAG_U8:        *dest = &ffi_type_uint8;   return true;
+  case TAG_U16:       *dest = &ffi_type_uint16;  return true;
+  case TAG_U32:       *dest = &ffi_type_uint32;  return true;
+  case TAG_U64:       *dest = &ffi_type_uint64;  return true;
+  case TAG_UW:        *dest = &ffi_type_ulong;   return true;
   case TAG_VAR:       *dest = &ffi_type_pointer; return true;
-  case TAG_VOID:      *dest = &ffi_type_void; return true;
+  case TAG_VOID:      *dest = &ffi_type_void;    return true;
   }
   warnx("tag_type_to_ffi_type: unknown tag type: %d", type);
   assert(! "tag_type_to_ffi_type: unknown tag type");
