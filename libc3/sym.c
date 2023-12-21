@@ -211,8 +211,8 @@ const s_sym * sym_new (const s_str *src)
 
 bool sym_to_buf_inspect (const s_sym *type, f_buf_inspect *dest)
 {
-  if (type == sym_1("Void")) {
-    *dest = (f_buf_inspect) buf_inspect_var;
+  if (type == sym_1("Array")) {
+    *dest = (f_buf_inspect) buf_inspect_array;
     return true;
   }
   if (type == sym_1("Bool")) {
@@ -255,24 +255,60 @@ bool sym_to_buf_inspect (const s_sym *type, f_buf_inspect *dest)
     *dest = (f_buf_inspect) buf_inspect_integer;
     return true;
   }
-  if (type == sym_1("Sw")) {
-    *dest = (f_buf_inspect) buf_inspect_sw;
+  if (type == sym_1("List")) {
+    *dest = (f_buf_inspect) buf_inspect_list;
     return true;
   }
-  if (type == sym_1("S64")) {
-    *dest = (f_buf_inspect) buf_inspect_s64;
+  if (type == sym_1("Ptag")) {
+    *dest = (f_buf_inspect) buf_inspect_ptag;
     return true;
   }
-  if (type == sym_1("S32")) {
-    *dest = (f_buf_inspect) buf_inspect_s32;
+  if (type == sym_1("Ptr")) {
+    *dest = (f_buf_inspect) buf_inspect_ptr;
+    return true;
+  }
+  if (type == sym_1("PtrFree")) {
+    *dest = (f_buf_inspect) buf_inspect_ptr_free;
+    return true;
+  }
+  if (type == sym_1("Quote")) {
+    *dest = (f_buf_inspect) buf_inspect_quote;
+    return true;
+  }
+  if (type == sym_1("S8")) {
+    *dest = (f_buf_inspect) buf_inspect_s8;
     return true;
   }
   if (type == sym_1("S16")) {
     *dest = (f_buf_inspect) buf_inspect_s16;
     return true;
   }
-  if (type == sym_1("S8")) {
-    *dest = (f_buf_inspect) buf_inspect_s8;
+  if (type == sym_1("S32")) {
+    *dest = (f_buf_inspect) buf_inspect_s32;
+    return true;
+  }
+  if (type == sym_1("S64")) {
+    *dest = (f_buf_inspect) buf_inspect_s64;
+    return true;
+  }
+  if (type == sym_1("Str")) {
+    *dest = (f_buf_inspect) buf_inspect_str;
+    return true;
+  }
+  if (type == sym_1("Struct")) {
+    *dest = (f_buf_inspect) buf_inspect_struct;
+    return true;
+  }
+  if (type == sym_1("Sw")) {
+    *dest = (f_buf_inspect) buf_inspect_sw;
+    return true;
+  }
+  if (type == sym_1("Sym")) {
+    *dest = (f_buf_inspect) buf_inspect_sym;
+    return true;
+  }
+  if (type == sym_1("Tuple")) {
+    *dest = (f_buf_inspect) buf_inspect_tuple;
     return true;
   }
   if (type == sym_1("U8")) {
@@ -295,39 +331,11 @@ bool sym_to_buf_inspect (const s_sym *type, f_buf_inspect *dest)
     *dest = (f_buf_inspect) buf_inspect_uw;
     return true;
   }
-  if (type == sym_1("List")) {
-    *dest = (f_buf_inspect) buf_inspect_list;
-    return true;
-  }
-  if (type == sym_1("Ptag")) {
-    *dest = (f_buf_inspect) buf_inspect_ptag;
-    return true;
-  }
-  if (type == sym_1("Ptr")) {
-    *dest = (f_buf_inspect) buf_inspect_ptr;
-    return true;
-  }
-  if (type == sym_1("PtrFree")) {
-    *dest = (f_buf_inspect) buf_inspect_ptr_free;
-    return true;
-  }
-  if (type == sym_1("Quote")) {
-    *dest = (f_buf_inspect) buf_inspect_quote;
-    return true;
-  }
-  if (type == sym_1("Str")) {
-    *dest = (f_buf_inspect) buf_inspect_str;
-    return true;
-  }
-  if (type == sym_1("Sym")) {
-    *dest = (f_buf_inspect) buf_inspect_sym;
-    return true;
-  }
-  if (type == sym_1("Tuple")) {
-    *dest = (f_buf_inspect) buf_inspect_tuple;
-    return true;
-  }
   if (type == sym_1("Var")) {
+    *dest = (f_buf_inspect) buf_inspect_var;
+    return true;
+  }
+  if (type == sym_1("Void")) {
     *dest = (f_buf_inspect) buf_inspect_var;
     return true;
   }
@@ -344,6 +352,10 @@ bool sym_to_buf_inspect (const s_sym *type, f_buf_inspect *dest)
 
 bool sym_to_buf_inspect_size (const s_sym *type, f_buf_inspect_size *dest)
 {
+  if (type == sym_1("Array")) {
+    *dest = (f_buf_inspect_size) buf_inspect_array_size;
+    return true;
+  }
   if (type == sym_1("Bool")) {
     *dest = (f_buf_inspect_size) buf_inspect_bool_size;
     return true;
@@ -384,46 +396,6 @@ bool sym_to_buf_inspect_size (const s_sym *type, f_buf_inspect_size *dest)
     *dest = (f_buf_inspect_size) buf_inspect_integer_size;
     return true;
   }
-  if (type == sym_1("Sw")) {
-    *dest = (f_buf_inspect_size) buf_inspect_sw_size;
-    return true;
-  }
-  if (type == sym_1("S64")) {
-    *dest = (f_buf_inspect_size) buf_inspect_s64_size;
-    return true;
-  }
-  if (type == sym_1("S32")) {
-    *dest = (f_buf_inspect_size) buf_inspect_s32_size;
-    return true;
-  }
-  if (type == sym_1("S16")) {
-    *dest = (f_buf_inspect_size) buf_inspect_s16_size;
-    return true;
-  }
-  if (type == sym_1("S8")) {
-    *dest = (f_buf_inspect_size) buf_inspect_s8_size;
-    return true;
-  }
-  if (type == sym_1("U8")) {
-    *dest = (f_buf_inspect_size) buf_inspect_u8_size;
-    return true;
-  }
-  if (type == sym_1("U16")) {
-    *dest = (f_buf_inspect_size) buf_inspect_u16_size;
-    return true;
-  }
-  if (type == sym_1("U32")) {
-    *dest = (f_buf_inspect_size) buf_inspect_u32_size;
-    return true;
-  }
-  if (type == sym_1("U64")) {
-    *dest = (f_buf_inspect_size) buf_inspect_u64_size;
-    return true;
-  }
-  if (type == sym_1("Uw")) {
-    *dest = (f_buf_inspect_size) buf_inspect_uw_size;
-    return true;
-  }
   if (type == sym_1("List")) {
     *dest = (f_buf_inspect_size) buf_inspect_list_size;
     return true;
@@ -444,8 +416,32 @@ bool sym_to_buf_inspect_size (const s_sym *type, f_buf_inspect_size *dest)
     *dest = (f_buf_inspect_size) buf_inspect_quote_size;
     return true;
   }
+  if (type == sym_1("S8")) {
+    *dest = (f_buf_inspect_size) buf_inspect_s8_size;
+    return true;
+  }
+  if (type == sym_1("S16")) {
+    *dest = (f_buf_inspect_size) buf_inspect_s16_size;
+    return true;
+  }
+  if (type == sym_1("S32")) {
+    *dest = (f_buf_inspect_size) buf_inspect_s32_size;
+    return true;
+  }
+  if (type == sym_1("S64")) {
+    *dest = (f_buf_inspect_size) buf_inspect_s64_size;
+    return true;
+  }
   if (type == sym_1("Str")) {
     *dest = (f_buf_inspect_size) buf_inspect_str_size;
+    return true;
+  }
+  if (type == sym_1("Struct")) {
+    *dest = (f_buf_inspect_size) buf_inspect_struct_size;
+    return true;
+  }
+  if (type == sym_1("Sw")) {
+    *dest = (f_buf_inspect_size) buf_inspect_sw_size;
     return true;
   }
   if (type == sym_1("Sym")) {
@@ -454,6 +450,26 @@ bool sym_to_buf_inspect_size (const s_sym *type, f_buf_inspect_size *dest)
   }
   if (type == sym_1("Tuple")) {
     *dest = (f_buf_inspect_size) buf_inspect_tuple_size;
+    return true;
+  }
+  if (type == sym_1("U8")) {
+    *dest = (f_buf_inspect_size) buf_inspect_u8_size;
+    return true;
+  }
+  if (type == sym_1("U16")) {
+    *dest = (f_buf_inspect_size) buf_inspect_u16_size;
+    return true;
+  }
+  if (type == sym_1("U32")) {
+    *dest = (f_buf_inspect_size) buf_inspect_u32_size;
+    return true;
+  }
+  if (type == sym_1("U64")) {
+    *dest = (f_buf_inspect_size) buf_inspect_u64_size;
+    return true;
+  }
+  if (type == sym_1("Uw")) {
+    *dest = (f_buf_inspect_size) buf_inspect_uw_size;
     return true;
   }
   if (type == sym_1("Var")) {
@@ -477,6 +493,10 @@ bool sym_to_buf_inspect_size (const s_sym *type, f_buf_inspect_size *dest)
 
 bool sym_to_clean (const s_sym *type, f_clean *dest)
 {
+  if (type == sym_1("Array")) {
+    *dest = (f_clean) array_clean;
+    return true;
+  }
   if (type == sym_1("Bool")) {
     *dest = NULL;
     return true;
@@ -517,46 +537,6 @@ bool sym_to_clean (const s_sym *type, f_clean *dest)
     *dest = (f_clean) integer_clean;
     return true;
   }
-  if (type == sym_1("Sw")) {
-    *dest = NULL;
-    return true;
-  }
-  if (type == sym_1("S64")) {
-    *dest = NULL;
-    return true;
-  }
-  if (type == sym_1("S32")) {
-    *dest = NULL;
-    return true;
-  }
-  if (type == sym_1("S16")) {
-    *dest = NULL;
-    return true;
-  }
-  if (type == sym_1("S8")) {
-    *dest = NULL;
-    return true;
-  }
-  if (type == sym_1("U8")) {
-    *dest = NULL;
-    return true;
-  }
-  if (type == sym_1("U16")) {
-    *dest = NULL;
-    return true;
-  }
-  if (type == sym_1("U32")) {
-    *dest = NULL;
-    return true;
-  }
-  if (type == sym_1("U64")) {
-    *dest = NULL;
-    return true;
-  }
-  if (type == sym_1("Uw")) {
-    *dest = NULL;
-    return true;
-  }
   if (type == sym_1("List")) {
     *dest = (f_clean) list_f_clean;
     return true;
@@ -581,8 +561,32 @@ bool sym_to_clean (const s_sym *type, f_clean *dest)
     *dest = (f_clean) quote_clean;
     return true;
   }
+  if (type == sym_1("S8")) {
+    *dest = NULL;
+    return true;
+  }
+  if (type == sym_1("S16")) {
+    *dest = NULL;
+    return true;
+  }
+  if (type == sym_1("S32")) {
+    *dest = NULL;
+    return true;
+  }
+  if (type == sym_1("S64")) {
+    *dest = NULL;
+    return true;
+  }
   if (type == sym_1("Str")) {
     *dest = (f_clean) str_clean;
+    return true;
+  }
+  if (type == sym_1("Struct")) {
+    *dest = (f_clean) struct_clean;
+    return true;
+  }
+  if (type == sym_1("Sw")) {
+    *dest = NULL;
     return true;
   }
   if (type == sym_1("Sym")) {
@@ -591,6 +595,26 @@ bool sym_to_clean (const s_sym *type, f_clean *dest)
   }
   if (type == sym_1("Tuple")) {
     *dest = (f_clean) tuple_clean;
+    return true;
+  }
+  if (type == sym_1("U8")) {
+    *dest = NULL;
+    return true;
+  }
+  if (type == sym_1("U16")) {
+    *dest = NULL;
+    return true;
+  }
+  if (type == sym_1("U32")) {
+    *dest = NULL;
+    return true;
+  }
+  if (type == sym_1("U64")) {
+    *dest = NULL;
+    return true;
+  }
+  if (type == sym_1("Uw")) {
+    *dest = NULL;
     return true;
   }
   if (type == sym_1("Var")) {
@@ -622,6 +646,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
       return false;
     }
     *dest = result_type;
+    return true;
+  }
+  if (sym == sym_1("Array")) {
+    *dest = &ffi_type_pointer;
     return true;
   }
   if (sym == sym_1("Bool")) {
@@ -737,6 +765,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
 
 bool sym_to_init_cast (const s_sym *type, f_init_cast *dest)
 {
+  if (type == sym_1("Array")) {
+    *dest = (f_init_cast) array_init_cast;
+    return true;
+  }
   if (type == sym_1("Bool")) {
     *dest = (f_init_cast) bool_init_cast;
     return true;
@@ -781,24 +813,56 @@ bool sym_to_init_cast (const s_sym *type, f_init_cast *dest)
     *dest = (f_init_cast) list_init_cast;
     return true;
   }
-  if (type == sym_1("Sw")) {
-    *dest = (f_init_cast) sw_init_cast;
+  if (type == sym_1("Ptag")) {
+    *dest = (f_init_cast) ptag_init_cast;
     return true;
   }
-  if (type == sym_1("S64")) {
-    *dest = (f_init_cast) s64_init_cast;
+  if (type == sym_1("Ptr")) {
+    *dest = (f_init_cast) ptr_init_cast;
     return true;
   }
-  if (type == sym_1("S32")) {
-    *dest = (f_init_cast) s32_init_cast;
+  if (type == sym_1("PtrFree")) {
+    *dest = (f_init_cast) ptr_free_init_cast;
+    return true;
+  }
+  if (type == sym_1("Quote")) {
+    *dest = (f_init_cast) quote_init_cast;
+    return true;
+  }
+  if (type == sym_1("S8")) {
+    *dest = (f_init_cast) s8_init_cast;
     return true;
   }
   if (type == sym_1("S16")) {
     *dest = (f_init_cast) s16_init_cast;
     return true;
   }
-  if (type == sym_1("S8")) {
-    *dest = (f_init_cast) s8_init_cast;
+  if (type == sym_1("S32")) {
+    *dest = (f_init_cast) s32_init_cast;
+    return true;
+  }
+  if (type == sym_1("S64")) {
+    *dest = (f_init_cast) s64_init_cast;
+    return true;
+  }
+  if (type == sym_1("Str")) {
+    *dest = (f_init_cast) str_init_cast;
+    return true;
+  }
+  if (type == sym_1("Struct")) {
+    *dest = (f_init_cast) struct_init_cast;
+    return true;
+  }
+  if (type == sym_1("Sw")) {
+    *dest = (f_init_cast) sw_init_cast;
+    return true;
+  }
+  if (type == sym_1("Sym")) {
+    *dest = (f_init_cast) sym_init_cast;
+    return true;
+  }
+  if (type == sym_1("Tuple")) {
+    *dest = (f_init_cast) tuple_init_cast;
     return true;
   }
   if (type == sym_1("U8")) {
@@ -819,34 +883,6 @@ bool sym_to_init_cast (const s_sym *type, f_init_cast *dest)
   }
   if (type == sym_1("Uw")) {
     *dest = (f_init_cast) uw_init_cast;
-    return true;
-  }
-  if (type == sym_1("Ptag")) {
-    *dest = (f_init_cast) ptag_init_cast;
-    return true;
-  }
-  if (type == sym_1("Ptr")) {
-    *dest = (f_init_cast) ptr_init_cast;
-    return true;
-  }
-  if (type == sym_1("PtrFree")) {
-    *dest = (f_init_cast) ptr_free_init_cast;
-    return true;
-  }
-  if (type == sym_1("Quote")) {
-    *dest = (f_init_cast) quote_init_cast;
-    return true;
-  }
-  if (type == sym_1("Str")) {
-    *dest = (f_init_cast) str_init_cast;
-    return true;
-  }
-  if (type == sym_1("Sym")) {
-    *dest = (f_init_cast) sym_init_cast;
-    return true;
-  }
-  if (type == sym_1("Tuple")) {
-    *dest = (f_init_cast) tuple_init_cast;
     return true;
   }
   if (type == sym_1("Var")) {
@@ -870,6 +906,10 @@ bool sym_to_init_cast (const s_sym *type, f_init_cast *dest)
 
 bool sym_to_init_copy (const s_sym *type, f_init_copy *dest)
 {
+  if (type == sym_1("Array")) {
+    *dest = (f_init_copy) array_init_copy;
+    return true;
+  }
   if (type == sym_1("Bool")) {
     *dest = (f_init_copy) bool_init_copy;
     return true;
@@ -914,24 +954,56 @@ bool sym_to_init_copy (const s_sym *type, f_init_copy *dest)
     *dest = (f_init_copy) list_init_copy;
     return true;
   }
-  if (type == sym_1("Sw")) {
-    *dest = (f_init_copy) sw_init_copy;
+  if (type == sym_1("Ptag")) {
+    *dest = (f_init_copy) ptag_init_copy;
     return true;
   }
-  if (type == sym_1("S64")) {
-    *dest = (f_init_copy) s64_init_copy;
+  if (type == sym_1("Ptr")) {
+    *dest = (f_init_copy) ptr_init_copy;
     return true;
   }
-  if (type == sym_1("S32")) {
-    *dest = (f_init_copy) s32_init_copy;
+  if (type == sym_1("PtrFree")) {
+    *dest = (f_init_copy) ptr_free_init_copy;
+    return true;
+  }
+  if (type == sym_1("Quote")) {
+    *dest = (f_init_copy) quote_init_copy;
+    return true;
+  }
+  if (type == sym_1("S8")) {
+    *dest = (f_init_copy) s8_init_copy;
     return true;
   }
   if (type == sym_1("S16")) {
     *dest = (f_init_copy) s16_init_copy;
     return true;
   }
-  if (type == sym_1("S8")) {
-    *dest = (f_init_copy) s8_init_copy;
+  if (type == sym_1("S32")) {
+    *dest = (f_init_copy) s32_init_copy;
+    return true;
+  }
+  if (type == sym_1("S64")) {
+    *dest = (f_init_copy) s64_init_copy;
+    return true;
+  }
+  if (type == sym_1("Str")) {
+    *dest = (f_init_copy) str_init_copy;
+    return true;
+  }
+  if (type == sym_1("Struct")) {
+    *dest = (f_init_copy) struct_init_copy;
+    return true;
+  }
+  if (type == sym_1("Sw")) {
+    *dest = (f_init_copy) sw_init_copy;
+    return true;
+  }
+  if (type == sym_1("Sym")) {
+    *dest = (f_init_copy) sym_init_copy;
+    return true;
+  }
+  if (type == sym_1("Tuple")) {
+    *dest = (f_init_copy) tuple_init_copy;
     return true;
   }
   if (type == sym_1("U8")) {
@@ -952,34 +1024,6 @@ bool sym_to_init_copy (const s_sym *type, f_init_copy *dest)
   }
   if (type == sym_1("Uw")) {
     *dest = (f_init_copy) uw_init_copy;
-    return true;
-  }
-  if (type == sym_1("Ptag")) {
-    *dest = (f_init_copy) ptag_init_copy;
-    return true;
-  }
-  if (type == sym_1("Ptr")) {
-    *dest = (f_init_copy) ptr_init_copy;
-    return true;
-  }
-  if (type == sym_1("PtrFree")) {
-    *dest = (f_init_copy) ptr_free_init_copy;
-    return true;
-  }
-  if (type == sym_1("Quote")) {
-    *dest = (f_init_copy) quote_init_copy;
-    return true;
-  }
-  if (type == sym_1("Str")) {
-    *dest = (f_init_copy) str_init_copy;
-    return true;
-  }
-  if (type == sym_1("Sym")) {
-    *dest = (f_init_copy) sym_init_copy;
-    return true;
-  }
-  if (type == sym_1("Tuple")) {
-    *dest = (f_init_copy) tuple_init_copy;
     return true;
   }
   if (type == sym_1("Var")) {
@@ -1003,8 +1047,8 @@ bool sym_to_init_copy (const s_sym *type, f_init_copy *dest)
 
 bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 {
-  if (sym == sym_1("Void")) {
-    *dest = TAG_VOID;
+  if (sym == sym_1("Array")) {
+    *dest = TAG_ARRAY;
     return true;
   }
   if (sym == sym_1("Bool")) {
@@ -1123,6 +1167,14 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_UW;
     return true;
   }
+  if (sym == sym_1("Var")) {
+    *dest = TAG_VAR;
+    return true;
+  }
+  if (sym == sym_1("Void")) {
+    *dest = TAG_VOID;
+    return true;
+  }
   if (struct_type_exists(sym)) {
     *dest = TAG_STRUCT;
     return true;
@@ -1137,6 +1189,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 bool sym_type_size (const s_sym *type, uw *dest)
 {
   s_struct_type st;
+  if (type == sym_1("Array")) {
+    *dest = sizeof(s_array);
+    return true;
+  }
   if (type == sym_1("Bool")) {
     *dest = sizeof(bool);
     return true;

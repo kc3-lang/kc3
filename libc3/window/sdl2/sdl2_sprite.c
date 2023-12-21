@@ -237,7 +237,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   sprite->dim_y = dim_y;
   sprite->w = sprite->total_w / dim_x;
   sprite->h = sprite->total_h / dim_y;
-  sprite->texture = malloc(sprite->frame_count * sizeof(GLuint));
+  sprite->texture = calloc(sprite->frame_count, sizeof(GLuint));
   if (! sprite->texture) {
     err_puts("sdl2_sprite_init: sprite->texture:"
              " failed to allocate memory");
@@ -282,15 +282,33 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
 	v++;
       }
       glBindTexture(GL_TEXTURE_2D, sprite->texture[i]);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+      gl_error = glGetError();
+      if (gl_error != GL_NO_ERROR) {
+	err_write_1("sdl2_sprite_init: ");
+        err_inspect_str(&sprite->real_path);
+        err_write_1(": glBindTexture: ");
+        err_puts((const s8 *) gluErrorString(gl_error));
+	return NULL;
+      }
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                      GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                      GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                       GL_LINEAR_MIPMAP_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      /*      glTexImage2D(GL_TEXTURE_2D, 0, gl_format, sprite->w, sprite->h,
-              0, gl_format, gl_type, data);*/
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sprite->w, sprite->h,
-                   0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+      gl_error = glGetError();
+      if (gl_error != GL_NO_ERROR) {
+	err_write_1("sdl2_sprite_init: ");
+        err_inspect_str(&sprite->real_path);
+        err_write_1(": glTexParameteri: ");
+        err_puts((const s8 *) gluErrorString(gl_error));
+	return NULL;
+      }
+      glTexImage2D(GL_TEXTURE_2D, 0, gl_format, sprite->w, sprite->h,
+                   0, gl_format, gl_type, data);
+      //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sprite->w, sprite->h,
+      //             0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       gl_error = glGetError();
       if (gl_error != GL_NO_ERROR) {
 	err_write_1("sdl2_sprite_init: ");

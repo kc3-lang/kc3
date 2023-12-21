@@ -176,6 +176,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
           SDL_GetError());
     goto ko;
   }
+  glewExperimental = GL_TRUE;
   if (glewInit() != GLEW_OK) {
     warnx("window_sdl2_run: failed to initialize GLEW");
     goto ko;
