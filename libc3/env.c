@@ -118,6 +118,8 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   array_init_copy(&tmp, array);
   item_size = tmp.dimensions[tmp.dimension - 1].item_size;
   if (! tmp.data && array->tags) {
+    if (! sym_to_init_cast(tmp.type, &init_cast))
+      return false;
     tmp.data = tmp.data_free = calloc(tmp.dimensions[0].count,
                                       tmp.dimensions[0].item_size);
     if (! tmp.data) {
@@ -125,7 +127,6 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
       assert(! "env_eval_array: failed to allocate memory");
       return false;
     }
-    if (! sym_to_init_cast(tmp.type, &init_cast))
     data = tmp.data;
     tag = tmp.tags;
     i = 0;
