@@ -271,45 +271,47 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
     assert(! "list_to_array: zero item size");
     return NULL;
   }
-  tmp.dimension = 1;
   tmp.type = type;
-  tmp.dimensions = calloc(1, sizeof(s_array_dimension));
-  if (! tmp.dimensions) {
-    err_puts("list_to_array: out of memory: 1");
-    assert(! "list_to_array: out of memory: 1");
-    return NULL;
-  }
-  tmp.count = len;
-  tmp.dimensions[0].count = len;
-  tmp.dimensions[0].item_size = size;
-  tmp.size = len * size;
-  tmp.data = calloc(len, size);
-  if (! tmp.data) {
-    err_puts("list_to_array: out of memory: 2");
-    assert(! "list_to_array: out of memory: 2");
-    free(tmp.dimensions);
-    return NULL;
-  }
-  if (! sym_to_init_copy(type, &init_copy)) {
-    free(tmp.data);
-    free(tmp.dimensions);
-    return NULL;
-  }
-  data = tmp.data;
-  l = list;
-  while (l) {
-    if (! tag_to_const_pointer(&l->tag, type, &data_list))
-      goto ko;
-    if (data_list) {
-      if (init_copy) {
-        if (! init_copy(data, data_list))
-          goto ko;
-      }
-      else
-        memcpy(data, data_list, size);
+  if (len) {
+    tmp.dimension = 1;
+    tmp.dimensions = calloc(1, sizeof(s_array_dimension));
+    if (! tmp.dimensions) {
+      err_puts("list_to_array: out of memory: 1");
+      assert(! "list_to_array: out of memory: 1");
+      return NULL;
     }
-    data += size;
-    l = list_next(l);
+    tmp.count = len;
+    tmp.dimensions[0].count = len;
+    tmp.dimensions[0].item_size = size;
+    tmp.size = len * size;
+    tmp.data = calloc(len, size);
+    if (! tmp.data) {
+      err_puts("list_to_array: out of memory: 2");
+      assert(! "list_to_array: out of memory: 2");
+      free(tmp.dimensions);
+      return NULL;
+    }
+    if (! sym_to_init_copy(type, &init_copy)) {
+      free(tmp.data);
+      free(tmp.dimensions);
+      return NULL;
+    }
+    data = tmp.data;
+    l = list;
+    while (l) {
+      if (! tag_to_const_pointer(&l->tag, type, &data_list))
+        goto ko;
+      if (data_list) {
+        if (init_copy) {
+          if (! init_copy(data, data_list))
+            goto ko;
+        }
+        else
+          memcpy(data, data_list, size);
+      }
+      data += size;
+      l = list_next(l);
+    }
   }
   *dest = tmp;
   return dest;
