@@ -81,6 +81,7 @@
 #include "sequence.h"
 #include "str.h"
 #include "struct.h"
+#include "struct_type.h"
 #include "sw.h"
 #include "tag.h"
 #include "time.h"

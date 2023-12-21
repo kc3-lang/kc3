@@ -218,20 +218,6 @@ s_list * list_new_copy (const s_tag *x, s_list *next)
   return dest;
 }
 
-/*
-s_list * list_new_f64 (f64 x, s_list *next)
-{
-  s_list *dest;
-  if ((dest = list_new(next))) {
-    if (! tag_init_f64(&dest->tag, x)) {
-      free(dest);
-      return NULL;
-    }
-  }
-  return dest;
-}
-*/
-
 s_list * list_new_list (s_list *x, s_list *next)
 {
   s_list *dest;
@@ -244,31 +230,24 @@ s_list * list_new_list (s_list *x, s_list *next)
   return dest;
 }
 
-/*
-s_list * list_new_map (uw count, s_list *next)
+s_list ** list_remove_void (s_list **list)
 {
-  s_list *dest;
-  if ((dest = list_new(next))) {
-    if (! tag_init_map(&dest->tag, count)) {
-      free(dest);
-      return NULL;
-    }
+  s_list *tmp;
+  s_list **l;
+  assert(list);
+  tmp = *list;
+  l = &tmp;
+  while (*l) {
+    if ((*l)->tag.type == TAG_VOID)
+      *l = list_delete(*l);
+    else if ((*l)->next.type == TAG_LIST)
+      l = &(*l)->next.data.list;
+    else
+      break;
   }
-  return dest;
+  *list = tmp;
+  return list;
 }
-
-s_list * list_new_str_1 (s8 *x_free, const s8 *x, s_list *next)
-{
-  s_list *dest;
-  if ((dest = list_new(next))) {
-    if (! tag_init_str_1(&dest->tag, x_free, x)) {
-      free(dest);
-      return NULL;
-    }
-  }
-  return dest;
-}
-*/
 
 s_array * list_to_array (const s_list *list, const s_sym *type,
                          s_array *dest)
@@ -344,23 +323,4 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
   free(tmp.data);
   free(tmp.dimensions);
   return NULL;
-}
-
-s_list ** list_remove_void (s_list **list)
-{
-  s_list *tmp;
-  s_list **l;
-  assert(list);
-  tmp = *list;
-  l = &tmp;
-  while (*l) {
-    if ((*l)->tag.type == TAG_VOID)
-      *l = list_delete(*l);
-    else if ((*l)->next.type == TAG_LIST)
-      l = &(*l)->next.data.list;
-    else
-      break;
-  }
-  *list = tmp;
-  return list;
 }

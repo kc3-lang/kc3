@@ -13,11 +13,25 @@
 #include <libc3/c3.h>
 #include "gl_object.h"
 
+s_gl_object * gl_object_allocate (s_gl_object *object, uw vertex_count,
+                                  uw triangle_count)
+{
+  assert(object);
+  assert(vertex_count);
+  assert(triangle_count);
+  if (! array_init(&object->vertex, sym_1("GL.Vertex"), 1,
+                   &vertex_count) ||
+      ! array_init(&object->triangle, sym_1("GL.Triangle"), 1,
+                   &triangle_count))
+    return NULL;
+  return object;
+}
+
 void gl_object_clean (s_gl_object *object)
 {
   assert(object);
   array_clean(&object->vertex);
-  array_clean(&object->index);
+  array_clean(&object->triangle);
   glDeleteVertexArrays(1, &object->gl_vao);
   glDeleteBuffers(1, &object->gl_vbo);
   glDeleteBuffers(1, &object->gl_ebo);
@@ -30,18 +44,6 @@ s_gl_object * gl_object_init (s_gl_object *object)
   glGenBuffers(1, &tmp.gl_vbo);
   glGenBuffers(1, &tmp.gl_ebo);
   *object = tmp;
-  return object;
-}
-
-s_gl_object * gl_object_allocate (s_gl_object *object, uw vertex_count,
-                                  uw index_count)
-{
-  assert(object);
-  assert(vertex_count);
-  assert(index_count);
-  assert(index_count % 3 == 0);
-  array_init(&object->vertex, sym_1("GL.Vertex"), 1, &vertex_count);
-  array_init(&object->index, sym_1("U32"), 1, &index_count);
   return object;
 }
 
@@ -65,8 +67,8 @@ bool gl_object_update (s_gl_object *object)
   glBufferData(GL_ARRAY_BUFFER, object->vertex.size,
                object->vertex.data, GL_STATIC_DRAW);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->index.size,
-               object->index.data, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->triangle.size,
+               object->triangle.data, GL_STATIC_DRAW);
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_NORMAL_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);

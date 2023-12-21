@@ -331,6 +331,10 @@ bool sym_to_buf_inspect (const s_sym *type, f_buf_inspect *dest)
     *dest = (f_buf_inspect) buf_inspect_var;
     return true;
   }
+  if (struct_type_exists(type)) {
+    *dest = (f_buf_inspect) buf_inspect_struct;
+    return true;
+  }
   err_write_1("sym_to_buf_inspect: unknown type: ");
   err_write_1(type->str.ptr.ps8);
   err_write_1("\n");
@@ -435,7 +439,6 @@ bool sym_to_buf_inspect_size (const s_sym *type, f_buf_inspect_size *dest)
   if (type == sym_1("PtrFree")) {
     *dest = (f_buf_inspect_size) buf_inspect_ptr_free_size;
     return true;
-
   }
   if (type == sym_1("Quote")) {
     *dest = (f_buf_inspect_size) buf_inspect_quote_size;
@@ -459,6 +462,10 @@ bool sym_to_buf_inspect_size (const s_sym *type, f_buf_inspect_size *dest)
   }
   if (type == sym_1("Void")) {
     *dest = (f_buf_inspect_size) buf_inspect_void_size;
+    return true;
+  }
+  if (struct_type_exists(type)) {
+    *dest = (f_buf_inspect_size) buf_inspect_struct_size;
     return true;
   }
   err_write_1("sym_to_buf_inspect_size: unknown type: ");
@@ -594,6 +601,10 @@ bool sym_to_clean (const s_sym *type, f_clean *dest)
     *dest = NULL;
     return true;
   }
+  if (struct_type_exists(type)) {
+    *dest = (f_clean) struct_clean;
+    return true;
+  }
   err_write_1("sym_to_clean: unknown type: ");
   err_inspect_sym(&type);
   err_write_1("\n");
@@ -619,6 +630,14 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
   }
   if (sym == sym_1("Character")) {
     *dest = &ffi_type_uint32;
+    return true;
+  }
+  if (sym == sym_1("F32")) {
+    *dest = &ffi_type_float;
+    return true;
+  }
+  if (sym == sym_1("F64")) {
+    *dest = &ffi_type_double;
     return true;
   }
   if (sym == sym_1("Fn")) {
@@ -703,6 +722,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
   }
   if (sym == sym_1("Void")) {
     *dest = &ffi_type_void;
+    return true;
+  }
+  if (struct_type_exists(sym)) {
+    *dest = &ffi_type_pointer;
     return true;
   }
   err_write_1("sym_to_ffi_type: unknown type: ");
@@ -834,6 +857,10 @@ bool sym_to_init_cast (const s_sym *type, f_init_cast *dest)
     *dest = NULL;
     return true;
   }
+  if (struct_type_exists(type)) {
+    *dest = (f_init_cast) struct_init_cast;
+    return true;
+  }
   err_write_1("sym_to_init_cast: unknown type: ");
   err_inspect_sym(&type);
   err_write_1("\n");
@@ -963,6 +990,10 @@ bool sym_to_init_copy (const s_sym *type, f_init_copy *dest)
     *dest = NULL;
     return true;
   }
+  if (struct_type_exists(type)) {
+    *dest = (f_init_copy) struct_init_copy;
+    return true;
+  }
   err_write_1("sym_to_init_copy: unknown type: ");
   err_inspect_sym(&type);
   err_write_1("\n");
@@ -1052,6 +1083,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_STR;
     return true;
   }
+  if (sym == sym_1("Struct")) {
+    *dest = TAG_STRUCT;
+    return true;
+  }
   if (sym == sym_1("Sw")) {
     *dest = TAG_SW;
     return true;
@@ -1088,6 +1123,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_UW;
     return true;
   }
+  if (struct_type_exists(sym)) {
+    *dest = TAG_STRUCT;
+    return true;
+  }
   err_write_1("sym_to_tag_type: unknown type: ");
   err_inspect_sym(&sym);
   err_write_1("\n");
@@ -1097,6 +1136,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 
 bool sym_type_size (const s_sym *type, uw *dest)
 {
+  s_struct_type st;
   if (type == sym_1("Bool")) {
     *dest = sizeof(bool);
     return true;
@@ -1177,6 +1217,10 @@ bool sym_type_size (const s_sym *type, uw *dest)
     *dest = sizeof(s_str);
     return true;
   }
+  if (type == sym_1("Struct")) {
+    *dest = sizeof(s_struct);
+    return true;
+  }
   if (type == sym_1("Sw")) {
     *dest = sizeof(sw);
     return true;
@@ -1215,6 +1259,11 @@ bool sym_type_size (const s_sym *type, uw *dest)
   }
   if (type == sym_1("Void")) {
     *dest = 0;
+    return true;
+  }
+  if (struct_type_init_from_env(&st, type, &g_c3_env)) {
+    *dest = st.size;
+    struct_type_clean(&st);
     return true;
   }
   err_write_1("sym_type_size: unknown type: ");

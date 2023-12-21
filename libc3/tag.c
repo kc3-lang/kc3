@@ -750,7 +750,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     }
     goto invalid_cast;
   case TAG_F64:
-    if (type == sym_1("f64")) {
+    if (type == sym_1("F64")) {
       *dest = &tag->data.f64;
       return true;
     }
@@ -891,6 +891,10 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       *dest = &tag->data.struct_;
       return true;
     }
+    if (type == tag->data.struct_.type.module) {
+      *dest = tag->data.struct_.data;
+      return true;
+    }
     goto invalid_cast;
   case TAG_SYM:
     if (type == sym_1("Sym")) {
@@ -981,6 +985,13 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
 {
   assert(tag);
   assert(dest);
+  switch (tag->type) {
+  case TAG_STRUCT:
+    *dest = tag->data.struct_.type.module;
+    return dest;
+  default:
+    break;
+  }
   *dest = tag_type_to_sym(tag->type);
   return dest;
 }
