@@ -112,3 +112,5 @@ quote (List) {[1, 2], [3, 4]}
 m = (List) {[1, 2], [3, 4]}
 m[0]
 m[1]
+quote (GL.Vertex) {}
+(GL.Vertex) {}

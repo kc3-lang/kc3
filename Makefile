@@ -141,6 +141,12 @@ gdb_test:
 gen:
 	${MAKE} -C libc3 gen
 
+ic3:
+	${MAKE} -C ic3 build
+
+ic3_debug:
+	${MAKE} -C ic3 debug
+
 ic3_gcovr:
 	${MAKE} clean_cov
 	${MAKE} ic3_test_cov

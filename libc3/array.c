@@ -50,6 +50,19 @@
 #include "uw.h"
 #include "var.h"
 
+s_array * array_allocate (s_array *a)
+{
+  assert(a);
+  a->data_free = calloc(1, a->size);
+  if (! a->data_free) {
+    err_puts("array_allocate: failed to allocate memory");
+    assert(! "array_allocate: failed to allocate memory");
+    return NULL;
+  }
+  a->data = a->data_free;
+  return a;
+}
+
 void array_clean (s_array *a)
 {
   f_clean clean;

@@ -88,7 +88,15 @@ void hash_update_array (t_hash *hash, const s_array *a)
                 sizeof(a->dimensions[i].count));
     i++;
   }
-  hash_update(hash, a->data, a->size);
+  if (a->data)
+    hash_update(hash, a->data, a->size);
+  else if (a->tags) {
+    i = 0;
+    while (i < a->count) {
+      hash_update_tag(hash, a->tags + i);
+      i++;
+    }
+  }
 }
 
 void hash_update_bool (t_hash *hash, const bool *x)
