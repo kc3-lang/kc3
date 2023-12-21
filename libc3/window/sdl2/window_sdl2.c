@@ -10,11 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
 #include <err.h>
 #include <stdlib.h>
 #include <xkbcommon/xkbcommon.h>
-#include <libc3/tag.h>
+#include <libc3/c3.h>
 #include "../window.h"
 #include "window_sdl2.h"
 
@@ -137,15 +136,6 @@ bool window_sdl2_run (s_window_sdl2 *window)
           SDL_GetError());
     return false;
   }
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                      SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
   sdl_window = SDL_CreateWindow(window->title,
                                 window->x, window->y,
                                 window->w, window->h,
@@ -160,6 +150,15 @@ bool window_sdl2_run (s_window_sdl2 *window)
   }
   SDL_SetWindowBordered(sdl_window, SDL_TRUE);
   window->sdl_window = sdl_window;
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                      SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
   context = SDL_GL_CreateContext(sdl_window);
   if (! context) {
     warnx("window_sdl2_run: failed to create OpenGL context: %s",
@@ -177,7 +176,18 @@ bool window_sdl2_run (s_window_sdl2 *window)
           SDL_GetError());
     goto ko;
   }
-  glewInit();
+  if (glewInit() != GLEW_OK) {
+    warnx("window_sdl2_run: failed to initialize GLEW");
+    goto ko;
+  }
+  const s8 * version = (const s8 *) glGetString(GL_VERSION);
+  if (version) {
+    err_write_1("window_sdl2_run: OpenGL Version: ");
+    err_puts(version);
+  } else {
+    err_puts("window_sdl2_run: failed to retrieve OpenGL version");
+    goto ko;
+  }
   int gl_w = window->w;
   int gl_h = window->h;
   SDL_GL_GetDrawableSize(sdl_window, &gl_w, &gl_h);
