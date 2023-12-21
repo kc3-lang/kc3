@@ -144,6 +144,9 @@ gen:
 ic3:
 	${MAKE} -C ic3 build
 
+ic3_asan:
+	${MAKE} -C ic3 asan
+
 ic3_debug:
 	${MAKE} -C ic3 debug
 
