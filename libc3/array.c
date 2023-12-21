@@ -294,69 +294,57 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   s_array tmp = {0};
   assert(a);
   assert(src);
-  assert(src->dimension);
-  assert(src->dimensions);
-  (void) i;
-  if (! src->dimension) {
-    err_puts("array_init_copy: zero dimension");
-    assert(! "array_init_copy: zero dimension");
-    return NULL;
-  }
-#ifdef DEBUG
-  while (i < src->dimension) {
-    assert(src->dimensions[i].count);
-    i++;
-  }
-#endif
+  tmp.count     = src->count;
   tmp.dimension = src->dimension;
-  if (! (tmp.dimensions = calloc(tmp.dimension,
-                                 sizeof(s_array_dimension)))) {
-    assert(! "array_init_copy: out of memory: dimensions");
-    warnx("array_init_copy: out of memory: dimensions");
-    return NULL;
-  }
-  memcpy(tmp.dimensions, src->dimensions,
-         src->dimension * sizeof(s_array_dimension));
-  tmp.count = src->count;
-  tmp.size = src->size;
-  tmp.type = src->type;
-  if (src->data) {
-    tmp.data = tmp.data_free = calloc(1, src->size);
-    if (! tmp.data) {
-      warnx("array_init_copy: failed to allocate memory");
-      assert(! "array_init_copy: failed to allocate memory");
-      free(tmp.dimensions);
+  tmp.size      = src->size;
+  tmp.type      = src->type;
+  if (tmp.dimension) {
+    if (! (tmp.dimensions = calloc(tmp.dimension,
+                                   sizeof(s_array_dimension)))) {
+      assert(! "array_init_copy: out of memory: dimensions");
+      warnx("array_init_copy: out of memory: dimensions");
       return NULL;
     }
-    if (! sym_to_init_copy(src->type, &init_copy)) {
-      free(tmp.dimensions);
-      return NULL;
+    memcpy(tmp.dimensions, src->dimensions,
+           src->dimension * sizeof(s_array_dimension));
+    if (src->data) {
+      tmp.data = tmp.data_free = calloc(1, src->size);
+      if (! tmp.data) {
+        warnx("array_init_copy: failed to allocate memory");
+        assert(! "array_init_copy: failed to allocate memory");
+        free(tmp.dimensions);
+        return NULL;
+      }
+      if (! sym_to_init_copy(src->type, &init_copy)) {
+        free(tmp.dimensions);
+        return NULL;
+      }
+      data_tmp = tmp.data;
+      data_src = src->data;
+      i = 0;
+      item_size = src->dimensions[src->dimension - 1].item_size;
+      while (i < src->count) {
+        if (! init_copy(data_tmp, data_src))
+          goto ko_data;
+        data_tmp += item_size;
+        data_src += item_size;
+        i++;
+      }
     }
-    data_tmp = tmp.data;
-    data_src = src->data;
-    i = 0;
-    item_size = src->dimensions[src->dimension - 1].item_size;
-    while (i < src->count) {
-      if (! init_copy(data_tmp, data_src))
-        goto ko_data;
-      data_tmp += item_size;
-      data_src += item_size;
-      i++;
-    }
-  }
-  else if (src->tags) {
-    tmp.tags = calloc(src->count, sizeof(s_tag));
-    if (! tmp.tags) {
-      warn("array_init_copy: failed to allocate memory");
-      assert(! "array_init_copy: failed to allocate memory");
-      free(tmp.dimensions);
-      return NULL;
-    }
-    i = 0;
-    while (i < src->count) {
-      if (! tag_init_copy(tmp.tags + i, src->tags + i))
-        goto ko_tags;
-      i++;
+    else if (src->tags) {
+      tmp.tags = calloc(src->count, sizeof(s_tag));
+      if (! tmp.tags) {
+        warn("array_init_copy: failed to allocate memory");
+        assert(! "array_init_copy: failed to allocate memory");
+        free(tmp.dimensions);
+        return NULL;
+      }
+      i = 0;
+      while (i < src->count) {
+        if (! tag_init_copy(tmp.tags + i, src->tags + i))
+          goto ko_tags;
+        i++;
+      }
     }
   }
   *a = tmp;

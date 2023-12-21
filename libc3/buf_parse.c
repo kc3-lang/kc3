@@ -58,15 +58,11 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_peek_array_dimension_count(buf, &tmp)) <= 0) {
+  if ((r = buf_peek_array_dimension_count(buf, &tmp)) <= 0 ||
+      (tmp.dimension &&
+       (r = buf_peek_array_dimensions(buf, &tmp)) <= 0) ||
+      (r = buf_parse_array_data(buf, &tmp)) <= 0)
     goto restore;
-  }
-  if ((r = buf_peek_array_dimensions(buf, &tmp)) <= 0) {
-    goto restore;
-  }
-  if ((r = buf_parse_array_data(buf, &tmp)) < 0) {
-    goto restore;
-  }
   result += r;
   *dest = tmp;
   r = result;
@@ -231,16 +227,28 @@ sw buf_parse_array_dimension_count (s_buf *buf, s_array *dest)
   s_array tmp;
   assert(buf);
   assert(dest);
-  tmp = *dest;
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "{")) <= 0)
     goto clean;
   result += r;
-  tmp.dimension = 1;
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  while ((r = buf_read_1(buf, "{")) > 0) {
+  if ((r = buf_read_1(buf, "}")) < 0)
+    goto restore;
+  if (r > 0) {
+    result += r;
+    dest->dimension = 0;
+    r = result;
+    goto clean;
+  }
+  tmp = *dest;
+  tmp.dimension = 1;
+  while (1) {
+    if ((r = buf_read_1(buf, "{")) < 0)
+      goto restore;
+    if (! r)
+      break;
     result += r;
     tmp.dimension++;
     if ((r = buf_ignore_spaces(buf)) < 0)

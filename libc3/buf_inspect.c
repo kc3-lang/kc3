@@ -52,6 +52,13 @@ sw buf_inspect_array (s_buf *buf, const s_array *array)
   if ((r = buf_write_1(buf, " ")) < 0)
     goto clean;
   result += r;
+  if (! array->dimension) {
+    if ((r = buf_write_1(buf, "{}")) < 0)
+      goto clean;
+    result += r;
+    r = result;
+    goto clean;
+  }
   if ((r = buf_inspect_array_data(buf, array)) < 0) {
     err_puts("buf_inspect_array: buf_inspect_array_data");
     goto clean;
