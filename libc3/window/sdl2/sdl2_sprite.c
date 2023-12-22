@@ -328,6 +328,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
     }
     y++;
   }
+  glBindTexture(GL_TEXTURE_2D, 0);
   free(data);
   free(png_data);
   free(png_row);
