@@ -210,12 +210,16 @@ bool window_sdl2_run (s_window_sdl2 *window)
   fprintf(stderr, "window_sdl2_run: dpi=%.2f, dpi_w=%.2f, dpi_h=%.2f\n",
           window->dpi, window->dpi_w, window->dpi_h);
   SDL_GL_SetSwapInterval(1);
+  assert(glGetError() == GL_NO_ERROR);
   if (! window->load(window)) {
     err_puts("window_sdl2_run: window->load => false");
     goto ko;
   }
+  assert(glGetError() == GL_NO_ERROR);
   while (! quit) {
+    assert(glGetError() == GL_NO_ERROR);
     while (SDL_PollEvent(&sdl_event) != 0) {
+      assert(glGetError() == GL_NO_ERROR);
       switch (sdl_event.type) {
       case SDL_QUIT:
         err_puts("window_sdl2_run: SDL_QUIT");
@@ -250,18 +254,20 @@ bool window_sdl2_run (s_window_sdl2 *window)
             err_puts("window_sdl2_run: window->resize -> false");
             quit = 1;
           }
+          assert(glGetError() == GL_NO_ERROR);
           window->w = sdl_event.window.data1;
           window->h = sdl_event.window.data2;
           SDL_GL_GetDrawableSize(sdl_window, &gl_w, &gl_h);
+          assert(glGetError() == GL_NO_ERROR);
           window->gl_w = gl_w;
           window->gl_h = gl_h;
-          glViewport(0, 0, window->gl_w, window->gl_h);
         }
         break;
       default:
         break;
       }
     }
+    assert(glGetError() == GL_NO_ERROR);
     //glDrawBuffer(GL_BACK);
     if (! window->render(window, NULL)) {
       err_puts("window_sdl2_run: window->render -> false");

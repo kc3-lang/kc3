@@ -50,7 +50,10 @@ bool bg_rect_render (s_sequence *seq, s_window_sdl2 *window,
   rgb.r = color[c1].r * q + color[c2].r * p;
   rgb.g = color[c1].g * q + color[c2].g * p;
   rgb.b = color[c1].b * q + color[c2].b * p;
+  assert(glGetError() == GL_NO_ERROR);
   glClearColor(rgb.r, rgb.g, rgb.b, 1.0);
+  assert(glGetError() == GL_NO_ERROR);
   glClear(GL_COLOR_BUFFER_BIT);
+  assert(glGetError() == GL_NO_ERROR);
   return true;
 }

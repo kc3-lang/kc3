@@ -27,5 +27,9 @@ s_gl_ortho * gl_ortho_new (void);
 /* Operators. */
 void         gl_ortho_render (s_gl_ortho *ortho);
 void         gl_ortho_render_end (s_gl_ortho *ortho);
+void         gl_ortho_resize (s_gl_ortho *ortho, f64 x1, f64 x2, f64 y1,
+                              f64 y2, f64 clip_z_near, f64 clip_z_far);
+void         gl_ortho_update_model_matrix (s_gl_ortho *ortho);
+void         gl_ortho_update_view_matrix (s_gl_ortho *ortho);
 
 #endif /* GL_ORTHO_H */

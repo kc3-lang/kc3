@@ -33,6 +33,7 @@ s_sdl2_font * sdl2_font_init (s_sdl2_font *font, const s8 *path)
     str_clean(&font->path);
     return NULL;
   }
+  assert(glGetError() == GL_NO_ERROR);
   font->ftgl_font = ftglCreateTextureFont(font->real_path.ptr.ps8);
   if (! font->ftgl_font) {
     err_write_1("sdl2_font_init: error loading font: ");
@@ -41,6 +42,7 @@ s_sdl2_font * sdl2_font_init (s_sdl2_font *font, const s8 *path)
     str_clean(&font->real_path);
     return NULL;
   }
+  assert(glGetError() == GL_NO_ERROR);
   font->size = 0;
   font->dpi = 72;
   return font;
@@ -57,5 +59,7 @@ void sdl2_font_set_size (s_sdl2_font *font, u32 size, u32 dpi)
 
 void sdl2_font_render_text (const s_sdl2_font *font, const s8 *p)
 {
+  assert(glGetError() == GL_NO_ERROR);
   ftglRenderFont(font->ftgl_font, p, FTGL_RENDER_ALL);
+  assert(glGetError() == GL_NO_ERROR);
 }

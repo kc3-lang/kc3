@@ -87,7 +87,7 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw seg_u, uw seg_v)
     }
     i++;
   }
-  
+  gl_object_update(&sphere->object);
   *sphere = tmp;
   return sphere;
 }
