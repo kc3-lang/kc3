@@ -31,6 +31,7 @@
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
+#include "ratio.h"
 #include "str.h"
 #include "struct.h"
 #include "tag.h"
@@ -237,6 +238,52 @@ s_list * list_init_quote_copy (s_list *list, const s_quote *quote,
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_quote_copy(&tmp.tag, quote))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_ratio_1 (s_list *list, const char *p, s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_ratio_1(&tmp.tag, p))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_ratio (s_list *list, s_integer *numerator, 
+                          s_integer *denominator, s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_ratio(&tmp.tag, numerator, denominator))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_ratio_copy (s_list *list, const s_ratio *r, 
+                               s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_ratio_copy(&tmp.tag, r))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_ratio_zero (s_list *list, s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_ratio_zero(&tmp.tag))
     return NULL;
   *list = tmp;
   return list;
@@ -721,6 +768,59 @@ s_list * list_new_quote_copy (const s_quote *quote, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_quote_copy(&list->tag, quote)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_ratio_1 (const char *p, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_ratio_1(&list->tag, p)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_ratio (s_integer *numerator, s_integer *denominator, 
+                         s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_ratio(&list->tag, numerator, denominator)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_ratio_copy (const s_ratio *r, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_ratio_copy(&list->tag, r)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_ratio_zero (s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_ratio_zero(&list->tag)) {
     free(list);
     return NULL;
   }

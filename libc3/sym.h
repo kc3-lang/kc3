@@ -50,6 +50,7 @@ extern const s_sym g_sym_Ptag;
 extern const s_sym g_sym_Ptr;
 extern const s_sym g_sym_PtrFree;
 extern const s_sym g_sym_Quote;
+extern const s_sym g_sym_Ratio;
 extern const s_sym g_sym_Result;
 extern const s_sym g_sym_S8;
 extern const s_sym g_sym_S16;

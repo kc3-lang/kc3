@@ -17,6 +17,7 @@
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
+#include "ratio.h"
 #include "sw.h"
 
 sw * sw_init_cast (sw *s, const s_tag *tag)
@@ -36,6 +37,9 @@ sw * sw_init_cast (sw *s, const s_tag *tag)
     return s;
   case TAG_INTEGER:
     *s = integer_to_sw(&tag->data.integer);
+    return s;
+  case TAG_RATIO:
+    *s = ratio_to_sw(&tag->data.ratio);
     return s;
   case TAG_SW:
     *s = (sw) tag->data.sw;

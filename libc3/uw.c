@@ -16,6 +16,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "integer.h"
+#include "ratio.h"
 #include "tag.h"
 #include "uw.h"
 
@@ -36,6 +37,9 @@ uw * uw_init_cast (uw *u, const s_tag *tag)
     return u;
   case TAG_INTEGER:
     *u = integer_to_uw(&tag->data.integer);
+    return u;
+  case TAG_RATIO:
+    *u = ratio_to_uw(&tag->data.ratio);
     return u;
   case TAG_SW:
     *u = (uw) tag->data.sw;

@@ -16,6 +16,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "integer.h"
+#include "ratio.h"
 #include "tag.h"
 #include "u_bits$.h"
 
@@ -36,6 +37,9 @@ u_bits$ * u_bits$_init_cast (u_bits$ *u, const s_tag *tag)
     return u;
   case TAG_INTEGER:
     *u = integer_to_u_bits$(&tag->data.integer);
+    return u;
+  case TAG_RATIO:
+    *u = ratio_to_u_bits$(&tag->data.ratio);
     return u;
   case TAG_SW:
     *u = (u_bits$) tag->data.sw;

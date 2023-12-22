@@ -48,7 +48,9 @@
 #include "struct.h"
 #include "struct_type.h"
 #include "tag.h"
+#include "tag_init.h"
 #include "tuple.h"
+#include "integer.h"
 
 s_env g_c3_env;
 
@@ -1156,6 +1158,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_FACT:
   case TAG_FN:
   case TAG_INTEGER:
+  case TAG_RATIO:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:

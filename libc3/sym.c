@@ -39,6 +39,7 @@ const s_sym g_sym_Ptr             = {{{NULL},  3, {"Ptr"}}};
 const s_sym g_sym_PtrFree         = {{{NULL},  7, {"PtrFree"}}};
 const s_sym g_sym_Quote           = {{{NULL},  5, {"Quote"}}};
 const s_sym g_sym_Unquote         = {{{NULL},  7, {"Unquote"}}};
+const s_sym g_sym_Ratio           = {{{NULL},  5, {"Ratio"}}};
 const s_sym g_sym_Result          = {{{NULL},  6, {"Result"}}};
 const s_sym g_sym_S8              = {{{NULL},  2, {"S8"}}};
 const s_sym g_sym_S16             = {{{NULL},  3, {"S16"}}};
@@ -280,6 +281,7 @@ void sym_init_g_sym (void)
   sym_intern(&g_sym_Ptr, NULL);
   sym_intern(&g_sym_PtrFree, NULL);
   sym_intern(&g_sym_Quote, NULL);
+  sym_intern(&g_sym_Ratio, NULL);
   sym_intern(&g_sym_Result, NULL);
   sym_intern(&g_sym_S8, NULL);
   sym_intern(&g_sym_S16, NULL);

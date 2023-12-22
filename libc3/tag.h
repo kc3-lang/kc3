@@ -48,9 +48,13 @@ bool           tag_ident_is_bound (const s_tag *tag);
 bool           tag_is_bound_var (const s_tag *tag);
 bool           tag_is_number (const s_tag *tag);
 bool           tag_is_unbound_var (const s_tag *tag);
+bool           tag_is_zero(const s_tag *tag);
 s8             tag_number_compare (const s_tag *a, const s_tag *b);
 uw *           tag_size (const s_tag *tag, uw *dest);
 ffi_type       tag_to_ffi_type(const s_tag *tag);
+f32            tag_to_f32(const s_tag *tag);
+f64            tag_to_f64(const s_tag *tag);
+s_integer      tag_to_integer(const s_tag *tag);
 const s_sym ** tag_type (const s_tag *tag, const s_sym **type);
 
 /* Operators. */

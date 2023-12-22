@@ -114,6 +114,8 @@ s8            env_operator_arity (s_env *env, const s_ident *op);
 bool          env_operator_find (s_env *env, const s_ident *op);
 s_ident *     env_operator_ident (s_env *env, const s_ident *op,
                                   s_ident *dest);
+bool          env_eval_integer (s_env *env, const s_integer *integer,
+                                s_integer *dest);
 bool          env_operator_is_right_associative (s_env *env,
                                                  const s_ident *op);
 s8            env_operator_precedence (s_env *env, const s_ident *op);

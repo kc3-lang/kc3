@@ -38,6 +38,7 @@
 #include "sym.h"
 #include "tag.h"
 #include "tuple.h"
+#include "ratio.h"
 
 sw buf_parse_array_data_rec (s_buf *buf, s_array *dest, uw *address,
                              s_tag **tag, uw dimension);
@@ -2708,6 +2709,34 @@ sw buf_parse_special_operator (s_buf *buf, s_call *dest)
   return r;
 }
 
+sw buf_parse_ratio (s_buf *buf, s_ratio *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_ratio tmp;
+  buf_save_init(buf, &save);
+  ratio_init(&tmp);
+  if ((r = buf_parse_integer(buf, &tmp.numerator)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_read_1(buf, "/")) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_integer(buf, &tmp.denominator)) <= 0)
+    goto restore;
+  result += r;
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  ratio_clean(&tmp);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {
   u8 b;
@@ -3402,6 +3431,9 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
   r = buf_parse_tag_f64(buf, dest);
   if (r > 0)
     return r;
+  r = buf_parse_tag_ratio(buf, dest);
+  if (r > 0)
+    return r;
   r = buf_parse_tag_integer(buf, dest);
   if (r > 0) {
     tag_integer_reduce(dest);
@@ -3428,6 +3460,8 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
   }
   if ((r = buf_parse_tag_void(buf, dest)) != 0 ||
       (r = buf_parse_tag_number(buf, dest)) != 0 ||
+      (r = buf_parse_tag_number(buf, dest)) != 0 ||
+      (r = buf_parse_tag_ratio(buf, dest)) != 0 ||
       (r = buf_parse_tag_array(buf, dest)) != 0 ||
       (r = buf_parse_tag_cast(buf, dest)) != 0 ||
       (r = buf_parse_tag_unquote(buf, dest)) != 0 ||
@@ -3475,6 +3509,16 @@ sw buf_parse_tag_quote (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_quote(buf, &dest->data.quote)) > 0)
     dest->type = TAG_QUOTE;
+  return r;
+}
+
+sw buf_parse_tag_ratio (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_ratio(buf, &dest->data.ratio)) > 0)
+    dest->type = TAG_RATIO;
   return r;
 }
 

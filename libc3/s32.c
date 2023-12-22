@@ -17,6 +17,7 @@
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
+#include "ratio.h"
 #include "s32.h"
 
 s32 * s32_init_cast (s32 *s, const s_tag *tag)
@@ -36,6 +37,9 @@ s32 * s32_init_cast (s32 *s, const s_tag *tag)
     return s;
   case TAG_INTEGER:
     *s = integer_to_s32(&tag->data.integer);
+    return s;
+  case TAG_RATIO:
+    *s = ratio_to_s32(&tag->data.ratio);
     return s;
   case TAG_SW:
     *s = (s32) tag->data.sw;

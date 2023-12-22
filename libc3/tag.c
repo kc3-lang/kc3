@@ -35,6 +35,7 @@
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
+#include "ratio.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -188,6 +189,7 @@ void tag_clean (s_tag *tag)
   case TAG_MAP:         map_clean(&tag->data.map);         break;
   case TAG_PTR_FREE:    ptr_free_clean(&tag->data.ptr);    break;
   case TAG_QUOTE:       quote_clean(&tag->data.quote);     break;
+  case TAG_RATIO:       ratio_clean(&tag->data.ratio);     break;
   case TAG_STR:         str_clean(&tag->data.str);         break;
   case TAG_STRUCT:      struct_clean(&tag->data.struct_);  break;
   case TAG_STRUCT_TYPE: struct_type_clean(&tag->data.struct_type);
@@ -380,6 +382,9 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
   case TAG_QUOTE:
     quote_init_copy(&tag->data.quote, &src->data.quote);
     break;
+  case TAG_RATIO:
+    ratio_init_copy(&tag->data.ratio, &src->data.ratio);
+    break;
   case TAG_STR:
     str_init_copy(&tag->data.str, &src->data.str);
     break;
@@ -510,6 +515,48 @@ bool tag_is_unbound_var (const s_tag *tag)
 {
   return (tag && tag->type == TAG_VAR);
 }
+
+bool tag_is_zero(const s_tag *tag)
+{
+  assert(tag);
+  switch (tag->type) {
+    case TAG_INTEGER:
+      return integer_is_zero(&tag->data.integer);
+    case TAG_F32:
+      return tag->data.f32 == 0.0f;
+    case TAG_F64:
+      return tag->data.f64 == 0.0;
+    case TAG_S8:
+      return tag->data.s8 == 0;
+    case TAG_S16:
+      return tag->data.s16 == 0;
+    case TAG_S32:
+      return tag->data.s32 == 0;
+    case TAG_S64:
+      return tag->data.s64 == 0;
+    case TAG_U8:
+      return tag->data.u8 == 0;
+    case TAG_U16:
+      return tag->data.u16 == 0;
+    case TAG_U32:
+      return tag->data.u32 == 0;
+    case TAG_U64:
+      return tag->data.u64 == 0;
+    case TAG_UW:
+      return tag->data.uw == 0;
+    default:
+      return false;
+  }
+}
+
+/*
+s_tag * tag_list (s_tag *tag, s_list *x)
+{
+  assert(tag);
+  tag_clean(tag);
+  return tag_init_list(tag, x);
+}
+*/
 
 s_tag * tag_list_1 (s_tag *tag, const char *p)
 {
@@ -649,7 +696,8 @@ bool * tag_or (const s_tag *a, const s_tag *b, bool *dest)
   assert(b);
   assert(dest);
   tag_init_bool(&f, false);
-  *dest = compare_tag(a, &f) != 0 || compare_tag(b, &f) != 0 ? 1 : 0;
+  *dest = compare_tag(a, &f) != 0 ||
+          compare_tag(b, &f) != 0 ? 1 : 0;
   return dest;
 }
 
@@ -715,6 +763,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   case TAG_PTR:         *dest = &tag->data.ptr.p;       return true;
   case TAG_PTR_FREE:    *dest = &tag->data.ptr_free.p;  return true;
   case TAG_QUOTE:       *dest = &tag->data.quote;       return true;
+  case TAG_RATIO:       *dest = &tag->data.ratio;       return true;
   case TAG_STR:         *dest = &tag->data.str;         return true;
   case TAG_STRUCT:      *dest = &tag->data.struct_;     return true;
   case TAG_STRUCT_TYPE: *dest = &tag->data.struct_type; return true;
@@ -820,6 +869,11 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       *dest = &tag->data.integer;
       return true;
     }
+    goto invalid_cast;
+  case TAG_RATIO:
+    if (type == sym_1("Ratio") ||
+        type == sym_1("ratio"))
+      return true;
     goto invalid_cast;
   case TAG_SW:
     if (type == &g_sym_Sw) {
@@ -1033,11 +1087,49 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_TUPLE:       *dest = &tag->data.tuple;       return true;
   case TAG_UNQUOTE:     *dest = &tag->data.unquote;     return true;
   case TAG_VAR:         *dest = NULL;                   return true;
+  case TAG_RATIO:       *dest = &tag->data.ratio;       return true;
   }
   warnx("tag_to_pointer: invalid tag type: %d", tag_type);
   assert(! "tag_to_pointer: invalid tag type");
   return false;
 }
+
+f32 tag_to_f32(const s_tag *tag)
+{
+  assert(tag);
+  assert(tag->type == TAG_F32);
+  return tag->data.f32;
+}
+
+f64 tag_to_f64(const s_tag *tag)
+{
+  assert(tag);
+  assert(tag->type == TAG_F64);
+  return tag->data.f64;
+}
+
+s_integer tag_to_integer(const s_tag *tag)
+{
+  assert(tag);
+  assert(tag->type == TAG_INTEGER);
+  return tag->data.integer;
+}
+
+/*
+s_tag * tag_tuple (s_tag *tag, uw count)
+{
+  assert(tag);
+  tag_clean(tag);
+  return tag_init_tuple(tag, count);
+}
+
+s_tag * tag_tuple_2 (s_tag *tag, const s_tag *a, const s_tag *b)
+{
+  assert(tag);
+  tag_clean(tag);
+  return tag_init_tuple_2(tag, a, b);
+}
+*/
 
 const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
 {
@@ -1076,6 +1168,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_PTR:         *dest = &g_sym_Ptr;        return dest;
   case TAG_PTR_FREE:    *dest = &g_sym_PtrFree;    return dest;
   case TAG_QUOTE:       *dest = &g_sym_Quote;      return dest;
+  case TAG_RATIO:       *dest = &g_sym_Ratio;      return dest;
   case TAG_STR:         *dest = &g_sym_Str;        return dest;
   case TAG_STRUCT:      *dest = tag->data.struct_.type->module;
                                                      return dest;

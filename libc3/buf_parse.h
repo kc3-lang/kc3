@@ -94,6 +94,7 @@ sw buf_parse_ptag (s_buf *buf, p_tag *dest);
 sw buf_parse_ptr (s_buf *buf, u_ptr_w *dest);
 sw buf_parse_ptr_free (s_buf *buf, u_ptr_w *dest);
 sw buf_parse_quote (s_buf *buf, s_quote *dest);
+sw buf_parse_ratio (s_buf *buf, s_ratio *dest);
 sw buf_parse_special_operator (s_buf *buf, s_call *dest);
 sw buf_parse_str (s_buf *buf, s_str *dest);
 sw buf_parse_str_character (s_buf *buf, character *dest);
@@ -135,7 +136,7 @@ sw buf_parse_u64_hex (s_buf *buf, u64 *dest);
 sw buf_parse_unquote (s_buf *buf, s_unquote *dest);
 sw buf_parse_var (s_buf *buf, void *dest);
 sw buf_parse_void (s_buf *buf, void *dest);
-
+sw buf_parse_tag_ratio (s_buf *buf, s_tag *dest);
 sw buf_peek_array_dimensions (s_buf *buf, s_array *dest);
 sw buf_peek_ident (s_buf *buf, s_ident *dest);
 

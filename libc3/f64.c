@@ -16,6 +16,7 @@
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
+#include "ratio.h"
 #include "f64.h"
 #include "u64.h"
 

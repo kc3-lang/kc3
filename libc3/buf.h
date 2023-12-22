@@ -109,5 +109,6 @@ sw      buf_xfer_reverse(s_buf *src, s_buf *dest);
 s_str * buf_slice_to_str (const s_buf *buf, uw start, uw end,
                           s_str *dest);
 s_str * buf_to_str (const s_buf *buf, s_str *dest);
+s_ratio * buf_to_ratio (const s_buf *buf, s_ratio *ratio);
 
 #endif /* LIBC3_BUF_H */

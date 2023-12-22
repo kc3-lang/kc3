@@ -372,6 +372,20 @@ s8 compare_quote (const s_quote *a, const s_quote *b)
   return compare_tag(a->tag, b->tag);
 }
 
+s8 compare_ratio (const s_ratio *a, const s_ratio *b)
+{
+  s8 r;
+  if (a == b)
+    return 0;
+  if (!a)
+    return -1;
+  if (!b)
+    return 1;
+  if ((r = compare_integer(&a->numerator, &b->numerator)))
+    return r;
+  return compare_integer(&a->denominator, &b->denominator);
+}
+
 COMPARE_DEF(s8)
 
 COMPARE_DEF(s16)
@@ -909,6 +923,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                           b->data.ptr_free.p);
   case TAG_QUOTE:      return compare_quote(&a->data.quote,
                                             &b->data.quote);
+  case TAG_RATIO:      return compare_ratio(&a->data.ratio,
+                                           &b->data.ratio);
   case TAG_STR:        return compare_str(&a->data.str, &b->data.str);
   case TAG_STRUCT:     return compare_struct(&a->data.struct_,
                                              &b->data.struct_);

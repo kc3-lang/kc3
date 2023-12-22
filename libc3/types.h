@@ -102,6 +102,7 @@ typedef enum {
   TAG_FACT,
   TAG_FN,
   TAG_INTEGER,
+  TAG_RATIO,
   TAG_SW,
   TAG_S64,
   TAG_S32,
@@ -138,6 +139,7 @@ typedef struct buf                     s_buf;
 typedef struct buf_save                s_buf_save;
 typedef struct call                    s_call;
 typedef struct cfn                     s_cfn;
+typedef struct complex                 s_complex;
 typedef struct env                     s_env;
 typedef struct error_handler           s_error_handler;
 typedef struct fact                    s_fact;
@@ -161,6 +163,7 @@ typedef struct log                     s_log;
 typedef struct map                     s_map;
 typedef struct queue                   s_queue;
 typedef struct quote                   s_quote;
+typedef struct ratio                   s_ratio;
 typedef struct sequence                s_sequence;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
@@ -390,15 +393,15 @@ struct cfn {
   bool special_operator;
 };
 
-struct integer_fraction {
-  s_integer num;
-  s_integer div;
-};
-
 struct log {
   s_buf  buf;
   u64    count;
   t_hash hash;
+};
+
+struct ratio {
+  s_integer numerator;
+  s_integer denominator;
 };
 
 struct sym {
@@ -445,6 +448,7 @@ union tag_data {
   u_ptr_w       ptr;
   u_ptr_w       ptr_free;
   s_quote       quote;
+  s_ratio       ratio;
   s_str         str;
   s_struct      struct_;
   s_struct_type struct_type;
@@ -482,6 +486,11 @@ struct binding {
   const s_sym *name;
   s_tag value;
   s_binding *next;
+};
+
+struct complex {
+  s_tag x;
+  s_tag y;
 };
 
 struct error_handler

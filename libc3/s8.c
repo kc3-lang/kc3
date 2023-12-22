@@ -17,6 +17,7 @@
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
+#include "ratio.h"
 #include "s8.h"
 
 s8 * s8_init_cast (s8 *s, const s_tag *tag)
@@ -36,6 +37,9 @@ s8 * s8_init_cast (s8 *s, const s_tag *tag)
     return s;
   case TAG_INTEGER:
     *s = integer_to_s8(&tag->data.integer);
+    return s;
+  case TAG_RATIO:
+    *s = ratio_to_s8(&tag->data.ratio);
     return s;
   case TAG_SW:
     *s = (s8) tag->data.sw;

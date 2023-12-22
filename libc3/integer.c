@@ -19,6 +19,7 @@
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
+#include "ratio.h"
 
 // TODO: errx -> warnx
 
@@ -127,6 +128,8 @@ s_integer * integer_init_cast (s_integer *a, const s_tag *tag)
     return integer_init_f128(a, tag->data.f128);
   case TAG_INTEGER:
     return integer_init_copy(a, &tag->data.integer);
+  case TAG_RATIO:
+    return integer_init_ratio(a, &tag->data.ratio);
   case TAG_SW:
     return integer_init_sw(a, tag->data.sw);
   case TAG_S64:
@@ -267,6 +270,13 @@ s_integer * integer_init_s64 (s_integer *a, s64 x)
   assert(a);
   integer_init(a);
   return integer_set_s64(a, x);
+}
+
+s_integer * integer_init_ratio (s_integer *a, const s_ratio *r)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_ratio(a, r);
 }
 
 s_integer * integer_init_sw (s_integer *a, sw x)
@@ -471,6 +481,14 @@ s_integer * integer_set_s64 (s_integer *a, s64 x)
 {
   assert(a);
   mp_set_i64(&a->mp_int, x);
+  return a;
+}
+
+s_integer * integer_set_ratio (s_integer *a, const s_ratio *r)
+{
+  assert(a);
+  assert(r);
+  integer_div(&r->numerator, &r->denominator, a);
   return a;
 }
 

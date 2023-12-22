@@ -1730,6 +1730,44 @@ sw buf_inspect_quote_size (const s_quote *quote)
   return result;
 }
 
+sw buf_inspect_ratio (s_buf *buf, const s_ratio *ratio)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_inspect_integer(buf, &ratio->numerator)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_write_1(buf, "/")) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_inspect_integer(buf, &ratio->denominator)) < 0)
+    goto restore;
+  result += r;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_wpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_inspect_ratio_size (const s_ratio *ratio)
+{
+  sw r;
+  sw result = 0;
+  if ((r = buf_inspect_integer_size(&ratio->numerator)) < 0)
+    return r;
+  result += r;
+  result += strlen("/");
+  if ((r = buf_inspect_integer_size(&ratio->denominator)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 sw buf_inspect_str (s_buf *buf, const s_str *str)
 {
   sw r;
@@ -2235,6 +2273,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_PTR_FREE:
     return buf_inspect_ptr_free(buf, &tag->data.ptr_free);
   case TAG_QUOTE:   return buf_inspect_quote(buf, &tag->data.quote);
+  case TAG_RATIO:   return buf_inspect_ratio(buf, &tag->data.ratio);
   case TAG_S8:      return buf_inspect_s8(buf, &tag->data.s8);
   case TAG_S16:     return buf_inspect_s16(buf, &tag->data.s16);
   case TAG_S32:     return buf_inspect_s32(buf, &tag->data.s32);
@@ -2287,6 +2326,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_PTR_FREE:
     return buf_inspect_ptr_free_size(&tag->data.ptr_free);
   case TAG_QUOTE:    return buf_inspect_quote_size(&tag->data.quote);
+  case TAG_RATIO:    return buf_inspect_ratio_size(&tag->data.ratio);
   case TAG_S8:       return buf_inspect_s8_size(&tag->data.s8);
   case TAG_S16:      return buf_inspect_s16_size(&tag->data.s16);
   case TAG_S32:      return buf_inspect_s32_size(&tag->data.s32);

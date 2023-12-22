@@ -16,6 +16,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "integer.h"
+#include "ratio.h"
 #include "tag.h"
 #include "u8.h"
 
@@ -36,6 +37,9 @@ u8 * u8_init_cast (u8 *u, const s_tag *tag)
     return u;
   case TAG_INTEGER:
     *u = integer_to_u8(&tag->data.integer);
+    return u;
+  case TAG_RATIO:
+    *u = ratio_to_u8(&tag->data.ratio);
     return u;
   case TAG_SW:
     *u = (u8) tag->data.sw;

@@ -270,6 +270,8 @@ C3_C_SOURCES = \
 	"libc3/character.h" \
 	"libc3/compare.c" \
 	"libc3/compare.h" \
+	"libc3/complex.c" \
+	"libc3/complex.h" \
 	"libc3/data.c" \
 	"libc3/data.h" \
 	"libc3/env.c" \
@@ -343,6 +345,8 @@ C3_C_SOURCES = \
 	"libc3/queue.h" \
 	"libc3/quote.c" \
 	"libc3/quote.h" \
+	"libc3/ratio.c" \
+	"libc3/ratio.h" \
 	"libc3/s.c.in" \
 	"libc3/s.h.in" \
 	"libc3/s16.c" \
@@ -646,6 +650,7 @@ C3_OTHER_SOURCES = \
 	"img/iris-c3-004.png" \
 	"img/mandelbrot_f128_limit.1.png" \
 	"img/mandelbrot_f128_limit.2.png" \
+	"img/mandelbrot_f128_limit.3.png" \
 	"img/mandelbrot_f128_limit.png" \
 	"img/matrix_shade.png" \
 	"img/thodg_No_Prompt_073261d5-2c81-4b6e-9572-e0b840c55f1f.jpeg" \
@@ -1046,7 +1051,6 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/NameAliases.txt" \
 	"ucd2c/UCD/NamedSequences.txt" \
 	"ucd2c/UCD/NamedSequencesProv.txt" \
-	"ucd2c/UCD/NamesList.html" \
 	"ucd2c/UCD/NamesList.txt" \
 	"ucd2c/UCD/NormalizationCorrections.txt" \
 	"ucd2c/UCD/NormalizationTest.txt" \
@@ -1066,15 +1070,11 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/UnicodeData.txt" \
 	"ucd2c/UCD/VerticalOrientation.txt" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakProperty.txt" \
-	"ucd2c/UCD/auxiliary/GraphemeBreakTest.html" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakTest.txt" \
-	"ucd2c/UCD/auxiliary/LineBreakTest.html" \
 	"ucd2c/UCD/auxiliary/LineBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/SentenceBreakProperty.txt" \
-	"ucd2c/UCD/auxiliary/SentenceBreakTest.html" \
 	"ucd2c/UCD/auxiliary/SentenceBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/WordBreakProperty.txt" \
-	"ucd2c/UCD/auxiliary/WordBreakTest.html" \
 	"ucd2c/UCD/auxiliary/WordBreakTest.txt" \
 	"ucd2c/UCD/emoji/ReadMe.txt" \
 	"ucd2c/UCD/emoji/emoji-data.txt" \

@@ -79,6 +79,7 @@ HEADERS = \
 	"cfn.h" \
 	"character.h" \
 	"compare.h" \
+	"complex.h" \
 	"config.h" \
 	"data.h" \
 	"env.h" \
@@ -116,6 +117,7 @@ HEADERS = \
 	"ptr_free.h" \
 	"queue.h" \
 	"quote.h" \
+	"ratio.h" \
 	"s16.h" \
 	"s32.h" \
 	"s64.h" \
@@ -232,6 +234,7 @@ SOURCES = \
 	"cfn.c" \
 	"character.c" \
 	"compare.c" \
+	"complex.c" \
 	"data.c" \
 	"env.c" \
 	"error.c" \
@@ -268,6 +271,7 @@ SOURCES = \
 	"ptr_free.c" \
 	"queue.c" \
 	"quote.c" \
+	"ratio.c" \
 	"s16.c" \
 	"s32.c" \
 	"s64.c" \
@@ -489,6 +493,7 @@ LO_SOURCES = \
 	"cfn.c" \
 	"character.c" \
 	"compare.c" \
+	"complex.c" \
 	"data.c" \
 	"env.c" \
 	"error.c" \
@@ -525,6 +530,7 @@ LO_SOURCES = \
 	"ptr_free.c" \
 	"queue.c" \
 	"quote.c" \
+	"ratio.c" \
 	"s16.c" \
 	"s32.c" \
 	"s64.c" \
