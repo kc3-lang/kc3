@@ -635,11 +635,10 @@ s_tag * tag_paren (const s_tag *tag, s_tag *dest)
 
 uw * tag_size (const s_tag *tag, uw *dest)
 {
-  const s_sym *type = NULL;
+  const s_sym *type;
   uw tmp = 0;
   assert(tag);
-  type = tag_type_to_sym(tag->type);
-  if (! type ||
+  if (! tag_type(tag, &type) ||
       ! sym_type_size(type, &tmp))
     return NULL;
   *dest = tmp;
@@ -660,7 +659,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
     return false;
   }
   switch (tag_type) {
-  case TAG_ARRAY:     *dest = tag->data.array.data;  return true;
+  case TAG_ARRAY:     *dest = &tag->data.array;      return true;
   case TAG_BOOL:      *dest = &tag->data.bool;       return true;
   case TAG_CALL:      *dest = &tag->data.call;       return true;
   case TAG_CFN:       *dest = &tag->data.cfn;        return true;
@@ -943,7 +942,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   }
   switch (tag_type) {
   case TAG_VOID:      *dest = NULL;                  return true;
-  case TAG_ARRAY:     *dest = tag->data.array.data;  return true;
+  case TAG_ARRAY:     *dest = &tag->data.array;      return true;
   case TAG_BOOL:      *dest = &tag->data.bool;       return true;
   case TAG_CALL:      *dest = &tag->data.call;       return true;
   case TAG_CFN:       *dest = &tag->data.cfn;        return true;

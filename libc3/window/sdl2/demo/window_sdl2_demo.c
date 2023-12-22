@@ -14,9 +14,10 @@
 #include <stdlib.h>
 #include <libc3/c3.h>
 #include "../../window.h"
-#include "../window_sdl2.h"
+#include "../gl_ortho.h"
 #include "../sdl2_font.h"
 #include "../sdl2_sprite.h"
+#include "../window_sdl2.h"
 #include "bg_rect.h"
 #include "lightspeed.h"
 #include "toasters.h"
@@ -27,6 +28,7 @@
 
 //s_sdl2_font g_font_computer_modern;
 s_sdl2_font g_font_courier_new = {0};
+s_gl_ortho  g_ortho = {0};
 
 static bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
                                      sw x, sw y);
@@ -133,6 +135,8 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
     assert(window->sequence_count == WINDOW_SDL2_DEMO_SEQUENCE_COUNT);
     return false;
   }
+  if (! gl_ortho_init(&g_ortho))
+    return false;
   if (! sdl2_font_init(&g_font_courier_new,
                        "fonts/Courier New/Courier New.ttf"))
     return false;
@@ -218,11 +222,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   if (! seq->render(seq, window, context))
     return false;
   /* 2D */
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, window->w, 0, window->h, -1, 1);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+  gl_ortho_render(&g_ortho);
   glDisable(GL_DEPTH_TEST);
   sdl2_font_set_size(&g_font_courier_new, 20, window->dpi);
   render_text(&g_font_courier_new, 20.0f, 30.0f, seq->title);
@@ -240,6 +240,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   s8 fps[32];
   snprintf(fps, sizeof(fps), "%.2f", (f64) seq->frame / seq->t);
   render_text(&g_font_courier_new, 20, window->h - 30, fps);
+  gl_ortho_render_end(&g_ortho);
   return true;
 }
 
@@ -257,6 +258,7 @@ void window_sdl2_demo_unload (s_window_sdl2 *window)
 {
   assert(window);
   (void) window;
+  gl_ortho_clean(&g_ortho);
   sdl2_font_clean(&g_font_courier_new);
   sdl2_sprite_clean(&g_sprite_toaster);
   sdl2_sprite_clean(&g_sprite_toast);

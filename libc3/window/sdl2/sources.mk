@@ -18,6 +18,7 @@ SOURCES = \
 	"gl_cylinder.c" \
 	"gl_matrix_4d.c" \
 	"gl_object.c" \
+	"gl_ortho.c" \
 	"gl_point_2d.c" \
 	"gl_point_3d.c" \
 	"gl_sphere.c" \
