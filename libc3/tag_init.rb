@@ -342,6 +342,14 @@ class TagInitList
                    [Arg.new("void *", "p")]),
        TagInit.new("quote", "copy", "TAG_QUOTE", :init_mode_init,
                    [Arg.new("const s_quote *", "quote")]),
+       TagInit1.new("ratio", "1", "TAG_RATIO", :init_mode_init),
+       TagInit.new("ratio", "TAG_RATIO", :init_mode_init,
+                      [Arg.new("s_integer *", "numerator"),
+                      Arg.new("s_integer *", "denominator")]),
+       TagInit.new("ratio", "copy", "TAG_RATIO", :init_mode_init,
+                      [Arg.new("const s_ratio *", "r")]),
+       TagInit.new("ratio", "zero", "TAG_RATIO", :init_mode_init,
+                       []),
        TagInit.new("s8", "TAG_S8", :init_mode_direct,
                    [Arg.new("s8", "i")]),
        TagInit.new("s16", "TAG_S16", :init_mode_direct,
@@ -518,6 +526,7 @@ tag_init_c.content = <<EOF
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
+#include "ratio.h"
 #include "str.h"
 #include "struct.h"
 #include "tag.h"
@@ -571,6 +580,7 @@ list_init_c.content = <<EOF
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
+#include "ratio.h"
 #include "str.h"
 #include "struct.h"
 #include "tag.h"

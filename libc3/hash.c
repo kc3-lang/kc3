@@ -334,6 +334,18 @@ bool hash_update_quote (t_hash *hash, const s_quote *x)
   return hash_update_tag(hash, x->tag);
 }
 
+bool hash_update_ratio (t_hash *hash, const s_ratio *ratio)
+{
+  const s8 type[] = "ratio";
+  assert(hash);
+  assert(ratio);
+  if (! hash_update(hash, type, sizeof(type)) ||
+  ! hash_update(hash, &ratio->numerator, sizeof(ratio->numerator)) ||
+  ! hash_update(hash, &ratio->denominator, sizeof(ratio->denominator)))
+    return false;
+  return true;
+}
+
 HASH_UPDATE_DEF(s8)
 HASH_UPDATE_DEF(s16)
 HASH_UPDATE_DEF(s32)
@@ -455,8 +467,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_PTR_FREE:
     return hash_update_ptr_free(hash, &tag->data.ptr_free);
   case TAG_QUOTE: return hash_update_quote(hash, &tag->data.quote);
-  case TAG_UNQUOTE:
-    return hash_update_unquote(hash, &tag->data.unquote);
+  case TAG_RATIO: return hash_update_ratio(hash, &tag->data.ratio);
   case TAG_S8:    return hash_update_s8(hash, &tag->data.s8);
   case TAG_S16:   return hash_update_s16(hash, &tag->data.s16);
   case TAG_S32:   return hash_update_s32(hash, &tag->data.s32);
@@ -473,6 +484,8 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_U16:   return hash_update_u16(hash, &tag->data.u16);
   case TAG_U32:   return hash_update_u32(hash, &tag->data.u32);
   case TAG_U64:   return hash_update_u64(hash, &tag->data.u64);
+  case TAG_UNQUOTE:
+    return hash_update_unquote(hash, &tag->data.unquote);
   case TAG_UW:    return hash_update_uw(hash, &tag->data.uw);
   case TAG_VAR:   return hash_update_var(hash, NULL);
   case TAG_VOID:  return hash_update_void(hash, NULL);

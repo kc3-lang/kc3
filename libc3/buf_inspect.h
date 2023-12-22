@@ -120,6 +120,8 @@ sw buf_inspect_ptr_free_size (const u_ptr_w *ptr_free);
 sw buf_inspect_ptr_size (const u_ptr_w *ptr);
 sw buf_inspect_quote (s_buf *buf, const s_quote *quote);
 sw buf_inspect_quote_size (const s_quote *quote);
+sw buf_inspect_ratio (s_buf *buf, const s_ratio *x);
+sw buf_inspect_ratio_size (const s_ratio *x);
 BUF_INSPECT_S_PROTOTYPES(8);
 BUF_INSPECT_S_PROTOTYPES(16);
 BUF_INSPECT_S_PROTOTYPES(32);

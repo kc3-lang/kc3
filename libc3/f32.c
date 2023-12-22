@@ -15,6 +15,7 @@
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
+#include "ratio.h"
 #include "f32.h"
 #include "u32.h"
 
@@ -35,6 +36,9 @@ f32 * f32_init_cast (f32 *x, const s_tag *tag)
     return x;
   case TAG_INTEGER:
     *x = integer_to_f32(&tag->data.integer);
+    return x;
+  case TAG_RATIO:
+    *x = ratio_to_f32(&tag->data.ratio);
     return x;
   case TAG_SW:
     *x = (f32) tag->data.sw;

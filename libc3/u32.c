@@ -16,6 +16,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "integer.h"
+#include "ratio.h"
 #include "tag.h"
 #include "u32.h"
 
@@ -36,6 +37,9 @@ u32 * u32_init_cast (u32 *u, const s_tag *tag)
     return u;
   case TAG_INTEGER:
     *u = integer_to_u32(&tag->data.integer);
+    return u;
+  case TAG_RATIO:
+    *u = ratio_to_u32(&tag->data.ratio);
     return u;
   case TAG_SW:
     *u = (u32) tag->data.sw;

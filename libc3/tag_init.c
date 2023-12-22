@@ -31,6 +31,7 @@
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
+#include "ratio.h"
 #include "str.h"
 #include "struct.h"
 #include "tag.h"
@@ -237,6 +238,51 @@ s_tag * tag_init_quote_copy (s_tag *tag, const s_quote *quote)
   assert(tag);
   tmp.type = TAG_QUOTE;
   if (! quote_init_copy(&tmp.data.quote, quote))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_ratio_1 (s_tag *tag, const char *p)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_RATIO;
+  if (! ratio_init_1(&tmp.data.ratio, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_ratio (s_tag *tag, s_integer *numerator, 
+                        s_integer *denominator)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_RATIO;
+  if (! ratio_init(&tmp.data.ratio, numerator, denominator))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_ratio_copy (s_tag *tag, const s_ratio *r)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_RATIO;
+  if (! ratio_init_copy(&tmp.data.ratio, r))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_ratio_zero (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_RATIO;
+  if (! ratio_init_zero(&tmp.data.ratio))
     return NULL;
   *tag = tmp;
   return tag;
@@ -730,6 +776,66 @@ s_tag * tag_new_quote_copy (const s_quote *quote)
   }
   tag->type = TAG_QUOTE;
   if (! quote_init_copy(&tag->data.quote, quote)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_ratio_1 (const char *p)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_ratio_1: calloc");
+    return NULL;
+  }
+  tag->type = TAG_RATIO;
+  if (! ratio_init_1(&tag->data.ratio, p)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_ratio (s_integer *numerator, s_integer *denominator)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_ratio: calloc");
+    return NULL;
+  }
+  tag->type = TAG_RATIO;
+  if (! ratio_init(&tag->data.ratio, numerator, denominator)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_ratio_copy (const s_ratio *r)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_ratio_copy: calloc");
+    return NULL;
+  }
+  tag->type = TAG_RATIO;
+  if (! ratio_init_copy(&tag->data.ratio, r)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_ratio_zero (void)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_ratio_zero: calloc");
+    return NULL;
+  }
+  tag->type = TAG_RATIO;
+  if (! ratio_init_zero(&tag->data.ratio)) {
     free(tag);
     return NULL;
   }
@@ -1244,6 +1350,55 @@ s_tag * tag_quote_copy (s_tag *tag, const s_quote *quote)
   tag_clean(tag);
   tmp.type = TAG_QUOTE;
   if (! quote_init_copy(&tmp.data.quote, quote))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_ratio_1 (s_tag *tag, const char *p)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_RATIO;
+  if (! ratio_init_1(&tmp.data.ratio, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_ratio (s_tag *tag, s_integer *numerator, 
+                   s_integer *denominator)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_RATIO;
+  if (! ratio_init(&tmp.data.ratio, numerator, denominator))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_ratio_copy (s_tag *tag, const s_ratio *r)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_RATIO;
+  if (! ratio_init_copy(&tmp.data.ratio, r))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_ratio_zero (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_RATIO;
+  if (! ratio_init_zero(&tmp.data.ratio))
     return NULL;
   *tag = tmp;
   return tag;

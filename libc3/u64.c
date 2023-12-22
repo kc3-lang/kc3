@@ -16,6 +16,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "integer.h"
+#include "ratio.h"
 #include "tag.h"
 #include "u64.h"
 
@@ -36,6 +37,9 @@ u64 * u64_init_cast (u64 *u, const s_tag *tag)
     return u;
   case TAG_INTEGER:
     *u = integer_to_u64(&tag->data.integer);
+    return u;
+  case TAG_RATIO:
+    *u = ratio_to_u64(&tag->data.ratio);
     return u;
   case TAG_SW:
     *u = (u64) tag->data.sw;
