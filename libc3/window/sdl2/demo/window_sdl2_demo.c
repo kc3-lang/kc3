@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <libc3/c3.h>
 #include "../../window.h"
+#include "../gl_matrix_4d.h"
 #include "../gl_ortho.h"
 #include "../sdl2_font.h"
 #include "../sdl2_sprite.h"
@@ -129,6 +130,7 @@ bool window_sdl2_demo_key (s_window_sdl2 *window, SDL_Keysym *keysym)
 bool window_sdl2_demo_load (s_window_sdl2 *window)
 {
   assert(window);
+  assert(glGetError() == GL_NO_ERROR);
   if (window->sequence_count != WINDOW_SDL2_DEMO_SEQUENCE_COUNT) {
     fprintf(stderr, "window_sdl2_demo_load: "
             "window->sequence_count = %lu\n", window->sequence_count);
@@ -171,59 +173,84 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
                          1, 1, 1))
     return false;
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  assert(glGetError() == GL_NO_ERROR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  assert(glGetError() == GL_NO_ERROR);
   window_sdl2_sequence_init(window->sequence + 4, 120.0,
                             "05. Earth",
                             earth_load, earth_render);
-  window_set_sequence_pos((s_window *) window, 0);
+  assert(glGetError() == GL_NO_ERROR);
+  window_set_sequence_pos((s_window *) window, 0); 
+  assert(glGetError() == GL_NO_ERROR);
   return true;
 }
 
-static void render_text (s_sdl2_font *font, double x, double y,
+static void render_text (s_sdl2_font *font, f64 x, f64 y,
                          const s8 *p)
 {
+  assert(glGetError() == GL_NO_ERROR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                   GL_LINEAR);
-  glPushMatrix();
-  glTranslated(x, y, 0.0);
-  glPushMatrix();
-  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-  glTranslatef(-1.0f, -1.0f, 0.0f);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, x - 1.0, y - 1.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
+  glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
+  assert(glGetError() == GL_NO_ERROR);
   sdl2_font_render_text(font, p);
-  glTranslatef( 1.0f,  0.0f, 0.0f);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
+  assert(glGetError() == GL_NO_ERROR);
   sdl2_font_render_text(font, p);
-  glTranslatef( 1.0f,  0.0f, 0.0f);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
   sdl2_font_render_text(font, p);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
   glTranslatef( 0.0f,  1.0f, 0.0f);
   sdl2_font_render_text(font, p);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
   glTranslatef(-1.0f,  0.0f, 0.0f);
   sdl2_font_render_text(font, p);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
   glTranslatef(-1.0f,  0.0f, 0.0f);
   sdl2_font_render_text(font, p);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
   glTranslatef( 0.0f,  1.0f, 0.0f);
   sdl2_font_render_text(font, p);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
   glTranslatef( 1.0f,  0.0f, 0.0f);
   sdl2_font_render_text(font, p);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
   glTranslatef( 1.0f,  0.0f, 0.0f);
   sdl2_font_render_text(font, p);
-  glPopMatrix();
   glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, -1.0, -1.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
   sdl2_font_render_text(font, p);
-  glPopMatrix();
+  assert(glGetError() == GL_NO_ERROR);
 }
 
 bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
 {
   s_sequence *seq;
   assert(window);
+  assert(glGetError() == GL_NO_ERROR);
   if (! window_animate((s_window *) window))
     return false;
   seq = window->sequence + window->sequence_pos;
+  gl_ortho_render(&g_ortho);
   if (! seq->render(seq, window, context))
     return false;
   /* 2D */
-  gl_ortho_render(&g_ortho);
   glDisable(GL_DEPTH_TEST);
+  assert(glGetError() == GL_NO_ERROR);
   sdl2_font_set_size(&g_font_courier_new, 20, window->dpi);
   render_text(&g_font_courier_new, 20.0f, 30.0f, seq->title);
   /* progress bar */
@@ -236,6 +263,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   glRectd(20, 12,
           20 + (window->w - 40.0) * seq->t / seq->duration,
           12 + 2);
+  assert(glGetError() == GL_NO_ERROR);
   /* fps */
   s8 fps[32];
   snprintf(fps, sizeof(fps), "%.2f", (f64) seq->frame / seq->t);
@@ -249,8 +277,9 @@ bool window_sdl2_demo_resize (s_window_sdl2 *window,
 {
   assert(window);
   (void) window;
-  (void) w;
-  (void) h;
+  assert(glGetError() == GL_NO_ERROR);
+  gl_ortho_resize(&g_ortho, 0, w, 0, h, -1, 1);
+  assert(glGetError() == GL_NO_ERROR);
   return true;
 }
 

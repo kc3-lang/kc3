@@ -42,9 +42,11 @@ void gl_object_clean (s_gl_object *object)
 s_gl_object * gl_object_init (s_gl_object *object)
 {
   s_gl_object tmp = {0};
+  assert(glGetError() == GL_NO_ERROR);
   glGenVertexArrays(1, &tmp.gl_vao);
   glGenBuffers(1, &tmp.gl_vbo);
   glGenBuffers(1, &tmp.gl_ebo);
+  assert(glGetError() == GL_NO_ERROR);
   *object = tmp;
   return object;
 }
@@ -52,6 +54,7 @@ s_gl_object * gl_object_init (s_gl_object *object)
 void gl_object_render (const s_gl_object *object)
 {
   assert(object);
+  assert(glGetError() == GL_NO_ERROR);
   glBindVertexArray(object->gl_vao);
   glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
@@ -59,11 +62,13 @@ void gl_object_render (const s_gl_object *object)
   glEnableClientState(GL_NORMAL_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  assert(glGetError() == GL_NO_ERROR);
 }
 
 bool gl_object_update (s_gl_object *object)
 {
   assert(object);
+  assert(glGetError() == GL_NO_ERROR);
   glBindVertexArray(object->gl_vao);
   glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
   glBufferData(GL_ARRAY_BUFFER, object->vertex.size,
@@ -80,5 +85,6 @@ bool gl_object_update (s_gl_object *object)
                     (void *) (3 * sizeof(f64)));
   glTexCoordPointer(2, GL_DOUBLE, 8 * sizeof(f64),
                     (void *) (6 * sizeof(f64)));
+  assert(glGetError() == GL_NO_ERROR);
   return true;
 }

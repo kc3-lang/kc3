@@ -18,7 +18,9 @@ void sdl2_sprite_bind (const s_sdl2_sprite *sprite, uw frame)
   assert(sprite);
   assert(frame < sprite->frame_count);
   frame %= sprite->frame_count;
+  assert(glGetError() == GL_NO_ERROR);
   glBindTexture(GL_TEXTURE_2D, sprite->texture[frame]);
+  assert(glGetError() == GL_NO_ERROR);
 }
 
 void sdl2_sprite_clean (s_sdl2_sprite *sprite)
@@ -119,6 +121,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
   assert(path);
   assert(dim_x);
   assert(dim_y);
+  assert(glGetError() == GL_NO_ERROR);
   sprite->frame_count = (frame_count > 0) ? frame_count :
     (dim_x * dim_y);
   str_init_copy_1(&sprite->path, path);
@@ -319,6 +322,7 @@ s_sdl2_sprite * sdl2_sprite_init (s_sdl2_sprite *sprite,
 	return NULL;
       }
       glGenerateMipmap(GL_TEXTURE_2D);
+      assert(glGetError() == GL_NO_ERROR);
       i++;
       x++;
     }

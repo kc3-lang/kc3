@@ -208,8 +208,12 @@ struct gl_ortho {
   f64 clip_z_far;
   s_gl_point_3d position;
   s_gl_point_3d rotation;
-  s_gl_matrix_4d matrix;
-  u32 gl_matrix_loc;
+  s_gl_matrix_4d projection_matrix;
+  u32         gl_projection_matrix_loc;
+  s_gl_matrix_4d view_matrix;
+  u32         gl_view_matrix_loc;
+  s_gl_matrix_4d model_matrix;
+  u32         gl_model_matrix_loc;
   u32 gl_shader_program;
 };
 
