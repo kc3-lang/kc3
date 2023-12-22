@@ -35,18 +35,19 @@ void gl_ortho_delete (s_gl_ortho *ortho)
   free(ortho);
 }
 
-s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho, uw w, uw h)
+s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
 {
   GLint success;
   u32 vertex_shader;
   assert(ortho);
   ortho->clip_z_far = 1.0;
   ortho->clip_z_near = -1.0;
-  ortho->fov_y = 90.0;
   ortho->position.x = 0.0;
   ortho->position.y = 0.0;
   ortho->position.z = 0.0;
-  ortho->rotation = 0.0;
+  ortho->rotation.x = 0.0;
+  ortho->rotation.y = 0.0;
+  ortho->rotation.z = 0.0;
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_shader, 1, &g_gl_ortho_vertex_shader_src,
                  NULL);
@@ -67,7 +68,7 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho, uw w, uw h)
   return ortho;
 }
 
-s_gl_ortho * gl_ortho_new (uw w, uw h)
+s_gl_ortho * gl_ortho_new (void)
 {
   s_gl_ortho *ortho;
   ortho = calloc(1, sizeof(s_gl_ortho));
@@ -75,7 +76,7 @@ s_gl_ortho * gl_ortho_new (uw w, uw h)
     err_puts("gl_ortho_new: failed to allocate memory");
     return NULL;
   }
-  if (! gl_ortho_init(ortho, w, h)) {
+  if (! gl_ortho_init(ortho)) {
     free(ortho);
     return NULL;
   }
@@ -107,12 +108,4 @@ void gl_ortho_render_end (s_gl_ortho *ortho)
   assert(ortho);
   (void) ortho;
   glUseProgram(0);
-}
-
-s_gl_ortho * gl_ortho_set_aspect_ratio (s_gl_ortho *ortho, uw w,
-                                          uw h)
-{
-  assert(ortho);
-  ortho->aspect_ratio = (f64) (w ? w : 1) / (h ? h : 1);
-  return ortho;
 }

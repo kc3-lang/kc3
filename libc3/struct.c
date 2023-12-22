@@ -43,22 +43,20 @@ s_struct * struct_allocate (s_struct *s)
 void struct_clean (s_struct *s)
 {
   f_clean clean;
-  s8 *data;
   uw i;
   const s_sym *sym;
   assert(s);
-  data = s->data;
-  if (data) {
+  if (s->data) {
     i = 0;
     while (i < s->type.map.count) {
       if (tag_type(s->type.map.value + i, &sym) &&
           sym_to_clean(sym, &clean) &&
           clean)
-        clean(data + s->type.offset[i]);
+        clean((s8 *) s->data + s->type.offset[i]);
       i++;
     }
     if (s->free_data)
-      free(data);
+      free(s->data);
   }
   if (s->tag) {
     i = 0;

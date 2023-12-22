@@ -102,7 +102,6 @@ C3_C_SOURCES = \
 	"ic3/linenoise.c" \
 	"ic3/buf_wineditline.c" \
 	"ic3/buf_wineditline.h" \
-	"libc3/array.c" \
 	"libc3/struct.c" \
 	"libc3/abs.c" \
 	"libc3/buf.c" \
@@ -119,7 +118,6 @@ C3_C_SOURCES = \
 	"libc3/set_item__fact.h" \
 	"libc3/set__fact.c" \
 	"libc3/call.c" \
-	"libc3/buf_parse.c" \
 	"libc3/arg.c" \
 	"libc3/binding.c" \
 	"libc3/c3.c" \
@@ -369,6 +367,7 @@ C3_C_SOURCES = \
 	"libc3/buf_inspect_s.c.in" \
 	"libc3/tag.h" \
 	"libc3/list_init.c" \
+	"libc3/array.c" \
 	"libc3/env.c" \
 	"libc3/tag_shift_right.c" \
 	"libc3/error_handler.h" \
@@ -384,6 +383,7 @@ C3_C_SOURCES = \
 	"libc3/buf_inspect_u.h.in" \
 	"libc3/env.h" \
 	"libc3/c3.h" \
+	"libc3/list.c" \
 	"libc3/arg.h" \
 	"libc3/buf_inspect_u_base.c.in" \
 	"libc3/buf_inspect_u_base.h.in" \
@@ -455,15 +455,15 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/gl_cylinder.h" \
 	"libc3/window/sdl2/gl_sphere.h" \
 	"libc3/window/sdl2/gl_point_2d.h" \
+	"libc3/window/sdl2/gl_matrix_4d.c" \
 	"libc3/window/sdl2/gl_object.c" \
 	"libc3/window/sdl2/gl_object.h" \
 	"libc3/window/sdl2/gl_point_3d.h" \
 	"libc3/window/sdl2/gl_matrix_4d.h" \
 	"libc3/window/sdl2/gl_matrix_3d.h" \
-	"libc3/window/sdl2/gl_matrix_4d.c" \
+	"libc3/window/sdl2/gl_ortho.c" \
 	"libc3/array.h" \
 	"libc3/u16.c" \
-	"libc3/list.c" \
 	"libc3/u.h.in" \
 	"libc3/sha1.h" \
 	"libc3/file.h" \
@@ -473,6 +473,7 @@ C3_C_SOURCES = \
 	"libc3/map.h" \
 	"libc3/sym.c" \
 	"libc3/struct_type.h" \
+	"libc3/buf_parse.c" \
 	"libc3/u32.c" \
 	"libc3/license.c" \
 	"libc3/file.c" \
@@ -602,6 +603,11 @@ C3_OTHER_SOURCES = \
 	"lib/c3/0.1/c3.facts" \
 	"lib/c3/0.1/array.facts" \
 	"lib/c3/0.1/gl/sphere.facts" \
+	"lib/c3/0.1/gl/triangle.facts" \
+	"lib/c3/0.1/gl/vertex.facts" \
+	"lib/c3/0.1/gl/point2d.facts" \
+	"lib/c3/0.1/gl/point3d.facts" \
+	"lib/c3/0.1/gl/object.facts" \
 	"lib/c3/0.1/list.facts" \
 	"lib/c3/0.1/map.facts" \
 	"lib/c3/0.1/ptr_free.facts" \
@@ -610,8 +616,10 @@ C3_OTHER_SOURCES = \
 	"lib/c3/0.1/u32.facts" \
 	"lib/c3/0.1/u16.facts" \
 	"lib/c3/0.1/u64.facts" \
+	"lib/c3/0.1/f64.facts" \
 	"lib/c3/0.1/uw.facts" \
 	"lib/c3/0.1/integer.facts" \
+	"lib/c3/0.1/f32.facts" \
 	"lib/c3/0.1/s32.facts" \
 	"lib/c3/0.1/s64.facts" \
 	"lib/c3/0.1/s8.facts" \

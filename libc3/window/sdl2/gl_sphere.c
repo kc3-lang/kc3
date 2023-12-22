@@ -46,7 +46,8 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw seg_u, uw seg_v)
     seg_v = 2;
   tmp.segments_u = seg_u;
   tmp.segments_v = seg_v;
-  if (! gl_object_allocate(&tmp.object, seg_u * (seg_v + 2),
+  if (! gl_object_init(&tmp.object) ||
+      ! gl_object_allocate(&tmp.object, seg_u * (seg_v + 2),
                            2 * seg_u * (seg_v + 1)))
     return NULL;
   vertex = tmp.object.vertex.data;
