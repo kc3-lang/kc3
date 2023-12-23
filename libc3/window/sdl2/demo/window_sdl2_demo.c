@@ -214,34 +214,27 @@ static void render_text (s_gl_text *text, f64 x, f64 y)
   assert(glGetError() == GL_NO_ERROR);
   gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  assert(glGetError() == GL_NO_ERROR);
   gl_text_render(text);
   gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_text_render(text);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 0.0, 1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  glTranslatef( 0.0f,  1.0f, 0.0f);
+  gl_text_render(text);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, -1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
+  gl_text_render(text);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, -1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
+  gl_text_render(text);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 0.0, 1.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
   gl_text_render(text);
   gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  glTranslatef(-1.0f,  0.0f, 0.0f);
   gl_text_render(text);
   gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  glTranslatef(-1.0f,  0.0f, 0.0f);
-  gl_text_render(text);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  glTranslatef( 0.0f,  1.0f, 0.0f);
-  gl_text_render(text);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  glTranslatef( 1.0f,  0.0f, 0.0f);
-  gl_text_render(text);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  glTranslatef( 1.0f,  0.0f, 0.0f);
   gl_text_render(text);
   glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
   gl_matrix_4d_translate(&g_ortho.model_matrix, -1.0, -1.0, 0.0);
@@ -278,6 +271,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   assert(glGetError() == GL_NO_ERROR);
   glBindTexture(GL_TEXTURE_2D, 0);
   assert(glGetError() == GL_NO_ERROR);
+  /*
   glRectd(19, 11,
           19 + (window->w - 40.0) * seq->t / seq->duration + 2,
           11 + 4);
@@ -286,6 +280,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
           20 + (window->w - 40.0) * seq->t / seq->duration,
           12 + 2);
   assert(glGetError() == GL_NO_ERROR);
+  */
   /* fps */
   s8 fps[32];
   snprintf(fps, sizeof(fps), "%.1f", (f64) seq->frame / seq->t);

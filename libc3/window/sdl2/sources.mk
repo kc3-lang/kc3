@@ -12,6 +12,7 @@ HEADERS = \
 	"gl_point_3d.h" \
 	"gl_sphere.h" \
 	"gl_text.h" \
+	"gl_triangle.h" \
 	"sdl2_sprite.h" \
 	"types.h" \
 	"window_sdl2.h" \
@@ -27,6 +28,7 @@ SOURCES = \
 	"gl_point_3d.c" \
 	"gl_sphere.c" \
 	"gl_text.c" \
+	"gl_triangle.c" \
 	"sdl2_sprite.c" \
 	"window_sdl2.c" \
 

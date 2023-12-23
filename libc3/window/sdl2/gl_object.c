@@ -56,35 +56,49 @@ void gl_object_render (const s_gl_object *object)
   assert(object);
   assert(glGetError() == GL_NO_ERROR);
   glBindVertexArray(object->gl_vao);
-  glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
+  assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_NORMAL_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  assert(glGetError() == GL_NO_ERROR);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   assert(glGetError() == GL_NO_ERROR);
 }
 
 bool gl_object_update (s_gl_object *object)
 {
+  //GLenum gl_error;
   assert(object);
+  assert(object->gl_vao);
+  assert(object->gl_vbo);
+  assert(object->gl_ebo);
+  assert(object->vertex.data);
+  assert(object->triangle.data);
   assert(glGetError() == GL_NO_ERROR);
   glBindVertexArray(object->gl_vao);
+  assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
-  glBufferData(GL_ARRAY_BUFFER, object->vertex.size,
+  assert(glGetError() == GL_NO_ERROR);
+  glBufferData(GL_ARRAY_BUFFER, object->vertex.count * sizeof(s_gl_vertex),
                object->vertex.data, GL_STATIC_DRAW);
+  assert(glGetError() == GL_NO_ERROR);
+  glVertexAttribPointer(0, 3, GL_DOUBLE, GL_FALSE, sizeof(s_gl_vertex),
+                        (void *) 0);
+  assert(glGetError() == GL_NO_ERROR);
+  glEnableVertexAttribArray(0);
+  assert(glGetError() == GL_NO_ERROR);
+  glVertexAttribPointer(1, 3, GL_DOUBLE, GL_FALSE, sizeof(s_gl_vertex),
+                        (void *) (3 * sizeof(double)));
+  assert(glGetError() == GL_NO_ERROR);
+  glEnableVertexAttribArray(1);
+  assert(glGetError() == GL_NO_ERROR);
+  glVertexAttribPointer(2, 2, GL_DOUBLE, GL_FALSE, sizeof(s_gl_vertex),
+                        (void *) (6 * sizeof(double)));
+  assert(glGetError() == GL_NO_ERROR);
+  glEnableVertexAttribArray(2);
+  assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->triangle.size,
+  assert(glGetError() == GL_NO_ERROR);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->triangle.count * 3,
                object->triangle.data, GL_STATIC_DRAW);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_NORMAL_ARRAY);
-  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glVertexPointer(3, GL_DOUBLE,   8 * sizeof(f64),
-                    (void *) 0);
-  glNormalPointer(GL_DOUBLE,      8 * sizeof(f64),
-                    (void *) (3 * sizeof(f64)));
-  glTexCoordPointer(2, GL_DOUBLE, 8 * sizeof(f64),
-                    (void *) (6 * sizeof(f64)));
   assert(glGetError() == GL_NO_ERROR);
   return true;
 }
