@@ -24,9 +24,9 @@ build:
 
 all:
 	${MAKE} build
-	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
+	if ${HAVE_GCOV}; then ${MAKE} cov; fi
 	${MAKE} -C window all
 
 asan:

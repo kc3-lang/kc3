@@ -12,9 +12,10 @@
  */
 #include <math.h>
 #include <libc3/c3.h>
-#include "../window_sdl2.h"
-#include "../sdl2_font.h"
+#include "../gl_font.h"
+#include "../gl_text.h"
 #include "../sdl2_sprite.h"
+#include "../window_sdl2.h"
 #include "flies.h"
 
 #define BOARD_SIZE    25
@@ -31,9 +32,11 @@ static const u8  g_board_item_space    = BOARD_ITEM_SPACE;
 static const u8  g_board_item_block    = BOARD_ITEM_BLOCK;
 static const u8  g_board_item_fly      = BOARD_ITEM_FLY;
 static const u8  g_board_item_dead_fly = BOARD_ITEM_DEAD_FLY;
-s_sdl2_font      g_font_flies          = {0};
+s_gl_font        g_font_flies          = {0};
 s_sdl2_sprite    g_sprite_dead_fly     = {0};
 s_sdl2_sprite    g_sprite_fly          = {0};
+s_gl_text        g_text_flies_in       = {0};
+s_gl_text        g_text_flies_out      = {0};
 static const f64 g_xy_ratio            = 0.666;
 
 static void fly_init (s_map *map)
@@ -196,9 +199,10 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
     buf_write_1(&buf, "In ");
     buf_inspect_uw(&buf, fly_in);
     buf_write_u8(&buf, 0);
-    sdl2_font_set_size(&g_font_flies, board_item_h,
-                       window->dpi);
-    sdl2_font_render_text(&g_font_flies, buf.ptr.ps8);
+    gl_font_set_size(&g_font_flies, board_item_h,
+                     (f64) window->gl_h / window->h);
+    gl_text_update_1(&g_text_flies_in, a);
+    gl_text_render(&g_text_flies_in);
     buf_init(&buf, false, sizeof(a), a);
     buf_write_1(&buf, "Out ");
     buf_inspect_uw(&buf, fly_out);
@@ -206,7 +210,8 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
     x = board_item_w * (BOARD_SIZE / 2 + 1);
     glPushMatrix(); {
       glTranslated(x, 0.0, 0.0);
-      sdl2_font_render_text(&g_font_flies, buf.ptr.ps8);
+      gl_text_update_1(&g_text_flies_out, a);
+      gl_text_render(&g_text_flies_out);
     } glPopMatrix();
     glTranslated(0.0, board_item_h, 0.0);
     glColor4f(0.6f, 0.7f, 0.9f, 1.0f);

@@ -51,7 +51,7 @@ LIBS="$LIBS -lm"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
-pkg_config ftgl
+pkg_config freetype2
 pkg_config gl
 pkg_config glu
 pkg_config glut

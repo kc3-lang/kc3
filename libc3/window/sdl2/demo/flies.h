@@ -16,7 +16,7 @@
 #include "../types.h"
 #include "window_sdl2_demo.h"
 
-extern s_sdl2_font   g_font_flies;
+extern s_gl_font     g_font_flies;
 extern s_sdl2_sprite g_sprite_dead_fly;
 extern s_sdl2_sprite g_sprite_fly;
 

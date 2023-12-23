@@ -37,13 +37,14 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
 # Common config for all targets
 CPPFLAGS="-I../../../libffi/include -I../../.. $CPPFLAGS"
+CPPFLAGS="-Iftgl/src $CPPFLAGS"
 #CPPFLAGS="$CPPFLAGS -DGL_SILENCE_DEPRECATION=1"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 LDFLAGS="--shared ${LDFLAGS}"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
-pkg_config ftgl
+pkg_config freetype2
 pkg_config gl
 pkg_config glew
 pkg_config glu

@@ -13,8 +13,6 @@
 #ifndef LIBC3_WINDOW_SDL2_SDL2_FONT_H
 #define LIBC3_WINDOW_SDL2_SDL2_FONT_H
 
-#include <assert.h>
-#include <err.h>
 #include "types.h"
 
 /* Stack-allocation compatible functions, call sdl2_font_clean after

@@ -218,9 +218,48 @@ config_objc_lib_have() {
     rm -f "$OUT" "$OUT_M"
 }
 
+cpp_o_rule() {
+    "$CXX" $CPPFLAGS $CXXFLAGS -M "$1" || { echo "$1" | sed -e 's/^\(.*\)\.cpp$/\1.o: \1.cpp/'; }
+    echo "$1" | sed -e 's/^\(.*\)\.cpp$/\1.o: Makefile config.mk/'
+}
+
+cpp_ext_rule() {
+    cpp_o_rule "$2" | sed -e "s/[.]o:/$1:/"
+}
+
+cpp_lo_rule() {
+    cpp_ext_rule .lo "$1"
+}
+
+cpp_prog_rule() {
+    { cpp_o_rule "$1" || exit 1; } | sed -e 's/[.]o:/:/'
+}
+
+cpp2ext() {
+    EXT="$1"; shift
+    echo "$@" | sed -e "s/[.]cpp$/${EXT}/" -e "s/[.]cpp /${EXT} /g"
+}
+
+cpp2la() {
+    cpp2ext .la "$@"
+}
+
+cpp2lo() {
+    cpp2ext .lo "$@"
+}
+
+cpp2o() {
+    cpp2ext .o "$@"
+}
+
+cpp2prog() {
+    echo "$@" | sed -e 's/[.]cpp$//' -e 's/[.]cpp / /g'
+}
+
 env_reset() {
     CPPFLAGS="$ENV_CPPFLAGS"
     CFLAGS="$ENV_CFLAGS"
+    CXXFLAGS="$ENV_CXXFLAGS"
     LDFLAGS="$ENV_LDFLAGS"
     LIBS="$ENV_LIBS"
 }
@@ -242,6 +281,7 @@ objc2ext() {
 pkg_config() {
     if pkg-config "$1"; then
 	CFLAGS="$CFLAGS $(pkg-config --cflags "$1")"
+	CXXFLAGS="$CXXFLAGS $(pkg-config --cflags "$1")"
 	LIBS="$LIBS $(pkg-config --libs "$1")"
     fi
 }
@@ -254,10 +294,11 @@ require_pkg_config() {
 }
 
 sources() {
+    SOURCES_TMP="$(echo "$2" | sort -u)"
     echo "$1 = \\
-$(echo "$2" | sed -e 's/^\(.*\)$/	"\1" \\/')
+$(echo "$SOURCES_TMP" | sed -e 's/^\(.*\)$/	"\1" \\/')
 " >> ${SOURCES_MK}
-    echo "$1='$(echo "$2" | tr '\n' ' ')'" >> ${SOURCES_SH}
+    echo "$1='$(echo "$SOURCES_TMP" | tr '\n' ' ')'" >> ${SOURCES_SH}
 }
 
 swift_o_rule() {
@@ -332,6 +373,7 @@ echo "SRC_TOP = $SRC_TOP" >> ${CONFIG_MK}
 
 ENV_CPPFLAGS="$CPPFLAGS"
 ENV_CFLAGS="$CFLAGS"
+ENV_CXXFLAGS="$CXXFLAGS"
 ENV_LDFLAGS="$LDFLAGS"
 ENV_LIBS="$LIBS"
 
@@ -346,6 +388,15 @@ echo "CC = $CC" >> ${CONFIG_MK}
 
 CC_TARGET=$(LC_ALL=C cc -v 2>&1 | grep 'Target: ' | cut -c 9-)
 echo "CC_TARGET = $CC_TARGET" >> ${CONFIG_MK}
+
+if [ "x$CXX" = "x" ]; then
+    if test -n $(which c++); then
+        CXX=c++
+    elif test -n $(which g++); then
+        CXX=g++
+    fi
+fi
+echo "CXX = $CXX" >> ${CONFIG_MK}
 
 if [ "x$GCOV" = "xfalse" ]; then
     HAVE_GCOV=false

@@ -20,13 +20,15 @@
 
 #include <GL/glew.h>
 #include <SDL.h>
-#include <FTGL/ftgl.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include <png.h>
 #include <libc3/types.h>
 #include "../types.h"
 
 typedef struct gl_camera    s_gl_camera;
 typedef struct gl_cylinder  s_gl_cylinder;
+typedef struct gl_font      s_gl_font;
 typedef struct gl_matrix_3d s_gl_matrix_3d;
 typedef struct gl_matrix_4d s_gl_matrix_4d;
 typedef struct gl_object    s_gl_object;
@@ -34,9 +36,9 @@ typedef struct gl_ortho     s_gl_ortho;
 typedef struct gl_point_2d  s_gl_point_2d;
 typedef struct gl_point_3d  s_gl_point_3d;
 typedef struct gl_sphere    s_gl_sphere;
+typedef struct gl_text      s_gl_text;
 typedef struct gl_triangle  s_gl_triangle;
 typedef struct gl_vertex    s_gl_vertex;
-typedef struct sdl2_font    s_sdl2_font;
 typedef struct sdl2_sprite  s_sdl2_sprite;
 typedef struct rgb          s_rgb;
 typedef struct rgba         s_rgba;
@@ -75,15 +77,12 @@ typedef bool (*f_window_sdl2_sequence_render) (s_sequence *seq,
 typedef void (*f_window_sdl2_unload) (s_window_sdl2 *window);
 
 /* 1 */
-struct gl_point_2d {
-  f64 x;
-  f64 y;
-};
-
-struct gl_point_3d {
-  f64 x;
-  f64 y;
-  f64 z;
+struct gl_font {
+  FT_Face ft_face;
+  f64 point_size;
+  f64 pixel_per_point;
+  s_str path;
+  s_str real_path;
 };
 
 struct gl_matrix_3d {
@@ -126,6 +125,26 @@ struct gl_object {
   u32 gl_ebo;
 };
 
+struct gl_point_2d {
+  f64 x;
+  f64 y;
+};
+
+struct gl_point_3d {
+  f64 x;
+  f64 y;
+  f64 z;
+};
+
+struct gl_text {
+  s_gl_object object;
+  const s_gl_font *font;
+  s_str str;
+  uw w;
+  uw h;
+  GLuint texture;
+};
+
 struct gl_triangle {
   u32 a;
   u32 b;
@@ -143,14 +162,6 @@ struct rgba {
   f64 g;
   f64 b;
   f64 a;
-};
-
-struct sdl2_font {
-  FTGLfont *ftgl_font;
-  u32 size;
-  u32 dpi;
-  s_str path;
-  s_str real_path;
 };
 
 /* Subtype of s_window. See libc3/window/types.h */

@@ -14,9 +14,10 @@
 #include <stdlib.h>
 #include <libc3/c3.h>
 #include "../../window.h"
+#include "../gl_font.h"
 #include "../gl_matrix_4d.h"
 #include "../gl_ortho.h"
-#include "../sdl2_font.h"
+#include "../gl_text.h"
 #include "../sdl2_sprite.h"
 #include "../window_sdl2.h"
 #include "bg_rect.h"
@@ -27,9 +28,11 @@
 
 #define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 5
 
-//s_sdl2_font g_font_computer_modern;
-s_sdl2_font g_font_courier_new = {0};
-s_gl_ortho  g_ortho = {0};
+//s_gl_font  g_font_computer_modern = {0};
+s_gl_font  g_font_courier_new = {0};
+s_gl_ortho g_ortho = {0};
+s_gl_text  g_text_fps = {0};
+s_gl_text  g_text_seq_title = {0};
 
 static bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
                                      sw x, sw y);
@@ -45,6 +48,10 @@ static void window_sdl2_demo_unload (s_window_sdl2 *window);
 int main (int argc, char **argv)
 {
   s_window_sdl2 window;
+  if (FT_Init_FreeType(&g_ft)) {
+    err_puts("main: failed to initialize FreeType");
+    return 1;
+  }
   if (! c3_init(NULL, argc, argv)) {
     err_puts("c3_init");
     return 1;
@@ -68,6 +75,7 @@ int main (int argc, char **argv)
   window_sdl2_clean(&window);
   c3_clean(NULL);
   SDL_Quit();
+  FT_Done_FreeType(g_ft);
   return 0;
 }
 
@@ -90,15 +98,17 @@ bool window_sdl2_demo_key (s_window_sdl2 *window, SDL_Keysym *keysym)
     if (! window->fullscreen) {
       if (SDL_SetWindowFullscreen(window->sdl_window,
                                   SDL_WINDOW_FULLSCREEN_DESKTOP)) {
-        warnx("window_sdl2_demo_key: SDL_SetWindowFullscreen(:desktop): %s",
-              SDL_GetError());
+        err_write_1("window_sdl2_demo_key:"
+                    " SDL_SetWindowFullscreen(:desktop): ");
+        err_puts(SDL_GetError());
         SDL_MaximizeWindow(window->sdl_window);
       }
     }
     else {
       if (SDL_SetWindowFullscreen(window->sdl_window, 0)) {
-        warnx("window_sdl2_demo_key: SDL_SetWindowFullscreen(0): %s",
-              SDL_GetError());
+        err_write_1("window_sdl2_demo_key:"
+                    " SDL_SetWindowFullscreen(0): ");
+        err_puts(SDL_GetError());
         SDL_RestoreWindow(window->sdl_window);
       }
     }
@@ -139,8 +149,12 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   }
   if (! gl_ortho_init(&g_ortho))
     return false;
-  if (! sdl2_font_init(&g_font_courier_new,
+  if (! gl_font_init(&g_font_courier_new,
                        "fonts/Courier New/Courier New.ttf"))
+    return false;
+  if (! gl_text_init_1(&g_text_seq_title, &g_font_courier_new, ""))
+    return false;
+  if (! gl_text_init_1(&g_text_fps, &g_font_courier_new, "0.00"))
     return false;
   window_sdl2_sequence_init(window->sequence, 8.0,
                             "01. Background rectangles",
@@ -157,7 +171,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   window_sdl2_sequence_init(window->sequence + 2, 60.0,
                             "03. Toasters",
                             toasters_load, toasters_render);
-  if (! sdl2_font_init(&g_font_flies,
+  if (! gl_font_init(&g_font_flies,
                        "fonts/Courier New/Courier New.ttf"))
     return false;
   if (! sdl2_sprite_init(&g_sprite_fly, "img/fly-noto.png",
@@ -185,8 +199,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   return true;
 }
 
-static void render_text (s_sdl2_font *font, f64 x, f64 y,
-                         const s8 *p)
+static void render_text (s_gl_text *text, f64 x, f64 y)
 {
   assert(glGetError() == GL_NO_ERROR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
@@ -197,43 +210,43 @@ static void render_text (s_sdl2_font *font, f64 x, f64 y,
   gl_ortho_update_model_matrix(&g_ortho);
   glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
   assert(glGetError() == GL_NO_ERROR);
-  sdl2_font_render_text(font, p);
+  gl_text_render(text);
   assert(glGetError() == GL_NO_ERROR);
   gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   assert(glGetError() == GL_NO_ERROR);
-  sdl2_font_render_text(font, p);
+  gl_text_render(text);
   gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  sdl2_font_render_text(font, p);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  glTranslatef( 0.0f,  1.0f, 0.0f);
-  sdl2_font_render_text(font, p);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  glTranslatef(-1.0f,  0.0f, 0.0f);
-  sdl2_font_render_text(font, p);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  glTranslatef(-1.0f,  0.0f, 0.0f);
-  sdl2_font_render_text(font, p);
+  gl_text_render(text);
   gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   glTranslatef( 0.0f,  1.0f, 0.0f);
-  sdl2_font_render_text(font, p);
+  gl_text_render(text);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
+  glTranslatef(-1.0f,  0.0f, 0.0f);
+  gl_text_render(text);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
+  glTranslatef(-1.0f,  0.0f, 0.0f);
+  gl_text_render(text);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
+  glTranslatef( 0.0f,  1.0f, 0.0f);
+  gl_text_render(text);
   gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   glTranslatef( 1.0f,  0.0f, 0.0f);
-  sdl2_font_render_text(font, p);
+  gl_text_render(text);
   gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   glTranslatef( 1.0f,  0.0f, 0.0f);
-  sdl2_font_render_text(font, p);
-  glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+  gl_text_render(text);
+  glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
   gl_matrix_4d_translate(&g_ortho.model_matrix, -1.0, -1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  sdl2_font_render_text(font, p);
+  gl_text_render(text);
   assert(glGetError() == GL_NO_ERROR);
 }
 
@@ -246,28 +259,38 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
     return false;
   seq = window->sequence + window->sequence_pos;
   gl_ortho_render(&g_ortho);
+  glEnable(GL_BLEND);
+  glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                      GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   if (! seq->render(seq, window, context))
     return false;
   /* 2D */
   glDisable(GL_DEPTH_TEST);
   assert(glGetError() == GL_NO_ERROR);
-  sdl2_font_set_size(&g_font_courier_new, 20, window->dpi);
-  render_text(&g_font_courier_new, 20.0f, 30.0f, seq->title);
+  gl_font_set_size(&g_font_courier_new, 20,
+                   (f64) window->gl_h / window->h);
+  gl_text_update_1(&g_text_seq_title, seq->title);
+  render_text(&g_text_seq_title, 20.0f, 30.0f);
   /* progress bar */
-  glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-  glDisable(GL_TEXTURE_2D);
+  glDisable(GL_BLEND);
+  assert(glGetError() == GL_NO_ERROR);
+  glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
+  assert(glGetError() == GL_NO_ERROR);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  assert(glGetError() == GL_NO_ERROR);
   glRectd(19, 11,
           19 + (window->w - 40.0) * seq->t / seq->duration + 2,
           11 + 4);
-  glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+  glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
   glRectd(20, 12,
           20 + (window->w - 40.0) * seq->t / seq->duration,
           12 + 2);
   assert(glGetError() == GL_NO_ERROR);
   /* fps */
   s8 fps[32];
-  snprintf(fps, sizeof(fps), "%.2f", (f64) seq->frame / seq->t);
-  render_text(&g_font_courier_new, 20, window->h - 30, fps);
+  snprintf(fps, sizeof(fps), "%.1f", (f64) seq->frame / seq->t);
+  gl_text_update_1(&g_text_fps, fps);
+  render_text(&g_text_fps, 20, window->h - 30);
   gl_ortho_render_end(&g_ortho);
   return true;
 }
@@ -288,10 +311,10 @@ void window_sdl2_demo_unload (s_window_sdl2 *window)
   assert(window);
   (void) window;
   gl_ortho_clean(&g_ortho);
-  sdl2_font_clean(&g_font_courier_new);
+  gl_font_clean(&g_font_courier_new);
   sdl2_sprite_clean(&g_sprite_toaster);
   sdl2_sprite_clean(&g_sprite_toast);
-  sdl2_font_clean(&g_font_flies);
+  gl_font_clean(&g_font_flies);
   sdl2_sprite_clean(&g_sprite_fly);
   sdl2_sprite_clean(&g_sprite_dead_fly);
   sdl2_sprite_clean(&g_sprite_earth);
