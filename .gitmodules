@@ -13,6 +13,3 @@
 [submodule "fonts"]
 	path = fonts
 	url = https://git.kmx.io/c3-lang/fonts.git
-[submodule "ftgl"]
-	path = ftgl
-	url = https://git.kmx.io/c3-lang/ftgl.git

@@ -13,7 +13,6 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "../window_sdl2.h"
-#include "../sdl2_font.h"
 #include "../sdl2_sprite.h"
 #include "../gl_camera.h"
 #include "../gl_sphere.h"
@@ -64,14 +63,14 @@ bool earth_render (s_sequence *seq, s_window_sdl2 *window,
   (void) context;
   if (! seq || seq->tag.type != TAG_MAP ||
       seq->tag.data.map.count != 3) {
-    warnx("earth_render: invalid seq->tag");
+    err_puts("earth_render: invalid seq->tag");
     return false;
   }
   map = &seq->tag.data.map;
   if (map->value[0].type != TAG_PTR_FREE ||
       map->value[1].type != TAG_F64 ||
       map->value[2].type != TAG_STRUCT) {
-    warnx("earth_render: invalid map");
+    err_puts("earth_render: invalid map");
     return false;
   }
   camera             =  map->value[0].data.ptr_free.p;

@@ -10,12 +10,21 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBC3_WINDOW_SDL2_DEMO_H
-#define LIBC3_WINDOW_SDL2_DEMO_H
+#ifndef GL_FT2_H
+#define GL_FT2_H
 
-#include "../types.h"
+#include "types.h"
 
-extern s_gl_font g_font_computer_modern;
-extern s_gl_font g_font_courier_new;
+/* Stack-allocation compatible functions, call gl_font_clean
+   after use. */
+void        gl_font_clean (s_gl_font *font);
+s_gl_font * gl_font_init (s_gl_font *font, const s8 *path);
 
-#endif /* LIBC3_WINDOW_SDL2_DEMO_H */
+/* Operators. */
+void gl_font_set_size (s_gl_font *font, f64 size, f64 ppp);
+
+/* Observers */
+GLuint gl_font_render_to_texture (const s_gl_font *font,
+                                  const s_str *str);
+
+#endif /* GL_FT2_H */

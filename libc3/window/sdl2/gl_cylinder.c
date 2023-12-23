@@ -15,6 +15,12 @@
 #include "gl_object.h"
 #include "gl_cylinder.h"
 
+void gl_cylinder_clean (s_gl_cylinder *cylinder)
+{
+  assert(cylinder);
+  gl_object_clean(&cylinder->object);
+}
+
 s_gl_cylinder * gl_cylinder_init (s_gl_cylinder *cylinder,
                                   uw segments_u, uw segments_v)
 {

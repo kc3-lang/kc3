@@ -2,13 +2,16 @@
 HEADERS = \
 	"gl_camera.h" \
 	"gl_cylinder.h" \
+	"gl_font.h" \
+	"gl_ft2.h" \
 	"gl_matrix_3d.h" \
 	"gl_matrix_4d.h" \
 	"gl_object.h" \
+	"gl_ortho.h" \
 	"gl_point_2d.h" \
 	"gl_point_3d.h" \
 	"gl_sphere.h" \
-	"sdl2_font.h" \
+	"gl_text.h" \
 	"sdl2_sprite.h" \
 	"types.h" \
 	"window_sdl2.h" \
@@ -16,13 +19,14 @@ HEADERS = \
 SOURCES = \
 	"gl_camera.c" \
 	"gl_cylinder.c" \
+	"gl_font.c" \
 	"gl_matrix_4d.c" \
 	"gl_object.c" \
 	"gl_ortho.c" \
 	"gl_point_2d.c" \
 	"gl_point_3d.c" \
 	"gl_sphere.c" \
-	"sdl2_font.c" \
+	"gl_text.c" \
 	"sdl2_sprite.c" \
 	"window_sdl2.c" \
 

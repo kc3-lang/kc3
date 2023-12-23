@@ -10,12 +10,14 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBC3_WINDOW_SDL2_DEMO_H
-#define LIBC3_WINDOW_SDL2_DEMO_H
+#include "gl_triangle.h"
 
-#include "../types.h"
-
-extern s_gl_font g_font_computer_modern;
-extern s_gl_font g_font_courier_new;
-
-#endif /* LIBC3_WINDOW_SDL2_DEMO_H */
+s_gl_triangle * gl_triangle_init (s_gl_triangle *triangle, u32 a, u32 b,
+                                  u32 c)
+{
+  assert(triangle);
+  triangle->a = a;
+  triangle->b = b;
+  triangle->c = c;
+  return triangle;
+}
