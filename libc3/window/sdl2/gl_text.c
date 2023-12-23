@@ -30,16 +30,18 @@ s_gl_text * gl_text_init (s_gl_text *text, const s_gl_font *font)
   s_gl_text tmp = {0};
   assert(glGetError() == GL_NO_ERROR);
   tmp.font = font;
-  *text = tmp;  
-  glGenTextures(1, &text->texture);
+  glGenTextures(1, &tmp.texture);
   assert(glGetError() == GL_NO_ERROR);
-  gl_object_init(&text->object);
+  gl_object_init(&tmp.object);
   dimension = 4;
-  array_init(&text->object.vertex, sym_1("GL.Vertex"), 1,
+  array_init(&tmp.object.vertex, sym_1("GL.Vertex"), 1,
              &dimension);
+  array_allocate(&tmp.object.vertex);
   dimension = 2;
-  array_init(&text->object.triangle, sym_1("GL.Triangle"), 1,
+  array_init(&tmp.object.triangle, sym_1("GL.Triangle"), 1,
              &dimension);
+  array_allocate(&tmp.object.triangle);
+  *text = tmp;  
   return text;
 }
 
@@ -55,7 +57,8 @@ s_gl_text * gl_text_init_str (s_gl_text *text, const s_gl_font *font,
                               const s_str *str)
 {
   s_gl_text tmp = {0};
-  tmp.font = font;
+  if (! gl_text_init(&tmp, font))
+    return NULL;
   if (! str_init_copy(&tmp.str, str))
     return NULL;
   *text = tmp;
@@ -81,6 +84,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
   uw  data_y;
   FT_Vector delta;
   const s_gl_font *font;
+  FT_GlyphSlot glyph;
   FT_UInt glyph_index;
   uw i;
   uw j;
@@ -103,7 +107,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
     if (prev_glyph_index && glyph_index) {
       FT_Get_Kerning(font->ft_face, prev_glyph_index, glyph_index,
                      FT_KERNING_DEFAULT, &delta);
-      total_width += (f64) delta.x / (1 << 6);
+      total_width += ceil((f64) delta.x / (1 << 6));
     }
     if (FT_Load_Glyph(font->ft_face, glyph_index, FT_LOAD_RENDER)) {
       err_write_1("gl_font_render_to_texture: failed to load glyph: ");
@@ -111,15 +115,17 @@ bool gl_text_render_to_texture (s_gl_text *text)
       err_write_1("\n");
       continue;
     }
-    total_width += font->ft_face->glyph->bitmap.width;
-    max_height = (font->ft_face->glyph->bitmap.rows > max_height) ?
-      font->ft_face->glyph->bitmap.rows : max_height;
+    glyph = font->ft_face->glyph;
+    total_width += glyph->bitmap.width;
+    max_height =
+      (glyph->bitmap.rows + glyph->bitmap_top > max_height) ?
+      (glyph->bitmap.rows + glyph->bitmap_top) : max_height;
     prev_glyph_index = glyph_index;
   }
   data_w = ceil(total_width);
   data_h = ceil(max_height);
-  data_size = data_w * data_h;
-  data = calloc(4, data_size);
+  data_size = data_w * data_h * 4;
+  data = calloc(1, data_size);
   f64 x = 0;
   prev_glyph_index = 0;
   s = text->str;
@@ -136,7 +142,6 @@ bool gl_text_render_to_texture (s_gl_text *text)
     if (FT_Load_Glyph(font->ft_face, glyph_index, FT_LOAD_RENDER)) {
       continue;
     }
-    FT_GlyphSlot glyph;
     glyph = font->ft_face->glyph;
     i = 0;
     while (i < glyph->bitmap.width) {
@@ -203,7 +208,7 @@ bool gl_text_set_text_buf (s_gl_text *text, s_buf *buf)
   bool result;
   s_str str;
   assert(text);
-  assert(p);
+  assert(buf);
   buf_peek_to_str(buf, &str);
   result = gl_text_set_text(text, &str);
   str_clean(&str);
@@ -232,6 +237,7 @@ bool gl_text_update (s_gl_text *text)
   triangle = text->object.triangle.data;
   gl_triangle_init(triangle + 0, 0, 1, 2);
   gl_triangle_init(triangle + 1, 1, 3, 2);
+  gl_object_update(&text->object);
   return true;
 }
 

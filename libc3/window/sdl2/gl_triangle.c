@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <libc3/c3.h>
 #include "gl_triangle.h"
 
 s_gl_triangle * gl_triangle_init (s_gl_triangle *triangle, u32 a, u32 b,
