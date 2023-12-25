@@ -149,6 +149,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   }
   if (! gl_ortho_init(&g_ortho))
     return false;
+  gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, -1, 1);
   if (! gl_font_init(&g_font_courier_new,
                        "fonts/Courier New/Courier New.ttf"))
     return false;
@@ -204,6 +205,9 @@ static void render_text (s_gl_text *text, f64 x, f64 y)
   assert(glGetError() == GL_NO_ERROR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                   GL_LINEAR);
+  glEnable(GL_BLEND);
+  glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                      GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   assert(glGetError() == GL_NO_ERROR);
   gl_matrix_4d_init_identity(&g_ortho.model_matrix);
   gl_matrix_4d_translate(&g_ortho.model_matrix, x - 1.0, y - 1.0, 0.0);
@@ -251,6 +255,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   if (! window_animate((s_window *) window))
     return false;
   seq = window->sequence + window->sequence_pos;
+  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
   gl_ortho_render(&g_ortho);
   glEnable(GL_BLEND);
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
@@ -285,6 +290,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   s8 fps[32];
   snprintf(fps, sizeof(fps), "%.1f", (f64) seq->frame / seq->t);
   gl_text_update_1(&g_text_fps, fps);
+  glEnable(GL_BLEND);
   render_text(&g_text_fps, 20, window->h - 30);
   gl_ortho_render_end(&g_ortho);
   return true;

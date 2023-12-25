@@ -36,6 +36,7 @@ typedef struct gl_ortho     s_gl_ortho;
 typedef struct gl_point_2d  s_gl_point_2d;
 typedef struct gl_point_3d  s_gl_point_3d;
 typedef struct gl_sphere    s_gl_sphere;
+typedef struct gl_square    s_gl_square;
 typedef struct gl_text      s_gl_text;
 typedef struct gl_triangle  s_gl_triangle;
 typedef struct gl_vertex    s_gl_vertex;
@@ -229,6 +230,12 @@ struct gl_ortho {
 };
 
 struct gl_sphere {
+  s_gl_object object;
+  uw segments_u;
+  uw segments_v;
+};
+
+struct gl_square {
   s_gl_object object;
   uw segments_u;
   uw segments_v;
