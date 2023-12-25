@@ -22,7 +22,7 @@ s_gl_object * gl_object_init (s_gl_object *object);
 
 /* Heap-allocation functions, call gl_object_delete after use. */
 void          gl_object_delete (s_gl_object *object);
-s_gl_object * gl_object_new ();
+s_gl_object * gl_object_new (void);
 
 /* Operators. */
 s_gl_object * gl_object_allocate (s_gl_object *object, uw vertex_count,
