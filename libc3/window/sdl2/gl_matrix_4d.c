@@ -129,9 +129,10 @@ s_gl_matrix_4d * gl_matrix_4d_ortho (s_gl_matrix_4d *m, f64 x1, f64 x2,
   ortho.xx = 2.0 / dx;
   ortho.yy = 2.0 / dy;
   ortho.zz = -2.0 / dz;
-  ortho.tx = -((x1 + x2) / dx);
-  ortho.ty = -((y1 + y2) / dy);
-  ortho.tz = -((clip_z_near + clip_z_far) / dz);
+  ortho.tx = -(x1 + x2) / dx;
+  ortho.ty = -(y1 + y2) / dy;
+  ortho.tz = -(clip_z_near + clip_z_far) / dz;
+  ortho.tt = 1.0;
   gl_matrix_4d_product(m, &ortho);
   return m;
 }

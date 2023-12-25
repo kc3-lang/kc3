@@ -40,7 +40,6 @@ void gl_ortho_delete (s_gl_ortho *ortho)
 
 s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
 {
-  GLenum error;
   GLint success;
   u32 vertex_shader;
   assert(ortho);
@@ -77,23 +76,12 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   ortho->gl_projection_matrix_loc =
     glGetUniformLocation(ortho->gl_shader_program, "projection_matrix");
-  glUniformMatrix4dv(ortho->gl_projection_matrix_loc, 1, GL_FALSE,
-                     &ortho->view_matrix.xx);
-  if ((error = glGetError()) != GL_NO_ERROR) {
-    err_write_1("gl_ortho_init: glUniformMatrix4dv: ");
-    err_puts((const s8 *) glewGetErrorString(error));
-    assert(! "gl_ortho_init: glUniformMatrix4dv");
-    return NULL;
-  }
+  assert(glGetError() == GL_NO_ERROR);
   ortho->gl_view_matrix_loc =
     glGetUniformLocation(ortho->gl_shader_program, "view_matrix");
-  glUniformMatrix4dv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
-                     &ortho->view_matrix.xx);
+  assert(glGetError() == GL_NO_ERROR);
   ortho->gl_model_matrix_loc =
     glGetUniformLocation(ortho->gl_shader_program, "model_matrix");
-  assert(glGetError() == GL_NO_ERROR);
-  glUniformMatrix4dv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
-                     &ortho->model_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);
   glUseProgram(0);
   assert(glGetError() == GL_NO_ERROR);
@@ -117,9 +105,24 @@ s_gl_ortho * gl_ortho_new (void)
 
 void gl_ortho_render (s_gl_ortho *ortho)
 {
+  GLenum error;
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
   glUseProgram(ortho->gl_shader_program);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniformMatrix4dv(ortho->gl_projection_matrix_loc, 1, GL_FALSE,
+                     &ortho->projection_matrix.xx);
+  if ((error = glGetError()) != GL_NO_ERROR) {
+    err_write_1("gl_ortho_render: glUniformMatrix4dv: ");
+    err_puts((const s8 *) glewGetErrorString(error));
+    assert(! "gl_ortho_render: glUniformMatrix4dv");
+  }
+  assert(glGetError() == GL_NO_ERROR);
+  glUniformMatrix4dv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
+                     &ortho->view_matrix.xx);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniformMatrix4dv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
+                     &ortho->model_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);
 }
 
