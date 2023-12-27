@@ -13,7 +13,7 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "../window_sdl2.h"
-#include "../sdl2_sprite.h"
+#include "../gl_sprite.h"
 #include "../gl_camera.h"
 #include "../gl_sphere.h"
 #include "earth.h"
@@ -22,7 +22,7 @@
 #define EARTH_SEGMENTS_U 200
 #define EARTH_SEGMENTS_V 100
 
-s_sdl2_sprite g_sprite_earth = {0};
+s_gl_sprite g_sprite_earth = {0};
 
 bool earth_load (s_sequence *seq,
                  s_window_sdl2 *window)
@@ -83,11 +83,17 @@ bool earth_render (s_sequence *seq, s_window_sdl2 *window,
     *camera_rot_x_speed *= -1.0;
   camera->rotation.z += seq->dt * EARTH_CAMERA_ROTATION_Z_SPEED *
     360.0;
+  assert(glGetError() == GL_NO_ERROR);
   gl_camera_render(camera);
+  assert(glGetError() == GL_NO_ERROR);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  assert(glGetError() == GL_NO_ERROR);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
+  assert(glGetError() == GL_NO_ERROR);
+  //glEnable(GL_LIGHTING);
+  assert(glGetError() == GL_NO_ERROR);
+  //glEnable(GL_LIGHT0);
+  assert(glGetError() == GL_NO_ERROR);
   f32 ambiant[4] = {0.1f, 0.1f, 0.1f, 1.0f};
   glLightfv(GL_LIGHT0, GL_AMBIENT, ambiant);
   f32 diffuse[4] = {1.0f, 0.92f, 0.83f, 1.0f};
@@ -98,14 +104,20 @@ bool earth_render (s_sequence *seq, s_window_sdl2 *window,
   glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1f);
   glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.0f);
   glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0f);
+  assert(glGetError() == GL_NO_ERROR);
   glEnable(GL_DEPTH_TEST);
+  assert(glGetError() == GL_NO_ERROR);
   glPushMatrix(); {
     sphere_radius = 5.0;
+    assert(glGetError() == GL_NO_ERROR);
     glScalef(sphere_radius, sphere_radius, sphere_radius);
+  assert(glGetError() == GL_NO_ERROR);
     glEnable(GL_TEXTURE_2D);
+  assert(glGetError() == GL_NO_ERROR);
+    gl_sprite_bind(&g_sprite_earth, 0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
-    sdl2_sprite_bind(&g_sprite_earth, 0);
+    assert(glGetError() == GL_NO_ERROR);
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     gl_sphere_render(sphere);
     /*

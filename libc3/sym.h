@@ -48,7 +48,6 @@ bool          sym_to_buf_inspect (const s_sym *type,
                                   f_buf_inspect *dest);
 bool          sym_to_buf_inspect_size (const s_sym *type,
                                        f_buf_inspect_size *dest);
-bool          sym_to_clean (const s_sym *type, f_clean *dest);
 bool          sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
                                ffi_type **dest);
 bool          sym_to_init_cast (const s_sym *type, f_init_cast *dest);

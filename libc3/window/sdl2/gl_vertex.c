@@ -10,17 +10,16 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef EARTH_H
-#define EARTH_H
+#include <libc3/c3.h>
+#include "gl_point_3d.h"
+#include "gl_vertex.h"
 
-#include "../types.h"
-#include "window_sdl2_demo.h"
-
-extern s_gl_sprite g_sprite_earth;
-extern s_gl_sprite g_sprite_earth_night;
-
-bool earth_load (s_sequence *seq, s_window_sdl2 *window);
-bool earth_render (s_sequence *seq, s_window_sdl2 *window,
-                   void *context);
-
-#endif /* EARTH_H */
+void gl_vertex_transform (s_gl_vertex *vertex,
+                          const s_gl_matrix_4d *matrix)
+{
+  assert(vertex);
+  assert(matrix);
+  gl_point_3d_transform(&vertex->position, matrix);
+  gl_point_3d_transform(&vertex->normal, matrix);
+  gl_point_3d_normalize(&vertex->normal);
+}

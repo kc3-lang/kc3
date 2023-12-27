@@ -248,48 +248,6 @@ bool tag_type_to_buf_parse (e_tag_type type, f_buf_parse *p)
   return false;
 }
 
-bool tag_type_to_clean (e_tag_type type, f_clean *dest)
-{
-  switch (type) {
-  case TAG_ARRAY:    *dest = (f_clean) array_clean;    return true;
-  case TAG_BOOL:     *dest = NULL;                     return true;
-  case TAG_CALL:     *dest = (f_clean) call_clean;     return true;
-  case TAG_CFN:      *dest = (f_clean) cfn_clean;      return true;
-  case TAG_CHARACTER:
-  case TAG_F32:
-  case TAG_F64:
-  case TAG_FACT:     *dest = NULL;                     return true;
-  case TAG_FN:       *dest = (f_clean) fn_clean;       return true;
-  case TAG_IDENT:    *dest = NULL;                     return true;
-  case TAG_INTEGER:  *dest = (f_clean) integer_clean;  return true;
-  case TAG_SW:
-  case TAG_S64:
-  case TAG_S32:
-  case TAG_S16:
-  case TAG_S8:
-  case TAG_U8:
-  case TAG_U16:
-  case TAG_U32:
-  case TAG_U64:
-  case TAG_UW:       *dest = NULL;                     return true;
-  case TAG_LIST:     *dest = (f_clean) list_f_clean;   return true;
-  case TAG_MAP:      *dest = (f_clean) map_clean;      return true;
-  case TAG_PTAG:
-  case TAG_PTR:      *dest = NULL;                     return true;
-  case TAG_PTR_FREE: *dest = (f_clean) ptr_free_clean; return true;
-  case TAG_QUOTE:    *dest = (f_clean) quote_clean;    return true;
-  case TAG_STR:      *dest = (f_clean) str_clean;      return true;
-  case TAG_STRUCT:   *dest = (f_clean) struct_clean;   return true;
-  case TAG_SYM:      *dest = NULL;                     return true;
-  case TAG_TUPLE:    *dest = (f_clean) tuple_clean;    return true;
-  case TAG_VAR:
-  case TAG_VOID:     *dest = NULL;                     return true;
-  }
-  warnx("tag_type_to_clean: invalid tag type: %d", type);
-  assert(! "tag_type_to_clean: invalid tag type");
-  return false;
-}
-
 bool tag_type_to_env_eval (e_tag_type type, f_env_eval *dest)
 {
   switch (type) {

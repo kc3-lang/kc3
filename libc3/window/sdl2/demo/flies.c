@@ -14,7 +14,7 @@
 #include <libc3/c3.h>
 #include "../gl_font.h"
 #include "../gl_text.h"
-#include "../sdl2_sprite.h"
+#include "../gl_sprite.h"
 #include "../window_sdl2.h"
 #include "flies.h"
 
@@ -33,8 +33,8 @@ static const u8  g_board_item_block    = BOARD_ITEM_BLOCK;
 static const u8  g_board_item_fly      = BOARD_ITEM_FLY;
 static const u8  g_board_item_dead_fly = BOARD_ITEM_DEAD_FLY;
 s_gl_font        g_font_flies          = {0};
-s_sdl2_sprite    g_sprite_dead_fly     = {0};
-s_sdl2_sprite    g_sprite_fly          = {0};
+s_gl_sprite    g_sprite_dead_fly     = {0};
+s_gl_sprite    g_sprite_fly          = {0};
 s_gl_text        g_text_flies_in       = {0};
 s_gl_text        g_text_flies_out      = {0};
 static const f64 g_xy_ratio            = 0.666;
@@ -238,7 +238,7 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
             glPushMatrix(); {
               glTranslated(-board_item_w / 2.0, -board_item_h / 2.0, 0.0);
               glScaled(fly_scale, fly_scale, 1.0);
-              sdl2_sprite_render(&g_sprite_fly, 0);
+              gl_sprite_render(&g_sprite_fly, 0);
             } glPopMatrix();
             if (address[0] == BOARD_SIZE / 2 &&
                 address[1] == BOARD_SIZE - 1) {
@@ -311,7 +311,7 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
               glTranslated(-board_item_w / 2.0, -board_item_h / 2.0,
                            0.0);
               glScaled(dead_fly_scale, dead_fly_scale, 1.0);
-              sdl2_sprite_render(&g_sprite_dead_fly, 0);
+              gl_sprite_render(&g_sprite_dead_fly, 0);
             } glPopMatrix();
             break;
           }

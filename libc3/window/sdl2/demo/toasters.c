@@ -12,7 +12,7 @@
  */
 #include <math.h>
 #include <libc3/c3.h>
-#include "../sdl2_sprite.h"
+#include "../gl_sprite.h"
 #include "toasters.h"
 
 #define TOASTERS_SCALE_TOAST   0.52
@@ -22,8 +22,8 @@
 
 static const f64 g_speed_x =  80.0;
 static const f64 g_speed_y = -40.0;
-s_sdl2_sprite   g_sprite_toast = {0};
-s_sdl2_sprite   g_sprite_toaster = {0};
+s_gl_sprite    g_sprite_toast = {0};
+s_gl_sprite    g_sprite_toaster = {0};
 
 static bool toasters_render_toasters (s_list **toasters,
                                       s_window_sdl2 *window,
@@ -61,7 +61,7 @@ static void toast_render (s_tag *toast, s_window_sdl2 *window,
     glPushMatrix();
     glTranslated(*x, *y + g_sprite_toast.h, 0.0);
     glScalef(TOASTERS_SCALE_TOAST, -TOASTERS_SCALE_TOAST, 1);
-    sdl2_sprite_render(&g_sprite_toast, 0);
+    gl_sprite_render(&g_sprite_toast, 0);
     glPopMatrix();
   }
 }
@@ -94,9 +94,9 @@ static void toaster_render (s_tag *toaster, s_window_sdl2 *window,
     glPushMatrix();
     glTranslated(*x, *y + g_sprite_toaster.h, 0.0);
     glScalef(TOASTERS_SCALE_TOASTER, -TOASTERS_SCALE_TOASTER, 1);
-    sdl2_sprite_render(&g_sprite_toaster,
-                       fmod(seq->t * g_sprite_toaster.frame_count,
-                            g_sprite_toaster.frame_count));
+    gl_sprite_render(&g_sprite_toaster,
+                     fmod(seq->t * g_sprite_toaster.frame_count,
+                          g_sprite_toaster.frame_count));
     glPopMatrix();
   }
 }

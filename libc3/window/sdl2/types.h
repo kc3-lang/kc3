@@ -29,6 +29,7 @@
 typedef struct gl_camera    s_gl_camera;
 typedef struct gl_cylinder  s_gl_cylinder;
 typedef struct gl_font      s_gl_font;
+typedef struct gl_lines    s_gl_lines;
 typedef struct gl_matrix_3d s_gl_matrix_3d;
 typedef struct gl_matrix_4d s_gl_matrix_4d;
 typedef struct gl_object    s_gl_object;
@@ -36,6 +37,7 @@ typedef struct gl_ortho     s_gl_ortho;
 typedef struct gl_point_2d  s_gl_point_2d;
 typedef struct gl_point_3d  s_gl_point_3d;
 typedef struct gl_sphere    s_gl_sphere;
+typedef struct gl_sprite    s_gl_sprite;
 typedef struct gl_square    s_gl_square;
 typedef struct gl_text      s_gl_text;
 typedef struct gl_triangle  s_gl_triangle;
@@ -84,6 +86,12 @@ struct gl_font {
   f64 pixel_per_point;
   s_str path;
   s_str real_path;
+};
+
+struct gl_lines {
+  s_array vertex;
+  u32 gl_vao;
+  u32 gl_vbo;
 };
 
 struct gl_matrix_3d {
@@ -233,6 +241,22 @@ struct gl_sphere {
   s_gl_object object;
   uw segments_u;
   uw segments_v;
+};
+
+struct gl_sprite {
+  s_gl_object object;
+  s_str path;
+  s_str real_path;
+  uw total_w;
+  uw total_h;
+  uw dim_x;
+  uw dim_y;
+  uw frame_count;
+  uw w;
+  uw h;
+  uw tex_w;
+  uw tex_h;
+  GLuint *texture;
 };
 
 struct gl_square {

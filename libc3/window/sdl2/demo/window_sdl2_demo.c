@@ -15,10 +15,12 @@
 #include <libc3/c3.h>
 #include "../../window.h"
 #include "../gl_font.h"
+#include "../gl_lines.h"
 #include "../gl_matrix_4d.h"
 #include "../gl_ortho.h"
+#include "../gl_square.h"
 #include "../gl_text.h"
-#include "../sdl2_sprite.h"
+#include "../gl_sprite.h"
 #include "../window_sdl2.h"
 #include "bg_rect.h"
 #include "lightspeed.h"
@@ -28,11 +30,12 @@
 
 #define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 5
 
-//s_gl_font  g_font_computer_modern = {0};
-s_gl_font  g_font_courier_new = {0};
-s_gl_ortho g_ortho = {0};
-s_gl_text  g_text_fps = {0};
-s_gl_text  g_text_seq_title = {0};
+//s_gl_font   g_font_computer_modern = {0};
+s_gl_font   g_font_courier_new = {0};
+s_gl_ortho  g_ortho = {0};
+s_gl_square g_square = {0};
+s_gl_text   g_text_fps = {0};
+s_gl_text   g_text_seq_title = {0};
 
 static bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
                                      sw x, sw y);
@@ -80,7 +83,7 @@ int main (int argc, char **argv)
 }
 
 bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
-                               sw x, sw y)
+                              sw x, sw y)
 {
   assert(window);
   (void) window;
@@ -151,7 +154,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
     return false;
   gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, -1, 1);
   if (! gl_font_init(&g_font_courier_new,
-                       "fonts/Courier New/Courier New.ttf"))
+                     "fonts/Courier New/Courier New.ttf"))
     return false;
   if (! gl_text_init_1(&g_text_seq_title, &g_font_courier_new, ""))
     return false;
@@ -160,32 +163,35 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   window_sdl2_sequence_init(window->sequence, 8.0,
                             "01. Background rectangles",
                             bg_rect_load, bg_rect_render);
+  if (! gl_lines_init(&g_lines_stars) ||
+      ! gl_lines_allocate(&g_lines_stars, LIGHTSPEED_STAR_MAX))
+    return false;
   window_sdl2_sequence_init(window->sequence + 1, 20.0,
                             "02. Lightspeed",
                             lightspeed_load, lightspeed_render);
-  if (! sdl2_sprite_init(&g_sprite_toaster, "img/flaps.256.png",
-                         4, 1, 4))
+  if (! gl_sprite_init(&g_sprite_toaster, "img/flaps.256.png",
+                       4, 1, 4))
     return false;
-  if (! sdl2_sprite_init(&g_sprite_toast, "img/toast.128.png",
-                         1, 1, 1))
+  if (! gl_sprite_init(&g_sprite_toast, "img/toast.128.png",
+                       1, 1, 1))
     return false;
   window_sdl2_sequence_init(window->sequence + 2, 60.0,
                             "03. Toasters",
                             toasters_load, toasters_render);
   if (! gl_font_init(&g_font_flies,
-                       "fonts/Courier New/Courier New.ttf"))
+                     "fonts/Courier New/Courier New.ttf"))
     return false;
-  if (! sdl2_sprite_init(&g_sprite_fly, "img/fly-noto.png",
-                         1, 1, 1))
+  if (! gl_sprite_init(&g_sprite_fly, "img/fly-noto.png",
+                       1, 1, 1))
     return false;
-  if (! sdl2_sprite_init(&g_sprite_dead_fly, "img/fly-dead.png",
-                         1, 1, 1))
+  if (! gl_sprite_init(&g_sprite_dead_fly, "img/fly-dead.png",
+                       1, 1, 1))
     return false;
   window_sdl2_sequence_init(window->sequence + 3, 60.0,
                             "04. Flies",
                             flies_load, flies_render);
-  if (! sdl2_sprite_init(&g_sprite_earth, "img/earth.png",
-                         1, 1, 1))
+  if (! gl_sprite_init(&g_sprite_earth, "img/earth.png",
+                       1, 1, 1))
     return false;
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   assert(glGetError() == GL_NO_ERROR);
@@ -195,7 +201,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
                             "05. Earth",
                             earth_load, earth_render);
   assert(glGetError() == GL_NO_ERROR);
-  window_set_sequence_pos((s_window *) window, 0); 
+  window_set_sequence_pos((s_window *) window, 0);
   assert(glGetError() == GL_NO_ERROR);
   return true;
 }
@@ -260,10 +266,15 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   glEnable(GL_BLEND);
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
                       GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  assert(glGetError() == GL_NO_ERROR);
   if (! seq->render(seq, window, context))
     return false;
+  assert(glGetError() == GL_NO_ERROR);
   /* 2D */
   glDisable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                      GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   assert(glGetError() == GL_NO_ERROR);
   gl_font_set_size(&g_font_courier_new, 20,
                    (f64) window->gl_h / window->h);
@@ -272,19 +283,34 @@ bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
   /* progress bar */
   glDisable(GL_BLEND);
   assert(glGetError() == GL_NO_ERROR);
-  glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
   assert(glGetError() == GL_NO_ERROR);
   glBindTexture(GL_TEXTURE_2D, 0);
   assert(glGetError() == GL_NO_ERROR);
+  glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
+  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 19.0, 11.0, 0);
+  gl_matrix_4d_scale(&g_ortho.model_matrix,
+                     (window->w - 40.0) * seq->t / seq->duration + 2.0,
+                     4.0, 0);
+  gl_ortho_update_model_matrix(&g_ortho);
+  gl_square_render(&g_square);
   /*
-  glRectd(19, 11,
-          19 + (window->w - 40.0) * seq->t / seq->duration + 2,
-          11 + 4);
+    glRectd(19, 11,
+    19 + (window->w - 40.0) * seq->t / seq->duration + 2,
+    11 + 4);
+  */
   glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
-  glRectd(20, 12,
-          20 + (window->w - 40.0) * seq->t / seq->duration,
-          12 + 2);
-  assert(glGetError() == GL_NO_ERROR);
+  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 20.0, 12.0, 0);
+  gl_matrix_4d_scale(&g_ortho.model_matrix,
+                     (window->w - 40.0) * seq->t / seq->duration,
+                     2.0, 0);
+  gl_ortho_update_model_matrix(&g_ortho);
+  gl_square_render(&g_square);
+  /*
+    glRectd(20, 12,
+    20 + (window->w - 40.0) * seq->t / seq->duration,
+    12 + 2);
   */
   /* fps */
   s8 fps[32];
@@ -313,10 +339,10 @@ void window_sdl2_demo_unload (s_window_sdl2 *window)
   (void) window;
   gl_ortho_clean(&g_ortho);
   gl_font_clean(&g_font_courier_new);
-  sdl2_sprite_clean(&g_sprite_toaster);
-  sdl2_sprite_clean(&g_sprite_toast);
+  gl_sprite_clean(&g_sprite_toaster);
+  gl_sprite_clean(&g_sprite_toast);
   gl_font_clean(&g_font_flies);
-  sdl2_sprite_clean(&g_sprite_fly);
-  sdl2_sprite_clean(&g_sprite_dead_fly);
-  sdl2_sprite_clean(&g_sprite_earth);
+  gl_sprite_clean(&g_sprite_fly);
+  gl_sprite_clean(&g_sprite_dead_fly);
+  gl_sprite_clean(&g_sprite_earth);
 }

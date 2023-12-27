@@ -37,8 +37,9 @@ s_gl_point_3d * gl_point_3d_new_product (const s_gl_matrix_4d *m,
 s_gl_point_3d * gl_point_3d_new_zero (void);
 
 /* Operators. */
-s_gl_point_3d * gl_point_3d_product (s_gl_point_3d *p,
-                                     const s_gl_matrix_4d *m);
+void gl_point_3d_normalize (s_gl_point_3d *p);
+void gl_point_3d_transform (s_gl_point_3d *p,
+                            const s_gl_matrix_4d *matrix);
 
 /* Observers. */
 f64 gl_point_3d_norm (const s_gl_point_3d *p);
