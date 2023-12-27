@@ -15,6 +15,32 @@
 #include "gl_matrix_4d.h"
 #include "gl_point_3d.h"
 
+sw gl_matrix_4d_buf_inspect (s_buf *buf, const s_gl_matrix_4d *matrix)
+{
+  u8 i;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(matrix);
+  const f64 *m;
+  if ((r = buf_write_1(buf, "(F64) {")) < 0)
+    return r;
+  result += r;
+  m = &matrix->xx;
+  i = 0;
+  while (i < 16) {
+    if ((r = buf_inspect_f64(buf, m)) < 0)
+      return r;
+    result += r;
+    m++;
+    i++;
+  }
+  if ((r = buf_write_1(buf, "}")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 s_gl_matrix_4d * gl_matrix_4d_init_copy (s_gl_matrix_4d *m,
                                          const s_gl_matrix_4d *src)
 {
@@ -125,13 +151,13 @@ s_gl_matrix_4d * gl_matrix_4d_ortho (s_gl_matrix_4d *m, f64 x1, f64 x2,
   assert(m);
   dx = x2 - x1;
   dy = y2 - y1;
-  dz = clip_z_far - clip_z_near;
+  dz = clip_z_near - clip_z_far;
   ortho.xx = 2.0 / dx;
   ortho.yy = 2.0 / dy;
-  ortho.zz = -2.0 / dz;
-  ortho.tx = -(x1 + x2) / dx;
-  ortho.ty = -(y1 + y2) / dy;
-  ortho.tz = -(clip_z_near + clip_z_far) / dz;
+  ortho.zz = 2.0 / dz;
+  ortho.xt = -(x1 + x2) / dx;
+  ortho.yt = -(y1 + y2) / dy;
+  ortho.zt = (clip_z_near + clip_z_far) / dz;
   ortho.tt = 1.0;
   gl_matrix_4d_product(m, &ortho);
   return m;
@@ -164,6 +190,18 @@ s_gl_matrix_4d * gl_matrix_4d_product (s_gl_matrix_4d *m,
   s_gl_matrix_4d tmp;
   gl_matrix_4d_init_product(&tmp, m, a);
   *m = tmp;
+  return m;
+}
+
+s_gl_matrix_4d * gl_matrix_4d_scale (s_gl_matrix_4d *m, f64 x, f64 y,
+                                     f64 z)
+{
+  s_gl_matrix_4d s = {0};
+  s.xx = x;
+  s.yy = y;
+  s.zz = z;
+  s.tt = 1.0;
+  gl_matrix_4d_product(m, &s);
   return m;
 }
 

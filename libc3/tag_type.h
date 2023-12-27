@@ -28,7 +28,6 @@ bool          tag_type_to_buf_inspect_size (e_tag_type type,
                                             f_buf_inspect_size *dest);
 bool          tag_type_to_buf_parse (e_tag_type type,
                                      f_buf_parse *dest);
-bool          tag_type_to_clean (e_tag_type type, f_clean *dest);
 bool          tag_type_to_env_eval (e_tag_type type, f_env_eval *dest);
 bool          tag_type_to_hash_update (e_tag_type type,
                                        f_hash_update *dest);

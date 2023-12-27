@@ -182,7 +182,6 @@ typedef u64          t_skiplist_height;
 typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
 typedef sw (* f_buf_inspect_size) (const void *x);
 typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
-typedef void (* f_clean) (void *x);
 typedef bool (* f_env_eval) (s_env *env, const void *x, s_tag *dest);
 typedef void (* f_hash_update) (t_hash *hash, const void *x);
 typedef void * (* f_init_cast) (void *x, const s_tag *tag);

@@ -31,5 +31,6 @@ bool          gl_object_update (s_gl_object *object);
 
 /* Observers. */
 void          gl_object_render (const s_gl_object *object);
+void          gl_object_render_wireframe (const s_gl_object *object);
 
 #endif /* GL_OBJECT_H */

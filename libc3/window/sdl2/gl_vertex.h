@@ -10,17 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef EARTH_H
-#define EARTH_H
+#ifndef GL_VERTEX_H
+#define GL_VERTEX_H
 
-#include "../types.h"
-#include "window_sdl2_demo.h"
+#include "types.h"
 
-extern s_gl_sprite g_sprite_earth;
-extern s_gl_sprite g_sprite_earth_night;
+void gl_vertex_transform (s_gl_vertex *vertex,
+                          const s_gl_matrix_4d *matrix);
 
-bool earth_load (s_sequence *seq, s_window_sdl2 *window);
-bool earth_render (s_sequence *seq, s_window_sdl2 *window,
-                   void *context);
-
-#endif /* EARTH_H */
+#endif /* GL_VERTEX_H */

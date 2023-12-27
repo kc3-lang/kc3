@@ -14,6 +14,7 @@
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
+#include "clean.h"
 #include "env.h"
 #include "list.h"
 #include "map.h"
@@ -42,17 +43,14 @@ s_struct * struct_allocate (s_struct *s)
 
 void struct_clean (s_struct *s)
 {
-  f_clean clean;
   uw i;
   const s_sym *sym;
   assert(s);
   if (s->data) {
     i = 0;
     while (i < s->type.map.count) {
-      if (tag_type(s->type.map.value + i, &sym) &&
-          sym_to_clean(sym, &clean) &&
-          clean)
-        clean((s8 *) s->data + s->type.offset[i]);
+      if (tag_type(s->type.map.value + i, &sym))
+        clean(sym, (s8 *) s->data + s->type.offset[i]);
       i++;
     }
     if (s->free_data)
@@ -300,7 +298,6 @@ s_struct * struct_new_copy (const s_struct *src)
 s_struct * struct_set (s_struct *s, const s_sym *key,
                        const s_tag *value)
 {
-  f_clean clean;
   void *data;
   const void *data_src;
   uw i;
@@ -317,15 +314,13 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
     if (s->type.map.key[i].type == TAG_SYM &&
         s->type.map.key[i].data.sym == key) {
       type = s->type.map.value[i].type;
-      if (! tag_type_to_clean(type, &clean) ||
-          ! tag_type_to_init_copy(type, &init_copy) ||
+      if (! tag_type_to_init_copy(type, &init_copy) ||
           ! tag_type(s->type.map.value + i, &type_sym))
         return NULL;
       data = (s8 *) s->data + s->type.offset[i];
       if (! tag_to_const_pointer(value, type_sym, &data_src))
         return NULL;
-      if (clean)
-        clean(data);
+      clean(type_sym, data);
       if (init_copy) {
         if (! init_copy(data, data_src))
           return NULL;

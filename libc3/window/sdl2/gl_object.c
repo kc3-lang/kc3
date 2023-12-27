@@ -12,6 +12,7 @@
  */
 #include <libc3/c3.h>
 #include "gl_object.h"
+#include "gl_vertex.h"
 
 s_gl_object * gl_object_allocate (s_gl_object *object, uw vertex_count,
                                   uw triangle_count)
@@ -55,12 +56,41 @@ void gl_object_render (const s_gl_object *object)
 {
   assert(object);
   assert(glGetError() == GL_NO_ERROR);
+  glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
+  assert(glGetError() == GL_NO_ERROR);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
+  assert(glGetError() == GL_NO_ERROR);
+  glDrawArrays(GL_TRIANGLES, object->triangle.count * 3,
+               GL_UNSIGNED_INT);
+  assert(glGetError() == GL_NO_ERROR);
+}
+
+void gl_object_render_wireframe (const s_gl_object *object)
+{
+  assert(object);
+  assert(glGetError() == GL_NO_ERROR);
   glBindVertexArray(object->gl_vao);
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
   assert(glGetError() == GL_NO_ERROR);
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_LINE_LOOP, object->triangle.count * 3, GL_UNSIGNED_INT, 0);
   assert(glGetError() == GL_NO_ERROR);
+}
+
+void gl_object_transform (s_gl_object *object,
+                          const s_gl_matrix_4d *matrix)
+{
+  uw i;
+  s_gl_vertex *vertex;
+  assert(object);
+  assert(matrix);
+  vertex = object->vertex.data;
+  i = 0;
+  while (i < object->vertex.count) {
+    gl_vertex_transform(vertex, matrix);
+    vertex++;
+    i++;
+  }
 }
 
 bool gl_object_update (s_gl_object *object)

@@ -17,6 +17,7 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
+#include "clean.h"
 #include "list.h"
 #include "sym.h"
 #include "tag.h"
@@ -252,7 +253,6 @@ s_list ** list_remove_void (s_list **list)
 s_array * list_to_array (const s_list *list, const s_sym *type,
                          s_array *dest)
 {
-  f_clean clean;
   s8 *data;
   const void *data_list;
   f_init_copy init_copy;
@@ -316,11 +316,9 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
   *dest = tmp;
   return dest;
  ko:
-  if (sym_to_clean(type, &clean) && clean) {
-    while (data > (s8 *) tmp.data) {
-      data -= size;
-      clean(data);
-    }
+  while (data > (s8 *) tmp.data) {
+    data -= size;
+    clean(type, data);
   }
   free(tmp.data);
   free(tmp.dimensions);

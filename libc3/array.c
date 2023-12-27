@@ -22,6 +22,7 @@
 #include "call.h"
 #include "cfn.h"
 #include "character.h"
+#include "clean.h"
 #include "env.h"
 #include "f32.h"
 #include "f64.h"
@@ -65,21 +66,18 @@ s_array * array_allocate (s_array *a)
 
 void array_clean (s_array *a)
 {
-  f_clean clean;
   u8 *data;
   uw i;
   uw size;
   assert(a);
   free(a->dimensions);
   if (a->data) {
-    if (sym_to_clean(a->type, &clean) &&
-        clean &&
-        sym_type_size(a->type, &size) &&
+    if (sym_type_size(a->type, &size) &&
         size) {
       data = a->data;
       i = 0;
       while (i < a->count) {
-        clean(data);
+        clean(a->type, data);
         data += size;
         i++;
       }
@@ -285,7 +283,6 @@ s_array * array_init_cast (s_array *array, const s_tag *tag)
 
 s_array * array_init_copy (s_array *a, const s_array *src)
 {
-  f_clean clean;
   f_init_copy init_copy;
   u8 *data_tmp;
   u8 *data_src;
@@ -350,10 +347,10 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   *a = tmp;
   return a;
  ko_data:
-  if (i && sym_to_clean(src->type, &clean) && clean) {
+  if (i) {
     while (--i) {
       data_tmp -= item_size;
-      clean(data_tmp);
+      clean(src->type, data_tmp);
     }
   }
   free(tmp.data);

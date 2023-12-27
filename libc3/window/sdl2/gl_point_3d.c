@@ -130,3 +130,23 @@ f64 gl_point_3d_norm (const s_gl_point_3d *p)
   assert(p);
   return sqrt(p->x * p->x + p->y * p->y + p->z * p->z);
 }
+
+void gl_point_3d_normalize (s_gl_point_3d *p)
+{
+  f64 inv_norm;
+  assert(p);
+  inv_norm = 1.0 / gl_point_3d_norm(p);
+  p->x *= inv_norm;
+  p->y *= inv_norm;
+  p->z *= inv_norm;
+}
+
+void gl_point_3d_transform (s_gl_point_3d *p,
+                            const s_gl_matrix_4d *matrix)
+{
+  s_gl_point_3d tmp;
+  assert(p);
+  assert(matrix);
+  gl_point_3d_init_product(&tmp, matrix, p);
+  *p = tmp;
+}

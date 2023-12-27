@@ -11,10 +11,14 @@
  * THIS SOFTWARE.
  */
 #include <libc3/c3.h>
+#include "../gl_lines.h"
+#include "../gl_matrix_4d.h"
+#include "../gl_ortho.h"
+#include "../gl_point_3d.h"
+#include "window_sdl2_demo.h"
 #include "lightspeed.h"
 
-#define LIGHTSPEED_STAR_MAX (1024 * 1024)
-#define LIGHTSPEED_STAR_PROBABILITY 0.005
+s_gl_lines g_lines_stars = {0};
 
 static void star_init (s_tag *star)
 {
@@ -33,7 +37,7 @@ static void star_init (s_tag *star)
   tag_init_f64(star->data.map.value + 2, 2.0 * y - 1.0);
 }
 
-static void star_render (s_tag *star, s_sequence *seq)
+static void star_render (s_tag *star, s_sequence *seq, s_gl_vertex *v)
 {
   f64 q;
   f64 *speed;
@@ -44,14 +48,16 @@ static void star_render (s_tag *star, s_sequence *seq)
   speed = &star->data.map.value[0].data.f64;
   x = &star->data.map.value[1].data.f64;
   y = &star->data.map.value[2].data.f64;
-  glVertex2d(*x, *y);
+  gl_point_3d_init(&v[0].position, *x, *y, 0.0);
   q = (1 + *speed / 20);
-  glVertex2d(*x * q, *y * q);
+  gl_point_3d_init(&v[1].position, *x * q, *y * q, 0.0);
   q = (1 + *speed / 100);
   *x = *x * q;
   *y = *y * q;
   *speed += seq->dt;
-  if (*x < -1.0 || *x > 1.0 || *y < -1.0 || *y > 1.0)
+  if ((*x == 0.0 && *y == 0.0) ||
+      *x < -1.0 || *x > 1.0 ||
+      *y < -1.0 || *y > 1.0)
     star_init(star);
 }
 
@@ -77,31 +83,46 @@ bool lightspeed_render (s_sequence *seq, s_window_sdl2 *window,
 {
   uw i;
   uw star_count;
+  s_gl_vertex *v;
   (void) window;
   (void) context;
-  glDisable(GL_TEXTURE_2D);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  //glScale2d(window->w / 2.0, window->h / 2.0);
-  //glTranslatef(1.0f, 1.0f, 0.0f);
-  glClearColor(0, 0, 0, 1);
-  glClear(GL_COLOR_BUFFER_BIT);
-  glLineWidth(2);
-  glColor4f(1, 1, 1, 0.7f);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_LINE_SMOOTH);
-  glBegin(GL_LINES);
+  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
+  /*
+  gl_matrix_4d_scale(&g_ortho.model_matrix, window->w / 2.0,
+                     window->h / 2.0, 1);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 1, 1, 0);
+  */
+  gl_ortho_update_model_matrix(&g_ortho);
   star_count = window->w * window->h * LIGHTSPEED_STAR_PROBABILITY;
   if (star_count > LIGHTSPEED_STAR_MAX)
     star_count = LIGHTSPEED_STAR_MAX;
+  v = g_lines_stars.vertex.data;
   i = 0;
   while (i < star_count) {
-    star_render(seq->tag.data.tuple.tag + i, seq);
+    star_render(seq->tag.data.tuple.tag + i, seq, v);
+    v += 2;
     i++;
   }
-  glEnd();
+  assert(glGetError() == GL_NO_ERROR);
+  gl_lines_update(&g_lines_stars, star_count);
+  assert(glGetError() == GL_NO_ERROR);
+  glDisable(GL_DEPTH_TEST);
+  assert(glGetError() == GL_NO_ERROR);
+  glClearColor(0, 0, 0, 1);
+  assert(glGetError() == GL_NO_ERROR);
+  glClear(GL_COLOR_BUFFER_BIT);
+  assert(glGetError() == GL_NO_ERROR);
+  glLineWidth(2);
+  assert(glGetError() == GL_NO_ERROR);
+  glBlendColor(1, 1, 1, 0.7f);
+  assert(glGetError() == GL_NO_ERROR);
+  glEnable(GL_BLEND);
+  assert(glGetError() == GL_NO_ERROR);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  assert(glGetError() == GL_NO_ERROR);
+  glEnable(GL_LINE_SMOOTH);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_lines_render(&g_lines_stars, star_count);
+  assert(glGetError() == GL_NO_ERROR);
   return true;
 }
