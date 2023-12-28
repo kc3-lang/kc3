@@ -17,11 +17,11 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
-#include "clean.h"
 #include "list.h"
 #include "sym.h"
 #include "tag.h"
 #include "tuple.h"
+#include "void.h"
 
 void list_clean (s_list *list)
 {
@@ -255,7 +255,6 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
 {
   s8 *data;
   const void *data_list;
-  f_init_copy init_copy;
   const s_list *l;
   uw len;
   uw size;
@@ -291,23 +290,14 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
       free(tmp.dimensions);
       return NULL;
     }
-    if (! sym_to_init_copy(type, &init_copy)) {
-      free(tmp.data);
-      free(tmp.dimensions);
-      return NULL;
-    }
     data = tmp.data;
     l = list;
     while (l) {
       if (! tag_to_const_pointer(&l->tag, type, &data_list))
         goto ko;
       if (data_list) {
-        if (init_copy) {
-          if (! init_copy(data, data_list))
-            goto ko;
-        }
-        else
-          memcpy(data, data_list, size);
+        if (! void_init_copy(type, data, data_list))
+          goto ko;
       }
       data += size;
       l = list_next(l);
@@ -318,7 +308,7 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
  ko:
   while (data > (s8 *) tmp.data) {
     data -= size;
-    clean(type, data);
+    void_clean(type, data);
   }
   free(tmp.data);
   free(tmp.dimensions);

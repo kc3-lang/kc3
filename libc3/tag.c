@@ -985,14 +985,44 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   assert(tag);
   assert(dest);
   switch (tag->type) {
-  case TAG_STRUCT:
-    *dest = tag->data.struct_.type.module;
-    return dest;
-  default:
-    break;
+  case TAG_VOID:       *dest = sym_1("Void");      return dest;
+  case TAG_ARRAY:      *dest = sym_1("Array");     return dest;
+  case TAG_BOOL:       *dest = sym_1("Bool");      return dest;
+  case TAG_CALL:       *dest = sym_1("Call");      return dest;
+  case TAG_CFN:        *dest = sym_1("Cfn");       return dest;
+  case TAG_CHARACTER:  *dest = sym_1("Character"); return dest;
+  case TAG_F32:        *dest = sym_1("F32");       return dest;
+  case TAG_F64:        *dest = sym_1("F64");       return dest;
+  case TAG_FACT:       *dest = sym_1("Fact");      return dest;
+  case TAG_FN:         *dest = sym_1("Fn");        return dest;
+  case TAG_IDENT:      *dest = sym_1("Ident");     return dest;
+  case TAG_INTEGER:    *dest = sym_1("Integer");   return dest;
+  case TAG_SW:         *dest = sym_1("Sw");        return dest;
+  case TAG_S64:        *dest = sym_1("S64");       return dest;
+  case TAG_S32:        *dest = sym_1("S32");       return dest;
+  case TAG_S16:        *dest = sym_1("S16");       return dest;
+  case TAG_S8:         *dest = sym_1("S8");        return dest;
+  case TAG_U8:         *dest = sym_1("U8");        return dest;
+  case TAG_U16:        *dest = sym_1("U16");       return dest;
+  case TAG_U32:        *dest = sym_1("U32");       return dest;
+  case TAG_U64:        *dest = sym_1("U64");       return dest;
+  case TAG_UW:         *dest = sym_1("Uw");        return dest;
+  case TAG_LIST:       *dest = sym_1("List");      return dest;
+  case TAG_MAP:        *dest = sym_1("Map");       return dest;
+  case TAG_PTAG:       *dest = sym_1("Ptag");      return dest;
+  case TAG_PTR:        *dest = sym_1("Ptr");       return dest;
+  case TAG_PTR_FREE:   *dest = sym_1("PtrFree");   return dest;
+  case TAG_QUOTE:      *dest = sym_1("Quote");     return dest;
+  case TAG_STR:        *dest = sym_1("Str");       return dest;
+  case TAG_STRUCT:     *dest = tag->data.struct_.type.module;
+                                                   return dest;
+  case TAG_SYM:        *dest = sym_1("Sym");       return dest;
+  case TAG_TUPLE:      *dest = sym_1("Tuple");     return dest;
+  case TAG_VAR:        *dest = sym_1("Var");       return dest;
   }
-  *dest = tag_type_to_sym(tag->type);
-  return dest;
+  warnx("tag_type: unknown tag type: %d", tag->type);
+  assert(! "tag_type: unknown tag type");
+  return NULL;
 }
 
 bool tag_xor (const s_tag *a, const s_tag *b)

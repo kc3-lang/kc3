@@ -126,15 +126,159 @@ bool void_clean (const s_sym *type, void *data)
   if (type == sym_1("Void")) {
     return true;
   }
+  /*
+  if (sym_is_array_type(type)) {
+  */
   if (struct_type_exists(type)) {
     s_struct s = {0};
     struct_init_with_data(&s, type, false, data);
     struct_clean(&s);
     return true;
   }
-  err_write_1("sym_to_clean: unknown type: ");
+  err_write_1("void_clean: unknown type: ");
   err_inspect_sym(&type);
   err_write_1("\n");
-  assert(! "sym_to_clean: unknown type");
+  assert(! "void_clean: unknown type");
+  return false;
+}
+
+bool void_init_copy (const s_sym *type, void *v, const void *src)
+{
+  if (type == sym_1("Array")) {
+    array_init_copy;
+    return true;
+  }
+  if (type == sym_1("Bool")) {
+    bool_init_copy;
+    return true;
+  }
+  if (type == sym_1("Call")) {
+    call_init_copy;
+    return true;
+  }
+  if (type == sym_1("Cfn")) {
+    cfn_init_copy;
+    return true;
+  }
+  if (type == sym_1("Character")) {
+    character_init_copy;
+    return true;
+  }
+  if (type == sym_1("F32")) {
+    f32_init_copy;
+    return true;
+  }
+  if (type == sym_1("F64")) {
+    f64_init_copy;
+    return true;
+  }
+  if (type == sym_1("Fact")) {
+    fact_init_copy;
+    return true;
+  }
+  if (type == sym_1("Fn")) {
+    fn_init_copy;
+    return true;
+  }
+  if (type == sym_1("Ident")) {
+    ident_init_copy;
+    return true;
+  }
+  if (type == sym_1("Integer")) {
+    integer_init_copy;
+    return true;
+  }
+  if (type == sym_1("List")) {
+    list_init_copy;
+    return true;
+  }
+  if (type == sym_1("Ptag")) {
+    ptag_init_copy;
+    return true;
+  }
+  if (type == sym_1("Ptr")) {
+    ptr_init_copy;
+    return true;
+  }
+  if (type == sym_1("PtrFree")) {
+    ptr_free_init_copy;
+    return true;
+  }
+  if (type == sym_1("Quote")) {
+    quote_init_copy;
+    return true;
+  }
+  if (type == sym_1("S8")) {
+    s8_init_copy;
+    return true;
+  }
+  if (type == sym_1("S16")) {
+    s16_init_copy;
+    return true;
+  }
+  if (type == sym_1("S32")) {
+    s32_init_copy;
+    return true;
+  }
+  if (type == sym_1("S64")) {
+    s64_init_copy;
+    return true;
+  }
+  if (type == sym_1("Str")) {
+    str_init_copy;
+    return true;
+  }
+  if (type == sym_1("Struct")) {
+    struct_init_copy;
+    return true;
+  }
+  if (type == sym_1("Sw")) {
+    sw_init_copy;
+    return true;
+  }
+  if (type == sym_1("Sym")) {
+    sym_init_copy;
+    return true;
+  }
+  if (type == sym_1("Tuple")) {
+    tuple_init_copy;
+    return true;
+  }
+  if (type == sym_1("U8")) {
+    u8_init_copy;
+    return true;
+  }
+  if (type == sym_1("U16")) {
+    u16_init_copy;
+    return true;
+  }
+  if (type == sym_1("U32")) {
+    u32_init_copy;
+    return true;
+  }
+  if (type == sym_1("U64")) {
+    u64_init_copy;
+    return true;
+  }
+  if (type == sym_1("Uw")) {
+    uw_init_copy;
+    return true;
+  }
+  if (type == sym_1("Var")) {
+    *dest = NULL;
+    return true;
+  }
+  if (type == sym_1("Void")) {
+    *dest = NULL;
+    return true;
+  }
+  if (struct_type_exists(type)) {
+    struct_init_copy;
+    return true;
+  }
+  err_write_1("void_init_copy: unknown type: ");
+  err_inspect_sym(&type);
+  err_write_1("\n");
+  assert(! "void_init_copy: unknown type");
   return false;
 }

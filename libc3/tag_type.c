@@ -55,6 +55,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   return false;
 }
 
+/*
 bool tag_type_to_buf_inspect (e_tag_type type, f_buf_inspect *dest)
 {
   switch (type) {
@@ -289,6 +290,7 @@ bool tag_type_to_env_eval (e_tag_type type, f_env_eval *dest)
   assert(! "tag_type_to_env_eval: unknown tag type");
   return false;
 }
+*/
 
 bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
 {
@@ -332,6 +334,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   return false;
 }
 
+/*
 bool tag_type_to_hash_update (e_tag_type type, f_hash_update *p)
 {
   switch (type) {
@@ -469,6 +472,7 @@ const s8 * tag_type_to_string (e_tag_type type)
     return NULL;
   return sym->str.ptr.ps8;
 }
+*/
 
 const s_sym * tag_type_to_sym (e_tag_type tag_type)
 {

@@ -19,6 +19,7 @@
 #include "str.h"
 #include "tag.h"
 #include "tag_type.h"
+#include "void.h"
 
 #define HASH_UPDATE_DEF(type)                                          \
   void hash_update_##type (t_hash *hash, const type *x)                \
@@ -303,7 +304,6 @@ void hash_update_str (t_hash *hash, const s_str *str)
 void hash_update_struct (t_hash *hash, const s_struct *s)
 {
   const void *data;
-  f_hash_update hash_update_value;
   uw i = 0;
   const s_sym *sym;
   s8 type[] = "struct";
@@ -314,14 +314,11 @@ void hash_update_struct (t_hash *hash, const s_struct *s)
   hash_update(hash, &s->type.map.count, sizeof(s->type.map.count));
   while (i < s->type.map.count) {
     hash_update_tag(hash, s->type.map.key + i);
-    if (! tag_type_to_hash_update(s->type.map.value[i].type,
-                                  &hash_update_value))
+    if (! tag_type(s->type.map.value + i, &sym))
       exit(1);
     if (s->data)
       data = (s8 *) s->data + s->type.offset[i];
     else {
-      if (! tag_type(s->type.map.value + i, &sym))
-        exit(1);
       if (s->tag) {
         if (! tag_to_const_pointer(s->tag + i, sym, &data))
           exit(1);
@@ -331,7 +328,7 @@ void hash_update_struct (t_hash *hash, const s_struct *s)
           exit(1);
       }
     }
-    hash_update_value(hash, data);
+    void_hash_update(sym, hash, data);
     i++;
   }
 }
