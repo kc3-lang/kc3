@@ -14,7 +14,6 @@
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
-#include "clean.h"
 #include "env.h"
 #include "list.h"
 #include "map.h"
@@ -23,6 +22,7 @@
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
+#include "void.h"
 
 s_struct * struct_allocate (s_struct *s)
 {
@@ -50,7 +50,7 @@ void struct_clean (s_struct *s)
     i = 0;
     while (i < s->type.map.count) {
       if (tag_type(s->type.map.value + i, &sym))
-        clean(sym, (s8 *) s->data + s->type.offset[i]);
+        void_clean(sym, (s8 *) s->data + s->type.offset[i]);
       i++;
     }
     if (s->free_data)
@@ -129,9 +129,7 @@ s_struct * struct_init_cast (s_struct *s, const s_tag *tag)
 
 s_struct * struct_init_copy (s_struct *s, const s_struct *src)
 {
-  f_init_copy init_copy;
   uw i;
-  uw size;
   const s_sym *sym;
   s_struct tmp = {0};
   assert(s);
@@ -143,23 +141,10 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
     tmp.data = calloc(1, tmp.type.size);
     i = 0;
     while (i < tmp.type.map.count) {
-      if (tag_type(tmp.type.map.value + i, &sym)) {
-        if (! sym_to_init_copy(sym, &init_copy))
-          goto ko;
-        if (init_copy) {
-          if (! init_copy((s8 *) tmp.data + tmp.type.offset[i],
-                          (s8 *) src->data + tmp.type.offset[i]))
-            goto ko;
-        }
-        else {
-          if (! tag_size(tmp.type.map.value + i, &size))
-            goto ko;
-          if (size)
-            memcpy((s8 *) tmp.data + tmp.type.offset[i],
-                   (s8 *) src->data + tmp.type.offset[i],
-                   size);
-        }
-      }
+      if (! tag_type(tmp.type.map.value + i, &sym) ||
+          ! void_init_copy(sym, (s8 *) tmp.data + tmp.type.offset[i],
+                           (s8 *) src->data + tmp.type.offset[i]))
+        goto ko;
       i++;
     }
   }
@@ -301,9 +286,6 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
   void *data;
   const void *data_src;
   uw i;
-  f_init_copy init_copy;
-  uw size;
-  e_tag_type   type;
   const s_sym *type_sym;
   assert(s);
   assert(s->type.map.count);
@@ -313,25 +295,15 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
   while (i < s->type.map.count) {
     if (s->type.map.key[i].type == TAG_SYM &&
         s->type.map.key[i].data.sym == key) {
-      type = s->type.map.value[i].type;
-      if (! tag_type_to_init_copy(type, &init_copy) ||
-          ! tag_type(s->type.map.value + i, &type_sym))
+      if (! tag_type(s->type.map.value + i, &type_sym))
         return NULL;
       data = (s8 *) s->data + s->type.offset[i];
       if (! tag_to_const_pointer(value, type_sym, &data_src))
         return NULL;
-      clean(type_sym, data);
-      if (init_copy) {
-        if (! init_copy(data, data_src))
-          return NULL;
-        return s;
-      }
-      else {
-        if (! tag_size(s->type.map.value + i, &size))
-          return NULL;
-        if (size)
-          memcpy((s8 *) data + s->type.offset[i], data_src, size);
-      }
+      void_clean(type_sym, data);
+      if (! void_init_copy(type_sym, data, data_src))
+        return NULL;
+      return s;
     }
     i++;
   }
