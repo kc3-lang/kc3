@@ -179,16 +179,7 @@ typedef const s_tag *p_tag;
 typedef u64          t_skiplist_height;
 
 /* function typedefs */
-typedef sw (* f_buf_inspect) (s_buf *buf, const void *x);
-typedef sw (* f_buf_inspect_size) (const void *x);
-typedef sw (* f_buf_parse) (s_buf *buf, void *dest);
-typedef bool (* f_env_eval) (s_env *env, const void *x, s_tag *dest);
-typedef void (* f_hash_update) (t_hash *hash, const void *x);
-typedef void * (* f_init_cast) (void *x, const s_tag *tag);
-typedef void * (* f_init_copy) (void *x, const void *src);
-typedef bool (* f_sequence_load) (s_sequence *seq, void *window);
-typedef bool (* f_sequence_render) (s_sequence *seq, void *window,
-                                    void *context);
+typedef bool (* f_sequence) (s_sequence *seq);
 
 #define CHARACTER_MAX S32_MAX
 #define SKIPLIST_HEIGHT_MAX U64_MAX
@@ -465,11 +456,13 @@ struct sequence {
   f64 dt;
   f64 duration;
   u64 frame;
-  f_sequence_load load;
-  f_sequence_render render;
   f64 t;
   s_time t0;
   const s8 *title;
+  void *window;
+  f_sequence load;
+  f_sequence render;
+  f_sequence unload;
 };
 
 #define TYPEDEF_SET_ITEM(name, type)                                   \

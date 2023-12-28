@@ -21,21 +21,6 @@
 
 #include "types.h"
 
-bool          tag_type_to_size (e_tag_type type, uw *size);
-bool          tag_type_to_buf_inspect (e_tag_type type,
-                                       f_buf_inspect *dest);
-bool          tag_type_to_buf_inspect_size (e_tag_type type,
-                                            f_buf_inspect_size *dest);
-bool          tag_type_to_buf_parse (e_tag_type type,
-                                     f_buf_parse *dest);
-bool          tag_type_to_env_eval (e_tag_type type, f_env_eval *dest);
-bool          tag_type_to_hash_update (e_tag_type type,
-                                       f_hash_update *dest);
-bool          tag_type_to_init_cast (e_tag_type type,
-                                     f_init_cast *dest);
-bool          tag_type_to_init_copy (e_tag_type type,
-                                     f_init_copy *dest);
 const s8 *    tag_type_to_string (e_tag_type type);
-const s_sym * tag_type_to_sym (e_tag_type tag_type);
 
 #endif /* LIBC3_TAG_TYPE */

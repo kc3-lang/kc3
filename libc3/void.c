@@ -10,36 +10,131 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include "void.h"
-#include "buf.h"
-#include "buf_inspect.h"
-#include "io.h"
+#include "c3.h"
 
-void * void_init_copy (void *dest, const void *src)
+bool void_clean (const s_sym *type, void *data)
 {
-  (void) dest;
-  (void) src;
-  return dest;
-}
-
-s_str * void_inspect (void *b, s_str *dest)
-{
-  sw size;
-  s_buf tmp;
-  (void) b;
-  size = buf_inspect_void_size(NULL);
-  if (size < 0) {
-    assert(! "void_inspect: error");
-    return NULL;
+  assert(type);
+  if (type == sym_1("Array")) {
+    array_clean(data);
+    return true;
   }
-  buf_init_alloc(&tmp, size);
-  buf_inspect_void(&tmp, NULL);
-  assert(tmp.wpos == tmp.size);
-  if (tmp.wpos != tmp.size) {
-    buf_clean(&tmp);
-    err_write_1("void_inspect: buf_inspect_void");
-    return NULL;
+  if (type == sym_1("Bool")) {
+    return true;
   }
-  return buf_to_str(&tmp, dest);
+  if (type == sym_1("Call")) {
+    call_clean(data);
+    return true;
+  }
+  if (type == sym_1("Cfn")) {
+    cfn_clean(data);
+    return true;
+  }
+  if (type == sym_1("Character")) {
+    return true;
+  }
+  if (type == sym_1("F32")) {
+    return true;
+  }
+  if (type == sym_1("F64")) {
+    return true;
+  }
+  if (type == sym_1("Fact")) {
+    return true;
+  }
+  if (type == sym_1("Fn")) {
+    fn_clean(data);
+    return true;
+  }
+  if (type == sym_1("Ident")) {
+    return true;
+  }
+  if (type == sym_1("Integer")) {
+    integer_clean(data);
+    return true;
+  }
+  if (type == sym_1("List")) {
+    list_f_clean(data);
+    return true;
+  }
+  if (type == sym_1("Map")) {
+    map_clean(data);
+    return true;
+  }
+  if (type == sym_1("Ptag")) {
+    return true;
+  }
+  if (type == sym_1("Ptr")) {
+    return true;
+  }
+  if (type == sym_1("PtrFree")) {
+    ptr_free_clean(data);
+    return true;
+  }
+  if (type == sym_1("Quote")) {
+    quote_clean(data);
+    return true;
+  }
+  if (type == sym_1("S8")) {
+    return true;
+  }
+  if (type == sym_1("S16")) {
+    return true;
+  }
+  if (type == sym_1("S32")) {
+    return true;
+  }
+  if (type == sym_1("S64")) {
+    return true;
+  }
+  if (type == sym_1("Str")) {
+    str_clean(data);
+    return true;
+  }
+  if (type == sym_1("Struct")) {
+    struct_clean(data);
+    return true;
+  }
+  if (type == sym_1("Sw")) {
+    return true;
+  }
+  if (type == sym_1("Sym")) {
+    return true;
+  }
+  if (type == sym_1("Tuple")) {
+    tuple_clean(data);
+    return true;
+  }
+  if (type == sym_1("U8")) {
+    return true;
+  }
+  if (type == sym_1("U16")) {
+    return true;
+  }
+  if (type == sym_1("U32")) {
+    return true;
+  }
+  if (type == sym_1("U64")) {
+    return true;
+  }
+  if (type == sym_1("Uw")) {
+    return true;
+  }
+  if (type == sym_1("Var")) {
+    return true;
+  }
+  if (type == sym_1("Void")) {
+    return true;
+  }
+  if (struct_type_exists(type)) {
+    s_struct s = {0};
+    struct_init_with_data(&s, type, false, data);
+    struct_clean(&s);
+    return true;
+  }
+  err_write_1("sym_to_clean: unknown type: ");
+  err_inspect_sym(&type);
+  err_write_1("\n");
+  assert(! "sym_to_clean: unknown type");
+  return false;
 }

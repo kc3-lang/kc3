@@ -44,14 +44,8 @@ const s_sym * sym_find (const s_str *src);
 bool          sym_has_reserved_characters (const s_sym *sym);
 s_str *       sym_inspect (const s_sym *sym, s_str *dest);
 bool          sym_is_module (const s_sym *sym);
-bool          sym_to_buf_inspect (const s_sym *type,
-                                  f_buf_inspect *dest);
-bool          sym_to_buf_inspect_size (const s_sym *type,
-                                       f_buf_inspect_size *dest);
 bool          sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
                                ffi_type **dest);
-bool          sym_to_init_cast (const s_sym *type, f_init_cast *dest);
-bool          sym_to_init_copy (const s_sym *type, f_init_copy *dest);
 bool          sym_to_tag_type (const s_sym *sym, e_tag_type *dest);
 bool          sym_type_size (const s_sym *type, uw *size);
 

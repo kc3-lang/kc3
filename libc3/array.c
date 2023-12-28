@@ -15,41 +15,13 @@
 #include <string.h>
 #include <err.h>
 #include "array.h"
-#include "bool.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
-#include "call.h"
-#include "cfn.h"
-#include "character.h"
-#include "clean.h"
-#include "env.h"
-#include "f32.h"
-#include "f64.h"
-#include "fact.h"
-#include "fn.h"
-#include "ident.h"
-#include "integer.h"
 #include "io.h"
-#include "list.h"
-#include "ptag.h"
-#include "quote.h"
-#include "s8.h"
-#include "s16.h"
-#include "s32.h"
-#include "s64.h"
-#include "str.h"
-#include "sw.h"
 #include "sym.h"
 #include "tag.h"
-#include "tuple.h"
-#include "type.h"
-#include "u8.h"
-#include "u16.h"
-#include "u32.h"
-#include "u64.h"
-#include "uw.h"
-#include "var.h"
+#include "void.h"
 
 s_array * array_allocate (s_array *a)
 {
@@ -77,7 +49,7 @@ void array_clean (s_array *a)
       data = a->data;
       i = 0;
       while (i < a->count) {
-        clean(a->type, data);
+        void_clean(a->type, data);
         data += size;
         i++;
       }
@@ -124,16 +96,12 @@ s_array * array_data_set (s_array *a, const uw *address,
                           const void *data)
 {
   void *a_data;
-  f_init_copy init_copy;
   assert(a);
   assert(address);
   assert(data);
   a_data = array_data(a, address);
   if (a_data) {
-    if (! sym_to_init_copy(a->type, &init_copy))
-      return NULL;
-    if (init_copy &&
-        ! init_copy(a_data, data))
+    if (! void_init_copy(a->type, a_data, data))
       return NULL;
     return a;
   }
@@ -144,7 +112,6 @@ s_tag * array_data_tag (const s_tag *a, const s_tag *address,
                         s_tag *dest)
 {
   void *a_data;
-  f_init_copy init_copy;
   void *tmp_data;
   s_tag tmp = {0};
   if (a->type != TAG_ARRAY) {
@@ -173,17 +140,14 @@ s_tag * array_data_tag (const s_tag *a, const s_tag *address,
     return NULL;
   }
   a_data = array_data(&a->data.array, address->data.array.data);
-  if (a_data) {
-    if (! sym_to_init_copy(a->data.array.type, &init_copy) ||
-        ! sym_to_tag_type(a->data.array.type, &tmp.type) ||
-        ! tag_to_pointer(&tmp, a->data.array.type, &tmp_data) ||
-        (init_copy &&
-         ! init_copy(tmp_data, a_data)))
-      return NULL;
-    *dest = tmp;
-    return dest;
-  }
-  return NULL;
+  if (! a_data)
+    return NULL;
+  if (! sym_to_tag_type(a->data.array.type, &tmp.type) ||
+      ! tag_to_pointer(&tmp, a->data.array.type, &tmp_data) ||
+      ! void_init_copy(a->data.array.type, tmp_data, a_data))
+    return NULL;
+  *dest = tmp;
+  return dest;
 }
 
 s_array * array_init (s_array *a, const s_sym *type, uw dimension,
@@ -283,7 +247,6 @@ s_array * array_init_cast (s_array *array, const s_tag *tag)
 
 s_array * array_init_copy (s_array *a, const s_array *src)
 {
-  f_init_copy init_copy;
   u8 *data_tmp;
   u8 *data_src;
   uw i = 0;
@@ -312,16 +275,12 @@ s_array * array_init_copy (s_array *a, const s_array *src)
         free(tmp.dimensions);
         return NULL;
       }
-      if (! sym_to_init_copy(src->type, &init_copy)) {
-        free(tmp.dimensions);
-        return NULL;
-      }
       data_tmp = tmp.data;
       data_src = src->data;
       i = 0;
       item_size = src->dimensions[src->dimension - 1].item_size;
       while (i < src->count) {
-        if (! init_copy(data_tmp, data_src))
+        if (! void_init_copy(src->type, data_tmp, data_src))
           goto ko_data;
         data_tmp += item_size;
         data_src += item_size;
@@ -350,7 +309,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   if (i) {
     while (--i) {
       data_tmp -= item_size;
-      clean(src->type, data_tmp);
+      void_clean(src->type, data_tmp);
     }
   }
   free(tmp.data);
