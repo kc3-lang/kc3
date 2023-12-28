@@ -12,19 +12,19 @@
  */
 /**
  * @file void.h
- * @brief Void operations. Be careful :)
+ * @brief Generic (void *) operations.
  *
- * Structure to manipulate void. Nothing really.
+ * Functions to manage (void *) operations.
  */
 #ifndef LIBC3_VOID_H
 #define LIBC3_VOID_H
 
 #include "types.h"
 
-/* Stack-allocation compatible functions */
-void * void_init_copy (void *dest, const void *src);
-
-/* Observers */
-s_str * void_inspect (void *b, s_str *dest);
+sw     void_buf_inspect (const s_sym *type, s_buf *buf, const void *v);
+sw     void_buf_inspect_size (const s_sym *type, const void *v);
+bool   void_clean (const s_sym *type, void *v);
+void * void_init_cast (const s_sym *type, void *v, const s_tag *src);
+void * void_init_copy (const s_sym *type, void *v, const void *src);
 
 #endif /* LIBC3_VOID_H */

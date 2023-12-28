@@ -77,7 +77,6 @@ HEADERS = \
 	"ceiling.h" \
 	"cfn.h" \
 	"character.h" \
-	"clean.h" \
 	"compare.h" \
 	"config.h" \
 	"env.h" \
@@ -224,7 +223,6 @@ SOURCES = \
 	"ceiling.c" \
 	"cfn.c" \
 	"character.c" \
-	"clean.c" \
 	"compare.c" \
 	"env.c" \
 	"error.c" \
@@ -475,7 +473,6 @@ LO_SOURCES = \
 	"ceiling.c" \
 	"cfn.c" \
 	"character.c" \
-	"clean.c" \
 	"compare.c" \
 	"env.c" \
 	"error.c" \
