@@ -68,12 +68,10 @@ bool window_sdl2_default_motion_cb (s_window_sdl2 *window, sw x, sw y)
   return true;
 }
 
-bool window_sdl2_default_render_cb (s_window_sdl2 *window,
-                                    void *sdl_window)
+bool window_sdl2_default_render_cb (s_window_sdl2 *window)
 {
-  (void) window;
-  (void) sdl_window;
   assert(window);
+  (void) window;
   printf("window_sdl2_default_render_cb\n");
   return true;
 }
@@ -227,14 +225,14 @@ bool window_sdl2_run (s_window_sdl2 *window)
         break;
       case SDL_KEYDOWN:
         if (! window->key(window, &sdl_event.key.keysym)) {
-          err_puts("window_sdl2_run: window->key -> false");
+          err_puts("window_sdl2_run: window->key => false");
           quit = 1;
         }
         break;
       case SDL_MOUSEBUTTONDOWN:
         if (! window->button(window, sdl_event.button.button,
                              sdl_event.button.x, sdl_event.button.y)) {
-          err_puts("window_sdl2_run: window->button -> false");
+          err_puts("window_sdl2_run: window->button => false");
           quit = 1;
         }
         break;
@@ -243,7 +241,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
         //int relativeY = sdl_event.motion.yrel;
         if (! window->motion(window, sdl_event.motion.x,
                              sdl_event.motion.y)) {
-          err_puts("window_sdl2_run: window->motion -> false");
+          err_puts("window_sdl2_run: window->motion => false");
           quit = 1;
         }
         break;
@@ -251,7 +249,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
         if (sdl_event.window.event == SDL_WINDOWEVENT_RESIZED) {
           if (! window->resize(window, sdl_event.window.data1,
                                sdl_event.window.data2)) {
-            err_puts("window_sdl2_run: window->resize -> false");
+            err_puts("window_sdl2_run: window->resize => false");
             quit = 1;
           }
           assert(glGetError() == GL_NO_ERROR);
@@ -269,8 +267,8 @@ bool window_sdl2_run (s_window_sdl2 *window)
     }
     assert(glGetError() == GL_NO_ERROR);
     //glDrawBuffer(GL_BACK);
-    if (! window->render(window, NULL)) {
-      err_puts("window_sdl2_run: window->render -> false");
+    if (! window->render(window)) {
+      err_puts("window_sdl2_run: window->render => false");
       quit = 1;
     }
     SDL_GL_SwapWindow(sdl_window);
@@ -282,20 +280,4 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_GL_DeleteContext(context);
   SDL_DestroyWindow(sdl_window);
   return false;
-}
-
-s_sequence * window_sdl2_sequence_init
-(s_sequence *seq, f64 duration, const s8 *title,
- f_window_sdl2_sequence_load load,
- f_window_sdl2_sequence_render render)
-{
-  assert(seq);
-  seq->t = 0.0;
-  seq->duration = duration;
-  seq->frame = 0;
-  seq->title = title;
-  seq->load = (f_sequence_load) load;
-  seq->render = (f_sequence_render) render;
-  tag_init_void(&seq->tag);
-  return seq;
 }

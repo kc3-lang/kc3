@@ -53,10 +53,9 @@ static void star_render (s_tag *star, s_window_cairo *window,
     star_init(star);
 }
 
-bool lightspeed_load (s_sequence *seq, s_window_cairo *window)
+bool lightspeed_load (s_sequence *seq)
 {
   uw i;
-  (void) window;
   tag_tuple(&seq->tag, LIGHTSPEED_STARS);
   i = 0;
   while (i < LIGHTSPEED_STARS) {
@@ -66,11 +65,14 @@ bool lightspeed_load (s_sequence *seq, s_window_cairo *window)
   return true;
 }
 
-bool lightspeed_render (s_sequence *seq, s_window_cairo *window,
-                        cairo_t *cr)
+bool lightspeed_render (s_sequence *seq)
 {
+  cairo_t *cr;
   uw i;
   cairo_matrix_t matrix;
+  s_window_cairo *window;
+  window = seq->window;
+  cr = window->cr;
   cairo_get_matrix(cr, &matrix);
   cairo_scale(cr, window->w / 2.0, window->h / 2.0);
   cairo_translate(cr, 1.0, 1.0);
@@ -83,5 +85,11 @@ bool lightspeed_render (s_sequence *seq, s_window_cairo *window,
     i++;
   }
   cairo_set_matrix(cr, &matrix);
+  return true;
+}
+
+bool lightspeed_unload (s_sequence *seq)
+{
+  (void) seq;
   return true;
 }

@@ -24,13 +24,15 @@
 
 s_gl_sprite g_sprite_earth = {0};
 
-bool earth_load (s_sequence *seq,
-                 s_window_sdl2 *window)
+bool earth_load (s_sequence *seq)
 {
   s_map *map;
   s_gl_camera *camera;
   s_gl_sphere *sphere;
-  (void) window;
+  s_window_sdl2 *window;
+  assert(seq);
+  window = seq->window;
+  assert(window);
   camera = gl_camera_new(window->w, window->h);
   if (! camera)
     return false;
@@ -50,17 +52,17 @@ bool earth_load (s_sequence *seq,
   return true;
 }
 
-bool earth_render (s_sequence *seq, s_window_sdl2 *window,
-                   void *context)
+bool earth_render (s_sequence *seq)
 {
   s_gl_camera *camera;
   f64         *camera_rot_x_speed;
   s_map *map;
   s_gl_sphere *sphere;
   f64 sphere_radius;
+  s_window_sdl2 *window;
   assert(seq);
+  window = seq->window;
   assert(window);
-  (void) context;
   if (! seq || seq->tag.type != TAG_MAP ||
       seq->tag.data.map.count != 3) {
     err_puts("earth_render: invalid seq->tag");
@@ -130,5 +132,11 @@ bool earth_render (s_sequence *seq, s_window_sdl2 *window,
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_LIGHT0);
   glDisable(GL_LIGHTING);
+  return true;
+}
+
+bool earth_unload (s_sequence *seq)
+{
+  (void) seq;
   return true;
 }

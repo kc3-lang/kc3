@@ -92,9 +92,11 @@ bool window_cairo_motion_default (s_window_cairo *window, sw x, sw y)
   return true;
 }
 
-bool window_cairo_render_default (s_window_cairo *window, cairo_t *cr)
+bool window_cairo_render_default (s_window_cairo *window)
 {
+  cairo_t *cr;
   assert(window);
+  cr = window->cr;
   assert(cr);
   cairo_set_source_rgb(cr, 1, 1, 1);
   cairo_rectangle(cr, 0, 0, window->w, window->h);
@@ -111,22 +113,4 @@ bool window_cairo_resize_default (s_window_cairo *window, uw w, uw h)
   (void) h;
   printf("window_cairo_resize_default: %lu x %lu\n", w, h);
   return true;
-}
-
-s_sequence * window_cairo_sequence_init
-(s_sequence *seq, f64 duration, const s8 *title,
- f_window_cairo_sequence_load load,
- f_window_cairo_sequence_render render)
-{
-  s_sequence tmp = {0};
-  assert(seq);
-  tmp.dt = 0.0;
-  tmp.t = 0.0;
-  tmp.duration = duration;
-  tmp.title = title;
-  tmp.load = (f_sequence_load) load;
-  tmp.render = (f_sequence_render) render;
-  tag_init_void(&tmp.tag);
-  *seq = tmp;
-  return seq;
 }

@@ -18,8 +18,8 @@
 extern s_cairo_sprite g_sprite_dead_fly;
 extern s_cairo_sprite g_sprite_fly;
 
-bool flies_load (s_sequence *seq, s_window_cairo *window);
-bool flies_render (s_sequence *seq, s_window_cairo *window,
-                      cairo_t *cr);
+bool flies_load (s_sequence *seq);
+bool flies_render (s_sequence *seq);
+bool flies_unload (s_sequence *seq);
 
 #endif /* FLIES_H */

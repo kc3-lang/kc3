@@ -51,15 +51,13 @@ static void fly_init (s_map *map)
   (*in)++;
 }
 
-bool flies_load (s_sequence *seq,
-                 s_window_cairo *window)
+bool flies_load (s_sequence *seq)
 {
   uw address[2];
   s_array *board;
   uw i;
   uw j;
   s_map *map;
-  (void) window;
   tag_map(&seq->tag, 4);
   map = &seq->tag.data.map;
   tag_init_sym_1( map->key  + 0, "board");
@@ -128,8 +126,7 @@ bool flies_load (s_sequence *seq,
   return true;
 }
 
-bool flies_render (s_sequence *seq, s_window_cairo *window,
-                   cairo_t *cr)
+bool flies_render (s_sequence *seq)
 {
   s8 a[BOARD_SIZE];
   uw address[2];
@@ -141,6 +138,7 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
   f64 board_item_w;
   f64 board_item_h;
   s_buf buf;
+  cairo_t *cr;
   f64 dead_fly_scale;
   u8   direction;
   u8   direction_prev = 4;
@@ -159,6 +157,9 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
   cairo_text_extents_t te;
   f64 x;
   f64 y;
+  s_window_cairo *window;
+  window = seq->window;
+  cr = window->cr;
   cairo_set_source_rgb(cr, 0.5, 0.5, 0.5);
   cairo_rectangle(cr, 0, 0, window->w, window->h);
   cairo_fill(cr);
@@ -308,5 +309,11 @@ bool flies_render (s_sequence *seq, s_window_cairo *window,
       }
     }
   }
+  return true;
+}
+
+bool flies_unload (s_sequence *seq)
+{
+  (void) seq;
   return true;
 }

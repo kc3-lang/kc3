@@ -92,8 +92,12 @@ bool window_set_sequence_pos (s_window *window, uw sequence_pos)
     return false;
   }
   window->sequence_pos = sequence_pos;
+  if (window->seq)
+    if (! window->seq->unload(window->seq))
+      return false;
+  window->seq = seq;
   io_puts(seq->title);
-  if (! seq->load(seq, window))
+  if (! seq->load(seq))
     return false;
   return true;
 }

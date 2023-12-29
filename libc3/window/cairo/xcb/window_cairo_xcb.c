@@ -47,7 +47,7 @@ bool window_cairo_xcb_event (s_window_cairo *window,
       goto ko;
     break;
   case XCB_EXPOSE:
-    if (! window->render(window, window->cr))
+    if (! window->render(window))
       goto ko;
     xcb_gcontext_t gc = xcb_generate_id(conn);
     u32 gc_mask = XCB_GC_GRAPHICS_EXPOSURES;

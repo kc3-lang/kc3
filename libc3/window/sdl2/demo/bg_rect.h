@@ -15,8 +15,8 @@
 
 #include "../types.h"
 
-bool bg_rect_load (s_sequence *seq, s_window_sdl2 *window);
-bool bg_rect_render (s_sequence *seq, s_window_sdl2 *window,
-                     SDL_GLContext context);
+bool bg_rect_load (s_sequence *seq);
+bool bg_rect_render (s_sequence *seq);
+bool bg_rect_unload (s_sequence *seq);
 
 #endif /* BG_RECT_H */

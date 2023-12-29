@@ -15,8 +15,8 @@
 
 #include "../types.h"
 
-bool bg_rect_load (s_sequence *seq, s_window_cairo *window);
-bool bg_rect_render (s_sequence *seq, s_window_cairo *window,
-                     cairo_t *cr);
+bool bg_rect_load (s_sequence *seq);
+bool bg_rect_render (s_sequence *seq);
+bool bg_rect_unload (s_sequence *seq);
 
 #endif /* BG_RECT_H */

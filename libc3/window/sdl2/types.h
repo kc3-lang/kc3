@@ -63,8 +63,7 @@ typedef bool (*f_window_sdl2_motion) (s_window_sdl2 *window, sw x,
                                       sw y);
 
 /* return false to break event loop */
-typedef bool (*f_window_sdl2_render) (s_window_sdl2 *window,
-                                      void *context);
+typedef bool (*f_window_sdl2_render) (s_window_sdl2 *window);
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_resize) (s_window_sdl2 *window,
@@ -187,6 +186,7 @@ struct window_sdl2 {
   f_window_sdl2_render render;
   SDL_Window          *sdl_window;
   f_window_sdl2_resize resize;
+  s_sequence          *seq;
   s_sequence          *sequence;
   uw                   sequence_count;
   uw                   sequence_pos;

@@ -101,11 +101,9 @@ static void toaster_render (s_tag *toaster, s_window_sdl2 *window,
   }
 }
 
-bool toasters_load (s_sequence *seq,
-                    s_window_sdl2 *window)
+bool toasters_load (s_sequence *seq)
 {
   s_map *map;
-  (void) window;
   tag_map(&seq->tag, 2);
   map = &seq->tag.data.map;
   tag_init_sym_1( map->key + 0, "toasters");
@@ -115,12 +113,14 @@ bool toasters_load (s_sequence *seq,
   return true;
 }
 
-bool toasters_render (s_sequence *seq, s_window_sdl2 *window,
-                      void *context)
+bool toasters_render (s_sequence *seq)
 {
   s_list **toasters;
   s_list **toasts;
-  (void) context;
+  s_window_sdl2 *window;
+  assert(seq);
+  window = seq->window;
+  assert(window);
   glClearColor(0.7f, 0.95f, 1.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   glPushMatrix();
@@ -240,5 +240,11 @@ bool toasters_render_toasters (s_list **toasters, s_window_sdl2 *window,
     }
     i = list_next(i);
   }
+  return true;
+}
+
+bool toasters_unload (s_sequence *seq)
+{
+  (void) seq;
   return true;
 }
