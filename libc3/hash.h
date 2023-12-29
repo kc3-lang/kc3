@@ -16,48 +16,48 @@
 #include "types.h"
 
 #define HASH_UPDATE_PROTOTYPE(type)                           \
-  void hash_update_##type (t_hash *hash, const type *x)
+  bool hash_update_##type (t_hash *hash, const type *x)
 
 void hash_clean (t_hash *hash);
 void hash_init (t_hash *hash);
 uw   hash_to_uw (t_hash *hash);
 u64  hash_to_u64 (t_hash *hash);
-void hash_update (t_hash *hash, const void *data, uw size);
-void hash_update_1 (t_hash *hash, const s8 *p);
-void hash_update_array (t_hash *hash, const s_array *a);
-void hash_update_bool (t_hash *hash, const bool *b);
-void hash_update_call (t_hash *hash, const s_call *call);
-void hash_update_cfn (t_hash *hash, const s_cfn *cfn);
+bool hash_update (t_hash *hash, const void *data, uw size);
+bool hash_update_1 (t_hash *hash, const s8 *p);
+bool hash_update_array (t_hash *hash, const s_array *a);
+bool hash_update_bool (t_hash *hash, const bool *b);
+bool hash_update_call (t_hash *hash, const s_call *call);
+bool hash_update_cfn (t_hash *hash, const s_cfn *cfn);
 HASH_UPDATE_PROTOTYPE(character);
 HASH_UPDATE_PROTOTYPE(f32);
 HASH_UPDATE_PROTOTYPE(f64);
-void hash_update_fact (t_hash *hash, const s_fact *fact);
-void hash_update_fn (t_hash *hash, const s_fn *fn);
-void hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses);
-void hash_update_ident (t_hash *hash, const s_ident *ident);
-void hash_update_integer (t_hash *hash, const s_integer *i);
-void hash_update_list (t_hash *hash, const s_list * const *list);
-void hash_update_map (t_hash *hash, const s_map *map);
-void hash_update_ptag (t_hash *hash, const p_tag *ptag);
-void hash_update_ptr (t_hash *hash, const u_ptr_w *ptr);
-void hash_update_ptr_free (t_hash *hash, const u_ptr_w *ptr_free);
-void hash_update_quote (t_hash *hash, const s_quote *x);
+bool hash_update_fact (t_hash *hash, const s_fact *fact);
+bool hash_update_fn (t_hash *hash, const s_fn *fn);
+bool hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses);
+bool hash_update_ident (t_hash *hash, const s_ident *ident);
+bool hash_update_integer (t_hash *hash, const s_integer *i);
+bool hash_update_list (t_hash *hash, const s_list * const *list);
+bool hash_update_map (t_hash *hash, const s_map *map);
+bool hash_update_ptag (t_hash *hash, const p_tag *ptag);
+bool hash_update_ptr (t_hash *hash, const u_ptr_w *ptr);
+bool hash_update_ptr_free (t_hash *hash, const u_ptr_w *ptr_free);
+bool hash_update_quote (t_hash *hash, const s_quote *x);
 HASH_UPDATE_PROTOTYPE(s8);
 HASH_UPDATE_PROTOTYPE(s16);
 HASH_UPDATE_PROTOTYPE(s32);
 HASH_UPDATE_PROTOTYPE(s64);
 HASH_UPDATE_PROTOTYPE(sw);
-void hash_update_str (t_hash *hash, const s_str *str);
-void hash_update_struct (t_hash *hash, const s_struct *s);
-void hash_update_sym (t_hash *hash, const s_sym * const *sym);
-void hash_update_tag (t_hash *hash, const s_tag *tag);
-void hash_update_tuple (t_hash *hash, const s_tuple *tuple);
+bool hash_update_str (t_hash *hash, const s_str *str);
+bool hash_update_struct (t_hash *hash, const s_struct *s);
+bool hash_update_sym (t_hash *hash, const s_sym * const *sym);
+bool hash_update_tag (t_hash *hash, const s_tag *tag);
+bool hash_update_tuple (t_hash *hash, const s_tuple *tuple);
 HASH_UPDATE_PROTOTYPE(u8);
 HASH_UPDATE_PROTOTYPE(u16);
 HASH_UPDATE_PROTOTYPE(u32);
 HASH_UPDATE_PROTOTYPE(u64);
 HASH_UPDATE_PROTOTYPE(uw);
-void hash_update_var (t_hash *hash, const void *x);
-void hash_update_void (t_hash *hash, const void *x);
+bool hash_update_var (t_hash *hash, const void *x);
+bool hash_update_void (t_hash *hash, const void *x);
 
 #endif /* LIBC3_HASH_H */
