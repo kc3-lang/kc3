@@ -310,6 +310,90 @@ bool void_clean (const s_sym *type, void *data)
   return false;
 }
 
+bool void_hash_update (const s_sym *type, t_hash *hash, const void *v)
+{
+  bool r;
+  if (type == sym_1("Array"))
+    return hash_update_array(hash, v);
+  if (type == sym_1("Bool"))
+    return hash_update_bool(hash, v);
+  if (type == sym_1("Call"))
+    return hash_update_call(hash, v);
+  if (type == sym_1("Cfn"))
+    return hash_update_cfn(hash, v);
+  if (type == sym_1("Character"))
+    return hash_update_character(hash, v);
+  if (type == sym_1("F32"))
+    return hash_update_f32(hash, v);
+  if (type == sym_1("F64"))
+    return hash_update_f64(hash, v);
+  if (type == sym_1("Fact"))
+    return hash_update_fact(hash, v);
+  if (type == sym_1("Fn"))
+    return hash_update_fn(hash, v);
+  if (type == sym_1("Ident"))
+    return hash_update_ident(hash, v);
+  if (type == sym_1("Integer"))
+    return hash_update_integer(hash, v);
+  if (type == sym_1("List"))
+    return hash_update_list(hash, v);
+  if (type == sym_1("Ptag"))
+    return hash_update_ptag(hash, v);
+  if (type == sym_1("Ptr"))
+    return hash_update_ptr(hash, v);
+  if (type == sym_1("PtrFree"))
+    return hash_update_ptr_free(hash, v);
+  if (type == sym_1("Quote"))
+    return hash_update_quote(hash, v);
+  if (type == sym_1("S8"))
+    return hash_update_s8(hash, v);
+  if (type == sym_1("S16"))
+    return hash_update_s16(hash, v);
+  if (type == sym_1("S32"))
+    return hash_update_s32(hash, v);
+  if (type == sym_1("S64"))
+    return hash_update_s64(hash, v);
+  if (type == sym_1("Str"))
+    return hash_update_str(hash, v);
+  if (type == sym_1("Struct"))
+    return hash_update_struct(hash, v);
+  if (type == sym_1("Sw"))
+    return hash_update_sw(hash, v);
+  if (type == sym_1("Sym"))
+    return hash_update_sym(hash, v);
+  if (type == sym_1("Tuple"))
+    return hash_update_tuple(hash, v);
+  if (type == sym_1("U8"))
+    return hash_update_u8(hash, v);
+  if (type == sym_1("U16"))
+    return hash_update_u16(hash, v);
+  if (type == sym_1("U32"))
+    return hash_update_u32(hash, v);
+  if (type == sym_1("U64"))
+    return hash_update_u64(hash, v);
+  if (type == sym_1("Uw"))
+    return hash_update_uw(hash, v);
+  if (type == sym_1("Var"))
+    return hash_update_var(hash, v);
+  if (type == sym_1("Void"))
+    return hash_update_void(hash, v);
+  /*
+  if (sym_is_array_type(type)) {
+  */
+  if (struct_type_exists(type)) {
+    s_struct s = {0};
+    struct_init_with_data(&s, type, false, (void *) v);
+    r = hash_update_struct(hash, &s);
+    struct_type_clean(&s.type);
+    return r;
+  }
+  err_write_1("void_hash_update: unknown type: ");
+  err_inspect_sym(&type);
+  err_write_1("\n");
+  assert(! "void_hash_update: unknown type");
+  return false;
+}
+
 void * void_init_cast (const s_sym *type, void *v, const s_tag *tag)
 {
   void *r;
