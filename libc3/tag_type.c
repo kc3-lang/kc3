@@ -464,16 +464,51 @@ bool tag_type_to_init_copy (e_tag_type type, f_init_copy *p)
   assert(! "tag_type_to_init_copy: invalid tag type");
   return false;
 }
-
-const s8 * tag_type_to_string (e_tag_type type)
-{
-  const s_sym *sym;
-  if (! (sym = tag_type_to_sym(type)))
-    return NULL;
-  return sym->str.ptr.ps8;
-}
 */
 
+const s8 * tag_type_to_string (e_tag_type tag_type)
+{
+  switch (tag_type) {
+  case TAG_VOID:      return "Void";
+  case TAG_ARRAY:     return "Array";
+  case TAG_BOOL:      return "Bool";
+  case TAG_CALL:      return "Call";
+  case TAG_CFN:       return "Cfn";
+  case TAG_CHARACTER: return "Character";
+  case TAG_F32:       return "F32";
+  case TAG_F64:       return "F64";
+  case TAG_FACT:      return "Fact";
+  case TAG_FN:        return "Fn";
+  case TAG_IDENT:     return "Ident";
+  case TAG_INTEGER:   return "Integer";
+  case TAG_SW:        return "Sw";
+  case TAG_S64:       return "S64";
+  case TAG_S32:       return "S32";
+  case TAG_S16:       return "S16";
+  case TAG_S8:        return "S8";
+  case TAG_U8:        return "U8";
+  case TAG_U16:       return "U16";
+  case TAG_U32:       return "U32";
+  case TAG_U64:       return "U64";
+  case TAG_UW:        return "Uw";
+  case TAG_LIST:      return "List";
+  case TAG_MAP:       return "Map";
+  case TAG_PTAG:      return "Ptag";
+  case TAG_PTR:       return "Ptr";
+  case TAG_PTR_FREE:  return "PtrFree";
+  case TAG_QUOTE:     return "Quote";
+  case TAG_STR:       return "Str";
+  case TAG_STRUCT:    return "Struct";
+  case TAG_SYM:       return "Sym";
+  case TAG_TUPLE:     return "Tuple";
+  case TAG_VAR:       return "Var";
+  }
+  warnx("tag_type_to_string: unknown tag type: %d", tag_type);
+  assert(! "tag_type_to_string: unknown tag type");
+  return NULL;
+}
+
+/*
 const s_sym * tag_type_to_sym (e_tag_type tag_type)
 {
   switch (tag_type) {
@@ -515,3 +550,4 @@ const s_sym * tag_type_to_sym (e_tag_type tag_type)
   errx(1, "tag_type_to_sym: invalid tag type: %d", tag_type);
   return NULL;
 }
+*/
