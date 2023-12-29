@@ -15,9 +15,24 @@
 #include <xkbcommon/xkbcommon.h>
 #include <libc3/c3.h>
 #include "../window.h"
+#include "gl_deprecated.h"
 #include "window_sdl2.h"
 
 static bool g_window_sdl2_initialized = false;
+
+static void gl_debug (GLenum source, GLenum type, GLuint id,
+                      GLenum severity, GLsizei length,
+                      const GLchar* message, const void* user_param)
+{
+  (void) source;
+  (void) type;
+  (void) id;
+  (void) severity;
+  (void) length;
+  (void) user_param;
+  err_write_1("gl_debug_callback: ");
+  err_puts(message);
+}
 
 void window_sdl2_clean (s_window_sdl2 *window)
 {
@@ -166,9 +181,11 @@ bool window_sdl2_run (s_window_sdl2 *window)
   GLenum gl_error = glGetError();
   if (gl_error != GL_NO_ERROR) {
     warnx("OpenGL initialization error: %s\n",
-          gluErrorString(gl_error));
+          gl_error_string(gl_error));
     goto ko;
   }
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(gl_debug, NULL);
   if (SDL_GL_MakeCurrent(sdl_window, context) < 0) {
     warnx("window_sdl2_run: failed to make OpenGL context current: %s",
           SDL_GetError());
