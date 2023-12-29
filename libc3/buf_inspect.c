@@ -1108,7 +1108,7 @@ sw buf_inspect_integer_size (const s_integer *x)
   return size - 1;
 }
 
-sw buf_inspect_list (s_buf *buf, const s_list **x)
+sw buf_inspect_list (s_buf *buf, const s_list * const *x)
 {
   const s_list *i;
   sw r;

@@ -93,7 +93,7 @@ sw buf_inspect_ident_reserved_size (const s_ident *ident);
 sw buf_inspect_ident_size (const s_ident *ident);
 sw buf_inspect_integer (s_buf *buf, const s_integer *x);
 sw buf_inspect_integer_size (const s_integer *x);
-sw buf_inspect_list (s_buf *buf, const s_list **list);
+sw buf_inspect_list (s_buf *buf, const s_list * const *list);
 sw buf_inspect_list_paren (s_buf *buf, const s_list * const *list);
 sw buf_inspect_list_size (const s_list * const *list);
 sw buf_inspect_list_tag (s_buf *buf, const s_tag *tag);
