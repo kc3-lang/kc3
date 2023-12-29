@@ -18,8 +18,8 @@
 extern s_gl_sprite g_sprite_toast;
 extern s_gl_sprite g_sprite_toaster;
 
-bool toasters_load (s_sequence *seq, s_window_sdl2 *window);
-bool toasters_render (s_sequence *seq, s_window_sdl2 *window,
-                      void *context);
+bool toasters_load (s_sequence *seq);
+bool toasters_render (s_sequence *seq);
+bool toasters_unload (s_sequence *seq);
 
 #endif /* TOASTERS_H */

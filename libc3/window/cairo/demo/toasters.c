@@ -39,7 +39,6 @@ static s_tag * toast_init (s_tag *toast, f64 x, f64 y)
   return toast;
 }
 
-
 static void toast_render (s_tag *toast, s_window_cairo *window,
                           cairo_t *cr, s_sequence *seq)
 {
@@ -99,11 +98,9 @@ static void toaster_render (s_tag *toaster, s_window_cairo *window,
   }
 }
 
-bool toasters_load (s_sequence *seq,
-                    s_window_cairo *window)
+bool toasters_load (s_sequence *seq)
 {
   s_map *map;
-  (void) window;
   tag_map(&seq->tag, 2);
   map = &seq->tag.data.map;
   tag_init_sym_1( map->key + 0, "toasters");
@@ -113,11 +110,14 @@ bool toasters_load (s_sequence *seq,
   return true;
 }
 
-bool toasters_render (s_sequence *seq, s_window_cairo *window,
-                      cairo_t *cr)
+bool toasters_render (s_sequence *seq)
 {
+  cairo_t *cr;
   s_list **toasters;
   s_list **toasts;
+  s_window_cairo *window;
+  window = seq->window;
+  cr = window->cr;
   cairo_set_source_rgb(cr, 0.7, 0.95, 1.0);
   cairo_rectangle(cr, 0, 0, window->w, window->h);
   cairo_fill(cr);
@@ -232,5 +232,11 @@ bool toasters_render_toasters (s_list **toasters,
     }
     i = list_next(i);
   }
+  return true;
+}
+
+bool toasters_unload (s_sequence *seq)
+{
+  (void) seq;
   return true;
 }

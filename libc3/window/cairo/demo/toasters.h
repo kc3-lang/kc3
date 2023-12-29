@@ -18,8 +18,8 @@
 extern s_cairo_sprite g_sprite_toast;
 extern s_cairo_sprite g_sprite_toaster;
 
-bool toasters_load (s_sequence *seq, s_window_cairo *window);
-bool toasters_render (s_sequence *seq, s_window_cairo *window,
-                      cairo_t *cr);
+bool toasters_load (s_sequence *seq);
+bool toasters_render (s_sequence *seq);
+bool toasters_unload (s_sequence *seq);
 
 #endif /* TOASTERS_H */

@@ -20,8 +20,8 @@
 
 extern s_gl_lines g_lines_stars;
 
-bool lightspeed_load (s_sequence *seq, s_window_sdl2 *window);
-bool lightspeed_render (s_sequence *seq, s_window_sdl2 *window,
-                        void *context);
+bool lightspeed_load (s_sequence *seq);
+bool lightspeed_render (s_sequence *seq);
+bool lightspeed_unload (s_sequence *seq);
 
 #endif /* LIGHTSPEED_H */

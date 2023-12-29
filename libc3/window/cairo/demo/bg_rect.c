@@ -15,18 +15,17 @@
 #include "../types.h"
 #include "bg_rect.h"
 
-bool bg_rect_load (s_sequence *seq, s_window_cairo *window)
+#define BG_RECT_COLOR_MAX 8
+
+bool bg_rect_load (s_sequence *seq)
 {
   (void) seq;
-  (void) window;
   return true;
 }
 
-bool bg_rect_render (s_sequence *seq, s_window_cairo *window,
-                     cairo_t *cr)
+bool bg_rect_render (s_sequence *seq)
 {
-#define C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX 8
-  const s_rgb color[C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX] = {
+  const s_rgb color[BG_RECT_COLOR_MAX] = {
     {0, 0, 0},
     {1, 0, 0},
     {1, 1, 0},
@@ -38,11 +37,15 @@ bool bg_rect_render (s_sequence *seq, s_window_cairo *window,
   };
   u8 c1;
   u8 c2;
+  cairo_t *cr;
   double p;
   double q;
   s_rgb rgb;
-  c1 = (u8) trunc(seq->t) % C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX;
-  c2 = (u8) trunc(seq->t + 1.0) % C3_WINDOW_CAIRO_DEMO_BG_RECT_COLOR_MAX;
+  s_window_cairo *window;
+  window = seq->window;
+  cr = window->cr;
+  c1 = (u8) trunc(seq->t) % BG_RECT_COLOR_MAX;
+  c2 = (u8) trunc(seq->t + 1.0) % BG_RECT_COLOR_MAX;
   p = fmod(seq->t, 1.0);
   q = 1.0 - p;
   rgb.r = color[c1].r * q + color[c2].r * p;
@@ -51,5 +54,11 @@ bool bg_rect_render (s_sequence *seq, s_window_cairo *window,
   cairo_set_source_rgb(cr, rgb.r, rgb.g, rgb.b);
   cairo_rectangle(cr, 0, 0, window->w, window->h);
   cairo_fill(cr);
+  return true;
+}
+
+bool bg_rect_unload (s_sequence *seq)
+{
+  (void) seq;
   return true;
 }

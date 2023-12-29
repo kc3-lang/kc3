@@ -24,7 +24,7 @@ bool window_cairo_demo_button (s_window_cairo *window, u8 button,
                                sw x, sw y);
 bool window_cairo_demo_key (s_window_cairo *window, uw keysym);
 bool window_cairo_demo_load (s_window_cairo *window);
-bool window_cairo_demo_render (s_window_cairo *window, cairo_t *cr);
+bool window_cairo_demo_render (s_window_cairo *window);
 bool window_cairo_demo_resize (s_window_cairo *window, uw w, uw h);
 void window_cairo_demo_unload (s_window_cairo *window);
 

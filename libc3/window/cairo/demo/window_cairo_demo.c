@@ -88,30 +88,28 @@ bool window_cairo_demo_load (s_window_cairo *window)
   if (! cairo_font_init(&g_font_courier_new,
                         "fonts/Courier New/Courier New.ttf"))
     return false;
-  window_cairo_sequence_init(window->sequence, 8.0,
-                             "01. Background rectangles",
-                             bg_rect_load, bg_rect_render);
-  window_cairo_sequence_init(window->sequence + 1, 20.0,
-                             "02. Lightspeed",
-                             lightspeed_load, lightspeed_render);
+  sequence_init(window->sequence, 8.0, "01. Background rectangles",
+                bg_rect_load, bg_rect_render, bg_rect_unload, window);
+  sequence_init(window->sequence + 1, 20.0, "02. Lightspeed",
+                lightspeed_load, lightspeed_render, lightspeed_unload,
+                window);
   if (! cairo_sprite_init(&g_sprite_toaster, "img/flaps.png",
                           4, 1, 4))
     return false;
   if (! cairo_sprite_init(&g_sprite_toast, "img/toast.png",
                           1, 1, 1))
     return false;
-  window_cairo_sequence_init(window->sequence + 2, 60.0,
-                             "03. Toasters",
-                             toasters_load, toasters_render);
+  sequence_init(window->sequence + 2, 60.0, "03. Toasters",
+                toasters_load, toasters_render, toasters_unload,
+                window);
   if (! cairo_sprite_init(&g_sprite_fly, "img/fly-noto.png",
                           1, 1, 1))
     return false;
   if (! cairo_sprite_init(&g_sprite_dead_fly, "img/fly-dead.png",
                           1, 1, 1))
     return false;
-  window_cairo_sequence_init(window->sequence + 3, 60.0,
-                             "04. Flies",
-                             flies_load, flies_render);
+  sequence_init(window->sequence + 3, 60.0, "04. Flies",
+                flies_load, flies_render, flies_unload, window);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }
@@ -142,17 +140,18 @@ static void render_text (cairo_t *cr, double x, double y,
   cairo_show_text(cr, p);
 }
 
-bool window_cairo_demo_render (s_window_cairo *window,
-                               cairo_t *cr)
+bool window_cairo_demo_render (s_window_cairo *window)
 {
+  cairo_t *cr;
   s_sequence *seq;
   cairo_text_extents_t te;
   assert(window);
+  cr = window->cr;
   assert(cr);
   if (! window_animate((s_window *) window))
     return false;
   seq = window->sequence + window->sequence_pos;
-  if (! seq->render(seq, window, cr))
+  if (! seq->render(seq))
     return false;
   /* text */
   cairo_set_font_size(cr, 20);

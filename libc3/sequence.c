@@ -21,16 +21,20 @@ void sequence_clean (s_sequence *seq)
 
 s_sequence * sequence_init (s_sequence *seq, f64 duration,
                             const s8 *title, f_sequence load,
-                            f_sequence render, f_sequence unload)
+                            f_sequence render, f_sequence unload,
+                            void *window)
 {
+  s_sequence tmp = {0};
   assert(seq);
-  seq->dt = 0.0;
-  seq->t = 0.0;
-  seq->duration = duration;
-  seq->title = title;
-  seq->load = load;
-  seq->render = render;
-  seq->unload = unload;
-  tag_init_void(&seq->tag);
+  tmp.dt = 0.0;
+  tmp.t = 0.0;
+  tmp.duration = duration;
+  tag_init_void(&tmp.tag);
+  tmp.title = title;
+  tmp.load = load;
+  tmp.render = render;
+  tmp.unload = unload;
+  tmp.window = window;
+  *seq = tmp;
   return seq;
 }

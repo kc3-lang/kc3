@@ -42,8 +42,7 @@ static bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
 static bool window_sdl2_demo_key (s_window_sdl2 *window,
                                   SDL_Keysym *keysym);
 static bool window_sdl2_demo_load (s_window_sdl2 *window);
-static bool window_sdl2_demo_render (s_window_sdl2 *window,
-                                     void *context);
+static bool window_sdl2_demo_render (s_window_sdl2 *window);
 static bool window_sdl2_demo_resize (s_window_sdl2 *window,
                                      uw w, uw h);
 static void window_sdl2_demo_unload (s_window_sdl2 *window);
@@ -160,24 +159,23 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
     return false;
   if (! gl_text_init_1(&g_text_fps, &g_font_courier_new, "0.00"))
     return false;
-  window_sdl2_sequence_init(window->sequence, 8.0,
-                            "01. Background rectangles",
-                            bg_rect_load, bg_rect_render);
+  sequence_init(window->sequence, 8.0, "01. Background rectangles",
+                bg_rect_load, bg_rect_render, bg_rect_unload, window);
   if (! gl_lines_init(&g_lines_stars) ||
       ! gl_lines_allocate(&g_lines_stars, LIGHTSPEED_STAR_MAX))
     return false;
-  window_sdl2_sequence_init(window->sequence + 1, 20.0,
-                            "02. Lightspeed",
-                            lightspeed_load, lightspeed_render);
+  sequence_init(window->sequence + 1, 20.0, "02. Lightspeed",
+                lightspeed_load, lightspeed_render, lightspeed_unload,
+                window);
   if (! gl_sprite_init(&g_sprite_toaster, "img/flaps.256.png",
                        4, 1, 4))
     return false;
   if (! gl_sprite_init(&g_sprite_toast, "img/toast.128.png",
                        1, 1, 1))
     return false;
-  window_sdl2_sequence_init(window->sequence + 2, 60.0,
-                            "03. Toasters",
-                            toasters_load, toasters_render);
+  sequence_init(window->sequence + 2, 60.0, "03. Toasters",
+                toasters_load, toasters_render, toasters_unload,
+                window);
   if (! gl_font_init(&g_font_flies,
                      "fonts/Courier New/Courier New.ttf"))
     return false;
@@ -187,9 +185,8 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   if (! gl_sprite_init(&g_sprite_dead_fly, "img/fly-dead.png",
                        1, 1, 1))
     return false;
-  window_sdl2_sequence_init(window->sequence + 3, 60.0,
-                            "04. Flies",
-                            flies_load, flies_render);
+  sequence_init(window->sequence + 3, 60.0, "04. Flies",
+                flies_load, flies_render, flies_unload, window);
   if (! gl_sprite_init(&g_sprite_earth, "img/earth.png",
                        1, 1, 1))
     return false;
@@ -197,9 +194,8 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   assert(glGetError() == GL_NO_ERROR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   assert(glGetError() == GL_NO_ERROR);
-  window_sdl2_sequence_init(window->sequence + 4, 120.0,
-                            "05. Earth",
-                            earth_load, earth_render);
+  sequence_init(window->sequence + 4, 120.0, "05. Earth",
+                earth_load, earth_render, earth_unload, window);
   assert(glGetError() == GL_NO_ERROR);
   window_set_sequence_pos((s_window *) window, 0);
   assert(glGetError() == GL_NO_ERROR);
@@ -253,21 +249,21 @@ static void render_text (s_gl_text *text, f64 x, f64 y)
   assert(glGetError() == GL_NO_ERROR);
 }
 
-bool window_sdl2_demo_render (s_window_sdl2 *window, void *context)
+bool window_sdl2_demo_render (s_window_sdl2 *window)
 {
   s_sequence *seq;
   assert(window);
   assert(glGetError() == GL_NO_ERROR);
   if (! window_animate((s_window *) window))
     return false;
-  seq = window->sequence + window->sequence_pos;
+  seq = window->seq;
   gl_matrix_4d_init_identity(&g_ortho.model_matrix);
   gl_ortho_render(&g_ortho);
   glEnable(GL_BLEND);
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
                       GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   assert(glGetError() == GL_NO_ERROR);
-  if (! seq->render(seq, window, context))
+  if (! seq->render(seq))
     return false;
   assert(glGetError() == GL_NO_ERROR);
   /* 2D */

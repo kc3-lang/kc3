@@ -61,11 +61,14 @@ static void star_render (s_tag *star, s_sequence *seq, s_gl_vertex *v)
     star_init(star);
 }
 
-bool lightspeed_load (s_sequence *seq, s_window_sdl2 *window)
+bool lightspeed_load (s_sequence *seq)
 {
   uw i;
   uw star_count;
-  (void) window;
+  s_window_sdl2 *window;
+  assert(seq);
+  window = seq->window;
+  assert(window);
   tag_tuple(&seq->tag, LIGHTSPEED_STAR_MAX);
   star_count = window->w * window->h * LIGHTSPEED_STAR_PROBABILITY;
   if (star_count > LIGHTSPEED_STAR_MAX)
@@ -78,14 +81,15 @@ bool lightspeed_load (s_sequence *seq, s_window_sdl2 *window)
   return true;
 }
 
-bool lightspeed_render (s_sequence *seq, s_window_sdl2 *window,
-                        void *context)
+bool lightspeed_render (s_sequence *seq)
 {
   uw i;
   uw star_count;
   s_gl_vertex *v;
-  (void) window;
-  (void) context;
+  s_window_sdl2 *window;
+  assert(seq);
+  window = seq->window;
+  assert(window);
   gl_matrix_4d_init_identity(&g_ortho.model_matrix);
   /*
   gl_matrix_4d_scale(&g_ortho.model_matrix, window->w / 2.0,
@@ -124,5 +128,11 @@ bool lightspeed_render (s_sequence *seq, s_window_sdl2 *window,
   assert(glGetError() == GL_NO_ERROR);
   gl_lines_render(&g_lines_stars, star_count);
   assert(glGetError() == GL_NO_ERROR);
+  return true;
+}
+
+bool lightspeed_unload (s_sequence *seq)
+{
+  (void) seq;
   return true;
 }

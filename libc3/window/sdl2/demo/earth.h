@@ -19,8 +19,8 @@
 extern s_gl_sprite g_sprite_earth;
 extern s_gl_sprite g_sprite_earth_night;
 
-bool earth_load (s_sequence *seq, s_window_sdl2 *window);
-bool earth_render (s_sequence *seq, s_window_sdl2 *window,
-                   void *context);
+bool earth_load (s_sequence *seq);
+bool earth_render (s_sequence *seq);
+bool earth_unload (s_sequence *seq);
 
 #endif /* EARTH_H */

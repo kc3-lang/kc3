@@ -15,18 +15,14 @@
 #include "../types.h"
 #include "bg_rect.h"
 
-bool bg_rect_load (s_sequence *seq, s_window_sdl2 *window)
+bool bg_rect_load (s_sequence *seq)
 {
   (void) seq;
-  (void) window;
   return true;
 }
 
-bool bg_rect_render (s_sequence *seq, s_window_sdl2 *window,
-                     SDL_GLContext context)
+bool bg_rect_render (s_sequence *seq)
 {
-  (void) context;
-  (void) window;
 #define BG_RECT_COLOR_MAX 8
   const s_rgb color[BG_RECT_COLOR_MAX] = {
     {0, 0, 0},
@@ -55,5 +51,11 @@ bool bg_rect_render (s_sequence *seq, s_window_sdl2 *window,
   assert(glGetError() == GL_NO_ERROR);
   glClear(GL_COLOR_BUFFER_BIT);
   assert(glGetError() == GL_NO_ERROR);
+  return true;
+}
+
+bool bg_rect_unload (s_sequence *seq)
+{
+  (void) seq;
   return true;
 }

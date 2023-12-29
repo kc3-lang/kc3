@@ -54,15 +54,13 @@ static void fly_init (s_map *map)
   (*in)++;
 }
 
-bool flies_load (s_sequence *seq,
-                 s_window_sdl2 *window)
+bool flies_load (s_sequence *seq)
 {
   uw address[2];
   s_array *board;
   uw i;
   uw j;
   s_map *map;
-  (void) window;
   tag_map(&seq->tag, 4);
   map = &seq->tag.data.map;
   tag_init_sym_1( map->key  + 0, "board");
@@ -131,8 +129,7 @@ bool flies_load (s_sequence *seq,
   return true;
 }
 
-bool flies_render (s_sequence *seq, s_window_sdl2 *window,
-                   void *context)
+bool flies_render (s_sequence *seq)
 {
   s8 a[BOARD_SIZE];
   uw address[2];
@@ -161,12 +158,10 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
   uw random_bits = 0;
   f64 x;
   f64 y;
-  (void) context;
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0, window->w, 0, window->h, -1, 1);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+  s_window_sdl2 *window;
+  assert(seq);
+  window = seq->window;
+  assert(window);
   glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   /* io_inspect(&seq->tag); */
@@ -321,5 +316,11 @@ bool flies_render (s_sequence *seq, s_window_sdl2 *window,
       address[1]++;
     }
   } glPopMatrix();
+  return true;
+}
+
+bool flies_unload (s_sequence *seq)
+{
+  (void) seq;
   return true;
 }

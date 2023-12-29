@@ -47,19 +47,11 @@ typedef bool (*f_window_cairo_motion) (s_window_cairo *window, sw x,
                                        sw y);
 
 /* return false to break event loop */
-typedef bool (*f_window_cairo_render) (s_window_cairo *window,
-                                       cairo_t *cr);
+typedef bool (*f_window_cairo_render) (s_window_cairo *window);
 
 /* return false to break event loop */
 typedef bool (*f_window_cairo_resize) (s_window_cairo *window,
                                        uw w, uw h);
-
-typedef bool (*f_window_cairo_sequence_load) (s_sequence *seq,
-                                              s_window_cairo *window);
-
-typedef bool (*f_window_cairo_sequence_render) (s_sequence *seq,
-                                                s_window_cairo *window,
-                                                cairo_t *cr);
 
 typedef void (*f_window_cairo_unload) (s_window_cairo *window);
 
@@ -111,6 +103,7 @@ struct window_cairo {
   f_window_cairo_render render;
   cairo_t              *cr;
   f_window_cairo_resize resize;
+  s_sequence           *seq;
   s_sequence           *sequence;
   uw                    sequence_count;
   uw                    sequence_pos;
