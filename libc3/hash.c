@@ -405,11 +405,11 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_LIST:
     return hash_update_list(hash, (const s_list * const *)
                             &tag->data.list);
-  case TAG_MAP:    hash_update_map(hash, &tag->data.map);
-  case TAG_PTAG:   hash_update_ptag(hash, &tag->data.ptag);
-  case TAG_PTR:    hash_update_ptr(hash, &tag->data.ptr);
+  case TAG_MAP:   return hash_update_map(hash, &tag->data.map);
+  case TAG_PTAG:  return hash_update_ptag(hash, &tag->data.ptag);
+  case TAG_PTR:   return hash_update_ptr(hash, &tag->data.ptr);
   case TAG_PTR_FREE:
-    hash_update_ptr_free(hash, &tag->data.ptr_free);
+    return hash_update_ptr_free(hash, &tag->data.ptr_free);
   case TAG_QUOTE: return hash_update_quote(hash, &tag->data.quote);
   case TAG_S8:    return hash_update_s8(hash, &tag->data.s8);
   case TAG_S16:   return hash_update_s16(hash, &tag->data.s16);
