@@ -22,7 +22,7 @@ s_gl_lines * gl_lines_init (s_gl_lines *lines);
 
 /* Heap-allocation functions, call gl_lines_delete after use. */
 void         gl_lines_delete (s_gl_lines *lines);
-s_gl_lines * gl_lines_new ();
+s_gl_lines * gl_lines_new (void);
 
 /* Operators. */
 s_gl_lines * gl_lines_allocate (s_gl_lines *lines, uw lines_count);

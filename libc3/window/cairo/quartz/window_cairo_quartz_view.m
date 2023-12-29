@@ -42,7 +42,7 @@
                                                  self.bounds.size.width,
                                                  self.bounds.size.height);
     cairo_t *cr = cairo_create(surface);
-    if (! self.window_cairo->render(self.window_cairo, cr)) {
+    if (! self.window_cairo->render(self.window_cairo)) {
       [self.window close];
       [self.window release];
       [[NSApplication sharedApplication] stop:nil];

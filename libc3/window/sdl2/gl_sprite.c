@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <libc3/c3.h>
+#include "gl_deprecated.h"
 #include "gl_object.h"
 #include "gl_point_2d.h"
 #include "gl_point_3d.h"
@@ -262,7 +263,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
     err_write_1("sdl2_sprite_init: ");
     err_inspect_str(&tmp.real_path);
     err_write_1(": glGenTextures: ");
-    err_puts((const s8 *) gluErrorString(gl_error));
+    err_puts(gl_error_string(gl_error));
     free(tmp.texture);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -298,7 +299,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
 	err_write_1("sdl2_sprite_init: ");
         err_inspect_str(&tmp.real_path);
         err_write_1(": glBindTexture: ");
-        err_puts((const s8 *) gluErrorString(gl_error));
+        err_puts(gl_error_string(gl_error));
 	return NULL;
       }
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
@@ -313,7 +314,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
 	err_write_1("sdl2_sprite_init: ");
         err_inspect_str(&tmp.real_path);
         err_write_1(": glTexParameteri: ");
-        err_puts((const s8 *) gluErrorString(gl_error));
+        err_puts(gl_error_string(gl_error));
 	return NULL;
       }
       glTexImage2D(GL_TEXTURE_2D, 0, gl_format, tmp.w, tmp.h,
@@ -325,7 +326,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
 	err_write_1("sdl2_sprite_init: ");
         err_inspect_str(&tmp.real_path);
         err_write_1(": glTexImage2D: ");
-        err_puts((const s8 *) gluErrorString(gl_error));
+        err_puts(gl_error_string(gl_error));
 	return NULL;
       }
       glGenerateMipmap(GL_TEXTURE_2D);

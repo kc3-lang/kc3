@@ -2,6 +2,7 @@
 HEADERS = \
 	"gl_camera.h" \
 	"gl_cylinder.h" \
+	"gl_deprecated.h" \
 	"gl_font.h" \
 	"gl_ft2.h" \
 	"gl_lines.h" \
@@ -17,13 +18,13 @@ HEADERS = \
 	"gl_text.h" \
 	"gl_triangle.h" \
 	"gl_vertex.h" \
-	"sdl2_sprite.h" \
 	"types.h" \
 	"window_sdl2.h" \
 
 SOURCES = \
 	"gl_camera.c" \
 	"gl_cylinder.c" \
+	"gl_deprecated.c" \
 	"gl_font.c" \
 	"gl_lines.c" \
 	"gl_matrix_4d.c" \
@@ -37,6 +38,5 @@ SOURCES = \
 	"gl_text.c" \
 	"gl_triangle.c" \
 	"gl_vertex.c" \
-	"sdl2_sprite.c" \
 	"window_sdl2.c" \
 
