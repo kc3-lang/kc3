@@ -14,7 +14,7 @@
 set -e
 
 export SRC_TOP="$(dirname "$PWD")"
-CONFIG_H_PREFIX=C3_
+CONFIG_H_PREFIX=LIBC3_
 
 . ../config.subr
 
