@@ -333,12 +333,14 @@ void window_sdl2_demo_unload (s_window_sdl2 *window)
 {
   assert(window);
   (void) window;
-  gl_ortho_clean(&g_ortho);
-  gl_font_clean(&g_font_courier_new);
-  gl_sprite_clean(&g_sprite_toaster);
-  gl_sprite_clean(&g_sprite_toast);
-  gl_font_clean(&g_font_flies);
-  gl_sprite_clean(&g_sprite_fly);
-  gl_sprite_clean(&g_sprite_dead_fly);
-  gl_sprite_clean(&g_sprite_earth);
+  if (g_ortho.gl_shader_program) {
+    gl_ortho_clean(&g_ortho);
+    gl_font_clean(&g_font_courier_new);
+    gl_sprite_clean(&g_sprite_toaster);
+    gl_sprite_clean(&g_sprite_toast);
+    gl_font_clean(&g_font_flies);
+    gl_sprite_clean(&g_sprite_fly);
+    gl_sprite_clean(&g_sprite_dead_fly);
+    gl_sprite_clean(&g_sprite_earth);
+  }
 }
