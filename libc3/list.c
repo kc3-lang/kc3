@@ -17,11 +17,11 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
+#include "data.h"
 #include "list.h"
 #include "sym.h"
 #include "tag.h"
 #include "tuple.h"
-#include "void.h"
 
 void list_clean (s_list *list)
 {
@@ -296,7 +296,7 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
       if (! tag_to_const_pointer(&l->tag, type, &data_list))
         goto ko;
       if (data_list) {
-        if (! void_init_copy(type, data, data_list))
+        if (! data_init_copy(type, data, data_list))
           goto ko;
       }
       data += size;
@@ -308,7 +308,7 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
  ko:
   while (data > (s8 *) tmp.data) {
     data -= size;
-    void_clean(type, data);
+    data_clean(type, data);
   }
   free(tmp.data);
   free(tmp.dimensions);

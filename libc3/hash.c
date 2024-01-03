@@ -14,12 +14,12 @@
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
+#include "data.h"
 #include "hash.h"
 #include "list.h"
 #include "str.h"
 #include "tag.h"
 #include "tag_type.h"
-#include "void.h"
 
 #define HASH_UPDATE_DEF(type)                                          \
   bool hash_update_##type (t_hash *hash, const type *x)                \
@@ -361,7 +361,7 @@ bool hash_update_struct (t_hash *hash, const s_struct *s)
           return false;
       }
     }
-    if (! void_hash_update(sym, hash, data))
+    if (! data_hash_update(sym, hash, data))
       return false;
     i++;
   }

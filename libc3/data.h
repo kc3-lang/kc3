@@ -16,12 +16,17 @@
  *
  * Functions to manage (void *) operations.
  */
-#ifndef LIBC3_VOID_H
-#define LIBC3_VOID_H
+#ifndef LIBC3_DATA_H
+#define LIBC3_DATA_H
 
 #include "types.h"
 
-/* Operators. */
-void * void_init_cast (void *v, const s_tag *src);
+sw     data_buf_inspect (const s_sym *type, s_buf *buf, const void *v);
+sw     data_buf_inspect_size (const s_sym *type, const void *v);
+bool   data_clean (const s_sym *type, void *v);
+bool   data_hash_update (const s_sym *type, t_hash *hash,
+                         const void *s);
+void * data_init_cast (const s_sym *type, void *v, const s_tag *src);
+void * data_init_copy (const s_sym *type, void *v, const void *src);
 
-#endif /* LIBC3_VOID_H */
+#endif /* LIBC3_DATA_H */

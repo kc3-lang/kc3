@@ -300,6 +300,9 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - get (get key value)
      - put (return a new map)
    - structs
+     - struct type
+       - `TAG_STRUCT_TYPE`
+     - finish refactor (data_*)
      - access
      - get
      - put
@@ -314,7 +317,14 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - switch/case/cond
      - while
    - quote
-     - unquote
+     - increase quote level in env
+     - eval : do not eval if quote level > 0
+   - unquote
+     - if quote_level is zero return unquote(x) unchanged
+     - decrease quote level in env
+     - eval if quote level is zero
+   - macros
+   - unwind protect
    - functions
      - return
      - def

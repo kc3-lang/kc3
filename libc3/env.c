@@ -27,6 +27,7 @@
 #include "call.h"
 #include "cfn.h"
 #include "compare.h"
+#include "data.h"
 #include "env.h"
 #include "error.h"
 #include "error_handler.h"
@@ -47,7 +48,6 @@
 #include "struct_type.h"
 #include "tag.h"
 #include "tuple.h"
-#include "void.h"
 
 s_env g_c3_env;
 
@@ -119,7 +119,7 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   if (tmp.dimension) {
     item_size = tmp.dimensions[tmp.dimension - 1].item_size;
     if (! tmp.data && array->tags) {
-      tmp.data = tmp.data_free = calloc(tmp.dimensions[0].count,
+      tmp.data = tmp.free_data = calloc(tmp.dimensions[0].count,
                                         tmp.dimensions[0].item_size);
       if (! tmp.data) {
         warn("env_eval_array: failed to allocate memory");
@@ -132,7 +132,7 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
       while (i < tmp.count) {
         if (! env_eval_tag(env, tag, &tag_eval))
           goto ko;
-        if (! void_init_cast(array->type, data, &tag_eval)) {
+        if (! data_init_cast(array->type, data, &tag_eval)) {
           err_write_1("env_eval_array: cannot cast ");
           err_inspect_tag(&tag_eval);
           err_write_1(" to ");
@@ -683,20 +683,21 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
     *dest = tmp;
     return true;
   }
-  if (! struct_type_init_copy(&t->type, &s->type) ||
-      ! struct_allocate(t))
+  t->type = s->type;
+  if (! struct_allocate(t))
     return false;
   i = 0;
-  while (i < t->type.map.count) {
-    if (! tag_type(t->type.map.value + i, &type) ||
+  while (i < t->type->map.count) {
+    if (! tag_type(t->type->map.value + i, &type) ||
         ! env_eval_tag(env, s->tag + i, &tag))
       goto ko;
-    if (! void_init_cast(type, (s8 *) t->data + t->type.offset[i], &tag)) {
+    if (! data_init_cast(type, (s8 *) t->data + t->type->offset[i],
+                         &tag)) {
       warnx("env_eval_struct:"
             " invalid type %s for key %s, expected %s.",
             tag_type_to_string(tag.type),
-            t->type.map.key[i].data.sym->str.ptr.ps8,
-            tag_type_to_string(t->type.map.value[i].type));
+            t->type->map.key[i].data.sym->str.ptr.ps8,
+            tag_type_to_string(t->type->map.value[i].type));
       goto ko_tag;
     }
     i++;
@@ -1172,13 +1173,48 @@ bool env_struct_type_exists (s_env *env, const s_sym *module)
   s_tag tag_var;
   assert(env);
   assert(module);
-  tag_init_sym_1(&tag_defstruct, "defstruct");
   tag_init_sym(&tag_module, module);
+  tag_init_sym_1(&tag_defstruct, "defstruct");
   tag_init_var(&tag_var);
   env_module_maybe_reload(env, module, &env->facts);
   facts_with_tags(&env->facts, &cursor, &tag_module,
                   &tag_defstruct, &tag_var);
   result = facts_cursor_next(&cursor) ? true : false;
+  facts_cursor_clean(&cursor);
+  return result;
+}
+
+s_struct_type * env_struct_type_find (s_env *env, const s_sym *module)
+{
+  s_facts_cursor cursor;
+  s_struct_type *result;
+  s_tag tag_struct_type;
+  s_tag tag_module;
+  s_tag tag_var;
+  const s_sym *type;
+  assert(env);
+  assert(module);
+  tag_init_sym(&tag_module, module);
+  tag_init_sym_1(&tag_struct_type, "struct_type");
+  tag_init_var(&tag_var);
+  env_module_maybe_reload(env, module, &env->facts);
+  facts_with_tags(&env->facts, &cursor, &tag_module,
+                  &tag_struct_type, &tag_var);
+  if (! facts_cursor_next(&cursor)) {
+    facts_cursor_clean(&cursor);
+    return NULL;
+  }
+  if (tag_var.type != TAG_STRUCT_TYPE) {
+    tag_type(&tag_var, &type);
+    err_write_1("env_struct_type_find: module ");
+    err_inspect_sym(module);
+    err_write_1(": :struct_type is actually a ");
+    err_inspect_sym(type);
+    err_write_1("\n");
+    assert(! "env_struct_type_find: invalid struct_type");
+    return NULL;
+  }
+  result = tag_var.data.struct_type;
   facts_cursor_clean(&cursor);
   return result;
 }

@@ -257,6 +257,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   if (! window_animate((s_window *) window))
     return false;
   seq = window->seq;
+  gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, -1, 1);
   gl_matrix_4d_init_identity(&g_ortho.model_matrix);
   gl_ortho_render(&g_ortho);
   glEnable(GL_BLEND);
@@ -267,6 +268,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
     return false;
   assert(glGetError() == GL_NO_ERROR);
   /* 2D */
+  gl_ortho_render(&g_ortho);
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,

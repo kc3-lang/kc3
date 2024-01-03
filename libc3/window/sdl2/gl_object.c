@@ -56,12 +56,13 @@ void gl_object_render (const s_gl_object *object)
 {
   assert(object);
   assert(glGetError() == GL_NO_ERROR);
+  //glBindVertexArray(object->gl_vao);
+  //assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
   assert(glGetError() == GL_NO_ERROR);
-  glDrawArrays(GL_TRIANGLES, object->triangle.count * 3,
-               GL_UNSIGNED_INT);
+  glDrawArrays(GL_TRIANGLES, 0, object->triangle.count * 3);
   assert(glGetError() == GL_NO_ERROR);
 }
 

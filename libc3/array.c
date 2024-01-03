@@ -18,21 +18,21 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
+#include "data.h"
 #include "io.h"
 #include "sym.h"
 #include "tag.h"
-#include "void.h"
 
 s_array * array_allocate (s_array *a)
 {
   assert(a);
-  a->data_free = calloc(1, a->size);
-  if (! a->data_free) {
+  a->free_data = calloc(1, a->size);
+  if (! a->free_data) {
     err_puts("array_allocate: failed to allocate memory");
     assert(! "array_allocate: failed to allocate memory");
     return NULL;
   }
-  a->data = a->data_free;
+  a->data = a->free_data;
   return a;
 }
 
@@ -49,14 +49,14 @@ void array_clean (s_array *a)
       data = a->data;
       i = 0;
       while (i < a->count) {
-        void_clean(a->type, data);
+        data_clean(a->type, data);
         data += size;
         i++;
       }
     }
   }
-  if (a->data_free)
-    free(a->data_free);
+  if (a->free_data)
+    free(a->free_data);
   if (a->tags) {
     i = 0;
     while (i < a->count) {
@@ -101,7 +101,7 @@ s_array * array_data_set (s_array *a, const uw *address,
   assert(data);
   a_data = array_data(a, address);
   if (a_data) {
-    if (! void_init_copy(a->type, a_data, data))
+    if (! data_init_copy(a->type, a_data, data))
       return NULL;
     return a;
   }
@@ -144,7 +144,7 @@ s_tag * array_data_tag (const s_tag *a, const s_tag *address,
     return NULL;
   if (! sym_to_tag_type(a->data.array.type, &tmp.type) ||
       ! tag_to_pointer(&tmp, a->data.array.type, &tmp_data) ||
-      ! void_init_copy(a->data.array.type, tmp_data, a_data))
+      ! data_init_copy(a->data.array.type, tmp_data, a_data))
     return NULL;
   *dest = tmp;
   return dest;
@@ -235,6 +235,8 @@ s_array * array_init_cast (s_array *array, const s_tag *tag)
   switch (tag->type) {
   case TAG_ARRAY:
     return array_init_copy(array, &tag->data.array);
+  case TAG_VOID:
+    return array_init_void(array);
   default:
     break;
   }
@@ -268,7 +270,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
     memcpy(tmp.dimensions, src->dimensions,
            src->dimension * sizeof(s_array_dimension));
     if (src->data) {
-      tmp.data = tmp.data_free = calloc(1, src->size);
+      tmp.data = tmp.free_data = calloc(1, src->size);
       if (! tmp.data) {
         warnx("array_init_copy: failed to allocate memory");
         assert(! "array_init_copy: failed to allocate memory");
@@ -280,7 +282,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
       i = 0;
       item_size = src->dimensions[src->dimension - 1].item_size;
       while (i < src->count) {
-        if (! void_init_copy(src->type, data_tmp, data_src))
+        if (! data_init_copy(src->type, data_tmp, data_src))
           goto ko_data;
         data_tmp += item_size;
         data_src += item_size;
@@ -309,7 +311,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   if (i) {
     while (--i) {
       data_tmp -= item_size;
-      void_clean(src->type, data_tmp);
+      data_clean(src->type, data_tmp);
     }
   }
   free(tmp.data);
@@ -320,6 +322,14 @@ s_array * array_init_copy (s_array *a, const s_array *src)
     while (--i)
       tag_clean(tmp.tags + i);
   return NULL;
+}
+
+s_array * array_init_void (s_array *array)
+{
+  s_array tmp = {0};
+  tmp.type = sym_1("Void");
+  *array = tmp;
+  return array;
 }
 
 s_str * array_inspect (const s_array *array, s_str *dest)

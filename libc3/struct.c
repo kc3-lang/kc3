@@ -14,6 +14,7 @@
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
+#include "data.h"
 #include "env.h"
 #include "list.h"
 #include "map.h"
@@ -22,7 +23,6 @@
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
-#include "void.h"
 
 s_struct * struct_allocate (s_struct *s)
 {
@@ -50,7 +50,7 @@ void struct_clean (s_struct *s)
     i = 0;
     while (i < s->type.map.count) {
       if (tag_type(s->type.map.value + i, &sym))
-        void_clean(sym, (s8 *) s->data + s->type.offset[i]);
+        data_clean(sym, (s8 *) s->data + s->type.offset[i]);
       i++;
     }
     if (s->free_data)
@@ -142,7 +142,7 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
     i = 0;
     while (i < tmp.type.map.count) {
       if (! tag_type(tmp.type.map.value + i, &sym) ||
-          ! void_init_copy(sym, (s8 *) tmp.data + tmp.type.offset[i],
+          ! data_init_copy(sym, (s8 *) tmp.data + tmp.type.offset[i],
                            (s8 *) src->data + tmp.type.offset[i]))
         goto ko;
       i++;
@@ -300,8 +300,8 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
       data = (s8 *) s->data + s->type.offset[i];
       if (! tag_to_const_pointer(value, type_sym, &data_src))
         return NULL;
-      void_clean(type_sym, data);
-      if (! void_init_copy(type_sym, data, data_src))
+      data_clean(type_sym, data);
+      if (! data_init_copy(type_sym, data, data_src))
         return NULL;
       return s;
     }
