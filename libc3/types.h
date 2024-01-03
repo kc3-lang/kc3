@@ -115,6 +115,7 @@ typedef enum {
   TAG_QUOTE,
   TAG_STR,
   TAG_STRUCT,
+  TAG_STRUCT_TYPE,
   TAG_SYM,
   TAG_TUPLE,
   TAG_VAR,
@@ -319,7 +320,7 @@ struct struct_ {
   void *data;
   s_tag *tag;
   bool free_data;
-  s_struct_type type;
+  s_struct_type *type;
 };
 
 /* 3 */
@@ -373,7 +374,7 @@ struct array {
   uw dimension;
   s_array_dimension *dimensions;
   void *data;
-  void *data_free;
+  void *free_data;
   uw size;
   s_tag *tags;
   const s_sym *type;
@@ -386,37 +387,38 @@ struct float_s {
 
 /* 5 */
 union tag_data {
-  s_array      array;
-  bool         bool;
-  s_call       call;
-  s_cfn        cfn;
-  character    character;
-  f32          f32;
-  f64          f64;
-  s_fact       fact;
-  s_fn         fn;
-  s_ident      ident;
-  s_integer    integer;
-  s_list      *list;
-  s_map        map;
-  p_tag        ptag;
-  u_ptr_w      ptr;
-  u_ptr_w      ptr_free;
-  s_quote      quote;
-  s_str        str;
-  s_struct     struct_;
-  const s_sym *sym;
-  s8           s8;
-  s16          s16;
-  s32          s32;
-  s64          s64;
-  sw           sw;
-  s_tuple      tuple;
-  u8           u8;
-  u16          u16;
-  u32          u32;
-  u64          u64;
-  uw           uw;
+  s_array        array;
+  bool           bool;
+  s_call         call;
+  s_cfn          cfn;
+  character      character;
+  f32            f32;
+  f64            f64;
+  s_fact         fact;
+  s_fn           fn;
+  s_ident        ident;
+  s_integer      integer;
+  s_list        *list;
+  s_map          map;
+  p_tag          ptag;
+  u_ptr_w        ptr;
+  u_ptr_w        ptr_free;
+  s_quote        quote;
+  s_str          str;
+  s_struct       struct_;
+  s_struct_type *struct_type;
+  const s_sym   *sym;
+  s8             s8;
+  s16            s16;
+  s32            s32;
+  s64            s64;
+  sw             sw;
+  s_tuple        tuple;
+  u8             u8;
+  u16            u16;
+  u32            u32;
+  u64            u64;
+  uw             uw;
 };
 
 /* 6 */

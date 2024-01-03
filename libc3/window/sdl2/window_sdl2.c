@@ -149,6 +149,15 @@ bool window_sdl2_run (s_window_sdl2 *window)
           SDL_GetError());
     return false;
   }
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                      SDL_GL_CONTEXT_PROFILE_CORE);
   sdl_window = SDL_CreateWindow(window->title,
                                 window->x, window->y,
                                 window->w, window->h,
@@ -163,15 +172,6 @@ bool window_sdl2_run (s_window_sdl2 *window)
   }
   SDL_SetWindowBordered(sdl_window, SDL_TRUE);
   window->sdl_window = sdl_window;
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
-                      SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
   context = SDL_GL_CreateContext(sdl_window);
   if (! context) {
     warnx("window_sdl2_run: failed to create OpenGL context: %s",
@@ -182,13 +182,6 @@ bool window_sdl2_run (s_window_sdl2 *window)
   if (gl_error != GL_NO_ERROR) {
     warnx("OpenGL initialization error: %s\n",
           gl_error_string(gl_error));
-    goto ko;
-  }
-  glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(gl_debug, NULL);
-  if (SDL_GL_MakeCurrent(sdl_window, context) < 0) {
-    warnx("window_sdl2_run: failed to make OpenGL context current: %s",
-          SDL_GetError());
     goto ko;
   }
   glewExperimental = GL_TRUE;
@@ -202,6 +195,13 @@ bool window_sdl2_run (s_window_sdl2 *window)
     err_puts(version);
   } else {
     err_puts("window_sdl2_run: failed to retrieve OpenGL version");
+    goto ko;
+  }
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(gl_debug, NULL);
+  if (SDL_GL_MakeCurrent(sdl_window, context) < 0) {
+    warnx("window_sdl2_run: failed to make OpenGL context current: %s",
+          SDL_GetError());
     goto ko;
   }
   int gl_w = window->w;

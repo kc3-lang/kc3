@@ -13,6 +13,8 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "../gl_font.h"
+#include "../gl_matrix_4d.h"
+#include "../gl_ortho.h"
 #include "../gl_text.h"
 #include "../gl_sprite.h"
 #include "../window_sdl2.h"
@@ -33,8 +35,8 @@ static const u8  g_board_item_block    = BOARD_ITEM_BLOCK;
 static const u8  g_board_item_fly      = BOARD_ITEM_FLY;
 static const u8  g_board_item_dead_fly = BOARD_ITEM_DEAD_FLY;
 s_gl_font        g_font_flies          = {0};
-s_gl_sprite    g_sprite_dead_fly     = {0};
-s_gl_sprite    g_sprite_fly          = {0};
+s_gl_sprite      g_sprite_dead_fly     = {0};
+s_gl_sprite      g_sprite_fly          = {0};
 s_gl_text        g_text_flies_in       = {0};
 s_gl_text        g_text_flies_out      = {0};
 static const f64 g_xy_ratio            = 0.666;
@@ -126,6 +128,8 @@ bool flies_load (s_sequence *seq)
     i++;
   }
   fly_init(map);
+  gl_text_init_1(&g_text_flies_in, &g_font_flies, "In 0");
+  gl_text_init_1(&g_text_flies_out, &g_font_flies, "Out 0");
   return true;
 }
 
@@ -154,6 +158,9 @@ bool flies_render (s_sequence *seq)
   uw i;
   uw j;
   s_map *map;
+  s_gl_matrix_4d matrix;
+  s_gl_matrix_4d matrix_1;
+  s_gl_matrix_4d matrix_2;
   uw r;
   uw random_bits = 0;
   f64 x;
@@ -187,54 +194,60 @@ bool flies_render (s_sequence *seq)
   dead_fly_scale = 2.0 * board_item_w / g_sprite_dead_fly.w;
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                   GL_LINEAR_MIPMAP_LINEAR);
-  glPushMatrix(); {
-    glTranslated(board_x, 60.0, 0.0);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    buf_init(&buf, false, sizeof(a), a);
-    buf_write_1(&buf, "In ");
-    buf_inspect_uw(&buf, fly_in);
-    buf_write_u8(&buf, 0);
-    gl_font_set_size(&g_font_flies, board_item_h,
-                     (f64) window->gl_h / window->h);
-    gl_text_update_1(&g_text_flies_in, a);
-    gl_text_render(&g_text_flies_in);
-    buf_init(&buf, false, sizeof(a), a);
-    buf_write_1(&buf, "Out ");
-    buf_inspect_uw(&buf, fly_out);
-    buf_write_u8(&buf, 0);
-    x = board_item_w * (BOARD_SIZE / 2 + 1);
-    glPushMatrix(); {
-      glTranslated(x, 0.0, 0.0);
-      gl_text_update_1(&g_text_flies_out, a);
-      gl_text_render(&g_text_flies_out);
-    } glPopMatrix();
-    glTranslated(0.0, board_item_h, 0.0);
-    glColor4f(0.6f, 0.7f, 0.9f, 1.0f);
-    glRectd(0, 0, board_w, board_h);
+  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, board_x, 60.0, 0.0);
+  glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
+  buf_init(&buf, false, sizeof(a), a);
+  buf_write_1(&buf, "In ");
+  buf_inspect_uw(&buf, fly_in);
+  buf_write_u8(&buf, 0);
+  gl_font_set_size(&g_font_flies, board_item_h,
+                   (f64) window->gl_h / window->h);
+  gl_text_update_1(&g_text_flies_in, a);
+  gl_text_render(&g_text_flies_in);
+  buf_init(&buf, false, sizeof(a), a);
+  buf_write_1(&buf, "Out ");
+  buf_inspect_uw(&buf, fly_out);
+  buf_write_u8(&buf, 0);
+  x = board_item_w * (BOARD_SIZE / 2 + 1);
+  matrix = g_ortho.model_matrix; {
+    gl_matrix_4d_translate(&g_ortho.model_matrix, x, 0.0, 0.0);
+    gl_ortho_update_model_matrix(&g_ortho);
+    gl_text_update_1(&g_text_flies_out, a);
+    gl_text_render(&g_text_flies_out);
+    g_ortho.model_matrix = matrix;
+    gl_matrix_4d_translate(&g_ortho.model_matrix, 0.0, board_item_h, 0.0);
+    glBlendColor(0.6f, 0.7f, 0.9f, 1.0f);
+    //glRectd(0, 0, board_w, board_h);
     address[1] = 0;
     while (address[1] < BOARD_SIZE) {
       y = board_item_h * address[1];
       address[0] = 0;
       while (address[0] < BOARD_SIZE) {
         x = board_item_w * address[0];
-        glPushMatrix(); {
-          glTranslated(x, board_h - board_item_h - y, 0.0);
+        matrix_1 = g_ortho.model_matrix; {
+          gl_matrix_4d_translate(&g_ortho.model_matrix, x,
+                                 board_h - board_item_h - y, 0.0);
           board_item = (u8 *) array_data(board, address);
           assert(board_item);
           switch (*board_item) {
           case BOARD_ITEM_SPACE:
             break;
           case BOARD_ITEM_BLOCK:
-            glDisable(GL_TEXTURE_2D);
-            glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
-            glRectd(0, 0, board_item_w + 1.0, board_item_h + 1.0);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glBlendColor(0.0f, 0.0f, 1.0f, 1.0f);
+            //glRectd(0, 0, board_item_w + 1.0, board_item_h + 1.0);
             break;
           case BOARD_ITEM_FLY:
-            glPushMatrix(); {
-              glTranslated(-board_item_w / 2.0, -board_item_h / 2.0, 0.0);
-              glScaled(fly_scale, fly_scale, 1.0);
+            matrix_2 = g_ortho.model_matrix; {
+              gl_matrix_4d_translate(&g_ortho.model_matrix,
+                                     -board_item_w / 2.0,
+                                     -board_item_h / 2.0, 0.0);
+              gl_matrix_4d_scale(&g_ortho.model_matrix, fly_scale,
+                                 fly_scale, 1.0);
+              gl_ortho_update_model_matrix(&g_ortho);
               gl_sprite_render(&g_sprite_fly, 0);
-            } glPopMatrix();
+            } g_ortho.model_matrix = matrix_2;
             if (address[0] == BOARD_SIZE / 2 &&
                 address[1] == BOARD_SIZE - 1) {
               array_data_set(board, address, &g_board_item_space);
@@ -302,25 +315,30 @@ bool flies_render (s_sequence *seq)
             }
             break;
           case BOARD_ITEM_DEAD_FLY:
-            glPushMatrix(); {
-              glTranslated(-board_item_w / 2.0, -board_item_h / 2.0,
-                           0.0);
-              glScaled(dead_fly_scale, dead_fly_scale, 1.0);
+            matrix_2 = g_ortho.model_matrix; {
+              gl_matrix_4d_translate(&g_ortho.model_matrix,
+                                     -board_item_w / 2.0,
+                                     -board_item_h / 2.0, 0.0);
+              gl_matrix_4d_scale(&g_ortho.model_matrix, dead_fly_scale,
+                                 dead_fly_scale, 1.0);
+              gl_ortho_update_model_matrix(&g_ortho);
               gl_sprite_render(&g_sprite_dead_fly, 0);
-            } glPopMatrix();
+            } g_ortho.model_matrix = matrix_2;
             break;
           }
-        } glPopMatrix();
+        } g_ortho.model_matrix = matrix_1;;
         address[0]++;
       }
       address[1]++;
     }
-  } glPopMatrix();
+  } g_ortho.model_matrix = matrix;
   return true;
 }
 
 bool flies_unload (s_sequence *seq)
 {
   (void) seq;
+  gl_text_clean(&g_text_flies_in);
+  gl_text_clean(&g_text_flies_out);
   return true;
 }

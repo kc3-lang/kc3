@@ -1,0 +1,8 @@
+quote void
+void
+quote type(void)
+type(void)
+quote (Void) 0
+(Void) 0
+quote type((Void) 0)
+type((Void) 0)

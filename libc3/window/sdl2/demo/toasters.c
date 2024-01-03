@@ -12,8 +12,11 @@
  */
 #include <math.h>
 #include <libc3/c3.h>
+#include "../gl_matrix_4d.h"
+#include "../gl_ortho.h"
 #include "../gl_sprite.h"
 #include "toasters.h"
+#include "window_sdl2_demo.h"
 
 #define TOASTERS_SCALE_TOAST   0.52
 #define TOASTERS_SCALE_TOASTER 0.4
@@ -46,6 +49,7 @@ static s_tag * toast_init (s_tag *toast, f64 x, f64 y)
 static void toast_render (s_tag *toast, s_window_sdl2 *window,
                           s_sequence *seq)
 {
+  s_gl_matrix_4d matrix;
   f64 *x;
   f64 *y;
   if (toast->type == TAG_MAP) {
@@ -58,11 +62,15 @@ static void toast_render (s_tag *toast, s_window_sdl2 *window,
       toast->type = TAG_VOID;
       return;
     }
-    glPushMatrix();
-    glTranslated(*x, *y + g_sprite_toast.h, 0.0);
-    glScalef(TOASTERS_SCALE_TOAST, -TOASTERS_SCALE_TOAST, 1);
+    matrix = g_ortho.model_matrix;
+    gl_matrix_4d_translate(&g_ortho.model_matrix, *x,
+                           *y + g_sprite_toast.h, 0.0);
+    gl_matrix_4d_scale(&g_ortho.model_matrix,
+                       TOASTERS_SCALE_TOAST,
+                       -TOASTERS_SCALE_TOAST, 1);
+    gl_ortho_update_model_matrix(&g_ortho);
     gl_sprite_render(&g_sprite_toast, 0);
-    glPopMatrix();
+    g_ortho.model_matrix = matrix;
   }
 }
 
@@ -79,6 +87,7 @@ static s_tag * toaster_init (s_tag *toaster, f64 y)
 static void toaster_render (s_tag *toaster, s_window_sdl2 *window,
                             s_sequence *seq)
 {
+  s_gl_matrix_4d matrix;
   f64 *x;
   f64 *y;
   if (toaster->type == TAG_MAP) {
@@ -91,13 +100,17 @@ static void toaster_render (s_tag *toaster, s_window_sdl2 *window,
       toaster->type = TAG_VOID;
       return;
     }
-    glPushMatrix();
-    glTranslated(*x, *y + g_sprite_toaster.h, 0.0);
-    glScalef(TOASTERS_SCALE_TOASTER, -TOASTERS_SCALE_TOASTER, 1);
+    matrix = g_ortho.model_matrix;
+    gl_matrix_4d_translate(&g_ortho.model_matrix, *x,
+                           *y + g_sprite_toaster.h, 0.0);
+    gl_matrix_4d_scale(&g_ortho.model_matrix,
+                       TOASTERS_SCALE_TOASTER,
+                       -TOASTERS_SCALE_TOASTER, 1);
+    gl_ortho_update_model_matrix(&g_ortho);
     gl_sprite_render(&g_sprite_toaster,
                      fmod(seq->t * g_sprite_toaster.frame_count,
                           g_sprite_toaster.frame_count));
-    glPopMatrix();
+    g_ortho.model_matrix = matrix;
   }
 }
 
@@ -123,9 +136,9 @@ bool toasters_render (s_sequence *seq)
   assert(window);
   glClearColor(0.7f, 0.95f, 1.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
-  glPushMatrix();
-  glTranslated(0, window->h, 0);
-  glScalef(1, -1, 1);
+  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4d_translate(&g_ortho.model_matrix, 0, window->h, 0);
+  gl_matrix_4d_scale(&g_ortho.model_matrix, 1, -1, 1);
   /* io_inspect(&seq->tag); */
   if (seq->tag.type == TAG_MAP) {
     toasters = &seq->tag.data.map.value[0].data.list;
@@ -135,7 +148,6 @@ bool toasters_render (s_sequence *seq)
     toasters_render_toasts(toasts, window, seq);
     toasters_render_toasters(toasters, window, seq);
   }
-  glPopMatrix();
   return true;
 }
 

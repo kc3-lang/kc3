@@ -43,6 +43,11 @@ bool struct_type_exists (const s_sym *module)
   return env_struct_type_exists(&g_c3_env, module);
 }
 
+s_struct_type * struct_type_find (const s_sym *module)
+{
+  return env_struct_type_find(&g_c3_env, module);
+}
+
 s_struct_type * struct_type_init (s_struct_type *st, const s_sym *module,
                                   const s_list *spec)
 {

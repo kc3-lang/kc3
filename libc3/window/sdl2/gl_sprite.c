@@ -381,4 +381,5 @@ void gl_sprite_render (const s_gl_sprite *sprite, uw frame)
   assert(glGetError() == GL_NO_ERROR);
   glBindTexture(GL_TEXTURE_2D, 0);
   assert(glGetError() == GL_NO_ERROR);
+  gl_object_render_wireframe(&sprite->object);
 }

@@ -1,0 +1,5 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {Void, :is_a, :module}
+replace {Void, :symbol, Void.cast}
+replace {Void.cast, :cfn, cfn Void "void_init_cast" (Result, Tag)}

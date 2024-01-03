@@ -50,7 +50,7 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   u32 vertex_shader;
   assert(ortho);
   gl_matrix_4d_init_identity(&ortho->projection_matrix);
-  gl_matrix_4d_ortho(&ortho->projection_matrix, -1, 1, -1, 1, -1, 1);
+  //gl_matrix_4d_ortho(&ortho->projection_matrix, -1, 1, -1, 1, -1, 1);
   ortho->position.x = 0.0;
   ortho->position.y = 0.0;
   ortho->position.z = 0.0;

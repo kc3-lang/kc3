@@ -147,17 +147,18 @@ s_gl_matrix_4d * gl_matrix_4d_ortho (s_gl_matrix_4d *m, f64 x1, f64 x2,
   f64 dx;
   f64 dy;
   f64 dz;
-  s_gl_matrix_4d ortho = {0};
+  s_gl_matrix_4d ortho;
   assert(m);
   dx = x2 - x1;
   dy = y2 - y1;
-  dz = clip_z_near - clip_z_far;
+  dz = clip_z_far - clip_z_near;
+  gl_matrix_4d_init_zero(&ortho);
   ortho.xx = 2.0 / dx;
   ortho.yy = 2.0 / dy;
-  ortho.zz = 2.0 / dz;
+  ortho.zz = -2.0 / dz;
   ortho.xt = -(x1 + x2) / dx;
   ortho.yt = -(y1 + y2) / dy;
-  ortho.zt = (clip_z_near + clip_z_far) / dz;
+  ortho.zt = -(clip_z_near + clip_z_far) / dz;
   ortho.tt = 1.0;
   gl_matrix_4d_product(m, &ortho);
   return m;
@@ -169,12 +170,13 @@ s_gl_matrix_4d * gl_matrix_4d_perspective (s_gl_matrix_4d *m, f64 fov_y,
                                            f64 z_far)
 {
   f64 dz;
-  s_gl_matrix_4d perspective = {0};
+  s_gl_matrix_4d perspective;
   f64 f;
   f64 fov_y_2;
   fov_y_2 = fov_y / 2.0;
   f = cos(fov_y_2) / sin(fov_y_2);
   dz = z_near - z_far;
+  gl_matrix_4d_init_zero(&perspective);
   perspective.xx = f / aspect_ratio;
   perspective.yy = f;
   perspective.zz = (z_near + z_far) / dz;

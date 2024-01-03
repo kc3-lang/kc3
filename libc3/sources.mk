@@ -79,6 +79,7 @@ HEADERS = \
 	"character.h" \
 	"compare.h" \
 	"config.h" \
+	"data.h" \
 	"env.h" \
 	"error.h" \
 	"error_handler.h" \
@@ -224,6 +225,7 @@ SOURCES = \
 	"cfn.c" \
 	"character.c" \
 	"compare.c" \
+	"data.c" \
 	"env.c" \
 	"error.c" \
 	"error_handler.c" \
@@ -474,6 +476,7 @@ LO_SOURCES = \
 	"cfn.c" \
 	"character.c" \
 	"compare.c" \
+	"data.c" \
 	"env.c" \
 	"error.c" \
 	"error_handler.c" \

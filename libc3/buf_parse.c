@@ -2908,7 +2908,8 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_number(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_void(buf, dest)) != 0 ||
+      (r = buf_parse_tag_number(buf, dest)) != 0 ||
       (r = buf_parse_tag_array(buf, dest)) != 0 ||
       (r = buf_parse_tag_cast(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
@@ -2992,6 +2993,16 @@ sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_tuple(buf, &dest->data.tuple)) > 0)
     dest->type = TAG_TUPLE;
+  return r;
+}
+
+sw buf_parse_tag_void (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_void(buf, NULL)) > 0)
+    dest->type = TAG_VOID;
   return r;
 }
 
@@ -3151,6 +3162,7 @@ sw buf_parse_void (s_buf *buf, void *dest)
     r = 0;
     goto restore;
   }
+  goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:

@@ -268,6 +268,8 @@ C3_C_SOURCES = \
 	"libc3/character.h" \
 	"libc3/compare.c" \
 	"libc3/compare.h" \
+	"libc3/data.c" \
+	"libc3/data.h" \
 	"libc3/env.c" \
 	"libc3/env.h" \
 	"libc3/error.c" \
@@ -475,10 +477,14 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/disabled/mandelbrot.h" \
 	"libc3/window/sdl2/disabled/sdl2_font.c" \
 	"libc3/window/sdl2/disabled/sdl2_font.h" \
+	"libc3/window/sdl2/disabled/sdl2_sprite.c" \
+	"libc3/window/sdl2/disabled/sdl2_sprite.h" \
 	"libc3/window/sdl2/gl_camera.c" \
 	"libc3/window/sdl2/gl_camera.h" \
 	"libc3/window/sdl2/gl_cylinder.c" \
 	"libc3/window/sdl2/gl_cylinder.h" \
+	"libc3/window/sdl2/gl_deprecated.c" \
+	"libc3/window/sdl2/gl_deprecated.h" \
 	"libc3/window/sdl2/gl_font.c" \
 	"libc3/window/sdl2/gl_font.h" \
 	"libc3/window/sdl2/gl_ft2.h" \
@@ -507,8 +513,6 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/gl_triangle.h" \
 	"libc3/window/sdl2/gl_vertex.c" \
 	"libc3/window/sdl2/gl_vertex.h" \
-	"libc3/window/sdl2/sdl2_sprite.c" \
-	"libc3/window/sdl2/sdl2_sprite.h" \
 	"libc3/window/sdl2/types.h" \
 	"libc3/window/sdl2/window_sdl2.c" \
 	"libc3/window/sdl2/window_sdl2.h" \
@@ -638,6 +642,7 @@ C3_OTHER_SOURCES = \
 	"lib/c3/0.1/u64.facts" \
 	"lib/c3/0.1/u8.facts" \
 	"lib/c3/0.1/uw.facts" \
+	"lib/c3/0.1/void.facts" \
 	"libc3/tag_init.rb" \
 	"license.h" \
 	"sources.mk" \
@@ -766,6 +771,9 @@ C3_OTHER_SOURCES = \
 	"test/ic3/tuple.in" \
 	"test/ic3/tuple.out.expected" \
 	"test/ic3/tuple.ret.expected" \
+	"test/ic3/void.in" \
+	"test/ic3/void.out.expected" \
+	"test/ic3/void.ret.expected" \
 	"test/ic3_test" \
 	"test/replace_lines.rb" \
 	"test/test.rb" \
