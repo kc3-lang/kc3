@@ -468,6 +468,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   case TAG_PTR_FREE:
   case TAG_STR:
   case TAG_STRUCT:
+  case TAG_STRUCT_TYPE:
   case TAG_SYM:
   case TAG_VAR:
     if (compare_tag(a, b)) {
@@ -752,6 +753,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_S64:
   case TAG_SW:
   case TAG_STR:
+  case TAG_STRUCT_TYPE:
   case TAG_SYM:
   case TAG_U8:
   case TAG_U16:
@@ -1207,9 +1209,9 @@ s_struct_type * env_struct_type_find (s_env *env, const s_sym *module)
   if (tag_var.type != TAG_STRUCT_TYPE) {
     tag_type(&tag_var, &type);
     err_write_1("env_struct_type_find: module ");
-    err_inspect_sym(module);
+    err_inspect_sym(&module);
     err_write_1(": :struct_type is actually a ");
-    err_inspect_sym(type);
+    err_inspect_sym(&type);
     err_write_1("\n");
     assert(! "env_struct_type_find: invalid struct_type");
     return NULL;

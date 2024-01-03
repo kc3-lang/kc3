@@ -340,24 +340,24 @@ bool hash_update_struct (t_hash *hash, const s_struct *s)
   assert(hash);
   assert(s);
   if (! hash_update(hash, type, sizeof(type)) ||
-      ! hash_update_sym(hash, &s->type.module) ||
-      ! hash_update(hash, &s->type.map.count,
-                    sizeof(s->type.map.count)))
+      ! hash_update_sym(hash, &s->type->module) ||
+      ! hash_update(hash, &s->type->map.count,
+                    sizeof(s->type->map.count)))
     return false;
-  while (i < s->type.map.count) {
-    if (! hash_update_tag(hash, s->type.map.key + i))
+  while (i < s->type->map.count) {
+    if (! hash_update_tag(hash, s->type->map.key + i))
       return false;
-    if (! tag_type(s->type.map.value + i, &sym))
+    if (! tag_type(s->type->map.value + i, &sym))
       return false;
     if (s->data)
-      data = (s8 *) s->data + s->type.offset[i];
+      data = (s8 *) s->data + s->type->offset[i];
     else {
       if (s->tag) {
         if (! tag_to_const_pointer(s->tag + i, sym, &data))
           return false;
       }
       else {
-        if (! tag_to_const_pointer(s->type.map.value + i, sym, &data))
+        if (! tag_to_const_pointer(s->type->map.value + i, sym, &data))
           return false;
       }
     }
@@ -419,6 +419,8 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_STR:   return hash_update_str(hash, &tag->data.str);
   case TAG_STRUCT:
     return hash_update_struct(hash, &tag->data.struct_);
+  case TAG_STRUCT_TYPE:
+    return hash_update_struct_type(hash, tag->data.struct_type);
   case TAG_SYM:   return hash_update_sym(hash, &tag->data.sym);
   case TAG_TUPLE: return hash_update_tuple(hash, &tag->data.tuple);
   case TAG_U8:    return hash_update_u8(hash, &tag->data.u8);
