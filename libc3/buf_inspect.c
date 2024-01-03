@@ -1858,7 +1858,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_STR:     return buf_inspect_str(buf, &tag->data.str);
   case TAG_STRUCT:  return buf_inspect_struct(buf, &tag->data.struct_);
   case TAG_STRUCT_TYPE:
-    return buf_inspect_struct_type(buf, tag->data.struct_type);
+    return buf_inspect_struct_type(buf, &tag->data.struct_type);
   case TAG_SYM:     return buf_inspect_sym(buf, &tag->data.sym);
   case TAG_TUPLE:   return buf_inspect_tuple(buf, &tag->data.tuple);
   case TAG_U8:      return buf_inspect_u8(buf, &tag->data.u8);
@@ -1907,7 +1907,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_STR:      return buf_inspect_str_size(&tag->data.str);
   case TAG_STRUCT:   return buf_inspect_struct_size(&tag->data.struct_);
   case TAG_STRUCT_TYPE:
-    return buf_inspect_struct_type_size(tag->data.struct_type);
+    return buf_inspect_struct_type_size(&tag->data.struct_type);
   case TAG_SYM:      return buf_inspect_sym_size(&tag->data.sym);
   case TAG_TUPLE:    return buf_inspect_tuple_size(&tag->data.tuple);
   case TAG_U8:       return buf_inspect_u8_size(&tag->data.u8);

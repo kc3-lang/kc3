@@ -420,7 +420,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_STRUCT:
     return hash_update_struct(hash, &tag->data.struct_);
   case TAG_STRUCT_TYPE:
-    return hash_update_struct_type(hash, tag->data.struct_type);
+    return hash_update_struct_type(hash, &tag->data.struct_type);
   case TAG_SYM:   return hash_update_sym(hash, &tag->data.sym);
   case TAG_TUPLE: return hash_update_tuple(hash, &tag->data.tuple);
   case TAG_U8:    return hash_update_u8(hash, &tag->data.u8);
