@@ -1216,7 +1216,7 @@ s_struct_type * env_struct_type_find (s_env *env, const s_sym *module)
     assert(! "env_struct_type_find: invalid struct_type");
     return NULL;
   }
-  result = tag_var.data.struct_type;
+  result = &tag_var.data.struct_type;
   facts_cursor_clean(&cursor);
   return result;
 }
