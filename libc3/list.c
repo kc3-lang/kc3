@@ -283,14 +283,14 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
     tmp.dimensions[0].count = len;
     tmp.dimensions[0].item_size = size;
     tmp.size = len * size;
-    tmp.data_free = calloc(len, size);
-    if (! tmp.data_free) {
+    tmp.free_data = calloc(len, size);
+    if (! tmp.free_data) {
       err_puts("list_to_array: out of memory: 2");
       assert(! "list_to_array: out of memory: 2");
       free(tmp.dimensions);
       return NULL;
     }
-    data = tmp.data = tmp.data_free;
+    data = tmp.data = tmp.free_data;
     l = list;
     while (l) {
       if (! tag_to_const_pointer(&l->tag, type, &data_list))
