@@ -643,12 +643,12 @@ sw buf_inspect_character_size (const character *c)
 
 sw buf_inspect_f32 (s_buf *buf, const f32 *f)
 {
-  s64 exp;
+  s32 exp;
   u8 i;
   u8 j;
   sw r;
   sw result = 0;
-  f64 x;
+  f32 x;
   assert(buf);
   assert(f);
   exp = 0;
@@ -680,7 +680,7 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
   if ((r = buf_write_1(buf, ".")) <= 0)
     return r;
   result += r;
-  j = 0;
+  j = 7;
   do {
     x *= 10;
     i = (u8) x;
@@ -689,8 +689,8 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
     if ((r = buf_write_u8(buf, i)) <= 0)
       return r;
     result += r;
-    j++;
-  } while (x >= 0.000001 && j < 6);
+    j--;
+  } while (x >= pow(0.1, j) && j);
   if (exp) {
     if ((r = buf_write_1(buf, "e")) <= 0)
       return r;
@@ -700,7 +700,7 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_s64(buf, &exp)) <= 0)
+    if ((r = buf_inspect_s32(buf, &exp)) <= 0)
       return r;
     result += r;
   }
@@ -714,6 +714,7 @@ sw buf_inspect_f32_size (const f32 *f)
 {
   s8 b[32];
   s_buf buf;
+  assert(f);
   buf_init(&buf, false, sizeof(b), b);
   return buf_inspect_f32(&buf, f);
 }
@@ -757,7 +758,7 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
   if ((r = buf_write_1(buf, ".")) <= 0)
     return r;
   result += r;
-  j = 0;
+  j = 15;
   do {
     x *= 10;
     i = (u8) x;
@@ -766,8 +767,8 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
     if ((r = buf_write_u8(buf, i)) <= 0)
       return r;
     result += r;
-    j++;
-  } while (x > 0.0000000000001 && j < 14);
+    j--;
+  } while (x > pow(0.1, j) && j);
   if (exp) {
     if ((r = buf_write_1(buf, "e")) <= 0)
       return r;
@@ -788,6 +789,7 @@ sw buf_inspect_f64_size (const f64 *f)
 {
   s8 b[64];
   s_buf buf;
+  assert(f);
   buf_init(&buf, false, sizeof(b), b);
   return buf_inspect_f64(&buf, f);
 }
@@ -1888,6 +1890,89 @@ sw buf_inspect_struct_size (const s_struct *s)
   assert(! "buf_inspect_struct_size: not implemented");
   (void) s;
   return -1;
+}
+
+sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
+{
+  s_array offset_array;
+  uw offset_array_dimension;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(st);
+  assert(sym_is_module(st->module));
+  assert(st->offset);
+  assert(st->size);
+  if ((r = buf_write_1(buf, "%StructType{module: ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_sym(buf, &st->module)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ", map: ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_map(buf, &st->map)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ", offset: ")) < 0)
+    return r;
+  result += r;
+  offset_array_dimension = st->map.count;
+  array_init(&offset_array, sym_1("Uw"), 1, &offset_array_dimension);
+  offset_array.data = st->offset;
+  if ((r = buf_inspect_array(buf, &offset_array)) < 0) {
+    array_clean(&offset_array);
+    return r;
+  }
+  result += r;
+  array_clean(&offset_array);
+  if ((r = buf_write_1(buf, ", size: ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw(buf, &st->size)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "}")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_struct_type_size (const s_struct_type *st)
+{
+  s_array offset_array;
+  uw offset_array_dimension;
+  sw r;
+  sw result;
+  assert(st);
+  assert(sym_is_module(st->module));
+  assert(st->offset);
+  assert(st->size);
+  result = strlen("%StructType{module: ");
+  if ((r = buf_inspect_sym_size(&st->module)) < 0)
+    return r;
+  result += r;
+  result += strlen(", map: ");
+  if ((r = buf_inspect_map_size(&st->map)) < 0)
+    return r;
+  result += r;
+  result += strlen(", offset: ");
+  offset_array_dimension = st->map.count;
+  array_init(&offset_array, sym_1("Uw"), 1, &offset_array_dimension);
+  offset_array.data = st->offset;
+  if ((r = buf_inspect_array_size(&offset_array)) < 0) {
+    array_clean(&offset_array);
+    return r;
+  }
+  result += r;
+  array_clean(&offset_array);
+  result += strlen(", size: ");
+  if ((r = buf_inspect_uw_size(&st->size)) < 0)
+    return r;
+  result += r;
+  result += strlen("}");
+  return result;
 }
 
 sw buf_inspect_sym (s_buf *buf, const s_sym * const *sym)

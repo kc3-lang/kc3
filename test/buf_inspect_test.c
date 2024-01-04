@@ -66,10 +66,11 @@
     s_buf buf;                                                         \
     f32 tmp;                                                           \
     test_context("buf_inspect_f32(" # test ") -> " # expected);        \
-    buf_init(&buf, false, sizeof(b), b);                               \
     tmp = (test);                                                      \
+    buf_init(&buf, false, sizeof(b), b);                               \
     buf_inspect_f32(&buf, &tmp);                                       \
     TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
+    TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_EQ(buf_inspect_f32_size(&tmp), strlen(expected));             \
     buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_f32(&buf, &tmp), strlen(expected));            \
@@ -82,10 +83,11 @@
     s_buf buf;                                                         \
     f64 tmp;                                                           \
     test_context("buf_inspect_f64(" # test ") -> " # expected);        \
-    buf_init(&buf, false, sizeof(b), b);                               \
     tmp = (test);                                                      \
+    buf_init(&buf, false, sizeof(b), b);                               \
     buf_inspect_f64(&buf, &tmp);                                       \
     TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
+    TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_EQ(buf_inspect_f64_size(&tmp), strlen(expected));             \
     buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_f64(&buf, &tmp), strlen(expected));            \
@@ -242,7 +244,7 @@ TEST_CASE(buf_inspect_f32)
   BUF_INSPECT_TEST_F32(0.1f, "1.0e-1f");
   BUF_INSPECT_TEST_F32(0.1234567f, "1.234567e-1f");
   BUF_INSPECT_TEST_F32(1.234567f, "1.234567f");
-  BUF_INSPECT_TEST_F32(1234567.0f, "1.234566e+6f");
+  BUF_INSPECT_TEST_F32(1234567.0f, "1.234567e+6f");
   BUF_INSPECT_TEST_F32(-0.1f, "-0.1f");
   BUF_INSPECT_TEST_F32(-0.1234567f, "-1.234567e-1f");
   BUF_INSPECT_TEST_F32(-1.234567f, "-1.234567f");
