@@ -68,9 +68,11 @@
     test_context("buf_inspect_f32(" # test ") -> " # expected);        \
     buf_init(&buf, false, sizeof(b), b);                               \
     tmp = (test);                                                      \
-    TEST_EQ(buf_inspect_f32_size(&tmp), strlen(expected));             \
-    TEST_EQ(buf_inspect_f32(&buf, &tmp), strlen(expected));            \
+    buf_inspect_f32(&buf, &tmp);                                       \
     TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
+    TEST_EQ(buf_inspect_f32_size(&tmp), strlen(expected));             \
+    buf_init(&buf, false, sizeof(b), b);                               \
+    TEST_EQ(buf_inspect_f32(&buf, &tmp), strlen(expected));            \
     test_context(NULL);                                                \
   } while (0)
 
@@ -82,7 +84,10 @@
     test_context("buf_inspect_f64(" # test ") -> " # expected);        \
     buf_init(&buf, false, sizeof(b), b);                               \
     tmp = (test);                                                      \
+    buf_inspect_f64(&buf, &tmp);                                       \
+    TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
     TEST_EQ(buf_inspect_f64_size(&tmp), strlen(expected));             \
+    buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_f64(&buf, &tmp), strlen(expected));            \
     TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
     test_context(NULL);                                                \
@@ -233,29 +238,29 @@ TEST_CASE_END(buf_inspect_character)
 
 TEST_CASE(buf_inspect_f32)
 {
-  BUF_INSPECT_TEST_F32(0.0, "0");
-  BUF_INSPECT_TEST_F32(0.1, "0.1");
-  BUF_INSPECT_TEST_F32(0.123456789, "0.123457");
-  BUF_INSPECT_TEST_F32(1.23456789, "1.23457");
-  BUF_INSPECT_TEST_F32(123456789.0, "1.23457e+08");
-  BUF_INSPECT_TEST_F32(-0.1, "-0.1");
-  BUF_INSPECT_TEST_F32(-0.123456789, "-0.123457");
-  BUF_INSPECT_TEST_F32(-1.23456789, "-1.23457");
-  BUF_INSPECT_TEST_F32(-123456789.0, "-1.23457e+08");
+  BUF_INSPECT_TEST_F32(0.0f, "0.0f");
+  BUF_INSPECT_TEST_F32(0.1f, "1.0e-1f");
+  BUF_INSPECT_TEST_F32(0.1234567f, "1.234567e-1f");
+  BUF_INSPECT_TEST_F32(1.234567f, "1.234567f");
+  BUF_INSPECT_TEST_F32(1234567.0f, "1.234566e+6f");
+  BUF_INSPECT_TEST_F32(-0.1f, "-0.1f");
+  BUF_INSPECT_TEST_F32(-0.1234567f, "-1.234567e-1f");
+  BUF_INSPECT_TEST_F32(-1.234567f, "-1.234567f");
+  BUF_INSPECT_TEST_F32(-1234567.0f, "-1.234567e+6f");
 }
 TEST_CASE_END(buf_inspect_f32)
 
 TEST_CASE(buf_inspect_f64)
 {
-  BUF_INSPECT_TEST_F64(0.0, "0");
-  BUF_INSPECT_TEST_F64(0.1, "0.1");
-  BUF_INSPECT_TEST_F64(0.123456789, "0.123457");
-  BUF_INSPECT_TEST_F64(1.23456789, "1.23457");
-  BUF_INSPECT_TEST_F64(123456789.0, "1.23457e+08");
-  BUF_INSPECT_TEST_F64(-0.1, "-0.1");
-  BUF_INSPECT_TEST_F64(-0.123456789, "-0.123457");
-  BUF_INSPECT_TEST_F64(-1.23456789, "-1.23457");
-  BUF_INSPECT_TEST_F64(-123456789.0, "-1.23457e+08");
+  BUF_INSPECT_TEST_F64(0.0, "0.0");
+  BUF_INSPECT_TEST_F64(0.1, "1.0e-1");
+  BUF_INSPECT_TEST_F64(0.123456789, "1.23456788999999e-1");
+  BUF_INSPECT_TEST_F64(1.23456789, "1.23456788999999");
+  BUF_INSPECT_TEST_F64(123456789.0, "1.23456789000000e+8");
+  BUF_INSPECT_TEST_F64(-0.1, "-1.0e-1");
+  BUF_INSPECT_TEST_F64(-0.123456789, "-1.23456789e-1");
+  BUF_INSPECT_TEST_F64(-1.23456789, "-1.23456789");
+  BUF_INSPECT_TEST_F64(-123456789.0, "-1.23456789e+8");
 }
 TEST_CASE_END(buf_inspect_f64)
 
@@ -374,8 +379,8 @@ TEST_CASE(buf_inspect_tag)
   BUF_INSPECT_TEST_TAG(tag_bool(&tag, false), "false");
   BUF_INSPECT_TEST_TAG(tag_bool(&tag, true), "true");
   BUF_INSPECT_TEST_TAG(tag_character(&tag, '\n'), "'\\n'");
-  BUF_INSPECT_TEST_TAG(tag_f32(&tag, 1.234), "1.234");
-  BUF_INSPECT_TEST_TAG(tag_f64(&tag, 1.2345), "1.2345");
+  BUF_INSPECT_TEST_TAG(tag_f32(&tag, 1.0f), "1.0f");
+  BUF_INSPECT_TEST_TAG(tag_f64(&tag, 1.0), "1.0");
   BUF_INSPECT_TEST_TAG(tag_ident_1(&tag, "ident"), "ident");
   BUF_INSPECT_TEST_TAG(tag_integer_1(&tag, "-0x10000000000000000"), "-18446744073709551616");
   BUF_INSPECT_TEST_TAG(tag_integer_1(&tag, "0x10000000000000000"), "18446744073709551616");

@@ -849,7 +849,8 @@ s_list ** env_get_struct_type_spec (s_env *env, const s_sym *module,
   tag_init_sym_1(&tag_defstruct, "defstruct");
   tag_init_sym(&tag_module, module);
   tag_init_var(&tag_var);
-  env_module_maybe_reload(env, module, &env->facts);
+  if (! env_module_maybe_reload(env, module, &env->facts))
+    return NULL;
   facts_with_tags(&env->facts, &cursor, &tag_module,
                   &tag_defstruct, &tag_var);
   if (! facts_cursor_next(&cursor)) {

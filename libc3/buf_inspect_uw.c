@@ -30,6 +30,7 @@ sw buf_inspect_uw_base (s_buf *buf,
   u8 digit;
   sw i;
   sw r;
+  sw result = 0;
   uw radix;
   s_buf_save save;
   sw size;
@@ -41,7 +42,7 @@ sw buf_inspect_uw_base (s_buf *buf,
       return -1;
     return buf_write_character_utf8(buf, zero);
   }
-  size = buf_inspect_uw_base_size(base, u);
+  size = buf_inspect_uw_base_digits(base, u);
   c = calloc(size, sizeof(character));
   buf_save_init(buf, &save);
   radix = base->size;
@@ -55,10 +56,12 @@ sw buf_inspect_uw_base (s_buf *buf,
     }
     i++;
   }
-  while (i--)
+  while (i--) {
     if ((r = buf_write_character_utf8(buf, c[i])) < 0)
       goto restore;
-  r = size;
+    result += r;
+  }
+  r = result;
   goto clean;
  restore:
   buf_save_restore_wpos(buf, &save);
@@ -68,8 +71,8 @@ sw buf_inspect_uw_base (s_buf *buf,
   return r;
 }
 
-sw buf_inspect_uw_base_size (const s_str *base,
-                                  const uw *u)
+sw buf_inspect_uw_base_digits (const s_str *base,
+                                    const uw *u)
 {
   uw radix;
   sw size = 0;
@@ -83,6 +86,28 @@ sw buf_inspect_uw_base_size (const s_str *base,
     size++;
   }
   return size;
+}
+
+sw buf_inspect_uw_base_size (const s_str *base,
+                                  const uw *u)
+{
+  character c;
+  uw digit;
+  uw radix;
+  sw result = 0;
+  uw u_;
+  u_ = *u;
+  if (u_ == 0)
+    return 1;
+  radix = base->size;
+  while (u_ > 0) {
+    digit = u_ % radix;
+    u_ /= radix;
+    if (str_character(base, digit, &c) < 0)
+      return -1;
+    result += buf_inspect_str_character_size(&c);
+  }
+  return result;
 }
 
 sw buf_inspect_uw_size (const uw *u)
