@@ -11,6 +11,8 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
+#include <float.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../libtommath/tommath.h"
@@ -641,12 +643,76 @@ sw buf_inspect_character_size (const character *c)
 
 sw buf_inspect_f32 (s_buf *buf, const f32 *f)
 {
-  return buf_f(buf, "%g", *f);
+  s64 exp;
+  u8 i;
+  u8 j;
+  sw r;
+  sw result = 0;
+  f64 x;
+  assert(buf);
+  assert(f);
+  exp = 0;
+  x = *f;
+  if (x == 0.0)
+    return buf_write_1(buf, "0.0f");
+  if (x < 0) {
+    if ((r = buf_write_1(buf, "-")) <= 0)
+      return r;
+    result += r;
+    x = -x;
+  }
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
+      exp++;
+    }
+  else
+    while (x < 1.0) {
+      x *= 10.0;
+      exp--;
+    }
+  i = (u8) x;
+  x -= i;
+  i += '0';
+  if ((r = buf_write_u8(buf, i)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ".")) <= 0)
+    return r;
+  result += r;
+  j = 0;
+  do {
+    x *= 10;
+    i = (u8) x;
+    x -= i;
+    i += '0';
+    if ((r = buf_write_u8(buf, i)) <= 0)
+      return r;
+    result += r;
+    j++;
+  } while (x >= 0.000001 && j < 6);
+  if (exp) {
+    if ((r = buf_write_1(buf, "e")) <= 0)
+      return r;
+    result += r;
+    if (exp > 0) {
+      if ((r = buf_write_1(buf, "+") <= 0))
+        return r;
+      result += r;
+    }
+    if ((r = buf_inspect_s64(buf, &exp)) <= 0)
+      return r;
+    result += r;
+  }
+  if ((r = buf_write_1(buf, "f")) <= 0)
+    return r;
+  result += r;
+  return result;
 }
 
 sw buf_inspect_f32_size (const f32 *f)
 {
-  s8 b[16];
+  s8 b[32];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
   return buf_inspect_f32(&buf, f);
@@ -654,12 +720,73 @@ sw buf_inspect_f32_size (const f32 *f)
 
 sw buf_inspect_f64 (s_buf *buf, const f64 *f)
 {
-  return buf_f(buf, "%g", *f);
+  s64 exp;
+  u8 i;
+  u8 j;
+  sw r;
+  sw result = 0;
+  f64 x;
+  assert(buf);
+  assert(f);
+  exp = 0.0;
+  x = *f;
+  if (x == 0.0)
+    return buf_write_1(buf, "0.0");
+  if (x < 0) {
+    if ((r = buf_write_1(buf, "-")) <= 0)
+      return r;
+    result += r;
+    x = -x;
+  }
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
+      exp++;
+    }
+  else
+    while (x < 1.0) {
+      x *= 10.0;
+      exp--;
+    }
+  i = (u8) x;
+  x -= i;
+  i += '0';
+  if ((r = buf_write_u8(buf, i)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ".")) <= 0)
+    return r;
+  result += r;
+  j = 0;
+  do {
+    x *= 10;
+    i = (u8) x;
+    x -= i;
+    i += '0';
+    if ((r = buf_write_u8(buf, i)) <= 0)
+      return r;
+    result += r;
+    j++;
+  } while (x > 0.0000000000001 && j < 14);
+  if (exp) {
+    if ((r = buf_write_1(buf, "e")) <= 0)
+      return r;
+    result += r;
+    if (exp > 0) {
+      if ((r = buf_write_1(buf, "+") <= 0))
+        return r;
+      result += r;
+    }
+    if ((r = buf_inspect_s64(buf, &exp)) <= 0)
+      return r;
+    result += r;
+  }
+  return result;
 }
 
 sw buf_inspect_f64_size (const f64 *f)
 {
-  s8 b[16];
+  s8 b[64];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
   return buf_inspect_f64(&buf, f);
@@ -1936,7 +2063,6 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
 sw buf_inspect_tag_type_size (e_tag_type type)
 {
   const s8 *s;
-  assert(buf);
   s = tag_type_to_string(type);
   if (! s)
     return -1;

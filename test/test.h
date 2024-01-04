@@ -13,6 +13,7 @@
 #ifndef TEST_H
 #define TEST_H
 
+#include <float.h>
 #include <stdio.h>
 
 #define TEST_COLOR_KO "\033[0;91m"
@@ -81,7 +82,7 @@
       test_ko();                                                       \
       fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
               "%s == %s\n"                                             \
-              "Expected %s got %.16g.%s\n",                            \
+              "Expected %s got %.8g.%s\n",                            \
               TEST_COLOR_KO,                                           \
               __FILE__, __LINE__, __func__,                            \
               # test, # expected, # expected, TEST_FLOAT_EQ_tmp,       \
@@ -104,7 +105,7 @@
       test_ko();                                                       \
       fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
               "%s == %s\n"                                             \
-              "Expected %s got %.16g.%s\n",                            \
+              "Expected %s got %.8g.%s\n",                            \
               TEST_COLOR_KO,                                           \
               __FILE__, __LINE__, __func__,                            \
               # test, # expected1, # expected1, TEST_FLOAT_EQ2_tmp,    \
@@ -115,7 +116,7 @@
 
 #define TEST_DOUBLE_EQ(test, expected)                                 \
   do {                                                                 \
-    f64 TEST_DOUBLE_EQ_tmp = (double) (test);                          \
+    double TEST_DOUBLE_EQ_tmp = (double) (test);                       \
     if (fabs(TEST_DOUBLE_EQ_tmp - (expected)) <= DBL_EPSILON) {        \
       g_test_assert_count++;                                           \
       g_test_assert_ok++;                                              \
@@ -124,7 +125,7 @@
       test_ko();                                                       \
       fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
               "%s == %s\n"                                             \
-              "Expected %s got %lf.%s\n",                              \
+              "Expected %s got %.16lg.%s\n",                              \
               TEST_COLOR_KO,                                           \
               __FILE__, __LINE__, __func__,                            \
               # test, # expected, # expected, TEST_DOUBLE_EQ_tmp,      \

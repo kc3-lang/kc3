@@ -36,13 +36,17 @@
 #define BUF_INSPECT_U_BASE_PROTOTYPES(bits, base)                      \
   sw buf_inspect_u ## bits ## _ ## base (s_buf *buf,                   \
                                          const u ## bits *s);          \
+  sw buf_inspect_u ## bits ## _ ## base ## _digits (const u##bits *s); \
   sw buf_inspect_u ## bits ## _ ## base ## _size (const u ## bits *s)
 
 #define BUF_INSPECT_U_PROTOTYPES(bits)                                 \
   sw buf_inspect_u ## bits (s_buf *buf, const u ## bits *u);           \
+  sw buf_inspect_u ## bits ## _digits (const u ## bits *u);            \
   sw buf_inspect_u ## bits ## _size (const u ## bits *u);              \
   sw buf_inspect_u ## bits ## _base (s_buf *buf, const s_str *base,    \
                                      const u ## bits *u);              \
+  sw buf_inspect_u ## bits ## _base_digits (const s_str *base,         \
+                                            const u ## bits *u);       \
   sw buf_inspect_u ## bits ## _base_size (const s_str *base,           \
                                           const u ## bits *u);         \
   BUF_INSPECT_U_BASE_PROTOTYPES(bits, binary);                         \

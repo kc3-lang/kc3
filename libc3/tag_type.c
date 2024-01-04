@@ -63,13 +63,13 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_BOOL:        *dest = &ffi_type_uint8;   return true;
   case TAG_CALL:        *dest = &ffi_type_pointer; return true;
   case TAG_CFN:         *dest = &ffi_type_pointer; return true;
-  case TAG_CHARACTER:   *dest = &ffi_type_schar;   return true;
+  case TAG_CHARACTER:   *dest = &ffi_type_uint32;  return true;
   case TAG_F32:         *dest = &ffi_type_float;   return true;
   case TAG_F64:         *dest = &ffi_type_double;  return true;
   case TAG_FACT:        *dest = &ffi_type_pointer; return true;
   case TAG_FN:          *dest = &ffi_type_pointer; return true;
   case TAG_IDENT:       *dest = &ffi_type_pointer; return true;
-  case TAG_INTEGER:     *dest = &ffi_type_sint;    return true;
+  case TAG_INTEGER:     *dest = &ffi_type_pointer; return true;
   case TAG_LIST:        *dest = &ffi_type_pointer; return true;
   case TAG_MAP:         *dest = &ffi_type_pointer; return true;
   case TAG_PTAG:        *dest = &ffi_type_pointer; return true;

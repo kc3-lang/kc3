@@ -368,6 +368,25 @@ bool hash_update_struct (t_hash *hash, const s_struct *s)
   return true;
 }
 
+bool hash_update_struct_type (t_hash *hash, const s_struct_type *st)
+{
+  uw i;
+  s8 type[] = "struct_type";
+  assert(hash);
+  assert(st);
+  if (! hash_update(hash, type, strlen(type)) ||
+      ! hash_update_sym(hash, &st->module) ||
+      ! hash_update_map(hash, &st->map))
+    return false;
+  i = 0;
+  while (i < st->map.count) {
+    if (! hash_update_uw(hash, st->offset + i))
+      return false;
+    i++;
+  }
+  return hash_update_uw(hash, &st->size);
+}
+
 bool hash_update_sym (t_hash *hash, const s_sym * const *sym)
 {
   s8 type[] = "sym";

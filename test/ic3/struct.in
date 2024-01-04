@@ -1,0 +1,10 @@
+quote 0.0
+0.0
+quote %GL.Point3D{}
+%GL.Point3D{}
+quote [position:  %GL.Point3D{},
+       normal:    %GL.Point3D{},
+       tex_coord: %GL.Point2D{}]
+[position:  %GL.Point3D{},
+ normal:    %GL.Point3D{},
+ tex_coord: %GL.Point2D{}]

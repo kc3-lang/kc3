@@ -166,9 +166,9 @@ s_str * sym_inspect (const s_sym *sym, s_str *dest)
 bool sym_is_module (const s_sym *sym)
 {
   character c;
-  if (str_peek_character_utf8(&sym->str, &c) > 0)
-    return character_is_uppercase(c);
-  return false;
+  if (str_peek_character_utf8(&sym->str, &c) <= 0)
+    return false;
+  return character_is_uppercase(c);
 }
 
 s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next)
