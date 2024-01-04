@@ -320,7 +320,7 @@ struct struct_ {
   void *data;
   s_tag *tag;
   bool free_data;
-  s_struct_type *type;
+  const s_struct_type *type;
 };
 
 /* 3 */

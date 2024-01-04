@@ -14,7 +14,7 @@
 
 sw data_buf_inspect (const s_sym *type, s_buf *buf, const void *data)
 {
-  s_struct_type *st;
+  const s_struct_type *st;
   if (type == sym_1("Array"))
     return buf_inspect_array(buf, data);
   if (type == sym_1("Bool"))
@@ -98,7 +98,7 @@ sw data_buf_inspect (const s_sym *type, s_buf *buf, const void *data)
 
 sw data_buf_inspect_size (const s_sym *type, const void *data)
 {
-  s_struct_type *st;
+  const s_struct_type *st;
   if (type == sym_1("Array"))
     return buf_inspect_array_size(data);
   if (type == sym_1("Bool"))
@@ -182,7 +182,7 @@ sw data_buf_inspect_size (const s_sym *type, const void *data)
 
 bool data_clean (const s_sym *type, void *data)
 {
-  s_struct_type *st;
+  const s_struct_type *st;
   assert(type);
   if (type == sym_1("Array")) {
     array_clean(data);
@@ -315,7 +315,7 @@ bool data_clean (const s_sym *type, void *data)
 
 bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
 {
-  s_struct_type *st;
+  const s_struct_type *st;
   if (type == sym_1("Array"))
     return hash_update_array(hash, data);
   if (type == sym_1("Bool"))
@@ -399,7 +399,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
 
 void * data_init_cast (const s_sym *type, void *data, const s_tag *tag)
 {
-  s_struct_type *st;
+  const s_struct_type *st;
   if (type == sym_1("Array"))
     return array_init_cast(data, tag);
   if (type == sym_1("Bool"))
@@ -483,7 +483,7 @@ void * data_init_cast (const s_sym *type, void *data, const s_tag *tag)
 
 void * data_init_copy (const s_sym *type, void *data, const void *src)
 {
-  s_struct_type *st;
+  const s_struct_type *st;
   if (type == sym_1("Array"))
     return array_init_copy(data, src);
   if (type == sym_1("Bool"))

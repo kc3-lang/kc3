@@ -1187,10 +1187,12 @@ bool env_struct_type_exists (s_env *env, const s_sym *module)
   return result;
 }
 
-s_struct_type * env_struct_type_find (s_env *env, const s_sym *module)
+const s_struct_type * env_struct_type_find (s_env *env,
+                                            const s_sym *module)
 {
-  s_facts_cursor cursor;
-  s_struct_type *result;
+  s_facts_with_cursor cursor;
+  s_fact *found;
+  const s_struct_type *result;
   s_tag tag_struct_type;
   s_tag tag_module;
   s_tag tag_var;
@@ -1201,24 +1203,25 @@ s_struct_type * env_struct_type_find (s_env *env, const s_sym *module)
   tag_init_sym_1(&tag_struct_type, "struct_type");
   tag_init_var(&tag_var);
   env_module_maybe_reload(env, module, &env->facts);
-  facts_with_tags(&env->facts, &cursor, &tag_module,
-                  &tag_struct_type, &tag_var);
-  if (! facts_cursor_next(&cursor)) {
-    facts_cursor_clean(&cursor);
+  facts_with(&env->facts, &cursor, (t_facts_spec) {
+      &tag_module, &tag_struct_type, &tag_var, NULL, NULL });
+  found = facts_with_cursor_next(&cursor);
+  if (! found) {
+    facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  if (tag_var.type != TAG_STRUCT_TYPE) {
-    tag_type(&tag_var, &type);
+  if (found->object->type != TAG_STRUCT_TYPE) {
+    tag_type(found->object, &type);
     err_write_1("env_struct_type_find: module ");
     err_inspect_sym(&module);
-    err_write_1(": :struct_type is actually a ");
+    err_write_1(" :struct_type is actually a ");
     err_inspect_sym(&type);
     err_write_1("\n");
     assert(! "env_struct_type_find: invalid struct_type");
     return NULL;
   }
-  result = &tag_var.data.struct_type;
-  facts_cursor_clean(&cursor);
+  result = &found->object->data.struct_type;
+  facts_with_cursor_clean(&cursor);
   return result;
 }
 
