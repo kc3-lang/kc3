@@ -69,7 +69,7 @@
     tmp = (test);                                                      \
     buf_init(&buf, false, sizeof(b), b);                               \
     buf_inspect_f32(&buf, &tmp);                                       \
-    TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
+    TEST_STRNCMP(buf.ptr.ps8, (expected), strlen(expected));           \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_EQ(buf_inspect_f32_size(&tmp), strlen(expected));             \
     buf_init(&buf, false, sizeof(b), b);                               \
@@ -256,9 +256,9 @@ TEST_CASE(buf_inspect_f64)
 {
   BUF_INSPECT_TEST_F64(0.0, "0.0");
   BUF_INSPECT_TEST_F64(0.1, "1.0e-1");
-  BUF_INSPECT_TEST_F64(0.123456789, "1.23456788999999e-1");
-  BUF_INSPECT_TEST_F64(1.23456789, "1.23456788999999");
-  BUF_INSPECT_TEST_F64(123456789.0, "1.23456789000000e+8");
+  BUF_INSPECT_TEST_F64(0.123456789, "1.234567889999999e-1");
+  BUF_INSPECT_TEST_F64(1.23456789, "1.234567889999999");
+  BUF_INSPECT_TEST_F64(123456789.0, "1.23456789e+8");
   BUF_INSPECT_TEST_F64(-0.1, "-1.0e-1");
   BUF_INSPECT_TEST_F64(-0.123456789, "-1.23456789e-1");
   BUF_INSPECT_TEST_F64(-1.23456789, "-1.23456789");
