@@ -1047,7 +1047,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 
 bool sym_type_size (const s_sym *type, uw *dest)
 {
-  s_struct_type st;
+  const s_struct_type *st;
   if (type == sym_1("Array")) {
     *dest = sizeof(s_array);
     return true;
@@ -1176,9 +1176,9 @@ bool sym_type_size (const s_sym *type, uw *dest)
     *dest = 0;
     return true;
   }
-  if (struct_type_init_from_env(&st, type, &g_c3_env)) {
-    *dest = st.size;
-    struct_type_clean(&st);
+  st = struct_type_find(type);
+  if (st) {
+    *dest = st->size;
     return true;
   }
   err_write_1("sym_type_size: unknown type: ");
