@@ -835,8 +835,9 @@ s_env * env_init (s_env *env, int argc, s8 **argv)
   return env;
 }
 
-s_list ** env_get_struct_type_spec (s_env *env, const s_sym *module,
-                                    s_list **dest)
+const s_list ** env_get_struct_type_spec (s_env *env,
+                                          const s_sym *module,
+                                          const s_list **dest)
 {
   s_facts_cursor cursor;
   s_tag tag_defstruct;
@@ -924,8 +925,12 @@ void env_longjmp (s_env *env, jmp_buf *jmp_buf)
 bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
 {
   s_str path;
+  s_struct_type *st;
+  const s_list  *st_spec;
   s_tag tag_module_name;
   s_tag tag_load_time;
+  s_tag tag_st = {0};
+  s_tag tag_struct_type;
   s_tag tag_time;
   assert(env);
   assert(module);
@@ -935,6 +940,7 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
           module->str.ptr.ps8);
     return false;
   }
+  tag_init_time(&tag_time);
   if (facts_load_file(facts, &path) < 0) {
     warnx("env_module_load: %s: facts_load_file",
           path.ptr.ps8);
@@ -943,10 +949,16 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
   }
   str_clean(&path);
   tag_init_sym(&tag_module_name, module);
-  tag_init_sym(&tag_load_time, sym_1("load_time"));
-  tag_init_time(&tag_time);
+  tag_init_sym_1(&tag_load_time, "load_time");
   facts_replace_tags(facts, &tag_module_name, &tag_load_time, &tag_time);
   tag_clean(&tag_time);
+  if (env_get_struct_type_spec(env, module, &st_spec)) {
+    tag_init_sym_1(&tag_struct_type, "struct_type");
+    tag_st.type = TAG_STRUCT_TYPE;
+    st = &tag_st.data.struct_type;
+    struct_type_init(st, module, st_spec);
+    facts_replace_tags(facts, &tag_module_name, &tag_struct_type, &tag_st);
+  }
   return true;
 }
 

@@ -787,30 +787,55 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   if (a->type > b->type)
     return 1;
   switch (a->type) {
-  case TAG_VOID: return 0;
-  case TAG_ARRAY: return compare_array(&a->data.array, &b->data.array);
-  case TAG_BOOL: return compare_bool(a->data.bool, b->data.bool);
-  case TAG_CALL: return compare_call(&a->data.call, &b->data.call);
-  case TAG_CFN: return compare_cfn(&a->data.cfn, &b->data.cfn);
-  case TAG_CHARACTER: return compare_character(a->data.character,
-                                               b->data.character);
-  case TAG_FACT: return compare_fact(&a->data.fact, &b->data.fact);
-  case TAG_FN: return compare_fn(&a->data.fn, &b->data.fn);
-  case TAG_IDENT: return compare_ident(&a->data.ident, &b->data.ident);
-  case TAG_LIST: return compare_list(a->data.list, b->data.list);
-  case TAG_MAP: return compare_map(&a->data.map, &b->data.map);
-  case TAG_PTAG: return compare_ptag(a->data.ptag, b->data.ptag);
-  case TAG_QUOTE: return compare_quote(&a->data.quote, &b->data.quote);
-  case TAG_STR: return compare_str(&a->data.str, &b->data.str);
-  case TAG_SYM: return compare_str(&a->data.sym->str,
-                                   &b->data.sym->str);
-  case TAG_TUPLE: return compare_tuple(&a->data.tuple, &b->data.tuple);
-  case TAG_VAR: return compare_ptr(a, b);
-  default:
+  case TAG_VOID:       return 0;
+  case TAG_ARRAY:      return compare_array(&a->data.array,
+                                            &b->data.array);
+  case TAG_BOOL:       return compare_bool(a->data.bool, b->data.bool);
+  case TAG_CALL:       return compare_call(&a->data.call,
+                                           &b->data.call);
+  case TAG_CFN:        return compare_cfn(&a->data.cfn, &b->data.cfn);
+  case TAG_CHARACTER:  return compare_character(a->data.character,
+                                                b->data.character);
+  case TAG_FACT:       return compare_fact(&a->data.fact,
+                                           &b->data.fact);
+  case TAG_FN:         return compare_fn(&a->data.fn, &b->data.fn);
+  case TAG_IDENT:      return compare_ident(&a->data.ident,
+                                            &b->data.ident);
+  case TAG_LIST:       return compare_list(a->data.list, b->data.list);
+  case TAG_MAP:        return compare_map(&a->data.map, &b->data.map);
+  case TAG_PTAG:       return compare_ptag(a->data.ptag, b->data.ptag);
+  case TAG_PTR:        return compare_ptr(a->data.ptr.p, b->data.ptr.p);
+  case TAG_PTR_FREE:   return compare_ptr(a->data.ptr_free.p,
+                                          b->data.ptr_free.p);
+  case TAG_QUOTE:      return compare_quote(&a->data.quote,
+                                            &b->data.quote);
+  case TAG_STR:        return compare_str(&a->data.str, &b->data.str);
+  case TAG_STRUCT:     return compare_struct(&a->data.struct_,
+                                             &b->data.struct_);
+  case TAG_STRUCT_TYPE:return compare_struct_type(&a->data.struct_type,
+                                                  &b->data.struct_type);
+  case TAG_SYM:        return compare_str(&a->data.sym->str,
+                                          &b->data.sym->str);
+  case TAG_TUPLE:      return compare_tuple(&a->data.tuple,
+                                            &b->data.tuple);
+  case TAG_VAR:        return compare_ptr(a, b);
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_INTEGER:
+  case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_SW:
+  case TAG_U8:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_UW:
     break;
   }
-  assert(! "compare_tag: error");
-  errx(1, "compare_tag");
+  warnx("compare_tag: unknown tag type: %d", a->type);
+  assert(! "compare_tag: unknown tag type");
   return 0;
 }
 

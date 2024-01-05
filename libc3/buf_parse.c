@@ -2622,6 +2622,7 @@ sw buf_parse_struct (s_buf *buf, s_struct *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_struct tmp = {0};
   s_list  *values = NULL;
   s_list **values_end;
   assert(buf);
@@ -2648,61 +2649,72 @@ sw buf_parse_struct (s_buf *buf, s_struct *dest)
   result += r;
   if ((r = buf_read_1(buf, "}")) < 0)
     goto restore;
-  result += r;
-  if (r == 0) {
-    while (1) {
-      *keys_end = list_new(NULL);
-      if ((r = buf_parse_map_key(buf, &(*keys_end)->tag)) <= 0)
-        goto restore;
-      result += r;
-      keys_end = &(*keys_end)->next.data.list;
-      if ((r = buf_parse_comments(buf)) < 0)
-        goto restore;
-      result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
-      result += r;
-      *values_end = list_new(NULL);
-      if ((r = buf_parse_tag(buf, &(*values_end)->tag)) <= 0)
-        goto restore;
-      result += r;
-      values_end = &(*values_end)->next.data.list;
-      if ((r = buf_parse_comments(buf)) < 0)
-        goto restore;
-      result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
-      result += r;
-      if ((r = buf_read_1(buf, "}")) < 0)
-        goto restore;
-      result += r;
-      if (r > 0)
-        break;
-      if ((r = buf_read_1(buf, ",")) <= 0)
-        goto restore;
-      result += r;
-      if ((r = buf_parse_comments(buf)) < 0)
-        goto restore;
-      result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
-        goto restore;
-      result += r;
-      r = 0;
+  if (r > 0) {
+    result += r;
+    if (! struct_init(&tmp, module)) {
+      err_write_1("buf_parse_struct: struct_init ");
+      err_inspect_sym(&module);
+      err_puts(".");
+      r = -2;
+      goto clean;
     }
+    goto ok;
   }
-  if (! struct_init_from_lists(dest, module, keys, values)) {
+  while (1) {
+    *keys_end = list_new(NULL);
+    if ((r = buf_parse_map_key(buf, &(*keys_end)->tag)) <= 0)
+      goto restore;
+    result += r;
+    keys_end = &(*keys_end)->next.data.list;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    *values_end = list_new(NULL);
+    if ((r = buf_parse_tag(buf, &(*values_end)->tag)) <= 0)
+      goto restore;
+    result += r;
+    values_end = &(*values_end)->next.data.list;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "}")) < 0)
+      goto restore;
+    result += r;
+    if (r > 0)
+      break;
+    if ((r = buf_read_1(buf, ",")) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
     r = 0;
-    goto restore;
   }
+  if (! struct_init_from_lists(&tmp, module, keys, values)) {
+    err_write_1("buf_parse_struct: struct_init_from_lists ");
+    err_inspect_sym(&module);
+    err_puts(".");    
+    r = -2;
+    goto clean;
+  }
+ ok:
+  *dest = tmp;
   r = result;
-  list_delete_all(keys);
-  list_delete_all(values);
   goto clean;
  restore:
-  list_delete_all(keys);
-  list_delete_all(values);
   buf_save_restore_rpos(buf, &save);
  clean:
+  list_delete_all(keys);
+  list_delete_all(values);
   buf_save_clean(buf, &save);
   return r;
 }

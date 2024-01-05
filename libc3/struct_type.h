@@ -31,9 +31,11 @@ s_struct_type * struct_type_init (s_struct_type *s, const s_sym *module,
                                   const s_list *spec);
 s_struct_type * struct_type_init_copy (s_struct_type *s,
                                        const s_struct_type *src);
+/*
 s_struct_type * struct_type_init_from_env (s_struct_type *st,
                                            const s_sym *module,
                                            s_env *env);
+*/
 
 /* Heap-allocation functions, call struct_type_delete after use. */
 void            struct_type_delete (s_struct_type *s);
