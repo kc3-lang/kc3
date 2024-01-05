@@ -855,9 +855,9 @@ const s_list ** env_get_struct_type_spec (s_env *env,
   facts_with_tags(&env->facts, &cursor, &tag_module,
                   &tag_defstruct, &tag_var);
   if (! facts_cursor_next(&cursor)) {
-    warnx("env_get_struct_type_spec: module %s"
+    /*warnx("env_get_struct_type_spec: module %s"
           " does not use defstruct",
-          module->str.ptr.ps8);
+          module->str.ptr.ps8);*/
     facts_cursor_clean(&cursor);
     return NULL;
   }
