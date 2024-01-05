@@ -696,7 +696,7 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
       return r;
     result += r;
     if (exp > 0) {
-      if ((r = buf_write_1(buf, "+") <= 0))
+      if ((r = buf_write_1(buf, "+")) <= 0)
         return r;
       result += r;
     }
@@ -774,7 +774,7 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
       return r;
     result += r;
     if (exp > 0) {
-      if ((r = buf_write_1(buf, "+") <= 0))
+      if ((r = buf_write_1(buf, "+")) <= 0)
         return r;
       result += r;
     }
