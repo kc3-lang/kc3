@@ -69,7 +69,7 @@
     tmp = (test);                                                      \
     buf_init(&buf, false, sizeof(b), b);                               \
     buf_inspect_f32(&buf, &tmp);                                       \
-    TEST_STRNCMP(buf.ptr.ps8, (expected), strlen(expected));           \
+    TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_EQ(buf_inspect_f32_size(&tmp), strlen(expected));             \
     buf_init(&buf, false, sizeof(b), b);                               \
@@ -245,7 +245,7 @@ TEST_CASE(buf_inspect_f32)
   BUF_INSPECT_TEST_F32(0.1234567f, "1.234567e-1f");
   BUF_INSPECT_TEST_F32(1.234567f, "1.234567f");
   BUF_INSPECT_TEST_F32(1234567.0f, "1.234567e+6f");
-  BUF_INSPECT_TEST_F32(-0.1f, "-0.1f");
+  BUF_INSPECT_TEST_F32(-0.1f, "-1.0e-1f");
   BUF_INSPECT_TEST_F32(-0.1234567f, "-1.234567e-1f");
   BUF_INSPECT_TEST_F32(-1.234567f, "-1.234567f");
   BUF_INSPECT_TEST_F32(-1234567.0f, "-1.234567e+6f");
@@ -260,8 +260,8 @@ TEST_CASE(buf_inspect_f64)
   BUF_INSPECT_TEST_F64(1.23456789, "1.234567889999999");
   BUF_INSPECT_TEST_F64(123456789.0, "1.23456789e+8");
   BUF_INSPECT_TEST_F64(-0.1, "-1.0e-1");
-  BUF_INSPECT_TEST_F64(-0.123456789, "-1.23456789e-1");
-  BUF_INSPECT_TEST_F64(-1.23456789, "-1.23456789");
+  BUF_INSPECT_TEST_F64(-0.123456789, "-1.234567889999999e-1");
+  BUF_INSPECT_TEST_F64(-1.23456789, "-1.234567889999999");
   BUF_INSPECT_TEST_F64(-123456789.0, "-1.23456789e+8");
 }
 TEST_CASE_END(buf_inspect_f64)
