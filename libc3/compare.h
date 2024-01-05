@@ -18,6 +18,7 @@
 #define COMPARE_PROTOTYPE(type)                     \
   s8 compare_##type (type a, type b)
 
+s8 compare_array (const s_array *a, const s_array *b);
 s8 compare_bool (bool a, bool b);
 s8 compare_call (const s_call *a, const s_call *b);
 s8 compare_cfn (const s_cfn *a, const s_cfn *b);
@@ -38,11 +39,13 @@ s8 compare_integer_u64 (const s_integer *a, u64 b);
 s8 compare_list (const s_list *a, const s_list *b);
 s8 compare_map (const s_map *a, const s_map *b);
 s8 compare_ptag (const p_tag a, const p_tag b);
+s8 compare_ptr (const void *a, const void *b);
 s8 compare_quote (const s_quote *a, const s_quote *b);
 COMPARE_PROTOTYPE(s8);
 COMPARE_PROTOTYPE(s16);
 COMPARE_PROTOTYPE(s32);
 COMPARE_PROTOTYPE(s64);
+COMPARE_PROTOTYPE(sw);
 s8 compare_str (const s_str *a, const s_str *b);
 s8 compare_struct (const s_struct *a, const s_struct *b);
 s8 compare_struct_type (const s_struct_type *a, const s_struct_type *b);
@@ -53,5 +56,6 @@ COMPARE_PROTOTYPE(u8);
 COMPARE_PROTOTYPE(u16);
 COMPARE_PROTOTYPE(u32);
 COMPARE_PROTOTYPE(u64);
+COMPARE_PROTOTYPE(uw);
 
 #endif /* LIBC3_COMPARE_H */

@@ -313,6 +313,93 @@ bool data_clean (const s_sym *type, void *data)
   return false;
 }
 
+bool data_compare (const s_sym *type, const void *a, const void *b)
+{
+  const s_struct_type *st;
+  if (type == sym_1("Array"))
+    return compare_array(a, b);
+  if (type == sym_1("Bool"))
+    return compare_bool(*(bool *) a, *(bool *) b);
+  if (type == sym_1("Call"))
+    return compare_call(a, b);
+  if (type == sym_1("Cfn"))
+    return compare_cfn(a, b);
+  if (type == sym_1("Character"))
+    return compare_character(*(character *) a, *(character *) b);
+  if (type == sym_1("F32"))
+    return compare_f32(*(f64 *) a, *(f64 *) b);
+  if (type == sym_1("F64"))
+    return compare_f64(*(f64 *) a, *(f64 *) b);
+  if (type == sym_1("Fact"))
+    return compare_fact(a, b);
+  if (type == sym_1("Fn"))
+    return compare_fn(a, b);
+  if (type == sym_1("Ident"))
+    return compare_ident(a, b);
+  if (type == sym_1("Integer"))
+    return compare_integer(a, b);
+  if (type == sym_1("List"))
+    return compare_list(a, b);
+  if (type == sym_1("Ptag"))
+    return compare_ptag(a, b);
+  if (type == sym_1("Ptr"))
+    return compare_ptr(a, b);
+  if (type == sym_1("PtrFree"))
+    return compare_ptr(a, b);
+  if (type == sym_1("Quote"))
+    return compare_quote(a, b);
+  if (type == sym_1("S8"))
+    return compare_s8(*(s8 *) a, *(s8 *) b);
+  if (type == sym_1("S16"))
+    return compare_s16(*(s16 *) a, *(s16 *) b);
+  if (type == sym_1("S32"))
+    return compare_s32(*(s32 *) a, *(s32 *) b);
+  if (type == sym_1("S64"))
+    return compare_s64(*(s64 *) a, *(s64 *) b);
+  if (type == sym_1("Str"))
+    return compare_str(a, b);
+  if (type == sym_1("Struct"))
+    return compare_struct(a, b);
+  if (type == sym_1("Sw"))
+    return compare_sw(*(sw *) a, *(sw *) b);
+  if (type == sym_1("Sym"))
+    return compare_sym(a, b);
+  if (type == sym_1("Tuple"))
+    return compare_tuple(a, b);
+  if (type == sym_1("U8"))
+    return compare_u8(*(u8 *) a, *(u8 *) b);
+  if (type == sym_1("U16"))
+    return compare_u16(*(u16 *) a, *(u16 *) b);
+  if (type == sym_1("U32"))
+    return compare_u32(*(u32 *) a, *(u32 *) b);
+  if (type == sym_1("U64"))
+    return compare_u64(*(u64 *) a, *(u64 *) b);
+  if (type == sym_1("Uw"))
+    return compare_uw(*(uw *) a, *(uw *) b);
+  if (type == sym_1("Var"))
+    return compare_ptr(a, b);
+  if (type == sym_1("Void"))
+    return 0;
+  /*
+  if (sym_is_array_type(type)) {
+  */
+  st = struct_type_find(type);
+  if (st) {
+    s_struct sa = {0};
+    s_struct sb = {0};
+    sa.type = st;
+    sa.data = (void *) a;
+    sb.type = st;
+    sb.data = (void *) a;
+    return compare_struct(&sa, &sb);
+  }
+  err_write_1("data_compare: unknown type: ");
+  err_inspect_sym(&type);
+  err_write_1("\n");
+  assert(! "data_compare: unknown type");
+  return false;
+}
+
 bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
 {
   const s_struct_type *st;
