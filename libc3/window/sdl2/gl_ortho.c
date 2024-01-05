@@ -15,7 +15,7 @@
 #include "gl_ortho.h"
 #include "gl_matrix_4d.h"
 
-static const s8 * g_gl_ortho_vertex_shader_src = "#version 460 core\n"
+static const s8 * g_gl_ortho_vertex_shader_src = "#version 330 core\n"
   "layout (location = 0) in dvec3 aPos;\n"
   "layout (location = 1) in dvec3 aNorm;\n"
   "layout (location = 2) in dvec2 aTexCoord;\n"
