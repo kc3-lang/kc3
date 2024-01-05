@@ -15,7 +15,7 @@
 #include "gl_camera.h"
 #include "gl_matrix_4d.h"
 
-static const s8 * g_gl_camera_vertex_shader_src = "#version 460 core\n"
+static const s8 * g_gl_camera_vertex_shader_src = "#version 330 core\n"
 "layout (location = 0) in dvec3 aPos;\n"
 "uniform dmat4 matrix;\n"
 "\n"
