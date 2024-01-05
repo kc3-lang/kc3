@@ -245,11 +245,11 @@ struct quote {
   s_tag *tag;
 };
 
-struct struct_type {
-  const s_sym *module;
-  s_map map;
-  uw *offset;
-  uw size;
+struct struct_ {
+  void *data;
+  s_tag *tag;
+  bool free_data;
+  const s_struct_type *type;
 };
 
 struct sym_list {
@@ -316,11 +316,11 @@ struct str {
   u_ptr   ptr;         /**< Pointer to memory. */
 };
 
-struct struct_ {
-  void *data;
-  s_tag *tag;
-  bool free_data;
-  const s_struct_type *type;
+struct struct_type {
+  const s_sym *module;
+  s_map map;
+  uw *offset;
+  uw size;
 };
 
 /* 3 */

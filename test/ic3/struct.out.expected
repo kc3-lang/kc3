@@ -2,9 +2,5 @@
 0.0
 %GL.Point3D{x: 0.0, y: 0.0, z: 0.0}
 %GL.Point3D{x: 0.0, y: 0.0, z: 0.0}
-[position:  %GL.Point3D{x: 0.0, y: 0.0, z: 0.0},
- normal:    %GL.Point3D{x: 0.0, y: 0.0, z: 0.0},
- tex_coord: %GL.Point2D{x: 0.0, y: 0.0}]
-[position:  %GL.Point3D{x: 0.0, y: 0.0, z: 0.0},
- normal:    %GL.Point3D{x: 0.0, y: 0.0, z: 0.0},
- tex_coord: %GL.Point2D{x: 0.0, y: 0.0}]
+[position: %GL.Point3D{x: 0.0, y: 0.0, z: 0.0}, normal: %GL.Point3D{x: 0.0, y: 0.0, z: 0.0}, tex_coord: %GL.Point2D{x: 0.0, y: 0.0}]
+[position: %GL.Point3D{x: 0.0, y: 0.0, z: 0.0}, normal: %GL.Point3D{x: 0.0, y: 0.0, z: 0.0}, tex_coord: %GL.Point2D{x: 0.0, y: 0.0}]

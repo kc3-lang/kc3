@@ -689,17 +689,27 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
     return false;
   i = 0;
   while (i < t->type->map.count) {
-    if (! tag_type(t->type->map.value + i, &type) ||
-        ! env_eval_tag(env, s->tag + i, &tag))
+    if (! tag_type(t->type->map.value + i, &type))
       goto ko;
-    if (! data_init_cast(type, (s8 *) t->data + t->type->offset[i],
-                         &tag)) {
-      warnx("env_eval_struct:"
-            " invalid type %s for key %s, expected %s.",
-            tag_type_to_string(tag.type),
-            t->type->map.key[i].data.sym->str.ptr.ps8,
-            tag_type_to_string(t->type->map.value[i].type));
-      goto ko_tag;
+    if (s->tag) {
+      if (! env_eval_tag(env, s->tag + i, &tag))
+        goto ko;
+      if (! data_init_cast(type, (s8 *) t->data + t->type->offset[i],
+                           &tag)) {
+        warnx("env_eval_struct:"
+              " invalid type %s for key %s, expected %s.",
+              tag_type_to_string(tag.type),
+              t->type->map.key[i].data.sym->str.ptr.ps8,
+              tag_type_to_string(t->type->map.value[i].type));
+        goto ko_tag;
+      }
+      tag_clean(&tag);
+    }
+    else {
+      const void *value;
+      if (! tag_to_const_pointer(t->type->map.value + i, type, &value))
+        goto ko;
+      data_init_copy(type, (s8 *) t->data + t->type->offset[i], value);
     }
     i++;
   }

@@ -14,6 +14,7 @@
 #include <err.h>
 #include <string.h>
 #include "compare.h"
+#include "data.h"
 #include "integer.h"
 #include "list.h"
 #include "tag.h"
@@ -385,6 +386,60 @@ s8 compare_str (const s_str *a, const s_str *b)
     return -1;
   if (r > 0)
     return 1;
+  return 0;
+}
+
+s8 compare_struct (const s_struct *a, const s_struct *b)
+{
+  uw i;
+  int r;
+  const s_sym *type;
+  assert(a);
+  assert(b);
+  if (a == b)
+    return 0;
+  r = compare_struct_type(a->type, b->type);
+  if (r)
+    return r;
+  if (! a->data && ! b->data) {
+    if (a->tag == b->tag)
+      return 0;
+    i = 0;
+    while (i < a->type->map.count) {
+      r = compare_tag(a->tag + i, b->tag + i);
+      if (r)
+        return r;
+    }
+  }
+  if (a->data == b->data)
+    return 0;
+  if (! a->data)
+    return -1;
+  if (! b->data)
+    return 1;
+  while (i < a->type->map.count) {
+    tag_type(a->type->map.value + i, &type);
+    r = data_compare(type, (s8 *) a->data + a->type->offset[i],
+                     (s8 *) b->data + b->type->offset[i]);
+    if (r)
+      return r;
+  }
+  return 0;
+}
+
+s8 compare_struct_type (const s_struct_type *a, const s_struct_type *b)
+{
+  int r;
+  assert(a);
+  assert(b);
+  if (a == b)
+    return 0;
+  r = compare_sym(a->module, b->module);
+  if (r)
+    return r;
+  r = compare_map(&a->map, &b->map);
+  if (r)
+    return r;
   return 0;
 }
 
