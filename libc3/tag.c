@@ -175,20 +175,20 @@ void tag_clean (s_tag *tag)
 {
   assert(tag);
   switch (tag->type) {
-  case TAG_ARRAY:       array_clean(&tag->data.array);            break;
-  case TAG_CALL:        call_clean(&tag->data.call);              break;
-  case TAG_CFN:         cfn_clean(&tag->data.cfn);                break;
-  case TAG_FN:          fn_clean(&tag->data.fn);                  break;
-  case TAG_INTEGER:     integer_clean(&tag->data.integer);        break;
-  case TAG_LIST:        list_delete_all(tag->data.list);          break;
-  case TAG_MAP:         map_clean(&tag->data.map);                break;
-  case TAG_PTR_FREE:    ptr_free_clean(&tag->data.ptr);           break;
-  case TAG_QUOTE:       quote_clean(&tag->data.quote);            break;
-  case TAG_STR:         str_clean(&tag->data.str);                break;
-  case TAG_STRUCT:      struct_clean(&tag->data.struct_);         break;
-  case TAG_STRUCT_TYPE:
-    struct_type_clean(&tag->data.struct_type);                    break;
-  case TAG_TUPLE:       tuple_clean(&tag->data.tuple);            break;
+  case TAG_ARRAY:       array_clean(&tag->data.array);     break;
+  case TAG_CALL:        call_clean(&tag->data.call);       break;
+  case TAG_CFN:         cfn_clean(&tag->data.cfn);         break;
+  case TAG_FN:          fn_clean(&tag->data.fn);           break;
+  case TAG_INTEGER:     integer_clean(&tag->data.integer); break;
+  case TAG_LIST:        list_delete_all(tag->data.list);   break;
+  case TAG_MAP:         map_clean(&tag->data.map);         break;
+  case TAG_PTR_FREE:    ptr_free_clean(&tag->data.ptr);    break;
+  case TAG_QUOTE:       quote_clean(&tag->data.quote);     break;
+  case TAG_STR:         str_clean(&tag->data.str);         break;
+  case TAG_STRUCT:      struct_clean(&tag->data.struct_);  break;
+  case TAG_STRUCT_TYPE: struct_type_clean(&tag->data.struct_type);
+                                                           break;
+  case TAG_TUPLE:       tuple_clean(&tag->data.tuple);     break;
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:
