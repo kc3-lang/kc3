@@ -16,19 +16,19 @@
 #include "gl_matrix_4d.h"
 
 static const s8 * g_gl_ortho_vertex_shader_src = "#version 330 core\n"
-  "layout (location = 0) in dvec3 aPos;\n"
-  "layout (location = 1) in dvec3 aNorm;\n"
-  "layout (location = 2) in dvec2 aTexCoord;\n"
+  "layout (location = 0) in vec3 aPos;\n"
+  "layout (location = 1) in vec3 aNorm;\n"
+  "layout (location = 2) in vec2 aTexCoord;\n"
   "out vec3 FragNormal;\n"
   "out vec2 TexCoord;\n"
-  "uniform dmat4 projection_matrix;\n"
-  "uniform dmat4 view_matrix;\n"
-  "uniform dmat4 model_matrix;\n"
+  "uniform mat4 projection_matrix;\n"
+  "uniform mat4 view_matrix;\n"
+  "uniform mat4 model_matrix;\n"
   "\n"
   "void main() {\n"
   "  gl_Position = vec4(projection_matrix * view_matrix * \n"
-  "                     model_matrix * dvec4(aPos, 1.0));\n"
-  "  FragNormal = vec3(dmat3(transpose(inverse(model_matrix))) * aNorm);\n"
+  "                     model_matrix * vec4(aPos, 1.0));\n"
+  "  FragNormal = vec3(mat3(transpose(inverse(model_matrix))) * aNorm);\n"
   "  TexCoord = vec2(aTexCoord);\n"
   "}\n";
 
@@ -112,7 +112,7 @@ void gl_ortho_render (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glUseProgram(ortho->gl_shader_program);
   assert(glGetError() == GL_NO_ERROR);
-  glUniformMatrix4dv(ortho->gl_projection_matrix_loc, 1, GL_FALSE,
+  glUniformMatrix4fv(ortho->gl_projection_matrix_loc, 1, GL_FALSE,
                      &ortho->projection_matrix.xx);
   if ((error = glGetError()) != GL_NO_ERROR) {
     err_write_1("gl_ortho_render: glUniformMatrix4dv: ");
@@ -120,16 +120,16 @@ void gl_ortho_render (s_gl_ortho *ortho)
     assert(! "gl_ortho_render: glUniformMatrix4dv");
   }
   assert(glGetError() == GL_NO_ERROR);
-  glUniformMatrix4dv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
+  glUniformMatrix4fv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
                      &ortho->view_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);
-  glUniformMatrix4dv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
+  glUniformMatrix4fv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
                      &ortho->model_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);
 }
 
-void gl_ortho_resize (s_gl_ortho *ortho, f64 x1, f64 x2, f64 y1, f64 y2,
-                      f64 clip_z_near, f64 clip_z_far)
+void gl_ortho_resize (s_gl_ortho *ortho, f32 x1, f32 x2, f32 y1, f32 y2,
+                      f32 clip_z_near, f32 clip_z_far)
 {
   assert(ortho);
   gl_matrix_4d_init_identity(&ortho->projection_matrix);
@@ -150,7 +150,7 @@ void gl_ortho_update_model_matrix (s_gl_ortho *ortho)
 {
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
-  glUniformMatrix4dv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
+  glUniformMatrix4fv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
                      &ortho->model_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);
 }
@@ -168,7 +168,7 @@ void gl_ortho_update_view_matrix (s_gl_ortho *ortho)
                            &(s_gl_point_3d) { 0.0, 1.0, 0.0 });
   gl_matrix_4d_rotate_axis(&ortho->view_matrix, ortho->rotation.z,
                            &(s_gl_point_3d) { 0.0, 0.0, 1.0 });
-  glUniformMatrix4dv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
+  glUniformMatrix4fv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
                      &ortho->view_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);
 }

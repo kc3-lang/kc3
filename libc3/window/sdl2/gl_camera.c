@@ -16,11 +16,11 @@
 #include "gl_matrix_4d.h"
 
 static const s8 * g_gl_camera_vertex_shader_src = "#version 330 core\n"
-"layout (location = 0) in dvec3 aPos;\n"
-"uniform dmat4 matrix;\n"
+"layout (location = 0) in vec3 aPos;\n"
+"uniform mat4 matrix;\n"
 "\n"
 "void main() {\n"
-"  gl_Position = vec4(matrix * dvec4(aPos, 1.0));\n"
+"  gl_Position = vec4(matrix * vec4(aPos, 1.0));\n"
 "}\n";
 
 void gl_camera_clean (s_gl_camera *camera)
@@ -41,15 +41,15 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   u32 vertex_shader;
   assert(camera);
   gl_camera_set_aspect_ratio(camera, w, h);
-  camera->clip_z_far = 1000;
-  camera->clip_z_near = 0.1;
-  camera->fov_y = 90.0;
-  camera->position.x = 0.0;
-  camera->position.y = 0.0;
-  camera->position.z = -10.0;
-  camera->rotation.x = 90.0;
-  camera->rotation.y = 0.0;
-  camera->rotation.z = 0.0;
+  camera->clip_z_far = 1000.0f;
+  camera->clip_z_near = 0.1f;
+  camera->fov_y = 90.0f;
+  camera->position.x = 0.0f;
+  camera->position.y = 0.0f;
+  camera->position.z = -10.0f;
+  camera->rotation.x = 90.0f;
+  camera->rotation.y = 0.0f;
+  camera->rotation.z = 0.0f;
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_shader, 1, &g_gl_camera_vertex_shader_src,
                  NULL);
@@ -101,7 +101,7 @@ void gl_camera_render (s_gl_camera *camera)
   gl_matrix_4d_rotate_axis(&camera->matrix, camera->rotation.z,
                            &(s_gl_point_3d) { 0.0, 0.0, 1.0 });
   glUseProgram(camera->gl_shader_program);
-  glUniformMatrix4dv(camera->gl_matrix_loc, 1, GL_FALSE,
+  glUniformMatrix4fv(camera->gl_matrix_loc, 1, GL_FALSE,
                      &camera->matrix.xx);
 }
 
