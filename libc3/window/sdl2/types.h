@@ -81,8 +81,8 @@ typedef void (*f_window_sdl2_unload) (s_window_sdl2 *window);
 /* 1 */
 struct gl_font {
   FT_Face ft_face;
-  f64 point_size;
-  f64 pixel_per_point;
+  f32 point_size;
+  f32 pixel_per_point;
   s_str path;
   s_str real_path;
 };
@@ -94,34 +94,34 @@ struct gl_lines {
 };
 
 struct gl_matrix_3d {
-  f64 xx;
-  f64 xy;
-  f64 xz;
-  f64 yx;
-  f64 yy;
-  f64 yz;
-  f64 zx;
-  f64 zy;
-  f64 zz;
+  f32 xx;
+  f32 xy;
+  f32 xz;
+  f32 yx;
+  f32 yy;
+  f32 yz;
+  f32 zx;
+  f32 zy;
+  f32 zz;
 };
 
 struct gl_matrix_4d {
-  f64 xx;
-  f64 xy;
-  f64 xz;
-  f64 xt;
-  f64 yx;
-  f64 yy;
-  f64 yz;
-  f64 yt;
-  f64 zx;
-  f64 zy;
-  f64 zz;
-  f64 zt;
-  f64 tx;
-  f64 ty;
-  f64 tz;
-  f64 tt;
+  f32 xx;
+  f32 xy;
+  f32 xz;
+  f32 xt;
+  f32 yx;
+  f32 yy;
+  f32 yz;
+  f32 yt;
+  f32 zx;
+  f32 zy;
+  f32 zz;
+  f32 zt;
+  f32 tx;
+  f32 ty;
+  f32 tz;
+  f32 tt;
 };
 
 struct gl_object {
@@ -134,14 +134,14 @@ struct gl_object {
 };
 
 struct gl_point_2d {
-  f64 x;
-  f64 y;
+  f32 x;
+  f32 y;
 };
 
 struct gl_point_3d {
-  f64 x;
-  f64 y;
-  f64 z;
+  f32 x;
+  f32 y;
+  f32 z;
 };
 
 struct gl_text {
@@ -160,16 +160,16 @@ struct gl_triangle {
 };
 
 struct rgb {
-  f64 r;
-  f64 g;
-  f64 b;
+  f32 r;
+  f32 g;
+  f32 b;
 };
 
 struct rgba {
-  f64 r;
-  f64 g;
-  f64 b;
-  f64 a;
+  f32 r;
+  f32 g;
+  f32 b;
+  f32 a;
 };
 
 /* Subtype of s_window. See libc3/window/types.h */
@@ -202,10 +202,10 @@ struct window_sdl2 {
 
 /* 2 */
 struct gl_camera {
-  f64 aspect_ratio;
-  f64 clip_z_far;
-  f64 clip_z_near;
-  f64 fov_y;
+  f32 aspect_ratio;
+  f32 clip_z_far;
+  f32 clip_z_near;
+  f32 fov_y;
   s_gl_point_3d position;
   s_gl_point_3d rotation;
   s_gl_matrix_4d matrix;
@@ -220,12 +220,12 @@ struct gl_cylinder {
 };
 
 struct gl_ortho {
-  f64 x1;
-  f64 x2;
-  f64 y1;
-  f64 y2;
-  f64 clip_z_near;
-  f64 clip_z_far;
+  f32 x1;
+  f32 x2;
+  f32 y1;
+  f32 y2;
+  f32 clip_z_near;
+  f32 clip_z_far;
   s_gl_point_3d position;
   s_gl_point_3d rotation;
   s_gl_matrix_4d projection_matrix;
