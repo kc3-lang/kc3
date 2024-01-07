@@ -12,9 +12,9 @@
  */
 #include <libc3/c3.h>
 #include "../gl_lines.h"
-#include "../gl_matrix_4d.h"
+#include "../gl_matrix_4f.h"
 #include "../gl_ortho.h"
-#include "../gl_point_3d.h"
+#include "../gl_point_3f.h"
 #include "window_sdl2_demo.h"
 #include "lightspeed.h"
 
@@ -48,9 +48,9 @@ static void star_render (s_tag *star, s_sequence *seq, s_gl_vertex *v)
   speed = &star->data.map.value[0].data.f64;
   x = &star->data.map.value[1].data.f64;
   y = &star->data.map.value[2].data.f64;
-  gl_point_3d_init(&v[0].position, *x, *y, 0.0);
+  gl_point_3f_init(&v[0].position, *x, *y, 0.0);
   q = (1 + *speed / 20);
-  gl_point_3d_init(&v[1].position, *x * q, *y * q, 0.0);
+  gl_point_3f_init(&v[1].position, *x * q, *y * q, 0.0);
   q = (1 + *speed / 100);
   *x = *x * q;
   *y = *y * q;
@@ -90,11 +90,11 @@ bool lightspeed_render (s_sequence *seq)
   assert(seq);
   window = seq->window;
   assert(window);
-  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   /*
-  gl_matrix_4d_scale(&g_ortho.model_matrix, window->w / 2.0,
+  gl_matrix_4f_scale(&g_ortho.model_matrix, window->w / 2.0,
                      window->h / 2.0, 1);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1, 1, 0);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, 1, 1, 0);
   */
   gl_ortho_update_model_matrix(&g_ortho);
   star_count = window->w * window->h * LIGHTSPEED_STAR_PROBABILITY;

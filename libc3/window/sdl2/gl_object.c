@@ -79,7 +79,7 @@ void gl_object_render_wireframe (const s_gl_object *object)
 }
 
 void gl_object_transform (s_gl_object *object,
-                          const s_gl_matrix_4d *matrix)
+                          const s_gl_matrix_4f *matrix)
 {
   uw i;
   s_gl_vertex *vertex;

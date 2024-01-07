@@ -12,8 +12,8 @@
  */
 #include <libc3/c3.h>
 #include "gl_object.h"
-#include "gl_point_2d.h"
-#include "gl_point_3d.h"
+#include "gl_point_2f.h"
+#include "gl_point_3f.h"
 #include "gl_text.h"
 #include "gl_triangle.h"
 
@@ -88,10 +88,10 @@ bool gl_text_render_to_texture (s_gl_text *text)
   FT_UInt glyph_index;
   uw i;
   uw j;
-  f64 max_height = 0.0;
+  f32 max_height = 0.0;
   FT_UInt prev_glyph_index = 0;
   s_str s;
-  f64 total_width = 0.0;
+  f32 total_width = 0.0;
   assert(text);
   assert(text->font);
   assert(text->texture);
@@ -107,7 +107,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
     if (prev_glyph_index && glyph_index) {
       FT_Get_Kerning(font->ft_face, prev_glyph_index, glyph_index,
                      FT_KERNING_DEFAULT, &delta);
-      total_width += ceil((f64) delta.x / (1 << 6));
+      total_width += ceil((f32) delta.x / (1 << 6));
     }
     if (FT_Load_Glyph(font->ft_face, glyph_index, FT_LOAD_RENDER)) {
       err_write_1("gl_font_render_to_texture: failed to load glyph: ");
@@ -126,7 +126,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
   data_h = ceil(max_height);
   data_size = data_w * data_h * 4;
   data = calloc(1, data_size);
-  f64 x = 0;
+  f32 x = 0;
   prev_glyph_index = 0;
   s = text->str;
   while (str_read_character_utf8(&s, &c) > 0) {
@@ -137,7 +137,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
       FT_Vector delta;
       FT_Get_Kerning(font->ft_face, prev_glyph_index, glyph_index,
                      FT_KERNING_DEFAULT, &delta);
-      x += (f64) delta.x / (1 << 6);
+      x += (f32) delta.x / (1 << 6);
     }
     if (FT_Load_Glyph(font->ft_face, glyph_index, FT_LOAD_RENDER)) {
       continue;
@@ -222,18 +222,18 @@ bool gl_text_update (s_gl_text *text)
   if (! gl_text_render_to_texture(text))
     return false;
   vertex = text->object.vertex.data;
-  gl_point_3d_init(&vertex[0].position, 0.0, text->h, 0.0);
-  gl_point_3d_init(&vertex[0].normal, 0.0, 0.0, -1.0);
-  gl_point_2d_init(&vertex[0].tex_coord, 0.0, 1.0);
-  gl_point_3d_init(&vertex[1].position, 0.0, 0.0, 0.0);
-  gl_point_3d_init(&vertex[1].normal, 0.0, 0.0, -1.0);
-  gl_point_2d_init(&vertex[1].tex_coord, 0.0, 0.0);
-  gl_point_3d_init(&vertex[2].position, text->w, text->h, 0.0);
-  gl_point_3d_init(&vertex[2].normal, 0.0, 0.0, -1.0);
-  gl_point_2d_init(&vertex[2].tex_coord, 1.0, 1.0);
-  gl_point_3d_init(&vertex[3].position, text->w, 0.0, 0.0);
-  gl_point_3d_init(&vertex[3].normal, 0.0, 0.0, -1.0);
-  gl_point_2d_init(&vertex[3].tex_coord, 1.0, 0.0);
+  gl_point_3f_init(&vertex[0].position, 0.0, text->h, 0.0);
+  gl_point_3f_init(&vertex[0].normal, 0.0, 0.0, -1.0);
+  gl_point_2f_init(&vertex[0].tex_coord, 0.0, 1.0);
+  gl_point_3f_init(&vertex[1].position, 0.0, 0.0, 0.0);
+  gl_point_3f_init(&vertex[1].normal, 0.0, 0.0, -1.0);
+  gl_point_2f_init(&vertex[1].tex_coord, 0.0, 0.0);
+  gl_point_3f_init(&vertex[2].position, text->w, text->h, 0.0);
+  gl_point_3f_init(&vertex[2].normal, 0.0, 0.0, -1.0);
+  gl_point_2f_init(&vertex[2].tex_coord, 1.0, 1.0);
+  gl_point_3f_init(&vertex[3].position, text->w, 0.0, 0.0);
+  gl_point_3f_init(&vertex[3].normal, 0.0, 0.0, -1.0);
+  gl_point_2f_init(&vertex[3].tex_coord, 1.0, 0.0);
   triangle = text->object.triangle.data;
   gl_triangle_init(triangle + 0, 0, 1, 2);
   gl_triangle_init(triangle + 1, 1, 3, 2);

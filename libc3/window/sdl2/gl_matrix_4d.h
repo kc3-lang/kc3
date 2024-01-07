@@ -33,20 +33,20 @@ s_gl_matrix_4d * gl_matrix_4d_new_matrix_mult (const s_gl_matrix_4d *a,
 s_gl_matrix_4d * gl_matrix_4d_new_zero (void);
 
 /* Operators. */
-s_gl_matrix_4d * gl_matrix_4d_ortho (s_gl_matrix_4d *m, f32 x1, f32 x2,
-                                     f32 y1, f32 y2, f32 clip_z_near,
-                                     f32 clip_z_far);
-s_gl_matrix_4d * gl_matrix_4d_perspective (s_gl_matrix_4d *m, f32 fov_y,
-                                           f32 aspect_ratio,
-                                           f32 clip_z_near,
-                                           f32 clip_z_far);
+s_gl_matrix_4d * gl_matrix_4d_ortho (s_gl_matrix_4d *m, f64 x1, f64 x2,
+                                     f64 y1, f64 y2, f64 clip_z_near,
+                                     f64 clip_z_far);
+s_gl_matrix_4d * gl_matrix_4d_perspective (s_gl_matrix_4d *m, f64 fov_y,
+                                           f64 aspect_ratio,
+                                           f64 clip_z_near,
+                                           f64 clip_z_far);
 s_gl_matrix_4d * gl_matrix_4d_product (s_gl_matrix_4d *m,
                                        const s_gl_matrix_4d *a);
-s_gl_matrix_4d * gl_matrix_4d_rotate_axis (s_gl_matrix_4d *m, f32 rad,
+s_gl_matrix_4d * gl_matrix_4d_rotate_axis (s_gl_matrix_4d *m, f64 rad,
                                            const s_gl_point_3d *axis);
-s_gl_matrix_4d * gl_matrix_4d_scale (s_gl_matrix_4d *m, f32 x, f32 y,
-                                     f32 z);
-s_gl_matrix_4d * gl_matrix_4d_translate (s_gl_matrix_4d *m, f32 x,
-                                         f32 y, f32 z);
+s_gl_matrix_4d * gl_matrix_4d_scale (s_gl_matrix_4d *m, f64 x, f64 y,
+                                     f64 z);
+s_gl_matrix_4d * gl_matrix_4d_translate (s_gl_matrix_4d *m, f64 x,
+                                         f64 y, f64 z);
 
 #endif /* GL_MATRIX_4D_H */

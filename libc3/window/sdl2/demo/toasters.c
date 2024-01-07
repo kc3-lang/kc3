@@ -12,7 +12,7 @@
  */
 #include <math.h>
 #include <libc3/c3.h>
-#include "../gl_matrix_4d.h"
+#include "../gl_matrix_4f.h"
 #include "../gl_ortho.h"
 #include "../gl_sprite.h"
 #include "toasters.h"
@@ -49,7 +49,7 @@ static s_tag * toast_init (s_tag *toast, f64 x, f64 y)
 static void toast_render (s_tag *toast, s_window_sdl2 *window,
                           s_sequence *seq)
 {
-  s_gl_matrix_4d matrix;
+  s_gl_matrix_4f matrix;
   f64 *x;
   f64 *y;
   if (toast->type == TAG_MAP) {
@@ -63,9 +63,9 @@ static void toast_render (s_tag *toast, s_window_sdl2 *window,
       return;
     }
     matrix = g_ortho.model_matrix;
-    gl_matrix_4d_translate(&g_ortho.model_matrix, *x,
+    gl_matrix_4f_translate(&g_ortho.model_matrix, *x,
                            *y + g_sprite_toast.h, 0.0);
-    gl_matrix_4d_scale(&g_ortho.model_matrix,
+    gl_matrix_4f_scale(&g_ortho.model_matrix,
                        TOASTERS_SCALE_TOAST,
                        -TOASTERS_SCALE_TOAST, 1);
     gl_ortho_update_model_matrix(&g_ortho);
@@ -87,7 +87,7 @@ static s_tag * toaster_init (s_tag *toaster, f64 y)
 static void toaster_render (s_tag *toaster, s_window_sdl2 *window,
                             s_sequence *seq)
 {
-  s_gl_matrix_4d matrix;
+  s_gl_matrix_4f matrix;
   f64 *x;
   f64 *y;
   if (toaster->type == TAG_MAP) {
@@ -101,9 +101,9 @@ static void toaster_render (s_tag *toaster, s_window_sdl2 *window,
       return;
     }
     matrix = g_ortho.model_matrix;
-    gl_matrix_4d_translate(&g_ortho.model_matrix, *x,
+    gl_matrix_4f_translate(&g_ortho.model_matrix, *x,
                            *y + g_sprite_toaster.h, 0.0);
-    gl_matrix_4d_scale(&g_ortho.model_matrix,
+    gl_matrix_4f_scale(&g_ortho.model_matrix,
                        TOASTERS_SCALE_TOASTER,
                        -TOASTERS_SCALE_TOASTER, 1);
     gl_ortho_update_model_matrix(&g_ortho);
@@ -136,9 +136,9 @@ bool toasters_render (s_sequence *seq)
   assert(window);
   glClearColor(0.7f, 0.95f, 1.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT);
-  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 0, window->h, 0);
-  gl_matrix_4d_scale(&g_ortho.model_matrix, 1, -1, 1);
+  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, 0, window->h, 0);
+  gl_matrix_4f_scale(&g_ortho.model_matrix, 1, -1, 1);
   /* io_inspect(&seq->tag); */
   if (seq->tag.type == TAG_MAP) {
     toasters = &seq->tag.data.map.value[0].data.list;

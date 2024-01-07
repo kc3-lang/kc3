@@ -13,7 +13,7 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "gl_ortho.h"
-#include "gl_matrix_4d.h"
+#include "gl_matrix_4f.h"
 
 static const s8 * g_gl_ortho_vertex_shader_src = "#version 330 core\n"
   "layout (location = 0) in vec3 aPos;\n"
@@ -50,16 +50,16 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   GLint success;
   u32 vertex_shader;
   assert(ortho);
-  gl_matrix_4d_init_identity(&ortho->projection_matrix);
-  gl_matrix_4d_ortho(&ortho->projection_matrix, -1, 1, -1, 1, -1, 1);
+  gl_matrix_4f_init_identity(&ortho->projection_matrix);
+  gl_matrix_4f_ortho(&ortho->projection_matrix, -1, 1, -1, 1, -1, 1);
   ortho->position.x = 0.0;
   ortho->position.y = 0.0;
   ortho->position.z = 0.0;
   ortho->rotation.x = 0.0;
   ortho->rotation.y = 0.0;
   ortho->rotation.z = 0.0;
-  gl_matrix_4d_init_identity(&ortho->view_matrix);
-  gl_matrix_4d_init_identity(&ortho->model_matrix);
+  gl_matrix_4f_init_identity(&ortho->view_matrix);
+  gl_matrix_4f_init_identity(&ortho->model_matrix);
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_shader, 1, &g_gl_ortho_vertex_shader_src,
                  NULL);
@@ -133,8 +133,8 @@ void gl_ortho_resize (s_gl_ortho *ortho, f32 x1, f32 x2, f32 y1, f32 y2,
                       f32 clip_z_near, f32 clip_z_far)
 {
   assert(ortho);
-  gl_matrix_4d_init_identity(&ortho->projection_matrix);
-  gl_matrix_4d_ortho(&ortho->projection_matrix, x1, x2, y1, y2,
+  gl_matrix_4f_init_identity(&ortho->projection_matrix);
+  gl_matrix_4f_ortho(&ortho->projection_matrix, x1, x2, y1, y2,
                      clip_z_near, clip_z_far);
 }
 
@@ -160,15 +160,15 @@ void gl_ortho_update_view_matrix (s_gl_ortho *ortho)
 {
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
-  gl_matrix_4d_init_identity(&ortho->view_matrix);
-  gl_matrix_4d_translate(&ortho->view_matrix, ortho->position.x,
+  gl_matrix_4f_init_identity(&ortho->view_matrix);
+  gl_matrix_4f_translate(&ortho->view_matrix, ortho->position.x,
                          ortho->position.y, ortho->position.z);
-  gl_matrix_4d_rotate_axis(&ortho->view_matrix, ortho->rotation.x,
-                           &(s_gl_point_3d) { 1.0, 0.0, 0.0 });
-  gl_matrix_4d_rotate_axis(&ortho->view_matrix, ortho->rotation.y,
-                           &(s_gl_point_3d) { 0.0, 1.0, 0.0 });
-  gl_matrix_4d_rotate_axis(&ortho->view_matrix, ortho->rotation.z,
-                           &(s_gl_point_3d) { 0.0, 0.0, 1.0 });
+  gl_matrix_4f_rotate_axis(&ortho->view_matrix, ortho->rotation.x,
+                           &(s_gl_point_3f) { 1.0f, 0.0f, 0.0f });
+  gl_matrix_4f_rotate_axis(&ortho->view_matrix, ortho->rotation.y,
+                           &(s_gl_point_3f) { 0.0f, 1.0f, 0.0f });
+  gl_matrix_4f_rotate_axis(&ortho->view_matrix, ortho->rotation.z,
+                           &(s_gl_point_3f) { 0.0f, 0.0f, 1.0f });
   glUniformMatrix4fv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
                      &ortho->view_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);

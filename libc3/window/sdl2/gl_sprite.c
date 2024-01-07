@@ -13,8 +13,8 @@
 #include <libc3/c3.h>
 #include "gl_deprecated.h"
 #include "gl_object.h"
-#include "gl_point_2d.h"
-#include "gl_point_3d.h"
+#include "gl_point_2f.h"
+#include "gl_point_3f.h"
 #include "gl_sprite.h"
 #include "gl_triangle.h"
 
@@ -351,18 +351,18 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
              &dimension);
   array_allocate(&tmp.object.triangle);
   vertex = tmp.object.vertex.data;
-  gl_point_3d_init(&vertex[0].position, 0.0, tmp.h, 0.0);
-  gl_point_3d_init(&vertex[0].normal, 0.0, 0.0, -1.0);
-  gl_point_2d_init(&vertex[0].tex_coord, 0.0, 1.0);
-  gl_point_3d_init(&vertex[1].position, 0.0, 0.0, 0.0);
-  gl_point_3d_init(&vertex[1].normal, 0.0, 0.0, -1.0);
-  gl_point_2d_init(&vertex[1].tex_coord, 0.0, 0.0);
-  gl_point_3d_init(&vertex[2].position, tmp.w, tmp.h, 0.0);
-  gl_point_3d_init(&vertex[2].normal, 0.0, 0.0, -1.0);
-  gl_point_2d_init(&vertex[2].tex_coord, 1.0, 1.0);
-  gl_point_3d_init(&vertex[3].position, tmp.w, 0.0, 0.0);
-  gl_point_3d_init(&vertex[3].normal, 0.0, 0.0, -1.0);
-  gl_point_2d_init(&vertex[3].tex_coord, 1.0, 0.0);
+  gl_point_3f_init(&vertex[0].position, 0.0, tmp.h, 0.0);
+  gl_point_3f_init(&vertex[0].normal, 0.0, 0.0, -1.0);
+  gl_point_2f_init(&vertex[0].tex_coord, 0.0, 1.0);
+  gl_point_3f_init(&vertex[1].position, 0.0, 0.0, 0.0);
+  gl_point_3f_init(&vertex[1].normal, 0.0, 0.0, -1.0);
+  gl_point_2f_init(&vertex[1].tex_coord, 0.0, 0.0);
+  gl_point_3f_init(&vertex[2].position, tmp.w, tmp.h, 0.0);
+  gl_point_3f_init(&vertex[2].normal, 0.0, 0.0, -1.0);
+  gl_point_2f_init(&vertex[2].tex_coord, 1.0, 1.0);
+  gl_point_3f_init(&vertex[3].position, tmp.w, 0.0, 0.0);
+  gl_point_3f_init(&vertex[3].normal, 0.0, 0.0, -1.0);
+  gl_point_2f_init(&vertex[3].tex_coord, 1.0, 0.0);
   triangle = tmp.object.triangle.data;
   gl_triangle_init(triangle + 0, 0, 1, 2);
   gl_triangle_init(triangle + 1, 1, 3, 2);
