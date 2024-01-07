@@ -1,5 +1,8 @@
 # C3 v0.1.10
 
+This is a development branch, please see
+[C3 v0.1.9](/c3-lang/c3/_tag/v0.1.9) for a stable release.
+
 C3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
 for semantic programming, and programming the semantic web.
