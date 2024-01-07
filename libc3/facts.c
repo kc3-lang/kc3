@@ -560,7 +560,7 @@ void facts_remove_all (s_facts *facts)
     f[i] = &item->data;
     i++;
   }
-  qsort(f, count, sizeof(f[0]), facts_compare_fact_id_reverse);
+  qsort(f, i, sizeof(f[0]), facts_compare_fact_id_reverse);
   j = 0;
   while (j < i) {
     facts_remove_fact(facts, f[j]);
