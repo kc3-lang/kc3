@@ -46,6 +46,5 @@ s_struct_type * struct_type_new (const s_sym *module,
 bool                  struct_type_exists (const s_sym *module);
 const s_struct_type * struct_type_find (const s_sym *module);
 uw                    struct_type_padding (uw offset, uw size);
-void                  struct_type_facts_clean(s_facts *facts);
 
 #endif /* LIBC3_STRUCT_TYPE_H */

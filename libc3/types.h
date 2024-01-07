@@ -148,7 +148,7 @@ typedef struct ident                   s_ident;
 typedef struct integer                 s_integer;
 typedef struct integer_fraction        s_integer_fraction;
 typedef struct list                    s_list;
-typedef struct list__fact              s_list__fact;
+typedef struct fact_list               s_fact_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct map                     s_map;
@@ -224,9 +224,9 @@ struct frame {
   s_frame *next;
 };
 
-struct list__fact {
+struct fact_list {
   s_fact *fact;
-  s_list__fact *next;
+  s_fact_list *next;
 };
 
 struct map {
@@ -538,7 +538,7 @@ struct facts {
   sw                rwlock_count;
   pthread_t         rwlock_thread;
   uw                next_id;
-  s_list__fact     *fact_list;
+  s_fact_list      *fact_list;
 };
 
 struct facts_cursor {
