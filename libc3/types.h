@@ -538,7 +538,6 @@ struct facts {
   sw                rwlock_count;
   pthread_t         rwlock_thread;
   uw                next_id;
-  s_fact_list      *fact_list;
 };
 
 struct facts_cursor {

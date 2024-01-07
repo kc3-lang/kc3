@@ -46,6 +46,7 @@ void     facts_lock_w (s_facts *facts);
 sw       facts_open_file (s_facts *facts, const s_str *path);
 s_tag *  facts_ref_tag (s_facts *facts, const s_tag *tag);
 bool     facts_remove_fact (s_facts *facts, const s_fact *fact);
+void     facts_remove_all (s_facts *facts);
 s_fact * facts_replace_fact (s_facts *facts, const s_fact *fact);
 s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
                              const s_tag *predicate,
