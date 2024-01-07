@@ -32,8 +32,9 @@
 #include "skiplist__fact.h"
 #include "tag.h"
 
-sw facts_open_file_create (s_facts *facts, const s_str *path);
-sw facts_open_log (s_facts *facts, s_buf *buf);
+static int facts_compare_fact_id_reverse (const void *a, const void *b);
+static sw facts_open_file_create (s_facts *facts, const s_str *path);
+static sw facts_open_log (s_facts *facts, s_buf *buf);
 
 s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
 {
@@ -96,6 +97,21 @@ void facts_close (s_facts *facts)
   log_close(facts->log);
   log_delete(facts->log);
   facts->log = NULL;
+}
+
+int facts_compare_fact_id_reverse (const void *a, const void *b)
+{
+  const s_fact *fa;
+  const s_fact *fb;
+  assert(a);
+  assert(b);
+  fa = a;
+  fb = b;
+  if (fa->id < fb->id)
+    return 1;
+  if (fa->id > fb->id)
+    return -1;
+  return 0;
 }
 
 void facts_delete (s_facts *facts)
@@ -526,28 +542,13 @@ s_tag * facts_ref_tag (s_facts *facts, const s_tag *tag)
   return &item->data;
 }
 
-int facts_compare_fact_id_reverse (const void *a, const void *b)
-{
-  const s_fact *fa;
-  const s_fact *fb;
-  fa = a;
-  fb = b;
-  if (fa == fb)
-    return 0;
-  if (fa->id == fb->id)
-    return 0;
-  if (fa->id < fb->id)
-    return 1;
-  return -1;
-}
-
-
 void facts_remove_all (s_facts *facts)
 {
   uw count;
   s_set_cursor__fact cursor;
   s_fact **f;
   uw i;
+  uw j;
   s_set_item__fact *item;
   assert(facts);
   count = facts->facts.count;
@@ -560,10 +561,10 @@ void facts_remove_all (s_facts *facts)
     i++;
   }
   qsort(f, count, sizeof(f[0]), facts_compare_fact_id_reverse);
-  i = 0;
-  while (i < count) {
-    facts_remove_fact(facts, f[i]);
-    i++;
+  j = 0;
+  while (j < i) {
+    facts_remove_fact(facts, f[j]);
+    j++;
   }
   free(f);
 }
