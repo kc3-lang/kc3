@@ -28,7 +28,8 @@ static const s8 * g_gl_ortho_vertex_shader_src = "#version 330 core\n"
   "void main() {\n"
   "  gl_Position = vec4(projection_matrix * view_matrix * \n"
   "                     model_matrix * vec4(aPos, 1.0));\n"
-  "  FragNormal = vec3(mat3(transpose(inverse(model_matrix))) * aNorm);\n"
+  "  FragNormal = vec3(mat3(transpose(inverse(model_matrix))) *\n"
+  "                    aNorm);\n"
   "  TexCoord = vec2(aTexCoord);\n"
   "}\n";
 
@@ -50,7 +51,7 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   u32 vertex_shader;
   assert(ortho);
   gl_matrix_4d_init_identity(&ortho->projection_matrix);
-  //gl_matrix_4d_ortho(&ortho->projection_matrix, -1, 1, -1, 1, -1, 1);
+  gl_matrix_4d_ortho(&ortho->projection_matrix, -1, 1, -1, 1, -1, 1);
   ortho->position.x = 0.0;
   ortho->position.y = 0.0;
   ortho->position.z = 0.0;
@@ -115,9 +116,9 @@ void gl_ortho_render (s_gl_ortho *ortho)
   glUniformMatrix4fv(ortho->gl_projection_matrix_loc, 1, GL_FALSE,
                      &ortho->projection_matrix.xx);
   if ((error = glGetError()) != GL_NO_ERROR) {
-    err_write_1("gl_ortho_render: glUniformMatrix4dv: ");
+    err_write_1("gl_ortho_render: glUniformMatrix4fv: ");
     err_puts((const s8 *) glewGetErrorString(error));
-    assert(! "gl_ortho_render: glUniformMatrix4dv");
+    assert(! "gl_ortho_render: glUniformMatrix4fv");
   }
   assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
