@@ -20,6 +20,7 @@
 #include "buf_parse.h"
 #include "compare.h"
 #include "fact.h"
+#include "fact_list.h"
 #include "facts.h"
 #include "facts_cursor.h"
 #include "facts_with.h"
@@ -62,6 +63,7 @@ s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
   skiplist_insert__fact(facts->index_spo, f);
   skiplist_insert__fact(facts->index_pos, f);
   skiplist_insert__fact(facts->index_osp, f);
+  facts->fact_list = fact_list_new(f, facts->fact_list);
   facts_lock_unlock_w(facts);
   return f;
 }
@@ -77,8 +79,14 @@ s_fact * facts_add_tags (s_facts *facts, const s_tag *subject,
 
 void facts_clean (s_facts *facts)
 {
+  s_fact_list *fl;
   if (facts->log)
     facts_close(facts);
+  fl = facts->fact_list;
+  while (fl) {
+    facts_remove_fact(facts, fl->fact);
+    fl = fact_list_delete(fl);
+  }
   skiplist_delete__fact(facts->index_osp);
   skiplist_delete__fact(facts->index_pos);
   skiplist_delete__fact(facts->index_spo);

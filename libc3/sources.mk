@@ -87,6 +87,7 @@ HEADERS = \
 	"f32.h" \
 	"f64.h" \
 	"fact.h" \
+	"fact_list.h" \
 	"facts.h" \
 	"facts_cursor.h" \
 	"facts_spec.h" \
@@ -233,6 +234,7 @@ SOURCES = \
 	"f32.c" \
 	"f64.c" \
 	"fact.c" \
+	"fact_list.c" \
 	"facts.c" \
 	"facts_cursor.c" \
 	"facts_spec.c" \
@@ -484,6 +486,7 @@ LO_SOURCES = \
 	"f32.c" \
 	"f64.c" \
 	"fact.c" \
+	"fact_list.c" \
 	"facts.c" \
 	"facts_cursor.c" \
 	"facts_spec.c" \

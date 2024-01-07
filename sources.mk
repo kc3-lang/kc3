@@ -284,6 +284,8 @@ C3_C_SOURCES = \
 	"libc3/f64.h" \
 	"libc3/fact.c" \
 	"libc3/fact.h" \
+	"libc3/fact_list.c" \
+	"libc3/fact_list.h" \
 	"libc3/facts.c" \
 	"libc3/facts.h" \
 	"libc3/facts_cursor.c" \
@@ -763,6 +765,9 @@ C3_OTHER_SOURCES = \
 	"test/ic3/str.in" \
 	"test/ic3/str.out.expected" \
 	"test/ic3/str.ret.expected" \
+	"test/ic3/struct.in" \
+	"test/ic3/struct.out.expected" \
+	"test/ic3/struct.ret.expected" \
 	"test/ic3/sym.err.expected" \
 	"test/ic3/sym.in" \
 	"test/ic3/sym.out.expected" \
