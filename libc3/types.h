@@ -148,6 +148,7 @@ typedef struct ident                   s_ident;
 typedef struct integer                 s_integer;
 typedef struct integer_fraction        s_integer_fraction;
 typedef struct list                    s_list;
+typedef struct list__fact              s_list__fact;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct map                     s_map;
@@ -221,6 +222,11 @@ struct fn_clause {
 struct frame {
   s_binding *bindings;
   s_frame *next;
+};
+
+struct list__fact {
+  s_fact *fact;
+  s_list__fact *next;
 };
 
 struct map {
@@ -519,7 +525,7 @@ TYPEDEF_SKIPLIST_NODE(fact, s_fact *);
   } s_skiplist__##name
 
 TYPEDEF_SKIPLIST(fact, s_fact *);
-  
+
 /* 8 */
 struct facts {
   s_set__tag        tags;
@@ -531,7 +537,8 @@ struct facts {
   pthread_rwlock_t  rwlock;
   sw                rwlock_count;
   pthread_t         rwlock_thread;
-  u64               next_id;
+  uw                next_id;
+  s_list__fact     *fact_list;
 };
 
 struct facts_cursor {

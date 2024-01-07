@@ -50,7 +50,7 @@ s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
     return &item->data;
   }
   tmp.id = facts->next_id;
-  if (facts->next_id == U64_MAX) {
+  if (facts->next_id == UW_MAX) {
     errx(1, "facts serial id exhausted");
     return NULL;
   }
@@ -216,7 +216,7 @@ s_facts * facts_init (s_facts *facts)
   facts->index_osp->compare = compare_fact_osp;
   facts->log = NULL;
   facts_lock_init(facts);
-  facts->next_id = 0;
+  facts->next_id = 1;
   return facts;
 }
 
