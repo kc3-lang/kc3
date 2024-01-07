@@ -327,6 +327,7 @@ bool window_sdl2_demo_resize (s_window_sdl2 *window,
   (void) window;
   assert(glGetError() == GL_NO_ERROR);
   gl_ortho_resize(&g_ortho, 0, w, 0, h, -1, 1);
+  glViewport(0, 0, w, h);
   assert(glGetError() == GL_NO_ERROR);
   return true;
 }
