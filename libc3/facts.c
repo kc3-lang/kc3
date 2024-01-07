@@ -10,10 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
 #include <err.h>
 #include <errno.h>
 #include <stdlib.h>
+#include "assert.h"
 #include "buf.h"
 #include "buf_file.h"
 #include "buf_inspect.h"
@@ -24,6 +24,7 @@
 #include "facts.h"
 #include "facts_cursor.h"
 #include "facts_with.h"
+#include "io.h"
 #include "list.h"
 #include "log.h"
 #include "set__fact.h"
@@ -32,7 +33,8 @@
 #include "skiplist__fact.h"
 #include "tag.h"
 
-static int facts_compare_fact_id_reverse (const void *a, const void *b);
+static int facts_compare_pfact_id_reverse (const void *a,
+                                           const void *b);
 static sw facts_open_file_create (s_facts *facts, const s_str *path);
 static sw facts_open_log (s_facts *facts, s_buf *buf);
 
@@ -99,14 +101,18 @@ void facts_close (s_facts *facts)
   facts->log = NULL;
 }
 
-int facts_compare_fact_id_reverse (const void *a, const void *b)
+int facts_compare_pfact_id_reverse (const void *a, const void *b)
 {
   const s_fact *fa;
   const s_fact *fb;
+  const s_fact * const *pfa;
+  const s_fact * const *pfb;
   assert(a);
   assert(b);
-  fa = a;
-  fb = b;
+  pfa = a;
+  pfb = b;
+  fa = *pfa;
+  fb = *pfb;
   if (fa->id < fb->id)
     return 1;
   if (fa->id > fb->id)
@@ -552,7 +558,14 @@ void facts_remove_all (s_facts *facts)
   s_set_item__fact *item;
   assert(facts);
   count = facts->facts.count;
+  if (! count)
+    return;
   f = calloc(count, sizeof(s_fact *));
+  if (! f) {
+    err_puts("facts_remove_all: failed to allocate memory");
+    assert(! "facts_remove_all: failed to allocate memory");
+    return;
+  }
   i = 0;
   set_cursor_init__fact(&facts->facts, &cursor);
   while (i < count &&
@@ -560,7 +573,7 @@ void facts_remove_all (s_facts *facts)
     f[i] = &item->data;
     i++;
   }
-  qsort(f, i, sizeof(f[0]), facts_compare_fact_id_reverse);
+  qsort(f, i, sizeof(s_fact *), facts_compare_pfact_id_reverse);
   j = 0;
   while (j < i) {
     facts_remove_fact(facts, f[j]);
