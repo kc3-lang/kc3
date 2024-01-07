@@ -47,6 +47,12 @@ void c3_exit (sw code)
   exit((int) code);
 }
 
+uw * c3_facts_next_id (uw *dest)
+{
+  *dest = g_c3_env.facts.next_id;
+  return dest;
+}
+
 s_env * c3_init (s_env *env, int argc, s8 **argv)
 {
   if (! env)

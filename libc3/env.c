@@ -58,6 +58,7 @@ void env_clean (s_env *env)
   assert(env);
   frame_delete_all(env->frame);
   error_handler_delete_all(env->error_handler);
+  struct_type_facts_clean(&env->facts);
   facts_clean(&env->facts);
   buf_file_close(&env->in);
   buf_clean(&env->in);
