@@ -493,16 +493,23 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/gl_lines.c" \
 	"libc3/window/sdl2/gl_lines.h" \
 	"libc3/window/sdl2/gl_matrix_3d.h" \
+	"libc3/window/sdl2/gl_matrix_3f.h" \
 	"libc3/window/sdl2/gl_matrix_4d.c" \
 	"libc3/window/sdl2/gl_matrix_4d.h" \
+	"libc3/window/sdl2/gl_matrix_4f.c" \
+	"libc3/window/sdl2/gl_matrix_4f.h" \
 	"libc3/window/sdl2/gl_object.c" \
 	"libc3/window/sdl2/gl_object.h" \
 	"libc3/window/sdl2/gl_ortho.c" \
 	"libc3/window/sdl2/gl_ortho.h" \
 	"libc3/window/sdl2/gl_point_2d.c" \
 	"libc3/window/sdl2/gl_point_2d.h" \
+	"libc3/window/sdl2/gl_point_2f.c" \
+	"libc3/window/sdl2/gl_point_2f.h" \
 	"libc3/window/sdl2/gl_point_3d.c" \
 	"libc3/window/sdl2/gl_point_3d.h" \
+	"libc3/window/sdl2/gl_point_3f.c" \
+	"libc3/window/sdl2/gl_point_3f.h" \
 	"libc3/window/sdl2/gl_sphere.c" \
 	"libc3/window/sdl2/gl_sphere.h" \
 	"libc3/window/sdl2/gl_sprite.c" \

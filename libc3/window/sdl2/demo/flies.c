@@ -13,7 +13,7 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "../gl_font.h"
-#include "../gl_matrix_4d.h"
+#include "../gl_matrix_4f.h"
 #include "../gl_ortho.h"
 #include "../gl_text.h"
 #include "../gl_sprite.h"
@@ -158,9 +158,9 @@ bool flies_render (s_sequence *seq)
   uw i;
   uw j;
   s_map *map;
-  s_gl_matrix_4d matrix;
-  s_gl_matrix_4d matrix_1;
-  s_gl_matrix_4d matrix_2;
+  s_gl_matrix_4f matrix;
+  s_gl_matrix_4f matrix_1;
+  s_gl_matrix_4f matrix_2;
   uw r;
   uw random_bits = 0;
   f64 x;
@@ -194,8 +194,8 @@ bool flies_render (s_sequence *seq)
   dead_fly_scale = 2.0 * board_item_w / g_sprite_dead_fly.w;
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                   GL_LINEAR_MIPMAP_LINEAR);
-  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, board_x, 60.0, 0.0);
+  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, board_x, 60.0, 0.0);
   glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
   buf_init(&buf, false, sizeof(a), a);
   buf_write_1(&buf, "In ");
@@ -211,12 +211,12 @@ bool flies_render (s_sequence *seq)
   buf_write_u8(&buf, 0);
   x = board_item_w * (BOARD_SIZE / 2 + 1);
   matrix = g_ortho.model_matrix; {
-    gl_matrix_4d_translate(&g_ortho.model_matrix, x, 0.0, 0.0);
+    gl_matrix_4f_translate(&g_ortho.model_matrix, x, 0.0, 0.0);
     gl_ortho_update_model_matrix(&g_ortho);
     gl_text_update_1(&g_text_flies_out, a);
     gl_text_render(&g_text_flies_out);
     g_ortho.model_matrix = matrix;
-    gl_matrix_4d_translate(&g_ortho.model_matrix, 0.0, board_item_h, 0.0);
+    gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, board_item_h, 0.0);
     glBlendColor(0.6f, 0.7f, 0.9f, 1.0f);
     //glRectd(0, 0, board_w, board_h);
     address[1] = 0;
@@ -226,7 +226,7 @@ bool flies_render (s_sequence *seq)
       while (address[0] < BOARD_SIZE) {
         x = board_item_w * address[0];
         matrix_1 = g_ortho.model_matrix; {
-          gl_matrix_4d_translate(&g_ortho.model_matrix, x,
+          gl_matrix_4f_translate(&g_ortho.model_matrix, x,
                                  board_h - board_item_h - y, 0.0);
           board_item = (u8 *) array_data(board, address);
           assert(board_item);
@@ -240,10 +240,10 @@ bool flies_render (s_sequence *seq)
             break;
           case BOARD_ITEM_FLY:
             matrix_2 = g_ortho.model_matrix; {
-              gl_matrix_4d_translate(&g_ortho.model_matrix,
+              gl_matrix_4f_translate(&g_ortho.model_matrix,
                                      -board_item_w / 2.0,
                                      -board_item_h / 2.0, 0.0);
-              gl_matrix_4d_scale(&g_ortho.model_matrix, fly_scale,
+              gl_matrix_4f_scale(&g_ortho.model_matrix, fly_scale,
                                  fly_scale, 1.0);
               gl_ortho_update_model_matrix(&g_ortho);
               gl_sprite_render(&g_sprite_fly, 0);
@@ -316,10 +316,10 @@ bool flies_render (s_sequence *seq)
             break;
           case BOARD_ITEM_DEAD_FLY:
             matrix_2 = g_ortho.model_matrix; {
-              gl_matrix_4d_translate(&g_ortho.model_matrix,
+              gl_matrix_4f_translate(&g_ortho.model_matrix,
                                      -board_item_w / 2.0,
                                      -board_item_h / 2.0, 0.0);
-              gl_matrix_4d_scale(&g_ortho.model_matrix, dead_fly_scale,
+              gl_matrix_4f_scale(&g_ortho.model_matrix, dead_fly_scale,
                                  dead_fly_scale, 1.0);
               gl_ortho_update_model_matrix(&g_ortho);
               gl_sprite_render(&g_sprite_dead_fly, 0);

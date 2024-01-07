@@ -13,7 +13,7 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "gl_object.h"
-#include "gl_point_3d.h"
+#include "gl_point_3f.h"
 #include "gl_square.h"
 
 void gl_square_clean (s_gl_square *square)
@@ -33,11 +33,11 @@ s_gl_square * gl_square_init (s_gl_square *square, uw seg_u, uw seg_v)
 {
   uw i;
   uw j;
-  s_gl_point_3d normal;
+  s_gl_point_3f normal;
   s_gl_square tmp = {0};
   s_gl_triangle *triangle;
   s_gl_vertex *vertex;
-  f64 y;
+  f32 y;
   assert(square);
   if (seg_u < 2)
     seg_u = 2;
@@ -49,14 +49,14 @@ s_gl_square * gl_square_init (s_gl_square *square, uw seg_u, uw seg_v)
       ! gl_object_allocate(&tmp.object, seg_u * seg_v,
                            2 * (seg_u - 1) * (seg_v - 1)))
     return NULL;
-  gl_point_3d_init(&normal, 0.0, 0.0, 1.0);
+  gl_point_3f_init(&normal, 0.0f, 0.0f, 1.0f);
   vertex = tmp.object.vertex.data;
   i = 0;
   while (i < seg_v) {
-    y = (f64) i / seg_v;
+    y = (f32) i / seg_v;
     j = 0;
     while (j < seg_u) {
-      vertex->tex_coord.x = vertex->position.x = (f64) j / seg_u;
+      vertex->tex_coord.x = vertex->position.x = (f32) j / seg_u;
       vertex->tex_coord.y = vertex->position.y = y;
       vertex->position.z = 0.0;
       vertex->normal = normal;

@@ -13,7 +13,7 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "gl_camera.h"
-#include "gl_matrix_4d.h"
+#include "gl_matrix_4f.h"
 
 static const s8 * g_gl_camera_vertex_shader_src = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
@@ -88,18 +88,18 @@ s_gl_camera * gl_camera_new (uw w, uw h)
 void gl_camera_render (s_gl_camera *camera)
 {
   assert(camera);
-  gl_matrix_4d_init_identity(&camera->matrix);
-  gl_matrix_4d_perspective(&camera->matrix, camera->fov_y,
+  gl_matrix_4f_init_identity(&camera->matrix);
+  gl_matrix_4f_perspective(&camera->matrix, camera->fov_y,
                            camera->aspect_ratio, camera->clip_z_near,
                            camera->clip_z_far);
-  gl_matrix_4d_translate(&camera->matrix, camera->position.x,
+  gl_matrix_4f_translate(&camera->matrix, camera->position.x,
                          camera->position.y, camera->position.z);
-  gl_matrix_4d_rotate_axis(&camera->matrix, camera->rotation.x,
-                           &(s_gl_point_3d) { 1.0, 0.0, 0.0 });
-  gl_matrix_4d_rotate_axis(&camera->matrix, camera->rotation.y,
-                           &(s_gl_point_3d) { 0.0, 1.0, 0.0 });
-  gl_matrix_4d_rotate_axis(&camera->matrix, camera->rotation.z,
-                           &(s_gl_point_3d) { 0.0, 0.0, 1.0 });
+  gl_matrix_4f_rotate_axis(&camera->matrix, camera->rotation.x,
+                           &(s_gl_point_3f) { 1.0f, 0.0f, 0.0f });
+  gl_matrix_4f_rotate_axis(&camera->matrix, camera->rotation.y,
+                           &(s_gl_point_3f) { 0.0f, 1.0f, 0.0f });
+  gl_matrix_4f_rotate_axis(&camera->matrix, camera->rotation.z,
+                           &(s_gl_point_3f) { 0.0f, 0.0f, 1.0f });
   glUseProgram(camera->gl_shader_program);
   glUniformMatrix4fv(camera->gl_matrix_loc, 1, GL_FALSE,
                      &camera->matrix.xx);

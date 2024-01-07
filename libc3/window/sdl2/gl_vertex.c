@@ -11,15 +11,15 @@
  * THIS SOFTWARE.
  */
 #include <libc3/c3.h>
-#include "gl_point_3d.h"
+#include "gl_point_3f.h"
 #include "gl_vertex.h"
 
 void gl_vertex_transform (s_gl_vertex *vertex,
-                          const s_gl_matrix_4d *matrix)
+                          const s_gl_matrix_4f *matrix)
 {
   assert(vertex);
   assert(matrix);
-  gl_point_3d_transform(&vertex->position, matrix);
-  gl_point_3d_transform(&vertex->normal, matrix);
-  gl_point_3d_normalize(&vertex->normal);
+  gl_point_3f_transform(&vertex->position, matrix);
+  gl_point_3f_transform(&vertex->normal, matrix);
+  gl_point_3f_normalize(&vertex->normal);
 }

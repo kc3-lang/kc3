@@ -16,7 +16,7 @@
 #include "../../window.h"
 #include "../gl_font.h"
 #include "../gl_lines.h"
-#include "../gl_matrix_4d.h"
+#include "../gl_matrix_4f.h"
 #include "../gl_ortho.h"
 #include "../gl_square.h"
 #include "../gl_text.h"
@@ -211,39 +211,39 @@ static void render_text (s_gl_text *text, f64 x, f64 y)
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
                       GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   assert(glGetError() == GL_NO_ERROR);
-  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, x - 1.0, y - 1.0, 0.0);
+  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, x - 1.0, y - 1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
   assert(glGetError() == GL_NO_ERROR);
   gl_text_render(text);
   assert(glGetError() == GL_NO_ERROR);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_text_render(text);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_text_render(text);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 0.0, 1.0, 0.0);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, 1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_text_render(text);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, -1.0, 0.0, 0.0);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, -1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_text_render(text);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, -1.0, 0.0, 0.0);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, -1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_text_render(text);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 0.0, 1.0, 0.0);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, 1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_text_render(text);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_text_render(text);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_text_render(text);
   glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, -1.0, -1.0, 0.0);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, -1.0, -1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_text_render(text);
   assert(glGetError() == GL_NO_ERROR);
@@ -258,7 +258,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
     return false;
   seq = window->seq;
   gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, -1, 1);
-  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   gl_ortho_render(&g_ortho);
   glEnable(GL_BLEND);
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
@@ -285,9 +285,9 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   glBindTexture(GL_TEXTURE_2D, 0);
   assert(glGetError() == GL_NO_ERROR);
   glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
-  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 19.0, 11.0, 0);
-  gl_matrix_4d_scale(&g_ortho.model_matrix,
+  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, 19.0, 11.0, 0);
+  gl_matrix_4f_scale(&g_ortho.model_matrix,
                      (window->w - 40.0) * seq->t / seq->duration + 2.0,
                      4.0, 0);
   gl_ortho_update_model_matrix(&g_ortho);
@@ -298,9 +298,9 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
     11 + 4);
   */
   glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
-  gl_matrix_4d_init_identity(&g_ortho.model_matrix);
-  gl_matrix_4d_translate(&g_ortho.model_matrix, 20.0, 12.0, 0);
-  gl_matrix_4d_scale(&g_ortho.model_matrix,
+  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
+  gl_matrix_4f_translate(&g_ortho.model_matrix, 20.0, 12.0, 0);
+  gl_matrix_4f_scale(&g_ortho.model_matrix,
                      (window->w - 40.0) * seq->t / seq->duration,
                      2.0, 0);
   gl_ortho_update_model_matrix(&g_ortho);

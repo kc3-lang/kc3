@@ -29,13 +29,17 @@
 typedef struct gl_camera    s_gl_camera;
 typedef struct gl_cylinder  s_gl_cylinder;
 typedef struct gl_font      s_gl_font;
-typedef struct gl_lines    s_gl_lines;
+typedef struct gl_lines     s_gl_lines;
 typedef struct gl_matrix_3d s_gl_matrix_3d;
+typedef struct gl_matrix_3f s_gl_matrix_3f;
 typedef struct gl_matrix_4d s_gl_matrix_4d;
+typedef struct gl_matrix_4f s_gl_matrix_4f;
 typedef struct gl_object    s_gl_object;
 typedef struct gl_ortho     s_gl_ortho;
 typedef struct gl_point_2d  s_gl_point_2d;
+typedef struct gl_point_2f  s_gl_point_2f;
 typedef struct gl_point_3d  s_gl_point_3d;
+typedef struct gl_point_3f  s_gl_point_3f;
 typedef struct gl_sphere    s_gl_sphere;
 typedef struct gl_sprite    s_gl_sprite;
 typedef struct gl_square    s_gl_square;
@@ -94,6 +98,18 @@ struct gl_lines {
 };
 
 struct gl_matrix_3d {
+  f64 xx;
+  f64 xy;
+  f64 xz;
+  f64 yx;
+  f64 yy;
+  f64 yz;
+  f64 zx;
+  f64 zy;
+  f64 zz;
+};
+
+struct gl_matrix_3f {
   f32 xx;
   f32 xy;
   f32 xz;
@@ -106,6 +122,25 @@ struct gl_matrix_3d {
 };
 
 struct gl_matrix_4d {
+  f64 xx;
+  f64 xy;
+  f64 xz;
+  f64 xt;
+  f64 yx;
+  f64 yy;
+  f64 yz;
+  f64 yt;
+  f64 zx;
+  f64 zy;
+  f64 zz;
+  f64 zt;
+  f64 tx;
+  f64 ty;
+  f64 tz;
+  f64 tt;
+};
+
+struct gl_matrix_4f {
   f32 xx;
   f32 xy;
   f32 xz;
@@ -134,11 +169,22 @@ struct gl_object {
 };
 
 struct gl_point_2d {
+  f64 x;
+  f64 y;
+};
+
+struct gl_point_2f {
   f32 x;
   f32 y;
 };
 
 struct gl_point_3d {
+  f64 x;
+  f64 y;
+  f64 z;
+};
+
+struct gl_point_3f {
   f32 x;
   f32 y;
   f32 z;
@@ -206,9 +252,9 @@ struct gl_camera {
   f32 clip_z_far;
   f32 clip_z_near;
   f32 fov_y;
-  s_gl_point_3d position;
-  s_gl_point_3d rotation;
-  s_gl_matrix_4d matrix;
+  s_gl_point_3f position;
+  s_gl_point_3f rotation;
+  s_gl_matrix_4f matrix;
   u32 gl_matrix_loc;
   u32 gl_shader_program;
 };
@@ -226,13 +272,13 @@ struct gl_ortho {
   f32 y2;
   f32 clip_z_near;
   f32 clip_z_far;
-  s_gl_point_3d position;
-  s_gl_point_3d rotation;
-  s_gl_matrix_4d projection_matrix;
+  s_gl_point_3f position;
+  s_gl_point_3f rotation;
+  s_gl_matrix_4f projection_matrix;
   u32         gl_projection_matrix_loc;
-  s_gl_matrix_4d view_matrix;
+  s_gl_matrix_4f view_matrix;
   u32         gl_view_matrix_loc;
-  s_gl_matrix_4d model_matrix;
+  s_gl_matrix_4f model_matrix;
   u32         gl_model_matrix_loc;
   u32 gl_shader_program;
 };
@@ -266,9 +312,9 @@ struct gl_square {
 };
 
 struct gl_vertex {
-  s_gl_point_3d position;
-  s_gl_point_3d normal;
-  s_gl_point_2d tex_coord;
+  s_gl_point_3f position;
+  s_gl_point_3f normal;
+  s_gl_point_2f tex_coord;
 };
 
 struct sdl2_sprite {
