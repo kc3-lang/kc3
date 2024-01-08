@@ -151,7 +151,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   }
   if (! gl_ortho_init(&g_ortho))
     return false;
-  gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, -1, 1);
+  gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, 0, 1);
   if (! gl_font_init(&g_font_courier_new,
                      "fonts/Courier New/Courier New.ttf"))
     return false;
@@ -257,7 +257,6 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   if (! window_animate((s_window *) window))
     return false;
   seq = window->seq;
-  gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, -1, 1);
   gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   gl_ortho_render(&g_ortho);
   glEnable(GL_BLEND);
@@ -326,8 +325,7 @@ bool window_sdl2_demo_resize (s_window_sdl2 *window,
   assert(window);
   (void) window;
   assert(glGetError() == GL_NO_ERROR);
-  gl_ortho_resize(&g_ortho, 0, w, 0, h, -1, 1);
-  glViewport(0, 0, w, h);
+  gl_ortho_resize(&g_ortho, 0, w, 0, h, 0, 1);
   assert(glGetError() == GL_NO_ERROR);
   return true;
 }

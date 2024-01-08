@@ -126,16 +126,8 @@ void gl_ortho_render (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
                      &ortho->model_matrix.xx);
+  glDepthRange(ortho->clip_z_near, ortho->clip_z_far);
   assert(glGetError() == GL_NO_ERROR);
-}
-
-void gl_ortho_resize (s_gl_ortho *ortho, f32 x1, f32 x2, f32 y1, f32 y2,
-                      f32 clip_z_near, f32 clip_z_far)
-{
-  assert(ortho);
-  gl_matrix_4f_init_identity(&ortho->projection_matrix);
-  gl_matrix_4f_ortho(&ortho->projection_matrix, x1, x2, y1, y2,
-                     clip_z_near, clip_z_far);
 }
 
 void gl_ortho_render_end (s_gl_ortho *ortho)
@@ -145,6 +137,17 @@ void gl_ortho_render_end (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glUseProgram(0);
   assert(glGetError() == GL_NO_ERROR);
+}
+
+void gl_ortho_resize (s_gl_ortho *ortho, f32 x1, f32 x2, f32 y1, f32 y2,
+                      f32 clip_z_near, f32 clip_z_far)
+{
+  assert(ortho);
+  gl_matrix_4f_init_identity(&ortho->projection_matrix);
+  gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);
+  gl_matrix_4f_ortho(&ortho->projection_matrix, x1, x2, y1, y2,
+                     clip_z_near, clip_z_far);
+  gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);
 }
 
 void gl_ortho_update_model_matrix (s_gl_ortho *ortho)

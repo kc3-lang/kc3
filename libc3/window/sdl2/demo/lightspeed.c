@@ -19,6 +19,7 @@
 #include "lightspeed.h"
 
 s_gl_lines g_lines_stars = {0};
+s_gl_ortho g_ortho_lightspeed = {0};
 
 static void star_init (s_tag *star)
 {

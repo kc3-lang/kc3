@@ -18,6 +18,7 @@
 sw gl_matrix_4f_buf_inspect (s_buf *buf, const s_gl_matrix_4f *matrix)
 {
   u8 i;
+  u8 j;
   sw r;
   sw result = 0;
   assert(buf);
@@ -28,14 +29,33 @@ sw gl_matrix_4f_buf_inspect (s_buf *buf, const s_gl_matrix_4f *matrix)
   result += r;
   m = &matrix->xx;
   i = 0;
-  while (i < 16) {
-    if ((r = buf_inspect_f32(buf, m)) < 0)
-      return r;
-    result += r;
-    m++;
+  while (i < 4) {
+    j = 0;
+    while (j < 4) {
+      if ((r = buf_inspect_f32(buf, m)) < 0)
+        return r;
+      result += r;
+      if (i < 3 || j < 3) {
+        if ((r = buf_write_1(buf, ",")) < 0)
+          return r;
+        result += r;
+        if (j < 3) {
+          if ((r = buf_write_1(buf, " ")) < 0)
+            return r;
+          result += r;
+        }
+      }
+      m++;
+      j++;
+    }
+    if (i < 3) {
+      if ((r = buf_write_1(buf, "\n       ")) < 0)
+        return r;
+      result += r;
+    }
     i++;
   }
-  if ((r = buf_write_1(buf, "}")) < 0)
+  if ((r = buf_write_1(buf, "}\n")) < 0)
     return r;
   result += r;
   return result;
@@ -156,9 +176,9 @@ s_gl_matrix_4f * gl_matrix_4f_ortho (s_gl_matrix_4f *m, f32 x1, f32 x2,
   ortho.xx = 2.0 / dx;
   ortho.yy = 2.0 / dy;
   ortho.zz = -2.0 / dz;
-  ortho.xt = -(x1 + x2) / dx;
-  ortho.yt = -(y1 + y2) / dy;
-  ortho.zt = -(clip_z_near + clip_z_far) / dz;
+  ortho.xt = (x1 + x2) / dx;
+  ortho.yt = (y1 + y2) / dy;
+  ortho.zt = (clip_z_near + clip_z_far) / dz;
   ortho.tt = 1.0;
   gl_matrix_4f_product(m, &ortho);
   return m;
