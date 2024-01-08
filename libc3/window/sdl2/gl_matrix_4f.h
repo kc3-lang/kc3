@@ -49,4 +49,7 @@ s_gl_matrix_4f * gl_matrix_4f_scale (s_gl_matrix_4f *m, f32 x, f32 y,
 s_gl_matrix_4f * gl_matrix_4f_translate (s_gl_matrix_4f *m, f32 x,
                                          f32 y, f32 z);
 
+/* Observers. */
+sw gl_matrix_4f_buf_inspect (s_buf *buf, const s_gl_matrix_4f *matrix);
+
 #endif /* GL_MATRIX_4F_H */
