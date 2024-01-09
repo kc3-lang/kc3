@@ -680,7 +680,7 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
   if ((r = buf_write_1(buf, ".")) <= 0)
     return r;
   result += r;
-  j = 7;
+  j = 6;
   do {
     x *= 10;
     i = (u8) x;
@@ -758,7 +758,7 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
   if ((r = buf_write_1(buf, ".")) <= 0)
     return r;
   result += r;
-  j = 15;
+  j = 14;
   do {
     x *= 10;
     i = (u8) x;

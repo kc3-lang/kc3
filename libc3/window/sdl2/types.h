@@ -274,6 +274,7 @@ struct gl_ortho {
   f32 clip_z_far;
   s_gl_point_3f position;
   s_gl_point_3f rotation;
+  s_gl_point_3f scale;
   s_gl_matrix_4f projection_matrix;
   u32         gl_projection_matrix_loc;
   s_gl_matrix_4f view_matrix;
