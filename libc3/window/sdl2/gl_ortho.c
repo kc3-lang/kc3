@@ -30,7 +30,7 @@ static const s8 * g_gl_ortho_vertex_shader_src = "#version 330 core\n"
   "                     model_matrix * vec4(aPos, 1.0));\n"
   "  FragNormal = vec3(mat3(transpose(inverse(model_matrix))) *\n"
   "                    aNorm);\n"
-  "  TexCoord = vec2(aTexCoord);\n"
+  "  TexCoord = aTexCoord;\n"
   "}\n";
 
 void gl_ortho_clean (s_gl_ortho *ortho)
@@ -51,13 +51,16 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   u32 vertex_shader;
   assert(ortho);
   gl_matrix_4f_init_identity(&ortho->projection_matrix);
-  gl_matrix_4f_ortho(&ortho->projection_matrix, -1, 1, -1, 1, -1, 1);
-  ortho->position.x = 0.0;
-  ortho->position.y = 0.0;
-  ortho->position.z = 0.0;
-  ortho->rotation.x = 0.0;
-  ortho->rotation.y = 0.0;
-  ortho->rotation.z = 0.0;
+  gl_matrix_4f_ortho(&ortho->projection_matrix, -1, 1, -1, 1, 0, 1);
+  ortho->position.x = 0.0f;
+  ortho->position.y = 0.0f;
+  ortho->position.z = 0.0f;
+  ortho->rotation.x = M_PI;
+  ortho->rotation.y = 0.0f;
+  ortho->rotation.z = 0.0f;
+  ortho->scale.x = 1.0f;
+  ortho->scale.y = 1.0f;
+  ortho->scale.z = 1.0f;
   gl_matrix_4f_init_identity(&ortho->view_matrix);
   gl_matrix_4f_init_identity(&ortho->model_matrix);
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -144,10 +147,10 @@ void gl_ortho_resize (s_gl_ortho *ortho, f32 x1, f32 x2, f32 y1, f32 y2,
 {
   assert(ortho);
   gl_matrix_4f_init_identity(&ortho->projection_matrix);
-  gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);
   gl_matrix_4f_ortho(&ortho->projection_matrix, x1, x2, y1, y2,
                      clip_z_near, clip_z_far);
   gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);
+  buf_flush(&g_c3_env.err);
 }
 
 void gl_ortho_update_model_matrix (s_gl_ortho *ortho)
@@ -172,6 +175,8 @@ void gl_ortho_update_view_matrix (s_gl_ortho *ortho)
                            &(s_gl_point_3f) { 0.0f, 1.0f, 0.0f });
   gl_matrix_4f_rotate_axis(&ortho->view_matrix, ortho->rotation.z,
                            &(s_gl_point_3f) { 0.0f, 0.0f, 1.0f });
+  gl_matrix_4f_scale(&ortho->view_matrix, ortho->scale.x,
+                     ortho->scale.y, ortho->scale.z);
   glUniformMatrix4fv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
                      &ortho->view_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);

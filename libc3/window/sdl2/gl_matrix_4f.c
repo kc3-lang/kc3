@@ -176,9 +176,9 @@ s_gl_matrix_4f * gl_matrix_4f_ortho (s_gl_matrix_4f *m, f32 x1, f32 x2,
   ortho.xx = 2.0 / dx;
   ortho.yy = 2.0 / dy;
   ortho.zz = -2.0 / dz;
-  ortho.xt = (x1 + x2) / dx;
-  ortho.yt = (y1 + y2) / dy;
-  ortho.zt = (clip_z_near + clip_z_far) / dz;
+  ortho.tx = - (x1 + x2) / dx;
+  ortho.ty = - (y1 + y2) / dy;
+  ortho.tz = - (clip_z_near + clip_z_far) / dz;
   ortho.tt = 1.0;
   gl_matrix_4f_product(m, &ortho);
   return m;
