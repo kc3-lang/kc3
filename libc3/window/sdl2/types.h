@@ -109,7 +109,6 @@ struct gl_matrix_3d {
   f64 zz;
 };
 
-#pragma pack(push, 1)
 struct gl_matrix_3f {
   f32 xx;
   f32 yx;
@@ -121,7 +120,6 @@ struct gl_matrix_3f {
   f32 yz;
   f32 zz;
 };
-#pragma pack(pop)
 
 struct gl_matrix_4d {
   f64 xx;
@@ -142,7 +140,6 @@ struct gl_matrix_4d {
   f64 tt;
 };
 
-#pragma pack(push, 1)
 struct gl_matrix_4f {
   f32 xx;
   f32 yx;
@@ -161,7 +158,6 @@ struct gl_matrix_4f {
   f32 zt;
   f32 tt;
 };
-#pragma pack(pop)
 
 struct gl_object {
   s_array vertex;
@@ -316,11 +312,13 @@ struct gl_square {
   uw segments_v;
 };
 
+#pragma pack(push, 1)
 struct gl_vertex {
   s_gl_point_3f position;
   s_gl_point_3f normal;
   s_gl_point_2f tex_coord;
 };
+#pragma pack(pop)
 
 struct sdl2_sprite {
   s_gl_object object;

@@ -281,6 +281,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   render_text(&g_text_seq_title, 20.0f, 30.0f);
   */
   /* progress bar */
+  /*
   glDisable(GL_BLEND);
   assert(glGetError() == GL_NO_ERROR);
   assert(glGetError() == GL_NO_ERROR);
@@ -294,11 +295,13 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
                      4.0, 0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_square_render(&g_square);
+  */
   /*
     glRectd(19, 11,
     19 + (window->w - 40.0) * seq->t / seq->duration + 2,
     11 + 4);
   */
+  /*
   glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
   gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   gl_matrix_4f_translate(&g_ortho.model_matrix, 20.0, 12.0, 0);
@@ -307,6 +310,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
                      2.0, 0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_square_render(&g_square);
+  */
   /*
     glRectd(20, 12,
     20 + (window->w - 40.0) * seq->t / seq->duration,
