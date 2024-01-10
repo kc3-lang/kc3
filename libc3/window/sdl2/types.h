@@ -99,65 +99,69 @@ struct gl_lines {
 
 struct gl_matrix_3d {
   f64 xx;
-  f64 xy;
-  f64 xz;
   f64 yx;
-  f64 yy;
-  f64 yz;
   f64 zx;
+  f64 xy;
+  f64 yy;
   f64 zy;
+  f64 xz;
+  f64 yz;
   f64 zz;
 };
 
+#pragma pack(push, 1)
 struct gl_matrix_3f {
   f32 xx;
-  f32 xy;
-  f32 xz;
   f32 yx;
-  f32 yy;
-  f32 yz;
   f32 zx;
+  f32 xy;
+  f32 yy;
   f32 zy;
+  f32 xz;
+  f32 yz;
   f32 zz;
 };
+#pragma pack(pop)
 
 struct gl_matrix_4d {
   f64 xx;
-  f64 xy;
-  f64 xz;
-  f64 xt;
   f64 yx;
-  f64 yy;
-  f64 yz;
-  f64 yt;
   f64 zx;
-  f64 zy;
-  f64 zz;
-  f64 zt;
   f64 tx;
+  f64 xy;
+  f64 yy;
+  f64 zy;
   f64 ty;
+  f64 xz;
+  f64 yz;
+  f64 zz;
   f64 tz;
+  f64 xt;
+  f64 yt;
+  f64 zt;
   f64 tt;
 };
 
+#pragma pack(push, 1)
 struct gl_matrix_4f {
   f32 xx;
-  f32 xy;
-  f32 xz;
-  f32 xt;
   f32 yx;
-  f32 yy;
-  f32 yz;
-  f32 yt;
   f32 zx;
-  f32 zy;
-  f32 zz;
-  f32 zt;
   f32 tx;
+  f32 xy;
+  f32 yy;
+  f32 zy;
   f32 ty;
+  f32 xz;
+  f32 yz;
+  f32 zz;
   f32 tz;
+  f32 xt;
+  f32 yt;
+  f32 zt;
   f32 tt;
 };
+#pragma pack(pop)
 
 struct gl_object {
   s_array vertex;

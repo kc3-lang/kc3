@@ -56,9 +56,9 @@ s_gl_point_3f * gl_point_3f_init_product (s_gl_point_3f *p,
   assert(p);
   assert(m);
   assert(s);
-  p->x = s->x * m->xx + s->y * m->xy + s->z * m->xz + m->xt;
-  p->y = s->x * m->yx + s->y * m->yy + s->z * m->yz + m->yt;
-  p->z = s->x * m->zx + s->y * m->zy + s->z * m->zz + m->zt;
+  p->x = m->xx * s->x + m->yx * s->y + m->zx * s->z + m->tx;
+  p->y = m->yx * s->x + m->yy * s->y + m->zy * s->z + m->ty;
+  p->z = m->zx * s->x + m->yz * s->y + m->zz * s->z + m->tz;
   return p;
 }
 
