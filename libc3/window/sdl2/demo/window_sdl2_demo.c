@@ -202,6 +202,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   return true;
 }
 
+/*
 static void render_text (s_gl_text *text, f64 x, f64 y)
 {
   assert(glGetError() == GL_NO_ERROR);
@@ -248,7 +249,7 @@ static void render_text (s_gl_text *text, f64 x, f64 y)
   gl_text_render(text);
   assert(glGetError() == GL_NO_ERROR);
 }
-
+*/
 bool window_sdl2_demo_render (s_window_sdl2 *window)
 {
   s_sequence *seq;
@@ -273,10 +274,12 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
                       GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   assert(glGetError() == GL_NO_ERROR);
+  /*
   gl_font_set_size(&g_font_courier_new, 20,
                    (f64) window->gl_h / window->h);
   gl_text_update_1(&g_text_seq_title, seq->title);
   render_text(&g_text_seq_title, 20.0f, 30.0f);
+  */
   /* progress bar */
   glDisable(GL_BLEND);
   assert(glGetError() == GL_NO_ERROR);
@@ -310,11 +313,13 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
     12 + 2);
   */
   /* fps */
+  /*
   char fps[32];
   snprintf(fps, sizeof(fps), "%.1f", (f64) seq->frame / seq->t);
   gl_text_update_1(&g_text_fps, fps);
   glEnable(GL_BLEND);
   render_text(&g_text_fps, 20, window->h - 30);
+  */
   gl_ortho_render_end(&g_ortho);
   return true;
 }

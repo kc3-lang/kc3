@@ -32,7 +32,7 @@ sw gl_matrix_4f_buf_inspect (s_buf *buf, const s_gl_matrix_4f *matrix)
   while (i < 4) {
     j = 0;
     while (j < 4) {
-      if ((r = buf_inspect_f32(buf, m)) < 0)
+      if ((r = buf_inspect_f32(buf, m + j * 4 + i)) < 0)
         return r;
       result += r;
       if (i < 3 || j < 3) {
@@ -45,7 +45,6 @@ sw gl_matrix_4f_buf_inspect (s_buf *buf, const s_gl_matrix_4f *matrix)
           result += r;
         }
       }
-      m++;
       j++;
     }
     if (i < 3) {
@@ -231,9 +230,9 @@ s_gl_matrix_4f * gl_matrix_4f_scale (s_gl_matrix_4f *m, f32 x, f32 y,
 s_gl_matrix_4f * gl_matrix_4f_translate (s_gl_matrix_4f *m, f32 x,
                                          f32 y, f32 z)
 {
-  m->xt += x;
-  m->yt += y;
-  m->zt += z;
+  m->tx += x;
+  m->ty += y;
+  m->tz += z;
   return m;
 }
 

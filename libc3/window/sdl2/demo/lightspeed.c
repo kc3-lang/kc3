@@ -92,8 +92,8 @@ bool lightspeed_render (s_sequence *seq)
   window = seq->window;
   assert(window);
   gl_matrix_4f_init_identity(&g_ortho.model_matrix);
-  gl_matrix_4f_scale(&g_ortho.model_matrix, window->w / 2.0,
-                     window->h / 2.0, 1);
+  gl_matrix_4f_scale(&g_ortho.model_matrix, (f32) window->w / 2.0f,
+                     (f32) window->h / 2.0f, 1.0f);
   gl_matrix_4f_translate(&g_ortho.model_matrix, 1, 1, 0);
   gl_ortho_update_model_matrix(&g_ortho);
   star_count = window->w * window->h * LIGHTSPEED_STAR_PROBABILITY;
