@@ -18,7 +18,7 @@
 #include "../../demo/window_cairo_demo.h"
 #include "../window_cairo_quartz.h"
 
-int main (int argc, s8 **argv)
+int main (int argc, char **argv)
 {
   sw r = 0;
   s_window_cairo window;
