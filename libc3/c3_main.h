@@ -22,11 +22,11 @@ extern const s_str g_c3_base_octal;
 extern const s_str g_c3_base_decimal;
 extern const s_str g_c3_base_hexadecimal;
 extern const s_str g_c3_bases_hexadecimal[2];
-extern const s8   *g_c3_license;
+extern const char *g_c3_license;
 extern sw          g_c3_exit_code;
 
 /* stack-allocation compatible functions */
-s_env * c3_init (s_env *env, int argc, s8 **argv);
+s_env * c3_init (s_env *env, int argc, char **argv);
 void c3_clean (s_env *env);
 
 /* debug */

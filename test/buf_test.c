@@ -36,7 +36,7 @@
     test_context(# test " -> " # expected);                            \
     TEST_EQ(test, len);                                                \
     TEST_EQ(buf.wpos, pos + len);                                      \
-    TEST_STRNCMP(buf.ptr.ps8 + pos, expected, len);                    \
+    TEST_STRNCMP(buf.ptr.pchar + pos, expected, len);                    \
   } while (0)
 
 #define BUF_TEST_IGNORE(test, count, expected)                         \
@@ -206,7 +206,7 @@ void buf_test (void)
 
 TEST_CASE(buf_f)
 {
-  s8 b[32];
+  char b[32];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);          \
   BUF_TEST_F(buf_f(&buf, "09AZaz"), "09AZaz");
@@ -360,7 +360,7 @@ TEST_CASE_END(buf_peek_s8)
 
 TEST_CASE(buf_peek_s16)
 {
-  s8 b[8];
+  char b[8];
   s_buf buf;
   s16 val;
   buf_init(&buf, false, sizeof(b), b);
@@ -437,7 +437,7 @@ TEST_CASE_END(buf_read_character_utf8)
 
 TEST_CASE(buf_read_f32)
 {
-  s8 b[16];
+  char b[16];
   s_buf buf;
   f32 f;
   buf_init(&buf, false, sizeof(b), b);
@@ -467,7 +467,7 @@ TEST_CASE_END(buf_read_character_utf8)
 
 TEST_CASE(buf_read_f64)
 {
-  s8 b[32];
+  char b[32];
   s_buf buf;
   f64 f;
   buf_init(&buf, false, sizeof(b), b);
@@ -540,7 +540,7 @@ TEST_CASE_END(buf_read_s8)
 
 TEST_CASE(buf_read_s16)
 {
-  s8 b[8];
+  char b[8];
   s_buf buf;
   s16 val;
   buf_init(&buf, false, sizeof(b), b);
@@ -565,7 +565,7 @@ TEST_CASE_END(buf_read_s16)
 
 TEST_CASE(buf_read_s32)
 {
-  s8 b[16];
+  char b[16];
   s_buf buf;
   s32 val;
   buf_init(&buf, false, sizeof(b), b);
@@ -595,7 +595,7 @@ TEST_CASE_END(buf_read_s16)
 
 TEST_CASE(buf_read_s64)
 {
-  s8 b[32];
+  char b[32];
   s_buf buf;
   s64 val;
   buf_init(&buf, false, sizeof(b), b);
@@ -668,7 +668,7 @@ TEST_CASE_END(buf_read_u8)
 
 TEST_CASE(buf_read_u16)
 {
-  s8 b[8];
+  char b[8];
   s_buf buf;
   u16 val;
   buf_init(&buf, false, sizeof(b), b);
@@ -698,7 +698,7 @@ TEST_CASE_END(buf_read_u8)
 
 TEST_CASE(buf_read_u32)
 {
-  s8 b[16];
+  char b[16];
   s_buf buf;
   u32 val;
   buf_init(&buf, false, sizeof(b), b);
@@ -728,7 +728,7 @@ TEST_CASE_END(buf_read_u8)
 
 TEST_CASE(buf_read_u64)
 {
-  s8 b[32];
+  char b[32];
   s_buf buf;
   u64 val;
   buf_init(&buf, false, sizeof(b), b);
@@ -758,7 +758,7 @@ TEST_CASE_END(buf_read_u8)
 
 TEST_CASE(buf_write_s8)
 {
-  s8 b[4];
+  char b[4];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s8(&buf, 0x00), 1);
@@ -782,7 +782,7 @@ TEST_CASE_END(buf_write_s8)
 
 TEST_CASE(buf_write_s16)
 {
-  s8 b[8];
+  char b[8];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s16(&buf, 0x0000), 2);
@@ -806,7 +806,7 @@ TEST_CASE_END(buf_write_s16)
 
 TEST_CASE(buf_write_s32)
 {
-  s8 b[16];
+  char b[16];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s32(&buf, 0x00000000), 4);
@@ -830,7 +830,7 @@ TEST_CASE_END(buf_write_s32)
 
 TEST_CASE(buf_write_s64)
 {
-  s8 b[32];
+  char b[32];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_s64(&buf, 0x0000000000000000), 8);
@@ -854,7 +854,7 @@ TEST_CASE_END(buf_write_s64)
 
 TEST_CASE(buf_write_u8)
 {
-  s8 b[4];
+  char b[4];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_u8(&buf, 0x00), 1);
@@ -878,7 +878,7 @@ TEST_CASE_END(buf_write_u8)
 
 TEST_CASE(buf_write_u16)
 {
-  s8 b[8];
+  char b[8];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_u16(&buf, 0x0000), 2);
@@ -902,7 +902,7 @@ TEST_CASE_END(buf_write_u16)
 
 TEST_CASE(buf_write_u32)
 {
-  s8 b[16];
+  char b[16];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_u32(&buf, 0x00000000), 4);
@@ -926,7 +926,7 @@ TEST_CASE_END(buf_write_u32)
 
 TEST_CASE(buf_write_u64)
 {
-  s8 b[32];
+  char b[32];
   s_buf buf;
   buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_write_u64(&buf, 0x0000000000000000), 8);
@@ -955,9 +955,9 @@ TEST_CASE_END(buf_write_str)
 
 TEST_CASE(buf_xfer)
 {
-  s8 d[16];
+  char d[16];
   s_buf dest;
-  s8 s[16] = "0123456789ABCDEF";
+  char s[16] = "0123456789ABCDEF";
   s_buf src;
   buf_init(&src, false, sizeof(s), s);
   src.wpos = 16;

@@ -27,23 +27,24 @@ s_list * list_init_f32 (s_list *list, f32 f, s_list *next);
 s_list * list_init_f64 (s_list *list, f64 f, s_list *next);
 s_list * list_init_ident (s_list *list, const s_ident *ident, 
                           s_list *next);
-s_list * list_init_ident_1 (s_list *list, const s8 *p, s_list *next);
-s_list * list_init_integer_1 (s_list *list, const s8 *p, s_list *next);
+s_list * list_init_ident_1 (s_list *list, const char *p, s_list *next);
+s_list * list_init_integer_1 (s_list *list, const char *p, 
+                              s_list *next);
 s_list * list_init_integer_copy (s_list *list, const s_integer *i, 
                                  s_list *next);
 s_list * list_init_integer_zero (s_list *list, s_list *next);
 
 s_list * list_init_map (s_list *list, uw count, s_list *next);
-s_list * list_init_map_1 (s_list *list, const s8 *p, s_list *next);
+s_list * list_init_map_1 (s_list *list, const char *p, s_list *next);
 s_list * list_init_ptr (s_list *list, void *p, s_list *next);
 s_list * list_init_ptr_free (s_list *list, void *p, s_list *next);
 s_list * list_init_s8 (s_list *list, s8 i, s_list *next);
 s_list * list_init_s16 (s_list *list, s16 i, s_list *next);
 s_list * list_init_s32 (s_list *list, s32 i, s_list *next);
 s_list * list_init_s64 (s_list *list, s64 i, s_list *next);
-s_list * list_init_str (s_list *list, s8 *p_free, uw size, const s8 *p, 
-                        s_list *next);
-s_list * list_init_str_1 (s_list *list, s8 *p_free, const s8 *p, 
+s_list * list_init_str (s_list *list, char *p_free, uw size, 
+                        const char *p, s_list *next);
+s_list * list_init_str_1 (s_list *list, char *p_free, const char *p, 
                           s_list *next);
 s_list * list_init_struct (s_list *list, const s_sym *module, 
                            s_list *next);
@@ -52,7 +53,7 @@ s_list * list_init_struct_with_data (s_list *list, const s_sym *module,
                                      s_list *next);
 s_list * list_init_sw (s_list *list, sw i, s_list *next);
 s_list * list_init_sym (s_list *list, const s_sym *sym, s_list *next);
-s_list * list_init_sym_1 (s_list *list, const s8 *p, s_list *next);
+s_list * list_init_sym_1 (s_list *list, const char *p, s_list *next);
 s_list * list_init_tuple (s_list *list, uw count, s_list *next);
 s_list * list_init_tuple_2 (s_list *list, const s_tag *a, 
                             const s_tag *b, s_list *next);
@@ -75,28 +76,29 @@ s_list * list_new_character (character c, s_list *next);
 s_list * list_new_f32 (f32 f, s_list *next);
 s_list * list_new_f64 (f64 f, s_list *next);
 s_list * list_new_ident (const s_ident *ident, s_list *next);
-s_list * list_new_ident_1 (const s8 *p, s_list *next);
-s_list * list_new_integer_1 (const s8 *p, s_list *next);
+s_list * list_new_ident_1 (const char *p, s_list *next);
+s_list * list_new_integer_1 (const char *p, s_list *next);
 s_list * list_new_integer_copy (const s_integer *i, s_list *next);
 s_list * list_new_integer_zero (s_list *next);
 
 s_list * list_new_map (uw count, s_list *next);
-s_list * list_new_map_1 (const s8 *p, s_list *next);
+s_list * list_new_map_1 (const char *p, s_list *next);
 s_list * list_new_ptr (void *p, s_list *next);
 s_list * list_new_ptr_free (void *p, s_list *next);
 s_list * list_new_s8 (s8 i, s_list *next);
 s_list * list_new_s16 (s16 i, s_list *next);
 s_list * list_new_s32 (s32 i, s_list *next);
 s_list * list_new_s64 (s64 i, s_list *next);
-s_list * list_new_str (s8 *p_free, uw size, const s8 *p, s_list *next);
-s_list * list_new_str_1 (s8 *p_free, const s8 *p, s_list *next);
+s_list * list_new_str (char *p_free, uw size, const char *p, 
+                       s_list *next);
+s_list * list_new_str_1 (char *p_free, const char *p, s_list *next);
 s_list * list_new_struct (const s_sym *module, s_list *next);
 s_list * list_new_struct_with_data (const s_sym *module, 
                                     bool free_data, void *data, 
                                     s_list *next);
 s_list * list_new_sw (sw i, s_list *next);
 s_list * list_new_sym (const s_sym *sym, s_list *next);
-s_list * list_new_sym_1 (const s8 *p, s_list *next);
+s_list * list_new_sym_1 (const char *p, s_list *next);
 s_list * list_new_tuple (uw count, s_list *next);
 s_list * list_new_tuple_2 (const s_tag *a, const s_tag *b, 
                            s_list *next);
@@ -119,27 +121,27 @@ s_list * list_character (s_list *list, character c);
 s_list * list_f32 (s_list *list, f32 f);
 s_list * list_f64 (s_list *list, f64 f);
 s_list * list_ident (s_list *list, const s_ident *ident);
-s_list * list_ident_1 (s_list *list, const s8 *p);
-s_list * list_integer_1 (s_list *list, const s8 *p);
+s_list * list_ident_1 (s_list *list, const char *p);
+s_list * list_integer_1 (s_list *list, const char *p);
 s_list * list_integer_copy (s_list *list, const s_integer *i);
 s_list * list_integer_zero (s_list *list);
 
 s_list * list_map (s_list *list, uw count);
-s_list * list_map_1 (s_list *list, const s8 *p);
+s_list * list_map_1 (s_list *list, const char *p);
 s_list * list_ptr (s_list *list, void *p);
 s_list * list_ptr_free (s_list *list, void *p);
 s_list * list_s8 (s_list *list, s8 i);
 s_list * list_s16 (s_list *list, s16 i);
 s_list * list_s32 (s_list *list, s32 i);
 s_list * list_s64 (s_list *list, s64 i);
-s_list * list_str (s_list *list, s8 *p_free, uw size, const s8 *p);
-s_list * list_str_1 (s_list *list, s8 *p_free, const s8 *p);
+s_list * list_str (s_list *list, char *p_free, uw size, const char *p);
+s_list * list_str_1 (s_list *list, char *p_free, const char *p);
 s_list * list_struct (s_list *list, const s_sym *module);
 s_list * list_struct_with_data (s_list *list, const s_sym *module, 
                                 bool free_data, void *data);
 s_list * list_sw (s_list *list, sw i);
 s_list * list_sym (s_list *list, const s_sym *sym);
-s_list * list_sym_1 (s_list *list, const s8 *p);
+s_list * list_sym_1 (s_list *list, const char *p);
 s_list * list_tuple (s_list *list, uw count);
 s_list * list_tuple_2 (s_list *list, const s_tag *a, const s_tag *b);
 s_list * list_time (s_list *list);

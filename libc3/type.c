@@ -20,14 +20,14 @@
 const s_sym * type_pointer (const s_sym *type)
 {
   uw len;
-  s8 *mem;
+  char *mem;
   s_str str;
   const s_sym *tmp;
   assert(type);
   len = type->str.size + 2;
   if (! (mem = malloc(len)))
     errx(1, "type_pointer: out of memory");
-  memcpy(mem, type->str.ptr.ps8, type->str.size);
+  memcpy(mem, type->str.ptr.pchar, type->str.size);
   memcpy(mem + type->str.size, "*", 2);
   str_init(&str, mem, len, mem);
   tmp = str_to_sym(&str);

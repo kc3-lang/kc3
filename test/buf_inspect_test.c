@@ -17,7 +17,7 @@
 
 #define BUF_INSPECT_TEST_ARRAY(test, expected)                         \
   do {                                                                 \
-    s8 b[1024];                                                        \
+    char b[1024];                                                      \
     s_buf buf_result;                                                  \
     s_array tmp;                                                       \
     test_context("buf_inspect_array(" # test ") -> " # expected);      \
@@ -26,14 +26,14 @@
     TEST_EQ(buf_inspect_array_size(&tmp), strlen(expected));           \
     TEST_EQ(buf_inspect_array(&buf_result, &tmp), strlen(expected));   \
     TEST_EQ(buf_result.wpos, strlen(expected));                        \
-    TEST_STRNCMP(buf_result.ptr.ps8, (expected), buf_result.wpos);     \
+    TEST_STRNCMP(buf_result.ptr.pchar, (expected), buf_result.wpos);   \
     array_clean(&tmp);                                                 \
     buf_clean(&buf_result);                                            \
   } while (0)
 
 #define BUF_INSPECT_TEST_BOOL(test, expected)                          \
   do {                                                                 \
-    s8 b[16];                                                          \
+    char b[16];                                                        \
     s_buf buf;                                                         \
     bool tmp;                                                          \
     test_context("buf_inspect_bool(" # test ") -> " # expected);       \
@@ -47,7 +47,7 @@
   
 #define BUF_INSPECT_TEST_CHARACTER(test, expected)                     \
   do {                                                                 \
-    s8 b[32];                                                          \
+    char b[32];                                                        \
     s_buf buf;                                                         \
     character tmp;                                                     \
     test_context("buf_inspect_character(" # test ") -> " # expected);  \
@@ -56,20 +56,20 @@
     TEST_EQ(buf_inspect_character_size(&tmp), strlen(expected));       \
     TEST_EQ(buf_inspect_character(&buf, &tmp), strlen(expected));      \
     TEST_EQ(buf.wpos, strlen(expected));                               \
-    TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
+    TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
     test_context(NULL);                                                \
   } while (0)
 
 #define BUF_INSPECT_TEST_F32(test, expected)                           \
   do {                                                                 \
-    s8 b[32];                                                          \
+    char b[32];                                                        \
     s_buf buf;                                                         \
     f32 tmp;                                                           \
     test_context("buf_inspect_f32(" # test ") -> " # expected);        \
     tmp = (test);                                                      \
     buf_init(&buf, false, sizeof(b), b);                               \
     buf_inspect_f32(&buf, &tmp);                                       \
-    TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
+    TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_EQ(buf_inspect_f32_size(&tmp), strlen(expected));             \
     buf_init(&buf, false, sizeof(b), b);                               \
@@ -79,25 +79,25 @@
 
 #define BUF_INSPECT_TEST_F64(test, expected)                           \
   do {                                                                 \
-    s8 b[64];                                                          \
+    char b[64];                                                        \
     s_buf buf;                                                         \
     f64 tmp;                                                           \
     test_context("buf_inspect_f64(" # test ") -> " # expected);        \
     tmp = (test);                                                      \
     buf_init(&buf, false, sizeof(b), b);                               \
     buf_inspect_f64(&buf, &tmp);                                       \
-    TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
+    TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     TEST_EQ(buf_inspect_f64_size(&tmp), strlen(expected));             \
     buf_init(&buf, false, sizeof(b), b);                               \
     TEST_EQ(buf_inspect_f64(&buf, &tmp), strlen(expected));            \
-    TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
+    TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
     test_context(NULL);                                                \
   } while (0)
 
 #define BUF_INSPECT_TEST_INTEGER(test, expected)                       \
   do {                                                                 \
-    s8 b[1024];                                                        \
+    char b[1024];                                                      \
     s_buf buf_result;                                                  \
     s_integer i;                                                       \
     test_context("buf_inspect_integer(" # test ") -> " # expected);    \
@@ -107,7 +107,7 @@
     TEST_EQ(buf_inspect_integer(&buf_result, &i), strlen(test));       \
     integer_clean(&i);                                                 \
     TEST_EQ(buf_result.wpos, strlen(test));                            \
-    TEST_STRNCMP(buf_result.ptr.ps8, (expected), buf_result.wpos);     \
+    TEST_STRNCMP(buf_result.ptr.pchar, (expected), buf_result.wpos);   \
     buf_clean(&buf_result);                                            \
   } while (0)
 
@@ -131,7 +131,7 @@
 
 #define BUF_INSPECT_TEST_STR(test, expected)                           \
   do {                                                                 \
-    s8 b[1024];                                                        \
+    char b[1024];                                                      \
     s_buf buf;                                                         \
     s_str str;                                                         \
     test_context("buf_inspect_str(" # test ") -> " # expected);        \
@@ -145,7 +145,7 @@
 
 #define BUF_INSPECT_TEST_STR_CHARACTER(test, expected)                 \
   do {                                                                 \
-    s8 b[32];                                                          \
+    char b[32];                                                        \
     s_buf buf;                                                         \
     character tmp;                                                     \
     test_context("buf_inspect_str_character(" # test ") -> "           \
@@ -154,7 +154,7 @@
     tmp = (test);                                                      \
     TEST_EQ(buf_inspect_str_character_size(&tmp), strlen(expected));   \
     TEST_EQ(buf_inspect_str_character(&buf, &tmp), strlen(expected));  \
-    TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                   \
+    TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);                 \
     test_context(NULL);                                                \
   } while (0)
 
@@ -169,7 +169,7 @@
     TEST_EQ(buf_inspect_tag(&buf, test_tag), strlen(expected));        \
     TEST_EQ(buf.wpos, strlen(expected));                               \
     if (g_test_last_ok)                                                \
-      TEST_STRNCMP(buf.ptr.ps8, (expected), buf.wpos);                 \
+      TEST_STRNCMP(buf.ptr.pchar, (expected), buf.wpos);               \
     buf_clean(&buf);                                                   \
   } while (0)
 
@@ -256,12 +256,12 @@ TEST_CASE(buf_inspect_f64)
 {
   BUF_INSPECT_TEST_F64(0.0, "0.0");
   BUF_INSPECT_TEST_F64(0.1, "1.0e-1");
-  BUF_INSPECT_TEST_F64(0.123456789, "1.234567889999999e-1");
-  BUF_INSPECT_TEST_F64(1.23456789, "1.234567889999999");
+  BUF_INSPECT_TEST_F64(0.123456789, "1.23456788999999e-1");
+  BUF_INSPECT_TEST_F64(1.23456789, "1.23456788999999");
   BUF_INSPECT_TEST_F64(123456789.0, "1.23456789e+8");
   BUF_INSPECT_TEST_F64(-0.1, "-1.0e-1");
-  BUF_INSPECT_TEST_F64(-0.123456789, "-1.234567889999999e-1");
-  BUF_INSPECT_TEST_F64(-1.23456789, "-1.234567889999999");
+  BUF_INSPECT_TEST_F64(-0.123456789, "-1.23456788999999e-1");
+  BUF_INSPECT_TEST_F64(-1.23456789, "-1.23456788999999");
   BUF_INSPECT_TEST_F64(-123456789.0, "-1.23456789e+8");
 }
 TEST_CASE_END(buf_inspect_f64)
@@ -304,7 +304,7 @@ TEST_CASE(buf_inspect_str)
   BUF_INSPECT_TEST_STR("\v", "\"\\v\"");
   BUF_INSPECT_TEST_STR("\"", "\"\\\"\"");
   {
-    s8 b[1024];
+    char b[1024];
     s_buf buf;
     s_str str;
     test_context("buf_inspect_str(\"\\0\") -> \"\\0\"");

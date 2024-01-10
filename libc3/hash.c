@@ -24,7 +24,7 @@
 #define HASH_UPDATE_DEF(type)                                          \
   bool hash_update_##type (t_hash *hash, const type *x)                \
   {                                                                    \
-    const s8 t[] = #type;                                              \
+    const char t[] = #type;                                              \
     assert(hash);                                                      \
     assert(x);                                                         \
     return hash_update(hash, t, sizeof(t)) &&                          \
@@ -64,10 +64,10 @@ bool hash_update (t_hash *hash, const void *data, uw size)
   return true;
 }
 
-bool hash_update_1 (t_hash *hash, const s8 *p)
+bool hash_update_1 (t_hash *hash, const char *p)
 {
   uw len;
-  const s8 type[] = "s8*";
+  const char type[] = "s8*";
   assert(hash);
   assert(p);
   len = strlen(p);
@@ -79,7 +79,7 @@ bool hash_update_1 (t_hash *hash, const s8 *p)
 bool hash_update_array (t_hash *hash, const s_array *a)
 {
   uw i = 0;
-  const s8 type[] = "array";
+  const char type[] = "array";
   assert(hash);
   assert(a);
   if (! hash_update(hash, type, sizeof(type)) ||
@@ -110,7 +110,7 @@ bool hash_update_array (t_hash *hash, const s_array *a)
 bool hash_update_bool (t_hash *hash, const bool *x)
 {
   bool b;
-  const s8 type[] = "bool";
+  const char type[] = "bool";
   assert(hash);
   assert(x);
   b = x ? 1 : 0;
@@ -120,7 +120,7 @@ bool hash_update_bool (t_hash *hash, const bool *x)
 
 bool hash_update_call (t_hash *hash, const s_call *call)
 {
-  const s8 type[] = "call";
+  const char type[] = "call";
   assert(hash);
   assert(call);
   return hash_update(hash, type, sizeof(type)) &&
@@ -130,7 +130,7 @@ bool hash_update_call (t_hash *hash, const s_call *call)
 
 bool hash_update_cfn (t_hash *hash, const s_cfn *cfn)
 {
-  const s8 type[] = "cfn";
+  const char type[] = "cfn";
   assert(hash);
   assert(cfn);
   return hash_update(hash, type, sizeof(type)) &&
@@ -138,15 +138,14 @@ bool hash_update_cfn (t_hash *hash, const s_cfn *cfn)
     hash_update_list(hash, (const s_list * const *) &cfn->arg_types);
 }
 
+HASH_UPDATE_DEF(char)
 HASH_UPDATE_DEF(character)
-
 HASH_UPDATE_DEF(f32)
-
 HASH_UPDATE_DEF(f64)
 
 bool hash_update_fact (t_hash *hash, const s_fact *fact)
 {
-  const s8 type[] = "fact";
+  const char type[] = "fact";
   assert(hash);
   assert(fact);
   assert(fact->subject);
@@ -160,7 +159,7 @@ bool hash_update_fact (t_hash *hash, const s_fact *fact)
 
 bool hash_update_fn (t_hash *hash, const s_fn *fn)
 {
-  const s8 type[] = "fn";
+  const char type[] = "fn";
   assert(hash);
   assert(fn);
   return hash_update(hash, type, sizeof(type)) &&
@@ -173,7 +172,7 @@ bool hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses)
 {
   uw count = 0;
   const s_fn_clause *f;
-  const s8 type[] = "fn_clauses";
+  const char type[] = "fn_clauses";
   assert(hash);
   assert(clauses);
   if (! hash_update(hash, type, sizeof(type)))
@@ -199,14 +198,14 @@ bool hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses)
 
 bool hash_update_ident (t_hash *hash, const s_ident *ident)
 {
-  const s8 type[] = "ident";
+  const char type[] = "ident";
   assert(hash);
   assert(ident);
   if (! hash_update(hash, type, sizeof(type)))
     return false;
   if (ident->module) {
     if (! hash_update_sym(hash, &ident->module) ||
-        ! hash_update_s8(hash, "."))
+        ! hash_update_char(hash, "."))
       return false;
   }
   return hash_update_sym(hash, &ident->sym);
@@ -216,7 +215,7 @@ bool hash_update_integer (t_hash *hash, const s_integer *i)
 {
   int j = 0;
   mp_digit *digit;
-  const s8 type[] = "integer";
+  const char type[] = "integer";
   assert(hash);
   assert(i);
   digit = i->mp_int.dp;
@@ -238,7 +237,7 @@ bool hash_update_list (t_hash *hash, const s_list * const *list)
   uw count;
   const s_list *l;
   const s_list *last;
-  const s8 type[] = "list";
+  const char type[] = "list";
   assert(hash);
   assert(list);
   l = *list;
@@ -262,7 +261,7 @@ bool hash_update_list (t_hash *hash, const s_list * const *list)
 bool hash_update_map (t_hash *hash, const s_map *map)
 {
   uw i = 0;
-  const s8 type[] = "map";
+  const char type[] = "map";
   assert(hash);
   assert(map);
   if (! hash_update(hash, type, strlen(type)) ||
@@ -279,7 +278,7 @@ bool hash_update_map (t_hash *hash, const s_map *map)
 
 bool hash_update_ptag (t_hash *hash, const p_tag *ptag)
 {
-  const s8 type[] = "ptag";
+  const char type[] = "ptag";
   assert(hash);
   assert(ptag);
   if (! hash_update(hash, type, sizeof(type)))
@@ -289,7 +288,7 @@ bool hash_update_ptag (t_hash *hash, const p_tag *ptag)
 
 bool hash_update_ptr (t_hash *hash, const u_ptr_w *ptr)
 {
-  const s8 type[] = "ptr";
+  const char type[] = "ptr";
   if (! hash_update(hash, type, strlen(type)))
     return false;
   return hash_update(hash, &ptr->p, sizeof(void *));
@@ -297,7 +296,7 @@ bool hash_update_ptr (t_hash *hash, const u_ptr_w *ptr)
 
 bool hash_update_ptr_free (t_hash *hash, const u_ptr_w *ptr_free)
 {
-  const s8 type[] = "ptr_free";
+  const char type[] = "ptr_free";
   if (! hash_update(hash, type, strlen(type)))
     return false;
   return hash_update(hash, &ptr_free->p, sizeof(void *));
@@ -305,25 +304,21 @@ bool hash_update_ptr_free (t_hash *hash, const u_ptr_w *ptr_free)
 
 bool hash_update_quote (t_hash *hash, const s_quote *x)
 {
-  const s8 type[] = "quote";
+  const char type[] = "quote";
   if (! hash_update(hash, type, strlen(type)))
     return false;
   return hash_update_tag(hash, x->tag);
 }
 
 HASH_UPDATE_DEF(s8)
-
 HASH_UPDATE_DEF(s16)
-
 HASH_UPDATE_DEF(s32)
-
 HASH_UPDATE_DEF(s64)
-
 HASH_UPDATE_DEF(sw)
 
 bool hash_update_str (t_hash *hash, const s_str *str)
 {
-  s8 type[] = "str";
+  char type[] = "str";
   assert(hash);
   assert(str);
   return hash_update(hash, type, strlen(type)) &&
@@ -336,7 +331,7 @@ bool hash_update_struct (t_hash *hash, const s_struct *s)
   const void *data;
   uw i = 0;
   const s_sym *sym;
-  s8 type[] = "struct";
+  char type[] = "struct";
   assert(hash);
   assert(s);
   if (! hash_update(hash, type, sizeof(type)) ||
@@ -371,7 +366,7 @@ bool hash_update_struct (t_hash *hash, const s_struct *s)
 bool hash_update_struct_type (t_hash *hash, const s_struct_type *st)
 {
   uw i;
-  s8 type[] = "struct_type";
+  char type[] = "struct_type";
   assert(hash);
   assert(st);
   if (! hash_update(hash, type, strlen(type)) ||
@@ -389,7 +384,7 @@ bool hash_update_struct_type (t_hash *hash, const s_struct_type *st)
 
 bool hash_update_sym (t_hash *hash, const s_sym * const *sym)
 {
-  s8 type[] = "sym";
+  char type[] = "sym";
   assert(hash);
   assert(sym);
   return hash_update(hash, type, sizeof(type)) &&
@@ -399,7 +394,7 @@ bool hash_update_sym (t_hash *hash, const s_sym * const *sym)
 bool hash_update_tag (t_hash *hash, const s_tag *tag)
 {
   u8 tag_type;
-  s8 type[] = "tag";
+  char type[] = "tag";
   assert(hash);
   assert(tag);
   if (! hash_update(hash, type, strlen(type)))
@@ -477,7 +472,7 @@ HASH_UPDATE_DEF(uw)
 
 bool hash_update_var (t_hash *hash, const void *x)
 {
-  s8 type[] = "var";
+  char type[] = "var";
   (void) x;
   assert(hash);
   return hash_update(hash, type, strlen(type));
@@ -485,7 +480,7 @@ bool hash_update_var (t_hash *hash, const void *x)
 
 bool hash_update_void (t_hash *hash, const void *x)
 {
-  s8 type[] = "void";
+  char type[] = "void";
   (void) x;
   assert(hash);
   return hash_update(hash, type, strlen(type));

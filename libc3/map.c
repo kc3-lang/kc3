@@ -84,13 +84,13 @@ s_map * map_init (s_map *map, uw count)
   return map;
 }
 
-s_map * map_init_1 (s_map *map, const s8 *p)
+s_map * map_init_1 (s_map *map, const char *p)
 {
   s_buf buf;
   sw r;
   assert(map);
   assert(p);
-  buf_init_1(&buf, false, (s8 *) p);
+  buf_init_1(&buf, false, (char *) p);
   if ((r = buf_parse_map(&buf, map)) != (sw) strlen(p)) {
     assert(! "invalid map");
     warnx("invalid map: \"%s\" (%ld)", p, r);
@@ -182,7 +182,7 @@ s_map * map_new (uw count)
   return map_init(map, count);
 }
 
-s_map * map_new_1 (const s8 *p)
+s_map * map_new_1 (const char *p)
 {
   s_map *map;
   if (! (map = malloc(sizeof(s_map)))) {

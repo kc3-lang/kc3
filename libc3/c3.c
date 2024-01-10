@@ -53,7 +53,7 @@ uw * c3_facts_next_id (uw *dest)
   return dest;
 }
 
-s_env * c3_init (s_env *env, int argc, s8 **argv)
+s_env * c3_init (s_env *env, int argc, char **argv)
 {
   if (! env)
     env = &g_c3_env;

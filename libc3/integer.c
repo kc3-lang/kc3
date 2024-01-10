@@ -195,12 +195,12 @@ s_integer * integer_init (s_integer *dest)
   return dest;
 }
 
-s_integer * integer_init_1 (s_integer *i, const s8 *p)
+s_integer * integer_init_1 (s_integer *i, const char *p)
 {
   s_buf buf;
   assert(i);
   assert(p);
-  buf_init_1(&buf, false, (s8 *) p);
+  buf_init_1(&buf, false, (char *) p);
   buf_parse_integer(&buf, i);
   return i;
 }

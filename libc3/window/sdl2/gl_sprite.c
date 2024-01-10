@@ -96,7 +96,7 @@ static bool png_info_to_gl_info (s32 png_color_type,
   return true;
 }
 
-s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
+s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
                               uw dim_x, uw dim_y, uw frame_count)
 {
   u8 *data;
@@ -139,10 +139,10 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
     str_clean(&tmp.path);
     return NULL;
   }
-  fp = fopen(tmp.real_path.ptr.ps8, "rb");
+  fp = fopen(tmp.real_path.ptr.pchar, "rb");
   if (! fp) {
     err_write_1("sdl2_sprite_init: fopen: ");
-    err_puts(tmp.real_path.ptr.ps8);
+    err_puts(tmp.real_path.ptr.pchar);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
     return NULL;
@@ -150,7 +150,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
   if (fread(png_header, 1, sizeof(png_header), fp) !=
       sizeof(png_header)) {
     err_write_1("sdl2_sprite_init: fread: ");
-    err_puts(tmp.real_path.ptr.ps8);
+    err_puts(tmp.real_path.ptr.pchar);
     fclose(fp);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -158,7 +158,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
   }
   if (png_sig_cmp(png_header, 0, sizeof(png_header))) {
     err_write_1("sdl2_sprite_init: not a png: ");
-    err_puts(tmp.real_path.ptr.ps8);
+    err_puts(tmp.real_path.ptr.pchar);
     fclose(fp);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -168,7 +168,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
 				    NULL);
   if (! png_read) {
     err_write_1("sdl2_sprite_init: png_create_read_struct: ");
-    err_puts(tmp.real_path.ptr.ps8);
+    err_puts(tmp.real_path.ptr.pchar);
     fclose(fp);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -177,7 +177,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
   png_info = png_create_info_struct(png_read);
   if (! png_info) {
     err_write_1("sdl2_sprite_init: png_create_info_struct: ");
-    err_puts(tmp.real_path.ptr.ps8);
+    err_puts(tmp.real_path.ptr.pchar);
     png_destroy_read_struct(&png_read, NULL, NULL);
     fclose(fp);
     str_clean(&tmp.path);
@@ -210,15 +210,15 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
       err_write_1("sdl2_sprite_init: unknown PNG color type ");
       err_inspect_s32(&png_color_type);
       err_write_1(": ");
-      err_puts(tmp.real_path.ptr.ps8);
+      err_puts(tmp.real_path.ptr.pchar);
     }
     if (! gl_internal_format) {
       err_write_1("sdl2_sprite_init: unknown OpenGL internal format: ");
-      err_puts(tmp.real_path.ptr.ps8);
+      err_puts(tmp.real_path.ptr.pchar);
     }
     if (! gl_type) {
       err_write_1("sdl2_sprite_init: unknown OpenGL type: ");
-      err_puts(tmp.real_path.ptr.ps8);
+      err_puts(tmp.real_path.ptr.pchar);
     }
     png_destroy_read_struct(&png_read, &png_info, NULL);
     fclose(fp);
@@ -273,7 +273,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
   data = malloc(tmp.h * sprite_stride);
   if (! data) {
     err_write_1("sdl2_sprite_init: failed to allocate memory: ");
-    err_puts(tmp.real_path.ptr.ps8);
+    err_puts(tmp.real_path.ptr.pchar);
     free(tmp.texture);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);

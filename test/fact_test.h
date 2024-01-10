@@ -35,8 +35,8 @@
              "Expected %s got %s.%s\n",                                \
              TEST_COLOR_KO,                                            \
              __FILE__, __LINE__, __func__,                             \
-             str_test.ptr.ps8, str_expected.ptr.ps8,                   \
-             str_expected.ptr.ps8, str_test.ptr.ps8,                   \
+             str_test.ptr.pchar, str_expected.ptr.pchar,               \
+             str_expected.ptr.pchar, str_test.ptr.pchar,               \
              TEST_COLOR_RESET);                                        \
       str_clean(&str_expected);                                        \
       str_clean(&str_test);                                            \
@@ -46,8 +46,8 @@
 
 void     fact_test_clean_1 (s_fact *fact);
 void     fact_test_clean_3 (s_fact *fact);
-s_fact * fact_test_init_1 (s_fact *fact, const s8 *tag);
-s_fact * fact_test_init_3 (s_fact *fact, const s8 *subject,
-                           const s8 *predicate, const s8 *object);
+s_fact * fact_test_init_1 (s_fact *fact, const char *tag);
+s_fact * fact_test_init_3 (s_fact *fact, const char *subject,
+                           const char *predicate, const char *object);
 
 #endif /* FACT_TEST_H */

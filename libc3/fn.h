@@ -24,7 +24,7 @@
 /* Stack-allocation compatible functions, call fn_clean after use. */
 void   fn_clean (s_fn *fn);
 s_fn * fn_init (s_fn *fn);
-s_fn * fn_init_1 (s_fn *fn, s8 *p);
+s_fn * fn_init_1 (s_fn *fn, char *p);
 s_fn * fn_init_cast (s_fn *fn, const s_tag *tag);
 s_fn * fn_init_copy (s_fn *fn, const s_fn *src);
 

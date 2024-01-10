@@ -18,15 +18,15 @@
 #include "../linenoise/linenoise.h"
 
 typedef struct buf_linenoise {
-  s_buf     buf;
-  bool      eof;
-  const s8 *prompt;
+  s_buf buf;
+  bool eof;
+  const char *prompt;
 } s_buf_linenoise;
 
 sw buf_linenoise_refill_fgets (s_buf *buf);
 sw buf_linenoise_refill_linenoise (s_buf *buf);
 
-void buf_linenoise_close (s_buf *buf, const s8 *history_path)
+void buf_linenoise_close (s_buf *buf, const char *history_path)
 {
   assert(buf);
   if (history_path)
@@ -38,8 +38,8 @@ void buf_linenoise_close (s_buf *buf, const s8 *history_path)
     puts("");
 }
 
-s_buf * buf_linenoise_open_r (s_buf *buf, const s8 *prompt,
-                              const s8 *history_path)
+s_buf * buf_linenoise_open_r (s_buf *buf, const char *prompt,
+                              const char *history_path)
 {
   s_buf_linenoise *buf_linenoise;
   assert(buf);
@@ -112,7 +112,7 @@ sw buf_linenoise_refill_linenoise (s_buf *buf)
     }
     linenoiseHistoryAdd(buf_linenoise->buf.ptr.p);
     buf_linenoise_len = strlen(buf_linenoise->buf.ptr.p);
-    buf_linenoise->buf.ptr.ps8[buf_linenoise_len++] = '\n';
+    buf_linenoise->buf.ptr.pchar[buf_linenoise_len++] = '\n';
     buf_linenoise->buf.size = buf_linenoise->buf.wpos = buf_linenoise_len;
     buf_linenoise->buf.rpos = 0;
   }

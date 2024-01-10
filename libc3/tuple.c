@@ -56,7 +56,7 @@ s_tuple * tuple_init (s_tuple *tuple, uw count)
   return tuple;
 }
 
-s_tuple * tuple_init_1 (s_tuple *tuple, const s8 *p)
+s_tuple * tuple_init_1 (s_tuple *tuple, const char *p)
 {
   s_buf buf;
   uw len;
@@ -64,7 +64,7 @@ s_tuple * tuple_init_1 (s_tuple *tuple, const s8 *p)
   assert(tuple);
   assert(p);
   len = strlen(p);
-  buf_init(&buf, false, len, (s8 *) p);
+  buf_init(&buf, false, len, (char *) p);
   buf.wpos = len;
   r = buf_parse_tuple(&buf, tuple);
   if (r < 0 || (uw) r != len) {
@@ -151,7 +151,7 @@ s_tuple * tuple_new (uw count)
   return tuple;
 }
 
-s_tuple * tuple_new_1 (const s8 *p)
+s_tuple * tuple_new_1 (const char *p)
 {
   s_tuple *tuple;
   tuple = malloc(sizeof(s_tuple));

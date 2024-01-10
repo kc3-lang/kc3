@@ -12,7 +12,7 @@
  */
 #include "c3_main.h"
 
-const s8 * g_c3_license = "c3\n"
+const char *g_c3_license = "c3\n"
  "Copyright 2022,2023 kmx.io <contact@kmx.io>\n"
  "\n"
  "Permission is hereby granted to use this software granted the above\n"

@@ -30,7 +30,7 @@ void buf_file_test (void)
 
 TEST_CASE(buf_file_open_r_close)
 {
-  s8 b[16];
+  char b[16];
   s_buf buf;
   FILE *fp;
   fp = fopen("/dev/null", "r");
@@ -46,7 +46,7 @@ TEST_CASE_END(buf_file_open_r_close)
 TEST_CASE(buf_file_open_r_refill)
 {
   u8 b = 0x80;
-  s8 bu[16];
+  char bu[16];
   s_buf buf;
   FILE *fp;
   sw i = 64;

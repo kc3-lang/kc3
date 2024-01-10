@@ -25,6 +25,7 @@
     TEST_EQ(str.size, strlen(expected));                               \
     TEST_STRNCMP(str.ptr.p, (expected), str.size);                     \
     str_clean(&str);						       \
+    test_context(NULL);                                                \
   } while (0)
 
 void bool_test (void);

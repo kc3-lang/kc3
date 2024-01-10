@@ -65,7 +65,7 @@ s_list * list_init (s_list *list, s_list *next)
   return list;
 }
 
-s_list * list_init_1 (s_list *list, const s8 *p, s_list *next)
+s_list * list_init_1 (s_list *list, const char *p, s_list *next)
 {
   assert(list);
   tag_init_1(&list->tag, p);
@@ -195,11 +195,11 @@ s_list * list_new (s_list *next)
   return list_init(dest, next);
 }
 
-s_list * list_new_1 (const s8 *p)
+s_list * list_new_1 (const char *p)
 {
   s_buf buf;
   s_list *list;
-  buf_init_1(&buf, false, (s8 *) p);
+  buf_init_1(&buf, false, (char *) p);
   if (buf_parse_list(&buf, &list) != (sw) strlen(p)) {
     assert(! "invalid list");
     return NULL;

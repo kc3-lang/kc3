@@ -165,9 +165,9 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   return r;
 }
 
-sw facts_dump_file (s_facts *facts, const s8 *path)
+sw facts_dump_file (s_facts *facts, const char *path)
 {
-  s8 b[BUF_SIZE];
+  char b[BUF_SIZE];
   s_buf buf;
   FILE *fp;
   sw r;
@@ -293,12 +293,12 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   return result;
  ko_header:
   warnx("facts_load: %s: invalid or missing header",
-        path->ptr.ps8);
+        path->ptr.pchar);
   return -1;
  ko_fact:
   facts_lock_unlock_w(facts);
   warnx("facts_load: %s: %s fact line %lu",
-        path->ptr.ps8,
+        path->ptr.pchar,
         r ? "invalid" : "missing",
         (unsigned long) line);
   return -1;
@@ -306,15 +306,15 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 
 sw facts_load_file (s_facts *facts, const s_str *path)
 {
-  s8 b[BUF_SIZE];
+  char b[BUF_SIZE];
   s_buf buf;
   FILE *fp;
   sw result;
   assert(facts);
   assert(path);
   buf_init(&buf, false, sizeof(b), b);
-  if (! (fp = fopen(path->ptr.ps8, "rb"))) {
-    warn("facts_load_file: %s", path->ptr.ps8);
+  if (! (fp = fopen(path->ptr.pchar, "rb"))) {
+    warn("facts_load_file: %s", path->ptr.pchar);
     return -1;
   }
   buf_file_open_r(&buf, fp);
@@ -445,12 +445,12 @@ sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path)
 sw facts_open_file (s_facts *facts, const s_str *path)
 {
   FILE *fp;
-  s8 i[BUF_SIZE];
+  char i[BUF_SIZE];
   s_buf in;
   sw r;
   sw result = 0;
   buf_init(&in, false, sizeof(i), i);
-  if (! (fp = fopen(path->ptr.ps8, "rb"))) {
+  if (! (fp = fopen(path->ptr.pchar, "rb"))) {
     if (errno == ENOENT)
       return facts_open_file_create(facts, path);
     return -1;
@@ -460,8 +460,8 @@ sw facts_open_file (s_facts *facts, const s_str *path)
     return r;
   result += r;
   buf_file_close(&in);
-  if (! (fp = fopen(path->ptr.ps8, "ab"))) {
-    warn("facts_open_file: fopen: %s", path->ptr.ps8);
+  if (! (fp = fopen(path->ptr.pchar, "ab"))) {
+    warn("facts_open_file: fopen: %s", path->ptr.pchar);
     return -1;
   }
   if (! (facts->log = log_new()))
@@ -476,8 +476,8 @@ sw facts_open_file_create (s_facts *facts, const s_str *path)
   s_buf *out;
   sw r;
   sw result = 0;
-  if (! (fp = fopen(path->ptr.ps8, "wb"))) {
-    warn("facts_open_file_create: fopen: %s", path->ptr.ps8);
+  if (! (fp = fopen(path->ptr.pchar, "wb"))) {
+    warn("facts_open_file_create: fopen: %s", path->ptr.pchar);
     return -1;
   }
   if (facts_count(facts)) {
@@ -647,9 +647,9 @@ s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
   return f;
 }
 
-sw facts_save_file (s_facts *facts, const s8 *path)
+sw facts_save_file (s_facts *facts, const char *path)
 {
-  s8 b[BUF_SIZE];
+  char b[BUF_SIZE];
   s_buf buf;
   FILE *fp;
   sw r;

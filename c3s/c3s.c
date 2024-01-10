@@ -43,7 +43,6 @@ sw buf_xfer_spaces (s_buf *out, s_buf *in)
   assert(in);
   assert(out);
   while ((r = buf_peek_character_utf8(in, &c)) > 0 &&
-         c >= 0 &&
          c < UCD_MAX &&
          g_ucd[c].flags & (UCD_OTHER_CONTROL | UCD_SEPARATOR_SPACE)) {
     csize = r;
@@ -60,10 +59,10 @@ sw buf_xfer_spaces (s_buf *out, s_buf *in)
 
 int main (int argc, char **argv)
 {
-  s8 i[BUF_SIZE];
+  char i[BUF_SIZE];
   s_buf in;
   s_tag input;
-  s8 o[BUF_SIZE];
+  char o[BUF_SIZE];
   s_buf out;
   sw r;
   s_tag result;

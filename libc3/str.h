@@ -28,12 +28,12 @@
 
 /* Stack allocation compatible functions */
 void    str_clean (s_str *str);
-s_str * str_init (s_str *str, s8 *free, uw size, const s8 *p);
-s_str * str_init_1 (s_str *str, s8 *free, const s8 *p);
-s_str * str_init_alloc (s_str *str, uw size, const s8 *p);
+s_str * str_init (s_str *str, char *free, uw size, const char *p);
+s_str * str_init_1 (s_str *str, char *free, const char *p);
+s_str * str_init_alloc (s_str *str, uw size, const char *p);
 s_str * str_init_cast (s_str *str, const s_tag *tag);
 s_str * str_init_copy (s_str *str, const s_str *src);
-s_str * str_init_copy_1 (s_str *str, const s8 *p);
+s_str * str_init_copy_1 (s_str *str, const char *p);
 s_str * str_init_empty (s_str *str);
 s_str * str_init_f (s_str *str, const char *fmt, ...);
 s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end);
@@ -42,9 +42,9 @@ s_str * str_init_slice_utf8 (s_str *str, const s_str *src, sw start,
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap);
 
 /* Constructors, call str_delete after use */
-s_str * str_new (s8 *free, uw size, const s8 *p);
-s_str * str_new_1 (s8 *free, const s8 *p);
-s_str * str_new_cpy (const s8 *p, uw size);
+s_str * str_new (char *free, uw size, const char *p);
+s_str * str_new_1 (char *free, const char *p);
+s_str * str_new_cpy (const char *p, uw size);
 s_str * str_new_copy (const s_str *src);
 s_str * str_new_empty (void);
 s_str * str_new_f (const char *fmt, ...);

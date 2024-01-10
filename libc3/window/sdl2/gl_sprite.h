@@ -18,7 +18,7 @@
 /* Stack-allocation compatible functions, call gl_sprite_clean
    after use. */
 void          gl_sprite_clean (s_gl_sprite *sprite);
-s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const s8 *path,
+s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
                               uw dim_x, uw dim_y, uw frame_count);
 
 /* Observers. */

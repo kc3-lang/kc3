@@ -110,7 +110,7 @@ void window_sdl2_default_unload_cb (s_window_sdl2 *window)
 
 s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
                                   sw x, sw y, uw w, uw h,
-                                  const s8 *title,
+                                  const char *title,
                                   uw sequence_count)
 {
   s_window_sdl2 tmp = {0};
@@ -189,7 +189,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
     warnx("window_sdl2_run: failed to initialize GLEW");
     goto ko;
   }
-  const s8 * version = (const s8 *) glGetString(GL_VERSION);
+  const char * version = (const char *) glGetString(GL_VERSION);
   if (version) {
     err_write_1("window_sdl2_run: OpenGL Version: ");
     err_puts(version);

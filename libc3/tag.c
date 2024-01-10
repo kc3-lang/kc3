@@ -45,7 +45,7 @@
 s_tag g_tag_first;
 s_tag g_tag_last;
 
-s_tag * tag_1 (s_tag *tag, const s8 *p)
+s_tag * tag_1 (s_tag *tag, const char *p)
 {
   tag_clean(tag);
   return tag_init_1(tag, p);
@@ -377,7 +377,7 @@ s_tag * tag_init (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_init_1 (s_tag *tag, const s8 *p)
+s_tag * tag_init_1 (s_tag *tag, const char *p)
 {
   s_buf buf;
   uw len;
@@ -386,7 +386,7 @@ s_tag * tag_init_1 (s_tag *tag, const s8 *p)
   tag_init_void(tag);
   if (! p)
     return tag;
-  buf_init_1(&buf, false, (s8 *) p);
+  buf_init_1(&buf, false, (char *) p);
   len = strlen(p);
   r = buf_parse_tag(&buf, tag);
   if (r < 0 || (uw) r != len) {
@@ -488,7 +488,7 @@ bool tag_is_unbound_var (const s_tag *tag)
   return (tag && tag->type == TAG_VAR);
 }
 
-s_tag * tag_list_1 (s_tag *tag, const s8 *p)
+s_tag * tag_list_1 (s_tag *tag, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -585,7 +585,7 @@ s_tag * tag_new (void)
   return tag;
 }
 
-s_tag * tag_new_1 (const s8 *p)
+s_tag * tag_new_1 (const char *p)
 {
   s_tag *tag;
   tag = calloc(1, sizeof(s_tag));
@@ -658,7 +658,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   if (tag->type != tag_type) {
     warnx("tag_to_const_pointer: cannot cast %s to %s",
           tag_type_to_string(tag->type),
-          type->str.ptr.ps8);
+          type->str.ptr.pchar);
     assert(! "tag_to_const_pointer: cannot cast");
     return false;
   }
@@ -886,7 +886,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     if (type == sym_1("Char*")) {
-      *dest = (void *) tag->data.str.ptr.ps8;
+      *dest = (void *) tag->data.str.ptr.pchar;
       return true;
     }
     goto invalid_cast;
@@ -916,7 +916,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     if (type == sym_1("Char*")) {
-      *dest = (void *) tag->data.sym->str.ptr.ps8;
+      *dest = (void *) tag->data.sym->str.ptr.pchar;
       return true;
     }
     goto invalid_cast;

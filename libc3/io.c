@@ -46,7 +46,7 @@ sw err_inspect (const s_tag *x)
   return err_inspect_tag(x);
 }
 
-sw err_puts (const s8 *x)
+sw err_puts (const char *x)
 {
   sw r;
   sw result = 0;
@@ -60,7 +60,7 @@ sw err_puts (const s8 *x)
   return result;
 }
 
-sw err_write_1 (const s8 *x)
+sw err_write_1 (const char *x)
 {
   sw r;
   if ((r = buf_write_1(&g_c3_env.err, x)) > 0)
@@ -82,7 +82,7 @@ sw io_inspect (const s_tag *x)
   return result;
 }
 
-sw io_puts (const s8 *x)
+sw io_puts (const char *x)
 {
   sw r;
   sw result = 0;
@@ -96,7 +96,7 @@ sw io_puts (const s8 *x)
   return result;
 }
 
-sw io_write_1 (const s8 *x)
+sw io_write_1 (const char *x)
 {
   sw r;
   if ((r = buf_write_1(&g_c3_env.out, x)) > 0)

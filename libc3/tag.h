@@ -32,12 +32,12 @@ extern s_tag g_tag_last;
 /* Stack-allocation compatible functions, call tag_clean after use. */
 void    tag_clean (s_tag *tag);
 s_tag * tag_init (s_tag *tag);
-s_tag * tag_init_1 (s_tag *tag, const s8 *p);
+s_tag * tag_init_1 (s_tag *tag, const char *p);
 
 /* Heap-allocation functions, call tag_delete after use. */
 void    tag_delete (s_tag *tag);
 s_tag * tag_new (void);
-s_tag * tag_new_1 (const s8 *p);
+s_tag * tag_new_1 (const char *p);
 
 /* Observers */
 u64            tag_hash_u64 (const s_tag *tag);
@@ -53,7 +53,7 @@ ffi_type       tag_to_ffi_type(const s_tag *tag);
 const s_sym ** tag_type (const s_tag *tag, const s_sym **type);
 
 /* Operators. */
-s_tag * tag_1 (s_tag *tag, const s8 *p);
+s_tag * tag_1 (s_tag *tag, const char *p);
 s_tag * tag_integer_cast_to_s16 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_cast_to_s32 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_cast_to_s64 (const s_tag *tag, s_tag *dest);
@@ -63,7 +63,7 @@ s_tag * tag_integer_cast_to_u32 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_cast_to_u64 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_cast_to_u8 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_reduce (s_tag *tag);
-s_tag * tag_list_1 (s_tag *tag, const s8 *p);
+s_tag * tag_list_1 (s_tag *tag, const char *p);
 bool    tag_to_const_pointer (const s_tag *tag, const s_sym *type,
                               const void **dest);
 bool    tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest);

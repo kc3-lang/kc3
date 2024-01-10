@@ -26,8 +26,8 @@
 
 #define SYM_MAX 1024
 
-const s_sym  * sym_1 (const s8 *p);
-const s_sym ** sym_init_1 (const s_sym **sym, const s8 *p);
+const s_sym  * sym_1 (const char *p);
+const s_sym ** sym_init_1 (const s_sym **sym, const char *p);
 const s_sym ** sym_init_cast (const s_sym **sym, const s_tag *tag);
 const s_sym ** sym_init_copy (const s_sym **sym,
                               const s_sym * const *src);

@@ -19,7 +19,7 @@
    after use. */
 void         sequence_clean (s_sequence *seq);
 s_sequence * sequence_init (s_sequence *sequence, f64 duration,
-                            const s8 *title, f_sequence load,
+                            const char *title, f_sequence load,
                             f_sequence render, f_sequence unload,
                             void *window);
 

@@ -51,7 +51,7 @@ void facts_test (void)
 TEST_CASE(facts_add)
 {
   uw i = 0;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -105,7 +105,7 @@ TEST_CASE_END(facts_add)
 TEST_CASE(facts_dump_file)
 {
   uw i = 0;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -156,7 +156,7 @@ TEST_CASE_END(facts_dump_file)
 TEST_CASE(facts_find)
 {
   uw i = 0;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -226,7 +226,7 @@ TEST_CASE_END(facts_init_clean)
 TEST_CASE(facts_load)
 {
   uw i = 0;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -272,7 +272,7 @@ TEST_CASE_END(facts_load)
 TEST_CASE(facts_log_add)
 {
   uw i = 0;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -323,7 +323,7 @@ TEST_CASE_END(facts_log_add)
 TEST_CASE(facts_log_remove)
 {
   uw i = 0;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -392,7 +392,7 @@ TEST_CASE_END(facts_new_delete)
 TEST_CASE(facts_open_file)
 {
   uw i = 0;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -418,7 +418,7 @@ TEST_CASE(facts_open_file)
     "-0x10000000000000000",
     NULL
   };
-  s8 *q[24] = {
+  char *q[24] = {
     "\"b\"",
     ":b",
     "B",
@@ -547,7 +547,7 @@ TEST_CASE_END(facts_open_file)
 TEST_CASE(facts_remove)
 {
   uw i = 0;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -597,7 +597,7 @@ TEST_CASE_END(facts_remove)
 TEST_CASE(facts_save)
 {
   uw i = 0;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",

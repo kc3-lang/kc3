@@ -97,9 +97,9 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
   if (facts_with_cursor_next(&cursor)) {
     if (tag_var.type != TAG_CFN) {
       err_write_1("call_get: ");
-      err_write_1(module->str.ptr.ps8);
+      err_write_1(module->str.ptr.pchar);
       err_write_1(".");
-      err_write_1(ident->sym->str.ptr.ps8);
+      err_write_1(ident->sym->str.ptr.pchar);
       err_puts(" is not a C function");
       facts_with_cursor_clean(&cursor);
       return NULL;
@@ -113,9 +113,9 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
     if (facts_with_cursor_next(&cursor)) {
       if (tag_var.type != TAG_FN) {
         err_write_1("call_get: ");
-        err_write_1(module->str.ptr.ps8);
+        err_write_1(module->str.ptr.pchar);
         err_write_1(".");
-        err_write_1(ident->sym->str.ptr.ps8);
+        err_write_1(ident->sym->str.ptr.pchar);
         err_puts(" is not a function");
         facts_with_cursor_clean(&cursor);
         return NULL;
@@ -180,7 +180,7 @@ s_ident * ident_init (s_ident *ident, const s_sym *module,
   return ident;
 }
 
-s_ident * ident_init_1 (s_ident *ident, const s8 *p)
+s_ident * ident_init_1 (s_ident *ident, const char *p)
 {
   s_str tmp;
   str_init_1(&tmp, NULL, p);

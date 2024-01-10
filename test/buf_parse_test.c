@@ -77,7 +77,7 @@
 #define BUF_PARSE_TEST_CHARACTER(test, expected)                       \
   do {                                                                 \
     s_buf buf;                                                         \
-    character dest = -1;                                               \
+    character dest = 0;                                               \
     test_context("buf_parse_character(" # test ") -> " # expected);    \
     buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_character(&buf, &dest), strlen(test));           \
@@ -89,12 +89,12 @@
 #define BUF_PARSE_TEST_CHARACTER_EOF(test)                             \
   do {                                                                 \
     s_buf buf;                                                         \
-    character dest = -1;                                               \
+    character dest = 0;                                                \
     test_context("buf_parse_character(" # test ") -> -1");             \
     buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_character(&buf, &dest), -1);                     \
     TEST_EQ(buf.rpos, 0);                                              \
-    TEST_EQ(dest, -1);                                                 \
+    TEST_EQ(dest, 0);                                                  \
     test_context(NULL);                                                \
   } while (0)
 
@@ -302,12 +302,12 @@
 #define BUF_PARSE_TEST_NOT_CHARACTER(test)                             \
   do {                                                                 \
     s_buf buf;                                                         \
-    character dest = -1;                                               \
+    character dest = 0;                                                \
     test_context("buf_parse_character(" # test ") -> 0");              \
     buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_character(&buf, &dest), 0);                      \
     TEST_EQ(buf.rpos, 0);                                              \
-    TEST_EQ(dest, -1);                                                 \
+    TEST_EQ(dest, 0);                                                  \
     test_context(NULL);                                                \
   } while (0)
 

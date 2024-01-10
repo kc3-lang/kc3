@@ -113,7 +113,7 @@ void set__tag_test (void)
 TEST_CASE(set__tag_add)
 {
   uw i = 0;
-  const s8 *p[] = {
+  const char *p[] = {
     "false",
     "true",
     "'a'",
