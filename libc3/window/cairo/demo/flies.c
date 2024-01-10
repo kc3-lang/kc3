@@ -128,7 +128,7 @@ bool flies_load (s_sequence *seq)
 
 bool flies_render (s_sequence *seq)
 {
-  s8 a[BOARD_SIZE];
+  char a[BOARD_SIZE];
   uw address[2];
   s_array *board;
   f64 board_w;
@@ -192,18 +192,18 @@ bool flies_render (s_sequence *seq)
       buf_write_1(&buf, "In ");
       buf_inspect_uw(&buf, fly_in);
       buf_write_u8(&buf, 0);
-      cairo_text_extents(cr, buf.ptr.ps8, &te);
+      cairo_text_extents(cr, buf.ptr.pchar, &te);
       y = board_h + board_item_h + te.height + te.y_bearing;
       x = board_x;
       cairo_move_to(cr, x, y);
-      cairo_show_text(cr, buf.ptr.ps8);
+      cairo_show_text(cr, buf.ptr.pchar);
       buf_init(&buf, false, sizeof(a), a);
       buf_write_1(&buf, "Out ");
       buf_inspect_uw(&buf, fly_out);
       buf_write_u8(&buf, 0);
       x = board_x + board_item_w * (BOARD_SIZE / 2 + 1);
       cairo_move_to(cr, x, y);
-      cairo_show_text(cr, buf.ptr.ps8);
+      cairo_show_text(cr, buf.ptr.pchar);
       address[1] = 0;
       while (address[1] < BOARD_SIZE) {
         y = board_item_h * address[1];

@@ -19,7 +19,7 @@ extern s_env g_c3_env;
 
 /* Stack allocation compatible functions, call env_clean after use. */
 void    env_clean (s_env *env);
-s_env * env_init (s_env *env, int argc, s8 **argv);
+s_env * env_init (s_env *env, int argc, char **argv);
 
 /* Operators. */
 bool          env_eval_array (s_env *env, const s_array *array,

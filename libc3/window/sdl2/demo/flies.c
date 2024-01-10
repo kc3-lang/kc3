@@ -135,7 +135,7 @@ bool flies_load (s_sequence *seq)
 
 bool flies_render (s_sequence *seq)
 {
-  s8 a[BOARD_SIZE];
+  char a[BOARD_SIZE];
   uw address[2];
   s_array *board;
   f64 board_w;

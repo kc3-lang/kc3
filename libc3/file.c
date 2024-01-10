@@ -51,16 +51,16 @@ bool * file_access (const s_str *path, const s_sym *mode,
     m = X_OK;
   else
     m = F_OK;
-  *dest = access(path->ptr.ps8, m) ? false : true;
+  *dest = access(path->ptr.pchar, m) ? false : true;
   return dest;
 }
 
 sw file_copy_1 (const char *from, const char *to)
 {
-  s8 buf[4096];
+  char buf[4096];
   sw fd_from = -1;
   sw fd_to = -1;
-  s8 *out;
+  char *out;
   sw r;
   sw saved_errno;
   sw w;
@@ -117,8 +117,8 @@ s_tag * file_mtime (const s_str *path, s_tag *dest)
   struct stat sb;
   assert(path);
   assert(dest);
-  if (stat(path->ptr.ps8, &sb)) {
-    warn("file_mtime: %s", path->ptr.ps8);
+  if (stat(path->ptr.pchar, &sb)) {
+    warn("file_mtime: %s", path->ptr.pchar);
     return NULL;
   }
 #if HAVE_STAT_MTIM
@@ -135,7 +135,7 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
                      s_str *dest)
 {
   bool access;
-  s8 buf_s[PATH_MAX];
+  char buf_s[PATH_MAX];
   s_buf buf;
   const s_list *path;
   sw r;
@@ -153,7 +153,7 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
       buf_save_restore_wpos(&buf, &save);
       str = &path->tag.data.str;
       if ((r = buf_write_str(&buf, str)) < 0 ||
-          (str->ptr.ps8[str->size - 1] != '/' &&
+          (str->ptr.pchar[str->size - 1] != '/' &&
            (r = buf_write_1(&buf, "/")) < 0) ||
           (r = buf_write_str(&buf, suffix)) < 0)
         return NULL;

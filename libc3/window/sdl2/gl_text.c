@@ -46,7 +46,7 @@ s_gl_text * gl_text_init (s_gl_text *text, const s_gl_font *font)
 }
 
 s_gl_text * gl_text_init_1 (s_gl_text *text, const s_gl_font *font,
-                            const s8 *p)
+                            const char *p)
 {
   s_str str;
   str_init_1(&str, NULL, p);
@@ -194,7 +194,7 @@ bool gl_text_set_text (s_gl_text *text, const s_str *str)
   return false;
 }
 
-bool gl_text_set_text_1 (s_gl_text *text, const s8 *p)
+bool gl_text_set_text_1 (s_gl_text *text, const char *p)
 {
   s_str str;
   assert(text);
@@ -241,7 +241,7 @@ bool gl_text_update (s_gl_text *text)
   return true;
 }
 
-bool gl_text_update_1 (s_gl_text *text, const s8 *p)
+bool gl_text_update_1 (s_gl_text *text, const char *p)
 {
   if (gl_text_set_text_1(text, p)) {
     gl_text_update(text);

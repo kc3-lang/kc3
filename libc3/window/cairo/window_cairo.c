@@ -32,7 +32,7 @@ void window_cairo_clean (s_window_cairo *window)
 
 s_window_cairo * window_cairo_init (s_window_cairo *window,
                                     sw x, sw y, uw w, uw h,
-                                    const s8 *title,
+                                    const char *title,
                                     uw sequence_count)
 {
   s_window_cairo tmp = {0};

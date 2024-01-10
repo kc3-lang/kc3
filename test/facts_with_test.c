@@ -35,7 +35,7 @@ TEST_CASE(facts_with_)
   s_facts facts;
   sw i = 0;
   s_tag object;
-  const s8 *p[9] = { "A", "B", "C", "D", "E", "F", "G", "H", NULL };
+  const char *p[9] = { "A", "B", "C", "D", "E", "F", "G", "H", NULL };
   s_tag predicate;
   s_tag subject;
   s_tag tag[8];
@@ -186,7 +186,7 @@ TEST_CASE(facts_with_tags)
   s_facts facts;
   sw i = 0;
   s_tag object;
-  const s8 *p[9] = { "A", "B", "C", "D", "E", "F", "G", "H", NULL };
+  const char *p[9] = { "A", "B", "C", "D", "E", "F", "G", "H", NULL };
   s_tag predicate;
   s_tag subject;
   s_tag tag[8];

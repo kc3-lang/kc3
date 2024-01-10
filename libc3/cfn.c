@@ -209,8 +209,8 @@ s_cfn * cfn_init_cast (s_cfn *cfn, const s_tag *tag)
 s_cfn * cfn_link (s_cfn *cfn)
 {
   assert(cfn);
-  if (! (cfn->ptr.p = dlsym(RTLD_DEFAULT, cfn->name->str.ptr.ps8))) {
-    warnx("cfn_link: %s: %s", cfn->name->str.ptr.ps8, dlerror());
+  if (! (cfn->ptr.p = dlsym(RTLD_DEFAULT, cfn->name->str.ptr.pchar))) {
+    warnx("cfn_link: %s: %s", cfn->name->str.ptr.pchar, dlerror());
     assert(! "cfn_link: dlsym failed");
     return NULL;
   }
@@ -290,7 +290,7 @@ s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
   assert(type);
   if (! sym_to_tag_type(type, &tmp.type)) {
     err_write_1("cfn_tag_init: invalid type: ");
-    err_puts(type->str.ptr.ps8);
+    err_puts(type->str.ptr.pchar);
     assert(! "cfn_tag_init: invalid type");
     return NULL;
   }

@@ -115,7 +115,7 @@ bool window_cairo_demo_load (s_window_cairo *window)
 }
 
 static void render_text (cairo_t *cr, double x, double y,
-                         const s8 *p)
+                         const char *p)
 {
   cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
   cairo_move_to(cr, x - 1.0, y - 1.0);
@@ -171,7 +171,7 @@ bool window_cairo_demo_render (s_window_cairo *window)
                   2);
   cairo_fill(cr);
   /* fps */
-  s8 fps[32];
+  char fps[32];
   snprintf(fps, sizeof(fps), "%f", (f64) seq->frame / seq->t);
   cairo_text_extents(cr, fps, &te);
   render_text(cr, 20.0, 20.0 + te.height, fps);

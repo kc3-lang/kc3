@@ -240,9 +240,8 @@ TEST_CASE_END(character_utf8)
 
 TEST_CASE(character_utf8_size)
 {
-  character c;
-  for (c = -10; c < 0; c++)
-    TEST_EQ(character_utf8_size(c), -1);
+  TEST_EQ(character_utf8_size((character) -1), -1);
+  TEST_EQ(character_utf8_size(0), 1);
   TEST_EQ(character_utf8_size('_'), 1);
   TEST_EQ(character_utf8_size('0'), 1);
   TEST_EQ(character_utf8_size('1'), 1);

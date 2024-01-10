@@ -179,7 +179,7 @@ sw buf_ignore_spaces_but_newline (s_buf *buf)
   return result;
 }
 
-s_buf * buf_init (s_buf *buf, bool p_free, uw size, s8 *p)
+s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
 {
   assert(buf);
   assert(p);
@@ -187,7 +187,7 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, s8 *p)
   buf->flush = NULL;
   buf->free = p_free;
   buf->line = -1;
-  buf->ptr.ps8 = p;
+  buf->ptr.pchar = p;
   buf->refill = NULL;
   buf->rpos = 0;
   buf->save = NULL;
@@ -197,7 +197,7 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, s8 *p)
   return buf;
 }
 
-s_buf * buf_init_1 (s_buf *buf, bool p_free, s8 *p)
+s_buf * buf_init_1 (s_buf *buf, bool p_free, char *p)
 {
   uw len;
   assert(buf);
@@ -208,7 +208,7 @@ s_buf * buf_init_1 (s_buf *buf, bool p_free, s8 *p)
   return buf;
 }
 
-s_buf * buf_init_1_copy (s_buf *buf, const s8 *p)
+s_buf * buf_init_1_copy (s_buf *buf, const char *p)
 {
   uw size;
   assert(buf);
@@ -223,7 +223,7 @@ s_buf * buf_init_1_copy (s_buf *buf, const s8 *p)
 
 s_buf * buf_init_alloc (s_buf *buf, uw size)
 {
-  s8 *p;
+  char *p;
   assert(buf);
   if (! size)
     return buf_init(buf, false, 0, NULL);
@@ -237,7 +237,7 @@ s_buf * buf_init_str (s_buf *buf, bool p_free, s_str *p)
 {
   assert(buf);
   assert(p);
-  buf_init(buf, p_free, p->size, (s8 *) p->ptr.ps8);
+  buf_init(buf, p_free, p->size, (char *) p->ptr.pchar);
   buf->wpos = p->size;
   return buf;
 }
@@ -252,7 +252,7 @@ s_buf * buf_init_str_copy (s_buf *buf, const s_str *str)
   return buf;
 }
 
-s_buf * buf_new (bool p_free, uw size, s8 *p)
+s_buf * buf_new (bool p_free, uw size, char *p)
 {
   s_buf *buf;
   buf = malloc(sizeof(s_buf));
@@ -272,7 +272,7 @@ s_buf * buf_new_alloc (uw size)
   return buf;
 }
 
-sw buf_peek_1 (s_buf *buf, const s8 *p)
+sw buf_peek_1 (s_buf *buf, const char *p)
 {
   s_str stra;
   assert(buf);
@@ -488,13 +488,13 @@ sw buf_peek_str (s_buf *buf, const s_str *src)
   }
   size = buf->wpos - buf->rpos;
   if ((uw) size < src->size) {
-    if (memcmp(buf->ptr.ps8 + buf->rpos, src->ptr.p, size))
+    if (memcmp(buf->ptr.pchar + buf->rpos, src->ptr.p, size))
       return 0;
   }
   if (buf->rpos + src->size > buf->wpos &&
       buf_refill(buf, src->size) < (sw) src->size)
     return 0;
-  if (memcmp(buf->ptr.ps8 + buf->rpos, src->ptr.p, src->size))
+  if (memcmp(buf->ptr.pchar + buf->rpos, src->ptr.p, src->size))
     return 0;
   return src->size;
 }
@@ -513,7 +513,7 @@ sw buf_peek_to_str (s_buf *buf, s_str *dest)
     str_init_empty(dest);
     return 0;
   }
-  str_init_alloc(dest, size, buf->ptr.ps8 + buf->rpos);
+  str_init_alloc(dest, size, buf->ptr.pchar + buf->rpos);
   return size;
 }
 
@@ -593,7 +593,7 @@ sw buf_peek_u64 (s_buf *buf, u64 *p)
     return size;
 }
 
-sw buf_read_1 (s_buf *buf, const s8 *p)
+sw buf_read_1 (s_buf *buf, const char *p)
 {
   s_str stra;
   assert(buf);
@@ -708,7 +708,7 @@ sw buf_read_to_str (s_buf *buf, s_str *dest)
     str_init_empty(dest);
     return 0;
   }
-  str_init_alloc(dest, size, buf->ptr.ps8 + buf->rpos);
+  str_init_alloc(dest, size, buf->ptr.pchar + buf->rpos);
   return buf_ignore(buf, size);
 }
 
@@ -795,7 +795,7 @@ sw buf_refill_compact (s_buf *buf)
       size = buf->wpos - min_rpos;
       assert(size < buf->size);
       memmove(buf->ptr.p,
-              buf->ptr.ps8 + min_rpos,
+              buf->ptr.pchar + min_rpos,
               size);
       buf->rpos -= min_rpos;
       save = buf->save;
@@ -887,7 +887,7 @@ sw buf_vf (s_buf *buf, const char *fmt, va_list ap)
   return r;
 }
 
-sw buf_write_1 (s_buf *buf, const s8 *p)
+sw buf_write_1 (s_buf *buf, const char *p)
 {
   s_str stra;
   str_init_1(&stra, NULL, p);
@@ -907,7 +907,7 @@ sw buf_write_character_utf8 (s_buf *buf, character c)
     assert(! "buffer overflow");
     return -1;
   }
-  character_utf8(c, buf->ptr.ps8 + buf->wpos);
+  character_utf8(c, buf->ptr.pchar + buf->wpos);
   buf->wpos += size;
   return size;
 }

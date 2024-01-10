@@ -39,16 +39,16 @@
 #endif
 
 /* Basic integer types. */
-typedef char          s8;
+typedef int8_t        s8;
 typedef int16_t       s16;
 typedef int32_t       s32;
-typedef long          sw;
 typedef int64_t       s64;
+typedef long          sw;
 typedef uint8_t       u8;
 typedef uint16_t      u16;
 typedef uint32_t      u32;
-typedef unsigned long uw;
 typedef uint64_t      u64;
+typedef unsigned long uw;
 
 #ifdef SW_MAX
 #undef SW_MAX
@@ -173,7 +173,7 @@ typedef union tag_data u_tag_data;
 typedef union tag_type u_tag_type;
 
 /* typedefs */
-typedef s32            character;
+typedef u32            character;
 typedef s_tag      **p_facts_spec;
 typedef s_tag       *t_facts_spec[];
 typedef SHA1_CTX     t_hash;
@@ -237,14 +237,16 @@ struct map {
 
 union ptr_ {
   const void *p;
-  const s8   *ps8;
-  const u8   *pu8;
+  const char *pchar;
+  const s8 *ps8;
+  const u8 *pu8;
 };
 
 union ptr_w {
   void *p;
-  s8   *ps8;
-  u8   *pu8;
+  char *pchar;
+  s8 *ps8;
+  u8 *pu8;
 };
 
 struct quote {
@@ -466,7 +468,7 @@ struct sequence {
   u64 frame;
   f64 t;
   s_time t0;
-  const s8 *title;
+  const char *title;
   void *window;
   f_sequence load;
   f_sequence render;
@@ -555,7 +557,7 @@ struct facts_cursor {
 /* 9 */
 struct env {
   sw                argc;
-  s8              **argv;
+  char            **argv;
   s_str             argv0_dir;
   s_list           *backtrace;
   const s_sym      *current_module;

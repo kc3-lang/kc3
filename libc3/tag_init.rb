@@ -271,7 +271,7 @@ end
 
 class TagInit1 < TagInit
   def initialize(name, suffix, tag_type, init_mode = :init_mode_init,
-                 args_list = [Arg.new("const s8 *", "p")])
+                 args_list = [Arg.new("const char *", "p")])
     super(name, suffix, tag_type, init_mode, args_list)
   end
 end
@@ -327,7 +327,7 @@ class TagInitList
        TagInit.new("list", "TAG_LIST", :init_mode_direct,
                    [Arg.new("s_list *", "list")]),
 #       TagInit1.new("list", "1", "TAG_LIST", :init_mode_init,
-#                    [Arg.new("const s8 *", "p"),
+#                    [Arg.new("const char *", "p"),
 #                     Arg.new("s_list *", "next")]),
        TagInit.new("map", "TAG_MAP", :init_mode_init,
                    [Arg.new("uw", "count")]),
@@ -345,12 +345,12 @@ class TagInitList
        TagInit.new("s64", "TAG_S64", :init_mode_direct,
                    [Arg.new("s64", "i")]),
        TagInit.new("str", "TAG_STR", :init_mode_init,
-                   [Arg.new("s8 *", "p_free"),
+                   [Arg.new("char *", "p_free"),
                     Arg.new("uw", "size"),
-                    Arg.new("const s8 *", "p")]),
+                    Arg.new("const char *", "p")]),
        TagInit.new("str", "1", "TAG_STR", :init_mode_init,
-                   [Arg.new("s8 *", "p_free"),
-                    Arg.new("const s8 *", "p")]),
+                   [Arg.new("char *", "p_free"),
+                    Arg.new("const char *", "p")]),
        TagInit.new("struct", "TAG_STRUCT", :init_mode_init,
                    [Arg.new("const s_sym *", "module")]),
        TagInit.new("struct", "with_data", "TAG_STRUCT", :init_mode_init,

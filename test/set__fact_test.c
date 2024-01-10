@@ -92,7 +92,7 @@ TEST_CASE(set__fact_add)
 {
   s_fact fact[24];
   sw i;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -140,7 +140,7 @@ TEST_CASE_END(set__fact_add)
 TEST_CASE(set__fact_cursor)
 {
   sw i;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -225,7 +225,7 @@ TEST_CASE_END(set__fact_init_clean)
 TEST_CASE(set__fact_remove)
 {
   sw i;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -272,7 +272,7 @@ TEST_CASE_END(set__fact_remove)
 TEST_CASE(set__fact_resize)
 {
   sw i;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",

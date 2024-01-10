@@ -17,10 +17,10 @@
 #include <err.h>
 #include "types.h"
 
-/* Stack-allocation compatible functions, call cairo_font_clean after
-   use. */
+/* Stack-allocation compatible functions, call cairo_font_clean
+   after use. */
 void           cairo_font_clean (s_cairo_font *font);
-s_cairo_font * cairo_font_init (s_cairo_font *font, const s8 *path);
+s_cairo_font * cairo_font_init (s_cairo_font *font, const char *path);
 
 /* Observers */
 void cairo_set_font (cairo_t *cr, const s_cairo_font *font);

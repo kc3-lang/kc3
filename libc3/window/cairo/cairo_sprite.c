@@ -41,7 +41,7 @@ void cairo_sprite_clean (s_cairo_sprite *sprite)
 }
 
 s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
-                                    const s8 *path,
+                                    const char *path,
                                     uw dim_x, uw dim_y,
                                     uw frame_count)
 {
@@ -69,10 +69,11 @@ s_cairo_sprite * cairo_sprite_init (s_cairo_sprite *sprite,
     str_clean(&sprite->path);
     return NULL;
   }
-  src = cairo_image_surface_create_from_png(sprite->real_path.ptr.ps8);
+  src =
+    cairo_image_surface_create_from_png(sprite->real_path.ptr.pchar);
   if (! src) {
     err_write_1("cairo_sprite_init: error loading image: ");
-    err_puts(sprite->real_path.ptr.ps8);
+    err_puts(sprite->real_path.ptr.pchar);
     str_clean(&sprite->path);
     str_clean(&sprite->real_path);
     return NULL;

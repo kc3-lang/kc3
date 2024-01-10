@@ -27,16 +27,16 @@
 
 /* Stack-allocation compatible functions, call buf_clean after use. */
 void    buf_clean (s_buf *buf);
-s_buf * buf_init (s_buf *buf, bool p_free, uw size, s8 *p);
-s_buf * buf_init_1 (s_buf *buf, bool p_free, s8 *p);
+s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p);
+s_buf * buf_init_1 (s_buf *buf, bool p_free, char *p);
 s_buf * buf_init_alloc (s_buf *buf, uw size);
 s_buf * buf_init_str (s_buf *buf, bool free, s_str *p);
 s_buf * buf_init_str_copy (s_buf *buf, const s_str *str);
 
 /* Heap-allocation compatible functions, call buf_delete after use. */
 void    buf_delete (s_buf *buf);
-s_buf * buf_new (bool free, uw size, s8 *p);
-s_buf * buf_new_1 (bool free, uw size, s8 *p);
+s_buf * buf_new (bool free, uw size, char *p);
+s_buf * buf_new_1 (bool free, uw size, char *p);
 s_buf * buf_new_alloc (uw bytes);
 s_buf * buf_new_str (s_str *str);
 
@@ -48,7 +48,7 @@ sw      buf_ignore_line (s_buf *buf);
 sw      buf_ignore_newline (s_buf *buf);
 sw      buf_ignore_spaces (s_buf *buf);
 sw      buf_ignore_spaces_but_newline (s_buf *buf);
-sw      buf_peek_1 (s_buf *buf, const s8 *p);
+sw      buf_peek_1 (s_buf *buf, const char *p);
 sw      buf_peek_character_utf8 (s_buf *buf, character *p);
 sw      buf_peek_f32 (s_buf *buf, f32 *p);
 sw      buf_peek_f64 (s_buf *buf, f64 *p);
@@ -65,7 +65,7 @@ sw      buf_peek_u32 (s_buf *buf, u32 *p);
 sw      buf_peek_u64 (s_buf *buf, u64 *p);
 sw      buf_read_integer (s_buf *buf, s_integer *dst);
 sw      buf_read_character_utf8 (s_buf *buf, character *p);
-sw      buf_read_1 (s_buf *buf, const s8 *p);
+sw      buf_read_1 (s_buf *buf, const char *p);
 sw      buf_read_f32 (s_buf *buf, f32 *p);
 sw      buf_read_f64 (s_buf *buf, f64 *p);
 sw      buf_read_s8 (s_buf *buf, s8 *p);
@@ -88,7 +88,7 @@ sw      buf_str_to_hex_size (const s_str *src);
 sw      buf_u8_to_hex (s_buf *buf, const u8 *x);
 sw      buf_u8_to_hex_size (const u8 *x);
 sw      buf_vf (s_buf *buf, const char *fmt, va_list ap);
-sw      buf_write_1 (s_buf *buf, const s8 *p);
+sw      buf_write_1 (s_buf *buf, const char *p);
 sw      buf_write_character_utf8 (s_buf *buf, character c);
 sw      buf_write_f32 (s_buf *buf, f32 x);
 sw      buf_write_f64 (s_buf *buf, f64 x);

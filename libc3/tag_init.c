@@ -111,7 +111,7 @@ s_tag * tag_init_ident (s_tag *tag, const s_ident *ident)
   return tag;
 }
 
-s_tag * tag_init_ident_1 (s_tag *tag, const s8 *p)
+s_tag * tag_init_ident_1 (s_tag *tag, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -122,7 +122,7 @@ s_tag * tag_init_ident_1 (s_tag *tag, const s8 *p)
   return tag;
 }
 
-s_tag * tag_init_integer_1 (s_tag *tag, const s8 *p)
+s_tag * tag_init_integer_1 (s_tag *tag, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -176,7 +176,7 @@ s_tag * tag_init_map (s_tag *tag, uw count)
   return tag;
 }
 
-s_tag * tag_init_map_1 (s_tag *tag, const s8 *p)
+s_tag * tag_init_map_1 (s_tag *tag, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -249,7 +249,7 @@ s_tag * tag_init_s64 (s_tag *tag, s64 i)
   return tag;
 }
 
-s_tag * tag_init_str (s_tag *tag, s8 *p_free, uw size, const s8 *p)
+s_tag * tag_init_str (s_tag *tag, char *p_free, uw size, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -260,7 +260,7 @@ s_tag * tag_init_str (s_tag *tag, s8 *p_free, uw size, const s8 *p)
   return tag;
 }
 
-s_tag * tag_init_str_1 (s_tag *tag, s8 *p_free, const s8 *p)
+s_tag * tag_init_str_1 (s_tag *tag, char *p_free, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -315,7 +315,7 @@ s_tag * tag_init_sym (s_tag *tag, const s_sym *sym)
   return tag;
 }
 
-s_tag * tag_init_sym_1 (s_tag *tag, const s8 *p)
+s_tag * tag_init_sym_1 (s_tag *tag, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -507,7 +507,7 @@ s_tag * tag_new_ident (const s_ident *ident)
   return tag;
 }
 
-s_tag * tag_new_ident_1 (const s8 *p)
+s_tag * tag_new_ident_1 (const char *p)
 {
   s_tag *tag;
   if (! (tag = calloc(1, sizeof(s_tag)))) {
@@ -522,7 +522,7 @@ s_tag * tag_new_ident_1 (const s8 *p)
   return tag;
 }
 
-s_tag * tag_new_integer_1 (const s8 *p)
+s_tag * tag_new_integer_1 (const char *p)
 {
   s_tag *tag;
   if (! (tag = calloc(1, sizeof(s_tag)))) {
@@ -594,7 +594,7 @@ s_tag * tag_new_map (uw count)
   return tag;
 }
 
-s_tag * tag_new_map_1 (const s8 *p)
+s_tag * tag_new_map_1 (const char *p)
 {
   s_tag *tag;
   if (! (tag = calloc(1, sizeof(s_tag)))) {
@@ -687,7 +687,7 @@ s_tag * tag_new_s64 (s64 i)
   return tag;
 }
 
-s_tag * tag_new_str (s8 *p_free, uw size, const s8 *p)
+s_tag * tag_new_str (char *p_free, uw size, const char *p)
 {
   s_tag *tag;
   if (! (tag = calloc(1, sizeof(s_tag)))) {
@@ -702,7 +702,7 @@ s_tag * tag_new_str (s8 *p_free, uw size, const s8 *p)
   return tag;
 }
 
-s_tag * tag_new_str_1 (s8 *p_free, const s8 *p)
+s_tag * tag_new_str_1 (char *p_free, const char *p)
 {
   s_tag *tag;
   if (! (tag = calloc(1, sizeof(s_tag)))) {
@@ -773,7 +773,7 @@ s_tag * tag_new_sym (const s_sym *sym)
   return tag;
 }
 
-s_tag * tag_new_sym_1 (const s8 *p)
+s_tag * tag_new_sym_1 (const char *p)
 {
   s_tag *tag;
   if (! (tag = calloc(1, sizeof(s_tag)))) {
@@ -980,7 +980,7 @@ s_tag * tag_ident (s_tag *tag, const s_ident *ident)
   return tag;
 }
 
-s_tag * tag_ident_1 (s_tag *tag, const s8 *p)
+s_tag * tag_ident_1 (s_tag *tag, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -992,7 +992,7 @@ s_tag * tag_ident_1 (s_tag *tag, const s8 *p)
   return tag;
 }
 
-s_tag * tag_integer_1 (s_tag *tag, const s8 *p)
+s_tag * tag_integer_1 (s_tag *tag, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1051,7 +1051,7 @@ s_tag * tag_map (s_tag *tag, uw count)
   return tag;
 }
 
-s_tag * tag_map_1 (s_tag *tag, const s8 *p)
+s_tag * tag_map_1 (s_tag *tag, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1131,7 +1131,7 @@ s_tag * tag_s64 (s_tag *tag, s64 i)
   return tag;
 }
 
-s_tag * tag_str (s_tag *tag, s8 *p_free, uw size, const s8 *p)
+s_tag * tag_str (s_tag *tag, char *p_free, uw size, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1143,7 +1143,7 @@ s_tag * tag_str (s_tag *tag, s8 *p_free, uw size, const s8 *p)
   return tag;
 }
 
-s_tag * tag_str_1 (s_tag *tag, s8 *p_free, const s8 *p)
+s_tag * tag_str_1 (s_tag *tag, char *p_free, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1203,7 +1203,7 @@ s_tag * tag_sym (s_tag *tag, const s_sym *sym)
   return tag;
 }
 
-s_tag * tag_sym_1 (s_tag *tag, const s8 *p)
+s_tag * tag_sym_1 (s_tag *tag, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);

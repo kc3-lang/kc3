@@ -99,7 +99,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   return false;
 }
 
-const s8 * tag_type_to_string (e_tag_type tag_type)
+const char * tag_type_to_string (e_tag_type tag_type)
 {
   switch (tag_type) {
   case TAG_VOID:        return "Void";

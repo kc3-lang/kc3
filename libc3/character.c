@@ -17,7 +17,7 @@
 #include "tag_type.h"
 #include "ucd.h"
 
-character character_1 (const s8 *p)
+character character_1 (const char *p)
 {
   character c;
   s_str stra;
@@ -71,8 +71,7 @@ bool character_is_digit (character c)
 
 bool character_is_lowercase (character c)
 {
-  return (c >= 0 &&
-          c < UCD_MAX &&
+  return (c < UCD_MAX &&
           g_ucd[c].flags & UCD_LETTER_LOWERCASE);
 }
 
@@ -80,30 +79,26 @@ bool character_is_printable (character c)
 {
   const u64 ucd_printable = UCD_LETTER | UCD_MARK | UCD_NUMBER |
     UCD_PUNCTUATION | UCD_SYMBOL | UCD_SEPARATOR_SPACE;
-  return (c >= 0 &&
-          c < UCD_MAX &&
+  return (c < UCD_MAX &&
           g_ucd[c].flags & ucd_printable);
 }
 
 bool character_is_space (character c)
 {
-  return (c >= 0 &&
-          c < UCD_MAX &&
+  return (c < UCD_MAX &&
           g_ucd[c].flags & (UCD_OTHER_CONTROL | UCD_SEPARATOR_SPACE));
 }
 
 bool character_is_uppercase (character c)
 {
-  return (c >= 0 &&
-          c < UCD_MAX &&
+  return (c < UCD_MAX &&
           g_ucd[c].flags & UCD_LETTER_UPPERCASE);
 }
 
 character character_switch_case (character c)
 {
   character s;
-  if (c >= 0 &&
-      c < UCD_MAX &&
+  if (c < UCD_MAX &&
       (s = g_ucd[c].to_lower | g_ucd[c].to_upper))
     return s;
   return c;
@@ -111,8 +106,7 @@ character character_switch_case (character c)
 
 character character_to_lower (character c)
 {
-  if (c >= 0 &&
-      c < UCD_MAX &&
+  if (c < UCD_MAX &&
       g_ucd[c].to_lower)
     return g_ucd[c].to_lower;
   return c;
@@ -120,14 +114,13 @@ character character_to_lower (character c)
 
 character character_to_upper (character c)
 {
-  if (c >= 0 &&
-      c < UCD_MAX &&
+  if (c < UCD_MAX &&
       g_ucd[c].to_upper)
     return g_ucd[c].to_upper;
   return c;
 }
 
-sw character_utf8 (character c, s8 *dest)
+sw character_utf8 (character c, char *dest)
 {
   const u8 _00000111 = 0x07;
   const u8 _00001111 = 0x0F;
@@ -137,24 +130,22 @@ sw character_utf8 (character c, s8 *dest)
   const u8 _11000000 = 0xC0;
   const u8 _11100000 = 0xE0;
   const u8 _11110000 = 0xF0;
-  if (c == -1)
-    return -1;
-  if (((u64) c) < 0x80) {
+  if (c < 0x80) {
     dest[0] = (s8) c;
     return 1;
   }
-  if (((u64) c) < 0x800) {
+  if (c < 0x800) {
     dest[0] = _11000000 | ((c >> 6) & _00011111);
     dest[1] = _10000000 | ( c       & _00111111);
     return 2;
   }
-  if (((u64) c) < 0x10000) {
+  if (c < 0x10000) {
     dest[0] = _11100000 | ((c >> 12) & _00001111);
     dest[1] = _10000000 | ((c >>  6) & _00111111);
     dest[2] = _10000000 | ( c        & _00111111);
     return 3;
   }
-  if (((u64) c) < 0x110000) {
+  if (c < 0x110000) {
     dest[0] = _11110000 | ((c >> 18) & _00000111);
     dest[1] = _10000000 | ((c >> 12) & _00111111);
     dest[2] = _10000000 | ((c >>  6) & _00111111);
@@ -166,15 +157,13 @@ sw character_utf8 (character c, s8 *dest)
 
 sw character_utf8_size (character c)
 {
-  if (c == -1)
-    return -1;
-  if (((u64) c) < 0x80)
+  if (c < 0x80)
     return 1;
-  if (((u64) c) < 0x800)
+  if (c < 0x800)
     return 2;
-  if (((u64) c) < 0x10000)
+  if (c < 0x10000)
     return 3;
-  if (((u64) c) < 0x110000)
+  if (c < 0x110000)
     return 4;
   return -1;
 }

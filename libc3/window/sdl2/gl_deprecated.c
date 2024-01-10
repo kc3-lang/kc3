@@ -13,7 +13,7 @@
 #define GL_SILENCE_DEPRECATION 1
 #include "gl_deprecated.h"
 
-const s8 * gl_error_string (GLenum error)
+const char * gl_error_string (GLenum error)
 {
-  return (const s8 *) gluErrorString(error);
+  return (const char *) gluErrorString(error);
 }

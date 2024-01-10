@@ -202,7 +202,7 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
   return a;
 }
 
-s_array * array_init_1 (s_array *array, s8 *p)
+s_array * array_init_1 (s_array *array, const char *p)
 {
   s_buf buf;
   uw len;
@@ -211,7 +211,7 @@ s_array * array_init_1 (s_array *array, s8 *p)
   assert(array);
   assert(p);
   len = strlen(p);
-  buf_init(&buf, false, len, p);
+  buf_init(&buf, false, len, (char *) p);
   buf.wpos = len;
   r = buf_parse_array(&buf, &tmp);
   if (r < 0 || (uw) r != len) {

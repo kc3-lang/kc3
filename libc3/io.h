@@ -27,13 +27,13 @@
 
 /* error output */
 sw err_inspect (const s_tag *x);
-sw err_puts (const s8 *x);
-sw err_write_1 (const s8 *x);
+sw err_puts (const char *x);
+sw err_write_1 (const char *x);
 
 /* standard output */
 sw io_inspect (const s_tag *x);
-sw io_puts (const s8 *x);
-sw io_write_1 (const s8 *x);
+sw io_puts (const char *x);
+sw io_write_1 (const char *x);
 
 PROTOTYPES_ERR_IO_INSPECT(array,      const s_array *);
 PROTOTYPES_ERR_IO_INSPECT(bool,       const bool *);

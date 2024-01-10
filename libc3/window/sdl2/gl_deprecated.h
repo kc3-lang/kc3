@@ -15,6 +15,6 @@
 
 #include "types.h"
 
-const s8 * gl_error_string (GLenum error);
+const char * gl_error_string (GLenum error);
 
 #endif /* GL_DEPRECATED_H */

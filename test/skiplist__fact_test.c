@@ -68,7 +68,7 @@ TEST_CASE(skiplist__fact_find)
   const u8 *h;
   const u8 height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 0};
   sw i;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -126,7 +126,7 @@ TEST_CASE(skiplist__fact_insert)
   const u8 height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 0};
   const double *s;
   const double spacing[] = {2.0, 2.4, 3.0, 0.0};
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",
@@ -198,7 +198,7 @@ TEST_CASE(skiplist__fact_remove)
   const u8 *h;
   const u8 height[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 0};
   sw i;
-  s8 *p[24] = {
+  char *p[24] = {
     "\"a\"",
     ":a",
     "A",

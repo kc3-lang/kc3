@@ -1537,7 +1537,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   sw result = 0;
   s_buf_save save;
   s_str str;
-  s8 t[IDENT_MAX];
+  char t[IDENT_MAX];
   s_buf tmp;
   assert(buf);
   assert(dest);
@@ -2420,8 +2420,8 @@ sw buf_parse_str (s_buf *buf, s_str *dest)
 {
   u8 b;
   character c;
-  s8 *end = "\"";
-  s8 *end1 = NULL;
+  char *end = "\"";
+  char *end1 = NULL;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -2727,7 +2727,7 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
   sw result = 0;
   s_buf_save save;
   s_str str;
-  s8 t[SYM_MAX];
+  char t[SYM_MAX];
   s_buf tmp;
   assert(buf);
   assert(dest);
@@ -2803,7 +2803,7 @@ sw buf_parse_sym_str (s_buf *buf, s_str *str)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s8 t[SYM_MAX];
+  char t[SYM_MAX];
   s_buf tmp;
   buf_save_init(buf, &save);
   buf_init(&tmp, false, sizeof(t), t);

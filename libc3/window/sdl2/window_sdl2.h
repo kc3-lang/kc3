@@ -20,7 +20,7 @@
 void            window_sdl2_clean (s_window_sdl2 *window);
 s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
                                   sw x, sw y, uw w, uw h,
-                                  const s8 *title,
+                                  const char *title,
                                   uw sequence_count);
 
 /* Operators. */

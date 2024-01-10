@@ -15,7 +15,7 @@
 #include "gl_camera.h"
 #include "gl_matrix_4f.h"
 
-static const s8 * g_gl_camera_vertex_shader_src = "#version 330 core\n"
+static const char * g_gl_camera_vertex_shader_src = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
 "uniform mat4 matrix;\n"
 "\n"
@@ -56,7 +56,7 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   glCompileShader(vertex_shader);
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
   if (! success) {
-    s8 info_log[512];
+    char info_log[512];
     glGetShaderInfoLog(vertex_shader, sizeof(info_log), NULL, info_log);
     err_write_1("gl_camera_init: shader compilation failed: ");
     err_puts(info_log);

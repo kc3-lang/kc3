@@ -50,15 +50,15 @@ void fact_test_clean_3 (s_fact *fact)
   tag_delete((s_tag *) fact->object);
 }
 
-s_fact * fact_test_init_1 (s_fact *fact, const s8 *tag)
+s_fact * fact_test_init_1 (s_fact *fact, const char *tag)
 {
   assert(fact);
   fact->subject = fact->predicate = fact->object = tag_new_1(tag);
   return fact;
 }
 
-s_fact * fact_test_init_3 (s_fact *fact, const s8 *subject,
-                           const s8 *predicate, const s8 *object)
+s_fact * fact_test_init_3 (s_fact *fact, const char *subject,
+                           const char *predicate, const char *object)
 {
   assert(fact);
   fact->subject   = tag_new_1(subject);

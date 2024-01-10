@@ -712,7 +712,7 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
 
 sw buf_inspect_f32_size (const f32 *f)
 {
-  s8 b[32];
+  char b[32];
   s_buf buf;
   assert(f);
   buf_init(&buf, false, sizeof(b), b);
@@ -787,7 +787,7 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
 
 sw buf_inspect_f64_size (const f64 *f)
 {
-  s8 b[64];
+  char b[64];
   s_buf buf;
   assert(f);
   buf_init(&buf, false, sizeof(b), b);
@@ -1419,7 +1419,7 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
           return r;
       }
       else
-        if ((r = buf_write_1(buf, k->data.sym->str.ptr.ps8)) < 0)
+        if ((r = buf_write_1(buf, k->data.sym->str.ptr.pchar)) < 0)
           return r;
       result += r;
       if ((r = buf_write_1(buf, ": ")) < 0)
@@ -1631,7 +1631,7 @@ sw buf_inspect_str_byte_size (const u8 *byte)
 
 sw buf_inspect_str_character (s_buf *buf, const character *c)
 {
-  s8 b[4];
+  char b[4];
   s_buf char_buf;
   int i;
   int j;
@@ -1825,7 +1825,7 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
       return r;
   }
   else
-    if ((r = buf_write_1(buf, s->type->module->str.ptr.ps8)) < 0)
+    if ((r = buf_write_1(buf, s->type->module->str.ptr.pchar)) < 0)
       return r;
   result += r;
   if ((r = buf_write_1(buf, "{")) < 0)
@@ -1847,7 +1847,7 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
         return r;
     }
     else
-      if ((r = buf_write_1(buf, k->data.sym->str.ptr.ps8)) < 0)
+      if ((r = buf_write_1(buf, k->data.sym->str.ptr.pchar)) < 0)
         return r;
     result += r;
     if ((r = buf_write_1(buf, ": ")) < 0)
@@ -1856,7 +1856,7 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
     if (s->data) {
       if (! tag_type(s->type->map.value + i, &type))
         return -1;
-      if ((r = data_buf_inspect(type, buf, (s8 *) s->data +
+      if ((r = data_buf_inspect(type, buf, (char *) s->data +
                                 s->type->offset[i])) < 0)
         return r;
       result += r;
@@ -2137,7 +2137,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
 
 sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
 {
-  const s8 *s;
+  const char *s;
   assert(buf);
   s = tag_type_to_string(type);
   if (! s)
@@ -2147,7 +2147,7 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
 
 sw buf_inspect_tag_type_size (e_tag_type type)
 {
-  const s8 *s;
+  const char *s;
   s = tag_type_to_string(type);
   if (! s)
     return -1;

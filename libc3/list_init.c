@@ -118,7 +118,7 @@ s_list * list_init_ident (s_list *list, const s_ident *ident,
   return list;
 }
 
-s_list * list_init_ident_1 (s_list *list, const s8 *p, s_list *next)
+s_list * list_init_ident_1 (s_list *list, const char *p, s_list *next)
 {
   s_list tmp;
   assert(list);
@@ -129,7 +129,7 @@ s_list * list_init_ident_1 (s_list *list, const s8 *p, s_list *next)
   return list;
 }
 
-s_list * list_init_integer_1 (s_list *list, const s8 *p, s_list *next)
+s_list * list_init_integer_1 (s_list *list, const char *p, s_list *next)
 {
   s_list tmp;
   assert(list);
@@ -174,7 +174,7 @@ s_list * list_init_map (s_list *list, uw count, s_list *next)
   return list;
 }
 
-s_list * list_init_map_1 (s_list *list, const s8 *p, s_list *next)
+s_list * list_init_map_1 (s_list *list, const char *p, s_list *next)
 {
   s_list tmp;
   assert(list);
@@ -251,8 +251,8 @@ s_list * list_init_s64 (s_list *list, s64 i, s_list *next)
   return list;
 }
 
-s_list * list_init_str (s_list *list, s8 *p_free, uw size, const s8 *p, 
-                        s_list *next)
+s_list * list_init_str (s_list *list, char *p_free, uw size, 
+                        const char *p, s_list *next)
 {
   s_list tmp;
   assert(list);
@@ -263,7 +263,7 @@ s_list * list_init_str (s_list *list, s8 *p_free, uw size, const s8 *p,
   return list;
 }
 
-s_list * list_init_str_1 (s_list *list, s8 *p_free, const s8 *p, 
+s_list * list_init_str_1 (s_list *list, char *p_free, const char *p, 
                           s_list *next)
 {
   s_list tmp;
@@ -322,7 +322,7 @@ s_list * list_init_sym (s_list *list, const s_sym *sym, s_list *next)
   return list;
 }
 
-s_list * list_init_sym_1 (s_list *list, const s8 *p, s_list *next)
+s_list * list_init_sym_1 (s_list *list, const char *p, s_list *next)
 {
   s_list tmp;
   assert(list);
@@ -525,7 +525,7 @@ s_list * list_new_ident (const s_ident *ident, s_list *next)
   return list;
 }
 
-s_list * list_new_ident_1 (const s8 *p, s_list *next)
+s_list * list_new_ident_1 (const char *p, s_list *next)
 {
   s_list *list;
   list = list_new(next);
@@ -538,7 +538,7 @@ s_list * list_new_ident_1 (const s8 *p, s_list *next)
   return list;
 }
 
-s_list * list_new_integer_1 (const s8 *p, s_list *next)
+s_list * list_new_integer_1 (const char *p, s_list *next)
 {
   s_list *list;
   list = list_new(next);
@@ -590,7 +590,7 @@ s_list * list_new_map (uw count, s_list *next)
   return list;
 }
 
-s_list * list_new_map_1 (const s8 *p, s_list *next)
+s_list * list_new_map_1 (const char *p, s_list *next)
 {
   s_list *list;
   list = list_new(next);
@@ -681,7 +681,8 @@ s_list * list_new_s64 (s64 i, s_list *next)
   return list;
 }
 
-s_list * list_new_str (s8 *p_free, uw size, const s8 *p, s_list *next)
+s_list * list_new_str (char *p_free, uw size, const char *p, 
+                       s_list *next)
 {
   s_list *list;
   list = list_new(next);
@@ -694,7 +695,7 @@ s_list * list_new_str (s8 *p_free, uw size, const s8 *p, s_list *next)
   return list;
 }
 
-s_list * list_new_str_1 (s8 *p_free, const s8 *p, s_list *next)
+s_list * list_new_str_1 (char *p_free, const char *p, s_list *next)
 {
   s_list *list;
   list = list_new(next);
@@ -762,7 +763,7 @@ s_list * list_new_sym (const s_sym *sym, s_list *next)
   return list;
 }
 
-s_list * list_new_sym_1 (const s8 *p, s_list *next)
+s_list * list_new_sym_1 (const char *p, s_list *next)
 {
   s_list *list;
   list = list_new(next);

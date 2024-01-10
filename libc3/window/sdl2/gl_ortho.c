@@ -15,7 +15,7 @@
 #include "gl_ortho.h"
 #include "gl_matrix_4f.h"
 
-static const s8 * g_gl_ortho_vertex_shader_src = "#version 330 core\n"
+static const char * g_gl_ortho_vertex_shader_src = "#version 330 core\n"
   "layout (location = 0) in vec3 aPos;\n"
   "layout (location = 1) in vec3 aNorm;\n"
   "layout (location = 2) in vec2 aTexCoord;\n"
@@ -69,7 +69,7 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   glCompileShader(vertex_shader);
   glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
   if (! success) {
-    s8 info_log[512];
+    char info_log[512];
     glGetShaderInfoLog(vertex_shader, sizeof(info_log), NULL, info_log);
     err_write_1("gl_ortho_init: shader compilation failed: ");
     err_puts(info_log);
@@ -120,7 +120,7 @@ void gl_ortho_render (s_gl_ortho *ortho)
                      &ortho->projection_matrix.xx);
   if ((error = glGetError()) != GL_NO_ERROR) {
     err_write_1("gl_ortho_render: glUniformMatrix4fv: ");
-    err_puts((const s8 *) glewGetErrorString(error));
+    err_puts((const char *) glewGetErrorString(error));
     assert(! "gl_ortho_render: glUniformMatrix4fv");
   }
   assert(glGetError() == GL_NO_ERROR);

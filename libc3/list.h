@@ -27,24 +27,24 @@
 /* Stack-allocation functions, call list_clean after use. */
 void      list_clean (s_list *list);
 s_list  * list_init (s_list *list, s_list *next);
-s_list  * list_init_1 (s_list *list, const s8 *p, s_list *next);
+s_list  * list_init_1 (s_list *list, const char *p, s_list *next);
 s_list ** list_init_cast (s_list **list, const s_tag *tag);
 s_list ** list_init_copy (s_list **list, const s_list * const *src);
 s_list  * list_init_copy_tag (s_list *list, const s_tag *tag,
                               s_list *next);
-s_list  * list_init_eval (s_list *list, const s8 *p);
+s_list  * list_init_eval (s_list *list, const char *p);
 
 /* Heap-allocation functions, call list_delete after use */
 s_list * list_delete (s_list *list);
 void     list_delete_all (s_list *list);
 void     list_f_clean (s_list **list);
 s_list * list_new (s_list *next);
-s_list * list_new_1 (const s8 *p);
+s_list * list_new_1 (const char *p);
 s_list * list_new_f64 (f64 x, s_list *next);
 s_list * list_new_copy (const s_tag *tag, s_list *next);
 s_list * list_new_list (s_list *list, s_list *next);
 s_list * list_new_map (uw count, s_list *next);
-s_list * list_new_str_1 (s8 *free, const s8 *p, s_list *next);
+s_list * list_new_str_1 (char *free, const char *p, s_list *next);
 
 /* Observers */
 s_list ** list_cast (const s_tag *tag, s_list **list);

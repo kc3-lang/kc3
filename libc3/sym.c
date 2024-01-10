@@ -21,7 +21,7 @@ s_sym_list * sym_list_new (s_sym *sym, s_sym_list *next);
 
 static s_sym_list * g_sym_list = NULL;
 
-const s_sym * sym_1 (const s8 *p)
+const s_sym * sym_1 (const char *p)
 {
   s_str stra;
   str_init_1(&stra, NULL, p);
@@ -100,7 +100,7 @@ bool sym_has_reserved_characters (const s_sym *sym)
   return false;
 }
 
-const s_sym ** sym_init_1 (const s_sym **sym, const s8 *p)
+const s_sym ** sym_init_1 (const s_sym **sym, const char *p)
 {
   assert(sym);
   assert(p);
@@ -345,7 +345,7 @@ bool sym_to_buf_inspect (const s_sym *type, f_buf_inspect *dest)
     return true;
   }
   err_write_1("sym_to_buf_inspect: unknown type: ");
-  err_write_1(type->str.ptr.ps8);
+  err_write_1(type->str.ptr.pchar);
   err_write_1("\n");
   assert(! "sym_to_buf_inspect: unknown type");
   return false;

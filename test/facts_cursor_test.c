@@ -30,7 +30,7 @@ TEST_CASE(facts_cursor_init)
 {
   s_facts_cursor cursor;
   uw i = 0;
-  s8 *p[24] = {
+  char *p[24] = {
     "0",
     "1",
     "10",
@@ -113,7 +113,7 @@ TEST_CASE(facts_cursor_next)
 {
   s_facts_cursor cursor;
   uw i = 0;
-  s8 *p[24] = {
+  char *p[24] = {
     "-0x10000000000000000",
     "-0x100000000",
     "-0x10000",

@@ -20,7 +20,7 @@ extern FT_Library g_ft;
 /* Stack-allocation compatible functions, call gl_font_clean
    after use. */
 void        gl_font_clean (s_gl_font *font);
-s_gl_font * gl_font_init (s_gl_font *font, const s8 *path);
+s_gl_font * gl_font_init (s_gl_font *font, const char *path);
 
 /* Operators. */
 void gl_font_set_size (s_gl_font *font, f64 size, f64 pixels_per_point);

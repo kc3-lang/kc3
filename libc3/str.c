@@ -95,7 +95,7 @@ bool str_has_reserved_characters (const s_str *src)
   return false;
 }
 
-s_str * str_init (s_str *str, s8 *free, uw size, const s8 *p)
+s_str * str_init (s_str *str, char *free, uw size, const char *p)
 {
   assert(str);
   str->free.p = free;
@@ -104,7 +104,7 @@ s_str * str_init (s_str *str, s8 *free, uw size, const s8 *p)
   return str;
 }
 
-s_str * str_init_1 (s_str *str, s8 *free, const s8 *p)
+s_str * str_init_1 (s_str *str, char *free, const char *p)
 {
   assert(str);
   str->free.p = free;
@@ -113,7 +113,7 @@ s_str * str_init_1 (s_str *str, s8 *free, const s8 *p)
   return str;
 }
 
-s_str * str_init_alloc (s_str *str, uw size, const s8 *p)
+s_str * str_init_alloc (s_str *str, uw size, const char *p)
 {
   assert(str);
   str->free.p = calloc(size + 1, 1);
@@ -155,7 +155,7 @@ s_str * str_init_copy (s_str *str, const s_str *src)
   return str;
 }
 
-s_str * str_init_copy_1 (s_str *str, const s8 *src)
+s_str * str_init_copy_1 (s_str *str, const char *src)
 {
   uw len;
   assert(str);
@@ -191,7 +191,7 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
   s_buf buf;
   assert(str);
   assert(src);
-  buf_init(&buf, false, src->size, (s8 *) src->ptr.ps8);
+  buf_init(&buf, false, src->size, (char *) src->ptr.pchar);
   if (! str_sw_pos_to_uw(start, src->size, &buf.rpos) ||
       ! str_sw_pos_to_uw(end, src->size, &buf.wpos))
     return NULL;
@@ -234,7 +234,7 @@ uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap)
 {
   int len;
-  s8 *s;
+  char *s;
   len = vasprintf(&s, fmt, ap);
   if (len < 0)
     err(1, "vasprintf");
@@ -268,7 +268,7 @@ sw str_length_utf8 (const s_str *str)
   return result;
 }
 
-s_str * str_new (s8 *free, uw size, const s8 *p)
+s_str * str_new (char *free, uw size, const char *p)
 {
   s_str *str;
   str = malloc(sizeof(s_str));
@@ -278,16 +278,16 @@ s_str * str_new (s8 *free, uw size, const s8 *p)
   return str;
 }
 
-s_str * str_new_1 (s8 *free, const s8 *s)
+s_str * str_new_1 (char *free, const char *s)
 {
   size_t len = strlen(s);
   s_str *str = str_new(free, len, s);
   return str;
 }
 
-s_str * str_new_cpy (const s8 *p, uw size)
+s_str * str_new_cpy (const char *p, uw size)
 {
-  s8 *a;
+  char *a;
   s_str *str;
   if (! (a = malloc(size))) {
     warn("str_new_cpy");
@@ -300,7 +300,7 @@ s_str * str_new_cpy (const s8 *p, uw size)
 
 s_str * str_new_copy (const s_str *src)
 {
-  s8 *a;
+  char *a;
   s_str *dest;
   assert(src);
   if (! (a = malloc(src->size))) {
@@ -424,7 +424,7 @@ sw str_read_character_utf8 (s_str *str, character *c)
   if (size < 0)
     return size;
   str->size -= size;
-  str->ptr.p = str->ptr.ps8 + size;
+  str->ptr.p = str->ptr.pchar + size;
   return size;
 }
 

@@ -58,7 +58,7 @@ void window_clean (s_window *window)
 
 s_window * window_init (s_window *window,
                         sw x, sw y, uw w, uw h,
-                        const s8 *title,
+                        const char *title,
                         uw sequence_count)
 {
   s_window tmp = {0};

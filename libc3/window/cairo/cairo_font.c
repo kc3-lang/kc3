@@ -52,7 +52,7 @@ static FT_Library * cairo_font_ft (void)
   return g_cairo_font_ft;
 }
 
-s_cairo_font * cairo_font_init (s_cairo_font *font, const s8 *path)
+s_cairo_font * cairo_font_init (s_cairo_font *font, const char *path)
 {
   FT_Library *ft;
   assert(font);
@@ -66,9 +66,9 @@ s_cairo_font * cairo_font_init (s_cairo_font *font, const s8 *path)
     str_clean(&font->path);
     return NULL;
   }
-  if (FT_New_Face(*ft, font->real_path.ptr.ps8, 0, &font->ft_face)) {
+  if (FT_New_Face(*ft, font->real_path.ptr.pchar, 0, &font->ft_face)) {
     err_write_1("cairo_font_init: error loading font: ");
-    err_puts(font->real_path.ptr.ps8);
+    err_puts(font->real_path.ptr.pchar);
     str_clean(&font->path);
     str_clean(&font->real_path);
     return NULL;

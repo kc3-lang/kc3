@@ -16,7 +16,7 @@
 #include "hash.h"
 #include "types.h"
 
-character   character_1 (const s8 *p);
+character   character_1 (const char *p);
 void        character_hash_update (character c, t_hash *hash);
 character * character_init_cast (character *c, const s_tag *tag);
 character * character_init_copy (character *c, const character *src);
@@ -30,7 +30,7 @@ character   character_switch_case (character c);
 character   character_to_lower (character c);
 character   character_to_upper (character c);
 sw          character_write (s_buf *buf, character c);
-sw          character_utf8 (character c, s8 *dest);
+sw          character_utf8 (character c, char *dest);
 sw          character_utf8_size (character c);
 
 #endif /* LIBC3_CHARACTER_H */

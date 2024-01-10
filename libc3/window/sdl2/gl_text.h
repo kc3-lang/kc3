@@ -20,7 +20,7 @@
 void        gl_text_clean (s_gl_text *text);
 s_gl_text * gl_text_init (s_gl_text *text, const s_gl_font *font);
 s_gl_text * gl_text_init_1 (s_gl_text *text, const s_gl_font *font,
-                            const s8 *p);
+                            const char *p);
 s_gl_text * gl_text_init_str (s_gl_text *text, const s_gl_font *font,
                               const s_str *str);
 
@@ -28,10 +28,10 @@ s_gl_text * gl_text_init_str (s_gl_text *text, const s_gl_font *font,
 bool gl_text_render_to_texture (s_gl_text *text);
 bool gl_text_set_font (s_gl_text *text, const s_gl_font *font);
 bool gl_text_set_text (s_gl_text *text, const s_str *str);
-bool gl_text_set_text_1 (s_gl_text *text, const s8 *p);
+bool gl_text_set_text_1 (s_gl_text *text, const char *p);
 bool gl_text_set_text_buf (s_gl_text *text, s_buf *buf);
 bool gl_text_update (s_gl_text *text);
-bool gl_text_update_1 (s_gl_text *text, const s8 *p);
+bool gl_text_update_1 (s_gl_text *text, const char *p);
 bool gl_text_update_buf (s_gl_text *text, s_buf *buf);
 
 /* Observers. */

@@ -21,6 +21,6 @@
 
 #include "types.h"
 
-const s8 *    tag_type_to_string (e_tag_type type);
+const char *    tag_type_to_string (e_tag_type type);
 
 #endif /* LIBC3_TAG_TYPE */

@@ -51,7 +51,7 @@
 
 s_env g_c3_env;
 
-static s_env * env_init_args (s_env *env, int argc, s8 **argv);
+static s_env * env_init_args (s_env *env, int argc, char **argv);
 
 void env_clean (s_env *env)
 {
@@ -180,8 +180,8 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
     result = env_eval_call_fn(env, &c, dest);
   else {
     warnx("env_eval_call: could not resolve call %s.%s.",
-          c.ident.module->str.ptr.ps8,
-          c.ident.sym->str.ptr.ps8);
+          c.ident.module->str.ptr.pchar,
+          c.ident.sym->str.ptr.pchar);
     result = false;
   }
   call_clean(&c);
@@ -375,8 +375,8 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   is_unbound_b = b->type == TAG_IDENT;
   if (is_unbound_a && is_unbound_b) {
     warnx("unbound equal on both sides: %s = %s",
-          a->data.ident.sym->str.ptr.ps8,
-          b->data.ident.sym->str.ptr.ps8);
+          a->data.ident.sym->str.ptr.pchar,
+          b->data.ident.sym->str.ptr.pchar);
     return false;
   }
   if (is_unbound_a) {
@@ -578,8 +578,8 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   if (! ((tag = frame_get(env->frame, tmp_ident.sym)) ||
          (tag = ident_get(&tmp_ident, &env->facts, &tmp)))) {
     warnx("unbound ident: %s.%s",
-          tmp_ident.module->str.ptr.ps8,
-          tmp_ident.sym->str.ptr.ps8);
+          tmp_ident.module->str.ptr.pchar,
+          tmp_ident.sym->str.ptr.pchar);
     return false;
   }
   tag_init_copy(dest, tag);
@@ -699,7 +699,7 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
         warnx("env_eval_struct:"
               " invalid type %s for key %s, expected %s.",
               tag_type_to_string(tag.type),
-              t->type->map.key[i].data.sym->str.ptr.ps8,
+              t->type->map.key[i].data.sym->str.ptr.pchar,
               tag_type_to_string(t->type->map.value[i].type));
         goto ko_tag;
       }
@@ -841,7 +841,7 @@ s_list ** env_get_struct_type_spec (s_env *env,
       ! list_is_plist(tmp.data.list)) {
     warnx("env_get_struct_type_spec: module %s"
           " has a defstruct that is not a property list",
-          module->str.ptr.ps8);
+          module->str.ptr.pchar);
     tag_clean(&tmp);
     return NULL;
   }
@@ -849,7 +849,7 @@ s_list ** env_get_struct_type_spec (s_env *env,
   return dest;
 }
 
-s_env * env_init (s_env *env, int argc, s8 **argv)
+s_env * env_init (s_env *env, int argc, char **argv)
 {
   s_str path;
   assert(env);
@@ -887,9 +887,9 @@ s_env * env_init (s_env *env, int argc, s8 **argv)
   return env;
 }
 
-s_env * env_init_args (s_env *env, int argc, s8 **argv)
+s_env * env_init_args (s_env *env, int argc, char **argv)
 {
-  s8 a[PATH_MAX];
+  char a[PATH_MAX];
   s_str argv0;
   s_buf buf;
   s_str dir;
@@ -946,13 +946,13 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
   assert(facts);
   if (! module_path(module, &env->module_path, &path)) {
     warnx("env_module_load: %s: module_path",
-          module->str.ptr.ps8);
+          module->str.ptr.pchar);
     return false;
   }
   tag_init_time(&tag_time);
   if (facts_load_file(facts, &path) < 0) {
     warnx("env_module_load: %s: facts_load_file",
-          path.ptr.ps8);
+          path.ptr.pchar);
     str_clean(&path);
     return false;
   }
@@ -1017,8 +1017,8 @@ s8 env_operator_arity (s_env *env, const s_ident *op)
   else
     warnx("env_operator_arity: "
           "arity for operator %s not found in module %s",
-          op->sym->str.ptr.ps8,
-          op->module->str.ptr.ps8);
+          op->sym->str.ptr.pchar,
+          op->module->str.ptr.pchar);
   facts_cursor_clean(&cursor);
   return r;
 }
@@ -1086,8 +1086,8 @@ s8 env_operator_precedence (s_env *env, const s_ident *op)
   else
     warnx("env_operator_precedence: "
           "precedence for operator %s not found in module %s",
-          op->sym->str.ptr.ps8,
-          op->module->str.ptr.ps8);
+          op->sym->str.ptr.pchar,
+          op->module->str.ptr.pchar);
   facts_cursor_clean(&cursor);
   return r;
 }
@@ -1132,9 +1132,9 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
   }
   if (false)
     warnx("env_operator_resolve: operator %s/%d not found in module %s",
-          tmp.sym->str.ptr.ps8,
+          tmp.sym->str.ptr.pchar,
           arity,
-          tmp.module->str.ptr.ps8);
+          tmp.module->str.ptr.pchar);
   facts_with_cursor_clean(&cursor);
   return NULL;
 }
@@ -1159,8 +1159,8 @@ const s_sym * env_operator_symbol (s_env *env, const s_ident *op)
   else
     warnx("env_operator_symbol: "
           "symbol for operator %s not found in module %s",
-          op->sym->str.ptr.ps8,
-          op->module->str.ptr.ps8);
+          op->sym->str.ptr.pchar,
+          op->module->str.ptr.pchar);
   facts_cursor_clean(&cursor);
   return r;
 }

@@ -23,7 +23,7 @@ void gl_font_clean (s_gl_font *font)
   str_clean(&font->real_path);
 }
 
-s_gl_font * gl_font_init (s_gl_font *font, const s8 *path)
+s_gl_font * gl_font_init (s_gl_font *font, const char *path)
 {
   assert(font);
   assert(path);
@@ -35,9 +35,9 @@ s_gl_font * gl_font_init (s_gl_font *font, const s8 *path)
     return NULL;
   }
   assert(glGetError() == GL_NO_ERROR);
-  if (FT_New_Face(g_ft, font->real_path.ptr.ps8, 0, &font->ft_face)) {
+  if (FT_New_Face(g_ft, font->real_path.ptr.pchar, 0, &font->ft_face)) {
     err_write_1("gl_font_init: error loading font: ");
-    err_puts(font->real_path.ptr.ps8);
+    err_puts(font->real_path.ptr.pchar);
     str_clean(&font->path);
     str_clean(&font->real_path);
     return NULL;

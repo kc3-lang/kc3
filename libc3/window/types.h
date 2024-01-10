@@ -65,7 +65,7 @@ struct window {
   uw              sequence_count;
   uw              sequence_pos;
   s_tag           tag; // TODO: move sequence to tag
-  const s8       *title;
+  const char     *title;
   f_window_unload unload;
 };
 

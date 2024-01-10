@@ -310,7 +310,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
     12 + 2);
   */
   /* fps */
-  s8 fps[32];
+  char fps[32];
   snprintf(fps, sizeof(fps), "%.1f", (f64) seq->frame / seq->t);
   gl_text_update_1(&g_text_fps, fps);
   glEnable(GL_BLEND);
