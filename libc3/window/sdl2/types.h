@@ -123,39 +123,39 @@ struct gl_matrix_3f {
 
 struct gl_matrix_4d {
   f64 xx;
-  f64 yx;
-  f64 zx;
-  f64 tx;
   f64 xy;
-  f64 yy;
-  f64 zy;
-  f64 ty;
   f64 xz;
-  f64 yz;
-  f64 zz;
-  f64 tz;
   f64 xt;
+  f64 yx;
+  f64 yy;
+  f64 yz;
   f64 yt;
+  f64 zx;
+  f64 zy;
+  f64 zz;
   f64 zt;
+  f64 tx;
+  f64 ty;
+  f64 tz;
   f64 tt;
 };
 
 struct gl_matrix_4f {
   f32 xx;
-  f32 yx;
-  f32 zx;
-  f32 tx;
   f32 xy;
-  f32 yy;
-  f32 zy;
-  f32 ty;
   f32 xz;
-  f32 yz;
-  f32 zz;
-  f32 tz;
   f32 xt;
+  f32 yx;
+  f32 yy;
+  f32 yz;
   f32 yt;
+  f32 zx;
+  f32 zy;
+  f32 zz;
   f32 zt;
+  f32 tx;
+  f32 ty;
+  f32 tz;
   f32 tt;
 };
 
@@ -281,6 +281,8 @@ struct gl_ortho {
   u32         gl_view_matrix_loc;
   s_gl_matrix_4f model_matrix;
   u32         gl_model_matrix_loc;
+  u32 gl_color_loc;
+  u32 gl_texture_loc;
   u32 gl_shader_program;
 };
 
