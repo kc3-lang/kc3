@@ -15,7 +15,8 @@
 #include "gl_ortho.h"
 #include "gl_matrix_4f.h"
 
-static const char * g_gl_ortho_vertex_shader_src = "#version 330 core\n"
+static const char * g_gl_ortho_vertex_shader_src =
+  "#version 330 core\n"
   "layout (location = 0) in vec3 aPos;\n"
   "layout (location = 1) in vec3 aNorm;\n"
   "layout (location = 2) in vec2 aTexCoord;\n"
@@ -33,6 +34,17 @@ static const char * g_gl_ortho_vertex_shader_src = "#version 330 core\n"
   "  TexCoord = aTexCoord;\n"
   "}\n";
 
+static const char * g_gl_ortho_fragment_shader_src =
+  "#version 330 core\n"
+  "in vec3 FragNormal;\n"
+  "in vec2 TexCoord;\n"
+  "out vec4 FragColor;\n"
+  "uniform sampler2D texture2D;\n"
+  "void main() {\n"
+  "  vec4 textureColor = texture(texture2D, TexCoord);\n"
+  "  FragColor = textureColor;"
+  "}\n";
+
 void gl_ortho_clean (s_gl_ortho *ortho)
 {
   assert(ortho);
@@ -47,8 +59,9 @@ void gl_ortho_delete (s_gl_ortho *ortho)
 
 s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
 {
+  GLuint fragment_shader;
   GLint success;
-  u32 vertex_shader;
+  GLuint vertex_shader;
   assert(ortho);
   gl_matrix_4f_init_identity(&ortho->projection_matrix);
   gl_matrix_4f_ortho(&ortho->projection_matrix, -1, 1, -1, 1, 0, 1);
@@ -74,13 +87,28 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
     err_write_1("gl_ortho_init: shader compilation failed: ");
     err_puts(info_log);
   }
+  fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragment_shader, 1, &g_gl_ortho_fragment_shader_src,
+                 NULL);
+  glCompileShader(fragment_shader);
+  glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+  if (! success) {
+    char info_log[512];
+    glGetShaderInfoLog(fragment_shader, sizeof(info_log), NULL, info_log);
+    err_write_1("gl_ortho_init: shader compilation failed: ");
+    err_puts(info_log);
+  }
   ortho->gl_shader_program = glCreateProgram();
   assert(glGetError() == GL_NO_ERROR);
   glAttachShader(ortho->gl_shader_program, vertex_shader);
   assert(glGetError() == GL_NO_ERROR);
+  glAttachShader(ortho->gl_shader_program, fragment_shader);
+  assert(glGetError() == GL_NO_ERROR);
   glLinkProgram(ortho->gl_shader_program);
   assert(glGetError() == GL_NO_ERROR);
   glDeleteShader(vertex_shader);
+  assert(glGetError() == GL_NO_ERROR);
+  glDeleteShader(fragment_shader);
   assert(glGetError() == GL_NO_ERROR);
   ortho->gl_projection_matrix_loc =
     glGetUniformLocation(ortho->gl_shader_program, "projection_matrix");
@@ -90,6 +118,9 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   ortho->gl_model_matrix_loc =
     glGetUniformLocation(ortho->gl_shader_program, "model_matrix");
+  assert(glGetError() == GL_NO_ERROR);
+  ortho->gl_texture_loc =
+    glGetUniformLocation(ortho->gl_shader_program, "texture2D");
   assert(glGetError() == GL_NO_ERROR);
   return ortho;
 }
@@ -129,6 +160,8 @@ void gl_ortho_render (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
                      &ortho->model_matrix.xx);
+  glUniform1i(ortho->gl_texture_loc, 0);
+  glUniform4f(ortho->gl_color_loc, 1.0f, 1.0f, 1.0f, 1.0f);
   glDepthRange(ortho->clip_z_near, ortho->clip_z_far);
   assert(glGetError() == GL_NO_ERROR);
   err_puts("gl_ortho_render projection matrix");
