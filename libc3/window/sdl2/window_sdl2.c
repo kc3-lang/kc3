@@ -276,8 +276,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
           assert(glGetError() == GL_NO_ERROR);
           window->gl_w = gl_w;
           window->gl_h = gl_h;
-          glViewport(0, 0, sdl_event.window.data1,
-                     sdl_event.window.data2);
+          glViewport(0, 0, gl_w, gl_h);
         }
         break;
       default:
