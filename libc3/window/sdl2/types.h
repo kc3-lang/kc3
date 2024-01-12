@@ -282,6 +282,7 @@ struct gl_ortho {
   s_gl_matrix_4f model_matrix;
   u32         gl_model_matrix_loc;
   u32 gl_color_loc;
+  u32 gl_enable_texture_loc;
   u32 gl_texture_loc;
   u32 gl_shader_program;
 };

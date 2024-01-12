@@ -39,10 +39,15 @@ static const char * g_gl_ortho_fragment_shader_src =
   "in vec3 FragNormal;\n"
   "in vec2 TexCoord;\n"
   "out vec4 FragColor;\n"
+  "uniform bool enable_texture;\n"
   "uniform sampler2D texture2D;\n"
   "void main() {\n"
-  "  vec4 textureColor = texture(texture2D, TexCoord);\n"
-  "  FragColor = textureColor;"
+  "  if (enable_texture) {\n"
+  "    vec4 textureColor = texture(texture2D, TexCoord);\n"
+  "    FragColor = textureColor;\n"
+  "  }\n"
+  "  else\n"
+  "    FragColor = vec4(1, 1, 1, 1);\n"
   "}\n";
 
 void gl_ortho_clean (s_gl_ortho *ortho)
@@ -119,6 +124,9 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   ortho->gl_model_matrix_loc =
     glGetUniformLocation(ortho->gl_shader_program, "model_matrix");
   assert(glGetError() == GL_NO_ERROR);
+  ortho->gl_enable_texture_loc =
+    glGetUniformLocation(ortho->gl_shader_program, "enable_texture");
+  assert(glGetError() == GL_NO_ERROR);
   ortho->gl_texture_loc =
     glGetUniformLocation(ortho->gl_shader_program, "texture2D");
   assert(glGetError() == GL_NO_ERROR);
@@ -160,7 +168,8 @@ void gl_ortho_render (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
                      &ortho->model_matrix.xx);
-  glUniform1i(ortho->gl_texture_loc, 0);
+  glUniform1i(ortho->gl_enable_texture_loc, 0);
+  glUniform1i(ortho->gl_texture_loc, -1);
   glUniform4f(ortho->gl_color_loc, 1.0f, 1.0f, 1.0f, 1.0f);
   glDepthRange(ortho->clip_z_near, ortho->clip_z_far);
   assert(glGetError() == GL_NO_ERROR);
