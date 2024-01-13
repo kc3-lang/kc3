@@ -42,11 +42,11 @@ bool earth_load (s_sequence *seq)
   if (! tag_map(&seq->tag, 3))
     return false;
   map = &seq->tag.data.map;
-  tag_init_sym_1(             map->key + 0, "camera");
+  tag_init_sym(               map->key + 0, sym_1("camera"));
   tag_init_ptr_free(        map->value + 0, camera);
-  tag_init_sym_1(             map->key + 1, "camera_rot_x_speed");
+  tag_init_sym(               map->key + 1, sym_1("camera_rot_x_speed"));
   tag_init_f64(             map->value + 1, 0.01);
-  tag_init_sym_1(             map->key + 2, "sphere");
+  tag_init_sym(               map->key + 2, sym_1("sphere"));
   tag_init_struct_with_data(map->value + 2, sym_1("GL.Sphere"),
                             true, sphere);
   return true;

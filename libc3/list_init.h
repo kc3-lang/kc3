@@ -53,7 +53,6 @@ s_list * list_init_struct_with_data (s_list *list, const s_sym *module,
                                      s_list *next);
 s_list * list_init_sw (s_list *list, sw i, s_list *next);
 s_list * list_init_sym (s_list *list, const s_sym *sym, s_list *next);
-s_list * list_init_sym_1 (s_list *list, const char *p, s_list *next);
 s_list * list_init_tuple (s_list *list, uw count, s_list *next);
 s_list * list_init_tuple_2 (s_list *list, const s_tag *a, 
                             const s_tag *b, s_list *next);
@@ -98,7 +97,6 @@ s_list * list_new_struct_with_data (const s_sym *module,
                                     s_list *next);
 s_list * list_new_sw (sw i, s_list *next);
 s_list * list_new_sym (const s_sym *sym, s_list *next);
-s_list * list_new_sym_1 (const char *p, s_list *next);
 s_list * list_new_tuple (uw count, s_list *next);
 s_list * list_new_tuple_2 (const s_tag *a, const s_tag *b, 
                            s_list *next);
@@ -141,7 +139,6 @@ s_list * list_struct_with_data (s_list *list, const s_sym *module,
                                 bool free_data, void *data);
 s_list * list_sw (s_list *list, sw i);
 s_list * list_sym (s_list *list, const s_sym *sym);
-s_list * list_sym_1 (s_list *list, const char *p);
 s_list * list_tuple (s_list *list, uw count);
 s_list * list_tuple_2 (s_list *list, const s_tag *a, const s_tag *b);
 s_list * list_time (s_list *list);

@@ -65,9 +65,9 @@ static void toast_render (s_tag *toast, s_window_cairo *window,
 static s_tag * toaster_init (s_tag *toaster, f64 y)
 {
   tag_init_map(toaster, 2);
-  tag_init_sym_1(toaster->data.map.key + 0, "x");
+  tag_init_sym(toaster->data.map.key + 0, sym_1("x"));
   tag_init_f64(toaster->data.map.value + 0, -150);
-  tag_init_sym_1(toaster->data.map.key + 1, "y");
+  tag_init_sym(toaster->data.map.key + 1, sym_1("y"));
   tag_init_f64(toaster->data.map.value + 1, y);
   return toaster;
 }
@@ -103,9 +103,9 @@ bool toasters_load (s_sequence *seq)
   s_map *map;
   tag_map(&seq->tag, 2);
   map = &seq->tag.data.map;
-  tag_init_sym_1( map->key + 0, "toasters");
+  tag_init_sym( map->key + 0, sym_1("toasters"));
   tag_init_list(map->value + 0, NULL);
-  tag_init_sym_1( map->key + 1, "toasts");
+  tag_init_sym( map->key + 1, sym_1("toasts"));
   tag_init_list(map->value + 1, NULL);
   return true;
 }
@@ -153,9 +153,9 @@ bool toasters_render_toasts (s_list **toasts, s_window_cairo *window,
     y += 170.0;
     *toasts = list_new_map(2, *toasts);
     map = &(*toasts)->tag.data.map;
-    tag_init_sym_1(map->key  + 0, "toasts");
+    tag_init_sym(map->key  + 0, sym_1("toasts"));
     tag_init_list(map->value + 0, NULL);
-    tag_init_sym_1(map->key  + 1, "y");
+    tag_init_sym(map->key  + 1, sym_1("y"));
     tag_init_f64(map->value  + 1, y);
   }
   i = *toasts;
@@ -206,9 +206,9 @@ bool toasters_render_toasters (s_list **toasters,
     y += 170.0;
     *toasters = list_new_map(2, *toasters);
     map = &(*toasters)->tag.data.map;
-    tag_init_sym_1(map->key  + 0, "toasters");
+    tag_init_sym(map->key  + 0, sym_1("toasters"));
     tag_init_list(map->value + 0, NULL);
-    tag_init_sym_1(map->key  + 1, "y");
+    tag_init_sym(map->key  + 1, sym_1("y"));
     tag_init_f64(map->value  + 1, y);
   }
   i = *toasters;

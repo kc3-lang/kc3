@@ -322,17 +322,6 @@ s_list * list_init_sym (s_list *list, const s_sym *sym, s_list *next)
   return list;
 }
 
-s_list * list_init_sym_1 (s_list *list, const char *p, s_list *next)
-{
-  s_list tmp;
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_sym_1(&tmp.tag, p))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
 s_list * list_init_tuple (s_list *list, uw count, s_list *next)
 {
   s_list tmp;
@@ -757,19 +746,6 @@ s_list * list_new_sym (const s_sym *sym, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_sym(&list->tag, sym)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_sym_1 (const char *p, s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_sym_1(&list->tag, p)) {
     free(list);
     return NULL;
   }

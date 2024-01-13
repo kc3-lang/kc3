@@ -71,9 +71,9 @@ TEST_CASE(fact_init)
 {
   s_tag sym[3];
   s_fact fact;
-  tag_init_sym_1(sym, "A");
-  tag_init_sym_1(sym + 1, "B");
-  tag_init_sym_1(sym + 2, "C");
+  tag_init_sym(sym, sym_1("A"));
+  tag_init_sym(sym + 1, sym_1("B"));
+  tag_init_sym(sym + 2, sym_1("C"));
   TEST_EQ(fact_init(&fact, sym, sym + 1, sym + 2), &fact);
   TEST_EQ(fact.subject, sym);
   TEST_EQ(fact.predicate, sym + 1);
