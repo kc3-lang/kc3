@@ -388,11 +388,6 @@ struct array {
   const s_sym *type;
 };
 
-struct float_s {
-  s_integer_fraction f; /* divisor is always 10^n */
-};
-
-
 /* 5 */
 union tag_data {
   s_array       array;
