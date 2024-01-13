@@ -241,9 +241,9 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   sw r;
   sw result = 0;
   if (operator_find(&call->ident) &&
-      operator_symbol(&call->ident) == sym_1("[]"))
+      operator_symbol(&call->ident) == &g_sym__brackets)
     return buf_inspect_call_brackets(buf, call);
-  if (call->ident.sym == sym_1("cast"))
+  if (call->ident.sym == &g_sym_cast)
     return buf_inspect_cast(buf, call);
   if (operator_find(&call->ident) &&
       operator_arity(&call->ident) == 1)
@@ -415,7 +415,7 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
   s_ident tmp;
   assert(buf);
   assert(call);
-  if (operator_symbol(&call->ident) == sym_1("()"))
+  if (operator_symbol(&call->ident) == &g_sym__paren)
     return buf_inspect_call_paren(buf, call);
   if (operator_ident(&call->ident, &tmp) != &tmp)
     return -1;
@@ -1919,7 +1919,7 @@ sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
     return r;
   result += r;
   offset_array_dimension = st->map.count;
-  array_init(&offset_array, sym_1("Uw"), 1, &offset_array_dimension);
+  array_init(&offset_array, &g_sym_Uw, 1, &offset_array_dimension);
   offset_array.data = st->offset;
   if ((r = buf_inspect_array(buf, &offset_array)) < 0) {
     array_clean(&offset_array);
@@ -1959,7 +1959,7 @@ sw buf_inspect_struct_type_size (const s_struct_type *st)
   result += r;
   result += strlen(", offset: ");
   offset_array_dimension = st->map.count;
-  array_init(&offset_array, sym_1("Uw"), 1, &offset_array_dimension);
+  array_init(&offset_array, &g_sym_Uw, 1, &offset_array_dimension);
   offset_array.data = st->offset;
   if ((r = buf_inspect_array_size(&offset_array)) < 0) {
     array_clean(&offset_array);

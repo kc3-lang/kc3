@@ -26,13 +26,63 @@
 
 #define SYM_MAX 1024
 
+extern const s_sym g_sym__brackets;
+extern const s_sym g_sym__paren;
+extern const s_sym g_sym_Array;
+extern const s_sym g_sym_Bool;
+extern const s_sym g_sym_C3;
+extern const s_sym g_sym_Call;
+extern const s_sym g_sym_Cfn;
+extern const s_sym g_sym_Character;
+extern const s_sym g_sym_Char__star;
+extern const s_sym g_sym_F32;
+extern const s_sym g_sym_F64;
+extern const s_sym g_sym_Fact;
+extern const s_sym g_sym_Fn;
+extern const s_sym g_sym_Ident;
+extern const s_sym g_sym_Integer;
+extern const s_sym g_sym_List;
+extern const s_sym g_sym_Map;
+extern const s_sym g_sym_Ptag;
+extern const s_sym g_sym_Ptr;
+extern const s_sym g_sym_PtrFree;
+extern const s_sym g_sym_Quote;
+extern const s_sym g_sym_Result;
+extern const s_sym g_sym_S8;
+extern const s_sym g_sym_S16;
+extern const s_sym g_sym_S32;
+extern const s_sym g_sym_S64;
+extern const s_sym g_sym_Str;
+extern const s_sym g_sym_Struct;
+extern const s_sym g_sym_StructType;
+extern const s_sym g_sym_Sw;
+extern const s_sym g_sym_Sym;
+extern const s_sym g_sym_Tag;
+extern const s_sym g_sym_Tuple;
+extern const s_sym g_sym_U8;
+extern const s_sym g_sym_U16;
+extern const s_sym g_sym_U32;
+extern const s_sym g_sym_U64;
+extern const s_sym g_sym_Uw;
+extern const s_sym g_sym_Var;
+extern const s_sym g_sym_Void;
+extern const s_sym g_sym_cast;
+extern const s_sym g_sym_r;
+extern const s_sym g_sym_rw;
+extern const s_sym g_sym_rwx;
+extern const s_sym g_sym_rx;
+extern const s_sym g_sym_w;
+extern const s_sym g_sym_wx;
+extern const s_sym g_sym_x;
+
 const s_sym  * sym_1 (const char *p);
 const s_sym ** sym_init_1 (const s_sym **sym, const char *p);
 const s_sym ** sym_init_cast (const s_sym **sym, const s_tag *tag);
 const s_sym ** sym_init_copy (const s_sym **sym,
                               const s_sym * const *src);
+void           sym_init_g_sym (void);
 const s_sym ** sym_init_str (const s_sym **sym, const s_str *src);
-
+bool           sym_intern (const s_sym *sym, s_sym *free_sym);
 
 /* Heap-allocation functions, call sym_delete_all at exit. */
 void          sym_delete_all (void);

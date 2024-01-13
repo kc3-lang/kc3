@@ -35,19 +35,19 @@ bool * file_access (const s_str *path, const s_sym *mode,
                     bool *dest)
 {
   sw m;
-  if (mode == sym_1("r"))
+  if (mode == &g_sym_r)
     m = R_OK;
-  else if (mode == sym_1("rw"))
+  else if (mode == &g_sym_rw)
     m = R_OK | W_OK;
-  else if (mode == sym_1("rwx"))
+  else if (mode == &g_sym_rwx)
     m = R_OK | W_OK | X_OK;
-  else if (mode == sym_1("rx"))
+  else if (mode == &g_sym_rx)
     m = R_OK | X_OK;
-  else if (mode == sym_1("w"))
+  else if (mode == &g_sym_w)
     m = W_OK;
-  else if (mode == sym_1("wx"))
+  else if (mode == &g_sym_wx)
     m = W_OK | X_OK;
-  else if (mode == sym_1("x"))
+  else if (mode == &g_sym_x)
     m = X_OK;
   else
     m = F_OK;
