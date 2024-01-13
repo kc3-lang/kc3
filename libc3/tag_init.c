@@ -315,17 +315,6 @@ s_tag * tag_init_sym (s_tag *tag, const s_sym *sym)
   return tag;
 }
 
-s_tag * tag_init_sym_1 (s_tag *tag, const char *p)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_SYM;
-  if (! sym_init_1(&tmp.data.sym, p))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_init_tuple (s_tag *tag, uw count)
 {
   s_tag tmp = {0};
@@ -773,21 +762,6 @@ s_tag * tag_new_sym (const s_sym *sym)
   return tag;
 }
 
-s_tag * tag_new_sym_1 (const char *p)
-{
-  s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_sym_1: calloc");
-    return NULL;
-  }
-  tag->type = TAG_SYM;
-  if (! sym_init_1(&tag->data.sym, p)) {
-    free(tag);
-    return NULL;
-  }
-  return tag;
-}
-
 s_tag * tag_new_tuple (uw count)
 {
   s_tag *tag;
@@ -1199,18 +1173,6 @@ s_tag * tag_sym (s_tag *tag, const s_sym *sym)
   tag_clean(tag);
   tmp.type = TAG_SYM;
   tmp.data.sym = sym;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_sym_1 (s_tag *tag, const char *p)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_SYM;
-  if (! sym_init_1(&tmp.data.sym, p))
-    return NULL;
   *tag = tmp;
   return tag;
 }

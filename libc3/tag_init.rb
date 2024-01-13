@@ -361,7 +361,6 @@ class TagInitList
                    [Arg.new("sw", "i")]),
        TagInit.new("sym", "TAG_SYM", :init_mode_direct,
                    [Arg.new("const s_sym *", "sym")]),
-       TagInit1.new("sym", "1", "TAG_SYM", :init_mode_init),
        TagInit.new("tuple", "TAG_TUPLE", :init_mode_init,
                    [Arg.new("uw", "count")]),
        TagInit.new("tuple", "2", "TAG_TUPLE", :init_mode_init,

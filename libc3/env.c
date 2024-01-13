@@ -820,7 +820,7 @@ s_list ** env_get_struct_type_spec (s_env *env,
   assert(env);
   assert(module);
   assert(dest);
-  tag_init_sym_1(&tag_defstruct, "defstruct");
+  tag_init_sym(&tag_defstruct, &g_sym_defstruct);
   tag_init_sym(&tag_module, module);
   tag_init_var(&tag_var);
   if (! env_module_maybe_reload(env, module, &env->facts))
@@ -959,12 +959,12 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
   }
   str_clean(&path);
   tag_init_sym(&tag_module_name, module);
-  tag_init_sym_1(&tag_load_time, "load_time");
+  tag_init_sym(&tag_load_time, &g_sym_load_time);
   facts_replace_tags(facts, &tag_module_name, &tag_load_time,
                      &tag_time);
   tag_clean(&tag_time);
   if (env_get_struct_type_spec(env, module, &st_spec)) {
-    tag_init_sym_1(&tag_struct_type, "struct_type");
+    tag_init_sym(&tag_struct_type, &g_sym_struct_type);
     tag_st.type = TAG_STRUCT_TYPE;
     st = &tag_st.data.struct_type;
     struct_type_init(st, module, st_spec);
@@ -1202,7 +1202,7 @@ bool env_struct_type_exists (s_env *env, const s_sym *module)
   assert(env);
   assert(module);
   tag_init_sym(&tag_module, module);
-  tag_init_sym_1(&tag_defstruct, "defstruct");
+  tag_init_sym(&tag_defstruct, &g_sym_defstruct);
   tag_init_var(&tag_var);
   env_module_maybe_reload(env, module, &env->facts);
   facts_with_tags(&env->facts, &cursor, &tag_module,
@@ -1225,7 +1225,7 @@ const s_struct_type * env_struct_type_find (s_env *env,
   assert(env);
   assert(module);
   tag_init_sym(&tag_module, module);
-  tag_init_sym_1(&tag_struct_type, "struct_type");
+  tag_init_sym(&tag_struct_type, &g_sym_struct_type);
   tag_init_var(&tag_var);
   env_module_maybe_reload(env, module, &env->facts);
   facts_with(&env->facts, &cursor, (t_facts_spec) {

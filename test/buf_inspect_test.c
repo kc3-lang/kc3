@@ -398,7 +398,6 @@ TEST_CASE(buf_inspect_tag)
   BUF_INSPECT_TEST_TAG(tag_str_1(&tag, NULL, ""), "\"\"");
   BUF_INSPECT_TEST_TAG(tag_str_1(&tag, NULL, "09AZaz"), "\"09AZaz\"");
   BUF_INSPECT_TEST_TAG(tag_sym(&tag, sym_1("Module")), "Module");
-  BUF_INSPECT_TEST_TAG(tag_sym_1(&tag, "Module"), "Module");
   BUF_INSPECT_TEST_TAG(tag_u16(&tag, 0x100), "256");
   BUF_INSPECT_TEST_TAG(tag_u32(&tag, 0x10000), "65536");
   BUF_INSPECT_TEST_TAG(tag_u64(&tag, 0x100000000), "4294967296");
