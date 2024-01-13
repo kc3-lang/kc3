@@ -327,7 +327,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
 s_array * array_init_void (s_array *array)
 {
   s_array tmp = {0};
-  tmp.type = sym_1("Void");
+  tmp.type = &g_sym_Void;
   *array = tmp;
   return array;
 }

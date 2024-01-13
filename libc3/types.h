@@ -261,7 +261,8 @@ struct struct_ {
 };
 
 struct sym_list {
-  s_sym *sym;
+  const s_sym *sym;
+  s_sym *free_sym;
   s_sym_list *next;
 };
 

@@ -855,6 +855,7 @@ s_env * env_init (s_env *env, int argc, char **argv)
   assert(env);
   if (! env_init_args(env, argc, argv))
     return NULL;
+  sym_init_g_sym();
   env->error_handler = NULL;
   env->frame = frame_new(NULL);
   buf_init_alloc(&env->in, BUF_SIZE);
@@ -874,13 +875,13 @@ s_env * env_init (s_env *env, int argc, char **argv)
           (NULL, "../../../../../", list_new_str_1
            (NULL, "../../../../../../", NULL))))))));
   str_init_1(&path, NULL, "lib/c3/0.1/");
-  if (! file_search(&path, sym_1("x"), &env->module_path)) {
+  if (! file_search(&path, &g_sym_x, &env->module_path)) {
     assert(! "env_init: module path not found");
     warn("env_init: module_path not found");
     return NULL;
   }
-  env->current_module = sym_1("C3");
-  if (! module_load(sym_1("C3"), &env->facts)) {
+  env->current_module = &g_sym_C3;
+  if (! module_load(&g_sym_C3, &env->facts)) {
     env_clean(env);
     return NULL;
   }
