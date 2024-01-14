@@ -198,7 +198,8 @@ bool window_sdl2_run (s_window_sdl2 *window)
     goto ko;
   }
   glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(gl_debug, NULL);
+  if (glDebugMessageCallback)
+    glDebugMessageCallback(gl_debug, NULL);
   if (SDL_GL_MakeCurrent(sdl_window, context) < 0) {
     warnx("window_sdl2_run: failed to make OpenGL context current: %s",
           SDL_GetError());
