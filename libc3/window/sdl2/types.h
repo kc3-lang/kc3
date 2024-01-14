@@ -93,8 +93,8 @@ struct gl_font {
 
 struct gl_lines {
   s_array vertex;
-  u32 gl_vao;
-  u32 gl_vbo;
+  GLuint gl_vao;
+  GLuint gl_vbo;
 };
 
 struct gl_matrix_3d {
@@ -200,9 +200,9 @@ struct gl_text {
 };
 
 struct gl_triangle {
-  u32 a;
-  u32 b;
-  u32 c;
+  GLuint a;
+  GLuint b;
+  GLuint c;
 };
 
 struct rgb {

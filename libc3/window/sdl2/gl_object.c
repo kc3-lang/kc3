@@ -111,18 +111,18 @@ bool gl_object_update (s_gl_object *object)
   glBufferData(GL_ARRAY_BUFFER, object->vertex.count * sizeof(s_gl_vertex),
                object->vertex.data, GL_STATIC_DRAW);
   assert(glGetError() == GL_NO_ERROR);
-  glVertexAttribPointer(0, 3, GL_DOUBLE, GL_FALSE, sizeof(s_gl_vertex),
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
                         (void *) 0);
   assert(glGetError() == GL_NO_ERROR);
   glEnableVertexAttribArray(0);
   assert(glGetError() == GL_NO_ERROR);
-  glVertexAttribPointer(1, 3, GL_DOUBLE, GL_FALSE, sizeof(s_gl_vertex),
-                        (void *) (3 * sizeof(double)));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
+                        (void *) (3 * sizeof(float)));
   assert(glGetError() == GL_NO_ERROR);
   glEnableVertexAttribArray(1);
   assert(glGetError() == GL_NO_ERROR);
-  glVertexAttribPointer(2, 2, GL_DOUBLE, GL_FALSE, sizeof(s_gl_vertex),
-                        (void *) (6 * sizeof(double)));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
+                        (void *) (6 * sizeof(float)));
   assert(glGetError() == GL_NO_ERROR);
   glEnableVertexAttribArray(2);
   assert(glGetError() == GL_NO_ERROR);
