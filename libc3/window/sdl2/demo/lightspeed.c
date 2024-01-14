@@ -115,8 +115,6 @@ bool lightspeed_render (s_sequence *seq)
   assert(glGetError() == GL_NO_ERROR);
   glClear(GL_COLOR_BUFFER_BIT);
   assert(glGetError() == GL_NO_ERROR);
-  glLineWidth(2);
-  assert(glGetError() == GL_NO_ERROR);
   glBlendColor(1, 1, 1, 0.7f);
   assert(glGetError() == GL_NO_ERROR);
   glEnable(GL_BLEND);
