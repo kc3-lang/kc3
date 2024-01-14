@@ -168,9 +168,11 @@ void gl_ortho_render (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
                      &ortho->model_matrix.xx);
+  assert(glGetError() == GL_NO_ERROR);
   glUniform1i(ortho->gl_enable_texture_loc, 0);
+  assert(glGetError() == GL_NO_ERROR);
   glUniform1i(ortho->gl_texture_loc, -1);
-  glUniform4f(ortho->gl_color_loc, 1.0f, 1.0f, 1.0f, 1.0f);
+  assert(glGetError() == GL_NO_ERROR);
   glDepthRange(ortho->clip_z_near, ortho->clip_z_far);
   assert(glGetError() == GL_NO_ERROR);
   err_puts("gl_ortho_render projection matrix");

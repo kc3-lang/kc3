@@ -134,14 +134,14 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
     (dim_x * dim_y);
   str_init_copy_1(&tmp.path, path);
   if (! file_search(&tmp.path, sym_1("r"), &tmp.real_path)) {
-    err_write_1("sdl2_sprite_init: file not found: ");
+    err_write_1("gl_sprite_init: file not found: ");
     err_puts(path);
     str_clean(&tmp.path);
     return NULL;
   }
   fp = fopen(tmp.real_path.ptr.pchar, "rb");
   if (! fp) {
-    err_write_1("sdl2_sprite_init: fopen: ");
+    err_write_1("gl_sprite_init: fopen: ");
     err_puts(tmp.real_path.ptr.pchar);
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
@@ -149,7 +149,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   }
   if (fread(png_header, 1, sizeof(png_header), fp) !=
       sizeof(png_header)) {
-    err_write_1("sdl2_sprite_init: fread: ");
+    err_write_1("gl_sprite_init: fread: ");
     err_puts(tmp.real_path.ptr.pchar);
     fclose(fp);
     str_clean(&tmp.path);
@@ -157,7 +157,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
     return NULL;
   }
   if (png_sig_cmp(png_header, 0, sizeof(png_header))) {
-    err_write_1("sdl2_sprite_init: not a png: ");
+    err_write_1("gl_sprite_init: not a png: ");
     err_puts(tmp.real_path.ptr.pchar);
     fclose(fp);
     str_clean(&tmp.path);
@@ -167,7 +167,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   png_read = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL,
 				    NULL);
   if (! png_read) {
-    err_write_1("sdl2_sprite_init: png_create_read_struct: ");
+    err_write_1("gl_sprite_init: png_create_read_struct: ");
     err_puts(tmp.real_path.ptr.pchar);
     fclose(fp);
     str_clean(&tmp.path);
@@ -176,7 +176,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   }
   png_info = png_create_info_struct(png_read);
   if (! png_info) {
-    err_write_1("sdl2_sprite_init: png_create_info_struct: ");
+    err_write_1("gl_sprite_init: png_create_info_struct: ");
     err_puts(tmp.real_path.ptr.pchar);
     png_destroy_read_struct(&png_read, NULL, NULL);
     fclose(fp);
@@ -207,17 +207,17 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
 			    &gl_internal_format, &gl_type,
 			    &png_components)) {
     if (! gl_format || ! png_components) {
-      err_write_1("sdl2_sprite_init: unknown PNG color type ");
+      err_write_1("gl_sprite_init: unknown PNG color type ");
       err_inspect_s32(&png_color_type);
       err_write_1(": ");
       err_puts(tmp.real_path.ptr.pchar);
     }
     if (! gl_internal_format) {
-      err_write_1("sdl2_sprite_init: unknown OpenGL internal format: ");
+      err_write_1("gl_sprite_init: unknown OpenGL internal format: ");
       err_puts(tmp.real_path.ptr.pchar);
     }
     if (! gl_type) {
-      err_write_1("sdl2_sprite_init: unknown OpenGL type: ");
+      err_write_1("gl_sprite_init: unknown OpenGL type: ");
       err_puts(tmp.real_path.ptr.pchar);
     }
     png_destroy_read_struct(&png_read, &png_info, NULL);
@@ -251,16 +251,17 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   tmp.h = tmp.total_h / dim_y;
   tmp.texture = calloc(tmp.frame_count, sizeof(GLuint));
   if (! tmp.texture) {
-    err_puts("sdl2_sprite_init: tmp.texture:"
+    err_puts("gl_sprite_init: tmp.texture:"
              " failed to allocate memory");
     str_clean(&tmp.path);
     str_clean(&tmp.real_path);
     return NULL;
   }
+  assert(glGetError() == GL_NO_ERROR);
   glGenTextures(tmp.frame_count, tmp.texture);
   GLenum gl_error = glGetError();
   if (gl_error != GL_NO_ERROR) {
-    err_write_1("sdl2_sprite_init: ");
+    err_write_1("gl_sprite_init: ");
     err_inspect_str(&tmp.real_path);
     err_write_1(": glGenTextures: ");
     err_puts(gl_error_string(gl_error));
@@ -272,7 +273,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   sprite_stride = tmp.w * png_pixel_size;
   data = malloc(tmp.h * sprite_stride);
   if (! data) {
-    err_write_1("sdl2_sprite_init: failed to allocate memory: ");
+    err_write_1("gl_sprite_init: failed to allocate memory: ");
     err_puts(tmp.real_path.ptr.pchar);
     free(tmp.texture);
     str_clean(&tmp.path);
@@ -296,7 +297,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
       glBindTexture(GL_TEXTURE_2D, tmp.texture[i]);
       gl_error = glGetError();
       if (gl_error != GL_NO_ERROR) {
-	err_write_1("sdl2_sprite_init: ");
+	err_write_1("gl_sprite_init: ");
         err_inspect_str(&tmp.real_path);
         err_write_1(": glBindTexture: ");
         err_puts(gl_error_string(gl_error));
@@ -311,7 +312,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       gl_error = glGetError();
       if (gl_error != GL_NO_ERROR) {
-	err_write_1("sdl2_sprite_init: ");
+	err_write_1("gl_sprite_init: ");
         err_inspect_str(&tmp.real_path);
         err_write_1(": glTexParameteri: ");
         err_puts(gl_error_string(gl_error));
@@ -323,7 +324,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
       //             0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       gl_error = glGetError();
       if (gl_error != GL_NO_ERROR) {
-	err_write_1("sdl2_sprite_init: ");
+	err_write_1("gl_sprite_init: ");
         err_inspect_str(&tmp.real_path);
         err_write_1(": glTexImage2D: ");
         err_puts(gl_error_string(gl_error));
