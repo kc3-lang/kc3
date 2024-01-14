@@ -171,7 +171,7 @@ void gl_ortho_render (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(ortho->gl_enable_texture_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform1i(ortho->gl_texture_loc, -1);
+  glUniform1i(ortho->gl_texture_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
   glDepthRange(ortho->clip_z_near, ortho->clip_z_far);
   assert(glGetError() == GL_NO_ERROR);
