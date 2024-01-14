@@ -179,7 +179,8 @@ s_gl_matrix_4f * gl_matrix_4f_ortho (s_gl_matrix_4f *m, f32 x1, f32 x2,
   ortho.ty = - (y1 + y2) / dy;
   ortho.tz = - (clip_z_near + clip_z_far) / dz;
   ortho.tt = 1.0;
-  gl_matrix_4f_product(m, &ortho);
+  gl_matrix_4f_product(&ortho, m);
+  *m = ortho;
   return m;
 }
 
@@ -201,7 +202,8 @@ s_gl_matrix_4f * gl_matrix_4f_perspective (s_gl_matrix_4f *m, f32 fov_y,
   perspective.zz = (z_near + z_far) / dz;
   perspective.zt = -1.0;
   perspective.tz = 2.0 * z_near * z_far / dz;
-  gl_matrix_4f_product(m, &perspective);
+  gl_matrix_4f_product(&perspective, m);
+  *m = perspective;
   return m;
 }
 
@@ -223,16 +225,21 @@ s_gl_matrix_4f * gl_matrix_4f_scale (s_gl_matrix_4f *m, f32 x, f32 y,
   s.yy = y;
   s.zz = z;
   s.tt = 1.0;
-  gl_matrix_4f_product(m, &s);
+  gl_matrix_4f_product(&s, m);
+  *m = s;
   return m;
 }
 
 s_gl_matrix_4f * gl_matrix_4f_translate (s_gl_matrix_4f *m, f32 x,
                                          f32 y, f32 z)
 {
-  m->tx += x;
-  m->ty += y;
-  m->tz += z;
+  s_gl_matrix_4f s;
+  gl_matrix_4f_init_identity(&s);
+  s.tx = x;
+  s.ty = y;
+  s.tz = z;
+  gl_matrix_4f_product(&s, m);
+  *m = s;
   return m;
 }
 
@@ -262,6 +269,7 @@ s_gl_matrix_4f * gl_matrix_4f_rotate_axis (s_gl_matrix_4f *m, f32 rad,
                        x + a.z * a.z * one_minus_x,
                        0.0,
                        0.0, 0.0, 0.0, 1.0 };
-  gl_matrix_4f_product(m, &r);
+  gl_matrix_4f_product(&r, m);
+  *m = r;
   return m;
 }
