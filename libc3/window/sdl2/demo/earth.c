@@ -80,11 +80,11 @@ bool earth_render (s_sequence *seq)
   sphere             =  map->value[2].data.struct_.data;
   gl_camera_set_aspect_ratio(camera, window->w, window->h);
   camera->rotation.x += seq->dt * (*camera_rot_x_speed) *
-    360.0;
+    M_PI * 2.0f;
   if (camera->rotation.x > 180 || camera->rotation.x < 0)
     *camera_rot_x_speed *= -1.0;
   camera->rotation.z += seq->dt * EARTH_CAMERA_ROTATION_Z_SPEED *
-    360.0;
+    M_PI * 2.0f;
   assert(glGetError() == GL_NO_ERROR);
   gl_camera_render(camera);
   assert(glGetError() == GL_NO_ERROR);
