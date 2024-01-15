@@ -42,10 +42,10 @@ static const char * g_gl_ortho_fragment_shader_src =
   "in vec2 TexCoord;\n"
   "out vec4 FragColor;\n"
   "uniform bool enable_texture;\n"
-  "uniform sampler2D texture2D;\n"
+  "uniform sampler2D tex;\n"
   "void main() {\n"
   "  if (enable_texture) {\n"
-  "    vec4 textureColor = texture(texture2D, TexCoord);\n"
+  "    vec4 textureColor = texture(tex, TexCoord);\n"
   "    FragColor = textureColor;\n"
   "  }\n"
   "  else\n"
@@ -174,8 +174,8 @@ void gl_ortho_rect (s_gl_ortho *ortho, f32 x, f32 y, f32 w, f32 h)
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
   matrix = ortho->model_matrix;
-  gl_matrix_4f_translate(&ortho->model_matrix, x, y, 0.0f);
-  gl_matrix_4f_scale(&ortho->model_matrix, w, h, 1.0f);
+  gl_matrix_4f_translate(&ortho->model_matrix, x - 0.5, y - 0.5, 0.0f);
+  gl_matrix_4f_scale(&ortho->model_matrix, w + 1.0f, h + 1.0f, 1.0f);
   gl_ortho_update_model_matrix(ortho);
   assert(glGetError() == GL_NO_ERROR);
   gl_square_render(&ortho->square);

@@ -191,12 +191,28 @@ struct gl_point_3f {
   f32 z;
 };
 
+struct gl_sprite {
+  s_str path;
+  s_str real_path;
+  uw total_w;
+  uw total_h;
+  uw dim_x;
+  uw dim_y;
+  uw frame_count;
+  f32 pt_w;
+  f32 pt_h;
+  uw tex_w;
+  uw tex_h;
+  GLuint *texture;
+};
+
 struct gl_text {
-  s_gl_object object;
   const s_gl_font *font;
   s_str str;
-  uw w;
-  uw h;
+  uw tex_w;
+  uw tex_h;
+  f32 pt_w;
+  f32 pt_h;
   GLuint texture;
 };
 
@@ -271,22 +287,6 @@ struct gl_sphere {
   s_gl_object object;
   uw segments_u;
   uw segments_v;
-};
-
-struct gl_sprite {
-  s_gl_object object;
-  s_str path;
-  s_str real_path;
-  uw total_w;
-  uw total_h;
-  uw dim_x;
-  uw dim_y;
-  uw frame_count;
-  uw w;
-  uw h;
-  uw tex_w;
-  uw tex_h;
-  GLuint *texture;
 };
 
 struct gl_square {
