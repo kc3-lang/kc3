@@ -2564,10 +2564,11 @@ sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
 {
   character c;
   uw end;
-  bool eval = false;
   s_str in;
   s_buf in_buf = {0};
-  s_str out;
+  s_list *list;
+  s_list **list_end;
+  s_buf out_buf;
   sw r;
   sw result;
   s_buf_save save;
@@ -2578,20 +2579,34 @@ sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
     goto clean;
   result = r;
   buf_init_str(&in_buf, false, &in);
+  list = NULL;
+  list_end = &list;
   start = 0;
   while (1) {
-    if (! eval) {
-      end = in_buf.rpos;
-      r = buf_read_1(&in_buf, "#{");
+    end = in_buf.rpos;
+    r = buf_read_1(&in_buf, "#{");
+    if (r < 0)
+      goto restore;
+    if (r > 0) {
+      *list_end = list_new(NULL);
+      (*list_end)->tag.type = TAG_STR;
+      buf_slice_to_str(&in_buf, start, end, &(*list_end)->tag.data.str);
+      list_end = &(*list_end)->next.data.list;
+      *list_end = list_new(NULL);
+      buf_parse_tag(&out_buf, &(*list_end)->tag);
+      list_end = &(*list_end)->next.data.list;
+      r = buf_ignore_spaces(&in_buf);
       if (r < 0)
         goto restore;
-      if (r > 0) {
-        buf_slice_to_str(&in_buf, start, end, &out);
-        eval = true;
-      }
+      r = buf_parse_comments(&in_buf);
+      if (r < 0)
+        goto restore;
+      r = buf_read_1(&in_buf, "}");
+      if (r <= 0)
+        goto restore;
+      start = in_buf.rpos;
     }
     r = buf_read_character_utf8(&in_buf, &c);
-    
   }
   r = result;
   goto clean;

@@ -826,6 +826,29 @@ sw buf_refill_compact (s_buf *buf)
   return 0;
 }
 
+s_str * buf_slice_to_str (const s_buf *buf, uw start, uw end,
+                          s_str *dest)
+{
+  assert(buf);
+  assert(dest);
+  if (start > buf->wpos) {
+    err_puts("buf_slice_to_str: start > wpos");
+    assert(! "buf_slice_to_str: start > wpos");
+    return NULL;
+  }
+  if (end < start) {
+    err_puts("buf_slice_to_str: end < start");
+    assert(! "buf_slice_to_str: end < start");
+    return NULL;
+  }
+  if (end > buf->wpos) {
+    err_puts("buf_slice_to_str: end > wpos");
+    assert(! "buf_slice_to_str: end > wpos");
+    return NULL;
+  }
+  return str_init(dest, NULL, end - start, buf->ptr.ps8 + start);
+}
+
 sw buf_str_to_hex (s_buf *buf, const s_str *src)
 {
   const u8 *b;
