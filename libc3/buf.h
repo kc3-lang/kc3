@@ -105,6 +105,8 @@ sw      buf_xfer (s_buf *buf, s_buf *src, uw size);
 sw      buf_xfer_reverse(s_buf *src, s_buf *dest);
 
 /* Observers. */
+s_str * buf_slice_to_str (const s_buf *buf, uw start, uw end,
+                          s_str *dest);
 s_str * buf_to_str (const s_buf *buf, s_str *dest);
 
 #endif /* LIBC3_BUF_H */
