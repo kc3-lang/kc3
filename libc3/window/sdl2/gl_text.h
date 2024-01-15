@@ -34,7 +34,4 @@ bool gl_text_update (s_gl_text *text);
 bool gl_text_update_1 (s_gl_text *text, const char *p);
 bool gl_text_update_buf (s_gl_text *text, s_buf *buf);
 
-/* Observers. */
-void gl_text_render (const s_gl_text *text);
-
 #endif /* GL_TEXT_H */

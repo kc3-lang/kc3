@@ -13,8 +13,9 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "gl_deprecated.h"
-#include "gl_ortho.h"
 #include "gl_matrix_4f.h"
+#include "gl_ortho.h"
+#include "gl_square.h"
 
 static const char * g_gl_ortho_vertex_shader_src =
   "#version 330 core\n"
@@ -51,10 +52,26 @@ static const char * g_gl_ortho_fragment_shader_src =
   "    FragColor = vec4(1, 1, 1, 1);\n"
   "}\n";
 
+void gl_ortho_bind_texture (s_gl_ortho *ortho, GLuint texture)
+{
+  assert(ortho);
+  assert(glGetError() == GL_NO_ERROR);
+  if (! texture) {
+    glUniform1i(ortho->gl_enable_texture_loc, 0);
+    assert(glGetError() == GL_NO_ERROR);
+    return;
+  }
+  glUniform1i(ortho->gl_enable_texture_loc, 1);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniform1i(ortho->gl_texture_loc, texture);  
+  assert(glGetError() == GL_NO_ERROR);
+}
+
 void gl_ortho_clean (s_gl_ortho *ortho)
 {
   assert(ortho);
   glDeleteProgram(ortho->gl_shader_program);
+  gl_square_clean(&ortho->square);
 }
 
 void gl_ortho_delete (s_gl_ortho *ortho)
@@ -69,6 +86,8 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   GLint success;
   GLuint vertex_shader;
   assert(ortho);
+  if (! gl_square_init(&ortho->square, 2, 2))
+    return NULL;
   gl_matrix_4f_init_identity(&ortho->projection_matrix);
   gl_matrix_4f_ortho(&ortho->projection_matrix, -1, 1, -1, 1, 0, 1);
   ortho->position.x = 0.0f;
@@ -149,6 +168,21 @@ s_gl_ortho * gl_ortho_new (void)
   return ortho;
 }
 
+void gl_ortho_rect (s_gl_ortho *ortho, f32 x, f32 y, f32 w, f32 h)
+{
+  s_gl_matrix_4f matrix;
+  assert(ortho);
+  assert(glGetError() == GL_NO_ERROR);
+  matrix = ortho->model_matrix;
+  gl_matrix_4f_translate(&ortho->model_matrix, x, y, 0.0f);
+  gl_matrix_4f_scale(&ortho->model_matrix, w, h, 1.0f);
+  gl_ortho_update_model_matrix(ortho);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_square_render(&ortho->square);
+  assert(glGetError() == GL_NO_ERROR);
+  ortho->model_matrix = matrix;
+}
+
 void gl_ortho_render (s_gl_ortho *ortho)
 {
   GLenum error;
@@ -201,6 +235,15 @@ void gl_ortho_resize (s_gl_ortho *ortho, f32 x1, f32 x2, f32 y1, f32 y2,
   gl_matrix_4f_init_identity(&ortho->projection_matrix);
   gl_matrix_4f_ortho(&ortho->projection_matrix, x1, x2, y1, y2,
                      clip_z_near, clip_z_far);
+}
+
+void gl_ortho_text_render (s_gl_ortho *ortho, const s_gl_text *text)
+{
+  assert(ortho);
+  assert(text);
+  gl_ortho_bind_texture(ortho, text->texture);
+  gl_ortho_rect(ortho, 0, 0, text->w, text->h);
+  gl_ortho_bind_texture(ortho, 0);
 }
 
 void gl_ortho_update_model_matrix (s_gl_ortho *ortho)
