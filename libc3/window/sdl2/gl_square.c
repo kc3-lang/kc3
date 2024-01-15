@@ -82,7 +82,7 @@ s_gl_square * gl_square_init (s_gl_square *square, uw seg_u, uw seg_v)
     }
     i++;
   }
-  gl_object_update(&square->object);
+  gl_object_update(&tmp.object);
   *square = tmp;
   return square;
 }

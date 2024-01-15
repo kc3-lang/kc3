@@ -202,7 +202,6 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   return true;
 }
 
-/*
 static void render_text (s_gl_text *text, f64 x, f64 y)
 {
   assert(glGetError() == GL_NO_ERROR);
@@ -217,39 +216,39 @@ static void render_text (s_gl_text *text, f64 x, f64 y)
   gl_ortho_update_model_matrix(&g_ortho);
   glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
   assert(glGetError() == GL_NO_ERROR);
-  gl_text_render(text);
+  gl_ortho_text_render(&g_ortho, text);
   assert(glGetError() == GL_NO_ERROR);
   gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  gl_text_render(text);
+  gl_ortho_text_render(&g_ortho, text);
   gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  gl_text_render(text);
+  gl_ortho_text_render(&g_ortho, text);
   gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, 1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  gl_text_render(text);
+  gl_ortho_text_render(&g_ortho, text);
   gl_matrix_4f_translate(&g_ortho.model_matrix, -1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  gl_text_render(text);
+  gl_ortho_text_render(&g_ortho, text);
   gl_matrix_4f_translate(&g_ortho.model_matrix, -1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  gl_text_render(text);
+  gl_ortho_text_render(&g_ortho, text);
   gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, 1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  gl_text_render(text);
+  gl_ortho_text_render(&g_ortho, text);
   gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  gl_text_render(text);
+  gl_ortho_text_render(&g_ortho, text);
   gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  gl_text_render(text);
+  gl_ortho_text_render(&g_ortho, text);
   glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
   gl_matrix_4f_translate(&g_ortho.model_matrix, -1.0, -1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  gl_text_render(text);
+  gl_ortho_text_render(&g_ortho, text);
   assert(glGetError() == GL_NO_ERROR);
 }
-*/
+
 bool window_sdl2_demo_render (s_window_sdl2 *window)
 {
   s_sequence *seq;
@@ -274,56 +273,30 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
                       GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   assert(glGetError() == GL_NO_ERROR);
-  /*
   gl_font_set_size(&g_font_courier_new, 20,
                    (f64) window->gl_h / window->h);
   gl_text_update_1(&g_text_seq_title, seq->title);
   render_text(&g_text_seq_title, 20.0f, 30.0f);
-  */
   /* progress bar */
-  /*
+  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   glDisable(GL_BLEND);
   assert(glGetError() == GL_NO_ERROR);
-  assert(glGetError() == GL_NO_ERROR);
-  glBindTexture(GL_TEXTURE_2D, 0);
+  gl_ortho_bind_texture(&g_ortho, 0);
   assert(glGetError() == GL_NO_ERROR);
   glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
-  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
-  gl_matrix_4f_translate(&g_ortho.model_matrix, 19.0, 11.0, 0);
-  gl_matrix_4f_scale(&g_ortho.model_matrix,
-                     (window->w - 40.0) * seq->t / seq->duration + 2.0,
-                     4.0, 0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  gl_square_render(&g_square);
-  */
-  /*
-    glRectd(19, 11,
-    19 + (window->w - 40.0) * seq->t / seq->duration + 2,
-    11 + 4);
-  */
-  /*
+  gl_ortho_rect(&g_ortho, 19, 11,
+                (window->w - 40.0) * seq->t / seq->duration + 2,
+                4);
   glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
-  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
-  gl_matrix_4f_translate(&g_ortho.model_matrix, 20.0, 12.0, 0);
-  gl_matrix_4f_scale(&g_ortho.model_matrix,
-                     (window->w - 40.0) * seq->t / seq->duration,
-                     2.0, 0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  gl_square_render(&g_square);
-  */
-  /*
-    glRectd(20, 12,
-    20 + (window->w - 40.0) * seq->t / seq->duration,
-    12 + 2);
-  */
+  gl_ortho_rect(&g_ortho, 20, 12,
+                (window->w - 40.0) * seq->t / seq->duration,
+                2);
   /* fps */
-  /*
   char fps[32];
   snprintf(fps, sizeof(fps), "%.1f", (f64) seq->frame / seq->t);
   gl_text_update_1(&g_text_fps, fps);
   glEnable(GL_BLEND);
   render_text(&g_text_fps, 20, window->h - 30);
-  */
   gl_ortho_render_end(&g_ortho);
   return true;
 }

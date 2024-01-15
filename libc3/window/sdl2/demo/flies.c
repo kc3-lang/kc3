@@ -164,7 +164,6 @@ bool flies_render (s_sequence *seq)
   s_map *map;
   s_gl_matrix_4f matrix;
   s_gl_matrix_4f matrix_1;
-  s_gl_matrix_4f matrix_2;
   uw r;
   uw random_bits = 0;
   f64 x;
@@ -209,7 +208,7 @@ bool flies_render (s_sequence *seq)
   gl_font_set_size(&g_font_flies, board_item_h,
                    (f64) window->gl_h / window->h);
   gl_text_update_1(&g_text_flies_in, a);
-  gl_text_render(&g_text_flies_in);
+  gl_ortho_text_render(&g_ortho, &g_text_flies_in);
   buf_init(&buf, false, sizeof(a), a);
   buf_write_1(&buf, "Out ");
   buf_inspect_uw(&buf, fly_out);
@@ -219,124 +218,123 @@ bool flies_render (s_sequence *seq)
     gl_matrix_4f_translate(&g_ortho.model_matrix, x, 0.0, 0.0);
     gl_ortho_update_model_matrix(&g_ortho);
     gl_text_update_1(&g_text_flies_out, a);
-    gl_text_render(&g_text_flies_out);
-    g_ortho.model_matrix = matrix;
-    gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, board_item_h, 0.0);
-    glBlendColor(0.6f, 0.7f, 0.9f, 1.0f);
-    gl_ortho_rect(&g_ortho, 0, 0, board_w, board_h);
-    address[1] = 0;
-    while (address[1] < BOARD_SIZE) {
-      y = board_item_h * address[1];
-      address[0] = 0;
-      while (address[0] < BOARD_SIZE) {
-        x = board_item_w * address[0];
-        matrix_1 = g_ortho.model_matrix; {
-          gl_matrix_4f_translate(&g_ortho.model_matrix, x,
-                                 board_h - board_item_h - y, 0.0);
-          board_item = (u8 *) array_data(board, address);
-          assert(board_item);
-          switch (*board_item) {
-          case BOARD_ITEM_SPACE:
-            break;
-          case BOARD_ITEM_BLOCK:
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glBlendColor(0.0f, 0.0f, 1.0f, 1.0f);
-            gl_ortho_rect(&g_ortho, 0, 0, board_item_w + 1.0, board_item_h + 1.0);
-            break;
-          case BOARD_ITEM_FLY:
-            matrix_2 = g_ortho.model_matrix; {
-              gl_matrix_4f_translate(&g_ortho.model_matrix,
-                                     -board_item_w / 2.0,
-                                     -board_item_h / 2.0, 0.0);
-              gl_matrix_4f_scale(&g_ortho.model_matrix, fly_scale,
-                                 fly_scale, 1.0);
-              gl_ortho_update_model_matrix(&g_ortho);
-              gl_sprite_render(&g_sprite_fly, 0);
-            } g_ortho.model_matrix = matrix_2;
-            if (address[0] == BOARD_SIZE / 2 &&
-                address[1] == BOARD_SIZE - 1) {
-              array_data_set(board, address, &g_board_item_space);
-              (*fly_out)++;
-              fly_init(map);
-              break;
-            }
-            fly_address[0] = address[0];
-            fly_address[1] = address[1];
-            i = 0;
-            while (i < 3) {
-              j = 0;
-              while (j < 9) {
-                directions[j] = true;
-                j++;
-              }
-              while (directions[0] | directions[1] | directions[2] |
-                     directions[3] | directions[4] | directions[5] |
-                     directions[6] | directions[7] | directions[8]) {
-                if (random_bits < 4) {
-                  r = arc4random();
-                  random_bits = 32;
-                }
-                direction = r % 16;
-                r >>= 4;
-                random_bits -= 4;
-                if (direction >= 12)
-                  direction = direction_prev;
-                if (direction >= 9)
-                  direction = (direction - 6) % 3 + 6;
-                fly_prev_address[0] = fly_address[0];
-                fly_prev_address[1] = fly_address[1];
-                switch (direction) {
-                case 0: fly_address[0]--; fly_address[1]--; break;
-                case 1:                   fly_address[1]--; break;
-                case 2: fly_address[0]++; fly_address[1]--; break;
-                case 3: fly_address[0]--;                 ; break;
-                case 4:                                   ; break;
-                case 5: fly_address[0]++;                 ; break;
-                case 6: fly_address[0]--; fly_address[1]++; break;
-                case 7:                   fly_address[1]++; break;
-                case 8: fly_address[0]++; fly_address[1]++; break;
-                }
-                if (fly_address[0] < BOARD_SIZE &&
-                    fly_address[1] < BOARD_SIZE &&
-                    (board_item = (u8 *) array_data(board,
-                                                    fly_address)) &&
-                    *board_item == g_board_item_space) {
-                  array_data_set(board, fly_prev_address,
-                                 &g_board_item_space);
-                  array_data_set(board, fly_address, &g_board_item_fly);
-                  direction_prev = direction;
-                  break;
-                }
-                directions[direction] = false;
-                fly_address[0] = fly_prev_address[0];
-                fly_address[1] = fly_prev_address[1];
-              }
-              i++;
-            }
-            *fly_time += 1;
-            if (*fly_time > FLY_TIME_MAX) {
-              array_data_set(board, fly_address, &g_board_item_dead_fly);
-              fly_init(map);
-            }
-            break;
-          case BOARD_ITEM_DEAD_FLY:
-            matrix_2 = g_ortho.model_matrix; {
-              gl_matrix_4f_translate(&g_ortho.model_matrix,
-                                     -board_item_w / 2.0,
-                                     -board_item_h / 2.0, 0.0);
-              gl_matrix_4f_scale(&g_ortho.model_matrix, dead_fly_scale,
-                                 dead_fly_scale, 1.0);
-              gl_ortho_update_model_matrix(&g_ortho);
-              gl_sprite_render(&g_sprite_dead_fly, 0);
-            } g_ortho.model_matrix = matrix_2;
+    gl_ortho_text_render(&g_ortho, &g_text_flies_out);
+  } g_ortho.model_matrix = matrix;
+  gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, board_item_h, 0.0);
+  glBlendColor(0.6f, 0.7f, 0.9f, 1.0f);
+  gl_ortho_rect(&g_ortho, 0, 0, board_w, board_h);
+  address[1] = 0;
+  while (address[1] < BOARD_SIZE) {
+    y = board_item_h * address[1];
+    address[0] = 0;
+    while (address[0] < BOARD_SIZE) {
+      x = board_item_w * address[0];
+      matrix = g_ortho.model_matrix; {
+        gl_matrix_4f_translate(&g_ortho.model_matrix, x,
+                               board_h - board_item_h - y, 0.0);
+        board_item = (u8 *) array_data(board, address);
+        assert(board_item);
+        switch (*board_item) {
+        case BOARD_ITEM_SPACE:
+          break;
+        case BOARD_ITEM_BLOCK:
+          glBindTexture(GL_TEXTURE_2D, 0);
+          glBlendColor(0.0f, 0.0f, 1.0f, 1.0f);
+          gl_ortho_rect(&g_ortho, 0, 0, board_item_w + 1.0, board_item_h + 1.0);
+          break;
+        case BOARD_ITEM_FLY:
+          matrix_1 = g_ortho.model_matrix; {
+            gl_matrix_4f_translate(&g_ortho.model_matrix,
+                                   -board_item_w / 2.0,
+                                   -board_item_h / 2.0, 0.0);
+            gl_matrix_4f_scale(&g_ortho.model_matrix, fly_scale,
+                               fly_scale, 1.0);
+            gl_ortho_update_model_matrix(&g_ortho);
+            gl_sprite_render(&g_sprite_fly, 0);
+          } g_ortho.model_matrix = matrix_1;
+          if (address[0] == BOARD_SIZE / 2 &&
+              address[1] == BOARD_SIZE - 1) {
+            array_data_set(board, address, &g_board_item_space);
+            (*fly_out)++;
+            fly_init(map);
             break;
           }
-        } g_ortho.model_matrix = matrix_1;;
-        address[0]++;
-      }
-      address[1]++;
+          fly_address[0] = address[0];
+          fly_address[1] = address[1];
+          i = 0;
+          while (i < 3) {
+            j = 0;
+            while (j < 9) {
+              directions[j] = true;
+              j++;
+            }
+            while (directions[0] | directions[1] | directions[2] |
+                   directions[3] | directions[4] | directions[5] |
+                   directions[6] | directions[7] | directions[8]) {
+              if (random_bits < 4) {
+                r = arc4random();
+                random_bits = 32;
+              }
+              direction = r % 16;
+              r >>= 4;
+              random_bits -= 4;
+              if (direction >= 12)
+                direction = direction_prev;
+              if (direction >= 9)
+                direction = (direction - 6) % 3 + 6;
+              fly_prev_address[0] = fly_address[0];
+              fly_prev_address[1] = fly_address[1];
+              switch (direction) {
+              case 0: fly_address[0]--; fly_address[1]--; break;
+              case 1:                   fly_address[1]--; break;
+              case 2: fly_address[0]++; fly_address[1]--; break;
+              case 3: fly_address[0]--;                 ; break;
+              case 4:                                   ; break;
+              case 5: fly_address[0]++;                 ; break;
+              case 6: fly_address[0]--; fly_address[1]++; break;
+              case 7:                   fly_address[1]++; break;
+              case 8: fly_address[0]++; fly_address[1]++; break;
+              }
+              if (fly_address[0] < BOARD_SIZE &&
+                  fly_address[1] < BOARD_SIZE &&
+                  (board_item = (u8 *) array_data(board,
+                                                  fly_address)) &&
+                  *board_item == g_board_item_space) {
+                array_data_set(board, fly_prev_address,
+                               &g_board_item_space);
+                array_data_set(board, fly_address, &g_board_item_fly);
+                direction_prev = direction;
+                break;
+              }
+              directions[direction] = false;
+              fly_address[0] = fly_prev_address[0];
+              fly_address[1] = fly_prev_address[1];
+            }
+            i++;
+          }
+          *fly_time += 1;
+          if (*fly_time > FLY_TIME_MAX) {
+            array_data_set(board, fly_address, &g_board_item_dead_fly);
+            fly_init(map);
+          }
+          break;
+        case BOARD_ITEM_DEAD_FLY:
+          matrix_1 = g_ortho.model_matrix; {
+            gl_matrix_4f_translate(&g_ortho.model_matrix,
+                                   -board_item_w / 2.0,
+                                   -board_item_h / 2.0, 0.0);
+            gl_matrix_4f_scale(&g_ortho.model_matrix, dead_fly_scale,
+                               dead_fly_scale, 1.0);
+            gl_ortho_update_model_matrix(&g_ortho);
+            gl_sprite_render(&g_sprite_dead_fly, 0);
+          } g_ortho.model_matrix = matrix_1;
+          break;
+        }
+      } g_ortho.model_matrix = matrix;
+      address[0]++;
     }
-  } g_ortho.model_matrix = matrix;
+    address[1]++;
+  }
   return true;
 }
 

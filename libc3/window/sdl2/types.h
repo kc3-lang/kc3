@@ -83,6 +83,7 @@ typedef bool (*f_window_sdl2_sequence_render) (s_sequence *seq,
 typedef void (*f_window_sdl2_unload) (s_window_sdl2 *window);
 
 /* 1 */
+
 struct gl_font {
   FT_Face ft_face;
   f32 point_size;
@@ -247,6 +248,7 @@ struct window_sdl2 {
 };
 
 /* 2 */
+
 struct gl_camera {
   f32 aspect_ratio;
   f32 clip_z_far;
@@ -263,29 +265,6 @@ struct gl_cylinder {
   s_gl_object object;
   uw segments_u;
   uw segments_v;
-};
-
-struct gl_ortho {
-  f32 x1;
-  f32 x2;
-  f32 y1;
-  f32 y2;
-  f32 clip_z_near;
-  f32 clip_z_far;
-  s_gl_point_3f position;
-  s_gl_point_3f rotation;
-  s_gl_point_3f scale;
-  s_gl_matrix_4f projection_matrix;
-  u32         gl_projection_matrix_loc;
-  s_gl_matrix_4f view_matrix;
-  u32         gl_view_matrix_loc;
-  s_gl_matrix_4f model_matrix;
-  u32         gl_model_matrix_loc;
-  u32 gl_color_loc;
-  u32 gl_enable_texture_loc;
-  u32 gl_texture_loc;
-  u32 gl_shader_program;
-  s_gl_square square;
 };
 
 struct gl_sphere {
@@ -338,6 +317,31 @@ struct sdl2_sprite {
   uw tex_w;
   uw tex_h;
   GLuint *texture;
+};
+
+/* 3 */
+
+struct gl_ortho {
+  f32 x1;
+  f32 x2;
+  f32 y1;
+  f32 y2;
+  f32 clip_z_near;
+  f32 clip_z_far;
+  s_gl_point_3f position;
+  s_gl_point_3f rotation;
+  s_gl_point_3f scale;
+  s_gl_matrix_4f projection_matrix;
+  u32         gl_projection_matrix_loc;
+  s_gl_matrix_4f view_matrix;
+  u32         gl_view_matrix_loc;
+  s_gl_matrix_4f model_matrix;
+  u32         gl_model_matrix_loc;
+  u32 gl_color_loc;
+  u32 gl_enable_texture_loc;
+  u32 gl_texture_loc;
+  u32 gl_shader_program;
+  s_gl_square square;
 };
 
 #endif /* LIBC3_WINDOW_SDL2_TYPES_H */
