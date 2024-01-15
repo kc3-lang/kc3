@@ -101,7 +101,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
     if (prev_glyph_index && glyph_index) {
       FT_Get_Kerning(font->ft_face, prev_glyph_index, glyph_index,
                      FT_KERNING_DEFAULT, &delta);
-      total_width += ceil((f32) delta.x / (1 << 6));
+      total_width += delta.x >> 6;
     }
     if (FT_Load_Glyph(font->ft_face, glyph_index, FT_LOAD_RENDER)) {
       err_write_1("gl_font_render_to_texture: failed to load glyph: ");
@@ -111,9 +111,8 @@ bool gl_text_render_to_texture (s_gl_text *text)
     }
     glyph = font->ft_face->glyph;
     total_width += glyph->bitmap.width;
-    max_height =
-      (glyph->bitmap.rows + glyph->bitmap_top > max_height) ?
-      (glyph->bitmap.rows + glyph->bitmap_top) : max_height;
+    if (glyph->bitmap.rows + glyph->bitmap_top > max_height)
+      max_height = glyph->bitmap.rows + glyph->bitmap_top;
     prev_glyph_index = glyph_index;
   }
   data_w = ceil(total_width);

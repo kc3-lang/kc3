@@ -204,6 +204,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
 
 static void render_text (s_gl_text *text, f64 x, f64 y)
 {
+  s_gl_matrix_4f matrix;
   assert(glGetError() == GL_NO_ERROR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                   GL_LINEAR);
@@ -211,7 +212,7 @@ static void render_text (s_gl_text *text, f64 x, f64 y)
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
                       GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   assert(glGetError() == GL_NO_ERROR);
-  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
+  matrix = g_ortho.model_matrix;
   gl_matrix_4f_translate(&g_ortho.model_matrix, x - 1.0, y - 1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -239,14 +240,19 @@ static void render_text (s_gl_text *text, f64 x, f64 y)
   gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_ortho_text_render(&g_ortho, text);
+  assert(glGetError() == GL_NO_ERROR);
   gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
   gl_ortho_text_render(&g_ortho, text);
+  assert(glGetError() == GL_NO_ERROR);
   glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
+  assert(glGetError() == GL_NO_ERROR);
   gl_matrix_4f_translate(&g_ortho.model_matrix, -1.0, -1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
+  assert(glGetError() == GL_NO_ERROR);
   gl_ortho_text_render(&g_ortho, text);
   assert(glGetError() == GL_NO_ERROR);
+  g_ortho.model_matrix = matrix;
 }
 
 bool window_sdl2_demo_render (s_window_sdl2 *window)
@@ -276,6 +282,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   gl_font_set_size(&g_font_courier_new, 20,
                    (f64) window->gl_h / window->h);
   gl_text_update_1(&g_text_seq_title, seq->title);
+  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   render_text(&g_text_seq_title, 20.0f, 30.0f);
   /* progress bar */
   gl_matrix_4f_init_identity(&g_ortho.model_matrix);
@@ -294,6 +301,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   /* fps */
   char fps[32];
   snprintf(fps, sizeof(fps), "%.1f", (f64) seq->frame / seq->t);
+  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   gl_text_update_1(&g_text_fps, fps);
   glEnable(GL_BLEND);
   render_text(&g_text_fps, 20, window->h - 30);
