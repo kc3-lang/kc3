@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <libc3/c3.h>
+#include "gl_deprecated.h"
 #include "gl_object.h"
 #include "gl_vertex.h"
 
@@ -45,7 +46,9 @@ s_gl_object * gl_object_init (s_gl_object *object)
   s_gl_object tmp = {0};
   assert(glGetError() == GL_NO_ERROR);
   glGenVertexArrays(1, &tmp.gl_vao);
+  assert(glGetError() == GL_NO_ERROR);
   glGenBuffers(1, &tmp.gl_vbo);
+  assert(glGetError() == GL_NO_ERROR);
   glGenBuffers(1, &tmp.gl_ebo);
   assert(glGetError() == GL_NO_ERROR);
   *object = tmp;
@@ -54,15 +57,22 @@ s_gl_object * gl_object_init (s_gl_object *object)
 
 void gl_object_render (const s_gl_object *object)
 {
+  GLenum error;
   assert(object);
   assert(glGetError() == GL_NO_ERROR);
-  //glBindVertexArray(object->gl_vao);
-  //assert(glGetError() == GL_NO_ERROR);
+  glBindVertexArray(object->gl_vao);
+  assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
   assert(glGetError() == GL_NO_ERROR);
-  glDrawArrays(GL_TRIANGLES, 0, object->triangle.count * 3);
+  glDrawElements(GL_TRIANGLES, object->triangle.count * 3, GL_UNSIGNED_INT,
+                 NULL);
+  if ((error = glGetError()) != GL_NO_ERROR) {
+    err_write_1("gl_object_render: glDrawElements: ");
+    err_puts(gl_error_string(error));
+    assert(! "gl_object_render: glDrawElements");
+  }
   assert(glGetError() == GL_NO_ERROR);
 }
 
@@ -72,9 +82,12 @@ void gl_object_render_wireframe (const s_gl_object *object)
   assert(glGetError() == GL_NO_ERROR);
   glBindVertexArray(object->gl_vao);
   assert(glGetError() == GL_NO_ERROR);
+  glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
+  assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
   assert(glGetError() == GL_NO_ERROR);
-  glDrawElements(GL_LINE_LOOP, object->triangle.count * 3, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_LINE_LOOP, object->triangle.count * 3, GL_UNSIGNED_INT,
+                 NULL);
   assert(glGetError() == GL_NO_ERROR);
 }
 
@@ -109,27 +122,14 @@ bool gl_object_update (s_gl_object *object)
   glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
   assert(glGetError() == GL_NO_ERROR);
   glBufferData(GL_ARRAY_BUFFER, object->vertex.count * sizeof(s_gl_vertex),
-               object->vertex.data, GL_STATIC_DRAW);
+               object->vertex.data, GL_DYNAMIC_DRAW);
   assert(glGetError() == GL_NO_ERROR);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
-                        (void *) 0);
-  assert(glGetError() == GL_NO_ERROR);
-  glEnableVertexAttribArray(0);
-  assert(glGetError() == GL_NO_ERROR);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
-                        (void *) (3 * sizeof(float)));
-  assert(glGetError() == GL_NO_ERROR);
-  glEnableVertexAttribArray(1);
-  assert(glGetError() == GL_NO_ERROR);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
-                        (void *) (6 * sizeof(float)));
-  assert(glGetError() == GL_NO_ERROR);
-  glEnableVertexAttribArray(2);
+  gl_vertex_attrib();
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
   assert(glGetError() == GL_NO_ERROR);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->triangle.count * 3,
-               object->triangle.data, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->triangle.count * sizeof(s_gl_triangle),
+               object->triangle.data, GL_DYNAMIC_DRAW);
   assert(glGetError() == GL_NO_ERROR);
   return true;
 }

@@ -12,6 +12,7 @@
  */
 #include <math.h>
 #include <libc3/c3.h>
+#include "gl_deprecated.h"
 #include "gl_ortho.h"
 #include "gl_matrix_4f.h"
 
@@ -159,7 +160,7 @@ void gl_ortho_render (s_gl_ortho *ortho)
                      &ortho->projection_matrix.xx);
   if ((error = glGetError()) != GL_NO_ERROR) {
     err_write_1("gl_ortho_render: glUniformMatrix4fv: ");
-    err_puts((const char *) glewGetErrorString(error));
+    err_puts(gl_error_string(error));
     assert(! "gl_ortho_render: glUniformMatrix4fv");
   }
   assert(glGetError() == GL_NO_ERROR);

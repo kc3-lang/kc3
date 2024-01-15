@@ -26,21 +26,14 @@ void gl_text_clean (s_gl_text *text)
 
 s_gl_text * gl_text_init (s_gl_text *text, const s_gl_font *font)
 {
-  uw dimension;
   s_gl_text tmp = {0};
   assert(glGetError() == GL_NO_ERROR);
   tmp.font = font;
   glGenTextures(1, &tmp.texture);
   assert(glGetError() == GL_NO_ERROR);
   gl_object_init(&tmp.object);
-  dimension = 4;
-  array_init(&tmp.object.vertex, sym_1("GL.Vertex"), 1,
-             &dimension);
-  array_allocate(&tmp.object.vertex);
-  dimension = 2;
-  array_init(&tmp.object.triangle, sym_1("GL.Triangle"), 1,
-             &dimension);
-  array_allocate(&tmp.object.triangle);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_object_allocate(&tmp.object, 4, 2);
   *text = tmp;  
   return text;
 }
@@ -70,6 +63,7 @@ void gl_text_render (const s_gl_text *text)
   assert(text);
   assert(glGetError() == GL_NO_ERROR);
   gl_object_render(&text->object);
+  assert(glGetError() == GL_NO_ERROR);
 }
 
 bool gl_text_render_to_texture (s_gl_text *text)
@@ -222,18 +216,18 @@ bool gl_text_update (s_gl_text *text)
   if (! gl_text_render_to_texture(text))
     return false;
   vertex = text->object.vertex.data;
-  gl_point_3f_init(&vertex[0].position, 0.0, text->h, 0.0);
-  gl_point_3f_init(&vertex[0].normal, 0.0, 0.0, -1.0);
-  gl_point_2f_init(&vertex[0].tex_coord, 0.0, 1.0);
-  gl_point_3f_init(&vertex[1].position, 0.0, 0.0, 0.0);
-  gl_point_3f_init(&vertex[1].normal, 0.0, 0.0, -1.0);
-  gl_point_2f_init(&vertex[1].tex_coord, 0.0, 0.0);
-  gl_point_3f_init(&vertex[2].position, text->w, text->h, 0.0);
-  gl_point_3f_init(&vertex[2].normal, 0.0, 0.0, -1.0);
-  gl_point_2f_init(&vertex[2].tex_coord, 1.0, 1.0);
-  gl_point_3f_init(&vertex[3].position, text->w, 0.0, 0.0);
-  gl_point_3f_init(&vertex[3].normal, 0.0, 0.0, -1.0);
-  gl_point_2f_init(&vertex[3].tex_coord, 1.0, 0.0);
+  gl_point_3f_init(&vertex[0].position,  0.0,     text->h, 0.0);
+  gl_point_3f_init(&vertex[0].normal,    0.0,     0.0,    -1.0);
+  gl_point_2f_init(&vertex[0].tex_coord, 0.0,     1.0);
+  gl_point_3f_init(&vertex[1].position,  0.0,     0.0,     0.0);
+  gl_point_3f_init(&vertex[1].normal,    0.0,     0.0,    -1.0);
+  gl_point_2f_init(&vertex[1].tex_coord, 0.0,     0.0);
+  gl_point_3f_init(&vertex[2].position,  text->w, text->h, 0.0);
+  gl_point_3f_init(&vertex[2].normal,    0.0,     0.0,    -1.0);
+  gl_point_2f_init(&vertex[2].tex_coord, 1.0,     1.0);
+  gl_point_3f_init(&vertex[3].position,  text->w, 0.0,     0.0);
+  gl_point_3f_init(&vertex[3].normal,    0.0,     0.0,    -1.0);
+  gl_point_2f_init(&vertex[3].tex_coord, 1.0,     0.0);
   triangle = text->object.triangle.data;
   gl_triangle_init(triangle + 0, 0, 1, 2);
   gl_triangle_init(triangle + 1, 1, 3, 2);

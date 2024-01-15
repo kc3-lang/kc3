@@ -72,7 +72,7 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw seg_u, uw seg_v)
   }
   triangle = tmp.object.triangle.data;
   i = 0;
-  while (i < seg_v + 1) {
+  while (i < seg_v) {
     j = 0;
     while (j < seg_u) {
       triangle->a =  i      * seg_u +  j;

@@ -12,6 +12,7 @@
  */
 #include <libc3/c3.h>
 #include "gl_lines.h"
+#include "gl_vertex.h"
 
 s_gl_lines * gl_lines_allocate (s_gl_lines *lines, uw lines_count)
 {
@@ -53,6 +54,8 @@ void gl_lines_render (const s_gl_lines *lines, uw lines_count)
   assert(glGetError() == GL_NO_ERROR);
   glBindVertexArray(lines->gl_vao);
   assert(glGetError() == GL_NO_ERROR);
+  glBindVertexArray(lines->gl_vao);
+  assert(glGetError() == GL_NO_ERROR);
   glDrawArrays(GL_LINES, 0, lines_count * 2);
   assert(glGetError() == GL_NO_ERROR);
 }
@@ -74,20 +77,7 @@ bool gl_lines_update (s_gl_lines *lines, uw lines_count)
   glBufferData(GL_ARRAY_BUFFER, lines_count * 2 * sizeof(s_gl_vertex),
                lines->vertex.data, GL_DYNAMIC_DRAW);
   assert(glGetError() == GL_NO_ERROR);
-  glEnableVertexAttribArray(0);
-  assert(glGetError() == GL_NO_ERROR);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
-                        (void *) 0);
-  assert(glGetError() == GL_NO_ERROR);
-  glEnableVertexAttribArray(1);
-  assert(glGetError() == GL_NO_ERROR);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
-                        (void *) (3 * sizeof(float)));
-  assert(glGetError() == GL_NO_ERROR);
-  glEnableVertexAttribArray(2);
-  assert(glGetError() == GL_NO_ERROR);
-  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(s_gl_vertex),
-                        (void *) (6 * sizeof(float)));
+  gl_vertex_attrib();
   assert(glGetError() == GL_NO_ERROR);
   return true;
 }
