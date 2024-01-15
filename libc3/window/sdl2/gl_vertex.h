@@ -15,6 +15,7 @@
 
 #include "types.h"
 
+void gl_vertex_attrib (void);
 void gl_vertex_transform (s_gl_vertex *vertex,
                           const s_gl_matrix_4f *matrix);
 

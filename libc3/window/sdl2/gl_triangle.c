@@ -13,8 +13,8 @@
 #include <libc3/c3.h>
 #include "gl_triangle.h"
 
-s_gl_triangle * gl_triangle_init (s_gl_triangle *triangle, u32 a, u32 b,
-                                  u32 c)
+s_gl_triangle * gl_triangle_init (s_gl_triangle *triangle, GLuint a,
+                                  GLuint b, GLuint c)
 {
   assert(triangle);
   triangle->a = a;

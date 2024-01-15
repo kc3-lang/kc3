@@ -10,11 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef GL_DEPRECATED_H
-#define GL_DEPRECATED_H
+#ifndef C3_GL_DEPRECATED_H
+#define C3_GL_DEPRECATED_H
 
 #include "types.h"
 
 const char * gl_error_string (GLenum error);
 
-#endif /* GL_DEPRECATED_H */
+#endif /* C3_GL_DEPRECATED_H */

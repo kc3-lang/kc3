@@ -285,6 +285,7 @@ struct gl_ortho {
   u32 gl_enable_texture_loc;
   u32 gl_texture_loc;
   u32 gl_shader_program;
+  s_gl_square square;
 };
 
 struct gl_sphere {

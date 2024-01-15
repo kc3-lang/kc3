@@ -121,7 +121,6 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   uw x;
   uw y;
   uw v;
-  uw dimension;
   s_gl_sprite tmp = {0};
   s_gl_triangle *triangle;
   s_gl_vertex *vertex;
@@ -343,14 +342,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   free(png_row);
   assert(glGetError() == GL_NO_ERROR);
   gl_object_init(&tmp.object);
-  dimension = 4;
-  array_init(&tmp.object.vertex, sym_1("GL.Vertex"), 1,
-             &dimension);
-  array_allocate(&tmp.object.vertex);
-  dimension = 2;
-  array_init(&tmp.object.triangle, sym_1("GL.Triangle"), 1,
-             &dimension);
-  array_allocate(&tmp.object.triangle);
+  gl_object_allocate(&tmp.object, 4, 2);
   vertex = tmp.object.vertex.data;
   gl_point_3f_init(&vertex[0].position, 0.0, tmp.h, 0.0);
   gl_point_3f_init(&vertex[0].normal, 0.0, 0.0, -1.0);

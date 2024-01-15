@@ -128,8 +128,12 @@ bool flies_load (s_sequence *seq)
     i++;
   }
   fly_init(map);
-  gl_text_init_1(&g_text_flies_in, &g_font_flies, "In 0");
-  gl_text_init_1(&g_text_flies_out, &g_font_flies, "Out 0");
+  if (! gl_text_init_1(&g_text_flies_in, &g_font_flies, "In 0"))
+    return false;
+  gl_text_update(&g_text_flies_in);
+  if (! gl_text_init_1(&g_text_flies_out, &g_font_flies, "Out 0"))
+    return false;
+  gl_text_update(&g_text_flies_out);
   return true;
 }
 
@@ -196,6 +200,7 @@ bool flies_render (s_sequence *seq)
                   GL_LINEAR_MIPMAP_LINEAR);
   gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   gl_matrix_4f_translate(&g_ortho.model_matrix, board_x, 60.0, 0.0);
+  gl_ortho_update_model_matrix(&g_ortho);
   glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
   buf_init(&buf, false, sizeof(a), a);
   buf_write_1(&buf, "In ");
@@ -218,7 +223,7 @@ bool flies_render (s_sequence *seq)
     g_ortho.model_matrix = matrix;
     gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, board_item_h, 0.0);
     glBlendColor(0.6f, 0.7f, 0.9f, 1.0f);
-    //glRectd(0, 0, board_w, board_h);
+    gl_ortho_rect(&g_ortho, 0, 0, board_w, board_h);
     address[1] = 0;
     while (address[1] < BOARD_SIZE) {
       y = board_item_h * address[1];
@@ -236,7 +241,7 @@ bool flies_render (s_sequence *seq)
           case BOARD_ITEM_BLOCK:
             glBindTexture(GL_TEXTURE_2D, 0);
             glBlendColor(0.0f, 0.0f, 1.0f, 1.0f);
-            //glRectd(0, 0, board_item_w + 1.0, board_item_h + 1.0);
+            gl_ortho_rect(&g_ortho, 0, 0, board_item_w + 1.0, board_item_h + 1.0);
             break;
           case BOARD_ITEM_FLY:
             matrix_2 = g_ortho.model_matrix; {
