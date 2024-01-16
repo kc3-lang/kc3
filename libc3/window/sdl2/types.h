@@ -303,11 +303,13 @@ struct gl_square {
   uw segments_v;
 };
 
+#pragma pack(push, 1)
 struct gl_vertex {
   s_gl_point_3f position;
   s_gl_point_3f normal;
   s_gl_point_2f tex_coord;
 };
+#pragma pack(pop)
 
 struct sdl2_sprite {
   s_gl_object object;

@@ -46,7 +46,7 @@ static const char * g_gl_ortho_fragment_shader_src =
   "void main() {\n"
   "  vec4 texColor = texture(uTex2D, iTexCoord);\n"
   "  if (uEnableTex2D) {\n"
-  "    oFragColor = texColor;\n"
+  "    oFragColor = texColor * uColor;\n"
   "  }\n"
   "  else\n"
   "    oFragColor = uColor;\n"
