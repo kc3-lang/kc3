@@ -86,9 +86,9 @@ typedef void (*f_window_sdl2_unload) (s_window_sdl2 *window);
 
 struct gl_font {
   FT_Face ft_face;
-  f32 point_size;
-  f32 pixel_per_point;
   s_str path;
+  f32 point_size;
+  f32 point_per_pixel;
   s_str real_path;
 };
 
@@ -192,27 +192,27 @@ struct gl_point_3f {
 };
 
 struct gl_sprite {
-  s_str path;
-  s_str real_path;
-  uw total_w;
-  uw total_h;
   uw dim_x;
   uw dim_y;
   uw frame_count;
+  s_str path;
+  uw pix_w;
+  uw pix_h;
   f32 pt_w;
   f32 pt_h;
-  uw tex_w;
-  uw tex_h;
+  s_str real_path;
   GLuint *texture;
+  uw total_w;
+  uw total_h;
 };
 
 struct gl_text {
   const s_gl_font *font;
-  s_str str;
-  uw tex_w;
-  uw tex_h;
+  uw pix_w;
+  uw pix_h;
   f32 pt_w;
   f32 pt_h;
+  s_str str;
   GLuint texture;
 };
 
@@ -272,8 +272,15 @@ struct gl_camera {
   f32 fov_y;
   s_gl_point_3f position;
   s_gl_point_3f rotation;
-  s_gl_matrix_4f matrix;
-  u32 gl_matrix_loc;
+  s_gl_point_3f scale;
+  s_gl_matrix_4f projection_matrix;
+  u32         gl_projection_matrix_loc;
+  s_gl_matrix_4f view_matrix;
+  u32         gl_view_matrix_loc;
+  s_gl_matrix_4f model_matrix;
+  u32         gl_model_matrix_loc;
+  u32 gl_enable_tex2d_loc;
+  u32 gl_tex2d_loc;
   u32 gl_shader_program;
 };
 
@@ -337,9 +344,8 @@ struct gl_ortho {
   u32         gl_view_matrix_loc;
   s_gl_matrix_4f model_matrix;
   u32         gl_model_matrix_loc;
-  u32 gl_color_loc;
-  u32 gl_enable_texture_loc;
-  u32 gl_texture_loc;
+  u32 gl_enable_tex2d_loc;
+  u32 gl_tex2d_loc;
   u32 gl_shader_program;
   s_gl_square square;
 };

@@ -18,20 +18,9 @@
 #include "gl_sprite.h"
 #include "gl_triangle.h"
 
-void gl_sprite_bind (const s_gl_sprite *sprite, uw frame)
-{
-  assert(sprite);
-  assert(frame < sprite->frame_count);
-  frame %= sprite->frame_count;
-  assert(glGetError() == GL_NO_ERROR);
-  glBindTexture(GL_TEXTURE_2D, sprite->texture[frame]);
-  assert(glGetError() == GL_NO_ERROR);
-}
-
 void gl_sprite_clean (s_gl_sprite *sprite)
 {
   assert(sprite);
-  gl_object_clean(&sprite->object);
   str_clean(&sprite->path);
   str_clean(&sprite->real_path);
   glDeleteTextures(sprite->frame_count, sprite->texture);
@@ -97,7 +86,8 @@ static bool png_info_to_gl_info (s32 png_color_type,
 }
 
 s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
-                              uw dim_x, uw dim_y, uw frame_count)
+                              uw dim_x, uw dim_y, uw frame_count,
+                              f32 point_per_pixel)
 {
   u8 *data;
   FILE *fp;
@@ -122,8 +112,6 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   uw y;
   uw v;
   s_gl_sprite tmp = {0};
-  s_gl_triangle *triangle;
-  s_gl_vertex *vertex;
   assert(sprite);
   assert(path);
   assert(dim_x);
@@ -246,8 +234,8 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   tmp.total_h = png_h;
   tmp.dim_x = dim_x;
   tmp.dim_y = dim_y;
-  tmp.w = tmp.total_w / dim_x;
-  tmp.h = tmp.total_h / dim_y;
+  tmp.pix_w = tmp.total_w / dim_x;
+  tmp.pix_h = tmp.total_h / dim_y;
   tmp.texture = calloc(tmp.frame_count, sizeof(GLuint));
   if (! tmp.texture) {
     err_puts("gl_sprite_init: tmp.texture:"
@@ -269,8 +257,8 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
     str_clean(&tmp.real_path);
     return NULL;
   }
-  sprite_stride = tmp.w * png_pixel_size;
-  data = malloc(tmp.h * sprite_stride);
+  sprite_stride = tmp.pix_w * png_pixel_size;
+  data = malloc(tmp.pix_h * sprite_stride);
   if (! data) {
     err_write_1("gl_sprite_init: failed to allocate memory: ");
     err_puts(tmp.real_path.ptr.pchar);
@@ -284,12 +272,12 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
   while (i < tmp.frame_count && y < dim_y) {
     x = 0;
     while (i < tmp.frame_count && x < dim_x) {
-      sprite_data = data + sprite_stride * tmp.h;
+      sprite_data = data + sprite_stride * tmp.pix_h;
       v = 0;
-      while (v < tmp.h) {
+      while (v < tmp.pix_h) {
 	sprite_data -= sprite_stride;
 	memcpy(sprite_data,
-	       png_row[y * tmp.h + v] + x * sprite_stride,
+	       png_row[y * tmp.pix_h + v] + x * sprite_stride,
 	       sprite_stride);
 	v++;
       }
@@ -317,10 +305,8 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
         err_puts(gl_error_string(gl_error));
 	return NULL;
       }
-      glTexImage2D(GL_TEXTURE_2D, 0, gl_format, tmp.w, tmp.h,
+      glTexImage2D(GL_TEXTURE_2D, 0, gl_format, tmp.pix_w, tmp.pix_h,
                    0, gl_format, gl_type, data);
-      //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tmp.w, tmp.h,
-      //             0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       gl_error = glGetError();
       if (gl_error != GL_NO_ERROR) {
 	err_write_1("gl_sprite_init: ");
@@ -337,42 +323,20 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
     y++;
   }
   glBindTexture(GL_TEXTURE_2D, 0);
+  assert(glGetError() == GL_NO_ERROR);
+  tmp.pt_w = tmp.pix_w * point_per_pixel;
+  tmp.pt_h = tmp.pix_h * point_per_pixel;
   free(data);
   free(png_data);
   free(png_row);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_object_init(&tmp.object);
-  gl_object_allocate(&tmp.object, 4, 2);
-  vertex = tmp.object.vertex.data;
-  gl_point_3f_init(&vertex[0].position, 0.0, tmp.h, 0.0);
-  gl_point_3f_init(&vertex[0].normal, 0.0, 0.0, -1.0);
-  gl_point_2f_init(&vertex[0].tex_coord, 0.0, 1.0);
-  gl_point_3f_init(&vertex[1].position, 0.0, 0.0, 0.0);
-  gl_point_3f_init(&vertex[1].normal, 0.0, 0.0, -1.0);
-  gl_point_2f_init(&vertex[1].tex_coord, 0.0, 0.0);
-  gl_point_3f_init(&vertex[2].position, tmp.w, tmp.h, 0.0);
-  gl_point_3f_init(&vertex[2].normal, 0.0, 0.0, -1.0);
-  gl_point_2f_init(&vertex[2].tex_coord, 1.0, 1.0);
-  gl_point_3f_init(&vertex[3].position, tmp.w, 0.0, 0.0);
-  gl_point_3f_init(&vertex[3].normal, 0.0, 0.0, -1.0);
-  gl_point_2f_init(&vertex[3].tex_coord, 1.0, 0.0);
-  triangle = tmp.object.triangle.data;
-  gl_triangle_init(triangle + 0, 0, 1, 2);
-  gl_triangle_init(triangle + 1, 1, 3, 2);
-  gl_object_update(&tmp.object);
   *sprite = tmp;  
   return sprite;
 }
 
-void gl_sprite_render (const s_gl_sprite *sprite, uw frame)
+GLuint gl_sprite_texture (const s_gl_sprite *sprite, uw frame)
 {
   assert(sprite);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_sprite_bind(sprite, frame);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_object_render(&sprite->object);
-  assert(glGetError() == GL_NO_ERROR);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_object_render_wireframe(&sprite->object);
+  assert(frame < sprite->frame_count);
+  frame %= sprite->frame_count;
+  return sprite->texture[frame];
 }

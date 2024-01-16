@@ -117,7 +117,8 @@ bool earth_render (s_sequence *seq)
     assert(glGetError() == GL_NO_ERROR);
     //glEnable(GL_TEXTURE_2D);
     assert(glGetError() == GL_NO_ERROR);
-    gl_sprite_bind(&g_sprite_earth, 0);
+    gl_camera_bind_texture(camera,
+                           gl_sprite_texture(&g_sprite_earth, 0));
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
     assert(glGetError() == GL_NO_ERROR);

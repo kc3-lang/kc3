@@ -141,8 +141,10 @@ bool window_sdl2_demo_key (s_window_sdl2 *window, SDL_Keysym *keysym)
 
 bool window_sdl2_demo_load (s_window_sdl2 *window)
 {
+  f32 point_per_pixel;
   assert(window);
   assert(glGetError() == GL_NO_ERROR);
+  point_per_pixel = (f32) window->w / window->gl_w;
   if (window->sequence_count != WINDOW_SDL2_DEMO_SEQUENCE_COUNT) {
     fprintf(stderr, "window_sdl2_demo_load: "
             "window->sequence_count = %lu\n", window->sequence_count);
@@ -153,7 +155,8 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
     return false;
   gl_ortho_resize(&g_ortho, 0, window->w, 0, window->h, 0, 1);
   if (! gl_font_init(&g_font_courier_new,
-                     "fonts/Courier New/Courier New.ttf"))
+                     "fonts/Courier New/Courier New.ttf",
+                     point_per_pixel))
     return false;
   if (! gl_text_init_1(&g_text_seq_title, &g_font_courier_new, ""))
     return false;
@@ -168,27 +171,28 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
                 lightspeed_load, lightspeed_render, lightspeed_unload,
                 window);
   if (! gl_sprite_init(&g_sprite_toaster, "img/flaps.256.png",
-                       4, 1, 4))
+                       4, 1, 4, point_per_pixel))
     return false;
   if (! gl_sprite_init(&g_sprite_toast, "img/toast.128.png",
-                       1, 1, 1))
+                       1, 1, 1, point_per_pixel))
     return false;
   sequence_init(window->sequence + 2, 60.0, "03. Toasters",
                 toasters_load, toasters_render, toasters_unload,
                 window);
   if (! gl_font_init(&g_font_flies,
-                     "fonts/Courier New/Courier New.ttf"))
+                     "fonts/Courier New/Courier New.ttf",
+                     point_per_pixel))
     return false;
   if (! gl_sprite_init(&g_sprite_fly, "img/fly-noto.png",
-                       1, 1, 1))
+                       1, 1, 1, point_per_pixel))
     return false;
   if (! gl_sprite_init(&g_sprite_dead_fly, "img/fly-dead.png",
-                       1, 1, 1))
+                       1, 1, 1, point_per_pixel))
     return false;
   sequence_init(window->sequence + 3, 60.0, "04. Flies",
                 flies_load, flies_render, flies_unload, window);
   if (! gl_sprite_init(&g_sprite_earth, "img/earth.png",
-                       1, 1, 1))
+                       1, 1, 1, point_per_pixel))
     return false;
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   assert(glGetError() == GL_NO_ERROR);
@@ -279,8 +283,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
                       GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   assert(glGetError() == GL_NO_ERROR);
-  gl_font_set_size(&g_font_courier_new, 20,
-                   (f64) window->gl_h / window->h);
+  gl_font_set_size(&g_font_courier_new, 20);
   gl_text_update_1(&g_text_seq_title, seq->title);
   gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   render_text(&g_text_seq_title, 20.0f, 30.0f);

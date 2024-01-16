@@ -19,37 +19,36 @@
 
 static const char * g_gl_ortho_vertex_shader_src =
   "#version 330 core\n"
-  "layout (location = 0) in vec3 aPos;\n"
-  "layout (location = 1) in vec3 aNorm;\n"
-  "layout (location = 2) in vec2 aTexCoord;\n"
-  "out vec3 FragNormal;\n"
-  "out vec2 TexCoord;\n"
-  "uniform mat4 projection_matrix;\n"
-  "uniform mat4 view_matrix;\n"
-  "uniform mat4 model_matrix;\n"
-  "\n"
+  "layout (location = 0) in vec3 iPos;\n"
+  "layout (location = 1) in vec3 iNormal;\n"
+  "layout (location = 2) in vec2 iTexCoord;\n"
+  "out vec3 oFragNormal;\n"
+  "out vec2 oTexCoord;\n"
+  "uniform mat4 uProjectionMatrix;\n"
+  "uniform mat4 uViewMatrix;\n"
+  "uniform mat4 uModelMatrix;\n"
   "void main() {\n"
-  "  gl_Position = vec4(projection_matrix * view_matrix * \n"
-  "                     model_matrix * vec4(aPos, 1.0));\n"
-  "  FragNormal = vec3(mat3(transpose(inverse(model_matrix))) *\n"
-  "                    aNorm);\n"
-  "  TexCoord = aTexCoord;\n"
+  "  gl_Position = vec4(uProjectionMatrix * uViewMatrix * \n"
+  "                     uModelMatrix * vec4(iPos, 1.0));\n"
+  "  oFragNormal = vec3(mat3(transpose(inverse(uModelMatrix))) *\n"
+  "                     iNormal);\n"
+  "  oTexCoord = iTexCoord;\n"
   "}\n";
 
 static const char * g_gl_ortho_fragment_shader_src =
   "#version 330 core\n"
-  "in vec3 FragNormal;\n"
-  "in vec2 TexCoord;\n"
-  "out vec4 FragColor;\n"
-  "uniform bool enable_texture;\n"
-  "uniform sampler2D tex;\n"
+  "in vec3 iFragNormal;\n"
+  "in vec2 iTexCoord;\n"
+  "out vec4 oFragColor;\n"
+  "uniform bool uEnableTex2D;\n"
+  "uniform sampler2D uTex2D;\n"
   "void main() {\n"
-  "  if (enable_texture) {\n"
-  "    vec4 textureColor = texture(tex, TexCoord);\n"
-  "    FragColor = textureColor;\n"
+  "  if (uEnableTex2D) {\n"
+  "    vec4 texColor = texture(uTex2D, iTexCoord);\n"
+  "    oFragColor = texColor;\n"
   "  }\n"
   "  else\n"
-  "    FragColor = vec4(1, 1, 1, 1);\n"
+  "    oFragColor = vec4(1, 1, 1, 1);\n"
   "}\n";
 
 void gl_ortho_bind_texture (s_gl_ortho *ortho, GLuint texture)
@@ -57,13 +56,13 @@ void gl_ortho_bind_texture (s_gl_ortho *ortho, GLuint texture)
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
   if (! texture) {
-    glUniform1i(ortho->gl_enable_texture_loc, 0);
+    glUniform1i(ortho->gl_enable_tex2d_loc, 0);
     assert(glGetError() == GL_NO_ERROR);
     return;
   }
-  glUniform1i(ortho->gl_enable_texture_loc, 1);
+  glUniform1i(ortho->gl_enable_tex2d_loc, 1);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform1i(ortho->gl_texture_loc, texture);  
+  glUniform1i(ortho->gl_tex2d_loc, texture);  
   assert(glGetError() == GL_NO_ERROR);
 }
 
@@ -136,19 +135,19 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   glDeleteShader(fragment_shader);
   assert(glGetError() == GL_NO_ERROR);
   ortho->gl_projection_matrix_loc =
-    glGetUniformLocation(ortho->gl_shader_program, "projection_matrix");
+    glGetUniformLocation(ortho->gl_shader_program, "uProjectionMatrix");
   assert(glGetError() == GL_NO_ERROR);
   ortho->gl_view_matrix_loc =
-    glGetUniformLocation(ortho->gl_shader_program, "view_matrix");
+    glGetUniformLocation(ortho->gl_shader_program, "uViewMatrix");
   assert(glGetError() == GL_NO_ERROR);
   ortho->gl_model_matrix_loc =
-    glGetUniformLocation(ortho->gl_shader_program, "model_matrix");
+    glGetUniformLocation(ortho->gl_shader_program, "uModelMatrix");
   assert(glGetError() == GL_NO_ERROR);
-  ortho->gl_enable_texture_loc =
-    glGetUniformLocation(ortho->gl_shader_program, "enable_texture");
+  ortho->gl_enable_tex2d_loc =
+    glGetUniformLocation(ortho->gl_shader_program, "uEnableTex2D");
   assert(glGetError() == GL_NO_ERROR);
-  ortho->gl_texture_loc =
-    glGetUniformLocation(ortho->gl_shader_program, "texture2D");
+  ortho->gl_tex2d_loc =
+    glGetUniformLocation(ortho->gl_shader_program, "uTex2D");
   assert(glGetError() == GL_NO_ERROR);
   return ortho;
 }
@@ -204,12 +203,13 @@ void gl_ortho_render (s_gl_ortho *ortho)
   glUniformMatrix4fv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
                      &ortho->model_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform1i(ortho->gl_enable_texture_loc, 0);
+  glUniform1i(ortho->gl_enable_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform1i(ortho->gl_texture_loc, 0);
+  glUniform1i(ortho->gl_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
   glDepthRange(ortho->clip_z_near, ortho->clip_z_far);
   assert(glGetError() == GL_NO_ERROR);
+  /*
   err_puts("gl_ortho_render projection matrix");
   gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);
   err_puts("view matrix");
@@ -217,6 +217,7 @@ void gl_ortho_render (s_gl_ortho *ortho)
   err_puts("model matrix");
   gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->model_matrix);
   buf_flush(&g_c3_env.err);
+  */
 }
 
 void gl_ortho_render_end (s_gl_ortho *ortho)
@@ -242,7 +243,7 @@ void gl_ortho_text_render (s_gl_ortho *ortho, const s_gl_text *text)
   assert(ortho);
   assert(text);
   gl_ortho_bind_texture(ortho, text->texture);
-  gl_ortho_rect(ortho, 0, 0, text->w, text->h);
+  gl_ortho_rect(ortho, 0, 0, text->pt_w, text->pt_h);
   gl_ortho_bind_texture(ortho, 0);
 }
 
@@ -253,6 +254,7 @@ void gl_ortho_update_model_matrix (s_gl_ortho *ortho)
   glUniformMatrix4fv(ortho->gl_model_matrix_loc, 1, GL_FALSE,
                      &ortho->model_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);
+  /*
   err_puts("gl_ortho_update_model_matrix projection matrix");
   gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);
   err_puts("view matrix");
@@ -260,6 +262,7 @@ void gl_ortho_update_model_matrix (s_gl_ortho *ortho)
   err_puts("model matrix");
   gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->model_matrix);
   buf_flush(&g_c3_env.err);
+  */
 }
 
 void gl_ortho_update_view_matrix (s_gl_ortho *ortho)
