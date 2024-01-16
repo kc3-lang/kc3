@@ -42,13 +42,14 @@ static const char * g_gl_ortho_fragment_shader_src =
   "out vec4 oFragColor;\n"
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
+  "uniform vec4 uColor;\n"
   "void main() {\n"
+  "  vec4 texColor = texture(uTex2D, iTexCoord);\n"
   "  if (uEnableTex2D) {\n"
-  "    vec4 texColor = texture(uTex2D, iTexCoord);\n"
   "    oFragColor = texColor;\n"
   "  }\n"
   "  else\n"
-  "    oFragColor = vec4(1, 1, 1, 1);\n"
+  "    oFragColor = uColor;\n"
   "}\n";
 
 void gl_ortho_bind_texture (s_gl_ortho *ortho, GLuint texture)
@@ -56,21 +57,43 @@ void gl_ortho_bind_texture (s_gl_ortho *ortho, GLuint texture)
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
   if (! texture) {
+    glActiveTexture(GL_TEXTURE0);
+    assert(glGetError() == GL_NO_ERROR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    assert(glGetError() == GL_NO_ERROR);
     glUniform1i(ortho->gl_enable_tex2d_loc, 0);
+    assert(glGetError() == GL_NO_ERROR);
+    glUniform1i(ortho->gl_tex2d_loc, 0);
     assert(glGetError() == GL_NO_ERROR);
     return;
   }
+  glActiveTexture(GL_TEXTURE0);
+  assert(glGetError() == GL_NO_ERROR);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  assert(glGetError() == GL_NO_ERROR);
   glUniform1i(ortho->gl_enable_tex2d_loc, 1);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform1i(ortho->gl_tex2d_loc, texture);  
+  glUniform1i(ortho->gl_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
 }
 
 void gl_ortho_clean (s_gl_ortho *ortho)
 {
   assert(ortho);
+  assert(glGetError() == GL_NO_ERROR);
   glDeleteProgram(ortho->gl_shader_program);
+  assert(glGetError() == GL_NO_ERROR);
   gl_square_clean(&ortho->square);
+  assert(glGetError() == GL_NO_ERROR);
+}
+
+void gl_ortho_color (s_gl_ortho *ortho, f32 r, f32 g, f32 b, f32 a)
+{
+  s_rgba color = {r, g, b, a};
+  assert(ortho);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniform4fv(ortho->gl_color_loc, 1, &color.r);    
+  assert(glGetError() == GL_NO_ERROR);
 }
 
 void gl_ortho_delete (s_gl_ortho *ortho)
@@ -149,6 +172,9 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   ortho->gl_tex2d_loc =
     glGetUniformLocation(ortho->gl_shader_program, "uTex2D");
   assert(glGetError() == GL_NO_ERROR);
+  ortho->gl_color_loc =
+    glGetUniformLocation(ortho->gl_shader_program, "uColor");
+  assert(glGetError() == GL_NO_ERROR);
   return ortho;
 }
 
@@ -173,8 +199,8 @@ void gl_ortho_rect (s_gl_ortho *ortho, f32 x, f32 y, f32 w, f32 h)
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
   matrix = ortho->model_matrix;
-  gl_matrix_4f_translate(&ortho->model_matrix, x - 0.5, y - 0.5, 0.0f);
-  gl_matrix_4f_scale(&ortho->model_matrix, w + 1.0f, h + 1.0f, 1.0f);
+  gl_matrix_4f_translate(&ortho->model_matrix, x, y, 0.0f);
+  gl_matrix_4f_scale(&ortho->model_matrix, w, h, 1.0f);
   gl_ortho_update_model_matrix(ortho);
   assert(glGetError() == GL_NO_ERROR);
   gl_square_render(&ortho->square);
@@ -184,6 +210,7 @@ void gl_ortho_rect (s_gl_ortho *ortho, f32 x, f32 y, f32 w, f32 h)
 
 void gl_ortho_render (s_gl_ortho *ortho)
 {
+  const s_rgba color = {1, 1, 1, 1};
   GLenum error;
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
@@ -206,6 +233,8 @@ void gl_ortho_render (s_gl_ortho *ortho)
   glUniform1i(ortho->gl_enable_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(ortho->gl_tex2d_loc, 0);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniform4fv(ortho->gl_color_loc, 1, &color.r);
   assert(glGetError() == GL_NO_ERROR);
   glDepthRange(ortho->clip_z_near, ortho->clip_z_far);
   assert(glGetError() == GL_NO_ERROR);

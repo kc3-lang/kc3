@@ -274,14 +274,15 @@ struct gl_camera {
   s_gl_point_3f rotation;
   s_gl_point_3f scale;
   s_gl_matrix_4f projection_matrix;
-  u32         gl_projection_matrix_loc;
   s_gl_matrix_4f view_matrix;
-  u32         gl_view_matrix_loc;
   s_gl_matrix_4f model_matrix;
-  u32         gl_model_matrix_loc;
-  u32 gl_enable_tex2d_loc;
-  u32 gl_tex2d_loc;
-  u32 gl_shader_program;
+  GLuint gl_projection_matrix_loc;
+  GLuint gl_view_matrix_loc;
+  GLuint gl_model_matrix_loc;
+  GLuint gl_enable_tex2d_loc;
+  GLuint gl_tex2d_loc;
+  GLuint gl_color_loc;
+  GLuint gl_shader_program;
 };
 
 struct gl_cylinder {
@@ -302,13 +303,11 @@ struct gl_square {
   uw segments_v;
 };
 
-#pragma pack(push, 1)
 struct gl_vertex {
   s_gl_point_3f position;
   s_gl_point_3f normal;
   s_gl_point_2f tex_coord;
 };
-#pragma pack(pop)
 
 struct sdl2_sprite {
   s_gl_object object;
@@ -339,14 +338,15 @@ struct gl_ortho {
   s_gl_point_3f rotation;
   s_gl_point_3f scale;
   s_gl_matrix_4f projection_matrix;
-  u32         gl_projection_matrix_loc;
+  GLuint      gl_projection_matrix_loc;
   s_gl_matrix_4f view_matrix;
-  u32         gl_view_matrix_loc;
+  GLuint      gl_view_matrix_loc;
   s_gl_matrix_4f model_matrix;
-  u32         gl_model_matrix_loc;
-  u32 gl_enable_tex2d_loc;
-  u32 gl_tex2d_loc;
-  u32 gl_shader_program;
+  GLuint      gl_model_matrix_loc;
+  GLuint gl_enable_tex2d_loc;
+  GLuint gl_tex2d_loc;
+  GLuint gl_color_loc;
+  GLuint gl_shader_program;
   s_gl_square square;
 };
 

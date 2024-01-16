@@ -40,13 +40,14 @@ static const char * g_gl_camera_fragment_shader_src =
   "out vec4 oFragColor;\n"
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
+  "uniform vec4 uColor;\n"
   "void main() {\n"
+  "  vec4 texColor = texture(uTex2D, iTexCoord);\n"
   "  if (uEnableTex2D) {\n"
-  "    vec4 texColor = texture(uTex2D, iTexCoord);\n"
-  "    oFragColor = texColor;\n"
+  "    oFragColor = texColor * uColor;\n"
   "  }\n"
   "  else\n"
-  "    oFragColor = vec4(1, 1, 1, 1);\n"
+  "    oFragColor = uColor;\n"
   "}\n";
 
 void gl_camera_bind_texture (s_gl_camera *camera, GLuint texture)
@@ -129,6 +130,15 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   camera->gl_model_matrix_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uModelMatrix");
+  camera->gl_enable_tex2d_loc =
+    glGetUniformLocation(camera->gl_shader_program,
+                         "uEnableTex2D");
+  camera->gl_tex2d_loc =
+    glGetUniformLocation(camera->gl_shader_program,
+                         "uTex2D");
+  camera->gl_color_loc =
+    glGetUniformLocation(camera->gl_shader_program,
+                         "uColor");
   return camera;
 }
 
@@ -149,7 +159,9 @@ s_gl_camera * gl_camera_new (uw w, uw h)
 
 void gl_camera_render (s_gl_camera *camera)
 {
+  const s_rgba color = {1, 1, 1, 1};
   assert(camera);
+  assert(glGetError() == GL_NO_ERROR);
   gl_matrix_4f_init_identity(&camera->projection_matrix);
   gl_matrix_4f_perspective(&camera->projection_matrix, camera->fov_y,
                            camera->aspect_ratio, camera->clip_z_near,
@@ -165,12 +177,22 @@ void gl_camera_render (s_gl_camera *camera)
                            &(s_gl_point_3f) { 0.0f, 0.0f, 1.0f });
   gl_matrix_4f_init_identity(&camera->model_matrix);
   glUseProgram(camera->gl_shader_program);
+  assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(camera->gl_projection_matrix_loc, 1, GL_FALSE,
                      &camera->projection_matrix.xx);
+  assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(camera->gl_view_matrix_loc, 1, GL_FALSE,
                      &camera->view_matrix.xx);
+  assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(camera->gl_model_matrix_loc, 1, GL_FALSE,
                      &camera->model_matrix.xx);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniform1i(camera->gl_enable_tex2d_loc, 0);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniform1i(camera->gl_tex2d_loc, 0);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniform4fv(camera->gl_color_loc, 1, &color.r);
+  assert(glGetError() == GL_NO_ERROR);
 }
 
 void gl_camera_render_end (s_gl_camera *camera)

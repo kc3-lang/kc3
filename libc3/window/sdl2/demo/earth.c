@@ -117,10 +117,10 @@ bool earth_render (s_sequence *seq)
     assert(glGetError() == GL_NO_ERROR);
     //glEnable(GL_TEXTURE_2D);
     assert(glGetError() == GL_NO_ERROR);
-    gl_camera_bind_texture(camera,
-                           gl_sprite_texture(&g_sprite_earth, 0));
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                    GL_LINEAR_MIPMAP_LINEAR);
+    //gl_camera_bind_texture(camera,
+    //                       gl_sprite_texture(&g_sprite_earth, 0));
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+    //                GL_LINEAR_MIPMAP_LINEAR);
     assert(glGetError() == GL_NO_ERROR);
     glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
     gl_sphere_render(sphere);

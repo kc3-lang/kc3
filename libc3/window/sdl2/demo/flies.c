@@ -201,7 +201,7 @@ bool flies_render (s_sequence *seq)
   gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   gl_matrix_4f_translate(&g_ortho.model_matrix, board_x, 60.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
+  gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 1.0f);
   buf_init(&buf, false, sizeof(a), a);
   buf_write_1(&buf, "In ");
   buf_inspect_uw(&buf, fly_in);
@@ -213,15 +213,15 @@ bool flies_render (s_sequence *seq)
   buf_write_1(&buf, "Out ");
   buf_inspect_uw(&buf, fly_out);
   buf_write_u8(&buf, 0);
+  gl_text_update_1(&g_text_flies_out, a);
   matrix = g_ortho.model_matrix; {
     x = board_item_w * (BOARD_SIZE / 2 + 1);
     gl_matrix_4f_translate(&g_ortho.model_matrix, x, 0.0, 0.0);
     gl_ortho_update_model_matrix(&g_ortho);
-    gl_text_update_1(&g_text_flies_out, a);
     gl_ortho_text_render(&g_ortho, &g_text_flies_out);
     g_ortho.model_matrix = matrix;
     gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, board_item_h, 0.0);
-    glBlendColor(0.6f, 0.7f, 0.9f, 1.0f);
+    gl_ortho_color(&g_ortho, 0.6f, 0.7f, 0.9f, 1.0f);
     gl_ortho_rect(&g_ortho, 0, 0, board_w, board_h);
     address[1] = 0;
     while (address[1] < BOARD_SIZE) {
@@ -239,7 +239,7 @@ bool flies_render (s_sequence *seq)
             break;
           case BOARD_ITEM_BLOCK:
             gl_ortho_bind_texture(&g_ortho, 0);
-            glBlendColor(0.0f, 0.0f, 1.0f, 1.0f);
+            gl_ortho_color(&g_ortho, 0.0f, 0.0f, 1.0f, 1.0f);
             gl_ortho_rect(&g_ortho, 0, 0, board_item_w + 1.0, board_item_h + 1.0);
             break;
           case BOARD_ITEM_FLY:
@@ -252,6 +252,7 @@ bool flies_render (s_sequence *seq)
               gl_ortho_update_model_matrix(&g_ortho);
               gl_ortho_bind_texture(&g_ortho,
                                     gl_sprite_texture(&g_sprite_fly, 0));
+              gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 1.0f);
               gl_ortho_rect(&g_ortho, 0, 0, g_sprite_fly.pt_w,
                             g_sprite_fly.pt_h);
               gl_ortho_bind_texture(&g_ortho, 0);
@@ -332,6 +333,7 @@ bool flies_render (s_sequence *seq)
               gl_ortho_update_model_matrix(&g_ortho);
               gl_ortho_bind_texture(&g_ortho,
                                     gl_sprite_texture(&g_sprite_dead_fly, 0));
+              gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 1.0f);
               gl_ortho_rect(&g_ortho, 0, 0, g_sprite_dead_fly.pt_w,
                             g_sprite_dead_fly.pt_h);
               gl_ortho_bind_texture(&g_ortho, 0);
