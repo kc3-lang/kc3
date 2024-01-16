@@ -219,7 +219,7 @@ static void render_text (s_gl_text *text, f64 x, f64 y)
   matrix = g_ortho.model_matrix;
   gl_matrix_4f_translate(&g_ortho.model_matrix, x - 1.0, y - 1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
-  glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
+  gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 1.0f);
   assert(glGetError() == GL_NO_ERROR);
   gl_ortho_text_render(&g_ortho, text);
   assert(glGetError() == GL_NO_ERROR);
@@ -249,7 +249,7 @@ static void render_text (s_gl_text *text, f64 x, f64 y)
   gl_ortho_update_model_matrix(&g_ortho);
   gl_ortho_text_render(&g_ortho, text);
   assert(glGetError() == GL_NO_ERROR);
-  glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
+  gl_ortho_color(&g_ortho, 0.0f, 0.0f, 0.0f, 1.0f);
   assert(glGetError() == GL_NO_ERROR);
   gl_matrix_4f_translate(&g_ortho.model_matrix, -1.0, -1.0, 0.0);
   gl_ortho_update_model_matrix(&g_ortho);
@@ -293,11 +293,11 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   assert(glGetError() == GL_NO_ERROR);
   gl_ortho_bind_texture(&g_ortho, 0);
   assert(glGetError() == GL_NO_ERROR);
-  glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
+  gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 1.0f);
   gl_ortho_rect(&g_ortho, 19, 11,
                 (window->w - 40.0) * seq->t / seq->duration + 2,
                 4);
-  glBlendColor(0.0f, 0.0f, 0.0f, 1.0f);
+  gl_ortho_color(&g_ortho, 0.0f, 0.0f, 0.0f, 1.0f);
   gl_ortho_rect(&g_ortho, 20, 12,
                 (window->w - 40.0) * seq->t / seq->duration,
                 2);

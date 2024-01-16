@@ -26,6 +26,8 @@ s_gl_ortho * gl_ortho_new (void);
 
 /* Operators. */
 void         gl_ortho_bind_texture (s_gl_ortho *ortho, GLuint texture);
+void         gl_ortho_color (s_gl_ortho *ortho, f32 r, f32 g, f32 b,
+                             f32 a);
 void         gl_ortho_rect (s_gl_ortho *ortho, f32 x1, f32 x2, f32 y1,
                             f32 y2);
 void         gl_ortho_render (s_gl_ortho *ortho);

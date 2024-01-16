@@ -118,7 +118,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
       FT_Vector delta;
       FT_Get_Kerning(font->ft_face, prev_glyph_index, glyph_index,
                      FT_KERNING_DEFAULT, &delta);
-      x += (f32) delta.x / (1 << 6);
+      x += delta.x >> 6;
     }
     if (FT_Load_Glyph(font->ft_face, glyph_index, FT_LOAD_RENDER)) {
       continue;
@@ -128,13 +128,13 @@ bool gl_text_render_to_texture (s_gl_text *text)
     while (i < glyph->bitmap.width) {
       j = 0;
       while (j < glyph->bitmap.rows) {
-        data_x = round(x) + i;
+        data_x = x + i;
         data_y = j + glyph->bitmap_top;
         data_pixel = data + (data_y * data_w + data_x) * 4;
         u8 value = glyph->bitmap.buffer[j * glyph->bitmap.width + i];
-        data_pixel[0] = value;
-        data_pixel[1] = value;
-        data_pixel[2] = value;
+        data_pixel[0] = 255;
+        data_pixel[1] = 255;
+        data_pixel[2] = 255;
         data_pixel[3] = value;
         j++;
       }
