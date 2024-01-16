@@ -53,10 +53,10 @@ s_gl_square * gl_square_init (s_gl_square *square, uw seg_u, uw seg_v)
   vertex = tmp.object.vertex.data;
   i = 0;
   while (i < seg_v) {
-    y = (f32) i / seg_v;
+    y = (f32) i / (seg_v - 1);
     j = 0;
     while (j < seg_u) {
-      vertex->tex_coord.x = vertex->position.x = (f32) j / seg_u;
+      vertex->tex_coord.x = vertex->position.x = (f32) j / (seg_u - 1);
       vertex->tex_coord.y = vertex->position.y = y;
       vertex->position.z = 0.0;
       vertex->normal = normal;

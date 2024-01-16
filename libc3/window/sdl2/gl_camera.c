@@ -15,15 +15,54 @@
 #include "gl_camera.h"
 #include "gl_matrix_4f.h"
 
-static const char * g_gl_camera_vertex_shader_src = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 aNormal;\n"
-"layout (location = 2) in vec2 aTexCoord;\n"
-"uniform mat4 matrix;\n"
-"\n"
-"void main() {\n"
-"  gl_Position = vec4(matrix * vec4(aPos, 1.0));\n"
-"}\n";
+static const char * g_gl_camera_vertex_shader_src =
+  "#version 330 core\n"
+  "layout (location = 0) in vec3 iPos;\n"
+  "layout (location = 1) in vec3 iNormal;\n"
+  "layout (location = 2) in vec2 iTexCoord;\n"
+  "out vec3 oFragNormal;\n"
+  "out vec2 oTexCoord;\n"
+  "uniform mat4 uProjectionMatrix;\n"
+  "uniform mat4 uViewMatrix;\n"
+  "uniform mat4 uModelMatrix;\n"
+  "void main() {\n"
+  "  gl_Position = vec4(uProjectionMatrix * uViewMatrix *\n"
+  "                     uModelMatrix * vec4(iPos, 1.0));\n"
+  "  oFragNormal = vec3(mat3(transpose(inverse(uModelMatrix))) *\n"
+  "                     iNormal);\n"
+  "  oTexCoord = iTexCoord;\n"
+  "}\n";
+
+static const char * g_gl_camera_fragment_shader_src =
+  "#version 330 core\n"
+  "in vec3 iFragNormal;\n"
+  "in vec2 iTexCoord;\n"
+  "out vec4 oFragColor;\n"
+  "uniform bool uEnableTex2D;\n"
+  "uniform sampler2D uTex2D;\n"
+  "void main() {\n"
+  "  if (uEnableTex2D) {\n"
+  "    vec4 texColor = texture(uTex2D, iTexCoord);\n"
+  "    oFragColor = texColor;\n"
+  "  }\n"
+  "  else\n"
+  "    oFragColor = vec4(1, 1, 1, 1);\n"
+  "}\n";
+
+void gl_camera_bind_texture (s_gl_camera *camera, GLuint texture)
+{
+  assert(camera);
+  assert(glGetError() == GL_NO_ERROR);
+  if (! texture) {
+    glUniform1i(camera->gl_enable_tex2d_loc, 0);
+    assert(glGetError() == GL_NO_ERROR);
+    return;
+  }
+  glUniform1i(camera->gl_enable_tex2d_loc, 1);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniform1i(camera->gl_tex2d_loc, texture);  
+  assert(glGetError() == GL_NO_ERROR);
+}
 
 void gl_camera_clean (s_gl_camera *camera)
 {
@@ -39,8 +78,9 @@ void gl_camera_delete (s_gl_camera *camera)
 
 s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
 {
+  GLuint fragment_shader;
   GLint success;
-  u32 vertex_shader;
+  GLuint vertex_shader;
   assert(camera);
   gl_camera_set_aspect_ratio(camera, w, h);
   camera->clip_z_far = 1000.0f;
@@ -63,12 +103,32 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
     err_write_1("gl_camera_init: shader compilation failed: ");
     err_puts(info_log);
   }
+  fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragment_shader, 1, &g_gl_camera_fragment_shader_src,
+                 NULL);
+  glCompileShader(fragment_shader);
+  glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
+  if (! success) {
+    char info_log[512];
+    glGetShaderInfoLog(fragment_shader, sizeof(info_log), NULL, info_log);
+    err_write_1("gl_camera_init: shader compilation failed: ");
+    err_puts(info_log);
+  }
   camera->gl_shader_program = glCreateProgram();
   glAttachShader(camera->gl_shader_program, vertex_shader);
+  glAttachShader(camera->gl_shader_program, fragment_shader);
   glLinkProgram(camera->gl_shader_program);
   glDeleteShader(vertex_shader);
-  camera->gl_matrix_loc =
-    glGetUniformLocation(camera->gl_shader_program, "matrix");
+  glDeleteShader(fragment_shader);
+  camera->gl_projection_matrix_loc =
+    glGetUniformLocation(camera->gl_shader_program,
+                         "uProjectionMatrix");
+  camera->gl_view_matrix_loc =
+    glGetUniformLocation(camera->gl_shader_program,
+                         "uViewMatrix");
+  camera->gl_model_matrix_loc =
+    glGetUniformLocation(camera->gl_shader_program,
+                         "uModelMatrix");
   return camera;
 }
 
@@ -90,21 +150,27 @@ s_gl_camera * gl_camera_new (uw w, uw h)
 void gl_camera_render (s_gl_camera *camera)
 {
   assert(camera);
-  gl_matrix_4f_init_identity(&camera->matrix);
-  gl_matrix_4f_perspective(&camera->matrix, camera->fov_y,
+  gl_matrix_4f_init_identity(&camera->projection_matrix);
+  gl_matrix_4f_perspective(&camera->projection_matrix, camera->fov_y,
                            camera->aspect_ratio, camera->clip_z_near,
                            camera->clip_z_far);
-  gl_matrix_4f_translate(&camera->matrix, camera->position.x,
+  gl_matrix_4f_init_identity(&camera->view_matrix);
+  gl_matrix_4f_translate(&camera->view_matrix, camera->position.x,
                          camera->position.y, camera->position.z);
-  gl_matrix_4f_rotate_axis(&camera->matrix, camera->rotation.x,
+  gl_matrix_4f_rotate_axis(&camera->view_matrix, camera->rotation.x,
                            &(s_gl_point_3f) { 1.0f, 0.0f, 0.0f });
-  gl_matrix_4f_rotate_axis(&camera->matrix, camera->rotation.y,
+  gl_matrix_4f_rotate_axis(&camera->view_matrix, camera->rotation.y,
                            &(s_gl_point_3f) { 0.0f, 1.0f, 0.0f });
-  gl_matrix_4f_rotate_axis(&camera->matrix, camera->rotation.z,
+  gl_matrix_4f_rotate_axis(&camera->view_matrix, camera->rotation.z,
                            &(s_gl_point_3f) { 0.0f, 0.0f, 1.0f });
+  gl_matrix_4f_init_identity(&camera->model_matrix);
   glUseProgram(camera->gl_shader_program);
-  glUniformMatrix4fv(camera->gl_matrix_loc, 1, GL_FALSE,
-                     &camera->matrix.xx);
+  glUniformMatrix4fv(camera->gl_projection_matrix_loc, 1, GL_FALSE,
+                     &camera->projection_matrix.xx);
+  glUniformMatrix4fv(camera->gl_view_matrix_loc, 1, GL_FALSE,
+                     &camera->view_matrix.xx);
+  glUniformMatrix4fv(camera->gl_model_matrix_loc, 1, GL_FALSE,
+                     &camera->model_matrix.xx);
 }
 
 void gl_camera_render_end (s_gl_camera *camera)

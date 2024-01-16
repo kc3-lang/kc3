@@ -21,7 +21,7 @@
 #define TOASTERS_SCALE_TOAST   0.52
 #define TOASTERS_SCALE_TOASTER 0.4
 #define TOASTERS_SPACING \
-  (g_sprite_toaster.h * TOASTERS_SCALE_TOASTER * 2.0)
+  (g_sprite_toaster.pt_h * TOASTERS_SCALE_TOASTER * 2.0)
 
 static const f64 g_speed_x =  80.0;
 static const f64 g_speed_y = -40.0;
@@ -50,6 +50,7 @@ static void toast_render (s_tag *toast, s_window_sdl2 *window,
                           s_sequence *seq)
 {
   s_gl_matrix_4f matrix;
+  GLuint texture;
   f64 *x;
   f64 *y;
   if (toast->type == TAG_MAP) {
@@ -62,15 +63,18 @@ static void toast_render (s_tag *toast, s_window_sdl2 *window,
       toast->type = TAG_VOID;
       return;
     }
-    matrix = g_ortho.model_matrix;
-    gl_matrix_4f_translate(&g_ortho.model_matrix, *x,
-                           *y + g_sprite_toast.h, 0.0);
-    gl_matrix_4f_scale(&g_ortho.model_matrix,
-                       TOASTERS_SCALE_TOAST,
-                       -TOASTERS_SCALE_TOAST, 1);
-    gl_ortho_update_model_matrix(&g_ortho);
-    gl_sprite_render(&g_sprite_toast, 0);
-    g_ortho.model_matrix = matrix;
+    matrix = g_ortho.model_matrix; {
+      gl_matrix_4f_translate(&g_ortho.model_matrix, *x,
+                             *y + g_sprite_toast.pt_h, 0.0);
+      gl_matrix_4f_scale(&g_ortho.model_matrix,
+                         TOASTERS_SCALE_TOAST,
+                         -TOASTERS_SCALE_TOAST, 1);
+      gl_ortho_update_model_matrix(&g_ortho);
+      texture = gl_sprite_texture(&g_sprite_toast, 0);
+      gl_ortho_bind_texture(&g_ortho, texture);
+      gl_ortho_rect(&g_ortho, 0, 0, g_sprite_toast.pt_w,
+                    g_sprite_toast.pt_h);
+    } g_ortho.model_matrix = matrix;
   }
 }
 
@@ -88,6 +92,7 @@ static void toaster_render (s_tag *toaster, s_window_sdl2 *window,
                             s_sequence *seq)
 {
   s_gl_matrix_4f matrix;
+  GLuint texture;
   f64 *x;
   f64 *y;
   if (toaster->type == TAG_MAP) {
@@ -102,14 +107,18 @@ static void toaster_render (s_tag *toaster, s_window_sdl2 *window,
     }
     matrix = g_ortho.model_matrix;
     gl_matrix_4f_translate(&g_ortho.model_matrix, *x,
-                           *y + g_sprite_toaster.h, 0.0);
+                           *y + g_sprite_toaster.pt_h, 0.0);
     gl_matrix_4f_scale(&g_ortho.model_matrix,
                        TOASTERS_SCALE_TOASTER,
                        -TOASTERS_SCALE_TOASTER, 1);
     gl_ortho_update_model_matrix(&g_ortho);
-    gl_sprite_render(&g_sprite_toaster,
-                     fmod(seq->t * g_sprite_toaster.frame_count,
-                          g_sprite_toaster.frame_count));
+    texture = gl_sprite_texture(&g_sprite_toaster,
+                                fmod(seq->t *
+                                     g_sprite_toaster.frame_count,
+                                     g_sprite_toaster.frame_count));
+    gl_ortho_bind_texture(&g_ortho, texture);
+    gl_ortho_rect(&g_ortho, 0, 0, g_sprite_toaster.pt_w,
+                  g_sprite_toaster.pt_h);
     g_ortho.model_matrix = matrix;
   }
 }

@@ -23,32 +23,35 @@ void gl_font_clean (s_gl_font *font)
   str_clean(&font->real_path);
 }
 
-s_gl_font * gl_font_init (s_gl_font *font, const char *path)
+s_gl_font * gl_font_init (s_gl_font *font, const char *path,
+                          f32 point_per_pixel)
 {
+  s_gl_font tmp = {0};
   assert(font);
   assert(path);
-  str_init_copy_1(&font->path, path);
-  if (! file_search(&font->path, sym_1("r"), &font->real_path)) {
+  str_init_copy_1(&tmp.path, path);
+  if (! file_search(&tmp.path, sym_1("r"), &tmp.real_path)) {
     err_write_1("gl_font_init: file not found: ");
     err_puts(path);
-    str_clean(&font->path);
+    str_clean(&tmp.path);
     return NULL;
   }
   assert(glGetError() == GL_NO_ERROR);
-  if (FT_New_Face(g_ft, font->real_path.ptr.pchar, 0, &font->ft_face)) {
+  if (FT_New_Face(g_ft, tmp.real_path.ptr.pchar, 0, &tmp.ft_face)) {
     err_write_1("gl_font_init: error loading font: ");
-    err_puts(font->real_path.ptr.pchar);
-    str_clean(&font->path);
-    str_clean(&font->real_path);
+    err_puts(tmp.real_path.ptr.pchar);
+    str_clean(&tmp.path);
+    str_clean(&tmp.real_path);
     return NULL;
   }
+  tmp.point_per_pixel = point_per_pixel;
+  *font = tmp;
   return font;
 }
 
-void gl_font_set_size (s_gl_font *font, f64 point_size,
-                       f64 pixel_per_point)
+void gl_font_set_size (s_gl_font *font, f32 point_size)
 {
-  f64 size;
-  size = point_size * pixel_per_point;
+  f32 size;
+  size = point_size / font->point_per_pixel;
   FT_Set_Pixel_Sizes(font->ft_face, 0, size);
 }
