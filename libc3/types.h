@@ -39,16 +39,18 @@
 #endif
 
 /* Basic integer types. */
-typedef int8_t        s8;
-typedef int16_t       s16;
-typedef int32_t       s32;
-typedef int64_t       s64;
-typedef long          sw;
-typedef uint8_t       u8;
-typedef uint16_t      u16;
-typedef uint32_t      u32;
-typedef uint64_t      u64;
-typedef unsigned long uw;
+typedef int8_t             s8;
+typedef int16_t            s16;
+typedef int32_t            s32;
+typedef int64_t            s64;
+typedef long long          s128;
+typedef long               sw;
+typedef uint8_t            u8;
+typedef uint16_t           u16;
+typedef uint32_t           u32;
+typedef uint64_t           u64;
+typedef unsigned long long u128;
+typedef unsigned long      uw;
 
 #ifdef SW_MAX
 #undef SW_MAX
