@@ -84,6 +84,7 @@ HEADERS = \
 	"error.h" \
 	"error_handler.h" \
 	"eval.h" \
+	"f128.h" \
 	"f32.h" \
 	"f64.h" \
 	"fact.h" \
@@ -231,6 +232,7 @@ SOURCES = \
 	"error.c" \
 	"error_handler.c" \
 	"eval.c" \
+	"f128.c" \
 	"f32.c" \
 	"f64.c" \
 	"fact.c" \
@@ -483,6 +485,7 @@ LO_SOURCES = \
 	"error.c" \
 	"error_handler.c" \
 	"eval.c" \
+	"f128.c" \
 	"f32.c" \
 	"f64.c" \
 	"fact.c" \

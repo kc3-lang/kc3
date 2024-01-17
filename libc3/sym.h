@@ -37,6 +37,7 @@ extern const s_sym g_sym_Character;
 extern const s_sym g_sym_Char__star;
 extern const s_sym g_sym_F32;
 extern const s_sym g_sym_F64;
+extern const s_sym g_sym_F128;
 extern const s_sym g_sym_Fact;
 extern const s_sym g_sym_Fn;
 extern const s_sym g_sym_Ident;

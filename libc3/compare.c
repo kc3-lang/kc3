@@ -94,10 +94,9 @@ s8 compare_cfn (const s_cfn *a, const s_cfn *b)
 }
 
 COMPARE_DEF(character)
-
 COMPARE_DEF(f32)
-
 COMPARE_DEF(f64)
+COMPARE_DEF(f128)
 
 s8 compare_fact (const s_fact *a, const s_fact *b)
 {
@@ -473,9 +472,10 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32(a->data.f32, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.f32, b->data.f64);
+    case TAG_F128:
+      return compare_f128((f128) a->data.f32, b->data.f128);
     case TAG_INTEGER:
-      return compare_f64((f64) a->data.f32,
-                         integer_to_f64(&b->data.integer));
+      return compare_f32(a->data.f32, integer_to_f32(&b->data.integer));
     case TAG_S8:  return compare_f32(a->data.f32, (f32) b->data.s8);
     case TAG_S16: return compare_f32(a->data.f32, (f32) b->data.s16);
     case TAG_S32: return compare_f32(a->data.f32, (f32) b->data.s32);
@@ -494,6 +494,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f64(a->data.f64, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.f64, b->data.f64);
+    case TAG_F128:
+      return compare_f128((f128) a->data.f64, b->data.f128);
     case TAG_INTEGER:
       return compare_f64(a->data.f64, integer_to_f64(&b->data.integer));
     case TAG_S8:  return compare_f64(a->data.f64, (f64) b->data.s8);
@@ -516,6 +518,9 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                      (f64) b->data.f32);
     case TAG_F64: return compare_f64(integer_to_f64(&a->data.integer),
                                      b->data.f64);
+    case TAG_F128:
+      return compare_f128(integer_to_f128(&a->data.integer),
+                          b->data.f128);
     case TAG_INTEGER:
       return compare_integer(&a->data.integer, &b->data.integer);
     case TAG_S8:
@@ -576,6 +581,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.s8, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.s8, b->data.f64);
+    case TAG_F128:
+      return compare_f128((f128) a->data.s8, b->data.f128);
     case TAG_INTEGER:
       integer_init_s8(&tmp, a->data.s8);
       r = compare_integer(&tmp, &b->data.integer);
@@ -646,6 +653,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.s32, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.s32, b->data.f64);
+    case TAG_F128:
+      return compare_f128((f128) a->data.s32, b->data.f128);
     case TAG_INTEGER:
       integer_init_s32(&tmp, a->data.s32);
       r = compare_integer(&tmp, &b->data.integer);
@@ -681,6 +690,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.s64, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.s64, b->data.f64);
+    case TAG_F128:
+      return compare_f128((f128) a->data.s64, b->data.f128);
     case TAG_INTEGER:
       integer_init_s64(&tmp, a->data.s64);
       r = compare_integer(&tmp, &b->data.integer);
@@ -716,6 +727,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.u8, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.u8, b->data.f64);
+    case TAG_F128:
+      return compare_f128((f128) a->data.u8, b->data.f128);
     case TAG_INTEGER:
       integer_init_u8(&tmp, a->data.u8);
       r = compare_integer(&tmp, &b->data.integer);
@@ -739,6 +752,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.u16, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.u16, b->data.f64);
+    case TAG_F128:
+      return compare_f128((f128) a->data.u16, b->data.f128);
     case TAG_INTEGER:
       integer_init_u16(&tmp, a->data.u16);
       r = compare_integer(&tmp, &b->data.integer);
@@ -762,6 +777,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.u32, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.u32, b->data.f64);
+    case TAG_F128:
+      return compare_f128((f128) a->data.u32, b->data.f128);
     case TAG_INTEGER:
       integer_init_u32(&tmp, a->data.u32);
       r = compare_integer(&tmp, &b->data.integer);
@@ -785,6 +802,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.u64, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.u64, b->data.f64);
+    case TAG_F128:
+      return compare_f128((f128) a->data.u64, b->data.f128);
     case TAG_INTEGER:
       integer_init_u64(&tmp, a->data.u64);
       r = compare_integer(&tmp, &b->data.integer);
@@ -876,6 +895,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_VAR:        return compare_ptr(a, b);
   case TAG_F32:
   case TAG_F64:
+  case TAG_F128:
   case TAG_INTEGER:
   case TAG_S8:
   case TAG_S16:

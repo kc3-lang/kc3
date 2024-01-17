@@ -32,6 +32,7 @@ HASH_UPDATE_PROTOTYPE(char);
 HASH_UPDATE_PROTOTYPE(character);
 HASH_UPDATE_PROTOTYPE(f32);
 HASH_UPDATE_PROTOTYPE(f64);
+HASH_UPDATE_PROTOTYPE(f128);
 bool hash_update_fact (t_hash *hash, const s_fact *fact);
 bool hash_update_fn (t_hash *hash, const s_fn *fn);
 bool hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses);

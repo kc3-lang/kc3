@@ -73,8 +73,9 @@ typedef unsigned long uw;
 #define UW_MAX  ((uw)  ~ 0)
 
 /* IEEE 754 floating point numbers. */
-typedef float               f32;
-typedef double              f64;
+typedef float       f32;
+typedef double      f64;
+typedef long double f128;
 
 /* Boolean : true or false. */
 typedef u8 bool;
@@ -94,6 +95,7 @@ typedef enum {
   TAG_CHARACTER,
   TAG_F32,
   TAG_F64,
+  TAG_F128,
   TAG_FACT,
   TAG_FN,
   TAG_INTEGER,
@@ -398,6 +400,7 @@ union tag_data {
   character     character;
   f32           f32;
   f64           f64;
+  f128          f128;
   s_fact        fact;
   s_fn          fn;
   s_ident       ident;

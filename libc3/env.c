@@ -392,6 +392,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   switch (a->type) {
   case TAG_F32:
   case TAG_F64:
+  case TAG_F128:
   case TAG_INTEGER:
   case TAG_S8:
   case TAG_S16:
@@ -406,6 +407,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     switch (b->type) {
     case TAG_F32:
     case TAG_F64:
+    case TAG_F128:
     case TAG_INTEGER:
     case TAG_S8:
     case TAG_S16:
@@ -751,6 +753,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
+  case TAG_F128:
   case TAG_FACT:
   case TAG_FN:
   case TAG_INTEGER:

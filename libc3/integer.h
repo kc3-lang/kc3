@@ -32,6 +32,7 @@ s_integer * integer_init_cast (s_integer *a, const s_tag *tag);
 s_integer * integer_init_copy (s_integer *a, const s_integer *src);
 s_integer * integer_init_f32 (s_integer *a, f32 x);
 s_integer * integer_init_f64 (s_integer *a, f64 x);
+s_integer * integer_init_f128 (s_integer *a, f128 x);
 s_integer * integer_init_s8 (s_integer *a, s8 x);
 s_integer * integer_init_s16 (s_integer *a, s16 x);
 s_integer * integer_init_s32 (s_integer *a, s32 x);
@@ -46,7 +47,9 @@ s_integer * integer_init_zero (s_integer *i);
 void        integer_clean (s_integer *i);
 
 /* Setters */
-s_integer * integer_set_double (s_integer *a, double x);
+s_integer * integer_set_f32 (s_integer *a, f32 x);
+s_integer * integer_set_f64 (s_integer *a, f64 x);
+s_integer * integer_set_f128 (s_integer *a, f128 x);
 s_integer * integer_set_s32 (s_integer *a, s32 x);
 s_integer * integer_set_s64 (s_integer *a, s64 x);
 s_integer * integer_set_sw (s_integer *a, sw x);
@@ -94,6 +97,7 @@ bool integer_is_negative (const s_integer *i);
 bool integer_is_zero (const s_integer *i);
 f32  integer_to_f32 (const s_integer *i);
 f64  integer_to_f64 (const s_integer *i);
+f128 integer_to_f128 (const s_integer *i);
 s8   integer_to_s8 (const s_integer *i);
 s16  integer_to_s16 (const s_integer *i);
 s32  integer_to_s32 (const s_integer *i);

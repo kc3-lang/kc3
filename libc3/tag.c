@@ -194,6 +194,7 @@ void tag_clean (s_tag *tag)
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
+  case TAG_F128:
   case TAG_FACT:
   case TAG_IDENT:
   case TAG_PTAG:
@@ -283,6 +284,7 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
+  case TAG_F128:
   case TAG_FACT:
   case TAG_IDENT:
   case TAG_PTAG:
@@ -671,6 +673,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;
   case TAG_F32:         *dest = &tag->data.f32;         return true;
   case TAG_F64:         *dest = &tag->data.f64;         return true;
+  case TAG_F128:        *dest = &tag->data.f128;        return true;
   case TAG_FACT:        *dest = &tag->data.fact;        return true;
   case TAG_FN:          *dest = &tag->data.fn;          return true;
   case TAG_IDENT:       *dest = &tag->data.ident;       return true;
@@ -757,6 +760,12 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_F64:
     if (type == &g_sym_F64) {
       *dest = &tag->data.f64;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_F128:
+    if (type == &g_sym_F128) {
+      *dest = &tag->data.f128;
       return true;
     }
     goto invalid_cast;
@@ -961,6 +970,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;
   case TAG_F32:         *dest = &tag->data.f32;         return true;
   case TAG_F64:         *dest = &tag->data.f64;         return true;
+  case TAG_F128:        *dest = &tag->data.f128;        return true;
   case TAG_FACT:        *dest = &tag->data.fact;        return true;
   case TAG_FN:          *dest = &tag->data.fn;          return true;
   case TAG_IDENT:       *dest = &tag->data.ident;       return true;
@@ -1006,6 +1016,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_CHARACTER:   *dest = &g_sym_Character;  return dest;
   case TAG_F32:         *dest = &g_sym_F32;        return dest;
   case TAG_F64:         *dest = &g_sym_F64;        return dest;
+  case TAG_F128:        *dest = &g_sym_F128;       return dest;
   case TAG_FACT:        *dest = &g_sym_Fact;       return dest;
   case TAG_FN:          *dest = &g_sym_Fn;         return dest;
   case TAG_IDENT:       *dest = &g_sym_Ident;      return dest;
