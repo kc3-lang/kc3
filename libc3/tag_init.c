@@ -101,6 +101,16 @@ s_tag * tag_init_f64 (s_tag *tag, f64 f)
   return tag;
 }
 
+s_tag * tag_init_f128 (s_tag *tag, f128 f)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_F128;
+  tmp.data.f128 = f;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_ident (s_tag *tag, const s_ident *ident)
 {
   s_tag tmp = {0};
@@ -481,6 +491,18 @@ s_tag * tag_new_f64 (f64 f)
   }
   tag->type = TAG_F64;
   tag->data.f64 = f;
+  return tag;
+}
+
+s_tag * tag_new_f128 (f128 f)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_f128: calloc");
+    return NULL;
+  }
+  tag->type = TAG_F128;
+  tag->data.f128 = f;
   return tag;
 }
 
@@ -939,6 +961,17 @@ s_tag * tag_f64 (s_tag *tag, f64 f)
   tag_clean(tag);
   tmp.type = TAG_F64;
   tmp.data.f64 = f;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_f128 (s_tag *tag, f128 f)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_F128;
+  tmp.data.f128 = f;
   *tag = tmp;
   return tag;
 }

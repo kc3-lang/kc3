@@ -785,13 +785,88 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
   return result;
 }
 
-sw buf_inspect_f64_size (const f64 *f)
+sw buf_inspect_f64_size (const f64 *x)
 {
   char b[64];
   s_buf buf;
-  assert(f);
+  assert(x);
   buf_init(&buf, false, sizeof(b), b);
-  return buf_inspect_f64(&buf, f);
+  return buf_inspect_f64(&buf, x);
+}
+
+sw buf_inspect_f128 (s_buf *buf, const f128 *x)
+{
+  s64 exp;
+  u8 i;
+  u8 j;
+  sw r;
+  sw result = 0;
+  f128 y;
+  assert(buf);
+  assert(f);
+  exp = 0.0;
+  y = *x;
+  if (y == 0.0)
+    return buf_write_1(buf, "0.0");
+  if (y < 0) {
+    if ((r = buf_write_1(buf, "-")) <= 0)
+      return r;
+    result += r;
+    y = -y;
+  }
+  if (y >= 1.0)
+    while (y >= 10.0) {
+      y /= 10.0;
+      exp++;
+    }
+  else
+    while (y < 1.0) {
+      y *= 10.0;
+      exp--;
+    }
+  i = (u8) y;
+  y -= i;
+  i += '0';
+  if ((r = buf_write_u8(buf, i)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ".")) <= 0)
+    return r;
+  result += r;
+  j = 33;
+  do {
+    y *= 10;
+    i = (u8) y;
+    y -= i;
+    i += '0';
+    if ((r = buf_write_u8(buf, i)) <= 0)
+      return r;
+    result += r;
+    j--;
+  } while (y > pow(0.1, j) && j);
+  if (exp) {
+    if ((r = buf_write_1(buf, "e")) <= 0)
+      return r;
+    result += r;
+    if (exp > 0) {
+      if ((r = buf_write_1(buf, "+")) <= 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_inspect_s64(buf, &exp)) <= 0)
+      return r;
+    result += r;
+  }
+  return result;
+}
+
+sw buf_inspect_f128_size (const f128 *x)
+{
+  char b[128];
+  s_buf buf;
+  assert(x);
+  buf_init(&buf, false, sizeof(b), b);
+  return buf_inspect_f128(&buf, x);
 }
 
 sw buf_inspect_fact (s_buf *buf, const s_fact *fact)
@@ -2050,6 +2125,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
     return buf_inspect_character(buf, &tag->data.character);
   case TAG_F32:     return buf_inspect_f32(buf, &tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, &tag->data.f64);
+  case TAG_F128:    return buf_inspect_f128(buf, &tag->data.f128);
   case TAG_FACT:    return buf_inspect_fact(buf, &tag->data.fact);
   case TAG_FN:      return buf_inspect_fn(buf, &tag->data.fn);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
@@ -2098,6 +2174,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
     return buf_inspect_character_size(&tag->data.character);
   case TAG_F32:      return buf_inspect_f32_size(&tag->data.f32);
   case TAG_F64:      return buf_inspect_f64_size(&tag->data.f64);
+  case TAG_F128:     return buf_inspect_f128_size(&tag->data.f128);
   case TAG_FACT:     return buf_inspect_fact_size(&tag->data.fact);
   case TAG_FN:       return buf_inspect_fn_size(&tag->data.fn);
   case TAG_IDENT:    return buf_inspect_ident_size(&tag->data.ident);

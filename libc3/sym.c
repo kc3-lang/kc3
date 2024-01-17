@@ -25,6 +25,7 @@ const s_sym g_sym_Character   = {{{NULL},  9, {"Character"}}};
 const s_sym g_sym_Char__star  = {{{NULL},  5, {"Char*"}}};
 const s_sym g_sym_F32         = {{{NULL},  3, {"F32"}}};
 const s_sym g_sym_F64         = {{{NULL},  3, {"F64"}}};
+const s_sym g_sym_F128        = {{{NULL},  3, {"F128"}}};
 const s_sym g_sym_Fact        = {{{NULL},  4, {"Fact"}}};
 const s_sym g_sym_Fn          = {{{NULL},  2, {"Fn"}}};
 const s_sym g_sym_Ident       = {{{NULL},  5, {"Ident"}}};
@@ -203,6 +204,7 @@ void sym_init_g_sym (void)
   sym_intern(&g_sym_Char__star, NULL);
   sym_intern(&g_sym_F32, NULL);
   sym_intern(&g_sym_F64, NULL);
+  sym_intern(&g_sym_F128, NULL);
   sym_intern(&g_sym_Fact, NULL);
   sym_intern(&g_sym_Fn, NULL);
   sym_intern(&g_sym_Ident, NULL);
@@ -364,6 +366,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
   }
   if (sym == &g_sym_F64) {
     *dest = &ffi_type_double;
+    return true;
+  }
+  if (sym == &g_sym_F128) {
+    *dest = &ffi_type_longdouble;
     return true;
   }
   if (sym == &g_sym_Fn) {
@@ -775,6 +781,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_F64;
     return true;
   }
+  if (sym == &g_sym_F128) {
+    *dest = TAG_F128;
+    return true;
+  }
   if (sym == &g_sym_Fn) {
     *dest = TAG_FN;
     return true;
@@ -915,6 +925,10 @@ bool sym_type_size (const s_sym *type, uw *dest)
   }
   if (type == &g_sym_F64) {
     *dest = sizeof(f64);
+    return true;
+  }
+  if (type == &g_sym_F128) {
+    *dest = sizeof(f128);
     return true;
   }
   if (type == &g_sym_Fact) {

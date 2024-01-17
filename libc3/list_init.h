@@ -25,6 +25,7 @@ s_list * list_init_character (s_list *list, character c, s_list *next);
 
 s_list * list_init_f32 (s_list *list, f32 f, s_list *next);
 s_list * list_init_f64 (s_list *list, f64 f, s_list *next);
+s_list * list_init_f128 (s_list *list, f128 f, s_list *next);
 s_list * list_init_ident (s_list *list, const s_ident *ident, 
                           s_list *next);
 s_list * list_init_ident_1 (s_list *list, const char *p, s_list *next);
@@ -74,6 +75,7 @@ s_list * list_new_character (character c, s_list *next);
 
 s_list * list_new_f32 (f32 f, s_list *next);
 s_list * list_new_f64 (f64 f, s_list *next);
+s_list * list_new_f128 (f128 f, s_list *next);
 s_list * list_new_ident (const s_ident *ident, s_list *next);
 s_list * list_new_ident_1 (const char *p, s_list *next);
 s_list * list_new_integer_1 (const char *p, s_list *next);
@@ -118,6 +120,7 @@ s_list * list_character (s_list *list, character c);
 
 s_list * list_f32 (s_list *list, f32 f);
 s_list * list_f64 (s_list *list, f64 f);
+s_list * list_f128 (s_list *list, f128 f);
 s_list * list_ident (s_list *list, const s_ident *ident);
 s_list * list_ident_1 (s_list *list, const char *p);
 s_list * list_integer_1 (s_list *list, const char *p);

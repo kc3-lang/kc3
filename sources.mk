@@ -278,6 +278,8 @@ C3_C_SOURCES = \
 	"libc3/error_handler.h" \
 	"libc3/eval.c" \
 	"libc3/eval.h" \
+	"libc3/f128.c" \
+	"libc3/f128.h" \
 	"libc3/f32.c" \
 	"libc3/f32.h" \
 	"libc3/f64.c" \
@@ -471,6 +473,8 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/demo/flies.h" \
 	"libc3/window/sdl2/demo/lightspeed.c" \
 	"libc3/window/sdl2/demo/lightspeed.h" \
+	"libc3/window/sdl2/demo/mandelbrot_f128.c" \
+	"libc3/window/sdl2/demo/mandelbrot_f128.h" \
 	"libc3/window/sdl2/demo/toasters.c" \
 	"libc3/window/sdl2/demo/toasters.h" \
 	"libc3/window/sdl2/demo/window_sdl2_demo.c" \

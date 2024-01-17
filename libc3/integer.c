@@ -123,6 +123,8 @@ s_integer * integer_init_cast (s_integer *a, const s_tag *tag)
     return integer_init_f32(a, tag->data.f32);
   case TAG_F64:
     return integer_init_f64(a, tag->data.f64);
+  case TAG_F128:
+    return integer_init_f128(a, tag->data.f128);
   case TAG_INTEGER:
     return integer_init_copy(a, &tag->data.integer);
   case TAG_SW:
@@ -218,18 +220,25 @@ s_integer * integer_init_copy (s_integer *a, const s_integer *src)
   return a;
 }
 
-s_integer * integer_init_f64 (s_integer *a, f64 x)
-{
-  assert(a);
-  integer_init(a);
-  return integer_set_double(a, x);
-}
-
 s_integer * integer_init_f32 (s_integer *a, f32 x)
 {
   assert(a);
   integer_init(a);
-  return integer_set_double(a, x);
+  return integer_set_f32(a, x);
+}
+
+s_integer * integer_init_f64 (s_integer *a, f64 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_f64(a, x);
+}
+
+s_integer * integer_init_f128 (s_integer *a, f128 x)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_f128(a, x);
 }
 
 s_integer * integer_init_s8 (s_integer *a, s8 x)
@@ -507,6 +516,13 @@ f32 integer_to_f32 (const s_integer *i)
 f64 integer_to_f64 (const s_integer *i)
 {
   assert(i);
+  return mp_get_double(&i->mp_int);
+}
+
+f128 integer_to_f128 (const s_integer *i)
+{
+  assert(i);
+  // FIXME
   return mp_get_double(&i->mp_int);
 }
 
