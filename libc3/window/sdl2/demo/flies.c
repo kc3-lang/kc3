@@ -223,6 +223,7 @@ bool flies_render (s_sequence *seq)
     gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, board_item_h, 0.0);
     gl_ortho_color(&g_ortho, 0.6f, 0.7f, 0.9f, 1.0f);
     gl_ortho_rect(&g_ortho, 0, 0, board_w, board_h);
+    gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 1.0f);
     address[1] = 0;
     while (address[1] < BOARD_SIZE) {
       y = board_item_h * address[1];
@@ -241,6 +242,7 @@ bool flies_render (s_sequence *seq)
             gl_ortho_bind_texture(&g_ortho, 0);
             gl_ortho_color(&g_ortho, 0.0f, 0.0f, 1.0f, 1.0f);
             gl_ortho_rect(&g_ortho, 0, 0, board_item_w + 1.0, board_item_h + 1.0);
+            gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 1.0f);
             break;
           case BOARD_ITEM_FLY:
             matrix_2 = g_ortho.model_matrix; {
