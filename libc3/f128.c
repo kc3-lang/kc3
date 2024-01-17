@@ -91,10 +91,10 @@ f128 * f128_init_copy (f128 *x, const f128 *src)
 
 f128 * f128_random (f128 *x)
 {
-  const f128 max = ((f128) 1 << 113) - 1;
+  const f128 max = exp2l(113) - 1;
   f128 y;
   arc4random_buf(y, 15);
-  y = y & 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFF800000;
+  y = (f128) ((u128) y & 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFF800000);
   *x = y;
   return x;
 }
