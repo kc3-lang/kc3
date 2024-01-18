@@ -12,6 +12,7 @@
  */
 #include <assert.h>
 #include <err.h>
+#include <math.h>
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
@@ -89,12 +90,22 @@ f128 * f128_init_copy (f128 *x, const f128 *src)
   return x;
 }
 
+typedef union _128 {
+  f128 f128;
+  s128 s128;
+  u128 u128;
+  u64 u64[2];
+  s64 s64[2];
+} u_128;
+
 f128 * f128_random (f128 *x)
 {
-  const f128 max = exp2l(113) - 1;
-  f128 y;
-  arc4random_buf(y, 15);
-  y = (f128) ((u128) y & 0x7FFFFFFFFFFFFFFFFFFFFFFFFFFF800000);
-  *x = y;
+  u_128 u;
+  u_128 mask;
+  arc4random_buf(&u, 15);
+  mask.u64[0] = 0x7FFFFFFFFFFFFFFF;
+  mask.u64[1] = 0xFFFFFFFFFFFFC000;
+  u.u128 &= mask.u128;
+  *x = u.f128;
   return x;
 }

@@ -803,7 +803,7 @@ sw buf_inspect_f128 (s_buf *buf, const f128 *x)
   sw result = 0;
   f128 y;
   assert(buf);
-  assert(f);
+  assert(x);
   exp = 0.0;
   y = *x;
   if (y == 0.0)
