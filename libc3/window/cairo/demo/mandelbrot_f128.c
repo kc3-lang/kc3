@@ -19,6 +19,44 @@ static cairo_surface_t *g_mandelbrot_f128_surface = NULL;
 static bool mandelbrot_f128_resize (s_sequence *seq);
 static bool mandelbrot_f128_update (s_sequence *seq);
 
+bool mandelbrot_f128_button (s_sequence *seq, u8 button, sw x, sw y)
+{
+  s_map *map;
+  f128 *next_x;
+  f128 *next_y;
+  f128 *next_z;
+  s_window_cairo *win;
+  assert(seq);
+  win = seq->window;
+  assert(win);
+  assert(seq->tag.type == TAG_MAP);
+  map = &seq->tag.data.map;
+  assert(map->count == 9);
+  assert(map->key[1].type == TAG_SYM);
+  assert(map->key[1].data.sym == sym_1("next_x"));
+  assert(map->value[1].type == TAG_F128);
+  next_x = &map->value[1].data.f128;
+  assert(map->key[2].type == TAG_SYM);
+  assert(map->key[2].data.sym == sym_1("next_y"));
+  assert(map->value[2].type == TAG_F128);
+  next_y = &map->value[2].data.f128;
+  assert(map->key[3].type == TAG_SYM);
+  assert(map->key[3].data.sym == sym_1("next_z"));
+  assert(map->value[3].type == TAG_F128);
+  next_z = &map->value[3].data.f128;
+  if (button == 1) {
+    *next_x = *next_x + *next_z * (x - (f128) win->w / 2);
+    *next_y = *next_y + *next_z * (y - (f128) win->h / 2);
+  }
+  else if (button == 5) {
+    *next_z = *next_z * exp2l(0.5);
+  }
+  else if (button == 4) {
+    *next_z = *next_z * exp2l(-0.5);
+  }
+  return true;
+}
+
 bool mandelbrot_f128_load (s_sequence *seq)
 {
   s_map *map;
