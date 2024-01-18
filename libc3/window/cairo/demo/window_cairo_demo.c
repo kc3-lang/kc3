@@ -40,6 +40,9 @@ bool window_cairo_demo_button (s_window_cairo *window, u8 button,
   io_write_1(", ");
   io_inspect_sw(&y);
   io_puts(")");
+  if (window->seq->button &&
+      ! window->seq->button(window->seq, button, x, y))
+    return false;
   return true;
 }
 
@@ -114,6 +117,7 @@ bool window_cairo_demo_load (s_window_cairo *window)
   sequence_init(window->sequence + 4, 3600.0, "05. Mandelbrot (f128)",
                 mandelbrot_f128_load, mandelbrot_f128_render,
                 mandelbrot_f128_unload, window);
+  window->sequence[4].button = mandelbrot_f128_button;
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }
