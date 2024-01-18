@@ -23,6 +23,7 @@
 #include "lightspeed.h"
 #include "toasters.h"
 #include "flies.h"
+#include "mandelbrot_f128.h"
 
 s_cairo_font g_font_computer_modern = {0};
 s_cairo_font g_font_courier_new = {0};
@@ -110,6 +111,9 @@ bool window_cairo_demo_load (s_window_cairo *window)
     return false;
   sequence_init(window->sequence + 3, 60.0, "04. Flies",
                 flies_load, flies_render, flies_unload, window);
+  sequence_init(window->sequence + 4, 3600.0, "05. Mandelbrot (f128)",
+                mandelbrot_f128_load, mandelbrot_f128_render,
+                mandelbrot_f128_unload, window);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }
@@ -154,6 +158,7 @@ bool window_cairo_demo_render (s_window_cairo *window)
   if (! seq->render(seq))
     return false;
   /* text */
+  cairo_identity_matrix(cr);
   cairo_set_font_size(cr, 20);
   cairo_set_font(cr, &g_font_courier_new);
   cairo_text_extents(cr, seq->title, &te);

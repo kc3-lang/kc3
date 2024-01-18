@@ -15,7 +15,7 @@
 
 #include "../types.h"
 
-#define WINDOW_CAIRO_DEMO_SEQUENCE_COUNT 4
+#define WINDOW_CAIRO_DEMO_SEQUENCE_COUNT 5
 
 extern s_cairo_font g_font_computer_modern;
 extern s_cairo_font g_font_courier_new;
