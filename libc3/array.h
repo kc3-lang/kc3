@@ -34,5 +34,6 @@ s_tag *            array_data_tag (const s_tag *a, const s_tag *address,
 s_array * array_allocate (s_array *a);
 s_array * array_data_set (s_array *a, const uw *address,
                           const void *data);
+s_array * array_free (s_array *a);
 
 #endif /* LIBC3_ARRAY_H */

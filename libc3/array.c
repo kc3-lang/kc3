@@ -150,6 +150,16 @@ s_tag * array_data_tag (const s_tag *a, const s_tag *address,
   return dest;
 }
 
+s_array * array_free (s_array *a)
+{
+  a->data = NULL;
+  if (a->free_data) {
+    free(a->free_data);
+    a->free_data = NULL;
+  }
+  return a;
+}
+
 s_array * array_init (s_array *a, const s_sym *type, uw dimension,
                       const uw *dimensions)
 {
@@ -160,8 +170,6 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
   assert(a);
   assert(type);
   assert(sym_is_module(type));
-  assert(dimension);
-  assert(dimensions);
   tmp.type = type;
   if (dimension) {
 #ifdef DEBUG

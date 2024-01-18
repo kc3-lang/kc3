@@ -27,8 +27,9 @@
 #include "toasters.h"
 #include "flies.h"
 #include "earth.h"
+#include "mandelbrot_f128.h"
 
-#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 5
+#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 6
 
 //s_gl_font   g_font_computer_modern = {0};
 s_gl_font   g_font_courier_new = {0};
@@ -200,9 +201,10 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   assert(glGetError() == GL_NO_ERROR);
   sequence_init(window->sequence + 4, 120.0, "05. Earth",
                 earth_load, earth_render, earth_unload, window);
-  assert(glGetError() == GL_NO_ERROR);
+  sequence_init(window->sequence + 5, 3600.0, "06. Mandelbrot (f128)",
+                mandelbrot_f128_load, mandelbrot_f128_render,
+                mandelbrot_f128_unload, window);
   window_set_sequence_pos((s_window *) window, 0);
-  assert(glGetError() == GL_NO_ERROR);
   return true;
 }
 
