@@ -520,6 +520,16 @@ bool * tag_lte (const s_tag *a, const s_tag *b, bool *dest)
   return dest;
 }
 
+bool tag_must_clean (const s_sym *sym, bool *must_clean)
+{
+  
+  err_write_1("tag_must_clean: unknown type: ");
+  err_inspect_sym(&sym);
+  err_write_1("\n");
+  assert(! "tag_must_clean: unknown type");
+  return false;
+}
+
 s_tag * tag_neg (const s_tag *tag, s_tag *result)
 {
   s_integer tmp;
