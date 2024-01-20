@@ -93,10 +93,12 @@ void          sym_delete_all (void);
 const s_sym * sym_new (const s_str *src);
 
 /* Observers */
+bool          sym_array_type (const s_sym *sym, s_sym *dest);
 bool          sym_character_is_reserved (character c);
 const s_sym * sym_find (const s_str *src);
 bool          sym_has_reserved_characters (const s_sym *sym);
 s_str *       sym_inspect (const s_sym *sym, s_str *dest);
+bool          sym_is_array_type (const s_sym *sym);
 bool          sym_is_module (const s_sym *sym);
 bool          sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
                                ffi_type **dest);
