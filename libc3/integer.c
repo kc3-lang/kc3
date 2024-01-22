@@ -432,12 +432,31 @@ s_integer * integer_pow (const s_integer *a, const s_integer *b,
   return dest;
 }
 
-s_integer * integer_set_double (s_integer *a, double x)
+s_integer * integer_set_f32 (s_integer *a, f32 x)
 {
   sw r;
   assert(a);
   if ((r = mp_set_double(&a->mp_int, x)) != MP_OKAY)
-    errx(1, "integer_set_double: %s", mp_error_to_string(r));
+    errx(1, "integer_set_f32: %s", mp_error_to_string(r));
+  return a;
+}
+
+s_integer * integer_set_f64 (s_integer *a, f64 x)
+{
+  sw r;
+  assert(a);
+  if ((r = mp_set_double(&a->mp_int, x)) != MP_OKAY)
+    errx(1, "integer_set_f64: %s", mp_error_to_string(r));
+  return a;
+}
+
+s_integer * integer_set_f128 (s_integer *a, f128 x)
+{
+  sw r;
+  assert(a);
+  // FIXME
+  if ((r = mp_set_double(&a->mp_int, (f64) x)) != MP_OKAY)
+    errx(1, "integer_set_f128: %s", mp_error_to_string(r));
   return a;
 }
 
