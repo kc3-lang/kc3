@@ -54,10 +54,12 @@ s_struct_type * struct_type_init (s_struct_type *st,
 {
   uw count;
   uw i;
+  bool must_clean;
   uw offset;
   const s_list *s;
   uw size;
   const s_tuple *tuple;
+  const s_sym *type;
   assert(st);
   assert(module);
   assert(spec);
@@ -71,6 +73,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
     map_clean(&st->map);
     return NULL;
   }
+  st->must_clean = false;
   offset = 0;
   i = 0;
   s = spec;
@@ -89,6 +92,14 @@ s_struct_type * struct_type_init (s_struct_type *st,
     }
     tag_init_copy(st->map.key + i,   tuple->tag + 0);
     tag_init_copy(st->map.value + i, tuple->tag + 1);
+    tag_type(st->map.value + i, &type);
+    if (! sym_must_clean(type, &must_clean)) {
+      map_clean(&st->map);
+      free(st->offset);
+      return NULL;
+    }
+    if (must_clean)
+      st->must_clean = true;
     offset = struct_type_padding(offset, size);
     st->offset[i] = offset;
     offset += size;

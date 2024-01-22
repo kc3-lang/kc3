@@ -250,27 +250,29 @@ s_list ** list_remove_void (s_list **list)
   return list;
 }
 
-s_array * list_to_array (const s_list *list, const s_sym *type,
+s_array * list_to_array (const s_list *list, const s_sym *array_type,
                          s_array *dest)
 {
   s8 *data;
   const void *data_list;
   const s_list *l;
   uw len;
+  bool must_clean;
   uw size;
   s_array tmp = {0};
   assert(list);
-  assert(type);
+  assert(array_type);
   assert(dest);
   len = list_length(list);
-  if (! sym_type_size(type, &size))
+  if (! sym_type_size(array_type, &size))
     return NULL;
   if (! size) {
     err_puts("list_to_array: zero item size");
     assert(! "list_to_array: zero item size");
     return NULL;
   }
-  tmp.type = type;
+  tmp.array_type = array_type;
+  tmp.element_type = sym_array_type(array_type);
   if (len) {
     tmp.dimension = 1;
     tmp.dimensions = calloc(1, sizeof(s_array_dimension));
@@ -293,10 +295,10 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
     data = tmp.data = tmp.free_data;
     l = list;
     while (l) {
-      if (! tag_to_const_pointer(&l->tag, type, &data_list))
+      if (! tag_to_const_pointer(&l->tag, tmp.element_type, &data_list))
         goto ko;
       if (data_list) {
-        if (! data_init_copy(type, data, data_list))
+        if (! data_init_copy(tmp.element_type, data, data_list))
           goto ko;
       }
       data += size;
@@ -306,9 +308,12 @@ s_array * list_to_array (const s_list *list, const s_sym *type,
   *dest = tmp;
   return dest;
  ko:
-  while (data > (s8 *) tmp.data) {
-    data -= size;
-    data_clean(type, data);
+  if (sym_must_clean(tmp.element_type, &must_clean) &&
+      must_clean) {
+    while (data > (s8 *) tmp.data) {
+      data -= size;
+      data_clean(tmp.element_type, data);
+    }
   }
   free(tmp.data);
   free(tmp.dimensions);

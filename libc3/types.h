@@ -334,6 +334,7 @@ struct str {
 struct struct_type {
   const s_sym *module;
   s_map map;
+  bool must_clean;
   uw *offset;
   uw size;
 };
@@ -392,7 +393,8 @@ struct array {
   void *free_data;
   uw size;
   s_tag *tags;
-  const s_sym *type;
+  const s_sym *array_type;
+  const s_sym *element_type;
 };
 
 /* 5 */

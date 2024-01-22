@@ -40,19 +40,21 @@ void array_clean (s_array *a)
 {
   u8 *data;
   uw i;
+  bool must_clean;
   uw size;
   assert(a);
   free(a->dimensions);
-  if (a->data) {
-    if (sym_type_size(a->type, &size) &&
-        size) {
-      data = a->data;
-      i = 0;
-      while (i < a->count) {
-        data_clean(a->type, data);
-        data += size;
-        i++;
-      }
+  if (a->data &&
+      sym_must_clean(a->element_type, &must_clean) &&
+      must_clean &&
+      sym_type_size(a->element_type, &size) &&
+      size) {
+    data = a->data;
+    i = 0;
+    while (i < a->count) {
+      data_clean(a->element_type, data);
+      data += size;
+      i++;
     }
   }
   if (a->free_data)
@@ -101,7 +103,7 @@ s_array * array_data_set (s_array *a, const uw *address,
   assert(data);
   a_data = array_data(a, address);
   if (a_data) {
-    if (! data_init_copy(a->type, a_data, data))
+    if (! data_init_copy(a->element_type, a_data, data))
       return NULL;
     return a;
   }
@@ -142,9 +144,9 @@ s_tag * array_data_tag (const s_tag *a, const s_tag *address,
   a_data = array_data(&a->data.array, address->data.array.data);
   if (! a_data)
     return NULL;
-  if (! sym_to_tag_type(a->data.array.type, &tmp.type) ||
-      ! tag_to_pointer(&tmp, a->data.array.type, &tmp_data) ||
-      ! data_init_copy(a->data.array.type, tmp_data, a_data))
+  if (! sym_to_tag_type(a->data.array.element_type, &tmp.type) ||
+      ! tag_to_pointer(&tmp, a->data.array.element_type, &tmp_data) ||
+      ! data_init_copy(a->data.array.element_type, tmp_data, a_data))
     return NULL;
   *dest = tmp;
   return dest;
@@ -160,7 +162,7 @@ s_array * array_free (s_array *a)
   return a;
 }
 
-s_array * array_init (s_array *a, const s_sym *type, uw dimension,
+s_array * array_init (s_array *a, const s_sym *array_type, uw dimension,
                       const uw *dimensions)
 {
   uw count = 1;
@@ -168,9 +170,10 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
   uw item_size;
   s_array tmp = {0};
   assert(a);
-  assert(type);
-  assert(sym_is_module(type));
-  tmp.type = type;
+  assert(array_type);
+  assert(sym_is_array_type(array_type));
+  tmp.array_type = array_type;
+  tmp.element_type = sym_array_type(array_type);
   if (dimension) {
 #ifdef DEBUG
     while (i < dimension) {
@@ -187,7 +190,7 @@ s_array * array_init (s_array *a, const s_sym *type, uw dimension,
       i++;
     }
     i--;
-    if (! sym_type_size(type, &item_size)) {
+    if (! sym_type_size(tmp.element_type, &item_size)) {
       free(tmp.dimensions);
       return NULL;
     }
@@ -261,13 +264,15 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   u8 *data_src;
   uw i = 0;
   uw item_size;
+  bool must_clean;
   s_array tmp = {0};
   assert(a);
   assert(src);
-  tmp.count     = src->count;
-  tmp.dimension = src->dimension;
-  tmp.size      = src->size;
-  tmp.type      = src->type;
+  tmp.array_type   = src->array_type;
+  tmp.count        = src->count;
+  tmp.dimension    = src->dimension;
+  tmp.element_type = src->element_type;
+  tmp.size         = src->size;
   if (tmp.dimension) {
     if (! (tmp.dimensions = calloc(tmp.dimension,
                                    sizeof(s_array_dimension)))) {
@@ -290,7 +295,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
       i = 0;
       item_size = src->dimensions[src->dimension - 1].item_size;
       while (i < src->count) {
-        if (! data_init_copy(src->type, data_tmp, data_src))
+        if (! data_init_copy(src->element_type, data_tmp, data_src))
           goto ko_data;
         data_tmp += item_size;
         data_src += item_size;
@@ -316,10 +321,12 @@ s_array * array_init_copy (s_array *a, const s_array *src)
   *a = tmp;
   return a;
  ko_data:
-  if (i) {
+  if (i &&
+      sym_must_clean(src->element_type, &must_clean) &&
+      must_clean) {
     while (--i) {
       data_tmp -= item_size;
-      data_clean(src->type, data_tmp);
+      data_clean(src->element_type, data_tmp);
     }
   }
   free(tmp.data);
@@ -335,7 +342,8 @@ s_array * array_init_copy (s_array *a, const s_array *src)
 s_array * array_init_void (s_array *array)
 {
   s_array tmp = {0};
-  tmp.type = &g_sym_Void;
+  tmp.array_type = sym_1("Void[0]");
+  tmp.element_type = &g_sym_Void;
   *array = tmp;
   return array;
 }

@@ -52,9 +52,14 @@ sw buf_parse_array (s_buf *buf, s_array *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_parse_paren_sym(buf, &tmp.type)) <= 0)
+  if ((r = buf_parse_paren_sym(buf, &tmp.array_type)) <= 0)
     goto clean;
   result += r;
+  if (! sym_is_array_type(tmp.array_type)) {
+    r = 0;
+    goto restore;
+  }
+  tmp.element_type = sym_array_type(tmp.array_type);
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
@@ -279,7 +284,7 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
   assert(buf);
   assert(dest);
   tmp = *dest;
-  if (! sym_type_size(tmp.type, &size))
+  if (! sym_type_size(tmp.element_type, &size))
     return -1;
   if (! size) {
     err_puts("buf_parse_array_dimensions: zero item size");
@@ -474,7 +479,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
     goto restore;
   }
   arg_addr->type = TAG_ARRAY;
-  if (! list_to_array(addr, &g_sym_Uw, &arg_addr->data.array))
+  if (! list_to_array(addr, &g_sym_Uw_brackets, &arg_addr->data.array))
     goto restore;
   ident_init(&tmp.ident, NULL, &g_sym__brackets);
   if (! operator_resolve(&tmp.ident, 2, &tmp.ident)) {
@@ -2766,12 +2771,24 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest)
     while (1) {
       if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
         break;
-      if (c == '.') {
+      if (c == '[') {
         if ((r = buf_peek_next_character_utf8(buf, &c)) <= 0)
+          break;
+        if (c != ']')
+          break;
+        csize = r;
+        if ((r = buf_xfer(&tmp, buf, csize)) < 0)
           goto restore;
+        result += r;
+        break;
+      }
+      else if (c == '.') {
+        csize = r;
+        if ((r = buf_peek_next_character_utf8(buf, &c)) <= 0)
+          break;
         if (! character_is_uppercase(c))
           break;
-        r = 1;
+        r += csize;
       }
       else if (sym_character_is_reserved(c))
         break;

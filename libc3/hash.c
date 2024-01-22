@@ -18,6 +18,7 @@
 #include "hash.h"
 #include "list.h"
 #include "str.h"
+#include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
 
@@ -78,13 +79,15 @@ bool hash_update_1 (t_hash *hash, const char *p)
 
 bool hash_update_array (t_hash *hash, const s_array *a)
 {
+  u8 *data;
   uw i = 0;
+  uw size;
   const char type[] = "array";
   assert(hash);
   assert(a);
   if (! hash_update(hash, type, sizeof(type)) ||
-      ! hash_update(hash, &a->dimension, sizeof(a->dimension)) ||
-      ! hash_update(hash, &a->type, sizeof(a->type)))
+      ! hash_update_sym(hash, &a->array_type) ||
+      ! hash_update(hash, &a->dimension, sizeof(a->dimension)))
     return false;
   while (i < a->dimension) {
     if (! hash_update(hash, &a->dimensions[i].count,
@@ -92,9 +95,16 @@ bool hash_update_array (t_hash *hash, const s_array *a)
       return false;
     i++;
   }
-  if (a->data) {
-    if (! hash_update(hash, a->data, a->size))
-      return false;
+  if (a->data &&
+      sym_type_size(a->element_type, &size) &&
+      size) {
+    data = a->data;
+    i = 0;
+    while (i < a->count) {
+      if (! data_hash_update(a->element_type, hash, data))
+        return false;
+      data += size;
+    }
   }
   else if (a->tags) {
     i = 0;

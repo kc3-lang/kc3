@@ -47,7 +47,8 @@ sw buf_inspect_array (s_buf *buf, const s_array *array)
   sw result = 0;
   assert(buf);
   assert(array);
-  if ((r = buf_inspect_paren_sym(buf, array->type)) <= 0)
+  assert(sym_is_array_type(array->array_type));
+  if ((r = buf_inspect_paren_sym(buf, array->array_type)) <= 0)
     goto clean;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
@@ -104,7 +105,8 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
   while (1) {
     if (dimension == array->dimension - 1) {
       if (*data) {
-        if ((r = data_buf_inspect(array->type, buf, *data)) <= 0)
+        if ((r = data_buf_inspect(array->element_type,
+                                  buf, *data)) <= 0)
           goto clean;
         result += r;
         *data += array->dimensions[dimension].item_size;
@@ -169,7 +171,8 @@ sw buf_inspect_array_data_size_rec (const s_array *array,
   while (1) {
     if (dimension == array->dimension - 1) {
       if (*data) {
-        if ((r = data_buf_inspect_size(array->type, *data)) <= 0)
+        if ((r = data_buf_inspect_size(array->element_type,
+                                       *data)) <= 0)
           goto clean;
         result += r;
         *data += array->dimensions[dimension].item_size;
@@ -206,7 +209,7 @@ sw buf_inspect_array_size (const s_array *array)
   sw r;
   sw result = 0;
   assert(array);
-  if ((r = buf_inspect_paren_sym_size(array->type)) <= 0)
+  if ((r = buf_inspect_paren_sym_size(array->array_type)) <= 0)
     goto clean;
   result += r;
   r = strlen(" ");
@@ -2063,7 +2066,7 @@ sw buf_inspect_sym (s_buf *buf, const s_sym * const *sym)
     return buf_write_1(buf, ":\"\"");
   if (sym_has_reserved_characters(x))
     return buf_inspect_sym_reserved(buf, x);
-  if (sym_is_module(x))
+  if (sym_is_module(x) || sym_is_array_type(x))
     return buf_write_str(buf, &x->str);
   size = x->str.size + 1;
   if ((r = buf_write_1(buf, ":")) < 0 ||
@@ -2083,7 +2086,7 @@ sw buf_inspect_sym_size (const s_sym * const *sym)
     return 3;
   if (sym_has_reserved_characters(x))
     return buf_inspect_sym_reserved_size(x);
-  if (sym_is_module(x))
+  if (sym_is_module(x) || sym_is_array_type(x))
     return x->str.size;
   return x->str.size + colon_size;
 }
