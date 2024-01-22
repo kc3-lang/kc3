@@ -98,27 +98,30 @@ const s_sym * sym_array_type (const s_sym *sym)
   while (1) {
     if (separator) {
       if (str_read_character_utf8(&str, &c) <= 0)
-        return NULL;
+        goto ko;
       if (! character_is_uppercase(c))
-        return NULL;
+        goto ko;
       separator = false;
       buf_write_character_utf8(&buf, c);
     }
     else {
       r = str_read_character_utf8(&str, &c);
       if (r <= 0)
-        return NULL;
+        goto ko;
       if (c == '.')
         separator = true;
       else if (c == '[') {
         buf_read_to_str(&buf, &str);
         tmp = str_to_sym(&str);
         str_clean(&str);
+        buf_clean(&buf);
         return tmp;
       }
       buf_write_character_utf8(&buf, c);
     }
   }
+ ko:
+  buf_clean(&buf);
   return NULL;
 }
 
