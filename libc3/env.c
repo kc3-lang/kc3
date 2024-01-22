@@ -717,7 +717,7 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
   }
   *dest = tmp;
   return true;
-    ko_tag:
+ ko_tag:
   tag_clean(&tag);
  ko:
   struct_clean(t);

@@ -47,14 +47,14 @@ void struct_clean (s_struct *s)
   const s_sym *sym;
   assert(s);
   assert(s->type);
-  if (! s->type->must_clean)
-    return;
   if (s->data) {
-    i = 0;
-    while (i < s->type->map.count) {
-      if (tag_type(s->type->map.value + i, &sym))
-        data_clean(sym, (s8 *) s->data + s->type->offset[i]);
-      i++;
+    if (s->type->must_clean) {
+      i = 0;
+      while (i < s->type->map.count) {
+        if (tag_type(s->type->map.value + i, &sym))
+          data_clean(sym, (s8 *) s->data + s->type->offset[i]);
+        i++;
+      }
     }
     if (s->free_data)
       free(s->data);
