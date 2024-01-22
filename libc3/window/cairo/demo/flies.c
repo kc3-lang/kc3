@@ -61,7 +61,7 @@ bool flies_load (s_sequence *seq)
   tag_map(&seq->tag, 4);
   map = &seq->tag.data.map;
   tag_init_sym( map->key  + 0, sym_1("board"));
-  tag_init_array(map->value + 0, sym_1("U8"),
+  tag_init_array(map->value + 0, sym_1("U8[]"),
                  2, (uw[]) {BOARD_SIZE, BOARD_SIZE});
   tag_init_sym(map->key + 1, sym_1("in"));
   tag_init_uw( map->value + 1, 0);

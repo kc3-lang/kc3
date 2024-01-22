@@ -1,8 +1,8 @@
 %{module: C3.Facts.Dump,
   version: 1}
 replace {GL.Object, :is_a, :module}
-replace {GL.Object, :defstruct, [vertex: (GL.Vertex) {},
-                                 triangle: (GL.Triangle) {},
+replace {GL.Object, :defstruct, [vertex: (GL.Vertex[]) {},
+                                 triangle: (GL.Triangle[]) {},
                                  gl_mode: (U32) 0,
                                  gl_vao: (U32) 0,
                                  gl_vbo: (U32) 0,

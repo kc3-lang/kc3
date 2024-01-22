@@ -40,7 +40,7 @@ bool mandelbrot_f128_load (s_sequence *seq)
   tag_init_sym(    map->key + 3, sym_1("next_z"));
   tag_init_f128( map->value + 3, 0.01);
   tag_init_sym(    map->key + 4, sym_1("pixels"));
-  tag_init_array(map->value + 4, sym_1("U8"), 0, NULL);
+  tag_init_array(map->value + 4, sym_1("U8[]"), 0, NULL);
   tag_init_sym(    map->key + 5, sym_1("w"));
   tag_init_uw(   map->value + 5, 0);
   tag_init_sym(    map->key + 6, sym_1("x"));
@@ -141,7 +141,7 @@ static bool mandelbrot_f128_resize (s_sequence *seq)
   dim[0] = win->h;
   dim[1] = win->w;
   dim[2] = 4;
-  if (! array_init(pixels, &g_sym_U8, 3, dim))
+  if (! array_init(pixels, sym_1("U8[]"), 3, dim))
     return false;
   if (! array_allocate(pixels))
     return false;

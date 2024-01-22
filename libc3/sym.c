@@ -571,7 +571,8 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = result_type;
     return true;
   }
-  if (sym == &g_sym_Array) {
+  if (sym == &g_sym_Array ||
+      sym_is_array_type(sym)) {
     *dest = &ffi_type_pointer;
     return true;
   }
@@ -692,7 +693,8 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
 
 bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 {
-  if (sym == &g_sym_Array) {
+  if (sym == &g_sym_Array ||
+      sym_is_array_type(sym)) {
     *dest = TAG_ARRAY;
     return true;
   }
@@ -838,7 +840,8 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 bool sym_type_size (const s_sym *type, uw *dest)
 {
   const s_struct_type *st;
-  if (type == &g_sym_Array) {
+  if (type == &g_sym_Array ||
+      sym_is_array_type(type)) {
     *dest = sizeof(s_array);
     return true;
   }

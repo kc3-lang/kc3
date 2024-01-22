@@ -21,10 +21,10 @@ s_gl_object * gl_object_allocate (s_gl_object *object, uw vertex_count,
   assert(object);
   assert(vertex_count);
   assert(triangle_count);
-  if (! array_init(&object->vertex, sym_1("GL.Vertex"), 1,
+  if (! array_init(&object->vertex, sym_1("GL.Vertex[]"), 1,
                    &vertex_count) ||
       ! array_allocate(&object->vertex) ||
-      ! array_init(&object->triangle, sym_1("GL.Triangle"), 1,
+      ! array_init(&object->triangle, sym_1("GL.Triangle[]"), 1,
                    &triangle_count) ||
       ! array_allocate(&object->triangle))
     return NULL;

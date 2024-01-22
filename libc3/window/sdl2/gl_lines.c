@@ -20,7 +20,7 @@ s_gl_lines * gl_lines_allocate (s_gl_lines *lines, uw lines_count)
   assert(lines);
   assert(lines_count);
   vertex_count = lines_count * 2;
-  if (! array_init(&lines->vertex, sym_1("GL.Vertex"), 1,
+  if (! array_init(&lines->vertex, sym_1("GL.Vertex[]"), 1,
                    &vertex_count) ||
       ! array_allocate(&lines->vertex))
     return NULL;
