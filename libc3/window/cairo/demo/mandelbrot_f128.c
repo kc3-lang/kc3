@@ -73,7 +73,7 @@ bool mandelbrot_f128_load (s_sequence *seq)
   tag_init_sym(    map->key + 3, sym_1("next_z"));
   tag_init_f128( map->value + 3, 0.01);
   tag_init_sym(    map->key + 4, sym_1("pixels"));
-  tag_init_array(map->value + 4, sym_1("U8"), 0, NULL);
+  tag_init_array(map->value + 4, sym_1("U8[]"), 0, NULL);
   tag_init_sym(    map->key + 5, sym_1("w"));
   tag_init_uw(   map->value + 5, 0);
   tag_init_sym(    map->key + 6, sym_1("x"));
