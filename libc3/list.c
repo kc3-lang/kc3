@@ -264,15 +264,15 @@ s_array * list_to_array (const s_list *list, const s_sym *array_type,
   assert(array_type);
   assert(dest);
   len = list_length(list);
-  if (! sym_type_size(array_type, &size))
+  tmp.array_type = array_type;
+  tmp.element_type = sym_array_type(array_type);
+  if (! sym_type_size(tmp.element_type, &size))
     return NULL;
   if (! size) {
     err_puts("list_to_array: zero item size");
     assert(! "list_to_array: zero item size");
     return NULL;
   }
-  tmp.array_type = array_type;
-  tmp.element_type = sym_array_type(array_type);
   if (len) {
     tmp.dimension = 1;
     tmp.dimensions = calloc(1, sizeof(s_array_dimension));
