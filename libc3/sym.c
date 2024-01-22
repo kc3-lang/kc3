@@ -53,6 +53,7 @@ const s_sym g_sym_U16         = {{{NULL},  3, {"U16"}}};
 const s_sym g_sym_U32         = {{{NULL},  3, {"U32"}}};
 const s_sym g_sym_U64         = {{{NULL},  3, {"U64"}}};
 const s_sym g_sym_Uw          = {{{NULL},  2, {"Uw"}}};
+const s_sym g_sym_Uw_brackets = {{{NULL},  4, {"Uw[]"}}};
 const s_sym g_sym_Var         = {{{NULL},  3, {"Var"}}};
 const s_sym g_sym_Void        = {{{NULL},  4, {"Void"}}};
 const s_sym g_sym_defstruct   = {{{NULL},  9, {"defstruct"}}};
@@ -80,6 +81,45 @@ const s_sym * sym_1 (const char *p)
   s_str stra;
   str_init_1(&stra, NULL, p);
   return str_to_sym(&stra);
+}
+
+const s_sym * sym_array_type (const s_sym *sym)
+{
+  s_buf buf;
+  character c;
+  sw r;
+  bool separator;
+  s_str str;
+  const s_sym *tmp;
+  assert(sym);
+  buf_init_alloc(&buf, sym->str.size);
+  str = sym->str;
+  separator = true;
+  while (1) {
+    if (separator) {
+      if (str_read_character_utf8(&str, &c) <= 0)
+        return NULL;
+      if (! character_is_uppercase(c))
+        return NULL;
+      separator = false;
+      buf_write_character_utf8(&buf, c);
+    }
+    else {
+      r = str_read_character_utf8(&str, &c);
+      if (r <= 0)
+        return NULL;
+      if (c == '.')
+        separator = true;
+      else if (c == '[') {
+        buf_read_to_str(&buf, &str);
+        tmp = str_to_sym(&str);
+        str_clean(&str);
+        return tmp;
+      }
+      buf_write_character_utf8(&buf, c);
+    }
+  }
+  return NULL;
 }
 
 bool sym_character_is_reserved (character c)
@@ -135,12 +175,21 @@ const s_sym * sym_find (const s_str *str)
 bool sym_has_reserved_characters (const s_sym *sym)
 {
   character c;
+  bool is_array_type;
   sw r;
   s_str stra;
   str_init(&stra, NULL, sym->str.size, sym->str.ptr.p);
+  is_array_type = sym_is_array_type(sym);
   while (1) {
     if ((r = str_read_character_utf8(&stra, &c)) <= 0)
       break;
+    if (is_array_type && c == '[') {
+      if ((r = str_read_character_utf8(&stra, &c)) <= 0)
+        return true;
+      if (c == ']' &&
+          (r = str_peek_character_utf8(&stra, &c)) <= 0)
+        return false;
+    }
     if (c == '.') {
       if ((r = str_peek_character_utf8(&stra, &c)) <= 0)
         return true;
@@ -232,6 +281,7 @@ void sym_init_g_sym (void)
   sym_intern(&g_sym_U32, NULL);
   sym_intern(&g_sym_U64, NULL);
   sym_intern(&g_sym_Uw, NULL);
+  sym_intern(&g_sym_Uw_brackets, NULL);
   sym_intern(&g_sym_Var, NULL);
   sym_intern(&g_sym_Void, NULL);
   sym_intern(&g_sym_cast, NULL);
@@ -288,12 +338,64 @@ bool sym_intern (const s_sym *sym, s_sym *free_sym)
   return true;
 }
 
+bool sym_is_array_type (const s_sym *sym)
+{
+  character c;
+  sw r;
+  bool separator;
+  s_str str;
+  assert(sym);
+  str = sym->str;
+  separator = true;
+  while (1) {
+    if (separator) {
+      if (str_read_character_utf8(&str, &c) <= 0)
+        return false;
+      if (! character_is_uppercase(c))
+        return false;
+      separator = false;
+    }
+    else {
+      r = str_read_character_utf8(&str, &c);
+      if (r <= 0)
+        return false;
+      if (c == '.')
+        separator = true;
+      if (c == '[')
+        return true;
+    }
+  }
+  return false;
+}
+
 bool sym_is_module (const s_sym *sym)
 {
   character c;
-  if (str_peek_character_utf8(&sym->str, &c) <= 0)
-    return false;
-  return character_is_uppercase(c);
+  sw r;
+  bool separator;
+  s_str str;
+  assert(sym);
+  str = sym->str;
+  separator = true;
+  while (1) {
+    if (separator) {
+      if (str_read_character_utf8(&str, &c) <= 0)
+        return false;
+      if (! character_is_uppercase(c))
+        return false;
+      separator = false;
+    }
+    else {
+      r = str_read_character_utf8(&str, &c);
+      if (r <= 0)
+        return true;
+      if (c == '.')
+        separator = true;
+      if (c == '[')
+        return false;
+    }
+  }
+  return true;
 }
 
 s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
@@ -314,10 +416,9 @@ s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
 
 bool sym_must_clean (const s_sym *sym, bool *must_clean)
 {
-  if (sym_is_array_type(sym)) {
-    *must_clean = sym_must_clean(sym_array_type(sym));
-    return true;
-  }
+  const s_struct_type *st;
+  if (sym_is_array_type(sym))
+    sym = sym_array_type(sym);
   if (sym == &g_sym_Bool) {
     *must_clean = false;
     return true;
@@ -422,8 +523,9 @@ bool sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = false;
     return true;
   }
-  if (struct_type_exists(sym)) {
-    *must_clean = struct_type_must_clean(sym);
+  st = struct_type_find(sym);
+  if (st) {
+    *must_clean = st->must_clean;
     return true;
   }
   err_write_1("sym_must_clean: unknown type: ");
@@ -587,290 +689,6 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
   assert(! "sym_to_ffi_type: unknown type");
   return false;
 }
-
-/*
-bool sym_to_init_cast (const s_sym *type, f_init_cast *dest)
-{
-  if (type == &g_sym_Array) {
-    *dest = (f_init_cast) array_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Bool) {
-    *dest = (f_init_cast) bool_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Call) {
-    *dest = (f_init_cast) call_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Cfn) {
-    *dest = (f_init_cast) cfn_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Character) {
-    *dest = (f_init_cast) character_init_cast;
-    return true;
-  }
-  if (type == &g_sym_F32) {
-    *dest = (f_init_cast) f32_init_cast;
-    return true;
-  }
-  if (type == &g_sym_F64) {
-    *dest = (f_init_cast) f64_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Fact) {
-    *dest = (f_init_cast) fact_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Fn) {
-    *dest = (f_init_cast) fn_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Ident) {
-    *dest = (f_init_cast) ident_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Integer) {
-    *dest = (f_init_cast) integer_init_cast;
-    return true;
-  }
-  if (type == &g_sym_List) {
-    *dest = (f_init_cast) list_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Ptag) {
-    *dest = (f_init_cast) ptag_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Ptr) {
-    *dest = (f_init_cast) ptr_init_cast;
-    return true;
-  }
-  if (type == &g_sym_PtrFree) {
-    *dest = (f_init_cast) ptr_free_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Quote) {
-    *dest = (f_init_cast) quote_init_cast;
-    return true;
-  }
-  if (type == &g_sym_S8) {
-    *dest = (f_init_cast) s8_init_cast;
-    return true;
-  }
-  if (type == &g_sym_S16) {
-    *dest = (f_init_cast) s16_init_cast;
-    return true;
-  }
-  if (type == &g_sym_S32) {
-    *dest = (f_init_cast) s32_init_cast;
-    return true;
-  }
-  if (type == &g_sym_S64) {
-    *dest = (f_init_cast) s64_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Str) {
-    *dest = (f_init_cast) str_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Struct) {
-    *dest = (f_init_cast) struct_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Sw) {
-    *dest = (f_init_cast) sw_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Sym) {
-    *dest = (f_init_cast) sym_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Tuple) {
-    *dest = (f_init_cast) tuple_init_cast;
-    return true;
-  }
-  if (type == &g_sym_U8) {
-    *dest = (f_init_cast) u8_init_cast;
-    return true;
-  }
-  if (type == &g_sym_U16) {
-    *dest = (f_init_cast) u16_init_cast;
-    return true;
-  }
-  if (type == &g_sym_U32) {
-    *dest = (f_init_cast) u32_init_cast;
-    return true;
-  }
-  if (type == &g_sym_U64) {
-    *dest = (f_init_cast) u64_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Uw) {
-    *dest = (f_init_cast) uw_init_cast;
-    return true;
-  }
-  if (type == &g_sym_Var) {
-    *dest = NULL;
-    return true;
-  }
-  if (type == &g_sym_Void) {
-    *dest = NULL;
-    return true;
-  }
-  if (struct_type_exists(type)) {
-    *dest = (f_init_cast) struct_init_cast;
-    return true;
-  }
-  err_write_1("sym_to_init_cast: unknown type: ");
-  err_inspect_sym(&type);
-  err_write_1("\n");
-  assert(! "sym_to_init_cast: unknown type");
-  return false;
-}
-
-bool sym_to_init_copy (const s_sym *type, f_init_copy *dest)
-{
-  if (type == &g_sym_Array) {
-    *dest = (f_init_copy) array_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Bool) {
-    *dest = (f_init_copy) bool_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Call) {
-    *dest = (f_init_copy) call_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Cfn) {
-    *dest = (f_init_copy) cfn_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Character) {
-    *dest = (f_init_copy) character_init_copy;
-    return true;
-  }
-  if (type == &g_sym_F32) {
-    *dest = (f_init_copy) f32_init_copy;
-    return true;
-  }
-  if (type == &g_sym_F64) {
-    *dest = (f_init_copy) f64_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Fact) {
-    *dest = (f_init_copy) fact_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Fn) {
-    *dest = (f_init_copy) fn_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Ident) {
-    *dest = (f_init_copy) ident_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Integer) {
-    *dest = (f_init_copy) integer_init_copy;
-    return true;
-  }
-  if (type == &g_sym_List) {
-    *dest = (f_init_copy) list_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Ptag) {
-    *dest = (f_init_copy) ptag_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Ptr) {
-    *dest = (f_init_copy) ptr_init_copy;
-    return true;
-  }
-  if (type == &g_sym_PtrFree) {
-    *dest = (f_init_copy) ptr_free_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Quote) {
-    *dest = (f_init_copy) quote_init_copy;
-    return true;
-  }
-  if (type == &g_sym_S8) {
-    *dest = (f_init_copy) s8_init_copy;
-    return true;
-  }
-  if (type == &g_sym_S16) {
-    *dest = (f_init_copy) s16_init_copy;
-    return true;
-  }
-  if (type == &g_sym_S32) {
-    *dest = (f_init_copy) s32_init_copy;
-    return true;
-  }
-  if (type == &g_sym_S64) {
-    *dest = (f_init_copy) s64_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Str) {
-    *dest = (f_init_copy) str_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Struct) {
-    *dest = (f_init_copy) struct_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Sw) {
-    *dest = (f_init_copy) sw_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Sym) {
-    *dest = (f_init_copy) sym_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Tuple) {
-    *dest = (f_init_copy) tuple_init_copy;
-    return true;
-  }
-  if (type == &g_sym_U8) {
-    *dest = (f_init_copy) u8_init_copy;
-    return true;
-  }
-  if (type == &g_sym_U16) {
-    *dest = (f_init_copy) u16_init_copy;
-    return true;
-  }
-  if (type == &g_sym_U32) {
-    *dest = (f_init_copy) u32_init_copy;
-    return true;
-  }
-  if (type == &g_sym_U64) {
-    *dest = (f_init_copy) u64_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Uw) {
-    *dest = (f_init_copy) uw_init_copy;
-    return true;
-  }
-  if (type == &g_sym_Var) {
-    *dest = NULL;
-    return true;
-  }
-  if (type == &g_sym_Void) {
-    *dest = NULL;
-    return true;
-  }
-  if (struct_type_exists(type)) {
-    *dest = (f_init_copy) struct_init_copy;
-    return true;
-  }
-  err_write_1("sym_to_init_copy: unknown type: ");
-  err_inspect_sym(&type);
-  err_write_1("\n");
-  assert(! "sym_to_init_copy: unknown type");
-  return false;
-}
-*/
 
 bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 {

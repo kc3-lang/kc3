@@ -1009,7 +1009,9 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   assert(dest);
   switch (tag->type) {
   case TAG_VOID:        *dest = &g_sym_Void;       return dest;
-  case TAG_ARRAY:       *dest = &g_sym_Array;      return dest;
+  case TAG_ARRAY:
+    *dest = tag->data.array.array_type;
+    return dest;
   case TAG_BOOL:        *dest = &g_sym_Bool;       return dest;
   case TAG_CALL:        *dest = &g_sym_Call;       return dest;
   case TAG_CFN:         *dest = &g_sym_Cfn;        return dest;

@@ -65,6 +65,7 @@ extern const s_sym g_sym_U16;
 extern const s_sym g_sym_U32;
 extern const s_sym g_sym_U64;
 extern const s_sym g_sym_Uw;
+extern const s_sym g_sym_Uw_brackets;
 extern const s_sym g_sym_Var;
 extern const s_sym g_sym_Void;
 extern const s_sym g_sym_cast;
@@ -93,13 +94,14 @@ void          sym_delete_all (void);
 const s_sym * sym_new (const s_str *src);
 
 /* Observers */
-bool          sym_array_type (const s_sym *sym, s_sym *dest);
+const s_sym * sym_array_type (const s_sym *sym);
 bool          sym_character_is_reserved (character c);
 const s_sym * sym_find (const s_str *src);
 bool          sym_has_reserved_characters (const s_sym *sym);
 s_str *       sym_inspect (const s_sym *sym, s_str *dest);
 bool          sym_is_array_type (const s_sym *sym);
 bool          sym_is_module (const s_sym *sym);
+bool          sym_must_clean (const s_sym *sym, bool *must_clean);
 bool          sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
                                ffi_type **dest);
 bool          sym_to_tag_type (const s_sym *sym, e_tag_type *dest);

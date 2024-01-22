@@ -17,7 +17,7 @@
 
 /* Stack-allocation compatible functions, call array_clean after use. */
 void      array_clean (s_array *a);
-s_array * array_init (s_array *a, const s_sym *type,
+s_array * array_init (s_array *a, const s_sym *array_type,
                       uw dimension, const uw *dimensions);
 s_array * array_init_1 (s_array *a, const char *p);
 s_array * array_init_cast (s_array *a, const s_tag *tag);

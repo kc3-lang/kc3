@@ -46,6 +46,9 @@ void struct_clean (s_struct *s)
   uw i;
   const s_sym *sym;
   assert(s);
+  assert(s->type);
+  if (! s->type->must_clean)
+    return;
   if (s->data) {
     i = 0;
     while (i < s->type->map.count) {
