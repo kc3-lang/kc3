@@ -142,7 +142,7 @@ s_struct_type * struct_type_init_from_env (s_struct_type *st,
   assert(st);
   assert(module);
   assert(env);
-  if (! env_get_struct_type_spec(env, module, &spec) ||
+  if (! env_struct_type_get_spec(env, module, &spec) ||
       ! spec)
     return NULL;
   if (! struct_type_init(st, module, spec))

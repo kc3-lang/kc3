@@ -70,7 +70,7 @@ bool flies_load (s_sequence *seq)
   tag_init_sym(map->key + 3, sym_1("t"));
   tag_init_uw( map->value + 3, 0);
   board = &map->value[0].data.array;
-  board->data = malloc(board->size);
+  array_allocate(board);
   i = 0;
   while (i < BOARD_SIZE) {
     address[0] = i;

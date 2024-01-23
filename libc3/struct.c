@@ -48,7 +48,9 @@ void struct_clean (s_struct *s)
   assert(s);
   assert(s->type);
   if (s->data) {
-    if (s->type->must_clean) {
+    if (s->type->clean)
+      s->type->clean(s->data);
+    else if (s->type->must_clean) {
       i = 0;
       while (i < s->type->map.count) {
         if (tag_type(s->type->map.value + i, &sym))

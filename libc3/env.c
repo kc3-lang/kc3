@@ -810,48 +810,6 @@ bool env_eval_void (s_env *env, const void *_, s_tag *dest)
   return true;
 }
 
-s_list ** env_get_struct_type_spec (s_env *env,
-                                    const s_sym *module,
-                                    s_list **dest)
-{
-  s_facts_with_cursor cursor;
-  s_fact *found;
-  s_tag tag_defstruct;
-  s_tag tag_module;
-  s_tag tag_var;
-  s_tag tmp;
-  assert(env);
-  assert(module);
-  assert(dest);
-  tag_init_sym(&tag_defstruct, &g_sym_defstruct);
-  tag_init_sym(&tag_module, module);
-  tag_init_var(&tag_var);
-  if (! env_module_maybe_reload(env, module, &env->facts))
-    return NULL;
-  facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_module, &tag_defstruct, &tag_var, NULL, NULL });
-  found = facts_with_cursor_next(&cursor);
-  if (! found) {
-    facts_with_cursor_clean(&cursor);
-    return NULL;
-  }
-  if (! env_eval_tag(env, found->object, &tmp)) {
-    facts_with_cursor_clean(&cursor);
-    return NULL;
-  }
-  facts_with_cursor_clean(&cursor);
-  if (tmp.type != TAG_LIST ||
-      ! list_is_plist(tmp.data.list)) {
-    warnx("env_get_struct_type_spec: module %s"
-          " has a defstruct that is not a property list",
-          module->str.ptr.pchar);
-    tag_clean(&tmp);
-    return NULL;
-  }
-  *dest = tmp.data.list;
-  return dest;
-}
-
 s_env * env_init (s_env *env, int argc, char **argv)
 {
   s_str path;
@@ -935,6 +893,46 @@ void env_longjmp (s_env *env, jmp_buf *jmp_buf)
   longjmp(*jmp_buf, 1);
 }
 
+bool env_module_is_loading (s_env *env, const s_sym *module)
+{
+  s_facts_cursor cursor;
+  s_tag tag_module;
+  s_tag tag_is_loading;
+  s_tag tag_true;
+  assert(env);
+  assert(module);
+  tag_init_sym(&tag_module, module);
+  tag_init_sym(&tag_is_loading, sym_1("is_loading"));
+  tag_init_bool(&tag_true, true);
+  facts_with_tags(&env->facts, &cursor, &tag_module, &tag_is_loading,
+                  &tag_true);
+  if (facts_cursor_next(&cursor)) {
+    facts_cursor_clean(&cursor);
+    return true;
+  }
+  facts_cursor_clean(&cursor);
+  return false;  
+}
+
+void env_module_is_loading_set (s_env *env, const s_sym *module,
+                                bool is_loading)
+{
+  s_tag tag_module;
+  s_tag tag_is_loading;
+  s_tag tag_true;
+  assert(env);
+  assert(module);
+  tag_init_sym(&tag_module, module);
+  tag_init_sym(&tag_is_loading, sym_1("is_loading"));
+  tag_init_bool(&tag_true, true);
+  if (is_loading)
+    facts_replace_tags(&env->facts, &tag_module, &tag_is_loading,
+                       &tag_true);
+  else
+    facts_remove_fact_tags(&env->facts, &tag_module, &tag_is_loading,
+                           &tag_true);
+}
+
 bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
 {
   s_str path;
@@ -948,17 +946,21 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
   assert(env);
   assert(module);
   assert(facts);
+  if (env_module_is_loading(env, module)) {
+    return true;
+  }
+  env_module_is_loading_set(env, module, true);
   if (! module_path(module, &env->module_path, &path)) {
     warnx("env_module_load: %s: module_path",
           module->str.ptr.pchar);
-    return false;
+    goto ko;
   }
   tag_init_time(&tag_time);
   if (facts_load_file(facts, &path) < 0) {
     warnx("env_module_load: %s: facts_load_file",
           path.ptr.pchar);
     str_clean(&path);
-    return false;
+    goto ko;
   }
   str_clean(&path);
   tag_init_sym(&tag_module_name, module);
@@ -966,16 +968,21 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
   facts_replace_tags(facts, &tag_module_name, &tag_load_time,
                      &tag_time);
   tag_clean(&tag_time);
-  if (env_get_struct_type_spec(env, module, &st_spec)) {
+  if (env_struct_type_get_spec(env, module, &st_spec)) {
     tag_init_sym(&tag_struct_type, &g_sym_struct_type);
     tag_st.type = TAG_STRUCT_TYPE;
     st = &tag_st.data.struct_type;
     struct_type_init(st, module, st_spec);
+    st->clean = env_struct_type_get_clean(env, module);
     facts_replace_tags(facts, &tag_module_name, &tag_struct_type,
                        &tag_st);
     list_delete_all(st_spec);
   }
+  env_module_is_loading_set(env, module, false);
   return true;
+ ko:
+  env_module_is_loading_set(env, module, false);
+  return false;
 }
 
 bool env_module_maybe_reload (s_env *env, const s_sym *module,
@@ -1251,6 +1258,93 @@ const s_struct_type * env_struct_type_find (s_env *env,
   result = &found->object->data.struct_type;
   facts_with_cursor_clean(&cursor);
   return result;
+}
+
+f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
+{
+  s_facts_with_cursor cursor;
+  s_fact *found;
+  s_tag tag_clean;
+  s_tag tag_module;
+  s_tag tag_var;
+  f_clean tmp;
+  const s_sym *type;
+  tag_init_sym(&tag_module, module);
+  tag_init_sym(&tag_clean, sym_1("clean"));
+  tag_init_var(&tag_var);
+  facts_with(&env->facts, &cursor, (t_facts_spec) {
+      &tag_module, &tag_clean, &tag_var, NULL, NULL });
+  found = facts_with_cursor_next(&cursor);
+  if (! found) {
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  if (found->object->type != TAG_CFN) {
+    tag_type(found->object, &type);
+    err_write_1("env_struct_type_get_clean: ");
+    err_inspect_sym(&module);
+    err_write_1(": clean is actually a ");
+    err_inspect_sym(&type);
+    err_write_1(", it should be a Cfn.\n");
+    assert(! "env_struct_type_get_clean: invalid object");
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  if (found->object->data.cfn.arity != 1) {
+    err_write_1("env_struct_type_get_clean: ");
+    err_inspect_sym(&module);
+    err_write_1(": clean arity is ");
+    err_inspect_u8(&found->object->data.cfn.arity);
+    err_write_1(", it should be 1.\n");
+    assert(! "env_struct_type_get_clean: invalid arity");
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  tmp = (f_clean) found->object->data.cfn.ptr.f;
+  facts_with_cursor_clean(&cursor);
+  return tmp;
+}
+
+s_list ** env_struct_type_get_spec (s_env *env,
+                                    const s_sym *module,
+                                    s_list **dest)
+{
+  s_facts_with_cursor cursor;
+  s_fact *found;
+  s_tag tag_defstruct;
+  s_tag tag_module;
+  s_tag tag_var;
+  s_tag tmp;
+  assert(env);
+  assert(module);
+  assert(dest);
+  tag_init_sym(&tag_defstruct, &g_sym_defstruct);
+  tag_init_sym(&tag_module, module);
+  tag_init_var(&tag_var);
+  if (! env_module_maybe_reload(env, module, &env->facts))
+    return NULL;
+  facts_with(&env->facts, &cursor, (t_facts_spec) {
+      &tag_module, &tag_defstruct, &tag_var, NULL, NULL });
+  found = facts_with_cursor_next(&cursor);
+  if (! found) {
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  if (! env_eval_tag(env, found->object, &tmp)) {
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  facts_with_cursor_clean(&cursor);
+  if (tmp.type != TAG_LIST ||
+      ! list_is_plist(tmp.data.list)) {
+    warnx("env_get_struct_type_spec: module %s"
+          " has a defstruct that is not a property list",
+          module->str.ptr.pchar);
+    tag_clean(&tmp);
+    return NULL;
+  }
+  *dest = tmp.data.list;
+  return dest;
 }
 
 bool env_tag_ident_is_bound (const s_env *env, const s_tag *tag,

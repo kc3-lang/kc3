@@ -608,6 +608,20 @@ bool facts_remove_fact (s_facts *facts, const s_fact *fact)
   return result;
 }
 
+bool facts_remove_fact_tags (s_facts *facts, const s_tag *subject,
+                             const s_tag *predicate,
+                             const s_tag *object)
+{
+  s_fact fact;
+  assert(facts);
+  assert(subject);
+  assert(predicate);
+  assert(object);
+  fact.subject = subject;
+  fact.predicate = predicate;
+  fact.object = object;
+  return facts_remove_fact(facts, &fact);
+}
 
 s_fact * facts_replace_fact (s_facts *facts, const s_fact *fact)
 {
