@@ -583,6 +583,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_uint8;
     return true;
   }
+  if (sym == &g_sym_Char__star) {
+    *dest = &ffi_type_pointer;
+    return true;
+  }
   if (sym == &g_sym_Character) {
     *dest = &ffi_type_uint32;
     return true;
