@@ -64,8 +64,10 @@ bool          env_eval_tag (s_env *env, const s_tag *tag,
 bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
                               s_tag *dest);
 bool          env_eval_void (s_env *env, const void *_, s_tag *dest);
-s_list **     env_get_struct_type_spec (s_env *env, const s_sym *module,
-                                        s_list **dest);
+bool          env_module_is_loading (s_env *env, const s_sym *module);
+void          env_module_is_loading_set (s_env *env,
+                                         const s_sym *module,
+                                         bool value);
 bool          env_module_load (s_env *env, const s_sym *module,
                                s_facts *facts);
 bool          env_module_maybe_reload (s_env *env,
@@ -85,6 +87,10 @@ bool          env_struct_type_exists (s_env *env,
                                         const s_sym *module);
 const s_struct_type *
               env_struct_type_find (s_env *env, const s_sym *module);
+f_clean       env_struct_type_get_clean (s_env *env,
+                                         const s_sym *module);
+s_list **     env_struct_type_get_spec (s_env *env, const s_sym *module,
+                                        s_list **dest);
 bool          env_tag_ident_is_bound (const s_env *env,
                                       const s_tag *tag,
                                       s_facts *facts);

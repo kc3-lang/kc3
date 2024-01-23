@@ -185,6 +185,7 @@ typedef const s_tag *p_tag;
 typedef u64          t_skiplist_height;
 
 /* function typedefs */
+typedef void (* f_clean) (void *x);
 typedef bool (* f_sequence) (s_sequence *seq);
 typedef bool (* f_sequence_button) (s_sequence *seq, u8 button, sw x,
                                     sw y);
@@ -337,6 +338,7 @@ struct struct_type {
   bool must_clean;
   uw *offset;
   uw size;
+  f_clean clean;
 };
 
 /* 3 */

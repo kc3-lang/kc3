@@ -7,3 +7,4 @@ replace {GL.Object, :defstruct, [vertex: (GL.Vertex[]) {},
                                  gl_vao: (U32) 0,
                                  gl_vbo: (U32) 0,
                                  gl_ebo: (U32) 0]}
+replace {GL.Object, :clean, cfn Void "gl_object_clean" (GL.Object)}
