@@ -71,8 +71,8 @@ static bool png_info_to_gl_info (s32 png_color_type,
     *components = 4;
     *gl_format = GL_RGBA;
     switch (png_bit_depth) {
-    case 8:  *gl_internal_format = GL_RGBA8;  break;
-    case 16: *gl_internal_format = GL_RGBA16; break;
+    case 8:  *gl_internal_format = GL_RGBA;  break;
+    case 16: *gl_internal_format = GL_RGBA; break;
     default: *gl_internal_format = 0; return false;
     }
     break;
