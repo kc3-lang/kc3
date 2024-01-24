@@ -39,8 +39,9 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 CPPFLAGS="-I../libffi/include $CPPFLAGS"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
+LDFLAGS="$LDFLAGS -rdynamic"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
@@ -57,7 +58,7 @@ LOCAL_LIBS_ASAN="$LIBC3_ASAN"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
-CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
+CFLAGS_COV="$CFLAGS --coverage"
 LDFLAGS_COV="$LDFLAGS"
 LIBC3_COV=../libc3/libc3_cov.la
 LOCAL_LIBS_COV="$LIBC3_COV"

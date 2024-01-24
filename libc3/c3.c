@@ -11,12 +11,14 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
+#include <dlfcn.h>
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "buf.h"
 #include "c3_main.h"
 #include "env.h"
+#include "str.h"
 #include "sym.h"
 
 const s_str g_c3_base_binary = {{NULL}, 2, {"01"}};
@@ -42,6 +44,12 @@ void c3_clean (s_env *env)
   sym_delete_all();
 }
 
+void * c3_dlopen (const s_str *path)
+{
+  assert(path);
+  return dlopen(path->ptr.pchar, RTLD_GLOBAL);
+}
+
 void c3_exit (sw code)
 {
   exit((int) code);
@@ -49,8 +57,20 @@ void c3_exit (sw code)
 
 uw * c3_facts_next_id (uw *dest)
 {
+  assert(dest);
   *dest = g_c3_env.facts.next_id;
   return dest;
+}
+
+s_str * c3_getenv (const s_str *name, s_str *dest)
+{
+  char *p;
+  assert(name);
+  assert(dest);
+  p = getenv(name->ptr.pchar);
+  if (! p)
+    return NULL;
+  return str_init_1(dest, NULL, p);
 }
 
 s_env * c3_init (s_env *env, int argc, char **argv)

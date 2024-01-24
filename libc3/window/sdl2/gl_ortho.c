@@ -40,13 +40,16 @@ static const char * g_gl_ortho_fragment_shader_src =
   "in vec3 iFragNormal;\n"
   "in vec2 iTexCoord;\n"
   "out vec4 oFragColor;\n"
+  "uniform vec4 uColor;\n"
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
-  "uniform vec4 uColor;\n"
   "void main() {\n"
   "  vec4 texColor = texture(uTex2D, iTexCoord);\n"
   "  if (uEnableTex2D) {\n"
-  "    oFragColor = texColor * uColor;\n"
+  "    oFragColor = vec4(texColor[0] * uColor[0],\n"
+  "                      texColor[1] * uColor[1],\n"
+  "                      texColor[2] * uColor[2],\n"
+  "                      texColor[3] * uColor[3]);\n"
   "  }\n"
   "  else\n"
   "    oFragColor = uColor;\n"
@@ -210,7 +213,6 @@ void gl_ortho_rect (s_gl_ortho *ortho, f32 x, f32 y, f32 w, f32 h)
 
 void gl_ortho_render (s_gl_ortho *ortho)
 {
-  const s_rgba color = {1, 1, 1, 1};
   GLenum error;
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
@@ -234,7 +236,7 @@ void gl_ortho_render (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(ortho->gl_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform4fv(ortho->gl_color_loc, 1, &color.r);
+  glUniform4f(ortho->gl_color_loc, 1.0f, 1.0f, 1.0f, 1.0f);
   assert(glGetError() == GL_NO_ERROR);
   glDepthRange(ortho->clip_z_near, ortho->clip_z_far);
   assert(glGetError() == GL_NO_ERROR);
