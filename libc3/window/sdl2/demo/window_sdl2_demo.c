@@ -146,6 +146,9 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   assert(window);
   assert(glGetError() == GL_NO_ERROR);
   point_per_pixel = (f32) window->w / window->gl_w;
+  err_write_1("point_per_pixel: ");
+  err_inspect_f32(&point_per_pixel);
+  err_write_1("\n");
   if (window->sequence_count != WINDOW_SDL2_DEMO_SEQUENCE_COUNT) {
     fprintf(stderr, "window_sdl2_demo_load: "
             "window->sequence_count = %lu\n", window->sequence_count);
