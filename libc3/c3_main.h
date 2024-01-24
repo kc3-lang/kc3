@@ -25,9 +25,12 @@ extern const s_str g_c3_bases_hexadecimal[2];
 extern const char *g_c3_license;
 extern sw          g_c3_exit_code;
 
-/* stack-allocation compatible functions */
+/* Stack-allocation compatible functions, call c3_clean after use. */
 s_env * c3_init (s_env *env, int argc, char **argv);
 void c3_clean (s_env *env);
+
+/* Observers. */
+s_str * c3_getenv (const s_str *name, s_str *dest);
 
 /* debug */
 void c3_break (void);

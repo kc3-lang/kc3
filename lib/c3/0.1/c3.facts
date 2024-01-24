@@ -188,5 +188,7 @@ replace {C3.fib, :fn, fn { (0) { 1 }
                            (x) { fib(x - 1) + fib(x - 2) } }}
 add {C3, :symbol, C3.facts_next_id}
 replace {C3.facts_next_id, :cfn, cfn Uw "c3_facts_next_id" (Result)}
+add {C3, :symbol, C3.getenv}
+replace {C3.getenv, :cfn, cfn Str "c3_getenv" (Str, Result)}
 add {C3, :symbol, C3.dlopen}
-replace {C3.dlopen, :cfn, cfn Ptr "dlopen" (Char*, U32)}
+replace {C3.dlopen, :cfn, cfn Ptr "c3_dlopen" (Char*)}

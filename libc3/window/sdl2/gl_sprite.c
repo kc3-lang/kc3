@@ -267,6 +267,7 @@ s_gl_sprite * gl_sprite_init (s_gl_sprite *sprite, const char *path,
     str_clean(&tmp.real_path);
     return NULL;
   }
+  glActiveTexture(GL_TEXTURE0);
   i = 0;
   y = 0;
   while (i < tmp.frame_count && y < dim_y) {

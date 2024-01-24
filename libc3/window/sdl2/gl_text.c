@@ -125,17 +125,19 @@ bool gl_text_render_to_texture (s_gl_text *text)
     }
     glyph = font->ft_face->glyph;
     i = 0;
-    while (i < glyph->bitmap.width) {
+    while (i < glyph->bitmap.rows) {
+      data_y = i + glyph->bitmap_top;
+      //printf("\n");
       j = 0;
-      while (j < glyph->bitmap.rows) {
-        data_x = x + i;
-        data_y = j + glyph->bitmap_top;
+      while (j < glyph->bitmap.width) {
+        data_x = x + j;
         data_pixel = data + (data_y * data_w + data_x) * 4;
-        u8 value = glyph->bitmap.buffer[j * glyph->bitmap.width + i];
+        u8 value = glyph->bitmap.buffer[i * glyph->bitmap.width + j];
         data_pixel[0] = 255;
         data_pixel[1] = 255;
         data_pixel[2] = 255;
-        data_pixel[3] = value;
+        data_pixel[3] = (u8) value;
+        //printf("%s", (const char *[]) {" ", ".", ":", "#", "░", "▒", "▓", "█"}[value / 32]);
         j++;
       }
       i++;
@@ -145,12 +147,15 @@ bool gl_text_render_to_texture (s_gl_text *text)
   }
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data_w, data_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
   assert(glGetError() == GL_NO_ERROR);
+  glGenerateMipmap(GL_TEXTURE_2D);
+  assert(glGetError() == GL_NO_ERROR);
   free(data);
   glBindTexture(GL_TEXTURE_2D, 0);
   text->pix_w = data_w;
   text->pix_h = data_h;
   text->pt_w = text->pix_w * text->font->point_per_pixel;
   text->pt_h = text->pix_h * text->font->point_per_pixel;
+  //printf("\n");
   return true;
 }
 

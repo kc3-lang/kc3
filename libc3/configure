@@ -38,9 +38,8 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 
 # Common config for all targets
 CPPFLAGS="-I../libffi/include $CPPFLAGS"
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-LDFLAGS="--shared ${LDFLAGS}"
-LIBS="${LIBS} -lm -pthread -rpath ${PREFIX}/lib"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
+LDFLAGS="--shared $LDFLAGS -rdynamic"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
@@ -52,7 +51,7 @@ config_include sha1_h sys/types.h sha1.h HAVE_SHA1_H
 config_define PREFIX "\"${PREFIX}\""
 config_have_stat_mtim
 update_config_h
-LIBS="$LIBS ../libffi/libffi.la"
+LIBS="$LIBS ../libffi/libffi.la -lm -pthread -rpath ${PREFIX}/lib"
 
 if ! [ -f ../ucd2c/ucd.c ]; then
     touch ../ucd2c/ucd.c
@@ -64,9 +63,9 @@ LDFLAGS_ASAN="$LDFLAGS"
 LIBS_ASAN="$LIBS"
 
 # Coverage config
-CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
-LDFLAGS_COV="$LDFLAGS --coverage"
-LIBS_COV="$LIBS"
+CFLAGS_COV="$CFLAGS --coverage"
+LDFLAGS_COV="$LDFLAGS"
+LIBS_COV="$LIBS -lgcov"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
