@@ -47,6 +47,8 @@ s_list * list_init_str (s_list *list, char *p_free, uw size,
                         const char *p, s_list *next);
 s_list * list_init_str_1 (s_list *list, char *p_free, const char *p, 
                           s_list *next);
+s_list * list_init_str_cat (s_list *list, const s_str *a, 
+                            const s_str *b, s_list *next);
 s_list * list_init_struct (s_list *list, const s_sym *module, 
                            s_list *next);
 s_list * list_init_struct_with_data (s_list *list, const s_sym *module, 
@@ -93,6 +95,8 @@ s_list * list_new_s64 (s64 i, s_list *next);
 s_list * list_new_str (char *p_free, uw size, const char *p, 
                        s_list *next);
 s_list * list_new_str_1 (char *p_free, const char *p, s_list *next);
+s_list * list_new_str_cat (const s_str *a, const s_str *b, 
+                           s_list *next);
 s_list * list_new_struct (const s_sym *module, s_list *next);
 s_list * list_new_struct_with_data (const s_sym *module, 
                                     bool free_data, void *data, 
@@ -137,6 +141,7 @@ s_list * list_s32 (s_list *list, s32 i);
 s_list * list_s64 (s_list *list, s64 i);
 s_list * list_str (s_list *list, char *p_free, uw size, const char *p);
 s_list * list_str_1 (s_list *list, char *p_free, const char *p);
+s_list * list_str_cat (s_list *list, const s_str *a, const s_str *b);
 s_list * list_struct (s_list *list, const s_sym *module);
 s_list * list_struct_with_data (s_list *list, const s_sym *module, 
                                 bool free_data, void *data);
