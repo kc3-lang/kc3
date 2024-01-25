@@ -191,4 +191,4 @@ replace {C3.facts_next_id, :cfn, cfn Uw "c3_facts_next_id" (Result)}
 add {C3, :symbol, C3.getenv}
 replace {C3.getenv, :cfn, cfn Str "c3_getenv" (Str, Result)}
 add {C3, :symbol, C3.dlopen}
-replace {C3.dlopen, :cfn, cfn Ptr "c3_dlopen" (Char*)}
+replace {C3.dlopen, :cfn, cfn Ptr "c3_dlopen" (Str, Result)}

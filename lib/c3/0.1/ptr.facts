@@ -1,0 +1,5 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {Ptr, :is_a, :module}
+replace {Ptr, :symbol, Ptr.cast}
+replace {Ptr.cast, :cfn, cfn Ptr "ptr_init_cast" (Result, Tag)}
