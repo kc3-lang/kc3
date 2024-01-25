@@ -130,6 +130,7 @@ s_str * str_init_alloc (s_str *str, uw size, const char *p)
   tmp.size = size;
   tmp.ptr.p = tmp.free.p;
   memcpy(tmp.free.p, p, size);
+  *str = tmp;
   return str;
 }
 
