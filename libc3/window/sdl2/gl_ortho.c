@@ -22,23 +22,23 @@ static const char * g_gl_ortho_vertex_shader_src =
   "layout (location = 0) in vec3 iPos;\n"
   "layout (location = 1) in vec3 iNormal;\n"
   "layout (location = 2) in vec2 iTexCoord;\n"
-  "out vec3 oFragNormal;\n"
   "out vec2 oTexCoord;\n"
+  "out vec3 oFragNormal;\n"
   "uniform mat4 uProjectionMatrix;\n"
   "uniform mat4 uViewMatrix;\n"
   "uniform mat4 uModelMatrix;\n"
   "void main() {\n"
   "  gl_Position = vec4(uProjectionMatrix * uViewMatrix * \n"
   "                     uModelMatrix * vec4(iPos, 1.0));\n"
+  "  oTexCoord = iTexCoord;\n"
   "  oFragNormal = vec3(mat3(transpose(inverse(uModelMatrix))) *\n"
   "                     iNormal);\n"
-  "  oTexCoord = iTexCoord;\n"
   "}\n";
 
 static const char * g_gl_ortho_fragment_shader_src =
   "#version 330 core\n"
-  "in vec3 iFragNormal;\n"
   "in vec2 iTexCoord;\n"
+  "in vec3 iFragNormal;\n"
   "out vec4 oFragColor;\n"
   "uniform vec4 uColor;\n"
   "uniform bool uEnableTex2D;\n"
@@ -118,7 +118,7 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   ortho->position.x = 0.0f;
   ortho->position.y = 0.0f;
   ortho->position.z = 0.0f;
-  ortho->rotation.x = M_PI;
+  ortho->rotation.x = 0.0f;
   ortho->rotation.y = 0.0f;
   ortho->rotation.z = 0.0f;
   ortho->scale.x = 1.0f;

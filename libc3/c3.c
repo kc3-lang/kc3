@@ -44,10 +44,13 @@ void c3_clean (s_env *env)
   sym_delete_all();
 }
 
-void * c3_dlopen (const s_str *path)
+void ** c3_dlopen (const s_str *path, void **dest)
 {
   assert(path);
-  return dlopen(path->ptr.pchar, RTLD_GLOBAL);
+  assert(dest);
+  printf("dlopen %s -> %p\n", path->ptr.pchar, (void *) dest);
+  *dest = dlopen(path->ptr.pchar, RTLD_GLOBAL);
+  return dest;
 }
 
 void c3_exit (sw code)

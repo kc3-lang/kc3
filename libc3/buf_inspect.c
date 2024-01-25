@@ -1564,7 +1564,7 @@ sw buf_inspect_ptr (s_buf *buf, const u_ptr_w *ptr)
   sw r;
   sw result = 0;
   assert(buf);
-  if ((r = buf_write_1(buf, "(Ptr) ")) < 0)
+  if ((r = buf_write_1(buf, "(Ptr) 0x")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) &ptr->p)) < 0)
@@ -1578,7 +1578,7 @@ sw buf_inspect_ptr_free (s_buf *buf, const u_ptr_w *ptr_free)
   sw r;
   sw result = 0;
   assert(buf);
-  if ((r = buf_write_1(buf, "(PtrFree) ")) < 0)
+  if ((r = buf_write_1(buf, "(PtrFree) 0x")) < 0)
     return r;
   result += r;
   r = buf_inspect_uw_hexadecimal(buf, (uw *) &ptr_free->p);
@@ -1592,7 +1592,7 @@ sw buf_inspect_ptr_free_size (const u_ptr_w *ptr)
 {
   sw result;
   (void) ptr;
-  result = strlen("(PtrFree) ");
+  result = strlen("(PtrFree) 0x");
   result += sizeof(uw) / 4;
   return result;
 }
@@ -1601,7 +1601,7 @@ sw buf_inspect_ptr_size (const u_ptr_w *ptr)
 {
   sw result;
   (void) ptr;
-  result = strlen("(Ptr) ");
+  result = strlen("(Ptr) 0x");
   result += sizeof(uw) / 4;
   return result;
 }
