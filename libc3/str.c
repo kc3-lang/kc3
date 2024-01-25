@@ -97,31 +97,39 @@ bool str_has_reserved_characters (const s_str *src)
 
 s_str * str_init (s_str *str, char *free, uw size, const char *p)
 {
+  s_str tmp = {0};
   assert(str);
-  str->free.p = free;
-  str->size = size;
-  str->ptr.p = p;
+  tmp.free.p = free;
+  tmp.size = size;
+  tmp.ptr.p = p;
+  *str = tmp;
   return str;
 }
 
 s_str * str_init_1 (s_str *str, char *free, const char *p)
 {
+  s_str tmp = {0};
   assert(str);
-  str->free.p = free;
-  str->size = strlen(p);
-  str->ptr.p = p;
+  tmp.free.p = free;
+  tmp.size = strlen(p);
+  tmp.ptr.p = p;
+  *str = tmp;
   return str;
 }
 
 s_str * str_init_alloc (s_str *str, uw size, const char *p)
 {
+  s_str tmp;
   assert(str);
-  str->free.p = calloc(size + 1, 1);
-  str->size = size;
-  str->ptr.p = str->free.p;
-  if (! str->ptr.p)
-    err(1, "out of memory");
-  memcpy(str->free.p, p, size);
+  tmp.free.p = calloc(size + 1, 1);
+  if (! tmp.free.p) {
+    err_puts("str_init_alloc: failed to allocate memory.");
+    assert(! "str_init_alloc: failed to allocate memory.");
+    return NULL;
+  }
+  tmp.size = size;
+  tmp.ptr.p = tmp.free.p;
+  memcpy(tmp.free.p, p, size);
   return str;
 }
 
@@ -144,51 +152,90 @@ s_str * str_init_cast (s_str *str, const s_tag *tag)
   return NULL;
 }
 
+s_str * str_init_cat (s_str *str, const s_str *a, const s_str *b)
+{
+  s_str tmp = {0};
+  assert(str);
+  assert(a);
+  assert(b);
+  tmp.size = a->size + b->size;
+  tmp.free.p = calloc(tmp.size + 1, 1);
+  if (! tmp.free.p) {
+    err_puts("str_init_cat: failed to allocate memory.");
+    assert(! "str_init_cat: failed to allocate memory.");
+    return NULL;
+  }
+  tmp.ptr.p = tmp.free.p;
+  memcpy(tmp.free.ps8, a->ptr.p, a->size);
+  memcpy(tmp.free.ps8 + a->size, b->ptr.p, b->size);
+  *str = tmp;
+  return str;
+}
+
 s_str * str_init_copy (s_str *str, const s_str *src)
 {
+  s_str tmp = {0};
   assert(str);
   assert(src);
-  str->free.p = calloc(src->size + 1, 1);
-  str->size = src->size;
-  str->ptr.p = str->free.p;
-  memcpy(str->free.p, src->ptr.p, str->size);
+  tmp.free.p = calloc(src->size + 1, 1);
+  if (! tmp.free.p) {
+    err_puts("str_init_copy: failed to allocate memory.");
+    assert(! "str_init_copy: failed to allocate memory.");
+    return NULL;
+  }
+  tmp.size = src->size;
+  tmp.ptr.p = tmp.free.p;
+  memcpy(tmp.free.p, src->ptr.p, tmp.size);
+  *str = tmp;
   return str;
 }
 
 s_str * str_init_copy_1 (s_str *str, const char *src)
 {
   uw len;
+  s_str tmp = {0};
   assert(str);
   assert(src);
   len = strlen(src);
-  str->free.p = calloc(len + 1, 1);
-  str->size = len;
-  str->ptr.p = str->free.p;
-  memcpy(str->free.p, src, len + 1);
+  tmp.free.p = calloc(len + 1, 1);
+  if (! tmp.free.p) {
+    err_puts("str_init_copy_1: failed to allocate memory.");
+    assert(! "str_init_copy_1: failed to allocate memory.");
+    return NULL;
+  }
+  tmp.size = len;
+  tmp.ptr.p = tmp.free.p;
+  memcpy(tmp.free.p, src, len + 1);
+  *str = tmp;
   return str;
 }
 
 s_str * str_init_empty (s_str *str)
 {
+  s_str tmp = {0};
   assert(str);
-  str->free.p = NULL;
-  str->size = 0;
-  str->ptr.p = NULL;
+  *str = tmp;
   return str;
 }
 
 s_str * str_init_f (s_str *str, const char *fmt, ...)
 {
   va_list ap;
+  s_str tmp = {0};
   va_start(ap, fmt);
-  str_init_vf(str, fmt, ap);
+  if (! str_init_vf(&tmp, fmt, ap)) {
+    va_end(ap);
+    return NULL;
+  }
   va_end(ap);
+  *str = tmp;
   return str;
 }
 
 s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
 {
   s_buf buf;
+  s_str tmp = {0};
   assert(str);
   assert(src);
   buf_init(&buf, false, src->size, (char *) src->ptr.pchar);
@@ -201,8 +248,9 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
     assert(! "str_init_slice: invalid positions");
     return NULL;
   }
-  if (! buf_read_to_str(&buf, str))
+  if (! buf_read_to_str(&buf, &tmp))
     return NULL;
+  *str = tmp;
   return str;
 }
 
