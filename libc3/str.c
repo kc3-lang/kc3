@@ -167,8 +167,10 @@ s_str * str_init_cat (s_str *str, const s_str *a, const s_str *b)
     return NULL;
   }
   tmp.ptr.p = tmp.free.p;
-  memcpy(tmp.free.ps8, a->ptr.p, a->size);
-  memcpy(tmp.free.ps8 + a->size, b->ptr.p, b->size);
+  if (a->size)
+    memcpy(tmp.free.ps8, a->ptr.p, a->size);
+  if (b->size)
+    memcpy(tmp.free.ps8 + a->size, b->ptr.p, b->size);
   *str = tmp;
   return str;
 }
