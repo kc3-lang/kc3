@@ -2566,21 +2566,24 @@ sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
   uw end;
   s_str in;
   s_buf in_buf = {0};
-  s_list *list;
+  s_list  *list;
   s_list **list_end;
+  s_list  *list_start;
   s_buf out_buf;
   sw r;
   sw result;
   s_buf_save save;
   uw start;
+  s_tag tmp;
+  s_tag tmp1;
   buf_save_init(buf, &save);
   r = buf_parse_str(buf, &in);
   if (r <= 0)
     goto clean;
   result = r;
   buf_init_str(&in_buf, false, &in);
-  list = NULL;
-  list_end = &list;
+  list_start = NULL;
+  list_end = &list_start;
   start = 0;
   while (1) {
     end = in_buf.rpos;
@@ -2588,10 +2591,12 @@ sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
     if (r < 0)
       goto restore;
     if (r > 0) {
-      *list_end = list_new(NULL);
-      (*list_end)->tag.type = TAG_STR;
-      buf_slice_to_str(&in_buf, start, end, &(*list_end)->tag.data.str);
-      list_end = &(*list_end)->next.data.list;
+      if (end > 0) {
+        *list_end = list_new(NULL);
+        (*list_end)->tag.type = TAG_STR;
+        buf_slice_to_str(&in_buf, start, end, &(*list_end)->tag.data.str);
+        list_end = &(*list_end)->next.data.list;
+      }
       *list_end = list_new(NULL);
       buf_parse_tag(&out_buf, &(*list_end)->tag);
       list_end = &(*list_end)->next.data.list;
@@ -2605,14 +2610,35 @@ sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
       if (r <= 0)
         goto restore;
       start = in_buf.rpos;
+      continue;
     }
     r = buf_read_character_utf8(&in_buf, &c);
+    if (r < 0)
+      goto restore;
+    if (! r)
+      break;
   }
+  if (! list_start)
+    tag_init_str_empty(&tmp);
+  else {
+    list = list_start;
+    if (list->tag.type == TAG_STR) {
+      tmp = list->tag;
+    }
+    while (list) {
+      if (list->tag.type == TAG_STR)
+        
   r = result;
   goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
+  while (list_start) {
+    list = list_next(list_start);
+    free(list_start);
+    list_start = list;
+  }
+  str_clean(&in);
   buf_save_clean(buf, &save);
   return r;
 }

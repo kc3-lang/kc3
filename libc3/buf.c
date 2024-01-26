@@ -829,6 +829,7 @@ sw buf_refill_compact (s_buf *buf)
 s_str * buf_slice_to_str (const s_buf *buf, uw start, uw end,
                           s_str *dest)
 {
+  s_str tmp;
   assert(buf);
   assert(dest);
   if (start > buf->wpos) {
@@ -846,7 +847,8 @@ s_str * buf_slice_to_str (const s_buf *buf, uw start, uw end,
     assert(! "buf_slice_to_str: end > wpos");
     return NULL;
   }
-  return str_init(dest, NULL, end - start, buf->ptr.ps8 + start);
+  str_init(&tmp, NULL, end - start, buf->ptr.pchar + start);
+  return str_init_copy(dest, &tmp);
 }
 
 sw buf_str_to_hex (s_buf *buf, const s_str *src)

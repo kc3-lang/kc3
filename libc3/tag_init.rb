@@ -356,6 +356,7 @@ class TagInitList
        TagInit.new("str", "cat", "TAG_STR", :init_mode_init,
                    [Arg.new("const s_str *", "a"),
                     Arg.new("const s_str *", "b")]),
+       TagInit.new("str", "empty", "TAG_STR", :init_mode_init, []),
        TagInit.new("struct", "TAG_STRUCT", :init_mode_init,
                    [Arg.new("const s_sym *", "module")]),
        TagInit.new("struct", "with_data", "TAG_STRUCT", :init_mode_init,

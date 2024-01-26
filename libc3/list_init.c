@@ -298,6 +298,17 @@ s_list * list_init_str_cat (s_list *list, const s_str *a,
   return list;
 }
 
+s_list * list_init_str_empty (s_list *list, s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_str_empty(&tmp.tag))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_struct (s_list *list, const s_sym *module, 
                            s_list *next)
 {
@@ -740,6 +751,19 @@ s_list * list_new_str_cat (const s_str *a, const s_str *b, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_str_cat(&list->tag, a, b)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_str_empty (s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_str_empty(&list->tag)) {
     free(list);
     return NULL;
   }

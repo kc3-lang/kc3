@@ -292,6 +292,17 @@ s_tag * tag_init_str_cat (s_tag *tag, const s_str *a, const s_str *b)
   return tag;
 }
 
+s_tag * tag_init_str_empty (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_empty(&tmp.data.str))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_struct (s_tag *tag, const s_sym *module)
 {
   s_tag tmp = {0};
@@ -754,6 +765,21 @@ s_tag * tag_new_str_cat (const s_str *a, const s_str *b)
   return tag;
 }
 
+s_tag * tag_new_str_empty (void)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_str_empty: calloc");
+    return NULL;
+  }
+  tag->type = TAG_STR;
+  if (! str_init_empty(&tag->data.str)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_struct (const s_sym *module)
 {
   s_tag *tag;
@@ -1195,6 +1221,18 @@ s_tag * tag_str_cat (s_tag *tag, const s_str *a, const s_str *b)
   tag_clean(tag);
   tmp.type = TAG_STR;
   if (! str_init_cat(&tmp.data.str, a, b))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_str_empty (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_empty(&tmp.data.str))
     return NULL;
   *tag = tmp;
   return tag;

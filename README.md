@@ -297,8 +297,9 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - negative facts : 4 + 2n = not 3 + 2n
      - with ignore variables
    - math
-     - fractions
+     - ratios
      - floating point numbers (decimals)
+     - floating point numbers (ieee854)
    - maps
      - get (get key value)
      - put (return a new map)
