@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
@@ -181,43 +181,42 @@ sw buf_ignore_spaces_but_newline (s_buf *buf)
 
 s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
 {
+  s_buf tmp = {0};
   assert(buf);
   assert(p);
-  buf->column = 0;
-  buf->flush = NULL;
-  buf->free = p_free;
-  buf->line = -1;
-  buf->ptr.pchar = p;
-  buf->refill = NULL;
-  buf->rpos = 0;
-  buf->save = NULL;
-  buf->size = size;
-  buf->user_ptr = NULL;
-  buf->wpos = 0;
+  tmp.free = p_free;
+  tmp.line = -1;
+  tmp.ptr.pchar = p;
+  tmp.size = size;
+  *buf = tmp;
   return buf;
 }
 
 s_buf * buf_init_1 (s_buf *buf, bool p_free, char *p)
 {
   uw len;
+  s_buf tmp = {0};
   assert(buf);
   assert(p);
   len = strlen(p);
-  buf_init(buf, p_free, len, p);
-  buf->wpos = len;
+  buf_init(&tmp, p_free, len, p);
+  tmp.wpos = len;
+  *buf = tmp;
   return buf;
 }
 
 s_buf * buf_init_1_copy (s_buf *buf, const char *p)
 {
   uw size;
+  s_buf tmp = {0};
   assert(buf);
   assert(p);
   size = strlen(p);
-  if (! buf_init_alloc(buf, size))
+  if (! buf_init_alloc(&tmp, size))
     return NULL;
-  memcpy(buf->ptr.p, p, size);
-  buf->wpos = size;
+  memcpy(tmp.ptr.p, p, size);
+  tmp.wpos = size;
+  *buf = tmp;
   return buf;
 }
 
@@ -228,36 +227,46 @@ s_buf * buf_init_alloc (s_buf *buf, uw size)
   if (! size)
     return buf_init(buf, false, 0, NULL);
   p = calloc(size + 1, 1);
-  if (!p)
-    err(1, "out of memory");
+  if (! p) {
+    err_puts("buf_init_alloc: failed to allocate memory");
+    assert(! "buf_init_alloc: failed to allocate memory");
+    return NULL;
+  }
   return buf_init(buf, true, size, p);
 }
 
 s_buf * buf_init_str (s_buf *buf, bool p_free, s_str *p)
 {
+  s_buf tmp = {0};
   assert(buf);
   assert(p);
-  buf_init(buf, p_free, p->size, (char *) p->ptr.pchar);
-  buf->wpos = p->size;
+  buf_init(&tmp, p_free, p->size, (char *) p->ptr.pchar);
+  tmp.wpos = p->size;
+  *buf = tmp;
   return buf;
 }
 
 s_buf * buf_init_str_copy (s_buf *buf, const s_str *str)
 {
+  s_buf tmp = {0};
   assert(buf);
   assert(str);
-  buf_init_alloc(buf, str->size);
-  memcpy(buf->ptr.p, str->ptr.p, str->size);
-  buf->wpos = str->size;
+  buf_init_alloc(&tmp, str->size);
+  memcpy(tmp.ptr.p, str->ptr.p, str->size);
+  tmp.wpos = str->size;
+  *buf = tmp;
   return buf;
 }
 
 s_buf * buf_new (bool p_free, uw size, char *p)
 {
   s_buf *buf;
-  buf = malloc(sizeof(s_buf));
-  if (! buf)
-    err(1, "out of memory");
+  buf = calloc(1, sizeof(s_buf));
+  if (! buf) {
+    err_puts("buf_new: failed to allocate memory");
+    assert(! "buf_new: failed to allocate memory");
+    return NULL;
+  }
   buf_init(buf, p_free, size, p);
   return buf;
 }
@@ -265,10 +274,16 @@ s_buf * buf_new (bool p_free, uw size, char *p)
 s_buf * buf_new_alloc (uw size)
 {
   s_buf *buf;
-  buf = malloc(sizeof(s_buf));
-  if (! buf)
-    err(1, "out of memory");
-  buf_init_alloc(buf, size);
+  buf = calloc(1, sizeof(s_buf));
+  if (! buf) {
+    err_puts("buf_new_alloc: failed to allocate memory");
+    assert(! "buf_new_alloc: failed to allocate memory");
+    return NULL;
+  }
+  if (! buf_init_alloc(buf, size)) {
+    free(buf);
+    return NULL;
+  }
   return buf;
 }
 

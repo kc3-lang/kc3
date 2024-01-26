@@ -2560,6 +2560,48 @@ sw buf_parse_str_character_unicode (s_buf *buf, character *dest)
   return r;
 }
 
+sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
+{
+  character c;
+  uw end;
+  bool eval = false;
+  s_str in;
+  s_buf in_buf = {0};
+  s_str out;
+  sw r;
+  sw result;
+  s_buf_save save;
+  uw start;
+  buf_save_init(buf, &save);
+  r = buf_parse_str(buf, &in);
+  if (r <= 0)
+    goto clean;
+  result = r;
+  buf_init_str(&in_buf, false, &in);
+  start = 0;
+  while (1) {
+    if (! eval) {
+      end = in_buf.rpos;
+      r = buf_read_1(&in_buf, "#{");
+      if (r < 0)
+        goto restore;
+      if (r > 0) {
+        buf_slice_to_str(&in_buf, start, end, &out);
+        eval = true;
+      }
+    }
+    r = buf_read_character_utf8(&in_buf, &c);
+    
+  }
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_str_u8 (s_buf *buf, u8 *dest)
 {
   u8 digit[3];
