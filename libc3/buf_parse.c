@@ -2563,19 +2563,17 @@ sw buf_parse_str_character_unicode (s_buf *buf, character *dest)
 sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
 {
   character c;
-  uw end;
   s_str in;
-  s_buf in_buf = {0};
+  s_buf in_buf;
   s_list  *list;
   s_list **list_end;
   s_list  *list_start = NULL;
   s_ident op;
-  s_buf out_buf;
+  s_buf out_buf = {0};
   sw r;
   sw result;
   s_tag *right;
   s_buf_save save;
-  uw start;
   s_tag tmp = {0};
   s_tag tmp1 = {0};
   buf_save_init(buf, &save);
@@ -2584,22 +2582,25 @@ sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
     goto save_clean;
   result = r;
   buf_init_str(&in_buf, false, &in);
+  if (! buf_init_alloc(&out_buf, in.size)) {
+    r = -2;
+    goto restore;
+  }
   list_end = &list_start;
-  start = 0;
   while (1) {
-    end = in_buf.rpos;
     r = buf_read_1(&in_buf, "#{");
     if (r < 0)
       break;
     if (r > 0) {
-      if (end > start) {
+      if (out_buf.wpos > 0) {
         *list_end = list_new(NULL);
         (*list_end)->tag.type = TAG_STR;
-        buf_slice_to_str(&in_buf, start, end, &(*list_end)->tag.data.str);
+        buf_read_to_str(&out_buf, &(*list_end)->tag.data.str);
         list_end = &(*list_end)->next.data.list;
+        out_buf.rpos = out_buf.wpos = 0;
       }
       *list_end = list_new(NULL);
-      r = buf_parse_tag(&out_buf, &(*list_end)->tag);
+      r = buf_parse_tag(&in_buf, &(*list_end)->tag);
       if (r <= 0)
         goto restore;
       list_end = &(*list_end)->next.data.list;
@@ -2612,19 +2613,21 @@ sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
       r = buf_read_1(&in_buf, "}");
       if (r <= 0)
         goto restore;
-      start = end = in_buf.rpos;
       continue;
     }
-    r = buf_read_character_utf8(&in_buf, &c);
+    r = buf_peek_character_utf8(&in_buf, &c);
     if (r <= 0)
       break;
+    r = buf_xfer(&out_buf, &in_buf, r);
+    if (r <= 0) {
+      r = -2;
+      goto restore;
+    }
   }
-  end = in_buf.rpos;
-  if (end > start) {
+  if (out_buf.wpos > 0) {
     *list_end = list_new(NULL);
     (*list_end)->tag.type = TAG_STR;
-    buf_slice_to_str(&in_buf, start, end, &(*list_end)->tag.data.str);
-    list_end = &(*list_end)->next.data.list;
+    buf_read_to_str(&out_buf, &(*list_end)->tag.data.str);
   }
   if (! list_start)
     tag_init_str_empty(&tmp);
@@ -2674,6 +2677,7 @@ sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
     tag_clean(&list->tag);
     list = list_next(list);
   }
+  buf_clean(&out_buf);
   buf_save_restore_rpos(buf, &save);
  clean:
   while (list_start) {

@@ -1,0 +1,5 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {Str, :is_a, :module}
+replace {Str, :symbol, Str.cast}
+replace {Str.cast, :cfn, cfn Str "str_init_cast" (Result, Tag)}
