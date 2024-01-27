@@ -237,77 +237,6 @@ s_tag * tag_brackets (const s_tag *tag, const s_tag *address,
   return NULL;
 }
 
-s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
-{
-  assert(tag);
-  assert(src);
-  switch (src->type) {
-  case TAG_VAR:
-    tag_init_var(tag);
-    break;
-  case TAG_VOID:
-    break;
-  case TAG_ARRAY:
-    array_init_copy(&tag->data.array, &src->data.array);
-    break;
-  case TAG_CALL:
-    call_init_copy(&tag->data.call, &src->data.call);
-    break;
-  case TAG_CFN:
-    cfn_init_copy(&tag->data.cfn, &src->data.cfn);
-    break;
-  case TAG_FN:
-    fn_init_copy(&tag->data.fn, &src->data.fn);
-    break;
-  case TAG_INTEGER:
-    integer_init_copy(&tag->data.integer, &src->data.integer);
-    break;
-  case TAG_LIST:
-    list_init_copy(&tag->data.list, (const s_list **) &src->data.list);
-    break;
-  case TAG_MAP:
-    map_init_copy(&tag->data.map, &src->data.map);
-    break;
-  case TAG_QUOTE:
-    quote_init_copy(&tag->data.quote, &src->data.quote);
-    break;
-  case TAG_STR:
-    str_init_copy(&tag->data.str, &src->data.str);
-    break;
-  case TAG_STRUCT:
-    struct_init_copy(&tag->data.struct_, &src->data.struct_);
-    break;
-  case TAG_TUPLE:
-    tuple_init_copy(&tag->data.tuple, &src->data.tuple);
-    break;
-  case TAG_BOOL:
-  case TAG_CHARACTER:
-  case TAG_F32:
-  case TAG_F64:
-  case TAG_F128:
-  case TAG_FACT:
-  case TAG_IDENT:
-  case TAG_PTAG:
-  case TAG_PTR:
-  case TAG_PTR_FREE:
-  case TAG_S8:
-  case TAG_S16:
-  case TAG_S32:
-  case TAG_S64:
-  case TAG_STRUCT_TYPE:
-  case TAG_SW:
-  case TAG_SYM:
-  case TAG_U8:
-  case TAG_U16:
-  case TAG_U32:
-  case TAG_U64:
-  case TAG_UW:
-    tag->data = src->data;
-  }
-  tag->type = src->type;
-  return tag;
-}
-
 void tag_delete (s_tag *tag)
 {
   tag_clean(tag);
@@ -397,6 +326,87 @@ s_tag * tag_init_1 (s_tag *tag, const char *p)
     assert(! "invalid tag");
     return NULL;
   }
+  return tag;
+}
+
+s_tag * tag_init_call_cast (s_tag *tag, const s_sym *type)
+{
+  s_tag tmp = {0};
+  tmp.type = TAG_CALL;
+  if (! call_init_call_cast(&tmp.data.call, type))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
+{
+  assert(tag);
+  assert(src);
+  switch (src->type) {
+  case TAG_VAR:
+    tag_init_var(tag);
+    break;
+  case TAG_VOID:
+    break;
+  case TAG_ARRAY:
+    array_init_copy(&tag->data.array, &src->data.array);
+    break;
+  case TAG_CALL:
+    call_init_copy(&tag->data.call, &src->data.call);
+    break;
+  case TAG_CFN:
+    cfn_init_copy(&tag->data.cfn, &src->data.cfn);
+    break;
+  case TAG_FN:
+    fn_init_copy(&tag->data.fn, &src->data.fn);
+    break;
+  case TAG_INTEGER:
+    integer_init_copy(&tag->data.integer, &src->data.integer);
+    break;
+  case TAG_LIST:
+    list_init_copy(&tag->data.list, (const s_list **) &src->data.list);
+    break;
+  case TAG_MAP:
+    map_init_copy(&tag->data.map, &src->data.map);
+    break;
+  case TAG_QUOTE:
+    quote_init_copy(&tag->data.quote, &src->data.quote);
+    break;
+  case TAG_STR:
+    str_init_copy(&tag->data.str, &src->data.str);
+    break;
+  case TAG_STRUCT:
+    struct_init_copy(&tag->data.struct_, &src->data.struct_);
+    break;
+  case TAG_TUPLE:
+    tuple_init_copy(&tag->data.tuple, &src->data.tuple);
+    break;
+  case TAG_BOOL:
+  case TAG_CHARACTER:
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_F128:
+  case TAG_FACT:
+  case TAG_IDENT:
+  case TAG_PTAG:
+  case TAG_PTR:
+  case TAG_PTR_FREE:
+  case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_STRUCT_TYPE:
+  case TAG_SW:
+  case TAG_SYM:
+  case TAG_U8:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_UW:
+    tag->data = src->data;
+  }
+  tag->type = src->type;
   return tag;
 }
 

@@ -236,6 +236,18 @@ s_call * call_init_1 (s_call *call, const char *p)
   return call;
 }
 
+s_call * call_init_call_cast (s_call *call, const s_sym *type)
+{
+  s_call tmp = {0};
+  tmp.ident.module = type;
+  tmp.ident.sym = &g_sym_cast;
+  tmp.arguments = list_new(NULL);
+  if (! tmp.arguments)
+    return NULL;
+  *call = tmp;
+  return call;
+}
+
 s_call * call_init_cast (s_call *call, const s_tag *tag)
 {
   switch (tag->type) {

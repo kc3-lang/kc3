@@ -646,6 +646,7 @@ C3_OTHER_SOURCES = \
 	"lib/c3/0.1/integer.facts" \
 	"lib/c3/0.1/list.facts" \
 	"lib/c3/0.1/map.facts" \
+	"lib/c3/0.1/ptr.facts" \
 	"lib/c3/0.1/ptr_free.facts" \
 	"lib/c3/0.1/s16.facts" \
 	"lib/c3/0.1/s32.facts" \
@@ -813,10 +814,18 @@ C3_EXTERNAL_SOURCES = \
 	"libffi/autom4te.cache/output.0" \
 	"libffi/autom4te.cache/output.1" \
 	"libffi/autom4te.cache/output.2" \
+	"libffi/autom4te.cache/output.3" \
+	"libffi/autom4te.cache/output.4" \
+	"libffi/autom4te.cache/output.5" \
+	"libffi/autom4te.cache/output.6" \
 	"libffi/autom4te.cache/requests" \
 	"libffi/autom4te.cache/traces.0" \
 	"libffi/autom4te.cache/traces.1" \
 	"libffi/autom4te.cache/traces.2" \
+	"libffi/autom4te.cache/traces.3" \
+	"libffi/autom4te.cache/traces.4" \
+	"libffi/autom4te.cache/traces.5" \
+	"libffi/autom4te.cache/traces.6" \
 	"libffi/compile" \
 	"libffi/config.guess" \
 	"libffi/config.log" \
@@ -1501,6 +1510,7 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/NameAliases.txt" \
 	"ucd2c/UCD/NamedSequences.txt" \
 	"ucd2c/UCD/NamedSequencesProv.txt" \
+	"ucd2c/UCD/NamesList.html" \
 	"ucd2c/UCD/NamesList.txt" \
 	"ucd2c/UCD/NormalizationCorrections.txt" \
 	"ucd2c/UCD/NormalizationTest.txt" \
@@ -1520,11 +1530,15 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/UnicodeData.txt" \
 	"ucd2c/UCD/VerticalOrientation.txt" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakProperty.txt" \
+	"ucd2c/UCD/auxiliary/GraphemeBreakTest.html" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakTest.txt" \
+	"ucd2c/UCD/auxiliary/LineBreakTest.html" \
 	"ucd2c/UCD/auxiliary/LineBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/SentenceBreakProperty.txt" \
+	"ucd2c/UCD/auxiliary/SentenceBreakTest.html" \
 	"ucd2c/UCD/auxiliary/SentenceBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/WordBreakProperty.txt" \
+	"ucd2c/UCD/auxiliary/WordBreakTest.html" \
 	"ucd2c/UCD/auxiliary/WordBreakTest.txt" \
 	"ucd2c/UCD/emoji/ReadMe.txt" \
 	"ucd2c/UCD/emoji/emoji-data.txt" \
