@@ -45,7 +45,7 @@ git submodule update
 make
 ```
 
-### Add the sources to LD_LIBRARY_PATH
+### Add the sources to `LD_LIBRARY_PATH`
 ```sh
 export LD_LIBRARY_PATH=$PWD/libc3/.libs:$PWD/libffi/.libs
 ```

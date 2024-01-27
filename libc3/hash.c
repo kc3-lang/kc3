@@ -332,9 +332,13 @@ bool hash_update_str (t_hash *hash, const s_str *str)
   char type[] = "str";
   assert(hash);
   assert(str);
-  return hash_update(hash, type, strlen(type)) &&
-    hash_update(hash, &str->size, sizeof(str->size)) &&
-    hash_update(hash, str->ptr.p, str->size);
+  if (! hash_update(hash, type, strlen(type)) ||
+      ! hash_update(hash, &str->size, sizeof(str->size)))
+    return false;
+  if (str->size &&
+      ! hash_update(hash, str->ptr.p, str->size))
+    return false;
+  return true;
 }
 
 bool hash_update_struct (t_hash *hash, const s_struct *s)
