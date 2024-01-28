@@ -17,6 +17,10 @@
 #include "gl_text.h"
 #include "gl_triangle.h"
 
+const char *g_gray_3_bits_utf8[] = {
+  " ", ".", ":", "#", "░", "▒", "▓", "█"
+};
+
 void gl_text_clean (s_gl_text *text)
 {
   str_clean(&text->str);
@@ -134,13 +138,12 @@ bool gl_text_render_to_texture (s_gl_text *text)
       while (j < glyph->bitmap.width) {
         data_x = x + j;
         data_pixel = data + (data_y * data_w + data_x) * 4;
-        u8 value = glyph->bitmap.buffer[(glyph->bitmap.rows - 1 - i) *
-                                        glyph->bitmap.width + j];
+        u8 value = glyph->bitmap.buffer[i * glyph->bitmap.width + j];
         data_pixel[0] = 255;
         data_pixel[1] = 255;
         data_pixel[2] = 255;
         data_pixel[3] = value;
-        //printf("%s", (const char *[]) {" ", ".", ":", "#", "░", "▒", "▓", "█"}[value / 32]);
+        //printf("%s", g_gray_3_bits_utf8[value / 32]);
         j++;
       }
       i++;
@@ -148,7 +151,8 @@ bool gl_text_render_to_texture (s_gl_text *text)
     x += glyph->metrics.horiAdvance >> 6;
     prev_glyph_index = glyph_index;
   }
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data_w, data_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data_w, data_h, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, data);
   assert(glGetError() == GL_NO_ERROR);
   glGenerateMipmap(GL_TEXTURE_2D);
   assert(glGetError() == GL_NO_ERROR);
