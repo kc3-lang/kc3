@@ -18,12 +18,12 @@
 #include "gl_square.h"
 
 static const char * g_gl_ortho_vertex_shader_src =
-  "#version 330 core\n"
+  "#version 420 core\n"
   "layout (location = 0) in vec3 iPos;\n"
   "layout (location = 1) in vec3 iNormal;\n"
   "layout (location = 2) in vec2 iTexCoord;\n"
-  "out vec2 oTexCoord;\n"
-  "out vec3 oFragNormal;\n"
+  "layout (location = 0) out vec2 oTexCoord;\n"
+  "layout (location = 1) out vec3 oFragNormal;\n"
   "uniform mat4 uProjectionMatrix;\n"
   "uniform mat4 uViewMatrix;\n"
   "uniform mat4 uModelMatrix;\n"
@@ -36,9 +36,9 @@ static const char * g_gl_ortho_vertex_shader_src =
   "}\n";
 
 static const char * g_gl_ortho_fragment_shader_src =
-  "#version 330 core\n"
-  "in vec2 iTexCoord;\n"
-  "in vec3 iFragNormal;\n"
+  "#version 420 core\n"
+  "layout (location = 0) in vec2 iTexCoord;\n"
+  "layout (location = 1) in vec3 iFragNormal;\n"
   "out vec4 oFragColor;\n"
   "uniform vec4 uColor;\n"
   "uniform bool uEnableTex2D;\n"
