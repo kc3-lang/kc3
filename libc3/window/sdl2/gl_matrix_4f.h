@@ -22,6 +22,8 @@ s_gl_matrix_4f * gl_matrix_4f_init_identity (s_gl_matrix_4f *m);
 s_gl_matrix_4f * gl_matrix_4f_init_product (s_gl_matrix_4f *m,
                                             const s_gl_matrix_4f *a,
                                             const s_gl_matrix_4f *b);
+s_gl_matrix_4f * gl_matrix_4f_init_scale (s_gl_matrix_4f *m, f32 x,
+                                          f32 y, f32 z);
 s_gl_matrix_4f * gl_matrix_4f_init_zero (s_gl_matrix_4f *m);
 
 /* Heap-allocation functions, call gl_matrix_4f_delete after use. */
