@@ -65,15 +65,18 @@ bool gl_text_render_to_texture (s_gl_text *text)
   uw  data_x;
   uw  data_y;
   FT_Vector delta;
+  FT_Face face;
   const s_gl_font *font;
   FT_GlyphSlot glyph;
   FT_UInt glyph_index;
   uw i;
   uw j;
-  f32 max_height = 0.0;
+  uw max_ascent;
+  uw max_descent;
   FT_UInt prev_glyph_index = 0;
   s_str s;
-  f32 total_width = 0.0;
+  f32 scale_y;
+  f32 x;
   assert(text);
   assert(text->font);
   assert(text->texture);
@@ -83,50 +86,49 @@ bool gl_text_render_to_texture (s_gl_text *text)
   glBindTexture(GL_TEXTURE_2D, text->texture);
   assert(glGetError() == GL_NO_ERROR);
   font = text->font;
+  face = font->ft_face;
   s = text->str;
+  scale_y = face->size->metrics.y_scale / 65536.0;
+  max_ascent = (u32) (face->ascender * scale_y) >> 6;
+  max_descent = (u32) abs((int) (face->descender * scale_y)) >> 6;
+  data_w = 0;
+  data_h = max_ascent + max_descent;
   while (str_read_character_utf8(&s, &c) > 0) {
-    glyph_index = FT_Get_Char_Index(font->ft_face, c);
+    glyph_index = FT_Get_Char_Index(face, c);
     if (prev_glyph_index && glyph_index) {
-      FT_Get_Kerning(font->ft_face, prev_glyph_index, glyph_index,
+      FT_Get_Kerning(face, prev_glyph_index, glyph_index,
                      FT_KERNING_DEFAULT, &delta);
-      total_width += delta.x >> 6;
+      data_w += delta.x >> 6;
     }
-    if (FT_Load_Glyph(font->ft_face, glyph_index, FT_LOAD_RENDER)) {
+    if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER)) {
       err_write_1("gl_font_render_to_texture: failed to load glyph: ");
       err_inspect_character(&c);
       err_write_1("\n");
       continue;
     }
-    glyph = font->ft_face->glyph;
-    total_width += glyph->bitmap.width;
-    if (glyph->bitmap.rows + glyph->bitmap_top > max_height)
-      max_height = glyph->bitmap.rows + glyph->bitmap_top;
+    glyph = face->glyph;
+    data_w += glyph->metrics.horiAdvance >> 6;
     prev_glyph_index = glyph_index;
   }
-  data_w = ceil(total_width);
-  data_h = ceil(max_height);
   data_size = data_w * data_h * 4;
   data = calloc(1, data_size);
-  f32 x = 0;
+  x = 0;
   prev_glyph_index = 0;
   s = text->str;
   while (str_read_character_utf8(&s, &c) > 0) {
-    glyph_index = FT_Get_Char_Index(font->ft_face, c);
-
-    // Apply kerning (adjust spacing between characters)
+    glyph_index = FT_Get_Char_Index(face, c);
     if (prev_glyph_index && glyph_index) {
       FT_Vector delta;
-      FT_Get_Kerning(font->ft_face, prev_glyph_index, glyph_index,
+      FT_Get_Kerning(face, prev_glyph_index, glyph_index,
                      FT_KERNING_DEFAULT, &delta);
       x += delta.x >> 6;
     }
-    if (FT_Load_Glyph(font->ft_face, glyph_index, FT_LOAD_RENDER)) {
+    if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER))
       continue;
-    }
-    glyph = font->ft_face->glyph;
+    glyph = face->glyph;
     i = 0;
     while (i < glyph->bitmap.rows) {
-      data_y = i + glyph->bitmap_top;
+      data_y = data_h - 1 - i - max_ascent + glyph->bitmap_top;
       //printf("\n");
       j = 0;
       while (j < glyph->bitmap.width) {
@@ -137,13 +139,13 @@ bool gl_text_render_to_texture (s_gl_text *text)
         data_pixel[0] = 255;
         data_pixel[1] = 255;
         data_pixel[2] = 255;
-        data_pixel[3] = (u8) value;
+        data_pixel[3] = value;
         //printf("%s", (const char *[]) {" ", ".", ":", "#", "░", "▒", "▓", "█"}[value / 32]);
         j++;
       }
       i++;
     }
-    x += glyph->bitmap.width;
+    x += glyph->metrics.horiAdvance >> 6;
     prev_glyph_index = glyph_index;
   }
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data_w, data_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
