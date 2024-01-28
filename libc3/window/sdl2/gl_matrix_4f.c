@@ -105,6 +105,17 @@ s_gl_matrix_4f * gl_matrix_4f_init_identity (s_gl_matrix_4f *m)
   return m;
 }
 
+s_gl_matrix_4f * gl_matrix_4f_init_scale (s_gl_matrix_4f *m, f32 x,
+                                          f32 y, f32 z)
+{
+  assert(m);
+  m->xx = x;   m->xy = 0.0; m->xz = 0.0; m->xt = 0.0;
+  m->yx = 0.0; m->yy = y;   m->yz = 0.0; m->yt = 0.0;
+  m->zx = 0.0; m->zy = 0.0; m->zz = z;   m->zt = 0.0;
+  m->tx = 0.0; m->ty = 0.0; m->tz = 0.0; m->tt = 1.0;
+  return m;
+}
+
 s_gl_matrix_4f * gl_matrix_4f_init_zero (s_gl_matrix_4f *m)
 {
   assert(m);

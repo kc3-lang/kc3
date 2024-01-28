@@ -13,9 +13,11 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "../window_sdl2.h"
-#include "../gl_sprite.h"
 #include "../gl_camera.h"
+#include "../gl_matrix_4f.h"
+#include "../gl_object.h"
 #include "../gl_sphere.h"
+#include "../gl_sprite.h"
 #include "earth.h"
 
 #define EARTH_CAMERA_ROTATION_Z_SPEED 0.1
@@ -27,8 +29,10 @@ s_gl_sprite g_sprite_earth = {0};
 bool earth_load (s_sequence *seq)
 {
   s_map *map;
+  s_gl_matrix_4f matrix;
   s_gl_camera *camera;
   s_gl_sphere *sphere;
+  const f32    sphere_radius = 5.0;
   s_window_sdl2 *window;
   assert(seq);
   window = seq->window;
@@ -39,6 +43,9 @@ bool earth_load (s_sequence *seq)
   sphere = gl_sphere_new(EARTH_SEGMENTS_U, EARTH_SEGMENTS_V);
   if (! sphere)
     return false;
+  gl_matrix_4f_init_scale(&matrix, sphere_radius, sphere_radius,
+                          sphere_radius);
+  gl_object_transform(&sphere->object, &matrix);
   if (! tag_map(&seq->tag, 3))
     return false;
   map = &seq->tag.data.map;
@@ -111,18 +118,17 @@ bool earth_render (s_sequence *seq)
   assert(glGetError() == GL_NO_ERROR);
   //glPushMatrix();
   {
-    //sphere_radius = 5.0;
     assert(glGetError() == GL_NO_ERROR);
-    //glScalef(sphere_radius, sphere_radius, sphere_radius);
     assert(glGetError() == GL_NO_ERROR);
     //glEnable(GL_TEXTURE_2D);
     assert(glGetError() == GL_NO_ERROR);
-    //gl_camera_bind_texture(camera,
-    //                       gl_sprite_texture(&g_sprite_earth, 0));
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-    //                GL_LINEAR_MIPMAP_LINEAR);
+    gl_camera_bind_texture(camera,
+                           gl_sprite_texture(&g_sprite_earth, 0));
     assert(glGetError() == GL_NO_ERROR);
-    glBlendColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
+    assert(glGetError() == GL_NO_ERROR);
+    gl_camera_color(camera, 1.0f, 1.0f, 1.0f, 1.0f);
     gl_sphere_render(sphere);
     /*
     glDisable(GL_TEXTURE_2D);

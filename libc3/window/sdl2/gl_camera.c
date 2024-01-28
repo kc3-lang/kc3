@@ -20,29 +20,29 @@ static const char * g_gl_camera_vertex_shader_src =
   "layout (location = 0) in vec3 iPos;\n"
   "layout (location = 1) in vec3 iNormal;\n"
   "layout (location = 2) in vec2 iTexCoord;\n"
-  "out vec3 oFragNormal;\n"
-  "out vec2 oTexCoord;\n"
+  "out vec3 ioFragNormal;\n"
+  "out vec2 ioTexCoord;\n"
   "uniform mat4 uProjectionMatrix;\n"
   "uniform mat4 uViewMatrix;\n"
   "uniform mat4 uModelMatrix;\n"
   "void main() {\n"
   "  gl_Position = vec4(uProjectionMatrix * uViewMatrix *\n"
   "                     uModelMatrix * vec4(iPos, 1.0));\n"
-  "  oFragNormal = vec3(mat3(transpose(inverse(uModelMatrix))) *\n"
-  "                     iNormal);\n"
-  "  oTexCoord = iTexCoord;\n"
+  "  ioFragNormal = vec3(mat3(transpose(inverse(uModelMatrix))) *\n"
+  "                      iNormal);\n"
+  "  ioTexCoord = iTexCoord;\n"
   "}\n";
 
 static const char * g_gl_camera_fragment_shader_src =
   "#version 330 core\n"
-  "in vec3 iFragNormal;\n"
-  "in vec2 iTexCoord;\n"
+  "in vec3 ioFragNormal;\n"
+  "in vec2 ioTexCoord;\n"
   "out vec4 oFragColor;\n"
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
   "uniform vec4 uColor;\n"
   "void main() {\n"
-  "  vec4 texColor = texture(uTex2D, iTexCoord);\n"
+  "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
   "  if (uEnableTex2D) {\n"
   "    oFragColor = texColor * uColor;\n"
   "  }\n"
@@ -55,13 +55,23 @@ void gl_camera_bind_texture (s_gl_camera *camera, GLuint texture)
   assert(camera);
   assert(glGetError() == GL_NO_ERROR);
   if (! texture) {
+    glActiveTexture(GL_TEXTURE0);
+    assert(glGetError() == GL_NO_ERROR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    assert(glGetError() == GL_NO_ERROR);
     glUniform1i(camera->gl_enable_tex2d_loc, 0);
+    assert(glGetError() == GL_NO_ERROR);
+    glUniform1i(camera->gl_tex2d_loc, 0);
     assert(glGetError() == GL_NO_ERROR);
     return;
   }
+  glActiveTexture(GL_TEXTURE0);
+  assert(glGetError() == GL_NO_ERROR);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  assert(glGetError() == GL_NO_ERROR);
   glUniform1i(camera->gl_enable_tex2d_loc, 1);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform1i(camera->gl_tex2d_loc, texture);  
+  glUniform1i(camera->gl_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
 }
 
@@ -69,6 +79,15 @@ void gl_camera_clean (s_gl_camera *camera)
 {
   assert(camera);
   glDeleteProgram(camera->gl_shader_program);
+}
+
+void gl_camera_color (s_gl_camera *camera, f32 r, f32 g, f32 b, f32 a)
+{
+  s_rgba color = {r, g, b, a};
+  assert(camera);
+  assert(glGetError() == GL_NO_ERROR);
+  glUniform4fv(camera->gl_color_loc, 1, &color.r);    
+  assert(glGetError() == GL_NO_ERROR);
 }
 
 void gl_camera_delete (s_gl_camera *camera)
