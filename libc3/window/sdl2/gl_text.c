@@ -132,7 +132,8 @@ bool gl_text_render_to_texture (s_gl_text *text)
       while (j < glyph->bitmap.width) {
         data_x = x + j;
         data_pixel = data + (data_y * data_w + data_x) * 4;
-        u8 value = glyph->bitmap.buffer[i * glyph->bitmap.width + j];
+        u8 value = glyph->bitmap.buffer[(glyph->bitmap.rows - 1 - i) *
+                                        glyph->bitmap.width + j];
         data_pixel[0] = 255;
         data_pixel[1] = 255;
         data_pixel[2] = 255;
