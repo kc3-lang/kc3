@@ -26,6 +26,9 @@
 
 #define STR_MAX (16 * 1024 * 1024)
 
+#define PROTOTYPE_STR_INIT(type)                                      \
+  s_str * str_init_ ## type (s_str *str, type x)
+
 /* Stack allocation compatible functions */
 void    str_clean (s_str *str);
 s_str * str_init (s_str *str, char *free, uw size, const char *p);
@@ -37,9 +40,19 @@ s_str * str_init_copy (s_str *str, const s_str *src);
 s_str * str_init_copy_1 (s_str *str, const char *p);
 s_str * str_init_empty (s_str *str);
 s_str * str_init_f (s_str *str, const char *fmt, ...);
+PROTOTYPE_STR_INIT(s8);
+PROTOTYPE_STR_INIT(s16);
+PROTOTYPE_STR_INIT(s32);
+PROTOTYPE_STR_INIT(s64);
 s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end);
 s_str * str_init_slice_utf8 (s_str *str, const s_str *src, sw start,
                              sw end);
+PROTOTYPE_STR_INIT(sw);
+PROTOTYPE_STR_INIT(u8);
+PROTOTYPE_STR_INIT(u16);
+PROTOTYPE_STR_INIT(u32);
+PROTOTYPE_STR_INIT(u64);
+PROTOTYPE_STR_INIT(uw);
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap);
 
 /* Constructors, call str_delete after use */
@@ -61,31 +74,32 @@ character     str_character_escape (character c);
 bool          str_character_is_reserved (character c);
 sw            str_character_position (const s_str *str, character c);
 bool          str_has_reserved_characters (const s_str *str);
-s_str *       str_inspect (const s_str *x, s_str *dest);
+s_str *       str_inspect (const s_str *str, s_str *dest);
 sw            str_length_utf8 (const s_str *str);
-sw            str_peek_bool (const s_str *src, bool *p);
-sw            str_peek_character_utf8 (const s_str *src, character *p);
-sw            str_peek_f32 (const s_str *src, f32 *p);
-sw            str_peek_f64 (const s_str *src, f64 *p);
-sw            str_peek_s8 (const s_str *src, s8 *p);
-sw            str_peek_s16 (const s_str *src, s16 *p);
-sw            str_peek_s32 (const s_str *src, s32 *p);
-sw            str_peek_s64 (const s_str *src, s64 *p);
-sw            str_peek_str (const s_str *src, s_str *p);
-sw            str_peek_sym (const s_str *src, s_sym *p);
-sw            str_peek_u8 (const s_str *src, u8 *p);
-sw            str_peek_u16 (const s_str *src, u16 *p);
-sw            str_peek_u32 (const s_str *src, u32 *p);
-sw            str_peek_u64 (const s_str *src, u64 *p);
+bool          str_parse_eval (const s_str *str, s_tag *dest);
+sw            str_peek_bool (const s_str *str, bool *dest);
+sw            str_peek_character_utf8 (const s_str *str, character *dest);
+sw            str_peek_f32 (const s_str *str, f32 *dest);
+sw            str_peek_f64 (const s_str *str, f64 *dest);
+sw            str_peek_s8 (const s_str *str, s8 *dest);
+sw            str_peek_s16 (const s_str *str, s16 *dest);
+sw            str_peek_s32 (const s_str *str, s32 *dest);
+sw            str_peek_s64 (const s_str *str, s64 *dest);
+sw            str_peek_str (const s_str *str, s_str *dest);
+sw            str_peek_sym (const s_str *str, s_sym *dest);
+sw            str_peek_u8 (const s_str *str, u8 *dest);
+sw            str_peek_u16 (const s_str *str, u16 *dest);
+sw            str_peek_u32 (const s_str *str, u32 *dest);
+sw            str_peek_u64 (const s_str *str, u64 *dest);
 uw *          str_rindex_character (const s_str *str, character c,
                                     uw *dest);
 uw *          str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest);
-s_str *       str_to_hex (const s_str *src, s_str *dest);
-s_ident *     str_to_ident (const s_str *src, s_ident *dest);
-const s_sym * str_to_sym (const s_str *src);
+s_str *       str_to_hex (const s_str *str, s_str *dest);
+s_ident *     str_to_ident (const s_str *str, s_ident *dest);
+const s_sym * str_to_sym (const s_str *str);
 
 /* Modifiers */
-sw str_read_u8 (s_str *str, u8 *p);
+sw str_read_u8 (s_str *str, u8 *dest);
 sw str_read_character_utf8 (s_str *str, character *c);
 
 #endif /* LIBC3_STR_H */

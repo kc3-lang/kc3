@@ -668,6 +668,24 @@ bool env_eval_quote (s_env *env, const s_quote *quote, s_tag *dest)
   return true;
 }
 
+bool env_eval_str (s_env *env, const s_str *str, s_tag *dest)
+{
+  bool r = true;
+  s_tag tmp;
+  if (str_parse_eval(str, &tmp) < 0) {
+    err_puts("env_eval_str: invalid Str");
+    assert(! "env_eval_str: invalid Str");
+    return false;
+  }
+  if (tmp.type == TAG_STR) {
+    *dest = tmp;
+    return true;
+  }
+  r = env_eval_tag(env, &tmp, dest);
+  tag_clean(&tmp);
+  return r;
+}
+
 bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
 {
   uw i;
@@ -744,6 +762,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_map(env, &tag->data.map, dest);
   case TAG_QUOTE:
     return env_eval_quote(env, &tag->data.quote, dest);
+  case TAG_STR:
+    return env_eval_str(env, &tag->data.str, dest);
   case TAG_STRUCT:
     return env_eval_struct(env, &tag->data.struct_, dest);
   case TAG_TUPLE:
@@ -765,7 +785,6 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_S32:
   case TAG_S64:
   case TAG_SW:
-  case TAG_STR:
   case TAG_STRUCT_TYPE:
   case TAG_SYM:
   case TAG_U8:
