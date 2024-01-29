@@ -233,6 +233,8 @@ void gl_ortho_render (s_gl_ortho *ortho)
                      &ortho->model_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(ortho->gl_enable_tex2d_loc, 0);
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, 0);
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(ortho->gl_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);

@@ -46,6 +46,7 @@ bool earth_load (s_sequence *seq)
   gl_matrix_4f_init_scale(&matrix, sphere_radius, sphere_radius,
                           sphere_radius);
   gl_object_transform(&sphere->object, &matrix);
+  gl_object_update(&sphere->object);
   if (! tag_map(&seq->tag, 3))
     return false;
   map = &seq->tag.data.map;
@@ -88,7 +89,7 @@ bool earth_render (s_sequence *seq)
   gl_camera_set_aspect_ratio(camera, window->w, window->h);
   camera->rotation.x += seq->dt * (*camera_rot_x_speed) *
     M_PI * 2.0f;
-  if (camera->rotation.x > 180 || camera->rotation.x < 0)
+  if (camera->rotation.x > M_PI || camera->rotation.x < 0)
     *camera_rot_x_speed *= -1.0;
   camera->rotation.z += seq->dt * EARTH_CAMERA_ROTATION_Z_SPEED *
     M_PI * 2.0f;

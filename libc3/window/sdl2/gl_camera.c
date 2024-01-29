@@ -103,7 +103,7 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   GLuint vertex_shader;
   assert(camera);
   gl_camera_set_aspect_ratio(camera, w, h);
-  camera->clip_z_far = 1000.0f;
+  camera->clip_z_far = 100.0f;
   camera->clip_z_near = 0.1f;
   camera->fov_y = 90.0f;
   camera->position.x = 0.0f;
@@ -211,6 +211,10 @@ void gl_camera_render (s_gl_camera *camera)
   glUniform1i(camera->gl_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
   glUniform4fv(camera->gl_color_loc, 1, &color.r);
+  assert(glGetError() == GL_NO_ERROR);
+  glDisable(GL_CULL_FACE);
+  assert(glGetError() == GL_NO_ERROR);
+  glDepthRange(camera->clip_z_near, camera->clip_z_far);
   assert(glGetError() == GL_NO_ERROR);
 }
 
