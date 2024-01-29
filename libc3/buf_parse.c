@@ -2562,129 +2562,24 @@ sw buf_parse_str_character_unicode (s_buf *buf, character *dest)
 
 sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
 {
-  character c;
   s_str in;
-  s_buf in_buf;
-  s_list  *list;
-  s_list **list_end;
-  s_list  *list_start = NULL;
-  s_ident op;
-  s_buf out_buf = {0};
   sw r;
   sw result;
-  s_tag *right;
   s_buf_save save;
-  s_tag tmp = {0};
-  s_tag tmp1 = {0};
   buf_save_init(buf, &save);
   r = buf_parse_str(buf, &in);
   if (r <= 0)
     goto save_clean;
   result = r;
-  buf_init_str(&in_buf, false, &in);
-  if (! buf_init_alloc(&out_buf, in.size)) {
+  if (! str_parse_eval(&in, dest)) {
     r = -2;
     goto restore;
   }
-  list_end = &list_start;
-  while (1) {
-    r = buf_read_1(&in_buf, "#{");
-    if (r < 0)
-      break;
-    if (r > 0) {
-      if (out_buf.wpos > 0) {
-        *list_end = list_new(NULL);
-        (*list_end)->tag.type = TAG_STR;
-        buf_read_to_str(&out_buf, &(*list_end)->tag.data.str);
-        list_end = &(*list_end)->next.data.list;
-        out_buf.rpos = out_buf.wpos = 0;
-      }
-      *list_end = list_new(NULL);
-      r = buf_parse_tag(&in_buf, &(*list_end)->tag);
-      if (r <= 0)
-        goto restore;
-      list_end = &(*list_end)->next.data.list;
-      r = buf_ignore_spaces(&in_buf);
-      if (r < 0)
-        goto restore;
-      r = buf_parse_comments(&in_buf);
-      if (r < 0)
-        goto restore;
-      r = buf_read_1(&in_buf, "}");
-      if (r <= 0)
-        goto restore;
-      continue;
-    }
-    r = buf_peek_character_utf8(&in_buf, &c);
-    if (r <= 0)
-      break;
-    r = buf_xfer(&out_buf, &in_buf, r);
-    if (r <= 0) {
-      r = -2;
-      goto restore;
-    }
-  }
-  if (out_buf.wpos > 0) {
-    *list_end = list_new(NULL);
-    (*list_end)->tag.type = TAG_STR;
-    buf_read_to_str(&out_buf, &(*list_end)->tag.data.str);
-  }
-  if (! list_start)
-    tag_init_str_empty(&tmp);
-  else {
-    list = list_start;
-    if (list->tag.type == TAG_STR)
-      tmp = list->tag;
-    else {
-      if (! tag_init_call_cast(&tmp, &g_sym_Str)) {
-        r = -2;
-        goto restore;
-      }
-      tmp.data.call.arguments->tag = list->tag;
-    }
-    list = list_next(list);
-    while (list) {
-      tmp1 = (s_tag) {0};
-      tmp1.type = TAG_CALL;
-      if (! call_init_op(&tmp1.data.call)) {
-        r = -2;
-        goto restore;
-      }
-      op.module = &g_sym_C3;
-      op.sym = &g_sym__plus;
-      operator_resolve(&op, 2, &tmp1.data.call.ident);
-      tmp1.data.call.arguments->tag = tmp;
-      right = &tmp1.data.call.arguments->next.data.list->tag;
-      if (list->tag.type == TAG_STR)
-        *right = list->tag;
-      else {
-        if (! tag_init_call_cast(right, &g_sym_Str)) {
-          r = -2;
-          goto restore;
-        }
-        right->data.call.arguments->tag = list->tag;
-      }
-      tmp = tmp1;
-      list = list_next(list);
-    }
-  }
-  *dest = tmp;
   r = result;
   goto clean;
  restore:
-  list = list_start;
-  while (list) {
-    tag_clean(&list->tag);
-    list = list_next(list);
-  }
-  buf_clean(&out_buf);
   buf_save_restore_rpos(buf, &save);
  clean:
-  while (list_start) {
-    list = list_next(list_start);
-    free(list_start);
-    list_start = list;
-  }
   str_clean(&in);
  save_clean:
   buf_save_clean(buf, &save);
@@ -3234,7 +3129,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_bool(buf, dest)) != 0 ||
       (r = buf_parse_tag_character(buf, dest)) != 0 ||
       (r = buf_parse_tag_map(buf, dest)) != 0 ||
-      (r = buf_parse_str_eval(buf, dest)) != 0 ||
+      (r = buf_parse_tag_str(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||

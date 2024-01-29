@@ -18,11 +18,30 @@
 #include <string.h>
 #include "buf.h"
 #include "buf_inspect.h"
+#include "buf_parse.h"
+#include "call.h"
 #include "character.h"
 #include "ident.h"
+#include "list.h"
+#include "operator.h"
 #include "str.h"
 #include "sym.h"
+#include "tag.h"
 #include "tag_type.h"
+
+#define DEF_STR_INIT(type)                                             \
+  s_str * str_init_ ## type (s_str *str, type x)                       \
+  {                                                                    \
+    s_buf buf;                                                         \
+    sw size;                                                           \
+    size = buf_inspect_ ## type ## _size(&x);                          \
+    if (size <= 0)                                                     \
+      return NULL;                                                     \
+    buf_init_alloc(&buf, size);                                        \
+    buf_inspect_ ## type(&buf, &x);                                    \
+    assert(buf.wpos == (uw) size);                                     \
+    return buf_to_str(&buf, str);                                      \
+  }
 
 sw str_character (const s_str *str, uw position, character *dest)
 {
@@ -139,10 +158,30 @@ s_str * str_init_cast (s_str *str, const s_tag *tag)
   assert(str);
   assert(tag);
   switch (tag->type) {
+  case TAG_S8:
+    return str_init_s8(str, tag->data.s8);
+  case TAG_S16:
+    return str_init_s16(str, tag->data.s16);
+  case TAG_S32:
+    return str_init_s32(str, tag->data.s32);
+  case TAG_S64:
+    return str_init_s64(str, tag->data.s64);
   case TAG_STR:
     return str_init_copy(str, &tag->data.str);
   case TAG_SYM:
     return str_init_copy(str, &tag->data.sym->str);
+  case TAG_SW:
+    return str_init_sw(str, tag->data.sw);
+  case TAG_U8:
+    return str_init_u8(str, tag->data.u8);
+  case TAG_U16:
+    return str_init_u16(str, tag->data.u16);
+  case TAG_U32:
+    return str_init_u32(str, tag->data.u32);
+  case TAG_U64:
+    return str_init_u64(str, tag->data.u64);
+  case TAG_UW:
+    return str_init_uw(str, tag->data.uw);
   default:
     break;
   }
@@ -235,6 +274,12 @@ s_str * str_init_f (s_str *str, const char *fmt, ...)
   return str;
 }
 
+DEF_STR_INIT(s8)
+DEF_STR_INIT(s16)
+DEF_STR_INIT(s32)
+DEF_STR_INIT(s64)
+DEF_STR_INIT(sw)
+
 s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
 {
   s_buf buf;
@@ -257,30 +302,11 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
   return str;
 }
 
-uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
-{
-  assert(dest);
-  if (pos >= 0) {
-    if ((uw) pos > max_pos) {
-      warnx("str_sw_pos_to_uw: index out of bounds: %ld > %lu",
-            pos, max_pos);
-      assert(! "str_sw_pos_to_uw: index too large");
-      return NULL;
-    }
-    *dest = (uw) pos;
-  }
-  else {
-    if (max_pos > SW_MAX || pos >= (sw) -max_pos)
-      *dest = max_pos - pos;
-    else {
-      warnx("str_sw_pos_to_uw: index out of bounds: %ld < -%lu",
-            pos, max_pos);
-      assert(! "str_sw_pos_to_uw: index too low");
-      return NULL;
-    }
-  }
-  return dest;
-}
+DEF_STR_INIT(u8)
+DEF_STR_INIT(u16)
+DEF_STR_INIT(u32)
+DEF_STR_INIT(u64)
+DEF_STR_INIT(uw)
 
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap)
 {
@@ -392,6 +418,104 @@ s_str * str_new_vf (const char *fmt, va_list ap)
   return dest;
 }
 
+bool str_parse_eval (const s_str *str, s_tag *dest)
+{
+  character c;
+  s_buf in_buf;
+  s_list  *list;
+  s_list **list_end;
+  s_list  *list_start = NULL;
+  s_ident op;
+  s_buf out_buf = {0};
+  sw r;
+  s_tag *right;
+  s_tag tmp = {0};
+  s_tag tmp1 = {0};
+  buf_init_str(&in_buf, false, (s_str *) str);
+  if (! buf_init_alloc(&out_buf, str->size))
+    goto restore;
+  list_end = &list_start;
+  while (1) {
+    r = buf_read_1(&in_buf, "#{");
+    if (r < 0)
+      break;
+    if (r > 0) {
+      if (out_buf.wpos > 0) {
+        *list_end = list_new(NULL);
+        (*list_end)->tag.type = TAG_STR;
+        buf_read_to_str(&out_buf, &(*list_end)->tag.data.str);
+        list_end = &(*list_end)->next.data.list;
+        out_buf.rpos = out_buf.wpos = 0;
+      }
+      *list_end = list_new(NULL);
+      r = buf_parse_tag(&in_buf, &(*list_end)->tag);
+      if (r <= 0)
+        goto restore;
+      list_end = &(*list_end)->next.data.list;
+      r = buf_ignore_spaces(&in_buf);
+      if (r < 0)
+        goto restore;
+      r = buf_parse_comments(&in_buf);
+      if (r < 0)
+        goto restore;
+      r = buf_read_1(&in_buf, "}");
+      if (r <= 0)
+        goto restore;
+      continue;
+    }
+    r = buf_peek_character_utf8(&in_buf, &c);
+    if (r <= 0)
+      break;
+    r = buf_xfer(&out_buf, &in_buf, r);
+    if (r <= 0)
+      goto restore;
+  }
+  if (out_buf.wpos > 0) {
+    *list_end = list_new(NULL);
+    (*list_end)->tag.type = TAG_STR;
+    buf_read_to_str(&out_buf, &(*list_end)->tag.data.str);
+  }
+  if (! list_start)
+    tag_init_str_empty(&tmp);
+  else {
+    list = list_start;
+    if (list->tag.type == TAG_STR)
+      tmp = list->tag;
+    else {
+      if (! tag_init_call_cast(&tmp, &g_sym_Str))
+        goto restore;
+      tmp.data.call.arguments->tag = list->tag;
+    }
+    list = list_next(list);
+    while (list) {
+      tmp1 = (s_tag) {0};
+      tmp1.type = TAG_CALL;
+      if (! call_init_op(&tmp1.data.call))
+        goto restore;
+      op.module = &g_sym_C3;
+      op.sym = &g_sym__plus;
+      operator_resolve(&op, 2, &tmp1.data.call.ident);
+      tmp1.data.call.arguments->tag = tmp;
+      right = &tmp1.data.call.arguments->next.data.list->tag;
+      if (list->tag.type == TAG_STR)
+        *right = list->tag;
+      else {
+        if (! tag_init_call_cast(right, &g_sym_Str))
+          goto restore;
+        right->data.call.arguments->tag = list->tag;
+      }
+      tmp = tmp1;
+      list = list_next(list);
+    }
+  }
+  *dest = tmp;
+  return true;
+ restore:
+  list_delete_all(list_start);
+  buf_clean(&out_buf);
+  return false;
+}
+
 sw str_peek_character_utf8 (const s_str *str, character *c)
 {
   assert(str);
@@ -496,6 +620,31 @@ uw * str_rindex_character (const s_str *str, character c, uw *dest)
     return dest;
   }
   return NULL;
+}
+
+uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
+{
+  assert(dest);
+  if (pos >= 0) {
+    if ((uw) pos > max_pos) {
+      warnx("str_sw_pos_to_uw: index out of bounds: %ld > %lu",
+            pos, max_pos);
+      assert(! "str_sw_pos_to_uw: index too large");
+      return NULL;
+    }
+    *dest = (uw) pos;
+  }
+  else {
+    if (max_pos > SW_MAX || pos >= (sw) -max_pos)
+      *dest = max_pos - pos;
+    else {
+      warnx("str_sw_pos_to_uw: index out of bounds: %ld < -%lu",
+            pos, max_pos);
+      assert(! "str_sw_pos_to_uw: index too low");
+      return NULL;
+    }
+  }
+  return dest;
 }
 
 s_str * str_to_hex (const s_str *src, s_str *dest)
