@@ -37,12 +37,12 @@ OBJECTS_COV="$(c2ext .cov.lo "$LO_SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 
 # Common config for all targets
-CPPFLAGS="-I../libffi/include $CPPFLAGS"
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -fPIC"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
 LDFLAGS="--shared $LDFLAGS -rdynamic"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
+pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
@@ -51,7 +51,7 @@ config_include sha1_h sys/types.h sha1.h HAVE_SHA1_H
 config_define PREFIX "\"${PREFIX}\""
 config_have_stat_mtim
 update_config_h
-LIBS="$LIBS ../libffi/libffi.la -lm -pthread -rpath ${PREFIX}/lib"
+LIBS="$LIBS -lm -pthread -rpath ${PREFIX}/lib"
 
 if ! [ -f ../ucd2c/ucd.c ]; then
     touch ../ucd2c/ucd.c

@@ -44,10 +44,12 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-CPPFLAGS="$CPPFLAGS -I../../../../../libffi/include -I../../../../.."
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic"
+CPPFLAGS="$CPPFLAGS -I../../../../.."
 config_asan
 config_gnu
+pkg_config libbsd-overlay
+pkg_config libffi
 pkg_config xcb
 pkg_config cairo
 LIBS="$LIBS"

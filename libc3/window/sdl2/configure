@@ -36,10 +36,9 @@ OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
 # Common config for all targets
-CPPFLAGS="-I../../../libffi/include -I../../.. $CPPFLAGS"
-CPPFLAGS="-Iftgl/src $CPPFLAGS"
+CPPFLAGS="-I../../.. $CPPFLAGS"
 #CPPFLAGS="$CPPFLAGS -DGL_SILENCE_DEPRECATION=1"
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic"
 LDFLAGS="--shared ${LDFLAGS}"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
