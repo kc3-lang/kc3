@@ -42,29 +42,29 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw seg_u, uw seg_v)
   assert(sphere);
   if (seg_u < 3)
     seg_u = 3;
-  if (seg_v < 2)
-    seg_v = 2;
+  if (seg_v < 1)
+    seg_v = 1;
   tmp.segments_u = seg_u;
   tmp.segments_v = seg_v;
   if (! gl_object_init(&tmp.object) ||
-      ! gl_object_allocate(&tmp.object, seg_u * (seg_v + 2),
+      ! gl_object_allocate(&tmp.object, (seg_u + 1) * (seg_v + 2),
                            2 * seg_u * (seg_v + 1)))
     return NULL;
   vertex = tmp.object.vertex.data;
   i = 0;
-  while (i < seg_v + 2) {
-    angle_i = (f64) i * M_PI / (seg_v + 2);
+  while (i <= seg_v + 1) {
+    angle_i = (f64) i * M_PI / (seg_v + 1);
     r = sin(angle_i);
     z = cos(angle_i);
     j = 0;
-    while (j < seg_u) {
+    while (j <= seg_u) {
       angle_j = j * M_PI * 2.0 / seg_u;
       vertex->position.x = cos(angle_j) * r;
       vertex->position.y = sin(angle_j) * r;
       vertex->position.z = z;
       vertex->normal = vertex->position;
       vertex->tex_coord.x = (f64) (seg_u - j) / seg_u;
-      vertex->tex_coord.y = (f64) i / (seg_v + 2);
+      vertex->tex_coord.y = (f64) i / (seg_v + 1);
       vertex++;
       j++;
     }
@@ -72,16 +72,16 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw seg_u, uw seg_v)
   }
   triangle = tmp.object.triangle.data;
   i = 0;
-  while (i < seg_v) {
+  while (i <= seg_v) {
     j = 0;
-    while (j < seg_u) {
-      triangle->a =  i      * seg_u +  j;
-      triangle->b = (i + 1) * seg_u +  j;
-      triangle->c = (i + 1) * seg_u + (j + 1) % seg_u;
+    while (j <= seg_u - 1) {
+      triangle->a =  i      * seg_u + j;
+      triangle->b = (i + 1) * seg_u + j;
+      triangle->c = (i + 1) * seg_u + j + 1;
       triangle++;
-      triangle->a =  i      * seg_u +  j;
-      triangle->b = (i + 1) * seg_u + (j + 1) % seg_u;
-      triangle->c =  i      * seg_u + (j + 1) % seg_u;
+      triangle->a =  i      * seg_u + j;
+      triangle->b = (i + 1) * seg_u + j + 1;
+      triangle->c =  i      * seg_u + j + 1;
       triangle++;
       j++;
     }
