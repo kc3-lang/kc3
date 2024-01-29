@@ -36,7 +36,6 @@ echo "HAVE_ASAN = ${HAVE_ASAN}" >> ${CONFIG_MK}
 update_config_mk
 env_reset
 
-( cd libffi; sh autogen.sh; MAKE="${GMAKE}" ./configure --prefix "${PREFIX}" --disable-multi-os-directory --disable-dependency-tracking; )
 ( cd libtommath; ./configure; )
 ( cd ucd2c     ; ./configure; )
 ( cd libc3     ; ./configure; )

@@ -12,7 +12,6 @@
 
 build:
 	${MAKE} gen
-	${GMAKE} -C libffi all
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c build
 	${MAKE} -C libc3 build
@@ -22,7 +21,6 @@ build:
 
 all:
 	${MAKE} gen
-	${GMAKE} -C libffi all
 	${MAKE} -C libtommath all
 	${MAKE} -C ucd2c all
 	${MAKE} -C libc3 all
@@ -31,7 +29,6 @@ all:
 	${MAKE} -C test all
 
 asan:
-	${GMAKE} -C libffi all
 	${MAKE} -C libtommath asan
 	${MAKE} -C libc3 asan
 	${MAKE} -C ic3 asan
@@ -39,7 +36,6 @@ asan:
 	${MAKE} -C test asan
 
 clean:
-	${GMAKE} -C libffi clean
 	${MAKE} -C libtommath clean
 	${MAKE} -C ucd2c clean
 	${MAKE} -C libc3 clean
@@ -56,7 +52,6 @@ clean_cov:
 
 cov:
 	${MAKE} gen
-	${GMAKE} -C libffi all
 	${MAKE} -C libtommath cov
 	${MAKE} -C libc3 cov
 	${MAKE} -C ic3 cov
@@ -64,7 +59,6 @@ cov:
 	${MAKE} -C test cov
 
 debug:
-	${GMAKE} -C libffi all
 	${MAKE} -C libtommath debug
 	${MAKE} -C libc3 debug
 	${MAKE} -C ic3 debug
@@ -156,7 +150,6 @@ ic3_gcovr:
 	${MAKE} gcovr
 
 install:
-	${GMAKE} -C libffi install
 	${MAKE} -C libc3 install
 	${MAKE} -C ic3 install
 	${MAKE} -C c3s install
@@ -165,9 +158,6 @@ libc3_gcovr:
 	${MAKE} clean_cov
 	${MAKE} libc3_test_cov
 	${MAKE} gcovr
-
-libffi:
-	${GMAKE} -C libffi all
 
 license:
 	update_header config.subr ${C3_CONFIGURES}
@@ -259,7 +249,6 @@ test_libc3_debug:
 	install \
 	libc3 \
 	libtommath \
-	libffi \
 	license \
 	test \
 	test_asan \

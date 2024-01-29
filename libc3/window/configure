@@ -36,13 +36,14 @@ OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
 # Common config for all targets
-CPPFLAGS="-I../../libffi/include -I../.. $CPPFLAGS"
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+CPPFLAGS="-I../.. $CPPFLAGS"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic"
 LDFLAGS="--shared ${LDFLAGS}"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
+pkg_config libffi
 config_define PREFIX "\"${PREFIX}\""
 
 # Address Sanitizer config
