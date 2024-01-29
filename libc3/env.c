@@ -672,7 +672,7 @@ bool env_eval_str (s_env *env, const s_str *str, s_tag *dest)
 {
   bool r = true;
   s_tag tmp;
-  if (str_parse_eval(str, &tmp) < 0) {
+  if (! str_parse_eval(str, &tmp)) {
     err_puts("env_eval_str: invalid Str");
     assert(! "env_eval_str: invalid Str");
     return false;
