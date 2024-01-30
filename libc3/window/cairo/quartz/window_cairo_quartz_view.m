@@ -42,6 +42,7 @@
                                                  self.bounds.size.width,
                                                  self.bounds.size.height);
     cairo_t *cr = cairo_create(surface);
+    self.window_cairo->cr = cr;
     if (! self.window_cairo->render(self.window_cairo)) {
       [self.window close];
       [self.window release];
