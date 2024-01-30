@@ -49,6 +49,7 @@ pkg_config gl
 pkg_config glew
 pkg_config glu
 pkg_config glut
+pkg_config libffi
 pkg_config libpng
 config_lib OPENGL -framework OpenGL
 pkg_config sdl2

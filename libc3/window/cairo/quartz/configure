@@ -48,8 +48,8 @@ OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.lo "$OBJC_SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CPPFLAGS="$CPPFLAGS -I../../../../libffi/include -I../../../.."
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+CPPFLAGS="$CPPFLAGS -I../../../.."
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic"
 OBJCFLAGS="$CFLAGS -W -Wall -Werror"
 LDFLAGS="--shared $LDFLAGS"
 LIBS="$LIBS"
@@ -58,6 +58,7 @@ config_gnu
 pkg_config cairo
 pkg_config cairo-ft
 config_lib COCOA -framework Cocoa
+pkg_config libffi
 pkg_config xkbcommon
 
 # Asan config

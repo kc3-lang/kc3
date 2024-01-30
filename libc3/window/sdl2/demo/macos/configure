@@ -52,7 +52,7 @@ echo "${APP_PROG}: ../.libs/${PROG}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP}/Contents/MacOS" >> ${CONFIG_MK}
 echo "	cp ../.libs/${PROG} ${APP_PROG}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_COMMON="/usr/local/lib/libSDL2-2.0.0.dylib ../../../../../libffi/.libs/libffi.8.dylib"
+BUNDLE_LIBS_COMMON="/usr/local/lib/libSDL2-2.0.0.dylib"
 
 BUNDLE_LIBS="${BUNDLE_LIBS_COMMON} ../../../../.libs/libc3.0.dylib ../../../.libs/libc3_window.0.dylib ../../.libs/libc3_window_sdl2.0.dylib"
 echo >> ${CONFIG_MK}
