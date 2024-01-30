@@ -662,8 +662,16 @@ bool env_eval_quote (s_env *env, const s_quote *quote, s_tag *dest)
   assert(env);
   assert(quote);
   assert(dest);
+  return env_eval_quote_tag(env, quote->tag, dest);
+}
+
+bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
+{
+  assert(env);
+  assert(tag);
+  assert(dest);
   (void) env;
-  if (! tag_init_copy(dest, quote->tag))
+  if (! tag_init_copy(dest, tag))
     return false;
   return true;
 }

@@ -57,6 +57,8 @@ bool          env_eval_progn (s_env *env, const s_list *program,
                               s_tag *dest);
 bool          env_eval_quote (s_env *env, const s_quote *quote,
                               s_tag *dest);
+bool          env_eval_quote_tag (s_env *env, const s_tag *tag,
+                                  s_tag *dest);
 bool          env_eval_struct (s_env *env, const s_struct *s,
                                s_tag *dest);
 bool          env_eval_tag (s_env *env, const s_tag *tag,
