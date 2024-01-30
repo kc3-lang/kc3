@@ -509,6 +509,12 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
     }
   }
   *dest = tmp;
+  while (list_start) {
+    list = list_next(list_start);
+    free(list_start);
+    list_start = list;
+  }
+  buf_clean(&out_buf);
   return true;
  restore:
   list_delete_all(list_start);
