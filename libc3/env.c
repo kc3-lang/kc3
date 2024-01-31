@@ -665,14 +665,111 @@ bool env_eval_quote (s_env *env, const s_quote *quote, s_tag *dest)
   return env_eval_quote_tag(env, quote->tag, dest);
 }
 
+bool env_eval_quote_array_tag (s_env *env, const s_array *array,
+                               s_tag *dest)
+{
+  uw i;
+  s_tag       *tag;
+  s_tag        tag_eval;
+  s_array tmp = {0};
+  assert(env);
+  assert(array);
+  assert(dest);
+  if ((! array->dimension || array->data || ! array->tags) &&
+      ! tag_init_array_copy(dest, array))
+    return false;
+  if (! array->tags) {
+      tmp.data = tmp.free_data = calloc(tmp.dimensions[0].count,
+                                        tmp.dimensions[0].item_size);
+      if (! tmp.data) {
+        warn("env_eval_array: failed to allocate memory");
+        assert(! "env_eval_array: failed to allocate memory");
+        return false;
+      }
+      data = tmp.data;
+      tag = tmp.tags;
+      i = 0;
+      while (i < tmp.count) {
+        if (! env_eval_tag(env, tag, &tag_eval))
+          goto ko;
+        if (! data_init_cast(tmp.element_type, data, &tag_eval)) {
+          err_write_1("env_eval_array: cannot cast ");
+          err_inspect_tag(&tag_eval);
+          err_write_1(" to ");
+          err_inspect_sym(&tmp.element_type);
+          err_puts(".");
+          goto ko;
+        }
+        tag_clean(&tag_eval);
+        data += item_size;
+        tag++;
+        i++;
+      }
+    }
+  }
+  *dest = tmp;
+  return true;
+ ko:
+  array_clean(&tmp);
+  return false;
+}
+
+// Like tag_init_copy excepted that the unquote parts get evaluated.
 bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
 {
   assert(env);
   assert(tag);
   assert(dest);
-  (void) env;
-  if (! tag_init_copy(dest, tag))
-    return false;
+  switch (tag->type) {
+  case TAG_ARRAY:
+    return env_eval_quote_array_tag(env, &tag->data.array, dest);
+  case TAG_CALL:
+    return env_eval_quote_call(env, &tag->data.call, dest);
+  case TAG_LIST:
+    return env_eval_quote_list(env, tag->data.list, dest);
+  case TAG_MAP:
+    return env_eval_quote_map(env, &tag->data.map, dest);
+  case TAG_STR:
+    return env_eval_quote_str(env, &tag->data.str, dest);
+  case TAG_STRUCT:
+    return env_eval_quote_struct(env, &tag->data.struct_, dest);
+  case TAG_TUPLE:
+    return env_eval_quote_tuple(env, &tag->data.tuple, dest);
+  case TAG_VOID:
+  case TAG_BOOL:
+  case TAG_CFN:
+  case TAG_CHARACTER:
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_F128:
+  case TAG_FACT:
+  case TAG_FN:
+  case TAG_IDENT:
+  case TAG_INTEGER:
+  case TAG_PTAG:
+  case TAG_PTR:
+  case TAG_PTR_FREE:
+  case TAG_QUOTE:
+  case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_SW:
+  case TAG_STRUCT_TYPE:
+  case TAG_SYM:
+  case TAG_U8:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_UW:
+  case TAG_VAR:
+    if (! tag_init_copy(dest, tag))
+      return false;
+    return true;
+  }
+  warnx("env_eval_quote_tag: unknown tag type: %d", tag->type);
+  assert(! "env_eval_quote_tag: unknown tag type");
+  return false;
   return true;
 }
 
@@ -801,7 +898,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_U64:
   case TAG_UW:
   case TAG_VAR:
-    tag_init_copy(dest, tag);
+    if (! tag_init_copy(dest, tag))
+      return false;
     return true;
   }
   warnx("env_eval_tag: unknown tag type: %d", tag->type);
