@@ -24,6 +24,44 @@ static GLuint g_mandelbrot_f128_texture = 0;
 static bool mandelbrot_f128_resize (s_sequence *seq);
 static bool mandelbrot_f128_update (s_sequence *seq);
 
+bool mandelbrot_f128_button (s_sequence *seq, u8 button, sw x, sw y)
+{
+  s_map *map;
+  f128 *next_x;
+  f128 *next_y;
+  f128 *next_z;
+  s_window_cairo *win;
+  assert(seq);
+  win = seq->window;
+  assert(win);
+  assert(seq->tag.type == TAG_MAP);
+  map = &seq->tag.data.map;
+  assert(map->count == 9);
+  assert(map->key[1].type == TAG_SYM);
+  assert(map->key[1].data.sym == sym_1("next_x"));
+  assert(map->value[1].type == TAG_F128);
+  next_x = &map->value[1].data.f128;
+  assert(map->key[2].type == TAG_SYM);
+  assert(map->key[2].data.sym == sym_1("next_y"));
+  assert(map->value[2].type == TAG_F128);
+  next_y = &map->value[2].data.f128;
+  assert(map->key[3].type == TAG_SYM);
+  assert(map->key[3].data.sym == sym_1("next_z"));
+  assert(map->value[3].type == TAG_F128);
+  next_z = &map->value[3].data.f128;
+  if (button == 1) {
+    *next_x = *next_x + *next_z * (x - (f128) win->w / 2);
+    *next_y = *next_y + *next_z * (y - (f128) win->h / 2);
+  }
+  else if (button == 5) {
+    *next_z = *next_z * exp2l(0.5);
+  }
+  else if (button == 4) {
+    *next_z = *next_z * exp2l(-0.5);
+  }
+  return true;
+}
+
 bool mandelbrot_f128_load (s_sequence *seq)
 {
   s_map *map;
@@ -48,18 +86,20 @@ bool mandelbrot_f128_load (s_sequence *seq)
   tag_init_sym(    map->key + 7, sym_1("y"));
   tag_init_f128( map->value + 7, 0.0);
   tag_init_sym(    map->key + 8, sym_1("z"));
-  tag_init_f128( map->value + 8, 0.01);
-  glGenTextures(1, &g_mandelbrot_f128_texture);
+  tag_init_f128( map->value + 8, 0.0);
   return true;
 }
 
 bool mandelbrot_f128_render (s_sequence *seq)
 {
+  char a[80];
+  s_buf buf;
   uw *h;
   s_map *map;
   f128 next_x;
   f128 next_y;
   f128 next_z;
+  s_str str;
   uw *w;
   s_window_sdl2 *win;
   f128 *x;
@@ -160,6 +200,7 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   f128 _2z_xz_y;
   f128 c_x;
   f128 c_y;
+  u8 *data;
   uw i;
   uw j;
   u8 k;
@@ -169,8 +210,8 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   f128 next_y;
   f128 next_z;
   u8 *pix;
-  s_array *pixels;
-  s_window_sdl2 *win;
+  uw stride;
+  s_window_cairo *win;
   f128 z_x;
   f128 z_y;
   f128 z_x2;
@@ -199,12 +240,14 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   pixels = &map->value[4].data.array;
   pix = pixels->data;
   assert(pix);
+  stride = win->w * 4;
   i = 0;
   while (i < win->h) {
-    c_y = next_y + next_z * (i - win->h / 2);
+    c_y = next_y + next_z * ((f128) i - win->h / 2);
+    pix = data + i * stride;
     j = 0;
     while (j < win->w) {
-      c_x = next_x + next_z * (j - win->w / 2);
+      c_x = next_x + next_z * ((f128) j - win->w / 2);
       z_x = c_x;
       z_y = c_y;
       k = 0;
@@ -218,22 +261,27 @@ static bool mandelbrot_f128_update (s_sequence *seq)
         z_y2 = z_y * z_y;
         k++;
       }
-      level = (f32) k / 255.0f;
+      level = 255 - k;
+      /*if (k)
+        printf("x %lu, y %lu, k %d, level %d", j, i, k, level);*/
       pix[0] = level;
       pix[1] = level;
       pix[2] = level;
-      pix[3] = 255;
       pix += 4;
       j++;
     }
     i++;
   }
+  assert(glGetError() == GL_NO_ERROR);
   glBindTexture(GL_TEXTURE_2D, g_mandelbrot_f128_texture);
+  assert(glGetError() == GL_NO_ERROR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  assert(glGetError() == GL_NO_ERROR);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, win->w, win->h, 0,
                GL_RGBA, GL_UNSIGNED_BYTE, pixels->data);
+  assert(glGetError() == GL_NO_ERROR);
   return true;
 }
