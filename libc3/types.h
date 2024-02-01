@@ -584,6 +584,7 @@ struct env {
   s_str             module_path;
   s_buf             out;
   s_list           *path;
+  uw                quote_level;
   s_unwind_protect *unwind_protect;
 };
 

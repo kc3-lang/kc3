@@ -50,6 +50,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_STRUCT_TYPE: *dest = sizeof(s_struct_type); return true;
   case TAG_SYM:         *dest = sizeof(s_sym *);       return true;
   case TAG_TUPLE:       *dest = sizeof(s_tuple);       return true;
+  case TAG_UNQUOTE:     *dest = sizeof(s_unquote);     return true;
   case TAG_VAR:         *dest = 0;                     return true;
   }
   warnx("tag_type_size: invalid tag type: %d", type);
@@ -92,6 +93,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_U16:         *dest = &ffi_type_uint16;     return true;
   case TAG_U32:         *dest = &ffi_type_uint32;     return true;
   case TAG_U64:         *dest = &ffi_type_uint64;     return true;
+  case TAG_UNQUOTE:     *dest = &ffi_type_pointer;    return true;
   case TAG_UW:          *dest = &ffi_type_ulong;      return true;
   case TAG_VAR:         *dest = &ffi_type_pointer;    return true;
   case TAG_VOID:        *dest = &ffi_type_void;       return true;
@@ -138,6 +140,7 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_STRUCT_TYPE: return "StructType";
   case TAG_SYM:         return "Sym";
   case TAG_TUPLE:       return "Tuple";
+  case TAG_UNQUOTE:     return "Unquote";
   case TAG_VAR:         return "Var";
   }
   warnx("tag_type_to_string: unknown tag type: %d", tag_type);

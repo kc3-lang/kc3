@@ -146,6 +146,7 @@ HEADERS = \
 	"u64.h" \
 	"u8.h" \
 	"ucd.h" \
+	"unquote.h" \
 	"uw.h" \
 	"var.h" \
 	"void.h" \
@@ -302,6 +303,7 @@ SOURCES = \
 	"u64.c" \
 	"u8.c" \
 	"ucd.c" \
+	"unquote.c" \
 	"uw.c" \
 	"var.c" \
 	"void.c" \
@@ -555,6 +557,7 @@ LO_SOURCES = \
 	"u64.c" \
 	"u8.c" \
 	"ucd.c" \
+	"unquote.c" \
 	"uw.c" \
 	"var.c" \
 	"void.c" \

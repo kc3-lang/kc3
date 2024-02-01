@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
-#include <stdlib.h>
 #include "quote.h"
 #include "tag.h"
 
