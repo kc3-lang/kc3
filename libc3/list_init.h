@@ -19,6 +19,8 @@
 s_list * list_init_array (s_list *list, const s_sym *type, 
                           uw dimension, const uw *dimensions, 
                           s_list *next);
+s_list * list_init_array_copy (s_list *list, const s_array *a, 
+                               s_list *next);
 s_list * list_init_bool (s_list *list, bool b, s_list *next);
 s_list * list_init_call (s_list *list, s_list *next);
 s_list * list_init_character (s_list *list, character c, s_list *next);
@@ -72,6 +74,7 @@ s_list * list_init_void (s_list *list, s_list *next);
 /* Heap-allocation functions, call list_delete after use. */
 s_list * list_new_array (const s_sym *type, uw dimension, 
                          const uw *dimensions, s_list *next);
+s_list * list_new_array_copy (const s_array *a, s_list *next);
 s_list * list_new_bool (bool b, s_list *next);
 s_list * list_new_call (s_list *next);
 s_list * list_new_character (character c, s_list *next);
@@ -120,6 +123,7 @@ s_list * list_new_void (s_list *next);
 /* Setters. */
 s_list * list_array (s_list *list, const s_sym *type, uw dimension, 
                      const uw *dimensions);
+s_list * list_array_copy (s_list *list, const s_array *a);
 s_list * list_bool (s_list *list, bool b);
 s_list * list_call (s_list *list);
 s_list * list_character (s_list *list, character c);

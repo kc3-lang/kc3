@@ -122,6 +122,7 @@ typedef enum {
   TAG_STRUCT_TYPE,
   TAG_SYM,
   TAG_TUPLE,
+  TAG_UNQUOTE,
   TAG_VAR,
   TAG_IDENT
 } e_tag_type;
@@ -168,6 +169,7 @@ typedef struct tag_type_list           s_tag_type_list;
 typedef struct timespec                s_time;
 typedef struct tuple                   s_tuple;
 typedef struct type                    s_type;
+typedef struct unquote                 s_unquote;
 typedef struct unwind_protect          s_unwind_protect;
 
 /* unions */
@@ -280,6 +282,10 @@ struct tag_type_list {
 
 struct tuple {
   uw count;
+  s_tag *tag;
+};
+
+struct unquote {
   s_tag *tag;
 };
 
@@ -433,6 +439,7 @@ union tag_data {
   u16           u16;
   u32           u32;
   u64           u64;
+  s_unquote     unquote;
   uw            uw;
 };
 

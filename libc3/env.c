@@ -665,46 +665,27 @@ bool env_eval_quote (s_env *env, const s_quote *quote, s_tag *dest)
   return env_eval_quote_tag(env, quote->tag, dest);
 }
 
-bool env_eval_quote_array_tag (s_env *env, const s_array *array,
-                               s_tag *dest)
+bool env_eval_quote_array (s_env *env, const s_array *array,
+                           s_tag *dest)
 {
   uw i;
-  s_tag       *tag;
-  s_tag        tag_eval;
+  s_tag *tag;
+  s_tag  tag_eval;
   s_array tmp = {0};
   assert(env);
   assert(array);
   assert(dest);
-  if ((! array->dimension || array->data || ! array->tags) &&
-      ! tag_init_array_copy(dest, array))
-    return false;
-  if (! array->tags) {
-      tmp.data = tmp.free_data = calloc(tmp.dimensions[0].count,
-                                        tmp.dimensions[0].item_size);
-      if (! tmp.data) {
-        warn("env_eval_array: failed to allocate memory");
-        assert(! "env_eval_array: failed to allocate memory");
-        return false;
-      }
-      data = tmp.data;
-      tag = tmp.tags;
-      i = 0;
-      while (i < tmp.count) {
-        if (! env_eval_tag(env, tag, &tag_eval))
-          goto ko;
-        if (! data_init_cast(tmp.element_type, data, &tag_eval)) {
-          err_write_1("env_eval_array: cannot cast ");
-          err_inspect_tag(&tag_eval);
-          err_write_1(" to ");
-          err_inspect_sym(&tmp.element_type);
-          err_puts(".");
-          goto ko;
-        }
-        tag_clean(&tag_eval);
-        data += item_size;
-        tag++;
-        i++;
-      }
+  if (! array->dimension || array->data || ! array->tags) {
+    return tag_init_array_copy(dest, array))
+  tag = array->tags;
+  i = 0;
+  while (i < array->count) {
+    if (tag->type == TAG_UNQUOTE) {
+      if (! env_eval_tag(env, tag, &tag_eval))
+        goto ko;
+    }
+    else
+
     }
   }
   *dest = tmp;

@@ -258,13 +258,8 @@ s_array * array_init_cast (s_array *array, const s_tag *tag)
   return NULL;
 }
 
-s_array * array_init_copy (s_array *a, const s_array *src)
+s_array * array_init_copy_shallow (s_array *array, const s_array *src)
 {
-  u8 *data_tmp;
-  u8 *data_src;
-  uw i = 0;
-  uw item_size;
-  bool must_clean;
   s_array tmp = {0};
   assert(a);
   assert(src);
@@ -282,8 +277,26 @@ s_array * array_init_copy (s_array *a, const s_array *src)
     }
     memcpy(tmp.dimensions, src->dimensions,
            src->dimension * sizeof(s_array_dimension));
+  }
+  *array = tmp;
+  return array;
+}
+
+s_array * array_init_copy (s_array *a, const s_array *src)
+{
+  u8 *data_tmp;
+  u8 *data_src;
+  uw i = 0;
+  uw item_size;
+  bool must_clean;
+  s_array tmp;
+  assert(a);
+  assert(src);
+  if (! array_init_copy_shallow(&tmp, src))
+    return NULL;
+  if (tmp.dimension) {
     if (src->data) {
-      tmp.data = tmp.free_data = calloc(1, src->size);
+      tmp.data = tmp.free_data = calloc(1, tmp.size);
       if (! tmp.data) {
         warnx("array_init_copy: failed to allocate memory");
         assert(! "array_init_copy: failed to allocate memory");
