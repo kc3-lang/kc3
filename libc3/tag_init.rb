@@ -304,6 +304,8 @@ class TagInitList
                    [Arg.new("const s_sym *", "type"),
                     Arg.new("uw", "dimension"),
                     Arg.new("const uw *", "dimensions")]),
+       TagInit.new("array", "copy", "TAG_ARRAY", :init_mode_init,
+                   [Arg.new("const s_array *", "a")]),
        TagInit.new("bool", "TAG_BOOL", :init_mode_direct,
                    [Arg.new("bool", "b")]),
        TagInit.new("call", "TAG_CALL", :init_mode_init, []),

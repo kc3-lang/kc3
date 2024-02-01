@@ -2156,6 +2156,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_U16:     return buf_inspect_u16(buf, &tag->data.u16);
   case TAG_U32:     return buf_inspect_u32(buf, &tag->data.u32);
   case TAG_U64:     return buf_inspect_u64(buf, &tag->data.u64);
+  case TAG_UNQUOTE: return buf_inspect_unquote(buf, &tag->data.unquote);
   case TAG_UW:      return buf_inspect_uw(buf, &tag->data.uw);
   case TAG_VAR:     return buf_inspect_var(buf, NULL);
   case TAG_VOID:    return buf_inspect_void(buf, NULL);
@@ -2206,6 +2207,8 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_U16:      return buf_inspect_u16_size(&tag->data.u16);
   case TAG_U32:      return buf_inspect_u32_size(&tag->data.u32);
   case TAG_U64:      return buf_inspect_u64_size(&tag->data.u64);
+  case TAG_UNQUOTE:
+    return buf_inspect_unquote_size(&tag->data.unquote);
   case TAG_UW:       return buf_inspect_uw_size(&tag->data.uw);
   case TAG_VAR:      return buf_inspect_var_size(NULL);
   case TAG_VOID:     return buf_inspect_void_size(NULL);

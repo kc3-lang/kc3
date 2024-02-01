@@ -50,6 +50,17 @@ s_tag * tag_init_array (s_tag *tag, const s_sym *type, uw dimension,
   return tag;
 }
 
+s_tag * tag_init_array_copy (s_tag *tag, const s_array *a)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_ARRAY;
+  if (! array_init_copy(&tmp.data.array, a))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_bool (s_tag *tag, bool b)
 {
   s_tag tmp = {0};
@@ -447,6 +458,21 @@ s_tag * tag_new_array (const s_sym *type, uw dimension,
   }
   tag->type = TAG_ARRAY;
   if (! array_init(&tag->data.array, type, dimension, dimensions)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_array_copy (const s_array *a)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_array_copy: calloc");
+    return NULL;
+  }
+  tag->type = TAG_ARRAY;
+  if (! array_init_copy(&tag->data.array, a)) {
     free(tag);
     return NULL;
   }
@@ -956,6 +982,18 @@ s_tag * tag_array (s_tag *tag, const s_sym *type, uw dimension,
   tag_clean(tag);
   tmp.type = TAG_ARRAY;
   if (! array_init(&tmp.data.array, type, dimension, dimensions))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_array_copy (s_tag *tag, const s_array *a)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_ARRAY;
+  if (! array_init_copy(&tmp.data.array, a))
     return NULL;
   *tag = tmp;
   return tag;

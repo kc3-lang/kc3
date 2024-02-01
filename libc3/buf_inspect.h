@@ -147,6 +147,8 @@ BUF_INSPECT_U_PROTOTYPES(8);
 BUF_INSPECT_U_PROTOTYPES(16);
 BUF_INSPECT_U_PROTOTYPES(32);
 BUF_INSPECT_U_PROTOTYPES(64);
+sw buf_inspect_unquote (s_buf *buf, const s_unquote *unquote);
+sw buf_inspect_unquote_size (const s_unquote *unquote);
 BUF_INSPECT_U_PROTOTYPES(w);
 sw buf_inspect_var (s_buf *buf, const s_tag *var);
 sw buf_inspect_var_size (const s_tag *var);
