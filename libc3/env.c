@@ -676,8 +676,12 @@ bool env_eval_quote_array (s_env *env, const s_array *array,
   assert(array);
   assert(dest);
   if (! array->dimension || array->data || ! array->tags) {
-    return tag_init_array_copy(dest, array))
+    if (! tag_init_array_copy(dest, array))
+      return false;
+    return true;
+  }
   tag = array->tags;
+  tmp_tag = tmp.tags = calloc();
   i = 0;
   while (i < array->count) {
     if (tag->type == TAG_UNQUOTE) {
@@ -703,7 +707,7 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
   assert(dest);
   switch (tag->type) {
   case TAG_ARRAY:
-    return env_eval_quote_array_tag(env, &tag->data.array, dest);
+    return env_eval_quote_array(env, &tag->data.array, dest);
   case TAG_CALL:
     return env_eval_quote_call(env, &tag->data.call, dest);
   case TAG_LIST:
