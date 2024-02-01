@@ -659,10 +659,14 @@ bool env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
 
 bool env_eval_quote (s_env *env, const s_quote *quote, s_tag *dest)
 {
+  bool r;
   assert(env);
   assert(quote);
   assert(dest);
-  return env_eval_quote_tag(env, quote->tag, dest);
+  env->quote_level++;
+  r = env_eval_quote_tag(env, quote->tag, dest);
+  env->quote_level--;
+  return r;
 }
 
 bool env_eval_quote_array (s_env *env, const s_array *array,
@@ -704,6 +708,113 @@ bool env_eval_quote_array (s_env *env, const s_array *array,
   return false;
 }
 
+bool env_eval_quote_call (s_env *env, const s_call *call, s_tag *dest)
+{
+  const s_list *arg;
+  s_call        tmp = {0};
+  s_list **tmp_arg_last;
+  assert(call);
+  assert(dest);
+  if (! ident_init_copy(&tmp.ident, &call->ident))
+    return false;
+  tmp_arg_last = &tmp.arguments;
+  arg = call->arguments;
+  while (arg) {
+    *tmp_arg_last = list_new(NULL);
+    if (! env_eval_quote_tag(env, &arg->tag, &(*tmp_arg_last)->tag))
+      goto ko;
+    arg = list_next(arg);
+  }
+  // TODO: copy cfn and fn ?
+  tmp.cfn = call->cfn;
+  tmp.fn = call->fn;
+  dest->type = TAG_CALL;
+  dest->data.call = tmp;
+  return true;
+ ko:
+  call_clean(&tmp);
+  return false;
+}
+
+bool env_eval_quote_map (s_env *env, const s_map *map, s_tag *dest)
+{
+  s_map tmp;
+  uw i = 0;
+  assert(env);
+  assert(map);
+  assert(dest);
+  if (! map_init(&tmp, map->count))
+    return false;
+  while (i < tmp.count) {
+    if (! env_eval_quote_tag(env, map->key + i, tmp.key + i) ||
+        ! env_eval_quote_tag(env, map->value + i, tmp.value + i))
+      goto ko;
+    i++;
+  }
+  dest->type = TAG_MAP;
+  dest->data.map = tmp;
+  return true;
+ ko:
+  map_clean(&tmp);
+  return false;
+}
+
+bool env_eval_quote_quote (s_env *env, const s_quote *quote, s_tag *dest)
+{
+  bool r;
+  s_quote tmp = {0};
+  assert(env);
+  assert(quote);
+  assert(dest);
+  tmp.tag = tag_new();
+  if (! tmp.tag)
+    return false;
+  env->quote_level++;
+  r = env_eval_quote_tag(env, quote->tag, tmp.tag);
+  env->quote_level--;
+  if (! r)
+    return false;
+  dest->type = TAG_QUOTE;
+  dest->data.quote = tmp;
+  return true;
+}
+
+bool env_eval_quote_struct (s_env *env, const s_struct *s, s_tag *dest)
+{
+  uw i;
+  s_struct *t;
+  s_tag tmp = {0};
+  assert(env);
+  assert(s);
+  assert(dest);
+  tmp.type = TAG_STRUCT;
+  t = &tmp.data.struct_;
+  if (s->data || ! s->tag) {
+    if (! struct_init_copy(t, s))
+      return false;
+    *dest = tmp;
+    return true;
+  }
+  t->type = s->type;
+  t->tag = calloc(t->type->map.count, sizeof(s_tag));
+  if (! t->tag) {
+    err_puts("env_eval_quote_struct: failed to allocate memory");
+    assert(! "env_eval_quote_struct: failed to allocate memory");
+    return false;
+  }
+  i = 0;
+  while (i < t->type->map.count) {
+    if (! env_eval_quote_tag(env, s->tag + i, t->tag + i))
+      goto ko;
+    i++;
+  }
+  *dest = tmp;
+  return true;
+ ko:
+  struct_clean(t);
+  return false;
+}
+
 // Like tag_init_copy excepted that the unquote parts get evaluated.
 bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
 {
@@ -719,6 +830,8 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_quote_list(env, tag->data.list, dest);
   case TAG_MAP:
     return env_eval_quote_map(env, &tag->data.map, dest);
+  case TAG_QUOTE:
+    return env_eval_quote_quote(env, &tag->data.quote, dest);
   case TAG_STR:
     return env_eval_quote_str(env, &tag->data.str, dest);
   case TAG_STRUCT:
@@ -741,7 +854,6 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
-  case TAG_QUOTE:
   case TAG_S8:
   case TAG_S16:
   case TAG_S32:
@@ -762,6 +874,27 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
   warnx("env_eval_quote_tag: unknown tag type: %d", tag->type);
   assert(! "env_eval_quote_tag: unknown tag type");
   return false;
+  return true;
+}
+
+bool env_eval_quote_unquote (s_env *env, const s_unquote *unquote, s_tag *dest)
+{
+  bool r;
+  s_tag tmp;
+  assert(env);
+  assert(unquote);
+  assert(dest);
+  if (env->unquote_level + 1 >= env->quote_level) {
+    err_puts("env_eval_quote_unquote: unquote outside of a quote");
+    assert(! "env_eval_quote_unquote: unquote outside of a quote");
+    return false;
+  }
+  env->unquote_level++;
+  r = env_eval_tag(env, unquote->tag, &tmp);
+  env->unquote_level--;
+  if (! r)
+    return false;
+  *dest = tmp;
   return true;
 }
 
@@ -965,6 +1098,7 @@ s_env * env_init (s_env *env, int argc, char **argv)
     return NULL;
   }
   env->quote_level = 0;
+  env->unquote_level = 0;
   return env;
 }
 
