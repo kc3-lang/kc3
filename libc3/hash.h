@@ -59,6 +59,7 @@ HASH_UPDATE_PROTOTYPE(u8);
 HASH_UPDATE_PROTOTYPE(u16);
 HASH_UPDATE_PROTOTYPE(u32);
 HASH_UPDATE_PROTOTYPE(u64);
+bool hash_update_unquote (t_hash *hash, const s_unquote *x);
 HASH_UPDATE_PROTOTYPE(uw);
 bool hash_update_var (t_hash *hash, const void *x);
 bool hash_update_void (t_hash *hash, const void *x);

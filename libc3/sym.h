@@ -65,6 +65,7 @@ extern const s_sym g_sym_U8;
 extern const s_sym g_sym_U16;
 extern const s_sym g_sym_U32;
 extern const s_sym g_sym_U64;
+extern const s_sym g_sym_Unquote;
 extern const s_sym g_sym_Uw;
 extern const s_sym g_sym_Uw_brackets;
 extern const s_sym g_sym_Var;

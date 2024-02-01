@@ -441,6 +441,8 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_PTR_FREE:
     return hash_update_ptr_free(hash, &tag->data.ptr_free);
   case TAG_QUOTE: return hash_update_quote(hash, &tag->data.quote);
+  case TAG_UNQUOTE:
+    return hash_update_unquote(hash, &tag->data.unquote);
   case TAG_S8:    return hash_update_s8(hash, &tag->data.s8);
   case TAG_S16:   return hash_update_s16(hash, &tag->data.s16);
   case TAG_S32:   return hash_update_s32(hash, &tag->data.s32);
@@ -484,6 +486,15 @@ HASH_UPDATE_DEF(u8)
 HASH_UPDATE_DEF(u16)
 HASH_UPDATE_DEF(u32)
 HASH_UPDATE_DEF(u64)
+
+bool hash_update_unquote (t_hash *hash, const s_unquote *x)
+{
+  const char type[] = "unquote";
+  if (! hash_update(hash, type, strlen(type)))
+    return false;
+  return hash_update_tag(hash, x->tag);
+}
+
 HASH_UPDATE_DEF(uw)
 
 bool hash_update_var (t_hash *hash, const void *x)

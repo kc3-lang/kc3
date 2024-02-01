@@ -59,8 +59,24 @@ bool          env_eval_quote (s_env *env, const s_quote *quote,
                               s_tag *dest);
 bool          env_eval_quote_array (s_env *env, const s_array *array,
                                     s_tag *dest);
+bool          env_eval_quote_call (s_env *env, const s_call *call,
+                                   s_tag *dest);
+bool          env_eval_quote_list (s_env *env, const s_list *list,
+                                   s_tag *dest);
+bool          env_eval_quote_map (s_env *env, const s_map *map,
+                                  s_tag *dest);
+bool          env_eval_quote_quote (s_env *env, const s_quote *quote,
+                                    s_tag *dest);
+bool          env_eval_quote_str (s_env *env, const s_str *str,
+                                  s_tag *dest);
+bool          env_eval_quote_struct (s_env *env, const s_struct *s,
+                                     s_tag *dest);
 bool          env_eval_quote_tag (s_env *env, const s_tag *tag,
                                   s_tag *dest);
+bool          env_eval_quote_tuple (s_env *env, const s_tuple *tuple,
+                                    s_tag *dest);
+bool          env_eval_quote_unquote (s_env *env, const s_unquote *unquote,
+                                      s_tag *dest);
 bool          env_eval_struct (s_env *env, const s_struct *s,
                                s_tag *dest);
 bool          env_eval_tag (s_env *env, const s_tag *tag,

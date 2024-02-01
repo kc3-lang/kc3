@@ -670,8 +670,8 @@ bool env_eval_quote_array (s_env *env, const s_array *array,
 {
   uw i;
   s_tag *tag;
-  s_tag  tag_eval;
   s_array tmp = {0};
+  s_tag  *tmp_tag;
   assert(env);
   assert(array);
   assert(dest);
@@ -681,18 +681,23 @@ bool env_eval_quote_array (s_env *env, const s_array *array,
     return true;
   }
   tag = array->tags;
-  tmp_tag = tmp.tags = calloc();
+  tmp_tag = tmp.tags = calloc(tmp.count, sizeof(s_tag));
   i = 0;
   while (i < array->count) {
     if (tag->type == TAG_UNQUOTE) {
-      if (! env_eval_tag(env, tag, &tag_eval))
+      if (! env_eval_tag(env, tag->data.unquote.tag, tmp_tag))
         goto ko;
     }
-    else
-
+    else {
+      if (! tag_init_copy(tmp_tag, tag))
+        goto ko;
     }
+    tag++;
+    tmp_tag++;
+    i++;
   }
-  *dest = tmp;
+  dest->type = TAG_ARRAY;
+  dest->data.array = tmp;
   return true;
  ko:
   array_clean(&tmp);
@@ -720,6 +725,8 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_quote_struct(env, &tag->data.struct_, dest);
   case TAG_TUPLE:
     return env_eval_quote_tuple(env, &tag->data.tuple, dest);
+  case TAG_UNQUOTE:
+    return env_eval_quote_unquote(env, &tag->data.unquote, dest);
   case TAG_VOID:
   case TAG_BOOL:
   case TAG_CFN:
@@ -881,6 +888,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_U16:
   case TAG_U32:
   case TAG_U64:
+  case TAG_UNQUOTE:
   case TAG_UW:
   case TAG_VAR:
     if (! tag_init_copy(dest, tag))
@@ -956,6 +964,7 @@ s_env * env_init (s_env *env, int argc, char **argv)
     env_clean(env);
     return NULL;
   }
+  env->quote_level = 0;
   return env;
 }
 

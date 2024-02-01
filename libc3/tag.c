@@ -42,6 +42,7 @@
 #include "tag_type.h"
 #include "time.h"
 #include "tuple.h"
+#include "unquote.h"
 
 s_tag g_tag_first;
 s_tag g_tag_last;
@@ -190,6 +191,7 @@ void tag_clean (s_tag *tag)
   case TAG_STRUCT_TYPE: struct_type_clean(&tag->data.struct_type);
                                                            break;
   case TAG_TUPLE:       tuple_clean(&tag->data.tuple);     break;
+  case TAG_UNQUOTE:     unquote_clean(&tag->data.unquote); break;
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:
@@ -381,6 +383,9 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     break;
   case TAG_TUPLE:
     tuple_init_copy(&tag->data.tuple, &src->data.tuple);
+    break;
+  case TAG_UNQUOTE:
+    unquote_init_copy(&tag->data.unquote, &src->data.unquote);
     break;
   case TAG_BOOL:
   case TAG_CHARACTER:
@@ -709,6 +714,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   case TAG_STRUCT_TYPE: *dest = &tag->data.struct_type; return true;
   case TAG_SYM:         *dest = &tag->data.sym;         return true;
   case TAG_TUPLE:       *dest = &tag->data.tuple;       return true;
+  case TAG_UNQUOTE:     *dest = &tag->data.unquote;     return true;
   case TAG_VAR:         *dest = NULL;                   return true;
   case TAG_VOID:        *dest = NULL;                   return true;
   }
@@ -900,6 +906,12 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
+  case TAG_UNQUOTE:
+    if (type == &g_sym_Unquote) {
+      *dest = &tag->data.unquote;
+      return true;
+    }
+    goto invalid_cast;
   case TAG_STR:
     if (type == &g_sym_Str) {
       *dest = &tag->data.str;
@@ -1006,6 +1018,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_STRUCT_TYPE: *dest = &tag->data.struct_type; return true;
   case TAG_SYM:         *dest = &tag->data.sym;         return true;
   case TAG_TUPLE:       *dest = &tag->data.tuple;       return true;
+  case TAG_UNQUOTE:     *dest = &tag->data.unquote;     return true;
   case TAG_VAR:         *dest = NULL;                   return true;
   }
   warnx("tag_to_pointer: invalid tag type: %d", tag_type);
@@ -1055,6 +1068,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_STRUCT_TYPE: *dest = &g_sym_StructType; return dest;
   case TAG_SYM:         *dest = &g_sym_Sym;        return dest;
   case TAG_TUPLE:       *dest = &g_sym_Tuple;      return dest;
+  case TAG_UNQUOTE:     *dest = &g_sym_Unquote;    return dest;
   case TAG_VAR:         *dest = &g_sym_Var;        return dest;
   }
   warnx("tag_type: unknown tag type: %d", tag->type);

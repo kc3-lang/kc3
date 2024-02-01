@@ -37,6 +37,7 @@ const s_sym g_sym_Ptag        = {{{NULL},  4, {"Ptag"}}};
 const s_sym g_sym_Ptr         = {{{NULL},  3, {"Ptr"}}};
 const s_sym g_sym_PtrFree     = {{{NULL},  7, {"PtrFree"}}};
 const s_sym g_sym_Quote       = {{{NULL},  5, {"Quote"}}};
+const s_sym g_sym_Unquote     = {{{NULL},  7, {"Unquote"}}};
 const s_sym g_sym_Result      = {{{NULL},  6, {"Result"}}};
 const s_sym g_sym_S8          = {{{NULL},  2, {"S8"}}};
 const s_sym g_sym_S16         = {{{NULL},  3, {"S16"}}};
@@ -285,6 +286,7 @@ void sym_init_g_sym (void)
   sym_intern(&g_sym_U16, NULL);
   sym_intern(&g_sym_U32, NULL);
   sym_intern(&g_sym_U64, NULL);
+  sym_intern(&g_sym_Unquote, NULL);
   sym_intern(&g_sym_Uw, NULL);
   sym_intern(&g_sym_Uw_brackets, NULL);
   sym_intern(&g_sym_Var, NULL);
