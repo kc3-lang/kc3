@@ -2287,6 +2287,37 @@ sw buf_inspect_tuple_size (const s_tuple *tuple)
   return result;
 }
 
+sw buf_inspect_unquote (s_buf *buf, const s_unquote *unquote)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_write_1(buf, "unquote ")) < 0)
+    goto clean;
+  result += r;
+  if ((r = buf_inspect_tag(buf, unquote->tag)) < 0)
+    goto restore;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_wpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_inspect_unquote_size (const s_unquote *unquote)
+{
+  sw r;
+  sw result = 0;
+  result += strlen("unquote ");
+  if ((r = buf_inspect_tag_size(unquote->tag)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 sw buf_inspect_var (s_buf *buf, const s_tag *var)
 {
   sw r;
