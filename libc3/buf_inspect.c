@@ -351,6 +351,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   sw result = 0;
   s_tag *right;
   left = &call->arguments->tag;
+  assert(list_next(call->arguments));
   right = &list_next(call->arguments)->tag;
   if (left->type == TAG_CALL &&
       operator_find(&left->data.call.ident) &&
