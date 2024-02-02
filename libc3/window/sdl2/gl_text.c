@@ -75,12 +75,14 @@ bool gl_text_render_to_texture (s_gl_text *text)
   FT_UInt glyph_index;
   uw i;
   uw j;
+  uw line_height;
   uw max_ascent;
   uw max_descent;
-  FT_UInt prev_glyph_index = 0;
+  FT_UInt prev_glyph_index;
   s_str s;
   f32 scale_y;
-  f32 x;
+  uw x;
+  uw y;
   assert(text);
   assert(text->font);
   assert(text->texture);
@@ -95,14 +97,25 @@ bool gl_text_render_to_texture (s_gl_text *text)
   scale_y = face->size->metrics.y_scale / 65536.0;
   max_ascent = (u32) (face->ascender * scale_y) >> 6;
   max_descent = (u32) abs((int) (face->descender * scale_y)) >> 6;
+  line_height = max_ascent + max_descent;
   data_w = 0;
-  data_h = max_ascent + max_descent;
+  data_h = line_height;
+  x = 0;
+  prev_glyph_index = 0;
   while (str_read_character_utf8(&s, &c) > 0) {
+    if (c == '\n') {
+      if (x > data_w)
+        data_w = x;
+      x = 0;
+      data_h += line_height;
+      prev_glyph_index = 0;
+      continue;
+    }
     glyph_index = FT_Get_Char_Index(face, c);
     if (prev_glyph_index && glyph_index) {
       FT_Get_Kerning(face, prev_glyph_index, glyph_index,
                      FT_KERNING_DEFAULT, &delta);
-      data_w += delta.x >> 6;
+      x += delta.x >> 6;
     }
     if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER)) {
       err_write_1("gl_font_render_to_texture: failed to load glyph: ");
@@ -111,15 +124,24 @@ bool gl_text_render_to_texture (s_gl_text *text)
       continue;
     }
     glyph = face->glyph;
-    data_w += glyph->metrics.horiAdvance >> 6;
+    x += glyph->metrics.horiAdvance >> 6;
     prev_glyph_index = glyph_index;
   }
+  if (x > data_w)
+    data_w = x;
   data_size = data_w * data_h * 4;
   data = calloc(1, data_size);
   x = 0;
+  y = 0;
   prev_glyph_index = 0;
   s = text->str;
   while (str_read_character_utf8(&s, &c) > 0) {
+    if (c == '\n') {
+      x = 0;
+      y += line_height;
+      prev_glyph_index = 0;
+      continue;
+    }
     glyph_index = FT_Get_Char_Index(face, c);
     if (prev_glyph_index && glyph_index) {
       FT_Vector delta;
@@ -132,7 +154,7 @@ bool gl_text_render_to_texture (s_gl_text *text)
     glyph = face->glyph;
     i = 0;
     while (i < glyph->bitmap.rows) {
-      data_y = data_h - 1 - i - max_ascent + glyph->bitmap_top;
+      data_y = data_h - 1 - (y + i + max_ascent - glyph->bitmap_top);
       //printf("\n");
       j = 0;
       while (j < glyph->bitmap.width) {

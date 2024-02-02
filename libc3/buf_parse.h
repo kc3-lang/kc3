@@ -123,9 +123,11 @@ sw buf_parse_tag_str (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_struct (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_sym (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest);
+sw buf_parse_tag_unquote (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_void (s_buf *buf, s_tag *dest);
 sw buf_parse_tuple (s_buf *buf, s_tuple *dest);
 sw buf_parse_u64_hex (s_buf *buf, u64 *dest);
+sw buf_parse_unquote (s_buf *buf, s_unquote *dest);
 sw buf_parse_var (s_buf *buf, void *dest);
 sw buf_parse_void (s_buf *buf, void *dest);
 

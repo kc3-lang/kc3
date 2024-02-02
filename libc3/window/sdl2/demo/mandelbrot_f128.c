@@ -13,12 +13,15 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "../gl_deprecated.h"
+#include "../gl_font.h"
 #include "../gl_matrix_4f.h"
 #include "../gl_ortho.h"
+#include "../gl_text.h"
 #include "mandelbrot_f128.h"
 #include "window_sdl2_demo.h"
 
-// FIXME: move g_mandelbrot_f128_texture to seq->tag
+static s_gl_font g_mandelbrot_f128_font = {0};
+static s_gl_text g_mandelbrot_f128_text = {0};
 static GLuint g_mandelbrot_f128_texture = 0;
 
 static bool mandelbrot_f128_resize (s_sequence *seq);
@@ -30,7 +33,7 @@ bool mandelbrot_f128_button (s_sequence *seq, u8 button, sw x, sw y)
   f128 *next_x;
   f128 *next_y;
   f128 *next_z;
-  s_window_cairo *win;
+  s_window_sdl2 *win;
   assert(seq);
   win = seq->window;
   assert(win);
@@ -64,8 +67,13 @@ bool mandelbrot_f128_button (s_sequence *seq, u8 button, sw x, sw y)
 
 bool mandelbrot_f128_load (s_sequence *seq)
 {
+  f32 point_per_pixel;
   s_map *map;
+  s_window_sdl2 *window;
   assert(seq);
+  window = seq->window;
+  assert(window);
+  point_per_pixel = (f32) window->w / window->gl_w;
   if (! tag_map(&seq->tag, 9))
     return false;
   map = &seq->tag.data.map;
@@ -87,19 +95,27 @@ bool mandelbrot_f128_load (s_sequence *seq)
   tag_init_f128( map->value + 7, 0.0);
   tag_init_sym(    map->key + 8, sym_1("z"));
   tag_init_f128( map->value + 8, 0.0);
+  if (! gl_font_init(&g_mandelbrot_f128_font,
+                     "fonts/Courier New/Courier New.ttf",
+                     point_per_pixel))
+    return false;
+  gl_font_set_size(&g_mandelbrot_f128_font, 20.0);
+  if (! gl_text_init_1(&g_mandelbrot_f128_text, &g_mandelbrot_f128_font,
+                       "x: 0.0\n"
+                       "y: 0.0\n"
+                       "z: 0.01"))
+    return false;
+  gl_text_update(&g_mandelbrot_f128_text);
   return true;
 }
 
 bool mandelbrot_f128_render (s_sequence *seq)
 {
-  char a[80];
-  s_buf buf;
   uw *h;
   s_map *map;
   f128 next_x;
   f128 next_y;
   f128 next_z;
-  s_str str;
   uw *w;
   s_window_sdl2 *win;
   f128 *x;
@@ -159,6 +175,8 @@ bool mandelbrot_f128_render (s_sequence *seq)
   gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   gl_ortho_bind_texture(&g_ortho, g_mandelbrot_f128_texture);
   gl_ortho_rect(&g_ortho, 0, 0, win->w, win->h);
+  gl_ortho_text_render_outline(&g_ortho, &g_mandelbrot_f128_text,
+                               20.0, 120.0);
   return true;
 }
 
@@ -200,7 +218,6 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   f128 _2z_xz_y;
   f128 c_x;
   f128 c_y;
-  u8 *data;
   uw i;
   uw j;
   u8 k;
@@ -209,9 +226,9 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   f128 next_x;
   f128 next_y;
   f128 next_z;
+  s_array *pixels;
   u8 *pix;
-  uw stride;
-  s_window_cairo *win;
+  s_window_sdl2 *win;
   f128 z_x;
   f128 z_y;
   f128 z_x2;
@@ -240,11 +257,9 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   pixels = &map->value[4].data.array;
   pix = pixels->data;
   assert(pix);
-  stride = win->w * 4;
   i = 0;
   while (i < win->h) {
     c_y = next_y + next_z * ((f128) i - win->h / 2);
-    pix = data + i * stride;
     j = 0;
     while (j < win->w) {
       c_x = next_x + next_z * ((f128) j - win->w / 2);
@@ -283,5 +298,15 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, win->w, win->h, 0,
                GL_RGBA, GL_UNSIGNED_BYTE, pixels->data);
   assert(glGetError() == GL_NO_ERROR);
+  char a[512];
+  s_buf buf;
+  buf_init(&buf, false, sizeof(a), a);
+  buf_write_1(&buf, "x: ");
+  buf_inspect_f128(&buf, &next_x);
+  buf_write_1(&buf, "\ny: ");
+  buf_inspect_f128(&buf, &next_y);
+  buf_write_1(&buf, "\nz: ");
+  buf_inspect_f128(&buf, &next_z);
+  gl_text_update_buf(&g_mandelbrot_f128_text, &buf);
   return true;
 }

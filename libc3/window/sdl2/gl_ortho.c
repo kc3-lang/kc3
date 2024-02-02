@@ -280,6 +280,38 @@ void gl_ortho_text_render (s_gl_ortho *ortho, const s_gl_text *text)
   gl_ortho_bind_texture(ortho, 0);
 }
 
+void gl_ortho_text_render_outline (s_gl_ortho *ortho, s_gl_text *text,
+                                   f64 x, f64 y)
+{
+  s_gl_matrix_4f matrix;
+  assert(glGetError() == GL_NO_ERROR);
+  glEnable(GL_BLEND);
+  glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                      GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_ortho_bind_texture(ortho, text->texture);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_ortho_color(ortho, 1.0f, 1.0f, 1.0f, 1.0f);
+  assert(glGetError() == GL_NO_ERROR);
+  matrix = ortho->model_matrix;
+  gl_ortho_rect(ortho, x - 1.0, y - 1.0, text->pt_w, text->pt_h);
+  gl_ortho_rect(ortho, x,       y - 1.0, text->pt_w, text->pt_h);
+  gl_ortho_rect(ortho, x + 1.0, y - 1.0, text->pt_w, text->pt_h);
+  gl_ortho_rect(ortho, x - 1.0, y,       text->pt_w, text->pt_h);
+  //gl_ortho_rect(ortho, x,       y,       text->pt_w, text->pt_h);
+  gl_ortho_rect(ortho, x + 1.0, y,       text->pt_w, text->pt_h);
+  gl_ortho_rect(ortho, x - 1.0, y + 1.0, text->pt_w, text->pt_h);
+  gl_ortho_rect(ortho, x,       y + 1.0, text->pt_w, text->pt_h);
+  gl_ortho_rect(ortho, x + 1.0, y + 1.0, text->pt_w, text->pt_h);
+  gl_ortho_color(ortho, 0.0f, 0.0f, 0.0f, 1.0f);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_ortho_rect(ortho, x,       y,       text->pt_w, text->pt_h);
+  assert(glGetError() == GL_NO_ERROR);
+  ortho->model_matrix = matrix;
+  gl_ortho_update_model_matrix(ortho);
+  assert(glGetError() == GL_NO_ERROR);
+}
+
 void gl_ortho_update_model_matrix (s_gl_ortho *ortho)
 {
   assert(ortho);
