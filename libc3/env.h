@@ -67,8 +67,6 @@ bool          env_eval_quote_map (s_env *env, const s_map *map,
                                   s_tag *dest);
 bool          env_eval_quote_quote (s_env *env, const s_quote *quote,
                                     s_tag *dest);
-bool          env_eval_quote_str (s_env *env, const s_str *str,
-                                  s_tag *dest);
 bool          env_eval_quote_struct (s_env *env, const s_struct *s,
                                      s_tag *dest);
 bool          env_eval_quote_tag (s_env *env, const s_tag *tag,

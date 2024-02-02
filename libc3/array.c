@@ -261,7 +261,7 @@ s_array * array_init_cast (s_array *array, const s_tag *tag)
 s_array * array_init_copy_shallow (s_array *array, const s_array *src)
 {
   s_array tmp = {0};
-  assert(a);
+  assert(array);
   assert(src);
   tmp.array_type   = src->array_type;
   tmp.count        = src->count;
