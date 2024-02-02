@@ -230,6 +230,18 @@ s_list * list_init_ptr_free (s_list *list, void *p, s_list *next)
   return list;
 }
 
+s_list * list_init_quote_copy (s_list *list, const s_quote *quote, 
+                               s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_quote_copy(&tmp.tag, quote))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_s8 (s_list *list, s8 i, s_list *next)
 {
   s_list tmp;
@@ -430,6 +442,18 @@ s_list * list_init_u64 (s_list *list, u64 i, s_list *next)
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_u64(&tmp.tag, i))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_unquote_copy (s_list *list, 
+                                 const s_unquote *unquote, s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_unquote_copy(&tmp.tag, unquote))
     return NULL;
   *list = tmp;
   return list;
@@ -690,6 +714,19 @@ s_list * list_new_ptr_free (void *p, s_list *next)
   return list;
 }
 
+s_list * list_new_quote_copy (const s_quote *quote, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_quote_copy(&list->tag, quote)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
 s_list * list_new_s8 (s8 i, s_list *next)
 {
   s_list *list;
@@ -922,6 +959,19 @@ s_list * list_new_u64 (u64 i, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_u64(&list->tag, i)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_unquote_copy (const s_unquote *unquote, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_unquote_copy(&list->tag, unquote)) {
     free(list);
     return NULL;
   }

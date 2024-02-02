@@ -690,14 +690,8 @@ bool env_eval_quote_array (s_env *env, const s_array *array,
   tmp_tag = tmp.tags = calloc(tmp.count, sizeof(s_tag));
   i = 0;
   while (i < array->count) {
-    if (tag->type == TAG_UNQUOTE) {
-      if (! env_eval_tag(env, tag->data.unquote.tag, tmp_tag))
-        goto ko;
-    }
-    else {
-      if (! tag_init_copy(tmp_tag, tag))
-        goto ko;
-    }
+    if (! env_eval_quote_tag(env, tag, tmp_tag))
+      goto ko;
     tag++;
     tmp_tag++;
     i++;
@@ -941,7 +935,14 @@ bool env_eval_quote_unquote (s_env *env, const s_unquote *unquote, s_tag *dest)
     return false;
   }
   env->unquote_level++;
-  r = env_eval_tag(env, unquote->tag, &tmp);
+  if (env->unquote_level == 1) {
+    if (env->quote_level == 1)
+      r = env_eval_tag(env, unquote->tag, &tmp);
+    else
+      r = tag_init_copy(&tmp, unquote->tag) ? true : false;
+  }
+  else
+    r = tag_init_unquote_copy(&tmp, unquote) ? true : false;
   env->unquote_level--;
   if (! r)
     return false;

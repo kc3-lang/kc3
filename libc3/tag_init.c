@@ -37,6 +37,7 @@
 #include "tag_init.h"
 #include "time.h"
 #include "tuple.h"
+#include "unquote.h"
 
 s_tag * tag_init_array (s_tag *tag, const s_sym *type, uw dimension, 
                         const uw *dimensions)
@@ -230,6 +231,17 @@ s_tag * tag_init_ptr_free (s_tag *tag, void *p)
   return tag;
 }
 
+s_tag * tag_init_quote_copy (s_tag *tag, const s_quote *quote)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_QUOTE;
+  if (! quote_init_copy(&tmp.data.quote, quote))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_s8 (s_tag *tag, s8 i)
 {
   s_tag tmp = {0};
@@ -416,6 +428,17 @@ s_tag * tag_init_u64 (s_tag *tag, u64 i)
   assert(tag);
   tmp.type = TAG_U64;
   tmp.data.u64 = i;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_unquote_copy (s_tag *tag, const s_unquote *unquote)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_UNQUOTE;
+  if (! unquote_init_copy(&tmp.data.unquote, unquote))
+    return NULL;
   *tag = tmp;
   return tag;
 }
@@ -698,6 +721,21 @@ s_tag * tag_new_ptr_free (void *p)
   return tag;
 }
 
+s_tag * tag_new_quote_copy (const s_quote *quote)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_quote_copy: calloc");
+    return NULL;
+  }
+  tag->type = TAG_QUOTE;
+  if (! quote_init_copy(&tag->data.quote, quote)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_s8 (s8 i)
 {
   s_tag *tag;
@@ -937,6 +975,21 @@ s_tag * tag_new_u64 (u64 i)
   }
   tag->type = TAG_U64;
   tag->data.u64 = i;
+  return tag;
+}
+
+s_tag * tag_new_unquote_copy (const s_unquote *unquote)
+{
+  s_tag *tag;
+  if (! (tag = calloc(1, sizeof(s_tag)))) {
+    warn("tag_new_unquote_copy: calloc");
+    return NULL;
+  }
+  tag->type = TAG_UNQUOTE;
+  if (! unquote_init_copy(&tag->data.unquote, unquote)) {
+    free(tag);
+    return NULL;
+  }
   return tag;
 }
 
@@ -1184,6 +1237,18 @@ s_tag * tag_ptr_free (s_tag *tag, void *p)
   return tag;
 }
 
+s_tag * tag_quote_copy (s_tag *tag, const s_quote *quote)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_QUOTE;
+  if (! quote_init_copy(&tmp.data.quote, quote))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_s8 (s_tag *tag, s8 i)
 {
   s_tag tmp = {0};
@@ -1388,6 +1453,18 @@ s_tag * tag_u64 (s_tag *tag, u64 i)
   tag_clean(tag);
   tmp.type = TAG_U64;
   tmp.data.u64 = i;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_unquote_copy (s_tag *tag, const s_unquote *unquote)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_UNQUOTE;
+  if (! unquote_init_copy(&tmp.data.unquote, unquote))
+    return NULL;
   *tag = tmp;
   return tag;
 }
