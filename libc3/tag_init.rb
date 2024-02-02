@@ -340,6 +340,8 @@ class TagInitList
                    [Arg.new("void *", "p")]),
        TagInit.new("ptr_free", "TAG_PTR_FREE", :init_mode_init,
                    [Arg.new("void *", "p")]),
+       TagInit.new("quote", "copy", "TAG_QUOTE", :init_mode_init,
+                   [Arg.new("const s_quote *", "quote")]),
        TagInit.new("s8", "TAG_S8", :init_mode_direct,
                    [Arg.new("s8", "i")]),
        TagInit.new("s16", "TAG_S16", :init_mode_direct,
@@ -383,6 +385,8 @@ class TagInitList
                    [Arg.new("u32", "i")]),
        TagInit.new("u64", "TAG_U64", :init_mode_direct,
                    [Arg.new("u64", "i")]),
+       TagInit.new("unquote", "copy", "TAG_UNQUOTE", :init_mode_init,
+                   [Arg.new("const s_unquote *", "unquote")]),
        TagInit.new("uw", "TAG_UW", :init_mode_direct,
                    [Arg.new("uw", "i")]),
        TagInit.new("var", "TAG_VAR", :init_mode_none, []),
@@ -520,6 +524,7 @@ tag_init_c.content = <<EOF
 #include "tag_init.h"
 #include "time.h"
 #include "tuple.h"
+#include "unquote.h"
 #{inits.def_tag_init.c_word_wrap}
 #{inits.def_tag_new.c_word_wrap}
 #{inits.def_tag.c_word_wrap}
