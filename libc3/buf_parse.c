@@ -2408,8 +2408,14 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
     goto restore;
   result += r;
   quote.tag = tag_new();
-  if ((r = buf_parse_tag(buf, quote.tag)) <= 0)
+  if (! quote.tag) {
+    r = -2;
     goto restore;
+  }
+  if ((r = buf_parse_tag(buf, quote.tag)) <= 0) {
+    free(quote.tag);
+    goto restore;
+  }
   result += r;
   *dest = quote;
   r = result;
@@ -3132,6 +3138,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_str(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
+      (r = buf_parse_tag_unquote(buf, dest)) != 0 ||
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
       (r = buf_parse_tag_struct(buf, dest)) != 0 ||
@@ -3204,6 +3211,16 @@ sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_tuple(buf, &dest->data.tuple)) > 0)
     dest->type = TAG_TUPLE;
+  return r;
+}
+
+sw buf_parse_tag_unquote (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_unquote(buf, &dest->data.unquote)) > 0)
+    dest->type = TAG_UNQUOTE;
   return r;
 }
 
@@ -3332,6 +3349,39 @@ sw buf_parse_u64_hex (s_buf *buf, u64 *dest)
     *dest = tmp;
     r = result;
   }
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_unquote (s_buf *buf, s_unquote *dest)
+{
+  s_unquote unquote;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "unquote")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  unquote.tag = tag_new();
+  if (! unquote.tag) {
+    r = -2;
+    goto restore;
+  }
+  if ((r = buf_parse_tag(buf, unquote.tag)) <= 0) {
+    free(unquote.tag);
+    goto restore;
+  }
+  result += r;
+  *dest = unquote;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
   buf_save_clean(buf, &save);
   return r;
 }

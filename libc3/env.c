@@ -736,6 +736,32 @@ bool env_eval_quote_call (s_env *env, const s_call *call, s_tag *dest)
   return false;
 }
 
+bool env_eval_quote_list (s_env *env, const s_list *list, s_tag *dest)
+{
+  s_list *next;
+  s_list *tmp = NULL;
+  s_list **tail = &tmp;
+  assert(env);
+  assert(dest);
+  while (list) {
+    *tail = list_new(NULL);
+    if (! env_eval_quote_tag(env, &list->tag, &(*tail)->tag))
+      goto ko;
+    next = list_next(list);
+    if (! next)
+      if (! env_eval_quote_tag(env, &list->next, &(*tail)->next))
+        goto ko;
+    tail = &(*tail)->next.data.list;
+    list = next;
+  }
+  dest->type = TAG_LIST;
+  dest->data.list = tmp;
+  return true;
+ ko:
+  list_delete_all(tmp);
+  return false;
+}
+
 bool env_eval_quote_map (s_env *env, const s_map *map, s_tag *dest)
 {
   s_map tmp;
@@ -777,6 +803,24 @@ bool env_eval_quote_quote (s_env *env, const s_quote *quote, s_tag *dest)
   dest->type = TAG_QUOTE;
   dest->data.quote = tmp;
   return true;
+}
+
+bool env_eval_quote_str (s_env *env, const s_str *str, s_tag *dest)
+{
+  bool r = true;
+  s_tag tmp;
+  if (! str_parse_eval(str, &tmp)) {
+    err_puts("env_eval_str: invalid Str");
+    assert(! "env_eval_str: invalid Str");
+    return false;
+  }
+  if (tmp.type == TAG_STR) {
+    *dest = tmp;
+    return true;
+  }
+  r = env_eval_quote_tag(env, &tmp, dest);
+  tag_clean(&tmp);
+  return r;
 }
 
 bool env_eval_quote_struct (s_env *env, const s_struct *s, s_tag *dest)
@@ -877,6 +921,27 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
   return true;
 }
 
+bool env_eval_quote_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
+{
+  uw i = 0;
+  s_tuple tmp;
+  assert(env);
+  assert(tuple);
+  assert(dest);
+  tuple_init(&tmp, tuple->count);
+  while (i < tuple->count) {
+    if (! env_eval_quote_tag(env, tuple->tag + i, tmp.tag + i))
+      goto ko;
+    i++;
+  }
+  dest->type = TAG_TUPLE;
+  dest->data.tuple = tmp;
+  return true;
+ ko:
+  tuple_clean(&tmp);
+  return false;
+}
+
 bool env_eval_quote_unquote (s_env *env, const s_unquote *unquote, s_tag *dest)
 {
   bool r;
@@ -884,7 +949,7 @@ bool env_eval_quote_unquote (s_env *env, const s_unquote *unquote, s_tag *dest)
   assert(env);
   assert(unquote);
   assert(dest);
-  if (env->unquote_level + 1 >= env->quote_level) {
+  if (env->unquote_level >= env->quote_level) {
     err_puts("env_eval_quote_unquote: unquote outside of a quote");
     assert(! "env_eval_quote_unquote: unquote outside of a quote");
     return false;
@@ -1042,7 +1107,7 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
   assert(dest);
   tuple_init(&tmp, tuple->count);
   while (i < tuple->count) {
-    if (! env_eval_tag(env, &tuple->tag[i], &tmp.tag[i]))
+    if (! env_eval_tag(env, tuple->tag + i, tmp.tag + i))
       return false;
     i++;
   }

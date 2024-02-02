@@ -88,6 +88,9 @@ bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
   assert(window);
   (void) window;
   printf("c3_window_sdl2_demo_button: %lu (%ld, %ld)\n", (uw) button, x, y);
+  if (window->seq && window->seq->button &&
+      ! window->seq->button(window->seq, button, x, y))
+    return false;
   return true;
 }
 
@@ -207,61 +210,9 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   sequence_init(window->sequence + 5, 3600.0, "06. Mandelbrot (f128)",
                 mandelbrot_f128_load, mandelbrot_f128_render,
                 mandelbrot_f128_unload, window);
+  window->sequence[5].button = mandelbrot_f128_button;
   window_set_sequence_pos((s_window *) window, 0);
   return true;
-}
-
-static void render_text (s_gl_text *text, f64 x, f64 y)
-{
-  s_gl_matrix_4f matrix;
-  assert(glGetError() == GL_NO_ERROR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                  GL_LINEAR);
-  glEnable(GL_BLEND);
-  glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
-                      GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  assert(glGetError() == GL_NO_ERROR);
-  matrix = g_ortho.model_matrix;
-  gl_matrix_4f_translate(&g_ortho.model_matrix, x - 1.0, y - 1.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 1.0f);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_ortho_text_render(&g_ortho, text);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  gl_ortho_text_render(&g_ortho, text);
-  gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  gl_ortho_text_render(&g_ortho, text);
-  gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, 1.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  gl_ortho_text_render(&g_ortho, text);
-  gl_matrix_4f_translate(&g_ortho.model_matrix, -1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  gl_ortho_text_render(&g_ortho, text);
-  gl_matrix_4f_translate(&g_ortho.model_matrix, -1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  gl_ortho_text_render(&g_ortho, text);
-  gl_matrix_4f_translate(&g_ortho.model_matrix, 0.0, 1.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  gl_ortho_text_render(&g_ortho, text);
-  gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  gl_ortho_text_render(&g_ortho, text);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_matrix_4f_translate(&g_ortho.model_matrix, 1.0, 0.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  gl_ortho_text_render(&g_ortho, text);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_ortho_color(&g_ortho, 0.0f, 0.0f, 0.0f, 1.0f);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_matrix_4f_translate(&g_ortho.model_matrix, -1.0, -1.0, 0.0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_ortho_text_render(&g_ortho, text);
-  assert(glGetError() == GL_NO_ERROR);
-  g_ortho.model_matrix = matrix;
 }
 
 bool window_sdl2_demo_render (s_window_sdl2 *window)
@@ -291,7 +242,8 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   gl_font_set_size(&g_font_courier_new, 20);
   gl_text_update_1(&g_text_seq_title, seq->title);
   gl_matrix_4f_init_identity(&g_ortho.model_matrix);
-  render_text(&g_text_seq_title, 20.0f, 30.0f);
+  gl_ortho_text_render_outline(&g_ortho, &g_text_seq_title,
+                               20.0f, 30.0f);
   /* progress bar */
   gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   glDisable(GL_BLEND);
@@ -312,7 +264,8 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   gl_matrix_4f_init_identity(&g_ortho.model_matrix);
   gl_text_update_1(&g_text_fps, fps);
   glEnable(GL_BLEND);
-  render_text(&g_text_fps, 20, window->h - 30);
+  gl_ortho_text_render_outline(&g_ortho, &g_text_fps,
+                               20, window->h - 30);
   gl_ortho_render_end(&g_ortho);
   return true;
 }
