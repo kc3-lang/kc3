@@ -684,6 +684,8 @@ bool env_eval_quote_array (s_env *env, const s_array *array,
       return false;
     return true;
   }
+  if (! array_init_copy_shallow(&tmp, array))
+    return false;
   tag = array->tags;
   tmp_tag = tmp.tags = calloc(tmp.count, sizeof(s_tag));
   i = 0;
@@ -723,6 +725,7 @@ bool env_eval_quote_call (s_env *env, const s_call *call, s_tag *dest)
     *tmp_arg_last = list_new(NULL);
     if (! env_eval_quote_tag(env, &arg->tag, &(*tmp_arg_last)->tag))
       goto ko;
+    tmp_arg_last = &(*tmp_arg_last)->next.data.list;
     arg = list_next(arg);
   }
   // TODO: copy cfn and fn ?
@@ -745,6 +748,8 @@ bool env_eval_quote_list (s_env *env, const s_list *list, s_tag *dest)
   assert(dest);
   while (list) {
     *tail = list_new(NULL);
+    if (! *tail)
+      goto ko;
     if (! env_eval_quote_tag(env, &list->tag, &(*tail)->tag))
       goto ko;
     next = list_next(list);
