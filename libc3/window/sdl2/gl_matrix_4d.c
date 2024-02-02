@@ -18,6 +18,7 @@
 sw gl_matrix_4d_buf_inspect (s_buf *buf, const s_gl_matrix_4d *matrix)
 {
   u8 i;
+  u8 j;
   sw r;
   sw result = 0;
   assert(buf);
@@ -28,14 +29,32 @@ sw gl_matrix_4d_buf_inspect (s_buf *buf, const s_gl_matrix_4d *matrix)
   result += r;
   m = &matrix->xx;
   i = 0;
-  while (i < 16) {
-    if ((r = buf_inspect_f64(buf, m)) < 0)
-      return r;
-    result += r;
-    m++;
+  while (i < 4) {
+    j = 0;
+    while (j < 4) {
+      if ((r = buf_inspect_f64(buf, m + j * 4 + i)) < 0)
+        return r;
+      result += r;
+      if (i < 3 || j < 3) {
+        if ((r = buf_write_1(buf, ",")) < 0)
+          return r;
+        result += r;
+        if (j < 3) {
+          if ((r = buf_write_1(buf, " ")) < 0)
+            return r;
+          result += r;
+        }
+      }
+      j++;
+    }
+    if (i < 3) {
+      if ((r = buf_write_1(buf, "\n       ")) < 0)
+        return r;
+      result += r;
+    }
     i++;
   }
-  if ((r = buf_write_1(buf, "}")) < 0)
+  if ((r = buf_write_1(buf, "}\n")) < 0)
     return r;
   result += r;
   return result;
@@ -82,6 +101,17 @@ s_gl_matrix_4d * gl_matrix_4d_init_identity (s_gl_matrix_4d *m)
   m->xx = 1.0; m->xy = 0.0; m->xz = 0.0; m->xt = 0.0;
   m->yx = 0.0; m->yy = 1.0; m->yz = 0.0; m->yt = 0.0;
   m->zx = 0.0; m->zy = 0.0; m->zz = 1.0; m->zt = 0.0;
+  m->tx = 0.0; m->ty = 0.0; m->tz = 0.0; m->tt = 1.0;
+  return m;
+}
+
+s_gl_matrix_4d * gl_matrix_4d_init_scale (s_gl_matrix_4d *m, f64 x,
+                                          f64 y, f64 z)
+{
+  assert(m);
+  m->xx = x;   m->xy = 0.0; m->xz = 0.0; m->xt = 0.0;
+  m->yx = 0.0; m->yy = y;   m->yz = 0.0; m->yt = 0.0;
+  m->zx = 0.0; m->zy = 0.0; m->zz = z;   m->zt = 0.0;
   m->tx = 0.0; m->ty = 0.0; m->tz = 0.0; m->tt = 1.0;
   return m;
 }
@@ -156,11 +186,12 @@ s_gl_matrix_4d * gl_matrix_4d_ortho (s_gl_matrix_4d *m, f64 x1, f64 x2,
   ortho.xx = 2.0 / dx;
   ortho.yy = 2.0 / dy;
   ortho.zz = -2.0 / dz;
-  ortho.xt = (x1 + x2) / dx;
-  ortho.yt = (y1 + y2) / dy;
-  ortho.zt = (clip_z_near + clip_z_far) / dz;
+  ortho.tx = - (x1 + x2) / dx;
+  ortho.ty = - (y1 + y2) / dy;
+  ortho.tz = - (clip_z_near + clip_z_far) / dz;
   ortho.tt = 1.0;
-  gl_matrix_4d_product(m, &ortho);
+  gl_matrix_4d_product(&ortho, m);
+  *m = ortho;
   return m;
 }
 
@@ -182,7 +213,8 @@ s_gl_matrix_4d * gl_matrix_4d_perspective (s_gl_matrix_4d *m, f64 fov_y,
   perspective.zz = (z_near + z_far) / dz;
   perspective.zt = -1.0;
   perspective.tz = 2.0 * z_near * z_far / dz;
-  gl_matrix_4d_product(m, &perspective);
+  gl_matrix_4d_product(&perspective, m);
+  *m = perspective;
   return m;
 }
 
@@ -198,21 +230,27 @@ s_gl_matrix_4d * gl_matrix_4d_product (s_gl_matrix_4d *m,
 s_gl_matrix_4d * gl_matrix_4d_scale (s_gl_matrix_4d *m, f64 x, f64 y,
                                      f64 z)
 {
-  s_gl_matrix_4d s = {0};
+  s_gl_matrix_4d s;
+  gl_matrix_4d_init_zero(&s);
   s.xx = x;
   s.yy = y;
   s.zz = z;
   s.tt = 1.0;
-  gl_matrix_4d_product(m, &s);
+  gl_matrix_4d_product(&s, m);
+  *m = s;
   return m;
 }
 
 s_gl_matrix_4d * gl_matrix_4d_translate (s_gl_matrix_4d *m, f64 x,
                                          f64 y, f64 z)
 {
-  m->xt += x;
-  m->yt += y;
-  m->zt += z;
+  s_gl_matrix_4d s;
+  gl_matrix_4d_init_identity(&s);
+  s.tx = x;
+  s.ty = y;
+  s.tz = z;
+  gl_matrix_4d_product(&s, m);
+  *m = s;
   return m;
 }
 
@@ -242,6 +280,7 @@ s_gl_matrix_4d * gl_matrix_4d_rotate_axis (s_gl_matrix_4d *m, f64 rad,
                        x + a.z * a.z * one_minus_x,
                        0.0,
                        0.0, 0.0, 0.0, 1.0 };
-  gl_matrix_4d_product(m, &r);
+  gl_matrix_4d_product(&r, m);
+  *m = r;
   return m;
 }
