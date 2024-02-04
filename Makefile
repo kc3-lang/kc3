@@ -10,15 +10,6 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-build:
-	${MAKE} gen
-	${MAKE} -C libtommath build
-	${MAKE} -C ucd2c build
-	${MAKE} -C libc3 build
-	${MAKE} -C ic3 build
-	${MAKE} -C c3s build
-	${MAKE} -C test build
-
 all:
 	${MAKE} gen
 	${MAKE} -C libtommath all
@@ -34,6 +25,15 @@ asan:
 	${MAKE} -C ic3 asan
 	${MAKE} -C c3s asan
 	${MAKE} -C test asan
+
+build:
+	${MAKE} gen
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c build
+	${MAKE} -C libc3 build
+	${MAKE} -C ic3 build
+	${MAKE} -C c3s build
+	${MAKE} -C test build
 
 clean:
 	${MAKE} -C libtommath clean
