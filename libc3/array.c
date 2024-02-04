@@ -258,30 +258,6 @@ s_array * array_init_cast (s_array *array, const s_tag *tag)
   return NULL;
 }
 
-s_array * array_init_copy_shallow (s_array *array, const s_array *src)
-{
-  s_array tmp = {0};
-  assert(array);
-  assert(src);
-  tmp.array_type   = src->array_type;
-  tmp.count        = src->count;
-  tmp.dimension    = src->dimension;
-  tmp.element_type = src->element_type;
-  tmp.size         = src->size;
-  if (tmp.dimension) {
-    if (! (tmp.dimensions = calloc(tmp.dimension,
-                                   sizeof(s_array_dimension)))) {
-      assert(! "array_init_copy: out of memory: dimensions");
-      warnx("array_init_copy: out of memory: dimensions");
-      return NULL;
-    }
-    memcpy(tmp.dimensions, src->dimensions,
-           src->dimension * sizeof(s_array_dimension));
-  }
-  *array = tmp;
-  return array;
-}
-
 s_array * array_init_copy (s_array *a, const s_array *src)
 {
   u8 *data_tmp;
@@ -350,6 +326,30 @@ s_array * array_init_copy (s_array *a, const s_array *src)
     while (--i)
       tag_clean(tmp.tags + i);
   return NULL;
+}
+
+s_array * array_init_copy_shallow (s_array *array, const s_array *src)
+{
+  s_array tmp = {0};
+  assert(array);
+  assert(src);
+  tmp.array_type   = src->array_type;
+  tmp.count        = src->count;
+  tmp.dimension    = src->dimension;
+  tmp.element_type = src->element_type;
+  tmp.size         = src->size;
+  if (tmp.dimension) {
+    if (! (tmp.dimensions = calloc(tmp.dimension,
+                                   sizeof(s_array_dimension)))) {
+      assert(! "array_init_copy: out of memory: dimensions");
+      warnx("array_init_copy: out of memory: dimensions");
+      return NULL;
+    }
+    memcpy(tmp.dimensions, src->dimensions,
+           src->dimension * sizeof(s_array_dimension));
+  }
+  *array = tmp;
+  return array;
 }
 
 s_array * array_init_void (s_array *array)

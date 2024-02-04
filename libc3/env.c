@@ -1011,7 +1011,9 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
       const void *value;
       if (! tag_to_const_pointer(t->type->map.value + i, type, &value))
         goto ko;
-      data_init_copy(type, (s8 *) t->data + t->type->offset[i], value);
+      if (! data_init_copy(type, (s8 *) t->data + t->type->offset[i],
+                           value))
+        goto ko;
     }
     i++;
   }

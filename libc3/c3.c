@@ -48,7 +48,7 @@ void ** c3_dlopen (const s_str *path, void **dest)
 {
   assert(path);
   assert(dest);
-  printf("dlopen %s -> %p\n", path->ptr.pchar, (void *) dest);
+  printf("dlopen %p := %s\n", (void *) dest, path->ptr.pchar);
   *dest = dlopen(path->ptr.pchar, RTLD_GLOBAL);
   return dest;
 }
