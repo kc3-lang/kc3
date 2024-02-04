@@ -34,11 +34,18 @@ s_gl_object * gl_object_allocate (s_gl_object *object, uw vertex_count,
 void gl_object_clean (s_gl_object *object)
 {
   assert(object);
+  assert(glGetError() == GL_NO_ERROR);
+  if (object->gl_vao)
+    glDeleteVertexArrays(1, &object->gl_vao);
+  assert(glGetError() == GL_NO_ERROR);
+  if (object->gl_vbo)
+    glDeleteBuffers(1, &object->gl_vbo);
+  assert(glGetError() == GL_NO_ERROR);
+  if (object->gl_ebo)
+    glDeleteBuffers(1, &object->gl_ebo);
+  assert(glGetError() == GL_NO_ERROR);
   array_clean(&object->vertex);
   array_clean(&object->triangle);
-  glDeleteVertexArrays(1, &object->gl_vao);
-  glDeleteBuffers(1, &object->gl_vbo);
-  glDeleteBuffers(1, &object->gl_ebo);
 }
 
 s_gl_object * gl_object_init (s_gl_object *object)

@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
@@ -144,6 +144,11 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
   if (src->data) {
     tmp.free_data = true;
     tmp.data = calloc(1, tmp.type->size);
+    if (! tmp.data) {
+      err_puts("struct_init_copy: failed to allocate memory for data");
+      assert(! "struct_init_copy: failed to allocate memory for data");
+      return NULL;
+    }
     i = 0;
     while (i < tmp.type->map.count) {
       if (! tag_type(tmp.type->map.value + i, &sym) ||
@@ -153,8 +158,15 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
       i++;
     }
   }
-  if (src->tag) {
+  else if (src->tag) {
     tmp.tag = calloc(tmp.type->map.count, sizeof(s_tag));
+    if (! tmp.tag) {
+      err_puts("struct_init_copy:"
+               " failed to allocate memory for tags (1)");
+      assert(! "struct_init_copy:"
+             " failed to allocate memory for tags (1)");
+      return NULL;
+    }
     i = 0;
     while (i < tmp.type->map.count) {
       if (! tag_init_copy(tmp.tag + i, src->tag + i))
@@ -184,7 +196,7 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
     return NULL;
   tmp.tag = calloc(tmp.type->map.count, sizeof(s_tag));
   if (! tmp.tag) {
-    warn("struct_init_from_lists: tag");
+    err_puts("struct_init_from_lists: tag");
     assert(! "struct_init_from_lists: failed to allocate memory");
     return NULL;
   }
