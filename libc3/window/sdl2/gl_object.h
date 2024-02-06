@@ -28,7 +28,7 @@ s_gl_object * gl_object_new (void);
 s_gl_object * gl_object_allocate (s_gl_object *object, uw vertex_count,
                                   uw index_count);
 void          gl_object_transform (s_gl_object *object,
-                                   const s_gl_matrix_4f *matrix);
+                                   const s_mat4 *matrix);
 bool          gl_object_update (s_gl_object *object);
 
 /* Observers. */

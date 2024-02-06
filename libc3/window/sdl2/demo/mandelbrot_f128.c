@@ -14,7 +14,7 @@
 #include <libc3/c3.h>
 #include "../gl_deprecated.h"
 #include "../gl_font.h"
-#include "../gl_matrix_4f.h"
+#include "../mat4.h"
 #include "../gl_ortho.h"
 #include "../gl_text.h"
 #include "mandelbrot_f128.h"
@@ -172,7 +172,7 @@ bool mandelbrot_f128_render (s_sequence *seq)
     *y = next_y;
     *z = next_z;
   }
-  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
+  mat4_init_identity(&g_ortho.model_matrix);
   gl_ortho_bind_texture(&g_ortho, g_mandelbrot_f128_texture);
   gl_ortho_rect(&g_ortho, 0, 0, win->w, win->h);
   gl_ortho_text_render_outline(&g_ortho, &g_mandelbrot_f128_text,

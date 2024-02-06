@@ -11,7 +11,8 @@
  * THIS SOFTWARE.
  */
 #include <libc3/c3.h>
-#include "gl_point_3f.h"
+#include "mat4.h"
+#include "vec3.h"
 #include "gl_vertex.h"
 
 void gl_vertex_attrib (void)
@@ -34,12 +35,13 @@ void gl_vertex_attrib (void)
   assert(glGetError() == GL_NO_ERROR);
 }
 
-void gl_vertex_transform (s_gl_vertex *vertex,
-                          const s_gl_matrix_4f *matrix)
+void gl_vertex_transform (s_gl_vertex *vertex, const s_mat4 *matrix)
 {
   assert(vertex);
   assert(matrix);
-  gl_point_3f_transform(&vertex->position, matrix);
-  gl_point_3f_transform(&vertex->normal, matrix);
-  gl_point_3f_normalize(&vertex->normal);
+  mat4_mult_vec3(matrix, (s_vec3 *) &vertex->pos_x,
+                 (s_vec3 *) &vertex->pos_x);
+  mat4_mult_vec3(matrix, (s_vec3 *) &vertex->normal_x,
+                 (s_vec3 *) &vertex->normal_x);
+  vec3_normalize((s_vec3 *) &vertex->normal_x);
 }

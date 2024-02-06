@@ -13,7 +13,7 @@
 #include <math.h>
 #include <libc3/c3.h>
 #include "gl_deprecated.h"
-#include "gl_matrix_4f.h"
+#include "mat4.h"
 #include "gl_ortho.h"
 #include "gl_square.h"
 
@@ -113,8 +113,8 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   assert(ortho);
   if (! gl_square_init(&ortho->square, 2, 2))
     return NULL;
-  gl_matrix_4f_init_identity(&ortho->projection_matrix);
-  gl_matrix_4f_ortho(&ortho->projection_matrix, -1, 1, -1, 1, 0, 1);
+  mat4_init_identity(&ortho->projection_matrix);
+  mat4_ortho(&ortho->projection_matrix, -1, 1, -1, 1, 0, 1);
   ortho->position.x = 0.0f;
   ortho->position.y = 0.0f;
   ortho->position.z = 0.0f;
@@ -124,8 +124,8 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   ortho->scale.x = 1.0f;
   ortho->scale.y = 1.0f;
   ortho->scale.z = 1.0f;
-  gl_matrix_4f_init_identity(&ortho->view_matrix);
-  gl_matrix_4f_init_identity(&ortho->model_matrix);
+  mat4_init_identity(&ortho->view_matrix);
+  mat4_init_identity(&ortho->model_matrix);
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_shader, 1, &g_gl_ortho_vertex_shader_src,
                  NULL);
@@ -198,12 +198,12 @@ s_gl_ortho * gl_ortho_new (void)
 
 void gl_ortho_rect (s_gl_ortho *ortho, f32 x, f32 y, f32 w, f32 h)
 {
-  s_gl_matrix_4f matrix;
+  s_mat4 matrix;
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
   matrix = ortho->model_matrix;
-  gl_matrix_4f_translate(&ortho->model_matrix, x, y, 0.0f);
-  gl_matrix_4f_scale(&ortho->model_matrix, w, h, 1.0f);
+  mat4_translate(&ortho->model_matrix, x, y, 0.0f);
+  mat4_scale(&ortho->model_matrix, w, h, 1.0f);
   gl_ortho_update_model_matrix(ortho);
   assert(glGetError() == GL_NO_ERROR);
   gl_square_render(&ortho->square);
@@ -244,11 +244,11 @@ void gl_ortho_render (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   /*
   err_puts("gl_ortho_render projection matrix");
-  gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);
+  mat4_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);
   err_puts("view matrix");
-  gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->view_matrix);
+  mat4_buf_inspect(&g_c3_env.err, &ortho->view_matrix);
   err_puts("model matrix");
-  gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->model_matrix);
+  mat4_buf_inspect(&g_c3_env.err, &ortho->model_matrix);
   buf_flush(&g_c3_env.err);
   */
 }
@@ -266,9 +266,9 @@ void gl_ortho_resize (s_gl_ortho *ortho, f32 x1, f32 x2, f32 y1, f32 y2,
                       f32 clip_z_near, f32 clip_z_far)
 {
   assert(ortho);
-  gl_matrix_4f_init_identity(&ortho->projection_matrix);
-  gl_matrix_4f_ortho(&ortho->projection_matrix, x1, x2, y1, y2,
-                     clip_z_near, clip_z_far);
+  mat4_init_identity(&ortho->projection_matrix);
+  mat4_ortho(&ortho->projection_matrix, x1, x2, y1, y2,
+             clip_z_near, clip_z_far);
 }
 
 void gl_ortho_text_render (s_gl_ortho *ortho, const s_gl_text *text)
@@ -283,7 +283,7 @@ void gl_ortho_text_render (s_gl_ortho *ortho, const s_gl_text *text)
 void gl_ortho_text_render_outline (s_gl_ortho *ortho, s_gl_text *text,
                                    f64 x, f64 y)
 {
-  s_gl_matrix_4f matrix;
+  s_mat4 matrix;
   assert(glGetError() == GL_NO_ERROR);
   glEnable(GL_BLEND);
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
@@ -321,11 +321,11 @@ void gl_ortho_update_model_matrix (s_gl_ortho *ortho)
   assert(glGetError() == GL_NO_ERROR);
   /*
   err_puts("gl_ortho_update_model_matrix projection matrix");
-  gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);
+  mat4_buf_inspect(&g_c3_env.err, &ortho->projection_matrix);
   err_puts("view matrix");
-  gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->view_matrix);
+  mat4_buf_inspect(&g_c3_env.err, &ortho->view_matrix);
   err_puts("model matrix");
-  gl_matrix_4f_buf_inspect(&g_c3_env.err, &ortho->model_matrix);
+  mat4_buf_inspect(&g_c3_env.err, &ortho->model_matrix);
   buf_flush(&g_c3_env.err);
   */
 }
@@ -334,17 +334,17 @@ void gl_ortho_update_view_matrix (s_gl_ortho *ortho)
 {
   assert(ortho);
   assert(glGetError() == GL_NO_ERROR);
-  gl_matrix_4f_init_identity(&ortho->view_matrix);
-  gl_matrix_4f_translate(&ortho->view_matrix, ortho->position.x,
-                         ortho->position.y, ortho->position.z);
-  gl_matrix_4f_rotate_axis(&ortho->view_matrix, ortho->rotation.x,
-                           &(s_gl_point_3f) { 1.0f, 0.0f, 0.0f });
-  gl_matrix_4f_rotate_axis(&ortho->view_matrix, ortho->rotation.y,
-                           &(s_gl_point_3f) { 0.0f, 1.0f, 0.0f });
-  gl_matrix_4f_rotate_axis(&ortho->view_matrix, ortho->rotation.z,
-                           &(s_gl_point_3f) { 0.0f, 0.0f, 1.0f });
-  gl_matrix_4f_scale(&ortho->view_matrix, ortho->scale.x,
-                     ortho->scale.y, ortho->scale.z);
+  mat4_init_identity(&ortho->view_matrix);
+  mat4_translate(&ortho->view_matrix, ortho->position.x,
+                 ortho->position.y, ortho->position.z);
+  mat4_rotate_axis(&ortho->view_matrix, ortho->rotation.x,
+                   &(s_vec3) { 1.0f, 0.0f, 0.0f });
+  mat4_rotate_axis(&ortho->view_matrix, ortho->rotation.y,
+                   &(s_vec3) { 0.0f, 1.0f, 0.0f });
+  mat4_rotate_axis(&ortho->view_matrix, ortho->rotation.z,
+                   &(s_vec3) { 0.0f, 0.0f, 1.0f });
+  mat4_scale(&ortho->view_matrix, ortho->scale.x,
+             ortho->scale.y, ortho->scale.z);
   glUniformMatrix4fv(ortho->gl_view_matrix_loc, 1, GL_FALSE,
                      &ortho->view_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);

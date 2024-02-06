@@ -13,8 +13,6 @@
 #include <libc3/c3.h>
 #include "gl_deprecated.h"
 #include "gl_object.h"
-#include "gl_point_2f.h"
-#include "gl_point_3f.h"
 #include "gl_sprite.h"
 #include "gl_triangle.h"
 

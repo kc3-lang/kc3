@@ -12,10 +12,10 @@
  */
 #include <math.h>
 #include <libc3/c3.h>
-#include "gl_matrix_4d.h"
-#include "gl_point_3d.h"
+#include "dmat4.h"
+#include "dvec3.h"
 
-sw gl_matrix_4d_buf_inspect (s_buf *buf, const s_gl_matrix_4d *matrix)
+sw dmat4_buf_inspect (s_buf *buf, const s_dmat4 *matrix)
 {
   u8 i;
   u8 j;
@@ -60,8 +60,7 @@ sw gl_matrix_4d_buf_inspect (s_buf *buf, const s_gl_matrix_4d *matrix)
   return result;
 }
 
-s_gl_matrix_4d * gl_matrix_4d_init_copy (s_gl_matrix_4d *m,
-                                         const s_gl_matrix_4d *src)
+s_dmat4 * dmat4_init_copy (s_dmat4 *m, const s_dmat4 *src)
 {
   assert(m);
   assert(src);
@@ -69,9 +68,8 @@ s_gl_matrix_4d * gl_matrix_4d_init_copy (s_gl_matrix_4d *m,
   return m;
 }
 
-s_gl_matrix_4d * gl_matrix_4d_init_product (s_gl_matrix_4d *m,
-                                            const s_gl_matrix_4d *a,
-                                            const s_gl_matrix_4d *b)
+s_dmat4 * dmat4_init_product (s_dmat4 *m, const s_dmat4 *a,
+                              const s_dmat4 *b)
 {
   assert(m);
   assert(a);
@@ -95,7 +93,7 @@ s_gl_matrix_4d * gl_matrix_4d_init_product (s_gl_matrix_4d *m,
   return m;
 }
 
-s_gl_matrix_4d * gl_matrix_4d_init_identity (s_gl_matrix_4d *m)
+s_dmat4 * dmat4_init_identity (s_dmat4 *m)
 {
   assert(m);
   m->xx = 1.0; m->xy = 0.0; m->xz = 0.0; m->xt = 0.0;
@@ -105,8 +103,7 @@ s_gl_matrix_4d * gl_matrix_4d_init_identity (s_gl_matrix_4d *m)
   return m;
 }
 
-s_gl_matrix_4d * gl_matrix_4d_init_scale (s_gl_matrix_4d *m, f64 x,
-                                          f64 y, f64 z)
+s_dmat4 * dmat4_init_scale (s_dmat4 *m, f64 x, f64 y, f64 z)
 {
   assert(m);
   m->xx = x;   m->xy = 0.0; m->xz = 0.0; m->xt = 0.0;
@@ -116,7 +113,7 @@ s_gl_matrix_4d * gl_matrix_4d_init_scale (s_gl_matrix_4d *m, f64 x,
   return m;
 }
 
-s_gl_matrix_4d * gl_matrix_4d_init_zero (s_gl_matrix_4d *m)
+s_dmat4 * dmat4_init_zero (s_dmat4 *m)
 {
   assert(m);
   m->xx = 0.0; m->xy = 0.0; m->xz = 0.0; m->xt = 0.0;
@@ -126,63 +123,61 @@ s_gl_matrix_4d * gl_matrix_4d_init_zero (s_gl_matrix_4d *m)
   return m;
 }
 
-void gl_matrix_4d_delete (s_gl_matrix_4d *m)
+void dmat4_delete (s_dmat4 *m)
 {
   free(m);
 }
 
-s_gl_matrix_4d * gl_matrix_4d_new_copy (const s_gl_matrix_4d *src)
+s_dmat4 * dmat4_new_copy (const s_dmat4 *src)
 {
-  s_gl_matrix_4d *m;
-  m = calloc(1, sizeof(s_gl_matrix_4d));
+  s_dmat4 *m;
+  m = calloc(1, sizeof(s_dmat4));
   if (! m) {
-    err_puts("gl_matrix_4d_new: failed to allocate memory");
+    err_puts("dmat4_new: failed to allocate memory");
     return NULL;
   }
   *m = *src;
   return m;
 }
 
-s_gl_matrix_4d * gl_matrix_4d_new_product (const s_gl_matrix_4d *a,
-                                           const s_gl_matrix_4d *b)
+s_dmat4 * dmat4_new_product (const s_dmat4 *a, const s_dmat4 *b)
 {
-  s_gl_matrix_4d *m;
+  s_dmat4 *m;
   assert(a);
   assert(b);
-  m = calloc(1, sizeof(s_gl_matrix_4d));
+  m = calloc(1, sizeof(s_dmat4));
   if (! m) {
-    err_puts("gl_matrix_4d_new: failed to allocate memory");
+    err_puts("dmat4_new: failed to allocate memory");
     return NULL;
   }
-  gl_matrix_4d_init_product(m, a, b);
+  dmat4_init_product(m, a, b);
   return m;
 }
 
-s_gl_matrix_4d * gl_matrix_4d_new_zero (void)
+s_dmat4 * dmat4_new_zero (void)
 {
-  s_gl_matrix_4d *m;
-  m = calloc(1, sizeof(s_gl_matrix_4d));
+  s_dmat4 *m;
+  m = calloc(1, sizeof(s_dmat4));
   if (! m) {
-    err_puts("gl_matrix_4d_new: failed to allocate memory");
+    err_puts("dmat4_new: failed to allocate memory");
     return NULL;
   }
-  gl_matrix_4d_init_zero(m);
+  dmat4_init_zero(m);
   return m;
 }
 
-s_gl_matrix_4d * gl_matrix_4d_ortho (s_gl_matrix_4d *m, f64 x1, f64 x2,
-                                     f64 y1, f64 y2, f64 clip_z_near,
-                                     f64 clip_z_far)
+s_dmat4 * dmat4_ortho (s_dmat4 *m, f64 x1, f64 x2, f64 y1, f64 y2,
+                       f64 clip_z_near, f64 clip_z_far)
 {
   f64 dx;
   f64 dy;
   f64 dz;
-  s_gl_matrix_4d ortho;
+  s_dmat4 ortho;
   assert(m);
   dx = x2 - x1;
   dy = y2 - y1;
   dz = clip_z_far - clip_z_near;
-  gl_matrix_4d_init_zero(&ortho);
+  dmat4_init_zero(&ortho);
   ortho.xx = 2.0 / dx;
   ortho.yy = 2.0 / dy;
   ortho.zz = -2.0 / dz;
@@ -190,84 +185,54 @@ s_gl_matrix_4d * gl_matrix_4d_ortho (s_gl_matrix_4d *m, f64 x1, f64 x2,
   ortho.ty = - (y1 + y2) / dy;
   ortho.tz = - (clip_z_near + clip_z_far) / dz;
   ortho.tt = 1.0;
-  gl_matrix_4d_product(&ortho, m);
+  dmat4_product(&ortho, m);
   *m = ortho;
   return m;
 }
 
-s_gl_matrix_4d * gl_matrix_4d_perspective (s_gl_matrix_4d *m, f64 fov_y,
-                                           f64 aspect_ratio,
-                                           f64 z_near,
-                                           f64 z_far)
+s_dmat4 * dmat4_perspective (s_dmat4 *m, f64 fov_y, f64 aspect_ratio,
+                             f64 z_near, f64 z_far)
 {
   f64 dz;
-  s_gl_matrix_4d perspective;
+  s_dmat4 perspective;
   f64 f;
   f64 fov_y_2;
   fov_y_2 = fov_y / 2.0;
   f = cos(fov_y_2) / sin(fov_y_2);
   dz = z_near - z_far;
-  gl_matrix_4d_init_zero(&perspective);
+  dmat4_init_zero(&perspective);
   perspective.xx = f / aspect_ratio;
   perspective.yy = f;
   perspective.zz = (z_near + z_far) / dz;
   perspective.zt = -1.0;
   perspective.tz = 2.0 * z_near * z_far / dz;
-  gl_matrix_4d_product(&perspective, m);
+  dmat4_product(&perspective, m);
   *m = perspective;
   return m;
 }
 
-s_gl_matrix_4d * gl_matrix_4d_product (s_gl_matrix_4d *m,
-                                       const s_gl_matrix_4d *a)
+s_dmat4 * dmat4_product (s_dmat4 *m, const s_dmat4 *a)
 {
-  s_gl_matrix_4d tmp;
-  gl_matrix_4d_init_product(&tmp, m, a);
+  s_dmat4 tmp;
+  dmat4_init_product(&tmp, m, a);
   *m = tmp;
   return m;
 }
 
-s_gl_matrix_4d * gl_matrix_4d_scale (s_gl_matrix_4d *m, f64 x, f64 y,
-                                     f64 z)
+s_dmat4 * dmat4_rotate_axis (s_dmat4 *m, f64 rad,
+                             const s_dvec3 *axis)
 {
-  s_gl_matrix_4d s;
-  gl_matrix_4d_init_zero(&s);
-  s.xx = x;
-  s.yy = y;
-  s.zz = z;
-  s.tt = 1.0;
-  gl_matrix_4d_product(&s, m);
-  *m = s;
-  return m;
-}
-
-s_gl_matrix_4d * gl_matrix_4d_translate (s_gl_matrix_4d *m, f64 x,
-                                         f64 y, f64 z)
-{
-  s_gl_matrix_4d s;
-  gl_matrix_4d_init_identity(&s);
-  s.tx = x;
-  s.ty = y;
-  s.tz = z;
-  gl_matrix_4d_product(&s, m);
-  *m = s;
-  return m;
-}
-
-s_gl_matrix_4d * gl_matrix_4d_rotate_axis (s_gl_matrix_4d *m, f64 rad,
-                                           const s_gl_point_3d *axis)
-{
-  s_gl_point_3d a;
+  s_dvec3 a;
   f64 angle;
   f64 one_minus_x;
   f64 x;
   f64 y;
-  gl_point_3d_init_normalize(&a, axis);
+  dvec3_init_normalize(&a, axis);
   angle = -rad;
   x = cos(angle);
   one_minus_x = 1.0 - x;
   y = sin(angle);
-  s_gl_matrix_4d r = { x + a.x * a.x * one_minus_x,
+  s_dmat4 r = { x + a.x * a.x * one_minus_x,
                        a.x * a.y * one_minus_x - a.z * y,
                        a.x * a.z * one_minus_x + a.y * y,
                        0.0,
@@ -280,7 +245,32 @@ s_gl_matrix_4d * gl_matrix_4d_rotate_axis (s_gl_matrix_4d *m, f64 rad,
                        x + a.z * a.z * one_minus_x,
                        0.0,
                        0.0, 0.0, 0.0, 1.0 };
-  gl_matrix_4d_product(&r, m);
+  dmat4_product(&r, m);
   *m = r;
+  return m;
+}
+
+s_dmat4 * dmat4_scale (s_dmat4 *m, f64 x, f64 y, f64 z)
+{
+  s_dmat4 s;
+  dmat4_init_zero(&s);
+  s.xx = x;
+  s.yy = y;
+  s.zz = z;
+  s.tt = 1.0;
+  dmat4_product(&s, m);
+  *m = s;
+  return m;
+}
+
+s_dmat4 * dmat4_translate (s_dmat4 *m, f64 x, f64 y, f64 z)
+{
+  s_dmat4 s;
+  dmat4_init_identity(&s);
+  s.tx = x;
+  s.ty = y;
+  s.tz = z;
+  dmat4_product(&s, m);
+  *m = s;
   return m;
 }
