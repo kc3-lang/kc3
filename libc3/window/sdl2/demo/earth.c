@@ -14,7 +14,7 @@
 #include <libc3/c3.h>
 #include "../window_sdl2.h"
 #include "../gl_camera.h"
-#include "../gl_matrix_4f.h"
+#include "../mat4.h"
 #include "../gl_object.h"
 #include "../gl_sphere.h"
 #include "../gl_sprite.h"
@@ -29,7 +29,7 @@ s_gl_sprite g_sprite_earth = {0};
 bool earth_load (s_sequence *seq)
 {
   s_map *map;
-  s_gl_matrix_4f matrix;
+  s_mat4 matrix;
   s_gl_camera *camera;
   s_gl_sphere *sphere;
   const f32    sphere_radius = 5.0;
@@ -43,8 +43,8 @@ bool earth_load (s_sequence *seq)
   sphere = gl_sphere_new(EARTH_SEGMENTS_U, EARTH_SEGMENTS_V);
   if (! sphere)
     return false;
-  gl_matrix_4f_init_scale(&matrix, sphere_radius, sphere_radius,
-                          sphere_radius);
+  mat4_init_scale(&matrix, sphere_radius, sphere_radius,
+                  sphere_radius);
   gl_object_transform(&sphere->object, &matrix);
   gl_object_update(&sphere->object);
   if (! tag_map(&seq->tag, 3))
@@ -129,7 +129,6 @@ bool earth_render (s_sequence *seq)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
     assert(glGetError() == GL_NO_ERROR);
-    gl_camera_color(camera, 1.0f, 1.0f, 1.0f, 1.0f);
     gl_sphere_render(sphere);
     /*
     glDisable(GL_TEXTURE_2D);

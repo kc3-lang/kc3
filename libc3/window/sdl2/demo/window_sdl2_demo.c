@@ -16,7 +16,7 @@
 #include "../../window.h"
 #include "../gl_font.h"
 #include "../gl_lines.h"
-#include "../gl_matrix_4f.h"
+#include "../mat4.h"
 #include "../gl_ortho.h"
 #include "../gl_square.h"
 #include "../gl_text.h"
@@ -223,7 +223,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   if (! window_animate((s_window *) window))
     return false;
   seq = window->seq;
-  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
+  mat4_init_identity(&g_ortho.model_matrix);
   gl_ortho_render(&g_ortho);
   glEnable(GL_BLEND);
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
@@ -241,11 +241,11 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   assert(glGetError() == GL_NO_ERROR);
   gl_font_set_size(&g_font_courier_new, 20);
   gl_text_update_1(&g_text_seq_title, seq->title);
-  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
+  mat4_init_identity(&g_ortho.model_matrix);
   gl_ortho_text_render_outline(&g_ortho, &g_text_seq_title,
                                20.0f, 30.0f);
   /* progress bar */
-  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
+  mat4_init_identity(&g_ortho.model_matrix);
   glDisable(GL_BLEND);
   assert(glGetError() == GL_NO_ERROR);
   gl_ortho_bind_texture(&g_ortho, 0);
@@ -261,7 +261,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   /* fps */
   char fps[32];
   snprintf(fps, sizeof(fps), "%.1f", (f64) seq->frame / seq->t);
-  gl_matrix_4f_init_identity(&g_ortho.model_matrix);
+  mat4_init_identity(&g_ortho.model_matrix);
   gl_text_update_1(&g_text_fps, fps);
   glEnable(GL_BLEND);
   gl_ortho_text_render_outline(&g_ortho, &g_text_fps,

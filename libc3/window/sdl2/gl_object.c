@@ -93,13 +93,13 @@ void gl_object_render_wireframe (const s_gl_object *object)
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
   assert(glGetError() == GL_NO_ERROR);
-  glDrawElements(GL_LINE_LOOP, object->triangle.count * 3, GL_UNSIGNED_INT,
+  glDrawElements(GL_LINE_LOOP, object->triangle.count * 3,
+                 GL_UNSIGNED_INT,
                  NULL);
   assert(glGetError() == GL_NO_ERROR);
 }
 
-void gl_object_transform (s_gl_object *object,
-                          const s_gl_matrix_4f *matrix)
+void gl_object_transform (s_gl_object *object, const s_mat4 *matrix)
 {
   uw i;
   s_gl_vertex *vertex;

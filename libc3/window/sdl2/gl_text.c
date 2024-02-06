@@ -11,11 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <libc3/c3.h>
-#include "gl_object.h"
-#include "gl_point_2f.h"
-#include "gl_point_3f.h"
 #include "gl_text.h"
-#include "gl_triangle.h"
 
 const char *g_gray_3_bits_utf8[] = {
   " ", ".", ":", "#", "░", "▒", "▓", "█"

@@ -27,7 +27,7 @@ s_gl_cylinder * gl_cylinder_init (s_gl_cylinder *cylinder,
   f64 angle;
   uw i;
   uw j;
-  s_gl_point_3d *p;
+  s_vec3 *p;
   f64 z;
   assert(cylinder);
   assert(segments_u);

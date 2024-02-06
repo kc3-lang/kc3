@@ -10,6 +10,14 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+CLEANFILES = *.a *.gcno *.la .libs *.lo *.o
+
+CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
+
+CLEANFILES += ${CLEANFILES_COV}
+
+DISTCLEANFILES = ${CLEANFILES} config.h config.mk
+
 build:
 	${MAKE} ${LIB}
 	${MAKE} -C demo build
@@ -25,6 +33,7 @@ asan:
 	${MAKE} -C demo asan
 
 clean:
+	rm -rf ${CLEANFILES}
 	${MAKE} -C demo clean
 
 clean_cov:
