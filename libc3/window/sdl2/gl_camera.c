@@ -72,7 +72,7 @@ static const char * g_gl_camera_fragment_shader_src =
   "  return f0 + (1 - f0) * pow(1.0 - lDotH, 5);\n"
   "}\n"
   "vec4 microfacetModel (int lightIdx, vec3 pos, vec3 n, vec4 color) {\n"
-  "  vec4 diffuseBrdf = vec4(0.0);  // Metallic\n"
+  "  vec4 diffuseBrdf = vec4(0.0, 0.0, 0.0, 1.0);  // Metallic\n"
   "  if (! uMaterial.Metal) {\n"
   "    diffuseBrdf = color;\n"
   "  }\n"
@@ -176,7 +176,7 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   camera->rotation.z = 0.0f;
   camera->light_count = 1;
   camera->light_pos[0] = (s_vec3) {-100, 0, 0};
-  camera->light_color[0] = (s_rgb) {10, 10, 10};
+  camera->light_color[0] = (s_rgb) {1, 1, 1};
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_shader, 1, &g_gl_camera_vertex_shader_src,
                  NULL);
@@ -261,8 +261,8 @@ void gl_camera_render (s_gl_camera *camera)
   assert(glGetError() == GL_NO_ERROR);
   mat4_init_identity(&camera->projection_matrix);
   mat4_perspective(&camera->projection_matrix, camera->fov_y,
-                           camera->aspect_ratio, camera->clip_z_near,
-                           camera->clip_z_far);
+                   camera->aspect_ratio, camera->clip_z_near,
+                   camera->clip_z_far);
   mat4_init_identity(&camera->view_matrix);
   mat4_translate(&camera->view_matrix, camera->position.x,
                  camera->position.y, camera->position.z);
@@ -273,8 +273,7 @@ void gl_camera_render (s_gl_camera *camera)
   mat4_rotate_axis(&camera->view_matrix, camera->rotation.z,
                    &(s_vec3) { 0.0f, 0.0f, 1.0f });
   mat4_init_identity(&camera->model_matrix);
-  mat4_init_identity(&matrix);
-  mat4_mult_mat4(&camera->view_matrix, &matrix, &matrix);
+  mat4_init_copy(&matrix, &camera->view_matrix);
   mat4_mult_mat4(&camera->projection_matrix, &matrix, &matrix);
   for (int i = 0; i < camera->light_count; i++)
     mat4_mult_vec3(&matrix, camera->light_pos + i,
