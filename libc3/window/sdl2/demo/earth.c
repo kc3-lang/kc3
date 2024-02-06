@@ -66,7 +66,6 @@ bool earth_render (s_sequence *seq)
   f64         *camera_rot_x_speed;
   s_map *map;
   s_gl_sphere *sphere;
-  //f64 sphere_radius;
   s_window_sdl2 *window;
   assert(seq);
   window = seq->window;
@@ -100,46 +99,19 @@ bool earth_render (s_sequence *seq)
   assert(glGetError() == GL_NO_ERROR);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   assert(glGetError() == GL_NO_ERROR);
-  //glEnable(GL_LIGHTING);
   assert(glGetError() == GL_NO_ERROR);
-  //glEnable(GL_LIGHT0);
   assert(glGetError() == GL_NO_ERROR);
-  //f32 ambiant[4] = {0.1f, 0.1f, 0.1f, 1.0f};
-  //glLightfv(GL_LIGHT0, GL_AMBIENT, ambiant);
-  //f32 diffuse[4] = {1.0f, 0.92f, 0.83f, 1.0f};
-  //glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-  //glLightfv(GL_LIGHT0, GL_SPECULAR, diffuse);
-  //f32 position[4] = {-1000.0, 0.0, 0.0, 1.0};
-  //glLightfv(GL_LIGHT0, GL_POSITION, position);
-  //glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1f);
-  //glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.0f);
-  //glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0f);
   assert(glGetError() == GL_NO_ERROR);
   glEnable(GL_DEPTH_TEST);
   assert(glGetError() == GL_NO_ERROR);
-  //glPushMatrix();
-  {
-    assert(glGetError() == GL_NO_ERROR);
-    assert(glGetError() == GL_NO_ERROR);
-    //glEnable(GL_TEXTURE_2D);
-    assert(glGetError() == GL_NO_ERROR);
-    gl_camera_bind_texture(camera,
-                           gl_sprite_texture(&g_sprite_earth, 0));
-    assert(glGetError() == GL_NO_ERROR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                    GL_LINEAR_MIPMAP_LINEAR);
-    assert(glGetError() == GL_NO_ERROR);
-    gl_sphere_render(sphere);
-    /*
-    glDisable(GL_TEXTURE_2D);
-    glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-    gl_sphere_render_wireframe(sphere);
-    */
-  } // glPopMatrix();
-  //glDisable(GL_TEXTURE_2D);
+  gl_camera_bind_texture(camera,
+                         gl_sprite_texture(&g_sprite_earth, 0));
+  assert(glGetError() == GL_NO_ERROR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                  GL_LINEAR_MIPMAP_LINEAR);
+  assert(glGetError() == GL_NO_ERROR);
+  gl_sphere_render(sphere);
   glDisable(GL_DEPTH_TEST);
-  //glDisable(GL_LIGHT0);
-  //glDisable(GL_LIGHTING);
   return true;
 }
 
