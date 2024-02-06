@@ -65,7 +65,7 @@ static const char * g_gl_camera_fragment_shader_src =
   "  return 1.0 / denom;\n"
   "}\n"
   "vec4 schlickFresnel( float lDotH ) {\n"
-  "  vec4 f0 = vec4(0.04);\n"
+  "  vec4 f0 = vec4(0.04, 0.04, 0.04, 1.0);\n"
   "  if( uMaterial.Metal ) {\n"
   "    f0 = uMaterial.Color;\n"
   "  }\n"
