@@ -41,9 +41,7 @@ void tuple_delete (s_tuple *tuple);
 s_tuple * tuple_1 (s_tuple *tuple, const char *p);
 
 /* Observers */
-s_list *         tuple_to_list (const s_tuple *tuple, s_list **list);
-
-/* Call str_delete after use. */
-s_str *          tuple_inspect (const s_tuple *x, s_str *dest);
+s_list * tuple_to_list (const s_tuple *tuple, s_list **list);
+s_str *  tuple_inspect (const s_tuple *x, s_str *dest);
 
 #endif /* LIBC3_TUPLE_H */

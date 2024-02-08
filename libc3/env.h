@@ -26,6 +26,8 @@ bool          env_eval_array (s_env *env, const s_array *array,
                               s_array *dest);
 bool          env_eval_array_tag (s_env *env, const s_array *array,
                                   s_tag *dest);
+bool          env_eval_block (s_env *env, const s_block *block,
+                              s_tag *dest);
 bool          env_eval_call (s_env *env, const s_call *call,
                              s_tag *dest);
 bool          env_eval_call_arguments (s_env *env, const s_list *args,
@@ -35,6 +37,8 @@ bool          env_eval_call_cfn (s_env *env, const s_call *call,
 bool          env_eval_call_fn (s_env *env, const s_call *call,
                                 s_tag *dest);
 bool          env_eval_call_resolve (s_env *env, s_call *call);
+bool          env_eval_equal_block (s_env *env, const s_block *a,
+                                    const s_block *b, s_block *dest);
 bool          env_eval_equal_list (s_env *env, const s_list *a,
                                    const s_list *b, s_list **dest);
 bool          env_eval_equal_struct (s_env *env, const s_struct *a,
@@ -58,6 +62,8 @@ bool          env_eval_progn (s_env *env, const s_list *program,
 bool          env_eval_quote (s_env *env, const s_quote *quote,
                               s_tag *dest);
 bool          env_eval_quote_array (s_env *env, const s_array *array,
+                                    s_tag *dest);
+bool          env_eval_quote_block (s_env *env, const s_block *block,
                                     s_tag *dest);
 bool          env_eval_quote_call (s_env *env, const s_call *call,
                                    s_tag *dest);

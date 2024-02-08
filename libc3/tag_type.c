@@ -18,6 +18,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   switch (type) {
   case TAG_VOID:        *dest = 0;                     return true;
   case TAG_ARRAY:       *dest = sizeof(s_array);       return true;
+  case TAG_BLOCK:       *dest = sizeof(s_block);       return true;
   case TAG_BOOL:        *dest = sizeof(bool);          return true;
   case TAG_CALL:        *dest = sizeof(s_call);        return true;
   case TAG_CFN:         *dest = sizeof(s_cfn);         return true;
@@ -62,6 +63,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
 {
   switch (type) {
   case TAG_ARRAY:       *dest = &ffi_type_pointer;    return true;
+  case TAG_BLOCK:       *dest = &ffi_type_pointer;    return true;
   case TAG_BOOL:        *dest = &ffi_type_uint8;      return true;
   case TAG_CALL:        *dest = &ffi_type_pointer;    return true;
   case TAG_CFN:         *dest = &ffi_type_pointer;    return true;
@@ -108,6 +110,7 @@ const char * tag_type_to_string (e_tag_type tag_type)
   switch (tag_type) {
   case TAG_VOID:        return "Void";
   case TAG_ARRAY:       return "Array";
+  case TAG_BLOCK:       return "Block";
   case TAG_BOOL:        return "Bool";
   case TAG_CALL:        return "Call";
   case TAG_CFN:         return "Cfn";

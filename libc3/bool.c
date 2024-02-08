@@ -23,22 +23,46 @@ bool * bool_init_cast (bool *b, const s_tag *tag)
   assert(b);
   assert(tag);
   switch (tag->type) {
-  case TAG_BOOL:      *b = tag->data.bool;                    return b;
-  case TAG_CHARACTER: *b = (bool) tag->data.character;        return b;
-  case TAG_F32:       *b = (bool) tag->data.f32;              return b;
-  case TAG_F64:       *b = (bool) tag->data.f64;              return b;
-  case TAG_INTEGER:   *b = integer_to_u8(&tag->data.integer); return b;
-  case TAG_S8:        *b = (bool) tag->data.s8;               return b;
-  case TAG_S16:       *b = (bool) tag->data.s16;              return b;
-  case TAG_S32:       *b = (bool) tag->data.s32;              return b;
-  case TAG_S64:       *b = (bool) tag->data.s64;              return b;
-  case TAG_SW:        *b = (bool) tag->data.sw;               return b;
-  case TAG_U8:        *b = (bool) tag->data.u8;               return b;
-  case TAG_U16:       *b = (bool) tag->data.u16;              return b;
-  case TAG_U32:       *b = (bool) tag->data.u32;              return b;
-  case TAG_U64:       *b = (bool) tag->data.u64;              return b;
-  case TAG_UW:        *b = (bool) tag->data.uw;               return b;
-  default: break;
+  case TAG_BOOL:      *b = tag->data.bool;                  return b;
+  case TAG_CHARACTER: *b = (bool) tag->data.character;      return b;
+  case TAG_F32:       *b = (bool) tag->data.f32;            return b;
+  case TAG_F64:       *b = (bool) tag->data.f64;            return b;
+  case TAG_F128:      *b = (bool) tag->data.f128;           return b;
+  case TAG_INTEGER:
+    *b = ! integer_is_zero(&tag->data.integer);             return b;
+  case TAG_S8:        *b = tag->data.s8 != 0;               return b;
+  case TAG_S16:       *b = tag->data.s16 != 0;              return b;
+  case TAG_S32:       *b = tag->data.s32 != 0;              return b;
+  case TAG_S64:       *b = tag->data.s64 != 0;              return b;
+  case TAG_SW:        *b = tag->data.sw != 0;               return b;
+  case TAG_U8:        *b = tag->data.u8 != 0;               return b;
+  case TAG_U16:       *b = tag->data.u16 != 0;              return b;
+  case TAG_U32:       *b = tag->data.u32 != 0;              return b;
+  case TAG_U64:       *b = tag->data.u64 != 0;              return b;
+  case TAG_UW:        *b = tag->data.uw != 0;               return b;
+  case TAG_PTAG:      return tag->data.ptag ?
+      bool_init_cast(b, tag->data.ptag) : (*b = false, b);
+  case TAG_PTR:       *b = tag->data.ptr.p != 0;            return b;
+  case TAG_PTR_FREE:  *b = tag->data.ptr_free.p != 0;       return b;
+  case TAG_ARRAY:
+  case TAG_BLOCK:
+  case TAG_CALL:
+  case TAG_CFN:
+  case TAG_FACT:
+  case TAG_FN:
+  case TAG_IDENT:
+  case TAG_LIST:
+  case TAG_MAP:
+  case TAG_QUOTE:
+  case TAG_STR:
+  case TAG_STRUCT:
+  case TAG_STRUCT_TYPE:
+  case TAG_SYM:
+  case TAG_TUPLE:
+  case TAG_UNQUOTE:
+  case TAG_VAR:
+  case TAG_VOID:
+    break;
   }
   err_write_1("bool_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
