@@ -17,6 +17,7 @@
 #include <string.h>
 #include <strings.h>
 #include "array.h"
+#include "block.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
@@ -178,6 +179,7 @@ void tag_clean (s_tag *tag)
   assert(tag);
   switch (tag->type) {
   case TAG_ARRAY:       array_clean(&tag->data.array);     break;
+  case TAG_BLOCK:       block_clean(&tag->data.block);     break;
   case TAG_CALL:        call_clean(&tag->data.call);       break;
   case TAG_CFN:         cfn_clean(&tag->data.cfn);         break;
   case TAG_FN:          fn_clean(&tag->data.fn);           break;
@@ -353,6 +355,9 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     break;
   case TAG_ARRAY:
     array_init_copy(&tag->data.array, &src->data.array);
+    break;
+  case TAG_BLOCK:
+    block_init_copy(&tag->data.block, &src->data.block);
     break;
   case TAG_CALL:
     call_init_copy(&tag->data.call, &src->data.call);
@@ -540,7 +545,7 @@ s_tag * tag_neg (const s_tag *tag, s_tag *result)
   s_integer tmp;
   switch (tag->type) {
   case TAG_BOOL:
-    return tag_init_s8(result, -(tag->data.bool ? 1 : 0));
+    return tag_init_s8(result, tag->data.bool ? -1 : 0);
   case TAG_CHARACTER:
     return tag_init_s64(result, -tag->data.character);
   case TAG_INTEGER:
@@ -682,6 +687,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   }
   switch (tag_type) {
   case TAG_ARRAY:       *dest = &tag->data.array;       return true;
+  case TAG_BLOCK:       *dest = &tag->data.block;       return true;
   case TAG_BOOL:        *dest = &tag->data.bool;        return true;
   case TAG_CALL:        *dest = &tag->data.call;        return true;
   case TAG_CFN:         *dest = &tag->data.cfn;         return true;
@@ -740,6 +746,12 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_ARRAY:
     if (type == &g_sym_Array) {
       *dest = tag->data.array.data;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_BLOCK:
+    if (type == &g_sym_Block) {
+      *dest = &tag->data.block;
       return true;
     }
     goto invalid_cast;
@@ -986,6 +998,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   switch (tag_type) {
   case TAG_VOID:        *dest = NULL;                   return true;
   case TAG_ARRAY:       *dest = &tag->data.array;       return true;
+  case TAG_BLOCK:       *dest = &tag->data.block;       return true;
   case TAG_BOOL:        *dest = &tag->data.bool;        return true;
   case TAG_CALL:        *dest = &tag->data.call;        return true;
   case TAG_CFN:         *dest = &tag->data.cfn;         return true;
@@ -1035,6 +1048,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_ARRAY:
     *dest = tag->data.array.array_type;
     return dest;
+  case TAG_BLOCK:       *dest = &g_sym_Block;      return dest;
   case TAG_BOOL:        *dest = &g_sym_Bool;       return dest;
   case TAG_CALL:        *dest = &g_sym_Call;       return dest;
   case TAG_CFN:         *dest = &g_sym_Cfn;        return dest;

@@ -91,6 +91,7 @@ typedef enum {
 typedef enum {
   TAG_VOID = 0,
   TAG_ARRAY,
+  TAG_BLOCK,
   TAG_BOOL,
   TAG_CALL,
   TAG_CFN,
@@ -132,6 +133,7 @@ typedef struct arg                     s_arg;
 typedef struct array                   s_array;
 typedef struct array_dimension         s_array_dimension;
 typedef struct binding                 s_binding;
+typedef struct block                   s_block;
 typedef struct buf                     s_buf;
 typedef struct buf_save                s_buf_save;
 typedef struct call                    s_call;
@@ -196,6 +198,7 @@ typedef bool (* f_sequence_button) (s_sequence *seq, u8 button, sw x,
 #define SKIPLIST_HEIGHT_MAX U64_MAX
 
 /* 1 */
+
 struct array_dimension {
   uw count;
   uw item_size;
@@ -296,6 +299,11 @@ struct unwind_protect {
 };
 
 /* 2 */
+
+struct block {
+  s_tuple tuple;
+};
+
 struct buf {
   sw          column;
   sw        (*flush) (s_buf *buf);
@@ -348,6 +356,7 @@ struct struct_type {
 };
 
 /* 3 */
+
 struct call {
   /* key */
   s_ident ident;
@@ -393,6 +402,7 @@ struct type {
 };
 
 /* 4 */
+
 struct array {
   uw count;
   uw dimension;
@@ -406,8 +416,10 @@ struct array {
 };
 
 /* 5 */
+
 union tag_data {
   s_array       array;
+  s_block       block;
   bool          bool;
   s_call        call;
   s_cfn         cfn;
@@ -444,12 +456,14 @@ union tag_data {
 };
 
 /* 6 */
+
 struct tag {
   e_tag_type type;
   u_tag_data data;
 };
 
 /* 7 */
+
 struct arg {
   const s_sym *name;
   s_type type;
@@ -544,6 +558,7 @@ TYPEDEF_SKIPLIST_NODE(fact, s_fact *);
 TYPEDEF_SKIPLIST(fact, s_fact *);
 
 /* 8 */
+
 struct facts {
   s_set__tag        tags;
   s_set__fact       facts;
@@ -570,6 +585,7 @@ struct facts_cursor {
 };
 
 /* 9 */
+
 struct env {
   sw                argc;
   char            **argv;
@@ -596,6 +612,7 @@ struct facts_with_cursor_level {
 };
 
 /* 10 */
+
 struct facts_with_cursor {
   s_facts *facts;
   s_binding *bindings;

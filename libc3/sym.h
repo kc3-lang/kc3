@@ -30,6 +30,7 @@ extern const s_sym g_sym__brackets;
 extern const s_sym g_sym__paren;
 extern const s_sym g_sym__plus;
 extern const s_sym g_sym_Array;
+extern const s_sym g_sym_Block;
 extern const s_sym g_sym_Bool;
 extern const s_sym g_sym_C3;
 extern const s_sym g_sym_Call;

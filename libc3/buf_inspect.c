@@ -2122,6 +2122,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
     return buf_write_1(buf, "NULL");
   switch(tag->type) {
   case TAG_ARRAY:   return buf_inspect_array(buf, &tag->data.array);
+  case TAG_BLOCK:   return buf_inspect_block(buf, &tag->data.block);
   case TAG_BOOL:    return buf_inspect_bool(buf, &tag->data.bool);
   case TAG_CALL:    return buf_inspect_call(buf, &tag->data.call);
   case TAG_CFN:     return buf_inspect_cfn(buf, &tag->data.cfn);
@@ -2172,6 +2173,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   assert(tag);
   switch(tag->type) {
   case TAG_ARRAY:    return buf_inspect_array_size(&tag->data.array);
+  case TAG_BLOCK:    return buf_inspect_block_size(&tag->data.block);
   case TAG_BOOL:     return buf_inspect_bool_size(&tag->data.bool);
   case TAG_CALL:     return buf_inspect_call_size(&tag->data.call);
   case TAG_CFN:      return buf_inspect_cfn_size(&tag->data.cfn);

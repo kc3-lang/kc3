@@ -30,8 +30,7 @@ static const char * g_gl_camera_vertex_shader_src =
   "void main() {\n"
   "  gl_Position = vec4(uProjectionMatrix * uViewMatrix *\n"
   "                     uModelMatrix * vec4(iPos, 1.0));\n"
-  "  ioNormal = vec3(mat3(transpose(inverse(uModelMatrix))) *\n"
-  "                  iNormal);\n"
+  "  ioNormal = vec3(uViewMatrix * uModelMatrix * vec4(iNormal, 1.0));\n"
   "  ioPos = (uViewMatrix * uModelMatrix * vec4(iPos, 1.0)).xyz;\n"
   "  ioTexCoord = iTexCoord;\n"
   "}\n";
@@ -274,7 +273,6 @@ void gl_camera_render (s_gl_camera *camera)
                    &(s_vec3) { 0.0f, 0.0f, 1.0f });
   mat4_init_identity(&camera->model_matrix);
   mat4_init_copy(&matrix, &camera->view_matrix);
-  mat4_mult_mat4(&camera->projection_matrix, &matrix, &matrix);
   for (int i = 0; i < camera->light_count; i++)
     mat4_mult_vec3(&matrix, camera->light_pos + i,
                    camera->light_pos_cam + i);

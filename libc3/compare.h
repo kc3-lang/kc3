@@ -19,6 +19,7 @@
   s8 compare_##type (type a, type b)
 
 s8 compare_array (const s_array *a, const s_array *b);
+s8 compare_block (const s_block *a, const s_block *b);
 s8 compare_bool (bool a, bool b);
 s8 compare_call (const s_call *a, const s_call *b);
 s8 compare_cfn (const s_cfn *a, const s_cfn *b);

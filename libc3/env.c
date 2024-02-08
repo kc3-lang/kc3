@@ -358,6 +358,7 @@ bool env_eval_equal_map (s_env *env, const s_map *a,
   return true;
 }
 
+// TODO: pin operator
 bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
                          s_tag *dest)
 {
@@ -455,6 +456,10 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     dest->type = TAG_TUPLE;
     return env_eval_equal_tuple(env, &a->data.tuple, &b->data.tuple,
                                 &dest->data.tuple);
+  case TAG_BLOCK:
+    dest->type = TAG_BLOCK;
+    return env_eval_equal_block(env, &a->data.block, &b->data.block,
+                                &dest->data.block);
   case TAG_CALL:
   case TAG_QUOTE:
   case TAG_ARRAY:
@@ -849,6 +854,8 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
   switch (tag->type) {
   case TAG_ARRAY:
     return env_eval_quote_array(env, &tag->data.array, dest);
+  case TAG_BLOCK:
+    return env_eval_quote_block(env, &tag->data.block, dest);
   case TAG_CALL:
     return env_eval_quote_call(env, &tag->data.call, dest);
   case TAG_LIST:
@@ -1036,6 +1043,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_void(env, NULL, dest);
   case TAG_ARRAY:
     return env_eval_array_tag(env, &tag->data.array, dest);
+  case TAG_BLOCK:
+    return env_eval_block(env, &tag->data.block, dest);
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
   case TAG_IDENT:
