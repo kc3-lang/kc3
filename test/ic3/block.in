@@ -1,0 +1,30 @@
+quote do
+  1
+end
+do
+  1
+end
+quote do
+  1
+  2
+end
+do
+  1
+  2
+end
+quote do
+  1
+  2
+  3
+end
+do
+  1
+  2
+  3
+end
+quote do 1; end
+do 1; end
+quote do 1; 2; end
+do 1; 2; end
+quote do 1; 2; 3; end
+do 1; 2; 3; end

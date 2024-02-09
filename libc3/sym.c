@@ -60,6 +60,7 @@ const s_sym g_sym_Uw_brackets = {{{NULL},  4, {"Uw[]"}}};
 const s_sym g_sym_Var         = {{{NULL},  3, {"Var"}}};
 const s_sym g_sym_Void        = {{{NULL},  4, {"Void"}}};
 const s_sym g_sym_defstruct   = {{{NULL},  9, {"defstruct"}}};
+const s_sym g_sym_do          = {{{NULL},  2, {"do"}}};
 const s_sym g_sym_cast        = {{{NULL},  4, {"cast"}}};
 const s_sym g_sym_load_time   = {{{NULL},  9, {"load_time"}}};
 const s_sym g_sym_r           = {{{NULL},  1, {"r"}}};
@@ -295,6 +296,7 @@ void sym_init_g_sym (void)
   sym_intern(&g_sym_Void, NULL);
   sym_intern(&g_sym_cast, NULL);
   sym_intern(&g_sym_defstruct, NULL);
+  sym_intern(&g_sym_do, NULL);
   sym_intern(&g_sym_load_time, NULL);
   sym_intern(&g_sym_r, NULL);
   sym_intern(&g_sym_rw, NULL);

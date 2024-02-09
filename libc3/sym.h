@@ -73,6 +73,7 @@ extern const s_sym g_sym_Var;
 extern const s_sym g_sym_Void;
 extern const s_sym g_sym_cast;
 extern const s_sym g_sym_defstruct;
+extern const s_sym g_sym_do;
 extern const s_sym g_sym_load_time;
 extern const s_sym g_sym_r;
 extern const s_sym g_sym_rw;
