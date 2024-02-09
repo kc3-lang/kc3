@@ -257,6 +257,8 @@ sw buf_inspect_block_size (const s_block *block)
   u64 i = 0;
   sw r;
   sw result;
+  if (! block->count)
+    result = strlen("do end");
   result = strlen("do\n  ");
   if (block->count) {
     while (i < block->count - 1) {
@@ -270,7 +272,7 @@ sw buf_inspect_block_size (const s_block *block)
       return r;
     result += r;
   }
-  result += strlen("end");
+  result += strlen("\nend");
   return result;
 }
 

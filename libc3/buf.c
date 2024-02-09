@@ -709,6 +709,26 @@ sw buf_read_str (s_buf *buf, const s_str *src)
   return r;
 }
 
+sw buf_read_sym (s_buf *buf, const s_sym *src)
+{
+  character c;
+  sw r;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  r = buf_read_str(buf, &src->str);
+  if (r > 0 &&
+      buf_peek_character_utf8(buf, &c) > 0 &&
+      ! sym_character_is_reserved(c))
+    goto restore;
+  goto clean;
+ restore:
+  r = 0;
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_read_to_str (s_buf *buf, s_str *dest)
 {
   sw size;

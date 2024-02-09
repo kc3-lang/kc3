@@ -411,7 +411,7 @@ sw buf_parse_block (s_buf *buf, s_block *block)
   assert(buf);
   assert(block);
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "do")) <= 0)
+  if ((r = buf_read_sym(buf, &g_sym_do)) <= 0)
     goto clean;
   result += r;
   i = &list;
