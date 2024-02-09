@@ -45,6 +45,7 @@ sw buf_parse_array (s_buf *buf, s_array *dest);
 sw buf_parse_array_data (s_buf *buf, s_array *dest);
 sw buf_parse_array_dimension_count (s_buf *buf, s_array *dest);
 sw buf_parse_array_dimensions (s_buf *buf, s_array *dest);
+sw buf_parse_block (s_buf *buf, s_block *dest);
 sw buf_parse_bool (s_buf *buf, bool *dest);
 sw buf_parse_brackets (s_buf *buf, s_call *dest);
 sw buf_parse_call (s_buf *buf, s_call *dest);

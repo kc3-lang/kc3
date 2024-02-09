@@ -111,6 +111,8 @@ C3_C_SOURCES = \
 	"libc3/assert.h" \
 	"libc3/binding.c" \
 	"libc3/binding.h" \
+	"libc3/block.c" \
+	"libc3/block.h" \
 	"libc3/bool.c" \
 	"libc3/bool.h" \
 	"libc3/buf.c" \
@@ -489,6 +491,13 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/disabled/sdl2_font.h" \
 	"libc3/window/sdl2/disabled/sdl2_sprite.c" \
 	"libc3/window/sdl2/disabled/sdl2_sprite.h" \
+	"libc3/window/sdl2/dmat3.h" \
+	"libc3/window/sdl2/dmat4.c" \
+	"libc3/window/sdl2/dmat4.h" \
+	"libc3/window/sdl2/dvec2.c" \
+	"libc3/window/sdl2/dvec2.h" \
+	"libc3/window/sdl2/dvec3.c" \
+	"libc3/window/sdl2/dvec3.h" \
 	"libc3/window/sdl2/gl_camera.c" \
 	"libc3/window/sdl2/gl_camera.h" \
 	"libc3/window/sdl2/gl_cylinder.c" \
@@ -497,27 +506,12 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/gl_deprecated.h" \
 	"libc3/window/sdl2/gl_font.c" \
 	"libc3/window/sdl2/gl_font.h" \
-	"libc3/window/sdl2/gl_ft2.h" \
 	"libc3/window/sdl2/gl_lines.c" \
 	"libc3/window/sdl2/gl_lines.h" \
-	"libc3/window/sdl2/gl_matrix_3d.h" \
-	"libc3/window/sdl2/gl_matrix_3f.h" \
-	"libc3/window/sdl2/gl_matrix_4d.c" \
-	"libc3/window/sdl2/gl_matrix_4d.h" \
-	"libc3/window/sdl2/gl_matrix_4f.c" \
-	"libc3/window/sdl2/gl_matrix_4f.h" \
 	"libc3/window/sdl2/gl_object.c" \
 	"libc3/window/sdl2/gl_object.h" \
 	"libc3/window/sdl2/gl_ortho.c" \
 	"libc3/window/sdl2/gl_ortho.h" \
-	"libc3/window/sdl2/gl_point_2d.c" \
-	"libc3/window/sdl2/gl_point_2d.h" \
-	"libc3/window/sdl2/gl_point_2f.c" \
-	"libc3/window/sdl2/gl_point_2f.h" \
-	"libc3/window/sdl2/gl_point_3d.c" \
-	"libc3/window/sdl2/gl_point_3d.h" \
-	"libc3/window/sdl2/gl_point_3f.c" \
-	"libc3/window/sdl2/gl_point_3f.h" \
 	"libc3/window/sdl2/gl_sphere.c" \
 	"libc3/window/sdl2/gl_sphere.h" \
 	"libc3/window/sdl2/gl_sprite.c" \
@@ -530,7 +524,14 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/gl_triangle.h" \
 	"libc3/window/sdl2/gl_vertex.c" \
 	"libc3/window/sdl2/gl_vertex.h" \
+	"libc3/window/sdl2/mat3.h" \
+	"libc3/window/sdl2/mat4.c" \
+	"libc3/window/sdl2/mat4.h" \
 	"libc3/window/sdl2/types.h" \
+	"libc3/window/sdl2/vec2.c" \
+	"libc3/window/sdl2/vec2.h" \
+	"libc3/window/sdl2/vec3.c" \
+	"libc3/window/sdl2/vec3.h" \
 	"libc3/window/sdl2/window_sdl2.c" \
 	"libc3/window/sdl2/window_sdl2.h" \
 	"libc3/window/types.h" \
@@ -639,9 +640,12 @@ C3_OTHER_SOURCES = \
 	"lib/c3/0.1/c3.facts" \
 	"lib/c3/0.1/f32.facts" \
 	"lib/c3/0.1/f64.facts" \
+	"lib/c3/0.1/gl/.#sphere.facts" \
 	"lib/c3/0.1/gl/object.facts" \
 	"lib/c3/0.1/gl/point2d.facts" \
+	"lib/c3/0.1/gl/point2f.facts" \
 	"lib/c3/0.1/gl/point3d.facts" \
+	"lib/c3/0.1/gl/point3f.facts" \
 	"lib/c3/0.1/gl/sphere.facts" \
 	"lib/c3/0.1/gl/triangle.facts" \
 	"lib/c3/0.1/gl/vertex.facts" \
@@ -778,6 +782,9 @@ C3_OTHER_SOURCES = \
 	"test/ic3/plist.in" \
 	"test/ic3/plist.out.expected" \
 	"test/ic3/plist.ret.expected" \
+	"test/ic3/quote.in" \
+	"test/ic3/quote.out.expected" \
+	"test/ic3/quote.ret.expected" \
 	"test/ic3/str.err.expected" \
 	"test/ic3/str.in" \
 	"test/ic3/str.out.expected" \

@@ -16,6 +16,7 @@
 #include <math.h>
 #include "../libtommath/tommath.h"
 #include "array.h"
+#include "block.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
@@ -395,6 +396,88 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_block (s_buf *buf, s_block *block)
+{
+  character c;
+  s_list **i;
+  s_list *list = 0;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_block tmp;
+  assert(buf);
+  assert(block);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "do")) <= 0)
+    goto clean;
+  result += r;
+  i = &list;
+  *i = NULL;
+  while (1) {
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    *i = list_new(NULL);
+    if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "\n")) < 0 ||
+        (! r && (r = buf_read_1(buf, ";")) <= 0))
+      goto restore;
+    result += r;
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_read_1(buf, "end")) < 0)
+      goto restore;
+    if (r > 0 && ((r = buf_peek_character_utf8(buf, &c)) <= 0 ||
+                  sym_character_is_reserved(c))) {
+      sw i;
+      s_list *j;
+      sw k;
+      result += r;
+      i = list_length(list);
+      if (i < 2) {
+	r = 0;
+	goto restore;
+      }
+      block_init(&tmp, i);
+      j = list;
+      k = 0;
+      while (i--) {
+	tmp.tag[k] = j->tag;
+	tag_init_void(&j->tag);
+	j = list_next(j);
+        k++;
+      }
+      *block = tmp;
+      r = result;
+      goto clean;
+    }
+    i = &(*i)->next.data.list;
+  }
+  r = 0;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  if (list)
+    list_delete_all(list);
   return r;
 }
 

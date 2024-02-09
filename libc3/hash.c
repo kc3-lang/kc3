@@ -117,6 +117,20 @@ bool hash_update_array (t_hash *hash, const s_array *a)
   return true;
 }
 
+bool hash_update_block (t_hash *hash, const s_block *block)
+{
+  uw i = 0;
+  assert(block);
+  if (! hash_update(hash, &block->count, sizeof(block->count)))
+    return false;
+  while (i < block->count) {
+    if (! hash_update_tag(hash, block->tag + i))
+      return false;
+    i++;
+  }
+  return true;
+}
+
 bool hash_update_bool (t_hash *hash, const bool *x)
 {
   bool b;
@@ -472,8 +486,11 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
 bool hash_update_tuple (t_hash *hash, const s_tuple *tuple)
 {
   uw i = 0;
+  char type[] = "tuple";
   assert(tuple);
-  if (! hash_update(hash, &tuple->count, sizeof(tuple->count)))
+  assert(hash);
+  if (! hash_update(hash, type, sizeof(type)) ||
+      ! hash_update(hash, &tuple->count, sizeof(tuple->count)))
     return false;
   while (i < tuple->count) {
     if (! hash_update_tag(hash, tuple->tag + i))
