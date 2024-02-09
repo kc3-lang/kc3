@@ -3003,6 +3003,16 @@ sw buf_parse_tag_array (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_block (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_block(buf, &dest->data.block)) > 0)
+    dest->type = TAG_BLOCK;
+  return r;
+}
+
 sw buf_parse_tag_bool (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -3219,6 +3229,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_character(buf, dest)) != 0 ||
       (r = buf_parse_tag_map(buf, dest)) != 0 ||
       (r = buf_parse_tag_str(buf, dest)) != 0 ||
+      (r = buf_parse_tag_block(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_unquote(buf, dest)) != 0 ||
