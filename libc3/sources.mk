@@ -5,6 +5,7 @@ HEADERS = \
 	"array.h" \
 	"assert.h" \
 	"binding.h" \
+	"block.h" \
 	"bool.h" \
 	"buf.h" \
 	"buf_file.h" \
@@ -156,6 +157,7 @@ SOURCES = \
 	"arg.c" \
 	"array.c" \
 	"binding.c" \
+	"block.c" \
 	"bool.c" \
 	"buf.c" \
 	"buf_file.c" \
@@ -410,6 +412,7 @@ LO_SOURCES = \
 	"arg.c" \
 	"array.c" \
 	"binding.c" \
+	"block.c" \
 	"bool.c" \
 	"buf.c" \
 	"buf_file.c" \

@@ -204,6 +204,11 @@ struct array_dimension {
   uw item_size;
 };
 
+struct block {
+  uw count;
+  s_tag *tag;
+};
+
 struct buf_save {
   s_buf_save *next;
   uw rpos;
@@ -299,10 +304,6 @@ struct unwind_protect {
 };
 
 /* 2 */
-
-struct block {
-  s_tuple tuple;
-};
 
 struct buf {
   sw          column;

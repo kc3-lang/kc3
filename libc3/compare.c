@@ -56,6 +56,26 @@ s8 compare_array (const s_array *a, const s_array *b)
   return 0;
 }
 
+s8 compare_block (const s_block *a, const s_block *b)
+{
+  uw i = 0;
+  s8 r;
+  assert(a);
+  assert(b);
+  if (a == b)
+    return 0;
+  if (a->count < b->count)
+    return -1;
+  if (a->count > b->count)
+    return 1;
+  while (i < a->count) {
+    if ((r = compare_tag(a->tag + i, b->tag + i)))
+      return r;
+    i++;
+  }
+  return 0;
+}
+
 s8 compare_bool (bool a, bool b)
 {
   if (! a && b)

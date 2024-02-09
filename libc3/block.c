@@ -13,16 +13,21 @@
 #include "assert.h"
 #include <stdlib.h>
 #include <string.h>
+#include "block.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "io.h"
-#include "block.h"
 #include "tag.h"
 
 void block_clean (s_block *block)
 {
-  tuple_clean(&block->tuple);
+  uw i;
+  assert(block);
+  i = block->count;
+  while (i--)
+    tag_clean(block->tag + i);
+  free(block->tag);
 }
 
 void block_delete (s_block *block)
@@ -34,8 +39,16 @@ void block_delete (s_block *block)
 s_block * block_init (s_block *block, uw count)
 {
   s_block tmp = {0};
-  if (! tuple_init(&tmp->tuple, count))
-    return NULL;
+  assert(block);
+  tmp.count = count;
+  if (count) {
+    tmp.tag = calloc(count, sizeof(s_tag));
+    if (! tmp.tag) {
+      err_puts("block_init: failed to allocate memory");
+      assert(! "block_init: failed to allocate memory");
+      return NULL;
+    }
+  }
   *block = tmp;
   return block;
 }
