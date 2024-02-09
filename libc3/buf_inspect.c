@@ -224,6 +224,56 @@ sw buf_inspect_array_size (const s_array *array)
   return r;
 }
 
+sw buf_inspect_block (s_buf *buf, const s_block *block)
+{
+  u64 i = 0;
+  sw r;
+  sw result = 0;
+  if ((r = buf_write_1(buf, "do\n  ")) < 0)
+    return r;
+  result += r;
+  if (block->count) {
+    while (i < block->count - 1) {
+      if ((r = buf_inspect_tag(buf, block->tag + i)) < 0)
+        return r;
+      result += r;
+      if ((r = buf_write_1(buf, "\n  ")) < 0)
+        return r;
+      result += r;
+      i++;
+    }
+    if ((r = buf_inspect_tag(buf, block->tag + i)) < 0)
+      return r;
+    result += r;
+  }
+  if ((r = buf_write_1(buf, "end")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_block_size (const s_block *block)
+{
+  u64 i = 0;
+  sw r;
+  sw result;
+  result = strlen("do\n  ");
+  if (block->count) {
+    while (i < block->count - 1) {
+      if ((r = buf_inspect_tag_size(block->tag + i)) < 0)
+        return r;
+      result += r;
+      result += strlen("\n  ");
+      i++;
+    }
+    if ((r = buf_inspect_tag_size(block->tag + i)) < 0)
+      return r;
+    result += r;
+  }
+  result += strlen("end");
+  return result;
+}
+
 sw buf_inspect_bool (s_buf *buf, const bool *b)
 {
   if (*b)

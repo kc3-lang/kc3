@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include "array.h"
 #include "binding.h"
+#include "block.h"
 #include "buf.h"
 #include "buf_file.h"
 #include "buf_inspect.h"
@@ -162,6 +163,27 @@ bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
   dest->type = TAG_ARRAY;
   dest->data.array = tmp;
   return true;
+}
+bool env_eval_block (s_env *env, const s_block *block, s_tag *dest)
+{
+  uw i = 0;
+  bool r;
+  s_tag tmp;
+  assert(env);
+  assert(block);
+  assert(dest);
+  if (! block->count) {
+    tag_init_void(dest);
+    return true;
+  }
+  while (i < block->count - 1) {
+    r = env_eval_tag(env, block->tag + i, &tmp);
+    tag_clean(&tmp);
+    if (! r)
+      return false;
+    i++;
+  }
+  return env_eval_tag(env, block->tag + i, dest);
 }
 
 bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
@@ -456,13 +478,10 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     dest->type = TAG_TUPLE;
     return env_eval_equal_tuple(env, &a->data.tuple, &b->data.tuple,
                                 &dest->data.tuple);
-  case TAG_BLOCK:
-    dest->type = TAG_BLOCK;
-    return env_eval_equal_block(env, &a->data.block, &b->data.block,
-                                &dest->data.block);
   case TAG_CALL:
   case TAG_QUOTE:
   case TAG_ARRAY:
+  case TAG_BLOCK:
   case TAG_BOOL:
   case TAG_CFN:
   case TAG_CHARACTER:
@@ -706,6 +725,27 @@ bool env_eval_quote_array (s_env *env, const s_array *array,
   return true;
  ko:
   array_clean(&tmp);
+  return false;
+}
+
+bool env_eval_quote_block (s_env *env, const s_block *block, s_tag *dest)
+{
+  uw i = 0;
+  s_block tmp;
+  assert(env);
+  assert(block);
+  assert(dest);
+  block_init(&tmp, block->count);
+  while (i < block->count) {
+    if (! env_eval_quote_tag(env, block->tag + i, tmp.tag + i))
+      goto ko;
+    i++;
+  }
+  dest->type = TAG_BLOCK;
+  dest->data.block = tmp;
+  return true;
+ ko:
+  block_clean(&tmp);
   return false;
 }
 
