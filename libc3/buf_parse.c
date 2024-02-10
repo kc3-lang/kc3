@@ -401,7 +401,6 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
 
 sw buf_parse_block (s_buf *buf, s_block *block)
 {
-  character c;
   s_list **i;
   s_list *list = 0;
   sw r;
@@ -443,19 +442,14 @@ sw buf_parse_block (s_buf *buf, s_block *block)
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
-    if ((r = buf_read_1(buf, "end")) < 0)
+    if ((r = buf_read_sym(buf, &g_sym_end)) < 0)
       goto restore;
-    if (r > 0 && ((r = buf_peek_character_utf8(buf, &c)) <= 0 ||
-                  sym_character_is_reserved(c))) {
+    if (r > 0) {
       sw i;
       s_list *j;
       sw k;
       result += r;
       i = list_length(list);
-      if (i < 2) {
-	r = 0;
-	goto restore;
-      }
       block_init(&tmp, i);
       j = list;
       k = 0;
