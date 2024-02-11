@@ -38,3 +38,8 @@ do
   2 + 2
   3 + 3
 end
+quote do
+  1 + 1
+  2 + unquote 1 + 1
+  unquote 3 + 3
+end
