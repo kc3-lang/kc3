@@ -73,6 +73,10 @@ s8 compare_block (const s_block *a, const s_block *b)
       return r;
     i++;
   }
+  if (a->short_form && ! b->short_form)
+    return -1;
+  if (! a->short_form && b->short_form)
+    return 1;
   return 0;
 }
 

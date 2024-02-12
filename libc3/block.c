@@ -103,6 +103,7 @@ s_block * block_init_copy (s_block *block, const s_block *src)
     tag_init_copy(block->tag + i, src->tag + i);
     i++;
   }
+  block->short_form = src->short_form;
   return block;
 }
 

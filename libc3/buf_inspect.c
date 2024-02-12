@@ -229,22 +229,47 @@ sw buf_inspect_block (s_buf *buf, const s_block *block)
   u64 i = 0;
   sw r;
   sw result = 0;
-  if (! block->count)
-    return buf_write_1(buf, "do end");
-  if ((r = buf_write_1(buf, "do")) < 0)
-    return r;
-  result += r;
-  while (i < block->count) {
-    if ((r = buf_write_1(buf, "\n  ")) < 0)
+  if (! block->count) {
+    if (block->short_form)
+      return buf_write_1(buf, "{}");
+    else
+      return buf_write_1(buf, "do end");
+  }
+  if (block->short_form) {    
+    if ((r = buf_write_1(buf, "{ ")) < 0)
       return r;
-    result += r;
+  }
+  else {
+    if ((r = buf_write_1(buf, "do\n  ")) < 0)
+      return r;
+  }
+  result += r;
+  while (i < block->count - 1) {
     if ((r = buf_inspect_tag(buf, block->tag + i)) < 0)
       return r;
     result += r;
+    if (block->short_form) {
+      if ((r = buf_write_1(buf, "; ")) < 0)
+        return r;
+    }
+    else {
+      if ((r = buf_write_1(buf, "\n  ")) < 0)
+        return r;
+    }
+    result += r;
     i++;
   }
-  if ((r = buf_write_1(buf, "\nend")) < 0)
+  if ((r = buf_inspect_tag(buf, block->tag + i)) < 0)
     return r;
+  result += r;
+  if (block->short_form) {
+    if ((r = buf_write_1(buf, " }")) < 0)
+      return r;
+  }
+  else {
+    if ((r = buf_write_1(buf, "\nend")) < 0)
+      return r;
+  }
   result += r;
   return result;
 }
