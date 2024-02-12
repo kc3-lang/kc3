@@ -12,6 +12,7 @@
  */
 #include <math.h>
 #include <libc3/c3.h>
+#include "../cairo_text.h"
 #include "mandelbrot_f128.h"
 
 static cairo_surface_t *g_mandelbrot_f128_surface = NULL;
@@ -154,6 +155,23 @@ bool mandelbrot_f128_render (s_sequence *seq)
   cairo_set_source_surface(cr, g_mandelbrot_f128_surface, 0, 0);
   cairo_rectangle(cr, 0, 0, win->w, win->h);
   cairo_fill(cr);
+  char a[128];
+  s_buf buf;
+  buf_init(&buf, false, sizeof(a), a);
+  buf_write_1(&buf, "x: ");
+  buf_inspect_f128(&buf, &next_x);
+  buf_write_u8(&buf, 0);
+  cairo_text_outline(cr, 20, win->h - 100, a);
+  buf_init(&buf, false, sizeof(a), a);
+  buf_write_1(&buf, "y: ");
+  buf_inspect_f128(&buf, &next_y);
+  buf_write_u8(&buf, 0);
+  cairo_text_outline(cr, 20, win->h - 80, a);
+  buf_init(&buf, false, sizeof(a), a);
+  buf_write_1(&buf, "z: ");
+  buf_inspect_f128(&buf, &next_z);
+  buf_write_u8(&buf, 0);
+  cairo_text_outline(cr, 20, win->h - 60, a);
   return true;
 }
 

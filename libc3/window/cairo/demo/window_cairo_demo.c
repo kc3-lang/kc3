@@ -17,6 +17,7 @@
 #include "../../window.h"
 #include "../cairo_font.h"
 #include "../cairo_sprite.h"
+#include "../cairo_text.h"
 #include "../window_cairo.h"
 #include "window_cairo_demo.h"
 #include "bg_rect.h"
@@ -122,32 +123,6 @@ bool window_cairo_demo_load (s_window_cairo *window)
   return true;
 }
 
-static void render_text (cairo_t *cr, double x, double y,
-                         const char *p)
-{
-  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-  cairo_move_to(cr, x - 1.0, y - 1.0);
-  cairo_show_text(cr, p);
-  cairo_move_to(cr, x - 1.0, y);
-  cairo_show_text(cr, p);
-  cairo_move_to(cr, x - 1.0, y + 1.0);
-  cairo_show_text(cr, p);
-  cairo_move_to(cr, x, y - 1.0);
-  cairo_show_text(cr, p);
-  cairo_move_to(cr, x, y + 1.0);
-  cairo_show_text(cr, p);
-  cairo_move_to(cr, x + 1.0, y - 1.0);
-  cairo_show_text(cr, p);
-  cairo_move_to(cr, x + 1.0, y);
-  cairo_show_text(cr, p);
-  cairo_move_to(cr, x + 1.0, y + 1.0);
-  cairo_show_text(cr, p);
-  /* text */
-  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
-  cairo_move_to(cr, x, y);
-  cairo_show_text(cr, p);
-}
-
 bool window_cairo_demo_render (s_window_cairo *window)
 {
   cairo_t *cr;
@@ -166,7 +141,7 @@ bool window_cairo_demo_render (s_window_cairo *window)
   cairo_set_font_size(cr, 20);
   cairo_set_font(cr, &g_font_courier_new);
   cairo_text_extents(cr, seq->title, &te);
-  render_text(cr, 20.0, window->h - te.height - te.y_bearing - 20,
+  cairo_text_outline(cr, 20.0, window->h - te.height - te.y_bearing - 20,
               seq->title);
   /* progress bar */
   cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
@@ -183,7 +158,7 @@ bool window_cairo_demo_render (s_window_cairo *window)
   char fps[32];
   snprintf(fps, sizeof(fps), "%f", (f64) seq->frame / seq->t);
   cairo_text_extents(cr, fps, &te);
-  render_text(cr, 20.0, 20.0 + te.height, fps);
+  cairo_text_outline(cr, 20.0, 20.0 + te.height, fps);
   return true;
 }
 
