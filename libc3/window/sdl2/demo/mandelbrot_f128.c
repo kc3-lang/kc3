@@ -210,6 +210,8 @@ bool mandelbrot_f128_unload (s_sequence *seq)
 {
   (void) seq;
   glDeleteTextures(1, &g_mandelbrot_f128_texture);
+  gl_text_clean(&g_mandelbrot_f128_text);
+  gl_font_clean(&g_mandelbrot_f128_font);
   return true;
 }
 
