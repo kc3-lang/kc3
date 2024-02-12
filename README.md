@@ -289,7 +289,10 @@ Script interpreter. Works the same as ic3 but is not interactive.
 ## TODO
 
  - libc3
-   - height function `(TAG_VOID: 0, TAG_TUPLE: max(height(tuple->tags)))`
+   - tags
+     - height function `(TAG_VOID: 0, TAG_TUPLE: max(height(tuple->tags)))`
+     - has_ident
+     - collect_idents
    - macros
    - modules
      - defmodule
