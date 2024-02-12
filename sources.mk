@@ -439,6 +439,8 @@ C3_C_SOURCES = \
 	"libc3/window/cairo/cairo_font.h" \
 	"libc3/window/cairo/cairo_sprite.c" \
 	"libc3/window/cairo/cairo_sprite.h" \
+	"libc3/window/cairo/cairo_text.c" \
+	"libc3/window/cairo/cairo_text.h" \
 	"libc3/window/cairo/demo/bg_rect.c" \
 	"libc3/window/cairo/demo/bg_rect.h" \
 	"libc3/window/cairo/demo/flies.c" \
@@ -640,7 +642,6 @@ C3_OTHER_SOURCES = \
 	"lib/c3/0.1/c3.facts" \
 	"lib/c3/0.1/f32.facts" \
 	"lib/c3/0.1/f64.facts" \
-	"lib/c3/0.1/gl/.#sphere.facts" \
 	"lib/c3/0.1/gl/object.facts" \
 	"lib/c3/0.1/gl/point2d.facts" \
 	"lib/c3/0.1/gl/point2f.facts" \
@@ -686,6 +687,9 @@ C3_OTHER_SOURCES = \
 	"test/ic3/array.in" \
 	"test/ic3/array.out.expected" \
 	"test/ic3/array.ret.expected" \
+	"test/ic3/block.in" \
+	"test/ic3/block.out.expected" \
+	"test/ic3/block.ret.expected" \
 	"test/ic3/bool.err.expected" \
 	"test/ic3/bool.in" \
 	"test/ic3/bool.out.expected" \
