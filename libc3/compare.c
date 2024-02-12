@@ -231,7 +231,7 @@ s8 compare_fn_clause (const s_fn_clause *a, const s_fn_clause *b)
       return 1;
     if ((r = compare_list(a->pattern, b->pattern)))
       return r;
-    if ((r = compare_list(a->algo, b->algo)))
+    if ((r = compare_block(&a->algo, &b->algo)))
       return r;
     a = a->next_clause;
     b = b->next_clause;

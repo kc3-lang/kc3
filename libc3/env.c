@@ -579,7 +579,7 @@ bool env_eval_fn_call (s_env *env, const s_fn *fn,
       return false;
     }
   }
-  if (! env_eval_progn(env, clause->algo, &tag)) {
+  if (! env_eval_block(env, &clause->algo, &tag)) {
     list_delete_all(args);
     list_delete_all(tmp);
     env->frame = frame_clean(&frame);
@@ -660,25 +660,6 @@ bool env_eval_map (s_env *env, const s_map *map, s_tag *dest)
  ko:
   map_clean(&tmp);
   return false;
-}
-
-bool env_eval_progn (s_env *env, const s_list *program, s_tag *dest)
-{
-  const s_list *next;
-  s_tag tmp;
-  assert(env);
-  assert(program);
-  assert(dest);
-  while (program) {
-    next = list_next(program);
-    if (! env_eval_tag(env, &program->tag, &tmp))
-      return false;
-    if (next)
-      tag_clean(&tmp);
-    program = next;
-  }
-  *dest = tmp;
-  return true;
 }
 
 bool env_eval_quote (s_env *env, const s_quote *quote, s_tag *dest)
@@ -1714,7 +1695,7 @@ bool env_tag_ident_is_bound (const s_env *env, const s_tag *tag,
      ident_get(&tag->data.ident, facts, &tmp));
 }
 
-s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_list *cleanup,
+s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_block *cleanup,
                             s_tag *dest)
 {
   s_tag tmp;
@@ -1723,11 +1704,11 @@ s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_list *cleanup,
   assert(protected);
   if (setjmp(unwind_protect.buf)) {
     env_pop_unwind_protect(env);
-    env_eval_progn(env, cleanup, &tmp);
+    env_eval_block(env, cleanup, &tmp);
     longjmp(*unwind_protect.jmp, 1);
   }
   env_eval_tag(env, protected, dest);
   env_pop_unwind_protect(env);
-  env_eval_progn(env, cleanup, &tmp);
+  env_eval_block(env, cleanup, &tmp);
   return dest;
 }

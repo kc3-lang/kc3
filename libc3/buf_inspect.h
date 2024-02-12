@@ -88,8 +88,6 @@ sw buf_inspect_fact (s_buf *buf, const s_fact *fact);
 sw buf_inspect_fact_size (const s_fact *fact);
 sw buf_inspect_facts_spec (s_buf *buf, p_facts_spec spec);
 sw buf_inspect_fn (s_buf *buf, const s_fn *fn);
-sw buf_inspect_fn_algo (s_buf *buf, const s_list *algo);
-sw buf_inspect_fn_algo_size (const s_list *algo);
 sw buf_inspect_fn_clause (s_buf *buf, const s_fn_clause *clause);
 sw buf_inspect_fn_clause_size (const s_fn_clause *clause);
 sw buf_inspect_fn_pattern (s_buf *buf, const s_list *pattern);
