@@ -472,10 +472,13 @@ sw buf_parse_block (s_buf *buf, s_block *block)
  ok:
   result += r;
   j = list_length(list);
-  block_init(&tmp, j);
+  if (! block_init(&tmp, j)) {
+    r = -2;
+    goto restore;
+  }
   k = list;
   l = 0;
-  while (k--) {
+  while (l < j) {
     tmp.tag[l] = k->tag;
     tag_init_void(&k->tag);
     k = list_next(k);
