@@ -213,8 +213,7 @@ bool hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses)
   while (f) {
     if (! hash_update_list(hash, (const s_list * const *)
                            &f->pattern) ||
-        ! hash_update_list(hash, (const s_list * const *)
-                           &f->algo))
+        ! hash_update_block(hash, &f->algo))
       return false;
     f = f->next_clause;
   }

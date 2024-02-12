@@ -232,7 +232,7 @@ struct fact_w {
 struct fn_clause {
   uw arity;
   s_list *pattern;
-  s_list *algo;
+  s_block algo;
   s_fn_clause *next_clause;
 };
 

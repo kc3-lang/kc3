@@ -402,6 +402,9 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
 sw buf_parse_block (s_buf *buf, s_block *block)
 {
   s_list **i;
+  sw j;
+  s_list *k;
+  sw l;
   s_list *list = 0;
   sw r;
   sw result = 0;
@@ -410,7 +413,9 @@ sw buf_parse_block (s_buf *buf, s_block *block)
   assert(buf);
   assert(block);
   buf_save_init(buf, &save);
-  if ((r = buf_read_sym(buf, &g_sym_do)) <= 0)
+  if ((r = buf_read_sym(buf, &g_sym_do)) < 0)
+    goto clean;
+  if (! r && (r = buf_read_1(buf, "{")) <= 0)
     goto clean;
   result += r;
   i = &list;
@@ -432,6 +437,12 @@ sw buf_parse_block (s_buf *buf, s_block *block)
     if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
       goto restore;
     result += r;
+    if ((r = buf_read_sym(buf, &g_sym_end)) < 0)
+      goto restore;
+    if (! r && (r = buf_read_1(buf, "}")) < 0)
+      goto restore;
+    if (r > 0)
+      goto ok;
     if ((r = buf_read_1(buf, "\n")) < 0 ||
         (! r && (r = buf_read_1(buf, ";")) <= 0))
       goto restore;
@@ -444,25 +455,10 @@ sw buf_parse_block (s_buf *buf, s_block *block)
     result += r;
     if ((r = buf_read_sym(buf, &g_sym_end)) < 0)
       goto restore;
-    if (r > 0) {
-      sw i;
-      s_list *j;
-      sw k;
-      result += r;
-      i = list_length(list);
-      block_init(&tmp, i);
-      j = list;
-      k = 0;
-      while (i--) {
-	tmp.tag[k] = j->tag;
-	tag_init_void(&j->tag);
-	j = list_next(j);
-        k++;
-      }
-      *block = tmp;
-      r = result;
-      goto clean;
-    }
+    if (! r && (r = buf_read_1(buf, "}")) < 0)
+      goto restore;
+    if (r > 0)
+      goto ok;
     i = &(*i)->next.data.list;
   }
   r = 0;
@@ -473,6 +469,21 @@ sw buf_parse_block (s_buf *buf, s_block *block)
   if (list)
     list_delete_all(list);
   return r;
+ ok:
+  result += r;
+  j = list_length(list);
+  block_init(&tmp, j);
+  k = list;
+  l = 0;
+  while (k--) {
+    tmp.tag[l] = k->tag;
+    tag_init_void(&k->tag);
+    k = list_next(k);
+    l++;
+  }
+  *block = tmp;
+  r = result;
+  goto clean;
 }
 
 sw buf_parse_bool (s_buf *buf, bool *p)
@@ -1488,7 +1499,7 @@ sw buf_parse_fn_clause (s_buf *buf, s_fn_clause *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_fn_algo(buf, &tmp.algo)) <= 0) {
+  if ((r = buf_parse_block(buf, &tmp.algo)) <= 0) {
     buf_inspect_fn_clause(&g_c3_env.err, &tmp);
     buf_flush(&g_c3_env.err);
     err_puts("buf_parse_fn: invalid program");
@@ -1500,50 +1511,6 @@ sw buf_parse_fn_clause (s_buf *buf, s_fn_clause *dest)
   goto clean;
  restore:
   fn_clause_clean(&tmp);
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
-sw buf_parse_fn_algo (s_buf *buf, s_list **dest)
-{
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s_list **tail;
-  s_tag tag;
-  s_list *tmp = NULL;
-  assert(buf);
-  assert(dest);
-  buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "{")) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto restore;
-  result += r;
-  tail = &tmp;
-  while (1) {
-    if ((r = buf_parse_tag(buf, &tag)) < 0)
-      goto restore;
-    if (! r)
-      break;
-    result += r;
-    *tail = list_new(NULL);
-    (*tail)->tag = tag;
-    tail = &(*tail)->next.data.list;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
-  }
-  if ((r = buf_read_1(buf, "}")) <= 0)
-    goto restore;
-  result += r;
-  *dest = tmp;
-  r = result;
-  goto clean;
- restore:
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
