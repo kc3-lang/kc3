@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBC3_WINDOW_CAIRO_CAIRO_FONT_H
-#define LIBC3_WINDOW_CAIRO_CAIRO_FONT_H
+#ifndef LIBC3_WINDOW_CAIRO_CAIRO_TEXT_H
+#define LIBC3_WINDOW_CAIRO_CAIRO_TEXT_H
 
 #include "types.h"
 
@@ -21,6 +21,7 @@ void           cairo_font_clean (s_cairo_font *font);
 s_cairo_font * cairo_font_init (s_cairo_font *font, const char *path);
 
 /* Observers */
-void cairo_set_font (cairo_t *cr, const s_cairo_font *font);
+void cairo_text_outline (cairo_t *cr, double x, double y,
+                         const char *p);
 
-#endif /* LIBC3_WINDOW_CAIRO_CAIRO_FONT_H */
+#endif /* LIBC3_WINDOW_CAIRO_CAIRO_TEXT_H */
