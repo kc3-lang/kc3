@@ -207,6 +207,7 @@ struct array_dimension {
 struct block {
   uw count;
   s_tag *tag;
+  bool short_form;
 };
 
 struct buf_save {

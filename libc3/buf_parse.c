@@ -409,14 +409,18 @@ sw buf_parse_block (s_buf *buf, s_block *block)
   sw r;
   sw result = 0;
   s_buf_save save;
+  bool short_form = false;
   s_block tmp;
   assert(buf);
   assert(block);
   buf_save_init(buf, &save);
   if ((r = buf_read_sym(buf, &g_sym_do)) < 0)
     goto clean;
-  if (! r && (r = buf_read_1(buf, "{")) <= 0)
-    goto clean;
+  if (! r) {
+    short_form = true;
+    if ((r = buf_read_1(buf, "{")) <= 0)
+      goto clean;
+  }
   result += r;
   i = &list;
   *i = NULL;
@@ -484,6 +488,7 @@ sw buf_parse_block (s_buf *buf, s_block *block)
     k = list_next(k);
     l++;
   }
+  tmp.short_form = short_form;
   *block = tmp;
   r = result;
   goto clean;
@@ -3193,8 +3198,8 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_character(buf, dest)) != 0 ||
       (r = buf_parse_tag_map(buf, dest)) != 0 ||
       (r = buf_parse_tag_str(buf, dest)) != 0 ||
-      (r = buf_parse_tag_block(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
+      (r = buf_parse_tag_block(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_unquote(buf, dest)) != 0 ||
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
