@@ -53,6 +53,7 @@ bool          env_eval_fn_call (s_env *env, const s_fn *fn,
                                 const s_list *arguments, s_tag *dest);
 bool          env_eval_ident (s_env *env, const s_ident *ident,
                               s_tag *dest);
+bool          env_eval_ident_is_bound (s_env *env, const s_ident *ident);
 bool          env_eval_list (s_env *env, const s_list *list,
                              s_tag *dest);
 bool          env_eval_map (s_env *env, const s_map *map,

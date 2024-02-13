@@ -612,6 +612,23 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   return true;
 }
 
+bool env_eval_ident_is_bound (s_env *env, const s_ident *ident)
+{
+  s_ident tmp_ident;
+  s_tag tmp;
+  assert(env);
+  assert(ident);
+  if (frame_get(env->frame, tmp_ident.sym))
+    return true;
+  ident_init_copy(&tmp_ident, ident);
+  ident_resolve_module(&tmp_ident, env);
+  if (ident_get(&tmp_ident, &env->facts, &tmp)) {
+    tag_clean(&tmp);
+    return true;
+  }
+  return false;
+}
+
 bool env_eval_list (s_env *env, const s_list *list, s_tag *dest)
 {
   s_list *next;
