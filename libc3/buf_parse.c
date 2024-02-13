@@ -1430,6 +1430,7 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
 
 sw buf_parse_fn (s_buf *buf, s_fn *dest)
 {
+  bool macro = false;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -1438,8 +1439,13 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "fn")) <= 0)
+  if ((r = buf_read_1(buf, "fn")) < 0)
     goto clean;
+  if (! r) {
+    macro = true;
+    if ((r = buf_read_1(buf, "macro")) <= 0)
+      goto clean;
+  }
   result += r;
   fn_init(&tmp);
   tail = &tmp.clauses;
@@ -1477,6 +1483,7 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
     result += r;
   }
  ok:
+  tmp.macro = macro;
   *dest = tmp;
   r = result;
   goto clean;
