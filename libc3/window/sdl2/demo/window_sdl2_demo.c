@@ -225,6 +225,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   seq = window->seq;
   mat4_init_identity(&g_ortho.model_matrix);
   gl_ortho_render(&g_ortho);
+  glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
                       GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

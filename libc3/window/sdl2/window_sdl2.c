@@ -131,6 +131,7 @@ s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
 bool window_sdl2_run (s_window_sdl2 *window)
 {
   SDL_GLContext context;
+  int mouse_x, mouse_y;
   int quit = 0;
   SDL_Event sdl_event;
   SDL_Window *sdl_window;
@@ -251,6 +252,14 @@ bool window_sdl2_run (s_window_sdl2 *window)
       case SDL_MOUSEBUTTONDOWN:
         if (! window->button(window, sdl_event.button.button,
                              sdl_event.button.x, sdl_event.button.y)) {
+          err_puts("window_sdl2_run: window->button => false");
+          quit = 1;
+        }
+        break;
+      case SDL_MOUSEWHEEL:
+        SDL_GetMouseState(&mouse_x, &mouse_y);
+        if (! window->button(window, sdl_event.wheel.y > 0 ? 4 : 5,
+                             mouse_x, mouse_y)) {
           err_puts("window_sdl2_run: window->button => false");
           quit = 1;
         }

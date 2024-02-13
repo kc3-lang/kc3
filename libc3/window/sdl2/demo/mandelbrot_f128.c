@@ -172,11 +172,13 @@ bool mandelbrot_f128_render (s_sequence *seq)
     *y = next_y;
     *z = next_z;
   }
+  glClearColor(0, 0, 0, 0);
+  glClear(GL_COLOR_BUFFER_BIT);
   mat4_init_identity(&g_ortho.model_matrix);
   gl_ortho_bind_texture(&g_ortho, g_mandelbrot_f128_texture);
   gl_ortho_rect(&g_ortho, 0, 0, win->w, win->h);
   gl_ortho_text_render_outline(&g_ortho, &g_mandelbrot_f128_text,
-                               20.0, 120.0);
+                               20.0, 66.0);
   return true;
 }
 
@@ -203,6 +205,7 @@ static bool mandelbrot_f128_resize (s_sequence *seq)
     return false;
   if (! array_allocate(pixels))
     return false;
+  printf("mandelbrot_f128_resize: %lux%lu\n", win->w, win->h);
   return true;
 }
 
@@ -218,6 +221,8 @@ bool mandelbrot_f128_unload (s_sequence *seq)
 static bool mandelbrot_f128_update (s_sequence *seq)
 {
   f128 _2z_xz_y;
+  char a[512];
+  s_buf buf;
   f128 c_x;
   f128 c_y;
   uw i;
@@ -294,14 +299,12 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   assert(glGetError() == GL_NO_ERROR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   assert(glGetError() == GL_NO_ERROR);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, win->w, win->h, 0,
-               GL_RGBA, GL_UNSIGNED_BYTE, pixels->data);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, win->w, win->h, 0,
+               GL_RGB, GL_UNSIGNED_BYTE, pixels->data);
   assert(glGetError() == GL_NO_ERROR);
-  char a[512];
-  s_buf buf;
   buf_init(&buf, false, sizeof(a), a);
   buf_write_1(&buf, "x: ");
   buf_inspect_f128(&buf, &next_x);
@@ -310,5 +313,6 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   buf_write_1(&buf, "\nz: ");
   buf_inspect_f128(&buf, &next_z);
   gl_text_update_buf(&g_mandelbrot_f128_text, &buf);
+  printf("mandelbrot_f128_update: %lux%lu\n", win->w, win->h);
   return true;
 }
