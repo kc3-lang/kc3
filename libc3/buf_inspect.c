@@ -594,41 +594,6 @@ sw buf_inspect_cast_size (const s_call *call)
   return result;
 }
 
-sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym)
-{
-  sw r;
-  sw result = 0;
-  assert(buf);
-  assert(sym);
-  if ((r = buf_write_1(buf, "(")) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_inspect_sym(buf, &sym)) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_write_1(buf, ")")) <= 0)
-    goto clean;
-  result += r;
-  r = result;
- clean:
-  return r;
-}
-
-sw buf_inspect_paren_sym_size (const s_sym *sym)
-{
-  sw r;
-  sw result = 0;
-  assert(sym);
-  result += strlen("(");
-  if ((r = buf_inspect_sym_size(&sym)) <= 0)
-    goto clean;
-  result += r;
-  result += strlen(")");
-  r = result;
- clean:
-  return r;
-}
-
 sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
 {
   sw r;
@@ -1035,8 +1000,14 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
   sw result = 0;
   assert(buf);
   assert(fn);
-  if ((r = buf_write_1(buf, "fn ")) < 0)
-    return r;
+  if (fn->macro) {
+    if ((r = buf_write_1(buf, "macro ")) < 0)
+      return r;
+  }
+  else {
+    if ((r = buf_write_1(buf, "fn ")) < 0)
+      return r;
+  }
   result += r;
   clause = fn->clauses;
   assert(clause);
@@ -1525,6 +1496,41 @@ sw buf_inspect_map_size (const s_map *map)
   assert(! "buf_inspect_map_size: not implemented");
   (void) map;
   return -1;
+}
+
+sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(sym);
+  if ((r = buf_write_1(buf, "(")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_inspect_sym(buf, &sym)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_write_1(buf, ")")) <= 0)
+    goto clean;
+  result += r;
+  r = result;
+ clean:
+  return r;
+}
+
+sw buf_inspect_paren_sym_size (const s_sym *sym)
+{
+  sw r;
+  sw result = 0;
+  assert(sym);
+  result += strlen("(");
+  if ((r = buf_inspect_sym_size(&sym)) <= 0)
+    goto clean;
+  result += r;
+  result += strlen(")");
+  r = result;
+ clean:
+  return r;
 }
 
 sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag)
