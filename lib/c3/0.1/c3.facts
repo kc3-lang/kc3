@@ -15,6 +15,13 @@ replace {C3.operator01, :arity, 2}
 replace {C3.operator01, :cfn, cfn Tag "tag_brackets" (Tag, Tag, Result)}
 replace {C3.operator01, :operator_precedence, 13}
 replace {C3.operator01, :operator_associativity, :left}
+add {C3, :operator, C3.operator_pin}
+replace {C3.operator_pin, :is_a, :operator}
+replace {C3.operator_pin, :symbol, :^}
+replace {C3.operator_pin, :arity, 1}
+replace {C3.operator_pin, :cfn, cfn Tag "c3_pin" (Tag, Result)}
+replace {C3.operator_pin, :operator_precedence, 12}
+replace {C3.operator_pin, :operator_associativity, :right}
 add {C3, :operator, C3.operator02}
 replace {C3.operator02, :is_a, :operator}
 replace {C3.operator02, :symbol, :!}
