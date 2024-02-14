@@ -15,11 +15,13 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "bool.h"
 #include "buf.h"
 #include "c3_main.h"
 #include "env.h"
 #include "str.h"
 #include "sym.h"
+#include "tag.h"
 
 const s_str g_c3_base_binary = {{NULL}, 2, {"01"}};
 const s_str g_c3_base_octal = {{NULL}, 8, {"01234567"}};
@@ -74,6 +76,29 @@ s_str * c3_getenv (const s_str *name, s_str *dest)
   if (! p)
     return NULL;
   return str_init_1(dest, NULL, p);
+}
+
+/* Special operator. */
+s_tag * c3_if (const s_tag *cond, const s_tag *then, const s_tag *else_,
+               s_tag *dest)
+{
+  bool b;
+  s_tag tmp;
+  if (! env_eval_tag(&g_c3_env, cond, &tmp))
+    return NULL;
+  if (! bool_init_cast(&b, &tmp)) {
+    tag_clean(&tmp);
+    return NULL;
+  }
+  tag_clean(&tmp);
+  if (b) {
+    if (! env_eval_tag(&g_c3_env, then, dest))
+      return NULL;
+    return dest;
+  }
+  if (! env_eval_tag(&g_c3_env, else_, dest))
+    return NULL;
+  return dest;
 }
 
 s_env * c3_init (s_env *env, int argc, char **argv)
