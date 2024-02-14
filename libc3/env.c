@@ -611,7 +611,12 @@ bool env_eval_fn_call (s_env *env, const s_fn *fn,
     env->frame = frame_clean(&frame);
     return false;
   }
-  *dest = tag;
+  if (fn->macro) {
+    if (! env_eval_tag(env, &tag, dest))
+      return false;
+  }
+  else
+    *dest = tag;
   list_delete_all(args);
   list_delete_all(tmp);
   env->frame = frame_clean(&frame);
