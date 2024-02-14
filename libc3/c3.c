@@ -88,3 +88,10 @@ void c3_license (void)
   buf_write_1(&g_c3_env.out, g_c3_license);
   buf_flush(&g_c3_env.out);
 }
+
+s_tag * c3_pin (const s_tag *a, s_tag *dest)
+{
+  if (! env_eval_tag(&g_c3_env, a, dest))
+    return NULL;
+  return dest;
+}

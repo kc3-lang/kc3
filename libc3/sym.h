@@ -76,6 +76,7 @@ extern const s_sym g_sym_defstruct;
 extern const s_sym g_sym_do;
 extern const s_sym g_sym_end;
 extern const s_sym g_sym_load_time;
+extern const s_sym g_sym_operator_pin;
 extern const s_sym g_sym_r;
 extern const s_sym g_sym_rw;
 extern const s_sym g_sym_rwx;

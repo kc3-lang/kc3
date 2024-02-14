@@ -397,9 +397,11 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   is_unbound_a = a->type == TAG_IDENT;
   is_unbound_b = b->type == TAG_IDENT;
   if (is_unbound_a && is_unbound_b) {
-    warnx("unbound equal on both sides: %s = %s",
-          a->data.ident.sym->str.ptr.pchar,
-          b->data.ident.sym->str.ptr.pchar);
+    err_write_1("env_eval_equal_tag: unbound equal on both sides: ");
+    err_inspect_ident(&a->data.ident),
+    err_write_1(" = ");
+    err_inspect_ident(&b->data.ident);
+    err_write_1("\n");
     return false;
   }
   if (is_unbound_a) {
@@ -410,6 +412,30 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   if (is_unbound_b) {
     env_eval_tag(env, a, dest);
     frame_binding_new(env->frame, b->data.ident.sym, dest);
+    return true;
+  }
+  if (a->type == TAG_CALL &&
+      //a->data.call.ident.module == &g_sym_C3 &&
+      a->data.call.ident.sym == &g_sym_operator_pin) {
+    if (! env_eval_tag(env, &a->data.call.arguments->tag, &tmp_a))
+      return false;
+    if (! env_eval_equal_tag(env, &tmp_a, b, dest)) {
+      tag_clean(&tmp_a);
+      return false;
+    }
+    tag_clean(&tmp_a);
+    return true;
+  }
+  if (b->type == TAG_CALL &&
+      //b->data.call.ident.module == &g_sym_C3 &&
+      b->data.call.ident.sym == &g_sym_operator_pin) {
+    if (! env_eval_tag(env, &b->data.call.arguments->tag, &tmp_b))
+      return false;
+    if (! env_eval_equal_tag(env, a, &tmp_b, dest)) {
+      tag_clean(&tmp_b);
+      return false;
+    }
+    tag_clean(&tmp_b);
     return true;
   }
   switch (a->type) {
@@ -618,7 +644,7 @@ bool env_eval_ident_is_bound (s_env *env, const s_ident *ident)
   s_tag tmp;
   assert(env);
   assert(ident);
-  if (frame_get(env->frame, tmp_ident.sym))
+  if (frame_get(env->frame, ident->sym))
     return true;
   ident_init_copy(&tmp_ident, ident);
   ident_resolve_module(&tmp_ident, env);
