@@ -33,8 +33,8 @@ void c3_clean (s_env *env);
 s_str * c3_getenv (const s_str *name, s_str *dest);
 
 /* Special operators. */
-s_tag * c3_if (const s_tag *cond, const s_tag *then,
-               const s_tag *else_, s_tag *dest);
+s_tag * c3_if (const s_tag *cond, const s_tag *then, const s_tag *else_,
+               s_tag *dest);
 
 /* debug */
 void c3_break (void);
