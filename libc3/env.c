@@ -415,7 +415,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     return true;
   }
   if (a->type == TAG_CALL &&
-      //a->data.call.ident.module == &g_sym_C3 &&
+      a->data.call.ident.module == &g_sym_C3 &&
       a->data.call.ident.sym == &g_sym_operator_pin) {
     if (! env_eval_tag(env, &a->data.call.arguments->tag, &tmp_a))
       return false;
@@ -427,7 +427,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     return true;
   }
   if (b->type == TAG_CALL &&
-      //b->data.call.ident.module == &g_sym_C3 &&
+      b->data.call.ident.module == &g_sym_C3 &&
       b->data.call.ident.sym == &g_sym_operator_pin) {
     if (! env_eval_tag(env, &b->data.call.arguments->tag, &tmp_b))
       return false;
