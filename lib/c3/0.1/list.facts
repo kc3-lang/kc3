@@ -6,9 +6,9 @@ add {List, :symbol, List.map}
 add {List, :symbol, List.reverse}
 replace {List.cast, :cfn, cfn List "list_init_cast" (Result, Tag)}
 replace {List.map, :fn, fn {
-  ([], _) {
+  ([], _) do
     []
-  }
+  end
   ([a | b], f) {
     [f(a) | List.map(b, f)]
   }
