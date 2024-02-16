@@ -293,6 +293,7 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - height function `(TAG_VOID: 0, TAG_TUPLE: max(height(tuple->tags)))`
      - has_ident
      - collect_idents
+   - DONE pin operator (for pattern matching)
    - DONE macros
    - modules
      - defmodule

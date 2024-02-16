@@ -274,7 +274,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   const s_tag *value;
   assert(env);
   assert(call);
-  if ((value = frame_get(env->frame, call->ident.sym))) {
+  if ((value = env_frames_get(env, call->ident.sym))) {
     if (value->type == TAG_CFN) {
       call->cfn = cfn_new_copy(&value->data.cfn);
       return true;
@@ -290,8 +290,8 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   return call_get(call, &env->facts);
 }
 
-bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
-                          s_list **dest)
+bool env_eval_equal_list (s_env *env, bool macro, const s_list *a,
+                          const s_list *b, s_list **dest)
 {
   s_list *a_next;
   s_list *b_next;
@@ -310,13 +310,13 @@ bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
     if (! b)
       goto ko;
     *t = list_new(NULL);
-    if (! env_eval_equal_tag(env, &a->tag, &b->tag,
+    if (! env_eval_equal_tag(env, macro, &a->tag, &b->tag,
                              &(*t)->tag))
       goto ko;
     a_next = list_next(a);
     b_next = list_next(b);
     if (! a_next || ! b_next) {
-      if (! env_eval_equal_tag(env, &a->next, &b->next,
+      if (! env_eval_equal_tag(env, macro, &a->next, &b->next,
                                &(*t)->next))
         goto ko;
       goto ok;
@@ -334,7 +334,7 @@ bool env_eval_equal_list (s_env *env, const s_list *a, const s_list *b,
   return false;
 }
 
-bool env_eval_equal_map (s_env *env, const s_map *a,
+bool env_eval_equal_map (s_env *env, bool macro, const s_map *a,
                          const s_map *b, s_map *dest)
 {
   const s_map *c;
@@ -363,7 +363,7 @@ bool env_eval_equal_map (s_env *env, const s_map *a,
     j = 0;
     while (j < b->count) {
       if (! compare_tag(a->key + i, b->key + j)) {
-        if (! env_eval_equal_tag(env, a->value + i, b->value + j,
+        if (! env_eval_equal_tag(env, macro, a->value + i, b->value + j,
                                  &tmp)) {
           return false;
         }
@@ -380,9 +380,8 @@ bool env_eval_equal_map (s_env *env, const s_map *a,
   return true;
 }
 
-// TODO: pin operator
-bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
-                         s_tag *dest)
+bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
+                         const s_tag *b, s_tag *dest)
 {
   bool is_unbound_a;
   bool is_unbound_b;
@@ -395,7 +394,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   tag_init_void(&tmp_a);
   tag_init_void(&tmp_b);
   is_unbound_a = a->type == TAG_IDENT;
-  is_unbound_b = b->type == TAG_IDENT;
+  is_unbound_b = ! macro && b->type == TAG_IDENT;
   if (is_unbound_a && is_unbound_b) {
     err_write_1("env_eval_equal_tag: unbound equal on both sides: ");
     err_inspect_ident(&a->data.ident),
@@ -414,24 +413,26 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     frame_binding_new(env->frame, b->data.ident.sym, dest);
     return true;
   }
-  if (a->type == TAG_CALL &&
+  if (! macro &&
+      a->type == TAG_CALL &&
       a->data.call.ident.module == &g_sym_C3 &&
       a->data.call.ident.sym == &g_sym_operator_pin) {
     if (! env_eval_tag(env, &a->data.call.arguments->tag, &tmp_a))
       return false;
-    if (! env_eval_equal_tag(env, &tmp_a, b, dest)) {
+    if (! env_eval_equal_tag(env, macro, &tmp_a, b, dest)) {
       tag_clean(&tmp_a);
       return false;
     }
     tag_clean(&tmp_a);
     return true;
   }
-  if (b->type == TAG_CALL &&
+  if (! macro &&
+      b->type == TAG_CALL &&
       b->data.call.ident.module == &g_sym_C3 &&
       b->data.call.ident.sym == &g_sym_operator_pin) {
     if (! env_eval_tag(env, &b->data.call.arguments->tag, &tmp_b))
       return false;
-    if (! env_eval_equal_tag(env, a, &tmp_b, dest)) {
+    if (! env_eval_equal_tag(env, macro, a, &tmp_b, dest)) {
       tag_clean(&tmp_b);
       return false;
     }
@@ -488,22 +489,22 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
     return true;
   case TAG_LIST:
     tag_init_list(dest, NULL);
-    return env_eval_equal_list(env, a->data.list, b->data.list,
+    return env_eval_equal_list(env, macro, a->data.list, b->data.list,
                                &dest->data.list);
   case TAG_MAP:
     dest->type = TAG_MAP;
-    return env_eval_equal_map(env, &a->data.map, &b->data.map,
+    return env_eval_equal_map(env, macro, &a->data.map, &b->data.map,
                               &dest->data.map);
   /*
   case TAG_STRUCT:
     dest->type = TAG_STRUCT;
-    return env_eval_equal_struct(env, &a->data.struct_,
+    return env_eval_equal_struct(env, macro, &a->data.struct_,
                                  &b->data.struct_, &dest->data.struct_);
   */
   case TAG_TUPLE:
     dest->type = TAG_TUPLE;
-    return env_eval_equal_tuple(env, &a->data.tuple, &b->data.tuple,
-                                &dest->data.tuple);
+    return env_eval_equal_tuple(env, macro, &a->data.tuple,
+                                &b->data.tuple, &dest->data.tuple);
   case TAG_CALL:
   case TAG_QUOTE:
   case TAG_ARRAY:
@@ -524,7 +525,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   case TAG_SYM:
   case TAG_VAR:
     if (compare_tag(a, b)) {
-      warnx("env_eval_compare_tag: value mismatch");
+      err_puts("env_eval_compare_tag: value mismatch");
       return false;
     }
     tag_init_copy(dest, a);
@@ -536,7 +537,7 @@ bool env_eval_equal_tag (s_env *env, const s_tag *a, const s_tag *b,
   return false;
 }
 
-bool env_eval_equal_tuple (s_env *env, const s_tuple *a,
+bool env_eval_equal_tuple (s_env *env, bool macro, const s_tuple *a,
                            const s_tuple *b, s_tuple *dest)
 {
   uw i;
@@ -550,7 +551,8 @@ bool env_eval_equal_tuple (s_env *env, const s_tuple *a,
   tuple_init(&tmp, a->count);
   i = 0;
   while (i < a->count) {
-    if (! env_eval_equal_tag(env, a->tag + i, b->tag + i, tmp.tag + i)) {
+    if (! env_eval_equal_tag(env, macro, a->tag + i, b->tag + i,
+                             tmp.tag + i)) {
       tuple_clean(&tmp);
       return false;
     }
@@ -572,8 +574,6 @@ bool env_eval_fn_call (s_env *env, const s_fn *fn,
   assert(env);
   assert(fn);
   assert(dest);
-  frame_init(&frame, env->frame);
-  env->frame = &frame;
   clause = fn->clauses;
   if (arguments) {
     if (fn->macro || fn->special_operator)
@@ -585,10 +585,15 @@ bool env_eval_fn_call (s_env *env, const s_fn *fn,
       }
       args_final = args;
     }
-    /* FIXME: bindings go through clauses */
-    while (clause && ! env_eval_equal_list(env, clause->pattern,
-                                           args_final, &tmp))
+    while (clause) {
+      frame_init(&frame, env->frame);
+      env->frame = &frame;
+      if (env_eval_equal_list(env, fn->macro || fn->special_operator,
+                              clause->pattern, args_final, &tmp))
+        break;
+      env->frame = frame_clean(&frame);
       clause = clause->next_clause;
+    }
     if (! clause) {
       err_puts("env_eval_call_fn: no clause matching.\nTried clauses :\n");
       clause = fn->clauses;
@@ -601,9 +606,12 @@ bool env_eval_fn_call (s_env *env, const s_fn *fn,
       err_inspect_fn_pattern(args);
       err_puts("\n");
       list_delete_all(args);
-      env->frame = frame_clean(&frame);
       return false;
     }
+  }
+  else {
+    frame_init(&frame, env->frame);
+    env->frame = &frame;
   }
   if (! env_eval_block(env, &clause->algo, &tag)) {
     list_delete_all(args);
@@ -611,15 +619,18 @@ bool env_eval_fn_call (s_env *env, const s_fn *fn,
     env->frame = frame_clean(&frame);
     return false;
   }
-  if (fn->macro) {
-    if (! env_eval_tag(env, &tag, dest))
-      return false;
-  }
-  else
-    *dest = tag;
   list_delete_all(args);
   list_delete_all(tmp);
   env->frame = frame_clean(&frame);
+  if (fn->macro) {
+    if (! env_eval_tag(env, &tag, dest)) {
+      tag_clean(&tag);
+      return false;
+    }
+    tag_clean(&tag);
+  }
+  else
+    *dest = tag;
   return true;
 }
 
@@ -632,11 +643,11 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   assert(ident);
   ident_init_copy(&tmp_ident, ident);
   ident_resolve_module(&tmp_ident, env);
-  if (! ((tag = frame_get(env->frame, tmp_ident.sym)) ||
+  if (! ((tag = env_frames_get(env, tmp_ident.sym)) ||
          (tag = ident_get(&tmp_ident, &env->facts, &tmp)))) {
-    warnx("unbound ident: %s.%s",
-          tmp_ident.module->str.ptr.pchar,
-          tmp_ident.sym->str.ptr.pchar);
+    err_write_1("env_eval_ident: unbound ident: ");
+    err_inspect_ident(ident);
+    err_write_1("\n");
     return false;
   }
   tag_init_copy(dest, tag);
@@ -649,7 +660,7 @@ bool env_eval_ident_is_bound (s_env *env, const s_ident *ident)
   s_tag tmp;
   assert(env);
   assert(ident);
-  if (frame_get(env->frame, ident->sym))
+  if (env_frames_get(env, ident->sym))
     return true;
   ident_init_copy(&tmp_ident, ident);
   ident_resolve_module(&tmp_ident, env);
@@ -1193,6 +1204,15 @@ bool env_eval_void (s_env *env, const void *_, s_tag *dest)
   return true;
 }
 
+const s_tag * env_frames_get (const s_env *env, const s_sym *name)
+{
+  const s_tag *tag;
+  if ((tag = frame_get(env->frame, name)) ||
+      (tag = frame_get(&env->global_frame, name)))
+    return tag;
+  return NULL;
+}
+
 s_env * env_init (s_env *env, int argc, char **argv)
 {
   s_str path;
@@ -1201,7 +1221,8 @@ s_env * env_init (s_env *env, int argc, char **argv)
     return NULL;
   sym_init_g_sym();
   env->error_handler = NULL;
-  env->frame = frame_new(NULL);
+  env->frame = frame_new(NULL);         // toplevel
+  frame_init(&env->global_frame, NULL); // globals
   buf_init_alloc(&env->in, BUF_SIZE);
   buf_file_open_r(&env->in, stdin);
   buf_init_alloc(&env->out, BUF_SIZE);
@@ -1739,7 +1760,7 @@ bool env_tag_ident_is_bound (const s_env *env, const s_tag *tag,
   assert(tag);
   assert(tag->type == TAG_IDENT);
   return tag->type == TAG_IDENT &&
-    (frame_get(env->frame, tag->data.ident.sym) ||
+    (env_frames_get(env, tag->data.ident.sym) ||
      ident_get(&tag->data.ident, facts, &tmp));
 }
 

@@ -21,6 +21,9 @@ extern s_env g_c3_env;
 void    env_clean (s_env *env);
 s_env * env_init (s_env *env, int argc, char **argv);
 
+/* Observers. */
+const s_tag * env_frames_get (const s_env *env, const s_sym *name);
+
 /* Operators. */
 bool          env_eval_array (s_env *env, const s_array *array,
                               s_array *dest);
@@ -37,17 +40,22 @@ bool          env_eval_call_cfn (s_env *env, const s_call *call,
 bool          env_eval_call_fn (s_env *env, const s_call *call,
                                 s_tag *dest);
 bool          env_eval_call_resolve (s_env *env, s_call *call);
-bool          env_eval_equal_block (s_env *env, const s_block *a,
-                                    const s_block *b, s_block *dest);
-bool          env_eval_equal_list (s_env *env, const s_list *a,
-                                   const s_list *b, s_list **dest);
-bool          env_eval_equal_struct (s_env *env, const s_struct *a,
+bool          env_eval_equal_block (s_env *env, bool macro,
+                                    const s_block *a, const s_block *b,
+                                    s_block *dest);
+bool          env_eval_equal_list (s_env *env, bool macro,
+                                   const s_list *a, const s_list *b,
+                                   s_list **dest);
+bool          env_eval_equal_struct (s_env *env, bool macro,
+                                     const s_struct *a,
                                      const s_struct *b,
                                      s_struct *dest);
-bool          env_eval_equal_tag (s_env *env, const s_tag *a,
-                                  const s_tag *b, s_tag *dest);
-bool          env_eval_equal_tuple (s_env *env, const s_tuple *a,
-                                    const s_tuple *b, s_tuple *dest);
+bool          env_eval_equal_tag (s_env *env, bool macro,
+                                  const s_tag *a, const s_tag *b,
+                                  s_tag *dest);
+bool          env_eval_equal_tuple (s_env *env, bool macro,
+                                    const s_tuple *a, const s_tuple *b,
+                                    s_tuple *dest);
 bool          env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest);
 bool          env_eval_fn_call (s_env *env, const s_fn *fn,
                                 const s_list *arguments, s_tag *dest);

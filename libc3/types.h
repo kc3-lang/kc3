@@ -598,6 +598,7 @@ struct env {
   s_error_handler  *error_handler;
   s_facts           facts;
   s_frame          *frame;
+  s_frame           global_frame;
   s_buf             in;
   s_str             module_path;
   s_buf             out;
