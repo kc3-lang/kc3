@@ -404,12 +404,18 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     return false;
   }
   if (is_unbound_a) {
-    env_eval_tag(env, b, dest);
+    if (macro)
+      tag_init_copy(dest, b);
+    else
+      env_eval_tag(env, b, dest);
     frame_binding_new(env->frame, a->data.ident.sym, dest);
     return true;
   }
   if (is_unbound_b) {
-    env_eval_tag(env, a, dest);
+    if (macro)
+      tag_init_copy(dest, a);
+    else
+      env_eval_tag(env, a, dest);
     frame_binding_new(env->frame, b->data.ident.sym, dest);
     return true;
   }
@@ -595,7 +601,7 @@ bool env_eval_fn_call (s_env *env, const s_fn *fn,
       clause = clause->next_clause;
     }
     if (! clause) {
-      err_puts("env_eval_call_fn: no clause matching.\nTried clauses :\n");
+      err_puts("env_eval_fn_call: no clause matching.\nTried clauses :\n");
       clause = fn->clauses;
       while (clause) {
         err_inspect_fn_pattern(clause->pattern);
