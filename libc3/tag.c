@@ -261,7 +261,7 @@ s_tag * tag_equal (const s_tag *a, const s_tag *b, s_tag *dest)
   assert(a);
   assert(b);
   assert(dest);
-  if (! env_eval_equal_tag (&g_c3_env, a, b, dest))
+  if (! env_eval_equal_tag (&g_c3_env, false, a, b, dest))
     return NULL;
   return dest;
 }

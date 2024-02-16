@@ -50,13 +50,7 @@ void frame_delete_all (s_frame *frame)
 
 const s_tag * frame_get (const s_frame *frame, const s_sym *sym)
 {
-  const s_tag *tag;
-  while (frame) {
-    if ((tag = binding_get(frame->bindings, sym)))
-      return tag;
-    frame = frame->next;
-  }
-  return NULL;
+  return binding_get(frame->bindings, sym);
 }
 
 s_frame * frame_init (s_frame *frame, s_frame *next)
