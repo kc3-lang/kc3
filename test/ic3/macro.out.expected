@@ -1,0 +1,8 @@
+m = macro (name) { quote "Hello, " + (unquote name) + " !" }
+macro (name) { quote "Hello, " + (unquote name) + " !" }
+m("Terrence")
+"Hello, Terrence !"
+n = "Phillip"
+"Phillip"
+m(n)
+"Hello, Phillip !"
