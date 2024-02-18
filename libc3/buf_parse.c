@@ -3433,10 +3433,10 @@ sw buf_parse_unquote (s_buf *buf, s_unquote *dest)
   if ((r = buf_read_1(buf, "unquote(")) <= 0)
     goto clean;
   result += r;
-  if ((r = buf_parse_comments(buf)) <= 0)
+  if ((r = buf_parse_comments(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) <= 0)
+  if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
   unquote.tag = tag_new();
@@ -3449,10 +3449,10 @@ sw buf_parse_unquote (s_buf *buf, s_unquote *dest)
     goto restore;
   }
   result += r;
-  if ((r = buf_parse_comments(buf)) <= 0)
+  if ((r = buf_parse_comments(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) <= 0)
+  if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
   if ((r = buf_read_1(buf, ")")) <= 0)

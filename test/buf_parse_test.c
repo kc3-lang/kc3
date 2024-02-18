@@ -582,6 +582,17 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_UNQUOTE(test)                                   \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_unquote dest = {0};                                              \
+    test_context("buf_parse_unquote(" # test ")");                     \
+    buf_init_1(&buf, false, (test));                                   \
+    TEST_EQ(buf_parse_unquote(&buf, &dest), strlen(test));             \
+    unquote_clean(&dest);                                              \
+    test_context(NULL);                                                \
+  } while (0)
+
 TEST_CASE_PROTOTYPE(buf_parse_array);
 TEST_CASE_PROTOTYPE(buf_parse_bool);
 TEST_CASE_PROTOTYPE(buf_parse_call);
@@ -608,6 +619,7 @@ TEST_CASE_PROTOTYPE(buf_parse_str_u8);
 TEST_CASE_PROTOTYPE(buf_parse_sym);
 TEST_CASE_PROTOTYPE(buf_parse_tag);
 TEST_CASE_PROTOTYPE(buf_parse_tuple);
+TEST_CASE_PROTOTYPE(buf_parse_unquote);
 
 void buf_parse_test (void)
 {
@@ -621,6 +633,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_digit_dec);
   TEST_CASE_RUN(buf_parse_str_character);
   TEST_CASE_RUN(buf_parse_str_u8);
+  TEST_CASE_RUN(buf_parse_cfn);
   TEST_CASE_RUN(buf_parse_character);
   TEST_CASE_RUN(buf_parse_f32);
   TEST_CASE_RUN(buf_parse_f64);
@@ -636,6 +649,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_list);
   TEST_CASE_RUN(buf_parse_tag);
   TEST_CASE_RUN(buf_parse_tuple);
+  TEST_CASE_RUN(buf_parse_unquote);
 #ifdef C3_TEST_BUF_PARSE_SU
   TEST_CASE_RUN(buf_parse_u8_binary);
   TEST_CASE_RUN(buf_parse_u8_octal);
@@ -688,7 +702,6 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_s8_decimal_negative);
   TEST_CASE_RUN(buf_parse_sw);
 #endif /* C3_TEST_BUF_PARSE_SU */
-  TEST_CASE_RUN(buf_parse_cfn);
 }
 
 TEST_CASE(buf_parse_array)
@@ -1295,6 +1308,16 @@ TEST_CASE(buf_parse_u)
 {
 }
 TEST_CASE_END(buf_parse_u)
+
+TEST_CASE(buf_parse_unquote)
+{
+  BUF_PARSE_TEST_UNQUOTE("unquote(1)");
+  BUF_PARSE_TEST_UNQUOTE("unquote(1 + 1)");
+  BUF_PARSE_TEST_UNQUOTE("unquote(ident)");
+  BUF_PARSE_TEST_UNQUOTE("unquote(:sym)");
+  BUF_PARSE_TEST_UNQUOTE("unquote(\"str\")");
+}
+TEST_CASE_END(buf_parse_unquote)
 
 TEST_CASE(buf_parse_uw)
 {

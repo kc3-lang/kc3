@@ -93,6 +93,7 @@
 #include "u64.h"
 #include "uw.h"
 #include "ucd.h"
+#include "unquote.h"
 #include "var.h"
 #include "void.h"
 
