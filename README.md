@@ -261,11 +261,10 @@ ic3>
 
 #### Lists
 
-
 Lists are marked with brackets `[]`.
 
 Regular lists can be :
- - an element and a list : `[1 | [2]]` → `[1, 2]`
+ - an element and a list : `[1 | []]` → `[1]`
  - multiple elements : `[1, 2, 3]`
  - multiple elements and a list : `[1, 2 | [3, 4]]` → `[1, 2, 3, 4]`
  - the empty list : `[]`
@@ -279,6 +278,58 @@ the next list pointer is an arbitrary form. E.g. :
  - the empty list and an element : `[[] | 1]`
 
 All these list formats are supported in pattern matching.
+
+
+#### Pattern matching and destructuring
+
+All tag data structures in C3 can be pattern matched using the equal
+sign (`=`) against litteral values containing identifiers. All
+identifiers are supposed to be new bindings when using pattern matching
+in C3. If you want to use an identifier's value in pattern matching you
+must use the _pin operator_ (`^`). Variables can be assigned a new value
+from either side of the equal sign and from inside a tag data structure,
+which is called _destructuring_.
+
+
+Examples :
+```
+ic3> a = 1
+1
+ic3> a = 2
+2
+ic3> a
+2
+ic3> ^ a = 1
+void
+ic3> ^ a = 2
+2
+ic3> ^ a = b
+2
+ic3> b
+2
+```
+
+To use destructuring just type the litteral value you want to match and
+put identifiers (variable names) where you want a variable matching the
+value on the other side of the equal sign. This is the most visual
+approach possible to text-based value matching : the data is constantly
+matched to litterals that show their type to the programmer. This is
+really helpful when writing large programs that need to scale in the way
+of abstractions. Let the data flow in the code through visual types.
+
+
+
+#### Macros
+
+Macros are like functions but start with `macro` instead of `fn` and
+their arguments do not get evaluated. However they get pattern matched
+and the full power of the pattern matcher is available for arguments
+destructuring. Use a map if you want named arguments. Use a list if you
+want &rest or &body arguments.
+
+When evaluated, a macro call returns a tag which is in turn evaluated
+in the calling site lexical environment. This allows for DSLs and custom
+control structures to be defined in C3.
 
 
 ### c3s

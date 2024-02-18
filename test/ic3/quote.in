@@ -15,21 +15,21 @@ quote quote %{1 => 1}
 quote quote %{1 + 1 => 1}
 quote quote %{1 => 1 + 1}
 quote quote 1
-quote quote unquote a = 1 + 1
-quote quote unquote a + a
-quote quote %{a: unquote 1}
-quote quote %{unquote "a" => unquote 1}
-quote quote %{unquote 1 => unquote 1}
-quote quote %{unquote 1 => 1}
-quote quote %{unquote 1 + 1 => 1}
-quote quote %{1 => unquote 1 + 1}
-quote quote %{unquote unquote 1 + 1 => 1}
-quote quote %{1 => unquote unquote 1 + 1}
-quote unquote 1
-quote unquote a = 1 + 1
-quote unquote a + a
-quote unquote %{a: 1}
-quote unquote %{"a" => 1}
-quote unquote %{1 => 1}
-quote unquote %{1 + 1 => 1}
-quote unquote %{1 => 1 + 1}
+quote quote unquote(a = 1 + 1)
+quote quote unquote(a + a)
+quote quote %{a: unquote(1)}
+quote quote %{unquote("a") => unquote(1)}
+quote quote %{unquote(1) => unquote(1)}
+quote quote %{unquote(1) => 1}
+quote quote %{unquote(1 + 1) => 1}
+quote quote %{1 => unquote(1 + 1)}
+quote quote %{unquote(unquote(1 + 1)) => 1}
+quote quote %{1 => unquote(unquote(1 + 1))}
+quote unquote(1)
+quote unquote(a = 1 + 1)
+quote unquote(a + a)
+quote unquote(%{a: 1})
+quote unquote(%{"a" => 1})
+quote unquote(%{1 => 1})
+quote unquote(%{1 + 1 => 1})
+quote unquote(%{1 => 1 + 1})

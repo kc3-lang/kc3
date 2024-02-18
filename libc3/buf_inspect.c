@@ -2292,11 +2292,15 @@ sw buf_inspect_unquote (s_buf *buf, const s_unquote *unquote)
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_write_1(buf, "unquote ")) < 0)
+  if ((r = buf_write_1(buf, "unquote(")) < 0)
     goto clean;
   result += r;
   if ((r = buf_inspect_tag(buf, unquote->tag)) < 0)
     goto restore;
+  result += r;
+  if ((r = buf_write_1(buf, ")")) < 0)
+    goto clean;
+  result += r;
   r = result;
   goto clean;
  restore:
@@ -2310,10 +2314,11 @@ sw buf_inspect_unquote_size (const s_unquote *unquote)
 {
   sw r;
   sw result = 0;
-  result += strlen("unquote ");
+  result += strlen("unquote(");
   if ((r = buf_inspect_tag_size(unquote->tag)) < 0)
     return r;
   result += r;
+  result += strlen(")");
   return result;
 }
 
