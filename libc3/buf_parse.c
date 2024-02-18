@@ -3198,6 +3198,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_number(buf, dest)) != 0 ||
       (r = buf_parse_tag_array(buf, dest)) != 0 ||
       (r = buf_parse_tag_cast(buf, dest)) != 0 ||
+      (r = buf_parse_tag_unquote(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
@@ -3208,7 +3209,6 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_block(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
-      (r = buf_parse_tag_unquote(buf, dest)) != 0 ||
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
       (r = buf_parse_tag_struct(buf, dest)) != 0 ||
@@ -3430,8 +3430,11 @@ sw buf_parse_unquote (s_buf *buf, s_unquote *dest)
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "unquote")) <= 0)
+  if ((r = buf_read_1(buf, "unquote(")) <= 0)
     goto clean;
+  result += r;
+  if ((r = buf_parse_comments(buf)) <= 0)
+    goto restore;
   result += r;
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
@@ -3445,6 +3448,15 @@ sw buf_parse_unquote (s_buf *buf, s_unquote *dest)
     free(unquote.tag);
     goto restore;
   }
+  result += r;
+  if ((r = buf_parse_comments(buf)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, ")")) <= 0)
+    goto clean;
   result += r;
   *dest = unquote;
   r = result;

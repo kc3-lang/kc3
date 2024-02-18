@@ -1,5 +1,5 @@
-quote m = macro (name) { quote "Hello, " + (unquote name) + " !" }
-m = macro (name) { quote "Hello, " + (unquote name) + " !" }
+quote m = macro (name) { quote "Hello, " + unquote(name) + " !" }
+m = macro (name) { quote "Hello, " + unquote(name) + " !" }
 quote m("Terrence")
 m("Terrence")
 quote n = "Phillip"
