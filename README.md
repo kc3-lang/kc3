@@ -282,6 +282,8 @@ All these list formats are supported in pattern matching.
 
 #### Pattern matching and destructuring
 
+The C3 pattern matching principles come from Erlang and Elixir.
+
 All tag data structures in C3 can be pattern matched using the equal
 sign (`=`) against litteral values containing identifiers. All
 identifiers are supposed to be new bindings when using pattern matching
@@ -318,8 +320,9 @@ really helpful when writing large programs that need to scale in the way
 of abstractions. Let the data flow in the code through visual types.
 
 
-
 #### Macros
+
+C3 macros are like Common Lisp macros with Elixir pattern-matching.
 
 Macros are like functions but start with `macro` instead of `fn` and
 their arguments do not get evaluated. However they get pattern matched
