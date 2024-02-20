@@ -63,6 +63,7 @@ const s_sym g_sym_cast            = {{{NULL},  4, {"cast"}}};
 const s_sym g_sym_defstruct       = {{{NULL},  9, {"defstruct"}}};
 const s_sym g_sym_do              = {{{NULL},  2, {"do"}}};
 const s_sym g_sym_end             = {{{NULL},  3, {"end"}}};
+const s_sym g_sym_if_then_else    = {{{NULL}, 12, {"if_then_else"}}};
 const s_sym g_sym_is_a            = {{{NULL},  4, {"is_a"}}};
 const s_sym g_sym_load_time       = {{{NULL},  9, {"load_time"}}};
 const s_sym g_sym_operator_pin    = {{{NULL}, 12, {"operator_pin"}}};
@@ -303,6 +304,7 @@ void sym_init_g_sym (void)
   sym_intern(&g_sym_defstruct, NULL);
   sym_intern(&g_sym_do, NULL);
   sym_intern(&g_sym_end, NULL);
+  sym_intern(&g_sym_if_then_else, NULL);
   sym_intern(&g_sym_is_a, NULL);
   sym_intern(&g_sym_load_time, NULL);
   sym_intern(&g_sym_operator_pin, NULL);

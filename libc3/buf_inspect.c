@@ -312,6 +312,9 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   s8 op_precedence;
   sw r;
   sw result = 0;
+  if (call->ident.module == &g_sym_C3 &&
+      call->ident.sym == &g_sym_if_then_else)
+    return buf_inspect_call_if_then_else(buf, call);
   if (operator_find(&call->ident) &&
       operator_symbol(&call->ident) == &g_sym__brackets)
     return buf_inspect_call_brackets(buf, call);
@@ -329,7 +332,7 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   result += r;
   if ((r = buf_inspect_call_args(buf, call->arguments)) < 0)
     return r;
-  result += r;
+   result += r;
   return result;
 }
 
@@ -406,6 +409,70 @@ sw buf_inspect_call_brackets (s_buf *buf, const s_call *call)
       return r;
     result += r;
     i++;
+  }
+  return result;
+}
+
+sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
+{
+  s_list *else_;
+  sw r;
+  sw result = 0;
+  s_list *then;
+  if (call->ident.module != &g_sym_C3 ||
+      call->ident.sym != &g_sym_if_then_else ||
+      ! call->arguments ||
+      ! (then = list_next(call->arguments)) ||
+      ! (else_ = list_next(then)))
+    return -2;
+  if ((r = buf_write_1(buf, "if ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_tag(buf, &call->arguments->tag)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_tag(buf, &then->tag)) < 0)
+    return r;
+  result += r;
+  if (else_->tag.type != TAG_VOID) {
+    if ((r = buf_write_1(buf, "\nelse ")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_tag(buf, &else_->tag)) < 0)
+      return r;
+    result += r;
+  }
+  return result;
+}
+
+sw buf_inspect_call_if_then_else_size (const s_call *call)
+{
+  s_list *else_;
+  sw r;
+  sw result = 0;
+  s_list *then;
+  if (call->ident.module != &g_sym_C3 ||
+      call->ident.sym != &g_sym_if_then_else ||
+      ! call->arguments ||
+      ! (then = list_next(call->arguments)) ||
+      ! (else_ = list_next(then)))
+    return -2;
+  result += strlen("if ");
+  if ((r = buf_inspect_tag_size(&call->arguments->tag)) < 0)
+    return r;
+  result += r;
+  result += strlen(" ");
+  if ((r = buf_inspect_tag_size(&then->tag)) < 0)
+    return r;
+  result += r;
+  if (else_->tag.type != TAG_VOID) {
+    result += strlen("\nelse ");
+    if ((r = buf_inspect_tag_size(&else_->tag)) < 0)
+      return r;
+    result += r;
   }
   return result;
 }
@@ -533,6 +600,9 @@ sw buf_inspect_call_size (const s_call *call)
   s8 op_precedence;
   sw r;
   sw result = 0;
+  if (call->ident.module == &g_sym_C3 &&
+      call->ident.sym == &g_sym_if_then_else)
+    return buf_inspect_call_if_then_else_size(call);
   if (operator_find(&call->ident) &&
       operator_arity(&call->ident) == 1)
     return buf_inspect_call_op_unary_size(call);

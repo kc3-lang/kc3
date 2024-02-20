@@ -75,7 +75,9 @@ sw buf_parse_integer_unsigned_dec (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_unsigned_hex (s_buf *buf, s_integer *dest);
 sw buf_parse_integer_unsigned_oct (s_buf *buf, s_integer *dest);
 sw buf_parse_ident (s_buf *buf, s_ident *dest);
-sw buf_parse_ident_peek (s_buf *buf, s_ident *dest);
+sw buf_parse_if (s_buf *buf, s_call *dest);
+sw buf_parse_if_then (s_buf *buf, s_call *dest);
+sw buf_parse_if_then_else (s_buf *buf, s_call *dest);
 sw buf_parse_integer (s_buf *buf, s_integer *dest);
 sw buf_parse_list (s_buf *buf, s_list **dest);
 sw buf_parse_list_paren (s_buf *buf, s_list **dest);
@@ -113,6 +115,7 @@ sw buf_parse_tag_f32 (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_f64 (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_fn (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_ident (s_buf *buf, s_tag *dest);
+sw buf_parse_tag_if (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_integer (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_list (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_map (s_buf *buf, s_tag *map);
@@ -134,5 +137,6 @@ sw buf_parse_var (s_buf *buf, void *dest);
 sw buf_parse_void (s_buf *buf, void *dest);
 
 sw buf_peek_array_dimensions (s_buf *buf, s_array *dest);
+sw buf_peek_ident (s_buf *buf, s_ident *dest);
 
 #endif /* LIBC3_BUF_PARSE_H */
