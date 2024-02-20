@@ -1658,7 +1658,7 @@ u8 env_special_operator_arity (s_env *env, const s_ident *ident)
   facts_with_tags(&env->facts, &cursor,
                   &tag_ident, &tag_arity, &tag_var);
   if (facts_cursor_next(&cursor)) {
-    if (tag_var.type != TAG_U8) {
+    if (tag_var.type != TAG_U8 || ! tag_var.data.u8) {
       err_write_1("env_special_operator_arity: "
                   "invalid arity for special operator ");
       err_inspect_ident(&tag_ident.data.ident);
