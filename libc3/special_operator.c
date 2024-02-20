@@ -13,7 +13,7 @@
 #include "env.h"
 #include "operator.h"
 
-s_tag * special_operator_arity (const s_ident *ident, s_tag *dest)
+u8 special_operator_arity (const s_ident *ident)
 {
-  return env_special_operator_arity(&g_c3_env, ident, dest);
+  return env_special_operator_arity(&g_c3_env, ident);
 }
