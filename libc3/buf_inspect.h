@@ -62,6 +62,8 @@ sw buf_inspect_bool_size (const bool *b);
 sw buf_inspect_call (s_buf *buf, const s_call *call);
 sw buf_inspect_call_args (s_buf *buf, const s_list *args);
 sw buf_inspect_call_brackets (s_buf *buf, const s_call *call);
+sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call);
+sw buf_inspect_call_if_then_else_size (const s_call *call);
 sw buf_inspect_call_op (s_buf *buf, const s_call *call,
                         s8 op_precedence);
 sw buf_inspect_call_op_size (const s_call *call, s8 op_precedence);

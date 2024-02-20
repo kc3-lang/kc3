@@ -1,0 +1,12 @@
+quote if true 1 else 2
+if true 1 else 2
+quote if true 1 else void
+if true 1 else void
+quote if true 1
+if true 1
+quote if false 1 else 2
+if false 1 else 2
+quote if false 1 else void
+if false 1 else void
+quote if false 1
+if false 1
