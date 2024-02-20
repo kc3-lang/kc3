@@ -203,17 +203,3 @@ add {C3, :symbol, C3.if_then_else}
 replace {C3.if_then_else, :arity, 3}
 replace {C3.if_then_else, :is_a, :special_operator}
 replace {C3.if_then_else, :cfn, cfn Tag "c3_if_then_else" (Tag, Tag, Tag, Result)}
-add {C3, :symbol, C3.if}
-replace {C3.if, :arity, [4, 2]}
-replace {C3.if, :is_a, :macro}
-add {C3.if, :is_a, :special_operator}
-replace {C3.if, :fn, macro { (cond, then, :else, else) do
-                               quote if_then_else unquote(cond)
-                                 unquote(then)
-                                 unquote(else)
-                             end
-                             (cond, then) do
-                               quote if_then_else unquote(cond)
-                                 unquote(then)
-                                 unquote(void)
-                             end }}
