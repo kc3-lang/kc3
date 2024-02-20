@@ -363,7 +363,6 @@ struct call {
   /* key */
   s_ident ident;
   s_list *arguments;
-  s_list_map *keyword;
   /* value */
   s_cfn *cfn;
   s_fn *fn;

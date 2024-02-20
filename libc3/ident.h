@@ -30,20 +30,12 @@ s_ident * ident_init_copy (s_ident *ident, const s_ident *src);
 s_ident * ident_resolve_module (s_ident *ident, const s_env *env);
 
 /* Observers */
-
-/* Returns true iff c is an ident reserved character. */
-bool ident_character_is_reserved (character c);
-
-/* Returns true iff c is an ident reserved character as first. */
-bool ident_first_character_is_reserved (character c);
-
+bool    ident_character_is_reserved (character c);
+bool    ident_first_character_is_reserved (character c);
 s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest);
-
-/* Returns true iff ident contains reserved characters. */
-bool ident_has_reserved_characters (const s_ident *ident);
-
+bool    ident_has_reserved_characters (const s_ident *ident);
 s_str * ident_inspect (const s_ident *ident, s_str *dest);
-
-bool ident_to_tag_type (const s_ident *ident, e_tag_type *dest);
+bool    ident_is_special_operator (const s_ident *ident);
+bool    ident_to_tag_type (const s_ident *ident, e_tag_type *dest);
 
 #endif /* LIBC3_IDENT_H */

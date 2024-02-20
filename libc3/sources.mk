@@ -130,6 +130,7 @@ HEADERS = \
 	"sign.h" \
 	"skiplist__fact.h" \
 	"skiplist_node__fact.h" \
+	"special_operator.h" \
 	"str.h" \
 	"struct.h" \
 	"struct_type.h" \
@@ -279,6 +280,7 @@ SOURCES = \
 	"sign.c" \
 	"skiplist__fact.c" \
 	"skiplist_node__fact.c" \
+	"special_operator.c" \
 	"str.c" \
 	"struct.c" \
 	"struct_type.c" \
@@ -534,6 +536,7 @@ LO_SOURCES = \
 	"sign.c" \
 	"skiplist__fact.c" \
 	"skiplist_node__fact.c" \
+	"special_operator.c" \
 	"str.c" \
 	"struct.c" \
 	"struct_type.c" \
