@@ -43,8 +43,6 @@ sw buf_parse_array_data_rec (s_buf *buf, s_array *dest, uw *address,
                              s_tag **tag, uw dimension);
 sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
                                    uw *address,uw dimension);
-sw buf_parse_special_operator_arguments (s_buf *buf, u8 arity,
-                                         s_call *dest);
 sw buf_peek_array_dimension_count (s_buf *buf, s_array *dest);
 
 sw buf_parse_array (s_buf *buf, s_array *dest)
@@ -2491,8 +2489,9 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
 
 sw buf_parse_special_operator (s_buf *buf, s_call *dest)
 {
-  const s_list *a;
+  s_list **args_last;
   s_tag arity;
+  uw i;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -2511,66 +2510,17 @@ sw buf_parse_special_operator (s_buf *buf, s_call *dest)
     r = 0;
     goto restore;
   }
-  if (arity.type == TAG_U8) {
-    if (! arity.data.u8) {
-      err_write_1("buf_parse_special_operator: ");
-      err_inspect_ident(&tmp.ident);
-      err_write_1("invalid arity: ");
-      err_inspect_tag(&arity);
-      r = -2;
-      goto restore;
-    }
-    if ((r = buf_parse_special_operator_arguments(buf, arity.data.u8,
-                                                  &tmp)) <= 0)
-      goto restore;
+  if (arity.type != TAG_U8 || ! arity.data.u8) {
+    err_write_1("buf_parse_special_operator: ");
+    err_inspect_ident(&tmp.ident);
+    err_write_1("invalid arity: ");
+    err_inspect_tag(&arity);
+    r = -2;
+    goto restore;
   }
-  else if (arity.type == TAG_LIST) {
-    a = arity.data.list;
-    while (a) {
-      if (a->tag.type != TAG_U8 || ! a->tag.data.u8) {
-        err_write_1("buf_parse_special_operator: ");
-        err_inspect_ident(&tmp.ident);
-        err_write_1("invalid arity: ");
-        err_inspect_tag(&a->tag);
-        r = -2;
-        goto restore;
-      }
-      if ((r = buf_parse_special_operator_arguments(buf, a->tag.data.u8,
-                                                    &tmp)) < 0)
-        goto restore;
-      if (r > 0)
-        break;
-      a = list_next(a);
-    }
-  }
-  result += r;
-  r = result;
-  *dest = tmp;
-  goto clean;
- restore:
-  call_clean(&tmp);
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
-sw buf_parse_special_operator_arguments (s_buf *buf, u8 arity,
-                                         s_call *dest)
-{
-  s_list **args_last;
-  uw i;
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s_call tmp;
-  assert(buf);
-  assert(dest);
-  buf_save_init(buf, &save);
-  tmp = *dest;
   args_last = &tmp.arguments;
   i = 0;
-  while (i < arity) {
+  while (i < arity.data.u8) {
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
