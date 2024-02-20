@@ -2490,7 +2490,7 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
 sw buf_parse_special_operator (s_buf *buf, s_call *dest)
 {
   s_list **args_last;
-  s_tag arity;
+  u8 arity;
   uw i;
   sw r;
   sw result = 0;
@@ -2506,21 +2506,13 @@ sw buf_parse_special_operator (s_buf *buf, s_call *dest)
     r = 0;
     goto restore;
   }
-  if (! special_operator_arity(&tmp.ident, &arity)) {
+  if (! (arity = special_operator_arity(&tmp.ident))) {
     r = 0;
-    goto restore;
-  }
-  if (arity.type != TAG_U8 || ! arity.data.u8) {
-    err_write_1("buf_parse_special_operator: ");
-    err_inspect_ident(&tmp.ident);
-    err_write_1("invalid arity: ");
-    err_inspect_tag(&arity);
-    r = -2;
     goto restore;
   }
   args_last = &tmp.arguments;
   i = 0;
-  while (i < arity.data.u8) {
+  while (i < arity) {
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;

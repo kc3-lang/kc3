@@ -120,9 +120,8 @@ s8            env_operator_precedence (s_env *env, const s_ident *op);
 s_ident *     env_operator_resolve (s_env *env, const s_ident *op,
                                     u8 arity, s_ident *dest);
 const s_sym * env_operator_symbol (s_env *env, const s_ident *op);
-s_tag *       env_special_operator_arity (s_env *env,
-                                          const s_ident *ident,
-                                          s_tag *dest);
+u8            env_special_operator_arity (s_env *env,
+                                          const s_ident *ident);
 bool          env_struct_type_exists (s_env *env,
                                         const s_sym *module);
 const s_struct_type *

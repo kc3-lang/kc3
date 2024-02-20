@@ -1642,9 +1642,9 @@ void env_push_unwind_protect (s_env *env,
   env->unwind_protect = unwind_protect;
 }
 
-s_tag * env_special_operator_arity (s_env *env, const s_ident *ident,
-                                    s_tag *dest)
+u8 env_special_operator_arity (s_env *env, const s_ident *ident)
 {
+  u8 arity;
   s_facts_cursor cursor;
   s_tag tag_arity;
   s_tag tag_ident;
@@ -1658,16 +1658,24 @@ s_tag * env_special_operator_arity (s_env *env, const s_ident *ident,
   facts_with_tags(&env->facts, &cursor,
                   &tag_ident, &tag_arity, &tag_var);
   if (facts_cursor_next(&cursor)) {
-    tag_init_copy(dest, &tag_var);
+    if (tag_var.type != TAG_U8) {
+      err_write_1("env_special_operator_arity: "
+                  "invalid arity for special operator ");
+      err_inspect_ident(&tag_ident.data.ident);
+      err_write_1("\n");
+      facts_cursor_clean(&cursor);
+      return 0;
+    }
+    arity = tag_var.data.u8;
     facts_cursor_clean(&cursor);
-    return dest;
+    return arity;
   }
   facts_cursor_clean(&cursor);
   err_write_1("env_special_operator_arity: "
               "arity not found for special operator ");
   err_inspect_ident(&tag_ident.data.ident);
   err_write_1("\n");
-  return NULL;
+  return 0;
 }
 
 bool env_struct_type_exists (s_env *env, const s_sym *module)
