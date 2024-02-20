@@ -1219,6 +1219,34 @@ const s_tag * env_frames_get (const s_env *env, const s_sym *name)
   return NULL;
 }
 
+bool env_ident_is_special_operator (s_env *env,
+                                    const s_ident *ident)
+{
+  s_tag tag_ident;
+  s_tag tag_is_a;
+  s_tag tag_special_operator;
+  assert(env);
+  assert(ident);
+  tag_init_ident(&tag_ident, ident);
+  env_ident_resolve_module(env, &tag_ident.data.ident);
+  tag_init_sym(&tag_is_a, &g_sym_is_a);
+  tag_init_sym(&tag_special_operator, &g_sym_special_operator);
+  if (facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
+                              &tag_special_operator))
+    return true;
+  return false;
+}
+
+void env_ident_resolve_module (const s_env *env, s_ident *ident)
+{
+  assert(env);
+  assert(ident);
+  if (! ident->module) {
+    assert(env->current_module);
+    ident->module = env->current_module;
+  }
+}
+
 s_env * env_init (s_env *env, int argc, char **argv)
 {
   s_str path;
@@ -1612,6 +1640,34 @@ void env_push_unwind_protect (s_env *env,
 {
   unwind_protect->next = env->unwind_protect;
   env->unwind_protect = unwind_protect;
+}
+
+s_tag * env_special_operator_arity (s_env *env, const s_ident *ident,
+                                    s_tag *dest)
+{
+  s_facts_cursor cursor;
+  s_tag tag_arity;
+  s_tag tag_ident;
+  s_tag tag_var;
+  assert(env);
+  assert(ident);
+  tag_init_ident(&tag_ident, ident);
+  env_ident_resolve_module(env, &tag_ident.data.ident);
+  tag_init_1(    &tag_arity, ":arity");
+  tag_init_var(  &tag_var);
+  facts_with_tags(&env->facts, &cursor,
+                  &tag_ident, &tag_arity, &tag_var);
+  if (facts_cursor_next(&cursor)) {
+    tag_init_copy(dest, &tag_var);
+    facts_cursor_clean(&cursor);
+    return dest;
+  }
+  facts_cursor_clean(&cursor);
+  err_write_1("env_special_operator_arity: "
+              "arity not found for special operator ");
+  err_inspect_ident(&tag_ident.data.ident);
+  err_write_1("\n");
+  return NULL;
 }
 
 bool env_struct_type_exists (s_env *env, const s_sym *module)

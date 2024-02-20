@@ -23,6 +23,8 @@ s_env * env_init (s_env *env, int argc, char **argv);
 
 /* Observers. */
 const s_tag * env_frames_get (const s_env *env, const s_sym *name);
+void          env_ident_resolve_module (const s_env *env,
+                                        s_ident *ident);
 
 /* Operators. */
 bool          env_eval_array (s_env *env, const s_array *array,
@@ -97,6 +99,8 @@ bool          env_eval_tag (s_env *env, const s_tag *tag,
 bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
                               s_tag *dest);
 bool          env_eval_void (s_env *env, const void *_, s_tag *dest);
+bool          env_ident_is_special_operator (s_env *env,
+                                             const s_ident *ident);
 bool          env_module_is_loading (s_env *env, const s_sym *module);
 void          env_module_is_loading_set (s_env *env,
                                          const s_sym *module,
@@ -116,6 +120,9 @@ s8            env_operator_precedence (s_env *env, const s_ident *op);
 s_ident *     env_operator_resolve (s_env *env, const s_ident *op,
                                     u8 arity, s_ident *dest);
 const s_sym * env_operator_symbol (s_env *env, const s_ident *op);
+s_tag *       env_special_operator_arity (s_env *env,
+                                          const s_ident *ident,
+                                          s_tag *dest);
 bool          env_struct_type_exists (s_env *env,
                                         const s_sym *module);
 const s_struct_type *

@@ -32,6 +32,7 @@
 #include "list.h"
 #include "map.h"
 #include "operator.h"
+#include "special_operator.h"
 #include "str.h"
 #include "struct.h"
 #include "sym.h"
@@ -42,6 +43,8 @@ sw buf_parse_array_data_rec (s_buf *buf, s_array *dest, uw *address,
                              s_tag **tag, uw dimension);
 sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
                                    uw *address,uw dimension);
+sw buf_parse_special_operator_arguments (s_buf *buf, u8 arity,
+                                         s_call *dest);
 sw buf_peek_array_dimension_count (s_buf *buf, s_array *dest);
 
 sw buf_parse_array (s_buf *buf, s_array *dest)
@@ -2486,6 +2489,112 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
   return r;
 }
 
+sw buf_parse_special_operator (s_buf *buf, s_call *dest)
+{
+  const s_list *a;
+  s_tag arity;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_call tmp = {0};
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0)
+    goto clean;
+  result += r;
+  if (! ident_is_special_operator(&tmp.ident)) {
+    r = 0;
+    goto restore;
+  }
+  if (! special_operator_arity(&tmp.ident, &arity)) {
+    r = 0;
+    goto restore;
+  }
+  if (arity.type == TAG_U8) {
+    if (! arity.data.u8) {
+      err_write_1("buf_parse_special_operator: ");
+      err_inspect_ident(&tmp.ident);
+      err_write_1("invalid arity: ");
+      err_inspect_tag(&arity);
+      r = -2;
+      goto restore;
+    }
+    if ((r = buf_parse_special_operator_arguments(buf, arity.data.u8,
+                                                  &tmp)) <= 0)
+      goto restore;
+  }
+  else if (arity.type == TAG_LIST) {
+    a = arity.data.list;
+    while (a) {
+      if (a->tag.type != TAG_U8 || ! a->tag.data.u8) {
+        err_write_1("buf_parse_special_operator: ");
+        err_inspect_ident(&tmp.ident);
+        err_write_1("invalid arity: ");
+        err_inspect_tag(&a->tag);
+        r = -2;
+        goto restore;
+      }
+      if ((r = buf_parse_special_operator_arguments(buf, a->tag.data.u8,
+                                                    &tmp)) < 0)
+        goto restore;
+      if (r > 0)
+        break;
+      a = list_next(a);
+    }
+  }
+  result += r;
+  r = result;
+  *dest = tmp;
+  goto clean;
+ restore:
+  call_clean(&tmp);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_special_operator_arguments (s_buf *buf, u8 arity,
+                                         s_call *dest)
+{
+  s_list **args_last;
+  uw i;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_call tmp;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  tmp = *dest;
+  args_last = &tmp.arguments;
+  i = 0;
+  while (i < arity) {
+    if ((r = buf_parse_comments(buf)) < 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) <= 0)
+      goto restore;
+    result += r;
+    *args_last = list_new(NULL);
+    if ((r = buf_parse_tag(buf, &(*args_last)->tag)) <= 0)
+      goto restore;
+    result += r;
+    args_last = &(*args_last)->next.data.list;
+    i++;
+  }
+  r = result;
+  *dest = tmp;
+  goto clean;
+ restore:
+  call_clean(&tmp);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {
   u8 b;
@@ -3209,6 +3318,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_block(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
+      (r = buf_parse_tag_special_operator(buf, dest)) != 0 ||
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
       (r = buf_parse_tag_struct(buf, dest)) != 0 ||
@@ -3241,6 +3351,16 @@ sw buf_parse_tag_quote (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_quote(buf, &dest->data.quote)) > 0)
     dest->type = TAG_QUOTE;
+  return r;
+}
+
+sw buf_parse_tag_special_operator (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_special_operator(buf, &dest->data.call)) > 0)
+    dest->type = TAG_CALL;
   return r;
 }
 

@@ -171,9 +171,9 @@ replace {C3.operator22, :operator_precedence, 2}
 replace {C3.operator22, :operator_associativity, :left}
 add {C3, :operator, C3.operator23}
 replace {C3.operator23, :is_a, :operator}
+replace {C3.operator23, :arity, 2}
 add {C3.operator23, :is_a, :special_operator}
 replace {C3.operator23, :symbol, :=}
-replace {C3.operator23, :arity, 2}
 replace {C3.operator23, :cfn, cfn Tag "tag_equal" (Tag, Tag, Result)}
 replace {C3.operator23, :operator_precedence, 1}
 replace {C3.operator23, :operator_associativity, :right}
@@ -199,6 +199,21 @@ add {C3, :symbol, C3.fib}
 replace {C3.fib, :fn, fn { (0) { 1 }
                            (1) { 1 }
                            (x) { fib(x - 1) + fib(x - 2) } }}
+add {C3, :symbol, C3.if_then_else}
+replace {C3.if_then_else, :arity, 3}
+replace {C3.if_then_else, :is_a, :special_operator}
+replace {C3.if_then_else, :cfn, cfn Tag "c3_if_then_else" (Tag, Tag, Tag, Result)}
 add {C3, :symbol, C3.if}
+replace {C3.if, :arity, [4, 2]}
 replace {C3.if, :is_a, :macro}
-replace {C3.if, :cfn, cfn Tag "c3_if" (Tag, Tag, Tag, Result)}
+add {C3.if, :is_a, :special_operator}
+replace {C3.if, :fn, macro { (cond, then, :else, else) do
+                               quote if_then_else unquote(cond)
+                                 unquote(then)
+                                 unquote(else)
+                             end
+                             (cond, then) do
+                               quote if_then_else unquote(cond)
+                                 unquote(then)
+                                 unquote(void)
+                             end }}

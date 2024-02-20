@@ -228,14 +228,14 @@ s_str * ident_inspect (const s_ident *ident, s_str *dest)
   return buf_to_str(&buf, dest);
 }
 
-void ident_resolve_module (s_ident *ident, const s_env *env)
+bool ident_is_special_operator (const s_ident *ident)
 {
-  assert(env);
-  assert(ident);
-  if (! ident->module) {
-    assert(env->current_module);
-    ident->module = env->current_module;
-  }
+  return env_ident_is_special_operator(&g_c3_env, ident);
+}
+
+void ident_resolve_module (s_ident *ident)
+{
+  env_ident_resolve_module(&g_c3_env, ident);
 }
 
 bool ident_to_tag_type (const s_ident *ident, e_tag_type *dest)

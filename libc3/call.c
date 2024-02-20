@@ -78,23 +78,20 @@ bool call_get (s_call *call, s_facts *facts)
       call->fn = fn_new_copy(&tag_var.data.fn);
     else {
       err_write_1("call_get: ");
-      err_write_1(call->ident.module->str.ptr.pchar);
-      err_write_1(".");
-      err_write_1(call->ident.sym->str.ptr.pchar);
+      err_inspect_ident(&call->ident);
       err_puts(" is not a function");
       return false;
     }
   }
   facts_cursor_clean(&cursor);
+  tag_init_var(&tag_var);
   facts_with_tags(facts, &cursor, &tag_ident, &tag_cfn, &tag_var);
   if (facts_cursor_next(&cursor)) {
     if (tag_var.type == TAG_CFN)
       call->cfn = cfn_new_copy(&tag_var.data.cfn);
     else {
       err_write_1("call_get: ");
-      err_write_1(call->ident.module->str.ptr.pchar);
-      err_write_1(".");
-      err_write_1(call->ident.sym->str.ptr.pchar);
+      err_inspect_ident(&call->ident);
       err_puts(" is not a C function");
       return false;
     }
