@@ -1,12 +1,60 @@
-quote if true 1 else 2
-if true 1 else 2
-quote if true 1 else void
-if true 1 else void
-quote if true 1
-if true 1
-quote if false 1 else 2
-if false 1 else 2
-quote if false 1 else void
-if false 1 else void
-quote if false 1
-if false 1
+quote if true
+  1
+else
+  2
+end
+if true
+  1
+else
+  2
+end
+quote if true
+  1
+end
+if true
+  1
+end
+quote if false
+  1
+else
+  2
+end
+if false
+  1
+else
+  2
+end
+quote if false
+  1
+end
+if false
+  1
+end
+quote if true && true
+  1 + 1
+  2 + 2
+else
+  3 + 3
+  4 + 4
+end
+if true && true
+  1 + 1
+  2 + 2
+else
+  3 + 3
+  4 + 4
+end
+quote if true && false
+  1 + 1
+  2 + 2
+else
+  3 + 3
+  4 + 4
+end
+if true && false
+  1 + 1
+  2 + 2
+else
+  3 + 3
+  4 + 4
+end
