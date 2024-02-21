@@ -56,6 +56,8 @@
 sw buf_inspect_array (s_buf *buf, const s_array *a);
 sw buf_inspect_array_size (const s_array *a);
 sw buf_inspect_block (s_buf *buf, const s_block *b);
+sw buf_inspect_block_inner (s_buf *buf, const s_block *b);
+sw buf_inspect_block_inner_size (const s_block *b);
 sw buf_inspect_block_size (const s_block *b);
 sw buf_inspect_bool (s_buf *buf, const bool *b);
 sw buf_inspect_bool_size (const bool *b);

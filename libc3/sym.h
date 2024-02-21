@@ -74,6 +74,7 @@ extern const s_sym g_sym_Void;
 extern const s_sym g_sym_cast;
 extern const s_sym g_sym_defstruct;
 extern const s_sym g_sym_do;
+extern const s_sym g_sym_else;
 extern const s_sym g_sym_end;
 extern const s_sym g_sym_if_then_else;
 extern const s_sym g_sym_is_a;

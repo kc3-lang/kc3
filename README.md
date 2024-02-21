@@ -349,16 +349,29 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - collect_idents
    - DONE pin operator (for pattern matching)
    - DONE macros
-   - special operators
+   - DONE special operators
      - their arguments do not get evaluated
      - they return a value
      - parsed without syntax
+       Ideally it would look like this :
        ```
-       ic3> Facts.add(C3.env.facts, {C3.op, :is_a, :special_operator})
-       {C3.op, :is_a, :special_operator}
-       ic3> op = fn (a, b, c) { true }
-       ic3> op a b c
+       ic3> defspecial_operator op (a, b, c) { true }
+       special_operator (a, b, c) { true }
+       ic3> op 1 2 3
+       true
        ```
+   - if
+     - if cond1
+         then1
+         then2
+       end
+     - if cond1
+         then1
+         then2
+       else
+         else1
+         else2
+       end
    - modules
      - defmodule
      - def
