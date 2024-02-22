@@ -54,7 +54,7 @@ bool mandelbrot_f128_button (s_sequence *seq, u8 button, sw x, sw y)
   next_z = &map->value[3].data.f128;
   if (button == 1) {
     *next_x = *next_x + *next_z * (x - (f128) win->w / 2);
-    *next_y = *next_y + *next_z * (y - (f128) win->h / 2);
+    *next_y = *next_y + *next_z * ((f128) win->h / 2 - y);
   }
   else if (button == 5) {
     *next_z = *next_z * exp2l(0.5);
@@ -106,6 +106,9 @@ bool mandelbrot_f128_load (s_sequence *seq)
                        "z: 0.01"))
     return false;
   gl_text_update(&g_mandelbrot_f128_text);
+  assert(glGetError() == GL_NO_ERROR);
+  glGenTextures(1, &g_mandelbrot_f128_texture);
+  assert(glGetError() == GL_NO_ERROR);
   return true;
 }
 
@@ -289,6 +292,7 @@ static bool mandelbrot_f128_update (s_sequence *seq)
       pix[0] = level;
       pix[1] = level;
       pix[2] = level;
+      pix[3] = 255;
       pix += 4;
       j++;
     }
@@ -302,8 +306,8 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   assert(glGetError() == GL_NO_ERROR);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, win->w, win->h, 0,
-               GL_RGB, GL_UNSIGNED_BYTE, pixels->data);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, win->w, win->h, 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, pixels->data);
   assert(glGetError() == GL_NO_ERROR);
   buf_init(&buf, false, sizeof(a), a);
   buf_write_1(&buf, "x: ");
