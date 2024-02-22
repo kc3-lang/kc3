@@ -267,8 +267,8 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   pixels = &map->value[4].data.array;
   pix = pixels->data;
   assert(pix);
-  i = 0;
-  while (i < win->h) {
+#pragma omp parallel for private(c_x, c_y, j, k, z_x, z_y, z_x2, z_y2, _2z_xz_y, level)
+  for (i = 0; i < win->h; i++) {
     c_y = next_y + next_z * ((f128) i - win->h / 2);
     j = 0;
     while (j < win->w) {
@@ -289,14 +289,12 @@ static bool mandelbrot_f128_update (s_sequence *seq)
       level = 255 - k;
       /*if (k)
         printf("x %lu, y %lu, k %d, level %d", j, i, k, level);*/
-      pix[0] = level;
-      pix[1] = level;
-      pix[2] = level;
-      pix[3] = 255;
-      pix += 4;
+      pix[(i * win->w + j) * 4 + 0] = level;
+      pix[(i * win->w + j) * 4 + 1] = level;
+      pix[(i * win->w + j) * 4 + 2] = level;
+      pix[(i * win->w + j) * 4 + 3] = 255;
       j++;
     }
-    i++;
   }
   assert(glGetError() == GL_NO_ERROR);
   glBindTexture(GL_TEXTURE_2D, g_mandelbrot_f128_texture);
