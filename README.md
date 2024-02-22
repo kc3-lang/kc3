@@ -360,21 +360,14 @@ Script interpreter. Works the same as ic3 but is not interactive.
        ic3> op 1 2 3
        true
        ```
-   - if
-     - if cond1
-         then1
-         then2
-       end
-     - if cond1
-         then1
-         then2
-       else
-         else1
-         else2
-       end
+   - DONE if
    - modules
      - defmodule
      - def
+     - defmacro
+     - defoperator
+     - defspecial_operator
+     - defstruct
    - facts
      - negative facts : 4 + 2n = not 3 + 2n
      - with ignore variables
