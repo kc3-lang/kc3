@@ -485,6 +485,8 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/demo/lightspeed.h" \
 	"libc3/window/sdl2/demo/mandelbrot_f128.c" \
 	"libc3/window/sdl2/demo/mandelbrot_f128.h" \
+	"libc3/window/sdl2/demo/matrix_utf8.c" \
+	"libc3/window/sdl2/demo/matrix_utf8.h" \
 	"libc3/window/sdl2/demo/toasters.c" \
 	"libc3/window/sdl2/demo/toasters.h" \
 	"libc3/window/sdl2/demo/window_sdl2_demo.c" \
@@ -528,6 +530,8 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/gl_triangle.h" \
 	"libc3/window/sdl2/gl_vertex.c" \
 	"libc3/window/sdl2/gl_vertex.h" \
+	"libc3/window/sdl2/gl_vtext.c" \
+	"libc3/window/sdl2/gl_vtext.h" \
 	"libc3/window/sdl2/mat3.h" \
 	"libc3/window/sdl2/mat4.c" \
 	"libc3/window/sdl2/mat4.h" \
@@ -602,6 +606,7 @@ C3_OTHER_SOURCES = \
 	"config.subr" \
 	"configure" \
 	"fonts/Courier New/Courier New.ttf" \
+	"fonts/NotoSans-Regular.ttf" \
 	"img/c3.1.xcf" \
 	"img/c3.1080.jpg" \
 	"img/c3.1080.png" \
@@ -637,6 +642,8 @@ C3_OTHER_SOURCES = \
 	"img/fly-noto.png" \
 	"img/iris-c3-004.jpeg" \
 	"img/iris-c3-004.png" \
+	"img/mandelbrot_f128_limit.1.png" \
+	"img/mandelbrot_f128_limit.2.png" \
 	"img/mandelbrot_f128_limit.png" \
 	"img/thodg_No_Prompt_073261d5-2c81-4b6e-9572-e0b840c55f1f.jpeg" \
 	"img/toast.128.png" \
@@ -731,6 +738,9 @@ C3_OTHER_SOURCES = \
 	"test/ic3/ident.in" \
 	"test/ic3/ident.out.expected" \
 	"test/ic3/ident.ret.expected" \
+	"test/ic3/if.in" \
+	"test/ic3/if.out.expected" \
+	"test/ic3/if.ret.expected" \
 	"test/ic3/integer.in" \
 	"test/ic3/integer.lisp" \
 	"test/ic3/integer.out.expected" \

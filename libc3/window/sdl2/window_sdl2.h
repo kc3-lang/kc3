@@ -15,6 +15,8 @@
 
 #include "types.h"
 
+extern const char *g_gray_3_bits_utf8[];
+
 /* Stack-allocation compatible functions, call window_sdl2_clean
    after use. */
 void            window_sdl2_clean (s_window_sdl2 *window);

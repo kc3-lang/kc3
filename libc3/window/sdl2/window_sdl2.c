@@ -18,6 +18,10 @@
 #include "gl_deprecated.h"
 #include "window_sdl2.h"
 
+const char *g_gray_3_bits_utf8[] = {
+  " ", ".", ":", "#", "░", "▒", "▓", "█"
+};
+
 static bool g_window_sdl2_initialized = false;
 
 static void gl_debug (GLenum source, GLenum type, GLuint id,

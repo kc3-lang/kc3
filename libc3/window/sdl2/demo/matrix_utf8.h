@@ -10,14 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBC3_WINDOW_SDL2_DEMO_H
-#define LIBC3_WINDOW_SDL2_DEMO_H
+#ifndef MATRIX_UTF8_H
+#define MATRIX_UTF8_H
 
 #include "../types.h"
 
-extern s_gl_font  g_font_computer_modern;
-extern s_gl_font  g_font_courier_new;
+bool matrix_utf8_load (s_sequence *seq);
+bool matrix_utf8_render (s_sequence *seq);
+bool matrix_utf8_unload (s_sequence *seq);
 
-extern s_gl_ortho g_ortho;
-
-#endif /* LIBC3_WINDOW_SDL2_DEMO_H */
+#endif /* MATRIX_UTF8_H */
