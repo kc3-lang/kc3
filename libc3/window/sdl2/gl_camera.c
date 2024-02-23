@@ -100,7 +100,7 @@ static const char * g_gl_camera_fragment_shader_src =
   "    oColor = uMaterial.Color;\n"
   "  vec4 sum = vec4(0);\n"
   "  vec3 n = normalize(ioNormal);\n"
-  "  for (int i = 0; i < 3; i++) {\n"
+  "  for (int i = 0; i < uLightCount; i++) {\n"
   "    sum += microfacetModel(i, ioPos, n, oColor);\n"
   "  }\n"
   "  sum = pow(sum, vec4(1.0 / 2.2));\n"
