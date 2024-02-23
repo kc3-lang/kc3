@@ -41,5 +41,7 @@ void         gl_ortho_text_render_outline (s_gl_ortho *ortho,
                                            f64 x, f64 y);
 void         gl_ortho_update_model_matrix (s_gl_ortho *ortho);
 void         gl_ortho_update_view_matrix (s_gl_ortho *ortho);
+void         gl_ortho_vtext_render (s_gl_ortho *ortho,
+                                    const s_gl_text *text);
 
 #endif /* GL_ORTHO_H */

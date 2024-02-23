@@ -17,6 +17,7 @@ HEADERS = \
 	"gl_text.h" \
 	"gl_triangle.h" \
 	"gl_vertex.h" \
+	"gl_vtext.h" \
 	"mat3.h" \
 	"mat4.h" \
 	"types.h" \
@@ -41,6 +42,7 @@ SOURCES = \
 	"gl_text.c" \
 	"gl_triangle.c" \
 	"gl_vertex.c" \
+	"gl_vtext.c" \
 	"mat4.c" \
 	"vec2.c" \
 	"vec3.c" \

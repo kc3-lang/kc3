@@ -349,3 +349,12 @@ void gl_ortho_update_view_matrix (s_gl_ortho *ortho)
                      &ortho->view_matrix.xx);
   assert(glGetError() == GL_NO_ERROR);
 }
+
+void gl_ortho_vtext_render (s_gl_ortho *ortho, const s_gl_text *text)
+{
+  assert(ortho);
+  assert(text);
+  gl_ortho_bind_texture(ortho, text->texture);
+  gl_ortho_rect(ortho, 0, -text->pt_h, text->pt_w, text->pt_h);
+  gl_ortho_bind_texture(ortho, 0);
+}

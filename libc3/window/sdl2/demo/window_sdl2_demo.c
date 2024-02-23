@@ -28,8 +28,9 @@
 #include "flies.h"
 #include "earth.h"
 #include "mandelbrot_f128.h"
+#include "matrix_utf8.h"
 
-#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 6
+#define WINDOW_SDL2_DEMO_SEQUENCE_COUNT 7
 
 //s_gl_font   g_font_computer_modern = {0};
 s_gl_font   g_font_courier_new = {0};
@@ -211,6 +212,9 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
                 mandelbrot_f128_load, mandelbrot_f128_render,
                 mandelbrot_f128_unload, window);
   window->sequence[5].button = mandelbrot_f128_button;
+  sequence_init(window->sequence + 6, 3600.0, "07. Matrix UTF-8",
+                matrix_utf8_load, matrix_utf8_render,
+                matrix_utf8_unload, window);
   window_set_sequence_pos((s_window *) window, 0);
   return true;
 }
