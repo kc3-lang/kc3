@@ -73,13 +73,14 @@ bool matrix_utf8_text_init (s_tag *tag, f32 y)
   if (! tag_map(tag, 3))
     return false;
   buf_init(&buf, false, sizeof(a), a);
-  u8_random_uniform(&len, 10);
+  u8_random_uniform(&len, 40);
   len += 10;
   i = 0;
   while (i < len) {
     do {
       u32_random(&c);
-    } while (! character_is_printable(c));
+    } while (! character_is_printable(c) ||
+             ! FT_Get_Char_Index(g_matrix_utf8_font.ft_face, c));
     if (buf_write_character_utf8(&buf, c) < 0) {
       err_puts("matrix_utf8_init_text: buffer overflow");
       assert(! "matrix_utf8_init_text: buffer overflow");
@@ -103,28 +104,29 @@ bool matrix_utf8_text_init (s_tag *tag, f32 y)
   tag_init_sym(  map->key + 1, sym_1("text"));
   tag_init_ptr(map->value + 1, text);
   tag_init_sym(  map->key + 2, sym_1("y"));
-  tag_init_f32(map->value + 2, y);
+  tag_init_f32(map->value + 2, y + text->pt_h);
   return true;
 }
 
 bool matrix_utf8_text_render (s_sequence *seq, const s_tag *tag)
 {
+  u8 i;
   const s_map *map;
-  //f32 spacing;
+  f32 *spacing;
   const s_gl_text *text;
+  s_window_sdl2 *window;
   f32 *y;
-  (void) seq;
   assert(seq);
+  window = seq->window;
+  assert(window);
   assert(tag);
   assert(tag->type == TAG_MAP);
   map = &tag->data.map;
   assert(map->count == 3);
-  /*
-  assert(     map->key[0].type == TAG_SYM);
-  assert(     map->key[0].data.sym == sym_1("spacing"));
-  assert(   map->value[0].type == TAG_F32);
-  spacing = map->value[0].data.f32;
-  */
+  assert(      map->key[0].type == TAG_SYM);
+  assert(      map->key[0].data.sym == sym_1("spacing"));
+  assert(    map->value[0].type == TAG_F32);
+  spacing = &map->value[0].data.f32;
   assert(  map->key[1].type == TAG_SYM);
   assert(  map->key[1].data.sym == sym_1("text"));
   assert(map->value[1].type == TAG_PTR);
@@ -136,7 +138,10 @@ bool matrix_utf8_text_render (s_sequence *seq, const s_tag *tag)
   if (seq->t - g_matrix_utf8_time > 0.2) {
     *y -= G_MATRIX_UTF8_FONT_SIZE;
     if (*y < 0) {
-      
+      u8_random_uniform(&i, 15);
+      *spacing = i * G_MATRIX_UTF8_FONT_SIZE;
+      *y = window->h + text->pt_h;
+    }
     g_matrix_utf8_time = seq->t;
   }
   mat4_init_identity(&g_ortho.model_matrix);
