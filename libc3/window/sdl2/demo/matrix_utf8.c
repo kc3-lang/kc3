@@ -14,14 +14,17 @@
 #include <libc3/c3.h>
 #include "../gl_font.h"
 #include "../gl_ortho.h"
+#include "../gl_sprite.h"
 #include "../gl_vtext.h"
 #include "../mat4.h"
 #include "window_sdl2_demo.h"
 #include "matrix_utf8.h"
 
-#define G_MATRIX_UTF8_FONT_SIZE 20
-static s_gl_font g_matrix_utf8_font = {0};
-static f64 g_matrix_utf8_time;
+#define            G_MATRIX_UTF8_FONT_SIZE 20
+
+static s_gl_font   g_matrix_utf8_font = {0};
+static s_gl_sprite g_matrix_utf8_shade = {0};
+static f64         g_matrix_utf8_time;
 
 void matrix_utf8_text_clean (s_tag *tag);
 bool matrix_utf8_text_init (s_tag *tag, f32 y);
@@ -44,6 +47,10 @@ bool matrix_utf8_load (s_sequence *seq)
   assert(glGetError() == GL_NO_ERROR);
   if (! matrix_utf8_text_init(&seq->tag, window->h))
     return false;
+  if (! gl_sprite_init(&g_matrix_utf8_shade,
+                       "img/matrix_shade.png",
+                       1, 1, 1, 1))
+    return false;
   g_matrix_utf8_time = seq->t;
   return true;
 }
@@ -64,6 +71,7 @@ bool matrix_utf8_text_init (s_tag *tag, f32 y)
   char a[1024];
   s_buf buf;
   character c;
+  FT_Face face;
   u8 i;
   u8 len;
   s_map *map;
@@ -75,12 +83,12 @@ bool matrix_utf8_text_init (s_tag *tag, f32 y)
   buf_init(&buf, false, sizeof(a), a);
   u8_random_uniform(&len, 40);
   len += 10;
+  face = g_matrix_utf8_font.ft_face;
   i = 0;
   while (i < len) {
     do {
       u32_random(&c);
-    } while (! character_is_printable(c) ||
-             ! FT_Get_Char_Index(g_matrix_utf8_font.ft_face, c));
+    } while (! FT_Get_Char_Index(face, c));
     if (buf_write_character_utf8(&buf, c) < 0) {
       err_puts("matrix_utf8_init_text: buffer overflow");
       assert(! "matrix_utf8_init_text: buffer overflow");
@@ -117,6 +125,7 @@ bool matrix_utf8_text_render (s_sequence *seq, const s_tag *tag)
   s_window_sdl2 *window;
   f32 *y;
   assert(seq);
+  assert(glGetError() == GL_NO_ERROR);
   window = seq->window;
   assert(window);
   assert(tag);
@@ -147,8 +156,23 @@ bool matrix_utf8_text_render (s_sequence *seq, const s_tag *tag)
   mat4_init_identity(&g_ortho.model_matrix);
   mat4_translate(&g_ortho.model_matrix, 0, *y, 0);
   gl_ortho_update_model_matrix(&g_ortho);
+  assert(glGetError() == GL_NO_ERROR);
   gl_ortho_color(&g_ortho, 0, 1, 0, 1);
+  assert(glGetError() == GL_NO_ERROR);
   gl_ortho_vtext_render(&g_ortho, text);
+  assert(glGetError() == GL_NO_ERROR);
+  glDisable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                      GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  gl_ortho_color(&g_ortho, 1, 1, 1, 1);
+  gl_ortho_bind_texture(&g_ortho,
+                        gl_sprite_texture(&g_matrix_utf8_shade, 0));
+  assert(glGetError() == GL_NO_ERROR);
+  gl_ortho_rect(&g_ortho, 0, G_MATRIX_UTF8_FONT_SIZE - text->pt_h,
+                text->pt_w, text->pt_h - G_MATRIX_UTF8_FONT_SIZE);
+  assert(glGetError() == GL_NO_ERROR);
+  glDisable(GL_BLEND);
   assert(glGetError() == GL_NO_ERROR);
   return true;
 }

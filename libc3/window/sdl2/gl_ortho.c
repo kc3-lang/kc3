@@ -209,6 +209,7 @@ void gl_ortho_rect (s_gl_ortho *ortho, f32 x, f32 y, f32 w, f32 h)
   gl_square_render(&ortho->square);
   assert(glGetError() == GL_NO_ERROR);
   ortho->model_matrix = matrix;
+  gl_ortho_update_model_matrix(ortho);
 }
 
 void gl_ortho_render (s_gl_ortho *ortho)
