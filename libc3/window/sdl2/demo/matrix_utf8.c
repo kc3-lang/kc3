@@ -70,42 +70,22 @@ bool matrix_utf8_text_init (s_tag *tag, f32 y)
 {
   char a[1024];
   s_buf buf;
-  character c;
-  FT_Face face;
   u8 i;
   u8 len;
   s_map *map;
   f32 spacing;
-  s_str str;
   s_gl_text *text;
   if (! tag_map(tag, 3))
     return false;
   buf_init(&buf, false, sizeof(a), a);
-  u8_random_uniform(&len, 40);
-  len += 10;
-  face = g_matrix_utf8_font.ft_face;
-  i = 0;
-  while (i < len) {
-    do {
-      u32_random(&c);
-    } while (! FT_Get_Char_Index(face, c));
-    if (buf_write_character_utf8(&buf, c) < 0) {
-      err_puts("matrix_utf8_init_text: buffer overflow");
-      assert(! "matrix_utf8_init_text: buffer overflow");
-      return false;
-    }
-    i++;
-  }
-  buf_read_to_str(&buf, &str);
-  u8_random_uniform(&i, 15);
+  u8_random_uniform(&i, 10);
   spacing = i * G_MATRIX_UTF8_FONT_SIZE;
-  text = gl_vtext_new_str(&g_matrix_utf8_font, &str);
-  if (! text)
+  u8_random_uniform(&len, 10);
+  len += 10;
+  text = gl_vtext_new(&g_matrix_utf8_font);
+  if (! text ||
+      ! gl_vtext_render_to_texture_random(text, len))
     return false;
-  gl_vtext_update(text);
-  err_inspect_str(&str);
-  err_write_1("\n");
-  str_clean(&str);
   map = &tag->data.map;
   tag_init_sym(  map->key + 0, sym_1("spacing"));
   tag_init_f32(map->value + 0, spacing);

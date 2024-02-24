@@ -26,11 +26,13 @@ s_gl_text * gl_vtext_init_str (s_gl_text *text, const s_gl_font *font,
 
 /* Heap-allocation functions, call gl_vtext_delete after use. */
 void        gl_vtext_delete (s_gl_text *text);
+s_gl_text * gl_vtext_new (const s_gl_font *font);
 s_gl_text * gl_vtext_new_1 (const s_gl_font *font, const char *p);
 s_gl_text * gl_vtext_new_str (const s_gl_font *font, const s_str *str);
 
 /* Operators. */
 bool gl_vtext_render_to_texture (s_gl_text *text);
+bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len);
 bool gl_vtext_set_font (s_gl_text *text, const s_gl_font *font);
 bool gl_vtext_set_text (s_gl_text *text, const s_str *str);
 bool gl_vtext_set_text_1 (s_gl_text *text, const char *p);
