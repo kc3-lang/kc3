@@ -36,22 +36,52 @@ bool matrix_update (s_sequence *seq);
 
 void matrix_column_clean (s_tag *tag)
 {
-  matrix_text_clean(tag);
+  s_list *list;
+  if (tag->type != TAG_LIST) {
+    err_puts("matrix_column_clean: invalid tag");
+    assert(! "matrix_column_clean: invalid tag");
+    return;
+  }
+  list = tag->data.list;
+  while (list) {
+    matrix_text_clean(&list->tag);
+    list = list_next(list);
+  }
 }
 
 bool matrix_column_init (s_sequence *seq, s_tag *tag, f32 x)
 {
+  s_list *list;
   s_window_sdl2 *window;
   (void) x;
   assert(seq);
   window = seq->window;
   assert(window);
-  return matrix_text_init(tag, window->h);
+  if (! (list = list_new(NULL)))
+    return false;
+  if (! matrix_text_init(&list->tag, window->h)) {
+    list_delete_all(list);
+    return false;
+  }
+  tag_init_list(tag, list);
+  return true;
 }
 
 bool matrix_column_render (s_sequence *seq, const s_tag *tag)
 {
-  return matrix_text_render(seq, tag);
+  s_list *list;
+  if (tag->type != TAG_LIST) {
+    err_puts("matrix_column_render: invalid tag");
+    assert(! "matrix_column_render: invalid tag");
+    return false;
+  }
+  list = tag->data.list;
+  while (list) {
+    if (! matrix_text_render(seq, &list->tag))
+      return false;
+    list = list_next(list);
+  }
+  return true;
 }
 
 bool matrix_load (s_sequence *seq)
@@ -84,7 +114,7 @@ bool matrix_render (s_sequence *seq)
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   assert(glGetError() == GL_NO_ERROR);
-  matrix_text_render(seq, &seq->tag);
+  matrix_column_render(seq, &seq->tag);
   assert(glGetError() == GL_NO_ERROR);
   return true;
 }
