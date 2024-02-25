@@ -485,8 +485,8 @@ C3_C_SOURCES = \
 	"libc3/window/sdl2/demo/lightspeed.h" \
 	"libc3/window/sdl2/demo/mandelbrot_f128.c" \
 	"libc3/window/sdl2/demo/mandelbrot_f128.h" \
-	"libc3/window/sdl2/demo/matrix_utf8.c" \
-	"libc3/window/sdl2/demo/matrix_utf8.h" \
+	"libc3/window/sdl2/demo/matrix.c" \
+	"libc3/window/sdl2/demo/matrix.h" \
 	"libc3/window/sdl2/demo/toasters.c" \
 	"libc3/window/sdl2/demo/toasters.h" \
 	"libc3/window/sdl2/demo/window_sdl2_demo.c" \
@@ -645,6 +645,7 @@ C3_OTHER_SOURCES = \
 	"img/mandelbrot_f128_limit.1.png" \
 	"img/mandelbrot_f128_limit.2.png" \
 	"img/mandelbrot_f128_limit.png" \
+	"img/matrix_shade.png" \
 	"img/thodg_No_Prompt_073261d5-2c81-4b6e-9572-e0b840c55f1f.jpeg" \
 	"img/toast.128.png" \
 	"img/toast.png" \

@@ -10,13 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef MATRIX_UTF8_H
-#define MATRIX_UTF8_H
+#ifndef MATRIX_H
+#define MATRIX_H
 
 #include "../types.h"
 
-bool matrix_utf8_load (s_sequence *seq);
-bool matrix_utf8_render (s_sequence *seq);
-bool matrix_utf8_unload (s_sequence *seq);
+bool matrix_load (s_sequence *seq);
+bool matrix_render (s_sequence *seq);
+bool matrix_unload (s_sequence *seq);
 
-#endif /* MATRIX_UTF8_H */
+#endif /* MATRIX_H */

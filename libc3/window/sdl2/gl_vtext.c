@@ -252,7 +252,7 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
       if (FT_Load_Glyph(face, glyphs[i], FT_LOAD_RENDER))
         continue;
       glyph = face->glyph;
-      printf("width %ld\n", glyph->metrics.width >> 6);
+      //printf("width %ld\n", glyph->metrics.width >> 6);
     } while (! (glyph->metrics.width >> 6));
   }
   scale_y = face->size->metrics.y_scale / 65536.0;

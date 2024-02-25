@@ -5,7 +5,7 @@ HEADERS = \
 	"flies.h" \
 	"lightspeed.h" \
 	"mandelbrot_f128.h" \
-	"matrix_utf8.h" \
+	"matrix.h" \
 	"toasters.h" \
 	"window_sdl2_demo.h" \
 
@@ -15,7 +15,7 @@ SOURCES = \
 	"flies.c" \
 	"lightspeed.c" \
 	"mandelbrot_f128.c" \
-	"matrix_utf8.c" \
+	"matrix.c" \
 	"toasters.c" \
 	"window_sdl2_demo.c" \
 
