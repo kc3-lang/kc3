@@ -26,16 +26,40 @@ static s_gl_font   g_matrix_utf8_font = {0};
 static s_gl_sprite g_matrix_utf8_shade = {0};
 static f64         g_matrix_utf8_time;
 
+void matrix_utf8_column_clean (s_tag *tag);
+bool matrix_utf8_column_init (s_sequence *seq, s_tag *tag, f32 x);
+bool matrix_utf8_column_render (s_sequence *seq, const s_tag *tag);
 void matrix_utf8_text_clean (s_tag *tag);
 bool matrix_utf8_text_init (s_tag *tag, f32 y);
 bool matrix_utf8_text_render (s_sequence *seq, const s_tag *tag);
 bool matrix_utf8_update (s_sequence *seq);
+
+void matrix_utf8_column_clean (s_tag *tag)
+{
+  matrix_utf8_text_clean(tag);
+}
+
+bool matrix_utf8_column_init (s_sequence *seq, s_tag *tag, f32 x)
+{
+  s_window_sdl2 *window;
+  (void) x;
+  assert(seq);
+  window = seq->window;
+  assert(window);
+  return matrix_utf8_text_init(tag, window->h);
+}
+
+bool matrix_utf8_column_render (s_sequence *seq, const s_tag *tag)
+{
+  return matrix_utf8_text_render(seq, tag);
+}
 
 bool matrix_utf8_load (s_sequence *seq)
 {
   f32 point_per_pixel;
   s_window_sdl2 *window;
   assert(seq);
+  assert(glGetError() == GL_NO_ERROR);
   window = seq->window;
   assert(window);
   point_per_pixel = (f32) window->w / window->gl_w;
@@ -44,8 +68,7 @@ bool matrix_utf8_load (s_sequence *seq)
                      point_per_pixel))
     return false;
   gl_font_set_size(&g_matrix_utf8_font, G_MATRIX_UTF8_FONT_SIZE);
-  assert(glGetError() == GL_NO_ERROR);
-  if (! matrix_utf8_text_init(&seq->tag, window->h))
+  if (! matrix_utf8_column_init(seq, &seq->tag, 0))
     return false;
   if (! gl_sprite_init(&g_matrix_utf8_shade,
                        "img/matrix_shade.png",
