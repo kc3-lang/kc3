@@ -20,7 +20,8 @@
 #include "window_sdl2_demo.h"
 #include "matrix.h"
 
-#define            G_MATRIX_FONT_SIZE 20
+#define              MATRIX_FONT_SIZE 20
+#define              MATRIX_TIME 0.2
 
 static s_gl_font   g_matrix_font = {0};
 static s_gl_sprite g_matrix_shade = {0};
@@ -28,10 +29,10 @@ static f64         g_matrix_time;
 
 void matrix_column_clean (s_tag *tag);
 bool matrix_column_init (s_sequence *seq, s_tag *tag, f32 x);
-bool matrix_column_render (s_sequence *seq, const s_tag *tag);
+bool matrix_column_render (s_sequence *seq, s_tag *tag);
 void matrix_text_clean (s_tag *tag);
-bool matrix_text_init (s_tag *tag, f32 y);
-bool matrix_text_render (s_sequence *seq, const s_tag *tag);
+bool matrix_text_init (s_tag *tag, f32 y, f32 *h);
+bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py);
 bool matrix_update (s_sequence *seq);
 
 void matrix_column_clean (s_tag *tag)
@@ -51,35 +52,51 @@ void matrix_column_clean (s_tag *tag)
 
 bool matrix_column_init (s_sequence *seq, s_tag *tag, f32 x)
 {
+  f32 h;
+  s_list *l;
   s_list *list;
   s_window_sdl2 *window;
+  f32 y;
   (void) x;
   assert(seq);
   window = seq->window;
   assert(window);
-  if (! (list = list_new(NULL)))
-    return false;
-  if (! matrix_text_init(&list->tag, window->h)) {
-    list_delete_all(list);
-    return false;
+  list = NULL;
+  y = window->h;
+  while (y < window->h * 2) {
+    if (! (l = list_new(list))) {
+      list_delete_all(list);
+      return false;
+    }
+    if (! matrix_text_init(&l->tag, y, &h)) {
+      list_delete_all(l);
+      return false;
+    }
+    list = l;
+    y += h;
   }
   tag_init_list(tag, list);
   return true;
 }
 
-bool matrix_column_render (s_sequence *seq, const s_tag *tag)
+bool matrix_column_render (s_sequence *seq, s_tag *tag)
 {
-  s_list *list;
+  s_list **list;
+  f32 *py;
   if (tag->type != TAG_LIST) {
     err_puts("matrix_column_render: invalid tag");
     assert(! "matrix_column_render: invalid tag");
     return false;
   }
-  list = tag->data.list;
-  while (list) {
-    if (! matrix_text_render(seq, &list->tag))
+  list = &tag->data.list;
+  while (*list) {
+    if (! matrix_text_render(seq, &(*list)->tag, &py))
       return false;
-    list = list_next(list);
+    if (*py < 0) {
+      matrix_text_clean(&(*list)->tag);
+      *list = list_delete(*list);
+    }
+    list = &(*list)->next.data.list;
   }
   return true;
 }
@@ -97,7 +114,7 @@ bool matrix_load (s_sequence *seq)
                      "fonts/NotoSans-Regular.ttf",
                      point_per_pixel))
     return false;
-  gl_font_set_size(&g_matrix_font, G_MATRIX_FONT_SIZE);
+  gl_font_set_size(&g_matrix_font, MATRIX_FONT_SIZE);
   if (! matrix_column_init(seq, &seq->tag, 0))
     return false;
   if (! gl_sprite_init(&g_matrix_shade,
@@ -116,10 +133,12 @@ bool matrix_render (s_sequence *seq)
   assert(glGetError() == GL_NO_ERROR);
   matrix_column_render(seq, &seq->tag);
   assert(glGetError() == GL_NO_ERROR);
+  if (seq->t - g_matrix_time > MATRIX_TIME)
+    g_matrix_time = seq->t;
   return true;
 }
 
-bool matrix_text_init (s_tag *tag, f32 y)
+bool matrix_text_init (s_tag *tag, f32 y, f32 *h)
 {
   char a[1024];
   s_buf buf;
@@ -132,7 +151,7 @@ bool matrix_text_init (s_tag *tag, f32 y)
     return false;
   buf_init(&buf, false, sizeof(a), a);
   u8_random_uniform(&i, 10);
-  spacing = i * G_MATRIX_FONT_SIZE;
+  spacing = i * MATRIX_FONT_SIZE;
   u8_random_uniform(&len, 10);
   len += 10;
   text = gl_vtext_new(&g_matrix_font);
@@ -146,29 +165,27 @@ bool matrix_text_init (s_tag *tag, f32 y)
   tag_init_ptr(map->value + 1, text);
   tag_init_sym(  map->key + 2, sym_1("y"));
   tag_init_f32(map->value + 2, y + text->pt_h);
+  *h = text->pt_h + spacing;
   return true;
 }
 
-bool matrix_text_render (s_sequence *seq, const s_tag *tag)
+bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py)
 {
-  u8 i;
   const s_map *map;
-  f32 *spacing;
   const s_gl_text *text;
-  s_window_sdl2 *window;
   f32 *y;
   assert(seq);
   assert(glGetError() == GL_NO_ERROR);
-  window = seq->window;
-  assert(window);
   assert(tag);
   assert(tag->type == TAG_MAP);
   map = &tag->data.map;
   assert(map->count == 3);
+  /*
   assert(      map->key[0].type == TAG_SYM);
   assert(      map->key[0].data.sym == sym_1("spacing"));
   assert(    map->value[0].type == TAG_F32);
   spacing = &map->value[0].data.f32;
+  */
   assert(  map->key[1].type == TAG_SYM);
   assert(  map->key[1].data.sym == sym_1("text"));
   assert(map->value[1].type == TAG_PTR);
@@ -177,16 +194,10 @@ bool matrix_text_render (s_sequence *seq, const s_tag *tag)
   assert(  map->key[2].data.sym == sym_1("y"));
   assert(map->value[2].type == TAG_F32);
   y =   &map->value[2].data.f32;
-  if (seq->t - g_matrix_time > 0.2) {
-    *y -= G_MATRIX_FONT_SIZE;
-    if (*y < 0) {
-      u8_random_uniform(&i, 15);
-      *spacing = i * G_MATRIX_FONT_SIZE;
-      *y = window->h + text->pt_h;
-    }
-    g_matrix_time = seq->t;
-  }
+  if (seq->t - g_matrix_time > MATRIX_TIME)
+    *y -= MATRIX_FONT_SIZE;
   mat4_init_identity(&g_ortho.model_matrix);
+  printf("y %f\n", *y);
   mat4_translate(&g_ortho.model_matrix, 0, *y, 0);
   gl_ortho_update_model_matrix(&g_ortho);
   assert(glGetError() == GL_NO_ERROR);
@@ -202,11 +213,12 @@ bool matrix_text_render (s_sequence *seq, const s_tag *tag)
   gl_ortho_bind_texture(&g_ortho,
                         gl_sprite_texture(&g_matrix_shade, 0));
   assert(glGetError() == GL_NO_ERROR);
-  gl_ortho_rect(&g_ortho, 0, G_MATRIX_FONT_SIZE - text->pt_h,
-                text->pt_w, text->pt_h - G_MATRIX_FONT_SIZE);
+  gl_ortho_rect(&g_ortho, 0, MATRIX_FONT_SIZE - text->pt_h,
+                text->pt_w, text->pt_h - MATRIX_FONT_SIZE);
   assert(glGetError() == GL_NO_ERROR);
   glDisable(GL_BLEND);
   assert(glGetError() == GL_NO_ERROR);
+  *py = y;
   return true;
 }
 

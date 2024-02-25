@@ -339,6 +339,8 @@ C3_C_SOURCES = \
 	"libc3/ptr.h" \
 	"libc3/ptr_free.c" \
 	"libc3/ptr_free.h" \
+	"libc3/queue.c" \
+	"libc3/queue.h" \
 	"libc3/quote.c" \
 	"libc3/quote.h" \
 	"libc3/s.c.in" \
