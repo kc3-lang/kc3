@@ -159,6 +159,7 @@ typedef struct fact_list               s_fact_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct map                     s_map;
+typedef struct queue                   s_queue;
 typedef struct quote                   s_quote;
 typedef struct sequence                s_sequence;
 typedef struct str                     s_str;
@@ -265,6 +266,12 @@ union ptr_w {
   char *pchar;
   s8 *ps8;
   u8 *pu8;
+};
+
+struct queue {
+  uw count;
+  s_list *head;
+  s_list *tail;
 };
 
 struct quote {

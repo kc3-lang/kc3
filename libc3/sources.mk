@@ -114,6 +114,7 @@ HEADERS = \
 	"ptag.h" \
 	"ptr.h" \
 	"ptr_free.h" \
+	"queue.h" \
 	"quote.h" \
 	"s16.h" \
 	"s32.h" \
@@ -265,6 +266,7 @@ SOURCES = \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
+	"queue.c" \
 	"quote.c" \
 	"s16.c" \
 	"s32.c" \
@@ -521,6 +523,7 @@ LO_SOURCES = \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
+	"queue.c" \
 	"quote.c" \
 	"s16.c" \
 	"s32.c" \
