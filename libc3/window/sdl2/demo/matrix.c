@@ -152,7 +152,7 @@ bool matrix_text_init (s_tag *tag, f32 y, f32 *h)
   buf_init(&buf, false, sizeof(a), a);
   u8_random_uniform(&i, 10);
   spacing = i * MATRIX_FONT_SIZE;
-  u8_random_uniform(&len, 10);
+  u8_random_uniform(&len, 70);
   len += 10;
   text = gl_vtext_new(&g_matrix_font);
   if (! text ||
