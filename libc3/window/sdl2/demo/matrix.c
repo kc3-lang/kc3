@@ -199,7 +199,8 @@ bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py)
     *y -= MATRIX_FONT_SIZE;
   mat4_init_identity(&g_ortho.model_matrix);
   printf("y %f\n", *y);
-  mat4_translate(&g_ortho.model_matrix, 0, *y, 0);
+  mat4_translate(&g_ortho.model_matrix,
+                 (MATRIX_FONT_SIZE - text->pt_w) / 2, *y, 0);
   gl_ortho_update_model_matrix(&g_ortho);
   assert(glGetError() == GL_NO_ERROR);
   gl_ortho_color(&g_ortho, 0, 1, 0, 1);
