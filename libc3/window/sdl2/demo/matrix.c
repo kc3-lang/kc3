@@ -28,8 +28,11 @@ static s_gl_sprite g_matrix_shade = {0};
 static f64         g_matrix_time;
 
 void matrix_column_clean (s_tag *tag);
-bool matrix_column_init (s_sequence *seq, s_tag *tag, f32 x);
+bool matrix_column_init (s_sequence *seq, s_tag *tag);
 bool matrix_column_render (s_sequence *seq, s_tag *tag);
+void matrix_screen_clean (s_tag *tag);
+bool matrix_screen_init (s_tag *tag);
+bool matrix_screen_render (s_sequence *seq, s_tag *tag);
 void matrix_text_clean (s_tag *tag);
 bool matrix_text_init (s_tag *tag, f32 y);
 bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py);
@@ -50,11 +53,10 @@ void matrix_column_clean (s_tag *tag)
   }
 }
 
-bool matrix_column_init (s_sequence *seq, s_tag *tag, f32 x)
+bool matrix_column_init (s_sequence *seq, s_tag *tag)
 {
   s_list *list;
   s_window_sdl2 *window;
-  (void) x;
   assert(seq);
   window = seq->window;
   assert(window);
@@ -78,7 +80,8 @@ bool matrix_column_render (s_sequence *seq, s_tag *tag)
   assert(glGetError() == GL_NO_ERROR);
   window = seq->window;
   assert(window);
-  if (tag->type != TAG_LIST) {
+  if (!tag ||
+      tag->type != TAG_LIST) {
     err_puts("matrix_column_render: invalid tag");
     assert(! "matrix_column_render: invalid tag");
     return false;
@@ -117,7 +120,7 @@ bool matrix_load (s_sequence *seq)
                      point_per_pixel))
     return false;
   gl_font_set_size(&g_matrix_font, MATRIX_FONT_SIZE);
-  if (! matrix_column_init(seq, &seq->tag, 0))
+  if (! matrix_screen_init(&seq->tag))
     return false;
   if (! gl_sprite_init(&g_matrix_shade,
                        "img/matrix_shade.png",
@@ -133,10 +136,79 @@ bool matrix_render (s_sequence *seq)
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   assert(glGetError() == GL_NO_ERROR);
-  matrix_column_render(seq, &seq->tag);
+  matrix_screen_render(seq, &seq->tag);
   assert(glGetError() == GL_NO_ERROR);
   if (seq->t - g_matrix_time > MATRIX_TIME)
     g_matrix_time = seq->t;
+  return true;
+}
+
+void matrix_screen_clean (s_tag *tag)
+{
+  s_list *list;
+  if (! tag ||
+      tag->type != TAG_LIST) {
+    err_puts("matrix_screen_clean: invalid tag");
+    assert(! "matrix_screen_clean: invalid tag");
+    return;
+  }
+  list = tag->data.list;
+  while (list) {
+    matrix_column_clean(&list->tag);
+    list = list_delete(list);
+  }
+}
+
+bool matrix_screen_init (s_tag *tag)
+{
+  tag_init_list(tag, NULL);
+  return true;
+}
+
+bool matrix_screen_render (s_sequence *seq, s_tag *tag)
+{
+  s_list **l;
+  s_list *list;
+  s_mat4 matrix;
+  s_window_sdl2 *window;
+  f32 x;
+  assert(seq);
+  window = seq->window;
+  assert(window);
+  if (! tag ||
+      tag->type != TAG_LIST) {
+    err_puts("matrix_screen_render: invalid tag");
+    assert(! "matrix_screen_render: invalid tag");
+    return false;
+  }
+  x = 0;
+  l = &tag->data.list;
+  while (*l) {
+    if (x > window->w) {
+      matrix_column_clean(&(*l)->tag);
+      *l = list_delete(*l);
+    }
+    else {
+      x += MATRIX_FONT_SIZE;
+      l = &(*l)->next.data.list;
+    }
+  }
+  while (x < window->w) {
+    *l = list_new(NULL);
+    if (! matrix_column_init(seq, &(*l)->tag))
+      return false;
+    x += MATRIX_FONT_SIZE;
+    l = &(*l)->next.data.list;
+  }
+  matrix = g_ortho.model_matrix; {
+    list = tag->data.list;
+    while (list) {
+      if (! matrix_column_render(seq, &list->tag))
+        return false;
+      mat4_translate(&g_ortho.model_matrix, MATRIX_FONT_SIZE, 0, 0);
+      list = list_next(list);
+    }
+  } g_ortho.model_matrix = matrix;
   return true;
 }
 
@@ -230,21 +302,24 @@ void matrix_text_clean (s_tag *tag)
 {
   s_map *map;
   s_gl_text *text;
-  if (tag->type == TAG_MAP &&
-      (map = &tag->data.map) &&
-      map->count == 3 &&
-      map->key[1].type == TAG_SYM &&
-      map->key[1].data.sym == sym_1("text") &&
-      map->value[1].type == TAG_PTR &&
-      (text = map->value[1].data.ptr.p)) {
-    gl_vtext_clean(text);
+  if (! (tag->type == TAG_MAP &&
+         (map = &tag->data.map) &&
+         map->count == 3 &&
+         map->key[1].type == TAG_SYM &&
+         map->key[1].data.sym == sym_1("text") &&
+         map->value[1].type == TAG_PTR &&
+         (text = map->value[1].data.ptr.p))) {
+    err_puts("matrix_text_clean: invalid tag");
+    assert(! "matrix_text_clean: invalid tag");
+    return;
   }
+  gl_vtext_clean(text);
 }
 
 bool matrix_unload (s_sequence *seq)
 {
   assert(seq);
-  matrix_text_clean(&seq->tag);
+  matrix_screen_clean(&seq->tag);
   tag_void(&seq->tag);
   gl_font_clean(&g_matrix_font);
   return true;

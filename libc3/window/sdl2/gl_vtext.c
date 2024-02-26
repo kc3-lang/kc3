@@ -173,7 +173,7 @@ bool gl_vtext_render_to_texture (s_gl_text *text)
     x = (data_w - (glyph->metrics.width >> 6)) / 2;
     i = 0;
     while (i < glyph->bitmap.rows) {
-      data_y = data_h - 1 - (y + i + max_ascent - glyph->bitmap_top);
+      data_y = data_h - line_height - 1 - (y + i + max_ascent - glyph->bitmap_top);
       //printf("\n");
       j = 0;
       while (j < glyph->bitmap.width) {
@@ -210,25 +210,25 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
 {
   FT_UInt *glyphs;
   u8 *data;
-  uw  data_w;
-  uw  data_h;
+  sw  data_w;
+  sw  data_h;
   u8 *data_pixel;
-  uw  data_size;
-  uw  data_x;
-  uw  data_y;
+  sw  data_size;
+  sw  data_x;
+  sw  data_y;
   FT_Face face;
   const s_gl_font *font;
   FT_GlyphSlot glyph;
   FT_UInt glyph_index;
-  uw i;
-  uw j;
-  uw k;
-  uw line_height;
-  uw max_ascent;
-  uw max_descent;
+  sw i;
+  sw j;
+  sw k;
+  sw line_height;
+  sw max_ascent;
+  sw max_descent;
   f32 scale_y;
-  uw x;
-  uw y;
+  sw x;
+  sw y;
   assert(text);
   assert(text->font);
   assert(text->texture);
@@ -245,7 +245,7 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
              " failed to allocate memory");
     return false;
   }
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < (sw) len; i++) {
     do {
       u32_random_uniform(glyphs + i, face->num_glyphs - 2);
       glyphs[i]++;
@@ -262,7 +262,7 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
   data_w = 0;
   data_h = 0;
   x = 0;
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < (sw) len; i++) {
     glyph_index = glyphs[i];
     if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER)) {
       err_write_1("gl_vtext_render_to_texture_random: failed to load glyph: ");
@@ -276,11 +276,13 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
       data_w = x;
     data_h += line_height;
   }
+  data_w++;
+  data_h += line_height * 2;
   data_size = data_w * data_h * 4;
   data = calloc(1, data_size);
   x = 0;
   y = 0;
-  for (i = 0; i < len; i++) {
+  for (i = 0; i < (sw) len; i++) {
     glyph_index = glyphs[i];
     if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER))
       continue;
@@ -288,7 +290,8 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
     x = (data_w - (glyph->metrics.width >> 6)) / 2;
     j = 0;
     while (j < glyph->bitmap.rows) {
-      data_y = data_h - 1 - (y + j + max_ascent - glyph->bitmap_top);
+      data_y = data_h - line_height - 1 -
+        ((sw) y + j + max_ascent - glyph->bitmap_top);
       //printf("\n");
       k = 0;
       while (k < glyph->bitmap.width) {
