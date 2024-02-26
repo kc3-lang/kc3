@@ -154,7 +154,7 @@ bool matrix_text_init (s_tag *tag, f32 y)
   buf_init(&buf, false, sizeof(a), a);
   u8_random_uniform(&i, 10);
   spacing = i * MATRIX_FONT_SIZE;
-  u8_random_uniform(&len, 70);
+  u8_random_uniform(&len, 40);
   len += 10;
   text = gl_vtext_new(&g_matrix_font);
   if (! text ||
@@ -173,6 +173,7 @@ bool matrix_text_init (s_tag *tag, f32 y)
 bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py)
 {
   const s_map *map;
+  s_mat4 matrix;
   const s_gl_text *text;
   f32 *y;
   assert(seq);
@@ -197,26 +198,27 @@ bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py)
   y =   &map->value[2].data.f32;
   if (seq->t - g_matrix_time > MATRIX_TIME)
     *y -= MATRIX_FONT_SIZE;
-  mat4_init_identity(&g_ortho.model_matrix);
-  printf("y %f\n", *y);
-  mat4_translate(&g_ortho.model_matrix,
-                 (MATRIX_FONT_SIZE - text->pt_w) / 2, *y, 0);
-  gl_ortho_update_model_matrix(&g_ortho);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_ortho_color(&g_ortho, 0, 1, 0, 1);
-  assert(glGetError() == GL_NO_ERROR);
-  glEnable(GL_BLEND);
-  glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
-                      GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  gl_ortho_vtext_render(&g_ortho, text);
-  assert(glGetError() == GL_NO_ERROR);
-  glDisable(GL_DEPTH_TEST);
-  gl_ortho_color(&g_ortho, 1, 1, 1, 1);
-  gl_ortho_bind_texture(&g_ortho,
-                        gl_sprite_texture(&g_matrix_shade, 0));
-  assert(glGetError() == GL_NO_ERROR);
-  gl_ortho_rect(&g_ortho, 0, MATRIX_FONT_SIZE - text->pt_h,
-                text->pt_w, text->pt_h - MATRIX_FONT_SIZE);
+  matrix = g_ortho.model_matrix; {
+    printf("y %f\n", *y);
+    mat4_translate(&g_ortho.model_matrix,
+                   (MATRIX_FONT_SIZE - text->pt_w) / 2, *y, 0);
+    gl_ortho_update_model_matrix(&g_ortho);
+    assert(glGetError() == GL_NO_ERROR);
+    gl_ortho_color(&g_ortho, 0, 1, 0, 1);
+    assert(glGetError() == GL_NO_ERROR);
+    glEnable(GL_BLEND);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                        GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    gl_ortho_vtext_render(&g_ortho, text);
+    assert(glGetError() == GL_NO_ERROR);
+    glDisable(GL_DEPTH_TEST);
+    gl_ortho_color(&g_ortho, 1, 1, 1, 1);
+    gl_ortho_bind_texture(&g_ortho,
+                          gl_sprite_texture(&g_matrix_shade, 0));
+    assert(glGetError() == GL_NO_ERROR);
+    gl_ortho_rect(&g_ortho, 0, MATRIX_FONT_SIZE - text->pt_h,
+                  text->pt_w, text->pt_h - MATRIX_FONT_SIZE);
+  } g_ortho.model_matrix = matrix;
   assert(glGetError() == GL_NO_ERROR);
   glDisable(GL_BLEND);
   assert(glGetError() == GL_NO_ERROR);
