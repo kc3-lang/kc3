@@ -31,7 +31,7 @@ void matrix_column_clean (s_tag *tag);
 bool matrix_column_init (s_sequence *seq, s_tag *tag, f32 x);
 bool matrix_column_render (s_sequence *seq, s_tag *tag);
 void matrix_text_clean (s_tag *tag);
-bool matrix_text_init (s_tag *tag, f32 y, f32 *h);
+bool matrix_text_init (s_tag *tag, f32 y);
 bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py);
 bool matrix_update (s_sequence *seq);
 
@@ -52,28 +52,17 @@ void matrix_column_clean (s_tag *tag)
 
 bool matrix_column_init (s_sequence *seq, s_tag *tag, f32 x)
 {
-  f32 h;
-  s_list *l;
   s_list *list;
   s_window_sdl2 *window;
-  f32 y;
   (void) x;
   assert(seq);
   window = seq->window;
   assert(window);
-  list = NULL;
-  y = window->h;
-  while (y < window->h * 2) {
-    if (! (l = list_new(list))) {
-      list_delete_all(list);
-      return false;
-    }
-    if (! matrix_text_init(&l->tag, y, &h)) {
-      list_delete_all(l);
-      return false;
-    }
-    list = l;
-    y += h;
+  if (! (list = list_new(NULL)))
+    return false;
+  if (! matrix_text_init(&list->tag, window->h)) {
+    list_delete_all(list);
+    return false;
   }
   tag_init_list(tag, list);
   return true;
@@ -83,12 +72,24 @@ bool matrix_column_render (s_sequence *seq, s_tag *tag)
 {
   s_list **list;
   f32 *py;
+  s_window_sdl2 *window;
+  f32 y;
+  assert(seq);
+  assert(glGetError() == GL_NO_ERROR);
+  window = seq->window;
+  assert(window);
   if (tag->type != TAG_LIST) {
     err_puts("matrix_column_render: invalid tag");
     assert(! "matrix_column_render: invalid tag");
     return false;
   }
   list = &tag->data.list;
+  y = (*list)->tag.data.map.value[2].data.f32;
+  if (y < window->h) {
+    *list = list_new(*list);
+    if (! matrix_text_init(&(*list)->tag, window->h))
+      return false;
+  }
   while (*list) {
     if (! matrix_text_render(seq, &(*list)->tag, &py))
       return false;
@@ -139,7 +140,7 @@ bool matrix_render (s_sequence *seq)
   return true;
 }
 
-bool matrix_text_init (s_tag *tag, f32 y, f32 *h)
+bool matrix_text_init (s_tag *tag, f32 y)
 {
   char a[1024];
   s_buf buf;
@@ -165,8 +166,7 @@ bool matrix_text_init (s_tag *tag, f32 y, f32 *h)
   tag_init_sym(  map->key + 1, sym_1("text"));
   tag_init_ptr(map->value + 1, text);
   tag_init_sym(  map->key + 2, sym_1("y"));
-  tag_init_f32(map->value + 2, y + text->pt_h);
-  *h = text->pt_h + spacing;
+  tag_init_f32(map->value + 2, y + text->pt_h + spacing);
   return true;
 }
 
@@ -204,12 +204,12 @@ bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py)
   assert(glGetError() == GL_NO_ERROR);
   gl_ortho_color(&g_ortho, 0, 1, 0, 1);
   assert(glGetError() == GL_NO_ERROR);
-  gl_ortho_vtext_render(&g_ortho, text);
-  assert(glGetError() == GL_NO_ERROR);
-  glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
                       GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+  gl_ortho_vtext_render(&g_ortho, text);
+  assert(glGetError() == GL_NO_ERROR);
+  glDisable(GL_DEPTH_TEST);
   gl_ortho_color(&g_ortho, 1, 1, 1, 1);
   gl_ortho_bind_texture(&g_ortho,
                         gl_sprite_texture(&g_matrix_shade, 0));
