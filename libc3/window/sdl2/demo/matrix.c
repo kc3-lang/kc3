@@ -96,7 +96,8 @@ bool matrix_column_render (s_sequence *seq, s_tag *tag)
       matrix_text_clean(&(*list)->tag);
       *list = list_delete(*list);
     }
-    list = &(*list)->next.data.list;
+    else
+      list = &(*list)->next.data.list;
   }
   return true;
 }
