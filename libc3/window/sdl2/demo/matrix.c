@@ -21,7 +21,7 @@
 #include "matrix.h"
 
 #define              MATRIX_FONT_SIZE 20
-#define              MATRIX_TIME 0.2
+#define              MATRIX_TIME 0.1
 
 static s_gl_font   g_matrix_font = {0};
 static s_gl_sprite g_matrix_shade = {0};
@@ -271,7 +271,7 @@ bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py)
   if (seq->t - g_matrix_time > MATRIX_TIME)
     *y -= MATRIX_FONT_SIZE;
   matrix = g_ortho.model_matrix; {
-    printf("y %f\n", *y);
+    //printf("y %f\n", *y);
     mat4_translate(&g_ortho.model_matrix,
                    (MATRIX_FONT_SIZE - text->pt_w) / 2, *y, 0);
     gl_ortho_update_model_matrix(&g_ortho);
