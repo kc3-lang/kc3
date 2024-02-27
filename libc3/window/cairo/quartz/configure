@@ -59,6 +59,7 @@ pkg_config cairo
 pkg_config cairo-ft
 config_lib COCOA -framework Cocoa
 pkg_config libffi
+pkg_config libmd
 pkg_config xkbcommon
 
 # Asan config
