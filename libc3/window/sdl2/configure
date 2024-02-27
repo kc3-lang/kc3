@@ -44,6 +44,7 @@ LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
+pkg_config libmd
 pkg_config freetype2
 pkg_config gl
 pkg_config glew

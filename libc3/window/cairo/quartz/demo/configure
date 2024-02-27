@@ -82,6 +82,7 @@ config_gnu
 pkg_config cairo
 pkg_config cairo-ft
 pkg_config libffi
+pkg_config libmd
 pkg_config xkbcommon
 
 # Asan config
