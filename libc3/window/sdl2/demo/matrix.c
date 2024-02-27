@@ -155,7 +155,7 @@ void matrix_screen_clean (s_tag *tag)
   list = tag->data.list;
   while (list) {
     matrix_column_clean(&list->tag);
-    list = list_delete(list);
+    list = list_next(list);
   }
 }
 
