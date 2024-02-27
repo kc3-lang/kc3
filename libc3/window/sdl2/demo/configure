@@ -44,10 +44,10 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CPPFLAGS="-I../../../.. $CPPFLAGS"
+CPPFLAGS="-fopenmp -I../../../.. $CPPFLAGS"
 #CPPFLAGS="$CPPFLAGS -DGL_SILENCE_DEPRECATION=1"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic"
-LIBS="$LIBS -lm"
+LIBS="$LIBS -lm -fopenmp"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
