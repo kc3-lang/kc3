@@ -320,6 +320,21 @@ really helpful when writing large programs that need to scale in the way
 of abstractions. Let the data flow in the code through visual types.
 
 
+#### Macros
+
+C3 macros are like Common Lisp macros with Elixir pattern-matching.
+
+Macros are like functions but start with `macro` instead of `fn` and
+their arguments do not get evaluated. However they get pattern matched
+and the full power of the pattern matcher is available for arguments
+destructuring. Use a map if you want named arguments. Use a list if you
+want &rest or &body arguments.
+
+When evaluated, a macro call returns a tag which is in turn evaluated
+in the calling site lexical environment. This allows for DSLs and custom
+control structures to be defined in C3.
+
+
 #### If, then, else.
 
 Conditionals in C3 are like in Ruby, for example :
@@ -344,21 +359,6 @@ A C3 `if` statement always return a value. If the condition is true, the
 first (then) block gets evaluated. If the condition is false the second
 block gets evaluated. If the condition is false and an `else` block is
 not provided, then `void` gets returned.
-
-
-#### Macros
-
-C3 macros are like Common Lisp macros with Elixir pattern-matching.
-
-Macros are like functions but start with `macro` instead of `fn` and
-their arguments do not get evaluated. However they get pattern matched
-and the full power of the pattern matcher is available for arguments
-destructuring. Use a map if you want named arguments. Use a list if you
-want &rest or &body arguments.
-
-When evaluated, a macro call returns a tag which is in turn evaluated
-in the calling site lexical environment. This allows for DSLs and custom
-control structures to be defined in C3.
 
 
 ### c3s
