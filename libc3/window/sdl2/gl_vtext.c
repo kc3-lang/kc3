@@ -246,6 +246,7 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
     return false;
   }
   for (i = 0; i < (sw) len; i++) {
+    glyph = NULL;
     do {
       u32_random_uniform(glyphs + i, face->num_glyphs - 2);
       glyphs[i]++;
@@ -253,7 +254,7 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
         continue;
       glyph = face->glyph;
       //printf("width %ld\n", glyph->metrics.width >> 6);
-    } while (! (glyph->metrics.width >> 6));
+    } while (! glyph || ! (glyph->metrics.width >> 6));
   }
   scale_y = face->size->metrics.y_scale / 65536.0;
   max_ascent = (u32) (face->ascender * scale_y) >> 6;
