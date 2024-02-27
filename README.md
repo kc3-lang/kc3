@@ -320,6 +320,32 @@ really helpful when writing large programs that need to scale in the way
 of abstractions. Let the data flow in the code through visual types.
 
 
+#### If, then, else.
+
+Conditionals in C3 are like in Ruby, for example :
+```
+ic3> if true && true
+ic3>   1 + 1
+ic3>   2 + 2
+ic3> end
+4
+
+ic3> if true && false
+ic3>   1 + 1
+ic3>   2 + 2
+ic3> else
+ic3>   3 + 3
+ic3>   4 + 4
+ic3> end
+8
+```
+
+A C3 `if` statement always return a value. If the condition is true, the
+first (then) block gets evaluated. If the condition is false the second
+block gets evaluated. If the condition is false and an `else` block is
+not provided, then `void` gets returned.
+
+
 #### Macros
 
 C3 macros are like Common Lisp macros with Elixir pattern-matching.
@@ -340,16 +366,11 @@ control structures to be defined in C3.
 Script interpreter. Works the same as ic3 but is not interactive.
 
 
-## TODO
+## New in this release
 
- - libc3
-   - tags
-     - height function `(TAG_VOID: 0, TAG_TUPLE: max(height(tuple->tags)))`
-     - has_ident
-     - collect_idents
-   - DONE pin operator (for pattern matching)
-   - DONE macros
-   - DONE special operators
+   - pin operator (for pattern matching)
+   - macros
+   - special operators
      - their arguments do not get evaluated
      - they return a value
      - parsed without syntax
@@ -361,6 +382,14 @@ Script interpreter. Works the same as ic3 but is not interactive.
        true
        ```
    - DONE if
+
+## TODO
+
+ - libc3
+   - tags
+     - height function `(TAG_VOID: 0, TAG_TUPLE: max(height(tuple->tags)))`
+     - has_ident
+     - collect_idents
    - modules
      - defmodule
      - def
