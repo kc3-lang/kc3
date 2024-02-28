@@ -599,6 +599,10 @@ s_tag * tag_neg (const s_tag *tag, s_tag *result)
     result->type = TAG_INTEGER;
     integer_neg(&tag->data.integer, &result->data.integer);
     return result;
+  case TAG_RATIO:
+    result->type = TAG_RATIO;
+    ratio_neg(&tag->data.ratio, &result->data.ratio);
+    return result;
   case TAG_SW:
     if (tag->data.sw == SW_MIN) {
       integer_init_sw(&tmp, tag->data.sw);

@@ -51,11 +51,12 @@ u8      ratio_to_u8 (const s_ratio *r);
 /* Operators. */
 s_ratio * ratio_add (const s_ratio *a, const s_ratio *b,
                      s_ratio *dest);
-s_ratio * ratio_sub (const s_ratio *a, const s_ratio *b,
+s_ratio * ratio_div (const s_ratio *a, const s_ratio *b,
                      s_ratio *dest);
 s_ratio * ratio_mul (const s_ratio *a, const s_ratio *b,
                      s_ratio *dest);
-s_ratio * ratio_div (const s_ratio *a, const s_ratio *b,
+s_ratio * ratio_neg (const s_ratio *r, s_ratio *dest);
+s_ratio * ratio_sub (const s_ratio *a, const s_ratio *b,
                      s_ratio *dest);
 
 /* Setters. */
