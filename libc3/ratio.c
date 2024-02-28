@@ -127,6 +127,22 @@ s_ratio * ratio_add (const s_ratio *a, const s_ratio *b,
   return dest;
 }
 
+s_ratio * ratio_neg (const s_ratio *r, s_ratio *dest)
+{
+  s_ratio tmp = {0};
+  assert(r);
+  assert(dest);
+  assert(! integer_is_zero(&r->denominator));
+  if (! integer_neg(&r->numerator, &tmp.numerator))
+    return NULL;
+  if (! integer_init_copy(&tmp.denominator, &r->denominator)) {
+    integer_clean(&tmp.numerator);
+    return NULL;
+  }
+  *dest = tmp;
+  return dest;
+}
+
 s_ratio * ratio_sub (const s_ratio *a, const s_ratio *b,
                            s_ratio *dest)
 {
