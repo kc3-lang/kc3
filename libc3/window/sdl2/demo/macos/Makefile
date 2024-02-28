@@ -25,11 +25,13 @@ IMG_SOURCES = \
 	../../../../../img/flaps.png \
 	../../../../../img/fly-dead.png \
 	../../../../../img/fly-noto.png \
+	../../../../../img/matrix_shade.png \
 	../../../../../img/toast.128.png \
 	../../../../../img/toast.png \
 
 FONT_SOURCES = \
 	../../../../../fonts/Courier\ New \
+	../../../../../fonts/NotoSans-Regular.ttf \
 
 build:
 	${MAKE} ${APP_PROG}
