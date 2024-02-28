@@ -47,6 +47,8 @@ void window_clean (s_window *window)
   uw i;
   assert(window);
   i = 0;
+  if (window->seq && window->seq->unload)
+    window->seq->unload(window->seq);
   while (i < window->sequence_count) {
     sequence_clean(window->sequence + i);
     i++;
