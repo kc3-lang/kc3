@@ -452,6 +452,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
   case TAG_F64:
   case TAG_F128:
   case TAG_INTEGER:
+  case TAG_RATIO:
   case TAG_S8:
   case TAG_S16:
   case TAG_S32:
@@ -467,6 +468,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     case TAG_F64:
     case TAG_F128:
     case TAG_INTEGER:
+    case TAG_RATIO:
     case TAG_S8:
     case TAG_S16:
     case TAG_S32:
@@ -513,11 +515,10 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     dest->type = TAG_TUPLE;
     return env_eval_equal_tuple(env, macro, &a->data.tuple,
                                 &b->data.tuple, &dest->data.tuple);
-  case TAG_CALL:
-  case TAG_QUOTE:
   case TAG_ARRAY:
   case TAG_BLOCK:
   case TAG_BOOL:
+  case TAG_CALL:
   case TAG_CFN:
   case TAG_CHARACTER:
   case TAG_FACT:
@@ -527,6 +528,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
+  case TAG_QUOTE:
   case TAG_STR:
   case TAG_STRUCT:
   case TAG_STRUCT_TYPE:
@@ -972,6 +974,7 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
+  case TAG_RATIO:
   case TAG_S8:
   case TAG_S16:
   case TAG_S32:

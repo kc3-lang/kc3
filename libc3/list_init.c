@@ -254,13 +254,12 @@ s_list * list_init_ratio_1 (s_list *list, const char *p, s_list *next)
   return list;
 }
 
-s_list * list_init_ratio (s_list *list, s_integer *numerator, 
-                          s_integer *denominator, s_list *next)
+s_list * list_init_ratio (s_list *list, s_list *next)
 {
   s_list tmp;
   assert(list);
   list_init(&tmp, next);
-  if (! tag_init_ratio(&tmp.tag, numerator, denominator))
+  if (! tag_init_ratio(&tmp.tag))
     return NULL;
   *list = tmp;
   return list;
@@ -787,14 +786,13 @@ s_list * list_new_ratio_1 (const char *p, s_list *next)
   return list;
 }
 
-s_list * list_new_ratio (s_integer *numerator, s_integer *denominator, 
-                         s_list *next)
+s_list * list_new_ratio (s_list *next)
 {
   s_list *list;
   list = list_new(next);
   if (! list)
     return NULL;
-  if (! tag_init_ratio(&list->tag, numerator, denominator)) {
+  if (! tag_init_ratio(&list->tag)) {
     free(list);
     return NULL;
   }

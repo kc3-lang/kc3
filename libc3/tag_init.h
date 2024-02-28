@@ -38,8 +38,7 @@ s_tag * tag_init_ptr (s_tag *tag, void *p);
 s_tag * tag_init_ptr_free (s_tag *tag, void *p);
 s_tag * tag_init_quote_copy (s_tag *tag, const s_quote *quote);
 s_tag * tag_init_ratio_1 (s_tag *tag, const char *p);
-s_tag * tag_init_ratio (s_tag *tag, s_integer *numerator, 
-                        s_integer *denominator);
+s_tag * tag_init_ratio (s_tag *tag);
 s_tag * tag_init_ratio_copy (s_tag *tag, const s_ratio *r);
 s_tag * tag_init_ratio_zero (s_tag *tag);
 s_tag * tag_init_s8 (s_tag *tag, s8 i);
@@ -90,7 +89,7 @@ s_tag * tag_new_ptr (void *p);
 s_tag * tag_new_ptr_free (void *p);
 s_tag * tag_new_quote_copy (const s_quote *quote);
 s_tag * tag_new_ratio_1 (const char *p);
-s_tag * tag_new_ratio (s_integer *numerator, s_integer *denominator);
+s_tag * tag_new_ratio (void);
 s_tag * tag_new_ratio_copy (const s_ratio *r);
 s_tag * tag_new_ratio_zero (void);
 s_tag * tag_new_s8 (s8 i);
@@ -141,8 +140,7 @@ s_tag * tag_ptr (s_tag *tag, void *p);
 s_tag * tag_ptr_free (s_tag *tag, void *p);
 s_tag * tag_quote_copy (s_tag *tag, const s_quote *quote);
 s_tag * tag_ratio_1 (s_tag *tag, const char *p);
-s_tag * tag_ratio (s_tag *tag, s_integer *numerator, 
-                   s_integer *denominator);
+s_tag * tag_ratio (s_tag *tag);
 s_tag * tag_ratio_copy (s_tag *tag, const s_ratio *r);
 s_tag * tag_ratio_zero (s_tag *tag);
 s_tag * tag_s8 (s_tag *tag, s8 i);

@@ -254,13 +254,12 @@ s_tag * tag_init_ratio_1 (s_tag *tag, const char *p)
   return tag;
 }
 
-s_tag * tag_init_ratio (s_tag *tag, s_integer *numerator, 
-                        s_integer *denominator)
+s_tag * tag_init_ratio (s_tag *tag)
 {
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_RATIO;
-  if (! ratio_init(&tmp.data.ratio, numerator, denominator))
+  if (! ratio_init(&tmp.data.ratio))
     return NULL;
   *tag = tmp;
   return tag;
@@ -797,7 +796,7 @@ s_tag * tag_new_ratio_1 (const char *p)
   return tag;
 }
 
-s_tag * tag_new_ratio (s_integer *numerator, s_integer *denominator)
+s_tag * tag_new_ratio (void)
 {
   s_tag *tag;
   if (! (tag = calloc(1, sizeof(s_tag)))) {
@@ -805,7 +804,7 @@ s_tag * tag_new_ratio (s_integer *numerator, s_integer *denominator)
     return NULL;
   }
   tag->type = TAG_RATIO;
-  if (! ratio_init(&tag->data.ratio, numerator, denominator)) {
+  if (! ratio_init(&tag->data.ratio)) {
     free(tag);
     return NULL;
   }
@@ -1367,14 +1366,13 @@ s_tag * tag_ratio_1 (s_tag *tag, const char *p)
   return tag;
 }
 
-s_tag * tag_ratio (s_tag *tag, s_integer *numerator, 
-                   s_integer *denominator)
+s_tag * tag_ratio (s_tag *tag)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_RATIO;
-  if (! ratio_init(&tmp.data.ratio, numerator, denominator))
+  if (! ratio_init(&tmp.data.ratio))
     return NULL;
   *tag = tmp;
   return tag;
