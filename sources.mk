@@ -1096,8 +1096,5 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/license.txt" \
 	"ucd2c/ucd.c" \
 	"ucd2c/ucd.h" \
-	"ucd2c/ucd2c" \
 	"ucd2c/ucd2c.c" \
-	"ucd2c/ucd2c.lo" \
-	"ucd2c/ucd2c.o" \
 
