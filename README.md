@@ -368,6 +368,9 @@ Script interpreter. Works the same as ic3 but is not interactive.
 
 ## New in this release
 
+   - OpenGL demo (`make demo_gl`)
+     - OpenGL 3.3 with shaders (portable)
+     - makes use of C3 data structures.
    - pin operator (for pattern matching)
    - macros
    - special operators
@@ -381,7 +384,9 @@ Script interpreter. Works the same as ic3 but is not interactive.
        ic3> op 1 2 3
        true
        ```
-   - DONE if
+     - See C3 module in `lib/c3/0.1/c3.facts`
+   - if, then, else.
+
 
 ## TODO
 
