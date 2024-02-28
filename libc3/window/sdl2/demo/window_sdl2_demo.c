@@ -179,10 +179,10 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
                 lightspeed_load, lightspeed_render, lightspeed_unload,
                 window);
   if (! gl_sprite_init(&g_sprite_toaster, "img/flaps.256.png",
-                       4, 1, 4, point_per_pixel))
+                       4, 1, 4, 1))
     return false;
   if (! gl_sprite_init(&g_sprite_toast, "img/toast.128.png",
-                       1, 1, 1, point_per_pixel))
+                       1, 1, 1, 1))
     return false;
   sequence_init(window->sequence + 2, 60.0, "03. Toasters",
                 toasters_load, toasters_render, toasters_unload,
