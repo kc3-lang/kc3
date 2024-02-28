@@ -229,9 +229,12 @@ bool matrix_text_init (s_tag *tag, f32 y)
   u8_random_uniform(&len, 40);
   len += 10;
   text = gl_vtext_new(&g_matrix_font);
-  if (! text ||
-      ! gl_vtext_render_to_texture_random(text, len))
+  if (! text)
     return false;
+  if (! gl_vtext_render_to_texture_random(text, len)) {
+    gl_vtext_delete(text);
+    return false;
+  }
   map = &tag->data.map;
   tag_init_sym(  map->key + 0, sym_1("spacing"));
   tag_init_f32(map->value + 0, spacing);
@@ -313,7 +316,7 @@ void matrix_text_clean (s_tag *tag)
     assert(! "matrix_text_clean: invalid tag");
     return;
   }
-  gl_vtext_clean(text);
+  gl_vtext_delete(text);
 }
 
 bool matrix_unload (s_sequence *seq)
@@ -322,11 +325,6 @@ bool matrix_unload (s_sequence *seq)
   matrix_screen_clean(&seq->tag);
   tag_void(&seq->tag);
   gl_font_clean(&g_matrix_font);
-  return true;
-}
-
-bool matrix_update (s_sequence *seq)
-{
-  (void) seq;
+  gl_sprite_clean(&g_matrix_shade);
   return true;
 }

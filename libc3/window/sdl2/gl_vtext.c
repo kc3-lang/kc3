@@ -240,9 +240,9 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
   glyphs = calloc(len, sizeof(FT_UInt));
   if (! glyphs) {
     err_puts("gl_vtext_render_to_texture_random:"
-             " failed to allocate memory");
+             " failed to allocate memory (glyphs)");
     assert(! "gl_vtext_render_to_texture_random:"
-             " failed to allocate memory");
+             " failed to allocate memory (glyphs)");
     return false;
   }
   for (i = 0; i < (sw) len; i++) {
@@ -266,7 +266,8 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
   for (i = 0; i < (sw) len; i++) {
     glyph_index = glyphs[i];
     if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER)) {
-      err_write_1("gl_vtext_render_to_texture_random: failed to load glyph: ");
+      err_write_1("gl_vtext_render_to_texture_random:"
+                  " failed to load glyph: ");
       err_inspect_u32(&glyph_index);
       err_write_1("\n");
       continue;
@@ -281,6 +282,14 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
   data_h += line_height * 2;
   data_size = data_w * data_h * 4;
   data = calloc(1, data_size);
+  if (! data) {
+    err_puts("gl_vtext_render_to_texture_random:"
+             " failed to allocate memory (data)");
+    assert(! "gl_vtext_render_to_texture_random:"
+             " failed to allocate memory (data)");
+    free(glyphs);
+    return false;
+  }
   x = 0;
   y = 0;
   for (i = 0; i < (sw) len; i++) {
@@ -310,6 +319,7 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
     }
     y += line_height;
   }
+  free(glyphs);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, data_w, data_h, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, data);
   assert(glGetError() == GL_NO_ERROR);
