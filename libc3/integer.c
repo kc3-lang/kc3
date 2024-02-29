@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "buf.h"
 #include "buf_parse.h"
@@ -21,16 +20,18 @@
 #include "tag_type.h"
 #include "ratio.h"
 
-// TODO: errx -> warnx
-
 s_integer * integer_abs (const s_integer *a, s_integer *dest)
 {
   sw r;
   assert(a);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_abs(&a->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_abs: %s", mp_error_to_string(r));
+  if ((r = mp_abs(&a->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_abs: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_abs: mp_abs");
+    return NULL;
+  }
   return dest;
 }
 
@@ -42,8 +43,12 @@ s_integer * integer_add (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   integer_init(dest);
-  if ((r = mp_add(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_add: %s", mp_error_to_string(r));
+  if ((r = mp_add(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_add: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_add: mp_add");
+    return NULL;
+  }
   return dest;
 }
 
@@ -55,8 +60,12 @@ s_integer * integer_band (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_and(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_band: %s", mp_error_to_string(r));
+  if ((r = mp_and(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_band: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_band: mp_and");
+    return NULL;
+  }
   return dest;
 }
 
@@ -77,8 +86,12 @@ s_integer * integer_bnot (const s_integer *a, s_integer *dest)
   assert(a);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_complement(&a->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_bnot: %s", mp_error_to_string(r));
+  if ((r = mp_complement(&a->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_bnot: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_bnot: mp_complement");
+    return NULL;
+  }
   return dest;
 }
 
@@ -90,8 +103,12 @@ s_integer * integer_bor (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_or(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_bor: %s", mp_error_to_string(r));
+  if ((r = mp_or(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_bor: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_bor: mp_or");
+    return NULL;
+  }
   return dest;
 }
 
@@ -103,8 +120,12 @@ s_integer * integer_bxor (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_xor(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_bxor: %s", mp_error_to_string(r));
+  if ((r = mp_xor(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_bxor: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_bxor: mp_xor");
+    return NULL;
+  }
   return dest;
 }
 
@@ -153,9 +174,11 @@ s_integer * integer_init_cast (s_integer *a, const s_tag *tag)
   default:
     break;
   }
-  errx(1, "integer_cast: cannot cast %s to integer",
-       tag_type_to_string(tag->type));
-  return 0;
+  err_write_1("integer_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to integer");
+  assert(! "integer_cast: cannot cast");
+  return NULL;
 }
 
 void integer_clean (s_integer *a)
@@ -172,9 +195,13 @@ s_integer * integer_div (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_div(&a->mp_int, &b->mp_int, &dest->mp_int,
-                  NULL)) != MP_OKAY)
-    errx(1, "integer_div: %s", mp_error_to_string(r));
+  r = mp_div(&a->mp_int, &b->mp_int, &dest->mp_int, NULL);
+  if (r != MP_OKAY) {
+    err_write_1("integer_div: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_div: mp_div");
+    return NULL;
+  }
   return dest;
 }
 
@@ -186,8 +213,12 @@ s_integer * integer_gcd (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_gcd(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_gcd: %s", mp_error_to_string(r));
+  if ((r = mp_gcd(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_gcd: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_gcd: mp_gcd");
+    return NULL;
+  }
   return dest;
 }
 
@@ -195,8 +226,12 @@ s_integer * integer_init (s_integer *dest)
 {
   sw r;
   assert(dest);
-  if ((r = mp_init(&dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_init: %s", mp_error_to_string(r));
+  if ((r = mp_init(&dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_init: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_init: mp_init");
+    return NULL;
+  }
   return dest;
 }
 
@@ -205,6 +240,7 @@ s_integer * integer_init_1 (s_integer *i, const char *p)
   s_buf buf;
   assert(i);
   assert(p);
+  // FIXME
   buf_init_1(&buf, false, (char *) p);
   buf_parse_integer(&buf, i);
   return i;
@@ -216,7 +252,8 @@ s_integer * integer_init_copy (s_integer *a, const s_integer *src)
   assert(src);
   assert(a);
   if ((r = mp_init_copy(&a->mp_int, &src->mp_int)) != MP_OKAY) {
-    warnx("integer_init_copy: %s", mp_error_to_string(r));
+    err_write_1("integer_init_copy: ");
+    err_puts(mp_error_to_string(r));
     assert(! "integer_init_copy: mp_init_copy");
     return NULL;
   }
@@ -349,8 +386,12 @@ s_integer * integer_lcm (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_lcm(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_lcm: %s", mp_error_to_string(r));
+  if ((r = mp_lcm(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_lcm: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_lcm: mp_lcm");
+    return NULL;
+  }
   return dest;
 }
 
@@ -360,8 +401,12 @@ s_integer * integer_lshift (const s_integer *a, sw b, s_integer *dest)
   assert(a);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_mul_2d(&a->mp_int, b, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_lshift: %s", mp_error_to_string(r));
+  if ((r = mp_mul_2d(&a->mp_int, b, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_lshift: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_lshift: mp_mul_2d");
+    return NULL;
+  }
   return dest;
 }
 
@@ -373,8 +418,12 @@ s_integer * integer_mod (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_mod(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_mod: %s", mp_error_to_string(r));
+  if ((r = mp_mod(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_mod: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_mod: mp_mod");
+    return NULL;
+  }
   return dest;
 }
 
@@ -386,8 +435,12 @@ s_integer * integer_mul (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_mul(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_mul: %s", mp_error_to_string(r));
+  if ((r = mp_mul(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_mul: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_mul: mp_mul");
+    return NULL;
+  }
   return dest;
 }
 
@@ -397,18 +450,29 @@ s_integer * integer_neg (const s_integer *a, s_integer *dest)
   assert(a);
   assert(dest);
   integer_init(dest);
-  if ((r = mp_neg(&a->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_neg: %s", mp_error_to_string(r));
+  if ((r = mp_neg(&a->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_neg: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_neg: mp_neg");
+    return NULL;
+  }
   return dest;
 }
 
 s_integer * integer_new (void)
 {
-  s_integer *i = NULL;
-  if (! (i = malloc(sizeof(s_integer)))) {
-    err(1, "integer_new: out of memory");
+  s_integer *a = NULL;
+  a = calloc(1, sizeof(s_integer));
+  if (! a) {
+    err_puts("integer_new: failed to allocate memory");
+    assert(! "integer_new: failed to allocate memory");
+    return NULL;
   }
-  return integer_init(i);
+  if (! integer_init(a)) {
+    free(a);
+    return NULL;
+  }
+  return a;
 }
 
 s_integer * integer_new_copy (const s_integer *src)
@@ -417,7 +481,7 @@ s_integer * integer_new_copy (const s_integer *src)
   assert(src);
   a = calloc(1, sizeof(s_integer));
   if (! a) {
-    warn("integer_new_copy");
+    err_puts("integer_new_copy: failed to allocate memory");
     assert(! "integer_new_copy: failed to allocate memory");
     return NULL;
   }
@@ -436,9 +500,14 @@ s_integer * integer_pow (const s_integer *a, const s_integer *b,
   assert(b);
   assert(dest);
   integer_init(dest);
+  // FIXME
   if ((r = mp_exptmod(&a->mp_int, &b->mp_int, &dest->mp_int, &dest->mp_int))
-      != MP_OKAY)
-    errx(1, "integer_pow: %s", mp_error_to_string(r));
+      != MP_OKAY) {
+    err_write_1("integer_pow: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_pow: mp_exptmod");
+    return NULL;
+  }
   return dest;
 }
 
@@ -446,8 +515,13 @@ s_integer * integer_set_f32 (s_integer *a, f32 x)
 {
   sw r;
   assert(a);
-  if ((r = mp_set_double(&a->mp_int, x)) != MP_OKAY)
-    errx(1, "integer_set_f32: %s", mp_error_to_string(r));
+  // FIXME
+  if ((r = mp_set_double(&a->mp_int, x)) != MP_OKAY) {
+    err_write_1("integer_set_f32: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_set_f32: mp_set_double");
+    return NULL;
+  }
   return a;
 }
 
@@ -455,8 +529,12 @@ s_integer * integer_set_f64 (s_integer *a, f64 x)
 {
   sw r;
   assert(a);
-  if ((r = mp_set_double(&a->mp_int, x)) != MP_OKAY)
-    errx(1, "integer_set_f64: %s", mp_error_to_string(r));
+  if ((r = mp_set_double(&a->mp_int, x)) != MP_OKAY) {
+    err_write_1("integer_set_f64: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_set_f64: mp_set_double");
+    return NULL;
+  }
   return a;
 }
 
@@ -465,8 +543,12 @@ s_integer * integer_set_f128 (s_integer *a, f128 x)
   sw r;
   assert(a);
   // FIXME
-  if ((r = mp_set_double(&a->mp_int, (f64) x)) != MP_OKAY)
-    errx(1, "integer_set_f128: %s", mp_error_to_string(r));
+  if ((r = mp_set_double(&a->mp_int, (f64) x)) != MP_OKAY) {
+    err_write_1("integer_set_f128: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_set_f128: mp_set_double");
+    return NULL;
+  }
   return a;
 }
 
@@ -488,8 +570,7 @@ s_integer * integer_set_ratio (s_integer *a, const s_ratio *r)
 {
   assert(a);
   assert(r);
-  integer_div(&r->numerator, &r->denominator, a);
-  return a;
+  return integer_div(&r->numerator, &r->denominator, a);
 }
 
 s_integer * integer_set_sw (s_integer *a, sw x)
@@ -520,14 +601,19 @@ s_integer * integer_set_uw (s_integer *a, uw x)
   return a;
 }
 
-s_integer * integer_sqrt (const s_integer *a, s_integer *dest)
+s_tag * integer_sqrt (const s_integer *a, s_tag *dest)
 {
   sw r;
   assert(a);
   assert(dest);
-  integer_init(dest);
-  if ((r = mp_sqrt(&a->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_sqrt: %s", mp_error_to_string(r));
+  dest->type = TAG_INTEGER;
+  integer_init(&dest->data.integer);
+  if ((r = mp_sqrt(&a->mp_int, &dest->data.integer.mp_int)) != MP_OKAY) {
+    err_write_1("integer_sqrt: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_sqrt: mp_sqrt");
+    return NULL;
+  }
   return dest;
 }
 
@@ -539,8 +625,12 @@ s_integer * integer_sub (const s_integer *a, const s_integer *b,
   assert(a);
   assert(b);
   integer_init(dest);
-  if ((r = mp_sub(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY)
-    errx(1, "integer_sub: %s", mp_error_to_string(r));
+  if ((r = mp_sub(&a->mp_int, &b->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_sub: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_sub: mp_sub");
+    return NULL;
+  }
   return dest;
 }
 

@@ -303,6 +303,7 @@ SOURCES = \
 	"tag_neg.c" \
 	"tag_shift_left.c" \
 	"tag_shift_right.c" \
+	"tag_sqrt.c" \
 	"tag_sub.c" \
 	"tag_type.c" \
 	"time.c" \
@@ -562,6 +563,7 @@ LO_SOURCES = \
 	"tag_neg.c" \
 	"tag_shift_left.c" \
 	"tag_shift_right.c" \
+	"tag_sqrt.c" \
 	"tag_sub.c" \
 	"tag_type.c" \
 	"time.c" \

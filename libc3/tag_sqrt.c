@@ -13,45 +13,38 @@
 #include "assert.h"
 #include "integer.h"
 #include "ratio.h"
+#include "s8.h"
+#include "s16.h"
+#include "s32.h"
+#include "s64.h"
+#include "sw.h"
 #include "tag.h"
+#include "u8.h"
+#include "u16.h"
+#include "u32.h"
+#include "u64.h"
+#include "uw.h"
 
 s_tag * tag_sqrt (const s_tag *tag, s_tag *dest)
 {
-  s_complex c;
   switch (tag->type) {
-  case TAG_INTEGER:
-    if (integer_is_negative(&tag->data.integer))
-      
-    dest->type = TAG_INTEGER;
-    integer_sqrt(&tag->data.integer, &dest->data.integer);
-    return dest;
-  case TAG_RATIO:
-    dest->type = TAG_RATIO;
-    ratio_sqrt(&tag->data.ratio, &dest->data.ratio);
-    return dest;
-  case TAG_SW:
-    return tag_init_sw(dest, sw_sqrt(tag->data.sw));
-  case TAG_S64:
-    return tag_init_s64(dest, s64_sqrt(tag->data.s64));
-  case TAG_S32:
-    return tag_init_s32(dest, s32_sqrt(tag->data.s32);
-  case TAG_S16:
-    return tag_init_s16(dest, tag->data.s16);
-  case TAG_S8:
-    return tag_init_s8(dest, tag->data.s8);
-  case TAG_U8:
-    return tag_init_u8(dest, tag->data.u8);
-  case TAG_U16:
-    return tag_init_u16(dest, tag->data.u16);
-  case TAG_U32:
-    return tag_init_u32(dest, tag->data.u32);
-  case TAG_U64:
-    return tag_init_u64(dest, tag->data.u32);
-  case TAG_UW:
-    return tag_init_uw(dest, tag->data.u32);
+  case TAG_INTEGER: return integer_sqrt(&tag->data.integer, dest);
+  case TAG_RATIO:   return ratio_sqrt(&tag->data.ratio, dest);
+  case TAG_SW:      return sw_sqrt(tag->data.sw, dest);
+  case TAG_S64:     return s64_sqrt(tag->data.s64, dest);
+  case TAG_S32:     return s32_sqrt(tag->data.s32, dest);
+  case TAG_S16:     return s16_sqrt(tag->data.s16, dest);
+  case TAG_S8:      return s8_sqrt(tag->data.s8, dest);
+  case TAG_U8:      return u8_sqrt(tag->data.u8, dest);
+  case TAG_U16:     return u16_sqrt(tag->data.u16, dest);
+  case TAG_U32:     return u32_sqrt(tag->data.u32, dest);
+  case TAG_U64:     return u64_sqrt(tag->data.u64, dest);
+  case TAG_UW:      return uw_sqrt(tag->data.uw, dest);
   default:
-    err_write_1("tag_neg: invalid tag type: ");
-    err_puts(tag_type_to_string(tag->type));
+    break;
   }
+  err_write_1("tag_sqrt: invalid tag type: ");
+  err_puts(tag_type_to_string(tag->type));
+  assert(! "tag_sqrt: invalid tag type");
   return NULL;
 }

@@ -19,5 +19,6 @@
 s8 * s8_init_cast (s8 *s, const s_tag *tag);
 s8 * s8_init_copy (s8 *s, const s8 *src);
 s8 * s8_random (s8 *s);
+s_tag *   s8_sqrt (const s8 x, s_tag *dest);
 
 #endif /* LIBC3_S8_H */

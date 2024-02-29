@@ -57,29 +57,22 @@ s_complex * complex_mul (const s_complex *a, const s_complex *b,
                          s_complex *dest)
 {
   s_tag axbx;
-  s_tag bd;
-  s_tag ad;
-  s_tag bc;
-  s_tag axbx_bd;
-  s_tag ad_bc;
+  s_tag axby;
+  s_tag aybx;
+  s_tag ayby;
   assert(a);
   assert(b);
   assert(dest);
   tag_mul(&a->x, &b->x, &axbx);
-  // bd = a.y * b.y
-  tag_mul(&a->y, &b->y, &bd);
-  // ad = a.x * b.y
-  tag_mul(&a->x, &b->y, &ad);
-  // bc = a.y * b.x
-  tag_mul(&a->y, &b->x, &bc);
-  // axbx_bd = ac - bd
-  tag_sub(&axbx, &bd, &axbx_bd);
-  // ad_bc = ad + bc
-  tag_add(&ad, &bc, &ad_bc);
-  // dest.x = ac_bd
-  tag_init_copy(&dest->x, &axbx_bd);
-  // dest.y = ad_bc
-  tag_init_copy(&dest->y, &ad_bc);
+  tag_mul(&a->y, &b->y, &ayby);
+  tag_mul(&a->x, &b->y, &axby);
+  tag_mul(&a->y, &b->x, &aybx);
+  tag_sub(&axbx, &ayby, &dest->x);
+  tag_add(&axby, &aybx, &dest->y);
+  tag_clean(&axbx);
+  tag_clean(&axby);
+  tag_clean(&aybx);
+  tag_clean(&ayby);
   return dest;
 }
 
