@@ -80,6 +80,8 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn);
 sw buf_inspect_cfn_size (const s_cfn *cfn);
 sw buf_inspect_character (s_buf *buf, const character *c);
 sw buf_inspect_character_size (const character *c);
+sw buf_inspect_complex (s_buf *buf, const s_complex *c);
+sw buf_inspect_complex_size (const s_complex *c);
 sw buf_inspect_error_handler (s_buf *buf,
                               const s_error_handler *error_handler);
 sw buf_inspect_f32 (s_buf *buf, const f32 *x);

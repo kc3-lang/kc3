@@ -12,7 +12,6 @@
  */
 /* Gen from u.h.in BITS=W bits=w */
 #include "assert.h"
-#include <err.h>
 #include <math.h>
 #include <stdlib.h>
 #include "integer.h"
@@ -74,8 +73,9 @@ uw * uw_init_cast (uw *u, const s_tag *tag)
   default:
     break;
   }
-  warnx("uw_cast: cannot cast %s to uw",
-        tag_type_to_string(tag->type));
+  err_write_1("uw_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to uw");
   assert(! "uw_cast: cannot cast to uw");
   return NULL;
 }

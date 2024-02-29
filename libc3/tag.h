@@ -52,9 +52,6 @@ bool           tag_is_zero(const s_tag *tag);
 s8             tag_number_compare (const s_tag *a, const s_tag *b);
 uw *           tag_size (const s_tag *tag, uw *dest);
 ffi_type       tag_to_ffi_type(const s_tag *tag);
-f32            tag_to_f32(const s_tag *tag);
-f64            tag_to_f64(const s_tag *tag);
-s_integer      tag_to_integer(const s_tag *tag);
 const s_sym ** tag_type (const s_tag *tag, const s_sym **type);
 
 /* Operators. */
@@ -99,6 +96,7 @@ bool *  tag_or (const s_tag *a, const s_tag *b, bool *dest);
 s_tag * tag_paren (const s_tag *tag, s_tag *dest);
 s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *dest);
 s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_sqrt (const s_tag *tag, s_tag *dest);
 s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest);
 
 #endif /* LIBC3_TAG_H */

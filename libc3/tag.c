@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <err.h>
 #include <math.h>
 #include <stdlib.h>
@@ -587,71 +587,6 @@ bool * tag_lte (const s_tag *a, const s_tag *b, bool *dest)
   return dest;
 }
 
-s_tag * tag_neg (const s_tag *tag, s_tag *result)
-{
-  s_integer tmp;
-  switch (tag->type) {
-  case TAG_BOOL:
-    return tag_init_s8(result, tag->data.bool ? -1 : 0);
-  case TAG_CHARACTER:
-    return tag_init_s64(result, -tag->data.character);
-  case TAG_INTEGER:
-    result->type = TAG_INTEGER;
-    integer_neg(&tag->data.integer, &result->data.integer);
-    return result;
-  case TAG_RATIO:
-    result->type = TAG_RATIO;
-    ratio_neg(&tag->data.ratio, &result->data.ratio);
-    return result;
-  case TAG_SW:
-    if (tag->data.sw == SW_MIN) {
-      integer_init_sw(&tmp, tag->data.sw);
-      result->type = TAG_INTEGER;
-      integer_neg(&tmp, &result->data.integer);
-      integer_clean(&tmp);
-      return result;
-    }
-    return tag_init_sw(result, -tag->data.sw);
-  case TAG_S64:
-    if (tag->data.s64 == S64_MIN) {
-      integer_init_s64(&tmp, tag->data.s64);
-      result->type = TAG_INTEGER;
-      integer_neg(&tmp, &result->data.integer);
-      integer_clean(&tmp);
-      return result;
-    }
-    return tag_init_s64(result, -tag->data.s64);
-  case TAG_S32:
-    return tag_init_s64(result, - (s64) tag->data.s32);
-  case TAG_S16:
-    return tag_init_s32(result, - (s32) tag->data.s16);
-  case TAG_S8:
-    return tag_init_s16(result, - (s16) tag->data.s8);
-  case TAG_U8:
-    return tag_init_s16(result, - (s16) tag->data.u8);
-  case TAG_U16:
-    return tag_init_s32(result, - (s32) tag->data.u16);
-  case TAG_U32:
-    return tag_init_s64(result, - (s64) tag->data.u32);
-  case TAG_U64:
-    integer_init_u64(&tmp, tag->data.u64);
-    result->type = TAG_INTEGER;
-    integer_neg(&tmp, &result->data.integer);
-    integer_clean(&tmp);
-    return result;
-  case TAG_UW:
-    integer_init_uw(&tmp, tag->data.uw);
-    result->type = TAG_INTEGER;
-    integer_neg(&tmp, &result->data.integer);
-    integer_clean(&tmp);
-    return result;
-  default:
-    warnx("tag_neg: invalid tag type: %s",
-          tag_type_to_string(tag->type));
-  }
-  return NULL;
-}
-
 s_tag * tag_new (void)
 {
   s_tag *tag;
@@ -1097,43 +1032,6 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   assert(! "tag_to_pointer: invalid tag type");
   return false;
 }
-
-f32 tag_to_f32(const s_tag *tag)
-{
-  assert(tag);
-  assert(tag->type == TAG_F32);
-  return tag->data.f32;
-}
-
-f64 tag_to_f64(const s_tag *tag)
-{
-  assert(tag);
-  assert(tag->type == TAG_F64);
-  return tag->data.f64;
-}
-
-s_integer tag_to_integer(const s_tag *tag)
-{
-  assert(tag);
-  assert(tag->type == TAG_INTEGER);
-  return tag->data.integer;
-}
-
-/*
-s_tag * tag_tuple (s_tag *tag, uw count)
-{
-  assert(tag);
-  tag_clean(tag);
-  return tag_init_tuple(tag, count);
-}
-
-s_tag * tag_tuple_2 (s_tag *tag, const s_tag *a, const s_tag *b)
-{
-  assert(tag);
-  tag_clean(tag);
-  return tag_init_tuple_2(tag, a, b);
-}
-*/
 
 const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
 {

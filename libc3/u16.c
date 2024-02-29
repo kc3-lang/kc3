@@ -12,7 +12,6 @@
  */
 /* Gen from u.h.in BITS=16 bits=16 */
 #include "assert.h"
-#include <err.h>
 #include <math.h>
 #include <stdlib.h>
 #include "integer.h"
@@ -74,8 +73,9 @@ u16 * u16_init_cast (u16 *u, const s_tag *tag)
   default:
     break;
   }
-  warnx("u16_cast: cannot cast %s to u16",
-        tag_type_to_string(tag->type));
+  err_write_1("u16_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to u16");
   assert(! "u16_cast: cannot cast to u16");
   return NULL;
 }

@@ -86,7 +86,6 @@
 #include "tag.h"
 #include "time.h"
 #include "tuple.h"
-#include "type.h"
 #include "u8.h"
 #include "u16.h"
 #include "u32.h"

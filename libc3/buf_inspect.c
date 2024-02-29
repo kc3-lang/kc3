@@ -775,6 +775,46 @@ sw buf_inspect_character_size (const character *c)
   return result;
 }
 
+/*
+sw buf_inspect_complex (s_buf *buf, const s_complex *c)
+{
+  s_struct s;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if (! struct_init_with_data(&s, &g_sym_Complex, false, c)) {
+    r = -2;
+    goto clean;
+  }
+  if ((r = buf_inspect_struct(buf, c)) <= 0)
+    goto restore;
+  result += r;
+  if ((
+    goto restore;
+  result += r;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_wpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return result;
+}
+
+sw buf_inspect_complex_size (const complex *c)
+{
+  sw r;
+  sw result = 0;
+  result += strlen("'");
+  if ((r = buf_inspect_str_complex_size(c)) <= 0)
+    return r;
+  result += r;
+  result += strlen("'");
+  return result;
+}
+*/
+
 sw buf_inspect_f32 (s_buf *buf, const f32 *f)
 {
   s32 exp;
@@ -1346,7 +1386,7 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
     result++;
   }
   buf_init_alloc(&buf_tmp, maxlen);
-  while (!MP_IS_ZERO(&t)) {
+  while (! MP_IS_ZERO(&t)) {
     if (mp_div_d(&t, radix, &t, &d) != MP_OKAY)
       goto error;
     p = '0' + d;

@@ -1,0 +1,6 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {Complex, :is_a, :module}
+replace {Complex, :defstruct, [x: void,
+                               y: void]}
+replace {Complex, :clean, cfn Void "gl_object_clean" (Complex)}

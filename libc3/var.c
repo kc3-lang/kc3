@@ -10,7 +10,17 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include "tag.h"
 #include "var.h"
+
+s_tag * var_init_copy (s_tag *var, const s_tag *src)
+{
+  assert(var);
+  assert(src);
+  assert(src->type == TAG_VAR);
+  if (src->type != TAG_VAR)
+    return NULL;
+  tag_init_var(var);
+  return var;
+}

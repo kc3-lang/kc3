@@ -144,7 +144,6 @@ HEADERS = \
 	"tag_type.h" \
 	"time.h" \
 	"tuple.h" \
-	"type.h" \
 	"types.h" \
 	"u16.h" \
 	"u32.h" \
@@ -301,13 +300,13 @@ SOURCES = \
 	"tag_init.c" \
 	"tag_mod.c" \
 	"tag_mul.c" \
+	"tag_neg.c" \
 	"tag_shift_left.c" \
 	"tag_shift_right.c" \
 	"tag_sub.c" \
 	"tag_type.c" \
 	"time.c" \
 	"tuple.c" \
-	"type.c" \
 	"u16.c" \
 	"u32.c" \
 	"u64.c" \
@@ -560,13 +559,13 @@ LO_SOURCES = \
 	"tag_init.c" \
 	"tag_mod.c" \
 	"tag_mul.c" \
+	"tag_neg.c" \
 	"tag_shift_left.c" \
 	"tag_shift_right.c" \
 	"tag_sub.c" \
 	"tag_type.c" \
 	"time.c" \
 	"tuple.c" \
-	"type.c" \
 	"u16.c" \
 	"u32.c" \
 	"u64.c" \

@@ -96,6 +96,7 @@ typedef enum {
   TAG_CALL,
   TAG_CFN,
   TAG_CHARACTER,
+  //TAG_COMPLEX,
   TAG_F32,
   TAG_F64,
   TAG_F128,
@@ -435,6 +436,7 @@ union tag_data {
   s_call        call;
   s_cfn         cfn;
   character     character;
+  s_complex    *complex;
   f32           f32;
   f64           f64;
   f128          f128;

@@ -11,8 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from s.h.in BITS=W bits=w */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
@@ -74,8 +73,9 @@ sw * sw_init_cast (sw *s, const s_tag *tag)
   default:
     break;
   }
-  warnx("sw_cast: cannot cast %s to sw",
-        tag_type_to_string(tag->type));
+  err_write_1("sw_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to sw");
   assert(! "sw_cast: cannot cast to sw");
   return NULL;
 }

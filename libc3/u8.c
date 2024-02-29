@@ -12,7 +12,6 @@
  */
 /* Gen from u.h.in BITS=8 bits=8 */
 #include "assert.h"
-#include <err.h>
 #include <math.h>
 #include <stdlib.h>
 #include "integer.h"
@@ -74,8 +73,9 @@ u8 * u8_init_cast (u8 *u, const s_tag *tag)
   default:
     break;
   }
-  warnx("u8_cast: cannot cast %s to u8",
-        tag_type_to_string(tag->type));
+  err_write_1("u8_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to u8");
   assert(! "u8_cast: cannot cast to u8");
   return NULL;
 }
