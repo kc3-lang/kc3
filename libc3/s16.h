@@ -19,5 +19,6 @@
 s16 * s16_init_cast (s16 *s, const s_tag *tag);
 s16 * s16_init_copy (s16 *s, const s16 *src);
 s16 * s16_random (s16 *s);
+s_tag *   s16_sqrt (const s16 x, s_tag *dest);
 
 #endif /* LIBC3_S16_H */

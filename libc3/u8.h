@@ -20,5 +20,6 @@ u8 * u8_init_cast (u8 *u, const s_tag *tag);
 u8 * u8_init_copy (u8 *u, const u8 *src);
 u8 * u8_random (u8 *u);
 u8 * u8_random_uniform (u8 *u, u8 max);
+s_tag *   u8_sqrt (const u8 x, s_tag *dest);
 
 #endif /* LIBC3_U8_H */
