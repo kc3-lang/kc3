@@ -12,6 +12,7 @@
  */
 /* Gen from s.h.in BITS=32 bits=32 */
 #include "assert.h"
+#include <math.h>
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
@@ -92,4 +93,17 @@ s32 * s32_random (s32 *s)
 {
   arc4random_buf(s, sizeof(s32));
   return s;
+}
+
+s_tag * s32_sqrt (const s32 x, s_tag *dest)
+{
+  assert(dest);
+  if (x < 0) {
+    // FIXME
+    //dest->type = TAG_COMPLEX;
+    return NULL;
+  }
+  dest->type = TAG_S32;
+  dest->data.s32 = (s32) sqrtl((long double) x);
+  return dest;
 }

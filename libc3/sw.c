@@ -12,6 +12,7 @@
  */
 /* Gen from s.h.in BITS=W bits=w */
 #include "assert.h"
+#include <math.h>
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
@@ -92,4 +93,17 @@ sw * sw_random (sw *s)
 {
   arc4random_buf(s, sizeof(sw));
   return s;
+}
+
+s_tag * sw_sqrt (const sw x, s_tag *dest)
+{
+  assert(dest);
+  if (x < 0) {
+    // FIXME
+    //dest->type = TAG_COMPLEX;
+    return NULL;
+  }
+  dest->type = TAG_SW;
+  dest->data.sw = (sw) sqrtl((long double) x);
+  return dest;
 }

@@ -19,12 +19,47 @@
 #include "buf_inspect.h"
 #include "compare.h"
 #include "integer.h"
+#include "ratio.h"
+
+s_ratio * ratio_add (const s_ratio *a, const s_ratio *b,
+                           s_ratio *dest)
+{
+  s_integer i;
+  s_integer j;
+  assert(a);
+  assert(b);
+  assert(dest);
+  assert(integer_is_positive(&a->denominator));
+  assert(integer_is_positive(&b->denominator));
+  integer_mul(&a->numerator, &b->denominator, &i);
+  integer_mul(&b->numerator, &a->denominator, &j);
+  integer_add(&i, &j, &dest->numerator);
+  integer_mul(&a->denominator, &b->denominator,
+              &dest->denominator);
+  integer_clean(&i);
+  integer_clean(&j);
+  return dest;
+}
 
 void ratio_clean (s_ratio *r)
 {
   assert(r);
   integer_clean(&r->numerator);
   integer_clean(&r->denominator);
+}
+
+s_ratio * ratio_div (const s_ratio *a, const s_ratio *b,
+                           s_ratio *dest)
+{
+  assert(a);
+  assert(b);
+  assert(dest);
+  assert(! integer_is_zero(&b->numerator));
+  assert(integer_is_positive(&a->denominator));
+  assert(integer_is_positive(&b->denominator));
+  integer_mul(&a->numerator, &b->denominator, &dest->numerator);
+  integer_mul(&a->denominator, &b->numerator, &dest->denominator);
+  return dest;
 }
 
 s_ratio * ratio_init (s_ratio *dest)
@@ -38,38 +73,15 @@ s_ratio * ratio_init (s_ratio *dest)
   return dest;
 }
 
-s_ratio * ratio_init_integer (s_ratio *r, s_integer *numerator, s_integer *denominator)
-{
-  assert(numerator);
-  assert(denominator);
-  assert(r);
-
-  integer_init_copy(&r->numerator, numerator);
-  integer_init_copy(&r->denominator, denominator);
-
-  return r;
-}
-
 s_ratio * ratio_init_1 (s_ratio *r, const char *p)
 {
-  assert(r);
-  assert(p);
-
   s_integer numerator;
   s_integer denominator;
+  assert(r);
+  assert(p);
   integer_init_1(&numerator, p);
   integer_init_u64(&denominator, 1);
   ratio_init_integer(r, &numerator, &denominator);
-  return r;
-}
-
-s_ratio * ratio_init_zero (s_ratio *r)
-{
-  assert(r);
-
-  integer_init_zero(&r->numerator);
-  integer_init(&r->denominator);
-  integer_set_u64(&r->denominator, 1);
   return r;
 }
 
@@ -84,11 +96,33 @@ s_ratio * ratio_init_copy (s_ratio *dest, const s_ratio *src)
   return dest;
 }
 
+s_ratio * ratio_init_integer (s_ratio *r, s_integer *numerator, s_integer *denominator)
+{
+  assert(numerator);
+  assert(denominator);
+  assert(r);
+  integer_init_copy(&r->numerator, numerator);
+  integer_init_copy(&r->denominator, denominator);
+  return r;
+}
+
+s_ratio * ratio_init_zero (s_ratio *r)
+{
+  assert(r);
+  integer_init_zero(&r->numerator);
+  integer_init(&r->denominator);
+  integer_set_u64(&r->denominator, 1);
+  return r;
+}
+
 s_str * ratio_inspect (const s_ratio *src, s_str *dest)
 {
   s_buf buf;
   sw r;
   sw size;
+  assert(src);
+  assert(dest);
+  assert(integer_is_positive(&src->denominator));
   size = buf_inspect_ratio_size(src);
   if (size <= 0)
     return NULL;
@@ -108,22 +142,31 @@ s_str * ratio_inspect (const s_ratio *src, s_str *dest)
   return buf_to_str(&buf, dest);
 }
 
-s_ratio * ratio_add (const s_ratio *a, const s_ratio *b,
+bool ratio_is_negative (const s_ratio *r)
+{
+  assert(r);
+  assert(integer_is_positive(&r->denominator));
+  return integer_is_negative(&r->numerator);
+}
+
+bool ratio_is_zero (const s_ratio *r)
+{
+  assert(r);
+  assert(integer_is_positive(&r->denominator));
+  return integer_is_zero(&r->numerator);
+}
+
+s_ratio * ratio_mul (const s_ratio *a, const s_ratio *b,
                            s_ratio *dest)
 {
   assert(a);
   assert(b);
   assert(dest);
-  assert(!integer_is_zero(&a->denominator));
-  assert(!integer_is_zero(&b->denominator));
-
-  s_integer temp1, temp2;
-  integer_mul(&a->numerator, &b->denominator, &temp1);
-  integer_mul(&b->numerator, &a->denominator, &temp2);
-  integer_add(&temp1, &temp2, &dest->numerator);
+  assert(integer_is_positive(&a->denominator));
+  assert(integer_is_positive(&b->denominator));
+  integer_mul(&a->numerator, &b->numerator, &dest->numerator);
   integer_mul(&a->denominator, &b->denominator,
           &dest->denominator);
-
   return dest;
 }
 
@@ -132,7 +175,7 @@ s_ratio * ratio_neg (const s_ratio *r, s_ratio *dest)
   s_ratio tmp = {0};
   assert(r);
   assert(dest);
-  assert(! integer_is_zero(&r->denominator));
+  assert(integer_is_positive(&r->denominator));
   if (! integer_neg(&r->numerator, &tmp.numerator))
     return NULL;
   if (! integer_init_copy(&tmp.denominator, &r->denominator)) {
@@ -140,6 +183,29 @@ s_ratio * ratio_neg (const s_ratio *r, s_ratio *dest)
     return NULL;
   }
   *dest = tmp;
+  return dest;
+}
+
+s_tag * ratio_sqrt (const s_ratio *r, s_tag *dest)
+{
+  s_ratio tmp = {0};
+  assert(r);
+  assert(dest);
+  assert(integer_is_positive(&r->denominator));
+  if (ratio_is_negative(r)) {
+    // FIXME
+    err_puts("ratio_sqrt: not implemented");
+    assert(! "ratio_sqrt: not implemented");
+    return NULL;
+  }
+  if (! integer_sqrt_positive(&r->numerator, &tmp.numerator))
+    return NULL;
+  if (! integer_sqrt_positive(&r->denominator, &tmp.denominator)) {
+    integer_clean(&tmp.numerator);
+    return NULL;
+  }
+  dest->type = TAG_RATIO;
+  dest->data.ratio = tmp;
   return dest;
 }
 
@@ -160,44 +226,6 @@ s_ratio * ratio_sub (const s_ratio *a, const s_ratio *b,
           &dest->denominator);
 
   return dest;
-}
-
-s_ratio * ratio_mul (const s_ratio *a, const s_ratio *b,
-                           s_ratio *dest)
-{
-  assert(a);
-  assert(b);
-  assert(dest);
-  assert(!integer_is_zero(&a->denominator));
-  assert(!integer_is_zero(&b->denominator));
-
-  integer_mul(&a->numerator, &b->numerator, &dest->numerator);
-  integer_mul(&a->denominator, &b->denominator,
-          &dest->denominator);
-
-  return dest;
-}
-
-s_ratio * ratio_div (const s_ratio *a, const s_ratio *b,
-                           s_ratio *dest)
-{
-  assert(a);
-  assert(b);
-  assert(dest);
-  assert(!integer_is_zero(&b->numerator));
-  assert(!integer_is_zero(&a->denominator));
-  assert(!integer_is_zero(&b->denominator));
-
-  integer_mul(&a->numerator, &b->denominator, &dest->numerator);
-  integer_mul(&a->denominator, &b->numerator, &dest->denominator);
-
-  return dest;
-}
-
-bool ratio_is_zero (const s_ratio *r)
-{
-  assert(r);
-  return integer_is_zero(&r->numerator);
 }
 
 f32 ratio_to_f32(const s_ratio *r)
@@ -222,35 +250,13 @@ f64 ratio_to_f64(const s_ratio *r)
   return numerator / denominator;
 }
 
-sw ratio_to_sw (const s_ratio *r)
+s8 ratio_to_s8 (const s_ratio *r)
 {
   assert(r);
   assert(!integer_is_zero(&r->denominator));
 
-  sw numerator = integer_to_sw(&r->numerator);
-  sw denominator = integer_to_sw(&r->denominator);
-
-  return numerator / denominator;
-}
-
-s64 ratio_to_s64 (const s_ratio *r)
-{
-  assert(r);
-  assert(!integer_is_zero(&r->denominator));
-
-  s64 numerator = integer_to_s64(&r->numerator);
-  s64 denominator = integer_to_s64(&r->denominator);
-
-  return numerator / denominator;
-}
-
-s32 ratio_to_s32 (const s_ratio *r)
-{
-  assert(r);
-  assert(!integer_is_zero(&r->denominator));
-
-  s32 numerator = integer_to_s32(&r->numerator);
-  s32 denominator = integer_to_s32(&r->denominator);
+  s8 numerator = integer_to_s8(&r->numerator);
+  s8 denominator = integer_to_s8(&r->denominator);
 
   return numerator / denominator;
 }
@@ -266,46 +272,46 @@ s16 ratio_to_s16 (const s_ratio *r)
   return numerator / denominator;
 }
 
-s8 ratio_to_s8 (const s_ratio *r)
+s32 ratio_to_s32 (const s_ratio *r)
 {
   assert(r);
   assert(!integer_is_zero(&r->denominator));
 
-  s8 numerator = integer_to_s8(&r->numerator);
-  s8 denominator = integer_to_s8(&r->denominator);
+  s32 numerator = integer_to_s32(&r->numerator);
+  s32 denominator = integer_to_s32(&r->denominator);
 
   return numerator / denominator;
 }
 
-uw ratio_to_uw (const s_ratio *r)
+s64 ratio_to_s64 (const s_ratio *r)
 {
   assert(r);
   assert(!integer_is_zero(&r->denominator));
 
-  uw numerator = integer_to_uw(&r->numerator);
-  uw denominator = integer_to_uw(&r->denominator);
+  s64 numerator = integer_to_s64(&r->numerator);
+  s64 denominator = integer_to_s64(&r->denominator);
 
   return numerator / denominator;
 }
 
-u64 ratio_to_u64 (const s_ratio *r)
+sw ratio_to_sw (const s_ratio *r)
 {
   assert(r);
   assert(!integer_is_zero(&r->denominator));
 
-  u64 numerator = integer_to_u64(&r->numerator);
-  u64 denominator = integer_to_u64(&r->denominator);
+  sw numerator = integer_to_sw(&r->numerator);
+  sw denominator = integer_to_sw(&r->denominator);
 
   return numerator / denominator;
 }
 
-u32 ratio_to_u32 (const s_ratio *r)
+u8 ratio_to_u8 (const s_ratio *r)
 {
   assert(r);
   assert(!integer_is_zero(&r->denominator));
 
-  u32 numerator = integer_to_u32(&r->numerator);
-  u32 denominator = integer_to_u32(&r->denominator);
+  u8 numerator = integer_to_u8(&r->numerator);
+  u8 denominator = integer_to_u8(&r->denominator);
 
   return numerator / denominator;
 }
@@ -321,13 +327,35 @@ u16 ratio_to_u16 (const s_ratio *r)
   return numerator / denominator;
 }
 
-u8 ratio_to_u8 (const s_ratio *r)
+u32 ratio_to_u32 (const s_ratio *r)
 {
   assert(r);
   assert(!integer_is_zero(&r->denominator));
 
-  u8 numerator = integer_to_u8(&r->numerator);
-  u8 denominator = integer_to_u8(&r->denominator);
+  u32 numerator = integer_to_u32(&r->numerator);
+  u32 denominator = integer_to_u32(&r->denominator);
+
+  return numerator / denominator;
+}
+
+u64 ratio_to_u64 (const s_ratio *r)
+{
+  assert(r);
+  assert(!integer_is_zero(&r->denominator));
+
+  u64 numerator = integer_to_u64(&r->numerator);
+  u64 denominator = integer_to_u64(&r->denominator);
+
+  return numerator / denominator;
+}
+
+uw ratio_to_uw (const s_ratio *r)
+{
+  assert(r);
+  assert(!integer_is_zero(&r->denominator));
+
+  uw numerator = integer_to_uw(&r->numerator);
+  uw denominator = integer_to_uw(&r->denominator);
 
   return numerator / denominator;
 }

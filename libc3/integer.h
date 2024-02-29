@@ -19,8 +19,6 @@
 #ifndef LIBC3_INTEGER_H
 #define LIBC3_INTEGER_H
 
-#include <stdarg.h>
-#include <stdio.h>
 #include "types.h"
 
 #define MP_IS_ZERO(a) ((a)->used == 0)
@@ -86,6 +84,7 @@ s_integer * integer_neg (const s_integer *a, s_integer *dest);
 s_integer * integer_pow (const s_integer *a, const s_integer *b,
                          s_integer *dest);
 s_tag *     integer_sqrt (const s_integer *a, s_tag *dest);
+s_integer * integer_sqrt_positive (const s_integer *a, s_integer *dest);
 s_integer * integer_sub (const s_integer *a, const s_integer *b,
                          s_integer *dest);
 
@@ -97,6 +96,7 @@ s_integer * integer_new_copy (const s_integer *a);
 uw   integer_bits (const s_integer *i);
 uw   integer_bytes (const s_integer *i);
 bool integer_is_negative (const s_integer *i);
+bool integer_is_positive (const s_integer *i);
 bool integer_is_zero (const s_integer *i);
 f32  integer_to_f32 (const s_integer *i);
 f64  integer_to_f64 (const s_integer *i);

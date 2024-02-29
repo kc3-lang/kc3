@@ -12,6 +12,7 @@
  */
 /* Gen from s.h.in BITS=64 bits=64 */
 #include "assert.h"
+#include <math.h>
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
@@ -92,4 +93,17 @@ s64 * s64_random (s64 *s)
 {
   arc4random_buf(s, sizeof(s64));
   return s;
+}
+
+s_tag * s64_sqrt (const s64 x, s_tag *dest)
+{
+  assert(dest);
+  if (x < 0) {
+    // FIXME
+    //dest->type = TAG_COMPLEX;
+    return NULL;
+  }
+  dest->type = TAG_S64;
+  dest->data.s64 = (s64) sqrtl((long double) x);
+  return dest;
 }
