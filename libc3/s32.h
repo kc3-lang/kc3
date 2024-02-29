@@ -19,6 +19,7 @@
 s32 * s32_init_cast (s32 *s, const s_tag *tag);
 s32 * s32_init_copy (s32 *s, const s32 *src);
 s32 * s32_random (s32 *s);
+u32 * s32_random_uniform (s32 *s, s32 min, s32 max);
 s_tag *   s32_sqrt (const s32 x, s_tag *dest);
 
 #endif /* LIBC3_S32_H */

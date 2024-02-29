@@ -58,7 +58,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_SYM:         *dest = sizeof(s_sym *);       return true;
   case TAG_TUPLE:       *dest = sizeof(s_tuple);       return true;
   case TAG_UNQUOTE:     *dest = sizeof(s_unquote);     return true;
-  case TAG_VAR:         *dest = 0;                     return true;
+  case TAG_VAR:         *dest = sizeof(s_tag);         return true;
   }
   warnx("tag_type_size: invalid tag type: %d", type);
   assert(! "tag_type_size: invalid tag type");

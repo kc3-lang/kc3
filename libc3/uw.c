@@ -115,3 +115,11 @@ uw * uw_random_uniform (uw *u, uw max)
 }
 
 #endif
+
+s_tag * uw_sqrt (const uw x, s_tag *dest)
+{
+  assert(dest);
+  dest->type = TAG_UW;
+  dest->data.uw = (uw) sqrtl((long double) x);
+  return dest;
+}

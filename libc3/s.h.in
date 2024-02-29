@@ -19,6 +19,7 @@
 s_bits$ * s_bits$_init_cast (s_bits$ *s, const s_tag *tag);
 s_bits$ * s_bits$_init_copy (s_bits$ *s, const s_bits$ *src);
 s_bits$ * s_bits$_random (s_bits$ *s);
+u_bits$ * s_bits$_random_uniform (s_bits$ *s, s_bits$ min, s_bits$ max);
 s_tag *   s_bits$_sqrt (const s_bits$ x, s_tag *dest);
 
 #endif /* LIBC3_S_BITS$_H */

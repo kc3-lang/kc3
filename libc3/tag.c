@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
-#include <err.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,7 +54,6 @@ s_tag * tag_1 (s_tag *tag, const char *p)
   return tag_init_1(tag, p);
 }
 
-
 bool * tag_and (const s_tag *a, const s_tag *b, bool *dest)
 {
   s_tag f;
@@ -65,42 +63,6 @@ bool * tag_and (const s_tag *a, const s_tag *b, bool *dest)
   tag_init_bool(&f, false);
   *dest = compare_tag(a, &f) != 0 && compare_tag(b, &f) != 0 ? 1 : 0;
   return dest;
-}
-
-s_tag * tag_bnot (const s_tag *tag, s_tag *result)
-{
-  assert(tag);
-  assert(result);
-  switch (tag->type) {
-  case TAG_INTEGER:
-    result->type = TAG_INTEGER;
-    integer_bnot(&tag->data.integer, &result->data.integer);
-    return result;
-  case TAG_SW:
-    return tag_init_sw(result, ~tag->data.sw);
-  case TAG_S64:
-    return tag_init_s64(result, ~tag->data.s64);
-  case TAG_S32:
-    return tag_init_s32(result, ~tag->data.s32);
-  case TAG_S16:
-    return tag_init_s16(result, ~tag->data.s16);
-  case TAG_S8:
-    return tag_init_s8(result, ~tag->data.s8);
-  case TAG_U8:
-    return tag_init_u8(result, ~tag->data.u8);
-  case TAG_U16:
-    return tag_init_u16(result, ~tag->data.u16);
-  case TAG_U32:
-    return tag_init_u32(result, ~tag->data.u32);
-  case TAG_U64:
-    return tag_init_u64(result, ~tag->data.u64);
-  case TAG_UW:
-    return tag_init_uw(result, ~tag->data.uw);
-  default:
-    warnx("tag_bnot: invalid tag type: %s",
-          tag_type_to_string(tag->type));
-  }
-  return NULL;
 }
 
 s_tag * tag_cast_integer_to_s8 (s_tag *tag)
@@ -239,7 +201,8 @@ s_tag * tag_brackets (const s_tag *tag, const s_tag *address,
   default:
     break;
   }
-  warnx("tag_brackets: invalid arguments");
+  err_puts("tag_brackets: invalid arguments");
+  assert(! "tag_brackets: invalid arguments");
   return NULL;
 }
 
@@ -328,7 +291,12 @@ s_tag * tag_init_1 (s_tag *tag, const char *p)
   len = strlen(p);
   r = buf_parse_tag(&buf, tag);
   if (r < 0 || (uw) r != len) {
-    warnx("invalid tag: \"%s\", %lu != %ld", p, len, r);
+    err_write_1("invalid tag: \"");
+    err_write_1(p);
+    err_write_1("\", ");
+    err_inspect_uw(&len);
+    err_write_1(" != ");
+    err_inspect_sw(&r);
     assert(! "invalid tag");
     return NULL;
   }
@@ -345,6 +313,7 @@ s_tag * tag_init_call_cast (s_tag *tag, const s_sym *type)
   return tag;
 }
 
+// FIXME: error handling
 s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
 {
   assert(tag);
@@ -439,14 +408,14 @@ s_str * tag_inspect (const s_tag *tag, s_str *dest)
   assert(tag);
   assert(dest);
   if ((size = buf_inspect_tag_size(tag)) < 0) {
+    err_puts("tag_inspect: size error");
     assert(! "tag_inspect: size error");
-    errx(1, "tag_inspect: size error");
     return NULL;
   }
   buf_init_alloc(&buf, size);
   if (buf_inspect_tag(&buf, tag) != size) {
+    err_puts("tag_inspect: inspect error");
     assert(! "tag_inspect: inspect error");
-    errx(1, "tag_inspect: inspect error");
     return NULL;
   }
   return buf_to_str(&buf, dest);
@@ -589,24 +558,46 @@ bool * tag_lte (const s_tag *a, const s_tag *b, bool *dest)
 
 s_tag * tag_new (void)
 {
-  s_tag *tag;
-  tag = calloc(1, sizeof(s_tag));
-  return tag;
+  s_tag *dest;
+  dest = calloc(1, sizeof(s_tag));
+  if (! dest) {
+    err_puts("tag_new: failed to allocate memory");
+    assert(! "tag_new: failed to allocate memory");
+    return NULL;
+  }
+  return dest;
 }
 
 s_tag * tag_new_1 (const char *p)
 {
-  s_tag *tag;
-  tag = calloc(1, sizeof(s_tag));
-  return tag_init_1(tag, p);
+  s_tag *dest;
+  dest = calloc(1, sizeof(s_tag));
+  if (! dest) {
+    err_puts("tag_new_1: failed to allocate memory");
+    assert(! "tag_new_1: failed to allocate memory");
+    return NULL;
+  }
+  if (! tag_init_1(dest, p)) {
+    free(dest);
+    return NULL;
+  }
+  return dest;
 }
 
 s_tag * tag_new_copy (const s_tag *src)
 {
   s_tag *dest;
-  if (! (dest = malloc(sizeof(s_tag))))
-    errx(1, "tag_new_copy: out of memory");
-  return tag_init_copy(dest, src);
+  dest = calloc(1, sizeof(s_tag));
+  if (! dest) {
+    err_puts("tag_new_copy: failed to allocate memory");
+    assert(! "tag_new_copy: failed to allocate memory");
+    return NULL;
+  }
+  if (! tag_init_copy(dest, src)) {
+    free(dest);
+    return NULL;
+  }
+  return dest;
 }
 
 bool * tag_not (const s_tag *tag, bool *dest)
@@ -666,9 +657,10 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   if (! sym_to_tag_type(type, &tag_type))
     return false;
   if (tag->type != tag_type) {
-    warnx("tag_to_const_pointer: cannot cast %s to %s",
-          tag_type_to_string(tag->type),
-          type->str.ptr.pchar);
+    err_write_1("tag_to_const_pointer: cannot cast ");
+    err_write_1(tag_type_to_string(tag->type));
+    err_write_1(" to ");
+    err_puts(type->str.ptr.pchar);
     assert(! "tag_to_const_pointer: cannot cast");
     return false;
   }
@@ -709,11 +701,11 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   case TAG_SYM:         *dest = &tag->data.sym;         return true;
   case TAG_TUPLE:       *dest = &tag->data.tuple;       return true;
   case TAG_UNQUOTE:     *dest = &tag->data.unquote;     return true;
-  case TAG_VAR:         *dest = NULL;                   return true;
+  case TAG_VAR:         *dest = tag;                    return true;
   case TAG_VOID:        *dest = NULL;                   return true;
   }
-  warnx("tag_to_const_pointer: invalid tag type: %s",
-        tag_type_to_string(tag_type));
+  err_write_1("tag_to_const_pointer: invalid tag type: ");
+  err_puts(tag_type_to_string(tag_type));
   assert(! "tag_to_const_pointer: invalid tag type");
   return false;
 }
@@ -964,15 +956,21 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     }
     goto invalid_cast;
   case TAG_VAR:
+    if (type == &g_sym_Tag) {
+      *dest = tag;
+      return true;
+    }
     goto invalid_cast;
   }
-    warnx("tag_to_ffi_pointer: invalid tag type: %d", tag->type);
+  err_puts("tag_to_ffi_pointer: invalid tag type");
   assert(! "tag_to_ffi_pointer: invalid tag type");
   return false;
  invalid_cast:
-  warnx("tag_to_ffi_pointer: cannot cast %s to %s",
-        tag_type_to_string(tag->type),
-        type->str.ptr.ps8);
+  err_write_1("tag_to_ffi_pointer: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_write_1(" to ");
+  err_puts(type->str.ptr.pchar);
+  assert(! "tag_to_ffi_pointer: cannot cast");
   return false;
 }
 
@@ -982,9 +980,10 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   if (! sym_to_tag_type(type, &tag_type))
     return false;
   if (tag->type != tag_type) {
-    warnx("tag_to_pointer: cannot cast %s to %s",
-          tag_type_to_string(tag->type),
-          type->str.ptr.ps8);
+    err_write_1("tag_to_pointer: cannot cast ");
+    err_write_1(tag_type_to_string(tag->type));
+    err_write_1(" to ");
+    err_puts(type->str.ptr.pchar);
     assert(! "tag_to_pointer: cannot cast");
     return false;
   }
@@ -1025,10 +1024,10 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_SYM:         *dest = &tag->data.sym;         return true;
   case TAG_TUPLE:       *dest = &tag->data.tuple;       return true;
   case TAG_UNQUOTE:     *dest = &tag->data.unquote;     return true;
-  case TAG_VAR:         *dest = NULL;                   return true;
+  case TAG_VAR:         *dest = tag;                    return true;
   case TAG_RATIO:       *dest = &tag->data.ratio;       return true;
   }
-  warnx("tag_to_pointer: invalid tag type: %d", tag_type);
+  err_puts("tag_to_pointer: invalid tag type");
   assert(! "tag_to_pointer: invalid tag type");
   return false;
 }
@@ -1080,8 +1079,8 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_UNQUOTE:     *dest = &g_sym_Unquote;    return dest;
   case TAG_VAR:         *dest = &g_sym_Var;        return dest;
   }
-  warnx("tag_type: unknown tag type: %d", tag->type);
-  assert(! "tag_type: unknown tag type");
+  err_puts("tag_type: invalid tag type");
+  assert(! "tag_type: invalid tag type");
   return NULL;
 }
 
