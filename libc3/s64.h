@@ -19,6 +19,7 @@
 s64 * s64_init_cast (s64 *s, const s_tag *tag);
 s64 * s64_init_copy (s64 *s, const s64 *src);
 s64 * s64_random (s64 *s);
+u64 * s64_random_uniform (s64 *s, s64 min, s64 max);
 s_tag *   s64_sqrt (const s64 x, s_tag *dest);
 
 #endif /* LIBC3_S64_H */

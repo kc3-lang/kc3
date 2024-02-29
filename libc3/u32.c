@@ -115,3 +115,11 @@ u32 * u32_random_uniform (u32 *u, u32 max)
 }
 
 #endif
+
+s_tag * u32_sqrt (const u32 x, s_tag *dest)
+{
+  assert(dest);
+  dest->type = TAG_U32;
+  dest->data.u32 = (u32) sqrtl((long double) x);
+  return dest;
+}

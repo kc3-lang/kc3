@@ -115,3 +115,11 @@ u64 * u64_random_uniform (u64 *u, u64 max)
 }
 
 #endif
+
+s_tag * u64_sqrt (const u64 x, s_tag *dest)
+{
+  assert(dest);
+  dest->type = TAG_U64;
+  dest->data.u64 = (u64) sqrtl((long double) x);
+  return dest;
+}

@@ -294,6 +294,7 @@ SOURCES = \
 	"tag.c" \
 	"tag_add.c" \
 	"tag_band.c" \
+	"tag_bnot.c" \
 	"tag_bor.c" \
 	"tag_bxor.c" \
 	"tag_div.c" \
@@ -554,6 +555,7 @@ LO_SOURCES = \
 	"tag.c" \
 	"tag_add.c" \
 	"tag_band.c" \
+	"tag_bnot.c" \
 	"tag_bor.c" \
 	"tag_bxor.c" \
 	"tag_div.c" \
