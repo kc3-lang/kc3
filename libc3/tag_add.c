@@ -1216,9 +1216,10 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
     goto ko;
   }
  ko:
-  err_write_1("tag_add: cannot add ");
+  err_write_1("tag_add: invalid tag type: ");
   err_write_1(tag_type_to_string(a->type));
-  err_write_1(" to ");
+  err_write_1(" + ");
   err_puts(tag_type_to_string(b->type));
+  assert(! "tag_add: invalid tag type");
   return NULL;
 }

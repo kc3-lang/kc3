@@ -11,8 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from s.h.in BITS=8 bits=8 */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
@@ -74,8 +73,9 @@ s8 * s8_init_cast (s8 *s, const s_tag *tag)
   default:
     break;
   }
-  warnx("s8_cast: cannot cast %s to s8",
-        tag_type_to_string(tag->type));
+  err_write_1("s8_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to s8");
   assert(! "s8_cast: cannot cast to s8");
   return NULL;
 }

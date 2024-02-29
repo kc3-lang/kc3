@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include "integer.h"
 #include "tag.h"
 
@@ -544,8 +543,10 @@ s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *result)
     goto error;
   }
  error:
-  warnx("tag_shift_left: invalid tag type: %s << %s",
-        tag_type_to_string(a->type),
-        tag_type_to_string(b->type));
+  err_write_1("tag_shift_left: invalid tag type: ");
+  err_write_1(tag_type_to_string(a->type));
+  err_write_1(" << ");
+  err_puts(tag_type_to_string(b->type));
+  assert(! "tag_shift_left: invalid tag type");
   return NULL;
 }

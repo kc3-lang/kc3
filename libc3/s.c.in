@@ -11,8 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from s.h.in BITS=_BITS$ bits=_bits$ */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
@@ -74,8 +73,9 @@ s_bits$ * s_bits$_init_cast (s_bits$ *s, const s_tag *tag)
   default:
     break;
   }
-  warnx("s_bits$_cast: cannot cast %s to s_bits$",
-        tag_type_to_string(tag->type));
+  err_write_1("s_bits$_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to s_bits$");
   assert(! "s_bits$_cast: cannot cast to s_bits$");
   return NULL;
 }

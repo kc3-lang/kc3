@@ -11,8 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from s.h.in BITS=16 bits=16 */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
@@ -74,8 +73,9 @@ s16 * s16_init_cast (s16 *s, const s_tag *tag)
   default:
     break;
   }
-  warnx("s16_cast: cannot cast %s to s16",
-        tag_type_to_string(tag->type));
+  err_write_1("s16_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to s16");
   assert(! "s16_cast: cannot cast to s16");
   return NULL;
 }

@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <math.h>
 #include "integer.h"
 #include "tag.h"
@@ -564,7 +563,9 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
     goto ko;
   }
  ko:
-  errx(1, "cannot subtract %s by %s",
-       tag_type_to_string(a->type),
-       tag_type_to_string(b->type));
+  err_write_1("tag_sub: cannot subtract ");
+  err_write_1(tag_type_to_string(a->type));
+  err_write_1(" by ");
+  err_puts(tag_type_to_string(b->type));
+  return NULL;
 }

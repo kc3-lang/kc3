@@ -12,7 +12,6 @@
  */
 /* Gen from u.h.in BITS=32 bits=32 */
 #include "assert.h"
-#include <err.h>
 #include <math.h>
 #include <stdlib.h>
 #include "integer.h"
@@ -74,8 +73,9 @@ u32 * u32_init_cast (u32 *u, const s_tag *tag)
   default:
     break;
   }
-  warnx("u32_cast: cannot cast %s to u32",
-        tag_type_to_string(tag->type));
+  err_write_1("u32_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to u32");
   assert(! "u32_cast: cannot cast to u32");
   return NULL;
 }

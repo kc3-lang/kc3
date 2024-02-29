@@ -11,8 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from s.h.in BITS=32 bits=32 */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
@@ -74,8 +73,9 @@ s32 * s32_init_cast (s32 *s, const s_tag *tag)
   default:
     break;
   }
-  warnx("s32_cast: cannot cast %s to s32",
-        tag_type_to_string(tag->type));
+  err_write_1("s32_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to s32");
   assert(! "s32_cast: cannot cast to s32");
   return NULL;
 }

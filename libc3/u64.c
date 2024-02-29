@@ -12,7 +12,6 @@
  */
 /* Gen from u.h.in BITS=64 bits=64 */
 #include "assert.h"
-#include <err.h>
 #include <math.h>
 #include <stdlib.h>
 #include "integer.h"
@@ -74,8 +73,9 @@ u64 * u64_init_cast (u64 *u, const s_tag *tag)
   default:
     break;
   }
-  warnx("u64_cast: cannot cast %s to u64",
-        tag_type_to_string(tag->type));
+  err_write_1("u64_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to u64");
   assert(! "u64_cast: cannot cast to u64");
   return NULL;
 }

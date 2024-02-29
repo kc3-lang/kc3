@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <string.h>
 #include "array.h"
 #include "buf.h"
@@ -520,8 +519,10 @@ s_tag * tag_new_array (const s_sym *type, uw dimension,
                        const uw *dimensions)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_array: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_array: failed to allocate memory");
+    assert(! "tag_new_array: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_ARRAY;
@@ -535,8 +536,10 @@ s_tag * tag_new_array (const s_sym *type, uw dimension,
 s_tag * tag_new_array_copy (const s_array *a)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_array_copy: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_array_copy: failed to allocate memory");
+    assert(! "tag_new_array_copy: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_ARRAY;
@@ -550,8 +553,10 @@ s_tag * tag_new_array_copy (const s_array *a)
 s_tag * tag_new_bool (bool b)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_bool: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_bool: failed to allocate memory");
+    assert(! "tag_new_bool: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_BOOL;
@@ -562,8 +567,10 @@ s_tag * tag_new_bool (bool b)
 s_tag * tag_new_call (void)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_call: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_call: failed to allocate memory");
+    assert(! "tag_new_call: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_CALL;
@@ -577,8 +584,10 @@ s_tag * tag_new_call (void)
 s_tag * tag_new_character (character c)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_character: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_character: failed to allocate memory");
+    assert(! "tag_new_character: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_CHARACTER;
@@ -589,8 +598,10 @@ s_tag * tag_new_character (character c)
 s_tag * tag_new_f32 (f32 f)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_f32: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_f32: failed to allocate memory");
+    assert(! "tag_new_f32: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_F32;
@@ -601,8 +612,10 @@ s_tag * tag_new_f32 (f32 f)
 s_tag * tag_new_f64 (f64 f)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_f64: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_f64: failed to allocate memory");
+    assert(! "tag_new_f64: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_F64;
@@ -613,8 +626,10 @@ s_tag * tag_new_f64 (f64 f)
 s_tag * tag_new_f128 (f128 f)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_f128: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_f128: failed to allocate memory");
+    assert(! "tag_new_f128: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_F128;
@@ -625,8 +640,10 @@ s_tag * tag_new_f128 (f128 f)
 s_tag * tag_new_ident (const s_ident *ident)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_ident: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_ident: failed to allocate memory");
+    assert(! "tag_new_ident: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_IDENT;
@@ -637,8 +654,10 @@ s_tag * tag_new_ident (const s_ident *ident)
 s_tag * tag_new_ident_1 (const char *p)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_ident_1: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_ident_1: failed to allocate memory");
+    assert(! "tag_new_ident_1: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_IDENT;
@@ -652,8 +671,10 @@ s_tag * tag_new_ident_1 (const char *p)
 s_tag * tag_new_integer_1 (const char *p)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_integer_1: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_integer_1: failed to allocate memory");
+    assert(! "tag_new_integer_1: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_INTEGER;
@@ -667,8 +688,10 @@ s_tag * tag_new_integer_1 (const char *p)
 s_tag * tag_new_integer_copy (const s_integer *i)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_integer_copy: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_integer_copy: failed to allocate memory");
+    assert(! "tag_new_integer_copy: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_INTEGER;
@@ -682,8 +705,10 @@ s_tag * tag_new_integer_copy (const s_integer *i)
 s_tag * tag_new_integer_zero (void)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_integer_zero: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_integer_zero: failed to allocate memory");
+    assert(! "tag_new_integer_zero: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_INTEGER;
@@ -697,8 +722,10 @@ s_tag * tag_new_integer_zero (void)
 s_tag * tag_new_list (s_list *list)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_list: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_list: failed to allocate memory");
+    assert(! "tag_new_list: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_LIST;
@@ -709,8 +736,10 @@ s_tag * tag_new_list (s_list *list)
 s_tag * tag_new_map (uw count)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_map: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_map: failed to allocate memory");
+    assert(! "tag_new_map: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_MAP;
@@ -724,8 +753,10 @@ s_tag * tag_new_map (uw count)
 s_tag * tag_new_map_1 (const char *p)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_map_1: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_map_1: failed to allocate memory");
+    assert(! "tag_new_map_1: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_MAP;
@@ -739,8 +770,10 @@ s_tag * tag_new_map_1 (const char *p)
 s_tag * tag_new_ptr (void *p)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_ptr: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_ptr: failed to allocate memory");
+    assert(! "tag_new_ptr: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_PTR;
@@ -754,8 +787,10 @@ s_tag * tag_new_ptr (void *p)
 s_tag * tag_new_ptr_free (void *p)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_ptr_free: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_ptr_free: failed to allocate memory");
+    assert(! "tag_new_ptr_free: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_PTR_FREE;
@@ -769,8 +804,10 @@ s_tag * tag_new_ptr_free (void *p)
 s_tag * tag_new_quote_copy (const s_quote *quote)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_quote_copy: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_quote_copy: failed to allocate memory");
+    assert(! "tag_new_quote_copy: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_QUOTE;
@@ -784,8 +821,10 @@ s_tag * tag_new_quote_copy (const s_quote *quote)
 s_tag * tag_new_ratio_1 (const char *p)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_ratio_1: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_ratio_1: failed to allocate memory");
+    assert(! "tag_new_ratio_1: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_RATIO;
@@ -799,8 +838,10 @@ s_tag * tag_new_ratio_1 (const char *p)
 s_tag * tag_new_ratio (void)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_ratio: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_ratio: failed to allocate memory");
+    assert(! "tag_new_ratio: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_RATIO;
@@ -814,8 +855,10 @@ s_tag * tag_new_ratio (void)
 s_tag * tag_new_ratio_copy (const s_ratio *r)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_ratio_copy: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_ratio_copy: failed to allocate memory");
+    assert(! "tag_new_ratio_copy: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_RATIO;
@@ -829,8 +872,10 @@ s_tag * tag_new_ratio_copy (const s_ratio *r)
 s_tag * tag_new_ratio_zero (void)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_ratio_zero: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_ratio_zero: failed to allocate memory");
+    assert(! "tag_new_ratio_zero: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_RATIO;
@@ -844,8 +889,10 @@ s_tag * tag_new_ratio_zero (void)
 s_tag * tag_new_s8 (s8 i)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_s8: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_s8: failed to allocate memory");
+    assert(! "tag_new_s8: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_S8;
@@ -856,8 +903,10 @@ s_tag * tag_new_s8 (s8 i)
 s_tag * tag_new_s16 (s16 i)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_s16: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_s16: failed to allocate memory");
+    assert(! "tag_new_s16: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_S16;
@@ -868,8 +917,10 @@ s_tag * tag_new_s16 (s16 i)
 s_tag * tag_new_s32 (s32 i)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_s32: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_s32: failed to allocate memory");
+    assert(! "tag_new_s32: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_S32;
@@ -880,8 +931,10 @@ s_tag * tag_new_s32 (s32 i)
 s_tag * tag_new_s64 (s64 i)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_s64: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_s64: failed to allocate memory");
+    assert(! "tag_new_s64: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_S64;
@@ -892,8 +945,10 @@ s_tag * tag_new_s64 (s64 i)
 s_tag * tag_new_str (char *p_free, uw size, const char *p)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_str: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_str: failed to allocate memory");
+    assert(! "tag_new_str: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_STR;
@@ -907,8 +962,10 @@ s_tag * tag_new_str (char *p_free, uw size, const char *p)
 s_tag * tag_new_str_1 (char *p_free, const char *p)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_str_1: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_str_1: failed to allocate memory");
+    assert(! "tag_new_str_1: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_STR;
@@ -922,8 +979,10 @@ s_tag * tag_new_str_1 (char *p_free, const char *p)
 s_tag * tag_new_str_cat (const s_str *a, const s_str *b)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_str_cat: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_str_cat: failed to allocate memory");
+    assert(! "tag_new_str_cat: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_STR;
@@ -937,8 +996,10 @@ s_tag * tag_new_str_cat (const s_str *a, const s_str *b)
 s_tag * tag_new_str_empty (void)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_str_empty: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_str_empty: failed to allocate memory");
+    assert(! "tag_new_str_empty: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_STR;
@@ -952,8 +1013,10 @@ s_tag * tag_new_str_empty (void)
 s_tag * tag_new_struct (const s_sym *module)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_struct: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_struct: failed to allocate memory");
+    assert(! "tag_new_struct: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_STRUCT;
@@ -968,8 +1031,10 @@ s_tag * tag_new_struct_with_data (const s_sym *module, bool free_data,
                                   void *data)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_struct_with_data: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_struct_with_data: failed to allocate memory");
+    assert(! "tag_new_struct_with_data: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_STRUCT;
@@ -984,8 +1049,10 @@ s_tag * tag_new_struct_with_data (const s_sym *module, bool free_data,
 s_tag * tag_new_sw (sw i)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_sw: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_sw: failed to allocate memory");
+    assert(! "tag_new_sw: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_SW;
@@ -996,8 +1063,10 @@ s_tag * tag_new_sw (sw i)
 s_tag * tag_new_sym (const s_sym *sym)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_sym: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_sym: failed to allocate memory");
+    assert(! "tag_new_sym: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_SYM;
@@ -1008,8 +1077,10 @@ s_tag * tag_new_sym (const s_sym *sym)
 s_tag * tag_new_tuple (uw count)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_tuple: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_tuple: failed to allocate memory");
+    assert(! "tag_new_tuple: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_TUPLE;
@@ -1023,8 +1094,10 @@ s_tag * tag_new_tuple (uw count)
 s_tag * tag_new_tuple_2 (const s_tag *a, const s_tag *b)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_tuple_2: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_tuple_2: failed to allocate memory");
+    assert(! "tag_new_tuple_2: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_TUPLE;
@@ -1038,8 +1111,10 @@ s_tag * tag_new_tuple_2 (const s_tag *a, const s_tag *b)
 s_tag * tag_new_u8 (u8 i)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_u8: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_u8: failed to allocate memory");
+    assert(! "tag_new_u8: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_U8;
@@ -1050,8 +1125,10 @@ s_tag * tag_new_u8 (u8 i)
 s_tag * tag_new_u16 (u16 i)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_u16: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_u16: failed to allocate memory");
+    assert(! "tag_new_u16: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_U16;
@@ -1062,8 +1139,10 @@ s_tag * tag_new_u16 (u16 i)
 s_tag * tag_new_u32 (u32 i)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_u32: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_u32: failed to allocate memory");
+    assert(! "tag_new_u32: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_U32;
@@ -1074,8 +1153,10 @@ s_tag * tag_new_u32 (u32 i)
 s_tag * tag_new_u64 (u64 i)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_u64: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_u64: failed to allocate memory");
+    assert(! "tag_new_u64: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_U64;
@@ -1086,8 +1167,10 @@ s_tag * tag_new_u64 (u64 i)
 s_tag * tag_new_unquote_copy (const s_unquote *unquote)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_unquote_copy: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_unquote_copy: failed to allocate memory");
+    assert(! "tag_new_unquote_copy: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_UNQUOTE;
@@ -1101,8 +1184,10 @@ s_tag * tag_new_unquote_copy (const s_unquote *unquote)
 s_tag * tag_new_uw (uw i)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_uw: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_uw: failed to allocate memory");
+    assert(! "tag_new_uw: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_UW;
@@ -1113,8 +1198,10 @@ s_tag * tag_new_uw (uw i)
 s_tag * tag_new_var (void)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_var: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_var: failed to allocate memory");
+    assert(! "tag_new_var: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_VAR;
@@ -1124,8 +1211,10 @@ s_tag * tag_new_var (void)
 s_tag * tag_new_void (void)
 {
   s_tag *tag;
-  if (! (tag = calloc(1, sizeof(s_tag)))) {
-    warn("tag_new_void: calloc");
+  tag = calloc(1, sizeof(s_tag));
+  if (! tag) {
+    err_puts("tag_new_void: failed to allocate memory");
+    assert(! "tag_new_void: failed to allocate memory");
     return NULL;
   }
   tag->type = TAG_VOID;

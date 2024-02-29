@@ -411,6 +411,7 @@ C3_C_SOURCES = \
 	"libc3/tag_init.h" \
 	"libc3/tag_mod.c" \
 	"libc3/tag_mul.c" \
+	"libc3/tag_neg.c" \
 	"libc3/tag_shift_left.c" \
 	"libc3/tag_shift_right.c" \
 	"libc3/tag_sub.c" \
@@ -420,8 +421,6 @@ C3_C_SOURCES = \
 	"libc3/time.h" \
 	"libc3/tuple.c" \
 	"libc3/tuple.h" \
-	"libc3/type.c" \
-	"libc3/type.h" \
 	"libc3/types.h" \
 	"libc3/u.c.in" \
 	"libc3/u.h.in" \
@@ -813,6 +812,9 @@ C3_OTHER_SOURCES = \
 	"test/ic3/quote.in" \
 	"test/ic3/quote.out.expected" \
 	"test/ic3/quote.ret.expected" \
+	"test/ic3/ratio.in" \
+	"test/ic3/ratio.out.expected" \
+	"test/ic3/ratio.ret.expected" \
 	"test/ic3/str.err.expected" \
 	"test/ic3/str.in" \
 	"test/ic3/str.out.expected" \
@@ -1096,5 +1098,8 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/license.txt" \
 	"ucd2c/ucd.c" \
 	"ucd2c/ucd.h" \
+	"ucd2c/ucd2c" \
 	"ucd2c/ucd2c.c" \
+	"ucd2c/ucd2c.lo" \
+	"ucd2c/ucd2c.o" \
 

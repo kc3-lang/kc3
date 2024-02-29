@@ -11,8 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from s.h.in BITS=64 bits=64 */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
@@ -74,8 +73,9 @@ s64 * s64_init_cast (s64 *s, const s_tag *tag)
   default:
     break;
   }
-  warnx("s64_cast: cannot cast %s to s64",
-        tag_type_to_string(tag->type));
+  err_write_1("s64_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to s64");
   assert(! "s64_cast: cannot cast to s64");
   return NULL;
 }
