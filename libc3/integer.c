@@ -372,10 +372,16 @@ bool integer_is_negative (const s_integer *i)
   return i->mp_int.sign == MP_NEG;
 }
 
+bool integer_is_positive (const s_integer *i)
+{
+  assert(i);
+  return i->mp_int.used && i->mp_int.sign != MP_NEG;
+}
+
 bool integer_is_zero (const s_integer *i)
 {
   assert(i);
-  return (i->mp_int.used == 0);
+  return ! i->mp_int.used;
 }
 
 s_integer * integer_lcm (const s_integer *a, const s_integer *b,
@@ -606,12 +612,38 @@ s_tag * integer_sqrt (const s_integer *a, s_tag *dest)
   sw r;
   assert(a);
   assert(dest);
+  if (integer_is_negative(a)) {
+    // FIXME
+    err_puts("integer_sqrt: not implemented");
+    assert(! "integer_sqrt: not implemented");
+    return NULL;
+  }
   dest->type = TAG_INTEGER;
   integer_init(&dest->data.integer);
   if ((r = mp_sqrt(&a->mp_int, &dest->data.integer.mp_int)) != MP_OKAY) {
     err_write_1("integer_sqrt: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_sqrt: mp_sqrt");
+    return NULL;
+  }
+  return dest;
+}
+
+s_integer * integer_sqrt_positive (const s_integer *a, s_integer *dest)
+{
+  sw r;
+  assert(a);
+  assert(dest);
+  if (integer_is_negative(a)) {
+    err_puts("integer_sqrt_positive: negative argument");
+    assert(! "integer_sqrt_positive: negative argument");
+    return NULL;
+  }
+  integer_init(dest);
+  if ((r = mp_sqrt(&a->mp_int, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_sqrt_positive: ");
+    err_puts(mp_error_to_string(r));
+    assert(! "integer_sqrt_positive: mp_sqrt");
     return NULL;
   }
   return dest;

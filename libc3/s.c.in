@@ -12,6 +12,7 @@
  */
 /* Gen from s.h.in BITS=_BITS$ bits=_bits$ */
 #include "assert.h"
+#include <math.h>
 #include <stdlib.h>
 #include "integer.h"
 #include "tag.h"
@@ -97,6 +98,11 @@ s_bits$ * s_bits$_random (s_bits$ *s)
 s_tag * s_bits$_sqrt (const s_bits$ x, s_tag *dest)
 {
   assert(dest);
+  if (x < 0) {
+    // FIXME
+    //dest->type = TAG_COMPLEX;
+    return NULL;
+  }
   dest->type = TAG_S_BITS$;
   dest->data.s_bits$ = (s_bits$) sqrtl((long double) x);
   return dest;

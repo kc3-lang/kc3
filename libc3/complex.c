@@ -79,7 +79,6 @@ s_complex * complex_mul (const s_complex *a, const s_complex *b,
 s_complex * complex_new (void)
 {
   s_complex *c;
-  assert(src);
   c = calloc(1, sizeof(s_complex));
   if (! c) {
     err_puts("complex_new_copy: failed to allocate memory");
