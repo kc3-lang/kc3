@@ -241,6 +241,7 @@ s8 compare_fn_clause (const s_fn_clause *a, const s_fn_clause *b)
   }
   err_puts("compare_fn_clause");
   assert(! "compare_fn_clause");
+  abort();
   return 0;
 }
 
@@ -272,6 +273,7 @@ s8 compare_integer (const s_integer *a, const s_integer *b)
   err_write_1("integer_compare: ");
   err_puts(mp_error_to_string(r));
   assert(! "integer_compare");
+  abort();
   return -1;
 }
 
@@ -959,6 +961,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   }
   err_puts("compare_tag: invalid tag type");
   assert(! "compare_tag: invalid tag type");
+  abort();
   return 0;
 }
 
@@ -1178,6 +1181,7 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
   }
   err_puts("tag_number_compare: not a number");
   assert(! "tag_number_compare: not a number");
+  abort();
   return 0;
 }
 
