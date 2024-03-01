@@ -112,6 +112,7 @@ s_struct * struct_init_1 (s_struct *s, const s8 *p)
   assert(p);
   (void) s;
   (void) p;
+  // FIXME
   return s;
 }
 
