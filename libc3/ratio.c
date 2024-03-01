@@ -127,7 +127,7 @@ s_ratio * ratio_init_1 (s_ratio *q, const char *p)
     assert(! "invalid ratio");
     return NULL;
   }
-  ratio_init_integer(q, &tmp.numerator, &tmp.denominator);
+  *q = tmp;
   return q;
 }
 
