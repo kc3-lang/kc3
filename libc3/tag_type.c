@@ -10,7 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <err.h>
 #include "c3.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
@@ -60,7 +59,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_UNQUOTE:     *dest = sizeof(s_unquote);     return true;
   case TAG_VAR:         *dest = sizeof(s_tag);         return true;
   }
-  warnx("tag_type_size: invalid tag type: %d", type);
+  err_puts("tag_type_size: invalid tag type");
   assert(! "tag_type_size: invalid tag type");
   return false;
 }
@@ -107,8 +106,8 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_VAR:         *dest = &ffi_type_pointer;    return true;
   case TAG_VOID:        *dest = &ffi_type_void;       return true;
   }
-  warnx("tag_type_to_ffi_type: unknown tag type: %d", type);
-  assert(! "tag_type_to_ffi_type: unknown tag type");
+  err_puts("tag_type_to_ffi_type: invalid tag type");
+  assert(! "tag_type_to_ffi_type: invalid tag type");
   return false;
 }
 
@@ -154,7 +153,7 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_UNQUOTE:     return "Unquote";
   case TAG_VAR:         return "Var";
   }
-  warnx("tag_type_to_string: unknown tag type: %d", tag_type);
-  assert(! "tag_type_to_string: unknown tag type");
+  err_puts("tag_type_to_string: invalid tag type");
+  assert(! "tag_type_to_string: invalid tag type");
   return NULL;
 }

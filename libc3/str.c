@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
-#include <err.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,8 +79,8 @@ sw str_character_position (const s_str *str, character c)
     i++;
   }
   if (r < 0) {
+    err_puts("str_character_position: invalid str character utf8");
     assert(! "str_character_position: invalid str character utf8");
-    errx(1, "str_character_position: invalid str character utf8");
   }
   return -1;
 }
@@ -291,8 +290,11 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
       ! str_sw_pos_to_uw(end, src->size, &buf.wpos))
     return NULL;
   if (buf.rpos > buf.wpos) {
-    warnx("str_init_slice: invalid positions: %lu > %lu",
-          buf.rpos, buf.wpos);
+    err_write_1("str_init_slice: invalid positions: ");
+    err_inspect_uw(&buf.rpos);
+    err_write_1(" > ");
+    err_inspect_uw(&buf.wpos);
+    err_write_1("\n");
     assert(! "str_init_slice: invalid positions");
     return NULL;
   }
@@ -313,8 +315,11 @@ s_str * str_init_vf (s_str *str, const char *fmt, va_list ap)
   int len;
   char *s;
   len = vasprintf(&s, fmt, ap);
-  if (len < 0)
-    err(1, "vasprintf");
+  if (len < 0) {
+    err_puts("str_init_vf: vasprintf");
+    assert(! "str_init_vf: vasprintf");
+    return NULL;
+  }
   return str_init(str, s, len, s);
 }
 
@@ -348,9 +353,12 @@ sw str_length_utf8 (const s_str *str)
 s_str * str_new (char *free, uw size, const char *p)
 {
   s_str *str;
-  str = malloc(sizeof(s_str));
-  if (! str)
-    err(1, "out of memory");
+  str = calloc(1, sizeof(s_str));
+  if (! str) {
+    err_puts("str_new: failed to allocate memory");
+    assert(! "str_new: failed to allocate memory");
+    return NULL;
+  }
   str_init(str, free, size, p);
   return str;
 }
@@ -367,11 +375,16 @@ s_str * str_new_cpy (const char *p, uw size)
   char *a;
   s_str *str;
   if (! (a = malloc(size))) {
-    warn("str_new_cpy");
+    err_puts("str_new_cpy: failed to allocate memory");
+    assert(! "str_new_cpy: failed to allocate memory");
     return NULL;
   }
   memcpy(a, p, size);
   str = str_new(a, size, a);
+  if (! str) {
+    free(a);
+    return NULL;
+  }
   return str;
 }
 
@@ -381,11 +394,16 @@ s_str * str_new_copy (const s_str *src)
   s_str *dest;
   assert(src);
   if (! (a = malloc(src->size))) {
-    warn("str_new_copy");
+    err_puts("str_new_copy: failed to allocate memory");
+    assert(! "str_new_copy: failed to allocate memory");
     return NULL;
   }
   memcpy(a, src->ptr.p, src->size);
   dest = str_new(a, src->size, a);
+  if (! dest) {
+    free(a);
+    return NULL;
+  }
   return dest;
 }
 
@@ -412,8 +430,11 @@ s_str * str_new_vf (const char *fmt, va_list ap)
   char *s;
   s_str *dest;
   len = vasprintf(&s, fmt, ap);
-  if (len < 0)
-    err(1, "vasprintf");
+  if (len < 0) {
+    err_puts("str_new_vf: vasprintf");
+    assert(! "str_new_vf: vasprintf");
+    return NULL;
+  }
   dest = str_new(s, len, s);
   return dest;
 }
@@ -633,8 +654,11 @@ uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
   assert(dest);
   if (pos >= 0) {
     if ((uw) pos > max_pos) {
-      warnx("str_sw_pos_to_uw: index out of bounds: %ld > %lu",
-            pos, max_pos);
+      err_write_1("str_sw_pos_to_uw: index too large: ");
+      err_inspect_sw(&pos);
+      err_write_1(" > ");
+      err_inspect_uw(&max_pos);
+      err_write_1("\n");
       assert(! "str_sw_pos_to_uw: index too large");
       return NULL;
     }
@@ -644,8 +668,11 @@ uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
     if (max_pos > SW_MAX || pos >= (sw) -max_pos)
       *dest = max_pos - pos;
     else {
-      warnx("str_sw_pos_to_uw: index out of bounds: %ld < -%lu",
-            pos, max_pos);
+      err_write_1("str_sw_pos_to_uw: index too low: ");
+      err_inspect_sw(&pos);
+      err_write_1(" < -");
+      err_inspect_uw(&max_pos);
+      err_write_1("\n");
       assert(! "str_sw_pos_to_uw: index too low");
       return NULL;
     }
