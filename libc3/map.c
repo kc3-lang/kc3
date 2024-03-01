@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include <string.h>
 #include "buf.h"
@@ -28,7 +27,7 @@ s_tag * map_access (const s_map *map, const s_tag *key, s_tag *value)
   assert(key);
   assert(value);
   if (key->type != TAG_SYM) {
-    warnx("map_access: only works with symbol key");
+    err_puts("map_access: only works with symbol key");
     return NULL;
   }
   return map_get(map, key, value);
@@ -39,8 +38,10 @@ s_map * map_init_cast (s_map *map, const s_tag *tag)
   assert(tag);
   if (tag->type == TAG_MAP)
     return map_init_copy(map, &tag->data.map);
-  warnx("map_init_cast: cannot cast %s to map",
-        tag_type_to_string(tag->type));
+  err_write_1("map_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Map");
+  assert(! "map_init_cast: cannot cast to Map");
   return NULL;
 }
 
@@ -87,13 +88,23 @@ s_map * map_init (s_map *map, uw count)
 s_map * map_init_1 (s_map *map, const char *p)
 {
   s_buf buf;
+  uw len;
   sw r;
   assert(map);
   assert(p);
-  buf_init_1(&buf, false, (char *) p);
-  if ((r = buf_parse_map(&buf, map)) != (sw) strlen(p)) {
-    assert(! "invalid map");
-    warnx("invalid map: \"%s\" (%ld)", p, r);
+  len = strlen(p);
+  buf_init(&buf, false, len, (char *) p);
+  buf.wpos = len;
+  r = buf_parse_map(&buf, map);
+  if (r < 0 || (uw) r != len) {
+    err_write_1("map_init_1: invalid map: \"");
+    err_write_1(p);
+    err_write_1("\" => ");
+    err_inspect_sw(&r);
+    err_write_1(" != ");
+    err_inspect_uw(&len);
+    err_write_1("\n");
+    assert(! "map_init_1: invalid map");
     return NULL;
   }
   return map;
@@ -122,7 +133,10 @@ s_map * map_init_from_lists (s_map *map, const s_list *keys,
   const s_list *v;
   assert(map);
   if ((len = list_length(keys)) != list_length(values)) {
-    warnx("map_init_from_lists: list length don't match");
+    err_puts("map_init_from_lists:"
+             " keys and values length do not match");
+    assert(! "map_init_from_lists:"
+             " keys and values length do not match");
     return NULL;
   }
   map_init(map, len);
@@ -175,31 +189,50 @@ s_list ** map_map (const s_map *map, const s_fn *fn, s_list **result)
 s_map * map_new (uw count)
 {
   s_map *map;
-  if (! (map = malloc(sizeof(s_map)))) {
-    warn("map_new");
+  map = calloc(1, sizeof(s_map));
+  if (! map) {
+    err_puts("map_new: failed to allocate memory");
+    assert(! "map_new: failed to allocate memory");
     return NULL;
   }
-  return map_init(map, count);
+  if (! map_init(map, count)) {
+    free(map);
+    return NULL;
+  }
+  return map;
 }
 
 s_map * map_new_1 (const char *p)
 {
   s_map *map;
-  if (! (map = malloc(sizeof(s_map)))) {
-    warn("map_new");
+  map = calloc(1, sizeof(s_map));
+  if (! map) {
+    err_puts("map_new_1: failed to allocate memory");
+    assert(! "map_new_1: failed to allocate memory");
     return NULL;
   }
-  return map_init_1(map, p);
+  if (! map_init_1(map, p)) {
+    free(map);
+    return NULL;
+  }
+  return map;
 }
 
 s_map * map_new_from_lists (const s_list *keys, const s_list *values)
 {
   s_map *map;
-  if (! (map = malloc(sizeof(s_map)))) {
-    warn("map_new");
+  map = calloc(1, sizeof(s_map));
+  if (! map) {
+    err_puts("map_new_from_lists: failed to allocate memory");
+    assert(! "map_new_from_lists: failed to allocate memory");
     return NULL;
   }
-  return map_init_from_lists(map, keys, values);
+  if (! map_init_from_lists(map, keys, values)) {
+    free(map);
+    return NULL;
+  }
+  return map;
+  
 }
 
 s_map * map_set (s_map *map, const s_tag *key, const s_tag *value)
@@ -272,7 +305,8 @@ s_map * map_update_list (const s_map *map, const s_list *alist, s_map *dest)
   while (i) {
     assert(i->tag.type == TAG_TUPLE && i->tag.data.tuple.count == 2);
     if (i->tag.type != TAG_TUPLE || i->tag.data.tuple.count != 2) {
-      warnx("map_update_list: not an associative list");
+      err_puts("map_update_list: not an associative list");
+      assert(! "map_update_list: not an associative list");
       goto ko;
     }
     if (! map_set(&tmp, i->tag.data.tuple.tag, i->tag.data.tuple.tag + 1))

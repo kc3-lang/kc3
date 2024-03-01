@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
-#include <err.h>
 #include "ptag.h"
 #include "tag_type.h"
 

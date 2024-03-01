@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <string.h>
 #include "buf.h"
 #include "character.h"
@@ -39,8 +38,9 @@ bool module_ensure_loaded (const s_sym *module, s_facts *facts)
       NULL, NULL });
   if (! facts_with_cursor_next(&cursor)) {
     if (! module_load(module, facts)) {
-      warnx("module not found: %s",
-            module->str.ptr.ps8);
+      err_write_1("module_ensure_loaded: module not found: ");
+      err_puts(module->str.ptr.pchar);
+      assert(! "module_ensure_loaded: module not found");
       facts_with_cursor_clean(&cursor);
       return false;
     }
@@ -117,7 +117,8 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
   return buf_to_str(&out, dest);
  error:
   buf_clean(&out);
-  warnx("module_path: error");
+  err_puts("module_path: error");
+  assert(! "module_path: error");
   return NULL;
 }
 

@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "integer.h"
 #include "ptr_free.h"
@@ -62,8 +61,9 @@ u_ptr_w * ptr_free_init_cast (u_ptr_w *p, const s_tag *tag)
   case TAG_UW:  p->p = (void *) ((uw) tag->data.uw);   return p;
   default: break;
   }
-  warnx("ptr_free_init_cast: cannot cast %s to PtrFree",
-        tag_type_to_string(tag->type));
+  err_write_1("ptr_free_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to PtrFree");
   assert(! "ptr_free_init_cast: cannot cast to PtrFree");
   return NULL;
 }
@@ -83,7 +83,8 @@ u_ptr_w * ptr_free_new (void *p)
   u_ptr_w *ptr_free;
   ptr_free = calloc(1, sizeof(u_ptr_w));
   if (! ptr_free) {
-    warn("ptr_free_new: ptr_free");
+    err_puts("ptr_free_new: failed to allocate memory");
+    assert(! "ptr_free_new: failed to allocate memory");
     return NULL;
   }
   if (! ptr_free_init(ptr_free, p)) {
@@ -99,7 +100,8 @@ u_ptr_w * ptr_free_new_copy (const u_ptr_w *src)
   assert(src);
   ptr_free = calloc(1, sizeof(u_ptr_w));
   if (! ptr_free) {
-    warn("ptr_free_new: ptr_free");
+    err_puts("ptr_free_new_copy: failed to allocate memory");
+    assert(! "ptr_free_new_copy: failed to allocate memory");
     return NULL;
   }
   if (! ptr_free_init_copy(ptr_free, src)) {
