@@ -30,18 +30,41 @@ s_ratio * ratio_add (const s_ratio *a, const s_ratio *b, s_ratio *dest)
   assert(dest);
   assert(integer_is_positive(&a->denominator));
   assert(integer_is_positive(&b->denominator));
-  if (! integer_init(&tmp.numerator) || ! integer_init(&tmp.denominator)) {
-    err_puts("ratio_add: failed to initialize numerator or denominator");
+  if (! integer_init(&tmp.numerator))
+    return NULL;
+  if (! integer_init(&tmp.denominator)) {
+    integer_clean(&tmp.numerator);
     return NULL;
   }
-  integer_mul(&a->numerator, &b->denominator, &i);
-  integer_mul(&b->numerator, &a->denominator, &j);
-  integer_add(&i, &j, &tmp.numerator);
-  integer_mul(&a->denominator, &b->denominator, &tmp.denominator);
+  if (! integer_mul(&a->numerator, &b->denominator, &i)) {
+    integer_clean(&tmp.numerator);
+    integer_clean(&tmp.denominator);
+    return NULL;
+  }
+  if (! integer_mul(&b->numerator, &a->denominator, &j)) {
+    integer_clean(&i);
+    integer_clean(&tmp.numerator);
+    integer_clean(&tmp.denominator);
+    return NULL;
+  }
+  if (! integer_add(&i, &j, &tmp.numerator)) {
+    integer_clean(&i);
+    integer_clean(&j);
+    integer_clean(&tmp.numerator);
+    integer_clean(&tmp.denominator);
+    return NULL;
+  }
+  if (! integer_mul(&a->denominator, &b->denominator,
+                    &tmp.denominator)) {
+    integer_clean(&i);
+    integer_clean(&j);
+    integer_clean(&tmp.numerator);
+    integer_clean(&tmp.denominator);
+    return NULL;
+  }
   integer_clean(&i);
   integer_clean(&j);
   if (! ratio_simplify(&tmp, dest)) {
-    err_puts("ratio_add: failed to simplify ratio");
     ratio_clean(&tmp);
     return NULL;
   }
@@ -86,14 +109,28 @@ s_ratio * ratio_init (s_ratio *dest)
 
 s_ratio * ratio_init_1 (s_ratio *r, const char *p)
 {
-  s_integer numerator;
-  s_integer denominator;
+  s_buf buf;
+  uw len;
+  sw r_val;
+  s_ratio tmp;
   assert(r);
-  assert(p);
-  // FIXME
-  integer_init_1(&numerator, p);
-  integer_init_u64(&denominator, 1);
-  ratio_init_integer(r, &numerator, &denominator);
+  if (!p)
+    return r;
+  len = strlen(p);
+  buf_init(&buf, false, len, (char *) p); // buf is read-only
+  buf.wpos = len;
+  r_val = buf_parse_ratio(&buf, &tmp);
+  if (r_val < 0 || (uw) r_val != len) {
+    err_write_1("invalid ratio: \"");
+    err_write_1(p);
+    err_write_1("\", ");
+    err_inspect_uw(&len);
+    err_write_1(" != ");
+    err_inspect_sw(&r_val);
+    assert(! "invalid ratio");
+    return NULL;
+  }
+  ratio_init_integer(r, &tmp.numerator, &tmp.denominator);
   return r;
 }
 
@@ -214,25 +251,30 @@ s_ratio * ratio_neg (const s_ratio *r, s_ratio *dest)
   return dest;
 }
 
-s_ratio * ratio_simplify(s_ratio *r, s_ratio *dest)
+s_ratio * ratio_simplify (s_ratio *r, s_ratio *dest)
 {
   s_ratio tmp;
   s_integer gcd;
   assert(r);
   assert(dest);
-  if (! integer_init(&tmp.numerator) || ! integer_init(&tmp.denominator)) {
-    err_puts("ratio_simplify: failed to initialize numerator or denominator");
+  assert(integer_is_positive(&r->denominator));
+  if (! integer_init(&tmp.numerator))
+    return NULL;
+  if (! integer_init(&tmp.denominator)) {
+    integer_clean(&tmp.numerator);
     return NULL;
   }
-  integer_gcd(&r->numerator, &r->denominator, &gcd);
+  if (! integer_gcd(&r->numerator, &r->denominator, &gcd)) {
+    integer_clean(&tmp.numerator);
+    integer_clean(&tmp.denominator);
+    return NULL;
+  }
   if (! integer_div(&r->numerator, &gcd, &tmp.numerator)) {
-    err_puts("ratio_simplify: failed to divide numerator by gcd");
     integer_clean(&tmp.numerator);
     integer_clean(&tmp.denominator);
     return NULL;
   }
   if (! integer_div(&r->denominator, &gcd, &tmp.denominator)) {
-    err_puts("ratio_simplify: failed to divide denominator by gcd");
     integer_clean(&tmp.numerator);
     integer_clean(&tmp.denominator);
     return NULL;
