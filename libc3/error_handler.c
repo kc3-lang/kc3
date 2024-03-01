@@ -10,9 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
-#include <stdlib.h>
+#include "alloc.h"
+#include "assert.h"
 #include "error_handler.h"
 
 void error_handler_clean (s_error_handler *error_handler)
@@ -49,7 +48,8 @@ error_handler_init (s_error_handler *error_handler,
 s_error_handler * error_handler_new (s_error_handler *next)
 {
   s_error_handler *error_handler;
-  if (! (error_handler = malloc(sizeof(s_error_handler))))
-    errx(1, "error_handler_new: out of memory");
+  error_handler = alloc(sizeof(s_error_handler));
+  if (! error_handler)
+    return NULL;
   return error_handler_init(error_handler, next);
 }
