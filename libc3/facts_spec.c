@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <stdlib.h>
+#include "alloc.h"
+#include "assert.h"
 #include "compare.h"
 #include "fact.h"
 #include "facts_spec.h"
@@ -37,8 +37,12 @@ p_facts_spec facts_spec_new_expand (p_facts_spec spec)
   if (count > 0) {
     s_facts_spec_cursor cursor;
     s_fact fact;
-    p_facts_spec new = calloc(count * 4 + 1, sizeof(s_tag *));
-    p_facts_spec n = new;
+    p_facts_spec new;
+    p_facts_spec n;
+    new = alloc((count * 4 + 1) * sizeof(s_tag *));
+    if (! new)
+      return NULL;
+    n = new;
     facts_spec_cursor_init(&cursor, spec);
     while (facts_spec_cursor_next(&cursor, &fact)) {
       *n++ = (s_tag *) fact.subject;
