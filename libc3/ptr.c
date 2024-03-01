@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
-#include <err.h>
 #include <stdlib.h>
 #include "integer.h"
 #include "ptr.h"
@@ -53,10 +52,13 @@ u_ptr_w * ptr_init_cast (u_ptr_w *p, const s_tag *tag)
   case TAG_U32: p->p = (void *) ((uw) tag->data.u32);  return p;
   case TAG_U64: p->p = (void *) ((uw) tag->data.u64);  return p;
   case TAG_UW:  p->p = (void *) ((uw) tag->data.uw);   return p;
-  default: break;
+  default:
+    break;
   }
-  warnx("ptr_cast: cannot cast %s to Ptr",
-        tag_type_to_string(tag->type));
+  err_write_1("ptr_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Ptr");
+  assert(! "ptr_cast: cannot cast to Ptr");
   return NULL;
 }
 
@@ -75,7 +77,8 @@ u_ptr_w * ptr_new (void *p)
   u_ptr_w *ptr;
   ptr = calloc(1, sizeof(u_ptr_w));
   if (! ptr) {
-    warn("ptr_new: ptr");
+    err_puts("ptr_new: failed to allocate memory");
+    assert(! "ptr_new: failed to allocate memory");
     return NULL;
   }
   if (! ptr_init(ptr, p)) {
@@ -91,7 +94,8 @@ u_ptr_w * ptr_new_copy (const u_ptr_w *src)
   assert(src);
   ptr = calloc(1, sizeof(u_ptr_w));
   if (! ptr) {
-    warn("ptr_new: ptr");
+    err_puts("ptr_new_copy: failed to allocate memory");
+    assert(! "ptr_new_copy: failed to allocate memory");
     return NULL;
   }
   if (! ptr_init_copy(ptr, src)) {
