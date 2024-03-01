@@ -23,7 +23,7 @@ s_ratio * ratio_init (s_ratio *dest);
 s_ratio * ratio_init_integer (s_ratio *r, s_integer *numerator,
                               s_integer *denominator);
 s_ratio * ratio_init_zero (s_ratio *r);
-s_ratio * ratio_init_1 (s_ratio *r, const char *p);
+s_ratio * ratio_init_1 (s_ratio *q, const char *p);
 s_ratio * ratio_init_copy (s_ratio *a, const s_ratio *x);
 s_ratio * ratio_init_f32 (s_ratio *a, f32 x);
 s_ratio * ratio_init_f64 (s_ratio *a, f64 x);
