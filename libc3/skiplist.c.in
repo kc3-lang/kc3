@@ -12,7 +12,6 @@
  */
 #include <assert.h>
 #include <stdlib.h>
-#include <strings.h>
 #include "compare.h"
 #include "_NAME$.h"
 #include "skiplist_node___NAME$.h"

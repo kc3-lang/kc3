@@ -13,7 +13,6 @@
 #include "assert.h"
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include "arg.h"
 #include "binding.h"
 #include "buf.h"

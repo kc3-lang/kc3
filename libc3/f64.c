@@ -10,9 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
 #include <stdlib.h>
+#include "assert.h"
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
@@ -73,9 +72,10 @@ f64 * f64_init_cast (f64 *x, const s_tag *tag)
   default:
     break;
   }
-  warnx("f64_init_cast: cannot cast %s to f64",
-        tag_type_to_string(tag->type));
-  assert(! "f64_init_cast: cannot cast to f64");
+  err_write_1("f64_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to F64");
+  assert(! "f64_init_cast: cannot cast to F64");
   return NULL;
 }
 

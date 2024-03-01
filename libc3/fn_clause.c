@@ -12,7 +12,6 @@
  */
 #include "assert.h"
 #include <stdlib.h>
-#include <strings.h>
 #include "arg.h"
 #include "binding.h"
 #include "block.h"
