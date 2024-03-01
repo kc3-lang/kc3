@@ -2714,9 +2714,8 @@ sw buf_parse_ratio (s_buf *buf, s_ratio *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_ratio tmp;
+  s_ratio tmp = {0};
   buf_save_init(buf, &save);
-  ratio_init(&tmp);
   if ((r = buf_parse_integer(buf, &tmp.numerator)) <= 0)
     goto clean;
   result += r;
