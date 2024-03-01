@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include "facts_spec_cursor.h"
 
 s_facts_spec_cursor *
@@ -44,7 +43,8 @@ bool facts_spec_cursor_next (s_facts_spec_cursor *cursor,
   } while (! predicate);
   object = cursor->spec[cursor->pos + 1];
   if (! object) {
-    warnx("facts_spec_cursor_next: NULL object");
+    err_puts("facts_spec_cursor_next: NULL object");
+    assert(! "facts_spec_cursor_next: NULL object");
     return false;
   }
   cursor->pos += 2;

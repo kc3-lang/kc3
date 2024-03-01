@@ -104,6 +104,8 @@ C3_C_SOURCES = \
 	"ic3/linenoise.c" \
 	"libc3/abs.c" \
 	"libc3/abs.h" \
+	"libc3/alloc.c" \
+	"libc3/alloc.h" \
 	"libc3/arg.c" \
 	"libc3/arg.h" \
 	"libc3/array.c" \
@@ -1056,7 +1058,6 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/NameAliases.txt" \
 	"ucd2c/UCD/NamedSequences.txt" \
 	"ucd2c/UCD/NamedSequencesProv.txt" \
-	"ucd2c/UCD/NamesList.html" \
 	"ucd2c/UCD/NamesList.txt" \
 	"ucd2c/UCD/NormalizationCorrections.txt" \
 	"ucd2c/UCD/NormalizationTest.txt" \
@@ -1076,15 +1077,11 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/UnicodeData.txt" \
 	"ucd2c/UCD/VerticalOrientation.txt" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakProperty.txt" \
-	"ucd2c/UCD/auxiliary/GraphemeBreakTest.html" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakTest.txt" \
-	"ucd2c/UCD/auxiliary/LineBreakTest.html" \
 	"ucd2c/UCD/auxiliary/LineBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/SentenceBreakProperty.txt" \
-	"ucd2c/UCD/auxiliary/SentenceBreakTest.html" \
 	"ucd2c/UCD/auxiliary/SentenceBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/WordBreakProperty.txt" \
-	"ucd2c/UCD/auxiliary/WordBreakTest.html" \
 	"ucd2c/UCD/auxiliary/WordBreakTest.txt" \
 	"ucd2c/UCD/emoji/ReadMe.txt" \
 	"ucd2c/UCD/emoji/emoji-data.txt" \
