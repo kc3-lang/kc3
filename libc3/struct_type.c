@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include <string.h>
 #include "env.h"
@@ -69,7 +68,10 @@ s_struct_type * struct_type_init (s_struct_type *st,
     return NULL;
   st->offset = calloc(count, sizeof(uw));
   if (! st->offset) {
-    warn("struct_type_init: offset array of size %lu", count);
+    err_puts("struct_type_init: failed to allocate memory:"
+             " offset array");
+    assert(! "struct_type_init: failed to allocate memory:"
+             " offset array");
     map_clean(&st->map);
     return NULL;
   }
@@ -79,7 +81,8 @@ s_struct_type * struct_type_init (s_struct_type *st,
   s = spec;
   while (s) {
     if (s->tag.type != TAG_TUPLE || s->tag.data.tuple.count != 2) {
-      warn("struct_type_init: invalid spec");
+      err_puts("struct_type_init: invalid spec");
+      assert(! "struct_type_init: invalid spec");
       map_clean(&st->map);
       free(st->offset);
       return NULL;
@@ -123,8 +126,10 @@ s_struct_type * struct_type_init_copy (s_struct_type *s,
     return NULL;
   tmp.offset = calloc(tmp.map.count, sizeof(uw));
   if (! tmp.offset) {
-    warn("struct_type_init_copy: offset array of size %lu",
-         tmp.map.count);
+    err_puts("struct_type_init_copy: failed to allocate memory:"
+             " offset array");
+    assert(! "struct_type_init_copy: failed to allocate memory:"
+             " offset array");
     map_clean(&tmp.map);
     return NULL;
   }
@@ -158,7 +163,8 @@ s_struct_type * struct_type_new (const s_sym *module,
   assert(module);
   st = calloc(1, sizeof(s_struct_type));
   if (! st) {
-    warn("struct_type_new: %s: calloc", module->str.ptr.ps8);
+    err_puts("struct_type_new: failed to allocate memory");
+    assert(! "struct_type_new: failed to allocate memory");
     return NULL;
   }
   if (! struct_type_init(st, module, spec)) {
