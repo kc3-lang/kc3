@@ -10,17 +10,21 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "binding.h"
 #include "frame.h"
 #include "list.h"
 
-void frame_binding_new (s_frame *frame, const s_sym *name,
-                        const s_tag *value)
+s_frame * frame_binding_new (s_frame *frame, const s_sym *name,
+                             const s_tag *value)
 {
-  frame->bindings = binding_new(name, value, frame->bindings);
+  s_binding *b;
+  b = binding_new(name, value, frame->bindings);
+  if (! b)
+    return NULL;
+  frame->bindings = b;
+  return frame;
 }
 
 s_frame * frame_clean (s_frame *frame)
@@ -55,16 +59,21 @@ const s_tag * frame_get (const s_frame *frame, const s_sym *sym)
 
 s_frame * frame_init (s_frame *frame, s_frame *next)
 {
+  s_frame tmp = {0};
   assert(frame);
-  frame->bindings = NULL;
-  frame->next = next;
+  tmp.next = next;
+  *frame = tmp;
   return frame;
 }
 
 s_frame * frame_new (s_frame *next)
 {
   s_frame *frame;
-  if (! (frame = malloc(sizeof(s_frame))))
-    errx(1, "frame_new: out of memory");
+  frame = calloc(1, sizeof(s_frame));
+  if (! frame) {
+    err_puts("frame_new: failed to allocate memory");
+    assert(! "frame_new: failed to allocate memory");
+    return NULL;
+  }
   return frame_init(frame, next);
 }
