@@ -10,9 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
-#include <stdlib.h>
+#include "assert.h"
 #include <string.h>
 #include "data.h"
 #include "hash.h"
@@ -490,7 +488,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_VAR:   return hash_update_var(hash, NULL);
   case TAG_VOID:  return hash_update_void(hash, NULL);
   }
-  warnx("hash_update_tag: unknown tag type: %d", tag->type);
+  err_puts("hash_update_tag: unknown tag type");
   assert(! "hash_update_tag: unknown tag type");
   return false;
 }

@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include <strings.h>
 #include "arg.h"
@@ -71,8 +70,11 @@ s_fn_clause * fn_clause_init (s_fn_clause *fn_clause, s_fn_clause *next_clause)
 s_fn_clause * fn_clause_new (s_fn_clause *next_clause)
 {
   s_fn_clause *fn_clause;
-  if (! (fn_clause = calloc(1, sizeof(s_fn_clause))))
-    err(1, "fn_clause_new: calloc");
-  fn_clause_init(fn_clause, next_clause);
-  return fn_clause;
+  fn_clause = calloc(1, sizeof(s_fn_clause));
+  if (! fn_clause) {
+    err_puts("fn_clause_new: failed to allocate memory");
+    assert(! "fn_clause_new: failed to allocate memory");
+    return NULL;
+  }
+  return fn_clause_init(fn_clause, next_clause);
 }
