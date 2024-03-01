@@ -285,8 +285,9 @@ s_tag * tag_init_1 (s_tag *tag, const char *p)
   tag_init_void(tag);
   if (! p)
     return tag;
-  buf_init_1(&buf, false, (char *) p);
   len = strlen(p);
+  buf_init(&buf, false, len, (char *) p); // buf is read-only
+  buf.wpos = len;
   r = buf_parse_tag(&buf, tag);
   if (r < 0 || (uw) r != len) {
     err_write_1("invalid tag: \"");
