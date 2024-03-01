@@ -30,32 +30,32 @@ s_facts * facts_new (void);
 void     facts_delete (s_facts *facts);
 
 /* Modifiers */
-s_fact * facts_add_fact (s_facts *facts, const s_fact *fact);
-s_fact * facts_add_tags (s_facts *facts, const s_tag *subject,
-                         const s_tag *predicate,
-                         const s_tag *object);
-void     facts_close (s_facts *facts);
-sw       facts_load (s_facts *facts, s_buf *buf, const s_str *path);
-sw       facts_load_file (s_facts *facts, const s_str *path);
-void     facts_lock_clean (s_facts *facts);
-void     facts_lock_init (s_facts *facts);
-void     facts_lock_r (s_facts *facts);
-void     facts_lock_unlock_r (s_facts *facts);
-void     facts_lock_unlock_w (s_facts *facts);
-void     facts_lock_w (s_facts *facts);
-sw       facts_open_file (s_facts *facts, const s_str *path);
-s_tag *  facts_ref_tag (s_facts *facts, const s_tag *tag);
-bool     facts_remove_fact (s_facts *facts, const s_fact *fact);
-bool     facts_remove_fact_tags (s_facts *facts, const s_tag *subject,
-                                 const s_tag *predicate,
-                                 const s_tag *object);
-void     facts_remove_all (s_facts *facts);
-s_fact * facts_replace_fact (s_facts *facts, const s_fact *fact);
-s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
-                             const s_tag *predicate,
-                             const s_tag *object);
-sw       facts_save_file (s_facts *facts, const char *path);
-bool     facts_unref_tag (s_facts *facts, const s_tag *tag);
+s_fact *  facts_add_fact (s_facts *facts, const s_fact *fact);
+s_fact *  facts_add_tags (s_facts *facts, const s_tag *subject,
+                          const s_tag *predicate,
+                          const s_tag *object);
+void      facts_close (s_facts *facts);
+sw        facts_load (s_facts *facts, s_buf *buf, const s_str *path);
+sw        facts_load_file (s_facts *facts, const s_str *path);
+s_facts * facts_lock_clean (s_facts *facts);
+s_facts * facts_lock_init (s_facts *facts);
+s_facts * facts_lock_r (s_facts *facts);
+s_facts * facts_lock_unlock_r (s_facts *facts);
+s_facts * facts_lock_unlock_w (s_facts *facts);
+s_facts * facts_lock_w (s_facts *facts);
+sw        facts_open_file (s_facts *facts, const s_str *path);
+s_tag *   facts_ref_tag (s_facts *facts, const s_tag *tag);
+bool      facts_remove_fact (s_facts *facts, const s_fact *fact);
+bool      facts_remove_fact_tags (s_facts *facts, const s_tag *subject,
+                                  const s_tag *predicate,
+                                  const s_tag *object);
+void      facts_remove_all (s_facts *facts);
+s_fact *  facts_replace_fact (s_facts *facts, const s_fact *fact);
+s_fact *  facts_replace_tags (s_facts *facts, const s_tag *subject,
+                              const s_tag *predicate,
+                              const s_tag *object);
+sw        facts_save_file (s_facts *facts, const char *path);
+bool      facts_unref_tag (s_facts *facts, const s_tag *tag);
 
 /* Observers */
 sw       facts_dump (s_facts *facts, s_buf *buf);

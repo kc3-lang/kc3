@@ -10,9 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
-#include <stdlib.h>
+#include "assert.h"
 #include "facts.h"
 #include "facts_cursor.h"
 #include "skiplist__fact.h"
@@ -64,8 +62,11 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
 s_facts_cursor * facts_cursor_lock (s_facts_cursor *cursor)
 {
   assert(cursor);
-  if (pthread_mutex_lock(&cursor->mutex))
-    errx(1, "facts_cursor_lock: pthread_mutex_lock");
+  if (pthread_mutex_lock(&cursor->mutex)) {
+    err_puts("facts_cursor_lock: pthread_mutex_lock");
+    assert(! "facts_cursor_lock: pthread_mutex_lock");
+    return NULL;
+  }
   facts_lock_r(cursor->facts);
   return cursor;
 }
@@ -73,16 +74,22 @@ s_facts_cursor * facts_cursor_lock (s_facts_cursor *cursor)
 s_facts_cursor * facts_cursor_lock_clean (s_facts_cursor *cursor)
 {
   assert(cursor);
-  if (pthread_mutex_destroy(&cursor->mutex))
-    errx(1, "facts_cursor_lock_clean: pthread_mutex_destroy");
+  if (pthread_mutex_destroy(&cursor->mutex)) {
+    err_puts("facts_cursor_lock_clean: pthread_mutex_destroy");
+    assert(! "facts_cursor_lock_clean: pthread_mutex_destroy");
+    return NULL;
+  }
   return cursor;
 }
 
 s_facts_cursor * facts_cursor_lock_init (s_facts_cursor *cursor)
 {
   assert(cursor);
-  if (pthread_mutex_init(&cursor->mutex, NULL))
-    errx(1, "facts_cursor_lock_init: pthread_mutex_init");
+  if (pthread_mutex_init(&cursor->mutex, NULL)) {
+    err_puts("facts_cursor_lock_init: pthread_mutex_init");
+    assert(! "facts_cursor_lock_init: pthread_mutex_init");
+    return NULL;
+  }
   return cursor;
 }
 
@@ -90,8 +97,11 @@ s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor)
 {
   assert(cursor);
   facts_lock_unlock_r(cursor->facts);
-  if (pthread_mutex_unlock(&cursor->mutex))
-    errx(1, "facts_cursor_lock_unlock: pthread_mutex_unlock");
+  if (pthread_mutex_unlock(&cursor->mutex)) {
+    err_puts("facts_cursor_lock_unlock: pthread_mutex_unlock");
+    assert(! "facts_cursor_lock_unlock: pthread_mutex_unlock");
+    return NULL;
+  }
   return cursor;
 }
 
