@@ -64,4 +64,6 @@ s_ratio * ratio_sub (const s_ratio *a, const s_ratio *b,
 /* Setters. */
 s_ratio * ratio_set_double (s_ratio *a, double x);
 
+s_ratio * ratio_simplify(s_ratio *r, s_ratio *dest);
+
 #endif /* LIBC3_RATIO_H */

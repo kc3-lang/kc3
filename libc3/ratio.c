@@ -20,9 +20,9 @@
 #include "integer.h"
 #include "ratio.h"
 
-s_ratio * ratio_add (const s_ratio *a, const s_ratio *b,
-                           s_ratio *dest)
+s_ratio * ratio_add (const s_ratio *a, const s_ratio *b, s_ratio *dest)
 {
+  s_ratio tmp;
   s_integer i;
   s_integer j;
   assert(a);
@@ -30,13 +30,22 @@ s_ratio * ratio_add (const s_ratio *a, const s_ratio *b,
   assert(dest);
   assert(integer_is_positive(&a->denominator));
   assert(integer_is_positive(&b->denominator));
+  if (! integer_init(&tmp.numerator) || ! integer_init(&tmp.denominator)) {
+    err_puts("ratio_add: failed to initialize numerator or denominator");
+    return NULL;
+  }
   integer_mul(&a->numerator, &b->denominator, &i);
   integer_mul(&b->numerator, &a->denominator, &j);
-  integer_add(&i, &j, &dest->numerator);
-  integer_mul(&a->denominator, &b->denominator,
-              &dest->denominator);
+  integer_add(&i, &j, &tmp.numerator);
+  integer_mul(&a->denominator, &b->denominator, &tmp.denominator);
   integer_clean(&i);
   integer_clean(&j);
+  if (! ratio_simplify(&tmp, dest)) {
+    err_puts("ratio_add: failed to simplify ratio");
+    ratio_clean(&tmp);
+    return NULL;
+  }
+  ratio_clean(&tmp);
   return dest;
 }
 
@@ -201,6 +210,34 @@ s_ratio * ratio_neg (const s_ratio *r, s_ratio *dest)
     integer_clean(&tmp.numerator);
     return NULL;
   }
+  *dest = tmp;
+  return dest;
+}
+
+s_ratio * ratio_simplify(s_ratio *r, s_ratio *dest)
+{
+  s_ratio tmp;
+  s_integer gcd;
+  assert(r);
+  assert(dest);
+  if (! integer_init(&tmp.numerator) || ! integer_init(&tmp.denominator)) {
+    err_puts("ratio_simplify: failed to initialize numerator or denominator");
+    return NULL;
+  }
+  integer_gcd(&r->numerator, &r->denominator, &gcd);
+  if (! integer_div(&r->numerator, &gcd, &tmp.numerator)) {
+    err_puts("ratio_simplify: failed to divide numerator by gcd");
+    integer_clean(&tmp.numerator);
+    integer_clean(&tmp.denominator);
+    return NULL;
+  }
+  if (! integer_div(&r->denominator, &gcd, &tmp.denominator)) {
+    err_puts("ratio_simplify: failed to divide denominator by gcd");
+    integer_clean(&tmp.numerator);
+    integer_clean(&tmp.denominator);
+    return NULL;
+  }
+  integer_clean(&gcd);
   *dest = tmp;
   return dest;
 }
