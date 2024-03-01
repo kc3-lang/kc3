@@ -37,29 +37,25 @@ s_ratio * ratio_add (const s_ratio *a, const s_ratio *b, s_ratio *dest)
     return NULL;
   }
   if (! integer_mul(&a->numerator, &b->denominator, &i)) {
-    integer_clean(&tmp.numerator);
-    integer_clean(&tmp.denominator);
+    ratio_clean(&tmp);
     return NULL;
   }
   if (! integer_mul(&b->numerator, &a->denominator, &j)) {
     integer_clean(&i);
-    integer_clean(&tmp.numerator);
-    integer_clean(&tmp.denominator);
+    ratio_clean(&tmp);
     return NULL;
   }
   if (! integer_add(&i, &j, &tmp.numerator)) {
     integer_clean(&i);
     integer_clean(&j);
-    integer_clean(&tmp.numerator);
-    integer_clean(&tmp.denominator);
+    ratio_clean(&tmp);
     return NULL;
   }
   if (! integer_mul(&a->denominator, &b->denominator,
                     &tmp.denominator)) {
     integer_clean(&i);
     integer_clean(&j);
-    integer_clean(&tmp.numerator);
-    integer_clean(&tmp.denominator);
+    ratio_clean(&tmp);
     return NULL;
   }
   integer_clean(&i);
@@ -107,31 +103,32 @@ s_ratio * ratio_init (s_ratio *dest)
   return dest;
 }
 
-s_ratio * ratio_init_1 (s_ratio *r, const char *p)
+s_ratio * ratio_init_1 (s_ratio *q, const char *p)
 {
   s_buf buf;
   uw len;
-  sw r_val;
+  sw r;
   s_ratio tmp;
-  assert(r);
-  if (!p)
-    return r;
+  assert(q);
+  assert(p);
+  if (! p)
+    return NULL;
   len = strlen(p);
   buf_init(&buf, false, len, (char *) p); // buf is read-only
   buf.wpos = len;
-  r_val = buf_parse_ratio(&buf, &tmp);
-  if (r_val < 0 || (uw) r_val != len) {
+  r = buf_parse_ratio(&buf, &tmp);
+  if (r < 0 || (uw) r != len) {
     err_write_1("invalid ratio: \"");
     err_write_1(p);
     err_write_1("\", ");
     err_inspect_uw(&len);
     err_write_1(" != ");
-    err_inspect_sw(&r_val);
+    err_inspect_sw(&r);
     assert(! "invalid ratio");
     return NULL;
   }
-  ratio_init_integer(r, &tmp.numerator, &tmp.denominator);
-  return r;
+  ratio_init_integer(q, &tmp.numerator, &tmp.denominator);
+  return q;
 }
 
 s_ratio * ratio_init_copy (s_ratio *dest, const s_ratio *src)
@@ -265,18 +262,15 @@ s_ratio * ratio_simplify (s_ratio *r, s_ratio *dest)
     return NULL;
   }
   if (! integer_gcd(&r->numerator, &r->denominator, &gcd)) {
-    integer_clean(&tmp.numerator);
-    integer_clean(&tmp.denominator);
+    ratio_clean(&tmp);
     return NULL;
   }
   if (! integer_div(&r->numerator, &gcd, &tmp.numerator)) {
-    integer_clean(&tmp.numerator);
-    integer_clean(&tmp.denominator);
+    ratio_clean(&tmp);
     return NULL;
   }
   if (! integer_div(&r->denominator, &gcd, &tmp.denominator)) {
-    integer_clean(&tmp.numerator);
-    integer_clean(&tmp.denominator);
+    ratio_clean(&tmp);
     return NULL;
   }
   integer_clean(&gcd);
