@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
-#include <stdlib.h>
 #include "buf.h"
 #include "buf_inspect.h"
 #include "env.h"

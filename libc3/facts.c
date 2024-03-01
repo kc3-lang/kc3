@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <err.h>
 #include <errno.h>
-#include <stdlib.h>
+#include <string.h>
+#include "alloc.h"
 #include "assert.h"
 #include "buf.h"
 #include "buf_file.h"
@@ -24,6 +24,7 @@
 #include "facts.h"
 #include "facts_cursor.h"
 #include "facts_with.h"
+#include "file.h"
 #include "io.h"
 #include "list.h"
 #include "log.h"
@@ -56,7 +57,8 @@ s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
   }
   tmp.id = facts->next_id;
   if (facts->next_id == UW_MAX) {
-    errx(1, "facts serial id exhausted");
+    err_puts("facts_add_fact: facts serial id exhausted");
+    assert(! "facts_add_fact: facts serial id exhausted");
     return NULL;
   }
   facts->next_id++;
@@ -174,10 +176,9 @@ sw facts_dump_file (s_facts *facts, const char *path)
   assert(facts);
   assert(path);
   buf_init(&buf, false, sizeof(b), b);
-  if (! (fp = fopen(path, "wb"))) {
-    warn("fopen: %s", path);
+  fp = file_open(path, "wb");
+  if (! fp)
     return -1;
-  }
   buf_file_open_w(&buf, fp);
   r = facts_dump(facts, &buf);
   buf_file_close(&buf);
@@ -292,15 +293,17 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   facts_lock_unlock_w(facts);
   return result;
  ko_header:
-  warnx("facts_load: %s: invalid or missing header",
-        path->ptr.pchar);
+  err_write_1("facts_load: invalid or missing header: ");
+  err_puts(path->ptr.pchar);
   return -1;
  ko_fact:
   facts_lock_unlock_w(facts);
-  warnx("facts_load: %s: %s fact line %lu",
-        path->ptr.pchar,
-        r ? "invalid" : "missing",
-        (unsigned long) line);
+  err_write_1("facts_load: ");
+  err_write_1(r ? "invalid" : "missing");
+  err_write_1(" fact line ");
+  err_inspect_u64(&line);
+  err_write_1(": ");
+  err_write_1(path->ptr.pchar);
   return -1;
 }
 
@@ -313,10 +316,9 @@ sw facts_load_file (s_facts *facts, const s_str *path)
   assert(facts);
   assert(path);
   buf_init(&buf, false, sizeof(b), b);
-  if (! (fp = fopen(path->ptr.pchar, "rb"))) {
-    warn("facts_load_file: %s", path->ptr.pchar);
+  fp = file_open(path->ptr.pchar, "rb");
+  if (! fp)
     return -1;
-  }
   buf_file_open_r(&buf, fp);
   result = facts_load(facts, &buf, path);
   buf_file_close(&buf);
@@ -324,67 +326,90 @@ sw facts_load_file (s_facts *facts, const s_str *path)
   return result;
 }
 
-void facts_lock_clean (s_facts *facts)
+s_facts * facts_lock_clean (s_facts *facts)
 {
   assert(facts);
-  if (pthread_rwlock_destroy(&facts->rwlock))
-    errx(1, "facts_lock_clean: pthread_rwlock_destroy");
+  if (pthread_rwlock_destroy(&facts->rwlock)) {
+    err_puts("facts_lock_clean: pthread_rwlock_destroy");
+    assert(! "facts_lock_clean: pthread_rwlock_destroy");
+    return NULL;
+  }
+  return facts;
 }
 
-void facts_lock_init (s_facts *facts)
+s_facts * facts_lock_init (s_facts *facts)
 {
   assert(facts);
-  if (pthread_rwlock_init(&facts->rwlock, NULL))
-    errx(1, "facts_lock_init: pthread_rwlock_init");
+  if (pthread_rwlock_init(&facts->rwlock, NULL)) {
+    err_puts("facts_lock_init: pthread_rwlock_init");
+    assert(! "facts_lock_init: pthread_rwlock_init");
+    return NULL;
+  }
   facts->rwlock_count = 0;
   facts->rwlock_thread = 0;
+  return facts;
 }
 
-void facts_lock_r (s_facts *facts)
+s_facts * facts_lock_r (s_facts *facts)
 {
   pthread_t thread;
   assert(facts);
   thread = pthread_self();
-  if (facts->rwlock_thread == thread)
-    return;
-  if (pthread_rwlock_rdlock(&facts->rwlock))
-    errx(1, "facts_lock_r: pthread_rwlock_rdlock");
+  if (facts->rwlock_thread != thread &&
+      pthread_rwlock_rdlock(&facts->rwlock)) {
+    err_puts("facts_lock_r: pthread_rwlock_rdlock");
+    assert(! "facts_lock_r: pthread_rwlock_rdlock");
+    return NULL;
+  }
+  return facts;
 }
 
-void facts_lock_unlock_r (s_facts *facts)
+s_facts * facts_lock_unlock_r (s_facts *facts)
 {
   pthread_t thread;
   assert(facts);
   thread = pthread_self();
-  if (facts->rwlock_thread == thread)
-    return;
-  if (pthread_rwlock_unlock(&facts->rwlock))
-    errx(1, "facts_lock_unlock_r: pthread_rwlock_unlock");
+  if (facts->rwlock_thread != thread &&
+      pthread_rwlock_unlock(&facts->rwlock)) {
+    err_puts("facts_lock_unlock_r: pthread_rwlock_unlock");
+    assert(! "facts_lock_unlock_r: pthread_rwlock_unlock");
+    return NULL;
+  }
+  return facts;
 }
 
-void facts_lock_unlock_w (s_facts *facts)
+s_facts * facts_lock_unlock_w (s_facts *facts)
 {
   assert(facts);
+  assert(facts->rwlock_count);
   facts->rwlock_count--;
   if (! facts->rwlock_count) {
     facts->rwlock_thread = 0;
-    if (pthread_rwlock_unlock(&facts->rwlock))
-      errx(1, "facts_lock_unlock_w: pthread_rwlock_unlock");
+    if (pthread_rwlock_unlock(&facts->rwlock)) {
+      err_puts("facts_lock_unlock_w: pthread_rwlock_unlock");
+      assert(! "facts_lock_unlock_w: pthread_rwlock_unlock");
+      return NULL;
+    }
   }
+  return facts;
 }
 
-void facts_lock_w (s_facts *facts)
+s_facts * facts_lock_w (s_facts *facts)
 {
   pthread_t thread;
   assert(facts);
   thread = pthread_self();
   if (facts->rwlock_thread != thread) {
-    if (pthread_rwlock_wrlock(&facts->rwlock))
-      errx(1, "facts_lock_w: pthread_rwlock_wrlock");
+    if (pthread_rwlock_wrlock(&facts->rwlock)) {
+      err_puts("facts_lock_w: pthread_rwlock_wrlock");
+      assert(! "facts_lock_w: pthread_rwlock_wrlock");
+      return NULL;
+    }
     facts->rwlock_thread = thread;
     facts->rwlock_count = 0;
   }
   facts->rwlock_count++;
+  return facts;
 }
 
 sw facts_log_add (s_log *log, const s_fact *fact)
@@ -423,10 +448,15 @@ sw facts_log_remove (s_log *log, const s_fact *fact)
 
 s_facts * facts_new (void)
 {
-  s_facts *n;
-  if (! (n = malloc(sizeof(s_facts))))
-    errx(1, "facts_new: out of memory");
-  return facts_init(n);
+  s_facts *facts;
+  facts = alloc(sizeof(s_facts));
+  if (! facts)
+    return NULL;
+  if (! facts_init(facts)) {
+    free(facts);
+    return NULL;
+  }
+  return facts;
 }
 
 sw facts_open_buf (s_facts *facts, s_buf *buf, const s_str *path)
@@ -450,7 +480,8 @@ sw facts_open_file (s_facts *facts, const s_str *path)
   sw r;
   sw result = 0;
   buf_init(&in, false, sizeof(i), i);
-  if (! (fp = fopen(path->ptr.pchar, "rb"))) {
+  fp = fopen(path->ptr.pchar, "rb");
+  if (! fp) {
     if (errno == ENOENT)
       return facts_open_file_create(facts, path);
     return -1;
@@ -460,10 +491,9 @@ sw facts_open_file (s_facts *facts, const s_str *path)
     return r;
   result += r;
   buf_file_close(&in);
-  if (! (fp = fopen(path->ptr.pchar, "ab"))) {
-    warn("facts_open_file: fopen: %s", path->ptr.pchar);
+  fp = file_open(path->ptr.pchar, "ab");
+  if (! fp)
     return -1;
-  }
   if (! (facts->log = log_new()))
     return -1;
   log_open(facts->log, fp);
@@ -476,16 +506,16 @@ sw facts_open_file_create (s_facts *facts, const s_str *path)
   s_buf *out;
   sw r;
   sw result = 0;
-  if (! (fp = fopen(path->ptr.pchar, "wb"))) {
-    warn("facts_open_file_create: fopen: %s", path->ptr.pchar);
+  fp = file_open(path->ptr.pchar, "wb");
+  if (! fp)
     return -1;
-  }
   if (facts_count(facts)) {
     /* TODO: clear facts
        facts_close(facts);
        facts_remove_all(facts);
     */
-    warnx("facts_open_file: not supported");
+    err_puts("facts_open_file: not implemented");
+    assert(! "facts_open_file: not implemented");
     return -1;
   }
   out = buf_new_alloc(BUF_SIZE);
@@ -672,10 +702,9 @@ sw facts_save_file (s_facts *facts, const char *path)
   assert(path);
   assert(! facts->log);
   buf_init(&buf, false, sizeof(b), b);
-  if (! (fp = fopen(path, "wb"))) {
-    warn("fopen: %s", path);
+  fp = file_open(path, "wb");
+  if (! fp)
     return -1;
-  }
   buf_file_open_w(&buf, fp);
   if ((r = facts_dump(facts, &buf)) < 0)
     goto ko;

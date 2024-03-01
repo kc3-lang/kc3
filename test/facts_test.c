@@ -447,9 +447,9 @@ TEST_CASE(facts_open_file)
   s_fact fact;
   s_facts facts;
   s_str path;
-  if (file_copy_1("facts_test_open_file.1.in.facts",
-                  "facts_test_open_file.1.facts")) {
-    fprintf(stderr, "%s:%i: %s: file_copy_1\n", __FILE__, __LINE__,
+  if (file_copy("facts_test_open_file.1.in.facts",
+                "facts_test_open_file.1.facts")) {
+    fprintf(stderr, "%s:%i: %s: file_copy\n", __FILE__, __LINE__,
             __func__);
     exit(1);
   }
@@ -480,9 +480,9 @@ TEST_CASE(facts_open_file)
   if (g_test_last_ok)
     unlink("facts_test_open_file.1.facts");
   facts_init(&facts);
-  if (file_copy_1("facts_test_open_file.2.in.facts",
-                  "facts_test_open_file.2.facts")) {
-    fprintf(stderr, "%s:%i: %s: file_copy_1", __FILE__, __LINE__,
+  if (file_copy("facts_test_open_file.2.in.facts",
+                "facts_test_open_file.2.facts")) {
+    fprintf(stderr, "%s:%i: %s: file_copy", __FILE__, __LINE__,
             __func__);
     exit(1);
   }
@@ -510,9 +510,9 @@ TEST_CASE(facts_open_file)
   if (g_test_last_ok)
     unlink("facts_test_open_file.2.facts");
   facts_init(&facts);
-  if (file_copy_1("facts_test_open_file.3.in.facts",
-                  "facts_test_open_file.3.facts")) {
-    fprintf(stderr, "%s:%i: %s: file_copy_1", __FILE__, __LINE__,
+  if (file_copy("facts_test_open_file.3.in.facts",
+                "facts_test_open_file.3.facts")) {
+    fprintf(stderr, "%s:%i: %s: file_copy", __FILE__, __LINE__,
             __func__);
     exit(1);
   }

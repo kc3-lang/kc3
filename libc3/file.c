@@ -12,8 +12,8 @@
  */
 #include "assert.h"
 #include <fcntl.h>
-#include <err.h>
 #include <errno.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include "buf.h"
@@ -55,9 +55,10 @@ bool * file_access (const s_str *path, const s_sym *mode,
   return dest;
 }
 
-sw file_copy_1 (const char *from, const char *to)
+sw file_copy (const char *from, const char *to)
 {
   char buf[4096];
+  s32 e;
   sw fd_from = -1;
   sw fd_to = -1;
   char *out;
@@ -65,11 +66,21 @@ sw file_copy_1 (const char *from, const char *to)
   sw saved_errno;
   sw w;
   if ((fd_from = open(from, O_RDONLY | O_BINARY)) < 0) {
-    warn("cp: %s", from);
+    e = errno;
+    err_write_1("file_copy: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_puts(from);
+    assert(! "file_copy: failed to open file for reading");
     return -1;
   }
   if ((fd_to = open(to, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0666)) < 0) {
-    warn("cp: %s", to);
+    e = errno;
+    err_write_1("file_copy: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_puts(to);
+    assert(! "file_copy: failed to open file for writing");
     goto error;
   }
   while ((r = read(fd_from, buf, sizeof buf)) > 0) {
@@ -114,11 +125,16 @@ s_str * file_dirname (const s_str *path, s_str *dest)
 
 s_tag * file_mtime (const s_str *path, s_tag *dest)
 {
+  s32 e;
   struct stat sb;
   assert(path);
   assert(dest);
   if (stat(path->ptr.pchar, &sb)) {
-    warn("file_mtime: %s", path->ptr.pchar);
+    e = errno;
+    err_write_1("file_mtime: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_puts(path->ptr.pchar);
     return NULL;
   }
 #if HAVE_STAT_MTIM
@@ -129,6 +145,23 @@ s_tag * file_mtime (const s_str *path, s_tag *dest)
   tmp.tv_nsec = 0;
   return time_to_tag(&tmp, dest);
 #endif
+}
+
+FILE * file_open (const char *path, const char *mode)
+{
+  s32 e;
+  FILE *fp;
+  fp = fopen(path, mode);
+  if (! fp) {
+    e = errno;
+    err_write_1("file_open: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_puts(path);
+    assert(! "facts_open_file: fopen");
+    return NULL;
+  }
+  return fp;
 }
 
 s_str * file_search (const s_str *suffix, const s_sym *mode,
