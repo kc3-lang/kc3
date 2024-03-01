@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <string.h>
 #include "compare.h"
 #include "data.h"
@@ -240,8 +239,8 @@ s8 compare_fn_clause (const s_fn_clause *a, const s_fn_clause *b)
     a = a->next_clause;
     b = b->next_clause;
   }
-  assert(! "compare_fn");
-  err(1, "compare_fn");
+  err_puts("compare_fn_clause");
+  assert(! "compare_fn_clause");
   return 0;
 }
 
@@ -270,7 +269,9 @@ s8 compare_integer (const s_integer *a, const s_integer *b)
   case MP_EQ: return 0;
   case MP_GT: return 1;
   }
-  errx(1, "integer_compare: %s", mp_error_to_string(r));
+  err_write_1("integer_compare: ");
+  err_puts(mp_error_to_string(r));
+  assert(! "integer_compare");
   return -1;
 }
 
@@ -300,8 +301,11 @@ s8 compare_integer_u64 (const s_integer *a, u64 b)
   case MP_EQ: return 0;
   case MP_GT: return 1;
   }
-  errx(1, "integer_compare: %s", mp_error_to_string(r));
-  return -1;
+  err_write_1("integer_compare: ");
+  err_puts(mp_error_to_string(r));
+  assert(! "integer_compare: mp_cmp_d");
+  abort();
+  return -2;
 }
 
 /* FIXME: dotted lists and circular lists */
@@ -953,8 +957,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_UW:
     break;
   }
-  warnx("compare_tag: unknown tag type: %d", a->type);
-  assert(! "compare_tag: unknown tag type");
+  err_puts("compare_tag: invalid tag type");
+  assert(! "compare_tag: invalid tag type");
   return 0;
 }
 
@@ -1172,8 +1176,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
     break;
   default: ;
   }
+  err_puts("tag_number_compare: not a number");
   assert(! "tag_number_compare: not a number");
-  errx(1,  "tag_number_compare: not a number");
   return 0;
 }
 

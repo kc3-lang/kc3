@@ -10,9 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include "assert.h"
 #include <dlfcn.h>
-#include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "bool.h"
@@ -33,9 +32,9 @@ sw          g_c3_exit_code = 1;
 
 void c3_break (void)
 {
+  err_puts("break");
   assert(! "break");
-  errx(1, "break");
-  exit(1);
+  abort();
 }
 
 void c3_clean (s_env *env)
