@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
-#include <err.h>
 #include <stdlib.h>
 #include <string.h>
 #include "data.h"
@@ -33,8 +32,8 @@ s_struct * struct_allocate (s_struct *s)
   tmp.free_data = true;
   tmp.data = calloc(1, tmp.type->size);
   if (! tmp.data) {
-    warn("struct_allocate: data");
-    assert(! "struct_allocate: data: failed to allocate memory");
+    err_puts("struct_allocate: failed to allocate memory");
+    assert(! "struct_allocate: failed to allocate memory");
     return NULL;
   }
   *s = tmp;
@@ -126,9 +125,10 @@ s_struct * struct_init_cast (s_struct *s, const s_tag *tag)
   default:
     break;
   }
-  warnx("struct_init_cast: cannot cast %s to Struct",
-        tag_type_to_string(tag->type));
-  //assert(! "struct_init_cast: cannot cast to Struct");
+  err_write_1("struct_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to Struct");
+  assert(! "struct_init_cast: cannot cast to Struct");
   return NULL;
 }
 
@@ -196,8 +196,8 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
     return NULL;
   tmp.tag = calloc(tmp.type->map.count, sizeof(s_tag));
   if (! tmp.tag) {
-    err_puts("struct_init_from_lists: tag");
-    assert(! "struct_init_from_lists: failed to allocate memory");
+    err_puts("struct_init_from_lists: failed to allocate memory (tag)");
+    assert(! "struct_init_from_lists: failed to allocate memory (tag)");
     return NULL;
   }
   k = keys;
@@ -205,14 +205,15 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
   while (k && v) {
     assert(k->tag.type == TAG_SYM);
     if (k->tag.type != TAG_SYM) {
-      warnx("struct_init_from_lists: key that is not a symbol: %s",
-            tag_type_to_string(k->tag.type));
+      err_write_1("struct_init_from_lists: key that is not a symbol: ");
+      err_puts(tag_type_to_string(k->tag.type));
       assert(! "struct_init_from_lists: key that is not a symbol");
       goto ko;
     }
     if (! struct_find_key_index(&tmp, k->tag.data.sym, &i)) {
-      warnx("struct_init_from_lists: cannot find key in defstruct: %s",
-            k->tag.data.sym->str.ptr.ps8);
+      err_write_1("struct_init_from_lists:"
+                  " cannot find key in defstruct: ");
+      err_puts(k->tag.data.sym->str.ptr.pchar);
       assert(! "struct_init_from_lists: cannot find key in defstruct");
       goto ko;
     }
@@ -256,7 +257,8 @@ s_struct * struct_new (const s_sym *module)
   assert(module);
   s = calloc(1, sizeof(s_struct));
   if (! s) {
-    warn("struct_new: %s: calloc", module->str.ptr.ps8);
+    err_puts("struct_new: failed to allocate memory");
+    assert(! "struct_new: failed to allocate memory");
     return NULL;
   }
   if (! struct_init(s, module)) {
@@ -272,7 +274,8 @@ s_struct * struct_new_1 (const s8 *p)
   assert(p);
   s = calloc(1, sizeof(s_struct));
   if (! s) {
-    warn("struct_new_1: %s: calloc", p);
+    err_puts("struct_new_1: failed to allocate memory");
+    assert(! "struct_new_1: failed to allocate memory");
     return NULL;
   }
   if (! struct_init_1(s, p)) {
@@ -288,7 +291,8 @@ s_struct * struct_new_copy (const s_struct *src)
   assert(src);
   s = calloc(1, sizeof(s_struct));
   if (! s) {
-    warn("struct_new_copy: calloc");
+    err_puts("struct_new_copy: failed to allocate memory");
+    assert(! "struct_new_copy: failed to allocate memory");
     return NULL;
   }
   if (! struct_init_copy(s, src)) {
