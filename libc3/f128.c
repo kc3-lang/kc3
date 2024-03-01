@@ -10,10 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
-#include <math.h>
 #include <stdlib.h>
+#include "assert.h"
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
@@ -76,9 +74,10 @@ f128 * f128_init_cast (f128 *x, const s_tag *tag)
   default:
     break;
   }
-  warnx("f128_init_cast: cannot cast %s to f128",
-        tag_type_to_string(tag->type));
-  assert(! "f128_init_cast: cannot cast to f128");
+  err_write_1("f128_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to F128");
+  assert(! "f128_init_cast: cannot cast to F128");
   return NULL;
 }
 

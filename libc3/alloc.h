@@ -16,5 +16,6 @@
 #include "types.h"
 
 void * alloc (uw size);
+void   free (void *ptr);
 
 #endif /* LIBC3_ALLOC_H */

@@ -12,7 +12,6 @@
  */
 #include <assert.h>
 #include <stdlib.h>
-#include <strings.h>
 #include "compare.h"
 #include "fact.h"
 #include "skiplist_node__fact.h"

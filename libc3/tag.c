@@ -12,9 +12,7 @@
  */
 #include "assert.h"
 #include <math.h>
-#include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include "array.h"
 #include "block.h"
 #include "buf.h"

@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include <stdlib.h>
+#include "assert.h"
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
@@ -73,9 +73,10 @@ f32 * f32_init_cast (f32 *x, const s_tag *tag)
   default:
     break;
   }
-  warnx("f32_init_cast: cannot cast %s to f32",
-        tag_type_to_string(tag->type));
-  assert(! "f32_init_cast: cannot cast to f32");
+  err_write_1("f32_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to F32");
+  assert(! "f32_init_cast: cannot cast to F32");
   return NULL;
 }
 

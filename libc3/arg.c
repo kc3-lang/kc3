@@ -10,10 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
-#include <stdlib.h>
-#include <strings.h>
+#include "alloc.h"
+#include "assert.h"
 #include "arg.h"
 
 s_arg * arg_delete (s_arg *arg)
@@ -52,7 +50,12 @@ uw arg_length (s_arg *arg)
 s_arg * arg_new (void)
 {
   s_arg *arg;
-  if (! (arg = malloc(sizeof(s_arg))))
-    errx(1, "arg_new: out of memory");
-  return arg_init(arg);
+  arg = alloc(sizeof(s_arg));
+  if (! arg)
+    return NULL;
+  if (! arg_init(arg)) {
+    free(arg);
+    return NULL;
+  }
+  return arg;
 }
