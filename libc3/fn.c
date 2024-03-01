@@ -53,8 +53,16 @@ s_fn * fn_init_1 (s_fn *fn, char *p)
   buf_init(&buf, false, len, (char *) p);
   buf.wpos = len;
   r = buf_parse_fn(&buf, fn);
-  if (r < 0 || (uw) r != len)
-    errx(1, "fn_init_1: buf_parse_fn(%s): %ld != %lu", p, r, len);
+  if (r < 0 || (uw) r != len) {
+    err_write_1("fn_init_1: invalid fn: \"");
+    err_write_1(p);
+    err_write_1("\": ");
+    err_inspect_sw(&r);
+    err_write_1(" != ");
+    err_inspect_uw(&len);
+    assert(! "fn_init_1: invalid fn");
+    return NULL;
+  }
   return fn;
 }
 
@@ -75,17 +83,23 @@ s_fn * fn_init_cast (s_fn *fn, const s_tag *tag)
 
 s_fn * fn_init_copy (s_fn *fn, const s_fn *src)
 {
-  fn_clause_copy(src->clauses, &fn->clauses);
-  fn->macro = src->macro;
-  fn->special_operator = src->special_operator;
+  s_fn tmp = {0};
+  fn_clause_copy(src->clauses, &tmp.clauses);
+  tmp.macro = src->macro;
+  tmp.special_operator = src->special_operator;
+  *fn = tmp;
   return fn;
 }
 
 s_fn * fn_new (void)
 {
   s_fn *fn;
-  if (! (fn = calloc(1, sizeof(s_fn))))
-    err(1, "fn_new: calloc");
+  fn = calloc(1, sizeof(s_fn));
+  if (! fn) {
+    err_puts("fn_new: failed to allocate memory");
+    assert(! "fn_new: failed to allocate memory");
+    return NULL;
+  }
   fn_init(fn);
   return fn;
 }
@@ -94,7 +108,15 @@ s_fn * fn_new_copy (const s_fn *src)
 {
   s_fn *fn;
   assert(src);
-  if (! (fn = calloc(1, sizeof(s_fn))))
-    err(1, "fn_new_copy: calloc");
-  return fn_init_copy(fn, src);
+  fn = calloc(1, sizeof(s_fn));
+  if (! fn) {
+    err_puts("fn_new_copy: failed to allocate memory");
+    assert(! "fn_new_copy: failed to allocate memory");
+    return NULL;
+  }
+  if (! fn_init_copy(fn, src)) {
+    free(fn);
+    return NULL;
+  }
+  return fn;
 }
