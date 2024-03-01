@@ -11,8 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from set_item.c.in NAME=tag TYPE=s_tag */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include <stdlib.h>
 #include "set_item__tag.h"
 #include "tag.h"
@@ -21,9 +20,16 @@ s_set_item__tag *
 set_item_new__tag (const s_tag *data, uw hash, s_set_item__tag *next)
 {
   s_set_item__tag *item;
-  if (! (item = malloc(sizeof(s_set_item__tag))))
-    errx(1, "set_item_new__tag: out of memory");
-  tag_init_copy(&item->data, data);
+  item = malloc(sizeof(s_set_item__tag));
+  if (! item) {
+    err_puts("set_item_new__tag: out of memory");
+    assert(! "set_item_new__tag: out of memory");
+    return NULL;
+  }
+  if (! tag_init_copy(&item->data, data)) {
+    free(item);
+    return NULL;
+  }
   item->hash = hash;
   item->next = next;
   item->usage = 0;
