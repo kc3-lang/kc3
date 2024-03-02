@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "alloc.h"
 #include "assert.h"
-#include <stdlib.h>
 #include "binding.h"
 #include "frame.h"
 #include "list.h"
@@ -69,11 +69,8 @@ s_frame * frame_init (s_frame *frame, s_frame *next)
 s_frame * frame_new (s_frame *next)
 {
   s_frame *frame;
-  frame = calloc(1, sizeof(s_frame));
-  if (! frame) {
-    err_puts("frame_new: failed to allocate memory");
-    assert(! "frame_new: failed to allocate memory");
+  frame = alloc(sizeof(s_frame));
+  if (! frame)
     return NULL;
-  }
   return frame_init(frame, next);
 }

@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include <stdlib.h>
 #include <string.h>
+#include "alloc.h"
+#include "assert.h"
 #include "buf.h"
 #include "buf_parse.h"
 #include "compare.h"
@@ -78,10 +78,20 @@ s_tag * map_get (const s_map *map, const s_tag *key, s_tag *value)
 
 s_map * map_init (s_map *map, uw count)
 {
+  s_map tmp = {0};
   assert(map);
-  map->count = count;
-  map->key = calloc(count, sizeof(s_tag));
-  map->value = calloc(count, sizeof(s_tag));
+  if (count) {
+    tmp.count = count;
+    tmp.key = alloc(count * sizeof(s_tag));
+    if (! tmp.key)
+      return NULL;
+    tmp.value = alloc(count * sizeof(s_tag));
+    if (! tmp.value) {
+      free(tmp.key);
+      return NULL;
+    }
+  }
+  *map = tmp;
   return map;
 }
 
@@ -113,15 +123,21 @@ s_map * map_init_1 (s_map *map, const char *p)
 s_map * map_init_copy (s_map *map, const s_map *src)
 {
   uw i = 0;
+  s_map tmp = {0};
   assert(src);
   assert(map);
-  map_init(map, src->count);
-  while (i < src->count) {
-    tag_init_copy(map->key + i, src->key + i);
-    tag_init_copy(map->value + i, src->value + i);
+  if (! map_init(&tmp, src->count))
+    return NULL;
+  while (i < tmp.count) {
+    if (! tag_init_copy(tmp.key + i, src->key + i) ||
+        ! tag_init_copy(tmp.value + i, src->value + i))
+      goto ko;
     i++;
   }
   return map;
+ ko:
+  map_clean(&tmp);
+  return NULL;
 }
 
 s_map * map_init_from_lists (s_map *map, const s_list *keys,
@@ -130,6 +146,7 @@ s_map * map_init_from_lists (s_map *map, const s_list *keys,
   sw i = 0;
   const s_list *k;
   sw len;
+  s_map tmp = {0};
   const s_list *v;
   assert(map);
   if ((len = list_length(keys)) != list_length(values)) {
@@ -139,12 +156,12 @@ s_map * map_init_from_lists (s_map *map, const s_list *keys,
              " keys and values length do not match");
     return NULL;
   }
-  map_init(map, len);
+  map_init(&tmp, len);
   k = keys;
   v = values;
   while (i < len) {
-    if (! tag_init_copy(map->key + i, &k->tag) ||
-        ! tag_init_copy(map->value + i, &v->tag))
+    if (! tag_init_copy(tmp.key + i, &k->tag) ||
+        ! tag_init_copy(tmp.value + i, &v->tag))
       goto ko;
     k = list_next(k);
     v = list_next(v);
@@ -189,12 +206,9 @@ s_list ** map_map (const s_map *map, const s_fn *fn, s_list **result)
 s_map * map_new (uw count)
 {
   s_map *map;
-  map = calloc(1, sizeof(s_map));
-  if (! map) {
-    err_puts("map_new: failed to allocate memory");
-    assert(! "map_new: failed to allocate memory");
+  map = alloc(sizeof(s_map));
+  if (! map)
     return NULL;
-  }
   if (! map_init(map, count)) {
     free(map);
     return NULL;
@@ -205,12 +219,9 @@ s_map * map_new (uw count)
 s_map * map_new_1 (const char *p)
 {
   s_map *map;
-  map = calloc(1, sizeof(s_map));
-  if (! map) {
-    err_puts("map_new_1: failed to allocate memory");
-    assert(! "map_new_1: failed to allocate memory");
+  map = alloc(sizeof(s_map));
+  if (! map)
     return NULL;
-  }
   if (! map_init_1(map, p)) {
     free(map);
     return NULL;
@@ -221,12 +232,9 @@ s_map * map_new_1 (const char *p)
 s_map * map_new_from_lists (const s_list *keys, const s_list *values)
 {
   s_map *map;
-  map = calloc(1, sizeof(s_map));
-  if (! map) {
-    err_puts("map_new_from_lists: failed to allocate memory");
-    assert(! "map_new_from_lists: failed to allocate memory");
+  map = alloc(sizeof(s_map));
+  if (! map)
     return NULL;
-  }
   if (! map_init_from_lists(map, keys, values)) {
     free(map);
     return NULL;

@@ -184,13 +184,15 @@ skiplist_random_height___NAME$ (s_skiplist___NAME$ *skiplist)
 {
   u8 height;
   const t_skiplist_height *height_table;
-  sw max;
-  u32 k;
   sw i;
+  u32 j;
+  sw max;
+  t_skiplist_height k;
   assert(skiplist);
   height_table = SKIPLIST_HEIGHT_TABLE___NAME$(skiplist);
   max = height_table[skiplist->max_height - 1];
-  u32_random_uniform(&k, max);
+  u32_random_uniform(&j, max);
+  k = j;
   for (i = 0; i < skiplist->max_height && k > height_table[i]; i++)
     ;
   height = skiplist->max_height - i;
