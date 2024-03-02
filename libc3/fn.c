@@ -53,13 +53,13 @@ s_fn * fn_init_1 (s_fn *fn, char *p)
   buf.wpos = len;
   r = buf_parse_fn(&buf, fn);
   if (r < 0 || (uw) r != len) {
-    err_write_1("fn_init_1: invalid fn: \"");
+    err_write_1("fn_init_1: invalid function: \"");
     err_write_1(p);
     err_write_1("\": ");
     err_inspect_sw(&r);
     err_write_1(" != ");
     err_inspect_uw(&len);
-    assert(! "fn_init_1: invalid fn");
+    assert(! "fn_init_1: invalid function");
     return NULL;
   }
   return fn;
