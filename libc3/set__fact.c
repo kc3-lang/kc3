@@ -129,6 +129,7 @@ set_init__fact (s_set__fact *set, uw max)
     return NULL;
   tmp.count = 0;
   tmp.collisions = 0;
+  *set = tmp;
   return set;
 }
 

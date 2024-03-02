@@ -129,6 +129,7 @@ set_init__tag (s_set__tag *set, uw max)
     return NULL;
   tmp.count = 0;
   tmp.collisions = 0;
+  *set = tmp;
   return set;
 }
 
