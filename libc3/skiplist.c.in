@@ -10,12 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <stdlib.h>
+#include "alloc.h"
+#include "assert.h"
 #include "compare.h"
 #include "_NAME$.h"
 #include "skiplist_node___NAME$.h"
 #include "skiplist___NAME$.h"
+#include "u32.h"
 
 /*
   Random height
@@ -112,6 +113,8 @@ skiplist_init___NAME$ (s_skiplist___NAME$ *skiplist, u8 max_height, f64 spacing)
 {
   assert(skiplist);
   skiplist->head = skiplist_node_new___NAME$(NULL, max_height);
+  if (! skiplist->head)
+    return NULL;
   skiplist->compare = compare__NAME$;
   skiplist->length = 0;
   skiplist->max_height = max_height;
@@ -142,9 +145,14 @@ skiplist_insert___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ _NAME$)
 s_skiplist___NAME$ *
 skiplist_new___NAME$ (u8 max_height, f64 spacing)
 {
-  s_skiplist___NAME$ *skiplist = malloc(SKIPLIST_SIZE___NAME$(max_height));
-  if (skiplist)
-    skiplist_init___NAME$(skiplist, max_height, spacing);
+  s_skiplist___NAME$ *skiplist;
+  skiplist = alloc(SKIPLIST_SIZE___NAME$(max_height));
+  if (! skiplist)
+    return NULL;
+  if (! skiplist_init___NAME$(skiplist, max_height, spacing)) {
+    free(skiplist);
+    return NULL;
+  }
   return skiplist;
 }
 
@@ -177,12 +185,12 @@ skiplist_random_height___NAME$ (s_skiplist___NAME$ *skiplist)
   u8 height;
   const t_skiplist_height *height_table;
   sw max;
-  t_skiplist_height k;
+  u32 k;
   sw i;
   assert(skiplist);
   height_table = SKIPLIST_HEIGHT_TABLE___NAME$(skiplist);
   max = height_table[skiplist->max_height - 1];
-  k = arc4random_uniform(max);
+  u32_random_uniform(&k, max);
   for (i = 0; i < skiplist->max_height && k > height_table[i]; i++)
     ;
   height = skiplist->max_height - i;
