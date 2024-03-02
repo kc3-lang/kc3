@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include <stdlib.h>
 #include <string.h>
+#include "alloc.h"
+#include "assert.h"
 #include "data.h"
 #include "env.h"
 #include "list.h"
@@ -30,12 +30,9 @@ s_struct * struct_allocate (s_struct *s)
   assert(! s->data);
   tmp = *s;
   tmp.free_data = true;
-  tmp.data = calloc(1, tmp.type->size);
-  if (! tmp.data) {
-    err_puts("struct_allocate: failed to allocate memory");
-    assert(! "struct_allocate: failed to allocate memory");
+  tmp.data = alloc(tmp.type->size);
+  if (! tmp.data)
     return NULL;
-  }
   *s = tmp;
   return s;
 }
@@ -144,12 +141,9 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
   tmp.type = src->type;
   if (src->data) {
     tmp.free_data = true;
-    tmp.data = calloc(1, tmp.type->size);
-    if (! tmp.data) {
-      err_puts("struct_init_copy: failed to allocate memory for data");
-      assert(! "struct_init_copy: failed to allocate memory for data");
+    tmp.data = alloc(tmp.type->size);
+    if (! tmp.data)
       return NULL;
-    }
     i = 0;
     while (i < tmp.type->map.count) {
       if (! tag_type(tmp.type->map.value + i, &sym) ||
@@ -160,14 +154,9 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
     }
   }
   else if (src->tag) {
-    tmp.tag = calloc(tmp.type->map.count, sizeof(s_tag));
-    if (! tmp.tag) {
-      err_puts("struct_init_copy:"
-               " failed to allocate memory for tags (1)");
-      assert(! "struct_init_copy:"
-             " failed to allocate memory for tags (1)");
+    tmp.tag = alloc(tmp.type->map.count * sizeof(s_tag));
+    if (! tmp.tag)
       return NULL;
-    }
     i = 0;
     while (i < tmp.type->map.count) {
       if (! tag_init_copy(tmp.tag + i, src->tag + i))
@@ -195,12 +184,9 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
   assert(list_length(keys) == list_length(values));
   if (! struct_init(&tmp, module))
     return NULL;
-  tmp.tag = calloc(tmp.type->map.count, sizeof(s_tag));
-  if (! tmp.tag) {
-    err_puts("struct_init_from_lists: failed to allocate memory (tag)");
-    assert(! "struct_init_from_lists: failed to allocate memory (tag)");
+  tmp.tag = alloc(tmp.type->map.count * sizeof(s_tag));
+  if (! tmp.tag)
     return NULL;
-  }
   k = keys;
   v = values;
   while (k && v) {
@@ -256,12 +242,9 @@ s_struct * struct_new (const s_sym *module)
 {
   s_struct *s;
   assert(module);
-  s = calloc(1, sizeof(s_struct));
-  if (! s) {
-    err_puts("struct_new: failed to allocate memory");
-    assert(! "struct_new: failed to allocate memory");
+  s = alloc(sizeof(s_struct));
+  if (! s)
     return NULL;
-  }
   if (! struct_init(s, module)) {
     free(s);
     return NULL;
@@ -273,12 +256,9 @@ s_struct * struct_new_1 (const s8 *p)
 {
   s_struct *s;
   assert(p);
-  s = calloc(1, sizeof(s_struct));
-  if (! s) {
-    err_puts("struct_new_1: failed to allocate memory");
-    assert(! "struct_new_1: failed to allocate memory");
+  s = alloc(sizeof(s_struct));
+  if (! s)
     return NULL;
-  }
   if (! struct_init_1(s, p)) {
     free(s);
     return NULL;
@@ -290,12 +270,9 @@ s_struct * struct_new_copy (const s_struct *src)
 {
   s_struct *s;
   assert(src);
-  s = calloc(1, sizeof(s_struct));
-  if (! s) {
-    err_puts("struct_new_copy: failed to allocate memory");
-    assert(! "struct_new_copy: failed to allocate memory");
+  s = alloc(sizeof(s_struct));
+  if (! s)
     return NULL;
-  }
   if (! struct_init_copy(s, src)) {
     free(s);
     return NULL;

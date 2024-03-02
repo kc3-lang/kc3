@@ -10,11 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdarg.h>
 #include <string.h>
+#include "alloc.h"
+#include "assert.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
@@ -139,12 +138,9 @@ s_str * str_init_alloc (s_str *str, uw size, const char *p)
 {
   s_str tmp;
   assert(str);
-  tmp.free.p = calloc(size + 1, 1);
-  if (! tmp.free.p) {
-    err_puts("str_init_alloc: failed to allocate memory.");
-    assert(! "str_init_alloc: failed to allocate memory.");
+  tmp.free.p = alloc(size + 1);
+  if (! tmp.free.p)
     return NULL;
-  }
   tmp.size = size;
   tmp.ptr.p = tmp.free.p;
   memcpy(tmp.free.p, p, size);
@@ -198,12 +194,9 @@ s_str * str_init_cat (s_str *str, const s_str *a, const s_str *b)
   assert(a);
   assert(b);
   tmp.size = a->size + b->size;
-  tmp.free.p = calloc(tmp.size + 1, 1);
-  if (! tmp.free.p) {
-    err_puts("str_init_cat: failed to allocate memory.");
-    assert(! "str_init_cat: failed to allocate memory.");
+  tmp.free.p = alloc(tmp.size + 1);
+  if (! tmp.free.p)
     return NULL;
-  }
   tmp.ptr.p = tmp.free.p;
   if (a->size)
     memcpy(tmp.free.ps8, a->ptr.p, a->size);
@@ -218,12 +211,9 @@ s_str * str_init_copy (s_str *str, const s_str *src)
   s_str tmp = {0};
   assert(str);
   assert(src);
-  tmp.free.p = calloc(src->size + 1, 1);
-  if (! tmp.free.p) {
-    err_puts("str_init_copy: failed to allocate memory.");
-    assert(! "str_init_copy: failed to allocate memory.");
+  tmp.free.p = alloc(src->size + 1);
+  if (! tmp.free.p)
     return NULL;
-  }
   tmp.size = src->size;
   tmp.ptr.p = tmp.free.p;
   memcpy(tmp.free.p, src->ptr.p, tmp.size);
@@ -238,12 +228,9 @@ s_str * str_init_copy_1 (s_str *str, const char *src)
   assert(str);
   assert(src);
   len = strlen(src);
-  tmp.free.p = calloc(len + 1, 1);
-  if (! tmp.free.p) {
-    err_puts("str_init_copy_1: failed to allocate memory.");
-    assert(! "str_init_copy_1: failed to allocate memory.");
+  tmp.free.p = alloc(len + 1);
+  if (! tmp.free.p)
     return NULL;
-  }
   tmp.size = len;
   tmp.ptr.p = tmp.free.p;
   memcpy(tmp.free.p, src, len + 1);
@@ -353,19 +340,16 @@ sw str_length_utf8 (const s_str *str)
 s_str * str_new (char *free, uw size, const char *p)
 {
   s_str *str;
-  str = calloc(1, sizeof(s_str));
-  if (! str) {
-    err_puts("str_new: failed to allocate memory");
-    assert(! "str_new: failed to allocate memory");
+  str = alloc(sizeof(s_str));
+  if (! str)
     return NULL;
-  }
   str_init(str, free, size, p);
   return str;
 }
 
 s_str * str_new_1 (char *free, const char *s)
 {
-  size_t len = strlen(s);
+  uw len = strlen(s);
   s_str *str = str_new(free, len, s);
   return str;
 }
@@ -374,11 +358,9 @@ s_str * str_new_cpy (const char *p, uw size)
 {
   char *a;
   s_str *str;
-  if (! (a = malloc(size))) {
-    err_puts("str_new_cpy: failed to allocate memory");
-    assert(! "str_new_cpy: failed to allocate memory");
+  a = alloc(size);
+  if (! a)
     return NULL;
-  }
   memcpy(a, p, size);
   str = str_new(a, size, a);
   if (! str) {
@@ -393,11 +375,9 @@ s_str * str_new_copy (const s_str *src)
   char *a;
   s_str *dest;
   assert(src);
-  if (! (a = malloc(src->size))) {
-    err_puts("str_new_copy: failed to allocate memory");
-    assert(! "str_new_copy: failed to allocate memory");
+  a = alloc(src->size);
+  if (! a)
     return NULL;
-  }
   memcpy(a, src->ptr.p, src->size);
   dest = str_new(a, src->size, a);
   if (! dest) {
