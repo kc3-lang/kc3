@@ -134,6 +134,7 @@ s_map * map_init_copy (s_map *map, const s_map *src)
       goto ko;
     i++;
   }
+  *map = tmp;
   return map;
  ko:
   map_clean(&tmp);
@@ -167,11 +168,12 @@ s_map * map_init_from_lists (s_map *map, const s_list *keys,
     v = list_next(v);
     i++;
   }
-  if (! map_sort(map))
+  if (! map_sort(&tmp))
     goto ko;
+  *map = tmp;
   return map;
  ko:
-  map_clean(map);
+  map_clean(&tmp);
   return NULL;
 }
 
