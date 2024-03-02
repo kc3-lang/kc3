@@ -167,12 +167,9 @@ EOF
 #{tag_new_proto[0..-2]}
 {
   s_tag *tag;
-  tag = calloc(1, sizeof(s_tag));
-  if (! tag) {
-    err_puts("tag_new_#{name_suffix}: failed to allocate memory");
-    assert(! "tag_new_#{name_suffix}: failed to allocate memory");
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
     return NULL;
-  }
   #{tag_type ? "tag->type = #{tag_type};\n" : ""}#{def_tag_new_init}  return tag;
 }
 EOF
@@ -506,8 +503,8 @@ inits = TagInitList.all
 tag_init_c = FileUpdate.new("tag_init.c")
 tag_init_c.content = <<EOF
 #{$license}
+#include "alloc.h"
 #include "assert.h"
-#include <string.h>
 #include "array.h"
 #include "buf.h"
 #include "buf_inspect.h"
