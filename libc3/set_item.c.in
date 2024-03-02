@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from set_item.c.in NAME=_NAME$ TYPE=_TYPE$ */
+#include "alloc.h"
 #include "assert.h"
-#include <stdlib.h>
 #include "set_item___NAME$.h"
 #include "_NAME$.h"
 
@@ -20,12 +20,9 @@ s_set_item___NAME$ *
 set_item_new___NAME$ (const _TYPE$ *data, uw hash, s_set_item___NAME$ *next)
 {
   s_set_item___NAME$ *item;
-  item = malloc(sizeof(s_set_item___NAME$));
-  if (! item) {
-    err_puts("set_item_new___NAME$: out of memory");
-    assert(! "set_item_new___NAME$: out of memory");
+  item = alloc(sizeof(s_set_item___NAME$));
+  if (! item)
     return NULL;
-  }
   if (! _NAME$_init_copy(&item->data, data)) {
     free(item);
     return NULL;

@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from set.c.in NAME=fact TYPE=s_fact */
-#include <assert.h>
-#include <stdlib.h>
+#include "alloc.h"
+#include "assert.h"
 #include "compare.h"
 #include "fact.h"
 #include "set__fact.h"
@@ -120,12 +120,15 @@ set_get_hash_next__fact (const s_set_item__fact *item)
 s_set__fact *
 set_init__fact (s_set__fact *set, uw max)
 {
+  s_set__fact tmp = {0};
   assert(set);
   assert(max > 0);
-  set->max = max;
-  set->items = calloc(max, sizeof(s_set_item__fact *));
-  set->count = 0;
-  set->collisions = 0;
+  tmp.max = max;
+  tmp.items = alloc(max * sizeof(s_set_item__fact *));
+  if (! tmp.items)
+    return NULL;
+  tmp.count = 0;
+  tmp.collisions = 0;
   return set;
 }
 

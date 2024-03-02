@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from set_item.c.in NAME=fact TYPE=s_fact */
+#include "alloc.h"
 #include "assert.h"
-#include <stdlib.h>
 #include "set_item__fact.h"
 #include "fact.h"
 
@@ -20,12 +20,9 @@ s_set_item__fact *
 set_item_new__fact (const s_fact *data, uw hash, s_set_item__fact *next)
 {
   s_set_item__fact *item;
-  item = malloc(sizeof(s_set_item__fact));
-  if (! item) {
-    err_puts("set_item_new__fact: out of memory");
-    assert(! "set_item_new__fact: out of memory");
+  item = alloc(sizeof(s_set_item__fact));
+  if (! item)
     return NULL;
-  }
   if (! fact_init_copy(&item->data, data)) {
     free(item);
     return NULL;
