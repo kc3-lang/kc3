@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "alloc.h"
 #include "assert.h"
 #include "buf.h"
 #include "buf_file.h"
@@ -47,11 +48,9 @@ s_log * log_init (s_log *log)
 s_log * log_new (void)
 {
   s_log *log;
-  log = malloc(sizeof(s_log));
-  if (! log) {
-    err_puts("log_new: failed to allocate memory");
+  log = alloc(sizeof(s_log));
+  if (! log)
     return NULL;
-  }
   if (! log_init(log)) {
     free(log);
     return NULL;

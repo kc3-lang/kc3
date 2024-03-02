@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "alloc.h"
 #include "assert.h"
-#include <stdlib.h>
 #include "buf.h"
 #include "buf_parse.h"
 #include "compare.h"
@@ -468,12 +468,9 @@ s_integer * integer_neg (const s_integer *a, s_integer *dest)
 s_integer * integer_new (void)
 {
   s_integer *a = NULL;
-  a = calloc(1, sizeof(s_integer));
-  if (! a) {
-    err_puts("integer_new: failed to allocate memory");
-    assert(! "integer_new: failed to allocate memory");
+  a = alloc(sizeof(s_integer));
+  if (! a)
     return NULL;
-  }
   if (! integer_init(a)) {
     free(a);
     return NULL;
@@ -485,12 +482,9 @@ s_integer * integer_new_copy (const s_integer *src)
 {
   s_integer *a;
   assert(src);
-  a = calloc(1, sizeof(s_integer));
-  if (! a) {
-    err_puts("integer_new_copy: failed to allocate memory");
-    assert(! "integer_new_copy: failed to allocate memory");
+  a = alloc(sizeof(s_integer));
+  if (! a)
     return NULL;
-  }
   if (! integer_init_copy(a, src)) {
     free(a);
     return NULL;

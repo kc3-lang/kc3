@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "alloc.h"
 #include "assert.h"
-#include <stdlib.h>
 #include "integer.h"
 #include "ptr_free.h"
 #include "tag_type.h"
@@ -81,12 +81,9 @@ u_ptr_w * ptr_free_init_copy (u_ptr_w *ptr_free, const u_ptr_w *src)
 u_ptr_w * ptr_free_new (void *p)
 {
   u_ptr_w *ptr_free;
-  ptr_free = calloc(1, sizeof(u_ptr_w));
-  if (! ptr_free) {
-    err_puts("ptr_free_new: failed to allocate memory");
-    assert(! "ptr_free_new: failed to allocate memory");
+  ptr_free = alloc(sizeof(u_ptr_w));
+  if (! ptr_free)
     return NULL;
-  }
   if (! ptr_free_init(ptr_free, p)) {
     free(ptr_free);
     return NULL;
@@ -98,12 +95,9 @@ u_ptr_w * ptr_free_new_copy (const u_ptr_w *src)
 {
   u_ptr_w *ptr_free;
   assert(src);
-  ptr_free = calloc(1, sizeof(u_ptr_w));
-  if (! ptr_free) {
-    err_puts("ptr_free_new_copy: failed to allocate memory");
-    assert(! "ptr_free_new_copy: failed to allocate memory");
+  ptr_free = alloc(sizeof(u_ptr_w));
+  if (! ptr_free)
     return NULL;
-  }
   if (! ptr_free_init_copy(ptr_free, src)) {
     free(ptr_free);
     return NULL;
