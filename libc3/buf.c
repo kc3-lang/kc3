@@ -10,13 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include <err.h>
-#include <stdlib.h>
 #include <string.h>
+#include "alloc.h"
+#include "assert.h"
 #include "buf.h"
 #include "buf_save.h"
 #include "character.h"
+#include "error.h"
 #include "ratio.h"
 #include "str.h"
 #include "sym.h"
@@ -87,7 +87,7 @@ sw buf_ignore (s_buf *buf, uw size)
         i += r;
         continue;
       }
-      assert(! "error");
+      error("buf_ignore");
       return -1;
     }
     assert(i == size);
@@ -227,12 +227,9 @@ s_buf * buf_init_alloc (s_buf *buf, uw size)
   assert(buf);
   if (! size)
     return buf_init(buf, false, 0, NULL);
-  p = calloc(size + 1, 1);
-  if (! p) {
-    err_puts("buf_init_alloc: failed to allocate memory");
-    assert(! "buf_init_alloc: failed to allocate memory");
+  p = alloc(size + 1);
+  if (! p)
     return NULL;
-  }
   return buf_init(buf, true, size, p);
 }
 
@@ -262,12 +259,9 @@ s_buf * buf_init_str_copy (s_buf *buf, const s_str *str)
 s_buf * buf_new (bool p_free, uw size, char *p)
 {
   s_buf *buf;
-  buf = calloc(1, sizeof(s_buf));
-  if (! buf) {
-    err_puts("buf_new: failed to allocate memory");
-    assert(! "buf_new: failed to allocate memory");
+  buf = alloc(sizeof(s_buf));
+  if (! buf)
     return NULL;
-  }
   buf_init(buf, p_free, size, p);
   return buf;
 }
@@ -275,12 +269,9 @@ s_buf * buf_new (bool p_free, uw size, char *p)
 s_buf * buf_new_alloc (uw size)
 {
   s_buf *buf;
-  buf = calloc(1, sizeof(s_buf));
-  if (! buf) {
-    err_puts("buf_new_alloc: failed to allocate memory");
-    assert(! "buf_new_alloc: failed to allocate memory");
+  buf = alloc(sizeof(s_buf));
+  if (! buf)
     return NULL;
-  }
   if (! buf_init_alloc(buf, size)) {
     free(buf);
     return NULL;
