@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "assert.h"
 #include "abs.h"
 #include "ceiling.h"
 #include "sign.h"
@@ -33,8 +32,8 @@
   {                                                                    \
     u ## bits result;                                                  \
     if (b == 0) {                                                      \
+      err_puts("ceiling_u" # bits ": division by zero");               \
       assert(! "ceiling_u" # bits ": division by zero");               \
-      errx(1, "ceiling_u" # bits ": division by zero");                \
       return 0;                                                        \
     }                                                                  \
     result = a / b + ((a % b) ? 1 : 0);                                \

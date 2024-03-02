@@ -10,13 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "alloc.h"
 #include "assert.h"
-#include <err.h>
-#include <libgen.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 #include <unistd.h>
 #include "array.h"
 #include "binding.h"
@@ -122,13 +117,11 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
   if (tmp.dimension) {
     item_size = tmp.dimensions[tmp.dimension - 1].item_size;
     if (! tmp.data && tmp.tags) {
-      tmp.data = tmp.free_data = calloc(tmp.dimensions[0].count,
-                                        tmp.dimensions[0].item_size);
-      if (! tmp.data) {
-        warn("env_eval_array: failed to allocate memory");
-        assert(! "env_eval_array: failed to allocate memory");
+      tmp.free_data = alloc(tmp.dimensions[0].count *
+                            tmp.dimensions[0].item_size);
+      if (! tmp.free_data)
         return false;
-      }
+      tmp.data = tmp.free_data;
       data = tmp.data;
       tag = tmp.tags;
       i = 0;
@@ -191,7 +184,7 @@ bool env_eval_block (s_env *env, const s_block *block, s_tag *dest)
 bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
 {
   s_call c;
-  bool result = false;
+  bool result;
   assert(env);
   assert(call);
   assert(dest);
@@ -203,9 +196,10 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   else if (c.fn)
     result = env_eval_call_fn(env, &c, dest);
   else {
-    warnx("env_eval_call: could not resolve call %s.%s.",
-          c.ident.module->str.ptr.pchar,
-          c.ident.sym->str.ptr.pchar);
+    err_write_1("env_eval_call: could not resolve call ");
+    err_write_1(c.ident.module->str.ptr.pchar);
+    err_write_1(".");
+    err_puts(c.ident.sym->str.ptr.pchar);
     result = false;
   }
   call_clean(&c);
@@ -761,7 +755,10 @@ bool env_eval_quote_array (s_env *env, const s_array *array,
   if (! array_init_copy_shallow(&tmp, array))
     return false;
   tag = array->tags;
-  tmp_tag = tmp.tags = calloc(tmp.count, sizeof(s_tag));
+  tmp.tags = alloc(tmp.count * sizeof(s_tag));
+  if (! tmp.tags)
+    goto ko;
+  tmp_tag = tmp.tags;
   i = 0;
   while (i < array->count) {
     if (! env_eval_quote_tag(env, tag, tmp_tag))
@@ -993,10 +990,9 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
       return false;
     return true;
   }
-  warnx("env_eval_quote_tag: unknown tag type: %d", tag->type);
-  assert(! "env_eval_quote_tag: unknown tag type");
+  err_puts("env_eval_quote_tag: invalid tag type");
+  assert(! "env_eval_quote_tag: invalid tag type");
   return false;
-  return true;
 }
 
 bool env_eval_quote_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
@@ -1096,11 +1092,12 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
         goto ko;
       if (! data_init_cast(type, (s8 *) t->data + t->type->offset[i],
                            &tag)) {
-        warnx("env_eval_struct:"
-              " invalid type %s for key %s, expected %s.",
-              tag_type_to_string(tag.type),
-              t->type->map.key[i].data.sym->str.ptr.pchar,
-              tag_type_to_string(t->type->map.value[i].type));
+        err_write_1("env_eval_struct: invalid type ");
+        err_write_1(tag_type_to_string(tag.type));
+        err_write_1(" for key ");
+        err_write_1(t->type->map.key[i].data.sym->str.ptr.pchar);
+        err_write_1(", expected ");
+        err_puts(tag_type_to_string(t->type->map.value[i].type));
         goto ko_tag;
       }
       tag_clean(&tag);
@@ -1183,7 +1180,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
       return false;
     return true;
   }
-  warnx("env_eval_tag: unknown tag type: %d", tag->type);
+  err_puts("env_eval_tag: unknown tag type");
   assert(! "env_eval_tag: unknown tag type");
   return false;
 }
@@ -1281,8 +1278,8 @@ s_env * env_init (s_env *env, int argc, char **argv)
            (NULL, "../../../../../../", NULL))))))));
   str_init_1(&path, NULL, "lib/c3/0.1/");
   if (! file_search(&path, &g_sym_x, &env->module_path)) {
+    err_puts("env_init: module_path not found");
     assert(! "env_init: module path not found");
-    warn("env_init: module_path not found");
     return NULL;
   }
   env->current_module = &g_sym_C3;
@@ -1397,14 +1394,16 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
   }
   env_module_is_loading_set(env, module, true);
   if (! module_path(module, &env->module_path, &path)) {
-    warnx("env_module_load: %s: module_path",
-          module->str.ptr.pchar);
+    err_write_1("env_module_load: ");
+    err_write_1(module->str.ptr.pchar);
+    err_puts(": module_path");
     goto ko;
   }
   tag_init_time(&tag_time);
   if (facts_load_file(facts, &path) < 0) {
-    warnx("env_module_load: %s: facts_load_file",
-          path.ptr.pchar);
+    err_write_1("env_module_load: ");
+    err_write_1(module->str.ptr.pchar);
+    err_puts(": facts_load_file");
     str_clean(&path);
     goto ko;
   }
@@ -1471,11 +1470,13 @@ s8 env_operator_arity (s_env *env, const s_ident *op)
       tag_var.type == TAG_U8) {
     r = tag_var.data.u8;
   }
-  else
-    warnx("env_operator_arity: "
-          "arity for operator %s not found in module %s",
-          op->sym->str.ptr.pchar,
-          op->module->str.ptr.pchar);
+  else {
+    err_write_1("env_operator_arity: arity for operator ");
+    err_write_1(op->sym->str.ptr.pchar);
+    err_write_1(" not found in module ");
+    err_puts(op->module->str.ptr.pchar);
+    r = -1;
+  }
   facts_cursor_clean(&cursor);
   return r;
 }
@@ -1540,11 +1541,13 @@ s8 env_operator_precedence (s_env *env, const s_ident *op)
       tag_var.type == TAG_U8) {
     r = tag_var.data.u8;
   }
-  else
-    warnx("env_operator_precedence: "
-          "precedence for operator %s not found in module %s",
-          op->sym->str.ptr.pchar,
-          op->module->str.ptr.pchar);
+  else {
+    err_write_1("env_operator_precedence: precedence for operator ");
+    err_write_1(op->sym->str.ptr.pchar);
+    err_write_1(" not found in module ");
+    err_puts(op->module->str.ptr.pchar);
+    r = -1;
+  }
   facts_cursor_clean(&cursor);
   return r;
 }
@@ -1587,11 +1590,6 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
       return dest;
     }
   }
-  if (false)
-    warnx("env_operator_resolve: operator %s/%d not found in module %s",
-          tmp.sym->str.ptr.pchar,
-          arity,
-          tmp.module->str.ptr.pchar);
   facts_with_cursor_clean(&cursor);
   return NULL;
 }
@@ -1599,7 +1597,7 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
 const s_sym * env_operator_symbol (s_env *env, const s_ident *op)
 {
   s_facts_cursor cursor;
-  const s_sym *r = NULL;
+  const s_sym *r;
   s_tag tag_op;
   s_tag tag_symbol;
   s_tag tag_var;
@@ -1613,11 +1611,13 @@ const s_sym * env_operator_symbol (s_env *env, const s_ident *op)
       tag_var.type == TAG_SYM) {
     r = tag_var.data.sym;
   }
-  else
-    warnx("env_operator_symbol: "
-          "symbol for operator %s not found in module %s",
-          op->sym->str.ptr.pchar,
-          op->module->str.ptr.pchar);
+  else {
+    err_write_1("env_operator_symbol: symbol for operator ");
+    err_write_1(op->sym->str.ptr.pchar);
+    err_write_1(" not found in module ");
+    err_puts(op->module->str.ptr.pchar);
+    r = NULL;
+  }
   facts_cursor_clean(&cursor);
   return r;
 }
@@ -1819,9 +1819,9 @@ s_list ** env_struct_type_get_spec (s_env *env,
   facts_with_cursor_clean(&cursor);
   if (tmp.type != TAG_LIST ||
       ! list_is_plist(tmp.data.list)) {
-    warnx("env_get_struct_type_spec: module %s"
-          " has a defstruct that is not a property list",
-          module->str.ptr.pchar);
+    err_write_1("env_get_struct_type_spec: module ");
+    err_write_1(module->str.ptr.pchar);
+    err_puts(" has a defstruct that is not a property list");
     tag_clean(&tmp);
     return NULL;
   }

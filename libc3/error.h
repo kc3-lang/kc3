@@ -17,8 +17,9 @@
 
 #define error(message)                                                 \
   do {                                                                 \
+    err_puts(message);                                                 \
     assert(! message);                                                 \
-    errx(1, "%s", message);                                            \
+    abort();                                                           \
   } while (0)
 
 void error_print (s_buf *buf, const s_error_handler *error_handler);
