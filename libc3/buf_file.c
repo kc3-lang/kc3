@@ -10,10 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
+#include "alloc.h"
+#include "assert.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include "buf.h"
 #include "buf_file.h"
 #include "buf_save.h"
@@ -53,9 +52,9 @@ s_buf * buf_file_open_r (s_buf *buf, FILE *fp)
   s_buf_file *buf_file;
   assert(buf);
   assert(fp);
-  buf_file = malloc(sizeof(s_buf_file));
+  buf_file = alloc(sizeof(s_buf_file));
   if (! buf_file)
-    errx(1, "buf_file_open_r: out of memory");
+    return NULL;
   buf_file->fp = fp;
   buf->refill = buf_file_open_r_refill;
   buf->user_ptr = buf_file;
@@ -72,10 +71,11 @@ sw buf_file_open_r_refill (s_buf *buf)
       buf->wpos > buf->size)
     return -1;
   size = buf->size - buf->wpos;
-  r = fread(buf->ptr.ps8 + buf->wpos, 1, size,
+  r = fread(buf->ptr.pchar + buf->wpos, 1, size,
             ((s_buf_file *) (buf->user_ptr))->fp);
   if (buf->wpos + r > buf->size) {
-    assert(! "buffer overflow");
+    err_puts("buf_file_open_r_refill: buffer overflow");
+    assert(! "buf_file_open_r_refill: buffer overflow");
     return -1;
   }
   buf->wpos += r;
@@ -87,9 +87,9 @@ s_buf * buf_file_open_w (s_buf *buf, FILE *fp)
   s_buf_file *buf_file;
   assert(buf);
   assert(fp);
-  buf_file = malloc(sizeof(s_buf_file));
+  buf_file = alloc(sizeof(s_buf_file));
   if (! buf_file)
-    errx(1, "buf_file_open_w: out of memory");
+    return NULL;
   buf_file->fp = fp;
   buf->flush = buf_file_open_w_flush;
   buf->seek = buf_file_open_w_seek;
@@ -117,7 +117,7 @@ sw buf_file_open_w_flush (s_buf *buf)
     return buf->size - buf->wpos;
   buf_file = buf->user_ptr;
   if (fwrite(buf->ptr.p, size, 1, buf_file->fp) != 1) {
-    warn("buf_file_open_w_flush: fwrite");
+    err_puts("buf_file_open_w_flush: fwrite");
     return -1;
   }
   fflush(buf_file->fp);
@@ -141,7 +141,7 @@ sw buf_file_open_w_seek (s_buf *buf, sw offset, u8 whence)
   if ((r = buf_flush(buf)) < 0)
     return r;
   if (fseek(buf_file->fp, offset, whence)) {
-    warn("buf_file_open_w_seek: fseek");
+    err_puts("buf_file_open_w_seek: fseek");
     return -1;
   }
   return 0;

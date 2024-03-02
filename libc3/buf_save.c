@@ -10,9 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
-#include <stdlib.h>
+#include "assert.h"
 #include "buf.h"
 #include "buf_save.h"
 
