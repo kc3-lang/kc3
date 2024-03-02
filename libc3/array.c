@@ -10,10 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include <stdlib.h>
 #include <string.h>
-#include <err.h>
+#include "alloc.h"
+#include "assert.h"
 #include "array.h"
 #include "buf.h"
 #include "buf_inspect.h"
@@ -26,12 +25,10 @@
 s_array * array_allocate (s_array *a)
 {
   assert(a);
-  a->free_data = calloc(1, a->size);
-  if (! a->free_data) {
-    err_puts("array_allocate: failed to allocate memory");
-    assert(! "array_allocate: failed to allocate memory");
+  assert(a->size);
+  a->free_data = alloc(a->size);
+  if (! a->free_data)
     return NULL;
-  }
   a->data = a->free_data;
   return a;
 }
@@ -195,7 +192,7 @@ s_array * array_init (s_array *a, const s_sym *array_type, uw dimension,
       return NULL;
     }
     if (! item_size) {
-      warnx("array_init: zero item size");
+      err_puts("array_init: zero item size");
       assert(! "array_init: zero item size");
       free(tmp.dimensions);
       return NULL;
@@ -226,14 +223,15 @@ s_array * array_init_1 (s_array *array, const char *p)
   buf.wpos = len;
   r = buf_parse_array(&buf, &tmp);
   if (r < 0 || (uw) r != len) {
-    warnx("array_init_1: buf_parse_array(%s) => %ld != %lu",
-	  p, r, len);
+    err_puts("array_init_1: invalid array");
+    assert(! "array_init_1: invalid array");
     if (r > 0)
       array_clean(&tmp);
     return NULL;
   }
   if (! env_eval_array(&g_c3_env, &tmp, array)) {
-    warnx("array_init_1: env_eval_array");
+    err_puts("array_init_1: env_eval_array");
+    assert(! "array_init_1: env_eval_array");
     array_clean(&tmp);
     return NULL;
   }
@@ -274,7 +272,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
     if (src->data) {
       tmp.data = tmp.free_data = calloc(1, tmp.size);
       if (! tmp.data) {
-        warnx("array_init_copy: failed to allocate memory");
+        err_puts("array_init_copy: failed to allocate memory");
         assert(! "array_init_copy: failed to allocate memory");
         free(tmp.dimensions);
         return NULL;
@@ -294,7 +292,7 @@ s_array * array_init_copy (s_array *a, const s_array *src)
     else if (src->tags) {
       tmp.tags = calloc(src->count, sizeof(s_tag));
       if (! tmp.tags) {
-        warn("array_init_copy: failed to allocate memory");
+        err_puts("array_init_copy: failed to allocate memory");
         assert(! "array_init_copy: failed to allocate memory");
         free(tmp.dimensions);
         return NULL;
@@ -339,12 +337,9 @@ s_array * array_init_copy_shallow (s_array *array, const s_array *src)
   tmp.element_type = src->element_type;
   tmp.size         = src->size;
   if (tmp.dimension) {
-    if (! (tmp.dimensions = calloc(tmp.dimension,
-                                   sizeof(s_array_dimension)))) {
-      assert(! "array_init_copy: out of memory: dimensions");
-      warnx("array_init_copy: out of memory: dimensions");
+    tmp.dimensions = alloc(tmp.dimension * sizeof(s_array_dimension));
+    if (! tmp.dimensions)
       return NULL;
-    }
     memcpy(tmp.dimensions, src->dimensions,
            src->dimension * sizeof(s_array_dimension));
   }
@@ -367,16 +362,16 @@ s_str * array_inspect (const s_array *array, s_str *dest)
   s_buf tmp;
   size = buf_inspect_array_size(array);
   if (size < 0) {
-    assert(! "array_inspect: error");
-    errx(1, "array_inspect: error");
+    err_puts("array_inspect: buf_inspect_array_size error");
+    assert(! "array_inspect: buf_inspect_array_size error");
     return NULL;
   }
   buf_init_alloc(&tmp, size);
   buf_inspect_array(&tmp, array);
-  assert(tmp.wpos == tmp.size);
   if (tmp.wpos != tmp.size) {
+    err_puts("array_inspect: tmp.wpos != tmp.size");
+    assert(! "array_inspect: tmp.wpos != tmp.size");
     buf_clean(&tmp);
-    errx(1, "array_inspect: buf_inspect_array");
     return NULL;
   }
   return buf_to_str(&tmp, dest);
