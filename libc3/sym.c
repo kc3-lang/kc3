@@ -10,9 +10,16 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <stdlib.h>
-#include <string.h>
-#include "c3.h"
+#include "alloc.h"
+#include "assert.h"
+#include "buf.h"
+#include "buf_inspect.h"
+#include "character.h"
+#include "compare.h"
+#include "str.h"
+#include "struct_type.h"
+#include "sym.h"
+#include "tag_type.h"
 
 const s_sym g_sym__brackets       = {{{NULL},  2, {"[]"}}};
 const s_sym g_sym__paren          = {{{NULL},  2, {"()"}}};
@@ -428,12 +435,9 @@ s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
                            s_sym_list *next)
 {
   s_sym_list *sym_list;
-  sym_list = malloc(sizeof(s_sym_list));
-  if (! sym_list) {
-    err_puts("sym_list_new: failed to allocate memory");
-    assert(! "sym_list_new: failed to allocate memory");
+  sym_list = alloc(sizeof(s_sym_list));
+  if (! sym_list)
     return NULL;
-  }
   sym_list->sym = sym;
   sym_list->free_sym = free_sym;
   sym_list->next = next;
@@ -565,12 +569,9 @@ const s_sym * sym_new (const s_str *src)
 {
   s_sym *sym;
   s_sym_list *tmp;
-  sym = malloc(sizeof(s_sym));
-  if (! sym) {
-    err_puts("sym_new: failed to allocate memory");
-    assert(! "sym_new: failed to allocate memory");
+  sym = alloc(sizeof(s_sym));
+  if (! sym)
     return NULL;
-  }
   if (! str_init_copy(&sym->str, src)) {
     free(sym);
     return NULL;
