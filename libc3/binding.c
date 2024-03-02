@@ -10,9 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
-#include <err.h>
-#include <stdlib.h>
+#include "alloc.h"
+#include "assert.h"
 #include "binding.h"
 #include "list.h"
 #include "tag.h"
@@ -47,10 +46,13 @@ const s_tag * binding_get (const s_binding *binding, const s_sym *name)
 s_binding * binding_init (s_binding *binding, const s_sym *name,
                           const s_tag *value, s_binding *next)
 {
+  s_binding tmp = {0};
   assert(binding);
-  binding->name = name;
-  tag_init_copy(&binding->value, value);
-  binding->next = next;
+  if (! tag_init_copy(&tmp.value, value))
+    return NULL;
+  tmp.name = name;
+  tmp.next = next;
+  *binding = tmp;
   return binding;
 }
 
@@ -58,7 +60,12 @@ s_binding * binding_new (const s_sym *name, const s_tag *value,
                          s_binding *next)
 {
   s_binding *binding;
-  if (! (binding = malloc(sizeof(s_binding))))
-    errx(1, "binding_new: out of memory");
-  return binding_init(binding, name, value, next);
+  binding = alloc(sizeof(s_binding));
+  if (! binding)
+    return NULL;
+  if (! binding_init(binding, name, value, next)) {
+    free(binding);
+    return NULL;
+  }
+  return binding;
 }
