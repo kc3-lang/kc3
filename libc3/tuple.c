@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include <stdlib.h>
 #include <string.h>
+#include "alloc.h"
+#include "assert.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
@@ -43,12 +43,9 @@ s_tuple * tuple_init (s_tuple *tuple, uw count)
   assert(tuple);
   assert(2 <= count);
   tmp.count = count;
-  tmp.tag = calloc(count, sizeof(s_tag));
-  if (! tmp.tag) {
-    err_puts("tuple_init: failed to allocate memory");
-    assert(! "tuple_init: failed to allocate memory");
+  tmp.tag = alloc(count * sizeof(s_tag));
+  if (! tmp.tag)
     return NULL;
-  }
   i = count;
   while (i--)
     tag_init_void(tmp.tag + i);
@@ -138,12 +135,9 @@ s_str * tuple_inspect (const s_tuple *x, s_str *dest)
 s_tuple * tuple_new (uw count)
 {
   s_tuple *tuple;
-  tuple = malloc(sizeof(s_tuple));
-  if (! tuple) {
-    err_puts("tuple_new: failed to allocate memory");
-    assert(! "tuple_new: failed to allocate memory");
+  tuple = alloc(sizeof(s_tuple));
+  if (! tuple)
     return NULL;
-  }
   if (! tuple_init(tuple, count)) {
     free(tuple);
     return NULL;
@@ -154,12 +148,9 @@ s_tuple * tuple_new (uw count)
 s_tuple * tuple_new_1 (const char *p)
 {
   s_tuple *tuple;
-  tuple = malloc(sizeof(s_tuple));
-  if (! tuple) {
-    err_puts("tuple_new_1: failed to allocate memory");
-    assert(! "tuple_new_1: failed to allocate memory");
+  tuple = alloc(sizeof(s_tuple));
+  if (! tuple)
     return NULL;
-  }
   if (! tuple_init_1(tuple, p)) {
     free(tuple);
     return NULL;

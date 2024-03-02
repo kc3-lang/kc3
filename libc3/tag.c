@@ -10,10 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include <math.h>
 #include <string.h>
+#include "alloc.h"
 #include "array.h"
+#include "assert.h"
 #include "block.h"
 #include "buf.h"
 #include "buf_inspect.h"
@@ -558,24 +558,18 @@ bool * tag_lte (const s_tag *a, const s_tag *b, bool *dest)
 s_tag * tag_new (void)
 {
   s_tag *dest;
-  dest = calloc(1, sizeof(s_tag));
-  if (! dest) {
-    err_puts("tag_new: failed to allocate memory");
-    assert(! "tag_new: failed to allocate memory");
+  dest = alloc(sizeof(s_tag));
+  if (! dest)
     return NULL;
-  }
   return dest;
 }
 
 s_tag * tag_new_1 (const char *p)
 {
   s_tag *dest;
-  dest = calloc(1, sizeof(s_tag));
-  if (! dest) {
-    err_puts("tag_new_1: failed to allocate memory");
-    assert(! "tag_new_1: failed to allocate memory");
+  dest = alloc(sizeof(s_tag));
+  if (! dest)
     return NULL;
-  }
   if (! tag_init_1(dest, p)) {
     free(dest);
     return NULL;
@@ -586,12 +580,9 @@ s_tag * tag_new_1 (const char *p)
 s_tag * tag_new_copy (const s_tag *src)
 {
   s_tag *dest;
-  dest = calloc(1, sizeof(s_tag));
-  if (! dest) {
-    err_puts("tag_new_copy: failed to allocate memory");
-    assert(! "tag_new_copy: failed to allocate memory");
+  dest = alloc(sizeof(s_tag));
+  if (! dest)
     return NULL;
-  }
   if (! tag_init_copy(dest, src)) {
     free(dest);
     return NULL;
