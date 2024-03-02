@@ -129,6 +129,7 @@ set_init___NAME$ (s_set___NAME$ *set, uw max)
     return NULL;
   tmp.count = 0;
   tmp.collisions = 0;
+  *set = tmp;
   return set;
 }
 
