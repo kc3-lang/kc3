@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 /* Gen from skiplist_node.c.in NAME=fact TYPE=s_fact * */
-#include <stdlib.h>
 #include <string.h>
+#include "alloc.h"
 #include "skiplist_node__fact.h"
 
 s_skiplist_node__fact *
@@ -28,9 +28,11 @@ skiplist_node_init (s_skiplist_node__fact *node, s_fact * fact, u8 height)
 s_skiplist_node__fact *
 skiplist_node_new__fact (s_fact * fact, u8 height)
 {
-  s_skiplist_node__fact *node = malloc(SKIPLIST_NODE_SIZE__fact(height));
-  if (node)
-    skiplist_node_init(node, fact, height);
+  s_skiplist_node__fact *node;
+  node = alloc(SKIPLIST_NODE_SIZE__fact(height));
+  if (! node)
+    return NULL;
+  skiplist_node_init(node, fact, height);
   return node;
 }
 
