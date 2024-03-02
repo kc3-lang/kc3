@@ -10,10 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "alloc.h"
 #include "assert.h"
 #include <dlfcn.h>
-#include <err.h>
-#include <stdlib.h>
 #include <string.h>
 #include "cfn.h"
 #include "list.h"
@@ -21,7 +20,6 @@
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
-//#include "type.h"
 
 static s_tag * cfn_tag_init (s_tag *tag, const s_sym *type);
 
@@ -43,8 +41,11 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   num_args = list_length(args);
   arity = cfn->arity - (cfn->arg_result ? 1 : 0);
   if (arity != num_args) {
-    warnx("cfn_apply: invalid number of arguments, expected %d, have %ld",
-          arity, num_args);
+    err_write_1("cfn_apply: invalid number of arguments, expected ");
+    err_inspect_u8(&arity);
+    err_write_1(", have ");
+    err_inspect_sw(&num_args);
+    err_write_1("\n");
     return NULL;
   }
   cfn_tag_init(&tmp, cfn->result_type);
@@ -60,14 +61,11 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       return NULL;
   }
   if (cfn->arity) {
-    arg_pointers = calloc(cfn->arity + 1, sizeof(void *));
-    if (! arg_pointers) {
-      warn("cfn_apply: arg_pointers");
+    arg_pointers = alloc((cfn->arity + 1) * sizeof(void *));
+    if (! arg_pointers)
       return NULL;
-    }
-    arg_values = calloc(cfn->arity + 1, sizeof(void *));
+    arg_values = alloc((cfn->arity + 1) * sizeof(void *));
     if (! arg_values) {
-      warn("cfn_apply: arg_values");
       free(arg_pointers);
       return NULL;
     }
@@ -112,7 +110,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       *dest = tmp;
   }
   else {
-    warnx("cfn_apply: NULL function pointer");
+    err_puts("cfn_apply: NULL function pointer");
+    assert(! "cfn_apply: NULL function pointer");
     tag_init_void(dest);
   }
   free(arg_pointers);
@@ -132,37 +131,6 @@ void cfn_clean (s_cfn *cfn)
     free(cfn->cif.arg_types);
 }
 
-s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
-{
-  s_cfn tmp = {0};
-  assert(src);
-  assert(cfn);
-  tmp.name = src->name;
-  tmp.arg_result = src->arg_result;
-  if (! list_init_copy(&tmp.arg_types,
-                       (const s_list * const *) &src->arg_types))
-    return NULL;
-  tmp.arity = src->arity;
-  tmp.cif = src->cif;
-  if (src->arity) {
-    tmp.cif.arg_types = calloc(src->cif.nargs + 1, sizeof(ffi_type *));
-    if (! tmp.cif.arg_types) {
-      warn("cfn_init_copy: cif.arg_types");
-      assert(! "cfn_init_copy: cif.arg_types: failed to allocate memory");
-      list_delete_all(tmp.arg_types);
-      return NULL;
-    }
-    memcpy(tmp.cif.arg_types, src->cif.arg_types,
-           (src->cif.nargs + 1) * sizeof(ffi_type *));
-  }
-  tmp.result_type = src->result_type;
-  tmp.ptr = src->ptr;
-  tmp.macro = src->macro;
-  tmp.special_operator = src->special_operator;
-  *cfn = tmp;
-  return cfn;
-}
-
 void cfn_delete (s_cfn *cfn)
 {
   assert(cfn);
@@ -180,8 +148,8 @@ s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
   tmp.arg_types = arg_types;
   arity = list_length(tmp.arg_types);
   if (arity > 255) {
-    assert(arity <= 255);
     err_puts("cfn_init: arity > 255");
+    assert(arity <= 255);
     return NULL;
   }
   tmp.arity = arity;
@@ -205,11 +173,43 @@ s_cfn * cfn_init_cast (s_cfn *cfn, const s_tag *tag)
   return NULL;
 }
 
+s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
+{
+  s_cfn tmp = {0};
+  assert(src);
+  assert(cfn);
+  tmp.name = src->name;
+  tmp.arg_result = src->arg_result;
+  if (! list_init_copy(&tmp.arg_types,
+                       (const s_list * const *) &src->arg_types))
+    return NULL;
+  tmp.arity = src->arity;
+  tmp.cif = src->cif;
+  if (src->arity) {
+    tmp.cif.arg_types = alloc((src->cif.nargs + 1) * sizeof(ffi_type *));
+    if (! tmp.cif.arg_types) {
+      list_delete_all(tmp.arg_types);
+      return NULL;
+    }
+    memcpy(tmp.cif.arg_types, src->cif.arg_types,
+           (src->cif.nargs + 1) * sizeof(ffi_type *));
+  }
+  tmp.result_type = src->result_type;
+  tmp.ptr = src->ptr;
+  tmp.macro = src->macro;
+  tmp.special_operator = src->special_operator;
+  *cfn = tmp;
+  return cfn;
+}
+
 s_cfn * cfn_link (s_cfn *cfn)
 {
   assert(cfn);
   if (! (cfn->ptr.p = dlsym(RTLD_DEFAULT, cfn->name->str.ptr.pchar))) {
-    warnx("cfn_link: %s: %s", cfn->name->str.ptr.pchar, dlerror());
+    err_write_1("cfn_link: ");
+    err_write_1(cfn->name->str.ptr.pchar);
+    err_write_1(": ");
+    err_puts(dlerror());
     assert(! "cfn_link: dlsym failed");
     return NULL;
   }
@@ -219,10 +219,9 @@ s_cfn * cfn_link (s_cfn *cfn)
 s_cfn * cfn_new_copy (const s_cfn *src)
 {
   s_cfn *cfn;
-  if (! (cfn = calloc(1, sizeof(s_cfn)))) {
-    errx(1, "cfn_new_copy: out of memory");
+  cfn = alloc(sizeof(s_cfn));
+  if (! cfn)
     return NULL;
-  }
   cfn_init_copy(cfn, src);
   return cfn;
 }
@@ -238,19 +237,18 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
   if (! sym_to_ffi_type(cfn->result_type, NULL, &result_ffi_type))
     return NULL;
   if (cfn->arity) {
-    arg_ffi_type = calloc(cfn->arity + 1, sizeof(ffi_type *));
-    if (! arg_ffi_type) {
-      warn("cfn_prep_cif: arg_ffi_type: failed to allocate memory");
-      assert(! "cfn_prep_cif: arg_ffi_type: failed to allocate memory");
+    arg_ffi_type = alloc((cfn->arity + 1) * sizeof(ffi_type *));
+    if (! arg_ffi_type)
       return NULL;
-    }
     a = cfn->arg_types;
     while (a) {
       assert(i < cfn->arity);
       if (a->tag.type != TAG_SYM) {
+        err_write_1("cfn_prep_cif: invalid type: ");
+        err_puts(tag_type_to_string(a->tag.type));
         assert(! "cfn_prep_cif: invalid type");
-        errx(1, "cfn_prep_cif: invalid type: %s",
-             tag_type_to_string(a->tag.type));
+        free(arg_ffi_type);
+        return NULL;
       }
       if (! sym_to_ffi_type(a->tag.data.sym, result_ffi_type, arg_ffi_type + i)) {
         free(arg_ffi_type);
@@ -268,15 +266,18 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
   status = ffi_prep_cif(&cfn->cif, FFI_DEFAULT_ABI, cfn->arity,
                         result_ffi_type, arg_ffi_type);
   if (status == FFI_BAD_TYPEDEF) {
-    warnx("cfn_prep_cif: ffi_prep_cif: FFI_BAD_TYPEDEF");
+    err_puts("cfn_prep_cif: ffi_prep_cif: FFI_BAD_TYPEDEF");
+    assert(! "cfn_prep_cif: ffi_prep_cif: FFI_BAD_TYPEDEF");
     return NULL;
   }
   if (status == FFI_BAD_ABI) {
-    warnx("cfn_prep_cif: ffi_prep_cif: FFI_BAD_ABI");
+    err_puts("cfn_prep_cif: ffi_prep_cif: FFI_BAD_ABI");
+    assert(! "cfn_prep_cif: ffi_prep_cif: FFI_BAD_ABI");
     return NULL;
   }
   if (status != FFI_OK) {
-    warnx("cfn_prep_cif: ffi_prep_cif: unknown error");
+    err_puts("cfn_prep_cif: ffi_prep_cif: error");
+    assert(! "cfn_prep_cif: ffi_prep_cif: error");
     return NULL;
   }
   return cfn;
