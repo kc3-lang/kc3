@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u.c.in BITS=16 bits=16 */
+#include "alloc.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_save.h"
@@ -43,7 +44,7 @@ sw buf_inspect_u16_base (s_buf *buf,
     return buf_write_character_utf8(buf, zero);
   }
   size = buf_inspect_u16_base_digits(base, u);
-  c = calloc(size, sizeof(character));
+  c = alloc(size * sizeof(character));
   buf_save_init(buf, &save);
   radix = base->size;
   i = 0;

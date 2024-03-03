@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
 #include <math.h>
-#include <stdlib.h>
+#include "alloc.h"
+#include "assert.h"
 #include "f32.h"
 #include "f64.h"
 #include "tag.h"
@@ -79,12 +79,9 @@ s_complex * complex_mul (const s_complex *a, const s_complex *b,
 s_complex * complex_new (void)
 {
   s_complex *c;
-  c = calloc(1, sizeof(s_complex));
-  if (! c) {
-    err_puts("complex_new_copy: failed to allocate memory");
-    assert(! "complex_new_copy: failed to allocate memory");
+  c = alloc(sizeof(s_complex));
+  if (! c)
     return NULL;
-  }
   if (! complex_init(c)) {
     free(c);
     return NULL;
@@ -96,12 +93,9 @@ s_complex * complex_new_copy (const s_complex *src)
 {
   s_complex *c;
   assert(src);
-  c = calloc(1, sizeof(s_complex));
-  if (! c) {
-    err_puts("complex_new_copy: failed to allocate memory");
-    assert(! "complex_new_copy: failed to allocate memory");
+  c = alloc(sizeof(s_complex));
+  if (! c)
     return NULL;
-  }
   if (! complex_init_copy(c, src)) {
     free(c);
     return NULL;

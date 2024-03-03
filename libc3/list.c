@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include <stdlib.h>
 #include <string.h>
+#include "alloc.h"
+#include "assert.h"
 #include "array.h"
 #include "buf.h"
 #include "buf_inspect.h"
@@ -188,10 +188,9 @@ s_list * list_next (const s_list *list)
 s_list * list_new (s_list *next)
 {
   s_list *dest;
-  if (! (dest = calloc(1, sizeof(s_list)))) {
-    err_puts("list_new: failed to allocate memory");
+  dest = alloc(sizeof(s_list));
+  if (! dest)
     return NULL;
-  }
   return list_init(dest, next);
 }
 
@@ -201,7 +200,8 @@ s_list * list_new_1 (const char *p)
   s_list *list;
   buf_init_1(&buf, false, (char *) p);
   if (buf_parse_list(&buf, &list) != (sw) strlen(p)) {
-    assert(! "invalid list");
+    err_puts("list_new_1: invalid list");
+    assert(! "list_new_1: invalid list");
     return NULL;
   }
   return list;
@@ -275,20 +275,15 @@ s_array * list_to_array (const s_list *list, const s_sym *array_type,
   }
   if (len) {
     tmp.dimension = 1;
-    tmp.dimensions = calloc(1, sizeof(s_array_dimension));
-    if (! tmp.dimensions) {
-      err_puts("list_to_array: out of memory: 1");
-      assert(! "list_to_array: out of memory: 1");
+    tmp.dimensions = alloc(sizeof(s_array_dimension));
+    if (! tmp.dimensions)
       return NULL;
-    }
     tmp.count = len;
     tmp.dimensions[0].count = len;
     tmp.dimensions[0].item_size = size;
     tmp.size = len * size;
-    tmp.free_data = calloc(len, size);
+    tmp.free_data = alloc(len * size);
     if (! tmp.free_data) {
-      err_puts("list_to_array: out of memory: 2");
-      assert(! "list_to_array: out of memory: 2");
       free(tmp.dimensions);
       return NULL;
     }

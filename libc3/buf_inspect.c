@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
 #include <float.h>
 #include <math.h>
-#include <stdlib.h>
 #include <string.h>
 #include "../libtommath/tommath.h"
+#include "alloc.h"
+#include "assert.h"
 #include "array.h"
 #include "buf.h"
 #include "buf_inspect.h"
@@ -85,7 +85,9 @@ sw buf_inspect_array_data (s_buf *buf, const s_array *array)
     data = array->data;
   else 
     tag = array->tags;
-  address = calloc(array->dimension, sizeof(uw));
+  address = alloc(array->dimension * sizeof(uw));
+  if (! address)
+    return -1;
   r = buf_inspect_array_data_rec(buf, array, (const u8 **) &data,
                                  (const s_tag **) &tag, address, 0);
   free(address);
@@ -150,7 +152,9 @@ sw buf_inspect_array_data_size (const s_array *array)
     data = array->data;
   else 
     tag = array->tags;
-  address = calloc(array->dimension, sizeof(uw));
+  address = alloc(array->dimension * sizeof(uw));
+  if (! address)
+    return -1;
   r = buf_inspect_array_data_size_rec(array, (const u8 **) &data,
                                       (const s_tag **) &tag,
                                       address, 0);

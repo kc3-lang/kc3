@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include <stdlib.h>
 #include <string.h>
+#include "alloc.h"
+#include "assert.h"
 #include "block.h"
 #include "buf.h"
 #include "buf_inspect.h"
@@ -42,12 +42,9 @@ s_block * block_init (s_block *block, uw count)
   assert(block);
   tmp.count = count;
   if (count) {
-    tmp.tag = calloc(count, sizeof(s_tag));
-    if (! tmp.tag) {
-      err_puts("block_init: failed to allocate memory");
-      assert(! "block_init: failed to allocate memory");
+    tmp.tag = alloc(count * sizeof(s_tag));
+    if (! tmp.tag)
       return NULL;
-    }
   }
   *block = tmp;
   return block;
@@ -128,12 +125,9 @@ s_str * block_inspect (const s_block *x, s_str *dest)
 s_block * block_new (uw count)
 {
   s_block *block;
-  block = malloc(sizeof(s_block));
-  if (! block) {
-    err_puts("block_new: failed to allocate memory");
-    assert(! "block_new: failed to allocate memory");
+  block = alloc(sizeof(s_block));
+  if (! block)
     return NULL;
-  }
   if (! block_init(block, count)) {
     free(block);
     return NULL;
@@ -144,12 +138,9 @@ s_block * block_new (uw count)
 s_block * block_new_1 (const char *p)
 {
   s_block *block;
-  block = malloc(sizeof(s_block));
-  if (! block) {
-    err_puts("block_new_1: failed to allocate memory");
-    assert(! "block_new_1: failed to allocate memory");
+  block = alloc(sizeof(s_block));
+  if (! block)
     return NULL;
-  }
   if (! block_init_1(block, p)) {
     free(block);
     return NULL;

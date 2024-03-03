@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include <stdlib.h>
 #include <string.h>
+#include "alloc.h"
+#include "assert.h"
 #include "arg.h"
 #include "binding.h"
 #include "buf.h"
@@ -93,12 +93,9 @@ s_fn * fn_init_copy (s_fn *fn, const s_fn *src)
 s_fn * fn_new (void)
 {
   s_fn *fn;
-  fn = calloc(1, sizeof(s_fn));
-  if (! fn) {
-    err_puts("fn_new: failed to allocate memory");
-    assert(! "fn_new: failed to allocate memory");
+  fn = alloc(sizeof(s_fn));
+  if (! fn)
     return NULL;
-  }
   fn_init(fn);
   return fn;
 }
@@ -107,12 +104,9 @@ s_fn * fn_new_copy (const s_fn *src)
 {
   s_fn *fn;
   assert(src);
-  fn = calloc(1, sizeof(s_fn));
-  if (! fn) {
-    err_puts("fn_new_copy: failed to allocate memory");
-    assert(! "fn_new_copy: failed to allocate memory");
+  fn = alloc(sizeof(s_fn));
+  if (! fn)
     return NULL;
-  }
   if (! fn_init_copy(fn, src)) {
     free(fn);
     return NULL;
