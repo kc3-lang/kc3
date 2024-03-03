@@ -14,6 +14,7 @@
 #include "assert.h"
 #include <math.h>
 #include <stdlib.h>
+#include "f128.h"
 #include "integer.h"
 #include "ratio.h"
 #include "tag.h"
@@ -94,16 +95,15 @@ uw * uw_random (uw *u)
   return u;
 }
 
-#if w > 32
+#if w == 64 || w == w
 
 uw * uw_random_uniform (uw *u, uw max)
 {
-  // TODO
-  (void) u;
-  (void) max;
-  err_puts("uw_random_uniform: not implemented");
-  assert(! "uw_random_uniform: not implemented");
-  return NULL;
+  f128 x;
+  f128_random(&x);
+  x *= max;
+  *u = (uw) x;
+  return u;
 }
 
 #else

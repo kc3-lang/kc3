@@ -17,6 +17,7 @@
 #include "skiplist_node__fact.h"
 #include "skiplist__fact.h"
 #include "u32.h"
+#include "u64.h"
 
 /*
   Random height

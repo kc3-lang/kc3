@@ -14,6 +14,7 @@
 #include "assert.h"
 #include <math.h>
 #include <stdlib.h>
+#include "f128.h"
 #include "integer.h"
 #include "ratio.h"
 #include "tag.h"
@@ -94,16 +95,15 @@ u64 * u64_random (u64 *u)
   return u;
 }
 
-#if 64 > 32
+#if 64 == 64 || 64 == w
 
 u64 * u64_random_uniform (u64 *u, u64 max)
 {
-  // TODO
-  (void) u;
-  (void) max;
-  err_puts("u64_random_uniform: not implemented");
-  assert(! "u64_random_uniform: not implemented");
-  return NULL;
+  f128 x;
+  f128_random(&x);
+  x *= max;
+  *u = (u64) x;
+  return u;
 }
 
 #else
