@@ -179,7 +179,9 @@ s_array * array_init (s_array *a, const s_sym *array_type, uw dimension,
     }
 #endif
     tmp.dimension = dimension;
-    tmp.dimensions = calloc(dimension, sizeof(s_array_dimension));
+    tmp.dimensions = alloc(dimension * sizeof(s_array_dimension));
+    if (! tmp.dimensions)
+      return NULL;
     i = 0;
     while (i < dimension) {
       tmp.dimensions[i].count = dimensions[i];
@@ -270,10 +272,8 @@ s_array * array_init_copy (s_array *a, const s_array *src)
     return NULL;
   if (tmp.dimension) {
     if (src->data) {
-      tmp.data = tmp.free_data = calloc(1, tmp.size);
+      tmp.data = tmp.free_data = alloc(tmp.size);
       if (! tmp.data) {
-        err_puts("array_init_copy: failed to allocate memory");
-        assert(! "array_init_copy: failed to allocate memory");
         free(tmp.dimensions);
         return NULL;
       }
@@ -290,10 +290,8 @@ s_array * array_init_copy (s_array *a, const s_array *src)
       }
     }
     else if (src->tags) {
-      tmp.tags = calloc(src->count, sizeof(s_tag));
+      tmp.tags = alloc(src->count * sizeof(s_tag));
       if (! tmp.tags) {
-        err_puts("array_init_copy: failed to allocate memory");
-        assert(! "array_init_copy: failed to allocate memory");
         free(tmp.dimensions);
         return NULL;
       }

@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <unistd.h>
 #include "alloc.h"
 #include "assert.h"
-#include <unistd.h>
 #include "array.h"
 #include "binding.h"
 #include "block.h"
@@ -913,12 +913,9 @@ bool env_eval_quote_struct (s_env *env, const s_struct *s, s_tag *dest)
     return true;
   }
   t->type = s->type;
-  t->tag = calloc(t->type->map.count, sizeof(s_tag));
-  if (! t->tag) {
-    err_puts("env_eval_quote_struct: failed to allocate memory");
-    assert(! "env_eval_quote_struct: failed to allocate memory");
+  t->tag = alloc(t->type->map.count * sizeof(s_tag));
+  if (! t->tag)
     return false;
-  }
   i = 0;
   while (i < t->type->map.count) {
     if (! env_eval_quote_tag(env, s->tag + i, t->tag + i))

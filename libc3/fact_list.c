@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <stdlib.h>
+#include "alloc.h"
 #include "assert.h"
 #include "fact_list.h"
 
@@ -44,12 +44,9 @@ s_fact_list * fact_list_init (s_fact_list *fl, s_fact *fact,
 s_fact_list * fact_list_new (s_fact *fact, s_fact_list *next)
 {
   s_fact_list *fl;
-  fl = malloc(sizeof(s_fact_list));
-  if (! fl) {
-    err_puts("fact_list_new: failed to allocate memory");
-    assert(! "fact_list_new: failed to allocate memory");
+  fl = alloc(sizeof(s_fact_list));
+  if (! fl)
     return NULL;
-  }
   if (! fact_list_init(fl, fact, next)) {
     free(fl);
     return NULL;

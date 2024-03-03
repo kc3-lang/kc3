@@ -10,12 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
-#include <stdlib.h>
-#include <string.h>
 #include <math.h>
+#include <string.h>
 #include "../libtommath/tommath.h"
+#include "alloc.h"
 #include "array.h"
+#include "assert.h"
 #include "block.h"
 #include "buf.h"
 #include "buf_inspect.h"
@@ -106,10 +106,9 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
     return result;
   }
   tmp = *dest;
-  if (! (address = calloc(tmp.dimension, sizeof(sw)))) {
-    err_puts("buf_parse_array_data: out of memory: address");
+  address = alloc(tmp.dimension * sizeof(sw));
+  if (! address)
     return -1;
-  }
   tmp.count = 1;
   i = 0;
   while (i < tmp.dimension) {
@@ -117,9 +116,9 @@ sw buf_parse_array_data (s_buf *buf, s_array *dest)
     i++;
   }
   tmp.size = tmp.dimensions[0].count * tmp.dimensions[0].item_size;
-  if (! (tmp.tags = calloc(tmp.count, sizeof(s_tag)))) {
+  tmp.tags = alloc(tmp.count * sizeof(s_tag));
+  if (! tmp.tags) {
     free(address);
-    err_puts("buf_parse_array_data: out of memory: tags");
     return -1;
   }
   tag = tmp.tags;
@@ -263,11 +262,10 @@ sw buf_parse_array_dimension_count (s_buf *buf, s_array *dest)
       goto restore;
     result += r;
   }
-  if (! (tmp.dimensions = calloc(tmp.dimension,
-                                 sizeof(s_array_dimension)))) {
-    err_puts("tmp.dimensions: failed to allocate memory");
+  tmp.dimensions = alloc(tmp.dimension *
+                         sizeof(s_array_dimension));
+  if (! tmp.dimensions)
     return -1;
-  }
   *dest = tmp;
   r = result;
   goto clean;
@@ -294,7 +292,9 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
     assert(! "buf_parse_array_dimensions: zero item size");
     return -1;
   }
-  address = calloc(tmp.dimension, sizeof(sw));
+  address = alloc(tmp.dimension * sizeof(sw));
+  if (! address)
+    return -1;
   tmp.dimensions[tmp.dimension - 1].item_size = size;
   if ((r = buf_parse_array_dimensions_rec(buf, &tmp, address,
                                           0)) < 0) {

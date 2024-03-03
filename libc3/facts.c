@@ -590,10 +590,9 @@ void facts_remove_all (s_facts *facts)
   count = facts->facts.count;
   if (! count)
     return;
-  f = calloc(count, sizeof(s_fact *));
+  f = alloc(count * sizeof(s_fact *));
   if (! f) {
-    err_puts("facts_remove_all: failed to allocate memory");
-    assert(! "facts_remove_all: failed to allocate memory");
+    abort();
     return;
   }
   i = 0;

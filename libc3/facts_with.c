@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "alloc.h"
 #include "assert.h"
-#include <stdlib.h>
 #include "buf.h"
 #include "buf_inspect.h"
 #include "env.h"
@@ -32,8 +32,10 @@ s_facts_with_cursor * facts_with (s_facts *facts,
   cursor->facts = facts;
   cursor->facts_count = facts_count;
   if (facts_count > 0) {
-    cursor->levels = calloc(facts_count,
-                            sizeof(s_facts_with_cursor_level));
+    cursor->levels = alloc(facts_count *
+                           sizeof(s_facts_with_cursor_level));
+    if (! cursor->levels)
+      return NULL;
     cursor->spec = facts_spec_new_expand(spec);
     /*
     buf_inspect_facts_spec(&g_c3_env.err, spec);
