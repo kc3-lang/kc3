@@ -64,20 +64,20 @@ replace {C3.operator07, :arity, 2}
 replace {C3.operator07, :cfn, cfn Tag "tag_mod" (Tag, Tag, Result)}
 replace {C3.operator07, :operator_precedence, 11}
 replace {C3.operator07, :operator_associativity, :left}
-add {C3, :operator, C3.operator08}
-replace {C3.operator08, :is_a, :operator}
-replace {C3.operator08, :symbol, :+}
-replace {C3.operator08, :arity, 2}
-replace {C3.operator08, :cfn, cfn Tag "tag_add" (Tag, Tag, Result)}
-replace {C3.operator08, :operator_precedence, 10}
-replace {C3.operator08, :operator_associativity, :left}
-add {C3, :operator, C3.operator09}
-replace {C3.operator09, :is_a, :operator}
-replace {C3.operator09, :symbol, :-}
-replace {C3.operator09, :arity, 2}
-replace {C3.operator09, :cfn, cfn Tag "tag_sub" (Tag, Tag, Result)}
-replace {C3.operator09, :operator_precedence, 10}
-replace {C3.operator09, :operator_associativity, :left}
+add {C3, :operator, C3.operator_add}
+replace {C3.operator_add, :is_a, :operator}
+replace {C3.operator_add, :symbol, :+}
+replace {C3.operator_add, :arity, 2}
+replace {C3.operator_add, :cfn, cfn Tag "tag_add" (Tag, Tag, Result)}
+replace {C3.operator_add, :operator_precedence, 10}
+replace {C3.operator_add, :operator_associativity, :left}
+add {C3, :operator, C3.operator_sub}
+replace {C3.operator_sub, :is_a, :operator}
+replace {C3.operator_sub, :symbol, :-}
+replace {C3.operator_sub, :arity, 2}
+replace {C3.operator_sub, :cfn, cfn Tag "tag_sub" (Tag, Tag, Result)}
+replace {C3.operator_sub, :operator_precedence, 10}
+replace {C3.operator_sub, :operator_associativity, :left}
 add {C3, :operator, C3.operator10}
 replace {C3.operator10, :is_a, :operator}
 replace {C3.operator10, :symbol, :<<}
