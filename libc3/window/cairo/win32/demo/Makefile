@@ -1,5 +1,5 @@
 ## c3
-## Copyright 2022,2023 kmx.io <contact@kmx.io>
+## Copyright 2022-2024 kmx.io <contact@kmx.io>
 ##
 ## Permission is hereby granted to use this software granted the above
 ## copyright notice and this permission paragraph are included in all
@@ -9,6 +9,7 @@
 ## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
+
 include config.mk
 include sources.mk
 
