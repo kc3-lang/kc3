@@ -93,20 +93,23 @@ s_ratio * ratio_div (const s_ratio *a, const s_ratio *b,
     return NULL;
   }
   if (integer_is_negative(&tmp.denominator)) {
-    if (! integer_neg(&tmp.numerator, &tmp2.numerator)) {
-      ratio_clean(&tmp);
+    tmp2 = tmp;
+    if (! integer_neg(&tmp2.numerator, &tmp.numerator)) {
+      ratio_clean(&tmp2);
       return NULL;
     }
-    if (! integer_neg(&tmp.denominator, &tmp2.denominator)) {
-      integer_clean(&tmp2.numerator);
-      ratio_clean(&tmp);
+    if (! integer_neg(&tmp2.denominator, &tmp.denominator)) {
+      integer_clean(&tmp.numerator);
+      ratio_clean(&tmp2);
       return NULL;
     }
-    *dest = tmp2;
-    ratio_clean(&tmp);
+    ratio_clean(&tmp2);
   }
-  else
-    *dest = tmp;
+  if (! ratio_simplify(&tmp, dest)) {
+    ratio_clean(&tmp);
+    return NULL;
+  }
+  ratio_clean(&tmp);
   return dest;
 }
 
@@ -259,7 +262,11 @@ s_ratio * ratio_mul (const s_ratio *a, const s_ratio *b,
     integer_clean(&tmp.numerator);
     return NULL;
   }
-  *dest = tmp;
+  if (! ratio_simplify(&tmp, dest)) {
+    ratio_clean(&tmp);
+    return NULL;
+  }
+  ratio_clean(&tmp);
   return dest;
 }
 
@@ -286,22 +293,15 @@ s_ratio * ratio_simplify (s_ratio *r, s_ratio *dest)
   assert(r);
   assert(dest);
   assert(integer_is_positive(&r->denominator));
-  if (! integer_init(&tmp.numerator))
+  if (! integer_gcd(&r->numerator, &r->denominator, &gcd))
     return NULL;
-  if (! integer_init(&tmp.denominator)) {
-    integer_clean(&tmp.numerator);
-    return NULL;
-  }
-  if (! integer_gcd(&r->numerator, &r->denominator, &gcd)) {
-    ratio_clean(&tmp);
-    return NULL;
-  }
   if (! integer_div(&r->numerator, &gcd, &tmp.numerator)) {
-    ratio_clean(&tmp);
+    integer_clean(&gcd);
     return NULL;
   }
   if (! integer_div(&r->denominator, &gcd, &tmp.denominator)) {
-    ratio_clean(&tmp);
+    integer_clean(&tmp.numerator);
+    integer_clean(&gcd);
     return NULL;
   }
   integer_clean(&gcd);
@@ -364,15 +364,13 @@ s_ratio * ratio_sub (const s_ratio *a, const s_ratio *b,
     ratio_clean(&tmp);
     return NULL;
   }
+  integer_clean(&i);
+  integer_clean(&j);
   if (! integer_mul(&a->denominator, &b->denominator,
                     &tmp.denominator)) {
-    integer_clean(&i);
-    integer_clean(&j);
     ratio_clean(&tmp);
     return NULL;
   }
-  integer_clean(&i);
-  integer_clean(&j);
   if (! ratio_simplify(&tmp, dest)) {
     ratio_clean(&tmp);
     return NULL;
