@@ -203,3 +203,5 @@ add {C3, :symbol, C3.if_then_else}
 replace {C3.if_then_else, :arity, 3}
 replace {C3.if_then_else, :is_a, :special_operator}
 replace {C3.if_then_else, :cfn, cfn Tag "c3_if_then_else" (Tag, Tag, Tag, Result)}
+add {C3, :symbol, C3.sqrt}
+replace {C3.sqrt, :cfn, cfn Tag "tag_sqrt" (Tag, Result)}
