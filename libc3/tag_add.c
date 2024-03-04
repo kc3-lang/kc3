@@ -166,8 +166,10 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
   case TAG_RATIO:
     switch (b->type) {
     case TAG_RATIO:
+      if (! ratio_add(&a->data.ratio, &b->data.ratio,
+                      &dest->data.ratio))
+        return NULL;
       dest->type = TAG_RATIO;
-      ratio_add(&a->data.ratio, &b->data.ratio, &dest->data.ratio);
       return dest;
     default:
       goto ko;
