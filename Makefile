@@ -1,5 +1,5 @@
 ## c3
-## Copyright 2022,2023 kmx.io <contact@kmx.io>
+## Copyright 2022-2024 kmx.io <contact@kmx.io>
 ##
 ## Permission is hereby granted to use this software granted the above
 ## copyright notice and this permission paragraph are included in all
@@ -162,7 +162,7 @@ libc3_gcovr:
 license:
 	update_header config.subr ${C3_CONFIGURES}
 	update_header Makefile ${C3_MAKEFILES}
-	update_header license.h ${C3_C_SOURCES}
+	update_header libc3/license.c ${C3_C_SOURCES}
 
 lldb_demo:
 	${MAKE} debug
