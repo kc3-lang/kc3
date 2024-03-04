@@ -43,7 +43,7 @@ TEST_CASE(env_eval_call)
   test_context("env_eval_call(1 + 2) -> 3");
   call_init(&call);
   call.ident.module = sym_1("C3");
-  call.ident.sym = sym_1("operator08");
+  call.ident.sym = sym_1("operator_add");
   call.arguments = list_new_1("[1, 2]");
   tag_init_u8(&expected, 3);
   TEST_ASSERT(env_eval_call(&env, &call, &result));
