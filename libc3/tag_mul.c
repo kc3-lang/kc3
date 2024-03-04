@@ -13,6 +13,7 @@
 #include "assert.h"
 #include <math.h>
 #include "integer.h"
+#include "ratio.h"
 #include "tag.h"
 
 s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
@@ -139,6 +140,17 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
       dest->type = TAG_INTEGER;
       integer_mul(&a->data.integer, &tmp, &dest->data.integer);
       integer_clean(&tmp);
+      return dest;
+    default:
+      goto ko;
+    }
+  case TAG_RATIO:
+    switch (b->type) {
+    case TAG_RATIO:
+      if (! ratio_mul(&a->data.ratio, &b->data.ratio,
+                      &dest->data.ratio))
+        return NULL;
+      dest->type = TAG_RATIO;
       return dest;
     default:
       goto ko;
