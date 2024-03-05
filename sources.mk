@@ -405,6 +405,7 @@ C3_C_SOURCES = \
 	"libc3/tag.c" \
 	"libc3/tag.h" \
 	"libc3/tag_add.c" \
+	"libc3/tag_addi.c" \
 	"libc3/tag_band.c" \
 	"libc3/tag_bnot.c" \
 	"libc3/tag_bor.c" \
