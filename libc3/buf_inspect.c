@@ -779,22 +779,19 @@ sw buf_inspect_character_size (const character *c)
   return result;
 }
 
-/*
 sw buf_inspect_complex (s_buf *buf, const s_complex *c)
 {
-  s_struct s;
   sw r;
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if (! struct_init_with_data(&s, &g_sym_Complex, false, c)) {
-    r = -2;
-    goto clean;
-  }
-  if ((r = buf_inspect_struct(buf, c)) <= 0)
+  if ((r = buf_inspect_tag(buf, &c->x)) < 0)
     goto restore;
   result += r;
-  if ((
+  if ((r = buf_write_1(buf, " +i ")) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_inspect_tag(buf, &c->y)) < 0)
     goto restore;
   result += r;
   r = result;
@@ -803,21 +800,22 @@ sw buf_inspect_complex (s_buf *buf, const s_complex *c)
   buf_save_restore_wpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
-  return result;
+  return r;
 }
 
-sw buf_inspect_complex_size (const complex *c)
+sw buf_inspect_complex_size (const s_complex *c)
 {
   sw r;
   sw result = 0;
-  result += strlen("'");
-  if ((r = buf_inspect_str_complex_size(c)) <= 0)
+  if ((r = buf_inspect_tag_size(&c->x)) < 0)
     return r;
   result += r;
-  result += strlen("'");
+  result += strlen(" +i ");
+  if ((r = buf_inspect_tag_size(&c->y)) < 0)
+    return r;
+  result += r;
   return result;
 }
-*/
 
 sw buf_inspect_f32 (s_buf *buf, const f32 *f)
 {
@@ -2302,6 +2300,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_CFN:     return buf_inspect_cfn(buf, &tag->data.cfn);
   case TAG_CHARACTER:
     return buf_inspect_character(buf, &tag->data.character);
+  case TAG_COMPLEX: return buf_inspect_complex(buf, tag->data.complex);
   case TAG_F32:     return buf_inspect_f32(buf, &tag->data.f32);
   case TAG_F64:     return buf_inspect_f64(buf, &tag->data.f64);
   case TAG_F128:    return buf_inspect_f128(buf, &tag->data.f128);
@@ -2354,6 +2353,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_CFN:      return buf_inspect_cfn_size(&tag->data.cfn);
   case TAG_CHARACTER:
     return buf_inspect_character_size(&tag->data.character);
+  case TAG_COMPLEX:  return buf_inspect_complex_size(tag->data.complex);
   case TAG_F32:      return buf_inspect_f32_size(&tag->data.f32);
   case TAG_F64:      return buf_inspect_f64_size(&tag->data.f64);
   case TAG_F128:     return buf_inspect_f128_size(&tag->data.f128);

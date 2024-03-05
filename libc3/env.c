@@ -286,6 +286,29 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   return call_get(call, &env->facts);
 }
 
+bool env_eval_complex (s_env *env, const s_complex *c, s_tag *dest)
+{
+  s_complex *tmp = NULL;
+  assert(env);
+  assert(c);
+  assert(dest);
+  tmp = alloc(sizeof(s_complex));
+  if (! tmp)
+    return false;
+  if (! env_eval_tag(env, &c->x, &tmp->x)) {
+    free(tmp);
+    return false;
+  }
+  if (! env_eval_tag(env, &c->y, &tmp->y)) {
+    tag_clean(&tmp->x);
+    free(tmp);
+    return false;
+  }
+  dest->type = TAG_COMPLEX;
+  dest->data.complex = tmp;
+  return true;
+}
+
 bool env_eval_equal_list (s_env *env, bool macro, const s_list *a,
                           const s_list *b, s_list **dest)
 {
@@ -442,6 +465,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     return true;
   }
   switch (a->type) {
+  case TAG_COMPLEX:
   case TAG_F32:
   case TAG_F64:
   case TAG_F128:
@@ -458,6 +482,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
   case TAG_U64:
   case TAG_UW:
     switch (b->type) {
+    case TAG_COMPLEX:
     case TAG_F32:
     case TAG_F64:
     case TAG_F128:
@@ -958,6 +983,7 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_BOOL:
   case TAG_CFN:
   case TAG_CHARACTER:
+  case TAG_COMPLEX:
   case TAG_F32:
   case TAG_F64:
   case TAG_F128:
@@ -1132,6 +1158,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_block(env, &tag->data.block, dest);
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
+  case TAG_COMPLEX:
+    return env_eval_complex(env, tag->data.complex, dest);
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
   case TAG_LIST:

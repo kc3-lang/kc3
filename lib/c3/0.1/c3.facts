@@ -71,6 +71,13 @@ replace {C3.operator_add, :arity, 2}
 replace {C3.operator_add, :cfn, cfn Tag "tag_add" (Tag, Tag, Result)}
 replace {C3.operator_add, :operator_precedence, 10}
 replace {C3.operator_add, :operator_associativity, :left}
+add {C3, :operator, C3.operator_addi}
+replace {C3.operator_addi, :is_a, :operator}
+replace {C3.operator_addi, :symbol, :+i}
+replace {C3.operator_addi, :arity, 2}
+replace {C3.operator_addi, :cfn, cfn Tag "tag_addi" (Tag, Tag, Result)}
+replace {C3.operator_addi, :operator_precedence, 10}
+replace {C3.operator_addi, :operator_associativity, :left}
 add {C3, :operator, C3.operator_sub}
 replace {C3.operator_sub, :is_a, :operator}
 replace {C3.operator_sub, :symbol, :-}

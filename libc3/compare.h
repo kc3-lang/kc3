@@ -24,6 +24,7 @@ s8 compare_bool (bool a, bool b);
 s8 compare_call (const s_call *a, const s_call *b);
 s8 compare_cfn (const s_cfn *a, const s_cfn *b);
 COMPARE_PROTOTYPE(character);
+s8 compare_complex (const s_complex *a, const s_complex *b);
 COMPARE_PROTOTYPE(f32);
 COMPARE_PROTOTYPE(f64);
 COMPARE_PROTOTYPE(f128);

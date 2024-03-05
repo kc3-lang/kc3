@@ -27,8 +27,8 @@ bool * bool_init_cast (bool *b, const s_tag *tag)
   switch (tag->type) {
   case TAG_BOOL:      *b = tag->data.bool;                     return b;
   case TAG_CHARACTER: *b = (bool) tag->data.character;         return b;
-    //case TAG_COMPLEX:   *b = ! complex_is_zero(tag->data.complex);
-    //                                                         return b;
+  case TAG_COMPLEX:   *b = ! complex_is_zero(tag->data.complex);
+                                                               return b;
   case TAG_F32:       *b = (bool) tag->data.f32;               return b;
   case TAG_F64:       *b = (bool) tag->data.f64;               return b;
   case TAG_F128:      *b = (bool) tag->data.f128;              return b;
