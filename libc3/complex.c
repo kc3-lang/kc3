@@ -19,6 +19,29 @@
 #include "tag.h"
 #include "tag_init.h"
 
+#define DEF_COMPLEX_INIT(type)                                         \
+  s_complex * complex_init_ ## type (s_complex *c, type src)           \
+  {                                                                    \
+    assert(c);                                                         \
+    tag_init_ ## type(&c->x, src);                                     \
+    tag_init_u8(&c->y, 0);                                             \
+    return c;                                                          \
+  }
+
+DEF_COMPLEX_INIT(f32)
+DEF_COMPLEX_INIT(f64)
+DEF_COMPLEX_INIT(f128)
+DEF_COMPLEX_INIT(s8)
+DEF_COMPLEX_INIT(s16)
+DEF_COMPLEX_INIT(s32)
+DEF_COMPLEX_INIT(s64)
+DEF_COMPLEX_INIT(sw)
+DEF_COMPLEX_INIT(u8)
+DEF_COMPLEX_INIT(u16)
+DEF_COMPLEX_INIT(u32)
+DEF_COMPLEX_INIT(u64)
+DEF_COMPLEX_INIT(uw)
+
 s_complex * complex_add (const s_complex *a, const s_complex *b,
                          s_complex *dest)
 {
@@ -90,12 +113,73 @@ s_complex * complex_init (s_complex *c)
   return c;
 }
 
+s_complex * complex_init_cast (s_complex *c, const s_tag *src)
+{
+  assert(c);
+  assert(src);
+  switch (src->type) {
+  case TAG_COMPLEX:
+    return complex_init_copy(c, src->data.complex);
+  case TAG_F32:
+    return complex_init_f32(c, src->data.f32);
+  case TAG_F64:
+    return complex_init_f64(c, src->data.f64);
+  case TAG_F128:
+    return complex_init_f128(c, src->data.f128);
+  case TAG_INTEGER:
+    return complex_init_integer(c, &src->data.integer);
+  case TAG_RATIO:
+    return complex_init_ratio(c, &src->data.ratio);
+  case TAG_SW:
+    return complex_init_sw(c, src->data.sw);
+  case TAG_S64:
+    return complex_init_s64(c, src->data.s64);
+  case TAG_S32:
+    return complex_init_s32(c, src->data.s32);
+  case TAG_S16:
+    return complex_init_s16(c, src->data.s16);
+  case TAG_S8:
+    return complex_init_s8(c, src->data.s8);
+  case TAG_U8:
+    return complex_init_u8(c, src->data.u8);
+  case TAG_U16:
+    return complex_init_u16(c, src->data.u16);
+  case TAG_U32:
+    return complex_init_u32(c, src->data.u32);
+  case TAG_U64:
+    return complex_init_u64(c, src->data.u64);
+  case TAG_UW:
+    return complex_init_uw(c, src->data.uw);
+  default:
+    break;
+  }
+  err_puts("complex_init_cast: invalid tag type");
+  assert(! "complex_init_cast: invalid tag type");
+  return NULL;
+}
+
 s_complex * complex_init_copy (s_complex *c, const s_complex *src)
 {
   assert(c);
   assert(src);
   tag_init_copy(&c->x, &src->x);
   tag_init_copy(&c->y, &src->y);
+  return c;
+}
+
+s_complex * complex_init_integer (s_complex *c, const s_integer *src)
+{
+  assert(c);
+  tag_init_integer_copy(&c->x, src);
+  tag_init_u8(&c->y, 0);
+  return c;
+}
+
+s_complex * complex_init_ratio (s_complex *c, const s_ratio *src)
+{
+  assert(c);
+  tag_init_ratio_copy(&c->x, src);
+  tag_init_u8(&c->y, 0);
   return c;
 }
 

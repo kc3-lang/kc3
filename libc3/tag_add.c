@@ -18,6 +18,7 @@
 
 s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
 {
+  s_complex c;
   s_integer tmp;
   s_integer tmp2;
   assert(a);
@@ -29,12 +30,79 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_COMPLEX:
       return tag_init_complex(dest, complex_new_add(a->data.complex,
                                                     b->data.complex));
+    case TAG_F32:
+      complex_init_f32(&c, b->data.f32);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_F64:
+      complex_init_f64(&c, b->data.f64);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_F128:
+      complex_init_f128(&c, b->data.f128);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_INTEGER:
+      if (! complex_init_integer(&c, &b->data.integer))
+        return NULL;
+      if (! tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                   &c))) {
+                                                   
+        complex_clean(&c);
+        return NULL;
+      }
+      complex_clean(&c);
+      return dest;
+    case TAG_S8:
+      complex_init_s8(&c, b->data.s8);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_S16:
+      complex_init_s16(&c, b->data.s16);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_S32:
+      complex_init_s32(&c, b->data.s32);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_S64:
+      complex_init_s64(&c, b->data.s64);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_SW:
+      complex_init_sw(&c, b->data.sw);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_U8:
+      complex_init_u8(&c, b->data.u8);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_U16:
+      complex_init_u16(&c, b->data.u16);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_U32:
+      complex_init_u32(&c, b->data.u32);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_U64:
+      complex_init_u64(&c, b->data.u64);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
+    case TAG_UW:
+      complex_init_uw(&c, b->data.uw);
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    &c));
     default:
       break;
     }
     break;
   case TAG_F32:
     switch (b->type) {
+    case TAG_COMPLEX:
+      complex_init_f32(&c, a->data.f32);
+      return tag_init_complex(dest, complex_new_add(&c,
+                                                    b->data.complex));
     case TAG_F32:
       return tag_init_f32(dest, a->data.f32 + b->data.f32);
     case TAG_F64:
@@ -99,6 +167,16 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
   }
   case TAG_INTEGER:
     switch (b->type) {
+    case TAG_COMPLEX:
+      if (! complex_init_integer(&c, &a->data.integer))
+        return NULL;
+      if (! tag_init_complex(dest, complex_new_add(&c,
+                                                   b->data.complex))) {
+        complex_clean(&c);
+        return NULL;
+      }
+      complex_clean(&c);
+      return dest;
     case TAG_F32:
       return tag_init_f32(dest, (f32) integer_to_f64(&a->data.integer) +
                           b->data.f32);

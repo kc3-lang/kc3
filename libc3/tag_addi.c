@@ -12,27 +12,41 @@
  */
 #include "alloc.h"
 #include "assert.h"
+#include "complex.h"
 #include "tag.h"
 
 s_tag * tag_addi (const s_tag *a, const s_tag *b, s_tag *dest)
 {
   s_complex *c;
+  s_complex ca = {0};
+  s_complex cb = {0};
   assert(a);
   assert(b);
   assert(dest);
   c = alloc(sizeof(s_complex));
   if (! c)
     return NULL;
-  if (! tag_init_copy(&c->x, a)) {
+  if (! complex_init_cast(&ca, a)) {
     free(c);
     return NULL;
   }
-  if (! tag_init_copy(&c->y, b)) {
+  if (! complex_init_cast(&cb, b)) {
+    complex_clean(&ca);
+    free(c);
+    return NULL;
+  }
+  if (! tag_sub(&ca.x, &cb.y, &c->x)) {
+    complex_clean(&cb);
+    complex_clean(&ca);
+    free(c);
+    return NULL;
+  }
+  if (! tag_add(&ca.y, &cb.x, &c->y)) {
     tag_clean(&c->x);
+    complex_clean(&cb);
+    complex_clean(&ca);
     free(c);
     return NULL;
   }
-  dest->type = TAG_COMPLEX;
-  dest->data.complex = c;
-  return dest;
+  return tag_init_complex(dest, c);
 }

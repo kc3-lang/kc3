@@ -17,13 +17,28 @@
 #include <stdio.h>
 #include "types.h"
 
-/* Stack allocation compatible functions */
+/* Stack-allocation compatible functions, call complex_clean
+   after use. */
+void        complex_clean (s_complex *c);
 s_complex * complex_init (s_complex *c);
 s_complex * complex_init_1 (s_complex *c, const s8 *p);
-s_complex * complex_init_copy (s_complex *a, const s_complex *x);
-s_complex * complex_init_f32 (s_complex *a, f32 x, f32 y);
-s_complex * complex_init_f64 (s_complex *a, f64 x, f64 y);
-void        complex_clean (s_complex *c);
+s_complex * complex_init_cast (s_complex *c, const s_tag *src);
+s_complex * complex_init_copy (s_complex *c, const s_complex *src);
+s_complex * complex_init_f32 (s_complex *c, f32 src);
+s_complex * complex_init_f64 (s_complex *c, f64 src);
+s_complex * complex_init_f128 (s_complex *c, f128 src);
+s_complex * complex_init_integer (s_complex *c, const s_integer *src);
+s_complex * complex_init_ratio (s_complex *c, const s_ratio *src);
+s_complex * complex_init_s8 (s_complex *c, s8 src);
+s_complex * complex_init_s16 (s_complex *c, s16 src);
+s_complex * complex_init_s32 (s_complex *c, s32 src);
+s_complex * complex_init_s64 (s_complex *c, s64 src);
+s_complex * complex_init_sw (s_complex *c, sw src);
+s_complex * complex_init_u8 (s_complex *c, u8 src);
+s_complex * complex_init_u16 (s_complex *c, u16 src);
+s_complex * complex_init_u32 (s_complex *c, u32 src);
+s_complex * complex_init_u64 (s_complex *c, u64 src);
+s_complex * complex_init_uw (s_complex *c, uw src);
 
 /* Setters */
 s_complex * complex_set_double (s_complex *a, double x, double y);
