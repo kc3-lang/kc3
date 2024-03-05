@@ -14,6 +14,7 @@ s_list * list_init_bool (s_list *list, bool b, s_list *next);
 s_list * list_init_call (s_list *list, s_list *next);
 s_list * list_init_character (s_list *list, character c, s_list *next);
 
+s_list * list_init_complex (s_list *list, s_complex *c, s_list *next);
 s_list * list_init_f32 (s_list *list, f32 f, s_list *next);
 s_list * list_init_f64 (s_list *list, f64 f, s_list *next);
 s_list * list_init_f128 (s_list *list, f128 f, s_list *next);
@@ -78,6 +79,7 @@ s_list * list_new_bool (bool b, s_list *next);
 s_list * list_new_call (s_list *next);
 s_list * list_new_character (character c, s_list *next);
 
+s_list * list_new_complex (s_complex *c, s_list *next);
 s_list * list_new_f32 (f32 f, s_list *next);
 s_list * list_new_f64 (f64 f, s_list *next);
 s_list * list_new_f128 (f128 f, s_list *next);
@@ -133,6 +135,7 @@ s_list * list_bool (s_list *list, bool b);
 s_list * list_call (s_list *list);
 s_list * list_character (s_list *list, character c);
 
+s_list * list_complex (s_list *list, s_complex *c);
 s_list * list_f32 (s_list *list, f32 f);
 s_list * list_f64 (s_list *list, f64 f);
 s_list * list_f128 (s_list *list, f128 f);

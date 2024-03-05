@@ -85,6 +85,17 @@ s_list * list_init_character (s_list *list, character c, s_list *next)
   return list;
 }
 
+s_list * list_init_complex (s_list *list, s_complex *c, s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_complex(&tmp.tag, c))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_f32 (s_list *list, f32 f, s_list *next)
 {
   s_list tmp;
@@ -586,6 +597,19 @@ s_list * list_new_character (character c, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_character(&list->tag, c)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_complex (s_complex *c, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_complex(&list->tag, c)) {
     free(list);
     return NULL;
   }

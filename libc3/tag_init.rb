@@ -45,6 +45,7 @@ class TagInit
 
     @args_list.each do |arg|
       @first_arg_deref ||= arg.type != "const s_sym *" &&
+                           arg.type != "s_complex *" &&
                            arg.type != "s_list *" &&
                            arg.type.match?(/\*$/) ?
                              "*#{arg.name}" : arg.name
@@ -312,6 +313,8 @@ class TagInitList
                    [Arg.new("character", "c")]),
        TagInitProto.new("copy", nil, :init_mode_none,
                         [Arg.new("const s_tag *", "src")]),
+       TagInit.new("complex", "TAG_COMPLEX", :init_mode_direct,
+                   [Arg.new("s_complex *", "c")]),
        TagInit.new("f32", "TAG_F32", :init_mode_direct,
                    [Arg.new("f32", "f")]),
        TagInit.new("f64", "TAG_F64", :init_mode_direct,
