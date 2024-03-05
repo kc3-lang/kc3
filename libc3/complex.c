@@ -36,11 +36,18 @@ void complex_clean (s_complex *c)
   tag_clean(&c->y);
 }
 
+void complex_delete (s_complex *c)
+{
+  assert(c);
+  complex_clean(c);
+  free(c);
+}
+
 s_complex * complex_init (s_complex *c)
 {
   assert(c);
-  tag_init_f64(&c->x, 0);
-  tag_init_f64(&c->y, 0);
+  tag_init_u8(&c->x, 0);
+  tag_init_u8(&c->y, 0);
   return c;
 }
 

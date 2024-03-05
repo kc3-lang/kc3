@@ -21,6 +21,7 @@
 #include "call.h"
 #include "cfn.h"
 #include "compare.h"
+#include "complex.h"
 #include "env.h"
 #include "fn.h"
 #include "frame.h"
@@ -143,6 +144,7 @@ void tag_clean (s_tag *tag)
   case TAG_BLOCK:       block_clean(&tag->data.block);     break;
   case TAG_CALL:        call_clean(&tag->data.call);       break;
   case TAG_CFN:         cfn_clean(&tag->data.cfn);         break;
+  case TAG_COMPLEX:     complex_delete(tag->data.complex); break;
   case TAG_FN:          fn_clean(&tag->data.fn);           break;
   case TAG_INTEGER:     integer_clean(&tag->data.integer); break;
   case TAG_LIST:        list_delete_all(tag->data.list);   break;
@@ -322,6 +324,7 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     tag_init_var(tag);
     break;
   case TAG_VOID:
+    tag_init_void(tag);
     break;
   case TAG_ARRAY:
     array_init_copy(&tag->data.array, &src->data.array);
@@ -334,6 +337,9 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     break;
   case TAG_CFN:
     cfn_init_copy(&tag->data.cfn, &src->data.cfn);
+    break;
+  case TAG_COMPLEX:
+    tag->data.complex = complex_new_copy(src->data.complex);
     break;
   case TAG_FN:
     fn_init_copy(&tag->data.fn, &src->data.fn);
@@ -464,18 +470,51 @@ bool tag_is_number (const s_tag *tag)
 {
   assert(tag);
   switch (tag->type) {
+  case TAG_VOID:
+  case TAG_ARRAY:
+  case TAG_BLOCK:
+  case TAG_BOOL:
+  case TAG_CALL:
+  case TAG_CFN:
+  case TAG_CHARACTER:
+  case TAG_FACT:
+  case TAG_FN:
+  case TAG_LIST:
+  case TAG_MAP:
+  case TAG_PTAG:
+  case TAG_PTR:
+  case TAG_PTR_FREE:
+  case TAG_QUOTE:
+  case TAG_STR:
+  case TAG_STRUCT:
+  case TAG_STRUCT_TYPE:
+  case TAG_SYM:
+  case TAG_TUPLE:
+  case TAG_UNQUOTE:
+  case TAG_VAR:
+  case TAG_IDENT:
+    return false;
+  case TAG_COMPLEX:
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_F128:
   case TAG_INTEGER:
-  case TAG_S8:
-  case TAG_S16:
-  case TAG_S32:
+  case TAG_RATIO:
+  case TAG_SW:
   case TAG_S64:
+  case TAG_S32:
+  case TAG_S16:
+  case TAG_S8:
   case TAG_U8:
   case TAG_U16:
   case TAG_U32:
   case TAG_U64:
+  case TAG_UW:
     return true;
-  default: ;
   }
+  err_puts("tag_is_number: invalid tag type");
+  assert(! "tag_is_number: invalid tag type");
+  abort();
   return false;
 }
 

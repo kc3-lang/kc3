@@ -13,9 +13,11 @@
 #include "assert.h"
 #include <string.h>
 #include "compare.h"
+#include "complex.h"
 #include "data.h"
 #include "integer.h"
 #include "list.h"
+#include "ratio.h"
 #include "tag.h"
 
 #define COMPARE_DEF(type)                       \
@@ -117,6 +119,35 @@ s8 compare_cfn (const s_cfn *a, const s_cfn *b)
 }
 
 COMPARE_DEF(character)
+
+s8 compare_complex (const s_complex *a, const s_complex *b)
+{
+  s_tag aa = {0};
+  s_tag ax2 = {0};
+  s_tag ay2 = {0};
+  s_tag bb = {0};
+  s_tag bx2 = {0};
+  s_tag by2 = {0};
+  s8 r;
+  assert(a);
+  assert(b);
+  if (! tag_mul(&a->x, &a->x, &ax2) ||
+      ! tag_mul(&a->y, &a->y, &ay2) ||
+      ! tag_add(&ax2, &ay2, &aa) ||
+      ! tag_mul(&b->x, &b->x, &bx2) ||
+      ! tag_mul(&b->y, &b->y, &by2) ||
+      ! tag_add(&bx2, &by2, &bb))
+    abort();
+  r = compare_tag(&aa, &bb);
+  tag_clean(&bb);
+  tag_clean(&by2);
+  tag_clean(&bx2);
+  tag_clean(&aa);
+  tag_clean(&ay2);
+  tag_clean(&ax2);
+  return r;
+}
+
 COMPARE_DEF(f32)
 COMPARE_DEF(f64)
 COMPARE_DEF(f128)
@@ -512,14 +543,26 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       b == TAG_FIRST)
     return 1;
   switch (a->type) {
+  case TAG_COMPLEX:
+    switch (b->type) {
+    case TAG_COMPLEX:
+      return compare_complex(a->data.complex, b->data.complex);
+    default:
+      break;
+    }
+    break;
   case TAG_F32:
     switch (b->type) {
+    case TAG_COMPLEX:
+      return compare_f32(a->data.f32, complex_to_f32(b->data.complex));
     case TAG_F32: return compare_f32(a->data.f32, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.f32, b->data.f64);
     case TAG_F128:
       return compare_f128((f128) a->data.f32, b->data.f128);
     case TAG_INTEGER:
       return compare_f32(a->data.f32, integer_to_f32(&b->data.integer));
+    case TAG_RATIO:
+      return compare_f32(a->data.f32, ratio_to_f32(&b->data.ratio));
     case TAG_S8:  return compare_f32(a->data.f32, (f32) b->data.s8);
     case TAG_S16: return compare_f32(a->data.f32, (f32) b->data.s16);
     case TAG_S32: return compare_f32(a->data.f32, (f32) b->data.s32);
@@ -536,6 +579,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     break;
   case TAG_F64:
     switch (b->type) {
+    case TAG_COMPLEX:
+      return compare_f64(a->data.f64, complex_to_f64(b->data.complex));
     case TAG_F32: return compare_f64(a->data.f64, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.f64, b->data.f64);
     case TAG_F128:
@@ -617,6 +662,14 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       r = compare_integer(&a->data.integer, &tmp);
       integer_clean(&tmp);
       return r;
+    default:
+      break;
+    }
+    break;
+  case TAG_RATIO:
+    switch (b->type) {
+    case TAG_RATIO:
+      return compare_ratio(&a->data.ratio, &b->data.ratio);
     default:
       break;
     }
@@ -929,8 +982,6 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                           b->data.ptr_free.p);
   case TAG_QUOTE:      return compare_quote(&a->data.quote,
                                             &b->data.quote);
-  case TAG_RATIO:      return compare_ratio(&a->data.ratio,
-                                           &b->data.ratio);
   case TAG_STR:        return compare_str(&a->data.str, &b->data.str);
   case TAG_STRUCT:     return compare_struct(&a->data.struct_,
                                              &b->data.struct_);
@@ -943,10 +994,12 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_UNQUOTE:    return compare_unquote(&a->data.unquote,
                                               &b->data.unquote);
   case TAG_VAR:        return compare_ptr(a, b);
+  case TAG_COMPLEX:
   case TAG_F32:
   case TAG_F64:
   case TAG_F128:
   case TAG_INTEGER:
+  case TAG_RATIO:
   case TAG_S8:
   case TAG_S16:
   case TAG_S32:

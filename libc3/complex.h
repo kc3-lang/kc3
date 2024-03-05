@@ -39,6 +39,7 @@ s_complex * complex_div (const s_complex *a, const s_complex *b,
                          s_complex *dest);
 
 /* Constructors, call complex_delete after use. */
+void        complex_delete (s_complex *c);
 s_complex * complex_new (void);
 s_complex * complex_new_copy (const s_complex *a);
 
