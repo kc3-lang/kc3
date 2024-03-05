@@ -295,6 +295,7 @@ SOURCES = \
 	"sym.c" \
 	"tag.c" \
 	"tag_add.c" \
+	"tag_addi.c" \
 	"tag_band.c" \
 	"tag_bnot.c" \
 	"tag_bor.c" \
@@ -557,6 +558,7 @@ LO_SOURCES = \
 	"sym.c" \
 	"tag.c" \
 	"tag_add.c" \
+	"tag_addi.c" \
 	"tag_band.c" \
 	"tag_bnot.c" \
 	"tag_bor.c" \
