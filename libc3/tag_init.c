@@ -82,6 +82,16 @@ s_tag * tag_init_character (s_tag *tag, character c)
   return tag;
 }
 
+s_tag * tag_init_complex (s_tag *tag, s_complex *c)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_COMPLEX;
+  tmp.data.complex = c;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_f32 (s_tag *tag, f32 f)
 {
   s_tag tmp = {0};
@@ -566,6 +576,17 @@ s_tag * tag_new_character (character c)
     return NULL;
   tag->type = TAG_CHARACTER;
   tag->data.character = c;
+  return tag;
+}
+
+s_tag * tag_new_complex (s_complex *c)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_COMPLEX;
+  tag->data.complex = c;
   return tag;
 }
 
@@ -1130,6 +1151,17 @@ s_tag * tag_character (s_tag *tag, character c)
   tag_clean(tag);
   tmp.type = TAG_CHARACTER;
   tmp.data.character = c;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_complex (s_tag *tag, s_complex *c)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_COMPLEX;
+  tmp.data.complex = c;
   *tag = tmp;
   return tag;
 }

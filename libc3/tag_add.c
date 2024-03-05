@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
+#include "complex.h"
 #include "integer.h"
 #include "ratio.h"
 #include "tag.h"
@@ -23,6 +24,15 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
   assert(b);
   assert(dest);
   switch (a->type) {
+  case TAG_COMPLEX:
+    switch (b->type) {
+    case TAG_COMPLEX:
+      return tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                    b->data.complex));
+    default:
+      break;
+    }
+    break;
   case TAG_F32:
     switch (b->type) {
     case TAG_F32:
