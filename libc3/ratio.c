@@ -30,12 +30,6 @@ s_ratio * ratio_add (const s_ratio *a, const s_ratio *b, s_ratio *dest)
   assert(dest);
   assert(integer_is_positive(&a->denominator));
   assert(integer_is_positive(&b->denominator));
-  if (! integer_init(&tmp.numerator))
-    return NULL;
-  if (! integer_init(&tmp.denominator)) {
-    integer_clean(&tmp.numerator);
-    return NULL;
-  }
   if (! integer_mul(&a->numerator, &b->denominator, &i)) {
     ratio_clean(&tmp);
     return NULL;
@@ -51,15 +45,13 @@ s_ratio * ratio_add (const s_ratio *a, const s_ratio *b, s_ratio *dest)
     ratio_clean(&tmp);
     return NULL;
   }
+  integer_clean(&i);
+  integer_clean(&j);
   if (! integer_mul(&a->denominator, &b->denominator,
                     &tmp.denominator)) {
-    integer_clean(&i);
-    integer_clean(&j);
     ratio_clean(&tmp);
     return NULL;
   }
-  integer_clean(&i);
-  integer_clean(&j);
   if (! ratio_simplify(&tmp, dest)) {
     ratio_clean(&tmp);
     return NULL;
