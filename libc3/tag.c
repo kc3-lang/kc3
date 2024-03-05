@@ -700,6 +700,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   case TAG_CALL:        *dest = &tag->data.call;        return true;
   case TAG_CFN:         *dest = &tag->data.cfn;         return true;
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;
+  case TAG_COMPLEX:     *dest = tag->data.complex;      return true;
   case TAG_F32:         *dest = &tag->data.f32;         return true;
   case TAG_F64:         *dest = &tag->data.f64;         return true;
   case TAG_F128:        *dest = &tag->data.f128;        return true;
@@ -785,6 +786,12 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_CHARACTER:
     if (type == &g_sym_Character) {
       *dest = &tag->data.character;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_COMPLEX:
+    if (type == &g_sym_Complex) {
+      *dest = tag->data.complex;
       return true;
     }
     goto invalid_cast;
@@ -1024,6 +1031,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_CALL:        *dest = &tag->data.call;        return true;
   case TAG_CFN:         *dest = &tag->data.cfn;         return true;
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;
+  case TAG_COMPLEX:     *dest =  tag->data.complex;     return true;
   case TAG_F32:         *dest = &tag->data.f32;         return true;
   case TAG_F64:         *dest = &tag->data.f64;         return true;
   case TAG_F128:        *dest = &tag->data.f128;        return true;
@@ -1075,6 +1083,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_CALL:        *dest = &g_sym_Call;       return dest;
   case TAG_CFN:         *dest = &g_sym_Cfn;        return dest;
   case TAG_CHARACTER:   *dest = &g_sym_Character;  return dest;
+  case TAG_COMPLEX:     *dest = &g_sym_Complex;    return dest;
   case TAG_F32:         *dest = &g_sym_F32;        return dest;
   case TAG_F64:         *dest = &g_sym_F64;        return dest;
   case TAG_F128:        *dest = &g_sym_F128;       return dest;

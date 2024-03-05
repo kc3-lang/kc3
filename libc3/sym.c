@@ -32,6 +32,7 @@ const s_sym g_sym_Call            = {{{NULL},  4, {"Call"}}};
 const s_sym g_sym_Cfn             = {{{NULL},  3, {"Cfn"}}};
 const s_sym g_sym_Character       = {{{NULL},  9, {"Character"}}};
 const s_sym g_sym_Char__star      = {{{NULL},  5, {"Char*"}}};
+const s_sym g_sym_Complex         = {{{NULL},  7, {"Complex"}}};
 const s_sym g_sym_F32             = {{{NULL},  3, {"F32"}}};
 const s_sym g_sym_F64             = {{{NULL},  3, {"F64"}}};
 const s_sym g_sym_F128            = {{{NULL},  3, {"F128"}}};
@@ -275,6 +276,7 @@ void sym_init_g_sym (void)
   sym_intern(&g_sym_Cfn, NULL);
   sym_intern(&g_sym_Character, NULL);
   sym_intern(&g_sym_Char__star, NULL);
+  sym_intern(&g_sym_Complex, NULL);
   sym_intern(&g_sym_F32, NULL);
   sym_intern(&g_sym_F64, NULL);
   sym_intern(&g_sym_F128, NULL);
