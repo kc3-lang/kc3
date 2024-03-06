@@ -335,12 +335,6 @@ s_ratio * ratio_sub (const s_ratio *a, const s_ratio *b,
   assert(dest);
   assert(integer_is_positive(&a->denominator));
   assert(integer_is_positive(&b->denominator));
-  if (! integer_init(&tmp.numerator))
-    return NULL;
-  if (! integer_init(&tmp.denominator)) {
-    integer_clean(&tmp.numerator);
-    return NULL;
-  }
   if (! integer_mul(&a->numerator, &b->denominator, &i)) {
     ratio_clean(&tmp);
     return NULL;
