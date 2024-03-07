@@ -21,7 +21,6 @@
 #include "call.h"
 #include "cfn.h"
 #include "compare.h"
-#include "complex.h"
 #include "env.h"
 #include "fn.h"
 #include "frame.h"
@@ -30,6 +29,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "pcomplex.h"
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
@@ -140,24 +140,24 @@ void tag_clean (s_tag *tag)
 {
   assert(tag);
   switch (tag->type) {
-  case TAG_ARRAY:       array_clean(&tag->data.array);     break;
-  case TAG_BLOCK:       block_clean(&tag->data.block);     break;
-  case TAG_CALL:        call_clean(&tag->data.call);       break;
-  case TAG_CFN:         cfn_clean(&tag->data.cfn);         break;
-  case TAG_COMPLEX:     complex_delete(tag->data.complex); break;
-  case TAG_FN:          fn_clean(&tag->data.fn);           break;
-  case TAG_INTEGER:     integer_clean(&tag->data.integer); break;
-  case TAG_LIST:        list_delete_all(tag->data.list);   break;
-  case TAG_MAP:         map_clean(&tag->data.map);         break;
-  case TAG_PTR_FREE:    ptr_free_clean(&tag->data.ptr);    break;
-  case TAG_QUOTE:       quote_clean(&tag->data.quote);     break;
-  case TAG_RATIO:       ratio_clean(&tag->data.ratio);     break;
-  case TAG_STR:         str_clean(&tag->data.str);         break;
-  case TAG_STRUCT:      struct_clean(&tag->data.struct_);  break;
+  case TAG_ARRAY:       array_clean(&tag->data.array);      break;
+  case TAG_BLOCK:       block_clean(&tag->data.block);      break;
+  case TAG_CALL:        call_clean(&tag->data.call);        break;
+  case TAG_CFN:         cfn_clean(&tag->data.cfn);          break;
+  case TAG_COMPLEX:     pcomplex_clean(&tag->data.complex); break;
+  case TAG_FN:          fn_clean(&tag->data.fn);            break;
+  case TAG_INTEGER:     integer_clean(&tag->data.integer);  break;
+  case TAG_LIST:        list_delete_all(tag->data.list);    break;
+  case TAG_MAP:         map_clean(&tag->data.map);          break;
+  case TAG_PTR_FREE:    ptr_free_clean(&tag->data.ptr);     break;
+  case TAG_QUOTE:       quote_clean(&tag->data.quote);      break;
+  case TAG_RATIO:       ratio_clean(&tag->data.ratio);      break;
+  case TAG_STR:         str_clean(&tag->data.str);          break;
+  case TAG_STRUCT:      struct_clean(&tag->data.struct_);   break;
   case TAG_STRUCT_TYPE: struct_type_clean(&tag->data.struct_type);
-                                                           break;
-  case TAG_TUPLE:       tuple_clean(&tag->data.tuple);     break;
-  case TAG_UNQUOTE:     unquote_clean(&tag->data.unquote); break;
+                                                            break;
+  case TAG_TUPLE:       tuple_clean(&tag->data.tuple);      break;
+  case TAG_UNQUOTE:     unquote_clean(&tag->data.unquote);  break;
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:
@@ -339,7 +339,8 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     cfn_init_copy(&tag->data.cfn, &src->data.cfn);
     break;
   case TAG_COMPLEX:
-    tag->data.complex = complex_new_copy(src->data.complex);
+    pcomplex_init_copy(&tag->data.complex,
+		       (const s_complex * const *) &src->data.complex);
     break;
   case TAG_FN:
     fn_init_copy(&tag->data.fn, &src->data.fn);
@@ -348,7 +349,8 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     integer_init_copy(&tag->data.integer, &src->data.integer);
     break;
   case TAG_LIST:
-    list_init_copy(&tag->data.list, (const s_list **) &src->data.list);
+    list_init_copy(&tag->data.list,
+		   (const s_list * const *) &src->data.list);
     break;
   case TAG_MAP:
     map_init_copy(&tag->data.map, &src->data.map);
@@ -700,7 +702,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   case TAG_CALL:        *dest = &tag->data.call;        return true;
   case TAG_CFN:         *dest = &tag->data.cfn;         return true;
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;
-  case TAG_COMPLEX:     *dest = tag->data.complex;      return true;
+  case TAG_COMPLEX:     *dest = &tag->data.complex;     return true;
   case TAG_F32:         *dest = &tag->data.f32;         return true;
   case TAG_F64:         *dest = &tag->data.f64;         return true;
   case TAG_F128:        *dest = &tag->data.f128;        return true;
@@ -791,7 +793,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_COMPLEX:
     if (type == &g_sym_Complex) {
-      *dest = tag->data.complex;
+      *dest = &tag->data.complex;
       return true;
     }
     goto invalid_cast;
@@ -838,9 +840,10 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     }
     goto invalid_cast;
   case TAG_RATIO:
-    if (type == sym_1("Ratio") ||
-        type == sym_1("ratio"))
+    if (type == &g_sym_Ratio) {
+      *dest = &tag->data.ratio;
       return true;
+    }
     goto invalid_cast;
   case TAG_SW:
     if (type == &g_sym_Sw) {
@@ -1031,7 +1034,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_CALL:        *dest = &tag->data.call;        return true;
   case TAG_CFN:         *dest = &tag->data.cfn;         return true;
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;
-  case TAG_COMPLEX:     *dest =  tag->data.complex;     return true;
+  case TAG_COMPLEX:     *dest = &tag->data.complex;     return true;
   case TAG_F32:         *dest = &tag->data.f32;         return true;
   case TAG_F64:         *dest = &tag->data.f64;         return true;
   case TAG_F128:        *dest = &tag->data.f128;        return true;
