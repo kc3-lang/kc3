@@ -409,9 +409,11 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
   case TAG_U16:
     switch (b->type) {
     case TAG_F32:
-      return tag_init_f32(dest, a->data.u16 - b->data.f32);
+      return tag_init_f32(dest, (f32) a->data.u16 - b->data.f32);
     case TAG_F64:
-      return tag_init_f64(dest, a->data.u16 - b->data.f64);
+      return tag_init_f64(dest, (f64) a->data.u16 - b->data.f64);
+    case TAG_F128:
+      return tag_init_f128(dest, (f128) a->data.u16 - b->data.f128);
     case TAG_INTEGER:
       integer_init_u16(&tmp, a->data.u16);
       dest->type = TAG_INTEGER;
