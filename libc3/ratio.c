@@ -109,12 +109,6 @@ s_ratio * ratio_init (s_ratio *dest)
 {
   s_ratio tmp = {0};
   assert(dest);
-  if (! integer_init(&tmp.numerator))
-    return NULL;
-  if (! integer_init(&tmp.denominator)) {
-    integer_clean(&tmp.numerator);
-    return NULL;
-  }
   *dest = tmp;
   return dest;
 }
@@ -162,6 +156,33 @@ s_ratio * ratio_init_copy (s_ratio *dest, const s_ratio *src)
   return dest;
 }
 
+s_ratio * ratio_init_f32 (s_ratio *r, f32 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_f32(&r->numerator, x);
+  integer_init_s32(&r->denominator, 1);
+  return r;
+}
+
+s_ratio * ratio_init_f64 (s_ratio *r, f64 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_f64(&r->numerator, x);
+  integer_init_s32(&r->denominator, 1);
+  return r;
+}
+
+s_ratio * ratio_init_f128 (s_ratio *r, f128 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_f128(&r->numerator, x);
+  integer_init_s32(&r->denominator, 1);
+  return r;
+}
+
 s_ratio * ratio_init_integer (s_ratio *r, const s_integer *src)
 {
   s_ratio tmp = {0};
@@ -174,6 +195,96 @@ s_ratio * ratio_init_integer (s_ratio *r, const s_integer *src)
     return NULL;
   }
   *r = tmp;
+  return r;
+}
+
+s_ratio * ratio_init_s8(s_ratio *r, s8 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_s8(&r->numerator, x);
+  integer_init_u8(&r->denominator, 1);
+  return r;
+}
+
+s_ratio * ratio_init_s16(s_ratio *r, s16 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_s16(&r->numerator, x);
+  integer_init_u8(&r->denominator, 1);
+  return r;
+}
+
+s_ratio * ratio_init_s32 (s_ratio *r, s32 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_s32(&r->numerator, x);
+  integer_init_u8(&r->denominator, 1);
+  return r;
+}
+
+s_ratio * ratio_init_s64 (s_ratio *r, s64 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_s64(&r->numerator, x);
+  integer_init_u8(&r->denominator, 1);
+  return r;
+}
+
+s_ratio * ratio_init_sw (s_ratio *r, sw x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_sw(&r->numerator, x);
+  integer_init_u8(&r->denominator, 1);
+  return r;
+}
+
+s_ratio * ratio_init_u8 (s_ratio *r, u8 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_u8(&r->numerator, x);
+  integer_init_u8(&r->denominator, 1);
+  return r;
+}
+
+s_ratio * ratio_init_u16 (s_ratio *r, u16 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_u16(&r->numerator, x);
+  integer_init_u8(&r->denominator, 1);
+  return r;
+}
+
+s_ratio * ratio_init_u32 (s_ratio *r, u32 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_u32(&r->numerator, x);
+  integer_init_u8(&r->denominator, 1);
+  return r;
+}
+
+s_ratio * ratio_init_u64 (s_ratio *r, u64 x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_u64(&r->numerator, x);
+  integer_init_u8(&r->denominator, 1);
+  return r;
+}
+
+s_ratio * ratio_init_uw (s_ratio *r, uw x)
+{
+  assert(r);
+  ratio_init(r);
+  integer_init_uw(&r->numerator, x);
+  integer_init_u8(&r->denominator, 1);
   return r;
 }
 
