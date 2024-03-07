@@ -551,6 +551,10 @@ bool sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = false;
     return true;
   }
+  if (sym == &g_sym_Var) {
+    *must_clean = false;
+    return true;
+  }
   if (sym == &g_sym_Void) {
     *must_clean = false;
     return true;
