@@ -113,6 +113,7 @@ HEADERS = \
 	"map.h" \
 	"module.h" \
 	"operator.h" \
+	"pcomplex.h" \
 	"ptag.h" \
 	"ptr.h" \
 	"ptr_free.h" \
@@ -267,6 +268,7 @@ SOURCES = \
 	"map.c" \
 	"module.c" \
 	"operator.c" \
+	"pcomplex.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
@@ -530,6 +532,7 @@ LO_SOURCES = \
 	"map.c" \
 	"module.c" \
 	"operator.c" \
+	"pcomplex.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \

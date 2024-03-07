@@ -28,6 +28,7 @@ SOURCES = \
 	"ident_test.c" \
 	"libc3_test.c" \
 	"list_test.c" \
+	"ratio_test.c" \
 	"set__fact_test.c" \
 	"set__tag_test.c" \
 	"skiplist__fact_test.c" \
