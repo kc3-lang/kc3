@@ -411,16 +411,17 @@ s8 compare_quote (const s_quote *a, const s_quote *b)
 
 s8 compare_ratio (const s_ratio *a, const s_ratio *b)
 {
-  s8 r;
-  if (a == b)
-    return 0;
-  if (!a)
-    return -1;
-  if (!b)
-    return 1;
-  if ((r = compare_integer(&a->numerator, &b->numerator)))
+    s_integer a_cross_product;
+    s_integer b_cross_product;
+    s8 r;
+    assert(a);
+    assert(b);
+    integer_mul(&a->numerator, &b->denominator, &a_cross_product);
+    integer_mul(&b->numerator, &a->denominator, &b_cross_product);
+    r = compare_integer(&a_cross_product, &b_cross_product);
+    integer_clean(&a_cross_product);
+    integer_clean(&b_cross_product);
     return r;
-  return compare_integer(&a->denominator, &b->denominator);
 }
 
 COMPARE_DEF(s8)
