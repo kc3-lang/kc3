@@ -48,5 +48,7 @@ s_tag * tag_addi (const s_tag *a, const s_tag *b, s_tag *dest)
     free(c);
     return NULL;
   }
+  complex_clean(&cb);
+  complex_clean(&ca);
   return tag_init_complex(dest, c);
 }
