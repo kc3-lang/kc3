@@ -312,12 +312,27 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       }
       complex_clean(&c);
       return dest;
+    case TAG_F32:
+    case TAG_F64:
+    case TAG_F128:
+    case TAG_INTEGER:
+      goto ko;
     case TAG_RATIO:
       if (! ratio_add(&a->data.ratio, &b->data.ratio,
                       &dest->data.ratio))
         return NULL;
       dest->type = TAG_RATIO;
       return dest;
+    case TAG_S8:
+    case TAG_S16:
+    case TAG_S32:
+    case TAG_S64:
+    case TAG_SW:
+    case TAG_U8:
+    case TAG_U16:
+    case TAG_U32:
+    case TAG_U64:
+    case TAG_UW:
     default:
       goto ko;
     }
