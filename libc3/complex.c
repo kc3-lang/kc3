@@ -232,6 +232,20 @@ s_complex * complex_new_add (const s_complex *a, const s_complex *b)
   return c;
 }
 
+s_complex * complex_new_cast (const s_tag *src)
+{
+  s_complex *c;
+  assert(src);
+  c = alloc(sizeof(s_complex));
+  if (! c)
+    return NULL;
+  if (! complex_init_cast(c, src)) {
+    free(c);
+    return NULL;
+  }
+  return c;
+}
+
 s_complex * complex_new_div (const s_complex *a, const s_complex *b)
 {
   s_complex *c;

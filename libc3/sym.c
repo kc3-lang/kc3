@@ -459,6 +459,10 @@ bool sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = false;
     return true;
   }
+  if (sym == &g_sym_Complex) {
+    *must_clean = true;
+    return true;
+  }
   if (sym == &g_sym_F32) {
     *must_clean = false;
     return true;
@@ -621,6 +625,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_uint32;
     return true;
   }
+  if (sym == &g_sym_Complex) {
+    *dest = &ffi_type_pointer;
+    return true;
+  }
   if (sym == &g_sym_F32) {
     *dest = &ffi_type_float;
     return true;
@@ -749,6 +757,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   }
   if (sym == &g_sym_Character) {
     *dest = TAG_CHARACTER;
+    return true;
+  }
+  if (sym == &g_sym_Complex) {
+    *dest = TAG_COMPLEX;
     return true;
   }
   if (sym == &g_sym_F32) {
@@ -896,6 +908,10 @@ bool sym_type_size (const s_sym *type, uw *dest)
   }
   if (type == &g_sym_Character) {
     *dest = sizeof(character);
+    return true;
+  }
+  if (type == &g_sym_Complex) {
+    *dest = sizeof(s_complex);
     return true;
   }
   if (type == &g_sym_F32) {
