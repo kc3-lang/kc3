@@ -3461,7 +3461,8 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_void(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_var(buf, dest)) != 0 ||
+      (r = buf_parse_tag_void(buf, dest)) != 0 ||
       (r = buf_parse_tag_number(buf, dest)) != 0 ||
       (r = buf_parse_tag_number(buf, dest)) != 0 ||
       (r = buf_parse_tag_ratio(buf, dest)) != 0 ||
@@ -3582,6 +3583,16 @@ sw buf_parse_tag_unquote (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_unquote(buf, &dest->data.unquote)) > 0)
     dest->type = TAG_UNQUOTE;
+  return r;
+}
+
+sw buf_parse_tag_var (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_var(buf, NULL)) > 0)
+    dest->type = TAG_VAR;
   return r;
 }
 
@@ -3774,6 +3785,7 @@ sw buf_parse_var (s_buf *buf, void *dest)
     r = 0;
     goto restore;
   }
+  goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:

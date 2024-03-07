@@ -1,0 +1,3 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {Var, :is_a, :module}
