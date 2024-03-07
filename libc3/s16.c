@@ -11,9 +11,10 @@
  * THIS SOFTWARE.
  */
 /* Gen from s.h.in BITS=16 bits=16 */
-#include "assert.h"
 #include <math.h>
 #include <stdlib.h>
+#include "assert.h"
+#include "complex.h"
 #include "integer.h"
 #include "tag.h"
 #include "tag_type.h"
@@ -99,11 +100,14 @@ s_tag * s16_sqrt (const s16 x, s_tag *dest)
 {
   assert(dest);
   if (x < 0) {
-    // FIXME
-    //dest->type = TAG_COMPLEX;
-    return NULL;
+    dest->type = TAG_COMPLEX;
+    dest->data.complex = complex_new();
+    tag_init_u8(&dest->data.complex->x, 0);
+    dest->data.complex->y.type = TAG_F128;
+    dest->data.complex->y.data.f128 = sqrtl((long double) -x);
+    return dest;
   }
-  dest->type = TAG_S16;
-  dest->data.s16 = (s16) sqrtl((long double) x);
+  dest->type = TAG_F128;
+  dest->data.f128 = sqrtl((long double) x);
   return dest;
 }

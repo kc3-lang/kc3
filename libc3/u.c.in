@@ -119,7 +119,7 @@ u_bits$ * u_bits$_random_uniform (u_bits$ *u, u_bits$ max)
 s_tag * u_bits$_sqrt (const u_bits$ x, s_tag *dest)
 {
   assert(dest);
-  dest->type = TAG_U_BITS$;
-  dest->data.u_bits$ = (u_bits$) sqrtl((long double) x);
+  dest->type = TAG_F128;
+  dest->data.f128 = sqrtl((long double) x);
   return dest;
 }

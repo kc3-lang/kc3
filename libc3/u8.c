@@ -119,7 +119,7 @@ u8 * u8_random_uniform (u8 *u, u8 max)
 s_tag * u8_sqrt (const u8 x, s_tag *dest)
 {
   assert(dest);
-  dest->type = TAG_U8;
-  dest->data.u8 = (u8) sqrtl((long double) x);
+  dest->type = TAG_F128;
+  dest->data.f128 = sqrtl((long double) x);
   return dest;
 }
