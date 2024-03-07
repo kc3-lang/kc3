@@ -13,8 +13,6 @@
 #ifndef LIBC3_COMPLEX_H
 #define LIBC3_COMPLEX_H
 
-#include <stdarg.h>
-#include <stdio.h>
 #include "types.h"
 
 /* Stack-allocation compatible functions, call complex_clean
@@ -53,10 +51,11 @@ s_complex * complex_mul (const s_complex *a, const s_complex *b,
 s_complex * complex_sub (const s_complex *a, const s_complex *b,
                          s_complex *dest);
 
-/* Constructors, call complex_delete after use. */
+/* Heap-allocation functions, call complex_delete after use. */
 void        complex_delete (s_complex *c);
 s_complex * complex_new (void);
 s_complex * complex_new_add (const s_complex *a, const s_complex *b);
+s_complex * complex_new_cast (const s_tag *src);
 s_complex * complex_new_div (const s_complex *a, const s_complex *b);
 s_complex * complex_new_mul (const s_complex *a, const s_complex *b);
 s_complex * complex_new_sub (const s_complex *a, const s_complex *b);
