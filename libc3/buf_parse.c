@@ -2725,6 +2725,10 @@ sw buf_parse_ratio (s_buf *buf, s_ratio *dest)
   if ((r = buf_parse_integer(buf, &tmp.denominator)) <= 0)
     goto restore;
   result += r;
+  if (! integer_is_positive(&tmp.denominator)) {
+    r = -1;
+    goto restore;
+  }
   *dest = tmp;
   r = result;
   goto clean;
