@@ -336,6 +336,8 @@ C3_C_SOURCES = \
 	"libc3/module.h" \
 	"libc3/operator.c" \
 	"libc3/operator.h" \
+	"libc3/pcomplex.c" \
+	"libc3/pcomplex.h" \
 	"libc3/point.h.in" \
 	"libc3/ptag.c" \
 	"libc3/ptag.h" \
@@ -587,6 +589,7 @@ C3_C_SOURCES = \
 	"test/ident_test.c" \
 	"test/libc3_test.c" \
 	"test/list_test.c" \
+	"test/ratio_test.c" \
 	"test/set__fact_test.c" \
 	"test/set__tag_test.c" \
 	"test/skiplist__fact_test.c" \
@@ -689,6 +692,7 @@ C3_OTHER_SOURCES = \
 	"lib/c3/0.1/u64.facts" \
 	"lib/c3/0.1/u8.facts" \
 	"lib/c3/0.1/uw.facts" \
+	"lib/c3/0.1/var.facts" \
 	"lib/c3/0.1/void.facts" \
 	"libc3/tag_init.rb" \
 	"license.h" \
@@ -732,6 +736,9 @@ C3_OTHER_SOURCES = \
 	"test/ic3/comment.in" \
 	"test/ic3/comment.out.expected" \
 	"test/ic3/comment.ret.expected" \
+	"test/ic3/complex.in" \
+	"test/ic3/complex.out.expected" \
+	"test/ic3/complex.ret.expected" \
 	"test/ic3/equal.err.expected" \
 	"test/ic3/equal.in" \
 	"test/ic3/equal.out.expected" \
