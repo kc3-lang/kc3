@@ -162,20 +162,14 @@ s_ratio * ratio_init_copy (s_ratio *dest, const s_ratio *src)
   return dest;
 }
 
-s_ratio * ratio_init_integer (s_ratio *r, s_integer *numerator, s_integer *denominator)
+s_ratio * ratio_init_integer (s_ratio *r, const s_integer *src)
 {
   s_ratio tmp = {0};
-  assert(numerator);
-  assert(denominator);
   assert(r);
-  if (! integer_is_positive(denominator)) {
-    err_puts("ratio_init_integer: invalid denominator");
-    assert(! "ratio_init_integer: invalid denominator");
+  assert(src);
+  if (! integer_init_copy(&tmp.numerator, src))
     return NULL;
-  }
-  if (! integer_init_copy(&tmp.numerator, numerator))
-    return NULL;
-  if (! integer_init_copy(&tmp.denominator, denominator)) {
+  if (! integer_init_u8(&tmp.denominator, 1)) {
     integer_clean(&tmp.numerator);
     return NULL;
   }

@@ -20,17 +20,30 @@
 /* Stack-allocation compatible functions, call ratio_clean after use. */
 void      ratio_clean (s_ratio *r);
 s_ratio * ratio_init (s_ratio *dest);
-s_ratio * ratio_init_integer (s_ratio *r, s_integer *numerator,
-                              s_integer *denominator);
+s_ratio * ratio_init_1 (s_ratio *r, const char *p);
+s_ratio * ratio_init_cast (s_ratio *r, const s_tag *src);
+s_ratio * ratio_init_copy (s_ratio *r, const s_ratio *src);
+s_ratio * ratio_init_f32 (s_ratio *r, f32 src);
+s_ratio * ratio_init_f64 (s_ratio *r, f64 src);
+s_ratio * ratio_init_f128 (s_ratio *r, f128 src);
+s_ratio * ratio_init_integer (s_ratio *r, const s_integer *src);
+s_ratio * ratio_init_ratio (s_ratio *r, const s_ratio *src);
+s_ratio * ratio_init_s8 (s_ratio *r, s8 src);
+s_ratio * ratio_init_s16 (s_ratio *r, s16 src);
+s_ratio * ratio_init_s32 (s_ratio *r, s32 src);
+s_ratio * ratio_init_s64 (s_ratio *r, s64 src);
+s_ratio * ratio_init_sw (s_ratio *r, sw src);
+s_ratio * ratio_init_u8 (s_ratio *r, u8 src);
+s_ratio * ratio_init_u16 (s_ratio *r, u16 src);
+s_ratio * ratio_init_u32 (s_ratio *r, u32 src);
+s_ratio * ratio_init_u64 (s_ratio *r, u64 src);
+s_ratio * ratio_init_uw (s_ratio *r, uw src);
 s_ratio * ratio_init_zero (s_ratio *r);
-s_ratio * ratio_init_1 (s_ratio *q, const char *p);
-s_ratio * ratio_init_copy (s_ratio *a, const s_ratio *x);
-s_ratio * ratio_init_f32 (s_ratio *a, f32 x);
-s_ratio * ratio_init_f64 (s_ratio *a, f64 x);
 
-/* Constructors, call ratio_delete after use. */
+/* Heap-allocation functions, call ratio_delete after use. */
+void      ratio_delete (s_ratio *r);
 s_ratio * ratio_new (void);
-s_ratio * ratio_new_copy (const s_ratio *a);
+s_ratio * ratio_new_copy (const s_ratio *src);
 
 /* Observers. */
 s_str * ratio_inspect (const s_ratio *src, s_str *dest);

@@ -891,18 +891,6 @@ s_str * buf_to_str (const s_buf *buf, s_str *str)
   return str_init(str, p_free, buf->size, buf->ptr.p);
 }
 
-s_ratio * buf_to_ratio (const s_buf *buf, s_ratio *ratio)
-{
-  assert(buf);
-  assert(ratio);
-  if (buf->size < 2 * sizeof(s_integer)) {
-    return NULL;
-  }
-  s_integer *numerator = (s_integer *)buf->ptr.p;
-  s_integer *denominator = ((s_integer *)buf->ptr.p) + 1;
-  return ratio_init_integer(ratio, numerator, denominator);
-}
-
 sw buf_u8_to_hex (s_buf *buf, const u8 *x)
 {
   u8 digit;
