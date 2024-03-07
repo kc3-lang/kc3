@@ -2,4 +2,6 @@
   version: 1}
 replace {Complex, :is_a, :module}
 replace {Complex, :defstruct, [x: ?, y: ?]}
-replace {Complex, :clean, cfn Void "gl_object_clean" (Complex)}
+replace {Complex, :symbol, Complex.cast}
+replace {Complex.cast, :cfn, cfn Complex "complex_init_cast" (Result, Tag)}
+replace {Complex, :clean, cfn Void "complex_clean" (Complex)}
