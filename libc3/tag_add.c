@@ -54,6 +54,17 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       }
       complex_clean(&c);
       return dest;
+    case TAG_RATIO:
+      if (! complex_init_ratio(&c, &b->data.ratio))
+        return NULL;
+      if (! tag_init_complex(dest, complex_new_add(a->data.complex,
+                                                   &c))) {
+                                                   
+        complex_clean(&c);
+        return NULL;
+      }
+      complex_clean(&c);
+      return dest;
     case TAG_S8:
       complex_init_s8(&c, b->data.s8);
       return tag_init_complex(dest, complex_new_add(a->data.complex,
@@ -113,6 +124,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_INTEGER:
       return tag_init_f32(dest, a->data.f32 +
                           integer_to_f32(&a->data.integer));
+    case TAG_RATIO:
+      ratio_init_f32(&r, a->data.f32);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
     case TAG_S8:
       return tag_init_f32(dest, a->data.f32 + (f32) b->data.s8);
     case TAG_S16:
@@ -151,6 +168,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_INTEGER:
       return tag_init_f64(dest, a->data.f64 +
                           integer_to_f64(&a->data.integer));
+    case TAG_RATIO:
+      ratio_init_f64(&r, a->data.f64);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
     case TAG_S8:
       return tag_init_f64(dest, a->data.f64 + (f64) b->data.s8);
     case TAG_S16:
@@ -189,6 +212,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_INTEGER:
       return tag_init_f128(dest, a->data.f128 +
                           integer_to_f128(&a->data.integer));
+    case TAG_RATIO:
+      ratio_init_f128(&r, a->data.f128);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
     case TAG_S8:
       return tag_init_f128(dest, a->data.f128 + (f128) b->data.s8);
     case TAG_S16:
@@ -239,7 +268,11 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
                   &dest->data.integer);
       return dest;
     case TAG_RATIO:
-
+      ratio_init_integer(&r, &a->data.integer);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
     case TAG_S8:
       integer_init_s8(&tmp, b->data.s8);
       dest->type = TAG_INTEGER;
@@ -426,6 +459,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       integer_add(&tmp, &b->data.integer, &dest->data.integer);
       integer_clean(&tmp);
       return dest;
+    case TAG_RATIO:
+      ratio_init_s8(&r, a->data.s8);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
     case TAG_S8:
       if (a->data.s8 < S8_MIN - b->data.s8 ||
           a->data.s8 > S8_MAX - b->data.s8)
@@ -525,6 +564,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       integer_add(&tmp, &b->data.integer, &dest->data.integer);
       integer_clean(&tmp);
       return dest;
+    case TAG_RATIO:
+      ratio_init_s16(&r, a->data.s16);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
     case TAG_S8:
       if (a->data.s16 < S16_MIN - b->data.s8 ||
           a->data.s16 > S16_MAX - b->data.s8)
@@ -617,6 +662,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       dest->type = TAG_INTEGER;
       integer_add(&tmp, &b->data.integer, &dest->data.integer);
       integer_clean(&tmp);
+      return dest;
+    case TAG_RATIO:
+      ratio_init_s32(&r, a->data.s32);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
       return dest;
     case TAG_S8:
       if (a->data.s32 < S32_MIN - b->data.s8 ||
@@ -713,6 +764,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       dest->type = TAG_INTEGER;
       integer_add(&tmp, &b->data.integer, &dest->data.integer);
       integer_clean(&tmp);
+      return dest;
+    case TAG_RATIO:
+      ratio_init_s64(&r, a->data.s64);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
       return dest;
     case TAG_S8:
       if (a->data.s64 < S64_MIN - b->data.s8 ||
@@ -852,6 +909,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       integer_add(&tmp, &b->data.integer, &dest->data.integer);
       integer_clean(&tmp);
       return dest;
+    case TAG_RATIO:
+      ratio_init_sw(&r, a->data.sw);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
     case TAG_S8:
       if (a->data.sw < SW_MIN - b->data.s8 ||
           a->data.sw > SW_MAX - b->data.s8) {
@@ -990,6 +1053,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       integer_add(&tmp, &b->data.integer, &dest->data.integer);
       integer_clean(&tmp);
       return dest;
+    case TAG_RATIO:
+      ratio_init_u8(&r, a->data.u8);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
     case TAG_S8:
       if (a->data.u8 > S8_MAX - b->data.s8)
         return tag_init_s16(dest, (s16) a->data.u8 + (s16) b->data.s8);
@@ -1088,6 +1157,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       dest->type = TAG_INTEGER;
       integer_add(&tmp, &b->data.integer, &dest->data.integer);
       integer_clean(&tmp);
+      return dest;
+    case TAG_RATIO:
+      ratio_init_u16(&r, a->data.u16);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
       return dest;
     case TAG_S8:
       if (a->data.u16 > S16_MAX - b->data.s8)
@@ -1188,6 +1263,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       integer_add(&tmp, &b->data.integer, &dest->data.integer);
       integer_clean(&tmp);
       return dest;
+    case TAG_RATIO:
+      ratio_init_u32(&r, a->data.u32);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
     case TAG_S8:
       if ((s64) a->data.u32 > S32_MAX - b->data.s8)
         return tag_init_s64(dest, (s64) a->data.u32 + (s64) b->data.s8);
@@ -1286,6 +1367,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       dest->type = TAG_INTEGER;
       integer_add(&tmp, &b->data.integer, &dest->data.integer);
       integer_clean(&tmp);
+      return dest;
+    case TAG_RATIO:
+      ratio_init_u64(&r, a->data.u64);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
       return dest;
     case TAG_S8:
       integer_init_u64(&tmp, a->data.u64);
@@ -1407,6 +1494,12 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       dest->type = TAG_INTEGER;
       integer_add(&tmp, &b->data.integer, &dest->data.integer);
       integer_clean(&tmp);
+      return dest;
+    case TAG_RATIO:
+      ratio_init_uw(&r, a->data.uw);
+      dest->type = TAG_RATIO;
+      ratio_add(&r, &b->data.ratio, &dest->data.ratio);
+      ratio_clean(&r);
       return dest;
     case TAG_S8:
       integer_init_uw(&tmp, a->data.uw);

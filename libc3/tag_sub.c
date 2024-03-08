@@ -10,16 +10,19 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
 #include <math.h>
+#include "assert.h"
+#include "complex.h"
 #include "integer.h"
 #include "ratio.h"
 #include "tag.h"
 
 s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
 {
+  s_complex c;
   s_integer tmp;
   s_integer tmp2;
+  s_ratio r;
   assert(a);
   assert(b);
   assert(dest);
@@ -146,11 +149,105 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
     }
   case TAG_RATIO:
     switch (b->type) {
+    case TAG_COMPLEX:
+      if (! complex_init_ratio(&c, &a->data.ratio))
+        return NULL;
+      if (! tag_init_complex(dest, complex_new_sub(&c,
+                                                   b->data.complex))) {
+        complex_clean(&c);
+        return NULL;
+      }
+      complex_clean(&c);
+      return dest;
+    case TAG_F32:
+      ratio_init_f32(&r, b->data.f32);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_F64:
+      ratio_init_f64(&r, b->data.f64);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_F128:
+      ratio_init_f128(&r, b->data.f128);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_INTEGER:
+      ratio_init_integer(&r, &b->data.integer);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
     case TAG_RATIO:
       if (! ratio_sub(&a->data.ratio, &b->data.ratio,
                       &dest->data.ratio))
         return NULL;
       dest->type = TAG_RATIO;
+      return dest;
+    case TAG_S8:
+      ratio_init_s8(&r, b->data.s8);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_S16:
+      ratio_init_s16(&r, b->data.s16);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_S32:
+      ratio_init_s32(&r, b->data.s32);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_S64:
+      ratio_init_s64(&r, b->data.s64);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_SW:
+      ratio_init_sw(&r, b->data.sw);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_U8:
+      ratio_init_u8(&r, b->data.u8);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_U16:
+      ratio_init_u16(&r, b->data.u16);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_U32:
+      ratio_init_u32(&r, b->data.u32);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_U64:
+      ratio_init_u64(&r, b->data.u64);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
+      return dest;
+    case TAG_UW:
+      ratio_init_uw(&r, b->data.uw);
+      dest->type = TAG_RATIO;
+      ratio_sub(&a->data.ratio, &r, &dest->data.ratio);
+      ratio_clean(&r);
       return dest;
     default:
       goto ko;

@@ -53,6 +53,17 @@ s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
       }
       complex_clean(&c);
       return dest;
+    case TAG_RATIO:
+      if (! complex_init_ratio(&c, &b->data.ratio))
+        return NULL;
+      if (! tag_init_complex(dest, complex_new_mul(a->data.complex,
+                                                   &c))) {
+                                                   
+        complex_clean(&c);
+        return NULL;
+      }
+      complex_clean(&c);
+      return dest;
     case TAG_S8:
       complex_init_s8(&c, b->data.s8);
       return tag_init_complex(dest, complex_new_mul(a->data.complex,
