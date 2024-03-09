@@ -29,9 +29,11 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, fmodf(a->data.f32, b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.f32, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.f32, b->data.f128));
     case TAG_INTEGER:
-      return tag_init_f64(dest, fmod((f64) a->data.f32,
-                                     integer_to_f64(&b->data.integer)));
+      return tag_init_f128(dest, fmodl((f128) a->data.f32,
+                                      integer_to_f128(&b->data.integer)));
     case TAG_S8:
       return tag_init_f32(dest, fmodf(a->data.f32, (f32) b->data.s8));
     case TAG_S16:
@@ -39,9 +41,9 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_S32:
       return tag_init_f64(dest, fmod((f64) a->data.f32, (f64) b->data.s32));
     case TAG_S64:
-      return tag_init_f64(dest, fmod((f64) a->data.f32, (f64) b->data.s64));
+      return tag_init_f128(dest, fmodl((f128) a->data.f32, (f128) b->data.s64));
     case TAG_SW:
-      return tag_init_f64(dest, fmod((f64) a->data.f32, (f64) b->data.sw));
+      return tag_init_f128(dest, fmodl((f128) a->data.f32, (f128) b->data.sw));
     case TAG_U8:
       return tag_init_f32(dest, fmodf(a->data.f32, (f32) b->data.u8));
     case TAG_U16:
@@ -49,9 +51,9 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_U32:
       return tag_init_f64(dest, fmod((f64) a->data.f32, (f64) b->data.u32));
     case TAG_U64:
-      return tag_init_f64(dest, fmod((f64) a->data.f32, (f64) b->data.u64));
+      return tag_init_f128(dest, fmodl((f128) a->data.f32, (f128) b->data.u64));
     case TAG_UW:
-      return tag_init_f64(dest, fmod((f64) a->data.f32, (f64) b->data.uw));
+      return tag_init_f128(dest, fmodl((f128) a->data.f32, (f128) b->data.uw));
     default:
       goto ko;
     }
@@ -61,9 +63,11 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod(a->data.f64, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.f64, b->data.f128));
     case TAG_INTEGER:
-      return tag_init_f64(dest, fmod(a->data.f64,
-                                     integer_to_f64(&b->data.integer)));
+      return tag_init_f128(dest, fmod(a->data.f64,
+                                     integer_to_f128(&b->data.integer)));
     case TAG_S8:
       return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.s8));
     case TAG_S16:
@@ -71,9 +75,9 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_S32:
       return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.s32));
     case TAG_S64:
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.s64));
+      return tag_init_f128(dest, fmodl(a->data.f64, (f128) b->data.s64));
     case TAG_SW:
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.sw));
+      return tag_init_f128(dest, fmodl(a->data.f64, (f128) b->data.sw));
     case TAG_U8:
       return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.u8));
     case TAG_U16:
@@ -81,9 +85,43 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_U32:
       return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.u32));
     case TAG_U64:
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.u64));
+      return tag_init_f128(dest, fmodl(a->data.f64, (f128) b->data.u64));
     case TAG_UW:
-      return tag_init_f64(dest, fmod(a->data.f64, (f64) b->data.uw));
+      return tag_init_f128(dest, fmodl(a->data.f64, (f128) b->data.uw));
+    default:
+      goto ko;
+    }
+  case TAG_F128:
+    switch (b->type) {
+    case TAG_F32:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.f32));
+    case TAG_F64:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl(a->data.f128, b->data.f128));
+    case TAG_INTEGER:
+      return tag_init_f128(dest, fmodl(a->data.f128,
+                                     integer_to_f128(&b->data.integer)));
+    case TAG_S8:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.s8));
+    case TAG_S16:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.s16));
+    case TAG_S32:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.s32));
+    case TAG_S64:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.s64));
+    case TAG_SW:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.sw));
+    case TAG_U8:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.u8));
+    case TAG_U16:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.u16));
+    case TAG_U32:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.u32));
+    case TAG_U64:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.u64));
+    case TAG_UW:
+      return tag_init_f128(dest, fmodl(a->data.f128, (f128) b->data.uw));
     default:
       goto ko;
     }
