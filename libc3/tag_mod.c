@@ -133,6 +133,9 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
     case TAG_F64:
       return tag_init_f64(dest, fmod(integer_to_f64(&a->data.integer),
                                      b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl(integer_to_f128(&a->data.integer),
+                                       b->data.f128));
     case TAG_INTEGER:
       dest->type = TAG_INTEGER;
       integer_mod(&a->data.integer, &b->data.integer,
@@ -217,6 +220,8 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, fmodf((f32) a->data.s8, b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.s8, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.s8, b->data.f128));
     case TAG_INTEGER:
       integer_init_s8(&tmp, a->data.s8);
       dest->type = TAG_INTEGER;
@@ -276,6 +281,8 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, fmodf((f32) a->data.s16, b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.s16, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.s16, b->data.f128));
     case TAG_INTEGER:
       integer_init_s16(&tmp, a->data.s16);
       dest->type = TAG_INTEGER;
@@ -335,6 +342,8 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod((f64) a->data.s32, b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.s32, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.s32, b->data.f128));
     case TAG_INTEGER:
       integer_init_s32(&tmp, a->data.s32);
       dest->type = TAG_INTEGER;
@@ -394,6 +403,8 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod((f64) a->data.s64, b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.s64, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.s64, b->data.f128));
     case TAG_INTEGER:
       integer_init_s64(&tmp, a->data.s64);
       dest->type = TAG_INTEGER;
@@ -453,6 +464,8 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod((f64) a->data.sw, b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.sw, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.sw, b->data.f128));
     case TAG_INTEGER:
       integer_init_sw(&tmp, a->data.sw);
       integer_mod(&tmp, &b->data.integer, &tmp2);
@@ -513,6 +526,8 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, fmodf((f32) a->data.u8, b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.u8, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.u8, b->data.f128));
     case TAG_INTEGER:
       integer_init_u8(&tmp, a->data.u8);
       dest->type = TAG_INTEGER;
@@ -572,6 +587,8 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f32(dest, fmodf((f32) a->data.u16, b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.u16, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.u16, b->data.f128));
     case TAG_INTEGER:
       integer_init_u16(&tmp, a->data.u16);
       dest->type = TAG_INTEGER;
@@ -631,6 +648,8 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod((f64) a->data.u32, b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.u32, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.u32, b->data.f128));
     case TAG_INTEGER:
       integer_init_u32(&tmp, a->data.u32);
       dest->type = TAG_INTEGER;
@@ -690,6 +709,8 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod((f64) a->data.u64, b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.u64, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.u64, b->data.f128));
     case TAG_INTEGER:
       integer_init_u64(&tmp, a->data.u64);
       dest->type = TAG_INTEGER;
@@ -755,6 +776,8 @@ s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
       return tag_init_f64(dest, fmod((f64) a->data.uw, b->data.f32));
     case TAG_F64:
       return tag_init_f64(dest, fmod((f64) a->data.uw, b->data.f64));
+    case TAG_F128:
+      return tag_init_f128(dest, fmodl((f128) a->data.uw, b->data.f128));
     case TAG_INTEGER:
       integer_init_uw(&tmp, a->data.uw);
       dest->type = TAG_INTEGER;
