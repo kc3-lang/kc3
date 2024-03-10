@@ -259,6 +259,49 @@ ic3> a * a
 ic3>
 ```
 
+#### Ratios
+
+Ratios are made with a couple of large integers : the numerator
+which can be any number, and the denominator which has to be positive.
+They represent fractions of integral numbers.
+They are written with a slash and no space.
+
+```
+ic3> 1/2 + 2/3
+7/6
+ic3> 1/2 * 2/3
+1/3
+ic3> 1/2 / 2/3
+3/4
+ic3> 1/2 - 2/3
+-1/6
+```
+
+
+#### Complex numbers
+
+Complex numbers are constructed using the operator `+i` on any kind of
+numbers (unsigned, signed, float, ratios, and even other complex
+numbers). For instance, you can write `a +i b` where `a` and `b` are
+real numbers.
+
+```
+ic3> 1 +i 2
+1 +i 2
+ic3> 1 +i 2 + 2 +i 3
+3 +i 5
+ic3> (1 +i 2) * (2 +i 3)
+-4 +i 7
+ic3> (1 +i 2) / (2 +i 3)
+0 +i 0
+ic3> (1/1 +i 2/1) / (2 +i 3)
+8/13 +i 1/13
+```
+
+As you can see integer division is not producing ratios.
+That might change in future releases.
+
+
 #### Lists
 
 Lists are marked with brackets `[]`.
