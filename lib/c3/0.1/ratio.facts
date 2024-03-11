@@ -1,0 +1,5 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {Ratio, :is_a, :module}
+replace {Ratio, :symbol, Ratio.cast}
+replace {Ratio.cast, :cfn, cfn Ratio "ratio_init_cast" (Result, Tag)}

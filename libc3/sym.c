@@ -499,6 +499,10 @@ bool sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = true;
     return true;
   }
+  if (sym == &g_sym_Ratio) {
+    *must_clean = true;
+    return true;
+  }
   if (sym == &g_sym_S8) {
     *must_clean = false;
     return true;
@@ -665,6 +669,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_pointer;
     return true;
   }
+  if (sym == &g_sym_Ratio) {
+    *dest = &ffi_type_pointer;
+    return true;
+  }
   if (sym == &g_sym_S8) {
     *dest = &ffi_type_sint8;
     return true;
@@ -805,6 +813,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   }
   if (sym == &g_sym_Quote) {
     *dest = TAG_QUOTE;
+    return true;
+  }
+  if (sym == &g_sym_Ratio) {
+    *dest = TAG_RATIO;
     return true;
   }
   if (sym == &g_sym_S8) {
@@ -960,6 +972,10 @@ bool sym_type_size (const s_sym *type, uw *dest)
   }
   if (type == &g_sym_Quote) {
     *dest = sizeof(s_quote);
+    return true;
+  }
+  if (type == &g_sym_Ratio) {
+    *dest = sizeof(s_ratio);
     return true;
   }
   if (type == &g_sym_S8) {
