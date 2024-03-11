@@ -17,8 +17,8 @@
 #ifndef IC3_BUF_WINEDITLINE_H
 #define IC3_BUF_WINEDITLINE_H
 
-void    buf_wineditline_close (s_buf *buf, const s8 *history_path);
-s_buf * buf_wineditline_open_r (s_buf *buf, const s8 *prompt,
-				const s8 *history_path);
+void    buf_wineditline_close (s_buf *buf, const char *history_path);
+s_buf * buf_wineditline_open_r (s_buf *buf, const char *prompt,
+				const char *history_path);
 
 #endif /* IC3_BUF_WINEDITLINE_H */

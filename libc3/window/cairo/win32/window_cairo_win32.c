@@ -62,7 +62,8 @@ LRESULT CALLBACK window_cairo_win32_proc (HWND hwnd, UINT message,
     SelectObject(buffer_hdc, buffer_hbitmap);
     surface = cairo_win32_surface_create(buffer_hdc);
     cr = cairo_create(surface);
-    if (! window->render(window, cr)) {
+    window->cr = cr;
+    if (! window->render(window)) {
       printf("render -> false\n");
       PostQuitMessage(1);
     }
