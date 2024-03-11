@@ -976,7 +976,7 @@ sw buf_parse_cast (s_buf *buf, s_call *dest)
   result += r;
   call_init_op_unary(&tmp);
   ident_init(&tmp.ident, module, &g_sym_cast);
-  if ((r = buf_parse_tag(buf, &tmp.arguments->tag)) <= 0)
+  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
     goto clean;
   result += r;
   *dest = tmp;
