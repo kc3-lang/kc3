@@ -18,15 +18,15 @@
 #include "../libc3/c3.h"
 
 typedef struct buf_wineditline {
-  s_buf     buf;
-  bool      eof;
-  const s8 *prompt;
+  s_buf       buf;
+  bool        eof;
+  const char *prompt;
 } s_buf_wineditline;
 
 sw buf_wineditline_refill_fgets (s_buf *buf);
 sw buf_wineditline_refill_wineditline (s_buf *buf);
 
-void buf_wineditline_close (s_buf *buf, const s8 *history_path)
+void buf_wineditline_close (s_buf *buf, const char *history_path)
 {
   assert(buf);
   if (history_path)
@@ -38,8 +38,8 @@ void buf_wineditline_close (s_buf *buf, const s8 *history_path)
     puts("");
 }
 
-s_buf * buf_wineditline_open_r (s_buf *buf, const s8 *prompt,
-                              const s8 *history_path)
+s_buf * buf_wineditline_open_r (s_buf *buf, const char *prompt,
+                                const char *history_path)
 {
   s_buf_wineditline *buf_wineditline;
   assert(buf);
