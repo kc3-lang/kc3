@@ -47,7 +47,7 @@ make
 
 ### Add the sources to `LD_LIBRARY_PATH`
 ```sh
-export LD_LIBRARY_PATH=$PWD/libc3/.libs:$PWD/libffi/.libs
+export LD_LIBRARY_PATH=$PWD/libc3/.libs
 ```
 
 ### Running the OpenGL demo
@@ -429,7 +429,9 @@ Script interpreter. Works the same as ic3 but is not interactive.
        ```
      - See C3 module in `lib/c3/0.1/c3.facts`
    - if, then, else.
-
+   - rational numbers and corresponding operations
+   - complex numbers and corresponding operations
+   - float 128 bit (F128) and corresponding operations
 
 ## TODO
 
@@ -449,16 +451,11 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - negative facts : 4 + 2n = not 3 + 2n
      - with ignore variables
    - math
-     - ratios
      - arbitrary precision floating point numbers (decimals)
-     - floating point numbers (ieee754)
-   - maps
+   - map
      - get (get key value)
      - put (return a new map)
-   - structs
-     - struct type
-       - `TAG_STRUCT_TYPE`
-     - finish refactor (data_*)
+   - struct
      - access
      - get
      - put
@@ -469,19 +466,10 @@ Script interpreter. Works the same as ic3 but is not interactive.
        - ffi ?
          - libdwarf
    - control structures
-     - if
      - when
      - unless
      - switch/case/cond
      - while
-   - quote
-     - increase quote level in env
-     - eval : do not eval if quote level > 0
-   - unquote
-     - if quote_level is zero return unquote(x) unchanged
-     - decrease quote level in env
-     - eval if quote level is zero
-   - macros
    - unwind protect
    - functions
      - return
