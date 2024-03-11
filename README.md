@@ -30,6 +30,31 @@ Supported architectures :
  - sparc64
 
 
+## New in this release
+
+   - OpenGL demo (`make demo_gl`)
+     - OpenGL 3.3 with shaders (portable)
+     - makes use of C3 data structures.
+   - pin operator (for pattern matching)
+   - macros
+   - special operators
+     - their arguments do not get evaluated
+     - they return a value
+     - parsed without syntax
+       Ideally it would look like this :
+       ```
+       ic3> defspecial_operator op (a, b, c) { true }
+       special_operator (a, b, c) { true }
+       ic3> op 1 2 3
+       true
+       ```
+     - See C3 module in `lib/c3/0.1/c3.facts`
+   - if, then, else.
+   - rational numbers and corresponding operations
+   - complex numbers and corresponding operations
+   - float 128 bit (F128) and corresponding operations
+
+
 ## Usage
 
 ### Compilation
@@ -405,30 +430,6 @@ not provided, then `void` gets returned.
 
 Script interpreter. Works the same as ic3 but is not interactive.
 
-
-## New in this release
-
-   - OpenGL demo (`make demo_gl`)
-     - OpenGL 3.3 with shaders (portable)
-     - makes use of C3 data structures.
-   - pin operator (for pattern matching)
-   - macros
-   - special operators
-     - their arguments do not get evaluated
-     - they return a value
-     - parsed without syntax
-       Ideally it would look like this :
-       ```
-       ic3> defspecial_operator op (a, b, c) { true }
-       special_operator (a, b, c) { true }
-       ic3> op 1 2 3
-       true
-       ```
-     - See C3 module in `lib/c3/0.1/c3.facts`
-   - if, then, else.
-   - rational numbers and corresponding operations
-   - complex numbers and corresponding operations
-   - float 128 bit (F128) and corresponding operations
 
 ## TODO
 

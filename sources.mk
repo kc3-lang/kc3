@@ -681,6 +681,7 @@ C3_OTHER_SOURCES = \
 	"lib/c3/0.1/map.facts" \
 	"lib/c3/0.1/ptr.facts" \
 	"lib/c3/0.1/ptr_free.facts" \
+	"lib/c3/0.1/ratio.facts" \
 	"lib/c3/0.1/s16.facts" \
 	"lib/c3/0.1/s32.facts" \
 	"lib/c3/0.1/s64.facts" \
