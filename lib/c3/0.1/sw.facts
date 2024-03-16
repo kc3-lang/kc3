@@ -2,4 +2,4 @@
   version: 1}
 replace {Sw, :is_a, :module}
 replace {Sw, :symbol, Sw.cast}
-replace {Sw.cast, :cfn, cfn Sw "sw_cast" (Tag, Result)}
+replace {Sw.cast, :cfn, cfn Sw "sw_init_cast" (Result, Tag)}

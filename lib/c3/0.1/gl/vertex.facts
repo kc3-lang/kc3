@@ -1,6 +1,6 @@
 %{module: C3.Facts.Dump,
   version: 1}
 replace {GL.Vertex, :is_a, :module}
-replace {GL.Vertex, :defstruct, [position:  %GL.Point3f{},
-                                 normal:    %GL.Point3f{},
-                                 tex_coord: %GL.Point2f{}]}
+replace {GL.Vertex, :defstruct, [position:  %GL.Vec3{},
+                                 normal:    %GL.Vec3{},
+                                 tex_coord: %GL.Vec2{}]}

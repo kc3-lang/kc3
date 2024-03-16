@@ -1,6 +1,0 @@
-%{module: C3.Facts.Dump,
-  version: 1}
-replace {GL.Point3D, :is_a, :module}
-replace {GL.Point3D, :defstruct, [x: (F64) 0,
-                                  y: (F64) 0,
-                                  z: (F64) 0]}
