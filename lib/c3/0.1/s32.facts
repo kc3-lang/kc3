@@ -2,4 +2,4 @@
   version: 1}
 replace {S32, :is_a, :module}
 replace {S32, :symbol, S32.cast}
-replace {S32.cast, :cfn, cfn S32 "s32_cast" (Tag, Result)}
+replace {S32.cast, :cfn, cfn S32 "s32_init_cast" (Result, Tag)}

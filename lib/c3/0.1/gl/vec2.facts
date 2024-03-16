@@ -1,0 +1,5 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {GL.Vec2, :is_a, :module}
+replace {GL.Vec2, :defstruct, [x: (F32) 0,
+                               y: (F32) 0]}
