@@ -1,4 +1,7 @@
-# C3 v0.1.10
+# C3 v0.1.11
+
+This is a development branch, please see
+[C3 v0.1.10](/c3-lang/c3/_tree/v0.1.10) for a stable release.
 
 C3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
@@ -28,31 +31,6 @@ Supported architectures :
  - amd64
  - i386
  - sparc64
-
-
-## New in this release
-
-   - OpenGL demo (`make demo_gl`)
-     - OpenGL 3.3 with shaders (portable)
-     - makes use of C3 data structures.
-   - pin operator (for pattern matching)
-   - macros
-   - special operators
-     - their arguments do not get evaluated
-     - they return a value
-     - parsed without syntax
-       Ideally it would look like this :
-       ```
-       ic3> defspecial_operator op (a, b, c) { true }
-       special_operator (a, b, c) { true }
-       ic3> op 1 2 3
-       true
-       ```
-     - See C3 module in `lib/c3/0.1/c3.facts`
-   - if, then, else.
-   - rational numbers and corresponding operations
-   - complex numbers and corresponding operations
-   - float 128 bit (F128) and corresponding operations
 
 
 ## Usage
@@ -435,7 +413,7 @@ Script interpreter. Works the same as ic3 but is not interactive.
 
  - libc3
    - tags
-     - height function `(TAG_VOID: 0, TAG_TUPLE: max(height(tuple->tags)))`
+     - height function `(TAG_VOID: 0, TAG_TUPLE: (1+ (max (height tuple->tags))))`
      - has_ident
      - collect_idents
    - modules
