@@ -265,71 +265,71 @@ const s_sym ** sym_init_copy (const s_sym **sym,
 
 void sym_init_g_sym (void)
 {
-  sym_intern(&g_sym__brackets, NULL);
-  sym_intern(&g_sym__paren, NULL);
-  sym_intern(&g_sym__plus, NULL);
-  sym_intern(&g_sym_Array, NULL);
-  sym_intern(&g_sym_Block, NULL);
-  sym_intern(&g_sym_Bool, NULL);
-  sym_intern(&g_sym_C3, NULL);
-  sym_intern(&g_sym_Call, NULL);
-  sym_intern(&g_sym_Cfn, NULL);
-  sym_intern(&g_sym_Character, NULL);
-  sym_intern(&g_sym_Char__star, NULL);
-  sym_intern(&g_sym_Complex, NULL);
-  sym_intern(&g_sym_F32, NULL);
-  sym_intern(&g_sym_F64, NULL);
-  sym_intern(&g_sym_F128, NULL);
-  sym_intern(&g_sym_Fact, NULL);
-  sym_intern(&g_sym_Fn, NULL);
-  sym_intern(&g_sym_Ident, NULL);
-  sym_intern(&g_sym_Integer, NULL);
-  sym_intern(&g_sym_List, NULL);
-  sym_intern(&g_sym_Map, NULL);
-  sym_intern(&g_sym_Ptag, NULL);
-  sym_intern(&g_sym_Ptr, NULL);
-  sym_intern(&g_sym_PtrFree, NULL);
-  sym_intern(&g_sym_Quote, NULL);
-  sym_intern(&g_sym_Ratio, NULL);
-  sym_intern(&g_sym_Result, NULL);
-  sym_intern(&g_sym_S8, NULL);
-  sym_intern(&g_sym_S16, NULL);
-  sym_intern(&g_sym_S32, NULL);
-  sym_intern(&g_sym_S64, NULL);
-  sym_intern(&g_sym_Str, NULL);
-  sym_intern(&g_sym_Struct, NULL);
-  sym_intern(&g_sym_StructType, NULL);
-  sym_intern(&g_sym_Sw, NULL);
-  sym_intern(&g_sym_Sym, NULL);
-  sym_intern(&g_sym_Tag, NULL);
-  sym_intern(&g_sym_Tuple, NULL);
-  sym_intern(&g_sym_U8, NULL);
-  sym_intern(&g_sym_U16, NULL);
-  sym_intern(&g_sym_U32, NULL);
-  sym_intern(&g_sym_U64, NULL);
-  sym_intern(&g_sym_Unquote, NULL);
-  sym_intern(&g_sym_Uw, NULL);
-  sym_intern(&g_sym_Uw_brackets, NULL);
-  sym_intern(&g_sym_Var, NULL);
-  sym_intern(&g_sym_Void, NULL);
-  sym_intern(&g_sym_cast, NULL);
-  sym_intern(&g_sym_defstruct, NULL);
-  sym_intern(&g_sym_do, NULL);
-  sym_intern(&g_sym_else, NULL);
-  sym_intern(&g_sym_end, NULL);
-  sym_intern(&g_sym_if_then_else, NULL);
-  sym_intern(&g_sym_is_a, NULL);
-  sym_intern(&g_sym_load_time, NULL);
-  sym_intern(&g_sym_operator_pin, NULL);
-  sym_intern(&g_sym_r, NULL);
-  sym_intern(&g_sym_rw, NULL);
-  sym_intern(&g_sym_rwx, NULL);
-  sym_intern(&g_sym_rx, NULL);
-  sym_intern(&g_sym_special_operator, NULL);
-  sym_intern(&g_sym_struct_type, NULL);
-  sym_intern(&g_sym_w, NULL);
-  sym_intern(&g_sym_wx, NULL);
-  sym_intern(&g_sym_x, NULL);
+  sym_register(&g_sym__brackets, NULL);
+  sym_register(&g_sym__paren, NULL);
+  sym_register(&g_sym__plus, NULL);
+  sym_register(&g_sym_Array, NULL);
+  sym_register(&g_sym_Block, NULL);
+  sym_register(&g_sym_Bool, NULL);
+  sym_register(&g_sym_C3, NULL);
+  sym_register(&g_sym_Call, NULL);
+  sym_register(&g_sym_Cfn, NULL);
+  sym_register(&g_sym_Character, NULL);
+  sym_register(&g_sym_Char__star, NULL);
+  sym_register(&g_sym_Complex, NULL);
+  sym_register(&g_sym_F32, NULL);
+  sym_register(&g_sym_F64, NULL);
+  sym_register(&g_sym_F128, NULL);
+  sym_register(&g_sym_Fact, NULL);
+  sym_register(&g_sym_Fn, NULL);
+  sym_register(&g_sym_Ident, NULL);
+  sym_register(&g_sym_Integer, NULL);
+  sym_register(&g_sym_List, NULL);
+  sym_register(&g_sym_Map, NULL);
+  sym_register(&g_sym_Ptag, NULL);
+  sym_register(&g_sym_Ptr, NULL);
+  sym_register(&g_sym_PtrFree, NULL);
+  sym_register(&g_sym_Quote, NULL);
+  sym_register(&g_sym_Ratio, NULL);
+  sym_register(&g_sym_Result, NULL);
+  sym_register(&g_sym_S8, NULL);
+  sym_register(&g_sym_S16, NULL);
+  sym_register(&g_sym_S32, NULL);
+  sym_register(&g_sym_S64, NULL);
+  sym_register(&g_sym_Str, NULL);
+  sym_register(&g_sym_Struct, NULL);
+  sym_register(&g_sym_StructType, NULL);
+  sym_register(&g_sym_Sw, NULL);
+  sym_register(&g_sym_Sym, NULL);
+  sym_register(&g_sym_Tag, NULL);
+  sym_register(&g_sym_Tuple, NULL);
+  sym_register(&g_sym_U8, NULL);
+  sym_register(&g_sym_U16, NULL);
+  sym_register(&g_sym_U32, NULL);
+  sym_register(&g_sym_U64, NULL);
+  sym_register(&g_sym_Unquote, NULL);
+  sym_register(&g_sym_Uw, NULL);
+  sym_register(&g_sym_Uw_brackets, NULL);
+  sym_register(&g_sym_Var, NULL);
+  sym_register(&g_sym_Void, NULL);
+  sym_register(&g_sym_cast, NULL);
+  sym_register(&g_sym_defstruct, NULL);
+  sym_register(&g_sym_do, NULL);
+  sym_register(&g_sym_else, NULL);
+  sym_register(&g_sym_end, NULL);
+  sym_register(&g_sym_if_then_else, NULL);
+  sym_register(&g_sym_is_a, NULL);
+  sym_register(&g_sym_load_time, NULL);
+  sym_register(&g_sym_operator_pin, NULL);
+  sym_register(&g_sym_r, NULL);
+  sym_register(&g_sym_rw, NULL);
+  sym_register(&g_sym_rwx, NULL);
+  sym_register(&g_sym_rx, NULL);
+  sym_register(&g_sym_special_operator, NULL);
+  sym_register(&g_sym_struct_type, NULL);
+  sym_register(&g_sym_w, NULL);
+  sym_register(&g_sym_wx, NULL);
+  sym_register(&g_sym_x, NULL);
 
 }
 
@@ -360,7 +360,7 @@ s_str * sym_inspect (const s_sym *sym, s_str *dest)
   return buf_to_str(&tmp, dest);
 }
 
-bool sym_intern (const s_sym *sym, s_sym *free_sym)
+bool sym_register (const s_sym *sym, s_sym *free_sym)
 {
   s_sym_list *tmp;
   assert(sym);
@@ -451,6 +451,10 @@ bool sym_must_clean (const s_sym *sym, bool *must_clean)
   const s_struct_type *st;
   if (sym_is_array_type(sym))
     sym = sym_array_type(sym);
+  if (sym == &g_sym_Block) {
+    *must_clean = true;
+    return true;
+  }
   if (sym == &g_sym_Bool) {
     *must_clean = false;
     return true;
@@ -617,6 +621,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_pointer;
     return true;
   }
+  if (sym == &g_sym_Block) {
+    *dest = &ffi_type_pointer;
+    return true;
+  }
   if (sym == &g_sym_Bool) {
     *dest = &ffi_type_uint8;
     return true;
@@ -749,6 +757,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   if (sym == &g_sym_Array ||
       sym_is_array_type(sym)) {
     *dest = TAG_ARRAY;
+    return true;
+  }
+  if (sym == &g_sym_Block) {
+    *dest = TAG_BLOCK;
     return true;
   }
   if (sym == &g_sym_Bool) {
@@ -904,6 +916,10 @@ bool sym_type_size (const s_sym *type, uw *dest)
   if (type == &g_sym_Array ||
       sym_is_array_type(type)) {
     *dest = sizeof(s_array);
+    return true;
+  }
+  if (type == &g_sym_Block) {
+    *dest = sizeof(s_block);
     return true;
   }
   if (type == &g_sym_Bool) {

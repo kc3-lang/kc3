@@ -68,6 +68,22 @@ void env_clean (s_env *env)
   list_delete_all(env->path);
 }
 
+s_tag * env_defmodule (s_env *env, const s_sym *name,
+                       const s_block *block, s_tag *dest)
+{
+  const s_sym *module;
+  assert(env);
+  assert(name);
+  assert(block);
+  assert(dest);
+  module = env->current_module;
+  env->current_module = name;
+  if (! env_eval_block(env, block, dest))
+    dest = NULL;
+  env->current_module = module;
+  return dest;
+}
+
 void env_error_f (s_env *env, const char *fmt, ...)
 {
   va_list ap;
