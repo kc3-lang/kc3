@@ -38,7 +38,7 @@ void call_clean (s_call *call)
 
 bool call_get (s_call *call, s_facts *facts)
 {
-  s_facts_with_cursor cursor;
+  s_facts_cursor cursor;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_macro;
@@ -50,14 +50,14 @@ bool call_get (s_call *call, s_facts *facts)
   s_tag tag_symbol_value;
   s_tag tag_var;
   tag_init_ident(&tag_ident, &call->ident);
-  tag_init_1(    &tag_is_a, ":is_a");
-  tag_init_1(    &tag_macro, ":macro");
+  tag_init_sym(  &tag_is_a, &g_sym_is_a);
+  tag_init_sym(  &tag_macro, &g_sym_macro);
   tag_init_sym(  &tag_module_name, call->ident.module);
-  tag_init_1(    &tag_operator, ":operator");
-  tag_init_1(    &tag_special_operator, ":special_operator");
+  tag_init_sym(  &tag_operator, &g_sym_operator);
+  tag_init_sym(  &tag_special_operator, &g_sym_special_operator);
   tag_init_sym(  &tag_sym, call->ident.sym);
-  tag_init_1(    &tag_symbol, ":symbol");
-  tag_init_1(    &tag_symbol_value, ":symbol_value");
+  tag_init_sym(  &tag_symbol, &g_sym_symbol);
+  tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
   tag_init_var(  &tag_var);
   if (! facts_find_fact_by_tags(facts, &tag_module_name,
                                 &tag_symbol, &tag_ident) &&
@@ -70,10 +70,10 @@ bool call_get (s_call *call, s_facts *facts)
     err_write_1("\n");
     return false;
   }
-  if (! facts_with(facts, &cursor, (t_facts_spec) {
-        &tag_ident, &tag_symbol_value, &tag_var, NULL, NULL }))
+  if (! facts_with_tags(facts, &cursor, &tag_ident,
+                        &tag_symbol_value, &tag_var))
     return false;
-  if (facts_with_cursor_next(&cursor)) {
+  if (facts_cursor_next(&cursor)) {
     if (tag_var.type == TAG_FN)
       call->fn = fn_new_copy(&tag_var.data.fn);
     else if (tag_var.type == TAG_CFN)
@@ -82,11 +82,11 @@ bool call_get (s_call *call, s_facts *facts)
       err_write_1("call_get: ");
       err_inspect_ident(&call->ident);
       err_puts(" is not a function");
-      facts_with_cursor_clean(&cursor);
+      facts_cursor_clean(&cursor);
       return false;
     }
   }
-  facts_with_cursor_clean(&cursor);
+  facts_cursor_clean(&cursor);
   if (facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
                               &tag_macro)) {
     if (call->fn)
@@ -106,7 +106,7 @@ bool call_get (s_call *call, s_facts *facts)
 
 bool call_op_get (s_call *call, s_facts *facts)
 {
-  s_facts_with_cursor cursor;
+  s_facts_cursor cursor;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_macro;
@@ -117,32 +117,27 @@ bool call_op_get (s_call *call, s_facts *facts)
   s_tag tag_symbol_value;
   s_tag tag_var;
   tag_init_ident(&tag_ident, &call->ident);
-  tag_init_1(    &tag_is_a,     ":is_a");
-  tag_init_1(    &tag_macro,    ":macro");
+  tag_init_sym(  &tag_is_a, &g_sym_is_a);
+  tag_init_sym(  &tag_macro, &g_sym_macro);
   tag_init_sym(  &tag_module_name, call->ident.module);
-  tag_init_1(    &tag_special_operator, ":special_operator");
+  tag_init_sym(  &tag_special_operator, &g_sym_special_operator);
   tag_init_sym(  &tag_sym, call->ident.sym);
-  tag_init_1(    &tag_symbol,   ":symbol");
-  tag_init_1(    &tag_symbol,   ":symbol_value");
+  tag_init_sym(  &tag_symbol, &g_sym_symbol);
+  tag_init_sym(  &tag_symbol, &g_sym_symbol_value);
   tag_init_var(  &tag_var);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_module_name,
-      &tag_symbol, &tag_ident,    /* module exports symbol */
-      NULL, NULL });
-  if (! facts_with_cursor_next(&cursor)) {
-    err_write_1("call_get: symbol ");
+  if (! facts_find_fact_by_tags(facts, &tag_module_name,
+                                &tag_symbol, &tag_ident)) {
+    err_write_1("call_op_get: symbol ");
     err_write_1(call->ident.sym->str.ptr.pchar);
     err_write_1(" not found in module ");
     err_write_1(call->ident.module->str.ptr.pchar);
     err_write_1("\n");
-    facts_with_cursor_clean(&cursor);
     return false;
   }
-  facts_with_cursor_clean(&cursor);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_symbol_value, &tag_var,
-      NULL, NULL });
-  if (facts_with_cursor_next(&cursor)) {
+  if (! facts_with_tags(facts, &cursor, &tag_ident, &tag_symbol_value,
+                        &tag_var))
+    return false;
+  if (facts_cursor_next(&cursor)) {
     if (tag_var.type == TAG_CFN)
       call->cfn = cfn_new_copy(&tag_var.data.cfn);
     else if (tag_var.type == TAG_FN)
@@ -151,28 +146,25 @@ bool call_op_get (s_call *call, s_facts *facts)
       err_write_1("call_op_get: ");
       err_inspect_ident(&call->ident);
       err_puts(" is not a function");
+      facts_cursor_clean(&cursor);
       return false;
     }
   }
-  facts_with_cursor_clean(&cursor);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });
-  if (facts_with_cursor_next(&cursor)) {
+  facts_cursor_clean(&cursor);
+  if (facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
+                              &tag_macro)) {
     if (call->fn)
       call->fn->macro = true;
     if (call->cfn)
       call->cfn->macro = true;
   }
-  facts_with_cursor_clean(&cursor);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_is_a, &tag_special_operator, NULL, NULL});
-  if (facts_with_cursor_next(&cursor)) {
+  if (facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
+                              &tag_special_operator)) {
     if (call->fn)
       call->fn->special_operator = true;
     if (call->cfn)
       call->cfn->special_operator = true;
   }
-  facts_with_cursor_clean(&cursor);
   return true;
 }
 

@@ -72,13 +72,13 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
   if (! module_ensure_loaded(module, facts))
     return NULL;
   tag_init_ident(&tag_ident, ident);
-  tag_init_1(    &tag_is_a, ":is_a");
-  tag_init_1(    &tag_macro, ":macro");
+  tag_init_sym(  &tag_is_a, &g_sym_is_a);
+  tag_init_sym(  &tag_macro, &g_sym_macro);
   tag_init_sym(  &tag_module, module);
-  tag_init_1(    &tag_special_operator, ":special_operator");
+  tag_init_sym(  &tag_special_operator, &g_sym_special_operator);
   tag_init_sym(  &tag_sym, ident->sym);
-  tag_init_1(    &tag_symbol, ":symbol");
-  tag_init_1(    &tag_symbol_value, ":symbol_value");
+  tag_init_sym(  &tag_symbol, &g_sym_symbol);
+  tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
   tag_init_var(  &tag_var);
   facts_with(facts, &cursor, (t_facts_spec) {
       &tag_module,

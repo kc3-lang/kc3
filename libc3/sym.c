@@ -76,6 +76,8 @@ const s_sym g_sym_end             = {{{NULL},  3, {"end"}}};
 const s_sym g_sym_if_then_else    = {{{NULL}, 12, {"if_then_else"}}};
 const s_sym g_sym_is_a            = {{{NULL},  4, {"is_a"}}};
 const s_sym g_sym_load_time       = {{{NULL},  9, {"load_time"}}};
+const s_sym g_sym_macro           = {{{NULL},  5, {"macro"}}};
+const s_sym g_sym_operator        = {{{NULL},  8, {"operator"}}};
 const s_sym g_sym_operator_pin    = {{{NULL}, 12, {"operator_pin"}}};
 const s_sym g_sym_r               = {{{NULL},  1, {"r"}}};
 const s_sym g_sym_rw              = {{{NULL},  2, {"rw"}}};
@@ -84,6 +86,8 @@ const s_sym g_sym_rx              = {{{NULL},  2, {"rx"}}};
 const s_sym g_sym_special_operator =
   {{{NULL}, 16, {"special_operator"}}};
 const s_sym g_sym_struct_type     = {{{NULL}, 11, {"struct_type"}}};
+const s_sym g_sym_symbol          = {{{NULL},  6, {"symbol"}}};
+const s_sym g_sym_symbol_value    = {{{NULL}, 12, {"symbol_value"}}};
 const s_sym g_sym_w               = {{{NULL},  1, {"w"}}};
 const s_sym g_sym_wx              = {{{NULL},  2, {"wx"}}};
 const s_sym g_sym_x               = {{{NULL},  1, {"x"}}};
@@ -320,6 +324,8 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_if_then_else, NULL);
   sym_register(&g_sym_is_a, NULL);
   sym_register(&g_sym_load_time, NULL);
+  sym_register(&g_sym_macro, NULL);
+  sym_register(&g_sym_operator, NULL);
   sym_register(&g_sym_operator_pin, NULL);
   sym_register(&g_sym_r, NULL);
   sym_register(&g_sym_rw, NULL);
@@ -327,6 +333,8 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_rx, NULL);
   sym_register(&g_sym_special_operator, NULL);
   sym_register(&g_sym_struct_type, NULL);
+  sym_register(&g_sym_symbol, NULL);
+  sym_register(&g_sym_symbol_value, NULL);
   sym_register(&g_sym_w, NULL);
   sym_register(&g_sym_wx, NULL);
   sym_register(&g_sym_x, NULL);
