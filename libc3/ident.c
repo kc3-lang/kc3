@@ -57,8 +57,6 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
 {
   s_facts_with_cursor cursor;
   const s_sym *module;
-  s_tag tag_cfn;
-  s_tag tag_fn;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_macro;
@@ -66,21 +64,21 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
   s_tag tag_special_operator;
   s_tag tag_sym;
   s_tag tag_symbol;
+  s_tag tag_symbol_value;
   s_tag tag_var;
   module = ident->module;
   if (! module)
     module = g_c3_env.current_module;
   if (! module_ensure_loaded(module, facts))
     return NULL;
-  tag_init_1(    &tag_cfn,      ":cfn");
-  tag_init_1(    &tag_fn,       ":fn");
   tag_init_ident(&tag_ident, ident);
-  tag_init_1(    &tag_is_a,     ":is_a");
-  tag_init_1(    &tag_macro,    ":macro");
+  tag_init_1(    &tag_is_a, ":is_a");
+  tag_init_1(    &tag_macro, ":macro");
+  tag_init_sym(  &tag_module, module);
   tag_init_1(    &tag_special_operator, ":special_operator");
   tag_init_sym(  &tag_sym, ident->sym);
-  tag_init_sym(  &tag_module, module);
-  tag_init_1(    &tag_symbol,   ":symbol");
+  tag_init_1(    &tag_symbol, ":symbol");
+  tag_init_1(    &tag_symbol_value, ":symbol_value");
   tag_init_var(  &tag_var);
   facts_with(facts, &cursor, (t_facts_spec) {
       &tag_module,
@@ -92,43 +90,13 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
   }
   facts_with_cursor_clean(&cursor);
   facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_cfn, &tag_var,
+      &tag_ident, &tag_symbol_value, &tag_var,
       NULL, NULL });
-  if (facts_with_cursor_next(&cursor)) {
-    if (tag_var.type != TAG_CFN) {
-      err_write_1("call_get: ");
-      err_write_1(module->str.ptr.pchar);
-      err_write_1(".");
-      err_write_1(ident->sym->str.ptr.pchar);
-      err_puts(" is not a C function");
-      facts_with_cursor_clean(&cursor);
-      return NULL;
-    }
-  }
-  facts_with_cursor_clean(&cursor);
-  if (tag_var.type == TAG_VAR) {
-    facts_with(facts, &cursor, (t_facts_spec) {
-        &tag_ident, &tag_fn, &tag_var,
-        NULL, NULL });
-    if (facts_with_cursor_next(&cursor)) {
-      if (tag_var.type != TAG_FN) {
-        err_write_1("call_get: ");
-        err_write_1(module->str.ptr.pchar);
-        err_write_1(".");
-        err_write_1(ident->sym->str.ptr.pchar);
-        err_puts(" is not a function");
-        facts_with_cursor_clean(&cursor);
-        return NULL;
-      }
-      facts_with_cursor_clean(&cursor);
-    }
-  }
-  if (tag_var.type == TAG_VAR) {
-    /*
-    warnx("Neither fn nor cfn");
-    */
+  if (! facts_with_cursor_next(&cursor)) {
+    facts_with_cursor_clean(&cursor);
     return NULL;
   }
+  facts_with_cursor_clean(&cursor);
   facts_with(facts, &cursor, (t_facts_spec) {
       &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });
   if (facts_with_cursor_next(&cursor)) {

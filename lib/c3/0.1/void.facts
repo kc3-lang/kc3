@@ -2,4 +2,4 @@
   version: 1}
 replace {Void, :is_a, :module}
 replace {Void, :symbol, Void.cast}
-replace {Void.cast, :cfn, cfn Void "void_init_cast" (Result, Tag)}
+replace {Void.cast, :symbol_value, cfn Void "void_init_cast" (Result, Tag)}

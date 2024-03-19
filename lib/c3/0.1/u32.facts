@@ -2,4 +2,4 @@
   version: 1}
 replace {U32, :is_a, :module}
 replace {U32, :symbol, U32.cast}
-replace {U32.cast, :cfn, cfn U32 "u32_init_cast" (Result, Tag)}
+replace {U32.cast, :symbol_value, cfn U32 "u32_init_cast" (Result, Tag)}

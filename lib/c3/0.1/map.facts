@@ -4,8 +4,8 @@ add {Map, :is_a, :module}
 add {Map, :symbol, Map.cast}
 add {Map, :symbol, Map.map}
 add {Map, :symbol, Map.to_list}
-replace {Map.cast, :cfn, cfn Map "map_cast" (Tag, Result)}
-replace {Map.map, :cfn, cfn List "map_map" (Map, Fn, Result)}
-replace {Map.to_list, :fn, fn (%{} = map) {
+replace {Map.cast, :symbol_value, cfn Map "map_cast" (Tag, Result)}
+replace {Map.map, :symbol_value, cfn List "map_map" (Map, Fn, Result)}
+replace {Map.to_list, :symbol_value, fn (%{} = map) {
   Map.map(map, fn (k, v) { {k, v} })
 }}

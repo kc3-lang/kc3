@@ -2,4 +2,4 @@
   version: 1}
 replace {Uw, :is_a, :module}
 replace {Uw, :symbol, Uw.cast}
-replace {Uw.cast, :cfn, cfn Uw "uw_init_cast" (Result, Tag)}
+replace {Uw.cast, :symbol_value, cfn Uw "uw_init_cast" (Result, Tag)}

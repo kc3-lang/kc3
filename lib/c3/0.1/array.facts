@@ -1,7 +1,7 @@
 %{module: C3.Facts.Dump,
   version: 1}
 add {Array, :is_a, :module}
-add {Array, :symbol, Array.cast}
+replace {Array, :symbol, Array.cast}
+replace {Array.cast, :symbol_value, cfn Array "array_init_cast" (Result, Tag)}
 add {Array, :symbol, Array.data}
-replace {Array.cast, :cfn, cfn Array "array_init_cast" (Result, Tag)}
-replace {Array.data, :cfn, cfn Tag "array_data_tag" (Tag, Tag, Result)}
+replace {Array.data, :symbol_value, cfn Tag "array_data_tag" (Tag, Tag, Result)}

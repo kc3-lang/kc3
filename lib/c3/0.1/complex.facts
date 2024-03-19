@@ -2,4 +2,4 @@
   version: 1}
 replace {Complex, :is_a, :module}
 replace {Complex, :symbol, Complex.cast}
-replace {Complex.cast, :cfn, cfn Complex "pcomplex_init_cast" (Result, Tag)}
+replace {Complex.cast, :symbol_value, cfn Complex "pcomplex_init_cast" (Result, Tag)}

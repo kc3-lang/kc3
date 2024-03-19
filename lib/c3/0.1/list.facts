@@ -4,8 +4,8 @@ add {List, :is_a, :module}
 add {List, :symbol, List.cast}
 add {List, :symbol, List.map}
 add {List, :symbol, List.reverse}
-replace {List.cast, :cfn, cfn List "list_init_cast" (Result, Tag)}
-replace {List.map, :fn, fn {
+replace {List.cast, :symbol_value, cfn List "list_init_cast" (Result, Tag)}
+replace {List.map, :symbol_value, fn {
   ([], _) do
     []
   end
@@ -13,7 +13,7 @@ replace {List.map, :fn, fn {
     [f(a) | List.map(b, f)]
   }
 }}
-replace {List.reverse, :fn, fn {
+replace {List.reverse, :symbol_value, fn {
   (x) { List.reverse(x, []) }
   ([], acc) { acc }
   ([a | b], acc) { List.reverse(b, [a | acc]) }
