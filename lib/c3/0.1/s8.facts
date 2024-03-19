@@ -2,4 +2,4 @@
   version: 1}
 replace {S8, :is_a, :module}
 replace {S8, :symbol, S8.cast}
-replace {S8.cast, :cfn, cfn S8 "s8_init_cast" (Result, Tag)}
+replace {S8.cast, :symbol_value, cfn S8 "s8_init_cast" (Result, Tag)}

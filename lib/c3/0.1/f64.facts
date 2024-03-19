@@ -2,4 +2,4 @@
   version: 1}
 replace {F64, :is_a, :module}
 replace {F64, :symbol, F64.cast}
-replace {F64.cast, :cfn, cfn F64 "f64_init_cast" (Result, Tag)}
+replace {F64.cast, :symbol_value, cfn F64 "f64_init_cast" (Result, Tag)}

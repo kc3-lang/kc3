@@ -2,4 +2,4 @@
   version: 1}
 replace {Integer, :is_a, :module}
 replace {Integer, :symbol, Integer.cast}
-replace {Integer.cast, :cfn, cfn Integer "integer_init_cast" (Result, Tag)}
+replace {Integer.cast, :symbol_value, cfn Integer "integer_init_cast" (Result, Tag)}
