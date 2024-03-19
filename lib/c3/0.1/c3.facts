@@ -214,3 +214,7 @@ add {C3, :symbol, C3.sqrt}
 replace {C3.sqrt, :cfn, cfn Tag "tag_sqrt" (Tag, Result)}
 add {C3, :symbol, C3.hash}
 replace {C3.hash, :cfn, cfn Uw "tag_hash_uw" (Tag)}
+add {C3, :symbol, C3.defmodule}
+replace {C3.defmodule, :arity, 2}
+replace {C3.defmodule, :is_a, :special_operator}
+replace {C3.defmodule, :cfn, cfn Tag "c3_defmodule" (Sym, Block, Result)}

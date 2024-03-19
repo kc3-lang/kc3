@@ -99,7 +99,7 @@ const s_sym ** sym_init_copy (const s_sym **sym,
                               const s_sym * const *src);
 void           sym_init_g_sym (void);
 const s_sym ** sym_init_str (const s_sym **sym, const s_str *src);
-bool           sym_intern (const s_sym *sym, s_sym *free_sym);
+bool           sym_register (const s_sym *sym, s_sym *free_sym);
 
 /* Heap-allocation functions, call sym_delete_all at exit. */
 void          sym_delete_all (void);
