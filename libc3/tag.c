@@ -637,7 +637,7 @@ bool * tag_not (const s_tag *tag, bool *dest)
   assert(tag);
   assert(dest);
   tag_init_bool(&f, false);
-  *dest = compare_tag(tag, &f) == 0 ? 1 : 0;
+  *dest = compare_tag(tag, &f) == 0 ? true : false;
   return dest;
 }
 
@@ -1128,6 +1128,6 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
 bool tag_xor (const s_tag *a, const s_tag *b)
 {
   s_tag f;
-  tag_init_1(&f, "false");
+  tag_init_bool(&f, false);
   return (compare_tag(a, &f) != 0) != (compare_tag(b, &f) != 0);
 }
