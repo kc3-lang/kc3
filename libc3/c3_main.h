@@ -27,10 +27,17 @@ extern sw          g_c3_exit_code;
 
 /* Stack-allocation compatible functions, call c3_clean after use. */
 s_env * c3_init (s_env *env, int argc, char **argv);
-void c3_clean (s_env *env);
+void    c3_clean (s_env *env);
 
 /* Observers. */
+uw *    c3_facts_next_id (uw *dest);
 s_str * c3_getenv (const s_str *name, s_str *dest);
+void    c3_license (void);
+
+/* Operators. */
+void ** c3_dlopen (const s_str *path, void **dest);
+void    c3_exit (sw code);
+s_tag * c3_pin (const s_tag *a, s_tag *dest);
 
 /* Special operators. */
 s_tag * c3_if_then_else (const s_tag *cond, const s_tag *then,
