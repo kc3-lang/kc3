@@ -22,6 +22,7 @@
 #include "file.h"
 #include "module.h"
 #include "tag.h"
+#include "sym.h"
 
 bool module_ensure_loaded (const s_sym *module, s_facts *facts)
 {
@@ -30,8 +31,8 @@ bool module_ensure_loaded (const s_sym *module, s_facts *facts)
   s_tag tag_is_a;
   s_tag tag_module;
   tag_init_sym(&tag_module_name, module);
-  tag_init_1(  &tag_is_a,     ":is_a");
-  tag_init_1(  &tag_module,   ":module");
+  tag_init_sym(&tag_is_a, &g_sym_is_a);
+  tag_init_sym(&tag_module, &g_sym_module);
   facts_with(facts, &cursor, (t_facts_spec) {
       &tag_module_name,
       &tag_is_a, &tag_module,     /* module exists */
@@ -62,7 +63,7 @@ s_tag * module_load_time (const s_sym *module, s_facts *facts,
   s_tag tag_load_time;
   s_tag tag_time_var;
   tag_init_sym(&tag_module_name, module);
-  tag_init_1(  &tag_load_time, ":load_time");
+  tag_init_sym(&tag_load_time, &g_sym_load_time);
   tag_init_var(&tag_time_var);
   facts_with(facts, &cursor, (t_facts_spec) {
       &tag_module_name, &tag_load_time, &tag_time_var, NULL, NULL });

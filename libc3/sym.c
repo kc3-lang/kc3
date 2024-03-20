@@ -68,6 +68,7 @@ const s_sym g_sym_Uw              = {{{NULL},  2, {"Uw"}}};
 const s_sym g_sym_Uw_brackets     = {{{NULL},  4, {"Uw[]"}}};
 const s_sym g_sym_Var             = {{{NULL},  3, {"Var"}}};
 const s_sym g_sym_Void            = {{{NULL},  4, {"Void"}}};
+const s_sym g_sym_arity           = {{{NULL},  5, {"arity"}}};
 const s_sym g_sym_cast            = {{{NULL},  4, {"cast"}}};
 const s_sym g_sym_defstruct       = {{{NULL},  9, {"defstruct"}}};
 const s_sym g_sym_do              = {{{NULL},  2, {"do"}}};
@@ -77,9 +78,15 @@ const s_sym g_sym_if_then_else    = {{{NULL}, 12, {"if_then_else"}}};
 const s_sym g_sym_is_a            = {{{NULL},  4, {"is_a"}}};
 const s_sym g_sym_load_time       = {{{NULL},  9, {"load_time"}}};
 const s_sym g_sym_macro           = {{{NULL},  5, {"macro"}}};
+const s_sym g_sym_module          = {{{NULL},  6, {"module"}}};
 const s_sym g_sym_operator        = {{{NULL},  8, {"operator"}}};
+const s_sym g_sym_operator_associativity =
+  {{{NULL}, 22, {"operator_associativity"}}};
 const s_sym g_sym_operator_pin    = {{{NULL}, 12, {"operator_pin"}}};
+const s_sym g_sym_operator_precedence =
+  {{{NULL}, 19, {"operator_precedence"}}};
 const s_sym g_sym_r               = {{{NULL},  1, {"r"}}};
+const s_sym g_sym_right           = {{{NULL},  5, {"right"}}};
 const s_sym g_sym_rw              = {{{NULL},  2, {"rw"}}};
 const s_sym g_sym_rwx             = {{{NULL},  3, {"rwx"}}};
 const s_sym g_sym_rx              = {{{NULL},  2, {"rx"}}};
@@ -316,6 +323,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Uw_brackets, NULL);
   sym_register(&g_sym_Var, NULL);
   sym_register(&g_sym_Void, NULL);
+  sym_register(&g_sym_arity, NULL);
   sym_register(&g_sym_cast, NULL);
   sym_register(&g_sym_defstruct, NULL);
   sym_register(&g_sym_do, NULL);
@@ -325,9 +333,13 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_is_a, NULL);
   sym_register(&g_sym_load_time, NULL);
   sym_register(&g_sym_macro, NULL);
+  sym_register(&g_sym_module, NULL);
   sym_register(&g_sym_operator, NULL);
+  sym_register(&g_sym_operator_associativity, NULL);
   sym_register(&g_sym_operator_pin, NULL);
+  sym_register(&g_sym_operator_precedence, NULL);
   sym_register(&g_sym_r, NULL);
+  sym_register(&g_sym_right, NULL);
   sym_register(&g_sym_rw, NULL);
   sym_register(&g_sym_rwx, NULL);
   sym_register(&g_sym_rx, NULL);
