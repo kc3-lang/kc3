@@ -68,7 +68,8 @@ s_list * list_init (s_list *list, s_list *next)
 s_list * list_init_1 (s_list *list, const char *p, s_list *next)
 {
   assert(list);
-  tag_init_1(&list->tag, p);
+  if (! tag_init_1(&list->tag, p))
+    return NULL;
   tag_init_list(&list->next, next);
   return list;
 }

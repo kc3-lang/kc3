@@ -1504,7 +1504,7 @@ s8 env_operator_arity (s_env *env, const s_ident *op)
   assert(env);
   assert(op);
   tag_init_ident(&tag_op, op);
-  tag_init_1(    &tag_arity, ":arity");
+  tag_init_sym(  &tag_arity, &g_sym_arity);
   tag_init_var(  &tag_var);
   facts_with_tags(&env->facts, &cursor, &tag_op, &tag_arity, &tag_var);
   if (facts_cursor_next(&cursor) &&
@@ -1529,11 +1529,11 @@ bool env_operator_find (s_env *env, const s_ident *op)
   s_tag tag_operator;
   assert(env);
   assert(op);
-  tag_init_1(    &tag_is_a, ":is_a");
+  tag_init_sym(  &tag_is_a, &g_sym_is_a);
   tag_init_ident(&tag_op, op);
-  tag_init_1(    &tag_operator, ":operator");
+  tag_init_sym(  &tag_operator, &g_sym_operator);
   return facts_find_fact_by_tags(&env->facts, &tag_op, &tag_is_a,
-                                 &tag_operator) ? 1 : 0;
+                                 &tag_operator) ? true : false;
 }
 
 s_ident * env_operator_ident (s_env *env, const s_ident *op,
@@ -1557,11 +1557,11 @@ bool env_operator_is_right_associative (s_env *env, const s_ident *op)
   s_tag tag_right;
   assert(env);
   assert(op);
-  tag_init_1(    &tag_assoc, ":operator_associativity");
+  tag_init_sym(  &tag_assoc, &g_sym_operator_associativity);
   tag_init_ident(&tag_op, op);
-  tag_init_1(    &tag_right, ":right");
+  tag_init_sym(  &tag_right, &g_sym_right);
   return facts_find_fact_by_tags(&env->facts, &tag_op, &tag_assoc,
-                                 &tag_right) ? 1 : 0;
+                                 &tag_right) ? true : false;
 }
 
 s8 env_operator_precedence (s_env *env, const s_ident *op)
@@ -1574,7 +1574,7 @@ s8 env_operator_precedence (s_env *env, const s_ident *op)
   assert(env);
   assert(op);
   tag_init_ident(&tag_op, op);
-  tag_init_1(    &tag_precedence, ":operator_precedence");
+  tag_init_sym(  &tag_precedence, &g_sym_operator_precedence);
   tag_init_var(  &tag_var);
   facts_with_tags(&env->facts, &cursor, &tag_op, &tag_precedence,
                   &tag_var);
@@ -1609,15 +1609,15 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
   s_ident tmp;
   tmp = *op;
   ident_resolve_module(&tmp, env);
-  tag_init_1(  &tag_arity, ":arity");
+  tag_init_sym(&tag_arity, &g_sym_arity);
   tag_init_u8( &tag_arity_u8, arity);
-  tag_init_1(  &tag_is_a, ":is_a");
-  tag_init_1(  &tag_module, ":module");
+  tag_init_sym(&tag_is_a, &g_sym_is_a);
+  tag_init_sym(&tag_module, &g_sym_module);
   tag_init_sym(&tag_module_name, tmp.module);
-  tag_init_1(  &tag_operator, ":operator");
+  tag_init_sym(&tag_operator, &g_sym_operator);
   tag_init_var(&tag_var);
   tag_init_sym(&tag_sym, tmp.sym);
-  tag_init_1(  &tag_symbol, ":symbol");
+  tag_init_sym(&tag_symbol, &g_sym_symbol);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_module_name, &tag_is_a, &tag_module,
       &tag_operator, &tag_var, NULL,   /* module exports operator */
@@ -1645,7 +1645,7 @@ const s_sym * env_operator_symbol (s_env *env, const s_ident *op)
   assert(env);
   assert(op);
   tag_init_ident(&tag_op, op);
-  tag_init_1(    &tag_symbol, ":symbol");
+  tag_init_sym(  &tag_symbol, &g_sym_symbol);
   tag_init_var(  &tag_var);
   facts_with_tags(&env->facts, &cursor, &tag_op, &tag_symbol, &tag_var);
   if (facts_cursor_next(&cursor) &&
@@ -1700,7 +1700,7 @@ u8 env_special_operator_arity (s_env *env, const s_ident *ident)
   assert(ident);
   tag_init_ident(&tag_ident, ident);
   env_ident_resolve_module(env, &tag_ident.data.ident);
-  tag_init_1(    &tag_arity, ":arity");
+  tag_init_sym(  &tag_arity, &g_sym_arity);
   tag_init_var(  &tag_var);
   facts_with_tags(&env->facts, &cursor,
                   &tag_ident, &tag_arity, &tag_var);
