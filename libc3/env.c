@@ -1386,7 +1386,7 @@ bool env_module_is_loading (s_env *env, const s_sym *module)
   assert(env);
   assert(module);
   tag_init_sym(&tag_module, module);
-  tag_init_sym(&tag_is_loading, sym_1("is_loading"));
+  tag_init_sym(&tag_is_loading, &g_sym_is_loading);
   tag_init_bool(&tag_true, true);
   facts_with_tags(&env->facts, &cursor, &tag_module, &tag_is_loading,
                   &tag_true);
@@ -1407,7 +1407,7 @@ void env_module_is_loading_set (s_env *env, const s_sym *module,
   assert(env);
   assert(module);
   tag_init_sym(&tag_module, module);
-  tag_init_sym(&tag_is_loading, sym_1("is_loading"));
+  tag_init_sym(&tag_is_loading, &g_sym_is_loading);
   tag_init_bool(&tag_true, true);
   if (is_loading)
     facts_replace_tags(&env->facts, &tag_module, &tag_is_loading,
@@ -1793,7 +1793,7 @@ f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
   f_clean tmp;
   const s_sym *type;
   tag_init_sym(&tag_module, module);
-  tag_init_sym(&tag_clean, sym_1("clean"));
+  tag_init_sym(&tag_clean, &g_sym_clean);
   tag_init_var(&tag_var);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_module, &tag_clean, &tag_var, NULL, NULL });
