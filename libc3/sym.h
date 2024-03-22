@@ -27,6 +27,7 @@
 #define SYM_MAX 1024
 
 extern const s_sym g_sym__brackets;
+extern const s_sym g_sym__equal;
 extern const s_sym g_sym__paren;
 extern const s_sym g_sym__plus;
 extern const s_sym g_sym_Array;
@@ -88,6 +89,7 @@ extern const s_sym g_sym_macro;
 extern const s_sym g_sym_module;
 extern const s_sym g_sym_operator;
 extern const s_sym g_sym_operator_associativity;
+extern const s_sym g_sym_operator_equal;
 extern const s_sym g_sym_operator_pin;
 extern const s_sym g_sym_operator_precedence;
 extern const s_sym g_sym_r;

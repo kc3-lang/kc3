@@ -22,6 +22,7 @@
 #include "tag_type.h"
 
 const s_sym g_sym__brackets       = {{{NULL},  2, {"[]"}}};
+const s_sym g_sym__equal          = {{{NULL},  1, {"="}}};
 const s_sym g_sym__paren          = {{{NULL},  2, {"()"}}};
 const s_sym g_sym__plus           = {{{NULL},  1, {"+"}}};
 const s_sym g_sym_Array           = {{{NULL},  5, {"Array"}}};
@@ -84,6 +85,7 @@ const s_sym g_sym_module          = {{{NULL},  6, {"module"}}};
 const s_sym g_sym_operator        = {{{NULL},  8, {"operator"}}};
 const s_sym g_sym_operator_associativity =
   {{{NULL}, 22, {"operator_associativity"}}};
+const s_sym g_sym_operator_equal  = {{{NULL}, 14, {"operator_equal"}}};
 const s_sym g_sym_operator_pin    = {{{NULL}, 12, {"operator_pin"}}};
 const s_sym g_sym_operator_precedence =
   {{{NULL}, 19, {"operator_precedence"}}};
@@ -279,6 +281,7 @@ const s_sym ** sym_init_copy (const s_sym **sym,
 void sym_init_g_sym (void)
 {
   sym_register(&g_sym__brackets, NULL);
+  sym_register(&g_sym__equal, NULL);
   sym_register(&g_sym__paren, NULL);
   sym_register(&g_sym__plus, NULL);
   sym_register(&g_sym_Array, NULL);
@@ -340,6 +343,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_module, NULL);
   sym_register(&g_sym_operator, NULL);
   sym_register(&g_sym_operator_associativity, NULL);
+  sym_register(&g_sym_operator_equal, NULL);
   sym_register(&g_sym_operator_pin, NULL);
   sym_register(&g_sym_operator_precedence, NULL);
   sym_register(&g_sym_r, NULL);
@@ -651,6 +655,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
   }
   if (sym == &g_sym_Bool) {
     *dest = &ffi_type_uint8;
+    return true;
+  }
+  if (sym == &g_sym_Call) {
+    *dest = &ffi_type_pointer;
     return true;
   }
   if (sym == &g_sym_Char__star) {

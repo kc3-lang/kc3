@@ -417,8 +417,11 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - has_ident
      - collect_idents
    - modules
-     - defmodule
+     - DONE defmodule
      - def
+       - def double = 4
+       - def double = fn (x) do x * 2 end
+       - def double = macro (x) do {x, x} end
      - defmacro
      - defoperator
      - defspecial_operator

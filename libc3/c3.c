@@ -45,6 +45,11 @@ void c3_clean (s_env *env)
   sym_delete_all();
 }
 
+s_tag * c3_def (const s_call *call, s_tag *dest)
+{
+  return env_def(&g_c3_env, call, dest);
+}
+
 s_tag * c3_defmodule (const s_sym *name, const s_block *block, s_tag *dest)
 {
   return env_defmodule(&g_c3_env, name, block, dest);
