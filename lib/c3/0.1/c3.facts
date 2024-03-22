@@ -176,14 +176,14 @@ replace {C3.operator22, :arity, 2}
 replace {C3.operator22, :symbol_value, cfn Bool "tag_or" (Tag, Tag, Result)}
 replace {C3.operator22, :operator_precedence, 2}
 replace {C3.operator22, :operator_associativity, :left}
-add {C3, :operator, C3.operator23}
-replace {C3.operator23, :is_a, :operator}
-replace {C3.operator23, :arity, 2}
-add {C3.operator23, :is_a, :special_operator}
-replace {C3.operator23, :symbol, :=}
-replace {C3.operator23, :symbol_value, cfn Tag "tag_equal" (Tag, Tag, Result)}
-replace {C3.operator23, :operator_precedence, 1}
-replace {C3.operator23, :operator_associativity, :right}
+add {C3, :operator, C3.operator_equal}
+replace {C3.operator_equal, :is_a, :operator}
+replace {C3.operator_equal, :arity, 2}
+add {C3.operator_equal, :is_a, :special_operator}
+replace {C3.operator_equal, :symbol, :=}
+replace {C3.operator_equal, :symbol_value, cfn Tag "tag_equal" (Tag, Tag, Result)}
+replace {C3.operator_equal, :operator_precedence, 1}
+replace {C3.operator_equal, :operator_associativity, :right}
 replace {C3.break, :symbol_value, cfn Void "c3_break" ()}
 replace {C3, :symbol, C3.license}
 replace {C3.license, :symbol_value, cfn Void "c3_license" ()}
@@ -220,3 +220,7 @@ add {C3, :symbol, C3.defmodule}
 replace {C3.defmodule, :arity, 2}
 replace {C3.defmodule, :is_a, :special_operator}
 replace {C3.defmodule, :symbol_value, cfn Tag "c3_defmodule" (Sym, Block, Result)}
+add {C3, :symbol, C3.def}
+replace {C3.def, :arity, 1}
+replace {C3.def, :is_a, :special_operator}
+replace {C3.def, :symbol_value, cfn Tag "c3_def" (Call, Result)}

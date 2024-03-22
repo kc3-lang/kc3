@@ -27,6 +27,7 @@ void          env_ident_resolve_module (const s_env *env,
                                         s_ident *ident);
 
 /* Operators. */
+s_tag *       env_def (s_env *env, const s_call *call, s_tag *dest);
 s_tag *       env_defmodule (s_env *env, const s_sym *name,
                              const s_block *block, s_tag *dest);
 bool          env_eval_array (s_env *env, const s_array *array,

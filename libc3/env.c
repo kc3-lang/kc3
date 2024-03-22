@@ -54,6 +54,7 @@ static s_env * env_init_args (s_env *env, int argc, char **argv);
 void env_clean (s_env *env)
 {
   assert(env);
+  facts_save_file(&env->facts, "debug.facts");
   frame_delete_all(env->frame);
   error_handler_delete_all(env->error_handler);
   facts_clean(&env->facts);
@@ -66,6 +67,41 @@ void env_clean (s_env *env)
   str_clean(&env->argv0_dir);
   str_clean(&env->module_path);
   list_delete_all(env->path);
+}
+
+s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
+{
+  s_tag *tag_ident;
+  s_tag tag_module;
+  s_tag tag_symbol;
+  s_tag tag_symbol_value;
+  s_tag *tag_value;
+  (void) env;
+  assert(env);
+  assert(call);
+  assert(dest);
+  if (call->ident.module != &g_sym_C3 ||
+      call->ident.sym != &g_sym_operator_equal ||
+      call->arguments->tag.type != TAG_IDENT ||
+      ! list_next(call->arguments) ||
+      list_next(list_next(call->arguments))) {
+    err_puts("env_def: invalid assignment: expected Ident = value");
+    assert(! "env_def: invalid assignment: expected Ident = value");
+    return NULL;
+  }
+  tag_init_sym(&tag_module, call->arguments->tag.data.ident.module);
+  tag_init_sym(&tag_symbol, &g_sym_symbol);
+  tag_ident = &call->arguments->tag;
+  tag_init_sym(&tag_symbol_value, &g_sym_symbol_value);
+  tag_value = &list_next(call->arguments)->tag;
+  if (! facts_add_tags(&env->facts, &tag_module, &tag_symbol,
+                       tag_ident))
+    return NULL;
+  if (! facts_add_tags(&env->facts, tag_ident, &tag_symbol_value,
+                       tag_value))
+    return NULL;
+  tag_init_ident(dest, &call->arguments->tag.data.ident);
+  return dest;
 }
 
 s_tag * env_defmodule (s_env *env, const s_sym *name,
