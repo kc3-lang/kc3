@@ -1,0 +1,30 @@
+quote def zero = 0
+def zero = 0
+quote zero
+zero
+quote def one_two_three = [1, 2, 3]
+def one_two_three = [1, 2, 3]
+quote one_two_three
+one_two_three
+quote def double = fn (x) { x * 2 }
+def double = fn (x) { x * 2 }
+quote double
+double
+quote double(200)
+double(200)
+quote double(zero)
+double(zero)
+quote def double_tuple = macro (x) do
+  {x, x}
+end
+def double_tuple = macro (x) do
+  {x, x}
+end
+quote double_tuple
+double_tuple
+quote double_tuple(200)
+double_tuple(200)
+quote double_tuple(zero)
+double_tuple(zero)
+quote double_tuple(one_two_three)
+double_tuple(one_two_three)
