@@ -27,6 +27,7 @@
 #include "io.h"
 #include "list.h"
 #include "operator.h"
+#include "special_operator.h"
 #include "str.h"
 #include "tag.h"
 
@@ -364,9 +365,9 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   if (call->ident.sym == &g_sym_cast)
     return buf_inspect_cast(buf, call);
   op_arity = op ? operator_arity(&call->ident) : 0;
-  if (op && op_arity == 1)
+  if (op_arity == 1)
     return buf_inspect_call_op_unary(buf, call);
-  if (op && op_arity == 2 &&
+  if (op_arity == 2 &&
       (op_precedence = operator_precedence(&call->ident)) > 0)
     return buf_inspect_call_op(buf, call, op_precedence);
   if (ident_is_special_operator(&call->ident))
@@ -452,6 +453,38 @@ sw buf_inspect_call_brackets (s_buf *buf, const s_call *call)
     if ((r = buf_write_1(buf, "]")) < 0)
       return r;
     result += r;
+    i++;
+  }
+  return result;
+}
+
+sw buf_inspect_call_brackets_size (const s_call *call)
+{
+  s_array *address;
+  s_tag *array;
+  uw i = 0;
+  s_list *next;
+  sw r;
+  sw result = 0;
+  assert(call);
+  assert(call->arguments);
+  next = list_next(call->arguments);
+  assert(next);
+  assert(! list_next(next));
+  assert(next->tag.type == TAG_ARRAY);
+  address = &next->tag.data.array;
+  assert(address->dimension == 1);
+  array = &call->arguments->tag;
+  if ((r = buf_inspect_tag_size(array)) < 0)
+    return r;
+  result += r;
+  while (i < address->dimensions[0].count) {
+    result += strlen("[");
+    if ((r = buf_inspect_uw_size(((uw *) address->data)
+                                 + i)) < 0)
+      return r;
+    result += r;
+    result += strlen("]");
     i++;
   }
   return result;
@@ -639,10 +672,14 @@ sw buf_inspect_call_size (const s_call *call)
       call->ident.sym == &g_sym_if_then_else)
     return buf_inspect_call_if_then_else_size(call);
   op = operator_find(&call->ident);
-  op_arity = operator_arity(&call->ident);
-  if (op && op_arity == 1)
+  if (op && operator_symbol(&call->ident) == &g_sym__brackets)
+    return buf_inspect_call_brackets_size(call);
+  if (call->ident.sym == &g_sym_cast)
+    return buf_inspect_cast_size(call);
+  op_arity = op ? operator_arity(&call->ident) : 0;
+  if (op_arity == 1)
     return buf_inspect_call_op_unary_size(call);
-  if (op && op_arity == 2 &&
+  if (op_arity == 2 &&
       (op_precedence = operator_precedence(&call->ident)) > 0)
     return buf_inspect_call_op_size(call, op_precedence);
   if (ident_is_special_operator(&call->ident))
