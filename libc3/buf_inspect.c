@@ -350,24 +350,27 @@ sw buf_inspect_bool_size (const bool *b)
 
 sw buf_inspect_call (s_buf *buf, const s_call *call)
 {
+  bool op;
+  u8 op_arity;
   s8 op_precedence;
   sw r;
   sw result = 0;
   if (call->ident.module == &g_sym_C3 &&
       call->ident.sym == &g_sym_if_then_else)
     return buf_inspect_call_if_then_else(buf, call);
-  if (operator_find(&call->ident) &&
-      operator_symbol(&call->ident) == &g_sym__brackets)
+  op = operator_find(&call->ident);
+  if (op && operator_symbol(&call->ident) == &g_sym__brackets)
     return buf_inspect_call_brackets(buf, call);
   if (call->ident.sym == &g_sym_cast)
     return buf_inspect_cast(buf, call);
-  if (operator_find(&call->ident) &&
-      operator_arity(&call->ident) == 1)
+  op_arity = op ? operator_arity(&call->ident) : 0;
+  if (op && op_arity == 1)
     return buf_inspect_call_op_unary(buf, call);
-  if (operator_find(&call->ident) &&
-      operator_arity(&call->ident) == 2 &&
+  if (op && op_arity == 2 &&
       (op_precedence = operator_precedence(&call->ident)) > 0)
     return buf_inspect_call_op(buf, call, op_precedence);
+  if (ident_is_special_operator(&call->ident))
+    return buf_inspect_call_special_operator(buf, call);
   if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
     return r;
   result += r;
@@ -627,25 +630,75 @@ sw buf_inspect_call_paren (s_buf *buf, const s_call *call)
 
 sw buf_inspect_call_size (const s_call *call)
 {
+  bool op;
+  u8 op_arity;
   s8 op_precedence;
   sw r;
   sw result = 0;
   if (call->ident.module == &g_sym_C3 &&
       call->ident.sym == &g_sym_if_then_else)
     return buf_inspect_call_if_then_else_size(call);
-  if (operator_find(&call->ident) &&
-      operator_arity(&call->ident) == 1)
+  op = operator_find(&call->ident);
+  op_arity = operator_arity(&call->ident);
+  if (op && op_arity == 1)
     return buf_inspect_call_op_unary_size(call);
-  if (operator_find(&call->ident) &&
-      operator_arity(&call->ident) == 2 &&
+  if (op && op_arity == 2 &&
       (op_precedence = operator_precedence(&call->ident)) > 0)
     return buf_inspect_call_op_size(call, op_precedence);
+  if (ident_is_special_operator(&call->ident))
+    return buf_inspect_call_special_operator_size(call);
   if ((r = buf_inspect_ident_size(&call->ident)) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_call_args_size(call->arguments)) < 0)
     return r;
   result += r;
+  return result;
+}
+
+sw buf_inspect_call_special_operator (s_buf *buf, const s_call *call)
+{
+  const s_list *args;
+  sw r;
+  sw result = 0;
+  assert(ident_is_special_operator(&call->ident));
+  assert(special_operator_arity(&call->ident) ==
+         list_length(call->arguments));
+  args = call->arguments;
+  if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
+    return r;
+  result += r;
+  while (args) {
+    if ((r = buf_write_1(buf, " ")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_tag(buf, &args->tag)) < 0)
+      return r;
+    result += r;
+    args = list_next(args);
+  }
+  return result;
+}
+
+sw buf_inspect_call_special_operator_size (const s_call *call)
+{
+  const s_list *args;
+  sw r;
+  sw result = 0;
+  assert(ident_is_special_operator(&call->ident));
+  assert(special_operator_arity(&call->ident) ==
+         list_length(call->arguments));
+  args = call->arguments;
+  if ((r = buf_inspect_ident_size(&call->ident)) < 0)
+    return r;
+  result += r;
+  while (args) {
+    result += strlen(" ");
+    if ((r = buf_inspect_tag_size(&args->tag)) < 0)
+      return r;
+    result += r;
+    args = list_next(args);
+  }
   return result;
 }
 

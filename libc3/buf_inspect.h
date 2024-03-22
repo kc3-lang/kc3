@@ -74,6 +74,8 @@ sw buf_inspect_call_op_unary_size (const s_call *call);
 sw buf_inspect_call_paren (s_buf *buf, const s_call *call);
 sw buf_inspect_call_paren_size (const s_call *call);
 sw buf_inspect_call_size (const s_call *call);
+sw buf_inspect_call_special_operator (s_buf *buf, const s_call *call);
+sw buf_inspect_call_special_operator_size (const s_call *call);
 sw buf_inspect_cast (s_buf *buf, const s_call *call);
 sw buf_inspect_cast_size (const s_call *call);
 sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn);
