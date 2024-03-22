@@ -1,0 +1,30 @@
+def zero = 0
+C3.zero
+zero
+0
+def one_two_three = [1, 2, 3]
+C3.one_two_three
+one_two_three
+[1, 2, 3]
+def double = fn (x) { x * 2 }
+C3.double
+double
+fn (x) { x * 2 }
+double(200)
+400
+double(zero)
+0
+def double_tuple = macro (x) do
+  {x, x}
+end
+C3.double_tuple
+double_tuple
+macro (x) do
+  {x, x}
+end
+double_tuple(200)
+{200, 200}
+double_tuple(zero)
+{0, 0}
+double_tuple(one_two_three)
+{[1, 2, 3], [1, 2, 3]}
