@@ -184,7 +184,6 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
 {
   s_buf tmp = {0};
   assert(buf);
-  assert(p);
   tmp.free = p_free;
   tmp.line = -1;
   tmp.ptr.pchar = p;
