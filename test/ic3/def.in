@@ -28,3 +28,21 @@ quote double_tuple(zero)
 double_tuple(zero)
 quote double_tuple(one_two_three)
 double_tuple(one_two_three)
+quote def reverse = fn (x) { List.reverse(x) }
+def reverse = fn (x) { List.reverse(x) }
+quote C3.reverse
+C3.reverse
+quote reverse([1, 2, 3])
+reverse([1, 2, 3])
+quote def reverse = fn (x) { [:reversed | List.reverse(x)] }
+def reverse = fn (x) { [:reversed | List.reverse(x)] }
+quote C3.reverse
+C3.reverse
+quote reverse([1, 2, 3])
+reverse([1, 2, 3])
+quote def reverse = fn (x) { List.reverse(x) }
+def reverse = fn (x) { List.reverse(x) }
+quote C3.reverse
+C3.reverse
+quote reverse([1, 2, 3])
+reverse([1, 2, 3])

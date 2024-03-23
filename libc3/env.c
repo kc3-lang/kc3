@@ -98,8 +98,8 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
   if (! facts_add_tags(&env->facts, &tag_module, &tag_symbol,
                        &tag_ident))
     return NULL;
-  if (! facts_add_tags(&env->facts, &tag_ident, &tag_symbol_value,
-                       tag_value))
+  if (! facts_replace_tags(&env->facts, &tag_ident, &tag_symbol_value,
+                           tag_value))
     return NULL;
   tag_init_ident(dest, &tag_ident.data.ident);
   return dest;
