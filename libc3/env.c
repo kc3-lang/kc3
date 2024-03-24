@@ -75,7 +75,7 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
   s_tag tag_module;
   s_tag tag_symbol;
   s_tag tag_symbol_value;
-  s_tag *tag_value;
+  s_tag tag_value;
   (void) env;
   assert(env);
   assert(call);
@@ -94,12 +94,12 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
   tag_init_sym(&tag_module, tag_ident.data.ident.module);
   tag_init_sym(&tag_symbol, &g_sym_symbol);
   tag_init_sym(&tag_symbol_value, &g_sym_symbol_value);
-  tag_value = &list_next(call->arguments)->tag;
+  env_eval_tag(env, &list_next(call->arguments)->tag, &tag_value);
   if (! facts_add_tags(&env->facts, &tag_module, &tag_symbol,
                        &tag_ident))
     return NULL;
   if (! facts_replace_tags(&env->facts, &tag_ident, &tag_symbol_value,
-                           tag_value))
+                           &tag_value))
     return NULL;
   tag_init_ident(dest, &tag_ident.data.ident);
   return dest;
