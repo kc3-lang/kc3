@@ -102,6 +102,7 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
                            &tag_value))
     return NULL;
   tag_init_ident(dest, &tag_ident.data.ident);
+  tag_clean(&tag_value);
   return dest;
 }
 
