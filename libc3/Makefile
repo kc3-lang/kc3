@@ -16,76 +16,37 @@ CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 
 CLEANFILES += ${CLEANFILES_COV}
 
-DISTCLEANFILES = ${CLEANFILES} config.h config.mk
-
-build:
-	${MAKE} ${LIB}
-	${MAKE} -C window build
+DISTCLEANFILES = .build ${CLEANFILES} config.h config.mk
 
 all:
 	${MAKE} build
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 	if ${HAVE_GCOV}; then ${MAKE} cov; fi
-	${MAKE} -C window all
 
 asan:
 	${MAKE} ${LIB_ASAN}
-	${MAKE} -C window asan
+
+build:
+	${MAKE} ${LIB}
 
 clean:
 	rm -rf ${CLEANFILES}
-	${MAKE} -C window clean
 
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
-	${MAKE} -C window clean_cov
 
 cov:
 	${MAKE} ${LIB_COV}
-	${MAKE} -C window cov
 
 debug:
 	${MAKE} ${LIB_DEBUG}
-	${MAKE} -C window debug
-
-demo: build
-	${MAKE} -C window demo
-
-demo_asan: asan
-	${MAKE} -C window demo_asan
-
-demo_cov: cov
-	${MAKE} -C window demo_cov
-
-demo_debug: debug
-	${MAKE} -C window demo_debug
-
-demo_gl: build
-	${MAKE} -C window demo_gl
-
-demo_gl_asan: asan
-	${MAKE} -C window demo_gl_asan
-
-demo_gl_cov: cov
-	${MAKE} -C window demo_gl_cov
-
-demo_gl_debug: debug
-	${MAKE} -C window demo_gl_debug
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
-	${MAKE} -C window distclean
 
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libc3.html
-	${MAKE} -C window gcovr
-
-gdb_demo: debug
-	${MAKE} -C window gdb_demo
-
-gdb_demo_gl: debug
-	${MAKE} -C window gdb_demo_gl
 
 include gen.mk
 CLEANFILES += ${GENERATED_FILES}
@@ -97,13 +58,6 @@ install:
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB_DEBUG} ${prefix}/lib
 	${LIBTOOL} --finish ${prefix}/lib
-	${MAKE} -C window install
-
-lldb_demo: debug
-	${MAKE} -C window lldb_demo
-
-lldb_demo_gl: debug
-	${MAKE} -C window lldb_demo_gl
 
 test:
 
@@ -117,21 +71,9 @@ update_sources:
 	clean \
 	cov \
 	debug \
-	demo \
-	demo_asan \
-	demo_cov \
-	demo_debug \
-	demo_gl \
-	demo_gl_asan \
-	demo_gl_cov \
-	demo_gl_debug \
 	distclean \
-	gdb_demo \
-	gdb_demo_gl \
 	gen \
 	install \
-	lldb_demo \
-	lldb_demo_gl \
 	test \
 	update_sources \
 

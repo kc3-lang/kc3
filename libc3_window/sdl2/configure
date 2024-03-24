@@ -15,12 +15,12 @@ set -e
 
 export SRC_TOP="$(dirname "$PWD")"
 
-. ../../../../config.subr
+. ../../config.subr
 
-LIB=libc3_window_cairo_xcb.la
-LIB_ASAN=libc3_window_cairo_xcb_asan.la
-LIB_COV=libc3_window_cairo_xcb_cov.la
-LIB_DEBUG=libc3_window_cairo_xcb_debug.la
+LIB=libc3_window_sdl2.la
+LIB_ASAN=libc3_window_sdl2_asan.la
+LIB_COV=libc3_window_sdl2_cov.la
+LIB_DEBUG=libc3_window_sdl2_debug.la
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
@@ -36,39 +36,42 @@ OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
 # Common config for all targets
-CPPFLAGS="$CPPFLAGS -I../../../.."
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
+CPPFLAGS="-I../.. $CPPFLAGS"
+#CPPFLAGS="$CPPFLAGS -DGL_SILENCE_DEPRECATION=1"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic"
 LDFLAGS="--shared ${LDFLAGS}"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
-pkg_config libffi
 pkg_config libmd
-pkg_config xcb
-pkg_config xkbcommon
-pkg_config cairo
-pkg_config cairo-xcb
+pkg_config freetype2
+pkg_config gl
+pkg_config glew
+pkg_config glu
+pkg_config glut
+pkg_config libffi
+pkg_config libpng
+config_lib OPENGL -framework OpenGL
+pkg_config sdl2
 config_define PREFIX "\"${PREFIX}\""
-update_config_h
-LIBS="$LIBS -lxkbcommon -lxkbcommon-x11"
 
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../libc3_window_cairo_asan.la"
+LIBS_LOCAL_ASAN="../libc3_window_asan.la"
 LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBS_LOCAL_COV="../libc3_window_cairo_cov.la"
+LIBS_LOCAL_COV="../libc3_window_cov.la"
 LIBS_COV="$LIBS_LOCAL_COV $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../libc3_window_cairo_debug.la"
+LIBS_LOCAL_DEBUG="../libc3_window_debug.la"
 LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
 
 # Main config
@@ -77,7 +80,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS_LOCAL="../libc3_window_cairo.la"
+LIBS_LOCAL="../libc3_window.la"
 LIBS="$LIBS_LOCAL $LIBS"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
@@ -142,4 +145,5 @@ done
 
 update_config_mk
 env_reset
-( cd demo && ./configure; )
+
+config_subdirs demo
