@@ -20,23 +20,23 @@ CLEANFILES += ${CLEANFILES_COV}
 DISTCLEANFILES = ${CLEANFILES} config.mk
 
 IMG_SOURCES = \
-	../../../../../img/earth.png \
-	../../../../../img/flaps.256.png \
-	../../../../../img/flaps.png \
-	../../../../../img/fly-dead.png \
-	../../../../../img/fly-noto.png \
-	../../../../../img/matrix_shade.png \
-	../../../../../img/toast.128.png \
-	../../../../../img/toast.png \
+	../../../../img/earth.png \
+	../../../../img/flaps.256.png \
+	../../../../img/flaps.png \
+	../../../../img/fly-dead.png \
+	../../../../img/fly-noto.png \
+	../../../../img/matrix_shade.png \
+	../../../../img/toast.128.png \
+	../../../../img/toast.png \
 
 FONT_SOURCES = \
-	../../../../../fonts/Courier\ New \
-	../../../../../fonts/NotoSans-Regular.ttf \
+	../../../../fonts/Courier\ New \
+	../../../../fonts/NotoSans-Regular.ttf \
 
 build:
 	${MAKE} ${APP_PROG}
 	${MAKE} ${APP}/Contents/Frameworks
-	rsync -aP --delete ../../../../../lib ${APP}/Contents/
+	rsync -aP --delete ../../../../lib ${APP}/Contents/
 	rsync -aP ${IMG_SOURCES} ${APP}/Contents/img/
 	rsync -aP ${FONT_SOURCES} ${APP}/Contents/fonts/
 
@@ -49,7 +49,7 @@ all:
 asan:
 	${MAKE} ${APP_PROG_ASAN}
 	${MAKE} ${APP_ASAN}/Contents/Frameworks
-	rsync -aP --delete ../../../../../lib ${APP_ASAN}/Contents/
+	rsync -aP --delete ../../../../lib ${APP_ASAN}/Contents/
 	rsync -aP ${IMG_SOURCES} ${APP_ASAN}/Contents/img/
 	rsync -aP ${FONT_SOURCES} ${APP_ASAN}/Contents/fonts/
 
@@ -62,14 +62,14 @@ clean_cov:
 cov:
 	${MAKE} ${APP_PROG_COV}
 	${MAKE} ${APP_COV}/Contents/Frameworks
-	rsync -aP --delete ../../../../../lib ${APP_COV}/Contents/
+	rsync -aP --delete ../../../../lib ${APP_COV}/Contents/
 	rsync -aP ${IMG_SOURCES} ${APP_COV}/Contents/img/
 	rsync -aP ${FONT_SOURCES} ${APP_COV}/Contents/fonts/
 
 debug:
 	${MAKE} ${APP_PROG_DEBUG}
 	${MAKE} ${APP_DEBUG}/Contents/Frameworks
-	rsync -aP --delete ../../../../../lib ${APP_DEBUG}/Contents/
+	rsync -aP --delete ../../../../lib ${APP_DEBUG}/Contents/
 	rsync -aP ${IMG_SOURCES} ${APP_DEBUG}/Contents/img/
 	rsync -aP ${FONT_SOURCES} ${APP_DEBUG}/Contents/fonts/
 

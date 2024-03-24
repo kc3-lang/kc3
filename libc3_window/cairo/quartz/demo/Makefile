@@ -20,21 +20,21 @@ CLEANFILES += ${CLEANFILES_COV}
 DISTCLEANFILES = ${CLEANFILES} config.mk
 
 IMG_SOURCES = \
-	../../../../../img/flaps.png \
-	../../../../../img/fly-dead.png \
-	../../../../../img/fly-noto.png \
-	../../../../../img/toast.png \
+	../../../../img/flaps.png \
+	../../../../img/fly-dead.png \
+	../../../../img/fly-noto.png \
+	../../../../img/toast.png \
 
 FONT_SOURCES = \
-	../../../../../fonts/Computer-Modern \
-	../../../../../fonts/Courier\ New \
+	../../../../fonts/Computer-Modern \
+	../../../../fonts/Courier\ New \
 
 build:
 	${MAKE} ${APP_PROG}
 	${MAKE} ${APP}/Contents/Frameworks
 	rsync -aP ${FONT_SOURCES} ${APP}/Contents/fonts/
 	rsync -aP ${IMG_SOURCES} ${APP}/Contents/img/
-	rsync -aP --delete ../../../../../lib ${APP}/Contents/
+	rsync -aP --delete ../../../../lib ${APP}/Contents/
 
 all:
 	${MAKE} build
@@ -47,7 +47,7 @@ asan:
 	${MAKE} ${APP_ASAN}/Contents/Frameworks
 	rsync -aP ${FONT_SOURCES} ${APP_ASAN}/Contents/fonts/
 	rsync -aP ${IMG_SOURCES} ${APP_ASAN}/Contents/img/
-	rsync -aP --delete ../../../../../lib ${APP_ASAN}/Contents/
+	rsync -aP --delete ../../../../lib ${APP_ASAN}/Contents/
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -60,14 +60,14 @@ cov:
 	${MAKE} ${APP_COV}/Contents/Frameworks
 	rsync -aP ${FONT_SOURCES} ${APP_COV}/Contents/fonts/
 	rsync -aP ${IMG_SOURCES} ${APP_COV}/Contents/img/
-	rsync -aP --delete ../../../../../lib ${APP_COV}/Contents/
+	rsync -aP --delete ../../../../lib ${APP_COV}/Contents/
 
 debug:
 	${MAKE} ${APP_PROG_DEBUG}
 	${MAKE} ${APP_DEBUG}/Contents/Frameworks
 	rsync -aP ${FONT_SOURCES} ${APP_DEBUG}/Contents/fonts/
 	rsync -aP ${IMG_SOURCES} ${APP_DEBUG}/Contents/img/
-	rsync -aP --delete ../../../../../lib ${APP_DEBUG}/Contents/
+	rsync -aP --delete ../../../../lib ${APP_DEBUG}/Contents/
 
 demo: build
 	time ${APP_PROG}
