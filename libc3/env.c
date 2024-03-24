@@ -1361,12 +1361,12 @@ s_env * env_init (s_env *env, int argc, char **argv)
     return NULL;
   }
   env->current_module = &g_sym_C3;
+  env->quote_level = 0;
+  env->unquote_level = 0;
   if (! module_load(&g_sym_C3, &env->facts)) {
     env_clean(env);
     return NULL;
   }
-  env->quote_level = 0;
-  env->unquote_level = 0;
   return env;
 }
 
@@ -1416,8 +1416,6 @@ void env_longjmp (s_env *env, jmp_buf *jmp_buf)
 
 bool env_module_is_loading (s_env *env, const s_sym *module)
 {
-  s_facts_cursor cursor;
-  bool r;
   s_tag tag_module;
   s_tag tag_is_loading;
   s_tag tag_true;
@@ -1426,10 +1424,9 @@ bool env_module_is_loading (s_env *env, const s_sym *module)
   tag_init_sym(&tag_module, module);
   tag_init_sym(&tag_is_loading, &g_sym_is_loading);
   tag_init_bool(&tag_true, true);
-  r = facts_find_fact_by_tags(&env->facts, &tag_module, &tag_is_loading,
-                              &tag_true) ? true : false;
-  facts_cursor_clean(&cursor);
-  return r;
+  return facts_find_fact_by_tags(&env->facts, &tag_module,
+                                 &tag_is_loading, &tag_true) ?
+    true : false;
 }
 
 void env_module_is_loading_set (s_env *env, const s_sym *module,
