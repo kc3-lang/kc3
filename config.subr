@@ -15,6 +15,48 @@ set -e
 
 cd "$(dirname "$0")"
 
+build_lib() {
+    echo >> ${CONFIG_MK}
+    echo "$LIB: $OBJECTS .build/ld_main" >> ${CONFIG_MK}
+    echo "	.build/ld_main $LIB" >> ${CONFIG_MK}
+
+    echo >> ${CONFIG_MK}
+    echo "$LIB_ASAN: $OBJECTS_ASAN .build/ld_asan" >> ${CONFIG_MK}
+    echo "	.build/ld_asan $LIB_ASAN" >> ${CONFIG_MK}
+
+    echo >> ${CONFIG_MK}
+    echo "$LIB_COV: $OBJECTS_COV .build/ld_cov" >> ${CONFIG_MK}
+    echo "	.build/ld_cov $LIB_COV" >> ${CONFIG_MK}
+
+    echo >> ${CONFIG_MK}
+    echo "$LIB_DEBUG: $OBJECTS_DEBUG .build/ld_debug" >> ${CONFIG_MK}
+    echo "	.build/ld_debug $LIB_DEBUG" >> ${CONFIG_MK}
+}
+
+build_lo() {
+    for SRC in $SOURCES; do
+        echo >> ${CONFIG_MK}
+        SRC_ASAN_LO="$(c2ext .asan.lo "$SRC")"
+        c_ext_rule .asan.lo "$SRC" .build/cc_asan >> ${CONFIG_MK}
+        echo "	.build/cc_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
+
+        echo >> ${CONFIG_MK}
+        SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
+        c_ext_rule .cov.lo "$SRC" .build/cc_cov >> ${CONFIG_MK}
+        echo "	.build/cc_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
+
+        echo >> ${CONFIG_MK}
+        SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
+        c_ext_rule .debug.lo "$SRC" .build/cc_debug >> ${CONFIG_MK}
+        echo "	.build/cc_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
+
+        echo >> ${CONFIG_MK}
+        SRC_LO="$(c2ext .main.lo "$SRC")"
+        c_ext_rule .main.lo "$SRC" .build/cc_main >> ${CONFIG_MK}
+        echo "	.build/cc_main $SRC $SRC_LO" >> ${CONFIG_MK}
+    done
+}
+
 c_o_rule() {
     "$CC" $CPPFLAGS $CFLAGS -M "$1" || { echo "$1" | sed -e 's/^\(.*\)\.c$/\1.o: \1.c/'; }
     echo "$1: $2" | sed -e 's/^\(.*\)\.c:/\1.o:/'
@@ -333,6 +375,94 @@ update_and_chmod() {
     chmod "$1" "$3"
 }
 
+update_build() {
+    CC_MAIN=.build/cc_main.tmp
+    CC_ASAN=.build/cc_asan.tmp
+    CC_COV=.build/cc_cov.tmp
+    CC_DEBUG=.build/cc_debug.tmp
+    mkdir -p .build
+
+    echo "#!/bin/sh" >> ${CC_ASAN}
+    echo "# gen by configure" >> ${CC_ASAN}
+    echo "CC=\"${CC}\"" >> ${CC_ASAN}
+    echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${CC_ASAN}
+    echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${CC_ASAN}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .cc/log 2>&1" >> ${CC_ASAN}
+    update_and_chmod 755 ${CC_ASAN} .build/cc_asan
+
+    echo "#!/bin/sh" >> ${CC_COV}
+    echo "# gen by configure" >> ${CC_COV}
+    echo "CC=\"${CC}\"" >> ${CC_COV}
+    echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${CC_COV}
+    echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${CC_COV}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${CC_COV}
+    update_and_chmod 755 ${CC_COV} .build/cc_cov
+
+    echo "#!/bin/sh" >> ${CC_DEBUG}
+    echo "# gen by configure" >> ${CC_DEBUG}
+    echo "CC=\"${CC}\"" >> ${CC_DEBUG}
+    echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${CC_DEBUG}
+    echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${CC_DEBUG}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${CC_DEBUG}
+    update_and_chmod 755 ${CC_DEBUG} .build/cc_debug
+
+    echo "#!/bin/sh" >> ${CC_MAIN}
+    echo "# gen by configure" >> ${CC_MAIN}
+    echo "CC=\"${CC}\"" >> ${CC_MAIN}
+    echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${CC_MAIN}
+    echo "CFLAGS=\"${CFLAGS}\"" >> ${CC_MAIN}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${CC_MAIN}
+    update_and_chmod 755 ${CC_MAIN} .build/cc_main
+}
+
+update_build_lib() {
+    LD_MAIN=.build/ld_main.tmp
+    LD_ASAN=.build/ld_asan.tmp
+    LD_COV=.build/ld_cov.tmp
+    LD_DEBUG=.build/ld_debug.tmp
+    mkdir -p .build
+
+    echo "#!/bin/sh" >> ${LD_ASAN}
+    echo "# gen by configure" >> ${LD_ASAN}
+    echo "CC=\"${CC}\"" >> ${LD_ASAN}
+    echo "LDFLAGS=\"${LDFLAGS_ASAN}\"" >> ${LD_ASAN}
+    echo "OBJECTS=\"${OBJECTS_ASAN}\"" >> ${LD_ASAN}
+    echo "LIBS=\"${LIBS_ASAN}\"" >> ${LD_ASAN}
+    echo >> ${LD_ASAN}
+    echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_ASAN}
+    update_and_chmod 755 ${LD_ASAN} .build/ld_asan
+
+    echo "#!/bin/sh" >> ${LD_COV}
+    echo "# gen by configure" >> ${LD_COV}
+    echo "CC=\"${CC}\"" >> ${LD_COV}
+    echo "LDFLAGS=\"${LDFLAGS_COV}\"" >> ${LD_COV}
+    echo "OBJECTS=\"${OBJECTS_COV}\"" >> ${LD_COV}
+    echo "LIBS=\"${LIBS_COV}\"" >> ${LD_COV}
+    echo >> ${LD_COV}
+    echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_COV}
+    update_and_chmod 755 ${LD_COV} .build/ld_cov
+
+    echo "#!/bin/sh" >> ${LD_DEBUG}
+    echo "# gen by configure" >> ${LD_DEBUG}
+    echo "CC=\"${CC}\"" >> ${LD_DEBUG}
+    echo "LDFLAGS=\"${LDFLAGS_DEBUG}\"" >> ${LD_DEBUG}
+    echo "OBJECTS=\"${OBJECTS_DEBUG}\"" >> ${LD_DEBUG}
+    echo "LIBS=\"${LIBS_DEBUG}\"" >> ${LD_DEBUG}
+    echo >> ${LD_DEBUG}
+    echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_DEBUG}
+    update_and_chmod 755 ${LD_DEBUG} .build/ld_debug
+
+    echo "#!/bin/sh" >> ${LD_MAIN}
+    echo "# gen by configure" >> ${LD_MAIN}
+    echo "CC=\"${CC}\"" >> ${LD_MAIN}
+    echo "LDFLAGS=\"${LDFLAGS}\"" >> ${LD_MAIN}
+    echo "OBJECTS=\"${OBJECTS}\"" >> ${LD_MAIN}
+    echo "LIBS=\"${LIBS}\"" >> ${LD_MAIN}
+    echo >> ${LD_MAIN}
+    echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_MAIN}
+    update_and_chmod 755 ${LD_MAIN} .build/ld_main
+}
+
 update_file() {
     if ! cmp "$1" "$2" >/dev/null 2>&1; then
         mv "$1" "$2"
@@ -523,15 +653,5 @@ if [ "x$LIBDIR" = "x" ]; then
     LIBDIR="${PREFIX}/lib"
 fi
 echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
-
-mkdir -p .build
-CC_MAIN=.build/cc_main.tmp
-CC_ASAN=.build/cc_asan.tmp
-CC_COV=.build/cc_cov.tmp
-CC_DEBUG=.build/cc_debug.tmp
-LD_MAIN=.build/ld_main.tmp
-LD_ASAN=.build/ld_asan.tmp
-LD_COV=.build/ld_cov.tmp
-LD_DEBUG=.build/ld_debug.tmp
 
 config_no_undefined
