@@ -37,7 +37,7 @@ OBJECTS_COV="$(c2ext .cov.lo "$LO_SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
 LDFLAGS="--shared $LDFLAGS -rdynamic"
 config_asan
 config_gnu
@@ -58,7 +58,8 @@ if ! [ -f ../ucd2c/ucd.c ]; then
 fi
 
 # Address Sanitizer config
-CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
+CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
+CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
 LIBS_ASAN="$LIBS"
 
@@ -73,7 +74,7 @@ LDFLAGS_DEBUG="$LDFLAGS"
 LIBS_DEBUG="$LIBS"
 
 # Main config
-DEFAULT_CFLAGS="-O2 -pipe"
+DEFAULT_CFLAGS="-O2 -fPIC"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
@@ -104,44 +105,114 @@ echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
-echo >> ${CONFIG_MK}
-echo "$LIB: $LIBTOMMATH $OBJECTS" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} ${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o ${LIB}" >> ${CONFIG_MK}
+echo "#!/bin/sh" >> ${CC_ASAN}
+echo "# gen by libc3/configure" >> ${CC_ASAN}
+echo "CC=\"${CC}\"" >> ${CC_ASAN}
+echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${CC_ASAN}
+echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${CC_ASAN}
+echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .cc/log 2>&1" >> ${CC_ASAN}
+update_and_chmod 755 ${CC_ASAN} .build/cc_asan
 
-echo >> ${CONFIG_MK}
-echo "$LIB_ASAN: $LIBTOMMATH_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} -rpath ${LIBDIR} -o ${LIB_ASAN}" >> ${CONFIG_MK}
+echo "#!/bin/sh" >> ${CC_COV}
+echo "# gen by libc3/configure" >> ${CC_COV}
+echo "CC=\"${CC}\"" >> ${CC_COV}
+echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${CC_COV}
+echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${CC_COV}
+echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${CC_COV}
+update_and_chmod 755 ${CC_COV} .build/cc_cov
 
-echo >> ${CONFIG_MK}
-echo "$LIB_COV: $LIBTOMMATH_COV $OBJECTS_COV" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} -rpath ${LIBDIR} -o ${LIB_COV}" >> ${CONFIG_MK}
+echo "#!/bin/sh" >> ${CC_DEBUG}
+echo "# gen by libc3/configure" >> ${CC_DEBUG}
+echo "CC=\"${CC}\"" >> ${CC_DEBUG}
+echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${CC_DEBUG}
+echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${CC_DEBUG}
+echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${CC_DEBUG}
+update_and_chmod 755 ${CC_DEBUG} .build/cc_debug
 
-echo >> ${CONFIG_MK}
-echo "$LIB_DEBUG: $LIBTOMMATH_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} -rpath ${LIBDIR} -o ${LIB_DEBUG}" >> ${CONFIG_MK}
+echo "#!/bin/sh" >> ${CC_MAIN}
+echo "# gen by libc3/configure" >> ${CC_MAIN}
+echo "CC=\"${CC}\"" >> ${CC_MAIN}
+echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${CC_MAIN}
+echo "CFLAGS=\"${CFLAGS}\"" >> ${CC_MAIN}
+echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${CC_MAIN}
+update_and_chmod 755 ${CC_MAIN} .build/cc_main
+
+echo "#!/bin/sh" >> ${LD_ASAN}
+echo "# gen by libc3/configure" >> ${LD_ASAN}
+echo "CC=\"${CC}\"" >> ${LD_ASAN}
+echo "LDFLAGS=\"${LDFLAGS_ASAN}\"" >> ${LD_ASAN}
+echo "OBJECTS=\"${OBJECTS_ASAN}\"" >> ${LD_ASAN}
+echo "LIBS=\"${LIBS_ASAN}\"" >> ${LD_ASAN}
+echo >> ${LD_ASAN}
+echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_ASAN}
+update_and_chmod 755 ${LD_ASAN} .build/ld_asan
+
+echo "#!/bin/sh" >> ${LD_COV}
+echo "# gen by libc3/configure" >> ${LD_COV}
+echo "CC=\"${CC}\"" >> ${LD_COV}
+echo "LDFLAGS=\"${LDFLAGS_COV}\"" >> ${LD_COV}
+echo "OBJECTS=\"${OBJECTS_COV}\"" >> ${LD_COV}
+echo "LIBS=\"${LIBS_COV}\"" >> ${LD_COV}
+echo >> ${LD_COV}
+echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_COV}
+update_and_chmod 755 ${LD_COV} .build/ld_cov
+
+echo "#!/bin/sh" >> ${LD_DEBUG}
+echo "# gen by libc3/configure" >> ${LD_DEBUG}
+echo "CC=\"${CC}\"" >> ${LD_DEBUG}
+echo "LDFLAGS=\"${LDFLAGS_DEBUG}\"" >> ${LD_DEBUG}
+echo "OBJECTS=\"${OBJECTS_DEBUG}\"" >> ${LD_DEBUG}
+echo "LIBS=\"${LIBS_DEBUG}\"" >> ${LD_DEBUG}
+echo >> ${LD_DEBUG}
+echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_DEBUG}
+update_and_chmod 755 ${LD_DEBUG} .build/ld_debug
+
+echo "#!/bin/sh" >> ${LD_MAIN}
+echo "# gen by libc3/configure" >> ${LD_MAIN}
+echo "CC=\"${CC}\"" >> ${LD_MAIN}
+echo "LDFLAGS=\"${LDFLAGS}\"" >> ${LD_MAIN}
+echo "OBJECTS=\"${OBJECTS}\"" >> ${LD_MAIN}
+echo "LIBS=\"${LIBS}\"" >> ${LD_MAIN}
+echo >> ${LD_MAIN}
+echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_MAIN}
+update_and_chmod 755 ${LD_MAIN} .build/ld_main
 
 for SRC in $SOURCES; do
     echo >> ${CONFIG_MK}
-    SRC_LO="$(c2ext .main.lo "$SRC")"
-    c_ext_rule .main.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
-
-    echo >> ${CONFIG_MK}
     SRC_ASAN_LO="$(c2ext .asan.lo "$SRC")"
-    c_ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
+    c_ext_rule .asan.lo "$SRC" .build/cc_asan >> ${CONFIG_MK}
+    echo "	.build/cc_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
     SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
-    c_ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
+    c_ext_rule .cov.lo "$SRC" .build/cc_cov >> ${CONFIG_MK}
+    echo "	.build/cc_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
     SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
-    c_ext_rule .debug.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
+    c_ext_rule .debug.lo "$SRC" .build/cc_debug >> ${CONFIG_MK}
+    echo "	.build/cc_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
+
+    echo >> ${CONFIG_MK}
+    SRC_LO="$(c2ext .main.lo "$SRC")"
+    c_ext_rule .main.lo "$SRC" .build/cc_main >> ${CONFIG_MK}
+    echo "	.build/cc_main $SRC $SRC_LO" >> ${CONFIG_MK}
 done
 
+echo >> ${CONFIG_MK}
+echo "$LIB: $OBJECTS .build/ld_main" >> ${CONFIG_MK}
+echo "	.build/ld_main $LIB" >> ${CONFIG_MK}
+
+echo >> ${CONFIG_MK}
+echo "$LIB_ASAN: $OBJECTS_ASAN .build/ld_asan" >> ${CONFIG_MK}
+echo "	.build/ld_asan $LIB_ASAN" >> ${CONFIG_MK}
+
+echo >> ${CONFIG_MK}
+echo "$LIB_COV: $OBJECTS_COV .build/ld_cov" >> ${CONFIG_MK}
+echo "	.build/ld_cov $LIB_COV" >> ${CONFIG_MK}
+
+echo >> ${CONFIG_MK}
+echo "$LIB_DEBUG: $OBJECTS_DEBUG .build/ld_debug" >> ${CONFIG_MK}
+echo "	.build/ld_debug $LIB_DEBUG" >> ${CONFIG_MK}
+
 update_config_mk
-env_reset
-( cd window && ./configure; )

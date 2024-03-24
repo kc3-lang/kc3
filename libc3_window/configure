@@ -15,12 +15,12 @@ set -e
 
 export SRC_TOP="$(dirname "$PWD")"
 
-. ../../../config.subr
+. ../config.subr
 
-LIB=libc3_window_sdl2.la
-LIB_ASAN=libc3_window_sdl2_asan.la
-LIB_COV=libc3_window_sdl2_cov.la
-LIB_DEBUG=libc3_window_sdl2_debug.la
+LIB=libc3_window.la
+LIB_ASAN=libc3_window_asan.la
+LIB_COV=libc3_window_cov.la
+LIB_DEBUG=libc3_window_debug.la
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
@@ -36,42 +36,33 @@ OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
 # Common config for all targets
-CPPFLAGS="-I../../.. $CPPFLAGS"
-#CPPFLAGS="$CPPFLAGS -DGL_SILENCE_DEPRECATION=1"
+CPPFLAGS="-I.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic"
 LDFLAGS="--shared ${LDFLAGS}"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
-pkg_config libmd
-pkg_config freetype2
-pkg_config gl
-pkg_config glew
-pkg_config glu
-pkg_config glut
 pkg_config libffi
-pkg_config libpng
-config_lib OPENGL -framework OpenGL
-pkg_config sdl2
+pkg_config libmd
 config_define PREFIX "\"${PREFIX}\""
 
 # Address Sanitizer config
 CFLAGS_ASAN="$CFLAGS -O1 -fsanitize=address -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_LOCAL_ASAN="../libc3_window_asan.la"
+LIBS_LOCAL_ASAN="../libc3/libc3_asan.la"
 LIBS_ASAN="$LIBS_LOCAL_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBS_LOCAL_COV="../libc3_window_cov.la"
+LIBS_LOCAL_COV="../libc3/libc3_cov.la"
 LIBS_COV="$LIBS_LOCAL_COV $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBS_LOCAL_DEBUG="../libc3_window_debug.la"
+LIBS_LOCAL_DEBUG="../libc3/libc3_debug.la"
 LIBS_DEBUG="$LIBS_LOCAL_DEBUG $LIBS"
 
 # Main config
@@ -80,7 +71,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBS_LOCAL="../libc3_window.la"
+LIBS_LOCAL="../libc3/libc3.la"
 LIBS="$LIBS_LOCAL $LIBS"
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
@@ -143,7 +134,26 @@ for SRC in $SOURCES; do
     echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
 done
 
+if pkg-config cairo; then
+    HAVE_CAIRO=true
+else
+    HAVE_CAIRO=false
+fi
+echo "HAVE_CAIRO = $HAVE_CAIRO" >> ${CONFIG_MK}
+
+if pkg-config sdl2; then
+    HAVE_SDL2=true
+else
+    HAVE_SDL2=false
+fi
+echo "HAVE_SDL2 = $HAVE_SDL2" >> ${CONFIG_MK}
+
 update_config_mk
 env_reset
 
-( cd demo && ./configure; )
+if ${HAVE_CAIRO}; then
+    config_subdirs cairo
+fi
+if ${HAVE_SDL2}; then
+    config_subdirs sdl2
+fi

@@ -1417,6 +1417,7 @@ void env_longjmp (s_env *env, jmp_buf *jmp_buf)
 bool env_module_is_loading (s_env *env, const s_sym *module)
 {
   s_facts_cursor cursor;
+  bool r;
   s_tag tag_module;
   s_tag tag_is_loading;
   s_tag tag_true;
@@ -1425,14 +1426,10 @@ bool env_module_is_loading (s_env *env, const s_sym *module)
   tag_init_sym(&tag_module, module);
   tag_init_sym(&tag_is_loading, &g_sym_is_loading);
   tag_init_bool(&tag_true, true);
-  facts_with_tags(&env->facts, &cursor, &tag_module, &tag_is_loading,
-                  &tag_true);
-  if (facts_cursor_next(&cursor)) {
-    facts_cursor_clean(&cursor);
-    return true;
-  }
+  r = facts_find_fact_by_tags(&env->facts, &tag_module, &tag_is_loading,
+                              &tag_true) ? true : false;
   facts_cursor_clean(&cursor);
-  return false;  
+  return r;
 }
 
 void env_module_is_loading_set (s_env *env, const s_sym *module,

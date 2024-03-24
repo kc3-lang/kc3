@@ -124,5 +124,3 @@ sources LO_SOURCES "$LO_SOURCES"
 
 update_sources_mk
 update_sources_sh
-
-( cd window && ./update_sources; )

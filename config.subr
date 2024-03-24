@@ -14,15 +14,14 @@
 set -e
 
 cd "$(dirname "$0")"
-echo "$PWD/$(basename "$0")"
 
 c_o_rule() {
     "$CC" $CPPFLAGS $CFLAGS -M "$1" || { echo "$1" | sed -e 's/^\(.*\)\.c$/\1.o: \1.c/'; }
-    echo "$1" | sed -e 's/^\(.*\)\.c$/\1.o: Makefile config.mk/'
+    echo "$1: $2" | sed -e 's/^\(.*\)\.c:/\1.o:/'
 }
 
 c_ext_rule() {
-    c_o_rule "$2" | sed -e "s/[.]o:/$1:/"
+    c_o_rule "$2" "$3" | sed -e "s/[.]o:/$1:/"
 }
 
 c_lo_rule() {
@@ -221,6 +220,12 @@ config_objc_lib_have() {
     rm -f "$OUT" "$OUT_M"
 }
 
+config_subdirs() {
+    for SUBDIR; do
+        ( cd "$SUBDIR" && echo "$PWD/configure" && ./configure; )
+    done
+}
+
 cpp_o_rule() {
     "$CXX" $CPPFLAGS $CXXFLAGS -M "$1" || { echo "$1" | sed -e 's/^\(.*\)\.cpp$/\1.o: \1.cpp/'; }
     echo "$1" | sed -e 's/^\(.*\)\.cpp$/\1.o: Makefile config.mk/'
@@ -316,6 +321,25 @@ swift_ext_rule() {
 swift2ext() {
     EXT="$1"; shift
     echo "$@" | sed -e "s/[.]swift$/${EXT}/" -e "s/[.]swift /${EXT} /g"
+}
+
+update_and_chmod() {
+    if ! cmp "$2" "$3" >/dev/null 2>&1; then
+        mv "$2" "$3"
+        echo "-> ${PWD}/$3"
+    else
+        rm "$2"
+    fi
+    chmod "$1" "$3"
+}
+
+update_file() {
+    if ! cmp "$1" "$2" >/dev/null 2>&1; then
+        mv "$1" "$2"
+        echo "-> ${PWD}/$2"
+    else
+        rm "$1"
+    fi
 }
 
 update_config_h() {
@@ -499,5 +523,15 @@ if [ "x$LIBDIR" = "x" ]; then
     LIBDIR="${PREFIX}/lib"
 fi
 echo "LIBDIR = $LIBDIR" >> ${CONFIG_MK}
+
+mkdir -p .build
+CC_MAIN=.build/cc_main.tmp
+CC_ASAN=.build/cc_asan.tmp
+CC_COV=.build/cc_cov.tmp
+CC_DEBUG=.build/cc_debug.tmp
+LD_MAIN=.build/ld_main.tmp
+LD_ASAN=.build/ld_asan.tmp
+LD_COV=.build/ld_cov.tmp
+LD_DEBUG=.build/ld_debug.tmp
 
 config_no_undefined
