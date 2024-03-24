@@ -15,7 +15,7 @@ set -e
 
 export SRC_TOP="$(dirname "$PWD")"
 
-. ../../../../config.subr
+. ../../../config.subr
 
 LIB=libc3_window_cairo_quartz.la
 LIB_ASAN=libc3_window_cairo_quartz_asan.la
@@ -48,8 +48,8 @@ OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.lo "$OBJC_SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CPPFLAGS="$CPPFLAGS -I../../../.."
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic"
+CPPFLAGS="$CPPFLAGS -I../../.."
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
 OBJCFLAGS="$CFLAGS -W -Wall -Werror"
 LDFLAGS="--shared $LDFLAGS"
 LIBS="$LIBS"
@@ -81,7 +81,7 @@ LOCAL_LIBS_DEBUG="../libc3_window_cairo_debug.la"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
-DEFAULT_CFLAGS="-O2 -pipe"
+DEFAULT_CFLAGS="-O2 -fPIC"
 if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
