@@ -387,7 +387,7 @@ update_build() {
     echo "CC=\"${CC}\"" >> ${CC_ASAN}
     echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${CC_ASAN}
     echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${CC_ASAN}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .cc/log 2>&1" >> ${CC_ASAN}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${CC_ASAN}
     update_and_chmod 755 ${CC_ASAN} .build/cc_asan
 
     echo "#!/bin/sh" >> ${CC_COV}
