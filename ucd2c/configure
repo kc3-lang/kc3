@@ -20,7 +20,7 @@ PROG=ucd2c
 SOURCES="ucd2c.c"
 echo "SOURCES = $SOURCES" >> ${CONFIG_MK}
 
-OBJECTS="$(c2lo "$SOURCES")"
+OBJECTS="$(c2ext .main.lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 
 # Default config
@@ -31,7 +31,7 @@ LDFLAGS="${LDFLAGS:=}"
 LIBS="${LIBS:=}"
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -O0 -ggdb"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -O2"
 pkg_config libbsd-overlay
 
 # Main config
@@ -46,15 +46,10 @@ echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
 
-for SRC in $SOURCES; do
-    echo >> ${CONFIG_MK}
-    SRC_LO="$(c2lo "$SRC")"
-    c_lo_rule "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
-done
+update_build
+update_build_prog
 
-echo >> ${CONFIG_MK}
-echo "$PROG: $OBJECTS" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} ${OBJECTS} ${LIBS} -o $PROG" >> ${CONFIG_MK}
+build_lo
+build_prog
 
 update_config_mk

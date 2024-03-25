@@ -10,11 +10,6 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-build:
-	${MAKE} ${LIB}
-	if ${HAVE_CAIRO}; then ${MAKE} -C cairo build; fi
-	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 build; fi
-
 all:
 	${MAKE} build
 	${MAKE} debug
@@ -25,6 +20,11 @@ asan:
 	${MAKE} ${LIB_ASAN}
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo asan; fi
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 asan; fi
+
+build:
+	${MAKE} ${LIB}
+	if ${HAVE_CAIRO}; then ${MAKE} -C cairo build; fi
+	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 build; fi
 
 clean:
 	if ${HAVE_CAIRO}; then ${MAKE} -C cairo clean; fi
