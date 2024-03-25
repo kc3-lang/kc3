@@ -57,6 +57,30 @@ build_lo() {
     done
 }
 
+build_lo_objc() {
+    for SRC in $OBJC_SOURCES; do
+        echo >> ${CONFIG_MK}
+        SRC_LO="$(objc2ext .main.lo "$SRC")"
+        objc_ext_rule .main.lo "$SRC" .build/objcc_main >> ${CONFIG_MK}
+        echo "	.build/objcc_main $SRC $SRC_LO" >> ${CONFIG_MK}
+
+        echo >> ${CONFIG_MK}
+        SRC_LO="$(objc2ext .asan.lo "$SRC")"
+        objc_ext_rule .asan.lo "$SRC" .build/objcc_asan >> ${CONFIG_MK}
+        echo "	.build/objcc_asan $SRC $SRC_LO" >> ${CONFIG_MK}
+
+        echo >> ${CONFIG_MK}
+        SRC_LO="$(objc2ext .cov.lo "$SRC")"
+        objc_ext_rule .cov.lo "$SRC" .build/objcc_cov >> ${CONFIG_MK}
+        echo "	.build/objcc_cov $SRC $SRC_LO" >> ${CONFIG_MK}
+
+        echo >> ${CONFIG_MK}
+        SRC_LO="$(objc2ext .debug.lo "$SRC")"
+        objc_ext_rule .debug.lo "$SRC" .build/objcc_debug >> ${CONFIG_MK}
+        echo "	.build/objcc_debug $SRC $SRC_LO" >> ${CONFIG_MK}
+    done
+}
+
 build_prog() {
     echo >> ${CONFIG_MK}
     echo "$PROG_ASAN: $LOCAL_LIBS_ASAN $OBJECTS_ASAN .build/ld_asan" >> ${CONFIG_MK}
@@ -481,6 +505,46 @@ update_build_lib() {
     echo >> ${LD_MAIN}
     echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_MAIN}
     update_and_chmod 755 ${LD_MAIN} .build/ld_main
+}
+
+update_build_objc() {
+    OBJCC_MAIN=.build/objcc_main.tmp
+    OBJCC_ASAN=.build/objcc_asan.tmp
+    OBJCC_COV=.build/objcc_cov.tmp
+    OBJCC_DEBUG=.build/objcc_debug.tmp
+    mkdir -p .build
+
+    echo "#!/bin/sh" >> ${OBJCC_ASAN}
+    echo "# gen by configure" >> ${OBJCC_ASAN}
+    echo "OBJCC=\"${OBJCC}\"" >> ${OBJCC_ASAN}
+    echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${OBJCC_ASAN}
+    echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${OBJCC_ASAN}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJCC_ASAN}
+    update_and_chmod 755 ${OBJCC_ASAN} .build/objcc_asan
+
+    echo "#!/bin/sh" >> ${OBJCC_COV}
+    echo "# gen by configure" >> ${OBJCC_COV}
+    echo "OBJCC=\"${OBJCC}\"" >> ${OBJCC_COV}
+    echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${OBJCC_COV}
+    echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${OBJCC_COV}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJCC_COV}
+    update_and_chmod 755 ${OBJCC_COV} .build/objcc_cov
+
+    echo "#!/bin/sh" >> ${OBJCC_DEBUG}
+    echo "# gen by configure" >> ${OBJCC_DEBUG}
+    echo "OBJCC=\"${OBJCC}\"" >> ${OBJCC_DEBUG}
+    echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${OBJCC_DEBUG}
+    echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${OBJCC_DEBUG}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJCC_DEBUG}
+    update_and_chmod 755 ${OBJCC_DEBUG} .build/objcc_debug
+
+    echo "#!/bin/sh" >> ${OBJCC_MAIN}
+    echo "# gen by configure" >> ${OBJCC_MAIN}
+    echo "OBJCC=\"${OBJCC}\"" >> ${OBJCC_MAIN}
+    echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${OBJCC_MAIN}
+    echo "CFLAGS=\"${CFLAGS}\"" >> ${OBJCC_MAIN}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJCC_MAIN}
+    update_and_chmod 755 ${OBJCC_MAIN} .build/objcc_main
 }
 
 update_build_prog() {

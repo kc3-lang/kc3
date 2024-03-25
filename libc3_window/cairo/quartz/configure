@@ -63,18 +63,21 @@ pkg_config libmd
 pkg_config xkbcommon
 
 # Asan config
+CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
 LOCAL_LIBS_ASAN="../libc3_window_cairo_asan.la"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
+CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs -fprofile-generate"
 LDFLAGS_COV="$LDFLAGS --coverage"
 LOCAL_LIBS_COV="../libc3_window_cairo_cov.la"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS"
 
 # Debug config
+CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
 LOCAL_LIBS_DEBUG="../libc3_window_cairo_debug.la"
@@ -107,65 +110,13 @@ echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
-echo >> ${CONFIG_MK}
-echo "$LIB: $LIBS_LOCAL $OBJECTS" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} ${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o ${LIB}" >> ${CONFIG_MK}
+update_build
+update_build_objc
+update_build_lib
 
-echo >> ${CONFIG_MK}
-echo "$LIB_ASAN: $LIBS_LOCAL_ASAN $OBJECTS_ASAN" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_ASAN} ${OBJECTS_ASAN} \${LIBS_ASAN} -rpath ${LIBDIR} -o ${LIB_ASAN}" >> ${CONFIG_MK}
-
-echo >> ${CONFIG_MK}
-echo "$LIB_COV: $LIBS_LOCAL_COV $OBJECTS_COV" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_COV} ${OBJECTS_COV} \${LIBS_COV} -rpath ${LIBDIR} -o ${LIB_COV}" >> ${CONFIG_MK}
-
-echo >> ${CONFIG_MK}
-echo "$LIB_DEBUG: $LIBS_LOCAL_DEBUG $OBJECTS_DEBUG" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS_DEBUG} ${OBJECTS_DEBUG} \${LIBS_DEBUG} -rpath ${LIBDIR} -o ${LIB_DEBUG}" >> ${CONFIG_MK}
-
-for SRC in $SOURCES; do
-    echo >> ${CONFIG_MK}
-    SRC_LO="$(c2ext .main.lo "$SRC")"
-    c_ext_rule .main.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
-
-    echo >> ${CONFIG_MK}
-    SRC_ASAN_LO="$(c2ext .asan.lo "$SRC")"
-    c_ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_ASAN_LO" >> ${CONFIG_MK}
-
-    echo >> ${CONFIG_MK}
-    SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
-    c_ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_COV_LO" >> ${CONFIG_MK}
-
-    echo >> ${CONFIG_MK}
-    SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
-    c_ext_rule .debug.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_DEBUG_LO" >> ${CONFIG_MK}
-done
-
-for SRC in $OBJC_SOURCES; do
-    echo >> ${CONFIG_MK}
-    SRC_LO="$(objc2ext .main.lo "$SRC")"
-    objc_ext_rule .main.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
-
-    echo >> ${CONFIG_MK}
-    SRC_LO="$(objc2ext .asan.lo "$SRC")"
-    objc_ext_rule .asan.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS_ASAN} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
-
-    echo >> ${CONFIG_MK}
-    SRC_LO="$(objc2ext .cov.lo "$SRC")"
-    objc_ext_rule .cov.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS_COV} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
-
-    echo >> ${CONFIG_MK}
-    SRC_LO="$(objc2ext .debug.lo "$SRC")"
-    objc_ext_rule .debug.lo "$SRC" >> ${CONFIG_MK}
-    echo "	${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS_DEBUG} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
-done
+build_lo
+build_lo_objc
+build_lib
 
 update_config_mk
 env_reset
