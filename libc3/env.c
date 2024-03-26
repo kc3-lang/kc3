@@ -470,8 +470,13 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
   is_unbound_b = ! macro && b->type == TAG_IDENT;
   if (is_unbound_a && is_unbound_b) {
     err_write_1("env_eval_equal_tag: unbound equal on both sides: ");
-    err_inspect_ident(&a->data.ident),
+    err_inspect_ident(&a->data.ident);
     err_write_1(" = ");
+    err_inspect_ident(&b->data.ident);
+    err_write_1(".\nTo assign a variable an existing variable, use"
+                " the pin operator on the\nexisting variable: ");
+    err_inspect_ident(&a->data.ident);
+    err_write_1(" = ^ ");
     err_inspect_ident(&b->data.ident);
     err_write_1("\n");
     return false;
