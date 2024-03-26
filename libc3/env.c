@@ -270,9 +270,9 @@ bool env_eval_call_arguments (s_env *env, const s_list *args,
     *tail = list_new(NULL);
     if (! env_eval_tag(env, &args->tag, &(*tail)->tag)) {
       list_delete_all(tmp);
-      err_puts("env_eval_call_arguments: invalid argument: ");
+      err_write_1("env_eval_call_arguments: invalid argument: ");
       err_inspect(&args->tag);
-      err_puts("\n");
+      err_write_1("\n");
       return false;
     }
     tail = &(*tail)->next.data.list;
