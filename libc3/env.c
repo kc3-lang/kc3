@@ -260,6 +260,7 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
   return result;
 }
 
+// FIXME: better error message (cite call function name if any)
 bool env_eval_call_arguments (s_env *env, const s_list *args,
                               s_list **dest)
 {
