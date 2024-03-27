@@ -730,7 +730,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   case TAG_STR:         *dest = &tag->data.str;         return true;
   case TAG_STRUCT:      *dest = &tag->data.struct_;     return true;
   case TAG_STRUCT_TYPE: *dest = &tag->data.struct_type; return true;
-  case TAG_SYM:         *dest = &tag->data.sym;         return true;
+  case TAG_SYM:         *dest = tag->data.sym;          return true;
   case TAG_TUPLE:       *dest = &tag->data.tuple;       return true;
   case TAG_UNQUOTE:     *dest = &tag->data.unquote;     return true;
   case TAG_VAR:         *dest = tag;                    return true;
@@ -976,7 +976,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_SYM:
     if (type == &g_sym_Sym) {
-      *dest = (void *) &tag->data.sym;
+      *dest = (void *) tag->data.sym;
       return true;
     }
     if (type == &g_sym_Str) {

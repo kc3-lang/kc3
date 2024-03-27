@@ -1,0 +1,5 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {Sym, :is_a, :module}
+replace {Sym, :symbol, Sym.cast}
+replace {Sym.cast, :symbol_value, cfn Sym "sym_init_cast" (Result, Tag)}

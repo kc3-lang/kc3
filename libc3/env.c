@@ -110,16 +110,21 @@ s_tag * env_defmodule (s_env *env, const s_sym *name,
                        const s_block *block, s_tag *dest)
 {
   const s_sym *module;
+  s_tag *result = NULL;
+  s_tag tmp;
   assert(env);
   assert(name);
   assert(block);
   assert(dest);
   module = env->current_module;
   env->current_module = name;
-  if (! env_eval_block(env, block, dest))
-    dest = NULL;
+  if (env_eval_block(env, block, &tmp)) {
+    dest->type = TAG_SYM;
+    dest->data.sym = name;
+    result = dest;
+  }
   env->current_module = module;
-  return dest;
+  return result;
 }
 
 void env_error_f (s_env *env, const char *fmt, ...)

@@ -1,0 +1,8 @@
+quote defmodule Empty do end
+defmodule Empty do end
+quote defmodule Double do
+  def double = fn (x) { x * 2 }
+end
+defmodule Double do
+  def double = fn (x) { x * 2 }
+end

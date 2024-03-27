@@ -76,6 +76,11 @@ uw * c3_facts_next_id (uw *dest)
   return dest;
 }
 
+s_tag * c3_quote_cfn (const s_sym *sym, s_tag *dest)
+{
+  return tag_init_sym(dest, sym);
+}
+
 s_str * c3_getenv (const s_str *name, s_str *dest)
 {
   char *p;

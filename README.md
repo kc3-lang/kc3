@@ -412,6 +412,9 @@ Script interpreter. Works the same as ic3 but is not interactive.
 ## TODO
 
  - libc3
+   - pretty printer
+     - indent
+     - 80 columns (`\n`)
    - tags
      - height function `(TAG_VOID: 0, TAG_TUPLE: (1+ (max (height tuple->tags))))`
      - has_ident
