@@ -418,6 +418,12 @@ sw buf_parse_block (s_buf *buf, s_block *block)
       goto clean;
   }
   result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
   if ((r = buf_parse_block_inner(buf, short_form, block)) <= 0)
     goto restore;
   result += r;
@@ -445,12 +451,15 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
   i = &list;
   *i = NULL;
   while (1) {
-    if ((r = buf_parse_comments(buf)) < 0)
-      goto restore;
-    result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
-      goto restore;
-    result += r;
+    if (short_form) {
+      if ((r = buf_read_1(buf, "}")) < 0)
+        goto restore;
+    }
+    else
+      if ((r = buf_read_sym(buf, &g_sym_end)) < 0)
+        goto restore;
+    if (r > 0)
+      goto ok;
     *i = list_new(NULL);
     if ((r = buf_parse_tag(buf, &(*i)->tag)) <= 0)
       goto restore;
@@ -461,10 +470,13 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
     if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
       goto restore;
     result += r;
-    if ((r = buf_read_sym(buf, &g_sym_end)) < 0)
-      goto restore;
-    if (! r && (r = buf_read_1(buf, "}")) < 0)
-      goto restore;
+    if (short_form) {
+      if ((r = buf_read_1(buf, "}")) < 0)
+        goto restore;
+    }
+    else
+      if ((r = buf_read_sym(buf, &g_sym_end)) < 0)
+        goto restore;
     if (r > 0)
       goto ok;
     if ((r = buf_read_1(buf, "\n")) < 0 ||
@@ -477,12 +489,6 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
-    if ((r = buf_read_sym(buf, &g_sym_end)) < 0)
-      goto restore;
-    if (! r && (r = buf_read_1(buf, "}")) < 0)
-      goto restore;
-    if (r > 0)
-      goto ok;
     i = &(*i)->next.data.list;
   }
   r = 0;
