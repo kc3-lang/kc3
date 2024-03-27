@@ -474,8 +474,8 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     err_inspect_ident(&a->data.ident);
     err_write_1(" = ");
     err_inspect_ident(&b->data.ident);
-    err_write_1(".\nTo assign a variable an existing variable, use"
-                " the pin operator on the\nexisting variable: ");
+    err_write_1(".\nTo match an existing variable please use the"
+                " pin operator, e.g.: ");
     err_inspect_ident(&a->data.ident);
     err_write_1(" = ^ ");
     err_inspect_ident(&b->data.ident);

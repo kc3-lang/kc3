@@ -101,6 +101,7 @@ extern const s_sym g_sym_special_operator;
 extern const s_sym g_sym_struct_type;
 extern const s_sym g_sym_symbol;
 extern const s_sym g_sym_symbol_value;
+extern const s_sym g_sym_then;
 extern const s_sym g_sym_w;
 extern const s_sym g_sym_wx;
 extern const s_sym g_sym_x;
