@@ -206,7 +206,7 @@ add {C3, :symbol, C3.fib}
 replace {C3.fib, :symbol_value, fn {
   (0) { 1 }
   (1) { 1 }
-  (x) { fib(x - 1) + fib(x - 2) }
+  (x) { if x < 0 then 0 else fib(x - 1) + fib(x - 2) end }
 }}
 add {C3, :symbol, C3.if_then_else}
 replace {C3.if_then_else, :arity, 3}

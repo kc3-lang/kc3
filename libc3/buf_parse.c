@@ -1710,6 +1710,12 @@ sw buf_parse_if (s_buf *buf, s_call *dest)
   if ((r = buf_parse_tag(buf, condition)) <= 0)
     goto restore;
   result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
   args_last = &(*args_last)->next.data.list;
   *args_last = list_new(NULL);
   then = &(*args_last)->tag;
@@ -1754,6 +1760,9 @@ sw buf_parse_if_then (s_buf *buf, s_tag *dest, bool *has_else)
   s_buf_save save;
   s_block tmp;
   buf_save_init(buf, &save);
+  if ((r = buf_read_sym(buf, &g_sym_then)) < 0)
+    goto restore;
+  result += r;
   i = &list;
   *i = NULL;
   while (1) {
