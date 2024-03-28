@@ -50,7 +50,8 @@ s_tag * c3_def (const s_call *call, s_tag *dest)
   return env_def(&g_c3_env, call, dest);
 }
 
-s_tag * c3_defmodule (const s_sym *name, const s_block *block, s_tag *dest)
+const s_sym ** c3_defmodule (const s_sym **name, const s_block *block,
+                             const s_sym **dest)
 {
   return env_defmodule(&g_c3_env, name, block, dest);
 }
