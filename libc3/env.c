@@ -106,24 +106,27 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
   return dest;
 }
 
-s_tag * env_defmodule (s_env *env, const s_sym *name,
-                       const s_block *block, s_tag *dest)
+const s_sym ** env_defmodule (s_env *env, const s_sym **name,
+                              const s_block *block, const s_sym **dest)
 {
   const s_sym *module;
-  s_tag *result = NULL;
+  const s_sym **result = NULL;
   s_tag tmp;
   assert(env);
   assert(name);
+  assert(*name);
   assert(block);
   assert(dest);
   module = env->current_module;
-  env->current_module = name;
+  env_module_is_loading_set(env, *name, true);
+  env->current_module = *name;
   if (env_eval_block(env, block, &tmp)) {
-    dest->type = TAG_SYM;
-    dest->data.sym = name;
+    *dest = *name;
     result = dest;
   }
   env->current_module = module;
+  env_module_is_loading_set(env, *name, false);
+  tag_clean(&tmp);
   return result;
 }
 
@@ -1441,7 +1444,7 @@ bool env_module_is_loading (s_env *env, const s_sym *module)
     true : false;
 }
 
-void env_module_is_loading_set (s_env *env, const s_sym *module,
+bool env_module_is_loading_set (s_env *env, const s_sym *module,
                                 bool is_loading)
 {
   s_tag tag_module;
@@ -1452,12 +1455,16 @@ void env_module_is_loading_set (s_env *env, const s_sym *module,
   tag_init_sym(&tag_module, module);
   tag_init_sym(&tag_is_loading, &g_sym_is_loading);
   tag_init_bool(&tag_true, true);
-  if (is_loading)
-    facts_replace_tags(&env->facts, &tag_module, &tag_is_loading,
-                       &tag_true);
+  if (is_loading) {
+    if (! facts_replace_tags(&env->facts, &tag_module, &tag_is_loading,
+                             &tag_true))
+      return false;
+  }
   else
-    facts_remove_fact_tags(&env->facts, &tag_module, &tag_is_loading,
-                           &tag_true);
+    if (! facts_remove_fact_tags(&env->facts, &tag_module,
+                                 &tag_is_loading, &tag_true))
+      return false;
+  return true;
 }
 
 bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
@@ -1473,10 +1480,10 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
   assert(env);
   assert(module);
   assert(facts);
-  if (env_module_is_loading(env, module)) {
+  if (env_module_is_loading(env, module))
     return true;
-  }
-  env_module_is_loading_set(env, module, true);
+  if (! env_module_is_loading_set(env, module, true))
+    return false;
   if (! module_path(module, &env->module_path, &path)) {
     err_write_1("env_module_load: ");
     err_write_1(module->str.ptr.pchar);

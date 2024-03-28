@@ -30,6 +30,8 @@ bool module_ensure_loaded (const s_sym *module, s_facts *facts)
   s_tag tag_module_name;
   s_tag tag_is_a;
   s_tag tag_module;
+  if (module_is_loading(module))
+    return true;
   tag_init_sym(&tag_module_name, module);
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_module, &g_sym_module);
@@ -48,6 +50,11 @@ bool module_ensure_loaded (const s_sym *module, s_facts *facts)
   }
   facts_with_cursor_clean(&cursor);
   return module_maybe_reload(module, facts);
+}
+
+bool module_is_loading (const s_sym *module)
+{
+  return env_module_is_loading(&g_c3_env, module);
 }
 
 bool module_load (const s_sym *module, s_facts *facts)

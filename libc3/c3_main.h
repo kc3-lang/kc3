@@ -35,9 +35,12 @@ s_str * c3_getenv (const s_str *name, s_str *dest);
 void    c3_license (void);
 
 /* Operators. */
-void ** c3_dlopen (const s_str *path, void **dest);
-void    c3_exit (sw code);
-s_tag * c3_pin (const s_tag *a, s_tag *dest);
+s_tag *        c3_def (const s_call *call, s_tag *dest);
+const s_sym ** c3_defmodule (const s_sym **name, const s_block *block,
+                             const s_sym **dest);
+void **        c3_dlopen (const s_str *path, void **dest);
+void           c3_exit (sw code);
+s_tag *        c3_pin (const s_tag *a, s_tag *dest);
 
 /* Special operators. */
 s_tag * c3_if_then_else (const s_tag *cond, const s_tag *then,
