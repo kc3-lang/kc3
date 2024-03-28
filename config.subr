@@ -494,44 +494,52 @@ update_build_lib() {
     LD_DEBUG=.build/ld_debug.tmp
     mkdir -p .build
 
+    LINK="${LIBTOOL} --tag=CC --mode=link"
+    LINK="$LINK \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS}"
+    LINK="$LINK -rpath ${LIBDIR} -o \"\$1\""
+
     echo "#!/bin/sh" >> ${LD_ASAN}
     echo "# gen by configure" >> ${LD_ASAN}
+    echo "LOG=\".build/\$1.asan.log\"" >> ${LD_ASAN}
     echo "CC=\"${CC}\"" >> ${LD_ASAN}
     echo "LDFLAGS=\"${LDFLAGS_ASAN}\"" >> ${LD_ASAN}
     echo "OBJECTS=\"${OBJECTS_ASAN}\"" >> ${LD_ASAN}
     echo "LIBS=\"${LIBS_ASAN}\"" >> ${LD_ASAN}
     echo >> ${LD_ASAN}
-    echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_ASAN}
+    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${LD_ASAN}
     update_and_chmod 755 ${LD_ASAN} .build/ld_asan
 
     echo "#!/bin/sh" >> ${LD_COV}
     echo "# gen by configure" >> ${LD_COV}
+    echo "LOG=\".build/\$1.cov.log\"" >> ${LD_COV}
     echo "CC=\"${CC}\"" >> ${LD_COV}
     echo "LDFLAGS=\"${LDFLAGS_COV}\"" >> ${LD_COV}
     echo "OBJECTS=\"${OBJECTS_COV}\"" >> ${LD_COV}
     echo "LIBS=\"${LIBS_COV}\"" >> ${LD_COV}
     echo >> ${LD_COV}
-    echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_COV}
+    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${LD_COV}
     update_and_chmod 755 ${LD_COV} .build/ld_cov
 
     echo "#!/bin/sh" >> ${LD_DEBUG}
     echo "# gen by configure" >> ${LD_DEBUG}
+    echo "LOG=\".build/\$1.debug.log\"" >> ${LD_DEBUG}
     echo "CC=\"${CC}\"" >> ${LD_DEBUG}
     echo "LDFLAGS=\"${LDFLAGS_DEBUG}\"" >> ${LD_DEBUG}
     echo "OBJECTS=\"${OBJECTS_DEBUG}\"" >> ${LD_DEBUG}
     echo "LIBS=\"${LIBS_DEBUG}\"" >> ${LD_DEBUG}
     echo >> ${LD_DEBUG}
-    echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_DEBUG}
+    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${LD_DEBUG}
     update_and_chmod 755 ${LD_DEBUG} .build/ld_debug
 
     echo "#!/bin/sh" >> ${LD_MAIN}
     echo "# gen by configure" >> ${LD_MAIN}
+    echo "LOG=\".build/\$1.main.log\"" >> ${LD_MAIN}
     echo "CC=\"${CC}\"" >> ${LD_MAIN}
     echo "LDFLAGS=\"${LDFLAGS}\"" >> ${LD_MAIN}
     echo "OBJECTS=\"${OBJECTS}\"" >> ${LD_MAIN}
     echo "LIBS=\"${LIBS}\"" >> ${LD_MAIN}
     echo >> ${LD_MAIN}
-    echo "${LIBTOOL} --tag=CC --mode=link \${CC} -shared \${LDFLAGS} \${OBJECTS} \${LIBS} -rpath ${LIBDIR} -o \"\$1\" >> .build/log 2>&1" >> ${LD_MAIN}
+    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${LD_MAIN}
     update_and_chmod 755 ${LD_MAIN} .build/ld_main
 }
 
@@ -582,48 +590,56 @@ update_build_prog() {
     LD_DEBUG=.build/ld_debug.tmp
     mkdir -p .build
 
+    LINK="${LIBTOOL} --tag=CC --mode=link"
+    LINK="$LINK \${CC} \${CFLAGS} \${LDFLAGS} \${OBJECTS} \${LIBS}"
+    LINK="$LINK -o \"\$1\""
+
     echo "#!/bin/sh" >> ${LD_ASAN}
     echo "# gen by configure" >> ${LD_ASAN}
+    echo "LOG=\".build/\$1.asan.log\"" >> ${LD_ASAN}
     echo "CC=\"${CC}\"" >> ${LD_ASAN}
     echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${LD_ASAN}
     echo "LDFLAGS=\"${LDFLAGS_ASAN}\"" >> ${LD_ASAN}
     echo "OBJECTS=\"${OBJECTS_ASAN}\"" >> ${LD_ASAN}
     echo "LIBS=\"${LIBS_ASAN}\"" >> ${LD_ASAN}
     echo >> ${LD_ASAN}
-    echo "${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} \${OBJECTS} \${LIBS} -o \"\$1\" >> .build/log 2>&1" >> ${LD_ASAN}
+    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${LD_ASAN}
     update_and_chmod 755 ${LD_ASAN} .build/ld_asan
 
     echo "#!/bin/sh" >> ${LD_COV}
     echo "# gen by configure" >> ${LD_COV}
+    echo "LOG=\".build/\$1.cov.log\"" >> ${LD_COV}
     echo "CC=\"${CC}\"" >> ${LD_COV}
     echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${LD_COV}
     echo "LDFLAGS=\"${LDFLAGS_COV}\"" >> ${LD_COV}
     echo "OBJECTS=\"${OBJECTS_COV}\"" >> ${LD_COV}
     echo "LIBS=\"${LIBS_COV}\"" >> ${LD_COV}
     echo >> ${LD_COV}
-    echo "${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} \${OBJECTS} \${LIBS} -o \"\$1\" >> .build/log 2>&1" >> ${LD_COV}
+    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${LD_COV}
     update_and_chmod 755 ${LD_COV} .build/ld_cov
 
     echo "#!/bin/sh" >> ${LD_DEBUG}
     echo "# gen by configure" >> ${LD_DEBUG}
+    echo "LOG=\".build/\$1.debug.log\"" >> ${LD_DEBUG}
     echo "CC=\"${CC}\"" >> ${LD_DEBUG}
     echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${LD_DEBUG}
     echo "LDFLAGS=\"${LDFLAGS_DEBUG}\"" >> ${LD_DEBUG}
     echo "OBJECTS=\"${OBJECTS_DEBUG}\"" >> ${LD_DEBUG}
     echo "LIBS=\"${LIBS_DEBUG}\"" >> ${LD_DEBUG}
     echo >> ${LD_DEBUG}
-    echo "${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} \${OBJECTS} \${LIBS} -o \"\$1\" >> .build/log 2>&1" >> ${LD_DEBUG}
+    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${LD_DEBUG}
     update_and_chmod 755 ${LD_DEBUG} .build/ld_debug
 
     echo "#!/bin/sh" >> ${LD_MAIN}
     echo "# gen by configure" >> ${LD_MAIN}
+    echo "LOG=\".build/\$1.main.log\"" >> ${LD_MAIN}
     echo "CC=\"${CC}\"" >> ${LD_MAIN}
     echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${LD_MAIN}
     echo "LDFLAGS=\"${LDFLAGS}\"" >> ${LD_MAIN}
     echo "OBJECTS=\"${OBJECTS}\"" >> ${LD_MAIN}
     echo "LIBS=\"${LIBS}\"" >> ${LD_MAIN}
     echo >> ${LD_MAIN}
-    echo "${LIBTOOL} --tag=CC --mode=link \${CC} \${CFLAGS} \${LDFLAGS} \${OBJECTS} \${LIBS} -o \"\$1\" >> .build/log 2>&1" >> ${LD_MAIN}
+    echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${LD_MAIN}
     update_and_chmod 755 ${LD_MAIN} .build/ld_main
 }
 
