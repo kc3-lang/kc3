@@ -426,36 +426,46 @@ update_build() {
     CC_DEBUG=.build/cc_debug.tmp
     mkdir -p .build
 
+    COMPILE="${LIBTOOL} --tag=CC --mode=compile"
+    COMPILE="$COMPILE \${CC} \${CPPFLAGS} \${CFLAGS}"
+    COMPILE="$COMPILE -c \"\$1\" -o \"\$2\""
+
     echo "#!/bin/sh" >> ${CC_ASAN}
     echo "# gen by configure" >> ${CC_ASAN}
+    echo "LOG=\".build/\$1.debug.log\"" >> ${CC_ASAN}
     echo "CC=\"${CC}\"" >> ${CC_ASAN}
     echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${CC_ASAN}
     echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${CC_ASAN}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${CC_ASAN}
+    echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${CC_ASAN}
     update_and_chmod 755 ${CC_ASAN} .build/cc_asan
 
     echo "#!/bin/sh" >> ${CC_COV}
     echo "# gen by configure" >> ${CC_COV}
+    echo "LOG=\".build/\$1.debug.log\"" >> ${CC_COV}
     echo "CC=\"${CC}\"" >> ${CC_COV}
     echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${CC_COV}
     echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${CC_COV}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${CC_COV}
+    echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${CC_COV}
     update_and_chmod 755 ${CC_COV} .build/cc_cov
 
+    COMPILE_DEBUG="${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\""
     echo "#!/bin/sh" >> ${CC_DEBUG}
     echo "# gen by configure" >> ${CC_DEBUG}
+    echo "LOG=\".build/\$1.debug.log\"" >> ${CC_DEBUG}
     echo "CC=\"${CC}\"" >> ${CC_DEBUG}
     echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${CC_DEBUG}
     echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${CC_DEBUG}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${CC_DEBUG}
+    echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${CC_DEBUG}
     update_and_chmod 755 ${CC_DEBUG} .build/cc_debug
 
+    COMPILE_MAIN="${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\""
     echo "#!/bin/sh" >> ${CC_MAIN}
     echo "# gen by configure" >> ${CC_MAIN}
+    echo "LOG=\".build/\$1.main.log\"" >> ${CC_MAIN}
     echo "CC=\"${CC}\"" >> ${CC_MAIN}
     echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${CC_MAIN}
     echo "CFLAGS=\"${CFLAGS}\"" >> ${CC_MAIN}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${CC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${CC_MAIN}
+    echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${CC_MAIN}
     update_and_chmod 755 ${CC_MAIN} .build/cc_main
 }
 
