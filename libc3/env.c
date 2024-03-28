@@ -111,7 +111,7 @@ const s_sym ** env_defmodule (s_env *env, const s_sym **name,
 {
   const s_sym *module;
   const s_sym **result = NULL;
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(env);
   assert(name);
   assert(*name);
@@ -343,7 +343,8 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
       return true;
     }
   }
-  ident_resolve_module(&call->ident, env);
+  if (! ident_resolve_module(&call->ident, env))
+    return false;
   if (! module_ensure_loaded(call->ident.module, &env->facts))
     return false;
   return call_get(call, &env->facts);
@@ -1333,12 +1334,17 @@ bool env_ident_is_special_operator (s_env *env,
   return false;
 }
 
-void env_ident_resolve_module (const s_env *env, s_ident *ident)
+bool env_ident_resolve_module (const s_env *env, const s_ident *ident,
+                               s_ident *dest)
 {
   assert(env);
   assert(ident);
   if (! ident->module) {
-    assert(env->current_module);
+    if (! env->current_module) {
+      err_puts("env_ident_resolve_module: env current module is NULL");
+      assert(! "env_ident_resolve_module: env current module is NULL");
+      return false;
+    }
     ident->module = env->current_module;
   }
 }
