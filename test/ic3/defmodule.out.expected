@@ -4,3 +4,5 @@ defmodule Double do
   def double = fn (x) { x * 2 }
 end
 Double
+Double.double(21)
+42

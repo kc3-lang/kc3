@@ -6,3 +6,5 @@ end
 defmodule Double do
   def double = fn (x) { x * 2 }
 end
+quote Double.double(21)
+Double.double(21)
