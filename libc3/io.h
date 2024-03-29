@@ -50,6 +50,7 @@ PROTOTYPES_ERR_IO_INSPECT(ident,      const s_ident *);
 PROTOTYPES_ERR_IO_INSPECT(integer,    const s_integer *);
 PROTOTYPES_ERR_IO_INSPECT(list,       const s_list * const *);
 PROTOTYPES_ERR_IO_INSPECT(map,        const s_map *);
+PROTOTYPES_ERR_IO_INSPECT(ptr,        const u_ptr_w *);
 PROTOTYPES_ERR_IO_INSPECT(s8,         const s8 *);
 PROTOTYPES_ERR_IO_INSPECT(s16,        const s16 *);
 PROTOTYPES_ERR_IO_INSPECT(s32,        const s32 *);

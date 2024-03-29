@@ -1,6 +1,14 @@
 *~
 *.a
 .build/
+.build_cc_asan
+.build_cc_cov
+.build_cc_debug
+.build_cc_main
+.build_ld_asan
+.build_ld_cov
+.build_ld_debug
+.build_ld_main
 /c3-*/
 /c3-*.tar.gz
 c3c/c3c

@@ -89,8 +89,9 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
     assert(! "env_def: invalid assignment: expected Ident = value");
     return NULL;
   }
-  tag_init_ident(&tag_ident, &call->arguments->tag.data.ident);
-  env_ident_resolve_module(env, &tag_ident.data.ident);
+  tag_ident.type = TAG_IDENT;
+  env_ident_resolve_module(env, &call->arguments->tag.data.ident,
+                           &tag_ident.data.ident);
   tag_init_sym(&tag_module, tag_ident.data.ident.module);
   tag_init_sym(&tag_symbol, &g_sym_symbol);
   tag_init_sym(&tag_symbol_value, &g_sym_symbol_value);
@@ -106,11 +107,11 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
   return dest;
 }
 
-const s_sym ** env_defmodule (s_env *env, const s_sym **name,
-                              const s_block *block, const s_sym **dest)
+s_tag * env_defmodule (s_env *env, const s_sym **name,
+                       const s_block *block, s_tag *dest)
 {
   const s_sym *module;
-  const s_sym **result = NULL;
+  s_tag *result = NULL;
   s_tag tmp = {0};
   assert(env);
   assert(name);
@@ -121,12 +122,12 @@ const s_sym ** env_defmodule (s_env *env, const s_sym **name,
   env_module_is_loading_set(env, *name, true);
   env->current_module = *name;
   if (env_eval_block(env, block, &tmp)) {
-    *dest = *name;
+    tag_clean(&tmp);
+    tag_init_sym(dest, *name);
     result = dest;
   }
   env->current_module = module;
   env_module_is_loading_set(env, *name, false);
-  tag_clean(&tmp);
   return result;
 }
 
@@ -330,10 +331,12 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
 
 bool env_eval_call_resolve (s_env *env, s_call *call)
 {
+  s_ident tmp_ident;
   const s_tag *value;
   assert(env);
   assert(call);
-  if ((value = env_frames_get(env, call->ident.sym))) {
+  if (call->ident.module == NULL &&
+      (value = env_frames_get(env, call->ident.sym))) {
     if (value->type == TAG_CFN) {
       call->cfn = cfn_new_copy(&value->data.cfn);
       return true;
@@ -343,11 +346,12 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
       return true;
     }
   }
-  if (! ident_resolve_module(&call->ident, env))
+  ident_init_copy(&tmp_ident, &call->ident);
+  if (! env_ident_resolve_module(env, &tmp_ident, &call->ident) ||
+      ! module_ensure_loaded(call->ident.module, &env->facts) ||
+      ! call_get(call, &env->facts))
     return false;
-  if (! module_ensure_loaded(call->ident.module, &env->facts))
-    return false;
-  return call_get(call, &env->facts);
+  return true;
 }
 
 bool env_eval_complex (s_env *env, const s_complex *c, s_tag *dest)
@@ -739,8 +743,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   s_ident tmp_ident;
   assert(env);
   assert(ident);
-  ident_init_copy(&tmp_ident, ident);
-  ident_resolve_module(&tmp_ident, env);
+  env_ident_resolve_module(env, ident, &tmp_ident);
   if (! ((tag = env_frames_get(env, tmp_ident.sym)) ||
          (tag = ident_get(&tmp_ident, &env->facts, &tmp)))) {
     err_write_1("env_eval_ident: unbound ident: ");
@@ -760,8 +763,7 @@ bool env_eval_ident_is_bound (s_env *env, const s_ident *ident)
   assert(ident);
   if (env_frames_get(env, ident->sym))
     return true;
-  ident_init_copy(&tmp_ident, ident);
-  ident_resolve_module(&tmp_ident, env);
+  env_ident_resolve_module(env, ident, &tmp_ident);
   if (ident_get(&tmp_ident, &env->facts, &tmp)) {
     tag_clean(&tmp);
     return true;
@@ -1324,8 +1326,8 @@ bool env_ident_is_special_operator (s_env *env,
   s_tag tag_special_operator;
   assert(env);
   assert(ident);
-  tag_init_ident(&tag_ident, ident);
-  env_ident_resolve_module(env, &tag_ident.data.ident);
+  tag_ident.type = TAG_IDENT;
+  env_ident_resolve_module(env, ident, &tag_ident.data.ident);
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_special_operator, &g_sym_special_operator);
   if (facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
@@ -1334,19 +1336,24 @@ bool env_ident_is_special_operator (s_env *env,
   return false;
 }
 
-bool env_ident_resolve_module (const s_env *env, const s_ident *ident,
-                               s_ident *dest)
+s_ident * env_ident_resolve_module (const s_env *env,
+                                    const s_ident *ident,
+                                    s_ident *dest)
 {
+  s_ident tmp;
   assert(env);
   assert(ident);
-  if (! ident->module) {
+  ident_init_copy(&tmp, ident);
+  if (! tmp.module) {
     if (! env->current_module) {
       err_puts("env_ident_resolve_module: env current module is NULL");
       assert(! "env_ident_resolve_module: env current module is NULL");
-      return false;
+      return NULL;
     }
-    ident->module = env->current_module;
+    tmp.module = env->current_module;
   }
+  *dest = tmp;
+  return dest;
 }
 
 s_env * env_init (s_env *env, int argc, char **argv)
@@ -1663,8 +1670,7 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
   s_tag tag_sym;
   s_tag tag_symbol;
   s_ident tmp;
-  tmp = *op;
-  ident_resolve_module(&tmp, env);
+  env_ident_resolve_module(env, op, &tmp);
   tag_init_sym(&tag_arity, &g_sym_arity);
   tag_init_u8( &tag_arity_u8, arity);
   tag_init_sym(&tag_is_a, &g_sym_is_a);
@@ -1754,8 +1760,8 @@ u8 env_special_operator_arity (s_env *env, const s_ident *ident)
   s_tag tag_var;
   assert(env);
   assert(ident);
-  tag_init_ident(&tag_ident, ident);
-  env_ident_resolve_module(env, &tag_ident.data.ident);
+  tag_ident.type = TAG_IDENT;
+  env_ident_resolve_module(env, ident, &tag_ident.data.ident);
   tag_init_sym(  &tag_arity, &g_sym_arity);
   tag_init_var(  &tag_var);
   facts_with_tags(&env->facts, &cursor,

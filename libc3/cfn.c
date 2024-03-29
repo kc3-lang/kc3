@@ -26,6 +26,7 @@ static s_tag * cfn_tag_init (s_tag *tag, const s_sym *type);
 s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
 {
   s_list *a;
+  void **arg_pointer_result = NULL;
   void **arg_pointers = NULL;
   void **arg_values = NULL;
   void **result_pointer = NULL;
@@ -75,15 +76,12 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     while (cfn_arg_types) {
       assert(cfn_arg_types->tag.type == TAG_SYM);
       if (cfn_arg_types->tag.data.sym == &g_sym_Result) {
+        assert(cfn->cif.rtype == &ffi_type_pointer);
         cfn_tag_init(&tmp2, cfn->result_type);
-        if (cfn->cif.rtype == &ffi_type_pointer) {
-          if (! tag_to_ffi_pointer(&tmp2, cfn->result_type, arg_pointers + i))
-            goto ko;
-          arg_values[i] = &arg_pointers[i];
-        }
-        else
-          if (! tag_to_ffi_pointer(&tmp2, cfn->result_type, arg_values + i))
-            goto ko;
+        if (! tag_to_ffi_pointer(&tmp2, cfn->result_type, arg_pointers + i))
+          goto ko;
+        arg_values[i] = &arg_pointers[i];
+        arg_pointer_result = arg_pointers[i];
       }
       else {
         if (cfn->cif.arg_types[i] == &ffi_type_pointer) {
@@ -105,6 +103,17 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   if (cfn->ptr.f) {
     ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
     if (cfn->arg_result) {
+      if (result_pointer != arg_pointer_result) {
+        err_write_1("cfn_apply: ");
+        err_inspect_str(&cfn->name->str);
+        err_write_1(": ");
+        err_inspect_ptr(result_pointer);
+        err_write_1(": ");
+        err_inspect_ptr(arg_pointer_result);
+        err_write_1("\n");
+        assert(! "cfn_apply: error");
+        goto ko;
+      }
       *dest = tmp2;
     }
     else
