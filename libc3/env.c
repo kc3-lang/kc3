@@ -112,6 +112,9 @@ s_tag * env_defmodule (s_env *env, const s_sym **name,
 {
   const s_sym *module;
   s_tag *result = NULL;
+  s_tag tag_is_a;
+  s_tag tag_module;
+  s_tag tag_module_name;
   s_tag tmp = {0};
   assert(env);
   assert(name);
@@ -121,10 +124,16 @@ s_tag * env_defmodule (s_env *env, const s_sym **name,
   module = env->current_module;
   env_module_is_loading_set(env, *name, true);
   env->current_module = *name;
-  if (env_eval_block(env, block, &tmp)) {
-    tag_clean(&tmp);
-    tag_init_sym(dest, *name);
-    result = dest;
+  tag_init_sym(&tag_is_a, &g_sym_is_a);
+  tag_init_sym(&tag_module, &g_sym_module);
+  tag_init_sym(&tag_module_name, *name);
+  if (facts_add_tags(&env->facts, &tag_module_name, &tag_is_a,
+                     &tag_module)) {
+    if (env_eval_block(env, block, &tmp)) {
+      tag_clean(&tmp);
+      tag_init_sym(dest, *name);
+      result = dest;
+    }
   }
   env->current_module = module;
   env_module_is_loading_set(env, *name, false);
@@ -1513,6 +1522,8 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
     err_puts(": module_path");
     goto ko;
   }
+  if (! file_access(&path, &g_sym_r))
+    goto ko;
   tag_init_time(&tag_time);
   if (facts_load_file(facts, &path) < 0) {
     err_write_1("env_module_load: ");
@@ -1556,7 +1567,8 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module,
     return false;
   }
   //io_inspect_str(&path);
-  if (! file_mtime(&path, &tag_mtime)) {
+  if (! file_access(&path, &g_sym_r) ||
+      ! file_mtime(&path, &tag_mtime)) {
     str_clean(&path);
     return false;
   }

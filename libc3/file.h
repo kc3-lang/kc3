@@ -25,8 +25,7 @@
 #include "types.h"
 
 /* Observers */
-bool *  file_access (const s_str *path, const s_sym *mode,
-                     bool *dest);
+bool    file_access (const s_str *path, const s_sym *mode);
 sw      file_copy (const char *from, const char *to);
 s_str * file_dirname (const s_str *path, s_str *dest);
 s_tag * file_mtime (const s_str *path, s_tag *dest);

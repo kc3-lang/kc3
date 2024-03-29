@@ -67,6 +67,7 @@ cov:
 
 debug:
 	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
 	${MAKE} -C libc3 debug
 	${MAKE} -C ic3 debug
 	${MAKE} -C c3s debug
@@ -135,7 +136,9 @@ gdb_demo_gl:
 	${MAKE} -C libc3 gdb_demo_gl
 
 gdb_ic3:
-	${MAKE} debug
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libc3 debug
 	${MAKE} -C ic3 gdb_ic3
 
 gdb_test:
