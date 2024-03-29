@@ -28,6 +28,9 @@ bool          module_load (const s_sym *module, s_facts *facts);
 bool          module_maybe_reload (const s_sym *module, s_facts *facts);
 
 /* Observers */
+bool          module_has_symbol (const s_sym *module,
+                                 const s_ident *ident,
+                                 s_facts *facts);
 bool          module_is_loading (const s_sym *module);
 s_tag *       module_load_time (const s_sym *module, s_facts *facts,
                                 s_tag *dest);
