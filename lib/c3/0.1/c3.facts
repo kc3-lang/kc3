@@ -219,7 +219,7 @@ replace {C3.hash, :symbol_value, cfn Uw "tag_hash_uw" (Tag)}
 add {C3, :symbol, C3.defmodule}
 replace {C3.defmodule, :arity, 2}
 replace {C3.defmodule, :is_a, :special_operator}
-replace {C3.defmodule, :symbol_value, cfn Sym "c3_defmodule" (Sym, Block, Result)}
+replace {C3.defmodule, :symbol_value, cfn Tag "c3_defmodule" (Sym, Block, Result)}
 add {C3, :symbol, C3.def}
 replace {C3.def, :arity, 1}
 replace {C3.def, :is_a, :special_operator}

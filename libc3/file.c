@@ -31,8 +31,7 @@
 # define O_BINARY 0
 #endif
 
-bool * file_access (const s_str *path, const s_sym *mode,
-                    bool *dest)
+bool file_access (const s_str *path, const s_sym *mode)
 {
   sw m;
   if (mode == &g_sym_r)
@@ -51,8 +50,7 @@ bool * file_access (const s_str *path, const s_sym *mode,
     m = X_OK;
   else
     m = F_OK;
-  *dest = access(path->ptr.pchar, m) ? false : true;
-  return dest;
+  return ! access(path->ptr.pchar, m);
 }
 
 sw file_copy (const char *from, const char *to)
@@ -167,7 +165,6 @@ FILE * file_open (const char *path, const char *mode)
 s_str * file_search (const s_str *suffix, const s_sym *mode,
                      s_str *dest)
 {
-  bool access;
   char buf_s[PATH_MAX];
   s_buf buf;
   const s_list *path;
@@ -192,8 +189,7 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
         return NULL;
       buf_read_to_str(&buf, &tmp);
       //io_inspect_str(&tmp);
-      file_access(&tmp, mode, &access);
-      if (access) {
+      if (file_access(&tmp, mode)) {
         *dest = tmp;
         return dest;
       }
