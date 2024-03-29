@@ -768,6 +768,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
     err_write_1("env_eval_ident: unbound ident: ");
     err_inspect_ident(ident);
     err_write_1("\n");
+    assert(! "env_eval_ident: unbound ident");
     return false;
   }
   tag_init_copy(dest, tag);

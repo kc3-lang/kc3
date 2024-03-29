@@ -26,30 +26,26 @@
 
 bool module_ensure_loaded (const s_sym *module, s_facts *facts)
 {
-  s_facts_with_cursor cursor;
   s_tag tag_module_name;
   s_tag tag_is_a;
   s_tag tag_module;
   if (module_is_loading(module))
     return true;
-  tag_init_sym(&tag_module_name, module);
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_module, &g_sym_module);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_module_name,
-      &tag_is_a, &tag_module,     /* module exists */
-      NULL, NULL });
-  if (! facts_with_cursor_next(&cursor)) {
+  tag_init_sym(&tag_module_name, module);
+  if (! facts_find_fact_by_tags(facts, &tag_module_name, &tag_is_a,
+                                &tag_module)) {
     if (! module_load(module, facts)) {
       err_write_1("module_ensure_loaded: module not found: ");
       err_puts(module->str.ptr.pchar);
       assert(! "module_ensure_loaded: module not found");
-      facts_with_cursor_clean(&cursor);
       return false;
     }
+    return true;
   }
-  facts_with_cursor_clean(&cursor);
-  return module_maybe_reload(module, facts);
+  module_maybe_reload(module, facts);
+  return true;
 }
 
 bool module_has_symbol (const s_sym *module, const s_ident *ident,

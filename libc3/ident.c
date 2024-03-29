@@ -15,6 +15,7 @@
 #include "buf_inspect.h"
 #include "character.h"
 #include "env.h"
+#include "facts.h"
 #include "facts_with.h"
 #include "facts_with_cursor.h"
 #include "module.h"
@@ -80,15 +81,9 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
   tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
   tag_init_var(  &tag_var);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_module,
-      &tag_symbol, &tag_ident,    /* module exports symbol */
-      NULL, NULL });
-  if (! facts_with_cursor_next(&cursor)) {
-    facts_with_cursor_clean(&cursor);
+  if (! facts_find_fact_by_tags(facts, &tag_module, &tag_symbol,
+                                &tag_ident))
     return NULL;
-  }
-  facts_with_cursor_clean(&cursor);
   facts_with(facts, &cursor, (t_facts_spec) {
       &tag_ident, &tag_symbol_value, &tag_var,
       NULL, NULL });
