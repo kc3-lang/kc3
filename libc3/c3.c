@@ -50,8 +50,7 @@ s_tag * c3_def (const s_call *call, s_tag *dest)
   return env_def(&g_c3_env, call, dest);
 }
 
-const s_sym ** c3_defmodule (const s_sym **name, const s_block *block,
-                             const s_sym **dest)
+s_tag * c3_defmodule (const s_sym **name, const s_block *block, s_tag *dest)
 {
   return env_defmodule(&g_c3_env, name, block, dest);
 }
@@ -77,9 +76,10 @@ uw * c3_facts_next_id (uw *dest)
   return dest;
 }
 
-s_tag * c3_quote_cfn (const s_sym *sym, s_tag *dest)
+s_tag * c3_quote_cfn (const s_sym **sym, s_tag *dest)
 {
-  return tag_init_sym(dest, sym);
+  assert(sym);
+  return tag_init_sym(dest, *sym);
 }
 
 s_str * c3_getenv (const s_str *name, s_str *dest)

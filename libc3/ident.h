@@ -27,7 +27,7 @@ s_ident * ident_init_cast (s_ident *ident, const s_tag *tag);
 s_ident * ident_init_copy (s_ident *ident, const s_ident *src);
 
 /* Modifiers */
-s_ident * ident_resolve_module (s_ident *ident, const s_env *env);
+s_ident * ident_resolve_module (const s_ident *ident, s_ident *dest);
 
 /* Observers */
 bool    ident_character_is_reserved (character c);

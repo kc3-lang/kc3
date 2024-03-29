@@ -201,9 +201,9 @@ bool ident_is_special_operator (const s_ident *ident)
   return env_ident_is_special_operator(&g_c3_env, ident);
 }
 
-void ident_resolve_module (s_ident *ident)
+s_ident * ident_resolve_module (const s_ident *ident, s_ident *dest)
 {
-  env_ident_resolve_module(&g_c3_env, ident);
+  return env_ident_resolve_module(&g_c3_env, ident, dest);
 }
 
 bool ident_to_tag_type (const s_ident *ident, e_tag_type *dest)
