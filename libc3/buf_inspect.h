@@ -116,6 +116,8 @@ sw buf_inspect_map (s_buf *buf, const s_map *map);
 sw buf_inspect_map_size (const s_map *map);
 sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym);
 sw buf_inspect_paren_sym_size (const s_sym *sym);
+sw buf_inspect_pointer (s_buf *buf, const void *ptr);
+sw buf_inspect_pointer_size (const void *ptr);
 sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag);
 sw buf_inspect_ptag_size (const p_tag *ptag);
 sw buf_inspect_ptr (s_buf *buf, const u_ptr_w *ptr);

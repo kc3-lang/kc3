@@ -1761,6 +1761,20 @@ sw buf_inspect_paren_sym_size (const s_sym *sym)
   return r;
 }
 
+sw buf_inspect_pointer (s_buf *buf, const void *ptr)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  if ((r = buf_write_1(buf, "0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) &ptr)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag)
 {
   sw r;

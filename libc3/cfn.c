@@ -107,11 +107,10 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
         err_write_1("cfn_apply: ");
         err_inspect_str(&cfn->name->str);
         err_write_1(": ");
-        err_inspect_ptr(result_pointer);
-        err_write_1(": ");
-        err_inspect_ptr(arg_pointer_result);
+        err_inspect_pointer(result_pointer);
+        err_write_1(" != ");
+        err_inspect_pointer(arg_pointer_result);
         err_write_1("\n");
-        assert(! "cfn_apply: error");
         goto ko;
       }
       *dest = tmp2;

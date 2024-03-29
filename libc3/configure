@@ -38,7 +38,7 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
-LDFLAGS="--shared $LDFLAGS -rdynamic"
+LDFLAGS="-export-dynamic $LDFLAGS -rdynamic"
 config_asan
 config_gnu
 pkg_config libbsd-overlay
