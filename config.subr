@@ -235,6 +235,11 @@ config_lib() {
                 "$OUT_C" ${LDFLAGS} ${LIBS} $@ -o "$OUT" \
                 >/dev/null 2>&1; then
         LIBS="$LIBS $@"
+        eval "HAVE_$NAME=true"
+        echo "HAVE_$NAME = true" >> ${CONFIG_MK}
+    else
+        eval "HAVE_$NAME=false"
+        echo "HAVE_$NAME = false" >> ${CONFIG_MK}
     fi
     rm -f "$OUT" "$OUT_C"
 }
