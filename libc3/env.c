@@ -260,9 +260,8 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
     result = env_eval_call_fn(env, &c, dest);
   else {
     err_write_1("env_eval_call: could not resolve call ");
-    err_write_1(c.ident.module->str.ptr.pchar);
-    err_write_1(".");
-    err_puts(c.ident.sym->str.ptr.pchar);
+    err_inspect_ident(&c.ident);
+    err_write_1("\n");
     result = false;
   }
   call_clean(&c);
@@ -349,9 +348,18 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   ident_init_copy(&tmp_ident, &call->ident);
   if (! env_ident_resolve_module(env, &tmp_ident, &call->ident) ||
       ! module_ensure_loaded(call->ident.module, &env->facts) ||
+      ! module_has_symbol(call->ident.module, &call->ident,
+                          &env->facts) ||
       ! call_get(call, &env->facts)) {
     ident_init_copy(&call->ident, &tmp_ident);
-    return false;
+    call->ident.module = &g_sym_C3;
+    if (! module_ensure_loaded(call->ident.module, &env->facts) ||
+        ! module_has_symbol(call->ident.module, &call->ident,
+                            &env->facts) ||
+        ! call_get(call, &env->facts)) {      
+      ident_init_copy(&call->ident, &tmp_ident);
+      return false;
+    }
   }
   return true;
 }

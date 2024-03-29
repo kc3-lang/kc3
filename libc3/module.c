@@ -52,6 +52,23 @@ bool module_ensure_loaded (const s_sym *module, s_facts *facts)
   return module_maybe_reload(module, facts);
 }
 
+bool module_has_symbol (const s_sym *module, const s_ident *ident,
+                        s_facts *facts)
+{
+  s_tag tag_ident;
+  s_tag tag_module_name;
+  s_tag tag_operator;
+  s_tag tag_symbol;
+  tag_init_ident(&tag_ident, ident);
+  tag_init_sym(  &tag_module_name, module);
+  tag_init_sym(  &tag_operator, &g_sym_operator);
+  tag_init_sym(  &tag_symbol, &g_sym_symbol);
+  return facts_find_fact_by_tags(facts, &tag_module_name,
+                                 &tag_symbol, &tag_ident) ||
+    facts_find_fact_by_tags(facts, &tag_module_name,
+                            &tag_operator, &tag_ident);
+}
+
 bool module_is_loading (const s_sym *module)
 {
   return env_module_is_loading(&g_c3_env, module);
