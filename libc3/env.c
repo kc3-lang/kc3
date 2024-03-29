@@ -349,8 +349,10 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   ident_init_copy(&tmp_ident, &call->ident);
   if (! env_ident_resolve_module(env, &tmp_ident, &call->ident) ||
       ! module_ensure_loaded(call->ident.module, &env->facts) ||
-      ! call_get(call, &env->facts))
+      ! call_get(call, &env->facts)) {
+    ident_init_copy(&call->ident, &tmp_ident);
     return false;
+  }
   return true;
 }
 
