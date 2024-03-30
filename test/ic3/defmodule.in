@@ -1,5 +1,17 @@
 quote defmodule Empty do end
 defmodule Empty do end
+quote defmodule Const do
+  def a = 1
+  def b = 10000000000000000000000000000000000000000000000000
+end
+defmodule Const do
+  def a = 1
+  def b = 10000000000000000000000000000000000000000000000000
+end
+quote Const.a
+Const.a
+quote Const.b
+Const.b
 quote defmodule Double do
   def double = fn (x) { x * 2 }
 end
