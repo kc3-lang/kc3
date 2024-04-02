@@ -186,14 +186,18 @@ s_tag * env_defoperator (s_env *env, const s_sym **name,
                *operator_associativity);
   facts_add_tags(&env->facts, &tag_module_name, &tag_operator,
                  &tag_ident);
-  facts_add_tags(&env->facts, &tag_ident, &tag_is_a, &tag_operator);
-  facts_add_tags(&env->facts, &tag_ident, &tag_symbol, &tag_sym);
-  facts_add_tags(&env->facts, &tag_ident, &tag_arity_sym, &tag_arity_u8);
-  facts_add_tags(&env->facts, &tag_ident, &tag_symbol_value, symbol_value);
-  facts_add_tags(&env->facts, &tag_ident, &tag_operator_precedence_sym,
-                 &tag_operator_precedence_u8);
-  facts_add_tags(&env->facts, &tag_ident, &tag_operator_associativity_rel,
-                 &tag_operator_associativity_value);
+  facts_replace_tags(&env->facts, &tag_ident, &tag_is_a, &tag_operator);
+  facts_replace_tags(&env->facts, &tag_ident, &tag_symbol, &tag_sym);
+  facts_replace_tags(&env->facts, &tag_ident, &tag_arity_sym,
+                     &tag_arity_u8);
+  facts_replace_tags(&env->facts, &tag_ident, &tag_symbol_value,
+                     symbol_value);
+  facts_replace_tags(&env->facts, &tag_ident,
+                     &tag_operator_precedence_sym,
+                     &tag_operator_precedence_u8);
+  facts_replace_tags(&env->facts, &tag_ident,
+                     &tag_operator_associativity_rel,
+                     &tag_operator_associativity_value);
   *dest = tag_ident;
   return dest;
 }
