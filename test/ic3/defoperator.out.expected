@@ -1,1 +1,8 @@
-
+defoperator :operator_muul :**** cfn Tag "tag_mul" (Tag, Tag, Result) 11 :left
+C3.operator_muul
+4 **** 4
+16
+4 **** 4 **** 4
+64
+4 **** 4 + 4
+20
