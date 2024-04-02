@@ -41,6 +41,7 @@ s_tag * tag_new (void);
 s_tag * tag_new_1 (const char *p);
 
 /* Observers */
+s8             tag_arity (const s_tag *tag);
 u64            tag_hash_u64 (const s_tag *tag);
 uw             tag_hash_uw (const s_tag *tag);
 s_str *        tag_inspect (const s_tag *tag, s_str *dest);

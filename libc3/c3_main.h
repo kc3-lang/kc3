@@ -37,6 +37,11 @@ void    c3_license (void);
 /* Operators. */
 s_tag * c3_def (const s_call *call, s_tag *dest);
 s_tag * c3_defmodule (const s_sym **name, const s_block *block, s_tag *dest);
+s_tag * c3_defoperator (const s_sym **name, const s_sym **sym,
+                        const s_tag *symbol_value,
+                        u8 operator_precedence,
+                        const s_sym **operator_associativity,
+                        s_tag *dest);
 void ** c3_dlopen (const s_str *path, void **dest);
 void    c3_exit (sw code);
 s_tag * c3_pin (const s_tag *a, s_tag *dest);

@@ -132,6 +132,18 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   return NULL;
 }
 
+s8 cfn_arity (const s_cfn *cfn)
+{
+  sw arity;
+  arity = cfn->arity - (cfn->arg_result ? 1 : 0);
+  if (arity < 0 || arity > S8_MAX) {
+    err_puts("fn_arity: invalid arity");
+    assert(! "fn_arity: invalid arity");
+    return -1;
+  }
+  return arity;
+}
+
 void cfn_clean (s_cfn *cfn)
 {
   assert(cfn);

@@ -33,4 +33,7 @@ void   fn_delete (s_fn *fn);
 s_fn * fn_new (void);
 s_fn * fn_new_copy (const s_fn *fn);
 
+/* Observers. */
+s8 fn_arity (const s_fn *fn);
+
 #endif /* LIBC3_FN_H */

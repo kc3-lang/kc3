@@ -55,6 +55,17 @@ s_tag * c3_defmodule (const s_sym **name, const s_block *block, s_tag *dest)
   return env_defmodule(&g_c3_env, name, block, dest);
 }
 
+s_tag * c3_defoperator (const s_sym **name, const s_sym **sym,
+                        const s_tag *symbol_value,
+                        u8 operator_precedence,
+                        const s_sym **operator_associativity,
+                        s_tag *dest)
+{
+  return env_defoperator(&g_c3_env, name, sym, symbol_value,
+                         operator_precedence,
+                         operator_associativity, dest);
+}
+
 void ** c3_dlopen (const s_str *path, void **dest)
 {
   assert(path);
