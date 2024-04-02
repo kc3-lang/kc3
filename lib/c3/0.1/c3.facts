@@ -228,3 +228,7 @@ add {C3, :symbol, C3.quote_cfn}
 replace {C3.quote_cfn, :arity, 1}
 replace {C3.quote_cfn, :is_a, :special_operator}
 replace {C3.quote_cfn, :symbol_value, cfn Tag "c3_quote_cfn" (Sym, Result)}
+add {C3, :symbol, C3.defoperator}
+replace {C3.defoperator, :arity, 5}
+replace {C3.defoperator, :is_a, :special_operator}
+replace {C3.defoperator, :symbol_value, cfn Tag "c3_defoperator" (Sym, Sym, Tag, U8, Sym, Result)}

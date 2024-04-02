@@ -64,6 +64,17 @@ bool * tag_and (const s_tag *a, const s_tag *b, bool *dest)
   return dest;
 }
 
+s8 tag_arity (const s_tag *tag)
+{
+  switch (tag->type) {
+  case TAG_CFN: return cfn_arity(&tag->data.cfn);
+  case TAG_FN:  return fn_arity(&tag->data.fn);
+  default:
+    break;
+  }
+  return -1;
+}
+
 s_tag * tag_cast_integer_to_s8 (s_tag *tag)
 {
   s8 i;

@@ -22,6 +22,20 @@
 #include "list.h"
 #include "tag_type.h"
 
+s8 fn_arity (const s_fn *fn)
+{
+  assert(fn);
+  if (fn->clauses) {
+    if (fn->clauses->arity > S8_MAX) {
+      err_puts("fn_arity: invalid arity");
+      assert(! "fn_arity: invalid arity");
+      return -1;
+    }
+    return fn->clauses->arity;
+  }
+  return -1;
+}
+
 void fn_clean (s_fn *fn)
 {
   assert(fn);
