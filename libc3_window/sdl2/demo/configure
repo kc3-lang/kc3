@@ -46,7 +46,8 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 # Common config for all targets
 CPPFLAGS="-I../../.. $CPPFLAGS"
 #CPPFLAGS="$CPPFLAGS -DGL_SILENCE_DEPRECATION=1"
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
+CFLAGS="$CFLAGS -W -Wall -Werror -Wno-error=unknown-pragmas"
+CFLAGS="$CFLAGS -std=c11 -pedantic -pipe"
 LIBS="$LIBS -lm"
 config_asan
 config_gnu
