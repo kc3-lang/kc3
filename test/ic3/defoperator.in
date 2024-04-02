@@ -1,0 +1,10 @@
+quote defoperator :operator_muul :**** cfn Tag "tag_mul" (Tag, Tag, Result) 11 :left
+defoperator :operator_muul :**** cfn Tag "tag_mul" (Tag, Tag, Result) 11 :left
+quote 4 **** 4
+4 **** 4
+quote defmodule Plop do
+  defoperator :operator_addd :++++ cfn Tag "tag_add" (Tag, Tag, Result) 10 :left
+  def double = fn (x) { x ++++ x }
+end
+quote Plop.double(21)
+Plop.double(21)
