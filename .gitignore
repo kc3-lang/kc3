@@ -9,6 +9,10 @@
 .build_ld_cov
 .build_ld_debug
 .build_ld_main
+.build_objcc_asan
+.build_objcc_cov
+.build_objcc_debug
+.build_objcc_main
 /c3-*/
 /c3-*.tar.gz
 c3c/c3c
