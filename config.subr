@@ -110,7 +110,7 @@ c_o_rule() {
 }
 
 c_ext_rule() {
-    c_o_rule "$2" "$3" | sed -e "s/[.]o:/$1:/"
+    c_o_rule "$2" "$3" | sed -e "s/\.o:/$1:/"
 }
 
 c_lo_rule() {
@@ -387,7 +387,7 @@ objc_o_rule() {
 }
 
 objc_ext_rule() {
-    objc_o_rule "$2" "$3" | sed -e "s/[.]o:/$1:/"
+    objc_o_rule "$2" "$3" | sed -e "s/\.o:/$1:/"
 }
 
 objc2ext() {
