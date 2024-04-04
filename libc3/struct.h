@@ -47,7 +47,11 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
                        const s_tag *value);
 
 /* Observers. */
-bool struct_find_key_index (const s_struct *s, const s_sym *key,
-                            uw *dest);
+bool           struct_find_key_index (const s_struct *s, const s_sym *key,
+                                      uw *dest);
+void *         struct_get (s_struct *s, const s_sym *key);
+const s_sym ** struct_get_sym (s_struct *s, const s_sym *key);
+s_tag *        struct_get_tag (s_struct *s, const s_sym *key);
+u8             struct_get_u8 (s_struct *s, const s_sym *key);
 
 #endif /* LIBC3_STRUCT_H */

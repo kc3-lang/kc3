@@ -91,6 +91,32 @@ bool struct_find_key_index (const s_struct *s, const s_sym *key,
   return false;
 }
 
+void * struct_get (s_struct *s, const s_sym *key)
+{
+  uw i = 0;
+  assert(s);
+  assert(key);
+  if (! struct_find_key_index(s, key, &i))
+    return NULL;
+  assert(i < s->type->map.count);
+  return (u8 *) s->data + s->type->offset[i];
+}
+
+const s_sym ** struct_get_sym (s_struct *s, const s_sym *key)
+{
+  return (const s_sym **) struct_get(s, key);
+}
+
+s_tag * struct_get_tag (s_struct *s, const s_sym *key)
+{
+  return (s_tag *) struct_get(s, key);
+}
+
+u8 struct_get_u8 (s_struct *s, const s_sym *key)
+{
+  return *(u8 *) struct_get(s, key);
+}
+
 s_struct * struct_init (s_struct *s, const s_sym *module)
 {
   s_struct tmp = {0};
