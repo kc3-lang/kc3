@@ -194,8 +194,9 @@ lldb_test:
 	${MAKE} debug
 	${MAKE} -C test lldb_test
 
-test: build
 test:
+	${MAKE} -C libc3 build
+	${MAKE} -C ic3 build
 	${MAKE} -C test test
 	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
 

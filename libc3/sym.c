@@ -29,6 +29,7 @@ const s_sym g_sym_Array           = {{{NULL},  5, {"Array"}}};
 const s_sym g_sym_Block           = {{{NULL},  5, {"Block"}}};
 const s_sym g_sym_Bool            = {{{NULL},  4, {"Bool"}}};
 const s_sym g_sym_C3              = {{{NULL},  2, {"C3"}}};
+const s_sym g_sym_C3__Operator    = {{{NULL}, 11, {"C3.Operator"}}};
 const s_sym g_sym_Call            = {{{NULL},  4, {"Call"}}};
 const s_sym g_sym_Cfn             = {{{NULL},  3, {"Cfn"}}};
 const s_sym g_sym_Character       = {{{NULL},  9, {"Character"}}};
@@ -97,6 +98,7 @@ const s_sym g_sym_rx              = {{{NULL},  2, {"rx"}}};
 const s_sym g_sym_special_operator =
   {{{NULL}, 16, {"special_operator"}}};
 const s_sym g_sym_struct_type     = {{{NULL}, 11, {"struct_type"}}};
+const s_sym g_sym_sym             = {{{NULL},  3, {"sym"}}};
 const s_sym g_sym_symbol          = {{{NULL},  6, {"symbol"}}};
 const s_sym g_sym_symbol_value    = {{{NULL}, 12, {"symbol_value"}}};
 const s_sym g_sym_then            = {{{NULL},  4, {"then"}}};
@@ -297,6 +299,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Block, NULL);
   sym_register(&g_sym_Bool, NULL);
   sym_register(&g_sym_C3, NULL);
+  sym_register(&g_sym_C3__Operator, NULL);
   sym_register(&g_sym_Call, NULL);
   sym_register(&g_sym_Cfn, NULL);
   sym_register(&g_sym_Character, NULL);
@@ -362,6 +365,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_rx, NULL);
   sym_register(&g_sym_special_operator, NULL);
   sym_register(&g_sym_struct_type, NULL);
+  sym_register(&g_sym_sym, NULL);
   sym_register(&g_sym_symbol, NULL);
   sym_register(&g_sym_symbol_value, NULL);
   sym_register(&g_sym_then, NULL);

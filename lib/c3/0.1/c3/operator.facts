@@ -1,4 +1,4 @@
 %{module: C3.Facts.Dump,
   version: 1}
 replace {C3.Operator, :is_a, :module}
-replace {C3.Operator, :defstruct, [sym: :+, symbol_value: ?, operator_precedence: 0, operator_associativity: :left]}
+replace {C3.Operator, :defstruct, [sym: :+, symbol_value: (Tag) ?, operator_precedence: 0, operator_associativity: :left]}

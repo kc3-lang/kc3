@@ -71,6 +71,7 @@ void env_clean (s_env *env)
 
 s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
 {
+  s_struct *s;
   s_tag tag_ident;
   s_tag tag_module;
   s_tag tag_symbol;
@@ -94,15 +95,36 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
                            &tag_ident.data.ident);
   tag_init_sym(&tag_module, tag_ident.data.ident.module);
   tag_init_sym(&tag_symbol, &g_sym_symbol);
-  tag_init_sym(&tag_symbol_value, &g_sym_symbol_value);
-  env_eval_tag(env, &list_next(call->arguments)->tag, &tag_value);
   if (! facts_add_tags(&env->facts, &tag_module, &tag_symbol,
                        &tag_ident))
     return NULL;
-  if (! facts_replace_tags(&env->facts, &tag_ident, &tag_symbol_value,
-                           &tag_value))
-    return NULL;
-  tag_init_ident(dest, &tag_ident.data.ident);
+  env_eval_tag(env, &list_next(call->arguments)->tag, &tag_value);
+  if (tag_value.type == TAG_STRUCT &&
+      (s = &tag_value.data.struct_) &&
+      s->type->module == &g_sym_C3__Operator) {
+    if (! env_defoperator(env, &tag_ident.data.ident.sym,
+                          struct_get_sym(&tag_value.data.struct_,
+                                         &g_sym_sym),
+                          struct_get_tag(&tag_value.data.struct_,
+                                         &g_sym_symbol_value),
+                          struct_get_u8(&tag_value.data.struct_,
+                                        &g_sym_operator_precedence),
+                          struct_get_sym(&tag_value.data.struct_,
+                                         &g_sym_operator_associativity),
+                          dest)) {
+      tag_clean(&tag_value);
+      return NULL;
+    }
+  }
+  else {
+    tag_init_sym(&tag_symbol_value, &g_sym_symbol_value);
+    if (! facts_replace_tags(&env->facts, &tag_ident, &tag_symbol_value,
+                             &tag_value)) {
+      tag_clean(&tag_value);
+      return NULL;
+    }
+    tag_init_ident(dest, &tag_ident.data.ident);
+  }
   tag_clean(&tag_value);
   return dest;
 }

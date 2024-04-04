@@ -1,5 +1,5 @@
-quote defoperator :operator_muul :**** cfn Tag "tag_mul" (Tag, Tag, Result) 11 :left
-defoperator :operator_muul :**** cfn Tag "tag_mul" (Tag, Tag, Result) 11 :left
+quote def operator_muul = %C3.Operator{sym: :****, symbol_value: cfn Tag "tag_mul" (Tag, Tag, Result), operator_precedence: 11, operator_associativity: :left}
+def operator_muul = %C3.Operator{sym: :****, symbol_value: cfn Tag "tag_mul" (Tag, Tag, Result), operator_precedence: 11, operator_associativity: :left}
 quote 4 **** 4
 4 **** 4
 quote 4 **** 4 **** 4
