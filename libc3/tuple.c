@@ -17,6 +17,7 @@
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "io.h"
+#include "sym.h"
 #include "tuple.h"
 #include "tag.h"
 
@@ -86,7 +87,8 @@ s_tuple * tuple_init_2 (s_tuple *tuple, const s_tag *a, const s_tag *b)
   return tuple;
 }
 
-s_tuple * tuple_init_cast (s_tuple *tuple, const s_tag *tag)
+s_tuple * tuple_init_cast (s_tuple *tuple, const s_sym *type,
+                           const s_tag *tag)
 {
   switch (tag->type) {
   case TAG_TUPLE:
@@ -96,7 +98,13 @@ s_tuple * tuple_init_cast (s_tuple *tuple, const s_tag *tag)
   }
   err_write_1("tuple_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Tuple");
+  if (type == &g_sym_Tuple)
+    err_puts(" to Tuple");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka Tuple");
+  }
   assert(! "tuple_init_cast: cannot cast to Tuple");
   return NULL;
 }

@@ -21,8 +21,10 @@
 #include "ratio.h"
 #include "s64.h"
 
-s64 * s64_init_cast (s64 *s, const s_tag *tag)
+s64 * s64_init_cast
+(s64 *s, const s_sym *type, const s_tag *tag)
 {
+  (void) type;
   switch (tag->type) {
   case TAG_BOOL:
     *s = tag->data.bool ? 1 : 0;

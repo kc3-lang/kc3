@@ -16,7 +16,8 @@
 
 #include "types.h"
 
-sw * sw_init_cast (sw *s, const s_tag *tag);
+sw * sw_init_cast
+(sw *s, const s_sym *type, const s_tag *tag);
 sw * sw_init_copy (sw *s, const sw *src);
 sw * sw_random (sw *s);
 uw * sw_random_uniform (sw *s, sw min, sw max);

@@ -21,8 +21,10 @@
 #include "ratio.h"
 #include "s32.h"
 
-s32 * s32_init_cast (s32 *s, const s_tag *tag)
+s32 * s32_init_cast
+(s32 *s, const s_sym *type, const s_tag *tag)
 {
+  (void) type;
   switch (tag->type) {
   case TAG_BOOL:
     *s = tag->data.bool ? 1 : 0;

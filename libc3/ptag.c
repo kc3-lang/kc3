@@ -12,10 +12,15 @@
  */
 #include "assert.h"
 #include "ptag.h"
+#include "sym.h"
 #include "tag_type.h"
 
-p_tag * ptag_init_cast (p_tag *ptag, const s_tag *tag)
+p_tag * ptag_init_cast (p_tag *ptag, const s_sym *type,
+                        const s_tag *tag)
 {
+  assert(ptag);
+  assert(type);
+  assert(tag);
   switch (tag->type) {
   case TAG_PTAG:
     return ptag_init_copy(ptag, &tag->data.ptag);
@@ -24,7 +29,13 @@ p_tag * ptag_init_cast (p_tag *ptag, const s_tag *tag)
   }
   err_write_1("ptag_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Ptag");
+  if (type == &g_sym_Ptag)
+    err_puts(" to Ptag");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka Ptag");
+  }
   assert(! "ptag_init_cast: cannot cast to Ptag");
   return NULL;
 }

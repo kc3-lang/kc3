@@ -65,5 +65,6 @@ s_complex * complex_new_copy (const s_complex *a);
 bool complex_is_zero (const s_complex *c);
 f32  complex_to_f32 (const s_complex *c);
 f64  complex_to_f64 (const s_complex *c);
+f128 complex_to_f128 (const s_complex *c);
 
 #endif /* LIBC3_COMPLEX_H */

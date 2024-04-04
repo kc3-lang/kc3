@@ -1,0 +1,5 @@
+%{module: C3.Facts.Dump,
+  version: 1}
+replace {F128, :is_a, :module}
+replace {F128, :symbol, F128.cast}
+replace {F128.cast, :symbol_value, cfn F128 "f128_init_cast" (Result, Sym, Tag)}

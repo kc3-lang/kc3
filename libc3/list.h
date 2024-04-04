@@ -28,7 +28,8 @@
 void      list_clean (s_list *list);
 s_list  * list_init (s_list *list, s_list *next);
 s_list  * list_init_1 (s_list *list, const char *p, s_list *next);
-s_list ** list_init_cast (s_list **list, const s_tag *tag);
+s_list ** list_init_cast (s_list **list, const s_sym *type,
+                          const s_tag *tag);
 s_list ** list_init_copy (s_list **list, const s_list * const *src);
 s_list  * list_init_copy_tag (s_list *list, const s_tag *tag,
                               s_list *next);

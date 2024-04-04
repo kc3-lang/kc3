@@ -980,9 +980,11 @@ sw buf_parse_cast (s_buf *buf, s_call *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  call_init_op_unary(&tmp);
+  call_init_op(&tmp);
   ident_init(&tmp.ident, module, &g_sym_cast);
-  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
+  tag_init_sym(&tmp.arguments->tag, module);
+  if ((r = buf_parse_tag_primary(buf,
+                                 &list_next(tmp.arguments)->tag)) <= 0)
     goto clean;
   result += r;
   *dest = tmp;

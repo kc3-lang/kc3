@@ -134,8 +134,10 @@ uw integer_bytes (const s_integer *i)
   return (integer_bits(i) + 7) / 8;
 }
 
-s_integer * integer_init_cast (s_integer *a, const s_tag *tag)
+s_integer * integer_init_cast (s_integer *a, const s_sym *type,
+                               const s_tag *tag)
 {
+  (void) type;
   switch (tag->type) {
   case TAG_BOOL:
     return integer_init_u8(a, tag->data.bool ? 1 : 0);

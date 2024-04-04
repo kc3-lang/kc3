@@ -16,6 +16,8 @@
 #include "complex.h"
 #include "f32.h"
 #include "f64.h"
+#include "f128.h"
+#include "sym.h"
 #include "tag.h"
 #include "tag_init.h"
 
@@ -338,7 +340,7 @@ f32 complex_to_f32 (const s_complex *c)
   f32 x;
   assert(c);
   complex_norm(c, &norm);
-  f32_init_cast(&x, &norm);
+  f32_init_cast(&x, &g_sym_F32, &norm);
   return x;
 }
 
@@ -348,6 +350,16 @@ f64 complex_to_f64 (const s_complex *c)
   f64 x;
   assert(c);
   complex_norm(c, &norm);
-  f64_init_cast(&x, &norm);
+  f64_init_cast(&x, &g_sym_F64, &norm);
+  return x;
+}
+
+f128 complex_to_f128 (const s_complex *c)
+{
+  s_tag norm;
+  f128 x;
+  assert(c);
+  complex_norm(c, &norm);
+  f128_init_cast(&x, &g_sym_F128, &norm);
   return x;
 }

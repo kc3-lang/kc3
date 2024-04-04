@@ -2,4 +2,4 @@
   version: 1}
 replace {F32, :is_a, :module}
 replace {F32, :symbol, F32.cast}
-replace {F32.cast, :symbol_value, cfn F32 "f32_init_cast" (Result, Tag)}
+replace {F32.cast, :symbol_value, cfn F32 "f32_init_cast" (Result, Sym, Tag)}

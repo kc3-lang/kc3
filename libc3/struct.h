@@ -24,7 +24,8 @@
 void       struct_clean (s_struct *s);
 s_struct * struct_init (s_struct *s, const s_sym *module);
 s_struct * struct_init_1 (s_struct *s, const s8 *p);
-s_struct * struct_init_cast (s_struct *s, const s_tag *tag);
+s_struct * struct_init_cast (s_struct *s, const s_sym *type,
+                             const s_tag *tag);
 s_struct * struct_init_copy (s_struct *s, const s_struct *src);
 s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
                                    const s_list *keys,

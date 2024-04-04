@@ -513,25 +513,36 @@ s_ratio * ratio_sub (const s_ratio *a, const s_ratio *b,
   return dest;
 }
 
-f32 ratio_to_f32(const s_ratio *r)
+f32 ratio_to_f32 (const s_ratio *r)
 {
+  f32 numerator;
+  f32 denominator;
   assert(r);
   assert(integer_is_positive(&r->denominator));
-
-  f32 numerator = integer_to_f32(&r->numerator);
-  f32 denominator = integer_to_f32(&r->denominator);
-
+  numerator = integer_to_f32(&r->numerator);
+  denominator = integer_to_f32(&r->denominator);
   return numerator / denominator;
 }
 
-f64 ratio_to_f64(const s_ratio *r)
+f64 ratio_to_f64 (const s_ratio *r)
 {
+  f64 numerator;
+  f64 denominator;
   assert(r);
   assert(integer_is_positive(&r->denominator));
+  numerator = integer_to_f64(&r->numerator);
+  denominator = integer_to_f64(&r->denominator);
+  return numerator / denominator;
+}
 
-  f64 numerator = integer_to_f64(&r->numerator);
-  f64 denominator = integer_to_f64(&r->denominator);
-
+f128 ratio_to_f128 (const s_ratio *r)
+{
+  f128 numerator;
+  f128 denominator;
+  assert(r);
+  assert(integer_is_positive(&r->denominator));
+  numerator = integer_to_f128(&r->numerator);
+  denominator = integer_to_f128(&r->denominator);
   return numerator / denominator;
 }
 

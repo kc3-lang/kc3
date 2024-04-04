@@ -199,18 +199,29 @@ s_call * call_init_1 (s_call *call, const char *p)
 
 s_call * call_init_call_cast (s_call *call, const s_sym *type)
 {
+  s_list *next;
   s_call tmp = {0};
   tmp.ident.module = type;
   tmp.ident.sym = &g_sym_cast;
-  tmp.arguments = list_new(NULL);
-  if (! tmp.arguments)
+  next = list_new(NULL);
+  if (! next)
     return NULL;
+  tmp.arguments = list_new(next);
+  if (! tmp.arguments) {
+    list_delete_all(next);
+    return NULL;
+  }
+  tag_init_sym(&tmp.arguments->tag, type);
   *call = tmp;
   return call;
 }
 
-s_call * call_init_cast (s_call *call, const s_tag *tag)
+s_call * call_init_cast (s_call *call, const s_sym *type,
+                         const s_tag *tag)
 {
+  assert(call);
+  assert(type);
+  assert(tag);
   switch (tag->type) {
   case TAG_CALL:
     return call_init_copy(call, &tag->data.call);
@@ -219,7 +230,13 @@ s_call * call_init_cast (s_call *call, const s_tag *tag)
   }
   err_write_1("call_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Call");
+  if (type == &g_sym_Call)
+    err_puts(" to Call");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka Call");
+  }
   assert(! "call_init_cast: cannot cast to Call");
   return NULL;
 }

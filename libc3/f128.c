@@ -12,16 +12,19 @@
  */
 #include <stdlib.h>
 #include "assert.h"
+#include "f128.h"
 #include "integer.h"
+#include "ratio.h"
+#include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
-#include "f128.h"
 #include "u64.h"
 
-f128 * f128_init_cast (f128 *x, const s_tag *tag)
+f128 * f128_init_cast (f128 *x, const s_sym *type, const s_tag *tag)
 {
-  assert(tag);
   assert(x);
+  assert(type);
+  assert(tag);
   switch (tag->type) {
   case TAG_BOOL:
     *x = tag->data.bool ? 1.0 : 0.0;
@@ -40,6 +43,9 @@ f128 * f128_init_cast (f128 *x, const s_tag *tag)
     return x;
   case TAG_INTEGER:
     *x = integer_to_f128(&tag->data.integer);
+    return x;
+  case TAG_RATIO:
+    *x = ratio_to_f128(&tag->data.ratio);
     return x;
   case TAG_SW:
     *x = (f128) tag->data.sw;
@@ -76,7 +82,13 @@ f128 * f128_init_cast (f128 *x, const s_tag *tag)
   }
   err_write_1("f128_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to F128");
+  if (type == &g_sym_F128)
+    err_puts(" to F128");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka F128");
+  }
   assert(! "f128_init_cast: cannot cast to F128");
   return NULL;
 }

@@ -14,6 +14,7 @@
 #include "assert.h"
 #include "integer.h"
 #include "ptr_free.h"
+#include "sym.h"
 #include "tag_type.h"
 
 void ptr_free_clean (u_ptr_w *ptr_free)
@@ -38,10 +39,12 @@ u_ptr_w * ptr_free_init (u_ptr_w *ptr_free, void *p)
   return ptr_free;
 }
 
-u_ptr_w * ptr_free_init_cast (u_ptr_w *p, const s_tag *tag)
+u_ptr_w * ptr_free_init_cast (u_ptr_w *p, const s_sym *type,
+                              const s_tag *tag)
 {
-  assert(tag);
   assert(p);
+  assert(type);
+  assert(tag);
   switch (tag->type) {
   case TAG_F32: p->p = (void *) ((uw) tag->data.f32);  return p;
   case TAG_F64: p->p = (void *) ((uw) tag->data.f64);  return p;
@@ -63,7 +66,13 @@ u_ptr_w * ptr_free_init_cast (u_ptr_w *p, const s_tag *tag)
   }
   err_write_1("ptr_free_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to PtrFree");
+  if (type == &g_sym_PtrFree)
+    err_puts(" to PtrFree");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka PtrFree");
+  }
   assert(! "ptr_free_init_cast: cannot cast to PtrFree");
   return NULL;
 }

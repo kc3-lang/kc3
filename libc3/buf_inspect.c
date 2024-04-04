@@ -748,7 +748,8 @@ sw buf_inspect_cast (s_buf *buf, const s_call *call)
   assert(buf);
   assert(call);
   assert(call->arguments);
-  assert(! list_next(call->arguments));
+  assert(list_next(call->arguments));
+  assert(! list_next(list_next(call->arguments)));
   module = call->ident.module;
   if ((r = buf_inspect_paren_sym(buf, module)) < 0)
     return r;
@@ -756,7 +757,7 @@ sw buf_inspect_cast (s_buf *buf, const s_call *call)
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  arg = &call->arguments->tag;
+  arg = &list_next(call->arguments)->tag;
   if ((r = buf_inspect_tag(buf, arg)) < 0)
     return r;
   result += r;

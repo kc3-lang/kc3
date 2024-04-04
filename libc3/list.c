@@ -74,8 +74,12 @@ s_list * list_init_1 (s_list *list, const char *p, s_list *next)
   return list;
 }
 
-s_list ** list_init_cast (s_list **list, const s_tag *tag)
+s_list ** list_init_cast (s_list **list, const s_sym *type,
+                          const s_tag *tag)
 {
+  assert(list);
+  assert(type);
+  assert(tag);
   switch (tag->type) {
   case TAG_LIST:
     return list_init_copy(list,
@@ -85,7 +89,13 @@ s_list ** list_init_cast (s_list **list, const s_tag *tag)
   }
   err_write_1("list_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to List");
+  if (type == &g_sym_List)
+    err_puts(" to List");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka List");
+  }
   assert(! "list_init_cast: cannot cast to List");
   return NULL;
 }

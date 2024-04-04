@@ -14,6 +14,7 @@
 #include "assert.h"
 #include "integer.h"
 #include "ptr.h"
+#include "sym.h"
 #include "tag_type.h"
 
 void ptr_delete (u_ptr_w *ptr)
@@ -31,10 +32,12 @@ u_ptr_w * ptr_init (u_ptr_w *ptr, void *p)
   return ptr;
 }
 
-u_ptr_w * ptr_init_cast (u_ptr_w *p, const s_tag *tag)
+u_ptr_w * ptr_init_cast (u_ptr_w *p, const s_sym *type,
+                         const s_tag *tag)
 {
-  assert(tag);
   assert(p);
+  assert(type);
+  assert(tag);
   switch (tag->type) {
   case TAG_F32: p->p = (void *) ((uw) tag->data.f32);  return p;
   case TAG_F64: p->p = (void *) ((uw) tag->data.f64);  return p;
@@ -57,7 +60,13 @@ u_ptr_w * ptr_init_cast (u_ptr_w *p, const s_tag *tag)
   }
   err_write_1("ptr_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Ptr");
+  if (type == &g_sym_Ptr)
+    err_puts(" to Ptr");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka Ptr");
+  }
   assert(! "ptr_cast: cannot cast to Ptr");
   return NULL;
 }
