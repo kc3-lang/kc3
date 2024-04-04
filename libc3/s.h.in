@@ -16,7 +16,8 @@
 
 #include "types.h"
 
-s_bits$ * s_bits$_init_cast (s_bits$ *s, const s_tag *tag);
+s_bits$ * s_bits$_init_cast
+(s_bits$ *s, const s_sym *type, const s_tag *tag);
 s_bits$ * s_bits$_init_copy (s_bits$ *s, const s_bits$ *src);
 s_bits$ * s_bits$_random (s_bits$ *s);
 u_bits$ * s_bits$_random_uniform (s_bits$ *s, s_bits$ min, s_bits$ max);

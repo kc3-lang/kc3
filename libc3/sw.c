@@ -21,8 +21,10 @@
 #include "ratio.h"
 #include "sw.h"
 
-sw * sw_init_cast (sw *s, const s_tag *tag)
+sw * sw_init_cast
+(sw *s, const s_sym *type, const s_tag *tag)
 {
+  (void) type;
   switch (tag->type) {
   case TAG_BOOL:
     *s = tag->data.bool ? 1 : 0;

@@ -15,6 +15,7 @@
 #include "buf_inspect.h"
 #include "hash.h"
 #include "fact.h"
+#include "sym.h"
 #include "tag.h"
 
 uw fact_hash_uw (const s_fact *fact)
@@ -37,8 +38,12 @@ s_fact * fact_init (s_fact *fact, const s_tag *subject,
   return fact;
 }
 
-s_fact * fact_init_cast (s_fact *fact, const s_tag *tag)
+s_fact * fact_init_cast (s_fact *fact, const s_sym *type,
+                         const s_tag *tag)
 {
+  assert(fact);
+  assert(type);
+  assert(tag);
   switch (tag->type) {
   case TAG_FACT:
     return fact_init_copy(fact, &tag->data.fact);
@@ -47,7 +52,13 @@ s_fact * fact_init_cast (s_fact *fact, const s_tag *tag)
   }
   err_write_1("fact_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Fact");
+  if (type == &g_sym_Fact)
+    err_puts(" to Fact");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka Fact");
+  }
   assert(! "fact_init_cast: cannot cast to Fact");
   return NULL;
 }

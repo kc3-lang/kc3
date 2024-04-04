@@ -21,8 +21,10 @@
 #include "ratio.h"
 #include "s8.h"
 
-s8 * s8_init_cast (s8 *s, const s_tag *tag)
+s8 * s8_init_cast
+(s8 *s, const s_sym *type, const s_tag *tag)
 {
+  (void) type;
   switch (tag->type) {
   case TAG_BOOL:
     *s = tag->data.bool ? 1 : 0;

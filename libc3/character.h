@@ -18,7 +18,8 @@
 
 character   character_1 (const char *p);
 void        character_hash_update (character c, t_hash *hash);
-character * character_init_cast (character *c, const s_tag *tag);
+character * character_init_cast (character *c, const s_sym *type,
+                                 const s_tag *tag);
 character * character_init_copy (character *c, const character *src);
 bool        character_is_digit (character c);
 bool        character_is_lowercase (character c);

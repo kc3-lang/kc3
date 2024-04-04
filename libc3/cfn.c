@@ -179,8 +179,9 @@ s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
   return cfn;
 }
 
-s_cfn * cfn_init_cast (s_cfn *cfn, const s_tag *tag)
+s_cfn * cfn_init_cast (s_cfn *cfn, const s_sym *type, const s_tag *tag)
 {
+  (void) type;
   switch (tag->type) {
   case TAG_CFN:
     return cfn_init_copy(cfn, &tag->data.cfn);

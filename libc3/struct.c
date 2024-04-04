@@ -113,19 +113,22 @@ s_struct * struct_init_1 (s_struct *s, const s8 *p)
   return s;
 }
 
-s_struct * struct_init_cast (s_struct *s, const s_tag *tag)
+s_struct * struct_init_cast (s_struct *s, const s_sym *type, const s_tag *tag)
 {
   assert(s);
   assert(tag);
   switch (tag->type) {
   case TAG_STRUCT:
-    return struct_init_copy(s, &tag->data.struct_);
+    if (type == tag->data.struct_.type->module)
+      return struct_init_copy(s, &tag->data.struct_);
   default:
     break;
   }
   err_write_1("struct_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Struct");
+  err_write_1(" to ");
+  err_inspect_sym(&type);
+  err_write_1("\n");
   assert(! "struct_init_cast: cannot cast to Struct");
   return NULL;
 }

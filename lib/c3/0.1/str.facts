@@ -2,4 +2,4 @@
   version: 1}
 replace {Str, :is_a, :module}
 replace {Str, :symbol, Str.cast}
-replace {Str.cast, :symbol_value, cfn Str "str_init_cast" (Result, Tag)}
+replace {Str.cast, :symbol_value, cfn Str "str_init_cast" (Result, Sym, Tag)}

@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-//#include <stdarg.h>
+#include <stdarg.h>
 #include <string.h>
 #include "alloc.h"
 #include "assert.h"
@@ -148,9 +148,10 @@ s_str * str_init_alloc (s_str *str, uw size, const char *p)
   return str;
 }
 
-s_str * str_init_cast (s_str *str, const s_tag *tag)
+s_str * str_init_cast (s_str *str, const s_sym *type, const s_tag *tag)
 {
   assert(str);
+  assert(type);
   assert(tag);
   switch (tag->type) {
   case TAG_S8:
@@ -182,7 +183,13 @@ s_str * str_init_cast (s_str *str, const s_tag *tag)
   }
   err_write_1("str_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Str");
+  if (type == &g_sym_Str)
+    err_puts(" to Str");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka Str");
+  }
   assert(! "str_init_cast: cannot cast to Str");
   return NULL;
 }
@@ -485,7 +492,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
     else {
       if (! tag_init_call_cast(&tmp, &g_sym_Str))
         goto restore;
-      tmp.data.call.arguments->tag = list->tag;
+      list_next(tmp.data.call.arguments)->tag = list->tag;
     }
     list = list_next(list);
     while (list) {
@@ -503,7 +510,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
       else {
         if (! tag_init_call_cast(right, &g_sym_Str))
           goto restore;
-        right->data.call.arguments->tag = list->tag;
+        list_next(right->data.call.arguments)->tag = list->tag;
       }
       tmp = tmp1;
       list = list_next(list);

@@ -18,11 +18,13 @@
 #include "integer.h"
 #include "io.h"
 #include "ratio.h"
+#include "sym.h"
 #include "tag_type.h"
 
-bool * bool_init_cast (bool *b, const s_tag *tag)
+bool * bool_init_cast (bool *b, const s_sym *type, const s_tag *tag)
 {
   assert(b);
+  assert(type);
   assert(tag);
   switch (tag->type) {
   case TAG_BOOL:      *b = tag->data.bool;                     return b;
@@ -45,8 +47,9 @@ bool * bool_init_cast (bool *b, const s_tag *tag)
   case TAG_U32:       *b = tag->data.u32 != 0;                 return b;
   case TAG_U64:       *b = tag->data.u64 != 0;                 return b;
   case TAG_UW:        *b = tag->data.uw != 0;                  return b;
-  case TAG_PTAG:      return tag->data.ptag ?
-      bool_init_cast(b, tag->data.ptag) : (*b = false, b);
+  case TAG_PTAG:
+    return tag->data.ptag ?
+      bool_init_cast(b, type, tag->data.ptag) : (*b = false, b);
   case TAG_PTR:       *b = tag->data.ptr.p != 0;               return b;
   case TAG_PTR_FREE:  *b = tag->data.ptr_free.p != 0;          return b;
   case TAG_ARRAY:
@@ -71,7 +74,13 @@ bool * bool_init_cast (bool *b, const s_tag *tag)
   }
   err_write_1("bool_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Bool");
+  if (type == &g_sym_Bool)
+    err_puts(" to Bool");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka Bool");
+  }
   assert(! "bool_cast: cannot cast to Bool");
   return NULL;
 }

@@ -251,9 +251,11 @@ const s_sym ** sym_init_1 (const s_sym **sym, const char *p)
   return sym;
 }
 
-const s_sym ** sym_init_cast (const s_sym **sym, const s_tag *tag)
+const s_sym ** sym_init_cast (const s_sym **sym, const s_sym *type,
+                              const s_tag *tag)
 {
   assert(sym);
+  assert(type);
   assert(tag);
   switch (tag->type) {
   case TAG_STR:
@@ -265,7 +267,13 @@ const s_sym ** sym_init_cast (const s_sym **sym, const s_tag *tag)
   }
   err_write_1("sym_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Sym");
+  if (type == &g_sym_Sym)
+    err_puts(" to Sym");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka Sym");
+  }
   assert(! "sym_init_cast: cannot cast to Sym");
   return NULL;
 }

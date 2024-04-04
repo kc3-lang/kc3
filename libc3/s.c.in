@@ -21,8 +21,10 @@
 #include "ratio.h"
 #include "s_bits$.h"
 
-s_bits$ * s_bits$_init_cast (s_bits$ *s, const s_tag *tag)
+s_bits$ * s_bits$_init_cast
+(s_bits$ *s, const s_sym *type, const s_tag *tag)
 {
+  (void) type;
   switch (tag->type) {
   case TAG_BOOL:
     *s = tag->data.bool ? 1 : 0;

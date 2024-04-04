@@ -20,8 +20,10 @@
 #include "tag.h"
 #include "u8.h"
 
-u8 * u8_init_cast (u8 *u, const s_tag *tag)
+u8 * u8_init_cast
+(u8 *u, const s_sym *type, const s_tag *tag)
 {
+  (void) type;
   switch (tag->type) {
   case TAG_BOOL:
     *u = tag->data.bool ? 1 : 0;

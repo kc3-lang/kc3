@@ -51,16 +51,17 @@ bool    ratio_is_negative (const s_ratio *r);
 bool    ratio_is_zero (const s_ratio *r);
 f32     ratio_to_f32 (const s_ratio *r);
 f64     ratio_to_f64 (const s_ratio *r);
-sw      ratio_to_sw (const s_ratio *r);
-s64     ratio_to_s64 (const s_ratio *r);
-s32     ratio_to_s32 (const s_ratio *r);
-s16     ratio_to_s16 (const s_ratio *r);
+f128    ratio_to_f128 (const s_ratio *r);
 s8      ratio_to_s8 (const s_ratio *r);
-uw      ratio_to_uw (const s_ratio *r);
-u64     ratio_to_u64 (const s_ratio *r);
-u32     ratio_to_u32 (const s_ratio *r);
-u16     ratio_to_u16 (const s_ratio *r);
+s16     ratio_to_s16 (const s_ratio *r);
+s32     ratio_to_s32 (const s_ratio *r);
+s64     ratio_to_s64 (const s_ratio *r);
+sw      ratio_to_sw (const s_ratio *r);
 u8      ratio_to_u8 (const s_ratio *r);
+u16     ratio_to_u16 (const s_ratio *r);
+u32     ratio_to_u32 (const s_ratio *r);
+u64     ratio_to_u64 (const s_ratio *r);
+uw      ratio_to_uw (const s_ratio *r);
 
 /* Operators. */
 s_ratio * ratio_add (const s_ratio *a, const s_ratio *b,

@@ -12,6 +12,7 @@
  */
 #include "assert.h"
 #include "quote.h"
+#include "sym.h"
 #include "tag.h"
 
 void quote_clean (s_quote *quote)
@@ -26,8 +27,12 @@ s_quote * quote_init (s_quote *quote, const s_tag *tag)
   return quote;
 }
 
-s_quote * quote_init_cast (s_quote *quote, const s_tag *tag)
+s_quote * quote_init_cast (s_quote *quote, const s_sym *type,
+                           const s_tag *tag)
 {
+  assert(quote);
+  assert(type);
+  assert(tag);
   switch (tag->type) {
   case TAG_QUOTE:
     return quote_init_copy(quote, &tag->data.quote);
@@ -36,7 +41,13 @@ s_quote * quote_init_cast (s_quote *quote, const s_tag *tag)
   }
   err_write_1("quote_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Quote");
+  if (type == &g_sym_Quote)
+    err_puts(" to Quote");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_puts(" aka Quote");
+  }
   assert(! "quote_init_cast: cannot cast to Quote");
   return NULL;
 }

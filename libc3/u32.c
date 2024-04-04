@@ -20,8 +20,10 @@
 #include "tag.h"
 #include "u32.h"
 
-u32 * u32_init_cast (u32 *u, const s_tag *tag)
+u32 * u32_init_cast
+(u32 *u, const s_sym *type, const s_tag *tag)
 {
+  (void) type;
   switch (tag->type) {
   case TAG_BOOL:
     *u = tag->data.bool ? 1 : 0;

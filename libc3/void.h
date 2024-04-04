@@ -22,6 +22,6 @@
 #include "types.h"
 
 /* Operators. */
-void * void_init_cast (void *v, const s_tag *src);
+void * void_init_cast (void *v, const s_sym *type, const s_tag *src);
 
 #endif /* LIBC3_VOID_H */

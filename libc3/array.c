@@ -241,8 +241,12 @@ s_array * array_init_1 (s_array *array, const char *p)
   return array;
 }
 
-s_array * array_init_cast (s_array *array, const s_tag *tag)
+s_array * array_init_cast (s_array *array, const s_sym *type, const s_tag *tag)
 {
+  assert(array);
+  assert(type);
+  assert(tag);
+  (void) type;
   switch (tag->type) {
   case TAG_ARRAY:
     return array_init_copy(array, &tag->data.array);
