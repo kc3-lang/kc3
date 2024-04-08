@@ -615,10 +615,8 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     return true;
   }
   if (! macro &&
-      a->type == TAG_CALL &&
-      a->data.call.ident.module == &g_sym_C3 &&
-      a->data.call.ident.sym == &g_sym_operator_pin) {
-    if (! env_eval_tag(env, &a->data.call.arguments->tag, &tmp_a))
+      a->type == TAG_CALL) {
+    if (! env_eval_tag(env, a, &tmp_a))
       return false;
     if (! env_eval_equal_tag(env, macro, &tmp_a, b, dest)) {
       tag_clean(&tmp_a);
@@ -628,10 +626,8 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     return true;
   }
   if (! macro &&
-      b->type == TAG_CALL &&
-      b->data.call.ident.module == &g_sym_C3 &&
-      b->data.call.ident.sym == &g_sym_operator_pin) {
-    if (! env_eval_tag(env, &b->data.call.arguments->tag, &tmp_b))
+      b->type == TAG_CALL) {
+    if (! env_eval_tag(env, b, &tmp_b))
       return false;
     if (! env_eval_equal_tag(env, macro, a, &tmp_b, dest)) {
       tag_clean(&tmp_b);
