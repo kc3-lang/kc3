@@ -362,6 +362,18 @@ matched to litterals that show their type to the programmer. This is
 really helpful when writing large programs that need to scale in the way
 of abstractions. Let the data flow in the code through visual types.
 
+Examples :
+```
+ic3> [x, y | z] = List.reverse([1, 2, 3, 4])
+[4, 3, 2, 1]
+ic3> x
+4
+ic3> y
+3
+ic3> z
+[2, 1]
+```
+
 
 #### Macros
 
