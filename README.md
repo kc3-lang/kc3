@@ -383,11 +383,15 @@ Macros are like functions but start with `macro` instead of `fn` and
 their arguments do not get evaluated. However they get pattern matched
 and the full power of the pattern matcher is available for arguments
 destructuring. Use a map if you want named arguments. Use a list if you
-want &rest or &body arguments.
+want &rest arguments, use a block if you want a &body argument.
 
 When evaluated, a macro call returns a tag which is in turn evaluated
 in the calling site lexical environment. This allows for DSLs and custom
 control structures to be defined in C3.
+
+Many basic operations in C3 are defined as macros : error handling,
+free operations with `unwind-protect`, graph database operations like
+`Facts.with`.
 
 
 #### If, then, else.
@@ -415,6 +419,13 @@ first (then) block gets evaluated. If the condition is false the second
 block gets evaluated. If the condition is false and an `else` block is
 not provided, then `void` gets returned.
 
+One liner examples with `then` :
+```
+ic3> if 42 then true end
+true
+ic3> if 0 then true else false end
+false
+```
 
 ### c3s
 
