@@ -2439,7 +2439,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_U64:     return buf_inspect_u64(buf, &tag->data.u64);
   case TAG_UNQUOTE: return buf_inspect_unquote(buf, &tag->data.unquote);
   case TAG_UW:      return buf_inspect_uw(buf, &tag->data.uw);
-  case TAG_VAR:     return buf_inspect_var(buf, NULL);
+  case TAG_VAR:     return buf_inspect_var(buf, tag);
   case TAG_VOID:    return buf_inspect_void(buf, NULL);
   }
   err_puts("buf_inspect_tag: unknown tag_type");
@@ -2494,7 +2494,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_UNQUOTE:
     return buf_inspect_unquote_size(&tag->data.unquote);
   case TAG_UW:       return buf_inspect_uw_size(&tag->data.uw);
-  case TAG_VAR:      return buf_inspect_var_size(NULL);
+  case TAG_VAR:      return buf_inspect_var_size(tag);
   case TAG_VOID:     return buf_inspect_void_size(NULL);
   }
   err_puts("buf_inspect_tag_size: unknown tag type");
@@ -2607,32 +2607,33 @@ sw buf_inspect_unquote_size (const s_unquote *unquote)
   return result;
 }
 
-sw buf_inspect_var (s_buf *buf, const s_tag *var)
+sw buf_inspect_var (s_buf *buf, const s_tag *tag)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(buf, "var(0x")) < 0)
+  assert(buf);
+  assert(tag);
+  assert(tag->type == TAG_VAR);
+  assert(tag->data.var.type);
+  if (tag->data.var.type == &g_sym_Tag)
+    return buf_write_1(buf, "?");
+  if ((r = buf_inspect_paren_sym(buf, tag->data.var.type)) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) var)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, ")")) < 0)
+  if ((r = buf_write_1(buf, " ?")) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_var_size (const s_tag *var)
+sw buf_inspect_var_size (const s_tag *tag)
 {
   sw r;
   sw result = 0;
-  r = strlen("var(0x");
+  if ((r = buf_inspect_paren_sym_size(tag->data.var.type)) < 0)
+    return r;
   result += r;
-  r = buf_inspect_uw_hexadecimal_size((uw *) var);
-  result += r;
-  r = strlen(")");
-  result += r;
+  result += strlen(" ?");
   return result;
 }
 

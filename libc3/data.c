@@ -537,7 +537,7 @@ void * data_init_cast (void *data, const s_sym *type, const s_tag *tag)
   if (type == &g_sym_Uw)
     return uw_init_cast(data, type, tag);
   if (type == &g_sym_Var)
-    return data;
+    return var_init_cast(data, type, tag);
   if (type == &g_sym_Void)
     return data;
   /*

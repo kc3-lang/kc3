@@ -3608,7 +3608,7 @@ sw buf_parse_tag_var (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_var(buf, NULL)) > 0)
+  if ((r = buf_parse_var(buf, &dest->data.var)) > 0)
     dest->type = TAG_VAR;
   return r;
 }
@@ -3787,21 +3787,32 @@ sw buf_parse_unquote (s_buf *buf, s_unquote *dest)
   return r;
 }
 
-sw buf_parse_var (s_buf *buf, void *dest)
+sw buf_parse_var (s_buf *buf, s_var *dest)
 {
   character c;
   sw r;
+  sw result = 0;
   s_buf_save save;
+  s_var tmp = {0};
   assert(buf);
   (void) dest;
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "?")) <= 0)
+  if ((r = buf_parse_paren_sym(buf, &tmp.type)) <= 0)
     goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "?")) <= 0)
+    goto restore;
+  result += r;
   if (buf_peek_character_utf8(buf, &c) > 0 &&
       ! ident_character_is_reserved(c)) {
     r = 0;
     goto restore;
   }
+  *dest = tmp;
+  r = result;
   goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);

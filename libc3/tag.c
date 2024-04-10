@@ -43,6 +43,7 @@
 #include "time.h"
 #include "tuple.h"
 #include "unquote.h"
+#include "var.h"
 
 s_tag g_tag_first;
 s_tag g_tag_last;
@@ -331,9 +332,6 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
   assert(tag);
   assert(src);
   switch (src->type) {
-  case TAG_VAR:
-    tag_init_var(tag);
-    break;
   case TAG_VOID:
     tag_init_void(tag);
     break;
@@ -383,6 +381,9 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     break;
   case TAG_UNQUOTE:
     unquote_init_copy(&tag->data.unquote, &src->data.unquote);
+    break;
+  case TAG_VAR:
+    var_init_copy(tag, src);
     break;
   case TAG_BOOL:
   case TAG_CHARACTER:

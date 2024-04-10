@@ -178,6 +178,7 @@ typedef struct tuple                   s_tuple;
 typedef struct type                    s_type;
 typedef struct unquote                 s_unquote;
 typedef struct unwind_protect          s_unwind_protect;
+typedef struct var                     s_var;
 
 /* unions */
 typedef union ptr_     u_ptr;
@@ -313,6 +314,10 @@ struct unwind_protect {
   jmp_buf buf;
   jmp_buf *jmp;
   s_unwind_protect *next;
+};
+
+struct var {
+  const s_sym *type;
 };
 
 /* 2 */
@@ -467,6 +472,7 @@ union tag_data {
   u64           u64;
   s_unquote     unquote;
   uw            uw;
+  s_var         var;
 };
 
 /* 6 */
