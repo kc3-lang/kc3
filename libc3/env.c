@@ -1279,8 +1279,11 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
     return false;
   i = 0;
   while (i < t->type->map.count) {
-    if (! tag_type(t->type->map.value + i, &type))
-      goto ko;
+    if (t->type->map.value[i].type == TAG_VAR)
+      type = t->type->map.value[i].data.var.type;
+    else
+      if (! tag_type(t->type->map.value + i, &type))
+        goto ko;
     if (s->tag) {
       if (! env_eval_tag(env, s->tag + i, &tag))
         goto ko;
