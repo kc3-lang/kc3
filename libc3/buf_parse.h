@@ -135,7 +135,7 @@ sw buf_parse_tag_void (s_buf *buf, s_tag *dest);
 sw buf_parse_tuple (s_buf *buf, s_tuple *dest);
 sw buf_parse_u64_hex (s_buf *buf, u64 *dest);
 sw buf_parse_unquote (s_buf *buf, s_unquote *dest);
-sw buf_parse_var (s_buf *buf, void *dest);
+sw buf_parse_var (s_buf *buf, s_var *dest);
 sw buf_parse_void (s_buf *buf, void *dest);
 sw buf_parse_tag_ratio (s_buf *buf, s_tag *dest);
 sw buf_peek_array_dimensions (s_buf *buf, s_array *dest);

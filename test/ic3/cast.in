@@ -28,7 +28,3 @@ quote (Sym) "Abc"
 (Sym) "Abc"
 quote (Sym) "abc"
 (Sym) "abc"
-quote (Tag) ?
-(Tag) ?
-quote (U8) ?
-(U8) ?
