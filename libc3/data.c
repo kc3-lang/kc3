@@ -524,6 +524,8 @@ void * data_init_cast (void *data, const s_sym *type, const s_tag *tag)
     return sw_init_cast(data, type, tag);
   if (type == &g_sym_Sym)
     return sym_init_cast(data, type, tag);
+  if (type == &g_sym_Tag)
+    return tag_init_copy(data, tag);
   if (type == &g_sym_Tuple)
     return tuple_init_cast(data, type, tag);
   if (type == &g_sym_U8)

@@ -21,16 +21,12 @@ s_tag * var_init_cast (s_tag *tag, const s_sym *type, const s_tag *src)
   void *data;
   s_tag tmp;
   assert(tag);
-  assert(tag->type == TAG_VAR);
   assert(type);
+  assert(type != &g_sym_Var);
   assert(src);
-  if (type != tag->data.var.type) {
-    err_write_1("var_init_cast: invalid type, expected ");
-    err_inspect_sym(&tag->data.var.type);
-    err_write_1(" got ");
-    err_inspect_sym(&type);
-    err_write_1("\n");
-    assert(! "var_init_cast: invalid type");
+  if (type == &g_sym_Var) {
+    err_puts("var_init_cast: cannot cast to Var");
+    assert(! "var_init_cast: cannot cast to Var");
     return NULL;
   }
   if (! sym_to_tag_type(type, &tmp.type))

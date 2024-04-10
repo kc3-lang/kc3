@@ -1072,6 +1072,10 @@ bool sym_type_size (const s_sym *type, uw *dest)
     *dest = sizeof(s_sym *);
     return true;
   }
+  if (type == &g_sym_Tag) {
+    *dest = sizeof(s_tag);
+    return true;
+  }
   if (type == &g_sym_Tuple) {
     *dest = sizeof(s_tuple);
     return true;
