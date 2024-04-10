@@ -421,10 +421,10 @@ not provided, then `void` gets returned.
 
 One liner examples with `then` :
 ```
-ic3> if 42 then true end
-true
-ic3> if 0 then true else false end
-false
+ic3> if 42 then 100 else 101 end
+100
+ic3> if 0 then 100 else 101 end
+101
 ```
 
 ### c3s
