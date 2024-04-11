@@ -33,6 +33,7 @@
 #include "facts_with_cursor.h"
 #include "file.h"
 #include "fn.h"
+#include "fn_clause.h"
 #include "frame.h"
 #include "ident.h"
 #include "io.h"
@@ -1318,6 +1319,75 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
   return false;
 }
 
+bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
+{
+  uw i;
+  s_block     *src_block;
+  s_fn_clause *src_clause;
+  s_list      *src_pattern;
+  s_tag       *src_tag;
+  s_tag         tmp = {0};
+  s_block      *tmp_block;
+  s_fn_clause **tmp_clause;
+  s_fn         *tmp_fn;
+  s_list      **tmp_pattern;
+  s_tag        *tmp_tag;
+  assert(env);
+  assert(fn);
+  assert(dest);
+  (void) env;
+  tmp.type = TAG_FN;
+  tmp_fn = &tmp.data.fn;
+  src_clause = fn->clauses;
+  tmp_clause = &tmp_fn->clauses;
+  while (src_clause) {
+    *tmp_clause = fn_clause_new(NULL);
+    src_pattern = src_clause->pattern;
+    tmp_pattern = &(*tmp_clause)->pattern;
+    while (src_pattern) {
+      *tmp_pattern = list_new(NULL);
+      if (! env_eval_fn_tag(env, &src_pattern->tag,
+                            &(*tmp_pattern)->tag))
+        goto ko;
+      src_pattern = list_next(src_pattern);
+      tmp_pattern = &(*tmp_pattern)->next.data.list;
+    }
+    src_block = &src_clause->algo;
+    tmp_block = &(*tmp_clause)->algo;
+    if (! block_init(tmp_block, src_block->count))
+      goto ko;
+    tmp_block->short_form = src_block->short_form;
+    i = 0;
+    while (i < src_block->count) {
+      src_tag = src_block->tag + i;
+      tmp_tag = tmp_block->tag + i;
+      if (! env_eval_fn_tag(env, src_tag, tmp_tag))
+        goto ko;
+      i++;
+    }
+    src_clause = src_clause->next_clause;
+    tmp_clause = &(*tmp_clause)->next_clause;
+  }
+  tmp_fn->macro = fn->macro;
+  tmp_fn->special_operator = fn->special_operator;
+  *dest = tmp;
+  return true;
+ ko:
+  fn_clean(&tmp.data.fn);
+  return false;
+}
+
+bool env_eval_fn_tag (s_env *env, const s_tag *tag, s_tag *dest)
+{
+  assert(env);
+  assert(tag);
+  assert(dest);
+  (void) env;
+  if (! tag_init_copy(dest, tag))
+    return false;
+  return true;
+}
+
 bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
 {
   assert(env);
@@ -1334,6 +1404,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_call(env, &tag->data.call, dest);
   case TAG_COMPLEX:
     return env_eval_complex(env, tag->data.complex, dest);
+  case TAG_FN:
+    return env_eval_fn(env, &tag->data.fn, dest);
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
   case TAG_LIST:
@@ -1355,7 +1427,6 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_F64:
   case TAG_F128:
   case TAG_FACT:
-  case TAG_FN:
   case TAG_INTEGER:
   case TAG_RATIO:
   case TAG_PTAG:

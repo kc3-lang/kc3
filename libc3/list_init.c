@@ -129,6 +129,17 @@ s_list * list_init_f128 (s_list *list, f128 f, s_list *next)
   return list;
 }
 
+s_list * list_init_fn_copy (s_list *list, const s_fn *fn, s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_fn_copy(&tmp.tag, fn))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_ident (s_list *list, const s_ident *ident, 
                           s_list *next)
 {
@@ -649,6 +660,19 @@ s_list * list_new_f128 (f128 f, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_f128(&list->tag, f)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_fn_copy (const s_fn *fn, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_fn_copy(&list->tag, fn)) {
     free(list);
     return NULL;
   }

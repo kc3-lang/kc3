@@ -71,6 +71,8 @@ bool          env_eval_equal_tuple (s_env *env, bool macro,
                                     const s_tuple *a, const s_tuple *b,
                                     s_tuple *dest);
 bool          env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest);
+bool          env_eval_fn_tag (s_env *env, const s_tag *tag,
+                               s_tag *dest);
 bool          env_eval_fn_call (s_env *env, const s_fn *fn,
                                 const s_list *arguments, s_tag *dest);
 bool          env_eval_ident (s_env *env, const s_ident *ident,

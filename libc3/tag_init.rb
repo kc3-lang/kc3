@@ -321,6 +321,8 @@ class TagInitList
                    [Arg.new("f64", "f")]),
        TagInit.new("f128", "TAG_F128", :init_mode_direct,
                    [Arg.new("f128", "f")]),
+       TagInit.new("fn", "copy", "TAG_FN", :init_mode_init,
+                   [Arg.new("const s_fn *", "fn")]),
        TagInit.new("ident", "TAG_IDENT", :init_mode_direct,
                    [Arg.new("const s_ident *", "ident")]),
        TagInit1.new("ident", "1", "TAG_IDENT", :init_mode_init),
