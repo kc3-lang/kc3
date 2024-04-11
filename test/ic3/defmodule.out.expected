@@ -15,3 +15,14 @@ end
 Double
 Double.double(21)
 42
+defmodule Plop do
+  def a = 1
+  def b = fn () { a }
+end
+Plop
+Plop.a
+1
+Plop.b
+fn () { a }
+Plop.b()
+1
