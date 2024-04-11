@@ -20,3 +20,17 @@ defmodule Double do
 end
 quote Double.double(21)
 Double.double(21)
+quote defmodule Plop do
+  def a = 1
+  def b = fn () { a }
+end
+defmodule Plop do
+  def a = 1
+  def b = fn () { a }
+end
+quote Plop.a
+Plop.a
+quote Plop.b
+Plop.b
+quote Plop.b()
+Plop.b()
