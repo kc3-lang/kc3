@@ -23,6 +23,7 @@
 #include "call.h"
 #include "cfn.h"
 #include "compare.h"
+#include "complex.h"
 #include "data.h"
 #include "env.h"
 #include "error.h"
@@ -419,7 +420,79 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
-  return env_eval_fn_call(env, call->fn, call->arguments, dest);
+  return env_eval_call_fn_args(env, call->fn, call->arguments, dest);
+}
+
+bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
+                            const s_list *arguments, s_tag *dest)
+{
+  s_list *args = NULL;
+  const s_list *args_final = NULL;
+  s_fn_clause *clause;
+  s_frame frame;
+  s_tag tag;
+  s_list *tmp = NULL;
+  assert(env);
+  assert(fn);
+  assert(dest);
+  clause = fn->clauses;
+  if (arguments) {
+    if (fn->macro || fn->special_operator)
+      args_final = arguments;
+    else {
+      if (! env_eval_call_arguments(env, arguments, &args)) {
+        env->frame = frame_clean(&frame);
+        return false;
+      }
+      args_final = args;
+    }
+    while (clause) {
+      frame_init(&frame, env->frame);
+      env->frame = &frame;
+      if (env_eval_equal_list(env, fn->macro || fn->special_operator,
+                              clause->pattern, args_final, &tmp))
+        break;
+      env->frame = frame_clean(&frame);
+      clause = clause->next_clause;
+    }
+    if (! clause) {
+      err_puts("env_eval_fn_call: no clause matching.\nTried clauses :\n");
+      clause = fn->clauses;
+      while (clause) {
+        err_inspect_fn_pattern(clause->pattern);
+        err_puts("\n");
+        clause = clause->next_clause;
+      }
+      err_puts("\nArguments :\n");
+      err_inspect_fn_pattern(args);
+      err_puts("\n");
+      list_delete_all(args);
+      return false;
+    }
+  }
+  else {
+    frame_init(&frame, env->frame);
+    env->frame = &frame;
+  }
+  if (! env_eval_block(env, &clause->algo, &tag)) {
+    list_delete_all(args);
+    list_delete_all(tmp);
+    env->frame = frame_clean(&frame);
+    return false;
+  }
+  list_delete_all(args);
+  list_delete_all(tmp);
+  env->frame = frame_clean(&frame);
+  if (fn->macro) {
+    if (! env_eval_tag(env, &tag, dest)) {
+      tag_clean(&tag);
+      return false;
+    }
+    tag_clean(&tag);
+  }
+  else
+    *dest = tag;
+  return true;
 }
 
 bool env_eval_call_resolve (s_env *env, s_call *call)
@@ -764,76 +837,56 @@ bool env_eval_equal_tuple (s_env *env, bool macro, const s_tuple *a,
   return true;
 }
 
-bool env_eval_fn_call (s_env *env, const s_fn *fn,
-                       const s_list *arguments, s_tag *dest)
+bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
 {
-  s_list *args = NULL;
-  const s_list *args_final = NULL;
-  s_fn_clause *clause;
-  s_frame frame;
-  s_tag tag;
-  s_list *tmp = NULL;
+  uw i;
+  s_fn_clause *src_clause;
+  s_list      *src_pattern;
+  s_fn tmp = {0};
+  s_fn_clause **tmp_clause;
+  s_list      **tmp_pattern;
   assert(env);
   assert(fn);
   assert(dest);
-  clause = fn->clauses;
-  if (arguments) {
-    if (fn->macro || fn->special_operator)
-      args_final = arguments;
-    else {
-      if (! env_eval_call_arguments(env, arguments, &args)) {
-        env->frame = frame_clean(&frame);
-        return false;
-      }
-      args_final = args;
+  tmp_clause = &tmp.clauses;
+  src_clause = fn->clauses;
+  while (src_clause) {
+    *tmp_clause = fn_clause_new(NULL);
+    if (! *tmp_clause)
+      goto ko;
+    (*tmp_clause)->arity = src_clause->arity;
+    tmp_pattern = &(*tmp_clause)->pattern;
+    src_pattern = src_clause->pattern;
+    while (src_pattern) {
+      *tmp_pattern = list_new(NULL);
+      if (! *tmp_pattern)
+        goto ko;
+      if (! env_eval_fn_tag(env, &src_pattern->tag,
+                            &(*tmp_pattern)->tag))
+        goto ko;
+      tmp_pattern = &(*tmp_pattern)->next.data.list;
+      src_pattern = list_next(src_pattern);
     }
-    while (clause) {
-      frame_init(&frame, env->frame);
-      env->frame = &frame;
-      if (env_eval_equal_list(env, fn->macro || fn->special_operator,
-                              clause->pattern, args_final, &tmp))
-        break;
-      env->frame = frame_clean(&frame);
-      clause = clause->next_clause;
+    if (! block_init(&(*tmp_clause)->algo, src_clause->algo.count))
+      goto ko;
+    i = 0;
+    while (i < src_clause->algo.count) {
+      if (! env_eval_fn_tag(env, src_clause->algo.tag + i,
+                            (*tmp_clause)->algo.tag + i))
+        goto ko;
+      i++;
     }
-    if (! clause) {
-      err_puts("env_eval_fn_call: no clause matching.\nTried clauses :\n");
-      clause = fn->clauses;
-      while (clause) {
-        err_inspect_fn_pattern(clause->pattern);
-        err_puts("\n");
-        clause = clause->next_clause;
-      }
-      err_puts("\nArguments :\n");
-      err_inspect_fn_pattern(args);
-      err_puts("\n");
-      list_delete_all(args);
-      return false;
-    }
+    tmp_clause = &(*tmp_clause)->next_clause;
+    src_clause = src_clause->next_clause;
   }
-  else {
-    frame_init(&frame, env->frame);
-    env->frame = &frame;
-  }
-  if (! env_eval_block(env, &clause->algo, &tag)) {
-    list_delete_all(args);
-    list_delete_all(tmp);
-    env->frame = frame_clean(&frame);
-    return false;
-  }
-  list_delete_all(args);
-  list_delete_all(tmp);
-  env->frame = frame_clean(&frame);
-  if (fn->macro) {
-    if (! env_eval_tag(env, &tag, dest)) {
-      tag_clean(&tag);
-      return false;
-    }
-    tag_clean(&tag);
-  }
-  else
-    *dest = tag;
+  tmp.macro = fn->macro;
+  tmp.special_operator = fn->special_operator;
+  dest->type = TAG_FN;
+  dest->data.fn = tmp;
   return true;
+ ko:
+  fn_clean(&tmp);
+  return false;
 }
 
 bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
@@ -1022,6 +1075,24 @@ bool env_eval_quote_call (s_env *env, const s_call *call, s_tag *dest)
   return false;
 }
 
+bool env_eval_quote_complex (s_env *env, const s_complex *c,
+                             s_tag *dest)
+{
+  s_tag tmp = {0};
+  assert(env);
+  assert(c);
+  assert(dest);
+  tmp.type = TAG_COMPLEX;
+  tmp.data.complex = complex_new();
+  if (! env_eval_quote_tag(env, &c->x, &tmp.data.complex->x) ||
+      ! env_eval_quote_tag(env, &c->y, &tmp.data.complex->y)) {
+    complex_delete(tmp.data.complex);
+    return false;
+  }
+  *dest = tmp;
+  return true;
+}
+
 bool env_eval_quote_list (s_env *env, const s_list *list, s_tag *dest)
 {
   s_list *next;
@@ -1139,6 +1210,8 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_quote_block(env, &tag->data.block, dest);
   case TAG_CALL:
     return env_eval_quote_call(env, &tag->data.call, dest);
+  case TAG_COMPLEX:
+    return env_eval_quote_complex(env, tag->data.complex, dest);
   case TAG_LIST:
     return env_eval_quote_list(env, tag->data.list, dest);
   case TAG_MAP:
@@ -1155,7 +1228,6 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_BOOL:
   case TAG_CFN:
   case TAG_CHARACTER:
-  case TAG_COMPLEX:
   case TAG_F32:
   case TAG_F64:
   case TAG_F128:
@@ -1317,75 +1389,6 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
  ko:
   struct_clean(t);
   return false;
-}
-
-bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
-{
-  uw i;
-  s_block     *src_block;
-  s_fn_clause *src_clause;
-  s_list      *src_pattern;
-  s_tag       *src_tag;
-  s_tag         tmp = {0};
-  s_block      *tmp_block;
-  s_fn_clause **tmp_clause;
-  s_fn         *tmp_fn;
-  s_list      **tmp_pattern;
-  s_tag        *tmp_tag;
-  assert(env);
-  assert(fn);
-  assert(dest);
-  (void) env;
-  tmp.type = TAG_FN;
-  tmp_fn = &tmp.data.fn;
-  src_clause = fn->clauses;
-  tmp_clause = &tmp_fn->clauses;
-  while (src_clause) {
-    *tmp_clause = fn_clause_new(NULL);
-    src_pattern = src_clause->pattern;
-    tmp_pattern = &(*tmp_clause)->pattern;
-    while (src_pattern) {
-      *tmp_pattern = list_new(NULL);
-      if (! env_eval_fn_tag(env, &src_pattern->tag,
-                            &(*tmp_pattern)->tag))
-        goto ko;
-      src_pattern = list_next(src_pattern);
-      tmp_pattern = &(*tmp_pattern)->next.data.list;
-    }
-    src_block = &src_clause->algo;
-    tmp_block = &(*tmp_clause)->algo;
-    if (! block_init(tmp_block, src_block->count))
-      goto ko;
-    tmp_block->short_form = src_block->short_form;
-    i = 0;
-    while (i < src_block->count) {
-      src_tag = src_block->tag + i;
-      tmp_tag = tmp_block->tag + i;
-      if (! env_eval_fn_tag(env, src_tag, tmp_tag))
-        goto ko;
-      i++;
-    }
-    src_clause = src_clause->next_clause;
-    tmp_clause = &(*tmp_clause)->next_clause;
-  }
-  tmp_fn->macro = fn->macro;
-  tmp_fn->special_operator = fn->special_operator;
-  *dest = tmp;
-  return true;
- ko:
-  fn_clean(&tmp.data.fn);
-  return false;
-}
-
-bool env_eval_fn_tag (s_env *env, const s_tag *tag, s_tag *dest)
-{
-  assert(env);
-  assert(tag);
-  assert(dest);
-  (void) env;
-  if (! tag_init_copy(dest, tag))
-    return false;
-  return true;
 }
 
 bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)

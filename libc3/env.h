@@ -51,6 +51,9 @@ bool          env_eval_call_cfn (s_env *env, const s_call *call,
                                  s_tag *dest);
 bool          env_eval_call_fn (s_env *env, const s_call *call,
                                 s_tag *dest);
+bool          env_eval_call_fn_args (s_env *env, const s_fn *fn,
+                                     const s_list *arguments,
+                                     s_tag *dest);
 bool          env_eval_call_resolve (s_env *env, s_call *call);
 bool          env_eval_complex (s_env *env, const s_complex *c,
                                 s_tag *dest);
@@ -73,8 +76,33 @@ bool          env_eval_equal_tuple (s_env *env, bool macro,
 bool          env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest);
 bool          env_eval_fn_tag (s_env *env, const s_tag *tag,
                                s_tag *dest);
-bool          env_eval_fn_call (s_env *env, const s_fn *fn,
-                                const s_list *arguments, s_tag *dest);
+bool          env_eval_fn_tag_array (s_env *env, const s_array *array,
+                                     s_tag *dest);
+bool          env_eval_fn_tag_block (s_env *env, const s_block *block,
+                                     s_tag *dest);
+bool          env_eval_fn_tag_call (s_env *env, const s_call *call,
+                                    s_tag *dest);
+bool          env_eval_fn_tag_complex (s_env *env, const s_complex *c,
+                                       s_tag *dest);
+bool          env_eval_fn_tag_ident (s_env *env, const s_ident *ident,
+                                     s_tag *dest);
+bool          env_eval_fn_tag_list (s_env *env, const s_list *list,
+                                    s_tag *dest);
+bool          env_eval_fn_tag_map (s_env *env, const s_map *map,
+                                   s_tag *dest);
+bool          env_eval_fn_tag_quote (s_env *env, const s_quote *quote,
+                                     s_tag *dest);
+bool          env_eval_fn_tag_str (s_env *env, const s_str *str,
+                                   s_tag *dest);
+bool          env_eval_fn_tag_struct (s_env *env, const s_struct *s,
+                                      s_tag *dest);
+bool          env_eval_fn_tag_tag (s_env *env, const s_tag *tag,
+                                   s_tag *dest);
+bool          env_eval_fn_tag_tuple (s_env *env, const s_tuple *tuple,
+                                     s_tag *dest);
+bool          env_eval_fn_tag_unquote (s_env *env,
+                                       const s_unquote *unquote,
+                                       s_tag *dest);
 bool          env_eval_ident (s_env *env, const s_ident *ident,
                               s_tag *dest);
 bool          env_eval_ident_is_bound (s_env *env,
@@ -93,6 +121,8 @@ bool          env_eval_quote_block (s_env *env, const s_block *block,
                                     s_tag *dest);
 bool          env_eval_quote_call (s_env *env, const s_call *call,
                                    s_tag *dest);
+bool          env_eval_quote_complex (s_env *env, const s_complex *c,
+                                      s_tag *dest);
 bool          env_eval_quote_list (s_env *env, const s_list *list,
                                    s_tag *dest);
 bool          env_eval_quote_map (s_env *env, const s_map *map,

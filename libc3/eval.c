@@ -20,5 +20,5 @@ bool eval_tag (const s_tag *tag, s_tag *dest)
 
 bool eval_fn_call (const s_fn *fn, const s_list *args, s_tag *dest)
 {
-  return env_eval_fn_call(&g_c3_env, fn, args, dest);
+  return env_eval_call_fn_args(&g_c3_env, fn, args, dest);
 }
