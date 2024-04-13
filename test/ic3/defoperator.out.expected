@@ -1,5 +1,5 @@
 def operator_muul = %C3.Operator{sym: :****, symbol_value: cfn Tag "tag_mul" (Tag, Tag, Result), operator_precedence: 11, operator_associativity: :left}
-C3.operator_muul
+operator_muul
 4 **** 4
 16
 4 **** 4 **** 4
