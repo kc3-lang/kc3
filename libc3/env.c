@@ -100,7 +100,8 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
   if (! facts_add_tags(&env->facts, &tag_module, &tag_symbol,
                        &tag_ident))
     return NULL;
-  env_eval_tag(env, &list_next(call->arguments)->tag, &tag_value);
+  if (! env_eval_tag(env, &list_next(call->arguments)->tag, &tag_value))
+    return NULL;
   if (tag_value.type == TAG_STRUCT &&
       (s = &tag_value.data.struct_) &&
       s->type->module == &g_sym_C3__Operator) {
