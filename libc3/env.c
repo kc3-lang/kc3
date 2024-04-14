@@ -1706,7 +1706,8 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
         err_write_1(t->type->map.key[i].data.sym->str.ptr.pchar);
         err_write_1(", expected ");
         err_puts(tag_type_to_string(t->type->map.value[i].type));
-        goto ko_tag;
+        tag_clean(&tag);
+        goto ko;
       }
       tag_clean(&tag);
     }
@@ -1722,8 +1723,6 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
   }
   *dest = tmp;
   return true;
- ko_tag:
-  tag_clean(&tag);
  ko:
   struct_clean(t);
   return false;
