@@ -287,6 +287,7 @@ bool data_clean (const s_sym *type, void *data)
     return true;
   }
   if (type == &g_sym_Var) {
+    tag_clean(data);
     return true;
   }
   if (type == &g_sym_Void) {
