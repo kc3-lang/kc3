@@ -326,7 +326,6 @@ s_tag * tag_init_call_cast (s_tag *tag, const s_sym *type)
   return tag;
 }
 
-// FIXME: error handling
 s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
 {
   assert(tag);
@@ -334,83 +333,183 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
   switch (src->type) {
   case TAG_VOID:
     tag_init_void(tag);
-    break;
+    return tag;
   case TAG_ARRAY:
-    array_init_copy(&tag->data.array, &src->data.array);
-    break;
+    tag->type = src->type;
+    if (! array_init_copy(&tag->data.array, &src->data.array))
+      return NULL;
+    return tag;
   case TAG_BLOCK:
-    block_init_copy(&tag->data.block, &src->data.block);
-    break;
+    tag->type = src->type;
+    if (! block_init_copy(&tag->data.block, &src->data.block))
+      return NULL;
+    return tag;
   case TAG_CALL:
-    call_init_copy(&tag->data.call, &src->data.call);
-    break;
+    tag->type = src->type;
+    if (! call_init_copy(&tag->data.call, &src->data.call))
+      return NULL;
+    return tag;
   case TAG_CFN:
-    cfn_init_copy(&tag->data.cfn, &src->data.cfn);
-    break;
+    tag->type = src->type;
+    if (! cfn_init_copy(&tag->data.cfn, &src->data.cfn))
+      return NULL;
+    return tag;
   case TAG_COMPLEX:
-    pcomplex_init_copy(&tag->data.complex,
-		       (const s_complex * const *) &src->data.complex);
-    break;
+    tag->type = src->type;
+    if (! pcomplex_init_copy(&tag->data.complex,
+                             (const s_complex * const *)
+                             &src->data.complex))
+      return NULL;
+    return tag;
   case TAG_FN:
-    fn_init_copy(&tag->data.fn, &src->data.fn);
-    break;
+    tag->type = src->type;
+    if (! fn_init_copy(&tag->data.fn, &src->data.fn))
+      return NULL;
+    return tag;
   case TAG_INTEGER:
-    integer_init_copy(&tag->data.integer, &src->data.integer);
-    break;
+    tag->type = src->type;
+    if (! integer_init_copy(&tag->data.integer, &src->data.integer))
+      return NULL;
+    return tag;
   case TAG_LIST:
-    list_init_copy(&tag->data.list,
-		   (const s_list * const *) &src->data.list);
-    break;
+    tag->type = src->type;
+    if (! list_init_copy(&tag->data.list,
+                         (const s_list * const *)
+                         &src->data.list))
+      return NULL;
+    return tag;
   case TAG_MAP:
-    map_init_copy(&tag->data.map, &src->data.map);
-    break;
+    tag->type = src->type;
+    if (! map_init_copy(&tag->data.map, &src->data.map))
+      return NULL;
+    return tag;
   case TAG_QUOTE:
-    quote_init_copy(&tag->data.quote, &src->data.quote);
-    break;
+    tag->type = src->type;
+    if (! quote_init_copy(&tag->data.quote, &src->data.quote))
+      return NULL;
+    return tag;
   case TAG_RATIO:
-    ratio_init_copy(&tag->data.ratio, &src->data.ratio);
-    break;
+    tag->type = src->type;
+    if (! ratio_init_copy(&tag->data.ratio, &src->data.ratio))
+      return NULL;
+    return tag;
   case TAG_STR:
-    str_init_copy(&tag->data.str, &src->data.str);
-    break;
+    tag->type = src->type;
+    if (! str_init_copy(&tag->data.str, &src->data.str))
+      return NULL;
+    return tag;
   case TAG_STRUCT:
-    struct_init_copy(&tag->data.struct_, &src->data.struct_);
-    break;
+    tag->type = src->type;
+    if (! struct_init_copy(&tag->data.struct_, &src->data.struct_))
+      return NULL;
+    return tag;
   case TAG_TUPLE:
-    tuple_init_copy(&tag->data.tuple, &src->data.tuple);
-    break;
+    tag->type = src->type;
+    if (! tuple_init_copy(&tag->data.tuple, &src->data.tuple))
+      return NULL;
+    return tag;
   case TAG_UNQUOTE:
-    unquote_init_copy(&tag->data.unquote, &src->data.unquote);
-    break;
+    tag->type = src->type;
+    if (! unquote_init_copy(&tag->data.unquote, &src->data.unquote))
+      return NULL;
+    return tag;
   case TAG_VAR:
-    var_init_copy(tag, src);
-    break;
+    tag->type = src->type;
+    if (! var_init_copy(tag, src))
+      return NULL;
+    return tag;
   case TAG_BOOL:
+    tag->type = src->type;
+    tag->data.bool = src->data.bool;
+    return tag;
   case TAG_CHARACTER:
+    tag->type = src->type;
+    tag->data.character = src->data.character;
+    return tag;
   case TAG_F32:
+    tag->type = src->type;
+    tag->data.f32 = src->data.f32;
+    return tag;
   case TAG_F64:
+    tag->type = src->type;
+    tag->data.f64 = src->data.f64;
+    return tag;
   case TAG_F128:
+    tag->type = src->type;
+    tag->data.f128 = src->data.f128;
+    return tag;
   case TAG_FACT:
+    tag->type = src->type;
+    tag->data.fact = src->data.fact;
+    return tag;
   case TAG_IDENT:
+    tag->type = src->type;
+    tag->data.ident = src->data.ident;
+    return tag;
   case TAG_PTAG:
+    tag->type = src->type;
+    tag->data.ptag = src->data.ptag;
+    return tag;
   case TAG_PTR:
+    tag->type = src->type;
+    tag->data.ptr = src->data.ptr;
+    return tag;
   case TAG_PTR_FREE:
+    tag->type = src->type;
+    tag->data.ptr_free = src->data.ptr_free;
+    return tag;
   case TAG_S8:
+    tag->type = src->type;
+    tag->data.s8 = src->data.s8;
+    return tag;
   case TAG_S16:
+    tag->type = src->type;
+    tag->data.s16 = src->data.s16;
+    return tag;
   case TAG_S32:
+    tag->type = src->type;
+    tag->data.s32 = src->data.s32;
+    return tag;
   case TAG_S64:
+    tag->type = src->type;
+    tag->data.s64 = src->data.s64;
+    return tag;
   case TAG_STRUCT_TYPE:
+    tag->type = src->type;
+    tag->data.struct_type = src->data.struct_type;
+    return tag;
   case TAG_SW:
+    tag->type = src->type;
+    tag->data.sw = src->data.sw;
+    return tag;
   case TAG_SYM:
+    tag->type = src->type;
+    tag->data.sym = src->data.sym;
+    return tag;
   case TAG_U8:
+    tag->type = src->type;
+    tag->data.u8 = src->data.u8;
+    return tag;
   case TAG_U16:
+    tag->type = src->type;
+    tag->data.u16 = src->data.u16;
+    return tag;
   case TAG_U32:
+    tag->type = src->type;
+    tag->data.u32 = src->data.u32;
+    return tag;
   case TAG_U64:
+    tag->type = src->type;
+    tag->data.u64 = src->data.u64;
+    return tag;
   case TAG_UW:
-    tag->data = src->data;
+    tag->type = src->type;
+    tag->data.uw = src->data.uw;
+    return tag;
   }
-  tag->type = src->type;
-  return tag;
+  err_puts("tag_init_copy: invalid tag type");
+  assert(! "tag_init_copy: invalid tag type");
+  return NULL;
 }
 
 s_tag * tag_init_time (s_tag *tag)
