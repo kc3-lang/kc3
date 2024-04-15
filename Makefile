@@ -195,20 +195,28 @@ lldb_test:
 	${MAKE} -C test lldb_test
 
 test:
+	${MAKE} -C libtommath build
 	${MAKE} -C libc3 build
 	${MAKE} -C ic3 build
 	${MAKE} -C test test
 	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
 
-test_asan: asan
 test_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C libc3 asan
+	${MAKE} -C ic3 asan
 	${MAKE} -C test test_asan
 
 test_cov: cov clean_cov
+	${MAKE} -C libtommath cov clean_cov
+	${MAKE} -C libc3 cov clean_cov
+	${MAKE} -C ic3 cov clean_cov
 	${MAKE} -C test test_cov
 
 test_debug:
-	${MAKE} debug
+	${MAKE} -C libtommath debug
+	${MAKE} -C libc3 debug
+	${MAKE} -C ic3 debug
 	${MAKE} -C test test_debug
 
 test_gcovr:
