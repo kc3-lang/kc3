@@ -10,40 +10,6 @@ C3_CONFIGURES = \
 	"libc3/configure" \
 	"libc3/sources.sh" \
 	"libc3/update_sources" \
-	"libc3/window/cairo/configure" \
-	"libc3/window/cairo/demo/configure" \
-	"libc3/window/cairo/demo/sources.sh" \
-	"libc3/window/cairo/demo/update_sources" \
-	"libc3/window/cairo/quartz/configure" \
-	"libc3/window/cairo/quartz/demo/configure" \
-	"libc3/window/cairo/quartz/demo/sources.sh" \
-	"libc3/window/cairo/quartz/demo/update_sources" \
-	"libc3/window/cairo/quartz/sources.sh" \
-	"libc3/window/cairo/quartz/update_sources" \
-	"libc3/window/cairo/sources.sh" \
-	"libc3/window/cairo/update_sources" \
-	"libc3/window/cairo/win32/configure" \
-	"libc3/window/cairo/win32/demo/configure" \
-	"libc3/window/cairo/win32/demo/sources.sh" \
-	"libc3/window/cairo/win32/demo/update_sources" \
-	"libc3/window/cairo/win32/sources.sh" \
-	"libc3/window/cairo/win32/update_sources" \
-	"libc3/window/cairo/xcb/configure" \
-	"libc3/window/cairo/xcb/demo/configure" \
-	"libc3/window/cairo/xcb/demo/sources.sh" \
-	"libc3/window/cairo/xcb/demo/update_sources" \
-	"libc3/window/cairo/xcb/sources.sh" \
-	"libc3/window/cairo/xcb/update_sources" \
-	"libc3/window/configure" \
-	"libc3/window/sdl2/configure" \
-	"libc3/window/sdl2/demo/configure" \
-	"libc3/window/sdl2/demo/macos/configure" \
-	"libc3/window/sdl2/demo/sources.sh" \
-	"libc3/window/sdl2/demo/update_sources" \
-	"libc3/window/sdl2/sources.sh" \
-	"libc3/window/sdl2/update_sources" \
-	"libc3/window/sources.sh" \
-	"libc3/window/update_sources" \
 	"libtommath/configure" \
 	"libtommath/sources.sh" \
 	"libtommath/update_sources" \
@@ -61,29 +27,6 @@ C3_MAKEFILES = \
 	"libc3/Makefile" \
 	"libc3/gen.mk" \
 	"libc3/sources.mk" \
-	"libc3/window/Makefile" \
-	"libc3/window/cairo/Makefile" \
-	"libc3/window/cairo/demo/Makefile" \
-	"libc3/window/cairo/demo/sources.mk" \
-	"libc3/window/cairo/quartz/Makefile" \
-	"libc3/window/cairo/quartz/demo/Makefile" \
-	"libc3/window/cairo/quartz/demo/sources.mk" \
-	"libc3/window/cairo/quartz/sources.mk" \
-	"libc3/window/cairo/sources.mk" \
-	"libc3/window/cairo/win32/Makefile" \
-	"libc3/window/cairo/win32/demo/Makefile" \
-	"libc3/window/cairo/win32/demo/sources.mk" \
-	"libc3/window/cairo/win32/sources.mk" \
-	"libc3/window/cairo/xcb/Makefile" \
-	"libc3/window/cairo/xcb/demo/Makefile" \
-	"libc3/window/cairo/xcb/demo/sources.mk" \
-	"libc3/window/cairo/xcb/sources.mk" \
-	"libc3/window/sdl2/Makefile" \
-	"libc3/window/sdl2/demo/Makefile" \
-	"libc3/window/sdl2/demo/macos/Makefile" \
-	"libc3/window/sdl2/demo/sources.mk" \
-	"libc3/window/sdl2/sources.mk" \
-	"libc3/window/sources.mk" \
 	"libtommath/Makefile" \
 	"libtommath/sources.mk" \
 	"test/Makefile" \
@@ -121,6 +64,10 @@ C3_C_SOURCES = \
 	"libc3/buf.h" \
 	"libc3/buf_file.c" \
 	"libc3/buf_file.h" \
+	"libc3/buf_getc.c" \
+	"libc3/buf_getc.h" \
+	"libc3/buf_getchar.c" \
+	"libc3/buf_getchar.h" \
 	"libc3/buf_inspect.c" \
 	"libc3/buf_inspect.h" \
 	"libc3/buf_inspect_s.c.in" \
@@ -449,114 +396,6 @@ C3_C_SOURCES = \
 	"libc3/var.h" \
 	"libc3/void.c" \
 	"libc3/void.h" \
-	"libc3/window/cairo/cairo_font.c" \
-	"libc3/window/cairo/cairo_font.h" \
-	"libc3/window/cairo/cairo_sprite.c" \
-	"libc3/window/cairo/cairo_sprite.h" \
-	"libc3/window/cairo/cairo_text.c" \
-	"libc3/window/cairo/cairo_text.h" \
-	"libc3/window/cairo/demo/bg_rect.c" \
-	"libc3/window/cairo/demo/bg_rect.h" \
-	"libc3/window/cairo/demo/flies.c" \
-	"libc3/window/cairo/demo/flies.h" \
-	"libc3/window/cairo/demo/lightspeed.c" \
-	"libc3/window/cairo/demo/lightspeed.h" \
-	"libc3/window/cairo/demo/mandelbrot_f128.c" \
-	"libc3/window/cairo/demo/mandelbrot_f128.h" \
-	"libc3/window/cairo/demo/toasters.c" \
-	"libc3/window/cairo/demo/toasters.h" \
-	"libc3/window/cairo/demo/window_cairo_demo.c" \
-	"libc3/window/cairo/demo/window_cairo_demo.h" \
-	"libc3/window/cairo/quartz/demo/window_cairo_quartz_demo.c" \
-	"libc3/window/cairo/quartz/quartz_to_xkbcommon.c" \
-	"libc3/window/cairo/quartz/quartz_to_xkbcommon.h" \
-	"libc3/window/cairo/quartz/window_cairo_quartz.h" \
-	"libc3/window/cairo/quartz/window_cairo_quartz_app_delegate.h" \
-	"libc3/window/cairo/quartz/window_cairo_quartz_view.h" \
-	"libc3/window/cairo/quartz/window_cairo_quartz_view_controller.h" \
-	"libc3/window/cairo/quartz/xkbquartz.h" \
-	"libc3/window/cairo/types.h" \
-	"libc3/window/cairo/win32/demo/window_cairo_win32_demo.c" \
-	"libc3/window/cairo/win32/vk_to_xkbcommon.c" \
-	"libc3/window/cairo/win32/vk_to_xkbcommon.h" \
-	"libc3/window/cairo/win32/window_cairo_win32.c" \
-	"libc3/window/cairo/win32/window_cairo_win32.h" \
-	"libc3/window/cairo/window_cairo.c" \
-	"libc3/window/cairo/window_cairo.h" \
-	"libc3/window/cairo/xcb/config.h" \
-	"libc3/window/cairo/xcb/demo/window_cairo_xcb_demo.c" \
-	"libc3/window/cairo/xcb/window_cairo_xcb.c" \
-	"libc3/window/cairo/xcb/window_cairo_xcb.h" \
-	"libc3/window/sdl2/demo/bg_rect.c" \
-	"libc3/window/sdl2/demo/bg_rect.h" \
-	"libc3/window/sdl2/demo/earth.c" \
-	"libc3/window/sdl2/demo/earth.h" \
-	"libc3/window/sdl2/demo/flies.c" \
-	"libc3/window/sdl2/demo/flies.h" \
-	"libc3/window/sdl2/demo/lightspeed.c" \
-	"libc3/window/sdl2/demo/lightspeed.h" \
-	"libc3/window/sdl2/demo/mandelbrot_f128.c" \
-	"libc3/window/sdl2/demo/mandelbrot_f128.h" \
-	"libc3/window/sdl2/demo/matrix.c" \
-	"libc3/window/sdl2/demo/matrix.h" \
-	"libc3/window/sdl2/demo/toasters.c" \
-	"libc3/window/sdl2/demo/toasters.h" \
-	"libc3/window/sdl2/demo/window_sdl2_demo.c" \
-	"libc3/window/sdl2/demo/window_sdl2_demo.h" \
-	"libc3/window/sdl2/disabled/mandelbrot.c" \
-	"libc3/window/sdl2/disabled/mandelbrot.h" \
-	"libc3/window/sdl2/disabled/sdl2_font.c" \
-	"libc3/window/sdl2/disabled/sdl2_font.h" \
-	"libc3/window/sdl2/disabled/sdl2_sprite.c" \
-	"libc3/window/sdl2/disabled/sdl2_sprite.h" \
-	"libc3/window/sdl2/dmat3.h" \
-	"libc3/window/sdl2/dmat4.c" \
-	"libc3/window/sdl2/dmat4.h" \
-	"libc3/window/sdl2/dvec2.c" \
-	"libc3/window/sdl2/dvec2.h" \
-	"libc3/window/sdl2/dvec3.c" \
-	"libc3/window/sdl2/dvec3.h" \
-	"libc3/window/sdl2/gl_camera.c" \
-	"libc3/window/sdl2/gl_camera.h" \
-	"libc3/window/sdl2/gl_cylinder.c" \
-	"libc3/window/sdl2/gl_cylinder.h" \
-	"libc3/window/sdl2/gl_deprecated.c" \
-	"libc3/window/sdl2/gl_deprecated.h" \
-	"libc3/window/sdl2/gl_font.c" \
-	"libc3/window/sdl2/gl_font.h" \
-	"libc3/window/sdl2/gl_lines.c" \
-	"libc3/window/sdl2/gl_lines.h" \
-	"libc3/window/sdl2/gl_object.c" \
-	"libc3/window/sdl2/gl_object.h" \
-	"libc3/window/sdl2/gl_ortho.c" \
-	"libc3/window/sdl2/gl_ortho.h" \
-	"libc3/window/sdl2/gl_sphere.c" \
-	"libc3/window/sdl2/gl_sphere.h" \
-	"libc3/window/sdl2/gl_sprite.c" \
-	"libc3/window/sdl2/gl_sprite.h" \
-	"libc3/window/sdl2/gl_square.c" \
-	"libc3/window/sdl2/gl_square.h" \
-	"libc3/window/sdl2/gl_text.c" \
-	"libc3/window/sdl2/gl_text.h" \
-	"libc3/window/sdl2/gl_triangle.c" \
-	"libc3/window/sdl2/gl_triangle.h" \
-	"libc3/window/sdl2/gl_vertex.c" \
-	"libc3/window/sdl2/gl_vertex.h" \
-	"libc3/window/sdl2/gl_vtext.c" \
-	"libc3/window/sdl2/gl_vtext.h" \
-	"libc3/window/sdl2/mat3.h" \
-	"libc3/window/sdl2/mat4.c" \
-	"libc3/window/sdl2/mat4.h" \
-	"libc3/window/sdl2/types.h" \
-	"libc3/window/sdl2/vec2.c" \
-	"libc3/window/sdl2/vec2.h" \
-	"libc3/window/sdl2/vec3.c" \
-	"libc3/window/sdl2/vec3.h" \
-	"libc3/window/sdl2/window_sdl2.c" \
-	"libc3/window/sdl2/window_sdl2.h" \
-	"libc3/window/types.h" \
-	"libc3/window/window.c" \
-	"libc3/window/window.h" \
 	"test/array_test.c" \
 	"test/bool_test.c" \
 	"test/buf_file_test.c" \
@@ -605,10 +444,7 @@ C3_C_SOURCES = \
 	"ucd2c/ucd2c.c" \
 
 C3_OBJC_SOURCES = \
-	"libc3/window/cairo/quartz/window_cairo_quartz.m" \
-	"libc3/window/cairo/quartz/window_cairo_quartz_app_delegate.m" \
-	"libc3/window/cairo/quartz/window_cairo_quartz_view.m" \
-	"libc3/window/cairo/quartz/window_cairo_quartz_view_controller.m" \
+	"" \
 
 C3_OTHER_SOURCES = \
 	"AUTHORS" \
@@ -665,16 +501,18 @@ C3_OTHER_SOURCES = \
 	"img/toast.png" \
 	"lib/c3/0.1/array.facts" \
 	"lib/c3/0.1/c3.facts" \
+	"lib/c3/0.1/c3/operator.facts" \
 	"lib/c3/0.1/complex.facts" \
+	"lib/c3/0.1/f128.facts" \
 	"lib/c3/0.1/f32.facts" \
 	"lib/c3/0.1/f64.facts" \
+	"lib/c3/0.1/gl/dvec2.facts" \
+	"lib/c3/0.1/gl/dvec3.facts" \
 	"lib/c3/0.1/gl/object.facts" \
-	"lib/c3/0.1/gl/point2d.facts" \
-	"lib/c3/0.1/gl/point2f.facts" \
-	"lib/c3/0.1/gl/point3d.facts" \
-	"lib/c3/0.1/gl/point3f.facts" \
 	"lib/c3/0.1/gl/sphere.facts" \
 	"lib/c3/0.1/gl/triangle.facts" \
+	"lib/c3/0.1/gl/vec2.facts" \
+	"lib/c3/0.1/gl/vec3.facts" \
 	"lib/c3/0.1/gl/vertex.facts" \
 	"lib/c3/0.1/integer.facts" \
 	"lib/c3/0.1/list.facts" \
@@ -688,6 +526,7 @@ C3_OTHER_SOURCES = \
 	"lib/c3/0.1/s8.facts" \
 	"lib/c3/0.1/str.facts" \
 	"lib/c3/0.1/sw.facts" \
+	"lib/c3/0.1/sym.facts" \
 	"lib/c3/0.1/u16.facts" \
 	"lib/c3/0.1/u32.facts" \
 	"lib/c3/0.1/u64.facts" \
@@ -740,6 +579,15 @@ C3_OTHER_SOURCES = \
 	"test/ic3/complex.in" \
 	"test/ic3/complex.out.expected" \
 	"test/ic3/complex.ret.expected" \
+	"test/ic3/def.in" \
+	"test/ic3/def.out.expected" \
+	"test/ic3/def.ret.expected" \
+	"test/ic3/defmodule.in" \
+	"test/ic3/defmodule.out.expected" \
+	"test/ic3/defmodule.ret.expected" \
+	"test/ic3/defoperator.in" \
+	"test/ic3/defoperator.out.expected" \
+	"test/ic3/defoperator.ret.expected" \
 	"test/ic3/equal.err.expected" \
 	"test/ic3/equal.in" \
 	"test/ic3/equal.out.expected" \
@@ -844,6 +692,9 @@ C3_OTHER_SOURCES = \
 	"test/ic3/tuple.in" \
 	"test/ic3/tuple.out.expected" \
 	"test/ic3/tuple.ret.expected" \
+	"test/ic3/var.in" \
+	"test/ic3/var.out.expected" \
+	"test/ic3/var.ret.expected" \
 	"test/ic3/void.in" \
 	"test/ic3/void.out.expected" \
 	"test/ic3/void.ret.expected" \
@@ -1067,6 +918,7 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/NameAliases.txt" \
 	"ucd2c/UCD/NamedSequences.txt" \
 	"ucd2c/UCD/NamedSequencesProv.txt" \
+	"ucd2c/UCD/NamesList.html" \
 	"ucd2c/UCD/NamesList.txt" \
 	"ucd2c/UCD/NormalizationCorrections.txt" \
 	"ucd2c/UCD/NormalizationTest.txt" \
@@ -1086,11 +938,15 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/UnicodeData.txt" \
 	"ucd2c/UCD/VerticalOrientation.txt" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakProperty.txt" \
+	"ucd2c/UCD/auxiliary/GraphemeBreakTest.html" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakTest.txt" \
+	"ucd2c/UCD/auxiliary/LineBreakTest.html" \
 	"ucd2c/UCD/auxiliary/LineBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/SentenceBreakProperty.txt" \
+	"ucd2c/UCD/auxiliary/SentenceBreakTest.html" \
 	"ucd2c/UCD/auxiliary/SentenceBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/WordBreakProperty.txt" \
+	"ucd2c/UCD/auxiliary/WordBreakTest.html" \
 	"ucd2c/UCD/auxiliary/WordBreakTest.txt" \
 	"ucd2c/UCD/emoji/ReadMe.txt" \
 	"ucd2c/UCD/emoji/emoji-data.txt" \
@@ -1114,6 +970,6 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/ucd.h" \
 	"ucd2c/ucd2c" \
 	"ucd2c/ucd2c.c" \
-	"ucd2c/ucd2c.lo" \
-	"ucd2c/ucd2c.o" \
+	"ucd2c/ucd2c.main.lo" \
+	"ucd2c/ucd2c.main.o" \
 

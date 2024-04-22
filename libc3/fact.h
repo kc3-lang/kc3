@@ -24,7 +24,7 @@ s_fact * fact_init_cast (s_fact *fact, const s_sym *type,
 s_fact * fact_init_copy (s_fact *fact, const s_fact *src);
 
 /* Observers */
-uw       fact_hash_uw (const s_fact *x);
+uw *     fact_hash_uw (const s_fact *fact, uw *dest);
 s_str *  fact_inspect (const s_fact *fact, s_str *dest);
 s_fact * fact_r (const s_fact_w *fact);
 

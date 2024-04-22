@@ -123,8 +123,12 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
   assert(s);
   assert(module);
   tmp.type = struct_type_find(module);
-  if (! tmp.type)
+  if (! tmp.type) {
+    err_write_1("struct_init: struct_type not found: ");
+    err_inspect_sym(&module);
+    err_write_1("\n");
     return NULL;
+  }
   *s = tmp;
   return s;
 }

@@ -1458,24 +1458,24 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
 
 sw buf_parse_fn (s_buf *buf, s_fn *dest)
 {
-  bool macro = false;
+  s_ident ident;
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_fn tmp;
+  s_fn tmp = {0};
   s_fn_clause **tail;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "fn")) < 0)
+  if ((r = buf_parse_ident(buf, &ident)) <= 0)
     goto clean;
-  if (! r) {
-    macro = true;
-    if ((r = buf_read_1(buf, "macro")) <= 0)
-      goto clean;
-  }
   result += r;
-  fn_init(&tmp);
+  if (ident.sym != &g_sym_fn &&
+      ident.sym != &g_sym_macro) {
+    r = 0;
+    goto restore;
+  }
+  fn_init(&tmp, ident.module);
   tail = &tmp.clauses;
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
@@ -1511,7 +1511,7 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
     result += r;
   }
  ok:
-  tmp.macro = macro;
+  tmp.macro = ident.sym == &g_sym_macro;
   *dest = tmp;
   r = result;
   goto clean;

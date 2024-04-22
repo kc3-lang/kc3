@@ -201,6 +201,7 @@ bool hash_update_fn (t_hash *hash, const s_fn *fn)
   return hash_update(hash, type, sizeof(type)) &&
     hash_update_bool(hash, &fn->macro) &&
     hash_update_bool(hash, &fn->special_operator) &&
+    (! fn->module || hash_update_sym(hash, &fn->module)) &&
     hash_update_fn_clauses(hash, fn->clauses);
 }
 
@@ -528,28 +529,31 @@ HASH_UPDATE_DEF(u16)
 HASH_UPDATE_DEF(u32)
 HASH_UPDATE_DEF(u64)
 
-bool hash_update_unquote (t_hash *hash, const s_unquote *x)
+bool hash_update_unquote (t_hash *hash, const s_unquote *unquote)
 {
   const char type[] = "unquote";
   if (! hash_update(hash, type, strlen(type)))
     return false;
-  return hash_update_tag(hash, x->tag);
+  return hash_update_tag(hash, unquote->tag);
 }
 
 HASH_UPDATE_DEF(uw)
 
-bool hash_update_var (t_hash *hash, const void *x)
+bool hash_update_var (t_hash *hash, const s_tag *tag)
 {
   char type[] = "var";
-  (void) x;
   assert(hash);
-  return hash_update(hash, type, strlen(type));
+  assert(tag);
+  assert(tag->type == TAG_VAR);
+  return hash_update(hash, type, strlen(type)) &&
+    hash_update_sym(hash, &tag->data.var.type);
 }
 
-bool hash_update_void (t_hash *hash, const void *x)
+bool hash_update_void (t_hash *hash, const s_tag *tag)
 {
   char type[] = "void";
-  (void) x;
   assert(hash);
+  assert(tag);
+  (void) tag;
   return hash_update(hash, type, strlen(type));
 }

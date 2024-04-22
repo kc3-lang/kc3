@@ -24,6 +24,7 @@ TEST_CASE_PROTOTYPE(env_eval_call);
 TEST_CASE_PROTOTYPE(env_eval_equal_tag);
 TEST_CASE_PROTOTYPE(env_eval_tag);
 TEST_CASE_PROTOTYPE(env_init_clean);
+TEST_CASE_PROTOTYPE(env_module_load);
 
 void env_test (void)
 {
@@ -31,6 +32,7 @@ void env_test (void)
   TEST_CASE_RUN(env_eval_equal_tag);
   TEST_CASE_RUN(env_eval_call);
   TEST_CASE_RUN(env_eval_tag);
+  TEST_CASE_RUN(env_module_load);
 }
 
 TEST_CASE(env_eval_call)
@@ -157,3 +159,12 @@ TEST_CASE(env_init_clean)
   env_clean(&env);
 }
 TEST_CASE_END(env_init_clean)
+
+TEST_CASE(env_module_load)
+{
+  s_env env;
+  env_init(&env, 0, NULL);
+  TEST_ASSERT(env_module_load(&env, sym_1("List"), &env.facts));
+  env_clean(&env);
+}
+TEST_CASE_END(env_module_load)

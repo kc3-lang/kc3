@@ -18,13 +18,15 @@
 #include "sym.h"
 #include "tag.h"
 
-uw fact_hash_uw (const s_fact *fact)
+uw * fact_hash_uw (const s_fact *fact, uw *dest)
 {
   t_hash hash;
   assert(fact);
   hash_init(&hash);
-  hash_update_fact(&hash, fact);
-  return hash_to_uw(&hash);
+  if (! hash_update_fact(&hash, fact))
+    return NULL;
+  *dest = hash_to_uw(&hash);
+  return dest;
 }
 
 s_fact * fact_init (s_fact *fact, const s_tag *subject,

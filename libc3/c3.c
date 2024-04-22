@@ -140,6 +140,11 @@ void c3_license (void)
   buf_flush(&g_c3_env.out);
 }
 
+const s_sym ** c3_module (const s_sym **dest)
+{
+  return env_module(&g_c3_env, dest);
+}
+
 s_tag * c3_pin (const s_tag *a, s_tag *dest)
 {
   if (! env_eval_tag(&g_c3_env, a, dest))

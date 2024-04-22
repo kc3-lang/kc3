@@ -18,8 +18,11 @@
 #include "block.h"
 #include "buf.h"
 #include "buf_file.h"
+#include "buf_getc.h"
 #include "buf_inspect.h"
+#include "buf_parse.h"
 #include "buf_save.h"
+#include "c3_main.h"
 #include "call.h"
 #include "cfn.h"
 #include "compare.h"
@@ -69,6 +72,7 @@ void env_clean (s_env *env)
   str_clean(&env->argv0_dir);
   str_clean(&env->module_path);
   list_delete_all(env->path);
+  list_delete_all(env->search_modules_default);
 }
 
 s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
@@ -146,20 +150,22 @@ s_tag * env_defmodule (s_env *env, const s_sym **name,
   assert(*name);
   assert(block);
   assert(dest);
-  module = env->current_module;
+  module = env->current_defmodule;
   env_module_is_loading_set(env, *name, true);
-  env->current_module = *name;
+  env->current_defmodule = *name;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_module, &g_sym_module);
   tag_init_sym(&tag_module_name, *name);
+  // FIXME: transaction ?
   if (facts_add_tags(&env->facts, &tag_module_name, &tag_is_a,
-                     &tag_module) &&
-      env_eval_block(env, block, &tmp)) {
-    tag_clean(&tmp);
-    tag_init_sym(dest, *name);
-    result = dest;
+                     &tag_module)) {
+    if (env_eval_block(env, block, &tmp)) {
+      tag_clean(&tmp);
+      tag_init_sym(dest, *name);
+      result = dest;
+    }
   }
-  env->current_module = module;
+  env->current_defmodule = module;
   env_module_is_loading_set(env, *name, false);
   return result;
 }
@@ -184,10 +190,10 @@ s_tag * env_defoperator (s_env *env, const s_sym **name,
   s_tag tag_operator_precedence_u8;
   s_tag tag_operator_associativity_rel;
   s_tag tag_operator_associativity_value;
-  tag_init_sym(&tag_module_name, env->current_module);
+  tag_init_sym(&tag_module_name, env->current_defmodule);
   tag_init_sym(&tag_operator, &g_sym_operator);
   tag_ident.type = TAG_IDENT;
-  tag_ident.data.ident.module = env->current_module;
+  tag_ident.data.ident.module = env->current_defmodule;
   tag_ident.data.ident.sym = *name;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_symbol, &g_sym_symbol);
@@ -431,6 +437,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   const s_list *args_final = NULL;
   s_fn_clause *clause;
   s_frame frame;
+  s_list *search_modules;
   s_tag tag;
   s_list *tmp = NULL;
   assert(env);
@@ -442,7 +449,6 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       args_final = arguments;
     else {
       if (! env_eval_call_arguments(env, arguments, &args)) {
-        env->frame = frame_clean(&frame);
         return false;
       }
       args_final = args;
@@ -457,7 +463,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       clause = clause->next_clause;
     }
     if (! clause) {
-      err_puts("env_eval_fn_call: no clause matching.\nTried clauses :\n");
+      err_puts("env_eval_call_fn_args: no clause matching.\nTried clauses :\n");
       clause = fn->clauses;
       while (clause) {
         err_inspect_fn_pattern(clause->pattern);
@@ -475,14 +481,20 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     frame_init(&frame, env->frame);
     env->frame = &frame;
   }
+  search_modules = env->search_modules;
+  env->search_modules = env_module_search_modules(env, fn->module);
   if (! env_eval_block(env, &clause->algo, &tag)) {
     list_delete_all(args);
     list_delete_all(tmp);
+    list_delete_all(env->search_modules);
+    env->search_modules = search_modules;
     env->frame = frame_clean(&frame);
     return false;
   }
   list_delete_all(args);
   list_delete_all(tmp);
+  list_delete_all(env->search_modules);
+  env->search_modules = search_modules;
   env->frame = frame_clean(&frame);
   if (fn->macro) {
     if (! env_eval_tag(env, &tag, dest)) {
@@ -516,13 +528,13 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   ident_init_copy(&tmp_ident, &call->ident);
   if (! env_ident_resolve_module(env, &tmp_ident, &call->ident) ||
       ! module_ensure_loaded(call->ident.module, &env->facts) ||
-      ! module_has_symbol(call->ident.module, &call->ident,
-                          &env->facts) ||
+      ! module_has_ident(call->ident.module, &call->ident,
+                         &env->facts) ||
       ! call_get(call, &env->facts)) {
     ident_init_copy(&call->ident, &tmp_ident);
     call->ident.module = &g_sym_C3;
     if (! module_ensure_loaded(call->ident.module, &env->facts) ||
-        ! module_has_symbol(call->ident.module, &call->ident,
+        ! module_has_ident(call->ident.module, &call->ident,
                             &env->facts) ||
         ! call_get(call, &env->facts)) {      
       ident_init_copy(&call->ident, &tmp_ident);
@@ -840,15 +852,26 @@ bool env_eval_equal_tuple (s_env *env, bool macro, const s_tuple *a,
 
 bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
 {
+  /*
   uw i;
   s_fn_clause *src_clause;
   s_list      *src_pattern;
   s_fn tmp = {0};
   s_fn_clause **tmp_clause;
   s_list      **tmp_pattern;
+  */
+  s_tag tmp = {0};
   assert(env);
   assert(fn);
   assert(dest);
+  tmp.type = TAG_FN;
+  if (! fn_init_copy(&tmp.data.fn, fn))
+    return false;
+  if (! tmp.data.fn.module)
+    tmp.data.fn.module = env->current_defmodule;
+  *dest = tmp;
+  return true;
+  /*
   tmp_clause = &tmp.clauses;
   src_clause = fn->clauses;
   while (src_clause) {
@@ -889,6 +912,7 @@ bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
  ko:
   fn_clean(&tmp);
   return false;
+  */
 }
 
 // Like tag_init_copy excepted that the idents get resolved.
@@ -1850,7 +1874,7 @@ bool env_ident_is_special_operator (s_env *env,
   return false;
 }
 
-s_ident * env_ident_resolve_module (const s_env *env,
+s_ident * env_ident_resolve_module (s_env *env,
                                     const s_ident *ident,
                                     s_ident *dest)
 {
@@ -1859,13 +1883,17 @@ s_ident * env_ident_resolve_module (const s_env *env,
   assert(ident);
   ident_init_copy(&tmp, ident);
   if (! tmp.module) {
-    if (! env->current_module) {
-      err_puts("env_ident_resolve_module: env current module is NULL");
-      assert(! "env_ident_resolve_module: env current module is NULL");
-      return NULL;
+    if (! env_sym_search_modules(env, tmp.sym, &tmp.module) ||
+        ! tmp.module) {
+      if (! env->current_defmodule) {
+        err_puts("env_ident_resolve_module: env current defmodule is NULL");
+        assert(! "env_ident_resolve_module: env current defmodule is NULL");
+        return NULL;
+      }
+      tmp.module = env->current_defmodule;
     }
-    tmp.module = env->current_module;
   }
+  assert(tmp.module);
   *dest = tmp;
   return dest;
 }
@@ -1878,7 +1906,7 @@ s_env * env_init (s_env *env, int argc, char **argv)
     return NULL;
   sym_init_g_sym();
   env->error_handler = NULL;
-  env->frame = frame_new(NULL);         // toplevel
+  env->frame = frame_new(NULL); // toplevel
   frame_init(&env->global_frame, NULL); // globals
   buf_init_alloc(&env->in, BUF_SIZE);
   buf_file_open_r(&env->in, stdin);
@@ -1902,7 +1930,9 @@ s_env * env_init (s_env *env, int argc, char **argv)
     assert(! "env_init: module path not found");
     return NULL;
   }
-  env->current_module = &g_sym_C3;
+  env->current_defmodule = &g_sym_C3;
+  env->search_modules_default = list_new_sym(&g_sym_C3, NULL);
+  env->search_modules = env->search_modules_default;
   env->quote_level = 0;
   env->unquote_level = 0;
   if (! module_load(&g_sym_C3, &env->facts)) {
@@ -1940,6 +1970,42 @@ s_env * env_init_args (s_env *env, int argc, char **argv)
   env->argv = NULL;
   str_init_1(&env->argv0_dir, NULL, "./");
   return env;
+}
+
+bool env_load (s_env *env, const s_str *path)
+{
+  s_buf buf;
+  sw r;
+  s_tag tag = {0};
+  s_tag tmp;
+  assert(env);
+  assert(path);
+  if (! buf_init_alloc(&buf, BUF_SIZE))
+    return false;
+  if (! buf_getc_open_r(&buf, path->ptr.pchar)) {
+    buf_clean(&buf);
+    return false;
+  }
+  while (1) {
+    if ((r = buf_parse_tag(&buf, &tag)) < 0) {
+      buf_getc_close(&buf);
+      buf_clean(&buf);
+      return false;
+    }
+    if (! r)
+      break;
+    if (! env_eval_tag(env, &tag, &tmp)) {
+      tag_clean(&tag);
+      buf_getc_close(&buf);
+      buf_clean(&buf);
+      return false;
+    }
+    tag_clean(&tmp);
+    tag_clean(&tag);
+  }
+  buf_getc_close(&buf);
+  buf_clean(&buf);
+  return true;
 }
 
 void env_longjmp (s_env *env, jmp_buf *jmp_buf)
@@ -2011,21 +2077,34 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
     return true;
   if (! env_module_is_loading_set(env, module, true))
     return false;
-  if (! module_path(module, &env->module_path, &path)) {
-    err_write_1("env_module_load: ");
-    err_write_1(module->str.ptr.pchar);
-    err_puts(": module_path");
-    goto ko;
+  if (module_path(module, &env->module_path, C3_EXT, &path) &&
+      file_access(&path, &g_sym_r)) {
+    tag_init_time(&tag_time);
+    if (! env_load(env, &path)) {
+      err_write_1("env_module_load: ");
+      err_write_1(module->str.ptr.pchar);
+      err_puts(": env_load");
+      str_clean(&path);
+      goto ko;
+    }
   }
-  if (! file_access(&path, &g_sym_r))
-    goto ko;
-  tag_init_time(&tag_time);
-  if (facts_load_file(facts, &path) < 0) {
-    err_write_1("env_module_load: ");
-    err_write_1(module->str.ptr.pchar);
-    err_puts(": facts_load_file");
-    str_clean(&path);
-    goto ko;
+  else {
+    if (! module_path(module, &env->module_path, FACTS_EXT, &path)) {
+      err_write_1("env_module_load: ");
+      err_write_1(module->str.ptr.pchar);
+      err_puts(": module_path");
+      goto ko;
+    }
+    if (! file_access(&path, &g_sym_r))
+      goto ko;
+    tag_init_time(&tag_time);
+    if (facts_load_file(facts, &path) < 0) {
+      err_write_1("env_module_load: ");
+      err_write_1(module->str.ptr.pchar);
+      err_puts(": facts_load_file");
+      str_clean(&path);
+      goto ko;
+    }
   }
   str_clean(&path);
   tag_init_sym(&tag_module_name, module);
@@ -2058,7 +2137,8 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module,
   s_tag tag_load_time = {0};
   s_tag tag_mtime;
   module_load_time(module, facts, &tag_load_time);
-  if (! module_path(module, &env->module_path, &path)) {
+  if (! module_path(module, &env->module_path, C3_EXT, &path) &&
+      ! module_path(module, &env->module_path, FACTS_EXT, &path)) {
     return false;
   }
   //io_inspect_str(&path);
@@ -2072,6 +2152,24 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module,
   str_clean(&path);
   tag_clean(&tag_mtime);
   return r;
+}
+
+const s_sym ** env_module (s_env *env, const s_sym **dest)
+{
+  assert(env);
+  assert(dest);
+  assert(env->search_modules);
+  assert(env->search_modules->tag.type == TAG_SYM);
+  *dest = env->search_modules->tag.data.sym;
+  return dest;
+}
+
+s_list * env_module_search_modules (s_env *env, const s_sym *module)
+{
+  assert(env);
+  assert(module);
+  (void) env;
+  return list_new_sym(module, NULL);
 }
 
 s8 env_operator_arity (s_env *env, const s_ident *op)
@@ -2122,7 +2220,7 @@ s_ident * env_operator_ident (s_env *env, const s_ident *op,
   assert(env);
   assert(op);
   assert(dest);
-  if (env->current_module == op->module)
+  if (env->current_defmodule == op->module)
     dest->module = NULL;
   else
     dest->module = op->module;
@@ -2266,6 +2364,31 @@ void env_push_unwind_protect (s_env *env,
 {
   unwind_protect->next = env->unwind_protect;
   env->unwind_protect = unwind_protect;
+}
+
+bool env_sym_search_modules (s_env *env, const s_sym *sym,
+                             const s_sym **dest)
+{
+  const s_sym *module;
+  s_list *search_module;
+  assert(env);
+  assert(sym);
+  assert(dest);
+  search_module = env->search_modules;
+  while (search_module) {
+    if (search_module->tag.type != TAG_SYM ||
+        ! (module = search_module->tag.data.sym)) {
+      err_puts("env_sym_search_modules: invalid env->search_modules");
+      assert(! "env_sym_search_modules: invalid env->search_modules");
+      return false;
+    }
+    if (module_has_symbol(module, sym, &env->facts)) {
+      *dest = module;
+      return true;
+    }
+    search_module = list_next(search_module);
+  }
+  return false;
 }
 
 u8 env_special_operator_arity (s_env *env, const s_ident *ident)

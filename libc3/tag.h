@@ -42,8 +42,8 @@ s_tag * tag_new_1 (const char *p);
 
 /* Observers */
 s8             tag_arity (const s_tag *tag);
-u64            tag_hash_u64 (const s_tag *tag);
-uw             tag_hash_uw (const s_tag *tag);
+u64 *          tag_hash_u64 (const s_tag *tag, u64 *dest);
+uw *           tag_hash_uw (const s_tag *tag, uw *dest);
 s_str *        tag_inspect (const s_tag *tag, s_str *dest);
 bool           tag_ident_is_bound (const s_tag *tag);
 bool           tag_is_bound_var (const s_tag *tag);

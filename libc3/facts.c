@@ -303,7 +303,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   err_write_1(" fact line ");
   err_inspect_u64(&line);
   err_write_1(": ");
-  err_write_1(path->ptr.pchar);
+  err_puts(path->ptr.pchar);
   return -1;
 }
 
@@ -573,7 +573,8 @@ s_tag * facts_ref_tag (s_facts *facts, const s_tag *tag)
   assert(facts);
   assert(tag);
   item = set_add__tag(&facts->tags, tag);
-  assert(item);
+  if (! item)
+    return NULL;
   item->usage++;
   return &item->data;
 }
