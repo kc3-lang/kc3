@@ -19,8 +19,11 @@
 
 #define TAG_TEST_HASH_U64_COMPARE(a, b, expected)                      \
   do {                                                                 \
-    TEST_EQ(compare_u64(tag_hash_u64(a), tag_hash_u64(b)),             \
-            (expected));                                               \
+    u64 hash_a;                                                        \
+    u64 hash_b;                                                        \
+    TEST_EQ(tag_hash_u64(a, &hash_a), &hash_a);                        \
+    TEST_EQ(tag_hash_u64(b, &hash_b), &hash_b);                        \
+    TEST_EQ(compare_u64(hash_a, hash_b), (expected));                  \
   } while (0)
 
 void tag_test (void);

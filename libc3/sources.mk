@@ -10,6 +10,8 @@ HEADERS = \
 	"bool.h" \
 	"buf.h" \
 	"buf_file.h" \
+	"buf_getc.h" \
+	"buf_getchar.h" \
 	"buf_inspect.h" \
 	"buf_inspect_s16.h" \
 	"buf_inspect_s16_binary.h" \
@@ -167,6 +169,8 @@ SOURCES = \
 	"bool.c" \
 	"buf.c" \
 	"buf_file.c" \
+	"buf_getc.c" \
+	"buf_getchar.c" \
 	"buf_inspect.c" \
 	"buf_inspect_s16.c" \
 	"buf_inspect_s16_binary.c" \
@@ -431,6 +435,8 @@ LO_SOURCES = \
 	"bool.c" \
 	"buf.c" \
 	"buf_file.c" \
+	"buf_getc.c" \
+	"buf_getchar.c" \
 	"buf_inspect.c" \
 	"buf_inspect_s16.c" \
 	"buf_inspect_s16_binary.c" \

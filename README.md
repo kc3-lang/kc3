@@ -435,21 +435,22 @@ Script interpreter. Works the same as ic3 but is not interactive.
 ## TODO
 
  - libc3
+   - macro cast `(Macro) fn (x) { x }`
    - pretty printer
      - indent
      - 80 columns (`\n`)
    - tags
-     - height function `(TAG_VOID: 0, TAG_TUPLE: (1+ (max (height tuple->tags))))`
+     - walker
+     - height function `(TAG_VOID: 1, TAG_TUPLE: (1+ (max (height tuple->tags))))`
      - has_ident
      - collect_idents
    - modules
-     - DONE defmodule
-     - def
-       - def double = 4
-       - def double = fn (x) do x * 2 end
-       - def double = macro (x) do {x, x} end
-     - defmacro
-     - defoperator
+     - defmodule
+     - DONE def
+       - DONE def double = 4
+       - DONE def double = fn (x) do x * 2 end
+       - DONE def double = macro (x) do {x, x} end
+     - DONE defoperator
      - defspecial_operator
      - defstruct
    - facts

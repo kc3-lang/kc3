@@ -4,7 +4,7 @@ defmodule List do
 
   def map = fn {
     ([], _) do
-      [] }
+      []
     end
     ([a | b], f) do
       [f(a) | map(b, f)]

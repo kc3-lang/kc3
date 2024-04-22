@@ -24,7 +24,8 @@ set_add__fact (s_set__fact *set, const s_fact *data)
   uw hash;
   assert(set);
   assert(data);
-  hash = fact_hash_uw(data);
+  if (! fact_hash_uw(data, &hash))
+    return NULL;
   return set_add_h__fact(set, data, hash);
 }
 
@@ -74,7 +75,8 @@ set_get__fact (const s_set__fact *set, const s_fact *data)
   uw hash;
   assert(set);
   assert(data);
-  hash = fact_hash_uw(data);
+  if (! fact_hash_uw(data, &hash))
+    return NULL;
   return set_get_h__fact(set, data, hash);
 }
 

@@ -48,8 +48,8 @@ bool module_ensure_loaded (const s_sym *module, s_facts *facts)
   return true;
 }
 
-bool module_has_symbol (const s_sym *module, const s_ident *ident,
-                        s_facts *facts)
+bool module_has_ident (const s_sym *module, const s_ident *ident,
+                       s_facts *facts)
 {
   s_tag tag_ident;
   s_tag tag_module_name;
@@ -63,6 +63,15 @@ bool module_has_symbol (const s_sym *module, const s_ident *ident,
                                  &tag_symbol, &tag_ident) ||
     facts_find_fact_by_tags(facts, &tag_module_name,
                             &tag_operator, &tag_ident);
+}
+
+bool module_has_symbol (const s_sym *module, const s_sym *sym,
+                        s_facts *facts)
+{
+  s_ident ident;
+  ident.module = module;
+  ident.sym = sym;
+  return module_has_ident(module, &ident, facts);
 }
 
 bool module_is_loading (const s_sym *module)
@@ -102,7 +111,7 @@ bool module_maybe_reload (const s_sym *module, s_facts *facts)
 }
 
 s_str * module_path (const s_sym *module, const s_str *prefix,
-                     s_str *dest)
+                     const char *ext, s_str *dest)
 {
   character b = 0;
   character c;
@@ -113,7 +122,7 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
   assert(dest);
   assert(module);
   buf_init_str(&in, false, (s_str *) &module->str);
-  out_size = module_path_size(module, prefix);
+  out_size = module_path_size(module, prefix, ext);
   buf_init_alloc(&out, out_size);
   if ((r = buf_write_str(&out, prefix)) < 0)
     goto error;
@@ -133,7 +142,7 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
     if ((r = buf_write_character_utf8(&out, c)) < 0)
       goto error;
   }
-  if ((r = buf_write_1(&out, FACTS_EXT)) < 0)
+  if ((r = buf_write_1(&out, ext)) < 0)
     goto error;
   return buf_to_str(&out, dest);
  error:
@@ -143,7 +152,7 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
   return NULL;
 }
 
-sw module_path_size (const s_sym *module, const s_str *prefix)
+sw module_path_size (const s_sym *module, const s_str *prefix, const char *ext)
 {
   character b = 0;
   character c;
@@ -167,6 +176,6 @@ sw module_path_size (const s_sym *module, const s_str *prefix)
       b = c;
     result += character_utf8_size(c);
   }
-  result += strlen(FACTS_EXT);
+  result += strlen(ext);
   return result;
 }

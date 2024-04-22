@@ -68,8 +68,16 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
   s_tag tag_symbol_value;
   s_tag tag_var;
   module = ident->module;
-  if (! module)
-    module = g_c3_env.current_module;
+  if (! module) {
+    if (! sym_search_modules(ident->sym, &module) ||
+        ! module) {
+      err_write_1("ident_get: symbol not found: ");
+      err_inspect_sym(&ident->sym);
+      err_write_1("\n");
+      assert(! "ident_get: symbol not found");
+      return NULL;
+    }
+  }
   if (! module_ensure_loaded(module, facts))
     return NULL;
   tag_init_ident(&tag_ident, ident);

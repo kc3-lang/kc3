@@ -24,7 +24,8 @@ set_add__tag (s_set__tag *set, const s_tag *data)
   uw hash;
   assert(set);
   assert(data);
-  hash = tag_hash_uw(data);
+  if (! tag_hash_uw(data, &hash))
+    return NULL;
   return set_add_h__tag(set, data, hash);
 }
 
@@ -74,7 +75,8 @@ set_get__tag (const s_set__tag *set, const s_tag *data)
   uw hash;
   assert(set);
   assert(data);
-  hash = tag_hash_uw(data);
+  if (! tag_hash_uw(data, &hash))
+    return NULL;
   return set_get_h__tag(set, data, hash);
 }
 

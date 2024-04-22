@@ -30,9 +30,10 @@ s_env * c3_init (s_env *env, int argc, char **argv);
 void    c3_clean (s_env *env);
 
 /* Observers. */
-uw *    c3_facts_next_id (uw *dest);
-s_str * c3_getenv (const s_str *name, s_str *dest);
-void    c3_license (void);
+uw *           c3_facts_next_id (uw *dest);
+s_str *        c3_getenv (const s_str *name, s_str *dest);
+void           c3_license (void);
+const s_sym ** c3_module (const s_sym **dest);
 
 /* Operators. */
 s_tag * c3_def (const s_call *call, s_tag *dest);

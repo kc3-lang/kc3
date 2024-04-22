@@ -196,14 +196,14 @@ replace {C3.getenv, :symbol_value, cfn Str "c3_getenv" (Str, Result)}
 add {C3, :symbol, C3.dlopen}
 replace {C3.dlopen, :symbol_value, cfn Ptr "c3_dlopen" (Str, Result)}
 add {C3, :symbol, C3.first}
-replace {C3.first, :symbol_value, fn {
+replace {C3.first, :symbol_value, C3.fn {
  ([a | _b]) { a }
  ({a, _b}) { a }
  ({a, _b, _c}) { a }
  ({a, _b, _c, _d}) { a }
 }}
 add {C3, :symbol, C3.fib}
-replace {C3.fib, :symbol_value, fn {
+replace {C3.fib, :symbol_value, C3.fn {
   (0) { 1 }
   (1) { 1 }
   (x) { if x < 0 then 0 else fib(x - 1) + fib(x - 2) end }
@@ -232,3 +232,5 @@ add {C3, :symbol, C3.defoperator}
 replace {C3.defoperator, :arity, 5}
 replace {C3.defoperator, :is_a, :special_operator}
 replace {C3.defoperator, :symbol_value, cfn Tag "c3_defoperator" (Sym, Sym, Tag, U8, Sym, Result)}
+add {C3, :symbol, C3.module}
+replace {C3.module, :symbol_value, cfn Sym "c3_module" (Result)}

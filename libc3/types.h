@@ -347,6 +347,7 @@ struct fn {
   s_fn_clause *clauses;
   bool macro;
   bool special_operator;
+  const s_sym *module;
 };
 
 struct ident {
@@ -616,7 +617,7 @@ struct env {
   char            **argv;
   s_str             argv0_dir;
   s_list           *backtrace;
-  const s_sym      *current_module;
+  const s_sym      *current_defmodule;
   s_buf             err;
   s_error_handler  *error_handler;
   s_facts           facts;
@@ -627,6 +628,8 @@ struct env {
   s_buf             out;
   s_list           *path;
   uw                quote_level;
+  s_list           *search_modules;
+  s_list           *search_modules_default;
   uw                unquote_level;
   s_unwind_protect *unwind_protect;
 };

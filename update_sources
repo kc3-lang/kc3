@@ -53,7 +53,7 @@ update_sources_sh
 
 ( cd libtommath && ./update_sources; )
 ( cd libc3 && ./update_sources; )
-( cd libc3_window && ./update_sources; )
 ( cd ic3 && ./update_sources; )
 ( cd c3s && ./update_sources; )
 ( cd test && ./update_sources; )
+( cd libc3_window && ./update_sources; )

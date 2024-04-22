@@ -261,22 +261,26 @@ bool * tag_gte (const s_tag *a, const s_tag *b, bool *dest)
   return dest;
 }
 
-u64 tag_hash_u64 (const s_tag *tag)
+u64 * tag_hash_u64 (const s_tag *tag, u64 *dest)
 {
   t_hash hash;
   assert(tag);
   hash_init(&hash);
-  hash_update_tag(&hash, tag);
-  return hash_to_u64(&hash);
+  if (! hash_update_tag(&hash, tag))
+    return NULL;
+  *dest = hash_to_u64(&hash);
+  return dest;
 }
 
-uw tag_hash_uw (const s_tag *tag)
+uw * tag_hash_uw (const s_tag *tag, uw *dest)
 {
   t_hash hash;
   assert(tag);
   hash_init(&hash);
-  hash_update_tag(&hash, tag);
-  return hash_to_uw(&hash);
+  if (! hash_update_tag(&hash, tag))
+    return NULL;
+  *dest = hash_to_uw(&hash);
+  return dest;
 }
 
 bool tag_ident_is_bound (const s_tag *tag)

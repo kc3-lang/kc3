@@ -82,6 +82,7 @@ extern const s_sym g_sym_defstruct;
 extern const s_sym g_sym_do;
 extern const s_sym g_sym_else;
 extern const s_sym g_sym_end;
+extern const s_sym g_sym_fn;
 extern const s_sym g_sym_if_then_else;
 extern const s_sym g_sym_is_a;
 extern const s_sym g_sym_is_loading;
@@ -131,6 +132,7 @@ s_str *       sym_inspect (const s_sym *sym, s_str *dest);
 bool          sym_is_array_type (const s_sym *sym);
 bool          sym_is_module (const s_sym *sym);
 bool          sym_must_clean (const s_sym *sym, bool *must_clean);
+bool          sym_search_modules (const s_sym *sym, const s_sym **dest);
 bool          sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
                                ffi_type **dest);
 bool          sym_to_tag_type (const s_sym *sym, e_tag_type *dest);

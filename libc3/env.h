@@ -22,10 +22,16 @@ void    env_clean (s_env *env);
 s_env * env_init (s_env *env, int argc, char **argv);
 
 /* Observers. */
-const s_tag * env_frames_get (const s_env *env, const s_sym *name);
-s_ident *     env_ident_resolve_module (const s_env *env,
-                                        const s_ident *ident,
-                                        s_ident *dest);
+const s_tag *  env_frames_get (const s_env *env, const s_sym *name);
+s_ident *      env_ident_resolve_module (s_env *env,
+                                         const s_ident *ident,
+                                         s_ident *dest);
+const s_sym ** env_module (s_env *env, const s_sym **dest);
+s_list *       env_module_search_modules (s_env *env,
+                                          const s_sym *module);
+bool           env_sym_search_modules (s_env *env,
+                                       const s_sym *sym,
+                                       const s_sym **dest);
 
 /* Operators. */
 s_tag *       env_def (s_env *env, const s_call *call, s_tag *dest);
@@ -107,6 +113,8 @@ bool          env_eval_ident (s_env *env, const s_ident *ident,
                               s_tag *dest);
 bool          env_eval_ident_is_bound (s_env *env,
                                        const s_ident *ident);
+bool          env_eval_integer (s_env *env, const s_integer *integer,
+                                s_integer *dest);
 bool          env_eval_list (s_env *env, const s_list *list,
                              s_tag *dest);
 bool          env_eval_map (s_env *env, const s_map *map,
@@ -147,6 +155,7 @@ bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
 bool          env_eval_void (s_env *env, const void *_, s_tag *dest);
 bool          env_ident_is_special_operator (s_env *env,
                                              const s_ident *ident);
+bool          env_load (s_env *env, const s_str *path);
 bool          env_module_is_loading (s_env *env, const s_sym *module);
 bool          env_module_is_loading_set (s_env *env,
                                          const s_sym *module,
@@ -160,8 +169,6 @@ s8            env_operator_arity (s_env *env, const s_ident *op);
 bool          env_operator_find (s_env *env, const s_ident *op);
 s_ident *     env_operator_ident (s_env *env, const s_ident *op,
                                   s_ident *dest);
-bool          env_eval_integer (s_env *env, const s_integer *integer,
-                                s_integer *dest);
 bool          env_operator_is_right_associative (s_env *env,
                                                  const s_ident *op);
 s8            env_operator_precedence (s_env *env, const s_ident *op);

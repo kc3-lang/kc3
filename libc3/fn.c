@@ -49,10 +49,12 @@ void fn_delete (s_fn *fn)
   free(fn);
 }
 
-s_fn * fn_init (s_fn *fn)
+s_fn * fn_init (s_fn *fn, const s_sym *module)
 {
+  s_fn tmp = {0};
   assert(fn);
-  *fn = (s_fn) {0};
+  tmp.module = module;
+  *fn = tmp;
   return fn;
 }
 
@@ -107,6 +109,7 @@ s_fn * fn_init_cast (s_fn *fn, const s_sym *type, const s_tag *tag)
 s_fn * fn_init_copy (s_fn *fn, const s_fn *src)
 {
   s_fn tmp = {0};
+  tmp.module = src->module;
   fn_clause_copy(src->clauses, &tmp.clauses);
   tmp.macro = src->macro;
   tmp.special_operator = src->special_operator;
@@ -114,13 +117,13 @@ s_fn * fn_init_copy (s_fn *fn, const s_fn *src)
   return fn;
 }
 
-s_fn * fn_new (void)
+s_fn * fn_new (const s_sym *module)
 {
   s_fn *fn;
   fn = alloc(sizeof(s_fn));
   if (! fn)
     return NULL;
-  fn_init(fn);
+  fn_init(fn, module);
   return fn;
 }
 

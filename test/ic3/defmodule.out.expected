@@ -23,6 +23,6 @@ Plop
 Plop.a
 1
 Plop.b
-fn () { Plop.a }
+Plop.fn () { a }
 Plop.b()
 1

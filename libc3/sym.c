@@ -77,6 +77,7 @@ const s_sym g_sym_defstruct       = {{{NULL},  9, {"defstruct"}}};
 const s_sym g_sym_do              = {{{NULL},  2, {"do"}}};
 const s_sym g_sym_else            = {{{NULL},  4, {"else"}}};
 const s_sym g_sym_end             = {{{NULL},  3, {"end"}}};
+const s_sym g_sym_fn              = {{{NULL},  2, {"fn"}}};
 const s_sym g_sym_if_then_else    = {{{NULL}, 12, {"if_then_else"}}};
 const s_sym g_sym_is_a            = {{{NULL},  4, {"is_a"}}};
 const s_sym g_sym_is_loading      = {{{NULL}, 10, {"is_loading"}}};
@@ -347,6 +348,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_do, NULL);
   sym_register(&g_sym_else, NULL);
   sym_register(&g_sym_end, NULL);
+  sym_register(&g_sym_fn, NULL);
   sym_register(&g_sym_if_then_else, NULL);
   sym_register(&g_sym_is_a, NULL);
   sym_register(&g_sym_is_loading, NULL);
@@ -644,6 +646,11 @@ const s_sym * sym_new (const s_str *src)
   }
   g_sym_list = tmp;
   return sym;
+}
+
+bool sym_search_modules (const s_sym *sym, const s_sym **dest)
+{
+  return env_sym_search_modules(&g_c3_env, sym, dest);
 }
 
 bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,

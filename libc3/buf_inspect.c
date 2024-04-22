@@ -1225,18 +1225,21 @@ sw buf_inspect_facts_spec (s_buf *buf, p_facts_spec spec)
 sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
 {
   const s_fn_clause *clause;
+  s_ident ident;
   sw r;
   sw result = 0;
   assert(buf);
   assert(fn);
-  if (fn->macro) {
-    if ((r = buf_write_1(buf, "macro ")) < 0)
-      return r;
-  }
-  else {
-    if ((r = buf_write_1(buf, "fn ")) < 0)
-      return r;
-  }
+  if (fn->macro)
+    ident.sym = &g_sym_macro;
+  else
+    ident.sym = &g_sym_fn;
+  ident.module = fn->module;
+  if ((r = buf_inspect_ident(buf, &ident)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
   result += r;
   clause = fn->clauses;
   assert(clause);
@@ -1387,7 +1390,8 @@ sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
   assert(buf);
   assert(ident);
   result = 0;
-  if (ident->module && ident->module != g_c3_env.current_module) {
+  // FIXME
+  if (ident->module && ident->module != g_c3_env.current_defmodule) {
     if ((r = buf_inspect_sym(buf, &ident->module)) < 0)
       return r;
     result += r;
