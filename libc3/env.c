@@ -2084,18 +2084,26 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module,
                               s_facts *facts)
 {
   s_str path;
-  bool r = true;
+  bool r = false;
   s_tag tag_load_time = {0};
   s_tag tag_mtime;
   if (env_module_is_loading(env, module))
     return true;
   module_load_time(module, facts, &tag_load_time);
-  if ((! module_path(module, &env->module_path, C3_EXT, &path) ||
-       ! file_access(&path, &g_sym_r)) &&
-      (! module_path(module, &env->module_path, FACTS_EXT, &path) ||
-       ! file_access(&path, &g_sym_r))) {
-    return false;
+  if (module_path(module, &env->module_path, C3_EXT, &path)) {
+    if (file_access(&path, &g_sym_r))
+      r = true;
+    else
+      str_clean(&path);
   }
+  if (!r && module_path(module, &env->module_path, FACTS_EXT, &path)) {
+    if (file_access(&path, &g_sym_r))
+      r = true;
+    else
+      str_clean(&path);
+  }
+  if (! r)
+    return false;
   //io_inspect_str(&path);
   if (! file_mtime(&path, &tag_mtime)) {
     str_clean(&path);
