@@ -100,40 +100,18 @@ s_list ** list_init_cast (s_list **list, const s_sym *type,
   return NULL;
 }
 
-/* FIXME: does not work on circular lists */
 s_list ** list_init_copy (s_list **list, const s_list * const *src)
 {
-  s_list **i;
-  s_list *next;
-  const s_list *s;
-  s_list *tmp;
+  s_list *tmp = NULL;
   assert(src);
   assert(list);
-  i = &tmp;
-  *i = NULL;
-  s = *src;
-  while (s) {
-    *i = list_new(NULL);
-    if (! tag_init_copy(&(*i)->tag, &s->tag))
-      goto ko;
-    if ((next = list_next(s))) {
-      s = next;
-      i = &(*i)->next.data.list;
-    }
-    else {
-      if (! tag_init_copy(&(*i)->next, &s->next))
-        goto ko;
-      break;
-    }
-  }
+  if (*src && ! (tmp = list_new_copy(*src)))
+    return NULL;
   *list = tmp;
   return list;
- ko:
-  list_delete_all(tmp);
-  return NULL;
 }
 
-s_list * list_init_copy_tag (s_list *list, const s_tag *tag, s_list *next)
+s_list * list_init_tag_copy (s_list *list, const s_tag *tag, s_list *next)
 {
   assert(list);
   assert(tag);
@@ -217,17 +195,34 @@ s_list * list_new_1 (const char *p)
   }
   return list;
 }
-
-s_list * list_new_copy (const s_tag *x, s_list *next)
+/* FIXME: does not work on circular lists */
+s_list * list_new_copy (const s_list *src)
 {
-  s_list *dest;
-  if ((dest = list_new(next))) {
-    if (! tag_init_copy(&dest->tag, x)) {
-      free(dest);
-      return NULL;
+  s_list **i;
+  s_list *next;
+  const s_list *s;
+  s_list *list;
+  list = NULL;
+  i = &list;
+  s = src;
+  while (s) {
+    *i = list_new(NULL);
+    if (! tag_init_copy(&(*i)->tag, &s->tag))
+      goto ko;
+    if ((next = list_next(s))) {
+      s = next;
+      i = &(*i)->next.data.list;
+    }
+    else {
+      if (! tag_init_copy(&(*i)->next, &s->next))
+        goto ko;
+      break;
     }
   }
-  return dest;
+  return list;
+ ko:
+  list_delete_all(list);
+  return NULL;
 }
 
 s_list * list_new_list (s_list *x, s_list *next)
@@ -235,6 +230,18 @@ s_list * list_new_list (s_list *x, s_list *next)
   s_list *dest;
   if ((dest = list_new(next))) {
     if (! tag_init_list(&dest->tag, x)) {
+      free(dest);
+      return NULL;
+    }
+  }
+  return dest;
+}
+
+s_list * list_new_tag_copy (const s_tag *x, s_list *next)
+{
+  s_list *dest;
+  if ((dest = list_new(next))) {
+    if (! tag_init_copy(&dest->tag, x)) {
       free(dest);
       return NULL;
     }

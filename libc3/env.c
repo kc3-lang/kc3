@@ -852,14 +852,6 @@ bool env_eval_equal_tuple (s_env *env, bool macro, const s_tuple *a,
 
 bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
 {
-  /*
-  uw i;
-  s_fn_clause *src_clause;
-  s_list      *src_pattern;
-  s_fn tmp = {0};
-  s_fn_clause **tmp_clause;
-  s_list      **tmp_pattern;
-  */
   s_tag tmp = {0};
   assert(env);
   assert(fn);
@@ -871,48 +863,6 @@ bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
     tmp.data.fn.module = env->current_defmodule;
   *dest = tmp;
   return true;
-  /*
-  tmp_clause = &tmp.clauses;
-  src_clause = fn->clauses;
-  while (src_clause) {
-    *tmp_clause = fn_clause_new(NULL);
-    if (! *tmp_clause)
-      goto ko;
-    (*tmp_clause)->arity = src_clause->arity;
-    tmp_pattern = &(*tmp_clause)->pattern;
-    src_pattern = src_clause->pattern;
-    while (src_pattern) {
-      *tmp_pattern = list_new(NULL);
-      if (! *tmp_pattern)
-        goto ko;
-      if (! env_eval_fn_tag(env, &src_pattern->tag,
-                            &(*tmp_pattern)->tag))
-        goto ko;
-      tmp_pattern = &(*tmp_pattern)->next.data.list;
-      src_pattern = list_next(src_pattern);
-    }
-    if (! block_init(&(*tmp_clause)->algo, src_clause->algo.count))
-      goto ko;
-    i = 0;
-    while (i < src_clause->algo.count) {
-      if (! env_eval_fn_tag(env, src_clause->algo.tag + i,
-                            (*tmp_clause)->algo.tag + i))
-        goto ko;
-      i++;
-    }
-    (*tmp_clause)->algo.short_form = src_clause->algo.short_form;
-    tmp_clause = &(*tmp_clause)->next_clause;
-    src_clause = src_clause->next_clause;
-  }
-  tmp.macro = fn->macro;
-  tmp.special_operator = fn->special_operator;
-  dest->type = TAG_FN;
-  dest->data.fn = tmp;
-  return true;
- ko:
-  fn_clean(&tmp);
-  return false;
-  */
 }
 
 // Like tag_init_copy excepted that the idents get resolved.
@@ -2062,7 +2012,7 @@ bool env_module_is_loading_set (s_env *env, const s_sym *module,
 
 bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
 {
-  s_str path;
+  s_str path = {0};
   s_struct_type *st;
   s_list        *st_spec;
   s_tag tag_module_name;
@@ -2082,13 +2032,14 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
     tag_init_time(&tag_time);
     if (! env_load(env, &path)) {
       err_write_1("env_module_load: ");
-      err_write_1(module->str.ptr.pchar);
+      err_inspect_sym(&module);
       err_puts(": env_load");
       str_clean(&path);
       goto ko;
     }
   }
   else {
+    str_clean(&path);
     if (! module_path(module, &env->module_path, FACTS_EXT, &path)) {
       err_write_1("env_module_load: ");
       err_write_1(module->str.ptr.pchar);
@@ -2137,13 +2088,14 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module,
   s_tag tag_load_time = {0};
   s_tag tag_mtime;
   module_load_time(module, facts, &tag_load_time);
-  if (! module_path(module, &env->module_path, C3_EXT, &path) &&
-      ! module_path(module, &env->module_path, FACTS_EXT, &path)) {
+  if ((! module_path(module, &env->module_path, C3_EXT, &path) ||
+       ! file_access(&path, &g_sym_r)) &&
+      (! module_path(module, &env->module_path, FACTS_EXT, &path) ||
+       ! file_access(&path, &g_sym_r))) {
     return false;
   }
   //io_inspect_str(&path);
-  if (! file_access(&path, &g_sym_r) ||
-      ! file_mtime(&path, &tag_mtime)) {
+  if (! file_mtime(&path, &tag_mtime)) {
     str_clean(&path);
     return false;
   }

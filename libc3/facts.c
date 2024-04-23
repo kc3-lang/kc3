@@ -573,8 +573,13 @@ s_tag * facts_ref_tag (s_facts *facts, const s_tag *tag)
   assert(facts);
   assert(tag);
   item = set_add__tag(&facts->tags, tag);
-  if (! item)
+  if (! item) {
+    err_write_1("facts_ref_tag: set_add__tag: ");
+    err_inspect_tag(tag);
+    err_write_1("\n");
+    assert(! "facts_ref_tag: set_add__tag");
     return NULL;
+  }
   item->usage++;
   return &item->data;
 }

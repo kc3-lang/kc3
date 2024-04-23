@@ -189,8 +189,8 @@ s_list ** map_map (const s_map *map, const s_fn *fn, s_list **result)
   t = &tmp;
   *t = NULL;
   while (i < map->count) {
-    args = list_new_copy(map->key + i,
-                         list_new_copy(map->value + i, NULL));
+    args = list_new_tag_copy(map->key + i,
+                             list_new_tag_copy(map->value + i, NULL));
     *t = list_new(NULL);
     if (! eval_fn_call(fn, args, &(*t)->tag)) {
       list_delete_all(args);

@@ -24,8 +24,11 @@ set_add__tag (s_set__tag *set, const s_tag *data)
   uw hash;
   assert(set);
   assert(data);
-  if (! tag_hash_uw(data, &hash))
+  if (! tag_hash_uw(data, &hash)) {
+    err_puts("set_add__tag: tag_hash_uw");
+    assert(! "set_add__tag: tag_hash_uw");
     return NULL;
+  }
   return set_add_h__tag(set, data, hash);
 }
 
@@ -52,7 +55,11 @@ set_add_h__tag (s_set__tag *set, const s_tag *data, uw hash)
   h = hash % set->max;
   if ((i = set->items[h]))
     return set_add_collision__tag(set, data, hash, i);
-  i = set_item_new__tag(data, hash, NULL);
+  if (! (i = set_item_new__tag(data, hash, NULL))) {
+    err_puts("set_add_h__tag: set_item_new__tag");
+    assert(! "set_add_h__tag: set_item_new__tag");
+    return NULL;
+  }
   set->items[h] = i;
   set->count++;
   return i;

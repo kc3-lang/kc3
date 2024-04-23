@@ -24,8 +24,11 @@ set_add___NAME$ (s_set___NAME$ *set, const _TYPE$ *data)
   uw hash;
   assert(set);
   assert(data);
-  if (! _NAME$_hash_uw(data, &hash))
+  if (! _NAME$_hash_uw(data, &hash)) {
+    err_puts("set_add___NAME$: _NAME$_hash_uw");
+    assert(! "set_add___NAME$: _NAME$_hash_uw");
     return NULL;
+  }
   return set_add_h___NAME$(set, data, hash);
 }
 
@@ -52,7 +55,11 @@ set_add_h___NAME$ (s_set___NAME$ *set, const _TYPE$ *data, uw hash)
   h = hash % set->max;
   if ((i = set->items[h]))
     return set_add_collision___NAME$(set, data, hash, i);
-  i = set_item_new___NAME$(data, hash, NULL);
+  if (! (i = set_item_new___NAME$(data, hash, NULL))) {
+    err_puts("set_add_h___NAME$: set_item_new___NAME$");
+    assert(! "set_add_h___NAME$: set_item_new___NAME$");
+    return NULL;
+  }
   set->items[h] = i;
   set->count++;
   return i;

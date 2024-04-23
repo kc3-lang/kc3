@@ -24,8 +24,11 @@ set_add__fact (s_set__fact *set, const s_fact *data)
   uw hash;
   assert(set);
   assert(data);
-  if (! fact_hash_uw(data, &hash))
+  if (! fact_hash_uw(data, &hash)) {
+    err_puts("set_add__fact: fact_hash_uw");
+    assert(! "set_add__fact: fact_hash_uw");
     return NULL;
+  }
   return set_add_h__fact(set, data, hash);
 }
 
@@ -52,7 +55,11 @@ set_add_h__fact (s_set__fact *set, const s_fact *data, uw hash)
   h = hash % set->max;
   if ((i = set->items[h]))
     return set_add_collision__fact(set, data, hash, i);
-  i = set_item_new__fact(data, hash, NULL);
+  if (! (i = set_item_new__fact(data, hash, NULL))) {
+    err_puts("set_add_h__fact: set_item_new__fact");
+    assert(! "set_add_h__fact: set_item_new__fact");
+    return NULL;
+  }
   set->items[h] = i;
   set->count++;
   return i;
