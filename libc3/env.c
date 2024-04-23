@@ -2087,6 +2087,8 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module,
   bool r = true;
   s_tag tag_load_time = {0};
   s_tag tag_mtime;
+  if (env_module_is_loading(env, module))
+    return true;
   module_load_time(module, facts, &tag_load_time);
   if ((! module_path(module, &env->module_path, C3_EXT, &path) ||
        ! file_access(&path, &g_sym_r)) &&
