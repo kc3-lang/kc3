@@ -277,8 +277,13 @@ uw * tag_hash_uw (const s_tag *tag, uw *dest)
   t_hash hash;
   assert(tag);
   hash_init(&hash);
-  if (! hash_update_tag(&hash, tag))
+  if (! hash_update_tag(&hash, tag)) {
+    err_write_1("tag_hash_uw: hash_update_tag: ");
+    err_inspect_tag(tag);
+    err_write_1("\n");
+    assert(! "tag_hash_uw: hash_update_tag");
     return NULL;
+  }
   *dest = hash_to_uw(&hash);
   return dest;
 }

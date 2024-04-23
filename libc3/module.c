@@ -119,6 +119,7 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
   s_buf out;
   sw out_size;
   sw r;
+  s_str *result;
   assert(dest);
   assert(module);
   buf_init_str(&in, false, (s_str *) &module->str);
@@ -144,7 +145,12 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
   }
   if ((r = buf_write_1(&out, ext)) < 0)
     goto error;
-  return buf_to_str(&out, dest);
+  result = buf_to_str(&out, dest);
+  if (result) {
+    err_inspect_str(dest);
+    err_write_1("\n");
+  }
+  return result;
  error:
   buf_clean(&out);
   err_puts("module_path: error");

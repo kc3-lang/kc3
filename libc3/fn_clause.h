@@ -27,12 +27,10 @@ s_fn_clause * fn_clause_init (s_fn_clause *clause, s_fn_clause *next_clause);
 
 /* constructors */
 s_fn_clause * fn_clause_new (s_fn_clause *next_clause);
+s_fn_clause * fn_clause_new_copy (const s_fn_clause *src);
 
 /* destructors */
 s_fn_clause * fn_clause_delete (s_fn_clause *clause);
 void          fn_clause_delete_all (s_fn_clause *clause);
-
-/* modifiers */
-s_fn_clause * fn_clause_copy (const s_fn_clause *src, s_fn_clause **dest);
 
 #endif /* LIBC3_FN_H */

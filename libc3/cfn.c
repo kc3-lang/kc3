@@ -203,8 +203,8 @@ s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
   assert(cfn);
   tmp.name = src->name;
   tmp.arg_result = src->arg_result;
-  if (! list_init_copy(&tmp.arg_types,
-                       (const s_list * const *) &src->arg_types))
+  if (src->arg_types &&
+      ! (tmp.arg_types = list_new_copy(src->arg_types)))
     return NULL;
   tmp.arity = src->arity;
   tmp.cif = src->cif;

@@ -25,22 +25,6 @@ void fn_clause_clean (s_fn_clause *fn_clause)
   block_clean(&fn_clause->algo);
 }
 
-s_fn_clause * fn_clause_copy (const s_fn_clause *src, s_fn_clause **dest)
-{
-  s_fn_clause *tmp = NULL;
-  s_fn_clause **tail = &tmp;
-  while (src) {
-    *tail = fn_clause_new(NULL);
-    (*tail)->arity = src->arity;
-    list_init_copy(&(*tail)->pattern, (const s_list **) &src->pattern);
-    block_init_copy(&(*tail)->algo, &src->algo);
-    src = src->next_clause;
-    tail = &(*tail)->next_clause;
-  }
-  *dest = tmp;
-  return tmp;
-}
-
 s_fn_clause * fn_clause_delete (s_fn_clause *fn_clause)
 {
   s_fn_clause *next_clause;
@@ -73,4 +57,21 @@ s_fn_clause * fn_clause_new (s_fn_clause *next_clause)
   if (! fn_clause)
     return NULL;
   return fn_clause_init(fn_clause, next_clause);
+}
+
+s_fn_clause * fn_clause_new_copy (const s_fn_clause *src)
+{
+  s_fn_clause *tmp;
+  s_fn_clause **tail;
+  tmp = NULL;
+  tail = &tmp;
+  while (src) {
+    *tail = fn_clause_new(NULL);
+    (*tail)->arity = src->arity;
+    (*tail)->pattern = list_new_copy(src->pattern);
+    block_init_copy(&(*tail)->algo, &src->algo);
+    tail = &(*tail)->next_clause;
+    src = src->next_clause;
+  }
+  return tmp;
 }

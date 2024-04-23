@@ -109,8 +109,10 @@ s_fn * fn_init_cast (s_fn *fn, const s_sym *type, const s_tag *tag)
 s_fn * fn_init_copy (s_fn *fn, const s_fn *src)
 {
   s_fn tmp = {0};
+  assert(fn);
+  assert(src);
   tmp.module = src->module;
-  fn_clause_copy(src->clauses, &tmp.clauses);
+  tmp.clauses = fn_clause_new_copy(src->clauses);
   tmp.macro = src->macro;
   tmp.special_operator = src->special_operator;
   *fn = tmp;

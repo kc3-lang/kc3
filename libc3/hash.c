@@ -499,8 +499,8 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_UNQUOTE:
     return hash_update_unquote(hash, &tag->data.unquote);
   case TAG_UW:      return hash_update_uw(hash, &tag->data.uw);
-  case TAG_VAR:     return hash_update_var(hash, NULL);
-  case TAG_VOID:    return hash_update_void(hash, NULL);
+  case TAG_VAR:     return hash_update_var(hash, tag);
+  case TAG_VOID:    return hash_update_void(hash, tag);
   }
   err_puts("hash_update_tag: unknown tag type");
   assert(! "hash_update_tag: unknown tag type");
