@@ -439,6 +439,7 @@ bool hash_update_sym (t_hash *hash, const s_sym * const *sym)
   char type[] = "sym";
   assert(hash);
   assert(sym);
+  assert(*sym);
   return hash_update(hash, type, sizeof(type)) &&
     hash_update_str(hash, &(*sym)->str);
 }

@@ -1972,6 +1972,15 @@ void env_longjmp (s_env *env, jmp_buf *jmp_buf)
   longjmp(*jmp_buf, 1);
 }
 
+const s_sym ** env_module (s_env *env, const s_sym **dest)
+{
+  assert(env);
+  assert(dest);
+  assert(env->current_defmodule);
+  *dest = env->current_defmodule;
+  return dest;
+}
+
 bool env_module_is_loading (s_env *env, const s_sym *module)
 {
   s_tag tag_module;
@@ -2112,16 +2121,6 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module,
   str_clean(&path);
   tag_clean(&tag_mtime);
   return r;
-}
-
-const s_sym ** env_module (s_env *env, const s_sym **dest)
-{
-  assert(env);
-  assert(dest);
-  assert(env->search_modules);
-  assert(env->search_modules->tag.type == TAG_SYM);
-  *dest = env->search_modules->tag.data.sym;
-  return dest;
 }
 
 s_list * env_module_search_modules (s_env *env, const s_sym *module)
@@ -2324,6 +2323,16 @@ void env_push_unwind_protect (s_env *env,
 {
   unwind_protect->next = env->unwind_protect;
   env->unwind_protect = unwind_protect;
+}
+
+s_list ** env_search_modules (s_env *env, s_list **dest)
+{
+  assert(env);
+  assert(dest);
+  assert(env->search_modules);
+  assert(env->search_modules->tag.type == TAG_SYM);
+  *dest = env->search_modules;
+  return dest;
 }
 
 bool env_sym_search_modules (s_env *env, const s_sym *sym,
