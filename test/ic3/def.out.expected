@@ -84,6 +84,8 @@ reverse([1, 2, 3])
 [3, 2, 1]
 module()
 C3
+search_modules()
+[C3]
 reverse
 fn (x) { List.reverse(x) }
 def reverse = fn (x) { [:reversed | List.reverse(x)] }
@@ -92,6 +94,10 @@ reverse
 fn (x) { [:reversed | List.reverse(x)] }
 reverse([1, 2, 3])
 [:reversed, 3, 2, 1]
+module()
+C3
+search_modules()
+[C3]
 reverse
 fn (x) { [:reversed | List.reverse(x)] }
 def reverse = fn (x) { List.reverse(x) }
@@ -100,5 +106,9 @@ reverse
 fn (x) { List.reverse(x) }
 reverse([1, 2, 3])
 [3, 2, 1]
+module()
+C3
+search_modules()
+[C3]
 reverse
 fn (x) { List.reverse(x) }
