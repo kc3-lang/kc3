@@ -151,3 +151,8 @@ s_tag * c3_pin (const s_tag *a, s_tag *dest)
     return NULL;
   return dest;
 }
+
+s_list ** c3_search_modules (s_list **dest)
+{
+  return env_search_modules(&g_c3_env, dest);
+}

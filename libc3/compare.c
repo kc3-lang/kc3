@@ -242,6 +242,8 @@ s8 compare_fn (const s_fn *a, const s_fn *b)
     return -1;
   if (!b)
     return 1;
+  if ((r = compare_sym(a->module, b->module)))
+    return r;
   if ((r = compare_bool(a->special_operator, b->special_operator)))
     return r;
   if ((r = compare_bool(a->macro, b->macro)))

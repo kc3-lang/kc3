@@ -234,3 +234,5 @@ replace {C3.defoperator, :is_a, :special_operator}
 replace {C3.defoperator, :symbol_value, cfn Tag "c3_defoperator" (Sym, Sym, Tag, U8, Sym, Result)}
 add {C3, :symbol, C3.module}
 replace {C3.module, :symbol_value, cfn Sym "c3_module" (Result)}
+add {C3, :symbol, C3.search_modules}
+replace {C3.search_modules, :symbol_value, cfn List "c3_search_modules" (Result)}

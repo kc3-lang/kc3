@@ -50,6 +50,7 @@ s_list * list_new_tag_copy (const s_tag *tag, s_list *next);
 
 /* Observers */
 s_list ** list_cast (const s_tag *tag, s_list **list);
+bool      list_has (const s_list *list, const s_tag *tag);
 bool      list_is_plist (const s_list *list);
 sw        list_length (const s_list *list);
 s_list  * list_next (const s_list *list);

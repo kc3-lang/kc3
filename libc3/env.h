@@ -27,8 +27,10 @@ s_ident *      env_ident_resolve_module (s_env *env,
                                          const s_ident *ident,
                                          s_ident *dest);
 const s_sym ** env_module (s_env *env, const s_sym **dest);
-s_list *       env_module_search_modules (s_env *env,
-                                          const s_sym *module);
+s_list **      env_module_search_modules (s_env *env,
+                                          const s_sym *module,
+                                          s_list **dest);
+s_list **      env_search_modules (s_env *env, s_list **dest);
 bool           env_sym_search_modules (s_env *env,
                                        const s_sym *sym,
                                        const s_sym **dest);

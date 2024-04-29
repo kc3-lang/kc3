@@ -97,8 +97,9 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
     return NULL;
   }
   tag_ident.type = TAG_IDENT;
-  env_ident_resolve_module(env, &call->arguments->tag.data.ident,
-                           &tag_ident.data.ident);
+  if (! env_ident_resolve_module(env, &call->arguments->tag.data.ident,
+                                 &tag_ident.data.ident))
+    return NULL;
   tag_init_sym(&tag_module, tag_ident.data.ident.module);
   tag_init_sym(&tag_symbol, &g_sym_symbol);
   if (! facts_add_tags(&env->facts, &tag_module, &tag_symbol,
@@ -443,12 +444,17 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   assert(env);
   assert(fn);
   assert(dest);
+  search_modules = env->search_modules;
+  if (! env_module_search_modules(env, fn->module, &env->search_modules))
+    return false;
   clause = fn->clauses;
   if (arguments) {
     if (fn->macro || fn->special_operator)
       args_final = arguments;
     else {
       if (! env_eval_call_arguments(env, arguments, &args)) {
+        list_delete_all(env->search_modules);
+        env->search_modules = search_modules;
         return false;
       }
       args_final = args;
@@ -474,6 +480,8 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       err_inspect_fn_pattern(args);
       err_puts("\n");
       list_delete_all(args);
+      list_delete_all(env->search_modules);
+      env->search_modules = search_modules;
       return false;
     }
   }
@@ -481,8 +489,6 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     frame_init(&frame, env->frame);
     env->frame = &frame;
   }
-  search_modules = env->search_modules;
-  env->search_modules = env_module_search_modules(env, fn->module);
   if (! env_eval_block(env, &clause->algo, &tag)) {
     list_delete_all(args);
     list_delete_all(tmp);
@@ -865,6 +871,7 @@ bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
   return true;
 }
 
+/*
 // Like tag_init_copy excepted that the idents get resolved.
 bool env_eval_fn_tag (s_env *env, const s_tag *tag, s_tag *dest)
 {
@@ -1193,6 +1200,7 @@ bool env_eval_fn_tag_unquote (s_env *env, const s_unquote *unquote,
   *dest = tmp;
   return true;
 }
+*/
 
 bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
 {
@@ -1201,9 +1209,9 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   s_ident tmp_ident;
   assert(env);
   assert(ident);
-  env_ident_resolve_module(env, ident, &tmp_ident);
-  if (! ((tag = env_frames_get(env, tmp_ident.sym)) ||
-         (tag = ident_get(&tmp_ident, &env->facts, &tmp)))) {
+  if (! (tag = env_frames_get(env, ident->sym)) &&
+      env_ident_resolve_module(env, ident, &tmp_ident) &&
+      ! (tag = ident_get(&tmp_ident, &env->facts, &tmp))) {
     err_write_1("env_eval_ident: unbound ident: ");
     err_inspect_ident(ident);
     err_write_1("\n");
@@ -1222,8 +1230,8 @@ bool env_eval_ident_is_bound (s_env *env, const s_ident *ident)
   assert(ident);
   if (env_frames_get(env, ident->sym))
     return true;
-  env_ident_resolve_module(env, ident, &tmp_ident);
-  if (ident_get(&tmp_ident, &env->facts, &tmp)) {
+  if (env_ident_resolve_module(env, ident, &tmp_ident) &&
+      ident_get(&tmp_ident, &env->facts, &tmp)) {
     tag_clean(&tmp);
     return true;
   }
@@ -1815,7 +1823,8 @@ bool env_ident_is_special_operator (s_env *env,
   assert(env);
   assert(ident);
   tag_ident.type = TAG_IDENT;
-  env_ident_resolve_module(env, ident, &tag_ident.data.ident);
+  if (! env_ident_resolve_module(env, ident, &tag_ident.data.ident))
+    return false;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_special_operator, &g_sym_special_operator);
   if (facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
@@ -2123,12 +2132,30 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module,
   return r;
 }
 
-s_list * env_module_search_modules (s_env *env, const s_sym *module)
+s_list ** env_module_search_modules (s_env *env, const s_sym *module, s_list **dest)
 {
+  s_list *tmp;
+  s_list *tmp2;
   assert(env);
-  assert(module);
   (void) env;
-  return list_new_sym(module, NULL);
+  if (! module) {
+    err_puts("env_module_search_modules: NULL module");
+    assert(! "env_module_search_modules: NULL module");
+    return NULL;
+  }
+  if (! (tmp = list_new_sym(&g_sym_C3, NULL)))
+    return NULL;
+  if (module == &g_sym_C3) {
+    *dest = tmp;
+    return dest;
+  }
+  tmp2 = list_new_sym(module, tmp);
+  if (! tmp2) {
+    list_delete(tmp);
+    return NULL;
+  }
+  *dest = tmp2;
+  return dest;
 }
 
 s8 env_operator_arity (s_env *env, const s_ident *op)
@@ -2331,8 +2358,7 @@ s_list ** env_search_modules (s_env *env, s_list **dest)
   assert(dest);
   assert(env->search_modules);
   assert(env->search_modules->tag.type == TAG_SYM);
-  *dest = env->search_modules;
-  return dest;
+  return list_init_copy(dest, (const s_list * const *) &env->search_modules);
 }
 
 bool env_sym_search_modules (s_env *env, const s_sym *sym,

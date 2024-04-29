@@ -198,11 +198,13 @@ bool hash_update_fn (t_hash *hash, const s_fn *fn)
   const char type[] = "fn";
   assert(hash);
   assert(fn);
-  return hash_update(hash, type, sizeof(type)) &&
-    hash_update_bool(hash, &fn->macro) &&
-    hash_update_bool(hash, &fn->special_operator) &&
-    (! fn->module || hash_update_sym(hash, &fn->module)) &&
-    hash_update_fn_clauses(hash, fn->clauses);
+  if (! hash_update(hash, type, sizeof(type)) ||
+      ! hash_update_bool(hash, &fn->macro) ||
+      ! hash_update_bool(hash, &fn->special_operator))
+    return false;
+  if (fn->module && ! hash_update_sym(hash, &fn->module))
+    return false;
+  return hash_update_fn_clauses(hash, fn->clauses);
 }
 
 bool hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses)
