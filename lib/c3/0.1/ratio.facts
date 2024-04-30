@@ -2,4 +2,4 @@
   version: 1}
 replace {Ratio, :is_a, :module}
 replace {Ratio, :symbol, Ratio.cast}
-replace {Ratio.cast, :symbol_value, cfn Ratio "ratio_init_cast" (Result, Tag)}
+replace {Ratio.cast, :symbol_value, cfn Ratio "ratio_init_cast" (Result, Sym, Tag)}
