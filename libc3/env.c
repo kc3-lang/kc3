@@ -77,6 +77,7 @@ void env_clean (s_env *env)
 
 s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
 {
+  s_ident *ident;
   s_struct *s;
   s_tag tag_ident;
   s_tag tag_module;
@@ -96,10 +97,13 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
     assert(! "env_def: invalid assignment: expected Ident = value");
     return NULL;
   }
+  ident = &call->arguments->tag.data.ident;
   tag_ident.type = TAG_IDENT;
-  if (! env_ident_resolve_module(env, &call->arguments->tag.data.ident,
-                                 &tag_ident.data.ident))
-    return NULL;
+  tag_ident.data.ident.sym = ident->sym;
+  if (ident->module)
+    tag_ident.data.ident.module = ident->module;
+  else
+    tag_ident.data.ident.module = env->current_defmodule;
   tag_init_sym(&tag_module, tag_ident.data.ident.module);
   tag_init_sym(&tag_symbol, &g_sym_symbol);
   if (! facts_add_tags(&env->facts, &tag_module, &tag_symbol,
