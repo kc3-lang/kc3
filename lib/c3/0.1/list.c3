@@ -2,7 +2,7 @@ defmodule List do
 
   def cast = cfn List "list_init_cast" (Result, Sym, Tag)
 
-  def map = List.fn {
+  def map = fn {
     ([], _) do
       []
     end
@@ -11,7 +11,7 @@ defmodule List do
     end
   }
 
-  def reverse = List.fn {
+  def reverse = fn {
     (x) { reverse(x, []) }
     ([], acc) { acc }
     ([a | b], acc) { reverse(b, [a | acc]) }
