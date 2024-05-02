@@ -22,7 +22,8 @@
 #include "types.h"
 
 /* Stack-allocation compatible functions */
-bool * bool_init_cast (bool *b, const s_sym *type, const s_tag *tag);
+bool * bool_init_cast (bool *b, const s_sym * const *type,
+                       const s_tag *tag);
 bool * bool_init_copy (bool *b, const bool *src);
 
 /* Observers */

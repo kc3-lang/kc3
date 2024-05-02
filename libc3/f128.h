@@ -15,7 +15,8 @@
 
 #include "types.h"
 
-f128 * f128_init_cast (f128 *x, const s_sym *type, const s_tag *tag);
+f128 * f128_init_cast (f128 *x, const s_sym * const *type,
+                       const s_tag *tag);
 f128 * f128_init_copy (f128 *x, const f128 *src);
 f128 * f128_random (f128 *x);
 

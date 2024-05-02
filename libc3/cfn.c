@@ -180,7 +180,8 @@ s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
   return cfn;
 }
 
-s_cfn * cfn_init_cast (s_cfn *cfn, const s_sym *type, const s_tag *tag)
+s_cfn * cfn_init_cast (s_cfn *cfn, const s_sym * const *type,
+                       const s_tag *tag)
 {
   (void) type;
   switch (tag->type) {
@@ -191,7 +192,13 @@ s_cfn * cfn_init_cast (s_cfn *cfn, const s_sym *type, const s_tag *tag)
   }
   err_write_1("cfn_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Cfn");
+  if (*type == &g_sym_Cfn)
+    err_puts(" to Cfn");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(type);
+    err_puts(" aka Cfn");
+  }
   assert(! "cfn_init_cast: cannot cast to Cfn");
   return NULL;
 }

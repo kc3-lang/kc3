@@ -298,7 +298,7 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
       while (i < tmp.count) {
         if (! env_eval_tag(env, tag, &tag_eval))
           goto ko;
-        if (! data_init_cast(data, tmp.element_type, &tag_eval)) {
+        if (! data_init_cast(data, &tmp.element_type, &tag_eval)) {
           err_write_1("env_eval_array: cannot cast ");
           err_inspect_tag(&tag_eval);
           err_write_1(" to ");
@@ -1685,7 +1685,7 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
       if (! env_eval_tag(env, s->tag + i, &tag))
         goto ko;
       if (! data_init_cast((s8 *) t->data + t->type->offset[i],
-                           type, &tag)) {
+                           &type, &tag)) {
         err_write_1("env_eval_struct: invalid type ");
         err_write_1(tag_type_to_string(tag.type));
         err_write_1(" for key ");

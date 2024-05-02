@@ -17,7 +17,7 @@
 #include "types.h"
 
 uw * uw_init_cast
-(uw *u, const s_sym *type, const s_tag *tag);
+(uw *u, const s_sym * const *type, const s_tag *tag);
 
 uw * uw_init_copy (uw *u, const uw *src);
 uw * uw_random (uw *u);

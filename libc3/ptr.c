@@ -32,7 +32,8 @@ u_ptr_w * ptr_init (u_ptr_w *ptr, void *p)
   return ptr;
 }
 
-u_ptr_w * ptr_init_cast (u_ptr_w *p, const s_sym *type,
+u_ptr_w * ptr_init_cast (u_ptr_w *p,
+                         const s_sym * const *type,
                          const s_tag *tag)
 {
   assert(p);
@@ -60,11 +61,11 @@ u_ptr_w * ptr_init_cast (u_ptr_w *p, const s_sym *type,
   }
   err_write_1("ptr_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_Ptr)
+  if (*type == &g_sym_Ptr)
     err_puts(" to Ptr");
   else {
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_puts(" aka Ptr");
   }
   assert(! "ptr_cast: cannot cast to Ptr");

@@ -17,7 +17,7 @@
 #include "types.h"
 
 u64 * u64_init_cast
-(u64 *u, const s_sym *type, const s_tag *tag);
+(u64 *u, const s_sym * const *type, const s_tag *tag);
 
 u64 * u64_init_copy (u64 *u, const u64 *src);
 u64 * u64_random (u64 *u);

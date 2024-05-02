@@ -17,7 +17,7 @@
 #include "types.h"
 
 u_bits$ * u_bits$_init_cast
-(u_bits$ *u, const s_sym *type, const s_tag *tag);
+(u_bits$ *u, const s_sym * const *type, const s_tag *tag);
 
 u_bits$ * u_bits$_init_copy (u_bits$ *u, const u_bits$ *src);
 u_bits$ * u_bits$_random (u_bits$ *u);

@@ -159,7 +159,8 @@ s_ident * ident_init_1 (s_ident *ident, const char *p)
   return ident;
 }
 
-s_ident * ident_init_cast (s_ident *ident, const s_tag *tag)
+s_ident * ident_init_cast (s_ident *ident, const s_sym * const *type,
+                           const s_tag *tag)
 {
   switch (tag->type) {
   case TAG_IDENT:
@@ -170,7 +171,13 @@ s_ident * ident_init_cast (s_ident *ident, const s_tag *tag)
   }
   err_write_1("ident_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Ident");
+  if (*type == &g_sym_Ident)
+    err_puts(" to Ident");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(type);
+    err_puts(" aka Ident");
+  }
   assert(! "ident_init_cast: cannot cast to Ident");
   return NULL;
 }

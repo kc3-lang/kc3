@@ -21,7 +21,8 @@
 #include "sym.h"
 #include "tag_type.h"
 
-bool * bool_init_cast (bool *b, const s_sym *type, const s_tag *tag)
+bool * bool_init_cast (bool *b, const s_sym * const *type,
+                       const s_tag *tag)
 {
   assert(b);
   assert(type);
@@ -74,11 +75,11 @@ bool * bool_init_cast (bool *b, const s_sym *type, const s_tag *tag)
   }
   err_write_1("bool_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_Bool)
+  if (*type == &g_sym_Bool)
     err_puts(" to Bool");
   else {
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_puts(" aka Bool");
   }
   assert(! "bool_cast: cannot cast to Bool");

@@ -17,7 +17,7 @@
 #include "types.h"
 
 u32 * u32_init_cast
-(u32 *u, const s_sym *type, const s_tag *tag);
+(u32 *u, const s_sym * const *type, const s_tag *tag);
 
 u32 * u32_init_copy (u32 *u, const u32 *src);
 u32 * u32_random (u32 *u);

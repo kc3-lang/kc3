@@ -40,7 +40,7 @@ s_fact * fact_init (s_fact *fact, const s_tag *subject,
   return fact;
 }
 
-s_fact * fact_init_cast (s_fact *fact, const s_sym *type,
+s_fact * fact_init_cast (s_fact *fact, const s_sym * const *type,
                          const s_tag *tag)
 {
   assert(fact);
@@ -54,11 +54,11 @@ s_fact * fact_init_cast (s_fact *fact, const s_sym *type,
   }
   err_write_1("fact_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_Fact)
+  if (*type == &g_sym_Fact)
     err_puts(" to Fact");
   else {
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_puts(" aka Fact");
   }
   assert(! "fact_init_cast: cannot cast to Fact");

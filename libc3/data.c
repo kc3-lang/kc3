@@ -475,78 +475,81 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
   return false;
 }
 
-void * data_init_cast (void *data, const s_sym *type, const s_tag *tag)
+void * data_init_cast (void *data, const s_sym * const *type,
+                       const s_tag *tag)
 {
+  const s_sym *t;
   const s_struct_type *st;
-  if (type == &g_sym_Array ||
-      sym_is_array_type(type))
+  t = *type;
+  if (t == &g_sym_Array ||
+      sym_is_array_type(*type))
     return array_init_cast(data, type, tag);
-  if (type == &g_sym_Bool)
+  if (t == &g_sym_Bool)
     return bool_init_cast(data, type, tag);
-  if (type == &g_sym_Call)
+  if (t == &g_sym_Call)
     return call_init_cast(data, type, tag);
-  if (type == &g_sym_Cfn)
+  if (t == &g_sym_Cfn)
     return cfn_init_cast(data, type, tag);
-  if (type == &g_sym_Character)
+  if (t == &g_sym_Character)
     return character_init_cast(data, type, tag);
-  if (type == &g_sym_F32)
+  if (t == &g_sym_F32)
     return f32_init_cast(data, type, tag);
-  if (type == &g_sym_F64)
+  if (t == &g_sym_F64)
     return f64_init_cast(data, type, tag);
-  if (type == &g_sym_Fact)
+  if (t == &g_sym_Fact)
     return fact_init_cast(data, type, tag);
-  if (type == &g_sym_Fn)
+  if (t == &g_sym_Fn)
     return fn_init_cast(data, type, tag);
-  if (type == &g_sym_Ident)
+  if (t == &g_sym_Ident)
     return ident_init_cast(data, type, tag);
-  if (type == &g_sym_Integer)
+  if (t == &g_sym_Integer)
     return integer_init_cast(data, type, tag);
-  if (type == &g_sym_List)
+  if (t == &g_sym_List)
     return list_init_cast(data, type, tag);
-  if (type == &g_sym_Ptag)
+  if (t == &g_sym_Ptag)
     return ptag_init_cast(data, type, tag);
-  if (type == &g_sym_Ptr)
+  if (t == &g_sym_Ptr)
     return ptr_init_cast(data, type, tag);
-  if (type == &g_sym_PtrFree)
+  if (t == &g_sym_PtrFree)
     return ptr_free_init_cast(data, type, tag);
-  if (type == &g_sym_Quote)
+  if (t == &g_sym_Quote)
     return quote_init_cast(data, type, tag);
-  if (type == &g_sym_S8)
+  if (t == &g_sym_S8)
     return s8_init_cast(data, type, tag);
-  if (type == &g_sym_S16)
+  if (t == &g_sym_S16)
     return s16_init_cast(data, type, tag);
-  if (type == &g_sym_S32)
+  if (t == &g_sym_S32)
     return s32_init_cast(data, type, tag);
-  if (type == &g_sym_S64)
+  if (t == &g_sym_S64)
     return s64_init_cast(data, type, tag);
-  if (type == &g_sym_Str)
+  if (t == &g_sym_Str)
     return str_init_cast(data, type, tag);
-  if (type == &g_sym_Sw)
+  if (t == &g_sym_Sw)
     return sw_init_cast(data, type, tag);
-  if (type == &g_sym_Sym)
+  if (t == &g_sym_Sym)
     return sym_init_cast(data, type, tag);
-  if (type == &g_sym_Tag)
+  if (t == &g_sym_Tag)
     return tag_init_copy(data, tag);
-  if (type == &g_sym_Tuple)
+  if (t == &g_sym_Tuple)
     return tuple_init_cast(data, type, tag);
-  if (type == &g_sym_U8)
+  if (t == &g_sym_U8)
     return u8_init_cast(data, type, tag);
-  if (type == &g_sym_U16)
+  if (t == &g_sym_U16)
     return u16_init_cast(data, type, tag);
-  if (type == &g_sym_U32)
+  if (t == &g_sym_U32)
     return u32_init_cast(data, type, tag);
-  if (type == &g_sym_U64)
+  if (t == &g_sym_U64)
     return u64_init_cast(data, type, tag);
-  if (type == &g_sym_Uw)
+  if (t == &g_sym_Uw)
     return uw_init_cast(data, type, tag);
-  if (type == &g_sym_Var)
+  if (t == &g_sym_Var)
     return var_init_cast(data, type, tag);
-  if (type == &g_sym_Void)
+  if (t == &g_sym_Void)
     return data;
   /*
-  if (sym_is_array_type(type)) {
+  if (sym_is_array_type(t)) {
   */
-  st = struct_type_find(type);
+  st = struct_type_find(t);
   if (st) {
     s_struct s = {0};
     s.type = st;
@@ -554,7 +557,7 @@ void * data_init_cast (void *data, const s_sym *type, const s_tag *tag)
     return struct_init_cast(&s, type, tag);
   }
   err_write_1("data_init_cast: unknown type: ");
-  err_inspect_sym(&type);
+  err_inspect_sym(type);
   err_write_1("\n");
   assert(! "data_init_cast: unknown type");
   return NULL;

@@ -115,7 +115,8 @@ s_complex * complex_init (s_complex *c)
   return c;
 }
 
-s_complex * complex_init_cast (s_complex *c, const s_tag *src)
+s_complex * complex_init_cast (s_complex *c, const s_sym * const *type,
+                               const s_tag *src)
 {
   assert(c);
   assert(src);
@@ -155,6 +156,16 @@ s_complex * complex_init_cast (s_complex *c, const s_tag *src)
   default:
     break;
   }
+  err_write_1("complex_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(src->type));
+  if (*type == &g_sym_F64)
+    err_puts(" to F64");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(type);
+    err_puts(" aka F64");
+  }
+  assert(! "f64_init_cast: cannot cast to F64");
   err_puts("complex_init_cast: invalid tag type");
   assert(! "complex_init_cast: invalid tag type");
   return NULL;
@@ -237,11 +248,13 @@ s_complex * complex_new_add (const s_complex *a, const s_complex *b)
 s_complex * complex_new_cast (const s_tag *src)
 {
   s_complex *c;
+  const s_sym *type;
   assert(src);
   c = alloc(sizeof(s_complex));
   if (! c)
     return NULL;
-  if (! complex_init_cast(c, src)) {
+  type = &g_sym_Complex;
+  if (! complex_init_cast(c, &type, src)) {
     free(c);
     return NULL;
   }
@@ -337,29 +350,35 @@ bool complex_is_zero(const s_complex *c)
 f32 complex_to_f32 (const s_complex *c)
 {
   s_tag norm;
+  const s_sym *type;
   f32 x;
   assert(c);
   complex_norm(c, &norm);
-  f32_init_cast(&x, &g_sym_F32, &norm);
+  type = &g_sym_F32;
+  f32_init_cast(&x, &type, &norm);
   return x;
 }
 
 f64 complex_to_f64 (const s_complex *c)
 {
   s_tag norm;
+  const s_sym *type;
   f64 x;
   assert(c);
   complex_norm(c, &norm);
-  f64_init_cast(&x, &g_sym_F64, &norm);
+  type = &g_sym_F64;
+  f64_init_cast(&x, &type, &norm);
   return x;
 }
 
 f128 complex_to_f128 (const s_complex *c)
 {
   s_tag norm;
+  const s_sym *type;
   f128 x;
   assert(c);
   complex_norm(c, &norm);
-  f128_init_cast(&x, &g_sym_F128, &norm);
+  type = &g_sym_F128;
+  f128_init_cast(&x, &type, &norm);
   return x;
 }

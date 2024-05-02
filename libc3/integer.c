@@ -16,6 +16,7 @@
 #include "buf_parse.h"
 #include "compare.h"
 #include "integer.h"
+#include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
 #include "ratio.h"
@@ -134,7 +135,7 @@ uw integer_bytes (const s_integer *i)
   return (integer_bits(i) + 7) / 8;
 }
 
-s_integer * integer_init_cast (s_integer *a, const s_sym *type,
+s_integer * integer_init_cast (s_integer *a, const s_sym * const *type,
                                const s_tag *tag)
 {
   (void) type;
@@ -178,8 +179,14 @@ s_integer * integer_init_cast (s_integer *a, const s_sym *type,
   }
   err_write_1("integer_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to integer");
-  assert(! "integer_cast: cannot cast");
+  if (*type == &g_sym_Integer)
+    err_puts(" to Integer");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(type);
+    err_puts(" aka Integer");
+  }
+  assert(! "integer_cast: cannot cast to Integer");
   return NULL;
 }
 

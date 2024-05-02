@@ -17,7 +17,7 @@
 #include "types.h"
 
 u16 * u16_init_cast
-(u16 *u, const s_sym *type, const s_tag *tag);
+(u16 *u, const s_sym * const *type, const s_tag *tag);
 
 u16 * u16_init_copy (u16 *u, const u16 *src);
 u16 * u16_random (u16 *u);

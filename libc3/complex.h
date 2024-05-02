@@ -20,7 +20,8 @@
 void        complex_clean (s_complex *c);
 s_complex * complex_init (s_complex *c);
 s_complex * complex_init_1 (s_complex *c, const s8 *p);
-s_complex * complex_init_cast (s_complex *c, const s_tag *src);
+s_complex * complex_init_cast (s_complex *c, const s_sym * const *type,
+                               const s_tag *src);
 s_complex * complex_init_copy (s_complex *c, const s_complex *src);
 s_complex * complex_init_f32 (s_complex *c, f32 src);
 s_complex * complex_init_f64 (s_complex *c, f64 src);

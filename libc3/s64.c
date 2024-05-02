@@ -16,13 +16,14 @@
 #include "assert.h"
 #include "complex.h"
 #include "integer.h"
+#include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
 #include "ratio.h"
 #include "s64.h"
 
 s64 * s64_init_cast
-(s64 *s, const s_sym *type, const s_tag *tag)
+(s64 *s, const s_sym * const *type, const s_tag *tag)
 {
   (void) type;
   switch (tag->type) {
@@ -79,8 +80,14 @@ s64 * s64_init_cast
   }
   err_write_1("s64_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to s64");
-  assert(! "s64_cast: cannot cast to s64");
+  if (*type == &g_sym_S64)
+    err_puts(" to S64");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(type);
+    err_puts(" aka S64");
+  }
+  assert(! "s64_cast: cannot cast to S64");
   return NULL;
 }
 

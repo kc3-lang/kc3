@@ -28,7 +28,7 @@ character character_1 (const char *p)
   return c;
 }
 
-character * character_init_cast (character *c, const s_sym *type,
+character * character_init_cast (character *c, const s_sym * const *type,
                                  const s_tag *tag)
 {
   assert(c);
@@ -53,11 +53,11 @@ character * character_init_cast (character *c, const s_sym *type,
   }
   err_write_1("character_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_Character)
+  if (*type == &g_sym_Character)
     err_puts(" to Character");
   else {
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_puts(" aka Character");
   }
   assert(! "character_cast: cannot cast to Character");

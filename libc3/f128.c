@@ -20,7 +20,8 @@
 #include "tag_type.h"
 #include "u64.h"
 
-f128 * f128_init_cast (f128 *x, const s_sym *type, const s_tag *tag)
+f128 * f128_init_cast (f128 *x, const s_sym * const *type,
+                       const s_tag *tag)
 {
   assert(x);
   assert(type);
@@ -82,11 +83,11 @@ f128 * f128_init_cast (f128 *x, const s_sym *type, const s_tag *tag)
   }
   err_write_1("f128_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_F128)
+  if (*type == &g_sym_F128)
     err_puts(" to F128");
   else {
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_puts(" aka F128");
   }
   assert(! "f128_init_cast: cannot cast to F128");

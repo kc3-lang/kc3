@@ -17,7 +17,8 @@
 
 /* Stack-allocation compatible functions. */
 u_ptr_w * ptr_init (u_ptr_w *ptr, void *p);
-u_ptr_w * ptr_init_cast (u_ptr_w *ptr, const s_sym *type,
+u_ptr_w * ptr_init_cast (u_ptr_w *ptr,
+                         const s_sym * const *type,
                          const s_tag *tag);
 u_ptr_w * ptr_init_copy (u_ptr_w *ptr, const u_ptr_w *src);
 

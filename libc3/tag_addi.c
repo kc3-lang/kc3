@@ -13,6 +13,7 @@
 #include "alloc.h"
 #include "assert.h"
 #include "complex.h"
+#include "sym.h"
 #include "tag.h"
 
 s_tag * tag_addi (const s_tag *a, const s_tag *b, s_tag *dest)
@@ -20,17 +21,19 @@ s_tag * tag_addi (const s_tag *a, const s_tag *b, s_tag *dest)
   s_complex *c;
   s_complex ca = {0};
   s_complex cb = {0};
+  const s_sym *type;
   assert(a);
   assert(b);
   assert(dest);
   c = alloc(sizeof(s_complex));
   if (! c)
     return NULL;
-  if (! complex_init_cast(&ca, a)) {
+  type = &g_sym_Complex;
+  if (! complex_init_cast(&ca, &type, a)) {
     free(c);
     return NULL;
   }
-  if (! complex_init_cast(&cb, b)) {
+  if (! complex_init_cast(&cb, &type, b)) {
     complex_clean(&ca);
     free(c);
     return NULL;

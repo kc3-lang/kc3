@@ -148,7 +148,8 @@ s_str * str_init_alloc (s_str *str, uw size, const char *p)
   return str;
 }
 
-s_str * str_init_cast (s_str *str, const s_sym *type, const s_tag *tag)
+s_str * str_init_cast (s_str *str, const s_sym * const *type,
+                       const s_tag *tag)
 {
   assert(str);
   assert(type);
@@ -183,11 +184,11 @@ s_str * str_init_cast (s_str *str, const s_sym *type, const s_tag *tag)
   }
   err_write_1("str_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_Str)
+  if (*type == &g_sym_Str)
     err_puts(" to Str");
   else {
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_puts(" aka Str");
   }
   assert(! "str_init_cast: cannot cast to Str");
