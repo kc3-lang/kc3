@@ -110,9 +110,11 @@ s_tag * c3_if_then_else (const s_tag *cond, const s_tag *then,
 {
   bool b;
   s_tag tmp;
+  const s_sym *type;
   if (! env_eval_tag(&g_c3_env, cond, &tmp))
     return NULL;
-  if (! bool_init_cast(&b, &g_sym_Bool, &tmp)) {
+  type = &g_sym_Bool;
+  if (! bool_init_cast(&b, &type, &tmp)) {
     tag_clean(&tmp);
     return NULL;
   }

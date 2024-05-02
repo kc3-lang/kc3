@@ -82,7 +82,7 @@ s_fn * fn_init_1 (s_fn *fn, char *p)
   return fn;
 }
 
-s_fn * fn_init_cast (s_fn *fn, const s_sym *type, const s_tag *tag)
+s_fn * fn_init_cast (s_fn *fn, const s_sym * const *type, const s_tag *tag)
 {
   assert(fn);
   assert(type);
@@ -95,11 +95,11 @@ s_fn * fn_init_cast (s_fn *fn, const s_sym *type, const s_tag *tag)
   }
   err_write_1("fn_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_Fn)
+  if (*type == &g_sym_Fn)
     err_puts(" to Fn");
   else {
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_puts(" aka Fn");
   }
   assert(! "fn_init_cast: cannot cast to Fn");

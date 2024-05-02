@@ -16,22 +16,22 @@
 #include "tag.h"
 #include "var.h"
 
-s_tag * var_init_cast (s_tag *tag, const s_sym *type, const s_tag *src)
+s_tag * var_init_cast (s_tag *tag, const s_sym * const *type,
+                       const s_tag *src)
 {
   void *data;
   s_tag tmp;
   assert(tag);
   assert(type);
-  assert(type != &g_sym_Var);
   assert(src);
-  if (type == &g_sym_Var) {
+  if (*type == &g_sym_Var) {
     err_puts("var_init_cast: cannot cast to Var");
     assert(! "var_init_cast: cannot cast to Var");
     return NULL;
   }
-  if (! sym_to_tag_type(type, &tmp.type))
+  if (! sym_to_tag_type(*type, &tmp.type))
     return NULL;
-  if (! tag_to_pointer(&tmp, type, &data))
+  if (! tag_to_pointer(&tmp, *type, &data))
     return NULL;
   if (! data_init_cast(data, type, src))
     return NULL;

@@ -17,11 +17,12 @@
 #include "f128.h"
 #include "integer.h"
 #include "ratio.h"
+#include "sym.h"
 #include "tag.h"
 #include "u32.h"
 
 u32 * u32_init_cast
-(u32 *u, const s_sym *type, const s_tag *tag)
+(u32 *u, const s_sym * const *type, const s_tag *tag)
 {
   (void) type;
   switch (tag->type) {
@@ -78,8 +79,14 @@ u32 * u32_init_cast
   }
   err_write_1("u32_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to u32");
-  assert(! "u32_cast: cannot cast to u32");
+  if (*type == &g_sym_U32)
+    err_puts(" to U32");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(type);
+    err_puts(" aka U32");
+  }
+  assert(! "u32_cast: cannot cast to U32");
   return NULL;
 }
 

@@ -241,7 +241,8 @@ s_array * array_init_1 (s_array *array, const char *p)
   return array;
 }
 
-s_array * array_init_cast (s_array *array, const s_sym *type, const s_tag *tag)
+s_array * array_init_cast (s_array *array, const s_sym * const *type,
+                           const s_tag *tag)
 {
   assert(array);
   assert(type);
@@ -257,7 +258,13 @@ s_array * array_init_cast (s_array *array, const s_sym *type, const s_tag *tag)
   }
   err_write_1("array_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to Array");
+  if (*type == &g_sym_Array)
+    err_puts(" to Array");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(type);
+    err_puts(" aka Array");
+  }
   assert(! "array_init_cast: cannot cast to Array");
   return NULL;
 }

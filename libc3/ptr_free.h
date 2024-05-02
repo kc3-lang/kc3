@@ -19,7 +19,8 @@
    after use. */
 void      ptr_free_clean (u_ptr_w *ptr_free);
 u_ptr_w * ptr_free_init (u_ptr_w *ptr_free, void *p);
-u_ptr_w * ptr_free_init_cast (u_ptr_w *ptr_free, const s_sym *type,
+u_ptr_w * ptr_free_init_cast (u_ptr_w *ptr_free,
+                              const s_sym * const *type,
                               const s_tag *tag);
 u_ptr_w * ptr_free_init_copy (u_ptr_w *ptr_free, const u_ptr_w *src);
 

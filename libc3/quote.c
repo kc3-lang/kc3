@@ -27,7 +27,7 @@ s_quote * quote_init (s_quote *quote, const s_tag *tag)
   return quote;
 }
 
-s_quote * quote_init_cast (s_quote *quote, const s_sym *type,
+s_quote * quote_init_cast (s_quote *quote, const s_sym * const *type,
                            const s_tag *tag)
 {
   assert(quote);
@@ -41,11 +41,11 @@ s_quote * quote_init_cast (s_quote *quote, const s_sym *type,
   }
   err_write_1("quote_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_Quote)
+  if (*type == &g_sym_Quote)
     err_puts(" to Quote");
   else {
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_puts(" aka Quote");
   }
   assert(! "quote_init_cast: cannot cast to Quote");

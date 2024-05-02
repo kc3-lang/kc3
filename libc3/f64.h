@@ -15,7 +15,8 @@
 
 #include "types.h"
 
-f64 * f64_init_cast (f64 *x, const s_sym *type, const s_tag *tag);
+f64 * f64_init_cast (f64 *x, const s_sym * const *type,
+                     const s_tag *tag);
 f64 * f64_init_copy (f64 *x, const f64 *src);
 f64 * f64_random (f64 *x);
 

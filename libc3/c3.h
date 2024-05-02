@@ -49,6 +49,7 @@
 #include "cfn.h"
 #include "character.h"
 #include "compare.h"
+#include "data.h"
 #include "env.h"
 #include "error.h"
 #include "eval.h"

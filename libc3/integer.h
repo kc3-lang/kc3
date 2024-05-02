@@ -26,7 +26,7 @@
 /* Stack allocation compatible functions */
 s_integer * integer_init (s_integer *i);
 s_integer * integer_init_1 (s_integer *i, const char *p);
-s_integer * integer_init_cast (s_integer *a, const s_sym *type,
+s_integer * integer_init_cast (s_integer *a, const s_sym * const *type,
                                const s_tag *tag);
 s_integer * integer_init_copy (s_integer *a, const s_integer *src);
 s_integer * integer_init_f32 (s_integer *a, f32 x);

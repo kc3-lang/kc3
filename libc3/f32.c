@@ -20,7 +20,8 @@
 #include "tag_type.h"
 #include "u32.h"
 
-f32 * f32_init_cast (f32 *x, const s_sym *type, const s_tag *tag)
+f32 * f32_init_cast (f32 *x, const s_sym * const *type,
+                     const s_tag *tag)
 {
   assert(x);
   assert(type);
@@ -79,11 +80,11 @@ f32 * f32_init_cast (f32 *x, const s_sym *type, const s_tag *tag)
   }
   err_write_1("f32_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_F32)
+  if (*type == &g_sym_F32)
     err_puts(" to F32");
   else {
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_puts(" aka F32");
   }
   assert(! "f32_init_cast: cannot cast to F32");

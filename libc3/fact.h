@@ -19,7 +19,7 @@
 #define  fact_clean(fact) do {} while(0)
 s_fact * fact_init (s_fact *fact, const s_tag *subject,
                     const s_tag *predicate, const s_tag *object);
-s_fact * fact_init_cast (s_fact *fact, const s_sym *type,
+s_fact * fact_init_cast (s_fact *fact, const s_sym * const *type,
                          const s_tag *tag);
 s_fact * fact_init_copy (s_fact *fact, const s_fact *src);
 

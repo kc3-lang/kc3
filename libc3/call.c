@@ -104,6 +104,128 @@ bool call_get (s_call *call, s_facts *facts)
   return true;
 }
 
+s_call * call_init (s_call *call)
+{
+  assert(call);
+  *call = (s_call) {0};
+  return call;
+}
+
+s_call * call_init_1 (s_call *call, const char *p)
+{
+  s_buf buf;
+  uw len;
+  sw r;
+  len = strlen(p);
+  buf_init(&buf, false, len, (char *) p);
+  buf.wpos = len;
+  r = buf_parse_call(&buf, call);
+  if (r < 0 || (uw) r != len) {
+    err_write_1("call_init_1: invalid call: ");
+    err_write_1(p);
+    err_write_1(": ");
+    err_inspect_sw(&r);
+    err_write_1(" != ");
+    err_inspect_uw(&len);
+    err_write_1("\n");
+    return NULL;
+  }
+  return call;
+}
+
+s_call * call_init_call_cast (s_call *call, const s_sym *type)
+{
+  s_list *next;
+  s_call tmp = {0};
+  tmp.ident.module = type;
+  tmp.ident.sym = &g_sym_cast;
+  next = list_new(NULL);
+  if (! next)
+    return NULL;
+  tmp.arguments = list_new(next);
+  if (! tmp.arguments) {
+    list_delete_all(next);
+    return NULL;
+  }
+  tag_init_sym(&tmp.arguments->tag, type);
+  *call = tmp;
+  return call;
+}
+
+s_call * call_init_cast (s_call *call, const s_sym * const *type,
+                         const s_tag *tag)
+{
+  assert(call);
+  assert(type);
+  assert(tag);
+  switch (tag->type) {
+  case TAG_CALL:
+    return call_init_copy(call, &tag->data.call);
+  default:
+    break;
+  }
+  err_write_1("call_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  if (*type == &g_sym_Call)
+    err_puts(" to Call");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(type);
+    err_puts(" aka Call");
+  }
+  assert(! "call_init_cast: cannot cast to Call");
+  return NULL;
+}
+
+s_call * call_init_copy (s_call *call, const s_call *src)
+{
+  s_call tmp = {0};
+  assert(src);
+  assert(call);
+  if (! ident_init_copy(&tmp.ident, &src->ident) ||
+      ! list_init_copy(&tmp.arguments,
+                       (const s_list * const *) &src->arguments))
+    return NULL;
+  // TODO: copy cfn and fn ?
+  tmp.cfn = src->cfn;
+  tmp.fn = src->fn;
+  *call = tmp;
+  return call;
+}
+
+s_call * call_init_op (s_call *call)
+{
+  s_call tmp = {0};
+  assert(call);
+  tmp.arguments = list_new(list_new(NULL));
+  *call = tmp;
+  return call;
+}
+
+s_call * call_init_op_unary (s_call *call)
+{
+  s_call tmp = {0};
+  assert(call);
+  tmp.arguments = list_new(NULL);
+  *call = tmp;
+  return call;
+}
+
+s_str * call_inspect (const s_call *call, s_str *dest)
+{
+  sw size;
+  s_buf tmp;
+  size = buf_inspect_call_size(call);
+  if (size < 0) {
+    assert(! "error");
+    return NULL;
+  }
+  buf_init_alloc(&tmp, size);
+  buf_inspect_call(&tmp, call);
+  assert(tmp.wpos == tmp.size);
+  return buf_to_str(&tmp, dest);
+}
+
 bool call_op_get (s_call *call, s_facts *facts)
 {
   s_facts_cursor cursor;
@@ -166,126 +288,4 @@ bool call_op_get (s_call *call, s_facts *facts)
       call->cfn->special_operator = true;
   }
   return true;
-}
-
-s_call * call_init (s_call *call)
-{
-  assert(call);
-  *call = (s_call) {0};
-  return call;
-}
-
-s_call * call_init_1 (s_call *call, const char *p)
-{
-  s_buf buf;
-  uw len;
-  sw r;
-  len = strlen(p);
-  buf_init(&buf, false, len, (char *) p);
-  buf.wpos = len;
-  r = buf_parse_call(&buf, call);
-  if (r < 0 || (uw) r != len) {
-    err_write_1("call_init_1: invalid call: ");
-    err_write_1(p);
-    err_write_1(": ");
-    err_inspect_sw(&r);
-    err_write_1(" != ");
-    err_inspect_uw(&len);
-    err_write_1("\n");
-    return NULL;
-  }
-  return call;
-}
-
-s_call * call_init_call_cast (s_call *call, const s_sym *type)
-{
-  s_list *next;
-  s_call tmp = {0};
-  tmp.ident.module = type;
-  tmp.ident.sym = &g_sym_cast;
-  next = list_new(NULL);
-  if (! next)
-    return NULL;
-  tmp.arguments = list_new(next);
-  if (! tmp.arguments) {
-    list_delete_all(next);
-    return NULL;
-  }
-  tag_init_sym(&tmp.arguments->tag, type);
-  *call = tmp;
-  return call;
-}
-
-s_call * call_init_cast (s_call *call, const s_sym *type,
-                         const s_tag *tag)
-{
-  assert(call);
-  assert(type);
-  assert(tag);
-  switch (tag->type) {
-  case TAG_CALL:
-    return call_init_copy(call, &tag->data.call);
-  default:
-    break;
-  }
-  err_write_1("call_init_cast: cannot cast ");
-  err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_Call)
-    err_puts(" to Call");
-  else {
-    err_write_1(" to ");
-    err_inspect_sym(&type);
-    err_puts(" aka Call");
-  }
-  assert(! "call_init_cast: cannot cast to Call");
-  return NULL;
-}
-
-s_call * call_init_copy (s_call *call, const s_call *src)
-{
-  s_call tmp = {0};
-  assert(src);
-  assert(call);
-  if (! ident_init_copy(&tmp.ident, &src->ident) ||
-      ! list_init_copy(&tmp.arguments,
-                       (const s_list * const *) &src->arguments))
-    return NULL;
-  // TODO: copy cfn and fn ?
-  tmp.cfn = src->cfn;
-  tmp.fn = src->fn;
-  *call = tmp;
-  return call;
-}
-
-s_call * call_init_op (s_call *call)
-{
-  s_call tmp = {0};
-  assert(call);
-  tmp.arguments = list_new(list_new(NULL));
-  *call = tmp;
-  return call;
-}
-
-s_call * call_init_op_unary (s_call *call)
-{
-  s_call tmp = {0};
-  assert(call);
-  tmp.arguments = list_new(NULL);
-  *call = tmp;
-  return call;
-}
-
-s_str * call_inspect (const s_call *call, s_str *dest)
-{
-  sw size;
-  s_buf tmp;
-  size = buf_inspect_call_size(call);
-  if (size < 0) {
-    assert(! "error");
-    return NULL;
-  }
-  buf_init_alloc(&tmp, size);
-  buf_inspect_call(&tmp, call);
-  assert(tmp.wpos == tmp.size);
-  return buf_to_str(&tmp, dest);
 }

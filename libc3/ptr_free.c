@@ -39,7 +39,8 @@ u_ptr_w * ptr_free_init (u_ptr_w *ptr_free, void *p)
   return ptr_free;
 }
 
-u_ptr_w * ptr_free_init_cast (u_ptr_w *p, const s_sym *type,
+u_ptr_w * ptr_free_init_cast (u_ptr_w *p,
+                              const s_sym * const *type,
                               const s_tag *tag)
 {
   assert(p);
@@ -66,11 +67,11 @@ u_ptr_w * ptr_free_init_cast (u_ptr_w *p, const s_sym *type,
   }
   err_write_1("ptr_free_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_PtrFree)
+  if (*type == &g_sym_PtrFree)
     err_puts(" to PtrFree");
   else {
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_puts(" aka PtrFree");
   }
   assert(! "ptr_free_init_cast: cannot cast to PtrFree");

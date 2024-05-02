@@ -17,11 +17,12 @@
 #include "f128.h"
 #include "integer.h"
 #include "ratio.h"
+#include "sym.h"
 #include "tag.h"
 #include "u16.h"
 
 u16 * u16_init_cast
-(u16 *u, const s_sym *type, const s_tag *tag)
+(u16 *u, const s_sym * const *type, const s_tag *tag)
 {
   (void) type;
   switch (tag->type) {
@@ -78,8 +79,14 @@ u16 * u16_init_cast
   }
   err_write_1("u16_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to u16");
-  assert(! "u16_cast: cannot cast to u16");
+  if (*type == &g_sym_U16)
+    err_puts(" to U16");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(type);
+    err_puts(" aka U16");
+  }
+  assert(! "u16_cast: cannot cast to U16");
   return NULL;
 }
 

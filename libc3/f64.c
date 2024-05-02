@@ -20,7 +20,7 @@
 #include "tag_type.h"
 #include "u64.h"
 
-f64 * f64_init_cast (f64 *x, const s_sym *type, const s_tag *tag)
+f64 * f64_init_cast (f64 *x, const s_sym * const *type, const s_tag *tag)
 {
   assert(x);
   assert(type);
@@ -76,11 +76,11 @@ f64 * f64_init_cast (f64 *x, const s_sym *type, const s_tag *tag)
   }
   err_write_1("f64_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
-  if (type == &g_sym_F64)
+  if (*type == &g_sym_F64)
     err_puts(" to F64");
   else {
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_puts(" aka F64");
   }
   assert(! "f64_init_cast: cannot cast to F64");
