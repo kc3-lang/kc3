@@ -24,6 +24,8 @@
 #include "call.h"
 #include "cfn.h"
 #include "character.h"
+#include "complex.h"
+#include "cow.h"
 #include "env.h"
 #include "fn.h"
 #include "fn_clause.h"
@@ -1142,6 +1144,68 @@ sw buf_parse_comments (s_buf *buf)
   if ((r = buf_parse_comment(buf)) <= 0)
     goto restore;
   r = r + r1;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_complex (s_buf *buf, s_complex *c)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_complex tmp;
+  assert(buf);
+  assert(c);
+  buf_save_init(buf, &save);
+  if ((r = buf_parse_tag(buf, &tmp.x)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "+i")) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_tag(buf, &tmp.y)) <= 0)
+    goto clean;
+  result += r;
+  *c = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_cow (s_buf *buf, s_cow *cow)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_cow tmp;
+  assert(buf);
+  assert(cow);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "cow")) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_tag(buf, &tmp.r)) <= 0)
+    goto clean;
+  result += r;
+  *cow = tmp;
+  r = result;
   goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
@@ -2616,6 +2680,32 @@ sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest)
   return r;
 }
 
+sw buf_parse_pcomplex (s_buf *buf, s_complex **c)
+{
+  sw r;
+  s_complex *tmp;
+  tmp = complex_new();
+  if ((r = buf_parse_complex(buf, tmp)) <= 0) {
+    free(tmp);
+    return r;
+  }
+  *c = tmp;
+  return r;
+}
+
+sw buf_parse_pcow (s_buf *buf, s_cow **c)
+{
+  sw r;
+  s_cow *tmp;
+  tmp = cow_new();
+  if ((r = buf_parse_cow(buf, tmp)) <= 0) {
+    free(tmp);
+    return r;
+  }
+  *c = tmp;
+  return r;
+}
+
 sw buf_parse_ptag (s_buf *buf, p_tag *dest)
 {
   (void) buf;
@@ -3350,6 +3440,26 @@ sw buf_parse_tag_character (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_complex (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pcomplex(buf, &dest->data.complex)) > 0)
+    dest->type = TAG_COMPLEX;
+  return r;
+}
+
+sw buf_parse_tag_cow (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pcow(buf, &dest->data.cow)) > 0)
+    dest->type = TAG_COW;
+  return r;
+}
+
 sw buf_parse_tag_f32 (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -3481,14 +3591,14 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
   if ((r = buf_parse_tag_var(buf, dest)) != 0 ||
       (r = buf_parse_tag_void(buf, dest)) != 0 ||
       (r = buf_parse_tag_number(buf, dest)) != 0 ||
-      (r = buf_parse_tag_number(buf, dest)) != 0 ||
-      (r = buf_parse_tag_ratio(buf, dest)) != 0 ||
       (r = buf_parse_tag_array(buf, dest)) != 0 ||
       (r = buf_parse_tag_cast(buf, dest)) != 0 ||
       (r = buf_parse_tag_unquote(buf, dest)) != 0 ||
       (r = buf_parse_tag_if(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
+      (r = buf_parse_tag_cow(buf, dest)) != 0 ||
+      (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
       (r = buf_parse_tag_bool(buf, dest)) != 0 ||
       (r = buf_parse_tag_character(buf, dest)) != 0 ||
@@ -3496,7 +3606,6 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_str(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_block(buf, dest)) != 0 ||
-      (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_special_operator(buf, dest)) != 0 ||
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
