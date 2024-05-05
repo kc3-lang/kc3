@@ -175,6 +175,19 @@ bool hash_update_complex (t_hash *hash, const s_complex *c)
   return true;
 }
 
+bool hash_update_cow (t_hash *hash, const s_cow *cow)
+{
+  const s8 type[] = "cow";
+  assert(hash);
+  assert(cow);
+  if (! hash_update(hash, type, sizeof(type)) ||
+      ! hash_update_tag(hash, &cow->r) ||
+      ! hash_update_bool(hash, &cow->w_is_set) ||
+      ! hash_update_tag(hash, &cow->w))
+    return false;
+  return true;
+}
+
 HASH_UPDATE_DEF(f32)
 HASH_UPDATE_DEF(f64)
 HASH_UPDATE_DEF(f128)
@@ -466,6 +479,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_CHARACTER:
     return hash_update_character(hash, &tag->data.character);
   case TAG_COMPLEX: return hash_update_complex(hash, tag->data.complex);
+  case TAG_COW:     return hash_update_cow(hash, tag->data.cow);
   case TAG_F32:     return hash_update_f32(hash, &tag->data.f32);
   case TAG_F64:     return hash_update_f64(hash, &tag->data.f64);
   case TAG_F128:    return hash_update_f128(hash, &tag->data.f128);

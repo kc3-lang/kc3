@@ -148,6 +148,16 @@ s8 compare_complex (const s_complex *a, const s_complex *b)
   return r;
 }
 
+u8 compare_cow (const s_cow *a, const s_cow *b)
+{
+  u8 r;
+  if ((r = compare_tag(&a->r, &b->r)) ||
+      (r = compare_bool(a->w_is_set, b->w_is_set)) ||
+      (r = compare_tag(&a->w, &b->w)))
+    return r;
+  return 0;
+}
+
 COMPARE_DEF(f32)
 COMPARE_DEF(f64)
 COMPARE_DEF(f128)
@@ -972,6 +982,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_CFN:        return compare_cfn(&a->data.cfn, &b->data.cfn);
   case TAG_CHARACTER:  return compare_character(a->data.character,
                                                 b->data.character);
+  case TAG_COW:        return compare_cow(a->data.cow, b->data.cow);
   case TAG_FACT:       return compare_fact(&a->data.fact,
                                            &b->data.fact);
   case TAG_FN:         return compare_fn(&a->data.fn, &b->data.fn);

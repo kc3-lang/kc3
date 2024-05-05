@@ -32,6 +32,7 @@ bool hash_update_cfn (t_hash *hash, const s_cfn *cfn);
 HASH_UPDATE_PROTOTYPE(char);
 HASH_UPDATE_PROTOTYPE(character);
 bool hash_update_complex (t_hash *hash, const s_complex *c);
+bool hash_update_cow (t_hash *hash, const s_cow *cow);
 HASH_UPDATE_PROTOTYPE(f32);
 HASH_UPDATE_PROTOTYPE(f64);
 HASH_UPDATE_PROTOTYPE(f128);

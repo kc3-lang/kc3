@@ -1,8 +1,5 @@
 # C3 v0.1.11
 
-This is a development branch, please see
-[C3 v0.1.10](/c3-lang/c3/_tree/v0.1.10) for a stable release.
-
 C3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
 for semantic programming, and programming the semantic web.
@@ -435,6 +432,7 @@ Script interpreter. Works the same as ic3 but is not interactive.
 ## TODO
 
  - libc3
+   - base-specific big floats
    - macro cast `(Macro) fn (x) { x }`
    - pretty printer
      - indent
@@ -445,13 +443,13 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - has_ident
      - collect_idents
    - modules
-     - defmodule
+     - DONE defmodule
      - DONE def
        - DONE def double = 4
        - DONE def double = fn (x) do x * 2 end
        - DONE def double = macro (x) do {x, x} end
-     - DONE defoperator
-     - defspecial_operator
+     - DONE def %C3.Operator{}
+     - def %C3.SpecialOperator{}
      - defstruct
    - facts
      - negative facts : 4 + 2n = not 3 + 2n

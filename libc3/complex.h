@@ -56,7 +56,8 @@ s_complex * complex_sub (const s_complex *a, const s_complex *b,
 void        complex_delete (s_complex *c);
 s_complex * complex_new (void);
 s_complex * complex_new_add (const s_complex *a, const s_complex *b);
-s_complex * complex_new_cast (const s_tag *src);
+s_complex * complex_new_cast (const s_sym * const *type,
+                              const s_tag *src);
 s_complex * complex_new_div (const s_complex *a, const s_complex *b);
 s_complex * complex_new_mul (const s_complex *a, const s_complex *b);
 s_complex * complex_new_sub (const s_complex *a, const s_complex *b);
