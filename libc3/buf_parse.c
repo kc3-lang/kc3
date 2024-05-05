@@ -3906,12 +3906,15 @@ sw buf_parse_var (s_buf *buf, s_var *dest)
   assert(buf);
   (void) dest;
   buf_save_init(buf, &save);
-  if ((r = buf_parse_paren_sym(buf, &tmp.type)) <= 0)
+  tmp.type = &g_sym_Tag;
+  if ((r = buf_parse_paren_sym(buf, &tmp.type)) < 0)
     goto clean;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto restore;
-  result += r;
+  if (r) {
+    if ((r = buf_ignore_spaces(buf)) <= 0)
+      goto restore;
+    result += r;
+  }
   if ((r = buf_read_1(buf, "?")) <= 0)
     goto restore;
   result += r;
