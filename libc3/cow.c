@@ -158,8 +158,10 @@ s_cow * cow_new_copy (const s_cow *src)
 const s_tag * cow_ro (const s_cow *cow)
 {
   assert(cow);
-  if (cow->w_is_set)
+  if (cow->w_is_set) {
+    // FIXME: get a read lock ?
     return &cow->w;
+  }
   return &cow->r;
 }
 
