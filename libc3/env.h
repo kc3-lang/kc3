@@ -65,6 +65,7 @@ bool          env_eval_call_fn_args (s_env *env, const s_fn *fn,
 bool          env_eval_call_resolve (s_env *env, s_call *call);
 bool          env_eval_complex (s_env *env, const s_complex *c,
                                 s_tag *dest);
+bool          env_eval_cow (s_env *env, const s_cow *cow, s_tag *dest);
 bool          env_eval_equal_block (s_env *env, bool macro,
                                     const s_block *a, const s_block *b,
                                     s_block *dest);

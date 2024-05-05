@@ -578,6 +578,24 @@ bool env_eval_complex (s_env *env, const s_complex *c, s_tag *dest)
   return true;
 }
 
+bool env_eval_cow (s_env *env, const s_cow *cow, s_tag *dest)
+{
+  s_cow *tmp = NULL;
+  assert(env);
+  assert(cow);
+  assert(dest);
+  tmp = alloc(sizeof(s_cow));
+  if (! tmp)
+    return false;
+  if (! env_eval_tag(env, cow_ro(cow), &tmp->r)) {
+    free(tmp);
+    return false;
+  }
+  dest->type = TAG_COW;
+  dest->data.cow = tmp;
+  return true;
+}
+
 bool env_eval_equal_list (s_env *env, bool macro, const s_list *a,
                           const s_list *b, s_list **dest)
 {
@@ -1775,7 +1793,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_COMPLEX:
     return env_eval_complex(env, tag->data.complex, dest);
   case TAG_COW:
-    return env_eval_tag(env, cow_ro(tag->data.cow), dest);
+    return env_eval_cow(env, tag->data.cow, dest);
   case TAG_FN:
     return env_eval_fn(env, &tag->data.fn, dest);
   case TAG_IDENT:
