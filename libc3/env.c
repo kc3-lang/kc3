@@ -27,6 +27,7 @@
 #include "cfn.h"
 #include "compare.h"
 #include "complex.h"
+#include "cow.h"
 #include "data.h"
 #include "env.h"
 #include "error.h"
@@ -733,6 +734,10 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     tag_clean(&tmp_b);
     return true;
   }
+  while (a->type == TAG_COW)
+    a = cow_ro(a->data.cow);
+  while (b->type == TAG_COW)
+    b = cow_ro(b->data.cow);
   switch (a->type) {
   case TAG_COMPLEX:
   case TAG_F32:
@@ -812,7 +817,6 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
   case TAG_FACT:
   case TAG_FN:
   case TAG_IDENT:
-  case TAG_INTEGER:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
@@ -828,7 +832,24 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     }
     tag_init_copy(dest, a);
     return true;
-  default:
+  case TAG_COMPLEX:
+  case TAG_COW:
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_F128:
+  case TAG_INTEGER:
+  case TAG_RATIO:
+  case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_SW:
+  case TAG_U8:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_UNQUOTE:
+  case TAG_UW:
     break;
   }
   error("env_eval_equal_tag: invalid tag");
@@ -1408,9 +1429,30 @@ bool env_eval_quote_complex (s_env *env, const s_complex *c,
   assert(dest);
   tmp.type = TAG_COMPLEX;
   tmp.data.complex = complex_new();
+  if (! tmp.data.complex)
+    return false;
   if (! env_eval_quote_tag(env, &c->x, &tmp.data.complex->x) ||
       ! env_eval_quote_tag(env, &c->y, &tmp.data.complex->y)) {
     complex_delete(tmp.data.complex);
+    return false;
+  }
+  *dest = tmp;
+  return true;
+}
+
+bool env_eval_quote_cow (s_env *env, const s_cow *cow,
+                         s_tag *dest)
+{
+  s_tag tmp = {0};
+  assert(env);
+  assert(cow);
+  assert(dest);
+  tmp.type = TAG_COW;
+  tmp.data.cow = cow_new();
+  if (! tmp.data.cow)
+    return false;
+  if (! env_eval_quote_tag(env, cow_ro(cow), &tmp.data.cow->r)) {
+    cow_delete(tmp.data.cow);
     return false;
   }
   *dest = tmp;
@@ -1536,6 +1578,8 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_quote_call(env, &tag->data.call, dest);
   case TAG_COMPLEX:
     return env_eval_quote_complex(env, tag->data.complex, dest);
+  case TAG_COW:
+    return env_eval_quote_cow(env, tag->data.cow, dest);
   case TAG_LIST:
     return env_eval_quote_list(env, tag->data.list, dest);
   case TAG_MAP:
@@ -1730,6 +1774,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_call(env, &tag->data.call, dest);
   case TAG_COMPLEX:
     return env_eval_complex(env, tag->data.complex, dest);
+  case TAG_COW:
+    return env_eval_tag(env, cow_ro(tag->data.cow), dest);
   case TAG_FN:
     return env_eval_fn(env, &tag->data.fn, dest);
   case TAG_IDENT:

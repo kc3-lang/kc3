@@ -84,6 +84,7 @@ HEADERS = \
 	"compare.h" \
 	"complex.h" \
 	"config.h" \
+	"cow.h" \
 	"data.h" \
 	"env.h" \
 	"error.h" \
@@ -116,6 +117,7 @@ HEADERS = \
 	"module.h" \
 	"operator.h" \
 	"pcomplex.h" \
+	"pcow.h" \
 	"ptag.h" \
 	"ptr.h" \
 	"ptr_free.h" \
@@ -241,6 +243,7 @@ SOURCES = \
 	"character.c" \
 	"compare.c" \
 	"complex.c" \
+	"cow.c" \
 	"data.c" \
 	"env.c" \
 	"error.c" \
@@ -273,6 +276,7 @@ SOURCES = \
 	"module.c" \
 	"operator.c" \
 	"pcomplex.c" \
+	"pcow.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
@@ -507,6 +511,7 @@ LO_SOURCES = \
 	"character.c" \
 	"compare.c" \
 	"complex.c" \
+	"cow.c" \
 	"data.c" \
 	"env.c" \
 	"error.c" \
@@ -539,6 +544,7 @@ LO_SOURCES = \
 	"module.c" \
 	"operator.c" \
 	"pcomplex.c" \
+	"pcow.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \

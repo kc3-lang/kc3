@@ -97,6 +97,7 @@ typedef enum {
   TAG_CFN,
   TAG_CHARACTER,
   TAG_COMPLEX,
+  TAG_COW,
   TAG_F32,
   TAG_F64,
   TAG_F128,
@@ -141,6 +142,7 @@ typedef struct buf_save                s_buf_save;
 typedef struct call                    s_call;
 typedef struct cfn                     s_cfn;
 typedef struct complex                 s_complex;
+typedef struct cow                     s_cow;
 typedef struct env                     s_env;
 typedef struct error_handler           s_error_handler;
 typedef struct fact                    s_fact;
@@ -443,6 +445,7 @@ union tag_data {
   s_cfn         cfn;
   character     character;
   s_complex    *complex;
+  s_cow        *cow;
   f32           f32;
   f64           f64;
   f128          f128;
@@ -500,6 +503,12 @@ struct binding {
 struct complex {
   s_tag x;
   s_tag y;
+};
+
+struct cow {
+  s_tag r;
+  s_tag w;
+  bool w_is_set;
 };
 
 struct error_handler

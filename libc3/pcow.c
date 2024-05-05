@@ -11,48 +11,46 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
-#include "complex.h"
-#include "pcomplex.h"
+#include "cow.h"
+#include "pcow.h"
 
-void pcomplex_clean (s_complex **p)
+void pcow_clean (s_cow **p)
 {
   assert(p);
-  complex_delete(*p);
+  cow_delete(*p);
 }
 
-s_complex ** pcomplex_init (s_complex **p)
+s_cow ** pcow_init (s_cow **p)
 {
-  s_complex *tmp = NULL;
+  s_cow *tmp = NULL;
   assert(p);
-  tmp = complex_new();
+  tmp = cow_new();
   if (! tmp)
     return NULL;
   *p = tmp;
   return p;
 }
 
-s_complex ** pcomplex_init_cast (s_complex **p,
-                                 const s_sym * const *type,
-                                 const s_tag *src)
+s_cow ** pcow_init_cast (s_cow **p, const s_sym * const *type,
+                         const s_tag *src)
 {
-  s_complex *tmp = NULL;
+  s_cow *tmp = NULL;
   assert(p);
-  assert(type);
   assert(src);
-  tmp = complex_new_cast(type, src);
+  tmp = cow_new_cast(type, src);
   if (! tmp)
     return NULL;
   *p = tmp;
   return p;
 }
 
-s_complex ** pcomplex_init_copy (s_complex **p,
-				 const s_complex * const *src)
+s_cow ** pcow_init_copy (s_cow **p,
+                         const s_cow * const *src)
 {
-  s_complex *tmp = NULL;
+  s_cow *tmp = NULL;
   assert(p);
   assert(src);
-  tmp = complex_new_copy(*src);
+  tmp = cow_new_copy(*src);
   if (! tmp)
     return NULL;
   *p = tmp;

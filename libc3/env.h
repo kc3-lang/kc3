@@ -133,6 +133,8 @@ bool          env_eval_quote_call (s_env *env, const s_call *call,
                                    s_tag *dest);
 bool          env_eval_quote_complex (s_env *env, const s_complex *c,
                                       s_tag *dest);
+bool          env_eval_quote_cow (s_env *env, const s_cow *cow,
+                                  s_tag *dest);
 bool          env_eval_quote_list (s_env *env, const s_list *list,
                                    s_tag *dest);
 bool          env_eval_quote_map (s_env *env, const s_map *map,

@@ -158,16 +158,14 @@ s_complex * complex_init_cast (s_complex *c, const s_sym * const *type,
   }
   err_write_1("complex_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(src->type));
-  if (*type == &g_sym_F64)
-    err_puts(" to F64");
+  if (*type == &g_sym_Complex)
+    err_puts(" to Complex");
   else {
     err_write_1(" to ");
     err_inspect_sym(type);
-    err_puts(" aka F64");
+    err_puts(" aka Complex");
   }
-  assert(! "f64_init_cast: cannot cast to F64");
-  err_puts("complex_init_cast: invalid tag type");
-  assert(! "complex_init_cast: invalid tag type");
+  assert(! "complex_init_cast: cannot cast to Complex");
   return NULL;
 }
 
@@ -245,16 +243,15 @@ s_complex * complex_new_add (const s_complex *a, const s_complex *b)
   return c;
 }
 
-s_complex * complex_new_cast (const s_tag *src)
+s_complex * complex_new_cast (const s_sym * const *type,
+                              const s_tag *src)
 {
   s_complex *c;
-  const s_sym *type;
   assert(src);
   c = alloc(sizeof(s_complex));
   if (! c)
     return NULL;
-  type = &g_sym_Complex;
-  if (! complex_init_cast(c, &type, src)) {
+  if (! complex_init_cast(c, type, src)) {
     free(c);
     return NULL;
   }

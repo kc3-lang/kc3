@@ -21,6 +21,7 @@
 #include "call.h"
 #include "cfn.h"
 #include "compare.h"
+#include "cow.h"
 #include "env.h"
 #include "fn.h"
 #include "frame.h"
@@ -30,6 +31,7 @@
 #include "list.h"
 #include "map.h"
 #include "pcomplex.h"
+#include "pcow.h"
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
@@ -157,6 +159,7 @@ void tag_clean (s_tag *tag)
   case TAG_CALL:        call_clean(&tag->data.call);        break;
   case TAG_CFN:         cfn_clean(&tag->data.cfn);          break;
   case TAG_COMPLEX:     pcomplex_clean(&tag->data.complex); break;
+  case TAG_COW:         pcow_clean(&tag->data.cow);         break;
   case TAG_FN:          fn_clean(&tag->data.fn);            break;
   case TAG_INTEGER:     integer_clean(&tag->data.integer);  break;
   case TAG_LIST:        list_delete_all(tag->data.list);    break;
@@ -368,6 +371,12 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     if (! pcomplex_init_copy(&tag->data.complex,
                              (const s_complex * const *)
                              &src->data.complex))
+      return NULL;
+    return tag;
+  case TAG_COW:
+    tag->type = src->type;
+    if (! pcow_init_copy(&tag->data.cow,
+                         (const s_cow * const *) &src->data.cow))
       return NULL;
     return tag;
   case TAG_FN:
@@ -591,6 +600,8 @@ bool tag_is_bound_var (const s_tag *tag)
 bool tag_is_number (const s_tag *tag)
 {
   assert(tag);
+  while (tag->type == TAG_COW)
+    tag = cow_ro(tag->data.cow);
   switch (tag->type) {
   case TAG_VOID:
   case TAG_ARRAY:
@@ -633,6 +644,8 @@ bool tag_is_number (const s_tag *tag)
   case TAG_U64:
   case TAG_UW:
     return true;
+  case TAG_COW:
+    break;
   }
   err_puts("tag_is_number: invalid tag type");
   assert(! "tag_is_number: invalid tag type");
@@ -827,6 +840,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   case TAG_CFN:         *dest = &tag->data.cfn;         return true;
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;
   case TAG_COMPLEX:     *dest = &tag->data.complex;     return true;
+  case TAG_COW:         *dest = &tag->data.cow;         return true;
   case TAG_F32:         *dest = &tag->data.f32;         return true;
   case TAG_F64:         *dest = &tag->data.f64;         return true;
   case TAG_F128:        *dest = &tag->data.f128;        return true;
@@ -920,6 +934,13 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       *dest = &tag->data.complex;
       return true;
     }
+    goto invalid_cast;
+  case TAG_COW:
+    if (type == &g_sym_Cow) {
+      *dest = &tag->data.cow;
+      return true;
+    }
+    // FIXME: other types
     goto invalid_cast;
   case TAG_F32:
     if (type == &g_sym_F32) {
@@ -1159,6 +1180,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_CFN:         *dest = &tag->data.cfn;         return true;
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;
   case TAG_COMPLEX:     *dest = &tag->data.complex;     return true;
+  case TAG_COW:         *dest = &tag->data.cow;         return true;
   case TAG_F32:         *dest = &tag->data.f32;         return true;
   case TAG_F64:         *dest = &tag->data.f64;         return true;
   case TAG_F128:        *dest = &tag->data.f128;        return true;
@@ -1211,6 +1233,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_CFN:         *dest = &g_sym_Cfn;        return dest;
   case TAG_CHARACTER:   *dest = &g_sym_Character;  return dest;
   case TAG_COMPLEX:     *dest = &g_sym_Complex;    return dest;
+  case TAG_COW:         *dest = &g_sym_Cow;        return dest;
   case TAG_F32:         *dest = &g_sym_F32;        return dest;
   case TAG_F64:         *dest = &g_sym_F64;        return dest;
   case TAG_F128:        *dest = &g_sym_F128;       return dest;
