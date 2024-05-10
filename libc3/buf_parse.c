@@ -1201,7 +1201,7 @@ sw buf_parse_cow (s_buf *buf, s_cow *cow)
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_tag(buf, &tmp.r)) <= 0)
+  if ((r = buf_parse_tag(buf, cow_read_write(&tmp))) <= 0)
     goto clean;
   result += r;
   *cow = tmp;
