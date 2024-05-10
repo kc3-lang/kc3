@@ -917,7 +917,7 @@ sw buf_inspect_cow (s_buf *buf, const s_cow *cow)
   buf_save_init(buf, &save);
   if ((r = buf_write_1(buf, "cow ")) < 0)
     goto restore;
-  if ((r = buf_inspect_tag(buf, cow_ro(cow))) < 0)
+  if ((r = buf_inspect_tag(buf, cow_read_only(cow))) < 0)
     goto restore;
   result += r;
   r = result;
@@ -934,7 +934,7 @@ sw buf_inspect_cow_size (const s_cow *cow)
   sw r;
   sw result;
   result = strlen("cow ");
-  if ((r = buf_inspect_tag_size(cow_ro(cow))) < 0)
+  if ((r = buf_inspect_tag_size(cow_read_only(cow))) < 0)
     return r;
   result += r;
   return result;

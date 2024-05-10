@@ -151,9 +151,8 @@ s8 compare_complex (const s_complex *a, const s_complex *b)
 u8 compare_cow (const s_cow *a, const s_cow *b)
 {
   u8 r;
-  if ((r = compare_tag(&a->r, &b->r)) ||
-      (r = compare_bool(a->w_is_set, b->w_is_set)) ||
-      (r = compare_tag(&a->w, &b->w)))
+  if ((r = compare_sym(a->type, b->type)) ||
+      (r = compare_list(a->list, b->list)))
     return r;
   return 0;
 }

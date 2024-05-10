@@ -224,6 +224,11 @@ struct buf_save {
   uw wpos;
 };
 
+struct cow {
+  const s_sym *type;
+  s_list *list;
+};
+
 struct fact {
   const s_tag *subject;
   const s_tag *predicate;
@@ -503,12 +508,6 @@ struct binding {
 struct complex {
   s_tag x;
   s_tag y;
-};
-
-struct cow {
-  s_tag r;
-  s_tag w;
-  bool w_is_set;
 };
 
 struct error_handler

@@ -14,16 +14,14 @@
  * @file cow.h
  * @brief Copy on write is a software technique that allows you to have
  * read-only access to some memory but still be able to modify it. The
- * read-only data is copied to newly allocated memory when modified.
+ * read-only data is copied to a writable memory area to allow for
+ * modification and can then be turned into read-only memory.
  *
- * You can cow_freeze the writable version into read-only memory which
- * cleans the previous read-only value and you must be sure to not
- * access it anymore.
- *
- * Call cow_thaw to restore the writable memory to a copy of the
- * read-only version.
- *
- * Call cow_rw to get a writable s_tag pointer.
+ * Usage :
+ *   - cow_init() 
+ *   - cow_rw() returns a writable tag pointer
+ *   - cow_freeze() freeze the writable memory area into a read-only one
+ *   - cow_ro() returns the last read-only version that was frozen
  */
 #ifndef LIBC3_COW_H
 #define LIBC3_COW_H
@@ -42,17 +40,19 @@ s_cow * cow_init_tag_copy (s_cow *cow, const s_tag *src);
 /* Heap-allocation functions. Call cow_delete after use. */
 void    cow_delete (s_cow *cow);
 s_cow * cow_new (void);
+s_cow * cow_new_1 (const char *utf8);
 s_cow * cow_new_cast (const s_sym * const *type, const s_tag *tag);
 s_cow * cow_new_copy (const s_cow *src);
 
 /* Observers. */
 s_str *       cow_inspect (const s_cow *cow, s_str *dest);
-const s_tag * cow_ro (const s_cow *cow);
+const s_tag * cow_read_only (const s_cow *cow);
+s_tag *       cow_read_write (s_cow *cow);
 
 /* Operators. */
 s_cow * cow_freeze (s_cow *cow);
 s_cow * cow_freeze_copy (s_cow *cow, const s_tag *src);
-s_tag * cow_rw (s_cow *cow);
 s_cow * cow_thaw (s_cow *cow);
+s_cow * cow_thaw_copy (s_cow *cow, const s_tag *src);
 
 #endif /* LIBC3_COW_H */
