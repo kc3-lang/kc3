@@ -584,15 +584,45 @@ bool env_eval_cow (s_env *env, const s_cow *cow, s_tag *dest)
   assert(env);
   assert(cow);
   assert(dest);
-  tmp = alloc(sizeof(s_cow));
+  tmp = cow_new(cow->type);
   if (! tmp)
     return false;
-  if (! env_eval_tag(env, cow_ro(cow), &tmp->r)) {
+  if (! env_eval_tag(env, cow_read_only(cow),
+                     cow_read_write(tmp))) {
     free(tmp);
     return false;
   }
+  cow_freeze(tmp);
   dest->type = TAG_COW;
   dest->data.cow = tmp;
+  return true;
+}
+
+bool env_eval_equal_cow (s_env *env, const s_cow *a,
+                         const s_cow *b, s_cow **dest)
+{
+  s8 r;
+  s_cow *tmp;
+  assert(env);
+  assert(a);
+  assert(b);
+  assert(dest);
+  (void) env;
+  if ((r = compare_sym(a->type, b->type))) {
+    err_puts("env_eval_equal_cow: type mismatch");
+    assert(! "env_eval_equal_cow: type mismatch");
+    return false;
+  }
+  if ((r = compare_tag(cow_read_only(a), cow_read_only(b)))) {
+    err_puts("env_eval_equal_cow: value mismatch");
+    assert(! "env_eval_equal_cow: value mismatch");
+    return false;
+  }
+  tmp = cow_new_tag_copy(a->type, cow_read_only(a));
+  if (! tmp)
+    return false;
+  cow_freeze(tmp);
+  *dest = tmp;
   return true;
 }
 
@@ -753,9 +783,9 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     return true;
   }
   while (a->type == TAG_COW)
-    a = cow_ro(a->data.cow);
+    a = cow_read_only(a->data.cow);
   while (b->type == TAG_COW)
-    b = cow_ro(b->data.cow);
+    b = cow_read_only(b->data.cow);
   switch (a->type) {
   case TAG_COMPLEX:
   case TAG_F32:
@@ -1135,13 +1165,15 @@ bool env_eval_quote_cow (s_env *env, const s_cow *cow,
   assert(cow);
   assert(dest);
   tmp.type = TAG_COW;
-  tmp.data.cow = cow_new();
+  tmp.data.cow = cow_new(cow->type);
   if (! tmp.data.cow)
     return false;
-  if (! env_eval_quote_tag(env, cow_ro(cow), &tmp.data.cow->r)) {
+  if (! env_eval_quote_tag(env, cow_read_only(cow),
+                           cow_read_write(tmp.data.cow))) {
     cow_delete(tmp.data.cow);
     return false;
   }
+  cow_freeze(tmp.data.cow);
   *dest = tmp;
   return true;
 }

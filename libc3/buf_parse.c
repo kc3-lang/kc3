@@ -1192,17 +1192,26 @@ sw buf_parse_cow (s_buf *buf, s_cow *cow)
   sw result = 0;
   s_buf_save save;
   s_cow tmp;
+  const s_sym *type;
   assert(buf);
   assert(cow);
   buf_save_init(buf, &save);
+  if ((r = buf_parse_paren_sym(buf, &type)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
   if ((r = buf_read_1(buf, "cow")) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) <= 0)
+  if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
+  if (! cow_init(&tmp, type))
+    goto restore;
   if ((r = buf_parse_tag(buf, cow_read_write(&tmp))) <= 0)
-    goto clean;
+    goto restore;
   result += r;
   *cow = tmp;
   r = result;
@@ -2697,7 +2706,7 @@ sw buf_parse_pcow (s_buf *buf, s_cow **c)
 {
   sw r;
   s_cow *tmp;
-  tmp = cow_new();
+  tmp = alloc(sizeof(s_cow));
   if ((r = buf_parse_cow(buf, tmp)) <= 0) {
     free(tmp);
     return r;

@@ -12,6 +12,7 @@
  */
 #include "assert.h"
 #include <string.h>
+#include "cow.h"
 #include "data.h"
 #include "hash.h"
 #include "list.h"
@@ -181,9 +182,8 @@ bool hash_update_cow (t_hash *hash, const s_cow *cow)
   assert(hash);
   assert(cow);
   if (! hash_update(hash, type, sizeof(type)) ||
-      ! hash_update_tag(hash, &cow->r) ||
-      ! hash_update_bool(hash, &cow->w_is_set) ||
-      ! hash_update_tag(hash, &cow->w))
+      ! hash_update_sym(hash, &cow->type) ||
+      ! hash_update_tag(hash, cow_read_only(cow)))
     return false;
   return true;
 }
