@@ -59,6 +59,7 @@ sw buf_parse_cast (s_buf *buf, s_call *dest);
 sw buf_parse_cfn (s_buf *buf, s_cfn *dest);
 sw buf_parse_character (s_buf *buf, character *dest);
 sw buf_parse_comments (s_buf *buf);
+sw buf_parse_cow (s_buf *buf, s_cow *cow);
 sw buf_parse_digit (s_buf *buf, const s_str *base, u8 *dest);
 sw buf_parse_digit_bin (s_buf *buf, u8 *dest);
 sw buf_parse_digit_hex (s_buf *buf, u8 *dest);

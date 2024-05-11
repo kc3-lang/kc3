@@ -600,8 +600,14 @@ bool tag_is_bound_var (const s_tag *tag)
 bool tag_is_number (const s_tag *tag)
 {
   assert(tag);
-  while (tag->type == TAG_COW)
-    tag = cow_ro(tag->data.cow);
+  while (tag->type == TAG_COW) {
+    tag = cow_read_only(tag->data.cow);
+    if (! tag) {
+      err_puts("tag_is_number: cow was not frozen");
+      assert(! "tag_is_number: cow was not frozen");
+      return false;
+    }
+  }
   switch (tag->type) {
   case TAG_VOID:
   case TAG_ARRAY:

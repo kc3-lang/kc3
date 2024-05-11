@@ -20,11 +20,11 @@ void pcow_clean (s_cow **p)
   cow_delete(*p);
 }
 
-s_cow ** pcow_init (s_cow **p)
+s_cow ** pcow_init (s_cow **p, const s_sym *type)
 {
   s_cow *tmp = NULL;
   assert(p);
-  tmp = cow_new();
+  tmp = cow_new(type);
   if (! tmp)
     return NULL;
   *p = tmp;

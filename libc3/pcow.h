@@ -17,10 +17,9 @@
 
 /* Stack-allocation compatible functions, call pcow_clean after use. */
 void     pcow_clean (s_cow **p);
-s_cow ** pcow_init (s_cow **p);
+s_cow ** pcow_init (s_cow **p, const s_sym *type);
 s_cow ** pcow_init_cast (s_cow **p, const s_sym * const *type,
                          const s_tag *src);
-s_cow ** pcow_init_copy (s_cow **p,
-                             const s_cow * const *src);
+s_cow ** pcow_init_copy (s_cow **p, const s_cow * const *src);
 
 #endif /* LIBC3_PCOW_H */

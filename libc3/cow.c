@@ -10,10 +10,16 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <string.h>
 #include "assert.h"
 #include "alloc.h"
+#include "buf.h"
+#include "buf_inspect.h"
+#include "buf_parse.h"
 #include "cow.h"
+#include "data.h"
 #include "list.h"
+#include "sym.h"
 #include "tag.h"
 
 void cow_clean (s_cow *cow)
@@ -70,13 +76,13 @@ s_cow * cow_init_1 (s_cow *cow, const char *utf8)
   s_buf buf;
   uw len;
   sw r;
-  len = strlen(p);
-  buf_init(&buf, false, len, (char *) p); // buf is read-only
+  len = strlen(utf8);
+  buf_init(&buf, false, len, (char *) utf8); // buf is read-only
   buf.wpos = len;
   r = buf_parse_cow(&buf, cow);
   if (r < 0 || (uw) r != len) {
     err_write_1("invalid cow: \"");
-    err_write_1(p);
+    err_write_1(utf8);
     err_write_1("\", ");
     err_inspect_uw(&len);
     err_write_1(" != ");
@@ -84,30 +90,31 @@ s_cow * cow_init_1 (s_cow *cow, const char *utf8)
     assert(! "invalid cow");
     return NULL;
   }
-  return tag;
+  return cow;
 }
 
 s_cow * cow_init_cast (s_cow *cow, const s_sym * const *type,
                        const s_tag *tag)
 {
   void *data;
-  s_tag tmp;
+  s_cow tmp;
   assert(tag);
   assert(type);
-  assert(src);
+  assert(tag);
   if (*type == &g_sym_Cow) {
     err_puts("cow_init_cast: cannot cast to Cow");
     assert(! "cow_init_cast: cannot cast to Cow");
     return NULL;
   }
-  if (! sym_to_tag_type(*type, &tmp.type))
+  tmp.type = *type;
+  if (! sym_to_tag_type(*type, &tmp.list->tag.type))
     return NULL;
   if (! tag_to_pointer(&tmp.list->tag, *type, &data))
     return NULL;
-  if (! data_init_cast(data, type, src))
+  if (! data_init_cast(data, type, tag))
     return NULL;
-  *tag = tmp;
-  return tag;
+  *cow = tmp;
+  return cow;
 }
 
 s_cow * cow_init_copy (s_cow *cow, const s_cow *src)
@@ -122,16 +129,27 @@ s_cow * cow_init_copy (s_cow *cow, const s_cow *src)
   *cow = tmp;
   return cow;
 }
-  
-s_cow * cow_init_tag_copy (s_cow *cow, const s_tag *src)
+
+s_cow * cow_init_tag_copy (s_cow *cow, const s_sym *type,
+                           const s_tag *src)
 {
   assert(cow);
   assert(src);
+  const s_sym *src_type;
   s_cow tmp = {0};
   assert(cow);
   assert(src);
-  tmp.type = src->type;
-  tmp.list = list_new_tag_copy(src);
+  if (type != &g_sym_Tag) {
+    if (! tag_type(src, &src_type))
+      return NULL;
+    if (type != src_type) {
+      err_puts("cow_init_tag_copy: type mismatch");
+      assert(! "cow_init_tag_copy: type mismatch");
+      return NULL;
+    }
+  }
+  tmp.type = type;
+  tmp.list = list_new_tag_copy(src, NULL);
   if (! tmp.list)
     return NULL;
   *cow = tmp;
@@ -142,7 +160,7 @@ s_str * cow_inspect (const s_cow *cow, s_str *dest)
 {
   s_buf buf;
   sw size;
-  assert(tag);
+  assert(cow);
   assert(dest);
   if ((size = buf_inspect_cow_size(cow)) < 0) {
     err_puts("tag_inspect: size error");
@@ -158,13 +176,13 @@ s_str * cow_inspect (const s_cow *cow, s_str *dest)
   return buf_to_str(&buf, dest);
 }
 
-s_cow * cow_new (void)
+s_cow * cow_new (const s_sym *type)
 {
   s_cow *cow;
   cow = alloc(sizeof(s_cow));
   if (! cow)
     return NULL;
-  if (! cow_init(cow)) {
+  if (! cow_init(cow, type)) {
     free(cow);
     return NULL;
   }
@@ -210,13 +228,24 @@ s_cow * cow_new_copy (const s_cow *src)
   return cow;
 }
 
+s_cow * cow_new_tag_copy (const s_sym *type, const s_tag *src)
+{
+  s_cow *cow;
+  cow = alloc(sizeof(s_cow));
+  if (! cow)
+    return NULL;
+  if (! cow_init_tag_copy(cow, type, src)) {
+    free(cow);
+    return NULL;
+  }
+  return cow;
+}
+
 const s_tag * cow_read_only (const s_cow *cow)
 {
   assert(cow);
   assert(cow->list);
-  if (! list_next(cow->list))
-    if (! cow_freeze(cow))
-      return NULL;
+  assert(list_next(cow->list));
   return &list_next(cow->list)->tag;
 }
 
