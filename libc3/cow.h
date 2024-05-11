@@ -50,6 +50,7 @@ s_cow * cow_new_tag_copy (const s_sym *type, const s_tag *src);
 s_str *       cow_inspect (const s_cow *cow, s_str *dest);
 const s_tag * cow_read_only (const s_cow *cow);
 s_tag *       cow_read_write (s_cow *cow);
+const s_tag * cow_resolve (const s_cow *cow);
 
 /* Operators. */
 s_cow * cow_freeze (s_cow *cow);

@@ -1196,16 +1196,19 @@ sw buf_parse_cow (s_buf *buf, s_cow *cow)
   assert(buf);
   assert(cow);
   buf_save_init(buf, &save);
-  if ((r = buf_parse_paren_sym(buf, &type)) <= 0)
+  type = &g_sym_Tag;
+  if ((r = buf_parse_paren_sym(buf, &type)) < 0)
     goto clean;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto restore;
-  result += r;
+  if (r) {
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) <= 0)
+      goto restore;
+    result += r;
+  }
   if ((r = buf_read_1(buf, "cow")) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
+  if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
   if (! cow_init(&tmp, type))
@@ -1213,6 +1216,22 @@ sw buf_parse_cow (s_buf *buf, s_cow *cow)
   if ((r = buf_parse_tag(buf, cow_read_write(&tmp))) <= 0)
     goto restore;
   result += r;
+  if (tmp.type != &g_sym_Tag) {
+    if (! tag_type(cow_read_write(&tmp), &type)) {
+      r = -1;
+      goto restore;
+    }
+    if (tmp.type != type) {
+      err_write_1("buf_parse_cow: type mismatch: ");
+      err_inspect_sym(&tmp.type);
+      err_write_1(" != ");
+      err_inspect_sym(&type);
+      assert(! "buf_parse_cow: type mismatch");
+      r = -1;
+      goto restore;
+    }
+  }
+  cow_freeze(&tmp);
   *cow = tmp;
   r = result;
   goto clean;
@@ -3601,12 +3620,12 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_void(buf, dest)) != 0 ||
       (r = buf_parse_tag_number(buf, dest)) != 0 ||
       (r = buf_parse_tag_array(buf, dest)) != 0 ||
+      (r = buf_parse_tag_cow(buf, dest)) != 0 ||
       (r = buf_parse_tag_cast(buf, dest)) != 0 ||
       (r = buf_parse_tag_unquote(buf, dest)) != 0 ||
       (r = buf_parse_tag_if(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
-      (r = buf_parse_tag_cow(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
       (r = buf_parse_tag_bool(buf, dest)) != 0 ||

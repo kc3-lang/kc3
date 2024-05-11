@@ -782,10 +782,8 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     tag_clean(&tmp_b);
     return true;
   }
-  while (a->type == TAG_COW)
-    a = cow_read_only(a->data.cow);
-  while (b->type == TAG_COW)
-    b = cow_read_only(b->data.cow);
+  a = tag_resolve_cow(a);
+  b = tag_resolve_cow(b);
   switch (a->type) {
   case TAG_COMPLEX:
   case TAG_F32:

@@ -600,14 +600,7 @@ bool tag_is_bound_var (const s_tag *tag)
 bool tag_is_number (const s_tag *tag)
 {
   assert(tag);
-  while (tag->type == TAG_COW) {
-    tag = cow_read_only(tag->data.cow);
-    if (! tag) {
-      err_puts("tag_is_number: cow was not frozen");
-      assert(! "tag_is_number: cow was not frozen");
-      return false;
-    }
-  }
+  tag = tag_resolve_cow(tag);
   switch (tag->type) {
   case TAG_VOID:
   case TAG_ARRAY:
@@ -806,6 +799,18 @@ s_tag * tag_paren (const s_tag *tag, s_tag *dest)
   assert(tag);
   assert(dest);
   return tag_init_copy(dest, tag);
+}
+
+const s_tag * tag_resolve_cow (const s_tag *tag)
+{
+  while (tag->type == TAG_COW)
+    tag = cow_read_only(tag->data.cow);
+  if (! tag) {
+    err_puts("tag_resolve_cow: cow was not frozen");
+    assert(! "tag_resolve_cow: cow was not frozen");
+    return NULL;
+  }
+  return tag;
 }
 
 uw * tag_size (const s_tag *tag, uw *dest)
