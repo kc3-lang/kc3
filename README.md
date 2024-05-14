@@ -30,6 +30,21 @@ Supported architectures :
  - sparc64
 
 
+## New in this release
+
+ - libc3
+   - modules
+     - defmodule Empty do end
+     - def
+       - def three = 3
+       - def double = fn (x) do x * 2 end
+       - def double_tuple = macro (x) do {x, x} end
+       - def operator\_double = %C3.Operator{sym: :double, symbol_value: fn (x) { x * 2 }}
+
+With this release you can actually load a module as a c3 source file.
+See [lib/c3/0.1/list.c3](https://git.kmx.io/c3-lang/c3/_tree/master/lib/c3/0.1/list.c3)
+
+
 ## Usage
 
 ### Compilation
@@ -424,6 +439,30 @@ ic3> if 0 then 100 else 101 end
 101
 ```
 
+## defmodule and def
+
+Example :
+```
+ic3> defmodule Example do
+ic3>   def three = 3
+ic3>   def double = fn (x) do x * 2 end
+ic3>   def double_tuple = macro (x) do {x, x} end
+ic3>   def operator_double = %C3.Operator{sym: :double, symbol_value: fn (x) { x * 2 }
+ic3> end
+Example
+ic3> Example.three
+3
+ic3> Example.double
+fn (x) do x * 2 end
+ic3> Example.double(21)
+42
+ic3> Example.double_tuple(:ok)
+{:ok, :ok}
+ic3> double 21
+42
+```
+
+
 ### c3s
 
 Script interpreter. Works the same as ic3 but is not interactive.
@@ -443,12 +482,6 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - has_ident
      - collect_idents
    - modules
-     - DONE defmodule
-     - DONE def
-       - DONE def double = 4
-       - DONE def double = fn (x) do x * 2 end
-       - DONE def double = macro (x) do {x, x} end
-     - DONE def %C3.Operator{}
      - def %C3.SpecialOperator{}
      - defstruct
    - facts
