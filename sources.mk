@@ -10,6 +10,40 @@ C3_CONFIGURES = \
 	"libc3/configure" \
 	"libc3/sources.sh" \
 	"libc3/update_sources" \
+	"libc3_window/cairo/configure" \
+	"libc3_window/cairo/demo/configure" \
+	"libc3_window/cairo/demo/sources.sh" \
+	"libc3_window/cairo/demo/update_sources" \
+	"libc3_window/cairo/quartz/configure" \
+	"libc3_window/cairo/quartz/demo/configure" \
+	"libc3_window/cairo/quartz/demo/sources.sh" \
+	"libc3_window/cairo/quartz/demo/update_sources" \
+	"libc3_window/cairo/quartz/sources.sh" \
+	"libc3_window/cairo/quartz/update_sources" \
+	"libc3_window/cairo/sources.sh" \
+	"libc3_window/cairo/update_sources" \
+	"libc3_window/cairo/win32/configure" \
+	"libc3_window/cairo/win32/demo/configure" \
+	"libc3_window/cairo/win32/demo/sources.sh" \
+	"libc3_window/cairo/win32/demo/update_sources" \
+	"libc3_window/cairo/win32/sources.sh" \
+	"libc3_window/cairo/win32/update_sources" \
+	"libc3_window/cairo/xcb/configure" \
+	"libc3_window/cairo/xcb/demo/configure" \
+	"libc3_window/cairo/xcb/demo/sources.sh" \
+	"libc3_window/cairo/xcb/demo/update_sources" \
+	"libc3_window/cairo/xcb/sources.sh" \
+	"libc3_window/cairo/xcb/update_sources" \
+	"libc3_window/configure" \
+	"libc3_window/sdl2/configure" \
+	"libc3_window/sdl2/demo/configure" \
+	"libc3_window/sdl2/demo/macos/configure" \
+	"libc3_window/sdl2/demo/sources.sh" \
+	"libc3_window/sdl2/demo/update_sources" \
+	"libc3_window/sdl2/sources.sh" \
+	"libc3_window/sdl2/update_sources" \
+	"libc3_window/sources.sh" \
+	"libc3_window/update_sources" \
 	"libtommath/configure" \
 	"libtommath/sources.sh" \
 	"libtommath/update_sources" \
@@ -27,6 +61,29 @@ C3_MAKEFILES = \
 	"libc3/Makefile" \
 	"libc3/gen.mk" \
 	"libc3/sources.mk" \
+	"libc3_window/Makefile" \
+	"libc3_window/cairo/Makefile" \
+	"libc3_window/cairo/demo/Makefile" \
+	"libc3_window/cairo/demo/sources.mk" \
+	"libc3_window/cairo/quartz/Makefile" \
+	"libc3_window/cairo/quartz/demo/Makefile" \
+	"libc3_window/cairo/quartz/demo/sources.mk" \
+	"libc3_window/cairo/quartz/sources.mk" \
+	"libc3_window/cairo/sources.mk" \
+	"libc3_window/cairo/win32/Makefile" \
+	"libc3_window/cairo/win32/demo/Makefile" \
+	"libc3_window/cairo/win32/demo/sources.mk" \
+	"libc3_window/cairo/win32/sources.mk" \
+	"libc3_window/cairo/xcb/Makefile" \
+	"libc3_window/cairo/xcb/demo/Makefile" \
+	"libc3_window/cairo/xcb/demo/sources.mk" \
+	"libc3_window/cairo/xcb/sources.mk" \
+	"libc3_window/sdl2/Makefile" \
+	"libc3_window/sdl2/demo/Makefile" \
+	"libc3_window/sdl2/demo/macos/Makefile" \
+	"libc3_window/sdl2/demo/sources.mk" \
+	"libc3_window/sdl2/sources.mk" \
+	"libc3_window/sources.mk" \
 	"libtommath/Makefile" \
 	"libtommath/sources.mk" \
 	"test/Makefile" \
@@ -400,6 +457,114 @@ C3_C_SOURCES = \
 	"libc3/var.h" \
 	"libc3/void.c" \
 	"libc3/void.h" \
+	"libc3_window/cairo/cairo_font.c" \
+	"libc3_window/cairo/cairo_font.h" \
+	"libc3_window/cairo/cairo_sprite.c" \
+	"libc3_window/cairo/cairo_sprite.h" \
+	"libc3_window/cairo/cairo_text.c" \
+	"libc3_window/cairo/cairo_text.h" \
+	"libc3_window/cairo/demo/bg_rect.c" \
+	"libc3_window/cairo/demo/bg_rect.h" \
+	"libc3_window/cairo/demo/flies.c" \
+	"libc3_window/cairo/demo/flies.h" \
+	"libc3_window/cairo/demo/lightspeed.c" \
+	"libc3_window/cairo/demo/lightspeed.h" \
+	"libc3_window/cairo/demo/mandelbrot_f128.c" \
+	"libc3_window/cairo/demo/mandelbrot_f128.h" \
+	"libc3_window/cairo/demo/toasters.c" \
+	"libc3_window/cairo/demo/toasters.h" \
+	"libc3_window/cairo/demo/window_cairo_demo.c" \
+	"libc3_window/cairo/demo/window_cairo_demo.h" \
+	"libc3_window/cairo/quartz/demo/window_cairo_quartz_demo.c" \
+	"libc3_window/cairo/quartz/quartz_to_xkbcommon.c" \
+	"libc3_window/cairo/quartz/quartz_to_xkbcommon.h" \
+	"libc3_window/cairo/quartz/window_cairo_quartz.h" \
+	"libc3_window/cairo/quartz/window_cairo_quartz_app_delegate.h" \
+	"libc3_window/cairo/quartz/window_cairo_quartz_view.h" \
+	"libc3_window/cairo/quartz/window_cairo_quartz_view_controller.h" \
+	"libc3_window/cairo/quartz/xkbquartz.h" \
+	"libc3_window/cairo/types.h" \
+	"libc3_window/cairo/win32/demo/window_cairo_win32_demo.c" \
+	"libc3_window/cairo/win32/vk_to_xkbcommon.c" \
+	"libc3_window/cairo/win32/vk_to_xkbcommon.h" \
+	"libc3_window/cairo/win32/window_cairo_win32.c" \
+	"libc3_window/cairo/win32/window_cairo_win32.h" \
+	"libc3_window/cairo/window_cairo.c" \
+	"libc3_window/cairo/window_cairo.h" \
+	"libc3_window/cairo/xcb/config.h" \
+	"libc3_window/cairo/xcb/demo/window_cairo_xcb_demo.c" \
+	"libc3_window/cairo/xcb/window_cairo_xcb.c" \
+	"libc3_window/cairo/xcb/window_cairo_xcb.h" \
+	"libc3_window/sdl2/demo/bg_rect.c" \
+	"libc3_window/sdl2/demo/bg_rect.h" \
+	"libc3_window/sdl2/demo/earth.c" \
+	"libc3_window/sdl2/demo/earth.h" \
+	"libc3_window/sdl2/demo/flies.c" \
+	"libc3_window/sdl2/demo/flies.h" \
+	"libc3_window/sdl2/demo/lightspeed.c" \
+	"libc3_window/sdl2/demo/lightspeed.h" \
+	"libc3_window/sdl2/demo/mandelbrot_f128.c" \
+	"libc3_window/sdl2/demo/mandelbrot_f128.h" \
+	"libc3_window/sdl2/demo/matrix.c" \
+	"libc3_window/sdl2/demo/matrix.h" \
+	"libc3_window/sdl2/demo/toasters.c" \
+	"libc3_window/sdl2/demo/toasters.h" \
+	"libc3_window/sdl2/demo/window_sdl2_demo.c" \
+	"libc3_window/sdl2/demo/window_sdl2_demo.h" \
+	"libc3_window/sdl2/disabled/mandelbrot.c" \
+	"libc3_window/sdl2/disabled/mandelbrot.h" \
+	"libc3_window/sdl2/disabled/sdl2_font.c" \
+	"libc3_window/sdl2/disabled/sdl2_font.h" \
+	"libc3_window/sdl2/disabled/sdl2_sprite.c" \
+	"libc3_window/sdl2/disabled/sdl2_sprite.h" \
+	"libc3_window/sdl2/dmat3.h" \
+	"libc3_window/sdl2/dmat4.c" \
+	"libc3_window/sdl2/dmat4.h" \
+	"libc3_window/sdl2/dvec2.c" \
+	"libc3_window/sdl2/dvec2.h" \
+	"libc3_window/sdl2/dvec3.c" \
+	"libc3_window/sdl2/dvec3.h" \
+	"libc3_window/sdl2/gl_camera.c" \
+	"libc3_window/sdl2/gl_camera.h" \
+	"libc3_window/sdl2/gl_cylinder.c" \
+	"libc3_window/sdl2/gl_cylinder.h" \
+	"libc3_window/sdl2/gl_deprecated.c" \
+	"libc3_window/sdl2/gl_deprecated.h" \
+	"libc3_window/sdl2/gl_font.c" \
+	"libc3_window/sdl2/gl_font.h" \
+	"libc3_window/sdl2/gl_lines.c" \
+	"libc3_window/sdl2/gl_lines.h" \
+	"libc3_window/sdl2/gl_object.c" \
+	"libc3_window/sdl2/gl_object.h" \
+	"libc3_window/sdl2/gl_ortho.c" \
+	"libc3_window/sdl2/gl_ortho.h" \
+	"libc3_window/sdl2/gl_sphere.c" \
+	"libc3_window/sdl2/gl_sphere.h" \
+	"libc3_window/sdl2/gl_sprite.c" \
+	"libc3_window/sdl2/gl_sprite.h" \
+	"libc3_window/sdl2/gl_square.c" \
+	"libc3_window/sdl2/gl_square.h" \
+	"libc3_window/sdl2/gl_text.c" \
+	"libc3_window/sdl2/gl_text.h" \
+	"libc3_window/sdl2/gl_triangle.c" \
+	"libc3_window/sdl2/gl_triangle.h" \
+	"libc3_window/sdl2/gl_vertex.c" \
+	"libc3_window/sdl2/gl_vertex.h" \
+	"libc3_window/sdl2/gl_vtext.c" \
+	"libc3_window/sdl2/gl_vtext.h" \
+	"libc3_window/sdl2/mat3.h" \
+	"libc3_window/sdl2/mat4.c" \
+	"libc3_window/sdl2/mat4.h" \
+	"libc3_window/sdl2/types.h" \
+	"libc3_window/sdl2/vec2.c" \
+	"libc3_window/sdl2/vec2.h" \
+	"libc3_window/sdl2/vec3.c" \
+	"libc3_window/sdl2/vec3.h" \
+	"libc3_window/sdl2/window_sdl2.c" \
+	"libc3_window/sdl2/window_sdl2.h" \
+	"libc3_window/types.h" \
+	"libc3_window/window.c" \
+	"libc3_window/window.h" \
 	"test/array_test.c" \
 	"test/bool_test.c" \
 	"test/buf_file_test.c" \
@@ -448,7 +613,10 @@ C3_C_SOURCES = \
 	"ucd2c/ucd2c.c" \
 
 C3_OBJC_SOURCES = \
-	"" \
+	"libc3_window/cairo/quartz/window_cairo_quartz.m" \
+	"libc3_window/cairo/quartz/window_cairo_quartz_app_delegate.m" \
+	"libc3_window/cairo/quartz/window_cairo_quartz_view.m" \
+	"libc3_window/cairo/quartz/window_cairo_quartz_view_controller.m" \
 
 C3_OTHER_SOURCES = \
 	"AUTHORS" \
