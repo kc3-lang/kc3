@@ -491,7 +491,7 @@ Script interpreter. Works the same as ic3 but is not interactive.
 
 ```
 /* c3
- * Copyright 2022,2023 kmx.io <contact@kmx.io>
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
