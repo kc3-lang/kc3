@@ -1,4 +1,8 @@
-# C3 v0.1.11
+# C3 v0.1.12
+
+This is a development branch, see
+[C3 v0.1.11](https://git.kmx.io/c3-lang/c3/_tag/v0.1.11)
+for a stable release.
 
 C3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
@@ -28,6 +32,11 @@ Supported architectures :
  - amd64
  - i386
  - sparc64
+
+
+## Discord invite
+
+[Join us on kmx.io Discord server !](https://discord.gg/A4MWkpUDsG)
 
 
 ## New in this release
