@@ -107,12 +107,14 @@ s_cow * cow_init_cast (s_cow *cow, const s_sym * const *type,
     return NULL;
   }
   tmp.type = *type;
+  tmp.list = list_new(NULL);
   if (! sym_to_tag_type(*type, &tmp.list->tag.type))
     return NULL;
   if (! tag_to_pointer(&tmp.list->tag, *type, &data))
     return NULL;
   if (! data_init_cast(data, type, tag))
     return NULL;
+  cow_freeze(&tmp);
   *cow = tmp;
   return cow;
 }
