@@ -1191,7 +1191,7 @@ sw buf_parse_cow (s_buf *buf, s_cow *cow)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_cow tmp;
+  s_cow tmp = {0};
   const s_sym *type;
   assert(buf);
   assert(cow);
@@ -1205,15 +1205,21 @@ sw buf_parse_cow (s_buf *buf, s_cow *cow)
       goto restore;
     result += r;
   }
-  if ((r = buf_read_1(buf, "cow")) <= 0)
+  if ((r = buf_read_1(buf, "cow(")) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) <= 0)
+  if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
   if (! cow_init(&tmp, type))
     goto restore;
   if ((r = buf_parse_tag(buf, cow_read_write(&tmp))) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, ")")) <= 0)
     goto restore;
   result += r;
   if (tmp.type != &g_sym_Tag) {
@@ -1236,6 +1242,7 @@ sw buf_parse_cow (s_buf *buf, s_cow *cow)
   r = result;
   goto clean;
  restore:
+  cow_clean(&tmp);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);

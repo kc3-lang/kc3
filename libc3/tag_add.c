@@ -25,6 +25,8 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
   assert(a);
   assert(b);
   assert(dest);
+  a = tag_resolve_cow(a);
+  b = tag_resolve_cow(b);
   switch (a->type) {
   case TAG_COMPLEX:
     switch (b->type) {
