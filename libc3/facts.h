@@ -55,6 +55,10 @@ s_fact *  facts_replace_tags (s_facts *facts, const s_tag *subject,
                               const s_tag *predicate,
                               const s_tag *object);
 sw        facts_save_file (s_facts *facts, const char *path);
+s_facts * facts_transaction_rollback (s_facts *facts,
+                                      s_facts_transaction *transaction);
+void      facts_transaction_start (s_facts *facts,
+                                   s_facts_transaction *transaction);
 bool      facts_unref_tag (s_facts *facts, const s_tag *tag);
 
 /* Observers */

@@ -244,7 +244,6 @@ const s_sym * env_defstruct (s_env *env, const s_sym *module)
   s_struct_type *st;
   s_list *st_spec;
   s_tag tag_module_name;
-  s_tag tag_load_time;
   s_tag tag_st = {0};
   s_tag tag_struct_type;
   tag_init_sym(&tag_module_name, module);
@@ -257,8 +256,8 @@ const s_sym * env_defstruct (s_env *env, const s_sym *module)
       return NULL;
     }
     st->clean = env_struct_type_get_clean(env, module);
-    if (! facts_replace_tags(facts, &tag_module_name, &tag_struct_type,
-                             &tag_st)) {
+    if (! facts_replace_tags(&env->facts, &tag_module_name,
+                             &tag_struct_type, &tag_st)) {
       struct_type_clean(st);
       list_delete_all(st_spec);
       return NULL;
@@ -1828,20 +1827,15 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
 {
   s_facts_transaction transaction;
   s_str path = {0};
-  s_struct_type *st;
-  s_list        *st_spec;
   s_tag tag_module_name;
   s_tag tag_load_time;
-  s_tag tag_st = {0};
-  s_tag tag_struct_type;
   s_tag tag_time;
   assert(env);
   assert(module);
   assert(facts);
   if (env_module_is_loading(env, module))
     return true;
-  if (! facts_transaction_start(&env->facts, &transaction))
-    return false;
+  facts_transaction_start(&env->facts, &transaction);
   if (! env_module_is_loading_set(env, module, true))
     goto rollback;
   if (module_path(module, &env->module_path, C3_EXT, &path) &&
@@ -1889,7 +1883,8 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
   if (! facts_transaction_rollback(facts, &transaction)) {
     exit(1);
     return false;
-  }  
+  }
+  return false;
 }
 
 bool env_module_maybe_reload (s_env *env, const s_sym *module,

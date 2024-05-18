@@ -146,6 +146,7 @@ typedef struct cow                     s_cow;
 typedef struct env                     s_env;
 typedef struct error_handler           s_error_handler;
 typedef struct fact                    s_fact;
+typedef struct fact_action             s_fact_action;
 typedef struct fact_w                  s_fact_w;
 typedef struct facts                   s_facts;
 typedef struct facts_transaction       s_facts_transaction;

@@ -732,6 +732,7 @@ s_facts * facts_transaction_rollback (s_facts *facts,
 {
   s_fact_action *log;
   s_facts_transaction *t;
+  t = facts->transaction;
   while (t) {
     if (t == transaction)
       goto rollback;
@@ -745,11 +746,11 @@ s_facts * facts_transaction_rollback (s_facts *facts,
     log = t->log;
     while (log) {
       if (log->remove) {
-        if (! facts_add(facts, &log->fact))
+        if (! facts_add_fact(facts, &log->fact))
           return NULL;
       }
       else {
-        if (! facts_remove(facts, &log->fact))
+        if (! facts_remove_fact(facts, &log->fact))
           return NULL;
       }
       log = log->next;
