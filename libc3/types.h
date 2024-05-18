@@ -148,6 +148,7 @@ typedef struct error_handler           s_error_handler;
 typedef struct fact                    s_fact;
 typedef struct fact_w                  s_fact_w;
 typedef struct facts                   s_facts;
+typedef struct facts_transaction       s_facts_transaction;
 typedef struct facts_cursor            s_facts_cursor;
 typedef struct facts_spec_cursor       s_facts_spec_cursor;
 typedef struct facts_with_cursor       s_facts_with_cursor;
@@ -241,6 +242,17 @@ struct fact_w {
   s_tag *predicate;
   s_tag *object;
   uw id; /* serial id */
+};
+
+struct fact_action {
+  bool remove;
+  s_fact fact;
+  s_fact_action *next;
+};
+
+struct facts_transaction {
+  s_fact_action *log;
+  s_facts_transaction *next;
 };
 
 struct fn_clause {
@@ -594,16 +606,17 @@ TYPEDEF_SKIPLIST(fact, s_fact *);
 /* 8 */
 
 struct facts {
-  s_set__tag        tags;
-  s_set__fact       facts;
-  s_skiplist__fact *index_spo;
-  s_skiplist__fact *index_pos;
-  s_skiplist__fact *index_osp;
-  s_log            *log;
-  pthread_rwlock_t  rwlock;
-  sw                rwlock_count;
-  pthread_t         rwlock_thread;
-  uw                next_id;
+  s_set__tag           tags;
+  s_set__fact          facts;
+  s_skiplist__fact    *index_spo;
+  s_skiplist__fact    *index_pos;
+  s_skiplist__fact    *index_osp;
+  s_log               *log;
+  uw                   next_id;
+  pthread_rwlock_t     rwlock;
+  sw                   rwlock_count;
+  pthread_t            rwlock_thread;
+  s_facts_transaction *transaction;
 };
 
 struct facts_cursor {

@@ -727,6 +727,52 @@ sw facts_save_file (s_facts *facts, const char *path)
   return r;
 }
 
+s_facts * facts_transaction_rollback (s_facts *facts,
+                                      s_facts_transaction *transaction)
+{
+  s_fact_action *log;
+  s_facts_transaction *t;
+  while (t) {
+    if (t == transaction)
+      goto rollback;
+    t = t->next;
+  }
+  err_puts("facts_transaction_rollback: transaction not found");
+  assert(! "facts_transaction_rollback: transaction not found");
+  return NULL;
+ rollback:
+  while (t) {
+    log = t->log;
+    while (log) {
+      if (log->remove) {
+        if (! facts_add(facts, &log->fact))
+          return NULL;
+      }
+      else {
+        if (! facts_remove(facts, &log->fact))
+          return NULL;
+      }
+      log = log->next;
+    }
+    if (t == transaction)
+      return facts;
+    t = t->next;
+  }
+  err_puts("facts_transaction_rollback: unknown error");
+  assert(! "facts_transaction_rollback: unknown error");
+  exit(1);
+  return NULL;
+}
+
+void facts_transaction_start (s_facts *facts,
+                              s_facts_transaction *transaction)
+{
+  assert(facts);
+  assert(transaction);
+  transaction->next = facts->transaction;
+  facts->transaction = transaction;
+}
+
 bool facts_unref_tag (s_facts *facts, const s_tag *tag)
 {
   s_set_item__tag *item;

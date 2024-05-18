@@ -239,6 +239,35 @@ s_tag * env_defoperator (s_env *env, const s_sym **name,
   return dest;
 }
 
+const s_sym * env_defstruct (s_env *env, const s_sym *module)
+{
+  s_struct_type *st;
+  s_list *st_spec;
+  s_tag tag_module_name;
+  s_tag tag_load_time;
+  s_tag tag_st = {0};
+  s_tag tag_struct_type;
+  tag_init_sym(&tag_module_name, module);
+  if (env_struct_type_get_spec(env, module, &st_spec)) {
+    tag_init_sym(&tag_struct_type, &g_sym_struct_type);
+    tag_st.type = TAG_STRUCT_TYPE;
+    st = &tag_st.data.struct_type;
+    if (! struct_type_init(st, module, st_spec)) {
+      list_delete_all(st_spec);
+      return NULL;
+    }
+    st->clean = env_struct_type_get_clean(env, module);
+    if (! facts_replace_tags(facts, &tag_module_name, &tag_struct_type,
+                             &tag_st)) {
+      struct_type_clean(st);
+      list_delete_all(st_spec);
+      return NULL;
+    }
+    list_delete_all(st_spec);
+  }
+  return module;
+}
+
 void env_error_f (s_env *env, const char *fmt, ...)
 {
   va_list ap;
@@ -1797,6 +1826,7 @@ bool env_module_is_loading_set (s_env *env, const s_sym *module,
 
 bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
 {
+  s_facts_transaction transaction;
   s_str path = {0};
   s_struct_type *st;
   s_list        *st_spec;
@@ -1810,8 +1840,10 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
   assert(facts);
   if (env_module_is_loading(env, module))
     return true;
-  if (! env_module_is_loading_set(env, module, true))
+  if (! facts_transaction_start(&env->facts, &transaction))
     return false;
+  if (! env_module_is_loading_set(env, module, true))
+    goto rollback;
   if (module_path(module, &env->module_path, C3_EXT, &path) &&
       file_access(&path, &g_sym_r)) {
     tag_init_time(&tag_time);
@@ -1820,7 +1852,7 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
       err_inspect_sym(&module);
       err_puts(": env_load");
       str_clean(&path);
-      goto ko;
+      goto rollback;
     }
   }
   else {
@@ -1829,40 +1861,35 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
       err_write_1("env_module_load: ");
       err_write_1(module->str.ptr.pchar);
       err_puts(": module_path");
-      goto ko;
+      goto rollback;
     }
     if (! file_access(&path, &g_sym_r))
-      goto ko;
+      goto rollback;
     tag_init_time(&tag_time);
     if (facts_load_file(facts, &path) < 0) {
       err_write_1("env_module_load: ");
       err_write_1(module->str.ptr.pchar);
       err_puts(": facts_load_file");
       str_clean(&path);
-      goto ko;
+      goto rollback;
     }
   }
   str_clean(&path);
   tag_init_sym(&tag_module_name, module);
   tag_init_sym(&tag_load_time, &g_sym_load_time);
-  facts_replace_tags(facts, &tag_module_name, &tag_load_time,
-                     &tag_time);
+  if (! facts_replace_tags(facts, &tag_module_name, &tag_load_time,
+                           &tag_time))
+    goto rollback;
   tag_clean(&tag_time);
-  if (env_struct_type_get_spec(env, module, &st_spec)) {
-    tag_init_sym(&tag_struct_type, &g_sym_struct_type);
-    tag_st.type = TAG_STRUCT_TYPE;
-    st = &tag_st.data.struct_type;
-    struct_type_init(st, module, st_spec);
-    st->clean = env_struct_type_get_clean(env, module);
-    facts_replace_tags(facts, &tag_module_name, &tag_struct_type,
-                       &tag_st);
-    list_delete_all(st_spec);
-  }
+  if (! env_defstruct(env, module))
+    goto rollback;
   env_module_is_loading_set(env, module, false);
   return true;
- ko:
-  env_module_is_loading_set(env, module, false);
-  return false;
+ rollback:
+  if (! facts_transaction_rollback(facts, &transaction)) {
+    exit(1);
+    return false;
+  }  
 }
 
 bool env_module_maybe_reload (s_env *env, const s_sym *module,
