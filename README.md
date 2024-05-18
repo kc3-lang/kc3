@@ -519,8 +519,6 @@ Script interpreter. Works the same as ic3 but is not interactive.
    - unwind protect
    - functions
      - return
-     - def
-     - & &1
    - livebook
      - gaussian
    - buf_sha256
