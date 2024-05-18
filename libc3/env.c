@@ -239,32 +239,24 @@ s_tag * env_defoperator (s_env *env, const s_sym **name,
   return dest;
 }
 
-const s_sym * env_defstruct (s_env *env, const s_sym *module)
+const s_sym * env_defstruct (s_env *env, const s_list *spec)
 {
   s_struct_type *st;
-  s_list *st_spec;
   s_tag tag_module_name;
   s_tag tag_st = {0};
   s_tag tag_struct_type;
-  tag_init_sym(&tag_module_name, module);
-  if (env_struct_type_get_spec(env, module, &st_spec)) {
-    tag_init_sym(&tag_struct_type, &g_sym_struct_type);
-    tag_st.type = TAG_STRUCT_TYPE;
-    st = &tag_st.data.struct_type;
-    if (! struct_type_init(st, module, st_spec)) {
-      list_delete_all(st_spec);
-      return NULL;
-    }
-    st->clean = env_struct_type_get_clean(env, module);
-    if (! facts_replace_tags(&env->facts, &tag_module_name,
-                             &tag_struct_type, &tag_st)) {
+  tag_init_sym(&tag_module_name, env->current_defmodule);
+  tag_init_sym(&tag_struct_type, &g_sym_struct_type);
+  tag_st.type = TAG_STRUCT_TYPE;
+  st = &tag_st.data.struct_type;
+  if (! struct_type_init(st, env->current_defmodule, spec))
+    return NULL;
+  if (! facts_replace_tags(&env->facts, &tag_module_name,
+                           &tag_struct_type, &tag_st)) {
       struct_type_clean(st);
-      list_delete_all(st_spec);
       return NULL;
-    }
-    list_delete_all(st_spec);
   }
-  return module;
+  return env->current_defmodule;
 }
 
 void env_error_f (s_env *env, const char *fmt, ...)
@@ -1875,8 +1867,10 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
                            &tag_time))
     goto rollback;
   tag_clean(&tag_time);
-  if (! env_defstruct(env, module))
-    goto rollback;
+  if (env_struct_type_has_spec(env, module)) {
+    if (! env_module_load_defstruct(env, module))
+      goto rollback;
+  }
   env_module_is_loading_set(env, module, false);
   return true;
  rollback:
@@ -1885,6 +1879,35 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
     return false;
   }
   return false;
+}
+
+const s_sym * env_module_load_defstruct (s_env *env,
+                                         const s_sym *module)
+{
+  s_struct_type *st;
+  s_list *st_spec;
+  s_tag tag_module_name;
+  s_tag tag_st = {0};
+  s_tag tag_struct_type;
+  if (! env_struct_type_get_spec(env, module, &st_spec))
+    return NULL;
+  tag_st.type = TAG_STRUCT_TYPE;
+  st = &tag_st.data.struct_type;
+  if (! struct_type_init(st, module, st_spec)) {
+    list_delete_all(st_spec);
+    return NULL;
+  }
+  st->clean = env_struct_type_get_clean(env, module);
+  tag_init_sym(&tag_module_name, module);
+  tag_init_sym(&tag_struct_type, &g_sym_struct_type);
+  if (! facts_replace_tags(&env->facts, &tag_module_name,
+                           &tag_struct_type, &tag_st)) {
+    struct_type_clean(st);
+    list_delete_all(st_spec);
+    return NULL;
+  }
+  list_delete_all(st_spec);
+  return module;
 }
 
 bool env_module_maybe_reload (s_env *env, const s_sym *module,
@@ -2318,7 +2341,6 @@ s_list ** env_struct_type_get_spec (s_env *env,
                                     const s_sym *module,
                                     s_list **dest)
 {
-  s_facts_with_cursor cursor;
   s_fact *found;
   s_tag tag_defstruct;
   s_tag tag_module;
@@ -2330,20 +2352,17 @@ s_list ** env_struct_type_get_spec (s_env *env,
   tag_init_sym(&tag_defstruct, &g_sym_defstruct);
   tag_init_sym(&tag_module, module);
   tag_init_var(&tag_var);
-  if (! env_module_maybe_reload(env, module, &env->facts))
-    return NULL;
-  facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_module, &tag_defstruct, &tag_var, NULL, NULL });
-  found = facts_with_cursor_next(&cursor);
+  found = facts_find_fact_by_tags(&env->facts, &tag_module,
+                                  &tag_defstruct, &tag_var);
   if (! found) {
-    facts_with_cursor_clean(&cursor);
+    err_write_1("env_struct_type_get_spec: ");
+    err_inspect_sym(&module);
+    err_puts(": defstruct not found");
+    assert(! "env_struct_type_get_spec: defstruct not found");
     return NULL;
   }
-  if (! env_eval_tag(env, found->object, &tmp)) {
-    facts_with_cursor_clean(&cursor);
+  if (! env_eval_tag(env, found->object, &tmp))
     return NULL;
-  }
-  facts_with_cursor_clean(&cursor);
   if (tmp.type != TAG_LIST ||
       ! list_is_plist(tmp.data.list)) {
     err_write_1("env_get_struct_type_spec: module ");
@@ -2354,6 +2373,24 @@ s_list ** env_struct_type_get_spec (s_env *env,
   }
   *dest = tmp.data.list;
   return dest;
+}
+
+bool env_struct_type_has_spec (s_env *env, const s_sym *module)
+{
+  s_fact *found;
+  s_tag tag_defstruct;
+  s_tag tag_module;
+  s_tag tag_var;
+  assert(env);
+  assert(module);
+  tag_init_sym(&tag_defstruct, &g_sym_defstruct);
+  tag_init_sym(&tag_module, module);
+  tag_init_var(&tag_var);
+  found = facts_find_fact_by_tags(&env->facts, &tag_module,
+                                  &tag_defstruct, &tag_var);
+  if (! found)
+    return false;
+  return true;
 }
 
 bool env_tag_ident_is_bound (const s_env *env, const s_tag *tag,

@@ -43,6 +43,7 @@ s_tag * c3_defoperator (const s_sym **name, const s_sym **sym,
                         u8 operator_precedence,
                         const s_sym **operator_associativity,
                         s_tag *dest);
+s_tag * c3_defstruct (const s_list *spec);
 void ** c3_dlopen (const s_str *path, void **dest);
 void    c3_exit (sw code);
 s_tag * c3_pin (const s_tag *a, s_tag *dest);

@@ -45,6 +45,9 @@ s_tag *       env_defoperator (s_env *env, const s_sym **name,
                                u8 operator_precedence,
                                const s_sym **operator_associativity,
                                s_tag *dest);
+const s_sym * env_defstruct (s_env *env, const s_list *spec);
+const s_sym * env_module_load_defstruct (s_env *env,
+                                         const s_sym *module);
 bool          env_eval_array (s_env *env, const s_array *array,
                               s_array *dest);
 bool          env_eval_array_tag (s_env *env, const s_array *array,
@@ -190,6 +193,8 @@ f_clean       env_struct_type_get_clean (s_env *env,
                                          const s_sym *module);
 s_list **     env_struct_type_get_spec (s_env *env, const s_sym *module,
                                         s_list **dest);
+bool          env_struct_type_has_spec (s_env *env,
+                                        const s_sym *module);
 bool          env_tag_ident_is_bound (const s_env *env,
                                       const s_tag *tag,
                                       s_facts *facts);
