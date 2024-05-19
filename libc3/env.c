@@ -1817,11 +1817,12 @@ bool env_module_is_loading_set (s_env *env, const s_sym *module,
 
 bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
 {
-  s_facts_transaction transaction;
+  bool has_spec;
   s_str path = {0};
   s_tag tag_module_name;
   s_tag tag_load_time;
   s_tag tag_time;
+  s_facts_transaction transaction;
   assert(env);
   assert(module);
   assert(facts);
@@ -1867,10 +1868,10 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
                            &tag_time))
     goto rollback;
   tag_clean(&tag_time);
-  if (env_struct_type_has_spec(env, module)) {
-    if (! env_module_load_defstruct(env, module))
-      goto rollback;
-  }
+  if (! env_struct_type_has_spec(env, module, &has_spec))
+    goto rollback;
+  if (has_spec && ! env_module_load_defstruct(env, module))
+    goto rollback;
   env_module_is_loading_set(env, module, false);
   return true;
  rollback:
@@ -2375,8 +2376,10 @@ s_list ** env_struct_type_get_spec (s_env *env,
   return dest;
 }
 
-bool env_struct_type_has_spec (s_env *env, const s_sym *module)
+bool * env_struct_type_has_spec (s_env *env, const s_sym *module,
+                                 bool *dest)
 {
+  s_facts_cursor cursor;
   s_fact *found;
   s_tag tag_defstruct;
   s_tag tag_module;
@@ -2386,11 +2389,12 @@ bool env_struct_type_has_spec (s_env *env, const s_sym *module)
   tag_init_sym(&tag_defstruct, &g_sym_defstruct);
   tag_init_sym(&tag_module, module);
   tag_init_var(&tag_var);
-  found = facts_find_fact_by_tags(&env->facts, &tag_module,
-                                  &tag_defstruct, &tag_var);
-  if (! found)
-    return false;
-  return true;
+  if (! facts_with_tags(&env->facts, &cursor, &tag_module,
+                        &tag_defstruct, &tag_var))
+    return NULL;
+  found = facts_cursor_next(&cursor);
+  *dest = found ? true : false;
+  return dest;
 }
 
 bool env_tag_ident_is_bound (const s_env *env, const s_tag *tag,

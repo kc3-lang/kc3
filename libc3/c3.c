@@ -66,6 +66,18 @@ s_tag * c3_defoperator (const s_sym **name, const s_sym **sym,
                          operator_associativity, dest);
 }
 
+s_tag * c3_defstruct (const s_list *spec, s_tag *dest)
+{
+  s_tag tmp;
+  assert(spec);
+  if (! spec)
+    return NULL;
+  tmp.type = TAG_SYM;
+  tmp.data.sym = env_defstruct(&g_c3_env, spec);
+  *dest = tmp;
+  return dest;
+}
+
 void ** c3_dlopen (const s_str *path, void **dest)
 {
   assert(path);

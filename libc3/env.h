@@ -193,8 +193,8 @@ f_clean       env_struct_type_get_clean (s_env *env,
                                          const s_sym *module);
 s_list **     env_struct_type_get_spec (s_env *env, const s_sym *module,
                                         s_list **dest);
-bool          env_struct_type_has_spec (s_env *env,
-                                        const s_sym *module);
+bool *        env_struct_type_has_spec (s_env *env, const s_sym *module,
+                                        bool *dest);
 bool          env_tag_ident_is_bound (const s_env *env,
                                       const s_tag *tag,
                                       s_facts *facts);
