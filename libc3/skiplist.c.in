@@ -170,8 +170,9 @@ skiplist_pred___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ _NAME$)
   assert(skiplist);
   level = skiplist->max_height;
   pred = skiplist_node_new___NAME$(NULL, skiplist->max_height);
+  if (! pred)
+    return NULL;
   node = skiplist->head;
-  assert(pred);
   while (level--) {
     n = node;
     while (n && skiplist->compare(_NAME$, n->_NAME$) > 0) {

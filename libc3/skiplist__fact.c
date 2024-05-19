@@ -170,8 +170,9 @@ skiplist_pred__fact (s_skiplist__fact *skiplist, s_fact * fact)
   assert(skiplist);
   level = skiplist->max_height;
   pred = skiplist_node_new__fact(NULL, skiplist->max_height);
+  if (! pred)
+    return NULL;
   node = skiplist->head;
-  assert(pred);
   while (level--) {
     n = node;
     while (n && skiplist->compare(fact, n->fact) > 0) {

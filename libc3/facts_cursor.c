@@ -33,7 +33,8 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
   assert(cursor);
   assert(index);
   pred = skiplist_pred__fact(index, start);
-  assert(pred);
+  if (! pred)
+    return NULL;
   cursor->index = index;
   cursor->node = SKIPLIST_NODE_NEXT__fact(pred, 0);
   skiplist_node_delete__fact(pred);
@@ -55,7 +56,10 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
   cursor->var_predicate = NULL;
   cursor->var_object    = NULL;
   cursor->facts = facts;
-  facts_cursor_lock_init(cursor);
+  if (! facts_cursor_lock_init(cursor)) {
+    facts_cursor_clean(cursor);
+    return NULL;
+  }
   return cursor;
 }
 
