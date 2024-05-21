@@ -140,15 +140,21 @@ const s_fact ** facts_cursor_next (s_facts_cursor *cursor,
     return dest;
   }
   fact = cursor->node->fact;
-  if (cursor->var_subject)
+  if (cursor->var_subject) {
+    tag_var(cursor->var_subject, cursor->var_subject_type);
     if (! var_set(cursor->var_subject, fact->subject))
       goto ko;
-  if (cursor->var_predicate)
+  }
+  if (cursor->var_predicate) {
+    tag_var(cursor->var_predicate, cursor->var_predicate_type);
     if (! var_set(cursor->var_predicate, fact->predicate))
       goto ko;
-  if (cursor->var_object)
+  }
+  if (cursor->var_object) {
+    tag_var(cursor->var_object, cursor->var_object_type);
     if (! var_set(cursor->var_object, fact->object))
       goto ko;
+  }
   facts_cursor_lock_unlock(cursor);
   *dest = fact;
   return dest;
