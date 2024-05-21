@@ -48,7 +48,7 @@ s_str *        tag_inspect (const s_tag *tag, s_str *dest);
 bool           tag_ident_is_bound (const s_tag *tag);
 bool           tag_is_bound_var (const s_tag *tag);
 bool           tag_is_number (const s_tag *tag);
-bool           tag_is_unbound_var (const s_tag *tag);
+bool *         tag_is_unbound_var (const s_tag *tag, bool *dest);
 bool           tag_is_zero(const s_tag *tag);
 s8             tag_number_compare (const s_tag *a, const s_tag *b);
 const s_tag *  tag_resolve_cow (const s_tag *tag);

@@ -15,6 +15,11 @@
 
 #include "types.h"
 
+#define COMPARE_ERROR ((s8) -2)
+#define COMPARE_LT    ((s8) -1)
+#define COMPARE_EQ    ((s8)  0)
+#define COMPARE_GT    ((s8)  1)
+
 #define COMPARE_PROTOTYPE(type)                     \
   s8 compare_##type (type a, type b)
 

@@ -183,6 +183,7 @@ s8 compare_fact_unbound_var_count (const s_fact *a,
 {
   u8 a_count;
   u8 b_count;
+  bool unbound;
   if (a == b)
     return 0;
   if (!a)
@@ -191,17 +192,29 @@ s8 compare_fact_unbound_var_count (const s_fact *a,
     return 1;
   a_count = 0;
   b_count = 0;
-  if (tag_is_unbound_var(a->subject))
+  if (! tag_is_unbound_var(a->subject, &unbound))
+    return COMPARE_ERROR;
+  if (unbound)
     a_count++;
-  if (tag_is_unbound_var(a->predicate))
+  if (! tag_is_unbound_var(a->predicate, &unbound))
+    return COMPARE_ERROR;
+  if (unbound)
     a_count++;
-  if (tag_is_unbound_var(a->object))
+  if (! tag_is_unbound_var(a->object, &unbound))
+    return COMPARE_ERROR;
+  if (unbound)
     a_count++;
-  if (tag_is_unbound_var(b->subject))
+  if (! tag_is_unbound_var(b->subject, &unbound))
+    return COMPARE_ERROR;
+  if (unbound)
     b_count++;
-  if (tag_is_unbound_var(b->predicate))
+  if (! tag_is_unbound_var(b->predicate, &unbound))
+    return COMPARE_ERROR;
+  if (unbound)
     b_count++;
-  if (tag_is_unbound_var(b->object))
+  if (! tag_is_unbound_var(b->object, &unbound))
+    return COMPARE_ERROR;
+  if (unbound)
     b_count++;
   return compare_u8(a_count, b_count);
 }

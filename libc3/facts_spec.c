@@ -63,6 +63,7 @@ p_facts_spec facts_spec_sort (p_facts_spec spec)
   uw count;
   uw i = 0;
   uw j;
+  s8 r;
   assert(spec);
   count = facts_spec_count_facts(spec);
   if (count > 0)
@@ -71,8 +72,11 @@ p_facts_spec facts_spec_sort (p_facts_spec spec)
       while (j < count - i - 1) {
         a = spec + j * 4;
         b = spec + (j + 1) * 4;
-        if (compare_fact_unbound_var_count((s_fact *) a,
-                                           (s_fact *) b) > 0) {
+        r = compare_fact_unbound_var_count((s_fact *) a,
+                                           (s_fact *) b);
+        if (r == COMPARE_ERROR)
+          return NULL;
+        if (r > 0) {
           s_tag *swap[3];
           swap[0] = a[0];
           swap[1] = a[1];

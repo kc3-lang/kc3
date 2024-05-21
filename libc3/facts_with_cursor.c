@@ -50,9 +50,10 @@ const s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
     err_puts("facts_with_cursor_next: pthread_mutex_lock");
     assert(! "facts_with_cursor_next: pthread_mutex_lock");
     exit(1);
+    return NULL;
   }
   if (! cursor->facts_count)
-    goto ko;
+    goto not_found;
   if (cursor->level == cursor->facts_count) {
     level = &cursor->levels[cursor->facts_count - 1];
 #ifdef DEBUG_FACTS
@@ -85,7 +86,7 @@ const s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
     cursor->level--;
     if (! cursor->level) {
       cursor->facts_count = 0;
-      goto ko;
+      goto not_found;
     }
     cursor->level--;
   }
@@ -97,9 +98,10 @@ const s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
       else
         parent_spec = cursor->spec;
       level->spec = facts_spec_new_expand(parent_spec);
-      facts_with_tags(cursor->facts, &level->cursor,
-                      level->spec[0], level->spec[1],
-                      level->spec[2]);
+      if (! facts_with_tags(cursor->facts, &level->cursor,
+                            level->spec[0], level->spec[1],
+                            level->spec[2]))
+        goto ko;
     }
 #ifdef DEBUG_FACTS
     buf_write_1(&g_c3_env.err, "[debug] cursor->level=");
@@ -126,7 +128,7 @@ const s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
     level->spec = NULL;
     if (! cursor->level) {
       cursor->facts_count = 0;
-      goto ko;
+      goto not_found;
     }
     cursor->level--;
   }
@@ -136,6 +138,14 @@ const s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
     exit(1);
   }
   *dest = fact;
+  return dest;
+ not_found:
+  if (pthread_mutex_unlock(&cursor->mutex)) {
+    err_puts("facts_with_cursor_next: pthread_mutex_unlock");
+    assert(! "facts_with_cursor_next: pthread_mutex_unlock");
+    exit(1);
+  }
+  *dest = NULL;
   return dest;
  ko:
   if (pthread_mutex_unlock(&cursor->mutex)) {

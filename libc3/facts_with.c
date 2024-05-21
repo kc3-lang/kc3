@@ -147,6 +147,7 @@ s_facts_cursor * facts_with_tags (s_facts *facts,
                                   s_tag *predicate,
                                   s_tag *object)
 {
+  bool unbound;
   s_tag *var_subject = NULL;
   s_tag *var_predicate = NULL;
   s_tag *var_object = NULL;
@@ -155,11 +156,17 @@ s_facts_cursor * facts_with_tags (s_facts *facts,
   assert(subject);
   assert(predicate);
   assert(object);
-  if (tag_is_unbound_var(subject))
+  if (! tag_is_unbound_var(subject, &unbound))
+    return NULL;
+  if (unbound)
     var_subject = subject;
-  if (tag_is_unbound_var(predicate))
+  if (! tag_is_unbound_var(predicate, &unbound))
+    return NULL;
+  if (unbound)
     var_predicate = predicate;
-  if (tag_is_unbound_var(object))
+  if (! tag_is_unbound_var(object, &unbound))
+    return NULL;
+  if (unbound)
     var_object = object;
   if (var_subject && var_predicate && var_object)
     return facts_with_0(facts, cursor, var_subject, var_predicate,

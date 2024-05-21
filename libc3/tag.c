@@ -652,9 +652,16 @@ bool tag_is_number (const s_tag *tag)
   return false;
 }
 
-bool tag_is_unbound_var (const s_tag *tag)
+bool * tag_is_unbound_var (const s_tag *tag, bool *dest)
 {
-  return (tag && tag->type == TAG_VAR);
+  assert(tag);
+  if (! tag) {
+    err_puts("tag_is_unbound_var: NULL tag");
+    assert(! "tag_is_unbound_var: NULL tag");
+    return NULL;
+  }
+  *dest = tag->type == TAG_VAR;
+  return dest;
 }
 
 bool tag_is_zero(const s_tag *tag)

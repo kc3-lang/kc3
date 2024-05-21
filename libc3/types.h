@@ -191,12 +191,12 @@ typedef union tag_data u_tag_data;
 typedef union tag_type u_tag_type;
 
 /* typedefs */
-typedef u32            character;
-typedef s_tag      **p_facts_spec;
-typedef s_tag       *t_facts_spec[];
-typedef SHA1_CTX     t_hash;
-typedef const s_tag *p_tag;
-typedef u64          t_skiplist_height;
+typedef u32           character;
+typedef s_tag       **p_facts_spec;
+typedef s_tag        *t_facts_spec[];
+typedef SHA1_CTX      t_hash;
+typedef const s_tag  *p_tag;
+typedef u64           t_skiplist_height;
 
 /* function typedefs */
 typedef void (* f_clean) (void *x);
