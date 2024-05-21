@@ -130,11 +130,11 @@ const s_fact ** facts_cursor_next (s_facts_cursor *cursor,
   }
   if (! cursor->node) {
     if (cursor->var_subject)
-      tag_init_var(cursor->var_subject, cursor->var_subject_type);
+      tag_var(cursor->var_subject, cursor->var_subject_type);
     if (cursor->var_predicate)
-      tag_init_var(cursor->var_predicate, cursor->var_predicate_type);
+      tag_var(cursor->var_predicate, cursor->var_predicate_type);
     if (cursor->var_object)
-      tag_init_var(cursor->var_object, cursor->var_object_type);
+      tag_var(cursor->var_object, cursor->var_object_type);
     facts_cursor_lock_unlock(cursor);
     *dest = NULL;
     return dest;
@@ -154,11 +154,11 @@ const s_fact ** facts_cursor_next (s_facts_cursor *cursor,
   return dest;
  ko:
   if (cursor->var_subject)
-    tag_init_var(cursor->var_subject, cursor->var_subject_type);
+    tag_var(cursor->var_subject, cursor->var_subject_type);
   if (cursor->var_predicate)
-    tag_init_var(cursor->var_predicate, cursor->var_predicate_type);
+    tag_var(cursor->var_predicate, cursor->var_predicate_type);
   if (cursor->var_object)
-    tag_init_var(cursor->var_object, cursor->var_object_type);
+    tag_var(cursor->var_object, cursor->var_object_type);
   facts_cursor_lock_unlock(cursor);
   return NULL;
 }

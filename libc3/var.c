@@ -73,8 +73,8 @@ s_tag * var_set (s_tag *var, const s_tag *value)
   assert(var);
   assert(value);
   if (var->type != TAG_VAR) {
-    err_puts("var_set: not a Var");
-    assert(! "var_set: not a Var");
+    err_puts("var_set: not a TAG_VAR");
+    assert(! "var_set: not a TAG_VAR");
     return NULL;
   }
   var_type = var->data.var.type;
