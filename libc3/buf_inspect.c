@@ -352,6 +352,7 @@ sw buf_inspect_bool_size (const bool *b)
 
 sw buf_inspect_call (s_buf *buf, const s_call *call)
 {
+  bool b;
   bool op;
   u8 op_arity;
   s8 op_precedence;
@@ -372,7 +373,9 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   if (op_arity == 2 &&
       (op_precedence = operator_precedence(&call->ident)) > 0)
     return buf_inspect_call_op(buf, call, op_precedence);
-  if (ident_is_special_operator(&call->ident))
+  if (! ident_is_special_operator(&call->ident, &b))
+    return -1;
+  if (b)
     return buf_inspect_call_special_operator(buf, call);
   if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
     return r;
@@ -671,6 +674,7 @@ sw buf_inspect_call_paren (s_buf *buf, const s_call *call)
 
 sw buf_inspect_call_size (const s_call *call)
 {
+  bool b;
   bool op;
   u8 op_arity;
   s8 op_precedence;
@@ -691,7 +695,9 @@ sw buf_inspect_call_size (const s_call *call)
   if (op_arity == 2 &&
       (op_precedence = operator_precedence(&call->ident)) > 0)
     return buf_inspect_call_op_size(call, op_precedence);
-  if (ident_is_special_operator(&call->ident))
+  if (! ident_is_special_operator(&call->ident, &b))
+    return -1;
+  if (b)
     return buf_inspect_call_special_operator_size(call);
   if ((r = buf_inspect_ident_size(&call->ident)) < 0)
     return r;
@@ -705,11 +711,26 @@ sw buf_inspect_call_size (const s_call *call)
 sw buf_inspect_call_special_operator (s_buf *buf, const s_call *call)
 {
   const s_list *args;
+  bool b;
   sw r;
   sw result = 0;
-  assert(ident_is_special_operator(&call->ident));
-  assert(special_operator_arity(&call->ident) ==
-         list_length(call->arguments));
+  if (! ident_is_special_operator(&call->ident, &b))
+    return -1;
+  if (! b) {
+    err_puts("buf_inspect_call_special_operator:"
+             " not a special operator");
+    assert(! "buf_inspect_call_special_operator:"
+             " not a special operator");
+    return -1;
+  }
+  if (special_operator_arity(&call->ident) !=
+      list_length(call->arguments)) {
+    err_puts("buf_inspect_call_special_operator:"
+             " invalid arity");
+    assert(! "buf_inspect_call_special_operator:"
+             " invalid arity");
+    return -1;
+  }
   args = call->arguments;
   if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
     return r;
@@ -729,11 +750,26 @@ sw buf_inspect_call_special_operator (s_buf *buf, const s_call *call)
 sw buf_inspect_call_special_operator_size (const s_call *call)
 {
   const s_list *args;
+  bool b;
   sw r;
   sw result = 0;
-  assert(ident_is_special_operator(&call->ident));
-  assert(special_operator_arity(&call->ident) ==
-         list_length(call->arguments));
+  if (! ident_is_special_operator(&call->ident, &b))
+    return -1;
+  if (! b) {
+    err_puts("buf_inspect_call_special_operator_size:"
+             " not a special operator");
+    assert(! "buf_inspect_call_special_operator_size:"
+             " not a special operator");
+    return -1;
+  }
+  if (special_operator_arity(&call->ident) !=
+      list_length(call->arguments)) {
+    err_puts("buf_inspect_call_special_operator_size:"
+             " invalid arity");
+    assert(! "buf_inspect_call_special_operator_size:"
+             " invalid arity");
+    return -1;
+  }
   args = call->arguments;
   if ((r = buf_inspect_ident_size(&call->ident)) < 0)
     return r;

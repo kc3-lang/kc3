@@ -36,7 +36,7 @@ bool    ident_first_character_is_reserved (character c);
 s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest);
 bool    ident_has_reserved_characters (const s_ident *ident);
 s_str * ident_inspect (const s_ident *ident, s_str *dest);
-bool    ident_is_special_operator (const s_ident *ident);
+bool *  ident_is_special_operator (const s_ident *ident, bool *dest);
 bool    ident_to_tag_type (const s_ident *ident, e_tag_type *dest);
 
 #endif /* LIBC3_IDENT_H */

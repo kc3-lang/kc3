@@ -179,7 +179,7 @@ TEST_CASE(facts_cursor_next)
   TEST_EQ(cursor_fact, NULL);
   facts_cursor_clean(&cursor);
   facts_cursor_init(&facts, &cursor, facts.index_spo, fact, fact);
-  TEST_EQ(facts_cursor_next(&cursor, &cursor_fact), fact);
+  TEST_EQ(facts_cursor_next(&cursor, &cursor_fact), &cursor_fact);
   FACT_TEST_EQ(cursor_fact, fact);
   TEST_EQ(facts_cursor_next(&cursor, &cursor_fact), &cursor_fact);
   TEST_EQ(cursor_fact, NULL);
@@ -229,6 +229,7 @@ TEST_CASE(facts_cursor_next)
   FACT_TEST_EQ(cursor_fact, fact + 5);
   TEST_EQ(facts_cursor_next(&cursor, &cursor_fact), &cursor_fact);
   FACT_TEST_EQ(cursor_fact, fact + 6);
+  TEST_EQ(facts_cursor_next(&cursor, &cursor_fact), &cursor_fact);
   TEST_EQ(cursor_fact, NULL);
   facts_cursor_clean(&cursor);
   facts_cursor_init(&facts, &cursor, facts.index_pos, fact, fact + 6);

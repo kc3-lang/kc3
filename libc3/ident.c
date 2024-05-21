@@ -18,6 +18,7 @@
 #include "facts.h"
 #include "facts_with.h"
 #include "facts_with_cursor.h"
+#include "ident.h"
 #include "module.h"
 #include "str.h"
 #include "sym.h"

@@ -2813,6 +2813,7 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
 
 sw buf_parse_special_operator (s_buf *buf, s_call *dest)
 {
+  bool b;
   s_list **args_last;
   u8 arity;
   uw i;
@@ -2826,7 +2827,11 @@ sw buf_parse_special_operator (s_buf *buf, s_call *dest)
   if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0)
     goto clean;
   result += r;
-  if (! ident_is_special_operator(&tmp.ident)) {
+  if (! ident_is_special_operator(&tmp.ident, &b)) {
+    r = -1;
+    goto restore;
+  }
+  if (! b) {
     r = 0;
     goto restore;
   }

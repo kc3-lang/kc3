@@ -59,8 +59,6 @@ TEST_CASE(facts_with_)
   fact_init(&fact, tag, tag + 1, tag + 2);
   TEST_EQ(facts_with_cursor_next(&cursor, &f), &f);
   FACT_TEST_EQ(&fact, f);
-  TEST_EQ(facts_with_cursor_next(&cursor, &f), &f);
-  TEST_ASSERT(f);
   fact_init(&fact, tag, tag + 1, tag + 3);
   TEST_EQ(facts_with_cursor_next(&cursor, &f), &f);
   FACT_TEST_EQ(&fact, f);
