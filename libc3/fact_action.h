@@ -10,13 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBC3_FACTS_WITH_CURSOR_H
-#define LIBC3_FACTS_WITH_CURSOR_H
+#ifndef LIBC3_FACT_ACTION_H
+#define LIBC3_FACT_ACTION_H
 
 #include "types.h"
 
-void facts_with_cursor_clean (s_facts_with_cursor *cursor);
-const s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
-                                        const s_fact **dest);
+void fact_action_delete_all (s_fact_action *action);
 
-#endif /* LIBC3_FACTS_WITH_CURSOR_H */
+#endif /* LIBC3_FACT_ACTION_H */

@@ -57,6 +57,7 @@ bool ident_first_character_is_reserved (character c)
 s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
 {
   s_facts_with_cursor cursor;
+  const s_fact *fact;
   const s_sym *module;
   s_tag tag_ident;
   s_tag tag_is_a;
@@ -88,30 +89,43 @@ s_tag * ident_get (const s_ident *ident, s_facts *facts, s_tag *dest)
   tag_init_sym(  &tag_sym, ident->sym);
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
   tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
-  tag_init_var(  &tag_var);
+  tag_init_var(  &tag_var, &g_sym_Tag);
   if (! facts_find_fact_by_tags(facts, &tag_module, &tag_symbol,
-                                &tag_ident))
+                                &tag_ident, &fact) ||
+      ! fact)
     return NULL;
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_symbol_value, &tag_var,
-      NULL, NULL });
-  if (! facts_with_cursor_next(&cursor)) {
+  if (! facts_with(facts, &cursor, (t_facts_spec) {
+        &tag_ident, &tag_symbol_value, &tag_var,
+        NULL, NULL }))
+    return NULL;
+  if (! facts_with_cursor_next(&cursor, &fact) ||
+      ! fact) {
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
   facts_with_cursor_clean(&cursor);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_is_a, &tag_macro, NULL, NULL });
-  if (facts_with_cursor_next(&cursor)) {
+  if (! facts_with(facts, &cursor, (t_facts_spec) {
+        &tag_ident, &tag_is_a, &tag_macro, NULL, NULL }))
+    return NULL;
+  if (! facts_with_cursor_next(&cursor, &fact)) {
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  if (fact) {
     if (tag_var.type == TAG_CFN)
       tag_var.data.cfn.macro = true;
     else if (tag_var.type == TAG_FN)
       tag_var.data.fn.macro = true;
   }
   facts_with_cursor_clean(&cursor);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_ident, &tag_is_a, &tag_special_operator, NULL, NULL});
-  if (facts_with_cursor_next(&cursor)) {
+  if (! facts_with(facts, &cursor, (t_facts_spec) {
+        &tag_ident, &tag_is_a, &tag_special_operator, NULL, NULL}))
+    return NULL;
+  if (! facts_with_cursor_next(&cursor, &fact)) {
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  if (fact) {
     if (tag_var.type == TAG_CFN)
       tag_var.data.cfn.special_operator = true;
     else if (tag_var.type == TAG_FN)
@@ -206,9 +220,9 @@ s_str * ident_inspect (const s_ident *ident, s_str *dest)
   return buf_to_str(&buf, dest);
 }
 
-bool ident_is_special_operator (const s_ident *ident)
+bool * ident_is_special_operator (const s_ident *ident, bool *dest)
 {
-  return env_ident_is_special_operator(&g_c3_env, ident);
+  return env_ident_is_special_operator(&g_c3_env, ident, dest);
 }
 
 s_ident * ident_resolve_module (const s_ident *ident, s_ident *dest)

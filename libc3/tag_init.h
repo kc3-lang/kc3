@@ -54,7 +54,7 @@ s_tag * tag_init_u32 (s_tag *tag, u32 i);
 s_tag * tag_init_u64 (s_tag *tag, u64 i);
 s_tag * tag_init_unquote_copy (s_tag *tag, const s_unquote *unquote);
 s_tag * tag_init_uw (s_tag *tag, uw i);
-s_tag * tag_init_var (s_tag *tag);
+s_tag * tag_init_var (s_tag *tag, const s_sym *type);
 s_tag * tag_init_void (s_tag *tag);
 
 /* Heap-allocation functions, call tag_delete after use. */
@@ -107,7 +107,7 @@ s_tag * tag_new_u32 (u32 i);
 s_tag * tag_new_u64 (u64 i);
 s_tag * tag_new_unquote_copy (const s_unquote *unquote);
 s_tag * tag_new_uw (uw i);
-s_tag * tag_new_var (void);
+s_tag * tag_new_var (const s_sym *type);
 s_tag * tag_new_void (void);
 
 /* Setters. */
@@ -160,7 +160,7 @@ s_tag * tag_u32 (s_tag *tag, u32 i);
 s_tag * tag_u64 (s_tag *tag, u64 i);
 s_tag * tag_unquote_copy (s_tag *tag, const s_unquote *unquote);
 s_tag * tag_uw (s_tag *tag, uw i);
-s_tag * tag_var (s_tag *tag);
+s_tag * tag_var (s_tag *tag, const s_sym *type);
 s_tag * tag_void (s_tag *tag);
 
 #endif /* LIBC3_TAG_INIT_H */

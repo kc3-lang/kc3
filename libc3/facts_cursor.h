@@ -28,6 +28,7 @@ s_facts_cursor * facts_cursor_lock (s_facts_cursor *cursor);
 s_facts_cursor * facts_cursor_lock_clean (s_facts_cursor *cursor);
 s_facts_cursor * facts_cursor_lock_init (s_facts_cursor *cursor);
 s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor);
-s_fact *         facts_cursor_next (s_facts_cursor *cursor);
+const s_fact **  facts_cursor_next (s_facts_cursor *cursor,
+                                    const s_fact **dest);
 
 #endif /* LIBC3_FACTS_H */

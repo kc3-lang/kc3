@@ -28,13 +28,13 @@ bool module_load (const s_sym *module, s_facts *facts);
 bool module_maybe_reload (const s_sym *module, s_facts *facts);
 
 /* Observers */
-bool          module_has_ident (const s_sym *module,
+bool *        module_has_ident (const s_sym *module,
                                 const s_ident *ident,
-                                s_facts *facts);
-bool          module_has_symbol (const s_sym *module,
+                                s_facts *facts, bool *dest);
+bool *        module_has_symbol (const s_sym *module,
                                  const s_sym *sym,
-                                 s_facts *facts);
-bool          module_is_loading (const s_sym *module);
+                                 s_facts *facts, bool *dest);
+bool *        module_is_loading (const s_sym *module, bool *dest);
 s_tag *       module_load_time (const s_sym *module, s_facts *facts,
                                 s_tag *dest);
 s_str *       module_path (const s_sym *module, const s_str *prefix,

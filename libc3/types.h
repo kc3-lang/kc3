@@ -245,12 +245,6 @@ struct fact_w {
   uw id; /* serial id */
 };
 
-struct fact_action {
-  bool remove;
-  s_fact fact;
-  s_fact_action *next;
-};
-
 struct facts_transaction {
   s_fact_action *log;
   s_facts_transaction *next;
@@ -355,6 +349,12 @@ struct buf {
   uw          size;
   void       *user_ptr;
   uw          wpos;
+};
+
+struct fact_action {
+  bool remove;
+  s_fact fact;
+  s_fact_action *next;
 };
 
 struct facts_spec_cursor {
@@ -588,7 +588,7 @@ TYPEDEF_SET_CURSOR(fact);
 
 #define TYPEDEF_SKIPLIST_NODE(name, type)                              \
   typedef struct skiplist_node__##name {                               \
-    type name;                                                         \
+    const type name;                                                         \
     u8 height;                                                         \
   } s_skiplist_node__##name
 
@@ -627,8 +627,11 @@ struct facts_cursor {
   s_fact start;
   s_fact end;
   s_tag *var_subject;
+  const s_sym *var_subject_type;
   s_tag *var_predicate;
+  const s_sym *var_predicate_type;
   s_tag *var_object;
+  const s_sym *var_object_type;
   pthread_mutex_t mutex;
 };
 
@@ -658,7 +661,7 @@ struct env {
 
 struct facts_with_cursor_level {
   s_facts_cursor cursor;
-  s_fact *fact;
+  const s_fact *fact;
   p_facts_spec spec;
 };
 

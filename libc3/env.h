@@ -161,10 +161,12 @@ bool          env_eval_tag (s_env *env, const s_tag *tag,
 bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
                               s_tag *dest);
 bool          env_eval_void (s_env *env, const void *_, s_tag *dest);
-bool          env_ident_is_special_operator (s_env *env,
-                                             const s_ident *ident);
+bool *        env_ident_is_special_operator (s_env *env,
+                                             const s_ident *ident,
+                                             bool *dest);
 bool          env_load (s_env *env, const s_str *path);
-bool          env_module_is_loading (s_env *env, const s_sym *module);
+bool *        env_module_is_loading (s_env *env, const s_sym *module,
+                                     bool *dest);
 bool          env_module_is_loading_set (s_env *env,
                                          const s_sym *module,
                                          bool value);
@@ -174,19 +176,21 @@ bool          env_module_maybe_reload (s_env *env,
                                        const s_sym *module,
                                        s_facts *facts);
 s8            env_operator_arity (s_env *env, const s_ident *op);
-bool          env_operator_find (s_env *env, const s_ident *op);
+bool *        env_operator_find (s_env *env, const s_ident *op,
+                                 bool *dest);
 s_ident *     env_operator_ident (s_env *env, const s_ident *op,
                                   s_ident *dest);
-bool          env_operator_is_right_associative (s_env *env,
-                                                 const s_ident *op);
+bool *        env_operator_is_right_associative (s_env *env,
+                                                 const s_ident *op,
+                                                 bool *dest);
 s8            env_operator_precedence (s_env *env, const s_ident *op);
 s_ident *     env_operator_resolve (s_env *env, const s_ident *op,
                                     u8 arity, s_ident *dest);
 const s_sym * env_operator_symbol (s_env *env, const s_ident *op);
 u8            env_special_operator_arity (s_env *env,
                                           const s_ident *ident);
-bool          env_struct_type_exists (s_env *env,
-                                      const s_sym *module);
+bool *        env_struct_type_exists (s_env *env, const s_sym *module,
+                                      bool *dest);
 const s_struct_type *
               env_struct_type_find (s_env *env, const s_sym *module);
 f_clean       env_struct_type_get_clean (s_env *env,

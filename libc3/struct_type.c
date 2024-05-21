@@ -37,9 +37,9 @@ void struct_type_delete (s_struct_type *st)
   free(st);
 }
 
-bool struct_type_exists (const s_sym *module)
+bool * struct_type_exists (const s_sym *module, bool *dest)
 {
-  return env_struct_type_exists(&g_c3_env, module);
+  return env_struct_type_exists(&g_c3_env, module, dest);
 }
 
 const s_struct_type * struct_type_find (const s_sym *module)

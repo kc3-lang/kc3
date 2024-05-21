@@ -35,25 +35,25 @@ void
 skiplist_delete___NAME$ (s_skiplist___NAME$ *skiplist);
 
 s_skiplist_node___NAME$ *
-skiplist_find___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ value);
+skiplist_find___NAME$ (s_skiplist___NAME$ *skiplist, const _TYPE$ value);
 
 /* do not call directly */
 s_skiplist___NAME$ *
 skiplist_init___NAME$ (s_skiplist___NAME$ *skiplist, u8 max_height, f64 spacing);
 
 s_skiplist_node___NAME$ *
-skiplist_insert___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ value);
+skiplist_insert___NAME$ (s_skiplist___NAME$ *skiplist, const _TYPE$ value);
 
 s_skiplist___NAME$ *
 skiplist_new___NAME$ (u8 max_height, f64 spacing);
 
 s_skiplist_node___NAME$ *
-skiplist_pred___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ value);
+skiplist_pred___NAME$ (s_skiplist___NAME$ *skiplist, const _TYPE$ value);
 
 u8
 skiplist_random_height___NAME$ (s_skiplist___NAME$ *skiplist);
 
 bool
-skiplist_remove___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ value);
+skiplist_remove___NAME$ (s_skiplist___NAME$ *skiplist, const _TYPE$ value);
 
 #endif /* LIBC3_SKIPLIST___NAME$_H */

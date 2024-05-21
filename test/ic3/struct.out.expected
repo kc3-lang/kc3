@@ -1,6 +1,6 @@
 0.0
 0.0
+%GL.Vec3{}
 %GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}
-%GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}
-[position: %GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}, normal: %GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}, tex_coord: %GL.Vec2{x: 0.0f, y: 0.0f}]
+[position: %GL.Vec3{}, normal: %GL.Vec3{}, tex_coord: %GL.Vec2{}]
 [position: %GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}, normal: %GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}, tex_coord: %GL.Vec2{x: 0.0f, y: 0.0f}]

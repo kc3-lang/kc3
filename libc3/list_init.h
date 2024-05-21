@@ -69,7 +69,7 @@ s_list * list_init_unquote_copy (s_list *list,
                                  const s_unquote *unquote, 
                                  s_list *next);
 s_list * list_init_uw (s_list *list, uw i, s_list *next);
-s_list * list_init_var (s_list *list, s_list *next);
+s_list * list_init_var (s_list *list, const s_sym *type, s_list *next);
 s_list * list_init_void (s_list *list, s_list *next);
 
 /* Heap-allocation functions, call list_delete after use. */
@@ -126,7 +126,7 @@ s_list * list_new_u32 (u32 i, s_list *next);
 s_list * list_new_u64 (u64 i, s_list *next);
 s_list * list_new_unquote_copy (const s_unquote *unquote, s_list *next);
 s_list * list_new_uw (uw i, s_list *next);
-s_list * list_new_var (s_list *next);
+s_list * list_new_var (const s_sym *type, s_list *next);
 s_list * list_new_void (s_list *next);
 
 /* Setters. */
@@ -179,7 +179,7 @@ s_list * list_u32 (s_list *list, u32 i);
 s_list * list_u64 (s_list *list, u64 i);
 s_list * list_unquote_copy (s_list *list, const s_unquote *unquote);
 s_list * list_uw (s_list *list, uw i);
-s_list * list_var (s_list *list);
+s_list * list_var (s_list *list, const s_sym *type);
 s_list * list_void (s_list *list);
 
 #endif /* LIBC3_LIST_INIT_H */

@@ -526,12 +526,12 @@ s_list * list_init_uw (s_list *list, uw i, s_list *next)
   return list;
 }
 
-s_list * list_init_var (s_list *list, s_list *next)
+s_list * list_init_var (s_list *list, const s_sym *type, s_list *next)
 {
   s_list tmp;
   assert(list);
   list_init(&tmp, next);
-  if (! tag_init_var(&tmp.tag))
+  if (! tag_init_var(&tmp.tag, type))
     return NULL;
   *list = tmp;
   return list;
@@ -1125,13 +1125,13 @@ s_list * list_new_uw (uw i, s_list *next)
   return list;
 }
 
-s_list * list_new_var (s_list *next)
+s_list * list_new_var (const s_sym *type, s_list *next)
 {
   s_list *list;
   list = list_new(next);
   if (! list)
     return NULL;
-  if (! tag_init_var(&list->tag)) {
+  if (! tag_init_var(&list->tag, type)) {
     free(list);
     return NULL;
   }

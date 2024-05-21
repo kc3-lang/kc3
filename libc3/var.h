@@ -15,8 +15,13 @@
 
 #include "types.h"
 
+/* Stack-allocation compatible functions. */
+s_var * var_init (s_var *var, const s_sym *type);
 s_tag * var_init_cast (s_tag *tag, const s_sym * const *type,
                        const s_tag *src);
 s_tag * var_init_copy (s_tag *tag, const s_tag *src);
+
+/* Operators. */
+s_tag * var_set (s_tag *var, const s_tag *value);
 
 #endif /* LIBC3_VAR_H */

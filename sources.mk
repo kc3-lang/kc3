@@ -298,6 +298,8 @@ C3_C_SOURCES = \
 	"libc3/f64.h" \
 	"libc3/fact.c" \
 	"libc3/fact.h" \
+	"libc3/fact_action.c" \
+	"libc3/fact_action.h" \
 	"libc3/fact_list.c" \
 	"libc3/fact_list.h" \
 	"libc3/facts.c" \
@@ -308,6 +310,8 @@ C3_C_SOURCES = \
 	"libc3/facts_spec.h" \
 	"libc3/facts_spec_cursor.c" \
 	"libc3/facts_spec_cursor.h" \
+	"libc3/facts_transaction.c" \
+	"libc3/facts_transaction.h" \
 	"libc3/facts_with.c" \
 	"libc3/facts_with.h" \
 	"libc3/facts_with_cursor.c" \
@@ -642,6 +646,7 @@ C3_OTHER_SOURCES = \
 	"fonts/Computer Modern/cmunss.otf" \
 	"fonts/Computer Modern/cmunsx-webfont.ttf" \
 	"fonts/Computer Modern/cmunsx.otf" \
+	"fonts/Courier New/Courier New.ttf" \
 	"fonts/Courier Prime/CourierPrime-Bold.ttf" \
 	"fonts/Courier Prime/CourierPrime-BoldItalic.ttf" \
 	"fonts/Courier Prime/CourierPrime-Italic.ttf" \
@@ -954,6 +959,9 @@ C3_OTHER_SOURCES = \
 	"test/ic3/defoperator.in" \
 	"test/ic3/defoperator.out.expected" \
 	"test/ic3/defoperator.ret.expected" \
+	"test/ic3/defstruct.in" \
+	"test/ic3/defstruct.out.expected" \
+	"test/ic3/defstruct.ret.expected" \
 	"test/ic3/equal.err.expected" \
 	"test/ic3/equal.in" \
 	"test/ic3/equal.out.expected" \

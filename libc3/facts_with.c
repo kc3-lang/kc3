@@ -69,8 +69,14 @@ s_facts_cursor * facts_with_0 (s_facts *facts,
   assert(cursor);
   facts_cursor_init(facts, cursor, facts->index_spo, NULL, NULL);
   cursor->var_subject = var_subject;
+  cursor->var_subject_type =
+    var_subject ? var_subject->data.var.type : NULL;
   cursor->var_predicate = var_predicate;
+  cursor->var_predicate_type =
+    var_predicate ? var_predicate->data.var.type : NULL;
   cursor->var_object = var_object;
+  cursor->var_object_type =
+    var_object ? var_object->data.var.type : NULL;
   return cursor;
 }
 
@@ -106,8 +112,14 @@ s_facts_cursor * facts_with_1_2 (s_facts *facts,
     tree = facts->index_osp;
   facts_cursor_init(facts, cursor, tree, &start, &end);
   cursor->var_subject = var_subject;
+  cursor->var_subject_type =
+    var_subject ? var_subject->data.var.type : NULL;
   cursor->var_predicate = var_predicate;
+  cursor->var_predicate_type =
+    var_predicate ? var_predicate->data.var.type : NULL;
   cursor->var_object = var_object;
+  cursor->var_object_type =
+    var_object ? var_object->data.var.type : NULL;
   return cursor;
 }
 

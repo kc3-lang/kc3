@@ -360,7 +360,8 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   if (call->ident.module == &g_sym_C3 &&
       call->ident.sym == &g_sym_if_then_else)
     return buf_inspect_call_if_then_else(buf, call);
-  op = operator_find(&call->ident);
+  if (! operator_find(&call->ident, &op))
+    return -1;
   if (op && operator_symbol(&call->ident) == &g_sym__brackets)
     return buf_inspect_call_brackets(buf, call);
   if (call->ident.sym == &g_sym_cast)
@@ -548,6 +549,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
 {
   s_ident ident;
   s_tag *left;
+  bool op;
   bool paren;
   s8 precedence;
   sw r;
@@ -556,8 +558,10 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   left = &call->arguments->tag;
   assert(list_next(call->arguments));
   right = &list_next(call->arguments)->tag;
+  if (! operator_find(&left->data.call.ident, &op))
+    return -1;
   if (left->type == TAG_CALL &&
-      operator_find(&left->data.call.ident) &&
+      op &&
       (precedence = operator_precedence(&left->data.call.ident))
       < op_precedence) {
     paren = true;
@@ -586,17 +590,20 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if (right->type == TAG_CALL &&
-      operator_find(&right->data.call.ident) &&
-      (precedence = operator_precedence(&right->data.call.ident))
-      < op_precedence) {
-    paren = true;
-    if ((r = buf_write_1(buf, "(")) < 0)
-      return r;
-    result += r;
+  if (right->type == TAG_CALL) {
+    if (! operator_find(&right->data.call.ident, &op))
+      return -1;
+    if (op &&
+        (precedence = operator_precedence(&right->data.call.ident))
+        < op_precedence) {
+      paren = true;
+      if ((r = buf_write_1(buf, "(")) < 0)
+        return r;
+      result += r;
+    }
+    else
+      paren = false;
   }
-  else
-    paren = false;
   if ((r = buf_inspect_tag(buf, right)) < 0)
     return r;
   result += r;
@@ -672,7 +679,8 @@ sw buf_inspect_call_size (const s_call *call)
   if (call->ident.module == &g_sym_C3 &&
       call->ident.sym == &g_sym_if_then_else)
     return buf_inspect_call_if_then_else_size(call);
-  op = operator_find(&call->ident);
+  if (! operator_find(&call->ident, &op))
+    return -1;
   if (op && operator_symbol(&call->ident) == &g_sym__brackets)
     return buf_inspect_call_brackets_size(call);
   if (call->ident.sym == &g_sym_cast)
@@ -2223,51 +2231,48 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
   if ((r = buf_write_1(buf, "{")) < 0)
     return r;
   result += r;
-  while (i < s->type->map.count) {
-    k = s->type->map.key + i;
-    if (k->type != TAG_SYM) {
-      err_write_1("buf_inspect_struct: key type is not a symbol: ");
-      err_inspect_tag(k);
-      err_write_1(" (");
-      err_write_1(tag_type_to_string(k->type));
-      err_puts(")");
-      assert(k->type == TAG_SYM);
-      return -1;
-    }
-    if (sym_has_reserved_characters(k->data.sym)) {
-      if ((r = buf_write_str(buf, &k->data.sym->str)) < 0)
-        return r;
-    }
-    else
-      if ((r = buf_write_1(buf, k->data.sym->str.ptr.pchar)) < 0)
-        return r;
-    result += r;
-    if ((r = buf_write_1(buf, ": ")) < 0)
-      return r;
-    result += r;
-    if (s->data) {
-      if (! tag_type(s->type->map.value + i, &type))
+  if (s->data || s->tag) {
+    while (i < s->type->map.count) {
+      k = s->type->map.key + i;
+      if (k->type != TAG_SYM) {
+        err_write_1("buf_inspect_struct: key type is not a symbol: ");
+        err_inspect_tag(k);
+        err_write_1(" (");
+        err_write_1(tag_type_to_string(k->type));
+        err_puts(")");
+        assert(k->type == TAG_SYM);
         return -1;
-      if ((r = data_buf_inspect(type, buf, (char *) s->data +
-                                s->type->offset[i])) < 0)
+      }
+      if (sym_has_reserved_characters(k->data.sym)) {
+        if ((r = buf_write_str(buf, &k->data.sym->str)) < 0)
+          return r;
+      }
+      else
+        if ((r = buf_write_1(buf, k->data.sym->str.ptr.pchar)) < 0)
+          return r;
+      result += r;
+      if ((r = buf_write_1(buf, ": ")) < 0)
         return r;
       result += r;
-    }
-    else if (s->tag) {
-      if ((r = buf_inspect_tag(buf, s->tag + i)) < 0)
-        return r;
-      result += r;
-    }
-    else {
-      if ((r = buf_inspect_tag(buf, s->type->map.value + i)) < 0)
-        return r;
-      result += r;
-    }
-    i++;
-    if (i < s->type->map.count) {
-      if ((r = buf_write_1(buf, ", ")) < 0)
-        return r;
-      result += r;
+      if (s->data) {
+        if (! tag_type(s->type->map.value + i, &type))
+          return -1;
+        if ((r = data_buf_inspect(type, buf, (char *) s->data +
+                                  s->type->offset[i])) < 0)
+          return r;
+        result += r;
+      }
+      else if (s->tag) {
+        if ((r = buf_inspect_tag(buf, s->tag + i)) < 0)
+          return r;
+        result += r;
+      }
+      i++;
+      if (i < s->type->map.count) {
+        if ((r = buf_write_1(buf, ", ")) < 0)
+          return r;
+        result += r;
+      }
     }
   }
   if ((r = buf_write_1(buf, "}")) < 0)

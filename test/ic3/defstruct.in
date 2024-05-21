@@ -1,0 +1,4 @@
+quote defmodule Test do defstruct [a: 1, b: 2] end
+defmodule Test do defstruct [a: 1, b: 2] end
+quote %Test{}
+%Test{}

@@ -23,6 +23,7 @@
 #include "fact_list.h"
 #include "facts.h"
 #include "facts_cursor.h"
+#include "facts_transaction.h"
 #include "facts_with.h"
 #include "file.h"
 #include "io.h"
@@ -32,6 +33,7 @@
 #include "set__tag.h"
 #include "set_cursor__fact.h"
 #include "skiplist__fact.h"
+#include "sym.h"
 #include "tag.h"
 
 static int facts_compare_pfact_id_reverse (const void *a,
@@ -39,18 +41,34 @@ static int facts_compare_pfact_id_reverse (const void *a,
 static sw facts_open_file_create (s_facts *facts, const s_str *path);
 static sw facts_open_log (s_facts *facts, s_buf *buf);
 
-s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
+const s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
 {
   s_fact tmp;
   s_fact *f = NULL;
   s_set_item__fact *item;
   assert(facts);
   assert(fact);
-  facts_lock_w(facts);
-  tmp.subject   = facts_ref_tag(facts, fact->subject);
+  if (! facts_lock_w(facts))
+    return NULL;
+  tmp.subject = facts_ref_tag(facts, fact->subject);
+  if (! tmp.subject) {
+    facts_lock_unlock_w(facts);
+    return NULL;
+  }
   tmp.predicate = facts_ref_tag(facts, fact->predicate);
-  tmp.object    = facts_ref_tag(facts, fact->object);
-  tmp.id        = 0;
+  if (! tmp.predicate) {
+    facts_unref_tag(facts, tmp.subject);
+    facts_lock_unlock_w(facts);
+    return NULL;
+  }
+  tmp.object = facts_ref_tag(facts, fact->object);
+  if (! tmp.object) {
+    facts_unref_tag(facts, tmp.subject);
+    facts_unref_tag(facts, tmp.predicate);
+    facts_lock_unlock_w(facts);
+    return NULL;
+  }
+  tmp.id = 0;
   if ((item = set_get__fact(&facts->facts, &tmp))) {
     facts_lock_unlock_w(facts);
     return &item->data;
@@ -59,23 +77,49 @@ s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
   if (facts->next_id == UW_MAX) {
     err_puts("facts_add_fact: facts serial id exhausted");
     assert(! "facts_add_fact: facts serial id exhausted");
-    return NULL;
+    goto ko;
+  }
+  item = set_add__fact(&facts->facts, &tmp);
+  if (! item)
+    goto ko;
+  f = &item->data;
+  if (! skiplist_insert__fact(facts->index_spo, f)) {
+    set_remove__fact(&facts->facts, f);
+    goto ko;
+  }
+  if (! skiplist_insert__fact(facts->index_pos, f)) {
+    skiplist_remove__fact(facts->index_spo, f);
+    set_remove__fact(&facts->facts, f);
+    goto ko;
+  }
+  if (! skiplist_insert__fact(facts->index_osp, f)) {
+    skiplist_remove__fact(facts->index_spo, f);
+    skiplist_remove__fact(facts->index_pos, f);
+    set_remove__fact(&facts->facts, f);
+    goto ko;
+  }
+  if (facts->log &&
+      ! facts_log_add(facts->log, &tmp)) {
+    skiplist_remove__fact(facts->index_spo, f);
+    skiplist_remove__fact(facts->index_pos, f);
+    skiplist_remove__fact(facts->index_osp, f);
+    set_remove__fact(&facts->facts, f);
+    goto ko;
   }
   facts->next_id++;
-  if (facts->log)
-    facts_log_add(facts->log, &tmp);
-  item = set_add__fact(&facts->facts, &tmp);
-  f = &item->data;
-  skiplist_insert__fact(facts->index_spo, f);
-  skiplist_insert__fact(facts->index_pos, f);
-  skiplist_insert__fact(facts->index_osp, f);
   facts_lock_unlock_w(facts);
   return f;
+ ko:
+  facts_unref_tag(facts, tmp.subject);
+  facts_unref_tag(facts, tmp.predicate);
+  facts_unref_tag(facts, tmp.object);
+  facts_lock_unlock_w(facts);
+  return NULL;
 }
 
-s_fact * facts_add_tags (s_facts *facts, const s_tag *subject,
-                         const s_tag *predicate,
-                         const s_tag *object)
+const s_fact * facts_add_tags (s_facts *facts, const s_tag *subject,
+                               const s_tag *predicate,
+                               const s_tag *object)
 {
   s_fact fact;
   fact_init(&fact, subject, predicate, object);
@@ -132,7 +176,7 @@ void facts_delete (s_facts *facts)
 sw facts_dump (s_facts *facts, s_buf *buf)
 {
   s_facts_cursor cursor;
-  s_fact *fact;
+  const s_fact *fact;
   s_tag predicate;
   s_tag object;
   sw r;
@@ -140,9 +184,9 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   s_tag subject;
   assert(facts);
   assert(buf);
-  tag_init_var(&subject);
-  tag_init_var(&predicate);
-  tag_init_var(&object);
+  tag_init_var(&subject, &g_sym_Tag);
+  tag_init_var(&predicate, &g_sym_Tag);
+  tag_init_var(&object, &g_sym_Tag);
   if ((r = buf_write_1(buf,
                        "%{module: C3.Facts.Dump,\n"
                        "  version: 1}\n")) < 0)
@@ -150,7 +194,9 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   result += r;
   facts_lock_r(facts);
   facts_with_0(facts, &cursor, &subject, &predicate, &object);
-  while ((fact = facts_cursor_next(&cursor))) {
+  if (! facts_cursor_next(&cursor, &fact))
+    goto clean;
+  while (fact) {
     if ((r = buf_write_1(buf, "add ")) < 0)
       goto clean;
     result += r;
@@ -160,6 +206,8 @@ sw facts_dump (s_facts *facts, s_buf *buf)
     if ((r = buf_write_1(buf, "\n")) < 0)
       goto clean;
     result += r;
+    if (! facts_cursor_next(&cursor, &fact))
+      goto clean;
   }
   r = result;
  clean:
@@ -186,42 +234,52 @@ sw facts_dump_file (s_facts *facts, const char *path)
   return r;
 }
 
-s_fact * facts_find_fact (s_facts *facts, const s_fact *fact)
+const s_fact ** facts_find_fact (s_facts *facts, const s_fact *fact,
+                                 const s_fact **dest)
 {
   s_fact f;
   s_set_item__fact *item;
-  s_fact *result = NULL;
   assert(facts);
   assert(fact);
-  facts_lock_r(facts);
-  if ((f.subject   = facts_find_tag(facts, fact->subject))   &&
-      (f.predicate = facts_find_tag(facts, fact->predicate)) &&
-      (f.object    = facts_find_tag(facts, fact->object))    &&
+  if (! facts_lock_r(facts))
+    return NULL;
+  if (! facts_find_tag(facts, fact->subject, &f.subject))
+    return NULL;
+  if (! facts_find_tag(facts, fact->predicate, &f.predicate))
+    return NULL;
+  if (! facts_find_tag(facts, fact->object, &f.object))
+    return NULL;
+  *dest = NULL;
+  if (f.subject && f.predicate && f.object &&
       (item = set_get__fact((const s_set__fact *) &facts->facts, &f)))
-    result = &item->data;
+    *dest = &item->data;
   facts_lock_unlock_r(facts);
-  return result;
+  return dest;
 }
 
-s_fact * facts_find_fact_by_tags (s_facts *facts, const s_tag *subject,
-                                  const s_tag *predicate,
-                                  const s_tag *object)
+const s_fact ** facts_find_fact_by_tags (s_facts *facts,
+                                         const s_tag *subject,
+                                         const s_tag *predicate,
+                                         const s_tag *object,
+                                         const s_fact **dest)
 {
   s_fact f = {subject, predicate, object, 0};
-  return facts_find_fact(facts, &f);
+  return facts_find_fact(facts, &f, dest);
 }
 
-s_tag * facts_find_tag (s_facts *facts, const s_tag *tag)
+const s_tag ** facts_find_tag (s_facts *facts, const s_tag *tag,
+                               const s_tag **dest)
 {
   s_set_item__tag *item;
-  s_tag *result = NULL;
   assert(facts);
   assert(tag);
-  facts_lock_r(facts);
+  if (! facts_lock_r(facts))
+    return NULL;
+  *dest = NULL;
   if ((item = set_get__tag(&facts->tags, tag)))
-    result = &item->data;
+    *dest = &item->data;
   facts_lock_unlock_r(facts);
-  return result;
+  return dest;
 }
 
 s_facts * facts_init (s_facts *facts)
@@ -532,6 +590,7 @@ sw facts_open_file_create (s_facts *facts, const s_str *path)
 
 sw facts_open_log (s_facts *facts, s_buf *buf)
 {
+  bool b;
   s_fact_w fact;
   s_fact *factp;
   sw r;
@@ -547,7 +606,8 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
         break;
       result += r;
       factp = fact_r(&fact);
-      facts_add_fact(facts, factp);
+      if (! facts_add_fact(facts, factp))
+        return -1;
       goto ok;
     }
     if ((r = buf_read_1(buf, "remove ")) <= 0)
@@ -557,7 +617,8 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
       break;
     result += r;
     factp = fact_r(&fact);
-    facts_remove_fact(facts, factp);
+    if (! facts_remove_fact(facts, factp, &b))
+      return -1;
   ok:
     fact_w_clean(&fact);
     if ((r = buf_read_1(buf, "\n")) <= 0)
@@ -567,7 +628,7 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
   return result;
 }
 
-s_tag * facts_ref_tag (s_facts *facts, const s_tag *tag)
+const s_tag * facts_ref_tag (s_facts *facts, const s_tag *tag)
 {
   s_set_item__tag *item;
   assert(facts);
@@ -584,8 +645,9 @@ s_tag * facts_ref_tag (s_facts *facts, const s_tag *tag)
   return &item->data;
 }
 
-void facts_remove_all (s_facts *facts)
+s_facts * facts_remove_all (s_facts *facts)
 {
+  bool b;
   uw count;
   s_set_cursor__fact cursor;
   s_fact **f;
@@ -595,12 +657,10 @@ void facts_remove_all (s_facts *facts)
   assert(facts);
   count = facts->facts.count;
   if (! count)
-    return;
+    return facts;
   f = alloc(count * sizeof(s_fact *));
-  if (! f) {
-    abort();
-    return;
-  }
+  if (! f)
+    return NULL;
   i = 0;
   set_cursor_init__fact(&facts->facts, &cursor);
   while (i < count &&
@@ -611,21 +671,28 @@ void facts_remove_all (s_facts *facts)
   qsort(f, i, sizeof(s_fact *), facts_compare_pfact_id_reverse);
   j = 0;
   while (j < i) {
-    facts_remove_fact(facts, f[j]);
+    if (! facts_remove_fact(facts, f[j], &b) ||
+        ! b) {
+      free(f);
+      return NULL;
+    }
     j++;
   }
   free(f);
+  return facts;
 }
 
-bool facts_remove_fact (s_facts *facts, const s_fact *fact)
+bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
+                          bool *dest)
 {
   s_fact f;
-  s_fact *found;
-  e_bool result = false;
+  const s_fact *found;
   assert(facts);
   assert(fact);
   facts_lock_w(facts);
-  found = facts_find_fact(facts, fact);
+  if (! facts_find_fact(facts, fact, &found))
+    return NULL;
+  *dest = false;
   if (found) {
     if (facts->log)
       facts_log_remove(facts->log, found);
@@ -637,15 +704,16 @@ bool facts_remove_fact (s_facts *facts, const s_fact *fact)
     facts_unref_tag(facts, f.subject);
     facts_unref_tag(facts, f.predicate);
     facts_unref_tag(facts, f.object);
-    result = true;
+    *dest = true;
   }
   facts_lock_unlock_w(facts);
-  return result;
+  return dest;
 }
 
-bool facts_remove_fact_tags (s_facts *facts, const s_tag *subject,
-                             const s_tag *predicate,
-                             const s_tag *object)
+bool * facts_remove_fact_tags (s_facts *facts, const s_tag *subject,
+                               const s_tag *predicate,
+                               const s_tag *object,
+                               bool *dest)
 {
   s_fact fact;
   assert(facts);
@@ -655,10 +723,10 @@ bool facts_remove_fact_tags (s_facts *facts, const s_tag *subject,
   fact.subject = subject;
   fact.predicate = predicate;
   fact.object = object;
-  return facts_remove_fact(facts, &fact);
+  return facts_remove_fact(facts, &fact, dest);
 }
 
-s_fact * facts_replace_fact (s_facts *facts, const s_fact *fact)
+const s_fact * facts_replace_fact (s_facts *facts, const s_fact *fact)
 {
   assert(facts);
   assert(fact);
@@ -666,34 +734,57 @@ s_fact * facts_replace_fact (s_facts *facts, const s_fact *fact)
                             fact->object);
 }
 
-s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
-                             const s_tag *predicate,
-                             const s_tag *object)
+const s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
+                                   const s_tag *predicate,
+                                   const s_tag *object)
 {
+  bool b;
   s_facts_cursor cursor;
+  const s_fact *fact;
   s_list *list = NULL;
-  s_fact *f;
+  s_facts_transaction transaction;
   s_tag var;
   assert(facts);
   assert(subject);
   assert(predicate);
   assert(object);
-  tag_init_var(&var);
-  facts_lock_w(facts);
-  facts_with_tags(facts, &cursor, (s_tag *) subject,
-                  (s_tag *) predicate, &var);
-  while ((f = facts_cursor_next(&cursor))) {
-    list = list_new(list);
-    list->tag.data.fact = *f;
+  tag_init_var(&var, &g_sym_Tag);
+  if (! facts_lock_w(facts))
+    return NULL;
+  if (! facts_with_tags(facts, &cursor, (s_tag *) subject,
+                        (s_tag *) predicate, &var)) {
+    facts_lock_unlock_w(facts);
+    return NULL;
   }
+  if (! facts_cursor_next(&cursor, &fact)) {
+    facts_lock_unlock_w(facts);
+    return NULL;
+  }
+  while (fact) {
+    list = list_new(list);
+    list->tag.data.fact = *fact;
+    if (! facts_cursor_next(&cursor, &fact)) {
+      facts_lock_unlock_w(facts);
+      list_delete_all(list);
+      return NULL;
+    }
+  }
+  facts_transaction_start(facts, &transaction);  
   while (list) {
-    facts_remove_fact(facts, &list->tag.data.fact);
+    if (! facts_remove_fact(facts, &list->tag.data.fact, &b) ||
+        ! b) {
+      list_delete_all(list);
+      facts_transaction_rollback(facts, &transaction);
+      facts_lock_unlock_w(facts);
+      return NULL;
+    }
     list = list_delete(list);
   }
   facts_cursor_clean(&cursor);
-  f = facts_add_tags(facts, subject, predicate, object);
+  fact = facts_add_tags(facts, subject, predicate, object);
+  facts_transaction_clean(&transaction);
   facts_lock_unlock_w(facts);
-  return f;
+  return fact;
 }
 
 sw facts_save_file (s_facts *facts, const char *path)
@@ -725,53 +816,6 @@ sw facts_save_file (s_facts *facts, const char *path)
  ko:
   fclose(fp);
   return r;
-}
-
-s_facts * facts_transaction_rollback (s_facts *facts,
-                                      s_facts_transaction *transaction)
-{
-  s_fact_action *log;
-  s_facts_transaction *t;
-  t = facts->transaction;
-  while (t) {
-    if (t == transaction)
-      goto rollback;
-    t = t->next;
-  }
-  err_puts("facts_transaction_rollback: transaction not found");
-  assert(! "facts_transaction_rollback: transaction not found");
-  return NULL;
- rollback:
-  while (t) {
-    log = t->log;
-    while (log) {
-      if (log->remove) {
-        if (! facts_add_fact(facts, &log->fact))
-          return NULL;
-      }
-      else {
-        if (! facts_remove_fact(facts, &log->fact))
-          return NULL;
-      }
-      log = log->next;
-    }
-    if (t == transaction)
-      return facts;
-    t = t->next;
-  }
-  err_puts("facts_transaction_rollback: unknown error");
-  assert(! "facts_transaction_rollback: unknown error");
-  exit(1);
-  return NULL;
-}
-
-void facts_transaction_start (s_facts *facts,
-                              s_facts_transaction *transaction)
-{
-  assert(facts);
-  assert(transaction);
-  transaction->next = facts->transaction;
-  facts->transaction = transaction;
 }
 
 bool facts_unref_tag (s_facts *facts, const s_tag *tag)

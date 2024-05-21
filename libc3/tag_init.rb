@@ -400,7 +400,8 @@ class TagInitList
                    [Arg.new("const s_unquote *", "unquote")]),
        TagInit.new("uw", "TAG_UW", :init_mode_direct,
                    [Arg.new("uw", "i")]),
-       TagInit.new("var", "TAG_VAR", :init_mode_none, []),
+       TagInit.new("var", "TAG_VAR", :init_mode_init,
+                   [Arg.new("const s_sym *", "type")]),
        TagInit.new("void", "TAG_VOID", :init_mode_none, [])])
   end
 
@@ -536,6 +537,7 @@ tag_init_c.content = <<EOF
 #include "time.h"
 #include "tuple.h"
 #include "unquote.h"
+#include "var.h"
 #{inits.def_tag_init.c_word_wrap}
 #{inits.def_tag_new.c_word_wrap}
 #{inits.def_tag.c_word_wrap}

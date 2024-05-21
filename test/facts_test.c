@@ -77,7 +77,7 @@ TEST_CASE(facts_add)
     "-0x10000000000000000",
     NULL
   };
-  s_fact *pf;
+  const s_fact *pf;
   s_fact fact[24];
   s_facts facts;
   facts_init(&facts);
@@ -155,6 +155,8 @@ TEST_CASE_END(facts_dump_file)
 
 TEST_CASE(facts_find)
 {
+  bool b;
+  const s_fact *f;
   uw i = 0;
   char *p[24] = {
     "\"a\"",
@@ -184,23 +186,28 @@ TEST_CASE(facts_find)
   };
   s_fact fact[24];
   s_facts facts;
-  s_fact *pf;
+  const s_fact *pf;
   facts_init(&facts);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
-    TEST_EQ(facts_find_fact(&facts, fact + i), NULL);
-    TEST_EQ(facts_find_fact(&facts, fact + i), NULL);
+    TEST_EQ(facts_find_fact(&facts, fact + i, &f), &f);
+    TEST_ASSERT(! f);
+    TEST_EQ(facts_find_fact(&facts, fact + i, &f), &f);
+    TEST_ASSERT(! f);
     facts_add_fact(&facts, fact + i);
-    TEST_ASSERT((pf = facts_find_fact(&facts, fact + i)));
+    TEST_EQ(facts_find_fact(&facts, fact + i, &pf), &pf);
+    TEST_ASSERT(pf);
     TEST_EQ(compare_tag(fact[i].subject, pf->subject), 0);
     TEST_EQ(compare_tag(fact[i].predicate, pf->predicate), 0);
     TEST_EQ(compare_tag(fact[i].object, pf->object), 0);
     i++;
   }
   while (i--) {
-    facts_remove_fact(&facts, fact + i);
-    TEST_EQ(facts_find_fact(&facts, fact + i), NULL);
-    TEST_EQ(facts_find_fact(&facts, fact + i), NULL);
+    facts_remove_fact(&facts, fact + i, &b);
+    TEST_EQ(facts_find_fact(&facts, fact + i, &f), &f);
+    TEST_ASSERT(! f);
+    TEST_EQ(facts_find_fact(&facts, fact + i, &f), &f);
+    TEST_ASSERT(! f);
     fact_test_clean_1(fact + i);
   }
   facts_clean(&facts);
@@ -225,6 +232,7 @@ TEST_CASE_END(facts_init_clean)
 
 TEST_CASE(facts_load)
 {
+  const s_fact *f;
   uw i = 0;
   char *p[24] = {
     "\"a\"",
@@ -261,7 +269,8 @@ TEST_CASE(facts_load)
   TEST_EQ(facts_count(&facts), 23);
   while (p[i]) {
     fact_test_init_1(&fact, p[i]);
-    TEST_ASSERT(facts_find_fact(&facts, &fact));
+    TEST_EQ(facts_find_fact(&facts, &fact, &f), &f);
+    TEST_ASSERT(f);
     fact_test_clean_1(&fact);
     i++;
   }
@@ -322,6 +331,7 @@ TEST_CASE_END(facts_log_add)
 
 TEST_CASE(facts_log_remove)
 {
+  bool b;
   uw i = 0;
   char *p[24] = {
     "\"a\"",
@@ -362,7 +372,7 @@ TEST_CASE(facts_log_remove)
     i++;
   }
   while (i--) {
-    facts_remove_fact(&facts, fact + i);
+    facts_remove_fact(&facts, fact + i, &b);
   }
   i = 0;
   while (p[i]) {
@@ -391,6 +401,8 @@ TEST_CASE_END(facts_new_delete)
 
 TEST_CASE(facts_open_file)
 {
+  bool b;
+  const s_fact *f;
   uw i = 0;
   char *p[24] = {
     "\"a\"",
@@ -460,15 +472,18 @@ TEST_CASE(facts_open_file)
   i = 0;
   while (p[i]) {
     fact_test_init_1(&fact, p[i]);
-    TEST_ASSERT(facts_find_fact(&facts, &fact));
-    TEST_ASSERT(facts_remove_fact(&facts, &fact));
+    TEST_EQ(facts_find_fact(&facts, &fact, &f), &f);
+    TEST_ASSERT(f);
+    TEST_EQ(facts_remove_fact(&facts, &fact, &b), &b);
+    TEST_ASSERT(b);
     fact_test_clean_1(&fact);
     i++;
   }
   i = 0;
   while (q[i]) {
     fact_test_init_1(&fact, q[i]);
-    TEST_ASSERT(! facts_find_fact(&facts, &fact));
+    TEST_EQ(facts_find_fact(&facts, &fact, &f), &f);
+    TEST_ASSERT(! f);
     TEST_ASSERT(facts_add_fact(&facts, &fact));
     fact_test_clean_1(&fact);
     i++;
@@ -492,14 +507,16 @@ TEST_CASE(facts_open_file)
   i = 0;
   while (p[i]) {
     fact_test_init_1(&fact, p[i]);
-    TEST_ASSERT(facts_find_fact(&facts, &fact));
+    TEST_EQ(facts_find_fact(&facts, &fact, &f), &f);
+    TEST_ASSERT(f);
     fact_test_clean_1(&fact);
     i++;
   }
   i = 0;
   while (q[i]) {
     fact_test_init_1(&fact, q[i]);
-    TEST_ASSERT(facts_find_fact(&facts, &fact));
+    TEST_EQ(facts_find_fact(&facts, &fact, &f), &f);
+    TEST_ASSERT(f);
     fact_test_clean_1(&fact);
     i++;
   }
@@ -522,7 +539,8 @@ TEST_CASE(facts_open_file)
   i = 0;
   while (p[i]) {
     fact_test_init_1(&fact, p[i]);
-    TEST_ASSERT(! facts_find_fact(&facts, &fact));
+    TEST_EQ(facts_find_fact(&facts, &fact, &f), &f);
+    TEST_ASSERT(! f);
     TEST_ASSERT(facts_add_fact(&facts, &fact));
     fact_test_clean_1(&fact);
     i++;
@@ -530,7 +548,8 @@ TEST_CASE(facts_open_file)
   i = 0;
   while (q[i]) {
     fact_test_init_1(&fact, q[i]);
-    TEST_ASSERT(! facts_find_fact(&facts, &fact));
+    TEST_EQ(facts_find_fact(&facts, &fact, &f), &f);
+    TEST_ASSERT(! f);
     TEST_ASSERT(facts_add_fact(&facts, &fact));
     fact_test_clean_1(&fact);
     i++;
@@ -546,6 +565,7 @@ TEST_CASE_END(facts_open_file)
 
 TEST_CASE(facts_remove)
 {
+  bool b;
   uw i = 0;
   char *p[24] = {
     "\"a\"",
@@ -582,10 +602,12 @@ TEST_CASE(facts_remove)
     i++;
   }
   while (i--) {
-    TEST_EQ(facts_remove_fact(&facts, fact + i), true);
+    TEST_EQ(facts_remove_fact(&facts, fact + i, &b), &b);
+    TEST_EQ(b, true);
     TEST_EQ(facts.tags.count, i);
     TEST_EQ(facts.facts.count, i);
-    TEST_EQ(facts_remove_fact(&facts, fact + i), false);
+    TEST_EQ(facts_remove_fact(&facts, fact + i, &b), &b);
+    TEST_EQ(b, false);
     TEST_EQ(facts.tags.count, i);
     TEST_EQ(facts.facts.count, i);
     fact_test_clean_1(fact + i);

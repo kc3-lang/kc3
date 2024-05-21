@@ -10,13 +10,19 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBC3_FACTS_WITH_CURSOR_H
-#define LIBC3_FACTS_WITH_CURSOR_H
+#ifndef LIBC3_FACTS_TRANSACTION_H
+#define LIBC3_FACTS_TRANSACTION_H
 
 #include "types.h"
 
-void facts_with_cursor_clean (s_facts_with_cursor *cursor);
-const s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
-                                        const s_fact **dest);
+/* Stack allocation compatible functions */
+s_facts_transaction * facts_transaction_clean
+(s_facts_transaction *transaction);
 
-#endif /* LIBC3_FACTS_WITH_CURSOR_H */
+/* Operators. */
+s_facts *      facts_transaction_rollback
+(s_facts *facts, const s_facts_transaction *transaction);
+void           facts_transaction_start
+(s_facts *facts, s_facts_transaction *transaction);
+
+#endif /* LIBC3_FACTS_TRANSACTION_H */

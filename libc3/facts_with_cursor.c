@@ -39,9 +39,10 @@ void facts_with_cursor_clean (s_facts_with_cursor *cursor)
   }
 }
 
-s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
+const s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
+                                        const s_fact **dest)
 {
-  s_fact *fact = NULL;
+  const s_fact *fact = NULL;
   s_facts_with_cursor_level *level;
   p_facts_spec parent_spec;
   assert(cursor);
@@ -62,7 +63,8 @@ s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
     err_write_1(" ");
     err_inspect_fact(level->fact);
 #endif
-    level->fact = facts_cursor_next(&level->cursor);
+    if (! facts_cursor_next(&level->cursor, &level->fact))
+      goto ko;
 #ifdef DEBUG_FACTS
     err_write_1(" -> ");
     err_inspect_fact(level->fact);
@@ -75,7 +77,8 @@ s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
         assert(! "facts_with_cursor_next: pthread_mutex_unlock");
         exit(1);
       }
-      return level->fact;
+      *dest = level->fact;
+      return dest;
     }
     free(level->spec);
     level->spec = NULL;
@@ -106,7 +109,8 @@ s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
     buf_write_1(&g_c3_env.err, " ");
     buf_inspect_fact(&g_c3_env.err, level->fact);
 #endif
-    fact = facts_cursor_next(&level->cursor);
+    if (! facts_cursor_next(&level->cursor, &fact))
+      goto ko;
     level->fact = fact;
 #ifdef DEBUG_FACTS
     buf_write_1(&g_c3_env.err, " -> ");
@@ -131,7 +135,8 @@ s_fact * facts_with_cursor_next (s_facts_with_cursor *cursor)
     assert(! "facts_with_cursor_next: pthread_mutex_unlock");
     exit(1);
   }
-  return fact;
+  *dest = fact;
+  return dest;
  ko:
   if (pthread_mutex_unlock(&cursor->mutex)) {
     err_puts("facts_with_cursor_next: pthread_mutex_unlock");

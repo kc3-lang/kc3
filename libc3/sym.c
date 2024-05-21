@@ -663,6 +663,7 @@ bool sym_search_modules (const s_sym *sym, const s_sym **dest)
 bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
                       ffi_type **dest)
 {
+  bool b;
   assert(sym);
   if (sym == &g_sym_Result) {
     if (! result_type) {
@@ -805,7 +806,9 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_void;
     return true;
   }
-  if (struct_type_exists(sym)) {
+  if (! struct_type_exists(sym, &b))
+    return false;
+  if (b) {
     *dest = &ffi_type_pointer;
     return true;
   }
@@ -818,6 +821,7 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
 
 bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 {
+  bool b;
   if (sym == &g_sym_Array ||
       sym_is_array_type(sym)) {
     *dest = TAG_ARRAY;
@@ -967,7 +971,9 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_VOID;
     return true;
   }
-  if (struct_type_exists(sym)) {
+  if (! struct_type_exists(sym, &b))
+    return false;
+  if (b) {
     *dest = TAG_STRUCT;
     return true;
   }

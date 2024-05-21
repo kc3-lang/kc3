@@ -39,6 +39,7 @@ void call_clean (s_call *call)
 bool call_get (s_call *call, s_facts *facts)
 {
   s_facts_cursor cursor;
+  const s_fact *fact;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_macro;
@@ -58,22 +59,29 @@ bool call_get (s_call *call, s_facts *facts)
   tag_init_sym(  &tag_sym, call->ident.sym);
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
   tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
-  tag_init_var(  &tag_var);
+  tag_init_var(  &tag_var, &g_sym_Tag);
   if (! facts_find_fact_by_tags(facts, &tag_module_name,
-                                &tag_symbol, &tag_ident) &&
-      ! facts_find_fact_by_tags(facts, &tag_module_name,
-                                &tag_operator, &tag_ident)) {
-    err_write_1("call_get: symbol ");
-    err_write_1(call->ident.sym->str.ptr.pchar);
-    err_write_1(" not found in module ");
-    err_write_1(call->ident.module->str.ptr.pchar);
-    err_write_1("\n");
+                                &tag_symbol, &tag_ident, &fact))
     return false;
+  if (! fact) {
+    if (! facts_find_fact_by_tags(facts, &tag_module_name,
+                                  &tag_operator, &tag_ident, &fact))
+      return false;
+    if (! fact) {
+      err_write_1("call_get: symbol ");
+      err_write_1(call->ident.sym->str.ptr.pchar);
+      err_write_1(" not found in module ");
+      err_write_1(call->ident.module->str.ptr.pchar);
+      err_write_1("\n");
+      return false;
+    }
   }
   if (! facts_with_tags(facts, &cursor, &tag_ident,
                         &tag_symbol_value, &tag_var))
     return false;
-  if (facts_cursor_next(&cursor)) {
+  if (! facts_cursor_next(&cursor, &fact))
+    return false;
+  if (fact) {
     if (tag_var.type == TAG_FN)
       call->fn = fn_new_copy(&tag_var.data.fn);
     else if (tag_var.type == TAG_CFN)
@@ -87,15 +95,19 @@ bool call_get (s_call *call, s_facts *facts)
     }
   }
   facts_cursor_clean(&cursor);
-  if (facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
-                              &tag_macro)) {
+  if (! facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
+                                &tag_macro, &fact))
+    return false;
+  if (fact) {
     if (call->fn)
       call->fn->macro = true;
     if (call->cfn)
       call->cfn->macro = true;
   }
-  if (facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
-                              &tag_special_operator)) {
+  if (! facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
+                                &tag_special_operator, &fact))
+    return false;
+  if (fact) {
     if (call->fn)
       call->fn->special_operator = true;
     if (call->cfn)
@@ -229,6 +241,7 @@ s_str * call_inspect (const s_call *call, s_str *dest)
 bool call_op_get (s_call *call, s_facts *facts)
 {
   s_facts_cursor cursor;
+  const s_fact *fact;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_macro;
@@ -246,9 +259,11 @@ bool call_op_get (s_call *call, s_facts *facts)
   tag_init_sym(  &tag_sym, call->ident.sym);
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
   tag_init_sym(  &tag_symbol, &g_sym_symbol_value);
-  tag_init_var(  &tag_var);
+  tag_init_var(  &tag_var, &g_sym_Tag);
   if (! facts_find_fact_by_tags(facts, &tag_module_name,
-                                &tag_symbol, &tag_ident)) {
+                                &tag_symbol, &tag_ident, &fact))
+    return false;
+  if (! fact) {
     err_write_1("call_op_get: symbol ");
     err_write_1(call->ident.sym->str.ptr.pchar);
     err_write_1(" not found in module ");
@@ -259,7 +274,9 @@ bool call_op_get (s_call *call, s_facts *facts)
   if (! facts_with_tags(facts, &cursor, &tag_ident, &tag_symbol_value,
                         &tag_var))
     return false;
-  if (facts_cursor_next(&cursor)) {
+  if (! facts_cursor_next(&cursor, &fact))
+    return false;
+  if (fact) {
     if (tag_var.type == TAG_CFN)
       call->cfn = cfn_new_copy(&tag_var.data.cfn);
     else if (tag_var.type == TAG_FN)
@@ -273,15 +290,19 @@ bool call_op_get (s_call *call, s_facts *facts)
     }
   }
   facts_cursor_clean(&cursor);
-  if (facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
-                              &tag_macro)) {
+  if (! facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
+                                &tag_macro, &fact))
+    return false;
+  if (fact) {
     if (call->fn)
       call->fn->macro = true;
     if (call->cfn)
       call->cfn->macro = true;
   }
-  if (facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
-                              &tag_special_operator)) {
+  if (! facts_find_fact_by_tags(facts, &tag_ident, &tag_is_a,
+                                &tag_special_operator, &fact))
+    return false;
+  if (fact) {
     if (call->fn)
       call->fn->special_operator = true;
     if (call->cfn)

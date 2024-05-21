@@ -17,8 +17,8 @@
 
 #define FACT_TEST_EQ(test, expected)                                   \
   do {                                                                 \
-    s_fact *fact_expected;                                             \
-    s_fact *fact_test;                                                 \
+    const s_fact *fact_expected;                                             \
+    const s_fact *fact_test;                                                 \
     fact_expected = (expected);                                        \
     fact_test = (test);                                                \
     if (compare_fact(fact_test, fact_expected) == 0) {                 \

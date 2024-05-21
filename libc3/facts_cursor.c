@@ -10,12 +10,14 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <stdlib.h>
 #include "assert.h"
 #include "facts.h"
 #include "facts_cursor.h"
 #include "skiplist__fact.h"
 #include "skiplist_node__fact.h"
 #include "tag.h"
+#include "var.h"
 
 void facts_cursor_clean (s_facts_cursor *cursor)
 {
@@ -52,9 +54,12 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
     cursor->end.predicate = TAG_LAST;
     cursor->end.object    = TAG_LAST;
   }
-  cursor->var_subject   = NULL;
-  cursor->var_predicate = NULL;
-  cursor->var_object    = NULL;
+  cursor->var_subject        = NULL;
+  cursor->var_subject_type   = NULL;
+  cursor->var_predicate      = NULL;
+  cursor->var_predicate_type = NULL;
+  cursor->var_object         = NULL;
+  cursor->var_object_type    = NULL;
   cursor->facts = facts;
   if (! facts_cursor_lock_init(cursor)) {
     facts_cursor_clean(cursor);
@@ -104,38 +109,56 @@ s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor)
   if (pthread_mutex_unlock(&cursor->mutex)) {
     err_puts("facts_cursor_lock_unlock: pthread_mutex_unlock");
     assert(! "facts_cursor_lock_unlock: pthread_mutex_unlock");
+    exit(1);
     return NULL;
   }
   return cursor;
 }
 
-s_fact * facts_cursor_next (s_facts_cursor *cursor)
+const s_fact ** facts_cursor_next (s_facts_cursor *cursor,
+                                   const s_fact **dest)
 {
+  const s_fact *fact;
   assert(cursor);
-  facts_cursor_lock(cursor);
+  if (! facts_cursor_lock(cursor))
+    return NULL;
   if (cursor->node) {
     cursor->node = SKIPLIST_NODE_NEXT__fact(cursor->node, 0);
     if (cursor->node &&
         cursor->index->compare(&cursor->end, cursor->node->fact) < 0)
       cursor->node = NULL;
   }
-  if (cursor->node) {
-    s_fact *fact = cursor->node->fact;
+  if (! cursor->node) {
     if (cursor->var_subject)
-      *cursor->var_subject = *fact->subject;
+      tag_init_var(cursor->var_subject, cursor->var_subject_type);
     if (cursor->var_predicate)
-      *cursor->var_predicate = *fact->predicate;
+      tag_init_var(cursor->var_predicate, cursor->var_predicate_type);
     if (cursor->var_object)
-      *cursor->var_object = *fact->object;
+      tag_init_var(cursor->var_object, cursor->var_object_type);
     facts_cursor_lock_unlock(cursor);
-    return fact;
+    *dest = NULL;
+    return dest;
   }
+  fact = cursor->node->fact;
   if (cursor->var_subject)
-    tag_init_var(cursor->var_subject);
+    if (! var_set(cursor->var_subject, fact->subject))
+      goto ko;
   if (cursor->var_predicate)
-    tag_init_var(cursor->var_predicate);
+    if (! var_set(cursor->var_predicate, fact->predicate))
+      goto ko;
   if (cursor->var_object)
-    tag_init_var(cursor->var_object);
+    if (! var_set(cursor->var_object, fact->object))
+      goto ko;
+  facts_cursor_lock_unlock(cursor);
+  *dest = fact;
+  return dest;
+ ko:
+  if (cursor->var_subject)
+    tag_init_var(cursor->var_subject, cursor->var_subject_type);
+  if (cursor->var_predicate)
+    tag_init_var(cursor->var_predicate, cursor->var_predicate_type);
+  if (cursor->var_object)
+    tag_init_var(cursor->var_object, cursor->var_object_type);
   facts_cursor_lock_unlock(cursor);
   return NULL;
 }

@@ -94,11 +94,13 @@ HEADERS = \
 	"f32.h" \
 	"f64.h" \
 	"fact.h" \
+	"fact_action.h" \
 	"fact_list.h" \
 	"facts.h" \
 	"facts_cursor.h" \
 	"facts_spec.h" \
 	"facts_spec_cursor.h" \
+	"facts_transaction.h" \
 	"facts_with.h" \
 	"facts_with_cursor.h" \
 	"file.h" \
@@ -253,11 +255,13 @@ SOURCES = \
 	"f32.c" \
 	"f64.c" \
 	"fact.c" \
+	"fact_action.c" \
 	"fact_list.c" \
 	"facts.c" \
 	"facts_cursor.c" \
 	"facts_spec.c" \
 	"facts_spec_cursor.c" \
+	"facts_transaction.c" \
 	"facts_with.c" \
 	"facts_with_cursor.c" \
 	"file.c" \
@@ -521,11 +525,13 @@ LO_SOURCES = \
 	"f32.c" \
 	"f64.c" \
 	"fact.c" \
+	"fact_action.c" \
 	"fact_list.c" \
 	"facts.c" \
 	"facts_cursor.c" \
 	"facts_spec.c" \
 	"facts_spec_cursor.c" \
+	"facts_transaction.c" \
 	"facts_with.c" \
 	"facts_with_cursor.c" \
 	"file.c" \

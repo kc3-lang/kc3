@@ -785,6 +785,7 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
 
 sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
 {
+  bool b;
   character c;
   s_tag *left;
   s_ident next_op;
@@ -840,10 +841,19 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
         ! operator_resolve(&next_op, 1, &next_op))
       break;
     next_op_precedence = operator_precedence(&next_op);
-    while (r > 0 && operator_arity(&next_op) == 2 &&
-           (next_op_precedence > op_precedence ||
-            (operator_is_right_associative(&next_op) &&
-             next_op_precedence == op_precedence))) {
+    while (1) {
+      if (r <= 0 ||
+          operator_arity(&next_op) != 2)
+        break;
+      if (next_op_precedence <= op_precedence) {
+        if (! operator_is_right_associative(&next_op, &b)) {
+          r = -1;
+          break;
+        }
+        if (! b ||
+            next_op_precedence != op_precedence)
+          break;
+      }
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
       if ((r = buf_parse_call_op_rec(buf, &tmp2,

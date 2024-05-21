@@ -1,0 +1,6 @@
+defmodule Test do
+  defstruct [a: 1, b: 2]
+end
+Test
+%Test{}
+%Test{a: 1, b: 2}

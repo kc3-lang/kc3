@@ -26,16 +26,22 @@
 
 bool module_ensure_loaded (const s_sym *module, s_facts *facts)
 {
+  bool b;
+  const s_fact *fact;
   s_tag tag_module_name;
   s_tag tag_is_a;
   s_tag tag_module;
-  if (module_is_loading(module))
+  if (! module_is_loading(module, &b))
+    return false;
+  if (b)
     return true;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_module, &g_sym_module);
   tag_init_sym(&tag_module_name, module);
   if (! facts_find_fact_by_tags(facts, &tag_module_name, &tag_is_a,
-                                &tag_module)) {
+                                &tag_module, &fact))
+    return false;
+  if (! fact) {
     if (! module_load(module, facts)) {
       err_write_1("module_ensure_loaded: module not found: ");
       err_puts(module->str.ptr.pchar);
@@ -48,9 +54,10 @@ bool module_ensure_loaded (const s_sym *module, s_facts *facts)
   return true;
 }
 
-bool module_has_ident (const s_sym *module, const s_ident *ident,
-                       s_facts *facts)
+bool * module_has_ident (const s_sym *module, const s_ident *ident,
+                         s_facts *facts, bool *dest)
 {
+  const s_fact *fact;
   s_tag tag_ident;
   s_tag tag_module_name;
   s_tag tag_operator;
@@ -59,24 +66,29 @@ bool module_has_ident (const s_sym *module, const s_ident *ident,
   tag_init_sym(  &tag_module_name, module);
   tag_init_sym(  &tag_operator, &g_sym_operator);
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
-  return facts_find_fact_by_tags(facts, &tag_module_name,
-                                 &tag_symbol, &tag_ident) ||
-    facts_find_fact_by_tags(facts, &tag_module_name,
-                            &tag_operator, &tag_ident);
+  if (! facts_find_fact_by_tags(facts, &tag_module_name,
+                                &tag_symbol, &tag_ident, &fact))
+    return NULL;
+  if (! fact &&
+      ! facts_find_fact_by_tags(facts, &tag_module_name,
+                                &tag_operator, &tag_ident, &fact))
+    return NULL;
+  *dest = fact ? true : false;
+  return dest;
 }
 
-bool module_has_symbol (const s_sym *module, const s_sym *sym,
-                        s_facts *facts)
+bool * module_has_symbol (const s_sym *module, const s_sym *sym,
+                          s_facts *facts, bool *dest)
 {
   s_ident ident;
   ident.module = module;
   ident.sym = sym;
-  return module_has_ident(module, &ident, facts);
+  return module_has_ident(module, &ident, facts, dest);
 }
 
-bool module_is_loading (const s_sym *module)
+bool * module_is_loading (const s_sym *module, bool *dest)
 {
-  return env_module_is_loading(&g_c3_env, module);
+  return env_module_is_loading(&g_c3_env, module, dest);
 }
 
 bool module_load (const s_sym *module, s_facts *facts)
@@ -88,15 +100,18 @@ s_tag * module_load_time (const s_sym *module, s_facts *facts,
                           s_tag *dest)
 {
   s_facts_with_cursor cursor;
+  const s_fact *fact;
   s_tag tag_module_name;
   s_tag tag_load_time;
   s_tag tag_time_var;
   tag_init_sym(&tag_module_name, module);
   tag_init_sym(&tag_load_time, &g_sym_load_time);
-  tag_init_var(&tag_time_var);
-  facts_with(facts, &cursor, (t_facts_spec) {
-      &tag_module_name, &tag_load_time, &tag_time_var, NULL, NULL });
-  if (! facts_with_cursor_next(&cursor)) {
+  tag_init_var(&tag_time_var, &g_sym_Tag);
+  if (! facts_with(facts, &cursor, (t_facts_spec) {
+        &tag_module_name, &tag_load_time, &tag_time_var, NULL, NULL }))
+    return NULL;
+  if (! facts_with_cursor_next(&cursor, &fact) ||
+      ! fact) {
     facts_with_cursor_clean(&cursor);
     return NULL;
   }

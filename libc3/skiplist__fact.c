@@ -79,7 +79,7 @@ skiplist_delete__fact (s_skiplist__fact *skiplist)
 }
 
 s_skiplist_node__fact *
-skiplist_find__fact (s_skiplist__fact *skiplist, s_fact * fact)
+skiplist_find__fact (s_skiplist__fact *skiplist, const s_fact * fact)
 {
   s_skiplist_node__fact *node = skiplist->head;
   u8 level = node->height;
@@ -127,7 +127,7 @@ skiplist_init__fact (s_skiplist__fact *skiplist, u8 max_height, f64 spacing)
 }
 
 s_skiplist_node__fact *
-skiplist_insert__fact (s_skiplist__fact *skiplist, s_fact * fact)
+skiplist_insert__fact (s_skiplist__fact *skiplist, const s_fact * fact)
 {
   s_skiplist_node__fact *pred;
   s_skiplist_node__fact *next;
@@ -161,7 +161,7 @@ skiplist_new__fact (u8 max_height, f64 spacing)
 }
 
 s_skiplist_node__fact *
-skiplist_pred__fact (s_skiplist__fact *skiplist, s_fact * fact)
+skiplist_pred__fact (s_skiplist__fact *skiplist, const s_fact * fact)
 {
   int level;
   s_skiplist_node__fact *pred;
@@ -209,7 +209,7 @@ skiplist_random_height__fact (s_skiplist__fact *skiplist)
 }
 
 bool
-skiplist_remove__fact (s_skiplist__fact *skiplist, s_fact * fact)
+skiplist_remove__fact (s_skiplist__fact *skiplist, const s_fact * fact)
 {
   uw level;
   s_skiplist_node__fact *pred;
