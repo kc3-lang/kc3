@@ -553,7 +553,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   s_ident ident;
   s_tag *left;
   bool op;
-  bool paren;
+  bool paren = false;
   s8 precedence;
   sw r;
   sw result = 0;
@@ -561,19 +561,18 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   left = &call->arguments->tag;
   assert(list_next(call->arguments));
   right = &list_next(call->arguments)->tag;
-  if (! operator_find(&left->data.call.ident, &op))
-    return -1;
-  if (left->type == TAG_CALL &&
-      op &&
-      (precedence = operator_precedence(&left->data.call.ident))
-      < op_precedence) {
-    paren = true;
-    if ((r = buf_write_1(buf, "(")) < 0)
-      return r;
-    result += r;
+  if (left->type == TAG_CALL) {
+    if (! operator_find(&left->data.call.ident, &op))
+      return -1;
+    if (op &&
+        (precedence = operator_precedence(&left->data.call.ident))
+        < op_precedence) {
+      paren = true;
+      if ((r = buf_write_1(buf, "(")) < 0)
+        return r;
+      result += r;
+    }
   }
-  else
-    paren = false;
   if ((r = buf_inspect_tag(buf, left)) < 0)
     return r;
   result += r;
