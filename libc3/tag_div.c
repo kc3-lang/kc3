@@ -643,7 +643,7 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       else
         return tag_init_s64(dest, a->data.s64 / (s64) b->data.u64);
     case TAG_UW:
-      if (b->data.uw > S64_MAX)
+      if (UW_MAX > S64_MAX && b->data.uw > S64_MAX)
         return tag_init_s64(dest, 0);
       else
         return tag_init_s64(dest, a->data.s64 / (s64) b->data.uw);
@@ -970,7 +970,7 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       ratio_clean(&r);
       return dest;
     case TAG_S8:
-      if (a->data.uw > S64_MAX) {
+      if (UW_MAX > S64_MAX && a->data.uw > S64_MAX) {
         integer_init_uw(&tmp, a->data.uw);
         integer_init_s32(&tmp2, (s32) b->data.s8);
         dest->type = TAG_INTEGER;
@@ -982,7 +982,7 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
       else
         return tag_init_s64(dest, (s64) a->data.uw / (s64) b->data.s8);
     case TAG_S16:
-      if (a->data.uw > S64_MAX) {
+      if (UW_MAX > S64_MAX && a->data.uw > S64_MAX) {
         integer_init_uw(&tmp, a->data.uw);
         integer_init_s32(&tmp2, (s32) b->data.s16);
         dest->type = TAG_INTEGER;
@@ -995,7 +995,7 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
         return tag_init_s64(dest, (s64) a->data.uw /
                             (s64) b->data.s16);
     case TAG_S32:
-      if (a->data.uw > S64_MAX) {
+      if (UW_MAX > S64_MAX && a->data.uw > S64_MAX) {
         integer_init_uw(&tmp, a->data.uw);
         integer_init_s32(&tmp2, b->data.s32);
         dest->type = TAG_INTEGER;
@@ -1008,7 +1008,7 @@ s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
         return tag_init_s64(dest, (s64) a->data.uw /
                             (s64) b->data.s32);
     case TAG_S64:
-      if (a->data.uw > S64_MAX) {
+      if (UW_MAX > S64_MAX && a->data.uw > S64_MAX) {
         integer_init_uw(&tmp, a->data.uw);
         integer_init_s64(&tmp2, b->data.s64);
         dest->type = TAG_INTEGER;

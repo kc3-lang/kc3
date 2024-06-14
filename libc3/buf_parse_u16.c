@@ -109,7 +109,7 @@ sw buf_parse_u16_base (s_buf *buf, const s_str *base,
   assert(dest);
   buf_save_init(buf, &save);
   radix = str_length_utf8(base);
-  if (radix < 2 || (uw) radix > U16_MAX) {
+  if (radix < 2 || (UW_MAX > U16_MAX && (uw) radix > U16_MAX)) {
     buf_save_clean(buf, &save);
     err_write_1("buf_parse_u16_base: invalid radix: ");
     err_inspect_sw(&radix);

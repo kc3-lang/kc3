@@ -121,7 +121,7 @@ sw buf_parse_s8_base (s_buf *buf, const s_str *base,
   assert(dest);
   buf_save_init(buf, &save);
   radix = str_length_utf8(base);
-  if (radix < 2 || radix > S8_MAX) {
+  if (radix < 2 || (SW_MAX > S8_MAX && radix > S8_MAX)) {
     buf_save_clean(buf, &save);
     err_write_1("buf_parse_s8_base: invalid radix: ");
     err_inspect_sw(&radix);

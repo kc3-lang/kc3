@@ -221,8 +221,8 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
   FT_GlyphSlot glyph;
   FT_UInt glyph_index;
   sw i;
-  sw j;
-  sw k;
+  uw j;
+  uw k;
   sw line_height;
   sw max_ascent;
   sw max_descent;

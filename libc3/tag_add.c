@@ -1007,7 +1007,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       else
         return tag_init_sw(dest, a->data.sw + (sw) b->data.u16);
     case TAG_U32:
-      if (a->data.sw > SW_MAX - b->data.u32) {
+      if (a->data.sw > (sw) (SW_MAX - b->data.u32)) {
         integer_init_sw(&tmp, a->data.sw);
         integer_init_u32(&tmp2, b->data.u32);
         dest->type = TAG_INTEGER;
@@ -1299,7 +1299,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       else
         return tag_init_s64(dest, (s64) a->data.u32 + b->data.s64);
     case TAG_SW:
-      if (a->data.u32 > SW_MAX - b->data.sw) {
+      if (a->data.u32 > (u32) (SW_MAX - b->data.sw)) {
         integer_init_u32(&tmp, a->data.u32);
         integer_init_sw(&tmp2, b->data.sw);
         dest->type = TAG_INTEGER;
