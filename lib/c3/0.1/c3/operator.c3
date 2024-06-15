@@ -1,0 +1,8 @@
+defmodule C3.Operator do
+
+  defstruct [sym: :+,
+             symbol_value: ?,
+	     operator_precedence: 0,
+	     operator_associativity: :left]
+
+end

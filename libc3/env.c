@@ -1831,7 +1831,6 @@ bool env_module_is_loading_set (s_env *env, const s_sym *module,
 bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
 {
   bool b;
-  bool has_spec;
   s_str path = {0};
   s_tag tag_module_name;
   s_tag tag_load_time;
@@ -1884,15 +1883,11 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
                            &tag_time))
     goto rollback;
   tag_clean(&tag_time);
-  if (! env_struct_type_has_spec(env, module, &has_spec))
-    goto rollback;
-  if (has_spec && ! env_module_load_defstruct(env, module))
-    goto rollback;
   env_module_is_loading_set(env, module, false);
   return true;
  rollback:
   if (! facts_transaction_rollback(facts, &transaction)) {
-    exit(1);
+    abort();
     return false;
   }
   return false;
@@ -2412,7 +2407,7 @@ s_list ** env_struct_type_get_spec (s_env *env,
     assert(! "env_struct_type_get_spec: defstruct not found");
     return NULL;
   }
-  if (! env_eval_tag(env, found->object, &tmp))
+  if (! env_eval_tag(env, &tag_var, &tmp))
     return NULL;
   if (tmp.type != TAG_LIST ||
       ! list_is_plist(tmp.data.list)) {
