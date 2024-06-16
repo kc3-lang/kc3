@@ -116,7 +116,7 @@ bool matrix_load (s_sequence *seq)
   assert(window);
   point_per_pixel = (f32) window->w / window->gl_w;
   if (! gl_font_init(&g_matrix_font,
-                     "fonts/NotoSans-Regular.ttf",
+                     "fonts/Noto Sans/NotoSans-Regular.ttf",
                      point_per_pixel))
     return false;
   gl_font_set_size(&g_matrix_font, MATRIX_FONT_SIZE);
