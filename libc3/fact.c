@@ -91,17 +91,24 @@ s_str * fact_inspect (const s_fact *fact, s_str *dest)
   return buf_to_str(&buf, dest);
 }
 
-s_fact * fact_r (const s_fact_w *fact)
+void fact_r (const s_fact_w *fact, s_fact *dest)
 {
-  return (s_fact *) fact;
+  s_fact tmp = {0};
+  tmp.subject = &fact->subject;
+  tmp.predicate = &fact->predicate;
+  tmp.object = &fact->object;
+  tmp.id = fact->id;
+  *dest = tmp;
 }
 
 void fact_w_clean (s_fact_w *fact)
 {
-  tag_delete(fact->subject);
-  fact->subject = NULL;
-  tag_delete(fact->predicate);
-  fact->predicate = NULL;
-  tag_delete(fact->object);
-  fact->object = NULL;
+  tag_clean(&fact->subject);
+  tag_clean(&fact->predicate);
+  tag_clean(&fact->object);
+}
+
+s_fact_w * fact_w_eval (const s_fact_w *fact, s_fact_w *dest)
+{
+  return env_fact_w_eval(&g_c3_env, fact, dest);
 }

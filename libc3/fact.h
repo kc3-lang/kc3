@@ -22,13 +22,14 @@ s_fact * fact_init (s_fact *fact, const s_tag *subject,
 s_fact * fact_init_cast (s_fact *fact, const s_sym * const *type,
                          const s_tag *tag);
 s_fact * fact_init_copy (s_fact *fact, const s_fact *src);
+void     fact_w_clean (s_fact_w *fact);
 
 /* Observers */
 uw *     fact_hash_uw (const s_fact *fact, uw *dest);
 s_str *  fact_inspect (const s_fact *fact, s_str *dest);
-s_fact * fact_r (const s_fact_w *fact);
+void     fact_r (const s_fact_w *fact, s_fact *dest);
 
-/* Modifiers */
-void fact_w_clean (s_fact_w *fact);
+/* Operators */
+s_fact_w * fact_w_eval (const s_fact_w *fact, s_fact_w *dest);
 
 #endif /* LIBC3_FACT_H */

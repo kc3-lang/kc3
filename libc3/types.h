@@ -238,13 +238,6 @@ struct fact {
   uw id; /* serial id */
 };
 
-struct fact_w {
-  s_tag *subject;
-  s_tag *predicate;
-  s_tag *object;
-  uw id; /* serial id */
-};
-
 struct facts_transaction {
   s_fact_action *log;
   s_facts_transaction *next;
@@ -529,6 +522,13 @@ struct error_handler
   jmp_buf jmp_buf;
   s_error_handler *next;
   s_tag tag;
+};
+
+struct fact_w {
+  s_tag subject;
+  s_tag predicate;
+  s_tag object;
+  uw id; /* serial id */
 };
 
 struct list {

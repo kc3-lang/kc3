@@ -578,6 +578,23 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   return true;
 }
 
+bool env_eval_cfn (s_env *env, const s_cfn *cfn, s_tag *dest)
+{
+  s_cfn tmp;
+  assert(cfn);
+  assert(dest);
+  (void) env;
+  if (! cfn_init_copy(&tmp, cfn))
+    return false;
+  if (! cfn_prep_cif(&tmp))
+    return false;
+  if (! cfn_link(&tmp))
+    return false;
+  dest->type = TAG_CFN;
+  dest->data.cfn = tmp;
+  return true;
+}
+
 bool env_eval_complex (s_env *env, const s_complex *c, s_tag *dest)
 {
   s_complex *tmp = NULL;
@@ -1512,6 +1529,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_block(env, &tag->data.block, dest);
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
+  case TAG_CFN:
+    return env_eval_cfn(env, &tag->data.cfn, dest);
   case TAG_COMPLEX:
     return env_eval_complex(env, tag->data.complex, dest);
   case TAG_COW:
@@ -1533,7 +1552,6 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_TUPLE:
     return env_eval_tuple(env, &tag->data.tuple, dest);
   case TAG_BOOL:
-  case TAG_CFN:
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
@@ -1593,6 +1611,41 @@ bool env_eval_void (s_env *env, const void *_, s_tag *dest)
   (void) _;
   tag_init_void(dest);
   return true;
+}
+
+s_fact_w * env_fact_w_eval (s_env *env, const s_fact_w *fact,
+			    s_fact_w *dest)
+{
+  s_fact_w tmp = {0};
+  assert(env);
+  assert(fact);
+  assert(dest);
+  if (fact->subject.type == TAG_CFN) {
+    if (! env_eval_tag(env, &fact->subject, &tmp.subject))
+      return NULL;
+  }
+  else {
+    if (! tag_init_copy(&tmp.subject, &fact->subject))
+      return NULL;
+  }
+  if (fact->predicate.type == TAG_CFN) {
+    if (! env_eval_tag(env, &fact->predicate, &tmp.predicate))
+      return NULL;
+  }
+  else {
+    if (! tag_init_copy(&tmp.predicate, &fact->predicate))
+      return NULL;
+  }
+  if (fact->object.type == TAG_CFN) {
+    if (! env_eval_tag(env, &fact->object, &tmp.object))
+      return NULL;
+  }
+  else {
+    if (! tag_init_copy(&tmp.object, &fact->object))
+      return NULL;
+  }
+  *dest = tmp;
+  return dest;
 }
 
 const s_tag * env_frames_get (const s_env *env, const s_sym *name)
@@ -1944,7 +1997,6 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module,
   }
   if (! r)
     return false;
-  //io_inspect_str(&path);
   if (! file_mtime(&path, &tag_mtime)) {
     str_clean(&path);
     return false;
@@ -2292,8 +2344,8 @@ bool * env_struct_type_exists (s_env *env, const s_sym *module,
     return NULL;
   if (! facts_cursor_next(&cursor, &fact))
     return NULL;
-  facts_cursor_clean(&cursor);
   *dest = fact ? true : false;
+  facts_cursor_clean(&cursor);
   return dest;
 }
 

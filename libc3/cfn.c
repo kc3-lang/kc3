@@ -215,7 +215,7 @@ s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
     return NULL;
   tmp.arity = src->arity;
   tmp.cif = src->cif;
-  if (src->arity) {
+  if (src->arity && src->cif.arg_types) {
     tmp.cif.arg_types = alloc((src->cif.nargs + 1) * sizeof(ffi_type *));
     if (! tmp.cif.arg_types) {
       list_delete_all(tmp.arg_types);

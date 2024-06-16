@@ -27,6 +27,7 @@
 #include "complex.h"
 #include "cow.h"
 #include "env.h"
+#include "fact.h"
 #include "fn.h"
 #include "fn_clause.h"
 #include "ident.h"
@@ -1019,7 +1020,7 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   sw result = 0;
   const s_sym *result_type;
   s_buf_save save;
-  s_cfn tmp;
+  s_cfn tmp = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -1048,8 +1049,11 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
     goto restore;
   result += r;
   cfn_init(&tmp, name_sym, arg_types, result_type);
+  // FIXME: implement env_eval_cfn
+  /*
   cfn_prep_cif(&tmp);
   cfn_link(&tmp);
+  */
   *dest = tmp;
   r = result;
   goto clean;
@@ -1481,12 +1485,10 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest) {
 
 sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
 {
-  s_tag *object = NULL;
-  s_tag *predicate = NULL;
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_tag *subject = NULL;
+  s_fact_w tmp = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -1499,7 +1501,7 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_new_tag(buf, &subject)) <= 0)
+  if ((r = buf_parse_tag(buf, &tmp.subject)) <= 0)
     goto restore;
   result += r;
   if ((r = buf_parse_comments(buf)) < 0)
@@ -1517,7 +1519,7 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_new_tag(buf, &predicate)) <= 0)
+  if ((r = buf_parse_tag(buf, &tmp.predicate)) <= 0)
     goto restore;
   result += r;
   if ((r = buf_parse_comments(buf)) < 0)
@@ -1535,7 +1537,7 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_new_tag(buf, &object)) <= 0)
+  if ((r = buf_parse_tag(buf, &tmp.object)) <= 0)
     goto restore;
   result += r;
   if ((r = buf_parse_comments(buf)) < 0)
@@ -1547,19 +1549,12 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
   if ((r = buf_read_1(buf, "}")) < 0)
     goto restore;
   result += r;
-  dest->subject = subject;
-  dest->predicate = predicate;
-  dest->object = object;
+  *dest = tmp;
   r = result;
   goto clean;
  restore:
+  fact_w_clean(&tmp);
   buf_save_restore_rpos(buf, &save);
-  if (subject)
-    tag_delete(subject);
-  if (predicate)
-    tag_delete(predicate);
-  if (object)
-    tag_delete(object);
  clean:
   buf_save_clean(buf, &save);
   return r;

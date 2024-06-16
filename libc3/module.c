@@ -161,12 +161,6 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
   if ((r = buf_write_1(&out, ext)) < 0)
     goto error;
   result = buf_to_str(&out, dest);
-  /*
-  if (result) {
-    err_inspect_str(dest);
-    err_write_1("\n");
-  }
-  */
   return result;
  error:
   buf_clean(&out);

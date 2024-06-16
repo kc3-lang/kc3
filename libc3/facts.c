@@ -307,7 +307,8 @@ s_facts * facts_init (s_facts *facts)
 sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 {
   s_fact_w fact;
-  s_fact *factp;
+  s_fact_w fact_eval;
+  s_fact   fact_eval_r;
   u64 line;
   sw r;
   bool replace;
@@ -316,8 +317,11 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   assert(buf);
   if ((r = buf_read_1(buf,
                       "%{module: C3.Facts.Dump,\n"
-                      "  version: 1}\n")) <= 0)
-    goto ko_header;
+                      "  version: 1}\n")) <= 0) {
+    err_write_1("facts_load: invalid or missing header: ");
+    err_puts(path->ptr.pchar);
+    return -1;
+  }
   result += r;
   facts_lock_w(facts);
   line = 3;
@@ -332,36 +336,62 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
         break;
     }
     result += r;
-    if ((r = buf_parse_fact(buf, &fact)) <= 0)
-      goto ko_fact;
-    result += r;
-    factp = fact_r(&fact);
-    if (replace)
-      facts_replace_fact(facts, factp);
-    else
-      facts_add_fact(facts, factp);
-    fact_w_clean(&fact);
-    if ((r = buf_read_1(buf, "\n")) <= 0) {
-      r = -1;
-      goto ko_fact;
+    if ((r = buf_parse_fact(buf, &fact)) <= 0) {
+      err_write_1("facts_load: invalid fact line ");
+      err_inspect_u64(&line);
+      err_write_1(": ");
+      err_puts(path->ptr.pchar);
+      goto ko;
     }
     result += r;
+    if ((r = buf_read_1(buf, "\n")) <= 0) {
+      fact_w_clean(&fact);
+      err_write_1("facts_load: missing newline line ");
+      err_inspect_u64(&line);
+      err_write_1(": ");
+      err_puts(path->ptr.pchar);
+      goto ko;
+    }
+    result += r;
+    if (! fact_w_eval(&fact, &fact_eval)) {
+      fact_w_clean(&fact);
+      err_write_1("facts_load: invalid fact line ");
+      err_inspect_u64(&line);
+      err_write_1(": ");
+      err_puts(path->ptr.pchar);
+      goto ko;
+    }
+    fact_r(&fact_eval, &fact_eval_r);
+    if (replace) {
+      if (! facts_replace_fact(facts, &fact_eval_r)) {
+	fact_w_clean(&fact_eval);
+	fact_w_clean(&fact);
+	err_write_1("facts_load: failed to replace fact line ");
+	err_inspect_u64(&line);
+	err_write_1(": ");
+	err_puts(path->ptr.pchar);
+	goto ko;
+      }
+    }
+    else {
+      if (! facts_add_fact(facts, &fact_eval_r)) {
+	fact_w_clean(&fact_eval);
+	fact_w_clean(&fact);
+	err_write_1("facts_load: failed to add fact line ");
+	err_inspect_u64(&line);
+	err_write_1(": ");
+	err_puts(path->ptr.pchar);
+	goto ko;
+      }
+    }
+    fact_w_clean(&fact);
+    fact_w_clean(&fact_eval);
     line++;
   }
   facts_lock_unlock_w(facts);
   return result;
- ko_header:
-  err_write_1("facts_load: invalid or missing header: ");
-  err_puts(path->ptr.pchar);
-  return -1;
- ko_fact:
+ ko:
   facts_lock_unlock_w(facts);
-  err_write_1("facts_load: ");
-  err_write_1(r ? "invalid" : "missing");
-  err_write_1(" fact line ");
-  err_inspect_u64(&line);
-  err_write_1(": ");
-  err_puts(path->ptr.pchar);
   return -1;
 }
 
@@ -591,8 +621,8 @@ sw facts_open_file_create (s_facts *facts, const s_str *path)
 sw facts_open_log (s_facts *facts, s_buf *buf)
 {
   bool b;
-  s_fact_w fact;
-  s_fact *factp;
+  s_fact_w fact_w;
+  s_fact fact;
   sw r;
   sw result = 0;
   assert(facts);
@@ -602,25 +632,25 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
       break;
     result += r;
     if (r) {
-      if ((r = buf_parse_fact(buf, &fact)) <= 0)
+      if ((r = buf_parse_fact(buf, &fact_w)) <= 0)
         break;
       result += r;
-      factp = fact_r(&fact);
-      if (! facts_add_fact(facts, factp))
+      fact_r(&fact_w, &fact);
+      if (! facts_add_fact(facts, &fact))
         return -1;
       goto ok;
     }
     if ((r = buf_read_1(buf, "remove ")) <= 0)
       break;
     result += r;
-    if ((r = buf_parse_fact(buf, &fact)) <= 0)
+    if ((r = buf_parse_fact(buf, &fact_w)) <= 0)
       break;
     result += r;
-    factp = fact_r(&fact);
-    if (! facts_remove_fact(facts, factp, &b))
+    fact_r(&fact_w, &fact);
+    if (! facts_remove_fact(facts, &fact, &b))
       return -1;
   ok:
-    fact_w_clean(&fact);
+    fact_w_clean(&fact_w);
     if ((r = buf_read_1(buf, "\n")) <= 0)
       break;
     result += r;

@@ -66,6 +66,7 @@ bool          env_eval_call_fn_args (s_env *env, const s_fn *fn,
                                      const s_list *arguments,
                                      s_tag *dest);
 bool          env_eval_call_resolve (s_env *env, s_call *call);
+bool          env_eval_cfn (s_env *env, const s_cfn *cfn, s_tag *dest);
 bool          env_eval_complex (s_env *env, const s_complex *c,
                                 s_tag *dest);
 bool          env_eval_cow (s_env *env, const s_cow *cow, s_tag *dest);
@@ -161,6 +162,8 @@ bool          env_eval_tag (s_env *env, const s_tag *tag,
 bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
                               s_tag *dest);
 bool          env_eval_void (s_env *env, const void *_, s_tag *dest);
+s_fact_w *    env_fact_w_eval (s_env *env, const s_fact_w *fact,
+			       s_fact_w *dest);
 bool *        env_ident_is_special_operator (s_env *env,
                                              const s_ident *ident,
                                              bool *dest);
