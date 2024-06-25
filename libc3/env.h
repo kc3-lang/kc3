@@ -206,6 +206,9 @@ bool          env_tag_ident_is_bound (const s_env *env,
                                       const s_tag *tag,
                                       s_facts *facts);
 
+/* Modifiers. */
+bool env_call_get (s_env *env, s_call *call);
+
 /* Control structures. */
 void env_error_f (s_env *env, const char *fmt, ...);
 void env_error_tag (s_env *env, const s_tag *tag);

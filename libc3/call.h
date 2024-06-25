@@ -27,7 +27,7 @@ s_call * call_init_op (s_call *call);
 s_call * call_init_op_unary (s_call *call);
 
 /* Modifiers */
-bool     call_get (s_call *call, s_facts *facts);
+bool     call_get (s_call *call);
 
 /* Observers */
 s_str *  call_inspect (const s_call *call, s_str *dest);

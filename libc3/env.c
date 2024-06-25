@@ -57,6 +57,86 @@ s_env g_c3_env;
 
 static s_env * env_init_args (s_env *env, int argc, char **argv);
 
+bool env_call_get (s_env *env, s_call *call)
+{
+  s_facts_cursor cursor;
+  const s_fact *fact;
+  s_tag tag_ident;
+  s_tag tag_is_a;
+  s_tag tag_macro;
+  s_tag tag_module_name;
+  s_tag tag_operator;
+  s_tag tag_special_operator;
+  s_tag tag_sym;
+  s_tag tag_symbol;
+  s_tag tag_symbol_value;
+  s_tag tag_var;
+  tag_init_ident(&tag_ident, &call->ident);
+  tag_init_sym(  &tag_is_a, &g_sym_is_a);
+  tag_init_sym(  &tag_macro, &g_sym_macro);
+  tag_init_sym(  &tag_module_name, call->ident.module);
+  tag_init_sym(  &tag_operator, &g_sym_operator);
+  tag_init_sym(  &tag_special_operator, &g_sym_special_operator);
+  tag_init_sym(  &tag_sym, call->ident.sym);
+  tag_init_sym(  &tag_symbol, &g_sym_symbol);
+  tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
+  tag_init_var(  &tag_var, &g_sym_Tag);
+  if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
+                                &tag_symbol, &tag_ident, &fact))
+    return false;
+  if (! fact) {
+    if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
+                                  &tag_operator, &tag_ident, &fact))
+      return false;
+    if (! fact) {
+      err_write_1("env_call_get: symbol ");
+      err_write_1(call->ident.sym->str.ptr.pchar);
+      err_write_1(" not found in module ");
+      err_write_1(call->ident.module->str.ptr.pchar);
+      err_write_1("\n");
+      return false;
+    }
+  }
+  if (! facts_with_tags(&env->facts, &cursor, &tag_ident,
+                        &tag_symbol_value, &tag_var))
+    return false;
+  if (! facts_cursor_next(&cursor, &fact))
+    return false;
+  if (fact) {
+    if (tag_var.type == TAG_FN)
+      call->fn = fn_new_copy(&tag_var.data.fn);
+    else if (tag_var.type == TAG_CFN)
+      call->cfn = cfn_new_copy(&tag_var.data.cfn);
+    else {
+      err_write_1("env_call_get: ");
+      err_inspect_ident(&call->ident);
+      err_puts(" is not a function");
+      facts_cursor_clean(&cursor);
+      return false;
+    }
+  }
+  facts_cursor_clean(&cursor);
+  if (! facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
+                                &tag_macro, &fact))
+    return false;
+  if (fact) {
+    if (call->fn)
+      call->fn->macro = true;
+    if (call->cfn)
+      call->cfn->macro = true;
+  }
+  if (! facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
+                                &tag_special_operator, &fact))
+    return false;
+  if (fact) {
+    if (call->fn)
+      call->fn->special_operator = true;
+    if (call->cfn)
+      call->cfn->special_operator = true;
+  }
+  return true;
+}
+
 void env_clean (s_env *env)
 {
   assert(env);
@@ -563,14 +643,14 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
       ! module_has_ident(call->ident.module, &call->ident,
                          &env->facts, &b) ||
       ! b ||
-      ! call_get(call, &env->facts)) {
+      ! env_call_get(env, call)) {
     ident_init_copy(&call->ident, &tmp_ident);
     call->ident.module = &g_sym_C3;
     if (! module_ensure_loaded(call->ident.module, &env->facts) ||
         ! module_has_ident(call->ident.module, &call->ident,
                            &env->facts, &b) ||
         ! b ||
-        ! call_get(call, &env->facts)) {      
+        ! env_call_get(env, call)) {      
       ident_init_copy(&call->ident, &tmp_ident);
       return false;
     }
