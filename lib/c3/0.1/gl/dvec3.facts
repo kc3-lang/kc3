@@ -1,6 +1,0 @@
-%{module: C3.Facts.Dump,
-  version: 1}
-replace {GL.Dvec3, :is_a, :module}
-replace {GL.Dvec3, :defstruct, [x: (F64) 0,
-                                y: (F64) 0,
-                                z: (F64) 0]}
