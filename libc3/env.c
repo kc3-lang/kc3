@@ -2172,35 +2172,6 @@ bool env_module_load (s_env *env, const s_sym *module)
   return false;
 }
 
-const s_sym * env_module_load_defstruct (s_env *env,
-                                         const s_sym *module)
-{
-  s_struct_type *st;
-  s_list *st_spec;
-  s_tag tag_module_name;
-  s_tag tag_st = {0};
-  s_tag tag_struct_type;
-  if (! env_struct_type_get_spec(env, module, &st_spec))
-    return NULL;
-  tag_st.type = TAG_STRUCT_TYPE;
-  st = &tag_st.data.struct_type;
-  if (! struct_type_init(st, module, st_spec)) {
-    list_delete_all(st_spec);
-    return NULL;
-  }
-  st->clean = env_struct_type_get_clean(env, module);
-  tag_init_sym(&tag_module_name, module);
-  tag_init_sym(&tag_struct_type, &g_sym_struct_type);
-  if (! facts_replace_tags(&env->facts, &tag_module_name,
-                           &tag_struct_type, &tag_st)) {
-    struct_type_clean(st);
-    list_delete_all(st_spec);
-    return NULL;
-  }
-  list_delete_all(st_spec);
-  return module;
-}
-
 s_tag * env_module_load_time (s_env *env, const s_sym *module,
                               s_tag *dest)
 {

@@ -52,8 +52,6 @@ s_tag *       env_defoperator (s_env *env, const s_sym **name,
                                const s_sym **operator_associativity,
                                s_tag *dest);
 const s_sym * env_defstruct (s_env *env, const s_list *spec);
-const s_sym * env_module_load_defstruct (s_env *env,
-                                         const s_sym *module);
 bool          env_eval_array (s_env *env, const s_array *array,
                               s_array *dest);
 bool          env_eval_array_tag (s_env *env, const s_array *array,
