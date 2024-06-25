@@ -164,7 +164,7 @@ TEST_CASE(env_module_load)
 {
   s_env env;
   env_init(&env, 0, NULL);
-  TEST_ASSERT(env_module_load(&env, sym_1("List"), &env.facts));
+  TEST_ASSERT(env_module_load(&env, sym_1("List")));
   env_clean(&env);
 }
 TEST_CASE_END(env_module_load)

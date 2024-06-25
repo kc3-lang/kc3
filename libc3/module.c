@@ -42,7 +42,7 @@ bool module_ensure_loaded (const s_sym *module, s_facts *facts)
                                 &tag_module, &fact))
     return false;
   if (! fact) {
-    if (! module_load(module, facts)) {
+    if (! module_load(module)) {
       err_write_1("module_ensure_loaded: module not found: ");
       err_puts(module->str.ptr.pchar);
       assert(! "module_ensure_loaded: module not found");
@@ -91,9 +91,9 @@ bool * module_is_loading (const s_sym *module, bool *dest)
   return env_module_is_loading(&g_c3_env, module, dest);
 }
 
-bool module_load (const s_sym *module, s_facts *facts)
+bool module_load (const s_sym *module)
 {
-  return env_module_load(&g_c3_env, module, facts);
+  return env_module_load(&g_c3_env, module);
 }
 
 s_tag * module_load_time (const s_sym *module, s_facts *facts,

@@ -173,8 +173,7 @@ bool *        env_module_is_loading (s_env *env, const s_sym *module,
 bool          env_module_is_loading_set (s_env *env,
                                          const s_sym *module,
                                          bool value);
-bool          env_module_load (s_env *env, const s_sym *module,
-                               s_facts *facts);
+bool          env_module_load (s_env *env, const s_sym *module);
 bool          env_module_maybe_reload (s_env *env,
                                        const s_sym *module,
                                        s_facts *facts);

@@ -1820,7 +1820,7 @@ s_env * env_init (s_env *env, int argc, char **argv)
   env->search_modules = env->search_modules_default;
   env->quote_level = 0;
   env->unquote_level = 0;
-  if (! module_load(&g_sym_C3, &env->facts)) {
+  if (! env_module_load(env, &g_sym_C3)) {
     env_clean(env);
     return NULL;
   }
@@ -1961,7 +1961,7 @@ bool env_module_is_loading_set (s_env *env, const s_sym *module,
   return true;
 }
 
-bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
+bool env_module_load (s_env *env, const s_sym *module)
 {
   bool b;
   s_str path = {0};
@@ -1971,7 +1971,6 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
   s_facts_transaction transaction;
   assert(env);
   assert(module);
-  assert(facts);
   if (! env_module_is_loading(env, module, &b))
     return false;
   if (b)
@@ -2001,7 +2000,7 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
     if (! file_access(&path, &g_sym_r))
       goto rollback;
     tag_init_time(&tag_time);
-    if (facts_load_file(facts, &path) < 0) {
+    if (facts_load_file(&env->facts, &path) < 0) {
       err_write_1("env_module_load: ");
       err_write_1(module->str.ptr.pchar);
       err_puts(": facts_load_file");
@@ -2012,14 +2011,14 @@ bool env_module_load (s_env *env, const s_sym *module, s_facts *facts)
   str_clean(&path);
   tag_init_sym(&tag_module_name, module);
   tag_init_sym(&tag_load_time, &g_sym_load_time);
-  if (! facts_replace_tags(facts, &tag_module_name, &tag_load_time,
-                           &tag_time))
+  if (! facts_replace_tags(&env->facts, &tag_module_name,
+                           &tag_load_time, &tag_time))
     goto rollback;
   tag_clean(&tag_time);
   env_module_is_loading_set(env, module, false);
   return true;
  rollback:
-  if (! facts_transaction_rollback(facts, &transaction)) {
+  if (! facts_transaction_rollback(&env->facts, &transaction)) {
     abort();
     return false;
   }
@@ -2082,7 +2081,7 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module,
     return false;
   }
   if (compare_tag(&tag_load_time, &tag_mtime) < 0)
-    r = module_load(module, facts);
+    r = env_module_load(env, module);
   str_clean(&path);
   tag_clean(&tag_mtime);
   return r;
