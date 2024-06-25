@@ -647,10 +647,6 @@ C3_OTHER_SOURCES = \
 	"fonts/Computer Modern/cmunsx-webfont.ttf" \
 	"fonts/Computer Modern/cmunsx.otf" \
 	"fonts/Courier New/Courier New.ttf" \
-	"fonts/Courier Prime/CourierPrime-Bold.ttf" \
-	"fonts/Courier Prime/CourierPrime-BoldItalic.ttf" \
-	"fonts/Courier Prime/CourierPrime-Italic.ttf" \
-	"fonts/Courier Prime/CourierPrime-Regular.ttf" \
 	"fonts/Courier/fonts/OGCourier-Bold.otf" \
 	"fonts/Courier/fonts/OGCourier-Bold.ttf" \
 	"fonts/Courier/fonts/OGCourier-BoldItalic.otf" \
@@ -872,7 +868,6 @@ C3_OTHER_SOURCES = \
 	"img/toast.png" \
 	"lib/c3/0.1/array.facts" \
 	"lib/c3/0.1/c3.facts" \
-	"lib/c3/0.1/c3/operator.facts" \
 	"lib/c3/0.1/complex.facts" \
 	"lib/c3/0.1/f128.facts" \
 	"lib/c3/0.1/f32.facts" \
@@ -1292,7 +1287,6 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/NameAliases.txt" \
 	"ucd2c/UCD/NamedSequences.txt" \
 	"ucd2c/UCD/NamedSequencesProv.txt" \
-	"ucd2c/UCD/NamesList.html" \
 	"ucd2c/UCD/NamesList.txt" \
 	"ucd2c/UCD/NormalizationCorrections.txt" \
 	"ucd2c/UCD/NormalizationTest.txt" \
@@ -1312,15 +1306,11 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/UnicodeData.txt" \
 	"ucd2c/UCD/VerticalOrientation.txt" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakProperty.txt" \
-	"ucd2c/UCD/auxiliary/GraphemeBreakTest.html" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakTest.txt" \
-	"ucd2c/UCD/auxiliary/LineBreakTest.html" \
 	"ucd2c/UCD/auxiliary/LineBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/SentenceBreakProperty.txt" \
-	"ucd2c/UCD/auxiliary/SentenceBreakTest.html" \
 	"ucd2c/UCD/auxiliary/SentenceBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/WordBreakProperty.txt" \
-	"ucd2c/UCD/auxiliary/WordBreakTest.html" \
 	"ucd2c/UCD/auxiliary/WordBreakTest.txt" \
 	"ucd2c/UCD/emoji/ReadMe.txt" \
 	"ucd2c/UCD/emoji/emoji-data.txt" \
@@ -1342,8 +1332,5 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/license.txt" \
 	"ucd2c/ucd.c" \
 	"ucd2c/ucd.h" \
-	"ucd2c/ucd2c" \
 	"ucd2c/ucd2c.c" \
-	"ucd2c/ucd2c.main.lo" \
-	"ucd2c/ucd2c.main.o" \
 
