@@ -293,7 +293,7 @@ uw * tag_hash_uw (const s_tag *tag, uw *dest)
 
 bool tag_ident_is_bound (const s_tag *tag)
 {
-  return env_tag_ident_is_bound(&g_c3_env, tag, &g_c3_env.facts);
+  return env_tag_ident_is_bound(&g_c3_env, tag);
 }
 
 s_tag * tag_init (s_tag *tag)

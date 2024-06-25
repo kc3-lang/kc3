@@ -1071,7 +1071,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   assert(ident);
   if (! (tag = env_frames_get(env, ident->sym)) &&
       env_ident_resolve_module(env, ident, &tmp_ident) &&
-      ! (tag = ident_get(&tmp_ident, &env->facts, &tmp))) {
+      ! (tag = env_ident_get(env, &tmp_ident, &tmp))) {
     err_write_1("env_eval_ident: unbound ident: ");
     err_inspect_ident(ident);
     err_write_1("\n");
@@ -1091,7 +1091,7 @@ bool env_eval_ident_is_bound (s_env *env, const s_ident *ident)
   if (env_frames_get(env, ident->sym))
     return true;
   if (env_ident_resolve_module(env, ident, &tmp_ident) &&
-      ident_get(&tmp_ident, &env->facts, &tmp)) {
+      env_ident_get(env, &tmp_ident, &tmp)) {
     tag_clean(&tmp);
     return true;
   }
@@ -1735,6 +1735,88 @@ const s_tag * env_frames_get (const s_env *env, const s_sym *name)
       (tag = frame_get(&env->global_frame, name)))
     return tag;
   return NULL;
+}
+
+s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
+{
+  s_facts_with_cursor cursor;
+  const s_fact *fact;
+  const s_sym *module;
+  s_tag tag_ident;
+  s_tag tag_is_a;
+  s_tag tag_macro;
+  s_tag tag_module;
+  s_tag tag_special_operator;
+  s_tag tag_sym;
+  s_tag tag_symbol;
+  s_tag tag_symbol_value;
+  s_tag tag_var;
+  module = ident->module;
+  if (! module) {
+    if (! sym_search_modules(ident->sym, &module) ||
+        ! module) {
+      err_write_1("env_ident_get: symbol not found: ");
+      err_inspect_sym(&ident->sym);
+      err_write_1("\n");
+      assert(! "env_ident_get: symbol not found");
+      return NULL;
+    }
+  }
+  if (! module_ensure_loaded(module, &env->facts))
+    return NULL;
+  tag_init_ident(&tag_ident, ident);
+  tag_init_sym(  &tag_is_a, &g_sym_is_a);
+  tag_init_sym(  &tag_macro, &g_sym_macro);
+  tag_init_sym(  &tag_module, module);
+  tag_init_sym(  &tag_special_operator, &g_sym_special_operator);
+  tag_init_sym(  &tag_sym, ident->sym);
+  tag_init_sym(  &tag_symbol, &g_sym_symbol);
+  tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
+  tag_init_var(  &tag_var, &g_sym_Tag);
+  if (! facts_find_fact_by_tags(&env->facts, &tag_module, &tag_symbol,
+                                &tag_ident, &fact) ||
+      ! fact)
+    return NULL;
+  if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
+        &tag_ident, &tag_symbol_value, &tag_var,
+        NULL, NULL }))
+    return NULL;
+  if (! facts_with_cursor_next(&cursor, &fact) ||
+      ! fact) {
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  facts_with_cursor_clean(&cursor);
+  if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
+        &tag_ident, &tag_is_a, &tag_macro, NULL, NULL }))
+    return NULL;
+  if (! facts_with_cursor_next(&cursor, &fact)) {
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  if (fact) {
+    if (tag_var.type == TAG_CFN)
+      tag_var.data.cfn.macro = true;
+    else if (tag_var.type == TAG_FN)
+      tag_var.data.fn.macro = true;
+  }
+  facts_with_cursor_clean(&cursor);
+  if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
+        &tag_ident, &tag_is_a, &tag_special_operator, NULL, NULL}))
+    return NULL;
+  if (! facts_with_cursor_next(&cursor, &fact)) {
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  if (fact) {
+    if (tag_var.type == TAG_CFN)
+      tag_var.data.cfn.special_operator = true;
+    else if (tag_var.type == TAG_FN)
+      tag_var.data.fn.special_operator = true;
+  }
+  facts_with_cursor_clean(&cursor);
+  *dest = tag_var;
+  return dest;
 }
 
 bool * env_ident_is_special_operator (s_env *env,
@@ -2575,15 +2657,14 @@ bool * env_struct_type_has_spec (s_env *env, const s_sym *module,
   return dest;
 }
 
-bool env_tag_ident_is_bound (const s_env *env, const s_tag *tag,
-                             s_facts *facts)
+bool env_tag_ident_is_bound (s_env *env, const s_tag *tag)
 {
   s_tag tmp;
   assert(tag);
   assert(tag->type == TAG_IDENT);
   return tag->type == TAG_IDENT &&
     (env_frames_get(env, tag->data.ident.sym) ||
-     ident_get(&tag->data.ident, facts, &tmp));
+     env_ident_get(env, &tag->data.ident, &tmp));
 }
 
 s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_block *cleanup,

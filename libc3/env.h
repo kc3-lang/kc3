@@ -164,6 +164,8 @@ bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
 bool          env_eval_void (s_env *env, const void *_, s_tag *dest);
 s_fact_w *    env_fact_w_eval (s_env *env, const s_fact_w *fact,
 			       s_fact_w *dest);
+s_tag *       env_ident_get (s_env *env, const s_ident *ident,
+                             s_tag *dest);
 bool *        env_ident_is_special_operator (s_env *env,
                                              const s_ident *ident,
                                              bool *dest);
@@ -201,9 +203,8 @@ s_list **     env_struct_type_get_spec (s_env *env, const s_sym *module,
                                         s_list **dest);
 bool *        env_struct_type_has_spec (s_env *env, const s_sym *module,
                                         bool *dest);
-bool          env_tag_ident_is_bound (const s_env *env,
-                                      const s_tag *tag,
-                                      s_facts *facts);
+bool          env_tag_ident_is_bound (s_env *env,
+                                      const s_tag *tag);
 
 /* Modifiers. */
 bool env_call_get (s_env *env, s_call *call);
