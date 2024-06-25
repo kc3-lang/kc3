@@ -1541,6 +1541,7 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
   s_tag tag = {0};
   s_tag tmp = {0};
   const s_sym *type;
+  const void *value;
   assert(env);
   assert(s);
   assert(dest);
@@ -1557,12 +1558,13 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
     return false;
   i = 0;
   while (i < t->type->map.count) {
-    if (t->type->map.value[i].type == TAG_VAR)
-      type = t->type->map.value[i].data.var.type;
-    else
-      if (! tag_type(t->type->map.value + i, &type))
-        goto ko;
     if (s->tag) {
+      if (t->type->map.value[i].type == TAG_VAR)
+        type = t->type->map.value[i].data.var.type;
+      else {
+        if (! tag_type(t->type->map.value + i, &type))
+          goto ko;
+      }
       if (! env_eval_tag(env, s->tag + i, &tag))
         goto ko;
       if (! data_init_cast((s8 *) t->data + t->type->offset[i],
@@ -1579,7 +1581,8 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
       tag_clean(&tag);
     }
     else {
-      const void *value;
+      if (! tag_type(t->type->map.value + i, &type))
+        goto ko;
       if (! tag_to_const_pointer(t->type->map.value + i, type, &value))
         goto ko;
       if (! data_init_copy(type, (s8 *) t->data + t->type->offset[i],

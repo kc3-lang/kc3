@@ -628,7 +628,7 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
   if (type == &g_sym_Uw)
     return uw_init_copy(data, src);
   if (type == &g_sym_Var)
-    return data;
+    return var_init_copy(data, src);
   if (type == &g_sym_Void)
     return data;
   st = struct_type_find(type);
