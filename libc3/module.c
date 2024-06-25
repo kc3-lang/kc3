@@ -30,35 +30,15 @@ bool module_ensure_loaded (const s_sym *module)
 }
 
 bool * module_has_ident (const s_sym *module, const s_ident *ident,
-                         s_facts *facts, bool *dest)
+                         bool *dest)
 {
-  const s_fact *fact;
-  s_tag tag_ident;
-  s_tag tag_module_name;
-  s_tag tag_operator;
-  s_tag tag_symbol;
-  tag_init_ident(&tag_ident, ident);
-  tag_init_sym(  &tag_module_name, module);
-  tag_init_sym(  &tag_operator, &g_sym_operator);
-  tag_init_sym(  &tag_symbol, &g_sym_symbol);
-  if (! facts_find_fact_by_tags(facts, &tag_module_name,
-                                &tag_symbol, &tag_ident, &fact))
-    return NULL;
-  if (! fact &&
-      ! facts_find_fact_by_tags(facts, &tag_module_name,
-                                &tag_operator, &tag_ident, &fact))
-    return NULL;
-  *dest = fact ? true : false;
-  return dest;
+  return env_module_has_ident(&g_c3_env, module, ident, dest);
 }
 
 bool * module_has_symbol (const s_sym *module, const s_sym *sym,
-                          s_facts *facts, bool *dest)
+                          bool *dest)
 {
-  s_ident ident;
-  ident.module = module;
-  ident.sym = sym;
-  return module_has_ident(module, &ident, facts, dest);
+  return env_module_has_symbol(&g_c3_env, module, sym, dest);
 }
 
 bool * module_is_loading (const s_sym *module, bool *dest)

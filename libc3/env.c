@@ -640,15 +640,15 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   ident_init_copy(&tmp_ident, &call->ident);
   if (! env_ident_resolve_module(env, &tmp_ident, &call->ident) ||
       ! env_module_ensure_loaded(env, call->ident.module) ||
-      ! module_has_ident(call->ident.module, &call->ident,
-                         &env->facts, &b) ||
+      ! env_module_has_ident(env, call->ident.module, &call->ident,
+                             &b) ||
       ! b ||
       ! env_call_get(env, call)) {
     ident_init_copy(&call->ident, &tmp_ident);
     call->ident.module = &g_sym_C3;
     if (! env_module_ensure_loaded(env, call->ident.module) ||
-        ! module_has_ident(call->ident.module, &call->ident,
-                           &env->facts, &b) ||
+        ! env_module_has_ident(env, call->ident.module, &call->ident,
+                               &b) ||
         ! b ||
         ! env_call_get(env, call)) {      
       ident_init_copy(&call->ident, &tmp_ident);
@@ -2028,6 +2028,38 @@ bool env_module_ensure_loaded (s_env *env, const s_sym *module)
   return true;
 }
 
+bool * env_module_has_ident (s_env *env, const s_sym *module,
+                             const s_ident *ident, bool *dest)
+{
+  const s_fact *fact;
+  s_tag tag_ident;
+  s_tag tag_module_name;
+  s_tag tag_operator;
+  s_tag tag_symbol;
+  tag_init_ident(&tag_ident, ident);
+  tag_init_sym(  &tag_module_name, module);
+  tag_init_sym(  &tag_operator, &g_sym_operator);
+  tag_init_sym(  &tag_symbol, &g_sym_symbol);
+  if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
+                                &tag_symbol, &tag_ident, &fact))
+    return NULL;
+  if (! fact &&
+      ! facts_find_fact_by_tags(&env->facts, &tag_module_name,
+                                &tag_operator, &tag_ident, &fact))
+    return NULL;
+  *dest = fact ? true : false;
+  return dest;
+}
+
+bool * env_module_has_symbol (s_env *env, const s_sym *module,
+                              const s_sym *sym, bool *dest)
+{
+  s_ident ident;
+  ident.module = module;
+  ident.sym = sym;
+  return env_module_has_ident(env, module, &ident, dest);
+}
+
 bool * env_module_is_loading (s_env *env, const s_sym *module,
                               bool *dest)
 {
@@ -2488,7 +2520,7 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
       assert(! "env_sym_search_modules: invalid env->search_modules");
       return false;
     }
-    if (! module_has_symbol(module, sym, &env->facts, &b))
+    if (! module_has_symbol(module, sym, &b))
       return false;
     if (b) {
       *dest = module;
