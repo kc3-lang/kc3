@@ -27,6 +27,8 @@ s_ident *      env_ident_resolve_module (s_env *env,
                                          const s_ident *ident,
                                          s_ident *dest);
 const s_sym ** env_module (s_env *env, const s_sym **dest);
+s_tag *        env_module_load_time (s_env *env, const s_sym *module,
+                                     s_tag *dest);
 s_list **      env_module_search_modules (s_env *env,
                                           const s_sym *module,
                                           s_list **dest);
@@ -177,8 +179,7 @@ bool          env_module_is_loading_set (s_env *env,
                                          bool value);
 bool          env_module_load (s_env *env, const s_sym *module);
 bool          env_module_maybe_reload (s_env *env,
-                                       const s_sym *module,
-                                       s_facts *facts);
+                                       const s_sym *module);
 s8            env_operator_arity (s_env *env, const s_ident *op);
 bool *        env_operator_find (s_env *env, const s_ident *op,
                                  bool *dest);

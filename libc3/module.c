@@ -71,33 +71,14 @@ bool module_load (const s_sym *module)
   return env_module_load(&g_c3_env, module);
 }
 
-s_tag * module_load_time (const s_sym *module, s_facts *facts,
-                          s_tag *dest)
+s_tag * module_load_time (const s_sym *module, s_tag *dest)
 {
-  s_facts_with_cursor cursor;
-  const s_fact *fact;
-  s_tag tag_module_name;
-  s_tag tag_load_time;
-  s_tag tag_time_var;
-  tag_init_sym(&tag_module_name, module);
-  tag_init_sym(&tag_load_time, &g_sym_load_time);
-  tag_init_var(&tag_time_var, &g_sym_Tag);
-  if (! facts_with(facts, &cursor, (t_facts_spec) {
-        &tag_module_name, &tag_load_time, &tag_time_var, NULL, NULL }))
-    return NULL;
-  if (! facts_with_cursor_next(&cursor, &fact) ||
-      ! fact) {
-    facts_with_cursor_clean(&cursor);
-    return NULL;
-  }
-  facts_with_cursor_clean(&cursor);
-  *dest = tag_time_var;
-  return dest;
+  return env_module_load_time(&g_c3_env, module, dest);
 }
 
-bool module_maybe_reload (const s_sym *module, s_facts *facts)
+bool module_maybe_reload (const s_sym *module)
 {
-  return env_module_maybe_reload(&g_c3_env, module, facts);
+  return env_module_maybe_reload(&g_c3_env, module);
 }
 
 s_str * module_path (const s_sym *module, const s_str *prefix,

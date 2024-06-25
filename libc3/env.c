@@ -2024,7 +2024,7 @@ bool env_module_ensure_loaded (s_env *env, const s_sym *module)
     }
     return true;
   }
-  module_maybe_reload(module, &env->facts);
+  env_module_maybe_reload(env, module);
   return true;
 }
 
@@ -2166,14 +2166,37 @@ const s_sym * env_module_load_defstruct (s_env *env,
   return module;
 }
 
-bool env_module_maybe_reload (s_env *env, const s_sym *module,
-                              s_facts *facts)
+s_tag * env_module_load_time (s_env *env, const s_sym *module,
+                              s_tag *dest)
+{
+  s_facts_with_cursor cursor;
+  const s_fact *fact;
+  s_tag tag_module_name;
+  s_tag tag_load_time;
+  s_tag tag_time_var;
+  tag_init_sym(&tag_module_name, module);
+  tag_init_sym(&tag_load_time, &g_sym_load_time);
+  tag_init_var(&tag_time_var, &g_sym_Tag);
+  if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
+        &tag_module_name, &tag_load_time, &tag_time_var, NULL, NULL }))
+    return NULL;
+  if (! facts_with_cursor_next(&cursor, &fact) ||
+      ! fact) {
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  facts_with_cursor_clean(&cursor);
+  *dest = tag_time_var;
+  return dest;
+}
+
+bool env_module_maybe_reload (s_env *env, const s_sym *module)
 {
   s_str path;
   bool r = false;
   s_tag tag_load_time = {0};
   s_tag tag_mtime;
-  module_load_time(module, facts, &tag_load_time);
+  env_module_load_time(env, module, &tag_load_time);
   if (module_path(module, &env->module_path, C3_EXT, &path)) {
     if (file_access(&path, &g_sym_r))
       r = true;
@@ -2529,7 +2552,7 @@ bool * env_struct_type_exists (s_env *env, const s_sym *module,
   tag_init_sym(&tag_module, module);
   tag_init_sym(&tag_defstruct, &g_sym_defstruct);
   tag_init_var(&tag_var, &g_sym_Tag);
-  env_module_maybe_reload(env, module, &env->facts);
+  env_module_maybe_reload(env, module);
   if (! facts_with_tags(&env->facts, &cursor, &tag_module,
                         &tag_defstruct, &tag_var))
     return NULL;
@@ -2555,7 +2578,7 @@ const s_struct_type * env_struct_type_find (s_env *env,
   tag_init_sym(&tag_module, module);
   tag_init_sym(&tag_struct_type, &g_sym_struct_type);
   tag_init_var(&tag_var, &g_sym_Tag);
-  env_module_maybe_reload(env, module, &env->facts);
+  env_module_maybe_reload(env, module);
   facts_with(&env->facts, &cursor, (t_facts_spec) {
       &tag_module, &tag_struct_type, &tag_var, NULL, NULL });
   if (! facts_with_cursor_next(&cursor, &found))
