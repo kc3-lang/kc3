@@ -23,7 +23,7 @@
 #include "types.h"
 
 /* Modifiers */
-bool module_ensure_loaded (const s_sym *module, s_facts *facts);
+bool module_ensure_loaded (const s_sym *module);
 bool module_load (const s_sym *module);
 bool module_maybe_reload (const s_sym *module, s_facts *facts);
 

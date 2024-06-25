@@ -639,14 +639,14 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   }
   ident_init_copy(&tmp_ident, &call->ident);
   if (! env_ident_resolve_module(env, &tmp_ident, &call->ident) ||
-      ! module_ensure_loaded(call->ident.module, &env->facts) ||
+      ! env_module_ensure_loaded(env, call->ident.module) ||
       ! module_has_ident(call->ident.module, &call->ident,
                          &env->facts, &b) ||
       ! b ||
       ! env_call_get(env, call)) {
     ident_init_copy(&call->ident, &tmp_ident);
     call->ident.module = &g_sym_C3;
-    if (! module_ensure_loaded(call->ident.module, &env->facts) ||
+    if (! env_module_ensure_loaded(env, call->ident.module) ||
         ! module_has_ident(call->ident.module, &call->ident,
                            &env->facts, &b) ||
         ! b ||
@@ -1762,7 +1762,7 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
       return NULL;
     }
   }
-  if (! module_ensure_loaded(module, &env->facts))
+  if (! env_module_ensure_loaded(env, module))
     return NULL;
   tag_init_ident(&tag_ident, ident);
   tag_init_sym(  &tag_is_a, &g_sym_is_a);
@@ -1996,6 +1996,36 @@ const s_sym ** env_module (s_env *env, const s_sym **dest)
   assert(env->current_defmodule);
   *dest = env->current_defmodule;
   return dest;
+}
+
+bool env_module_ensure_loaded (s_env *env, const s_sym *module)
+{
+  bool b;
+  const s_fact *fact;
+  s_tag tag_module_name;
+  s_tag tag_is_a;
+  s_tag tag_module;
+  if (! module_is_loading(module, &b))
+    return false;
+  if (b)
+    return true;
+  tag_init_sym(&tag_is_a, &g_sym_is_a);
+  tag_init_sym(&tag_module, &g_sym_module);
+  tag_init_sym(&tag_module_name, module);
+  if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
+                                &tag_is_a, &tag_module, &fact))
+    return false;
+  if (! fact) {
+    if (! module_load(module)) {
+      err_write_1("env_module_ensure_loaded: module not found: ");
+      err_puts(module->str.ptr.pchar);
+      assert(! "env_module_ensure_loaded: module not found");
+      return false;
+    }
+    return true;
+  }
+  module_maybe_reload(module, &env->facts);
+  return true;
 }
 
 bool * env_module_is_loading (s_env *env, const s_sym *module,

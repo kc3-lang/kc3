@@ -24,34 +24,9 @@
 #include "tag.h"
 #include "sym.h"
 
-bool module_ensure_loaded (const s_sym *module, s_facts *facts)
+bool module_ensure_loaded (const s_sym *module)
 {
-  bool b;
-  const s_fact *fact;
-  s_tag tag_module_name;
-  s_tag tag_is_a;
-  s_tag tag_module;
-  if (! module_is_loading(module, &b))
-    return false;
-  if (b)
-    return true;
-  tag_init_sym(&tag_is_a, &g_sym_is_a);
-  tag_init_sym(&tag_module, &g_sym_module);
-  tag_init_sym(&tag_module_name, module);
-  if (! facts_find_fact_by_tags(facts, &tag_module_name, &tag_is_a,
-                                &tag_module, &fact))
-    return false;
-  if (! fact) {
-    if (! module_load(module)) {
-      err_write_1("module_ensure_loaded: module not found: ");
-      err_puts(module->str.ptr.pchar);
-      assert(! "module_ensure_loaded: module not found");
-      return false;
-    }
-    return true;
-  }
-  module_maybe_reload(module, facts);
-  return true;
+  return env_module_ensure_loaded(&g_c3_env, module);
 }
 
 bool * module_has_ident (const s_sym *module, const s_ident *ident,
