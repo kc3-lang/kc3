@@ -74,11 +74,11 @@ LOCAL_LIBS_ASAN="$LIBC3_ASAN"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
-CFLAGS_COV="$CFLAGS --coverage"
-LDFLAGS_COV="$LDFLAGS"
+CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
+LDFLAGS_COV="$LDFLAGS --coverage"
 LIBC3_COV=../libc3/libc3_cov.la
 LOCAL_LIBS_COV="$LIBC3_COV"
-LIBS_COV="$LOCAL_LIBS_COV $LIBS"
+LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"

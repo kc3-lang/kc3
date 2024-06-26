@@ -64,8 +64,8 @@ LDFLAGS_ASAN="$LDFLAGS"
 LIBS_ASAN="$LIBS"
 
 # Coverage config
-CFLAGS_COV="$CFLAGS --coverage"
-LDFLAGS_COV="$LDFLAGS"
+CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
+LDFLAGS_COV="$LDFLAGS --coverage"
 LIBS_COV="$LIBS -lgcov"
 
 # Debug config

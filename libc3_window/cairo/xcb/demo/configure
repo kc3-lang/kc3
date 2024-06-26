@@ -69,14 +69,14 @@ LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
-CFLAGS_COV="$CFLAGS -DDEBUG --coverage"
-LDFLAGS_COV="$LDFLAGS"
+CFLAGS_COV="$CFLAGS -DDEBUG -fprofile-arcs -ftest-coverage"
+LDFLAGS_COV="$LDFLAGS --coverage"
 LOCAL_LIBS_COV="../../../../libc3/libc3_cov.la"
 LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../../../libc3_window_cov.la"
 LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../../libc3_window_cairo_cov.la"
 LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../../demo/libc3_window_cairo_demo_cov.la"
 LOCAL_LIBS_COV="$LOCAL_LIBS_COV ../libc3_window_cairo_xcb_cov.la"
-LIBS_COV="$LOCAL_LIBS_COV $LIBS"
+LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
