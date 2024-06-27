@@ -2292,6 +2292,7 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
       if (s->data) {
         if (! tag_type(s->type->map.value + i, &type))
           return -1;
+        assert(s->type->offset[i] < s->type->size);
         if ((r = data_buf_inspect(type, buf, (char *) s->data +
                                   s->type->offset[i])) < 0)
           return r;
