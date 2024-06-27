@@ -1,0 +1,10 @@
+quote %GL.Vec2{}
+%GL.Vec2{}
+quote %GL.Vec3{}
+%GL.Vec3{}
+quote %GL.Vertex{}
+%GL.Vertex{}
+quote %GL.Triangle{}
+%GL.Triangle{}
+quote %GL.Object{}
+%GL.Object{}

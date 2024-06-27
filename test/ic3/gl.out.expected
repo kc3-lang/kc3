@@ -1,0 +1,10 @@
+%GL.Vec2{}
+%GL.Vec2{x: 0.0f, y: 0.0f}
+%GL.Vec3{}
+%GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}
+%GL.Vertex{}
+%GL.Vertex{position: %GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}, normal: %GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}, tex_coord: %GL.Vec2{x: 0.0f, y: 0.0f}}
+%GL.Triangle{}
+%GL.Triangle{a: 0, b: 1, c: 2}
+%GL.Object{}
+%GL.Object{vertex: (GL.Vertex[]) {}, triangle: (GL.Triangle[]) {}, gl_mode: (U32) 0, gl_vao: (U32) 0, gl_vbo: (U32) 0, gl_ebo: (U32) 0}
