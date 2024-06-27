@@ -114,6 +114,7 @@ bool env_call_get (s_env *env, s_call *call)
       facts_cursor_clean(&cursor);
       return false;
     }
+    tag_clean(&tag_var);
   }
   facts_cursor_clean(&cursor);
   if (! facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
@@ -2230,6 +2231,7 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module)
   if (compare_tag(&tag_load_time, &tag_mtime) < 0)
     r = env_module_load(env, module);
   tag_clean(&tag_mtime);
+  tag_clean(&tag_load_time);
   return r;
 }
 
