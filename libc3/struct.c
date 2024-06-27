@@ -174,10 +174,10 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
   assert(src->type);
   tmp.type = src->type;
   if (src->data) {
-    tmp.free_data = true;
     tmp.data = alloc(tmp.type->size);
     if (! tmp.data)
       return NULL;
+    tmp.free_data = true;
     i = 0;
     while (i < tmp.type->map.count) {
       if (! tag_type(tmp.type->map.value + i, &sym) ||

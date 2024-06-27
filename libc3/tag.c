@@ -1280,7 +1280,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_RATIO:       *dest = &g_sym_Ratio;      return dest;
   case TAG_STR:         *dest = &g_sym_Str;        return dest;
   case TAG_STRUCT:      *dest = tag->data.struct_.type->module;
-                                                     return dest;
+                                                   return dest;
   case TAG_STRUCT_TYPE: *dest = &g_sym_StructType; return dest;
   case TAG_SYM:         *dest = &g_sym_Sym;        return dest;
   case TAG_TUPLE:       *dest = &g_sym_Tuple;      return dest;

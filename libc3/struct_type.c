@@ -53,7 +53,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
 {
   uw count;
   uw i;
-  bool must_clean;
+  bool must_clean = false;
   uw offset;
   const s_list *s;
   uw size;

@@ -1149,7 +1149,7 @@ bool sym_type_size (const s_sym *type, uw *dest)
     return true;
   }
   if (type == &g_sym_Var) {
-    *dest = 0;
+    *dest = sizeof(s_tag);
     return true;
   }
   if (type == &g_sym_Void) {
