@@ -829,7 +829,7 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
 
 bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 {
-  bool b;
+  bool b = false;
   if (sym == &g_sym_Array ||
       sym_is_array_type(sym)) {
     *dest = TAG_ARRAY;
