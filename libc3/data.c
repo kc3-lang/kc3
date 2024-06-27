@@ -60,6 +60,8 @@ sw data_buf_inspect (const s_sym *type, s_buf *buf, const void *data)
     return buf_inspect_str(buf, data);
   if (type == &g_sym_Struct)
     return buf_inspect_struct(buf, data);
+  if (type == &g_sym_StructType)
+    return buf_inspect_struct_type(buf, data);
   if (type == &g_sym_Sw)
     return buf_inspect_sw(buf, data);
   if (type == &g_sym_Sym)
@@ -96,6 +98,7 @@ sw data_buf_inspect (const s_sym *type, s_buf *buf, const void *data)
 
 sw data_buf_inspect_size (const s_sym *type, const void *data)
 {
+  s_struct s = {0};
   const s_struct_type *st;
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
@@ -142,6 +145,8 @@ sw data_buf_inspect_size (const s_sym *type, const void *data)
     return buf_inspect_str_size(data);
   if (type == &g_sym_Struct)
     return buf_inspect_struct_size(data);
+  if (type == &g_sym_StructType)
+    return buf_inspect_struct_type_size(data);
   if (type == &g_sym_Sw)
     return buf_inspect_sw_size(data);
   if (type == &g_sym_Sym)
@@ -164,7 +169,6 @@ sw data_buf_inspect_size (const s_sym *type, const void *data)
     return buf_inspect_void_size(data);
   st = struct_type_find(type);
   if (st) {
-    s_struct s = {0};
     s.type = st;
     s.data = (void *) data;
     return buf_inspect_struct_size(&s);
@@ -178,6 +182,7 @@ sw data_buf_inspect_size (const s_sym *type, const void *data)
 
 bool data_clean (const s_sym *type, void *data)
 {
+  s_struct s = {0};
   const s_struct_type *st;
   assert(type);
   if (type == &g_sym_Array ||
@@ -261,6 +266,10 @@ bool data_clean (const s_sym *type, void *data)
     struct_clean(data);
     return true;
   }
+  if (type == &g_sym_StructType) {
+    struct_type_clean(data);
+    return true;
+  }
   if (type == &g_sym_Sw) {
     return true;
   }
@@ -295,7 +304,6 @@ bool data_clean (const s_sym *type, void *data)
   }
   st = struct_type_find(type);
   if (st) {
-    s_struct s = {0};
     s.type = st;
     s.data = data;
     struct_clean(&s);
@@ -310,6 +318,8 @@ bool data_clean (const s_sym *type, void *data)
 
 bool data_compare (const s_sym *type, const void *a, const void *b)
 {
+  s_struct sa = {0};
+  s_struct sb = {0};
   const s_struct_type *st;
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
@@ -356,6 +366,8 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
     return compare_str(a, b);
   if (type == &g_sym_Struct)
     return compare_struct(a, b);
+  if (type == &g_sym_StructType)
+    return compare_struct_type(a, b);
   if (type == &g_sym_Sw)
     return compare_sw(*(sw *) a, *(sw *) b);
   if (type == &g_sym_Sym)
@@ -378,8 +390,6 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
     return 0;
   st = struct_type_find(type);
   if (st) {
-    s_struct sa = {0};
-    s_struct sb = {0};
     sa.type = st;
     sa.data = (void *) a;
     sb.type = st;
@@ -395,6 +405,7 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
 
 bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
 {
+  s_struct s = {0};
   const s_struct_type *st;
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
@@ -441,6 +452,8 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
     return hash_update_str(hash, data);
   if (type == &g_sym_Struct)
     return hash_update_struct(hash, data);
+  if (type == &g_sym_StructType)
+    return hash_update_struct_type(hash, data);
   if (type == &g_sym_Sw)
     return hash_update_sw(hash, data);
   if (type == &g_sym_Sym)
@@ -463,7 +476,6 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
     return hash_update_void(hash, data);
   st = struct_type_find(type);
   if (st) {
-    s_struct s = {0};
     s.type = st;
     s.data = (void *) data;
     return hash_update_struct(hash, &s);
@@ -478,8 +490,9 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
 void * data_init_cast (void *data, const s_sym * const *type,
                        const s_tag *tag)
 {
-  const s_sym *t;
+  s_struct s = {0};
   const s_struct_type *st;
+  const s_sym *t;
   t = *type;
   if (t == &g_sym_Array ||
       sym_is_array_type(*type))
@@ -524,6 +537,10 @@ void * data_init_cast (void *data, const s_sym * const *type,
     return s64_init_cast(data, type, tag);
   if (t == &g_sym_Str)
     return str_init_cast(data, type, tag);
+  if (t == &g_sym_Struct)
+    return struct_init_cast(data, type, tag);
+  if (t == &g_sym_StructType)
+    return struct_type_init_cast(data, type, tag);
   if (t == &g_sym_Sw)
     return sw_init_cast(data, type, tag);
   if (t == &g_sym_Sym)
@@ -551,7 +568,6 @@ void * data_init_cast (void *data, const s_sym * const *type,
   */
   st = struct_type_find(t);
   if (st) {
-    s_struct s = {0};
     s.type = st;
     s.data = data;
     return struct_init_cast(&s, type, tag);
@@ -565,7 +581,9 @@ void * data_init_cast (void *data, const s_sym * const *type,
 
 void * data_init_copy (const s_sym *type, void *data, const void *src)
 {
+  s_struct s = {0};
   const s_struct_type *st;
+  s_struct t = {0};
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
     return array_init_copy(data, src);
@@ -611,6 +629,8 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
     return str_init_copy(data, src);
   if (type == &g_sym_Struct)
     return struct_init_copy(data, src);
+  if (type == &g_sym_StructType)
+    return struct_type_init_copy(data, src);
   if (type == &g_sym_Sw)
     return sw_init_copy(data, src);
   if (type == &g_sym_Sym)
@@ -633,8 +653,6 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
     return data;
   st = struct_type_find(type);
   if (st) {
-    s_struct s = {0};
-    s_struct t = {0};
     t.type = s.type = st;
     s.data = data;
     t.data = (void *) src;

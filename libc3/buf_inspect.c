@@ -2352,7 +2352,7 @@ sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
     return r;
   result += r;
   offset_array_dimension = st->map.count;
-  array_init(&offset_array, &g_sym_Uw, 1, &offset_array_dimension);
+  array_init(&offset_array, sym_1("Uw[]"), 1, &offset_array_dimension);
   offset_array.data = st->offset;
   if ((r = buf_inspect_array(buf, &offset_array)) < 0) {
     array_clean(&offset_array);

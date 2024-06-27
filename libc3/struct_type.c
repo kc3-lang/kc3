@@ -109,11 +109,31 @@ s_struct_type * struct_type_init (s_struct_type *st,
   return st;
 }
 
-s_struct_type * struct_type_init_copy (s_struct_type *s,
+s_struct_type * struct_type_init_cast (s_struct_type *st,
+                                       const s_sym * const *type,
+                                       const s_tag *tag)
+{
+  assert(st);
+  assert(tag);
+  switch (tag->type) {
+  case TAG_STRUCT_TYPE:
+    if (*type == &g_sym_StructType)
+      return struct_type_init_copy(st, &tag->data.struct_type);
+  default:
+    break;
+  }
+  err_write_1("struct_type_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_puts(" to StructType");
+  assert(! "struct_type_init_cast: cannot cast to StructType");
+  return NULL;
+}
+
+s_struct_type * struct_type_init_copy (s_struct_type *st,
                                        const s_struct_type *src)
 {
   s_struct_type tmp;
-  assert(s);
+  assert(st);
   assert(src);
   assert(src->module);
   assert(src->map.count);
@@ -127,8 +147,8 @@ s_struct_type * struct_type_init_copy (s_struct_type *s,
   }
   memcpy(tmp.offset, src->offset, tmp.map.count * sizeof(uw));
   tmp.size = src->size;
-  *s = tmp;
-  return s;
+  *st = tmp;
+  return st;
 }
 
 s_struct_type * struct_type_init_from_env (s_struct_type *st,

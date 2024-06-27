@@ -24,20 +24,23 @@
 
 #include "types.h"
 
-/* Stack-allocation compatible functions, call struct_type_clean after
-   use. */
-void            struct_type_clean (s_struct_type *s);
-s_struct_type * struct_type_init (s_struct_type *s, const s_sym *module,
+/* Stack-allocation functions, call struct_type_clean after use. */
+void            struct_type_clean (s_struct_type *st);
+s_struct_type * struct_type_init (s_struct_type *st,
+                                  const s_sym *module,
                                   const s_list *spec);
-s_struct_type * struct_type_init_copy (s_struct_type *s,
+s_struct_type * struct_type_init_cast (s_struct_type *st,
+                                       const s_sym * const *type,
+                                       const s_tag *src);
+s_struct_type * struct_type_init_copy (s_struct_type *st,
                                        const s_struct_type *src);
 
 /* Heap-allocation functions, call struct_type_delete after use. */
-void            struct_type_delete (s_struct_type *s);
+void            struct_type_delete (s_struct_type *st);
 s_struct_type * struct_type_new (const s_sym *module,
                                  const s_list *spec);
 
-/* Utility functions. */
+/* Observers. */
 bool *                struct_type_exists (const s_sym *module,
                                           bool *dest);
 const s_struct_type * struct_type_find (const s_sym *module);

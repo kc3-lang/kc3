@@ -582,6 +582,10 @@ bool sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = true;
     return true;
   }
+  if (sym == &g_sym_StructType) {
+    *must_clean = true;
+    return true;
+  }
   if (sym == &g_sym_Sym) {
     *must_clean = true;
     return true;
@@ -770,6 +774,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_pointer;
     return true;
   }
+  if (sym == &g_sym_StructType) {
+    *dest = &ffi_type_pointer;
+    return true;
+  }
   if (sym == &g_sym_Sym) {
     *dest = &ffi_type_pointer;
     return true;
@@ -925,6 +933,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   }
   if (sym == &g_sym_Struct) {
     *dest = TAG_STRUCT;
+    return true;
+  }
+  if (sym == &g_sym_StructType) {
+    *dest = TAG_STRUCT_TYPE;
     return true;
   }
   if (sym == &g_sym_Sw) {
@@ -1094,6 +1106,10 @@ bool sym_type_size (const s_sym *type, uw *dest)
   }
   if (type == &g_sym_Struct) {
     *dest = sizeof(s_struct);
+    return true;
+  }
+  if (type == &g_sym_StructType) {
+    *dest = sizeof(s_struct_type);
     return true;
   }
   if (type == &g_sym_Sw) {
