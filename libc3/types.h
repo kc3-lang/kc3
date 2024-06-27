@@ -89,6 +89,12 @@ typedef enum {
 } e_bool;
 
 typedef enum {
+  FACT_ACTION_ADD,
+  FACT_ACTION_REMOVE,
+  FACT_ACTION_REPLACE
+} e_fact_action;
+
+typedef enum {
   TAG_VOID = 0,
   TAG_ARRAY,
   TAG_BLOCK,
@@ -344,12 +350,6 @@ struct buf {
   uw          wpos;
 };
 
-struct fact_action {
-  bool remove;
-  s_fact fact;
-  s_fact_action *next;
-};
-
 struct facts_spec_cursor {
   p_facts_spec spec;
   const s_tag *subject;
@@ -522,6 +522,13 @@ struct error_handler
   jmp_buf jmp_buf;
   s_error_handler *next;
   s_tag tag;
+};
+
+struct fact_action {
+  e_fact_action action;
+  s_fact fact;
+  s_tag object;
+  s_fact_action *next;
 };
 
 struct fact_w {

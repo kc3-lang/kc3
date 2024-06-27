@@ -286,21 +286,22 @@ s_facts * facts_init (s_facts *facts)
 {
   const u8 max_height = 10;
   const double spacing = 2.7;
+  s_facts tmp = {0};
   assert(facts);
-  set_init__tag(&facts->tags, 1024);
-  set_init__fact(&facts->facts, 1024);
-  facts->index_spo = skiplist_new__fact(max_height, spacing);
-  assert(facts->index_spo);
-  facts->index_spo->compare = compare_fact;
-  facts->index_pos = skiplist_new__fact(max_height, spacing);
-  assert(facts->index_pos);
-  facts->index_pos->compare = compare_fact_pos;
-  facts->index_osp = skiplist_new__fact(max_height, spacing);
-  assert(facts->index_osp);
-  facts->index_osp->compare = compare_fact_osp;
-  facts->log = NULL;
+  set_init__tag(&tmp.tags, 1024);
+  set_init__fact(&tmp.facts, 1024);
+  tmp.index_spo = skiplist_new__fact(max_height, spacing);
+  assert(tmp.index_spo);
+  tmp.index_spo->compare = compare_fact;
+  tmp.index_pos = skiplist_new__fact(max_height, spacing);
+  assert(tmp.index_pos);
+  tmp.index_pos->compare = compare_fact_pos;
+  tmp.index_osp = skiplist_new__fact(max_height, spacing);
+  assert(tmp.index_osp);
+  tmp.index_osp->compare = compare_fact_osp;
   facts_lock_init(facts);
-  facts->next_id = 1;
+  tmp.next_id = 1;
+  *facts = tmp;
   return facts;
 }
 
@@ -812,7 +813,7 @@ const s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
   }
   facts_cursor_clean(&cursor);
   fact = facts_add_tags(facts, subject, predicate, object);
-  facts_transaction_clean(&transaction);
+  facts_transaction_end(facts, &transaction);
   facts_lock_unlock_w(facts);
   return fact;
 }

@@ -15,14 +15,19 @@
 
 #include "types.h"
 
-/* Stack allocation compatible functions */
+/* Stack allocation compatible functions, call
+   facts_transaction_clean after use. */
 s_facts_transaction * facts_transaction_clean
+(s_facts_transaction *transaction);
+s_facts_transaction * facts_transaction_init
 (s_facts_transaction *transaction);
 
 /* Operators. */
-s_facts *      facts_transaction_rollback
+void      facts_transaction_end
+(s_facts *facts, s_facts_transaction *transaction);
+s_facts * facts_transaction_rollback
 (s_facts *facts, const s_facts_transaction *transaction);
-void           facts_transaction_start
+void      facts_transaction_start
 (s_facts *facts, s_facts_transaction *transaction);
 
 #endif /* LIBC3_FACTS_TRANSACTION_H */

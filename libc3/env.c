@@ -34,6 +34,7 @@
 #include "error_handler.h"
 #include "facts.h"
 #include "facts_cursor.h"
+#include "facts_transaction.h"
 #include "facts_with.h"
 #include "facts_with_cursor.h"
 #include "file.h"
@@ -1070,8 +1071,11 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   s_ident tmp_ident;
   assert(env);
   assert(ident);
-  if (! (tag = env_frames_get(env, ident->sym)) &&
-      env_ident_resolve_module(env, ident, &tmp_ident) &&
+  if ((tag = env_frames_get(env, ident->sym))) {
+    tag_init_copy(dest, tag);
+    return true;
+  }
+  if (env_ident_resolve_module(env, ident, &tmp_ident) &&
       ! (tag = env_ident_get(env, &tmp_ident, &tmp))) {
     err_write_1("env_eval_ident: unbound ident: ");
     err_inspect_ident(ident);
@@ -1079,7 +1083,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
     assert(! "env_eval_ident: unbound ident");
     return false;
   }
-  tag_init_copy(dest, tag);
+  *dest = *tag;
   return true;
 }
 
@@ -2164,8 +2168,10 @@ bool env_module_load (s_env *env, const s_sym *module)
     goto rollback;
   tag_clean(&tag_time);
   env_module_is_loading_set(env, module, false);
+  facts_transaction_end(&env->facts, &transaction);
   return true;
  rollback:
+  str_clean(&path);
   if (! facts_transaction_rollback(&env->facts, &transaction)) {
     abort();
     return false;

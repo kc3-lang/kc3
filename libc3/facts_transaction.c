@@ -12,10 +12,12 @@
  */
 #include <stdlib.h>
 #include "assert.h"
+#include "fact.h"
 #include "fact_action.h"
 #include "facts.h"
 #include "facts_transaction.h"
 #include "list.h"
+#include "types.h"
 
 s_facts_transaction * facts_transaction_clean
 (s_facts_transaction *transaction)
@@ -25,43 +27,89 @@ s_facts_transaction * facts_transaction_clean
   return transaction->next;
 }
 
-s_facts * facts_transaction_rollback
-(s_facts *facts, const s_facts_transaction *transaction)
+void facts_transaction_end (s_facts *facts,
+			    s_facts_transaction *transaction)
 {
-  bool b;
-  s_fact_action *log;
+  assert(facts);
+  assert(transaction);
+  if (facts->transaction != transaction) {
+    err_puts("facts_transaction_end: transaction mismatch");
+    assert(! "facts_transaction_end: transaction mismatch");
+    abort();
+  }
+  facts->transaction = facts_transaction_clean(transaction);
+}
+
+bool facts_transaction_find (s_facts *facts,
+			     const s_facts_transaction *transaction)
+{
   const s_facts_transaction *t;
   t = facts->transaction;
   while (t) {
     if (t == transaction)
-      goto rollback;
+      return true;
     t = t->next;
   }
-  err_puts("facts_transaction_rollback: transaction not found");
-  assert(! "facts_transaction_rollback: transaction not found");
-  return NULL;
- rollback:
+  err_puts("facts_transaction_find: transaction not found");
+  assert(! "facts_transaction_find: transaction not found");
+  return false;
+}
+
+s_facts_transaction * facts_transaction_init
+(s_facts_transaction *transaction)
+{
+  s_facts_transaction tmp = {0};
+  *transaction = tmp;
+  return transaction;
+}
+
+s_facts * facts_transaction_rollback
+(s_facts *facts, const s_facts_transaction *transaction)
+{
+  bool b;
+  s_fact fact;
+  s_fact_action *log;
+  s_facts_transaction *t;
+  if (! facts_transaction_find(facts, transaction))
+    return NULL;
+  t = facts->transaction;
   while (t) {
     log = t->log;
     while (log) {
-      if (log->remove) {
-        if (! facts_add_fact(facts, &log->fact))
-          return NULL;
-      }
-      else {
+      switch (log->action) {
+      case FACT_ACTION_ADD:
         if (! facts_remove_fact(facts, &log->fact, &b) ||
-            ! b)
-          return NULL;
+            ! b) {
+	  abort();
+	  return NULL;
+	}
+	break;
+      case FACT_ACTION_REMOVE:
+        if (! facts_add_fact(facts, &log->fact)) {
+	  abort();
+	  return NULL;
+	}
+	break;
+      case FACT_ACTION_REPLACE:
+	fact_init(&fact, log->fact.subject, log->fact.predicate,
+		  &log->object);
+	if (! facts_replace_fact(facts, &fact)) {
+	  abort();
+	  return NULL;
+	}
       }
       log = log->next;
     }
-    if (t == transaction)
+    if (t == transaction) {
+      facts_transaction_end(facts, t);
       return facts;
-    t = t->next;
+    }
+    facts_transaction_end(facts, t);
+    t = facts->transaction;
   }
-  err_puts("facts_transaction_rollback: unknown error");
-  assert(! "facts_transaction_rollback: unknown error");
-  exit(1);
+  err_puts("facts_transaction_rollback: no transaction in facts");
+  assert(! "facts_transaction_rollback: no transaction in facts");
+  abort();
   return NULL;
 }
 
