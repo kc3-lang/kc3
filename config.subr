@@ -617,7 +617,7 @@ update_build_prog() {
     echo "# gen by configure" >> ${LD_COV}
     echo "LOG=\".build/\$1.cov.log\"" >> ${LD_COV}
     echo "CC=\"${CC}\"" >> ${LD_COV}
-    echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${LD_COV}
+    echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${LD_COV}
     echo "LDFLAGS=\"${LDFLAGS_COV}\"" >> ${LD_COV}
     echo "OBJECTS=\"${OBJECTS_COV}\"" >> ${LD_COV}
     echo "LIBS=\"${LIBS_COV}\"" >> ${LD_COV}
