@@ -32,6 +32,7 @@ LIBS="${LIBS:=}"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic -O2"
+CFLAGS="$CFLAGS -msse2 -mfpmath=sse"
 pkg_config libbsd-overlay
 
 # Main config

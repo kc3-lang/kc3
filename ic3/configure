@@ -27,6 +27,7 @@ PROG_DEBUG=ic3_debug
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
+CFLAGS="$CFLAGS -msse2 -mfpmath=sse"
 LDFLAGS="$LDFLAGS -rdynamic"
 config_asan
 config_gnu
