@@ -57,21 +57,22 @@ s_struct_type * struct_type_init (s_struct_type *st,
   uw offset;
   const s_list *s;
   uw size;
+  s_struct_type tmp = {0};
   const s_tuple *tuple;
   const s_sym *type;
   assert(st);
   assert(module);
   assert(spec);
   count = list_length(spec);
-  st->module = module;
-  if (! map_init(&st->map, count))
+  tmp.module = module;
+  if (! map_init(&tmp.map, count))
     return NULL;
-  st->offset = alloc(count * sizeof(uw));
-  if (! st->offset) {
-    map_clean(&st->map);
+  tmp.offset = alloc(count * sizeof(uw));
+  if (! tmp.offset) {
+    map_clean(&tmp.map);
     return NULL;
   }
-  st->must_clean = false;
+  tmp.must_clean = false;
   offset = 0;
   i = 0;
   s = spec;
@@ -79,33 +80,34 @@ s_struct_type * struct_type_init (s_struct_type *st,
     if (s->tag.type != TAG_TUPLE || s->tag.data.tuple.count != 2) {
       err_puts("struct_type_init: invalid spec");
       assert(! "struct_type_init: invalid spec");
-      map_clean(&st->map);
-      free(st->offset);
+      map_clean(&tmp.map);
+      free(tmp.offset);
       return NULL;
     }
     tuple = &s->tag.data.tuple;
     if (! tag_size(tuple->tag + 1, &size)) {
-      map_clean(&st->map);
-      free(st->offset);
+      map_clean(&tmp.map);
+      free(tmp.offset);
       return NULL;
     }
-    tag_init_copy(st->map.key + i,   tuple->tag + 0);
-    tag_init_copy(st->map.value + i, tuple->tag + 1);
-    tag_type(st->map.value + i, &type);
+    tag_init_copy(tmp.map.key + i,   tuple->tag + 0);
+    tag_init_copy(tmp.map.value + i, tuple->tag + 1);
+    tag_type(tmp.map.value + i, &type);
     if (! sym_must_clean(type, &must_clean)) {
-      map_clean(&st->map);
-      free(st->offset);
+      map_clean(&tmp.map);
+      free(tmp.offset);
       return NULL;
     }
     if (must_clean)
-      st->must_clean = true;
+      tmp.must_clean = true;
     offset = struct_type_padding(offset, size);
-    st->offset[i] = offset;
+    tmp.offset[i] = offset;
     offset += size;
     i++;
     s = list_next(s);
   }
-  st->size = offset;
+  tmp.size = offset;
+  *st = tmp;
   return st;
 }
 
@@ -137,9 +139,11 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
   assert(src);
   assert(src->module);
   assert(src->map.count);
-  tmp.module = src->module;
+  tmp.clean = src->clean;
   if (! map_init_copy(&tmp.map, &src->map))
     return NULL;
+  tmp.module = src->module;
+  tmp.must_clean = src->must_clean;
   tmp.offset = alloc(tmp.map.count * sizeof(uw));
   if (! tmp.offset) {
     map_clean(&tmp.map);

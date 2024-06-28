@@ -379,12 +379,12 @@ struct str {
 };
 
 struct struct_type {
-  const s_sym *module;
+  f_clean clean;
   s_map map;
+  const s_sym *module;
   bool must_clean;
   uw *offset;
   uw size;
-  f_clean clean;
 };
 
 /* 3 */
