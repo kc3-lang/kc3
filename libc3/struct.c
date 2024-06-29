@@ -122,7 +122,12 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
   s_struct tmp = {0};
   assert(s);
   assert(module);
-  tmp.type = struct_type_find(module);
+  if (! struct_type_find(module, &tmp.type)) {
+    err_write_1("struct_init: struct_type_find(");
+    err_inspect_sym(&module);
+    err_puts(")");
+    return NULL;
+  }
   if (! tmp.type) {
     err_write_1("struct_init: struct_type not found: ");
     err_inspect_sym(&module);
@@ -263,9 +268,14 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
   s_struct tmp = {0};
   assert(s);
   assert(module);
-  tmp.type = struct_type_find(module);
-  if (! tmp.type)
+  if (! struct_type_find(module, &tmp.type))
     return NULL;
+  if (! tmp.type) {
+    err_write_1("struct_init_with_data: struct_type not found: ");
+    err_inspect_sym(&module);
+    err_write_1("\n");
+    return NULL;
+  }
   tmp.free_data = free_data;
   tmp.data = data;
   *s = tmp;

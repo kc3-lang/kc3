@@ -626,7 +626,8 @@ bool sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = false;
     return true;
   }
-  st = struct_type_find(sym);
+  if (! struct_type_find(sym, &st))
+    return false;
   if (st) {
     *must_clean = st->must_clean;
     return true;
@@ -1156,7 +1157,8 @@ bool sym_type_size (const s_sym *type, uw *dest)
     *dest = 0;
     return true;
   }
-  st = struct_type_find(type);
+  if (! struct_type_find(type, &st))
+    return false;
   if (st) {
     *dest = st->size;
     return true;

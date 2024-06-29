@@ -198,8 +198,9 @@ u8            env_special_operator_arity (s_env *env,
                                           const s_ident *ident);
 bool *        env_struct_type_exists (s_env *env, const s_sym *module,
                                       bool *dest);
-const s_struct_type *
-              env_struct_type_find (s_env *env, const s_sym *module);
+const s_struct_type **
+              env_struct_type_find (s_env *env, const s_sym *module,
+                                    const s_struct_type **dest);
 f_clean       env_struct_type_get_clean (s_env *env,
                                          const s_sym *module);
 s_list **     env_struct_type_get_spec (s_env *env, const s_sym *module,

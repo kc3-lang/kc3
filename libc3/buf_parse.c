@@ -3154,9 +3154,10 @@ sw buf_parse_struct (s_buf *buf, s_struct *dest)
   if (r > 0) {
     result += r;
     if (! struct_init(&tmp, module)) {
-      err_write_1("buf_parse_struct: struct_init ");
+      err_write_1("buf_parse_struct: struct_init(");
       err_inspect_sym(&module);
-      err_puts(".");
+      err_puts(")");
+      assert(! "buf_parse_struct: struct init");
       r = -2;
       goto clean;
     }

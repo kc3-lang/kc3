@@ -82,7 +82,8 @@ sw data_buf_inspect (const s_sym *type, s_buf *buf, const void *data)
     return buf_inspect_var(buf, data);
   if (type == &g_sym_Void)
     return buf_inspect_void(buf, data);
-  st = struct_type_find(type);
+  if (! struct_type_find(type, &st))
+    return -1;
   if (st) {
     s_struct s = {0};
     s.type = st;
@@ -167,7 +168,8 @@ sw data_buf_inspect_size (const s_sym *type, const void *data)
     return buf_inspect_var_size(data);
   if (type == &g_sym_Void)
     return buf_inspect_void_size(data);
-  st = struct_type_find(type);
+  if (! struct_type_find(type, &st))
+    return -1;
   if (st) {
     s.type = st;
     s.data = (void *) data;
@@ -302,7 +304,8 @@ bool data_clean (const s_sym *type, void *data)
   if (type == &g_sym_Void) {
     return true;
   }
-  st = struct_type_find(type);
+  if (! struct_type_find(type, &st))
+    return false;
   if (st) {
     s.type = st;
     s.data = data;
@@ -388,7 +391,8 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
     return compare_ptr(a, b);
   if (type == &g_sym_Void)
     return 0;
-  st = struct_type_find(type);
+  if (! struct_type_find(type, &st))
+    return COMPARE_ERROR;
   if (st) {
     sa.type = st;
     sa.data = (void *) a;
@@ -400,7 +404,7 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
   err_inspect_sym(&type);
   err_write_1("\n");
   assert(! "data_compare: unknown type");
-  return false;
+  return COMPARE_ERROR;
 }
 
 bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
@@ -474,7 +478,8 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
     return hash_update_var(hash, data);
   if (type == &g_sym_Void)
     return hash_update_void(hash, data);
-  st = struct_type_find(type);
+  if (! struct_type_find(type, &st))
+    return false;
   if (st) {
     s.type = st;
     s.data = (void *) data;
@@ -566,7 +571,8 @@ void * data_init_cast (void *data, const s_sym * const *type,
   /*
   if (sym_is_array_type(t)) {
   */
-  st = struct_type_find(t);
+  if (! struct_type_find(t, &st))
+    return NULL;
   if (st) {
     s.type = st;
     s.data = data;
@@ -651,7 +657,8 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
     return var_init_copy(data, src);
   if (type == &g_sym_Void)
     return data;
-  st = struct_type_find(type);
+  if (! struct_type_find(type, &st))
+    return NULL;
   if (st) {
     t.type = s.type = st;
     s.data = data;
