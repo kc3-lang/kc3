@@ -6,5 +6,3 @@ quote %GL.Vertex{}
 %GL.Vertex{}
 quote %GL.Triangle{}
 %GL.Triangle{}
-quote %GL.Object{}
-%GL.Object{}
