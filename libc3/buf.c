@@ -722,6 +722,7 @@ sw buf_read_sym (s_buf *buf, const s_sym *src)
 
 sw buf_read_to_str (s_buf *buf, s_str *dest)
 {
+  sw r;
   sw size;
   assert(buf);
   assert(dest);
@@ -734,8 +735,12 @@ sw buf_read_to_str (s_buf *buf, s_str *dest)
     str_init_empty(dest);
     return 0;
   }
-  str_init_alloc(dest, size, buf->ptr.pchar + buf->rpos);
-  return buf_ignore(buf, size);
+  if (! str_init_alloc(dest, size, buf->ptr.pchar + buf->rpos))
+    return -1;
+  r = buf_ignore(buf, size);
+  if (r < 0)
+    str_clean(dest);
+  return r;
 }
 
 sw buf_read_u8 (s_buf *buf, u8 *p)
