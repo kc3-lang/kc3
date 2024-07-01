@@ -41,6 +41,7 @@ s_buf * buf_new_alloc (uw bytes);
 s_buf * buf_new_str (s_str *str);
 
 /* Operators. */
+void    buf_empty (s_buf *buf);
 sw      buf_f (s_buf *buf, const char *fmt, ...);
 sw      buf_flush (s_buf *buf);
 sw      buf_ignore (s_buf *buf, uw size);

@@ -35,6 +35,12 @@ void buf_delete (s_buf *buf)
   free(buf);
 }
 
+void buf_empty (s_buf *buf)
+{
+  buf->wpos = 0;
+  buf->rpos = 0;
+}
+
 sw buf_f (s_buf *buf, const char *fmt, ...)
 {
   va_list ap;
