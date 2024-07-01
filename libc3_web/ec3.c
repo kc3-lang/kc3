@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "libc3/c3.h"
+#include <libc3/c3.h>
 #include "ec3.h"
 
 sw ec3_buf_parse (s_ec3 *ec3, s_buf *buf)

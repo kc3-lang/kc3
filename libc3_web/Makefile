@@ -48,9 +48,6 @@ distclean:
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libc3_web.html
 
-include gen.mk
-CLEANFILES += ${GENERATED_FILES}
-
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libc3_web
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libc3/web
