@@ -16,14 +16,20 @@
 #include "types.h"
 
 /* Stack-allocation compatible functions, call ec3_clean after use. */
-void    ec3_clean (s_ec3 *ec3);
-s_ec3 * ec3_init (s_ec3 *ec3);
+void    ec3_clean (p_ec3 *ec3);
+p_ec3 * ec3_init (p_ec3 *ec3);
 
 /* Operators. */
-sw     ec3_buf_parse (s_ec3 *ec3, s_buf *buf);
+s_list ** ec3_append_and_empty_buf (s_list **tail, s_buf *buf);
+s_list ** ec3_append_block (s_list **tail, s_block *block);
+s_list ** ec3_append_silent_block (s_list **tail, s_block *block);
+s_list ** ec3_append_str (s_list **tail, s_str *str);
+s_list ** ec3_append_sym (s_list **tail, const s_sym *sym);
+sw        ec3_buf_parse (s_buf *buf, p_ec3 *dest);
+sw        ec3_buf_parse_c3_block (s_buf *buf, s_block *dest);
 
 /* Observers. */
-sw     ec3_render (const s_ec3 *ec3, s_buf *buf, s_map *map);
-s_fn * ec3_to_render_fn (const s_ec3 *ec3, s_fn *dest);
+sw     ec3_render (const p_ec3 *ec3, s_buf *buf, s_map *map);
+s_fn * ec3_to_render_fn (const p_ec3 *ec3, s_fn *dest);
 
 #endif /* LIBC3_WEB_EC3_H */

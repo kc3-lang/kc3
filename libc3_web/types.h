@@ -15,6 +15,6 @@
 
 #include <libc3/types.h>
 
-typedef s_list s_ec3;
+typedef s_list *p_ec3;
 
 #endif /* LIBC3_WEB_TYPES_H */
