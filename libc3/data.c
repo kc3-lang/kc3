@@ -657,8 +657,9 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
   if (! struct_type_find(type, &st))
     return NULL;
   if (st) {
-    t.type = s.type = st;
+    s.type = st;
     s.data = data;
+    t.type = st;
     t.data = (void *) src;
     return struct_init_copy(&s, &t);
   }
