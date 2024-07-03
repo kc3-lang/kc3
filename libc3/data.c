@@ -397,7 +397,7 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
     sa.type = st;
     sa.data = (void *) a;
     sb.type = st;
-    sb.data = (void *) a;
+    sb.data = (void *) b;
     return compare_struct(&sa, &sb);
   }
   err_write_1("data_compare: unknown type: ");
