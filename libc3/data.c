@@ -568,9 +568,6 @@ void * data_init_cast (void *data, const s_sym * const *type,
     return var_init_cast(data, type, tag);
   if (t == &g_sym_Void)
     return data;
-  /*
-  if (sym_is_array_type(t)) {
-  */
   if (! struct_type_find(t, &st))
     return NULL;
   if (st) {
