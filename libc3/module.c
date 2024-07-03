@@ -51,7 +51,8 @@ bool module_load (const s_sym *module)
   return env_module_load(&g_c3_env, module);
 }
 
-s_tag * module_load_time (const s_sym *module, s_tag *dest)
+const s_tag ** module_load_time (const s_sym *module,
+				 const s_tag **dest)
 {
   return env_module_load_time(&g_c3_env, module, dest);
 }

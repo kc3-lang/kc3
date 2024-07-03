@@ -28,19 +28,20 @@ bool module_load (const s_sym *module);
 bool module_maybe_reload (const s_sym *module);
 
 /* Observers */
-bool *        module_has_ident (const s_sym *module,
-                                const s_ident *ident,
-                                bool *dest);
-bool *        module_has_symbol (const s_sym *module,
-                                 const s_sym *sym,
+bool *         module_has_ident (const s_sym *module,
+                                 const s_ident *ident,
                                  bool *dest);
-bool *        module_is_loading (const s_sym *module, bool *dest);
-s_tag *       module_load_time (const s_sym *module, s_tag *dest);
-s_str *       module_path (const s_sym *module, const s_str *prefix,
-                           const char *ext, s_str *dest);
-sw            module_path_size (const s_sym *module,
-                                const s_str *prefix,
-                                const char *ext);
-const s_sym * module_to_sym (const s_sym *module);
+bool *         module_has_symbol (const s_sym *module,
+                                  const s_sym *sym,
+                                  bool *dest);
+bool *         module_is_loading (const s_sym *module, bool *dest);
+const s_tag ** module_load_time (const s_sym *module,
+				 const s_tag **dest);
+s_str *        module_path (const s_sym *module, const s_str *prefix,
+                            const char *ext, s_str *dest);
+sw             module_path_size (const s_sym *module,
+                                 const s_str *prefix,
+                                 const char *ext);
+const s_sym *  module_to_sym (const s_sym *module);
 
 #endif /* LIBC3_MODULE_H */

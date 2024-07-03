@@ -31,8 +31,8 @@ bool *         env_module_has_ident (s_env *env, const s_sym *module,
                                      const s_ident *ident, bool *dest);
 bool *         env_module_has_symbol (s_env *env, const s_sym *module,
                                       const s_sym *sym, bool *dest);
-s_tag *        env_module_load_time (s_env *env, const s_sym *module,
-                                     s_tag *dest);
+const s_tag ** env_module_load_time (s_env *env, const s_sym *module,
+                                     const s_tag **dest);
 s_list **      env_module_search_modules (s_env *env,
                                           const s_sym *module,
                                           s_list **dest);

@@ -115,7 +115,6 @@ bool env_call_get (s_env *env, s_call *call)
       facts_cursor_clean(&cursor);
       return false;
     }
-    tag_clean(&tag_var);
   }
   facts_cursor_clean(&cursor);
   if (! facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
@@ -323,21 +322,18 @@ s_tag * env_defoperator (s_env *env, const s_sym **name,
 
 const s_sym * env_defstruct (s_env *env, const s_list *spec)
 {
-  s_struct_type *st;
   s_tag tag_module_name;
-  s_tag tag_st = {0};
+  s_tag tag_st;
   s_tag tag_struct_type;
   tag_init_sym(&tag_module_name, env->current_defmodule);
+  tag_init_struct_type(&tag_st, env->current_defmodule, spec);
   tag_init_sym(&tag_struct_type, &g_sym_struct_type);
-  tag_st.type = TAG_STRUCT_TYPE;
-  st = &tag_st.data.struct_type;
-  if (! struct_type_init(st, env->current_defmodule, spec))
-    return NULL;
   if (! facts_replace_tags(&env->facts, &tag_module_name,
                            &tag_struct_type, &tag_st)) {
-      struct_type_clean(st);
-      return NULL;
+    tag_clean(&tag_st);
+    return NULL;
   }
+  tag_clean(&tag_st);
   return env->current_defmodule;
 }
 
@@ -1759,6 +1755,7 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
   s_tag tag_symbol;
   s_tag tag_symbol_value;
   s_tag tag_var;
+  s_tag tmp;
   module = ident->module;
   if (! module) {
     if (! sym_search_modules(ident->sym, &module) ||
@@ -1794,6 +1791,7 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
+  tag_init_copy(&tmp, &tag_var);
   facts_with_cursor_clean(&cursor);
   if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
         &tag_ident, &tag_is_a, &tag_macro, NULL, NULL }))
@@ -1803,10 +1801,10 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
     return NULL;
   }
   if (fact) {
-    if (tag_var.type == TAG_CFN)
-      tag_var.data.cfn.macro = true;
-    else if (tag_var.type == TAG_FN)
-      tag_var.data.fn.macro = true;
+    if (tmp.type == TAG_CFN)
+      tmp.data.cfn.macro = true;
+    else if (tmp.type == TAG_FN)
+      tmp.data.fn.macro = true;
   }
   facts_with_cursor_clean(&cursor);
   if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
@@ -1817,13 +1815,13 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
     return NULL;
   }
   if (fact) {
-    if (tag_var.type == TAG_CFN)
-      tag_var.data.cfn.special_operator = true;
-    else if (tag_var.type == TAG_FN)
-      tag_var.data.fn.special_operator = true;
+    if (tmp.type == TAG_CFN)
+      tmp.data.cfn.special_operator = true;
+    else if (tmp.type == TAG_FN)
+      tmp.data.fn.special_operator = true;
   }
   facts_with_cursor_clean(&cursor);
-  *dest = tag_var;
+  *dest = tmp;
   return dest;
 }
 
@@ -2179,8 +2177,8 @@ bool env_module_load (s_env *env, const s_sym *module)
   return false;
 }
 
-s_tag * env_module_load_time (s_env *env, const s_sym *module,
-                              s_tag *dest)
+const s_tag ** env_module_load_time (s_env *env, const s_sym *module,
+				     const s_tag **dest)
 {
   s_facts_with_cursor cursor;
   const s_fact *fact;
@@ -2198,16 +2196,16 @@ s_tag * env_module_load_time (s_env *env, const s_sym *module,
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  *dest = tag_time_var;
+  *dest = fact->object;
   facts_with_cursor_clean(&cursor);
   return dest;
 }
 
 bool env_module_maybe_reload (s_env *env, const s_sym *module)
 {
+  const s_tag *load_time = {0};
   s_str path;
   bool r = false;
-  s_tag tag_load_time = {0};
   s_tag tag_mtime;
   if (module_path(module, &env->module_path, C3_EXT, &path)) {
     if (file_access(&path, &g_sym_r))
@@ -2223,17 +2221,18 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module)
   }
   if (! r)
     return true;
-  if (! env_module_load_time(env, module, &tag_load_time))
+  if (! env_module_load_time(env, module, &load_time)) {
+    str_clean(&path);
     return env_module_load(env, module);
+  }
   if (! file_mtime(&path, &tag_mtime)) {
     str_clean(&path);
     return false;
   }
   str_clean(&path);
-  if (compare_tag(&tag_load_time, &tag_mtime) < 0)
+  if (compare_tag(load_time, &tag_mtime) < 0)
     r = env_module_load(env, module);
   tag_clean(&tag_mtime);
-  tag_clean(&tag_load_time);
   return r;
 }
 

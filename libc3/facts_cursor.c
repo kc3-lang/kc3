@@ -22,6 +22,12 @@
 void facts_cursor_clean (s_facts_cursor *cursor)
 {
   assert(cursor);
+  if (cursor->var_subject)
+    tag_var(cursor->var_subject, cursor->var_subject_type);
+  if (cursor->var_predicate)
+    tag_var(cursor->var_predicate, cursor->var_predicate_type);
+  if (cursor->var_object)
+    tag_var(cursor->var_object, cursor->var_object_type);
   facts_cursor_lock_clean(cursor);
 }
 

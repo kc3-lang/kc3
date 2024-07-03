@@ -378,6 +378,9 @@ class TagInitList
                    [Arg.new("const s_sym *", "module"),
                     Arg.new("bool", "free_data"),
                     Arg.new("void *", "data")]),
+       TagInit.new("struct_type", "TAG_STRUCT_TYPE", :init_mode_init,
+                   [Arg.new("const s_sym *", "module"),
+                    Arg.new("const s_list *", "spec")]),
        TagInit.new("sw", "TAG_SW", :init_mode_direct,
                    [Arg.new("sw", "i")]),
        TagInit.new("sym", "TAG_SYM", :init_mode_direct,
@@ -532,6 +535,7 @@ tag_init_c.content = <<EOF
 #include "ratio.h"
 #include "str.h"
 #include "struct.h"
+#include "struct_type.h"
 #include "tag.h"
 #include "tag_init.h"
 #include "time.h"

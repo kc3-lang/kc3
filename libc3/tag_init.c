@@ -22,6 +22,7 @@
 #include "ratio.h"
 #include "str.h"
 #include "struct.h"
+#include "struct_type.h"
 #include "tag.h"
 #include "tag_init.h"
 #include "time.h"
@@ -400,6 +401,18 @@ s_tag * tag_init_struct_with_data (s_tag *tag, const s_sym *module,
   tmp.type = TAG_STRUCT;
   if (! struct_init_with_data(&tmp.data.struct_, module, free_data, 
                               data))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_struct_type (s_tag *tag, const s_sym *module, 
+                              const s_list *spec)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_STRUCT_TYPE;
+  if (! struct_type_init(&tmp.data.struct_type, module, spec))
     return NULL;
   *tag = tmp;
   return tag;
@@ -985,6 +998,20 @@ s_tag * tag_new_struct_with_data (const s_sym *module, bool free_data,
   return tag;
 }
 
+s_tag * tag_new_struct_type (const s_sym *module, const s_list *spec)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_STRUCT_TYPE;
+  if (! struct_type_init(&tag->data.struct_type, module, spec)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_sw (sw i)
 {
   s_tag *tag;
@@ -1534,6 +1561,19 @@ s_tag * tag_struct_with_data (s_tag *tag, const s_sym *module,
   tmp.type = TAG_STRUCT;
   if (! struct_init_with_data(&tmp.data.struct_, module, free_data, 
                               data))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_struct_type (s_tag *tag, const s_sym *module, 
+                         const s_list *spec)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_STRUCT_TYPE;
+  if (! struct_type_init(&tmp.data.struct_type, module, spec))
     return NULL;
   *tag = tmp;
   return tag;

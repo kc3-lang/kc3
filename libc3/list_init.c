@@ -414,6 +414,18 @@ s_list * list_init_struct_with_data (s_list *list, const s_sym *module,
   return list;
 }
 
+s_list * list_init_struct_type (s_list *list, const s_sym *module, 
+                                const s_list *spec, s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_struct_type(&tmp.tag, module, spec))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_sw (s_list *list, sw i, s_list *next)
 {
   s_list tmp;
@@ -989,6 +1001,20 @@ s_list * list_new_struct_with_data (const s_sym *module,
     return NULL;
   if (! tag_init_struct_with_data(&list->tag, module, free_data, 
                                   data)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_struct_type (const s_sym *module, const s_list *spec, 
+                               s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_struct_type(&list->tag, module, spec)) {
     free(list);
     return NULL;
   }
