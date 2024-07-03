@@ -480,6 +480,11 @@ Script interpreter. Works the same as ic3 but is not interactive.
 ## TODO
 
  - libc3
+   - operators dispatch
+     - list of matching operators (facts_with)
+   - map access (x = %{a: 1}; x.a = 1)
+     - buf_parse_call_access
+     - access
    - base-specific big floats
    - macro cast `(Macro) fn (x) { x }`
    - pretty printer
