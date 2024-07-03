@@ -147,8 +147,11 @@ sw ec3_buf_parse (s_buf *buf, p_ec3 *dest)
     }
     result += r;
     r = buf_write_character_utf8(&str_buf, c);
-    if (r <= 0)
+    if (r <= 0) {
+      err_puts("ec3_buf_parse: buf_write_character_utf8 str_buf");
+      assert(! "ec3_buf_parse: buf_write_character_utf8 str_buf");
       goto restore;
+    }
   }
  ko:
   r = -1;
@@ -157,6 +160,26 @@ sw ec3_buf_parse (s_buf *buf, p_ec3 *dest)
   ec3_clean(&tmp);
  clean:
   buf_clean(&str_buf);
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw ec3_buf_parse_c3_block (s_buf *buf, s_block *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  r = buf_ignore_spaces(buf);
+  if (r < 0)
+    goto clean;
+  if (! r) {
+    r = -1;
+    goto clean;
+  }
+ clean:
   buf_save_clean(buf, &save);
   return r;
 }
