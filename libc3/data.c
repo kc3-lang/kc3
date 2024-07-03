@@ -14,6 +14,7 @@
 
 sw data_buf_inspect (const s_sym *type, s_buf *buf, const void *data)
 {
+  s_struct s = {0};
   const s_struct_type *st;
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
@@ -85,7 +86,6 @@ sw data_buf_inspect (const s_sym *type, s_buf *buf, const void *data)
   if (! struct_type_find(type, &st))
     return -1;
   if (st) {
-    s_struct s = {0};
     s.type = st;
     s.data = (void *) data;
     return buf_inspect_struct(buf, &s);
