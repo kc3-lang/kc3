@@ -27,8 +27,8 @@
 #include "time.h"
 #include "tuple.h"
 
-s_list * list_init_array (s_list *list, const s_sym *type, 
-                          uw dimension, const uw *dimensions, 
+s_list * list_init_array (s_list *list, const s_sym *type,
+                          uw dimension, const uw *dimensions,
                           s_list *next)
 {
   s_list tmp;
@@ -40,7 +40,7 @@ s_list * list_init_array (s_list *list, const s_sym *type,
   return list;
 }
 
-s_list * list_init_array_copy (s_list *list, const s_array *a, 
+s_list * list_init_array_copy (s_list *list, const s_array *a,
                                s_list *next)
 {
   s_list tmp;
@@ -140,7 +140,7 @@ s_list * list_init_fn_copy (s_list *list, const s_fn *fn, s_list *next)
   return list;
 }
 
-s_list * list_init_ident (s_list *list, const s_ident *ident, 
+s_list * list_init_ident (s_list *list, const s_ident *ident,
                           s_list *next)
 {
   s_list tmp;
@@ -174,7 +174,7 @@ s_list * list_init_integer_1 (s_list *list, const char *p, s_list *next)
   return list;
 }
 
-s_list * list_init_integer_copy (s_list *list, const s_integer *i, 
+s_list * list_init_integer_copy (s_list *list, const s_integer *i,
                                  s_list *next)
 {
   s_list tmp;
@@ -241,7 +241,7 @@ s_list * list_init_ptr_free (s_list *list, void *p, s_list *next)
   return list;
 }
 
-s_list * list_init_quote_copy (s_list *list, const s_quote *quote, 
+s_list * list_init_quote_copy (s_list *list, const s_quote *quote,
                                s_list *next)
 {
   s_list tmp;
@@ -275,7 +275,7 @@ s_list * list_init_ratio (s_list *list, s_list *next)
   return list;
 }
 
-s_list * list_init_ratio_copy (s_list *list, const s_ratio *r, 
+s_list * list_init_ratio_copy (s_list *list, const s_ratio *r,
                                s_list *next)
 {
   s_list tmp;
@@ -342,7 +342,7 @@ s_list * list_init_s64 (s_list *list, s64 i, s_list *next)
   return list;
 }
 
-s_list * list_init_str (s_list *list, char *p_free, uw size, 
+s_list * list_init_str (s_list *list, char *p_free, uw size,
                         const char *p, s_list *next)
 {
   s_list tmp;
@@ -354,7 +354,7 @@ s_list * list_init_str (s_list *list, char *p_free, uw size,
   return list;
 }
 
-s_list * list_init_str_1 (s_list *list, char *p_free, const char *p, 
+s_list * list_init_str_1 (s_list *list, char *p_free, const char *p,
                           s_list *next)
 {
   s_list tmp;
@@ -366,7 +366,7 @@ s_list * list_init_str_1 (s_list *list, char *p_free, const char *p,
   return list;
 }
 
-s_list * list_init_str_cat (s_list *list, const s_str *a, 
+s_list * list_init_str_cat (s_list *list, const s_str *a,
                             const s_str *b, s_list *next)
 {
   s_list tmp;
@@ -389,7 +389,7 @@ s_list * list_init_str_empty (s_list *list, s_list *next)
   return list;
 }
 
-s_list * list_init_struct (s_list *list, const s_sym *module, 
+s_list * list_init_struct (s_list *list, const s_sym *module,
                            s_list *next)
 {
   s_list tmp;
@@ -401,20 +401,19 @@ s_list * list_init_struct (s_list *list, const s_sym *module,
   return list;
 }
 
-s_list * list_init_struct_with_data (s_list *list, const s_sym *module, 
-                                     bool free_data, void *data, 
-                                     s_list *next)
+s_list * list_init_struct_with_data (s_list *list, const s_sym *module,
+                                     void *data, s_list *next)
 {
   s_list tmp;
   assert(list);
   list_init(&tmp, next);
-  if (! tag_init_struct_with_data(&tmp.tag, module, free_data, data))
+  if (! tag_init_struct_with_data(&tmp.tag, module, data))
     return NULL;
   *list = tmp;
   return list;
 }
 
-s_list * list_init_struct_type (s_list *list, const s_sym *module, 
+s_list * list_init_struct_type (s_list *list, const s_sym *module,
                                 const s_list *spec, s_list *next)
 {
   s_list tmp;
@@ -459,7 +458,7 @@ s_list * list_init_tuple (s_list *list, uw count, s_list *next)
   return list;
 }
 
-s_list * list_init_tuple_2 (s_list *list, const s_tag *a, 
+s_list * list_init_tuple_2 (s_list *list, const s_tag *a,
                             const s_tag *b, s_list *next)
 {
   s_list tmp;
@@ -515,7 +514,7 @@ s_list * list_init_u64 (s_list *list, u64 i, s_list *next)
   return list;
 }
 
-s_list * list_init_unquote_copy (s_list *list, 
+s_list * list_init_unquote_copy (s_list *list,
                                  const s_unquote *unquote, s_list *next)
 {
   s_list tmp;
@@ -560,7 +559,7 @@ s_list * list_init_void (s_list *list, s_list *next)
   return list;
 }
 
-s_list * list_new_array (const s_sym *type, uw dimension, 
+s_list * list_new_array (const s_sym *type, uw dimension,
                          const uw *dimensions, s_list *next)
 {
   s_list *list;
@@ -925,7 +924,7 @@ s_list * list_new_s64 (s64 i, s_list *next)
   return list;
 }
 
-s_list * list_new_str (char *p_free, uw size, const char *p, 
+s_list * list_new_str (char *p_free, uw size, const char *p,
                        s_list *next)
 {
   s_list *list;
@@ -991,23 +990,21 @@ s_list * list_new_struct (const s_sym *module, s_list *next)
   return list;
 }
 
-s_list * list_new_struct_with_data (const s_sym *module, 
-                                    bool free_data, void *data, 
+s_list * list_new_struct_with_data (const s_sym *module, void *data,
                                     s_list *next)
 {
   s_list *list;
   list = list_new(next);
   if (! list)
     return NULL;
-  if (! tag_init_struct_with_data(&list->tag, module, free_data, 
-                                  data)) {
+  if (! tag_init_struct_with_data(&list->tag, module, data)) {
     free(list);
     return NULL;
   }
   return list;
 }
 
-s_list * list_new_struct_type (const s_sym *module, const s_list *spec, 
+s_list * list_new_struct_type (const s_sym *module, const s_list *spec,
                                s_list *next)
 {
   s_list *list;

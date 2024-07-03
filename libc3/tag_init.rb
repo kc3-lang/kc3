@@ -376,7 +376,6 @@ class TagInitList
                    [Arg.new("const s_sym *", "module")]),
        TagInit.new("struct", "with_data", "TAG_STRUCT", :init_mode_init,
                    [Arg.new("const s_sym *", "module"),
-                    Arg.new("bool", "free_data"),
                     Arg.new("void *", "data")]),
        TagInit.new("struct_type", "TAG_STRUCT_TYPE", :init_mode_init,
                    [Arg.new("const s_sym *", "module"),
@@ -492,7 +491,7 @@ class String
         space_pos = rest[0..71].rindex(/,\s/)
         space_pos += 1 if space_pos
         space_pos ||= rest[0..71].rindex(/[\*\s]/)
-        line1 = rest[0..space_pos]
+        line1 = rest[0..(space_pos - 1)]
         rest = rest[(space_pos + 1)..(rest.length - 1)]
         wrapped_lines += [line1]
         index = line1.rindex(/[\(\{\[]/)

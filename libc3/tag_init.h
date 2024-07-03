@@ -5,7 +5,7 @@
 #include "types.h"
 
 /* Stack-allocation compatible functions, call tag_clean after use. */
-s_tag * tag_init_array (s_tag *tag, const s_sym *type, uw dimension, 
+s_tag * tag_init_array (s_tag *tag, const s_sym *type, uw dimension,
                         const uw *dimensions);
 s_tag * tag_init_array_copy (s_tag *tag, const s_array *a);
 s_tag * tag_init_bool (s_tag *tag, bool b);
@@ -41,9 +41,9 @@ s_tag * tag_init_str_1 (s_tag *tag, char *p_free, const char *p);
 s_tag * tag_init_str_cat (s_tag *tag, const s_str *a, const s_str *b);
 s_tag * tag_init_str_empty (s_tag *tag);
 s_tag * tag_init_struct (s_tag *tag, const s_sym *module);
-s_tag * tag_init_struct_with_data (s_tag *tag, const s_sym *module, 
-                                   bool free_data, void *data);
-s_tag * tag_init_struct_type (s_tag *tag, const s_sym *module, 
+s_tag * tag_init_struct_with_data (s_tag *tag, const s_sym *module,
+                                   void *data);
+s_tag * tag_init_struct_type (s_tag *tag, const s_sym *module,
                               const s_list *spec);
 s_tag * tag_init_sw (s_tag *tag, sw i);
 s_tag * tag_init_sym (s_tag *tag, const s_sym *sym);
@@ -60,7 +60,7 @@ s_tag * tag_init_var (s_tag *tag, const s_sym *type);
 s_tag * tag_init_void (s_tag *tag);
 
 /* Heap-allocation functions, call tag_delete after use. */
-s_tag * tag_new_array (const s_sym *type, uw dimension, 
+s_tag * tag_new_array (const s_sym *type, uw dimension,
                        const uw *dimensions);
 s_tag * tag_new_array_copy (const s_array *a);
 s_tag * tag_new_bool (bool b);
@@ -96,8 +96,7 @@ s_tag * tag_new_str_1 (char *p_free, const char *p);
 s_tag * tag_new_str_cat (const s_str *a, const s_str *b);
 s_tag * tag_new_str_empty (void);
 s_tag * tag_new_struct (const s_sym *module);
-s_tag * tag_new_struct_with_data (const s_sym *module, bool free_data, 
-                                  void *data);
+s_tag * tag_new_struct_with_data (const s_sym *module, void *data);
 s_tag * tag_new_struct_type (const s_sym *module, const s_list *spec);
 s_tag * tag_new_sw (sw i);
 s_tag * tag_new_sym (const s_sym *sym);
@@ -114,7 +113,7 @@ s_tag * tag_new_var (const s_sym *type);
 s_tag * tag_new_void (void);
 
 /* Setters. */
-s_tag * tag_array (s_tag *tag, const s_sym *type, uw dimension, 
+s_tag * tag_array (s_tag *tag, const s_sym *type, uw dimension,
                    const uw *dimensions);
 s_tag * tag_array_copy (s_tag *tag, const s_array *a);
 s_tag * tag_bool (s_tag *tag, bool b);
@@ -150,9 +149,9 @@ s_tag * tag_str_1 (s_tag *tag, char *p_free, const char *p);
 s_tag * tag_str_cat (s_tag *tag, const s_str *a, const s_str *b);
 s_tag * tag_str_empty (s_tag *tag);
 s_tag * tag_struct (s_tag *tag, const s_sym *module);
-s_tag * tag_struct_with_data (s_tag *tag, const s_sym *module, 
-                              bool free_data, void *data);
-s_tag * tag_struct_type (s_tag *tag, const s_sym *module, 
+s_tag * tag_struct_with_data (s_tag *tag, const s_sym *module,
+                              void *data);
+s_tag * tag_struct_type (s_tag *tag, const s_sym *module,
                          const s_list *spec);
 s_tag * tag_sw (s_tag *tag, sw i);
 s_tag * tag_sym (s_tag *tag, const s_sym *sym);
