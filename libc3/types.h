@@ -297,10 +297,9 @@ struct quote {
 };
 
 struct struct_ {
-  void *data;
-  s_tag *tag;
-  bool free_data;
   const s_struct_type *type;
+  s_tag *tag;
+  void *data;
 };
 
 struct sym_list {

@@ -31,15 +31,14 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
                                    const s_list *keys,
                                    const s_list *values);
 s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
-                                  bool free_data, void *data);
+                                  void *data);
 
 /* Heap-allocation functions, call struct_delete after use. */
 void       struct_delete (s_struct *s);
 s_struct * struct_new (const s_sym *module);
 s_struct * struct_new_1 (const s8 *p);
 s_struct * struct_new_copy (const s_struct *src);
-s_struct * struct_new_with_data (const s_sym *module, bool free_data,
-                                 void *data);
+s_struct * struct_new_with_data (const s_sym *module, void *data);
 
 /* Operators. */
 s_struct * struct_allocate (s_struct *s);

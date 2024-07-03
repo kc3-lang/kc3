@@ -27,12 +27,12 @@ s_struct * struct_allocate (s_struct *s)
 {
   s_struct tmp;
   assert(s);
+  assert(s->type);
   assert(! s->data);
   tmp = *s;
   tmp.data = alloc(tmp.type->size);
   if (! tmp.data)
     return NULL;
-  tmp.free_data = true;
   *s = tmp;
   return s;
 }
@@ -54,8 +54,7 @@ void struct_clean (s_struct *s)
         i++;
       }
     }
-    if (s->free_data)
-      free(s->data);
+    free(s->data);
   }
   if (s->tag) {
     i = 0;
@@ -182,7 +181,6 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
     tmp.data = alloc(tmp.type->size);
     if (! tmp.data)
       return NULL;
-    tmp.free_data = true;
     i = 0;
     while (i < tmp.type->map.count) {
       if (! tag_type(tmp.type->map.value + i, &sym) ||
@@ -263,7 +261,7 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
 }
 
 s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
-                                  bool free_data, void *data)
+                                  void *data)
 {
   s_struct tmp = {0};
   assert(s);
@@ -276,7 +274,6 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
     err_write_1("\n");
     return NULL;
   }
-  tmp.free_data = free_data;
   tmp.data = data;
   *s = tmp;
   return s;
