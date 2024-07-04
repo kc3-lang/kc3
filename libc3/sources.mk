@@ -83,7 +83,6 @@ HEADERS = \
 	"character.h" \
 	"compare.h" \
 	"complex.h" \
-	"config.h" \
 	"cow.h" \
 	"data.h" \
 	"env.h" \
