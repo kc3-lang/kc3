@@ -48,7 +48,9 @@ C3_EXTERNAL_SOURCES="$(find libtommath linenoise -name '*.[ch]')
 libtommath/LICENSE
 libtommath/README.md
 linenoise/LICENSE
-linenoise/README.markdown"
+linenoise/README.markdown
+ucd2c/UCD.zip
+$(find ucd2c/UCD -type f)"
 sources C3_EXTERNAL_SOURCES "$C3_EXTERNAL_SOURCES"
 
 update_sources_mk

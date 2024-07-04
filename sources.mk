@@ -866,22 +866,24 @@ C3_OTHER_SOURCES = \
 	"img/thodg_No_Prompt_073261d5-2c81-4b6e-9572-e0b840c55f1f.jpeg" \
 	"img/toast.128.png" \
 	"img/toast.png" \
-	"lib/c3/0.1/array.facts" \
+	"lib/c3/0.1/array.c3" \
 	"lib/c3/0.1/c3.facts" \
+	"lib/c3/0.1/c3/operator.c3" \
 	"lib/c3/0.1/complex.facts" \
+	"lib/c3/0.1/cow.c3" \
 	"lib/c3/0.1/f128.facts" \
 	"lib/c3/0.1/f32.facts" \
 	"lib/c3/0.1/f64.facts" \
-	"lib/c3/0.1/gl/dvec2.facts" \
-	"lib/c3/0.1/gl/dvec3.facts" \
-	"lib/c3/0.1/gl/object.facts" \
-	"lib/c3/0.1/gl/sphere.facts" \
-	"lib/c3/0.1/gl/triangle.facts" \
-	"lib/c3/0.1/gl/vec2.facts" \
-	"lib/c3/0.1/gl/vec3.facts" \
-	"lib/c3/0.1/gl/vertex.facts" \
+	"lib/c3/0.1/gl/dvec2.c3" \
+	"lib/c3/0.1/gl/dvec3.c3" \
+	"lib/c3/0.1/gl/object.c3" \
+	"lib/c3/0.1/gl/sphere.c3" \
+	"lib/c3/0.1/gl/triangle.c3" \
+	"lib/c3/0.1/gl/vec2.c3" \
+	"lib/c3/0.1/gl/vec3.c3" \
+	"lib/c3/0.1/gl/vertex.c3" \
 	"lib/c3/0.1/integer.facts" \
-	"lib/c3/0.1/list.facts" \
+	"lib/c3/0.1/list.c3" \
 	"lib/c3/0.1/map.facts" \
 	"lib/c3/0.1/ptr.facts" \
 	"lib/c3/0.1/ptr_free.facts" \
@@ -968,6 +970,9 @@ C3_OTHER_SOURCES = \
 	"test/ic3/function_call.err.expected" \
 	"test/ic3/function_call.out.expected" \
 	"test/ic3/function_call.ret.expected" \
+	"test/ic3/gl.in" \
+	"test/ic3/gl.out.expected" \
+	"test/ic3/gl.ret.expected" \
 	"test/ic3/hello.err.expected" \
 	"test/ic3/hello.in" \
 	"test/ic3/hello.out.expected" \
@@ -1256,12 +1261,10 @@ C3_EXTERNAL_SOURCES = \
 	"libtommath/tommath_private.h" \
 	"libtommath/tommath_superclass.h" \
 	"linenoise/LICENSE" \
-	"linenoise/Makefile" \
 	"linenoise/README.markdown" \
 	"linenoise/example.c" \
 	"linenoise/linenoise.c" \
 	"linenoise/linenoise.h" \
-	"ucd2c/Makefile" \
 	"ucd2c/UCD.zip" \
 	"ucd2c/UCD/ArabicShaping.txt" \
 	"ucd2c/UCD/BidiBrackets.txt" \
@@ -1327,10 +1330,4 @@ C3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/extracted/DerivedName.txt" \
 	"ucd2c/UCD/extracted/DerivedNumericType.txt" \
 	"ucd2c/UCD/extracted/DerivedNumericValues.txt" \
-	"ucd2c/config.mk" \
-	"ucd2c/configure" \
-	"ucd2c/license.txt" \
-	"ucd2c/ucd.c" \
-	"ucd2c/ucd.h" \
-	"ucd2c/ucd2c.c" \
 
