@@ -179,6 +179,8 @@ sw ec3_buf_parse_c3_block (s_buf *buf, s_block *dest)
     r = -1;
     goto clean;
   }
+  result += r;
+  
  clean:
   buf_save_clean(buf, &save);
   return r;
