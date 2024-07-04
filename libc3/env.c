@@ -2023,7 +2023,7 @@ bool env_module_ensure_loaded (s_env *env, const s_sym *module)
   s_tag tag_module_name;
   s_tag tag_is_a;
   s_tag tag_module;
-  if (! module_is_loading(module, &b))
+  if (! env_module_is_loading(env, module, &b))
     return false;
   if (b)
     return true;
@@ -2034,7 +2034,7 @@ bool env_module_ensure_loaded (s_env *env, const s_sym *module)
                                 &tag_is_a, &tag_module, &fact))
     return false;
   if (! fact) {
-    if (! module_load(module)) {
+    if (! env_module_load(env, module)) {
       err_write_1("env_module_ensure_loaded: module not found: ");
       err_puts(module->str.ptr.pchar);
       assert(! "env_module_ensure_loaded: module not found");
@@ -2514,7 +2514,7 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
       assert(! "env_sym_search_modules: invalid env->search_modules");
       return false;
     }
-    if (! module_has_symbol(module, sym, &b))
+    if (! env_module_has_symbol(env, module, sym, &b))
       return false;
     if (b) {
       *dest = module;
