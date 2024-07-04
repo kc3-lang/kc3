@@ -584,9 +584,7 @@ void * data_init_cast (void *data, const s_sym * const *type,
 
 void * data_init_copy (const s_sym *type, void *data, const void *src)
 {
-  s_struct s = {0};
   const s_struct_type *st;
-  s_struct t = {0};
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
     return array_init_copy(data, src);
@@ -656,13 +654,8 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
     return data;
   if (! struct_type_find(type, &st))
     return NULL;
-  if (st) {
-    s.type = st;
-    s.data = data;
-    t.type = st;
-    t.data = (void *) src;
-    return struct_init_copy(&s, &t);
-  }
+  if (st)
+    return struct_type_copy_data(st, data, src);
   err_write_1("data_init_copy: unknown type: ");
   err_inspect_sym(&type);
   err_write_1("\n");

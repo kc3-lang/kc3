@@ -13,6 +13,7 @@
 #include <string.h>
 #include "alloc.h"
 #include "assert.h"
+#include "data.h"
 #include "env.h"
 #include "list.h"
 #include "map.h"
@@ -28,6 +29,30 @@ void struct_type_clean (s_struct_type *st)
   assert(st);
   map_clean(&st->map);
   free(st->offset);
+}
+
+void * struct_type_copy_data (const s_struct_type *st, void *dest,
+                              const void *src)
+{
+  uw count;
+  uw i;
+  uw offset;
+  const s_sym *sym;
+  assert(st);
+  assert(dest);
+  assert(src);
+  i = 0;
+  count = st->map.count;
+  while (i < count) {
+    if (! tag_type(st->map.value + i, &sym))
+      return NULL;
+    offset = st->offset[i];
+    if (! data_init_copy(sym, (s8 *) dest + offset,
+                         (s8 *) src + offset))
+      return NULL;
+    i++;
+  }
+  return dest;
 }
 
 void struct_type_delete (s_struct_type *st)
