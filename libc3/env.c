@@ -217,10 +217,52 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
       tag_clean(&tag_value);
       return NULL;
     }
-    tag_init_ident(dest, &tag_ident.data.ident);
+    if (tag_ident.data.ident.module == env->current_defmodule &&
+        tag_ident.data.ident.sym == &g_sym_clean) {
+      if (! env_def_clean(env, env->current_defmodule, &tag_value)) {
+        tag_clean(&tag_value);
+        return NULL;
+      }
+    }
   }
   tag_clean(&tag_value);
+  tag_init_ident(dest, &tag_ident.data.ident);
   return dest;
+}
+
+const s_sym * env_def_clean (s_env *env, const s_sym *module,
+                             const s_tag *clean)
+{
+  const s_struct_type *st;
+  s_tag tag_module_name;
+  s_tag tag_st;
+  s_tag tag_struct_type;
+  if (! env_struct_type_find(env, module, &st))
+    return NULL;
+  if (! st) {
+    err_write_1("env_def_clean: module ");
+    err_inspect_sym(&module);
+    err_write_1(": struct type not found");
+    assert(! "env_def_clean: module struct type not found");
+    return NULL;
+  }
+  if (clean->type != TAG_CFN) {
+    err_write_1("env_def_clean: module ");
+    err_inspect_sym(&module);
+    err_write_1(": clean method must be a Cfn");
+    assert(! "env_def_clean: module clean method must be a Cfn");
+    return NULL;
+  }
+  tag_init_sym(&tag_module_name, module);
+  tag_init_struct_type_update_clean(&tag_st, st, &clean->data.cfn);
+  tag_init_sym(&tag_struct_type, &g_sym_struct_type);
+  if (! facts_replace_tags(&env->facts, &tag_module_name,
+                           &tag_struct_type, &tag_st)) {
+    tag_clean(&tag_st);
+    return NULL;
+  }
+  tag_clean(&tag_st);
+  return module;
 }
 
 s_tag * env_defmodule (s_env *env, const s_sym **name,

@@ -417,6 +417,19 @@ s_tag * tag_init_struct_type (s_tag *tag, const s_sym *module,
   return tag;
 }
 
+s_tag * tag_init_struct_type_update_clean (s_tag *tag,
+                                           const s_struct_type *st,
+                                           const s_cfn *clean)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_STRUCT_TYPE;
+  if (! struct_type_init_update_clean(&tmp.data.struct_type, st, clean))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_sw (s_tag *tag, sw i)
 {
   s_tag tmp = {0};
@@ -1009,6 +1022,22 @@ s_tag * tag_new_struct_type (const s_sym *module, const s_list *spec)
   return tag;
 }
 
+s_tag * tag_new_struct_type_update_clean (const s_struct_type *st,
+                                          const s_cfn *clean)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_STRUCT_TYPE;
+  if (! struct_type_init_update_clean(&tag->data.struct_type, st,
+                                      clean)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_sw (sw i)
 {
   s_tag *tag;
@@ -1570,6 +1599,20 @@ s_tag * tag_struct_type (s_tag *tag, const s_sym *module,
   tag_clean(tag);
   tmp.type = TAG_STRUCT_TYPE;
   if (! struct_type_init(&tmp.data.struct_type, module, spec))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_struct_type_update_clean (s_tag *tag,
+                                      const s_struct_type *st,
+                                      const s_cfn *clean)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_STRUCT_TYPE;
+  if (! struct_type_init_update_clean(&tmp.data.struct_type, st, clean))
     return NULL;
   *tag = tmp;
   return tag;

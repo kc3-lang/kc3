@@ -425,6 +425,20 @@ s_list * list_init_struct_type (s_list *list, const s_sym *module,
   return list;
 }
 
+s_list * list_init_struct_type_update_clean (s_list *list,
+                                             const s_struct_type *st,
+                                             const s_cfn *clean,
+                                             s_list *next)
+{
+  s_list tmp;
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_struct_type_update_clean(&tmp.tag, st, clean))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_sw (s_list *list, sw i, s_list *next)
 {
   s_list tmp;
@@ -1012,6 +1026,21 @@ s_list * list_new_struct_type (const s_sym *module, const s_list *spec,
   if (! list)
     return NULL;
   if (! tag_init_struct_type(&list->tag, module, spec)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_struct_type_update_clean (const s_struct_type *st,
+                                            const s_cfn *clean,
+                                            s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_struct_type_update_clean(&list->tag, st, clean)) {
     free(list);
     return NULL;
   }

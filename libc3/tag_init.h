@@ -45,6 +45,9 @@ s_tag * tag_init_struct_with_data (s_tag *tag, const s_sym *module,
                                    void *data);
 s_tag * tag_init_struct_type (s_tag *tag, const s_sym *module,
                               const s_list *spec);
+s_tag * tag_init_struct_type_update_clean (s_tag *tag,
+                                           const s_struct_type *st,
+                                           const s_cfn *clean);
 s_tag * tag_init_sw (s_tag *tag, sw i);
 s_tag * tag_init_sym (s_tag *tag, const s_sym *sym);
 s_tag * tag_init_tuple (s_tag *tag, uw count);
@@ -98,6 +101,8 @@ s_tag * tag_new_str_empty (void);
 s_tag * tag_new_struct (const s_sym *module);
 s_tag * tag_new_struct_with_data (const s_sym *module, void *data);
 s_tag * tag_new_struct_type (const s_sym *module, const s_list *spec);
+s_tag * tag_new_struct_type_update_clean (const s_struct_type *st,
+                                          const s_cfn *clean);
 s_tag * tag_new_sw (sw i);
 s_tag * tag_new_sym (const s_sym *sym);
 s_tag * tag_new_tuple (uw count);
@@ -153,6 +158,9 @@ s_tag * tag_struct_with_data (s_tag *tag, const s_sym *module,
                               void *data);
 s_tag * tag_struct_type (s_tag *tag, const s_sym *module,
                          const s_list *spec);
+s_tag * tag_struct_type_update_clean (s_tag *tag,
+                                      const s_struct_type *st,
+                                      const s_cfn *clean);
 s_tag * tag_sw (s_tag *tag, sw i);
 s_tag * tag_sym (s_tag *tag, const s_sym *sym);
 s_tag * tag_tuple (s_tag *tag, uw count);

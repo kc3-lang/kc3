@@ -56,6 +56,10 @@ s_list * list_init_struct_with_data (s_list *list, const s_sym *module,
                                      void *data, s_list *next);
 s_list * list_init_struct_type (s_list *list, const s_sym *module,
                                 const s_list *spec, s_list *next);
+s_list * list_init_struct_type_update_clean (s_list *list,
+                                             const s_struct_type *st,
+                                             const s_cfn *clean,
+                                             s_list *next);
 s_list * list_init_sw (s_list *list, sw i, s_list *next);
 s_list * list_init_sym (s_list *list, const s_sym *sym, s_list *next);
 s_list * list_init_tuple (s_list *list, uw count, s_list *next);
@@ -116,6 +120,9 @@ s_list * list_new_struct_with_data (const s_sym *module, void *data,
                                     s_list *next);
 s_list * list_new_struct_type (const s_sym *module, const s_list *spec,
                                s_list *next);
+s_list * list_new_struct_type_update_clean (const s_struct_type *st,
+                                            const s_cfn *clean,
+                                            s_list *next);
 s_list * list_new_sw (sw i, s_list *next);
 s_list * list_new_sym (const s_sym *sym, s_list *next);
 s_list * list_new_tuple (uw count, s_list *next);
@@ -172,6 +179,9 @@ s_list * list_struct_with_data (s_list *list, const s_sym *module,
                                 void *data);
 s_list * list_struct_type (s_list *list, const s_sym *module,
                            const s_list *spec);
+s_list * list_struct_type_update_clean (s_list *list,
+                                        const s_struct_type *st,
+                                        const s_cfn *clean);
 s_list * list_sw (s_list *list, sw i);
 s_list * list_sym (s_list *list, const s_sym *sym);
 s_list * list_tuple (s_list *list, uw count);

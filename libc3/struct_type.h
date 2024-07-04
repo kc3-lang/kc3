@@ -32,6 +32,9 @@ s_struct_type * struct_type_init (s_struct_type *st,
 s_struct_type * struct_type_init_cast (s_struct_type *st,
                                        const s_sym * const *type,
                                        const s_tag *src);
+s_struct_type * struct_type_init_update_clean (s_struct_type *st,
+                                               const s_struct_type *src,
+                                               const s_cfn *clean);
 s_struct_type * struct_type_init_copy (s_struct_type *st,
                                        const s_struct_type *src);
 

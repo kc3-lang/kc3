@@ -43,6 +43,8 @@ bool           env_sym_search_modules (s_env *env,
 
 /* Operators. */
 s_tag *       env_def (s_env *env, const s_call *call, s_tag *dest);
+const s_sym * env_def_clean (s_env *env, const s_sym *module,
+                             const s_tag *tag_clean);
 s_tag *       env_defmodule (s_env *env, const s_sym **name,
                              const s_block *block, s_tag *dest);
 s_tag *       env_defoperator (s_env *env, const s_sym **name,
