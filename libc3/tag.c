@@ -844,7 +844,8 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   e_tag_type tag_type;
   if (! sym_to_tag_type(type, &tag_type))
     return false;
-  if (tag->type != tag_type) {
+  if (type != &g_sym_Tag &&
+      tag->type != tag_type) {
     err_write_1("tag_to_const_pointer: cannot cast ");
     err_write_1(tag_type_to_string(tag->type));
     err_write_1(" to ");
@@ -886,7 +887,22 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   case TAG_QUOTE:       *dest = &tag->data.quote;       return true;
   case TAG_RATIO:       *dest = &tag->data.ratio;       return true;
   case TAG_STR:         *dest = &tag->data.str;         return true;
-  case TAG_STRUCT:      *dest = &tag->data.struct_;     return true;
+  case TAG_STRUCT:
+    if (type == &g_sym_Struct) {
+      *dest = &tag->data.struct_;
+      return true;
+    }
+    if (type == tag->data.struct_.type->module) {
+      *dest = tag->data.struct_.data;
+      return true;
+    }
+    err_write_1("tag_to_const_pointer: cannot cast ");
+    err_write_1(tag_type_to_string(tag->type));
+    err_write_1(" to ");
+    err_inspect_sym(&type);
+    err_write_1("\n");
+    assert(! "tag_to_const_pointer: cannot cast");
+    return false;
   case TAG_STRUCT_TYPE: *dest = &tag->data.struct_type; return true;
   case TAG_SYM:         *dest = &tag->data.sym;         return true;
   case TAG_TUPLE:       *dest = &tag->data.tuple;       return true;
