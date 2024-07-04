@@ -56,7 +56,7 @@ bool earth_load (s_sequence *seq)
   tag_init_f64(             map->value + 1, 0.01);
   tag_init_sym(               map->key + 2, sym_1("sphere"));
   tag_init_struct_with_data(map->value + 2, sym_1("GL.Sphere"),
-                            true, sphere);
+                            sphere);
   return true;
 }
 
