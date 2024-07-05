@@ -2664,14 +2664,15 @@ sw buf_parse_map_key_tag (s_buf *buf, s_tag *dest)
 
 sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
 {
+  s_buf buf_tmp;
   sw r;
   sw result = 0;
   s_buf_save save;
   s_str str;
   const s_sym *sym;
-  s_buf tmp;
+  const s_sym *tmp;
   buf_save_init(buf, &save);
-  buf_init_alloc(&tmp, SYM_MAX);
+  buf_init_alloc(&buf_tmp, SYM_MAX);
   if ((r = buf_parse_sym(buf, &sym)) <= 0)
     goto clean;
   if (! sym_is_module(sym)) {
@@ -2679,7 +2680,7 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
     goto restore;
   }
   result += r;
-  if ((r = buf_inspect_sym(&tmp, &sym)) < 0)
+  if ((r = buf_inspect_sym(&buf_tmp, &sym)) < 0)
     goto clean;
   save.rpos = buf->rpos;
   while ((r = buf_read_1(buf, ".")) > 0 &&
@@ -2687,21 +2688,26 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
          sym_is_module(sym)) {
     result += r + 1;
     save.rpos = buf->rpos;
-    if ((r = buf_write_1(&tmp, ".")) < 0 ||
-        (r = buf_inspect_sym(&tmp, &sym)) < 0)
+    if ((r = buf_write_1(&buf_tmp, ".")) < 0 ||
+        (r = buf_inspect_sym(&buf_tmp, &sym)) < 0)
       goto clean;
   }
   buf_save_restore_rpos(buf, &save);
-  buf_read_to_str(&tmp, &str);
-  *dest = str_to_sym(&str);
+  buf_read_to_str(&buf_tmp, &str);
+  tmp = str_to_sym(&str);
   str_clean(&str);
+  if (! tmp) {
+    r = -1;
+    goto restore;
+  }
+  *dest = tmp;
   r = result;
   goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
-  buf_clean(&tmp);
+  buf_clean(&buf_tmp);
   return r;
 }
 
