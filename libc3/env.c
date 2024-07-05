@@ -2209,6 +2209,7 @@ bool env_module_load (s_env *env, const s_sym *module)
       err_write_1(module->str.ptr.pchar);
       err_puts(": facts_load_file");
       str_clean(&path);
+      tag_clean(&tag_time);
       goto rollback;
     }
   }
@@ -2223,7 +2224,6 @@ bool env_module_load (s_env *env, const s_sym *module)
   facts_transaction_end(&env->facts, &transaction);
   return true;
  rollback:
-  str_clean(&path);
   if (! facts_transaction_rollback(&env->facts, &transaction)) {
     abort();
     return false;
