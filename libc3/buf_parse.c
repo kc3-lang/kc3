@@ -1726,19 +1726,15 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
 
 sw buf_parse_ident (s_buf *buf, s_ident *dest)
 {
-  character c;
-  sw csize;
-  const s_sym *module = NULL;
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_str str;
-  char t[IDENT_MAX];
-  s_buf tmp;
+  s_ident tmp = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_parse_module_name(buf, &module)) < 0)
+  r = buf_parse_module_name(buf, &tmp.module);
+  if (r < 0)
     goto clean;
   if (r > 0) {
     result += r;
@@ -1746,6 +1742,33 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
       goto restore;
     result += r;
   }
+  r = buf_parse_ident_sym(buf, &tmp.sym);
+  if (r <= 0)
+    goto restore;
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_ident_sym (s_buf *buf, const s_sym **dest)
+{
+  s_buf buf_tmp;
+  character c;
+  sw csize;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_str str;
+  char t[IDENT_MAX];
+  const s_sym *tmp = NULL;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
   if ((r = buf_peek_1(buf, "_\"")) < 0)
     goto restore;
   if (r > 0) {
@@ -1755,9 +1778,13 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
     if ((r = buf_parse_str(buf, &str)) < 0)
       goto restore;
     result += r;
-    str_to_ident(&str, dest);
-    dest->module = module;
+    tmp = str_to_sym(&str);
     str_clean(&str);
+    if (! tmp) {
+      r = -1;
+      goto restore;
+    }
+    *dest = tmp;
     r = result;
     goto clean;
   }
@@ -1765,21 +1792,25 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
     goto restore;
   if (r > 0 && ! ident_first_character_is_reserved(c)) {
     csize = r;
-    buf_init(&tmp, false, sizeof(t), t);
-    if ((r = buf_xfer(&tmp, buf, csize)) < 0)
+    buf_init(&buf_tmp, false, sizeof(t), t);
+    if ((r = buf_xfer(&buf_tmp, buf, csize)) < 0)
       goto restore;
     result += csize;
     while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
            ! ident_character_is_reserved(c)) {
       csize = r;
-      if ((r = buf_xfer(&tmp, buf, csize)) != csize)
+      if ((r = buf_xfer(&buf_tmp, buf, csize)) != csize)
         goto restore;
       result += csize;
     }
-    buf_read_to_str(&tmp, &str);
-    str_to_ident(&str, dest);
-    dest->module = module;
+    buf_read_to_str(&buf_tmp, &str);
+    tmp = str_to_sym(&str);
     str_clean(&str);
+    if (! tmp) {
+      r = 0;
+      goto restore;
+    }
+    *dest = tmp;
     r = result;
     goto clean;
   }
