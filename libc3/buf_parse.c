@@ -1745,6 +1745,7 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   r = buf_parse_ident_sym(buf, &tmp.sym);
   if (r <= 0)
     goto restore;
+  result += r;
   *dest = tmp;
   r = result;
   goto clean;
