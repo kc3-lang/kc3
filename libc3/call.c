@@ -123,7 +123,7 @@ s_call * call_init_copy (s_call *call, const s_call *src)
       ! list_init_copy(&tmp.arguments,
                        (const s_list * const *) &src->arguments))
     return NULL;
-  // TODO: copy cfn and fn ?
+  // FIXME: copy cfn and fn ?
   tmp.cfn = src->cfn;
   tmp.fn = src->fn;
   *call = tmp;
@@ -132,9 +132,17 @@ s_call * call_init_copy (s_call *call, const s_call *src)
 
 s_call * call_init_op (s_call *call)
 {
+  s_list *arg;
   s_call tmp = {0};
   assert(call);
-  tmp.arguments = list_new(list_new(NULL));
+  arg = list_new(NULL);
+  if (! arg)
+    return NULL;
+  tmp.arguments = list_new(arg);
+  if (! tmp.arguments) {
+    list_delete(arg);
+    return NULL;
+  }
   *call = tmp;
   return call;
 }

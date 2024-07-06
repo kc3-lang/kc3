@@ -793,9 +793,14 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  call_init_op(&tmp);
-  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
-    goto restore;
+  if (! call_init_op(&tmp)) {
+    r = -1;
+    goto clean;
+  }
+  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0) {
+    call_clean(&tmp);
+    goto clean;
+  }
   result += r;
   if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
     goto restore;
