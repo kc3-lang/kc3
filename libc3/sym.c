@@ -71,6 +71,7 @@ const s_sym g_sym_Uw              = {{{NULL},  2, {"Uw"}}};
 const s_sym g_sym_Uw_brackets     = {{{NULL},  4, {"Uw[]"}}};
 const s_sym g_sym_Var             = {{{NULL},  3, {"Var"}}};
 const s_sym g_sym_Void            = {{{NULL},  4, {"Void"}}};
+const s_sym g_sym_access          = {{{NULL},  6, {"access"}}};
 const s_sym g_sym_arity           = {{{NULL},  5, {"arity"}}};
 const s_sym g_sym_cast            = {{{NULL},  4, {"cast"}}};
 const s_sym g_sym_clean           = {{{NULL},  5, {"clean"}}};
@@ -344,6 +345,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Uw_brackets, NULL);
   sym_register(&g_sym_Var, NULL);
   sym_register(&g_sym_Void, NULL);
+  sym_register(&g_sym_access, NULL);
   sym_register(&g_sym_arity, NULL);
   sym_register(&g_sym_cast, NULL);
   sym_register(&g_sym_clean, NULL);

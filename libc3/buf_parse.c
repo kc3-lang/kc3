@@ -745,6 +745,44 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
   return r;
 }
 
+sw buf_parse_call_access (s_buf *buf, s_call *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_tag *tag_sym;
+  s_call tmp = {0};
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if (! call_init_op(&tmp)) {
+    r = -1;
+    goto clean;
+  }
+  tag_sym = &tmp.arguments->next.data.list->tag;
+  tmp.ident.module = &g_sym_C3;
+  tmp.ident.sym = &g_sym_access;
+  r = buf_parse_tag_primary(buf, &tmp.arguments->tag);
+  if (r <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_read_1(buf, ".")) <= 0)
+    goto restore;
+  result += r;
+  r = buf_parse_ident_sym(buf, &tag_sym->data.sym);
+  if (r <= 0)
+    goto restore;
+  result += r;
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_call_op (s_buf *buf, s_call *dest)
 {
   s_ident next_op;
@@ -3393,7 +3431,8 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_call_op(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_call_access(buf, dest)) != 0 ||
+      (r = buf_parse_tag_call_op(buf, dest)) != 0 ||
       (r = buf_parse_tag_brackets(buf, dest)) != 0 ||
       (r = buf_parse_tag_primary(buf, dest)) != 0)
     goto end;
@@ -3460,6 +3499,16 @@ sw buf_parse_tag_call (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_call(buf, &dest->data.call)) > 0)
+    dest->type = TAG_CALL;
+  return r;
+}
+
+sw buf_parse_tag_call_access (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_call_access(buf, &dest->data.call)) > 0)
     dest->type = TAG_CALL;
   return r;
 }
@@ -3694,8 +3743,8 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
       (r = buf_parse_tag_struct(buf, dest)) != 0 ||
-      (r = buf_parse_tag_ident(buf, dest)) != 0 ||
       (r = buf_parse_tag_list(buf, dest)) != 0 ||
+      (r = buf_parse_tag_ident(buf, dest)) != 0 ||
       (r = buf_parse_tag_sym(buf, dest)) != 0)
     goto end;
   goto restore;

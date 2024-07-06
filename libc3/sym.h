@@ -76,6 +76,7 @@ extern const s_sym g_sym_Uw;
 extern const s_sym g_sym_Uw_brackets;
 extern const s_sym g_sym_Var;
 extern const s_sym g_sym_Void;
+extern const s_sym g_sym_access;
 extern const s_sym g_sym_arity;
 extern const s_sym g_sym_cast;
 extern const s_sym g_sym_clean;
