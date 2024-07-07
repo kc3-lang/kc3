@@ -60,25 +60,6 @@ s_tag * ident_get (const s_ident *ident, s_tag *dest)
   return env_ident_get(&g_c3_env, ident, dest);
 }
 
-bool ident_has_reserved_characters (const s_ident *ident)
-{
-  character c;
-  sw r;
-  s_str stra;
-  str_init(&stra, NULL, ident->sym->str.size, ident->sym->str.ptr.p);
-  if ((r = str_read_character_utf8(&stra, &c)) > 0) {
-    if (ident_first_character_is_reserved(c))
-      return true;
-    while ((r = str_read_character_utf8(&stra, &c)) > 0) {
-      if (ident_character_is_reserved(c))
-        return true;
-    }
-  }
-  if (r < 0)
-    return true;
-  return false;
-}
-
 s_ident * ident_init (s_ident *ident, const s_sym *module,
                       const s_sym *sym)
 {

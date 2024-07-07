@@ -16,6 +16,7 @@
 #include "buf_inspect.h"
 #include "character.h"
 #include "compare.h"
+#include "ident.h"
 #include "str.h"
 #include "struct_type.h"
 #include "sym.h"
@@ -214,6 +215,25 @@ const s_sym * sym_find (const s_str *str)
     sym_list = sym_list->next;
   }
   return NULL;
+}
+
+bool sym_has_ident_reserved_characters (const s_sym *sym)
+{
+  character c;
+  sw r;
+  s_str stra;
+  str_init(&stra, NULL, sym->str.size, sym->str.ptr.p);
+  if ((r = str_read_character_utf8(&stra, &c)) > 0) {
+    if (ident_first_character_is_reserved(c))
+      return true;
+    while ((r = str_read_character_utf8(&stra, &c)) > 0) {
+      if (ident_character_is_reserved(c))
+        return true;
+    }
+  }
+  if (r < 0)
+    return true;
+  return false;
 }
 
 bool sym_has_reserved_characters (const s_sym *sym)

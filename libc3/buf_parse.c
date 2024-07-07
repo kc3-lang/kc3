@@ -769,6 +769,7 @@ sw buf_parse_call_access (s_buf *buf, s_call *dest)
   if ((r = buf_read_1(buf, ".")) <= 0)
     goto restore;
   result += r;
+  tag_sym->type = TAG_SYM;
   r = buf_parse_ident_sym(buf, &tag_sym->data.sym);
   if (r <= 0)
     goto restore;

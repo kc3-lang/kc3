@@ -359,6 +359,9 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   sw r;
   sw result = 0;
   if (call->ident.module == &g_sym_C3 &&
+      call->ident.sym == &g_sym_access)
+    return buf_inspect_call_access(buf, call);
+  if (call->ident.module == &g_sym_C3 &&
       call->ident.sym == &g_sym_if_then_else)
     return buf_inspect_call_if_then_else(buf, call);
   if (! operator_find(&call->ident, &op))
@@ -383,6 +386,28 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   if ((r = buf_inspect_call_args(buf, call->arguments)) < 0)
     return r;
    result += r;
+  return result;
+}
+
+sw buf_inspect_call_access (s_buf *buf, const s_call *call)
+{
+  s_list *args;
+  sw r;
+  sw result = 0;
+  s_tag *tag_sym;
+  assert(buf);
+  assert(call);
+  args = call->arguments;
+  tag_sym = &args->next.data.list->tag;
+  if ((r = buf_inspect_tag(buf, &args->tag)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ".")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_ident_sym(buf, tag_sym->data.sym)) < 0)
+    return r;
+  result += r;
   return result;
 }
 
@@ -1474,46 +1499,10 @@ sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
       return r;
     result += r;
   }
-  if (ident->sym->str.size == 0) {
-    if ((r = buf_write_1(buf, "_\"\"")) < 0)
-      return r;
-    result += r;
-    return result;
-  }
-  if (ident_has_reserved_characters(ident)) {
-    if ((r = buf_inspect_ident_reserved(buf, ident)) < 0)
-      return r;
-    result += r;
-    return result;
-  }
-  if ((r = buf_write_str(buf, &ident->sym->str)) < 0)
+  if ((r = buf_inspect_ident_sym(buf, ident->sym)) < 0)
     return r;
   result += r;
   return result;
-}
-
-sw buf_inspect_ident_reserved (s_buf *buf, const s_ident *x)
-{
-  sw size;
-  assert(buf);
-  assert(x);
-  size = buf_inspect_ident_reserved_size(x);
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  buf_write_1(buf, "_");
-  buf_inspect_str_reserved(buf, &x->sym->str);
-  return size;
-}
-
-sw buf_inspect_ident_reserved_size (const s_ident *x)
-{
-  sw size;
-  assert(x);
-  size = strlen("_");
-  size += buf_inspect_str_reserved_size(&x->sym->str);
-  return size;
 }
 
 sw buf_inspect_ident_size (const s_ident *ident)
@@ -1527,11 +1516,52 @@ sw buf_inspect_ident_size (const s_ident *ident)
     result += r;
     result += strlen(".");
   }
-  if (ident->sym->str.size == 0)
-    return result + strlen("_\"\"");
-  if (ident_has_reserved_characters(ident))
-    return result + buf_inspect_ident_reserved_size(ident);
-  return result + ident->sym->str.size;
+  if ((r = buf_inspect_ident_sym_size(ident->sym)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_ident_sym (s_buf *buf, const s_sym *sym)
+{
+  if (sym->str.size == 0)
+    return buf_write_1(buf, "_\"\"");
+  if (sym_has_ident_reserved_characters(sym))
+    return buf_inspect_ident_sym_reserved(buf, sym);
+  return buf_write_str(buf, &sym->str);
+}
+
+sw buf_inspect_ident_sym_reserved (s_buf *buf, const s_sym *sym)
+{
+  sw size;
+  assert(buf);
+  assert(sym);
+  size = buf_inspect_ident_sym_reserved_size(sym);
+  if (buf->wpos + size > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  buf_write_1(buf, "_");
+  buf_inspect_str(buf, &sym->str);
+  return size;
+}
+
+sw buf_inspect_ident_sym_reserved_size (const s_sym *sym)
+{
+  sw size;
+  assert(sym);
+  size = strlen("_");
+  size += buf_inspect_str_size(&sym->str);
+  return size;
+}
+
+sw buf_inspect_ident_sym_size (const s_sym *sym)
+{
+  if (sym->str.size == 0)
+    return strlen("_\"\"");
+  if (sym_has_ident_reserved_characters(sym))
+    return buf_inspect_ident_sym_reserved_size(sym);
+  return sym->str.size;
 }
 
 sw buf_inspect_integer (s_buf *buf, const s_integer *x)
