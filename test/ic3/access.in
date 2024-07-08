@@ -17,7 +17,7 @@ map
 quote map.a
 map.a
 quote map.a.b
-mab.a.b
+map.a.b
 quote map.a.b.c
 map.a.b.c
 quote map.a.b.c + map.a.b.c
