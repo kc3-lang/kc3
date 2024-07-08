@@ -30,6 +30,18 @@ const s_str g_c3_bases_hexadecimal[2] = {{{NULL}, 16, {"0123456789abcdef"}},
                                          {{NULL}, 16, {"0123456789ABCDEF"}}};
 sw          g_c3_exit_code = 1;
 
+s_tag * c3_access (const s_tag *tag, const s_sym * const *sym,
+                   s_tag *dest)
+{
+  assert(tag);
+  assert(sym);
+  assert(dest);
+  (void) tag;
+  (void) sym;
+  tag_init(dest);
+  return dest;
+}
+
 void c3_break (void)
 {
   err_puts("break");

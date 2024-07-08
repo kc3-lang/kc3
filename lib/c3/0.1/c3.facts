@@ -243,3 +243,5 @@ add {C3, :symbol, C3.module}
 replace {C3.module, :symbol_value, cfn Sym "c3_module" (Result)}
 add {C3, :symbol, C3.search_modules}
 replace {C3.search_modules, :symbol_value, cfn List "c3_search_modules" (Result)}
+add {C3, :symbol, C3.access}
+replace {C3.access, :symbol_value, cfn Tag "c3_access" (Tag, Sym, Result)}

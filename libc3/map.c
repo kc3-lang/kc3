@@ -21,16 +21,15 @@
 #include "map.h"
 #include "tag.h"
 
-s_tag * map_access (const s_map *map, const s_tag *key, s_tag *value)
+s_tag * map_access (const s_map *map, const s_sym *key, s_tag *value)
 {
+  s_tag tag_key;
   assert(map);
   assert(key);
   assert(value);
-  if (key->type != TAG_SYM) {
-    err_puts("map_access: only works with symbol key");
-    return NULL;
-  }
-  return map_get(map, key, value);
+  tag_key.type = TAG_SYM;
+  tag_key.data.sym = key;
+  return map_get(map, &tag_key, value);
 }
 
 s_map * map_init_cast (s_map *map, const s_tag *tag)

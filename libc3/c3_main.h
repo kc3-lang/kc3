@@ -36,8 +36,11 @@ void           c3_license (void);
 const s_sym ** c3_module (const s_sym **dest);
 
 /* Operators. */
+s_tag * c3_access (const s_tag *tag, const s_sym * const *sym,
+                   s_tag *dest);
 s_tag * c3_def (const s_call *call, s_tag *dest);
-s_tag * c3_defmodule (const s_sym **name, const s_block *block, s_tag *dest);
+s_tag * c3_defmodule (const s_sym **name, const s_block *block,
+                      s_tag *dest);
 s_tag * c3_defoperator (const s_sym **name, const s_sym **sym,
                         const s_tag *symbol_value,
                         u8 operator_precedence,
