@@ -750,8 +750,10 @@ sw buf_parse_call_access (s_buf *buf, s_call *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_tag *tag_left;
   s_tag *tag_sym;
   s_call tmp = {0};
+  s_call tmp2 = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
@@ -759,25 +761,46 @@ sw buf_parse_call_access (s_buf *buf, s_call *dest)
     r = -1;
     goto clean;
   }
-  tag_sym = &tmp.arguments->next.data.list->tag;
+  tag_left = &tmp.arguments->tag;
   tmp.ident.module = &g_sym_C3;
   tmp.ident.sym = &g_sym_access;
   r = buf_parse_tag_primary(buf, &tmp.arguments->tag);
   if (r <= 0)
     goto clean;
   result += r;
-  if ((r = buf_read_1(buf, ".")) <= 0)
-    goto restore;
-  result += r;
-  tag_sym->type = TAG_SYM;
-  r = buf_parse_ident_sym(buf, &tag_sym->data.sym);
-  if (r <= 0)
-    goto restore;
-  result += r;
+  while (1) {
+    if ((r = buf_read_1(buf, ".")) <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+    tag_sym = &tmp.arguments->next.data.list->tag;
+    tag_sym->type = TAG_SYM;
+    r = buf_parse_ident_sym(buf, &tag_sym->data.sym);
+    if (r <= 0)
+      goto restore;
+    result += r;
+    if ((r = buf_peek_1(buf, ".")) < 0)
+      goto restore;
+    if (r == 0)
+      break;
+    if (! call_init_op(&tmp2)) {
+      r = -1;
+      goto restore;
+    }
+    tmp2.ident.module = &g_sym_C3;
+    tmp2.ident.sym = &g_sym_access;
+    tag_left = &tmp2.arguments->tag;
+    tag_left->type = TAG_CALL;
+    tag_left->data.call = tmp;
+    tmp = tmp2;
+  }
   *dest = tmp;
   r = result;
   goto clean;
  restore:
+  call_clean(&tmp);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -3437,9 +3460,9 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_call_access(buf, dest)) != 0 ||
-      (r = buf_parse_tag_call_op(buf, dest)) != 0 ||
+  if ((r = buf_parse_tag_call_op(buf, dest)) != 0 ||
       (r = buf_parse_tag_brackets(buf, dest)) != 0 ||
+      (r = buf_parse_tag_call_access(buf, dest)) != 0 ||
       (r = buf_parse_tag_primary(buf, dest)) != 0)
     goto end;
  end:
