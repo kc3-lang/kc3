@@ -46,6 +46,8 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
                        const s_tag *value);
 
 /* Observers. */
+s_tag *        struct_access (const s_struct *s, const s_sym *key,
+                              s_tag *dest);
 bool           struct_find_key_index (const s_struct *s, const s_sym *key,
                                       uw *dest);
 void *         struct_get (s_struct *s, const s_sym *key);

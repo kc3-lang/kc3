@@ -23,6 +23,17 @@
 #include "tag.h"
 #include "tag_type.h"
 
+s_tag * struct_access (const s_struct *s, const s_sym *key, s_tag *dest)
+{
+  s_tag *tag;
+  tag = struct_get_tag((s_struct *) s, key);
+  if (! tag)
+    return NULL;
+  if (! tag_init_copy(dest, tag))
+    return NULL;
+  return dest;
+}
+
 s_struct * struct_allocate (s_struct *s)
 {
   s_struct tmp;

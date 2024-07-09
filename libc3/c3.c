@@ -18,7 +18,9 @@
 #include "buf.h"
 #include "c3_main.h"
 #include "env.h"
+#include "map.h"
 #include "str.h"
+#include "struct.h"
 #include "sym.h"
 #include "tag.h"
 
@@ -36,10 +38,20 @@ s_tag * c3_access (const s_tag *tag, const s_sym * const *sym,
   assert(tag);
   assert(sym);
   assert(dest);
-  (void) tag;
-  (void) sym;
-  tag_init(dest);
-  return dest;
+  switch (tag->type) {
+  case TAG_MAP:
+    return map_access(&tag->data.map, *sym, dest);
+  case TAG_STRUCT:
+    return struct_access(&tag->data.struct_, *sym, dest);
+  default:
+    break;
+  }
+  err_write_1("c3_access: cannot access tag type ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_write_1(" for key ");
+  err_inspect_sym(sym);
+  err_write_1("\n");
+  return NULL;
 }
 
 void c3_break (void)
