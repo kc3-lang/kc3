@@ -764,7 +764,7 @@ sw buf_parse_call_access (s_buf *buf, s_call *dest)
   tag_left = &tmp.arguments->tag;
   tmp.ident.module = &g_sym_C3;
   tmp.ident.sym = &g_sym_access;
-  r = buf_parse_tag_primary(buf, &tmp.arguments->tag);
+  r = buf_parse_tag_primary_2(buf, &tmp.arguments->tag);
   if (r <= 0)
     goto clean;
   result += r;
@@ -3462,7 +3462,6 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
   }
   if ((r = buf_parse_tag_call_op(buf, dest)) != 0 ||
       (r = buf_parse_tag_brackets(buf, dest)) != 0 ||
-      (r = buf_parse_tag_call_access(buf, dest)) != 0 ||
       (r = buf_parse_tag_primary(buf, dest)) != 0)
     goto end;
  end:
@@ -3735,6 +3734,43 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
 }
 
 sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto clean;
+  if (r > 0) {
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) <= 0)
+      goto restore;
+    result += r;
+  }
+  if ((r = buf_parse_tag_call_access(buf, dest)) != 0 ||
+      (r = buf_parse_tag_primary_2(buf, dest)) != 0)
+    goto end;
+  goto restore;
+ end:
+  if (r < 0)
+    goto restore;
+  if (r > 0) {
+    result += r;
+    if ((r = buf_parse_comments(buf)) > 0)
+      result += r;
+  }
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_tag_primary_2 (s_buf *buf, s_tag *dest)
 {
   sw r;
   sw result = 0;

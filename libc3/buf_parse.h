@@ -125,6 +125,7 @@ sw buf_parse_tag_map (s_buf *buf, s_tag *map);
 sw buf_parse_tag_module_name (s_buf *buf, s_tag *module_name);
 sw buf_parse_tag_number (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_primary (s_buf *buf, s_tag *dest);
+sw buf_parse_tag_primary_2 (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_quote (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_special_operator (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_str (s_buf *buf, s_tag *dest);
