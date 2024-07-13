@@ -22,3 +22,5 @@ quote map.a.b.c
 map.a.b.c
 quote map.a.b.c + map.a.b.c
 map.a.b.c + map.a.b.c
+quote "0 #{map.a.b.c} 2"
+"0 #{map.a.b.c} 2"
