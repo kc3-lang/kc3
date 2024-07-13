@@ -86,6 +86,7 @@ s_tag * var_set (s_tag *var, const s_tag *value)
       err_inspect_sym(&var_type);
       err_write_1(" != ");
       err_inspect_sym(&value_type);
+      err_write_1("\n");
       assert(! "var_set: type mismatch");
       return NULL;
     }

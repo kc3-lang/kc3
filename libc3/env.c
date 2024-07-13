@@ -605,7 +605,11 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       args_final = args;
     }
     while (clause) {
-      frame_init(&frame, env->frame);
+      if (! frame_init(&frame, env->frame)) {
+        list_delete_all(env->search_modules);
+        env->search_modules = search_modules;
+        return false;
+      }
       env->frame = &frame;
       if (env_eval_equal_list(env, fn->macro || fn->special_operator,
                               clause->pattern, args_final, &tmp))

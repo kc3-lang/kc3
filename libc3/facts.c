@@ -321,6 +321,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
                       "  version: 1}\n")) <= 0) {
     err_write_1("facts_load: invalid or missing header: ");
     err_puts(path->ptr.pchar);
+    assert(! "facts_load: invalid or missing header");
     return -1;
   }
   result += r;
@@ -342,6 +343,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       err_inspect_u64(&line);
       err_write_1(": ");
       err_puts(path->ptr.pchar);
+      assert(! "facts_load: invalid fact");
       goto ko;
     }
     result += r;
@@ -351,6 +353,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       err_inspect_u64(&line);
       err_write_1(": ");
       err_puts(path->ptr.pchar);
+      assert(! "facts_load: missing newline");
       goto ko;
     }
     result += r;
@@ -360,6 +363,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       err_inspect_u64(&line);
       err_write_1(": ");
       err_puts(path->ptr.pchar);
+      assert(! "facts_load: invalid fact");
       goto ko;
     }
     fact_r(&fact_eval, &fact_eval_r);
@@ -371,6 +375,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 	err_inspect_u64(&line);
 	err_write_1(": ");
 	err_puts(path->ptr.pchar);
+	assert(! "facts_load: failed to replace fact");
 	goto ko;
       }
     }
@@ -382,6 +387,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
 	err_inspect_u64(&line);
 	err_write_1(": ");
 	err_puts(path->ptr.pchar);
+	assert(! "facts_load: failed to add fact");
 	goto ko;
       }
     }

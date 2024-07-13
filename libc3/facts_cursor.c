@@ -16,6 +16,7 @@
 #include "facts_cursor.h"
 #include "skiplist__fact.h"
 #include "skiplist_node__fact.h"
+#include "sym.h"
 #include "tag.h"
 #include "var.h"
 
@@ -125,10 +126,12 @@ const s_fact ** facts_cursor_next (s_facts_cursor *cursor,
                                    const s_fact **dest)
 {
   const s_fact *fact;
+  const s_sym *type;
   assert(cursor);
   if (! facts_cursor_lock(cursor))
     return NULL;
   if (cursor->node) {
+  next:
     cursor->node = SKIPLIST_NODE_NEXT__fact(cursor->node, 0);
     if (cursor->node &&
         cursor->index->compare(&cursor->end, cursor->node->fact) < 0)
@@ -148,16 +151,31 @@ const s_fact ** facts_cursor_next (s_facts_cursor *cursor,
   fact = cursor->node->fact;
   if (cursor->var_subject) {
     tag_var(cursor->var_subject, cursor->var_subject_type);
+    if (! tag_type(fact->subject, &type))
+      goto ko;
+    if (cursor->var_subject_type != &g_sym_Tag &&
+        cursor->var_subject_type != type)
+      goto next;
     if (! var_set(cursor->var_subject, fact->subject))
       goto ko;
   }
   if (cursor->var_predicate) {
     tag_var(cursor->var_predicate, cursor->var_predicate_type);
+    if (! tag_type(fact->predicate, &type))
+      goto ko;
+    if (cursor->var_predicate_type != &g_sym_Tag &&
+        cursor->var_predicate_type != type)
+      goto next;
     if (! var_set(cursor->var_predicate, fact->predicate))
       goto ko;
   }
   if (cursor->var_object) {
     tag_var(cursor->var_object, cursor->var_object_type);
+    if (! tag_type(fact->object, &type))
+      goto ko;
+    if (cursor->var_object_type != &g_sym_Tag &&
+        cursor->var_object_type != type)
+      goto next;
     if (! var_set(cursor->var_object, fact->object))
       goto ko;
   }

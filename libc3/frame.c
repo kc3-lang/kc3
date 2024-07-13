@@ -48,13 +48,25 @@ s_frame * frame_delete (s_frame *frame)
 
 void frame_delete_all (s_frame *frame)
 {
-  while (frame)
-    frame = frame_delete(frame);
+  s_frame *f;
+  f = frame;
+  while (f)
+    f = frame_delete(f);
 }
 
 const s_tag * frame_get (const s_frame *frame, const s_sym *sym)
 {
-  return binding_get(frame->bindings, sym);
+  const s_frame *f;
+  const s_tag *result;
+  assert(sym);
+  f = frame;
+  while (f) {
+    result = binding_get(frame->bindings, sym);
+    if (result)
+      return result;
+    f = f->next;
+  }
+  return NULL;
 }
 
 s_frame * frame_init (s_frame *frame, s_frame *next)
@@ -72,5 +84,9 @@ s_frame * frame_new (s_frame *next)
   frame = alloc(sizeof(s_frame));
   if (! frame)
     return NULL;
-  return frame_init(frame, next);
+  if (! frame_init(frame, next)) {
+    free(frame);
+    return NULL;
+  }
+  return frame;
 }
