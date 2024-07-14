@@ -24,3 +24,7 @@ map.a.b.c + map.a.b.c
 2
 "0 #{map.a.b.c} 2"
 "0 1 2"
+op = %C3.Operator{}
+%C3.Operator{sym: :+, symbol_value: ?, operator_precedence: 0, operator_associativity: :left}
+op.sym
+:+

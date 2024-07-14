@@ -25,12 +25,22 @@
 
 s_tag * struct_access (const s_struct *s, const s_sym *key, s_tag *dest)
 {
-  s_tag *tag;
-  tag = struct_get_tag((s_struct *) s, key);
-  if (! tag)
+  const void *data;
+  const s_sym *type;
+  s_tag tmp = {0};
+  void *tmp_data;
+  if (! struct_get_type(s, key, &type))
     return NULL;
-  if (! tag_init_copy(dest, tag))
+  data = struct_get(s, key);
+  if (! data)
     return NULL;
+  if (! sym_to_tag_type(type, &tmp.type))
+    return NULL;
+  if (! tag_to_pointer(&tmp, type, &tmp_data))
+    return NULL;
+  if (! data_init_copy(type, tmp_data, data))
+    return NULL;
+  *dest = tmp;
   return dest;
 }
 
@@ -101,7 +111,7 @@ bool struct_find_key_index (const s_struct *s, const s_sym *key,
   return false;
 }
 
-void * struct_get (s_struct *s, const s_sym *key)
+const void * struct_get (const s_struct *s, const s_sym *key)
 {
   uw i = 0;
   assert(s);
@@ -112,17 +122,25 @@ void * struct_get (s_struct *s, const s_sym *key)
   return (u8 *) s->data + s->type->offset[i];
 }
 
-const s_sym ** struct_get_sym (s_struct *s, const s_sym *key)
+const s_sym ** struct_get_sym (const s_struct *s, const s_sym *key)
 {
   return (const s_sym **) struct_get(s, key);
 }
 
-s_tag * struct_get_tag (s_struct *s, const s_sym *key)
+const s_tag * struct_get_tag (const s_struct *s, const s_sym *key)
 {
   return (s_tag *) struct_get(s, key);
 }
 
-u8 struct_get_u8 (s_struct *s, const s_sym *key)
+const s_sym ** struct_get_type (const s_struct *s, const s_sym *key,
+                                const s_sym **dest)
+{
+  s_tag tag_key;
+  tag_init_sym(&tag_key, key);
+  return map_get_type(&s->type->map, &tag_key, dest);
+}
+
+u8 struct_get_u8 (const s_struct *s, const s_sym *key)
 {
   return *(u8 *) struct_get(s, key);
 }

@@ -30,17 +30,20 @@ s_map * map_new (uw size);
 s_map * map_new_1 (const char *p);
 s_map * map_new_from_lists (const s_list *keys, const s_list *values);
 
-/* Modifiers */
+/* Operators. */
 s_map * map_set (s_map *map, const s_tag *key, const s_tag *value);
 s_map * map_sort (s_map *map);
 
-/* Operators */
-s_tag * map_access (const s_map *map, const s_sym *key, s_tag *value);
-s_map * map_cast (const s_tag *tag, s_map *map);
-s_tag * map_get (const s_map *map, const s_tag *key, s_tag *dest);
-s_map * map_update (const s_map *map, const s_tag *key,
-                    const s_tag *value, s_map *dest);
-s_map * map_update_list (const s_map *map, const s_list *alist,
-                         s_map *dest);
+/* Observers. */
+s_tag *        map_access (const s_map *map, const s_sym *key,
+                           s_tag *value);
+s_map *        map_cast (const s_tag *tag, s_map *map);
+s_tag *        map_get (const s_map *map, const s_tag *key, s_tag *dest);
+const s_sym ** map_get_type (const s_map *map, const s_tag *key,
+                             const s_sym **dest);
+s_map *        map_update (const s_map *map, const s_tag *key,
+                           const s_tag *value, s_map *dest);
+s_map *        map_update_list (const s_map *map, const s_list *alist,
+                                s_map *dest);
 
 #endif /* LIBC3_MAP_H */

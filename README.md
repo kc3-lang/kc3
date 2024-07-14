@@ -483,8 +483,8 @@ Script interpreter. Works the same as ic3 but is not interactive.
    - operators dispatch
      - list of matching operators (facts_with)
    - access
-     - buf_parse_call_access (Tag "." Sym)
-     - access (Tag, Sym) => Tag
+     - DONE buf_parse_call_access (Tag "." Sym)
+     - DONE access (Tag, Sym) => Tag
    - base-specific big floats
    - macro cast `(Macro) fn (x) { x }`
    - pretty printer
