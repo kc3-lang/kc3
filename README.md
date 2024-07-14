@@ -240,7 +240,10 @@ Don't forget to revert the changes to `list.facts`.
 
 #### Maps
 
-C3 maps are like Elixir maps :
+C3 maps are key-value stores, you can use any tag as a key and
+associate a value to it.
+
+You can use destructuring to access C3 maps :
 ```
 ic3> a = %{id: 1, title: "My title", message: "Hello, world !"}
 %{id: 1, title: "My title", message: "Hello, world !"}
@@ -251,6 +254,26 @@ ic3> %{id: id, title: "My title", message: message} = a
 ic3> id
 1
 ic3> message
+"Hello, world !"
+```
+
+You can use the dot syntax to access map values from a `Sym` key :
+```
+ic3> a = %{id: 1, title: "My title", message: "Hello, world !"}
+%{id: 1, title: "My title", message: "Hello, world !"}
+ic3> a.id
+1
+ic3> a.message
+"Hello, world !"
+```
+
+You can also use the `C3.access` function for the same result :
+```
+ic3> a = %{id: 1, title: "My title", message: "Hello, world !"}
+%{id: 1, title: "My title", message: "Hello, world !"}
+ic3> access(a, :id)
+1
+ic3> access(a, :message)
 "Hello, world !"
 ```
 
