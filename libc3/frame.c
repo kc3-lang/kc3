@@ -61,7 +61,7 @@ const s_tag * frame_get (const s_frame *frame, const s_sym *sym)
   assert(sym);
   f = frame;
   while (f) {
-    result = binding_get(frame->bindings, sym);
+    result = binding_get(f->bindings, sym);
     if (result)
       return result;
     f = f->next;
