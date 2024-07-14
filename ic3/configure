@@ -58,10 +58,8 @@ echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
 echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 
-if $HAVE_GCOV; then
-    OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
-    echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
-fi
+OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
+echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
