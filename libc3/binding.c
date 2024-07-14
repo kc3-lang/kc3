@@ -16,21 +16,22 @@
 #include "list.h"
 #include "tag.h"
 
-void binding_delete (s_binding *binding)
+s_binding * binding_delete (s_binding *binding)
 {
+  s_binding *next;
   assert(binding);
   tag_clean(&binding->value);
+  next = binding->next;
   free(binding);
+  return next;
 }
 
 void binding_delete_all (s_binding *binding)
 {
-  s_binding *next;
-  while (binding) {
-    next = binding->next;
-    binding_delete(binding);
-    binding = next;
-  }
+  s_binding *b;
+  b = binding;
+  while (b)
+    b = binding_delete(b);
 }
 
 const s_tag * binding_get (const s_binding *binding, const s_sym *name)

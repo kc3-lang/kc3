@@ -1,0 +1,4 @@
+quote let %{a: 1} do a; end
+let %{a: 1} do a; end
+quote let %{a: 1, b: 2} do a + b; end
+let %{a: 1, b: 2} do a + b; end

@@ -14,6 +14,7 @@
 #include "buf_inspect.h"
 #include "env.h"
 #include "io.h"
+#include "tag_type.h"
 
 #define DEF_ERR_INSPECT(name, type)                                    \
   sw err_inspect_ ## name (type x)                                     \
@@ -44,6 +45,11 @@
 sw err_inspect (const s_tag *x)
 {
   return err_inspect_tag(x);
+}
+
+sw err_inspect_tag_type (e_tag_type type)
+{
+  return err_write_1(tag_type_to_string(type));
 }
 
 sw err_puts (const char *x)
@@ -80,6 +86,11 @@ sw io_inspect (const s_tag *x)
   result += r;
   buf_flush(&g_c3_env.out);
   return result;
+}
+
+sw io_inspect_tag_type (e_tag_type type)
+{
+  return io_write_1(tag_type_to_string(type));
 }
 
 sw io_puts (const char *x)

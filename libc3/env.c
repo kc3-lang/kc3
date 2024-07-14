@@ -544,27 +544,35 @@ bool env_eval_call_cfn (s_env *env, const s_call *call, s_tag *dest)
   s_list *args = NULL;
   s_list *args_final = NULL;
   s_cfn *cfn;
+  s_frame frame;
   s_tag tag;
   assert(env);
   assert(call);
   assert(dest);
   cfn = call->cfn;
   assert(cfn);
+  if (! frame_init(&frame, env->frame))
+    return false;
+  env->frame = &frame;
   if (call->arguments) {
     if (cfn->macro || cfn->special_operator)
       args_final = call->arguments;
     else {
-      if (! env_eval_call_arguments(env, call->arguments, &args))
+      if (! env_eval_call_arguments(env, call->arguments, &args)) {
+        env->frame = frame_clean(&frame);
         return false;
+      }
       args_final = args;
     }
   }
   if (! cfn_apply(cfn, args_final, &tag)) {
     list_delete_all(args);
+    env->frame = frame_clean(&frame);
     return false;
   }
   *dest = tag;
   list_delete_all(args);
+  env->frame = frame_clean(&frame);
   return true;
 }
 
@@ -2001,6 +2009,60 @@ s_env * env_init_args (s_env *env, int argc, char **argv)
   env->argv = NULL;
   str_init_1(&env->argv0_dir, NULL, "./");
   return env;
+}
+
+s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
+                 s_tag *dest)
+{
+  uw i;
+  const s_map *map;
+  s_tag tmp;
+  assert(env);
+  assert(tag);
+  assert(block);
+  assert(dest);
+  if (! env_eval_tag(env, tag, &tmp))
+    return NULL;
+  switch(tag->type) {
+  case TAG_MAP:
+    map = &tag->data.map;
+    break;
+  case TAG_STRUCT:
+    map = &tag->data.struct_.type->map;
+    break;
+  default:
+    tag_clean(&tmp);
+    err_write_1("env_let: unsupported associative tag type: ");
+    err_inspect_tag_type(tag->type);
+    err_write_1(": ");
+    err_inspect_tag(tag);
+    err_write_1("\n");
+    assert(! "env_let: unsupported associative tag type");
+    return NULL;
+  }
+  i = 0;
+  while (i < map->count) {
+    if (map->key[i].type != TAG_SYM) {
+      tag_clean(&tmp);
+      err_write_1("env_let: binding key is not a symbol: ");
+      err_inspect_tag(map->key + i);
+      err_write_1("\n");
+      assert(! "env_let: binding key is not a symbol");
+      return NULL;
+    }
+    if (! frame_binding_new(env->frame, map->key[i].data.sym,
+                            map->value + i)) {
+      tag_clean(&tmp);
+      return NULL;
+    }
+    i++;
+  }
+  if (! env_eval_block(env, block, dest)) {
+    tag_clean(&tmp);
+    return NULL;
+  }
+  tag_clean(&tmp);
+  return dest;
 }
 
 bool env_load (s_env *env, const s_str *path)

@@ -172,6 +172,11 @@ s_env * c3_init (s_env *env, int argc, char **argv)
   return env_init(env, argc, argv);
 }
 
+s_tag * c3_let (const s_tag *tag, const s_block *block, s_tag *dest)
+{
+  return env_let(&g_c3_env, tag, block, dest);
+}
+
 void c3_license (void)
 {
   buf_write_1(&g_c3_env.out, g_c3_license);

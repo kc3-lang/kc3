@@ -60,6 +60,7 @@ PROTOTYPES_ERR_IO_INSPECT(str,        const s_str *);
 PROTOTYPES_ERR_IO_INSPECT(sw,         const sw *);
 PROTOTYPES_ERR_IO_INSPECT(sym,        const s_sym * const *);
 PROTOTYPES_ERR_IO_INSPECT(tag,        const s_tag *);
+PROTOTYPES_ERR_IO_INSPECT(tag_type,   e_tag_type);
 PROTOTYPES_ERR_IO_INSPECT(tuple,      const s_tuple *);
 PROTOTYPES_ERR_IO_INSPECT(u8,         const u8 *);
 PROTOTYPES_ERR_IO_INSPECT(u16,        const u16 *);

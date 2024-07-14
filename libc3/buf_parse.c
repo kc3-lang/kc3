@@ -766,7 +766,7 @@ sw buf_parse_call_access (s_buf *buf, s_call *dest)
   tmp.ident.sym = &g_sym_access;
   r = buf_parse_tag_primary_2(buf, &tmp.arguments->tag);
   if (r <= 0)
-    goto clean;
+    goto restore;
   result += r;
   while (1) {
     if ((r = buf_read_1(buf, ".")) <= 0)

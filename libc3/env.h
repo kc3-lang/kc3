@@ -175,6 +175,8 @@ s_tag *       env_ident_get (s_env *env, const s_ident *ident,
 bool *        env_ident_is_special_operator (s_env *env,
                                              const s_ident *ident,
                                              bool *dest);
+s_tag *       env_let (s_env *env, const s_tag *tag,
+                       const s_block *block, s_tag *dest);
 bool          env_load (s_env *env, const s_str *path);
 bool *        env_module_is_loading (s_env *env, const s_sym *module,
                                      bool *dest);
