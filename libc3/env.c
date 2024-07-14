@@ -1947,14 +1947,14 @@ s_env * env_init (s_env *env, int argc, char **argv)
   buf_file_open_w(&env->err, stderr);
   facts_init(&env->facts);
   env->path = list_new_str_1
-    (NULL, "./", list_new_str_1
-     (NULL, "../", list_new_str_1
-      (NULL, "../Resources/", list_new_str_1
-       (NULL, "../../", list_new_str_1
-        (NULL, "../../../", list_new_str_1
-         (NULL, "../../../../", list_new_str_1
-          (NULL, "../../../../../", list_new_str_1
-           (NULL, "../../../../../../", NULL))))))));
+    (NULL, ".", list_new_str_1
+     (NULL, "..", list_new_str_1
+      (NULL, "../Resources", list_new_str_1
+       (NULL, "../..", list_new_str_1
+        (NULL, "../../..", list_new_str_1
+         (NULL, "../../../..", list_new_str_1
+          (NULL, "../../../../..", list_new_str_1
+           (NULL, "../../../../../..", NULL))))))));
   str_init_1(&path, NULL, "lib/c3/0.1/");
   if (! file_search(&path, &g_sym_x, &env->module_path)) {
     err_puts("env_init: module_path not found");
