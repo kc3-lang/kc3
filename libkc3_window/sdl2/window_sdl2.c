@@ -119,7 +119,7 @@ s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
 {
   s_window_sdl2 tmp = {0};
   assert(window);
-  title = title ? title : "C3.Window.Sdl2";
+  title = title ? title : "KC3.Window.Sdl2";
   window_init((s_window *) &tmp, x, y, w, h, title, sequence_count);
   tmp.button = window_sdl2_default_button_cb;
   tmp.key    = window_sdl2_default_key_cb;

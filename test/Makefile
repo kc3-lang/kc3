@@ -18,10 +18,10 @@ CLEANFILES = \
 	*.lo \
 	*.o \
 	.libs \
-	ic3/*.diff \
-	ic3/*.err \
-	ic3/*.out \
-	ic3/*.ret \
+	ikc3/*.diff \
+	ikc3/*.err \
+	ikc3/*.out \
+	ikc3/*.ret \
 	libkc3_test \
 	libkc3_test_asan \
 	libkc3_test_cov \
@@ -71,31 +71,31 @@ lldb_test: debug
 
 test: libkc3_test
 	time ./libkc3_test
-	IC3=${SRC_TOP}/ic3/ic3 time ./ic3_test
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test
 
 test_asan: libkc3_test_asan
 	time ./libkc3_test_asan
-	IC3=${SRC_TOP}/ic3/ic3_asan time ./ic3_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./ikc3_test
 
 test_cov:
 	time ./libkc3_test_cov
-	IC3=${SRC_TOP}/ic3/ic3_cov time ./ic3_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./ikc3_test
 
 test_debug: libkc3_test_debug
 	time ./libkc3_test_debug
-	IC3=${SRC_TOP}/ic3/ic3_debug time ./ic3_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./ikc3_test
 
-test_ic3:
-	IC3=${SRC_TOP}/ic3/ic3 time ./ic3_test
+test_ikc3:
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test
 
-test_ic3_asan:
-	IC3=${SRC_TOP}/ic3/ic3_asan time ./ic3_test
+test_ikc3_asan:
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./ikc3_test
 
-test_ic3_cov:
-	IC3=${SRC_TOP}/ic3/ic3_cov time ./ic3_test
+test_ikc3_cov:
+	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./ikc3_test
 
-test_ic3_debug:
-	IC3=${SRC_TOP}/ic3/ic3_debug time ./ic3_test
+test_ikc3_debug:
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./ikc3_test
 
 test_libkc3: libkc3_test
 	time ./libkc3_test
@@ -106,7 +106,7 @@ test_libkc3_cov: libkc3_test_cov
 test_valgrind: libkc3_test
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./libkc3_test
 
-.PHONY: all asan cov debug clean clean_cov distclean ic3_test_cov libkc3_test_cov test test_asan test_cov test_debug test_ic3 test_valgrind
+.PHONY: all asan cov debug clean clean_cov distclean ikc3_test_cov libkc3_test_cov test test_asan test_cov test_debug test_ikc3 test_valgrind
 
 include config.mk
 include sources.mk

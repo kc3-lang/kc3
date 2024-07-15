@@ -188,7 +188,7 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   tag_init_var(&predicate, &g_sym_Tag);
   tag_init_var(&object, &g_sym_Tag);
   if ((r = buf_write_1(buf,
-                       "%{module: C3.Facts.Dump,\n"
+                       "%{module: KC3.Facts.Dump,\n"
                        "  version: 1}\n")) < 0)
     return r;
   result += r;
@@ -317,7 +317,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   assert(facts);
   assert(buf);
   if ((r = buf_read_1(buf,
-                      "%{module: C3.Facts.Dump,\n"
+                      "%{module: KC3.Facts.Dump,\n"
                       "  version: 1}\n")) <= 0) {
     err_write_1("facts_load: invalid or missing header: ");
     err_puts(path->ptr.pchar);

@@ -1,4 +1,4 @@
-%{module: C3.Facts.Dump,
+%{module: KC3.Facts.Dump,
   version: 1}
 replace {F64, :is_a, :module}
 replace {F64, :symbol, F64.cast}

@@ -17,10 +17,10 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . ../../../config.subr
 
-PROG=c3_window_sdl2_demo
-PROG_ASAN=c3_window_sdl2_demo_asan
-PROG_COV=c3_window_sdl2_demo_cov
-PROG_DEBUG=c3_window_sdl2_demo_debug
+PROG=kc3_window_sdl2_demo
+PROG_ASAN=kc3_window_sdl2_demo_asan
+PROG_COV=kc3_window_sdl2_demo_cov
+PROG_DEBUG=kc3_window_sdl2_demo_debug
 
 echo "PROG = $PROG" >> ${CONFIG_MK}
 echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}

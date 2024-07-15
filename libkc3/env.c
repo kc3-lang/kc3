@@ -2012,7 +2012,7 @@ s_env * env_init_args (s_env *env, int *argc, char ***argv)
   s_str dir;
   sw r;
   assert(env);
-  if (*argc && *argv) {
+  if (argc && argv && *argc && *argv) {
     env->argc = (*argc)--;
     env->argv = (*argv)++;
     str_init_1(&argv0, NULL, env->argv[0]);

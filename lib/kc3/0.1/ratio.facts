@@ -1,4 +1,4 @@
-%{module: C3.Facts.Dump,
+%{module: KC3.Facts.Dump,
   version: 1}
 replace {Ratio, :is_a, :module}
 replace {Ratio, :symbol, Ratio.cast}

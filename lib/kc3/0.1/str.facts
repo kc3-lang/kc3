@@ -1,4 +1,4 @@
-%{module: C3.Facts.Dump,
+%{module: KC3.Facts.Dump,
   version: 1}
 replace {Str, :is_a, :module}
 replace {Str, :symbol, Str.cast}

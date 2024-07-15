@@ -24,7 +24,7 @@ quote map.a.b.c + map.a.b.c
 map.a.b.c + map.a.b.c
 quote "0 #{map.a.b.c} 2"
 "0 #{map.a.b.c} 2"
-quote op = %C3.Operator{}
-op = %C3.Operator{}
+quote op = %KC3.Operator{}
+op = %KC3.Operator{}
 quote op.sym
 op.sym

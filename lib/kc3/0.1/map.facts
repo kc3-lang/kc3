@@ -1,4 +1,4 @@
-%{module: C3.Facts.Dump,
+%{module: KC3.Facts.Dump,
   version: 1}
 add {Map, :is_a, :module}
 add {Map, :symbol, Map.cast}

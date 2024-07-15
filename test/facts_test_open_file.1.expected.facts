@@ -1,4 +1,4 @@
-%{module: C3.Facts.Dump,
+%{module: KC3.Facts.Dump,
   version: 1}
 add {a, a, a}
 add {-18446744073709551616, -18446744073709551616, -18446744073709551616}
