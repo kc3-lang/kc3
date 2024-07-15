@@ -36,10 +36,12 @@ void binding_delete_all (s_binding *binding)
 
 const s_tag * binding_get (const s_binding *binding, const s_sym *name)
 {
-  while (binding) {
-    if (binding->name == name)
-      return &binding->value;
-    binding = binding->next;
+  const s_binding *b;
+  b = binding;
+  while (b) {
+    if (b->name == name)
+      return &b->value;
+    b = b->next;
   }
   return NULL;
 }
