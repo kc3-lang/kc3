@@ -1,21 +1,21 @@
-# C3 v0.1.12
+# KC3 v0.1.12
 
 This is a development branch, see
-[C3 v0.1.11](https://git.kmx.io/c3-lang/c3/_tag/v0.1.11)
+[KC3 v0.1.11](https://git.kmx.io/kc3-lang/kc3/_tag/v0.1.11)
 for a stable release.
 
-C3 is a programming language with meta-programmation and a graph
+KC3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
 for semantic programming, and programming the semantic web.
 
 We are currently fundraising for the project to become real and
 there is a working prototype available at
-[https://git.kmx.io/c3-lang/c3/](https://git.kmx.io/c3-lang/c3/),
+[https://git.kmx.io/kc3-lang/kc3/](https://git.kmx.io/kc3-lang/kc3/),
 please see the
 [https://www.kmx.io/en/donations.html](https://www.kmx.io/en/donations.html)
 page for helping out.
 
-C3 is currently a programming language project, inspired by C, Elixir
+KC3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
 pattern matching, and a semantic object system. The idea is to plug
 modules, closures, pattern matching, a graph database and
@@ -41,25 +41,25 @@ Supported architectures :
 
 ## New in this release
 
- - libc3
+ - libkc3
    - modules
      - defmodule Empty do end
      - def
        - def three = 3
        - def double = fn (x) do x * 2 end
        - def double_tuple = macro (x) do {x, x} end
-       - def operator\_double = %C3.Operator{sym: :double, symbol_value: fn (x) { x * 2 }}
+       - def operator\_double = %KC3.Operator{sym: :double, symbol_value: fn (x) { x * 2 }}
 
-With this release you can actually load a module as a c3 source file.
-See [lib/c3/0.1/list.c3](https://git.kmx.io/c3-lang/c3/_tree/master/lib/c3/0.1/list.c3)
+With this release you can actually load a module as a kc3 source file.
+See [lib/kc3/0.1/list.kc3](https://git.kmx.io/kc3-lang/kc3/_tree/master/lib/kc3/0.1/list.kc3)
 
 
 ## Usage
 
 ### Compilation
 ```sh
-git clone https://git.kmx.io/c3-lang/c3.git
-cd c3
+git clone https://git.kmx.io/kc3-lang/kc3.git
+cd kc3
 git submodule init
 git submodule update
 ./configure
@@ -68,7 +68,7 @@ make
 
 ### Add the sources to `LD_LIBRARY_PATH`
 ```sh
-export LD_LIBRARY_PATH=$PWD/libc3/.libs
+export LD_LIBRARY_PATH=$PWD/libkc3/.libs
 ```
 
 ### Running the OpenGL demo
@@ -107,21 +107,21 @@ make test
 
 All the tests will be run. More specific targets exist :
 ```sh
-make test_libc3
-make test_ic3
-make test_libc3_asan
-make test_ic3_asan
+make test_libkc3
+make test_ikc3
+make test_libkc3_asan
+make test_ikc3_asan
 make test_asan
 ```
 
-### Running ic3
+### Running ikc3
 ```sh
-ic3/.libs/ic3
+ikc3/.libs/ikc3
 ```
 
 ### Running gdb
 ```sh
-make gdb_ic3
+make gdb_ikc3
 make gdb_test
 ```
 
@@ -137,12 +137,12 @@ sources.sh files.
 
 ## Structure
 
-### libc3
+### libkc3
 
-C3 is implemented using libc3 a small C99 library implementing the core
+KC3 is implemented using libkc3 a small C99 library implementing the core
 of the language.
 
-The library includes a parser and an interpreter for C3 code in C
+The library includes a parser and an interpreter for KC3 code in C
 structures.
 
 Support for large integers provided by
@@ -160,7 +160,7 @@ The parser is recursive descent.
 
 #### AST
 
-The AST is represented as C3 data structures and can be meta-programmed
+The AST is represented as KC3 data structures and can be meta-programmed
 in C.
 
 #### Interpreter
@@ -168,7 +168,7 @@ in C.
 Under development.
 
 
-### ic3
+### ikc3
 
 Interactive shell. Terminal I/O provided by
 [linenoise](https://github.com/antirez/linenoise/tree/1.0).
@@ -176,39 +176,39 @@ Interactive shell. Terminal I/O provided by
 Example :
 ```
 $ make test
-$ ic3/ic3
-ic3> ic3> 1 + 1
+$ ikc3/ikc3
+ikc3> ikc3> 1 + 1
 2
-ic3> 2 + 2
+ikc3> 2 + 2
 4
-ic3> 3 + 3
+ikc3> 3 + 3
 6
-ic3> 1 +
-ic3> 1
+ikc3> 1 +
+ikc3> 1
 2
-ic3> double = fn (x) { x * 2 }
+ikc3> double = fn (x) { x * 2 }
 fn (x) { x * 2 }
-ic3> double
+ikc3> double
 fn (x) { x * 2 }
-ic3> double(1)
+ikc3> double(1)
 2
-ic3> double(2)
+ikc3> double(2)
 4
-ic3> double(3)
+ikc3> double(3)
 6
-ic3> double(4)
+ikc3> double(4)
 8
-ic3> List.map([1, 2, 3, 4], double)
+ikc3> List.map([1, 2, 3, 4], double)
 [2, 4, 6, 8]
-ic3> List.reverse(List.map([1, 2, 3, 4], double))
+ikc3> List.reverse(List.map([1, 2, 3, 4], double))
 [8, 6, 4, 2]
 ```
 
 The `List.map` and `List.reverse` functions are defined in
-`lib/c3/0.1/list.facts` and can be modified in real time.
+`lib/kc3/0.1/list.facts` and can be modified in real time.
 
-For example, without closing ic3 let's redefine `List.reverse`,
-open an editor and change the line in `lib/c3/0.1/list.facts` from
+For example, without closing ikc3 let's redefine `List.reverse`,
+open an editor and change the line in `lib/kc3/0.1/list.facts` from
 
 ```
 replace {List.reverse, :fn, fn {
@@ -228,10 +228,10 @@ replace {List.reverse, :fn, fn {
 }}
 ```
 
-and check the results of the last command (up key) in ic3/ic3 :
+and check the results of the last command (up key) in ikc3/ikc3 :
 
 ```
-ic3> List.reverse(List.map([1, 2, 3, 4], double))
+ikc3> List.reverse(List.map([1, 2, 3, 4], double))
 [:reversed, 8, 6, 4, 2]
 ```
 
@@ -240,67 +240,67 @@ Don't forget to revert the changes to `list.facts`.
 
 #### Maps
 
-C3 maps are key-value stores, you can use any tag as a key and
+KC3 maps are key-value stores, you can use any tag as a key and
 associate a value to it.
 
-You can use destructuring to access C3 maps :
+You can use destructuring to access KC3 maps :
 ```
-ic3> a = %{id: 1, title: "My title", message: "Hello, world !"}
+ikc3> a = %{id: 1, title: "My title", message: "Hello, world !"}
 %{id: 1, title: "My title", message: "Hello, world !"}
-ic3> a = %{}
+ikc3> a = %{}
 %{id: 1, title: "My title", message: "Hello, world !"}
-ic3> %{id: id, title: "My title", message: message} = a
+ikc3> %{id: id, title: "My title", message: message} = a
 %{id: 1, title: "My title", message: "Hello, world !"}
-ic3> id
+ikc3> id
 1
-ic3> message
+ikc3> message
 "Hello, world !"
 ```
 
 You can use the dot syntax to access map values from a `Sym` key :
 ```
-ic3> a = %{id: 1, title: "My title", message: "Hello, world !"}
+ikc3> a = %{id: 1, title: "My title", message: "Hello, world !"}
 %{id: 1, title: "My title", message: "Hello, world !"}
-ic3> a.id
+ikc3> a.id
 1
-ic3> a.message
+ikc3> a.message
 "Hello, world !"
 ```
 
-You can also use the `C3.access` function for the same result :
+You can also use the `KC3.access` function for the same result :
 ```
-ic3> a = %{id: 1, title: "My title", message: "Hello, world !"}
+ikc3> a = %{id: 1, title: "My title", message: "Hello, world !"}
 %{id: 1, title: "My title", message: "Hello, world !"}
-ic3> access(a, :id)
+ikc3> access(a, :id)
 1
-ic3> access(a, :message)
+ikc3> access(a, :message)
 "Hello, world !"
 ```
 
 
 #### Unicode characters
 
-`ic3` fully supports Unicode :
+`ikc3` fully supports Unicode :
 
 Some unicode characters :
 ```
-ic3> '\U+1B2FB'
+ikc3> '\U+1B2FB'
 '𛋻'
-ic3> '𐅀'
+ikc3> '𐅀'
 '𐅀'
-ic3> '🤩'
+ikc3> '🤩'
 '🤩'
-ic3>
+ikc3>
 ```
 
 #### Large integers
 
 ```
-ic3> a = 1 + 100000000000000000000000000000000
+ikc3> a = 1 + 100000000000000000000000000000000
 100000000000000000000000000000001
-ic3> a * a
+ikc3> a * a
 10000000000000000000000000000000200000000000000000000000000000001
-ic3>
+ikc3>
 ```
 
 #### Ratios
@@ -311,13 +311,13 @@ They represent fractions of integral numbers.
 They are written with a slash and no space.
 
 ```
-ic3> 1/2 + 2/3
+ikc3> 1/2 + 2/3
 7/6
-ic3> 1/2 * 2/3
+ikc3> 1/2 * 2/3
 1/3
-ic3> 1/2 / 2/3
+ikc3> 1/2 / 2/3
 3/4
-ic3> 1/2 - 2/3
+ikc3> 1/2 - 2/3
 -1/6
 ```
 
@@ -330,15 +330,15 @@ numbers). For instance, you can write `a +i b` where `a` and `b` are
 real numbers.
 
 ```
-ic3> 1 +i 2
+ikc3> 1 +i 2
 1 +i 2
-ic3> 1 +i 2 + 2 +i 3
+ikc3> 1 +i 2 + 2 +i 3
 3 +i 5
-ic3> (1 +i 2) * (2 +i 3)
+ikc3> (1 +i 2) * (2 +i 3)
 -4 +i 7
-ic3> (1 +i 2) / (2 +i 3)
+ikc3> (1 +i 2) / (2 +i 3)
 0 +i 0
-ic3> (1/1 +i 2/1) / (2 +i 3)
+ikc3> (1/1 +i 2/1) / (2 +i 3)
 8/13 +i 1/13
 ```
 
@@ -369,12 +369,12 @@ All these list formats are supported in pattern matching.
 
 #### Pattern matching and destructuring
 
-The C3 pattern matching principles come from Erlang and Elixir.
+The KC3 pattern matching principles come from Erlang and Elixir.
 
-All tag data structures in C3 can be pattern matched using the equal
+All tag data structures in KC3 can be pattern matched using the equal
 sign (`=`) against litteral values containing identifiers. All
 identifiers are supposed to be new bindings when using pattern matching
-in C3. If you want to use an identifier's value in pattern matching you
+in KC3. If you want to use an identifier's value in pattern matching you
 must use the _pin operator_ (`^`). Variables can be assigned a new value
 from either side of the equal sign and from inside a tag data structure,
 which is called _destructuring_.
@@ -382,19 +382,19 @@ which is called _destructuring_.
 
 Examples :
 ```
-ic3> a = 1
+ikc3> a = 1
 1
-ic3> a = 2
+ikc3> a = 2
 2
-ic3> a
+ikc3> a
 2
-ic3> ^ a = 1
+ikc3> ^ a = 1
 void
-ic3> ^ a = 2
+ikc3> ^ a = 2
 2
-ic3> ^ a = b
+ikc3> ^ a = b
 2
-ic3> b
+ikc3> b
 2
 ```
 
@@ -408,20 +408,20 @@ of abstractions. Let the data flow in the code through visual types.
 
 Examples :
 ```
-ic3> [x, y | z] = List.reverse([1, 2, 3, 4])
+ikc3> [x, y | z] = List.reverse([1, 2, 3, 4])
 [4, 3, 2, 1]
-ic3> x
+ikc3> x
 4
-ic3> y
+ikc3> y
 3
-ic3> z
+ikc3> z
 [2, 1]
 ```
 
 
 #### Macros
 
-C3 macros are like Common Lisp macros with Elixir pattern-matching.
+KC3 macros are like Common Lisp macros with Elixir pattern-matching.
 
 Macros are like functions but start with `macro` instead of `fn` and
 their arguments do not get evaluated. However they get pattern matched
@@ -431,43 +431,43 @@ want &rest arguments, use a block if you want a &body argument.
 
 When evaluated, a macro call returns a tag which is in turn evaluated
 in the calling site lexical environment. This allows for DSLs and custom
-control structures to be defined in C3.
+control structures to be defined in KC3.
 
-Many basic operations in C3 are defined as macros : error handling,
+Many basic operations in KC3 are defined as macros : error handling,
 free operations with `unwind-protect`, graph database operations like
 `Facts.with`.
 
 
 #### If, then, else.
 
-Conditionals in C3 are like in Ruby, for example :
+Conditionals in KC3 are like in Ruby, for example :
 ```
-ic3> if true && true
-ic3>   1 + 1
-ic3>   2 + 2
-ic3> end
+ikc3> if true && true
+ikc3>   1 + 1
+ikc3>   2 + 2
+ikc3> end
 4
 
-ic3> if true && false
-ic3>   1 + 1
-ic3>   2 + 2
-ic3> else
-ic3>   3 + 3
-ic3>   4 + 4
-ic3> end
+ikc3> if true && false
+ikc3>   1 + 1
+ikc3>   2 + 2
+ikc3> else
+ikc3>   3 + 3
+ikc3>   4 + 4
+ikc3> end
 8
 ```
 
-A C3 `if` statement always return a value. If the condition is true, the
+A KC3 `if` statement always return a value. If the condition is true, the
 first (then) block gets evaluated. If the condition is false the second
 block gets evaluated. If the condition is false and an `else` block is
 not provided, then `void` gets returned.
 
 One liner examples with `then` :
 ```
-ic3> if 42 then 100 else 101 end
+ikc3> if 42 then 100 else 101 end
 100
-ic3> if 0 then 100 else 101 end
+ikc3> if 0 then 100 else 101 end
 101
 ```
 
@@ -475,34 +475,34 @@ ic3> if 0 then 100 else 101 end
 
 Example :
 ```
-ic3> defmodule Example do
-ic3>   def three = 3
-ic3>   def double = fn (x) do x * 2 end
-ic3>   def double_tuple = macro (x) do {x, x} end
-ic3>   def operator_double = %C3.Operator{sym: :double, symbol_value: fn (x) { x * 2 }
-ic3> end
+ikc3> defmodule Example do
+ikc3>   def three = 3
+ikc3>   def double = fn (x) do x * 2 end
+ikc3>   def double_tuple = macro (x) do {x, x} end
+ikc3>   def operator_double = %KC3.Operator{sym: :double, symbol_value: fn (x) { x * 2 }
+ikc3> end
 Example
-ic3> Example.three
+ikc3> Example.three
 3
-ic3> Example.double
+ikc3> Example.double
 fn (x) do x * 2 end
-ic3> Example.double(21)
+ikc3> Example.double(21)
 42
-ic3> Example.double_tuple(:ok)
+ikc3> Example.double_tuple(:ok)
 {:ok, :ok}
-ic3> double 21
+ikc3> double 21
 42
 ```
 
 
-### c3s
+### kc3s
 
-Script interpreter. Works the same as ic3 but is not interactive.
+Script interpreter. Works the same as ikc3 but is not interactive.
 
 
 ## TODO
 
- - libc3
+ - libkc3
    - operators dispatch
      - list of matching operators (facts_with)
    - access
@@ -519,7 +519,7 @@ Script interpreter. Works the same as ic3 but is not interactive.
      - has_ident
      - collect_idents
    - modules
-     - def %C3.SpecialOperator{}
+     - def %KC3.SpecialOperator{}
      - defstruct
    - facts
      - negative facts : 4 + 2n = not 3 + 2n
@@ -555,10 +555,10 @@ Script interpreter. Works the same as ic3 but is not interactive.
 
 # License
 
-## C3
+## KC3
 
 ```
-/* c3
+/* kc3
  * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above

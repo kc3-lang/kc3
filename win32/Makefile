@@ -10,7 +10,7 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-DEST = c3-${C3_VERSION}.win32.tmp
+DEST = kc3-${C3_VERSION}.win32.tmp
 
 IMG_SOURCES = \
 	../img/earth.png \
@@ -40,18 +40,18 @@ c3-${C3_VERSION}.win32:
 	rsync -aP ${IMG_SOURCES} ${DEST}/img/
 	rsync -aP ${FONT_SOURCES} ${DEST}/fonts/
 	cp -a ../lib ${DEST}/
-	cp -a ../libc3/.libs/libc3*-0.dll ${DEST}
-	cp -a ../libc3/.libs/libc3*-0.dll ${DEST}/test
-	cp -a ../libc3/window/.libs/libc3_window*-0.dll ${DEST}
-	cp -a ../libc3/window/cairo/.libs/libc3_window_cairo*-0.dll ${DEST}
-	cp -a ../libc3/window/cairo/demo/.libs/libc3_window_cairo_demo*-0.dll ${DEST}
-	cp -a ../libc3/window/cairo/win32/.libs/libc3_window_cairo_win32*-0.dll ${DEST}
-	cp -a ../libc3/window/cairo/win32/demo/.libs/c3_window_cairo_win32_demo*.exe ${DEST}
-	cp -a ../libc3/window/sdl2/demo/.libs/c3_window_sdl2_demo*.exe ${DEST}
+	cp -a ../libkc3/.libs/libkc3*-0.dll ${DEST}
+	cp -a ../libkc3/.libs/libkc3*-0.dll ${DEST}/test
+	cp -a ../libkc3/window/.libs/libkc3_window*-0.dll ${DEST}
+	cp -a ../libkc3/window/cairo/.libs/libkc3_window_cairo*-0.dll ${DEST}
+	cp -a ../libkc3/window/cairo/demo/.libs/libkc3_window_cairo_demo*-0.dll ${DEST}
+	cp -a ../libkc3/window/cairo/win32/.libs/libkc3_window_cairo_win32*-0.dll ${DEST}
+	cp -a ../libkc3/window/cairo/win32/demo/.libs/c3_window_cairo_win32_demo*.exe ${DEST}
+	cp -a ../libkc3/window/sdl2/demo/.libs/c3_window_sdl2_demo*.exe ${DEST}
 	cp -a ../libffi/.libs/libffi-8.dll ${DEST}
 	cp -a ../libffi/.libs/libffi-8.dll ${DEST}/test
 	cp -a ../test/*.facts ${DEST}/test
-	cp -a ../test/.libs/libc3*.exe ${DEST}/test
+	cp -a ../test/.libs/libkc3*.exe ${DEST}/test
 	cp -a ../test/ic3/*.in ../test/ic3/*.expected ${DEST}/test/ic3
 	cp -a ../test/ic3_test ${DEST}/test
 	cp -a /mingw32/bin/edit.dll ${DEST}

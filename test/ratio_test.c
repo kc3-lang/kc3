@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022,2023 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -10,16 +10,15 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include "compare_test.h"
-#include "../libc3/str.h"
-#include "../libc3/buf.h"
-#include "../libc3/buf_parse.h"
-#include "../libc3/integer.h"
-#include "../libc3/ratio.h"
+#include "../libkc3/str.h"
+#include "../libkc3/buf.h"
+#include "../libkc3/buf_parse.h"
+#include "../libkc3/integer.h"
+#include "../libkc3/ratio.h"
 #include "test.h"
 
 #define RATIO_TEST_INSPECT(test_num, test_den, expected)               \

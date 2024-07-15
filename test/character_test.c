@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -12,7 +12,7 @@
  */
 #include <stdlib.h>
 #include <string.h>
-#include "../libc3/character.h"
+#include "../libkc3/character.h"
 #include "test.h"
 
 TEST_CASE_PROTOTYPE(character_1);

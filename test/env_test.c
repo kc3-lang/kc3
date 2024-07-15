@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -10,13 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "../libc3/call.h"
-#include "../libc3/compare.h"
-#include "../libc3/env.h"
-#include "../libc3/frame.h"
-#include "../libc3/list.h"
-#include "../libc3/sym.h"
-#include "../libc3/tag.h"
+#include "../libkc3/call.h"
+#include "../libkc3/compare.h"
+#include "../libkc3/env.h"
+#include "../libkc3/frame.h"
+#include "../libkc3/list.h"
+#include "../libkc3/sym.h"
+#include "../libkc3/tag.h"
 #include "test.h"
 
 void env_test (void);

@@ -58,22 +58,22 @@ config_lib dl -ldl
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBC3_ASAN=../libc3/libc3_asan.la
-LOCAL_LIBS_ASAN="$LIBC3_ASAN"
+LIBKC3_ASAN=../libkc3/libkc3_asan.la
+LOCAL_LIBS_ASAN="$LIBKC3_ASAN"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -ftest-coverage -fprofile-arcs"
 LDFLAGS_COV="$LDFLAGS"
-LIBC3_COV=../libc3/libc3_cov.la
-LOCAL_LIBS_COV="$LIBC3_COV"
+LIBKC3_COV=../libkc3/libkc3_cov.la
+LOCAL_LIBS_COV="$LIBKC3_COV"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBC3_DEBUG=../libc3/libc3_debug.la
-LOCAL_LIBS_DEBUG="$LIBC3_DEBUG"
+LIBKC3_DEBUG=../libkc3/libkc3_debug.la
+LOCAL_LIBS_DEBUG="$LIBKC3_DEBUG"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
@@ -81,8 +81,8 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBC3=../libc3/libc3.la
-LOCAL_LIBS="$LIBC3"
+LIBKC3=../libkc3/libkc3.la
+LOCAL_LIBS="$LIBKC3"
 LIBS="$LOCAL_LIBS $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

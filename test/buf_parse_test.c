@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -14,7 +14,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../libc3/c3.h"
+#include "../libkc3/kc3.h"
 #include "test.h"
 #include "buf_parse_test_su.h"
 
@@ -650,7 +650,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_tag);
   TEST_CASE_RUN(buf_parse_tuple);
   TEST_CASE_RUN(buf_parse_unquote);
-#ifdef C3_TEST_BUF_PARSE_SU
+#ifdef KC3_TEST_BUF_PARSE_SU
   TEST_CASE_RUN(buf_parse_u8_binary);
   TEST_CASE_RUN(buf_parse_u8_octal);
   TEST_CASE_RUN(buf_parse_u8_hexadecimal);
@@ -701,7 +701,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_s8_decimal);
   TEST_CASE_RUN(buf_parse_s8_decimal_negative);
   TEST_CASE_RUN(buf_parse_sw);
-#endif /* C3_TEST_BUF_PARSE_SU */
+#endif /* KC3_TEST_BUF_PARSE_SU */
 }
 
 TEST_CASE(buf_parse_array)

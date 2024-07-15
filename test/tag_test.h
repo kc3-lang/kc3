@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -13,7 +13,7 @@
 #ifndef TAG_TEST_H
 #define TAG_TEST_H
 
-#include "../libc3/c3.h"
+#include "../libkc3/kc3.h"
 
 #define TAG_TEST_EQ(test, expected)                                    \
   do {                                                                 \

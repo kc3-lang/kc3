@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -11,9 +11,9 @@
  * THIS SOFTWARE.
  */
 #include <string.h>
-#include "../libc3/array.h"
-#include "../libc3/str.h"
-#include "../libc3/sym.h"
+#include "../libkc3/array.h"
+#include "../libkc3/str.h"
+#include "../libkc3/sym.h"
 #include "test.h"
 
 #define ARRAY_TEST_INIT_CLEAN(type, dimension, dimensions)             \

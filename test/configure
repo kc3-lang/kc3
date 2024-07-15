@@ -1,5 +1,5 @@
 #!/bin/sh
-## c3
+## kc3
 ## Copyright 2022-2024 kmx.io <contact@kmx.io>
 ##
 ## Permission is hereby granted to use this software granted the above
@@ -17,10 +17,10 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . ../config.subr
 
-PROG=libc3_test
-PROG_ASAN=libc3_test_asan
-PROG_COV=libc3_test_cov
-PROG_DEBUG=libc3_test_debug
+PROG=libkc3_test
+PROG_ASAN=libkc3_test_asan
+PROG_COV=libkc3_test_cov
+PROG_DEBUG=libkc3_test_debug
 
 . ./sources.sh
 
@@ -54,22 +54,22 @@ LIBS="$LIBS -pthread -lm"
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBC3_ASAN=../libc3/libc3_asan.la
-LOCAL_LIBS_ASAN="$LIBC3_ASAN"
+LIBKC3_ASAN=../libkc3/libkc3_asan.la
+LOCAL_LIBS_ASAN="$LIBKC3_ASAN"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBC3_COV=../libc3/libc3_cov.la
-LOCAL_LIBS_COV="$LIBC3_COV"
+LIBKC3_COV=../libkc3/libkc3_cov.la
+LOCAL_LIBS_COV="$LIBKC3_COV"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 
 # Debug config
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBC3_DEBUG=../libc3/libc3_debug.la
-LOCAL_LIBS_DEBUG="$LIBC3_DEBUG"
+LIBKC3_DEBUG=../libkc3/libkc3_debug.la
+LOCAL_LIBS_DEBUG="$LIBKC3_DEBUG"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
 # Main config
@@ -78,8 +78,8 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBC3=../libc3/libc3.la
-LOCAL_LIBS="$LIBC3"
+LIBKC3=../libkc3/libkc3.la
+LOCAL_LIBS="$LIBKC3"
 LIBS="$LOCAL_LIBS $LIBS"
 
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}

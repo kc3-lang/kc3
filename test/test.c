@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -84,10 +84,10 @@ int test_file_compare (const char *path_a, const char *path_b)
   return 0;
 }
 
-void test_init (int argc, char **argv)
+void test_init (int *argc, char ***argv)
 {
   const char **t;
-  if (argv[argc] != NULL)
+  if ((*argv)[(*argc)] != NULL)
     err(1, "argv[argc] != NULL");
   g_test_context = NULL;
   g_test_count = 0;
@@ -95,8 +95,8 @@ void test_init (int argc, char **argv)
   g_test_last_ok = 0;
   g_test_ok = 0;
   g_test_targets = g_test_targets_default;
-  if (argc > 1) {
-    g_test_targets = (const char **) argv + 1;
+  if (*argc > 1) {
+    g_test_targets = (const char **) (*argv) + 1;
   }
   else {
     const char *env_target;
@@ -119,7 +119,7 @@ void test_init (int argc, char **argv)
       g_test_targets = (const char **) g_test_targets_env_v;
     }
   }
-  printf("%s", argv[0]);
+  printf("%s", (*argv)[0]);
   t = g_test_targets;
   while (*t) {
     printf(" %s", *t);

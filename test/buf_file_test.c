@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -11,8 +11,8 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
-#include "../libc3/buf.h"
-#include "../libc3/buf_file.h"
+#include "../libkc3/buf.h"
+#include "../libkc3/buf_file.h"
 #include "test.h"
 
 void buf_file_test (void);

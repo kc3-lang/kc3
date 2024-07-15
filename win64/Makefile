@@ -21,14 +21,14 @@ c3-${C3_VERSION}.win64:
 	cp -a /usr/bin/msys-md-0.dll ${DEST}/test
 	cp -a ../libffi/.libs/msys-ffi-8.dll ${DEST}
 	cp -a ../libffi/.libs/msys-ffi-8.dll ${DEST}/test
-	cp -a ../libc3/.libs/msys-c3*-0.dll ${DEST}
-	cp -a ../libc3/.libs/msys-c3*-0.dll ${DEST}/test
-	cp -a ../libc3/window/.libs/msys-c3_window*-0.dll ${DEST}
-	cp -a ../libc3/window/cairo/.libs/msys-c3_window_cairo*-0.dll ${DEST}
+	cp -a ../libkc3/.libs/msys-c3*-0.dll ${DEST}
+	cp -a ../libkc3/.libs/msys-c3*-0.dll ${DEST}/test
+	cp -a ../libkc3/window/.libs/msys-c3_window*-0.dll ${DEST}
+	cp -a ../libkc3/window/cairo/.libs/msys-c3_window_cairo*-0.dll ${DEST}
 	cp -a /mingw64/bin/libgcc_s_seh-1.dll ${DEST}
 	cp -a /mingw64/bin/libcairo-2.dll ${DEST}
-	cp -a ../libc3/window/cairo/win32/.libs/msys-c3_window_cairo_win32*-0.dll ${DEST}
-	cp -a ../libc3/window/cairo/win32/demo/.libs/c3_window_cairo_win32_demo.exe ${DEST}
+	cp -a ../libkc3/window/cairo/win32/.libs/msys-c3_window_cairo_win32*-0.dll ${DEST}
+	cp -a ../libkc3/window/cairo/win32/demo/.libs/c3_window_cairo_win32_demo.exe ${DEST}
 	cp -a /mingw64/bin/libxkbcommon-0.dll ${DEST}
 	cp -a /mingw64/bin/libwinpthread-1.dll ${DEST}
 	cp -a /mingw64/bin/libstdc++-6.dll ${DEST}
@@ -50,7 +50,7 @@ c3-${C3_VERSION}.win64:
 	cp -a ../lib ${DEST}/
 	cp -a ../c3s/.libs/c3s*.exe ${DEST}
 	cp -a ../ic3/.libs/ic3*.exe ${DEST}
-	cp -a ../test/.libs/libc3*.exe ${DEST}/test
+	cp -a ../test/.libs/libkc3*.exe ${DEST}/test
 	cp -a ../test/ic3_test ${DEST}/test
 	cp -a ../test/*.facts ${DEST}/test
 	cp -a ../test/ic3/*.in ../test/ic3/*.expected ${DEST}/test/ic3

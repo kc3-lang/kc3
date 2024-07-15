@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -14,8 +14,8 @@
 #define COMPARE_TEST_H
 
 #include "test.h"
-#include "../libc3/compare.h"
-#include "../libc3/str.h"
+#include "../libkc3/compare.h"
+#include "../libkc3/str.h"
 
 #define COMPARE_TEST_STR(a, b, expected)                               \
   do {                                                                 \

@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -10,9 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "../libc3/buf.h"
-#include "../libc3/facts.h"
-#include "../libc3/facts_cursor.h"
+#include "../libkc3/buf.h"
+#include "../libkc3/facts.h"
+#include "../libkc3/facts_cursor.h"
 #include "fact_test.h"
 #include "test.h"
 

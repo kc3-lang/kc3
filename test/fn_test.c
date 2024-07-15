@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <string.h>
-#include "../libc3/fn.h"
+#include "../libkc3/fn.h"
 #include "test.h"
 
 #define FN_TEST_INIT_1(test)                                           \

@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -13,9 +13,9 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../libc3/tag.h"
-#include "../libc3/set_cursor__tag.h"
-#include "../libc3/set__tag.h"
+#include "../libkc3/tag.h"
+#include "../libkc3/set_cursor__tag.h"
+#include "../libkc3/set__tag.h"
 #include "test.h"
 
 #define SET__TAG_TEST_ADD(test, expected_count)                        \

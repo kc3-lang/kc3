@@ -34,7 +34,7 @@ SOURCES = \
 	"fn_test.c" \
 	"hash_test.c" \
 	"ident_test.c" \
-	"libc3_test.c" \
+	"libkc3_test.c" \
 	"list_test.c" \
 	"ratio_test.c" \
 	"set__fact_test.c" \

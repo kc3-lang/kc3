@@ -1,5 +1,5 @@
-/* c3
- * Copyright 2022-2024 kmx.io <contact@kmx.io>
+/* kc3
+ * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -186,10 +186,13 @@ extern long         g_test_last_ok;
 extern long         g_test_ok;
 extern const char **g_test_targets;
 
+/* Init and clean. */
 void test_clean (void);
+void test_init (int *argc, char ***argv);
+
+/* Operators. */
 void test_context (const char *context);
 int  test_file_compare (const char *path_a, const char *path_b);
-void test_init (int argc, char **argv);
 void test_ko (void);
 void test_ok (void);
 void test_summary (void);
