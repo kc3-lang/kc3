@@ -1,0 +1,5 @@
+defmodule EKC3 do
+
+  def render = cfn Str "ekc3_render" (Str, Tag)
+
+end

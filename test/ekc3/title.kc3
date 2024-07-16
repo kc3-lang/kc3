@@ -1,0 +1,2 @@
+puts EKC3.render(__DIR__ + "/title.html.ekc3",
+  %{title: "EKC3 test title"})

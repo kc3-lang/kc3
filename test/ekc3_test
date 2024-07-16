@@ -1,5 +1,5 @@
 #!/bin/sh
-cd "$(dirname $0)/ec3" || exit
+cd "$(dirname $0)/ekc3" || exit
 
 TEST_COLOR_KO="[0;91m"
 TEST_COLOR_OK="[0;92m"
@@ -8,11 +8,11 @@ TEST_COUNT=0
 TEST_KO=0
 TEST_OK=0
 
-if [ "x$IC3" = "x" ]; then
-    if [ -f ../../ic3/ic3 ]; then
-	IC3=../../ic3/ic3
-    elif [ -f ../../ic3 ]; then
-	IC3=../../ic3
+if [ "x$IKC3" = "x" ]; then
+    if [ -f ../../ikc3/ikc3 ]; then
+	IKC3=../../ikc3/ikc3
+    elif [ -f ../../ikc3 ]; then
+	IKC3=../../ikc3
     fi
 fi
 
@@ -29,10 +29,10 @@ test_ok() {
 }
 
 if [ $# = 0 ]; then
-    if [ "x${EC3_TEST_TARGETS}" = "x" ]; then
-        TARGETS="$(ls -1 *.c3 | sed -e 's/[.]c3$//')"
+    if [ "x${EKC3_TEST_TARGETS}" = "x" ]; then
+        TARGETS="$(ls -1 *.kc3 | sed -e 's/[.]kc3$//')"
     else
-        TARGETS="${EC3_TEST_TARGETS}"
+        TARGETS="${EKC3_TEST_TARGETS}"
     fi
 else
     TARGETS="$@"
@@ -40,7 +40,7 @@ fi
 
 for TARGET in $TARGETS; do
     RESULT=test_ok
-    $IC3 < ${TARGET}.c3 > ${TARGET}.out 2>&1
+    $IKC3 < ${TARGET}.kc3 > ${TARGET}.out 2>&1
     echo $? > ${TARGET}.ret
     if ! diff -abu ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff
     then

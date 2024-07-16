@@ -1981,8 +1981,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   }
   if (argc) {
     while (*argc) {
-      if (strcmp("--load", **argv) ||
-          strcmp("-l", **argv)) {
+      if (! strcmp("--load", **argv) ||
+          ! strcmp("-l", **argv)) {
         if (*argc < 2) {
           err_write_1("env_init: ");
           err_write_1(**argv);
@@ -1991,7 +1991,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
           env_clean(env);
           return NULL;
         }
-        str_init_1(&path, NULL, **argv);
+        str_init_1(&path, NULL, (*argv)[1]);
         if (! env_load(env, &path)) {
           env_clean(env);
           return NULL;
@@ -1999,6 +1999,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
         *argc -= 2;
         *argv += 2;
       }
+      else
+        break;
     }
   }
   return env;

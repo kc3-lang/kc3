@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <string.h>
 #include "../libkc3/kc3.h"
 #include "config.h"
 
@@ -99,6 +100,10 @@ int main (int argc, char **argv)
     return usage(argv[0]);
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
+  if (argv && ! strcmp("--quit", argv[0])) {
+    kc3_clean(NULL);
+    return 0;
+  }
   buf_init(&in, false, sizeof(i), i);
 #if HAVE_WINEDITLINE
   buf_wineditline_open_r(&in, "ikc3> ", ".ikc3_history");
