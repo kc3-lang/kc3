@@ -42,6 +42,11 @@
   DEF_ERR_INSPECT(name, type)                                          \
   DEF_IO_INSPECT(name, type)
 
+sw err_flush (void)
+{
+  return buf_flush(&g_kc3_env.err);
+}
+
 sw err_inspect (const s_tag *x)
 {
   return err_inspect_tag(x);
@@ -80,6 +85,11 @@ sw err_write_str (const s_str *x)
   if ((r = buf_write_str(&g_kc3_env.err, x)) > 0)
     buf_flush(&g_kc3_env.err);
   return r;
+}
+
+sw io_flush (void)
+{
+  return buf_flush(&g_kc3_env.out);
 }
 
 sw io_inspect (const s_tag *x)

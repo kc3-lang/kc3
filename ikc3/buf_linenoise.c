@@ -43,6 +43,7 @@ s_buf * buf_linenoise_open_r (s_buf *buf, const char *prompt,
 {
   s_buf_linenoise *buf_linenoise;
   assert(buf);
+  buf->line = 0;
   buf_linenoise = malloc(sizeof(s_buf_linenoise));
   if (! buf_linenoise) {
     err_puts("buf_linenoise_open_r: failed to allocate memory");

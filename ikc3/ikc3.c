@@ -87,45 +87,72 @@ sw buf_xfer_spaces (s_buf *out, s_buf *in)
   return size;
 }
 
-int main (int argc, char **argv)
+sw ikc3_run (void)
 {
-  char i[BUF_SIZE];
-  s_buf in;
   s_tag input;
-  char o[BUF_SIZE];
-  s_buf out;
-  s_str path;
   sw r;
   s_tag result;
+  while ((r = ikc3_buf_ignore_spaces(&g_kc3_env.out,
+                                     &g_kc3_env.in)) >= 0) {
+    if ((r = buf_parse_tag(&g_kc3_env.in, &input)) > 0) {
+      if (! eval_tag(&input, &result)) {
+        tag_clean(&input);
+        continue;
+      }
+      if (buf_inspect_tag(&g_kc3_env.out, &result) < 0) {
+	tag_clean(&input);
+	tag_clean(&result);
+        break;
+      }
+      tag_clean(&input);
+      tag_clean(&result);
+    }
+    if ((r = buf_write_1(&g_kc3_env.out, "\n")) < 0)
+      break;
+    if ((r = buf_flush(&g_kc3_env.out)) < 0)
+      break;
+    if (r < 0 ||
+        (r == 0 &&
+         (r = buf_ignore_character(&g_kc3_env.in)) <= 0))
+      break;
+  }
+  return 0;
+}
+
+int main (int argc, char **argv)
+{
+  FILE *fp = 0;
+  char  in_data[BUF_SIZE];
+  s_buf in_original;
+  sw r;
   if (argc < 1)
-    return usage(argv[0]);
+    return usage("ikc3");
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
-  buf_init(&in, false, sizeof(i), i);
-#if HAVE_WINEDITLINE
-  buf_wineditline_open_r(&in, "ikc3> ", ".ikc3_history");
-#else
-  buf_linenoise_open_r(&in, "ikc3> ", ".ikc3_history");
-#endif
-  in.line = 0;
-  buf_init(&out, false, sizeof(o), o);
-  buf_file_open_w(&out, stdout);
+  in_original = g_kc3_env.in;
+  buf_init(&g_kc3_env.in, false, sizeof(in_data), in_data);
   while (argc) {
-    if (! strncmp("--load", *argv, 6) ||
-        ! strncmp("-l", *argv, 2)) {
+    if (! strcmp("--load", *argv) ||
+        ! strcmp("-l", *argv)) {
       if (argc < 2) {
-        err_write_1("ikc3: ");
+        err_write_1(g_kc3_env.argv[0]);
+        err_write_1(": ");
         err_write_1(*argv);
         err_write_1(" without an argument\n");
         assert(! "env_init: -l or --load without an argument");
         r = 1;
         goto clean;
       }
-      str_init_1(&path, NULL, argv[1]);
-      if (! env_load(&g_kc3_env, &path)) {
-        r = 1;
+      fp = fopen(argv[1], "rb");
+      if (! buf_file_open_r(&g_kc3_env.in, fp)) {
+        r = -1;
         goto clean;
       }
+      r = ikc3_run();
+      buf_file_close(&g_kc3_env.in);
+      fclose(fp);
+      if (r)
+        goto clean;
       argc -= 2;
       argv += 2;
     }
@@ -136,42 +163,25 @@ int main (int argc, char **argv)
     else
       break;
   }
-  while ((r = ikc3_buf_ignore_spaces(&out, &in)) >= 0) {
-    if ((r = buf_parse_tag(&in, &input)) > 0) {
-      if (! eval_tag(&input, &result)) {
-        tag_clean(&input);
-        continue;
-      }
-      if (buf_inspect_tag(&out, &result) < 0) {
-	tag_clean(&input);
-	tag_clean(&result);
-        break;
-      }
-      tag_clean(&input);
-      tag_clean(&result);
-      buf_write_u8(&out, '\n');
-      if ((r = buf_flush(&out)) < 0)
-        break;
-    }
-    if (r < 0 ||
-        (r == 0 &&
-         (r = buf_ignore_character(&in)) <= 0))
-      break;
-  }
-  r = 0;
+#if HAVE_WINEDITLINE
+  buf_wineditline_open_r(&g_kc3_env.in, "ikc3> ", ".ikc3_history");
+#else
+  buf_linenoise_open_r(&g_kc3_env.in, "ikc3> ", ".ikc3_history");
+#endif
+  r = ikc3_run();
  clean:
 #if HAVE_WINEDITLINE
-  buf_wineditline_close(&in, ".ikc3_history");
+  buf_wineditline_close(&g_kc3_env.in, ".ikc3_history");
 #else
-  buf_linenoise_close(&in, ".ikc3_history");
+  buf_linenoise_close(&g_kc3_env.in, ".ikc3_history");
 #endif
-  buf_file_close(&out);
+  g_kc3_env.in = in_original;
   kc3_clean(NULL);
   return r;
 }
 
 int usage (char *argv0)
 {
-  printf("Usage: %s\n", argv0);
+  printf("Usage: %s [--load FILE] [--quit]\n", argv0);
   return 1;
 }

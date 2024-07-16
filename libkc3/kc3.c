@@ -218,6 +218,8 @@ sw kc3_puts (const s_tag *tag)
   if ((r = io_write_1("\n")) < 0)
     return r;
   result += r;
+  if ((r = io_flush()) < 0)
+    return r;
   return result;
 }
 

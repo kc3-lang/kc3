@@ -56,6 +56,7 @@ s_buf * buf_file_open_r (s_buf *buf, FILE *fp)
   if (! buf_file)
     return NULL;
   buf_file->fp = fp;
+  buf->line = 0;
   buf->refill = buf_file_open_r_refill;
   buf->user_ptr = buf_file;
   return buf;

@@ -43,6 +43,7 @@ s_buf * buf_wineditline_open_r (s_buf *buf, const char *prompt,
 {
   s_buf_wineditline *buf_wineditline;
   assert(buf);
+  buf->line = 0;
   buf_wineditline = malloc(sizeof(s_buf_wineditline));
   if (! buf_wineditline) {
     err_puts("buf_wineditline_open_r: failed to allocate memory");
