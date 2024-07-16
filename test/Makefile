@@ -13,6 +13,10 @@
 CLEANFILES = \
 	*.a \
 	*.css \
+	ekc3/*.diff \
+	ekc3/*.err \
+	ekc3/*.out \
+	ekc3/*.ret \
 	*.gcno \
 	*.html \
 	*.lo \
