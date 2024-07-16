@@ -27,6 +27,8 @@ s_list *** ekc3_append_str (s_list ***tail, s_str *str);
 s_list *** ekc3_append_sym (s_list ***tail, const s_sym *sym);
 sw         ekc3_buf_parse (s_buf *buf, p_ekc3 *dest);
 sw         ekc3_buf_parse_kc3_block (s_buf *buf, s_block *dest);
+sw         ekc3_buf_parse_kc3_silent_block (s_buf *buf, s_block *dest);
+sw         ekc3_buf_peek_kc3_silent_block (s_buf *buf);
 
 /* Observers. */
 sw ekc3_render (const p_ekc3 *ekc3);

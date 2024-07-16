@@ -3,6 +3,7 @@
     <title><%= title %></title>
   </head>
   <body>
-    <h1><%= title %></h1>
+    <% title2 = title + " H1" %>
+    <h1><%= title2 %></h1>
   </body>
 </html>

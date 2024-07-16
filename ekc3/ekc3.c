@@ -130,8 +130,8 @@ sw ekc3_buf_parse (s_buf *buf, p_ekc3 *dest)
     if (r > 0) {
       result += r;
       if (! ekc3_append_and_empty_buf(&tail, &str_buf)) {
-        err_puts("ekc3_buf_parse: ekc3_append_and_empty_buf");
-        assert(! "ekc3_buf_parse: ekc3_append_and_empty_buf");
+        err_puts("ekc3_buf_parse: ekc3_append_and_empty_buf 1");
+        assert(! "ekc3_buf_parse: ekc3_append_and_empty_buf 1");
         goto ko;
       }
       r = ekc3_buf_parse_kc3_block(buf, &block);
@@ -147,20 +147,22 @@ sw ekc3_buf_parse (s_buf *buf, p_ekc3 *dest)
       }
       continue;
     }
-    r = buf_read_1(buf, "<%");
-    if (r < 0)
-      break;
+    r = ekc3_buf_peek_kc3_silent_block(buf);
+    if (r < 0) {
+      err_puts("ekc3_buf_parse: ekc3_buf_peek_kc3_silent_block");
+      assert(! "ekc3_buf_parse: ekc3_buf_peek_kc3_silent_block");
+      goto ko;
+    }
     if (r > 0) {
-      result += r;
       if (! ekc3_append_and_empty_buf(&tail, &str_buf)) {
-        err_puts("ekc3_buf_parse: ekc3_append_and_empty_buf");
-        assert(! "ekc3_buf_parse: ekc3_append_and_empty_buf");
+        err_puts("ekc3_buf_parse: ekc3_append_and_empty_buf 2");
+        assert(! "ekc3_buf_parse: ekc3_append_and_empty_buf 2");
         goto ko;
       }
-      r = ekc3_buf_parse_kc3_block(buf, &block);
+      r = ekc3_buf_parse_kc3_silent_block(buf, &block);
       if (r <= 0) {
-        err_puts("ekc3_buf_parse: ekc3_buf_parse_kc3_block");
-        assert(! "ekc3_buf_parse: ekc3_buf_parse_kc3_block");
+        err_puts("ekc3_buf_parse: ekc3_buf_parse_kc3_silent_block");
+        assert(! "ekc3_buf_parse: ekc3_buf_parse_kc3_silent_block");
         goto restore;
       }
       if (! ekc3_append_silent_block(&tail, &block)) {
@@ -173,8 +175,8 @@ sw ekc3_buf_parse (s_buf *buf, p_ekc3 *dest)
     r = buf_read_character_utf8(buf, &c);
     if (r <= 0) {
       if (! ekc3_append_and_empty_buf(&tail, &str_buf)) {
-        err_puts("ekc3_buf_parse: ekc3_append_and_empty_buf");
-        assert(! "ekc3_buf_parse: ekc3_append_and_empty_buf");
+        err_puts("ekc3_buf_parse: ekc3_append_and_empty_buf 3");
+        assert(! "ekc3_buf_parse: ekc3_append_and_empty_buf 3");
         goto ko;
       }
       break;
@@ -187,6 +189,7 @@ sw ekc3_buf_parse (s_buf *buf, p_ekc3 *dest)
       goto restore;
     }
   }
+  //err_inspect_list((const s_list * const *) &tmp);
   *dest = tmp;
   r = result;
   goto clean;
@@ -216,33 +219,129 @@ sw ekc3_buf_parse_kc3_block (s_buf *buf, s_block *dest)
   tail = &list;
   while (1) {
     r = buf_ignore_spaces(buf);
-    if (r < 0)
+    if (r < 0) {
+      err_puts("ekc3_buf_parse_kc3_block: buf_ignore_spaces 1");
+      assert(! "ekc3_buf_parse_kc3_block: buf_ignore_spaces 1");
       goto clean;
+    }
+    /*
     if (! r) {
+      err_puts("ekc3_buf_parse_kc3_block: buf_ignore_spaces 2");
+      assert(! "ekc3_buf_parse_kc3_block: buf_ignore_spaces 2");
       r = -1;
       goto clean;
     }
+    */
     r = buf_read_1(buf, "%>");
+    if (r < 0)
+      goto clean;
     if (r > 0) {
       result += r;
-      if (! block_init_from_list(&tmp, (const s_list * const*) &list)) {
-        list_delete_all(list);
-        r = -1;
-        goto clean;
-      }
-      *dest = tmp;
-      r = result;
-      goto clean;
+      break;
     }
     *tail = list_new(NULL);
     r = buf_parse_tag(buf, &(*tail)->tag);
-    if (r <= 0) {
+    if (r < 0) {
       list_delete_all(list);
+      err_puts("ekc3_buf_parse_kc3_block: buf_parse_tag < 0");
+      assert(! "ekc3_buf_parse_kc3_block: buf_parse_tag < 0");
       goto clean;
+    }
+    if (! r) {
+      list_delete(*tail);
+      err_puts("ekc3_buf_parse_kc3_block: buf_parse_tag = 0");
+      assert(! "ekc3_buf_parse_kc3_block: buf_parse_tag = 0");
+      break;
     }
     result += r;
     tail = &(*tail)->next.data.list;
   }
+  if (! block_init_from_list(&tmp, (const s_list * const*) &list)) {
+    list_delete_all(list);
+    err_puts("ekc3_buf_parse_kc3_block: block_init_from_list");
+    assert(! "ekc3_buf_parse_kc3_block: block_init_from_list");
+    r = -1;
+    goto clean;
+  }
+  *dest = tmp;
+  r = result;
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw ekc3_buf_parse_kc3_silent_block (s_buf *buf, s_block *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  r = buf_ignore_spaces(buf);
+  if (r < 0) {
+    err_puts("ekc3_buf_parse_kc3_silent_block: buf_ignore_spaces 1");
+    assert(! "ekc3_buf_parse_kc3_silent_block: buf_ignore_spaces 1");
+    goto clean;
+  }
+  r = buf_read_1(buf, "<%");
+  if (r < 0) {
+    err_puts("ekc3_buf_parse_kc3_silent_block: buf_read_1 < 0");
+    assert(! "ekc3_buf_parse_kc3_silent_block: buf_read_1 < 0");
+    goto restore;
+  }
+  if (! r) {
+    err_puts("ekc3_buf_parse_kc3_silent_block: buf_read_1 = 0");
+    assert(! "ekc3_buf_parse_kc3_silent_block: buf_read_1 = 0");
+    goto restore;
+  }
+  result += r;
+  r = buf_ignore_spaces(buf);
+  if (r <= 0) {
+    err_puts("ekc3_buf_parse_kc3_silent_block: buf_ignore_spaces 2");
+    assert(! "ekc3_buf_parse_kc3_silent_block: buf_ignore_spaces 2");
+    goto restore;
+  }
+  result += r;
+  r = ekc3_buf_parse_kc3_block(buf, dest);
+  if (r <= 0) {
+    err_puts("ekc3_buf_parse_kc3_silent_block: buf_parse_kc3_block");
+    assert(! "ekc3_buf_parse_kc3_silent_block: buf_parse_kc3_block");
+    goto restore;
+  }
+  result += r;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw ekc3_buf_peek_kc3_silent_block (s_buf *buf)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  r = buf_ignore_spaces(buf);
+  if (r < 0) {
+    r = 0;
+    goto clean;
+  }
+  result += r;
+  r = buf_read_1(buf, "<%");
+  if (r <= 0)
+    goto restore;
+  result += r;
+  r = buf_ignore_spaces(buf);
+  if (r <= 0)
+    goto restore;
+  result += r;
+  r = result;
+ restore:
+  buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
   return r;
@@ -251,6 +350,20 @@ sw ekc3_buf_parse_kc3_block (s_buf *buf, s_block *dest)
 void ekc3_clean (p_ekc3 *ekc3)
 {
   list_delete_all(*ekc3);
+}
+
+bool ekc3_eval_silent_block (const s_block *block)
+{
+  uw i = 0;
+  s_tag result = {0};
+  assert(block);
+  while (i < block->count) {
+    if (! eval_tag(block->tag + i, &result))
+      return false;
+    tag_clean(&result);
+    i++;
+  }
+  return true;
 }
 
 p_ekc3 * ekc3_init (p_ekc3 *ekc3)
@@ -268,9 +381,26 @@ sw ekc3_render (const p_ekc3 *ekc3)
   assert(ekc3);
   l = *ekc3;
   while (l) {
-    if (! (r = ekc3_render_tag(&l->tag)))
-      return r;
-    result += r;
+    if (l->tag.type == TAG_SYM &&
+        l->tag.data.sym == sym_1("silent")) {
+      l = list_next(l);
+      if (! l ||
+          l->tag.type != TAG_BLOCK) {
+        err_puts("ekc3_render: :silent without a block");
+        assert(! "ekc3_render: :silent without a block");
+        return -1;
+      }
+      if (! ekc3_eval_silent_block(&l->tag.data.block)) {
+        err_puts("ekc3_render: ekc3_eval_silent_block");
+        assert(! "ekc3_render: ekc3_eval_silent_block");
+        return -1;
+      }
+    }
+    else {
+      if (! (r = ekc3_render_tag(&l->tag)))
+        return r;
+      result += r;
+    }
     l = list_next(l);
   }
   return result;
@@ -351,10 +481,10 @@ sw ekc3_render_file (const s_str *path)
 sw ekc3_render_tag (const s_tag *tag)
 {
   switch(tag->type) {
-  case TAG_STR:
-    return io_write_str(&tag->data.str);
   case TAG_BLOCK:
     return ekc3_render_block(&tag->data.block);
+  case TAG_STR:
+    return io_write_str(&tag->data.str);
   default:
     break;
   }
