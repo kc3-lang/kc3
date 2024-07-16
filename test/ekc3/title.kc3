@@ -1,2 +1,2 @@
 title = "EKC3 test title"
-puts(EKC3.render_file(__DIR__ + "/title.html.ekc3"))
+EKC3.render_file(__DIR__ + "title.html.ekc3")
