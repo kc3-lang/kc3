@@ -1,0 +1,6 @@
+puts("Test")
+Test
+5
+puts(%{hello: "World !"})
+%{hello: "World !"}
+20

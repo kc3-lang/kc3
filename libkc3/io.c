@@ -74,6 +74,14 @@ sw err_write_1 (const char *x)
   return r;
 }
 
+sw err_write_str (const s_str *x)
+{
+  sw r;
+  if ((r = buf_write_str(&g_kc3_env.err, x)) > 0)
+    buf_flush(&g_kc3_env.err);
+  return r;
+}
+
 sw io_inspect (const s_tag *x)
 {
   sw r;
@@ -111,6 +119,14 @@ sw io_write_1 (const char *x)
 {
   sw r;
   if ((r = buf_write_1(&g_kc3_env.out, x)) > 0)
+    buf_flush(&g_kc3_env.out);
+  return r;
+}
+
+sw io_write_str (const s_str *x)
+{
+  sw r;
+  if ((r = buf_write_str(&g_kc3_env.out, x)) > 0)
     buf_flush(&g_kc3_env.out);
   return r;
 }

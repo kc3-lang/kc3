@@ -94,16 +94,13 @@ int main (int argc, char **argv)
   s_tag input;
   char o[BUF_SIZE];
   s_buf out;
+  s_str path;
   sw r;
   s_tag result;
   if (argc < 1)
     return usage(argv[0]);
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
-  if (argv && ! strcmp("--quit", argv[0])) {
-    kc3_clean(NULL);
-    return 0;
-  }
   buf_init(&in, false, sizeof(i), i);
 #if HAVE_WINEDITLINE
   buf_wineditline_open_r(&in, "ikc3> ", ".ikc3_history");
@@ -113,6 +110,32 @@ int main (int argc, char **argv)
   in.line = 0;
   buf_init(&out, false, sizeof(o), o);
   buf_file_open_w(&out, stdout);
+  while (argc) {
+    if (! strncmp("--load", *argv, 6) ||
+        ! strncmp("-l", *argv, 2)) {
+      if (argc < 2) {
+        err_write_1("ikc3: ");
+        err_write_1(*argv);
+        err_write_1(" without an argument\n");
+        assert(! "env_init: -l or --load without an argument");
+        r = 1;
+        goto clean;
+      }
+      str_init_1(&path, NULL, argv[1]);
+      if (! env_load(&g_kc3_env, &path)) {
+        r = 1;
+        goto clean;
+      }
+      argc -= 2;
+      argv += 2;
+    }
+    else if (argc == 1 && ! strcmp("--quit", *argv)) {
+      r = 0;
+      goto clean;
+    }
+    else
+      break;
+  }
   while ((r = ikc3_buf_ignore_spaces(&out, &in)) >= 0) {
     if ((r = buf_parse_tag(&in, &input)) > 0) {
       if (! eval_tag(&input, &result)) {
@@ -135,6 +158,8 @@ int main (int argc, char **argv)
          (r = buf_ignore_character(&in)) <= 0))
       break;
   }
+  r = 0;
+ clean:
 #if HAVE_WINEDITLINE
   buf_wineditline_close(&in, ".ikc3_history");
 #else
@@ -142,7 +167,7 @@ int main (int argc, char **argv)
 #endif
   buf_file_close(&out);
   kc3_clean(NULL);
-  return 0;
+  return r;
 }
 
 int usage (char *argv0)

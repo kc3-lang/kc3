@@ -250,6 +250,6 @@ replace {KC3.let, :arity, 2}
 replace {KC3.let, :is_a, :special_operator}
 replace {KC3.let, :symbol_value, cfn Tag "kc3_let" (Tag, Block, Result)}
 add {KC3, :symbol, KC3.puts}
-replace {KC3.puts, :symbol_value, cfn Sw "io_inspect_tag" (Tag)}
+replace {KC3.puts, :symbol_value, cfn Sw "kc3_puts" (Tag)}
 add {KC3, :symbol, KC3.load}
 replace {KC3.load, :symbol_value, cfn Bool "kc3_load" (Str)}

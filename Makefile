@@ -219,10 +219,23 @@ test_debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C test test_debug
 
+test_ekc3: build
+	${MAKE} -C test test_ekc3
+
+test_ekc3_asan: asan
+	${MAKE} -C test test_ekc3_asan
+
+test_ekc3_cov: cov
+	${MAKE} -C test test_ekc3_cov
+
+test_ekc3_debug: debug
+	${MAKE} -C test test_ekc3_debug
+
 test_gcovr:
 	${MAKE} clean_cov
 	${MAKE} test_libkc3_cov
 	${MAKE} test_ikc3_cov
+	${MAKE} test_ekc3_cov
 	${MAKE} gcovr
 
 test_ikc3: build

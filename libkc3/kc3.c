@@ -202,6 +202,25 @@ s_tag * kc3_pin (const s_tag *a, s_tag *dest)
   return dest;
 }
 
+sw kc3_puts (const s_tag *tag)
+{
+  sw r;
+  sw result = 0;
+  if (tag->type == TAG_STR) {
+    if ((r = io_write_str(&tag->data.str)) < 0)
+      return r;
+  }
+  else {
+    if ((r = io_inspect_tag(tag)) < 0)
+      return r;
+  }
+  result += r;
+  if ((r = io_write_1("\n")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 s_list ** kc3_search_modules (s_list **dest)
 {
   return env_search_modules(&g_kc3_env, dest);

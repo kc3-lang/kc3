@@ -1,0 +1,4 @@
+quote puts("Test")
+puts("Test")
+quote puts(%{hello: "World !"})
+puts(%{hello: "World !"})
