@@ -96,7 +96,6 @@ KC3_MAKEFILES = \
 	"ucd2c/Makefile" \
 
 KC3_C_SOURCES = \
-	"ekc3/config.h" \
 	"ekc3/ekc3.c" \
 	"ekc3/ekc3.h" \
 	"ekc3/types.h" \
@@ -104,7 +103,6 @@ KC3_C_SOURCES = \
 	"ikc3/buf_linenoise.h" \
 	"ikc3/buf_wineditline.c" \
 	"ikc3/buf_wineditline.h" \
-	"ikc3/config.h" \
 	"ikc3/ikc3.c" \
 	"ikc3/linenoise.c" \
 	"kc3c/c3c.c" \
@@ -503,7 +501,6 @@ KC3_C_SOURCES = \
 	"libkc3_window/cairo/win32/window_cairo_win32.h" \
 	"libkc3_window/cairo/window_cairo.c" \
 	"libkc3_window/cairo/window_cairo.h" \
-	"libkc3_window/cairo/xcb/config.h" \
 	"libkc3_window/cairo/xcb/demo/window_cairo_xcb_demo.c" \
 	"libkc3_window/cairo/xcb/window_cairo_xcb.c" \
 	"libkc3_window/cairo/xcb/window_cairo_xcb.h" \
@@ -877,9 +874,18 @@ KC3_OTHER_SOURCES = \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/complex.facts" \
 	"lib/kc3/0.1/cow.kc3" \
+	"lib/kc3/0.1/ekc3.kc3" \
 	"lib/kc3/0.1/f128.facts" \
 	"lib/kc3/0.1/f32.facts" \
 	"lib/kc3/0.1/f64.facts" \
+	"lib/kc3/0.1/gl/dvec2.kc3" \
+	"lib/kc3/0.1/gl/dvec3.kc3" \
+	"lib/kc3/0.1/gl/object.kc3" \
+	"lib/kc3/0.1/gl/sphere.kc3" \
+	"lib/kc3/0.1/gl/triangle.kc3" \
+	"lib/kc3/0.1/gl/vec2.kc3" \
+	"lib/kc3/0.1/gl/vec3.kc3" \
+	"lib/kc3/0.1/gl/vertex.kc3" \
 	"lib/kc3/0.1/integer.facts" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
@@ -978,6 +984,9 @@ KC3_OTHER_SOURCES = \
 	"test/ikc3/gl.in" \
 	"test/ikc3/gl.out.expected" \
 	"test/ikc3/gl.ret.expected" \
+	"test/ikc3/globals.in" \
+	"test/ikc3/globals.out.expected" \
+	"test/ikc3/globals.ret.expected" \
 	"test/ikc3/hello.err.expected" \
 	"test/ikc3/hello.in" \
 	"test/ikc3/hello.out.expected" \
@@ -1053,6 +1062,9 @@ KC3_OTHER_SOURCES = \
 	"test/ikc3/plist.in" \
 	"test/ikc3/plist.out.expected" \
 	"test/ikc3/plist.ret.expected" \
+	"test/ikc3/puts.in" \
+	"test/ikc3/puts.out.expected" \
+	"test/ikc3/puts.ret.expected" \
 	"test/ikc3/quote.in" \
 	"test/ikc3/quote.out.expected" \
 	"test/ikc3/quote.ret.expected" \
