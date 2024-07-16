@@ -2019,18 +2019,20 @@ s_env * env_init_args (s_env *env, int *argc, char ***argv)
 
 s_env * env_init_globals (s_env *env)
 {
+  s_tag file_dir;
+  s_tag file_path;
   if (! frame_init(&env->global_frame, NULL))
     return NULL;
-  if (! tag_init_str(&env->file_dir, NULL, env->argv0_dir.size,
-                     env->argv0_dir.ptr.pchar))
+  file_dir.type = TAG_STR;
+  if (! file_pwd(&file_dir.data.str))
     return NULL;
   if (! frame_binding_new(&env->global_frame, &g_sym___DIR__,
-                          &env->file_dir))
+                          &file_dir))
     return NULL;
-  if (! tag_init_str_1(&env->file_path, NULL, env->argv[0]))
+  if (! tag_init_str_1(&file_path, NULL, "stdin"))
     return NULL;
   if (! frame_binding_new(&env->global_frame, &g_sym___FILE__,
-                          &env->file_path))
+                          &file_path))
     return NULL;
   return env;
 }
@@ -2098,10 +2100,10 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
 bool env_load (s_env *env, const s_str *path)
 {
   s_buf buf;
-  s_tag dir;
-  s_tag env_file_dir;
-  s_tag env_file_path;
-  s_tag path_tag;
+  s_tag *file_dir;
+  s_tag  file_dir_save;
+  s_tag *file_path;
+  s_tag  file_path_save;
   sw r;
   s_tag tag = {0};
   s_tag tmp;
@@ -2113,16 +2115,15 @@ bool env_load (s_env *env, const s_str *path)
     buf_clean(&buf);
     return false;
   }
-  dir.type = TAG_STR;
-  if (! file_dirname(path, &dir.data.str)) {
+  file_dir = frame_get_w(&env->global_frame, &g_sym___DIR__);
+  file_dir_save = *file_dir;
+  file_path = frame_get_w(&env->global_frame, &g_sym___FILE__);
+  file_path_save = *file_path;
+  if (! file_dirname(path, &file_dir->data.str)) {
     buf_clean(&buf);
     return false;
   }
-  tag_init_str(&path_tag, NULL, path->size, path->ptr.pchar);
-  env_file_dir = env->file_dir;
-  env_file_path = env->file_path;
-  env->file_dir = dir;
-  env->file_path = path_tag;
+  tag_init_str(file_path, NULL, path->size, path->ptr.pchar);
   while (1) {
     if ((r = buf_parse_tag(&buf, &tag)) < 0) {
       buf_getc_close(&buf);
@@ -2140,10 +2141,10 @@ bool env_load (s_env *env, const s_str *path)
     tag_clean(&tmp);
     tag_clean(&tag);
   }
+  *file_dir = file_dir_save;
+  *file_path = file_path_save;
   buf_getc_close(&buf);
   buf_clean(&buf);
-  env->file_dir = env_file_dir;
-  env->file_path = env_file_path;
   return true;
 }
 

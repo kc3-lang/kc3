@@ -162,6 +162,20 @@ FILE * file_open (const char *path, const char *mode)
   return fp;
 }
 
+s_str * file_pwd (s_str *dest)
+{
+  char buf[PATH_MAX];
+  char *pchar;
+  uw size;
+  if (! getcwd(buf, sizeof(buf)))
+    return NULL;
+  size = strlen(buf);
+  pchar = calloc(1, size + 1);
+  memcpy(pchar, buf, size);
+  str_init(dest, pchar, size, pchar);
+  return dest;
+}
+
 s_str * file_search (const s_str *suffix, const s_sym *mode,
                      s_str *dest)
 {

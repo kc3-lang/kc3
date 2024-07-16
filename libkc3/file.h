@@ -33,6 +33,7 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
                      s_str *dest);
 
 /* Operators. */
-FILE * file_open (const char *path, const char *mode);
+s_str * file_pwd (s_str *dest);
+FILE *  file_open (const char *path, const char *mode);
 
 #endif /* LIBKC3_FILE_H */
