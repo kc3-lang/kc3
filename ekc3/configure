@@ -18,10 +18,10 @@ CONFIG_H_PREFIX=LIBKC3_WEB_
 
 . ../config.subr
 
-LIB=libkc3_web.la
-LIB_ASAN=libkc3_web_asan.la
-LIB_COV=libkc3_web_cov.la
-LIB_DEBUG=libkc3_web_debug.la
+LIB=libekc3.la
+LIB_ASAN=libekc3_asan.la
+LIB_COV=libekc3_cov.la
+LIB_DEBUG=libekc3_debug.la
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}

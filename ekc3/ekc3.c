@@ -13,9 +13,9 @@
 #include <libkc3/kc3.h>
 #include "ekc3.h"
 
-#define EC3_BUF_PARSE_STR_BUF_SIZE (1024 * 1024)
+#define EKC3_BUF_PARSE_STR_BUF_SIZE (1024 * 1024)
 
-s_list ** ec3_append_and_empty_buf (s_list **tail, s_buf *buf)
+s_list ** ekc3_append_and_empty_buf (s_list **tail, s_buf *buf)
 {
   sw r;
   s_str str;
@@ -40,7 +40,7 @@ s_list ** ec3_append_and_empty_buf (s_list **tail, s_buf *buf)
   return tail;
 }
 
-s_list ** ec3_append_block (s_list **tail, s_block *block)
+s_list ** ekc3_append_block (s_list **tail, s_block *block)
 {
   assert(tail);
   assert(! *tail);
@@ -53,19 +53,19 @@ s_list ** ec3_append_block (s_list **tail, s_block *block)
   return tail;
 }
 
-s_list ** ec3_append_silent_block (s_list **tail, s_block *block)
+s_list ** ekc3_append_silent_block (s_list **tail, s_block *block)
 {
   assert(tail);
   assert(! *tail);
   assert(block);
-  if (! ec3_append_sym(tail, sym_1("silent")))
+  if (! ekc3_append_sym(tail, sym_1("silent")))
     return NULL;
-  if (! ec3_append_block(tail, block))
+  if (! ekc3_append_block(tail, block))
     return NULL;
   return tail;
 }
 
-s_list ** ec3_append_str (s_list **tail, s_str *str)
+s_list ** ekc3_append_str (s_list **tail, s_str *str)
 {
   assert(tail);
   assert(! *tail);
@@ -78,7 +78,7 @@ s_list ** ec3_append_str (s_list **tail, s_str *str)
   return tail;
 }
 
-s_list ** ec3_append_sym (s_list **tail, const s_sym *sym)
+s_list ** ekc3_append_sym (s_list **tail, const s_sym *sym)
 {
   assert(tail);
   assert(! *tail);
@@ -91,7 +91,7 @@ s_list ** ec3_append_sym (s_list **tail, const s_sym *sym)
   return tail;
 }
 
-sw ec3_buf_parse (s_buf *buf, p_ec3 *dest)
+sw ekc3_buf_parse (s_buf *buf, p_ekc3 *dest)
 {
   s_block block;
   character c;
@@ -100,12 +100,12 @@ sw ec3_buf_parse (s_buf *buf, p_ec3 *dest)
   s_buf_save save;
   s_buf str_buf;
   s_list **tail;
-  p_ec3 tmp;
+  p_ekc3 tmp;
   assert(dest);
   assert(buf);
-  if (! buf_init_alloc(&str_buf, EC3_BUF_PARSE_STR_BUF_SIZE))
+  if (! buf_init_alloc(&str_buf, EKC3_BUF_PARSE_STR_BUF_SIZE))
     return -1;
-  ec3_init(&tmp);
+  ekc3_init(&tmp);
   tail = &tmp;
   buf_save_init(buf, &save);
   while (1) {
@@ -114,12 +114,12 @@ sw ec3_buf_parse (s_buf *buf, p_ec3 *dest)
       goto restore;
     if (r > 0) {
       result += r;
-      if (! ec3_append_and_empty_buf(tail, &str_buf))
+      if (! ekc3_append_and_empty_buf(tail, &str_buf))
         goto ko;
-      r = ec3_buf_parse_c3_block(buf, &block);
+      r = ekc3_buf_parse_kc3_block(buf, &block);
       if (r <= 0)
         goto restore;
-      if (! ec3_append_block(tail, &block))
+      if (! ekc3_append_block(tail, &block))
         goto ko;
       continue;
     }
@@ -128,12 +128,12 @@ sw ec3_buf_parse (s_buf *buf, p_ec3 *dest)
       goto restore;
     if (r > 0) {
       result += r;
-      if (! ec3_append_and_empty_buf(tail, &str_buf))
+      if (! ekc3_append_and_empty_buf(tail, &str_buf))
         goto ko;
-      r = ec3_buf_parse_c3_block(buf, &block);
+      r = ekc3_buf_parse_kc3_block(buf, &block);
       if (r <= 0)
         goto restore;
-      if (! ec3_append_block(tail, &block))
+      if (! ekc3_append_block(tail, &block))
         goto ko;
       continue;
     }
@@ -148,8 +148,8 @@ sw ec3_buf_parse (s_buf *buf, p_ec3 *dest)
     result += r;
     r = buf_write_character_utf8(&str_buf, c);
     if (r <= 0) {
-      err_puts("ec3_buf_parse: buf_write_character_utf8 str_buf");
-      assert(! "ec3_buf_parse: buf_write_character_utf8 str_buf");
+      err_puts("ekc3_buf_parse: buf_write_character_utf8 str_buf");
+      assert(! "ekc3_buf_parse: buf_write_character_utf8 str_buf");
       goto restore;
     }
   }
@@ -157,63 +157,139 @@ sw ec3_buf_parse (s_buf *buf, p_ec3 *dest)
   r = -1;
  restore:
   buf_save_restore_rpos(buf, &save);
-  ec3_clean(&tmp);
+  ekc3_clean(&tmp);
  clean:
   buf_clean(&str_buf);
   buf_save_clean(buf, &save);
   return r;
 }
 
-sw ec3_buf_parse_c3_block (s_buf *buf, s_block *dest)
+sw ekc3_buf_parse_kc3_block (s_buf *buf, s_block *dest)
 {
   sw r;
   sw result = 0;
   s_buf_save save;
+  s_list *list;
+  s_list **tail;
+  s_block tmp;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  r = buf_ignore_spaces(buf);
-  if (r < 0)
-    goto clean;
-  if (! r) {
-    r = -1;
-    goto clean;
+  list = NULL;
+  tail = &list;
+  while (1) {
+    r = buf_ignore_spaces(buf);
+    if (r < 0)
+      goto clean;
+    if (! r) {
+      r = -1;
+      goto clean;
+    }
+    r = buf_read_1(buf, "%>");
+    if (r > 0) {
+      result += r;
+      if (! block_init_from_list(&tmp, (const s_list * const*) &list)) {
+        list_delete_all(list);
+        r = -1;
+        goto clean;
+      }
+      *dest = tmp;
+      r = result;
+      goto clean;
+    }
+    *tail = list_new(NULL);
+    r = buf_parse_tag(buf, &(*tail)->tag);
+    if (r <= 0) {
+      list_delete_all(list);
+      goto clean;
+    }
+    result += r;
+    tail = &(*tail)->next.data.list;
   }
-  result += r;
-  
  clean:
   buf_save_clean(buf, &save);
   return r;
 }
 
-void ec3_clean (p_ec3 *ec3)
+void ekc3_clean (p_ekc3 *ekc3)
 {
-  list_delete_all(*ec3);
+  list_delete_all(*ekc3);
 }
 
-p_ec3 * ec3_init (p_ec3 *ec3)
+p_ekc3 * ekc3_init (p_ekc3 *ekc3)
 {
-  p_ec3 tmp = {0};
-  *ec3 = tmp;
-  return ec3;
+  p_ekc3 tmp = {0};
+  *ekc3 = tmp;
+  return ekc3;
 }
 
-sw ec3_render (const p_ec3 *ec3, s_buf *buf, s_map *map)
+sw ekc3_render (const p_ekc3 *ekc3)
 {
-  assert(ec3);
-  assert(buf);
-  assert(map);
-  (void) ec3;
-  (void) buf;
-  (void) map;
-  return -42;
+  const s_list *l;
+  sw r;
+  sw result = 0;
+  assert(ekc3);
+  l = *ekc3;
+  while (l) {
+    if (! (r = ekc3_render_tag(&l->tag)))
+      return r;
+    result += r;
+    l = list_next(l);
+  }
+  return result;
 }
 
-s_fn * ec3_to_render_fn (const p_ec3 *ec3, s_fn *dest)
+sw ekc3_render_buf (s_buf *in)
 {
-  assert(ec3);
+  p_ekc3 ekc3;
+  sw r;
+  assert(in);
+  ekc3_init(&ekc3);
+  r = ekc3_buf_parse(in, &ekc3);
+  if (r < 0)
+    return r;
+  r = ekc3_render(&ekc3);
+  ekc3_clean(&ekc3);
+  return r;
+}
+
+sw ekc3_render_file (const s_str *path)
+{
+  s_tag *file_dir;
+  s_tag  file_dir_save;
+  s_tag *file_path;
+  s_tag  file_path_save;
+  FILE *fp;
+  s_buf in;
+  char  in_data[BUF_SIZE];
+  sw r;
+  buf_init(&in, false, BUF_SIZE, in_data);
+  fp = file_open(path->ptr.pchar, "rb");
+  if (! fp)
+    return -1;
+  if (! buf_file_open_r(&in, fp)) {
+    fclose(fp);
+    return -1;
+  }
+  file_dir = frame_get_w(&g_kc3_env.global_frame, &g_sym___DIR__);
+  file_dir_save = *file_dir;
+  file_dirname(path, &file_dir->data.str);
+  file_path = frame_get_w(&g_kc3_env.global_frame, &g_sym___FILE__);
+  file_path_save = *file_path;
+  file_path->data.str = *path;
+  r = ekc3_render_buf(&in);
+  *file_dir = file_dir_save;
+  *file_path = file_path_save;
+  buf_file_close(&in);
+  fclose(fp);
+  return r;
+}
+
+s_fn * ekc3_to_render_fn (const p_ekc3 *ekc3, s_fn *dest)
+{
+  assert(ekc3);
   assert(dest);
-  (void) ec3;
+  (void) ekc3;
   (void) dest;
   return NULL;
 }

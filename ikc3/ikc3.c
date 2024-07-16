@@ -113,7 +113,7 @@ int main (int argc, char **argv)
         r = 1;
         goto clean;
       }
-      fp = fopen(argv[1], "rb");
+      fp = file_open(argv[1], "rb");
       if (! fp) {
         e = errno;
         err_write_1("ikc3: ");

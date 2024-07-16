@@ -26,10 +26,12 @@ s_list ** ekc3_append_silent_block (s_list **tail, s_block *block);
 s_list ** ekc3_append_str (s_list **tail, s_str *str);
 s_list ** ekc3_append_sym (s_list **tail, const s_sym *sym);
 sw        ekc3_buf_parse (s_buf *buf, p_ekc3 *dest);
-sw        ekc3_buf_parse_c3_block (s_buf *buf, s_block *dest);
+sw        ekc3_buf_parse_kc3_block (s_buf *buf, s_block *dest);
 
 /* Observers. */
-sw     ekc3_render (const p_ekc3 *ekc3, s_buf *buf, s_map *map);
-s_fn * ekc3_to_render_fn (const p_ekc3 *ekc3, s_fn *dest);
+sw ekc3_render (const p_ekc3 *ekc3);
+sw ekc3_render_buf (s_buf *in);
+sw ekc3_render_file (const s_str *path);
+sw ekc3_render_tag (const s_tag *tag);
 
 #endif /* EKC3_H */

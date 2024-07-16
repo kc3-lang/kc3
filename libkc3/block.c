@@ -18,6 +18,7 @@
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "io.h"
+#include "list.h"
 #include "tag.h"
 
 void block_clean (s_block *block)
@@ -101,6 +102,29 @@ s_block * block_init_copy (s_block *block, const s_block *src)
     i++;
   }
   block->short_form = src->short_form;
+  return block;
+}
+
+s_block * block_init_from_list (s_block *block,
+                                const s_list * const *list)
+{
+  uw i;
+  const s_list *l;
+  uw len;
+  s_block tmp;
+  assert(block);
+  assert(list);
+  l = *list;
+  len = list_length(l);
+  block_init(&tmp, len);
+  i = 0;
+  while (l) {
+    if (! tag_init_copy(tmp.tag + i, &l->tag))
+      return NULL;
+    i++;
+    l = list_next(l);
+  }
+  *block = tmp;
   return block;
 }
 

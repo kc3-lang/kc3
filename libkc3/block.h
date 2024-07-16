@@ -27,6 +27,8 @@ s_block * block_init (s_block *block, uw count);
 s_block * block_init_1 (s_block *block, const char *p);
 s_block * block_init_cast (s_block *block, const s_tag *tag);
 s_block * block_init_copy (s_block *block, const s_block *src);
+s_block * block_init_from_list (s_block *block,
+                                const s_list * const *list);
 void      block_clean (s_block *block);
 
 /* Constructors, call block_delete after use */
