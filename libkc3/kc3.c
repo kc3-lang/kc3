@@ -108,8 +108,16 @@ void ** kc3_dlopen (const s_str *path, void **dest)
 {
   assert(path);
   assert(dest);
-  printf("dlopen %p := %s\n", (void *) dest, path->ptr.pchar);
+  err_write_1("kc3_dlopen: ");
+  err_inspect_str(path);
+  err_write_1("\n");
   *dest = dlopen(path->ptr.pchar, RTLD_GLOBAL);
+  if (! *dest) {
+    err_write_1("kc3_dlopen: ");
+    err_inspect_str(path);
+    err_puts(": dlopen failed");
+    assert(! "kc3_dlopen: dlopen failed");
+  }
   return dest;
 }
 

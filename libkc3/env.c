@@ -13,8 +13,8 @@
 #include <string.h>
 #include <unistd.h>
 #include "alloc.h"
-#include "assert.h"
 #include "array.h"
+#include "assert.h"
 #include "binding.h"
 #include "block.h"
 #include "buf.h"
@@ -23,7 +23,6 @@
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "buf_save.h"
-#include "kc3_main.h"
 #include "call.h"
 #include "cfn.h"
 #include "compare.h"
@@ -43,21 +42,25 @@
 #include "fn_clause.h"
 #include "frame.h"
 #include "ident.h"
+#include "integer.h"
 #include "io.h"
+#include "kc3_main.h"
 #include "list.h"
 #include "map.h"
 #include "module.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
+#include "sym.h"
 #include "tag.h"
 #include "tag_init.h"
 #include "tuple.h"
-#include "integer.h"
 
 s_env g_kc3_env;
 
 static s_env * env_init_args (s_env *env, int *argc, char ***argv);
+static s_env * env_init_globals (s_env *env);
+static s_env * env_init_toplevel (s_env *env);
 
 bool env_call_get (s_env *env, s_call *call)
 {
@@ -1946,8 +1949,10 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     return NULL;
   sym_init_g_sym();
   env->error_handler = NULL;
-  env->frame = frame_new(NULL); // toplevel
-  frame_init(&env->global_frame, NULL); // globals
+  if (! env_init_toplevel(env))
+    return NULL;
+  if (! env_init_globals(env))
+    return NULL;
   buf_init_alloc(&env->in, BUF_SIZE);
   buf_file_open_r(&env->in, stdin);
   buf_init_alloc(&env->out, BUF_SIZE);
@@ -1956,18 +1961,18 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   buf_file_open_w(&env->err, stderr);
   facts_init(&env->facts);
   env->path = list_new_str_1
-    (NULL, ".", list_new_str_1
-     (NULL, "..", list_new_str_1
-      (NULL, "../Resources", list_new_str_1
-       (NULL, "../..", list_new_str_1
-        (NULL, "../../..", list_new_str_1
-         (NULL, "../../../..", list_new_str_1
-          (NULL, "../../../../..", list_new_str_1
-           (NULL, "../../../../../..", NULL))))))));
+    (NULL, "./", list_new_str_1
+     (NULL, "../", list_new_str_1
+      (NULL, "../Resources/", list_new_str_1
+       (NULL, "../../", list_new_str_1
+        (NULL, "../../../", list_new_str_1
+         (NULL, "../../../../", list_new_str_1
+          (NULL, "../../../../../", list_new_str_1
+           (NULL, "../../../../../../", NULL))))))));
   str_init_1(&path, NULL, "lib/kc3/0.1/");
   if (! file_search(&path, &g_sym_x, &env->module_path)) {
-    err_puts("env_init: module_path not found");
-    assert(! "env_init: module path not found");
+    err_puts("env_init: lib/kc3/0.1 not found in module path");
+    assert(! "env_init: lib/kc3/0.1 not found in module path");
     return NULL;
   }
   env->current_defmodule = &g_sym_KC3;
@@ -2009,6 +2014,30 @@ s_env * env_init_args (s_env *env, int *argc, char ***argv)
   env->argc = 0;
   env->argv = NULL;
   str_init_1(&env->argv0_dir, NULL, "./");
+  return env;
+}
+
+s_env * env_init_globals (s_env *env)
+{
+  if (! frame_init(&env->global_frame, NULL))
+    return NULL;
+  if (! tag_init_str(&env->file_dir, NULL, env->argv0_dir.size,
+                     env->argv0_dir.ptr.pchar))
+    return NULL;
+  if (! frame_binding_new(&env->global_frame, &g_sym___DIR__,
+                          &env->file_dir))
+    return NULL;
+  if (! tag_init_str_1(&env->file_path, NULL, env->argv[0]))
+    return NULL;
+  if (! frame_binding_new(&env->global_frame, &g_sym___FILE__,
+                          &env->file_path))
+    return NULL;
+  return env;
+}
+
+s_env * env_init_toplevel (s_env *env)
+{
+  env->frame = frame_new(NULL);
   return env;
 }
 
@@ -2069,6 +2098,10 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
 bool env_load (s_env *env, const s_str *path)
 {
   s_buf buf;
+  s_tag dir;
+  s_tag env_file_dir;
+  s_tag env_file_path;
+  s_tag path_tag;
   sw r;
   s_tag tag = {0};
   s_tag tmp;
@@ -2080,6 +2113,16 @@ bool env_load (s_env *env, const s_str *path)
     buf_clean(&buf);
     return false;
   }
+  dir.type = TAG_STR;
+  if (! file_dirname(path, &dir.data.str)) {
+    buf_clean(&buf);
+    return false;
+  }
+  tag_init_str(&path_tag, NULL, path->size, path->ptr.pchar);
+  env_file_dir = env->file_dir;
+  env_file_path = env->file_path;
+  env->file_dir = dir;
+  env->file_path = path_tag;
   while (1) {
     if ((r = buf_parse_tag(&buf, &tag)) < 0) {
       buf_getc_close(&buf);
@@ -2099,6 +2142,8 @@ bool env_load (s_env *env, const s_str *path)
   }
   buf_getc_close(&buf);
   buf_clean(&buf);
+  env->file_dir = env_file_dir;
+  env->file_path = env_file_path;
   return true;
 }
 

@@ -62,6 +62,7 @@
 #include "file.h"
 #include "fn.h"
 #include "fn_clause.h"
+#include "frame.h"
 #include "hash.h"
 #include "ident.h"
 #include "integer.h"

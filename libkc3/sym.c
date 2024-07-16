@@ -22,6 +22,8 @@
 #include "sym.h"
 #include "tag_type.h"
 
+const s_sym g_sym___DIR__         = {{{NULL},  7, {"__DIR__"}}};
+const s_sym g_sym___FILE__        = {{{NULL},  8, {"__FILE__"}}};
 const s_sym g_sym__brackets       = {{{NULL},  2, {"[]"}}};
 const s_sym g_sym__equal          = {{{NULL},  1, {"="}}};
 const s_sym g_sym__paren          = {{{NULL},  2, {"()"}}};
@@ -315,6 +317,8 @@ const s_sym ** sym_init_copy (const s_sym **sym,
 
 void sym_init_g_sym (void)
 {
+  sym_register(&g_sym___DIR__, NULL);
+  sym_register(&g_sym___FILE__, NULL);
   sym_register(&g_sym__brackets, NULL);
   sym_register(&g_sym__equal, NULL);
   sym_register(&g_sym__paren, NULL);

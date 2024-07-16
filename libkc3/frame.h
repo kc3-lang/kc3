@@ -15,22 +15,23 @@
 
 #include "types.h"
 
-/* stack-allocation compatible functions */
+/* Stack-allocation compatible functions, call frame_clean after use. */
 s_frame * frame_clean (s_frame *frame);
 s_frame * frame_init (s_frame *frame, s_frame *next);
 
-/* constructors */
+/* Constructors. */
 s_frame * frame_new (s_frame *next);
 
-/* destructors */
+/* Destructors. */
 s_frame * frame_delete (s_frame *frame);
 void      frame_delete_all (s_frame *frame);
 
-/* modifiers */
+/* Operators. */
 s_frame * frame_binding_new (s_frame *frame, const s_sym *name,
-                             const s_tag *value);
+                                 const s_tag *value);
+s_tag *   frame_get_w (s_frame *frame, const s_sym *sym);
 
-/* observers */
+/* Observers. */
 const s_tag * frame_get (const s_frame *frame, const s_sym *sym);
 
 #endif /* LIBKC3_FRAME_H */

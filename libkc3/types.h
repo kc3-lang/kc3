@@ -652,6 +652,8 @@ struct env {
   s_buf             err;
   s_error_handler  *error_handler;
   s_facts           facts;
+  s_tag             file_dir;
+  s_tag             file_path;
   s_frame          *frame;
   s_frame           global_frame;
   s_buf             in;

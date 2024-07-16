@@ -69,6 +69,21 @@ const s_tag * frame_get (const s_frame *frame, const s_sym *sym)
   return NULL;
 }
 
+s_tag * frame_get_w (s_frame *frame, const s_sym *sym)
+{
+  s_frame *f;
+  s_tag *result;
+  assert(sym);
+  f = frame;
+  while (f) {
+    result = binding_get_w(f->bindings, sym);
+    if (result)
+      return result;
+    f = f->next;
+  }
+  return NULL;
+}
+
 s_frame * frame_init (s_frame *frame, s_frame *next)
 {
   s_frame tmp = {0};

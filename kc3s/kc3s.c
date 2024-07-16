@@ -90,6 +90,11 @@ sw kc3s_run (void)
 
 int main (int argc, char **argv)
 {
+  s_env *env;
+  s_tag *file_dir;
+  s_tag  file_dir_save;
+  s_tag *file_path;
+  s_tag  file_path_save;
   FILE *fp;
   char  in_data[BUF_SIZE];
   s_buf in_original;
@@ -98,13 +103,14 @@ int main (int argc, char **argv)
     return usage(argv[0]);
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
-  in_original = g_kc3_env.in;
-  buf_init(&g_kc3_env.in, false, sizeof(in_data), in_data);
+  env = &g_kc3_env;
+  in_original = env->in;
+  buf_init(&env->in, false, sizeof(in_data), in_data);
   while (argc) {
     if (! strcmp("--load", *argv) ||
         ! strcmp("-l", *argv)) {
       if (argc < 2) {
-        err_write_1(g_kc3_env.argv[0]);
+        err_write_1(env->argv[0]);
         err_write_1(": ");
         err_write_1(*argv);
         err_write_1(" without an argument\n");
@@ -113,12 +119,25 @@ int main (int argc, char **argv)
         goto clean;
       }
       fp = fopen(argv[1], "rb");
-      if (! buf_file_open_r(&g_kc3_env.in, fp)) {
+      if (! buf_file_open_r(&env->in, fp)) {
+        r = -1;
+        goto clean;
+      }
+      file_dir = frame_get_w(&env->global_frame, &g_sym___DIR__);
+      file_dir_save = *file_dir;
+      file_path = frame_get_w(&env->global_frame, &g_sym___FILE__);
+      file_path_save = *file_path;
+      tag_init_str_1(file_path, NULL, argv[1]);
+      file_dir->type = TAG_STR;
+      if (! file_dirname(&file_path->data.str, &file_dir->data.str)) {
+        buf_file_close(&env->in);
         r = -1;
         goto clean;
       }
       r = kc3s_run();
-      buf_file_close(&g_kc3_env.in);
+      *file_dir = file_dir_save;
+      *file_path = file_path_save;
+      buf_file_close(&env->in);
       fclose(fp);
       if (r)
         goto clean;
@@ -134,7 +153,7 @@ int main (int argc, char **argv)
   }
   r = kc3s_run();
  clean:
-  g_kc3_env.in = in_original;
+  env->in = in_original;
   kc3_clean(NULL);
   return r;
 }

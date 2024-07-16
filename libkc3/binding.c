@@ -46,6 +46,18 @@ const s_tag * binding_get (const s_binding *binding, const s_sym *name)
   return NULL;
 }
 
+s_tag * binding_get_w (s_binding *binding, const s_sym *name)
+{
+  s_binding *b;
+  b = binding;
+  while (b) {
+    if (b->name == name)
+      return &b->value;
+    b = b->next;
+  }
+  return NULL;
+}
+
 s_binding * binding_init (s_binding *binding, const s_sym *name,
                           const s_tag *value, s_binding *next)
 {

@@ -118,7 +118,7 @@ s_str * file_dirname (const s_str *path, s_str *dest)
     return str_init(dest, NULL, 2, "./");
   if (! dirsep_pos)
     return str_init(dest, NULL, 1, "/");
-  return str_init_slice(dest, path, 0, dirsep_pos + 1);
+  return str_init_slice(dest, path, 0, dirsep_pos);
 }
 
 s_tag * file_mtime (const s_str *path, s_tag *dest)

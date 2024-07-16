@@ -1,0 +1,4 @@
+quote __DIR__
+__DIR__
+quote __FILE__
+__FILE__

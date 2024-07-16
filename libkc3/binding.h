@@ -15,22 +15,24 @@
 
 #include "types.h"
 
-/* stack-allocation compatible functions */
+/* Stack-allocation compatible functions, call binding_clean after
+   use. */
 void        binding_clean (s_binding *binding);
 s_binding * binding_init (s_binding *binding, const s_sym *name,
                           const s_tag *value, s_binding *next);
 
-/* constructors */
+/* Heap-allocation functions, call binding_delete* after use. */
+s_binding * binding_delete (s_binding *binding);
+void        binding_delete_all (s_binding *binding);
 s_binding * binding_new (const s_sym *name, const s_tag *value,
                          s_binding *next);
 
-/* destructors */
-s_binding * binding_delete (s_binding *binding);
-void        binding_delete_all (s_binding *binding);
-
-/* observers */
+/* Observers. */
 const s_tag * binding_get (const s_binding *binding, const s_sym *name);
 const s_tag * binding_is_bound (const s_binding *binding,
                                 const s_sym *name);
+
+/* Operators. */
+s_tag * binding_get_w (s_binding *binding, const s_sym *name);
 
 #endif /* LIBC3_BINDING_H */

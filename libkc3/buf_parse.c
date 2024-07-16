@@ -1187,12 +1187,16 @@ sw buf_parse_comment (s_buf *buf)
     if ((r = buf_read_1(buf, "#")) <= 0)
       goto restore;
     result += r1 + r;
-    while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
-           c != '\n') {
+    while (1) {
+      r = buf_peek_character_utf8(buf, &c);
+      if (r <= 0)
+        break;
       csize = r;
       if ((r = buf_ignore(buf, csize)) < 0)
         goto clean;
       result += csize;
+      if (c == '\n')
+        break;
     }
     if (r < 0)
       goto clean;

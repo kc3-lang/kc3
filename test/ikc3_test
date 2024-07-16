@@ -40,7 +40,7 @@ fi
 
 for TARGET in $TARGETS; do
     RESULT=test_ok
-    $IKC3 < ${TARGET}.in > ${TARGET}.out 2>&1
+    $IKC3 --load ${TARGET}.in --quit > ${TARGET}.out 2>&1
     echo $? > ${TARGET}.ret
     if ! diff -abu ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff
     then
