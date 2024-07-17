@@ -16,7 +16,7 @@ KC3_MAKEFILES="$(echo "$KC3_MAKEFILES" | grep -v 'libtommath/logs/Makefile')"
 sources KC3_MAKEFILES "$KC3_MAKEFILES"
 
 KC3_C_SOURCES="$(find ekc3 ikc3 kc3c kc3s libkc3 libkc3_window test -name "[a-z]*.c" -or -name "[a-z]*.h" -or -name "[a-z]*.c.in" -or -name "[a-z]*.h.in")"
-KC3_C_SOURCES="$(echo "${KC3_C_SOURCES}" | grep -Ev '^libkc3/config[.]h$')"
+KC3_C_SOURCES="$(echo "${KC3_C_SOURCES}" | grep -Ev '/config[.]h$')"
 KC3_C_SOURCES="$KC3_C_SOURCES
 ucd2c/ucd.h
 ucd2c/ucd2c.c"
