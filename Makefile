@@ -237,16 +237,36 @@ test_debug:
 	${MAKE} -C ekc3 debug
 	${MAKE} -C test test_debug
 
-test_ekc3: build
+test_ekc3:
+	${MAKE} -C libtommath build
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C ekc3 build
 	${MAKE} -C test test_ekc3
 
-test_ekc3_asan: asan
+test_ekc3_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C ekc3 asan
 	${MAKE} -C test test_ekc3_asan
 
-test_ekc3_cov: cov
+test_ekc3_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C kc3s cov
+	${MAKE} -C ekc3 cov
 	${MAKE} -C test test_ekc3_cov
 
-test_ekc3_debug: debug
+test_ekc3_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C ekc3 debug
 	${MAKE} -C test test_ekc3_debug
 
 test_gcovr:
