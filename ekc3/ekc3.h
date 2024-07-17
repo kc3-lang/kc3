@@ -32,6 +32,7 @@ sw         ekc3_buf_peek_kc3_silent_block (s_buf *buf);
 
 /* Observers. */
 sw ekc3_render (const p_ekc3 *ekc3);
+sw ekc3_render_block_to_str (const s_block *block, s_str *dest);
 sw ekc3_render_buf (s_buf *in);
 sw ekc3_render_file (const s_str *path);
 sw ekc3_render_tag (const s_tag *tag);

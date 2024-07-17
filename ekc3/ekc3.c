@@ -12,6 +12,7 @@
  */
 #include <libkc3/kc3.h>
 #include "ekc3.h"
+#include "html.h"
 
 s_list *** ekc3_append_and_empty_buf (s_list ***tail, s_buf *buf)
 {
@@ -429,6 +430,31 @@ sw ekc3_render_block (const s_block *block)
   return r;
 }
 
+s_str * ekc3_inspect_block (const s_block *block, s_str *dest)
+{
+  uw i = 0;
+  s_tag result = {0};
+  assert(block);
+  while (i < block->count) {
+    tag_clean(&result);
+    if (! eval_tag(block->tag + i, &result))
+      return NULL;
+    i++;
+  }
+  switch (result.type) {
+  case TAG_STR:
+    if (! str_init_copy(dest, &result.data.str))
+      return NULL;
+    break;
+  default:
+    if (! str_init_cast(dest, &g_sym_Str, &result))
+      return NULL;
+    break;
+  }
+  tag_clean(&result);
+  return dest;
+}
+
 sw ekc3_render_buf (s_buf *in)
 {
   p_ekc3 ekc3;
@@ -480,18 +506,41 @@ sw ekc3_render_file (const s_str *path)
 
 sw ekc3_render_tag (const s_tag *tag)
 {
+  s_str escaped = {0};
+  s_str in = {0};
+  sw r;
   switch(tag->type) {
   case TAG_BLOCK:
-    return ekc3_render_block(&tag->data.block);
-  case TAG_STR:
-    return io_write_str(&tag->data.str);
-  default:
+    if (! ekc3_inspect_block(&tag->data.block, &in)) {
+      err_puts("ekc3_render_tag: ekc3_render_block_to_str");
+      assert(! "ekc3_render_tag: ekc3_render_block_to_str");
+      return -1;
+    }
     break;
+  case TAG_STR:
+    str_init(&in, NULL, tag->data.str.size, tag->data.str.ptr.pchar);
+    break;
+  default:
+    err_write_1("ekc3_render_tag: cannot render ");
+    err_write_1(tag_type_to_string(tag->type));
+    err_write_1(": ");
+    err_inspect_tag(tag);
+    err_write_1("\n");
+    return -1;
   }
-  err_write_1("ekc3_render_tag: cannot render tag: ");
-  err_inspect_tag(tag);
-  err_write_1("\n");
-  return -1;
+  if (! html_escape(&in, &escaped)) {
+    str_clean(&in);
+    err_puts("ekc3_render_tag: html_escape");
+    assert(! "ekc3_render_tag: html_escape");
+    return -1;
+  }
+  if ((r = io_write_str(&escaped)) < 0) {
+    err_puts("ekc3_render_tag: io_write_str");
+    assert(! "ekc3_render_tag: io_write_str");
+  }
+  str_clean(&in);
+  str_clean(&escaped);
+  return r;
 }
 
 s_fn * ekc3_to_render_fn (const p_ekc3 *ekc3, s_fn *dest)
