@@ -329,7 +329,7 @@ config_objc_lib_have() {
 
 config_subdirs() {
     for SUBDIR; do
-        ( cd "$SUBDIR" && echo "$PWD/configure" && ./configure; )
+        ( cd "$SUBDIR" && ./configure; )
     done
 }
 

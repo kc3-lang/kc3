@@ -13,7 +13,10 @@
 
 set -e
 
+echo "$PWD/configure"
+
 export SRC_TOP="$(dirname "$PWD")"
+
 CONFIG_H_PREFIX=LIBKC3_
 
 . ../config.subr

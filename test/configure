@@ -13,6 +13,8 @@
 
 set -e
 
+echo "$PWD/configure"
+
 export SRC_TOP="$(dirname "$PWD")"
 
 . ../config.subr

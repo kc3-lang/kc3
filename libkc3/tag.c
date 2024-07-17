@@ -606,7 +606,7 @@ bool tag_is_an_associative_list (const s_tag *tag)
     if (l->tag.type != TAG_TUPLE ||
         l->tag.data.tuple.count != 2)
       return false;
-    l = list_next(e);
+    l = list_next(l);
   }
   return true;
 }

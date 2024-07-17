@@ -99,6 +99,7 @@ KC3_C_SOURCES = \
 	"ekc3/ekc3.c" \
 	"ekc3/ekc3.h" \
 	"ekc3/html.c" \
+	"ekc3/html.h" \
 	"ekc3/types.h" \
 	"ikc3/buf_linenoise.c" \
 	"ikc3/buf_linenoise.h" \

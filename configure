@@ -13,8 +13,9 @@
 
 set -e
 
-export SRC_TOP="$PWD"
 echo "$PWD/configure"
+
+export SRC_TOP="$PWD"
 
 : ${PREFIX:=/usr/local}
 if [ "x$1" = "x--prefix" ]; then
