@@ -1,6 +1,6 @@
 defmodule EKC3 do
 
-  dlopen(__DIR__ + "/ekc3/libekc3.so")
+  dlopen(__DIR__ + "ekc3.so")
 
   def render_file = cfn Str "ekc3_render_file" (Str)
 
