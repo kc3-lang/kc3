@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <libkc3/kc3.h>
 #include "html.h"
 
 s_str * html_escape (const s_str *str, s_str *dest)
@@ -38,7 +39,7 @@ s_str * html_escape (const s_str *str, s_str *dest)
              " List"));
     return NULL;
   }
-  escape = escape_tag->data.list;
+  escape = escape_tag.data.list;
   if (! buf_init_alloc(&buf, str->size * 8))
     return NULL;
   tag_c.type = TAG_CHARACTER;
@@ -71,14 +72,14 @@ s_str * html_escape (const s_str *str, s_str *dest)
     if (replace) {
       if (buf_write_str(&buf, &replace->data.str) <= 0) {
         err_puts("html_escape: buf_write_str");
-        assert(!("html_escape: buf_write_str");
+        assert(! "html_escape: buf_write_str");
         goto ko;
       }
     }
     else {
-      if (buf_write_character_utf8(&buf, &tag_c.data.character) <= 0) {
+      if (buf_write_character_utf8(&buf, tag_c.data.character) <= 0) {
         err_puts("html_escape: buf_write_character_utf8");
-        assert(!("html_escape: buf_write_character_utf8");
+        assert(! "html_escape: buf_write_character_utf8");
         goto ko;
       }
     }
