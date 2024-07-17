@@ -502,6 +502,9 @@ Script interpreter. Works the same as ikc3 but is not interactive.
 
 ## TODO
 
+ - EKC3
+   - escape HTML :
+     - ["&": "&amp, "<": "&lt", ">": "&gt", "\"": "&quot", "'": &#39"]
  - libkc3
    - operators dispatch
      - list of matching operators (facts_with)

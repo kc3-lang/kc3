@@ -5,4 +5,5 @@ HEADERS = \
 
 SOURCES = \
 	"ekc3.c" \
+	"html.c" \
 
