@@ -516,31 +516,34 @@ sw ekc3_render_tag (const s_tag *tag)
       assert(! "ekc3_render_tag: ekc3_render_block_to_str");
       return -1;
     }
-    break;
-  case TAG_STR:
-    str_init(&in, NULL, tag->data.str.size, tag->data.str.ptr.pchar);
-    break;
-  default:
-    err_write_1("ekc3_render_tag: cannot render ");
-    err_write_1(tag_type_to_string(tag->type));
-    err_write_1(": ");
-    err_inspect_tag(tag);
-    err_write_1("\n");
-    return -1;
-  }
-  if (! html_escape(&in, &escaped)) {
+    if (! html_escape(&in, &escaped)) {
+      str_clean(&in);
+      err_puts("ekc3_render_tag: html_escape");
+      assert(! "ekc3_render_tag: html_escape");
+      return -1;
+    }
     str_clean(&in);
-    err_puts("ekc3_render_tag: html_escape");
-    assert(! "ekc3_render_tag: html_escape");
-    return -1;
+    if ((r = io_write_str(&escaped)) < 0) {
+      err_puts("ekc3_render_tag: io_write_str 1");
+      assert(! "ekc3_render_tag: io_write_str 1");
+    }
+    str_clean(&escaped);
+    return r;
+  case TAG_STR:
+    if ((r = io_write_str(&tag->data.str)) < 0) {
+      err_puts("ekc3_render_tag: io_write_str 2");
+      assert(! "ekc3_render_tag: io_write_str 2");
+    }
+    return r;
+  default:
+    break;
   }
-  if ((r = io_write_str(&escaped)) < 0) {
-    err_puts("ekc3_render_tag: io_write_str");
-    assert(! "ekc3_render_tag: io_write_str");
-  }
-  str_clean(&in);
-  str_clean(&escaped);
-  return r;
+  err_write_1("ekc3_render_tag: cannot render ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_write_1(": ");
+  err_inspect_tag(tag);
+  err_write_1("\n");
+  return -1;
 }
 
 s_fn * ekc3_to_render_fn (const p_ekc3 *ekc3, s_fn *dest)

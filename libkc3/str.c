@@ -155,6 +155,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   assert(type);
   assert(tag);
   switch (tag->type) {
+  case TAG_CHARACTER:
+    return str_init_character(str, tag->data.character);
   case TAG_S8:
     return str_init_s8(str, tag->data.s8);
   case TAG_S16:
@@ -211,6 +213,18 @@ s_str * str_init_cat (s_str *str, const s_str *a, const s_str *b)
   if (b->size)
     memcpy(tmp.free.ps8 + a->size, b->ptr.p, b->size);
   *str = tmp;
+  return str;
+}
+
+s_str * str_init_character (s_str *str, const character src)
+{
+  char b[4];
+  s_buf buf;
+  buf_init(&buf, false, sizeof(b), b);
+  if (buf_write_character_utf8(&buf, src) < 0)
+    return NULL;
+  if (buf_read_to_str(&buf, str) < 0)
+    return NULL;
   return str;
 }
 

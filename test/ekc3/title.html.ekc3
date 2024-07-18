@@ -3,7 +3,9 @@
     <title><%= title %></title>
   </head>
   <body>
-    <% title2 = title + " H1" %>
+    <% title2 = title + " H1 (silent block)" %>
     <h1><%= title2 %></h1>
+    <h1><%= title_h1 %></h1>
+    <%= title_h2 %>
   </body>
 </html>

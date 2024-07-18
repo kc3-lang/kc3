@@ -3,6 +3,8 @@
     <title>EKC3 test title</title>
   </head>
   <body>
-    <h1>EKC3 test title H1</h1>
+    <h1>EKC3 test title H1 (silent block)</h1>
+    <h1>&lt;title&gt;&quot;Title escaped &amp;amp; in title&#39;&lt;/title&gt;</h1>
+    <h2>Title H2 (raw)</h2>
   </body>
 </html>

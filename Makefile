@@ -154,6 +154,10 @@ gdb_test:
 	${MAKE} debug
 	${MAKE} -C test gdb_test
 
+gdb_test_ekc3:
+	${MAKE} debug
+	${MAKE} -C test gdb_test_ekc3
+
 gen:
 	${MAKE} -C libkc3 gen
 

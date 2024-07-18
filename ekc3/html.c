@@ -16,6 +16,7 @@
 s_str * html_escape (const s_str *str, s_str *dest)
 {
   s_buf buf;
+  character c;
   const s_list *e;
   const s_list *escape;
   s_ident       escape_ident;
@@ -23,7 +24,7 @@ s_str * html_escape (const s_str *str, s_str *dest)
   s_tag *replace;
   s_tag *reserved;
   s_str s;
-  s_tag tag_c;
+  s_tag tag;
   assert(str);
   assert(dest);
   ident_init(&escape_ident, sym_1("EKC3"), sym_1("html_escape"));
@@ -42,9 +43,12 @@ s_str * html_escape (const s_str *str, s_str *dest)
   escape = escape_tag.data.list;
   if (! buf_init_alloc(&buf, str->size * 8))
     return NULL;
-  tag_c.type = TAG_CHARACTER;
+  tag.type = TAG_STR;
+  tag.data.str = (s_str) {0};
   s = *str;
-  while (str_read_character_utf8(&s, &tag_c.data.character) > 0) {
+  while (str_read_character_utf8(&s, &c) > 0) {
+    if (! str_init_character(&tag.data.str, c))
+      goto ko;
     replace = NULL;
     e = escape;
     while (e) {
@@ -54,21 +58,24 @@ s_str * html_escape (const s_str *str, s_str *dest)
                  " not a Str");
         assert(!("html_escape: EKC3.html_escape: reserved that is"
                  " not a Str"));
+        str_clean(&tag.data.str);
         goto ko;
       }
-      if (! compare_tag(reserved, &tag_c)) {
+      if (! compare_tag(reserved, &tag)) {
         replace = e->tag.data.tuple.tag + 1;
         if (replace->type != TAG_STR) {
           err_puts("html_escape: EKC3.html_escape: replacement that is"
                    " not a Str");
           assert(!("html_escape: EKC3.html_escape: replacement that is"
                    " not a Str"));
+          str_clean(&tag.data.str);
           goto ko;
         }
         break;
       }
       e = list_next(e);
     }
+    str_clean(&tag.data.str);
     if (replace) {
       if (buf_write_str(&buf, &replace->data.str) <= 0) {
         err_puts("html_escape: buf_write_str");
@@ -77,7 +84,7 @@ s_str * html_escape (const s_str *str, s_str *dest)
       }
     }
     else {
-      if (buf_write_character_utf8(&buf, tag_c.data.character) <= 0) {
+      if (buf_write_character_utf8(&buf, c) <= 0) {
         err_puts("html_escape: buf_write_character_utf8");
         assert(! "html_escape: buf_write_character_utf8");
         goto ko;
