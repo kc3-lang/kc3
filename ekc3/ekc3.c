@@ -374,6 +374,31 @@ p_ekc3 * ekc3_init (p_ekc3 *ekc3)
   return ekc3;
 }
 
+s_str * ekc3_inspect_block (const s_block *block, s_str *dest)
+{
+  uw i = 0;
+  s_tag result = {0};
+  assert(block);
+  while (i < block->count) {
+    tag_clean(&result);
+    if (! eval_tag(block->tag + i, &result))
+      return NULL;
+    i++;
+  }
+  switch (result.type) {
+  case TAG_STR:
+    if (! str_init_copy(dest, &result.data.str))
+      return NULL;
+    break;
+  default:
+    if (! str_init_cast(dest, &g_sym_Str, &result))
+      return NULL;
+    break;
+  }
+  tag_clean(&result);
+  return dest;
+}
+
 sw ekc3_render (const p_ekc3 *ekc3)
 {
   const s_list *l;
@@ -405,54 +430,6 @@ sw ekc3_render (const p_ekc3 *ekc3)
     l = list_next(l);
   }
   return result;
-}
-
-sw ekc3_render_block (const s_block *block)
-{
-  uw i = 0;
-  sw r;
-  s_tag result = {0};
-  assert(block);
-  while (i < block->count) {
-    tag_clean(&result);
-    if (! eval_tag(block->tag + i, &result))
-      return -1;
-    i++;
-  }
-  switch (result.type) {
-  case TAG_STR:
-    r = io_write_str(&result.data.str);
-    break;
-  default:
-    r = io_inspect_tag(&result);
-  }
-  tag_clean(&result);
-  return r;
-}
-
-s_str * ekc3_inspect_block (const s_block *block, s_str *dest)
-{
-  uw i = 0;
-  s_tag result = {0};
-  assert(block);
-  while (i < block->count) {
-    tag_clean(&result);
-    if (! eval_tag(block->tag + i, &result))
-      return NULL;
-    i++;
-  }
-  switch (result.type) {
-  case TAG_STR:
-    if (! str_init_copy(dest, &result.data.str))
-      return NULL;
-    break;
-  default:
-    if (! str_init_cast(dest, &g_sym_Str, &result))
-      return NULL;
-    break;
-  }
-  tag_clean(&result);
-  return dest;
 }
 
 sw ekc3_render_buf (s_buf *in)
@@ -504,13 +481,48 @@ sw ekc3_render_file (const s_str *path)
   return r;
 }
 
+sw ekc3_render_raw_block (const s_block *block)
+{
+  uw i;
+  sw r;
+  s_tag result = {0};
+  assert(block);
+  i = 1;
+  while (i < block->count) {
+    tag_clean(&result);
+    if (! eval_tag(block->tag + i, &result))
+      return -1;
+    i++;
+  }
+  switch (result.type) {
+  case TAG_STR:
+    r = io_write_str(&result.data.str);
+    break;
+  default:
+    r = io_inspect_tag(&result);
+  }
+  tag_clean(&result);
+  return r;
+}
+
 sw ekc3_render_tag (const s_tag *tag)
 {
+  const s_block *block;
   s_str escaped = {0};
   s_str in = {0};
   sw r;
   switch(tag->type) {
   case TAG_BLOCK:
+    block = &tag->data.block;
+    if (block->count > 1 &&
+        block->tag->type == TAG_IDENT &&
+        block->tag->data.ident.sym == sym_1("raw")) {
+      if ((r = ekc3_render_raw_block(block)) < 0) {
+        err_puts("ekc3_render_tag: ekc3_render_raw_block");
+        assert(! "ekc3_render_tag: ekc3_render_raw_block");
+      }
+      return r;
+    }
     if (! ekc3_inspect_block(&tag->data.block, &in)) {
       err_puts("ekc3_render_tag: ekc3_render_block_to_str");
       assert(! "ekc3_render_tag: ekc3_render_block_to_str");
@@ -544,13 +556,4 @@ sw ekc3_render_tag (const s_tag *tag)
   err_inspect_tag(tag);
   err_write_1("\n");
   return -1;
-}
-
-s_fn * ekc3_to_render_fn (const p_ekc3 *ekc3, s_fn *dest)
-{
-  assert(ekc3);
-  assert(dest);
-  (void) ekc3;
-  (void) dest;
-  return NULL;
 }
