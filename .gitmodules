@@ -1,11 +1,11 @@
 [submodule "libtommath"]
 	path = libtommath
-	url = https://git.kmx.io/c3-lang/libtommath.git
+	url = https://git.kmx.io/kc3-lang/libtommath.git
 	branch = v1.2
 [submodule "linenoise"]
 	path = linenoise
-	url = https://git.kmx.io/c3-lang/linenoise.git
+	url = https://git.kmx.io/kc3-lang/linenoise.git
         branch = 1.0
 [submodule "fonts"]
 	path = fonts
-	url = https://git.kmx.io/c3-lang/fonts.git
+	url = https://git.kmx.io/kc3-lang/fonts.git
