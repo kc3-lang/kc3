@@ -56,6 +56,25 @@ See [lib/kc3/0.1/list.kc3](https://git.kmx.io/kc3-lang/kc3/_tree/master/lib/kc3/
 
 ## Usage
 
+### Install dependencies
+
+#### Debian / Ubuntu / PopOS
+
+```
+# install build tools
+sudo apt install pkg-config clang libtool-bin make ruby time
+
+# install dependencies
+sudo apt install libffi-dev libbsd-dev
+
+# use clang
+export CC=clang
+
+# update symlinks
+cd lib/kc3/0.1 && ln -sf ../../../ekc3/.libs/libekc3.so ekc3.so
+```
+
+
 ### Compilation
 ```sh
 git clone https://git.kmx.io/kc3-lang/kc3.git
@@ -68,7 +87,7 @@ make
 
 ### Add the sources to `LD_LIBRARY_PATH`
 ```sh
-export LD_LIBRARY_PATH=$PWD/libkc3/.libs
+export LD_LIBRARY_PATH=$PWD/libkc3/.libs:$PWD/ekc3/.libs:$PWD/lib/kc3/0.1
 ```
 
 ### Running the OpenGL demo
