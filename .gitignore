@@ -79,6 +79,7 @@ libkc3_window/sdl2/demo/macos/kc3_window_sdl2_demo_debug.app/
 *.lo
 macos/kc3-v*
 *.o
+release/
 test/ekc3/*.diff
 test/ekc3/*.err
 test/ekc3/*.out
