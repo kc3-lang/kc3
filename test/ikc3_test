@@ -30,7 +30,7 @@ test_ok() {
 
 if [ $# = 0 ]; then
     if [ "x${IKC3_TEST}" = "x" ]; then
-        TARGETS="$(ls -1 *.in | sed -e 's/[.]in$//')"
+        TARGETS="$(ls -1 *.kc3 | sed -e 's/[.]kc3$//')"
     else
         TARGETS="${IKC3_TEST}"
     fi
@@ -40,7 +40,7 @@ fi
 
 for TARGET in $TARGETS; do
     RESULT=test_ok
-    $IKC3 --load ${TARGET}.in --quit > ${TARGET}.out 2>&1
+    $IKC3 --load ${TARGET}.kc3 --quit > ${TARGET}.out 2>&1
     echo $? > ${TARGET}.ret
     if ! diff -abu ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff
     then
