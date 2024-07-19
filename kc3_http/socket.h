@@ -10,10 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/kc3.h>
-#include "http.h"
-#include "socket.h"
+#ifndef SOCKET_H
+#define SOCKET_H
 
-buf *socket_to_buf(int socket) {
-    //listen on the socket first
-}
+#include "types.h"
+
+int * socket_init_listen(int *s, const struct sockaddr *addr, socklen_t addr_len);
+buf * socket_to_buf(int *s, s_buf *dest);
+
+#endif /* SOCKET_H */
