@@ -19,19 +19,43 @@
 #include <libkc3/kc3.h>
 #include "socket.h"
 
-void socket_clean (p_socket s)
+void socket_close (p_socket s)
 {
   assert(s);
   close(*s);
   *s = 0;
 }
 
+p_socket socket_init_accept (p_socket s, p_socket listening)
+{
+  struct sockaddr        *addr;
+  struct sockaddr_storage addr_storage = {0};
+  socklen_t               addr_len;
+  sw e;
+  t_socket tmp;
+  assert(s);
+  assert(listening);
+  addr = (struct sockaddr *) &addr_storage;
+  addr_len = sizeof(addr_storage);
+  tmp = accept(*listening, addr, &addr_len);
+  if (tmp < 0) {
+    e = errno;
+    err_write_1("socket_init_accept: accept: ");
+    err_puts(strerror(e));
+    assert(! "socket_init_accept: accept");
+    return NULL;
+  }
+  *s = tmp;
+  return s;
+}
+
 p_socket socket_init_listen (p_socket s, const s_str *host, u16 port)
 {
-  struct sockaddr *addr;
-  struct sockaddr_in *addr_inet;
-  struct sockaddr_in6 *addr_inet6;
-  socklen_t addr_len;
+  struct sockaddr        *addr;
+  struct sockaddr_in     *addr_inet;
+  struct sockaddr_in6    *addr_inet6;
+  socklen_t               addr_len;
+  struct sockaddr_storage addr_storage;
   sw e;
   struct hostent *hostent;
   t_socket tmp;
@@ -44,13 +68,11 @@ p_socket socket_init_listen (p_socket s, const s_str *host, u16 port)
     e = errno;
     err_write_1("socket_init_listen: gethostbyname2: ");
     err_puts(strerror(e));
-    assert(!"socket_init_listen: gethostbyname2");
+    assert(! "socket_init_listen: gethostbyname2");
     return NULL;
   }
+  addr = (struct sockaddr *) &addr_storage;
   addr_len = hostent->h_length;
-  addr = alloc(addr_len);
-  if (! addr)
-    return NULL;
   memcpy(addr, hostent->h_addr_list[0], addr_len);
   switch (addr->sa_family) {
   case AF_INET:
@@ -64,7 +86,6 @@ p_socket socket_init_listen (p_socket s, const s_str *host, u16 port)
   default:
     err_puts("socket_init_listen: unknown address family");
     assert(! "socket_init_listen: unknown address family");
-    free(addr);
     return NULL;
   }
   tmp = socket(addr->sa_family, SOCK_STREAM, 0);
@@ -73,7 +94,6 @@ p_socket socket_init_listen (p_socket s, const s_str *host, u16 port)
     err_write_1("socket_init_listen: socket: ");
     err_puts(strerror(e));
     assert(! "socket_init_listen: socket");
-    free(addr);
     return NULL;
   }
   if (bind(tmp, addr, addr_len) < 0) {
@@ -82,10 +102,8 @@ p_socket socket_init_listen (p_socket s, const s_str *host, u16 port)
     err_puts(strerror(e));
     assert(! "socket_init_listen: bind");
     socket_clean(&tmp);
-    free(addr);
     return NULL;
   }
-  free(addr);
   if (listen(tmp, SOMAXCONN) < 0) {
     e = errno;
     err_write_1("socket_init_listen: listen: ");

@@ -1,0 +1,5 @@
+defmodule S64 do
+
+  def cast = cfn S64 "s64_init_cast" (Result, Sym, Tag)
+
+end

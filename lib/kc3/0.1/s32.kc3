@@ -1,0 +1,5 @@
+defmodule S32 do
+
+  def cast = cfn S32 "s32_init_cast" (Result, Sym, Tag)
+
+end

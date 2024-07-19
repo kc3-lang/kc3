@@ -675,8 +675,14 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
       if (a->data.s32 < S32_MIN - b->data.s8 ||
           a->data.s32 > S32_MAX - b->data.s8)
         return tag_init_s64(dest, (s64) a->data.s32 + (s64) b->data.s8);
-      else
+      else if (a->data.s32 < S16_MIN - b->data.s8 ||
+               a->data.s32 > S16_MAX - b->data.s8)
         return tag_init_s32(dest, a->data.s32 + (s32) b->data.s8);
+      else if (a->data.s32 < S8_MIN - b->data.s8 ||
+               a->data.s32 > S8_MAX - b->data.s8)
+        return tag_init_s16(dest, a->data.s32 + (s32) b->data.s8);
+      else
+        return tag_init_s8(dest, a->data.s32 + (s32) b->data.s8);
     case TAG_S16:
       if (a->data.s32 < S32_MIN - b->data.s16 ||
           a->data.s32 > S32_MAX - b->data.s16)

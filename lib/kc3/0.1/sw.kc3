@@ -1,0 +1,5 @@
+defmodule Sw do
+
+  def cast = cfn Sw "sw_init_cast" (Result, Sym, Tag)
+
+end

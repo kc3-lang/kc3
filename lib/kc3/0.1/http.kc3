@@ -1,0 +1,13 @@
+defmodule Socket do
+
+  dlopen(__DIR__ + "http.so")
+
+  defstruct [fd: (S32) 0]
+
+  def accept = cfn Socket "socket_init_accept" (Result, Socket)
+
+  def close = cfn Void "socket_close" (Socket)
+
+  def listen = cfn Socket "socket_init_listen" (Result, Str, U16)
+
+end

@@ -42,7 +42,9 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   num_args = list_length(args);
   arity = cfn->arity - (cfn->arg_result ? 1 : 0);
   if (arity != num_args) {
-    err_write_1("cfn_apply: invalid number of arguments, expected ");
+    err_write_1("cfn_apply: ");
+    err_inspect_str(&cfn->name->str);
+    err_write_1(": invalid number of arguments, expected ");
     err_inspect_u8(&arity);
     err_write_1(", have ");
     err_inspect_sw(&num_args);

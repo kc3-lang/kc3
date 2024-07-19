@@ -29,10 +29,10 @@ test_ok() {
 }
 
 if [ $# = 0 ]; then
-    if [ "x${IKC3_TEST_TARGETS}" = "x" ]; then
+    if [ "x${IKC3_TEST}" = "x" ]; then
         TARGETS="$(ls -1 *.in | sed -e 's/[.]in$//')"
     else
-        TARGETS="${IKC3_TEST_TARGETS}"
+        TARGETS="${IKC3_TEST}"
     fi
 else
     TARGETS="$@"

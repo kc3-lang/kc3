@@ -15,10 +15,11 @@
 
 #include "types.h"
 
-/* Stack-allocation compatible functions, call socket_clean after
-   use. */
-void     socket_clean (p_socket s);
-p_socket socket_init_listen (p_socket s, const s_str *host, u16 port);
+/* Stack-allocation compatible functions. */
 p_socket socket_init_accept (p_socket s, p_socket listening);
+p_socket socket_init_listen (p_socket s, const s_str *host, u16 port);
+
+/* Operators. */
+void socket_close (p_socket s);
 
 #endif /* SOCKET_H */
