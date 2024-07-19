@@ -15,7 +15,6 @@
 
 #include "types.h"
 
-int * socket_init_listen(int *s, const struct sockaddr *addr, socklen_t addr_len);
-buf * socket_to_buf(int *s, s_buf *dest);
+int * socket_init_listen(int *s, const s_str *host, u16 port);
 
 #endif /* SOCKET_H */

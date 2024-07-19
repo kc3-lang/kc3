@@ -14,6 +14,3 @@
 #include "http.h"
 #include "socket.h"
 
-buf *socket_to_buf(int socket) {
-    //listen on the socket first
-}
