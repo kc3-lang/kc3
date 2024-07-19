@@ -21,10 +21,10 @@ CONFIG_H_PREFIX=KC3_HTTP_
 
 . ../config.subr
 
-LIB=libekc3.la
-LIB_ASAN=libekc3_asan.la
-LIB_COV=libekc3_cov.la
-LIB_DEBUG=libekc3_debug.la
+LIB=libkc3_http.la
+LIB_ASAN=libkc3_http_asan.la
+LIB_COV=libkc3_http_cov.la
+LIB_DEBUG=libkc3_http_debug.la
 
 echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}

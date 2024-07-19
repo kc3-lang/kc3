@@ -13,6 +13,7 @@
 #ifndef LIBKC3_KC3_H
 #define LIBKC3_KC3_H
 
+#include "alloc.h"
 #include "arg.h"
 #include "array.h"
 #include "assert.h"

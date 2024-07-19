@@ -15,6 +15,10 @@
 
 #include <libkc3/types.h>
 
-typedef s_list *p_http;
+/* 1 */
+typedef int       t_socket;
+
+/* 2 */
+typedef t_socket *p_socket;
 
 #endif /* HTTP_TYPES_H */
