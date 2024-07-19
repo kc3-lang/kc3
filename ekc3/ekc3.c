@@ -378,6 +378,7 @@ s_str * ekc3_inspect_block (const s_block *block, s_str *dest)
 {
   uw i = 0;
   s_tag result = {0};
+  const s_sym *type;
   assert(block);
   while (i < block->count) {
     tag_clean(&result);
@@ -391,7 +392,8 @@ s_str * ekc3_inspect_block (const s_block *block, s_str *dest)
       return NULL;
     break;
   default:
-    if (! str_init_cast(dest, &g_sym_Str, &result))
+    type = &g_sym_Str;
+    if (! str_init_cast(dest, &type, &result))
       return NULL;
     break;
   }

@@ -862,7 +862,6 @@ KC3_OTHER_SOURCES = \
 	"img/fly-dead.png" \
 	"img/fly-noto.png" \
 	"img/iris-c3-004.jpeg" \
-	"img/iris-c3-004.png" \
 	"img/mandelbrot_f128_limit.1.png" \
 	"img/mandelbrot_f128_limit.2.png" \
 	"img/mandelbrot_f128_limit.3.png" \
@@ -888,6 +887,7 @@ KC3_OTHER_SOURCES = \
 	"lib/kc3/0.1/gl/vec2.kc3" \
 	"lib/kc3/0.1/gl/vec3.kc3" \
 	"lib/kc3/0.1/gl/vertex.kc3" \
+	"lib/kc3/0.1/http.kc3" \
 	"lib/kc3/0.1/integer.facts" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
@@ -897,11 +897,14 @@ KC3_OTHER_SOURCES = \
 	"lib/kc3/0.1/ptr_free.facts" \
 	"lib/kc3/0.1/ratio.facts" \
 	"lib/kc3/0.1/s16.facts" \
-	"lib/kc3/0.1/s32.facts" \
+	"lib/kc3/0.1/s16.kc3" \
+	"lib/kc3/0.1/s32.kc3" \
 	"lib/kc3/0.1/s64.facts" \
-	"lib/kc3/0.1/s8.facts" \
+	"lib/kc3/0.1/s64.kc3" \
+	"lib/kc3/0.1/s8.kc3" \
+	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/str.facts" \
-	"lib/kc3/0.1/sw.facts" \
+	"lib/kc3/0.1/sw.kc3" \
 	"lib/kc3/0.1/sym.facts" \
 	"lib/kc3/0.1/u16.facts" \
 	"lib/kc3/0.1/u32.facts" \
@@ -928,170 +931,121 @@ KC3_OTHER_SOURCES = \
 	"test/facts_test_open_file.3.expected.facts" \
 	"test/facts_test_open_file.3.in.facts" \
 	"test/facts_test_save.expected.facts" \
-	"test/ikc3/access.in" \
 	"test/ikc3/access.out.expected" \
 	"test/ikc3/access.ret.expected" \
 	"test/ikc3/array.err.expected" \
-	"test/ikc3/array.in" \
 	"test/ikc3/array.out.expected" \
 	"test/ikc3/array.ret.expected" \
-	"test/ikc3/block.in" \
 	"test/ikc3/block.out.expected" \
 	"test/ikc3/block.ret.expected" \
 	"test/ikc3/bool.err.expected" \
-	"test/ikc3/bool.in" \
 	"test/ikc3/bool.out.expected" \
 	"test/ikc3/bool.ret.expected" \
 	"test/ikc3/call.err.expected" \
-	"test/ikc3/call.in" \
 	"test/ikc3/call.out.expected" \
 	"test/ikc3/call.ret.expected" \
-	"test/ikc3/cast.in" \
 	"test/ikc3/cast.out.expected" \
 	"test/ikc3/cast.ret.expected" \
 	"test/ikc3/character.err.expected" \
-	"test/ikc3/character.in" \
 	"test/ikc3/character.out.expected" \
 	"test/ikc3/character.ret.expected" \
 	"test/ikc3/comment.err.expected" \
-	"test/ikc3/comment.in" \
 	"test/ikc3/comment.out.expected" \
 	"test/ikc3/comment.ret.expected" \
-	"test/ikc3/complex.in" \
 	"test/ikc3/complex.out.expected" \
 	"test/ikc3/complex.ret.expected" \
-	"test/ikc3/def.in" \
 	"test/ikc3/def.out.expected" \
 	"test/ikc3/def.ret.expected" \
-	"test/ikc3/defmodule.in" \
 	"test/ikc3/defmodule.out.expected" \
 	"test/ikc3/defmodule.ret.expected" \
-	"test/ikc3/defoperator.in" \
 	"test/ikc3/defoperator.out.expected" \
 	"test/ikc3/defoperator.ret.expected" \
-	"test/ikc3/defstruct.in" \
 	"test/ikc3/defstruct.out.expected" \
 	"test/ikc3/defstruct.ret.expected" \
 	"test/ikc3/equal.err.expected" \
-	"test/ikc3/equal.in" \
 	"test/ikc3/equal.out.expected" \
 	"test/ikc3/equal.ret.expected" \
 	"test/ikc3/fn.err.expected" \
-	"test/ikc3/fn.in" \
 	"test/ikc3/fn.out.expected" \
 	"test/ikc3/fn.ret.expected" \
 	"test/ikc3/function_call.err.expected" \
 	"test/ikc3/function_call.out.expected" \
 	"test/ikc3/function_call.ret.expected" \
-	"test/ikc3/gl.in" \
 	"test/ikc3/gl.out.expected" \
 	"test/ikc3/gl.ret.expected" \
-	"test/ikc3/globals.in" \
 	"test/ikc3/globals.out.expected" \
 	"test/ikc3/globals.ret.expected" \
 	"test/ikc3/hello.err.expected" \
-	"test/ikc3/hello.in" \
 	"test/ikc3/hello.out.expected" \
 	"test/ikc3/hello.ret.expected" \
 	"test/ikc3/ident.err.expected" \
-	"test/ikc3/ident.in" \
 	"test/ikc3/ident.out.expected" \
 	"test/ikc3/ident.ret.expected" \
-	"test/ikc3/if.in" \
 	"test/ikc3/if.out.expected" \
 	"test/ikc3/if.ret.expected" \
-	"test/ikc3/integer.in" \
 	"test/ikc3/integer.lisp" \
 	"test/ikc3/integer.out.expected" \
 	"test/ikc3/integer.ret.expected" \
-	"test/ikc3/integer_add.in" \
 	"test/ikc3/integer_add.out.expected" \
 	"test/ikc3/integer_add.ret.expected" \
-	"test/ikc3/integer_band.in" \
 	"test/ikc3/integer_band.out.expected" \
 	"test/ikc3/integer_band.ret.expected" \
-	"test/ikc3/integer_bnot.in" \
 	"test/ikc3/integer_bnot.out.expected" \
 	"test/ikc3/integer_bnot.ret.expected" \
-	"test/ikc3/integer_bor-2.in" \
 	"test/ikc3/integer_bor-2.out.expected" \
 	"test/ikc3/integer_bor-2.ret.expected" \
-	"test/ikc3/integer_bxor.in" \
 	"test/ikc3/integer_bxor.out.expected" \
 	"test/ikc3/integer_bxor.ret.expected" \
-	"test/ikc3/integer_div.in" \
 	"test/ikc3/integer_div.out.expected" \
 	"test/ikc3/integer_div.ret.expected" \
-	"test/ikc3/integer_eq.in" \
 	"test/ikc3/integer_eq.out.expected" \
 	"test/ikc3/integer_eq.ret.expected" \
-	"test/ikc3/integer_gt.in" \
 	"test/ikc3/integer_gt.out.expected" \
 	"test/ikc3/integer_gt.ret.expected" \
-	"test/ikc3/integer_lt.in" \
 	"test/ikc3/integer_lt.out.expected" \
 	"test/ikc3/integer_lt.ret.expected" \
-	"test/ikc3/integer_mod-2.in" \
 	"test/ikc3/integer_mod-2.out.expected" \
 	"test/ikc3/integer_mod-2.ret.expected" \
-	"test/ikc3/integer_mul.in" \
 	"test/ikc3/integer_mul.out.expected" \
 	"test/ikc3/integer_mul.ret.expected" \
-	"test/ikc3/integer_neg.in" \
 	"test/ikc3/integer_neg.out.expected" \
 	"test/ikc3/integer_neg.ret.expected" \
-	"test/ikc3/integer_sub.in" \
 	"test/ikc3/integer_sub.out.expected" \
 	"test/ikc3/integer_sub.ret.expected" \
-	"test/ikc3/let.in" \
 	"test/ikc3/let.out.expected" \
 	"test/ikc3/let.ret.expected" \
 	"test/ikc3/list.err.expected" \
-	"test/ikc3/list.in" \
 	"test/ikc3/list.out.expected" \
 	"test/ikc3/list.ret.expected" \
-	"test/ikc3/macro.in" \
 	"test/ikc3/macro.out.expected" \
 	"test/ikc3/macro.ret.expected" \
-	"test/ikc3/map.in" \
 	"test/ikc3/map.out.expected" \
 	"test/ikc3/map.ret.expected" \
 	"test/ikc3/op.err.expected" \
-	"test/ikc3/op.in" \
 	"test/ikc3/op.out.expected" \
 	"test/ikc3/op.ret.expected" \
 	"test/ikc3/plist.err.expected" \
-	"test/ikc3/plist.in" \
 	"test/ikc3/plist.out.expected" \
 	"test/ikc3/plist.ret.expected" \
-	"test/ikc3/puts.in" \
 	"test/ikc3/puts.out.expected" \
 	"test/ikc3/puts.ret.expected" \
-	"test/ikc3/quote.in" \
 	"test/ikc3/quote.out.expected" \
 	"test/ikc3/quote.ret.expected" \
-	"test/ikc3/ratio.in" \
 	"test/ikc3/ratio.out.expected" \
 	"test/ikc3/ratio.ret.expected" \
 	"test/ikc3/str.err.expected" \
-	"test/ikc3/str.in" \
 	"test/ikc3/str.out.expected" \
 	"test/ikc3/str.ret.expected" \
-	"test/ikc3/struct.in" \
 	"test/ikc3/struct.out.expected" \
 	"test/ikc3/struct.ret.expected" \
 	"test/ikc3/sym.err.expected" \
-	"test/ikc3/sym.in" \
 	"test/ikc3/sym.out.expected" \
 	"test/ikc3/sym.ret.expected" \
 	"test/ikc3/tuple.err.expected" \
-	"test/ikc3/tuple.in" \
 	"test/ikc3/tuple.out.expected" \
 	"test/ikc3/tuple.ret.expected" \
-	"test/ikc3/var.in" \
 	"test/ikc3/var.out.expected" \
 	"test/ikc3/var.ret.expected" \
-	"test/ikc3/void.in" \
 	"test/ikc3/void.out.expected" \
 	"test/ikc3/void.ret.expected" \
 	"test/ikc3_test" \
