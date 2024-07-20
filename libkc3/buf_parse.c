@@ -532,8 +532,6 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
         goto clean;
       }
     }
-    else
-      buf->line++;
     result += r;
     if ((r = buf_parse_comments(buf)) < 0) {
       err_puts("buf_parse_block_inner: buf_parse_comments 2");
