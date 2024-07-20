@@ -539,26 +539,6 @@ s_tag * tag_init_time (s_tag *tag)
   return time_to_tag(&time, tag);
 }
 
-s_str * tag_inspect (const s_tag *tag, s_str *dest)
-{
-  s_buf buf;
-  sw size;
-  assert(tag);
-  assert(dest);
-  if ((size = buf_inspect_tag_size(tag)) < 0) {
-    err_puts("tag_inspect: size error");
-    assert(! "tag_inspect: size error");
-    return NULL;
-  }
-  buf_init_alloc(&buf, size);
-  if (buf_inspect_tag(&buf, tag) != size) {
-    err_puts("tag_inspect: inspect error");
-    assert(! "tag_inspect: inspect error");
-    return NULL;
-  }
-  return buf_to_str(&buf, dest);
-}
-
 s_tag * tag_integer_reduce (s_tag *tag)
 {
   uw bytes;

@@ -27,6 +27,7 @@ s_buf * buf_save_init (s_buf *buf, s_buf_save *save)
 {
   assert(buf);
   assert(save);
+  save->line = buf->line;
   save->rpos = buf->rpos;
   save->wpos = buf->wpos;
   save->next = buf->save;
@@ -67,6 +68,7 @@ s_buf * buf_save_restore_rpos (s_buf *buf, const s_buf_save *save)
   assert(buf);
   assert(save);
   assert(buf->save == save);
+  buf->line = save->line;
   buf->rpos = save->rpos;
   return buf;
 }
@@ -76,6 +78,7 @@ s_buf * buf_save_restore_wpos (s_buf *buf, const s_buf_save *save)
   assert(buf);
   assert(save);
   assert(buf->save == save);
+  buf->line = save->line;
   buf->wpos = save->wpos;
   return buf;
 }

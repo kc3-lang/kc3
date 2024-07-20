@@ -115,8 +115,6 @@ const s_sym g_sym_x               = {{{NULL},  1, {"x"}}};
 static s_sym_list * g_sym_list = NULL;
 
 void         sym_delete (s_sym *sym);
-s_str *      sym_inspect_reserved (const s_sym *sym, s_str *dest);
-sw           sym_inspect_reserved_size (const s_sym *sym);
 s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
                            s_sym_list *next);
 
@@ -418,21 +416,6 @@ const s_sym ** sym_init_str (const s_sym **sym, const s_str *src)
   return sym;
 }
 
-s_str * sym_inspect (const s_sym *sym, s_str *dest)
-{
-  sw size;
-  s_buf tmp;
-  size = buf_inspect_sym_size(&sym);
-  if (size < 0) {
-    assert(! "error");
-    return NULL;
-  }
-  buf_init_alloc(&tmp, size);
-  buf_inspect_sym(&tmp, &sym);
-  assert(tmp.wpos == tmp.size);
-  return buf_to_str(&tmp, dest);
-}
-
 bool sym_register (const s_sym *sym, s_sym *free_sym)
 {
   s_sym_list *tmp;
@@ -613,7 +596,7 @@ bool sym_must_clean (const s_sym *sym, bool *must_clean)
     return true;
   }
   if (sym == &g_sym_Sym) {
-    *must_clean = true;
+    *must_clean = false;
     return true;
   }
   if (sym == &g_sym_Sw) {
@@ -1144,7 +1127,7 @@ bool sym_type_size (const s_sym *type, uw *dest)
     return true;
   }
   if (type == &g_sym_Sym) {
-    *dest = sizeof(s_sym *);
+    *dest = sizeof(p_sym);
     return true;
   }
   if (type == &g_sym_Tag) {

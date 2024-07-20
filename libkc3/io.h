@@ -29,6 +29,7 @@
 sw err_flush (void);
 sw err_inspect (const s_tag *x);
 sw err_puts (const char *x);
+sw err_write (const void *x, uw len);
 sw err_write_1 (const char *x);
 sw err_write_str (const s_str *x);
 
@@ -36,11 +37,13 @@ sw err_write_str (const s_str *x);
 sw io_flush (void);
 sw io_inspect (const s_tag *x);
 sw io_puts (const char *x);
+sw io_write (const void *x, uw len);
 sw io_write_1 (const char *x);
 sw io_write_str (const s_str *x);
 
 PROTOTYPES_ERR_IO_INSPECT(array,      const s_array *);
 PROTOTYPES_ERR_IO_INSPECT(bool,       const bool *);
+PROTOTYPES_ERR_IO_INSPECT(buf,        const s_buf *);
 PROTOTYPES_ERR_IO_INSPECT(call,       const s_call *);
 PROTOTYPES_ERR_IO_INSPECT(cfn,        const s_cfn *);
 PROTOTYPES_ERR_IO_INSPECT(character,  const character *);

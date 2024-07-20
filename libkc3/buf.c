@@ -162,6 +162,8 @@ sw buf_ignore_spaces (s_buf *buf)
     if ((r = buf_ignore(buf, csize)) < 0)
       return r;
     result += csize;
+    if (c == '\n')
+      buf->line++;
   }
   if (! result && r < 0)
     return r;
@@ -191,7 +193,7 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
   s_buf tmp = {0};
   assert(buf);
   tmp.free = p_free;
-  tmp.line = -1;
+  tmp.line = 0;
   tmp.ptr.pchar = p;
   tmp.size = size;
   *buf = tmp;
@@ -947,6 +949,13 @@ sw buf_vf (s_buf *buf, const char *fmt, va_list ap)
   r = buf_write_str(buf, str);
   str_delete(str);
   return r;
+}
+
+sw buf_write (s_buf *buf, const void *data, uw len)
+{
+  s_str str;
+  str_init(&str, NULL, len, data);
+  return buf_write_str(buf, &str);
 }
 
 sw buf_write_1 (s_buf *buf, const char *p)

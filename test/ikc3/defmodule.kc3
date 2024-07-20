@@ -34,3 +34,13 @@ quote Plop.b
 Plop.b
 quote Plop.b()
 Plop.b()
+quote defmodule S32 do
+
+  def cast = cfn S32 "s32_init_cast" (Result, Sym, Tag)
+
+end
+defmodule S32 do
+
+  def cast = cfn S32 "s32_init_cast" (Result, Sym, Tag)
+
+end

@@ -1,0 +1,194 @@
+--- server.out.expected	Fri Jul 19 23:18:10 2024
++++ server.out	Sat Jul 20 18:56:53 2024
+@@ -0,0 +1,186 @@
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++buf_parse_block_inner: line 6: missing separator: 
++ S32 do
++
++  def cast 
++buf_parse_block: buf_parse_block_inner
++tag_to_ffi_pointer: cannot cast Ident to Block
++env_module_load: S32: env_load
++env_module_ensure_loaded: module not found: S32
++env_eval_call: could not resolve call S32.cast
++env_eval_call_arguments: invalid argument: [fd: (S32) -1]
++Segmentation fault (core dumped) 
+--- server.ret.expected	Sat Jul 20 00:53:32 2024
++++ server.ret	Sat Jul 20 18:56:53 2024
+@@ -1 +1 @@
+-0
++139

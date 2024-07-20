@@ -28,8 +28,8 @@
       s_str str_expected;                                              \
       s_str str_test;                                                  \
       test_ko();                                                       \
-      tag_inspect(tag_expected, &str_expected);                        \
-      tag_inspect(tag_test, &str_test);                                \
+      inspect_tag(tag_expected, &str_expected);                        \
+      inspect_tag(tag_test, &str_test);                                \
       printf("\n%sAssertion failed in %s:%d %s\n"                      \
              "%s == %s\n"                                              \
              "Expected %s got %s.%s\n",                                \

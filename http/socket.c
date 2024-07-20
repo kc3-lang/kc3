@@ -23,7 +23,7 @@ void socket_close (p_socket s)
 {
   assert(s);
   close(*s);
-  *s = 0;
+  *s = -1;
 }
 
 p_socket socket_init_accept (p_socket s, p_socket listening)
@@ -101,7 +101,6 @@ p_socket socket_init_listen (p_socket s, const s_str *host, u16 port)
     err_write_1("socket_init_listen: bind: ");
     err_puts(strerror(e));
     assert(! "socket_init_listen: bind");
-    socket_clean(&tmp);
     return NULL;
   }
   if (listen(tmp, SOMAXCONN) < 0) {
@@ -109,7 +108,6 @@ p_socket socket_init_listen (p_socket s, const s_str *host, u16 port)
     err_write_1("socket_init_listen: listen: ");
     err_puts(strerror(e));
     assert(! "socket_init_listen: listen");
-    socket_clean(&tmp);
     free(addr);
     return NULL;
   }

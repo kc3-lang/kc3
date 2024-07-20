@@ -201,6 +201,7 @@ typedef u32           character;
 typedef s_tag       **p_facts_spec;
 typedef s_tag        *t_facts_spec[];
 typedef SHA1_CTX      t_hash;
+typedef const s_sym  *p_sym;
 typedef const s_tag  *p_tag;
 typedef u64           t_skiplist_height;
 
@@ -228,6 +229,7 @@ struct block {
 
 struct buf_save {
   s_buf_save *next;
+  uw line;
   uw rpos;
   uw wpos;
 };

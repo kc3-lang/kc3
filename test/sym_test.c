@@ -25,15 +25,15 @@
     TEST_EQ(sym_1(test), sym_1(test));                                 \
   } while (0)
 
-#define SYM_TEST_INSPECT(test, result)                                 \
+#define INSPECT_TEST_SYM(test, result)                                 \
   do {                                                                 \
     const s_sym *sym;                                                  \
     s_str str;                                                         \
     assert(test);                                                      \
     assert(result);                                                    \
-    test_context("sym_inspect(" # test ") -> " # result);              \
+    test_context("inspect_sym(" # test ") -> " # result);              \
     sym = sym_1(test);                                                 \
-    TEST_EQ(sym_inspect(sym, &str), &str);                             \
+    TEST_EQ(inspect_sym(sym, &str), &str);                             \
     TEST_STRNCMP(str.ptr.p, (result), str.size);                       \
     str_clean(&str);                                                   \
     test_context(NULL);                                                \
@@ -41,12 +41,10 @@
 
 TEST_CASE_PROTOTYPE(sym_1);
 const s_sym * sym_test_1_test (const s8 *p);
-TEST_CASE_PROTOTYPE(sym_inspect);
 
 void sym_test (void)
 {
   TEST_CASE_RUN(sym_1);
-  TEST_CASE_RUN(sym_inspect);
 }
 
 TEST_CASE(sym_1)
@@ -112,42 +110,3 @@ TEST_CASE(sym_1)
   SYM_TEST_1("éoà \n\r\t\v\"");
 }
 TEST_CASE_END(sym_1)
-
-TEST_CASE(sym_inspect)
-{
-  SYM_TEST_INSPECT("", ":\"\"");
-  SYM_TEST_INSPECT(" ", ":\" \"");
-  SYM_TEST_INSPECT("\n", ":\"\\n\"");
-  SYM_TEST_INSPECT("\r", ":\"\\r\"");
-  SYM_TEST_INSPECT("\t", ":\"\\t\"");
-  SYM_TEST_INSPECT("\v", ":\"\\v\"");
-  SYM_TEST_INSPECT("\"", ":\"\\\"\"");
-  SYM_TEST_INSPECT(".", ":\".\"");
-  SYM_TEST_INSPECT("..", ":\"..\"");
-  SYM_TEST_INSPECT("...", ":\"...\"");
-  SYM_TEST_INSPECT(".. .", ":\".. .\"");
-  SYM_TEST_INSPECT("t", ":t");
-  SYM_TEST_INSPECT("T", "T");
-  SYM_TEST_INSPECT("test", ":test");
-  SYM_TEST_INSPECT("Test", "Test");
-  SYM_TEST_INSPECT("123", ":123");
-  SYM_TEST_INSPECT("test123", ":test123");
-  SYM_TEST_INSPECT("Test123", "Test123");
-  SYM_TEST_INSPECT("test 123", ":\"test 123\"");
-  SYM_TEST_INSPECT("Test 123", ":\"Test 123\"");
-  SYM_TEST_INSPECT("test123.test456", ":\"test123.test456\"");
-  SYM_TEST_INSPECT("Test123.Test456", "Test123.Test456");
-  SYM_TEST_INSPECT("test123(test456)", ":\"test123(test456)\"");
-  SYM_TEST_INSPECT("Test123(Test456)", ":\"Test123(Test456)\"");
-  SYM_TEST_INSPECT("test123{test456}", ":\"test123{test456}\"");
-  SYM_TEST_INSPECT("Test123{Test456}", ":\"Test123{Test456}\"");
-  SYM_TEST_INSPECT("É", "É");
-  SYM_TEST_INSPECT("Éo", "Éo");
-  SYM_TEST_INSPECT("Éoà \n\r\t\v\"",
-                   ":\"Éoà \\n\\r\\t\\v\\\"\"");
-  SYM_TEST_INSPECT("é", ":é");
-  SYM_TEST_INSPECT("éo", ":éo");
-  SYM_TEST_INSPECT("éoà \n\r\t\v\"",
-                   ":\"éoà \\n\\r\\t\\v\\\"\"");
-}
-TEST_CASE_END(sym_inspect)

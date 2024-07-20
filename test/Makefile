@@ -73,6 +73,9 @@ gdb_test: debug
 gdb_test_ekc3:
 	cd ekc3 && gdb ../../kc3s/.libs/kc3s_debug
 
+gdb_test_http:
+	cd http && gdb ../../kc3s/.libs/kc3s_debug
+
 lldb_test: debug
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
 
@@ -107,6 +110,18 @@ test_ekc3_cov:
 
 test_ekc3_debug:
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./ekc3_test
+
+test_http:
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./http_test
+
+test_http_asan:
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./http_test
+
+test_http_cov:
+	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./http_test
+
+test_http_debug:
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./http_test
 
 test_ikc3:
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test

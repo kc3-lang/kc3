@@ -8,6 +8,7 @@ defmodule Socket do
 
   def close = cfn Void "socket_close" (Socket)
 
+  # listen : Str host, U16 port
   def listen = cfn Socket "socket_init_listen" (Result, Str, U16)
 
 end

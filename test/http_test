@@ -1,5 +1,5 @@
 #!/bin/sh
-cd "$(dirname $0)/ikc3" || exit
+cd "$(dirname $0)/http" || exit
 
 TEST_COLOR_KO="[0;91m"
 TEST_COLOR_OK="[0;92m"
@@ -18,55 +18,45 @@ fi
 
 test_ko() {
     printf "%s" "${TEST_COLOR_KO}F${TEST_COLOR_RESET}"
-    echo $@ >> .test_ko
-    echo $@ >> .test
+    TEST_KO=$(($TEST_KO + 1))
+    TEST_COUNT=$(($TEST_COUNT + 1))
 }
 
 test_ok() {
     printf "%s" "${TEST_COLOR_OK}.${TEST_COLOR_RESET}"
-    echo $@ >> .test_ok
-    echo $@ >> .test
+    TEST_OK=$(($TEST_OK + 1))
+    TEST_COUNT=$(($TEST_COUNT + 1))
 }
 
 if [ $# = 0 ]; then
-    if [ "x${IKC3_TEST}" = "x" ]; then
+    if [ "x${EKC3_TEST_TARGETS}" = "x" ]; then
         TARGETS="$(ls -1 *.kc3 | sed -e 's/[.]kc3$//')"
     else
-        TARGETS="${IKC3_TEST}"
+        TARGETS="${EKC3_TEST_TARGETS}"
     fi
 else
     TARGETS="$@"
 fi
 
-rm -f .test .test_ko .test_ok
-touch .test .test_ko .test_ok
 for TARGET in $TARGETS; do
-    (
-        RESULT=test_ok
-        $IKC3 --load ${TARGET}.kc3 --quit > ${TARGET}.out 2>&1
-        echo $? > ${TARGET}.ret
-        if ! diff -abu ${TARGET}.out.expected ${TARGET}.out \
-             > ${TARGET}.diff
-        then
-            RESULT=test_ko
-        fi
-        if ! diff -abu ${TARGET}.ret.expected ${TARGET}.ret \
-             >> ${TARGET}.diff
-        then
-            RESULT=test_ko
-        fi
-        if [ "x$RESULT" = "xtest_ok" ]; then
-            rm ${TARGET}.diff
-            test_ok ${TARGET}
-        else
-            test_ko ${TARGET}
-        fi
-    ) &
+    RESULT=test_ok
+    $IKC3 --load ${TARGET}.kc3 --quit > ${TARGET}.out 2>&1
+    echo $? > ${TARGET}.ret
+    if ! diff -abu ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff
+    then
+        RESULT=test_ko
+    fi
+    if ! diff -abu ${TARGET}.ret.expected ${TARGET}.ret >> ${TARGET}.diff
+    then
+        RESULT=test_ko
+    fi
+    if [ "x$RESULT" = "xtest_ok" ]; then
+        rm ${TARGET}.diff
+        test_ok
+    else
+        test_ko
+    fi
 done
-wait
-TEST_COUNT=$(echo $(wc -l .test) | cut -f 1 -d ' ')
-TEST_KO=$(echo $(wc -l .test_ko) | cut -f 1 -d ' ')
-TEST_OK=$(echo $(wc -l .test_ok) | cut -f 1 -d ' ')
 echo
 DIFFS="$(for TARGET in $TARGETS; do
     if [ -f "${TARGET}.diff" ]; then

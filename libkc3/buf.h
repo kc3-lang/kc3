@@ -90,6 +90,7 @@ sw      buf_str_to_hex_size (const s_str *src);
 sw      buf_u8_to_hex (s_buf *buf, const u8 *x);
 sw      buf_u8_to_hex_size (const u8 *x);
 sw      buf_vf (s_buf *buf, const char *fmt, va_list ap);
+sw      buf_write (s_buf *buf, const void *data, uw len);
 sw      buf_write_1 (s_buf *buf, const char *p);
 sw      buf_write_character_utf8 (s_buf *buf, character c);
 sw      buf_write_f32 (s_buf *buf, f32 x);

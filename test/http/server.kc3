@@ -1,0 +1,2 @@
+server = Socket.listen("localhost", 8000)
+client = Socket.accept(server)

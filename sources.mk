@@ -335,6 +335,8 @@ KC3_C_SOURCES = \
 	"libkc3/hash.h" \
 	"libkc3/ident.c" \
 	"libkc3/ident.h" \
+	"libkc3/inspect.c" \
+	"libkc3/inspect.h" \
 	"libkc3/integer.c" \
 	"libkc3/integer.h" \
 	"libkc3/io.c" \
@@ -931,6 +933,8 @@ KC3_OTHER_SOURCES = \
 	"test/facts_test_open_file.3.expected.facts" \
 	"test/facts_test_open_file.3.in.facts" \
 	"test/facts_test_save.expected.facts" \
+	"test/http/server.kc3.ret.expected" \
+	"test/http/server.out.expected" \
 	"test/ikc3/access.out.expected" \
 	"test/ikc3/access.ret.expected" \
 	"test/ikc3/array.err.expected" \

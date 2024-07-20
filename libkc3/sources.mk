@@ -107,6 +107,7 @@ HEADERS = \
 	"frame.h" \
 	"hash.h" \
 	"ident.h" \
+	"inspect.h" \
 	"integer.h" \
 	"io.h" \
 	"kc3.h" \
@@ -268,6 +269,7 @@ SOURCES = \
 	"frame.c" \
 	"hash.c" \
 	"ident.c" \
+	"inspect.c" \
 	"integer.c" \
 	"io.c" \
 	"kc3.c" \
@@ -538,6 +540,7 @@ LO_SOURCES = \
 	"frame.c" \
 	"hash.c" \
 	"ident.c" \
+	"inspect.c" \
 	"integer.c" \
 	"io.c" \
 	"kc3.c" \

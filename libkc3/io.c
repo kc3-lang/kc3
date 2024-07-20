@@ -52,6 +52,13 @@ sw err_inspect (const s_tag *x)
   return err_inspect_tag(x);
 }
 
+sw err_inspect_buf (const s_buf *buf)
+{
+  uw pos;
+  pos = (buf->rpos < 20) ? 0 : buf->rpos - 20;
+  return err_write(buf->ptr.pchar + pos, buf->rpos - pos);
+}
+
 sw err_inspect_tag_type (e_tag_type type)
 {
   return err_write_1(tag_type_to_string(type));
@@ -69,6 +76,14 @@ sw err_puts (const char *x)
   result += r;
   buf_flush(&g_kc3_env.err);
   return result;
+}
+
+sw err_write (const void *x, uw len)
+{
+  sw r;
+  if ((r = buf_write(&g_kc3_env.err, x, len)) > 0)
+    buf_flush(&g_kc3_env.err);
+  return r;
 }
 
 sw err_write_1 (const char *x)
@@ -106,6 +121,13 @@ sw io_inspect (const s_tag *x)
   return result;
 }
 
+sw io_inspect_buf (const s_buf *buf)
+{
+  uw pos;
+  pos = (buf->rpos < 20) ? 0 : buf->rpos - 20;
+  return io_write(buf->ptr.pchar + pos, buf->rpos - pos);
+}
+
 sw io_inspect_tag_type (e_tag_type type)
 {
   return io_write_1(tag_type_to_string(type));
@@ -123,6 +145,14 @@ sw io_puts (const char *x)
   result += r;
   buf_flush(&g_kc3_env.out);
   return result;
+}
+
+sw io_write (const void *x, uw len)
+{
+  sw r;
+  if ((r = buf_write(&g_kc3_env.out, x, len)) > 0)
+    buf_flush(&g_kc3_env.out);
+  return r;
 }
 
 sw io_write_1 (const char *x)

@@ -158,6 +158,10 @@ gdb_test_ekc3:
 	${MAKE} debug
 	${MAKE} -C test gdb_test_ekc3
 
+gdb_test_http:
+	${MAKE} debug
+	${MAKE} -C test gdb_test_http
+
 gen:
 	${MAKE} -C libkc3 gen
 
@@ -280,16 +284,60 @@ test_gcovr:
 	${MAKE} test_ekc3_cov
 	${MAKE} gcovr
 
-test_ikc3: build
+test_http:
+	${MAKE} -C libtommath build
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C http build
+	${MAKE} -C test test_http
+
+test_http_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C http asan
+	${MAKE} -C test test_http_asan
+
+test_http_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C kc3s cov
+	${MAKE} -C http cov
+	${MAKE} -C test test_http_cov
+
+test_http_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C http debug
+	${MAKE} -C test test_http_debug
+
+test_ikc3:
+	${MAKE} -C libtommath build
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
 	${MAKE} -C test test_ikc3
 
-test_ikc3_asan: asan
+test_ikc3_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
 	${MAKE} -C test test_ikc3_asan
 
-test_ikc3_cov: cov
+test_ikc3_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
 	${MAKE} -C test test_ikc3_cov
 
-test_ikc3_debug: debug
+test_ikc3_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
 	${MAKE} -C test test_ikc3_debug
 
 test_libkc3: build

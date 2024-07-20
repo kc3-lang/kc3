@@ -67,6 +67,7 @@
 #include "frame.h"
 #include "hash.h"
 #include "ident.h"
+#include "inspect.h"
 #include "integer.h"
 #include "io.h"
 #include "kc3_main.h"

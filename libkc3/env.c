@@ -269,7 +269,7 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
   return module;
 }
 
-s_tag * env_defmodule (s_env *env, const s_sym **name,
+s_tag * env_defmodule (s_env *env, const s_sym * const *name,
                        const s_block *block, s_tag *dest)
 {
   const s_sym *module;
@@ -303,10 +303,11 @@ s_tag * env_defmodule (s_env *env, const s_sym **name,
   return result;
 }
 
-s_tag * env_defoperator (s_env *env, const s_sym **name,
-                         const s_sym **sym, const s_tag *symbol_value,
-                         u8 operator_precedence,
-                         const s_sym **operator_associativity,
+s_tag * env_defoperator (s_env *env, const s_sym * const *name,
+                         const s_sym * const *sym,
+                         const s_tag *symbol_value,
+                         u8 op_precedence,
+                         const s_sym * const *op_assoc,
                          s_tag *dest)
 {
   s8 arity;
@@ -319,10 +320,10 @@ s_tag * env_defoperator (s_env *env, const s_sym **name,
   s_tag tag_arity_sym;
   s_tag tag_arity_u8;
   s_tag tag_symbol_value;
-  s_tag tag_operator_precedence_sym;
-  s_tag tag_operator_precedence_u8;
-  s_tag tag_operator_associativity_rel;
-  s_tag tag_operator_associativity_value;
+  s_tag tag_op_precedence_sym;
+  s_tag tag_op_precedence_u8;
+  s_tag tag_op_assoc_rel;
+  s_tag tag_op_assoc_value;
   tag_init_sym(&tag_module_name, env->current_defmodule);
   tag_init_sym(&tag_operator, &g_sym_operator);
   tag_ident.type = TAG_IDENT;
@@ -341,13 +342,13 @@ s_tag * env_defoperator (s_env *env, const s_sym **name,
   };
   tag_init_u8( &tag_arity_u8, arity);
   tag_init_sym(&tag_symbol_value, &g_sym_symbol_value);
-  tag_init_sym(&tag_operator_precedence_sym,
+  tag_init_sym(&tag_op_precedence_sym,
                &g_sym_operator_precedence);
-  tag_init_u8( &tag_operator_precedence_u8, operator_precedence);
-  tag_init_sym(&tag_operator_associativity_rel,
+  tag_init_u8( &tag_op_precedence_u8, op_precedence);
+  tag_init_sym(&tag_op_assoc_rel,
                &g_sym_operator_associativity);
-  tag_init_sym(&tag_operator_associativity_value,
-               *operator_associativity);
+  tag_init_sym(&tag_op_assoc_value,
+               *op_assoc);
   facts_add_tags(&env->facts, &tag_module_name, &tag_operator,
                  &tag_ident);
   facts_replace_tags(&env->facts, &tag_ident, &tag_is_a, &tag_operator);
@@ -357,11 +358,11 @@ s_tag * env_defoperator (s_env *env, const s_sym **name,
   facts_replace_tags(&env->facts, &tag_ident, &tag_symbol_value,
                      symbol_value);
   facts_replace_tags(&env->facts, &tag_ident,
-                     &tag_operator_precedence_sym,
-                     &tag_operator_precedence_u8);
+                     &tag_op_precedence_sym,
+                     &tag_op_precedence_u8);
   facts_replace_tags(&env->facts, &tag_ident,
-                     &tag_operator_associativity_rel,
-                     &tag_operator_associativity_value);
+                     &tag_op_assoc_rel,
+                     &tag_op_assoc_value);
   *dest = tag_ident;
   return dest;
 }
