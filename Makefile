@@ -186,6 +186,10 @@ install:
 	${MAKE} -C ekc3 install
 	${MAKE} -C libkc3_window install
 
+lib_links:
+	ln -sf ../../../ekc3/.libs/libekc3.so lib/kc3/0.1/ekc3.so
+	ln -sf ../../../http/.libs/libkc3_http.so lib/kc3/0.1/http.so
+
 libkc3_gcovr:
 	${MAKE} clean_cov
 	${MAKE} libkc3_test_cov
