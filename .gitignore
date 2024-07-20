@@ -93,6 +93,10 @@ test/facts_test_log_remove.facts
 test/facts_test_open_file.1.facts
 test/facts_test_open_file.3.facts
 test/facts_test_save.facts
+test/http/*.diff
+test/http/*.err
+test/http/*.out
+test/http/*.ret
 test/ikc3/.ikc3_history
 test/ikc3/*.diff
 test/ikc3/*.err

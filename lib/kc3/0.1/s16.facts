@@ -2,4 +2,4 @@
   version: 1}
 replace {S16, :is_a, :module}
 replace {S16, :symbol, S16.cast}
-replace {S16.cast, :symbol_value, cfn S16 "s16_init_cast" (Result, Tag)}
+replace {S16.cast, :symbol_value, cfn S16 "s16_init_cast" (Result, Sym, Tag)}

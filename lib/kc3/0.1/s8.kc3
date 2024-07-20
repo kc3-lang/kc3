@@ -1,5 +1,0 @@
-defmodule S8 do
-
-  def cast = cfn S8 "s8_init_cast" (Result, Sym, Tag)
-
-end

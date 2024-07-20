@@ -1,5 +1,0 @@
-defmodule S16 do
-
-  def cast = cfn S16 "s16_init_cast" (Result, Sym, Tag)
-
-end
