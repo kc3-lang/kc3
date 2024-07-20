@@ -108,7 +108,6 @@ p_socket socket_init_listen (p_socket s, const s_str *host, u16 port)
     err_write_1("socket_init_listen: listen: ");
     err_puts(strerror(e));
     assert(! "socket_init_listen: listen");
-    free(addr);
     return NULL;
   }
   *s = tmp;
