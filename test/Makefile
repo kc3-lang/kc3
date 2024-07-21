@@ -19,6 +19,10 @@ CLEANFILES = \
 	ekc3/*.ret \
 	*.gcno \
 	*.html \
+	http/*.diff \
+	http/*.err \
+	http/*.out \
+	http/*.ret \
 	*.lo \
 	*.o \
 	.libs \

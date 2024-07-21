@@ -1,0 +1,8 @@
+defmodule Socket.Buf do
+
+  defstruct [buf_rw: %BufRW{},
+             sockfd: S32,
+             addr: %Socket.Addr{},
+             addr_len: U32]
+
+end

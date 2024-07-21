@@ -80,8 +80,10 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
   if ((r = buf_write_str(&out, prefix)) < 0)
     goto error;
   while ((r = buf_read_character_utf8(&in, &c)) > 0) {
-    if (c == '.')
+    if (c == '.') {
+      b = c;
       c = '/';
+    }
     else if (character_is_uppercase(c)) {
       if (character_is_lowercase(b)) {
         if ((r = buf_write_1(&out, "_")) < 0)

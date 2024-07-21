@@ -55,7 +55,7 @@ sw err_inspect (const s_tag *x)
 sw err_inspect_buf (const s_buf *buf)
 {
   uw pos;
-  pos = (buf->rpos < 20) ? 0 : buf->rpos - 20;
+  pos = (buf->rpos < 40) ? 0 : buf->rpos - 40;
   return err_write(buf->ptr.pchar + pos, buf->rpos - pos);
 }
 
@@ -124,7 +124,7 @@ sw io_inspect (const s_tag *x)
 sw io_inspect_buf (const s_buf *buf)
 {
   uw pos;
-  pos = (buf->rpos < 20) ? 0 : buf->rpos - 20;
+  pos = (buf->rpos < 40) ? 0 : buf->rpos - 40;
   return io_write(buf->ptr.pchar + pos, buf->rpos - pos);
 }
 

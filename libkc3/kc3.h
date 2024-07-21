@@ -44,6 +44,7 @@
 #include "buf_parse_u32.h"
 #include "buf_parse_u64.h"
 #include "buf_parse_uw.h"
+#include "buf_rw.h"
 #include "buf_save.h"
 #include "call.h"
 #include "ceiling.h"

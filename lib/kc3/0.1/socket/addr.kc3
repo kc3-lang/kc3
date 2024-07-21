@@ -1,0 +1,5 @@
+defmodule Socket.Addr do
+
+  defstruct [data: (U8[256]) {}]
+
+end

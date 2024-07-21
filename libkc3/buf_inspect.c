@@ -1845,9 +1845,16 @@ sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym)
   if ((r = buf_write_1(buf, "(")) <= 0)
     goto clean;
   result += r;
-  if ((r = buf_inspect_sym(buf, &sym)) <= 0)
-    goto clean;
-  result += r;
+  if (sym_is_array_type(sym)) {
+    if ((r = buf_write_str(buf, &sym->str)) <= 0)
+      goto clean;
+    result += r;
+  }
+  else {
+    if ((r = buf_inspect_sym(buf, &sym)) <= 0)
+      goto clean;
+    result += r;
+  }
   if ((r = buf_write_1(buf, ")")) <= 0)
     goto clean;
   result += r;

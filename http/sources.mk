@@ -2,9 +2,11 @@
 HEADERS = \
 	"http.h" \
 	"socket.h" \
+	"socket_buf.h" \
 	"types.h" \
 
 SOURCES = \
 	"http.c" \
 	"socket.c" \
+	"socket_buf.c" \
 

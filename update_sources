@@ -61,5 +61,6 @@ update_sources_sh
 ( cd ikc3 && ./update_sources; )
 ( cd kc3s && ./update_sources; )
 ( cd ekc3 && ./update_sources; )
+( cd http && ./update_sources; )
 ( cd test && ./update_sources; )
 ( cd libkc3_window && ./update_sources; )

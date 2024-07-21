@@ -1,0 +1,6 @@
+defmodule BufRW do
+
+  defstruct [r: %Buf{},
+             w: %Buf{}]
+
+end

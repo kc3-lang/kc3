@@ -39,4 +39,13 @@ echo "HAVE_ASAN = ${HAVE_ASAN}" >> ${CONFIG_MK}
 update_config_mk
 env_reset
 
-config_subdirs libtommath ucd2c libkc3 ikc3 kc3s ekc3 test libkc3_window
+config_subdirs \
+    libtommath \
+    ucd2c \
+    libkc3 \
+    ikc3 \
+    kc3s \
+    ekc3 \
+    http \
+    test \
+    libkc3_window

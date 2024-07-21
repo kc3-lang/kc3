@@ -75,6 +75,7 @@ HEADERS = \
 	"buf_parse_u64.h" \
 	"buf_parse_u8.h" \
 	"buf_parse_uw.h" \
+	"buf_rw.h" \
 	"buf_save.h" \
 	"call.h" \
 	"ceiling.h" \
@@ -239,6 +240,7 @@ SOURCES = \
 	"buf_parse_u64.c" \
 	"buf_parse_u8.c" \
 	"buf_parse_uw.c" \
+	"buf_rw.c" \
 	"buf_save.c" \
 	"call.c" \
 	"ceiling.c" \
@@ -511,6 +513,7 @@ LO_SOURCES = \
 	"buf_parse_u64.c" \
 	"buf_parse_u8.c" \
 	"buf_parse_uw.c" \
+	"buf_rw.c" \
 	"buf_save.c" \
 	"call.c" \
 	"ceiling.c" \

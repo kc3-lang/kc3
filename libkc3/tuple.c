@@ -25,10 +25,12 @@ void tuple_clean (s_tuple *tuple)
 {
   uw i;
   assert(tuple);
-  i = tuple->count;
-  while (i--)
-    tag_clean(tuple->tag + i);
-  free(tuple->tag);
+  if (tuple->tag) {
+    i = tuple->count;
+    while (i--)
+      tag_clean(tuple->tag + i);
+    free(tuple->tag);
+  }
 }
 
 void tuple_delete (s_tuple *tuple)

@@ -1,0 +1,4 @@
+%Socket.Buf{}
+%Socket.Buf{buf_rw: %BufRW{r: %Buf{column: Sw, flush: Ptr, free: Bool, line: Sw, ptr: Ptr, refill: Ptr, rpos: Uw, save: Ptr, seek: Ptr, size: Uw, user_ptr: Ptr, wpos: Uw}, w: %Buf{column: Sw, flush: Ptr, free: Bool, line: Sw, ptr: Ptr, refill: Ptr, rpos: Uw, save: Ptr, seek: Ptr, size: Uw, user_ptr: Ptr, wpos: Uw}}, sockfd: S32, addr: %Socket.Addr{data: (U8[256]) {}}, addr_len: U32}
+%Socket{}
+%Socket{fd: -1}

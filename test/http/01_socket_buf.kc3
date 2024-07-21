@@ -1,0 +1,4 @@
+quote %Socket.Buf{}
+%Socket.Buf{}
+quote %Socket{}
+%Socket{}

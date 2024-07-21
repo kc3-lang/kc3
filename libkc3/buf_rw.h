@@ -10,25 +10,20 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef HTTP_TYPES_H
-#define HTTP_TYPES_H
+/**
+ * @file buf_rw.h
+ * @brief Read/write byte buffers.
+ *
+ * Structure to manipulate read/write byte buffers.
+ */
+#ifndef LIBKC3_BUF_RW_H
+#define LIBKC3_BUF_RW_H
 
-#include <sys/socket.h>
-#include <libkc3/types.h>
+#include "types.h"
 
-/* 1 */
-typedef s32               t_socket;
-typedef struct socket_buf s_socket_buf;
+/* Stack-allocation compatible functions, call buf_rw_clean after
+   use. */
+void       buf_rw_clean (s_buf_rw *buf_rw);
+s_buf_rw * buf_rw_init_alloc (s_buf_rw *buf_rw, uw size);
 
-/* 2 */
-typedef t_socket *p_socket;
-
-/* Struct 1 */
-struct socket_buf {
-  s_buf_rw buf_rw;
-  t_socket sockfd;
-  struct sockaddr_storage addr;
-  u32                     addr_len;
-};
-
-#endif /* HTTP_TYPES_H */
+#endif /* LIBKC3_BUF_RW_H */

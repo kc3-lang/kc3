@@ -128,6 +128,8 @@ KC3_C_SOURCES = \
 	"libkc3/bool.h" \
 	"libkc3/buf.c" \
 	"libkc3/buf.h" \
+	"libkc3/buf_fd.c" \
+	"libkc3/buf_fd.h" \
 	"libkc3/buf_file.c" \
 	"libkc3/buf_file.h" \
 	"libkc3/buf_getc.c" \
@@ -270,6 +272,8 @@ KC3_C_SOURCES = \
 	"libkc3/buf_parse_u8.h" \
 	"libkc3/buf_parse_uw.c" \
 	"libkc3/buf_parse_uw.h" \
+	"libkc3/buf_rw.c" \
+	"libkc3/buf_rw.h" \
 	"libkc3/buf_save.c" \
 	"libkc3/buf_save.h" \
 	"libkc3/call.c" \
@@ -608,6 +612,7 @@ KC3_C_SOURCES = \
 	"test/fn_test.c" \
 	"test/hash_test.c" \
 	"test/ident_test.c" \
+	"test/inspect_test.c" \
 	"test/libkc3_test.c" \
 	"test/list_test.c" \
 	"test/ratio_test.c" \
@@ -889,7 +894,6 @@ KC3_OTHER_SOURCES = \
 	"lib/kc3/0.1/gl/vec2.kc3" \
 	"lib/kc3/0.1/gl/vec3.kc3" \
 	"lib/kc3/0.1/gl/vertex.kc3" \
-	"lib/kc3/0.1/http.kc3" \
 	"lib/kc3/0.1/integer.facts" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
@@ -899,14 +903,12 @@ KC3_OTHER_SOURCES = \
 	"lib/kc3/0.1/ptr_free.facts" \
 	"lib/kc3/0.1/ratio.facts" \
 	"lib/kc3/0.1/s16.facts" \
-	"lib/kc3/0.1/s16.kc3" \
-	"lib/kc3/0.1/s32.kc3" \
+	"lib/kc3/0.1/s32.facts" \
 	"lib/kc3/0.1/s64.facts" \
-	"lib/kc3/0.1/s64.kc3" \
-	"lib/kc3/0.1/s8.kc3" \
+	"lib/kc3/0.1/s8.facts" \
 	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/str.facts" \
-	"lib/kc3/0.1/sw.kc3" \
+	"lib/kc3/0.1/sw.facts" \
 	"lib/kc3/0.1/sym.facts" \
 	"lib/kc3/0.1/u16.facts" \
 	"lib/kc3/0.1/u32.facts" \
@@ -935,6 +937,7 @@ KC3_OTHER_SOURCES = \
 	"test/facts_test_save.expected.facts" \
 	"test/http/server.kc3.ret.expected" \
 	"test/http/server.out.expected" \
+	"test/http/server.ret.expected" \
 	"test/ikc3/access.out.expected" \
 	"test/ikc3/access.ret.expected" \
 	"test/ikc3/array.err.expected" \

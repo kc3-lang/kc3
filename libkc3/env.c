@@ -195,8 +195,12 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
   if (! facts_add_tags(&env->facts, &tag_module, &tag_symbol,
                        &tag_ident))
     return NULL;
-  if (! env_eval_tag(env, &list_next(call->arguments)->tag, &tag_value))
+  if (! env_eval_tag(env, &list_next(call->arguments)->tag,
+                     &tag_value)) {
+    err_puts("env_def: env_eval_tag");
+    assert(! "env_def: env_eval_tag");
     return NULL;
+  }
   if (tag_value.type == TAG_STRUCT &&
       (s = &tag_value.data.struct_) &&
       s->type->module == &g_sym_KC3__Operator) {
@@ -2670,15 +2674,19 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
       assert(! "env_sym_search_modules: invalid env->search_modules");
       return false;
     }
-    if (! env_module_has_symbol(env, module, sym, &b))
+    if (! env_module_has_symbol(env, module, sym, &b)) {
+      err_puts("env_sym_search_modules: env_module_has_symbol");
+      assert(! "env_sym_search_modules: env_module_has_symbol");
       return false;
+    }
     if (b) {
       *dest = module;
       return true;
     }
     search_module = list_next(search_module);
   }
-  return false;
+  *dest = NULL;
+  return true;
 }
 
 u8 env_special_operator_arity (s_env *env, const s_ident *ident)

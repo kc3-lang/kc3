@@ -1,0 +1,16 @@
+defmodule Buf do
+
+  defstruct [column: Sw,
+             flush: Ptr,
+             free: Bool,
+             line: Sw,
+             ptr: Ptr,
+             refill: Ptr,
+             rpos: Uw,
+             save: Ptr,
+             seek: Ptr,
+             size: Uw,
+             user_ptr: Ptr,
+             wpos: Uw]
+
+end
