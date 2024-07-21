@@ -8,6 +8,8 @@ defmodule Socket do
 
   def close = cfn Void "socket_close" (Socket)
 
-  def listen = cfn Socket "socket_init_listen" (Result, Str, U16)
+  def connect = cfn Socket "socket_init_connect" (Result, Str, Str)
+
+  def listen = cfn Socket "socket_init_listen" (Result, Str, Str)
 
 end

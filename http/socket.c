@@ -11,10 +11,10 @@
  * THIS SOFTWARE.
  */
 #include <errno.h>
-#include <netdb.h>
-#include <netinet/in.h>
 #include <string.h>
 #include <sys/socket.h>
+#include <netdb.h>
+#include <netinet/in.h>
 #include <unistd.h>
 #include <libkc3/kc3.h>
 #include "socket.h"
@@ -49,65 +49,112 @@ p_socket socket_init_accept (p_socket s, p_socket listening)
   return s;
 }
 
-p_socket socket_init_listen (p_socket s, const s_str *host, u16 port)
+p_socket socket_init_connect (p_socket s, const s_str *host,
+                              const s_str *service)
 {
-  struct sockaddr        *addr;
-  struct sockaddr_in     *addr_inet;
-  struct sockaddr_in6    *addr_inet6;
-  socklen_t               addr_len;
-  struct sockaddr_storage addr_storage;
-  sw e;
-  struct hostent *hostent;
+  struct addrinfo hints = {0};
+  struct addrinfo *res;
+  struct addrinfo *res0;
+  s32 e;
+  const char *error_reason;
   t_socket tmp;
   assert(s);
   assert(host);
-  hostent = gethostbyname2(host->ptr.pchar, AF_INET);
-  if (! hostent)
-    hostent = gethostbyname2(host->ptr.pchar, AF_INET6);
-  if (! hostent) {
-    e = errno;
-    err_write_1("socket_init_listen: gethostbyname2: ");
-    err_puts(strerror(e));
-    assert(! "socket_init_listen: gethostbyname2");
+  hints.ai_family = AF_INET;
+  e = getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0);
+  if (e) {
+    err_write_1("socket_init_connect(");
+    err_write_1(host->ptr.pchar);
+    err_write_1(", ");
+    err_write_1(service->ptr.pchar);
+    err_write_1("): getaddrinfo: ");
+    err_puts(gai_strerror(e));
+    assert(! "socket_init_connect: getaddrinfo");
     return NULL;
   }
-  addr = (struct sockaddr *) &addr_storage;
-  addr_len = hostent->h_length;
-  memcpy(addr, hostent->h_addr_list[0], addr_len);
-  switch (addr->sa_family) {
-  case AF_INET:
-    addr_inet = (struct sockaddr_in *) addr;
-    addr_inet->sin_port = htons(port);
-    break;
-  case AF_INET6:
-    addr_inet6 = (struct sockaddr_in6 *) addr;
-    addr_inet6->sin6_port = htons(port);
-    break;
-  default:
-    err_puts("socket_init_listen: unknown address family");
-    assert(! "socket_init_listen: unknown address family");
-    return NULL;
+  e = 0;
+  tmp = -1;
+  res = res0;
+  while (res) {
+    tmp = socket(res->ai_family, SOCK_STREAM, res->ai_protocol);
+    if (tmp < 0) {
+      e = errno;
+      error_reason = "socket_init_connect: socket: ";
+      goto next;
+    }
+    if (connect(tmp, res->ai_addr, res->ai_addrlen) < 0) {
+      e = errno;
+      error_reason = "socket_init_connect: connect: ";
+      goto next;
+    }
+  next:
+    res = res->ai_next;
   }
-  tmp = socket(addr->sa_family, SOCK_STREAM, 0);
   if (tmp < 0) {
-    e = errno;
-    err_write_1("socket_init_listen: socket: ");
+    err_write_1(error_reason);
     err_puts(strerror(e));
-    assert(! "socket_init_listen: socket");
+    assert(! "socket_init_connect");
     return NULL;
   }
-  if (bind(tmp, addr, addr_len) < 0) {
-    e = errno;
-    err_write_1("socket_init_listen: bind: ");
-    err_puts(strerror(e));
-    assert(! "socket_init_listen: bind");
+  *s = tmp;
+  return s;
+}
+
+p_socket socket_init_listen (p_socket s, const s_str *host,
+                             const s_str *service)
+{
+  struct addrinfo hints = {0};
+  struct addrinfo *res;
+  struct addrinfo *res0;
+  s32 e;
+  const char *error_reason;
+  t_socket tmp;
+  assert(s);
+  assert(host);
+  hints.ai_family = AF_INET;
+  e = getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0);
+  if (e) {
+    err_write_1("socket_init_listen(");
+    err_write_1(host->ptr.pchar);
+    err_write_1(", ");
+    err_write_1(service->ptr.pchar);
+    err_write_1("): getaddrinfo: ");
+    err_puts(gai_strerror(e));
+    assert(! "socket_init_listen: getaddrinfo");
     return NULL;
   }
-  if (listen(tmp, SOMAXCONN) < 0) {
-    e = errno;
-    err_write_1("socket_init_listen: listen: ");
+  e = 0;
+  tmp = -1;
+  res = res0;
+  while (res) {
+    tmp = socket(res->ai_family, SOCK_STREAM, res->ai_protocol);
+    if (tmp < 0) {
+      e = errno;
+      error_reason = "socket_init_listen: socket: ";
+      goto next;
+    }
+    if (setsockopt(tmp, SOL_SOCKET, SO_REUSEADDR, &(int) {1},
+                   sizeof(int)) < 0) {
+      error_reason = "setsockopt(SO_REUSEADDR)";
+      goto next;
+    }
+    if (bind(tmp, res->ai_addr, res->ai_addrlen) < 0) {
+      e = errno;
+      error_reason = "socket_init_listen: bind: ";
+      goto next;
+    }
+    if (listen(tmp, SOMAXCONN) < 0) {
+      e = errno;
+      error_reason = "socket_init_listen: listen: ";
+      goto next;
+    }
+  next:
+    res = res->ai_next;
+  }
+  if (tmp < 0) {
+    err_write_1(error_reason);
     err_puts(strerror(e));
-    assert(! "socket_init_listen: listen");
+    assert(! "socket_init_listen");
     return NULL;
   }
   *s = tmp;

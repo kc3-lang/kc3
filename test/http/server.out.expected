@@ -1,0 +1,12 @@
+server = Socket.listen("localhost", "8000")
+%Socket{fd: 4}
+client = Socket.connect("localhost", "8000")
+%Socket{fd: 5}
+server_client = Socket.accept(server)
+%Socket{fd: 6}
+Socket.close(client)
+void
+Socket.close(server_client)
+void
+Socket.close(server)
+void

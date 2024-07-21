@@ -56,14 +56,20 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   if (cfn->cif.rtype == &ffi_type_pointer) {
     /* make result point to result_pointer */
     if (! tag_to_ffi_pointer(&tmp, cfn->result_type,
-                             (void **) &result_pointer))
+                             (void **) &result_pointer)) {
+      err_puts("cfn_apply: tag_to_ffi_pointer 1");
+      assert(! "cfn_apply: tag_to_ffi_pointer 1");
       return NULL;
+    }
     result = &result_pointer;
   }
   else {
     /* make result point to tmp value */
-    if (! tag_to_ffi_pointer(&tmp, cfn->result_type, &result))
+    if (! tag_to_ffi_pointer(&tmp, cfn->result_type, &result)) {
+      err_puts("cfn_apply: tag_to_ffi_pointer 2");
+      assert(! "cfn_apply: tag_to_ffi_pointer 2");
       return NULL;
+    }
   }
   if (cfn->arity) {
     arg_pointers = alloc((cfn->arity + 1) * sizeof(void *));
@@ -81,22 +87,32 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       if (cfn_arg_types->tag.data.sym == &g_sym_Result) {
         assert(cfn->cif.rtype == &ffi_type_pointer);
         cfn_tag_init(&tmp2, cfn->result_type);
-        if (! tag_to_ffi_pointer(&tmp2, cfn->result_type, arg_pointers + i))
+        if (! tag_to_ffi_pointer(&tmp2, cfn->result_type,
+                                 arg_pointers + i)) {
+          err_puts("cfn_apply: tag_to_ffi_pointer 3");
+          assert(! "cfn_apply: tag_to_ffi_pointer 3");
           goto ko;
+        }
         arg_values[i] = &arg_pointers[i];
         arg_pointer_result = arg_pointers[i];
       }
       else {
         if (cfn->cif.arg_types[i] == &ffi_type_pointer) {
           if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.sym,
-                                   arg_pointers + i))
+                                   arg_pointers + i)) {
+            err_puts("cfn_apply: tag_to_ffi_pointer 4");
+            assert(! "cfn_apply: tag_to_ffi_pointer 4");
             goto ko;
+          }
           arg_values[i] = &arg_pointers[i];
         }
         else
           if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.sym,
-                                   arg_values + i))
+                                   arg_values + i)) {
+            err_puts("cfn_apply: tag_to_ffi_pointer 5");
+            assert(! "cfn_apply: tag_to_ffi_pointer 5");
             goto ko;
+          }
         a = list_next(a);
       }
       cfn_arg_types = list_next(cfn_arg_types);

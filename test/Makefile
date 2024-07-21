@@ -74,7 +74,7 @@ gdb_test_ekc3:
 	cd ekc3 && gdb ../../kc3s/.libs/kc3s_debug
 
 gdb_test_http:
-	cd http && gdb ../../kc3s/.libs/kc3s_debug
+	cd http && gdb ../../ikc3/.libs/ikc3_debug
 
 lldb_test: debug
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi

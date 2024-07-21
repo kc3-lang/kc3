@@ -17,7 +17,8 @@
 
 /* Stack-allocation compatible functions. */
 p_socket socket_init_accept (p_socket s, p_socket listening);
-p_socket socket_init_listen (p_socket s, const s_str *host, u16 port);
+p_socket socket_init_listen (p_socket s, const s_str *host,
+                             const s_str *service);
 
 /* Operators. */
 void socket_close (p_socket s);
