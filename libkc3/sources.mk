@@ -9,6 +9,7 @@ HEADERS = \
 	"block.h" \
 	"bool.h" \
 	"buf.h" \
+	"buf_fd.h" \
 	"buf_file.h" \
 	"buf_getc.h" \
 	"buf_getchar.h" \
@@ -172,6 +173,7 @@ SOURCES = \
 	"block.c" \
 	"bool.c" \
 	"buf.c" \
+	"buf_fd.c" \
 	"buf_file.c" \
 	"buf_getc.c" \
 	"buf_getchar.c" \
@@ -443,6 +445,7 @@ LO_SOURCES = \
 	"block.c" \
 	"bool.c" \
 	"buf.c" \
+	"buf_fd.c" \
 	"buf_file.c" \
 	"buf_getc.c" \
 	"buf_getchar.c" \
