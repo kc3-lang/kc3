@@ -17,6 +17,7 @@
 #include "cfn.h"
 #include "list.h"
 #include "str.h"
+#include "struct.h"
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
@@ -325,6 +326,20 @@ s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
     err_puts(type->str.ptr.pchar);
     assert(! "cfn_tag_init: invalid type");
     return NULL;
+  }
+  if (tmp.type == TAG_STRUCT) {
+    if (! struct_init(&tmp.data.struct_, type)) {
+      err_write_1("cfn_tag_init: struct_init: ");
+      err_puts(type->str.ptr.pchar);
+      assert(! "cfn_tag_init: struct_init");
+      return NULL;
+    }
+    if (! struct_allocate(&tmp.data.struct_)) {
+      err_write_1("cfn_tag_init: struct_allocate: ");
+      err_puts(type->str.ptr.pchar);
+      assert(! "cfn_tag_init: struct_allocate");
+      return NULL;
+    }
   }
   *tag = tmp;
   return tag;

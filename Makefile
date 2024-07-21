@@ -159,7 +159,11 @@ gdb_test_ekc3:
 	${MAKE} -C test gdb_test_ekc3
 
 gdb_test_http:
-	${MAKE} debug
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
 	${MAKE} -C test gdb_test_http
 
 gen:
