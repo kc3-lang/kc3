@@ -249,7 +249,7 @@ sw ekc3_buf_parse_kc3_block (s_buf *buf, s_block *dest)
       goto clean;
     }
     if (! r) {
-      list_delete(*tail);
+      *tail = list_delete(*tail);
       err_puts("ekc3_buf_parse_kc3_block: buf_parse_tag = 0");
       assert(! "ekc3_buf_parse_kc3_block: buf_parse_tag = 0");
       break;
@@ -264,6 +264,7 @@ sw ekc3_buf_parse_kc3_block (s_buf *buf, s_block *dest)
     r = -1;
     goto clean;
   }
+  list_delete_all(list);
   *dest = tmp;
   r = result;
  clean:

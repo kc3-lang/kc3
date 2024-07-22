@@ -502,154 +502,154 @@ s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
   return sym_list;
 }
 
-bool sym_must_clean (const s_sym *sym, bool *must_clean)
+bool * sym_must_clean (const s_sym *sym, bool *must_clean)
 {
   const s_struct_type *st;
   if (sym_is_array_type(sym))
     sym = sym_array_type(sym);
   if (sym == &g_sym_Block) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Bool) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Cfn) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Character) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Complex) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Cow) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_F32) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_F64) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_F128) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Fn) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Integer) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_List) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Map) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Ptr) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_PtrFree) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Ratio) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_S8) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_S16) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_S32) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_S64) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Str) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Struct) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_StructType) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Sym) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Sw) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Tag) {
     *must_clean = true;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_U8) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_U16) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_U32) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_U64) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Uw) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (sym == &g_sym_Var) {
-    *must_clean = false;
-    return true;
+    *must_clean = true;
+    return must_clean;
   }
   if (sym == &g_sym_Void) {
     *must_clean = false;
-    return true;
+    return must_clean;
   }
   if (! struct_type_find(sym, &st))
-    return false;
+    return NULL;
   if (st) {
     *must_clean = st->must_clean;
-    return true;
+    return must_clean;
   }
   err_write_1("sym_must_clean: unknown type: ");
   err_inspect_sym(&sym);
   err_write_1("\n");
   assert(! "sym_must_clean: unknown type");
-  return false;
+  return NULL;
 }
 
 const s_sym * sym_new (const s_str *src)

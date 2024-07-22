@@ -129,6 +129,12 @@ void kc3_exit (sw code)
   exit((int) code);
 }
 
+bool * kc3_must_clean(const s_sym * const *sym, bool *dest)
+{
+    assert(sym);
+    return sym_must_clean(*sym, dest);
+}
+
 uw * kc3_facts_next_id (uw *dest)
 {
   assert(dest);

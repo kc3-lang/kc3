@@ -96,6 +96,7 @@ s_str * html_escape (const s_str *str, s_str *dest)
     buf_clean(&buf);
     return NULL;
   }
+  buf_clean(&buf);
   *dest = s;
   return dest;
  ko:

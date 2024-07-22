@@ -136,7 +136,7 @@ bool          sym_has_ident_reserved_characters (const s_sym *sym);
 bool          sym_has_reserved_characters (const s_sym *sym);
 bool          sym_is_array_type (const s_sym *sym);
 bool          sym_is_module (const s_sym *sym);
-bool          sym_must_clean (const s_sym *sym, bool *must_clean);
+bool *        sym_must_clean (const s_sym *sym, bool *must_clean);
 bool          sym_search_modules (const s_sym *sym, const s_sym **dest);
 bool          sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
                                ffi_type **dest);

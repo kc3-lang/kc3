@@ -253,3 +253,5 @@ add {KC3, :symbol, KC3.puts}
 replace {KC3.puts, :symbol_value, cfn Sw "kc3_puts" (Tag)}
 add {KC3, :symbol, KC3.load}
 replace {KC3.load, :symbol_value, cfn Bool "kc3_load" (Str)}
+add {KC3, :symbol, KC3.must_clean}
+replace {KC3.must_clean, :symbol_value, cfn Bool "kc3_must_clean" (Sym, Result)}
