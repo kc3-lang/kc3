@@ -17,14 +17,14 @@
 #include "list.h"
 #include "tag.h"
 
-s_frame * frame_binding_new (s_frame *frame, const s_sym *name)
+s_tag * frame_binding_new (s_frame *frame, const s_sym *name)
 {
   s_binding *b;
   b = binding_new(name, frame->bindings);
   if (! b)
     return NULL;
   frame->bindings = b;
-  return frame;
+  return &b->value;
 }
 
 s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name, const s_tag *value)
