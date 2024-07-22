@@ -307,14 +307,15 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   tag_init_sym(&tag_module, &g_sym_module);
   tag_init_sym(&tag_module_name, *name);
   // FIXME: transaction ?
-  if (facts_add_tags(&env->facts, &tag_module_name, &tag_is_a,
-                     &tag_module)) {
-    if (env_eval_block(env, block, &tmp)) {
-      tag_clean(&tmp);
-      tag_init_sym(dest, *name);
-      result = dest;
-    }
-  }
+  if (! facts_add_tags(&env->facts, &tag_module_name, &tag_is_a,
+                       &tag_module))
+    goto clean;
+  if (! env_eval_block(env, block, &tmp))
+    goto clean;
+  tag_clean(&tmp);
+  tag_init_sym(dest, *name);
+  result = dest;
+ clean:
   env->current_defmodule = module;
   env_module_is_loading_set(env, *name, false);
   return result;
@@ -1944,11 +1945,23 @@ s_ident * env_ident_resolve_module (s_env *env,
   assert(ident);
   ident_init_copy(&tmp, ident);
   if (! tmp.module) {
-    if (! env_sym_search_modules(env, tmp.sym, &tmp.module) ||
-        ! tmp.module) {
+    if (! env_sym_search_modules(env, tmp.sym, &tmp.module)) {
+      err_puts("env_ident_resolve_module: env_sym_search_modules");
+      assert(! "env_ident_resolve_module: env_sym_search_modules");
+      return NULL;
+    }
+    if (! tmp.module) {
+      if (false) {
+        err_puts("env_ident_resolve_module: env_sym_search_modules"
+                 " -> NULL");
+        assert(!("env_ident_resolve_module: env_sym_search_modules"
+                 " -> NULL"));
+      }
       if (! env->current_defmodule) {
-        err_puts("env_ident_resolve_module: env current defmodule is NULL");
-        assert(! "env_ident_resolve_module: env current defmodule is NULL");
+        err_puts("env_ident_resolve_module: env current defmodule is"
+                 " NULL");
+        assert(!("env_ident_resolve_module: env current defmodule is"
+                 " NULL"));
         return NULL;
       }
       tmp.module = env->current_defmodule;
@@ -2204,8 +2217,11 @@ bool env_module_ensure_loaded (s_env *env, const s_sym *module)
   tag_init_sym(&tag_module, &g_sym_module);
   tag_init_sym(&tag_module_name, module);
   if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
-                                &tag_is_a, &tag_module, &fact))
+                                &tag_is_a, &tag_module, &fact)) {
+    err_puts("env_module_ensure_loaded: facts_find_fact_by_tags");
+    assert(! "env_module_ensure_loaded: facts_find_fact_by_tags");
     return false;
+  }
   if (! fact) {
     if (! env_module_load(env, module)) {
       err_write_1("env_module_ensure_loaded: module not found: ");
@@ -2215,18 +2231,23 @@ bool env_module_ensure_loaded (s_env *env, const s_sym *module)
     }
     return true;
   }
-  env_module_maybe_reload(env, module);
+  if (! env_module_maybe_reload(env, module)) {
+    err_puts("env_module_ensure_loaded: env_module_maybe_reload");
+    assert(! "env_module_ensure_loaded: env_module_maybe_reload");
+  }
   return true;
 }
 
 bool * env_module_has_ident (s_env *env, const s_sym *module,
                              const s_ident *ident, bool *dest)
 {
+  s_facts_with_cursor cursor;
   const s_fact *fact;
   s_tag tag_ident;
   s_tag tag_module_name;
   s_tag tag_operator;
   s_tag tag_symbol;
+  s_tag tag_var;
   tag_init_ident(&tag_ident, ident);
   tag_init_sym(  &tag_module_name, module);
   tag_init_sym(  &tag_operator, &g_sym_operator);
@@ -2234,11 +2255,42 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
   if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
                                 &tag_symbol, &tag_ident, &fact))
     return NULL;
-  if (! fact &&
-      ! facts_find_fact_by_tags(&env->facts, &tag_module_name,
-                                &tag_operator, &tag_ident, &fact))
+  if (fact) {
+    *dest = true;
+    return dest;
+  }
+  tag_init_var(&tag_var, &g_sym_Ident);
+  if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
+        &tag_module_name, &tag_operator, &tag_var, NULL,
+        &tag_var, &tag_symbol, &tag_ident, NULL, NULL})) {
+    err_puts("env_module_has_ident: facts_with");
+    assert(! "env_module_has_ident: facts_with");
     return NULL;
-  *dest = fact ? true : false;
+  }
+  if (! facts_with_cursor_next(&cursor, &fact)) {
+    err_puts("env_module_has_ident: facts_with_cursor_next");
+    assert(! "env_module_has_ident: facts_with_cursor_next");
+    return NULL;
+  }
+  if (fact) {
+    facts_with_cursor_clean(&cursor);
+    *dest = true;
+    return dest;
+  }
+  facts_with_cursor_clean(&cursor);
+  if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
+                                &tag_operator, &tag_ident, &fact)) {
+    err_puts("env_module_has_ident: facts_find_fact_by_tags");
+    assert(! "env_module_has_ident: facts_find_fact_by_tags");
+    return NULL;
+  }
+  if (fact) {
+    facts_with_cursor_clean(&cursor);
+    *dest = true;
+    return dest;
+  }
+  facts_with_cursor_clean(&cursor);
+  *dest = false;
   return dest;
 }
 
@@ -2584,23 +2636,46 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
   tag_init_var(&tag_var, &g_sym_Ident);
   tag_init_sym(&tag_sym, tmp.sym);
   tag_init_sym(&tag_symbol, &g_sym_symbol);
-  facts_with(&env->facts, &cursor, (t_facts_spec) {
-      &tag_module_name, &tag_is_a, &tag_module,
-      &tag_operator, &tag_var, NULL,   /* module exports operator */
-      &tag_var, &tag_symbol, &tag_sym,
-      &tag_arity, &tag_arity_u8,
-      NULL, NULL });
-  if (! facts_with_cursor_next(&cursor, &fact))
+  if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
+        &tag_module_name, &tag_is_a, &tag_module,
+        &tag_operator, &tag_var, NULL,
+        &tag_var, &tag_symbol, &tag_sym,
+        &tag_arity, &tag_arity_u8,
+        NULL, NULL })) {
+    err_write_1("env_operator_resolve: ");
+    err_inspect_ident(op);
+    err_puts(": facts_with");
+    assert(! "env_operator_resolve: facts_with");
     return NULL;
-  if (fact) {
-    if (tag_var.type == TAG_IDENT) {
-      *dest = tag_var.data.ident;
-      facts_with_cursor_clean(&cursor);
-      return dest;
-    }
   }
+  if (! facts_with_cursor_next(&cursor, &fact)) {
+    err_write_1("env_operator_resolve: ");
+    err_inspect_ident(op);
+    err_puts(": facts_with_cursor_next");
+    assert(! "env_operator_resolve: facts_with_cursor_next");
+    return NULL;
+  }
+  if (! fact) {
+    if (false) {
+      err_write_1("env_operator_resolve: ");
+      err_inspect_ident(op);
+      err_puts(": operator not found");
+      assert(! "env_operator_resolve: operator not found");
+    }
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  if (tag_var.type != TAG_IDENT) {
+    err_write_1("env_operator_resolve: ");
+    err_inspect_ident(op);
+    err_puts(": operator is not an ident");
+    assert(! "env_operator_resolve: operator is not an ident");
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  *dest = tag_var.data.ident;
   facts_with_cursor_clean(&cursor);
-  return NULL;
+  return dest;
 }
 
 const s_sym * env_operator_symbol (s_env *env, const s_ident *op)
@@ -2680,10 +2755,19 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
   assert(sym);
   assert(dest);
   search_module = env->search_modules;
+  if (false) {
+    err_write_1("env_sym_search_modules: ");
+    err_inspect_sym(&sym);
+    err_write_1(": search_module: ");
+    err_inspect_list((const s_list * const *) &search_module);
+    err_write_1("\n");
+  }
   while (search_module) {
     if (search_module->tag.type != TAG_SYM ||
         ! (module = search_module->tag.data.sym)) {
-      err_puts("env_sym_search_modules: invalid env->search_modules");
+      err_write_1("env_sym_search_modules: ");
+      err_inspect_sym(&sym);
+      err_puts(": invalid env->search_modules");
       assert(! "env_sym_search_modules: invalid env->search_modules");
       return false;
     }
@@ -2787,14 +2871,23 @@ const s_struct_type ** env_struct_type_find (s_env *env,
     err_write_1("env_struct_type_find: env_module_maybe_reload(");
     err_inspect_sym(&module);
     err_puts(")");
+    assert(! "env_struct_type_find: env_module_maybe_reload");
     return NULL;
   }
   if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
                    &tag_module, &tag_struct_type, &tag_var,
-                   NULL, NULL }))
+                   NULL, NULL })) {
+    err_write_1("env_struct_type_find: facts_with(");
+    err_inspect_sym(&module);
+    err_puts(", :struct_type, ?)");
+    assert(! "env_struct_type_find: facts_with");
     return NULL;
-  if (! facts_with_cursor_next(&cursor, &found))
+  }
+  if (! facts_with_cursor_next(&cursor, &found)) {
+    err_puts("env_struct_type_find: facts_with_cursor_next");
+    assert(! "env_struct_type_find: facts_with_cursor_next");
     return NULL;
+  }
   if (! found) {
     facts_with_cursor_clean(&cursor);
     *dest = NULL;

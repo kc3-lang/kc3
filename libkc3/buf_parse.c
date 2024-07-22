@@ -1040,8 +1040,12 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
   if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0)
     goto restore;
   result += r;
-  if (! operator_resolve(&tmp.ident, 1, &tmp.ident))
+  if (! operator_resolve(&tmp.ident, 1, &tmp.ident)) {
+    err_write_1("buf_parse_call_op_unary: ");
+    err_inspect_ident(&tmp.ident);
+    err_puts(": operator_resolve");
     goto restore;
+  }
   buf_save_clean(buf, &save);
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto clean;
@@ -2336,14 +2340,23 @@ sw buf_parse_list (s_buf *buf, s_list **list)
   if ((r = buf_read_1(buf, "[")) <= 0)
     return r;
   result += r;
-  if ((r = buf_parse_comments(buf)) < 0)
+  if ((r = buf_parse_comments(buf)) < 0) {
+    err_puts("buf_parse_list: buf_parse_comments 1");
+    assert(! "buf_parse_list: buf_parse_comments 1");
     return r;
+  }
   result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
+  if ((r = buf_ignore_spaces(buf)) < 0) {
+    err_puts("buf_parse_list: buf_ignore_spaces 1");
+    assert(! "buf_parse_list: buf_ignore_spaces 1");
     return r;
+  }
   result += r;
-  if ((r = buf_read_1(buf, "]")) < 0)
+  if ((r = buf_read_1(buf, "]")) < 0) {
+    err_puts("buf_parse_list: buf_read_1 \"]\" 1");
+    assert(! "buf_parse_list: buf_read_1 \"]\" 1");
     return r;
+  }
   if (r > 0) {
     result += r;
     *list = NULL;
@@ -2352,70 +2365,120 @@ sw buf_parse_list (s_buf *buf, s_list **list)
   *i = NULL;
   while (1) {
     *i = list_new(NULL);
-    if ((r = buf_parse_list_tag(buf, &(*i)->tag)) < 0)
+    if ((r = buf_parse_list_tag(buf, &(*i)->tag)) < 0) {
+      err_puts("buf_parse_list: buf_parse_list_tag < 0");
+      assert(! "buf_parse_list: buf_parse_list_tag < 0");
       goto eat_and_clean;
+    }
     if (! r) {
+      err_puts("buf_parse_list: buf_parse_list_tag = 0");
+      assert(! "buf_parse_list: buf_parse_list_tag = 0");
       r = -1;
       goto eat_and_clean;
     }
     result += r;
-    if ((r = buf_parse_comments(buf)) < 0)
+    if ((r = buf_parse_comments(buf)) < 0) {
+      err_puts("buf_parse_list: buf_parse_comments 2");
+      assert(! "buf_parse_list: buf_parse_comments 2");
       goto eat_and_clean;
+    }
     result += r;
-    if ((r = buf_ignore_spaces(buf)) < 0)
+    if ((r = buf_ignore_spaces(buf)) < 0) {
+      err_puts("buf_parse_list: buf_ignore_spaces 2");
+      assert(! "buf_parse_list: buf_ignore_spaces 2");
       goto eat_and_clean;
+    }
     result += r;
-    if ((r = buf_read_1(buf, "]")) < 0)
+    if ((r = buf_read_1(buf, "]")) < 0) {
+      err_puts("buf_parse_list: buf_read_1 \"]\" 2");
+      assert(! "buf_parse_list: buf_read_1 \"]\" 2");
       goto eat_and_clean;
+    }
     if (r > 0) {
       result += r;
       return result;
     }
-    if ((r = buf_read_1(buf, ",")) < 0)
+    if ((r = buf_read_1(buf, ",")) < 0) {
+      err_puts("buf_parse_list: buf_read_1 \",\"");
+      assert(! "buf_parse_list: buf_read_1 \",\"");
       goto eat_and_clean;
+    }
     if (r > 0) {
       result += r;
       i = &(*i)->next.data.list;
-      if ((r = buf_parse_comments(buf)) < 0)
+      if ((r = buf_parse_comments(buf)) < 0) {
+        err_puts("buf_parse_list: buf_parse_comments 3");
+        assert(! "buf_parse_list: buf_parse_comments 3");
         goto eat_and_clean;
+      }
       result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
+      if ((r = buf_ignore_spaces(buf)) < 0) {
+        err_puts("buf_parse_list: buf_ignore_spaces 3");
+        assert(! "buf_parse_list: buf_ignore_spaces 3");
         goto eat_and_clean;
+      }
       result += r;
       continue;
     }
-    if ((r = buf_read_1(buf, "|")) < 0)
+    if ((r = buf_read_1(buf, "|")) < 0) {
+      err_puts("buf_parse_list: buf_read_1 \"|\"");
+      assert(! "buf_parse_list: buf_read_1 \"|\"");
       goto eat_and_clean;
+    }
     if (r > 0) {
       result += r;
-      if ((r = buf_parse_comments(buf)) < 0)
+      if ((r = buf_parse_comments(buf)) < 0) {
+        err_puts("buf_parse_list: buf_parse_comments 4");
+        assert(! "buf_parse_list: buf_parse_comments 4");
         goto eat_and_clean;
+      }
       result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
+      if ((r = buf_ignore_spaces(buf)) < 0) {
+        err_puts("buf_parse_list: buf_ignore_spaces 4");
+        assert(! "buf_parse_list: buf_ignore_spaces 4");
         goto eat_and_clean;
+      }
       result += r;
-      if ((r = buf_parse_tag(buf, &(*i)->next)) < 0)
+      if ((r = buf_parse_tag(buf, &(*i)->next)) < 0) {
+        err_puts("buf_parse_list: buf_parse_tag < 0");
+        assert(! "buf_parse_list: buf_parse_tag < 0");
         goto eat_and_clean;
+      }
       if (! r) {
+        err_puts("buf_parse_list: buf_parse_tag = 0");
+        assert(! "buf_parse_list: buf_parse_tag = 0");
         r = -1;
         goto eat_and_clean;
       }
       result += r;
-      if ((r = buf_parse_comments(buf)) < 0)
+      if ((r = buf_parse_comments(buf)) < 0) {
+        err_puts("buf_parse_list: buf_parse_comments 5");
+        assert(! "buf_parse_list: buf_parse_comments 5");
         goto eat_and_clean;
+      }
       result += r;
-      if ((r = buf_ignore_spaces(buf)) < 0)
+      if ((r = buf_ignore_spaces(buf)) < 0) {
+        err_puts("buf_parse_list: buf_ignore_spaces 5");
+        assert(! "buf_parse_list: buf_ignore_spaces 5");
         goto eat_and_clean;
+      }
       result += r;
-      if ((r = buf_read_1(buf, "]")) < 0)
+      if ((r = buf_read_1(buf, "]")) < 0) {
+        err_puts("buf_parse_list: buf_read_1 \"]\" < 0");
+        assert(! "buf_parse_list: buf_read_1 \"]\" < 0");
         goto eat_and_clean;
+      }
       if (! r) {
+        err_puts("buf_parse_list: buf_read_1 \"]\" = 0");
+        assert(! "buf_parse_list: buf_read_1 \"]\" = 0");
         r = -1;
         goto eat_and_clean;
       }
       result += r;
       return result;
     }
+    err_puts("buf_parse_list: invalid list");
+    assert(! "buf_parse_list: invalid list");
     r = -1;
     goto eat_and_clean;
   }
@@ -2534,8 +2597,11 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if ((r = buf_parse_sym_str(buf, &str)) < 0)
+  if ((r = buf_parse_sym_str(buf, &str)) < 0) {
+    err_puts("buf_parse_list_tag: buf_parse_sym_str");
+    assert(! "buf_parse_list_tag: buf_parse_sym_str");
     goto clean;
+  }
   if (r > 0) {
     result += r;
     if ((r = buf_read_1(buf, ":") <= 0)) {
@@ -2573,8 +2639,13 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
  tag:
   result = 0;
   buf_save_restore_rpos(buf, &save);
-  if ((r = buf_parse_tag(buf, &tmp)) <= 0)
+  if ((r = buf_parse_tag(buf, &tmp)) <= 0) {
+    err_puts("buf_parse_list_tag: buf_parse_tag");
+    assert(! "buf_parse_list_tag: buf_parse_tag");
+    if (! r)
+      r = -1;
     goto clean;
+  }
   result += r;
  ok:
   *dest = tmp;
@@ -3011,6 +3082,9 @@ sw buf_parse_special_operator (s_buf *buf, s_call *dest)
     goto clean;
   result += r;
   if (! ident_is_special_operator(&tmp.ident, &b)) {
+    err_write_1("buf_parse_special_operator: ");
+    err_inspect_ident(&tmp.ident);
+    err_puts(": ident_is_special_operator");
     r = -1;
     goto restore;
   }
@@ -3019,21 +3093,50 @@ sw buf_parse_special_operator (s_buf *buf, s_call *dest)
     goto restore;
   }
   if (! (arity = special_operator_arity(&tmp.ident))) {
-    r = 0;
+    err_write_1("buf_parse_special_operator: ");
+    err_inspect_ident(&tmp.ident);
+    err_puts(": no arity");
+    assert(! "buf_parse_special_operator: no arity");
+    r = -1;
     goto restore;
   }
   args_last = &tmp.arguments;
   i = 0;
   while (i < arity) {
-    if ((r = buf_parse_comments(buf)) < 0)
+    if ((r = buf_parse_comments(buf)) < 0) {
+      err_write_1("buf_parse_special_operator: ");
+      err_inspect_ident(&tmp.ident);
+      err_puts(": buf_parse_comments");
+      assert(! "buf_parse_special_operator: buf_parse_comments");
       goto restore;
+    }
     result += r;
-    if ((r = buf_ignore_spaces(buf)) <= 0)
+    if ((r = buf_ignore_spaces(buf)) < 0) {
+      err_write_1("buf_parse_special_operator: ");
+      err_inspect_ident(&tmp.ident);
+      err_puts(": buf_ignore_spaces < 0");
+      assert(! "buf_parse_special_operator: buf_ignore_spaces < 0");
+      goto restore;
+    }
+    if (! r)
       goto restore;
     result += r;
     *args_last = list_new(NULL);
-    if ((r = buf_parse_tag(buf, &(*args_last)->tag)) <= 0)
+    if ((r = buf_parse_tag(buf, &(*args_last)->tag)) < 0) {
+      err_write_1("buf_parse_special_operator: ");
+      err_inspect_ident(&tmp.ident);
+      err_puts(": buf_parse_tag < 0");
+      assert(! "buf_parse_special_operator: buf_parse_tag < 0");
       goto restore;
+    }
+    if (! r) {
+      err_write_1("buf_parse_special_operator: ");
+      err_inspect_ident(&tmp.ident);
+      err_puts(": buf_parse_tag = 0");
+      assert(! "buf_parse_special_operator: buf_parse_tag = 0");
+      r = -1;
+      goto restore;
+    }
     result += r;
     args_last = &(*args_last)->next.data.list;
     i++;
@@ -3881,7 +3984,6 @@ sw buf_parse_tag_primary_2 (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
-      (r = buf_parse_tag_special_operator(buf, dest)) != 0 ||
       (r = buf_parse_tag_bool(buf, dest)) != 0 ||
       (r = buf_parse_tag_character(buf, dest)) != 0 ||
       (r = buf_parse_tag_map(buf, dest)) != 0 ||
@@ -3892,6 +3994,7 @@ sw buf_parse_tag_primary_2 (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
       (r = buf_parse_tag_struct(buf, dest)) != 0 ||
       (r = buf_parse_tag_list(buf, dest)) != 0 ||
+      (r = buf_parse_tag_special_operator(buf, dest)) != 0 ||
       (r = buf_parse_tag_ident(buf, dest)) != 0 ||
       (r = buf_parse_tag_sym(buf, dest)) != 0)
     goto end;
