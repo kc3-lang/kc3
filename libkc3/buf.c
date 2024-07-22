@@ -162,8 +162,6 @@ sw buf_ignore_spaces (s_buf *buf)
     if ((r = buf_ignore(buf, csize)) < 0)
       return r;
     result += csize;
-    if (c == '\n')
-      buf->line++;
   }
   if (! result && r < 0)
     return r;
