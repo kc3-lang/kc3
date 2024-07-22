@@ -25,20 +25,6 @@
     TEST_EQ(sym_1(test), sym_1(test));                                 \
   } while (0)
 
-#define INSPECT_TEST_SYM(test, result)                                 \
-  do {                                                                 \
-    const s_sym *sym;                                                  \
-    s_str str;                                                         \
-    assert(test);                                                      \
-    assert(result);                                                    \
-    test_context("inspect_sym(" # test ") -> " # result);              \
-    sym = sym_1(test);                                                 \
-    TEST_EQ(inspect_sym(sym, &str), &str);                             \
-    TEST_STRNCMP(str.ptr.p, (result), str.size);                       \
-    str_clean(&str);                                                   \
-    test_context(NULL);                                                \
-  } while (0)
-
 TEST_CASE_PROTOTYPE(sym_1);
 const s_sym * sym_test_1_test (const s8 *p);
 

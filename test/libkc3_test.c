@@ -29,6 +29,7 @@ void facts_cursor_test (void);
 void facts_with_test (void);
 void fn_test (void);
 void ident_test (void);
+void inspect_test (void);
 void list_test (void);
 void set__fact_test (void);
 void set__tag_test (void);
@@ -107,6 +108,10 @@ int main (int argc, char **argv)
   if (test_target("tag")) {
     fprintf(stderr, "\ntag\n");
     tag_test();
+  }
+  if (test_target("inspect")) {
+    fprintf(stderr, "\ninspect\n");
+    inspect_test();
   }
   if (test_target("fact")) {
     fprintf(stderr, "\nfact\n");

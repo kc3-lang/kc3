@@ -11,7 +11,10 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
+#include <string.h>
 #include "../libkc3/inspect.h"
+#include "../libkc3/str.h"
+#include "../libkc3/sym.h"
 #include "test.h"
 
 #define INSPECT_TEST_SYM(test, result)                                 \
