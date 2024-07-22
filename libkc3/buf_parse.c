@@ -1041,9 +1041,11 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
     goto restore;
   result += r;
   if (! operator_resolve(&tmp.ident, 1, &tmp.ident)) {
-    err_write_1("buf_parse_call_op_unary: ");
-    err_inspect_ident(&tmp.ident);
-    err_puts(": operator_resolve");
+    if (false) {
+      err_write_1("buf_parse_call_op_unary: ");
+      err_inspect_ident(&tmp.ident);
+      err_puts(": operator_resolve");
+    }
     goto restore;
   }
   buf_save_clean(buf, &save);

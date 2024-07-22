@@ -2285,11 +2285,9 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
     return NULL;
   }
   if (fact) {
-    facts_with_cursor_clean(&cursor);
     *dest = true;
     return dest;
   }
-  facts_with_cursor_clean(&cursor);
   *dest = false;
   return dest;
 }
