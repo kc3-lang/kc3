@@ -278,6 +278,10 @@ bool data_clean (const s_sym *type, void *data)
   if (type == &g_sym_Sym) {
     return true;
   }
+  if (type == &g_sym_Tag) {
+    tag_clean(data);
+    return true;
+  }
   if (type == &g_sym_Tuple) {
     tuple_clean(data);
     return true;

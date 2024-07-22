@@ -515,6 +515,10 @@ bool sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = false;
     return true;
   }
+  if (sym == &g_sym_Cfn) {
+    *must_clean = true;
+    return true;
+  }
   if (sym == &g_sym_Character) {
     *must_clean = false;
     return true;
