@@ -58,6 +58,8 @@
 
 s_env g_kc3_env;
 
+static void env_clean_globals (s_env *env);
+static void env_clean_toplevel (s_env *env);
 static s_env * env_init_args (s_env *env, int *argc, char ***argv);
 static s_env * env_init_globals (s_env *env);
 static s_env * env_init_toplevel (s_env *env);
@@ -146,7 +148,8 @@ void env_clean (s_env *env)
 {
   assert(env);
   //facts_save_file(&env->facts, "debug.facts"); // debug
-  frame_delete_all(env->frame);
+  env_clean_globals(env);
+  env_clean_toplevel(env);
   error_handler_delete_all(env->error_handler);
   facts_clean(&env->facts);
   buf_file_close(&env->in);
@@ -159,6 +162,16 @@ void env_clean (s_env *env)
   str_clean(&env->module_path);
   list_delete_all(env->path);
   list_delete_all(env->search_modules_default);
+}
+
+void env_clean_globals (s_env *env)
+{
+  frame_clean(&env->global_frame);
+}
+
+void env_clean_toplevel (s_env *env)
+{
+  frame_delete_all(env->frame);
 }
 
 s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
