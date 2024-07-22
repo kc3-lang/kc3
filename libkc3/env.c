@@ -2159,6 +2159,8 @@ bool env_load (s_env *env, const s_str *path)
     tag_clean(&tmp);
     tag_clean(&tag);
   }
+  tag_clean(file_dir);
+  tag_clean(file_path);
   *file_dir = file_dir_save;
   *file_path = file_path_save;
   buf_getc_close(&buf);
