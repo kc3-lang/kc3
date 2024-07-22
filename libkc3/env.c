@@ -943,7 +943,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
       tag_init_copy(dest, b);
     else
       env_eval_tag(env, b, dest);
-    frame_binding_new(env->frame->next, a->data.ident.sym, dest);
+    frame_binding_new_copy(env->frame->next, a->data.ident.sym, dest);
     return true;
   }
   if (is_unbound_b) {
@@ -951,7 +951,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
       tag_init_copy(dest, a);
     else
       env_eval_tag(env, a, dest);
-    frame_binding_new(env->frame->next, b->data.ident.sym, dest);
+    frame_binding_new_copy(env->frame->next, b->data.ident.sym, dest);
     return true;
   }
   if (! macro &&

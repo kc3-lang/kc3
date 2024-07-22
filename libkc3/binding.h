@@ -19,13 +19,12 @@
    use. */
 void        binding_clean (s_binding *binding);
 s_binding * binding_init (s_binding *binding, const s_sym *name,
-                          const s_tag *value, s_binding *next);
+                          s_binding *next);
 
 /* Heap-allocation functions, call binding_delete* after use. */
 s_binding * binding_delete (s_binding *binding);
 void        binding_delete_all (s_binding *binding);
-s_binding * binding_new (const s_sym *name, const s_tag *value,
-                         s_binding *next);
+s_binding * binding_new (const s_sym *name, s_binding *next);
 
 /* Observers. */
 const s_tag * binding_get (const s_binding *binding, const s_sym *name);
@@ -34,5 +33,6 @@ const s_tag * binding_is_bound (const s_binding *binding,
 
 /* Operators. */
 s_tag * binding_get_w (s_binding *binding, const s_sym *name);
+s_binding ** binding_find (s_binding **binding, const s_sym *name);
 
 #endif /* LIBC3_BINDING_H */

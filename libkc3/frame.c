@@ -15,15 +15,42 @@
 #include "binding.h"
 #include "frame.h"
 #include "list.h"
+#include "tag.h"
 
-s_frame * frame_binding_new (s_frame *frame, const s_sym *name,
-                             const s_tag *value)
+s_frame * frame_binding_new (s_frame *frame, const s_sym *name)
 {
   s_binding *b;
-  b = binding_new(name, value, frame->bindings);
+  b = binding_new(name, frame->bindings);
   if (! b)
     return NULL;
   frame->bindings = b;
+  return frame;
+}
+
+s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name, const s_tag *value)
+{
+  s_tag *tag;
+  frame_binding_new(frame, name);
+  tag = binding_get_w(frame->bindings, name);
+  if (tag == NULL) {
+    err_puts("frame_binding_new_copy: binding new");
+    assert(! "frame_binding_new_copy: binding new");
+    return NULL;
+    }
+  if (! tag_init_copy(tag, value)) {
+    err_puts("frame_binding_new_copy: tag_init_copy");
+    assert(! "frame_binding_new_copy: tag_init_copy");
+    frame = frame_binding_delete(frame, name);
+    return NULL;
+    }
+  return frame;
+}
+
+s_frame * frame_binding_delete (s_frame *frame, const s_sym *name)
+{
+  s_binding **b;
+  b = binding_find(&frame->bindings, name);
+  *b = binding_delete(*b);
   return frame;
 }
 
