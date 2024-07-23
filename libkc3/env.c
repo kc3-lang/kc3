@@ -1875,11 +1875,12 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
         &tag_ident, &tag_symbol_value, &tag_var,
         NULL, NULL }))
     return NULL;
-  if (! facts_with_cursor_next(&cursor, &fact) ||
-      ! fact) {
+  if (! facts_with_cursor_next(&cursor, &fact)) {
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
+  if (! fact)
+    return NULL;
   if (! tag_init_copy(&tmp, &tag_var)) {
     facts_with_cursor_clean(&cursor);
     return NULL;

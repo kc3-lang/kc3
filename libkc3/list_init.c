@@ -413,12 +413,13 @@ s_list * list_init_struct (s_list *list, const s_sym *module,
 }
 
 s_list * list_init_struct_with_data (s_list *list, const s_sym *module,
-                                     void *data, s_list *next)
+                                     void *data, bool free_data,
+                                     s_list *next)
 {
   s_list tmp;
   assert(list);
   list_init(&tmp, next);
-  if (! tag_init_struct_with_data(&tmp.tag, module, data))
+  if (! tag_init_struct_with_data(&tmp.tag, module, data, free_data))
     return NULL;
   *list = tmp;
   return list;
@@ -1016,13 +1017,14 @@ s_list * list_new_struct (const s_sym *module, s_list *next)
 }
 
 s_list * list_new_struct_with_data (const s_sym *module, void *data,
-                                    s_list *next)
+                                    bool free_data, s_list *next)
 {
   s_list *list;
   list = list_new(next);
   if (! list)
     return NULL;
-  if (! tag_init_struct_with_data(&list->tag, module, data)) {
+  if (! tag_init_struct_with_data(&list->tag, module, data,
+                                  free_data)) {
     free(list);
     return NULL;
   }

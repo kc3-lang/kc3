@@ -301,6 +301,7 @@ struct quote {
 
 struct struct_ {
   void *data;
+  bool free_data;
   s_tag *tag;
   const s_struct_type *type;
 };

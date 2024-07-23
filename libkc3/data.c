@@ -187,6 +187,8 @@ bool data_clean (const s_sym *type, void *data)
   s_struct s = {0};
   const s_struct_type *st;
   assert(type);
+  if (! data)
+    return true;
   if (type == &g_sym_Array ||
       sym_is_array_type(type)) {
     array_clean(data);

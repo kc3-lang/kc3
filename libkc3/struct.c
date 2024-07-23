@@ -49,9 +49,14 @@ s_struct * struct_allocate (s_struct *s)
   s_struct tmp;
   assert(s);
   assert(s->type);
-  assert(! s->data);
+  if (s->data) {
+    err_puts("struct_allocate: data != NULL");
+    assert(! "struct_allocate: data != NULL");
+    return NULL;
+  }
   tmp = *s;
   tmp.data = alloc(tmp.type->size);
+  tmp.free_data = true;
   if (! tmp.data)
     return NULL;
   *s = tmp;
@@ -75,7 +80,8 @@ void struct_clean (s_struct *s)
         i++;
       }
     }
-    free(s->data);
+    if (s->free_data)
+      free(s->data);
   }
   if (s->tag) {
     i = 0;
@@ -293,7 +299,7 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
 }
 
 s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
-                                  void *data)
+                                  void *data, bool free_data)
 {
   s_struct tmp = {0};
   assert(s);
@@ -307,6 +313,7 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
     return NULL;
   }
   tmp.data = data;
+  tmp.free_data = free_data;
   *s = tmp;
   return s;
 }

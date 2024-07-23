@@ -31,7 +31,7 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
                                    const s_list *keys,
                                    const s_list *values);
 s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
-                                  void *data);
+                                  void *data, bool free_data);
 
 /* Heap-allocation functions, call struct_delete after use. */
 void       struct_delete (s_struct *s);

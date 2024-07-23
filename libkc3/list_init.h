@@ -64,7 +64,8 @@ s_list * list_init_str_empty (s_list *list, s_list *next);
 s_list * list_init_struct (s_list *list, const s_sym *module,
                            s_list *next);
 s_list * list_init_struct_with_data (s_list *list, const s_sym *module,
-                                     void *data, s_list *next);
+                                     void *data, bool free_data,
+                                     s_list *next);
 s_list * list_init_struct_type (s_list *list, const s_sym *module,
                                 const s_list *spec, s_list *next);
 s_list * list_init_struct_type_update_clean (s_list *list,
@@ -128,7 +129,7 @@ s_list * list_new_str_cat (const s_str *a, const s_str *b,
 s_list * list_new_str_empty (s_list *next);
 s_list * list_new_struct (const s_sym *module, s_list *next);
 s_list * list_new_struct_with_data (const s_sym *module, void *data,
-                                    s_list *next);
+                                    bool free_data, s_list *next);
 s_list * list_new_struct_type (const s_sym *module, const s_list *spec,
                                s_list *next);
 s_list * list_new_struct_type_update_clean (const s_struct_type *st,
@@ -187,7 +188,7 @@ s_list * list_str_cat (s_list *list, const s_str *a, const s_str *b);
 s_list * list_str_empty (s_list *list);
 s_list * list_struct (s_list *list, const s_sym *module);
 s_list * list_struct_with_data (s_list *list, const s_sym *module,
-                                void *data);
+                                void *data, bool free_data);
 s_list * list_struct_type (s_list *list, const s_sym *module,
                            const s_list *spec);
 s_list * list_struct_type_update_clean (s_list *list,

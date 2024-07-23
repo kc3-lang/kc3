@@ -1,0 +1,2 @@
+%BufRW{}
+%BufRW{r: %Buf{column: 0, flush: (Ptr) 0x0, free: false, line: 0, ptr: (Ptr) 0x0, refill: (Ptr) 0x0, rpos: 0, save: (Ptr) 0x0, seek: (Ptr) 0x0, size: 0, user_ptr: (Ptr) 0x0, wpos: 0}, w: %Buf{column: 0, flush: (Ptr) 0x0, free: false, line: 0, ptr: (Ptr) 0x0, refill: (Ptr) 0x0, rpos: 0, save: (Ptr) 0x0, seek: (Ptr) 0x0, size: 0, user_ptr: (Ptr) 0x0, wpos: 0}}

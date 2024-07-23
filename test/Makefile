@@ -80,6 +80,9 @@ gdb_test_ekc3:
 gdb_test_http:
 	cd http && gdb ../../ikc3/.libs/ikc3_debug
 
+gdb_test_ikc3:
+	cd ikc3 && gdb ../../ikc3/.libs/ikc3_debug
+
 lldb_test: debug
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
 

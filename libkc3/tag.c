@@ -893,6 +893,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
     }
     if (type == tag->data.struct_.type->module) {
       *dest = tag->data.struct_.data;
+      assert(*dest);
       return true;
     }
     err_write_1("tag_to_const_pointer: cannot cast ");
@@ -1145,6 +1146,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     }
     if (type == tag->data.struct_.type->module) {
       *dest = tag->data.struct_.data;
+      assert(*dest);
       return true;
     }
     goto invalid_cast;
