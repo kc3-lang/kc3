@@ -1,4 +1,4 @@
 %Socket.Buf{}
-%Socket.Buf{buf_rw: %BufRW{r: %Buf{column: Sw, flush: Ptr, free: Bool, line: Sw, ptr: Ptr, refill: Ptr, rpos: Uw, save: Ptr, seek: Ptr, size: Uw, user_ptr: Ptr, wpos: Uw}, w: %Buf{column: Sw, flush: Ptr, free: Bool, line: Sw, ptr: Ptr, refill: Ptr, rpos: Uw, save: Ptr, seek: Ptr, size: Uw, user_ptr: Ptr, wpos: Uw}}, sockfd: S32, addr: %Socket.Addr{data: (U8[256]) {}}, addr_len: U32}
+%Socket.Buf{buf_rw: %BufRW{r: %Buf{column: 0, flush: (Ptr) 0x0, free: false, line: 0, ptr: (Ptr) 0x0, refill: (Ptr) 0x0, rpos: 0, save: (Ptr) 0x0, seek: (Ptr) 0x0, size: 0, user_ptr: (Ptr) 0x0, wpos: 0}, w: %Buf{column: 0, flush: (Ptr) 0x0, free: false, line: 0, ptr: (Ptr) 0x0, refill: (Ptr) 0x0, rpos: 0, save: (Ptr) 0x0, seek: (Ptr) 0x0, size: 0, user_ptr: (Ptr) 0x0, wpos: 0}}, sockfd: -1, addr: %Socket.Addr{data: (U8[256]) {}}, addr_len: 0}
 %Socket{}
 %Socket{fd: -1}
