@@ -56,7 +56,7 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
   struct addrinfo *res;
   struct addrinfo *res0;
   s32 e;
-  const char *error_reason;
+  const char *error_reason = "error";
   t_socket sockfd;
   assert(s);
   assert(host);

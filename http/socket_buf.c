@@ -56,7 +56,7 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   struct addrinfo *res;
   struct addrinfo *res0;
   s32 e;
-  const char *error_reason;
+  const char *error_reason = "error";
   t_socket sockfd;
   s_socket_buf tmp;
   assert(sb);
