@@ -161,7 +161,7 @@ s_str * kc3_getenv (const s_str *name, s_str *dest)
 
 /* Special operator. */
 s_tag * kc3_if_then_else (const s_tag *cond, const s_tag *then,
-                         const s_tag *else_, s_tag *dest)
+                          const s_tag *else_, s_tag *dest)
 {
   bool b;
   s_tag tmp;

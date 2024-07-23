@@ -83,6 +83,7 @@ const s_sym g_sym_do              = {{{NULL},  2, {"do"}}};
 const s_sym g_sym_else            = {{{NULL},  4, {"else"}}};
 const s_sym g_sym_end             = {{{NULL},  3, {"end"}}};
 const s_sym g_sym_fn              = {{{NULL},  2, {"fn"}}};
+const s_sym g_sym_if              = {{{NULL},  2, {"if"}}};
 const s_sym g_sym_if_then_else    = {{{NULL}, 12, {"if_then_else"}}};
 const s_sym g_sym_is_a            = {{{NULL},  4, {"is_a"}}};
 const s_sym g_sym_is_loading      = {{{NULL}, 10, {"is_loading"}}};
@@ -376,6 +377,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_else, NULL);
   sym_register(&g_sym_end, NULL);
   sym_register(&g_sym_fn, NULL);
+  sym_register(&g_sym_if, NULL);
   sym_register(&g_sym_if_then_else, NULL);
   sym_register(&g_sym_is_a, NULL);
   sym_register(&g_sym_is_loading, NULL);
