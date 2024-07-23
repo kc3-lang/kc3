@@ -212,8 +212,11 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
       return NULL;
     i = 0;
     while (i < tmp.type->map.count) {
-      if (! tag_type(tmp.type->map.value + i, &sym) ||
-          ! data_init_copy(sym, (s8 *) tmp.data + tmp.type->offset[i],
+      if (tmp.type->map.value[i].type == TAG_VAR)
+        sym = tmp.type->map.value[i].data.var.type;
+      else if (! tag_type(tmp.type->map.value + i, &sym))
+        goto ko;
+      if (! data_init_copy(sym, (s8 *) tmp.data + tmp.type->offset[i],
                            (s8 *) src->data + tmp.type->offset[i]))
         goto ko;
       i++;

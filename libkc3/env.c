@@ -121,8 +121,8 @@ bool env_call_get (s_env *env, s_call *call)
       facts_cursor_clean(&cursor);
       return false;
     }
+    facts_cursor_clean(&cursor);
   }
-  facts_cursor_clean(&cursor);
   if (! facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
                                 &tag_macro, &fact))
     return false;
@@ -2892,7 +2892,6 @@ const s_struct_type ** env_struct_type_find (s_env *env,
     return NULL;
   }
   if (! found) {
-    facts_with_cursor_clean(&cursor);
     *dest = NULL;
     return dest;
   }
