@@ -28,7 +28,7 @@ replace {KC3.operator_defstruct, :symbol, :defstruct}
 replace {KC3.operator_defstruct, :arity, 1}
 replace {KC3.operator_defstruct, :symbol_value, cfn Tag "kc3_defstruct" (List, Result)}
 replace {KC3.operator_defstruct, :operator_precedence, 12}
-replace {KC3.operator_defstruct, :operator_associativity, :right}
+replace {KC3.operator_defstruct, :operator_associativity, :none}
 add {KC3, :operator, KC3.operator_pin}
 replace {KC3.operator_pin, :is_a, :operator}
 replace {KC3.operator_pin, :symbol, :^}
@@ -50,6 +50,13 @@ replace {KC3.operator_not, :arity, 1}
 replace {KC3.operator_not, :symbol_value, cfn Bool "tag_not" (Tag, Result)}
 replace {KC3.operator_not, :operator_precedence, 12}
 replace {KC3.operator_not, :operator_associativity, :right}
+add {KC3, :operator, KC3.operator_require}
+replace {KC3.operator_require, :is_a, :operator}
+replace {KC3.operator_require, :symbol, :require}
+replace {KC3.operator_require, :arity, 1}
+replace {KC3.operator_require, :symbol_value, cfn Tag "kc3_require" (List, Result)}
+replace {KC3.operator_require, :operator_precedence, 12}
+replace {KC3.operator_require, :operator_associativity, :none}
 add {KC3, :operator, KC3.operator_div}
 replace {KC3.operator_div, :is_a, :operator}
 replace {KC3.operator_div, :symbol, :/}

@@ -52,6 +52,7 @@ void ** kc3_dlopen (const s_str *path, void **dest);
 void    kc3_exit (sw code);
 bool    kc3_load (const s_str *path);
 s_tag * kc3_pin (const s_tag *a, s_tag *dest);
+bool    kc3_require (const s_sym * const *module);
 
 /* Special operators. */
 s_tag * kc3_if_then_else (const s_tag *cond, const s_tag *then,

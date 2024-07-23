@@ -2,4 +2,4 @@
   version: 1}
 replace {Ptr, :is_a, :module}
 replace {Ptr, :symbol, Ptr.cast}
-replace {Ptr.cast, :symbol_value, cfn Ptr "ptr_init_cast" (Result, Tag)}
+replace {Ptr.cast, :symbol_value, cfn Ptr "ptr_init_cast" (Result, Sym, Tag)}

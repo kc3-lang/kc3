@@ -240,6 +240,11 @@ sw kc3_puts (const s_tag *tag)
   return result;
 }
 
+bool kc3_require (const s_sym * const *module)
+{
+  return env_module_ensure_loaded(&g_kc3_env, *module);
+}
+
 s_list ** kc3_search_modules (s_list **dest)
 {
   return env_search_modules(&g_kc3_env, dest);
