@@ -2249,6 +2249,7 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
   s_tag tag_ident;
   s_tag tag_module_name;
   s_tag tag_operator;
+  s_tag tag_sym;
   s_tag tag_symbol;
   s_tag tag_var;
   tag_init_ident(&tag_ident, ident);
@@ -2262,10 +2263,11 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
     *dest = true;
     return dest;
   }
+  tag_init_sym(&tag_sym, &g_sym_sym);
   tag_init_var(&tag_var, &g_sym_Ident);
   if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
         &tag_module_name, &tag_operator, &tag_var, NULL,
-        &tag_var, &tag_symbol, &tag_ident, NULL, NULL})) {
+        &tag_var, &tag_sym, &tag_ident, NULL, NULL})) {
     err_puts("env_module_has_ident: facts_with");
     assert(! "env_module_has_ident: facts_with");
     return NULL;
