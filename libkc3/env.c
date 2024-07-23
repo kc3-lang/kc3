@@ -549,7 +549,7 @@ bool env_eval_call_arguments (s_env *env, const s_list *args,
                               s_list **dest)
 {
   s_list **tail;
-  s_list *tmp;
+  s_list *tmp = NULL;
   tail = &tmp;
   while (args) {
     *tail = list_new(NULL);

@@ -642,6 +642,8 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
     return sw_init_copy(data, src);
   if (type == &g_sym_Sym)
     return sym_init_copy(data, src);
+  if (type == &g_sym_Tag)
+    return tag_init_copy(data, src);
   if (type == &g_sym_Tuple)
     return tuple_init_copy(data, src);
   if (type == &g_sym_U8)
