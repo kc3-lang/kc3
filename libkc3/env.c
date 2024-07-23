@@ -291,6 +291,7 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
 {
   const s_sym *module;
   s_tag *result = NULL;
+  s_list *search_modules;
   s_tag tag_is_a;
   s_tag tag_module;
   s_tag tag_module_name;
@@ -303,6 +304,7 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   module = env->current_defmodule;
   env_module_is_loading_set(env, *name, true);
   env->current_defmodule = *name;
+  search_modules = env->search_modules;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_module, &g_sym_module);
   tag_init_sym(&tag_module_name, *name);
@@ -310,12 +312,15 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   if (! facts_add_tags(&env->facts, &tag_module_name, &tag_is_a,
                        &tag_module))
     goto clean;
+  if (! env_module_search_modules(env, name, &env->search_modules))
+    goto clean;
   if (! env_eval_block(env, block, &tmp))
     goto clean;
   tag_clean(&tmp);
   tag_init_sym(dest, *name);
   result = dest;
  clean:
+  env->search_modules = search_modules;
   env->current_defmodule = module;
   env_module_is_loading_set(env, *name, false);
   return result;
@@ -621,7 +626,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   assert(fn);
   assert(dest);
   search_modules = env->search_modules;
-  if (! env_module_search_modules(env, fn->module, &env->search_modules))
+  if (! env_module_search_modules(env, &fn->module, &env->search_modules))
     return false;
   clause = fn->clauses;
   if (arguments) {
@@ -2175,7 +2180,6 @@ bool env_load (s_env *env, const s_str *path)
     tag_clean(&tag);
   }
   tag_clean(file_dir);
-  tag_clean(file_path);
   *file_dir = file_dir_save;
   *file_path = file_path_save;
   buf_getc_close(&buf);
@@ -2283,7 +2287,6 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
     *dest = true;
     return dest;
   }
-  facts_with_cursor_clean(&cursor);
   if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
                                 &tag_operator, &tag_ident, &fact)) {
     err_puts("env_module_has_ident: facts_find_fact_by_tags");
@@ -2477,24 +2480,26 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module)
   return r;
 }
 
-s_list ** env_module_search_modules (s_env *env, const s_sym *module, s_list **dest)
+s_list ** env_module_search_modules (s_env *env,
+                                     const s_sym * const *module,
+                                     s_list **dest)
 {
   s_list *tmp;
   s_list *tmp2;
   assert(env);
   (void) env;
-  if (! module) {
+  if (! module || ! *module) {
     err_puts("env_module_search_modules: NULL module");
     assert(! "env_module_search_modules: NULL module");
     return NULL;
   }
   if (! (tmp = list_new_sym(&g_sym_KC3, NULL)))
     return NULL;
-  if (module == &g_sym_KC3) {
+  if (*module == &g_sym_KC3) {
     *dest = tmp;
     return dest;
   }
-  tmp2 = list_new_sym(module, tmp);
+  tmp2 = list_new_sym(*module, tmp);
   if (! tmp2) {
     list_delete(tmp);
     return NULL;
@@ -2759,12 +2764,10 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
   assert(sym);
   assert(dest);
   search_module = env->search_modules;
-  if (false) {
-    err_write_1("env_sym_search_modules: ");
-    err_inspect_sym(&sym);
-    err_write_1(": search_module: ");
-    err_inspect_list((const s_list * const *) &search_module);
-    err_write_1("\n");
+  if (! search_module) {
+    err_puts("env_sym_search_modules: env->search_modules = NULL");
+    assert(! "env_sym_search_modules: env->search_modules = NULL");
+    return false;
   }
   while (search_module) {
     if (search_module->tag.type != TAG_SYM ||
@@ -2785,6 +2788,13 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
       return true;
     }
     search_module = list_next(search_module);
+  }
+  if (true) {
+    err_write_1("env_sym_search_modules: ");
+    err_inspect_sym(&sym);
+    err_write_1(": search_module: ");
+    err_inspect_list((const s_list * const *) &env->search_modules);
+    err_write_1(" -> false\n");
   }
   *dest = NULL;
   return true;

@@ -34,7 +34,7 @@ bool *         env_module_has_symbol (s_env *env, const s_sym *module,
 const s_tag ** env_module_load_time (s_env *env, const s_sym *module,
                                      const s_tag **dest);
 s_list **      env_module_search_modules (s_env *env,
-                                          const s_sym *module,
+                                          const s_sym * const *module,
                                           s_list **dest);
 s_list **      env_search_modules (s_env *env, s_list **dest);
 bool           env_sym_search_modules (s_env *env,
