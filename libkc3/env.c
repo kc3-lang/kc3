@@ -2281,6 +2281,7 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
   if (! facts_with_cursor_next(&cursor, &fact)) {
     err_puts("env_module_has_ident: facts_with_cursor_next");
     assert(! "env_module_has_ident: facts_with_cursor_next");
+    facts_with_cursor_clean(&cursor);
     return NULL;
   }
   if (fact) {
@@ -2288,6 +2289,7 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
     *dest = true;
     return dest;
   }
+  facts_with_cursor_clean(&cursor);
   if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
                                 &tag_operator, &tag_ident, &fact)) {
     err_puts("env_module_has_ident: facts_find_fact_by_tags");
@@ -2787,14 +2789,16 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
     }
     if (b) {
       *dest = module;
-      err_write_1("env_sym_search_modules: ");
-      err_inspect_sym(&sym);
-      err_write_1(": search_module: ");
-      err_inspect_sym(&module);
-      err_write_1(" -> Ok\n");
+      if (false) {
+        err_write_1("env_sym_search_modules: ");
+        err_inspect_sym(&sym);
+        err_write_1(": search_module: ");
+        err_inspect_sym(&module);
+        err_write_1(" -> Ok\n");
+      }
       return true;
     }
-    if (true) {
+    if (false) {
       err_write_1("env_sym_search_modules: ");
       err_inspect_sym(&sym);
       err_write_1(": search_module: ");
