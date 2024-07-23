@@ -1950,17 +1950,22 @@ sw buf_parse_if (s_buf *buf, s_call *dest)
   bool has_else;
   sw r;
   sw result = 0;
+  s_buf_save save;
   s_tag *then;
   s_call tmp = {0};
   assert(buf);
   assert(dest);
-  if ((r = buf_read_1(buf, "if")) <= 0)
+  buf_save_init(buf, &save);
+  if ((r = buf_read_sym(buf, &g_sym_if)) <= 0)
     goto clean;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
   result += r;
   if ((r = buf_parse_comments(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) <= 0)
+  if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
   tmp.ident.module = &g_sym_KC3;
@@ -1990,7 +1995,7 @@ sw buf_parse_if (s_buf *buf, s_call *dest)
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
-    if ((r = buf_ignore_spaces(buf)) <= 0)
+    if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
     else_->type = TAG_BLOCK;
@@ -2002,9 +2007,11 @@ sw buf_parse_if (s_buf *buf, s_call *dest)
   r = result;
   goto clean;
  restore:
+  buf_save_restore_rpos(buf, &save);
   call_clean(&tmp);
   r = -1;
  clean:
+  buf_save_clean(buf, &save);
   return r;
 }
 
@@ -2023,6 +2030,11 @@ sw buf_parse_if_then (s_buf *buf, s_tag *dest, bool *has_else)
   if ((r = buf_read_sym(buf, &g_sym_then)) < 0)
     goto restore;
   result += r;
+  if (! r) {
+    if ((r = buf_read_sym(buf, &g_sym_do)) < 0)
+      goto restore;
+    result += r;
+  }
   i = &list;
   *i = NULL;
   while (1) {
