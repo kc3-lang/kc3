@@ -286,10 +286,11 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
   return module;
 }
 
+// FIXME: transaction ?
 s_tag * env_defmodule (s_env *env, const s_sym * const *name,
                        const s_block *block, s_tag *dest)
 {
-  const s_sym *module;
+  const s_sym *prev_defmodule;
   s_tag *result = NULL;
   s_list *search_modules;
   s_tag tag_is_a;
@@ -301,14 +302,13 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   assert(*name);
   assert(block);
   assert(dest);
-  module = env->current_defmodule;
+  prev_defmodule = env->current_defmodule;
   env_module_is_loading_set(env, *name, true);
   env->current_defmodule = *name;
   search_modules = env->search_modules;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_module, &g_sym_module);
   tag_init_sym(&tag_module_name, *name);
-  // FIXME: transaction ?
   if (! facts_add_tags(&env->facts, &tag_module_name, &tag_is_a,
                        &tag_module))
     goto clean;
@@ -320,8 +320,9 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   tag_init_sym(dest, *name);
   result = dest;
  clean:
+  list_delete_all(env->search_modules);
   env->search_modules = search_modules;
-  env->current_defmodule = module;
+  env->current_defmodule = prev_defmodule;
   env_module_is_loading_set(env, *name, false);
   return result;
 }
@@ -2771,13 +2772,14 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
   }
   while (search_module) {
     if (search_module->tag.type != TAG_SYM ||
-        ! (module = search_module->tag.data.sym)) {
+        ! search_module->tag.data.sym) {
       err_write_1("env_sym_search_modules: ");
       err_inspect_sym(&sym);
       err_puts(": invalid env->search_modules");
       assert(! "env_sym_search_modules: invalid env->search_modules");
       return false;
     }
+    module = search_module->tag.data.sym;
     if (! env_module_has_symbol(env, module, sym, &b)) {
       err_puts("env_sym_search_modules: env_module_has_symbol");
       assert(! "env_sym_search_modules: env_module_has_symbol");
@@ -2785,11 +2787,23 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
     }
     if (b) {
       *dest = module;
+      err_write_1("env_sym_search_modules: ");
+      err_inspect_sym(&sym);
+      err_write_1(": search_module: ");
+      err_inspect_sym(&module);
+      err_write_1(" -> Ok\n");
       return true;
+    }
+    if (true) {
+      err_write_1("env_sym_search_modules: ");
+      err_inspect_sym(&sym);
+      err_write_1(": search_module: ");
+      err_inspect_sym(&env->search_modules->tag.data.sym);
+      err_write_1(" -> not found\n");
     }
     search_module = list_next(search_module);
   }
-  if (true) {
+  if (false) {
     err_write_1("env_sym_search_modules: ");
     err_inspect_sym(&sym);
     err_write_1(": search_module: ");
