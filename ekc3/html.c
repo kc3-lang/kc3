@@ -34,6 +34,7 @@ s_str * html_escape (const s_str *str, s_str *dest)
     return NULL;
   }
   if (! tag_is_an_associative_list(&escape_tag)) {
+    tag_clean(&escape_tag);
     err_puts("html_escape: EKC3.html_escape is not an associative"
              " List");
     assert(!("html_escape: EKC3.html_escape is not an associative"
@@ -41,8 +42,10 @@ s_str * html_escape (const s_str *str, s_str *dest)
     return NULL;
   }
   escape = escape_tag.data.list;
-  if (! buf_init_alloc(&buf, str->size * 8))
+  if (! buf_init_alloc(&buf, str->size * 8)) {
+    tag_clean(&escape_tag);
     return NULL;
+    }
   tag.type = TAG_STR;
   tag.data.str = (s_str) {0};
   s = *str;
@@ -91,6 +94,7 @@ s_str * html_escape (const s_str *str, s_str *dest)
       }
     }
   }
+  tag_clean(&escape_tag);
   s = (s_str) {0};
   if (! buf_read_to_str(&buf, &s)) {
     buf_clean(&buf);
@@ -100,6 +104,7 @@ s_str * html_escape (const s_str *str, s_str *dest)
   *dest = s;
   return dest;
  ko:
+  tag_clean(&escape_tag);
   buf_clean(&buf);
   return NULL;
 }

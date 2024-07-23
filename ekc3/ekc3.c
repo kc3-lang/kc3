@@ -477,6 +477,7 @@ sw ekc3_render_file (const s_str *path)
   file_path_save = *file_path;
   file_path->data.str = *path;
   r = ekc3_render_buf(&in);
+  tag_clean(file_dir);
   *file_dir = file_dir_save;
   *file_path = file_path_save;
   buf_file_close(&in);

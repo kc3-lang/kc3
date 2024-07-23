@@ -1880,7 +1880,10 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  tag_init_copy(&tmp, &tag_var);
+  if (! tag_init_copy(&tmp, &tag_var)) {
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
   facts_with_cursor_clean(&cursor);
   if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
         &tag_ident, &tag_is_a, &tag_macro, NULL, NULL }))
