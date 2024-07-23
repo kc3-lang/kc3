@@ -3984,8 +3984,8 @@ sw buf_parse_tag_primary_2 (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_if(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
-      (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
+      (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_bool(buf, dest)) != 0 ||
       (r = buf_parse_tag_character(buf, dest)) != 0 ||
       (r = buf_parse_tag_map(buf, dest)) != 0 ||

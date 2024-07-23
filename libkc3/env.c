@@ -306,13 +306,13 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   env_module_is_loading_set(env, *name, true);
   env->current_defmodule = *name;
   search_modules = env->search_modules;
+  if (! env_module_search_modules(env, name, &env->search_modules))
+    goto clean;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_module, &g_sym_module);
   tag_init_sym(&tag_module_name, *name);
   if (! facts_add_tags(&env->facts, &tag_module_name, &tag_is_a,
                        &tag_module))
-    goto clean;
-  if (! env_module_search_modules(env, name, &env->search_modules))
     goto clean;
   if (! env_eval_block(env, block, &tmp))
     goto clean;
@@ -339,7 +339,7 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
   s_tag tag_operator;
   s_tag tag_ident;
   s_tag tag_is_a;
-  s_tag tag_symbol;
+  s_tag tag_sym_sym;
   s_tag tag_sym;
   s_tag tag_arity_sym;
   s_tag tag_arity_u8;
@@ -354,7 +354,7 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
   tag_ident.data.ident.module = env->current_defmodule;
   tag_ident.data.ident.sym = *name;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
-  tag_init_sym(&tag_symbol, &g_sym_symbol);
+  tag_init_sym(&tag_sym_sym, &g_sym_sym);
   tag_init_sym(&tag_sym, *sym);
   tag_init_sym(&tag_arity_sym, &g_sym_arity);
   arity = tag_arity(symbol_value);
@@ -376,7 +376,7 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
   facts_add_tags(&env->facts, &tag_module_name, &tag_operator,
                  &tag_ident);
   facts_replace_tags(&env->facts, &tag_ident, &tag_is_a, &tag_operator);
-  facts_replace_tags(&env->facts, &tag_ident, &tag_symbol, &tag_sym);
+  facts_replace_tags(&env->facts, &tag_ident, &tag_sym_sym, &tag_sym);
   facts_replace_tags(&env->facts, &tag_ident, &tag_arity_sym,
                      &tag_arity_u8);
   facts_replace_tags(&env->facts, &tag_ident, &tag_symbol_value,
@@ -1853,7 +1853,7 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
   s_tag tmp;
   module = ident->module;
   if (! module) {
-    if (! sym_search_modules(ident->sym, &module) ||
+    if (! env_sym_search_modules(env, ident->sym, &module) ||
         ! module) {
       err_write_1("env_ident_get: symbol not found: ");
       err_inspect_sym(&ident->sym);
@@ -2255,25 +2255,40 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
   s_tag tag_ident;
   s_tag tag_module_name;
   s_tag tag_operator;
-  s_tag tag_sym;
+  s_tag tag_sym_value;
+  s_tag tag_sym_sym;
   s_tag tag_symbol;
   s_tag tag_var;
   tag_init_ident(&tag_ident, ident);
   tag_init_sym(  &tag_module_name, module);
   tag_init_sym(  &tag_operator, &g_sym_operator);
+  tag_init_sym(  &tag_sym_value, ident->sym);
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
   if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
-                                &tag_symbol, &tag_ident, &fact))
+                                &tag_symbol, &tag_ident, &fact)) {
+    err_puts("env_module_has_ident: facts_find_fact_by_tags 1");
+    assert(! "env_module_has_ident: facts_find_fact_by_tags 1");
     return NULL;
+  }
   if (fact) {
     *dest = true;
     return dest;
   }
-  tag_init_sym(&tag_sym, &g_sym_sym);
-  tag_init_var(&tag_var, &g_sym_Ident);
+  if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
+                                &tag_operator, &tag_ident, &fact)) {
+    err_puts("env_module_has_ident: facts_find_fact_by_tags 2");
+    assert(! "env_module_has_ident: facts_find_fact_by_tags 2");
+    return NULL;
+  }
+  if (fact) {
+    *dest = true;
+    return dest;
+  }
+  tag_init_sym(&tag_sym_sym, &g_sym_sym);
+  tag_init_var(&tag_var, &g_sym_Tag);
   if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
         &tag_module_name, &tag_operator, &tag_var, NULL,
-        &tag_var, &tag_sym, &tag_ident, NULL, NULL})) {
+        &tag_var, &tag_sym_sym, &tag_sym_value, NULL, NULL})) {
     err_puts("env_module_has_ident: facts_with");
     assert(! "env_module_has_ident: facts_with");
     return NULL;
@@ -2281,26 +2296,10 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
   if (! facts_with_cursor_next(&cursor, &fact)) {
     err_puts("env_module_has_ident: facts_with_cursor_next");
     assert(! "env_module_has_ident: facts_with_cursor_next");
-    facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  if (fact) {
-    facts_with_cursor_clean(&cursor);
-    *dest = true;
-    return dest;
-  }
+  *dest = fact ? true : false;
   facts_with_cursor_clean(&cursor);
-  if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
-                                &tag_operator, &tag_ident, &fact)) {
-    err_puts("env_module_has_ident: facts_find_fact_by_tags");
-    assert(! "env_module_has_ident: facts_find_fact_by_tags");
-    return NULL;
-  }
-  if (fact) {
-    *dest = true;
-    return dest;
-  }
-  *dest = false;
   return dest;
 }
 
@@ -2789,7 +2788,7 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
     }
     if (b) {
       *dest = module;
-      if (false) {
+      if (true) {
         err_write_1("env_sym_search_modules: ");
         err_inspect_sym(&sym);
         err_write_1(": search_module: ");
@@ -2798,12 +2797,14 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
       }
       return true;
     }
-    if (false) {
+    if (true) {
       err_write_1("env_sym_search_modules: ");
       err_inspect_sym(&sym);
       err_write_1(": search_module: ");
-      err_inspect_sym(&env->search_modules->tag.data.sym);
-      err_write_1(" -> not found\n");
+      err_inspect_sym(&module);
+      err_write_1(" ");
+      err_inspect_list((const s_list * const *) &search_module);
+      err_puts(" -> not found");
     }
     search_module = list_next(search_module);
   }
