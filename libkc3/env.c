@@ -2788,7 +2788,7 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
     }
     if (b) {
       *dest = module;
-      if (true) {
+      if (false) {
         err_write_1("env_sym_search_modules: ");
         err_inspect_sym(&sym);
         err_write_1(": search_module: ");
@@ -2797,7 +2797,7 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
       }
       return true;
     }
-    if (true) {
+    if (false) {
       err_write_1("env_sym_search_modules: ");
       err_inspect_sym(&sym);
       err_write_1(": search_module: ");
