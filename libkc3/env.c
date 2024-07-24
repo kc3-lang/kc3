@@ -68,6 +68,7 @@ bool env_call_get (s_env *env, s_call *call)
 {
   s_facts_cursor cursor;
   const s_fact *fact;
+  const s_fact *found;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_macro;
@@ -87,12 +88,18 @@ bool env_call_get (s_env *env, s_call *call)
   tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
   tag_init_var(  &tag_var, &g_sym_Tag);
   if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
-                                &tag_symbol, &tag_ident, &fact))
+                                &tag_symbol, &tag_ident, &fact)) {
+    err_puts("env_call_get: facts_find_fact_by_tags 1");
+    assert(! "env_call_get: facts_find_fact_by_tags 1");
     return false;
+  }
   if (! fact) {
     if (! facts_find_fact_by_tags(&env->facts, &tag_module_name,
-                                  &tag_operator, &tag_ident, &fact))
+                                  &tag_operator, &tag_ident, &fact)) {
+      err_puts("env_call_get: facts_find_fact_by_tags 2");
+      assert(! "env_call_get: facts_find_fact_by_tags 2");
       return false;
+    }
     if (! fact) {
       err_write_1("env_call_get: symbol ");
       err_write_1(call->ident.sym->str.ptr.pchar);
@@ -103,37 +110,53 @@ bool env_call_get (s_env *env, s_call *call)
     }
   }
   if (! facts_with_tags(&env->facts, &cursor, &tag_ident,
-                        &tag_symbol_value, &tag_var))
+                        &tag_symbol_value, &tag_var)) {
+    err_puts("env_call_get: facts_with_tags");
+    assert(! "env_call_get: facts_with_tags");
     return false;
-  if (! facts_cursor_next(&cursor, &fact))
-    return false;
-  if (fact) {
-    if (tag_var.type == TAG_FN)
-      call->fn = fn_new_copy(&tag_var.data.fn);
-    else if (tag_var.type == TAG_CFN)
-      call->cfn = cfn_new_copy(&tag_var.data.cfn);
-    else {
-      err_write_1("env_call_get: ");
-      err_inspect_ident(&call->ident);
-      err_puts(" is not a function");
-      facts_cursor_clean(&cursor);
-      return false;
-    }
-    facts_cursor_clean(&cursor);
   }
-  if (! facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
-                                &tag_macro, &fact))
+  if (! facts_cursor_next(&cursor, &fact)) {
+    err_puts("env_call_get: facts_cursor_next");
+    assert(! "env_call_get: facts_cursor_next");
     return false;
-  if (fact) {
+  }
+  if (! fact) {
+    err_write_1("env_call_get: ");
+    err_inspect_ident(&call->ident);
+    err_puts(" :symbol_value not found");
+    return false;
+  }
+  if (tag_var.type == TAG_FN)
+    call->fn = fn_new_copy(&tag_var.data.fn);
+  else if (tag_var.type == TAG_CFN)
+    call->cfn = cfn_new_copy(&tag_var.data.cfn);
+  else {
+    err_write_1("env_call_get: ");
+    err_inspect_ident(&call->ident);
+    err_puts(" is not a function");
+    facts_cursor_clean(&cursor);
+    return false;
+  }
+  facts_cursor_clean(&cursor);
+  if (! facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
+                                &tag_macro, &found)) {
+    err_puts("env_call_get: facts_find_fact_by_tags 3");
+    assert(! "env_call_get: facts_find_fact_by_tags 3");
+    return false;
+  }
+  if (found) {
     if (call->fn)
       call->fn->macro = true;
     if (call->cfn)
       call->cfn->macro = true;
   }
   if (! facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
-                                &tag_special_operator, &fact))
+                                &tag_special_operator, &found)) {
+    err_puts("env_call_get: facts_find_fact_by_tags 4");
+    assert(! "env_call_get: facts_find_fact_by_tags 4");
     return false;
-  if (fact) {
+  }
+  if (found) {
     if (call->fn)
       call->fn->special_operator = true;
     if (call->cfn)
@@ -714,7 +737,6 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
 {
   bool b;
   s_call tmp;
-  s_ident tmp_ident;
   const s_tag *value;
   assert(env);
   assert(call);
@@ -732,19 +754,37 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
       return true;
     }
   }
-  if (! env_ident_resolve_module(env, &tmp.ident, &tmp.ident) ||
-      ! env_module_ensure_loaded(env, tmp.ident.module) ||
-      ! env_module_has_ident(env, tmp.ident.module, &tmp.ident,
-                             &b) ||
-      ! b ||
-      ! env_call_get(env, call)) {
-    tmp.ident.module = &g_sym_KC3;
-    if (! env_module_ensure_loaded(env, tmp.ident.module) ||
-        ! env_module_has_ident(env, tmp.ident.module, &tmp.ident,
-                               &b) ||
-        ! b ||
-        ! env_call_get(env, &tmp))
-      return false;
+  if (! env_ident_resolve_module(env, &tmp.ident, &tmp.ident)) {
+    err_puts("env_eval_call_resolve: env_ident_resolve_module");
+    assert(! "env_eval_call_resolve: env_ident_resolve_module");
+    return false;
+  }
+  if (! env_module_ensure_loaded(env, tmp.ident.module)) {
+    err_puts("env_eval_call_resolve: env_module_ensure_loaded");
+    assert(! "env_eval_call_resolve: env_module_ensure_loaded");
+    return false;
+  }
+  if (! env_module_has_ident(env, tmp.ident.module, &tmp.ident,
+                             &b)) {
+    err_puts("env_eval_call_resolve: env_module_has_ident");
+    assert(! "env_eval_call_resolve: env_module_has_ident");
+    return false;
+  }
+  if (! b) {
+    err_write_1("env_eval_call_resolve: env_module_has_ident(");
+    err_inspect_sym(&tmp.ident.module);
+    err_write_1(", ");
+    err_inspect_ident(&tmp.ident);
+    err_puts(") -> false");
+    assert(! "env_eval_call_resolve: env_module_has_ident -> false");
+    return false;
+  }
+  if (! env_call_get(env, &tmp)) {
+    err_write_1("env_eval_call_resolve: env_call_get(");
+    err_inspect_call(&tmp);
+    err_puts(")");
+    assert(! "env_eval_call_resolve: env_call_get");
+    return false;
   }
   *call = tmp;
   return true;
@@ -1964,7 +2004,7 @@ s_ident * env_ident_resolve_module (s_env *env,
   s_ident tmp;
   assert(env);
   assert(ident);
-  ident_init_copy(&tmp, ident);
+  tmp = *ident;
   if (! tmp.module) {
     if (! env_sym_search_modules(env, tmp.sym, &tmp.module)) {
       err_puts("env_ident_resolve_module: env_sym_search_modules");
@@ -2262,7 +2302,7 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
                              const s_ident *ident, bool *dest)
 {
   s_facts_with_cursor cursor;
-  const s_fact *fact;
+  const s_fact *fact = NULL;
   s_tag tag_ident;
   s_tag tag_module_name;
   s_tag tag_operator;

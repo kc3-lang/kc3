@@ -198,14 +198,14 @@ replace {KC3.operator_equal, :sym, :=}
 replace {KC3.operator_equal, :symbol_value, cfn Tag "tag_equal" (Tag, Tag, Result)}
 replace {KC3.operator_equal, :operator_precedence, 1}
 replace {KC3.operator_equal, :operator_associativity, :right}
+replace {KC3, :symbol, KC3.license}
+replace {KC3.license, :symbol_value, cfn Void "kc3_license" ()}
 add {KC3, :symbol, KC3.break}
 replace {KC3.break, :symbol_value, cfn Void "kc3_break" ()}
 add {KC3, :symbol, KC3.if_then_else}
 replace {KC3.if_then_else, :arity, 3}
 replace {KC3.if_then_else, :is_a, :special_operator}
 replace {KC3.if_then_else, :symbol_value, cfn Tag "kc3_if_then_else" (Tag, Tag, Tag, Result)}
-replace {KC3, :symbol, KC3.license}
-replace {KC3.license, :symbol_value, cfn Void "kc3_license" ()}
 add {KC3, :symbol, KC3.type}
 replace {KC3.type, :symbol_value, cfn Sym "tag_type" (Tag, Result)}
 add {KC3, :symbol, KC3.facts_next_id}

@@ -38,6 +38,7 @@ else
     TARGETS="$@"
 fi
 
+rm -f *.diff *.out *.ret
 rm -f .test .test_ko .test_ok
 touch .test .test_ko .test_ok
 for TARGET in $TARGETS; do
