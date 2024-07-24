@@ -1,2 +1,2 @@
 %Socket{}
-%Socket{}
+%Socket{fd: -1}
