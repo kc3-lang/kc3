@@ -340,7 +340,7 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_sym_sym;
-  s_tag tag_sym;
+  s_tag tag_sym_value;
   s_tag tag_arity_sym;
   s_tag tag_arity_u8;
   s_tag tag_symbol_value;
@@ -355,7 +355,7 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
   tag_ident.data.ident.sym = *name;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_sym_sym, &g_sym_sym);
-  tag_init_sym(&tag_sym, *sym);
+  tag_init_sym(&tag_sym_value, *sym);
   tag_init_sym(&tag_arity_sym, &g_sym_arity);
   arity = tag_arity(symbol_value);
   if (arity < 1) {
