@@ -74,7 +74,6 @@ bool env_call_get (s_env *env, s_call *call)
   s_tag tag_module_name;
   s_tag tag_operator;
   s_tag tag_special_operator;
-  s_tag tag_sym;
   s_tag tag_symbol;
   s_tag tag_symbol_value;
   s_tag tag_var;
@@ -84,7 +83,6 @@ bool env_call_get (s_env *env, s_call *call)
   tag_init_sym(  &tag_module_name, call->ident.module);
   tag_init_sym(  &tag_operator, &g_sym_operator);
   tag_init_sym(  &tag_special_operator, &g_sym_special_operator);
-  tag_init_sym(  &tag_sym, call->ident.sym);
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
   tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
   tag_init_var(  &tag_var, &g_sym_Tag);
@@ -376,7 +374,8 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
   facts_add_tags(&env->facts, &tag_module_name, &tag_operator,
                  &tag_ident);
   facts_replace_tags(&env->facts, &tag_ident, &tag_is_a, &tag_operator);
-  facts_replace_tags(&env->facts, &tag_ident, &tag_sym_sym, &tag_sym);
+  facts_replace_tags(&env->facts, &tag_ident, &tag_sym_sym,
+                     &tag_sym_value);
   facts_replace_tags(&env->facts, &tag_ident, &tag_arity_sym,
                      &tag_arity_u8);
   facts_replace_tags(&env->facts, &tag_ident, &tag_symbol_value,
@@ -523,14 +522,19 @@ bool env_eval_block (s_env *env, const s_block *block, s_tag *dest)
 
 bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
 {
-  s_call c;
+  s_call c = {0};
   bool result;
   assert(env);
   assert(call);
   assert(dest);
   (void) call;
   call_init_copy(&c, call);
-  env_eval_call_resolve(env, &c);
+  if (! env_eval_call_resolve(env, &c)) {
+    err_write_1("env_eval_call: env_eval_call_resolve: ");
+    err_inspect_ident(&c.ident);
+    err_write_1("\n");
+    return false;
+  }
   if (c.cfn)
     result = env_eval_call_cfn(env, &c, dest);
   else if (c.fn)
@@ -709,39 +713,40 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
 bool env_eval_call_resolve (s_env *env, s_call *call)
 {
   bool b;
+  s_call tmp;
   s_ident tmp_ident;
   const s_tag *value;
   assert(env);
   assert(call);
-  if (call->ident.module == NULL &&
-      (value = env_frames_get(env, call->ident.sym))) {
+  tmp = *call;
+  if (tmp.ident.module == NULL &&
+      (value = env_frames_get(env, tmp.ident.sym))) {
     if (value->type == TAG_CFN) {
-      call->cfn = cfn_new_copy(&value->data.cfn);
+      tmp.cfn = cfn_new_copy(&value->data.cfn);
+      *call = tmp;
       return true;
     }
     else if (value->type == TAG_FN) {
-      call->fn = fn_new_copy(&value->data.fn);
+      tmp.fn = fn_new_copy(&value->data.fn);
+      *call = tmp;
       return true;
     }
   }
-  ident_init_copy(&tmp_ident, &call->ident);
-  if (! env_ident_resolve_module(env, &tmp_ident, &call->ident) ||
-      ! env_module_ensure_loaded(env, call->ident.module) ||
-      ! env_module_has_ident(env, call->ident.module, &call->ident,
+  if (! env_ident_resolve_module(env, &tmp.ident, &tmp.ident) ||
+      ! env_module_ensure_loaded(env, tmp.ident.module) ||
+      ! env_module_has_ident(env, tmp.ident.module, &tmp.ident,
                              &b) ||
       ! b ||
       ! env_call_get(env, call)) {
-    ident_init_copy(&call->ident, &tmp_ident);
-    call->ident.module = &g_sym_KC3;
-    if (! env_module_ensure_loaded(env, call->ident.module) ||
-        ! env_module_has_ident(env, call->ident.module, &call->ident,
+    tmp.ident.module = &g_sym_KC3;
+    if (! env_module_ensure_loaded(env, tmp.ident.module) ||
+        ! env_module_has_ident(env, tmp.ident.module, &tmp.ident,
                                &b) ||
         ! b ||
-        ! env_call_get(env, call)) {      
-      ident_init_copy(&call->ident, &tmp_ident);
+        ! env_call_get(env, &tmp))
       return false;
-    }
   }
+  *call = tmp;
   return true;
 }
 
