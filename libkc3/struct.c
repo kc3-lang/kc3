@@ -216,6 +216,7 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
     tmp.data = alloc(tmp.type->size);
     if (! tmp.data)
       return NULL;
+    tmp.free_data = true;
     i = 0;
     while (i < tmp.type->map.count) {
       if (tmp.type->map.value[i].type == TAG_VAR)
