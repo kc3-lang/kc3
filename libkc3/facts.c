@@ -454,6 +454,7 @@ s_facts * facts_lock_r (s_facts *facts)
       pthread_rwlock_rdlock(&facts->rwlock)) {
     err_puts("facts_lock_r: pthread_rwlock_rdlock");
     assert(! "facts_lock_r: pthread_rwlock_rdlock");
+    abort();
     return NULL;
   }
   return facts;
@@ -468,6 +469,7 @@ s_facts * facts_lock_unlock_r (s_facts *facts)
       pthread_rwlock_unlock(&facts->rwlock)) {
     err_puts("facts_lock_unlock_r: pthread_rwlock_unlock");
     assert(! "facts_lock_unlock_r: pthread_rwlock_unlock");
+    abort();
     return NULL;
   }
   return facts;
