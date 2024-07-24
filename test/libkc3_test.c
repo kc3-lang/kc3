@@ -42,9 +42,9 @@ void types_test (void);
 
 int main (int argc, char **argv)
 {
+  test_init(&argc, &argv);
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
-  test_init(&argc, &argv);
   if (test_target("types")) {
     fprintf(stderr, "\ntypes\n");
     types_test();
@@ -149,8 +149,8 @@ int main (int argc, char **argv)
     fprintf(stderr, "\nenv\n");
     env_test();
   }
+  kc3_clean(NULL);
   test_summary();
   test_clean();
-  kc3_clean(NULL);
   return 0;
 }
