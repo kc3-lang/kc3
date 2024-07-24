@@ -41,6 +41,8 @@ fi
 rm -f *.diff *.out *.ret
 rm -f .test .test_ko .test_ok
 touch .test .test_ko .test_ok
+TARGET_COUNT=8
+TARGET_I=0
 for TARGET in $TARGETS; do
     (
         RESULT=test_ok
@@ -63,6 +65,11 @@ for TARGET in $TARGETS; do
             test_ko ${TARGET}
         fi
     ) &
+    TARGET_I=$(($TARGET_I + 1))
+    if [ "x$TARGET_I" = "x$TARGET_COUNT" ]; then
+        wait
+        TARGET_I=0
+    fi
 done
 wait
 TEST_COUNT=$(echo $(wc -l .test) | cut -f 1 -d ' ')
