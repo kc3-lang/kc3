@@ -188,7 +188,7 @@ extern const char **g_test_targets;
 
 /* Init and clean. */
 void test_clean (void);
-void test_init (int *argc, char ***argv);
+void test_init (char *argv0, int *argc, char ***argv);
 
 /* Operators. */
 void test_context (const char *context);

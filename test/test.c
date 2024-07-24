@@ -84,7 +84,7 @@ int test_file_compare (const char *path_a, const char *path_b)
   return 0;
 }
 
-void test_init (int *argc, char ***argv)
+void test_init (char *argv0, int *argc, char ***argv)
 {
   const char **t;
   if ((*argv)[(*argc)] != NULL)
@@ -119,7 +119,7 @@ void test_init (int *argc, char ***argv)
       g_test_targets = (const char **) g_test_targets_env_v;
     }
   }
-  printf("%s", (*argv)[0]);
+  printf("%s", argv0);
   t = g_test_targets;
   while (*t) {
     printf(" %s", *t);
