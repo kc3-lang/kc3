@@ -2634,8 +2634,8 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
   s_tag tag_module_name;
   s_tag tag_operator;
   s_tag tag_var;
-  s_tag tag_sym;
-  s_tag tag_symbol;
+  s_tag tag_sym_sym;
+  s_tag tag_sym_value;
   s_ident tmp;
   env_ident_resolve_module(env, op, &tmp);
   tag_init_sym(&tag_arity, &g_sym_arity);
@@ -2645,12 +2645,12 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
   tag_init_sym(&tag_module_name, tmp.module);
   tag_init_sym(&tag_operator, &g_sym_operator);
   tag_init_var(&tag_var, &g_sym_Ident);
-  tag_init_sym(&tag_sym, tmp.sym);
   tag_init_sym(&tag_sym_sym, &g_sym_sym);
+  tag_init_sym(&tag_sym_value, tmp.sym);
   if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
         &tag_module_name, &tag_is_a, &tag_module,
         &tag_operator, &tag_var, NULL,
-        &tag_var, &tag_sym_sym, &tag_sym,
+        &tag_var, &tag_sym_sym, &tag_sym_value,
         &tag_arity, &tag_arity_u8,
         NULL, NULL })) {
     err_write_1("env_operator_resolve: ");
