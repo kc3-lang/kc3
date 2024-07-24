@@ -18,6 +18,7 @@ all:
 	${MAKE} -C ikc3 all
 	${MAKE} -C kc3s all
 	${MAKE} -C ekc3 all
+	${MAKE} -C http all
 	${MAKE} -C test all
 	${MAKE} -C libkc3_window all
 
@@ -28,6 +29,7 @@ asan:
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
+	${MAKE} -C http asan
 	${MAKE} -C test asan
 	${MAKE} -C libkc3_window asan
 
@@ -39,6 +41,7 @@ build:
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
+	${MAKE} -C http build
 	${MAKE} -C test build
 	${MAKE} -C libkc3_window build
 
@@ -49,6 +52,7 @@ clean:
 	${MAKE} -C ikc3 clean
 	${MAKE} -C kc3s clean
 	${MAKE} -C ekc3 clean
+	${MAKE} -C http clean
 	${MAKE} -C test clean
 	${MAKE} -C libkc3_window clean
 
@@ -58,6 +62,7 @@ clean_cov:
 	${MAKE} -C ikc3 clean_cov
 	${MAKE} -C kc3s clean_cov
 	${MAKE} -C ekc3 clean_cov
+	${MAKE} -C http clean_cov
 	${MAKE} -C test clean_cov
 	${MAKE} -C libkc3_window clean_cov
 
@@ -68,6 +73,7 @@ cov:
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C ekc3 cov
+	${MAKE} -C http cov
 	${MAKE} -C test cov
 	${MAKE} -C libkc3_window cov
 
@@ -78,6 +84,7 @@ debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
+	${MAKE} -C http debug
 	${MAKE} -C test debug
 	${MAKE} -C libkc3_window debug
 
@@ -124,6 +131,7 @@ distclean:
 	${MAKE} -C ikc3 distclean
 	${MAKE} -C kc3s distclean
 	${MAKE} -C ekc3 distclean
+	${MAKE} -C http distclean
 	${MAKE} -C test distclean
 	${MAKE} -C libkc3_window distclean
 
@@ -132,6 +140,7 @@ gcovr:
 	${MAKE} -C ikc3 gcovr
 	${MAKE} -C kc3s gcovr
 	${MAKE} -C ekc3 gcovr
+	${MAKE} -C http gcovr
 	${MAKE} -C test gcovr
 	${MAKE} -C libkc3_window gcovr
 	if [ -d "$$HOME/Downloads/kc3_gcovr" ]; then bin/gcovr-to-downloads; fi
@@ -170,6 +179,7 @@ gdb_test_http:
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
+	${MAKE} -C http debug
 	${MAKE} -C test gdb_test_http
 
 gdb_test_ikc3:
@@ -201,6 +211,7 @@ install:
 	${MAKE} -C ikc3 install
 	${MAKE} -C kc3s install
 	${MAKE} -C ekc3 install
+	${MAKE} -C http install
 	${MAKE} -C libkc3_window install
 
 lib_links:
@@ -239,39 +250,48 @@ lldb_test:
 
 test:
 	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
+	${MAKE} -C http build
 	${MAKE} -C test test
 	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
 
 test_asan:
 	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
+	${MAKE} -C http asan
 	${MAKE} -C test test_asan
 
-test_cov: cov clean_cov
+test_cov:
 	${MAKE} -C libtommath cov clean_cov
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov clean_cov
 	${MAKE} -C ikc3 cov clean_cov
 	${MAKE} -C kc3s cov clean_cov
 	${MAKE} -C ekc3 cov clean_cov
+	${MAKE} -C http cov clean_cov
 	${MAKE} -C test test_cov
 
 test_debug:
 	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
+	${MAKE} -C http debug
 	${MAKE} -C test test_debug
 
 test_ekc3:
 	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
@@ -280,6 +300,7 @@ test_ekc3:
 
 test_ekc3_asan:
 	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -288,6 +309,7 @@ test_ekc3_asan:
 
 test_ekc3_cov:
 	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
@@ -296,6 +318,7 @@ test_ekc3_cov:
 
 test_ekc3_debug:
 	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
@@ -311,6 +334,7 @@ test_gcovr:
 
 test_http:
 	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
@@ -319,6 +343,7 @@ test_http:
 
 test_http_asan:
 	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -327,6 +352,7 @@ test_http_asan:
 
 test_http_cov:
 	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
@@ -335,6 +361,7 @@ test_http_cov:
 
 test_http_debug:
 	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
@@ -343,36 +370,48 @@ test_http_debug:
 
 test_ikc3:
 	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C test test_ikc3
 
 test_ikc3_asan:
 	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C test test_ikc3_asan
 
 test_ikc3_cov:
 	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C test test_ikc3_cov
 
 test_ikc3_debug:
 	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C test test_ikc3_debug
 
-test_libkc3: build
+test_libkc3:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
 	${MAKE} -C test test_libkc3
 
-test_libkc3_cov: cov
+test_libkc3_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
 	${MAKE} -C test test_libkc3_cov
 
 test_libkc3_debug:
-	${MAKE} debug
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
 	${MAKE} -C test test_libkc3_debug
 
 .PHONY: \
