@@ -2,4 +2,4 @@
   version: 1}
 replace {PtrFree, :is_a, :module}
 replace {PtrFree, :symbol, PtrFree.cast}
-replace {PtrFree.cast, :symbol_value, cfn PtrFree "ptr_free_init_cast" (Result, Tag)}
+replace {PtrFree.cast, :symbol_value, cfn PtrFree "ptr_free_init_cast" (Result, Sym, Tag)}

@@ -1,12 +1,77 @@
 server = Socket.listen("localhost", "8000")
-%Socket{fd: 4}
+%Socket{fd: 7}
 client = Socket.connect("localhost", "8000")
-%Socket{fd: 5}
-server_client = Socket.accept(server)
-%Socket{fd: 6}
-Socket.close(client)
-void
-Socket.close(server_client)
-void
-Socket.close(server)
-void
+=================================================================
+==79724==ERROR: AddressSanitizer: unknown-crash on address 0x6110047704c0 at pc 0x7f0890c0777b bp 0x7fff91b172b0 sp 0x7fff91b172a0
+WRITE of size 216 at 0x6110047704c0 thread T0
+    #0 0x7f0890c0777a in socket_buf_init_connect /home/baptiste/3tek/kmx/kc3/http/socket_buf.c:114
+    #1 0x7f0897436e2d  (/lib/x86_64-linux-gnu/libffi.so.8+0x7e2d)
+    #2 0x7f0897433492  (/lib/x86_64-linux-gnu/libffi.so.8+0x4492)
+    #3 0x7f08940307e5 in cfn_apply /home/baptiste/3tek/kmx/kc3/libkc3/cfn.c:123
+    #4 0x7f089405c3a9 in env_eval_call_cfn /home/baptiste/3tek/kmx/kc3/libkc3/env.c:624
+    #5 0x7f089406c10f in env_eval_call /home/baptiste/3tek/kmx/kc3/libkc3/env.c:562
+    #6 0x7f0894059e7a in env_eval_tag /home/baptiste/3tek/kmx/kc3/libkc3/env.c:1761
+    #7 0x7f089405da80 in env_eval_equal_tag /home/baptiste/3tek/kmx/kc3/libkc3/env.c:1003
+    #8 0x7f08940f5d0d in tag_equal /home/baptiste/3tek/kmx/kc3/libkc3/tag.c:244
+    #9 0x7f0897436e2d  (/lib/x86_64-linux-gnu/libffi.so.8+0x7e2d)
+    #10 0x7f0897433492  (/lib/x86_64-linux-gnu/libffi.so.8+0x4492)
+    #11 0x7f08940307e5 in cfn_apply /home/baptiste/3tek/kmx/kc3/libkc3/cfn.c:123
+    #12 0x7f089405c3a9 in env_eval_call_cfn /home/baptiste/3tek/kmx/kc3/libkc3/env.c:624
+    #13 0x7f089406c10f in env_eval_call /home/baptiste/3tek/kmx/kc3/libkc3/env.c:562
+    #14 0x7f0894059e7a in env_eval_tag /home/baptiste/3tek/kmx/kc3/libkc3/env.c:1761
+    #15 0x7f089407142c in eval_tag /home/baptiste/3tek/kmx/kc3/libkc3/eval.c:19
+    #16 0x55d4c4346e9e in ikc3_run /home/baptiste/3tek/kmx/kc3/ikc3/ikc3.c:59
+    #17 0x55d4c4347636 in main /home/baptiste/3tek/kmx/kc3/ikc3/ikc3.c:143
+    #18 0x7f0893829d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #19 0x7f0893829e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #20 0x55d4c4346b64 in _start (/home/baptiste/3tek/kmx/kc3/ikc3/.libs/ikc3_asan+0x4b64)
+
+0x611004770594 is located 0 bytes to the right of 212-byte region [0x6110047704c0,0x611004770594)
+allocated by thread T0 here:
+    #0 0x7f0896ab4a57 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154
+    #1 0x7f0893fc07a9 in alloc /home/baptiste/3tek/kmx/kc3/libkc3/alloc.c:25
+    #2 0x7f08940e3aee in struct_allocate /home/baptiste/3tek/kmx/kc3/libkc3/struct.c:58
+    #3 0x7f0894030124 in cfn_tag_init /home/baptiste/3tek/kmx/kc3/libkc3/cfn.c:355
+    #4 0x7f08940310db in cfn_apply /home/baptiste/3tek/kmx/kc3/libkc3/cfn.c:89
+    #5 0x7f089405c3a9 in env_eval_call_cfn /home/baptiste/3tek/kmx/kc3/libkc3/env.c:624
+    #6 0x7f089406c10f in env_eval_call /home/baptiste/3tek/kmx/kc3/libkc3/env.c:562
+    #7 0x7f0894059e7a in env_eval_tag /home/baptiste/3tek/kmx/kc3/libkc3/env.c:1761
+    #8 0x7f089405da80 in env_eval_equal_tag /home/baptiste/3tek/kmx/kc3/libkc3/env.c:1003
+    #9 0x7f08940f5d0d in tag_equal /home/baptiste/3tek/kmx/kc3/libkc3/tag.c:244
+    #10 0x7f0897436e2d  (/lib/x86_64-linux-gnu/libffi.so.8+0x7e2d)
+    #11 0x7fff91b1837f  ([stack]+0x1c37f)
+
+SUMMARY: AddressSanitizer: unknown-crash /home/baptiste/3tek/kmx/kc3/http/socket_buf.c:114 in socket_buf_init_connect
+Shadow bytes around the buggy address:
+  0x0c22808e6040: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c22808e6050: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c22808e6060: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c22808e6070: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c22808e6080: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+=>0x0c22808e6090: fa fa fa fa fa fa fa fa[00]00 00 00 00 00 00 00
+  0x0c22808e60a0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0c22808e60b0: 00 00 04 fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c22808e60c0: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c22808e60d0: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0c22808e60e0: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==79724==ABORTING

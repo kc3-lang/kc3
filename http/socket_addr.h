@@ -10,25 +10,15 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef HTTP_TYPES_H
-#define HTTP_TYPES_H
+#ifndef SOCKET_ADDR_H
+#define SOCKET_ADDR_H
 
-#include <sys/socket.h>
-#include <libkc3/types.h>
+#include "types.h"
 
-/* 1 */
-typedef s32               t_socket;
-typedef struct socket_buf s_socket_buf;
+/* Heap-allocation functions. */
+void              socket_addr_delete (struct sockaddr *sa);
+struct sockaddr * socket_addr_new (u32 len);
+struct sockaddr * socket_addr_new_copy (const struct sockaddr *addr,
+                                        u32 len);
 
-/* 2 */
-typedef t_socket *p_socket;
-
-/* Struct 1 */
-struct socket_buf {
-  struct sockaddr *addr;
-  u32              addr_len;
-  t_socket sockfd;
-  s_buf_rw buf_rw;
-};
-
-#endif /* HTTP_TYPES_H */
+#endif /* SOCKET_H */

@@ -16,6 +16,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <libkc3/kc3.h>
+#include "socket_addr.h"
 #include "socket_buf.h"
 
 void socket_buf_clean (s_socket_buf *sb)
@@ -42,8 +43,13 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
   tmp.buf_rw.r.user_ptr = sb;
   tmp.buf_rw.w.user_ptr = sb;
   tmp.sockfd = sockfd;
+  tmp.addr = socket_addr_new_copy(addr, addr_len);
+  if (! tmp.addr) {
+    err_puts("socket_buf_init: socket_addr_new_copy");
+    assert(! "socket_buf_init: socket_addr_new_copy");
+    return NULL;
+  }
   tmp.addr_len = addr_len;
-  memcpy(&tmp.addr, addr, addr_len);
   *sb = tmp;
   return sb;
 }
@@ -89,6 +95,7 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
       error_reason = "socket_buf_init_connect: connect: ";
       goto next;
     }
+    break;
   next:
     res = res->ai_next;
   }
