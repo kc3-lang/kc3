@@ -24,6 +24,6 @@ bool *        operator_is_right_associative (const s_ident *op,
 s8            operator_precedence (const s_ident *op);
 s_ident *     operator_resolve (const s_ident *ident, u8 arity,
                                 s_ident *dest);
-const s_sym * operator_symbol (const s_ident *op);
+const s_sym ** operator_symbol (const s_ident *op, const s_sym **dest);
 
 #endif /* LIBKC3_OPERATOR_H */

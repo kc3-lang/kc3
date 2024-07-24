@@ -620,6 +620,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   const s_list *args_final = NULL;
   s_fn_clause *clause;
   s_frame frame;
+  const s_sym *module;
   s_list *search_modules;
   s_tag tag;
   s_list *tmp = NULL;
@@ -627,7 +628,12 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   assert(fn);
   assert(dest);
   search_modules = env->search_modules;
-  if (! env_module_search_modules(env, &fn->module, &env->search_modules))
+  module = fn->module;
+  if (! module)
+    module = env->current_defmodule;
+  if (! module)
+    module = &g_sym_KC3;
+  if (! env_module_search_modules(env, &module, &env->search_modules))
     return false;
   clause = fn->clauses;
   if (arguments) {
@@ -2560,14 +2566,17 @@ bool * env_operator_find (s_env *env, const s_ident *op, bool *dest)
 s_ident * env_operator_ident (s_env *env, const s_ident *op,
                               s_ident *dest)
 {
+  s_ident tmp;
   assert(env);
   assert(op);
   assert(dest);
   if (env->current_defmodule == op->module)
-    dest->module = NULL;
+    tmp.module = NULL;
   else
-    dest->module = op->module;
-  dest->sym = env_operator_symbol(env, op);
+    tmp.module = op->module;
+  if (! env_operator_symbol(env, op, &tmp.sym))
+    return NULL;
+  *dest = tmp;
   return dest;
 }
 
@@ -2689,11 +2698,12 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
   return dest;
 }
 
-const s_sym * env_operator_symbol (s_env *env, const s_ident *op)
+const s_sym ** env_operator_symbol (s_env *env, const s_ident *op,
+                                    const s_sym **dest)
 {
   s_facts_cursor cursor;
   const s_fact *fact;
-  const s_sym *r;
+  const s_sym **result = NULL;
   s_tag tag_op;
   s_tag tag_sym_sym;
   s_tag tag_var;
@@ -2708,17 +2718,18 @@ const s_sym * env_operator_symbol (s_env *env, const s_ident *op)
   if (! facts_cursor_next(&cursor, &fact))
     return NULL;
   if (fact &&
-      tag_var.type == TAG_SYM)
-    r = tag_var.data.sym;
+      tag_var.type == TAG_SYM) {
+    *dest = tag_var.data.sym;
+    result = dest;
+  }
   else {
     err_write_1("env_operator_symbol: symbol for operator ");
     err_write_1(op->sym->str.ptr.pchar);
     err_write_1(" not found in module ");
     err_puts(op->module->str.ptr.pchar);
-    r = NULL;
   }
   facts_cursor_clean(&cursor);
-  return r;
+  return result;
 }
 
 void env_pop_error_handler (s_env *env)

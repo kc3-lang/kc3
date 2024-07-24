@@ -358,6 +358,7 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   s8 op_precedence;
   sw r;
   sw result = 0;
+  const s_sym *sym;
   if (call->ident.module == &g_sym_KC3 &&
       call->ident.sym == &g_sym_access)
     return buf_inspect_call_access(buf, call);
@@ -366,8 +367,12 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
     return buf_inspect_call_if_then_else(buf, call);
   if (! operator_find(&call->ident, &op))
     return -1;
-  if (op && operator_symbol(&call->ident) == &g_sym__brackets)
-    return buf_inspect_call_brackets(buf, call);
+  if (op) {
+    if (! operator_symbol(&call->ident, &sym))
+      return -1;
+    if (sym == &g_sym__brackets)
+      return buf_inspect_call_brackets(buf, call);
+  }
   if (call->ident.sym == &g_sym_cast)
     return buf_inspect_cast(buf, call);
   op_arity = op ? operator_arity(&call->ident) : 0;
@@ -653,10 +658,13 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
 {
   sw r;
   sw result = 0;
+  const s_sym *sym;
   s_ident tmp;
   assert(buf);
   assert(call);
-  if (operator_symbol(&call->ident) == &g_sym__paren)
+  if (! operator_symbol(&call->ident, &sym))
+    return -1;
+  if (sym == &g_sym__paren)
     return buf_inspect_call_paren(buf, call);
   if (operator_ident(&call->ident, &tmp) != &tmp)
     return -1;
@@ -704,13 +712,18 @@ sw buf_inspect_call_size (const s_call *call)
   s8 op_precedence;
   sw r;
   sw result = 0;
+  const s_sym *sym;
   if (call->ident.module == &g_sym_KC3 &&
       call->ident.sym == &g_sym_if_then_else)
     return buf_inspect_call_if_then_else_size(call);
   if (! operator_find(&call->ident, &op))
     return -1;
-  if (op && operator_symbol(&call->ident) == &g_sym__brackets)
-    return buf_inspect_call_brackets_size(call);
+  if (op) {
+    if (! operator_symbol(&call->ident, &sym))
+      return -1;
+    if (sym == &g_sym__brackets)
+      return buf_inspect_call_brackets_size(call);
+  }
   if (call->ident.sym == &g_sym_cast)
     return buf_inspect_cast_size(call);
   op_arity = op ? operator_arity(&call->ident) : 0;

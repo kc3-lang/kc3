@@ -44,7 +44,7 @@ s_ident * operator_resolve (const s_ident *op, u8 arity,
   return env_operator_resolve(&g_kc3_env, op, arity, dest);
 }
 
-const s_sym * operator_symbol (const s_ident *op)
+const s_sym ** operator_symbol (const s_ident *op, const s_sym **dest)
 {
-  return env_operator_symbol(&g_kc3_env, op);
+  return env_operator_symbol(&g_kc3_env, op, dest);
 }
