@@ -222,6 +222,10 @@ lib_links_asan:
 	ln -sf ../../../ekc3/.libs/libekc3_asan.so lib/kc3/0.1/ekc3.so
 	ln -sf ../../../http/.libs/libkc3_http_asan.so lib/kc3/0.1/http.so
 
+lib_links_obsd:
+	ln -sf ../../../ekc3/.libs/libekc3.so.0.0 lib/kc3/0.1/ekc3.so
+	ln -sf ../../../http/.libs/libkc3_http.so.0.0 lib/kc3/0.1/http.so
+
 libkc3_gcovr:
 	${MAKE} clean_cov
 	${MAKE} libkc3_test_cov
