@@ -1,6 +1,6 @@
 defmodule HTTP.Request do
 
-  defstruct [action: :get,
+  defstruct [method: :get,
              url: "/",
              protocol: "HTTP/1.1",
              headers: []]
