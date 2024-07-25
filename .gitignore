@@ -103,6 +103,8 @@ test/ikc3/*.diff
 test/ikc3/*.err
 test/ikc3/*.out
 test/ikc3/*.ret
+test/kc3/0.1/ekc3.so
+test/kc3/0.1/http.so
 test/libkc3_test
 test/libkc3_test_asan
 test/libkc3_test_cov
