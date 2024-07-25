@@ -923,12 +923,6 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     return true;
   }
   switch (tag->type) {
-  case TAG_VOID:
-    if (type == &g_sym_Void) {
-      *dest = NULL;
-      return true;
-    }
-    goto invalid_cast;
   case TAG_ARRAY:
     if (type == &g_sym_Array) {
       *dest = tag->data.array.data;
@@ -1179,6 +1173,12 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_VAR:
     if (type == &g_sym_Tag) {
       *dest = tag;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_VOID:
+    if (type == &g_sym_Void) {
+      *dest = NULL;
       return true;
     }
     goto invalid_cast;

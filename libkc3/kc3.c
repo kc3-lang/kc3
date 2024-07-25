@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include "bool.h"
 #include "buf.h"
+#include "buf_parse.h"
 #include "kc3_main.h"
 #include "env.h"
 #include "map.h"
@@ -61,6 +62,15 @@ void kc3_break (void)
   err_puts("break");
   assert(! "break");
   abort();
+}
+
+s_tag * kc3_buf_parse_tag (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  r = buf_parse_tag(buf, dest);
+  if (r <= 0)
+    return NULL;
+  return dest;
 }
 
 void kc3_clean (s_env *env)

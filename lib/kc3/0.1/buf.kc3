@@ -13,4 +13,10 @@ defmodule Buf do
              user_ptr: (Ptr) 0,
              wpos: (Uw) 0]
 
+  def init_alloc = cfn Buf "buf_init_alloc" (Result, Uw)
+
+  def inspect = cfn Sw "buf_inspect_tag" (Buf, Tag)
+
+  def parse_tag = cfn Tag "kc3_buf_parse_tag" (Buf, Result)
+
 end
