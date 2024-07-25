@@ -19,6 +19,7 @@
 /* 1 */
 typedef s32               t_socket;
 typedef struct socket_buf s_socket_buf;
+typedef struct http_request s_http_request;
 
 /* 2 */
 typedef t_socket *p_socket;
@@ -29,6 +30,13 @@ struct socket_buf {
   u32              addr_len;
   t_socket sockfd;
   s_buf_rw buf_rw;
+};
+
+struct http_request {
+  const s_sym *method;
+  s_str url;
+  s_str protocol;
+  s_list *headers;
 };
 
 #endif /* HTTP_TYPES_H */
