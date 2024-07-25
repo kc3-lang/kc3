@@ -2872,7 +2872,7 @@ sw buf_parse_map_key_tag (s_buf *buf, s_tag *dest)
 
 sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
 {
-  s_buf buf_tmp;
+  s_buf buf_tmp = {0};
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -2880,7 +2880,6 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
   const s_sym *sym;
   const s_sym *tmp;
   buf_save_init(buf, &save);
-  buf_init_alloc(&buf_tmp, SYM_MAX);
   if ((r = buf_parse_sym(buf, &sym)) <= 0)
     goto clean;
   if (! sym_is_module(sym)) {
@@ -2888,6 +2887,7 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
     goto restore;
   }
   result += r;
+  buf_init_alloc(&buf_tmp, SYM_MAX);
   if ((r = buf_inspect_sym(&buf_tmp, &sym)) < 0)
     goto clean;
   save.rpos = buf->rpos;
