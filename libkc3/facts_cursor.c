@@ -104,6 +104,7 @@ s_facts_cursor * facts_cursor_lock_init (s_facts_cursor *cursor)
   if (pthread_mutex_init(&cursor->mutex, NULL)) {
     err_puts("facts_cursor_lock_init: pthread_mutex_init");
     assert(! "facts_cursor_lock_init: pthread_mutex_init");
+    abort();
     return NULL;
   }
   return cursor;
@@ -116,7 +117,7 @@ s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor)
   if (pthread_mutex_unlock(&cursor->mutex)) {
     err_puts("facts_cursor_lock_unlock: pthread_mutex_unlock");
     assert(! "facts_cursor_lock_unlock: pthread_mutex_unlock");
-    exit(1);
+    abort();
     return NULL;
   }
   return cursor;
