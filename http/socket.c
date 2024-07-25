@@ -28,19 +28,21 @@ void socket_close (p_socket s)
 
 p_socket socket_init_accept (p_socket s, p_socket listening)
 {
-  struct sockaddr        *addr;
-  struct sockaddr_storage addr_storage = {0};
-  socklen_t               addr_len;
+  struct sockaddr   *addr;
+  struct sockaddr_in addr_in = {0};
+  socklen_t          addr_len;
   sw e;
   t_socket tmp;
   assert(s);
   assert(listening);
-  addr = (struct sockaddr *) &addr_storage;
-  addr_len = sizeof(addr_storage);
+  addr = (struct sockaddr *) &addr_in;
+  addr_len = sizeof(addr_in);
   tmp = accept(*listening, addr, &addr_len);
   if (tmp < 0) {
     e = errno;
-    err_write_1("socket_init_accept: accept: ");
+    err_write_1("socket_init_accept: ");
+    err_inspect_s32(listening);
+    err_write_1(": accept: ");
     err_puts(strerror(e));
     assert(! "socket_init_accept: accept");
     return NULL;

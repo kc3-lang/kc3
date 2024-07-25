@@ -4,7 +4,7 @@ defmodule Socket do
 
   dlopen(__DIR__ + "http.so")
 
-  def accept = cfn Socket "socket_init_accept" (Result, Socket)
+  def accept = cfn Socket.Buf "socket_buf_init_accept" (Result, Socket)
 
   def close = cfn Void "socket_close" (Socket)
 
