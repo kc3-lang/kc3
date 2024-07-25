@@ -37,6 +37,8 @@ ikc3/ikc3_asan
 ikc3/ikc3_cov
 ikc3/ikc3_debug
 *.la
+lib/kc3/0.1/ekc3.so
+lib/kc3/0.1/http.so
 libkc3_window/cairo/quartz/build
 libkc3_window/cairo/quartz/demo/demo.xcodeproj/project.xcworkspace/xcuserdata
 libkc3_window/cairo/quartz/demo/kc3_window_cairo_quartz_demo
@@ -83,8 +85,6 @@ release/
 .test
 .test_ko
 .test_ok
-lib/kc3/0.1/ekc3.so
-lib/kc3/0.1/http.so
 test/ekc3/*.diff
 test/ekc3/*.err
 test/ekc3/*.out
