@@ -123,16 +123,16 @@ test_ekc3_debug:
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./ekc3_test
 
 test_http:
-	IKC3=${SRC_TOP}/ikc3/ikc3 time ./http_test
+	KC3S=${SRC_TOP}/kc3s/kc3s time ./http_test
 
 test_http_asan:
-	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./http_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./http_test
 
 test_http_cov:
-	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./http_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./http_test
 
 test_http_debug:
-	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./http_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./http_test
 
 test_ikc3:
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test

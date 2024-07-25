@@ -8,11 +8,11 @@ TEST_COUNT=0
 TEST_KO=0
 TEST_OK=0
 
-if [ "x$IKC3" = "x" ]; then
-    if [ -f ../../ikc3/ikc3 ]; then
-	IKC3=../../ikc3/ikc3
-    elif [ -f ../../ikc3 ]; then
-	IKC3=../../ikc3
+if [ "x$KC3S" = "x" ]; then
+    if [ -f ../../kc3s/kc3s ]; then
+	KC3S=../../kc3s/kc3s
+    elif [ -f ../../kc3s ]; then
+	KC3S=../../kc3s
     fi
 fi
 
@@ -41,7 +41,7 @@ fi
 rm -f *.diff *.out *.ret
 for TARGET in $TARGETS; do
     RESULT=test_ok
-    $IKC3 --load ${TARGET}.kc3 --quit > ${TARGET}.out 2>&1
+    $KC3S --load ${TARGET}.kc3 --quit > ${TARGET}.out 2>&1
     echo $? > ${TARGET}.ret
     if ! diff -abu ${TARGET}.out.expected ${TARGET}.out > ${TARGET}.diff
     then

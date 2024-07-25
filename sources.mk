@@ -880,6 +880,8 @@ KC3_OTHER_SOURCES = \
 	"kc3.index" \
 	"kc3.version" \
 	"lib/kc3/0.1/array.kc3" \
+	"lib/kc3/0.1/buf.kc3" \
+	"lib/kc3/0.1/buf_rw.kc3" \
 	"lib/kc3/0.1/complex.facts" \
 	"lib/kc3/0.1/cow.kc3" \
 	"lib/kc3/0.1/ekc3.kc3" \
@@ -907,6 +909,8 @@ KC3_OTHER_SOURCES = \
 	"lib/kc3/0.1/s64.facts" \
 	"lib/kc3/0.1/s8.facts" \
 	"lib/kc3/0.1/socket.kc3" \
+	"lib/kc3/0.1/socket/addr.kc3" \
+	"lib/kc3/0.1/socket/buf.kc3" \
 	"lib/kc3/0.1/str.facts" \
 	"lib/kc3/0.1/sw.facts" \
 	"lib/kc3/0.1/sym.facts" \
@@ -935,9 +939,12 @@ KC3_OTHER_SOURCES = \
 	"test/facts_test_open_file.3.expected.facts" \
 	"test/facts_test_open_file.3.in.facts" \
 	"test/facts_test_save.expected.facts" \
-	"test/http/server.kc3.ret.expected" \
-	"test/http/server.out.expected" \
-	"test/http/server.ret.expected" \
+	"test/http/01_socket_buf.out.expected" \
+	"test/http/01_socket_buf.ret.expected" \
+	"test/http/02_socket.out.expected" \
+	"test/http/02_socket.ret.expected" \
+	"test/http/03_server.out.expected" \
+	"test/http/03_server.ret.expected" \
 	"test/ikc3/access.out.expected" \
 	"test/ikc3/access.ret.expected" \
 	"test/ikc3/array.err.expected" \
@@ -948,6 +955,10 @@ KC3_OTHER_SOURCES = \
 	"test/ikc3/bool.err.expected" \
 	"test/ikc3/bool.out.expected" \
 	"test/ikc3/bool.ret.expected" \
+	"test/ikc3/buf.out.expected" \
+	"test/ikc3/buf.ret.expected" \
+	"test/ikc3/buf_rw.out.expected" \
+	"test/ikc3/buf_rw.ret.expected" \
 	"test/ikc3/call.err.expected" \
 	"test/ikc3/call.out.expected" \
 	"test/ikc3/call.ret.expected" \

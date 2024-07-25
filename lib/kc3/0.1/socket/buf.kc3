@@ -5,4 +5,8 @@ defmodule Socket.Buf do
              sockfd: (S32) -1,
              buf_rw: %BufRW{}]
 
+  dlopen(__DIR__ + "../http.so")
+
+  def close = cfn Void "socket_buf_clean" (Socket.Buf)
+
 end
