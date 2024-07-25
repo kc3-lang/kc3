@@ -99,15 +99,13 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
       error_reason = "socket_init_listen: listen: ";
       goto next;
     }
+    *s = sockfd;
+    return s;
   next:
     res = res->ai_next;
   }
-  if (sockfd < 0) {
-    err_write_1(error_reason);
-    err_puts(strerror(e));
-    assert(! "socket_init_listen");
-    return NULL;
-  }
-  *s = sockfd;
-  return s;
+  err_write_1(error_reason);
+  err_puts(strerror(e));
+  assert(! "socket_init_listen");
+  return NULL;
 }
