@@ -32,17 +32,17 @@ s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf)
     err_puts("http_request_buf_parse: no method");
     goto restore;
   }  
-  if ((r = buf_read_until_1_into_str(buf, " ", &tmp.url)) <= 0) {
+  if (! buf_read_until_1_into_str(buf, " ", &tmp.url)) {
     err_puts("http_request_buf_parse: invalid URL");
     goto restore;
   }
-  if ((r = buf_read_until_1_into_str(buf, "\r\n", &tmp.protocol)) <= 0) {
+  if (! buf_read_until_1_into_str(buf, "\r\n", &tmp.protocol)) {
     err_puts("http_request_buf_parse: invalid protocol");
     goto restore;
   }
   tail = &tmp.headers;
   while (1) {
-    if ((r = buf_read_until_1_into_str(buf, "\r\n", &line)) <= 0) {
+    if (! buf_read_until_1_into_str(buf, "\r\n", &line)) {
       err_puts("http_request_buf_parse: invalid header");
       goto restore;
     }
