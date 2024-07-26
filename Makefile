@@ -214,17 +214,25 @@ install:
 	${MAKE} -C http install
 	${MAKE} -C libkc3_window install
 
-lib_links:
+lib_links_linux:
 	ln -sf ../../../ekc3/.libs/libekc3.so lib/kc3/0.1/ekc3.so
 	ln -sf ../../../http/.libs/libkc3_http.so lib/kc3/0.1/http.so
 
-lib_links_asan:
+lib_links_linux_asan:
 	ln -sf ../../../ekc3/.libs/libekc3_asan.so lib/kc3/0.1/ekc3.so
 	ln -sf ../../../http/.libs/libkc3_http_asan.so lib/kc3/0.1/http.so
 
-lib_links_obsd:
+lib_links_linux_debug:
+	ln -sf ../../../ekc3/.libs/libekc3_debug.so lib/kc3/0.1/ekc3.so
+	ln -sf ../../../http/.libs/libkc3_http_debug.so lib/kc3/0.1/http.so
+
+lib_links_bsd:
 	ln -sf ../../../ekc3/.libs/libekc3.so.0.0 lib/kc3/0.1/ekc3.so
 	ln -sf ../../../http/.libs/libkc3_http.so.0.0 lib/kc3/0.1/http.so
+
+lib_links_bsd_debug:
+	ln -sf ../../../ekc3/.libs/libekc3_debug.so.0.0 lib/kc3/0.1/ekc3.so
+	ln -sf ../../../http/.libs/libkc3_http_debug.so.0.0 lib/kc3/0.1/http.so
 
 libkc3_gcovr:
 	${MAKE} clean_cov
