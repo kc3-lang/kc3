@@ -23,8 +23,9 @@ void socket_buf_clean (s_socket_buf *sb)
 {
   assert(sb);
   close(sb->sockfd);
-  socket_addr_delete(sb->addr);
   buf_rw_clean(&sb->buf_rw);
+  if (sb->addr)
+    socket_addr_delete(sb->addr);
 }
 
 s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
