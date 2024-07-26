@@ -43,6 +43,13 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
   }
   tmp.buf_rw.r.user_ptr = sb;
   tmp.buf_rw.w.user_ptr = sb;
+  if (! buf_rw_fd_open(&tmp.buf_rw, sockfd)) {
+    err_puts("socket_buf_init: buf_rw_fd_open");
+    assert(! "socket_buf_init: buf_rw_fd_open");
+    close(sockfd);
+    buf_rw_clean(&tmp.buf_rw);
+    return NULL;
+  }
   tmp.sockfd = sockfd;
   tmp.addr = socket_addr_new_copy(addr, addr_len);
   if (! tmp.addr) {
@@ -83,20 +90,6 @@ s_socket_buf * socket_buf_init_accept (s_socket_buf *sb, p_socket listening)
     close(sockfd);
     return NULL;
   }
-  if (! buf_rw_init_alloc(&tmp.buf_rw, BUF_SIZE)) {
-    err_puts("socket_buf_init_accept: buf_rw_init_alloc");
-    assert(! "socket_buf_init_accept: buf_rw_init_alloc");
-    close(sockfd);
-    return NULL;
-  }
-  if (! buf_rw_fd_open(&tmp.buf_rw, sockfd)) {
-    err_puts("socket_buf_init_accept: buf_rw_fd_open");
-    assert(! "socket_buf_init_accept: buf_rw_fd_open");
-    close(sockfd);
-    buf_rw_clean(&tmp.buf_rw);
-    return NULL;
-  }
-  tmp.sockfd = sockfd;
   *sb = tmp;
   return sb;
 }

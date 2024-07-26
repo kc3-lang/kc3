@@ -7,6 +7,10 @@ defmodule Socket.Buf do
 
   dlopen(__DIR__ + "../http.so")
 
+  def accept = cfn Socket.Buf "socket_buf_init_accept" (Result, Socket)
+
   def close = cfn Void "socket_buf_clean" (Socket.Buf)
+
+  def connect = cfn Socket.Buf "socket_buf_init_connect" (Result, Str, Str)
 
 end

@@ -19,4 +19,6 @@ defmodule Buf do
 
   def parse_tag = cfn Tag "kc3_buf_parse_tag" (Buf, Result)
 
+  def write_str = cfn Sw "buf_write_str" (Buf, Str)
+
 end
