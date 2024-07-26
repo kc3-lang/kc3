@@ -10,12 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef HTTP_H
-#define HTTP_H
+#ifndef HTTP_REQUEST_H
+#define HTTP_REQUEST_H
 
 #include "types.h"
 
 s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf);
 
-
-#endif /* HTTP_H */
+#endif /* HTTP_REQUEST_H */

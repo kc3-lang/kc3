@@ -896,6 +896,7 @@ KC3_OTHER_SOURCES = \
 	"lib/kc3/0.1/gl/vec2.kc3" \
 	"lib/kc3/0.1/gl/vec3.kc3" \
 	"lib/kc3/0.1/gl/vertex.kc3" \
+	"lib/kc3/0.1/http/request.kc3" \
 	"lib/kc3/0.1/integer.facts" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
@@ -943,8 +944,10 @@ KC3_OTHER_SOURCES = \
 	"test/http/01_socket_buf.ret.expected" \
 	"test/http/02_socket.out.expected" \
 	"test/http/02_socket.ret.expected" \
-	"test/http/03_server.out.expected" \
-	"test/http/03_server.ret.expected" \
+	"test/http/03_client_server.out.expected" \
+	"test/http/03_client_server.ret.expected" \
+	"test/http/04_server_request.out.expected" \
+	"test/http/04_server_request.ret.expected" \
 	"test/ikc3/access.out.expected" \
 	"test/ikc3/access.ret.expected" \
 	"test/ikc3/array.err.expected" \

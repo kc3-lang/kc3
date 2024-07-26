@@ -19,10 +19,6 @@
 #include "buf_fd.h"
 #include "buf_save.h"
 
-typedef struct buf_fd {
-  s32 fd;
-} s_buf_fd;
-
 sw buf_fd_open_r_refill (s_buf *buf);
 sw buf_fd_open_w_flush (s_buf *buf);
 sw buf_fd_open_w_seek (s_buf *buf, sw offset, u8 whence);

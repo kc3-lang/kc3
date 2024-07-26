@@ -144,6 +144,7 @@ typedef struct array_dimension         s_array_dimension;
 typedef struct binding                 s_binding;
 typedef struct block                   s_block;
 typedef struct buf                     s_buf;
+typedef struct buf_fd                  s_buf_fd;
 typedef struct buf_rw                  s_buf_rw;
 typedef struct buf_save                s_buf_save;
 typedef struct call                    s_call;
@@ -226,6 +227,10 @@ struct block {
   uw count;
   s_tag *tag;
   bool short_form;
+};
+
+struct buf_fd {
+  s32 fd;
 };
 
 struct buf_save {

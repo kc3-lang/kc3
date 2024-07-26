@@ -26,4 +26,8 @@
 void       buf_rw_clean (s_buf_rw *buf_rw);
 s_buf_rw * buf_rw_init_alloc (s_buf_rw *buf_rw, uw size);
 
+/* Operators. */
+void       buf_rw_fd_close (s_buf_rw *buf_rw);
+s_buf_rw * buf_rw_fd_open (s_buf_rw *buf_rw, s32 fd);
+
 #endif /* LIBKC3_BUF_RW_H */

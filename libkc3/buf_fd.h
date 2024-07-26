@@ -14,15 +14,15 @@
  * @file buf_file.h
  * @brief s_buf interface to UNIX file descriptors.
  */
-#ifndef LIBC3_BUF_FD_H
-#define LIBC3_BUF_FD_H
+#ifndef LIBKC3_BUF_FD_H
+#define LIBKC3_BUF_FD_H
 
 #include <stdio.h>
 #include "types.h"
 
-/* modifiers */
+/* Operators. */
 s_buf * buf_fd_open_r (s_buf *buf, s32 fd);
 s_buf * buf_fd_open_w (s_buf *buf, s32 fd);
 void    buf_fd_close (s_buf *buf);
 
-#endif /* LIBC3_BUF_FD_H */
+#endif /* LIBKC3_BUF_FD_H */
