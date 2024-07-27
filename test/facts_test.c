@@ -467,7 +467,7 @@ TEST_CASE(facts_open_file)
   }
   facts_init(&facts);
   str_init_1(&path, NULL, "facts_test_open_file.1.facts");
-  TEST_EQ(facts_open_file(&facts, &path), 761);
+  TEST_EQ(facts_open_file(&facts, &path), 944);
   TEST_EQ(facts_count(&facts), 23);
   i = 0;
   while (p[i]) {
