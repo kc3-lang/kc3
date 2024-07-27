@@ -13,13 +13,21 @@
 /* Gen from buf_inspect_s.c.in BITS=32 bits=32 */
 #include <string.h>
 #include "buf.h"
+#include "buf_inspect.h"
 #include "buf_inspect_u32.h"
+#include "sym.h"
 
 sw buf_inspect_s32 (s_buf *buf, const s32 *s)
 {
   sw r;
   sw result = 0;
   u32 u;
+  if ((r = buf_inspect_paren_sym(buf, &g_sym_S32)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
   u = *s;
   if (*s < 0) {
     if ((r = buf_write_1(buf, "-")) < 0)
@@ -27,7 +35,7 @@ sw buf_inspect_s32 (s_buf *buf, const s32 *s)
     result += r;
     u = -*s;
   }
-  if ((r = buf_inspect_u32 (buf, &u)) < 0)
+  if ((r = buf_inspect_u32(buf, &u)) < 0)
     return r;
   result += r;
   return result;
@@ -35,8 +43,13 @@ sw buf_inspect_s32 (s_buf *buf, const s32 *s)
 
 sw buf_inspect_s32_size (const s32 *s)
 {
+  sw r;
   sw result = 0;
   u32 u;
+  if ((r = buf_inspect_paren_sym_size(&g_sym_S32)) < 0)
+    return r;
+  result += r;
+  result += strlen(" ");
   u = *s;
   if (*s < 0) {
     result += strlen("-");
