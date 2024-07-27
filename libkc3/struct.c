@@ -41,7 +41,8 @@ s_tag * struct_access (const s_struct *s, const s_sym *key, s_tag *dest)
     return NULL;
   if (st) {
     tmp.data.struct_.type = st;
-    if (! struct_allocate(&tmp.data.struct_))
+    if (! tmp.data.struct_.data &&
+        ! struct_allocate(&tmp.data.struct_))
       return NULL;
   }
   if (! tag_to_pointer(&tmp, type, &tmp_data))
