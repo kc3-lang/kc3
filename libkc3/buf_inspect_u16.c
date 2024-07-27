@@ -23,12 +23,14 @@ sw buf_inspect_u16 (s_buf *buf, const u16 *u)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_inspect_paren_sym(buf, &g_sym_U16)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, " ")) < 0)
-    return r;
-  result += r;
+  if (g_buf_inspect_type != &g_sym_U16) {
+    if ((r = buf_inspect_paren_sym(buf, &g_sym_U16)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, " ")) < 0)
+      return r;
+    result += r;
+  }
   if ((r = buf_inspect_u16_base(buf, &g_kc3_base_decimal, u)) < 0)
     return r;
   result += r;
@@ -127,10 +129,12 @@ sw buf_inspect_u16_size (const u16 *u)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_inspect_paren_sym_size(&g_sym_U16)) < 0)
-    return r;
-  result += r;
-  result++;
+  if (g_buf_inspect_type != &g_sym_U16) {
+    if ((r = buf_inspect_paren_sym_size(&g_sym_U16)) < 0)
+      return r;
+    result += r;
+    result++;
+  }
   if ((r = buf_inspect_u16_base_size(&g_kc3_base_decimal, u)) < 0)
     return r;
   result += r;

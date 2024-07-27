@@ -19,6 +19,8 @@
 #include "array.h"
 #include "buf.h"
 #include "buf_inspect.h"
+#include "buf_inspect_s32_decimal.h"
+#include "buf_inspect_s64_decimal.h"
 #include "buf_save.h"
 #include "character.h"
 #include "cow.h"
@@ -31,6 +33,8 @@
 #include "special_operator.h"
 #include "str.h"
 #include "tag.h"
+
+const s_sym *g_buf_inspect_type = NULL;
 
 sw buf_inspect_array_data (s_buf *buf, const s_array *array);
 sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
@@ -45,6 +49,7 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type);
 
 sw buf_inspect_array (s_buf *buf, const s_array *array)
 {
+  const s_sym *buf_inspect_type;
   sw r;
   sw result = 0;
   assert(buf);
@@ -63,11 +68,14 @@ sw buf_inspect_array (s_buf *buf, const s_array *array)
     r = result;
     goto clean;
   }
+  buf_inspect_type = g_buf_inspect_type;
+  g_buf_inspect_type = sym_array_type(array->array_type);
   if ((r = buf_inspect_array_data(buf, array)) < 0) {
     err_puts("buf_inspect_array: buf_inspect_array_data");
     goto clean;
   }
   result += r;
+  g_buf_inspect_type = buf_inspect_type;
   r = result;
  clean:
   return r;
@@ -146,6 +154,7 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
 sw buf_inspect_array_data_size (const s_array *array)
 {
   uw *address;
+  const s_sym *buf_inspect_type;
   u8 *data = NULL;
   s_tag *tag = NULL;
   sw r;
@@ -157,9 +166,12 @@ sw buf_inspect_array_data_size (const s_array *array)
   address = alloc(array->dimension * sizeof(uw));
   if (! address)
     return -1;
+  buf_inspect_type = g_buf_inspect_type;
+  g_buf_inspect_type = sym_array_type(array->array_type);
   r = buf_inspect_array_data_size_rec(array, (const u8 **) &data,
                                       (const s_tag **) &tag,
                                       address, 0);
+  g_buf_inspect_type = buf_inspect_type;
   free(address);
   return r;
 }
@@ -1080,7 +1092,7 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_s32(buf, &exp)) <= 0)
+    if ((r = buf_inspect_s32_decimal(buf, &exp)) <= 0)
       return r;
     result += r;
   }
@@ -1158,7 +1170,7 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_s64(buf, &exp)) <= 0)
+    if ((r = buf_inspect_s64_decimal(buf, &exp)) <= 0)
       return r;
     result += r;
   }
@@ -1793,6 +1805,7 @@ sw buf_inspect_list_tag_size (const s_tag *tag)
 
 sw buf_inspect_map (s_buf *buf, const s_map *map)
 {
+  const s_sym *buf_inspect_type;
   uw i = 0;
   s_tag *k;
   sw r;
@@ -1825,9 +1838,17 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_tag(buf, map->value + i)) < 0)
+    buf_inspect_type = g_buf_inspect_type;
+    if (! tag_type(map->value + i, &g_buf_inspect_type)) {
+      g_buf_inspect_type = buf_inspect_type;
+      return -1;
+    }
+    if ((r = buf_inspect_tag(buf, map->value + i)) < 0) {
+      g_buf_inspect_type = buf_inspect_type;
       return r;
+    }
     result += r;
+    g_buf_inspect_type = buf_inspect_type;
     i++;
     if (i < map->count) {
       if ((r = buf_write_1(buf, ", ")) < 0)

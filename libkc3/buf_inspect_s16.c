@@ -15,6 +15,7 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_inspect_u16.h"
+#include "buf_inspect_u16_decimal.h"
 #include "sym.h"
 
 sw buf_inspect_s16 (s_buf *buf, const s16 *s)
@@ -22,12 +23,14 @@ sw buf_inspect_s16 (s_buf *buf, const s16 *s)
   sw r;
   sw result = 0;
   u16 u;
-  if ((r = buf_inspect_paren_sym(buf, &g_sym_S16)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, " ")) < 0)
-    return r;
-  result += r;
+  if (g_buf_inspect_type != &g_sym_S16) {
+    if ((r = buf_inspect_paren_sym(buf, &g_sym_S16)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, " ")) < 0)
+      return r;
+    result += r;
+  }
   u = *s;
   if (*s < 0) {
     if ((r = buf_write_1(buf, "-")) < 0)
@@ -35,7 +38,7 @@ sw buf_inspect_s16 (s_buf *buf, const s16 *s)
     result += r;
     u = -*s;
   }
-  if ((r = buf_inspect_u16(buf, &u)) < 0)
+  if ((r = buf_inspect_u16_decimal(buf, &u)) < 0)
     return r;
   result += r;
   return result;
@@ -46,15 +49,17 @@ sw buf_inspect_s16_size (const s16 *s)
   sw r;
   sw result = 0;
   u16 u;
-  if ((r = buf_inspect_paren_sym_size(&g_sym_S16)) < 0)
-    return r;
-  result += r;
-  result += strlen(" ");
+  if (g_buf_inspect_type != &g_sym_S16) {
+    if ((r = buf_inspect_paren_sym_size(&g_sym_S16)) < 0)
+      return r;
+    result += r;
+    result += strlen(" ");
+  }
   u = *s;
   if (*s < 0) {
     result += strlen("-");
     u = -*s;
   }
-  result += buf_inspect_u16_size(&u);
+  result += buf_inspect_u16_decimal_size(&u);
   return result;
 }

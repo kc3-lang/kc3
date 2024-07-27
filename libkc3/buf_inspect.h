@@ -21,6 +21,8 @@
 
 #include "types.h"
 
+extern const s_sym *g_buf_inspect_type;
+
 #define BUF_INSPECT_S_BASE_PROTOTYPES(bits, base)                      \
   sw buf_inspect_s ## bits ## _ ## base (s_buf *buf,                   \
                                          const s ## bits *s);          \
