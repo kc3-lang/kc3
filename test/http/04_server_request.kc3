@@ -4,6 +4,10 @@ quote client = Socket.Buf.connect("localhost", "58000")
 client = Socket.Buf.connect("localhost", "58000")
 quote server_client = Socket.accept(server)
 server_client = Socket.Buf.accept(server)
+quote client.buf_rw
+client.buf_rw
+quote client.buf_rw.w
+client.buf_rw.w
 quote Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n")
 Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n")
 quote Socket.Buf.close(client)

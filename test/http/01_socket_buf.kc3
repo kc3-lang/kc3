@@ -1,4 +1,4 @@
-quote %Socket.Buf{}
-%Socket.Buf{}
-quote %Socket{}
-%Socket{}
+quote a = %Socket.Buf{}
+a = %Socket.Buf{}
+quote a.buf_rw
+a.buf_rw

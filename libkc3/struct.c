@@ -26,6 +26,7 @@
 s_tag * struct_access (const s_struct *s, const s_sym *key, s_tag *dest)
 {
   const void *data;
+  const s_struct_type *st;
   const s_sym *type;
   s_tag tmp = {0};
   void *tmp_data;
@@ -36,6 +37,13 @@ s_tag * struct_access (const s_struct *s, const s_sym *key, s_tag *dest)
     return NULL;
   if (! sym_to_tag_type(type, &tmp.type))
     return NULL;
+  if (! struct_type_find(type, &st))
+    return NULL;
+  if (st) {
+    tmp.data.struct_.type = st;
+    if (! struct_allocate(&tmp.data.struct_))
+      return NULL;
+  }
   if (! tag_to_pointer(&tmp, type, &tmp_data))
     return NULL;
   if (! data_init_copy(type, tmp_data, data))
