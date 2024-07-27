@@ -1805,7 +1805,6 @@ sw buf_inspect_list_tag_size (const s_tag *tag)
 
 sw buf_inspect_map (s_buf *buf, const s_map *map)
 {
-  const s_sym *buf_inspect_type;
   uw i = 0;
   s_tag *k;
   sw r;
@@ -1838,17 +1837,9 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
         return r;
       result += r;
     }
-    buf_inspect_type = g_buf_inspect_type;
-    if (! tag_type(map->value + i, &g_buf_inspect_type)) {
-      g_buf_inspect_type = buf_inspect_type;
-      return -1;
-    }
-    if ((r = buf_inspect_tag(buf, map->value + i)) < 0) {
-      g_buf_inspect_type = buf_inspect_type;
+    if ((r = buf_inspect_tag(buf, map->value + i)) < 0)
       return r;
-    }
     result += r;
-    g_buf_inspect_type = buf_inspect_type;
     i++;
     if (i < map->count) {
       if ((r = buf_write_1(buf, ", ")) < 0)
