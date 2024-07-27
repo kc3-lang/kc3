@@ -40,10 +40,10 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 # Common config for all targets
 CPPFLAGS="-I../.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
-CFLAGS="$CFLAGS -msse2 -mfpmath=sse"
 LDFLAGS="--shared ${LDFLAGS}"
 config_asan
 config_gnu
+config_i386
 pkg_config libbsd-overlay
 pkg_config libmd
 pkg_config freetype2

@@ -183,6 +183,12 @@ config_gnu() {
     fi
 }
 
+config_i386() {
+    if [ "x$(uname -m)" = "xi386" ]; then
+	CFLAGS="$CFLAGS -msse2 -mfpmath=sse"
+    fi
+}
+
 config_include() {
     OUT=".config_$1"
     OUT_C=".config_$1.c"

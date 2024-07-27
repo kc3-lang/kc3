@@ -15,57 +15,100 @@ set -e
 
 echo "$PWD/configure"
 
+export SRC_TOP="$(dirname "$PWD")"
+
+CONFIG_H_PREFIX=KC3S_
+
 . ../config.subr
 
-PROG=c3c
-LIBRARY=../libkc3/libkc3.la
+PROG=kc3s
+PROG_ASAN=kc3s_asan
+PROG_COV=kc3s_cov
+PROG_DEBUG=kc3s_debug
 
-SOURCES="$(ls *.c | tr '\n' ' ')"
-echo "SOURCES = $SOURCES" >> ${CONFIG_MK}
+. ./sources.sh
 
-OBJECTS="$(c2lo "$SOURCES")"
+OBJECTS="$(c2ext .main.lo "$SOURCES")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 
-check_libbsd
+OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
+echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
 
-if pkg-config libbsd-overlay; then
-    CPPFLAGS="$CPPFLAGS -D_DEFAULT_SOURCE -D__USE_MISC"
+if $HAVE_GCOV; then
+    OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
+    echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
 fi
 
-if [ x"$DEBUG" = x"yes" ]; then
-    CFLAGS="$CFLAGS -DDEBUG -O0 -ggdb"
-else
-    CFLAGS="$CFLAGS -DNDEBUG -O2"
-fi
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-if pkg-config libbsd-overlay; then
-    CFLAGS="$CFLAGS $(pkg-config --cflags libbsd-overlay)"
-fi
+OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
+echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
-LIBS="$LIBS $LIBRARY"
-if pkg-config libbsd-overlay; then
-    LIBS="$LIBS $(pkg-config --libs libbsd-overlay)"
-fi
+# Common config for all targets
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
+LDFLAGS="$LDFLAGS -rdynamic"
+config_asan
+config_gnu
+config_i386
+pkg_config libbsd-overlay
+pkg_config libffi
+pkg_config libmd
+config_lib libmd -lmd 2>/dev/null
+config_lib dl -ldl 2>/dev/null
+LIBS="$LIBS -pthread -lm"
 
+# Asan config
+CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
+CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
+LDFLAGS_ASAN="$LDFLAGS"
+LIBKC3_ASAN=../libkc3/libkc3_asan.la
+LOCAL_LIBS_ASAN="$LIBKC3_ASAN"
+LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
+
+# Coverage config
+CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
+LDFLAGS_COV="$LDFLAGS --coverage"
+LIBKC3_COV=../libkc3/libkc3_cov.la
+LOCAL_LIBS_COV="$LIBKC3_COV"
+LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
+
+# Debug config
+CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -ggdb"
+LDFLAGS_DEBUG="$LDFLAGS"
+LIBKC3_DEBUG=../libkc3/libkc3_debug.la
+LOCAL_LIBS_DEBUG="$LIBKC3_DEBUG"
+LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
+
+# Main config
+DEFAULT_CFLAGS="-O2 -fPIC"
+if [ "x$ENV_CFLAGS" = "x" ]; then
+    CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
+fi
+CFLAGS="$CFLAGS -DNDEBUG"
+LIBKC3=../libkc3/libkc3.la
+LOCAL_LIBS="$LIBKC3"
+LIBS="$LOCAL_LIBS $LIBS"
+
+echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
 echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
 echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
-
-for SRC in $SOURCES; do
-    SRC_LO=$(c2lo $SRC)
-    echo >> ${CONFIG_MK}
-    lo_rule $SRC >> ${CONFIG_MK}
-    echo "	\${LIBTOOL} --tag CC --mode compile \${CC} \${CPPFLAGS} \${CFLAGS} -c $SRC -o $SRC_LO" >> ${CONFIG_MK}
-done
-
 echo >> ${CONFIG_MK}
-echo "$PROG: $LIBRARY $OBJECTS" >> ${CONFIG_MK}
-echo "	${LIBTOOL} --tag=CC --mode=link \${CC} \${LDFLAGS} ${OBJECTS} ${LIBRARY} ${LIBS} -o $PROG" >> ${CONFIG_MK}
-
+echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
+echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
+echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
-echo "install: $LIBRARY $PROG" >> ${CONFIG_MK}
-echo "	\${INSTALL} -o \${OWNER} -g \${GROUP} -m 0755 -d \${LIBDIR}" >> ${CONFIG_MK}
-echo "	\${LIBTOOL} --tag=CC --mode=install \${INSTALL} -o \${OWNER} -g \${GROUP} -m 0755 $LIBRARY \${LIBDIR}" >> ${CONFIG_MK}
-echo "	\${INSTALL} -o \${OWNER} -g \${GROUP} -m 0755 -d \${BINDIR}" >> ${CONFIG_MK}
-echo "	\${LIBTOOL} --tag=CC --mode=install \${INSTALL} -o \${OWNER} -g \${GROUP} -m 0755 $PROG \${BINDIR}/$PROG" >> ${CONFIG_MK}
+echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
+echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
+echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
+echo >> ${CONFIG_MK}
+echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
+echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
+echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
+
+update_build
+update_build_prog
+
+build_lo
+build_prog
+
+update_config_mk

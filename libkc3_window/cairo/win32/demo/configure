@@ -45,10 +45,10 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
-CFLAGS="$CFLAGS -msse2 -mfpmath=sse"
 CPPFLAGS="-I../../../../../libffi/include -I../../../../.. $CPPFLAGS"
 config_asan
 config_gnu
+config_i386
 pkg_config libbsd-overlay
 pkg_config cairo
 pkg_config cairo-win32

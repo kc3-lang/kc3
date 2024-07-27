@@ -68,12 +68,12 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -I../../../.."
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
-CFLAGS="$CFLAGS -msse2 -mfpmath=sse"
 OBJCFLAGS="$CFLAGS -W -Wall -Werror"
 LDFLAGS="$LDFLAGS -framework Cocoa"
 LIBS="$LIBS"
 config_asan
 config_gnu
+config_i386
 pkg_config cairo
 pkg_config cairo-ft
 pkg_config libffi
