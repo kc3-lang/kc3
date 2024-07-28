@@ -168,6 +168,8 @@ sw list_length (const s_list *list)
 s_list * list_next (const s_list *list)
 {
   assert(list);
+  if (! list)
+    return NULL;
   switch (list->next.type) {
   case TAG_LIST: return list->next.data.list;
   default: return NULL;

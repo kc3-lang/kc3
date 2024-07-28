@@ -771,6 +771,15 @@ if ${HAVE_GCOV}; then
     echo "GCOV = $GCOV" >> ${CONFIG_MK}
 fi
 
+if [ "x$GDB" = "x" ]; then
+    if which egdb >/dev/null 2>&1; then
+        GDB=egdb
+    else
+        GDB=gdb
+    fi
+fi
+echo "GDB = $GDB" >> ${CONFIG_MK}
+
 if [ "x$GMAKE" = "x" ]; then
     if which gmake >/dev/null 2>&1; then
         GMAKE=gmake

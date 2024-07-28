@@ -133,7 +133,7 @@ const s_sym * sym_array_type (const s_sym *sym)
   sw r;
   bool separator;
   s_str str;
-  const s_sym *tmp;
+  const s_sym *tmp = {0};
   assert(sym);
   buf_init_alloc(&buf, sym->str.size);
   str = sym->str;
@@ -196,7 +196,7 @@ void sym_delete_all (void)
   sym_list = g_sym_list;
   g_sym_list = NULL;
   while (sym_list) {
-    s_sym_list *tmp;
+    s_sym_list *tmp = NULL;
     tmp = sym_list;
     sym_list = sym_list->next;
     if (tmp->free_sym)
@@ -408,7 +408,7 @@ void sym_init_g_sym (void)
 
 const s_sym ** sym_init_str (const s_sym **sym, const s_str *src)
 {
-  const s_sym *tmp;
+  const s_sym *tmp = NULL;
   tmp = sym_find(src);
   if (! tmp)
     tmp = sym_new(src);
@@ -420,7 +420,7 @@ const s_sym ** sym_init_str (const s_sym **sym, const s_str *src)
 
 bool sym_register (const s_sym *sym, s_sym *free_sym)
 {
-  s_sym_list *tmp;
+  s_sym_list *tmp = NULL;
   assert(sym);
   if (sym_find(&sym->str))
     return false;
@@ -656,8 +656,8 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
 
 const s_sym * sym_new (const s_str *src)
 {
-  s_sym *sym;
-  s_sym_list *tmp;
+  s_sym *sym = NULL;
+  s_sym_list *tmp = NULL;
   sym = alloc(sizeof(s_sym));
   if (! sym)
     return NULL;

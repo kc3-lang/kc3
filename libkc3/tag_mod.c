@@ -17,8 +17,8 @@
 
 s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest)
 {
-  s_integer tmp;
-  s_integer tmp2;
+  s_integer tmp = {0};
+  s_integer tmp2 = {0};
   assert(a);
   assert(b);
   assert(dest);

@@ -35,7 +35,7 @@ s_tag * var_init_cast (s_tag *tag, const s_sym * const *type,
                        const s_tag *src)
 {
   void *data;
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(tag);
   assert(type);
   assert(src);

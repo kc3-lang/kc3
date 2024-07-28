@@ -72,16 +72,16 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details test.html
 
 gdb_test: debug
-	if [ -f libkc3_test_debug.core ]; then gdb .libs/libkc3_test_debug libkc3_test_debug.core; else gdb .libs/libkc3_test_debug; fi
+	if [ -f libkc3_test_debug.core ]; then ${GDB} .libs/libkc3_test_debug libkc3_test_debug.core; else ${GDB} .libs/libkc3_test_debug; fi
 
 gdb_test_ekc3:
-	cd ekc3 && gdb ../../kc3s/.libs/kc3s_debug
+	cd ekc3 && ${GDB} ../../kc3s/.libs/kc3s_debug
 
 gdb_test_http:
-	cd http && gdb ../../ikc3/.libs/ikc3_debug
+	cd http && ${GDB} ../../ikc3/.libs/ikc3_debug
 
 gdb_test_ikc3:
-	cd ikc3 && gdb ../../ikc3/.libs/ikc3_debug
+	cd ikc3 && ${GDB} ../../ikc3/.libs/ikc3_debug
 
 lldb_test: debug
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi

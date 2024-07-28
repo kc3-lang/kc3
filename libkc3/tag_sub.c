@@ -20,8 +20,8 @@
 s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
 {
   s_complex c;
-  s_integer tmp;
-  s_integer tmp2;
+  s_integer tmp = {0};
+  s_integer tmp2 = {0};
   s_ratio r;
   assert(a);
   assert(b);

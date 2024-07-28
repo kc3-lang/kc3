@@ -16,8 +16,8 @@
 
 s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *result)
 {
-  s_integer tmp;
-  s_integer tmp2;
+  s_integer tmp = {0};
+  s_integer tmp2 = {0};
   s_tag tmp_a;
   switch (a->type) {
   case TAG_BOOL:

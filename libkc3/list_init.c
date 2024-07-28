@@ -42,7 +42,7 @@ s_list * list_init_array (s_list *list, const s_sym *type,
                           uw dimension, const uw *dimensions,
                           s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_array(&tmp.tag, type, dimension, dimensions))
@@ -54,7 +54,7 @@ s_list * list_init_array (s_list *list, const s_sym *type,
 s_list * list_init_array_copy (s_list *list, const s_array *a,
                                s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_array_copy(&tmp.tag, a))
@@ -65,7 +65,7 @@ s_list * list_init_array_copy (s_list *list, const s_array *a,
 
 s_list * list_init_bool (s_list *list, bool b, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_bool(&tmp.tag, b))
@@ -76,7 +76,7 @@ s_list * list_init_bool (s_list *list, bool b, s_list *next)
 
 s_list * list_init_call (s_list *list, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_call(&tmp.tag))
@@ -87,7 +87,7 @@ s_list * list_init_call (s_list *list, s_list *next)
 
 s_list * list_init_character (s_list *list, character c, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_character(&tmp.tag, c))
@@ -98,7 +98,7 @@ s_list * list_init_character (s_list *list, character c, s_list *next)
 
 s_list * list_init_complex (s_list *list, s_complex *c, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_complex(&tmp.tag, c))
@@ -109,7 +109,7 @@ s_list * list_init_complex (s_list *list, s_complex *c, s_list *next)
 
 s_list * list_init_f32 (s_list *list, f32 f, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_f32(&tmp.tag, f))
@@ -120,7 +120,7 @@ s_list * list_init_f32 (s_list *list, f32 f, s_list *next)
 
 s_list * list_init_f64 (s_list *list, f64 f, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_f64(&tmp.tag, f))
@@ -131,7 +131,7 @@ s_list * list_init_f64 (s_list *list, f64 f, s_list *next)
 
 s_list * list_init_f128 (s_list *list, f128 f, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_f128(&tmp.tag, f))
@@ -142,7 +142,7 @@ s_list * list_init_f128 (s_list *list, f128 f, s_list *next)
 
 s_list * list_init_fn_copy (s_list *list, const s_fn *fn, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_fn_copy(&tmp.tag, fn))
@@ -154,7 +154,7 @@ s_list * list_init_fn_copy (s_list *list, const s_fn *fn, s_list *next)
 s_list * list_init_ident (s_list *list, const s_ident *ident,
                           s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_ident(&tmp.tag, ident))
@@ -165,7 +165,7 @@ s_list * list_init_ident (s_list *list, const s_ident *ident,
 
 s_list * list_init_ident_1 (s_list *list, const char *p, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_ident_1(&tmp.tag, p))
@@ -176,7 +176,7 @@ s_list * list_init_ident_1 (s_list *list, const char *p, s_list *next)
 
 s_list * list_init_integer_1 (s_list *list, const char *p, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_integer_1(&tmp.tag, p))
@@ -188,7 +188,7 @@ s_list * list_init_integer_1 (s_list *list, const char *p, s_list *next)
 s_list * list_init_integer_copy (s_list *list, const s_integer *i,
                                  s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_integer_copy(&tmp.tag, i))
@@ -199,7 +199,7 @@ s_list * list_init_integer_copy (s_list *list, const s_integer *i,
 
 s_list * list_init_integer_zero (s_list *list, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_integer_zero(&tmp.tag))
@@ -210,7 +210,7 @@ s_list * list_init_integer_zero (s_list *list, s_list *next)
 
 s_list * list_init_map (s_list *list, uw count, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_map(&tmp.tag, count))
@@ -221,7 +221,7 @@ s_list * list_init_map (s_list *list, uw count, s_list *next)
 
 s_list * list_init_map_1 (s_list *list, const char *p, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_map_1(&tmp.tag, p))
@@ -232,7 +232,7 @@ s_list * list_init_map_1 (s_list *list, const char *p, s_list *next)
 
 s_list * list_init_ptr (s_list *list, void *p, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_ptr(&tmp.tag, p))
@@ -243,7 +243,7 @@ s_list * list_init_ptr (s_list *list, void *p, s_list *next)
 
 s_list * list_init_ptr_free (s_list *list, void *p, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_ptr_free(&tmp.tag, p))
@@ -255,7 +255,7 @@ s_list * list_init_ptr_free (s_list *list, void *p, s_list *next)
 s_list * list_init_quote_copy (s_list *list, const s_quote *quote,
                                s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_quote_copy(&tmp.tag, quote))
@@ -266,7 +266,7 @@ s_list * list_init_quote_copy (s_list *list, const s_quote *quote,
 
 s_list * list_init_ratio_1 (s_list *list, const char *p, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_ratio_1(&tmp.tag, p))
@@ -277,7 +277,7 @@ s_list * list_init_ratio_1 (s_list *list, const char *p, s_list *next)
 
 s_list * list_init_ratio (s_list *list, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_ratio(&tmp.tag))
@@ -289,7 +289,7 @@ s_list * list_init_ratio (s_list *list, s_list *next)
 s_list * list_init_ratio_copy (s_list *list, const s_ratio *r,
                                s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_ratio_copy(&tmp.tag, r))
@@ -300,7 +300,7 @@ s_list * list_init_ratio_copy (s_list *list, const s_ratio *r,
 
 s_list * list_init_ratio_zero (s_list *list, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_ratio_zero(&tmp.tag))
@@ -311,7 +311,7 @@ s_list * list_init_ratio_zero (s_list *list, s_list *next)
 
 s_list * list_init_s8 (s_list *list, s8 i, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_s8(&tmp.tag, i))
@@ -322,7 +322,7 @@ s_list * list_init_s8 (s_list *list, s8 i, s_list *next)
 
 s_list * list_init_s16 (s_list *list, s16 i, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_s16(&tmp.tag, i))
@@ -333,7 +333,7 @@ s_list * list_init_s16 (s_list *list, s16 i, s_list *next)
 
 s_list * list_init_s32 (s_list *list, s32 i, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_s32(&tmp.tag, i))
@@ -344,7 +344,7 @@ s_list * list_init_s32 (s_list *list, s32 i, s_list *next)
 
 s_list * list_init_s64 (s_list *list, s64 i, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_s64(&tmp.tag, i))
@@ -356,7 +356,7 @@ s_list * list_init_s64 (s_list *list, s64 i, s_list *next)
 s_list * list_init_str (s_list *list, char *p_free, uw size,
                         const char *p, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_str(&tmp.tag, p_free, size, p))
@@ -368,7 +368,7 @@ s_list * list_init_str (s_list *list, char *p_free, uw size,
 s_list * list_init_str_1 (s_list *list, char *p_free, const char *p,
                           s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_str_1(&tmp.tag, p_free, p))
@@ -380,7 +380,7 @@ s_list * list_init_str_1 (s_list *list, char *p_free, const char *p,
 s_list * list_init_str_cat (s_list *list, const s_str *a,
                             const s_str *b, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_str_cat(&tmp.tag, a, b))
@@ -391,7 +391,7 @@ s_list * list_init_str_cat (s_list *list, const s_str *a,
 
 s_list * list_init_str_empty (s_list *list, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_str_empty(&tmp.tag))
@@ -403,7 +403,7 @@ s_list * list_init_str_empty (s_list *list, s_list *next)
 s_list * list_init_struct (s_list *list, const s_sym *module,
                            s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_struct(&tmp.tag, module))
@@ -416,7 +416,7 @@ s_list * list_init_struct_with_data (s_list *list, const s_sym *module,
                                      void *data, bool free_data,
                                      s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_struct_with_data(&tmp.tag, module, data, free_data))
@@ -428,7 +428,7 @@ s_list * list_init_struct_with_data (s_list *list, const s_sym *module,
 s_list * list_init_struct_type (s_list *list, const s_sym *module,
                                 const s_list *spec, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_struct_type(&tmp.tag, module, spec))
@@ -442,7 +442,7 @@ s_list * list_init_struct_type_update_clean (s_list *list,
                                              const s_cfn *clean,
                                              s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_struct_type_update_clean(&tmp.tag, st, clean))
@@ -453,7 +453,7 @@ s_list * list_init_struct_type_update_clean (s_list *list,
 
 s_list * list_init_sw (s_list *list, sw i, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_sw(&tmp.tag, i))
@@ -464,7 +464,7 @@ s_list * list_init_sw (s_list *list, sw i, s_list *next)
 
 s_list * list_init_sym (s_list *list, const s_sym *sym, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_sym(&tmp.tag, sym))
@@ -475,7 +475,7 @@ s_list * list_init_sym (s_list *list, const s_sym *sym, s_list *next)
 
 s_list * list_init_tuple (s_list *list, uw count, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_tuple(&tmp.tag, count))
@@ -487,7 +487,7 @@ s_list * list_init_tuple (s_list *list, uw count, s_list *next)
 s_list * list_init_tuple_2 (s_list *list, const s_tag *a,
                             const s_tag *b, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_tuple_2(&tmp.tag, a, b))
@@ -498,7 +498,7 @@ s_list * list_init_tuple_2 (s_list *list, const s_tag *a,
 
 s_list * list_init_u8 (s_list *list, u8 i, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_u8(&tmp.tag, i))
@@ -509,7 +509,7 @@ s_list * list_init_u8 (s_list *list, u8 i, s_list *next)
 
 s_list * list_init_u16 (s_list *list, u16 i, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_u16(&tmp.tag, i))
@@ -520,7 +520,7 @@ s_list * list_init_u16 (s_list *list, u16 i, s_list *next)
 
 s_list * list_init_u32 (s_list *list, u32 i, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_u32(&tmp.tag, i))
@@ -531,7 +531,7 @@ s_list * list_init_u32 (s_list *list, u32 i, s_list *next)
 
 s_list * list_init_u64 (s_list *list, u64 i, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_u64(&tmp.tag, i))
@@ -543,7 +543,7 @@ s_list * list_init_u64 (s_list *list, u64 i, s_list *next)
 s_list * list_init_unquote_copy (s_list *list,
                                  const s_unquote *unquote, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_unquote_copy(&tmp.tag, unquote))
@@ -554,7 +554,7 @@ s_list * list_init_unquote_copy (s_list *list,
 
 s_list * list_init_uw (s_list *list, uw i, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_uw(&tmp.tag, i))
@@ -565,7 +565,7 @@ s_list * list_init_uw (s_list *list, uw i, s_list *next)
 
 s_list * list_init_var (s_list *list, const s_sym *type, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_var(&tmp.tag, type))
@@ -576,7 +576,7 @@ s_list * list_init_var (s_list *list, const s_sym *type, s_list *next)
 
 s_list * list_init_void (s_list *list, s_list *next)
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_void(&tmp.tag))

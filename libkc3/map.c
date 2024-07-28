@@ -193,10 +193,10 @@ s_map * map_init_from_lists (s_map *map, const s_list *keys,
 
 s_list ** map_map (const s_map *map, const s_fn *fn, s_list **result)
 {
-  s_list *args;
+  s_list *args = NULL;
   uw i = 0;
-  s_list **t;
-  s_list *tmp;
+  s_list **t = NULL;
+  s_list *tmp = NULL;
   assert(map);
   assert(fn);
   assert(result);
@@ -302,7 +302,7 @@ s_map * map_sort (s_map *map)
 s_map * map_update (const s_map *map, const s_tag *key,
                     const s_tag *value, s_map *dest)
 {
-  s_map tmp;
+  s_map tmp = {0};
   uw i = 0;
   map_init_copy(&tmp, map);
   while (i < map->count) {
@@ -321,8 +321,8 @@ s_map * map_update (const s_map *map, const s_tag *key,
 
 s_map * map_update_list (const s_map *map, const s_list *alist, s_map *dest)
 {
-  const s_list *i;
-  s_map tmp;
+  const s_list *i = NULL;
+  s_map tmp = {0};
   assert(map);
   map_init_copy(&tmp, map);
   i = alist;

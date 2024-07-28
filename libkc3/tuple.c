@@ -42,7 +42,7 @@ void tuple_delete (s_tuple *tuple)
 s_tuple * tuple_init (s_tuple *tuple, uw count)
 {
   uw i;
-  s_tuple tmp;
+  s_tuple tmp = {0};
   assert(tuple);
   assert(2 <= count);
   tmp.count = count;

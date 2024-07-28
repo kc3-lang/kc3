@@ -214,7 +214,7 @@ EOF
 
 #{list_init_proto[0..-2]}
 {
-  s_list tmp;
+  s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_#{name_suffix}(&tmp.tag#{comma_args}))

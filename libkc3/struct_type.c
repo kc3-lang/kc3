@@ -175,7 +175,7 @@ s_struct_type * struct_type_init_update_clean (s_struct_type *st,
 s_struct_type * struct_type_init_copy (s_struct_type *st,
                                        const s_struct_type *src)
 {
-  s_struct_type tmp;
+  s_struct_type tmp = {0};
   assert(st);
   assert(src);
   assert(src->module);

@@ -19,10 +19,10 @@
 
 s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest)
 {
-  s_complex c;
-  s_integer tmp;
-  s_integer tmp2;
-  s_ratio r;
+  s_complex c = {0};
+  s_integer tmp = {0};
+  s_integer tmp2 = {0};
+  s_ratio r = {0};
   assert(a);
   assert(b);
   assert(dest);

@@ -17,7 +17,7 @@
 
 s_tag * tag_neg (const s_tag *tag, s_tag *result)
 {
-  s_integer tmp;
+  s_integer tmp = {0};
   switch (tag->type) {
   case TAG_INTEGER:
     result->type = TAG_INTEGER;

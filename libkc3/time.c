@@ -34,7 +34,7 @@ f64 * time_to_f64 (const s_time *time, f64 *dest)
 
 s_tag * time_to_tag (const s_time *time, s_tag *dest)
 {
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(time);
   if (! tag_init_tuple(&tmp, 2))
     return NULL;

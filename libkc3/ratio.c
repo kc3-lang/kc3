@@ -22,9 +22,9 @@
 
 s_ratio * ratio_add (const s_ratio *a, const s_ratio *b, s_ratio *dest)
 {
-  s_ratio tmp;
-  s_integer i;
-  s_integer j;
+  s_ratio tmp = {0};
+  s_integer i = {0};
+  s_integer j = {0};
   assert(a);
   assert(b);
   assert(dest);
@@ -115,10 +115,10 @@ s_ratio * ratio_init (s_ratio *dest)
 
 s_ratio * ratio_init_1 (s_ratio *q, const char *p)
 {
-  s_buf buf;
+  s_buf buf = {0};
   uw len;
   sw r;
-  s_ratio tmp;
+  s_ratio tmp = {0};
   assert(q);
   assert(p);
   if (! p)
@@ -475,9 +475,9 @@ s_tag * ratio_sqrt (const s_ratio *r, s_tag *dest)
 s_ratio * ratio_sub (const s_ratio *a, const s_ratio *b,
                            s_ratio *dest)
 {
-  s_ratio tmp;
-  s_integer i;
-  s_integer j;
+  s_ratio tmp = {0};
+  s_integer i = {0};
+  s_integer j = {0};
   assert(a);
   assert(b);
   assert(dest);

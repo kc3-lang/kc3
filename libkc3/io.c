@@ -12,6 +12,16 @@
  */
 #include "buf.h"
 #include "buf_inspect.h"
+#include "buf_inspect_s8_decimal.h"
+#include "buf_inspect_s16_decimal.h"
+#include "buf_inspect_s32_decimal.h"
+#include "buf_inspect_s64_decimal.h"
+#include "buf_inspect_sw_decimal.h"
+#include "buf_inspect_u8_decimal.h"
+#include "buf_inspect_u16_decimal.h"
+#include "buf_inspect_u32_decimal.h"
+#include "buf_inspect_u64_decimal.h"
+#include "buf_inspect_uw_decimal.h"
 #include "env.h"
 #include "io.h"
 #include "tag_type.h"
@@ -171,28 +181,38 @@ sw io_write_str (const s_str *x)
   return r;
 }
 
-DEF_ERR_IO_INSPECT(array,      const s_array *)
-DEF_ERR_IO_INSPECT(call,       const s_call *)
-DEF_ERR_IO_INSPECT(character,  const character *)
-DEF_ERR_IO_INSPECT(f32,        const f32 *)
-DEF_ERR_IO_INSPECT(fact,       const s_fact *)
-DEF_ERR_IO_INSPECT(fn_pattern, const s_list *)
-DEF_ERR_IO_INSPECT(ident,      const s_ident *)
-DEF_ERR_IO_INSPECT(list,       const s_list * const *)
-DEF_ERR_IO_INSPECT(map,        const s_map *)
-DEF_ERR_IO_INSPECT(pointer,    const void *)
-DEF_ERR_IO_INSPECT(ptr,        const u_ptr_w *)
-DEF_ERR_IO_INSPECT(s8,         const s8 *)
-DEF_ERR_IO_INSPECT(s16,        const s16 *)
-DEF_ERR_IO_INSPECT(s32,        const s32 *)
-DEF_ERR_IO_INSPECT(s64,        const s64 *)
-DEF_ERR_IO_INSPECT(str,        const s_str *)
-DEF_ERR_IO_INSPECT(sw,         const sw *)
-DEF_ERR_IO_INSPECT(sym,        const s_sym * const *)
-DEF_ERR_IO_INSPECT(tag,        const s_tag *)
-DEF_ERR_IO_INSPECT(tuple,      const s_tuple *)
-DEF_ERR_IO_INSPECT(u8,         const u8 *)
-DEF_ERR_IO_INSPECT(u16,        const u16 *)
-DEF_ERR_IO_INSPECT(u32,        const u32 *)
-DEF_ERR_IO_INSPECT(u64,        const u64 *)
-DEF_ERR_IO_INSPECT(uw,         const uw *)
+DEF_ERR_IO_INSPECT(array,       const s_array *)
+DEF_ERR_IO_INSPECT(call,        const s_call *)
+DEF_ERR_IO_INSPECT(character,   const character *)
+DEF_ERR_IO_INSPECT(f32,         const f32 *)
+DEF_ERR_IO_INSPECT(fact,        const s_fact *)
+DEF_ERR_IO_INSPECT(fn_pattern,  const s_list *)
+DEF_ERR_IO_INSPECT(ident,       const s_ident *)
+DEF_ERR_IO_INSPECT(list,        const s_list * const *)
+DEF_ERR_IO_INSPECT(map,         const s_map *)
+DEF_ERR_IO_INSPECT(pointer,     const void *)
+DEF_ERR_IO_INSPECT(ptr,         const u_ptr_w *)
+DEF_ERR_IO_INSPECT(s8,          const s8 *)
+DEF_ERR_IO_INSPECT(s8_decimal,  const s8 *)
+DEF_ERR_IO_INSPECT(s16,         const s16 *)
+DEF_ERR_IO_INSPECT(s16_decimal, const s16 *)
+DEF_ERR_IO_INSPECT(s32,         const s32 *)
+DEF_ERR_IO_INSPECT(s32_decimal, const s32 *)
+DEF_ERR_IO_INSPECT(s64,         const s64 *)
+DEF_ERR_IO_INSPECT(s64_decimal, const s64 *)
+DEF_ERR_IO_INSPECT(str,         const s_str *)
+DEF_ERR_IO_INSPECT(sw,          const sw *)
+DEF_ERR_IO_INSPECT(sw_decimal,  const sw *)
+DEF_ERR_IO_INSPECT(sym,         const s_sym * const *)
+DEF_ERR_IO_INSPECT(tag,         const s_tag *)
+DEF_ERR_IO_INSPECT(tuple,       const s_tuple *)
+DEF_ERR_IO_INSPECT(u8,          const u8 *)
+DEF_ERR_IO_INSPECT(u8_decimal,  const u8 *)
+DEF_ERR_IO_INSPECT(u16,         const u16 *)
+DEF_ERR_IO_INSPECT(u16_decimal, const u16 *)
+DEF_ERR_IO_INSPECT(u32,         const u32 *)
+DEF_ERR_IO_INSPECT(u32_decimal, const u32 *)
+DEF_ERR_IO_INSPECT(u64,         const u64 *)
+DEF_ERR_IO_INSPECT(u64_decimal, const u64 *)
+DEF_ERR_IO_INSPECT(uw,          const uw *)
+DEF_ERR_IO_INSPECT(uw_decimal,  const uw *)

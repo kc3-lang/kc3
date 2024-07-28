@@ -68,8 +68,8 @@ sw str_character_position (const s_str *str, character c)
 {
   uw i = 0;
   sw r = 0;
-  s_str tmp;
-  character tmp_c;
+  s_str tmp = {0};
+  character tmp_c = 0;
   assert(str);
   tmp = *str;
   while (tmp.size && (r = str_read_character_utf8(&tmp, &tmp_c)) > 0) {
@@ -136,7 +136,7 @@ s_str * str_init_1 (s_str *str, char *free, const char *p)
 
 s_str * str_init_alloc (s_str *str, uw size, const char *p)
 {
-  s_str tmp;
+  s_str tmp = {0};
   assert(str);
   tmp.free.p = alloc(size + 1);
   if (! tmp.free.p)
@@ -636,8 +636,8 @@ uw * str_rindex_character (const s_str *str, character c, uw *dest)
 {
   uw i = 0;
   sw result = -1;
-  s_str s;
-  character tmp;
+  s_str s = {0};
+  character tmp = 0;
   s = *str;
   while (str_read_character_utf8(&s, &tmp) > 0) {
     if (c == tmp)

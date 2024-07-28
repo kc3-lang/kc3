@@ -55,7 +55,7 @@ s_tag * struct_access (const s_struct *s, const s_sym *key, s_tag *dest)
 
 s_struct * struct_allocate (s_struct *s)
 {
-  s_struct tmp;
+  s_struct tmp = {0};
   assert(s);
   assert(s->type);
   if (s->data) {
