@@ -72,7 +72,7 @@ s_ident * ident_init (s_ident *ident, const s_sym *module,
 
 s_ident * ident_init_1 (s_ident *ident, const char *p)
 {
-  s_str tmp;
+  s_str tmp = {0};
   str_init_1(&tmp, NULL, p);
   str_to_ident(&tmp, ident);
   return ident;

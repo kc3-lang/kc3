@@ -138,7 +138,7 @@ s_tag * file_mtime (const s_str *path, s_tag *dest)
 #if HAVE_STAT_MTIM
   return time_to_tag(&sb.st_mtim, dest);
 #else
-  s_time tmp;
+  s_time tmp = {0};
   tmp.tv_sec = sb.st_mtime;
   tmp.tv_nsec = 0;
   return time_to_tag(&tmp, dest);
@@ -185,7 +185,7 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
   sw r;
   s_buf_save save;
   const s_str *str;
-  s_str tmp;
+  s_str tmp = {0};
   buf_init(&buf, false, PATH_MAX, buf_s);
   if ((r = buf_write_str(&buf, &g_kc3_env.argv0_dir)) < 0)
     return NULL;

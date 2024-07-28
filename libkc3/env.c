@@ -525,7 +525,7 @@ bool env_eval_block (s_env *env, const s_block *block, s_tag *dest)
 {
   uw i = 0;
   bool r;
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(env);
   assert(block);
   assert(dest);
@@ -736,7 +736,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
 bool env_eval_call_resolve (s_env *env, s_call *call)
 {
   bool b;
-  s_call tmp;
+  s_call tmp = {0};
   const s_tag *value;
   assert(env);
   assert(call);
@@ -792,7 +792,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
 
 bool env_eval_cfn (s_env *env, const s_cfn *cfn, s_tag *dest)
 {
-  s_cfn tmp;
+  s_cfn tmp = {0};
   assert(cfn);
   assert(dest);
   (void) env;
@@ -854,7 +854,7 @@ bool env_eval_equal_cow (s_env *env, const s_cow *a,
                          const s_cow *b, s_cow **dest)
 {
   s8 r;
-  s_cow *tmp;
+  s_cow *tmp = {0};
   assert(env);
   assert(a);
   assert(b);
@@ -928,7 +928,7 @@ bool env_eval_equal_map (s_env *env, bool macro, const s_map *a,
   const s_map *c;
   uw i;
   uw j;
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(env);
   assert(a);
   assert(b);
@@ -1158,7 +1158,7 @@ bool env_eval_equal_tuple (s_env *env, bool macro, const s_tuple *a,
                            const s_tuple *b, s_tuple *dest)
 {
   uw i;
-  s_tuple tmp;
+  s_tuple tmp = {0};
   assert(env);
   assert(a);
   assert(b);
@@ -1197,7 +1197,7 @@ bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
 bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
 {
   const s_tag *tag;
-  s_tag tmp;
+  s_tag tmp = {0};
   s_ident tmp_ident;
   assert(env);
   assert(ident);
@@ -1219,8 +1219,8 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
 
 bool env_eval_ident_is_bound (s_env *env, const s_ident *ident)
 {
-  s_ident tmp_ident;
-  s_tag tmp;
+  s_ident tmp_ident = {0};
+  s_tag tmp = {0};
   assert(env);
   assert(ident);
   if (env_frames_get(env, ident->sym))
@@ -1261,7 +1261,7 @@ bool env_eval_list (s_env *env, const s_list *list, s_tag *dest)
 
 bool env_eval_map (s_env *env, const s_map *map, s_tag *dest)
 {
-  s_map tmp;
+  s_map tmp = {0};
   uw i = 0;
   assert(env);
   assert(map);
@@ -1336,7 +1336,7 @@ bool env_eval_quote_array (s_env *env, const s_array *array,
 bool env_eval_quote_block (s_env *env, const s_block *block, s_tag *dest)
 {
   uw i = 0;
-  s_block tmp;
+  s_block tmp = {0};
   assert(env);
   assert(block);
   assert(dest);
@@ -1433,7 +1433,7 @@ bool env_eval_quote_cow (s_env *env, const s_cow *cow,
 
 bool env_eval_quote_list (s_env *env, const s_list *list, s_tag *dest)
 {
-  s_list *next;
+  s_list *next = NULL;
   s_list *tmp = NULL;
   s_list **tail = &tmp;
   assert(env);
@@ -1461,7 +1461,7 @@ bool env_eval_quote_list (s_env *env, const s_list *list, s_tag *dest)
 
 bool env_eval_quote_map (s_env *env, const s_map *map, s_tag *dest)
 {
-  s_map tmp;
+  s_map tmp = {0};
   uw i = 0;
   assert(env);
   assert(map);
@@ -1605,7 +1605,7 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
 bool env_eval_quote_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
 {
   uw i = 0;
-  s_tuple tmp;
+  s_tuple tmp = {0};
   assert(env);
   assert(tuple);
   assert(dest);
@@ -1626,7 +1626,7 @@ bool env_eval_quote_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
 bool env_eval_quote_unquote (s_env *env, const s_unquote *unquote, s_tag *dest)
 {
   bool r;
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(env);
   assert(unquote);
   assert(dest);
@@ -1654,7 +1654,7 @@ bool env_eval_quote_unquote (s_env *env, const s_unquote *unquote, s_tag *dest)
 bool env_eval_str (s_env *env, const s_str *str, s_tag *dest)
 {
   bool r = true;
-  s_tag tmp;
+  s_tag tmp = {0};
   if (! str_parse_eval(str, &tmp)) {
     err_puts("env_eval_str: invalid Str");
     assert(! "env_eval_str: invalid Str");
@@ -1818,7 +1818,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
 bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
 {
   uw i = 0;
-  s_tuple tmp;
+  s_tuple tmp = {0};
   assert(env);
   assert(tuple);
   assert(dest);
@@ -1901,7 +1901,7 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
   s_tag tag_symbol;
   s_tag tag_symbol_value;
   s_tag tag_var;
-  s_tag tmp;
+  s_tag tmp = {0};
   module = ident->module;
   if (! module) {
     if (! env_sym_search_modules(env, ident->sym, &module) ||
@@ -2001,7 +2001,7 @@ s_ident * env_ident_resolve_module (s_env *env,
                                     const s_ident *ident,
                                     s_ident *dest)
 {
-  s_ident tmp;
+  s_ident tmp = {0};
   assert(env);
   assert(ident);
   tmp = *ident;
@@ -2138,7 +2138,7 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
 {
   uw i;
   const s_map *map;
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(env);
   assert(tag);
   assert(block);
@@ -2196,7 +2196,7 @@ bool env_load (s_env *env, const s_str *path)
   s_tag  file_path_save;
   sw r;
   s_tag tag = {0};
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(env);
   assert(path);
   if (! buf_init_alloc(&buf, BUF_SIZE))
@@ -2537,8 +2537,8 @@ s_list ** env_module_search_modules (s_env *env,
                                      const s_sym * const *module,
                                      s_list **dest)
 {
-  s_list *tmp;
-  s_list *tmp2;
+  s_list *tmp = {0};
+  s_list *tmp2 = {0};
   assert(env);
   (void) env;
   if (! module || ! *module) {
@@ -2611,7 +2611,7 @@ bool * env_operator_find (s_env *env, const s_ident *op, bool *dest)
 s_ident * env_operator_ident (s_env *env, const s_ident *op,
                               s_ident *dest)
 {
-  s_ident tmp;
+  s_ident tmp = {0};
   assert(env);
   assert(op);
   assert(dest);
@@ -2690,7 +2690,7 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
   s_tag tag_var;
   s_tag tag_sym_sym;
   s_tag tag_sym_value;
-  s_ident tmp;
+  s_ident tmp = {0};
   env_ident_resolve_module(env, op, &tmp);
   tag_init_sym(&tag_arity, &g_sym_arity);
   tag_init_u8( &tag_arity_u8, arity);
@@ -3003,7 +3003,7 @@ f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
   s_tag tag_clean;
   s_tag tag_module;
   s_tag tag_var;
-  f_clean tmp;
+  f_clean tmp = {0};
   const s_sym *type;
   tag_init_sym(&tag_module, module);
   tag_init_sym(&tag_clean, &g_sym_clean);
@@ -3050,7 +3050,7 @@ s_list ** env_struct_type_get_spec (s_env *env,
   s_tag tag_defstruct;
   s_tag tag_module;
   s_tag tag_var;
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(env);
   assert(module);
   assert(dest);
@@ -3106,7 +3106,7 @@ bool * env_struct_type_has_spec (s_env *env, const s_sym *module,
 
 bool env_tag_ident_is_bound (s_env *env, const s_tag *tag)
 {
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(tag);
   assert(tag->type == TAG_IDENT);
   return tag->type == TAG_IDENT &&
@@ -3117,7 +3117,7 @@ bool env_tag_ident_is_bound (s_env *env, const s_tag *tag)
 s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_block *cleanup,
                             s_tag *dest)
 {
-  s_tag tmp;
+  s_tag tmp = {0};
   s_unwind_protect unwind_protect;
   assert(env);
   assert(protected);

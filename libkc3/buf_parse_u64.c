@@ -27,8 +27,8 @@ sw buf_parse_u64 (s_buf *buf, u64 *dest)
   sw r1;
   sw result = 0;
   s_buf_save save;
-  u64 tmp;
-  u64 tmp1;
+  u64 tmp = 0;
+  u64 tmp1 = 0;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);

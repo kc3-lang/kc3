@@ -27,8 +27,8 @@ sw buf_parse_u_bits$ (s_buf *buf, u_bits$ *dest)
   sw r1;
   sw result = 0;
   s_buf_save save;
-  u_bits$ tmp;
-  u_bits$ tmp1;
+  u_bits$ tmp = 0;
+  u_bits$ tmp1 = 0;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);

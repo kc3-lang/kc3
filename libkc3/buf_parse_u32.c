@@ -27,8 +27,8 @@ sw buf_parse_u32 (s_buf *buf, u32 *dest)
   sw r1;
   sw result = 0;
   s_buf_save save;
-  u32 tmp;
-  u32 tmp1;
+  u32 tmp = 0;
+  u32 tmp1 = 0;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);

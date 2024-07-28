@@ -18,7 +18,7 @@
 s_str * inspect_sym (const s_sym *sym, s_str *dest)
 {
   sw size;
-  s_buf tmp;
+  s_buf tmp = {0};
   size = buf_inspect_sym_size(&sym);
   if (size < 0) {
     assert(! "error");

@@ -555,8 +555,8 @@ s8 compare_sym (const s_sym *a, const s_sym *b)
 
 s8 compare_tag (const s_tag *a, const s_tag *b) {
   s8 r;
-  s_integer tmp;
-  s_integer tmp2;
+  s_integer tmp = {0};
+  s_integer tmp2 = {0};
   if (a == b)
     return 0;
   if (!a ||

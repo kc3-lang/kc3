@@ -37,7 +37,7 @@ void cow_delete (s_cow *cow)
 
 s_cow * cow_freeze (s_cow *cow)
 {
-  s_list *tmp;
+  s_list *tmp = NULL;
   assert(cow);
   assert(cow->list);
   tmp = list_new_tag_copy(&cow->list->tag, cow->list);
@@ -49,7 +49,7 @@ s_cow * cow_freeze (s_cow *cow)
 
 s_cow * cow_freeze_copy (s_cow *cow, const s_tag *src)
 {
-  s_list *tmp;
+  s_list *tmp = NULL;
   assert(cow);
   assert(cow->list);
   tmp = list_new_tag_copy(src, list_next(cow->list));
@@ -97,7 +97,7 @@ s_cow * cow_init_cast (s_cow *cow, const s_sym * const *type,
                        const s_tag *tag)
 {
   void *data;
-  s_cow tmp;
+  s_cow tmp = {0};
   assert(tag);
   assert(type);
   assert(tag);
@@ -260,7 +260,7 @@ s_tag * cow_read_write (s_cow *cow)
 
 s_cow * cow_thaw (s_cow *cow)
 {
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(cow);
   assert(cow->list);
   assert(list_next(cow->list));
@@ -278,7 +278,7 @@ s_cow * cow_thaw (s_cow *cow)
 
 s_cow * cow_thaw_copy (s_cow *cow, const s_tag *src)
 {
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(cow);
   assert(cow->list);
   assert(src);

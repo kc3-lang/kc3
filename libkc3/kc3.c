@@ -104,7 +104,7 @@ s_tag * kc3_defoperator (const s_sym **name, const s_sym **sym,
 
 s_tag * kc3_defstruct (const s_list * const *spec, s_tag *dest)
 {
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(spec);
   if (! spec)
     return NULL;
@@ -174,7 +174,7 @@ s_tag * kc3_if_then_else (const s_tag *cond, const s_tag *then,
                           const s_tag *else_, s_tag *dest)
 {
   bool b;
-  s_tag tmp;
+  s_tag tmp = {0};
   const s_sym *type;
   if (! env_eval_tag(&g_kc3_env, cond, &tmp))
     return NULL;

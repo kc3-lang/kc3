@@ -27,8 +27,8 @@ sw buf_parse_uw (s_buf *buf, uw *dest)
   sw r1;
   sw result = 0;
   s_buf_save save;
-  uw tmp;
-  uw tmp1;
+  uw tmp = 0;
+  uw tmp1 = 0;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);

@@ -326,7 +326,7 @@ s_tag * complex_norm (const s_complex *c, s_tag *dest)
 {
   s_complex d;
   s_tag sum;
-  s_tag tmp;
+  s_tag tmp = {0};
   assert(c);
   tag_mul(&c->x, &c->x, &d.x);
   tag_mul(&c->y, &c->y, &d.y);

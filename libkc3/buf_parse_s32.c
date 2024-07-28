@@ -27,8 +27,8 @@ sw buf_parse_s32 (s_buf *buf, s32 *dest)
   sw r1;
   sw result = 0;
   s_buf_save save;
-  s32 tmp;
-  s32 tmp1;
+  s32 tmp = 0;
+  s32 tmp1 = 0;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);

@@ -61,9 +61,8 @@ s_fn_clause * fn_clause_new (s_fn_clause *next_clause)
 
 s_fn_clause * fn_clause_new_copy (const s_fn_clause *src)
 {
-  s_fn_clause *tmp;
-  s_fn_clause **tail;
-  tmp = NULL;
+  s_fn_clause *tmp = NULL;
+  s_fn_clause **tail = NULL;
   tail = &tmp;
   while (src) {
     *tail = fn_clause_new(NULL);

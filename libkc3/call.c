@@ -159,7 +159,7 @@ s_call * call_init_op_unary (s_call *call)
 s_str * call_inspect (const s_call *call, s_str *dest)
 {
   sw size;
-  s_buf tmp;
+  s_buf tmp = {0};
   size = buf_inspect_call_size(call);
   if (size < 0) {
     assert(! "error");

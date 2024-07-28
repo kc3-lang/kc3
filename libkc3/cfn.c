@@ -36,8 +36,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   sw i = 0;
   sw num_args;
   void *result = NULL;
-  s_tag tmp;
-  s_tag tmp2;
+  s_tag tmp = {0};
+  s_tag tmp2 = {0};
   assert(cfn);
   assert(cfn->arity == cfn->cif.nargs);
   num_args = list_length(args);

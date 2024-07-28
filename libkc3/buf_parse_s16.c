@@ -27,8 +27,8 @@ sw buf_parse_s16 (s_buf *buf, s16 *dest)
   sw r1;
   sw result = 0;
   s_buf_save save;
-  s16 tmp;
-  s16 tmp1;
+  s16 tmp = 0;
+  s16 tmp1 = 0;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);

@@ -32,7 +32,7 @@ void buf_rw_fd_close (s_buf_rw *buf_rw)
 
 s_buf_rw * buf_rw_fd_open (s_buf_rw *buf_rw, s32 fd)
 {
-  s_buf_rw tmp;
+  s_buf_rw tmp = {0};
   assert(buf_rw);
   tmp = *buf_rw;
   if (! buf_fd_open_r(&tmp.r, fd))

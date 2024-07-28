@@ -43,7 +43,7 @@ static sw facts_open_log (s_facts *facts, s_buf *buf);
 
 const s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
 {
-  s_fact tmp;
+  s_fact tmp = {0};
   s_fact *f = NULL;
   s_set_item__fact *item;
   assert(facts);
