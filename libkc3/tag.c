@@ -1242,7 +1242,16 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_PTR_FREE:    *dest = &tag->data.ptr_free.p;  return true;
   case TAG_QUOTE:       *dest = &tag->data.quote;       return true;
   case TAG_STR:         *dest = &tag->data.str;         return true;
-  case TAG_STRUCT:      *dest = &tag->data.struct_;     return true;
+  case TAG_STRUCT:
+    if (type == &g_sym_Struct) {
+      *dest = &tag->data.struct_;
+      return true;
+    }
+    if (type == tag->data.struct_.type->module) {
+      *dest = tag->data.struct_.data;
+      return true;
+    }
+    goto invalid_cast;
   case TAG_STRUCT_TYPE: *dest = &tag->data.struct_type; return true;
   case TAG_SYM:         *dest = &tag->data.sym;         return true;
   case TAG_TUPLE:       *dest = &tag->data.tuple;       return true;
@@ -1252,6 +1261,17 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   }
   err_puts("tag_to_pointer: invalid tag type");
   assert(! "tag_to_pointer: invalid tag type");
+  return false;
+ invalid_cast:
+  err_write_1("tag_to_pointer: invalid cast from ");
+  if (tag->type == TAG_STRUCT)
+    err_inspect_sym(&tag->data.struct_.type->module);
+  else
+    err_write_1(tag_type_to_string(tag->type));
+  err_write_1(" to ");
+  err_inspect_sym(&type);
+  err_write_1("\n");
+  assert(! "tag_to_pointer: invalid cast");
   return false;
 }
 

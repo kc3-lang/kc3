@@ -135,6 +135,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
         assert(! "cfn_apply: invalid result pointer");
         goto ko;
       }
+      tag_clean(&tmp);
       *dest = tmp2;
     }
     else

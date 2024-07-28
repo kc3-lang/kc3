@@ -99,11 +99,13 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
       error_reason = "socket_init_listen: listen: ";
       goto next;
     }
+    freeaddrinfo(res0);
     *s = sockfd;
     return s;
   next:
     res = res->ai_next;
   }
+  freeaddrinfo(res0);
   err_write_1(error_reason);
   err_puts(strerror(e));
   assert(! "socket_init_listen");

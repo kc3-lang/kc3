@@ -18,6 +18,7 @@
 /* Stack-allocation compatible functions, call socket_buf_clean after
    use. */
 void           socket_buf_clean (s_socket_buf *sb);
+void           socket_buf_close (s_socket_buf *sb);
 s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
                                 struct sockaddr *addr, u32 addr_len);
 s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,

@@ -80,6 +80,9 @@ gdb_test_ekc3:
 gdb_test_http:
 	cd http && ${GDB} ../../ikc3/.libs/ikc3_debug
 
+gdb_test_http_asan:
+	cd http && ${GDB} ../../ikc3/.libs/ikc3_asan
+
 gdb_test_ikc3:
 	cd ikc3 && ${GDB} ../../ikc3/.libs/ikc3_debug
 
