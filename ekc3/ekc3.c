@@ -16,19 +16,17 @@
 
 s_list *** ekc3_append_and_empty_buf (s_list ***tail, s_buf *buf)
 {
-  sw r;
   s_str str;
   assert(tail);
   assert(*tail);
   assert(! **tail);
   assert(buf);
-  r = buf_read_to_str(buf, &str);
-  if (r < 0) {
+  if (! buf_read_to_str(buf, &str)) {
     err_puts("ekc3_append_and_empty_buf: buf_read_to_str");
     assert(! "ekc3_append_and_empty_buf: buf_read_to_str");
     return NULL;
   }
-  if (! r) {
+  if (! str.size) {
     buf_empty(buf);
     return tail;
   }

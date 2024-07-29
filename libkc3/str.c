@@ -247,7 +247,7 @@ s_str * str_init_character (s_str *str, const character src)
   buf_init(&buf, false, sizeof(b), b);
   if (buf_write_character_utf8(&buf, src) < 0)
     return NULL;
-  if (buf_read_to_str(&buf, str) < 0)
+  if (! buf_read_to_str(&buf, str))
     return NULL;
   return str;
 }

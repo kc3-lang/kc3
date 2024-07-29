@@ -8,8 +8,8 @@ quote client.buf_rw
 client.buf_rw
 quote client.buf_rw.w
 client.buf_rw.w
-quote Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n\r\n")
-Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n\r\n")
+quote Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n")
+Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n")
 quote req = HTTP.Request.buf_parse(server_client.buf_rw.r)
 req = HTTP.Request.buf_parse(server_client.buf_rw.r)
 quote Socket.Buf.close(client)

@@ -12,6 +12,7 @@
  */
 #include <libkc3/kc3.h>
 #include "http.h"
+#include <string.h>
 #include "socket.h"
 
 s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf)
@@ -32,21 +33,21 @@ s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf)
     err_puts("http_request_buf_parse: no method");
     goto restore;
   }
-  err_write_1("http_request_buf_parse: method: ")
+  err_write_1("http_request_buf_parse: method: ");
   err_inspect_sym(&tmp.method);
   err_write_1("\n");
   if (! buf_read_until_1_into_str(buf, " ", &tmp.url)) {
     err_puts("http_request_buf_parse: invalid URL");
     goto restore;
   }
-  err_write_1("http_request_buf_parse: url: ")
+  err_write_1("http_request_buf_parse: url: ");
   err_inspect_str(&tmp.url);
   err_write_1("\n");
   if (! buf_read_until_1_into_str(buf, "\r\n", &tmp.protocol)) {
     err_puts("http_request_buf_parse: invalid protocol");
     goto restore;
   }
-  err_write_1("http_request_buf_parse: protocol: ")
+  err_write_1("http_request_buf_parse: protocol: ");
   err_inspect_str(&tmp.protocol);
   err_write_1("\n");
   tail = &tmp.headers;
@@ -55,7 +56,7 @@ s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf)
       err_puts("http_request_buf_parse: invalid header");
       goto restore;
     }
-    if (strcmp(line.ptr.pchar, "\r\n") == 0)
+    if (line.size == 0)
       break;
     *tail = list_new(NULL);
     (*tail)->tag.type = TAG_STR;

@@ -726,27 +726,29 @@ sw buf_read_sym (s_buf *buf, const s_sym *src)
   return r;
 }
 
-sw buf_read_to_str (s_buf *buf, s_str *dest)
+s_str * buf_read_to_str (s_buf *buf, s_str *dest)
 {
   sw r;
   sw size;
   assert(buf);
   assert(dest);
   if (buf->rpos > buf->wpos)
-    return -1;
+    return NULL;
   if (buf->wpos > buf->size)
-    return -1;
+    return NULL;
   size = buf->wpos - buf->rpos;
   if (size == 0) {
     str_init_empty(dest);
-    return 0;
+    return dest;
   }
   if (! str_init_alloc(dest, size, buf->ptr.pchar + buf->rpos))
-    return -1;
+    return NULL;
   r = buf_ignore(buf, size);
-  if (r < 0)
+  if (r < 0) {
     str_clean(dest);
-  return r;
+    return NULL;
+  }
+  return dest;
 }
 
 sw buf_read_u8 (s_buf *buf, u8 *p)
@@ -804,9 +806,10 @@ s_str * buf_read_until_1_into_str(s_buf *buf, const char *end, s_str *dest)
     if (r) {
       buf_init(&tmp, false, buf->size, buf->ptr.pchar);
       tmp.rpos = save.rpos;
-      tmp.wpos = buf->rpos;
+      tmp.wpos = buf->rpos - strlen(end);
       if (! buf_read_to_str(&tmp, dest))
         goto restore;
+      buf_save_clean(buf, &save);
       return dest;
     }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0)

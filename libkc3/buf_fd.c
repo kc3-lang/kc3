@@ -64,9 +64,9 @@ sw buf_fd_open_r_refill (s_buf *buf)
   fd = ((s_buf_fd *) (buf->user_ptr))->fd;
   //r = read(fd, buf->ptr.pchar + buf->wpos, size);
   if (ioctl(fd, FIONREAD, &avail) == -1 ||
-      avail < 0)
+      avail <= 0)
     return -1;
-  if (avail > size)
+  if ((uw) avail > size)
     avail = size;
   r = read(fd, buf->ptr.pchar + buf->wpos, avail);
   if (buf->wpos + r > buf->size) {
