@@ -60,7 +60,8 @@ s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf)
       break;
     *tail = list_new(NULL);
     (*tail)->tag.type = TAG_STR;
-    (*tail)->tag.data.str = line;
+    if (! http_header_split(&line, &(*tail)->tag))
+      goto restore;
     tail = &(*tail)->next.data.list;
   }
   buf_save_clean(buf, &save);

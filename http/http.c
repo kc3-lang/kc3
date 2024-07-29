@@ -13,3 +13,34 @@
 #include <libkc3/kc3.h>
 #include "http.h"
 #include "socket.h"
+
+s_tag * http_header_split (s_str *header, s_tag *dest)
+{
+  assert(header);
+  assert(dest);
+  s_tag *key;
+  sw sep;
+  s_tag tmp;
+  s_tag *value;
+  if ((sep = str_position_1(header, ": ")) < 0) {
+    err_puts("http_header_split: missing separator");
+    return NULL;
+  }
+  tag_init_tuple(&tmp, 2);
+  key = tmp.data.tuple.tag;
+  key->type = TAG_STR;
+  if (! str_init_slice(&key->data.str, header, 0, sep)) {
+    err_puts("http_header_split: str_init_slice 1");
+    assert(! "http_header_split: str_init_slice 1");
+    return NULL;
+  }
+  value = tmp.data.tuple.tag + 1;
+  value->type = TAG_STR;
+  if (! str_init_slice(&value->data.str, header, sep + 2, -1)) {
+    err_puts("http_header_split: str_init_slice 2");
+    assert(! "http_header_split: str_init_slice 2");
+    return NULL;
+  }
+  *dest = tmp;
+  return dest;
+}

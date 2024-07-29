@@ -633,6 +633,28 @@ sw str_peek_character_utf8 (const s_str *str, character *c)
   return -1;
 }
 
+sw str_position_1 (const s_str *str, const char *token)
+{
+  character c;
+  uw len;
+  sw r;
+  sw result = 0;
+  s_str s;
+  assert(str);
+  assert(token);
+  len = strlen(token);
+  s = *str;
+  while (1) {
+    if (s.size < len)
+      return -1;
+    if (! memcmp(s.ptr.pchar, token, len))
+      return result;
+    if ((r = str_read_character_utf8(&s, &c)) < 0)
+      return -1;
+    result += r;
+  }
+}
+
 sw str_read_u8 (s_str *str, u8 *c)
 {
   if (str->size <= 0)
@@ -692,7 +714,7 @@ uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
   }
   else {
     if (max_pos > SW_MAX || pos >= (sw) -max_pos)
-      *dest = max_pos - pos;
+      *dest = max_pos - pos + 1;
     else {
       err_write_1("str_sw_pos_to_uw: index too low: ");
       err_inspect_sw(&pos);
