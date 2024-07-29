@@ -14,6 +14,7 @@
 #include "assert.h"
 #include <errno.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 #include "buf.h"
 #include "buf_fd.h"
@@ -50,6 +51,7 @@ s_buf * buf_fd_open_r (s_buf *buf, s32 fd)
 
 sw buf_fd_open_r_refill (s_buf *buf)
 {
+  int avail;
   s32 fd;
   uw r;
   uw size;
@@ -60,7 +62,13 @@ sw buf_fd_open_r_refill (s_buf *buf)
     return -1;
   size = buf->size - buf->wpos;
   fd = ((s_buf_fd *) (buf->user_ptr))->fd;
-  r = read(fd, buf->ptr.pchar + buf->wpos, size);
+  //r = read(fd, buf->ptr.pchar + buf->wpos, size);
+  if (ioctl(fd, FIONREAD, &avail) == -1 ||
+      avail < 0)
+    return -1;
+  if (avail > size)
+    avail = size;
+  r = read(fd, buf->ptr.pchar + buf->wpos, avail);
   if (buf->wpos + r > buf->size) {
     err_puts("buf_fd_open_r_refill: buffer overflow");
     assert(! "buf_fd_open_r_refill: buffer overflow");

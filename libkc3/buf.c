@@ -1158,6 +1158,7 @@ sw buf_write_str (s_buf *buf, const s_str *src)
   }
   memcpy(buf->ptr.pu8 + buf->wpos, src->ptr.p, src->size);
   buf->wpos += src->size;
+  buf_flush(buf);
   return src->size;
 }
 

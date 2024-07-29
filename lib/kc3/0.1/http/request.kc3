@@ -5,4 +5,6 @@ defmodule HTTP.Request do
              protocol: "HTTP/1.1",
              headers: []]
 
+  def buf_parse = cfn HTTP.Request "http_request_buf_parse" (Result, Buf)
+
 end
