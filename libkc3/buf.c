@@ -732,19 +732,30 @@ s_str * buf_read_to_str (s_buf *buf, s_str *dest)
   sw size;
   assert(buf);
   assert(dest);
-  if (buf->rpos > buf->wpos)
+  if (buf->rpos > buf->wpos) {
+    err_puts("buf_read_to_str: buf->rpos > buf->wpos");
+    assert(! "buf_read_to_str: buf->rpos > buf->wpos");
     return NULL;
-  if (buf->wpos > buf->size)
+  }
+  if (buf->wpos > buf->size) {
+    err_puts("buf_read_to_str: buf->wpos > buf->size");
+    assert(! "buf_read_to_str: buf->wpos > buf->size");
     return NULL;
+  }
   size = buf->wpos - buf->rpos;
-  if (size == 0) {
+  if (! size) {
     str_init_empty(dest);
     return dest;
   }
-  if (! str_init_alloc(dest, size, buf->ptr.pchar + buf->rpos))
+  if (! str_init_alloc(dest, size, buf->ptr.pchar + buf->rpos)) {
+    err_puts("buf_read_to_str: str_init_alloc");
+    assert(! "buf_read_to_str: str_init_alloc");
     return NULL;
+  }
   r = buf_ignore(buf, size);
   if (r < 0) {
+    err_puts("buf_read_to_str: buf_ignore");
+    assert(! "buf_read_to_str: buf_ignore");
     str_clean(dest);
     return NULL;
   }

@@ -338,8 +338,11 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
     assert(! "str_init_slice: invalid positions");
     return NULL;
   }
-  if (! buf_read_to_str(&buf, &tmp))
+  if (! buf_read_to_str(&buf, &tmp)) {
+    err_puts("str_init_slice: buf_read_to_str");
+    assert(! "str_init_slice: buf_read_to_str");
     return NULL;
+  }
   *str = tmp;
   return str;
 }
@@ -721,7 +724,7 @@ uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
   }
   else {
     if (max_pos > SW_MAX || pos >= (sw) -max_pos)
-      *dest = max_pos - pos + 1;
+      *dest = max_pos + pos + 1;
     else {
       err_write_1("str_sw_pos_to_uw: index too low: ");
       err_inspect_sw(&pos);
