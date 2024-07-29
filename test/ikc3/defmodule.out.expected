@@ -1,31 +1,31 @@
 defmodule Empty do end
 Empty
 defmodule Const do
-  def a = 1
+  def a = (U8) 1
   def b = 10000000000000000000000000000000000000000000000000
 end
 Const
 Const.a
-1
+(U8) 1
 Const.b
 10000000000000000000000000000000000000000000000000
 defmodule Double do
-  def double = fn (x) { x * 2 }
+  def double = fn (x) { x * (U8) 2 }
 end
 Double
-Double.double(21)
-42
+Double.double((U8) 21)
+(U16) 42
 defmodule Plop do
-  def a = 1
+  def a = (U8) 1
   def b = fn () { a }
 end
 Plop
 Plop.a
-1
+(U8) 1
 Plop.b
 Plop.fn () { a }
 Plop.b()
-1
+(U8) 1
 defmodule S32 do
   def cast = cfn S32 "s32_init_cast" (Result, Sym, Tag)
 end

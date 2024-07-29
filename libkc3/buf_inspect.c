@@ -472,6 +472,7 @@ sw buf_inspect_call_brackets (s_buf *buf, const s_call *call)
 {
   s_array *address;
   s_tag *array;
+  const s_sym *buf_inspect_type;
   uw i = 0;
   s_list *next;
   sw r;
@@ -493,10 +494,13 @@ sw buf_inspect_call_brackets (s_buf *buf, const s_call *call)
     if ((r = buf_write_1(buf, "[")) < 0)
       return r;
     result += r;
+    buf_inspect_type = g_buf_inspect_type;
+    g_buf_inspect_type = &g_sym_Uw;
     if ((r = buf_inspect_uw(buf, ((uw *) address->data)
                             + i)) < 0)
       return r;
     result += r;
+    g_buf_inspect_type = buf_inspect_type;
     if ((r = buf_write_1(buf, "]")) < 0)
       return r;
     result += r;
@@ -852,9 +856,12 @@ sw buf_inspect_cast (s_buf *buf, const s_call *call)
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  buf_inspect_type = g_buf_inspect_type;
-  g_buf_inspect_type = module;
   arg = &list_next(call->arguments)->tag;
+  buf_inspect_type = g_buf_inspect_type;
+  if (! tag_type(arg, &g_buf_inspect_type)) {
+    g_buf_inspect_type = buf_inspect_type;
+    return -1;
+  }
   if ((r = buf_inspect_tag(buf, arg)) < 0) {
     g_buf_inspect_type = buf_inspect_type;
     return r;

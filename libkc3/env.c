@@ -2975,9 +2975,11 @@ const s_struct_type ** env_struct_type_find (s_env *env,
   if (! facts_with_cursor_next(&cursor, &found)) {
     err_puts("env_struct_type_find: facts_with_cursor_next");
     assert(! "env_struct_type_find: facts_with_cursor_next");
+    facts_with_cursor_clean(&cursor);
     return NULL;
   }
   if (! found) {
+    facts_with_cursor_clean(&cursor);
     *dest = NULL;
     return dest;
   }
@@ -2989,6 +2991,7 @@ const s_struct_type ** env_struct_type_find (s_env *env,
     err_inspect_sym(&type);
     err_write_1("\n");
     assert(! "env_struct_type_find: invalid struct_type");
+    facts_with_cursor_clean(&cursor);
     return NULL;
   }
   *dest = &found->object->data.struct_type;

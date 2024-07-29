@@ -1,6 +1,6 @@
 defmodule Test do
-  defstruct [a: 1, b: 2]
+  defstruct [a: (U8) 1, b: (U8) 2]
 end
 Test
 %Test{}
-%Test{a: 1, b: 2}
+%Test{a: (U8) 1, b: (U8) 2}

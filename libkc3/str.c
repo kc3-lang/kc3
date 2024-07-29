@@ -16,6 +16,16 @@
 #include "assert.h"
 #include "buf.h"
 #include "buf_inspect.h"
+#include "buf_inspect_s8_decimal.h"
+#include "buf_inspect_s16_decimal.h"
+#include "buf_inspect_s32_decimal.h"
+#include "buf_inspect_s64_decimal.h"
+#include "buf_inspect_sw_decimal.h"
+#include "buf_inspect_u8_decimal.h"
+#include "buf_inspect_u16_decimal.h"
+#include "buf_inspect_u32_decimal.h"
+#include "buf_inspect_u64_decimal.h"
+#include "buf_inspect_uw_decimal.h"
 #include "buf_parse.h"
 #include "call.h"
 #include "character.h"
@@ -37,6 +47,20 @@
       return NULL;                                                     \
     buf_init_alloc(&buf, size);                                        \
     buf_inspect_ ## type(&buf, &x);                                    \
+    assert(buf.wpos == (uw) size);                                     \
+    return buf_to_str(&buf, str);                                      \
+  }
+
+#define DEF_STR_INIT_INT(type)                                         \
+  s_str * str_init_ ## type (s_str *str, type x)                       \
+  {                                                                    \
+    s_buf buf;                                                         \
+    sw size;                                                           \
+    size = buf_inspect_ ## type ## _decimal_size(&x);                  \
+    if (size <= 0)                                                     \
+      return NULL;                                                     \
+    buf_init_alloc(&buf, size);                                        \
+    buf_inspect_ ## type ## _decimal(&buf, &x);                        \
     assert(buf.wpos == (uw) size);                                     \
     return buf_to_str(&buf, str);                                      \
   }
@@ -282,11 +306,11 @@ s_str * str_init_f (s_str *str, const char *fmt, ...)
   return str;
 }
 
-DEF_STR_INIT(s8)
-DEF_STR_INIT(s16)
-DEF_STR_INIT(s32)
-DEF_STR_INIT(s64)
-DEF_STR_INIT(sw)
+DEF_STR_INIT_INT(s8)
+DEF_STR_INIT_INT(s16)
+DEF_STR_INIT_INT(s32)
+DEF_STR_INIT_INT(s64)
+DEF_STR_INIT_INT(sw)
 
 s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
 {
@@ -313,11 +337,11 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
   return str;
 }
 
-DEF_STR_INIT(u8)
-DEF_STR_INIT(u16)
-DEF_STR_INIT(u32)
-DEF_STR_INIT(u64)
-DEF_STR_INIT(uw)
+DEF_STR_INIT_INT(u8)
+DEF_STR_INIT_INT(u16)
+DEF_STR_INIT_INT(u32)
+DEF_STR_INIT_INT(u64)
+DEF_STR_INIT_INT(uw)
 
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap)
 {

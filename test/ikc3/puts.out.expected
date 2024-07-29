@@ -1,6 +1,6 @@
 puts("Test")
 Test
-5
+(Sw) 5
 puts(%{hello: "World !"})
 %{hello: "World !"}
-20
+(Sw) 20

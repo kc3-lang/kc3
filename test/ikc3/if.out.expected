@@ -1,36 +1,36 @@
 if true
-  1
+  (U8) 1
 else
-  2
+  (U8) 2
 end
-1
+(U8) 1
 if true
-  1
+  (U8) 1
 end
-1
+(U8) 1
 if false
-  1
+  (U8) 1
 else
-  2
+  (U8) 2
 end
-2
+(U8) 2
 if false
-  1
+  (U8) 1
 end
 void
 if true && true
-  1 + 1
-  2 + 2
+  (U8) 1 + (U8) 1
+  (U8) 2 + (U8) 2
 else
-  3 + 3
-  4 + 4
+  (U8) 3 + (U8) 3
+  (U8) 4 + (U8) 4
 end
-4
+(U8) 4
 if true && false
-  1 + 1
-  2 + 2
+  (U8) 1 + (U8) 1
+  (U8) 2 + (U8) 2
 else
-  3 + 3
-  4 + 4
+  (U8) 3 + (U8) 3
+  (U8) 4 + (U8) 4
 end
-8
+(U8) 8

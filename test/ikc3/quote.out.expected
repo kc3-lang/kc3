@@ -1,35 +1,35 @@
-1
-a = 1 + 1
+(U8) 1
+a = (U8) 1 + (U8) 1
 a + a
-%{a: 1}
-%{"a" => 1}
-%{1 => 1}
-%{1 + 1 => 1}
-%{1 => 1 + 1}
-quote 1
-quote a = 1 + 1
+%{a: (U8) 1}
+%{"a" => (U8) 1}
+%{(U8) 1 => (U8) 1}
+%{(U8) 1 + (U8) 1 => (U8) 1}
+%{(U8) 1 => (U8) 1 + (U8) 1}
+quote (U8) 1
+quote a = (U8) 1 + (U8) 1
 quote a + a
-quote %{a: 1}
-quote %{"a" => 1}
-quote %{1 => 1}
-quote %{1 + 1 => 1}
-quote %{1 => 1 + 1}
-quote 1
-quote a = 1 + 1
+quote %{a: (U8) 1}
+quote %{"a" => (U8) 1}
+quote %{(U8) 1 => (U8) 1}
+quote %{(U8) 1 + (U8) 1 => (U8) 1}
+quote %{(U8) 1 => (U8) 1 + (U8) 1}
+quote (U8) 1
+quote a = (U8) 1 + (U8) 1
 quote a + a
-quote %{a: 1}
-quote %{"a" => 1}
-quote %{1 => 1}
-quote %{1 => 1}
-quote %{1 + 1 => 1}
-quote %{1 => 1 + 1}
-quote %{unquote(1 + 1) => 1}
-quote %{1 => unquote(1 + 1)}
-1
-2
-4
-%{a: 1}
-%{"a" => 1}
-%{1 => 1}
-%{2 => 1}
-%{1 => 2}
+quote %{a: (U8) 1}
+quote %{"a" => (U8) 1}
+quote %{(U8) 1 => (U8) 1}
+quote %{(U8) 1 => (U8) 1}
+quote %{(U8) 1 + (U8) 1 => (U8) 1}
+quote %{(U8) 1 => (U8) 1 + (U8) 1}
+quote %{unquote((U8) 1 + (U8) 1) => (U8) 1}
+quote %{(U8) 1 => unquote((U8) 1 + (U8) 1)}
+(U8) 1
+(U8) 2
+(U8) 4
+%{a: (U8) 1}
+%{"a" => (U8) 1}
+%{(U8) 1 => (U8) 1}
+%{(U8) 2 => (U8) 1}
+%{(U8) 1 => (U8) 2}
