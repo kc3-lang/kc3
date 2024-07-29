@@ -319,9 +319,16 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
   assert(str);
   assert(src);
   buf_init(&buf, false, src->size, (char *) src->ptr.pchar);
-  if (! str_sw_pos_to_uw(start, src->size, &buf.rpos) ||
-      ! str_sw_pos_to_uw(end, src->size, &buf.wpos))
+  if (! str_sw_pos_to_uw(start, src->size, &buf.rpos)) {
+    err_puts("str_init_slice: str_sw_pos_to_uw: start");
+    assert(! "str_init_slice: str_sw_pos_to_uw: start");
     return NULL;
+  }
+  if (! str_sw_pos_to_uw(end, src->size, &buf.wpos)) {
+    err_puts("str_init_slice: str_sw_pos_to_uw: end");
+    assert(! "str_init_slice: str_sw_pos_to_uw: end");
+    return NULL;
+  }
   if (buf.rpos > buf.wpos) {
     err_write_1("str_init_slice: invalid positions: ");
     err_inspect_uw(&buf.rpos);
