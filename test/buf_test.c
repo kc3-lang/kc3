@@ -118,7 +118,7 @@
     s_str result;                                                      \
     test_context("buf_read_to_str(" # test ")");                       \
     buf_init_1(&buf, false, (test));                                   \
-    TEST_EQ(buf_read_to_str(&buf, &result), strlen(test));             \
+    TEST_EQ(buf_read_to_str(&buf, &result), &result);                  \
     TEST_EQ(buf.rpos, strlen(test));                                   \
     str_clean(&result);                                                \
     test_context(NULL);                                                \
