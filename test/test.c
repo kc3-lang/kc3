@@ -125,7 +125,7 @@ void test_init (char *argv0, int *argc, char ***argv)
     printf(" %s", *t);
     t++;
   }
-  printf("\n");
+  fflush(stdout);
 }
 
 void test_ko (void)

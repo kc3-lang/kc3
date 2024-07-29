@@ -46,107 +46,107 @@ int main (int argc, char **argv)
     return 1;
   test_init(g_kc3_env.argv[0], &argc, &argv);
   if (test_target("types")) {
-    fprintf(stderr, "\ntypes\n");
+    fprintf(stderr, "\ntypes ");
     types_test();
   }
   if (test_target("array")) {
-    fprintf(stderr, "\narray\n");
+    fprintf(stderr, "\narray ");
     array_test();
   }
   if (test_target("bool")) {
-    fprintf(stderr, "\nbool\n");
+    fprintf(stderr, "\nbool ");
     bool_test();
   }
   if (test_target("character")) {
-    fprintf(stderr, "\ncharacter\n");
+    fprintf(stderr, "\ncharacter ");
     character_test();
   }
   if (test_target("buf")) {
-    fprintf(stderr, "\nbuf\n");
+    fprintf(stderr, "\nbuf ");
     buf_test();
   }
   if (test_target("buf_parse")) {
-    fprintf(stderr, "\nbuf_parse\n");
+    fprintf(stderr, "\nbuf_parse ");
     buf_parse_test();
   }
   if (test_target("buf_inspect")) {
-    fprintf(stderr, "\nbuf_inspect\n");
+    fprintf(stderr, "\nbuf_inspect ");
     buf_inspect_test();
   }
   if (test_target("buf_file")) {
-    fprintf(stderr, "\nbuf_file\n");
+    fprintf(stderr, "\nbuf_file ");
     buf_file_test();
   }
   if (test_target("str")) {
-    fprintf(stderr, "\nstr\n");
+    fprintf(stderr, "\nstr ");
     str_test();
   }
   if (test_target("sym")) {
-    fprintf(stderr, "\nsym\n");
+    fprintf(stderr, "\nsym ");
     sym_test();
   }
   if (test_target("ident")) {
-    fprintf(stderr, "\nident\n");
+    fprintf(stderr, "\nident ");
     ident_test();
   }
   if (test_target("list")) {
-    fprintf(stderr, "\nlist\n");
+    fprintf(stderr, "\nlist ");
     list_test();
   }
   if (test_target("tuple")) {
-    fprintf(stderr, "\ntuple\n");
+    fprintf(stderr, "\ntuple ");
     tuple_test();
   }
   if (test_target("fn")) {
-    fprintf(stderr, "\nfn\n");
+    fprintf(stderr, "\nfn ");
     fn_test();
   }
   if (test_target("call")) {
-    fprintf(stderr, "\ncall\n");
+    fprintf(stderr, "\ncall ");
     call_test();
   }
   if (test_target("tag")) {
-    fprintf(stderr, "\ntag\n");
+    fprintf(stderr, "\ntag ");
     tag_test();
   }
   if (test_target("inspect")) {
-    fprintf(stderr, "\ninspect\n");
+    fprintf(stderr, "\ninspect ");
     inspect_test();
   }
   if (test_target("fact")) {
-    fprintf(stderr, "\nfact\n");
+    fprintf(stderr, "\nfact ");
     fact_test();
   }
   if (test_target("compare")) {
-      fprintf(stderr, "\ncompare\n");
+      fprintf(stderr, "\ncompare ");
       compare_test();
   }
   if (test_target("set__tag")) {
-    fprintf(stderr, "\nset__tag\n");
+    fprintf(stderr, "\nset__tag ");
     set__tag_test();
   }
   if (test_target("set__fact")) {
-    fprintf(stderr, "\nset__fact\n");
+    fprintf(stderr, "\nset__fact ");
     set__fact_test();
   }
   if (test_target("skiplist__fact")) {
-    fprintf(stderr, "\nskiplist__fact\n");
+    fprintf(stderr, "\nskiplist__fact ");
     skiplist__fact_test();
   }
   if (test_target("facts")) {
-    fprintf(stderr, "\nfacts\n");
+    fprintf(stderr, "\nfacts ");
     facts_test();
   }
   if (test_target("facts_cursor")) {
-    fprintf(stderr, "\nfacts_cursor\n");
+    fprintf(stderr, "\nfacts_cursor ");
     facts_cursor_test();
   }
   if (test_target("facts_with")) {
-    fprintf(stderr, "\nfacts_with\n");
+    fprintf(stderr, "\nfacts_with ");
     facts_with_test();
   }
   if (test_target("env")) {
-    fprintf(stderr, "\nenv\n");
+    fprintf(stderr, "\nenv ");
     env_test();
   }
   test_summary();

@@ -836,6 +836,7 @@ sw buf_inspect_call_special_operator_size (const s_call *call)
 sw buf_inspect_cast (s_buf *buf, const s_call *call)
 {
   s_tag *arg;
+  const s_sym *buf_inspect_type;
   const s_sym *module;
   sw r;
   sw result = 0;
@@ -851,10 +852,15 @@ sw buf_inspect_cast (s_buf *buf, const s_call *call)
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
+  buf_inspect_type = g_buf_inspect_type;
+  g_buf_inspect_type = module;
   arg = &list_next(call->arguments)->tag;
-  if ((r = buf_inspect_tag(buf, arg)) < 0)
+  if ((r = buf_inspect_tag(buf, arg)) < 0) {
+    g_buf_inspect_type = buf_inspect_type;
     return r;
+  }
   result += r;
+  g_buf_inspect_type = buf_inspect_type;
   return result;
 }
 

@@ -415,18 +415,18 @@ TEST_CASE(facts_open_file)
     "{{:a, :b}, {:c, :d}}",
     "{a, b}",
     "{{a, b}, {c, d}}",
-    "0",
-    "1",
-    "10",
-    "0x100",
-    "0x10000",
-    "0x100000000",
+    "(U8) 0",
+    "(U8) 1",
+    "(U8) 10",
+    "(U16) 0x100",
+    "(U32) 0x10000",
+    "(U64) 0x100000000",
     "0x10000000000000000",
-    "-1",
-    "-10",
-    "-0x100",
-    "-0x10000",
-    "-0x100000000",
+    "(S8) -1",
+    "(S8) -10",
+    "(S16) -0x100",
+    "(S32) -0x10000",
+    "(S64) -0x100000000",
     "-0x10000000000000000",
     NULL
   };
@@ -441,18 +441,18 @@ TEST_CASE(facts_open_file)
     "{{:b, :b}, {:c, :d}}",
     "{b, b}",
     "{{b, b}, {c, d}}",
-    "2",
-    "3",
-    "11",
-    "0x101",
-    "0x10001",
-    "0x100000001",
+    "(U8) 2",
+    "(U8) 3",
+    "(U8) 11",
+    "(U16) 0x101",
+    "(U32) 0x10001",
+    "(U64) 0x100000001",
     "0x10000000000000001",
-    "-2",
-    "-11",
-    "-0x101",
-    "-0x10001",
-    "-0x100000001",
+    "(S8) -2",
+    "(S8) -11",
+    "(S16) -0x101",
+    "(S32) -0x10001",
+    "(S64) -0x100000001",
     "-0x10000000000000001",
     NULL
   };
@@ -502,7 +502,7 @@ TEST_CASE(facts_open_file)
     exit(1);
   }
   str_init_1(&path, NULL, "facts_test_open_file.2.facts");
-  TEST_EQ(facts_open_file(&facts, &path), 1524);
+  TEST_EQ(facts_open_file(&facts, &path), 1890);
   TEST_EQ(facts_count(&facts), 46);
   i = 0;
   while (p[i]) {
@@ -534,7 +534,7 @@ TEST_CASE(facts_open_file)
     exit(1);
   }
   str_init_1(&path, NULL, "facts_test_open_file.3.facts");
-  TEST_EQ(facts_open_file(&facts, &path), 1551);
+  TEST_EQ(facts_open_file(&facts, &path), 3878);
   TEST_EQ(facts_count(&facts), 0);
   i = 0;
   while (p[i]) {
