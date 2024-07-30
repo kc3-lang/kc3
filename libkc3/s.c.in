@@ -22,6 +22,13 @@
 #include "ratio.h"
 #include "s_bits$.h"
 
+s_bits$ * s_bits$_init_1 (s_bits$ *s, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return s_bits$_init_str(s, &str);
+}
+
 s_bits$ * s_bits$_init_cast
 (s_bits$ *s, const s_sym * const *type, const s_tag *tag)
 {
@@ -99,6 +106,20 @@ s_bits$ * s_bits$_init_copy (s_bits$ *s, const s_bits$ *src)
   return s;
 }
 
+s_bits$ * s_bits$_init_str (s_bits$ *s, const s_str *str)
+{
+  s_buf buf;
+  s_bits$ tmp = 0;
+  buf_init(&buf, false, str.size, str.ptr.pchar);
+  buf.wpos = str.size;
+  if ((r = buf_parse_s_bits$(&buf, &tmp)) <= 0) {
+    err_puts("s_bits$_init_str: buf_parse_s_bits$");
+    assert(! "s_bits$_init_str: buf_parse_s_bits$");
+    return NULL;
+  }
+  *s = tmp;
+  return s;
+}
 
 s_bits$ * s_bits$_random (s_bits$ *s)
 {

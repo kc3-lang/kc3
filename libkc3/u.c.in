@@ -21,6 +21,13 @@
 #include "tag.h"
 #include "u_bits$.h"
 
+u_bits$ * u_bits$_init_1 (u_bits$ *u, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return u_bits$_init_str(u, &str);
+}
+
 u_bits$ * u_bits$_init_cast
 (u_bits$ *u, const s_sym * const *type, const s_tag *tag)
 {
@@ -95,6 +102,21 @@ u_bits$ * u_bits$_init_copy (u_bits$ *u, const u_bits$ *src)
   assert(src);
   assert(u);
   *u = *src;
+  return u;
+}
+
+u_bits$ * u_bits$_init_str (u_bits$ *u, const s_str *str)
+{
+  s_buf buf;
+  u_bits$ tmp = 0;
+  buf_init(&buf, false, str.size, str.ptr.pchar);
+  buf.wpos = str.size;
+  if ((r = buf_parse_u_bits$(&buf, &tmp)) <= 0) {
+    err_puts("u_bits$_init_str: buf_parse_u_bits$");
+    assert(! "u_bits$_init_str: buf_parse_u_bits$");
+    return NULL;
+  }
+  *u = tmp;
   return u;
 }
 
