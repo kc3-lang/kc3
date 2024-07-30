@@ -99,6 +99,7 @@ s_bits$ * s_bits$_init_copy (s_bits$ *s, const s_bits$ *src)
   return s;
 }
 
+
 s_bits$ * s_bits$_random (s_bits$ *s)
 {
   arc4random_buf(s, sizeof(s_bits$));

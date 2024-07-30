@@ -15,6 +15,7 @@
 #define LIBKC3_BUF_INSPECT_U_BITS$_H
 
 #include "types.h"
+#include "buf_inspect_u_bits$_decimal.h"
 
 sw buf_inspect_u_bits$ (s_buf *buf, const u_bits$ *u);
 sw buf_inspect_u_bits$_base (s_buf *buf,

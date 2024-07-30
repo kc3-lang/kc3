@@ -15,6 +15,7 @@
 #define LIBKC3_BUF_INSPECT_SW_H
 
 #include "types.h"
+#include "buf_inspect_sw_decimal.h"
 
 sw buf_inspect_sw (s_buf *buf, const sw *s);
 sw buf_inspect_sw_size (const sw *s);

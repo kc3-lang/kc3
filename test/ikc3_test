@@ -62,7 +62,7 @@ for TARGET in $TARGETS; do
         else
             test_ko ${TARGET}
         fi
-    ) &
+    )
     sleep 2
 done
 wait

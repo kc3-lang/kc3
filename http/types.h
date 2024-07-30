@@ -17,9 +17,10 @@
 #include <libkc3/types.h>
 
 /* 1 */
-typedef s32               t_socket;
-typedef struct socket_buf s_socket_buf;
-typedef struct http_request s_http_request;
+typedef s32                  t_socket;
+typedef struct socket_buf    s_socket_buf;
+typedef struct http_request  s_http_request;
+typedef struct http_response s_http_response;
 
 /* 2 */
 typedef t_socket *p_socket;
@@ -37,6 +38,14 @@ struct http_request {
   s_str url;
   s_str protocol;
   s_list *headers;
+};
+
+struct http_response {
+  s_str protocol;
+  u16 code;
+  s_str message;
+  s_list *headers;
+  s_str body;
 };
 
 #endif /* HTTP_TYPES_H */

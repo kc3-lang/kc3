@@ -10,14 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_s.h.in BITS=_BITS$ bits=_bits$ */
-#ifndef LIBKC3_BUF_INSPECT_S_BITS$_H
-#define LIBKC3_BUF_INSPECT_S_BITS$_H
+#ifndef HTTP_RESPONSE_H
+#define HTTP_RESPONSE_H
 
 #include "types.h"
-#include "buf_inspect_s_bits$_decimal.h"
 
-sw buf_inspect_s_bits$ (s_buf *buf, const s_bits$ *s);
-sw buf_inspect_s_bits$_size (const s_bits$ *s);
+const s_http_response * http_response_buf_write
+  (const s_http_response *response, s_buf *buf);
 
-#endif /* LIBKC3_BUF_INSPECT_S_BITS$_H */
+#endif /* HTTP_RESPONSE_H */

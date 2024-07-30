@@ -13,6 +13,7 @@
 #ifndef LIBKC3_KC3_H
 #define LIBKC3_KC3_H
 
+#include "alist.h"
 #include "alloc.h"
 #include "arg.h"
 #include "array.h"
@@ -22,16 +23,6 @@
 #include "buf.h"
 #include "buf_file.h"
 #include "buf_inspect.h"
-#include "buf_inspect_s8.h"
-#include "buf_inspect_s16.h"
-#include "buf_inspect_s32.h"
-#include "buf_inspect_s64.h"
-#include "buf_inspect_sw.h"
-#include "buf_inspect_u8.h"
-#include "buf_inspect_u16.h"
-#include "buf_inspect_u32.h"
-#include "buf_inspect_u64.h"
-#include "buf_inspect_uw.h"
 #include "buf_parse.h"
 #include "buf_parse.h"
 #include "buf_parse_s8.h"

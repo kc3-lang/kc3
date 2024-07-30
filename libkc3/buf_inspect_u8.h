@@ -15,6 +15,7 @@
 #define LIBKC3_BUF_INSPECT_U8_H
 
 #include "types.h"
+#include "buf_inspect_u8_decimal.h"
 
 sw buf_inspect_u8 (s_buf *buf, const u8 *u);
 sw buf_inspect_u8_base (s_buf *buf,

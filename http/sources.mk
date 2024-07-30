@@ -2,15 +2,17 @@
 HEADERS = \
 	"http.h" \
 	"http_request.h" \
-	"socket.h" \
+	"http_response.h" \
 	"socket_addr.h" \
 	"socket_buf.h" \
+	"socket.h" \
 	"types.h" \
 
 SOURCES = \
 	"http.c" \
 	"http_request.c" \
-	"socket.c" \
+	"http_response.c" \
 	"socket_addr.c" \
 	"socket_buf.c" \
+	"socket.c" \
 

@@ -10,14 +10,19 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_s.h.in BITS=_BITS$ bits=_bits$ */
-#ifndef LIBKC3_BUF_INSPECT_S_BITS$_H
-#define LIBKC3_BUF_INSPECT_S_BITS$_H
+/**
+ * @file alist.h
+ * @brief Associative list
+ *
+ * Linked list of tuples of key and value.
+ */
+#ifndef LIBKC3_ALIST_H
+#define LIBKC3_ALIST_H
 
 #include "types.h"
-#include "buf_inspect_s_bits$_decimal.h"
 
-sw buf_inspect_s_bits$ (s_buf *buf, const s_bits$ *s);
-sw buf_inspect_s_bits$_size (const s_bits$ *s);
+/* Observers */
+s_tag * alist_get (const s_list * const *alist, const s_tag *key,
+                   s_tag *dest);
 
-#endif /* LIBKC3_BUF_INSPECT_S_BITS$_H */
+#endif /* LIBKC3_ALIST_H */

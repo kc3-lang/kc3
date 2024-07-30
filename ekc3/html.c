@@ -33,7 +33,7 @@ s_str * html_escape (const s_str *str, s_str *dest)
     assert(! "html_escape: ident_get");
     return NULL;
   }
-  if (! tag_is_an_associative_list(&escape_tag)) {
+  if (! tag_is_alist(&escape_tag)) {
     tag_clean(&escape_tag);
     err_puts("html_escape: EKC3.html_escape is not an associative"
              " List");

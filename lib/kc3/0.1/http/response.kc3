@@ -1,0 +1,15 @@
+defmodule HTTP.Response do
+
+  defstruct [protocol: "HTTP/1.1",
+             code: 200,
+             message: "OK",
+             headers: [],
+             body: ""]
+
+  def default_messages = [{(U16) 200, "OK"},
+                          {(U16) 404, "Not Found"},
+                          {(U16) 500, "Internal Server Error"}]
+
+  def buf_write = cfn HTTP.Response "http_response_buf_write" (Result, Buf)
+
+end

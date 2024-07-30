@@ -20,6 +20,16 @@
 #define LIBKC3_BUF_INSPECT_H
 
 #include "types.h"
+#include "buf_inspect_s8.h"
+#include "buf_inspect_s16.h"
+#include "buf_inspect_s32.h"
+#include "buf_inspect_s64.h"
+#include "buf_inspect_sw.h"
+#include "buf_inspect_u8.h"
+#include "buf_inspect_u16.h"
+#include "buf_inspect_u32.h"
+#include "buf_inspect_u64.h"
+#include "buf_inspect_uw.h"
 
 extern const s_sym *g_buf_inspect_type;
 

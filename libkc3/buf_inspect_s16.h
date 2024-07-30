@@ -15,6 +15,7 @@
 #define LIBKC3_BUF_INSPECT_S16_H
 
 #include "types.h"
+#include "buf_inspect_s16_decimal.h"
 
 sw buf_inspect_s16 (s_buf *buf, const s16 *s);
 sw buf_inspect_s16_size (const s16 *s);

@@ -573,22 +573,14 @@ s_tag * tag_integer_reduce (s_tag *tag)
   return tag;
 }
 
-bool tag_is_an_associative_list (const s_tag *tag)
+bool tag_is_alist (const s_tag *tag)
 {
-  const s_list *l;
   assert(tag);
   if (! tag)
     return false;
   if (tag->type != TAG_LIST)
     return false;
-  l = tag->data.list;
-  while (l) {
-    if (l->tag.type != TAG_TUPLE ||
-        l->tag.data.tuple.count != 2)
-      return false;
-    l = list_next(l);
-  }
-  return true;
+  return list_is_alist((const s_list * const *) &tag->data.list);
 }
 
 bool tag_is_bound_var (const s_tag *tag)

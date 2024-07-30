@@ -15,6 +15,7 @@
 #define LIBKC3_BUF_INSPECT_U32_H
 
 #include "types.h"
+#include "buf_inspect_u32_decimal.h"
 
 sw buf_inspect_u32 (s_buf *buf, const u32 *u);
 sw buf_inspect_u32_base (s_buf *buf,

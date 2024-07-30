@@ -139,6 +139,22 @@ s_str * list_inspect (const s_list *x, s_str *dest)
   return NULL;
 }
 
+bool list_is_alist (const s_list * const *list)
+{
+  const s_list *l;
+  assert(list);
+  if (! list)
+    return false;
+  l = *list;
+  while (l) {
+    if (l->tag.type != TAG_TUPLE ||
+        l->tag.data.tuple.count != 2)
+      return false;
+    l = list_next(l);
+  }
+  return true;
+}
+
 bool list_is_plist (const s_list *list)
 {
   const s_list *l;
