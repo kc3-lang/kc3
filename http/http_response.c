@@ -10,13 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <libkc3/kc3.h>
-#include "http.h"
 #include <string.h>
+#include <libkc3/kc3.h>
+#include "http_response.h"
 #include "socket.h"
 
-sw http_response_buf_write (s_http_response *response,
-                                           s_buf *buf)
+sw http_response_buf_write (const s_http_response *response,
+                            s_buf *buf)
 {
   sw    content_length = -1;
   s_str content_length_str = {0};

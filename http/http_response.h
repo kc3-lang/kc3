@@ -15,7 +15,7 @@
 
 #include "types.h"
 
-const s_http_response * http_response_buf_write
-  (const s_http_response *response, s_buf *buf);
+sw http_response_buf_write (const s_http_response *response,
+                            s_buf *buf);
 
 #endif /* HTTP_RESPONSE_H */
