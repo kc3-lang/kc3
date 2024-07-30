@@ -56,11 +56,12 @@ sources KC3_EXTERNAL_SOURCES "$KC3_EXTERNAL_SOURCES"
 update_sources_mk
 update_sources_sh
 
-( cd libtommath && ./update_sources; )
-( cd libkc3 && ./update_sources; )
-( cd ikc3 && ./update_sources; )
-( cd kc3s && ./update_sources; )
-( cd ekc3 && ./update_sources; )
-( cd http && ./update_sources; )
-( cd test && ./update_sources; )
+( cd libtommath    && ./update_sources; )
+( cd libkc3        && ./update_sources; )
+( cd ikc3          && ./update_sources; )
+( cd kc3s          && ./update_sources; )
+( cd ekc3          && ./update_sources; )
+( cd http          && ./update_sources; )
+( cd httpd         && ./update_sources; )
+( cd test          && ./update_sources; )
 ( cd libkc3_window && ./update_sources; )
