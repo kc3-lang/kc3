@@ -76,39 +76,3 @@ quote reverse
 reverse
 quote reverse([1, 2, 3])
 reverse([1, 2, 3])
-quote def reverse = fn (x) { List.reverse(x) }
-def reverse = fn (x) { List.reverse(x) }
-quote reverse
-reverse
-quote reverse([1, 2, 3])
-reverse([1, 2, 3])
-quote module()
-module()
-quote search_modules()
-search_modules()
-quote reverse
-reverse
-quote def reverse = fn (x) { [:reversed | List.reverse(x)] }
-def reverse = fn (x) { [:reversed | List.reverse(x)] }
-quote reverse
-reverse
-quote reverse([1, 2, 3])
-reverse([1, 2, 3])
-quote module()
-module()
-quote search_modules()
-search_modules()
-quote reverse
-reverse
-quote def reverse = fn (x) { List.reverse(x) }
-def reverse = fn (x) { List.reverse(x) }
-quote reverse
-reverse
-quote reverse([1, 2, 3])
-reverse([1, 2, 3])
-quote module()
-module()
-quote search_modules()
-search_modules()
-quote reverse
-reverse

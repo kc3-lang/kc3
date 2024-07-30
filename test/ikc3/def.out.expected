@@ -76,39 +76,3 @@ fn {
 }
 reverse([(U8) 1, (U8) 2, (U8) 3])
 [(U8) 3, (U8) 2, (U8) 1]
-def reverse = fn (x) { List.reverse(x) }
-reverse
-reverse
-fn (x) { List.reverse(x) }
-reverse([(U8) 1, (U8) 2, (U8) 3])
-[(U8) 3, (U8) 2, (U8) 1]
-module()
-KC3
-search_modules()
-[KC3]
-reverse
-fn (x) { List.reverse(x) }
-def reverse = fn (x) { [:reversed | List.reverse(x)] }
-reverse
-reverse
-fn (x) { [:reversed | List.reverse(x)] }
-reverse([(U8) 1, (U8) 2, (U8) 3])
-[:reversed, (U8) 3, (U8) 2, (U8) 1]
-module()
-KC3
-search_modules()
-[KC3]
-reverse
-fn (x) { [:reversed | List.reverse(x)] }
-def reverse = fn (x) { List.reverse(x) }
-reverse
-reverse
-fn (x) { List.reverse(x) }
-reverse([(U8) 1, (U8) 2, (U8) 3])
-[(U8) 3, (U8) 2, (U8) 1]
-module()
-KC3
-search_modules()
-[KC3]
-reverse
-fn (x) { List.reverse(x) }
