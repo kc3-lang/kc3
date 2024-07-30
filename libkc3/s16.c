@@ -14,13 +14,23 @@
 #include <math.h>
 #include <stdlib.h>
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_s16.h"
 #include "complex.h"
 #include "integer.h"
+#include "ratio.h"
+#include "s16.h"
+#include "str.h"
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
-#include "ratio.h"
-#include "s16.h"
+
+s16 * s16_init_1 (s16 *s, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return s16_init_str(s, &str);
+}
 
 s16 * s16_init_cast
 (s16 *s, const s_sym * const *type, const s_tag *tag)
@@ -96,6 +106,21 @@ s16 * s16_init_copy (s16 *s, const s16 *src)
   assert(src);
   assert(s);
   *s = *src;
+  return s;
+}
+
+s16 * s16_init_str (s16 *s, const s_str *str)
+{
+  s_buf buf;
+  s16 tmp = 0;
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_s16(&buf, &tmp) <= 0) {
+    err_puts("s16_init_str: buf_parse_s16");
+    assert(! "s16_init_str: buf_parse_s16");
+    return NULL;
+  }
+  *s = tmp;
   return s;
 }
 

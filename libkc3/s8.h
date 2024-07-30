@@ -16,9 +16,11 @@
 
 #include "types.h"
 
+s8 * s8_init_1 (s8 *s, const char *p);
 s8 * s8_init_cast
 (s8 *s, const s_sym * const *type, const s_tag *tag);
 s8 * s8_init_copy (s8 *s, const s8 *src);
+s8 * s8_init_str (s8 *s, const s_str *str);
 s8 * s8_random (s8 *s);
 u8 * s8_random_uniform (s8 *s, s8 min, s8 max);
 s_tag *   s8_sqrt (const s8 x, s_tag *dest);

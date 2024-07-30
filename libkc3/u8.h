@@ -16,10 +16,12 @@
 
 #include "types.h"
 
+u8 * u8_init_1 (u8 *u, const char *p);
 u8 * u8_init_cast
 (u8 *u, const s_sym * const *type, const s_tag *tag);
 
 u8 * u8_init_copy (u8 *u, const u8 *src);
+u8 * u8_init_str (u8 *u, const s_str *str);
 u8 * u8_random (u8 *u);
 u8 * u8_random_uniform (u8 *u, u8 max);
 s_tag *   u8_sqrt (const u8 x, s_tag *dest);

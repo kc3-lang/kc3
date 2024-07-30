@@ -14,13 +14,23 @@
 #include <math.h>
 #include <stdlib.h>
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_sw.h"
 #include "complex.h"
 #include "integer.h"
+#include "ratio.h"
+#include "sw.h"
+#include "str.h"
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
-#include "ratio.h"
-#include "sw.h"
+
+sw * sw_init_1 (sw *s, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return sw_init_str(s, &str);
+}
 
 sw * sw_init_cast
 (sw *s, const s_sym * const *type, const s_tag *tag)
@@ -96,6 +106,21 @@ sw * sw_init_copy (sw *s, const sw *src)
   assert(src);
   assert(s);
   *s = *src;
+  return s;
+}
+
+sw * sw_init_str (sw *s, const s_str *str)
+{
+  s_buf buf;
+  sw tmp = 0;
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_sw(&buf, &tmp) <= 0) {
+    err_puts("sw_init_str: buf_parse_sw");
+    assert(! "sw_init_str: buf_parse_sw");
+    return NULL;
+  }
+  *s = tmp;
   return s;
 }
 

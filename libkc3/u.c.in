@@ -12,12 +12,15 @@
  */
 /* Gen from u.h.in BITS=_BITS$ bits=_bits$ */
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_u_bits$.h"
 #include <math.h>
 #include <stdlib.h>
 #include "f128.h"
 #include "integer.h"
 #include "ratio.h"
 #include "sym.h"
+#include "str.h"
 #include "tag.h"
 #include "u_bits$.h"
 
@@ -109,9 +112,9 @@ u_bits$ * u_bits$_init_str (u_bits$ *u, const s_str *str)
 {
   s_buf buf;
   u_bits$ tmp = 0;
-  buf_init(&buf, false, str.size, str.ptr.pchar);
-  buf.wpos = str.size;
-  if ((r = buf_parse_u_bits$(&buf, &tmp)) <= 0) {
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_u_bits$(&buf, &tmp) <= 0) {
     err_puts("u_bits$_init_str: buf_parse_u_bits$");
     assert(! "u_bits$_init_str: buf_parse_u_bits$");
     return NULL;

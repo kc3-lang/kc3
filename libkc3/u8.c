@@ -12,14 +12,24 @@
  */
 /* Gen from u.h.in BITS=8 bits=8 */
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_u8.h"
 #include <math.h>
 #include <stdlib.h>
 #include "f128.h"
 #include "integer.h"
 #include "ratio.h"
 #include "sym.h"
+#include "str.h"
 #include "tag.h"
 #include "u8.h"
+
+u8 * u8_init_1 (u8 *u, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return u8_init_str(u, &str);
+}
 
 u8 * u8_init_cast
 (u8 *u, const s_sym * const *type, const s_tag *tag)
@@ -95,6 +105,21 @@ u8 * u8_init_copy (u8 *u, const u8 *src)
   assert(src);
   assert(u);
   *u = *src;
+  return u;
+}
+
+u8 * u8_init_str (u8 *u, const s_str *str)
+{
+  s_buf buf;
+  u8 tmp = 0;
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_u8(&buf, &tmp) <= 0) {
+    err_puts("u8_init_str: buf_parse_u8");
+    assert(! "u8_init_str: buf_parse_u8");
+    return NULL;
+  }
+  *u = tmp;
   return u;
 }
 

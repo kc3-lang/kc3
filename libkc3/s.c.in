@@ -14,13 +14,16 @@
 #include <math.h>
 #include <stdlib.h>
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_s_bits$.h"
 #include "complex.h"
 #include "integer.h"
+#include "ratio.h"
+#include "s_bits$.h"
+#include "str.h"
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
-#include "ratio.h"
-#include "s_bits$.h"
 
 s_bits$ * s_bits$_init_1 (s_bits$ *s, const char *p)
 {
@@ -110,9 +113,9 @@ s_bits$ * s_bits$_init_str (s_bits$ *s, const s_str *str)
 {
   s_buf buf;
   s_bits$ tmp = 0;
-  buf_init(&buf, false, str.size, str.ptr.pchar);
-  buf.wpos = str.size;
-  if ((r = buf_parse_s_bits$(&buf, &tmp)) <= 0) {
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_s_bits$(&buf, &tmp) <= 0) {
     err_puts("s_bits$_init_str: buf_parse_s_bits$");
     assert(! "s_bits$_init_str: buf_parse_s_bits$");
     return NULL;

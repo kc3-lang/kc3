@@ -16,9 +16,11 @@
 
 #include "types.h"
 
+s16 * s16_init_1 (s16 *s, const char *p);
 s16 * s16_init_cast
 (s16 *s, const s_sym * const *type, const s_tag *tag);
 s16 * s16_init_copy (s16 *s, const s16 *src);
+s16 * s16_init_str (s16 *s, const s_str *str);
 s16 * s16_random (s16 *s);
 u16 * s16_random_uniform (s16 *s, s16 min, s16 max);
 s_tag *   s16_sqrt (const s16 x, s_tag *dest);

@@ -12,14 +12,24 @@
  */
 /* Gen from u.h.in BITS=16 bits=16 */
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_u16.h"
 #include <math.h>
 #include <stdlib.h>
 #include "f128.h"
 #include "integer.h"
 #include "ratio.h"
 #include "sym.h"
+#include "str.h"
 #include "tag.h"
 #include "u16.h"
+
+u16 * u16_init_1 (u16 *u, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return u16_init_str(u, &str);
+}
 
 u16 * u16_init_cast
 (u16 *u, const s_sym * const *type, const s_tag *tag)
@@ -95,6 +105,21 @@ u16 * u16_init_copy (u16 *u, const u16 *src)
   assert(src);
   assert(u);
   *u = *src;
+  return u;
+}
+
+u16 * u16_init_str (u16 *u, const s_str *str)
+{
+  s_buf buf;
+  u16 tmp = 0;
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_u16(&buf, &tmp) <= 0) {
+    err_puts("u16_init_str: buf_parse_u16");
+    assert(! "u16_init_str: buf_parse_u16");
+    return NULL;
+  }
+  *u = tmp;
   return u;
 }
 

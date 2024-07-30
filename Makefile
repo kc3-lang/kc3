@@ -114,6 +114,15 @@ demo_gl_debug: debug
 
 dist: kc3-${KC3_VERSION}.tar.gz
 
+http:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C ekc3 build
+	${MAKE} -C http build
+
 kc3-${KC3_VERSION}.tar.gz: kc3.index
 	rm -rf kc3-${KC3_VERSION}.old
 	-mv kc3-${KC3_VERSION} kc3-${KC3_VERSION}.old
@@ -455,6 +464,7 @@ test_libkc3_debug:
 	demo_gl_debug \
 	dist \
 	gcovr \
+	http \
 	ikc3 \
 	install \
 	libkc3 \

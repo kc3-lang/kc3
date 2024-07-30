@@ -12,14 +12,24 @@
  */
 /* Gen from u.h.in BITS=W bits=w */
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_uw.h"
 #include <math.h>
 #include <stdlib.h>
 #include "f128.h"
 #include "integer.h"
 #include "ratio.h"
 #include "sym.h"
+#include "str.h"
 #include "tag.h"
 #include "uw.h"
+
+uw * uw_init_1 (uw *u, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return uw_init_str(u, &str);
+}
 
 uw * uw_init_cast
 (uw *u, const s_sym * const *type, const s_tag *tag)
@@ -95,6 +105,21 @@ uw * uw_init_copy (uw *u, const uw *src)
   assert(src);
   assert(u);
   *u = *src;
+  return u;
+}
+
+uw * uw_init_str (uw *u, const s_str *str)
+{
+  s_buf buf;
+  uw tmp = 0;
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_uw(&buf, &tmp) <= 0) {
+    err_puts("uw_init_str: buf_parse_uw");
+    assert(! "uw_init_str: buf_parse_uw");
+    return NULL;
+  }
+  *u = tmp;
   return u;
 }
 

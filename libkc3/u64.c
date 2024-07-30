@@ -12,14 +12,24 @@
  */
 /* Gen from u.h.in BITS=64 bits=64 */
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_u64.h"
 #include <math.h>
 #include <stdlib.h>
 #include "f128.h"
 #include "integer.h"
 #include "ratio.h"
 #include "sym.h"
+#include "str.h"
 #include "tag.h"
 #include "u64.h"
+
+u64 * u64_init_1 (u64 *u, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return u64_init_str(u, &str);
+}
 
 u64 * u64_init_cast
 (u64 *u, const s_sym * const *type, const s_tag *tag)
@@ -95,6 +105,21 @@ u64 * u64_init_copy (u64 *u, const u64 *src)
   assert(src);
   assert(u);
   *u = *src;
+  return u;
+}
+
+u64 * u64_init_str (u64 *u, const s_str *str)
+{
+  s_buf buf;
+  u64 tmp = 0;
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_u64(&buf, &tmp) <= 0) {
+    err_puts("u64_init_str: buf_parse_u64");
+    assert(! "u64_init_str: buf_parse_u64");
+    return NULL;
+  }
+  *u = tmp;
   return u;
 }
 

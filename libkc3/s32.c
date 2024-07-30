@@ -14,13 +14,23 @@
 #include <math.h>
 #include <stdlib.h>
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_s32.h"
 #include "complex.h"
 #include "integer.h"
+#include "ratio.h"
+#include "s32.h"
+#include "str.h"
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
-#include "ratio.h"
-#include "s32.h"
+
+s32 * s32_init_1 (s32 *s, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return s32_init_str(s, &str);
+}
 
 s32 * s32_init_cast
 (s32 *s, const s_sym * const *type, const s_tag *tag)
@@ -96,6 +106,21 @@ s32 * s32_init_copy (s32 *s, const s32 *src)
   assert(src);
   assert(s);
   *s = *src;
+  return s;
+}
+
+s32 * s32_init_str (s32 *s, const s_str *str)
+{
+  s_buf buf;
+  s32 tmp = 0;
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_s32(&buf, &tmp) <= 0) {
+    err_puts("s32_init_str: buf_parse_s32");
+    assert(! "s32_init_str: buf_parse_s32");
+    return NULL;
+  }
+  *s = tmp;
   return s;
 }
 

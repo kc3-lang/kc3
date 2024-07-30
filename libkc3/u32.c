@@ -12,14 +12,24 @@
  */
 /* Gen from u.h.in BITS=32 bits=32 */
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_u32.h"
 #include <math.h>
 #include <stdlib.h>
 #include "f128.h"
 #include "integer.h"
 #include "ratio.h"
 #include "sym.h"
+#include "str.h"
 #include "tag.h"
 #include "u32.h"
+
+u32 * u32_init_1 (u32 *u, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return u32_init_str(u, &str);
+}
 
 u32 * u32_init_cast
 (u32 *u, const s_sym * const *type, const s_tag *tag)
@@ -95,6 +105,21 @@ u32 * u32_init_copy (u32 *u, const u32 *src)
   assert(src);
   assert(u);
   *u = *src;
+  return u;
+}
+
+u32 * u32_init_str (u32 *u, const s_str *str)
+{
+  s_buf buf;
+  u32 tmp = 0;
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_u32(&buf, &tmp) <= 0) {
+    err_puts("u32_init_str: buf_parse_u32");
+    assert(! "u32_init_str: buf_parse_u32");
+    return NULL;
+  }
+  *u = tmp;
   return u;
 }
 

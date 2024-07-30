@@ -14,13 +14,23 @@
 #include <math.h>
 #include <stdlib.h>
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_s64.h"
 #include "complex.h"
 #include "integer.h"
+#include "ratio.h"
+#include "s64.h"
+#include "str.h"
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
-#include "ratio.h"
-#include "s64.h"
+
+s64 * s64_init_1 (s64 *s, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return s64_init_str(s, &str);
+}
 
 s64 * s64_init_cast
 (s64 *s, const s_sym * const *type, const s_tag *tag)
@@ -96,6 +106,21 @@ s64 * s64_init_copy (s64 *s, const s64 *src)
   assert(src);
   assert(s);
   *s = *src;
+  return s;
+}
+
+s64 * s64_init_str (s64 *s, const s_str *str)
+{
+  s_buf buf;
+  s64 tmp = 0;
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_s64(&buf, &tmp) <= 0) {
+    err_puts("s64_init_str: buf_parse_s64");
+    assert(! "s64_init_str: buf_parse_s64");
+    return NULL;
+  }
+  *s = tmp;
   return s;
 }
 

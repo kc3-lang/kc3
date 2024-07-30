@@ -16,10 +16,12 @@
 
 #include "types.h"
 
+uw * uw_init_1 (uw *u, const char *p);
 uw * uw_init_cast
 (uw *u, const s_sym * const *type, const s_tag *tag);
 
 uw * uw_init_copy (uw *u, const uw *src);
+uw * uw_init_str (uw *u, const s_str *str);
 uw * uw_random (uw *u);
 uw * uw_random_uniform (uw *u, uw max);
 s_tag *   uw_sqrt (const uw x, s_tag *dest);

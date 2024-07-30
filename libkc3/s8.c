@@ -14,13 +14,23 @@
 #include <math.h>
 #include <stdlib.h>
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse_s8.h"
 #include "complex.h"
 #include "integer.h"
+#include "ratio.h"
+#include "s8.h"
+#include "str.h"
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
-#include "ratio.h"
-#include "s8.h"
+
+s8 * s8_init_1 (s8 *s, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return s8_init_str(s, &str);
+}
 
 s8 * s8_init_cast
 (s8 *s, const s_sym * const *type, const s_tag *tag)
@@ -96,6 +106,21 @@ s8 * s8_init_copy (s8 *s, const s8 *src)
   assert(src);
   assert(s);
   *s = *src;
+  return s;
+}
+
+s8 * s8_init_str (s8 *s, const s_str *str)
+{
+  s_buf buf;
+  s8 tmp = 0;
+  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf.wpos = str->size;
+  if (buf_parse_s8(&buf, &tmp) <= 0) {
+    err_puts("s8_init_str: buf_parse_s8");
+    assert(! "s8_init_str: buf_parse_s8");
+    return NULL;
+  }
+  *s = tmp;
   return s;
 }
 
