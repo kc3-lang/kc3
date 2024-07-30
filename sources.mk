@@ -113,6 +113,8 @@ KC3_C_SOURCES = \
 	"kc3s/kc3s.c" \
 	"libkc3/abs.c" \
 	"libkc3/abs.h" \
+	"libkc3/alist.c" \
+	"libkc3/alist.h" \
 	"libkc3/alloc.c" \
 	"libkc3/alloc.h" \
 	"libkc3/arg.c" \
@@ -897,6 +899,7 @@ KC3_OTHER_SOURCES = \
 	"lib/kc3/0.1/gl/vec3.kc3" \
 	"lib/kc3/0.1/gl/vertex.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
+	"lib/kc3/0.1/http/response.kc3" \
 	"lib/kc3/0.1/integer.facts" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/operator.kc3" \

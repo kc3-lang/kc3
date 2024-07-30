@@ -9,60 +9,60 @@ HEADERS = \
 	"binding.h" \
 	"block.h" \
 	"bool.h" \
+	"buf.h" \
 	"buf_fd.h" \
 	"buf_file.h" \
 	"buf_getc.h" \
 	"buf_getchar.h" \
-	"buf.h" \
 	"buf_inspect.h" \
+	"buf_inspect_s16.h" \
 	"buf_inspect_s16_binary.h" \
 	"buf_inspect_s16_decimal.h" \
-	"buf_inspect_s16.h" \
 	"buf_inspect_s16_hexadecimal.h" \
 	"buf_inspect_s16_octal.h" \
+	"buf_inspect_s32.h" \
 	"buf_inspect_s32_binary.h" \
 	"buf_inspect_s32_decimal.h" \
-	"buf_inspect_s32.h" \
 	"buf_inspect_s32_hexadecimal.h" \
 	"buf_inspect_s32_octal.h" \
+	"buf_inspect_s64.h" \
 	"buf_inspect_s64_binary.h" \
 	"buf_inspect_s64_decimal.h" \
-	"buf_inspect_s64.h" \
 	"buf_inspect_s64_hexadecimal.h" \
 	"buf_inspect_s64_octal.h" \
+	"buf_inspect_s8.h" \
 	"buf_inspect_s8_binary.h" \
 	"buf_inspect_s8_decimal.h" \
-	"buf_inspect_s8.h" \
 	"buf_inspect_s8_hexadecimal.h" \
 	"buf_inspect_s8_octal.h" \
+	"buf_inspect_sw.h" \
 	"buf_inspect_sw_binary.h" \
 	"buf_inspect_sw_decimal.h" \
-	"buf_inspect_sw.h" \
 	"buf_inspect_sw_hexadecimal.h" \
 	"buf_inspect_sw_octal.h" \
+	"buf_inspect_u16.h" \
 	"buf_inspect_u16_binary.h" \
 	"buf_inspect_u16_decimal.h" \
-	"buf_inspect_u16.h" \
 	"buf_inspect_u16_hexadecimal.h" \
 	"buf_inspect_u16_octal.h" \
+	"buf_inspect_u32.h" \
 	"buf_inspect_u32_binary.h" \
 	"buf_inspect_u32_decimal.h" \
-	"buf_inspect_u32.h" \
 	"buf_inspect_u32_hexadecimal.h" \
 	"buf_inspect_u32_octal.h" \
+	"buf_inspect_u64.h" \
 	"buf_inspect_u64_binary.h" \
 	"buf_inspect_u64_decimal.h" \
-	"buf_inspect_u64.h" \
 	"buf_inspect_u64_hexadecimal.h" \
 	"buf_inspect_u64_octal.h" \
+	"buf_inspect_u8.h" \
 	"buf_inspect_u8_binary.h" \
 	"buf_inspect_u8_decimal.h" \
-	"buf_inspect_u8.h" \
 	"buf_inspect_u8_hexadecimal.h" \
 	"buf_inspect_u8_octal.h" \
+	"buf_inspect_uw.h" \
 	"buf_inspect_uw_binary.h" \
 	"buf_inspect_uw_decimal.h" \
-	"buf_inspect_uw.h" \
 	"buf_inspect_uw_hexadecimal.h" \
 	"buf_inspect_uw_octal.h" \
 	"buf_parse.h" \
@@ -93,20 +93,20 @@ HEADERS = \
 	"f128.h" \
 	"f32.h" \
 	"f64.h" \
-	"fact_action.h" \
 	"fact.h" \
+	"fact_action.h" \
 	"fact_list.h" \
-	"facts_cursor.h" \
 	"facts.h" \
-	"facts_spec_cursor.h" \
+	"facts_cursor.h" \
 	"facts_spec.h" \
+	"facts_spec_cursor.h" \
 	"facts_transaction.h" \
-	"facts_with_cursor.h" \
 	"facts_with.h" \
+	"facts_with_cursor.h" \
 	"file.h" \
 	"float.h" \
-	"fn_clause.h" \
 	"fn.h" \
+	"fn_clause.h" \
 	"frame.h" \
 	"hash.h" \
 	"ident.h" \
@@ -124,8 +124,8 @@ HEADERS = \
 	"pcomplex.h" \
 	"pcow.h" \
 	"ptag.h" \
-	"ptr_free.h" \
 	"ptr.h" \
+	"ptr_free.h" \
 	"queue.h" \
 	"quote.h" \
 	"ratio.h" \
@@ -134,12 +134,12 @@ HEADERS = \
 	"s64.h" \
 	"s8.h" \
 	"sequence.h" \
+	"set__fact.h" \
+	"set__tag.h" \
 	"set_cursor__fact.h" \
 	"set_cursor__tag.h" \
-	"set__fact.h" \
 	"set_item__fact.h" \
 	"set_item__tag.h" \
-	"set__tag.h" \
 	"sha1.h" \
 	"sign.h" \
 	"skiplist__fact.h" \
@@ -181,53 +181,53 @@ SOURCES = \
 	"buf_getc.c" \
 	"buf_getchar.c" \
 	"buf_inspect.c" \
-	"buf_inspect_s16_binary.c" \
 	"buf_inspect_s16.c" \
+	"buf_inspect_s16_binary.c" \
 	"buf_inspect_s16_decimal.c" \
 	"buf_inspect_s16_hexadecimal.c" \
 	"buf_inspect_s16_octal.c" \
-	"buf_inspect_s32_binary.c" \
 	"buf_inspect_s32.c" \
+	"buf_inspect_s32_binary.c" \
 	"buf_inspect_s32_decimal.c" \
 	"buf_inspect_s32_hexadecimal.c" \
 	"buf_inspect_s32_octal.c" \
-	"buf_inspect_s64_binary.c" \
 	"buf_inspect_s64.c" \
+	"buf_inspect_s64_binary.c" \
 	"buf_inspect_s64_decimal.c" \
 	"buf_inspect_s64_hexadecimal.c" \
 	"buf_inspect_s64_octal.c" \
-	"buf_inspect_s8_binary.c" \
 	"buf_inspect_s8.c" \
+	"buf_inspect_s8_binary.c" \
 	"buf_inspect_s8_decimal.c" \
 	"buf_inspect_s8_hexadecimal.c" \
 	"buf_inspect_s8_octal.c" \
-	"buf_inspect_sw_binary.c" \
 	"buf_inspect_sw.c" \
+	"buf_inspect_sw_binary.c" \
 	"buf_inspect_sw_decimal.c" \
 	"buf_inspect_sw_hexadecimal.c" \
 	"buf_inspect_sw_octal.c" \
-	"buf_inspect_u16_binary.c" \
 	"buf_inspect_u16.c" \
+	"buf_inspect_u16_binary.c" \
 	"buf_inspect_u16_decimal.c" \
 	"buf_inspect_u16_hexadecimal.c" \
 	"buf_inspect_u16_octal.c" \
-	"buf_inspect_u32_binary.c" \
 	"buf_inspect_u32.c" \
+	"buf_inspect_u32_binary.c" \
 	"buf_inspect_u32_decimal.c" \
 	"buf_inspect_u32_hexadecimal.c" \
 	"buf_inspect_u32_octal.c" \
-	"buf_inspect_u64_binary.c" \
 	"buf_inspect_u64.c" \
+	"buf_inspect_u64_binary.c" \
 	"buf_inspect_u64_decimal.c" \
 	"buf_inspect_u64_hexadecimal.c" \
 	"buf_inspect_u64_octal.c" \
-	"buf_inspect_u8_binary.c" \
 	"buf_inspect_u8.c" \
+	"buf_inspect_u8_binary.c" \
 	"buf_inspect_u8_decimal.c" \
 	"buf_inspect_u8_hexadecimal.c" \
 	"buf_inspect_u8_octal.c" \
-	"buf_inspect_uw_binary.c" \
 	"buf_inspect_uw.c" \
+	"buf_inspect_uw_binary.c" \
 	"buf_inspect_uw_decimal.c" \
 	"buf_inspect_uw_hexadecimal.c" \
 	"buf_inspect_uw_octal.c" \
@@ -259,8 +259,8 @@ SOURCES = \
 	"f128.c" \
 	"f32.c" \
 	"f64.c" \
-	"fact_action.c" \
 	"fact.c" \
+	"fact_action.c" \
 	"fact_list.c" \
 	"facts.c" \
 	"facts_cursor.c" \
@@ -299,12 +299,12 @@ SOURCES = \
 	"s64.c" \
 	"s8.c" \
 	"sequence.c" \
+	"set__fact.c" \
+	"set__tag.c" \
 	"set_cursor__fact.c" \
 	"set_cursor__tag.c" \
-	"set__fact.c" \
 	"set_item__fact.c" \
 	"set_item__tag.c" \
-	"set__tag.c" \
 	"sign.c" \
 	"skiplist__fact.c" \
 	"skiplist_node__fact.c" \
@@ -314,13 +314,13 @@ SOURCES = \
 	"struct_type.c" \
 	"sw.c" \
 	"sym.c" \
+	"tag.c" \
 	"tag_add.c" \
 	"tag_addi.c" \
 	"tag_band.c" \
 	"tag_bnot.c" \
 	"tag_bor.c" \
 	"tag_bxor.c" \
-	"tag.c" \
 	"tag_div.c" \
 	"tag_init.c" \
 	"tag_mod.c" \
@@ -345,118 +345,6 @@ SOURCES = \
 
 LO_SOURCES = \
 	"" \
-	"abs.c" \
-	"alist.c" \
-	"alloc.c" \
-	"arg.c" \
-	"array.c" \
-	"binding.c" \
-	"block.c" \
-	"bool.c" \
-	"buf.c" \
-	"buf_fd.c" \
-	"buf_file.c" \
-	"buf_getc.c" \
-	"buf_getchar.c" \
-	"buf_inspect.c" \
-	"buf_inspect_s16_binary.c" \
-	"buf_inspect_s16.c" \
-	"buf_inspect_s16_decimal.c" \
-	"buf_inspect_s16_hexadecimal.c" \
-	"buf_inspect_s16_octal.c" \
-	"buf_inspect_s32_binary.c" \
-	"buf_inspect_s32.c" \
-	"buf_inspect_s32_decimal.c" \
-	"buf_inspect_s32_hexadecimal.c" \
-	"buf_inspect_s32_octal.c" \
-	"buf_inspect_s64_binary.c" \
-	"buf_inspect_s64.c" \
-	"buf_inspect_s64_decimal.c" \
-	"buf_inspect_s64_hexadecimal.c" \
-	"buf_inspect_s64_octal.c" \
-	"buf_inspect_s8_binary.c" \
-	"buf_inspect_s8.c" \
-	"buf_inspect_s8_decimal.c" \
-	"buf_inspect_s8_hexadecimal.c" \
-	"buf_inspect_s8_octal.c" \
-	"buf_inspect_sw_binary.c" \
-	"buf_inspect_sw.c" \
-	"buf_inspect_sw_decimal.c" \
-	"buf_inspect_sw_hexadecimal.c" \
-	"buf_inspect_sw_octal.c" \
-	"buf_inspect_u16_binary.c" \
-	"buf_inspect_u16.c" \
-	"buf_inspect_u16_decimal.c" \
-	"buf_inspect_u16_hexadecimal.c" \
-	"buf_inspect_u16_octal.c" \
-	"buf_inspect_u32_binary.c" \
-	"buf_inspect_u32.c" \
-	"buf_inspect_u32_decimal.c" \
-	"buf_inspect_u32_hexadecimal.c" \
-	"buf_inspect_u32_octal.c" \
-	"buf_inspect_u64_binary.c" \
-	"buf_inspect_u64.c" \
-	"buf_inspect_u64_decimal.c" \
-	"buf_inspect_u64_hexadecimal.c" \
-	"buf_inspect_u64_octal.c" \
-	"buf_inspect_u8_binary.c" \
-	"buf_inspect_u8.c" \
-	"buf_inspect_u8_decimal.c" \
-	"buf_inspect_u8_hexadecimal.c" \
-	"buf_inspect_u8_octal.c" \
-	"buf_inspect_uw_binary.c" \
-	"buf_inspect_uw.c" \
-	"buf_inspect_uw_decimal.c" \
-	"buf_inspect_uw_hexadecimal.c" \
-	"buf_inspect_uw_octal.c" \
-	"buf_parse.c" \
-	"buf_parse_s16.c" \
-	"buf_parse_s32.c" \
-	"buf_parse_s64.c" \
-	"buf_parse_s8.c" \
-	"buf_parse_sw.c" \
-	"buf_parse_u16.c" \
-	"buf_parse_u32.c" \
-	"buf_parse_u64.c" \
-	"buf_parse_u8.c" \
-	"buf_parse_uw.c" \
-	"buf_rw.c" \
-	"buf_save.c" \
-	"call.c" \
-	"ceiling.c" \
-	"cfn.c" \
-	"character.c" \
-	"compare.c" \
-	"complex.c" \
-	"cow.c" \
-	"data.c" \
-	"env.c" \
-	"error.c" \
-	"error_handler.c" \
-	"eval.c" \
-	"f128.c" \
-	"f32.c" \
-	"f64.c" \
-	"fact_action.c" \
-	"fact.c" \
-	"fact_list.c" \
-	"facts.c" \
-	"facts_cursor.c" \
-	"facts_spec.c" \
-	"facts_spec_cursor.c" \
-	"facts_transaction.c" \
-	"facts_with.c" \
-	"facts_with_cursor.c" \
-	"file.c" \
-	"fn.c" \
-	"fn_clause.c" \
-	"frame.c" \
-	"hash.c" \
-	"ident.c" \
-	"inspect.c" \
-	"integer.c" \
-	"io.c" \
-	"kc3.c" \
 	"../libtommath/bn_cutoffs.c" \
 	"../libtommath/bn_mp_2expt.c" \
 	"../libtommath/bn_mp_abs.c" \
@@ -473,10 +361,10 @@ LO_SOURCES = \
 	"../libtommath/bn_mp_complement.c" \
 	"../libtommath/bn_mp_copy.c" \
 	"../libtommath/bn_mp_count_bits.c" \
+	"../libtommath/bn_mp_div.c" \
 	"../libtommath/bn_mp_div_2.c" \
 	"../libtommath/bn_mp_div_2d.c" \
 	"../libtommath/bn_mp_div_3.c" \
-	"../libtommath/bn_mp_div.c" \
 	"../libtommath/bn_mp_div_d.c" \
 	"../libtommath/bn_mp_dr_is_modulus.c" \
 	"../libtommath/bn_mp_dr_reduce.c" \
@@ -498,24 +386,24 @@ LO_SOURCES = \
 	"../libtommath/bn_mp_invmod.c" \
 	"../libtommath/bn_mp_lcm.c" \
 	"../libtommath/bn_mp_lshd.c" \
-	"../libtommath/bn_mp_mod_2d.c" \
 	"../libtommath/bn_mp_mod.c" \
+	"../libtommath/bn_mp_mod_2d.c" \
 	"../libtommath/bn_mp_montgomery_calc_normalization.c" \
 	"../libtommath/bn_mp_montgomery_reduce.c" \
 	"../libtommath/bn_mp_montgomery_setup.c" \
+	"../libtommath/bn_mp_mul.c" \
 	"../libtommath/bn_mp_mul_2.c" \
 	"../libtommath/bn_mp_mul_2d.c" \
-	"../libtommath/bn_mp_mul.c" \
 	"../libtommath/bn_mp_mul_d.c" \
 	"../libtommath/bn_mp_mulmod.c" \
 	"../libtommath/bn_mp_neg.c" \
 	"../libtommath/bn_mp_or.c" \
 	"../libtommath/bn_mp_radix_size.c" \
+	"../libtommath/bn_mp_reduce.c" \
 	"../libtommath/bn_mp_reduce_2k.c" \
 	"../libtommath/bn_mp_reduce_2k_l.c" \
 	"../libtommath/bn_mp_reduce_2k_setup.c" \
 	"../libtommath/bn_mp_reduce_2k_setup_l.c" \
-	"../libtommath/bn_mp_reduce.c" \
 	"../libtommath/bn_mp_reduce_is_2k.c" \
 	"../libtommath/bn_mp_reduce_is_2k_l.c" \
 	"../libtommath/bn_mp_reduce_setup.c" \
@@ -553,6 +441,118 @@ LO_SOURCES = \
 	"../libtommath/bn_s_mp_sub.c" \
 	"../libtommath/bn_s_mp_toom_mul.c" \
 	"../libtommath/bn_s_mp_toom_sqr.c" \
+	"abs.c" \
+	"alist.c" \
+	"alloc.c" \
+	"arg.c" \
+	"array.c" \
+	"binding.c" \
+	"block.c" \
+	"bool.c" \
+	"buf.c" \
+	"buf_fd.c" \
+	"buf_file.c" \
+	"buf_getc.c" \
+	"buf_getchar.c" \
+	"buf_inspect.c" \
+	"buf_inspect_s16.c" \
+	"buf_inspect_s16_binary.c" \
+	"buf_inspect_s16_decimal.c" \
+	"buf_inspect_s16_hexadecimal.c" \
+	"buf_inspect_s16_octal.c" \
+	"buf_inspect_s32.c" \
+	"buf_inspect_s32_binary.c" \
+	"buf_inspect_s32_decimal.c" \
+	"buf_inspect_s32_hexadecimal.c" \
+	"buf_inspect_s32_octal.c" \
+	"buf_inspect_s64.c" \
+	"buf_inspect_s64_binary.c" \
+	"buf_inspect_s64_decimal.c" \
+	"buf_inspect_s64_hexadecimal.c" \
+	"buf_inspect_s64_octal.c" \
+	"buf_inspect_s8.c" \
+	"buf_inspect_s8_binary.c" \
+	"buf_inspect_s8_decimal.c" \
+	"buf_inspect_s8_hexadecimal.c" \
+	"buf_inspect_s8_octal.c" \
+	"buf_inspect_sw.c" \
+	"buf_inspect_sw_binary.c" \
+	"buf_inspect_sw_decimal.c" \
+	"buf_inspect_sw_hexadecimal.c" \
+	"buf_inspect_sw_octal.c" \
+	"buf_inspect_u16.c" \
+	"buf_inspect_u16_binary.c" \
+	"buf_inspect_u16_decimal.c" \
+	"buf_inspect_u16_hexadecimal.c" \
+	"buf_inspect_u16_octal.c" \
+	"buf_inspect_u32.c" \
+	"buf_inspect_u32_binary.c" \
+	"buf_inspect_u32_decimal.c" \
+	"buf_inspect_u32_hexadecimal.c" \
+	"buf_inspect_u32_octal.c" \
+	"buf_inspect_u64.c" \
+	"buf_inspect_u64_binary.c" \
+	"buf_inspect_u64_decimal.c" \
+	"buf_inspect_u64_hexadecimal.c" \
+	"buf_inspect_u64_octal.c" \
+	"buf_inspect_u8.c" \
+	"buf_inspect_u8_binary.c" \
+	"buf_inspect_u8_decimal.c" \
+	"buf_inspect_u8_hexadecimal.c" \
+	"buf_inspect_u8_octal.c" \
+	"buf_inspect_uw.c" \
+	"buf_inspect_uw_binary.c" \
+	"buf_inspect_uw_decimal.c" \
+	"buf_inspect_uw_hexadecimal.c" \
+	"buf_inspect_uw_octal.c" \
+	"buf_parse.c" \
+	"buf_parse_s16.c" \
+	"buf_parse_s32.c" \
+	"buf_parse_s64.c" \
+	"buf_parse_s8.c" \
+	"buf_parse_sw.c" \
+	"buf_parse_u16.c" \
+	"buf_parse_u32.c" \
+	"buf_parse_u64.c" \
+	"buf_parse_u8.c" \
+	"buf_parse_uw.c" \
+	"buf_rw.c" \
+	"buf_save.c" \
+	"call.c" \
+	"ceiling.c" \
+	"cfn.c" \
+	"character.c" \
+	"compare.c" \
+	"complex.c" \
+	"cow.c" \
+	"data.c" \
+	"env.c" \
+	"error.c" \
+	"error_handler.c" \
+	"eval.c" \
+	"f128.c" \
+	"f32.c" \
+	"f64.c" \
+	"fact.c" \
+	"fact_action.c" \
+	"fact_list.c" \
+	"facts.c" \
+	"facts_cursor.c" \
+	"facts_spec.c" \
+	"facts_spec_cursor.c" \
+	"facts_transaction.c" \
+	"facts_with.c" \
+	"facts_with_cursor.c" \
+	"file.c" \
+	"fn.c" \
+	"fn_clause.c" \
+	"frame.c" \
+	"hash.c" \
+	"ident.c" \
+	"inspect.c" \
+	"integer.c" \
+	"io.c" \
+	"kc3.c" \
 	"license.c" \
 	"list.c" \
 	"list_init.c" \
@@ -573,12 +573,12 @@ LO_SOURCES = \
 	"s64.c" \
 	"s8.c" \
 	"sequence.c" \
+	"set__fact.c" \
+	"set__tag.c" \
 	"set_cursor__fact.c" \
 	"set_cursor__tag.c" \
-	"set__fact.c" \
 	"set_item__fact.c" \
 	"set_item__tag.c" \
-	"set__tag.c" \
 	"sign.c" \
 	"skiplist__fact.c" \
 	"skiplist_node__fact.c" \
@@ -588,13 +588,13 @@ LO_SOURCES = \
 	"struct_type.c" \
 	"sw.c" \
 	"sym.c" \
+	"tag.c" \
 	"tag_add.c" \
 	"tag_addi.c" \
 	"tag_band.c" \
 	"tag_bnot.c" \
 	"tag_bor.c" \
 	"tag_bxor.c" \
-	"tag.c" \
 	"tag_div.c" \
 	"tag_init.c" \
 	"tag_mod.c" \
