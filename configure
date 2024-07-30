@@ -47,5 +47,6 @@ config_subdirs \
     kc3s \
     ekc3 \
     http \
+    httpd \
     test \
     libkc3_window
