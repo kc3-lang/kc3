@@ -240,15 +240,34 @@ gen:
 	${MAKE} -C libkc3 gen
 
 ikc3:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 
 ikc3_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 
+ikc3_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
+
 ikc3_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 
 ikc3_gcovr:
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
 	${MAKE} clean_cov
 	${MAKE} ikc3_test_cov
 	${MAKE} gcovr
