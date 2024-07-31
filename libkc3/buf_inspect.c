@@ -2006,7 +2006,7 @@ sw buf_inspect_ptr_free_size (const u_ptr_w *ptr)
   sw result;
   (void) ptr;
   result = strlen("(PtrFree) 0x");
-  result += sizeof(uw) / 4;
+  result += buf_inspect_uw_hexadecimal_size((uw *) &ptr->p);
   return result;
 }
 
@@ -2015,7 +2015,7 @@ sw buf_inspect_ptr_size (const u_ptr_w *ptr)
   sw result;
   (void) ptr;
   result = strlen("(Ptr) 0x");
-  result += sizeof(uw) / 4;
+  result += buf_inspect_uw_hexadecimal_size((uw *) &ptr->p);
   return result;
 }
 
