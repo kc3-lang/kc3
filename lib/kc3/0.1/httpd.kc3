@@ -21,7 +21,7 @@ defmodule HTTPd do
   </body>
 </html>
 "}
-      if (HTTP.Response.buf_write(res, client.buf_rw.w) < 0) then
+      if (HTTP.Response.buf_write(res, client.buf_rw.w) < 0) do
         ok = false
       end
     end
