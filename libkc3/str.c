@@ -37,16 +37,19 @@
 #include "tag.h"
 #include "tag_type.h"
 
-#define DEF_STR_INIT(type)                                             \
-  s_str * str_init_ ## type (s_str *str, type x)                       \
+#define DEF_STR_INIT(name, type)                                       \
+  s_str * str_init_ ## name (s_str *str, type x)                       \
   {                                                                    \
     s_buf buf;                                                         \
     sw size;                                                           \
-    size = buf_inspect_ ## type ## _size(&x);                          \
+    size = buf_inspect_ ## name ## _size(&x);                          \
     if (size <= 0)                                                     \
       return NULL;                                                     \
     buf_init_alloc(&buf, size);                                        \
-    buf_inspect_ ## type(&buf, &x);                                    \
+    if (buf_inspect_ ## name(&buf, &x) < 0) {                          \
+      buf_clean(&buf);                                                 \
+      return NULL;                                                     \
+    }                                                                  \
     assert(buf.wpos == (uw) size);                                     \
     return buf_to_str(&buf, str);                                      \
   }
@@ -61,6 +64,25 @@
       return NULL;                                                     \
     buf_init_alloc(&buf, size);                                        \
     buf_inspect_ ## type ## _decimal(&buf, &x);                        \
+    assert(buf.wpos == (uw) size);                                     \
+    return buf_to_str(&buf, str);                                      \
+  }
+
+#define DEF_STR_INIT_STRUCT(name)                                      \
+  s_str * str_init_ ## name (s_str *str, const s_ ## name *x)          \
+  {                                                                    \
+    s_buf buf;                                                         \
+    sw size;                                                           \
+    size = buf_inspect_ ## name ## _size(x);                           \
+    if (! size)                                                        \
+      return str_init_empty(str);                                      \
+    if (size < 0)                                                      \
+      return NULL;                                                     \
+    buf_init_alloc(&buf, size);                                        \
+    if (buf_inspect_ ## name(&buf, x) < 0) {                           \
+      buf_clean(&buf);                                                 \
+      return NULL;                                                     \
+    }                                                                  \
     assert(buf.wpos == (uw) size);                                     \
     return buf_to_str(&buf, str);                                      \
   }
@@ -181,6 +203,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   switch (tag->type) {
   case TAG_CHARACTER:
     return str_init_character(str, tag->data.character);
+  case TAG_MAP:
+    return str_init_map(str, &tag->data.map);
   case TAG_S8:
     return str_init_s8(str, tag->data.s8);
   case TAG_S16:
@@ -191,10 +215,14 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_s64(str, tag->data.s64);
   case TAG_STR:
     return str_init_copy(str, &tag->data.str);
+  case TAG_STRUCT:
+    return str_init_struct(str, &tag->data.struct_);
   case TAG_SYM:
     return str_init_copy(str, &tag->data.sym->str);
   case TAG_SW:
     return str_init_sw(str, tag->data.sw);
+  case TAG_TUPLE:
+    return str_init_tuple(str, &tag->data.tuple);
   case TAG_U8:
     return str_init_u8(str, tag->data.u8);
   case TAG_U16:
@@ -306,10 +334,12 @@ s_str * str_init_f (s_str *str, const char *fmt, ...)
   return str;
 }
 
+DEF_STR_INIT_STRUCT(map)
 DEF_STR_INIT_INT(s8)
 DEF_STR_INIT_INT(s16)
 DEF_STR_INIT_INT(s32)
 DEF_STR_INIT_INT(s64)
+DEF_STR_INIT_STRUCT(struct)
 DEF_STR_INIT_INT(sw)
 
 s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
@@ -347,6 +377,7 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
   return str;
 }
 
+DEF_STR_INIT_STRUCT(tuple)
 DEF_STR_INIT_INT(u8)
 DEF_STR_INIT_INT(u16)
 DEF_STR_INIT_INT(u32)

@@ -26,8 +26,14 @@
 
 #define STR_MAX (16 * 1024 * 1024)
 
-#define PROTOTYPE_STR_INIT(type)                                      \
+#define PROTOTYPE_STR_INIT(name, type)                          \
+  s_str * str_init_ ## name (s_str *str, type x)
+
+#define PROTOTYPE_STR_INIT_INT(type)                            \
   s_str * str_init_ ## type (s_str *str, type x)
+
+#define PROTOTYPE_STR_INIT_STRUCT(type)                         \
+  s_str * str_init_ ## type (s_str *str, const s_ ## type *x)
 
 /* Stack allocation compatible functions */
 void    str_clean (s_str *str);
@@ -42,19 +48,22 @@ s_str * str_init_copy (s_str *str, const s_str *src);
 s_str * str_init_copy_1 (s_str *str, const char *p);
 s_str * str_init_empty (s_str *str);
 s_str * str_init_f (s_str *str, const char *fmt, ...);
-PROTOTYPE_STR_INIT(s8);
-PROTOTYPE_STR_INIT(s16);
-PROTOTYPE_STR_INIT(s32);
-PROTOTYPE_STR_INIT(s64);
+PROTOTYPE_STR_INIT_STRUCT(map);
+PROTOTYPE_STR_INIT_INT(s8);
+PROTOTYPE_STR_INIT_INT(s16);
+PROTOTYPE_STR_INIT_INT(s32);
+PROTOTYPE_STR_INIT_INT(s64);
 s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end);
 s_str * str_init_slice_utf8 (s_str *str, const s_str *src, sw start,
                              sw end);
-PROTOTYPE_STR_INIT(sw);
-PROTOTYPE_STR_INIT(u8);
-PROTOTYPE_STR_INIT(u16);
-PROTOTYPE_STR_INIT(u32);
-PROTOTYPE_STR_INIT(u64);
-PROTOTYPE_STR_INIT(uw);
+PROTOTYPE_STR_INIT_STRUCT(struct);
+PROTOTYPE_STR_INIT_INT(sw);
+PROTOTYPE_STR_INIT_STRUCT(tuple);
+PROTOTYPE_STR_INIT_INT(u8);
+PROTOTYPE_STR_INIT_INT(u16);
+PROTOTYPE_STR_INIT_INT(u32);
+PROTOTYPE_STR_INIT_INT(u64);
+PROTOTYPE_STR_INIT_INT(uw);
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap);
 
 /* Constructors, call str_delete after use */
