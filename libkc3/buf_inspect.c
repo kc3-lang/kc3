@@ -1868,10 +1868,29 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
 
 sw buf_inspect_map_size (const s_map *map)
 {
+  uw i = 0;
+  s_tag *k;
+  sw result = 0;
   assert(map);
-  assert(! "buf_inspect_map_size: not implemented");
-  (void) map;
-  return -1;
+  result += strlen("%{");
+  while (i < map->count) {
+    k = map->key + i;
+    if (k->type == TAG_SYM) {
+      result += strlen(k->data.sym->str.ptr.pchar);
+      result += strlen(": ");
+    }
+    else {
+      result += buf_inspect_tag_size(map->key + i);
+      result += strlen(" => ");
+    }
+    result += buf_inspect_tag_size(map->value + i);
+    i++;
+    if (i < map->count) {
+      result += strlen(", ");
+    }
+  }
+  result += strlen("}");
+  return result;
 }
 
 sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym)
