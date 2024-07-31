@@ -238,6 +238,15 @@ s_buf * buf_init_alloc (s_buf *buf, uw size)
   return buf_init(buf, true, size, p);
 }
 
+s_buf * buf_init_copy (s_buf *buf, const s_buf *src)
+{
+  if (buf != src) {
+    *buf = *src;
+    buf->free = false;
+  }
+  return buf;
+}
+
 s_buf * buf_init_str (s_buf *buf, bool p_free, s_str *p)
 {
   s_buf tmp = {0};

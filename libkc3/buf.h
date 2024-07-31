@@ -30,6 +30,7 @@ void    buf_clean (s_buf *buf);
 s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p);
 s_buf * buf_init_1 (s_buf *buf, bool p_free, char *p);
 s_buf * buf_init_alloc (s_buf *buf, uw size);
+s_buf * buf_init_copy (s_buf *buf, const s_buf *src);
 s_buf * buf_init_str (s_buf *buf, bool free, s_str *p);
 s_buf * buf_init_str_copy (s_buf *buf, const s_str *str);
 

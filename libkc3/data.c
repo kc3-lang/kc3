@@ -600,6 +600,8 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
     return array_init_copy(data, src);
   if (type == &g_sym_Bool)
     return bool_init_copy(data, src);
+  if (type == &g_sym_Buf)
+    return buf_init_copy(data, src);
   if (type == &g_sym_Call)
     return call_init_copy(data, src);
   if (type == &g_sym_Cfn)

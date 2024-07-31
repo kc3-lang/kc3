@@ -31,6 +31,7 @@ const s_sym g_sym__plus           = {{{NULL},  1, {"+"}}};
 const s_sym g_sym_Array           = {{{NULL},  5, {"Array"}}};
 const s_sym g_sym_Block           = {{{NULL},  5, {"Block"}}};
 const s_sym g_sym_Bool            = {{{NULL},  4, {"Bool"}}};
+const s_sym g_sym_Buf             = {{{NULL},  3, {"Buf"}}};
 const s_sym g_sym_Call            = {{{NULL},  4, {"Call"}}};
 const s_sym g_sym_Cfn             = {{{NULL},  3, {"Cfn"}}};
 const s_sym g_sym_Character       = {{{NULL},  9, {"Character"}}};
@@ -325,6 +326,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Array, NULL);
   sym_register(&g_sym_Block, NULL);
   sym_register(&g_sym_Bool, NULL);
+  sym_register(&g_sym_Buf, NULL);
   sym_register(&g_sym_Call, NULL);
   sym_register(&g_sym_Cfn, NULL);
   sym_register(&g_sym_Character, NULL);
