@@ -2209,24 +2209,24 @@ bool env_load (s_env *env, const s_str *path)
   file_dir_save = *file_dir;
   file_path = frame_get_w(&env->global_frame, &g_sym___FILE__);
   file_path_save = *file_path;
-  if (! file_dirname(path, &file_dir->data.str)) {
-    buf_clean(&buf);
-    return false;
-  }
+  if (! file_dirname(path, &file_dir->data.str))
+    goto ko;
   tag_init_str(file_path, NULL, path->size, path->ptr.pchar);
   while (1) {
-    if ((r = buf_parse_tag(&buf, &tag)) < 0) {
-      buf_getc_close(&buf);
-      buf_clean(&buf);
-      return false;
-    }
+    if ((r = buf_parse_comments(&buf)) < 0)
+      goto ko;
+    if ((r = buf_ignore_spaces(&buf)) < 0)
+      goto ko;
+    if ((r = buf_parse_tag(&buf, &tag)) < 0)
+      goto ko;
     if (! r)
-      break;
+      continue;
     if (! env_eval_tag(env, &tag, &tmp)) {
+      err_write_1("env_load: env_eval_tag: ");
+      err_inspect_tag(&tag);
+      err_write_1("\n");
       tag_clean(&tag);
-      buf_getc_close(&buf);
-      buf_clean(&buf);
-      return false;
+      goto ko;
     }
     tag_clean(&tmp);
     tag_clean(&tag);
@@ -2237,6 +2237,10 @@ bool env_load (s_env *env, const s_str *path)
   buf_getc_close(&buf);
   buf_clean(&buf);
   return true;
+ ko:
+  buf_getc_close(&buf);
+  buf_clean(&buf);
+  return false;
 }
 
 void env_longjmp (s_env *env, jmp_buf *jmp_buf)
