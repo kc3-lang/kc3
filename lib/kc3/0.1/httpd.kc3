@@ -1,11 +1,12 @@
+puts("KC3 HTTPd loading, please wait...")
+
 defmodule HTTPd do
 
-  puts("KC3 HTTPd loading, please wait...")
-
-  def server_loop = fn (client) do
-                      while true do
-                        req = HTTP.Request.buf_parse(client.buf_rw.r)
-                        res = %HTTP.Response{body: "
+  def server_loop = fn (client) {
+    ok = true
+    while ok do
+      req = HTTP.Request.buf_parse(client.buf_rw.r)
+      res = %HTTP.Response{body: "
 <html>
   <head>
     <title>KC3 HTTPd</title>
@@ -19,22 +20,21 @@ defmodule HTTPd do
     <pre><code>#{req}</code></pre>
   </body>
 </html>
-"
-}
-                        if HTTP.Response.buf_write(res, client.buf_rw.w) < 0
-                          break
-                      end
-  end
+"}
+      if (HTTP.Response.buf_write(res, client.buf_rw.w) < 0)
+        ok = false
+    end
+  }
 
-  def server = fn (host, port) do
-                 socket = Socket.listen(host, port)
-                 puts("KC3 HTTPd: listening on #{host}:#{port}")
-                 while true do
-                   client = Socket.Buf.accept(socket)
-                   HTTPd.server_loop(client)
-                 end
-  end
-
-  HTTPd.server(getenv("KC3_HTTPD_HOST"), getenv("KC3_HTTPD_PORT"))
+  def server = fn (host, port) {
+    socket = Socket.listen(host, port)
+    puts("KC3 HTTPd: listening on #{host}:#{port}")
+    while true do
+      client = Socket.Buf.accept(socket)
+      HTTPd.server_loop(client)
+    end
+  }
 
 end
+
+HTTPd.server(getenv("KC3_HTTPD_HOST"), getenv("KC3_HTTPD_PORT"))
