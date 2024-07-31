@@ -2214,11 +2214,11 @@ bool env_load (s_env *env, const s_str *path)
   tag_init_str(file_path, NULL, path->size, path->ptr.pchar);
   while (1) {
     if ((r = buf_parse_comments(&buf)) < 0)
-      goto ko;
+      break;
     if ((r = buf_ignore_spaces(&buf)) < 0)
-      goto ko;
+      break;
     if ((r = buf_parse_tag(&buf, &tag)) < 0)
-      goto ko;
+      break;
     if (! r)
       continue;
     if (! env_eval_tag(env, &tag, &tmp)) {
