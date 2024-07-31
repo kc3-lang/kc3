@@ -433,6 +433,7 @@ sw buf_parse_block (s_buf *buf, s_block *block)
   result += r;
   if ((r = buf_parse_block_inner(buf, short_form, block)) < 0) {
     err_puts("buf_parse_block: buf_parse_block_inner < 0");
+    err_inspect_buf(buf);
     assert(! "buf_parse_block: buf_parse_block_inner < 0");
     return r;
   }

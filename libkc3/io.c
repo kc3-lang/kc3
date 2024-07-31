@@ -52,6 +52,8 @@
   DEF_ERR_INSPECT(name, type)                                          \
   DEF_IO_INSPECT(name, type)
 
+#define IO_INSPECT_BUF_SIZE 100
+
 sw err_flush (void)
 {
   return buf_flush(&g_kc3_env.err);
@@ -65,7 +67,8 @@ sw err_inspect (const s_tag *x)
 sw err_inspect_buf (const s_buf *buf)
 {
   uw pos;
-  pos = (buf->rpos < 40) ? 0 : buf->rpos - 40;
+  pos = (buf->rpos < IO_INSPECT_BUF_SIZE) ? 0 :
+    buf->rpos - IO_INSPECT_BUF_SIZE;
   return err_write(buf->ptr.pchar + pos, buf->rpos - pos);
 }
 
@@ -134,7 +137,8 @@ sw io_inspect (const s_tag *x)
 sw io_inspect_buf (const s_buf *buf)
 {
   uw pos;
-  pos = (buf->rpos < 40) ? 0 : buf->rpos - 40;
+  pos = (buf->rpos < IO_INSPECT_BUF_SIZE) ? 0 :
+    buf->rpos - IO_INSPECT_BUF_SIZE;
   return io_write(buf->ptr.pchar + pos, buf->rpos - pos);
 }
 
