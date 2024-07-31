@@ -58,6 +58,7 @@ bool    kc3_require (const s_sym * const *module);
 /* Special operators. */
 s_tag * kc3_if_then_else (const s_tag *cond, const s_tag *then,
                           const s_tag *else_, s_tag *dest);
+s_tag * kc3_while (const s_tag *cond, const s_tag *body, s_tag *dest);
 
 /* debug */
 void kc3_break (void);

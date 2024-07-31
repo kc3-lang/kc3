@@ -3134,3 +3134,32 @@ s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_block *cleanup,
   env_eval_block(env, cleanup, &tmp);
   return dest;
 }
+
+s_tag * env_while (s_env *env, const s_tag *cond, const s_tag *body,
+                   s_tag *dest)
+{
+  s_tag cond_bool = {0};
+  s_call cond_cast = {0};
+  s_tag tmp = {0};
+  call_init_call_cast(&cond_cast, &g_sym_Bool);
+  if (! tag_init_copy(&cond_cast.arguments->tag, cond))
+    goto ko;
+  while (1) {
+    tag_clean(&tmp);
+    if (! env_eval_call(env, &cond_cast, &cond_bool))
+      goto ko;
+    if (cond_bool.type != TAG_BOOL)
+      goto ko;
+    if (! cond_bool.data.bool)
+      break;
+    if (! env_eval_tag(env, body, &tmp))
+      goto ko;
+  }
+  call_clean(&cond_cast);
+  *dest = tmp;
+  return dest;
+ ko:
+  tag_clean(&tmp);
+  call_clean(&cond_cast);
+  return NULL;
+        }

@@ -1,0 +1,37 @@
+defmodule HTTPd do
+
+  def server_loop = fn (client) do
+                      while true do
+                        req = HTTP.Request.buf_parse(client.buf_rw.r)
+                        res = %HTTP.Response{body: """
+<html>
+  <head>
+    <title>KC3 HTTPd</title>
+  </head>
+  <body>
+    <h1>KC3 HTTPd</h1>
+    <p>
+      Hello from #{__FILE__}
+    </p>
+    <h2>Request</h2>
+    <pre><code>#{req}</code></pre>
+  </body>
+</html>
+"""}
+                        if HTTP.Response.buf_write(res, client.buf_rw.w) < 0
+                          break
+                      end
+  end
+
+  def server = fn (host, port) do
+                 socket = Socket.listen(host, port)
+                 puts("KC3 HTTPd: listening on #{host}:#{port}")
+                 while true do
+                   client = Socket.Buf.accept(socket)
+                   HTTPd.server_loop(client)
+                 end
+  end
+
+  HTTPd.server(getenv("KC3_HTTPD_HOST"), getenv("KC3_HTTPD_PORT"))
+
+end

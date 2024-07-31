@@ -214,6 +214,8 @@ bool *        env_struct_type_has_spec (s_env *env, const s_sym *module,
                                         bool *dest);
 bool          env_tag_ident_is_bound (s_env *env,
                                       const s_tag *tag);
+s_tag *       env_while (s_env *env, const s_tag *cond,
+                         const s_tag *body, s_tag *dest);
 
 /* Modifiers. */
 bool env_call_get (s_env *env, s_call *call);

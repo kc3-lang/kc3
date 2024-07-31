@@ -259,3 +259,8 @@ s_list ** kc3_search_modules (s_list **dest)
 {
   return env_search_modules(&g_kc3_env, dest);
 }
+
+s_tag * kc3_while (const s_tag *cond, const s_tag *body, s_tag *dest)
+{
+  return env_while(&g_kc3_env, cond, body, dest);
+}
