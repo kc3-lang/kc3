@@ -121,35 +121,6 @@ demo_gl_debug: debug
 
 dist: kc3-${KC3_VERSION}.tar.gz
 
-http:
-	${MAKE} -C libtommath build
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 build
-	${MAKE} -C ikc3 build
-	${MAKE} -C kc3s build
-	${MAKE} -C ekc3 build
-	${MAKE} -C http build
-
-httpd:
-	${MAKE} -C libtommath build
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 build
-	${MAKE} -C ikc3 build
-	${MAKE} -C kc3s build
-	${MAKE} -C ekc3 build
-	${MAKE} -C http build
-	${MAKE} -C httpd build
-
-kc3-${KC3_VERSION}.tar.gz: kc3.index
-	rm -rf kc3-${KC3_VERSION}.old
-	-mv kc3-${KC3_VERSION} kc3-${KC3_VERSION}.old
-	mkdir kc3-${KC3_VERSION}
-	pax -rw < kc3.index kc3-${KC3_VERSION}
-	pax -wz kc3-${KC3_VERSION} > kc3-${KC3_VERSION}.tar.gz
-
-kc3.index: sources.mk Makefile
-	for F in ${KC3_CONFIGURES} ${KC3_MAKEFILES} ${KC3_C_SOURCES} ${KC3_OBJC_SOURCES} ${KC3_OTHER_SOURCES} ${KC3_EXTERNAL_SOURCES}; do echo "$$F"; done | sort -u > kc3.index
-
 distclean:
 	${MAKE} -C libtommath distclean
 	${MAKE} -C ucd2c distclean
@@ -249,6 +220,25 @@ gdb_test_ikc3:
 gen:
 	${MAKE} -C libkc3 gen
 
+http:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C ekc3 build
+	${MAKE} -C http build
+
+httpd:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C ekc3 build
+	${MAKE} -C http build
+	${MAKE} -C httpd build
+
 ikc3:
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
@@ -290,6 +280,16 @@ install:
 	${MAKE} -C http install
 	${MAKE} -C httpd install
 	${MAKE} -C libkc3_window install
+
+kc3-${KC3_VERSION}.tar.gz: kc3.index
+	rm -rf kc3-${KC3_VERSION}.old
+	-mv kc3-${KC3_VERSION} kc3-${KC3_VERSION}.old
+	mkdir kc3-${KC3_VERSION}
+	pax -rw < kc3.index kc3-${KC3_VERSION}
+	pax -wz kc3-${KC3_VERSION} > kc3-${KC3_VERSION}.tar.gz
+
+kc3.index: sources.mk Makefile
+	for F in ${KC3_CONFIGURES} ${KC3_MAKEFILES} ${KC3_C_SOURCES} ${KC3_OBJC_SOURCES} ${KC3_OTHER_SOURCES} ${KC3_EXTERNAL_SOURCES}; do echo "$$F"; done | sort -u > kc3.index
 
 lib_links_linux:
 	ln -sf ../../../ekc3/.libs/libekc3.so lib/kc3/0.1/ekc3.so

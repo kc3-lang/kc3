@@ -31,6 +31,7 @@ s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf)
     tmp.method = sym_1("get");
   if (! tmp.method) {
     err_puts("http_request_buf_parse: no method");
+    err_inspect_buf(buf);
     goto restore;
   }
   if (false) {
