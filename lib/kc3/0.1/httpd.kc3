@@ -1,5 +1,7 @@
 defmodule HTTPd do
 
+  puts("KC3 HTTPd loading, please wait...")
+
   def server_loop = fn (client) do
                       while true do
                         req = HTTP.Request.buf_parse(client.buf_rw.r)
