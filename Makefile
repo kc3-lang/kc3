@@ -191,6 +191,16 @@ gdb_httpd:
 	${MAKE} -C httpd debug
 	${MAKE} -C test gdb_httpd
 
+gdb_httpd_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C http asan
+	${MAKE} -C httpd asan
+	${MAKE} -C test gdb_httpd_asan
+
 gdb_ikc3:
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c

@@ -74,6 +74,9 @@ gcovr:
 gdb_httpd:
 	cd httpd && ${GDB} ../../httpd/.libs/kc3_httpd_debug
 
+gdb_httpd_asan:
+	cd httpd && ${GDB} ../../httpd/.libs/kc3_httpd_asan
+
 gdb_test: debug
 	if [ -f libkc3_test_debug.core ]; then ${GDB} .libs/libkc3_test_debug libkc3_test_debug.core; else ${GDB} .libs/libkc3_test_debug; fi
 
