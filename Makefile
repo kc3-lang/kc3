@@ -432,6 +432,46 @@ test_http_debug:
 	${MAKE} -C http debug
 	${MAKE} -C test test_http_debug
 
+test_httpd:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C http build
+	${MAKE} -C httpd build
+	${MAKE} -C test test_httpd
+
+test_httpd_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C http asan
+	${MAKE} -C httpd asan
+	${MAKE} -C test test_httpd_asan
+
+test_httpd_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C kc3s cov
+	${MAKE} -C http cov
+	${MAKE} -C httpd cov
+	${MAKE} -C test test_httpd_cov
+
+test_httpd_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C http debug
+	${MAKE} -C httpd debug
+	${MAKE} -C test test_httpd_debug
+
 test_ikc3:
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
