@@ -211,6 +211,8 @@ s_str * str_init_alloc (s_str *str, uw size, const char *p)
   return str;
 }
 
+DEF_STR_INIT(bool, bool)
+
 s_str * str_init_cast (s_str *str, const s_sym * const *type,
                        const s_tag *tag)
 {
@@ -218,10 +220,16 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   assert(type);
   assert(tag);
   switch (tag->type) {
+  case TAG_BOOL:
+    return str_init_bool(str, tag->data.bool);
   case TAG_CHARACTER:
     return str_init_character(str, tag->data.character);
   case TAG_MAP:
     return str_init_map(str, &tag->data.map);
+  case TAG_PTR:
+    return str_init_ptr(str, tag->data.ptr);
+  case TAG_PTR_FREE:
+    return str_init_ptr_free(str, tag->data.ptr_free);
   case TAG_S8:
     return str_init_s8(str, tag->data.s8);
   case TAG_S16:
@@ -352,6 +360,8 @@ s_str * str_init_f (s_str *str, const char *fmt, ...)
 }
 
 DEF_STR_INIT_STRUCT(map)
+DEF_STR_INIT(ptr, u_ptr_w)
+DEF_STR_INIT(ptr_free, u_ptr_w)
 DEF_STR_INIT_INT(s8)
 DEF_STR_INIT_INT(s16)
 DEF_STR_INIT_INT(s32)

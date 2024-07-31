@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 /* Gen from buf_inspect_u.c.in BITS=8 bits=8 */
+#include <string.h>
 #include "alloc.h"
 #include "buf.h"
 #include "buf_inspect.h"
@@ -133,7 +134,7 @@ sw buf_inspect_u8_size (const u8 *u)
     if ((r = buf_inspect_paren_sym_size(&g_sym_U8)) < 0)
       return r;
     result += r;
-    result++;
+    result += strlen(" ");
   }
   if ((r = buf_inspect_u8_base_size(&g_kc3_base_decimal, u)) < 0)
     return r;

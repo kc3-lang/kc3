@@ -2347,8 +2347,11 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
   if ((r = buf_write_1(buf, "%")) < 0)
     return r;
   result += r;
-  if (! sym_is_module(s->type->module))
+  if (! sym_is_module(s->type->module)) {
+    err_puts("buf_inspect_struct: sym_is_module(s->type->module)");
+    assert(! "buf_inspect_struct: sym_is_module(s->type->module)");
     return -1;
+  }
   if ((r = buf_write_str(buf, &s->type->module->str)) < 0)
     return r;
   result += r;

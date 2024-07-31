@@ -55,11 +55,12 @@ sw buf_inspect_s32_size (const s32 *s)
     result += r;
     result += strlen(" ");
   }
-  u = *s;
   if (*s < 0) {
     result += strlen("-");
     u = -*s;
   }
+  else
+    u = *s;
   result += buf_inspect_u32_decimal_size(&u);
   return result;
 }

@@ -55,11 +55,12 @@ sw buf_inspect_s_bits$_size (const s_bits$ *s)
     result += r;
     result += strlen(" ");
   }
-  u = *s;
   if (*s < 0) {
     result += strlen("-");
     u = -*s;
   }
+  else
+    u = *s;
   result += buf_inspect_u_bits$_decimal_size(&u);
   return result;
 }
