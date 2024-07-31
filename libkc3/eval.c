@@ -14,12 +14,18 @@
 #include "types.h"
 #include "env.h"
 
-bool eval_tag (const s_tag *tag, s_tag *dest)
+
+bool eval_call (const s_call *call, s_tag *dest)
 {
-  return env_eval_tag(&g_kc3_env, tag, dest);
+  return env_eval_call(&g_kc3_env, call, dest);
 }
 
 bool eval_fn_call (const s_fn *fn, const s_list *args, s_tag *dest)
 {
   return env_eval_call_fn_args(&g_kc3_env, fn, args, dest);
+}
+
+bool eval_tag (const s_tag *tag, s_tag *dest)
+{
+  return env_eval_tag(&g_kc3_env, tag, dest);
 }

@@ -1,5 +1,3 @@
-puts("KC3 HTTPd loading, please wait...")
-
 defmodule HTTPd do
 
   def server_loop = fn (client) {
@@ -32,10 +30,19 @@ defmodule HTTPd do
     puts("KC3 HTTPd: listening on #{host}:#{port}")
     while true do
       client = Socket.Buf.accept(socket)
-      HTTPd.server_loop(client)
+      server_loop(client)
     end
   }
 
-end
+  def main = fn {
+    () {
+      host = getenv("KC3_HTTPD_HOST")
+      port = getenv("KC3_HTTPD_PORT")
+      server(host, port)
+    }
+    (host, port) {
+      server(host, port)
+    }     
+  }
 
-HTTPd.server(getenv("KC3_HTTPD_HOST"), getenv("KC3_HTTPD_PORT"))
+end

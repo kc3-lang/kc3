@@ -15,14 +15,42 @@
 
 int main (int argc, char **argv)
 {
-  s_str path;
+  s_call call = {0};
+  const s_sym *module = NULL;
+  int r = 1;
+  s_tag tmp = {0};
   kc3_init(NULL, &argc, &argv);
-  if (! module_path(sym_1("HTTPd"), &g_kc3_env.module_path, KC3_EXT,
-                    &path)) {
+  io_puts("KC3 HTTPd loading, please wait...");
+  module = sym_1("HTTPd");
+  if (! module_load(module)) {
     kc3_clean(NULL);
     return 1;
   }
-  kc3_load(&path);
+  call_init(&call);
+  call.ident.module = module;
+  call.ident.sym = sym_1("main");
+  if (argc >= 2)
+    call.arguments = list_new_str_1
+      (NULL, argv[0], list_new_str_1
+       (NULL, argv[1], NULL));
+  else if (argc == 1)
+    call.arguments = list_new_str_1(NULL, argv[0], NULL);
+  else
+    call.arguments = NULL;
+  if (! eval_call(&call, &tmp))
+    goto clean;
+  switch (tmp.type) {
+  case TAG_U8:
+    r = tmp.data.u8;
+    break;
+  default:
+    err_write_1("invalid return type from main: ");
+    err_inspect_tag(&tmp);
+    err_write_1("\n");
+  }
+ clean:
+  tag_clean(&tmp);
+  call_clean(&call);
   kc3_clean(NULL);
-  return 0;
+  return r;
 }

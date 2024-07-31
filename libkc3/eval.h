@@ -15,6 +15,7 @@
 
 #include "types.h"
 
+bool eval_call (const s_call *call, s_tag *dest);
 bool eval_call_function (const s_call *call,
                          s_tag *dest);
 bool eval_call_macro (const s_call *call, s_tag *dest);
