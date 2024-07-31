@@ -6,7 +6,7 @@ defmodule HTTP.Response do
              headers: [],
              body: ""]
 
-  dlopen(__DIR__ + "/http.so")
+  dlopen(__DIR__ + "../http.so")
 
   def default_messages = [{(U16) 200, "OK"},
                           {(U16) 404, "Not Found"},
