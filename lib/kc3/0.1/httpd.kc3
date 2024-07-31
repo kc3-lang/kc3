@@ -1,6 +1,7 @@
 defmodule HTTPd do
 
   def server_loop = fn (client) {
+    puts("HTTPd.server_loop: got client #{client}")
     ok = true
     while ok do
       req = HTTP.Request.buf_parse(client.buf_rw.r)
