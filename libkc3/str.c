@@ -87,12 +87,16 @@
       return NULL;                                                     \
     }                                                                  \
     if ((r = buf_inspect_ ## name(&buf, x)) < 0) {                     \
-      err_puts("str_init_" # name ": buf_inspect_" # name);            \
+      err_puts("str_init_" # name ": buf_inspect_" # name " < 0");     \
       buf_clean(&buf);                                                 \
       return NULL;                                                     \
     }                                                                  \
     if (r != size) {                                                   \
-      err_puts("str_init_" # name ": buf_inspect_" # name);            \
+      err_write_1("str_init_" # name ": buf_inspect_" # name ": ");    \
+      err_inspect_sw_decimal(&r);                                      \
+      err_write_1(" != ");                                             \
+      err_inspect_sw_decimal(&size);                                   \
+      err_write_1("\n");                                               \
       buf_clean(&buf);                                                 \
       return NULL;                                                     \
     }                                                                  \

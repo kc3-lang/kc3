@@ -2847,6 +2847,8 @@ sw buf_inspect_var_size (const s_tag *tag)
 {
   sw r;
   sw result = 0;
+  if (tag->data.var.type == &g_sym_Tag)
+    return strlen("?");
   if ((r = buf_inspect_paren_sym_size(tag->data.var.type)) < 0)
     return r;
   result += r;
