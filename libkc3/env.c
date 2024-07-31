@@ -3146,7 +3146,7 @@ s_tag * env_while (s_env *env, const s_tag *cond, const s_tag *body,
   s_call cond_cast = {0};
   s_tag tmp = {0};
   call_init_call_cast(&cond_cast, &g_sym_Bool);
-  if (! tag_init_copy(&cond_cast.arguments->tag, cond))
+  if (! tag_init_copy(&list_next(cond_cast.arguments)->tag, cond))
     goto ko;
   while (1) {
     tag_clean(&tmp);
@@ -3166,4 +3166,4 @@ s_tag * env_while (s_env *env, const s_tag *cond, const s_tag *body,
   tag_clean(&tmp);
   call_clean(&cond_cast);
   return NULL;
-        }
+}

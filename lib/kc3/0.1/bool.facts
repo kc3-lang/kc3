@@ -1,0 +1,5 @@
+%{module: KC3.Facts.Dump,
+  version: 1}
+replace {Bool, :is_a, :module}
+replace {Bool, :symbol, Bool.cast}
+replace {Bool.cast, :symbol_value, cfn Bool "bool_init_cast" (Result, Sym, Tag)}
