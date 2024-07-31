@@ -72,14 +72,27 @@
   s_str * str_init_ ## name (s_str *str, const s_ ## name *x)          \
   {                                                                    \
     s_buf buf;                                                         \
+    sw r;                                                              \
     sw size;                                                           \
     size = buf_inspect_ ## name ## _size(x);                           \
     if (! size)                                                        \
       return str_init_empty(str);                                      \
-    if (size < 0)                                                      \
+    if (size < 0) {                                                    \
+      err_puts("str_init_" # name ": buf_inspect_" # name              \
+               "_size < 0");                                           \
       return NULL;                                                     \
-    buf_init_alloc(&buf, size);                                        \
-    if (buf_inspect_ ## name(&buf, x) < 0) {                           \
+    }                                                                  \
+    if (! buf_init_alloc(&buf, size)) {                                \
+      err_puts("str_init_" # name ": buf_init_alloc");                 \
+      return NULL;                                                     \
+    }                                                                  \
+    if ((r = buf_inspect_ ## name(&buf, x)) < 0) {                     \
+      err_puts("str_init_" # name ": buf_inspect_" # name);            \
+      buf_clean(&buf);                                                 \
+      return NULL;                                                     \
+    }                                                                  \
+    if (r != size) {                                                   \
+      err_puts("str_init_" # name ": buf_inspect_" # name);            \
       buf_clean(&buf);                                                 \
       return NULL;                                                     \
     }                                                                  \

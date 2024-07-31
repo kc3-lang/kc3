@@ -2330,13 +2330,8 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
   result += r;
   if (! sym_is_module(s->type->module))
     return -1;
-  if (sym_has_reserved_characters(s->type->module)) {
-    if ((r = buf_write_str(buf, &s->type->module->str)) < 0)
-      return r;
-  }
-  else
-    if ((r = buf_write_1(buf, s->type->module->str.ptr.pchar)) < 0)
-      return r;
+  if ((r = buf_write_str(buf, &s->type->module->str)) < 0)
+    return r;
   result += r;
   if ((r = buf_write_1(buf, "{")) < 0)
     return r;
@@ -2354,11 +2349,11 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
         return -1;
       }
       if (sym_has_reserved_characters(k->data.sym)) {
-        if ((r = buf_write_str(buf, &k->data.sym->str)) < 0)
+        if ((r = buf_inspect_str(buf, &k->data.sym->str)) < 0)
           return r;
       }
       else
-        if ((r = buf_write_1(buf, k->data.sym->str.ptr.pchar)) < 0)
+        if ((r = buf_write_str(buf, &k->data.sym->str)) < 0)
           return r;
       result += r;
       if ((r = buf_write_1(buf, ": ")) < 0)
@@ -2404,10 +2399,7 @@ sw buf_inspect_struct_size (const s_struct *s)
   result += strlen("%");
   if (! sym_is_module(s->type->module))
     return -1;
-  if (sym_has_reserved_characters(s->type->module))
-    result += s->type->module->str.size;
-  else
-    result += strlen(s->type->module->str.ptr.pchar);
+  result += s->type->module->str.size;
   result += strlen("{");
   if (s->data || s->tag) {
     while (i < s->type->map.count) {
@@ -2421,10 +2413,13 @@ sw buf_inspect_struct_size (const s_struct *s)
         assert(k->type == TAG_SYM);
         return -1;
       }
-      if (sym_has_reserved_characters(k->data.sym))
-        result += k->data.sym->str.size;
+      if (sym_has_reserved_characters(k->data.sym)) {
+        if ((r = buf_inspect_str_size(&k->data.sym->str)) < 0)
+          return r;
+      }
       else
-        result += strlen(k->data.sym->str.ptr.pchar);
+        r = k->data.sym->str.size;
+      result += r;
       result += strlen(": ");
       if (s->data) {
         if (! tag_type(s->type->map.value + i, &type))
