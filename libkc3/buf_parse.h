@@ -111,6 +111,7 @@ sw buf_parse_tag_brackets (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call_access (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call_op (s_buf *buf, s_tag *dest);
+sw buf_parse_tag_call_op_unary (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call_paren (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_cfn (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_character (s_buf *buf, s_tag *dest);

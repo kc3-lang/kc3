@@ -1053,7 +1053,7 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto clean;
   result += r;
-  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
+  if ((r = buf_parse_tag(buf, &tmp.arguments->tag)) <= 0)
     goto clean;
   result += r;
   *dest = tmp;
@@ -3952,6 +3952,7 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
     result += r;
   }
   if ((r = buf_parse_tag_call_access(buf, dest)) != 0 ||
+      (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
       (r = buf_parse_tag_primary_2(buf, dest)) != 0)
     goto end;
   goto restore;
@@ -3998,7 +3999,6 @@ sw buf_parse_tag_primary_2 (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_if(buf, dest)) != 0 ||
       (r = buf_parse_tag_call(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_paren(buf, dest)) != 0 ||
-      (r = buf_parse_tag_call_op_unary(buf, dest)) != 0 ||
       (r = buf_parse_tag_quote(buf, dest)) != 0 ||
       (r = buf_parse_tag_bool(buf, dest)) != 0 ||
       (r = buf_parse_tag_character(buf, dest)) != 0 ||
