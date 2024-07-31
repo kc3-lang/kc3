@@ -181,6 +181,16 @@ gdb_demo_gl:
 	${MAKE} debug
 	${MAKE} -C libkc3 gdb_demo_gl
 
+gdb_httpd:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C http debug
+	${MAKE} -C httpd debug
+	${MAKE} -C test gdb_httpd
+
 gdb_ikc3:
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
