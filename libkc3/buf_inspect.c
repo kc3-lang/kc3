@@ -2394,10 +2394,59 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
 
 sw buf_inspect_struct_size (const s_struct *s)
 {
+  uw i = 0;
+  s_tag *k;
+  sw r;
+  sw result = 0;
+  const s_sym *type;
   assert(s);
-  assert(! "buf_inspect_struct_size: not implemented");
-  (void) s;
-  return -1;
+  assert(sym_is_module(s->type->module));
+  result += strlen("%");
+  if (! sym_is_module(s->type->module))
+    return -1;
+  if (sym_has_reserved_characters(s->type->module))
+    result += s->type->module->str.size;
+  else
+    result += strlen(s->type->module->str.ptr.pchar);
+  result += strlen("{");
+  if (s->data || s->tag) {
+    while (i < s->type->map.count) {
+      k = s->type->map.key + i;
+      if (k->type != TAG_SYM) {
+        err_write_1("buf_inspect_struct_size: key type is not a symbol: ");
+        err_inspect_tag(k);
+        err_write_1(" (");
+        err_write_1(tag_type_to_string(k->type));
+        err_puts(")");
+        assert(k->type == TAG_SYM);
+        return -1;
+      }
+      if (sym_has_reserved_characters(k->data.sym))
+        result += k->data.sym->str.size;
+      else
+        result += strlen(k->data.sym->str.ptr.pchar);
+      result += strlen(": ");
+      if (s->data) {
+        if (! tag_type(s->type->map.value + i, &type))
+          return -1;
+        assert(s->type->offset[i] < s->type->size);
+        if ((r = data_buf_inspect_size(type, (char *) s->data +
+                                       s->type->offset[i])) < 0)
+          return r;
+        result += r;
+      }
+      else if (s->tag) {
+        if ((r = buf_inspect_tag_size(s->tag + i)) < 0)
+          return r;
+        result += r;
+      }
+      i++;
+      if (i < s->type->map.count)
+        result += strlen(", ");
+    }
+  }
+  result += strlen("}");
+  return result;
 }
 
 sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
