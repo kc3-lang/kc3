@@ -5,7 +5,7 @@ defmodule HTTPd do
   def server_loop = fn (client) do
                       while true do
                         req = HTTP.Request.buf_parse(client.buf_rw.r)
-                        res = %HTTP.Response{body: """
+                        res = %HTTP.Response{body: "
 <html>
   <head>
     <title>KC3 HTTPd</title>
@@ -19,7 +19,8 @@ defmodule HTTPd do
     <pre><code>#{req}</code></pre>
   </body>
 </html>
-"""}
+"
+}
                         if HTTP.Response.buf_write(res, client.buf_rw.w) < 0
                           break
                       end
