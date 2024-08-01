@@ -1082,13 +1082,13 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
 {
   sw r;
   sw result = 0;
-  s_call tmp;
+  s_call tmp = {0};
   s_buf_save save;
-  call_init_op_unary(&tmp);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "(")) <= 0)
     goto restore;
   result += r;
+  call_init_op_unary(&tmp);
   ident_init_1(&tmp.ident, "()");
   if (! operator_resolve(&tmp.ident, 1, &tmp.ident)) {
     assert(! "buf_parse_call_paren: could not resolve operator ()");
@@ -1098,7 +1098,7 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
+  if ((r = buf_parse_tag(buf, &tmp.arguments->tag)) <= 0)
     goto restore;
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
@@ -3080,6 +3080,10 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
     goto restore;
   }
   if ((r = buf_parse_tag(buf, quote.tag)) <= 0) {
+    err_puts("buf_parse_quote: buf_parse_tag");
+    err_inspect_buf(buf);
+    err_write_1("\n");
+    assert(! "buf_parse_quote: buf_parse_tag");
     free(quote.tag);
     goto restore;
   }

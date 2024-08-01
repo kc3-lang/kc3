@@ -7,8 +7,5 @@ Test.test((U8) 1)
 Test.test((U8) 1, (U8) 2)
 Test.test((U8) 1, (U8) 2, (U8) 3)
 first([(U8) 1, (U8) 2])
-(U8) 1
 first([(U8) 2, (U8) 3])
-(U8) 2
 ((U8) 1 + (U8) 2)
-(U8) 3

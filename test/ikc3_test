@@ -44,6 +44,7 @@ touch .test .test_ko .test_ok
 for TARGET in $TARGETS; do
     (
         RESULT=test_ok
+        echo $TARGET > current_test
         $IKC3 --load ${TARGET}.kc3 --quit > ${TARGET}.out 2>&1
         echo $? > ${TARGET}.ret
         if ! diff -abu ${TARGET}.out.expected ${TARGET}.out \
