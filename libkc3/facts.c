@@ -342,6 +342,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       err_write_1(": ");
       err_puts(path->ptr.pchar);
       err_inspect_buf(buf);
+      err_write_1("\n");
       assert(! "facts_load: invalid fact");
       goto ko;
     }

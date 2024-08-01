@@ -2355,35 +2355,39 @@ sw buf_parse_integer_unsigned_oct (s_buf *buf, s_integer *dest)
 
 sw buf_parse_list (s_buf *buf, s_list **list)
 {
-  u8 b;
   s_list **i;
   sw r;
   sw result = 0;
+  s_buf_save save;
+  assert(buf);
+  assert(list);
+  buf_save_init(buf, &save);
   i = list;
   if ((r = buf_read_1(buf, "[")) <= 0)
-    return r;
+    goto clean;
   result += r;
   if ((r = buf_parse_comments(buf)) < 0) {
     err_puts("buf_parse_list: buf_parse_comments 1");
     assert(! "buf_parse_list: buf_parse_comments 1");
-    return r;
+    goto restore;
   }
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0) {
     err_puts("buf_parse_list: buf_ignore_spaces 1");
     assert(! "buf_parse_list: buf_ignore_spaces 1");
-    return r;
+    goto restore;
   }
   result += r;
   if ((r = buf_read_1(buf, "]")) < 0) {
     err_puts("buf_parse_list: buf_read_1 \"]\" 1");
     assert(! "buf_parse_list: buf_read_1 \"]\" 1");
-    return r;
+    goto restore;
   }
   if (r > 0) {
     result += r;
     *list = NULL;
-    return result;
+    r = result;
+    goto clean;
   }
   *i = NULL;
   while (1) {
@@ -2391,40 +2395,41 @@ sw buf_parse_list (s_buf *buf, s_list **list)
     if ((r = buf_parse_list_tag(buf, &(*i)->tag)) < 0) {
       err_puts("buf_parse_list: buf_parse_list_tag < 0");
       assert(! "buf_parse_list: buf_parse_list_tag < 0");
-      goto eat_and_clean;
+      goto restore;
     }
     if (! r) {
       err_puts("buf_parse_list: buf_parse_list_tag = 0");
       assert(! "buf_parse_list: buf_parse_list_tag = 0");
       r = -1;
-      goto eat_and_clean;
+      goto restore;
     }
     result += r;
     if ((r = buf_parse_comments(buf)) < 0) {
       err_puts("buf_parse_list: buf_parse_comments 2");
       assert(! "buf_parse_list: buf_parse_comments 2");
-      goto eat_and_clean;
+      goto restore;
     }
     result += r;
     if ((r = buf_ignore_spaces(buf)) < 0) {
       err_puts("buf_parse_list: buf_ignore_spaces 2");
       assert(! "buf_parse_list: buf_ignore_spaces 2");
-      goto eat_and_clean;
+      goto restore;
     }
     result += r;
     if ((r = buf_read_1(buf, "]")) < 0) {
       err_puts("buf_parse_list: buf_read_1 \"]\" 2");
       assert(! "buf_parse_list: buf_read_1 \"]\" 2");
-      goto eat_and_clean;
+      goto restore;
     }
     if (r > 0) {
       result += r;
-      return result;
+      r = result;
+      goto clean;
     }
     if ((r = buf_read_1(buf, ",")) < 0) {
       err_puts("buf_parse_list: buf_read_1 \",\"");
       assert(! "buf_parse_list: buf_read_1 \",\"");
-      goto eat_and_clean;
+      goto restore;
     }
     if (r > 0) {
       result += r;
@@ -2432,13 +2437,13 @@ sw buf_parse_list (s_buf *buf, s_list **list)
       if ((r = buf_parse_comments(buf)) < 0) {
         err_puts("buf_parse_list: buf_parse_comments 3");
         assert(! "buf_parse_list: buf_parse_comments 3");
-        goto eat_and_clean;
+        goto restore;
       }
       result += r;
       if ((r = buf_ignore_spaces(buf)) < 0) {
         err_puts("buf_parse_list: buf_ignore_spaces 3");
         assert(! "buf_parse_list: buf_ignore_spaces 3");
-        goto eat_and_clean;
+        goto restore;
       }
       result += r;
       continue;
@@ -2446,73 +2451,71 @@ sw buf_parse_list (s_buf *buf, s_list **list)
     if ((r = buf_read_1(buf, "|")) < 0) {
       err_puts("buf_parse_list: buf_read_1 \"|\"");
       assert(! "buf_parse_list: buf_read_1 \"|\"");
-      goto eat_and_clean;
+      goto restore;
     }
     if (r > 0) {
       result += r;
       if ((r = buf_parse_comments(buf)) < 0) {
         err_puts("buf_parse_list: buf_parse_comments 4");
         assert(! "buf_parse_list: buf_parse_comments 4");
-        goto eat_and_clean;
+        goto restore;
       }
       result += r;
       if ((r = buf_ignore_spaces(buf)) < 0) {
         err_puts("buf_parse_list: buf_ignore_spaces 4");
         assert(! "buf_parse_list: buf_ignore_spaces 4");
-        goto eat_and_clean;
+        goto restore;
       }
       result += r;
       if ((r = buf_parse_tag(buf, &(*i)->next)) < 0) {
         err_puts("buf_parse_list: buf_parse_tag < 0");
         assert(! "buf_parse_list: buf_parse_tag < 0");
-        goto eat_and_clean;
+        goto restore;
       }
       if (! r) {
         err_puts("buf_parse_list: buf_parse_tag = 0");
         assert(! "buf_parse_list: buf_parse_tag = 0");
         r = -1;
-        goto eat_and_clean;
+        goto restore;
       }
       result += r;
       if ((r = buf_parse_comments(buf)) < 0) {
         err_puts("buf_parse_list: buf_parse_comments 5");
         assert(! "buf_parse_list: buf_parse_comments 5");
-        goto eat_and_clean;
+        goto restore;
       }
       result += r;
       if ((r = buf_ignore_spaces(buf)) < 0) {
         err_puts("buf_parse_list: buf_ignore_spaces 5");
         assert(! "buf_parse_list: buf_ignore_spaces 5");
-        goto eat_and_clean;
+        goto restore;
       }
       result += r;
       if ((r = buf_read_1(buf, "]")) < 0) {
         err_puts("buf_parse_list: buf_read_1 \"]\" < 0");
         assert(! "buf_parse_list: buf_read_1 \"]\" < 0");
-        goto eat_and_clean;
+        goto restore;
       }
       if (! r) {
         err_puts("buf_parse_list: buf_read_1 \"]\" = 0");
         assert(! "buf_parse_list: buf_read_1 \"]\" = 0");
         r = -1;
-        goto eat_and_clean;
+        goto restore;
       }
       result += r;
-      return result;
+      r = result;
+      goto clean;
     }
     err_puts("buf_parse_list: invalid list");
     assert(! "buf_parse_list: invalid list");
     r = -1;
-    goto eat_and_clean;
+    goto restore;
   }
- eat_and_clean:
-  while (1)
-    if ((r = buf_read_u8(buf, &b)) < 0 ||
-        (r && b == ']') ||
-        ! r)
-      goto clean;
- clean:
+ restore:
   list_delete_all(*list);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
   return r;
 }
 
