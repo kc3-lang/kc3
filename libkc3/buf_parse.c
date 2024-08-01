@@ -2949,7 +2949,7 @@ sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest)
   s_buf_save save;
   const s_sym *tmp;
   s_buf        tmp_buf;
-  s8           tmp_buf_data[64] = {0};
+  char         tmp_buf_data[64] = {0};
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "(")) <= 0)
     goto clean;
@@ -2973,7 +2973,7 @@ sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest)
         break;
       result += r;
       buf_init(&tmp_buf, false, sizeof(tmp_buf_data),
-               (char *) tmp_buf_data);
+              tmp_buf_data);
       buf_inspect_sym(&tmp_buf, &tmp);
       buf_write_1(&tmp_buf, "[");
       if ((r = buf_parse_uw(buf, &b)) <= 0)

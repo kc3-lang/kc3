@@ -250,7 +250,7 @@ s_integer * integer_init_1 (s_integer *i, const char *p)
   assert(i);
   assert(p);
   // FIXME
-  buf_init_1(&buf, false, (char *) p);
+  buf_init_1_const(&buf, p);
   buf_parse_integer(&buf, i);
   return i;
 }

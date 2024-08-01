@@ -113,7 +113,7 @@ s8 * s8_init_str (s8 *s, const s_str *str)
 {
   s_buf buf;
   s8 tmp = 0;
-  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
   if (buf_parse_s8(&buf, &tmp) <= 0) {
     err_puts("s8_init_str: buf_parse_s8");

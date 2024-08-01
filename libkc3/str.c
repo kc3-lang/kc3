@@ -375,7 +375,7 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
   s_str tmp = {0};
   assert(str);
   assert(src);
-  buf_init(&buf, false, src->size, (char *) src->ptr.pchar);
+  buf_init_const(&buf, src->size, src->ptr.pchar);
   if (! str_sw_pos_to_uw(start, src->size, &buf.rpos)) {
     err_puts("str_init_slice: str_sw_pos_to_uw: start");
     assert(! "str_init_slice: str_sw_pos_to_uw: start");

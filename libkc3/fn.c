@@ -58,7 +58,7 @@ s_fn * fn_init (s_fn *fn, const s_sym *module)
   return fn;
 }
 
-s_fn * fn_init_1 (s_fn *fn, char *p)
+s_fn * fn_init_1 (s_fn *fn, const char *p)
 {
   s_buf buf;
   uw len;
@@ -66,7 +66,7 @@ s_fn * fn_init_1 (s_fn *fn, char *p)
   assert(fn);
   assert(p);
   len = strlen(p);
-  buf_init(&buf, false, len, (char *) p);
+  buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_fn(&buf, fn);
   if (r < 0 || (uw) r != len) {

@@ -113,7 +113,7 @@ s16 * s16_init_str (s16 *s, const s_str *str)
 {
   s_buf buf;
   s16 tmp = 0;
-  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
   if (buf_parse_s16(&buf, &tmp) <= 0) {
     err_puts("s16_init_str: buf_parse_s16");

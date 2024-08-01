@@ -117,7 +117,7 @@ s_map * map_init_1 (s_map *map, const char *p)
   assert(map);
   assert(p);
   len = strlen(p);
-  buf_init(&buf, false, len, (char *) p);
+  buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_map(&buf, map);
   if (r < 0 || (uw) r != len) {

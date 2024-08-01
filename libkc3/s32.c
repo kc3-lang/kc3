@@ -113,7 +113,7 @@ s32 * s32_init_str (s32 *s, const s_str *str)
 {
   s_buf buf;
   s32 tmp = 0;
-  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
   if (buf_parse_s32(&buf, &tmp) <= 0) {
     err_puts("s32_init_str: buf_parse_s32");

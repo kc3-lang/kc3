@@ -113,7 +113,7 @@ s64 * s64_init_str (s64 *s, const s_str *str)
 {
   s_buf buf;
   s64 tmp = 0;
-  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
   if (buf_parse_s64(&buf, &tmp) <= 0) {
     err_puts("s64_init_str: buf_parse_s64");

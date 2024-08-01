@@ -124,7 +124,7 @@ s_ratio * ratio_init_1 (s_ratio *q, const char *p)
   if (! p)
     return NULL;
   len = strlen(p);
-  buf_init(&buf, false, len, (char *) p); // buf is read-only
+  buf_init_const(&buf, len, p); // buf is read-only
   buf.wpos = len;
   r = buf_parse_ratio(&buf, &tmp);
   if (r < 0 || (uw) r != len) {

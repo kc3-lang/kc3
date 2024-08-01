@@ -59,7 +59,7 @@ s_block * block_init_1 (s_block *block, const char *p)
   assert(block);
   assert(p);
   len = strlen(p);
-  buf_init(&buf, false, len, (char *) p);
+  buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_block(&buf, block);
   if (r < 0 || (uw) r != len) {

@@ -77,7 +77,7 @@ s_cow * cow_init_1 (s_cow *cow, const char *utf8)
   uw len;
   sw r;
   len = strlen(utf8);
-  buf_init(&buf, false, len, (char *) utf8); // buf is read-only
+  buf_init_const(&buf, len, utf8); // buf is read-only
   buf.wpos = len;
   r = buf_parse_cow(&buf, cow);
   if (r < 0 || (uw) r != len) {

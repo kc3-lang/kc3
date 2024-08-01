@@ -54,7 +54,7 @@ s_call * call_init_1 (s_call *call, const char *p)
   uw len;
   sw r;
   len = strlen(p);
-  buf_init(&buf, false, len, (char *) p);
+  buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_call(&buf, call);
   if (r < 0 || (uw) r != len) {

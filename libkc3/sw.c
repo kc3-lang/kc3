@@ -113,7 +113,7 @@ sw * sw_init_str (sw *s, const s_str *str)
 {
   s_buf buf;
   sw tmp = 0;
-  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
+  buf_init_const(&buf, str->size, str->ptr.pchar);
   buf.wpos = str->size;
   if (buf_parse_sw(&buf, &tmp) <= 0) {
     err_puts("sw_init_str: buf_parse_sw");

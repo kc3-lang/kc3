@@ -221,7 +221,7 @@ s_array * array_init_1 (s_array *array, const char *p)
   assert(array);
   assert(p);
   len = strlen(p);
-  buf_init(&buf, false, len, (char *) p);
+  buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_array(&buf, &tmp);
   if (r < 0 || (uw) r != len) {
