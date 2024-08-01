@@ -2238,6 +2238,9 @@ bool env_load (s_env *env, const s_str *path)
   buf_clean(&buf);
   return true;
  ko:
+  tag_clean(file_dir);
+  *file_dir = file_dir_save;
+  *file_path = file_path_save;
   buf_getc_close(&buf);
   buf_clean(&buf);
   return false;
