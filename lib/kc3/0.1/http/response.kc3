@@ -12,6 +12,6 @@ defmodule HTTP.Response do
                           {(U16) 404, "Not Found"},
                           {(U16) 500, "Internal Server Error"}]
 
-  def buf_write = cfn Sw "http_response_buf_write" (HTTP.Response, Buf)
+  def buf_write = cfn Sw "http_response_buf_write" (HTTP.Response, Ptr)
 
 end

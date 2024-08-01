@@ -56,7 +56,7 @@ sw buf_getc_refill (s_buf *buf)
     return -1;
   fp = buf->user_ptr;
   if (feof(fp))
-    return -1;
+    return 0;
   while (buf->wpos < buf->size &&
          c != '\n' &&
          (c = getc(fp)) != EOF &&

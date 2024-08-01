@@ -349,6 +349,7 @@ struct buf {
   bool        free;
   sw          line;
   u_ptr_w     ptr;
+  bool        read_only;
   sw        (*refill) (s_buf *buf);
   uw          rpos;
   s_buf_save *save;
@@ -398,8 +399,8 @@ struct struct_type {
 /* 3 */
 
 struct buf_rw {
-  s_buf r;
-  s_buf w;
+  s_buf *r;
+  s_buf *w;
 };
 
 struct call {

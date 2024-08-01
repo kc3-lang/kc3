@@ -68,9 +68,16 @@ sw buf_file_open_r_refill (s_buf *buf)
   uw size;
   assert(buf);
   assert(buf->user_ptr);
-  if (buf->rpos > buf->wpos ||
-      buf->wpos > buf->size)
+  if (buf->rpos > buf->wpos) {
+    err_puts("buf_file_open_r_refill: buf->rpos > buf->wpos");
+    assert(! "buf_file_open_r_refill: buf->rpos > buf->wpos");
     return -1;
+  }
+  if (buf->wpos >= buf->size) {
+    err_puts("buf_file_open_r_refill: buf->wpos >= buf->size");
+    assert(! "buf_file_open_r_refill: buf->wpos >= buf->size");
+    return -1;
+  }
   size = buf->size - buf->wpos;
   r = fread(buf->ptr.pchar + buf->wpos, 1, size,
             ((s_buf_file *) (buf->user_ptr))->fp);

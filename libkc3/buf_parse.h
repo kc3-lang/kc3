@@ -106,6 +106,7 @@ sw buf_parse_sym (s_buf *buf, const s_sym **dest);
 sw buf_parse_sym_str (s_buf *buf, s_str *dest);
 sw buf_parse_tag (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_array (s_buf *buf, s_tag *dest);
+sw buf_parse_tag_block (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_bool (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_brackets (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_call (s_buf *buf, s_tag *dest);

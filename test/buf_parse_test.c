@@ -259,7 +259,7 @@
     s_buf buf;                                                         \
     s_list *dest = NULL;                                               \
     test_context("buf_parse_list(" # test ")");                        \
-    buf_init_1(&buf, false, (test));                                   \
+    buf_init_1_const(&buf, (test));                                    \
     TEST_EQ(buf_parse_list(&buf, &dest), strlen(test));                \
     list_delete_all(dest);                                             \
     test_context(NULL);                                                \

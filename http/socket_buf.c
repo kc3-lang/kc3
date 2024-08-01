@@ -51,8 +51,8 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
     assert(! "socket_buf_init: buf_rw_init_alloc");
     return NULL;
   }
-  tmp.buf_rw.r.user_ptr = sb;
-  tmp.buf_rw.w.user_ptr = sb;
+  tmp.buf_rw.r->user_ptr = sb;
+  tmp.buf_rw.w->user_ptr = sb;
   if (! buf_rw_fd_open(&tmp.buf_rw, sockfd)) {
     err_puts("socket_buf_init: buf_rw_fd_open");
     assert(! "socket_buf_init: buf_rw_fd_open");

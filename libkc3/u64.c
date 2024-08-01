@@ -112,8 +112,7 @@ u64 * u64_init_str (u64 *u, const s_str *str)
 {
   s_buf buf;
   u64 tmp = 0;
-  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
-  buf.wpos = str->size;
+  buf_init_str_const(&buf, str);
   if (buf_parse_u64(&buf, &tmp) <= 0) {
     err_puts("u64_init_str: buf_parse_u64");
     assert(! "u64_init_str: buf_parse_u64");

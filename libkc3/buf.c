@@ -191,8 +191,18 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
   s_buf tmp = {0};
   assert(buf);
   tmp.free = p_free;
-  tmp.line = 0;
   tmp.ptr.pchar = p;
+  tmp.size = size;
+  *buf = tmp;
+  return buf;
+}
+
+s_buf * buf_init_const (s_buf *buf, uw size, const char *p)
+{
+  s_buf tmp = {0};
+  assert(buf);
+  tmp.ptr.pchar = (char *) p;
+  tmp.read_only = true;
   tmp.size = size;
   *buf = tmp;
   return buf;
@@ -206,6 +216,20 @@ s_buf * buf_init_1 (s_buf *buf, bool p_free, char *p)
   assert(p);
   len = strlen(p);
   buf_init(&tmp, p_free, len, p);
+  tmp.wpos = len;
+  *buf = tmp;
+  return buf;
+}
+
+s_buf * buf_init_1_const (s_buf *buf, const char *p)
+{
+  uw len;
+  s_buf tmp = {0};
+  assert(buf);
+  assert(p);
+  len = strlen(p);
+  buf_init(&tmp, false, len, (char *) p);
+  tmp.read_only = true;
   tmp.wpos = len;
   *buf = tmp;
   return buf;
@@ -253,6 +277,17 @@ s_buf * buf_init_str (s_buf *buf, bool p_free, s_str *p)
   assert(buf);
   assert(p);
   buf_init(&tmp, p_free, p->size, (char *) p->ptr.pchar);
+  tmp.wpos = p->size;
+  *buf = tmp;
+  return buf;
+}
+
+s_buf * buf_init_str_const (s_buf *buf, const s_str *p)
+{
+  s_buf tmp = {0};
+  assert(buf);
+  assert(p);
+  buf_init_const(&tmp, p->size, p->ptr.pchar);
   tmp.wpos = p->size;
   *buf = tmp;
   return buf;
@@ -496,9 +531,14 @@ sw buf_peek_s64 (s_buf *buf, s64 *p)
 
 sw buf_peek_str (s_buf *buf, const s_str *src)
 {
+  sw r;
   sw size;
   assert(buf);
   assert(src);
+  if (! src->size)
+    return 0;
+  if ((r = buf_refill(buf, src->size)) < 0)
+    return r;
   if (buf->rpos > buf->wpos) {
     assert(buf->rpos <= buf->wpos);
     return -1;
@@ -892,16 +932,38 @@ sw buf_refill (s_buf *buf, sw size)
 {
   sw r = buf->wpos - buf->rpos;
   assert(buf);
-  if (size <= 0)
+  if (buf->read_only)
     return r;
-  if (buf->rpos + size > buf->wpos &&
-      (r = buf_refill_compact(buf)) >= 0 &&
-      buf->refill)
-    while ((r = buf->refill(buf)) > 0 &&
-           buf->wpos - buf->rpos < (uw) size)
-      ;
-  if (r >= 0)
-    r = buf->wpos - buf->rpos;
+  if (size < 0) {
+    err_puts("buf_refill: size < 0");
+    assert(! "buf_refill: size < 0");
+    return -1;
+  }
+  if (! size) {
+    err_puts("buf_refill: size = 0");
+    assert(! "buf_refill: size = 0");
+    return 0;
+  }
+  if (buf->rpos + size > buf->wpos) {
+    if ((r = buf_refill_compact(buf)) < 0) {
+      err_puts("buf_refill: buf_refill_compact");
+      assert(! "buf_refill: buf_refill_compact");
+      return r;
+    }
+    if (buf->refill)
+      while (1) {
+        if ((r = buf->refill(buf)) < 0) {
+          err_puts("buf_refill: buf->refill");
+          assert(! "buf_refill: buf->refill");
+          return r;
+        }
+        if (! r)
+          return -1;
+        if (buf->wpos - buf->rpos >= (uw) size)
+          break;
+      }
+  }
+  r = buf->wpos - buf->rpos;
   return r;
 }
 
@@ -909,7 +971,10 @@ sw buf_refill_compact (s_buf *buf)
 {
   uw min_rpos;
   s_buf_save *save;
+  uw size;
   assert(buf);
+  if (buf->read_only)
+    return 0;
   min_rpos = buf_save_min_rpos(buf);
   if (min_rpos > buf->wpos) {
     assert(min_rpos <= buf->wpos);
@@ -925,7 +990,6 @@ sw buf_refill_compact (s_buf *buf)
       buf->wpos = 0;
     }
     else {
-      uw size;
       size = buf->wpos - min_rpos;
       assert(size < buf->size);
       memmove(buf->ptr.p,

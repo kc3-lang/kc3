@@ -112,8 +112,7 @@ uw * uw_init_str (uw *u, const s_str *str)
 {
   s_buf buf;
   uw tmp = 0;
-  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
-  buf.wpos = str->size;
+  buf_init_str_const(&buf, str);
   if (buf_parse_uw(&buf, &tmp) <= 0) {
     err_puts("uw_init_str: buf_parse_uw");
     assert(! "uw_init_str: buf_parse_uw");

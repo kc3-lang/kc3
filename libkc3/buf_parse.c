@@ -408,42 +408,47 @@ sw buf_parse_block (s_buf *buf, s_block *block)
 {
   sw r;
   sw result = 0;
+  s_buf_save save;
   bool short_form = false;
   assert(buf);
   assert(block);
+  buf_save_init(buf, &save);
   if ((r = buf_read_sym(buf, &g_sym_do)) < 0)
-    return r;
+    goto clean;
   if (! r) {
     short_form = true;
     if ((r = buf_read_1(buf, "{")) <= 0)
-      return r;
+      goto clean;
   }
   result += r;
   if ((r = buf_parse_comments(buf)) < 0) {
     err_puts("buf_parse_block: buf_parse_comments");
     assert(! "buf_parse_block: buf_parse_comments");
-    return r;
+    goto restore;
   }
   result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0) {
-    err_puts("buf_parse_block: buf_ignore_spaces");
-    assert(! "buf_parse_block: buf_ignore_spaces");
-    return r;
-  }
+  if ((r = buf_ignore_spaces(buf)) <= 0)
+    goto restore;
   result += r;
   if ((r = buf_parse_block_inner(buf, short_form, block)) < 0) {
     err_puts("buf_parse_block: buf_parse_block_inner < 0");
     err_inspect_buf(buf);
     assert(! "buf_parse_block: buf_parse_block_inner < 0");
-    return r;
+    goto restore;
   }
   if (! r) {
     err_puts("buf_parse_block: buf_parse_block_inner = 0");
     assert(! "buf_parse_block: buf_parse_block_inner = 0");
-    return -1;
+    goto restore;
   }
   result += r;
-  return result;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
@@ -1087,7 +1092,7 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_tag(buf, &tmp.arguments->tag)) <= 0)
+  if ((r = buf_parse_tag_primary(buf, &tmp.arguments->tag)) <= 0)
     goto restore;
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
@@ -1812,7 +1817,7 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
     goto ok;
   }
   while (1) {
-    if ((r = buf_parse_tag(buf, &tag)) <= 0)
+    if ((r = buf_parse_tag_primary_2(buf, &tag)) <= 0)
       goto clean;
     result += r;
     *tail = list_new(NULL);
@@ -3664,6 +3669,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
   if ((r = buf_parse_tag_special_operator(buf, dest)) != 0 ||
       (r = buf_parse_tag_brackets(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_op(buf, dest)) != 0 ||
+      (r = buf_parse_tag_block(buf, dest)) != 0 ||
       (r = buf_parse_tag_primary(buf, dest)) != 0)
     goto end;
  end:
@@ -4005,7 +4011,6 @@ sw buf_parse_tag_primary_2 (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_map(buf, dest)) != 0 ||
       (r = buf_parse_tag_str(buf, dest)) != 0 ||
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
-      (r = buf_parse_tag_block(buf, dest)) != 0 ||
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
       (r = buf_parse_tag_struct(buf, dest)) != 0 ||

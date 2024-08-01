@@ -18,16 +18,16 @@
 void buf_rw_clean (s_buf_rw *buf_rw)
 {
   assert(buf_rw);
-  buf_clean(&buf_rw->w);
-  buf_clean(&buf_rw->r);
+  buf_delete(buf_rw->w);
+  buf_delete(buf_rw->r);
 }
 
 
 void buf_rw_fd_close (s_buf_rw *buf_rw)
 {
   assert(buf_rw);
-  buf_fd_close(&buf_rw->r);
-  buf_fd_close(&buf_rw->w);
+  buf_fd_close(buf_rw->r);
+  buf_fd_close(buf_rw->w);
 }
 
 s_buf_rw * buf_rw_fd_open (s_buf_rw *buf_rw, s32 fd)
@@ -35,10 +35,10 @@ s_buf_rw * buf_rw_fd_open (s_buf_rw *buf_rw, s32 fd)
   s_buf_rw tmp = {0};
   assert(buf_rw);
   tmp = *buf_rw;
-  if (! buf_fd_open_r(&tmp.r, fd))
+  if (! buf_fd_open_r(tmp.r, fd))
     return NULL;
-  if (! buf_fd_open_w(&tmp.w, fd)) {
-    buf_fd_close(&tmp.r);
+  if (! buf_fd_open_w(tmp.w, fd)) {
+    buf_fd_close(tmp.r);
     return NULL;
   }
   *buf_rw = tmp;
@@ -48,10 +48,10 @@ s_buf_rw * buf_rw_fd_open (s_buf_rw *buf_rw, s32 fd)
 s_buf_rw * buf_rw_init_alloc (s_buf_rw *buf_rw, uw size)
 {
   s_buf_rw tmp = {0};
-  if (! buf_init_alloc(&tmp.r, size))
+  if (! (tmp.r = buf_new_alloc(size)))
     return NULL;
-  if (! buf_init_alloc(&tmp.w, size)) {
-    buf_clean(&tmp.r);
+  if (! (tmp.w = buf_new_alloc(size))) {
+    buf_delete(tmp.r);
     return NULL;
   }
   *buf_rw = tmp;

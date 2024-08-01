@@ -57,18 +57,38 @@ sw buf_fd_open_r_refill (s_buf *buf)
   uw size;
   assert(buf);
   assert(buf->user_ptr);
-  if (buf->rpos > buf->wpos ||
-      buf->wpos > buf->size)
+  if (buf->rpos > buf->wpos) {
+    err_puts("buf_fd_open_r_refill: buf->rpos > buf->wpos");
+    assert(! "buf_fd_open_r_refill: buf->rpos > buf->wpos");
     return -1;
+  }
+  if (buf->wpos > buf->size) {
+    err_puts("buf_fd_open_r_refill: buf->wpos > buf->size");
+    assert(! "buf_fd_open_r_refill: buf->wpos > buf->size");
+    return -1;
+  }
   size = buf->size - buf->wpos;
   fd = ((s_buf_fd *) (buf->user_ptr))->fd;
   //r = read(fd, buf->ptr.pchar + buf->wpos, size);
-  if (ioctl(fd, FIONREAD, &avail) == -1 ||
-      avail <= 0)
+  if (ioctl(fd, FIONREAD, &avail) == -1) {
+    err_puts("buf_fd_open_r_refill: ioctl FIONREAD: -1");
     return -1;
+  }
+  if (avail < 0) {
+    err_write_1("buf_fd_open_r_refill: avail: ");
+    err_inspect_s32(&avail);
+    return -1;
+  }
+  if (! avail)
+    return 0;
   if ((uw) avail > size)
     avail = size;
   r = read(fd, buf->ptr.pchar + buf->wpos, avail);
+  if (r < 0) {
+    err_puts("buf_fd_open_r_refill: read");
+    assert(! "buf_fd_open_r_refill: read");
+    return r;
+  }
   if (buf->wpos + r > buf->size) {
     err_puts("buf_fd_open_r_refill: buffer overflow");
     assert(! "buf_fd_open_r_refill: buffer overflow");

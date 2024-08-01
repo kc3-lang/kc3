@@ -205,7 +205,7 @@ s_list * list_new_1 (const char *p)
 {
   s_buf buf;
   s_list *list;
-  buf_init_1(&buf, false, (char *) p);
+  buf_init_1_const(&buf, p);
   if (buf_parse_list(&buf, &list) != (sw) strlen(p)) {
     err_puts("list_new_1: invalid list");
     assert(! "list_new_1: invalid list");

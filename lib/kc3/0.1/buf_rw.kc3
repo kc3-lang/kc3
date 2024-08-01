@@ -1,7 +1,7 @@
 defmodule BufRW do
 
-  defstruct [r: %Buf{},
-             w: %Buf{}]
+  defstruct [r: (Ptr) 0,
+             w: (Ptr) 0]
 
   def init_alloc = cfn BufRW "buf_rw_init_alloc" (Result, Uw)
 

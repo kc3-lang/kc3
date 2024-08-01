@@ -112,8 +112,7 @@ u16 * u16_init_str (u16 *u, const s_str *str)
 {
   s_buf buf;
   u16 tmp = 0;
-  buf_init(&buf, false, str->size, (char *) str->ptr.pchar);
-  buf.wpos = str->size;
+  buf_init_str_const(&buf, str);
   if (buf_parse_u16(&buf, &tmp) <= 0) {
     err_puts("u16_init_str: buf_parse_u16");
     assert(! "u16_init_str: buf_parse_u16");
