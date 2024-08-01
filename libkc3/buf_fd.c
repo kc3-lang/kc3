@@ -76,11 +76,14 @@ sw buf_fd_open_r_refill (s_buf *buf)
   }
   if (avail < 0) {
     err_write_1("buf_fd_open_r_refill: avail: ");
-    err_inspect_s32(&avail);
+    err_inspect_s32_decimal(&avail);
     return -1;
   }
-  if (! avail)
+  if (! avail) {
+    err_write_1("buf_fd_open_r_refill: avail: ");
+    err_inspect_s32_decimal(&avail);
     return 0;
+  }
   if ((uw) avail > size)
     avail = size;
   r = read(fd, buf->ptr.pchar + buf->wpos, avail);
