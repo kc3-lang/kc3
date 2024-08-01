@@ -339,7 +339,7 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   address[dimension] = 0;
   while (1) {
     if (dimension == dest->dimension - 1) {
-      if ((r = buf_parse_tag(buf, &tag)) < 0) {
+      if ((r = buf_parse_tag(buf, &tag)) <= 0) {
         err_puts("buf_parse_array_dimensions_rec: buf_parse_tag");
         goto clean;
       }
@@ -433,6 +433,7 @@ sw buf_parse_block (s_buf *buf, s_block *block)
   if ((r = buf_parse_block_inner(buf, short_form, block)) < 0) {
     err_puts("buf_parse_block: buf_parse_block_inner < 0");
     err_inspect_buf(buf);
+    err_write_1("\n");
     assert(! "buf_parse_block: buf_parse_block_inner < 0");
     goto restore;
   }
@@ -533,7 +534,7 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
       goto restore;
     }
     if (! r) {
-      if ((r = buf_read_1(buf, ";")) <= 0) {
+      if ((r = buf_read_1(buf, ";")) < 0) {
         err_write_1("buf_parse_block_inner: line ");
         err_inspect_sw_decimal(&buf->line);
         err_puts(": missing separator: ");
@@ -542,6 +543,8 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
         assert(! "buf_parse_block_inner: missing separator");
         goto restore;
       }
+      if (! r)
+        goto restore;
     }
     result += r;
     if ((r = buf_parse_comments(buf)) < 0) {

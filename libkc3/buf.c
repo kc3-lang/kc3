@@ -526,6 +526,8 @@ sw buf_peek_str (s_buf *buf, const s_str *src)
     return 0;
   if ((r = buf_refill(buf, src->size)) < 0)
     return r;
+  if ((uw) r < src->size)
+    return -1;
   if (buf->rpos > buf->wpos) {
     assert(buf->rpos <= buf->wpos);
     return -1;
@@ -919,18 +921,14 @@ sw buf_refill (s_buf *buf, sw size)
 {
   sw r = buf->wpos - buf->rpos;
   assert(buf);
-  if (buf->read_only)
-    return r;
   if (size < 0) {
     err_puts("buf_refill: size < 0");
     assert(! "buf_refill: size < 0");
     return -1;
   }
-  if (! size) {
-    err_puts("buf_refill: size = 0");
-    assert(! "buf_refill: size = 0");
-    return 0;
-  }
+  if (buf->read_only ||
+      ! size)
+    return r;
   if (buf->rpos + size > buf->wpos) {
     if ((r = buf_refill_compact(buf)) < 0) {
       err_puts("buf_refill: buf_refill_compact");
