@@ -437,11 +437,8 @@ sw buf_parse_block (s_buf *buf, s_block *block)
     assert(! "buf_parse_block: buf_parse_block_inner < 0");
     goto restore;
   }
-  if (! r) {
-    err_puts("buf_parse_block: buf_parse_block_inner = 0");
-    assert(! "buf_parse_block: buf_parse_block_inner = 0");
+  if (! r)
     goto restore;
-  }
   result += r;
   r = result;
   goto clean;
@@ -3682,6 +3679,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
   if ((r = buf_parse_tag_special_operator(buf, dest)) != 0 ||
       (r = buf_parse_tag_brackets(buf, dest)) != 0 ||
       (r = buf_parse_tag_call_op(buf, dest)) != 0 ||
+      (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_block(buf, dest)) != 0 ||
       (r = buf_parse_tag_primary(buf, dest)) != 0)
     goto end;
