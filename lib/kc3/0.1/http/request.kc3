@@ -7,6 +7,6 @@ defmodule HTTP.Request do
 
   dlopen(__DIR__ + "../http.so")
 
-  def buf_parse = cfn HTTP.Request "http_request_buf_parse" (Result, Ptr)
+  def buf_parse = cfn HTTP.Request "http_request_buf_parse" (Result, Buf)
 
 end

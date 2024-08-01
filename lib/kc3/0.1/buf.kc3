@@ -5,6 +5,7 @@ defmodule Buf do
              free: false,
              line: (Sw) 0,
              ptr: (Ptr) 0,
+             read_only: false,
              refill: (Ptr) 0,
              rpos: (Uw) 0,
              save: (Ptr) 0,

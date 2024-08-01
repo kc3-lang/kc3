@@ -640,10 +640,10 @@ sw buf_peek_u64 (s_buf *buf, u64 *p)
 
 sw buf_read_1 (s_buf *buf, const char *p)
 {
-  s_str stra;
+  s_str str;
   assert(buf);
-  str_init_1(&stra, NULL, p);
-  return buf_read_str(buf, &stra);
+  str_init_1(&str, NULL, p);
+  return buf_read_str(buf, &str);
 }
 
 sw buf_read_character_utf8 (s_buf *buf, character *p)

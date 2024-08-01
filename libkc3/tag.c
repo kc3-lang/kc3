@@ -1006,72 +1006,6 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
-  case TAG_RATIO:
-    if (type == &g_sym_Ratio) {
-      *dest = &tag->data.ratio;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_SW:
-    if (type == &g_sym_Sw) {
-      *dest = &tag->data.sw;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_S64:
-    if (type == &g_sym_S64) {
-      *dest = &tag->data.s64;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_S32:
-    if (type == &g_sym_S32) {
-      *dest = &tag->data.s32;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_S16:
-    if (type == &g_sym_S16) {
-      *dest = &tag->data.s16;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_S8:
-    if (type == &g_sym_S8) {
-      *dest = &tag->data.s8;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_U8:
-    if (type == &g_sym_U8) {
-      *dest = &tag->data.u8;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_U16:
-    if (type == &g_sym_U16) {
-      *dest = &tag->data.u16;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_U32:
-    if (type == &g_sym_U32) {
-      *dest = &tag->data.u32;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_U64:
-    if (type == &g_sym_U64) {
-      *dest = &tag->data.u64;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_UW:
-    if (type == &g_sym_Uw) {
-      *dest = &tag->data.uw;
-      return true;
-    }
-    goto invalid_cast;
   case TAG_LIST:
     if (type == &g_sym_List) {
       *dest = &tag->data.list;
@@ -1095,23 +1029,25 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       *dest = &tag->data.ptr.p;
       return true;
     }
-    goto invalid_cast;
+    *dest = tag->data.ptr.p;
+    return true;
   case TAG_PTR_FREE:
     if (type == &g_sym_Ptr ||
         type == &g_sym_PtrFree) {
       *dest = &tag->data.ptr_free.p;
       return true;
     }
-    goto invalid_cast;
+    *dest = tag->data.ptr.p;
+    return true;
   case TAG_QUOTE:
     if (type == &g_sym_Quote) {
       *dest = &tag->data.quote;
       return true;
     }
     goto invalid_cast;
-  case TAG_UNQUOTE:
-    if (type == &g_sym_Unquote) {
-      *dest = &tag->data.unquote;
+  case TAG_RATIO:
+    if (type == &g_sym_Ratio) {
+      *dest = &tag->data.ratio;
       return true;
     }
     goto invalid_cast;
@@ -1142,6 +1078,12 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
+  case TAG_SW:
+    if (type == &g_sym_Sw) {
+      *dest = &tag->data.sw;
+      return true;
+    }
+    goto invalid_cast;
   case TAG_SYM:
     if (type == &g_sym_Sym) {
       *dest = (void *) &tag->data.sym;
@@ -1156,9 +1098,69 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
+  case TAG_S8:
+    if (type == &g_sym_S8) {
+      *dest = &tag->data.s8;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_S16:
+    if (type == &g_sym_S16) {
+      *dest = &tag->data.s16;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_S32:
+    if (type == &g_sym_S32) {
+      *dest = &tag->data.s32;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_S64:
+    if (type == &g_sym_S64) {
+      *dest = &tag->data.s64;
+      return true;
+    }
+    goto invalid_cast;
   case TAG_TUPLE:
     if (type == &g_sym_Tuple) {
       *dest = &tag->data.tuple;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_U8:
+    if (type == &g_sym_U8) {
+      *dest = &tag->data.u8;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_U16:
+    if (type == &g_sym_U16) {
+      *dest = &tag->data.u16;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_U32:
+    if (type == &g_sym_U32) {
+      *dest = &tag->data.u32;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_U64:
+    if (type == &g_sym_U64) {
+      *dest = &tag->data.u64;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_UNQUOTE:
+    if (type == &g_sym_Unquote) {
+      *dest = &tag->data.unquote;
+      return true;
+    }
+    goto invalid_cast;
+  case TAG_UW:
+    if (type == &g_sym_Uw) {
+      *dest = &tag->data.uw;
       return true;
     }
     goto invalid_cast;
