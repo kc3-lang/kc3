@@ -341,6 +341,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       err_inspect_sw_decimal(&buf->line);
       err_write_1(": ");
       err_puts(path->ptr.pchar);
+      err_inspect_buf(buf);
       assert(! "facts_load: invalid fact");
       goto ko;
     }
@@ -351,6 +352,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       err_inspect_sw_decimal(&buf->line);
       err_write_1(": ");
       err_puts(path->ptr.pchar);
+      err_inspect_buf(buf);
       assert(! "facts_load: missing newline");
       goto ko;
     }
@@ -361,6 +363,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
       err_inspect_sw_decimal(&buf->line);
       err_write_1(": ");
       err_puts(path->ptr.pchar);
+      err_inspect_buf(buf);
       assert(! "facts_load: invalid fact");
       goto ko;
     }
