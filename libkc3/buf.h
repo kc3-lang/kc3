@@ -32,7 +32,6 @@ s_buf * buf_init_const (s_buf *buf, uw size, const char *p);
 s_buf * buf_init_1 (s_buf *buf, bool p_free, char *p);
 s_buf * buf_init_1_const (s_buf *buf, const char *p);
 s_buf * buf_init_alloc (s_buf *buf, uw size);
-s_buf * buf_init_copy (s_buf *buf, const s_buf *src);
 s_buf * buf_init_str (s_buf *buf, bool free, s_str *p);
 s_buf * buf_init_str_const (s_buf *buf, const s_str *p);
 s_buf * buf_init_str_copy (s_buf *buf, const s_str *str);

@@ -77,12 +77,6 @@ sw buf_ignore (s_buf *buf, uw size)
       if ((r = buf_read_character_utf8(buf, &c)) < 0)
         return r;
       if (r > 0) {
-        if (c == '\n') {
-          buf->column = 0;
-          buf->line++;
-        }
-        else
-          buf->column++;
         i += r;
         continue;
       }
@@ -191,6 +185,7 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
   s_buf tmp = {0};
   assert(buf);
   tmp.free = p_free;
+  tmp.line = 1;
   tmp.ptr.pchar = p;
   tmp.size = size;
   *buf = tmp;
@@ -201,6 +196,7 @@ s_buf * buf_init_const (s_buf *buf, uw size, const char *p)
 {
   s_buf tmp = {0};
   assert(buf);
+  tmp.line = 1;
   tmp.ptr.pchar = (char *) p;
   tmp.read_only = true;
   tmp.size = size;
@@ -260,15 +256,6 @@ s_buf * buf_init_alloc (s_buf *buf, uw size)
   if (! p)
     return NULL;
   return buf_init(buf, true, size, p);
-}
-
-s_buf * buf_init_copy (s_buf *buf, const s_buf *src)
-{
-  if (buf != src) {
-    *buf = *src;
-    buf->free = false;
-  }
-  return buf;
 }
 
 s_buf * buf_init_str (s_buf *buf, bool p_free, s_str *p)
