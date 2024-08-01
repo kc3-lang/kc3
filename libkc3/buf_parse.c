@@ -460,29 +460,29 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
   s_list *list = 0;
   sw r;
   sw result = 0;
+  s_buf_save save;
   s_tag tag;
   s_block tmp;
   i = &list;
   *i = NULL;
+  buf_save_init(buf, &save);
   while (1) {
     if (short_form) {
       if ((r = buf_read_1(buf, "}")) < 0) {
         err_puts("buf_parse_block_inner: buf_read_1 \"}\"");
         assert(! "buf_parse_block_inner: buf_read_1 \"}\"");
-        goto clean;
+        goto restore;
       }
     }
     else if ((r = buf_read_sym(buf, &g_sym_end)) < 0) {
       err_puts("buf_parse_block_inner: buf_read_sym :end");
       assert(! "buf_parse_block_inner: buf_read_sym :end");
-      goto clean;
+      goto restore;
     }
     if (r > 0)
       goto ok;
     if ((r = buf_parse_tag(buf, &tag)) < 0) {
-      err_puts("buf_parse_block_inner: buf_parse_tag < 0");
-      assert(! "buf_parse_block_inner: buf_parse_tag < 0");
-      goto clean;
+      goto restore;
     }
     result += r;
     if (r > 0) {
@@ -490,7 +490,7 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
       if (! *i) {
         err_puts("buf_parse_block_inner: list_new");
         assert(! "buf_parse_block_inner: list_new");
-        goto clean;
+        goto restore;
       }
       (*i)->tag = tag;
       i = &(*i)->next.data.list;
@@ -498,7 +498,7 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
     if ((r = buf_parse_comments(buf)) < 0) {
       err_puts("buf_parse_block_inner: buf_parse_comments 1");
       assert(! "buf_parse_block_inner: buf_parse_comments 1");
-      goto clean;
+      goto restore;
     }
     result += r;
     if ((r = buf_ignore_spaces_but_newline(buf)) < 0) {
@@ -506,20 +506,20 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
                " buf_ignore_spaces_but_newline 1");
       assert(!("buf_parse_block_inner:"
                " buf_ignore_spaces_but_newline 1"));
-      goto clean;
+      goto restore;
     }
     result += r;
     if (short_form) {
       if ((r = buf_read_1(buf, "}")) < 0) {
         err_puts("buf_parse_block_inner: buf_read_1 \"}\" < 0");
         assert(! "buf_parse_block_inner: buf_read_1 \"}\" < 0");
-        goto clean;
+        goto restore;
       }
     }
     else if ((r = buf_read_sym(buf, &g_sym_end)) < 0) {
       err_puts("buf_parse_block_inner: buf_read_sym :end < 0");
       assert(! "buf_parse_block_inner: buf_read_sym :end < 0");
-      goto clean;
+      goto restore;
     }
     if (r > 0)
       goto ok;
@@ -530,7 +530,7 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
       err_inspect_buf(buf);
       err_write_1("\n");
       assert(! "buf_parse_block_inner: missing separator");
-      goto clean;
+      goto restore;
     }
     if (! r) {
       if ((r = buf_read_1(buf, ";")) <= 0) {
@@ -540,14 +540,14 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
         err_inspect_buf(buf);
         err_write_1("\n");
         assert(! "buf_parse_block_inner: missing separator");
-        goto clean;
+        goto restore;
       }
     }
     result += r;
     if ((r = buf_parse_comments(buf)) < 0) {
       err_puts("buf_parse_block_inner: buf_parse_comments 2");
       assert(! "buf_parse_block_inner: buf_parse_comments 2");
-      goto clean;
+      goto restore;
     }
     result += r;
     if ((r = buf_ignore_spaces_but_newline(buf)) < 0) {
@@ -555,14 +555,17 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
                " buf_ignore_spaces_but_newline 2");
       assert(!("buf_parse_block_inner:"
                " buf_ignore_spaces_but_newline 2"));
-      goto clean;
+      goto restore;
     }
     result += r;
   }
   r = 0;
+ restore:
+  buf_save_restore_rpos(buf, &save);
  clean:
   if (list)
     list_delete_all(list);
+  buf_save_clean(buf, &save);
   return r;
  ok:
   result += r;
@@ -1683,7 +1686,7 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_read_1(buf, "}")) < 0)
+  if ((r = buf_read_1(buf, "}")) <= 0)
     goto restore;
   result += r;
   *dest = tmp;
