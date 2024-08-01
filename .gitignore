@@ -17,6 +17,7 @@ config.h
 config.mk
 *.core
 *.css
+current_test
 *.dll
 .DS_Store
 *.exe
