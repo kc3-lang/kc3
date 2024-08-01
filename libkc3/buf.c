@@ -518,16 +518,11 @@ sw buf_peek_s64 (s_buf *buf, s64 *p)
 
 sw buf_peek_str (s_buf *buf, const s_str *src)
 {
-  sw r;
   sw size;
   assert(buf);
   assert(src);
   if (! src->size)
     return 0;
-  if ((r = buf_refill(buf, src->size)) < 0)
-    return r;
-  if ((uw) r < src->size)
-    return -1;
   if (buf->rpos > buf->wpos) {
     assert(buf->rpos <= buf->wpos);
     return -1;
