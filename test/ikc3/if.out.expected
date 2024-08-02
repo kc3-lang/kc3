@@ -1,24 +1,24 @@
-if true
+if true do
   (U8) 1
 else
   (U8) 2
 end
 (U8) 1
-if true
+if true do
   (U8) 1
 end
 (U8) 1
-if false
+if false do
   (U8) 1
 else
   (U8) 2
 end
 (U8) 2
-if false
+if false do
   (U8) 1
 end
 void
-if true && true
+if true && true do
   (U8) 1 + (U8) 1
   (U8) 2 + (U8) 2
 else
@@ -26,7 +26,7 @@ else
   (U8) 4 + (U8) 4
 end
 (U8) 4
-if true && false
+if true && false do
   (U8) 1 + (U8) 1
   (U8) 2 + (U8) 2
 else
