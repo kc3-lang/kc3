@@ -288,7 +288,7 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
   assert(buf);
   assert(dest);
   tmp = *dest;
-  if (! sym_type_size(tmp.element_type, &size))
+  if (! sym_type_size(&tmp.element_type, &size))
     return -1;
   if (! size) {
     err_puts("buf_parse_array_dimensions: zero item size");

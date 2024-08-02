@@ -231,13 +231,9 @@ s_struct_type * struct_type_new (const s_sym *module,
 uw struct_type_padding (uw offset, uw size)
 {
   unsigned int align = 1;
-  if (size == 2)
-    align = 2;
-  else if (size == 4)
-    align = 4;
-  else if (size == 8)
-    align = 8;
-  else if (size == 16)
+  if (size >= 16)
     align = 16;
+  else if (size >= 8)
+    align = 8;
   return (offset + align - 1) / align * align;
 }

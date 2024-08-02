@@ -1,0 +1,5 @@
+defmodule Struct do
+
+  def offset = cfn Uw "struct_offset" (Struct, Sym, Result)
+
+end

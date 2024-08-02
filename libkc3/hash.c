@@ -95,7 +95,7 @@ bool hash_update_array (t_hash *hash, const s_array *a)
     i++;
   }
   if (a->data &&
-      sym_type_size(a->element_type, &size) &&
+      sym_type_size(&a->element_type, &size) &&
       size) {
     data = a->data;
     i = 0;

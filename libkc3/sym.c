@@ -1014,175 +1014,175 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   return false;
 }
 
-bool sym_type_size (const s_sym *type, uw *dest)
+uw * sym_type_size (const s_sym * const *type, uw *dest)
 {
   const s_struct_type *st;
-  if (type == &g_sym_Array ||
-      sym_is_array_type(type)) {
+  if (*type == &g_sym_Array ||
+      sym_is_array_type(*type)) {
     *dest = sizeof(s_array);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Block) {
+  if (*type == &g_sym_Block) {
     *dest = sizeof(s_block);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Bool) {
+  if (*type == &g_sym_Bool) {
     *dest = sizeof(bool);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Call) {
+  if (*type == &g_sym_Call) {
     *dest = sizeof(s_call);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Cfn) {
+  if (*type == &g_sym_Cfn) {
     *dest = sizeof(s_cfn);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Character) {
+  if (*type == &g_sym_Character) {
     *dest = sizeof(character);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Complex) {
+  if (*type == &g_sym_Complex) {
     *dest = sizeof(s_complex);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Cow) {
+  if (*type == &g_sym_Cow) {
     *dest = sizeof(s_cow);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_F32) {
+  if (*type == &g_sym_F32) {
     *dest = sizeof(f32);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_F64) {
+  if (*type == &g_sym_F64) {
     *dest = sizeof(f64);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_F128) {
+  if (*type == &g_sym_F128) {
     *dest = sizeof(f128);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Fact) {
+  if (*type == &g_sym_Fact) {
     *dest = sizeof(s_fact);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Fn) {
+  if (*type == &g_sym_Fn) {
     *dest = sizeof(s_fn);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Ident) {
+  if (*type == &g_sym_Ident) {
     *dest = sizeof(s_ident);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Integer) {
+  if (*type == &g_sym_Integer) {
     *dest = sizeof(s_integer);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_List) {
+  if (*type == &g_sym_List) {
     *dest = sizeof(s_list *);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Ptag) {
+  if (*type == &g_sym_Ptag) {
     *dest = sizeof(p_tag);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Ptr) {
+  if (*type == &g_sym_Ptr) {
     *dest = sizeof(void *);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_PtrFree) {
+  if (*type == &g_sym_PtrFree) {
     *dest = sizeof(void *);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Quote) {
+  if (*type == &g_sym_Quote) {
     *dest = sizeof(s_quote);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Ratio) {
+  if (*type == &g_sym_Ratio) {
     *dest = sizeof(s_ratio);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_S8) {
+  if (*type == &g_sym_S8) {
     *dest = sizeof(s8);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_S16) {
+  if (*type == &g_sym_S16) {
     *dest = sizeof(s16);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_S32) {
+  if (*type == &g_sym_S32) {
     *dest = sizeof(s32);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_S64) {
+  if (*type == &g_sym_S64) {
     *dest = sizeof(s64);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Str) {
+  if (*type == &g_sym_Str) {
     *dest = sizeof(s_str);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Struct) {
+  if (*type == &g_sym_Struct) {
     *dest = sizeof(s_struct);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_StructType) {
+  if (*type == &g_sym_StructType) {
     *dest = sizeof(s_struct_type);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Sw) {
+  if (*type == &g_sym_Sw) {
     *dest = sizeof(sw);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Sym) {
+  if (*type == &g_sym_Sym) {
     *dest = sizeof(p_sym);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Tag) {
+  if (*type == &g_sym_Tag) {
     *dest = sizeof(s_tag);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Tuple) {
+  if (*type == &g_sym_Tuple) {
     *dest = sizeof(s_tuple);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_U8) {
+  if (*type == &g_sym_U8) {
     *dest = sizeof(u8);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_U16) {
+  if (*type == &g_sym_U16) {
     *dest = sizeof(u16);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_U32) {
+  if (*type == &g_sym_U32) {
     *dest = sizeof(u32);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_U64) {
+  if (*type == &g_sym_U64) {
     *dest = sizeof(u64);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Uw) {
+  if (*type == &g_sym_Uw) {
     *dest = sizeof(uw);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Var) {
+  if (*type == &g_sym_Var) {
     *dest = sizeof(s_tag);
-    return true;
+    return dest;
   }
-  if (type == &g_sym_Void) {
+  if (*type == &g_sym_Void) {
     *dest = 0;
-    return true;
+    return dest;
   }
-  if (! struct_type_find(type, &st))
-    return false;
+  if (! struct_type_find(*type, &st))
+    return NULL;
   if (st) {
     *dest = st->size;
-    return true;
+    return dest;
   }
   err_write_1("sym_type_size: unknown type: ");
-  err_inspect_sym(&type);
+  err_inspect_sym(type);
   err_write_1("\n");
   assert(! "sym_type_size: unknown type");
-  return false;
+  return NULL;
 }

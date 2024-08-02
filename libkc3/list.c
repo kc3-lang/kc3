@@ -302,7 +302,7 @@ s_array * list_to_array (const s_list *list, const s_sym *array_type,
   len = list_length(list);
   tmp.array_type = array_type;
   tmp.element_type = sym_array_type(array_type);
-  if (! sym_type_size(tmp.element_type, &size))
+  if (! sym_type_size(&tmp.element_type, &size))
     return NULL;
   if (! size) {
     err_puts("list_to_array: zero item size");

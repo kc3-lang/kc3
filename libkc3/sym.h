@@ -143,6 +143,6 @@ bool          sym_search_modules (const s_sym *sym, const s_sym **dest);
 bool          sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
                                ffi_type **dest);
 bool          sym_to_tag_type (const s_sym *sym, e_tag_type *dest);
-bool          sym_type_size (const s_sym *type, uw *size);
+uw *          sym_type_size (const s_sym * const *type, uw *size);
 
 #endif /* LIBKC3_SYM_H */
