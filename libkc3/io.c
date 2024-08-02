@@ -72,6 +72,18 @@ sw err_inspect_buf (const s_buf *buf)
   return err_write(buf->ptr.pchar + pos, buf->rpos - pos);
 }
 
+sw err_inspect_struct (const s_struct *s) {
+    sw r;
+    if (! s) {
+        err_puts("err_inspect_struct: NULL input");
+        return -1;
+    }
+    if ((r = buf_inspect_struct(&g_kc3_env.err, s)) < 0)
+        return r;
+    buf_flush(&g_kc3_env.err);
+    return r;
+}
+
 sw err_inspect_tag_type (e_tag_type type)
 {
   return err_write_1(tag_type_to_string(type));
