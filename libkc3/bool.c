@@ -72,20 +72,20 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_SYM:
   case TAG_TUPLE:
   case TAG_UNQUOTE:
-  case TAG_VAR:
-  case TAG_VOID:
-    break;
+  case TAG_VAR:       *b = true;                               return b;
+  case TAG_VOID:      *b = false;                              return b;
+  default:
+    err_write_1("bool_cast: cannot cast ");
+    err_write_1(tag_type_to_string(tag->type));
+    if (*type == &g_sym_Bool)
+      err_puts(" to Bool");
+    else {
+      err_write_1(" to ");
+      err_inspect_sym(type);
+      err_puts(" aka Bool");
+    }
+    assert(! "bool_cast: cannot cast to Bool");
   }
-  err_write_1("bool_cast: cannot cast ");
-  err_write_1(tag_type_to_string(tag->type));
-  if (*type == &g_sym_Bool)
-    err_puts(" to Bool");
-  else {
-    err_write_1(" to ");
-    err_inspect_sym(type);
-    err_puts(" aka Bool");
-  }
-  assert(! "bool_cast: cannot cast to Bool");
   return NULL;
 }
 

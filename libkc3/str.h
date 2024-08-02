@@ -86,7 +86,8 @@ sw            str_character (const s_str *str, uw position,
 character     str_character_escape (character c);
 bool          str_character_is_reserved (character c);
 sw            str_character_position (const s_str *str, character c);
-bool          str_has_reserved_characters (const s_str *str);
+bool *        str_has_reserved_characters (const s_str *src,
+                                           bool *dest);
 s_str *       str_inspect (const s_str *str, s_str *dest);
 sw            str_length_utf8 (const s_str *str);
 bool          str_parse_eval (const s_str *str, s_tag *dest);

@@ -3,10 +3,12 @@ defmodule HTTPd do
   def server_loop = fn (client) {
     puts("HTTPd.server_loop: got client #{client}")
     ok = true
-    while ok do
+    req = true
+    while req do
       req = HTTP.Request.buf_parse(client.buf_rw.r)
-      res = %HTTP.Response{body: "
-<html>
+      if req do
+        puts("HTTPd.server_loop: got request #{req}")
+        res = %HTTP.Response{body: "<html>
   <head>
     <title>KC3 HTTPd</title>
   </head>
@@ -20,7 +22,11 @@ defmodule HTTPd do
   </body>
 </html>
 "}
-      if (HTTP.Response.buf_write(res, client.buf_rw.w) < 0) do
+        puts("HTTPd.server_loop: response: #{res}")
+        if (HTTP.Response.buf_write(res, client.buf_rw.w) < 0) do
+          req = false
+        end
+      else
         ok = false
       end
     end

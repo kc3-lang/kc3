@@ -545,6 +545,7 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
 {
   s_tag *condition;
   s_tag *else_;
+  uw i;
   sw r;
   sw result = 0;
   s_tag *then;
@@ -561,8 +562,18 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
   result += r;
   then = &list_next(call->arguments)->tag;
   if (then->type == TAG_BLOCK) {
-    if ((r = buf_inspect_block_inner(buf, &then->data.block)) < 0)
+    if ((r = buf_write_1(buf, " do")) < 0)
       return r;
+    result += r;
+    i = 0;
+    while (i < then->data.block.count) {
+      if ((r = buf_write_1(buf, "\n  ")) < 0)
+        return r;
+      result += r;
+      if ((r = buf_inspect_tag(buf, then->data.block.tag + i)) < 0)
+        return r;
+      i++;
+    }
   }
   else
     if ((r = buf_inspect_tag(buf, then)) < 0)
@@ -2090,12 +2101,15 @@ sw buf_inspect_ratio_size (const s_ratio *ratio)
 
 sw buf_inspect_str (s_buf *buf, const s_str *str)
 {
+  bool b = false;
   sw r;
   sw result = 0;
   s_buf_save save;
   assert(buf);
   assert(str);
-  if (str_has_reserved_characters(str))
+  if (! str_has_reserved_characters(str, &b))
+    return -1;
+  if (b)
     return buf_inspect_str_reserved(buf, str);
   buf_save_init(buf, &save);
   if ((r = buf_write_u8(buf, '"')) <= 0)
@@ -2326,9 +2340,12 @@ sw buf_inspect_str_reserved_size (const s_str *str)
 
 sw buf_inspect_str_size (const s_str *str)
 {
+  bool b;
   const sw quote_size = strlen("\"");
   sw size;
-  if (str_has_reserved_characters(str))
+  if (! str_has_reserved_characters(str, &b))
+    return -1;
+  if (b)
     return buf_inspect_str_reserved_size(str);
   size = str->size + 2 * quote_size;
   return size;

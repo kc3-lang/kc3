@@ -25,20 +25,19 @@
 #include "tag.h"
 #include "tuple.h"
 
-s_tag * alist_get (const s_list * const *alist, const s_tag *key, s_tag *dest)
+s_tag * alist_get (const s_list * const *alist, const s_tag *key,
+                   s_tag *dest)
 {
-    const s_list *l;
-    assert(alist);
-    assert(list_is_alist(alist));
-    assert(key);
-    assert(dest);
-    l = *alist;
-    while (l) {
-        if (! compare_tag(&l->tag.data.tuple.tag[0], key)) {
-        *dest = l->tag.data.tuple.tag[1];
-        return dest;
-        }
-        l = list_next(l);
-    }
-    return NULL;
+  const s_list *l;
+  assert(alist);
+  assert(list_is_alist(alist));
+  assert(key);
+  assert(dest);
+  l = *alist;
+  while (l) {
+    if (! compare_tag(&l->tag.data.tuple.tag[0], key))
+      return tag_init_copy(dest, l->tag.data.tuple.tag + 1);
+    l = list_next(l);
+  }
+  return NULL;
 }

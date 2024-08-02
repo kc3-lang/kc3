@@ -17,8 +17,10 @@
 #include "bool.h"
 #include "buf.h"
 #include "buf_parse.h"
-#include "kc3_main.h"
+#include "call.h"
 #include "env.h"
+#include "kc3_main.h"
+#include "list.h"
 #include "map.h"
 #include "str.h"
 #include "struct.h"
@@ -139,12 +141,6 @@ void kc3_exit (sw code)
   exit((int) code);
 }
 
-bool * kc3_must_clean(const s_sym * const *sym, bool *dest)
-{
-    assert(sym);
-    return sym_must_clean(*sym, dest);
-}
-
 uw * kc3_facts_next_id (uw *dest)
 {
   assert(dest);
@@ -173,24 +169,35 @@ s_str * kc3_getenv (const s_str *name, s_str *dest)
 s_tag * kc3_if_then_else (const s_tag *cond, const s_tag *then,
                           const s_tag *else_, s_tag *dest)
 {
-  bool b;
+  s_call cond_cast = {0};
   s_tag tmp = {0};
-  const s_sym *type;
-  if (! env_eval_tag(&g_kc3_env, cond, &tmp))
-    return NULL;
-  type = &g_sym_Bool;
-  if (! bool_init_cast(&b, &type, &tmp)) {
-    tag_clean(&tmp);
+  call_init_call_cast(&cond_cast, &g_sym_Bool);
+  if (! tag_init_copy(&list_next(cond_cast.arguments)->tag, cond)) {
+    call_clean(&cond_cast);
     return NULL;
   }
-  tag_clean(&tmp);
-  if (b) {
-    if (! env_eval_tag(&g_kc3_env, then, dest))
+  if (! env_eval_call(&g_kc3_env, &cond_cast, &tmp)) {
+    call_clean(&cond_cast);
+    return NULL;
+  }
+  if (tmp.type != TAG_BOOL) {
+    tag_clean(&tmp);
+    call_clean(&cond_cast);
+    return NULL;
+  }
+  if (tmp.data.bool) {
+    if (! env_eval_tag(&g_kc3_env, then, dest)) {
+      call_clean(&cond_cast);
       return NULL;
+    }
+    call_clean(&cond_cast);
     return dest;
   }
-  if (! env_eval_tag(&g_kc3_env, else_, dest))
+  if (! env_eval_tag(&g_kc3_env, else_, dest)) {
+    call_clean(&cond_cast);
     return NULL;
+  }
+  call_clean(&cond_cast);
   return dest;
 }
 
@@ -220,6 +227,12 @@ bool kc3_load (const s_str *path)
 const s_sym ** kc3_module (const s_sym **dest)
 {
   return env_module(&g_kc3_env, dest);
+}
+
+bool * kc3_must_clean (const s_sym * const *sym, bool *dest)
+{
+  assert(sym);
+  return sym_must_clean(*sym, dest);
 }
 
 s_tag * kc3_pin (const s_tag *a, s_tag *dest)

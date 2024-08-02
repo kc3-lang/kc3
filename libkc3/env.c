@@ -524,7 +524,6 @@ bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
 bool env_eval_block (s_env *env, const s_block *block, s_tag *dest)
 {
   uw i = 0;
-  bool r;
   s_tag tmp = {0};
   assert(env);
   assert(block);
@@ -534,10 +533,8 @@ bool env_eval_block (s_env *env, const s_block *block, s_tag *dest)
     return true;
   }
   while (i < block->count - 1) {
-    r = env_eval_tag(env, block->tag + i, &tmp);
-    tag_clean(&tmp);
-    if (! r)
-      return false;
+    if (env_eval_tag(env, block->tag + i, &tmp))
+      tag_clean(&tmp);
     i++;
   }
   return env_eval_tag(env, block->tag + i, dest);
@@ -3145,7 +3142,7 @@ s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_block *cleanup,
 s_tag * env_while (s_env *env, const s_tag *cond, const s_tag *body,
                    s_tag *dest)
 {
-  s_tag cond_bool = {0};
+  s_tag  cond_bool = {0};
   s_call cond_cast = {0};
   s_tag tmp = {0};
   call_init_call_cast(&cond_cast, &g_sym_Bool);

@@ -24,11 +24,11 @@ sw http_response_buf_write (const s_http_response *response,
   s_ident ident = {0};
   s_tag *key = NULL;
   const s_list *l = NULL;
-  s_tag message = {0};
   s_str protocol = {0};
   sw r = 0;
   sw result = 0;
   s_tag tag_code = {0};
+  s_tag tag_message = {0};
   s_tag *value = NULL;
   assert(response);
   assert(buf);
@@ -65,21 +65,26 @@ sw http_response_buf_write (const s_http_response *response,
       return -1;
     }
     if (alist_get((const s_list * const *) &default_messages.data.list,
-                  &tag_code, &message)) {
-      if (message.type != TAG_STR) {
+                  &tag_code, &tag_message)) {
+      if (tag_message.type != TAG_STR) {
         err_puts("http_response_buf_write: invalid default message:"
                  " not a Str");
+        tag_clean(&tag_message);
         return -1;
       }
     }
   }
   else {
-    message.type = TAG_STR;
-    message.data.str = response->message;
+    tag_message.type = TAG_STR;
+    tag_message.data.str = response->message;
   }
-  if ((r = buf_write_str(buf, &message.data.str)) < 0)
+  err_write_1("message: ");
+  err_inspect_tag(&tag_message);
+  err_write_1("\n");
+  if ((r = buf_write_str(buf, &tag_message.data.str)) < 0)
     return r;
   result += r;
+  tag_clean(&tag_message);
   if ((r = buf_write_1(buf, "\r\n")) < 0)
     return r;
   result += r;

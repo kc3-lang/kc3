@@ -160,19 +160,24 @@ void str_delete (s_str *str)
   free(str);
 }
 
-bool str_has_reserved_characters (const s_str *src)
+bool * str_has_reserved_characters (const s_str *src, bool *dest)
 {
   character c;
   sw r;
-  s_str stra;
-  str_init(&stra, NULL, src->size, src->ptr.p);
-  while ((r = str_read_character_utf8(&stra, &c)) > 0) {
-    if (str_character_is_reserved(c))
-      return true;
+  s_str str;
+  str_init(&str, NULL, src->size, src->ptr.p);
+  while ((r = str_read_character_utf8(&str, &c)) > 0) {
+    if (str_character_is_reserved(c)) {
+      *dest = true;
+      return dest;
+    }
   }
-  if (r < 0)
-    return true;
-  return false;
+  if (r < 0) {
+    *dest = true;
+    return dest;
+  }
+  *dest = false;
+  return dest;
 }
 
 s_str * str_init (s_str *str, char *free, uw size, const char *p)

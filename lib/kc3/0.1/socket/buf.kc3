@@ -1,6 +1,6 @@
 defmodule Socket.Buf do
 
-  defstruct [addr: (PtrFree) 0,
+  defstruct [addr: (Ptr) 0,
              addr_len: (U32) 0,
              sockfd: (S32) -1,
              buf_rw: %BufRW{}]
