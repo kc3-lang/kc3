@@ -932,11 +932,8 @@ sw buf_refill (s_buf *buf, sw size)
     }
     if (buf->refill)
       while (1) {
-        if ((r = buf->refill(buf)) < 0) {
-          err_puts("buf_refill: buf->refill");
-          assert(! "buf_refill: buf->refill");
+        if ((r = buf->refill(buf)) < 0)
           return r;
-        }
         if (! r)
           return -1;
         if (buf->wpos - buf->rpos >= (uw) size)
