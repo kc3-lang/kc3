@@ -27,7 +27,8 @@ s_tag * frame_binding_new (s_frame *frame, const s_sym *name)
   return &b->value;
 }
 
-s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name, const s_tag *value)
+s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
+                                  const s_tag *value)
 {
   s_tag *tag;
   frame_binding_new(frame, name);
@@ -51,6 +52,36 @@ s_frame * frame_binding_delete (s_frame *frame, const s_sym *name)
   s_binding **b;
   b = binding_find(&frame->bindings, name);
   *b = binding_delete(*b);
+  return frame;
+}
+
+s_frame * frame_binding_replace (s_frame *frame, const s_sym *name,
+                                 const s_tag *value)
+{
+  s_tag *tag;
+  tag = binding_get_w(frame->bindings, name);
+  if (tag) {
+    tag_clean(tag);
+    if (! tag_init_copy(tag, value)) {
+      err_puts("frame_binding_new_copy: tag_init_copy 1");
+      assert(! "frame_binding_new_copy: tag_init_copy 1");
+      return NULL;
+    }
+    return frame;
+  }
+  frame_binding_new(frame, name);
+  tag = binding_get_w(frame->bindings, name);
+  if (! tag) {
+    err_puts("frame_binding_new_copy: binding new");
+    assert(! "frame_binding_new_copy: binding new");
+    return NULL;
+  }
+  if (! tag_init_copy(tag, value)) {
+    err_puts("frame_binding_new_copy: tag_init_copy 2");
+    assert(! "frame_binding_new_copy: tag_init_copy 2");
+    frame = frame_binding_delete(frame, name);
+    return NULL;
+  }
   return frame;
 }
 
@@ -131,4 +162,23 @@ s_frame * frame_new (s_frame *next)
     return NULL;
   }
   return frame;
+}
+
+s_frame * frame_replace (s_frame *frame, const s_sym *sym,
+                         const s_tag *value)
+{
+  s_frame *f;
+  s_tag *result;
+  assert(sym);
+  f = frame;
+  while (f) {
+    result = binding_get_w(f->bindings, sym);
+    if (result) {
+      tag_clean(result);
+      tag_init_copy(result, value);
+      return frame;
+    }
+    f = f->next;
+  }
+  return frame_binding_new_copy(frame, sym, value);
 }

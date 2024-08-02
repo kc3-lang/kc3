@@ -998,7 +998,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
       tag_init_copy(dest, b);
     else
       env_eval_tag(env, b, dest);
-    frame_binding_new_copy(env->frame->next, a->data.ident.sym, dest);
+    frame_replace(env->frame->next, a->data.ident.sym, dest);
     return true;
   }
   if (is_unbound_b) {
@@ -1006,7 +1006,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
       tag_init_copy(dest, a);
     else
       env_eval_tag(env, a, dest);
-    frame_binding_new_copy(env->frame->next, b->data.ident.sym, dest);
+    frame_replace(env->frame->next, b->data.ident.sym, dest);
     return true;
   }
   if (! macro &&
@@ -2169,8 +2169,9 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
       assert(! "env_let: binding key is not a symbol");
       return NULL;
     }
-    if (! frame_binding_new_copy(env->frame, map->key[i].data.sym,
-                            map->value + i)) {
+    if (! frame_binding_new_copy(env->frame,
+                                 map->key[i].data.sym,
+                                 map->value + i)) {
       tag_clean(&tmp);
       return NULL;
     }
