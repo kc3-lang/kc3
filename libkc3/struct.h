@@ -56,5 +56,8 @@ const s_sym ** struct_get_type (const s_struct *s, const s_sym *key,
 const s_sym ** struct_get_sym (const s_struct *s, const s_sym *key);
 const s_tag *  struct_get_tag (const s_struct *s, const s_sym *key);
 u8             struct_get_u8 (const s_struct *s, const s_sym *key);
+uw *           struct_offset (const s_struct *s,
+                              const s_sym * const *key,
+                              uw *dest);
 
 #endif /* LIBKC3_STRUCT_H */

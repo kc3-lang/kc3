@@ -369,6 +369,24 @@ s_struct * struct_new_copy (const s_struct *src)
   return s;
 }
 
+uw * struct_offset (const s_struct *s, const s_sym * const *key,
+                    uw *dest)
+{
+  uw i = 0;
+  assert(s);
+  assert(s->type);
+  assert(key);
+  if (! struct_find_key_index(s, *key, &i)) {
+    err_write_1("struct_offset: key not found: ");
+    err_inspect_sym(key);
+    err_write_1("\n");
+    return NULL;
+  }
+  assert(i < s->type->map.count);
+  *dest = s->type->offset[i];
+  return dest;
+}
+
 s_struct * struct_set (s_struct *s, const s_sym *key,
                        const s_tag *value)
 {
