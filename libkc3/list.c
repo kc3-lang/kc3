@@ -17,6 +17,7 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
+#include "compare.h"
 #include "data.h"
 #include "list.h"
 #include "sym.h"
@@ -55,6 +56,18 @@ void list_f_clean (s_list **list)
   l = *list;
   while (l)
     l = list_delete(l);
+}
+
+bool list_has (const s_list *list, const s_tag *tag)
+{
+  const s_list *l;
+  l = list;
+  while (l) {
+    if (! compare_tag(tag, &l->tag))
+      return true;
+    l = list_next(l);
+  }
+  return false;
 }
 
 s_list * list_init (s_list *list, s_list *next)

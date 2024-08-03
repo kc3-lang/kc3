@@ -1200,6 +1200,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
   s_ident tmp_ident;
   assert(env);
   assert(ident);
+  assert(dest);
   if ((tag = env_frames_get(env, ident->sym))) {
     tag_init_copy(dest, tag);
     return true;
