@@ -77,6 +77,7 @@ sw http_response_buf_write (const s_http_response *response,
   else {
     tag_message.type = TAG_STR;
     tag_message.data.str = response->message;
+    tag_message.data.str.free.p = NULL;
   }
   err_write_1("message: ");
   err_inspect_tag(&tag_message);
