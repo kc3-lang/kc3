@@ -79,9 +79,6 @@ sw http_response_buf_write (const s_http_response *response,
     tag_message.data.str = response->message;
     tag_message.data.str.free.p = NULL;
   }
-  err_write_1("message: ");
-  err_inspect_tag(&tag_message);
-  err_write_1("\n");
   if ((r = buf_write_str(buf, &tag_message.data.str)) < 0)
     return r;
   result += r;
