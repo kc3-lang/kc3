@@ -5,9 +5,18 @@ defmodule HTTPd do
     req = HTTP.Request.buf_parse(client.buf_rw.r)
     if req do
       puts("HTTPd.server_loop: got request #{req}")
-      res = %HTTP.Response{body: "<html>
+       res = %HTTP.Response{body: "<html>
   <head>
     <title>KC3 HTTPd</title>
+    <style>
+      pre {
+        white-space: pre-wrap; /* CSS3 */
+        white-space: -moz-pre-wrap; /* Mozilla */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        word-wrap: break-word; /* Internet Explorer 5.5+ */
+      }
+    </style>
   </head>
   <body>
     <h1>KC3 HTTPd</h1>
@@ -42,7 +51,7 @@ defmodule HTTPd do
     }
     (host, port) {
       server(host, port)
-    }     
+    }
   }
 
 end

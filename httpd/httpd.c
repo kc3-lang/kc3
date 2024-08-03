@@ -29,6 +29,7 @@ int main (int argc, char **argv)
   call_init(&call);
   call.ident.module = module;
   call.ident.sym = sym_1("main");
+  //FIXME
   if (argc >= 2)
     call.arguments = list_new_str_1
       (NULL, argv[0], list_new_str_1
