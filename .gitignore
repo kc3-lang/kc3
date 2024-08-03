@@ -23,6 +23,7 @@ current_test
 *.exe
 *.gcno
 *.html
+httpd.log
 httpd/kc3_httpd
 httpd/kc3_httpd_asan
 httpd/kc3_httpd_cov
