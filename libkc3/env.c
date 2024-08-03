@@ -2194,7 +2194,7 @@ bool env_load (s_env *env, const s_str *path)
   if (! file_dirname(path, &file_dir->data.str))
     goto ko;
   tag_init_str(file_path, NULL, path->size, path->ptr.pchar);
-  if (true) {
+  if (false) {
     err_write_1("env_load: __DIR__ = ");
     err_inspect_tag(file_dir);
     err_write_1("\n");

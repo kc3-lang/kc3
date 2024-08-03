@@ -3874,44 +3874,11 @@ sw buf_parse_tag_fn (s_buf *buf, s_tag *dest)
 sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
 {
   sw r;
-  const s_tag *tag;
-  s_tag tmp = {0};
   assert(buf);
   assert(dest);
-  tmp.type = TAG_IDENT;
-  r = buf_parse_ident(buf, &tmp.data.ident);
-  if (r <= 0)
-    return r;
-  if (! tmp.data.ident.module ||
-      tmp.data.ident.module == &g_sym_KC3) {
-    if (tmp.data.ident.sym == &g_sym___DIR__ ||
-        tmp.data.ident.sym == &g_sym___FILE__) {
-      if (true) {
-        err_write_1("buf_parse_tag_ident: ");
-        err_inspect_ident(&tmp.data.ident);
-        err_write_1("\n");
-      }
-      tag = frame_get(&g_kc3_env.global_frame, tmp.data.ident.sym);
-      if (! tag) {
-        err_write_1("buf_parse_tag_ident: frame_get: ");
-        err_inspect_sym(&tmp.data.ident.sym);
-        err_puts(" not found in global_frame");
-        assert(! "buf_parse_tag_ident: frame_get");
-        return -1;
-      }
-      if (! tag_init_copy(&tmp, tag)) {
-        err_puts("buf_parse_tag_ident: tag_init_copy");
-        assert(! "buf_parse_tag_ident: tag_init_copy");
-        return -1;
-      }
-      if (true) {
-        err_write_1("buf_parse_tag_ident: ");
-        err_inspect_tag(&tmp);
-        err_write_1("\n");
-      }
-    }
-  }
-  *dest = tmp;
+  r = buf_parse_ident(buf, &dest->data.ident);
+  if (r > 0)
+    dest->type = TAG_IDENT;
   return r;
 }
 
