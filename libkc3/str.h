@@ -39,10 +39,15 @@
 void    str_clean (s_str *str);
 s_str * str_init (s_str *str, char *free, uw size, const char *p);
 s_str * str_init_1 (s_str *str, char *free, const char *p);
-s_str * str_init_alloc (s_str *str, uw size, const char *p);
+s_str * str_init_1_alloc (s_str *str, const char *p);
+s_str * str_init_alloc (s_str *str, uw size);
+s_str * str_init_alloc_copy (s_str *str, uw size, const char *p);
 s_str * str_init_cast (s_str *str, const s_sym * const *type,
                        const s_tag *tag);
-s_str * str_init_cat (s_str *str, const s_str *a, const s_str *b);
+s_str * str_init_concatenate (s_str *str, const s_str *a,
+                              const s_str *b);
+s_str * str_init_concatenate_list (s_str *str,
+                                   const s_list **list);
 s_str * str_init_character (s_str *str, const character src);
 s_str * str_init_copy (s_str *str, const s_str *src);
 s_str * str_init_copy_1 (s_str *str, const char *p);

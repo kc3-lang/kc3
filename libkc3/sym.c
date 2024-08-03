@@ -105,6 +105,7 @@ const s_sym g_sym_rwx             = {{{NULL},  3, {"rwx"}}};
 const s_sym g_sym_rx              = {{{NULL},  2, {"rx"}}};
 const s_sym g_sym_special_operator =
   {{{NULL}, 16, {"special_operator"}}};
+const s_sym g_sym_str             = {{{NULL},  3, {"str"}}};
 const s_sym g_sym_struct_type     = {{{NULL}, 11, {"struct_type"}}};
 const s_sym g_sym_sym             = {{{NULL},  3, {"sym"}}};
 const s_sym g_sym_symbol          = {{{NULL},  6, {"symbol"}}};
@@ -397,6 +398,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_rwx, NULL);
   sym_register(&g_sym_rx, NULL);
   sym_register(&g_sym_special_operator, NULL);
+  sym_register(&g_sym_str, NULL);
   sym_register(&g_sym_struct_type, NULL);
   sym_register(&g_sym_sym, NULL);
   sym_register(&g_sym_symbol, NULL);

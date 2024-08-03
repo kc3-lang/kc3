@@ -1615,7 +1615,7 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
   case TAG_STR:
     switch (b->type) {
     case TAG_STR:
-      return tag_init_str_cat(dest, &a->data.str, &b->data.str);
+      return tag_init_str_concatenate(dest, &a->data.str, &b->data.str);
     default:
       goto ko;
     }

@@ -377,6 +377,12 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   if (call->ident.module == &g_sym_KC3 &&
       call->ident.sym == &g_sym_if_then_else)
     return buf_inspect_call_if_then_else(buf, call);
+  if ((! call->ident.module ||
+       call->ident.module == &g_sym_KC3) &&
+      call->ident.sym == &g_sym_str &&
+      call->arguments &&
+      call->arguments->tag.type == TAG_LIST)
+    return buf_inspect_call_str(buf, call);
   if (! operator_find(&call->ident, &op))
     return -1;
   if (op) {
@@ -423,6 +429,25 @@ sw buf_inspect_call_access (s_buf *buf, const s_call *call)
     return r;
   result += r;
   if ((r = buf_inspect_ident_sym(buf, tag_sym->data.sym)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_call_access_size (const s_call *call)
+{
+  s_list *args;
+  sw r;
+  sw result = 0;
+  s_tag *tag_sym;
+  assert(call);
+  args = call->arguments;
+  tag_sym = &args->next.data.list->tag;
+  if ((r = buf_inspect_tag_size(&args->tag)) < 0)
+    return r;
+  result += r;
+  result += strlen(".");
+  if ((r = buf_inspect_ident_sym_size(tag_sym->data.sym)) < 0)
     return r;
   result += r;
   return result;
@@ -741,8 +766,17 @@ sw buf_inspect_call_size (const s_call *call)
   sw result = 0;
   const s_sym *sym;
   if (call->ident.module == &g_sym_KC3 &&
+      call->ident.sym == &g_sym_access)
+    return buf_inspect_call_access_size(call);
+  if (call->ident.module == &g_sym_KC3 &&
       call->ident.sym == &g_sym_if_then_else)
     return buf_inspect_call_if_then_else_size(call);
+  if ((! call->ident.module ||
+       call->ident.module == &g_sym_KC3) &&
+      call->ident.sym == &g_sym_str &&
+      call->arguments &&
+      call->arguments->tag.type == TAG_LIST)
+    return buf_inspect_call_str_size(call);
   if (! operator_find(&call->ident, &op))
     return -1;
   if (op) {
@@ -846,6 +880,34 @@ sw buf_inspect_call_special_operator_size (const s_call *call)
     args = list_next(args);
   }
   return result;
+}
+
+sw buf_inspect_call_str (s_buf *buf, const s_call *call)
+{
+  if ((call->ident.module &&
+       call->ident.module != &g_sym_KC3) ||
+      call->ident.sym != &g_sym_str ||
+      ! call->arguments ||
+      call->arguments->tag.type != TAG_LIST) {
+    err_puts("buf_inspect_call_str: invalid call");
+    assert(! "buf_inspect_call_str: invalid call");
+    return -1;
+  }
+  return buf_inspect_str_eval(buf, call->arguments->tag.data.list);
+}
+
+sw buf_inspect_call_str_size (const s_call *call)
+{
+  if ((call->ident.module &&
+       call->ident.module != &g_sym_KC3) ||
+      call->ident.sym != &g_sym_str ||
+      ! call->arguments ||
+      call->arguments->tag.type != TAG_LIST) {
+    err_puts("buf_inspect_call_str_size: invalid call");
+    assert(! "buf_inspect_call_str_size: invalid call");
+    return -1;
+  }
+  return buf_inspect_str_eval_size(call->arguments->tag.data.list);
 }
 
 sw buf_inspect_cast (s_buf *buf, const s_call *call)
@@ -2256,6 +2318,44 @@ sw buf_inspect_str_character_size (const character *c)
     size += csize * 4;
   }
   return size;
+}
+
+sw buf_inspect_str_eval (s_buf *buf, const s_list *list)
+{
+  const s_list *l;
+  sw r;
+  sw result = 0;
+  const s_tag *tag;
+  if ((r = buf_write_1(buf, "\"")) < 0)
+    return r;
+  l = list;
+  while (l) {
+    if (l->tag.type == TAG_STR) {
+      if ((r = buf_write_str(buf, &l->tag.data.str)) < 0)
+        return r;
+    }
+    else {
+      if ((r = buf_write_1(buf, "#{")) < 0)
+        return r;
+      tag = &l->tag;
+      if (tag_is_cast(tag, &g_sym_Str))
+        tag = &list_next(tag->data.call.arguments)->tag;
+      if ((r = buf_inspect_tag(buf, tag)) < 0)
+        return r;
+      if ((r = buf_write_1(buf, "}")) < 0)
+        return r;
+    }
+    l = list_next(l);
+  }
+  if ((r = buf_write_1(buf, "\"")) < 0)
+    return r;
+  return result;
+}
+
+sw buf_inspect_str_eval_size (const s_list *list)
+{
+  (void) list;
+  return -1;
 }
 
 /* keep in sync with buf_inspect_str_reserved_size */

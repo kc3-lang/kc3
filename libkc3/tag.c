@@ -590,6 +590,16 @@ bool tag_is_bound_var (const s_tag *tag)
           tag->type != TAG_VAR);
 }
 
+bool tag_is_cast (const s_tag *tag, const s_sym *type)
+{
+  assert(tag);
+  return (tag &&
+          type &&
+          tag->type == TAG_CALL &&
+          tag->data.call.ident.module == type &&
+          tag->data.call.ident.sym == &g_sym_cast);
+}
+
 bool tag_is_number (const s_tag *tag)
 {
   assert(tag);

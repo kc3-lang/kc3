@@ -377,13 +377,26 @@ s_list * list_init_str_1 (s_list *list, char *p_free, const char *p,
   return list;
 }
 
-s_list * list_init_str_cat (s_list *list, const s_str *a,
-                            const s_str *b, s_list *next)
+s_list * list_init_str_concatenate (s_list *list, const s_str *a,
+                                    const s_str *b, s_list *next)
 {
   s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
-  if (! tag_init_str_cat(&tmp.tag, a, b))
+  if (! tag_init_str_concatenate(&tmp.tag, a, b))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_str_concatenate_list (s_list *list,
+                                         const s_list **src,
+                                         s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_str_concatenate_list(&tmp.tag, src))
     return NULL;
   *list = tmp;
   return list;
@@ -977,13 +990,28 @@ s_list * list_new_str_1 (char *p_free, const char *p, s_list *next)
   return list;
 }
 
-s_list * list_new_str_cat (const s_str *a, const s_str *b, s_list *next)
+s_list * list_new_str_concatenate (const s_str *a, const s_str *b,
+                                   s_list *next)
 {
   s_list *list;
   list = list_new(next);
   if (! list)
     return NULL;
-  if (! tag_init_str_cat(&list->tag, a, b)) {
+  if (! tag_init_str_concatenate(&list->tag, a, b)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_str_concatenate_list (const s_list **src,
+                                        s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_str_concatenate_list(&list->tag, src)) {
     free(list);
     return NULL;
   }

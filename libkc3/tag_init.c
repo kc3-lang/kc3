@@ -371,12 +371,24 @@ s_tag * tag_init_str_1 (s_tag *tag, char *p_free, const char *p)
   return tag;
 }
 
-s_tag * tag_init_str_cat (s_tag *tag, const s_str *a, const s_str *b)
+s_tag * tag_init_str_concatenate (s_tag *tag, const s_str *a,
+                                  const s_str *b)
 {
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
-  if (! str_init_cat(&tmp.data.str, a, b))
+  if (! str_init_concatenate(&tmp.data.str, a, b))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_str_concatenate_list (s_tag *tag, const s_list **src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_concatenate_list(&tmp.data.str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -964,14 +976,28 @@ s_tag * tag_new_str_1 (char *p_free, const char *p)
   return tag;
 }
 
-s_tag * tag_new_str_cat (const s_str *a, const s_str *b)
+s_tag * tag_new_str_concatenate (const s_str *a, const s_str *b)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
   tag->type = TAG_STR;
-  if (! str_init_cat(&tag->data.str, a, b)) {
+  if (! str_init_concatenate(&tag->data.str, a, b)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_str_concatenate_list (const s_list **src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_STR;
+  if (! str_init_concatenate_list(&tag->data.str, src)) {
     free(tag);
     return NULL;
   }
@@ -1556,13 +1582,25 @@ s_tag * tag_str_1 (s_tag *tag, char *p_free, const char *p)
   return tag;
 }
 
-s_tag * tag_str_cat (s_tag *tag, const s_str *a, const s_str *b)
+s_tag * tag_str_concatenate (s_tag *tag, const s_str *a, const s_str *b)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
-  if (! str_init_cat(&tmp.data.str, a, b))
+  if (! str_init_concatenate(&tmp.data.str, a, b))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_str_concatenate_list (s_tag *tag, const s_list **src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_concatenate_list(&tmp.data.str, src))
     return NULL;
   *tag = tmp;
   return tag;

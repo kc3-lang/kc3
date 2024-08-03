@@ -47,6 +47,7 @@ uw *           tag_hash_uw (const s_tag *tag, uw *dest);
 bool           tag_ident_is_bound (const s_tag *tag);
 bool           tag_is_alist (const s_tag *tag);
 bool           tag_is_bound_var (const s_tag *tag);
+bool           tag_is_cast (const s_tag *tag, const s_sym *type);
 bool           tag_is_number (const s_tag *tag);
 bool *         tag_is_unbound_var (const s_tag *tag, bool *dest);
 bool           tag_is_zero(const s_tag *tag);

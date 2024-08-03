@@ -30,6 +30,7 @@
 #include "fact.h"
 #include "fn.h"
 #include "fn_clause.h"
+#include "frame.h"
 #include "ident.h"
 #include "integer.h"
 #include "list.h"
@@ -3361,19 +3362,19 @@ sw buf_parse_str_eval (s_buf *buf, s_tag *dest)
   buf_save_init(buf, &save);
   r = buf_parse_str(buf, &in);
   if (r <= 0)
-    goto save_clean;
+    goto clean;
   result = r;
   if (! str_parse_eval(&in, dest)) {
     r = -2;
     goto restore;
   }
   r = result;
-  goto clean;
+  goto clean_in;
  restore:
   buf_save_restore_rpos(buf, &save);
- clean:
+ clean_in:
   str_clean(&in);
- save_clean:
+ clean:
   buf_save_clean(buf, &save);
   return r;
 }
@@ -3873,10 +3874,44 @@ sw buf_parse_tag_fn (s_buf *buf, s_tag *dest)
 sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
 {
   sw r;
+  const s_tag *tag;
+  s_tag tmp = {0};
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_ident(buf, &dest->data.ident)) > 0)
-    dest->type = TAG_IDENT;
+  tmp.type = TAG_IDENT;
+  r = buf_parse_ident(buf, &tmp.data.ident);
+  if (r <= 0)
+    return r;
+  if (! tmp.data.ident.module ||
+      tmp.data.ident.module == &g_sym_KC3) {
+    if (tmp.data.ident.sym == &g_sym___DIR__ ||
+        tmp.data.ident.sym == &g_sym___FILE__) {
+      if (true) {
+        err_write_1("buf_parse_tag_ident: ");
+        err_inspect_ident(&tmp.data.ident);
+        err_write_1("\n");
+      }
+      tag = frame_get(&g_kc3_env.global_frame, tmp.data.ident.sym);
+      if (! tag) {
+        err_write_1("buf_parse_tag_ident: frame_get: ");
+        err_inspect_sym(&tmp.data.ident.sym);
+        err_puts(" not found in global_frame");
+        assert(! "buf_parse_tag_ident: frame_get");
+        return -1;
+      }
+      if (! tag_init_copy(&tmp, tag)) {
+        err_puts("buf_parse_tag_ident: tag_init_copy");
+        assert(! "buf_parse_tag_ident: tag_init_copy");
+        return -1;
+      }
+      if (true) {
+        err_write_1("buf_parse_tag_ident: ");
+        err_inspect_tag(&tmp);
+        err_write_1("\n");
+      }
+    }
+  }
+  *dest = tmp;
   return r;
 }
 
@@ -4079,12 +4114,9 @@ sw buf_parse_tag_special_operator (s_buf *buf, s_tag *dest)
 
 sw buf_parse_tag_str (s_buf *buf, s_tag *dest)
 {
-  sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_str(buf, &dest->data.str)) > 0)
-    dest->type = TAG_STR;
-  return r;
+  return buf_parse_str_eval(buf, dest);
 }
 
 sw buf_parse_tag_struct (s_buf *buf, s_tag *dest)

@@ -273,6 +273,22 @@ s_list ** kc3_search_modules (s_list **dest)
   return env_search_modules(&g_kc3_env, dest);
 }
 
+s_str * kc3_str (const s_tag *tag, s_str *dest)
+{
+  const s_sym *sym;
+  switch (tag->type) {
+  case TAG_LIST:
+    return str_init_concatenate_list(dest,
+                                     (const s_list **)
+                                     &tag->data.list);
+  case TAG_STR:
+    return str_init_copy(dest, &tag->data.str);
+  default:
+    sym = &g_sym_Str;
+    return str_init_cast(dest, &sym, tag);
+  }
+}
+
 s_tag * kc3_while (const s_tag *cond, const s_tag *body, s_tag *dest)
 {
   return env_while(&g_kc3_env, cond, body, dest);

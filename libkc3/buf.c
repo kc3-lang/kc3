@@ -558,7 +558,7 @@ sw buf_peek_to_str (s_buf *buf, s_str *dest)
     str_init_empty(dest);
     return 0;
   }
-  str_init_alloc(dest, size, buf->ptr.pchar + buf->rpos);
+  str_init_alloc_copy(dest, size, buf->ptr.pchar + buf->rpos);
   return size;
 }
 
@@ -780,9 +780,9 @@ s_str * buf_read_to_str (s_buf *buf, s_str *dest)
     str_init_empty(dest);
     return dest;
   }
-  if (! str_init_alloc(dest, size, buf->ptr.pchar + buf->rpos)) {
-    err_puts("buf_read_to_str: str_init_alloc");
-    assert(! "buf_read_to_str: str_init_alloc");
+  if (! str_init_alloc_copy(dest, size, buf->ptr.pchar + buf->rpos)) {
+    err_puts("buf_read_to_str: str_init_alloc_copy");
+    assert(! "buf_read_to_str: str_init_alloc_copy");
     return NULL;
   }
   r = buf_ignore(buf, size);

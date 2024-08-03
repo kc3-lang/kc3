@@ -201,8 +201,20 @@ s_str * str_init_1 (s_str *str, char *free, const char *p)
   *str = tmp;
   return str;
 }
+s_str * str_init_alloc (s_str *str, uw size)
+{
+  s_str tmp = {0};
+  assert(str);
+  tmp.free.p = alloc(size + 1);
+  if (! tmp.free.p)
+    return NULL;
+  tmp.size = size;
+  tmp.ptr.p = tmp.free.p;
+  *str = tmp;
+  return str;
+}
 
-s_str * str_init_alloc (s_str *str, uw size, const char *p)
+s_str * str_init_alloc_copy (s_str *str, uw size, const char *p)
 {
   s_str tmp = {0};
   assert(str);
@@ -279,7 +291,20 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   return NULL;
 }
 
-s_str * str_init_cat (s_str *str, const s_str *a, const s_str *b)
+s_str * str_init_character (s_str *str, const character src)
+{
+  char b[4];
+  s_buf buf;
+  buf_init(&buf, false, sizeof(b), b);
+  if (buf_write_character_utf8(&buf, src) < 0)
+    return NULL;
+  if (! buf_read_to_str(&buf, str))
+    return NULL;
+  return str;
+}
+
+s_str * str_init_concatenate (s_str *str, const s_str *a,
+                              const s_str *b)
 {
   s_str tmp = {0};
   assert(str);
@@ -298,15 +323,39 @@ s_str * str_init_cat (s_str *str, const s_str *a, const s_str *b)
   return str;
 }
 
-s_str * str_init_character (s_str *str, const character src)
+s_str * str_init_concatenate_list (s_str *str,
+                                   const s_list **list)
 {
-  char b[4];
-  s_buf buf;
-  buf_init(&buf, false, sizeof(b), b);
-  if (buf_write_character_utf8(&buf, src) < 0)
+  const s_list *l;
+  char *p;
+  s_str tmp = {0};
+  l = *list;
+  while (l) {
+    if (l->tag.type != TAG_STR) {
+      err_write_1("str_init_concatenate_list: not a Str: ");
+      err_inspect_tag(&l->tag);
+      err_write_1("\n");
+      return NULL;
+    }
+    tmp.size += l->tag.data.str.size;
+    l = list_next(l);
+  }
+  if (! str_init_alloc(&tmp, tmp.size))
     return NULL;
-  if (! buf_read_to_str(&buf, str))
-    return NULL;
+  p = tmp.free.pchar;
+  l = *list;
+  while (l) {
+    if (p + l->tag.data.str.size > tmp.free.pchar + tmp.size) {
+      err_puts("str_init_concatenate_list: buffer overflow");
+      assert(! "str_init_concatenate_list: buffer overflow");
+      str_clean(&tmp);
+      return NULL;
+    }
+    memcpy(p, l->tag.data.str.ptr.p, l->tag.data.str.size);
+    p += l->tag.data.str.size;
+    l = list_next(l);
+  }
+  *str = tmp;
   return str;
 }
 
@@ -540,38 +589,37 @@ s_str * str_new_vf (const char *fmt, va_list ap)
 
 bool str_parse_eval (const s_str *str, s_tag *dest)
 {
+  s_tag *arg;
   character c;
   s_buf in_buf;
-  s_list  *list;
-  s_list **list_end;
-  s_list  *list_start = NULL;
-  s_ident op;
+  s_list  *l;
+  s_list **tail;
+  s_list  *list = NULL;
   s_buf out_buf = {0};
   sw r;
-  s_tag *right;
+  s_tag tag;
   s_tag tmp = {0};
-  s_tag tmp1 = {0};
   buf_init_str(&in_buf, false, (s_str *) str);
   if (! buf_init_alloc(&out_buf, str->size))
     goto restore;
-  list_end = &list_start;
+  tail = &list;
   while (1) {
     r = buf_read_1(&in_buf, "#{");
     if (r < 0)
       break;
     if (r > 0) {
       if (out_buf.wpos > 0) {
-        *list_end = list_new(NULL);
-        (*list_end)->tag.type = TAG_STR;
-        buf_read_to_str(&out_buf, &(*list_end)->tag.data.str);
-        list_end = &(*list_end)->next.data.list;
+        *tail = list_new(NULL);
+        (*tail)->tag.type = TAG_STR;
+        buf_read_to_str(&out_buf, &(*tail)->tag.data.str);
+        tail = &(*tail)->next.data.list;
         out_buf.rpos = out_buf.wpos = 0;
       }
-      *list_end = list_new(NULL);
-      r = buf_parse_tag(&in_buf, &(*list_end)->tag);
+      *tail = list_new(NULL);
+      r = buf_parse_tag(&in_buf, &(*tail)->tag);
       if (r <= 0)
         goto restore;
-      list_end = &(*list_end)->next.data.list;
+      tail = &(*tail)->next.data.list;
       r = buf_ignore_spaces(&in_buf);
       if (r < 0)
         goto restore;
@@ -591,53 +639,44 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
       goto restore;
   }
   if (out_buf.wpos > 0) {
-    *list_end = list_new(NULL);
-    (*list_end)->tag.type = TAG_STR;
-    buf_read_to_str(&out_buf, &(*list_end)->tag.data.str);
+    *tail = list_new(NULL);
+    (*tail)->tag.type = TAG_STR;
+    buf_read_to_str(&out_buf, &(*tail)->tag.data.str);
   }
-  if (! list_start)
+  if (! list)
     tag_init_str_empty(&tmp);
+  else if (list->tag.type == TAG_STR &&
+           ! list_next(list)) {
+    tmp = list->tag;
+    free(list);
+  }
   else {
-    list = list_start;
-    if (list->tag.type == TAG_STR)
-      tmp = list->tag;
-    else {
-      if (! tag_init_call_cast(&tmp, &g_sym_Str))
-        goto restore;
-      list_next(tmp.data.call.arguments)->tag = list->tag;
+    tag_init_call(&tmp);
+    ident_init(&tmp.data.call.ident, &g_sym_KC3, &g_sym_str);
+    tmp.data.call.arguments = list_new(NULL);
+    l = list;
+    while (l) {
+      if (l->tag.type == TAG_STR ||
+          (l->tag.type == TAG_CALL &&
+           l->tag.data.call.ident.module == &g_sym_Str &&
+           l->tag.data.call.ident.sym == &g_sym_cast))
+        goto next;
+      tag_init_call_cast(&tag, &g_sym_Str);
+      arg = &list_next(tag.data.call.arguments)->tag;
+      tag_init_copy(arg, &l->tag);
+      l->tag = tag;
+    next:
+      l = list_next(l);
     }
-    list = list_next(list);
-    while (list) {
-      tmp1 = (s_tag) {0};
-      tmp1.type = TAG_CALL;
-      if (! call_init_op(&tmp1.data.call))
-        goto restore;
-      op.module = &g_sym_KC3;
-      op.sym = &g_sym__plus;
-      operator_resolve(&op, 2, &tmp1.data.call.ident);
-      tmp1.data.call.arguments->tag = tmp;
-      right = &tmp1.data.call.arguments->next.data.list->tag;
-      if (list->tag.type == TAG_STR)
-        *right = list->tag;
-      else {
-        if (! tag_init_call_cast(right, &g_sym_Str))
-          goto restore;
-        list_next(right->data.call.arguments)->tag = list->tag;
-      }
-      tmp = tmp1;
-      list = list_next(list);
-    }
+    arg = &tmp.data.call.arguments->tag;
+    arg->type = TAG_LIST;
+    arg->data.list = list;
   }
   *dest = tmp;
-  while (list_start) {
-    list = list_next(list_start);
-    free(list_start);
-    list_start = list;
-  }
   buf_clean(&out_buf);
   return true;
  restore:
-  list_delete_all(list_start);
+  list_delete_all(list);
   buf_clean(&out_buf);
   return false;
 }

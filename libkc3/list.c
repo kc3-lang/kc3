@@ -271,11 +271,12 @@ s_list * list_new_list (s_list *x, s_list *next)
 s_list * list_new_tag_copy (const s_tag *x, s_list *next)
 {
   s_list *dest;
-  if ((dest = list_new(next))) {
-    if (! tag_init_copy(&dest->tag, x)) {
-      free(dest);
-      return NULL;
-    }
+  dest = list_new(next);
+  if (! dest)
+    return NULL;
+  if (! tag_init_copy(&dest->tag, x)) {
+    free(dest);
+    return NULL;
   }
   return dest;
 }
