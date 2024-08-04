@@ -1,8 +1,8 @@
-let %{a: (U8) 1} do
+let %{a: 1} do
   a
 end
-(U8) 1
-let %{a: (U8) 1, b: (U8) 2} do
+1
+let %{a: 1, b: 2} do
   a + b
 end
-(U8) 3
+3
