@@ -16,6 +16,7 @@
 #include "buf_inspect.h"
 #include "buf_inspect_u8.h"
 #include "buf_inspect_u8_decimal.h"
+#include "cast.h"
 #include "sym.h"
 
 sw buf_inspect_s8 (s_buf *buf, const s8 *s)
@@ -23,7 +24,8 @@ sw buf_inspect_s8 (s_buf *buf, const s8 *s)
   sw r;
   sw result = 0;
   u8 u;
-  if (g_buf_inspect_type != &g_sym_S8) {
+  if (g_buf_inspect_type != &g_sym_S8 &&
+      cast_needed_s8(*s)) {
     if ((r = buf_inspect_paren_sym(buf, &g_sym_S8)) < 0)
       return r;
     result += r;
@@ -49,7 +51,8 @@ sw buf_inspect_s8_size (const s8 *s)
   sw r;
   sw result = 0;
   u8 u;
-  if (g_buf_inspect_type != &g_sym_S8) {
+  if (g_buf_inspect_type != &g_sym_S8 &&
+      cast_needed_s8(*s)) {
     if ((r = buf_inspect_paren_sym_size(&g_sym_S8)) < 0)
       return r;
     result += r;

@@ -280,6 +280,8 @@ KC3_C_SOURCES = \
 	"libkc3/buf_save.h" \
 	"libkc3/call.c" \
 	"libkc3/call.h" \
+	"libkc3/cast.c" \
+	"libkc3/cast.h" \
 	"libkc3/ceiling.c" \
 	"libkc3/ceiling.h" \
 	"libkc3/cfn.c" \
@@ -882,6 +884,7 @@ KC3_OTHER_SOURCES = \
 	"kc3.index" \
 	"kc3.version" \
 	"lib/kc3/0.1/array.kc3" \
+	"lib/kc3/0.1/bool.facts" \
 	"lib/kc3/0.1/buf.kc3" \
 	"lib/kc3/0.1/buf_rw.kc3" \
 	"lib/kc3/0.1/complex.facts" \
@@ -900,6 +903,7 @@ KC3_OTHER_SOURCES = \
 	"lib/kc3/0.1/gl/vertex.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
 	"lib/kc3/0.1/http/response.kc3" \
+	"lib/kc3/0.1/httpd.kc3" \
 	"lib/kc3/0.1/integer.facts" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
@@ -916,6 +920,7 @@ KC3_OTHER_SOURCES = \
 	"lib/kc3/0.1/socket/addr.kc3" \
 	"lib/kc3/0.1/socket/buf.kc3" \
 	"lib/kc3/0.1/str.facts" \
+	"lib/kc3/0.1/struct.kc3" \
 	"lib/kc3/0.1/sw.facts" \
 	"lib/kc3/0.1/sym.facts" \
 	"lib/kc3/0.1/u16.facts" \

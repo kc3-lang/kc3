@@ -16,6 +16,7 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_save.h"
+#include "cast.h"
 #include "kc3_main.h"
 #include "str.h"
 #include "sym.h"
@@ -24,7 +25,8 @@ sw buf_inspect_u8 (s_buf *buf, const u8 *u)
 {
   sw r;
   sw result = 0;
-  if (g_buf_inspect_type != &g_sym_U8) {
+  if (g_buf_inspect_type != &g_sym_U8 &&
+      cast_needed_u8(*u)) {
     if ((r = buf_inspect_paren_sym(buf, &g_sym_U8)) < 0)
       return r;
     result += r;
@@ -130,7 +132,8 @@ sw buf_inspect_u8_size (const u8 *u)
 {
   sw r;
   sw result = 0;
-  if (g_buf_inspect_type != &g_sym_U8) {
+  if (g_buf_inspect_type != &g_sym_U8 &&
+      cast_needed_u8(*u)) {
     if ((r = buf_inspect_paren_sym_size(&g_sym_U8)) < 0)
       return r;
     result += r;

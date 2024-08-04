@@ -16,6 +16,7 @@
 #include "buf_inspect.h"
 #include "buf_inspect_uw.h"
 #include "buf_inspect_uw_decimal.h"
+#include "cast.h"
 #include "sym.h"
 
 sw buf_inspect_sw (s_buf *buf, const sw *s)
@@ -23,7 +24,8 @@ sw buf_inspect_sw (s_buf *buf, const sw *s)
   sw r;
   sw result = 0;
   uw u;
-  if (g_buf_inspect_type != &g_sym_Sw) {
+  if (g_buf_inspect_type != &g_sym_Sw &&
+      cast_needed_sw(*s)) {
     if ((r = buf_inspect_paren_sym(buf, &g_sym_Sw)) < 0)
       return r;
     result += r;
@@ -49,7 +51,8 @@ sw buf_inspect_sw_size (const sw *s)
   sw r;
   sw result = 0;
   uw u;
-  if (g_buf_inspect_type != &g_sym_Sw) {
+  if (g_buf_inspect_type != &g_sym_Sw &&
+      cast_needed_sw(*s)) {
     if ((r = buf_inspect_paren_sym_size(&g_sym_Sw)) < 0)
       return r;
     result += r;

@@ -62,11 +62,11 @@ typedef unsigned long      uw;
 #define S64_MAX ((s64) (((u64) 1 << (8 * sizeof(s64) - 1)) - 1))
 #define SW_MAX  ((sw)  (((uw)  1 << (8 * sizeof(sw)  - 1)) - 1))
 
-#define S8_MIN  ((s8)  1 << (8 * sizeof(s8)  - 1))
-#define S16_MIN ((s16) 1 << (8 * sizeof(s16) - 1))
-#define S32_MIN ((s32) 1 << (8 * sizeof(s32) - 1))
-#define S64_MIN ((s64) 1 << (8 * sizeof(s64) - 1))
-#define SW_MIN  ((sw)  1 << (8 * sizeof(sw)  - 1))
+#define S8_MIN  ((s8)  -1 << (8 * sizeof(s8)  - 1))
+#define S16_MIN ((s16) -1 << (8 * sizeof(s16) - 1))
+#define S32_MIN ((s32) -1 << (8 * sizeof(s32) - 1))
+#define S64_MIN ((s64) -1 << (8 * sizeof(s64) - 1))
+#define SW_MIN  ((sw)  -1 << (8 * sizeof(sw)  - 1))
 
 #define U8_MAX  ((u8)  ~ 0)
 #define U16_MAX ((u16) ~ 0)

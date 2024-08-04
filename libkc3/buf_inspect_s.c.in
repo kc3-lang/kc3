@@ -16,6 +16,7 @@
 #include "buf_inspect.h"
 #include "buf_inspect_u_bits$.h"
 #include "buf_inspect_u_bits$_decimal.h"
+#include "cast.h"
 #include "sym.h"
 
 sw buf_inspect_s_bits$ (s_buf *buf, const s_bits$ *s)
@@ -23,7 +24,8 @@ sw buf_inspect_s_bits$ (s_buf *buf, const s_bits$ *s)
   sw r;
   sw result = 0;
   u_bits$ u;
-  if (g_buf_inspect_type != &g_sym_S_bits$) {
+  if (g_buf_inspect_type != &g_sym_S_bits$ &&
+      cast_needed_s_bits$(*s)) {
     if ((r = buf_inspect_paren_sym(buf, &g_sym_S_bits$)) < 0)
       return r;
     result += r;
@@ -49,7 +51,8 @@ sw buf_inspect_s_bits$_size (const s_bits$ *s)
   sw r;
   sw result = 0;
   u_bits$ u;
-  if (g_buf_inspect_type != &g_sym_S_bits$) {
+  if (g_buf_inspect_type != &g_sym_S_bits$ &&
+      cast_needed_s_bits$(*s)) {
     if ((r = buf_inspect_paren_sym_size(&g_sym_S_bits$)) < 0)
       return r;
     result += r;

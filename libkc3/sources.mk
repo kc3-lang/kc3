@@ -79,6 +79,7 @@ HEADERS = \
 	"buf_rw.h" \
 	"buf_save.h" \
 	"call.h" \
+	"cast.h" \
 	"ceiling.h" \
 	"cfn.h" \
 	"character.h" \
@@ -245,6 +246,7 @@ SOURCES = \
 	"buf_rw.c" \
 	"buf_save.c" \
 	"call.c" \
+	"cast.c" \
 	"ceiling.c" \
 	"cfn.c" \
 	"character.c" \
@@ -519,6 +521,7 @@ LO_SOURCES = \
 	"buf_rw.c" \
 	"buf_save.c" \
 	"call.c" \
+	"cast.c" \
 	"ceiling.c" \
 	"cfn.c" \
 	"character.c" \

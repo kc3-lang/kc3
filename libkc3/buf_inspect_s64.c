@@ -16,6 +16,7 @@
 #include "buf_inspect.h"
 #include "buf_inspect_u64.h"
 #include "buf_inspect_u64_decimal.h"
+#include "cast.h"
 #include "sym.h"
 
 sw buf_inspect_s64 (s_buf *buf, const s64 *s)
@@ -23,7 +24,8 @@ sw buf_inspect_s64 (s_buf *buf, const s64 *s)
   sw r;
   sw result = 0;
   u64 u;
-  if (g_buf_inspect_type != &g_sym_S64) {
+  if (g_buf_inspect_type != &g_sym_S64 &&
+      cast_needed_s64(*s)) {
     if ((r = buf_inspect_paren_sym(buf, &g_sym_S64)) < 0)
       return r;
     result += r;
@@ -49,7 +51,8 @@ sw buf_inspect_s64_size (const s64 *s)
   sw r;
   sw result = 0;
   u64 u;
-  if (g_buf_inspect_type != &g_sym_S64) {
+  if (g_buf_inspect_type != &g_sym_S64 &&
+      cast_needed_s64(*s)) {
     if ((r = buf_inspect_paren_sym_size(&g_sym_S64)) < 0)
       return r;
     result += r;

@@ -16,6 +16,7 @@
 #include "buf_inspect.h"
 #include "buf_inspect_u32.h"
 #include "buf_inspect_u32_decimal.h"
+#include "cast.h"
 #include "sym.h"
 
 sw buf_inspect_s32 (s_buf *buf, const s32 *s)
@@ -23,7 +24,8 @@ sw buf_inspect_s32 (s_buf *buf, const s32 *s)
   sw r;
   sw result = 0;
   u32 u;
-  if (g_buf_inspect_type != &g_sym_S32) {
+  if (g_buf_inspect_type != &g_sym_S32 &&
+      cast_needed_s32(*s)) {
     if ((r = buf_inspect_paren_sym(buf, &g_sym_S32)) < 0)
       return r;
     result += r;
@@ -49,7 +51,8 @@ sw buf_inspect_s32_size (const s32 *s)
   sw r;
   sw result = 0;
   u32 u;
-  if (g_buf_inspect_type != &g_sym_S32) {
+  if (g_buf_inspect_type != &g_sym_S32 &&
+      cast_needed_s32(*s)) {
     if ((r = buf_inspect_paren_sym_size(&g_sym_S32)) < 0)
       return r;
     result += r;
