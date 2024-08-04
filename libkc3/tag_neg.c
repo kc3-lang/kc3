@@ -17,6 +17,7 @@
 
 s_tag * tag_neg (const s_tag *tag, s_tag *result)
 {
+  s16 i_s16;
   s_integer tmp = {0};
   switch (tag->type) {
   case TAG_INTEGER:
@@ -50,9 +51,23 @@ s_tag * tag_neg (const s_tag *tag, s_tag *result)
   case TAG_S16:
     return tag_init_s32(result, - (s32) tag->data.s16);
   case TAG_S8:
-    return tag_init_s16(result, - (s16) tag->data.s8);
+    i_s16 = - (s16) tag->data.s8;
+    if (i_s16 < S8_MIN)
+      return tag_init_s16(result, i_s16);
+    if (i_s16 < 0)
+      return tag_init_s8(result, i_s16);
+    if (i_s16 <= U8_MAX)
+      return tag_init_u8(result, i_s16);
+    return tag_init_u16(result, i_s16);
   case TAG_U8:
-    return tag_init_s16(result, - (s16) tag->data.u8);
+    i_s16 = - (s16) tag->data.u8;
+    if (i_s16 < S8_MIN)
+      return tag_init_s16(result, i_s16);
+    if (i_s16 < 0)
+      return tag_init_s8(result, i_s16);
+    if (i_s16 <= U8_MAX)
+      return tag_init_u8(result, i_s16);
+    return tag_init_u16(result, i_s16);
   case TAG_U16:
     return tag_init_s32(result, - (s32) tag->data.u16);
   case TAG_U32:

@@ -8,22 +8,22 @@ fn {
 }
 fn (x) do
   "Hello, world !"
-  x * (U8) 2
+  x * 2
 end
 fn (x) { x }
-(U8) 1
+1
 fn (x, _y) { x }
-(U8) 1
+1
 fn ([x | _y]) { x }
-(U8) 1
+1
 fn {
   ([]) { :error }
   ([x | _y]) { x }
   (_) { :error2 }
 }
-(U8) 1
+1
 fn (x) do
   "Hello, world !"
-  x * (U8) 2
+  x * 2
 end
-(U16) 4
+4

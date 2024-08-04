@@ -1,36 +1,36 @@
 if true do
-  (U8) 1
+  1
 else
-  (U8) 2
+  2
 end
-(U8) 1
+1
 if true do
-  (U8) 1
+  1
 end
-(U8) 1
+1
 if false do
-  (U8) 1
+  1
 else
-  (U8) 2
+  2
 end
-(U8) 2
+2
 if false do
-  (U8) 1
+  1
 end
 void
 if true && true do
-  (U8) 1 + (U8) 1
-  (U8) 2 + (U8) 2
+  1 + 1
+  2 + 2
 else
-  (U8) 3 + (U8) 3
-  (U8) 4 + (U8) 4
+  3 + 3
+  4 + 4
 end
-(U8) 4
+4
 if true && false do
-  (U8) 1 + (U8) 1
-  (U8) 2 + (U8) 2
+  1 + 1
+  2 + 2
 else
-  (U8) 3 + (U8) 3
-  (U8) 4 + (U8) 4
+  3 + 3
+  4 + 4
 end
-(U8) 8
+8

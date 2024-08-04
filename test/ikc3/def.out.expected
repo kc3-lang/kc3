@@ -1,19 +1,19 @@
-def zero = (U8) 0
+def zero = 0
 zero
 zero
-(U8) 0
-def one_two_three = [(U8) 1, (U8) 2, (U8) 3]
+0
+def one_two_three = [1, 2, 3]
 one_two_three
 one_two_three
-[(U8) 1, (U8) 2, (U8) 3]
-def double = fn (x) { x * (U8) 2 }
+[1, 2, 3]
+def double = fn (x) { x * 2 }
 double
 double
-fn (x) { x * (U8) 2 }
-double((U8) 200)
-(U16) 400
+fn (x) { x * 2 }
+double(200)
+400
 double(zero)
-(U16) 0
+0
 def double_tuple = macro (x) do
   quote do
   x = ^ unquote(x)
@@ -28,12 +28,12 @@ macro (x) do
   {x, x}
 end
 end
-double_tuple((U8) 200)
-{(U8) 200, (U8) 200}
+double_tuple(200)
+{200, 200}
 double_tuple(zero)
-{(U8) 0, (U8) 0}
+{0, 0}
 double_tuple(one_two_three)
-{[(U8) 1, (U8) 2, (U8) 3], [(U8) 1, (U8) 2, (U8) 3]}
+{[1, 2, 3], [1, 2, 3]}
 def reverse = fn {
   (x) { reverse(x, []) }
   ([], acc) { acc }
@@ -46,8 +46,8 @@ fn {
   ([], acc) { acc }
   ([a | b], acc) { reverse(b, [a | acc]) }
 }
-reverse([(U8) 1, (U8) 2, (U8) 3])
-[(U8) 3, (U8) 2, (U8) 1]
+reverse([1, 2, 3])
+[3, 2, 1]
 def reverse = fn {
   (x) { reverse(x, []) }
   ([], acc) { [:reversed | acc] }
@@ -60,8 +60,8 @@ fn {
   ([], acc) { [:reversed | acc] }
   ([a | b], acc) { reverse(b, [a | acc]) }
 }
-reverse([(U8) 1, (U8) 2, (U8) 3])
-[:reversed, (U8) 3, (U8) 2, (U8) 1]
+reverse([1, 2, 3])
+[:reversed, 3, 2, 1]
 def reverse = fn {
   (x) { reverse(x, []) }
   ([], acc) { acc }
@@ -74,5 +74,5 @@ fn {
   ([], acc) { acc }
   ([a | b], acc) { reverse(b, [a | acc]) }
 }
-reverse([(U8) 1, (U8) 2, (U8) 3])
-[(U8) 3, (U8) 2, (U8) 1]
+reverse([1, 2, 3])
+[3, 2, 1]
