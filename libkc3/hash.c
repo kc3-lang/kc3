@@ -411,20 +411,17 @@ bool hash_update_struct (t_hash *hash, const s_struct *s)
       return false;
     if (! tag_type(s->type->map.value + i, &sym))
       return false;
-    if (s->data)
+    if (s->data) {
       data = (s8 *) s->data + s->type->offset[i];
+      if (! data_hash_update(sym, hash, data))
+        return false;
+    }
     else {
       if (s->tag) {
-        if (! tag_to_const_pointer(s->tag + i, sym, &data))
-          return false;
-      }
-      else {
-        if (! tag_to_const_pointer(s->type->map.value + i, sym, &data))
+        if (! hash_update_tag(hash, s->tag + i))
           return false;
       }
     }
-    if (! data_hash_update(sym, hash, data))
-      return false;
     i++;
   }
   return true;

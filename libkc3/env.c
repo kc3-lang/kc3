@@ -2094,16 +2094,20 @@ s_env * env_init_globals (s_env *env)
 {
   s_tag *file_dir;
   s_tag *file_path;
-  if (! frame_init(&env->global_frame, NULL))
+  if (! frame_init(&env->read_time_frame, NULL))
     return NULL;
-  if (! (file_dir = frame_binding_new(&env->global_frame, &g_sym___DIR__)))
+  if (! (file_dir = frame_binding_new(&env->read_time_frame,
+                                      &g_sym___DIR__)))
     return NULL;
-  if (! (file_path = frame_binding_new(&env->global_frame, &g_sym___FILE__)))
+  if (! (file_path = frame_binding_new(&env->read_time_frame,
+                                       &g_sym___FILE__)))
     return NULL;
   file_dir->type = TAG_STR;
   if (! file_pwd(&file_dir->data.str))
     return NULL;
   if (! tag_init_str_1(file_path, NULL, "stdin"))
+    return NULL;
+  if (! frame_init(&env->global_frame, &env->read_time_frame))
     return NULL;
   return env;
 }

@@ -674,6 +674,7 @@ struct env {
   s_buf             out;
   s_list           *path;
   uw                quote_level;
+  s_frame           read_time_frame;
   s_list           *search_modules;
   s_list           *search_modules_default;
   uw                unquote_level;

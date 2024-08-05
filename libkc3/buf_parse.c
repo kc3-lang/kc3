@@ -3874,11 +3874,18 @@ sw buf_parse_tag_fn (s_buf *buf, s_tag *dest)
 sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
 {
   sw r;
+  const s_tag *tag;
   assert(buf);
   assert(dest);
   r = buf_parse_ident(buf, &dest->data.ident);
-  if (r > 0)
-    dest->type = TAG_IDENT;
+  if (r > 0) {
+    if (! dest->data.ident.module &&
+        (tag = frame_get(&g_kc3_env.read_time_frame,
+                         dest->data.ident.sym)))
+      tag_init_copy(dest, tag);
+    else
+      dest->type = TAG_IDENT;
+  }
   return r;
 }
 
