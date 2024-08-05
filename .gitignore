@@ -88,6 +88,7 @@ libkc3_window/sdl2/demo/macos/kc3_window_sdl2_demo_debug.app/
 macos/kc3-v*
 /misc/http_request_offsets
 /misc/http_response_offsets
+/misc/print_limits
 *.o
 release/
 .test
