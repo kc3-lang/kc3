@@ -326,7 +326,6 @@ class TagInitList
        TagInit.new("ident", "TAG_IDENT", :init_mode_direct,
                    [Arg.new("const s_ident *", "ident")]),
        TagInit1.new("ident", "1", "TAG_IDENT", :init_mode_init),
-#       TagInit.new("integer", "TAG_INTEGER", :init_mode_init, []),
        TagInit1.new("integer", "1", "TAG_INTEGER", :init_mode_init),
        TagInit.new("integer", "copy", "TAG_INTEGER", :init_mode_init,
                    [Arg.new("const s_integer *", "i")]),

@@ -541,34 +541,93 @@ s_tag * tag_init_time (s_tag *tag)
 
 s_tag * tag_integer_reduce (s_tag *tag)
 {
-  uw bytes;
-  e_bool negative;
+  s_integer *i;
+  s_integer j;
+  static s_integer s8_min = {0};
+  static s_integer s16_min = {0};
+  static s_integer s32_min = {0};
+  static s_integer s64_min = {0};
+  static s_integer u8_max = {0};
+  static s_integer u16_max = {0};
+  static s_integer u32_max = {0};
+  static s_integer u64_max = {0};
+  static s_integer zero = {0};
   assert(tag);
+  if (s8_min.mp_int.sign != MP_NEG) {
+    integer_init_s8(&s8_min, S8_MIN);
+    integer_init_s16(&s16_min, S16_MIN);
+    integer_init_s32(&s32_min, S32_MIN);
+    integer_init_s64(&s64_min, S64_MIN);
+    integer_init_u8(&u8_max, U8_MAX);
+    integer_init_u16(&u16_max, U16_MAX);
+    integer_init_u32(&u32_max, U32_MAX);
+    integer_init_u64(&u64_max, U64_MAX);
+    integer_init_u8(&zero, 0);
+  }
   switch (tag->type) {
   case TAG_INTEGER:
-    bytes = integer_bytes(&tag->data.integer);
-    if (bytes > 8)
-      break;
-    negative = integer_is_negative(&tag->data.integer);
-    if (bytes > 4) {
-      if (negative)
-        return tag_cast_integer_to_s64(tag);
-      return tag_cast_integer_to_u64(tag);
-    }
-    if (bytes > 2) {
-      if (negative)
-        return tag_cast_integer_to_s32(tag);
-      return tag_cast_integer_to_u32(tag);
-    }
-    if (bytes > 1) {
-      if (negative)
-        return tag_cast_integer_to_s16(tag);
-      return tag_cast_integer_to_u16(tag);
-    }
-    if (negative)
-      return tag_cast_integer_to_s8(tag);
-    return tag_cast_integer_to_u8(tag);
-  default: ;
+    i = &tag->data.integer;
+    if (compare_integer(i, &u64_max) > 0)
+      return tag;
+    if (compare_integer(i, &u32_max) > 0)
+      return tag_init_u64(tag, integer_to_u64(i));
+    if (compare_integer(i, &u16_max) > 0)
+      return tag_init_u32(tag, integer_to_u32(i));
+    if (compare_integer(i, &u8_max) > 0)
+      return tag_init_u16(tag, integer_to_u16(i));
+    if (compare_integer(i, &zero) >= 0)
+      return tag_init_u8(tag, integer_to_u8(i));
+    if (compare_integer(i, &s8_min) >= 0)
+      return tag_init_s8(tag, integer_to_s8(i));
+    if (compare_integer(i, &s16_min) >= 0)
+      return tag_init_s16(tag, integer_to_s16(i));
+    if (compare_integer(i, &s32_min) >= 0)
+      return tag_init_s32(tag, integer_to_s32(i));
+    if (compare_integer(i, &s64_min) >= 0)
+      return tag_init_s64(tag, integer_to_s64(i));
+    return tag;
+  case TAG_S8:
+    integer_init_s8(&j, tag->data.s8);
+    integer_reduce(&j, tag);
+    integer_clean(&j);
+    return tag;
+  case TAG_S16:
+    integer_init_s16(&j, tag->data.s16);
+    integer_reduce(&j, tag);
+    integer_clean(&j);
+    return tag;
+  case TAG_S32:
+    integer_init_s32(&j, tag->data.s32);
+    integer_reduce(&j, tag);
+    integer_clean(&j);
+    return tag;
+  case TAG_S64:
+    integer_init_s64(&j, tag->data.s64);
+    integer_reduce(&j, tag);
+    integer_clean(&j);
+    return tag;
+  case TAG_U8:
+    integer_init_u8(&j, tag->data.u8);
+    integer_reduce(&j, tag);
+    integer_clean(&j);
+    return tag;
+  case TAG_U16:
+    integer_init_u16(&j, tag->data.u16);
+    integer_reduce(&j, tag);
+    integer_clean(&j);
+    return tag;
+  case TAG_U32:
+    integer_init_u32(&j, tag->data.u32);
+    integer_reduce(&j, tag);
+    integer_clean(&j);
+    return tag;
+  case TAG_U64:
+    integer_init_u64(&j, tag->data.u64);
+    integer_reduce(&j, tag);
+    integer_clean(&j);
+    return tag;
+  default:
+    break;
   }
   return tag;
 }

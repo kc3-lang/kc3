@@ -20,6 +20,7 @@
 s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
 {
   s_complex c;
+  s16 i_s16;
   s_integer tmp = {0};
   s_integer tmp2 = {0};
   s_ratio r;
@@ -916,7 +917,12 @@ s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
       integer_clean(&tmp2);
       return dest;
     case TAG_U8:
-      return tag_init_s16(dest, (s16) a->data.u8 - (s16) b->data.u8);
+      i_s16 = (s16) a->data.u8 - (s16) b->data.u8;
+      if (i_s16 < S8_MIN)
+        return tag_init_s16(dest, i_s16);
+      if (i_s16 < 0)
+        return tag_init_s8(dest, i_s16);
+      return tag_init_u8(dest, i_s16);
     case TAG_U16:
       return tag_init_s32(dest, (s32) a->data.u8 - (s32) b->data.u16);
     case TAG_U32:
