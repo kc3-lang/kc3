@@ -118,7 +118,7 @@
                           :direction :output
                           :element-type 'character
                           :if-exists :supersede)
-  (with-open-file (in #P"integer.in"
+  (with-open-file (in #P"integer.kc3"
                       :direction :output
                       :element-type 'character
                       :if-exists :supersede)
@@ -200,7 +200,7 @@
                           :if-exists :supersede)
   (with-open-file (in (pathname
                        (concatenate
-                        'string "integer_" (op-to-str op 1) ".in"))
+                        'string "integer_" (op-to-str op 1) ".kc3"))
                       :direction :output
                       :element-type 'character
                       :if-exists :supersede)
@@ -227,7 +227,7 @@
                           :if-exists :supersede)
   (with-open-file (in (pathname
                        (concatenate
-                        'string "integer_" (op-to-str op 2) ".in"))
+                        'string "integer_" (op-to-str op 2) ".kc3"))
                       :direction :output
                       :element-type 'character
                       :if-exists :supersede)
