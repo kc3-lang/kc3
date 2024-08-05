@@ -599,7 +599,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
   sw r;
   s_tag tag;
   s_tag tmp = {0};
-  buf_init_str(&in_buf, false, (s_str *) str);
+  buf_init_str_const(&in_buf, str);
   if (! buf_init_alloc(&out_buf, str->size))
     goto restore;
   tail = &list;
