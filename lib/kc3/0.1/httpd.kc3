@@ -16,7 +16,27 @@ defmodule HTTPd do
     req = HTTP.Request.buf_parse(client.buf_rw.r)
     if req do
       puts("HTTPd.server_loop: got request #{req}")
-       res = %HTTP.Response{body: "<html>
+      router = route_request(req)
+      puts("HTTPd.server_loop: router: #{router}")
+      res = router(req)
+      puts("HTTPd.server_loop: response: #{res}")
+      HTTP.Response.buf_write(res, client.buf_rw.w)
+    end
+  }
+
+  def main = fn {
+    () {
+      host = getenv("KC3_HTTPD_HOST")
+      port = getenv("KC3_HTTPD_PORT")
+      server(host, port)
+    }
+    (host, port) {
+      server(host, port)
+    }
+  }
+
+  def debug_page = fn (request) {
+    body = "<html>
   <head>
     <title>KC3 HTTPd</title>
     <style>
@@ -38,21 +58,28 @@ defmodule HTTPd do
     <pre><code>#{req}</code></pre>
   </body>
 </html>
-"}
-      puts("HTTPd.server_loop: response: #{res}")
-      HTTP.Response.buf_write(res, client.buf_rw.w)
-    end
+"
+    %HTTP.Response{body: body}
   }
 
-  def main = fn {
-    () {
-      host = getenv("KC3_HTTPD_HOST")
-      port = getenv("KC3_HTTPD_PORT")
-      server(host, port)
-    }
-    (host, port) {
-      server(host, port)
-    }
+  def error_404_page = fn (request) {
+    body = "<html>
+  <head>
+    <title>404 Not Found</title>
+  </head>
+  <body>
+    <h1>404 Not Found</h1>
+    <p>
+      The requested URL #{request.url} was not found on this server.
+    </p>
+  </body>
+</html>
+"
+    %HTTP.Response{code: 404, body: body}
+  }
+
+  def route_request = fn (request) {
+    error_404_page
   }
 
 end
