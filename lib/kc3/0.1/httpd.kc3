@@ -1,6 +1,17 @@
 defmodule HTTPd do
 
-  def server_loop = fn (client) {
+  def server = fn (host, port) {
+    socket = Socket.listen(host, port)
+    puts("KC3 HTTPd: listening on #{host}:#{port}")
+    while true do
+      client = Socket.Buf.accept(socket)
+      server_client(client)
+      Socket.Buf.close(client)
+    end
+    Socket.close(socket)
+  }
+
+  def server_client = fn (client) {
     puts("HTTPd.server_loop: got client #{client}")
     req = HTTP.Request.buf_parse(client.buf_rw.r)
     if req do
@@ -30,16 +41,6 @@ defmodule HTTPd do
 "}
       puts("HTTPd.server_loop: response: #{res}")
       HTTP.Response.buf_write(res, client.buf_rw.w)
-    end
-  }
-
-  def server = fn (host, port) {
-    socket = Socket.listen(host, port)
-    puts("KC3 HTTPd: listening on #{host}:#{port}")
-    while true do
-      client = Socket.Buf.accept(socket)
-      server_loop(client)
-      Socket.Buf.close(client)
     end
   }
 

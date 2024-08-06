@@ -6,4 +6,4 @@ puts(%{hello: "World !"})
 (Sw) 20
 puts("Test #{:a}")
 Test a
-(Sw) 10
+(Sw) 7
