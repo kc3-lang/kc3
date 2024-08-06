@@ -201,6 +201,23 @@ s_str * str_init_1 (s_str *str, char *free, const char *p)
   *str = tmp;
   return str;
 }
+
+s_str * str_init_1_alloc (s_str *str, const char *p)
+{
+  uw size;
+  s_str tmp = {0};
+  assert(str);
+  size = strlen(p);
+  tmp.free.p = alloc(size + 1);
+  if (! tmp.free.p)
+    return NULL;
+  tmp.size = size;
+  tmp.ptr.p = tmp.free.p;
+  memcpy(tmp.free.p, p, size);
+  *str = tmp;
+  return str;
+}
+
 s_str * str_init_alloc (s_str *str, uw size)
 {
   s_str tmp = {0};

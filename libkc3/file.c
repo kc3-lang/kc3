@@ -150,8 +150,7 @@ s_list ** file_list (const s_str *path, s_list **dest)
   }
   tail = &tmp;
   while ((dirent = readdir(dir))) {
-    *tail = list_new_str_alloc_copy(dirent->d_namlen,
-                                    dirent->d_name, NULL);
+    *tail = list_new_str_1_alloc(dirent->d_name, NULL);
     if (! *tail) {
       list_delete_all(tmp);
       closedir(dir);
