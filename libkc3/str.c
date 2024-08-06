@@ -663,7 +663,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
         goto next;
       tag_init_call_cast(&tag, &g_sym_Str);
       arg = &list_next(tag.data.call.arguments)->tag;
-      tag_init_copy(arg, &l->tag);
+      *arg = l->tag;
       l->tag = tag;
     next:
       l = list_next(l);
