@@ -78,8 +78,15 @@ defmodule HTTPd do
     %HTTP.Response{code: 404, body: body}
   }
 
+  def root_dir = "."
+
   def route_request = fn (request) {
-    error_404_page
+    path = root_dir + request.url
+    if File.exists?(path) do
+      debug_page
+    else
+      error_404_page
+    end
   }
 
 end
