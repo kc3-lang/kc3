@@ -1,5 +1,7 @@
 defmodule HTTPd do
 
+  def root_dir = "."
+
   def server = fn (host, port) {
     socket = Socket.listen(host, port)
     puts("KC3 HTTPd: listening on #{host}:#{port}")
@@ -15,11 +17,8 @@ defmodule HTTPd do
     puts("HTTPd.server_loop: got client #{client}")
     req = HTTP.Request.buf_parse(client.buf_rw.r)
     if req do
-      puts("HTTPd.server_loop: got request #{req}")
       router = route_request(req)
-      puts("HTTPd.server_loop: router: #{router}")
       res = router(req)
-      puts("HTTPd.server_loop: response: #{res}")
       HTTP.Response.buf_write(res, client.buf_rw.w)
     end
   }
@@ -78,12 +77,35 @@ defmodule HTTPd do
     %HTTP.Response{code: 404, body: body}
   }
 
-  def root_dir = "."
+  def directory_page = fn (request) {
+    files = File.list(root_dir + request.url)
+    file_li = fn (file) {
+      slash = if request.url == "/" do "" else "/" end
+      "<li><a href=\"#{request.url}#{slash}#{file}\">#{request.url}#{slash}#{file}</a></li>"
+    }
+    body = "<html>
+  <head>
+    <title>Index of #{request.url}</title>
+  </head>
+  <body>
+    <h1>Index of #{request.url}</h1>
+    <ul>
+      #{str(List.map(files, file_li))}
+    </ul>
+  </body>
+</html>
+"
+    %HTTP.Response{body: body}
+  }
 
   def route_request = fn (request) {
     path = root_dir + request.url
     if File.exists?(path) do
-      debug_page
+      if File.is_directory?(path) do
+        directory_page
+      else
+        debug_page
+      end
     else
       error_404_page
     end

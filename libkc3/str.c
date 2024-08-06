@@ -258,6 +258,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_bool(str, tag->data.bool);
   case TAG_CHARACTER:
     return str_init_character(str, tag->data.character);
+  case TAG_FN:
+    return str_init_fn(str, &tag->data.fn);
   case TAG_MAP:
     return str_init_map(str, &tag->data.map);
   case TAG_PTR:
@@ -430,6 +432,7 @@ s_str * str_init_f (s_str *str, const char *fmt, ...)
   return str;
 }
 
+DEF_STR_INIT_STRUCT(fn)
 DEF_STR_INIT_STRUCT(map)
 DEF_STR_INIT(ptr, u_ptr_w)
 DEF_STR_INIT(ptr_free, u_ptr_w)

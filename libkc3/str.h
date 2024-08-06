@@ -53,6 +53,7 @@ s_str * str_init_copy (s_str *str, const s_str *src);
 s_str * str_init_copy_1 (s_str *str, const char *p);
 s_str * str_init_empty (s_str *str);
 s_str * str_init_f (s_str *str, const char *fmt, ...);
+PROTOTYPE_STR_INIT_STRUCT(fn);
 PROTOTYPE_STR_INIT_STRUCT(map);
 PROTOTYPE_STR_INIT(ptr, u_ptr_w);
 PROTOTYPE_STR_INIT(ptr_free, u_ptr_w);
