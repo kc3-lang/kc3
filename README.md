@@ -519,6 +519,13 @@ HTTP request and httpd.kc3 source file path.
 
  - HTTPd
    - file server (lftp)
+     - [DONE] route_request
+     - [DONE] error_404_page
+     - [DONE] directory_page
+ - lib
+   - [DONE] File.exists?
+   - [DONE] File.list
+   - [DONE] File.stat
  - libkc3
    - operators dispatch
      - list of matching operators (facts_with)
