@@ -15,6 +15,7 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
+#include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include "buf.h"
@@ -128,6 +129,38 @@ bool * file_exists (const s_str *path, bool *dest)
   assert(path);
   assert(dest);
   *dest = ! stat(path->ptr.pchar, &sb);
+  return dest;
+}
+
+s_list ** file_list (const s_str *path, s_list **dest)
+{
+  DIR           *dir;
+  struct dirent *dirent;
+  s32 e;
+  s_list **tail;
+  s_list *tmp = NULL;
+  dir = opendir(path->ptr.pchar);
+  if (! dir) {
+    e = errno;
+    err_write_1("file_list: opendir: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_write_str(path);
+    return NULL;
+  }
+  tail = &tmp;
+  while ((dirent = readdir(dir))) {
+    *tail = list_new_str_alloc_copy(dirent->d_namlen,
+                                    dirent->d_name, NULL);
+    if (! *tail) {
+      list_delete_all(tmp);
+      closedir(dir);
+      return NULL;
+    }
+    tail = &(*tail)->next.data.list;
+  }
+  closedir(dir);
+  *dest = tmp;
   return dest;
 }
 

@@ -11,6 +11,8 @@ defmodule File do
     end
   end
 
+  def list = cfn List "file_list" (Str, Result)
+
   def stat = cfn File.Stat "file_stat" (Str, Result)
 
 end

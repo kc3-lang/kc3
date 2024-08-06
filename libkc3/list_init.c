@@ -377,6 +377,18 @@ s_list * list_init_str_1 (s_list *list, char *p_free, const char *p,
   return list;
 }
 
+s_list * list_init_str_alloc_copy (s_list *list, uw size,
+                                   const char *p, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_str_alloc_copy(&tmp.tag, size, p))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_str_concatenate (s_list *list, const s_str *a,
                                     const s_str *b, s_list *next)
 {
@@ -984,6 +996,19 @@ s_list * list_new_str_1 (char *p_free, const char *p, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_str_1(&list->tag, p_free, p)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_str_alloc_copy (uw size, const char *p, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_str_alloc_copy(&list->tag, size, p)) {
     free(list);
     return NULL;
   }
