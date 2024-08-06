@@ -1,9 +1,5 @@
 # KC3 v0.1.12
 
-This is a development branch, see
-[KC3 v0.1.11](https://git.kmx.io/kc3-lang/kc3/_tag/v0.1.11)
-for a stable release.
-
 KC3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
 for semantic programming, and programming the semantic web.
@@ -42,16 +38,24 @@ Supported architectures :
 ## New in this release
 
  - libkc3
+   - access
+     - DONE buf_parse_call_access (Tag "." Sym)
+     - DONE access (Tag, Sym) => Tag
    - modules
-     - defmodule Empty do end
-     - def
-       - def three = 3
-       - def double = fn (x) do x * 2 end
-       - def double_tuple = macro (x) do {x, x} end
-       - def operator\_double = %KC3.Operator{sym: :double, symbol_value: fn (x) { x * 2 }}
-
-With this release you can actually load a module as a kc3 source file.
-See [lib/kc3/0.1/list.kc3](https://git.kmx.io/kc3-lang/kc3/_tree/master/lib/kc3/0.1/list.kc3)
+     - defstruct
+   - control structures
+     - while
+   - Str eval : `"Hello, #{name} !"`
+ - EKC3
+   - embed KC3 in any file : `Hello, <%= name %> !`
+   - escape HTML :
+     - ["&": "&amp, "<": "&lt", ">": "&gt", "\"": "&quot", "'": &#39"]
+ - HTTP
+   - sockets
+   - request
+   - response
+ - HTTPd
+   - `make test_httpd`
 
 
 ## Usage
@@ -519,17 +523,22 @@ ikc3> double 21
 Script interpreter. Works the same as ikc3 but is not interactive.
 
 
+### HTTPd
+
+HTTP daemon, use `make test_httpd`.
+
+The http daemon is defined in `httpd/httpd.c` and
+`lib/kc3/0.1/httpd.kc3`.
+
+For now the HTTP daemon only answers 200 OK with a page containing the
+HTTP request and httpd.kc3 source file path.
+
+
 ## TODO
 
- - EKC3
-   - escape HTML :
-     - ["&": "&amp, "<": "&lt", ">": "&gt", "\"": "&quot", "'": &#39"]
  - libkc3
    - operators dispatch
      - list of matching operators (facts_with)
-   - access
-     - DONE buf_parse_call_access (Tag "." Sym)
-     - DONE access (Tag, Sym) => Tag
    - base-specific big floats
    - macro cast `(Macro) fn (x) { x }`
    - pretty printer
@@ -540,9 +549,6 @@ Script interpreter. Works the same as ikc3 but is not interactive.
      - height function `(TAG_VOID: 1, TAG_TUPLE: (1+ (max (height tuple->tags))))`
      - has_ident
      - collect_idents
-   - modules
-     - def %KC3.SpecialOperator{}
-     - defstruct
    - facts
      - negative facts : 4 + 2n = not 3 + 2n
      - with ignore variables
@@ -565,7 +571,6 @@ Script interpreter. Works the same as ikc3 but is not interactive.
      - when
      - unless
      - switch/case/cond
-     - while
    - unwind protect
    - functions
      - return

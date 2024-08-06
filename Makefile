@@ -289,7 +289,23 @@ kc3-${KC3_VERSION}.tar.gz: kc3.index
 	pax -wz kc3-${KC3_VERSION} > kc3-${KC3_VERSION}.tar.gz
 
 kc3.index: sources.mk Makefile
-	for F in ${KC3_CONFIGURES} ${KC3_MAKEFILES} ${KC3_C_SOURCES} ${KC3_OBJC_SOURCES} ${KC3_OTHER_SOURCES} ${KC3_EXTERNAL_SOURCES}; do echo "$$F"; done | sort -u > kc3.index
+	echo -n > kc3.index.tmp
+	for F in ${KC3_CONFIGURES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_MAKEFILES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_C_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_FONT_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_IMG_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_LIB_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_OBJC_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_TEST_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_TEST_IKC3_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_TEST_EKC3_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_TEST_HTTP_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_TEST_HTTPD_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_OTHER_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	for F in ${KC3_EXTERNAL_SOURCES}; do echo "$$F"; done >> kc3.index.tmp
+	sort -u < kc3.index.tmp > kc3.index
+	rm kc3.index.tmp
 
 lib_links_linux:
 	ln -sf ../../../ekc3/.libs/libekc3.so lib/kc3/0.1/ekc3.so

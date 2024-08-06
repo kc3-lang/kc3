@@ -1,4 +1,43 @@
-# C3
+# KC3
+
+## v0.1.12
+
+ Renamed C3 to KC3.
+
+ - libkc3
+   - access
+     - DONE buf_parse_call_access (Tag "." Sym)
+     - DONE access (Tag, Sym) => Tag
+   - modules
+     - defstruct
+   - control structures
+     - while
+   - Str eval : `"Hello, #{name} !"`
+ - EKC3
+   - embed KC3 in any file : `Hello, <%= name %> !`
+   - escape HTML :
+     - ["&": "&amp, "<": "&lt", ">": "&gt", "\"": "&quot", "'": &#39"]
+ - HTTP
+   - sockets
+   - request
+   - response
+ - HTTPd
+   - `make test_httpd`
+
+
+## v0.1.11
+
+ - libc3
+   - modules
+     - defmodule Empty do end
+     - def
+       - def three = 3
+       - def double = fn (x) do x * 2 end
+       - def double_tuple = macro (x) do {x, x} end
+       - def operator\_double = %KC3.Operator{sym: :double, symbol_value: fn (x) { x * 2 }}
+
+With this release you can actually load a module as a kc3 source file.
+See [lib/kc3/0.1/list.kc3](https://git.kmx.io/kc3-lang/kc3/_tree/master/lib/kc3/0.1/list.kc3)
 
 ## v0.1.10
 

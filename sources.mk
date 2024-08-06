@@ -3,6 +3,12 @@ KC3_CONFIGURES = \
 	"ekc3/configure" \
 	"ekc3/sources.sh" \
 	"ekc3/update_sources" \
+	"http/configure" \
+	"http/sources.sh" \
+	"http/update_sources" \
+	"httpd/configure" \
+	"httpd/sources.sh" \
+	"httpd/update_sources" \
 	"ikc3/configure" \
 	"ikc3/sources.sh" \
 	"ikc3/update_sources" \
@@ -58,6 +64,10 @@ KC3_CONFIGURES = \
 KC3_MAKEFILES = \
 	"ekc3/Makefile" \
 	"ekc3/sources.mk" \
+	"http/Makefile" \
+	"http/sources.mk" \
+	"httpd/Makefile" \
+	"httpd/sources.mk" \
 	"ikc3/Makefile" \
 	"ikc3/sources.mk" \
 	"kc3c/Makefile" \
@@ -101,6 +111,21 @@ KC3_C_SOURCES = \
 	"ekc3/html.c" \
 	"ekc3/html.h" \
 	"ekc3/types.h" \
+	"http/http.c" \
+	"http/http.h" \
+	"http/http_request.c" \
+	"http/http_request.h" \
+	"http/http_response.c" \
+	"http/http_response.h" \
+	"http/socket.c" \
+	"http/socket.h" \
+	"http/socket_addr.c" \
+	"http/socket_addr.h" \
+	"http/socket_buf.c" \
+	"http/socket_buf.h" \
+	"http/types.h" \
+	"httpd/httpd.c" \
+	"httpd/httpd.h" \
 	"ikc3/buf_linenoise.c" \
 	"ikc3/buf_linenoise.h" \
 	"ikc3/buf_wineditline.c" \
@@ -634,18 +659,7 @@ KC3_C_SOURCES = \
 	"ucd2c/ucd.h" \
 	"ucd2c/ucd2c.c" \
 
-KC3_OBJC_SOURCES = \
-	"libkc3_window/cairo/quartz/window_cairo_quartz.m" \
-	"libkc3_window/cairo/quartz/window_cairo_quartz_app_delegate.m" \
-	"libkc3_window/cairo/quartz/window_cairo_quartz_view.m" \
-	"libkc3_window/cairo/quartz/window_cairo_quartz_view_controller.m" \
-
-KC3_OTHER_SOURCES = \
-	"AUTHORS" \
-	"Makefile" \
-	"README.md" \
-	"config.subr" \
-	"configure" \
+KC3_FONT_SOURCES = \
 	"fonts/Computer Modern/cmunbl-webfont.ttf" \
 	"fonts/Computer Modern/cmunbl.otf" \
 	"fonts/Computer Modern/cmunbx-webfont.ttf" \
@@ -839,6 +853,8 @@ KC3_OTHER_SOURCES = \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-SemiBoldItalic.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-Thin.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-ThinItalic.ttf" \
+
+KC3_IMG_SOURCES = \
 	"img/c3.1.xcf" \
 	"img/c3.1080.jpg" \
 	"img/c3.1080.png" \
@@ -881,8 +897,8 @@ KC3_OTHER_SOURCES = \
 	"img/thodg_No_Prompt_073261d5-2c81-4b6e-9572-e0b840c55f1f.jpeg" \
 	"img/toast.128.png" \
 	"img/toast.png" \
-	"kc3.index" \
-	"kc3.version" \
+
+KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bool.facts" \
 	"lib/kc3/0.1/buf.kc3" \
@@ -930,13 +946,15 @@ KC3_OTHER_SOURCES = \
 	"lib/kc3/0.1/uw.facts" \
 	"lib/kc3/0.1/var.facts" \
 	"lib/kc3/0.1/void.facts" \
-	"libkc3/tag_init.rb" \
-	"license.h" \
-	"sources.mk" \
-	"sources.sh" \
+
+KC3_OBJC_SOURCES = \
+	"libkc3_window/cairo/quartz/window_cairo_quartz.m" \
+	"libkc3_window/cairo/quartz/window_cairo_quartz_app_delegate.m" \
+	"libkc3_window/cairo/quartz/window_cairo_quartz_view.m" \
+	"libkc3_window/cairo/quartz/window_cairo_quartz_view_controller.m" \
+
+KC3_TEST_SOURCES = \
 	"test/buf_parse_test_su.rb" \
-	"test/ekc3/title.out.expected" \
-	"test/ekc3/title.ret.expected" \
 	"test/facts_test_dump_file.expected.facts" \
 	"test/facts_test_load_file.facts" \
 	"test/facts_test_log_add.expected.facts" \
@@ -948,140 +966,227 @@ KC3_OTHER_SOURCES = \
 	"test/facts_test_open_file.3.expected.facts" \
 	"test/facts_test_open_file.3.in.facts" \
 	"test/facts_test_save.expected.facts" \
-	"test/http/01_socket_buf.out.expected" \
-	"test/http/01_socket_buf.ret.expected" \
-	"test/http/02_socket.out.expected" \
-	"test/http/02_socket.ret.expected" \
-	"test/http/03_client_server.out.expected" \
-	"test/http/03_client_server.ret.expected" \
-	"test/http/04_server_request.out.expected" \
-	"test/http/04_server_request.ret.expected" \
+	"test/replace_lines.rb" \
+	"test/test.rb" \
+	"test/test_case_end.rb" \
+	"test/zero" \
+
+KC3_TEST_IKC3_SOURCES = \
+	"test/ikc3/access.kc3" \
 	"test/ikc3/access.out.expected" \
 	"test/ikc3/access.ret.expected" \
 	"test/ikc3/array.err.expected" \
+	"test/ikc3/array.kc3" \
 	"test/ikc3/array.out.expected" \
 	"test/ikc3/array.ret.expected" \
+	"test/ikc3/block.kc3" \
 	"test/ikc3/block.out.expected" \
 	"test/ikc3/block.ret.expected" \
 	"test/ikc3/bool.err.expected" \
+	"test/ikc3/bool.kc3" \
 	"test/ikc3/bool.out.expected" \
 	"test/ikc3/bool.ret.expected" \
+	"test/ikc3/buf.kc3" \
 	"test/ikc3/buf.out.expected" \
 	"test/ikc3/buf.ret.expected" \
+	"test/ikc3/buf_rw.kc3" \
 	"test/ikc3/buf_rw.out.expected" \
 	"test/ikc3/buf_rw.ret.expected" \
 	"test/ikc3/call.err.expected" \
+	"test/ikc3/call.kc3" \
 	"test/ikc3/call.out.expected" \
 	"test/ikc3/call.ret.expected" \
+	"test/ikc3/cast.kc3" \
 	"test/ikc3/cast.out.expected" \
 	"test/ikc3/cast.ret.expected" \
 	"test/ikc3/character.err.expected" \
+	"test/ikc3/character.kc3" \
 	"test/ikc3/character.out.expected" \
 	"test/ikc3/character.ret.expected" \
 	"test/ikc3/comment.err.expected" \
+	"test/ikc3/comment.kc3" \
 	"test/ikc3/comment.out.expected" \
 	"test/ikc3/comment.ret.expected" \
+	"test/ikc3/complex.kc3" \
 	"test/ikc3/complex.out.expected" \
 	"test/ikc3/complex.ret.expected" \
+	"test/ikc3/def.kc3" \
 	"test/ikc3/def.out.expected" \
 	"test/ikc3/def.ret.expected" \
+	"test/ikc3/defmodule.kc3" \
 	"test/ikc3/defmodule.out.expected" \
 	"test/ikc3/defmodule.ret.expected" \
+	"test/ikc3/defoperator.kc3" \
 	"test/ikc3/defoperator.out.expected" \
 	"test/ikc3/defoperator.ret.expected" \
+	"test/ikc3/defstruct.kc3" \
 	"test/ikc3/defstruct.out.expected" \
 	"test/ikc3/defstruct.ret.expected" \
 	"test/ikc3/equal.err.expected" \
+	"test/ikc3/equal.kc3" \
 	"test/ikc3/equal.out.expected" \
 	"test/ikc3/equal.ret.expected" \
 	"test/ikc3/fn.err.expected" \
+	"test/ikc3/fn.kc3" \
 	"test/ikc3/fn.out.expected" \
 	"test/ikc3/fn.ret.expected" \
 	"test/ikc3/function_call.err.expected" \
 	"test/ikc3/function_call.out.expected" \
 	"test/ikc3/function_call.ret.expected" \
+	"test/ikc3/gl.kc3" \
 	"test/ikc3/gl.out.expected" \
 	"test/ikc3/gl.ret.expected" \
+	"test/ikc3/globals.kc3" \
 	"test/ikc3/globals.out.expected" \
 	"test/ikc3/globals.ret.expected" \
 	"test/ikc3/hello.err.expected" \
+	"test/ikc3/hello.kc3" \
 	"test/ikc3/hello.out.expected" \
 	"test/ikc3/hello.ret.expected" \
 	"test/ikc3/ident.err.expected" \
+	"test/ikc3/ident.kc3" \
 	"test/ikc3/ident.out.expected" \
 	"test/ikc3/ident.ret.expected" \
+	"test/ikc3/if.kc3" \
 	"test/ikc3/if.out.expected" \
 	"test/ikc3/if.ret.expected" \
+	"test/ikc3/integer.kc3" \
 	"test/ikc3/integer.lisp" \
 	"test/ikc3/integer.out.expected" \
 	"test/ikc3/integer.ret.expected" \
+	"test/ikc3/integer_add.kc3" \
 	"test/ikc3/integer_add.out.expected" \
 	"test/ikc3/integer_add.ret.expected" \
+	"test/ikc3/integer_band.kc3" \
 	"test/ikc3/integer_band.out.expected" \
 	"test/ikc3/integer_band.ret.expected" \
+	"test/ikc3/integer_bnot.kc3" \
 	"test/ikc3/integer_bnot.out.expected" \
 	"test/ikc3/integer_bnot.ret.expected" \
+	"test/ikc3/integer_bor-2.kc3" \
 	"test/ikc3/integer_bor-2.out.expected" \
 	"test/ikc3/integer_bor-2.ret.expected" \
+	"test/ikc3/integer_bxor.kc3" \
 	"test/ikc3/integer_bxor.out.expected" \
 	"test/ikc3/integer_bxor.ret.expected" \
+	"test/ikc3/integer_div.kc3" \
 	"test/ikc3/integer_div.out.expected" \
 	"test/ikc3/integer_div.ret.expected" \
+	"test/ikc3/integer_eq.kc3" \
 	"test/ikc3/integer_eq.out.expected" \
 	"test/ikc3/integer_eq.ret.expected" \
+	"test/ikc3/integer_gt.kc3" \
 	"test/ikc3/integer_gt.out.expected" \
 	"test/ikc3/integer_gt.ret.expected" \
+	"test/ikc3/integer_lt.kc3" \
 	"test/ikc3/integer_lt.out.expected" \
 	"test/ikc3/integer_lt.ret.expected" \
+	"test/ikc3/integer_mod-2.kc3" \
 	"test/ikc3/integer_mod-2.out.expected" \
 	"test/ikc3/integer_mod-2.ret.expected" \
+	"test/ikc3/integer_mul.kc3" \
 	"test/ikc3/integer_mul.out.expected" \
 	"test/ikc3/integer_mul.ret.expected" \
+	"test/ikc3/integer_neg.kc3" \
 	"test/ikc3/integer_neg.out.expected" \
 	"test/ikc3/integer_neg.ret.expected" \
+	"test/ikc3/integer_sub.kc3" \
 	"test/ikc3/integer_sub.out.expected" \
 	"test/ikc3/integer_sub.ret.expected" \
+	"test/ikc3/let.kc3" \
 	"test/ikc3/let.out.expected" \
 	"test/ikc3/let.ret.expected" \
 	"test/ikc3/list.err.expected" \
+	"test/ikc3/list.kc3" \
 	"test/ikc3/list.out.expected" \
 	"test/ikc3/list.ret.expected" \
+	"test/ikc3/macro.kc3" \
 	"test/ikc3/macro.out.expected" \
 	"test/ikc3/macro.ret.expected" \
+	"test/ikc3/map.kc3" \
 	"test/ikc3/map.out.expected" \
 	"test/ikc3/map.ret.expected" \
 	"test/ikc3/op.err.expected" \
+	"test/ikc3/op.kc3" \
 	"test/ikc3/op.out.expected" \
 	"test/ikc3/op.ret.expected" \
 	"test/ikc3/plist.err.expected" \
+	"test/ikc3/plist.kc3" \
 	"test/ikc3/plist.out.expected" \
 	"test/ikc3/plist.ret.expected" \
+	"test/ikc3/puts.kc3" \
 	"test/ikc3/puts.out.expected" \
 	"test/ikc3/puts.ret.expected" \
+	"test/ikc3/quote.kc3" \
 	"test/ikc3/quote.out.expected" \
 	"test/ikc3/quote.ret.expected" \
+	"test/ikc3/ratio.kc3" \
 	"test/ikc3/ratio.out.expected" \
 	"test/ikc3/ratio.ret.expected" \
 	"test/ikc3/str.err.expected" \
+	"test/ikc3/str.kc3" \
 	"test/ikc3/str.out.expected" \
 	"test/ikc3/str.ret.expected" \
+	"test/ikc3/struct.kc3" \
 	"test/ikc3/struct.out.expected" \
 	"test/ikc3/struct.ret.expected" \
 	"test/ikc3/sym.err.expected" \
+	"test/ikc3/sym.kc3" \
 	"test/ikc3/sym.out.expected" \
 	"test/ikc3/sym.ret.expected" \
 	"test/ikc3/tuple.err.expected" \
+	"test/ikc3/tuple.kc3" \
 	"test/ikc3/tuple.out.expected" \
 	"test/ikc3/tuple.ret.expected" \
+	"test/ikc3/var.kc3" \
 	"test/ikc3/var.out.expected" \
 	"test/ikc3/var.ret.expected" \
+	"test/ikc3/void.kc3" \
 	"test/ikc3/void.out.expected" \
 	"test/ikc3/void.ret.expected" \
 	"test/ikc3_test" \
-	"test/replace_lines.rb" \
-	"test/test.rb" \
-	"test/test_case_end.rb" \
-	"test/zero" \
+
+KC3_TEST_EKC3_SOURCES = \
+	"test/ekc3/title.html.ekc3" \
+	"test/ekc3/title.kc3" \
+	"test/ekc3/title.out.expected" \
+	"test/ekc3/title.ret.expected" \
+	"test/ekc3_test" \
+
+KC3_TEST_HTTP_SOURCES = \
+	"test/http/01_socket_buf.kc3" \
+	"test/http/01_socket_buf.out.expected" \
+	"test/http/01_socket_buf.ret.expected" \
+	"test/http/02_socket.kc3" \
+	"test/http/02_socket.out.expected" \
+	"test/http/02_socket.ret.expected" \
+	"test/http/03_client_server.kc3" \
+	"test/http/03_client_server.out.expected" \
+	"test/http/03_client_server.ret.expected" \
+	"test/http/04_server_request.kc3" \
+	"test/http/04_server_request.out.expected" \
+	"test/http/04_server_request.ret.expected" \
+	"test/http/05_response.kc3" \
+	"test/http/05_response.out.expected" \
+	"test/http/05_response.ret.expected" \
+	"test/http_test" \
+
+KC3_TEST_HTTPD_SOURCES = \
+	"test/httpd/.keep" \
+
+KC3_OTHER_SOURCES = \
+	"AUTHORS" \
+	"Makefile" \
+	"README.md" \
+	"config.subr" \
+	"configure" \
+	"env" \
+	"kc3.index" \
+	"kc3.version" \
+	"libkc3/tag_init.rb" \
+	"license.h" \
+	"sources.mk" \
+	"sources.sh" \
 
 KC3_EXTERNAL_SOURCES = \
 	"libtommath/LICENSE" \
