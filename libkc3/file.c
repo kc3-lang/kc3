@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include "buf.h"
@@ -119,6 +120,15 @@ s_str * file_dirname (const s_str *path, s_str *dest)
   if (! dirsep_pos)
     return str_init(dest, NULL, 1, "/");
   return str_init_slice(dest, path, 0, dirsep_pos + 1);
+}
+
+bool * file_exists (const s_str *path, bool *dest)
+{
+  struct stat sb;
+  assert(path);
+  assert(dest);
+  *dest = ! stat(path->ptr.pchar, &sb);
+  return dest;
 }
 
 s_tag * file_mtime (const s_str *path, s_tag *dest)
