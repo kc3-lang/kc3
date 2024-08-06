@@ -569,22 +569,54 @@ s_tag * tag_integer_reduce (s_tag *tag)
     i = &tag->data.integer;
     if (compare_integer(i, &u64_max) > 0)
       return tag;
-    if (compare_integer(i, &u32_max) > 0)
-      return tag_init_u64(tag, integer_to_u64(i));
-    if (compare_integer(i, &u16_max) > 0)
-      return tag_init_u32(tag, integer_to_u32(i));
-    if (compare_integer(i, &u8_max) > 0)
-      return tag_init_u16(tag, integer_to_u16(i));
-    if (compare_integer(i, &zero) >= 0)
-      return tag_init_u8(tag, integer_to_u8(i));
-    if (compare_integer(i, &s8_min) >= 0)
-      return tag_init_s8(tag, integer_to_s8(i));
-    if (compare_integer(i, &s16_min) >= 0)
-      return tag_init_s16(tag, integer_to_s16(i));
-    if (compare_integer(i, &s32_min) >= 0)
-      return tag_init_s32(tag, integer_to_s32(i));
-    if (compare_integer(i, &s64_min) >= 0)
-      return tag_init_s64(tag, integer_to_s64(i));
+    if (compare_integer(i, &u32_max) > 0) {
+      j = tag->data.integer;
+      tag_init_u64(tag, integer_to_u64(&j));
+      integer_clean(&j);
+      return tag;
+    }
+    if (compare_integer(i, &u16_max) > 0) {
+      j = tag->data.integer;
+      tag_init_u32(tag, integer_to_u32(&j));
+      integer_clean(&j);
+      return tag;
+    }
+    if (compare_integer(i, &u8_max) > 0) {
+      j = tag->data.integer;
+      tag_init_u16(tag, integer_to_u16(&j));
+      integer_clean(&j);
+      return tag;
+    }
+    if (compare_integer(i, &zero) >= 0) {
+      j = tag->data.integer;
+      tag_init_u8(tag, integer_to_u8(&j));
+      integer_clean(&j);
+      return tag;
+    }
+    if (compare_integer(i, &s8_min) >= 0) {
+      j = tag->data.integer;
+      tag_init_s8(tag, integer_to_s8(&j));
+      integer_clean(&j);
+      return tag;
+    }
+    if (compare_integer(i, &s16_min) >= 0) {
+      j = tag->data.integer;
+      tag_init_s16(tag, integer_to_s16(&j));
+      integer_clean(&j);
+      return tag;
+    }
+    if (compare_integer(i, &s32_min) >= 0) {
+      j = tag->data.integer;
+      tag_init_s32(tag, integer_to_s32(&j));
+      integer_clean(&j);
+      return tag;
+    }
+    if (compare_integer(i, &s64_min) >= 0) {
+      j = tag->data.integer;
+      tag_init_s64(tag, integer_to_s64(&j));
+      integer_clean(&j);
+      return tag;
+    }
     return tag;
   case TAG_S8:
     integer_init_s8(&j, tag->data.s8);

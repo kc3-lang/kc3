@@ -2265,8 +2265,7 @@ sw buf_parse_integer_unsigned_dec (s_buf *buf, s_integer *dest)
   if ((r = buf_parse_digit_dec(buf, &digit)) <= 0)
     goto clean;
   result += r;
-  integer_init_zero(dest);
-  if (mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+  if (! integer_init_u8(dest, digit))
     goto error;
   while ((r = buf_read_1(buf, "_")) >= 0 &&
          (result += r,

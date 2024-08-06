@@ -30,7 +30,7 @@ http_response_offsets: http_response_offsets.c
 	${CC} ${CPPFLAGS} -I.. http_response_offsets.c -o http_response_offsets
 
 print_limits: print_limits.c
-	libtool --mode=link ${CC} ${CPPFLAGS} -I.. print_limits.c -L../libkc3 -lkc3 -o print_limits
+	libtool --mode=link --tag=CC ${CC} ${CPPFLAGS} -I.. print_limits.c -L../libkc3 -lkc3 -o print_limits
 
 .PHONY: \
 	all \
