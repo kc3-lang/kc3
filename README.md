@@ -1,8 +1,12 @@
-# KC3 v0.1.12
+# KC3 v0.1.13
 
 KC3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
 for semantic programming, and programming the semantic web.
+
+This is a development branch, see
+[KC3 v0.1.12](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.12/)
+for a stable release.
 
 We are currently fundraising for the project to become real and
 there is a working prototype available at
@@ -33,29 +37,6 @@ Supported architectures :
 ## Discord invite
 
 [Join us on kmx.io Discord server !](https://discord.gg/A4MWkpUDsG)
-
-
-## New in this release
-
- - libkc3
-   - access
-     - DONE buf_parse_call_access (Tag "." Sym)
-     - DONE access (Tag, Sym) => Tag
-   - modules
-     - defstruct
-   - control structures
-     - while
-   - Str eval : `"Hello, #{name} !"`
- - EKC3
-   - embed KC3 in any file : `Hello, <%= name %> !`
-   - escape HTML :
-     - ["&": "&amp, "<": "&lt", ">": "&gt", "\"": "&quot", "'": &#39"]
- - HTTP
-   - sockets
-   - request
-   - response
- - HTTPd
-   - `make test_httpd`
 
 
 ## Usage
@@ -536,6 +517,8 @@ HTTP request and httpd.kc3 source file path.
 
 ## TODO
 
+ - HTTPd
+   - file server (lftp)
  - libkc3
    - operators dispatch
      - list of matching operators (facts_with)
