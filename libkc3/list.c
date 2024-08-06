@@ -58,10 +58,10 @@ void list_f_clean (s_list **list)
     l = list_delete(l);
 }
 
-bool list_has (const s_list *list, const s_tag *tag)
+bool list_has (const s_list * const *list, const s_tag *tag)
 {
   const s_list *l;
-  l = list;
+  l = *list;
   while (l) {
     if (! compare_tag(tag, &l->tag))
       return true;

@@ -1,0 +1,5 @@
+defmodule Time do
+
+  defstruct [tv_sec: (Uw) 0, tv_nsec: (U32) 0]
+
+end

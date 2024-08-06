@@ -534,7 +534,7 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
 
 s_tag * tag_init_time (s_tag *tag)
 {
-  s_time time;
+  s_timespec time;
   clock_gettime(CLOCK_REALTIME, &time);
   return time_to_tag(&time, tag);
 }

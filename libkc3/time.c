@@ -14,7 +14,7 @@
 #include "tag.h"
 #include "time.h"
 
-s_time * time_sub (const s_time *a, const s_time *b, s_time *dest)
+s_timespec * time_sub (const s_timespec *a, const s_timespec *b, s_timespec *dest)
 {
   if ((a->tv_nsec - b->tv_nsec) < 0) {
     dest->tv_sec = a->tv_sec - b->tv_sec - 1;
@@ -26,13 +26,13 @@ s_time * time_sub (const s_time *a, const s_time *b, s_time *dest)
   return dest;
 }
 
-f64 * time_to_f64 (const s_time *time, f64 *dest)
+f64 * time_to_f64 (const s_timespec *time, f64 *dest)
 {
   *dest = (f64) time->tv_sec + (f64) time->tv_nsec * 0.000000001;
   return dest;
 }
 
-s_tag * time_to_tag (const s_time *time, s_tag *dest)
+s_tag * time_to_tag (const s_timespec *time, s_tag *dest)
 {
   s_tag tmp = {0};
   assert(time);

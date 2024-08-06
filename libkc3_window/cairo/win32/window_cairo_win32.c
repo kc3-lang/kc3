@@ -95,7 +95,7 @@ bool window_cairo_win32_run (s_window_cairo *window)
 {
   HWND hwnd;
   MSG msg;
-  s_time sleep;
+  s_timespec sleep;
   WNDCLASSEX wc;
   wc.cbSize        = sizeof(WNDCLASSEX);
   wc.style         = 0;

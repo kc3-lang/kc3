@@ -2,4 +2,15 @@ defmodule File do
 
   def exists? = cfn Bool "file_exists" (Str, Result)
 
+  def is_directory? = fn (path) do
+    sb = File.stat(path)
+    if (sb) do
+      List.has?(sb.st_mode, :directory)
+    else
+      false
+    end
+  end
+
+  def stat = cfn File.Stat "file_stat" (Str, Result)
+
 end

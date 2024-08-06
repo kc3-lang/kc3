@@ -31,6 +31,7 @@ s_str * file_dirname (const s_str *path, s_str *dest);
 s_tag * file_mtime (const s_str *path, s_tag *dest);
 s_str * file_search (const s_str *suffix, const s_sym *mode,
                      s_str *dest);
+s_file_stat * file_stat (const s_str *path, s_file_stat *dest);
 
 /* Operators. */
 s_str * file_pwd (s_str *dest);

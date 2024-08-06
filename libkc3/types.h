@@ -162,6 +162,7 @@ typedef struct facts_cursor            s_facts_cursor;
 typedef struct facts_spec_cursor       s_facts_spec_cursor;
 typedef struct facts_with_cursor       s_facts_with_cursor;
 typedef struct facts_with_cursor_level s_facts_with_cursor_level;
+typedef struct file_stat               s_file_stat;
 typedef struct float_s                 s_float;
 typedef struct fn                      s_fn;
 typedef struct fn_clause               s_fn_clause;
@@ -185,7 +186,8 @@ typedef struct sym                     s_sym;
 typedef struct sym_list                s_sym_list;
 typedef struct tag                     s_tag;
 typedef struct tag_type_list           s_tag_type_list;
-typedef struct timespec                s_time;
+typedef struct time                    s_time;
+typedef struct timespec                s_timespec;
 typedef struct tuple                   s_tuple;
 typedef struct type                    s_type;
 typedef struct unquote                 s_unquote;
@@ -322,6 +324,11 @@ struct tag_type_list {
   s_tag_type_list *next;
 };
 
+struct time {
+  uw tv_sec;
+  u32 tv_nsec;
+};
+
 struct tuple {
   uw count;
   s_tag *tag;
@@ -363,6 +370,22 @@ struct facts_spec_cursor {
   p_facts_spec spec;
   const s_tag *subject;
   uw pos;
+};
+
+struct file_stat {
+  uw st_dev;      /* ID of device containing file */
+  uw st_ino;      /* Inode number */
+  s_list * st_mode; /* File type and mode */
+  uw st_nlink;    /* Number of hard links */
+  uw st_uid;      /* User ID of owner */
+  uw st_gid;      /* Group ID of owner */
+  uw st_rdev;     /* Device ID (if special file) */
+  uw st_size;     /* Total size, in bytes */
+  uw st_blksize;  /* Block size for filesystem I/O */
+  uw st_blocks;   /* Number of 512B blocks allocated */
+  s_time st_atim; /* Time of last access */
+  s_time st_mtim; /* Time of last modification */
+  s_time st_ctim; /* Time of last status change */
 };
 
 struct fn {
@@ -563,7 +586,7 @@ struct sequence {
   f64 duration;
   u64 frame;
   f64 t;
-  s_time t0;
+  s_timespec t0;
   const char *title;
   void *window;
   f_sequence load;

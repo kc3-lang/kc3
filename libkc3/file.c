@@ -148,7 +148,7 @@ s_tag * file_mtime (const s_str *path, s_tag *dest)
 #if HAVE_STAT_MTIM
   return time_to_tag(&sb.st_mtim, dest);
 #else
-  s_time tmp = {0};
+  s_timespec tmp = {0};
   tmp.tv_sec = sb.st_mtime;
   tmp.tv_nsec = 0;
   return time_to_tag(&tmp, dest);
@@ -222,4 +222,43 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
     path = list_next(path);
   }
   return NULL;
+}
+
+s_file_stat * file_stat (const s_str *path, s_file_stat *dest)
+{
+  s32 e;
+  struct stat sb;
+  s_file_stat tmp = {0};
+  assert(path);
+  assert(dest);
+  if (stat(path->ptr.pchar, &sb)) {
+    e = errno;
+    err_write_1("file_stat: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_puts(path->ptr.pchar);
+    return NULL;
+  }
+  tmp.st_dev = sb.st_dev;
+  tmp.st_ino = sb.st_ino;
+  tmp.st_mode = NULL;
+  if (sb.st_mode & S_IFREG)
+    tmp.st_mode = list_new_sym(&g_sym_file, tmp.st_mode);
+  else if (sb.st_mode & S_IFDIR)
+    tmp.st_mode = list_new_sym(&g_sym_directory, tmp.st_mode);
+  tmp.st_nlink = sb.st_nlink;
+  tmp.st_uid = sb.st_uid;
+  tmp.st_gid = sb.st_gid;
+  tmp.st_rdev = sb.st_rdev;
+  tmp.st_size = sb.st_size;
+  tmp.st_blksize = sb.st_blksize;
+  tmp.st_blocks = sb.st_blocks;
+  tmp.st_atim.tv_sec = sb.st_atim.tv_sec;
+  tmp.st_atim.tv_nsec = sb.st_atim.tv_nsec;
+  tmp.st_mtim.tv_sec = sb.st_mtim.tv_sec;
+  tmp.st_mtim.tv_nsec = sb.st_mtim.tv_nsec;
+  tmp.st_ctim.tv_sec = sb.st_ctim.tv_sec;
+  tmp.st_ctim.tv_nsec = sb.st_ctim.tv_nsec;
+  *dest = tmp;
+  return dest;
 }

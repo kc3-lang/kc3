@@ -12,7 +12,7 @@
  */
 /**
  * @file time.h
- * @brief operations on s_time
+ * @brief operations on s_timespec
  *
  */
 #ifndef LIBKC3_TIME_H
@@ -21,10 +21,10 @@
 #include "types.h"
 
 /* Observers */
-f64 *   time_to_f64 (const s_time *time, f64 *dest);
-s_tag * time_to_tag (const s_time *time, s_tag *dest);
+f64 *   time_to_f64 (const s_timespec *time, f64 *dest);
+s_tag * time_to_tag (const s_timespec *time, s_tag *dest);
 
 /* Operators */
-s_time * time_sub (const s_time *a, const s_time *b, s_time *dest);
+s_timespec * time_sub (const s_timespec *a, const s_timespec *b, s_timespec *dest);
 
 #endif /* LIBKC3_TIME_H */

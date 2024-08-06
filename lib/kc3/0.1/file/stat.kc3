@@ -1,0 +1,16 @@
+defmodule File.Stat do
+
+  defstruct [st_dev: (Uw) 0,     # ID of device containing file
+             st_ino: (Uw) 0,     # Inode number
+             st_mode: [],        # File type and mode
+             st_nlink: (Uw) 0,   # Number of hard links
+             st_uid: (Uw) 0,     # User ID of owner
+             st_gid: (Uw) 0,     # Group ID of owner
+             st_rdev: (Uw) 0,    # Device ID (if special file)
+             st_size: (Uw) 0,    # Total size, in bytes
+             st_blksize: (Uw) 0, # Block size for filesystem I/O
+             st_blocks: (Uw) 0,  # Number of 512B blocks allocated
+             st_atim: %Time{},   # Time of last access
+             st_mtim: %Time{},   # Time of last modification
+             st_ctim: %Time{}]   # Time of last status change
+end

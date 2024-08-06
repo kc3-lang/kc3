@@ -15,8 +15,8 @@
 
 bool window_animate (s_window *window)
 {
-  s_time clock_monotonic;
-  s_time delta;
+  s_timespec clock_monotonic;
+  s_timespec delta;
   s_sequence *seq;
   f64 t;
   if (clock_gettime(CLOCK_MONOTONIC, &clock_monotonic)) {

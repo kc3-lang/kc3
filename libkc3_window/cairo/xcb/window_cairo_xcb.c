@@ -104,7 +104,7 @@ bool window_cairo_xcb_run (s_window_cairo *window)
   bool r;
   xcb_screen_t *screen;
   xcb_visualtype_t *screen_visual;
-  s_time sleep;
+  s_timespec sleep;
   cairo_surface_t *surface;
   u32 value_mask;
   u32 *value_list;
