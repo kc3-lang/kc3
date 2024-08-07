@@ -2,6 +2,8 @@ defmodule File do
 
   def exists? = cfn Bool "file_exists" (Str, Result)
 
+  def ext = cfn Str "file_ext" (Str, Result)
+
   def is_directory? = fn (path) do
     sb = File.stat(path)
     if (sb) do

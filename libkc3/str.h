@@ -113,8 +113,7 @@ sw            str_peek_u16 (const s_str *str, u16 *dest);
 sw            str_peek_u32 (const s_str *str, u32 *dest);
 sw            str_peek_u64 (const s_str *str, u64 *dest);
 sw            str_position_1 (const s_str *str, const char *token);
-uw *          str_rindex_character (const s_str *str, character c,
-                                    uw *dest);
+sw            str_rindex_character (const s_str *str, character c);
 bool          str_starts_with (const s_str *str, const s_str *start);
 uw *          str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest);
 s_str *       str_to_hex (const s_str *str, s_str *dest);

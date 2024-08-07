@@ -823,7 +823,7 @@ sw str_read_character_utf8 (s_str *str, character *c)
   return size;
 }
 
-uw * str_rindex_character (const s_str *str, character c, uw *dest)
+sw str_rindex_character (const s_str *str, character c)
 {
   uw i = 0;
   sw result = -1;
@@ -835,11 +835,7 @@ uw * str_rindex_character (const s_str *str, character c, uw *dest)
       result = i;
     i++;
   }
-  if (result >= 0) {
-    *dest = result;
-    return dest;
-  }
-  return NULL;
+  return result;
 }
 
 bool str_starts_with (const s_str *str, const s_str *start)

@@ -115,10 +115,10 @@ sw file_copy (const char *from, const char *to)
 
 s_str * file_dirname (const s_str *path, s_str *dest)
 {
-  uw dirsep_pos;
+  sw dirsep_pos;
   assert(path);
   assert(dest);
-  if (! str_rindex_character(path, '/', &dirsep_pos))
+  if ((dirsep_pos = str_rindex_character(path, '/')) < 0)
     return str_init(dest, NULL, 2, "./");
   if (! dirsep_pos)
     return str_init(dest, NULL, 1, "/");
@@ -132,6 +132,16 @@ bool * file_exists (const s_str *path, bool *dest)
   assert(dest);
   *dest = ! stat(path->ptr.pchar, &sb);
   return dest;
+}
+
+s_str * file_ext (const s_str *path, s_str *dest)
+{
+  sw dot_pos;
+  assert(path);
+  assert(dest);
+  if ((dot_pos = str_rindex_character(path, '.')) <= 0)
+    return str_init_empty(dest);
+  return str_init_slice(dest, path, dot_pos + 1, -1);
 }
 
 s_list ** file_list (const s_str *path, s_list **dest)
