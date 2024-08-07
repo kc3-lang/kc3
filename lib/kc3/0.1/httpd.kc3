@@ -98,13 +98,36 @@ defmodule HTTPd do
     %HTTP.Response{body: body}
   }
 
+  def show_page = fn (request) {
+    path = root_dir + request.url
+    if File.exists?(path) do
+      body = File.read(path)
+      body = "<html>
+  <head>
+    <title>#{request.url}</title>
+  </head>
+  <body>
+    #{body}
+  </body>
+</html>
+"
+      %HTTP.Response{body: body}
+    else
+      error_404_page(request)
+    end
+  }
+
   def route_request = fn (request) {
     path = root_dir + request.url
     if File.exists?(path) do
       if File.is_directory?(path) do
         directory_page
       else
-        debug_page
+        if Str.ends_with?(path, ".html") do
+          show_page
+        else
+          debug_page
+        end
       end
     else
       error_404_page
