@@ -61,7 +61,8 @@ sw buf_getc_refill (s_buf *buf)
          c != '\n' &&
          (c = getc(fp)) != EOF &&
          c <= 255) {
-    buf_write_u8(buf, c);
+    if (buf_write_u8(buf, c) < 0)
+      return -1;
     result++;
   }
   return result;

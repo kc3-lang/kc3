@@ -995,6 +995,12 @@ sw buf_refill_compact (s_buf *buf)
     if (min_rpos == buf->wpos) {
       buf->rpos = 0;
       buf->wpos = 0;
+      save = buf->save;
+      while (save) {
+        save->rpos -= min_rpos;
+        save->wpos -= min_rpos;
+        save = save->next;
+      }
     }
     else {
       size = buf->wpos - min_rpos;
@@ -1011,9 +1017,8 @@ sw buf_refill_compact (s_buf *buf)
       }
       buf->wpos = size;
     }
-    return 1;
   }
-  return 0;
+  return 1;
 }
 
 s_str * buf_slice_to_str (const s_buf *buf, uw start, uw end,
