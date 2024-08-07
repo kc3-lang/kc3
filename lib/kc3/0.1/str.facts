@@ -3,3 +3,7 @@
 replace {Str, :is_a, :module}
 replace {Str, :symbol, Str.cast}
 replace {Str.cast, :symbol_value, cfn Str "str_init_cast" (Result, Sym, Tag)}
+add {Str, :symbol, Str.starts_with?}
+replace {Str.starts_with?, :symbol_value, cfn Bool "str_starts_with" (Str, Str)}
+add {Str, :symbol, Str.ends_with?}
+replace {Str.ends_with?, :symbol_value, cfn Bool "str_ends_with" (Str, Str)}

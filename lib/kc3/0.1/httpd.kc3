@@ -80,7 +80,7 @@ defmodule HTTPd do
   def directory_page = fn (request) {
     files = File.list(root_dir + request.url)
     file_li = fn (file) {
-      slash = if request.url == "/" do "" else "/" end
+      slash = if Str.ends_with?(request.url, "/") do "" else "/" end
       "<li><a href=\"#{request.url}#{slash}#{file}\">#{request.url}#{slash}#{file}</a></li>"
     }
     body = "<html>
