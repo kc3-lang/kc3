@@ -94,11 +94,17 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
 
 bool http_mime_type_def (const s_sym *mime_type, const s_sym *ext)
 {
-  err_write_1("http_mime_type_def: ");
-  err_inspect_sym(&mime_type);
-  err_write_1(" => ");
-  err_inspect_sym(&ext);
-  err_write_1("\n");
+  s_tag tag_ext;
+  s_tag tag_mime_type;
+  s_tag tag_mime_type_value;
+  assert(mime_type);
+  assert(ext);
+  tag_init_sym(&tag_ext, ext);
+  tag_init_sym(&tag_mime_type, sym_1("mime_type"));
+  tag_init_sym(&tag_mime_type_value, mime_type);
+  if (! facts_add_tags(&g_kc3_env.facts, &tag_ext, &tag_mime_type,
+                       &tag_mime_type_value))
+    return false;
   return true;
 }
 
