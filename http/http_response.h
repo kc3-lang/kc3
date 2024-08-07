@@ -16,6 +16,6 @@
 #include "types.h"
 
 sw http_response_buf_write (const s_http_response *response,
-                            s_buf *buf);
+                            s_buf *buf, bool send_body);
 
 #endif /* HTTP_RESPONSE_H */

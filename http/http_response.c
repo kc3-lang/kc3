@@ -16,7 +16,7 @@
 #include "socket.h"
 
 sw http_response_buf_write (const s_http_response *response,
-                            s_buf *buf)
+                            s_buf *buf, bool send_body)
 {
   sw    content_length = -1;
   s_str content_length_str = {0};
@@ -116,7 +116,7 @@ sw http_response_buf_write (const s_http_response *response,
     result += r;
     l = list_next(l);
   }
-  if (content_length < 0) {
+  if (content_length < 0 && send_body) {
     if ((r = buf_write_str(buf, &content_length_str)) < 0)
       return r;
     result += r;
@@ -133,8 +133,10 @@ sw http_response_buf_write (const s_http_response *response,
   if ((r = buf_write_1(buf, "\r\n")) < 0)
     return r;
   result += r;
-  if ((r = buf_write_str(buf, &response->body)) < 0)
-    return r;
-  result += r;
+  if (send_body) {
+    if ((r = buf_write_str(buf, &response->body)) < 0)
+      return r;
+    result += r;
+  }
   return result;
 }

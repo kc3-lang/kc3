@@ -30,6 +30,18 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     goto restore;
   if (r > 0)
     tmp_req.method = sym_1("get");
+  if ((r = buf_read_1(buf, "POST ")) < 0)
+    goto restore;
+  if (r > 0)
+    tmp_req.method = sym_1("post");
+  if ((r = buf_read_1(buf, "PUT ")) < 0)
+    goto restore;
+  if (r > 0)
+    tmp_req.method = sym_1("put");
+  if ((r = buf_read_1(buf, "HEAD ")) < 0)
+    goto restore;
+  if (r > 0)
+    tmp_req.method = sym_1("head");
   if (! tmp_req.method) {
     err_write_1("http_request_buf_parse: no method: ");
     err_inspect_buf(buf);

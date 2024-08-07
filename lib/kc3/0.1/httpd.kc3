@@ -19,7 +19,7 @@ defmodule HTTPd do
     if req do
       router = route_request(req)
       res = router(req)
-      HTTP.Response.buf_write(res, client.buf_rw.w)
+      HTTP.Response.buf_write(res, client.buf_rw.w, req.method != :head)
     end
   }
 
