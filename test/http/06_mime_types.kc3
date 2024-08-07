@@ -1,0 +1,2 @@
+quote HTTP.mime_type_load(__DIR__ + "mime.types")
+HTTP.mime_type_load(__DIR__ + "mime.types")

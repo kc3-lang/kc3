@@ -878,6 +878,39 @@ sw buf_read_until_character_into_str (s_buf *buf, character end, s_str *dest)
   return r;
 }
 
+sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
+{
+  character c;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_buf tmp;
+  buf_save_init(buf, &save);
+  while (1) {
+    if ((r = buf_peek_character_utf8(buf, &c)) < 0)
+      goto restore;
+    if (r && character_is_space(c)) {
+      buf_init(&tmp, false, buf->size, buf->ptr.pchar);
+      tmp.rpos = save.rpos;
+      tmp.wpos = buf->rpos;
+      if (! buf_read_to_str(&tmp, dest)) {
+        r = -1;
+        goto restore;
+      }
+      r = result;
+      goto clean;
+    }
+    if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+      goto restore;
+    result += r;
+  }
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_read_until_str_into_str (s_buf *buf, const s_str *end, s_str *dest)
 {
   character c;

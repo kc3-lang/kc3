@@ -117,6 +117,8 @@ KC3_C_SOURCES = \
 	"http/http_request.h" \
 	"http/http_response.c" \
 	"http/http_response.h" \
+	"http/mime_type.c" \
+	"http/mime_type.h" \
 	"http/socket.c" \
 	"http/socket.h" \
 	"http/socket_addr.c" \
@@ -909,6 +911,8 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/f128.facts" \
 	"lib/kc3/0.1/f32.facts" \
 	"lib/kc3/0.1/f64.facts" \
+	"lib/kc3/0.1/file.kc3" \
+	"lib/kc3/0.1/file/stat.kc3" \
 	"lib/kc3/0.1/gl/dvec2.kc3" \
 	"lib/kc3/0.1/gl/dvec3.kc3" \
 	"lib/kc3/0.1/gl/object.kc3" \
@@ -939,6 +943,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/struct.kc3" \
 	"lib/kc3/0.1/sw.facts" \
 	"lib/kc3/0.1/sym.facts" \
+	"lib/kc3/0.1/time.kc3" \
 	"lib/kc3/0.1/u16.facts" \
 	"lib/kc3/0.1/u32.facts" \
 	"lib/kc3/0.1/u64.facts" \

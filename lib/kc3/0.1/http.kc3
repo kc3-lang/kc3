@@ -1,0 +1,7 @@
+defmodule HTTP do
+
+  dlopen(__DIR__ + "http.so")
+
+  def mime_type_load = cfn Bool "http_mime_type_load" (Str)
+
+end
