@@ -104,15 +104,6 @@ defmodule HTTPd do
     path = root_dir + request.url
     if File.exists?(path) do
       body = File.read(path)
-      body = "<html>
-  <head>
-    <title>#{request.url}</title>
-  </head>
-  <body>
-    #{body}
-  </body>
-</html>
-"
       %HTTP.Response{body: body}
     else
       error_404_page(request)
