@@ -25,11 +25,13 @@ defmodule HTTPd do
 
   def main = fn {
     () {
+      HTTP.mime_type_load("mime.types")
       host = getenv("KC3_HTTPD_HOST")
       port = getenv("KC3_HTTPD_PORT")
       server(host, port)
     }
     (host, port) {
+      HTTP.mime_type_load("mime.types")
       server(host, port)
     }
   }
@@ -123,11 +125,7 @@ defmodule HTTPd do
       if File.is_directory?(path) do
         directory_page
       else
-        if Str.ends_with?(path, ".html") do
-          show_page
-        else
-          debug_page
-        end
+        show_page
       end
     else
       error_404_page

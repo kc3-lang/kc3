@@ -15,21 +15,22 @@
 #include <string.h>
 #include "socket.h"
 
-s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf)
+s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 {
   s_str line;
   sw r;
   s_buf_save save;
   s_list **tail;
-  s_http_request tmp = {0};
+  s_tag tmp = {0};
+  s_http_request tmp_req = {0};
   assert(req);
   assert(buf);
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "GET ")) < 0)
     goto restore;
   if (r > 0)
-    tmp.method = sym_1("get");
-  if (! tmp.method) {
+    tmp_req.method = sym_1("get");
+  if (! tmp_req.method) {
     err_write_1("http_request_buf_parse: no method: ");
     err_inspect_buf(buf);
     err_write_1("\n");
@@ -37,28 +38,28 @@ s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf)
   }
   if (false) {
     err_write_1("http_request_buf_parse: method: ");
-    err_inspect_sym(&tmp.method);
+    err_inspect_sym(&tmp_req.method);
     err_write_1("\n");
   }
-  if (! buf_read_until_1_into_str(buf, " ", &tmp.url)) {
+  if (! buf_read_until_1_into_str(buf, " ", &tmp_req.url)) {
     err_puts("http_request_buf_parse: invalid URL");
     goto restore;
   }
   if (false) {
     err_write_1("http_request_buf_parse: url: ");
-    err_inspect_str(&tmp.url);
+    err_inspect_str(&tmp_req.url);
     err_write_1("\n");
   }
-  if (! buf_read_until_1_into_str(buf, "\r\n", &tmp.protocol)) {
+  if (! buf_read_until_1_into_str(buf, "\r\n", &tmp_req.protocol)) {
     err_puts("http_request_buf_parse: invalid protocol");
     goto restore;
   }
   if (false) {
     err_write_1("http_request_buf_parse: protocol: ");
-    err_inspect_str(&tmp.protocol);
+    err_inspect_str(&tmp_req.protocol);
     err_write_1("\n");
   }
-  tail = &tmp.headers;
+  tail = &tmp_req.headers;
   while (1) {
     if (! buf_read_until_1_into_str(buf, "\r\n", &line)) {
       err_puts("http_request_buf_parse: invalid header");
@@ -72,11 +73,18 @@ s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf)
       goto restore;
     tail = &(*tail)->next.data.list;
   }
+  if (! tag_init_struct(&tmp, sym_1("HTTP.Request")))
+    goto restore;
+  if (! struct_allocate(&tmp.data.struct_)) {
+    tag_void(&tmp);
+    goto restore;
+  }
+  *((s_http_request *) tmp.data.struct_.data) = tmp_req;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
   buf_save_clean(buf, &save);
   *req = tmp;
   return req;
- restore:
-  buf_save_restore_rpos(buf, &save);
-  buf_save_clean(buf, &save);
-  return NULL;
 }

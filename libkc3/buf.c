@@ -68,32 +68,36 @@ sw buf_ignore (s_buf *buf, uw size)
   assert(buf);
   if (size == 0)
     return 0;
-  if ((r = buf_refill(buf, size)) < 0)
+  if ((r = buf_refill(buf, size)) < 0) {
+    err_puts("buf_ignore: buf_refill");
     return r;
-  if ((uw) r < size)
-    return -1;
-  if (buf->line >= 0) {
-    while (i < size) {
-      if ((r = buf_read_character_utf8(buf, &c)) < 0)
-        return r;
-      if (r > 0) {
-        i += r;
-        continue;
-      }
-      if ((r = buf_read_u8(buf, &b)) < 0)
-        return r;
-      if (r > 0) {
-          buf->column++;
-        i += r;
-        continue;
-      }
-      error("buf_ignore");
-      return -1;
-    }
-    assert(i == size);
   }
-  else
-    buf->rpos += size;
+  if ((uw) r < size) {
+    err_puts("buf_ignore: buf_refill < size");
+    return -1;
+  }
+  while (i < size) {
+    if ((r = buf_read_character_utf8(buf, &c)) < 0) {
+      err_puts("buf_ignore: buf_read_character_utf8");
+      return r;
+    }
+    if (r > 0) {
+      i += r;
+      continue;
+    }
+    if ((r = buf_read_u8(buf, &b)) < 0) {
+      err_puts("buf_ignore: buf_read_u8");
+      return r;
+    }
+    if (r > 0) {
+        buf->column++;
+      i += r;
+      continue;
+    }
+    err_puts("buf_ignore: failed to read");
+    return -1;
+  }
+  assert(i == size);
   return size;
 }
 

@@ -18,6 +18,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "alloc.h"
 #include "buf.h"
 #include "buf_file.h"
 #include "buf_save.h"
@@ -221,24 +222,42 @@ s_str * file_pwd (s_str *dest)
 
 s_str * file_read (const s_str *path, s_str *dest)
 {
-  s_buf buf;
-  FILE *fp;
-  struct file_stat sb;
-  file_stat(path, &sb);
-  if (! sb.st_mode)
-    return NULL;
-  fp = file_open(path->ptr.pchar, "rb");
-  if (! fp)
-    return NULL;
-  buf_init_alloc(&buf, sb.st_size);
-  if (! buf_file_open_r(&buf, fp)) {
-    fclose(fp);
+  char *buf;
+  s32 e;
+  s32 fd;
+  uw r;
+  sw size = 0;
+  struct stat sb;
+  if (stat(path->ptr.pchar, &sb)) {
+    err_puts("file_read: stat");
     return NULL;
   }
-  buf_refill(&buf, sb.st_size);
-  buf_read_to_str(&buf, dest);
-  buf_file_close(&buf);
-  fclose(fp);
+  fd = open(path->ptr.pchar, O_RDONLY | O_BINARY);
+  if (fd < 0) {
+    e = errno;
+    err_write_1("file_read: open: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_write_str(path);
+    return NULL;
+  }
+  buf = alloc(sb.st_size);
+  if (! buf) {
+    err_puts("file_read: failed to allocate buf");
+    close(fd);
+    return NULL;
+  }
+  while (size < sb.st_size) {
+    if (! (r = read(fd, buf, sb.st_size))) {
+      err_puts("file_read: read = 0");
+      free(buf);
+      close(fd);
+      return NULL;
+    }
+    size += r;
+  }
+  close(fd);
+  str_init(dest, buf, sb.st_size, buf);
   return dest;
 }
 

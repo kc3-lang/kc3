@@ -15,8 +15,8 @@
 
 #include "types.h"
 
-s_tag *          http_header_split (s_str *header, s_tag *dest);
-s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf);
+s_tag * http_header_split (s_str *header, s_tag *dest);
+s_tag * http_request_buf_parse (s_tag *request, s_buf *buf);
 
 
 #endif /* HTTP_H */
