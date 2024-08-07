@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "buf.h"
+#include "buf_file.h"
 #include "buf_save.h"
 #include "env.h"
 #include "file.h"
@@ -215,6 +216,29 @@ s_str * file_pwd (s_str *dest)
   pchar = calloc(1, size + 1);
   memcpy(pchar, buf, size);
   str_init(dest, pchar, size, pchar);
+  return dest;
+}
+
+s_str * file_read (const s_str *path, s_str *dest)
+{
+  s_buf buf;
+  FILE *fp;
+  struct file_stat sb;
+  file_stat(path, &sb);
+  if (! sb.st_mode)
+    return NULL;
+  fp = file_open(path->ptr.pchar, "rb");
+  if (! fp)
+    return NULL;
+  buf_init_alloc(&buf, sb.st_size);
+  if (! buf_file_open_r(&buf, fp)) {
+    fclose(fp);
+    return NULL;
+  }
+  buf_refill(&buf, sb.st_size);
+  buf_read_to_str(&buf, dest);
+  buf_file_close(&buf);
+  fclose(fp);
   return dest;
 }
 

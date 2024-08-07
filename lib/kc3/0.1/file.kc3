@@ -15,4 +15,6 @@ defmodule File do
 
   def stat = cfn File.Stat "file_stat" (Str, Result)
 
+  def read = cfn Str "file_read" (Str, Result)
+
 end
