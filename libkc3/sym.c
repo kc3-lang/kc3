@@ -222,6 +222,16 @@ const s_sym * sym_find (const s_str *str)
   return NULL;
 }
 
+s_tag * sym_find_to_tag (const s_str *src, s_tag *dest)
+{
+  s_tag tmp = {0};
+  tmp.data.sym = sym_find(src);
+  if (tmp.data.sym)
+    tmp.type = TAG_SYM;
+  *dest = tmp;
+  return dest;
+}
+
 bool sym_has_ident_reserved_characters (const s_sym *sym)
 {
   character c;

@@ -5,3 +5,5 @@ replace {Sym, :symbol, Sym.cast}
 replace {Sym.cast, :symbol_value, cfn Sym "sym_init_cast" (Result, Sym, Tag)}
 add {Sym, :symbol, Sym.type_size}
 replace {Sym.type_size, :symbol_value, cfn Uw "sym_type_size" (Sym, Result)}
+add {Sym, :symbol, Sym.find}
+replace {Sym.find, :symbol_value, cfn Tag "sym_find_to_tag" (Str, Result)}

@@ -137,6 +137,7 @@ const s_sym * sym_new (const s_str *src);
 const s_sym * sym_array_type (const s_sym *sym);
 bool          sym_character_is_reserved (character c);
 const s_sym * sym_find (const s_str *src);
+s_tag *       sym_find_to_tag (const s_str *src, s_tag *dest);
 bool          sym_has_ident_reserved_characters (const s_sym *sym);
 bool          sym_has_reserved_characters (const s_sym *sym);
 bool          sym_is_array_type (const s_sym *sym);

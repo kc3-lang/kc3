@@ -17,7 +17,8 @@
 
 bool http_mime_type_buf_parse (s_buf *buf);
 bool http_mime_type_buf_parse_type (s_buf *buf);
-bool http_mime_type_def (const s_sym *mime_type, const s_sym *ext);
+bool http_mime_type_def (const s_tag *ext,
+                         const s_sym * const *mime_type);
 bool http_mime_type_load (s_str *path);
 
 #endif /* HTTP_MIME_TYPE_H */

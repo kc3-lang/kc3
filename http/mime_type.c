@@ -13,6 +13,34 @@
 #include <libkc3/kc3.h>
 #include "mime_type.h"
 
+const s_sym ** http_mime_type (const s_str *ext, const s_sym **dest)
+{
+  s_facts_cursor cursor;
+  const s_sym *default_mime_type;
+  const s_fact *fact = NULL;
+  s_tag tag_ext = {0};
+  s_tag tag_mime_type_sym;
+  s_tag tag_mime_type_value;
+  if ((tag_ext.data.sym = sym_find(ext)))
+    tag_ext.type = TAG_SYM;
+  tag_init_sym(&tag_mime_type_sym, sym_1("mime_type"));
+  tag_init_var(&tag_mime_type_value, &g_sym_Sym);
+  default_mime_type = sym_1("application/octet-stream");
+  if (! facts_with_tags(&g_kc3_env.facts, &cursor, &tag_ext,
+                        &tag_mime_type_sym, &tag_mime_type_value))
+    goto default_mime_type;
+  if (! facts_cursor_next(&cursor, &fact) ||
+      ! fact ||
+      tag_mime_type_value.type != TAG_SYM ||
+      ! tag_mime_type_value.data.sym)
+    goto default_mime_type;
+  *dest = tag_mime_type_value.data.sym;
+  return dest;
+ default_mime_type:
+  *dest = default_mime_type;
+  return dest;
+}
+
 bool http_mime_type_buf_parse (s_buf *buf)
 {
   sw r;
@@ -40,7 +68,7 @@ bool http_mime_type_buf_parse (s_buf *buf)
 bool http_mime_type_buf_parse_type (s_buf *buf)
 {
   character c;
-  const s_sym *ext;
+  s_tag ext;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -76,8 +104,8 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
     }
     buf_save_clean(buf, &save);
     if (r > 0) {
-      ext = str_to_sym(&str);
-      if (! http_mime_type_def(type, ext))
+      tag_init_sym(&ext, str_to_sym(&str));
+      if (! http_mime_type_def(&ext, &type))
         return false;
     }
     if ((r = buf_read_1(buf, ";")) < 0)
@@ -92,18 +120,18 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
   return false;
 }
 
-bool http_mime_type_def (const s_sym *mime_type, const s_sym *ext)
+bool http_mime_type_def (const s_tag *ext,
+                         const s_sym * const *mime_type)
 {
-  s_tag tag_ext;
-  s_tag tag_mime_type;
+  s_tag tag_mime_type_sym;
   s_tag tag_mime_type_value;
-  assert(mime_type);
   assert(ext);
-  tag_init_sym(&tag_ext, ext);
-  tag_init_sym(&tag_mime_type, sym_1("mime_type"));
-  tag_init_sym(&tag_mime_type_value, mime_type);
-  if (! facts_add_tags(&g_kc3_env.facts, &tag_ext, &tag_mime_type,
-                       &tag_mime_type_value))
+  assert(mime_type);
+  tag_init_sym(&tag_mime_type_sym, sym_1("mime_type"));
+  tag_init_sym(&tag_mime_type_value, *mime_type);
+  if (! facts_replace_tags(&g_kc3_env.facts, ext,
+                           &tag_mime_type_sym,
+                           &tag_mime_type_value))
     return false;
   return true;
 }
