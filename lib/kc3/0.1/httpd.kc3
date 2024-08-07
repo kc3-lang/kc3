@@ -101,10 +101,14 @@ defmodule HTTPd do
   }
 
   def show_page = fn (request) {
+    ext = File.ext(request.url)
     path = root_dir + request.url
     if File.exists?(path) do
       body = File.read(path)
-      %HTTP.Response{body: body}
+      mime = HTTP.mime_type(ext)
+      puts("HTTPd.show_page: mime = #{mime}")
+      headers = [{"Content-Type", (Str) mime}]
+      %HTTP.Response{body: body, headers: headers}
     else
       error_404_page(request)
     end
