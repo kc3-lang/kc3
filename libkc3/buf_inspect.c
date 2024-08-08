@@ -2768,6 +2768,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_STRUCT_TYPE:
     return buf_inspect_struct_type(buf, &tag->data.struct_type);
   case TAG_SYM:     return buf_inspect_sym(buf, &tag->data.sym);
+  case TAG_TIME:    return buf_inspect_time(buf, &tag->data.time);
   case TAG_TUPLE:   return buf_inspect_tuple(buf, &tag->data.tuple);
   case TAG_U8:      return buf_inspect_u8(buf, &tag->data.u8);
   case TAG_U16:     return buf_inspect_u16(buf, &tag->data.u16);
@@ -2823,6 +2824,7 @@ sw buf_inspect_tag_size (const s_tag *tag)
   case TAG_STRUCT_TYPE:
     return buf_inspect_struct_type_size(&tag->data.struct_type);
   case TAG_SYM:      return buf_inspect_sym_size(&tag->data.sym);
+  case TAG_TIME:     return buf_inspect_time_size(&tag->data.time);
   case TAG_TUPLE:    return buf_inspect_tuple_size(&tag->data.tuple);
   case TAG_U8:       return buf_inspect_u8_size(&tag->data.u8);
   case TAG_U16:      return buf_inspect_u16_size(&tag->data.u16);
@@ -2856,6 +2858,44 @@ sw buf_inspect_tag_type_size (e_tag_type type)
   if (! s)
     return -1;
   return strlen(s);
+}
+
+sw buf_inspect_time (s_buf *buf, const s_time *time)
+{
+  sw r;
+  sw result = 0;
+  if ((r = buf_write_1(buf, "%Time{tv_sec: ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_sw(buf, &time->tv_sec)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ", tv_nsec: ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_sw(buf, &time->tv_nsec)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "}")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_time_size (const s_time *time)
+{
+  sw r;
+  sw result = 0;
+  result += strlen("%Time{tv_sec: ");
+  if ((r = buf_inspect_sw_size(&time->tv_sec)) < 0)
+    return r;
+  result += r;
+  result += strlen(", tv_nsec: ");
+  if ((r = buf_inspect_sw_size(&time->tv_nsec)) < 0)
+    return r;
+  result += r;
+  result += strlen("}");
+  return result;
 }
 
 sw buf_inspect_tuple (s_buf *buf, const s_tuple *tuple)

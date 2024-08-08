@@ -176,6 +176,8 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag);
 sw buf_inspect_tag_size (const s_tag *tag);
 sw buf_inspect_tag_type (s_buf *buf, e_tag_type type);
 sw buf_inspect_tag_type_size (e_tag_type type);
+sw buf_inspect_time (s_buf *buf, const s_time *time);
+sw buf_inspect_time_size (const s_time *time);
 sw buf_inspect_tuple (s_buf *buf, const s_tuple *tuple);
 sw buf_inspect_tuple_size (const s_tuple *tuple);
 BUF_INSPECT_U_PROTOTYPES(8);

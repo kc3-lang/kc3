@@ -1015,6 +1015,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                                   &b->data.struct_type);
   case TAG_SYM:        return compare_str(&a->data.sym->str,
                                           &b->data.sym->str);
+  case TAG_TIME:       return compare_time(&a->data.time,
+                                           &b->data.time);
   case TAG_TUPLE:      return compare_tuple(&a->data.tuple,
                                             &b->data.tuple);
   case TAG_UNQUOTE:    return compare_unquote(&a->data.unquote,

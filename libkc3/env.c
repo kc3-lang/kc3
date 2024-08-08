@@ -2528,7 +2528,8 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module)
   }
   if (! r)
     return true;
-  if (! env_module_load_time(env, module, &load_time)) {
+  if (! env_module_load_time(env, module, &load_time) ||
+      ! load_time) {
     str_clean(&path);
     return env_module_load(env, module);
   }

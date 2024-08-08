@@ -10,7 +10,6 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
@@ -19,9 +18,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "alloc.h"
+#include "assert.h"
 #include "buf.h"
 #include "buf_file.h"
 #include "buf_save.h"
+#include "config.h"
 #include "env.h"
 #include "file.h"
 #include "io.h"

@@ -127,6 +127,7 @@ typedef enum {
   TAG_STRUCT,
   TAG_STRUCT_TYPE,
   TAG_SYM,
+  TAG_TIME,
   TAG_TUPLE,
   TAG_UNQUOTE,
   TAG_VAR,
@@ -321,8 +322,9 @@ struct tag_type_list {
 };
 
 struct time {
-  uw tv_sec;
-  uw tv_nsec;
+  s_tag *tag;
+  sw tv_sec;
+  sw tv_nsec;
 };
 
 struct tuple {
@@ -509,6 +511,7 @@ union tag_data {
   s_struct_type struct_type;
   const s_sym  *sym;
   s8            s8;
+  s_time        time;
   s16           s16;
   s32           s32;
   s64           s64;
