@@ -101,10 +101,12 @@ const s_sym g_sym_operator_pin    = {{{NULL}, 12, {"operator_pin"}}};
 const s_sym g_sym_operator_precedence =
   {{{NULL}, 19, {"operator_precedence"}}};
 const s_sym g_sym_r               = {{{NULL},  1, {"r"}}};
+const s_sym g_sym_read            = {{{NULL},  4, {"read"}}};
 const s_sym g_sym_right           = {{{NULL},  5, {"right"}}};
 const s_sym g_sym_rw              = {{{NULL},  2, {"rw"}}};
 const s_sym g_sym_rwx             = {{{NULL},  3, {"rwx"}}};
 const s_sym g_sym_rx              = {{{NULL},  2, {"rx"}}};
+const s_sym g_sym_signal          = {{{NULL},  6, {"signal"}}};
 const s_sym g_sym_special_operator =
   {{{NULL}, 16, {"special_operator"}}};
 const s_sym g_sym_str             = {{{NULL},  3, {"str"}}};
@@ -113,7 +115,9 @@ const s_sym g_sym_sym             = {{{NULL},  3, {"sym"}}};
 const s_sym g_sym_symbol          = {{{NULL},  6, {"symbol"}}};
 const s_sym g_sym_symbol_value    = {{{NULL}, 12, {"symbol_value"}}};
 const s_sym g_sym_then            = {{{NULL},  4, {"then"}}};
+const s_sym g_sym_timeout         = {{{NULL},  7, {"timeout"}}};
 const s_sym g_sym_w               = {{{NULL},  1, {"w"}}};
+const s_sym g_sym_write           = {{{NULL},  5, {"write"}}};
 const s_sym g_sym_wx              = {{{NULL},  2, {"wx"}}};
 const s_sym g_sym_x               = {{{NULL},  1, {"x"}}};
 
@@ -407,10 +411,12 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_operator_pin, NULL);
   sym_register(&g_sym_operator_precedence, NULL);
   sym_register(&g_sym_r, NULL);
+  sym_register(&g_sym_read, NULL);
   sym_register(&g_sym_right, NULL);
   sym_register(&g_sym_rw, NULL);
   sym_register(&g_sym_rwx, NULL);
   sym_register(&g_sym_rx, NULL);
+  sym_register(&g_sym_signal, NULL);
   sym_register(&g_sym_special_operator, NULL);
   sym_register(&g_sym_str, NULL);
   sym_register(&g_sym_struct_type, NULL);
@@ -418,7 +424,9 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_symbol, NULL);
   sym_register(&g_sym_symbol_value, NULL);
   sym_register(&g_sym_then, NULL);
+  sym_register(&g_sym_timeout, NULL);
   sym_register(&g_sym_w, NULL);
+  sym_register(&g_sym_write, NULL);
   sym_register(&g_sym_wx, NULL);
   sym_register(&g_sym_x, NULL);
 
