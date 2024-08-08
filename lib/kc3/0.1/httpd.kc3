@@ -1,15 +1,26 @@
 defmodule HTTPd do
 
+  require File
+  require Socket
+  require Socket.Buf
+  require Str
+  require HTTP
+  require HTTP.Request
+  require HTTP.Response
+  
   def root_dir = "./public"
 
   def server = fn (host, port) {
     socket = Socket.listen(host, port)
     puts("KC3 HTTPd: listening on #{host}:#{port}")
-    while true do
-      client = Socket.Buf.accept(socket)
-      server_client(client)
-      Socket.Buf.close(client)
-    end
+    acceptor = HTTPd.fn () {
+      while true do
+        client = Socket.Buf.accept(socket)
+        server_client(client)
+        Socket.Buf.close(client)
+      end
+    }
+    acceptor();
     Socket.close(socket)
   }
 
