@@ -1,0 +1,19 @@
+quote event_base = HTTP.Event.init()
+event_base = HTTP.Event.init()
+quote socket = Socket.listen("0.0.0.0", "57000")
+socket = Socket.listen("0.0.0.0", "57000")
+echo_client = fn (socket, events, client) do
+  if List.has?(events, :read) && List.has(events, :write) do
+    Buf.refill(client.buf_rw.r)
+    str = Buf.read_to_str(client.buf_rw.r);
+    Buf.write_str(client.buf_rw.w, str);
+  end
+end
+acceptor = fn (server, events, void) do
+  if List.has?(events, :read) do
+    client = Socket.Buf.accept(server)
+    acceptor_ev = HTTP.Event.new(client.sockfd, [:read, :write],
+      echo_client, client)
+  end
+end
+quote ev = HTTP.Event.new(socket.fd, [:read], acceptor, void)
