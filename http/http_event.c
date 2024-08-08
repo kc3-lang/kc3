@@ -14,6 +14,14 @@
 #include <event.h>
 #include "http_event.h"
 
+s32 http_event_add (struct event *ev, s_time *time)
+{
+  struct timeval tv;
+  tv.tv_sec = time->tv_sec;
+  tv.tv_usec = time->tv_nsec / 1000;
+  return event_add(ev, &tv);
+}
+
 void http_event_set (struct event *ev, s32 fd, s16 event,
                      const s_cfn *cfn, s_tag *arg)
 {
