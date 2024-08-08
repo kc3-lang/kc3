@@ -1,5 +1,7 @@
 defmodule HTTP.Event do
 
+  dlopen(__DIR__ + "../http.so")
+
   def add = cfn S32 "http_event_add" (Ptr, Time)
 
   def del = cfn S32 "event_del" (Ptr)
