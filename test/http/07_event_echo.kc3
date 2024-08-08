@@ -16,4 +16,5 @@ acceptor = fn (server, events, void) do
       echo_client, client)
   end
 end
-quote ev = HTTP.Event.new(socket.fd, [:read], acceptor, void)
+quote HTTP.Event.dispatch()
+HTTP.Event.dispatch()

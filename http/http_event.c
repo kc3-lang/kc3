@@ -65,6 +65,11 @@ void http_event_callback (int fd, short events, void *tag_tuple)
   tag_clean(&tmp);
 }
 
+s32 http_event_dispatch (void)
+{
+  return event_dispatch();
+}
+
 struct event * http_event_new (s32 fd, const s_list *events,
                                const s_fn *callback, s_tag *arg)
 {
