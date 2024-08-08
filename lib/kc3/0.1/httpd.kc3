@@ -5,6 +5,7 @@ defmodule HTTPd do
   require Socket.Buf
   require Str
   require HTTP
+  require HTTP.Event
   require HTTP.Request
   require HTTP.Response
   
@@ -39,6 +40,7 @@ defmodule HTTPd do
       HTTP.mime_type_load("mime.types")
       host = getenv("KC3_HTTPD_HOST")
       port = getenv("KC3_HTTPD_PORT")
+      event_base = HTTP.Event.init();
       server(host, port)
     }
     (host, port) {
