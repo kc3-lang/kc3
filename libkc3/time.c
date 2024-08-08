@@ -16,6 +16,14 @@
 #include "tag.h"
 #include "time.h"
 
+s_time * time_allocate (s_time *time)
+{
+  time->tag = alloc(2 * sizeof(s_tag));
+  if (! time->tag)
+    return NULL;
+  return time;
+}
+
 void time_clean (s_time *time)
 {
   if (time->tag) {
@@ -25,14 +33,9 @@ void time_clean (s_time *time)
   }
 }
 
-s_time * time_init (s_time *time, bool allocate)
+s_time * time_init (s_time *time)
 {
   s_time tmp = {0};
-  if (allocate) {
-    tmp.tag = alloc(2 * sizeof(s_tag));
-    if (! tmp.tag)
-      return NULL;
-  }
   *time = tmp;
   return time;
 }
@@ -41,8 +44,7 @@ s_time * time_init_copy (s_time *time, const s_time *src)
 {
   s_time tmp = {0};
   if (src->tag) {
-    tmp.tag = alloc(2 * sizeof(s_tag));
-    if (! tmp.tag)
+    if (! time_allocate(&tmp))
       return NULL;
     if (! tag_init_copy(tmp.tag, src->tag)) {
       free(tmp.tag);
@@ -56,8 +58,21 @@ s_time * time_init_copy (s_time *time, const s_time *src)
     *time = tmp;
     return time;
   }
-  tmp.tv_sec = src->tv_sec;
-  tmp.tv_nsec = src->tv_nsec;
+  else {
+    tmp.tv_sec = src->tv_sec;
+    tmp.tv_nsec = src->tv_nsec;
+  }
+  *time = tmp;
+  return time;
+}
+
+s_time * time_init_now (s_time *time)
+{
+  s_timespec timespec;
+  s_time tmp = {0};
+  clock_gettime(CLOCK_REALTIME, &timespec);
+  tmp.tv_sec = timespec.tv_sec;
+  tmp.tv_nsec = timespec.tv_nsec;
   *time = tmp;
   return time;
 }

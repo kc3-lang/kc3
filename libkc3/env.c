@@ -54,6 +54,7 @@
 #include "sym.h"
 #include "tag.h"
 #include "tag_init.h"
+#include "time.h"
 #include "tuple.h"
 
 s_env g_kc3_env;
@@ -1185,8 +1186,10 @@ bool env_eval_equal_time (s_env *env, bool macro, const s_time *a,
     b2[1].type = TAG_SW;
     b2[1].data.sw = b->tv_nsec;
   }
-  if (a->tag || b->tag)
-    tmp.tag = alloc(2 * sizeof(s_tag));
+  if (a->tag || b->tag) {
+    if (! time_allocate(&tmp))
+      return false;
+  }
   else
     tmp.tag = tmp_tag;
   if (! env_eval_equal_tag(env, macro, a2, b2, tmp.tag)) {
@@ -1681,7 +1684,8 @@ bool env_eval_quote_time (s_env *env, const s_time *time, s_tag *dest)
   assert(time);
   assert(dest);
   if (time->tag) {
-    tmp.tag = alloc(2 * sizeof(s_tag));
+    if (! time_allocate(&tmp))
+      return false;
     if (! env_eval_quote_tag(env, time->tag, tmp.tag)) {
       err_puts("env_eval_quote_time: env_eval_quote_tag: tv_sec");
       assert(! "env_eval_quote_time: env_eval_quote_tag: tv_sec");
@@ -1695,12 +1699,11 @@ bool env_eval_quote_time (s_env *env, const s_time *time, s_tag *dest)
       free(tmp.tag);
       return false;
     }
-    dest->type = TAG_TIME;
-    dest->data.time = tmp;
-    return true;
   }
-  tmp.tv_sec = time->tv_sec;
-  tmp.tv_nsec = time->tv_nsec;
+  else {
+    tmp.tv_sec = time->tv_sec;
+    tmp.tv_nsec = time->tv_nsec;
+  }
   dest->type = TAG_TIME;
   dest->data.time = tmp;
   return true;
@@ -1914,7 +1917,9 @@ bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
       tag_clean(tag);
       return false;
     }
-    if (tag[0].type != TAG_SW) {
+    if (tag[0].type == TAG_SW)
+      tmp.data.time.tv_sec = tag[0].data.sw;
+    else if (tag[0].type != TAG_VOID) {
       err_write_1("env_eval_time: tv_sec is not a Sw: ");
       err_inspect_tag(tag);
       err_write_1("\n");
@@ -1923,7 +1928,9 @@ bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
       tag_clean(tag);
       return false;
     }
-    if (tag[1].type != TAG_SW) {
+    if (tag[1].type == TAG_SW)
+      tmp.data.time.tv_nsec = tag[1].data.sw;
+    else if (tag[1].type != TAG_VOID) {
       err_write_1("env_eval_time: tv_nsec is not a Sw: ");
       err_inspect_tag(tag + 1);
       err_write_1("\n");
@@ -1932,8 +1939,6 @@ bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
       tag_clean(tag);
       return false;
     }
-    tmp.data.time.tv_sec = tag[0].data.sw;
-    tmp.data.time.tv_nsec = tag[1].data.sw;
   }
   *dest = tmp;
   return true;
@@ -2571,7 +2576,7 @@ bool env_module_load (s_env *env, const s_sym *module)
     goto rollback;
   if (module_path(module, &env->module_path, KC3_EXT, &path) &&
       file_access(&path, &g_sym_r)) {
-    tag_init_time(&tag_time);
+    tag_init_time_now(&tag_time);
     if (! env_load(env, &path)) {
       err_write_1("env_module_load: ");
       err_inspect_sym(&module);
@@ -2590,7 +2595,7 @@ bool env_module_load (s_env *env, const s_sym *module)
     }
     if (! file_access(&path, &g_sym_r))
       goto rollback;
-    tag_init_time(&tag_time);
+    tag_init_time_now(&tag_time);
     if (facts_load_file(&env->facts, &path) < 0) {
       err_write_1("env_module_load: ");
       err_write_1(module->str.ptr.pchar);
@@ -2632,12 +2637,16 @@ const s_time ** env_module_load_time (s_env *env, const s_sym *module,
   if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
         &tag_module_name, &tag_load_time, &tag_time_var, NULL, NULL }))
     return NULL;
-  if (! facts_with_cursor_next(&cursor, &fact) ||
-      ! fact) {
+  if (! facts_with_cursor_next(&cursor, &fact)) {
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  if (! tag_is_struct(fact->object, &g_sym_Time)) {
+  if (! fact) {
+    *dest = NULL;
+    facts_with_cursor_clean(&cursor);
+    return dest;
+  }
+  if (fact->object->type != TAG_TIME) {
     err_write_1("env_module_load_time: module ");
     err_inspect_sym(&module);
     err_puts(" load time is not a %Time{}");
@@ -2645,7 +2654,7 @@ const s_time ** env_module_load_time (s_env *env, const s_sym *module,
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  *dest = fact->object->data.struct_.data;
+  *dest = &fact->object->data.time;
   facts_with_cursor_clean(&cursor);
   return dest;
 }

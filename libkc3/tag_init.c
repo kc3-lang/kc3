@@ -518,6 +518,17 @@ s_tag * tag_init_tuple_2 (s_tag *tag, const s_tag *a, const s_tag *b)
   return tag;
 }
 
+s_tag * tag_init_time_now (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_TIME;
+  if (! time_init_now(&tmp.data.time))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_u8 (s_tag *tag, u8 i)
 {
   s_tag tmp = {0};
@@ -1178,6 +1189,20 @@ s_tag * tag_new_tuple_2 (const s_tag *a, const s_tag *b)
   return tag;
 }
 
+s_tag * tag_new_time_now (void)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_TIME;
+  if (! time_init_now(&tag->data.time)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_u8 (u8 i)
 {
   s_tag *tag;
@@ -1786,6 +1811,18 @@ s_tag * tag_tuple_2 (s_tag *tag, const s_tag *a, const s_tag *b)
   tag_clean(tag);
   tmp.type = TAG_TUPLE;
   if (! tuple_init_2(&tmp.data.tuple, a, b))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_time_now (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_TIME;
+  if (! time_init_now(&tmp.data.time))
     return NULL;
   *tag = tmp;
   return tag;

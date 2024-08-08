@@ -73,7 +73,8 @@ sw buf_ignore (s_buf *buf, uw size)
     return r;
   }
   if ((uw) r < size) {
-    err_puts("buf_ignore: buf_refill < size");
+    if (false)
+      err_puts("buf_ignore: buf_refill < size");
     return -1;
   }
   while (i < size) {

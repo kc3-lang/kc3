@@ -401,6 +401,7 @@ class TagInitList
                    [Arg.new("const s_tag *", "a"),
                     Arg.new("const s_tag *", "b")]),
        TagInitProto.new("time", "TAG_TIME", :init_mode_none, []),
+       TagInit.new("time", "now", "TAG_TIME", :init_mode_init, []),
        TagInit.new("u8", "TAG_U8", :init_mode_direct,
                    [Arg.new("u8", "i")]),
        TagInit.new("u16", "TAG_U16", :init_mode_direct,

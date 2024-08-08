@@ -538,29 +538,6 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
   return NULL;
 }
 
-s_tag * tag_init_time (s_tag *tag)
-{
-  s_time *time;
-  s_timespec timespec;
-  s_tag tmp = {0};
-  if (! tag_init_struct(&tmp, &g_sym_Time)) {
-    err_puts("tag_init_time: tag_init_struct");
-    assert(! "tag_init_time: tag_init_struct");
-    return NULL;
-  }
-  if (! struct_allocate(&tmp.data.struct_)) {
-    err_puts("tag_init_time: struct_allocate");
-    assert(! "tag_init_time: struct_allocate");
-    return NULL;
-  }
-  time = tmp.data.struct_.data;
-  clock_gettime(CLOCK_REALTIME, &timespec);
-  time->tv_sec = timespec.tv_sec;
-  time->tv_nsec = timespec.tv_nsec;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_integer_reduce (s_tag *tag)
 {
   s_integer *i;

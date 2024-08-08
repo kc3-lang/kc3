@@ -19,40 +19,6 @@ KC3_CONFIGURES = \
 	"libkc3/configure" \
 	"libkc3/sources.sh" \
 	"libkc3/update_sources" \
-	"libkc3_window/cairo/configure" \
-	"libkc3_window/cairo/demo/configure" \
-	"libkc3_window/cairo/demo/sources.sh" \
-	"libkc3_window/cairo/demo/update_sources" \
-	"libkc3_window/cairo/quartz/configure" \
-	"libkc3_window/cairo/quartz/demo/configure" \
-	"libkc3_window/cairo/quartz/demo/sources.sh" \
-	"libkc3_window/cairo/quartz/demo/update_sources" \
-	"libkc3_window/cairo/quartz/sources.sh" \
-	"libkc3_window/cairo/quartz/update_sources" \
-	"libkc3_window/cairo/sources.sh" \
-	"libkc3_window/cairo/update_sources" \
-	"libkc3_window/cairo/win32/configure" \
-	"libkc3_window/cairo/win32/demo/configure" \
-	"libkc3_window/cairo/win32/demo/sources.sh" \
-	"libkc3_window/cairo/win32/demo/update_sources" \
-	"libkc3_window/cairo/win32/sources.sh" \
-	"libkc3_window/cairo/win32/update_sources" \
-	"libkc3_window/cairo/xcb/configure" \
-	"libkc3_window/cairo/xcb/demo/configure" \
-	"libkc3_window/cairo/xcb/demo/sources.sh" \
-	"libkc3_window/cairo/xcb/demo/update_sources" \
-	"libkc3_window/cairo/xcb/sources.sh" \
-	"libkc3_window/cairo/xcb/update_sources" \
-	"libkc3_window/configure" \
-	"libkc3_window/sdl2/configure" \
-	"libkc3_window/sdl2/demo/configure" \
-	"libkc3_window/sdl2/demo/macos/configure" \
-	"libkc3_window/sdl2/demo/sources.sh" \
-	"libkc3_window/sdl2/demo/update_sources" \
-	"libkc3_window/sdl2/sources.sh" \
-	"libkc3_window/sdl2/update_sources" \
-	"libkc3_window/sources.sh" \
-	"libkc3_window/update_sources" \
 	"libtommath/configure" \
 	"libtommath/sources.sh" \
 	"libtommath/update_sources" \
@@ -60,6 +26,40 @@ KC3_CONFIGURES = \
 	"test/sources.sh" \
 	"test/update_sources" \
 	"ucd2c/configure" \
+	"window/cairo/configure" \
+	"window/cairo/demo/configure" \
+	"window/cairo/demo/sources.sh" \
+	"window/cairo/demo/update_sources" \
+	"window/cairo/quartz/configure" \
+	"window/cairo/quartz/demo/configure" \
+	"window/cairo/quartz/demo/sources.sh" \
+	"window/cairo/quartz/demo/update_sources" \
+	"window/cairo/quartz/sources.sh" \
+	"window/cairo/quartz/update_sources" \
+	"window/cairo/sources.sh" \
+	"window/cairo/update_sources" \
+	"window/cairo/win32/configure" \
+	"window/cairo/win32/demo/configure" \
+	"window/cairo/win32/demo/sources.sh" \
+	"window/cairo/win32/demo/update_sources" \
+	"window/cairo/win32/sources.sh" \
+	"window/cairo/win32/update_sources" \
+	"window/cairo/xcb/configure" \
+	"window/cairo/xcb/demo/configure" \
+	"window/cairo/xcb/demo/sources.sh" \
+	"window/cairo/xcb/demo/update_sources" \
+	"window/cairo/xcb/sources.sh" \
+	"window/cairo/xcb/update_sources" \
+	"window/configure" \
+	"window/sdl2/configure" \
+	"window/sdl2/demo/configure" \
+	"window/sdl2/demo/macos/configure" \
+	"window/sdl2/demo/sources.sh" \
+	"window/sdl2/demo/update_sources" \
+	"window/sdl2/sources.sh" \
+	"window/sdl2/update_sources" \
+	"window/sources.sh" \
+	"window/update_sources" \
 
 KC3_MAKEFILES = \
 	"ekc3/Makefile" \
@@ -76,34 +76,34 @@ KC3_MAKEFILES = \
 	"libkc3/Makefile" \
 	"libkc3/gen.mk" \
 	"libkc3/sources.mk" \
-	"libkc3_window/Makefile" \
-	"libkc3_window/cairo/Makefile" \
-	"libkc3_window/cairo/demo/Makefile" \
-	"libkc3_window/cairo/demo/sources.mk" \
-	"libkc3_window/cairo/quartz/Makefile" \
-	"libkc3_window/cairo/quartz/demo/Makefile" \
-	"libkc3_window/cairo/quartz/demo/sources.mk" \
-	"libkc3_window/cairo/quartz/sources.mk" \
-	"libkc3_window/cairo/sources.mk" \
-	"libkc3_window/cairo/win32/Makefile" \
-	"libkc3_window/cairo/win32/demo/Makefile" \
-	"libkc3_window/cairo/win32/demo/sources.mk" \
-	"libkc3_window/cairo/win32/sources.mk" \
-	"libkc3_window/cairo/xcb/Makefile" \
-	"libkc3_window/cairo/xcb/demo/Makefile" \
-	"libkc3_window/cairo/xcb/demo/sources.mk" \
-	"libkc3_window/cairo/xcb/sources.mk" \
-	"libkc3_window/sdl2/Makefile" \
-	"libkc3_window/sdl2/demo/Makefile" \
-	"libkc3_window/sdl2/demo/macos/Makefile" \
-	"libkc3_window/sdl2/demo/sources.mk" \
-	"libkc3_window/sdl2/sources.mk" \
-	"libkc3_window/sources.mk" \
 	"libtommath/Makefile" \
 	"libtommath/sources.mk" \
 	"test/Makefile" \
 	"test/sources.mk" \
 	"ucd2c/Makefile" \
+	"window/Makefile" \
+	"window/cairo/Makefile" \
+	"window/cairo/demo/Makefile" \
+	"window/cairo/demo/sources.mk" \
+	"window/cairo/quartz/Makefile" \
+	"window/cairo/quartz/demo/Makefile" \
+	"window/cairo/quartz/demo/sources.mk" \
+	"window/cairo/quartz/sources.mk" \
+	"window/cairo/sources.mk" \
+	"window/cairo/win32/Makefile" \
+	"window/cairo/win32/demo/Makefile" \
+	"window/cairo/win32/demo/sources.mk" \
+	"window/cairo/win32/sources.mk" \
+	"window/cairo/xcb/Makefile" \
+	"window/cairo/xcb/demo/Makefile" \
+	"window/cairo/xcb/demo/sources.mk" \
+	"window/cairo/xcb/sources.mk" \
+	"window/sdl2/Makefile" \
+	"window/sdl2/demo/Makefile" \
+	"window/sdl2/demo/macos/Makefile" \
+	"window/sdl2/demo/sources.mk" \
+	"window/sdl2/sources.mk" \
+	"window/sources.mk" \
 
 KC3_C_SOURCES = \
 	"ekc3/ekc3.c" \
@@ -508,113 +508,6 @@ KC3_C_SOURCES = \
 	"libkc3/var.h" \
 	"libkc3/void.c" \
 	"libkc3/void.h" \
-	"libkc3_window/cairo/cairo_font.c" \
-	"libkc3_window/cairo/cairo_font.h" \
-	"libkc3_window/cairo/cairo_sprite.c" \
-	"libkc3_window/cairo/cairo_sprite.h" \
-	"libkc3_window/cairo/cairo_text.c" \
-	"libkc3_window/cairo/cairo_text.h" \
-	"libkc3_window/cairo/demo/bg_rect.c" \
-	"libkc3_window/cairo/demo/bg_rect.h" \
-	"libkc3_window/cairo/demo/flies.c" \
-	"libkc3_window/cairo/demo/flies.h" \
-	"libkc3_window/cairo/demo/lightspeed.c" \
-	"libkc3_window/cairo/demo/lightspeed.h" \
-	"libkc3_window/cairo/demo/mandelbrot_f128.c" \
-	"libkc3_window/cairo/demo/mandelbrot_f128.h" \
-	"libkc3_window/cairo/demo/toasters.c" \
-	"libkc3_window/cairo/demo/toasters.h" \
-	"libkc3_window/cairo/demo/window_cairo_demo.c" \
-	"libkc3_window/cairo/demo/window_cairo_demo.h" \
-	"libkc3_window/cairo/quartz/demo/window_cairo_quartz_demo.c" \
-	"libkc3_window/cairo/quartz/quartz_to_xkbcommon.c" \
-	"libkc3_window/cairo/quartz/quartz_to_xkbcommon.h" \
-	"libkc3_window/cairo/quartz/window_cairo_quartz.h" \
-	"libkc3_window/cairo/quartz/window_cairo_quartz_app_delegate.h" \
-	"libkc3_window/cairo/quartz/window_cairo_quartz_view.h" \
-	"libkc3_window/cairo/quartz/window_cairo_quartz_view_controller.h" \
-	"libkc3_window/cairo/quartz/xkbquartz.h" \
-	"libkc3_window/cairo/types.h" \
-	"libkc3_window/cairo/win32/demo/window_cairo_win32_demo.c" \
-	"libkc3_window/cairo/win32/vk_to_xkbcommon.c" \
-	"libkc3_window/cairo/win32/vk_to_xkbcommon.h" \
-	"libkc3_window/cairo/win32/window_cairo_win32.c" \
-	"libkc3_window/cairo/win32/window_cairo_win32.h" \
-	"libkc3_window/cairo/window_cairo.c" \
-	"libkc3_window/cairo/window_cairo.h" \
-	"libkc3_window/cairo/xcb/demo/window_cairo_xcb_demo.c" \
-	"libkc3_window/cairo/xcb/window_cairo_xcb.c" \
-	"libkc3_window/cairo/xcb/window_cairo_xcb.h" \
-	"libkc3_window/sdl2/demo/bg_rect.c" \
-	"libkc3_window/sdl2/demo/bg_rect.h" \
-	"libkc3_window/sdl2/demo/earth.c" \
-	"libkc3_window/sdl2/demo/earth.h" \
-	"libkc3_window/sdl2/demo/flies.c" \
-	"libkc3_window/sdl2/demo/flies.h" \
-	"libkc3_window/sdl2/demo/lightspeed.c" \
-	"libkc3_window/sdl2/demo/lightspeed.h" \
-	"libkc3_window/sdl2/demo/mandelbrot_f128.c" \
-	"libkc3_window/sdl2/demo/mandelbrot_f128.h" \
-	"libkc3_window/sdl2/demo/matrix.c" \
-	"libkc3_window/sdl2/demo/matrix.h" \
-	"libkc3_window/sdl2/demo/toasters.c" \
-	"libkc3_window/sdl2/demo/toasters.h" \
-	"libkc3_window/sdl2/demo/window_sdl2_demo.c" \
-	"libkc3_window/sdl2/demo/window_sdl2_demo.h" \
-	"libkc3_window/sdl2/disabled/mandelbrot.c" \
-	"libkc3_window/sdl2/disabled/mandelbrot.h" \
-	"libkc3_window/sdl2/disabled/sdl2_font.c" \
-	"libkc3_window/sdl2/disabled/sdl2_font.h" \
-	"libkc3_window/sdl2/disabled/sdl2_sprite.c" \
-	"libkc3_window/sdl2/disabled/sdl2_sprite.h" \
-	"libkc3_window/sdl2/dmat3.h" \
-	"libkc3_window/sdl2/dmat4.c" \
-	"libkc3_window/sdl2/dmat4.h" \
-	"libkc3_window/sdl2/dvec2.c" \
-	"libkc3_window/sdl2/dvec2.h" \
-	"libkc3_window/sdl2/dvec3.c" \
-	"libkc3_window/sdl2/dvec3.h" \
-	"libkc3_window/sdl2/gl_camera.c" \
-	"libkc3_window/sdl2/gl_camera.h" \
-	"libkc3_window/sdl2/gl_cylinder.c" \
-	"libkc3_window/sdl2/gl_cylinder.h" \
-	"libkc3_window/sdl2/gl_deprecated.c" \
-	"libkc3_window/sdl2/gl_deprecated.h" \
-	"libkc3_window/sdl2/gl_font.c" \
-	"libkc3_window/sdl2/gl_font.h" \
-	"libkc3_window/sdl2/gl_lines.c" \
-	"libkc3_window/sdl2/gl_lines.h" \
-	"libkc3_window/sdl2/gl_object.c" \
-	"libkc3_window/sdl2/gl_object.h" \
-	"libkc3_window/sdl2/gl_ortho.c" \
-	"libkc3_window/sdl2/gl_ortho.h" \
-	"libkc3_window/sdl2/gl_sphere.c" \
-	"libkc3_window/sdl2/gl_sphere.h" \
-	"libkc3_window/sdl2/gl_sprite.c" \
-	"libkc3_window/sdl2/gl_sprite.h" \
-	"libkc3_window/sdl2/gl_square.c" \
-	"libkc3_window/sdl2/gl_square.h" \
-	"libkc3_window/sdl2/gl_text.c" \
-	"libkc3_window/sdl2/gl_text.h" \
-	"libkc3_window/sdl2/gl_triangle.c" \
-	"libkc3_window/sdl2/gl_triangle.h" \
-	"libkc3_window/sdl2/gl_vertex.c" \
-	"libkc3_window/sdl2/gl_vertex.h" \
-	"libkc3_window/sdl2/gl_vtext.c" \
-	"libkc3_window/sdl2/gl_vtext.h" \
-	"libkc3_window/sdl2/mat3.h" \
-	"libkc3_window/sdl2/mat4.c" \
-	"libkc3_window/sdl2/mat4.h" \
-	"libkc3_window/sdl2/types.h" \
-	"libkc3_window/sdl2/vec2.c" \
-	"libkc3_window/sdl2/vec2.h" \
-	"libkc3_window/sdl2/vec3.c" \
-	"libkc3_window/sdl2/vec3.h" \
-	"libkc3_window/sdl2/window_sdl2.c" \
-	"libkc3_window/sdl2/window_sdl2.h" \
-	"libkc3_window/types.h" \
-	"libkc3_window/window.c" \
-	"libkc3_window/window.h" \
 	"test/array_test.c" \
 	"test/bool_test.c" \
 	"test/buf_file_test.c" \
@@ -662,201 +555,116 @@ KC3_C_SOURCES = \
 	"test/types_test.c" \
 	"ucd2c/ucd.h" \
 	"ucd2c/ucd2c.c" \
+	"window/cairo/cairo_font.c" \
+	"window/cairo/cairo_font.h" \
+	"window/cairo/cairo_sprite.c" \
+	"window/cairo/cairo_sprite.h" \
+	"window/cairo/cairo_text.c" \
+	"window/cairo/cairo_text.h" \
+	"window/cairo/demo/bg_rect.c" \
+	"window/cairo/demo/bg_rect.h" \
+	"window/cairo/demo/flies.c" \
+	"window/cairo/demo/flies.h" \
+	"window/cairo/demo/lightspeed.c" \
+	"window/cairo/demo/lightspeed.h" \
+	"window/cairo/demo/mandelbrot_f128.c" \
+	"window/cairo/demo/mandelbrot_f128.h" \
+	"window/cairo/demo/toasters.c" \
+	"window/cairo/demo/toasters.h" \
+	"window/cairo/demo/window_cairo_demo.c" \
+	"window/cairo/demo/window_cairo_demo.h" \
+	"window/cairo/quartz/demo/window_cairo_quartz_demo.c" \
+	"window/cairo/quartz/quartz_to_xkbcommon.c" \
+	"window/cairo/quartz/quartz_to_xkbcommon.h" \
+	"window/cairo/quartz/window_cairo_quartz.h" \
+	"window/cairo/quartz/window_cairo_quartz_app_delegate.h" \
+	"window/cairo/quartz/window_cairo_quartz_view.h" \
+	"window/cairo/quartz/window_cairo_quartz_view_controller.h" \
+	"window/cairo/quartz/xkbquartz.h" \
+	"window/cairo/types.h" \
+	"window/cairo/win32/demo/window_cairo_win32_demo.c" \
+	"window/cairo/win32/vk_to_xkbcommon.c" \
+	"window/cairo/win32/vk_to_xkbcommon.h" \
+	"window/cairo/win32/window_cairo_win32.c" \
+	"window/cairo/win32/window_cairo_win32.h" \
+	"window/cairo/window_cairo.c" \
+	"window/cairo/window_cairo.h" \
+	"window/cairo/xcb/demo/window_cairo_xcb_demo.c" \
+	"window/cairo/xcb/window_cairo_xcb.c" \
+	"window/cairo/xcb/window_cairo_xcb.h" \
+	"window/sdl2/demo/bg_rect.c" \
+	"window/sdl2/demo/bg_rect.h" \
+	"window/sdl2/demo/earth.c" \
+	"window/sdl2/demo/earth.h" \
+	"window/sdl2/demo/flies.c" \
+	"window/sdl2/demo/flies.h" \
+	"window/sdl2/demo/lightspeed.c" \
+	"window/sdl2/demo/lightspeed.h" \
+	"window/sdl2/demo/mandelbrot_f128.c" \
+	"window/sdl2/demo/mandelbrot_f128.h" \
+	"window/sdl2/demo/matrix.c" \
+	"window/sdl2/demo/matrix.h" \
+	"window/sdl2/demo/toasters.c" \
+	"window/sdl2/demo/toasters.h" \
+	"window/sdl2/demo/window_sdl2_demo.c" \
+	"window/sdl2/demo/window_sdl2_demo.h" \
+	"window/sdl2/disabled/mandelbrot.c" \
+	"window/sdl2/disabled/mandelbrot.h" \
+	"window/sdl2/disabled/sdl2_font.c" \
+	"window/sdl2/disabled/sdl2_font.h" \
+	"window/sdl2/disabled/sdl2_sprite.c" \
+	"window/sdl2/disabled/sdl2_sprite.h" \
+	"window/sdl2/dmat3.h" \
+	"window/sdl2/dmat4.c" \
+	"window/sdl2/dmat4.h" \
+	"window/sdl2/dvec2.c" \
+	"window/sdl2/dvec2.h" \
+	"window/sdl2/dvec3.c" \
+	"window/sdl2/dvec3.h" \
+	"window/sdl2/gl_camera.c" \
+	"window/sdl2/gl_camera.h" \
+	"window/sdl2/gl_cylinder.c" \
+	"window/sdl2/gl_cylinder.h" \
+	"window/sdl2/gl_deprecated.c" \
+	"window/sdl2/gl_deprecated.h" \
+	"window/sdl2/gl_font.c" \
+	"window/sdl2/gl_font.h" \
+	"window/sdl2/gl_lines.c" \
+	"window/sdl2/gl_lines.h" \
+	"window/sdl2/gl_object.c" \
+	"window/sdl2/gl_object.h" \
+	"window/sdl2/gl_ortho.c" \
+	"window/sdl2/gl_ortho.h" \
+	"window/sdl2/gl_sphere.c" \
+	"window/sdl2/gl_sphere.h" \
+	"window/sdl2/gl_sprite.c" \
+	"window/sdl2/gl_sprite.h" \
+	"window/sdl2/gl_square.c" \
+	"window/sdl2/gl_square.h" \
+	"window/sdl2/gl_text.c" \
+	"window/sdl2/gl_text.h" \
+	"window/sdl2/gl_triangle.c" \
+	"window/sdl2/gl_triangle.h" \
+	"window/sdl2/gl_vertex.c" \
+	"window/sdl2/gl_vertex.h" \
+	"window/sdl2/gl_vtext.c" \
+	"window/sdl2/gl_vtext.h" \
+	"window/sdl2/mat3.h" \
+	"window/sdl2/mat4.c" \
+	"window/sdl2/mat4.h" \
+	"window/sdl2/types.h" \
+	"window/sdl2/vec2.c" \
+	"window/sdl2/vec2.h" \
+	"window/sdl2/vec3.c" \
+	"window/sdl2/vec3.h" \
+	"window/sdl2/window_sdl2.c" \
+	"window/sdl2/window_sdl2.h" \
+	"window/types.h" \
+	"window/window.c" \
+	"window/window.h" \
 
 KC3_FONT_SOURCES = \
-	"fonts/Computer Modern/cmunbl-webfont.ttf" \
-	"fonts/Computer Modern/cmunbl.otf" \
-	"fonts/Computer Modern/cmunbx-webfont.ttf" \
-	"fonts/Computer Modern/cmunbx.otf" \
-	"fonts/Computer Modern/cmunbxo-webfont.ttf" \
-	"fonts/Computer Modern/cmunbxo.otf" \
-	"fonts/Computer Modern/cmunrm-webfont.ttf" \
-	"fonts/Computer Modern/cmunrm.otf" \
-	"fonts/Computer Modern/cmunsi-webfont.ttf" \
-	"fonts/Computer Modern/cmunsi.otf" \
-	"fonts/Computer Modern/cmunsl-webfont.ttf" \
-	"fonts/Computer Modern/cmunsl.otf" \
-	"fonts/Computer Modern/cmunss-webfont.ttf" \
-	"fonts/Computer Modern/cmunss.otf" \
-	"fonts/Computer Modern/cmunsx-webfont.ttf" \
-	"fonts/Computer Modern/cmunsx.otf" \
-	"fonts/Courier New/Courier New.ttf" \
-	"fonts/Courier/fonts/OGCourier-Bold.otf" \
-	"fonts/Courier/fonts/OGCourier-Bold.ttf" \
-	"fonts/Courier/fonts/OGCourier-BoldItalic.otf" \
-	"fonts/Courier/fonts/OGCourier-BoldItalic.ttf" \
-	"fonts/Courier/fonts/OGCourier-Italic.otf" \
-	"fonts/Courier/fonts/OGCourier-Italic.ttf" \
-	"fonts/Courier/fonts/OGCourier.otf" \
-	"fonts/Courier/fonts/OGCourier.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-BoldItalic.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-BoldItalic.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Italic.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Italic.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-BoldItalic.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-BoldItalic.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Italic.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Italic.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash.ttf" \
-	"fonts/Courier/sfd/OGCourier-Bold.sfd.ttf" \
-	"fonts/Courier/sfd/OGCourier-BoldItalic.sfd.ttf" \
-	"fonts/Courier/sfd/OGCourier-Italic.sfd.ttf" \
-	"fonts/Courier/sfd/OGCourier.sfd.ttf" \
-	"fonts/Inter/InterVariable-Italic.ttf" \
-	"fonts/Inter/InterVariable.ttf" \
-	"fonts/Inter/extras/otf/Inter-Black.otf" \
-	"fonts/Inter/extras/otf/Inter-BlackItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-Bold.otf" \
-	"fonts/Inter/extras/otf/Inter-BoldItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-ExtraBold.otf" \
-	"fonts/Inter/extras/otf/Inter-ExtraBoldItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-ExtraLight.otf" \
-	"fonts/Inter/extras/otf/Inter-ExtraLightItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-Italic.otf" \
-	"fonts/Inter/extras/otf/Inter-Light.otf" \
-	"fonts/Inter/extras/otf/Inter-LightItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-Medium.otf" \
-	"fonts/Inter/extras/otf/Inter-MediumItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-Regular.otf" \
-	"fonts/Inter/extras/otf/Inter-SemiBold.otf" \
-	"fonts/Inter/extras/otf/Inter-SemiBoldItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-Thin.otf" \
-	"fonts/Inter/extras/otf/Inter-ThinItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Black.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-BlackItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Bold.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-BoldItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-ExtraBold.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-ExtraBoldItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-ExtraLight.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-ExtraLightItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Italic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Light.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-LightItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Medium.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-MediumItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Regular.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-SemiBold.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-SemiBoldItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Thin.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-ThinItalic.otf" \
-	"fonts/Inter/extras/ttf/Inter-Black.ttf" \
-	"fonts/Inter/extras/ttf/Inter-BlackItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Bold.ttf" \
-	"fonts/Inter/extras/ttf/Inter-BoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-ExtraBold.ttf" \
-	"fonts/Inter/extras/ttf/Inter-ExtraBoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-ExtraLight.ttf" \
-	"fonts/Inter/extras/ttf/Inter-ExtraLightItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Italic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Light.ttf" \
-	"fonts/Inter/extras/ttf/Inter-LightItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Medium.ttf" \
-	"fonts/Inter/extras/ttf/Inter-MediumItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Regular.ttf" \
-	"fonts/Inter/extras/ttf/Inter-SemiBold.ttf" \
-	"fonts/Inter/extras/ttf/Inter-SemiBoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Thin.ttf" \
-	"fonts/Inter/extras/ttf/Inter-ThinItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Black.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-BlackItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Bold.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-BoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-ExtraBold.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-ExtraBoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-ExtraLight.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-ExtraLightItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Italic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Light.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-LightItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Medium.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-MediumItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Regular.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-SemiBold.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-SemiBoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Thin.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-ThinItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Black.ttf" \
-	"fonts/Noto Sans/NotoSans-BlackItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Bold.ttf" \
-	"fonts/Noto Sans/NotoSans-BoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-ExtraBold.ttf" \
-	"fonts/Noto Sans/NotoSans-ExtraBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-ExtraLight.ttf" \
-	"fonts/Noto Sans/NotoSans-ExtraLightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Italic-VariableFont_wdth,wght.ttf" \
-	"fonts/Noto Sans/NotoSans-Italic.ttf" \
-	"fonts/Noto Sans/NotoSans-Light.ttf" \
-	"fonts/Noto Sans/NotoSans-LightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Medium.ttf" \
-	"fonts/Noto Sans/NotoSans-MediumItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Regular.ttf" \
-	"fonts/Noto Sans/NotoSans-SemiBold.ttf" \
-	"fonts/Noto Sans/NotoSans-SemiBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Thin.ttf" \
-	"fonts/Noto Sans/NotoSans-ThinItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-VariableFont_wdth,wght.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Black.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-BlackItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Bold.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-BoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-ExtraBold.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-ExtraBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-ExtraLight.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-ExtraLightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Italic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Light.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-LightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Medium.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-MediumItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Regular.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-SemiBold.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-SemiBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Thin.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-ThinItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Black.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-BlackItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Bold.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-BoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraBold.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraLight.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraLightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Italic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Light.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-LightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Medium.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-MediumItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Regular.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-SemiBold.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-SemiBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Thin.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-ThinItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Black.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-BlackItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Bold.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-BoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraBold.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraLight.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraLightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Italic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Light.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-LightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Medium.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-MediumItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Regular.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-SemiBold.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-SemiBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Thin.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-ThinItalic.ttf" \
+	"" \
 
 KC3_IMG_SOURCES = \
 	"img/c3.1.xcf" \
@@ -903,7 +711,6 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
-	"lib/kc3/0.1/.#httpd.kc3" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bool.facts" \
 	"lib/kc3/0.1/buf.kc3" \
@@ -925,6 +732,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/vec3.kc3" \
 	"lib/kc3/0.1/gl/vertex.kc3" \
 	"lib/kc3/0.1/http.kc3" \
+	"lib/kc3/0.1/http/event.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
 	"lib/kc3/0.1/http/response.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
@@ -957,10 +765,10 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/void.facts" \
 
 KC3_OBJC_SOURCES = \
-	"libkc3_window/cairo/quartz/window_cairo_quartz.m" \
-	"libkc3_window/cairo/quartz/window_cairo_quartz_app_delegate.m" \
-	"libkc3_window/cairo/quartz/window_cairo_quartz_view.m" \
-	"libkc3_window/cairo/quartz/window_cairo_quartz_view_controller.m" \
+	"window/cairo/quartz/window_cairo_quartz.m" \
+	"window/cairo/quartz/window_cairo_quartz_app_delegate.m" \
+	"window/cairo/quartz/window_cairo_quartz_view.m" \
+	"window/cairo/quartz/window_cairo_quartz_view_controller.m" \
 
 KC3_TEST_SOURCES = \
 	"test/buf_parse_test_su.rb" \
@@ -1181,6 +989,9 @@ KC3_TEST_HTTP_SOURCES = \
 	"test/http/06_mime_types.kc3" \
 	"test/http/06_mime_types.out.expected" \
 	"test/http/06_mime_types.ret.expected" \
+	"test/http/07_event_echo.kc3" \
+	"test/http/07_event_echo.out.expected" \
+	"test/http/07_event_echo.ret.expected" \
 	"test/http_test" \
 
 KC3_TEST_HTTPD_SOURCES = \

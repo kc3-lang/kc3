@@ -1268,20 +1268,48 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
 
 s8 compare_time (const s_time *a, const s_time *b)
 {
+  s_tag *a2;
+  s_tag  a_tag[2] = {0};
+  s_tag *b2;
+  s_tag  b_tag[2] = {0};
+  s8 r;
   if (a == b)
     return 0;
   if (! a)
     return -1;
   if (! b)
     return 1;
-  if (a->tv_sec < b->tv_sec)
-    return -1;
-  if (a->tv_sec > b->tv_sec)
-    return 1;
-  if (a->tv_nsec < b->tv_nsec)
-    return -1;
-  if (a->tv_nsec > b->tv_nsec)
-    return 1;
+  a2 = a->tag;
+  b2 = b->tag;
+  if (! (a2 || b2)) {
+    if (a->tv_sec < b->tv_sec)
+      return -1;
+    if (a->tv_sec > b->tv_sec)
+      return 1;
+    if (a->tv_nsec < b->tv_nsec)
+      return -1;
+    if (a->tv_nsec > b->tv_nsec)
+      return 1;
+    return 0;
+  }
+  if (! a2) {
+    a2 = a_tag;
+    a2[0].type = TAG_SW;
+    a2[0].data.sw = a->tv_sec;
+    a2[1].type = TAG_SW;
+    a2[1].data.sw = a->tv_nsec;
+  }
+  if (! b2) {
+    b2 = b_tag;
+    b2[0].type = TAG_SW;
+    b2[0].data.sw = b->tv_sec;
+    b2[1].type = TAG_SW;
+    b2[1].data.sw = b->tv_nsec;
+  }
+  if ((r = compare_tag(a2, b2)))
+    return r;
+  if ((r = compare_tag(a2 + 1, b2 + 1)))
+    return r;
   return 0;
 }
 

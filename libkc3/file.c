@@ -180,7 +180,7 @@ s_time * file_mtime (const s_str *path, s_time *dest)
 {
   s32 e;
   struct stat sb;
-  s_time tmp;
+  s_time tmp = {0};
   assert(path);
   assert(dest);
   if (stat(path->ptr.pchar, &sb)) {

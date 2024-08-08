@@ -52,7 +52,7 @@ pkg_config libffi
 pkg_config libmd
 config_define PREFIX "\"${PREFIX}\""
 update_config_h
-LIBS="$LIBS -levent -lm -rpath ${PREFIX}/lib"
+LIBS="$LIBS -lm -rpath ${PREFIX}/lib"
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
