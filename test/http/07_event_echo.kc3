@@ -5,8 +5,8 @@ socket = Socket.listen("0.0.0.0", "57000")
 echo_client = fn (socket, events, client) do
   if List.has?(events, :read) && List.has(events, :write) do
     Buf.refill(client.buf_rw.r)
-    str = Buf.read_to_str(client.buf_rw.r);
-    Buf.write_str(client.buf_rw.w, str);
+    str = Buf.read_to_str(client.buf_rw.r)
+    Buf.write_str(client.buf_rw.w, str)
   end
 end
 acceptor = fn (server, events, void) do
