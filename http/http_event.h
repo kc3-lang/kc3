@@ -16,6 +16,6 @@
 #include "types.h"
 
 void http_event_set (struct event *ev, s32 fd, s16 event,
-                     const s_cfn *cfn, void *arg);
+                     const s_cfn *cfn, s_tag *arg);
 
 #endif /* HTTP_H */
