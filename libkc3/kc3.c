@@ -11,8 +11,10 @@
  * THIS SOFTWARE.
  */
 #include <dlfcn.h>
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "assert.h"
 #include "bool.h"
 #include "buf.h"
@@ -134,6 +136,11 @@ void ** kc3_dlopen (const s_str *path, void **dest)
     assert(! "kc3_dlopen: dlopen failed");
   }
   return dest;
+}
+
+sw kc3_errno (void)
+{
+  return errno;
 }
 
 void kc3_exit (sw code)
@@ -287,6 +294,13 @@ s_str * kc3_str (const s_tag *tag, s_str *dest)
     sym = &g_sym_Str;
     return str_init_cast(dest, &sym, tag);
   }
+}
+
+s_str * kc3_strerror (sw err_no, s_str *dest)
+{
+  const char *s;
+  s = strerror(err_no);
+  return str_init_1_alloc(dest, s);
 }
 
 s_tag * kc3_while (const s_tag *cond, const s_tag *body, s_tag *dest)

@@ -50,10 +50,12 @@ s_tag * kc3_defoperator (const s_sym **name, const s_sym **sym,
                          s_tag *dest);
 s_tag * kc3_defstruct (const s_list * const *spec, s_tag *dest);
 void ** kc3_dlopen (const s_str *path, void **dest);
+sw      kc3_errno (void);
 void    kc3_exit (sw code);
 bool    kc3_load (const s_str *path);
 s_tag * kc3_pin (const s_tag *a, s_tag *dest);
 bool    kc3_require (const s_sym * const *module);
+s_str * kc3_strerror (sw err_no, s_str *dest);
 
 /* Special operators. */
 s_tag * kc3_if_then_else (const s_tag *cond, const s_tag *then,
