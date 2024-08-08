@@ -17,5 +17,6 @@
 void http_event_set (struct event *ev, s32 fd, s16 event,
                      const s_cfn *cfn, void *arg)
 {
-  event_set(ev, fd, event, cfn->ptr.f, arg);
+  event_set(ev, fd, event, (void (*) (int, short, void *)) cfn->ptr.f,
+            arg);
 }

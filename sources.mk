@@ -113,6 +113,8 @@ KC3_C_SOURCES = \
 	"ekc3/types.h" \
 	"http/http.c" \
 	"http/http.h" \
+	"http/http_event.c" \
+	"http/http_event.h" \
 	"http/http_request.c" \
 	"http/http_request.h" \
 	"http/http_response.c" \
@@ -901,6 +903,7 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
+	"lib/kc3/0.1/.#httpd.kc3" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bool.facts" \
 	"lib/kc3/0.1/buf.kc3" \
@@ -921,6 +924,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/vec2.kc3" \
 	"lib/kc3/0.1/gl/vec3.kc3" \
 	"lib/kc3/0.1/gl/vertex.kc3" \
+	"lib/kc3/0.1/http.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
 	"lib/kc3/0.1/http/response.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
@@ -1174,6 +1178,9 @@ KC3_TEST_HTTP_SOURCES = \
 	"test/http/05_response.kc3" \
 	"test/http/05_response.out.expected" \
 	"test/http/05_response.ret.expected" \
+	"test/http/06_mime_types.kc3" \
+	"test/http/06_mime_types.out.expected" \
+	"test/http/06_mime_types.ret.expected" \
 	"test/http_test" \
 
 KC3_TEST_HTTPD_SOURCES = \
