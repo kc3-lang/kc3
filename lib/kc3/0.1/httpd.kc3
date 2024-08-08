@@ -1,6 +1,6 @@
 defmodule HTTPd do
 
-  def root_dir = "."
+  def root_dir = "./public"
 
   def server = fn (host, port) {
     socket = Socket.listen(host, port)
@@ -81,13 +81,20 @@ defmodule HTTPd do
 
   def directory_page = fn (request) {
     files = File.list(root_dir + request.url)
-    file_li = fn (file) {
+    file_li = HTTPd.fn (file) {
       slash = if Str.ends_with?(request.url, "/") do "" else "/" end
-      "<li><a href=\"#{request.url}#{slash}#{file}\">#{request.url}#{slash}#{file}</a></li>"
+      real_path = "#{root_dir}#{request.url}#{slash}#{file}"
+      dir? = File.is_directory?(real_path)
+      path = "#{request.url}#{slash}#{file}"
+      mode = if dir? do "dr-xr-xr-x" else "-r--r--r--" end
+      "<li>#{mode} <a href=\"#{path}\">#{path}</a></li>"
     }
-    body = "<html>
+    body = """<html>
   <head>
     <title>Index of #{request.url}</title>
+    <style type="text/css">
+      ul { font-family: monospace; }        
+    </style>
   </head>
   <body>
     <h1>Index of #{request.url}</h1>
@@ -96,7 +103,7 @@ defmodule HTTPd do
     </ul>
   </body>
 </html>
-"
+"""
     %HTTP.Response{body: body}
   }
 
