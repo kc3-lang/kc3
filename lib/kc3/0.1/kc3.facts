@@ -54,7 +54,7 @@ add {KC3, :operator, KC3.operator_require}
 replace {KC3.operator_require, :is_a, :operator}
 replace {KC3.operator_require, :sym, :require}
 replace {KC3.operator_require, :arity, 1}
-replace {KC3.operator_require, :symbol_value, cfn Tag "kc3_require" (List, Result)}
+replace {KC3.operator_require, :symbol_value, cfn Bool "kc3_require" (Sym)}
 replace {KC3.operator_require, :operator_precedence, 12}
 replace {KC3.operator_require, :operator_associativity, :none}
 add {KC3, :operator, KC3.operator_div}
