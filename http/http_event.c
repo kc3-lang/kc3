@@ -70,6 +70,7 @@ struct event * http_event_new (s32 fd, const s_list *events,
 {
   const s_list *e;
   struct event *ev;
+  s16 events_s16;
   s_tag *tag;
   ev = alloc(sizeof(*ev));
   if (! ev)
@@ -80,16 +81,16 @@ struct event * http_event_new (s32 fd, const s_list *events,
     if (e->tag.type != TAG_SYM)
       goto invalid_event_list;
     if (e->tag.data.sym == &g_sym_read)
-      e |= EV_READ;
+      events_s16 |= EV_READ;
     else if (e->tag.data.sym == &g_sym_write)
-      e |= EV_WRITE;
+      events_s16 |= EV_WRITE;
     else
       goto invalid_event_list;
     e = list_next(e);
   }
   tag = tag_new_tuple(2);
   tag_init_fn_copy(tag->data.tuple.tag, callback);
-  tag_init_copy(tag->data.tuple.tag + 1, tag);
+  tag_init_copy(tag->data.tuple.tag + 1, arg);
   event_set(ev, fd, events_s16, http_event_callback, tag);
   return ev;
  invalid_event_list:
