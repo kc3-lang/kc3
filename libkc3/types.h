@@ -326,7 +326,7 @@ struct tag_type_list {
 
 struct time {
   uw tv_sec;
-  u32 tv_nsec;
+  uw tv_nsec;
 };
 
 struct tuple {
