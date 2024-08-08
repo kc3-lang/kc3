@@ -175,10 +175,11 @@ s_list ** file_list (const s_str *path, s_list **dest)
   return dest;
 }
 
-s_tag * file_mtime (const s_str *path, s_tag *dest)
+s_time * file_mtime (const s_str *path, s_time *dest)
 {
   s32 e;
   struct stat sb;
+  s_time tmp;
   assert(path);
   assert(dest);
   if (stat(path->ptr.pchar, &sb)) {
@@ -190,13 +191,19 @@ s_tag * file_mtime (const s_str *path, s_tag *dest)
     return NULL;
   }
 #if HAVE_STAT_MTIM
-  return time_to_tag(&sb.st_mtim, dest);
+# ifdef __APPLE__
+  tmp.tv_sec = sb.st_mtimespec.tv_sec;
+  tmp.tv_nsec = sb.st_mtimespec.tv_nsec;
+# else
+  tmp.tv_sec = sb.st_mtim.tv_sec;
+  tmp.tv_nsec = sb.st_mtim.tv_nsec;
+# endif
 #else
-  s_timespec tmp = {0};
   tmp.tv_sec = sb.st_mtime;
   tmp.tv_nsec = 0;
-  return time_to_tag(&tmp, dest);
 #endif
+  *dest = tmp;
+  return dest;
 }
 
 FILE * file_open (const char *path, const char *mode)
@@ -338,12 +345,26 @@ s_file_stat * file_stat (const s_str *path, s_file_stat *dest)
   tmp.st_size = sb.st_size;
   tmp.st_blksize = sb.st_blksize;
   tmp.st_blocks = sb.st_blocks;
-  tmp.st_atim.tv_sec = sb.st_atim.tv_sec;
+#if HAVE_STAT_MTIM
+# ifdef __APPLE__
+  tmp.st_atim.tv_sec  = sb.st_mtimespec.tv_sec;
+  tmp.st_atim.tv_nsec = sb.st_mtimespec.tv_nsec;
+# else
+  tmp.st_atim.tv_sec  = sb.st_atim.tv_sec;
   tmp.st_atim.tv_nsec = sb.st_atim.tv_nsec;
-  tmp.st_mtim.tv_sec = sb.st_mtim.tv_sec;
+  tmp.st_mtim.tv_sec  = sb.st_mtim.tv_sec;
   tmp.st_mtim.tv_nsec = sb.st_mtim.tv_nsec;
-  tmp.st_ctim.tv_sec = sb.st_ctim.tv_sec;
+  tmp.st_ctim.tv_sec  = sb.st_ctim.tv_sec;
   tmp.st_ctim.tv_nsec = sb.st_ctim.tv_nsec;
+# endif
+#else
+  tmp.st_atim.tv_sec  = sb.st_atime;
+  tmp.st_atim.tv_nsec = 0;
+  tmp.st_mtim.tv_sec  = sb.st_mtime;
+  tmp.st_mtim.tv_nsec = 0;
+  tmp.st_ctim.tv_sec  = sb.st_ctime;
+  tmp.st_ctim.tv_nsec = 0;
+#endif
   *dest = tmp;
   return dest;
 }

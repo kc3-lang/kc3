@@ -66,6 +66,7 @@ const s_sym g_sym_StructType      = {{{NULL}, 10, {"StructType"}}};
 const s_sym g_sym_Sw              = {{{NULL},  2, {"Sw"}}};
 const s_sym g_sym_Sym             = {{{NULL},  3, {"Sym"}}};
 const s_sym g_sym_Tag             = {{{NULL},  3, {"Tag"}}};
+const s_sym g_sym_Time            = {{{NULL},  4, {"Time"}}};
 const s_sym g_sym_Tuple           = {{{NULL},  5, {"Tuple"}}};
 const s_sym g_sym_U8              = {{{NULL},  2, {"U8"}}};
 const s_sym g_sym_U16             = {{{NULL},  3, {"U16"}}};
@@ -377,6 +378,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Sw, NULL);
   sym_register(&g_sym_Sym, NULL);
   sym_register(&g_sym_Tag, NULL);
+  sym_register(&g_sym_Time, NULL);
   sym_register(&g_sym_Tuple, NULL);
   sym_register(&g_sym_U8, NULL);
   sym_register(&g_sym_U16, NULL);

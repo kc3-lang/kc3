@@ -18,7 +18,7 @@ CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.h config.mk
 
-build: libc3_window_cairo_quartz.la
+build: libkc3_window_cairo_quartz.la
 	${MAKE} -C demo build
 
 all:
@@ -27,7 +27,7 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: libc3_window_cairo_quartz_asan.la
+asan: libkc3_window_cairo_quartz_asan.la
 	${MAKE} -C demo asan
 
 clean:
@@ -38,10 +38,10 @@ clean_cov:
 	rm -rf ${CLEANFILES_COV}
 	${MAKE} -C demo clean_cov
 
-cov: libc3_window_cairo_quartz_cov.la
+cov: libkc3_window_cairo_quartz_cov.la
 	${MAKE} -C demo cov
 
-debug: libc3_window_cairo_quartz_debug.la
+debug: libkc3_window_cairo_quartz_debug.la
 	${MAKE} -C demo debug
 
 demo: build

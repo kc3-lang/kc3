@@ -1258,9 +1258,28 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
     break;
   default: ;
   }
-  err_puts("tag_number_compare: not a number");
-  assert(! "tag_number_compare: not a number");
+  err_puts("compare_tag: not a number");
+  assert(! "compare_tag: not a number");
   abort();
+  return 0;
+}
+
+s8 compare_time (const s_time *a, const s_time *b)
+{
+  if (a == b)
+    return 0;
+  if (! a)
+    return -1;
+  if (! b)
+    return 1;
+  if (a->tv_sec < b->tv_sec)
+    return -1;
+  if (a->tv_sec > b->tv_sec)
+    return 1;
+  if (a->tv_nsec < b->tv_nsec)
+    return -1;
+  if (a->tv_nsec > b->tv_nsec)
+    return 1;
   return 0;
 }
 

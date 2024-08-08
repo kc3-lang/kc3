@@ -21,7 +21,7 @@ all:
 	${MAKE} -C http all
 	${MAKE} -C httpd all
 	${MAKE} -C test all
-	${MAKE} -C libkc3_window all
+	${MAKE} -C window all
 
 asan:
 	${MAKE} gen
@@ -33,7 +33,7 @@ asan:
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
 	${MAKE} -C test asan
-	${MAKE} -C libkc3_window asan
+	${MAKE} -C window asan
 
 build:
 	${MAKE} gen
@@ -46,7 +46,7 @@ build:
 	${MAKE} -C http build
 	${MAKE} -C httpd build
 	${MAKE} -C test build
-	${MAKE} -C libkc3_window build
+	${MAKE} -C window build
 
 clean:
 	${MAKE} -C libtommath clean
@@ -58,7 +58,7 @@ clean:
 	${MAKE} -C http clean
 	${MAKE} -C httpd clean
 	${MAKE} -C test clean
-	${MAKE} -C libkc3_window clean
+	${MAKE} -C window clean
 
 clean_cov:
 	${MAKE} -C libtommath clean_cov
@@ -69,7 +69,7 @@ clean_cov:
 	${MAKE} -C http clean_cov
 	${MAKE} -C httpd clean_cov
 	${MAKE} -C test clean_cov
-	${MAKE} -C libkc3_window clean_cov
+	${MAKE} -C window clean_cov
 
 cov:
 	${MAKE} gen
@@ -81,7 +81,7 @@ cov:
 	${MAKE} -C http cov
 	${MAKE} -C httpd cov
 	${MAKE} -C test cov
-	${MAKE} -C libkc3_window cov
+	${MAKE} -C window cov
 
 debug:
 	${MAKE} -C libtommath debug
@@ -93,31 +93,31 @@ debug:
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
 	${MAKE} -C test debug
-	${MAKE} -C libkc3_window debug
+	${MAKE} -C window debug
 
 demo: build
-	${MAKE} -C libkc3_window demo
+	${MAKE} -C window demo
 
 demo_asan: asan
-	${MAKE} -C libkc3_window demo_asan
+	${MAKE} -C window demo_asan
 
 demo_cov: cov
-	${MAKE} -C libkc3_window demo_cov
+	${MAKE} -C window demo_cov
 
 demo_debug: debug
-	${MAKE} -C libkc3_window demo_debug
+	${MAKE} -C window demo_debug
 
 demo_gl: build
-	${MAKE} -C libkc3_window demo_gl
+	${MAKE} -C window demo_gl
 
 demo_gl_asan: asan
-	${MAKE} -C libkc3_window demo_gl_asan
+	${MAKE} -C window demo_gl_asan
 
 demo_gl_cov: cov
-	${MAKE} -C libkc3_window demo_gl_cov
+	${MAKE} -C window demo_gl_cov
 
 demo_gl_debug: debug
-	${MAKE} -C libkc3_window demo_gl_debug
+	${MAKE} -C window demo_gl_debug
 
 dist: kc3-${KC3_VERSION}.tar.gz
 
@@ -131,7 +131,7 @@ distclean:
 	${MAKE} -C http distclean
 	${MAKE} -C httpd distclean
 	${MAKE} -C test distclean
-	${MAKE} -C libkc3_window distclean
+	${MAKE} -C window distclean
 
 gcovr:
 	${MAKE} -C libkc3 gcovr
@@ -141,7 +141,7 @@ gcovr:
 	${MAKE} -C http gcovr
 	${MAKE} -C httpd gcovr
 	${MAKE} -C test gcovr
-	${MAKE} -C libkc3_window gcovr
+	${MAKE} -C window gcovr
 	if [ -d "$$HOME/Downloads/kc3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
 gdb_demo:
@@ -279,7 +279,7 @@ install:
 	${MAKE} -C ekc3 install
 	${MAKE} -C http install
 	${MAKE} -C httpd install
-	${MAKE} -C libkc3_window install
+	${MAKE} -C window install
 
 kc3-${KC3_VERSION}.tar.gz: kc3.index
 	rm -rf kc3-${KC3_VERSION}.old

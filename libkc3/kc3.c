@@ -10,10 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "assert.h"
 #include "bool.h"
 #include "buf.h"
 #include "buf_parse.h"

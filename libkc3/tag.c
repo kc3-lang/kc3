@@ -746,6 +746,13 @@ bool tag_is_number (const s_tag *tag)
   return false;
 }
 
+bool tag_is_struct (const s_tag *tag, const s_sym *module)
+{
+  return tag &&
+    tag->type == TAG_STRUCT &&
+    tag->data.struct_.type->module == module;
+}
+
 bool * tag_is_unbound_var (const s_tag *tag, bool *dest)
 {
   assert(tag);

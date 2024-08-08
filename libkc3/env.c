@@ -2476,8 +2476,8 @@ bool env_module_load (s_env *env, const s_sym *module)
   return false;
 }
 
-const s_tag ** env_module_load_time (s_env *env, const s_sym *module,
-				     const s_tag **dest)
+const s_time ** env_module_load_time (s_env *env, const s_sym *module,
+                                      const s_time **dest)
 {
   s_facts_with_cursor cursor;
   const s_fact *fact;
@@ -2486,7 +2486,7 @@ const s_tag ** env_module_load_time (s_env *env, const s_sym *module,
   s_tag tag_time_var;
   tag_init_sym(&tag_module_name, module);
   tag_init_sym(&tag_load_time, &g_sym_load_time);
-  tag_init_var(&tag_time_var, &g_sym_Tag);
+  tag_init_var(&tag_time_var, &g_sym_Time);
   if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
         &tag_module_name, &tag_load_time, &tag_time_var, NULL, NULL }))
     return NULL;
@@ -2495,17 +2495,25 @@ const s_tag ** env_module_load_time (s_env *env, const s_sym *module,
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  *dest = fact->object;
+  if (! tag_is_struct(fact->object, &g_sym_Time)) {
+    err_write_1("env_module_load_time: module ");
+    err_inspect_sym(&module);
+    err_puts(" load time is not a %Time{}");
+    assert(! "env_module_load_time: module load time is not a %Time{}");
+    facts_with_cursor_clean(&cursor);
+    return NULL;
+  }
+  *dest = fact->object->data.struct_.data;
   facts_with_cursor_clean(&cursor);
   return dest;
 }
 
 bool env_module_maybe_reload (s_env *env, const s_sym *module)
 {
-  const s_tag *load_time = {0};
+  const s_time *load_time = NULL;
   s_str path;
   bool r = false;
-  s_tag tag_mtime;
+  s_time mtime;
   if (module_path(module, &env->module_path, KC3_EXT, &path)) {
     if (file_access(&path, &g_sym_r))
       r = true;
@@ -2524,14 +2532,13 @@ bool env_module_maybe_reload (s_env *env, const s_sym *module)
     str_clean(&path);
     return env_module_load(env, module);
   }
-  if (! file_mtime(&path, &tag_mtime)) {
+  if (! file_mtime(&path, &mtime)) {
     str_clean(&path);
     return false;
   }
   str_clean(&path);
-  if (compare_tag(load_time, &tag_mtime) < 0)
+  if (compare_time(load_time, &mtime) < 0)
     r = env_module_load(env, module);
-  tag_clean(&tag_mtime);
   return r;
 }
 

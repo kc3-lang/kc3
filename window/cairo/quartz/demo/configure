@@ -19,20 +19,20 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . ../../../../config.subr
 
-PROG=c3_window_cairo_quartz_demo
-PROG_ASAN=c3_window_cairo_quartz_demo_asan
-PROG_COV=c3_window_cairo_quartz_demo_cov
-PROG_DEBUG=c3_window_cairo_quartz_demo_debug
+PROG=kc3_window_cairo_quartz_demo
+PROG_ASAN=kc3_window_cairo_quartz_demo_asan
+PROG_COV=kc3_window_cairo_quartz_demo_cov
+PROG_DEBUG=kc3_window_cairo_quartz_demo_debug
 
 echo "PROG = $PROG" >> ${CONFIG_MK}
 echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}
 echo "PROG_COV = $PROG_COV" >> ${CONFIG_MK}
 echo "PROG_DEBUG = $PROG_DEBUG" >> ${CONFIG_MK}
 
-APP=c3_window_cairo_quartz_demo.app
-APP_ASAN=c3_window_cairo_quartz_demo_asan.app
-APP_COV=c3_window_cairo_quartz_demo_cov.app
-APP_DEBUG=c3_window_cairo_quartz_demo_debug.app
+APP=kc3_window_cairo_quartz_demo.app
+APP_ASAN=kc3_window_cairo_quartz_demo_asan.app
+APP_COV=kc3_window_cairo_quartz_demo_cov.app
+APP_DEBUG=kc3_window_cairo_quartz_demo_debug.app
 
 echo "APP = $APP" >> ${CONFIG_MK}
 echo "APP_ASAN = ${APP_ASAN}" >> ${CONFIG_MK}

@@ -22,24 +22,24 @@ void    env_clean (s_env *env);
 s_env * env_init (s_env *env, int *argc, char ***argv);
 
 /* Observers. */
-const s_tag *  env_frames_get (const s_env *env, const s_sym *name);
-s_ident *      env_ident_resolve_module (s_env *env,
-                                         const s_ident *ident,
-                                         s_ident *dest);
-const s_sym ** env_module (s_env *env, const s_sym **dest);
-bool *         env_module_has_ident (s_env *env, const s_sym *module,
-                                     const s_ident *ident, bool *dest);
-bool *         env_module_has_symbol (s_env *env, const s_sym *module,
-                                      const s_sym *sym, bool *dest);
-const s_tag ** env_module_load_time (s_env *env, const s_sym *module,
-                                     const s_tag **dest);
-s_list **      env_module_search_modules (s_env *env,
-                                          const s_sym * const *module,
-                                          s_list **dest);
-s_list **      env_search_modules (s_env *env, s_list **dest);
-bool           env_sym_search_modules (s_env *env,
-                                       const s_sym *sym,
-                                       const s_sym **dest);
+const s_tag *   env_frames_get (const s_env *env, const s_sym *name);
+s_ident *       env_ident_resolve_module (s_env *env,
+                                          const s_ident *ident,
+                                          s_ident *dest);
+const s_sym **  env_module (s_env *env, const s_sym **dest);
+bool *          env_module_has_ident (s_env *env, const s_sym *module,
+                                      const s_ident *ident, bool *dest);
+bool *          env_module_has_symbol (s_env *env, const s_sym *module,
+                                       const s_sym *sym, bool *dest);
+const s_time ** env_module_load_time (s_env *env, const s_sym *module,
+                                      const s_time **dest);
+s_list **       env_module_search_modules (s_env *env,
+                                           const s_sym * const *module,
+                                           s_list **dest);
+s_list **       env_search_modules (s_env *env, s_list **dest);
+bool            env_sym_search_modules (s_env *env,
+                                        const s_sym *sym,
+                                        const s_sym **dest);
 
 /* Operators. */
 s_tag *       env_def (s_env *env, const s_call *call, s_tag *dest);

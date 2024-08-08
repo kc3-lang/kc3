@@ -17,20 +17,20 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . ../../../../config.subr
 
-PROG=c3_window_sdl2_demo
-PROG_ASAN=c3_window_sdl2_demo_asan
-PROG_COV=c3_window_sdl2_demo_cov
-PROG_DEBUG=c3_window_sdl2_demo_debug
+PROG=kc3_window_sdl2_demo
+PROG_ASAN=kc3_window_sdl2_demo_asan
+PROG_COV=kc3_window_sdl2_demo_cov
+PROG_DEBUG=kc3_window_sdl2_demo_debug
 
 echo "PROG = $PROG" >> ${CONFIG_MK}
 echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}
 echo "PROG_COV = $PROG_COV" >> ${CONFIG_MK}
 echo "PROG_DEBUG = $PROG_DEBUG" >> ${CONFIG_MK}
 
-APP=c3_window_sdl2_demo.app
-APP_ASAN=c3_window_sdl2_demo_asan.app
-APP_COV=c3_window_sdl2_demo_cov.app
-APP_DEBUG=c3_window_sdl2_demo_debug.app
+APP=kc3_window_sdl2_demo.app
+APP_ASAN=kc3_window_sdl2_demo_asan.app
+APP_COV=kc3_window_sdl2_demo_cov.app
+APP_DEBUG=kc3_window_sdl2_demo_debug.app
 
 echo "APP = $APP" >> ${CONFIG_MK}
 echo "APP_ASAN = ${APP_ASAN}" >> ${CONFIG_MK}
@@ -52,7 +52,7 @@ echo "${APP_PROG}: ../.libs/${PROG}" >> ${CONFIG_MK}
 echo "	mkdir -p ${APP}/Contents/MacOS" >> ${CONFIG_MK}
 echo "	cp ../.libs/${PROG} ${APP_PROG}" >> ${CONFIG_MK}
 
-BUNDLE_LIBS_COMMON="/usr/local/lib/libSDL2-2.0.0.dylib"
+BUNDLE_LIBS_COMMON="/opt/homebrew/lib/libSDL2.dylib"
 
 BUNDLE_LIBS="${BUNDLE_LIBS_COMMON} ../../../../libkc3/.libs/libkc3.0.dylib ../../../.libs/libkc3_window.0.dylib ../../.libs/libkc3_window_sdl2.0.dylib"
 echo >> ${CONFIG_MK}

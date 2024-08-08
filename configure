@@ -49,4 +49,4 @@ config_subdirs \
     http \
     httpd \
     test \
-    libkc3_window
+    window

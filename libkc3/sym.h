@@ -69,6 +69,7 @@ extern const s_sym g_sym_StructType;
 extern const s_sym g_sym_Sw;
 extern const s_sym g_sym_Sym;
 extern const s_sym g_sym_Tag;
+extern const s_sym g_sym_Time;
 extern const s_sym g_sym_Tuple;
 extern const s_sym g_sym_U8;
 extern const s_sym g_sym_U16;
