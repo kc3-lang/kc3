@@ -60,24 +60,24 @@ build_lo() {
 build_lo_objc() {
     for SRC in $OBJC_SOURCES; do
         echo >> ${CONFIG_MK}
-        SRC_LO="$(objc2ext .main.lo "$SRC")"
-        objc_ext_rule .main.lo "$SRC" .build_objcc_main >> ${CONFIG_MK}
-        echo "	./.build_objcc_main $SRC $SRC_LO" >> ${CONFIG_MK}
+        SRC_ASAN_LO="$(objc2ext .asan.lo "$SRC")"
+        objc_ext_rule .asan.lo "$SRC" .build_objc_asan >> ${CONFIG_MK}
+        echo "	./.build_objc_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
-        SRC_LO="$(objc2ext .asan.lo "$SRC")"
-        objc_ext_rule .asan.lo "$SRC" .build_objcc_asan >> ${CONFIG_MK}
-        echo "	./.build_objcc_asan $SRC $SRC_LO" >> ${CONFIG_MK}
+        SRC_COV_LO="$(objc2ext .cov.lo "$SRC")"
+        objc_ext_rule .cov.lo "$SRC" .build_objc_cov >> ${CONFIG_MK}
+        echo "	./.build_objc_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
-        SRC_LO="$(objc2ext .cov.lo "$SRC")"
-        objc_ext_rule .cov.lo "$SRC" .build_objcc_cov >> ${CONFIG_MK}
-        echo "	./.build_objcc_cov $SRC $SRC_LO" >> ${CONFIG_MK}
+        SRC_DEBUG_LO="$(objc2ext .debug.lo "$SRC")"
+        objc_ext_rule .debug.lo "$SRC" .build_objc_debug >> ${CONFIG_MK}
+        echo "	./.build_objc_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
-        SRC_LO="$(objc2ext .debug.lo "$SRC")"
-        objc_ext_rule .debug.lo "$SRC" .build_objcc_debug >> ${CONFIG_MK}
-        echo "	./.build_objcc_debug $SRC $SRC_LO" >> ${CONFIG_MK}
+        SRC_MAIN_LO="$(objc2ext .main.lo "$SRC")"
+        objc_ext_rule .main.lo "$SRC" .build_objc_main >> ${CONFIG_MK}
+        echo "	./.build_objc_main $SRC $SRC_MAIN_LO" >> ${CONFIG_MK}
     done
 }
 
