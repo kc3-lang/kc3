@@ -2,4 +2,6 @@ defmodule Time do
 
   defstruct [tv_sec: (Sw) 0, tv_nsec: (Sw) 0, tag: (Ptr) 0]
 
+  def now = cfn Time "time_init_now" (Result)
+
 end

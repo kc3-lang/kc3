@@ -533,6 +533,18 @@ s_list * list_init_tuple_2 (s_list *list, const s_tag *a,
   return list;
 }
 
+s_list * list_init_time_add (s_list *list, const s_time *a,
+                             const s_time *b, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_time_add(&tmp.tag, a, b))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_time_now (s_list *list, s_list *next)
 {
   s_list tmp = {0};
@@ -1195,6 +1207,20 @@ s_list * list_new_tuple_2 (const s_tag *a, const s_tag *b, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_tuple_2(&list->tag, a, b)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_time_add (const s_time *a, const s_time *b,
+                            s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_time_add(&list->tag, a, b)) {
     free(list);
     return NULL;
   }

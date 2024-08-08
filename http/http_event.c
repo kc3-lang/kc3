@@ -37,8 +37,9 @@ void http_event_callback (int fd, short events, void *tag_tuple)
   s_tag tmp;
   tag = tag_tuple;
   if (tag->type != TAG_TUPLE ||
-      tag->data.tuple.count != 2 ||
-      tag->data.tuple.tag[0].type != TAG_FN) {
+      tag->data.tuple.count != 3 ||
+      tag->data.tuple.tag[0].type != TAG_FN ||
+      tag->data.tuple.tag[1].type != TAG_PTR) {
     err_puts("http_event_callback: invalid arg");
     assert(! "http_event_callback: invalid arg");
     abort();
@@ -70,7 +71,7 @@ s32 http_event_dispatch (void)
   return event_dispatch();
 }
 
-struct event * http_event_new (s32 fd, const s_list *events,
+struct event * http_event_new (s32 fd, const s_list * const *events,
                                const s_fn *callback, s_tag *arg)
 {
   const s_list *e;
@@ -81,7 +82,7 @@ struct event * http_event_new (s32 fd, const s_list *events,
   if (! ev)
     return NULL;
   events_s16 = 0;
-  e = events;
+  e = *events;
   while (e) {
     if (e->tag.type != TAG_SYM)
       goto invalid_event_list;
@@ -89,18 +90,21 @@ struct event * http_event_new (s32 fd, const s_list *events,
       events_s16 |= EV_READ;
     else if (e->tag.data.sym == &g_sym_write)
       events_s16 |= EV_WRITE;
+    else if (e->tag.data.sym == &g_sym_persist)
+      events_s16 |= EV_PERSIST;
     else
       goto invalid_event_list;
     e = list_next(e);
   }
-  tag = tag_new_tuple(2);
+  tag = tag_new_tuple(3);
   tag_init_fn_copy(tag->data.tuple.tag, callback);
-  tag_init_copy(tag->data.tuple.tag + 1, arg);
+  tag_init_ptr(tag->data.tuple.tag + 1, ev);
+  tag_init_copy(tag->data.tuple.tag + 2, arg);
   event_set(ev, fd, events_s16, http_event_callback, tag);
   return ev;
  invalid_event_list:
   err_write_1("http_event_new: invalid event list: ");
-  err_inspect_list(&events);
+  err_inspect_list(events);
   assert(! "http_event_new: invalid event list");
   return NULL;
 }

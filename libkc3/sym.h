@@ -103,6 +103,7 @@ extern const s_sym g_sym_operator_associativity;
 extern const s_sym g_sym_operator_equal;
 extern const s_sym g_sym_operator_pin;
 extern const s_sym g_sym_operator_precedence;
+extern const s_sym g_sym_persist;
 extern const s_sym g_sym_r;
 extern const s_sym g_sym_read;
 extern const s_sym g_sym_right;

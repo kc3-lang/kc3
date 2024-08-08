@@ -17,8 +17,8 @@
 
 /* Heap-allocation functions, call http_event_delete after use. */
 void           http_event_delete (struct event *ev);
-struct event * http_event_new (s32 fd, const s_list *events, const s_fn *fn,
-                               s_tag *arg);
+struct event * http_event_new (s32 fd, const s_list * const *events,
+                               const s_fn *fn, s_tag *arg);
 
 /* Operators. */
 s32  http_event_add (struct event *ev, s_time *time);

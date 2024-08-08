@@ -101,6 +101,7 @@ const s_sym g_sym_operator_equal  = {{{NULL}, 14, {"operator_equal"}}};
 const s_sym g_sym_operator_pin    = {{{NULL}, 12, {"operator_pin"}}};
 const s_sym g_sym_operator_precedence =
   {{{NULL}, 19, {"operator_precedence"}}};
+const s_sym g_sym_persist         = {{{NULL},  7, {"persist"}}};
 const s_sym g_sym_r               = {{{NULL},  1, {"r"}}};
 const s_sym g_sym_read            = {{{NULL},  4, {"read"}}};
 const s_sym g_sym_right           = {{{NULL},  5, {"right"}}};
@@ -412,6 +413,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_operator_equal, NULL);
   sym_register(&g_sym_operator_pin, NULL);
   sym_register(&g_sym_operator_precedence, NULL);
+  sym_register(&g_sym_persist, NULL);
   sym_register(&g_sym_r, NULL);
   sym_register(&g_sym_read, NULL);
   sym_register(&g_sym_right, NULL);

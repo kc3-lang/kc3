@@ -40,6 +40,28 @@ s_time * time_init (s_time *time)
   return time;
 }
 
+s_time * time_init_add (s_time *time, const s_time *a, const s_time *b)
+{
+  s_time tmp = {0}
+  assert(time);
+  assert(a);
+  assert(b);
+  assert(! a->tag);
+  assert(! b->tag);
+  tmp.tv_sec = a->tv_sec + b->tv_sec;
+  tmp.tv_nsec = a->tv_nsec + b->tv_nsec;
+  while (tmp.tv_nsec < 0) {
+    tmp.tv_sec--;
+    tmp.tv_nsec += 1000000000;
+  }
+  while (tmp.tv_nsec > 1000000000) {
+    tmp.tv_sec++;
+    tmp.tv_nsec -= 1000000000;
+  }
+  *time = tmp;
+  return time;
+}
+
 s_time * time_init_copy (s_time *time, const s_time *src)
 {
   s_time tmp = {0};

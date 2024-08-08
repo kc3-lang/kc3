@@ -1340,6 +1340,13 @@ s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest)
     default:
       goto ko;
     }
+  case TAG_TIME:
+    switch (b->type) {
+    case TAG_TIME:
+      return tag_init_time_add(dest, &a->data.time, &b->data.time);
+    default:
+      goto ko;
+    }
   default:
     goto ko;
   }

@@ -268,5 +268,8 @@ replace {KC3.while, :arity, 2}
 replace {KC3.while, :is_a, :special_operator}
 replace {KC3.while, :symbol_value, cfn Tag "kc3_while" (Tag, Tag, Result)}
 add {KC3, :symbol, KC3.str}
-replace {KC3.str, :arity, 1}
 replace {KC3.str, :symbol_value, cfn Str "kc3_str" (Tag, Result)}
+add {KC3, :symbol, KC3.errno}
+replace {KC3.errno, :symbol_value, cfn Sw "kc3_errno" ()}
+add {KC3, :symbol, KC3.strerror}
+replace {KC3.strerror, :symbol_value, cfn Str "kc3_strerror" (Sw, Result)}

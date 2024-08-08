@@ -85,6 +85,8 @@ s_list * list_init_tuple (s_list *list, uw count, s_list *next);
 s_list * list_init_tuple_2 (s_list *list, const s_tag *a,
                             const s_tag *b, s_list *next);
 s_list * list_init_time (s_list *list, s_list *next);
+s_list * list_init_time_add (s_list *list, const s_time *a,
+                             const s_time *b, s_list *next);
 s_list * list_init_time_now (s_list *list, s_list *next);
 s_list * list_init_u8 (s_list *list, u8 i, s_list *next);
 s_list * list_init_u16 (s_list *list, u16 i, s_list *next);
@@ -153,6 +155,8 @@ s_list * list_new_tuple (uw count, s_list *next);
 s_list * list_new_tuple_2 (const s_tag *a, const s_tag *b,
                            s_list *next);
 s_list * list_new_time (s_list *next);
+s_list * list_new_time_add (const s_time *a, const s_time *b,
+                            s_list *next);
 s_list * list_new_time_now (s_list *next);
 s_list * list_new_u8 (u8 i, s_list *next);
 s_list * list_new_u16 (u16 i, s_list *next);
@@ -216,6 +220,7 @@ s_list * list_sym (s_list *list, const s_sym *sym);
 s_list * list_tuple (s_list *list, uw count);
 s_list * list_tuple_2 (s_list *list, const s_tag *a, const s_tag *b);
 s_list * list_time (s_list *list);
+s_list * list_time_add (s_list *list, const s_time *a, const s_time *b);
 s_list * list_time_now (s_list *list);
 s_list * list_u8 (s_list *list, u8 i);
 s_list * list_u16 (s_list *list, u16 i);

@@ -24,6 +24,7 @@
    time_init argument allocate was true. */
 void     time_clean (s_time *time);
 s_time * time_init (s_time *time);
+s_time * time_init_add (s_time *time, const s_time *a, const s_time *b);
 s_time * time_init_copy (s_time *time, const s_time *src);
 s_time * time_init_now (s_time *time);
 
