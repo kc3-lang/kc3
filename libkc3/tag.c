@@ -171,6 +171,7 @@ void tag_clean (s_tag *tag)
   case TAG_STRUCT:      struct_clean(&tag->data.struct_);   break;
   case TAG_STRUCT_TYPE: struct_type_clean(&tag->data.struct_type);
                                                             break;
+  case TAG_TIME:        time_clean(&tag->data.time);        break;
   case TAG_TUPLE:       tuple_clean(&tag->data.tuple);      break;
   case TAG_UNQUOTE:     unquote_clean(&tag->data.unquote);  break;
   case TAG_BOOL:
@@ -488,6 +489,11 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     tag->type = src->type;
     tag->data.sym = src->data.sym;
     return tag;
+  case TAG_TIME:
+    tag->type = src->type;
+    if (! time_init_copy(&tag->data.time, &src->data.time))
+      return NULL;
+    return tag;
   case TAG_TUPLE:
     tag->type = src->type;
     if (! tuple_init_copy(&tag->data.tuple, &src->data.tuple))
@@ -731,6 +737,7 @@ bool tag_is_number (const s_tag *tag)
   case TAG_STRUCT:
   case TAG_STRUCT_TYPE:
   case TAG_SYM:
+  case TAG_TIME:
   case TAG_TUPLE:
   case TAG_UNQUOTE:
   case TAG_VAR:
@@ -1021,6 +1028,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
     return false;
   case TAG_STRUCT_TYPE: *dest = &tag->data.struct_type; return true;
   case TAG_SYM:         *dest = &tag->data.sym;         return true;
+  case TAG_TIME:        *dest = &tag->data.time;        return true;
   case TAG_TUPLE:       *dest = &tag->data.tuple;       return true;
   case TAG_UNQUOTE:     *dest = &tag->data.unquote;     return true;
   case TAG_VAR:         *dest = tag;                    return true;
@@ -1246,6 +1254,12 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
+  case TAG_TIME:
+    if (type == &g_sym_Time) {
+      *dest = &tag->data.time;
+      return true;
+    }
+    goto invalid_cast;
   case TAG_TUPLE:
     if (type == &g_sym_Tuple) {
       *dest = &tag->data.tuple;
@@ -1372,6 +1386,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_STRUCT_TYPE: *dest = &tag->data.struct_type; return true;
   case TAG_SYM:         *dest = &tag->data.sym;         return true;
+  case TAG_TIME:        *dest = &tag->data.time;        return true;
   case TAG_TUPLE:       *dest = &tag->data.tuple;       return true;
   case TAG_UNQUOTE:     *dest = &tag->data.unquote;     return true;
   case TAG_VAR:         *dest = tag;                    return true;
@@ -1438,6 +1453,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
                                                    return dest;
   case TAG_STRUCT_TYPE: *dest = &g_sym_StructType; return dest;
   case TAG_SYM:         *dest = &g_sym_Sym;        return dest;
+  case TAG_TIME:        *dest = &g_sym_Time;       return dest;
   case TAG_TUPLE:       *dest = &g_sym_Tuple;      return dest;
   case TAG_UNQUOTE:     *dest = &g_sym_Unquote;    return dest;
   case TAG_VAR:         *dest = &g_sym_Var;        return dest;

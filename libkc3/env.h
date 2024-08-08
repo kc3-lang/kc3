@@ -89,6 +89,9 @@ bool          env_eval_equal_struct (s_env *env, bool macro,
 bool          env_eval_equal_tag (s_env *env, bool macro,
                                   const s_tag *a, const s_tag *b,
                                   s_tag *dest);
+bool          env_eval_equal_time (s_env *env, bool macro,
+                                   const s_time *a, const s_time *b,
+                                   s_time *dest);
 bool          env_eval_equal_tuple (s_env *env, bool macro,
                                     const s_tuple *a, const s_tuple *b,
                                     s_tuple *dest);
@@ -156,6 +159,8 @@ bool          env_eval_quote_struct (s_env *env, const s_struct *s,
                                      s_tag *dest);
 bool          env_eval_quote_tag (s_env *env, const s_tag *tag,
                                   s_tag *dest);
+bool          env_eval_quote_time (s_env *env, const s_time *time,
+                                   s_tag *dest);
 bool          env_eval_quote_tuple (s_env *env, const s_tuple *tuple,
                                     s_tag *dest);
 bool          env_eval_quote_unquote (s_env *env,
@@ -165,6 +170,8 @@ bool          env_eval_struct (s_env *env, const s_struct *s,
                                s_tag *dest);
 bool          env_eval_tag (s_env *env, const s_tag *tag,
                             s_tag *dest);
+bool          env_eval_time (s_env *env, const s_time *time,
+                             s_tag *dest);
 bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
                               s_tag *dest);
 bool          env_eval_void (s_env *env, const void *_, s_tag *dest);

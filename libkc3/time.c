@@ -10,9 +10,57 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <assert.h>
+#include <stdlib.h>
+#include "alloc.h"
+#include "assert.h"
 #include "tag.h"
 #include "time.h"
+
+void time_clean (s_time *time)
+{
+  if (time->tag) {
+    tag_clean(time->tag);
+    tag_clean(time->tag + 1);
+    free(time->tag);
+  }
+}
+
+s_time * time_init (s_time *time, bool allocate)
+{
+  s_time tmp = {0};
+  if (allocate) {
+    tmp.tag = alloc(2 * sizeof(s_tag));
+    if (! tmp.tag)
+      return NULL;
+  }
+  *time = tmp;
+  return time;
+}
+
+s_time * time_init_copy (s_time *time, const s_time *src)
+{
+  s_time tmp = {0};
+  if (src->tag) {
+    tmp.tag = alloc(2 * sizeof(s_tag));
+    if (! tmp.tag)
+      return NULL;
+    if (! tag_init_copy(tmp.tag, src->tag)) {
+      free(tmp.tag);
+      return NULL;
+    }
+    if (! tag_init_copy(tmp.tag + 1, src->tag + 1)) {
+      tag_clean(tmp.tag);
+      free(tmp.tag);
+      return NULL;
+    }
+    *time = tmp;
+    return time;
+  }
+  tmp.tv_sec = src->tv_sec;
+  tmp.tv_nsec = src->tv_nsec;
+  *time = tmp;
+  return time;
+}
 
 s_timespec * time_sub (const s_timespec *a, const s_timespec *b, s_timespec *dest)
 {

@@ -995,6 +995,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_VOID;
     return true;
   }
+  if (sym == &g_sym_Time) {
+    *dest = TAG_TIME;
+    return true;
+  }
   if (sym == &g_sym_Tuple) {
     *dest = TAG_TUPLE;
     return true;
@@ -1166,6 +1170,10 @@ uw * sym_type_size (const s_sym * const *type, uw *dest)
   }
   if (*type == &g_sym_Tag) {
     *dest = sizeof(s_tag);
+    return dest;
+  }
+  if (*type == &g_sym_Time) {
+    *dest = sizeof(s_time);
     return dest;
   }
   if (*type == &g_sym_Tuple) {

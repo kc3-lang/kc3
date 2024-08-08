@@ -1102,6 +1102,10 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     return env_eval_equal_struct(env, macro, &a->data.struct_,
                                  &b->data.struct_, &dest->data.struct_);
   */
+  case TAG_TIME:
+    dest->type = TAG_TIME;
+    return env_eval_equal_time(env, macro, &a->data.time,
+                               &b->data.time, &dest->data.time);
   case TAG_TUPLE:
     dest->type = TAG_TUPLE;
     return env_eval_equal_tuple(env, macro, &a->data.tuple,
@@ -1152,6 +1156,71 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
   }
   error("env_eval_equal_tag: invalid tag");
   return false;
+}
+
+bool env_eval_equal_time (s_env *env, bool macro, const s_time *a,
+                          const s_time *b, s_time *dest)
+{
+  s_tag *a2;
+  s_tag  a_tag[2] = {0};
+  s_tag *b2;
+  s_tag  b_tag[2] = {0};
+  s_time tmp = {0};
+  s_tag  tmp_tag[2] = {0};
+  assert(env);
+  assert(a);
+  assert(b);
+  assert(dest);
+  if (! (a2 = a->tag)) {
+    a2 = a_tag;
+    a2[0].type = TAG_SW;
+    a2[0].data.sw = a->tv_sec;
+    a2[1].type = TAG_SW;
+    a2[1].data.sw = a->tv_nsec;
+  }
+  if (! (b2 = b->tag)) {
+    b2 = b_tag;
+    b2[0].type = TAG_SW;
+    b2[0].data.sw = b->tv_sec;
+    b2[1].type = TAG_SW;
+    b2[1].data.sw = b->tv_nsec;
+  }
+  if (a->tag || b->tag)
+    tmp.tag = alloc(2 * sizeof(s_tag));
+  else
+    tmp.tag = tmp_tag;
+  if (! env_eval_equal_tag(env, macro, a2, b2, tmp.tag)) {
+    free(tmp.tag);
+    return false;
+  }
+  if (! env_eval_equal_tag(env, macro, a2 + 1, b2 + 1, tmp.tag + 1)) {
+    tag_clean(tmp.tag);
+    free(tmp.tag);
+    return false;
+  }
+  if (! (a->tag || b->tag)) {
+    if (tmp_tag[0].type != TAG_SW) {
+      err_puts("env_eval_equal_time: tv_sec is not a Sw");
+      assert(! "env_eval_equal_time: tv_sec is not a Sw");
+      tag_clean(tmp.tag + 1);
+      tag_clean(tmp.tag);
+      free(tmp.tag);
+      return false;
+    }
+    tmp.tv_sec = tmp_tag[0].data.sw;
+    if (tmp_tag[1].type != TAG_SW) {
+      err_puts("env_eval_equal_time: tv_nsec is not a Sw");
+      assert(! "env_eval_equal_time: tv_nsec is not a Sw");
+      tag_clean(tmp.tag + 1);
+      tag_clean(tmp.tag);
+      free(tmp.tag);
+      return false;
+    }
+    tmp.tv_nsec = tmp_tag[1].data.sw;
+    tmp.tag = NULL;
+  }
+  *dest = tmp;
+  return true;
 }
 
 bool env_eval_equal_tuple (s_env *env, bool macro, const s_tuple *a,
@@ -1561,6 +1630,8 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_quote_quote(env, &tag->data.quote, dest);
   case TAG_STRUCT:
     return env_eval_quote_struct(env, &tag->data.struct_, dest);
+  case TAG_TIME:
+    return env_eval_quote_time(env, &tag->data.time, dest);
   case TAG_TUPLE:
     return env_eval_quote_tuple(env, &tag->data.tuple, dest);
   case TAG_UNQUOTE:
@@ -1601,6 +1672,38 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
   err_puts("env_eval_quote_tag: invalid tag type");
   assert(! "env_eval_quote_tag: invalid tag type");
   return false;
+}
+
+bool env_eval_quote_time (s_env *env, const s_time *time, s_tag *dest)
+{
+  s_time tmp = {0};
+  assert(env);
+  assert(time);
+  assert(dest);
+  if (time->tag) {
+    tmp.tag = alloc(2 * sizeof(s_tag));
+    if (! env_eval_quote_tag(env, time->tag, tmp.tag)) {
+      err_puts("env_eval_quote_time: env_eval_quote_tag: tv_sec");
+      assert(! "env_eval_quote_time: env_eval_quote_tag: tv_sec");
+      free(tmp.tag);
+      return false;
+    }
+    if (! env_eval_quote_tag(env, time->tag + 1, tmp.tag + 1)) {
+      err_puts("env_eval_quote_time: env_eval_quote_tag: tv_nsec");
+      assert(! "env_eval_quote_time: env_eval_quote_tag: tv_nsec");
+      tag_clean(tmp.tag);
+      free(tmp.tag);
+      return false;
+    }
+    dest->type = TAG_TIME;
+    dest->data.time = tmp;
+    return true;
+  }
+  tmp.tv_sec = time->tv_sec;
+  tmp.tv_nsec = time->tv_nsec;
+  dest->type = TAG_TIME;
+  dest->data.time = tmp;
+  return true;
 }
 
 bool env_eval_quote_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
@@ -1760,6 +1863,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_quote(env, &tag->data.quote, dest);
   case TAG_STRUCT:
     return env_eval_struct(env, &tag->data.struct_, dest);
+  case TAG_TIME:
+    return env_eval_time(env, &tag->data.time, dest);
   case TAG_TUPLE:
     return env_eval_tuple(env, &tag->data.tuple, dest);
   case TAG_BOOL:
@@ -1795,6 +1900,43 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   err_puts("env_eval_tag: unknown tag type");
   assert(! "env_eval_tag: unknown tag type");
   return false;
+}
+
+bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
+{
+  s_tag tag[2] = {0};
+  s_tag tmp = {0};
+  tmp.type = TAG_TIME;
+  if (time->tag) {
+    if (! env_eval_tag(env, time->tag, tag))
+      return false;
+    if (! env_eval_tag(env, time->tag + 1, tag + 1)) {
+      tag_clean(tag);
+      return false;
+    }
+    if (tag[0].type != TAG_SW) {
+      err_write_1("env_eval_time: tv_sec is not a Sw: ");
+      err_inspect_tag(tag);
+      err_write_1("\n");
+      assert(! "env_eval_time: tv_sec is not a Sw");
+      tag_clean(tag + 1);
+      tag_clean(tag);
+      return false;
+    }
+    if (tag[1].type != TAG_SW) {
+      err_write_1("env_eval_time: tv_nsec is not a Sw: ");
+      err_inspect_tag(tag + 1);
+      err_write_1("\n");
+      assert(! "env_eval_time: tv_nsec is not a Sw");
+      tag_clean(tag + 1);
+      tag_clean(tag);
+      return false;
+    }
+    tmp.data.time.tv_sec = tag[0].data.sw;
+    tmp.data.time.tv_nsec = tag[1].data.sw;
+  }
+  *dest = tmp;
+  return true;
 }
 
 bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)

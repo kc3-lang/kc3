@@ -505,6 +505,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_STRUCT_TYPE:
     return hash_update_struct_type(hash, &tag->data.struct_type);
   case TAG_SYM:     return hash_update_sym(hash, &tag->data.sym);
+  case TAG_TIME:    return hash_update_time(hash, &tag->data.time);
   case TAG_TUPLE:   return hash_update_tuple(hash, &tag->data.tuple);
   case TAG_U8:      return hash_update_u8(hash, &tag->data.u8);
   case TAG_U16:     return hash_update_u16(hash, &tag->data.u16);
@@ -519,6 +520,28 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   err_puts("hash_update_tag: unknown tag type");
   assert(! "hash_update_tag: unknown tag type");
   return false;
+}
+
+bool hash_update_time (t_hash *hash, const s_time *time)
+{
+  bool b;
+  char type[] = "time";
+  assert(time);
+  assert(hash);
+  b = time->tag ? true : false;
+  if (! hash_update(hash, type, sizeof(type)) ||
+      ! hash_update_bool(hash, &b))
+    return false;
+  if (time->tag) {
+    if (! hash_update_tag(hash, time->tag) ||
+        ! hash_update_tag(hash, time->tag + 1))
+      return false;
+    return true;
+  }
+  if (! hash_update_sw(hash, &time->tv_sec) ||
+      ! hash_update_sw(hash, &time->tv_nsec))
+    return false;
+  return true;
 }
 
 bool hash_update_tuple (t_hash *hash, const s_tuple *tuple)

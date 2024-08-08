@@ -4032,6 +4032,7 @@ sw buf_parse_tag_primary_2 (s_buf *buf, s_tag *dest)
       (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
       (r = buf_parse_tag_cfn(buf, dest)) != 0 ||
       (r = buf_parse_tag_fn(buf, dest)) != 0 ||
+      (r = buf_parse_tag_time(buf, dest)) != 0 ||
       (r = buf_parse_tag_struct(buf, dest)) != 0 ||
       (r = buf_parse_tag_list(buf, dest)) != 0 ||
       (r = buf_parse_tag_ident(buf, dest)) != 0 ||
@@ -4112,6 +4113,16 @@ sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_time (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_time(buf, &dest->data.time)) > 0)
+    dest->type = TAG_TIME;
+  return r;
+}
+
 sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -4150,6 +4161,30 @@ sw buf_parse_tag_void (s_buf *buf, s_tag *dest)
   if ((r = buf_parse_void(buf, NULL)) > 0)
     dest->type = TAG_VOID;
   return r;
+}
+
+sw buf_parse_time (s_buf *buf, s_time *time)
+{
+  sw r;
+  sw result = 0;
+  s_sym keys[2] = {0};
+  s_time tmp = {0};
+  if ((r = buf_read_1(buf, "%Time{")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "}")) < 0)
+    goto restore;
+  if (r > 0) {
+    result += r;
+    *dest = tmp;
+    return result;
+  }
 }
 
 sw buf_parse_tuple (s_buf *buf, s_tuple *tuple)

@@ -322,9 +322,9 @@ struct tag_type_list {
 };
 
 struct time {
-  s_tag *tag;
   sw tv_sec;
   sw tv_nsec;
+  s_tag *tag;
 };
 
 struct tuple {

@@ -57,6 +57,7 @@ bool hash_update_struct (t_hash *hash, const s_struct *s);
 bool hash_update_struct_type (t_hash *hash, const s_struct_type *st);
 bool hash_update_sym (t_hash *hash, const s_sym * const *sym);
 bool hash_update_tag (t_hash *hash, const s_tag *tag);
+bool hash_update_time (t_hash *hash, const s_time *time);
 bool hash_update_tuple (t_hash *hash, const s_tuple *tuple);
 HASH_UPDATE_PROTOTYPE(u8);
 HASH_UPDATE_PROTOTYPE(u16);
