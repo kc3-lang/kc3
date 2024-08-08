@@ -8,6 +8,6 @@ defmodule HTTP.Event do
 
   def init = cfn Ptr "event_init" ()
 
-  def set = cfn Void "http_event_set" (Ptr, S32, S16, Cfn, Tag)
+  def new = cfn Void "http_event_new" (S32, List, Cfn, Tag)
 
 end
