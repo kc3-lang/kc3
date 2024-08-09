@@ -25,13 +25,14 @@ s32 http_event_add (struct event *ev, s_time *time)
 
 /* http_event_callback
      expects a tag of the form
-     {fn (fd, events, socket_buf) {void},
+     {fn ((S32) fd, (List) events, (Ptr) ev, (Tag) Arg) {void},
       arg} */
 void http_event_callback (int fd, short events, void *tag_tuple)
 {
   s_tag  *arg;
   s_list *arguments;
-  s_list *events_list;
+  struct event *ev;
+  s_list       *events_list;
   s_fn *fn;
   s_tag *tag;
   s_tag tmp;
@@ -45,8 +46,11 @@ void http_event_callback (int fd, short events, void *tag_tuple)
     abort();
   }
   fn = &tag->data.tuple.tag[0].data.fn;
-  arg = tag->data.tuple.tag + 1;
+  ev = tag->data.tuple.tag[1].data.ptr.p;
+  arg = tag->data.tuple.tag + 2;
   events_list = NULL;
+  if (events & EV_PERSIST)
+    events_list = list_new_sym(&g_sym_persist, events_list);
   if (events & EV_WRITE)
     events_list = list_new_sym(&g_sym_write, events_list);
   if (events & EV_READ)
@@ -56,8 +60,9 @@ void http_event_callback (int fd, short events, void *tag_tuple)
   if (events & EV_TIMEOUT)
     events_list = list_new_sym(&g_sym_timeout, events_list);
   arguments = list_new_s32(fd, list_new_list
-                           (events_list, list_new_tag_copy
-                            (arg, NULL)));
+                           (events_list, list_new_ptr
+                            (ev, list_new_tag_copy
+                             (arg, NULL))));
   if (! env_eval_call_fn_args(&g_kc3_env, fn, arguments, &tmp)) {
     err_puts("http_event_callback: callback failed");
     assert(! "http_event_callback: callback failed");

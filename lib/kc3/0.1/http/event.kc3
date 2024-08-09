@@ -4,12 +4,15 @@ defmodule HTTP.Event do
 
   def add = cfn S32 "http_event_add" (Ptr, Time)
 
+  # base_set(base, ev)
+  def base_set = cfn S32 "event_base_set" (Ptr, Ptr)
+
   def del = cfn S32 "event_del" (Ptr)
 
   def dispatch = cfn S32 "event_dispatch" ()
 
   def init = cfn Ptr "event_init" ()
 
-  def new = cfn Void "http_event_new" (S32, List, Fn, Tag)
+  def new = cfn Ptr "http_event_new" (S32, List, Fn, Tag)
 
 end

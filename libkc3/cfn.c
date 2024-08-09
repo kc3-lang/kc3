@@ -53,7 +53,9 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     return NULL;
   }
   cfn_tag_init(&tmp, cfn->result_type);
-  if (cfn->cif.rtype == &ffi_type_pointer) {
+  if ((cfn->result_type != &g_sym_Ptr ||
+       cfn->arg_result) &&
+      cfn->cif.rtype == &ffi_type_pointer) {
     /* make result point to result_pointer */
     if (! tag_to_ffi_pointer(&tmp, cfn->result_type,
                              (void **) &result_pointer)) {
