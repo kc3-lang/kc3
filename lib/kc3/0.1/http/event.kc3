@@ -11,8 +11,8 @@ defmodule HTTP.Event do
 
   def dispatch = cfn S32 "event_base_dispatch" (Ptr)
 
-  # init() returns a (struct event_base *)
-  def event_base_new = cfn Ptr "event_base_new" ()
+  # base_new() returns a (struct event_base *)
+  def base_new = cfn Ptr "event_base_new" ()
 
   def new = cfn Ptr "http_event_new" (Ptr, S32, List, Fn, Tag)
 
