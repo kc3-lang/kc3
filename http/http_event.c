@@ -75,7 +75,7 @@ s32 http_event_base_dispatch (struct event_base *eb)
   return event_base_dispatch(eb);
 }
 
-void * http_event_init (void)
+struct event_base * http_event_base_new (void)
 {
   return event_base_new();
 }
