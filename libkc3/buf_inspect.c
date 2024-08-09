@@ -260,7 +260,7 @@ sw buf_inspect_block (s_buf *buf, const s_block *block)
   }
   pretty_save = buf->pretty;
   pretty_indent(&buf->pretty, 2);
-  if (block->short_form) {    
+  if (block->short_form) {
     if ((r = buf_write_1(buf, "{ ")) < 0)
       return r;
   }
