@@ -14,15 +14,15 @@
 #include "buf_inspect.h"
 #include "kc3_main.h"
 
-sw buf_inspect_u64_decimal (s_buf *buf, const u64 *u)
+sw buf_inspect_u64_decimal (s_pretty *pretty, s_buf *buf, const u64 *u)
 {
-  return buf_inspect_u64_base(buf,
+  return buf_inspect_u64_base(pretty, buf,
                                   &g_kc3_base_decimal,
                                   u);
 }
 
-sw buf_inspect_u64_decimal_size (const u64 *u)
+sw buf_inspect_u64_decimal_size (s_pretty *pretty, const u64 *u)
 {
-  return buf_inspect_u64_base_size(&g_kc3_base_decimal,
+  return buf_inspect_u64_base_size(pretty, &g_kc3_base_decimal,
                                        u);
 }

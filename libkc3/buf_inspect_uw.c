@@ -21,26 +21,26 @@
 #include "str.h"
 #include "sym.h"
 
-sw buf_inspect_uw (s_buf *buf, const uw *u)
+sw buf_inspect_uw (s_pretty *pretty, s_buf *buf, const uw *u)
 {
   sw r;
   sw result = 0;
   if (g_buf_inspect_type != &g_sym_Uw &&
       cast_needed_uw(*u)) {
-    if ((r = buf_inspect_paren_sym(buf, &g_sym_Uw)) < 0)
+    if ((r = buf_inspect_paren_sym(pretty, buf, &g_sym_Uw)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, " ")) < 0)
       return r;
     result += r;
   }
-  if ((r = buf_inspect_uw_base(buf, &g_kc3_base_decimal, u)) < 0)
+  if ((r = buf_inspect_uw_base(pretty, buf, &g_kc3_base_decimal, u)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_uw_base (s_buf *buf,
+sw buf_inspect_uw_base (s_pretty *pretty, s_buf *buf,
                              const s_str *base,
                              const uw *u)
 {
@@ -60,7 +60,7 @@ sw buf_inspect_uw_base (s_buf *buf,
       return -1;
     return buf_write_character_utf8(buf, zero);
   }
-  size = buf_inspect_uw_base_digits(base, u);
+  size = buf_inspect_uw_base_digits(pretty, base, u);
   c = alloc(size * sizeof(character));
   buf_save_init(buf, &save);
   radix = base->size;
@@ -89,7 +89,7 @@ sw buf_inspect_uw_base (s_buf *buf,
   return r;
 }
 
-sw buf_inspect_uw_base_digits (const s_str *base,
+sw buf_inspect_uw_base_digits (s_pretty *pretty, const s_str *base,
                                     const uw *u)
 {
   uw radix;
@@ -106,7 +106,7 @@ sw buf_inspect_uw_base_digits (const s_str *base,
   return size;
 }
 
-sw buf_inspect_uw_base_size (const s_str *base,
+sw buf_inspect_uw_base_size (s_pretty *pretty, const s_str *base,
                                   const uw *u)
 {
   character c;
@@ -123,23 +123,23 @@ sw buf_inspect_uw_base_size (const s_str *base,
     u_ /= radix;
     if (str_character(base, digit, &c) < 0)
       return -1;
-    result += buf_inspect_str_character_size(&c);
+    result += buf_inspect_str_character_size(pretty, &c);
   }
   return result;
 }
 
-sw buf_inspect_uw_size (const uw *u)
+sw buf_inspect_uw_size (s_pretty *pretty, const uw *u)
 {
   sw r;
   sw result = 0;
   if (g_buf_inspect_type != &g_sym_Uw &&
       cast_needed_uw(*u)) {
-    if ((r = buf_inspect_paren_sym_size(&g_sym_Uw)) < 0)
+    if ((r = buf_inspect_paren_sym_size(pretty, &g_sym_Uw)) < 0)
       return r;
     result += r;
     result += strlen(" ");
   }
-  if ((r = buf_inspect_uw_base_size(&g_kc3_base_decimal, u)) < 0)
+  if ((r = buf_inspect_uw_base_size(pretty, &g_kc3_base_decimal, u)) < 0)
     return r;
   result += r;
   return result;

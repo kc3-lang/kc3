@@ -14,15 +14,15 @@
 #include "buf_inspect.h"
 #include "kc3_main.h"
 
-sw buf_inspect_u8_binary (s_buf *buf, const u8 *u)
+sw buf_inspect_u8_binary (s_pretty *pretty, s_buf *buf, const u8 *u)
 {
-  return buf_inspect_u8_base(buf,
+  return buf_inspect_u8_base(pretty, buf,
                                   &g_kc3_base_binary,
                                   u);
 }
 
-sw buf_inspect_u8_binary_size (const u8 *u)
+sw buf_inspect_u8_binary_size (s_pretty *pretty, const u8 *u)
 {
-  return buf_inspect_u8_base_size(&g_kc3_base_binary,
+  return buf_inspect_u8_base_size(pretty, &g_kc3_base_binary,
                                        u);
 }

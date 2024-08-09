@@ -46,14 +46,14 @@ sw buf_inspect_s64 (s_buf *buf, const s64 *s)
   return result;
 }
 
-sw buf_inspect_s64_size (const s64 *s)
+sw buf_inspect_s64_size (s_pretty *pretty, const s64 *s)
 {
   sw r;
   sw result = 0;
   u64 u;
   if (g_buf_inspect_type != &g_sym_S64 &&
       cast_needed_s64(*s)) {
-    if ((r = buf_inspect_paren_sym_size(&g_sym_S64)) < 0)
+    if ((r = buf_inspect_paren_sym_size(pretty, &g_sym_S64)) < 0)
       return r;
     result += r;
     result += strlen(" ");

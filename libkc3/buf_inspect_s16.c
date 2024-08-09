@@ -46,14 +46,14 @@ sw buf_inspect_s16 (s_buf *buf, const s16 *s)
   return result;
 }
 
-sw buf_inspect_s16_size (const s16 *s)
+sw buf_inspect_s16_size (s_pretty *pretty, const s16 *s)
 {
   sw r;
   sw result = 0;
   u16 u;
   if (g_buf_inspect_type != &g_sym_S16 &&
       cast_needed_s16(*s)) {
-    if ((r = buf_inspect_paren_sym_size(&g_sym_S16)) < 0)
+    if ((r = buf_inspect_paren_sym_size(pretty, &g_sym_S16)) < 0)
       return r;
     result += r;
     result += strlen(" ");
