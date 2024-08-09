@@ -205,7 +205,7 @@ sw buf_inspect_unquote_size (s_pretty *pretty,
 BUF_INSPECT_U_PROTOTYPES(w);
 sw buf_inspect_var (s_buf *buf, const s_tag *var);
 sw buf_inspect_var_size (s_pretty *pretty, const s_tag *var);
-sw buf_inspect_void (s_buf *buf, const void *_);
-sw buf_inspect_void_size (s_pretty *pretty, const void *_);
+sw buf_inspect_void (s_buf *buf, const void *v);
+sw buf_inspect_void_size (s_pretty *pretty, const void *v);
 
 #endif /* LIBKC3_BUF_INSPECT_H */
