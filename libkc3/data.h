@@ -22,12 +22,14 @@
 #include "types.h"
 
 sw     data_buf_inspect (const s_sym *type, s_buf *buf, const void *v);
-sw     data_buf_inspect_size (const s_sym *type, const void *v);
+sw     data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
+                              const void *v);
 bool   data_clean (const s_sym *type, void *v);
 bool   data_compare (const s_sym *type, const void *a, const void *b);
 bool   data_hash_update (const s_sym *type, t_hash *hash,
                          const void *s);
-void * data_init_cast (void *v, const s_sym * const *type, const s_tag *src);
+void * data_init_cast (void *v, const s_sym * const *type,
+                       const s_tag *src);
 void * data_init_copy (const s_sym *type, void *v, const void *src);
 
 #endif /* LIBKC3_DATA_H */

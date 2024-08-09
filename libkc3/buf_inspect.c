@@ -41,8 +41,9 @@ sw buf_inspect_array_data (s_buf *buf, const s_array *array);
 sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
                                const u8 **data, const s_tag **tag,
                                uw *address, uw dimension);
-sw buf_inspect_array_data_size (const s_array *array);
-sw buf_inspect_array_data_size_rec (const s_array *array,
+sw buf_inspect_array_data_size (s_pretty *pretty, const s_array *array);
+sw buf_inspect_array_data_size_rec (s_pretty *pretty,
+                                    const s_array *array,
                                     const u8 **data,
                                     const s_tag **tag,
                                     uw *address, uw dimension);
@@ -152,7 +153,7 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
   return r;
 }
 
-sw buf_inspect_array_data_size (const s_array *array)
+sw buf_inspect_array_data_size (s_pretty *pretty, const s_array *array)
 {
   uw *address;
   const s_sym *buf_inspect_type;
@@ -169,7 +170,8 @@ sw buf_inspect_array_data_size (const s_array *array)
     return -1;
   buf_inspect_type = g_buf_inspect_type;
   g_buf_inspect_type = sym_array_type(array->array_type);
-  r = buf_inspect_array_data_size_rec(array, (const u8 **) &data,
+  r = buf_inspect_array_data_size_rec(pretty, array,
+                                      (const u8 **) &data,
                                       (const s_tag **) &tag,
                                       address, 0);
   g_buf_inspect_type = buf_inspect_type;
@@ -177,7 +179,8 @@ sw buf_inspect_array_data_size (const s_array *array)
   return r;
 }
 
-sw buf_inspect_array_data_size_rec (const s_array *array,
+sw buf_inspect_array_data_size_rec (s_pretty *pretty,
+                                    const s_array *array,
                                     const u8 **data,
                                     const s_tag **tag,
                                     uw *address, uw dimension)
@@ -190,21 +193,21 @@ sw buf_inspect_array_data_size_rec (const s_array *array,
   while (1) {
     if (dimension == array->dimension - 1) {
       if (*data) {
-        if ((r = data_buf_inspect_size(array->element_type,
+        if ((r = data_buf_inspect_size(pretty, array->element_type,
                                        *data)) <= 0)
           goto clean;
         result += r;
         *data += array->dimensions[dimension].item_size;
       }
       else if (*tag) {
-        if ((r = buf_inspect_tag_size(*tag)) <= 0)
+        if ((r = buf_inspect_tag_size(pretty, *tag)) <= 0)
           goto clean;
         result += r;
         (*tag)++;
       }
     }
     else {
-      if ((r = buf_inspect_array_data_size_rec(array, data, tag,
+      if ((r = buf_inspect_array_data_size_rec(pretty, array, data, tag,
                                                address,
                                                dimension + 1)) <= 0)
         goto clean;
@@ -223,17 +226,17 @@ sw buf_inspect_array_data_size_rec (const s_array *array,
   return r;
 }
 
-sw buf_inspect_array_size (const s_array *array)
+sw buf_inspect_array_size (s_pretty *pretty, const s_array *array)
 {
   sw r;
   sw result = 0;
   assert(array);
-  if ((r = buf_inspect_paren_sym_size(array->array_type)) <= 0)
+  if ((r = buf_inspect_paren_sym_size(pretty, array->array_type)) <= 0)
     goto clean;
   result += r;
   r = strlen(" ");
   result += r;
-  if ((r = buf_inspect_array_data_size(array)) <= 0) {
+  if ((r = buf_inspect_array_data_size(pretty, array)) <= 0) {
     err_puts("buf_inspect_array_size: buf_inspect_array_data");
     goto clean;
   }
@@ -334,22 +337,57 @@ sw buf_inspect_block_inner (s_buf *buf, const s_block *block)
   return result;
 }
 
-sw buf_inspect_block_size (const s_block *block)
+sw buf_inspect_block_size (s_pretty *pretty, const s_block *block)
 {
+  s_pretty pretty_save;
   u64 i = 0;
   sw r;
-  sw result;
-  if (! block->count)
-    result = strlen("do end");
-  result = strlen("do");
-  while (i < block->count) {
-    result += buf_write_1_size("\n");
-    if ((r = buf_inspect_tag_size(block->tag + i)) < 0)
+  sw result = 0;
+  if (! block->count) {
+    if (block->short_form)
+      return buf_write_1_size(pretty, "{}");
+    else
+      return buf_write_1_size(pretty, "do end");
+  }
+  pretty_save = *pretty;
+  pretty_indent(pretty, 2);
+  if (block->short_form) {    
+    if ((r = buf_write_1_size(pretty, "{ ")) < 0)
       return r;
+  }
+  else {
+    if ((r = buf_write_1_size(pretty, "do\n")) < 0)
+      return r;
+  }
+  result += r;
+  while (i < block->count - 1) {
+    if ((r = buf_inspect_tag_size(pretty, block->tag + i)) < 0)
+      return r;
+    result += r;
+    if (block->short_form) {
+      if ((r = buf_write_1_size(pretty, "; ")) < 0)
+        return r;
+    }
+    else {
+      if ((r = buf_write_1_size(pretty, "\n")) < 0)
+        return r;
+    }
     result += r;
     i++;
   }
-  result += strlen("\nend");
+  if ((r = buf_inspect_tag_size(pretty, block->tag + i)) < 0)
+    return r;
+  result += r;
+  *pretty = pretty_save;
+  if (block->short_form) {
+    if ((r = buf_write_1_size(pretty, " }")) < 0)
+      return r;
+  }
+  else {
+    if ((r = buf_write_1_size(pretty, "\nend")) < 0)
+      return r;
+  }
+  result += r;
   return result;
 }
 
@@ -360,11 +398,13 @@ sw buf_inspect_bool (s_buf *buf, const bool *b)
   return buf_write_1(buf, "false");
 }
 
-sw buf_inspect_bool_size (const bool *b)
+sw buf_inspect_bool_size (s_pretty *pretty, const bool *b)
 {
+  assert(pretty);
+  assert(b);
   if (*b)
-    return strlen("true");
-  return strlen("false");
+    return buf_write_1_size(pretty, "true");
+  return buf_write_1_size(pretty, "false");
 }
 
 sw buf_inspect_call (s_buf *buf, const s_call *call)
@@ -439,7 +479,7 @@ sw buf_inspect_call_access (s_buf *buf, const s_call *call)
   return result;
 }
 
-sw buf_inspect_call_access_size (const s_call *call)
+sw buf_inspect_call_access_size (s_pretty *pretty, const s_call *call)
 {
   s_list *args;
   sw r;
@@ -481,7 +521,7 @@ sw buf_inspect_call_args (s_buf *buf, const s_list *args)
   return result;
 }
 
-sw buf_inspect_call_args_size (const s_list *args)
+sw buf_inspect_call_args_size (s_pretty *pretty, const s_list *args)
 {
   sw r;
   sw result = 0;
@@ -539,7 +579,7 @@ sw buf_inspect_call_brackets (s_buf *buf, const s_call *call)
   return result;
 }
 
-sw buf_inspect_call_brackets_size (const s_call *call)
+sw buf_inspect_call_brackets_size (s_pretty *pretty, const s_call *call)
 {
   s_array *address;
   s_tag *array;
@@ -629,7 +669,7 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
   return result;
 }
 
-sw buf_inspect_call_if_then_else_size (const s_call *call)
+sw buf_inspect_call_if_then_else_size (s_pretty *pretty, const s_call *call)
 {
   (void) call;
   return -1;
@@ -704,7 +744,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, s8 op_precedence)
   return result;
 }
 
-sw buf_inspect_call_op_size (const s_call *call, s8 op_precedence)
+sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call, s8 op_precedence)
 {
   (void) call;
   (void) op_precedence;
@@ -737,7 +777,7 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
   return result;
 }
 
-sw buf_inspect_call_op_unary_size (const s_call *call)
+sw buf_inspect_call_op_unary_size (s_pretty *pretty, const s_call *call)
 {
   (void) call;
   return -1;
@@ -761,7 +801,7 @@ sw buf_inspect_call_paren (s_buf *buf, const s_call *call)
   return result;
 }
 
-sw buf_inspect_call_size (const s_call *call)
+sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
 {
   bool b;
   bool op;
@@ -850,7 +890,7 @@ sw buf_inspect_call_special_operator (s_buf *buf, const s_call *call)
   return result;
 }
 
-sw buf_inspect_call_special_operator_size (const s_call *call)
+sw buf_inspect_call_special_operator_size (s_pretty *pretty, const s_call *call)
 {
   const s_list *args;
   bool b;
@@ -901,7 +941,7 @@ sw buf_inspect_call_str (s_buf *buf, const s_call *call)
   return buf_inspect_str_eval(buf, call->arguments->tag.data.list);
 }
 
-sw buf_inspect_call_str_size (const s_call *call)
+sw buf_inspect_call_str_size (s_pretty *pretty, const s_call *call)
 {
   if ((call->ident.module &&
        call->ident.module != &g_sym_KC3) ||
@@ -949,7 +989,7 @@ sw buf_inspect_cast (s_buf *buf, const s_call *call)
   return result;
 }
 
-sw buf_inspect_cast_size (const s_call *call)
+sw buf_inspect_cast_size (s_pretty *pretty, const s_call *call)
 {
   s_tag *arg;
   const s_sym *module;
@@ -997,7 +1037,7 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
   return result;
 }
 
-sw buf_inspect_cfn_size (const s_cfn *cfn)
+sw buf_inspect_cfn_size (s_pretty *pretty, const s_cfn *cfn)
 {
   s_list *arg_type;
   sw r;
@@ -1043,7 +1083,7 @@ sw buf_inspect_character (s_buf *buf, const character *c)
   return result;
 }
 
-sw buf_inspect_character_size (const character *c)
+sw buf_inspect_character_size (s_pretty *pretty, const character *c)
 {
   sw r;
   sw result = 0;
@@ -1079,7 +1119,7 @@ sw buf_inspect_complex (s_buf *buf, const s_complex *c)
   return r;
 }
 
-sw buf_inspect_complex_size (const s_complex *c)
+sw buf_inspect_complex_size (s_pretty *pretty, const s_complex *c)
 {
   sw r;
   sw result = 0;
@@ -1113,7 +1153,7 @@ sw buf_inspect_cow (s_buf *buf, const s_cow *cow)
   return r;
 }
 
-sw buf_inspect_cow_size (const s_cow *cow)
+sw buf_inspect_cow_size (s_pretty *pretty, const s_cow *cow)
 {
   sw r;
   sw result;
@@ -1193,7 +1233,7 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
   return result;
 }
 
-sw buf_inspect_f32_size (const f32 *f)
+sw buf_inspect_f32_size (s_pretty *pretty, const f32 *f)
 {
   char b[32];
   s_buf buf;
@@ -1268,7 +1308,7 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
   return result;
 }
 
-sw buf_inspect_f64_size (const f64 *x)
+sw buf_inspect_f64_size (s_pretty *pretty, const f64 *x)
 {
   char b[64];
   s_buf buf;
@@ -1343,7 +1383,7 @@ sw buf_inspect_f128 (s_buf *buf, const f128 *x)
   return result;
 }
 
-sw buf_inspect_f128_size (const f128 *x)
+sw buf_inspect_f128_size (s_pretty *pretty, const f128 *x)
 {
   char b[128];
   s_buf buf;
@@ -1382,7 +1422,7 @@ sw buf_inspect_fact (s_buf *buf, const s_fact *fact)
   return result;
 }
 
-sw buf_inspect_fact_size (const s_fact *fact)
+sw buf_inspect_fact_size (s_pretty *pretty, const s_fact *fact)
 {
   sw r;
   sw result = 0;
@@ -1505,7 +1545,7 @@ sw buf_inspect_fn_clause (s_buf *buf, const s_fn_clause *clause)
   return result;
 }
 
-sw buf_inspect_fn_clause_size (const s_fn_clause *clause)
+sw buf_inspect_fn_clause_size (s_pretty *pretty, const s_fn_clause *clause)
 {
   sw r;
   sw result = 0;
@@ -1546,7 +1586,7 @@ sw buf_inspect_fn_pattern (s_buf *buf, const s_list *pattern)
   return result;
 }
 
-sw buf_inspect_fn_pattern_size (const s_list *pattern)
+sw buf_inspect_fn_pattern_size (s_pretty *pretty, const s_list *pattern)
 {
   sw r;
   sw result = 0;
@@ -1567,7 +1607,7 @@ sw buf_inspect_fn_pattern_size (const s_list *pattern)
   return result;
 }
 
-sw buf_inspect_fn_size (const s_fn *fn)
+sw buf_inspect_fn_size (s_pretty *pretty, const s_fn *fn)
 {
   const s_fn_clause *clause;
   sw r;
@@ -1621,7 +1661,7 @@ sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
   return result;
 }
 
-sw buf_inspect_ident_size (const s_ident *ident)
+sw buf_inspect_ident_size (s_pretty *pretty, const s_ident *ident)
 {
   sw r;
   sw result = 0;
@@ -1662,7 +1702,7 @@ sw buf_inspect_ident_sym_reserved (s_buf *buf, const s_sym *sym)
   return size;
 }
 
-sw buf_inspect_ident_sym_reserved_size (const s_sym *sym)
+sw buf_inspect_ident_sym_reserved_size (s_pretty *pretty, const s_sym *sym)
 {
   sw size;
   assert(sym);
@@ -1671,7 +1711,7 @@ sw buf_inspect_ident_sym_reserved_size (const s_sym *sym)
   return size;
 }
 
-sw buf_inspect_ident_sym_size (const s_sym *sym)
+sw buf_inspect_ident_sym_size (s_pretty *pretty, const s_sym *sym)
 {
   if (sym->str.size == 0)
     return strlen("_\"\"");
@@ -1723,7 +1763,7 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
   return -1;
 }
 
-sw buf_inspect_integer_size (const s_integer *x)
+sw buf_inspect_integer_size (s_pretty *pretty, const s_integer *x)
 {
   int size;
   if (mp_radix_size(&x->mp_int, 10, &size) != MP_OKAY)
@@ -1809,7 +1849,7 @@ sw buf_inspect_list_paren (s_buf *buf, const s_list * const *x)
   return result;
 }
 
-sw buf_inspect_list_size (const s_list * const *list)
+sw buf_inspect_list_size (s_pretty *pretty, const s_list * const *list)
 {
   const s_list *i;
   sw r;
@@ -1868,7 +1908,7 @@ sw buf_inspect_list_tag (s_buf *buf, const s_tag *tag)
   return buf_inspect_tag(buf, tag);
 }
 
-sw buf_inspect_list_tag_size (const s_tag *tag)
+sw buf_inspect_list_tag_size (s_pretty *pretty, const s_tag *tag)
 {
   sw r;
   sw result = 0;
@@ -1944,7 +1984,7 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
   return result;
 }
 
-sw buf_inspect_map_size (const s_map *map)
+sw buf_inspect_map_size (s_pretty *pretty, const s_map *map)
 {
   uw i = 0;
   s_tag *k;
@@ -1998,7 +2038,7 @@ sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym)
   return r;
 }
 
-sw buf_inspect_paren_sym_size (const s_sym *sym)
+sw buf_inspect_paren_sym_size (s_pretty *pretty, const s_sym *sym)
 {
   sw r;
   sw result = 0;
@@ -2041,7 +2081,7 @@ sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag)
   return result;
 }
 
-sw buf_inspect_ptag_size (const p_tag *ptag)
+sw buf_inspect_ptag_size (s_pretty *pretty, const p_tag *ptag)
 {
   sw result = 0;
   (void) ptag;
@@ -2079,7 +2119,7 @@ sw buf_inspect_ptr_free (s_buf *buf, const u_ptr_w *ptr_free)
   return result;
 }
 
-sw buf_inspect_ptr_free_size (const u_ptr_w *ptr)
+sw buf_inspect_ptr_free_size (s_pretty *pretty, const u_ptr_w *ptr)
 {
   sw result;
   (void) ptr;
@@ -2088,7 +2128,7 @@ sw buf_inspect_ptr_free_size (const u_ptr_w *ptr)
   return result;
 }
 
-sw buf_inspect_ptr_size (const u_ptr_w *ptr)
+sw buf_inspect_ptr_size (s_pretty *pretty, const u_ptr_w *ptr)
 {
   sw result;
   (void) ptr;
@@ -2117,7 +2157,7 @@ sw buf_inspect_quote (s_buf *buf, const s_quote *quote)
   return r;
 }
 
-sw buf_inspect_quote_size (const s_quote *quote)
+sw buf_inspect_quote_size (s_pretty *pretty, const s_quote *quote)
 {
   sw r;
   sw result = 0;
@@ -2152,7 +2192,7 @@ sw buf_inspect_ratio (s_buf *buf, const s_ratio *ratio)
   return r;
 }
 
-sw buf_inspect_ratio_size (const s_ratio *ratio)
+sw buf_inspect_ratio_size (s_pretty *pretty, const s_ratio *ratio)
 {
   sw r;
   sw result = 0;
@@ -2225,7 +2265,7 @@ sw buf_inspect_str_byte (s_buf *buf, const u8 *byte)
   return r;
 }
 
-sw buf_inspect_str_byte_size (const u8 *byte)
+sw buf_inspect_str_byte_size (s_pretty *pretty, const u8 *byte)
 {
   sw r;
   sw result = 0;
@@ -2298,7 +2338,7 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
   return r;
 }
 
-sw buf_inspect_str_character_size (const character *c)
+sw buf_inspect_str_character_size (s_pretty *pretty, const character *c)
 {
   sw csize;
   sw size;
@@ -2357,7 +2397,7 @@ sw buf_inspect_str_eval (s_buf *buf, const s_list *list)
   return result;
 }
 
-sw buf_inspect_str_eval_size (const s_list *list)
+sw buf_inspect_str_eval_size (s_pretty *pretty, const s_list *list)
 {
   (void) list;
   return -1;
@@ -2411,7 +2451,7 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str)
 }
 
 /* keep in sync with buf_inspect_str_reserved */
-sw buf_inspect_str_reserved_size (const s_str *str)
+sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str)
 {
   u8 byte;
   character c;
@@ -2443,7 +2483,7 @@ sw buf_inspect_str_reserved_size (const s_str *str)
   return -1;
 }
 
-sw buf_inspect_str_size (const s_str *str)
+sw buf_inspect_str_size (s_pretty *pretty, const s_str *str)
 {
   bool b;
   const sw quote_size = strlen("\"");
@@ -2531,7 +2571,7 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
   return result;
 }
 
-sw buf_inspect_struct_size (const s_struct *s)
+sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
 {
   uw i = 0;
   s_tag *k;
@@ -2635,7 +2675,7 @@ sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
   return result;
 }
 
-sw buf_inspect_struct_type_size (const s_struct_type *st)
+sw buf_inspect_struct_type_size (s_pretty *pretty, const s_struct_type *st)
 {
   s_array offset_array;
   uw offset_array_dimension;
@@ -2693,7 +2733,7 @@ sw buf_inspect_sym (s_buf *buf, const s_sym * const *sym)
   return size;
 }
 
-sw buf_inspect_sym_size (const s_sym * const *sym)
+sw buf_inspect_sym_size (s_pretty *pretty, const s_sym * const *sym)
 {
   const sw colon_size = 1;
   const s_sym *x;
@@ -2722,7 +2762,7 @@ sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *x)
   return result;
 }
 
-sw buf_inspect_sym_reserved_size (const s_sym *x)
+sw buf_inspect_sym_reserved_size (s_pretty *pretty, const s_sym *x)
 {
   sw r;
   sw result;
@@ -2789,7 +2829,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   return -1;
 }
 
-sw buf_inspect_tag_size (const s_tag *tag)
+sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
 {
   assert(tag);
   switch(tag->type) {
@@ -2887,7 +2927,7 @@ sw buf_inspect_time (s_buf *buf, const s_time *time)
   return result;
 }
 
-sw buf_inspect_time_size (const s_time *time)
+sw buf_inspect_time_size (s_pretty *pretty, const s_time *time)
 {
   sw r;
   sw result = 0;
@@ -2931,7 +2971,7 @@ sw buf_inspect_tuple (s_buf *buf, const s_tuple *tuple)
   return result;
 }
 
-sw buf_inspect_tuple_size (const s_tuple *tuple)
+sw buf_inspect_tuple_size (s_pretty *pretty, const s_tuple *tuple)
 {
   u64 i = 0;
   sw r;
@@ -2977,7 +3017,7 @@ sw buf_inspect_unquote (s_buf *buf, const s_unquote *unquote)
   return r;
 }
 
-sw buf_inspect_unquote_size (const s_unquote *unquote)
+sw buf_inspect_unquote_size (s_pretty *pretty, const s_unquote *unquote)
 {
   sw r;
   sw result = 0;
@@ -3008,7 +3048,7 @@ sw buf_inspect_var (s_buf *buf, const s_tag *tag)
   return result;
 }
 
-sw buf_inspect_var_size (const s_tag *tag)
+sw buf_inspect_var_size (s_pretty *pretty, const s_tag *tag)
 {
   sw r;
   sw result = 0;
@@ -3033,7 +3073,7 @@ sw buf_inspect_void (s_buf *buf, const void *_)
   return result;
 }
 
-sw buf_inspect_void_size (const void *_)
+sw buf_inspect_void_size (s_pretty *pretty, const void *_)
 {
   (void) _;
   return strlen("void");
