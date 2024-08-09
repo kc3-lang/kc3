@@ -10,8 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <sys/time.h>
-#include <event.h>
+#include <event2/event.h>
 #include <libkc3/kc3.h>
 #include "http_event.h"
 
@@ -71,21 +70,24 @@ void http_event_callback (int fd, short events, void *tag_tuple)
   tag_clean(&tmp);
 }
 
-s32 http_event_dispatch (void)
+s32 http_event_base_dispatch (struct event_base *eb)
 {
-  return event_dispatch();
+  return event_base_dispatch(eb);
 }
 
-struct event * http_event_new (s32 fd, const s_list * const *events,
+void * http_event_init (void)
+{
+  return event_base_new();
+}
+
+struct event * http_event_new (struct event_base *event_base, s32 fd,
+                               const s_list * const *events,
                                const s_fn *callback, s_tag *arg)
 {
   const s_list *e;
   struct event *ev;
   s16 events_s16;
   s_tag *tag;
-  ev = alloc(sizeof(*ev));
-  if (! ev)
-    return NULL;
   events_s16 = 0;
   e = *events;
   while (e) {
@@ -103,9 +105,9 @@ struct event * http_event_new (s32 fd, const s_list * const *events,
   }
   tag = tag_new_tuple(3);
   tag_init_fn_copy(tag->data.tuple.tag, callback);
-  tag_init_ptr(tag->data.tuple.tag + 1, ev);
   tag_init_copy(tag->data.tuple.tag + 2, arg);
-  event_set(ev, fd, events_s16, http_event_callback, tag);
+  ev = event_new(event_base, fd, events_s16, http_event_callback, tag);
+  tag_init_ptr(tag->data.tuple.tag + 1, ev);
   return ev;
  invalid_event_list:
   err_write_1("http_event_new: invalid event list: ");
@@ -155,3 +157,8 @@ struct event * http_event_new (s32 fd, const s_list *events,
   return ev;
 }
 */
+
+s_str * http_event_version (s_str *dest)
+{
+  return str_init_1(dest, NULL, event_get_version());
+}

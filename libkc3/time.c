@@ -42,7 +42,7 @@ s_time * time_init (s_time *time)
 
 s_time * time_init_add (s_time *time, const s_time *a, const s_time *b)
 {
-  s_time tmp = {0}
+  s_time tmp = {0};
   assert(time);
   assert(a);
   assert(b);

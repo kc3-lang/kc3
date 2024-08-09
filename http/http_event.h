@@ -15,10 +15,13 @@
 
 #include "types.h"
 
-/* Heap-allocation functions, call http_event_delete after use. */
-void           http_event_delete (struct event *ev);
-struct event * http_event_new (s32 fd, const s_list * const *events,
-                               const s_fn *fn, s_tag *arg);
+/* Heap-allocation functions, call *_delete after use. */
+struct event_base * http_event_base_new (void);
+void                http_event_delete (struct event *ev);
+struct event *      http_event_new (struct event_base *event_base,
+                                    s32 fd,
+                                    const s_list * const *events,
+                                    const s_fn *callback, s_tag *arg);
 
 /* Operators. */
 s32  http_event_add (struct event *ev, s_time *time);
