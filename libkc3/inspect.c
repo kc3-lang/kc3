@@ -27,7 +27,7 @@ s_str * inspect_array (const s_array *array, s_str *dest)
     return NULL;
   }
   buf_init_alloc(&tmp, size);
-  buf_inspect_array(&tmp, array);
+  buf_inspect_array(&pretty, &tmp, array);
   if (tmp.wpos != tmp.size) {
     err_puts("inspect_array: tmp.wpos != tmp.size");
     assert(! "inspect_array: tmp.wpos != tmp.size");
@@ -51,7 +51,7 @@ s_str * inspect_block (const s_block *x, s_str *dest)
   }
   if (! buf_init_alloc(&buf, size))
     return NULL;
-  if ((r = buf_inspect_block(&buf, x)) < 0)
+  if ((r = buf_inspect_block(&pretty, &buf, x)) < 0)
     goto error;
   assert(r == size);
   if (r != size)
@@ -66,7 +66,7 @@ s_str * inspect_bool (bool *b, s_str *dest)
 {
   sw size;
   s_buf tmp;
-  size = buf_inspect_bool_size(b);
+  size = buf_inspect_bool_size(&pretty, b);
   if (size < 0) {
     err_write_1("inspect_bool: error: ");
     err_inspect_u8(b);
@@ -74,7 +74,7 @@ s_str * inspect_bool (bool *b, s_str *dest)
     return NULL;
   }
   buf_init_alloc(&tmp, size);
-  buf_inspect_bool(&tmp, b);
+  buf_inspect_bool(&pretty, &tmp, b);
   assert(tmp.wpos == tmp.size);
   if (tmp.wpos != tmp.size) {
     buf_clean(&tmp);
@@ -88,13 +88,13 @@ s_str * inspect_sym (const s_sym *sym, s_str *dest)
 {
   sw size;
   s_buf tmp = {0};
-  size = buf_inspect_sym_size(&sym);
+  size = buf_inspect_sym_size(&pretty, &sym);
   if (size < 0) {
     assert(! "error");
     return NULL;
   }
   buf_init_alloc(&tmp, size);
-  buf_inspect_sym(&tmp, &sym);
+  buf_inspect_sym(&pretty, &tmp, &sym);
   assert(tmp.wpos == tmp.size);
   return buf_to_str(&tmp, dest);
 }
@@ -105,13 +105,13 @@ s_str * inspect_tag (const s_tag *tag, s_str *dest)
   sw size;
   assert(tag);
   assert(dest);
-  if ((size = buf_inspect_tag_size(tag)) < 0) {
+  if ((size = buf_inspect_tag_size(&pretty, tag)) < 0) {
     err_puts("tag_inspect: size error");
     assert(! "tag_inspect: size error");
     return NULL;
   }
   buf_init_alloc(&buf, size);
-  if (buf_inspect_tag(&buf, tag) != size) {
+  if (buf_inspect_tag(&pretty, &buf, tag) != size) {
     err_puts("tag_inspect: inspect error");
     assert(! "tag_inspect: inspect error");
     return NULL;
