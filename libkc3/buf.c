@@ -1262,7 +1262,7 @@ sw buf_write_str (s_buf *buf, const s_str *src)
     result += r;
     if (c == '\n') {
       i = 0;
-      while (i < buf->base_column) {
+      while (i < buf->pretty.base_column) {
         if ((r = buf_write_u8(buf, ' ')) < 0)
           return r;
         result += r;

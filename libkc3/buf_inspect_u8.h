@@ -21,8 +21,8 @@ sw buf_inspect_u8 (s_buf *buf, const u8 *u);
 sw buf_inspect_u8_base (s_buf *buf,
                              const s_str *base,
                              const u8 *u);
-sw buf_inspect_u8_base_size (const s_str *base,
+sw buf_inspect_u8_base_size (s_pretty *pretty, const s_str *base,
                                   const u8 *u);
-sw buf_inspect_u8_size (const u8 *u);
+sw buf_inspect_u8_size (s_pretty *pretty, const u8 *u);
 
 #endif /* LIBKC3_BUF_INSPECT_U8_H */

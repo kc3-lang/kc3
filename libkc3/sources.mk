@@ -124,6 +124,7 @@ HEADERS = \
 	"operator.h" \
 	"pcomplex.h" \
 	"pcow.h" \
+	"pretty.h" \
 	"ptag.h" \
 	"ptr.h" \
 	"ptr_free.h" \
@@ -290,6 +291,7 @@ SOURCES = \
 	"operator.c" \
 	"pcomplex.c" \
 	"pcow.c" \
+	"pretty.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
@@ -565,6 +567,7 @@ LO_SOURCES = \
 	"operator.c" \
 	"pcomplex.c" \
 	"pcow.c" \
+	"pretty.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \

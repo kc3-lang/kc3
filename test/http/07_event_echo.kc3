@@ -14,14 +14,12 @@ acceptor = fn (server_socket, events, acceptor_ev, void) do
     client_ev = HTTP.Event.new(event_base, client.sockfd, [:read, :write],
       echo_client, client)
     puts(client_ev)
-    HTTP.Event.base_set(event_base, client_ev)
     HTTP.Event.add(client_ev, timeout)
   end
 end
 puts(socket.fd)
 acceptor_ev = HTTP.Event.new(event_base, socket.fd, [:read], acceptor,
                              void)
-puts(HTTP.Event.base_set(event_base, acceptor_ev))
 puts(HTTP.Event.add(acceptor_ev, timeout))
 r = HTTP.Event.dispatch(event_base)
 if r do

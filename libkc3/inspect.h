@@ -21,6 +21,9 @@
 
 #include "types.h"
 
+s_str * inspect_array (const s_array *array, s_str *dest);
+s_str * inspect_block (const s_block *block, s_str *dest);
+s_str * inspect_bool (bool *b, s_str *dest);
 s_str * inspect_sym (const s_sym *sym, s_str *dest);
 s_str * inspect_tag (const s_tag *tag, s_str *dest);
 

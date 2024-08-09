@@ -18,6 +18,6 @@
 #include "buf_inspect_s_bits$_decimal.h"
 
 sw buf_inspect_s_bits$ (s_buf *buf, const s_bits$ *s);
-sw buf_inspect_s_bits$_size (const s_bits$ *s);
+sw buf_inspect_s_bits$_size (s_pretty *pretty, const s_bits$ *s);
 
 #endif /* LIBKC3_BUF_INSPECT_S_BITS$_H */

@@ -128,24 +128,6 @@ s_block * block_init_from_list (s_block *block,
   return block;
 }
 
-s_str * block_inspect (const s_block *x, s_str *dest)
-{
-  s_buf buf;
-  sw r;
-  sw size;
-  size = buf_inspect_block_size(x);
-  buf_init_alloc(&buf, size);
-  if ((r = buf_inspect_block(&buf, x)) < 0)
-    goto error;
-  assert(r == size);
-  if (r != size)
-    goto error;
-  return buf_to_str(&buf, dest);
- error:
-  buf_clean(&buf);
-  return NULL;
-}
-
 s_block * block_new (uw count)
 {
   s_block *block;

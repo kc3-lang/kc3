@@ -172,6 +172,7 @@ typedef struct fact_list               s_fact_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct map                     s_map;
+typedef struct pretty                  s_pretty;
 typedef struct queue                   s_queue;
 typedef struct quote                   s_quote;
 typedef struct ratio                   s_ratio;
@@ -279,6 +280,10 @@ struct map {
   s_tag *value;
 };
 
+struct pretty {
+  uw base_column;
+};
+
 union ptr_ {
   const void *p;
   const char *pchar;
@@ -349,11 +354,11 @@ struct var {
 /* 2 */
 
 struct buf {
-  uw          base_column;
   sw          column;
   sw        (*flush) (s_buf *buf);
   bool        free;
   sw          line;
+  s_pretty    pretty;
   u_ptr_w     ptr;
   bool        read_only;
   sw        (*refill) (s_buf *buf);

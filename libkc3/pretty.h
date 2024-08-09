@@ -10,14 +10,18 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* Gen from buf_inspect_s.h.in BITS=W bits=w */
-#ifndef LIBKC3_BUF_INSPECT_SW_H
-#define LIBKC3_BUF_INSPECT_SW_H
+/**
+ * @file pretty.h
+ * @brief Pretty printer
+ *
+ * Pretty printer functions.
+ */
+#ifndef LIBKC3_PRETTY_H
+#define LIBKC3_PRETTY_H
 
 #include "types.h"
-#include "buf_inspect_sw_decimal.h"
 
-sw buf_inspect_sw (s_buf *buf, const sw *s);
-sw buf_inspect_sw_size (s_pretty *pretty, const sw *s);
+/* Operators. */
+s_pretty * pretty_indent (s_pretty *pretty, sw indent);
 
-#endif /* LIBKC3_BUF_INSPECT_SW_H */
+#endif /* LIBKC3_LIST_H */

@@ -26,7 +26,4 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
                        const s_tag *tag);
 bool * bool_init_copy (bool *b, const bool *src);
 
-/* Observers */
-s_str * bool_inspect (bool *b, s_str *dest);
-
 #endif /* LIBKC3_BOOL_H */

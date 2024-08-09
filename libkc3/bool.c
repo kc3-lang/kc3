@@ -94,25 +94,3 @@ bool * bool_init_copy (bool *dest, const bool *src)
   *dest = *src;
   return dest;
 }
-
-s_str * bool_inspect (bool *b, s_str *dest)
-{
-  sw size;
-  s_buf tmp;
-  size = buf_inspect_bool_size(b);
-  if (size < 0) {
-    err_write_1("bool_inspect: error: ");
-    err_inspect_u8(b);
-    assert(! "bool_inspect: error");
-    return NULL;
-  }
-  buf_init_alloc(&tmp, size);
-  buf_inspect_bool(&tmp, b);
-  assert(tmp.wpos == tmp.size);
-  if (tmp.wpos != tmp.size) {
-    buf_clean(&tmp);
-    err_write_1("bool_inspect: buf_inspect_bool");
-    return NULL;
-  }
-  return buf_to_str(&tmp, dest);
-}

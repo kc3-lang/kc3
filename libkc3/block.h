@@ -43,6 +43,5 @@ s_block * block_1 (s_block *block, const char *p);
 
 /* Observers */
 s_list * block_to_list (const s_block *block, s_list **list);
-s_str *  block_inspect (const s_block *x, s_str *dest);
 
 #endif /* LIBKC3_BLOCK_H */

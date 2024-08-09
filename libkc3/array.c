@@ -364,24 +364,3 @@ s_array * array_init_void (s_array *array)
   *array = tmp;
   return array;
 }
-
-s_str * array_inspect (const s_array *array, s_str *dest)
-{
-  sw size;
-  s_buf tmp;
-  size = buf_inspect_array_size(array);
-  if (size < 0) {
-    err_puts("array_inspect: buf_inspect_array_size error");
-    assert(! "array_inspect: buf_inspect_array_size error");
-    return NULL;
-  }
-  buf_init_alloc(&tmp, size);
-  buf_inspect_array(&tmp, array);
-  if (tmp.wpos != tmp.size) {
-    err_puts("array_inspect: tmp.wpos != tmp.size");
-    assert(! "array_inspect: tmp.wpos != tmp.size");
-    buf_clean(&tmp);
-    return NULL;
-  }
-  return buf_to_str(&tmp, dest);
-}

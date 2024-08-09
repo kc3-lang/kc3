@@ -21,8 +21,8 @@ sw buf_inspect_u32 (s_buf *buf, const u32 *u);
 sw buf_inspect_u32_base (s_buf *buf,
                              const s_str *base,
                              const u32 *u);
-sw buf_inspect_u32_base_size (const s_str *base,
+sw buf_inspect_u32_base_size (s_pretty *pretty, const s_str *base,
                                   const u32 *u);
-sw buf_inspect_u32_size (const u32 *u);
+sw buf_inspect_u32_size (s_pretty *pretty, const u32 *u);
 
 #endif /* LIBKC3_BUF_INSPECT_U32_H */

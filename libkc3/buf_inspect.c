@@ -30,6 +30,7 @@
 #include "io.h"
 #include "list.h"
 #include "operator.h"
+#include "pretty.h"
 #include "special_operator.h"
 #include "str.h"
 #include "tag.h"
@@ -244,7 +245,7 @@ sw buf_inspect_array_size (const s_array *array)
 
 sw buf_inspect_block (s_buf *buf, const s_block *block)
 {
-  uw base_column;
+  s_pretty pretty_save;
   u64 i = 0;
   sw r;
   sw result = 0;
@@ -254,8 +255,8 @@ sw buf_inspect_block (s_buf *buf, const s_block *block)
     else
       return buf_write_1(buf, "do end");
   }
-  base_column = buf->base_column;
-  buf->base_column += 2;
+  pretty_save = buf->pretty;
+  pretty_indent(&buf->pretty, 2);
   if (block->short_form) {    
     if ((r = buf_write_1(buf, "{ ")) < 0)
       return r;
@@ -283,7 +284,7 @@ sw buf_inspect_block (s_buf *buf, const s_block *block)
   if ((r = buf_inspect_tag(buf, block->tag + i)) < 0)
     return r;
   result += r;
-  buf->base_column = base_column;
+  buf->pretty = pretty_save;
   if (block->short_form) {
     if ((r = buf_write_1(buf, " }")) < 0)
       return r;
@@ -308,7 +309,7 @@ sw buf_inspect_block_inner (s_buf *buf, const s_block *block)
       return r;
   }
   else {
-    if ((r = buf_write_1(buf, "\n  ")) < 0)
+    if ((r = buf_write_1(buf, "\n")) < 0)
       return r;
   }
   result += r;
@@ -321,7 +322,7 @@ sw buf_inspect_block_inner (s_buf *buf, const s_block *block)
         return r;
     }
     else {
-      if ((r = buf_write_1(buf, "\n  ")) < 0)
+      if ((r = buf_write_1(buf, "\n")) < 0)
         return r;
     }
     result += r;
@@ -342,7 +343,7 @@ sw buf_inspect_block_size (const s_block *block)
     result = strlen("do end");
   result = strlen("do");
   while (i < block->count) {
-    result += strlen("\n  ");
+    result += buf_write_1_size("\n");
     if ((r = buf_inspect_tag_size(block->tag + i)) < 0)
       return r;
     result += r;

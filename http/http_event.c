@@ -104,9 +104,15 @@ struct event * http_event_new (struct event_base *event_base, s32 fd,
     e = list_next(e);
   }
   tag = tag_new_tuple(3);
+  ev = event_new(event_base, fd, events_s16, http_event_callback, tag);
+  if (! ev) {
+    tag_delete(tag);
+    err_puts("http_event_new: event_new");
+    assert(! "http_event_new: event_new");
+    return NULL;
+  }
   tag_init_fn_copy(tag->data.tuple.tag, callback);
   tag_init_copy(tag->data.tuple.tag + 2, arg);
-  ev = event_new(event_base, fd, events_s16, http_event_callback, tag);
   tag_init_ptr(tag->data.tuple.tag + 1, ev);
   return ev;
  invalid_event_list:

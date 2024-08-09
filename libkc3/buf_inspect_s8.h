@@ -18,6 +18,6 @@
 #include "buf_inspect_s8_decimal.h"
 
 sw buf_inspect_s8 (s_buf *buf, const s8 *s);
-sw buf_inspect_s8_size (const s8 *s);
+sw buf_inspect_s8_size (s_pretty *pretty, const s8 *s);
 
 #endif /* LIBKC3_BUF_INSPECT_S8_H */

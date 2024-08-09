@@ -27,7 +27,6 @@ s_array * array_init_copy_shallow (s_array *a, const s_array *src);
 s_array * array_init_void (s_array *array);
 
 /* Observers */
-s_str *            array_inspect (const s_array *array, s_str *dest);
 void *             array_data (const s_array *a, const uw *address);
 s_tag *            array_data_tag (const s_tag *a, const s_tag *address,
                                    s_tag *dest);
