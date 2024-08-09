@@ -349,6 +349,7 @@ struct var {
 /* 2 */
 
 struct buf {
+  uw          base_column;
   sw          column;
   sw        (*flush) (s_buf *buf);
   bool        free;

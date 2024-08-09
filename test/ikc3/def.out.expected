@@ -16,17 +16,17 @@ double(zero)
 0
 def double_tuple = macro (x) do
   quote do
-  x = ^ unquote(x)
-  {x, x}
-end
+    x = ^ unquote(x)
+    {x, x}
+  end
 end
 double_tuple
 double_tuple
 macro (x) do
   quote do
-  x = ^ unquote(x)
-  {x, x}
-end
+    x = ^ unquote(x)
+    {x, x}
+  end
 end
 double_tuple(200)
 {200, 200}

@@ -1131,14 +1131,14 @@ sw buf_write (s_buf *buf, const void *data, uw len)
 {
   s_str str;
   str_init(&str, NULL, len, data);
-  return buf_write_str(buf, &str);
+  return buf_write_str_memcpy(buf, &str);
 }
 
 sw buf_write_1 (s_buf *buf, const char *p)
 {
-  s_str stra;
-  str_init_1(&stra, NULL, p);
-  return buf_write_str(buf, &stra);
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return buf_write_str(buf, &str);
 }
 
 sw buf_write_character_utf8 (s_buf *buf, character c)
@@ -1247,6 +1247,34 @@ sw buf_write_s64 (s_buf *buf, s64 v)
 }
 
 sw buf_write_str (s_buf *buf, const s_str *src)
+{
+  character c;
+  uw i;
+  sw r;
+  sw result = 0;
+  s_str s;
+  assert(buf);
+  assert(src);
+  s = *src;
+  while ((r = str_read_character_utf8(&s, &c)) > 0) {
+    if ((r = buf_write_character_utf8(buf, c)) < 0)
+      return r;
+    result += r;
+    if (c == '\n') {
+      i = 0;
+      while (i < buf->base_column) {
+        if ((r = buf_write_u8(buf, ' ')) < 0)
+          return r;
+        result += r;
+        i++;
+      }
+    }
+  }
+  buf_flush(buf);
+  return result;
+}
+
+sw buf_write_str_memcpy (s_buf *buf, const s_str *src)
 {
   sw r;
   assert(buf);
