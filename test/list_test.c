@@ -26,27 +26,12 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define LIST_TEST_INSPECT(test, expected)                              \
-  do {                                                                 \
-    s_list *list_test;                                                 \
-    s_str str_result;                                                  \
-    test_context("list_inspect(" # test ") -> " # expected);           \
-    list_test = list_new_1(test);                                      \
-    TEST_EQ(list_inspect(list_test, &str_result), &str_result);        \
-    TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
-    str_clean(&str_result);                                            \
-    list_delete_all(list_test);                                        \
-    test_context(NULL);                                                \
-  } while (0)
-
 void list_test (void);
 TEST_CASE_PROTOTYPE(list_new_1);
-TEST_CASE_PROTOTYPE(list_inspect);
 
 void list_test (void)
 {
   TEST_CASE_RUN(list_new_1);
-  TEST_CASE_RUN(list_inspect);
 }
 
 TEST_CASE(list_new_1)
@@ -63,11 +48,3 @@ TEST_CASE(list_new_1)
   LIST_TEST_NEW_1("[A, B, C | D]");
 }
 TEST_CASE_END(list_new_1)
-
-TEST_CASE(list_inspect)
-{
-  LIST_TEST_INSPECT("[]", "[]");
-  LIST_TEST_INSPECT("[[] | []]", "[[]]");
-  LIST_TEST_INSPECT("[[], [] | []]", "[[], []]");
-}
-TEST_CASE_END(list_inspect)

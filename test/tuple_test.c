@@ -35,23 +35,6 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define TUPLE_TEST_INSPECT(test, expected)                             \
-  do {                                                                 \
-    s_tuple tuple_test;                                                \
-    s_str str_result;                                                  \
-    test_context("tuple_inspect(" # test ") -> " # expected);          \
-    tuple_init_1(&tuple_test, (test));                                 \
-    TEST_EQ(tuple_inspect(&tuple_test, &str_result), &str_result);     \
-    tuple_clean(&tuple_test);                                          \
-    if (g_test_last_ok) {                                              \
-      TEST_EQ(str_result.size, strlen(expected));                      \
-      if (g_test_last_ok)                                              \
-        TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);   \
-      str_clean(&str_result);                                          \
-    }                                                                  \
-    test_context(NULL);                                                \
-  } while (0)
-
 #define TUPLE_TEST_NEW_1(test)                                         \
   do {                                                                 \
     s_tuple *tuple_test;                                               \
@@ -73,7 +56,6 @@
 void tuple_test (void);
 TEST_CASE_PROTOTYPE(tuple_init_1);
 TEST_CASE_PROTOTYPE(tuple_init_clean);
-TEST_CASE_PROTOTYPE(tuple_inspect);
 TEST_CASE_PROTOTYPE(tuple_new_1);
 TEST_CASE_PROTOTYPE(tuple_new_delete);
 
@@ -83,7 +65,6 @@ void tuple_test (void)
   TEST_CASE_RUN(tuple_new_delete);
   TEST_CASE_RUN(tuple_init_1);
   TEST_CASE_RUN(tuple_new_1);
-  TEST_CASE_RUN(tuple_inspect);
 }
 
 TEST_CASE(tuple_init_clean)
@@ -121,15 +102,6 @@ TEST_CASE(tuple_init_1)
   TUPLE_TEST_INIT_1("{{:a, :b}, {:c, :d}, {:e, :f}, {:g, :h}, {:i, :j}}");
 }
 TEST_CASE_END(tuple_init_1)
-
-TEST_CASE(tuple_inspect)
-{
-  TUPLE_TEST_INSPECT("{:a, :b}", "{:a, :b}");
-  TUPLE_TEST_INSPECT("{{:a, :b}, {:c, :d}}", "{{:a, :b}, {:c, :d}}");
-  TUPLE_TEST_INSPECT("{{:a, :b}, {:c, :d}, {:e, :f}}",
-                     "{{:a, :b}, {:c, :d}, {:e, :f}}");
-}
-TEST_CASE_END(tuple_inspect)
 
 TEST_CASE(tuple_new_1)
 {

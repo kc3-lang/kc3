@@ -17,6 +17,6 @@
 #include "types.h"
 
 sw buf_inspect_s64_binary (s_buf *buf, const s64 *s);
-sw buf_inspect_s64_binary_size (const s64 *s);
+sw buf_inspect_s64_binary_size (s_pretty *pretty, const s64 *s);
 
 #endif /* LIBKC3_BUF_INSPECT_S64_binary_H */

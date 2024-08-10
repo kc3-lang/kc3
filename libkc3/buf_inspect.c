@@ -341,6 +341,43 @@ sw buf_inspect_block_inner (s_buf *buf, const s_block *block)
   return result;
 }
 
+sw buf_inspect_block_inner_size (s_pretty *pretty, const s_block *block)
+{
+  u64 i = 0;
+  sw r;
+  sw result = 0;
+  if (! block->count)
+    return 0;
+  if (block->short_form) {    
+    if ((r = buf_write_1_size(pretty, " ")) < 0)
+      return r;
+  }
+  else {
+    if ((r = buf_write_1_size(pretty, "\n")) < 0)
+      return r;
+  }
+  result += r;
+  while (i < block->count - 1) {
+    if ((r = buf_inspect_tag_size(pretty, block->tag + i)) < 0)
+      return r;
+    result += r;
+    if (block->short_form) {
+      if ((r = buf_write_1_size(pretty, "; ")) < 0)
+        return r;
+    }
+    else {
+      if ((r = buf_write_1_size(pretty, "\n")) < 0)
+        return r;
+    }
+    result += r;
+    i++;
+  }
+  if ((r = buf_inspect_tag_size(pretty, block->tag + i)) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
 sw buf_inspect_block_size (s_pretty *pretty, const s_block *block)
 {
   s_pretty pretty_save;
@@ -953,6 +990,24 @@ sw buf_inspect_call_paren (s_buf *buf, const s_call *call)
     return r;
   result += r;
   if ((r = buf_write_1(buf, ")")) < 0)
+    return r;
+  result += r;
+  return result;
+}
+
+sw buf_inspect_call_paren_size (s_pretty *pretty, const s_call *call)
+{
+  sw r;
+  sw result = 0;
+  assert(pretty);
+  assert(call);
+  if ((r = buf_write_1_size(pretty, "(")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_tag_size(pretty, &call->arguments->tag)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1_size(pretty, ")")) < 0)
     return r;
   result += r;
   return result;

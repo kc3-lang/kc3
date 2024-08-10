@@ -58,7 +58,6 @@ s_list  * list_next (const s_list *list);
 s_array * list_to_array (const s_list *list, const s_sym *type,
                          s_array *dest);
 s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *dest);
-s_str   * list_inspect (const s_list *list, s_str *dest);
 
 /* Operators */
 s_list ** list_remove_void (s_list **list);

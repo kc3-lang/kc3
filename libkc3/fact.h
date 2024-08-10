@@ -26,7 +26,6 @@ void     fact_w_clean (s_fact_w *fact);
 
 /* Observers */
 uw *     fact_hash_uw (const s_fact *fact, uw *dest);
-s_str *  fact_inspect (const s_fact *fact, s_str *dest);
 void     fact_r (const s_fact_w *fact, s_fact *dest);
 
 /* Operators */

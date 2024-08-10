@@ -17,6 +17,6 @@
 #include "types.h"
 
 sw buf_inspect_s32_hexadecimal (s_buf *buf, const s32 *s);
-sw buf_inspect_s32_hexadecimal_size (const s32 *s);
+sw buf_inspect_s32_hexadecimal_size (s_pretty *pretty, const s32 *s);
 
 #endif /* LIBKC3_BUF_INSPECT_S32_hexadecimal_H */

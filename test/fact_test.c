@@ -16,24 +16,12 @@
 #include "fact_test.h"
 #include "test.h"
 
-#define FACT_TEST_INSPECT(test, expected)                              \
-  do {                                                                 \
-    s_str str;                                                         \
-    TEST_EQ(fact_inspect(test, &str), &str);                           \
-    TEST_EQ(str.size, strlen(expected));                               \
-    if (g_test_last_ok)						       \
-      TEST_STRNCMP(str.ptr.p, (expected), str.size);		       \
-    str_clean(&str);						       \
-  } while (0)
-
 void fact_test (void);
 TEST_CASE_PROTOTYPE(fact_init);
-TEST_CASE_PROTOTYPE(fact_inspect);
 
 void fact_test (void)
 {
   TEST_CASE_RUN(fact_init);
-  TEST_CASE_RUN(fact_inspect);
 }
 
 void fact_test_clean_1 (s_fact *fact)
@@ -80,15 +68,3 @@ TEST_CASE(fact_init)
   TEST_EQ(fact.object, sym + 2);
 }
 TEST_CASE_END(fact_init)
-
-TEST_CASE(fact_inspect)
-{
-  s_tag tag[3];
-  s_fact fact;
-  tag_init_1(tag, "A");
-  tag_init_1(tag + 1, "B");
-  tag_init_1(tag + 2, "C");
-  fact_init(&fact, tag, tag + 1, tag + 2);
-  FACT_TEST_INSPECT(&fact, "{A, B, C}");
-}
-TEST_CASE_END(fact_inspect)

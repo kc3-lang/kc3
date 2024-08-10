@@ -15,27 +15,12 @@
 #include "../libkc3/str.h"
 #include "test.h"
 
-#define BOOL_TEST_INSPECT(test, expected)                              \
-  do {                                                                 \
-    s_str str;                                                         \
-    bool tmp;                                                          \
-    test_context("bool_inspect(" # test ") -> " # expected);           \
-    tmp = (test);                                                      \
-    TEST_EQ(bool_inspect(&tmp, &str), &str);                           \
-    TEST_EQ(str.size, strlen(expected));                               \
-    TEST_STRNCMP(str.ptr.p, (expected), str.size);                     \
-    str_clean(&str);						       \
-    test_context(NULL);                                                \
-  } while (0)
-
 void bool_test (void);
 TEST_CASE_PROTOTYPE(bool_compat);
-TEST_CASE_PROTOTYPE(bool_inspect);
 
 void bool_test (void)
 {
   TEST_CASE_RUN(bool_compat);
-  TEST_CASE_RUN(bool_inspect);
 }
 
 TEST_CASE(bool_compat)
@@ -48,10 +33,3 @@ TEST_CASE(bool_compat)
   TEST_ASSERT(! (bool) false);
 }
 TEST_CASE_END(bool_compat)
-
-TEST_CASE(bool_inspect)
-{
-  BOOL_TEST_INSPECT(true, "true");
-  BOOL_TEST_INSPECT(false, "false");
-}
-TEST_CASE_END(bool_inspect)

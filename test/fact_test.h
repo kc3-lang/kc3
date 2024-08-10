@@ -17,8 +17,10 @@
 
 #define FACT_TEST_EQ(test, expected)                                   \
   do {                                                                 \
-    const s_fact *fact_expected;                                             \
-    const s_fact *fact_test;                                                 \
+    const s_fact *fact_expected;                                       \
+    const s_fact *fact_test;                                           \
+    s_str str_expected;                                                \
+    s_str str_test;                                                    \
     fact_expected = (expected);                                        \
     fact_test = (test);                                                \
     if (compare_fact(fact_test, fact_expected) == 0) {                 \
@@ -26,10 +28,8 @@
       g_test_assert_ok++;                                              \
     }                                                                  \
     else {                                                             \
-      s_str str_expected;                                              \
-      s_str str_test;                                                  \
-      fact_inspect(fact_expected, &str_expected);                      \
-      fact_inspect(fact_test, &str_test);                              \
+      inspect_fact(fact_expected, &str_expected);                      \
+      inspect_fact(fact_test, &str_test);                              \
       printf("\n%sAssertion failed in %s:%d %s\n"                      \
              "%s == %s\n"                                              \
              "Expected %s got %s.%s\n",                                \

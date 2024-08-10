@@ -17,29 +17,6 @@
 #include "../libkc3/str.h"
 #include "test.h"
 
-#define STR_TEST_INSPECT(test, expected)                               \
-  do {                                                                 \
-    s_str result;                                                      \
-    assert(test);                                                      \
-    test_context("str_inspect(" # test ") -> " # expected);            \
-    TEST_EQ(str_inspect((test), &result), &result);                    \
-    TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
-    str_clean(&result);                                                \
-    test_context(NULL);                                                \
-  } while (0)
-
-#define STR_TEST_INSPECT_1(test, expected)                               \
-  do {                                                                 \
-    s_str result;                                                      \
-    s_str str;                                                         \
-    str_init_1(&str, NULL, (test));                                    \
-    test_context("str_inspect(" # test ") -> " # expected);            \
-    TEST_EQ(str_inspect(&str, &result), &result);                      \
-    TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
-    str_clean(&result);                                                \
-    test_context(NULL);                                                \
-  } while (0)
-
 #define STR_TEST_TO_HEX(test, expected)                                \
   do {                                                                 \
     s_str str;                                                         \
@@ -69,7 +46,6 @@ TEST_CASE_PROTOTYPE(str_character_is_reserved);
 TEST_CASE_PROTOTYPE(str_init_clean);
 TEST_CASE_PROTOTYPE(str_init_copy);
 TEST_CASE_PROTOTYPE(str_init_copy_1);
-TEST_CASE_PROTOTYPE(str_inspect);
 TEST_CASE_PROTOTYPE(str_new_1);
 TEST_CASE_PROTOTYPE(str_new_cpy);
 TEST_CASE_PROTOTYPE(str_new_delete);
@@ -78,7 +54,6 @@ TEST_CASE_PROTOTYPE(str_new_f);
 TEST_CASE_PROTOTYPE(str_to_hex);
 TEST_CASE_PROTOTYPE(str_to_ident);
 TEST_CASE_PROTOTYPE(str_to_sym);
-
 
 void str_test (void)
 {
@@ -91,7 +66,6 @@ void str_test (void)
   TEST_CASE_RUN(str_new_cpy);
   TEST_CASE_RUN(str_new_f);
   TEST_CASE_RUN(str_character_is_reserved);
-  TEST_CASE_RUN(str_inspect);
   TEST_CASE_RUN(str_to_hex);
   TEST_CASE_RUN(str_to_sym);
 }
@@ -205,76 +179,6 @@ TEST_CASE(str_init_copy_1)
   str_clean(&str);
 }
 TEST_CASE_END(str_init_copy_1)
-
-TEST_CASE(str_inspect)
-{
-  s_str str;
-  char zero[16] = {0};
-  STR_TEST_INSPECT_1("", "\"\"");
-  STR_TEST_INSPECT_1(" ", "\" \"");
-  STR_TEST_INSPECT_1("\n", "\"\\n\"");
-  STR_TEST_INSPECT_1("\r", "\"\\r\"");
-  STR_TEST_INSPECT_1("\t", "\"\\t\"");
-  STR_TEST_INSPECT_1("\v", "\"\\v\"");
-  STR_TEST_INSPECT_1("\"", "\"\\\"\"");
-  STR_TEST_INSPECT_1("\\", "\"\\\\\"");
-  STR_TEST_INSPECT_1(".", "\".\"");
-  STR_TEST_INSPECT_1("..", "\"..\"");
-  STR_TEST_INSPECT_1("...", "\"...\"");
-  STR_TEST_INSPECT_1(".. .", "\".. .\"");
-  STR_TEST_INSPECT_1("t", "\"t\"");
-  STR_TEST_INSPECT_1("T", "\"T\"");
-  STR_TEST_INSPECT_1("test", "\"test\"");
-  STR_TEST_INSPECT_1("Test", "\"Test\"");
-  STR_TEST_INSPECT_1("123", "\"123\"");
-  STR_TEST_INSPECT_1("test123", "\"test123\"");
-  STR_TEST_INSPECT_1("Test123", "\"Test123\"");
-  STR_TEST_INSPECT_1("test 123", "\"test 123\"");
-  STR_TEST_INSPECT_1("Test 123", "\"Test 123\"");
-  STR_TEST_INSPECT_1("test123.test456", "\"test123.test456\"");
-  STR_TEST_INSPECT_1("Test123.Test456", "\"Test123.Test456\"");
-  STR_TEST_INSPECT_1("É", "\"É\"");
-  STR_TEST_INSPECT_1("Éo", "\"Éo\"");
-  STR_TEST_INSPECT_1("Éoà \n\r\t\v\"",
-                     "\"Éoà \\n\\r\\t\\v\\\"\"");
-  STR_TEST_INSPECT_1("é", "\"é\"");
-  STR_TEST_INSPECT_1("éo", "\"éo\"");
-  STR_TEST_INSPECT_1("éoà \n\r\t\v\"",
-                     "\"éoà \\n\\r\\t\\v\\\"\"");
-  STR_TEST_INSPECT_1("Π", "\"Π\"");
-  STR_TEST_INSPECT_1("꒴", "\"꒴\"");
-  STR_TEST_INSPECT_1("𐅀", "\"𐅀\"");
-  STR_TEST_INSPECT_1("ÉoàΠ꒴𐅀 \n\r\t\v\\\"",
-                     "\"ÉoàΠ꒴𐅀 \\n\\r\\t\\v\\\\\\\"\"");
-  STR_TEST_INSPECT(str_init(&str, NULL,  1, zero), "\"\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL,  2, zero), "\"\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL,  3, zero), "\"\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL,  4, zero), "\"\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL,  5, zero), "\"\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL,  6, zero), "\"\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL,  7, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL,  8, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL,  9, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL, 10, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL, 11, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL, 12, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL, 13, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL, 14, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL, 15, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"");
-  STR_TEST_INSPECT(str_init(&str, NULL, 16, zero),
-                   "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0"
-                   "\\0\"");
-}
-TEST_CASE_END(str_inspect)
 
 TEST_CASE(str_new_1)
 {

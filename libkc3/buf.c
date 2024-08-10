@@ -17,6 +17,7 @@
 #include "buf_save.h"
 #include "character.h"
 #include "error.h"
+#include "pretty.h"
 #include "ratio.h"
 #include "str.h"
 #include "sym.h"
@@ -1141,6 +1142,13 @@ sw buf_write_1 (s_buf *buf, const char *p)
   return buf_write_str(buf, &str);
 }
 
+sw buf_write_1_size (s_pretty *pretty, const char *p)
+{
+  s_str str;
+  str_init_1(&str, NULL, p);
+  return buf_write_str_size(pretty, &str);
+}
+
 sw buf_write_character_utf8 (s_buf *buf, character c)
 {
   sw size = character_utf8_size(c);
@@ -1292,6 +1300,31 @@ sw buf_write_str_memcpy (s_buf *buf, const s_str *src)
   buf->wpos += src->size;
   buf_flush(buf);
   return src->size;
+}
+
+sw buf_write_str_size (s_pretty *pretty, const s_str *src)
+{
+  character c;
+  uw i;
+  sw r;
+  sw result = 0;
+  s_str s;
+  assert(pretty);
+  assert(src);
+  s = *src;
+  while ((r = str_read_character_utf8(&s, &c)) > 0) {
+    if ((r = character_utf8_size(c)) < 0)
+      return r;
+    result += r;
+    if (c == '\n') {
+      i = 0;
+      while (i < pretty->base_column) {
+        result++;
+        i++;
+      }
+    }
+  }
+  return result;
 }
 
 sw buf_write_u8 (s_buf *buf, u8 x)

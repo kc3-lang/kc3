@@ -46,7 +46,6 @@ s_ratio * ratio_new (void);
 s_ratio * ratio_new_copy (const s_ratio *src);
 
 /* Observers. */
-s_str * ratio_inspect (const s_ratio *src, s_str *dest);
 bool    ratio_is_negative (const s_ratio *r);
 bool    ratio_is_zero (const s_ratio *r);
 f32     ratio_to_f32 (const s_ratio *r);

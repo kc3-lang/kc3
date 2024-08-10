@@ -95,7 +95,6 @@ sw            str_character_position (const s_str *str, character c);
 bool          str_ends_with (const s_str *str, const s_str *end);
 bool *        str_has_reserved_characters (const s_str *src,
                                            bool *dest);
-s_str *       str_inspect (const s_str *str, s_str *dest);
 sw            str_length_utf8 (const s_str *str);
 bool          str_parse_eval (const s_str *str, s_tag *dest);
 sw            str_peek_bool (const s_str *str, bool *dest);

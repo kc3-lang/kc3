@@ -21,21 +21,6 @@
 #include "../libkc3/ratio.h"
 #include "test.h"
 
-#define RATIO_TEST_INSPECT(test_num, test_den, expected)               \
-  do {                                                                 \
-  s_ratio ratio;                                                       \
-  s_str result;                                                        \
-  integer_init_u64(&ratio.numerator, test_num);                        \
-  integer_init_u64(&ratio.denominator, test_den);                      \
-  test_context("ratio_inspect(" # test_num "/" # test_den              \
-               ") -> " # expected);                                    \
-  TEST_EQ(ratio_inspect(&ratio, &result), &result);                    \
-  TEST_STRNCMP(result.ptr.p, expected, result.size);                   \
-  ratio_clean(&ratio);                                                 \
-  str_clean(&result);                                                  \
-  test_context(NULL);                                                  \
-} while (0)
-
 #define RATIO_TEST_PARSE(test, expected_num, expected_den)             \
   do {                                                                 \
     sw result_num;                                                     \
@@ -57,27 +42,12 @@
   test_context(NULL);                                                  \
 } while (0)
 
-TEST_CASE_PROTOTYPE(ratio_inspect);
 TEST_CASE_PROTOTYPE(ratio_parse);
 
 void ratio_test (void)
 {
-  TEST_CASE_RUN(ratio_inspect);
   TEST_CASE_RUN(ratio_parse);
 }
-
-TEST_CASE(ratio_inspect)
-{
-    RATIO_TEST_INSPECT(0, 1, "0/1");
-    RATIO_TEST_INSPECT(1, 1, "1/1");
-    RATIO_TEST_INSPECT(1, 10, "1/10");
-    RATIO_TEST_INSPECT(1, 100, "1/100");
-    RATIO_TEST_INSPECT(1, 1000, "1/1000");
-    RATIO_TEST_INSPECT(10, 1, "10/1");
-    RATIO_TEST_INSPECT(100, 1, "100/1");
-    RATIO_TEST_INSPECT(1000, 1, "1000/1");
-}
-TEST_CASE_END(ratio_inspect)
 
 TEST_CASE(ratio_parse)
 {

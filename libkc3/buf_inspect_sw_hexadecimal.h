@@ -17,6 +17,6 @@
 #include "types.h"
 
 sw buf_inspect_sw_hexadecimal (s_buf *buf, const sw *s);
-sw buf_inspect_sw_hexadecimal_size (const sw *s);
+sw buf_inspect_sw_hexadecimal_size (s_pretty *pretty, const sw *s);
 
 #endif /* LIBKC3_BUF_INSPECT_SW_hexadecimal_H */

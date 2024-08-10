@@ -23,26 +23,12 @@
     test_ok();                                                         \
   } while (0)
 
-#define CALL_TEST_INSPECT(test)                                        \
-  do {                                                                 \
-    s_call call;                                                       \
-    s_str result;                                                      \
-    TEST_EQ(call_init_1(&call, (test)), &call);                        \
-    TEST_EQ(call_inspect(&call, &result), &result);                    \
-    TEST_STRNCMP(result.ptr.p, (test), result.size);                   \
-    TEST_EQ(result.size, strlen(test));                                \
-    call_clean(&call);						       \
-    str_clean(&result);						       \
-  } while (0)
-
 void call_test (void);
 TEST_CASE_PROTOTYPE(call_init_1);
-TEST_CASE_PROTOTYPE(call_inspect);
 
 void call_test (void)
 {
   TEST_CASE_RUN(call_init_1);
-  TEST_CASE_RUN(call_inspect);
 }
 
 TEST_CASE(call_init_1)
@@ -57,16 +43,3 @@ TEST_CASE(call_init_1)
   CALL_TEST_INIT_1("A.b(c, d, e)");
 }
 TEST_CASE_END(call_init_1)
-
-TEST_CASE(call_inspect)
-{
-  CALL_TEST_INSPECT("a()");
-  CALL_TEST_INSPECT("a(b)");
-  CALL_TEST_INSPECT("a(b, c)");
-  CALL_TEST_INSPECT("a(b, c, d)");
-  CALL_TEST_INSPECT("A.b()");
-  CALL_TEST_INSPECT("A.b(c)");
-  CALL_TEST_INSPECT("A.b(c, d)");
-  CALL_TEST_INSPECT("A.b(c, d, e)");
-}
-TEST_CASE_END(call_inspect)
