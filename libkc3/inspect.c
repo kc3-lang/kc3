@@ -14,6 +14,7 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "inspect.h"
+#include "integer.h"
 
 s_str * inspect_array (const s_array *array, s_str *dest)
 {
@@ -185,7 +186,7 @@ s_str * inspect_list (const s_list *x, s_str *dest)
   return NULL;
 }
 
-s_str * ratio_inspect (const s_ratio *src, s_str *dest)
+s_str * inspect_ratio (const s_ratio *src, s_str *dest)
 {
   s_buf buf;
   s_pretty pretty = {0};
@@ -201,15 +202,38 @@ s_str * ratio_inspect (const s_ratio *src, s_str *dest)
     return NULL;
   r = buf_inspect_ratio(&buf, src);
   if (r != size) {
-   err_write_1("ratio_inspect: ");
+   err_write_1("inspect_ratio: ");
    err_inspect_sw(&r);
    err_write_1(" != ");
    err_inspect_sw(&size);
    err_write_1("\n");
-   assert(! "ratio_inspect: invalid ratio");
+   assert(! "inspect_ratio: buf_inspect_ratio != size");
    return NULL;
   }
   assert(buf.wpos == (uw) size);
+  return buf_to_str(&buf, dest);
+}
+
+s_str * inspect_str (const s_str *str, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw size;
+  size = buf_inspect_str_size(&pretty, str);
+  if (size < 0) {
+    err_puts("inspect_str: buf_inspect_str_size");
+    assert(! "inspect_str: buf_inspect_str_size");
+    return NULL;
+  }
+  buf_init_alloc(&buf, size);
+  buf_inspect_str(&buf, str);
+  assert(buf.wpos == buf.size);
+  if (buf.wpos != buf.size) {
+    buf_clean(&buf);
+    err_puts("inspect_str: buf_inspect_str");
+    assert(! "inspect_str: buf_inspect_str");
+    return NULL;
+  }
   return buf_to_str(&buf, dest);
 }
 
@@ -245,6 +269,29 @@ s_str * inspect_tag (const s_tag *tag, s_str *dest)
   if (buf_inspect_tag(&buf, tag) != size) {
     err_puts("tag_inspect: inspect error");
     assert(! "tag_inspect: inspect error");
+    return NULL;
+  }
+  return buf_to_str(&buf, dest);
+}
+
+s_str * inspect_tuple (const s_tuple *tuple, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw size;
+  size = buf_inspect_tuple_size(&pretty, tuple);
+  if (size < 0) {
+    err_puts("inspect_tuple: buf_inspect_tuple_size");
+    assert(! "inspect_tuple: buf_inspect_tuple_size");
+    return NULL;
+  }
+  buf_init_alloc(&buf, size);
+  buf_inspect_tuple(&buf, tuple);
+  assert(buf.wpos == buf.size);
+  if (buf.wpos != buf.size) {
+    buf_clean(&buf);
+    err_puts("inspect_tuple: buf_inspect_tuple");
+    assert(! "inspect_tuple: buf_inspect_tuple");
     return NULL;
   }
   return buf_to_str(&buf, dest);

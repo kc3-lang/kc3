@@ -41,8 +41,9 @@
   s_str * str_init_ ## name (s_str *str, type x)                       \
   {                                                                    \
     s_buf buf;                                                         \
+    s_pretty pretty = {0};                                             \
     sw size;                                                           \
-    size = buf_inspect_ ## name ## _size(&x);                          \
+    size = buf_inspect_ ## name ## _size(&pretty, &x);                 \
     if (size <= 0)                                                     \
       return NULL;                                                     \
     buf_init_alloc(&buf, size);                                        \
@@ -58,8 +59,9 @@
   s_str * str_init_ ## type (s_str *str, type x)                       \
   {                                                                    \
     s_buf buf;                                                         \
+    s_pretty pretty = {0};                                             \
     sw size;                                                           \
-    size = buf_inspect_ ## type ## _decimal_size(&x);                  \
+    size = buf_inspect_ ## type ## _decimal_size(&pretty, &x);         \
     if (size <= 0)                                                     \
       return NULL;                                                     \
     buf_init_alloc(&buf, size);                                        \
@@ -72,9 +74,10 @@
   s_str * str_init_ ## name (s_str *str, const s_ ## name *x)          \
   {                                                                    \
     s_buf buf;                                                         \
+    s_pretty pretty = {0};                                             \
     sw r;                                                              \
     sw size;                                                           \
-    size = buf_inspect_ ## name ## _size(x);                           \
+    size = buf_inspect_ ## name ## _size(&pretty, x);                  \
     if (! size)                                                        \
       return str_init_empty(str);                                      \
     if (size < 0) {                                                    \
@@ -509,19 +512,6 @@ s_str * str_init_vf (s_str *str, const char *fmt, va_list ap)
     return NULL;
   }
   return str_init(str, s, len, s);
-}
-
-s_str * str_inspect (const s_str *src, s_str *dest)
-{
-  s_buf buf;
-  sw size;
-  size = buf_inspect_str_size(src);
-  if (size <= 0)
-    return NULL;
-  buf_init_alloc(&buf, size);
-  buf_inspect_str(&buf, src);
-  assert(buf.wpos == (uw) size);
-  return buf_to_str(&buf, dest);
 }
 
 sw str_length_utf8 (const s_str *str)

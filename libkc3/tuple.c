@@ -124,24 +124,6 @@ s_tuple * tuple_init_copy (s_tuple *tuple, const s_tuple *src)
   return tuple;
 }
 
-s_str * tuple_inspect (const s_tuple *x, s_str *dest)
-{
-  s_buf buf;
-  sw r;
-  sw size;
-  size = buf_inspect_tuple_size(x);
-  buf_init_alloc(&buf, size);
-  if ((r = buf_inspect_tuple(&buf, x)) < 0)
-    goto error;
-  assert(r == size);
-  if (r != size)
-    goto error;
-  return buf_to_str(&buf, dest);
- error:
-  buf_clean(&buf);
-  return NULL;
-}
-
 s_tuple * tuple_new (uw count)
 {
   s_tuple *tuple;
