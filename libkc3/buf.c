@@ -92,7 +92,7 @@ sw buf_ignore (s_buf *buf, uw size)
       return r;
     }
     if (r > 0) {
-        buf->column++;
+        buf->pretty.column++;
       i += r;
       continue;
     }
@@ -659,11 +659,11 @@ sw buf_read_character_utf8 (s_buf *buf, character *p)
   if (r > 0) {
     if (buf->line >= 0) {
       if (*p == '\n') {
-        buf->column = 0;
+        buf->pretty.column = 0;
         buf->line++;
       }
       else
-        buf->column++;
+        buf->pretty.column++;
     }
     buf->rpos += r;
   }
@@ -1130,9 +1130,23 @@ sw buf_vf (s_buf *buf, const char *fmt, va_list ap)
 
 sw buf_write (s_buf *buf, const void *data, uw len)
 {
-  s_str str;
-  str_init(&str, NULL, len, data);
-  return buf_write_str_memcpy(buf, &str);
+  sw r;
+  assert(buf);
+  if (! len)
+    return 0;
+  if (buf->wpos > buf->size)
+    return -1;
+  if (buf->wpos + len > buf->size &&
+      (r = buf_flush(buf)) < (sw) len)
+    return -1;
+  if (buf->wpos + len > buf->size) {
+    assert(! "buffer overflow");
+    return -1;
+  }
+  memcpy(buf->ptr.ps8 + buf->wpos, data, len);
+  buf->wpos += len;
+  buf_flush(buf);
+  return len;
 }
 
 sw buf_write_1 (s_buf *buf, const char *p)
@@ -1151,9 +1165,15 @@ sw buf_write_1_size (s_pretty *pretty, const char *p)
 
 sw buf_write_character_utf8 (s_buf *buf, character c)
 {
-  sw size = character_utf8_size(c);
-  if (size <= 0)
-    return size;
+  sw csize;
+  sw size;
+  csize = character_utf8_size(c);
+  if (csize <= 0)
+    return csize;
+  if (c == '\n')
+    size = csize + buf->pretty.base_column;
+  else
+    size = csize;
   if (buf->wpos + size > buf->size &&
       buf_flush(buf) < size) {
     return -1;
@@ -1163,7 +1183,26 @@ sw buf_write_character_utf8 (s_buf *buf, character c)
     return -1;
   }
   character_utf8(c, buf->ptr.pchar + buf->wpos);
+  if (c == '\n') {
+    memset(buf->ptr.pchar + buf->wpos + csize, ' ',
+           buf->pretty.base_column);
+    buf->pretty.column = buf->pretty.base_column;
+  }
+  else
+    buf->pretty.column++;
   buf->wpos += size;
+  return size;
+}
+
+sw buf_write_character_utf8_size (s_pretty *pretty, character c)
+{
+  sw size = character_utf8_size(c);
+  if (size <= 0)
+    return size;
+  if (c == '\n')
+    pretty->column = pretty->base_column;
+  else
+    pretty->column++;
   return size;
 }
 
@@ -1257,7 +1296,6 @@ sw buf_write_s64 (s_buf *buf, s64 v)
 sw buf_write_str (s_buf *buf, const s_str *src)
 {
   character c;
-  uw i;
   sw r;
   sw result = 0;
   s_str s;
@@ -1268,44 +1306,14 @@ sw buf_write_str (s_buf *buf, const s_str *src)
     if ((r = buf_write_character_utf8(buf, c)) < 0)
       return r;
     result += r;
-    if (c == '\n') {
-      i = 0;
-      while (i < buf->pretty.base_column) {
-        if ((r = buf_write_u8(buf, ' ')) < 0)
-          return r;
-        result += r;
-        i++;
-      }
-    }
   }
   buf_flush(buf);
   return result;
 }
 
-sw buf_write_str_memcpy (s_buf *buf, const s_str *src)
-{
-  sw r;
-  assert(buf);
-  assert(src);
-  if (buf->wpos > buf->size)
-    return -1;
-  if (buf->wpos + src->size > buf->size &&
-      (r = buf_flush(buf)) < (sw) src->size)
-    return -1;
-  if (buf->wpos + src->size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  memcpy(buf->ptr.pu8 + buf->wpos, src->ptr.p, src->size);
-  buf->wpos += src->size;
-  buf_flush(buf);
-  return src->size;
-}
-
 sw buf_write_str_size (s_pretty *pretty, const s_str *src)
 {
   character c;
-  uw i;
   sw r;
   sw result = 0;
   s_str s;
@@ -1313,18 +1321,34 @@ sw buf_write_str_size (s_pretty *pretty, const s_str *src)
   assert(src);
   s = *src;
   while ((r = str_read_character_utf8(&s, &c)) > 0) {
-    if ((r = character_utf8_size(c)) < 0)
+    if ((r = buf_write_character_utf8_size(pretty, c)) < 0)
       return r;
     result += r;
-    if (c == '\n') {
-      i = 0;
-      while (i < pretty->base_column) {
-        result++;
-        i++;
-      }
-    }
   }
   return result;
+}
+
+sw buf_write_str_without_indent (s_buf *buf, const s_str *src)
+{
+  s_pretty_save pretty_save;
+  sw r;
+  pretty_save_init(&pretty_save, &buf->pretty);
+  pretty_indent_at_column(&buf->pretty, 0);
+  r = buf_write_str(buf, src);
+  pretty_save_clean(&pretty_save, &buf->pretty);
+  return r;
+}
+
+sw buf_write_str_without_indent_size (s_pretty *pretty,
+                                      const s_str *src)
+{
+  s_pretty_save pretty_save;
+  sw r;
+  pretty_save_init(&pretty_save, pretty);
+  pretty_indent_at_column(pretty, 0);
+  r = buf_write_str_size(pretty, src);
+  pretty_save_clean(&pretty_save, pretty);
+  return r;
 }
 
 sw buf_write_u8 (s_buf *buf, u8 x)

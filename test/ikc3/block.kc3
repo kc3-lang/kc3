@@ -53,3 +53,27 @@ do
   def cast = cfn S32 "s32_init_cast" (Result, Sym, Tag)
 
 end
+quote do
+  do
+    1
+  end
+end
+do
+  do
+    1
+  end
+end
+quote do
+  do
+    do
+      1
+    end
+  end
+end
+do
+  do
+    do
+      1
+    end
+  end
+end

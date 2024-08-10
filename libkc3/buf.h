@@ -111,8 +111,10 @@ sw      buf_write_s16 (s_buf *buf, s16 i);
 sw      buf_write_s32 (s_buf *buf, s32 i);
 sw      buf_write_s64 (s_buf *buf, s64 i);
 sw      buf_write_str (s_buf *buf, const s_str *src);
-sw      buf_write_str_memcpy (s_buf *buf, const s_str *src);
 sw      buf_write_str_size (s_pretty *pretty, const s_str *src);
+sw      buf_write_str_without_indent (s_buf *buf, const s_str *src);
+sw      buf_write_str_without_indent_size (s_pretty *pretty,
+                                           const s_str *src);
 sw      buf_write_u8 (s_buf *buf, u8 i);
 sw      buf_write_u16 (s_buf *buf, u16 i);
 sw      buf_write_u32 (s_buf *buf, u32 i);

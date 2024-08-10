@@ -23,7 +23,15 @@
 
 #define PRETTY_INDENT 2
 
+/* Stack-allocation compatible functions, call *_clean after use. */
+s_pretty *      pretty_save_clean (const s_pretty_save *pretty_save,
+                                   s_pretty *pretty);
+s_pretty_save * pretty_save_init (s_pretty_save *pretty_save,
+                                  const s_pretty *pretty);
+
 /* Operators. */
 s_pretty * pretty_indent (s_pretty *pretty, sw indent);
+s_pretty * pretty_indent_from_column (s_pretty *pretty, sw indent);
+s_pretty * pretty_indent_at_column (s_pretty *pretty, uw column);
 
 #endif /* LIBKC3_LIST_H */
