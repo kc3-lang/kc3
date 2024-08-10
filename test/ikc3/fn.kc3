@@ -27,3 +27,17 @@ e = fn (x) do
   x * 2
 end
 e(2)
+quote do
+  f = fn (x) do
+    puts("Hello, world !")
+    x * 2
+  end
+  f(2)
+end
+do
+  f = fn (x) do
+    puts("Hello, world !")
+    x * 2
+  end
+  f(2)
+end

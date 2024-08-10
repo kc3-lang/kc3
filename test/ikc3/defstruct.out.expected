@@ -3,4 +3,5 @@ defmodule Test do
 end
 Test
 %Test{}
-%Test{a: 1, b: 2}
+%Test{a: 1,
+      b: 2}

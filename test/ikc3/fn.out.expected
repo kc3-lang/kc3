@@ -27,3 +27,12 @@ fn (x) do
   x * 2
 end
 4
+do
+  f = fn (x) do
+    puts("Hello, world !")
+    x * 2
+  end
+  f(2)
+end
+Hello, world !
+4

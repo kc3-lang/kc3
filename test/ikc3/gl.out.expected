@@ -1,8 +1,20 @@
 %GL.Vec2{}
-%GL.Vec2{x: 0.0f, y: 0.0f}
+%GL.Vec2{x: 0.0f,
+         y: 0.0f}
 %GL.Vec3{}
-%GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}
+%GL.Vec3{x: 0.0f,
+         y: 0.0f,
+         z: 0.0f}
 %GL.Vertex{}
-%GL.Vertex{position: %GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}, normal: %GL.Vec3{x: 0.0f, y: 0.0f, z: 0.0f}, tex_coord: %GL.Vec2{x: 0.0f, y: 0.0f}}
+%GL.Vertex{position: %GL.Vec3{x: 0.0f,
+                              y: 0.0f,
+                              z: 0.0f},
+           normal: %GL.Vec3{x: 0.0f,
+                            y: 0.0f,
+                            z: 0.0f},
+           tex_coord: %GL.Vec2{x: 0.0f,
+                               y: 0.0f}}
 %GL.Triangle{}
-%GL.Triangle{a: (U32) 0, b: (U32) 1, c: (U32) 2}
+%GL.Triangle{a: (U32) 0,
+             b: (U32) 1,
+             c: (U32) 2}

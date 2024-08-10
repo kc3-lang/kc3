@@ -58,3 +58,29 @@ else
   3 + 3
   4 + 4
 end
+quote if false do
+  if false do
+    1
+  else
+    2
+  end
+else
+  if false do
+    3
+  else
+    4
+  end
+end
+if false do
+  if false do
+    1
+  else
+    2
+  end
+else
+  if false do
+    3
+  else
+    4
+  end
+end
