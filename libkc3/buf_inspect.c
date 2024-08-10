@@ -2380,6 +2380,7 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
 {
   uw i = 0;
   s_tag *k;
+  s_pretty_save pretty_save;
   sw r;
   sw result = 0;
   assert(buf);
@@ -2387,6 +2388,8 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
   if ((r = buf_write_1(buf, "%{")) < 0)
     return r;
   result += r;
+  pretty_save_init(&pretty_save, &buf->pretty);
+  pretty_indent_from_column(&buf->pretty, 0);
   while (i < map->count) {
     k = map->key + i;
     if (k->type == TAG_SYM) {
@@ -2415,7 +2418,7 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
     result += r;
     i++;
     if (i < map->count) {
-      if ((r = buf_write_1(buf, ", ")) < 0)
+      if ((r = buf_write_1(buf, ",\n")) < 0)
         return r;
       result += r;
     }
@@ -2423,6 +2426,7 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
   if ((r = buf_write_1(buf, "}")) < 0)
     return r;
   result += r;
+  pretty_save_clean(&pretty_save, &buf->pretty);
   return result;
 }
 
