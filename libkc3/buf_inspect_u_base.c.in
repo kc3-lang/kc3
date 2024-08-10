@@ -14,9 +14,9 @@
 #include "buf_inspect.h"
 #include "kc3_main.h"
 
-sw buf_inspect_u_bits$__BASE$ (s_pretty *pretty, s_buf *buf, const u_bits$ *u)
+sw buf_inspect_u_bits$__BASE$ (s_buf *buf, const u_bits$ *u)
 {
-  return buf_inspect_u_bits$_base(pretty, buf,
+  return buf_inspect_u_bits$_base(buf,
                                   &g_kc3_base__BASE$,
                                   u);
 }

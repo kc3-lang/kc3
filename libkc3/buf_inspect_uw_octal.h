@@ -17,6 +17,6 @@
 #include "types.h"
 
 sw buf_inspect_uw_octal (s_buf *buf, const uw *u);
-sw buf_inspect_uw_octal_size (const uw *u);
+sw buf_inspect_uw_octal_size (s_pretty *pretty, const uw *u);
 
 #endif /* LIBKC3_BUF_INSPECT_UW_octal_H */

@@ -17,6 +17,6 @@
 #include "types.h"
 
 sw buf_inspect_uw_binary (s_buf *buf, const uw *u);
-sw buf_inspect_uw_binary_size (const uw *u);
+sw buf_inspect_uw_binary_size (s_pretty *pretty, const uw *u);
 
 #endif /* LIBKC3_BUF_INSPECT_UW_binary_H */

@@ -33,7 +33,7 @@ sw buf_inspect_sw_hexadecimal (s_buf *buf, const sw *s)
   return result;
 }
 
-sw buf_inspect_sw_hexadecimal_size (const sw *s)
+sw buf_inspect_sw_hexadecimal_size (s_pretty *pretty, const sw *s)
 {
   sw result = 0;
   uw u;
@@ -42,6 +42,6 @@ sw buf_inspect_sw_hexadecimal_size (const sw *s)
     result += strlen("-");
     u = -*s;
   }
-  result += buf_inspect_uw_hexadecimal_size(&u);
+  result += buf_inspect_uw_hexadecimal_size(pretty, &u);
   return result;
 }

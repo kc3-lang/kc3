@@ -194,7 +194,7 @@ sw buf_inspect_array_data_size_rec (s_pretty *pretty,
   while (1) {
     if (dimension == array->dimension - 1) {
       if (*data) {
-        if ((r = data_buf_inspect_size(pretty, array->element_type,
+        if ((r = data_buf_inspect_size(array->element_type, pretty,
                                        *data)) <= 0)
           goto clean;
         result += r;
@@ -916,8 +916,28 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
 
 sw buf_inspect_call_op_unary_size (s_pretty *pretty, const s_call *call)
 {
-  (void) call;
-  return -1;
+  sw r;
+  sw result = 0;
+  const s_sym *sym;
+  s_ident tmp;
+  assert(pretty);
+  assert(call);
+  if (! operator_symbol(&call->ident, &sym))
+    return -1;
+  if (sym == &g_sym__paren)
+    return buf_inspect_call_paren_size(pretty, call);
+  if (operator_ident(&call->ident, &tmp) != &tmp)
+    return -1;
+  if ((r = buf_inspect_ident_size(pretty, &tmp)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1_size(pretty, " ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_tag_size(pretty, &call->arguments->tag)) < 0)
+    return r;
+  result += r;
+  return result;
 }
 
 sw buf_inspect_call_paren (s_buf *buf, const s_call *call)
@@ -1310,7 +1330,7 @@ sw buf_inspect_cow (s_buf *buf, const s_cow *cow)
 sw buf_inspect_cow_size (s_pretty *pretty, const s_cow *cow)
 {
   sw r;
-  sw result;
+  sw result = 0;
   if ((r = buf_write_1_size(pretty, "cow ")) < 0)
     return r;
   result += r;
@@ -1391,11 +1411,67 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
 
 sw buf_inspect_f32_size (s_pretty *pretty, const f32 *f)
 {
-  char b[32];
-  s_buf buf;
+  s32 exp;
+  u8 i;
+  u8 j;
+  sw r;
+  sw result = 0;
+  f32 x;
+  assert(pretty);
   assert(f);
-  buf_init(&buf, false, sizeof(b), b);
-  return buf_inspect_f32(&buf, f);
+  exp = 0;
+  x = *f;
+  if (x == 0.0)
+    return buf_write_1_size(pretty, "0.0f");
+  if (x < 0) {
+    if ((r = buf_write_1_size(pretty, "-")) <= 0)
+      return r;
+    result += r;
+    x = -x;
+  }
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
+      exp++;
+    }
+  else
+    while (x < 1.0) {
+      x *= 10.0;
+      exp--;
+    }
+  i = (u8) x;
+  x -= i;
+  i += '0';
+  result += 1;
+  if ((r = buf_write_1_size(pretty, ".")) <= 0)
+    return r;
+  result += r;
+  j = 6;
+  do {
+    x *= 10;
+    i = (u8) x;
+    x -= i;
+    i += '0';
+    result += 1;
+    j--;
+  } while (x >= pow(0.1, j) && j);
+  if (exp) {
+    if ((r = buf_write_1_size(pretty, "e")) <= 0)
+      return r;
+    result += r;
+    if (exp > 0) {
+      if ((r = buf_write_1_size(pretty, "+")) <= 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_inspect_s32_decimal_size(pretty, &exp)) <= 0)
+      return r;
+    result += r;
+  }
+  if ((r = buf_write_1_size(pretty, "f")) <= 0)
+    return r;
+  result += r;
+  return result;
 }
 
 sw buf_inspect_f64 (s_buf *buf, const f64 *f)
@@ -1464,13 +1540,66 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
   return result;
 }
 
-sw buf_inspect_f64_size (s_pretty *pretty, const f64 *x)
+sw buf_inspect_f64_size (s_pretty *pretty, const f64 *f)
 {
-  char b[64];
-  s_buf buf;
-  assert(x);
-  buf_init(&buf, false, sizeof(b), b);
-  return buf_inspect_f64(&buf, x);
+  s64 exp;
+  u8 i;
+  u8 j;
+  sw r;
+  sw result = 0;
+  f64 x;
+  assert(pretty);
+  assert(f);
+  exp = 0.0;
+  x = *f;
+  if (x == 0.0)
+    return buf_write_1_size(pretty, "0.0");
+  if (x < 0) {
+    if ((r = buf_write_1_size(pretty, "-")) <= 0)
+      return r;
+    result += r;
+    x = -x;
+  }
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
+      exp++;
+    }
+  else
+    while (x < 1.0) {
+      x *= 10.0;
+      exp--;
+    }
+  i = (u8) x;
+  x -= i;
+  i += '0';
+  result += 1;
+  if ((r = buf_write_1_size(pretty, ".")) <= 0)
+    return r;
+  result += r;
+  j = 14;
+  do {
+    x *= 10;
+    i = (u8) x;
+    x -= i;
+    i += '0';
+    result += 1;
+    j--;
+  } while (x > pow(0.1, j) && j);
+  if (exp) {
+    if ((r = buf_write_1_size(pretty, "e")) <= 0)
+      return r;
+    result += r;
+    if (exp > 0) {
+      if ((r = buf_write_1_size(pretty, "+")) <= 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_inspect_s64_decimal_size(pretty, &exp)) <= 0)
+      return r;
+    result += r;
+  }
+  return result;
 }
 
 sw buf_inspect_f128 (s_buf *buf, const f128 *x)
@@ -1541,11 +1670,64 @@ sw buf_inspect_f128 (s_buf *buf, const f128 *x)
 
 sw buf_inspect_f128_size (s_pretty *pretty, const f128 *x)
 {
-  char b[128];
-  s_buf buf;
+  s64 exp;
+  u8 i;
+  u8 j;
+  sw r;
+  sw result = 0;
+  f128 y;
+  assert(pretty);
   assert(x);
-  buf_init(&buf, false, sizeof(b), b);
-  return buf_inspect_f128(&buf, x);
+  exp = 0.0;
+  y = *x;
+  if (y == 0.0)
+    return buf_write_1_size(pretty, "0.0");
+  if (y < 0) {
+    if ((r = buf_write_1_size(pretty, "-")) <= 0)
+      return r;
+    result += r;
+    y = -y;
+  }
+  if (y >= 1.0)
+    while (y >= 10.0) {
+      y /= 10.0;
+      exp++;
+    }
+  else
+    while (y < 1.0) {
+      y *= 10.0;
+      exp--;
+    }
+  i = (u8) y;
+  y -= i;
+  i += '0';
+  result += 1;
+  if ((r = buf_write_1_size(pretty, ".")) <= 0)
+    return r;
+  result += r;
+  j = 33;
+  do {
+    y *= 10;
+    i = (u8) y;
+    y -= i;
+    i += '0';
+    result += 1;
+    j--;
+  } while (y > pow(0.1, j) && j);
+  if (exp) {
+    if ((r = buf_write_1_size(pretty, "e")) <= 0)
+      return r;
+    result += r;
+    if (exp > 0) {
+      if ((r = buf_write_1_size(pretty, "+")) <= 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_inspect_s64_size(pretty, &exp)) <= 0)
+      return r;
+    result += r;
+  }
+  return result;
 }
 
 sw buf_inspect_fact (s_buf *buf, const s_fact *fact)
@@ -1848,7 +2030,7 @@ sw buf_inspect_ident_size (s_pretty *pretty, const s_ident *ident)
       return r;
     result += r;
   }
-  if ((r = buf_inspect_ident_sym_size(ident->sym)) < 0)
+  if ((r = buf_inspect_ident_sym_size(pretty, ident->sym)) < 0)
     return r;
   result += r;
   return result;
@@ -1865,31 +2047,31 @@ sw buf_inspect_ident_sym (s_buf *buf, const s_sym *sym)
 
 sw buf_inspect_ident_sym_reserved (s_buf *buf, const s_sym *sym)
 {
-  sw size;
+  sw r;
+  sw result = 0;
   assert(buf);
   assert(sym);
-  size = buf_inspect_ident_sym_reserved_size(sym);
-  if (buf->wpos + size > buf->size) {
-    assert(! "buffer overflow");
-    return -1;
-  }
-  buf_write_1(buf, "_");
-  buf_inspect_str(buf, &sym->str);
-  return size;
+  if ((r = buf_write_1(buf, "_")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_str(buf, &sym->str)) < 0)
+    return r;
+  result += r;
+  return result;
 }
 
 sw buf_inspect_ident_sym_reserved_size (s_pretty *pretty, const s_sym *sym)
 {
   sw r;
-  sw size;
+  sw result = 0;
   assert(sym);
   if ((r = buf_write_1_size(pretty, "_")) < 0)
     return r;
-  size += r;
+  result += r;
   if ((r = buf_inspect_str_size(pretty, &sym->str)) < 0)
     return r;
-  size += r;
-  return size;
+  result += r;
+  return result;
 }
 
 sw buf_inspect_ident_sym_size (s_pretty *pretty, const s_sym *sym)
@@ -1897,7 +2079,7 @@ sw buf_inspect_ident_sym_size (s_pretty *pretty, const s_sym *sym)
   if (sym->str.size == 0)
     return buf_write_1_size(pretty, "_\"\"");
   if (sym_has_ident_reserved_characters(sym))
-    return buf_inspect_ident_sym_reserved_size(sym);
+    return buf_inspect_ident_sym_reserved_size(pretty, sym);
   return sym->str.size;
 }
 
@@ -1911,7 +2093,7 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
   const mp_digit radix = 10;
   s32 size = 0;
   mp_int t;
-  if (mp_radix_size(pretty, &x->mp_int, radix, &size) != MP_OKAY)
+  if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
     return -1;
   maxlen = size;
   if (MP_IS_ZERO(&x->mp_int))
@@ -1946,10 +2128,16 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
 
 sw buf_inspect_integer_size (s_pretty *pretty, const s_integer *x)
 {
-  int size;
-  if (mp_radix_size(pretty, &x->mp_int, 10, &size) != MP_OKAY)
+  const mp_digit radix = 10;
+  sw result = 0;
+  s32 size = 0;
+  (void) pretty;
+  if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
     return -1;
-  return size - 1;
+  result = size;
+  if (MP_IS_ZERO(&x->mp_int))
+    return 1;
+  return result;
 }
 
 sw buf_inspect_list (s_buf *buf, const s_list * const *x)
@@ -2180,6 +2368,7 @@ sw buf_inspect_map_size (s_pretty *pretty, const s_map *map)
 {
   uw i = 0;
   s_tag *k;
+  sw r;
   sw result = 0;
   assert(map);
   if ((r = buf_write_1_size(pretty, "%{")) < 0)
@@ -2296,6 +2485,7 @@ sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag)
 
 sw buf_inspect_ptag_size (s_pretty *pretty, const p_tag *ptag)
 {
+  sw r;
   sw result = 0;
   (void) ptag;
   if ((r = buf_write_1_size(pretty, "@0x")) < 0)
@@ -2338,6 +2528,7 @@ sw buf_inspect_ptr_free (s_buf *buf, const u_ptr_w *ptr_free)
 
 sw buf_inspect_ptr_free_size (s_pretty *pretty, const u_ptr_w *ptr)
 {
+  sw r;
   sw result = 0;
   (void) ptr;
   if ((r = buf_write_1_size(pretty, "(PtrFree) 0x")) < 0)
@@ -2351,12 +2542,15 @@ sw buf_inspect_ptr_free_size (s_pretty *pretty, const u_ptr_w *ptr)
 
 sw buf_inspect_ptr_size (s_pretty *pretty, const u_ptr_w *ptr)
 {
+  sw r;
   sw result = 0;
   (void) ptr;
   if ((r = buf_write_1_size(pretty, "(Ptr) 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal_size((uw *) &ptr->p);
+  if ((r = buf_inspect_uw_hexadecimal_size(pretty, (uw *) &ptr->p)) < 0)
+    return r;
+  result += r;
   return result;
 }
 
@@ -2449,7 +2643,7 @@ sw buf_inspect_str (s_buf *buf, const s_str *str)
   if ((r = buf_write_u8(buf, '"')) <= 0)
     goto clean;
   result += r;
-  if ((r = buf_write_str(buf, str)) < 0)
+  if ((r = buf_write_str_memcpy(buf, str)) < 0)
     goto restore;
   result += r;
   if ((r = buf_write_u8(buf, '"')) <= 0)
@@ -2497,10 +2691,10 @@ sw buf_inspect_str_byte_size (s_pretty *pretty, const u8 *byte)
   sw r;
   sw result = 0;
   (void) byte;
-  r = buf_write_1_size(pretty, "\\")) < 0)
+  if ((r = buf_write_1_size(pretty, "\\")) < 0)
     return r;
   result += r;
-  r = buf_write_1_size(pretty, "x")) < 0)
+  if ((r = buf_write_1_size(pretty, "x")) < 0)
     return r;
   result += r;
   r = 2;
@@ -2571,6 +2765,7 @@ sw buf_inspect_str_character_size (s_pretty *pretty, const character *c)
 {
   sw csize;
   sw size;
+  (void) pretty;
   if (! str_character_is_reserved(*c))
     return character_utf8_size(*c);
   size = 0;
@@ -2628,8 +2823,34 @@ sw buf_inspect_str_eval (s_buf *buf, const s_list *list)
 
 sw buf_inspect_str_eval_size (s_pretty *pretty, const s_list *list)
 {
-  (void) list;
-  return -1;
+  const s_list *l;
+  sw r;
+  sw result = 0;
+  const s_tag *tag;
+  if ((r = buf_write_1_size(pretty, "\"")) < 0)
+    return r;
+  l = list;
+  while (l) {
+    if (l->tag.type == TAG_STR) {
+      if ((r = buf_write_str_size(pretty, &l->tag.data.str)) < 0)
+        return r;
+    }
+    else {
+      if ((r = buf_write_1_size(pretty, "#{")) < 0)
+        return r;
+      tag = &l->tag;
+      if (tag_is_cast(tag, &g_sym_Str))
+        tag = &list_next(tag->data.call.arguments)->tag;
+      if ((r = buf_inspect_tag_size(pretty, tag)) < 0)
+        return r;
+      if ((r = buf_write_1_size(pretty, "}")) < 0)
+        return r;
+    }
+    l = list_next(l);
+  }
+  if ((r = buf_write_1_size(pretty, "\"")) < 0)
+    return r;
+  return result;
 }
 
 /* keep in sync with buf_inspect_str_reserved_size */
@@ -2717,10 +2938,8 @@ sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str)
 sw buf_inspect_str_size (s_pretty *pretty, const s_str *str)
 {
   bool b;
-  const sw quote_size;
   sw r;
   sw result = 0;
-  sw size;
   if (! str_has_reserved_characters(str, &b))
     return -1;
   if (b)
@@ -2732,7 +2951,7 @@ sw buf_inspect_str_size (s_pretty *pretty, const s_str *str)
   if ((r = buf_write_1_size(pretty, "\"")) < 0)
     return r;
   result += r;
-  return size;
+  return result;
 }
 
 sw buf_inspect_struct (s_buf *buf, const s_struct *s)
@@ -2854,13 +3073,14 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
         if (! tag_type(s->type->map.value + i, &type))
           return -1;
         assert(s->type->offset[i] < s->type->size);
-        if ((r = data_buf_inspect_size(type, (char *) s->data +
+        if ((r = data_buf_inspect_size(type, pretty,
+                                       (char *) s->data +
                                        s->type->offset[i])) < 0)
           return r;
         result += r;
       }
       else if (s->tag) {
-        if ((r = buf_inspect_tag_size(s->tag + i)) < 0)
+        if ((r = buf_inspect_tag_size(pretty, s->tag + i)) < 0)
           return r;
         result += r;
       }
@@ -2931,7 +3151,7 @@ sw buf_inspect_struct_type_size (s_pretty *pretty, const s_struct_type *st)
   s_array offset_array;
   uw offset_array_dimension;
   sw r;
-  sw result;
+  sw result = 0;
   assert(st);
   assert(sym_is_module(st->module));
   assert(st->offset);
@@ -3004,7 +3224,7 @@ sw buf_inspect_sym_size (s_pretty *pretty, const s_sym * const *sym)
   if (x->str.size == 0)
     return 3;
   if (sym_has_reserved_characters(x))
-    return buf_inspect_sym_reserved_size(x);
+    return buf_inspect_sym_reserved_size(pretty, x);
   if (sym_is_module(x) || sym_is_array_type(x))
     return x->str.size;
   return x->str.size + colon_size;
@@ -3109,9 +3329,9 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
   case TAG_CHARACTER:
     return buf_inspect_character_size(pretty, &tag->data.character);
   case TAG_COMPLEX:
-    return buf_inspect_complex_size(tag->data.complex);
+    return buf_inspect_complex_size(pretty, tag->data.complex);
   case TAG_COW:
-    return buf_inspect_cow_size(tag->data.cow);
+    return buf_inspect_cow_size(pretty, tag->data.cow);
   case TAG_F32:
     return buf_inspect_f32_size(pretty, &tag->data.f32);
   case TAG_F64:
@@ -3195,7 +3415,7 @@ sw buf_inspect_tag_type (s_buf *buf, e_tag_type type)
   return buf_write_1(buf, s);
 }
 
-sw buf_inspect_tag_type_size (e_tag_type type)
+sw buf_inspect_tag_type_size (s_pretty *pretty, e_tag_type type)
 {
   const char *s;
   s = tag_type_to_string(type);
@@ -3286,7 +3506,7 @@ sw buf_inspect_tuple_size (s_pretty *pretty, const s_tuple *tuple)
   result += r;
   if (tuple->count) {
     while (i < tuple->count - 1) {
-      if ((r = buf_inspect_tag_size(tuple->tag + i)) < 0)
+      if ((r = buf_inspect_tag_size(pretty, tuple->tag + i)) < 0)
         return r;
       result += r;
       if ((r = buf_write_1_size(pretty, ", ")) < 0)
@@ -3294,7 +3514,7 @@ sw buf_inspect_tuple_size (s_pretty *pretty, const s_tuple *tuple)
       result += r;
       i++;
     }
-    if ((r = buf_inspect_tag_size(tuple->tag + i)) < 0)
+    if ((r = buf_inspect_tag_size(pretty, tuple->tag + i)) < 0)
       return r;
     result += r;
   }
@@ -3369,7 +3589,7 @@ sw buf_inspect_var_size (s_pretty *pretty, const s_tag *tag)
   sw result = 0;
   if (tag->data.var.type == &g_sym_Tag)
     return buf_write_1_size(pretty, "?");
-  if ((r = buf_inspect_paren_sym_size(tag->data.var.type)) < 0)
+  if ((r = buf_inspect_paren_sym_size(pretty, tag->data.var.type)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1_size(pretty, " ?")) < 0)

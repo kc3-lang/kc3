@@ -56,14 +56,20 @@ sw buf_inspect_s_bits$_size (s_pretty *pretty, const s_bits$ *s)
     if ((r = buf_inspect_paren_sym_size(pretty, &g_sym_S_bits$)) < 0)
       return r;
     result += r;
-    result += strlen(" ");
+    if ((r = buf_write_1_size(pretty, " ")) < 0)
+      return r;
+    result += r;
   }
   if (*s < 0) {
-    result += strlen("-");
+    if ((r = buf_write_1_size(pretty, "-")) < 0)
+      return r;
+    result += r;
     u = -*s;
   }
   else
     u = *s;
-  result += buf_inspect_u_bits$_decimal_size(&u);
+  if ((r = buf_inspect_u_bits$_decimal_size(pretty, &u)) < 0)
+    return r;
+  result += r;
   return result;
 }

@@ -14,9 +14,9 @@
 #include "buf_inspect.h"
 #include "kc3_main.h"
 
-sw buf_inspect_uw_decimal (s_pretty *pretty, s_buf *buf, const uw *u)
+sw buf_inspect_uw_decimal (s_buf *buf, const uw *u)
 {
-  return buf_inspect_uw_base(pretty, buf,
+  return buf_inspect_uw_base(buf,
                                   &g_kc3_base_decimal,
                                   u);
 }

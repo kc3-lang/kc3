@@ -56,14 +56,20 @@ sw buf_inspect_s16_size (s_pretty *pretty, const s16 *s)
     if ((r = buf_inspect_paren_sym_size(pretty, &g_sym_S16)) < 0)
       return r;
     result += r;
-    result += strlen(" ");
+    if ((r = buf_write_1_size(pretty, " ")) < 0)
+      return r;
+    result += r;
   }
   if (*s < 0) {
-    result += strlen("-");
+    if ((r = buf_write_1_size(pretty, "-")) < 0)
+      return r;
+    result += r;
     u = -*s;
   }
   else
     u = *s;
-  result += buf_inspect_u16_decimal_size(&u);
+  if ((r = buf_inspect_u16_decimal_size(pretty, &u)) < 0)
+    return r;
+  result += r;
   return result;
 }

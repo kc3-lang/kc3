@@ -33,7 +33,7 @@ sw buf_inspect_sw_binary (s_buf *buf, const sw *s)
   return result;
 }
 
-sw buf_inspect_sw_binary_size (const sw *s)
+sw buf_inspect_sw_binary_size (s_pretty *pretty, const sw *s)
 {
   sw result = 0;
   uw u;
@@ -42,6 +42,6 @@ sw buf_inspect_sw_binary_size (const sw *s)
     result += strlen("-");
     u = -*s;
   }
-  result += buf_inspect_uw_binary_size(&u);
+  result += buf_inspect_uw_binary_size(pretty, &u);
   return result;
 }

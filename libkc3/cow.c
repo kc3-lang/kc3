@@ -158,26 +158,6 @@ s_cow * cow_init_tag_copy (s_cow *cow, const s_sym *type,
   return cow;
 }
 
-s_str * cow_inspect (const s_cow *cow, s_str *dest)
-{
-  s_buf buf;
-  sw size;
-  assert(cow);
-  assert(dest);
-  if ((size = buf_inspect_cow_size(cow)) < 0) {
-    err_puts("tag_inspect: size error");
-    assert(! "tag_inspect: size error");
-    return NULL;
-  }
-  buf_init_alloc(&buf, size);
-  if (buf_inspect_cow(&buf, cow) != size) {
-    err_puts("tag_inspect: inspect error");
-    assert(! "tag_inspect: inspect error");
-    return NULL;
-  }
-  return buf_to_str(&buf, dest);
-}
-
 s_cow * cow_new (const s_sym *type)
 {
   s_cow *cow;

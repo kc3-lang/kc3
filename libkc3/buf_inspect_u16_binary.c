@@ -14,9 +14,9 @@
 #include "buf_inspect.h"
 #include "kc3_main.h"
 
-sw buf_inspect_u16_binary (s_pretty *pretty, s_buf *buf, const u16 *u)
+sw buf_inspect_u16_binary (s_buf *buf, const u16 *u)
 {
-  return buf_inspect_u16_base(pretty, buf,
+  return buf_inspect_u16_base(buf,
                                   &g_kc3_base_binary,
                                   u);
 }

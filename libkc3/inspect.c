@@ -27,7 +27,7 @@ s_str * inspect_array (const s_array *array, s_str *dest)
     return NULL;
   }
   buf_init_alloc(&tmp, size);
-  buf_inspect_array(&pretty, &tmp, array);
+  buf_inspect_array(&tmp, array);
   if (tmp.wpos != tmp.size) {
     err_puts("inspect_array: tmp.wpos != tmp.size");
     assert(! "inspect_array: tmp.wpos != tmp.size");
@@ -51,7 +51,7 @@ s_str * inspect_block (const s_block *x, s_str *dest)
   }
   if (! buf_init_alloc(&buf, size))
     return NULL;
-  if ((r = buf_inspect_block(&pretty, &buf, x)) < 0)
+  if ((r = buf_inspect_block(&buf, x)) < 0)
     goto error;
   assert(r == size);
   if (r != size)
@@ -64,8 +64,9 @@ s_str * inspect_block (const s_block *x, s_str *dest)
 
 s_str * inspect_bool (bool *b, s_str *dest)
 {
+  s_buf buf;
+  s_pretty pretty = {0};
   sw size;
-  s_buf tmp;
   size = buf_inspect_bool_size(&pretty, b);
   if (size < 0) {
     err_write_1("inspect_bool: error: ");
@@ -73,35 +74,165 @@ s_str * inspect_bool (bool *b, s_str *dest)
     assert(! "inspect_bool: error");
     return NULL;
   }
-  buf_init_alloc(&tmp, size);
-  buf_inspect_bool(&pretty, &tmp, b);
-  assert(tmp.wpos == tmp.size);
-  if (tmp.wpos != tmp.size) {
-    buf_clean(&tmp);
+  buf_init_alloc(&buf, size);
+  buf_inspect_bool(&buf, b);
+  assert(buf.wpos == buf.size);
+  if (buf.wpos != buf.size) {
+    buf_clean(&buf);
     err_write_1("inspect_bool: buf_inspect_bool");
     return NULL;
   }
-  return buf_to_str(&tmp, dest);
+  return buf_to_str(&buf, dest);
+}
+
+s_str * inspect_call (const s_call *call, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw size;
+  size = buf_inspect_call_size(&pretty, call);
+  if (size < 0) {
+    err_puts("inspect_call: buf_inspect_call_size");
+    assert(! "inspect_call: buf_inspect_call_size");
+    return NULL;
+  }
+  buf_init_alloc(&buf, size);
+  buf_inspect_call(&buf, call);
+  assert(buf.wpos == buf.size);
+  if (buf.wpos != buf.size) {
+    buf_clean(&buf);
+    err_puts("inspect_call: buf_inspect_call");
+    assert(! "inspect_call: buf_inspect_call");
+    return NULL;
+  }
+  return buf_to_str(&buf, dest);
+}
+
+s_str * inspect_cow (const s_cow *cow, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw size;
+  assert(cow);
+  assert(dest);
+  if ((size = buf_inspect_cow_size(&pretty, cow)) < 0) {
+    err_puts("inspect_cow: size error");
+    assert(! "inspect_cow: size error");
+    return NULL;
+  }
+  buf_init_alloc(&buf, size);
+  if (buf_inspect_cow(&buf, cow) != size) {
+    err_puts("inspect_cow: inspect error");
+    assert(! "inspect_cow: inspect error");
+    return NULL;
+  }
+  return buf_to_str(&buf, dest);
+}
+
+s_str * inspect_fact (const s_fact *fact, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw size;
+  if ((size = buf_inspect_fact_size(&pretty, fact)) < 0) {
+    err_puts("inspect_fact: size error");
+    assert(! "inspect_fact: size error");
+    return NULL;
+  }
+  buf_init_alloc(&buf, size);
+  if (buf_inspect_fact(&buf, fact) != size) {
+    err_puts("inspect_fact: inspect error");
+    assert(! "inspect_fact: inspect error");
+    return NULL;
+  }
+  return buf_to_str(&buf, dest);
+}
+
+s_str * inspect_ident (const s_ident *ident, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw r;
+  sw size;
+  size = buf_inspect_ident_size(&pretty, ident);
+  if (size < 0)
+    return NULL;
+  buf_init_alloc(&buf, size);
+  r = buf_inspect_ident(&buf, ident);
+  if (r != size) {
+    buf_clean(&buf);
+    return NULL;
+  }
+  return buf_to_str(&buf, dest);
+}
+
+s_str * inspect_list (const s_list *x, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw r;
+  sw size;
+  size = buf_inspect_list_size(&pretty, &x);
+  buf_init_alloc(&buf, size);
+  if ((r = buf_inspect_list(&buf, &x)) < 0)
+    goto error;
+  assert(r == size);
+  if (r != size)
+    goto error;
+  return buf_to_str(&buf, dest);
+ error:
+  buf_clean(&buf);
+  return NULL;
+}
+
+s_str * ratio_inspect (const s_ratio *src, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw r;
+  sw size;
+  assert(src);
+  assert(dest);
+  assert(integer_is_positive(&src->denominator));
+  size = buf_inspect_ratio_size(&pretty, src);
+  if (size <= 0)
+    return NULL;
+  if (! buf_init_alloc(&buf, size))
+    return NULL;
+  r = buf_inspect_ratio(&buf, src);
+  if (r != size) {
+   err_write_1("ratio_inspect: ");
+   err_inspect_sw(&r);
+   err_write_1(" != ");
+   err_inspect_sw(&size);
+   err_write_1("\n");
+   assert(! "ratio_inspect: invalid ratio");
+   return NULL;
+  }
+  assert(buf.wpos == (uw) size);
+  return buf_to_str(&buf, dest);
 }
 
 s_str * inspect_sym (const s_sym *sym, s_str *dest)
 {
+  s_buf buf;
+  s_pretty pretty = {0};
   sw size;
-  s_buf tmp = {0};
   size = buf_inspect_sym_size(&pretty, &sym);
   if (size < 0) {
     assert(! "error");
     return NULL;
   }
-  buf_init_alloc(&tmp, size);
-  buf_inspect_sym(&pretty, &tmp, &sym);
-  assert(tmp.wpos == tmp.size);
-  return buf_to_str(&tmp, dest);
+  buf_init_alloc(&buf, size);
+  buf_inspect_sym(&buf, &sym);
+  assert(buf.wpos == buf.size);
+  return buf_to_str(&buf, dest);
 }
 
 s_str * inspect_tag (const s_tag *tag, s_str *dest)
 {
   s_buf buf;
+  s_pretty pretty = {0};
   sw size;
   assert(tag);
   assert(dest);
@@ -111,7 +242,7 @@ s_str * inspect_tag (const s_tag *tag, s_str *dest)
     return NULL;
   }
   buf_init_alloc(&buf, size);
-  if (buf_inspect_tag(&pretty, &buf, tag) != size) {
+  if (buf_inspect_tag(&buf, tag) != size) {
     err_puts("tag_inspect: inspect error");
     assert(! "tag_inspect: inspect error");
     return NULL;

@@ -14,9 +14,9 @@
 #include "buf_inspect.h"
 #include "kc3_main.h"
 
-sw buf_inspect_u64_hexadecimal (s_pretty *pretty, s_buf *buf, const u64 *u)
+sw buf_inspect_u64_hexadecimal (s_buf *buf, const u64 *u)
 {
-  return buf_inspect_u64_base(pretty, buf,
+  return buf_inspect_u64_base(buf,
                                   &g_kc3_base_hexadecimal,
                                   u);
 }

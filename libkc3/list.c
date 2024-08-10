@@ -134,24 +134,6 @@ s_list * list_init_tag_copy (s_list *list, const s_tag *tag, s_list *next)
   return list;
 }
 
-s_str * list_inspect (const s_list *x, s_str *dest)
-{
-  s_buf buf;
-  sw r;
-  sw size;
-  size = buf_inspect_list_size(&x);
-  buf_init_alloc(&buf, size);
-  if ((r = buf_inspect_list(&buf, &x)) < 0)
-    goto error;
-  assert(r == size);
-  if (r != size)
-    goto error;
-  return buf_to_str(&buf, dest);
- error:
-  buf_clean(&buf);
-  return NULL;
-}
-
 bool list_is_alist (const s_list * const *list)
 {
   const s_list *l;

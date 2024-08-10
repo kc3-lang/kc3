@@ -17,6 +17,6 @@
 #include "types.h"
 
 sw buf_inspect_s8_decimal (s_buf *buf, const s8 *s);
-sw buf_inspect_s8_decimal_size (const s8 *s);
+sw buf_inspect_s8_decimal_size (s_pretty *pretty, const s8 *s);
 
 #endif /* LIBKC3_BUF_INSPECT_S8_decimal_H */

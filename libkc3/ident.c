@@ -108,23 +108,6 @@ s_ident * ident_init_copy (s_ident *ident, const s_ident *src)
   return ident;
 }
 
-s_str * ident_inspect (const s_ident *ident, s_str *dest)
-{
-  sw r;
-  sw size;
-  s_buf buf;
-  size = buf_inspect_ident_size(ident);
-  if (size < 0)
-    return NULL;
-  buf_init_alloc(&buf, size);
-  r = buf_inspect_ident(&buf, ident);
-  if (r != size) {
-    buf_clean(&buf);
-    return NULL;
-  }
-  return buf_to_str(&buf, dest);
-}
-
 bool * ident_is_special_operator (const s_ident *ident, bool *dest)
 {
   return env_ident_is_special_operator(&g_kc3_env, ident, dest);

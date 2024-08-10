@@ -17,6 +17,6 @@
 #include "types.h"
 
 sw buf_inspect_u8_hexadecimal (s_buf *buf, const u8 *u);
-sw buf_inspect_u8_hexadecimal_size (const u8 *u);
+sw buf_inspect_u8_hexadecimal_size (s_pretty *pretty, const u8 *u);
 
 #endif /* LIBKC3_BUF_INSPECT_U8_hexadecimal_H */

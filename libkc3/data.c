@@ -99,85 +99,86 @@ sw data_buf_inspect (const s_sym *type, s_buf *buf, const void *data)
   return -1;
 }
 
-sw data_buf_inspect_size (const s_sym *type, const void *data)
+sw data_buf_inspect_size (const s_sym *type, s_pretty *pretty,
+                          const void *data)
 {
   s_struct s = {0};
   const s_struct_type *st;
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
-    return buf_inspect_array_size(data);
+    return buf_inspect_array_size(pretty, data);
   if (type == &g_sym_Bool)
-    return buf_inspect_bool_size(data);
+    return buf_inspect_bool_size(pretty, data);
   if (type == &g_sym_Call)
-    return buf_inspect_call_size(data);
+    return buf_inspect_call_size(pretty, data);
   if (type == &g_sym_Cfn)
-    return buf_inspect_cfn_size(data);
+    return buf_inspect_cfn_size(pretty, data);
   if (type == &g_sym_Character)
-    return buf_inspect_character_size(data);
+    return buf_inspect_character_size(pretty, data);
   if (type == &g_sym_F32)
-    return buf_inspect_f32_size(data);
+    return buf_inspect_f32_size(pretty, data);
   if (type == &g_sym_F64)
-    return buf_inspect_f64_size(data);
+    return buf_inspect_f64_size(pretty, data);
   if (type == &g_sym_Fact)
-    return buf_inspect_fact_size(data);
+    return buf_inspect_fact_size(pretty, data);
   if (type == &g_sym_Fn)
-    return buf_inspect_fn_size(data);
+    return buf_inspect_fn_size(pretty, data);
   if (type == &g_sym_Ident)
-    return buf_inspect_ident_size(data);
+    return buf_inspect_ident_size(pretty, data);
   if (type == &g_sym_Integer)
-    return buf_inspect_integer_size(data);
+    return buf_inspect_integer_size(pretty, data);
   if (type == &g_sym_List)
-    return buf_inspect_list_size(data);
+    return buf_inspect_list_size(pretty, data);
   if (type == &g_sym_Map)
-    return buf_inspect_map_size(data);
+    return buf_inspect_map_size(pretty, data);
   if (type == &g_sym_Ptag)
-    return buf_inspect_ptag_size(data);
+    return buf_inspect_ptag_size(pretty, data);
   if (type == &g_sym_Ptr)
-    return buf_inspect_ptr_size(data);
+    return buf_inspect_ptr_size(pretty, data);
   if (type == &g_sym_PtrFree)
-    return buf_inspect_ptr_free_size(data);
+    return buf_inspect_ptr_free_size(pretty, data);
   if (type == &g_sym_Quote)
-    return buf_inspect_quote_size(data);
+    return buf_inspect_quote_size(pretty, data);
   if (type == &g_sym_S8)
-    return buf_inspect_s8_size(data);
+    return buf_inspect_s8_size(pretty, data);
   if (type == &g_sym_S16)
-    return buf_inspect_s16_size(data);
+    return buf_inspect_s16_size(pretty, data);
   if (type == &g_sym_S32)
-    return buf_inspect_s32_size(data);
+    return buf_inspect_s32_size(pretty, data);
   if (type == &g_sym_S64)
-    return buf_inspect_s64_size(data);
+    return buf_inspect_s64_size(pretty, data);
   if (type == &g_sym_Str)
-    return buf_inspect_str_size(data);
+    return buf_inspect_str_size(pretty, data);
   if (type == &g_sym_Struct)
-    return buf_inspect_struct_size(data);
+    return buf_inspect_struct_size(pretty, data);
   if (type == &g_sym_StructType)
-    return buf_inspect_struct_type_size(data);
+    return buf_inspect_struct_type_size(pretty, data);
   if (type == &g_sym_Sw)
-    return buf_inspect_sw_size(data);
+    return buf_inspect_sw_size(pretty, data);
   if (type == &g_sym_Sym)
-    return buf_inspect_sym_size(data);
+    return buf_inspect_sym_size(pretty, data);
   if (type == &g_sym_Tuple)
-    return buf_inspect_tuple_size(data);
+    return buf_inspect_tuple_size(pretty, data);
   if (type == &g_sym_U8)
-    return buf_inspect_u8_size(data);
+    return buf_inspect_u8_size(pretty, data);
   if (type == &g_sym_U16)
-    return buf_inspect_u16_size(data);
+    return buf_inspect_u16_size(pretty, data);
   if (type == &g_sym_U32)
-    return buf_inspect_u32_size(data);
+    return buf_inspect_u32_size(pretty, data);
   if (type == &g_sym_U64)
-    return buf_inspect_u64_size(data);
+    return buf_inspect_u64_size(pretty, data);
   if (type == &g_sym_Uw)
-    return buf_inspect_uw_size(data);
+    return buf_inspect_uw_size(pretty, data);
   if (type == &g_sym_Var)
-    return buf_inspect_var_size(data);
+    return buf_inspect_var_size(pretty, data);
   if (type == &g_sym_Void)
-    return buf_inspect_void_size(data);
+    return buf_inspect_void_size(pretty, data);
   if (! struct_type_find(type, &st))
     return -1;
   if (st) {
     s.type = st;
     s.data = (void *) data;
-    return buf_inspect_struct_size(&s);
+    return buf_inspect_struct_size(pretty, &s);
   }
   err_write_1("data_buf_inspect_size: unknown type: ");
   err_inspect_sym(&type);

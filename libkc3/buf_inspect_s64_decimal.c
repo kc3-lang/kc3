@@ -33,7 +33,7 @@ sw buf_inspect_s64_decimal (s_buf *buf, const s64 *s)
   return result;
 }
 
-sw buf_inspect_s64_decimal_size (const s64 *s)
+sw buf_inspect_s64_decimal_size (s_pretty *pretty, const s64 *s)
 {
   sw result = 0;
   u64 u;
@@ -42,6 +42,6 @@ sw buf_inspect_s64_decimal_size (const s64 *s)
     result += strlen("-");
     u = -*s;
   }
-  result += buf_inspect_u64_decimal_size(&u);
+  result += buf_inspect_u64_decimal_size(pretty, &u);
   return result;
 }

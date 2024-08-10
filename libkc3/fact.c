@@ -73,24 +73,6 @@ s_fact * fact_init_copy (s_fact *fact, const s_fact *src)
   return fact;
 }
 
-s_str * fact_inspect (const s_fact *fact, s_str *dest)
-{
-  s_buf buf;
-  sw size;
-  if ((size = buf_inspect_fact_size(fact)) < 0) {
-    err_puts("fact_inspect: size error");
-    assert(! "fact_inspect: size error");
-    return NULL;
-  }
-  buf_init_alloc(&buf, size);
-  if (buf_inspect_fact(&buf, fact) != size) {
-    err_puts("fact_inspect: inspect error");
-    assert(! "fact_inspect: inspect error");
-    return NULL;
-  }
-  return buf_to_str(&buf, dest);
-}
-
 void fact_r (const s_fact_w *fact, s_fact *dest)
 {
   s_fact tmp = {0};

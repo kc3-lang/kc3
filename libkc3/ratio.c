@@ -345,33 +345,6 @@ s_ratio * ratio_init_zero (s_ratio *r)
   return r;
 }
 
-s_str * ratio_inspect (const s_ratio *src, s_str *dest)
-{
-  s_buf buf;
-  sw r;
-  sw size;
-  assert(src);
-  assert(dest);
-  assert(integer_is_positive(&src->denominator));
-  size = buf_inspect_ratio_size(src);
-  if (size <= 0)
-    return NULL;
-  if (! buf_init_alloc(&buf, size))
-    return NULL;
-  r = buf_inspect_ratio(&buf, src);
-  if (r != size) {
-   err_write_1("ratio_inspect: ");
-   err_inspect_sw(&r);
-   err_write_1(" != ");
-   err_inspect_sw(&size);
-   err_write_1("\n");
-   assert(! "ratio_inspect: invalid ratio");
-   return NULL;
-  }
-  assert(buf.wpos == (uw) size);
-  return buf_to_str(&buf, dest);
-}
-
 bool ratio_is_negative (const s_ratio *r)
 {
   assert(r);

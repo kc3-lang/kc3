@@ -21,26 +21,26 @@
 #include "str.h"
 #include "sym.h"
 
-sw buf_inspect_u8 (s_pretty *pretty, s_buf *buf, const u8 *u)
+sw buf_inspect_u8 (s_buf *buf, const u8 *u)
 {
   sw r;
   sw result = 0;
   if (g_buf_inspect_type != &g_sym_U8 &&
       cast_needed_u8(*u)) {
-    if ((r = buf_inspect_paren_sym(pretty, buf, &g_sym_U8)) < 0)
+    if ((r = buf_inspect_paren_sym(buf, &g_sym_U8)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, " ")) < 0)
       return r;
     result += r;
   }
-  if ((r = buf_inspect_u8_base(pretty, buf, &g_kc3_base_decimal, u)) < 0)
+  if ((r = buf_inspect_u8_base(buf, &g_kc3_base_decimal, u)) < 0)
     return r;
   result += r;
   return result;
 }
 
-sw buf_inspect_u8_base (s_pretty *pretty, s_buf *buf,
+sw buf_inspect_u8_base (s_buf *buf,
                              const s_str *base,
                              const u8 *u)
 {
@@ -60,7 +60,7 @@ sw buf_inspect_u8_base (s_pretty *pretty, s_buf *buf,
       return -1;
     return buf_write_character_utf8(buf, zero);
   }
-  size = buf_inspect_u8_base_digits(pretty, base, u);
+  size = buf_inspect_u8_base_digits(base, u);
   c = alloc(size * sizeof(character));
   buf_save_init(buf, &save);
   radix = base->size;
@@ -89,7 +89,7 @@ sw buf_inspect_u8_base (s_pretty *pretty, s_buf *buf,
   return r;
 }
 
-sw buf_inspect_u8_base_digits (s_pretty *pretty, const s_str *base,
+sw buf_inspect_u8_base_digits (const s_str *base,
                                     const u8 *u)
 {
   uw radix;

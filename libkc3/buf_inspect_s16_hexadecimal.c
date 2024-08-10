@@ -33,7 +33,7 @@ sw buf_inspect_s16_hexadecimal (s_buf *buf, const s16 *s)
   return result;
 }
 
-sw buf_inspect_s16_hexadecimal_size (const s16 *s)
+sw buf_inspect_s16_hexadecimal_size (s_pretty *pretty, const s16 *s)
 {
   sw result = 0;
   u16 u;
@@ -42,6 +42,6 @@ sw buf_inspect_s16_hexadecimal_size (const s16 *s)
     result += strlen("-");
     u = -*s;
   }
-  result += buf_inspect_u16_hexadecimal_size(&u);
+  result += buf_inspect_u16_hexadecimal_size(pretty, &u);
   return result;
 }

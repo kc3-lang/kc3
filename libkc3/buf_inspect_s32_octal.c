@@ -33,7 +33,7 @@ sw buf_inspect_s32_octal (s_buf *buf, const s32 *s)
   return result;
 }
 
-sw buf_inspect_s32_octal_size (const s32 *s)
+sw buf_inspect_s32_octal_size (s_pretty *pretty, const s32 *s)
 {
   sw result = 0;
   u32 u;
@@ -42,6 +42,6 @@ sw buf_inspect_s32_octal_size (const s32 *s)
     result += strlen("-");
     u = -*s;
   }
-  result += buf_inspect_u32_octal_size(&u);
+  result += buf_inspect_u32_octal_size(pretty, &u);
   return result;
 }
