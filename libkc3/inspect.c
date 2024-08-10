@@ -27,7 +27,11 @@ s_str * inspect_array (const s_array *array, s_str *dest)
     assert(! "inspect_array: buf_inspect_array_size error");
     return NULL;
   }
-  buf_init_alloc(&tmp, size);
+  if (! buf_init_alloc(&tmp, size)) {
+    err_puts("inspect_array: buf_init alloc");
+    assert(! "inspect_array: buf_init_alloc");
+    return NULL;
+  }
   buf_inspect_array(&tmp, array);
   if (tmp.wpos != tmp.size) {
     err_puts("inspect_array: tmp.wpos != tmp.size");
@@ -235,6 +239,37 @@ s_str * inspect_str (const s_str *str, s_str *dest)
     return NULL;
   }
   return buf_to_str(&buf, dest);
+}
+
+s_str * inspect_struct (const s_struct *s, s_str *dest)
+{
+  s_pretty pretty = {0};
+  sw size;
+  s_buf tmp;
+  size = buf_inspect_struct_size(&pretty, s);
+  if (size < 0) {
+    err_puts("inspect_struct: buf_inspect_struct_size error");
+    assert(! "inspect_struct: buf_inspect_struct_size error");
+    return NULL;
+  }
+  if (! buf_init_alloc(&tmp, size)) {
+    err_puts("inspect_struct: buf_init alloc");
+    assert(! "inspect_struct: buf_init_alloc");
+    return NULL;
+  }
+  if (buf_inspect_struct(&tmp, s) < 0) {
+    err_puts("inspect_struct: buf_inspect_struct error");
+    assert(! "inspect_struct: buf_inspect_struct error");
+    buf_clean(&tmp);
+    return NULL;
+  }
+  if (tmp.wpos != tmp.size) {
+    err_puts("inspect_struct: tmp.wpos != tmp.size");
+    assert(! "inspect_struct: tmp.wpos != tmp.size");
+    buf_clean(&tmp);
+    return NULL;
+  }
+  return buf_to_str(&tmp, dest);
 }
 
 s_str * inspect_sym (const s_sym *sym, s_str *dest)

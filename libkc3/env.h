@@ -167,7 +167,9 @@ bool          env_eval_quote_unquote (s_env *env,
                                       const s_unquote *unquote,
                                       s_tag *dest);
 bool          env_eval_struct (s_env *env, const s_struct *s,
-                               s_tag *dest);
+                               s_struct *dest);
+bool          env_eval_struct_tag (s_env *env, const s_struct *s,
+                                   s_tag *dest);
 bool          env_eval_tag (s_env *env, const s_tag *tag,
                             s_tag *dest);
 bool          env_eval_time (s_env *env, const s_time *time,

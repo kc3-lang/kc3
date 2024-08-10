@@ -523,6 +523,7 @@ bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
   dest->data.array = tmp;
   return true;
 }
+
 bool env_eval_block (s_env *env, const s_block *block, s_tag *dest)
 {
   uw i = 0;
@@ -1758,42 +1759,39 @@ bool env_eval_quote_unquote (s_env *env, const s_unquote *unquote, s_tag *dest)
   return true;
 }
 
-bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
+bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
 {
   uw i;
-  s_struct *t;
   s_tag       tag = {0};
   const void *tag_data;
-  s_tag tmp = {0};
+  s_struct tmp = {0};
   const s_sym *type;
   const void *value;
   assert(env);
   assert(s);
   assert(dest);
-  tmp.type = TAG_STRUCT;
-  t = &tmp.data.struct_;
   if (s->data) {
-    if (! struct_init_copy(t, s))
+    if (! struct_init_copy(&tmp, s))
       return false;
     *dest = tmp;
     return true;
   }
-  t->type = s->type;
-  if (! struct_allocate(t))
+  tmp.type = s->type;
+  if (! struct_allocate(&tmp))
     return false;
   i = 0;
-  while (i < t->type->map.count) {
+  while (i < tmp.type->map.count) {
     if (s->tag) {
-      if (t->type->map.value[i].type == TAG_VAR)
-        type = t->type->map.value[i].data.var.type;
+      if (tmp.type->map.value[i].type == TAG_VAR)
+        type = tmp.type->map.value[i].data.var.type;
       else {
-        if (! tag_type(t->type->map.value + i, &type))
+        if (! tag_type(tmp.type->map.value + i, &type))
           goto ko;
       }
       if (! env_eval_tag(env, s->tag + i, &tag))
         goto ko;
-      if (t->type->map.value[i].type == TAG_VAR) {
-        if (! data_init_cast((s8 *) t->data + t->type->offset[i],
+      if (tmp.type->map.value[i].type == TAG_VAR) {
+        if (! data_init_cast((s8 *) tmp.data + tmp.type->offset[i],
                              &type, &tag))
           goto ko_init;
       }
@@ -1802,18 +1800,18 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
           tag_clean(&tag);
           goto ko;
         }
-        if (! data_init_copy(type, (s8 *) t->data + t->type->offset[i],
+        if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
                              tag_data))
           goto ko_init;
       }
       tag_clean(&tag);
     }
     else {
-      if (! tag_type(t->type->map.value + i, &type))
+      if (! tag_type(tmp.type->map.value + i, &type))
         goto ko;
-      if (! tag_to_const_pointer(t->type->map.value + i, type, &value))
+      if (! tag_to_const_pointer(tmp.type->map.value + i, type, &value))
         goto ko;
-      if (! data_init_copy(type, (s8 *) t->data + t->type->offset[i],
+      if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
                            value))
         goto ko;
     }
@@ -1825,13 +1823,21 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_tag *dest)
   err_write_1("env_eval_struct: invalid type ");
   err_write_1(tag_type_to_string(tag.type));
   err_write_1(" for key ");
-  err_write_1(t->type->map.key[i].data.sym->str.ptr.pchar);
+  err_write_1(tmp.type->map.key[i].data.sym->str.ptr.pchar);
   err_write_1(", expected ");
-  err_puts(tag_type_to_string(t->type->map.value[i].type));
+  err_puts(tag_type_to_string(tmp.type->map.value[i].type));
   tag_clean(&tag);
  ko:
-  struct_clean(t);
+  struct_clean(&tmp);
   return false;
+}
+
+bool env_eval_struct_tag (s_env *env, const s_struct *s, s_tag *dest)
+{
+  if (! env_eval_struct(env, s, &dest->data.struct_))
+    return false;
+  dest->type = TAG_STRUCT;
+  return true;
 }
 
 bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
@@ -1865,7 +1871,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_QUOTE:
     return env_eval_quote(env, &tag->data.quote, dest);
   case TAG_STRUCT:
-    return env_eval_struct(env, &tag->data.struct_, dest);
+    return env_eval_struct_tag(env, &tag->data.struct_, dest);
   case TAG_TIME:
     return env_eval_time(env, &tag->data.time, dest);
   case TAG_TUPLE:

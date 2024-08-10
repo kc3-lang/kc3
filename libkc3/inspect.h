@@ -30,6 +30,7 @@ s_str * inspect_ident (const s_ident *ident, s_str *dest);
 s_str * inspect_list (const s_list *list, s_str *dest);
 s_str * inspect_ratio (const s_ratio *src, s_str *dest);
 s_str * inspect_str (const s_str *str, s_str *dest);
+s_str * inspect_struct (const s_struct *s, s_str *dest);
 s_str * inspect_sym (const s_sym *sym, s_str *dest);
 s_str * inspect_tag (const s_tag *tag, s_str *dest);
 s_str * inspect_tuple (const s_tuple *tuple, s_str *dest);

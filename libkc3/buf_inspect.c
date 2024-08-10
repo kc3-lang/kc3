@@ -263,7 +263,7 @@ sw buf_inspect_block (s_buf *buf, const s_block *block)
       return buf_write_1(buf, "do end");
   }
   pretty_save = buf->pretty;
-  pretty_indent(&buf->pretty, 2);
+  pretty_indent(&buf->pretty, PRETTY_INDENT);
   if (block->short_form) {
     if ((r = buf_write_1(buf, "{ ")) < 0)
       return r;
@@ -391,7 +391,7 @@ sw buf_inspect_block_size (s_pretty *pretty, const s_block *block)
       return buf_write_1_size(pretty, "do end");
   }
   pretty_save = *pretty;
-  pretty_indent(pretty, 2);
+  pretty_indent(pretty, PRETTY_INDENT);
   if (block->short_form) {    
     if ((r = buf_write_1_size(pretty, "{ ")) < 0)
       return r; 
@@ -669,6 +669,7 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
   s_tag *condition;
   s_tag *else_;
   uw i;
+  s_pretty pretty_save;
   sw r;
   sw result = 0;
   s_tag *then;
@@ -684,13 +685,15 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
     return r;
   result += r;
   then = &list_next(call->arguments)->tag;
+  pretty_save = buf->pretty;
   if (then->type == TAG_BLOCK) {
     if ((r = buf_write_1(buf, " do")) < 0)
       return r;
     result += r;
+    pretty_indent(&buf->pretty, PRETTY_INDENT);
     i = 0;
     while (i < then->data.block.count) {
-      if ((r = buf_write_1(buf, "\n  ")) < 0)
+      if ((r = buf_write_1(buf, "\n")) < 0)
         return r;
       result += r;
       if ((r = buf_inspect_tag(buf, then->data.block.tag + i)) < 0)
@@ -702,11 +705,14 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
     if ((r = buf_inspect_tag(buf, then)) < 0)
       return r;
   result += r;
+  buf->pretty = pretty_save;
   else_ = &list_next(list_next(call->arguments))->tag;
   if (else_->type != TAG_VOID) {
     if ((r = buf_write_1(buf, "\nelse")) < 0)
       return r;
     result += r;
+    pretty_save = buf->pretty;
+    pretty_indent(&buf->pretty, PRETTY_INDENT);
     if (then->type == TAG_BLOCK) {
       if ((r = buf_inspect_block_inner(buf, &else_->data.block)) < 0)
         return r;
@@ -716,6 +722,7 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
         return r;
     result += r;
   }
+  buf->pretty = pretty_save;
   if ((r = buf_write_1(buf, "\nend")) < 0)
     return r;
   result += r;
@@ -748,7 +755,7 @@ sw buf_inspect_call_if_then_else_size (s_pretty *pretty, const s_call *call)
     if ((r = buf_write_1_size(pretty, " do")) < 0)
       return r;
     result += r;
-    pretty_indent(pretty, 2);
+    pretty_indent(pretty, PRETTY_INDENT);
     i = 0;
     while (i < then->data.block.count) {
       if ((r = buf_write_1_size(pretty, "\n")) < 0)
@@ -760,7 +767,7 @@ sw buf_inspect_call_if_then_else_size (s_pretty *pretty, const s_call *call)
     }
   }
   else {
-    pretty_indent(pretty, 2);
+    pretty_indent(pretty, PRETTY_INDENT);
     if ((r = buf_inspect_tag_size(pretty, then)) < 0)
       return r;
   }
@@ -2148,11 +2155,11 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
   const mp_digit radix = 10;
   s32 size = 0;
   mp_int t;
+  if (MP_IS_ZERO(&x->mp_int))
+    return buf_write_u8(buf, '0');
   if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
     return -1;
   maxlen = size;
-  if (MP_IS_ZERO(&x->mp_int))
-    return buf_write_u8(buf, '0');
   if (mp_init_copy(&t, &x->mp_int) != MP_OKAY)
     return -1;
   if (t.sign == MP_NEG) {
@@ -2184,15 +2191,13 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
 sw buf_inspect_integer_size (s_pretty *pretty, const s_integer *x)
 {
   const mp_digit radix = 10;
-  sw result = 0;
   s32 size = 0;
   (void) pretty;
-  if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
-    return -1;
-  result = size;
   if (MP_IS_ZERO(&x->mp_int))
     return 1;
-  return result;
+  if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
+    return -1;
+  return size - 1;
 }
 
 sw buf_inspect_list (s_buf *buf, const s_list * const *x)
@@ -3027,7 +3032,7 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
     assert(! "buf_inspect_struct: sym_is_module(s->type->module)");
     return -1;
   }
-  if ((r = buf_write_str(buf, &s->type->module->str)) < 0)
+  if ((r = buf_write_str_memcpy(buf, &s->type->module->str)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, "{")) < 0)
@@ -3050,7 +3055,7 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
           return r;
       }
       else
-        if ((r = buf_write_str(buf, &k->data.sym->str)) < 0)
+        if ((r = buf_write_str_memcpy(buf, &k->data.sym->str)) < 0)
           return r;
       result += r;
       if ((r = buf_write_1(buf, ": ")) < 0)
@@ -3145,7 +3150,6 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
           return r;
         result += r;
       }
-    return r;
     }
   }
   if ((r = buf_write_1_size(pretty, "}")) < 0)

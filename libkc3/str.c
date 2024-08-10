@@ -42,12 +42,31 @@
   {                                                                    \
     s_buf buf;                                                         \
     s_pretty pretty = {0};                                             \
+    sw r;                                                              \
     sw size;                                                           \
     size = buf_inspect_ ## name ## _size(&pretty, &x);                 \
-    if (size <= 0)                                                     \
+    if (! size)                                                        \
+      return str_init_empty(str);                                      \
+    if (size < 0) {                                                    \
+      err_puts("str_init_" # name ": buf_inspect_" # name              \
+               "_size < 0");                                           \
       return NULL;                                                     \
-    buf_init_alloc(&buf, size);                                        \
-    if (buf_inspect_ ## name(&buf, &x) < 0) {                          \
+    }                                                                  \
+    if (! buf_init_alloc(&buf, size)) {                                \
+      err_puts("str_init_" # name ": buf_init_alloc");                 \
+      return NULL;                                                     \
+    }                                                                  \
+    if ((r = buf_inspect_ ## name(&buf, &x)) < 0) {                    \
+      err_puts("str_init_" # name ": buf_inspect_" # name " < 0");     \
+      buf_clean(&buf);                                                 \
+      return NULL;                                                     \
+    }                                                                  \
+    if (r != size) {                                                   \
+      err_write_1("str_init_" # name ": buf_inspect_" # name ": ");    \
+      err_inspect_sw_decimal(&r);                                      \
+      err_write_1(" != ");                                             \
+      err_inspect_sw_decimal(&size);                                   \
+      err_write_1("\n");                                               \
       buf_clean(&buf);                                                 \
       return NULL;                                                     \
     }                                                                  \
@@ -62,9 +81,17 @@
     s_pretty pretty = {0};                                             \
     sw size;                                                           \
     size = buf_inspect_ ## type ## _decimal_size(&pretty, &x);         \
-    if (size <= 0)                                                     \
+    if (! size)                                                        \
+      return str_init_empty(str);                                      \
+    if (size < 0) {                                                    \
+      err_puts("str_init_" # type ": buf_inspect_" # type              \
+               "_size < 0");                                           \
       return NULL;                                                     \
-    buf_init_alloc(&buf, size);                                        \
+    }                                                                  \
+    if (! buf_init_alloc(&buf, size)) {                                \
+      err_puts("str_init_" # type ": buf_init_alloc");                 \
+      return NULL;                                                     \
+    }                                                                  \
     buf_inspect_ ## type ## _decimal(&buf, &x);                        \
     assert(buf.wpos == (uw) size);                                     \
     return buf_to_str(&buf, str);                                      \
@@ -310,6 +337,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_u64(str, tag->data.u64);
   case TAG_UW:
     return str_init_uw(str, tag->data.uw);
+  case TAG_VAR:
+    return str_init_var(str, tag);
   default:
     break;
   }
@@ -500,6 +529,41 @@ DEF_STR_INIT_INT(u16)
 DEF_STR_INIT_INT(u32)
 DEF_STR_INIT_INT(u64)
 DEF_STR_INIT_INT(uw)
+
+s_str * str_init_var (s_str *str, const s_tag *x)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw r;
+  sw size;
+  size = buf_inspect_var_size(&pretty, x);
+  if (! size)
+    return str_init_empty(str);
+  if (size < 0) {
+    err_puts("str_init_var: buf_inspect_var_size < 0");
+    return NULL;
+  }
+  if (! buf_init_alloc(&buf, size)) {
+    err_puts("str_init_var: buf_init_alloc");
+    return NULL;
+  }
+  if ((r = buf_inspect_var(&buf, x)) < 0) {
+    err_puts("str_init_var: buf_inspect_var < 0");
+    buf_clean(&buf);
+    return NULL;
+  }
+  if (r != size) {
+    err_write_1("str_init_var: buf_inspect_var: ");
+    err_inspect_sw_decimal(&r);
+    err_write_1(" != ");
+    err_inspect_sw_decimal(&size);
+    err_write_1("\n");
+    buf_clean(&buf);
+    return NULL;
+  }
+  assert(buf.wpos == (uw) size);
+  return buf_to_str(&buf, str);
+}
 
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap)
 {

@@ -72,6 +72,7 @@ PROTOTYPE_STR_INIT_INT(u16);
 PROTOTYPE_STR_INIT_INT(u32);
 PROTOTYPE_STR_INIT_INT(u64);
 PROTOTYPE_STR_INIT_INT(uw);
+PROTOTYPE_STR_INIT(var, const s_tag *);
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap);
 
 /* Constructors, call str_delete after use */

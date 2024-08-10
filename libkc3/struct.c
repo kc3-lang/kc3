@@ -13,6 +13,8 @@
 #include <string.h>
 #include "alloc.h"
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse.h"
 #include "data.h"
 #include "env.h"
 #include "list.h"
@@ -180,13 +182,32 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
   return s;
 }
 
-s_struct * struct_init_1 (s_struct *s, const s8 *p)
+s_struct * struct_init_1 (s_struct *s, const char *p)
 {
+  s_buf buf;
+  uw len;
+  sw r;
+  s_struct tmp;
   assert(s);
   assert(p);
-  (void) s;
-  (void) p;
-  // FIXME
+  len = strlen(p);
+  buf_init_const(&buf, len, p);
+  buf.wpos = len;
+  r = buf_parse_struct(&buf, &tmp);
+  if (r < 0 || (uw) r != len) {
+    err_puts("struct_init_1: invalid struct");
+    assert(! "struct_init_1: invalid struct");
+    if (r > 0)
+      struct_clean(&tmp);
+    return NULL;
+  }
+  if (! env_eval_struct(&g_kc3_env, &tmp, s)) {
+    err_puts("struct_init_1: env_eval_struct");
+    assert(! "struct_init_1: env_eval_struct");
+    struct_clean(&tmp);
+    return NULL;
+  }
+  struct_clean(&tmp);
   return s;
 }
 
@@ -341,7 +362,7 @@ s_struct * struct_new (const s_sym *module)
   return s;
 }
 
-s_struct * struct_new_1 (const s8 *p)
+s_struct * struct_new_1 (const char *p)
 {
   s_struct *s;
   assert(p);

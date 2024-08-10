@@ -21,6 +21,8 @@
 
 #include "types.h"
 
+#define PRETTY_INDENT 2
+
 /* Operators. */
 s_pretty * pretty_indent (s_pretty *pretty, sw indent);
 

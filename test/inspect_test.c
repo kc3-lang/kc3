@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <string.h>
 #include "../libkc3/array.h"
+#include "../libkc3/buf_inspect.h"
 #include "../libkc3/call.h"
 #include "../libkc3/fact.h"
 #include "../libkc3/ident.h"
@@ -23,6 +24,7 @@
 #include "../libkc3/str.h"
 #include "../libkc3/sym.h"
 #include "../libkc3/tag.h"
+#include "../libkc3/struct.h"
 #include "../libkc3/tuple.h"
 #include "test.h"
 
@@ -126,13 +128,29 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define INSPECT_TEST_STR_1(test, expected)                               \
+#define INSPECT_TEST_STR_1(test, expected)                             \
   do {                                                                 \
     s_str result;                                                      \
     s_str str;                                                         \
     str_init_1(&str, NULL, (test));                                    \
     test_context("inspect_str(" # test ") -> " # expected);            \
     TEST_EQ(inspect_str(&str, &result), &result);                      \
+    TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
+    str_clean(&result);                                                \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define INSPECT_TEST_STRUCT(test, expected)                            \
+  do {                                                                 \
+    s_pretty pretty = {0};                                             \
+    s_str result;                                                      \
+    s_struct struct_test;                                              \
+    assert(test);                                                      \
+    test_context("inspect_struct(" # test ") -> " # expected);         \
+    struct_init_1(&struct_test, (test));                               \
+    TEST_EQ(buf_inspect_struct_size(&pretty, &struct_test),            \
+            strlen(expected));                                         \
+    TEST_EQ(inspect_struct(&struct_test, &result), &result);           \
     TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
     str_clean(&result);                                                \
     test_context(NULL);                                                \
@@ -177,6 +195,7 @@ TEST_CASE_PROTOTYPE(inspect_ident);
 TEST_CASE_PROTOTYPE(inspect_list);
 TEST_CASE_PROTOTYPE(inspect_ratio);
 TEST_CASE_PROTOTYPE(inspect_str);
+TEST_CASE_PROTOTYPE(inspect_struct);
 TEST_CASE_PROTOTYPE(inspect_sym);
 TEST_CASE_PROTOTYPE(inspect_tuple);
 
@@ -190,6 +209,7 @@ void inspect_test (void)
   TEST_CASE_RUN(inspect_list);
   TEST_CASE_RUN(inspect_ratio);
   TEST_CASE_RUN(inspect_str);
+  TEST_CASE_RUN(inspect_struct);
   TEST_CASE_RUN(inspect_sym);
   TEST_CASE_RUN(inspect_tuple);
 }
@@ -394,6 +414,14 @@ TEST_CASE(inspect_str)
                    "\\0\"");
 }
 TEST_CASE_END(inspect_str)
+
+TEST_CASE(inspect_struct)
+{
+  INSPECT_TEST_STRUCT("%KC3.Operator{}", "%KC3.Operator{sym: :+, symbol_value: ?, operator_precedence: 0, operator_associativity: :left}");
+  INSPECT_TEST_STRUCT("%KC3.Operator{sym: :-}",
+                      "%KC3.Operator{sym: :-, symbol_value: ?, operator_precedence: 0, operator_associativity: :left}");
+}
+TEST_CASE_END(inspect_struct)
 
 TEST_CASE(inspect_sym)
 {
