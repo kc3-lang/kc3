@@ -14,12 +14,17 @@
 #include <libkc3/kc3.h>
 #include "http_event.h"
 
-s32 http_event_add (struct event *ev, s_time *time)
+s32 http_event_add (struct event **ev, s_time *time)
 {
   struct timeval tv;
   tv.tv_sec = time->tv_sec;
   tv.tv_usec = time->tv_nsec / 1000;
-  return event_add(ev, &tv);
+  return event_add(*ev, &tv);
+}
+
+s32 http_event_del (struct event **ev)
+{
+  return event_del(*ev);
 }
 
 /* http_event_callback
@@ -70,9 +75,9 @@ void http_event_callback (int fd, short events, void *tag_tuple)
   tag_clean(&tmp);
 }
 
-s32 http_event_base_dispatch (struct event_base *eb)
+s32 http_event_base_dispatch (struct event_base **eb)
 {
-  return event_base_dispatch(eb);
+  return event_base_dispatch(*eb);
 }
 
 struct event_base * http_event_base_new (void)
@@ -80,7 +85,7 @@ struct event_base * http_event_base_new (void)
   return event_base_new();
 }
 
-struct event * http_event_new (struct event_base *event_base, s32 fd,
+struct event * http_event_new (struct event_base **event_base, s32 fd,
                                const s_list * const *events,
                                const s_fn *callback, s_tag *arg)
 {
@@ -104,7 +109,7 @@ struct event * http_event_new (struct event_base *event_base, s32 fd,
     e = list_next(e);
   }
   tag = tag_new_tuple(3);
-  ev = event_new(event_base, fd, events_s16, http_event_callback, tag);
+  ev = event_new(*event_base, fd, events_s16, http_event_callback, tag);
   if (! ev) {
     tag_delete(tag);
     err_puts("http_event_new: event_new");

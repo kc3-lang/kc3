@@ -20,6 +20,15 @@ defmodule Buf do
 
   def parse_tag = cfn Tag "kc3_buf_parse_tag" (Buf, Result)
 
+  def read_to_str = cfn Str "buf_read_to_str" (Buf, Result)
+
+  def read_until_str_into_str = cfn Str "buf_read_until_str_into_str" (
+    Buf, Str, Result)
+
+  def refill = cfn Sw "buf_refill" (Buf)
+
   def write_str = cfn Sw "buf_write_str" (Buf, Str)
+
+  def xfer = cfn Sw "buf_xfer" (Buf, Buf, Uw)
 
 end

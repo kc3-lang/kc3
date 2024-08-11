@@ -85,10 +85,10 @@ sw      buf_read_u32 (s_buf *buf, u32 *p);
 sw      buf_read_u64 (s_buf *buf, u64 *p);
 s_str * buf_read_until_1_into_str(s_buf *buf, const char *end,
                                   s_str *dest);
-sw      buf_read_until_character_into_str (s_buf *buf, character end,
+s_str * buf_read_until_character_into_str (s_buf *buf, character end,
                                            s_str *dest);
 sw      buf_read_until_space_into_str (s_buf *buf, s_str *dest);
-sw      buf_read_until_str_into_str (s_buf *buf, const s_str *end,
+s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,
                                      s_str *dest);
 sw      buf_read_integer (s_buf *buf, s_integer *dst);
 sw      buf_refill (s_buf *buf, sw size);

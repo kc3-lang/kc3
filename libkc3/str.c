@@ -97,6 +97,43 @@
     return buf_to_str(&buf, str);                                      \
   }
 
+#define DEF_STR_INIT_PTR(name, type)                                       \
+  s_str * str_init_ ## name (s_str *str, type x)                       \
+  {                                                                    \
+    s_buf buf;                                                         \
+    s_pretty pretty = {0};                                             \
+    sw r;                                                              \
+    sw size;                                                           \
+    size = buf_inspect_ ## name ## _size(&pretty, x);                 \
+    if (! size)                                                        \
+      return str_init_empty(str);                                      \
+    if (size < 0) {                                                    \
+      err_puts("str_init_" # name ": buf_inspect_" # name              \
+               "_size < 0");                                           \
+      return NULL;                                                     \
+    }                                                                  \
+    if (! buf_init_alloc(&buf, size)) {                                \
+      err_puts("str_init_" # name ": buf_init_alloc");                 \
+      return NULL;                                                     \
+    }                                                                  \
+    if ((r = buf_inspect_ ## name(&buf, x)) < 0) {                    \
+      err_puts("str_init_" # name ": buf_inspect_" # name " < 0");     \
+      buf_clean(&buf);                                                 \
+      return NULL;                                                     \
+    }                                                                  \
+    if (r != size) {                                                   \
+      err_write_1("str_init_" # name ": buf_inspect_" # name ": ");    \
+      err_inspect_sw_decimal(&r);                                      \
+      err_write_1(" != ");                                             \
+      err_inspect_sw_decimal(&size);                                   \
+      err_write_1("\n");                                               \
+      buf_clean(&buf);                                                 \
+      return NULL;                                                     \
+    }                                                                  \
+    assert(buf.wpos == (uw) size);                                     \
+    return buf_to_str(&buf, str);                                      \
+  }
+
 #define DEF_STR_INIT_STRUCT(name)                                      \
   s_str * str_init_ ## name (s_str *str, const s_ ## name *x)          \
   {                                                                    \
@@ -306,12 +343,14 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_character(str, tag->data.character);
   case TAG_FN:
     return str_init_fn(str, &tag->data.fn);
+  case TAG_LIST:
+    return str_init_list(str, (const s_list * const *) &tag->data.list);
   case TAG_MAP:
     return str_init_map(str, &tag->data.map);
   case TAG_PTR:
-    return str_init_ptr(str, tag->data.ptr);
+    return str_init_ptr(str, &tag->data.ptr);
   case TAG_PTR_FREE:
-    return str_init_ptr_free(str, tag->data.ptr_free);
+    return str_init_ptr_free(str, &tag->data.ptr_free);
   case TAG_S8:
     return str_init_s8(str, tag->data.s8);
   case TAG_S16:
@@ -481,9 +520,10 @@ s_str * str_init_f (s_str *str, const char *fmt, ...)
 }
 
 DEF_STR_INIT_STRUCT(fn)
+DEF_STR_INIT_PTR(list, const s_list * const *)
 DEF_STR_INIT_STRUCT(map)
-DEF_STR_INIT(ptr, u_ptr_w)
-DEF_STR_INIT(ptr_free, u_ptr_w)
+DEF_STR_INIT_PTR(ptr, const u_ptr_w *)
+DEF_STR_INIT_PTR(ptr_free, const u_ptr_w *)
 DEF_STR_INIT_INT(s8)
 DEF_STR_INIT_INT(s16)
 DEF_STR_INIT_INT(s32)
