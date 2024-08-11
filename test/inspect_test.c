@@ -223,13 +223,22 @@ TEST_CASE(inspect_array)
   INSPECT_TEST_ARRAY("(U8[]) {0, 0, 0}",
                      "(U8[]) {0, 0, 0}");
   INSPECT_TEST_ARRAY("(U8[]) {{0}, {0}}",
-                     "(U8[]) {{0}, {0}}");
+                     "(U8[]) {{0},\n"
+                     "        {0}}");
   INSPECT_TEST_ARRAY("(U8[]) {{0, 0}, {0, 0}}",
-                     "(U8[]) {{0, 0}, {0, 0}}");
+                     "(U8[]) {{0, 0},\n"
+                     "        {0, 0}}");
   INSPECT_TEST_ARRAY("(U8[]) {{0, 0}, {0, 0}, {0, 0}}",
-                     "(U8[]) {{0, 0}, {0, 0}, {0, 0}}");
+                     "(U8[]) {{0, 0},\n"
+                     "        {0, 0},\n"
+                     "        {0, 0}}");
   INSPECT_TEST_ARRAY("(U8[]) {{{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}}",
-                     "(U8[]) {{{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}, {{0, 0}, {0, 0}}}");
+                     "(U8[]) {{{0, 0},\n"
+                     "         {0, 0}},\n"
+                     "        {{0, 0},\n"
+                     "         {0, 0}},\n"
+                     "        {{0, 0},\n"
+                     "         {0, 0}}}");
   INSPECT_TEST_ARRAY("(U8[]) {1, 2, 3}",
                      "(U8[]) {1, 2, 3}");
   INSPECT_TEST_ARRAY("(U8[]) {1 + 1, 2 + 2, 3 + 3}",
@@ -417,9 +426,9 @@ TEST_CASE_END(inspect_str)
 
 TEST_CASE(inspect_struct)
 {
-  INSPECT_TEST_STRUCT("%KC3.Operator{}", "%KC3.Operator{sym: :+, symbol_value: ?, operator_precedence: 0, operator_associativity: :left}");
+  INSPECT_TEST_STRUCT("%KC3.Operator{}", "%KC3.Operator{sym: :+,\n              symbol_value: ?,\n              operator_precedence: 0,\n              operator_associativity: :left}");
   INSPECT_TEST_STRUCT("%KC3.Operator{sym: :-}",
-                      "%KC3.Operator{sym: :-, symbol_value: ?, operator_precedence: 0, operator_associativity: :left}");
+                      "%KC3.Operator{sym: :-,\n              symbol_value: ?,\n              operator_precedence: 0,\n              operator_associativity: :left}");
 }
 TEST_CASE_END(inspect_struct)
 

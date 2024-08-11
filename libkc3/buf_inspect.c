@@ -2224,13 +2224,20 @@ sw buf_inspect_integer_size (s_pretty *pretty, const s_integer *x)
 
 sw buf_inspect_list (s_buf *buf, const s_list * const *x)
 {
+  bool alist;
   const s_list *i;
+  s_pretty_save pretty_save;
   sw r;
   sw result = 0;
   assert(buf);
   if ((r = buf_write_1(buf, "[")) <= 0)
     return r;
-  result++;
+  result += r;
+  alist = list_is_alist(x);
+  if (alist) {
+    pretty_save_init(&pretty_save, &buf->pretty);
+    pretty_indent_from_column(&buf->pretty, 0);
+  }
   i = *x;
   while (i) {
     if ((r = buf_inspect_list_tag(buf, &i->tag)) < 0)
@@ -2239,8 +2246,14 @@ sw buf_inspect_list (s_buf *buf, const s_list * const *x)
     switch (i->next.type) {
     case TAG_LIST:
       if (i->next.data.list) {
-        if ((r = buf_write_1(buf, ", ")) < 0)
-          return r;
+        if (alist) {
+          if ((r = buf_write_1(buf, ",\n")) < 0)
+            return r;
+        }
+        else {
+          if ((r = buf_write_1(buf, ", ")) < 0)
+            return r;
+        }
         result += r;
       }
       i = i->next.data.list;
@@ -2255,6 +2268,8 @@ sw buf_inspect_list (s_buf *buf, const s_list * const *x)
       i = NULL;
     }
   }
+  if (alist)
+    pretty_save_clean(&pretty_save, &buf->pretty);
   if ((r = buf_write_1(buf, "]")) < 0)
     return r;
   result += r;

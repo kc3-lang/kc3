@@ -288,6 +288,7 @@ s_str * str_init_alloc_copy (s_str *str, uw size, const char *p)
   return str;
 }
 
+DEF_STR_INIT_STRUCT(array)
 DEF_STR_INIT(bool, bool)
 
 s_str * str_init_cast (s_str *str, const s_sym * const *type,
@@ -297,6 +298,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   assert(type);
   assert(tag);
   switch (tag->type) {
+  case TAG_ARRAY:
+    return str_init_array(str, &tag->data.array);
   case TAG_BOOL:
     return str_init_bool(str, tag->data.bool);
   case TAG_CHARACTER:
