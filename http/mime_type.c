@@ -80,6 +80,7 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
   if ((r = buf_read_until_space_into_str(buf, &str)) <= 0)
     return false;
   type = str_to_sym(&str);
+  str_clean(&str);
   while (1) {
     if ((r = buf_ignore_spaces(buf)) <= 0)
       return false;
@@ -105,6 +106,7 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
     buf_save_clean(buf, &save);
     if (r > 0) {
       tag_init_sym(&ext, str_to_sym(&str));
+      str_clean(&str);
       if (! http_mime_type_def(&ext, &type))
         return false;
     }

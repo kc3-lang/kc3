@@ -153,6 +153,7 @@
     TEST_EQ(inspect_struct(&struct_test, &result), &result);           \
     TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
     str_clean(&result);                                                \
+    struct_clean(&struct_test);                                        \
     test_context(NULL);                                                \
   } while (0)
 
