@@ -8,21 +8,46 @@ defmodule HTTPd do
   require HTTP.Event
   require HTTP.Request
   require HTTP.Response
-  
+
   def root_dir = "./public"
 
+  def http_client = fn (socket, events, client_ev, client) do
+    puts("echo_client")
+    if List.has?(events, :read) do
+      server_client(client)
+    end
+  end
+
+  def acceptor = fn (server_socket, events, acceptor_ev, void) do
+    if List.has?(events, :read) do
+      puts("acceptor: read")
+      client = Socket.Buf.accept(%Socket{fd: server_socket})
+      puts("acceptor: got client")
+      client_ev = HTTP.Event.new(event_base, client.sockfd, [:read, :persist],
+        http_client, client)
+      r = HTTP.Event.add(client_ev, timeout)
+      puts("HTTP.Event.add: #{r}")
+    end
+  end
+
   def server = fn (host, port) {
+    timeout = %Time{tv_sec: (Sw) 30}
+    event_base = HTTP.Event.base_new()
     socket = Socket.listen(host, port)
     puts("KC3 HTTPd: listening on #{host}:#{port}")
-    acceptor = HTTPd.fn () {
-      while true do
-        client = Socket.Buf.accept(socket)
-        server_client(client)
-        Socket.Buf.close(client)
-      end
-    }
-    acceptor();
-    Socket.close(socket)
+    puts("socket.fd: #{socket.fd}")
+    puts("event_base: #{event_base}")
+    acceptor_ev = HTTP.Event.new(event_base, socket.fd, [:read, :persist],
+                                 acceptor, void)
+    puts("acceptor_ev: #{acceptor_ev}")
+    r = HTTP.Event.add(acceptor_ev, timeout)
+    puts("HTTP.Event.add: #{r}")
+    r = HTTP.Event.dispatch(event_base)
+    if r do
+      e = errno()
+      puts("HTTP.Event.dispatch: #{r}: #{strerror(e)}")
+    end
+    Socket.close(%Socket{fd: socket})
   }
 
   def server_client = fn (client) {
@@ -106,7 +131,7 @@ defmodule HTTPd do
   <head>
     <title>Index of #{request.url}</title>
     <style type="text/css">
-      ul { font-family: monospace; }        
+      ul { font-family: monospace; }
     </style>
   </head>
   <body>
