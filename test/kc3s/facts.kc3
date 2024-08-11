@@ -1,0 +1,8 @@
+quote Facts.env_facts()
+Facts.env_facts()
+quote cursor = Facts.with_tags(Facts.env_facts(), KC3, :is_a, :module)
+cursor = Facts.with_tags(Facts.env_facts(), KC3, :is_a, :module)
+quote ptr = Facts.Cursor.next(cursor)
+ptr = Facts.Cursor.next(cursor)
+quote f = (Fact) ptr
+f = (Fact) ptr
