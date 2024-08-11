@@ -31,13 +31,3 @@
        rwlock_count: (Sw) 0,
        rwlock_thread: (Ptr) 0x0,
        transaction: (Ptr) 0x0}
-Facts.env_facts()
-(Ptr) 0x56bcf40e2d8
-cursor = Facts.with_tags(Facts.env_facts(), KC3, :is_a, :module)
-%Facts.Cursor{facts: (Ptr) 0x56bcf40e2d8,
-              index: (Ptr) 0x56b5d04b700,
-              node: (Ptr) 0x56af5ea3120,
-              start: %Fact{subject: (Ptr) 0x0,
-                           predicate: (Ptr) 0x0,
-                           object: (Ptr) 0x0}}
-
