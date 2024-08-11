@@ -284,6 +284,7 @@ struct map {
 struct pretty {
   uw base_column;
   sw column;
+  bool disable;
 };
 
 struct pretty_save {

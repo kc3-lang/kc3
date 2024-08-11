@@ -110,11 +110,14 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
                                const u8 **data, const s_tag **tag,
                                uw *address, uw dimension)
 {
+  s_pretty_save pretty_save;
   sw r;
   sw result = 0;
   if ((r = buf_write_1(buf, "{")) <= 0)
     goto clean;
   result += r;
+  pretty_save_init(&pretty_save, &buf->pretty);
+  pretty_indent_from_column(&buf->pretty, 0);
   address[dimension] = 0;
   while (1) {
     if (dimension == array->dimension - 1) {
@@ -141,10 +144,17 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
     address[dimension]++;
     if (address[dimension] == array->dimensions[dimension].count)
       break;
-    if ((r = buf_write_1(buf, ", ")) <= 0)
-      goto clean;
+    if (dimension == array->dimension - 1) {
+      if ((r = buf_write_1(buf, ", ")) <= 0)
+        goto clean;
+    }
+    else {
+      if ((r = buf_write_1(buf, ",\n")) <= 0)
+        goto clean;
+    }
     result += r;
   }
+  pretty_save_clean(&pretty_save, &buf->pretty);
   if ((r = buf_write_1(buf, "}")) <= 0)
     goto clean;
   result += r;
@@ -185,11 +195,14 @@ sw buf_inspect_array_data_size_rec (s_pretty *pretty,
                                     const s_tag **tag,
                                     uw *address, uw dimension)
 {
+  s_pretty_save pretty_save;
   sw r;
   sw result = 0;
   if ((r = buf_write_1_size(pretty, "{")) < 0)
     return r;
   result += r;
+  pretty_save_init(&pretty_save, pretty);
+  pretty_indent_from_column(pretty, 0);
   address[dimension] = 0;
   while (1) {
     if (dimension == array->dimension - 1) {
@@ -217,10 +230,17 @@ sw buf_inspect_array_data_size_rec (s_pretty *pretty,
     address[dimension]++;
     if (address[dimension] == array->dimensions[dimension].count)
       break;
-    if ((r = buf_write_1_size(pretty, ", ")) < 0)
-      goto clean;
+    if (dimension == array->dimension - 1) {
+      if ((r = buf_write_1_size(pretty, ", ")) < 0)
+        goto clean;
+    }
+    else {
+      if ((r = buf_write_1_size(pretty, ",\n")) < 0)
+        goto clean;
+    }
     result += r;
   }
+  pretty_save_clean(&pretty_save, pretty);
   if ((r = buf_write_1_size(pretty, "}")) < 0)
     goto clean;
   result += r;
@@ -2394,11 +2414,11 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
     k = map->key + i;
     if (k->type == TAG_SYM) {
       if (sym_has_reserved_characters(k->data.sym)) {
-        if ((r = buf_write_str(buf, &k->data.sym->str)) < 0)
+        if ((r = buf_inspect_str(buf, &k->data.sym->str)) < 0)
           return r;
       }
       else
-        if ((r = buf_write_1(buf, k->data.sym->str.ptr.pchar)) < 0)
+        if ((r = buf_write_str(buf, &k->data.sym->str)) < 0)
           return r;
       result += r;
       if ((r = buf_write_1(buf, ": ")) < 0)
@@ -2423,10 +2443,10 @@ sw buf_inspect_map (s_buf *buf, const s_map *map)
       result += r;
     }
   }
+  pretty_save_clean(&pretty_save, &buf->pretty);
   if ((r = buf_write_1(buf, "}")) < 0)
     return r;
   result += r;
-  pretty_save_clean(&pretty_save, &buf->pretty);
   return result;
 }
 
@@ -2434,18 +2454,25 @@ sw buf_inspect_map_size (s_pretty *pretty, const s_map *map)
 {
   uw i = 0;
   s_tag *k;
+  s_pretty_save pretty_save;
   sw r;
   sw result = 0;
   assert(map);
   if ((r = buf_write_1_size(pretty, "%{")) < 0)
     return r;
   result += r;
+  pretty_save_init(&pretty_save, pretty);
+  pretty_indent_from_column(pretty, 0);
   while (i < map->count) {
     k = map->key + i;
     if (k->type == TAG_SYM) {
-      if ((r = buf_write_1_size(pretty,
-                                k->data.sym->str.ptr.pchar)) < 0)
-        return r;
+      if (sym_has_reserved_characters(k->data.sym)) {
+        if ((r = buf_inspect_str_size(pretty, &k->data.sym->str)) < 0)
+          return r;
+      }
+      else
+        if ((r = buf_write_str_size(pretty, &k->data.sym->str)) < 0)
+          return r;
       result += r;
       if ((r = buf_write_1_size(pretty, ": ")) < 0)
         return r;
@@ -2464,11 +2491,12 @@ sw buf_inspect_map_size (s_pretty *pretty, const s_map *map)
     result += r;
     i++;
     if (i < map->count) {
-      if ((r = buf_write_1_size(pretty, ", ")) < 0)
+      if ((r = buf_write_1_size(pretty, ",\n")) < 0)
         return r;
       result += r;
     }
   }
+  pretty_save_clean(&pretty_save, pretty);
   if ((r = buf_write_1_size(pretty, "}")) < 0)
     return r;
   result += r;
@@ -2866,7 +2894,7 @@ sw buf_inspect_str_eval (s_buf *buf, const s_list *list)
   l = list;
   while (l) {
     if (l->tag.type == TAG_STR) {
-      if ((r = buf_write_str(buf, &l->tag.data.str)) < 0)
+      if ((r = buf_write_str_without_indent(buf, &l->tag.data.str)) < 0)
         return r;
     }
     else {
@@ -2898,7 +2926,8 @@ sw buf_inspect_str_eval_size (s_pretty *pretty, const s_list *list)
   l = list;
   while (l) {
     if (l->tag.type == TAG_STR) {
-      if ((r = buf_write_str_size(pretty, &l->tag.data.str)) < 0)
+      if ((r = buf_write_str_without_indent_size(pretty,
+                                                 &l->tag.data.str)) < 0)
         return r;
     }
     else {
@@ -3093,10 +3122,10 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
       }
     }
   }
+  pretty_save_clean(&pretty_save, &buf->pretty);
   if ((r = buf_write_1(buf, "}")) < 0)
     return r;
   result += r;
-  pretty_save_clean(&pretty_save, &buf->pretty);
   return result;
 }
 
@@ -3163,16 +3192,16 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
       }
       i++;
       if (i < s->type->map.count) {
-        if ((r = buf_write_1_size(pretty, ", ")) < 0)
+        if ((r = buf_write_1_size(pretty, ",\n")) < 0)
           return r;
         result += r;
       }
     }
   }
+  pretty_save_clean(&pretty_save, pretty);
   if ((r = buf_write_1_size(pretty, "}")) < 0)
     return r;
   result += r;
-  pretty_save_clean(&pretty_save, pretty);
   return result;
 }
 

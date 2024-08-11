@@ -1196,13 +1196,19 @@ sw buf_write_character_utf8 (s_buf *buf, character c)
 
 sw buf_write_character_utf8_size (s_pretty *pretty, character c)
 {
-  sw size = character_utf8_size(c);
-  if (size <= 0)
-    return size;
-  if (c == '\n')
+  sw csize;
+  sw size;
+  csize = character_utf8_size(c);
+  if (csize <= 0)
+    return csize;
+  if (c == '\n') {
+    size = csize + pretty->base_column;
     pretty->column = pretty->base_column;
-  else
+  }
+  else {
+    size = csize;
     pretty->column++;
+  }
   return size;
 }
 
