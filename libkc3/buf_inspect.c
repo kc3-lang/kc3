@@ -3337,18 +3337,24 @@ sw buf_inspect_sym (s_buf *buf, const s_sym * const *sym)
 
 sw buf_inspect_sym_size (s_pretty *pretty, const s_sym * const *sym)
 {
-  const sw colon_size = 1;
+  sw r;
+  sw size;
   const s_sym *x;
+  assert(pretty);
   assert(sym);
   x = *sym;
   assert(x);
   if (x->str.size == 0)
-    return 3;
+    return buf_write_1_size(pretty, ":\"\"");
   if (sym_has_reserved_characters(x))
     return buf_inspect_sym_reserved_size(pretty, x);
   if (sym_is_module(x) || sym_is_array_type(x))
-    return x->str.size;
-  return x->str.size + colon_size;
+    return buf_write_str_size(pretty, &x->str);
+  size = x->str.size + 1;
+  if ((r = buf_write_1_size(pretty, ":")) < 0 ||
+      (r = buf_write_str_size(pretty, &x->str)) < 0)
+    return r;
+  return size;
 }
 
 sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *x)

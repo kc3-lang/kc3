@@ -124,8 +124,10 @@ s_call * call_init_copy (s_call *call, const s_call *src)
                        (const s_list * const *) &src->arguments))
     return NULL;
   // FIXME: copy cfn and fn ?
-  tmp.cfn = src->cfn;
-  tmp.fn = src->fn;
+  if (src->cfn)
+    tmp.cfn = cfn_new_copy(src->cfn);
+  if (src->fn)
+    tmp.fn = fn_new_copy(src->fn);
   *call = tmp;
   return call;
 }

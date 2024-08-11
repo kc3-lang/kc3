@@ -18,6 +18,7 @@
 #include "facts_cursor.h"
 #include "facts_spec.h"
 #include "facts_with.h"
+#include "sym.h"
 #include "tag.h"
 
 s_facts_with_cursor * facts_with (s_facts *facts,
@@ -70,13 +71,13 @@ s_facts_cursor * facts_with_0 (s_facts *facts,
   facts_cursor_init(facts, cursor, facts->index_spo, NULL, NULL);
   cursor->var_subject = var_subject;
   cursor->var_subject_type =
-    var_subject ? var_subject->data.var.type : NULL;
+    var_subject ? var_subject->data.var.type : &g_sym_Void;
   cursor->var_predicate = var_predicate;
   cursor->var_predicate_type =
-    var_predicate ? var_predicate->data.var.type : NULL;
+    var_predicate ? var_predicate->data.var.type : &g_sym_Void;
   cursor->var_object = var_object;
   cursor->var_object_type =
-    var_object ? var_object->data.var.type : NULL;
+    var_object ? var_object->data.var.type : &g_sym_Void;
   return cursor;
 }
 
@@ -113,13 +114,13 @@ s_facts_cursor * facts_with_1_2 (s_facts *facts,
   facts_cursor_init(facts, cursor, tree, &start, &end);
   cursor->var_subject = var_subject;
   cursor->var_subject_type =
-    var_subject ? var_subject->data.var.type : NULL;
+    var_subject ? var_subject->data.var.type : &g_sym_Void;
   cursor->var_predicate = var_predicate;
   cursor->var_predicate_type =
-    var_predicate ? var_predicate->data.var.type : NULL;
+    var_predicate ? var_predicate->data.var.type : &g_sym_Void;
   cursor->var_object = var_object;
   cursor->var_object_type =
-    var_object ? var_object->data.var.type : NULL;
+    var_object ? var_object->data.var.type : &g_sym_Void;
   return cursor;
 }
 
@@ -176,3 +177,22 @@ s_facts_cursor * facts_with_tags (s_facts *facts,
   return facts_with_1_2(facts, cursor, subject, predicate, object,
                         var_subject, var_predicate, var_object);
 }
+
+s_facts_cursor * facts_with_tuple (s_facts *facts,
+                                   s_facts_cursor *cursor,
+                                   s_tuple *fact)
+{
+  assert(facts);
+  assert(cursor);
+  assert(fact);
+  if (fact->count != 3) {
+    err_write_1("facts_with_tuple: Tuple count != 3: ");
+    err_inspect_tuple(fact);
+    err_write_1("\n");
+    assert(! "facts_with_tuple: Tuple count != 3");
+    return NULL;
+  }
+  return facts_with_tags(facts, cursor, fact->tag, fact->tag + 1,
+                         fact->tag + 2);
+}
+

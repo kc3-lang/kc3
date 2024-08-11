@@ -836,6 +836,14 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_pointer;
     return true;
   }
+  if (sym == &g_sym_Time) {
+    *dest = &ffi_type_pointer;
+    return true;
+  }
+  if (sym == &g_sym_Tuple) {
+    *dest = &ffi_type_pointer;
+    return true;
+  }
   if (sym == &g_sym_U8) {
     *dest = &ffi_type_uint8;
     return true;

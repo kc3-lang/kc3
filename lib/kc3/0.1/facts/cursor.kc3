@@ -1,0 +1,18 @@
+defmodule Facts.Cursor do
+
+  defstruct [facts: (Ptr) 0,
+             index: (Ptr) 0,
+             node: (Ptr) 0,
+             start: %Fact{},
+             end: %Fact{},
+             var_subject: (Ptr) 0,
+             var_subject_type: Void,
+             var_predicate: (Ptr) 0,
+             var_predicate_type: Void,
+             var_object: (Ptr) 0,
+             var_object_type: Void,
+             mutex: (Ptr) 0]
+
+  def next = cfn Tag "kc3_facts_cursor_next" (Result, Facts.Cursor)
+
+end

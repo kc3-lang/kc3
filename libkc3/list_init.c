@@ -449,6 +449,18 @@ s_list * list_init_struct (s_list *list, const s_sym *module,
   return list;
 }
 
+s_list * list_init_struct_copy (s_list *list, const s_struct *src,
+                                s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_struct_copy(&tmp.tag, src))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_struct_with_data (s_list *list, const s_sym *module,
                                      void *data, bool free_data,
                                      s_list *next)
@@ -1111,6 +1123,19 @@ s_list * list_new_struct (const s_sym *module, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_struct(&list->tag, module)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_struct_copy (const s_struct *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_struct_copy(&list->tag, src)) {
     free(list);
     return NULL;
   }

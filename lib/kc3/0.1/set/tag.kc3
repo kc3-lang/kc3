@@ -1,0 +1,8 @@
+defmodule Set.Tag do
+
+  defstruct [collisions: (Uw) 0,
+             count: (Uw) 0,
+             items: (Ptr) 0,
+             max: (Uw) 0]
+
+end

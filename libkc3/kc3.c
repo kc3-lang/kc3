@@ -21,6 +21,7 @@
 #include "buf_parse.h"
 #include "call.h"
 #include "env.h"
+#include "facts_cursor.h"
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
@@ -138,6 +139,11 @@ void ** kc3_dlopen (const s_str *path, void **dest)
   return dest;
 }
 
+s_facts * kc3_env_facts (void)
+{
+  return &g_kc3_env.facts;
+}
+
 sw kc3_errno (void)
 {
   return errno;
@@ -146,6 +152,52 @@ sw kc3_errno (void)
 void kc3_exit (sw code)
 {
   exit((int) code);
+}
+
+const s_tag * kc3_fact_object (s_fact *fact)
+{
+  if (! fact->object) {
+    err_puts("kc3_fact_object: NULL object");
+    assert(! "kc3_fact_object: NULL object");
+    return NULL;
+  }
+  return fact->object;
+}
+
+const s_tag * kc3_fact_predicate (s_fact *fact)
+{
+  if (! fact->predicate) {
+    err_puts("kc3_fact_predicate: NULL predicate");
+    assert(! "kc3_fact_predicate: NULL predicate");
+    return NULL;
+  }
+  return fact->predicate;
+}
+
+const s_tag * kc3_fact_subject (s_fact *fact)
+{
+  if (! fact->subject) {
+    err_puts("kc3_fact_subject: NULL subject");
+    assert(! "kc3_fact_subject: NULL subject");
+    return NULL;
+  }
+  return fact->subject;
+}
+
+s_tag * kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr)
+{
+  return tag_init_struct_with_data(tag, &g_sym_Fact, ptr->p, false);
+}
+
+s_tag * kc3_facts_cursor_next (s_tag *tag, s_facts_cursor *cursor)
+{
+  const s_fact *fact = NULL;
+  if (! facts_cursor_next(cursor, &fact))
+    return NULL;
+  if (! fact)
+    return tag_init_void(tag);
+  return tag_init_struct_with_data(tag, &g_sym_Fact, (void *) fact,
+                                   false);
 }
 
 uw * kc3_facts_next_id (uw *dest)

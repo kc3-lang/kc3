@@ -1,0 +1,27 @@
+defmodule Facts do
+
+  defstruct [tags: %Set.Tag{},
+             facts: %Set.Fact{},
+             index_spo: (Ptr) 0,
+             index_pos: (Ptr) 0,
+             index_osp: (Ptr) 0,
+             log: (Ptr) 0,
+             next_id: (Uw) 0,
+             rwlock: (Ptr) 0,
+             rwlock_count: (Sw) 0,
+             rwlock_thread: (Ptr) 0,
+             transaction: (Ptr) 0]
+
+  def cast = cfn Tag "tag_init_cast_struct" (Result, Sym, Tag)
+
+  # env_facts() -> facts
+  def env_facts = cfn Ptr "kc3_env_facts" ()
+
+  # with_tags(facts, subject, predicate, object) -> cursor
+  def with_tags = cfn Facts.Cursor "facts_with_tags" (Facts, Result, Tag,
+                                                      Tag, Tag)
+
+  # with_tuple(facts, tuple) -> cursor
+  def with_tuple = cfn Facts.Cursor "facts_with_tuple" (Facts, Result, Tuple)
+
+end

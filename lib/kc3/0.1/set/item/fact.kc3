@@ -1,0 +1,8 @@
+defmodule Set.Item.Fact do
+
+  defstruct [data: %Fact{},
+             hash: (Uw) 0,
+             next: (Ptr) 0,
+             usage: (Uw) 0]
+
+end

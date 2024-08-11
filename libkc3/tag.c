@@ -538,6 +538,55 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
   return NULL;
 }
 
+s_tag * tag_init_cast (s_tag *tag, const s_sym * const *type,
+                       s_tag *src)
+{
+  assert(tag);
+  assert(type);
+  assert(*type);
+  assert(src);
+  switch (src->type) {
+  case TAG_PTR:
+    if (*type != &g_sym_Tag)
+      break;
+    return tag_init_copy(tag, src->data.ptr.p);
+  default:
+    break;
+  }
+  err_puts("tag_init_cast: invalid cast");
+  assert(! "tag_init_cast: invalid cast");
+  return NULL;
+}
+
+s_tag * tag_init_cast_struct (s_tag *tag, const s_sym * const *type,
+                              s_tag *src)
+{
+  assert(tag);
+  assert(type);
+  assert(*type);
+  assert(src);
+  switch (src->type) {
+  case TAG_PTR:
+    if (! src->data.ptr.p)
+      return tag_init_void(tag);
+    return tag_init_struct_with_data(tag, *type, src->data.ptr.p,
+                                     false);
+  case TAG_PTR_FREE:
+    if (! src->data.ptr_free.p)
+      return tag_init_void(tag);
+    return tag_init_struct_with_data(tag, *type, src->data.ptr_free.p,
+                                     false);
+  case TAG_STRUCT:
+    if (*type == src->data.struct_.type->module)
+      return tag_init_struct_copy(tag, &src->data.struct_);
+  default:
+    break;
+  }
+  err_puts("tag_init_cast_struct: invalid cast");
+  assert(! "tag_init_cast_struct: invalid cast");
+  return NULL;
+}
+
 s_tag * tag_integer_reduce (s_tag *tag)
 {
   s_integer *i;
@@ -1135,7 +1184,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_PTR:
     if (type == &g_sym_Ptr) {
-      *dest = &tag->data.ptr.p;
+      *dest = &tag->data.ptr;
       return true;
     }
     *dest = tag->data.ptr.p;
@@ -1143,7 +1192,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_PTR_FREE:
     if (type == &g_sym_Ptr ||
         type == &g_sym_PtrFree) {
-      *dest = &tag->data.ptr_free.p;
+      *dest = &tag->data.ptr_free;
       return true;
     }
     *dest = tag->data.ptr.p;
@@ -1173,6 +1222,11 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_STRUCT:
     if (type == &g_sym_Struct) {
       *dest = &tag->data.struct_;
+      return true;
+    }
+    if (type == &g_sym_Ptr) {
+      *dest = &tag->data.struct_.data;
+      assert(*dest);
       return true;
     }
     if (type == tag->data.struct_.type->module) {

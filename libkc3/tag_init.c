@@ -438,6 +438,17 @@ s_tag * tag_init_struct (s_tag *tag, const s_sym *module)
   return tag;
 }
 
+s_tag * tag_init_struct_copy (s_tag *tag, const s_struct *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_STRUCT;
+  if (! struct_init_copy(&tmp.data.struct_, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_struct_with_data (s_tag *tag, const s_sym *module,
                                    void *data, bool free_data)
 {
@@ -1104,6 +1115,20 @@ s_tag * tag_new_struct (const s_sym *module)
   return tag;
 }
 
+s_tag * tag_new_struct_copy (const s_struct *src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_STRUCT;
+  if (! struct_init_copy(&tag->data.struct_, src)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_struct_with_data (const s_sym *module, void *data,
                                   bool free_data)
 {
@@ -1749,6 +1774,18 @@ s_tag * tag_struct (s_tag *tag, const s_sym *module)
   tag_clean(tag);
   tmp.type = TAG_STRUCT;
   if (! struct_init(&tmp.data.struct_, module))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_struct_copy (s_tag *tag, const s_struct *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_STRUCT;
+  if (! struct_init_copy(&tmp.data.struct_, src))
     return NULL;
   *tag = tmp;
   return tag;

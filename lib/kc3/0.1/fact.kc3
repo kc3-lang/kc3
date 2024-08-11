@@ -1,0 +1,22 @@
+defmodule Fact do
+
+  defstruct [subject: (Ptr) 0,
+             predicate: (Ptr) 0,
+             object: (Ptr) 0,
+             id: (Uw) 0]
+
+  def cast = cfn Tag "tag_init_cast_struct" (Result, Sym, Tag)
+
+  def from_ptr = cfn Tag "kc3_fact_from_ptr" (Result, Ptr)
+
+  def object    = cfn Tag "kc3_fact_object"    (Fact)
+
+  def predicate = cfn Tag "kc3_fact_predicate" (Fact)
+
+  def puts = fn (fact) {
+    puts("{#{Fact.subject(fact)}, #{Fact.predicate(fact)}, #{Fact.object(fact)}}")
+  }
+
+  def subject   = cfn Tag "kc3_fact_subject"   (Fact)
+
+end
