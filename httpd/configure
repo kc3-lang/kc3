@@ -62,7 +62,7 @@ CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
-LOCAL_LIBS_ASAN="../libkc3/libkc3_asan.la ../http/libkc3_http.la"
+LOCAL_LIBS_ASAN="../libkc3/libkc3_asan.la ../http/libkc3_http_asan.la"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
