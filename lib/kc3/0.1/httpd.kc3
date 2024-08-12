@@ -19,6 +19,7 @@ defmodule HTTPd do
         res = router(req)
         r = HTTP.Response.buf_write(res, client.buf_rw.w,
           req.method != :head)
+        puts("#{res.code} #{res.message} #{req.method} #{req.url}")
       end
     end
   end

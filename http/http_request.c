@@ -42,12 +42,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     goto restore;
   if (r > 0)
     tmp_req.method = sym_1("head");
-  if (! tmp_req.method) {
-    err_write_1("http_request_buf_parse: no method: ");
-    err_inspect_buf(buf);
-    err_write_1("\n");
+  if (! tmp_req.method)
     goto restore;
-  }
   if (false) {
     err_write_1("http_request_buf_parse: method: ");
     err_inspect_sym(&tmp_req.method);
