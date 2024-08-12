@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <signal.h>
 #include <libkc3/kc3.h>
 #include "config.h"
 
@@ -21,6 +22,11 @@ int main (int argc, char **argv)
   s_tag tmp = {0};
   kc3_init(NULL, &argc, &argv);
   io_puts("KC3 HTTPd loading, please wait...");
+  if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
+    err_puts("http_event_base_new: signal");
+    assert(! "http_event_base_new: signal");
+    return 1;
+  }
   module = sym_1("HTTPd");
   if (! module_load(module)) {
     kc3_clean(NULL);

@@ -16,6 +16,8 @@
 #include "types.h"
 
 /* Heap-allocation functions. */
+s_str * socket_addr_to_str(s_str *str, const struct sockaddr *addr,
+                           s32 addr_len);
 void              socket_addr_delete (struct sockaddr *sa);
 struct sockaddr * socket_addr_new (u32 len);
 struct sockaddr * socket_addr_new_copy (const struct sockaddr *addr,

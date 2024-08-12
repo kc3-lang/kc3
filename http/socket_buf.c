@@ -67,6 +67,7 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
     assert(! "socket_buf_init: socket_addr_new_copy");
     return NULL;
   }
+  socket_addr_to_str(&tmp.addr_str, addr, addr_len);
   tmp.addr_len = addr_len;
   *sb = tmp;
   return sb;

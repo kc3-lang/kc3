@@ -2,6 +2,7 @@ defmodule Socket.Buf do
 
   defstruct [addr: (Ptr) 0,
              addr_len: (U32) 0,
+             addr_str: "",
              sockfd: (S32) -1,
              buf_rw: %BufRW{}]
 

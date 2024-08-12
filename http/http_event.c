@@ -12,6 +12,7 @@
  */
 #include <event2/event.h>
 #include <libkc3/kc3.h>
+#include <signal.h>
 #include "http_event.h"
 
 s32 http_event_add (struct event **ev, s_time *time)
