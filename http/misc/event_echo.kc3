@@ -33,8 +33,8 @@ acceptor_ev = HTTP.Event.new(event_base, socket.fd, [:read, :persist],
 puts("acceptor_ev: #{acceptor_ev}")
 r = HTTP.Event.add(acceptor_ev, timeout)
 puts("HTTP.Event.add: #{r}")
-# r = HTTP.Event.dispatch(event_base)
-# if r do
-#  e = errno()
-#  puts("HTTP.Event.dispatch: #{r}: #{strerror(e)}")
-# end
+r = HTTP.Event.dispatch(event_base)
+if r do
+  e = errno()
+  puts("HTTP.Event.dispatch: #{r}: #{strerror(e)}")
+end
