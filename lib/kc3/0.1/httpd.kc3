@@ -12,32 +12,23 @@ defmodule HTTPd do
   def root_dir = "./public"
 
   def http_client = fn (socket, events, client_ev, client) do
-    puts("http_client")
     if List.has?(events, :read) do
-      puts("http_client: read")
-      puts("HTTPd.server_loop: got client #{client}")
       req = HTTP.Request.buf_parse(client.buf_rw.r)
-      puts("http_client: req: #{req}")
       if req do
         router = route_request(req)
         res = router(req)
-        puts("http_client: res: #{res}")
         r = HTTP.Response.buf_write(res, client.buf_rw.w,
           req.method != :head)
-        puts("http_client: wrote #{r}")
       end
     end
   end
 
   def acceptor = fn (server_socket, events, acceptor_ev, void) do
     if List.has?(events, :read) do
-      puts("acceptor: read")
       client = Socket.Buf.accept(%Socket{fd: server_socket})
-      puts("acceptor: got client")
       client_ev = HTTP.Event.new(event_base, client.sockfd, [:read, :persist],
         http_client, client)
       r = HTTP.Event.add(client_ev, timeout)
-      puts("HTTP.Event.add: #{r}")
     end
   end
 
@@ -46,17 +37,12 @@ defmodule HTTPd do
     event_base = HTTP.Event.base_new()
     socket = Socket.listen(host, port)
     puts("KC3 HTTPd: listening on #{host}:#{port}")
-    puts("socket.fd: #{socket.fd}")
-    puts("event_base: #{event_base}")
     acceptor_ev = HTTP.Event.new(event_base, socket.fd, [:read, :persist],
                                  acceptor, void)
-    puts("acceptor_ev: #{acceptor_ev}")
     r = HTTP.Event.add(acceptor_ev, timeout)
-    puts("HTTP.Event.add: #{r}")
     r = HTTP.Event.dispatch(event_base)
     if r do
       e = errno()
-      puts("HTTP.Event.dispatch: #{r}: #{strerror(e)}")
     end
     Socket.close(%Socket{fd: socket})
   }
@@ -66,11 +52,12 @@ defmodule HTTPd do
       HTTP.mime_type_load("mime.types")
       host = getenv("KC3_HTTPD_HOST")
       port = getenv("KC3_HTTPD_PORT")
-      event_base = HTTP.Event.init();
+      event_base = HTTP.Event.base_new()
       server(host, port)
     }
     (host, port) {
       HTTP.mime_type_load("mime.types")
+      event_base = HTTP.Event.base_new()
       server(host, port)
     }
   }
@@ -152,7 +139,6 @@ defmodule HTTPd do
     if File.exists?(path) do
       body = File.read(path)
       mime = HTTP.mime_type(ext)
-      puts("HTTPd.show_page: mime = #{mime}")
       headers = [{"Content-Type", (Str) mime}]
       %HTTP.Response{body: body, headers: headers}
     else
