@@ -116,14 +116,14 @@ sw http_response_buf_write (const s_http_response *response,
     result += r;
     l = list_next(l);
   }
-  if (content_length < 0 && send_body) {
+  if (content_length < 0) {
     if ((r = buf_write_str(buf, &content_length_str)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, ": ")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_sw_decimal(buf, &content_length)) < 0)
+    if ((r = buf_inspect_uw_decimal(buf, &response->body.size)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, "\r\n")) < 0)
