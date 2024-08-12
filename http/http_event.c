@@ -18,6 +18,8 @@
 s32 http_event_add (struct event **ev, s_time *time)
 {
   struct timeval tv;
+  if (! time->tv_sec && ! time->tv_nsec)
+    return event_add(*ev, NULL);
   tv.tv_sec = time->tv_sec;
   tv.tv_usec = time->tv_nsec / 1000;
   return event_add(*ev, &tv);

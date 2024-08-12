@@ -33,8 +33,9 @@ defmodule HTTPd do
     end
   end
 
+  def timeout = %Time{}
+
   def server = fn (host, port) {
-    timeout = %Time{tv_sec: (Sw) 30}
     event_base = HTTP.Event.base_new()
     socket = Socket.listen(host, port)
     puts("KC3 HTTPd: listening on #{host}:#{port}")
@@ -44,8 +45,9 @@ defmodule HTTPd do
     r = HTTP.Event.dispatch(event_base)
     if r do
       e = errno()
+      puts("KC3 HTTPd: event dispatch error: #{strerror(e)}")
     end
-    Socket.close(%Socket{fd: socket})
+    Socket.close(socket)
   }
 
   def main = fn {
