@@ -2,7 +2,7 @@ defmodule HTTP.Response do
 
   defstruct [protocol: "HTTP/1.1",
              code: (U16) 200,
-             message: "OK",
+             message: "",
              headers: [{"Content-Type", "text/html"}],
              body: ""]
 
