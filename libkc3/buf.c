@@ -1083,17 +1083,17 @@ sw buf_u8_to_hex (s_buf *buf, const u8 *x)
   buf_save_init(buf, &save);
   digit = *x >> 4;
   if (digit < 10)
-    r = buf_write_u8(buf, digit + '0');
+    r = buf_write_character_utf8(buf, digit + '0');
   else
-    r = buf_write_u8(buf, digit - 10 + 'A');
+    r = buf_write_character_utf8(buf, digit - 10 + 'A');
   if (r <= 0)
     goto clean;
   result += r;
   digit = *x & 0xF;
   if (digit < 10)
-    r = buf_write_u8(buf, digit + '0');
+    r = buf_write_character_utf8(buf, digit + '0');
   else
-    r = buf_write_u8(buf, digit - 10 + 'A');
+    r = buf_write_character_utf8(buf, digit - 10 + 'A');
   if (r <= 0)
     goto restore;
   result += r;

@@ -62,8 +62,10 @@
 "#{%Buf{}}"
 "%Buf{column: (Sw) 0,\n     flush: (Ptr) 0x0,\n     free: false,\n     line: (Sw) 0,\n     ptr: (Ptr) 0x0,\n     read_only: false,\n     refill: (Ptr) 0x0,\n     rpos: (Uw) 0,\n     save: (Ptr) 0x0,\n     seek: (Ptr) 0x0,\n     size: (Uw) 0,\n     user_ptr: (Ptr) 0x0,\n     wpos: (Uw) 0}"
 "#{%BufRW{}}"
-"%BufRW{r: (Ptr) 0x0,\n        w: (Ptr) 0x0}"
+"%BufRW{r: (Ptr) 0x0,\n       w: (Ptr) 0x0}"
 "#{(U8[]) {{0, 0},
            {0, 0},
            {0, 0}}}"
 "(U8[]) {{0, 0},\n        {0, 0},\n        {0, 0}}"
+"#{%Socket.Buf{}}"
+"%Socket.Buf{addr: (Ptr) 0x0,\n            addr_len: (U32) 0,\n            sockfd: (S32) -1,\n            buf_rw: %BufRW{r: (Ptr) 0x0,\n                           w: (Ptr) 0x0}}"

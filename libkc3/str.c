@@ -137,7 +137,7 @@
 #define DEF_STR_INIT_STRUCT(name)                                      \
   s_str * str_init_ ## name (s_str *str, const s_ ## name *x)          \
   {                                                                    \
-    s_buf buf;                                                         \
+    s_buf buf = {0};                                                   \
     s_pretty pretty = {0};                                             \
     sw r;                                                              \
     sw size;                                                           \

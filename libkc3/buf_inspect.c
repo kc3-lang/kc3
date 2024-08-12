@@ -1457,7 +1457,7 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
   i = (u8) x;
   x -= i;
   i += '0';
-  if ((r = buf_write_u8(buf, i)) <= 0)
+  if ((r = buf_write_character_utf8(buf, i)) <= 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, ".")) <= 0)
@@ -1469,7 +1469,7 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
     i = (u8) x;
     x -= i;
     i += '0';
-    if ((r = buf_write_u8(buf, i)) <= 0)
+    if ((r = buf_write_character_utf8(buf, i)) <= 0)
       return r;
     result += r;
     j--;
@@ -1591,7 +1591,7 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
   i = (u8) x;
   x -= i;
   i += '0';
-  if ((r = buf_write_u8(buf, i)) <= 0)
+  if ((r = buf_write_character_utf8(buf, i)) <= 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, ".")) <= 0)
@@ -1603,7 +1603,7 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
     i = (u8) x;
     x -= i;
     i += '0';
-    if ((r = buf_write_u8(buf, i)) <= 0)
+    if ((r = buf_write_character_utf8(buf, i)) <= 0)
       return r;
     result += r;
     j--;
@@ -1719,7 +1719,7 @@ sw buf_inspect_f128 (s_buf *buf, const f128 *x)
   i = (u8) y;
   y -= i;
   i += '0';
-  if ((r = buf_write_u8(buf, i)) <= 0)
+  if ((r = buf_write_character_utf8(buf, i)) <= 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, ".")) <= 0)
@@ -1731,7 +1731,7 @@ sw buf_inspect_f128 (s_buf *buf, const f128 *x)
     i = (u8) y;
     y -= i;
     i += '0';
-    if ((r = buf_write_u8(buf, i)) <= 0)
+    if ((r = buf_write_character_utf8(buf, i)) <= 0)
       return r;
     result += r;
     j--;
@@ -1997,7 +1997,7 @@ sw buf_inspect_fn_pattern (s_buf *buf, const s_list *pattern)
   sw r;
   sw result = 0;
   assert(buf);
-  if ((r = buf_write_u8(buf, '(')) <= 0)
+  if ((r = buf_write_character_utf8(buf, '(')) <= 0)
     return r;
   result += r;
   while (pattern) {
@@ -2011,7 +2011,7 @@ sw buf_inspect_fn_pattern (s_buf *buf, const s_list *pattern)
       result += r;
     }
   }
-  if ((r = buf_write_u8(buf, ')')) < 0)
+  if ((r = buf_write_character_utf8(buf, ')')) < 0)
     return r;
   result += r;
   return result;
@@ -2178,7 +2178,7 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
   s32 size = 0;
   mp_int t;
   if (MP_IS_ZERO(&x->mp_int))
-    return buf_write_u8(buf, '0');
+    return buf_write_character_utf8(buf, '0');
   if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
     return -1;
   maxlen = size;
@@ -2187,7 +2187,7 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
   if (t.sign == MP_NEG) {
     t.sign = MP_ZPOS;
     maxlen--;
-    buf_write_u8(buf, '-');
+    buf_write_character_utf8(buf, '-');
     result++;
   }
   buf_init_alloc(&buf_tmp, maxlen);
@@ -2197,7 +2197,7 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
     p = '0' + d;
     if (p > '9')
       goto error;
-    buf_write_u8(&buf_tmp, p);
+    buf_write_character_utf8(&buf_tmp, p);
     result++;
   }
   buf_xfer_reverse(&buf_tmp, buf);
@@ -2749,13 +2749,13 @@ sw buf_inspect_str (s_buf *buf, const s_str *str)
   if (b)
     return buf_inspect_str_reserved(buf, str);
   buf_save_init(buf, &save);
-  if ((r = buf_write_u8(buf, '"')) <= 0)
+  if ((r = buf_write_character_utf8(buf, '"')) <= 0)
     goto clean;
   result += r;
   if ((r = buf_write_str_without_indent(buf, str)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_write_u8(buf, '"')) <= 0)
+  if ((r = buf_write_character_utf8(buf, '"')) <= 0)
     goto restore;
   result += r;
   r = result;
@@ -2828,21 +2828,45 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
     goto restore;
   result += r;
   switch (*c) {
-  case '\0': if ((r = buf_write_u8(buf, '0')) <= 0) goto restore; break;
-  case '\n': if ((r = buf_write_u8(buf, 'n')) <= 0) goto restore; break;
-  case '\r': if ((r = buf_write_u8(buf, 'r')) <= 0) goto restore; break;
-  case '\t': if ((r = buf_write_u8(buf, 't')) <= 0) goto restore; break;
-  case '\v': if ((r = buf_write_u8(buf, 'v')) <= 0) goto restore; break;
-  case '\"': if ((r = buf_write_u8(buf, '"')) <= 0) goto restore; break;
-  case '\'': if ((r = buf_write_u8(buf, '\'')) <= 0) goto restore; break;
-  case '\\': if ((r = buf_write_u8(buf, '\\')) <= 0) goto restore; break;
+  case '\0':
+    if ((r = buf_write_character_utf8(buf, '0')) <= 0)
+      goto restore;
+    break;
+  case '\n':
+    if ((r = buf_write_character_utf8(buf, 'n')) <= 0)
+      goto restore;
+    break;
+  case '\r':
+    if ((r = buf_write_character_utf8(buf, 'r')) <= 0)
+      goto restore;
+    break;
+  case '\t':
+    if ((r = buf_write_character_utf8(buf, 't')) <= 0)
+      goto restore;
+    break;
+  case '\v':
+    if ((r = buf_write_character_utf8(buf, 'v')) <= 0)
+      goto restore;
+    break;
+  case '\"':
+    if ((r = buf_write_character_utf8(buf, '"')) <= 0)
+      goto restore;
+    break;
+  case '\'':
+    if ((r = buf_write_character_utf8(buf, '\'')) <= 0)
+      goto restore;
+    break;
+  case '\\':
+    if ((r = buf_write_character_utf8(buf, '\\')) <= 0)
+      goto restore;
+    break;
   default:
     buf_init(&char_buf, false, sizeof(b), b);
     if ((r = buf_write_character_utf8(&char_buf, *c)) <= 0)
       goto restore;
     i = r - 1;
     j = 0;
-    if ((r = buf_write_u8(buf, 'x')) != 1)
+    if ((r = buf_write_character_utf8(buf, 'x')) != 1)
       goto restore;
     result1 += r;
     if ((r = buf_u8_to_hex(buf, &char_buf.ptr.pu8[j++])) != 2)
@@ -2996,7 +3020,7 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str)
       result += r;
     }
   }
-  if ((r = buf_write_u8(buf, '"')) <= 0)
+  if ((r = buf_write_character_utf8(buf, '"')) <= 0)
     goto restore;
   result += r;
   r = result;
@@ -3101,38 +3125,39 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
         err_write_1(tag_type_to_string(k->type));
         err_puts(")");
         assert(k->type == TAG_SYM);
-        return -1;
+        r = -1;
+        goto clean;
       }
       if (sym_has_reserved_characters(k->data.sym)) {
         if ((r = buf_inspect_str(buf, &k->data.sym->str)) < 0)
-          return r;
+          goto clean;
       }
       else
         if ((r = buf_write_str_without_indent(buf,
                                               &k->data.sym->str)) < 0)
-          return r;
+          goto clean;
       result += r;
       if ((r = buf_write_1(buf, ": ")) < 0)
-        return r;
+        goto clean;
       result += r;
       if (s->data) {
         if (! tag_type(s->type->map.value + i, &type))
-          return -1;
+          goto clean;
         assert(s->type->offset[i] < s->type->size);
         if ((r = data_buf_inspect(type, buf, (char *) s->data +
                                   s->type->offset[i])) < 0)
-          return r;
+          goto clean;
         result += r;
       }
       else if (s->tag) {
         if ((r = buf_inspect_tag(buf, s->tag + i)) < 0)
-          return r;
+          goto clean;
         result += r;
       }
       i++;
       if (i < s->type->map.count) {
         if ((r = buf_write_1(buf, ",\n")) < 0)
-          return r;
+          goto clean;
         result += r;
       }
     }
@@ -3142,6 +3167,9 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
     return r;
   result += r;
   return result;
+ clean:
+  pretty_save_clean(&pretty_save, &buf->pretty);
+  return -1;
 }
 
 sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
@@ -3152,15 +3180,18 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
   sw r;
   sw result = 0;
   const s_sym *type;
+  assert(pretty);
   assert(s);
   assert(sym_is_module(s->type->module));
   if ((r = buf_write_1_size(pretty, "%")) < 0)
     return r;
   result += r;
-  if (! sym_is_module(s->type->module))
+  if (! sym_is_module(s->type->module)) {
+    err_puts("buf_inspect_struct: sym_is_module(s->type->module)");
+    assert(! "buf_inspect_struct: sym_is_module(s->type->module)");
     return -1;
-  if ((r = buf_write_str_without_indent_size
-       (pretty, &s->type->module->str)) < 0)
+  }
+  if ((r = buf_write_str_without_indent_size(pretty, &s->type->module->str)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1_size(pretty, "{")) < 0)
@@ -3172,43 +3203,46 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
     while (i < s->type->map.count) {
       k = s->type->map.key + i;
       if (k->type != TAG_SYM) {
-        err_write_1("buf_inspect_struct_size: key type is not a symbol: ");
+        err_write_1("buf_inspect_struct: key type is not a symbol: ");
         err_inspect_tag(k);
         err_write_1(" (");
         err_write_1(tag_type_to_string(k->type));
         err_puts(")");
         assert(k->type == TAG_SYM);
-        return -1;
+        r = -1;
+        goto clean;
       }
       if (sym_has_reserved_characters(k->data.sym)) {
         if ((r = buf_inspect_str_size(pretty, &k->data.sym->str)) < 0)
-          return r;
+          goto clean;
       }
       else
-        r = k->data.sym->str.size;
+        if ((r = buf_write_str_without_indent_size(pretty,
+                                              &k->data.sym->str)) < 0)
+          goto clean;
       result += r;
       if ((r = buf_write_1_size(pretty, ": ")) < 0)
-        return r;
+        goto clean;
       result += r;
       if (s->data) {
         if (! tag_type(s->type->map.value + i, &type))
-          return -1;
+          goto clean;
         assert(s->type->offset[i] < s->type->size);
         if ((r = data_buf_inspect_size(type, pretty,
                                        (char *) s->data +
                                        s->type->offset[i])) < 0)
-          return r;
+          goto clean;
         result += r;
       }
       else if (s->tag) {
         if ((r = buf_inspect_tag_size(pretty, s->tag + i)) < 0)
-          return r;
+          goto clean;
         result += r;
       }
       i++;
       if (i < s->type->map.count) {
         if ((r = buf_write_1_size(pretty, ",\n")) < 0)
-          return r;
+          goto clean;
         result += r;
       }
     }
@@ -3218,6 +3252,9 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
     return r;
   result += r;
   return result;
+ clean:
+  pretty_save_clean(&pretty_save, pretty);
+  return -1;
 }
 
 sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
