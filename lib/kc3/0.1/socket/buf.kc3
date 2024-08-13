@@ -6,7 +6,7 @@ defmodule Socket.Buf do
              sockfd: (S32) -1,
              buf_rw: %BufRW{}]
 
-  dlopen(__DIR__ + "../http.so")
+  dlopen(__DIR__ + "../socket.so")
 
   def accept = cfn Socket.Buf "socket_buf_init_accept" (Result, Socket)
 

@@ -2,7 +2,7 @@ defmodule Socket do
 
   defstruct [fd: (S32) -1]
 
-  dlopen(__DIR__ + "http.so")
+  dlopen(__DIR__ + "socket.so")
 
   def close = cfn Void "socket_close" (Socket)
 

@@ -13,7 +13,6 @@
 #include <libkc3/kc3.h>
 #include "http.h"
 #include <string.h>
-#include "socket.h"
 
 s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 {

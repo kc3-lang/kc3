@@ -57,6 +57,7 @@ config_subdirs \
     kc3s \
     ekc3 \
     json \
+    socket \
     http \
     httpd \
     test \

@@ -12,7 +12,6 @@
  */
 #include <libkc3/kc3.h>
 #include "http.h"
-#include "socket.h"
 
 s_tag * http_header_split (s_str *header, s_tag *dest)
 {

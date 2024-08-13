@@ -12,6 +12,9 @@ KC3_CONFIGURES = \
 	"ikc3/configure" \
 	"ikc3/sources.sh" \
 	"ikc3/update_sources" \
+	"json/configure" \
+	"json/sources.sh" \
+	"json/update_sources" \
 	"kc3c/configure" \
 	"kc3s/configure" \
 	"kc3s/sources.sh" \
@@ -22,6 +25,9 @@ KC3_CONFIGURES = \
 	"libtommath/configure" \
 	"libtommath/sources.sh" \
 	"libtommath/update_sources" \
+	"socket/configure" \
+	"socket/sources.sh" \
+	"socket/update_sources" \
 	"test/configure" \
 	"test/sources.sh" \
 	"test/update_sources" \
@@ -70,6 +76,8 @@ KC3_MAKEFILES = \
 	"httpd/sources.mk" \
 	"ikc3/Makefile" \
 	"ikc3/sources.mk" \
+	"json/Makefile" \
+	"json/sources.mk" \
 	"kc3c/Makefile" \
 	"kc3s/Makefile" \
 	"kc3s/sources.mk" \
@@ -78,6 +86,8 @@ KC3_MAKEFILES = \
 	"libkc3/sources.mk" \
 	"libtommath/Makefile" \
 	"libtommath/sources.mk" \
+	"socket/Makefile" \
+	"socket/sources.mk" \
 	"test/Makefile" \
 	"test/sources.mk" \
 	"ucd2c/Makefile" \
@@ -121,12 +131,6 @@ KC3_C_SOURCES = \
 	"http/http_response.h" \
 	"http/mime_type.c" \
 	"http/mime_type.h" \
-	"http/socket.c" \
-	"http/socket.h" \
-	"http/socket_addr.c" \
-	"http/socket_addr.h" \
-	"http/socket_buf.c" \
-	"http/socket_buf.h" \
 	"http/types.h" \
 	"httpd/httpd.c" \
 	"httpd/httpd.h" \
@@ -136,6 +140,8 @@ KC3_C_SOURCES = \
 	"ikc3/buf_wineditline.h" \
 	"ikc3/ikc3.c" \
 	"ikc3/linenoise.c" \
+	"json/json.c" \
+	"json/json.h" \
 	"kc3c/c3c.c" \
 	"kc3s/buf_readline.c" \
 	"kc3s/buf_readline.h" \
@@ -510,6 +516,13 @@ KC3_C_SOURCES = \
 	"libkc3/var.h" \
 	"libkc3/void.c" \
 	"libkc3/void.h" \
+	"socket/socket.c" \
+	"socket/socket.h" \
+	"socket/socket_addr.c" \
+	"socket/socket_addr.h" \
+	"socket/socket_buf.c" \
+	"socket/socket_buf.h" \
+	"socket/types.h" \
 	"test/array_test.c" \
 	"test/bool_test.c" \
 	"test/buf_file_test.c" \
@@ -905,6 +918,7 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
+	"lib/kc3/0.1/.#kc3.facts" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bool.facts" \
 	"lib/kc3/0.1/buf.kc3" \
@@ -915,6 +929,9 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/f128.facts" \
 	"lib/kc3/0.1/f32.facts" \
 	"lib/kc3/0.1/f64.facts" \
+	"lib/kc3/0.1/fact.kc3" \
+	"lib/kc3/0.1/facts.kc3" \
+	"lib/kc3/0.1/facts/cursor.kc3" \
 	"lib/kc3/0.1/file.kc3" \
 	"lib/kc3/0.1/file/stat.kc3" \
 	"lib/kc3/0.1/gl/dvec2.kc3" \
@@ -931,6 +948,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/http/response.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
 	"lib/kc3/0.1/integer.facts" \
+	"lib/kc3/0.1/json/parser.kc3" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
 	"lib/kc3/0.1/list.kc3" \
@@ -942,6 +960,11 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/s32.facts" \
 	"lib/kc3/0.1/s64.facts" \
 	"lib/kc3/0.1/s8.facts" \
+	"lib/kc3/0.1/set.kc3" \
+	"lib/kc3/0.1/set/fact.kc3" \
+	"lib/kc3/0.1/set/item/fact.kc3" \
+	"lib/kc3/0.1/set/item/tag.kc3" \
+	"lib/kc3/0.1/set/tag.kc3" \
 	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/socket/addr.kc3" \
 	"lib/kc3/0.1/socket/buf.kc3" \
@@ -949,6 +972,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/struct.kc3" \
 	"lib/kc3/0.1/sw.facts" \
 	"lib/kc3/0.1/sym.facts" \
+	"lib/kc3/0.1/tag.kc3" \
 	"lib/kc3/0.1/time.kc3" \
 	"lib/kc3/0.1/u16.facts" \
 	"lib/kc3/0.1/u32.facts" \
@@ -1037,13 +1061,13 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/equal.kc3" \
 	"test/ikc3/equal.out.expected" \
 	"test/ikc3/equal.ret.expected" \
+	"test/ikc3/facts.kc3" \
+	"test/ikc3/facts.out.expected" \
+	"test/ikc3/facts.ret.expected" \
 	"test/ikc3/fn.err.expected" \
 	"test/ikc3/fn.kc3" \
 	"test/ikc3/fn.out.expected" \
 	"test/ikc3/fn.ret.expected" \
-	"test/ikc3/function_call.err.expected" \
-	"test/ikc3/function_call.out.expected" \
-	"test/ikc3/function_call.ret.expected" \
 	"test/ikc3/gl.kc3" \
 	"test/ikc3/gl.out.expected" \
 	"test/ikc3/gl.ret.expected" \
@@ -1183,9 +1207,6 @@ KC3_TEST_HTTP_SOURCES = \
 	"test/http/06_mime_types.kc3" \
 	"test/http/06_mime_types.out.expected" \
 	"test/http/06_mime_types.ret.expected" \
-	"test/http/07_event_echo.kc3" \
-	"test/http/07_event_echo.out.expected" \
-	"test/http/07_event_echo.ret.expected" \
 	"test/http_test" \
 
 KC3_TEST_HTTPD_SOURCES = \

@@ -13,7 +13,6 @@
 #include <string.h>
 #include <libkc3/kc3.h>
 #include "http_response.h"
-#include "socket.h"
 
 sw http_response_buf_write (const s_http_response *response,
                             s_buf *buf, bool send_body)

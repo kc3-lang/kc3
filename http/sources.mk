@@ -5,9 +5,6 @@ HEADERS = \
 	"http_request.h" \
 	"http_response.h" \
 	"mime_type.h" \
-	"socket.h" \
-	"socket_addr.h" \
-	"socket_buf.h" \
 	"types.h" \
 
 SOURCES = \
@@ -16,7 +13,4 @@ SOURCES = \
 	"http_request.c" \
 	"http_response.c" \
 	"mime_type.c" \
-	"socket.c" \
-	"socket_addr.c" \
-	"socket_buf.c" \
 
