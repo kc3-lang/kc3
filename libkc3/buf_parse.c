@@ -640,7 +640,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   buf_save_init(buf, &save);
   tmp.arguments = list_new(list_new(NULL));
   arg_addr = &(list_next(tmp.arguments)->tag);
-  if ((r = buf_parse_tag_primary_2(buf, &tmp.arguments->tag)) <= 0)
+  if ((r = buf_parse_tag_ident(buf, &tmp.arguments->tag)) <= 0)
     goto restore;
   result += r;
   while (1) {
