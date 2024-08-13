@@ -673,8 +673,7 @@ test_libkc3_debug:
 	${MAKE} -C libkc3 debug
 	${MAKE} -C test test_libkc3_debug
 
-.PHONY: \
-	all \
+.PHONY: all \
 	asan \
 	build \
 	kc3.index \
@@ -714,10 +713,10 @@ test_libkc3_debug:
 	gdb_test_json_debug \
 	gdb_test_kc3s \
 	gdb_test_kc3s_asan \
-	gdb_test_kc3s_debug
+	gdb_test_kc3s_debug \
 	gdb_test_libkc3 \
 	gdb_test_libkc3_asan \
-	gdb_test_libkc3_debug
+	gdb_test_libkc3_debug \
 	http \
 	httpd \
 	ikc3 \
