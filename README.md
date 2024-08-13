@@ -21,7 +21,7 @@ pattern matching, and a semantic object system. The idea is to plug
 modules, closures, pattern matching, a graph database and
 metaprogramming into C99 with an extremely small set of dependencies.
 
-Supported operating systems (additionnal dependencies) :
+Supported operating systems (additional dependencies) :
  - BSD
  - Linux (libbsd, libmd)
  - MacOS X (libmd)
@@ -50,7 +50,7 @@ Supported architectures :
 sudo apt install pkg-config clang libtool-bin make ruby time
 
 # install dependencies
-sudo apt install libffi-dev libbsd-dev
+sudo apt install libffi-dev libbsd-dev libevent-dev
 
 # use clang
 export CC=clang
