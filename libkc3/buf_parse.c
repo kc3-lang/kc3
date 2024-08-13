@@ -730,7 +730,7 @@ sw buf_parse_call_access (s_buf *buf, s_call *dest)
     return -1;
   tmp.ident.module = &g_sym_KC3;
   tmp.ident.sym = &g_sym_access;
-  r = buf_parse_tag_primary_3(buf, &tmp.arguments->tag);
+  r = buf_parse_tag_ident(buf, &tmp.arguments->tag);
   if (r <= 0)
     goto restore;
   result += r;
