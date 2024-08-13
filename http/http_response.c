@@ -62,6 +62,7 @@ sw http_response_buf_write (const s_http_response *response,
     if (! tag_is_alist(&default_messages)) {
       err_puts("http_response_buf_write: invalid default_messages:"
                " not an AList");
+      tag_clean(&default_messages);
       return -1;
     }
     if (alist_get((const s_list * const *) &default_messages.data.list,
@@ -70,6 +71,7 @@ sw http_response_buf_write (const s_http_response *response,
         err_puts("http_response_buf_write: invalid default message:"
                  " not a Str");
         tag_clean(&tag_message);
+        tag_clean(&default_messages);
         return -1;
       }
     }
@@ -79,10 +81,14 @@ sw http_response_buf_write (const s_http_response *response,
     tag_message.data.str = response->message;
     tag_message.data.str.free.p = NULL;
   }
-  if ((r = buf_write_str(buf, &tag_message.data.str)) < 0)
+  if ((r = buf_write_str(buf, &tag_message.data.str)) < 0) {
+    tag_clean(&tag_message);
+    tag_clean(&default_messages);
     return r;
+  }
   result += r;
   tag_clean(&tag_message);
+  tag_clean(&default_messages);
   if ((r = buf_write_1(buf, "\r\n")) < 0)
     return r;
   result += r;
