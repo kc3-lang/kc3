@@ -71,12 +71,6 @@ distclean:
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details test.html
 
-gdb_httpd:
-	cd httpd && ${GDB} ../../httpd/.libs/kc3_httpd_debug
-
-gdb_httpd_asan:
-	cd httpd && ${GDB} ../../httpd/.libs/kc3_httpd_asan
-
 gdb_test: debug
 	if [ -f libkc3_test_debug.core ]; then ${GDB} .libs/libkc3_test_debug libkc3_test_debug.core; else ${GDB} .libs/libkc3_test_debug; fi
 
@@ -89,8 +83,17 @@ gdb_test_http:
 gdb_test_http_asan:
 	cd http && ${GDB} ../../ikc3/.libs/ikc3_asan
 
+gdb_test_httpd:
+	cd httpd && ${GDB} ../../httpd/.libs/kc3_httpd_debug
+
+gdb_test_httpd_asan:
+	cd httpd && ${GDB} ../../httpd/.libs/kc3_httpd_asan
+
 gdb_test_ikc3:
 	cd ikc3 && ${GDB} ../../ikc3/.libs/ikc3_debug
+
+gdb_test_json:
+	cd json && ${GDB} ../../ikc3/.libs/ikc3_debug
 
 lldb_test: debug
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
@@ -167,6 +170,18 @@ test_ikc3_cov:
 test_ikc3_debug:
 	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./ikc3_test
 
+test_json:
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./json_test
+
+test_json_asan:
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./json_test
+
+test_json_cov:
+	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./json_test
+
+test_json_debug:
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./json_test
+
 test_libkc3: libkc3_test
 	time ./libkc3_test
 
@@ -176,7 +191,29 @@ test_libkc3_cov: libkc3_test_cov
 test_valgrind: libkc3_test
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./libkc3_test
 
-.PHONY: all asan cov debug clean clean_cov distclean ikc3_test_cov libkc3_test_cov test test_asan test_cov test_debug test_ikc3 test_valgrind
+.PHONY: all \
+	asan \
+	cov \
+	debug \
+	clean \
+	clean_cov \
+	distclean_test_cov \
+	gdb_test \
+	gdb_test_ekc3 \
+	gdb_test_http \
+	gdb_test_http_asan \
+	gdb_test_httpd \
+	gdb_test_httpd_asan \
+	gdb_test_ikc3 \
+	gdb_test_json \
+	libkc3_test_cov \
+	test \
+	test_asan \
+	test_cov \
+	test_debug \
+	test_ikc3 \
+	test_ikc3 \
+	test_valgrind
 
 include config.mk
 include sources.mk

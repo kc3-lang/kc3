@@ -36,6 +36,16 @@ echo "kc3-${KC3_VERSION}.tar.gz: $(tr '\n' ' ' < kc3.index)" \
 config_asan
 echo "HAVE_ASAN = ${HAVE_ASAN}" >> ${CONFIG_MK}
 
+ARCH="unknown"
+if uname | grep -iq bsd; then
+    ARCH=bsd
+elif uname | grep -q Linux; then
+    ARCH=linux
+elif uname | grep -q Darwin; then
+    ARCH=darwin
+fi
+echo "ARCH = $ARCH" >> ${CONFIG_MK}
+
 update_config_mk
 env_reset
 
@@ -46,6 +56,7 @@ config_subdirs \
     ikc3 \
     kc3s \
     ekc3 \
+    json \
     http \
     httpd \
     test \

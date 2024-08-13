@@ -84,6 +84,7 @@ update_sources_sh
 ( cd ikc3       && ./update_sources; )
 ( cd kc3s       && ./update_sources; )
 ( cd ekc3       && ./update_sources; )
+( cd json       && ./update_sources; )
 ( cd http       && ./update_sources; )
 ( cd httpd      && ./update_sources; )
 ( cd test       && ./update_sources; )

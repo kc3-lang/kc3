@@ -12,9 +12,6 @@
  */
 #include <libkc3/kc3.h>
 #include "json.h"
-#include "buf.h"
-#include "buf_parse.h"
-#include "tag.h"
 
 static bool parse_json(const s_buf *buf, s_tag *dest) {
   assert(buf);

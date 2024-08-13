@@ -18,6 +18,7 @@ all:
 	${MAKE} -C ikc3 all
 	${MAKE} -C kc3s all
 	${MAKE} -C ekc3 all
+	${MAKE} -C json all
 	${MAKE} -C http all
 	${MAKE} -C httpd all
 	${MAKE} -C test all
@@ -30,6 +31,7 @@ asan:
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
+	${MAKE} -C json asan
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
 	${MAKE} -C test asan
@@ -43,6 +45,7 @@ build:
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
+	${MAKE} -C json build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
 	${MAKE} -C test build
@@ -55,6 +58,7 @@ clean:
 	${MAKE} -C ikc3 clean
 	${MAKE} -C kc3s clean
 	${MAKE} -C ekc3 clean
+	${MAKE} -C json clean
 	${MAKE} -C http clean
 	${MAKE} -C httpd clean
 	${MAKE} -C test clean
@@ -66,6 +70,7 @@ clean_cov:
 	${MAKE} -C ikc3 clean_cov
 	${MAKE} -C kc3s clean_cov
 	${MAKE} -C ekc3 clean_cov
+	${MAKE} -C json clean_cov
 	${MAKE} -C http clean_cov
 	${MAKE} -C httpd clean_cov
 	${MAKE} -C test clean_cov
@@ -78,6 +83,7 @@ cov:
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C ekc3 cov
+	${MAKE} -C json cov
 	${MAKE} -C http cov
 	${MAKE} -C httpd cov
 	${MAKE} -C test cov
@@ -90,6 +96,7 @@ debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
+	${MAKE} -C json debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
 	${MAKE} -C test debug
@@ -128,6 +135,7 @@ distclean:
 	${MAKE} -C ikc3 distclean
 	${MAKE} -C kc3s distclean
 	${MAKE} -C ekc3 distclean
+	${MAKE} -C json distclean
 	${MAKE} -C http distclean
 	${MAKE} -C httpd distclean
 	${MAKE} -C test distclean
@@ -138,6 +146,7 @@ gcovr:
 	${MAKE} -C ikc3 gcovr
 	${MAKE} -C kc3s gcovr
 	${MAKE} -C ekc3 gcovr
+	${MAKE} -C json gcovr
 	${MAKE} -C http gcovr
 	${MAKE} -C httpd gcovr
 	${MAKE} -C test gcovr
@@ -151,26 +160,6 @@ gdb_demo:
 gdb_demo_gl:
 	${MAKE} debug
 	${MAKE} -C libkc3 gdb_demo_gl
-
-gdb_httpd:
-	${MAKE} -C libtommath debug
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 debug
-	${MAKE} -C ikc3 debug
-	${MAKE} -C kc3s debug
-	${MAKE} -C http debug
-	${MAKE} -C httpd debug
-	${MAKE} -C test gdb_httpd
-
-gdb_httpd_asan:
-	${MAKE} -C libtommath asan
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 asan
-	${MAKE} -C ikc3 asan
-	${MAKE} -C kc3s asan
-	${MAKE} -C http asan
-	${MAKE} -C httpd asan
-	${MAKE} -C test gdb_httpd_asan
 
 gdb_ikc3:
 	${MAKE} -C libtommath debug
@@ -198,6 +187,7 @@ gdb_test_http:
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
+	${MAKE} -C json debug
 	${MAKE} -C http debug
 	${MAKE} -C test gdb_test_http
 
@@ -207,8 +197,31 @@ gdb_test_http_asan:
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
+	${MAKE} -C json asan
 	${MAKE} -C http asan
 	${MAKE} -C test gdb_test_http_asan
+
+gdb_test_httpd:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C json debug
+	${MAKE} -C http debug
+	${MAKE} -C httpd debug
+	${MAKE} -C test gdb_test_httpd
+
+gdb_test_httpd_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C json asan
+	${MAKE} -C http asan
+	${MAKE} -C httpd asan
+	${MAKE} -C test gdb_test_httpd_asan
 
 gdb_test_ikc3:
 	${MAKE} -C libtommath debug
@@ -216,6 +229,13 @@ gdb_test_ikc3:
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C test gdb_test_ikc3
+
+gdb_test_json:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C test gdb_test_json
 
 gen:
 	${MAKE} -C libkc3 gen
@@ -227,6 +247,7 @@ http:
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
+	${MAKE} -C json build
 	${MAKE} -C http build
 
 httpd:
@@ -236,6 +257,7 @@ httpd:
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
+	${MAKE} -C json build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
 
@@ -272,13 +294,43 @@ ikc3_gcovr:
 	${MAKE} ikc3_test_cov
 	${MAKE} gcovr
 
+json:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C json build
+
+json_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C json asan
+
+json_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C json cov
+
+json_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C json debug
+
 install:
 	${MAKE} -C libkc3 install
 	${MAKE} -C ikc3 install
 	${MAKE} -C kc3s install
 	${MAKE} -C ekc3 install
+	${MAKE} -C json install
 	${MAKE} -C http install
 	${MAKE} -C httpd install
+	${MAKE} -C json install
 	${MAKE} -C window install
 
 kc3-${KC3_VERSION}.tar.gz: kc3.index
@@ -307,25 +359,39 @@ kc3.index: sources.mk Makefile
 	sort -u < kc3.index.tmp > kc3.index
 	rm kc3.index.tmp
 
-lib_links_linux:
-	ln -sf ../../../ekc3/.libs/libekc3.so lib/kc3/0.1/ekc3.so
-	ln -sf ../../../http/.libs/libkc3_http.so lib/kc3/0.1/http.so
+lib_links:
+	${MAKE} lib_links_${ARCH}
 
-lib_links_linux_asan:
-	ln -sf ../../../ekc3/.libs/libekc3_asan.so lib/kc3/0.1/ekc3.so
-	ln -sf ../../../http/.libs/libkc3_http_asan.so lib/kc3/0.1/http.so
+lib_links_asan:
+	${MAKE} lib_links_${ARCH}_asan
 
-lib_links_linux_debug:
-	ln -sf ../../../ekc3/.libs/libekc3_debug.so lib/kc3/0.1/ekc3.so
-	ln -sf ../../../http/.libs/libkc3_http_debug.so lib/kc3/0.1/http.so
+lib_links_debug:
+	${MAKE} lib_links_${ARCH}_debug
 
 lib_links_bsd:
 	ln -sf ../../../ekc3/.libs/libekc3.so.0.0 lib/kc3/0.1/ekc3.so
 	ln -sf ../../../http/.libs/libkc3_http.so.0.0 lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json.so.0.0 lib/kc3/0.1/json.so
 
 lib_links_bsd_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug.so.0.0 lib/kc3/0.1/ekc3.so
 	ln -sf ../../../http/.libs/libkc3_http_debug.so.0.0 lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json_debug.so.0.0 lib/kc3/0.1/json.so
+
+lib_links_linux:
+	ln -sf ../../../ekc3/.libs/libekc3.so lib/kc3/0.1/ekc3.so
+	ln -sf ../../../http/.libs/libkc3_http.so lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json.so lib/kc3/0.1/json.so
+
+lib_links_linux_asan:
+	ln -sf ../../../ekc3/.libs/libekc3_asan.so lib/kc3/0.1/ekc3.so
+	ln -sf ../../../http/.libs/libkc3_http_asan.so lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json_asan.so lib/kc3/0.1/json.so
+
+lib_links_linux_debug:
+	ln -sf ../../../ekc3/.libs/libekc3_debug.so lib/kc3/0.1/ekc3.so
+	ln -sf ../../../http/.libs/libkc3_http_debug.so lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json_debug.so lib/kc3/0.1/json.so
 
 libkc3_gcovr:
 	${MAKE} clean_cov
@@ -360,6 +426,7 @@ test:
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
+	${MAKE} -C json build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
 	${MAKE} -C test test
@@ -372,6 +439,7 @@ test_asan:
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
+	${MAKE} -C json asan
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
 	${MAKE} -C test test_asan
@@ -383,6 +451,7 @@ test_cov:
 	${MAKE} -C ikc3 cov clean_cov
 	${MAKE} -C kc3s cov clean_cov
 	${MAKE} -C ekc3 cov clean_cov
+	${MAKE} -C json cov clean_cov
 	${MAKE} -C http cov clean_cov
 	${MAKE} -C httpd cov clean_cov
 	${MAKE} -C test test_cov
@@ -394,6 +463,7 @@ test_debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
+	${MAKE} -C json debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
 	${MAKE} -C test test_debug
@@ -447,6 +517,7 @@ test_http:
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
+	${MAKE} -C json build
 	${MAKE} -C http build
 	${MAKE} -C test test_http
 
@@ -456,6 +527,7 @@ test_http_asan:
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
+	${MAKE} -C json asan
 	${MAKE} -C http asan
 	${MAKE} -C test test_http_asan
 
@@ -465,6 +537,7 @@ test_http_cov:
 	${MAKE} -C libkc3 cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
+	${MAKE} -C json cov
 	${MAKE} -C http cov
 	${MAKE} -C test test_http_cov
 
@@ -474,6 +547,7 @@ test_http_debug:
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
+	${MAKE} -C json debug
 	${MAKE} -C http debug
 	${MAKE} -C test test_http_debug
 
@@ -483,6 +557,7 @@ test_httpd:
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
+	${MAKE} -C json build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
 	${MAKE} -C test test_httpd
@@ -493,6 +568,7 @@ test_httpd_asan:
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
+	${MAKE} -C json asan
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
 	${MAKE} -C test test_httpd_asan
@@ -503,6 +579,7 @@ test_httpd_cov:
 	${MAKE} -C libkc3 cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
+	${MAKE} -C json cov
 	${MAKE} -C http cov
 	${MAKE} -C httpd cov
 	${MAKE} -C test test_httpd_cov
@@ -513,6 +590,7 @@ test_httpd_debug:
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
+	${MAKE} -C json debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
 	${MAKE} -C test test_httpd_debug
@@ -544,6 +622,38 @@ test_ikc3_debug:
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C test test_ikc3_debug
+
+test_json:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C json build
+	${MAKE} -C test test_json
+
+test_json_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C json asan
+	${MAKE} -C test test_json_asan
+
+test_json_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C json cov
+	${MAKE} -C test test_json_cov
+
+test_json_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C json debug
+	${MAKE} -C test test_json_debug
 
 test_libkc3:
 	${MAKE} -C libtommath build
@@ -583,10 +693,48 @@ test_libkc3_debug:
 	demo_gl_debug \
 	dist \
 	gcovr \
+	gdb_test \
+	gdb_test_asan \
+	gdb_test_debug \
+	gdb_test_gcovr \
+	gdb_test_ekc3 \
+	gdb_test_ekc3_asan \
+	gdb_test_ekc3_debug \
+	gdb_test_http \
+	gdb_test_http_asan \
+	gdb_test_http_debug \
+	gdb_test_httpd \
+	gdb_test_httpd_asan \
+	gdb_test_httpd_debug \
+	gdb_test_ikc3 \
+	gdb_test_ikc3_asan \
+	gdb_test_ikc3_debug \
+	gdb_test_json \
+	gdb_test_json_asan \
+	gdb_test_json_debug \
+	gdb_test_kc3s \
+	gdb_test_kc3s_asan \
+	gdb_test_kc3s_debug
+	gdb_test_libkc3 \
+	gdb_test_libkc3_asan \
+	gdb_test_libkc3_debug
 	http \
 	httpd \
 	ikc3 \
 	install \
+	json \
+	json_asan \
+	json_cov \
+	json_debug \
+	lib_links \
+	lib_links_asan \
+	lib_links_debug \
+	lib_links_bsd \
+	lib_links_bsd_asan \
+	lib_links_bsd_debug \
+	lib_links_linux \
+	lib_links_linux_asan \
+	lib_links_linux_debug \
 	libkc3 \
 	libtommath \
 	license \
@@ -595,7 +743,34 @@ test_libkc3_debug:
 	test_cov \
 	test_debug \
 	test_gcovr \
-	test_ikc3
+	test_ekc3 \
+	test_ekc3_asan \
+	test_ekc3_cov \
+	test_ekc3_debug \
+	test_http \
+	test_http_asan \
+	test_http_cov \
+	test_http_debug \
+	test_httpd \
+	test_httpd_asan \
+	test_httpd_cov \
+	test_httpd_debug \
+	test_ikc3 \
+	test_ikc3_asan \
+	test_ikc3_cov \
+	test_ikc3_debug \
+	test_json \
+	test_json_asan \
+	test_json_cov \
+	test_json_debug \
+	test_kc3s \
+	test_kc3s_asan \
+	test_kc3s_cov \
+	test_kc3s_debug
+	test_libkc3 \
+	test_libkc3_asan \
+	test_libkc3_cov \
+	test_libkc3_debug
 
 include config.mk
 include sources.mk
