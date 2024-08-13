@@ -68,4 +68,4 @@
            {0, 0}}}"
 "(U8[]) {{0, 0},\n        {0, 0},\n        {0, 0}}"
 "#{%Socket.Buf{}}"
-"%Socket.Buf{addr: (Ptr) 0x0,\n            addr_len: (U32) 0,\n            sockfd: (S32) -1,\n            buf_rw: %BufRW{r: (Ptr) 0x0,\n                           w: (Ptr) 0x0}}"
+"%Socket.Buf{addr: (Ptr) 0x0,\n            addr_len: (U32) 0,\n            addr_str: \"\",\n            sockfd: (S32) -1,\n            buf_rw: %BufRW{r: (Ptr) 0x0,\n                           w: (Ptr) 0x0}}"

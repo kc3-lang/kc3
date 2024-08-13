@@ -210,7 +210,8 @@ s_tag * tag_brackets (const s_tag *tag, const s_tag *address,
   case TAG_ARRAY:
     switch (address->type) {
     case TAG_ARRAY:
-      return array_data_tag(tag, address, dest);
+      return array_data_tag(&tag->data.array, &address->data.array,
+                            dest);
     default:
       break;
     }

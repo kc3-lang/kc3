@@ -17,19 +17,37 @@
 #include "buf_parse.h"
 #include "compare.h"
 #include "eval.h"
+#include "kc3_main.h"
 #include "list.h"
 #include "map.h"
 #include "tag.h"
 
-s_tag * map_access (const s_map *map, const s_sym *key, s_tag *value)
+s_tag * map_access (const s_map *map, const s_list * const *key,
+                    s_tag *dest)
 {
-  s_tag tag_key;
+  const s_tag *first;
+  const s_list *next;
+  s_tag *r;
+  s_tag tag;
   assert(map);
   assert(key);
-  assert(value);
-  tag_key.type = TAG_SYM;
-  tag_key.data.sym = key;
-  return map_get(map, &tag_key, value);
+  assert(dest);
+  first = &(*key)->tag;
+  next = list_next(*key);
+  if (! next)
+    return map_get(map, first, dest);
+  if (! map_get(map, first, &tag)) {
+    err_write_1("map_access: map_get(");
+    err_inspect_map(map);
+    err_write_1(", ");
+    err_inspect_tag(first);
+    err_write_1(")\n");
+    assert(! "map_access: map_get");
+    return NULL;
+  }
+  r = kc3_access(&tag, &next, dest);
+  tag_clean(&tag);
+  return r;
 }
 
 s_map * map_init_cast (s_map *map, const s_tag *tag)

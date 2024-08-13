@@ -35,7 +35,7 @@ s_map * map_set (s_map *map, const s_tag *key, const s_tag *value);
 s_map * map_sort (s_map *map);
 
 /* Observers. */
-s_tag *        map_access (const s_map *map, const s_sym *key,
+s_tag *        map_access (const s_map *map, const s_list * const *key,
                            s_tag *value);
 s_map *        map_cast (const s_tag *tag, s_map *map);
 s_tag *        map_get (const s_map *map, const s_tag *key, s_tag *dest);

@@ -17,6 +17,7 @@
 #include "buf_parse.h"
 #include "data.h"
 #include "env.h"
+#include "kc3_main.h"
 #include "list.h"
 #include "map.h"
 #include "struct.h"
@@ -25,7 +26,44 @@
 #include "tag.h"
 #include "tag_type.h"
 
-s_tag * struct_access (const s_struct *s, const s_sym *key, s_tag *dest)
+s_tag * struct_access (const s_struct *s, const s_list * const *key,
+                       s_tag *dest)
+{
+  const s_tag *first;
+  const s_list *next;
+  s_tag *r;
+  s_tag tag;
+  assert(s);
+  assert(key);
+  assert(dest);
+  first = &(*key)->tag;
+  next = list_next(*key);
+  if (first->type != TAG_SYM) {
+    err_write_1("struct_access: key is not a Sym: (");
+    err_inspect_struct(s);
+    err_write_1(", ");
+    err_inspect_tag(first);
+    err_write_1(")\n");
+    assert(! "struct_access: key is not a Sym");
+    return NULL;
+  }
+  if (! next)
+    return struct_access_sym(s, first->data.sym, dest);
+  if (! struct_access_sym(s, first->data.sym, &tag)) {
+    err_write_1("struct_access: map_get(");
+    err_inspect_struct(s);
+    err_write_1(", ");
+    err_inspect_tag(first);
+    err_write_1(")\n");
+    assert(! "struct_access: map_get");
+    return NULL;
+  }
+  r = kc3_access(&tag, &next, dest);
+  tag_clean(&tag);
+  return r;
+}
+
+s_tag * struct_access_sym (const s_struct *s, const s_sym *key, s_tag *dest)
 {
   const void *data;
   const s_struct_type *st;

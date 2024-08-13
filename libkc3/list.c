@@ -286,7 +286,6 @@ s_array * list_to_array (const s_list *list, const s_sym *array_type,
                          s_array *dest)
 {
   s8 *data;
-  const void *data_list;
   const s_list *l;
   uw len;
   bool must_clean;
@@ -322,12 +321,8 @@ s_array * list_to_array (const s_list *list, const s_sym *array_type,
     data = tmp.data = tmp.free_data;
     l = list;
     while (l) {
-      if (! tag_to_const_pointer(&l->tag, tmp.element_type, &data_list))
+      if (! data_init_cast(data, &tmp.element_type, &l->tag))
         goto ko;
-      if (data_list) {
-        if (! data_init_copy(tmp.element_type, data, data_list))
-          goto ko;
-      }
       data += size;
       l = list_next(l);
     }

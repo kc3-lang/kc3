@@ -1,15 +1,39 @@
 quote %{a: 1, b: 2, c: 3}.a
 %{a: 1, b: 2, c: 3}.a
+quote %{"a" => 1, "b" => 2, "c" => 3}["a"]
+%{"a" => 1, "b" => 2, "c" => 3}["a"]
+quote %{a: 1, b: 2, c: 3}[:a]
+%{a: 1, b: 2, c: 3}[:a]
 quote %{a: 1, b: 2, c: 3}.b
 %{a: 1, b: 2, c: 3}.b
+quote %{a: 1, b: 2, c: 3}[:b]
+%{a: 1, b: 2, c: 3}[:b]
+quote %{"a" => 1, "b" => 2, "c" => 3}["b"]
+%{"a" => 1, "b" => 2, "c" => 3}["b"]
 quote %{a: 1, b: 2, c: 3}.c
 %{a: 1, b: 2, c: 3}.c
+quote %{a: 1, b: 2, c: 3}[:c]
+%{a: 1, b: 2, c: 3}[:c]
+quote %{"a" => 1, "b" => 2, "c" => 3}["c"]
+%{"a" => 1, "b" => 2, "c" => 3}["c"]
 quote %{a: %{b: %{c: 1}}}.a
 %{a: %{b: %{c: 1}}}.a
+quote %{a: %{b: %{c: 1}}}[:a]
+%{a: %{b: %{c: 1}}}[:a]
+quote %{"a" => %{"b" => %{"c" => 3}}}["a"]
+%{"a" => %{"b" => %{"c" => 3}}}["a"]
 quote %{a: %{b: %{c: 1}}}.a.b
 %{a: %{b: %{c: 1}}}.a.b
+quote %{a: %{b: %{c: 1}}}[:a][:b]
+%{a: %{b: %{c: 1}}}[:a][:b]
+quote %{"a" => %{"b" => %{"c" => 3}}}["a"]["b"]
+%{"a" => %{"b" => %{"c" => 3}}}["a"]["b"]
 quote %{a: %{b: %{c: 1}}}.a.b.c
 %{a: %{b: %{c: 1}}}.a.b.c
+quote %{a: %{b: %{c: 1}}}[:a][:b][:c]
+%{a: %{b: %{c: 1}}}[:a][:b][:c]
+quote %{"a" => %{"b" => %{"c" => 3}}}["a"]["b"]["c"]
+%{"a" => %{"b" => %{"c" => 3}}}["a"]["b"]["c"]
 quote map = %{a: %{b: %{c: 1}}}
 map = %{a: %{b: %{c: 1}}}
 quote map
@@ -24,6 +48,20 @@ quote map.a.b.c + map.a.b.c
 map.a.b.c + map.a.b.c
 quote "0 #{map.a.b.c} 2"
 "0 #{map.a.b.c} 2"
+quote map = %{"a" => %{"b" => %{"c" => 1}}}
+map = %{"a" => %{"b" => %{"c" => 1}}}
+quote map
+map
+quote map["a"]
+map["a"]
+quote map["a"]["b"]
+map["a"]["b"]
+quote map["a"]["b"]["c"]
+map["a"]["b"]["c"]
+quote map["a"]["b"]["c"] + map["a"]["b"]["c"]
+map["a"]["b"]["c"] + map["a"]["b"]["c"]
+quote """0 #{map["a"]["b"]["c"]} 2"""
+"""0 #{map["a"]["b"]["c"]} 2"""
 quote op = %KC3.Operator{}
 op = %KC3.Operator{}
 quote op.sym

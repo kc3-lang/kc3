@@ -12,7 +12,7 @@ add {KC3, :operator, KC3.operator_brackets}
 replace {KC3.operator_brackets, :is_a, :operator}
 replace {KC3.operator_brackets, :sym, :"[]"}
 replace {KC3.operator_brackets, :arity, 2}
-replace {KC3.operator_brackets, :symbol_value, cfn Tag "tag_brackets" (Tag, Tag, Result)}
+replace {KC3.operator_brackets, :symbol_value, cfn Tag "kc3_access" (Tag, List, Result)}
 replace {KC3.operator_brackets, :operator_precedence, 13}
 replace {KC3.operator_brackets, :operator_associativity, :left}
 add {KC3, :operator, KC3.operator_bnot}
@@ -252,7 +252,7 @@ replace {KC3.module, :symbol_value, cfn Sym "kc3_module" (Result)}
 add {KC3, :symbol, KC3.search_modules}
 replace {KC3.search_modules, :symbol_value, cfn List "kc3_search_modules" (Result)}
 add {KC3, :symbol, KC3.access}
-replace {KC3.access, :symbol_value, cfn Tag "kc3_access" (Tag, Sym, Result)}
+replace {KC3.access, :symbol_value, cfn Tag "kc3_access" (Tag, List, Result)}
 add {KC3, :symbol, KC3.let}
 replace {KC3.let, :arity, 2}
 replace {KC3.let, :is_a, :special_operator}

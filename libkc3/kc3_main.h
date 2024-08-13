@@ -43,7 +43,7 @@ const s_sym ** kc3_module (const s_sym **dest);
 sw             kc3_puts (const s_tag *tag);
 
 /* Operators. */
-s_tag *   kc3_access (const s_tag *tag, const s_sym * const *sym,
+s_tag *   kc3_access (const s_tag *tag, const s_list * const *addr,
                       s_tag *dest);
 s_tag *   kc3_buf_parse_tag (s_buf *buf, s_tag *dest);
 s_tag *   kc3_def (const s_call *call, s_tag *dest);

@@ -19,8 +19,24 @@
 #include "buf_parse.h"
 #include "data.h"
 #include "io.h"
+#include "list.h"
 #include "sym.h"
 #include "tag.h"
+
+s_tag * array_access (const s_array *a, const s_list * const *key,
+                      s_tag *dest)
+{
+  s_array address;
+  s_tag *r;
+  if (! list_to_array(*key, &g_sym_Uw_brackets, &address)) {
+    err_puts("array_access: list_to_array");
+    assert(! "array_access: list_to_array");
+    return NULL;
+  }
+  r = array_data_tag(a, &address, dest);
+  array_clean(&address);
+  return r;
+}
 
 s_array * array_allocate (s_array *a)
 {
@@ -107,43 +123,33 @@ s_array * array_data_set (s_array *a, const uw *address,
   return NULL;
 }
 
-s_tag * array_data_tag (const s_tag *a, const s_tag *address,
+s_tag * array_data_tag (const s_array *a, const s_array *address,
                         s_tag *dest)
 {
   void *a_data;
   void *tmp_data;
   s_tag tmp = {0};
-  if (a->type != TAG_ARRAY) {
-    err_puts("array_data_tag: not an array");
-    assert(! "array_data_tag: not an array");
-    return NULL;
-  }
-  if (address->type != TAG_ARRAY) {
-    err_puts("array_data_tag: address: not an array");
-    assert(! "array_data_tag: address: not an array");
-    return NULL;
-  }
-  if (address->data.array.dimension != 1) {
+  if (address->dimension != 1) {
     err_puts("array_data_tag: address dimension != 1");
     assert(! "array_data_tag: address dimension != 1");
     return NULL;
   }
-  if (address->data.array.dimensions[0].count !=
-      a->data.array.dimension) {
+  if (address->dimensions[0].count !=
+      a->dimension) {
     err_write_1("array_data_tag: address dimension mismatch: ");
-    err_inspect_uw(&address->data.array.dimensions[0].count);
+    err_inspect_uw(&address->dimensions[0].count);
     err_write_1(" != ");
-    err_inspect_uw(&a->data.array.dimension);
+    err_inspect_uw(&a->dimension);
     err_write_1("\n");
     assert(! "array_data_tag: address dimension mismatch");
     return NULL;
   }
-  a_data = array_data(&a->data.array, address->data.array.data);
+  a_data = array_data(a, address->data);
   if (! a_data)
     return NULL;
-  if (! sym_to_tag_type(a->data.array.element_type, &tmp.type) ||
-      ! tag_to_pointer(&tmp, a->data.array.element_type, &tmp_data) ||
-      ! data_init_copy(a->data.array.element_type, tmp_data, a_data))
+  if (! sym_to_tag_type(a->element_type, &tmp.type) ||
+      ! tag_to_pointer(&tmp, a->element_type, &tmp_data) ||
+      ! data_init_copy(a->element_type, tmp_data, a_data))
     return NULL;
   *dest = tmp;
   return dest;

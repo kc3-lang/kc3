@@ -72,18 +72,6 @@ sw err_inspect_buf (const s_buf *buf)
   return err_write(buf->ptr.pchar + pos, buf->rpos - pos);
 }
 
-sw err_inspect_struct (const s_struct *s) {
-    sw r;
-    if (! s) {
-        err_puts("err_inspect_struct: NULL input");
-        return -1;
-    }
-    if ((r = buf_inspect_struct(&g_kc3_env.err, s)) < 0)
-        return r;
-    buf_flush(&g_kc3_env.err);
-    return r;
-}
-
 sw err_inspect_tag_type (e_tag_type type)
 {
   return err_write_1(tag_type_to_string(type));
@@ -221,6 +209,7 @@ DEF_ERR_IO_INSPECT(s64,             const s64 *)
 DEF_ERR_IO_INSPECT(s64_decimal,     const s64 *)
 DEF_ERR_IO_INSPECT(s64_hexadecimal, const s64 *)
 DEF_ERR_IO_INSPECT(str,             const s_str *)
+DEF_ERR_IO_INSPECT(struct,          const s_struct *)
 DEF_ERR_IO_INSPECT(sw,              const sw *)
 DEF_ERR_IO_INSPECT(sw_decimal,      const sw *)
 DEF_ERR_IO_INSPECT(sw_hexadecimal,  const sw *)

@@ -523,21 +523,35 @@ sw buf_inspect_call_access (s_buf *buf, const s_call *call)
   s_list *args;
   sw r;
   sw result = 0;
-  s_tag *tag_sym;
+  s_list *key;
   assert(buf);
   assert(call);
   args = call->arguments;
-  tag_sym = &args->next.data.list->tag;
   if ((r = buf_inspect_tag(buf, &args->tag)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1(buf, ".")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_ident_sym(buf, tag_sym->data.sym)) < 0)
-    return r;
-  result += r;
+  key = list_next(args);
+  if (key->tag.type != TAG_LIST)
+    goto invalid_key;
+  key = key->tag.data.list;
+  while (key) {
+    if (key->tag.type != TAG_SYM)
+      goto invalid_key;
+    if ((r = buf_write_1(buf, ".")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_ident_sym(buf, key->tag.data.sym)) < 0)
+      return r;
+    result += r;
+    key = list_next(key);
+  }
   return result;
+ invalid_key:
+  err_write_1("buf_inspect_call_access: invalid key: ");
+  err_inspect_tag(&list_next(args)->tag);
+  err_write_1("\n");
+  assert(! "buf_inspect_call_access: invalid key");
+  return -1;
 }
 
 sw buf_inspect_call_access_size (s_pretty *pretty, const s_call *call)
@@ -609,41 +623,34 @@ sw buf_inspect_call_args_size (s_pretty *pretty, const s_list *args)
 
 sw buf_inspect_call_brackets (s_buf *buf, const s_call *call)
 {
-  s_array *address;
-  s_tag *array;
-  const s_sym *buf_inspect_type;
-  uw i = 0;
+  s_list *key;
   s_list *next;
   sw r;
   sw result = 0;
+  s_tag *tag;
   assert(buf);
   assert(call);
   assert(call->arguments);
   next = list_next(call->arguments);
   assert(next);
   assert(! list_next(next));
-  assert(next->tag.type == TAG_ARRAY);
-  address = &next->tag.data.array;
-  assert(address->dimension == 1);
-  array = &call->arguments->tag;
-  if ((r = buf_inspect_tag(buf, array)) < 0)
+  assert(next->tag.type == TAG_LIST);
+  key = next->tag.data.list;
+  tag = &call->arguments->tag;
+  if ((r = buf_inspect_tag(buf, tag)) < 0)
     return r;
   result += r;
-  while (i < address->dimensions[0].count) {
+  while (key) {
     if ((r = buf_write_1(buf, "[")) < 0)
       return r;
     result += r;
-    buf_inspect_type = g_buf_inspect_type;
-    g_buf_inspect_type = &g_sym_Uw;
-    if ((r = buf_inspect_uw(buf, ((uw *) address->data)
-                            + i)) < 0)
+    if ((r = buf_inspect_tag(buf, &key->tag)) < 0)
       return r;
     result += r;
-    g_buf_inspect_type = buf_inspect_type;
     if ((r = buf_write_1(buf, "]")) < 0)
       return r;
     result += r;
-    i++;
+    key = list_next(key);
   }
   return result;
 }

@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "array.h"
 #include "assert.h"
 #include "bool.h"
 #include "buf.h"
@@ -40,24 +41,26 @@ const s_str g_kc3_bases_hexadecimal[2] = {{{NULL}, 16,
                                           {"0123456789ABCDEF"}}};
 sw          g_kc3_exit_code = 1;
 
-s_tag * kc3_access (const s_tag *tag, const s_sym * const *sym,
-                   s_tag *dest)
+s_tag * kc3_access (const s_tag *tag, const s_list * const *key,
+                    s_tag *dest)
 {
   assert(tag);
-  assert(sym);
+  assert(key);
   assert(dest);
   switch (tag->type) {
+  case TAG_ARRAY:
+    return array_access(&tag->data.array, key, dest);
   case TAG_MAP:
-    return map_access(&tag->data.map, *sym, dest);
+    return map_access(&tag->data.map, key, dest);
   case TAG_STRUCT:
-    return struct_access(&tag->data.struct_, *sym, dest);
+    return struct_access(&tag->data.struct_, key, dest);
   default:
     break;
   }
   err_write_1("kc3_access: cannot access tag type ");
   err_write_1(tag_type_to_string(tag->type));
   err_write_1(" for key ");
-  err_inspect_sym(sym);
+  err_inspect_list(key);
   err_write_1("\n");
   return NULL;
 }
