@@ -76,6 +76,10 @@ test/ikc3/*.diff
 test/ikc3/*.err
 test/ikc3/*.out
 test/ikc3/*.ret
+test/json/*.diff
+test/json/*.err
+test/json/*.out
+test/json/*.ret
 test/libkc3_test
 test/libkc3_test_asan
 test/libkc3_test_cov
