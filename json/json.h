@@ -10,3 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#ifndef KC3_JSON_H
+#define KC3_JSON_H
+
+#include <libkc3/types.h>
+
+s_tag * json_buf_parse (s_buf *buf, s_tag *dest);
+s_tag * json_from_str (const s_str *src, s_tag *dest);
+
+#endif /* KC3_JSON_H */

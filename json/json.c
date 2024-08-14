@@ -86,3 +86,11 @@ s_tag * json_buf_parse (s_buf *buf, s_tag *dest)
   *dest = tmp;
   return dest;
 }
+
+s_tag * json_from_str (const s_str *src, s_tag *dest)
+{
+  s_tag *r;
+  s_buf buf;
+  buf_init_str(&buf, src);
+  return json_buf_parse(&buf, dest);
+}
