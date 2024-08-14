@@ -36,6 +36,8 @@ s_tag * tag_init_integer_zero (s_tag *tag);
 s_tag * tag_init_list (s_tag *tag, s_list *list);
 s_tag * tag_init_map (s_tag *tag, uw count);
 s_tag * tag_init_map_1 (s_tag *tag, const char *p);
+s_tag * tag_init_map_from_lists (s_tag *tag, const s_list *keys,
+                                 const s_list *values);
 s_tag * tag_init_ptr (s_tag *tag, void *p);
 s_tag * tag_init_ptr_free (s_tag *tag, void *p);
 s_tag * tag_init_quote_copy (s_tag *tag, const s_quote *quote);
@@ -102,6 +104,8 @@ s_tag * tag_new_integer_zero (void);
 s_tag * tag_new_list (s_list *list);
 s_tag * tag_new_map (uw count);
 s_tag * tag_new_map_1 (const char *p);
+s_tag * tag_new_map_from_lists (const s_list *keys,
+                                const s_list *values);
 s_tag * tag_new_ptr (void *p);
 s_tag * tag_new_ptr_free (void *p);
 s_tag * tag_new_quote_copy (const s_quote *quote);
@@ -164,6 +168,8 @@ s_tag * tag_integer_zero (s_tag *tag);
 s_tag * tag_list (s_tag *tag, s_list *list);
 s_tag * tag_map (s_tag *tag, uw count);
 s_tag * tag_map_1 (s_tag *tag, const char *p);
+s_tag * tag_map_from_lists (s_tag *tag, const s_list *keys,
+                            const s_list *values);
 s_tag * tag_ptr (s_tag *tag, void *p);
 s_tag * tag_ptr_free (s_tag *tag, void *p);
 s_tag * tag_quote_copy (s_tag *tag, const s_quote *quote);

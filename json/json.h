@@ -16,6 +16,11 @@
 #include <libkc3/types.h>
 
 s_tag * json_buf_parse (s_buf *buf, s_tag *dest);
+s_tag * json_buf_parse_bool (s_buf *buf, s_tag *dest);
+s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest);
+s_tag * json_buf_parse_null (s_buf *buf, s_tag *dest);
+s_tag * json_buf_parse_number (s_buf *buf, s_tag *dest);
+s_tag * json_buf_parse_str (s_buf *buf, s_tag *dest);
 s_tag * json_from_str (const s_str *src, s_tag *dest);
 
 #endif /* KC3_JSON_H */

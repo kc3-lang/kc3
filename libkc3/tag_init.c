@@ -232,6 +232,18 @@ s_tag * tag_init_map_1 (s_tag *tag, const char *p)
   return tag;
 }
 
+s_tag * tag_init_map_from_lists (s_tag *tag, const s_list *keys,
+                                 const s_list *values)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_MAP;
+  if (! map_init_from_lists(&tmp.data.map, keys, values))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_ptr (s_tag *tag, void *p)
 {
   s_tag tmp = {0};
@@ -855,6 +867,21 @@ s_tag * tag_new_map_1 (const char *p)
     return NULL;
   tag->type = TAG_MAP;
   if (! map_init_1(&tag->data.map, p)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_map_from_lists (const s_list *keys,
+                                const s_list *values)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_MAP;
+  if (! map_init_from_lists(&tag->data.map, keys, values)) {
     free(tag);
     return NULL;
   }
@@ -1550,6 +1577,19 @@ s_tag * tag_map_1 (s_tag *tag, const char *p)
   tag_clean(tag);
   tmp.type = TAG_MAP;
   if (! map_init_1(&tmp.data.map, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_map_from_lists (s_tag *tag, const s_list *keys,
+                            const s_list *values)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_MAP;
+  if (! map_init_from_lists(&tmp.data.map, keys, values))
     return NULL;
   *tag = tmp;
   return tag;

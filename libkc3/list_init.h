@@ -41,6 +41,8 @@ s_list * list_init_integer_zero (s_list *list, s_list *next);
 
 s_list * list_init_map (s_list *list, uw count, s_list *next);
 s_list * list_init_map_1 (s_list *list, const char *p, s_list *next);
+s_list * list_init_map_from_lists (s_list *list, const s_list *keys,
+                                   const s_list *values, s_list *next);
 s_list * list_init_ptr (s_list *list, void *p, s_list *next);
 s_list * list_init_ptr_free (s_list *list, void *p, s_list *next);
 s_list * list_init_quote_copy (s_list *list, const s_quote *quote,
@@ -122,6 +124,8 @@ s_list * list_new_integer_zero (s_list *next);
 
 s_list * list_new_map (uw count, s_list *next);
 s_list * list_new_map_1 (const char *p, s_list *next);
+s_list * list_new_map_from_lists (const s_list *keys,
+                                  const s_list *values, s_list *next);
 s_list * list_new_ptr (void *p, s_list *next);
 s_list * list_new_ptr_free (void *p, s_list *next);
 s_list * list_new_quote_copy (const s_quote *quote, s_list *next);
@@ -191,6 +195,8 @@ s_list * list_integer_zero (s_list *list);
 
 s_list * list_map (s_list *list, uw count);
 s_list * list_map_1 (s_list *list, const char *p);
+s_list * list_map_from_lists (s_list *list, const s_list *keys,
+                              const s_list *values);
 s_list * list_ptr (s_list *list, void *p);
 s_list * list_ptr_free (s_list *list, void *p);
 s_list * list_quote_copy (s_list *list, const s_quote *quote);

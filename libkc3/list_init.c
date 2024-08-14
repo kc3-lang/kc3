@@ -230,6 +230,18 @@ s_list * list_init_map_1 (s_list *list, const char *p, s_list *next)
   return list;
 }
 
+s_list * list_init_map_from_lists (s_list *list, const s_list *keys,
+                                   const s_list *values, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_map_from_lists(&tmp.tag, keys, values))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_ptr (s_list *list, void *p, s_list *next)
 {
   s_list tmp = {0};
@@ -873,6 +885,20 @@ s_list * list_new_map_1 (const char *p, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_map_1(&list->tag, p)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_map_from_lists (const s_list *keys,
+                                  const s_list *values, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_map_from_lists(&list->tag, keys, values)) {
     free(list);
     return NULL;
   }
