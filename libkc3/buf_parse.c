@@ -36,6 +36,7 @@
 #include "list.h"
 #include "map.h"
 #include "operator.h"
+#include "ratio.h"
 #include "special_operator.h"
 #include "str.h"
 #include "struct.h"
@@ -43,7 +44,7 @@
 #include "tag.h"
 #include "time.h"
 #include "tuple.h"
-#include "ratio.h"
+#include "u16.h"
 
 sw buf_parse_array_data_rec (s_buf *buf, s_array *dest, uw *address,
                              s_tag **tag, uw dimension);
@@ -4201,6 +4202,29 @@ sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest)
   if ((r = buf_parse_tuple(buf, &dest->data.tuple)) > 0)
     dest->type = TAG_TUPLE;
   return r;
+}
+
+s_tag * buf_parse_tag_u16 (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  s_buf_save save;
+  s_tag tag;
+  const s_sym *type = &g_sym_U16;
+  u16 u;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  r = buf_parse_tag_integer(buf, &tag);
+  if (r > 0) {
+    if (! u16_init_cast(&u, &type, &tag))
+      goto restore;
+    buf_save_clean(buf, &save);
+    return tag_init_u16(dest, u);
+  }
+ restore:
+  buf_save_restore_rpos(buf, &save);
+  buf_save_clean(buf, &save);
+  return NULL;
 }
 
 sw buf_parse_tag_unquote (s_buf *buf, s_tag *dest)

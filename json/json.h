@@ -15,6 +15,15 @@
 
 #include <libkc3/types.h>
 
+sw      json_buf_inspect (s_buf *buf, const s_tag *tag);
+sw      json_buf_inspect_bool (s_buf *buf, bool b);
+sw      json_buf_inspect_bool_size (s_pretty *pretty, bool b);
+sw      json_buf_inspect_map (s_buf *buf, const s_map *map);
+sw      json_buf_inspect_map_size (s_pretty *pretty, const s_map *map);
+sw      json_buf_inspect_size (s_pretty *pretty, const s_tag *tag);
+sw      json_buf_inspect_tag_number (s_buf *buf, const s_tag *tag);
+sw      json_buf_inspect_tag_number_size (s_pretty *pretty,
+                                          const s_tag *tag);
 s_tag * json_buf_parse (s_buf *buf, s_tag *dest);
 s_tag * json_buf_parse_bool (s_buf *buf, s_tag *dest);
 s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest);

@@ -13,40 +13,236 @@
 #include <libkc3/kc3.h>
 #include "json.h"
 
-s_tag * json_buf_inspect (s_buf *buf, s_tag *tag)
+sw json_buf_inspect (s_buf *buf, const s_tag *tag)
 {
-  sw r;
+  const s_sym *type;
   assert(buf);
-  assert(dest);
+  assert(tag);
   switch (tag->type) {
-    case TAG_MAP:
-      return json_buf_inspect_map(buf, dest);
+  case TAG_MAP:
+    return json_buf_inspect_map(buf, &tag->data.map);
+  case TAG_STR:
+    return buf_inspect_str(buf, &tag->data.str);
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_F128:
+  case TAG_INTEGER:
+  case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_SW:
+  case TAG_U8:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_UW:
+    return json_buf_inspect_tag_number(buf, tag);
+  case TAG_BOOL:
+    return json_buf_inspect_bool(buf, tag->data.bool);
+  default:
+    break;
+  }
+  err_write_1("json_buf_inspect: unknown tag type: ");
+  tag_type(tag, &type);
+  err_inspect_sym(&type);
+  err_write_1("\n");
+  assert(! "json_buf_inspect: unknown tag type");
+  return -1;
+}
+
+sw json_buf_inspect_map (s_buf *buf, const s_map *map)
+{
+  uw i;
+  s_pretty_save pretty_save;
+  sw r;
+  sw result = 0;
+  s_str str;
+  const s_sym *type = &g_sym_Str;
+  if ((r = buf_write_1(buf, "{")) < 0)
+    return r;
+  result += r;
+  pretty_save_init(&pretty_save, &buf->pretty);
+  pretty_indent_from_column(&buf->pretty, 0);
+  i = 0;
+  while (i < map->count) {
+    switch (map->key[i].type) {
     case TAG_STR:
-      return json_buf_inspect_str(buf, dest);
-    case TAG_F32:
-    case TAG_F64:
-    case TAG_F128:
-    case TAG_INTEGER:
-    case TAG_S8:
-    case TAG_S16:
-    case TAG_S32:
-    case TAG_S64:
-    case TAG_SW;
-    case TAG_U8:
-    case TAG_U16:
-    case TAG_U32:
-    case TAG_U64:
-    case TAG_UW:
-      return json_buf_inspect_number(buf, dest);
+      if ((r = buf_inspect_str(buf, &map->key[i].data.str)) < 0)
+        return r;
+      result += r;
       break;
-    case 't':
-    case 'f':
-      return json_buf_parse_bool(buf, dest);
+    case TAG_SYM:
+      if ((r = buf_inspect_str(buf, &map->key[i].data.sym->str)) < 0)
+        return r;
+      result += r;
       break;
     default:
-      return NULL;
+      if (! str_init_cast(&str, &type, map->key + i)) {
+        err_puts("json_buf_inspect_map: cannot cast key to Str");
+        assert(! "json_buf_inspect_map: cannot cast key to Str");
+        return -1;
+      }
+      if ((r = buf_inspect_str(buf, &str)) < 0)
+        return r;
+      result += r;
+      str_clean(&str);
+    }
+    if ((r = buf_write_1(buf, ": ")) < 0)
+      return r;
+    result += r;
+    if ((r = json_buf_inspect(buf, map->value + i)) <= 0)
+      return r;
+    result += r;
+    i++;
+    if (i < map->count) {
+      if ((r = buf_write_1(buf, ",\n")) < 0)
+        return r;
+      result += r;
+    }
   }
-  return NULL;
+  pretty_save_clean(&pretty_save, &buf->pretty);
+  if ((r = buf_write_1(buf, "}")) < 0)
+    return -1;
+  result += r;
+  return result;
+}
+
+sw json_buf_inspect_map_size (s_pretty *pretty, const s_map *map)
+{
+  uw i;
+  s_pretty_save pretty_save;
+  sw r;
+  sw result = 0;
+  s_str str;
+  const s_sym *type = &g_sym_Str;
+  assert(pretty);
+  assert(map);
+  if ((r = buf_write_1_size(pretty, "{")) < 0)
+    return r;
+  result += r;
+  pretty_save_init(&pretty_save, pretty);
+  pretty_indent_from_column(pretty, 0);
+  i = 0;
+  while (i < map->count) {
+    switch (map->key[i].type) {
+    case TAG_STR:
+      if ((r = buf_inspect_str_size(pretty, &map->key[i].data.str)) < 0)
+        return r;
+      result += r;
+      break;
+    case TAG_SYM:
+      if ((r = buf_inspect_str_size(pretty, &map->key[i].data.sym->str)) < 0)
+        return r;
+      result += r;
+      break;
+    default:
+      if (! str_init_cast(&str, &type, map->key + i)) {
+        err_puts("json_buf_inspect_map: cannot cast key to Str");
+        assert(! "json_buf_inspect_map: cannot cast key to Str");
+        return -1;
+      }
+      if ((r = buf_inspect_str_size(pretty, &str)) < 0)
+        return r;
+      result += r;
+      str_clean(&str);
+    }
+    if ((r = buf_write_1_size(pretty, ": ")) < 0)
+      return r;
+    result += r;
+    if ((r = json_buf_inspect_size(pretty, map->value + i)) <= 0)
+      return r;
+    result += r;
+    i++;
+    if (i < map->count) {
+      if ((r = buf_write_1_size(pretty, ",\n")) < 0)
+        return r;
+      result += r;
+    }
+  }
+  pretty_save_clean(&pretty_save, pretty);
+  if ((r = buf_write_1_size(pretty, "}")) < 0)
+    return -1;
+  result += r;
+  return result;
+}
+
+sw json_buf_inspect_size (s_pretty *pretty, const s_tag *tag)
+{
+  const s_sym *type;
+  assert(pretty);
+  assert(tag);
+  switch (tag->type) {
+  case TAG_MAP:
+    return json_buf_inspect_map_size(pretty, &tag->data.map);
+  case TAG_STR:
+    return buf_inspect_str_size(pretty, &tag->data.str);
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_F128:
+  case TAG_INTEGER:
+  case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_SW:
+  case TAG_U8:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_UW:
+    return json_buf_inspect_tag_number_size(pretty, tag);
+  case TAG_BOOL:
+    return json_buf_inspect_bool_size(pretty, tag->data.bool);
+  default:
+    break;
+  }
+  err_write_1("json_buf_inspect: unknown tag type: ");
+  tag_type(tag, &type);
+  err_inspect_sym(&type);
+  err_write_1("\n");
+  assert(! "json_buf_inspect: unknown tag type");
+  return -1;
+}
+
+sw json_buf_inspect_tag_number (s_buf *buf, const s_tag *tag)
+{
+  s_integer i;
+  sw r;
+  const s_sym *type = &g_sym_Integer;
+  assert(buf);
+  assert(tag);
+  if (! integer_init_cast(&i, &type, tag)) {
+    err_write_1("json_buf_inspect_tag_number: cannot cast to"
+                " Integer: ");
+    err_inspect_tag(tag);
+    err_write_1("\n");
+    assert(! "json_buf_inspect_tag_number: cannot cast to Integer: ");
+    return -1;
+  }
+  r = buf_inspect_integer(buf, &i);
+  integer_clean(&i);
+  return r;
+}
+
+sw json_buf_inspect_tag_number_size (s_pretty *pretty, const s_tag *tag)
+{
+  s_integer i;
+  sw r;
+  const s_sym *type = &g_sym_Integer;
+  assert(pretty);
+  assert(tag);
+  if (! integer_init_cast(&i, &type, tag)) {
+    err_write_1("json_buf_inspect_tag_number: cannot cast to"
+                " Integer: ");
+    err_inspect_tag(tag);
+    err_write_1("\n");
+    assert(! "json_buf_inspect_tag_number: cannot cast to Integer: ");
+    return -1;
+  }
+  r = buf_inspect_integer_size(pretty, &i);
+  integer_clean(&i);
+  return r;
 }
 
 s_tag * json_buf_parse (s_buf *buf, s_tag *dest)
@@ -198,4 +394,30 @@ s_tag * json_from_str (const s_str *src, s_tag *dest)
   s_buf buf;
   buf_init_str_const(&buf, src);
   return json_buf_parse(&buf, dest);
+}
+
+s_str * json_to_str (const s_tag *tag, s_str *dest)
+{
+  s_pretty pretty = {0};
+  sw size;
+  s_buf tmp;
+  size = json_buf_inspect_size(&pretty, tag);
+  if (size < 0) {
+    err_puts("json_to_str: buf_inspect_array_size error");
+    assert(! "json_to_str: buf_inspect_array_size error");
+    return NULL;
+  }
+  if (! buf_init_alloc(&tmp, size)) {
+    err_puts("json_to_str: buf_init alloc");
+    assert(! "json_to_str: buf_init_alloc");
+    return NULL;
+  }
+  json_buf_inspect(&tmp, tag);
+  if (tmp.wpos != tmp.size) {
+    err_puts("json_to_str: tmp.wpos != tmp.size");
+    assert(! "json_to_str: tmp.wpos != tmp.size");
+    buf_clean(&tmp);
+    return NULL;
+  }
+  return buf_to_str(&tmp, dest);
 }

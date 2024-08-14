@@ -14,6 +14,132 @@
 #include <libkc3/kc3.h>
 #include "http_response.h"
 
+
+s_http_response * http_response_buf_parse (s_http_response *response,
+                                           s_buf *buf, bool parse_body)
+{
+  sw    content_length = -1;
+  s_str content_length_str = {0};
+  s_tag default_messages = {0};
+  s_ident ident = {0};
+  s_tag *key = NULL;
+  const s_list *l = NULL;
+  sw r = 0;
+  sw result = 0;
+  s_tag tag_code = {0};
+  s_tag tag_message = {0};
+  s_http_response tmp = {0};
+  s_tag *value = NULL;
+  assert(response);
+  assert(buf);
+  if ((r = buf_read_until_1_into_str(buf, ' ', &tmp.protocol)) < 0)
+    return r;
+  result += r;
+  tag_code.type = TAG_U16;
+  tag_code.data.u16 = response->code;
+  if (! tag_code.data.u16)
+    tag_code.data.u16 = 200;
+  if (tag_code.data.u16 < 100 || tag_code.data.u16 > 999) {
+    err_puts("http_response_buf_write: invalid response code");
+    return -1;
+  }
+  if ((r = buf_inspect_u16_decimal(buf, &tag_code.data.u16)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) < 0)
+    return r;
+  result += r;
+  if (! response->message.size) {
+    ident_init(&ident, sym_1("HTTP.Response"), sym_1("default_messages"));
+    ident_get(&ident, &default_messages);
+    if (! tag_is_alist(&default_messages)) {
+      err_puts("http_response_buf_write: invalid default_messages:"
+               " not an AList");
+      tag_clean(&default_messages);
+      return -1;
+    }
+    if (alist_get((const s_list * const *) &default_messages.data.list,
+                  &tag_code, &tag_message)) {
+      if (tag_message.type != TAG_STR) {
+        err_puts("http_response_buf_write: invalid default message:"
+                 " not a Str");
+        tag_clean(&tag_message);
+        tag_clean(&default_messages);
+        return -1;
+      }
+    }
+  }
+  else {
+    tag_message.type = TAG_STR;
+    tag_message.data.str = response->message;
+    tag_message.data.str.free.p = NULL;
+  }
+  if ((r = buf_write_str(buf, &tag_message.data.str)) < 0) {
+    tag_clean(&tag_message);
+    tag_clean(&default_messages);
+    return r;
+  }
+  result += r;
+  tag_clean(&tag_message);
+  tag_clean(&default_messages);
+  if ((r = buf_write_1(buf, "\r\n")) < 0)
+    return r;
+  result += r;
+  str_init_1(&content_length_str, NULL, "Content-Length");
+  l = response->headers;
+  while (l) {
+    if (l->tag.type != TAG_TUPLE ||
+        l->tag.data.tuple.count != 2) {
+      err_puts("http_response_buf_write: invalid header: not a Tuple");
+      return -1;
+    }
+    key = l->tag.data.tuple.tag;
+    value = key + 1;
+    if (key->type != TAG_STR || value->type != TAG_STR) {
+      err_puts("http_response_buf_write: invalid header: not a Str");
+      return -1;
+    }
+    if (! compare_str(&content_length_str, &key->data.str))
+      sw_init_str(&content_length, &value->data.str);
+    if ((r = buf_write_str(buf, &key->data.str)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, ": ")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_str(buf, &value->data.str)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, "\r\n")) < 0)
+      return r;
+    result += r;
+    l = list_next(l);
+  }
+  if (content_length < 0) {
+    if ((r = buf_write_str(buf, &content_length_str)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, ": ")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_uw_decimal(buf, &response->body.size)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, "\r\n")) < 0)
+      return r;
+    result += r;
+  }
+  if ((r = buf_write_1(buf, "\r\n")) < 0)
+    return r;
+  result += r;
+  if (send_body) {
+    if ((r = buf_write_str(buf, &response->body)) < 0)
+      return r;
+    result += r;
+  }
+  return result;
+}
+
 sw http_response_buf_write (const s_http_response *response,
                             s_buf *buf, bool send_body)
 {

@@ -1,0 +1,6 @@
+quote JSON.to_str(%{})
+JSON.to_str(%{})
+quote JSON.to_str(%{"a" => "b"})
+JSON.to_str(%{"a" => "b"})
+quote JSON.to_str(%{"a" => 1})
+JSON.to_str(%{"a" => 1})

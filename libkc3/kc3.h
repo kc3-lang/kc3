@@ -70,6 +70,7 @@
 #include "ptr_free.h"
 #include "module.h"
 #include "operator.h"
+#include "pretty.h"
 #include "quote.h"
 #include "s8.h"
 #include "s16.h"
