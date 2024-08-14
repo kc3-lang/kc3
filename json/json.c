@@ -291,6 +291,9 @@ s_tag * json_buf_parse (s_buf *buf, s_tag *dest)
     case 'f':
       return json_buf_parse_bool(buf, dest);
       break;
+    case 'n':
+      return json_buf_parse_null(buf, dest);
+      break;
     default:
       return NULL;
   }

@@ -4,3 +4,9 @@ JSON.from_str("{\"a\": \"b\"}")
 %{"a" => "b"}
 JSON.from_str("{\"a\": 1}")
 %{"a" => 1}
+JSON.from_str("{\"a\": true}")
+%{"a" => true}
+JSON.from_str("{\"a\": false}")
+%{"a" => false}
+JSON.from_str("{\"a\": null}")
+%{"a" => void}
