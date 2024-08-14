@@ -35,6 +35,48 @@
   return r;
 }*/
 
+s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest)
+{
+  s_list **k;
+  s_list  *keys;
+  sw r;
+  s_buf_save save;
+  s_list **v;
+  s_list  *values;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "{")) <= 0)
+    goto clean;
+  keys = NULL;
+  k = &keys;
+  values = NULL;
+  v = &values;
+  while (1) {
+    if ((r = buf_ignore_spaces(buf)) <= 0)
+      goto restore;
+    if ((r = buf_read_1(buf, "}")) < 0)
+      goto restore;
+    if (r > 0)
+      break;
+    buf_parse_tag_str(buf, &(*k)->tag);
+    buf_parse_tag(buf, &(*v)->tag);
+  }
+  dest->type = TAG_MAP;
+  if (! map_init_from_lists(&dest->data.map, keys, values))
+    goto restore;
+  list_delete_all(keys);
+  list_delete_all(values);
+  return dest;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  list_delete_all(keys);
+  list_delete_all(values);
+  buf_save_clean(buf, &save);
+  return NULL;
+}
+
 s_tag * json_buf_parse_numbers (s_buf *buf, s_tag *dest)
 {
   s_buf_save save;
@@ -60,6 +102,9 @@ s_tag * json_buf_parse (s_buf *buf, s_tag *dest)
   if ((r =buf_peek_character_utf8(buf, &c)) < 0)
     return NULL;
   switch (c) {
+    case '{':
+      json_buf_parse_map(buf, &tmp);
+      break;
     case '"':
       buf_parse_tag_str(buf, &tmp);
       break;

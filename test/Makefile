@@ -95,6 +95,9 @@ gdb_test_ikc3:
 gdb_test_json:
 	cd json && ${GDB} ../../ikc3/.libs/ikc3_debug
 
+gdb_test_json_asan:
+	cd json && ${GDB} ../../ikc3/.libs/ikc3_asan
+
 lldb_test: debug
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
 

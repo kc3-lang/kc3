@@ -44,7 +44,10 @@ kc3s/kc3s_cov
 kc3s/kc3s_debug
 *.la
 lib/kc3/0.1/ekc3.so
+lib/kc3/0.1/event.so
 lib/kc3/0.1/http.so
+lib/kc3/0.1/json.so
+lib/kc3/0.1/socket.so
 .libs/
 *.lo
 macos/kc3-v*

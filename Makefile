@@ -321,7 +321,16 @@ gdb_test_json:
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
+	${MAKE} -C json debug
 	${MAKE} -C test gdb_test_json
+
+gdb_test_json_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C json asan
+	${MAKE} -C test gdb_test_json_asan
 
 gen:
 	${MAKE} -C libkc3 gen
