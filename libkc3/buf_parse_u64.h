@@ -19,5 +19,8 @@
 sw buf_parse_u64 (s_buf *buf, u64 *dest);
 sw buf_parse_u64_base (s_buf *buf, const s_str *base,
                            u64 *dest);
+s_tag * buf_parse_tag_u64 (s_buf *buf, s_tag *dest);
+s_tag * buf_parse_tag_u64_base (s_buf *buf, const s_str *base,
+                                    s_tag *dest);
 
 #endif /* LIBKC3_BUF_PARSE_U64_H */

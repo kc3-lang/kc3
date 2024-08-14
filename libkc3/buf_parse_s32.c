@@ -164,3 +164,25 @@ sw buf_parse_s32_base (s_buf *buf, const s_str *base,
   buf_save_clean(buf, &save);
   return r;
 }
+
+s_tag * buf_parse_tag_s32 (s_buf *buf, s_tag *dest)
+{
+  s_tag tmp = {0};
+  tmp.type = TAG_S32;
+  if (buf_parse_s32(buf, &tmp.data.s32) <= 0)
+    return NULL;
+  *dest = tmp;
+  return dest;
+}
+
+s_tag * buf_parse_tag_s32_base (s_buf *buf, const s_str *base,
+                                    bool negative, s_tag *dest)
+{
+  s_tag tmp = {0};
+  tmp.type = TAG_S32;
+  if (buf_parse_s32_base(buf, base, negative,
+                             &tmp.data.s32) <= 0)
+    return NULL;
+  *dest = tmp;
+  return dest;
+}

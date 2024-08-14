@@ -566,6 +566,40 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
   return str;
 }
 
+s_str * str_init_to_lower (s_str *str, const s_str *src)
+{
+  s_buf buf;
+  character c;
+  s_str i_src;
+  assert(str);
+  assert(src);
+  if (! buf_init_alloc(&buf, src->size))
+    return NULL;
+  i_src = *src;
+  while (str_read_character_utf8(&i_src, &c) > 0) {
+    c = character_to_lower(c);
+    buf_write_character_utf8(&buf, c);
+  }
+  return buf_read_to_str(&buf, str);
+}
+
+s_str * str_init_to_upper (s_str *str, const s_str *src)
+{
+  s_buf buf;
+  character c;
+  s_str i_src;
+  assert(str);
+  assert(src);
+  if (! buf_init_alloc(&buf, src->size))
+    return NULL;
+  i_src = *src;
+  while (str_read_character_utf8(&i_src, &c) > 0) {
+    c = character_to_upper(c);
+    buf_write_character_utf8(&buf, c);
+  }
+  return buf_read_to_str(&buf, str);
+}
+
 DEF_STR_INIT_STRUCT(tuple)
 DEF_STR_INIT_INT(u8)
 DEF_STR_INIT_INT(u16)

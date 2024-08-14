@@ -154,3 +154,24 @@ sw buf_parse_u_bits$_base (s_buf *buf, const s_str *base,
   buf_save_clean(buf, &save);
   return r;
 }
+
+s_tag * buf_parse_tag_u_bits$ (s_buf *buf, s_tag *dest)
+{
+  s_tag tmp = {0};
+  tmp.type = TAG_U_BITS$;
+  if (buf_parse_u_bits$(buf, &tmp.data.u_bits$) <= 0)
+    return NULL;
+  *dest = tmp;
+  return dest;
+}
+
+s_tag * buf_parse_tag_u_bits$_base (s_buf *buf, const s_str *base,
+                                    s_tag *dest)
+{
+  s_tag tmp = {0};
+  tmp.type = TAG_U_BITS$;
+  if (buf_parse_u_bits$_base(buf, base, &tmp.data.u_bits$) <= 0)
+    return NULL;
+  *dest = tmp;
+  return dest;
+}

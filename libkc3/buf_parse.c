@@ -4204,29 +4204,6 @@ sw buf_parse_tag_tuple (s_buf *buf, s_tag *dest)
   return r;
 }
 
-s_tag * buf_parse_tag_u16 (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  s_buf_save save;
-  s_tag tag;
-  const s_sym *type = &g_sym_U16;
-  u16 u;
-  assert(buf);
-  assert(dest);
-  buf_save_init(buf, &save);
-  r = buf_parse_tag_integer(buf, &tag);
-  if (r > 0) {
-    if (! u16_init_cast(&u, &type, &tag))
-      goto restore;
-    buf_save_clean(buf, &save);
-    return tag_init_u16(dest, u);
-  }
- restore:
-  buf_save_restore_rpos(buf, &save);
-  buf_save_clean(buf, &save);
-  return NULL;
-}
-
 sw buf_parse_tag_unquote (s_buf *buf, s_tag *dest)
 {
   sw r;

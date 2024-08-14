@@ -19,5 +19,8 @@
 sw buf_parse_uw (s_buf *buf, uw *dest);
 sw buf_parse_uw_base (s_buf *buf, const s_str *base,
                            uw *dest);
+s_tag * buf_parse_tag_uw (s_buf *buf, s_tag *dest);
+s_tag * buf_parse_tag_uw_base (s_buf *buf, const s_str *base,
+                                    s_tag *dest);
 
 #endif /* LIBKC3_BUF_PARSE_UW_H */

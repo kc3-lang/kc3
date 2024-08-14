@@ -644,6 +644,33 @@ sw buf_peek_u64 (s_buf *buf, u64 *p)
     return size;
 }
 
+s_str * buf_read (s_buf *buf, uw size, s_str *dest)
+{
+  char *p;
+  sw r;
+  s_str tmp = {0};
+  assert(buf);
+  if (! size)
+    return str_init_empty(dest);
+  if (buf->rpos > buf->wpos)
+    return NULL;
+  if (buf->rpos + size > buf->wpos &&
+      (r = buf_refill(buf, size)) < (sw) size)
+    return NULL;
+  if (buf->rpos + size > buf->wpos) {
+    assert(! "buffer overflow");
+    return NULL;
+  }
+  p = alloc(size);
+  if (! p)
+    return NULL;
+  str_init(&tmp, p, size, p);
+  memcpy(p, buf->ptr.ps8 + buf->rpos, size);
+  buf->rpos += size;
+  *dest = tmp;
+  return dest;
+}
+
 sw buf_read_1 (s_buf *buf, const char *p)
 {
   s_str str;

@@ -69,6 +69,7 @@ sw      buf_peek_u32 (s_buf *buf, u32 *p);
 sw      buf_peek_u64 (s_buf *buf, u64 *p);
 sw      buf_read_integer (s_buf *buf, s_integer *dst);
 sw      buf_read_character_utf8 (s_buf *buf, character *p);
+s_str * buf_read (s_buf *buf, uw size, s_str *dest);
 sw      buf_read_1 (s_buf *buf, const char *p);
 sw      buf_read_f32 (s_buf *buf, f32 *p);
 sw      buf_read_f64 (s_buf *buf, f64 *p);

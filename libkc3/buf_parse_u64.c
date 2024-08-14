@@ -154,3 +154,24 @@ sw buf_parse_u64_base (s_buf *buf, const s_str *base,
   buf_save_clean(buf, &save);
   return r;
 }
+
+s_tag * buf_parse_tag_u64 (s_buf *buf, s_tag *dest)
+{
+  s_tag tmp = {0};
+  tmp.type = TAG_U64;
+  if (buf_parse_u64(buf, &tmp.data.u64) <= 0)
+    return NULL;
+  *dest = tmp;
+  return dest;
+}
+
+s_tag * buf_parse_tag_u64_base (s_buf *buf, const s_str *base,
+                                    s_tag *dest)
+{
+  s_tag tmp = {0};
+  tmp.type = TAG_U64;
+  if (buf_parse_u64_base(buf, base, &tmp.data.u64) <= 0)
+    return NULL;
+  *dest = tmp;
+  return dest;
+}

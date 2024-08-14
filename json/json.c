@@ -251,7 +251,7 @@ sw json_buf_inspect_tag_number_size (s_pretty *pretty, const s_tag *tag)
 
 sw json_buf_inspect_void (s_buf *buf)
 {
-  assert(pretty);
+  assert(buf);
   return buf_write_1(buf, "null");
 }
 

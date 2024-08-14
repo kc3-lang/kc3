@@ -68,6 +68,8 @@ s_str * str_init_slice_utf8 (s_str *str, const s_str *src, sw start,
                              sw end);
 PROTOTYPE_STR_INIT_STRUCT(struct);
 PROTOTYPE_STR_INIT_INT(sw);
+s_str * str_init_to_lower (s_str *str, const s_str *src);
+s_str * str_init_to_upper (s_str *str, const s_str *src);
 PROTOTYPE_STR_INIT_STRUCT(tuple);
 PROTOTYPE_STR_INIT_INT(u8);
 PROTOTYPE_STR_INIT_INT(u16);

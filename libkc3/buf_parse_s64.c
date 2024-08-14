@@ -164,3 +164,25 @@ sw buf_parse_s64_base (s_buf *buf, const s_str *base,
   buf_save_clean(buf, &save);
   return r;
 }
+
+s_tag * buf_parse_tag_s64 (s_buf *buf, s_tag *dest)
+{
+  s_tag tmp = {0};
+  tmp.type = TAG_S64;
+  if (buf_parse_s64(buf, &tmp.data.s64) <= 0)
+    return NULL;
+  *dest = tmp;
+  return dest;
+}
+
+s_tag * buf_parse_tag_s64_base (s_buf *buf, const s_str *base,
+                                    bool negative, s_tag *dest)
+{
+  s_tag tmp = {0};
+  tmp.type = TAG_S64;
+  if (buf_parse_s64_base(buf, base, negative,
+                             &tmp.data.s64) <= 0)
+    return NULL;
+  *dest = tmp;
+  return dest;
+}

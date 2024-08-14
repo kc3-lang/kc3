@@ -19,5 +19,8 @@
 sw buf_parse_u16 (s_buf *buf, u16 *dest);
 sw buf_parse_u16_base (s_buf *buf, const s_str *base,
                            u16 *dest);
+s_tag * buf_parse_tag_u16 (s_buf *buf, s_tag *dest);
+s_tag * buf_parse_tag_u16_base (s_buf *buf, const s_str *base,
+                                    s_tag *dest);
 
 #endif /* LIBKC3_BUF_PARSE_U16_H */
