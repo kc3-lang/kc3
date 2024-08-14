@@ -13,9 +13,9 @@
 #include <event2/event.h>
 #include <libkc3/kc3.h>
 #include <signal.h>
-#include "http_event.h"
+#include "event.h"
 
-s32 http_event_add (struct event **ev, s_time *time)
+s32 kc3_event_add (struct event **ev, s_time *time)
 {
   struct timeval tv;
   if (! time->tv_sec && ! time->tv_nsec)
@@ -25,16 +25,16 @@ s32 http_event_add (struct event **ev, s_time *time)
   return event_add(*ev, &tv);
 }
 
-s32 http_event_del (struct event **ev)
+s32 kc3_event_del (struct event **ev)
 {
   return event_del(*ev);
 }
 
-/* http_event_callback
+/* kc3_event_callback
      expects a tag of the form
      {fn ((S32) fd, (List) events, (Ptr) ev, (Tag) Arg) {void},
       arg} */
-void http_event_callback (int fd, short events, void *tag_tuple)
+void kc3_event_callback (int fd, short events, void *tag_tuple)
 {
   s_tag  *arg;
   s_list *arguments;
@@ -48,8 +48,8 @@ void http_event_callback (int fd, short events, void *tag_tuple)
       tag->data.tuple.count != 3 ||
       tag->data.tuple.tag[0].type != TAG_FN ||
       tag->data.tuple.tag[1].type != TAG_PTR) {
-    err_puts("http_event_callback: invalid arg");
-    assert(! "http_event_callback: invalid arg");
+    err_puts("kc3_event_callback: invalid arg");
+    assert(! "kc3_event_callback: invalid arg");
     abort();
   }
   fn = &tag->data.tuple.tag[0].data.fn;
@@ -71,24 +71,24 @@ void http_event_callback (int fd, short events, void *tag_tuple)
                             (ev, list_new_tag_copy
                              (arg, NULL))));
   if (! env_eval_call_fn_args(&g_kc3_env, fn, arguments, &tmp)) {
-    err_puts("http_event_callback: callback failed");
-    assert(! "http_event_callback: callback failed");
+    err_puts("kc3_event_callback: callback failed");
+    assert(! "kc3_event_callback: callback failed");
     abort();
   }
   tag_clean(&tmp);
 }
 
-s32 http_event_base_dispatch (struct event_base **eb)
+s32 kc3_event_base_dispatch (struct event_base **eb)
 {
   return event_base_dispatch(*eb);
 }
 
-struct event_base * http_event_base_new (void)
+struct event_base * kc3_event_base_new (void)
 {
   return event_base_new();
 }
 
-struct event * http_event_new (struct event_base **event_base, s32 fd,
+struct event * kc3_event_new (struct event_base **event_base, s32 fd,
                                const s_list * const *events,
                                const s_fn *callback, s_tag *arg)
 {
@@ -112,11 +112,11 @@ struct event * http_event_new (struct event_base **event_base, s32 fd,
     e = list_next(e);
   }
   tag = tag_new_tuple(3);
-  ev = event_new(*event_base, fd, events_s16, http_event_callback, tag);
+  ev = event_new(*event_base, fd, events_s16, kc3_event_callback, tag);
   if (! ev) {
     tag_delete(tag);
-    err_puts("http_event_new: event_new");
-    assert(! "http_event_new: event_new");
+    err_puts("kc3_event_new: event_new");
+    assert(! "kc3_event_new: event_new");
     return NULL;
   }
   tag_init_fn_copy(tag->data.tuple.tag, callback);
@@ -124,55 +124,13 @@ struct event * http_event_new (struct event_base **event_base, s32 fd,
   tag_init_ptr(tag->data.tuple.tag + 1, ev);
   return ev;
  invalid_event_list:
-  err_write_1("http_event_new: invalid event list: ");
+  err_write_1("kc3_event_new: invalid event list: ");
   err_inspect_list(events);
-  assert(! "http_event_new: invalid event list");
+  assert(! "kc3_event_new: invalid event list");
   return NULL;
 }
 
-/*
-struct event * http_event_new (s32 fd, const s_list *events,
-                               const s_fn *fn, s_tag *arg)
-{
-  static s_list *arg_types = NULL;
-  s_list *e;
-  struct event *ev;
-  ev = alloc(sizeof(*ev));
-  if (! ev)
-    return NULL;
-  if (! arg_types)
-    arg_types = list_new_sym(&g_sym_S32, list_new_sym
-                             (&g_sym_S16, list_new_sym
-                              (&g_sym_Tag, NULL)));
-  if (compare_list(arg_types, cfn->arg_types)) {
-    err_write_1("http_event_new: invalid argument types for Cfn ");
-    err_inspect_str(&cfn->name->str);
-    err_write_1(": expected ");
-    err_inspect_list((const s_list * const *) &arg_types);
-    err_write_1(" got ");
-    err_inspect_list((const s_list * const *) &cfn->arg_types);
-    assert(! "http_event_new: invalid argument types for Cfn");
-    return NULL;
-  }
-  events_s16 = 0;
-  e = events;
-  while (e) {
-    if (e->tag.type != TAG_SYM) {
-      err_write_1("http_event_new: invalid event list: ");
-      err_inspect_list(&events);
-      assert(! "http_event_new: invalid event list");
-      return NULL;
-    }
-    if (e->tag.data.sym == 
-    e = list_next(e);
-  }
-  event_set(ev, fd, events_s16, (void (*) (int, short, void *)) cfn->ptr.f,
-            arg);
-  return ev;
-}
-*/
-
-s_str * http_event_version (s_str *dest)
+s_str * kc3_event_version (s_str *dest)
 {
   return str_init_1(dest, NULL, event_get_version());
 }

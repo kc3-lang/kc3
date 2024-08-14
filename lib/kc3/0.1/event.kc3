@@ -1,0 +1,18 @@
+defmodule Event do
+
+  dlopen(__DIR__ + "event.so")
+
+  def add = cfn S32 "kc3_event_add" (Ptr, Time)
+
+  def del = cfn S32 "kc3_event_del" (Ptr)
+
+  def dispatch = cfn S32 "kc3_event_base_dispatch" (Ptr)
+
+  # base_new() returns a (struct event_base *)
+  def base_new = cfn Ptr "event_base_new" ()
+
+  def new = cfn Ptr "kc3_event_new" (Ptr, S32, List, Fn, Tag)
+
+  def version = cfn Str "kc3_event_version" (Result)
+
+end

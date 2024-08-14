@@ -10,20 +10,20 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef HTTP_EVENT_H
-#define HTTP_EVENT_H
+#ifndef KC3_EVENT_H
+#define KC3_EVENT_H
 
-#include "types.h"
+#include <libkc3/types.h>
 
 /* Heap-allocation functions, call *_delete after use. */
-struct event_base * http_event_base_new (void);
-void                http_event_delete (struct event *ev);
-struct event *      http_event_new (struct event_base **event_base,
-                                    s32 fd,
-                                    const s_list * const *events,
-                                    const s_fn *callback, s_tag *arg);
+struct event_base * kc3_event_base_new (void);
+void                kc3_event_delete (struct event *ev);
+struct event *      kc3_event_new (struct event_base **event_base,
+                                   s32 fd,
+                                   const s_list * const *events,
+                                   const s_fn *callback, s_tag *arg);
 
 /* Operators. */
-s32  http_event_add (struct event **ev, s_time *time);
+s32  kc3_event_add (struct event **ev, s_time *time);
 
-#endif /* HTTP_H */
+#endif /* KC3_EVENT_H */

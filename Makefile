@@ -18,6 +18,7 @@ all:
 	${MAKE} -C ikc3 all
 	${MAKE} -C kc3s all
 	${MAKE} -C ekc3 all
+	${MAKE} -C event all
 	-${MAKE} -C json all
 	${MAKE} -C socket all
 	${MAKE} -C http all
@@ -32,6 +33,7 @@ asan:
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
+	${MAKE} -C event asan
 	-${MAKE} -C json asan
 	${MAKE} -C socket asan
 	${MAKE} -C http asan
@@ -47,6 +49,7 @@ build:
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
+	${MAKE} -C event build
 	-${MAKE} -C json build
 	${MAKE} -C socket build
 	${MAKE} -C http build
@@ -61,6 +64,7 @@ clean:
 	${MAKE} -C ikc3 clean
 	${MAKE} -C kc3s clean
 	${MAKE} -C ekc3 clean
+	${MAKE} -C event clean
 	-${MAKE} -C json clean
 	${MAKE} -C socket clean
 	${MAKE} -C http clean
@@ -74,6 +78,7 @@ clean_cov:
 	${MAKE} -C ikc3 clean_cov
 	${MAKE} -C kc3s clean_cov
 	${MAKE} -C ekc3 clean_cov
+	${MAKE} -C event clean_cov
 	-${MAKE} -C json clean_cov
 	${MAKE} -C socket clean_cov
 	${MAKE} -C http clean_cov
@@ -88,6 +93,7 @@ cov:
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
 	${MAKE} -C ekc3 cov
+	${MAKE} -C event cov
 	-${MAKE} -C json cov
 	${MAKE} -C socket cov
 	${MAKE} -C http cov
@@ -102,6 +108,7 @@ debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
+	${MAKE} -C event debug
 	-${MAKE} -C json debug
 	${MAKE} -C socket debug
 	${MAKE} -C http debug
@@ -142,6 +149,7 @@ distclean:
 	${MAKE} -C ikc3 distclean
 	${MAKE} -C kc3s distclean
 	${MAKE} -C ekc3 distclean
+	${MAKE} -C event distclean
 	-${MAKE} -C json distclean
 	${MAKE} -C socket distclean
 	${MAKE} -C http distclean
@@ -149,11 +157,76 @@ distclean:
 	${MAKE} -C test distclean
 	${MAKE} -C window distclean
 
+ekc3:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C ekc3 build
+
+ekc3_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C ekc3 asan
+
+ekc3_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C kc3s cov
+	${MAKE} -C ekc3 cov
+
+ekc3_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C ekc3 debug
+
+event:
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C event build
+
+event_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C event asan
+
+event_cov:
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C kc3s cov
+	${MAKE} -C event cov
+
+event_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C event debug
+
 gcovr:
 	${MAKE} -C libkc3 gcovr
 	${MAKE} -C ikc3 gcovr
 	${MAKE} -C kc3s gcovr
 	${MAKE} -C ekc3 gcovr
+	${MAKE} -C event gcovr
 	-${MAKE} -C json gcovr
 	${MAKE} -C socket gcovr
 	${MAKE} -C http gcovr
@@ -260,6 +333,7 @@ http:
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
+	${MAKE} -C event build
 	-${MAKE} -C json build
 	${MAKE} -C socket build
 	${MAKE} -C http build
@@ -271,6 +345,7 @@ httpd:
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
+	${MAKE} -C event build
 	-${MAKE} -C json build
 	${MAKE} -C socket build
 	${MAKE} -C http build
@@ -342,6 +417,7 @@ install:
 	${MAKE} -C ikc3 install
 	${MAKE} -C kc3s install
 	${MAKE} -C ekc3 install
+	${MAKE} -C event install
 	-${MAKE} -C json install
 	${MAKE} -C socket install
 	${MAKE} -C http install
@@ -386,30 +462,35 @@ lib_links_debug:
 
 lib_links_bsd:
 	ln -sf ../../../ekc3/.libs/libekc3.so.0.0 lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event.so.0.0 lib/kc3/0.1/event.so
 	ln -sf ../../../http/.libs/libkc3_http.so.0.0 lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json.so.0.0 lib/kc3/0.1/json.so
 	ln -sf ../../../socket/.libs/libkc3_socket.so.0.0 lib/kc3/0.1/socket.so
 
 lib_links_bsd_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug.so.0.0 lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event_debug.so.0.0 lib/kc3/0.1/event.so
 	ln -sf ../../../http/.libs/libkc3_http_debug.so.0.0 lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json_debug.so.0.0 lib/kc3/0.1/json.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.so.0.0 lib/kc3/0.1/socket.so
 
 lib_links_linux:
 	ln -sf ../../../ekc3/.libs/libekc3.so lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event.so lib/kc3/0.1/event.so
 	ln -sf ../../../http/.libs/libkc3_http.so lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json.so lib/kc3/0.1/json.so
 	ln -sf ../../../socket/.libs/libkc3_socket.so lib/kc3/0.1/socket.so
 
 lib_links_linux_asan:
 	ln -sf ../../../ekc3/.libs/libekc3_asan.so lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event_asan.so lib/kc3/0.1/event.so
 	ln -sf ../../../http/.libs/libkc3_http_asan.so lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json_asan.so lib/kc3/0.1/json.so
 	ln -sf ../../../socket/.libs/libkc3_socket_asan.so lib/kc3/0.1/socket.so
 
 lib_links_linux_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug.so lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event_debug.so lib/kc3/0.1/event.so
 	ln -sf ../../../http/.libs/libkc3_http_debug.so lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json_debug.so lib/kc3/0.1/json.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.so lib/kc3/0.1/socket.so
@@ -447,6 +528,7 @@ test:
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C ekc3 build
+	${MAKE} -C event build
 	-${MAKE} -C json build
 	${MAKE} -C socket build
 	${MAKE} -C http build
@@ -461,6 +543,7 @@ test_asan:
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
 	${MAKE} -C ekc3 asan
+	${MAKE} -C event asan
 	-${MAKE} -C json asan
 	${MAKE} -C socket asan
 	${MAKE} -C http asan
@@ -474,6 +557,7 @@ test_cov:
 	${MAKE} -C ikc3 cov clean_cov
 	${MAKE} -C kc3s cov clean_cov
 	${MAKE} -C ekc3 cov clean_cov
+	${MAKE} -C event cov clean_cov
 	-${MAKE} -C json cov clean_cov
 	${MAKE} -C socket cov clean_cov
 	${MAKE} -C http cov clean_cov
@@ -487,6 +571,7 @@ test_debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C ekc3 debug
+	${MAKE} -C event debug
 	-${MAKE} -C json debug
 	${MAKE} -C socket debug
 	${MAKE} -C http debug
@@ -760,6 +845,14 @@ test_socket_debug:
 	demo_gl_cov \
 	demo_gl_debug \
 	dist \
+	ekc3 \
+	ekc3_asan \
+	ekc3_cov \
+	ekc3_debug \
+	event \
+	event_asan \
+	event_cov \
+	event_debug \
 	gcovr \
 	gdb_test \
 	gdb_test_asan \

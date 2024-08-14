@@ -1,13 +1,14 @@
 defmodule HTTPd do
 
+  require Event
   require File
+  require HTTP
+  require HTTP.Request
+  require HTTP.Response
+  require List
   require Socket
   require Socket.Buf
   require Str
-  require HTTP
-  require HTTP.Event
-  require HTTP.Request
-  require HTTP.Response
 
   def root_dir = "./public"
 
@@ -27,22 +28,22 @@ defmodule HTTPd do
   def acceptor = fn (server_socket, events, acceptor_ev, void) do
     if List.has?(events, :read) do
       client = Socket.Buf.accept(%Socket{fd: server_socket})
-      client_ev = HTTP.Event.new(event_base, client.sockfd, [:read, :persist],
+      client_ev = Event.new(event_base, client.sockfd, [:read, :persist],
         http_client, client)
-      r = HTTP.Event.add(client_ev, timeout)
+      r = Event.add(client_ev, timeout)
     end
   end
 
   def timeout = %Time{}
 
   def server = fn (host, port) {
-    event_base = HTTP.Event.base_new()
+    event_base = Event.base_new()
     socket = Socket.listen(host, port)
     puts("KC3 HTTPd: listening on #{host}:#{port}")
-    acceptor_ev = HTTP.Event.new(event_base, socket.fd, [:read, :persist],
+    acceptor_ev = Event.new(event_base, socket.fd, [:read, :persist],
                                  acceptor, void)
-    r = HTTP.Event.add(acceptor_ev, timeout)
-    r = HTTP.Event.dispatch(event_base)
+    r = Event.add(acceptor_ev, timeout)
+    r = Event.dispatch(event_base)
     if r do
       e = errno()
       puts("KC3 HTTPd: event dispatch error: #{strerror(e)}")
@@ -55,12 +56,12 @@ defmodule HTTPd do
       HTTP.mime_type_load("mime.types")
       host = getenv("KC3_HTTPD_HOST")
       port = getenv("KC3_HTTPD_PORT")
-      event_base = HTTP.Event.base_new()
+      event_base = Event.base_new()
       server(host, port)
     }
     (host, port) {
       HTTP.mime_type_load("mime.types")
-      event_base = HTTP.Event.base_new()
+      event_base = Event.base_new()
       server(host, port)
     }
   }

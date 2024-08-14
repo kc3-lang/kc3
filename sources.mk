@@ -3,6 +3,9 @@ KC3_CONFIGURES = \
 	"ekc3/configure" \
 	"ekc3/sources.sh" \
 	"ekc3/update_sources" \
+	"event/configure" \
+	"event/sources.sh" \
+	"event/update_sources" \
 	"http/configure" \
 	"http/sources.sh" \
 	"http/update_sources" \
@@ -70,6 +73,8 @@ KC3_CONFIGURES = \
 KC3_MAKEFILES = \
 	"ekc3/Makefile" \
 	"ekc3/sources.mk" \
+	"event/Makefile" \
+	"event/sources.mk" \
 	"http/Makefile" \
 	"http/sources.mk" \
 	"httpd/Makefile" \
@@ -121,10 +126,10 @@ KC3_C_SOURCES = \
 	"ekc3/html.c" \
 	"ekc3/html.h" \
 	"ekc3/types.h" \
+	"event/event.c" \
+	"event/event.h" \
 	"http/http.c" \
 	"http/http.h" \
-	"http/http_event.c" \
-	"http/http_event.h" \
 	"http/http_request.c" \
 	"http/http_request.h" \
 	"http/http_response.c" \
