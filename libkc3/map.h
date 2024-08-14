@@ -17,7 +17,7 @@
 
 /* Stack allocation compatible functions, call map_clean after use. */
 void    map_clean (s_map *map);
-s_map * map_init (s_map *map, uw size);
+s_map * map_init (s_map *map, uw count);
 s_map * map_init_1 (s_map *map, const char *p);
 s_map * map_init_cast (s_map *map, const s_tag *tag);
 s_map * map_init_copy (s_map *map, const s_map *src);
