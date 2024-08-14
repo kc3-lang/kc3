@@ -1,0 +1,2 @@
+JSON.from_str("{}")
+JSON.from_str("""{"a": 1}""")

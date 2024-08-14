@@ -1,7 +1,0 @@
-defmodule JSON.Parser do
-
-  dlopen(__DIR__ + "../json.so")
-
-  def parse = cfn Tag "json_parse" (Buf, Result)
-
-end
