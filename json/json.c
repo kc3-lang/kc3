@@ -13,7 +13,41 @@
 #include <libkc3/kc3.h>
 #include "json.h"
 
-
+s_tag * json_buf_inspect (s_buf *buf, s_tag *tag)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  switch (tag->type) {
+    case TAG_MAP:
+      return json_buf_inspect_map(buf, dest);
+    case TAG_STR:
+      return json_buf_inspect_str(buf, dest);
+    case TAG_F32:
+    case TAG_F64:
+    case TAG_F128:
+    case TAG_INTEGER:
+    case TAG_S8:
+    case TAG_S16:
+    case TAG_S32:
+    case TAG_S64:
+    case TAG_SW;
+    case TAG_U8:
+    case TAG_U16:
+    case TAG_U32:
+    case TAG_U64:
+    case TAG_UW:
+      return json_buf_inspect_number(buf, dest);
+      break;
+    case 't':
+    case 'f':
+      return json_buf_parse_bool(buf, dest);
+      break;
+    default:
+      return NULL;
+  }
+  return NULL;
+}
 
 s_tag * json_buf_parse (s_buf *buf, s_tag *dest)
 {
