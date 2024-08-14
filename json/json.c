@@ -79,16 +79,24 @@ s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest)
   if ((r = buf_read_1(buf, "{")) <= 0)
     goto clean;
   while (1) {
-    if ((r = buf_ignore_spaces(buf)) <= 0)
+    if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     if ((r = buf_read_1(buf, "}")) < 0)
       goto restore;
     if (r > 0)
       break;
+    *k = list_new(NULL);
+    if (! *k)
+      goto restore;
     if ((r = buf_parse_tag_str(buf, &(*k)->tag)) <= 0)
+      goto restore;
+    k = &(*k)->next.data.list;
+    *v = list_new(NULL);
+    if (! *v)
       goto restore;
     if (! json_buf_parse(buf, &(*v)->tag))
       goto restore;
+    v = &(*v)->next.data.list;
   }
   if (! tag_init_map_from_lists(dest, keys, values))
     goto restore;
