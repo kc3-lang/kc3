@@ -1,6 +1,14 @@
 JSON.to_str(%{})
 "{}"
+JSON.to_str(%{"a" => true})
+"{\"a\": true}"
+JSON.to_str(%{"a" => false})
+"{\"a\": false}"
+JSON.to_str(%{"a" => void})
+"{\"a\": null}"
 JSON.to_str(%{"a" => "b"})
 "{\"a\": \"b\"}"
 JSON.to_str(%{"a" => 1})
 "{\"a\": 1}"
+JSON.to_str(%{"a" => %{"b" => %{"c" => 1}}})
+"{\"a\": {\"b\": {\"c\": 1}}}"
