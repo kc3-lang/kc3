@@ -1,0 +1,6 @@
+JSON.from_str("{}")
+%{}
+JSON.from_str("{\"a\": \"b\"}")
+%{"a" => "b"}
+JSON.from_str("{\"a\": 1}")
+%{"a" => 1}

@@ -1,2 +1,6 @@
+quote JSON.from_str("{}")
 JSON.from_str("{}")
+quote JSON.from_str("""{"a": "b"}""")
+JSON.from_str("""{"a": "b"}""")
+quote JSON.from_str("""{"a": 1}""")
 JSON.from_str("""{"a": 1}""")
