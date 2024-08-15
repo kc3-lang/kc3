@@ -95,3 +95,96 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   *req = tmp;
   return req;
 }
+
+sw http_request_buf_write (s_http_request *req, s_buf *buf)
+{
+  s_tag *key;
+  s_list *list;
+  sw r;
+  sw result = 0;
+  s_str str;
+  const s_sym *type = &g_sym_Str;
+  s_tag *value;
+  assert(req);
+  assert(buf);
+  if (! req->method->str.size) {
+    err_puts("http_request_buf_write: invalid method: \"\"");
+    return -1;
+  }    
+  if (! req->url.size) {
+    err_puts("http_request_buf_write: invalid url: \"\"");
+    return -1;
+  }    
+  if (! req->protocol.size) {
+    err_puts("http_request_buf_write: invalid protocol: \"\"");
+    return -1;
+  }    
+  if (! list_is_alist((const s_list * const *) &req->headers)) {
+    err_puts("http_request_buf_write: invalid headers: not an AList");
+    return -1;
+  }
+  if (! str_init_to_upper(&str, &req->method->str))
+    return -1;
+  if ((r = buf_write_str(buf, &str)) < 0)
+    return r;
+  result += r;
+  str_clean(&str);
+  if ((r = buf_write_1(buf, " ")) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_str(buf, &req->url)) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, " ")) <= 0)
+    return r;
+  result += r;
+  if ((r = buf_write_str(buf, &req->protocol)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "\r\n")) < 0)
+    return r;
+  result += r;
+  list = req->headers;
+  while (list) {
+    key = list->tag.data.tuple.tag;
+    value = list->tag.data.tuple.tag + 1;
+    switch (key->type) {
+    case TAG_STR:
+      if ((r = buf_write_str(buf, &key->data.str)) <= 0)
+        return r;
+      result += r;
+      break;
+    case TAG_SYM:
+      if ((r = buf_write_str(buf, &key->data.sym->str)) <= 0)
+        return r;
+      result += r;
+      break;
+    default:
+      err_write_1("http_request_buf_write: invalid header key: ");
+      err_inspect_tag(key);
+      return -1;
+    }
+    if ((r = buf_write_1(buf, ": ")) <= 0)
+      return r;
+    result += r;
+    if (! str_init_cast(&str, &type, value)) {
+      err_write_1("http_request_buf_write: invalid header value: ");
+      err_inspect_tag(value);
+      return -1;
+    }
+    if ((r = buf_write_str(buf, &str)) <= 0) {
+      str_clean(&str);
+      return r;
+    }
+    result += r;
+    str_clean(&str);
+    if ((r = buf_write_1(buf, "\r\n")) <= 0)
+      return r;
+    result += r;
+    list = list_next(list);
+  }
+  if ((r = buf_write_1(buf, "\r\n")) <= 0)
+    return r;
+  result += r;
+  return result;
+}
