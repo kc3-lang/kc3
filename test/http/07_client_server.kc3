@@ -1,0 +1,32 @@
+quote server = Socket.listen("localhost", "57000")
+server = Socket.listen("localhost", "57000")
+quote client = Socket.Buf.connect("localhost", "57000")
+client = Socket.Buf.connect("localhost", "57000")
+quote server_client = Socket.Buf.accept(server)
+server_client = Socket.Buf.accept(server)
+quote client_req = %HTTP.Request{method: :get,
+                                 url: "/",
+                                 protocol: "HTTP/1.1",
+                                 headers: []}
+client_req = %HTTP.Request{method: :get,
+                           url: "/",
+                           protocol: "HTTP/1.1",
+                           headers: []}
+quote HTTP.Request.buf_write(client_req, client.buf_rw.w)
+HTTP.Request.buf_write(client_req, client.buf_rw.w)
+quote req = HTTP.Request.buf_parse(server_client.buf_rw.r)
+req = HTTP.Request.buf_parse(server_client.buf_rw.r)
+quote puts(req)
+puts(req)
+quote res = HTTP.Response.buf_write(%HTTP.Response{body: "Hello !"}, server_client.buf_rw.w, true)
+res = HTTP.Response.buf_write(%HTTP.Response{body: "Hello !"}, server_client.buf_rw.w, true)
+quote client_response = HTTP.Response.buf_parse(client.buf_rw.r, true)
+client_response = HTTP.Response.buf_parse(client.buf_rw.r, true)
+quote puts(client_response)
+puts(client_response)
+quote Socket.Buf.close(server_client)
+Socket.Buf.close(server_client)
+quote Socket.Buf.close(client)
+Socket.Buf.close(client)
+quote Socket.close(server)
+Socket.close(server)

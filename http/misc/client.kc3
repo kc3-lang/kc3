@@ -1,0 +1,16 @@
+quote client = Socket.Buf.connect("localhost", "58000")
+client = Socket.Buf.connect("localhost", "58000")
+quote client_req = %HTTP.Request{method: :get,
+                                 url: "/",
+                                 protocol: "HTTP/1.1",
+                                 headers: []}
+client_req = %HTTP.Request{method: :get,
+                           url: "/",
+                           protocol: "HTTP/1.1",
+                           headers: []}
+quote HTTP.Request.buf_write(client_req, client.buf_rw.w)
+HTTP.Request.buf_write(client_req, client.buf_rw.w)
+quote client_response = HTTP.Response.buf_parse(client.buf_rw.r, true)
+client_response = HTTP.Response.buf_parse(client.buf_rw.r, true)
+quote Socket.Buf.close(client)
+Socket.Buf.close(client)

@@ -25,7 +25,6 @@ s_http_response * http_response_buf_parse (s_http_response *response,
   sw r = 0;
   s_buf_save save;
   s_str str;
-  s_tag tag_code = {0};
   s_http_response tmp = {0};
   s_tuple *tuple = NULL;
   s_tag *value = NULL;
@@ -34,9 +33,9 @@ s_http_response * http_response_buf_parse (s_http_response *response,
   buf_save_init(buf, &save);
   if (! buf_read_until_1_into_str(buf, " ", &tmp.protocol))
     goto clean;
-  if (! buf_parse_tag_u16(buf, &tag_code))
+  if (buf_parse_u16(buf, &tmp.code) <= 0)
     goto restore;
-  if (tag_code.data.u16 < 100 || tag_code.data.u16 > 999) {
+  if (tmp.code < 100 || tmp.code > 999) {
     err_puts("http_response_buf_parse: invalid response code");
     goto restore;
   }
@@ -76,7 +75,7 @@ s_http_response * http_response_buf_parse (s_http_response *response,
     goto ok;
   if (content_length < 0)
     goto restore;
-  if (! buf_read(buf, content_length, &response->body))
+  if (! buf_read(buf, content_length, &tmp.body))
     goto restore;
  ok:
   buf_save_clean(buf, &save);

@@ -1,0 +1,10 @@
+%HTTP.Request{method: :get,
+              url: "/",
+              protocol: "HTTP/1.1",
+              headers: []}
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "OK",
+               headers: [{"Content-Type", "text/html"},
+                         {"Content-Length", "7"}],
+               body: "Hello !"}

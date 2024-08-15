@@ -20,20 +20,16 @@ client_req = %HTTP.Request{method: :get,
                            url: "/",
                            protocol: "HTTP/1.1",
                            headers: []}
-quote r = HTTP.Request.buf_write(client_req, client.buf_rw.w)
-r = HTTP.Request.buf_write(client_req, client.buf_rw.w)
-quote puts(r)
-puts(r)
-quote if (r) do
-  req = HTTP.Request.buf_parse(server_client.buf_rw.r)
-  puts(req)
-  HTTP.Response.buf_write(response, client.buf_rw.w, true)
-end
-if (r) do
-  req = HTTP.Request.buf_parse(server_client.buf_rw.r)
-  puts(req)
-  HTTP.Response.buf_write(response, client.buf_rw.w, true)
-end
+quote HTTP.Request.buf_write(client_req, client.buf_rw.w)
+HTTP.Request.buf_write(client_req, client.buf_rw.w)
+quote HTTP.Request.buf_parse(server_client.buf_rw.r)
+HTTP.Request.buf_parse(server_client.buf_rw.r)
+quote HTTP.Response.buf_write(response, client.buf_rw.w, true)
+HTTP.Response.buf_write(response, client.buf_rw.w, true)
+quote HTTP.Request.buf_parse(server_client.buf_rw.r)
+HTTP.Request.buf_parse(server_client.buf_rw.r)
+quote HTTP.Response.buf_write(response, client.buf_rw.w, true)
+HTTP.Response.buf_write(response, client.buf_rw.w, true)
 quote Socket.Buf.close(client)
 Socket.Buf.close(client)
 quote Socket.Buf.close(server_client)
