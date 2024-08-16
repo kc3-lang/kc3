@@ -94,3 +94,56 @@ s_fact_w * fact_w_eval (const s_fact_w *fact, s_fact_w *dest)
 {
   return env_fact_w_eval(&g_kc3_env, fact, dest);
 }
+
+s_fact_w * fact_w_init (s_fact_w *fact)
+{
+  s_fact_w tmp = {0};
+  assert(fact);
+  *fact = tmp;
+  return fact;
+}
+
+s_fact_w * fact_w_init_cast (s_fact_w *fact, const s_sym * const *type,
+                             const s_tag *tag)
+{
+  assert(fact);
+  assert(type);
+  assert(*type);
+  assert(tag);
+  switch (tag->type) {
+  case TAG_FACT:
+    return fact_w_init_fact(fact, &tag->data.fact);
+  default:
+    break;
+  }
+  err_write_1("fact_w_init_cast: cannot cast from ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_write_1(" to ");
+  if (*type == &g_sym_FactW)
+    err_puts("FactW");
+  else {
+    err_inspect_sym(type);
+    err_puts(" aka FactW");
+  }
+  assert(! "fact_w_init_cast: cannot cast");
+  return NULL;
+}
+
+s_fact_w * fact_w_init_fact (s_fact_w *fact, const s_fact *src)
+{
+  s_fact_w tmp = {0};
+  if (! tag_init_copy(&tmp.subject, src->subject))
+    return NULL;
+  if (! tag_init_copy(&tmp.predicate, src->predicate)) {
+    tag_clean(&tmp.subject);
+    return NULL;
+  }
+  if (! tag_init_copy(&tmp.object, src->object)) {
+    tag_clean(&tmp.predicate);
+    tag_clean(&tmp.subject);
+    return NULL;
+  }
+  *fact = tmp;
+  return fact;
+}
+

@@ -179,6 +179,10 @@ bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
 bool          env_eval_void (s_env *env, const void *_, s_tag *dest);
 s_fact_w *    env_fact_w_eval (s_env *env, const s_fact_w *fact,
 			       s_fact_w *dest);
+s_tag *       env_facts_with_tags (s_env *env, s_facts *facts,
+                                   s_tag *subject, s_tag *predicate,
+                                   s_tag *object, s_fn *callback,
+                                   s_tag *dest);
 s_tag *       env_ident_get (s_env *env, const s_ident *ident,
                              s_tag *dest);
 bool *        env_ident_is_special_operator (s_env *env,

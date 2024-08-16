@@ -32,6 +32,7 @@
 #include "env.h"
 #include "error.h"
 #include "error_handler.h"
+#include "fact.h"
 #include "facts.h"
 #include "facts_cursor.h"
 #include "facts_transaction.h"
@@ -2011,6 +2012,48 @@ s_fact_w * env_fact_w_eval (s_env *env, const s_fact_w *fact,
   }
   *dest = tmp;
   return dest;
+}
+
+s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
+                             s_tag *predicate, s_tag *object,
+                             s_fn *callback, s_tag *dest)
+{
+  s_list *arguments;
+  s_facts_cursor cursor = {0};
+  const s_fact *fact = NULL;
+  s_fact_w *fact_w = NULL;
+  s_tag tmp = {0};
+  if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
+    return NULL;
+  if (! struct_allocate(&arguments->tag.data.struct_))
+    return NULL;
+  fact_w = arguments->tag.data.struct_.data;
+  if (! facts_with_tags(facts, &cursor, subject, predicate, object))
+    return NULL;
+  while (1) {
+    if (! facts_cursor_next(&cursor, &fact))
+      goto clean;
+    if (! fact) {
+      goto ok;
+    }
+    tag_clean(&tmp);
+    fact_w_init_fact(fact_w, fact);
+    if (! env_eval_call_fn_args(env, callback, arguments, &tmp)) {
+      fact_w_clean(fact_w);
+      goto clean;
+    }
+    fact_w_clean(fact_w);
+    fact_w_init(fact_w);
+  }
+ ok:
+  list_delete_all(arguments);
+  *dest = tmp;
+  return dest;
+ clean:
+  tag_clean(&tmp);
+  fact_w_clean(fact_w);
+  list_delete_all(arguments);
+  return NULL;
 }
 
 const s_tag * env_frames_get (const s_env *env, const s_sym *name)

@@ -9,14 +9,14 @@ defmodule Fact do
 
   def from_ptr = cfn Tag "kc3_fact_from_ptr" (Result, Ptr)
 
-  def object    = cfn Tag "kc3_fact_object"    (Fact)
+  def object = cfn Tag "kc3_fact_object" (Fact, Result)
 
-  def predicate = cfn Tag "kc3_fact_predicate" (Fact)
+  def predicate = cfn Tag "kc3_fact_predicate" (Fact, Result)
 
   def puts = fn (fact) {
     puts("{#{Fact.subject(fact)}, #{Fact.predicate(fact)}, #{Fact.object(fact)}}")
   }
 
-  def subject   = cfn Tag "kc3_fact_subject"   (Fact)
+  def subject = cfn Tag "kc3_fact_subject" (Fact, Result)
 
 end

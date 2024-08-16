@@ -1,0 +1,8 @@
+defmodule FactW do
+
+  defstruct [subject: ?,
+             predicate: ?,
+             object: ?,
+             id: (Uw) 0]
+
+end

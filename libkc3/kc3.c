@@ -157,34 +157,25 @@ void kc3_exit (sw code)
   exit((int) code);
 }
 
-const s_tag * kc3_fact_object (s_fact *fact)
+s_tag * kc3_fact_object (s_fact *fact, s_tag *dest)
 {
-  if (! fact->object) {
-    err_puts("kc3_fact_object: NULL object");
-    assert(! "kc3_fact_object: NULL object");
-    return NULL;
-  }
-  return fact->object;
+  if (! fact->object)
+    return tag_init_void(dest);
+  return tag_init_copy(dest, fact->object);
 }
 
-const s_tag * kc3_fact_predicate (s_fact *fact)
+s_tag * kc3_fact_predicate (s_fact *fact, s_tag *dest)
 {
-  if (! fact->predicate) {
-    err_puts("kc3_fact_predicate: NULL predicate");
-    assert(! "kc3_fact_predicate: NULL predicate");
-    return NULL;
-  }
-  return fact->predicate;
+  if (! fact->predicate)
+    return tag_init_void(dest);
+  return tag_init_copy(dest, fact->predicate);
 }
 
-const s_tag * kc3_fact_subject (s_fact *fact)
+s_tag * kc3_fact_subject (s_fact *fact, s_tag *dest)
 {
-  if (! fact->subject) {
-    err_puts("kc3_fact_subject: NULL subject");
-    assert(! "kc3_fact_subject: NULL subject");
-    return NULL;
-  }
-  return fact->subject;
+  if (! fact->subject)
+    return tag_init_void(dest);
+  return tag_init_copy(dest, fact->subject);
 }
 
 s_tag * kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr)
@@ -192,22 +183,19 @@ s_tag * kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr)
   return tag_init_struct_with_data(tag, &g_sym_Fact, ptr->p, false);
 }
 
-s_tag * kc3_facts_cursor_next (s_tag *tag, s_facts_cursor *cursor)
-{
-  const s_fact *fact = NULL;
-  if (! facts_cursor_next(cursor, &fact))
-    return NULL;
-  if (! fact)
-    return tag_init_void(tag);
-  return tag_init_struct_with_data(tag, &g_sym_Fact, (void *) fact,
-                                   false);
-}
-
 uw * kc3_facts_next_id (uw *dest)
 {
   assert(dest);
   *dest = g_kc3_env.facts.next_id;
   return dest;
+}
+
+s_tag * kc3_facts_with_tags (s_facts *facts, s_tag *subject,
+                             s_tag *predicate, s_tag *object,
+                             s_fn *callback, s_tag *dest)
+{
+  return env_facts_with_tags(&g_kc3_env, facts, subject, predicate,
+                             object, callback, dest);
 }
 
 s_tag * kc3_quote_cfn (const s_sym **sym, s_tag *dest)

@@ -31,11 +31,9 @@ void    kc3_clean (s_env *env);
 
 /* Observers. */
 s_tag *        kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr);
-const s_tag *  kc3_fact_object (s_fact *fact);
-const s_tag *  kc3_fact_predicate (s_fact *fact);
-const s_tag *  kc3_fact_subject (s_fact *fact);
-s_tag *        kc3_facts_cursor_next (s_tag *tag,
-                                      s_facts_cursor *cursor);
+s_tag *        kc3_fact_object (s_fact *fact, s_tag *dest);
+s_tag *        kc3_fact_predicate (s_fact *fact, s_tag *dest);
+s_tag *        kc3_fact_subject (s_fact *fact, s_tag *dest);
 uw *           kc3_facts_next_id (uw *dest);
 s_str *        kc3_getenv (const s_str *name, s_str *dest);
 void           kc3_license (void);
@@ -59,6 +57,9 @@ void **   kc3_dlopen (const s_str *path, void **dest);
 s_facts * kc3_env_facts (void);
 sw        kc3_errno (void);
 void      kc3_exit (sw code);
+s_tag *   kc3_facts_with_tags (s_facts *facts, s_tag *subject,
+                               s_tag *predicate, s_tag *object,
+                               s_fn *callback, s_tag *dest);
 bool      kc3_load (const s_str *path);
 s_tag *   kc3_pin (const s_tag *a, s_tag *dest);
 bool      kc3_require (const s_sym * const *module);

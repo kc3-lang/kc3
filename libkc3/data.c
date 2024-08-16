@@ -69,6 +69,8 @@ sw data_buf_inspect (const s_sym *type, s_buf *buf, const void *data)
     return buf_inspect_sw(buf, data);
   if (type == &g_sym_Sym)
     return buf_inspect_sym(buf, data);
+  if (type == &g_sym_Tag)
+    return buf_inspect_tag(buf, data);
   if (type == &g_sym_Tuple)
     return buf_inspect_tuple(buf, data);
   if (type == &g_sym_U8)
