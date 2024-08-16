@@ -46,3 +46,9 @@ List.map([1, 2, 3, 4], fn (x) { x * 2 })
 
 quote List.reverse([1, 2, 3, 4])
 List.reverse([1, 2, 3, 4])
+
+quote List.has?([:read], :read)
+List.has?([:read], :read)
+
+quote List.has?([:read], :write)
+List.has?([:read], :write)

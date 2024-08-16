@@ -125,8 +125,10 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
   }
   if (! str_init_to_upper(&str, &req->method->str))
     return -1;
-  if ((r = buf_write_str(buf, &str)) < 0)
+  if ((r = buf_write_str(buf, &str)) < 0) {
+    str_clean(&str);
     return r;
+  }
   result += r;
   str_clean(&str);
   if ((r = buf_write_1(buf, " ")) <= 0)

@@ -2,7 +2,7 @@ defmodule List do
 
   def cast = cfn List "list_init_cast" (Result, Sym, Tag)
 
-  def has? = cfn Bool "list_has" (List, Tag)
+  def has? = cfn Bool "list_has" (List, Tag, Result)
 
   def map = fn {
     ([], _) do

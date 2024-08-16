@@ -24,3 +24,7 @@ List.map([1, 2, 3, 4], fn (x) { x * 2 })
 [2, 4, 6, 8]
 List.reverse([1, 2, 3, 4])
 [4, 3, 2, 1]
+List.has?([:read], :read)
+true
+List.has?([:read], :write)
+false
