@@ -760,6 +760,7 @@ sw buf_parse_call_access (s_buf *buf, s_call *dest)
   r = result;
   goto clean;
  restore:
+  list_delete_all(key);
   call_clean(&tmp);
   buf_save_restore_rpos(buf, &save);
  clean:
