@@ -580,7 +580,7 @@ s_str * str_init_to_lower (s_str *str, const s_str *src)
     c = character_to_lower(c);
     buf_write_character_utf8(&buf, c);
   }
-  return buf_read_to_str(&buf, str);
+  return buf_to_str(&buf, str);
 }
 
 s_str * str_init_to_upper (s_str *str, const s_str *src)
@@ -597,7 +597,7 @@ s_str * str_init_to_upper (s_str *str, const s_str *src)
     c = character_to_upper(c);
     buf_write_character_utf8(&buf, c);
   }
-  return buf_read_to_str(&buf, str);
+  return buf_to_str(&buf, str);
 }
 
 DEF_STR_INIT_STRUCT(tuple)
