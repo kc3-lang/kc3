@@ -227,17 +227,22 @@ void str_delete (s_str *str)
   free(str);
 }
 
-bool str_ends_with (const s_str *str, const s_str *end)
+bool * str_ends_with (const s_str *str, const s_str *end, bool *dest)
 {
   uw i;
   assert(str);
   assert(end);
-  if (! end->size)
-    return true;
-  if (str->size < end->size)
-    return false;
+  if (! end->size) {
+    *dest = true;
+    return dest;
+  }
+  if (str->size < end->size) {
+    *dest = false;
+    return dest;
+  }
   i = str->size - end->size;
-  return ! memcmp(str->ptr.pchar + i, end->ptr.p, end->size);
+  *dest = ! memcmp(str->ptr.pchar + i, end->ptr.p, end->size);
+  return dest;
 }
 
 bool * str_has_reserved_characters (const s_str *src, bool *dest)
@@ -969,15 +974,21 @@ sw str_rindex_character (const s_str *str, character c)
   return result;
 }
 
-bool str_starts_with (const s_str *str, const s_str *start)
+bool * str_starts_with (const s_str *str, const s_str *start,
+                        bool *dest)
 {
   assert(str);
   assert(start);
-  if (! start->size)
-    return true;
-  if (str->size < start->size)
-    return false;
-  return ! memcmp(str->ptr.p, start->ptr.p, start->size);
+  if (! start->size) {
+    *dest = true;
+    return dest;
+  }
+  if (str->size < start->size) {
+    *dest = false;
+    return dest;
+  }
+  *dest = ! memcmp(str->ptr.p, start->ptr.p, start->size);
+  return dest;
 }
 
 uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)

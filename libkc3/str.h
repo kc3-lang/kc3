@@ -97,7 +97,8 @@ sw            str_character (const s_str *str, uw position,
 character     str_character_escape (character c);
 bool          str_character_is_reserved (character c);
 sw            str_character_position (const s_str *str, character c);
-bool          str_ends_with (const s_str *str, const s_str *end);
+bool *        str_ends_with (const s_str *str, const s_str *end,
+                             bool *dest);
 bool *        str_has_reserved_characters (const s_str *src,
                                            bool *dest);
 sw            str_length_utf8 (const s_str *str);
@@ -118,7 +119,8 @@ sw            str_peek_u32 (const s_str *str, u32 *dest);
 sw            str_peek_u64 (const s_str *str, u64 *dest);
 sw            str_position_1 (const s_str *str, const char *token);
 sw            str_rindex_character (const s_str *str, character c);
-bool          str_starts_with (const s_str *str, const s_str *start);
+bool *        str_starts_with (const s_str *str, const s_str *start,
+                               bool *dest);
 uw *          str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest);
 s_str *       str_to_hex (const s_str *str, s_str *dest);
 s_ident *     str_to_ident (const s_str *str, s_ident *dest);
