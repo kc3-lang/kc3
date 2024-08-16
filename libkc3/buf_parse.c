@@ -754,7 +754,8 @@ sw buf_parse_call_access (s_buf *buf, s_call *dest)
     if (r == 0)
       break;
   }
-  tag_init_list(&list_next(tmp.arguments)->tag, key);
+  list_next(tmp.arguments)->tag.type = TAG_LIST;
+  list_next(tmp.arguments)->tag.data.list = key;
   *dest = tmp;
   r = result;
   goto clean;
