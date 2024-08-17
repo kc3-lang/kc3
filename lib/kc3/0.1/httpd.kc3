@@ -18,9 +18,11 @@ defmodule HTTPd do
       if req do
         router = route_request(req)
         res = router(req)
+        FD.set_blocking(socket, true)
         r = HTTP.Response.buf_write(res, client.buf_rw.w,
           req.method != :head)
         puts("#{res.code} #{client.addr_str} #{res.message} #{req.method} #{req.url}")
+        FD.set_blocking(socket, false)
       end
     end
   end
@@ -28,6 +30,7 @@ defmodule HTTPd do
   def acceptor = fn (server_socket, events, acceptor_ev, void) do
     if List.has?(events, :read) do
       client = Socket.Buf.accept(%Socket{fd: server_socket})
+      FD.set_blocking(client.sockfd, false)
       client_ev = Event.new(event_base, client.sockfd, [:read, :persist],
         http_client, client)
       r = Event.add(client_ev, timeout)

@@ -104,6 +104,7 @@ HEADERS = \
 	"facts_transaction.h" \
 	"facts_with.h" \
 	"facts_with_cursor.h" \
+	"fd.h" \
 	"file.h" \
 	"float.h" \
 	"fn.h" \
@@ -272,6 +273,7 @@ SOURCES = \
 	"facts_transaction.c" \
 	"facts_with.c" \
 	"facts_with_cursor.c" \
+	"fd.c" \
 	"file.c" \
 	"fn.c" \
 	"fn_clause.c" \
@@ -548,6 +550,7 @@ LO_SOURCES = \
 	"facts_transaction.c" \
 	"facts_with.c" \
 	"facts_with_cursor.c" \
+	"fd.c" \
 	"file.c" \
 	"fn.c" \
 	"fn_clause.c" \
