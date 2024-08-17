@@ -23,6 +23,7 @@ defmodule Facts do
     Fn, Result)
 
   # with_tuple(facts, tuple, fn (fact) {result}) -> result
-  #def with_tuple = cfn Tag "kc3_facts_with_tuple" (Facts, Tuple, Fn, Result)
+  def with_tuple = cfn Tag "kc3_facts_with_tuple" (Facts, Tuple, Fn,
+    Result)
 
 end

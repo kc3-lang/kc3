@@ -198,6 +198,23 @@ s_tag * kc3_facts_with_tags (s_facts *facts, s_tag *subject,
                              object, callback, dest);
 }
 
+s_tag * kc3_facts_with_tuple (s_facts *facts, s_tuple *tuple,
+                              s_fn *callback, s_tag *dest)
+{
+  assert(facts);
+  assert(tuple);
+  assert(callback);
+  assert(dest);
+  if (tuple->count < 3) {
+    err_puts("kc3_facts_with_tuple: tuple count < 3");
+    assert(! "kc3_facts_with_tuple: tuple count < 3");
+    return NULL;
+  }
+  return env_facts_with_tags(&g_kc3_env, facts, tuple->tag,
+                             tuple->tag + 1, tuple->tag + 2, callback,
+                             dest);
+}
+
 s_tag * kc3_quote_cfn (const s_sym **sym, s_tag *dest)
 {
   assert(sym);

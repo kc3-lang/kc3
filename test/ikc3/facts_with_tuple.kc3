@@ -1,0 +1,8 @@
+quote Facts.with_tuple(Facts.env_facts(), {KC3, :operator, ?}, fn (fact) {
+  puts(fact.object)
+  void
+})
+Facts.with_tuple(Facts.env_facts(), {KC3, :operator, ?}, fn (fact) {
+  puts(fact.object)
+  void
+})
