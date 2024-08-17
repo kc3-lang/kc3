@@ -1362,6 +1362,10 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
 bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
 {
   e_tag_type tag_type;
+  if (type == &g_sym_Tag) {
+    *dest = tag;
+    return true;
+  }
   if (! sym_to_tag_type(type, &tag_type))
     return false;
   if (tag->type != tag_type) {
@@ -1493,6 +1497,17 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   err_puts("tag_type: invalid tag type");
   assert(! "tag_type: invalid tag type");
   return NULL;
+}
+
+const s_sym ** tag_var_type (const s_tag *tag, const s_sym **dest)
+{
+  assert(tag);
+  assert(dest);
+  if (tag->type == TAG_VAR) {
+    *dest = tag->data.var.type;
+    return dest;
+  }
+  return tag_type(tag, dest);
 }
 
 bool tag_xor (const s_tag *a, const s_tag *b)

@@ -41,6 +41,8 @@ s_map *        map_cast (const s_tag *tag, s_map *map);
 s_tag *        map_get (const s_map *map, const s_tag *key, s_tag *dest);
 const s_sym ** map_get_type (const s_map *map, const s_tag *key,
                              const s_sym **dest);
+const s_sym ** map_get_var_type (const s_map *map, const s_tag *key,
+                                 const s_sym **dest);
 s_map *        map_update (const s_map *map, const s_tag *key,
                            const s_tag *value, s_map *dest);
 s_map *        map_update_list (const s_map *map, const s_list *alist,

@@ -59,6 +59,7 @@ const s_tag *  tag_resolve_cow (const s_tag *tag);
 uw *           tag_size (const s_tag *tag, uw *dest);
 ffi_type       tag_to_ffi_type(const s_tag *tag);
 const s_sym ** tag_type (const s_tag *tag, const s_sym **type);
+const s_sym ** tag_var_type (const s_tag *tag, const s_sym **type);
 
 /* Operators. */
 s_tag * tag_1 (s_tag *tag, const char *p);

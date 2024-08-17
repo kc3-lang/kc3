@@ -70,19 +70,21 @@ s_tag * struct_access_sym (const s_struct *s, const s_sym *key, s_tag *dest)
   const s_sym *type;
   s_tag tmp = {0};
   void *tmp_data;
-  if (! struct_get_type(s, key, &type))
-    return NULL;
+  if (! struct_get_var_type(s, key, &type))
+    return NULL;    
   data = struct_get(s, key);
   if (! data)
     return NULL;
-  if (! sym_to_tag_type(type, &tmp.type))
-    return NULL;
-  if (! struct_type_find(type, &st))
-    return NULL;
-  if (st) {
-    tmp.data.struct_.type = st;
-    if (! struct_allocate(&tmp.data.struct_))
+  if (type != &g_sym_Tag) {
+    if (! sym_to_tag_type(type, &tmp.type))
       return NULL;
+    if (! struct_type_find(type, &st))
+      return NULL;
+    if (st) {
+      tmp.data.struct_.type = st;
+      if (! struct_allocate(&tmp.data.struct_))
+        return NULL;
+    }
   }
   if (! tag_to_pointer(&tmp, type, &tmp_data))
     return NULL;
@@ -197,6 +199,14 @@ const s_sym ** struct_get_type (const s_struct *s, const s_sym *key,
 u8 struct_get_u8 (const s_struct *s, const s_sym *key)
 {
   return *(u8 *) struct_get(s, key);
+}
+
+const s_sym ** struct_get_var_type (const s_struct *s, const s_sym *key,
+                                    const s_sym **dest)
+{
+  s_tag tag_key;
+  tag_init_sym(&tag_key, key);
+  return map_get_var_type(&s->type->map, &tag_key, dest);
 }
 
 s_struct * struct_init (s_struct *s, const s_sym *module)

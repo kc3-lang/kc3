@@ -108,6 +108,21 @@ const s_sym ** map_get_type (const s_map *map, const s_tag *key,
   return NULL;
 }
 
+const s_sym ** map_get_var_type (const s_map *map, const s_tag *key,
+                                 const s_sym **dest)
+{
+  uw i = 0;
+  while (i < map->count) {
+    if (compare_tag(key, map->key + i) == 0)
+      return tag_var_type(map->value + i, dest);
+    i++;
+  }
+  err_write_1("map_get_type: ");
+  err_inspect_tag(key);
+  err_puts(": key not found");
+  return NULL;
+}
+
 s_map * map_init (s_map *map, uw count)
 {
   s_map tmp = {0};
