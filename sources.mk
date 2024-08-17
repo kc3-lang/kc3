@@ -686,7 +686,199 @@ KC3_C_SOURCES = \
 	"window/window.h" \
 
 KC3_FONT_SOURCES = \
-	"" \
+	"fonts/Computer Modern/cmunbl-webfont.ttf" \
+	"fonts/Computer Modern/cmunbl.otf" \
+	"fonts/Computer Modern/cmunbx-webfont.ttf" \
+	"fonts/Computer Modern/cmunbx.otf" \
+	"fonts/Computer Modern/cmunbxo-webfont.ttf" \
+	"fonts/Computer Modern/cmunbxo.otf" \
+	"fonts/Computer Modern/cmunrm-webfont.ttf" \
+	"fonts/Computer Modern/cmunrm.otf" \
+	"fonts/Computer Modern/cmunsi-webfont.ttf" \
+	"fonts/Computer Modern/cmunsi.otf" \
+	"fonts/Computer Modern/cmunsl-webfont.ttf" \
+	"fonts/Computer Modern/cmunsl.otf" \
+	"fonts/Computer Modern/cmunss-webfont.ttf" \
+	"fonts/Computer Modern/cmunss.otf" \
+	"fonts/Computer Modern/cmunsx-webfont.ttf" \
+	"fonts/Computer Modern/cmunsx.otf" \
+	"fonts/Courier New/Courier New.ttf" \
+	"fonts/Courier/fonts/OGCourier-Bold.otf" \
+	"fonts/Courier/fonts/OGCourier-Bold.ttf" \
+	"fonts/Courier/fonts/OGCourier-BoldItalic.otf" \
+	"fonts/Courier/fonts/OGCourier-BoldItalic.ttf" \
+	"fonts/Courier/fonts/OGCourier-Italic.otf" \
+	"fonts/Courier/fonts/OGCourier-Italic.ttf" \
+	"fonts/Courier/fonts/OGCourier.otf" \
+	"fonts/Courier/fonts/OGCourier.ttf" \
+	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.otf" \
+	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.ttf" \
+	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-BoldItalic.otf" \
+	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-BoldItalic.ttf" \
+	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Italic.otf" \
+	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Italic.ttf" \
+	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot.otf" \
+	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot.ttf" \
+	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.otf" \
+	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.ttf" \
+	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-BoldItalic.otf" \
+	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-BoldItalic.ttf" \
+	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Italic.otf" \
+	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Italic.ttf" \
+	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash.otf" \
+	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash.ttf" \
+	"fonts/Courier/sfd/OGCourier-Bold.sfd.ttf" \
+	"fonts/Courier/sfd/OGCourier-BoldItalic.sfd.ttf" \
+	"fonts/Courier/sfd/OGCourier-Italic.sfd.ttf" \
+	"fonts/Courier/sfd/OGCourier.sfd.ttf" \
+	"fonts/Inter/InterVariable-Italic.ttf" \
+	"fonts/Inter/InterVariable.ttf" \
+	"fonts/Inter/extras/otf/Inter-Black.otf" \
+	"fonts/Inter/extras/otf/Inter-BlackItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-Bold.otf" \
+	"fonts/Inter/extras/otf/Inter-BoldItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-ExtraBold.otf" \
+	"fonts/Inter/extras/otf/Inter-ExtraBoldItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-ExtraLight.otf" \
+	"fonts/Inter/extras/otf/Inter-ExtraLightItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-Italic.otf" \
+	"fonts/Inter/extras/otf/Inter-Light.otf" \
+	"fonts/Inter/extras/otf/Inter-LightItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-Medium.otf" \
+	"fonts/Inter/extras/otf/Inter-MediumItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-Regular.otf" \
+	"fonts/Inter/extras/otf/Inter-SemiBold.otf" \
+	"fonts/Inter/extras/otf/Inter-SemiBoldItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-Thin.otf" \
+	"fonts/Inter/extras/otf/Inter-ThinItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Black.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-BlackItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Bold.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-BoldItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-ExtraBold.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-ExtraBoldItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-ExtraLight.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-ExtraLightItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Italic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Light.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-LightItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Medium.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-MediumItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Regular.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-SemiBold.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-SemiBoldItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Thin.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-ThinItalic.otf" \
+	"fonts/Inter/extras/ttf/Inter-Black.ttf" \
+	"fonts/Inter/extras/ttf/Inter-BlackItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Bold.ttf" \
+	"fonts/Inter/extras/ttf/Inter-BoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-ExtraBold.ttf" \
+	"fonts/Inter/extras/ttf/Inter-ExtraBoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-ExtraLight.ttf" \
+	"fonts/Inter/extras/ttf/Inter-ExtraLightItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Italic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Light.ttf" \
+	"fonts/Inter/extras/ttf/Inter-LightItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Medium.ttf" \
+	"fonts/Inter/extras/ttf/Inter-MediumItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Regular.ttf" \
+	"fonts/Inter/extras/ttf/Inter-SemiBold.ttf" \
+	"fonts/Inter/extras/ttf/Inter-SemiBoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Thin.ttf" \
+	"fonts/Inter/extras/ttf/Inter-ThinItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Black.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-BlackItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Bold.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-BoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-ExtraBold.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-ExtraBoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-ExtraLight.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-ExtraLightItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Italic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Light.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-LightItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Medium.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-MediumItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Regular.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-SemiBold.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-SemiBoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Thin.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-ThinItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-Black.ttf" \
+	"fonts/Noto Sans/NotoSans-BlackItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-Bold.ttf" \
+	"fonts/Noto Sans/NotoSans-BoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-ExtraBold.ttf" \
+	"fonts/Noto Sans/NotoSans-ExtraBoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-ExtraLight.ttf" \
+	"fonts/Noto Sans/NotoSans-ExtraLightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-Italic-VariableFont_wdth,wght.ttf" \
+	"fonts/Noto Sans/NotoSans-Italic.ttf" \
+	"fonts/Noto Sans/NotoSans-Light.ttf" \
+	"fonts/Noto Sans/NotoSans-LightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-Medium.ttf" \
+	"fonts/Noto Sans/NotoSans-MediumItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-Regular.ttf" \
+	"fonts/Noto Sans/NotoSans-SemiBold.ttf" \
+	"fonts/Noto Sans/NotoSans-SemiBoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-Thin.ttf" \
+	"fonts/Noto Sans/NotoSans-ThinItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-VariableFont_wdth,wght.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Black.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-BlackItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Bold.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-BoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-ExtraBold.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-ExtraBoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-ExtraLight.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-ExtraLightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Italic.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Light.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-LightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Medium.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-MediumItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Regular.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-SemiBold.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-SemiBoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Thin.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-ThinItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Black.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-BlackItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Bold.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-BoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraBold.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraBoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraLight.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraLightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Italic.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Light.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-LightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Medium.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-MediumItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Regular.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-SemiBold.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-SemiBoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Thin.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-ThinItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Black.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-BlackItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Bold.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-BoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraBold.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraBoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraLight.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraLightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Italic.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Light.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-LightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Medium.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-MediumItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Regular.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-SemiBold.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-SemiBoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Thin.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-ThinItalic.ttf" \
 
 KC3_IMG_SOURCES = \
 	"img/c3.1.xcf" \
@@ -733,6 +925,7 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
+	"lib/kc3/0.1/.#kc3.facts" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bool.facts" \
 	"lib/kc3/0.1/buf.kc3" \
