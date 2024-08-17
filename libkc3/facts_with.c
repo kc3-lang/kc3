@@ -142,6 +142,22 @@ s_facts_cursor * facts_with_3 (s_facts *facts,
   return facts_cursor_init(facts, cursor, facts->index_spo, &fact, &fact);
 }
 
+s_facts_with_cursor * facts_with_list (s_facts *facts,
+                                       s_facts_with_cursor *cursor,
+                                       s_list *spec)
+{
+  p_facts_spec s;
+  assert(facts);
+  assert(cursor);
+  assert(spec);
+  if (! (s = facts_spec_new_list(spec))) {
+    err_puts("facts_with_list: facts_spec_new_list");
+    assert(! "facts_with_list: facts_spec_new_list");
+    return NULL;
+  }
+  return facts_with(facts, cursor, s);
+}
+
 s_facts_cursor * facts_with_tags (s_facts *facts,
                                   s_facts_cursor *cursor,
                                   s_tag *subject,

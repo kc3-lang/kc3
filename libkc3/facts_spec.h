@@ -29,6 +29,7 @@
 
 /* Constructors */
 p_facts_spec facts_spec_new_expand (p_facts_spec spec);
+p_facts_spec facts_spec_new_list (s_list *spec);
 
 /* Destructor */
 #define facts_spec_delete free

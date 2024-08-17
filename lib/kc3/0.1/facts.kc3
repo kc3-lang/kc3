@@ -17,6 +17,10 @@ defmodule Facts do
   # env_facts() -> facts
   def env_facts = cfn Ptr "kc3_env_facts" ()
 
+  # with(facts, [[?, ?, ?]], fn (fact) {result}) -> result
+  def with = cfn Tag "kc3_facts_with" (Facts, List, Fn,
+    Result)
+
   # with_tags(facts, subject, predicate, object,
   #           fn (fact) {result}) -> result
   def with_tags = cfn Tag "kc3_facts_with_tags" (Facts, Tag, Tag, Tag,

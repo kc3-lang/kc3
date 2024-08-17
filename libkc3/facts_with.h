@@ -40,6 +40,10 @@ s_facts_cursor * facts_with_3 (s_facts *facts,
                                const s_tag *predicate,
                                const s_tag *object);
 
+s_facts_with_cursor * facts_with_list (s_facts *facts,
+                                       s_facts_with_cursor *cursor,
+                                       s_list *spec);
+
 s_facts_cursor * facts_with_tags (s_facts *facts,
                                   s_facts_cursor *cursor,
                                   s_tag *subject,

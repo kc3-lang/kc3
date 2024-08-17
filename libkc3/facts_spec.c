@@ -16,6 +16,7 @@
 #include "fact.h"
 #include "facts_spec.h"
 #include "facts_spec_cursor.h"
+#include "list.h"
 #include "tag.h"
 
 uw facts_spec_count_facts (p_facts_spec spec)
@@ -54,6 +55,47 @@ p_facts_spec facts_spec_new_expand (p_facts_spec spec)
     return new;
   }
   return NULL;
+}
+
+p_facts_spec facts_spec_new_list (s_list *spec)
+{
+  uw c;
+  uw count = 1;
+  p_facts_spec new;
+  p_facts_spec n;
+  s_list *s;
+  s_list *t;
+  assert(spec);
+  if (! spec)
+    return NULL;
+  s = spec;
+  while (s) {
+    if (s->tag.type != TAG_LIST ||
+        (c = list_length(s->tag.data.list)) < 3 ||
+        (c - 1) % 2) {
+      err_puts("facts_spec_new_list: invalid spec");
+      assert(! "facts_spec_new_list: invalid spec");
+      return NULL;
+    }
+    count += c + 1;
+    s = list_next(s);
+  }
+  new = alloc(count * sizeof(s_tag *));
+  if (! new)
+    return NULL;
+  n = new;
+  s = spec;
+  while (s) {
+    t = s->tag.data.list;
+    while (t) {
+      *n++ = &t->tag;
+      t = list_next(t);
+    }
+    *n++ = NULL;
+    s = list_next(s);
+  }
+  *n = NULL;
+  return new;
 }
 
 p_facts_spec facts_spec_sort (p_facts_spec spec)
