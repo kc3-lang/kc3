@@ -2088,7 +2088,7 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
     }
   }
  ok:
-  //list_delete_all(arguments);
+  list_delete_all(arguments);
   *dest = tmp;
   return dest;
  clean:
