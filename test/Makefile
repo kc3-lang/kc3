@@ -92,6 +92,9 @@ gdb_test_httpd_asan:
 gdb_test_ikc3:
 	cd ikc3 && ${GDB} ../../ikc3/.libs/ikc3_debug
 
+gdb_test_ikc3_asan:
+	cd ikc3 && ${GDB} ../../ikc3/.libs/ikc3_asan
+
 gdb_test_json:
 	cd json && ${GDB} ../../ikc3/.libs/ikc3_debug
 
