@@ -106,9 +106,9 @@ s_struct * struct_allocate (s_struct *s)
   }
   tmp = *s;
   tmp.data = alloc(tmp.type->size);
-  tmp.free_data = true;
   if (! tmp.data)
     return NULL;
+  tmp.free_data = true;
   *s = tmp;
   return s;
 }

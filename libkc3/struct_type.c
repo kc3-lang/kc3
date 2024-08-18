@@ -233,5 +233,5 @@ uw struct_type_padding (uw offset, uw size)
   unsigned int align = 1;
   if (size >= 8)
     align = 8;
-  return (offset + align - 1) / align * align;
+  return (offset + (align - 1)) / align * align;
 }

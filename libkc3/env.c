@@ -2078,19 +2078,20 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
       goto ok;
     }
     tag_clean(&tmp);
-    fact_w_init_fact(fact_w, fact);
+    fact_w_clean(fact_w);
+    if (! fact_w_init_fact(fact_w, fact))
+      goto clean;
     if (! env_eval_call_fn_args(env, callback, arguments, &tmp)) {
       fact_w_clean(fact_w);
       goto clean;
     }
-    fact_w_clean(fact_w);
-    fact_w_init(fact_w);
   }
  ok:
-  list_delete_all(arguments);
+  //list_delete_all(arguments);
   *dest = tmp;
   return dest;
  clean:
+  facts_cursor_clean(&cursor);
   tag_clean(&tmp);
   fact_w_clean(fact_w);
   list_delete_all(arguments);
