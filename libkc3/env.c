@@ -2066,8 +2066,9 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
   s_tag tmp = {0};
   if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(&arguments->tag.data.struct_))
+  if (! (arguments->tag.data.struct_.data = alloc(sizeof(s_fact_w))))
     return NULL;
+  arguments->tag.data.struct_.free_data = true;
   fact_w = arguments->tag.data.struct_.data;
   if (! facts_with_tags(facts, &cursor, subject, predicate, object))
     return NULL;
