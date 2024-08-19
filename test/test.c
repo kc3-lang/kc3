@@ -100,7 +100,7 @@ void test_init (char *argv0, int *argc, char ***argv)
   }
   else {
     const char *env_target;
-    env_target = getenv("C3_TEST_TARGET");
+    env_target = getenv("KC3_TEST");
     if (env_target) {
       char **ap;
       size_t len = 0;
@@ -112,9 +112,9 @@ void test_init (char *argv0, int *argc, char ***argv)
       memcpy(target, env_target, len + 1);
       ap = g_test_targets_env_v;
       while (ap < g_test_targets_env_v + TARGETS_MAX &&
-             (*ap = test_strsep(&target, " \t")) != NULL)
-        if (**ap != '\0')
-          ap++;
+             (*ap = test_strsep(&target, " \t")) != NULL &&
+             **ap)
+        ap++;
       *ap = NULL;
       g_test_targets = (const char **) g_test_targets_env_v;
     }
