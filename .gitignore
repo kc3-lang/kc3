@@ -51,6 +51,7 @@ lib/kc3/0.1/socket.so
 .libs/
 *.lo
 macos/kc3-v*
+/misc/fact_w_offsets
 /misc/http_request_offsets
 /misc/http_response_offsets
 /misc/print_limits

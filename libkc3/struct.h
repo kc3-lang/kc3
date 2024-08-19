@@ -51,7 +51,7 @@ s_tag *        struct_access (const s_struct *s,
                               s_tag *dest);
 s_tag *        struct_access_sym (const s_struct *s, const s_sym *key,
                                   s_tag *dest);
-bool           struct_find_key_index (const s_struct *s,
+uw *           struct_find_key_index (const s_struct *s,
                                       const s_sym *key, uw *dest);
 const void *   struct_get (const s_struct *s, const s_sym *key);
 const s_sym ** struct_get_type (const s_struct *s, const s_sym *key,

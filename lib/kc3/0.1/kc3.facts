@@ -273,3 +273,5 @@ add {KC3, :symbol, KC3.errno}
 replace {KC3.errno, :symbol_value, cfn Sw "kc3_errno" ()}
 add {KC3, :symbol, KC3.strerror}
 replace {KC3.strerror, :symbol_value, cfn Str "kc3_strerror" (Sw, Result)}
+add {KC3, :symbol, KC3.offsetof}
+replace {KC3.offsetof, :symbol_value, cfn Uw "kc3_offsetof" (Sym, Sym, Result)}

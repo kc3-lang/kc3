@@ -28,6 +28,7 @@
 #include "map.h"
 #include "str.h"
 #include "struct.h"
+#include "struct_type.h"
 #include "sym.h"
 #include "tag.h"
 
@@ -306,6 +307,19 @@ bool * kc3_must_clean (const s_sym * const *sym, bool *dest)
 {
   assert(sym);
   return sym_must_clean(*sym, dest);
+}
+
+uw * kc3_offsetof (const s_sym * const *module,
+                   const s_sym * const *key, uw *dest)
+{
+  uw i = 0;
+  const s_struct_type *st;
+  if (! struct_type_find(*module, &st) ||
+      ! st ||
+      ! struct_type_find_key_index(st, *key, &i))
+    return NULL;
+  *dest = st->offset[i];
+  return dest;
 }
 
 s_tag * kc3_pin (const s_tag *a, s_tag *dest)

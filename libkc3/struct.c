@@ -150,21 +150,10 @@ void struct_delete (s_struct *s)
   free(s);
 }
 
-bool struct_find_key_index (const s_struct *s, const s_sym *key,
+uw * struct_find_key_index (const s_struct *s, const s_sym *key,
                             uw *dest)
 {
-  uw i = 0;
-  assert(s);
-  assert(key);
-  while (i < s->type->map.count) {
-    assert(s->type->map.key[i].type == TAG_SYM);
-    if (s->type->map.key[i].data.sym == key) {
-      *dest = i;
-      return true;
-    }
-    i++;
-  }
-  return false;
+  return struct_type_find_key_index(s->type, key, dest);
 }
 
 const void * struct_get (const s_struct *s, const s_sym *key)

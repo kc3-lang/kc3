@@ -15,3 +15,11 @@
                   z: 0.0f},
  tex_coord: %GL.Vec2{x: 0.0f,
                      y: 0.0f}]
+offsetof(FactW, :subject)
+(Uw) 0
+offsetof(FactW, :predicate)
+(Uw) 112
+offsetof(FactW, :object)
+(Uw) 224
+offsetof(FactW, :id)
+(Uw) 336

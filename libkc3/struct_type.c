@@ -73,6 +73,23 @@ const s_struct_type ** struct_type_find (const s_sym *module,
   return env_struct_type_find(&g_kc3_env, module, dest);
 }
 
+uw * struct_type_find_key_index (const s_struct_type *st,
+                                 const s_sym *key, uw *dest)
+{
+  uw i = 0;
+  assert(st);
+  assert(key);
+  while (i < st->map.count) {
+    assert(st->map.key[i].type == TAG_SYM);
+    if (st->map.key[i].data.sym == key) {
+      *dest = i;
+      return dest;
+    }
+    i++;
+  }
+  return NULL;
+}
+
 s_struct_type * struct_type_init (s_struct_type *st,
                                   const s_sym *module,
                                   const s_list *spec)

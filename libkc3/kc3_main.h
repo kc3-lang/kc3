@@ -38,6 +38,8 @@ uw *           kc3_facts_next_id (uw *dest);
 s_str *        kc3_getenv (const s_str *name, s_str *dest);
 void           kc3_license (void);
 const s_sym ** kc3_module (const s_sym **dest);
+uw *           kc3_offsetof (const s_sym * const *module,
+                             const s_sym * const *field, uw *dest);
 sw             kc3_puts (const s_tag *tag);
 
 /* Operators. */

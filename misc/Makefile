@@ -14,7 +14,7 @@ CLEANFILES = http_request_offsets http_response_offsets print_limits
 
 CPPFLAGS += -I/usr/local/include -I.. -W -Wall -Werror
 
-all: http_request_offsets http_response_offsets print_limits
+all: fact_w_offsets http_request_offsets http_response_offsets print_limits
 
 build: all
 
@@ -22,6 +22,9 @@ clean:
 	rm -rf ${CLEANFILES}
 
 distclean: clean
+
+fact_w_offsets: fact_w_offsets.c
+	${CC} ${CPPFLAGS} -I.. fact_w_offsets.c -o fact_w_offsets
 
 http_request_offsets: http_request_offsets.c
 	${CC} ${CPPFLAGS} -I.. http_request_offsets.c -o http_request_offsets
