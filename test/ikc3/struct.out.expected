@@ -23,3 +23,5 @@ offsetof(FactW, :object)
 (Uw) 224
 offsetof(FactW, :id)
 (Uw) 336
+Sym.type_size(FactW)
+(Uw) 352

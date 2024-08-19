@@ -4,13 +4,18 @@
 #include "../http/types.h"
 
 void print_offsets() {
-    printf("Offset of subject: %zu\n", offsetof(struct fact_w, subject));
-    printf("Offset of predicate: %zu\n", offsetof(struct fact_w, predicate));
-    printf("Offset of object: %zu\n", offsetof(struct fact_w, object));
-    printf("Offset of id: %zu\n", offsetof(struct fact_w, id));
 }
 
 int main (void) {
-  print_offsets();
+  printf("offsetof(s_fact_w, subject) = %zu\n",
+         offsetof(s_fact_w, subject));
+  printf("offsetof(s_fact_w, predicate) = %zu\n",
+         offsetof(s_fact_w, predicate));
+  printf("offsetof(s_fact_w, object) = %zu\n",
+         offsetof(s_fact_w, object));
+  printf("offsetof(s_fact_w, id) = %zu\n",
+         offsetof(s_fact_w, id));
+  printf("sizeof(s_fact_w) = %zu\n",
+         sizeof(s_fact_w));
   return 0;
 }
