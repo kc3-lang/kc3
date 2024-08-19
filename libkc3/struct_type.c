@@ -149,7 +149,10 @@ s_struct_type * struct_type_init (s_struct_type *st,
     i++;
     s = list_next(s);
   }
-  tmp.size = (offset + 15) / 16 * 16;
+  if (sizeof(long) == 4)
+    tmp.size = (offset + 3) / 4 * 4;
+  else
+    tmp.size = (offset + 15) / 16 * 16;
   *st = tmp;
   return st;
 }
