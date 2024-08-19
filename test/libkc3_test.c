@@ -35,120 +35,52 @@ void set__fact_test (void);
 void set__tag_test (void);
 void skiplist__fact_test (void);
 void str_test (void);
+void struct_test (void);
 void sym_test (void);
 void tag_test (void);
 void tuple_test (void);
 void types_test (void);
+
+#define TEST_TARGET(name)                           \
+  do {                                              \
+    if (test_target(# name)) {                      \
+      fprintf(stderr, "\n" # name " ");             \
+      name ## _test();                              \
+    }                                               \
+  } while (0)
 
 int main (int argc, char **argv)
 {
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
   test_init(g_kc3_env.argv[0], &argc, &argv);
-  if (test_target("types")) {
-    fprintf(stderr, "\ntypes ");
-    types_test();
-  }
-  if (test_target("array")) {
-    fprintf(stderr, "\narray ");
-    array_test();
-  }
-  if (test_target("bool")) {
-    fprintf(stderr, "\nbool ");
-    bool_test();
-  }
-  if (test_target("character")) {
-    fprintf(stderr, "\ncharacter ");
-    character_test();
-  }
-  if (test_target("buf")) {
-    fprintf(stderr, "\nbuf ");
-    buf_test();
-  }
-  if (test_target("buf_parse")) {
-    fprintf(stderr, "\nbuf_parse ");
-    buf_parse_test();
-  }
-  if (test_target("buf_inspect")) {
-    fprintf(stderr, "\nbuf_inspect ");
-    buf_inspect_test();
-  }
-  if (test_target("buf_file")) {
-    fprintf(stderr, "\nbuf_file ");
-    buf_file_test();
-  }
-  if (test_target("str")) {
-    fprintf(stderr, "\nstr ");
-    str_test();
-  }
-  if (test_target("sym")) {
-    fprintf(stderr, "\nsym ");
-    sym_test();
-  }
-  if (test_target("ident")) {
-    fprintf(stderr, "\nident ");
-    ident_test();
-  }
-  if (test_target("list")) {
-    fprintf(stderr, "\nlist ");
-    list_test();
-  }
-  if (test_target("tuple")) {
-    fprintf(stderr, "\ntuple ");
-    tuple_test();
-  }
-  if (test_target("fn")) {
-    fprintf(stderr, "\nfn ");
-    fn_test();
-  }
-  if (test_target("call")) {
-    fprintf(stderr, "\ncall ");
-    call_test();
-  }
-  if (test_target("tag")) {
-    fprintf(stderr, "\ntag ");
-    tag_test();
-  }
-  if (test_target("inspect")) {
-    fprintf(stderr, "\ninspect ");
-    inspect_test();
-  }
-  if (test_target("fact")) {
-    fprintf(stderr, "\nfact ");
-    fact_test();
-  }
-  if (test_target("compare")) {
-      fprintf(stderr, "\ncompare ");
-      compare_test();
-  }
-  if (test_target("set__tag")) {
-    fprintf(stderr, "\nset__tag ");
-    set__tag_test();
-  }
-  if (test_target("set__fact")) {
-    fprintf(stderr, "\nset__fact ");
-    set__fact_test();
-  }
-  if (test_target("skiplist__fact")) {
-    fprintf(stderr, "\nskiplist__fact ");
-    skiplist__fact_test();
-  }
-  if (test_target("facts")) {
-    fprintf(stderr, "\nfacts ");
-    facts_test();
-  }
-  if (test_target("facts_cursor")) {
-    fprintf(stderr, "\nfacts_cursor ");
-    facts_cursor_test();
-  }
-  if (test_target("facts_with")) {
-    fprintf(stderr, "\nfacts_with ");
-    facts_with_test();
-  }
-  if (test_target("env")) {
-    fprintf(stderr, "\nenv ");
-    env_test();
-  }
+  TEST_TARGET(types);
+  TEST_TARGET(array);
+  TEST_TARGET(bool);
+  TEST_TARGET(character);
+  TEST_TARGET(buf);
+  TEST_TARGET(buf_parse);
+  TEST_TARGET(buf_inspect);
+  TEST_TARGET(buf_file);
+  TEST_TARGET(str);
+  TEST_TARGET(sym);
+  TEST_TARGET(ident);
+  TEST_TARGET(list);
+  TEST_TARGET(tuple);
+  TEST_TARGET(fn);
+  TEST_TARGET(call);
+  TEST_TARGET(tag);
+  TEST_TARGET(inspect);
+  TEST_TARGET(fact);
+  TEST_TARGET(compare);
+  TEST_TARGET(set__tag);
+  TEST_TARGET(set__fact);
+  TEST_TARGET(skiplist__fact);
+  TEST_TARGET(facts);
+  TEST_TARGET(facts_cursor);
+  TEST_TARGET(facts_with);
+  TEST_TARGET(env);
+  TEST_TARGET(struct);
   test_summary();
   test_clean();
   kc3_clean(NULL);

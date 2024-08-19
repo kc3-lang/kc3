@@ -8,13 +8,3 @@ quote [position:  %GL.Vec3{},
 [position:  %GL.Vec3{},
  normal:    %GL.Vec3{},
  tex_coord: %GL.Vec2{}]
-quote offsetof(FactW, :subject)
-offsetof(FactW, :subject)
-quote offsetof(FactW, :predicate)
-offsetof(FactW, :predicate)
-quote offsetof(FactW, :object)
-offsetof(FactW, :object)
-quote offsetof(FactW, :id)
-offsetof(FactW, :id)
-quote Sym.type_size(FactW)
-Sym.type_size(FactW)
