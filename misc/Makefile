@@ -10,11 +10,11 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = http_request_offsets http_response_offsets print_limits
+CLEANFILES = http_request http_response limits
 
 CPPFLAGS += -I/usr/local/include -I.. -W -Wall -Werror
 
-all: fact_w_offsets http_request_offsets http_response_offsets print_limits
+all: fact_w http_request http_response limits
 
 build: all
 
@@ -23,17 +23,17 @@ clean:
 
 distclean: clean
 
-fact_w_offsets: fact_w_offsets.c
-	${CC} ${CPPFLAGS} -I.. fact_w_offsets.c -o fact_w_offsets
+fact_w: fact_w.c
+	${CC} ${CPPFLAGS} -I.. fact_w.c -o fact_w
 
-http_request_offsets: http_request_offsets.c
-	${CC} ${CPPFLAGS} -I.. http_request_offsets.c -o http_request_offsets
+http_request: http_request.c
+	${CC} ${CPPFLAGS} -I.. http_request.c -o http_request
 
-http_response_offsets: http_response_offsets.c
-	${CC} ${CPPFLAGS} -I.. http_response_offsets.c -o http_response_offsets
+http_response: http_response.c
+	${CC} ${CPPFLAGS} -I.. http_response.c -o http_response
 
-print_limits: print_limits.c
-	libtool --mode=link --tag=CC ${CC} ${CPPFLAGS} -I.. print_limits.c -L../libkc3 -lkc3 -o print_limits
+limits: limits.c
+	libtool --mode=link --tag=CC ${CC} ${CPPFLAGS} -I.. limits.c -L../libkc3 -lkc3 -o limits
 
 .PHONY: \
 	all \
