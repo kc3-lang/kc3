@@ -32,12 +32,12 @@ const s_tag * frame_get (const s_frame *frame, const s_sym *sym);
 /* Operators. */
 s_tag *   frame_binding_new (s_frame *frame, const s_sym *name);
 s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
-                                  const s_tag *value);
+                                  s_tag *value);
 s_frame * frame_binding_delete (s_frame *frame, const s_sym *name);
 s_frame * frame_binding_replace (s_frame *frame, const s_sym *name,
                                  const s_tag *value);
 s_tag *   frame_get_w (s_frame *frame, const s_sym *sym);
 s_frame * frame_replace (s_frame *frame, const s_sym *sym,
-                         const s_tag *value);
+                         s_tag *value);
 
 #endif /* LIBKC3_FRAME_H */

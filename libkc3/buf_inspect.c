@@ -3745,12 +3745,20 @@ sw buf_inspect_var (s_buf *buf, const s_tag *tag)
   assert(tag);
   assert(tag->type == TAG_VAR);
   assert(tag->data.var.type);
-  if (tag->data.var.type == &g_sym_Tag)
-    return buf_write_1(buf, "?");
-  if ((r = buf_inspect_paren_sym(buf, tag->data.var.type)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, " ?")) < 0)
+  if (tag->data.var.type == &g_sym_Tag) {
+    if ((r = buf_write_1(buf, "?0x")) < 0)
+      return r;
+  }
+  else {
+    if ((r = buf_inspect_paren_sym(buf, tag->data.var.type)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, " ?0x")) < 0)
+      return r;
+    result += r;
+  }
+  if ((r = buf_inspect_uw_hexadecimal
+       (buf, (uw *) &tag->data.var.ptr)) < 0)
     return r;
   result += r;
   return result;
@@ -3760,12 +3768,25 @@ sw buf_inspect_var_size (s_pretty *pretty, const s_tag *tag)
 {
   sw r;
   sw result = 0;
-  if (tag->data.var.type == &g_sym_Tag)
-    return buf_write_1_size(pretty, "?");
-  if ((r = buf_inspect_paren_sym_size(pretty, tag->data.var.type)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1_size(pretty, " ?")) < 0)
+  assert(pretty);
+  assert(tag);
+  assert(tag->type == TAG_VAR);
+  assert(tag->data.var.type);
+  if (tag->data.var.type == &g_sym_Tag) {
+    if ((r = buf_write_1_size(pretty, "?")) < 0)
+      return r;
+  }
+  else {
+    if ((r = buf_inspect_paren_sym_size(pretty,
+                                        tag->data.var.type)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1_size(pretty, " ?")) < 0)
+      return r;
+    result += r;
+  }
+  if ((r = buf_inspect_uw_hexadecimal_size
+       (pretty, (uw *) &tag->data.var.ptr)) < 0)
     return r;
   result += r;
   return result;

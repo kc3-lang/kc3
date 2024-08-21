@@ -15,6 +15,7 @@
 #include "binding.h"
 #include "frame.h"
 #include "list.h"
+#include "sym.h"
 #include "tag.h"
 
 s_tag * frame_binding_new (s_frame *frame, const s_sym *name)
@@ -24,11 +25,12 @@ s_tag * frame_binding_new (s_frame *frame, const s_sym *name)
   if (! b)
     return NULL;
   frame->bindings = b;
+  tag_init_var(&b->value, &g_sym_Tag);
   return &b->value;
 }
 
 s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
-                                  const s_tag *value)
+                                  s_tag *value)
 {
   s_tag *tag;
   frame_binding_new(frame, name);
@@ -38,8 +40,10 @@ s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
     assert(! "frame_binding_new_copy: binding new");
     return NULL;
   }
-  if (value->type == TAG_VAR)
+  if (value->type == TAG_VAR) {
     tag_init_var(tag, value->data.var.type);
+    value->data.var.ptr = tag->data.var.ptr;
+  }
   else if (! tag_init_copy(tag, value)) {
     err_puts("frame_binding_new_copy: tag_init_copy");
     assert(! "frame_binding_new_copy: tag_init_copy");
@@ -167,7 +171,7 @@ s_frame * frame_new (s_frame *next)
 }
 
 s_frame * frame_replace (s_frame *frame, const s_sym *sym,
-                         const s_tag *value)
+                         s_tag *value)
 {
   s_frame *f;
   s_tag *result;
@@ -177,8 +181,10 @@ s_frame * frame_replace (s_frame *frame, const s_sym *sym,
     result = binding_get_w(f->bindings, sym);
     if (result) {
       tag_clean(result);
-      if (value->type == TAG_VAR)
+      if (value->type == TAG_VAR) {
         tag_init_var(result, value->data.var.type);
+        value->data.var.ptr = result->data.var.ptr;
+      }
       else
         tag_init_copy(result, value);
       return frame;
