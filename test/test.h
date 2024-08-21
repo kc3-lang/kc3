@@ -52,8 +52,9 @@
 
 #define TEST_EQ(test, expected)                                        \
   do {                                                                 \
-    long long signed TEST_EQ_tmp = (long long signed) (test);          \
-    if (TEST_EQ_tmp == (long long signed) (expected)) {                \
+    long long signed TEST_EQ_test = (long long signed) (test);         \
+    long long signed TEST_EQ_expected = (long long signed) (expected); \
+    if (TEST_EQ_test == TEST_EQ_expected) {                            \
       g_test_assert_count++;                                           \
       g_test_assert_ok++;                                              \
     }                                                                  \
@@ -61,10 +62,10 @@
       test_ko();                                                       \
       fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
               "%s == %s\n"                                             \
-              "Expected %s got %lld.%s\n",                             \
+              "Expected %lld got %lld.%s\n",                           \
               TEST_COLOR_KO,                                           \
               __FILE__, __LINE__, __func__,                            \
-              # test, # expected, # expected, TEST_EQ_tmp,             \
+              # test, # expected, TEST_EQ_expected, TEST_EQ_test,      \
               TEST_COLOR_RESET);                                       \
       return 1;                                                        \
     }                                                                  \
