@@ -70,11 +70,22 @@ p_facts_spec facts_spec_new_list (s_list *spec)
     return NULL;
   s = spec;
   while (s) {
-    if (s->tag.type != TAG_LIST ||
-        (c = list_length(s->tag.data.list)) < 3 ||
-        (c - 1) % 2) {
-      err_puts("facts_spec_new_list: invalid spec");
-      assert(! "facts_spec_new_list: invalid spec");
+    if (s->tag.type != TAG_LIST) {
+      err_puts("facts_spec_new_list: invalid spec: not a List of List");
+      assert(! "facts_spec_new_list: invalid spec: not a List of List");
+      return NULL;
+    }
+    t = s->tag.data.list;
+    if ((c = list_length(t)) < 3) {
+      err_puts("facts_spec_new_list: invalid spec: list length < 3");
+      assert(! "facts_spec_new_list: invalid spec: list length < 3");
+      return NULL;
+    }
+    if ((c - 1) % 2) {
+      err_puts("facts_spec_new_list: invalid spec: list length"
+               " != 3 + 2 * n");
+      assert(! "facts_spec_new_list: invalid spec: list length"
+               " != 3 + 2 * n");
       return NULL;
     }
     count += c + 1;

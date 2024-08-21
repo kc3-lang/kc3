@@ -176,6 +176,7 @@ bool          env_eval_time (s_env *env, const s_time *time,
                              s_tag *dest);
 bool          env_eval_tuple (s_env *env, const s_tuple *tuple,
                               s_tag *dest);
+bool          env_eval_var (s_env *env, const s_tag *tag, s_tag *dest);
 bool          env_eval_void (s_env *env, const void *_, s_tag *dest);
 s_fact_w *    env_fact_w_eval (s_env *env, const s_fact_w *fact,
 			       s_fact_w *dest);

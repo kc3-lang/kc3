@@ -56,6 +56,7 @@ u_ptr_w * ptr_init_cast (u_ptr_w *p,
   case TAG_U32: p->p = (void *) ((uw) tag->data.u32);  return p;
   case TAG_U64: p->p = (void *) ((uw) tag->data.u64);  return p;
   case TAG_UW:  p->p = (void *) ((uw) tag->data.uw);   return p;
+  case TAG_VAR: p->p = tag->data.var.ptr;              return p;
   default:
     break;
   }

@@ -1344,6 +1344,10 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       *dest = tag;
       return true;
     }
+    if (type == &g_sym_Var) {
+      *dest = &tag->data.var;
+      return true;
+    }
     goto invalid_cast;
   case TAG_VOID:
     if (type == &g_sym_Void) {

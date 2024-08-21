@@ -866,6 +866,10 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_ulong;
     return true;
   }
+  if (sym == &g_sym_Var) {
+    *dest = &ffi_type_pointer;
+    return true;
+  }
   if (sym == &g_sym_Void) {
     *dest = &ffi_type_void;
     return true;

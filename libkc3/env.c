@@ -1878,6 +1878,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_time(env, &tag->data.time, dest);
   case TAG_TUPLE:
     return env_eval_tuple(env, &tag->data.tuple, dest);
+  case TAG_VAR:
+    return env_eval_var(env, tag, dest);
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:
@@ -1903,7 +1905,6 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_U64:
   case TAG_UNQUOTE:
   case TAG_UW:
-  case TAG_VAR:
     if (! tag_init_copy(dest, tag))
       return false;
     return true;
@@ -1967,6 +1968,33 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
   }
   dest->type = TAG_TUPLE;
   dest->data.tuple = tmp;
+  return true;
+}
+
+bool env_eval_var (s_env *env, const s_tag *tag, s_tag *dest)
+{
+  s_tag tmp = {0};
+  const s_var *var;
+  assert(env);
+  assert(tag);
+  assert(dest);
+  (void) env;
+  if (tag->type != TAG_VAR)
+    return false;
+  var = &tag->data.var;
+  if (var->ptr && var->ptr->type != TAG_VAR) {
+    if (! tag_init_copy(dest, var->ptr))
+      return false;
+    return true;
+  }
+  tmp.type = TAG_VAR;
+  if (! var->ptr ||
+      var->ptr == tag)
+    tmp.data.var.ptr = dest;
+  else
+    tmp.data.var.ptr = var->ptr;
+  tmp.data.var.type = var->type;
+  *dest = tmp;
   return true;
 }
 
@@ -2071,13 +2099,14 @@ s_facts_with_cursor * env_facts_with_list (s_env *env, s_facts *facts,
   assert(facts);
   assert(cursor);
   assert(spec);
-  spec_i = spec;
   tmp = NULL;
   tmp_tail = &tmp;
+  spec_i = spec;
   while (spec_i) {
     if (spec_i->tag.type != TAG_LIST)
       goto ko;
     *tmp_tail = list_new(NULL);
+    (*tmp_tail)->tag.type = TAG_LIST;
     tmp_tail_j = &(*tmp_tail)->tag.data.list;
     spec_j = spec_i->tag.data.list;
     while (spec_j) {

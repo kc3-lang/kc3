@@ -141,6 +141,13 @@ replace {KC3.operator_gte, :arity, 2}
 replace {KC3.operator_gte, :symbol_value, cfn Bool "tag_gte" (Tag, Tag, Result)}
 replace {KC3.operator_gte, :operator_precedence, 8}
 replace {KC3.operator_gte, :operator_associativity, :left}
+add {KC3, :operator, KC3.operator_assign}
+replace {KC3.operator_assign, :is_a, :operator}
+replace {KC3.operator_assign, :sym, :<-}
+replace {KC3.operator_assign, :arity, 2}
+replace {KC3.operator_assign, :symbol_value, cfn Tag "var_assign" (Var, Tag, Result)}
+replace {KC3.operator_assign, :operator_precedence, 7}
+replace {KC3.operator_assign, :operator_associativity, :left}
 add {KC3, :operator, KC3.operator_eq}
 replace {KC3.operator_eq, :is_a, :operator}
 replace {KC3.operator_eq, :sym, :==}

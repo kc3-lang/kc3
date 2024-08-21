@@ -16,6 +16,16 @@
 #include "tag.h"
 #include "var.h"
 
+s_tag * var_assign (s_var *var, const s_tag *value, s_tag *dest)
+{
+  assert(var);
+  assert(value);
+  assert(dest);
+  if (! var_set(var, value))
+    return NULL;
+  return tag_init_copy(dest, value);
+}
+
 s_var * var_init (s_var *var, s_tag *ptr, const s_sym *type)
 {
   s_var tmp = {0};

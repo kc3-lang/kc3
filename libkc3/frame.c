@@ -37,13 +37,15 @@ s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
     err_puts("frame_binding_new_copy: binding new");
     assert(! "frame_binding_new_copy: binding new");
     return NULL;
-    }
-  if (! tag_init_copy(tag, value)) {
+  }
+  if (value->type == TAG_VAR)
+    tag_init_var(tag, value->data.var.type);
+  else if (! tag_init_copy(tag, value)) {
     err_puts("frame_binding_new_copy: tag_init_copy");
     assert(! "frame_binding_new_copy: tag_init_copy");
     frame = frame_binding_delete(frame, name);
     return NULL;
-    }
+  }
   return frame;
 }
 
@@ -175,7 +177,10 @@ s_frame * frame_replace (s_frame *frame, const s_sym *sym,
     result = binding_get_w(f->bindings, sym);
     if (result) {
       tag_clean(result);
-      tag_init_copy(result, value);
+      if (value->type == TAG_VAR)
+        tag_init_var(result, value->data.var.type);
+      else
+        tag_init_copy(result, value);
       return frame;
     }
     f = f->next;
