@@ -23,12 +23,12 @@
 void facts_cursor_clean (s_facts_cursor *cursor)
 {
   assert(cursor);
-  if (cursor->var_subject)
-    tag_var(cursor->var_subject, cursor->var_subject_type);
-  if (cursor->var_predicate)
-    tag_var(cursor->var_predicate, cursor->var_predicate_type);
-  if (cursor->var_object)
-    tag_var(cursor->var_object, cursor->var_object_type);
+  if (cursor->var_subject.ptr)
+    var_reset(&cursor->var_subject);
+  if (cursor->var_predicate.ptr)
+    var_reset(&cursor->var_predicate);
+  if (cursor->var_object.ptr)
+    var_reset(&cursor->var_object);
   facts_cursor_lock_clean(cursor);
 }
 
@@ -39,39 +39,35 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
                                     s_fact *end)
 {
   s_skiplist_node__fact *pred;
+  s_facts_cursor tmp = {0};
   assert(cursor);
   assert(index);
   pred = skiplist_pred__fact(index, start);
   if (! pred)
     return NULL;
-  cursor->index = index;
-  cursor->node = SKIPLIST_NODE_NEXT__fact(pred, 0);
+  tmp.index = index;
+  tmp.node = SKIPLIST_NODE_NEXT__fact(pred, 0);
   skiplist_node_delete__fact(pred);
   if (start)
-    cursor->start = *start;
+    tmp.start = *start;
   else {
-    cursor->start.subject   = TAG_FIRST;
-    cursor->start.predicate = TAG_FIRST;
-    cursor->start.object    = TAG_FIRST;
+    tmp.start.subject   = TAG_FIRST;
+    tmp.start.predicate = TAG_FIRST;
+    tmp.start.object    = TAG_FIRST;
   }
   if (end)
-    cursor->end = *end;
+    tmp.end = *end;
   else {
-    cursor->end.subject   = TAG_LAST;
-    cursor->end.predicate = TAG_LAST;
-    cursor->end.object    = TAG_LAST;
+    tmp.end.subject   = TAG_LAST;
+    tmp.end.predicate = TAG_LAST;
+    tmp.end.object    = TAG_LAST;
   }
-  cursor->var_subject        = NULL;
-  cursor->var_subject_type   = NULL;
-  cursor->var_predicate      = NULL;
-  cursor->var_predicate_type = NULL;
-  cursor->var_object         = NULL;
-  cursor->var_object_type    = NULL;
-  cursor->facts = facts;
-  if (! facts_cursor_lock_init(cursor)) {
-    facts_cursor_clean(cursor);
+  tmp.facts = facts;
+  if (! facts_cursor_lock_init(&tmp)) {
+    facts_cursor_clean(&tmp);
     return NULL;
   }
+  *cursor = tmp;
   return cursor;
 }
 
@@ -139,57 +135,57 @@ const s_fact ** facts_cursor_next (s_facts_cursor *cursor,
       cursor->node = NULL;
   }
   if (! cursor->node) {
-    if (cursor->var_subject)
-      tag_var(cursor->var_subject, cursor->var_subject_type);
-    if (cursor->var_predicate)
-      tag_var(cursor->var_predicate, cursor->var_predicate_type);
-    if (cursor->var_object)
-      tag_var(cursor->var_object, cursor->var_object_type);
+    if (cursor->var_subject.ptr)
+      var_reset(&cursor->var_subject);
+    if (cursor->var_predicate.ptr)
+      var_reset(&cursor->var_predicate);
+    if (cursor->var_object.ptr)
+      var_reset(&cursor->var_object);
     facts_cursor_lock_unlock(cursor);
     *dest = NULL;
     return dest;
   }
   fact = cursor->node->fact;
-  if (cursor->var_subject) {
-    tag_var(cursor->var_subject, cursor->var_subject_type);
+  if (cursor->var_subject.ptr) {
+    var_reset(&cursor->var_subject);
     if (! tag_type(fact->subject, &type))
       goto ko;
-    if (cursor->var_subject_type != &g_sym_Tag &&
-        cursor->var_subject_type != type)
+    if (cursor->var_subject.type != &g_sym_Tag &&
+        cursor->var_subject.type != type)
       goto next;
-    if (! var_set(cursor->var_subject, fact->subject))
+    if (! var_set(&cursor->var_subject, fact->subject))
       goto ko;
   }
-  if (cursor->var_predicate) {
-    tag_var(cursor->var_predicate, cursor->var_predicate_type);
+  if (cursor->var_predicate.ptr) {
+    var_reset(&cursor->var_predicate);
     if (! tag_type(fact->predicate, &type))
       goto ko;
-    if (cursor->var_predicate_type != &g_sym_Tag &&
-        cursor->var_predicate_type != type)
+    if (cursor->var_predicate.type != &g_sym_Tag &&
+        cursor->var_predicate.type != type)
       goto next;
-    if (! var_set(cursor->var_predicate, fact->predicate))
+    if (! var_set(&cursor->var_predicate, fact->predicate))
       goto ko;
   }
-  if (cursor->var_object) {
-    tag_var(cursor->var_object, cursor->var_object_type);
+  if (cursor->var_object.ptr) {
+    var_reset(&cursor->var_object);
     if (! tag_type(fact->object, &type))
       goto ko;
-    if (cursor->var_object_type != &g_sym_Tag &&
-        cursor->var_object_type != type)
+    if (cursor->var_object.type != &g_sym_Tag &&
+        cursor->var_object.type != type)
       goto next;
-    if (! var_set(cursor->var_object, fact->object))
+    if (! var_set(&cursor->var_object, fact->object))
       goto ko;
   }
   facts_cursor_lock_unlock(cursor);
   *dest = fact;
   return dest;
  ko:
-  if (cursor->var_subject)
-    tag_var(cursor->var_subject, cursor->var_subject_type);
-  if (cursor->var_predicate)
-    tag_var(cursor->var_predicate, cursor->var_predicate_type);
-  if (cursor->var_object)
-    tag_var(cursor->var_object, cursor->var_object_type);
+  if (cursor->var_subject.ptr)
+    var_reset(&cursor->var_subject);
+  if (cursor->var_predicate.ptr)
+    var_reset(&cursor->var_predicate);
+  if (cursor->var_object.ptr)
+    var_reset(&cursor->var_object);
   facts_cursor_lock_unlock(cursor);
   return NULL;
 }

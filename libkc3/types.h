@@ -355,6 +355,7 @@ struct unwind_protect {
 };
 
 struct var {
+  s_tag *ptr;
   const s_sym *type;
 };
 
@@ -681,12 +682,9 @@ struct facts_cursor {
   s_skiplist_node__fact *node;
   s_fact start;
   s_fact end;
-  s_tag *var_subject;
-  const s_sym *var_subject_type;
-  s_tag *var_predicate;
-  const s_sym *var_predicate_type;
-  s_tag *var_object;
-  const s_sym *var_object_type;
+  s_var var_subject;
+  s_var var_predicate;
+  s_var var_object;
   pthread_mutex_t mutex;
 };
 

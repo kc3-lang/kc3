@@ -422,7 +422,7 @@ class TagInitList
                    [Arg.new("const s_unquote *", "unquote")]),
        TagInit.new("uw", "TAG_UW", :init_mode_direct,
                    [Arg.new("uw", "i")]),
-       TagInit.new("var", "TAG_VAR", :init_mode_init,
+       TagInitProto.new("var", "TAG_VAR", :init_mode_none,
                    [Arg.new("const s_sym *", "type")]),
        TagInit.new("void", "TAG_VOID", :init_mode_none, [])])
   end

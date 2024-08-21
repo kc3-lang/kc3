@@ -16,9 +16,11 @@
 #include "tag.h"
 #include "var.h"
 
-s_var * var_init (s_var *var, const s_sym *type)
+s_var * var_init (s_var *var, s_tag *ptr, const s_sym *type)
 {
+  s_var tmp = {0};
   assert(var);
+  assert(ptr);
   assert(type);
   if (! sym_is_module(type)) {
     err_write_1("var_init: invalid type: ");
@@ -27,7 +29,9 @@ s_var * var_init (s_var *var, const s_sym *type)
     assert(! "var_init: invalid type");
     return NULL;
   }
-  var->type = type;
+  tmp.ptr = ptr;
+  tmp.type = type;
+  *var = tmp;
   return var;
 }
 
@@ -54,36 +58,45 @@ s_tag * var_init_cast (s_tag *tag, const s_sym * const *type,
   return tag;
 }
 
-s_tag * var_init_copy (s_tag *tag, const s_tag *src)
+s_var * var_init_copy (s_var *var, const s_var *src)
 {
-  assert(tag);
+  assert(var);
   assert(src);
-  assert(src->type == TAG_VAR);
-  if (src->type != TAG_VAR)
-    return NULL;
-  tag->type = TAG_VAR;
-  tag->data.var = src->data.var;
-  return tag;
+  *var = *src;
+  return var;
 }
 
-s_tag * var_set (s_tag *var, const s_tag *value)
+bool * var_is_unbound (s_var *var, bool *dest)
+{
+  assert(var);
+  assert(dest);
+  *dest = var->ptr->type == TAG_VAR;
+  return dest;
+}
+
+s_var * var_reset (s_var *var)
+{
+  s_tag tmp = {0};
+  assert(var);
+  assert(var->ptr);
+  tmp.type = TAG_VAR;
+  var_init(&tmp.data.var, var->ptr, var->type);
+  tag_clean(var->ptr);
+  *var->ptr = tmp;
+  return var;
+}
+
+s_var * var_set (s_var *var, const s_tag *value)
 {
   const s_sym *value_type;
-  const s_sym *var_type;
   assert(var);
   assert(value);
-  if (var->type != TAG_VAR) {
-    err_puts("var_set: not a TAG_VAR");
-    assert(! "var_set: not a TAG_VAR");
-    return NULL;
-  }
-  var_type = var->data.var.type;
-  if (var_type != &g_sym_Tag) {
+  if (var->type != &g_sym_Tag) {
     if (! tag_type(value, &value_type))
       return NULL;
-    if (var_type != value_type) {
+    if (var->type != value_type) {
       err_write_1("var_set: type mismatch: ");
-      err_inspect_sym(&var_type);
+      err_inspect_sym(&var->type);
       err_write_1(" != ");
       err_inspect_sym(&value_type);
       err_write_1("\n");
@@ -91,5 +104,7 @@ s_tag * var_set (s_tag *var, const s_tag *value)
       return NULL;
     }
   }
-  return tag_init_copy(var, value);
+  if (! tag_init_copy(var->ptr, value))
+    return NULL;
+  return var;
 }

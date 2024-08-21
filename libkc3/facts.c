@@ -193,7 +193,8 @@ sw facts_dump (s_facts *facts, s_buf *buf)
     return r;
   result += r;
   facts_lock_r(facts);
-  facts_with_0(facts, &cursor, &subject, &predicate, &object);
+  facts_with_0(facts, &cursor, &subject.data.var, &predicate.data.var,
+               &object.data.var);
   if (! facts_cursor_next(&cursor, &fact))
     goto clean;
   while (fact) {

@@ -16,12 +16,16 @@
 #include "types.h"
 
 /* Stack-allocation compatible functions. */
-s_var * var_init (s_var *var, const s_sym *type);
+s_var * var_init (s_var *var, s_tag *ptr, const s_sym *type);
 s_tag * var_init_cast (s_tag *tag, const s_sym * const *type,
                        const s_tag *src);
-s_tag * var_init_copy (s_tag *tag, const s_tag *src);
+s_var * var_init_copy (s_var *tag, const s_var *src);
+
+/* Observers. */
+bool * var_is_unbound (s_var *var, bool *dest);
 
 /* Operators. */
-s_tag * var_set (s_tag *var, const s_tag *value);
+s_var * var_reset (s_var *var);
+s_var * var_set (s_var *var, const s_tag *value);
 
 #endif /* LIBKC3_VAR_H */

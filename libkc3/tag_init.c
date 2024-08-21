@@ -624,17 +624,6 @@ s_tag * tag_init_uw (s_tag *tag, uw i)
   return tag;
 }
 
-s_tag * tag_init_var (s_tag *tag, const s_sym *type)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_VAR;
-  if (! var_init(&tmp.data.var, type))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_init_void (s_tag *tag)
 {
   s_tag tmp = {0};
@@ -1349,20 +1338,6 @@ s_tag * tag_new_uw (uw i)
   return tag;
 }
 
-s_tag * tag_new_var (const s_sym *type)
-{
-  s_tag *tag;
-  tag = alloc(sizeof(s_tag));
-  if (! tag)
-    return NULL;
-  tag->type = TAG_VAR;
-  if (! var_init(&tag->data.var, type)) {
-    free(tag);
-    return NULL;
-  }
-  return tag;
-}
-
 s_tag * tag_new_void (void)
 {
   s_tag *tag;
@@ -2005,18 +1980,6 @@ s_tag * tag_uw (s_tag *tag, uw i)
   tag_clean(tag);
   tmp.type = TAG_UW;
   tmp.data.uw = i;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_var (s_tag *tag, const s_sym *type)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_VAR;
-  if (! var_init(&tmp.data.var, type))
-    return NULL;
   *tag = tmp;
   return tag;
 }

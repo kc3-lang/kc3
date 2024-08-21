@@ -35,6 +35,7 @@
 #include "fact.h"
 #include "facts.h"
 #include "facts_cursor.h"
+#include "facts_spec.h"
 #include "facts_transaction.h"
 #include "facts_with.h"
 #include "facts_with_cursor.h"
@@ -2027,7 +2028,7 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   if (! struct_allocate(&arguments->tag.data.struct_))
     return NULL;
   fact_w = arguments->tag.data.struct_.data;
-  if (! facts_with_list(facts, &cursor, *spec))
+  if (! env_facts_with_list(env, facts, &cursor, *spec))
     return NULL;
   while (1) {
     if (! facts_with_cursor_next(&cursor, &fact))
@@ -2052,6 +2053,64 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   tag_clean(&tmp);
   fact_w_clean(fact_w);
   list_delete_all(arguments);
+  return NULL;
+}
+
+s_facts_with_cursor * env_facts_with_list (s_env *env, s_facts *facts,
+                                           s_facts_with_cursor *cursor,
+                                           s_list *spec)
+{
+  s_ident *ident;
+  s_list *spec_i;
+  s_list *spec_j;
+  s_list  *tmp;
+  s_list **tmp_tail;
+  s_list **tmp_tail_j;
+  p_facts_spec facts_spec;
+  s_tag *var;
+  assert(facts);
+  assert(cursor);
+  assert(spec);
+  spec_i = spec;
+  tmp = NULL;
+  tmp_tail = &tmp;
+  while (spec_i) {
+    if (spec_i->tag.type != TAG_LIST)
+      goto ko;
+    *tmp_tail = list_new(NULL);
+    tmp_tail_j = &(*tmp_tail)->tag.data.list;
+    spec_j = spec_i->tag.data.list;
+    while (spec_j) {
+      *tmp_tail_j = list_new(NULL);
+      if (spec_j->tag.type == TAG_IDENT) {
+        ident = &spec_j->tag.data.ident;
+        if (! (var = binding_get_w(env->frame->bindings, ident->sym))) {
+          if (! (var = frame_binding_new(env->frame, ident->sym)))
+            goto ko;
+          tag_init_var(var, &g_sym_Tag);
+        }
+        tag_init_copy(&(*tmp_tail_j)->tag, var);
+      }
+      else
+        if (! env_eval_tag(env, &spec_j->tag, &(*tmp_tail_j)->tag))
+          goto ko;
+      tmp_tail_j = &(*tmp_tail_j)->next.data.list;
+      spec_j = list_next(spec_j);
+    }
+    tmp_tail = &(*tmp_tail)->next.data.list;
+    spec_i = list_next(spec_i);
+  }
+  if (! (facts_spec = facts_spec_new_list(tmp))) {
+    err_puts("env_facts_with_list: facts_spec_new_list");
+    assert(! "env_facts_with_list: facts_spec_new_list");
+    goto ko;
+  }
+  if (! facts_with(facts, cursor, facts_spec))
+    goto ko;
+  list_delete_all(tmp);
+  return cursor;
+ ko:
+  list_delete_all(tmp);
   return NULL;
 }
 

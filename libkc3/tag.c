@@ -527,8 +527,7 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     return tag;
   case TAG_VAR:
     tag->type = src->type;
-    if (! var_init_copy(tag, src))
-      return NULL;
+    var_init_copy(&tag->data.var, &src->data.var);
     return tag;
   case TAG_VOID:
     tag_init_void(tag);
@@ -586,6 +585,16 @@ s_tag * tag_init_cast_struct (s_tag *tag, const s_sym * const *type,
   err_puts("tag_init_cast_struct: invalid cast");
   assert(! "tag_init_cast_struct: invalid cast");
   return NULL;
+}
+
+s_tag * tag_init_var (s_tag *tag, const s_sym *type)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_VAR;
+  var_init(&tmp.data.var, tag, type);
+  *tag = tmp;
+  return tag;
 }
 
 s_tag * tag_integer_reduce (s_tag *tag)
@@ -976,12 +985,8 @@ uw * tag_size (const s_tag *tag, uw *dest)
   const s_sym *type;
   uw tmp = 0;
   assert(tag);
-  if (tag->type == TAG_VAR) {
-    if (! sym_type_size(&tag->data.var.type, &tmp))
-      return NULL;
-  }
-  else if (! tag_type(tag, &type) ||
-           ! sym_type_size(&type, &tmp))
+  if (! tag_type(tag, &type) ||
+      ! sym_type_size(&type, &tmp))
     return NULL;
   *dest = tmp;
   return dest;
