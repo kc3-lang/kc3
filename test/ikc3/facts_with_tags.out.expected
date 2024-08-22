@@ -1,4 +1,4 @@
-Facts.with_tags(Facts.env_facts(), KC3, :operator, ?, fn (fact) { puts(fact.object); void })
+Facts.with_tags(Facts.env_facts(), KC3, :operator, ?, fn (fact) { puts(fact.object); 1 })
 operator_eq
 operator_gt
 operator_lt
@@ -21,10 +21,82 @@ operator_bnot
 operator_bxor
 operator_equal
 operator_paren
+operator_assign
 operator_not_eq
 operator_require
 operator_brackets
 operator_defstruct
 operator_shift_left
 operator_shift_right
-void
+1
+Facts.with_tags(Facts.env_facts(), KC3, :operator, op = ?, fn (fact) { puts(op); 2 })
+operator_eq
+operator_gt
+operator_lt
+operator_or
+operator_add
+operator_and
+operator_bor
+operator_div
+operator_gte
+operator_lte
+operator_mod
+operator_mul
+operator_neg
+operator_not
+operator_pin
+operator_sub
+operator_addi
+operator_band
+operator_bnot
+operator_bxor
+operator_equal
+operator_paren
+operator_assign
+operator_not_eq
+operator_require
+operator_brackets
+operator_defstruct
+operator_shift_left
+operator_shift_right
+2
+op = ?
+?0x
+Facts.with_tags(Facts.env_facts(), KC3, :operator, op, fn (fact) { puts(op); 3 })
+operator_eq
+operator_gt
+operator_lt
+operator_or
+operator_add
+operator_and
+operator_bor
+operator_div
+operator_gte
+operator_lte
+operator_mod
+operator_mul
+operator_neg
+operator_not
+operator_pin
+operator_sub
+operator_addi
+operator_band
+operator_bnot
+operator_bxor
+operator_equal
+operator_paren
+operator_assign
+operator_not_eq
+operator_require
+operator_brackets
+operator_defstruct
+operator_shift_left
+operator_shift_right
+3
+type(op)
+Var
+op = quote operator_eq
+operator_eq
+Facts.with_tags(Facts.env_facts(), KC3, :operator, op, fn (fact) { puts(op); 4 })
+operator_eq
+4

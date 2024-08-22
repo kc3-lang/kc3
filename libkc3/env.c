@@ -2058,6 +2058,7 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
     if (! facts_with_cursor_next(&cursor, &fact))
       goto clean;
     if (! fact) {
+      err_puts("env_facts_with: ok");
       goto ok;
     }
     tag_clean(&tmp);
@@ -2124,7 +2125,7 @@ s_facts_with_cursor * env_facts_with_list (s_env *env, s_facts *facts,
     tmp_tail = &(*tmp_tail)->next.data.list;
     spec_i = list_next(spec_i);
   }
-  if (true) {
+  if (false) {
     err_write_1("env_facts_with_list: spec = ");
     err_inspect_list((const s_list * const *) &tmp);
     err_write_1("\n");
@@ -2134,7 +2135,7 @@ s_facts_with_cursor * env_facts_with_list (s_env *env, s_facts *facts,
     assert(! "env_facts_with_list: facts_spec_new_list");
     goto ko;
   }
-  if (true) {
+  if (false) {
     err_write_1("env_facts_with_list: spec = ");
     err_inspect_facts_spec(facts_spec);
     err_write_1("\n");

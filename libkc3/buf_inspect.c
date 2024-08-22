@@ -3746,21 +3746,26 @@ sw buf_inspect_var (s_buf *buf, const s_tag *tag)
   assert(tag->type == TAG_VAR);
   assert(tag->data.var.type);
   if (tag->data.var.type == &g_sym_Tag) {
-    if ((r = buf_write_1(buf, "?0x")) < 0)
+    if ((r = buf_write_1(buf, "?")) < 0)
       return r;
   }
   else {
     if ((r = buf_inspect_paren_sym(buf, tag->data.var.type)) < 0)
       return r;
     result += r;
-    if ((r = buf_write_1(buf, " ?0x")) < 0)
+    if ((r = buf_write_1(buf, " ?")) < 0)
       return r;
     result += r;
   }
-  if ((r = buf_inspect_uw_hexadecimal
-       (buf, (uw *) &tag->data.var.ptr)) < 0)
-    return r;
-  result += r;
+  if (tag->data.var.ptr) {
+    if ((r = buf_write_1(buf, "0x")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_uw_hexadecimal
+         (buf, (uw *) &tag->data.var.ptr)) < 0)
+      return r;
+    result += r;
+  }
   return result;
 }
 
@@ -3785,10 +3790,15 @@ sw buf_inspect_var_size (s_pretty *pretty, const s_tag *tag)
       return r;
     result += r;
   }
-  if ((r = buf_inspect_uw_hexadecimal_size
-       (pretty, (uw *) &tag->data.var.ptr)) < 0)
-    return r;
-  result += r;
+  if (tag->data.var.ptr) {
+    if ((r = buf_write_1_size(pretty, "0x")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_uw_hexadecimal_size
+         (pretty, (uw *) &tag->data.var.ptr)) < 0)
+      return r;
+    result += r;
+  }
   return result;
 }
 

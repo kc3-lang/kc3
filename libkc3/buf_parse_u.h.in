@@ -19,6 +19,7 @@
 sw buf_parse_u_bits$ (s_buf *buf, u_bits$ *dest);
 sw buf_parse_u_bits$_base (s_buf *buf, const s_str *base,
                            u_bits$ *dest);
+sw buf_parse_u_bits$_hexadecimal (s_buf *buf, u_bits$ *dest);
 s_tag * buf_parse_tag_u_bits$ (s_buf *buf, s_tag *dest);
 s_tag * buf_parse_tag_u_bits$_base (s_buf *buf, const s_str *base,
                                     s_tag *dest);

@@ -20,6 +20,7 @@
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
+#include "buf_parse_uw.h"
 #include "buf_save.h"
 #include "call.h"
 #include "cfn.h"
@@ -4517,6 +4518,7 @@ sw buf_parse_unquote (s_buf *buf, s_unquote *dest)
 sw buf_parse_var (s_buf *buf, s_var *dest)
 {
   character c;
+  uw i;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -4536,11 +4538,18 @@ sw buf_parse_var (s_buf *buf, s_var *dest)
   if ((r = buf_read_1(buf, "?")) <= 0)
     goto restore;
   result += r;
+  if ((r = buf_read_1(buf, "0x")) < 0)
+    goto ok;
+  if (r > 0) {
+    if ((r = buf_parse_uw_hexadecimal(buf, &i)) < 0)
+      goto restore;
+  }
   if (buf_peek_character_utf8(buf, &c) > 0 &&
       ! ident_character_is_reserved(c)) {
     r = 0;
     goto restore;
   }
+ ok:
   *dest = tmp;
   r = result;
   goto clean;

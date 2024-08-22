@@ -155,6 +155,11 @@ sw buf_parse_uw_base (s_buf *buf, const s_str *base,
   return r;
 }
 
+sw buf_parse_uw_hexadecimal (s_buf *buf, uw *dest)
+{
+  return buf_parse_uw_base(buf, &g_kc3_base_hexadecimal, dest);
+}
+
 s_tag * buf_parse_tag_uw (s_buf *buf, s_tag *dest)
 {
   s_tag tmp = {0};

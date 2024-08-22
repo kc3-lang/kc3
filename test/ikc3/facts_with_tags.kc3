@@ -1,8 +1,38 @@
 quote Facts.with_tags(Facts.env_facts(), KC3, :operator, ?, fn (fact) {
   puts(fact.object)
-  void
+  1
 })
 Facts.with_tags(Facts.env_facts(), KC3, :operator, ?, fn (fact) {
   puts(fact.object)
-  void
+  1
+})
+quote Facts.with_tags(Facts.env_facts(), KC3, :operator, op = ?, fn (fact) {
+  puts(op)
+  2
+})
+Facts.with_tags(Facts.env_facts(), KC3, :operator, op = ?, fn (fact) {
+  puts(op)
+  2
+})
+quote op = ?
+op = ?
+quote Facts.with_tags(Facts.env_facts(), KC3, :operator, op, fn (fact) {
+  puts(op)
+  3
+})
+Facts.with_tags(Facts.env_facts(), KC3, :operator, op, fn (fact) {
+  puts(op)
+  3
+})
+quote type(op)
+type(op)
+quote op = quote KC3.operator_eq
+op = quote KC3.operator_eq
+quote Facts.with_tags(Facts.env_facts(), KC3, :operator, op, fn (fact) {
+  puts(op)
+  4
+})
+Facts.with_tags(Facts.env_facts(), KC3, :operator, op, fn (fact) {
+  puts(op)
+  4
 })

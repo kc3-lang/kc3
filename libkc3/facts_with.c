@@ -27,37 +27,34 @@ s_facts_with_cursor * facts_with (s_facts *facts,
                                   p_facts_spec spec)
 {
   uw facts_count;
+  s_facts_with_cursor tmp = {0};
   assert(facts);
   assert(cursor);
   assert(spec);
   facts_count = facts_spec_count_facts(spec);
-  cursor->facts = facts;
-  cursor->facts_count = facts_count;
+  tmp.facts = facts;
+  tmp.facts_count = facts_count;
   if (facts_count > 0) {
-    cursor->levels = alloc(facts_count *
-                           sizeof(s_facts_with_cursor_level));
-    if (! cursor->levels)
+    tmp.levels = alloc(facts_count *
+                       sizeof(s_facts_with_cursor_level));
+    if (! tmp.levels)
       return NULL;
-    cursor->spec = facts_spec_new_expand(spec);
-    /*
-    buf_inspect_facts_spec(&g_c3_env.err, spec);
-    buf_write_1(&g_c3_env.err, "\n");
-    buf_inspect_facts_spec(&g_c3_env.err, cursor->spec);
-    buf_write_1(&g_c3_env.err, "\n");
-    buf_flush(&g_c3_env.err);
-    */
-    /* facts_spec_sort(cursor->spec); */
+    tmp.spec = facts_spec_new_expand(spec);
+    if (false) {
+      err_write_1("facts_with: spec = ");
+      err_inspect_facts_spec(spec);
+      err_write_1("\nfacts_with: tmp.spec = ");
+      err_inspect_facts_spec(tmp.spec);
+      err_write_1("\n");
+    }
+    /* facts_spec_sort(tmp.spec); */
   }
-  else {
-    cursor->levels = NULL;
-    cursor->spec = NULL;
-  }
-  cursor->level = 0;
-  if (pthread_mutex_init(&cursor->mutex, NULL)) {
+  if (pthread_mutex_init(&tmp.mutex, NULL)) {
     err_puts("facts_with: pthread_mutex_init");
     assert(! "facts_with: pthread_mutex_init");
     return NULL;
   }
+  *cursor = tmp;
   return cursor;
 }
 
