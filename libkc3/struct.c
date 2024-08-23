@@ -224,7 +224,7 @@ s_struct * struct_init_1 (s_struct *s, const char *p)
   s_buf buf;
   uw len;
   sw r;
-  s_struct tmp;
+  s_struct tmp = {0};
   assert(s);
   assert(p);
   len = strlen(p);
@@ -237,6 +237,11 @@ s_struct * struct_init_1 (s_struct *s, const char *p)
     if (r > 0)
       struct_clean(&tmp);
     return NULL;
+  }
+  if (true) {
+    err_write_1("\nstruct_init_1: tmp = ");
+    err_inspect_struct(&tmp);
+    err_write_1("\n");
   }
   if (! env_eval_struct(&g_kc3_env, &tmp, s)) {
     err_puts("struct_init_1: env_eval_struct");
@@ -462,6 +467,8 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
         s->type->map.key[i].data.sym == key) {
       if (! tag_type(s->type->map.value + i, &type_sym))
         return NULL;
+      if (type_sym == &g_sym_Var)
+        type_sym = s->type->map.value[i].data.var.type;
       data = (s8 *) s->data + s->type->offset[i];
       if (! tag_to_const_pointer(value, type_sym, &data_src))
         return NULL;

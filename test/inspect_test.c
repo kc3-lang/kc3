@@ -427,9 +427,16 @@ TEST_CASE_END(inspect_str)
 
 TEST_CASE(inspect_struct)
 {
-  INSPECT_TEST_STRUCT("%KC3.Operator{}", "%KC3.Operator{sym: :+,\n              symbol_value: ?,\n              operator_precedence: 0,\n              operator_associativity: :left}");
-  INSPECT_TEST_STRUCT("%KC3.Operator{sym: :-}",
-                      "%KC3.Operator{sym: :-,\n              symbol_value: ?,\n              operator_precedence: 0,\n              operator_associativity: :left}");
+  INSPECT_TEST_STRUCT("%KC3.Operator{symbol_value: void}",
+                      "%KC3.Operator{sym: :+,\n"
+                      "              symbol_value: void,\n"
+                      "              operator_precedence: 0,\n"
+                      "              operator_associativity: :left}");
+  INSPECT_TEST_STRUCT("%KC3.Operator{sym: :-, symbol_value: void}",
+                      "%KC3.Operator{sym: :-,\n"
+                      "              symbol_value: void,\n"
+                      "              operator_precedence: 0,\n"
+                      "              operator_associativity: :left}");
 }
 TEST_CASE_END(inspect_struct)
 

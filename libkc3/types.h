@@ -172,6 +172,7 @@ typedef struct fact_list               s_fact_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct map                     s_map;
+typedef struct operator                s_operator;
 typedef struct pretty                  s_pretty;
 typedef struct pretty_save             s_pretty_save;
 typedef struct queue                   s_queue;
@@ -218,7 +219,7 @@ typedef bool (* f_sequence_button) (s_sequence *seq, u8 button, sw x,
 #define SKIPLIST_HEIGHT_MAX U64_MAX
 
 /* 1 */
-
+  
 struct array_dimension {
   uw count;
   uw item_size;
@@ -590,6 +591,13 @@ struct fact_w {
 struct list {
   s_tag tag;
   s_tag next;
+};
+
+struct operator {
+  const s_sym *sym;
+  const s_sym *operator_associativity;
+  sw           operator_precedence;
+  s_tag        symbol_value;
 };
 
 struct sequence {

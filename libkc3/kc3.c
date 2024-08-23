@@ -322,11 +322,14 @@ uw * kc3_offsetof (const s_sym * const *module,
   return dest;
 }
 
-s_tag * kc3_pin (const s_tag *a, s_tag *dest)
+s_tag * kc3_operator_find_by_sym (const s_sym * const *sym, s_tag *dest)
 {
-  if (! env_eval_tag(&g_kc3_env, a, dest))
-    return NULL;
-  return dest;
+  return env_operator_find_by_sym(&g_kc3_env, *sym, dest);
+}
+
+s_tag * kc3_identity (const s_tag *tag, s_tag *dest)
+{
+  return tag_init_copy(dest, tag);
 }
 
 sw kc3_puts (const s_tag *tag)

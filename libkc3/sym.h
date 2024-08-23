@@ -51,7 +51,7 @@ extern const s_sym g_sym_Fn;
 extern const s_sym g_sym_Ident;
 extern const s_sym g_sym_Integer;
 extern const s_sym g_sym_KC3;
-extern const s_sym g_sym_KC3__Operator;
+extern const s_sym g_sym_KC3_Operator;
 extern const s_sym g_sym_List;
 extern const s_sym g_sym_Map;
 extern const s_sym g_sym_Ptag;

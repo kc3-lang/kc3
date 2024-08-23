@@ -45,27 +45,46 @@ s_var * var_init (s_var *var, s_tag *ptr, const s_sym *type)
   return var;
 }
 
-s_tag * var_init_cast (s_tag *tag, const s_sym * const *type,
+s_var * var_init_cast (s_var *var, const s_sym * const *type,
                        const s_tag *src)
 {
   void *data;
-  s_tag tmp = {0};
-  assert(tag);
+  s_tag tag = {0};
+  s_var tmp = {0};
+  assert(var);
   assert(type);
   assert(src);
   if (*type == &g_sym_Var) {
-    err_puts("var_init_cast: cannot cast to Var");
-    assert(! "var_init_cast: cannot cast to Var");
-    return NULL;
+    tmp.type = &g_sym_Tag;
+    switch (src->type) {
+    case TAG_PTR: tmp.ptr = src->data.ptr.p;              break;
+    case TAG_S8:  tmp.ptr = (s_tag *) (uw) src->data.s8;  break;
+    case TAG_S16: tmp.ptr = (s_tag *) (uw) src->data.s16; break;
+    case TAG_S32: tmp.ptr = (s_tag *) (uw) src->data.s32; break;
+    case TAG_S64: tmp.ptr = (s_tag *) (uw) src->data.s64; break;
+    case TAG_SW:  tmp.ptr = (s_tag *) (uw) src->data.sw;  break;
+    case TAG_U8:  tmp.ptr = (s_tag *) (uw) src->data.u8;  break;
+    case TAG_U16: tmp.ptr = (s_tag *) (uw) src->data.u16; break;
+    case TAG_U32: tmp.ptr = (s_tag *) (uw) src->data.u32; break;
+    case TAG_U64: tmp.ptr = (s_tag *) (uw) src->data.u64; break;
+    case TAG_UW:  tmp.ptr = (s_tag *) src->data.uw;       break;
+    default: goto invalid_cast;
+    }
+    *var = tmp;
+    return var;
   }
-  if (! sym_to_tag_type(*type, &tmp.type))
+  if (! sym_to_tag_type(*type, &tag.type))
     return NULL;
-  if (! tag_to_pointer(&tmp, *type, &data))
+  if (! tag_to_pointer(&tag, *type, &data))
     return NULL;
   if (! data_init_cast(data, type, src))
     return NULL;
-  *tag = tmp;
-  return tag;
+  *var->ptr = tag;
+  return var;
+ invalid_cast:
+  err_puts("var_init_cast: cannot cast to Var");
+  assert(! "var_init_cast: cannot cast to Var");
+  return NULL;
 }
 
 s_var * var_init_copy (s_var *var, const s_var *src)

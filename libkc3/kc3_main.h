@@ -43,31 +43,33 @@ uw *           kc3_offsetof (const s_sym * const *module,
 sw             kc3_puts (const s_tag *tag);
 
 /* Operators. */
-s_tag *   kc3_access (const s_tag *tag, const s_list * const *addr,
-                      s_tag *dest);
-s_tag *   kc3_buf_parse_tag (s_buf *buf, s_tag *dest);
-s_tag *   kc3_def (const s_call *call, s_tag *dest);
-s_tag *   kc3_defmodule (const s_sym **name, const s_block *block,
+s_tag *      kc3_access (const s_tag *tag, const s_list * const *addr,
                          s_tag *dest);
-s_tag *   kc3_defoperator (const s_sym **name, const s_sym **sym,
-                           const s_tag *symbol_value,
-                           u8 operator_precedence,
-                           const s_sym **operator_associativity,
-                           s_tag *dest);
-s_tag *   kc3_defstruct (const s_list * const *spec, s_tag *dest);
-void **   kc3_dlopen (const s_str *path, void **dest);
-s_facts * kc3_env_facts (void);
-sw        kc3_errno (void);
-void      kc3_exit (sw code);
-s_tag *   kc3_facts_with (s_facts *facts, s_list **spec,
-                          s_fn *callback, s_tag *dest);
-s_tag *   kc3_facts_with_tags (s_facts *facts, s_tag *subject,
-                               s_tag *predicate, s_tag *object,
-                               s_fn *callback, s_tag *dest);
-bool      kc3_load (const s_str *path);
-s_tag *   kc3_pin (const s_tag *a, s_tag *dest);
-bool      kc3_require (const s_sym * const *module);
-s_str *   kc3_strerror (sw err_no, s_str *dest);
+s_tag *      kc3_buf_parse_tag (s_buf *buf, s_tag *dest);
+s_tag *      kc3_def (const s_call *call, s_tag *dest);
+s_tag *      kc3_defmodule (const s_sym **name, const s_block *block,
+                            s_tag *dest);
+s_tag *      kc3_defoperator (const s_sym **name, const s_sym **sym,
+                              const s_tag *symbol_value,
+                              u8 operator_precedence,
+                              const s_sym **operator_associativity,
+                              s_tag *dest);
+s_tag *      kc3_defstruct (const s_list * const *spec, s_tag *dest);
+void **      kc3_dlopen (const s_str *path, void **dest);
+s_facts *    kc3_env_facts (void);
+sw           kc3_errno (void);
+void         kc3_exit (sw code);
+s_tag *      kc3_facts_with (s_facts *facts, s_list **spec,
+                             s_fn *callback, s_tag *dest);
+s_tag *      kc3_facts_with_tags (s_facts *facts, s_tag *subject,
+                                  s_tag *predicate, s_tag *object,
+                                  s_fn *callback, s_tag *dest);
+s_tag *      kc3_identity (const s_tag *tag, s_tag *dest);
+bool         kc3_load (const s_str *path);
+s_tag *      kc3_operator_find_by_sym (const s_sym * const *sym,
+                                       s_tag *dest);
+bool         kc3_require (const s_sym * const *module);
+s_str *      kc3_strerror (sw err_no, s_str *dest);
 
 /* Special operators. */
 s_tag * kc3_if_then_else (const s_tag *cond, const s_tag *then,

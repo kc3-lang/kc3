@@ -500,6 +500,8 @@ KC3_C_SOURCES = \
 	"libkc3/tag_type.h" \
 	"libkc3/time.c" \
 	"libkc3/time.h" \
+	"libkc3/to_lisp.c" \
+	"libkc3/to_lisp.h" \
 	"libkc3/tuple.c" \
 	"libkc3/tuple.h" \
 	"libkc3/types.h" \
@@ -568,6 +570,7 @@ KC3_C_SOURCES = \
 	"test/set__tag_test.c" \
 	"test/skiplist__fact_test.c" \
 	"test/str_test.c" \
+	"test/struct_test.c" \
 	"test/sym_test.c" \
 	"test/tag_test.c" \
 	"test/tag_test.h" \
@@ -925,7 +928,6 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
-	"lib/kc3/0.1/.#kc3.facts" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bool.facts" \
 	"lib/kc3/0.1/buf.kc3" \

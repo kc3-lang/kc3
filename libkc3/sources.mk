@@ -157,6 +157,7 @@ HEADERS = \
 	"tag_init.h" \
 	"tag_type.h" \
 	"time.h" \
+	"to_lisp.h" \
 	"tuple.h" \
 	"types.h" \
 	"u16.h" \
@@ -338,6 +339,7 @@ SOURCES = \
 	"tag_sub.c" \
 	"tag_type.c" \
 	"time.c" \
+	"to_lisp.c" \
 	"tuple.c" \
 	"u16.c" \
 	"u32.c" \
@@ -615,6 +617,7 @@ LO_SOURCES = \
 	"tag_sub.c" \
 	"tag_type.c" \
 	"time.c" \
+	"to_lisp.c" \
 	"tuple.c" \
 	"u16.c" \
 	"u32.c" \

@@ -47,7 +47,7 @@ const s_sym g_sym_Fn              = {{{NULL},  2, {"Fn"}}};
 const s_sym g_sym_Ident           = {{{NULL},  5, {"Ident"}}};
 const s_sym g_sym_Integer         = {{{NULL},  7, {"Integer"}}};
 const s_sym g_sym_KC3             = {{{NULL},  3, {"KC3"}}};
-const s_sym g_sym_KC3__Operator   = {{{NULL}, 12, {"KC3.Operator"}}};
+const s_sym g_sym_KC3_Operator    = {{{NULL}, 12, {"KC3.Operator"}}};
 const s_sym g_sym_List            = {{{NULL},  4, {"List"}}};
 const s_sym g_sym_Map             = {{{NULL},  3, {"Map"}}};
 const s_sym g_sym_Ptag            = {{{NULL},  4, {"Ptag"}}};
@@ -362,7 +362,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Ident, NULL);
   sym_register(&g_sym_Integer, NULL);
   sym_register(&g_sym_KC3, NULL);
-  sym_register(&g_sym_KC3__Operator, NULL);
+  sym_register(&g_sym_KC3_Operator, NULL);
   sym_register(&g_sym_List, NULL);
   sym_register(&g_sym_Map, NULL);
   sym_register(&g_sym_Ptag, NULL);

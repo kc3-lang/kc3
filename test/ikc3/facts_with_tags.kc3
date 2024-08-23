@@ -14,8 +14,8 @@ Facts.with_tags(Facts.env_facts(), KC3, :operator, op = ?, fn (fact) {
   puts(op)
   2
 })
-quote op = ?
-op = ?
+quote op = ? ; void
+op = ? ; void
 quote Facts.with_tags(Facts.env_facts(), KC3, :operator, op, fn (fact) {
   puts(op)
   3

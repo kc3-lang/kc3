@@ -1,5 +1,5 @@
-quote %KC3.Operator{}
-%KC3.Operator{}
+quote %KC3.Operator{symbol_value: void}
+%KC3.Operator{symbol_value: void}
 quote def operator_muul = %KC3.Operator{sym: :****, symbol_value: cfn Tag "tag_mul" (Tag, Tag, Result), operator_precedence: 11, operator_associativity: :left}
 def operator_muul = %KC3.Operator{sym: :****, symbol_value: cfn Tag "tag_mul" (Tag, Tag, Result), operator_precedence: 11, operator_associativity: :left}
 quote 4 **** 4

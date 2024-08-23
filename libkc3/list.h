@@ -19,9 +19,7 @@
 #ifndef LIBKC3_LIST_H
 #define LIBKC3_LIST_H
 
-#include <stdarg.h>
-#include <stdio.h>
-#include "hash.h"
+#include "types.h"
 #include "list_init.h"
 
 /* Stack-allocation functions, call list_clean after use. */
@@ -62,7 +60,5 @@ s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *dest);
 
 /* Operators */
 s_list ** list_remove_void (s_list **list);
-
-/*#include "list_init.h"*/
 
 #endif /* LIBKC3_LIST_H */

@@ -53,6 +53,7 @@
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
+#include "sw.h"
 #include "sym.h"
 #include "tag.h"
 #include "tag_init.h"
@@ -241,7 +242,7 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
   }
   if (tag_value.type == TAG_STRUCT &&
       (s = &tag_value.data.struct_) &&
-      s->type->module == &g_sym_KC3__Operator) {
+      s->type->module == &g_sym_KC3_Operator) {
     if (! env_defoperator(env, &tag_ident.data.ident.sym,
                           struct_get_sym(&tag_value.data.struct_,
                                          &g_sym_sym),
@@ -602,22 +603,22 @@ bool env_eval_call_cfn (s_env *env, const s_call *call, s_tag *dest)
   s_list *args = NULL;
   s_list *args_final = NULL;
   s_cfn *cfn;
-  s_frame frame;
+  //s_frame frame;
   s_tag tag;
   assert(env);
   assert(call);
   assert(dest);
   cfn = call->cfn;
   assert(cfn);
-  if (! frame_init(&frame, env->frame))
-    return false;
-  env->frame = &frame;
+  //if (! frame_init(&frame, env->frame))
+  //  return false;
+  //env->frame = &frame;
   if (call->arguments) {
     if (cfn->macro || cfn->special_operator)
       args_final = call->arguments;
     else {
       if (! env_eval_call_arguments(env, call->arguments, &args)) {
-        env->frame = frame_clean(&frame);
+        //env->frame = frame_clean(&frame);
         return false;
       }
       args_final = args;
@@ -625,12 +626,12 @@ bool env_eval_call_cfn (s_env *env, const s_call *call, s_tag *dest)
   }
   if (! cfn_apply(cfn, args_final, &tag)) {
     list_delete_all(args);
-    env->frame = frame_clean(&frame);
+    //env->frame = frame_clean(&frame);
     return false;
   }
   *dest = tag;
   list_delete_all(args);
-  env->frame = frame_clean(&frame);
+  //env->frame = frame_clean(&frame);
   return true;
 }
 
@@ -1003,7 +1004,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
       tag_init_copy(dest, b);
     else
       env_eval_tag(env, b, dest);
-    if (! frame_replace(env->frame->next, a->data.ident.sym, dest))
+    if (! frame_replace(env->frame, a->data.ident.sym, dest))
       return false;
     return true;
   }
@@ -1012,7 +1013,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
       tag_init_copy(dest, a);
     else
       env_eval_tag(env, a, dest);
-    if (! frame_replace(env->frame->next, b->data.ident.sym, dest))
+    if (! frame_replace(env->frame, b->data.ident.sym, dest))
       return false;
     return true;
   }
@@ -1879,7 +1880,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   case TAG_TUPLE:
     return env_eval_tuple(env, &tag->data.tuple, dest);
   case TAG_VAR:
-    return env_eval_var(env, tag, dest);
+    return env_eval_var(env, &tag->data.var, dest);
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:
@@ -1971,24 +1972,17 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
   return true;
 }
 
-bool env_eval_var (s_env *env, const s_tag *tag, s_tag *dest)
+bool env_eval_var (s_env *env, const s_var *var, s_tag *dest)
 {
   s_tag tmp = {0};
-  const s_var *var;
   assert(env);
-  assert(tag);
+  assert(var);
   assert(dest);
   (void) env;
-  if (tag->type != TAG_VAR)
-    return false;
-  var = &tag->data.var;
   if (var->ptr && var->ptr->type != TAG_VAR)
     return tag_init_copy(dest, var->ptr) ? true : false;
   tmp.type = TAG_VAR;
-  if (! var->ptr)
-    tmp.data.var.ptr = dest;
-  else
-    tmp.data.var.ptr = var->ptr;
+  tmp.data.var.ptr = var->ptr ? var->ptr : dest;
   tmp.data.var.type = var->type;
   *dest = tmp;
   return true;
@@ -2954,6 +2948,73 @@ bool * env_operator_find (s_env *env, const s_ident *op, bool *dest)
     return NULL;
   *dest = fact ? true : false;
   return dest;
+}
+
+s_tag * env_operator_find_by_sym (s_env *env,
+                                  const s_sym *sym,
+                                  s_tag *dest)
+{
+  s_facts_with_cursor cursor;
+  const s_fact *fact;
+  s_tag tag_ident;
+  s_tag tag_is_a;
+  s_tag tag_operator;
+  s_tag tag_operator_associativity;
+  s_tag tag_operator_associativity_sym;
+  s_tag tag_operator_precedence;
+  s_tag tag_operator_precedence_sym;
+  s_tag tag_sym;
+  s_tag tag_sym_sym;
+  s_tag tag_symbol_value;
+  s_tag tag_symbol_value_sym;
+  s_tag         tmp = {0};
+  tag_init_var(&tag_ident, &g_sym_Ident);
+  tag_init_sym(&tag_is_a, &g_sym_is_a);
+  tag_init_sym(&tag_operator, &g_sym_operator);
+  tag_init_var(&tag_operator_associativity, &g_sym_Sym);
+  tag_init_sym(&tag_operator_associativity_sym,
+               &g_sym_operator_associativity);
+  tag_init_var(&tag_operator_precedence, &g_sym_U8);
+  tag_init_sym(&tag_operator_precedence_sym,
+               &g_sym_operator_precedence);
+  tag_init_sym(&tag_operator, &g_sym_operator);
+  tag_init_sym(&tag_sym, sym);
+  tag_init_sym(&tag_sym_sym, &g_sym_sym);
+  tag_init_var(&tag_symbol_value, &g_sym_Tag);
+  tag_init_sym(&tag_symbol_value_sym, &g_sym_symbol_value);
+  if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
+        &tag_ident, &tag_is_a, &tag_operator,
+        &tag_sym_sym, &tag_sym,
+        &tag_operator_associativity_sym, &tag_operator_associativity,
+        &tag_operator_precedence_sym, &tag_operator_precedence,
+        &tag_symbol_value_sym, &tag_symbol_value, NULL, NULL}))
+    return NULL;
+  if (! facts_with_cursor_next(&cursor, &fact))
+    return NULL;
+  if (! fact)
+    return NULL;
+  if (! tag_init_struct(&tmp, &g_sym_KC3_Operator))
+    goto clean;
+  if (! struct_allocate(&tmp.data.struct_))
+    goto clean;
+  if (! struct_set(&tmp.data.struct_, &g_sym_sym, &tag_sym))
+    goto clean;
+  if (! struct_set(&tmp.data.struct_, &g_sym_symbol_value,
+                   &tag_symbol_value))
+    goto clean;
+  if (! struct_set(&tmp.data.struct_, &g_sym_operator_precedence,
+                   &tag_operator_precedence))
+    goto clean;
+  if (! struct_set(&tmp.data.struct_, &g_sym_operator_associativity,
+                   &tag_operator_associativity))
+    goto clean;
+  facts_with_cursor_clean(&cursor);
+  *dest = tmp;
+  return dest;
+ clean:
+  tag_clean(&tmp);
+  facts_with_cursor_clean(&cursor);
+  return NULL;
 }
 
 s_ident * env_operator_ident (s_env *env, const s_ident *op,

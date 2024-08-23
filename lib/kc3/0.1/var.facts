@@ -1,3 +1,5 @@
 %{module: KC3.Facts.Dump,
   version: 1}
 replace {Var, :is_a, :module}
+replace {Var, :symbol, Var.cast}
+replace {Var.cast, :symbol_value, cfn Var "var_init_cast" (Result, Sym, Tag)}
