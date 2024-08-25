@@ -436,8 +436,6 @@ sw buf_parse_block (s_buf *buf, s_block *block)
   result += r;
   if ((r = buf_parse_block_inner(buf, short_form, block)) < 0) {
     err_puts("buf_parse_block: buf_parse_block_inner < 0");
-    err_inspect_buf(buf);
-    err_write_1("\n");
     assert(! "buf_parse_block: buf_parse_block_inner < 0");
     goto restore;
   }
@@ -472,18 +470,26 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
     if (short_form) {
       if ((r = buf_read_1(buf, "}")) < 0) {
         err_puts("buf_parse_block_inner: buf_read_1 \"}\"");
+        err_inspect_buf(buf);
+        err_write_1("\n");
         assert(! "buf_parse_block_inner: buf_read_1 \"}\"");
         goto restore;
       }
     }
     else if ((r = buf_read_sym(buf, &g_sym_end)) < 0) {
       err_puts("buf_parse_block_inner: buf_read_sym :end");
+      err_inspect_buf(buf);
+      err_write_1("\n");
       assert(! "buf_parse_block_inner: buf_read_sym :end");
       goto restore;
     }
     if (r > 0)
       goto ok;
     if ((r = buf_parse_tag(buf, &tag)) < 0) {
+      err_puts("buf_parse_block_inner: buf_parse_tag");
+      err_inspect_buf(buf);
+      err_write_1("\n");
+      assert(! "buf_parse_block_inner: buf_parse_tag");
       goto restore;
     }
     result += r;
@@ -499,6 +505,8 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
     }
     if ((r = buf_parse_comments(buf)) < 0) {
       err_puts("buf_parse_block_inner: buf_parse_comments 1");
+      err_inspect_buf(buf);
+      err_write_1("\n");
       assert(! "buf_parse_block_inner: buf_parse_comments 1");
       goto restore;
     }
@@ -506,6 +514,8 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
     if ((r = buf_ignore_spaces_but_newline(buf)) < 0) {
       err_puts("buf_parse_block_inner:"
                " buf_ignore_spaces_but_newline 1");
+      err_inspect_buf(buf);
+      err_write_1("\n");
       assert(!("buf_parse_block_inner:"
                " buf_ignore_spaces_but_newline 1"));
       goto restore;
@@ -967,10 +977,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
     next_op_precedence = operator_precedence(&next_op);
     while (1) {
       if (r <= 0 ||
-          operator_arity(&next_op) != 2) {
-        r = -1;
+          operator_arity(&next_op) != 2)
         break;
-      }
       if (next_op_precedence <= op_precedence) {
         if (! operator_is_right_associative(&next_op, &b)) {
           r = -1;
@@ -978,16 +986,14 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
         }
         if (! b ||
             next_op_precedence != op_precedence) {
-          r = -1;
           break;
         }
       }
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
-      if ((r = buf_parse_call_op_rec(buf, &tmp2,
-                                     next_op_precedence > op_precedence
-                                     ? op_precedence + 1
-                                     : op_precedence)) <= 0) {
+      if ((r = buf_parse_call_op_rec
+           (buf, &tmp2, (next_op_precedence > op_precedence) ?
+            op_precedence + 1 : op_precedence)) <= 0) {
         tmp2.arguments->tag.type = TAG_VOID;
         call_clean(&tmp2);
         break;
@@ -1016,11 +1022,10 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
       break;
     call_init_op(&tmp3);
     tmp3.ident = op;
-    tag_init_call(&tmp3.arguments->tag);
-    tmp3.arguments->tag.data.call = tmp;
+    tmp3.arguments->tag = *left;
     list_next(tmp3.arguments)->tag = *right;
-    call_init(&tmp);
-    tmp = tmp3;
+    tag_init_call(left);
+    left->data.call = tmp3;
   }
   call_clean(dest);
   *dest = tmp;
@@ -3659,6 +3664,7 @@ sw buf_parse_sym_str (s_buf *buf, s_str *str)
 
 sw buf_parse_tag (s_buf *buf, s_tag *dest)
 {
+  character c;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -3673,12 +3679,21 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_special_operator(buf, dest)) != 0 ||
-      (r = buf_parse_tag_call_op(buf, dest)) != 0 ||
-      (r = buf_parse_tag_tuple(buf, dest)) != 0 ||
-      (r = buf_parse_tag_block(buf, dest)) != 0 ||
-      (r = buf_parse_tag_primary(buf, dest)) != 0)
-    goto end;
+  if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
+    goto restore;
+  switch (c) {
+  case '{':
+    if ((r = buf_parse_tag_tuple(buf, dest)) ||
+        (r = buf_parse_tag_block(buf, dest)))
+      goto end;
+    goto restore;
+  default:
+    if ((r = buf_parse_tag_special_operator(buf, dest)) != 0 ||
+        (r = buf_parse_tag_call_op(buf, dest)) != 0 ||
+        (r = buf_parse_tag_primary(buf, dest)) != 0)
+      goto end;
+  }
+  goto restore;
  end:
   if (r < 0)
     goto restore;
@@ -4095,7 +4110,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
     result += r;
   }
   if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
-    goto end;
+    goto restore;
   switch (c) {
   case '(':
     if ((r = buf_parse_tag_var(buf, dest)) ||
@@ -4103,6 +4118,10 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
         (r = buf_parse_tag_array(buf, dest)) ||
         (r = buf_parse_tag_cast(buf, dest)) ||
         (r = buf_parse_tag_call_paren(buf, dest)))
+      goto end;
+    goto restore;
+  case '?':
+    if ((r = buf_parse_tag_var(buf, dest)))
       goto end;
     goto restore;
   case 'v':
@@ -4127,8 +4146,14 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
     goto restore;
   case 'c':
     if ((r = buf_parse_tag_cow(buf, dest)) ||
-        (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_cfn(buf, dest)) ||
+        (r = buf_parse_tag_call(buf, dest)) ||
+        (r = buf_parse_tag_ident(buf, dest)))
+      goto end;
+    goto restore;
+  case 'd':
+    if ((r = buf_parse_tag_block(buf, dest)) ||
+        (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
@@ -4150,15 +4175,20 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
-  case 'b':
+  case 'f':
+    if ((r = buf_parse_tag_fn(buf, dest)))
+      goto end;
+    // fall through
+  case 't':
     if ((r = buf_parse_tag_bool(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
   case '\'':
-    r = buf_parse_tag_character(buf, dest);
-    goto end;
+    if ((r = buf_parse_tag_character(buf, dest)))
+      goto end;
+    goto restore;
   case '%':
     if ((r = buf_parse_tag_map(buf, dest)) ||
         (r = buf_parse_tag_time(buf, dest)) ||
@@ -4166,20 +4196,21 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   case '"':
-    r = buf_parse_tag_str(buf, dest);
-    goto end;
+    if ((r = buf_parse_tag_str(buf, dest)))
+      goto end;
+    goto restore;
   case '{':
-    r = buf_parse_tag_tuple(buf, dest);
-    goto end;
-  case 'f':
-    r = buf_parse_tag_fn(buf, dest);
-    goto end;
+    if ((r = buf_parse_tag_tuple(buf, dest)))
+      goto end;
+    goto restore;
   case '[':
-    r = buf_parse_tag_list(buf, dest);
-    goto end;
+    if ((r = buf_parse_tag_list(buf, dest)))
+      goto end;
+    goto restore;
   case ':':
-    r = buf_parse_tag_sym(buf, dest);
-    goto end;
+    if ((r = buf_parse_tag_sym(buf, dest)))
+      goto end;
+    goto restore;
   default:
     if ((r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)) ||

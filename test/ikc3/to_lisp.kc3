@@ -1,0 +1,2 @@
+quote to_lisp(quote a = ? <- 1 ; 2)
+to_lisp(quote a = ? <- 1 ; 2)

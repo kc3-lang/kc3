@@ -1,0 +1,2 @@
+quote to_lisp(quote a = ? <- 1 ; 2)
+[operator_semicolumn, [operator_equal, a, [operator_assign ?, 1], 2]
