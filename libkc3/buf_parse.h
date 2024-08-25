@@ -52,7 +52,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest);
 sw buf_parse_call (s_buf *buf, s_call *dest);
 sw buf_parse_call_args_paren (s_buf *buf, s_call *dest);
 sw buf_parse_call_op (s_buf *buf, s_call *dest);
-sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence);
+sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence);
 sw buf_parse_call_op_unary (s_buf *buf, s_call *dest);
 sw buf_parse_call_paren (s_buf *buf, s_call *dest);
 sw buf_parse_cast (s_buf *buf, s_call *dest);

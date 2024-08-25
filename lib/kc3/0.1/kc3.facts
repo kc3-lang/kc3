@@ -217,8 +217,8 @@ replace {KC3.operator_semicolumn, :is_a, :operator}
 replace {KC3.operator_semicolumn, :arity, 2}
 replace {KC3.operator_semicolumn, :sym, :";"}
 replace {KC3.operator_semicolumn, :symbol_value, cfn Tag "tag_semicolumn" (Tag, Tag, Result)}
-replace {KC3.operator_semicolumn, :operator_precedence, 1}
-replace {KC3.operator_semicolumn, :operator_associativity, :right}
+replace {KC3.operator_semicolumn, :operator_precedence, 0}
+replace {KC3.operator_semicolumn, :operator_associativity, :left}
 replace {KC3, :symbol, KC3.license}
 replace {KC3.license, :symbol_value, cfn Void "kc3_license" ()}
 add {KC3, :symbol, KC3.break}

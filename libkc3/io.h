@@ -52,6 +52,7 @@ PROTOTYPES_ERR_IO_INSPECT(f64,             const f64 *);
 PROTOTYPES_ERR_IO_INSPECT(fact,            const s_fact *);
 PROTOTYPES_ERR_IO_INSPECT(facts_spec,      const p_facts_spec);
 PROTOTYPES_ERR_IO_INSPECT(fn,              const s_fn *);
+PROTOTYPES_ERR_IO_INSPECT(fn_clause,       const s_fn_clause *);
 PROTOTYPES_ERR_IO_INSPECT(fn_pattern,      const s_list *);
 PROTOTYPES_ERR_IO_INSPECT(ident,           const s_ident *);
 PROTOTYPES_ERR_IO_INSPECT(integer,         const s_integer *);

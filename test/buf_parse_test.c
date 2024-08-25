@@ -63,6 +63,17 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_CALL_PAREN(test)                                \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_call dest = {0};                                                 \
+    test_context("buf_parse_call_paren(" # test ")");                  \
+    buf_init_1(&buf, false, (test));                                   \
+    TEST_EQ(buf_parse_call_paren(&buf, &dest), strlen(test));          \
+    call_clean(&dest);                                                 \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_PARSE_TEST_CFN(test)                                       \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -597,6 +608,7 @@ TEST_CASE_PROTOTYPE(buf_parse_array);
 TEST_CASE_PROTOTYPE(buf_parse_bool);
 TEST_CASE_PROTOTYPE(buf_parse_call);
 TEST_CASE_PROTOTYPE(buf_parse_call_op);
+TEST_CASE_PROTOTYPE(buf_parse_call_paren);
 TEST_CASE_PROTOTYPE(buf_parse_cfn);
 TEST_CASE_PROTOTYPE(buf_parse_character);
 TEST_CASE_PROTOTYPE(buf_parse_digit_bin);
@@ -627,6 +639,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_bool);
   TEST_CASE_RUN(buf_parse_call);
   TEST_CASE_RUN(buf_parse_call_op);
+  TEST_CASE_RUN(buf_parse_call_paren);
   TEST_CASE_RUN(buf_parse_digit_bin);
   TEST_CASE_RUN(buf_parse_digit_hex);
   TEST_CASE_RUN(buf_parse_digit_oct);
@@ -770,6 +783,16 @@ TEST_CASE(buf_parse_call_op)
   BUF_PARSE_TEST_CALL_OP("1 + 2 / 3 * 4 - 5");
 }
 TEST_CASE_END(buf_parse_call_op)
+
+TEST_CASE(buf_parse_call_paren)
+{
+  BUF_PARSE_TEST_CALL_PAREN("(1 + 2)");
+  BUF_PARSE_TEST_CALL_PAREN("(1 + 2 + 3)");
+  BUF_PARSE_TEST_CALL_PAREN("(1 + 2 / 3)");
+  BUF_PARSE_TEST_CALL_PAREN("(1 + 2 / 3 ; 4)");
+  BUF_PARSE_TEST_CALL_PAREN("(1 + 2 / 3 ; 4 - 5)");
+}
+TEST_CASE_END(buf_parse_call_paren)
 
 TEST_CASE(buf_parse_cfn)
 {
