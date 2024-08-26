@@ -209,26 +209,27 @@ ikc3> List.reverse(List.map([1, 2, 3, 4], double))
 ```
 
 The `List.map` and `List.reverse` functions are defined in
-`lib/kc3/0.1/list.facts` and can be modified in real time.
+`lib/kc3/0.1/list.kc3` and can be modified in real time.
 
 For example, without closing ikc3 let's redefine `List.reverse`,
-open an editor and change the line in `lib/kc3/0.1/list.facts` from
+open an editor and change the line in `lib/kc3/0.1/list.kc3` from
 
 ```
-replace {List.reverse, :fn, fn {
-  (x) { List.reverse(x, ()) }
-  ([], acc) { acc }
-  ([a | b], acc) { List.reverse(b, [a | acc]) }
-}}
+  def reverse = fn {
+    (x) { reverse(x, ()) }
+    ([], acc) { acc }
+    ([a | b], acc) { reverse(b, [a | acc]) }
+  }
 ```
 
 to
 
 ```
-replace {List.reverse, :fn, fn {
-  (x) { List.reverse(x, ()) }
-  ([], acc) { [:reversed | acc] }
-  ([a | b], acc) { List.reverse(b, [a | acc]) }
+  def reverse = fn {
+    (x) { reverse(x, ()) }
+    ([], acc) { [:reversed, acc] }
+    ([a | b], acc) { reverse(b, [a | acc]) }
+  }
 }}
 ```
 
@@ -239,7 +240,7 @@ ikc3> List.reverse(List.map([1, 2, 3, 4], double))
 [:reversed, 8, 6, 4, 2]
 ```
 
-Don't forget to revert the changes to `list.facts`.
+Don't forget to revert the changes to `list.kc3`.
 
 
 #### Maps
@@ -501,7 +502,8 @@ ikc3> double 21
 
 ### kc3s
 
-Script interpreter. Works the same as ikc3 but is not interactive.
+Script interpreter. Works the same as ikc3 but is not interactive
+and does not output results.
 
 
 ### HTTPd
@@ -511,8 +513,8 @@ HTTP daemon, use `make test_httpd`.
 The http daemon is defined in `httpd/httpd.c` and
 `lib/kc3/0.1/httpd.kc3`.
 
-For now the HTTP daemon only answers 200 OK with a page containing the
-HTTP request and httpd.kc3 source file path.
+The http daemon is a static file server listing directories and
+serving files for display or download (Web 1.0).
 
 
 ## TODO
@@ -522,6 +524,7 @@ HTTP request and httpd.kc3 source file path.
      - [DONE] route_request
      - [DONE] error_404_page
      - [DONE] directory_page
+   - dynamic pages
  - lib
    - [DONE] File.exists?
    - [DONE] File.list
