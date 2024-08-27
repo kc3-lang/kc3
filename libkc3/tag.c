@@ -530,8 +530,7 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     var_init_copy(&tag->data.var, &src->data.var);
     return tag;
   case TAG_VOID:
-    tag_init_void(tag);
-    return tag;
+    return tag_init_void(tag);
   }
   err_puts("tag_init_copy: invalid tag type");
   assert(! "tag_init_copy: invalid tag type");

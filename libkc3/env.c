@@ -1764,7 +1764,7 @@ bool env_eval_quote_unquote (s_env *env, const s_unquote *unquote, s_tag *dest)
 
 bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
 {
-  const void *data;
+  const void *data = NULL;
   uw i;
   s_tag tag = {0};
   s_struct tmp = {0};
