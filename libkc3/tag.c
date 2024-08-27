@@ -1002,10 +1002,13 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
                            const void **dest)
 {
   e_tag_type tag_type;
+  if (type == &g_sym_Tag) {
+    *dest = tag;
+    return true;
+  }
   if (! sym_to_tag_type(type, &tag_type))
     return false;
-  if (type != &g_sym_Tag &&
-      tag->type != tag_type) {
+  if (tag->type != tag_type) {
     err_write_1("tag_to_const_pointer: cannot cast ");
     err_write_1(tag_type_to_string(tag->type));
     err_write_1(" to ");

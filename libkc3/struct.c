@@ -225,6 +225,7 @@ s_struct * struct_init_1 (s_struct *s, const char *p)
   uw len;
   sw r;
   s_struct tmp = {0};
+  s_struct tmp2 = {0};
   assert(s);
   assert(p);
   len = strlen(p);
@@ -238,18 +239,19 @@ s_struct * struct_init_1 (s_struct *s, const char *p)
       struct_clean(&tmp);
     return NULL;
   }
-  if (false) {
+  if (true) {
     err_write_1("\nstruct_init_1: tmp = ");
     err_inspect_struct(&tmp);
     err_write_1("\n");
   }
-  if (! env_eval_struct(&g_kc3_env, &tmp, s)) {
+  if (! env_eval_struct(&g_kc3_env, &tmp, &tmp2)) {
     err_puts("struct_init_1: env_eval_struct");
     assert(! "struct_init_1: env_eval_struct");
     struct_clean(&tmp);
     return NULL;
   }
   struct_clean(&tmp);
+  *s = tmp2;
   return s;
 }
 
@@ -294,8 +296,8 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
         type = tmp.type->map.value[i].data.var.type;
       else if (! tag_type(tmp.type->map.value + i, &type))
         goto ko;
-      if (! data_init_copy(type, (s8 *) tmp.data +
-                           tmp.type->offset[i],
+      if (! data_init_copy(type,
+                           (s8 *) tmp.data + tmp.type->offset[i],
                            (s8 *) src->data + tmp.type->offset[i]))
         goto ko;
       i++;
