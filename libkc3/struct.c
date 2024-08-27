@@ -335,33 +335,29 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
   tmp.tag = alloc(tmp.type->map.count * sizeof(s_tag));
   if (! tmp.tag)
     return NULL;
-  k = keys;
-  v = values;
-  while (k && v) {
-    assert(k->tag.type == TAG_SYM);
-    if (k->tag.type != TAG_SYM) {
-      err_write_1("struct_init_from_lists: key that is not a symbol: ");
-      err_puts(tag_type_to_string(k->tag.type));
-      assert(! "struct_init_from_lists: key that is not a symbol");
-      goto ko;
-    }
-    if (! struct_find_key_index(&tmp, k->tag.data.sym, &i)) {
-      err_write_1("struct_init_from_lists:"
-                  " cannot find key in defstruct: ");
-      err_puts(k->tag.data.sym->str.ptr.pchar);
-      assert(! "struct_init_from_lists: cannot find key in defstruct");
-      goto ko;
-    }
-    if (! tag_init_copy(tmp.tag + i, &v->tag))
-      goto ko;
-    k = list_next(k);
-    v = list_next(v);
-  }
   i = 0;
   while (i < tmp.type->map.count) {
-    if (! tmp.tag[i].type)
-      if (! tag_init_copy(tmp.tag + i, tmp.type->map.value + i))
+    k = keys;
+    v = values;
+    while (k && v) {
+      if (k->tag.type != TAG_SYM) {
+        err_write_1("struct_init_from_lists: key that is not a"
+                    " symbol: ");
+        err_puts(tag_type_to_string(k->tag.type));
+        assert(! "struct_init_from_lists: key that is not a symbol");
         goto ko;
+      }
+      if (k->tag.data.sym == tmp.type->map.key[i].data.sym) {
+        if (! tag_init_copy(tmp.tag + i, &v->tag))
+          goto ko;
+        goto next;
+      }
+      k = list_next(k);
+      v = list_next(v);
+    }
+    if (! tag_init_copy(tmp.tag + i, tmp.type->map.value + i))
+      goto ko;
+  next:
     i++;
   }
   *s = tmp;
