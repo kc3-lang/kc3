@@ -1764,12 +1764,11 @@ bool env_eval_quote_unquote (s_env *env, const s_unquote *unquote, s_tag *dest)
 
 bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
 {
+  const void *data;
   uw i;
-  s_tag       tag = {0};
-  const void *tag_data;
+  s_tag tag = {0};
   s_struct tmp = {0};
   const s_sym *type;
-  const void *value;
   assert(env);
   assert(s);
   assert(dest);
@@ -1791,37 +1790,21 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
     if (s->tag) {
       if (! env_eval_tag(env, s->tag + i, &tag))
         goto ko;
-      if (type == &g_sym_Tag) {
-        if (! tag_init_copy((s_tag *) ((s8 *) tmp.data +
-                                       tmp.type->offset[i]),
-                            &tag))
-          goto ko_init;
+      if (! tag_to_const_pointer(&tag, type, &data)) {
+        tag_clean(&tag);
+        goto ko;
       }
-      else {
-        if (! tag_to_const_pointer(&tag, type, &tag_data)) {
-          tag_clean(&tag);
-          goto ko;
-        }
-        if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
-                             tag_data))
-          goto ko_init;
-      }
+      if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
+                           data))
+        goto ko_init;
       tag_clean(&tag);
     }
     else {
-      if (type == &g_sym_Tag) {
-        if (! tag_init_copy((s_tag *) ((s8 *) tmp.data +
-                                       tmp.type->offset[i]),
-                            tmp.type->map.value + i))
-          goto ko_init;
-      }
-      else {
-        if (! tag_to_const_pointer(tmp.type->map.value + i, type, &value))
-          goto ko;
-        if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
-                             value))
-          goto ko;
-      }
+      if (! tag_to_const_pointer(tmp.type->map.value + i, type, &data))
+        goto ko;
+      if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
+                           data))
+        goto ko;
     }
     i++;
   }
