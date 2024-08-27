@@ -144,10 +144,10 @@
   do {                                                                 \
     s_pretty pretty = {0};                                             \
     s_str result;                                                      \
-    s_struct struct_test;                                              \
+    s_struct struct_test = {0};                                        \
     assert(test);                                                      \
     test_context("inspect_struct(" # test ") -> " # expected);         \
-    struct_init_1(&struct_test, (test));                               \
+    TEST_EQ(struct_init_1(&struct_test, (test)), &struct_test);        \
     TEST_EQ(inspect_struct(&struct_test, &result), &result);           \
     TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
     TEST_EQ(buf_inspect_struct_size(&pretty, &struct_test),            \
