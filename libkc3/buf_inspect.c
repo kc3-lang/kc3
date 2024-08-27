@@ -3827,8 +3827,8 @@ sw buf_inspect_var_size (s_pretty *pretty, const s_var *var)
     if ((r = buf_write_1_size(pretty, "0x")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_uw_hexadecimal
-         _size(pretty, (uw *) &var->ptr)) < 0)
+    if ((r = buf_inspect_uw_hexadecimal_size
+         (pretty, (uw *) &var->ptr)) < 0)
       return r;
     result += r;
   }
