@@ -26,6 +26,7 @@ operator_not_eq
 operator_require
 operator_brackets
 operator_defstruct
+operator_semicolumn
 operator_shift_left
 operator_shift_right
 1
@@ -57,11 +58,12 @@ operator_not_eq
 operator_require
 operator_brackets
 operator_defstruct
+operator_semicolumn
 operator_shift_left
 operator_shift_right
 2
-op = ?
-?0x
+op = ? ; void
+void
 Facts.with_tags(Facts.env_facts(), KC3, :operator, op, fn (fact) { puts(op); 3 })
 operator_eq
 operator_gt
@@ -90,6 +92,7 @@ operator_not_eq
 operator_require
 operator_brackets
 operator_defstruct
+operator_semicolumn
 operator_shift_left
 operator_shift_right
 3

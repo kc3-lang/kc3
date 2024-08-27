@@ -1855,7 +1855,8 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
   assert(dest);
   switch (tag->type) {
   case TAG_VOID:
-    return env_eval_void(env, NULL, dest);
+    tag_init_void(dest);
+    return true;
   case TAG_ARRAY:
     return env_eval_array_tag(env, &tag->data.array, dest);
   case TAG_BLOCK:
@@ -1989,16 +1990,6 @@ bool env_eval_var (s_env *env, const s_var *var, s_tag *dest)
   tmp.type = TAG_VAR;
   tmp.data.var = *var;
   *dest = tmp;
-  return true;
-}
-
-bool env_eval_void (s_env *env, const void *_, s_tag *dest)
-{
-  assert(env);
-  assert(dest);
-  (void) env;
-  (void) _;
-  tag_init_void(dest);
   return true;
 }
 

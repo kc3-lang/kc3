@@ -23,6 +23,7 @@
 #include "buf_inspect_s64_decimal.h"
 #include "buf_save.h"
 #include "character.h"
+#include "compare.h"
 #include "cow.h"
 #include "data.h"
 #include "ident.h"
@@ -3097,7 +3098,9 @@ sw buf_inspect_str_size (s_pretty *pretty, const s_str *str)
 
 sw buf_inspect_struct (s_buf *buf, const s_struct *s)
 {
-  uw i = 0;
+  bool display;
+  uw   display_last = 0;
+  uw i;
   s_tag *k;
   s_pretty_save pretty_save;
   sw r;
@@ -3123,52 +3126,66 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
   pretty_save_init(&pretty_save, &buf->pretty);
   pretty_indent_from_column(&buf->pretty, 0);
   if (s->data || s->tag) {
+    i = 0;
     while (i < s->type->map.count) {
-      k = s->type->map.key + i;
-      if (k->type != TAG_SYM) {
-        err_write_1("buf_inspect_struct: key type is not a symbol: ");
-        err_inspect_tag(k);
-        err_write_1(" (");
-        err_write_1(tag_type_to_string(k->type));
-        err_puts(")");
-        assert(k->type == TAG_SYM);
-        r = -1;
-        goto clean;
-      }
-      if (sym_has_reserved_characters(k->data.sym)) {
-        if ((r = buf_inspect_str(buf, &k->data.sym->str)) < 0)
-          goto clean;
-      }
-      else
-        if ((r = buf_write_str_without_indent(buf,
-                                              &k->data.sym->str)) < 0)
-          goto clean;
-      result += r;
-      if ((r = buf_write_1(buf, ": ")) < 0)
-        goto clean;
-      result += r;
-      if (s->data) {
-        if (s->type->map.value[i].type == TAG_VAR)
-          type = s->type->map.value[i].data.var.type;
-        else if (! tag_type(s->type->map.value + i, &type))
-          goto clean;
-        assert(s->type->offset[i] < s->type->size);
-        if ((r = data_buf_inspect(buf, type, (char *) s->data +
-                                  s->type->offset[i])) < 0)
-          goto clean;
-        result += r;
-      }
-      else if (s->tag) {
-        if ((r = buf_inspect_tag(buf, s->tag + i)) < 0)
-          goto clean;
-        result += r;
-      }
+      if (s->data ||
+          compare_tag(s->tag + i, s->type->map.value + i))
+        display_last = i;
       i++;
-      if (i < s->type->map.count) {
+    }
+    i = 0;
+    while (i < s->type->map.count) {
+      display = s->data ||
+        compare_tag(s->tag + i, s->type->map.value + i);
+      if (display) {
+        k = s->type->map.key + i;
+        if (k->type != TAG_SYM) {
+          err_write_1("buf_inspect_struct: key type is not a symbol: ");
+          err_inspect_tag(k);
+          err_write_1(" (");
+          err_write_1(tag_type_to_string(k->type));
+          err_puts(")");
+          assert(k->type == TAG_SYM);
+          r = -1;
+          goto clean;
+        }
+        if (sym_has_reserved_characters(k->data.sym)) {
+          if ((r = buf_inspect_str(buf, &k->data.sym->str)) < 0)
+            goto clean;
+        }
+        else
+          if ((r = buf_write_str_without_indent(buf,
+                                                &k->data.sym->str)) < 0)
+            goto clean;
+        result += r;
+        if ((r = buf_write_1(buf, ": ")) < 0)
+          goto clean;
+        result += r;
+        if (s->data) {
+          if (s->type->map.value[i].type == TAG_VAR)
+            type = s->type->map.value[i].data.var.type;
+          else if (! tag_type(s->type->map.value + i, &type))
+            goto clean;
+          assert(s->type->offset[i] < s->type->size);
+          if ((r = data_buf_inspect(buf, type, (char *) s->data +
+                                    s->type->offset[i])) < 0)
+            goto clean;
+          result += r;
+        }
+        else if (s->tag) {
+          if ((r = buf_inspect_tag(buf, s->tag + i)) < 0)
+            goto clean;
+          result += r;
+        }
+      }
+      if (display &&
+          i < display_last &&
+          i < s->type->map.count - 1) {
         if ((r = buf_write_1(buf, ",\n")) < 0)
           goto clean;
         result += r;
       }
+      i++;
     }
   }
   pretty_save_clean(&pretty_save, &buf->pretty);
@@ -3183,7 +3200,9 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
 
 sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
 {
-  uw i = 0;
+  bool display;
+  uw   display_last = 0;
+  uw i;
   s_tag *k;
   s_pretty_save pretty_save;
   sw r;
@@ -3210,52 +3229,67 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
   pretty_save_init(&pretty_save, pretty);
   pretty_indent_from_column(pretty, 0);
   if (s->data || s->tag) {
+    i = 0;
     while (i < s->type->map.count) {
-      k = s->type->map.key + i;
-      if (k->type != TAG_SYM) {
-        err_write_1("buf_inspect_struct: key type is not a symbol: ");
-        err_inspect_tag(k);
-        err_write_1(" (");
-        err_write_1(tag_type_to_string(k->type));
-        err_puts(")");
-        assert(k->type == TAG_SYM);
-        r = -1;
-        goto clean;
-      }
-      if (sym_has_reserved_characters(k->data.sym)) {
-        if ((r = buf_inspect_str_size(pretty, &k->data.sym->str)) < 0)
-          goto clean;
-      }
-      else
-        if ((r = buf_write_str_without_indent_size(pretty,
-                                              &k->data.sym->str)) < 0)
-          goto clean;
-      result += r;
-      if ((r = buf_write_1_size(pretty, ": ")) < 0)
-        goto clean;
-      result += r;
-      if (s->data) {
-        if (s->type->map.value[i].type == TAG_VAR)
-          type = s->type->map.value[i].data.var.type;
-        else if (! tag_type(s->type->map.value + i, &type))
-          goto clean;
-        assert(s->type->offset[i] < s->type->size);
-        if ((r = data_buf_inspect_size(pretty, type, (char *) s->data +
-                                  s->type->offset[i])) < 0)
-          goto clean;
-        result += r;
-      }
-      else if (s->tag) {
-        if ((r = buf_inspect_tag_size(pretty, s->tag + i)) < 0)
-          goto clean;
-        result += r;
-      }
+      if (s->data ||
+          compare_tag(s->tag + i, s->type->map.value + i))
+        display_last = i;
       i++;
-      if (i < s->type->map.count) {
+    }
+    i = 0;
+    while (i < s->type->map.count) {
+      display = s->data ||
+        compare_tag(s->tag + i, s->type->map.value + i);
+      if (display) {
+        k = s->type->map.key + i;
+        if (k->type != TAG_SYM) {
+          err_write_1("buf_inspect_struct: key type is not a symbol: ");
+          err_inspect_tag(k);
+          err_write_1(" (");
+          err_write_1(tag_type_to_string(k->type));
+          err_puts(")");
+          assert(k->type == TAG_SYM);
+          r = -1;
+          goto clean;
+        }
+        if (sym_has_reserved_characters(k->data.sym)) {
+          if ((r = buf_inspect_str_size(pretty, &k->data.sym->str)) < 0)
+            goto clean;
+        }
+        else
+          if ((r = buf_write_str_without_indent_size
+               (pretty, &k->data.sym->str)) < 0)
+            goto clean;
+        result += r;
+        if ((r = buf_write_1_size(pretty, ": ")) < 0)
+          goto clean;
+        result += r;
+        if (s->data) {
+          if (s->type->map.value[i].type == TAG_VAR)
+            type = s->type->map.value[i].data.var.type;
+          else if (! tag_type(s->type->map.value + i, &type))
+            goto clean;
+          assert(s->type->offset[i] < s->type->size);
+          if ((r = data_buf_inspect_size(pretty, type,
+                                         (char *) s->data +
+                                         s->type->offset[i])) < 0)
+            goto clean;
+          result += r;
+        }
+        else if (s->tag) {
+          if ((r = buf_inspect_tag_size(pretty, s->tag + i)) < 0)
+            goto clean;
+          result += r;
+        }
+      }
+      if (display &&
+          i <= display_last &&
+          i < s->type->map.count - 1) {
         if ((r = buf_write_1_size(pretty, ",\n")) < 0)
           goto clean;
         result += r;
       }
+      i++;
     }
   }
   pretty_save_clean(&pretty_save, pretty);
@@ -3782,8 +3816,7 @@ sw buf_inspect_var_size (s_pretty *pretty, const s_var *var)
       return r;
   }
   else {
-    if ((r = buf_inspect_paren_sym_size(pretty,
-                                        var->type)) < 0)
+    if ((r = buf_inspect_paren_sym_size(pretty, var->type)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1_size(pretty, " ?")) < 0)
@@ -3794,8 +3827,8 @@ sw buf_inspect_var_size (s_pretty *pretty, const s_var *var)
     if ((r = buf_write_1_size(pretty, "0x")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_uw_hexadecimal_size
-         (pretty, (uw *) &var->ptr)) < 0)
+    if ((r = buf_inspect_uw_hexadecimal
+         _size(pretty, (uw *) &var->ptr)) < 0)
       return r;
     result += r;
   }

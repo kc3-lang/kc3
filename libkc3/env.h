@@ -240,7 +240,6 @@ bool env_eval_time (s_env *env, const s_time *time,
 bool env_eval_tuple (s_env *env, const s_tuple *tuple,
                      s_tag *dest);
 bool env_eval_var (s_env *env, const s_var *var, s_tag *dest);
-bool env_eval_void (s_env *env, const void *_, s_tag *dest);
 
 /* Modifiers. */
 bool env_call_get (s_env *env, s_call *call);

@@ -21,10 +21,12 @@ operator_bnot
 operator_bxor
 operator_equal
 operator_paren
+operator_assign
 operator_not_eq
 operator_require
 operator_brackets
 operator_defstruct
+operator_semicolumn
 operator_shift_left
 operator_shift_right
 void

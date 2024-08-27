@@ -2,7 +2,7 @@ defmodule KC3.Operator do
 
   defstruct [sym: :+,
 	     symbol_value: ?,
-             operator_precedence: (Sw) 0,
+             operator_precedence: 0,
              operator_associativity: :left]
 
   def find_by_sym = cfn Tag "kc3_operator_find_by_sym" (Sym, Result)

@@ -525,6 +525,10 @@ serving files for display or download (Web 1.0).
      - [DONE] error_404_page
      - [DONE] directory_page
    - dynamic pages
+     - dynamic router
+     - views
+     - templates
+     - MVC
  - lib
    - [DONE] File.exists?
    - [DONE] File.list
