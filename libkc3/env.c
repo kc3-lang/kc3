@@ -1784,18 +1784,17 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
     return false;
   i = 0;
   while (i < tmp.type->map.count) {
+    if (tmp.type->map.value[i].type == TAG_VAR)
+      type = tmp.type->map.value[i].data.var.type;
+    else if (! tag_type(tmp.type->map.value + i, &type))
+      goto ko;
     if (s->tag) {
-      if (tmp.type->map.value[i].type == TAG_VAR)
-        type = tmp.type->map.value[i].data.var.type;
-      else {
-        if (! tag_type(tmp.type->map.value + i, &type))
-          goto ko;
-      }
       if (! env_eval_tag(env, s->tag + i, &tag))
         goto ko;
-      if (tmp.type->map.value[i].type == TAG_VAR) {
-        if (! data_init_cast((s8 *) tmp.data + tmp.type->offset[i],
-                             &type, &tag))
+      if (type == &g_sym_Tag) {
+        if (! tag_init_copy((s_tag *) ((s8 *) tmp.data +
+                                       tmp.type->offset[i]),
+                            &tag))
           goto ko_init;
       }
       else {
@@ -1810,13 +1809,19 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
       tag_clean(&tag);
     }
     else {
-      if (! tag_type(tmp.type->map.value + i, &type))
-        goto ko;
-      if (! tag_to_const_pointer(tmp.type->map.value + i, type, &value))
-        goto ko;
-      if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
-                           value))
-        goto ko;
+      if (type == &g_sym_Tag) {
+        if (! tag_init_copy((s_tag *) ((s8 *) tmp.data +
+                                       tmp.type->offset[i]),
+                            tmp.type->map.value + i))
+          goto ko_init;
+      }
+      else {
+        if (! tag_to_const_pointer(tmp.type->map.value + i, type, &value))
+          goto ko;
+        if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
+                             value))
+          goto ko;
+      }
     }
     i++;
   }
@@ -1982,8 +1987,7 @@ bool env_eval_var (s_env *env, const s_var *var, s_tag *dest)
   if (var->ptr && var->ptr->type != TAG_VAR)
     return tag_init_copy(dest, var->ptr) ? true : false;
   tmp.type = TAG_VAR;
-  tmp.data.var.ptr = var->ptr ? var->ptr : dest;
-  tmp.data.var.type = var->type;
+  tmp.data.var = *var;
   *dest = tmp;
   return true;
 }

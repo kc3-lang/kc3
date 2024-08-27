@@ -68,15 +68,13 @@ sw ikc3_run (void)
       tag_clean(&input);
       tag_clean(&result);
     }
-    if (r < 0)
+    if (r < 0 ||
+        (r == 0 &&
+         (r = buf_ignore_character(&g_kc3_env.in)) <= 0))
       return 0;
     if ((r = buf_write_1(&g_kc3_env.out, "\n")) < 0)
       return 0;
     if ((r = buf_flush(&g_kc3_env.out)) < 0)
-      return 0;
-    if (r < 0 ||
-        (r == 0 &&
-         (r = buf_ignore_character(&g_kc3_env.in)) <= 0))
       return 0;
   }
   return 0;

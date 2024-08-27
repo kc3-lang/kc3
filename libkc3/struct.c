@@ -277,8 +277,8 @@ s_struct * struct_init_cast (s_struct *s, const s_sym * const *type,
 s_struct * struct_init_copy (s_struct *s, const s_struct *src)
 {
   uw i;
-  const s_sym *sym;
   s_struct tmp = {0};
+  const s_sym *type;
   assert(s);
   assert(src);
   assert(src->type);
@@ -291,10 +291,11 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
     i = 0;
     while (i < tmp.type->map.count) {
       if (tmp.type->map.value[i].type == TAG_VAR)
-        sym = tmp.type->map.value[i].data.var.type;
-      else if (! tag_type(tmp.type->map.value + i, &sym))
+        type = tmp.type->map.value[i].data.var.type;
+      else if (! tag_type(tmp.type->map.value + i, &type))
         goto ko;
-      if (! data_init_copy(sym, (s8 *) tmp.data + tmp.type->offset[i],
+      if (! data_init_copy(type, (s8 *) tmp.data +
+                           tmp.type->offset[i],
                            (s8 *) src->data + tmp.type->offset[i]))
         goto ko;
       i++;

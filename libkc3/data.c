@@ -12,7 +12,7 @@
  */
 #include "kc3.h"
 
-sw data_buf_inspect (const s_sym *type, s_buf *buf, const void *data)
+sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
 {
   s_struct s = {0};
   const s_struct_type *st;
@@ -101,7 +101,7 @@ sw data_buf_inspect (const s_sym *type, s_buf *buf, const void *data)
   return -1;
 }
 
-sw data_buf_inspect_size (const s_sym *type, s_pretty *pretty,
+sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
                           const void *data)
 {
   s_struct s = {0};
@@ -159,6 +159,8 @@ sw data_buf_inspect_size (const s_sym *type, s_pretty *pretty,
     return buf_inspect_sw_size(pretty, data);
   if (type == &g_sym_Sym)
     return buf_inspect_sym_size(pretty, data);
+  if (type == &g_sym_Tag)
+    return buf_inspect_tag_size(pretty, data);
   if (type == &g_sym_Tuple)
     return buf_inspect_tuple_size(pretty, data);
   if (type == &g_sym_U8)

@@ -977,8 +977,9 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
     next_op_precedence = operator_precedence(&next_op);
     while (1) {
       if (r <= 0 ||
-          operator_arity(&next_op) != 2)
+          operator_arity(&next_op) != 2) {
         break;
+      }
       if (next_op_precedence <= op_precedence) {
         if (! operator_is_right_associative(&next_op, &b)) {
           r = -1;
@@ -1022,10 +1023,20 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
       break;
     call_init_op(&tmp3);
     tmp3.ident = op;
-    tmp3.arguments->tag = *left;
-    list_next(tmp3.arguments)->tag = *right;
-    tag_init_call(left);
-    left->data.call = tmp3;
+    if (true) {
+      tmp3.arguments->tag = *left;
+      list_next(tmp3.arguments)->tag = *right;
+      tag_init_call(left);
+      left->data.call = tmp3;
+    }
+    else {
+      tag_init_call(&tmp3.arguments->tag);
+      tmp3.arguments->tag.data.call = tmp;
+      list_next(tmp3.arguments)->tag = *right;
+      tmp = tmp3;
+      left = &tmp.arguments->tag;
+      right = &list_next(tmp.arguments)->tag;
+    }
   }
   call_clean(dest);
   *dest = tmp;
@@ -4176,6 +4187,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   case 'f':
+  case 'm':
     if ((r = buf_parse_tag_fn(buf, dest)))
       goto end;
     // fall through

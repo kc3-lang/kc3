@@ -122,8 +122,8 @@ sw buf_inspect_array_data_rec (s_buf *buf, const s_array *array,
   while (1) {
     if (dimension == array->dimension - 1) {
       if (*data) {
-        if ((r = data_buf_inspect(array->element_type,
-                                  buf, *data)) <= 0)
+        if ((r = data_buf_inspect(buf, array->element_type,
+                                  *data)) <= 0)
           goto clean;
         result += r;
         *data += array->dimensions[dimension].item_size;
@@ -207,7 +207,7 @@ sw buf_inspect_array_data_size_rec (s_pretty *pretty,
   while (1) {
     if (dimension == array->dimension - 1) {
       if (*data) {
-        if ((r = data_buf_inspect_size(array->element_type, pretty,
+        if ((r = data_buf_inspect_size(pretty, array->element_type,
                                        *data)) <= 0)
           goto clean;
         result += r;
@@ -3148,12 +3148,12 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
         goto clean;
       result += r;
       if (s->data) {
-        if (! tag_type(s->type->map.value + i, &type))
-          goto clean;
-        if (type == &g_sym_Var)
+        if (s->type->map.value[i].type == TAG_VAR)
           type = s->type->map.value[i].data.var.type;
+        else if (! tag_type(s->type->map.value + i, &type))
+          goto clean;
         assert(s->type->offset[i] < s->type->size);
-        if ((r = data_buf_inspect(type, buf, (char *) s->data +
+        if ((r = data_buf_inspect(buf, type, (char *) s->data +
                                   s->type->offset[i])) < 0)
           goto clean;
         result += r;
@@ -3200,7 +3200,8 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
     assert(! "buf_inspect_struct: sym_is_module(s->type->module)");
     return -1;
   }
-  if ((r = buf_write_str_without_indent_size(pretty, &s->type->module->str)) < 0)
+  if ((r = buf_write_str_without_indent_size
+       (pretty, &s->type->module->str)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1_size(pretty, "{")) < 0)
@@ -3234,12 +3235,13 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
         goto clean;
       result += r;
       if (s->data) {
-        if (! tag_type(s->type->map.value + i, &type))
+        if (s->type->map.value[i].type == TAG_VAR)
+          type = s->type->map.value[i].data.var.type;
+        else if (! tag_type(s->type->map.value + i, &type))
           goto clean;
         assert(s->type->offset[i] < s->type->size);
-        if ((r = data_buf_inspect_size(type, pretty,
-                                       (char *) s->data +
-                                       s->type->offset[i])) < 0)
+        if ((r = data_buf_inspect_size(pretty, type, (char *) s->data +
+                                  s->type->offset[i])) < 0)
           goto clean;
         result += r;
       }
@@ -3477,7 +3479,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_U64:     return buf_inspect_u64(buf, &tag->data.u64);
   case TAG_UNQUOTE: return buf_inspect_unquote(buf, &tag->data.unquote);
   case TAG_UW:      return buf_inspect_uw(buf, &tag->data.uw);
-  case TAG_VAR:     return buf_inspect_var(buf, tag);
+  case TAG_VAR:     return buf_inspect_var(buf, &tag->data.var);
   case TAG_VOID:    return buf_inspect_void(buf, NULL);
   }
   err_puts("buf_inspect_tag: unknown tag_type");
@@ -3569,7 +3571,7 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
   case TAG_UW:
     return buf_inspect_uw_size(pretty, &tag->data.uw);
   case TAG_VAR:
-    return buf_inspect_var_size(pretty, tag);
+    return buf_inspect_var_size(pretty, &tag->data.var);
   case TAG_VOID:
     return buf_inspect_void_size(pretty, NULL);
   }
@@ -3737,65 +3739,63 @@ sw buf_inspect_unquote_size (s_pretty *pretty, const s_unquote *unquote)
   return result;
 }
 
-sw buf_inspect_var (s_buf *buf, const s_tag *tag)
+sw buf_inspect_var (s_buf *buf, const s_var *var)
 {
   sw r;
   sw result = 0;
   assert(buf);
-  assert(tag);
-  assert(tag->type == TAG_VAR);
-  assert(tag->data.var.type);
-  if (tag->data.var.type == &g_sym_Tag) {
+  assert(var);
+  assert(var->type);
+  if (var->type == &g_sym_Tag) {
     if ((r = buf_write_1(buf, "?")) < 0)
       return r;
   }
   else {
-    if ((r = buf_inspect_paren_sym(buf, tag->data.var.type)) < 0)
+    if ((r = buf_inspect_paren_sym(buf, var->type)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, " ?")) < 0)
       return r;
     result += r;
   }
-  if (tag->data.var.ptr) {
+  if (var->ptr) {
     if ((r = buf_write_1(buf, "0x")) < 0)
       return r;
     result += r;
     if ((r = buf_inspect_uw_hexadecimal
-         (buf, (uw *) &tag->data.var.ptr)) < 0)
+         (buf, (uw *) &var->ptr)) < 0)
       return r;
     result += r;
   }
   return result;
 }
 
-sw buf_inspect_var_size (s_pretty *pretty, const s_tag *tag)
+sw buf_inspect_var_size (s_pretty *pretty, const s_var *var)
 {
   sw r;
   sw result = 0;
   assert(pretty);
-  assert(tag);
-  assert(tag->type == TAG_VAR);
-  assert(tag->data.var.type);
-  if (tag->data.var.type == &g_sym_Tag) {
+  assert(var);
+  assert(var->type);
+  if (var->type == &g_sym_Tag) {
     if ((r = buf_write_1_size(pretty, "?")) < 0)
       return r;
   }
   else {
     if ((r = buf_inspect_paren_sym_size(pretty,
-                                        tag->data.var.type)) < 0)
+                                        var->type)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1_size(pretty, " ?")) < 0)
       return r;
     result += r;
   }
-  if (tag->data.var.ptr) {
+  if (var->ptr) {
     if ((r = buf_write_1_size(pretty, "0x")) < 0)
       return r;
     result += r;
     if ((r = buf_inspect_uw_hexadecimal_size
-         (pretty, (uw *) &tag->data.var.ptr)) < 0)
+         (pretty, (uw *) &var->ptr)) < 0)
       return r;
     result += r;
   }

@@ -148,10 +148,10 @@
     assert(test);                                                      \
     test_context("inspect_struct(" # test ") -> " # expected);         \
     struct_init_1(&struct_test, (test));                               \
-    TEST_EQ(buf_inspect_struct_size(&pretty, &struct_test),            \
-            strlen(expected));                                         \
     TEST_EQ(inspect_struct(&struct_test, &result), &result);           \
     TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
+    TEST_EQ(buf_inspect_struct_size(&pretty, &struct_test),            \
+            strlen(expected));                                         \
     str_clean(&result);                                                \
     struct_clean(&struct_test);                                        \
     test_context(NULL);                                                \
@@ -427,15 +427,20 @@ TEST_CASE_END(inspect_str)
 
 TEST_CASE(inspect_struct)
 {
+  INSPECT_TEST_STRUCT("%KC3.Operator{symbol_value: 1}",
+                      "%KC3.Operator{sym: :+,\n"
+                      "              symbol_value: 1,\n"
+                      "              operator_precedence: (Sw) 0,\n"
+                      "              operator_associativity: :left}");
   INSPECT_TEST_STRUCT("%KC3.Operator{symbol_value: void}",
                       "%KC3.Operator{sym: :+,\n"
                       "              symbol_value: void,\n"
-                      "              operator_precedence: 0,\n"
+                      "              operator_precedence: (Sw) 0,\n"
                       "              operator_associativity: :left}");
   INSPECT_TEST_STRUCT("%KC3.Operator{sym: :-, symbol_value: void}",
                       "%KC3.Operator{sym: :-,\n"
                       "              symbol_value: void,\n"
-                      "              operator_precedence: 0,\n"
+                      "              operator_precedence: (Sw) 0,\n"
                       "              operator_associativity: :left}");
 }
 TEST_CASE_END(inspect_struct)

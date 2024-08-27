@@ -544,6 +544,13 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_STRUCT(test)                                    \
+  do {                                                                 \
+    test_context("buf_parse_struct(" # test ")");       \
+    buf_init_1(&buf, false, (test));                                   \
+    TEST_EQ(buf_parse_struct(&buf, &s), strlen(test));                 \
+  } while (0)
+
 #define BUF_PARSE_TEST_SYM(test, expected)                             \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -1277,6 +1284,25 @@ TEST_CASE(buf_parse_str_u8)
   BUF_PARSE_TEST_STR_U8("\\xFF8", 4, 0xFF);
 }
 TEST_CASE_END(buf_parse_str_u8)
+
+TEST_CASE(buf_parse_struct)
+{
+  s_buf buf;
+  s_struct s = {0};
+  const s_tag *symbol_value;
+  BUF_PARSE_TEST_STRUCT("%KC3.Operator{symbol_value: 1}");
+  TEST_ASSERT((symbol_value =
+               struct_get_tag(&s, sym_1("symbol_value"))));
+  TEST_EQ(symbol_value->type, TAG_U8);
+  struct_clean(&s);
+  BUF_PARSE_TEST_STRUCT("%KC3.Operator{symbol_value: void}");
+  TEST_ASSERT((symbol_value =
+               struct_get_tag(&s, sym_1("symbol_value"))));
+  TEST_EQ(symbol_value->type, TAG_VOID);
+  struct_clean(&s);
+  test_context(NULL);
+}
+TEST_CASE_END(buf_parse_struct)
 
 TEST_CASE(buf_parse_sym)
 {

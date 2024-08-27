@@ -44,9 +44,9 @@ map["a"]["b"]
 %{"c" => 3}
 map["a"]["b"]["c"]
 3
-op = %KC3.Operator{}
+op = %KC3.Operator{symbol_value: void}
 %KC3.Operator{sym: :+,
-              symbol_value: ?,
+              symbol_value: void,
               operator_precedence: 0,
               operator_associativity: :left}
 op.sym
