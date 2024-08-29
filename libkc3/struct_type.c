@@ -128,7 +128,15 @@ s_struct_type * struct_type_init (s_struct_type *st,
       return NULL;
     }
     tuple = &s->tag.data.tuple;
-    if (! tag_size(tuple->tag + 1, &size)) {
+    if (tuple->tag[1].type == TAG_VAR) {
+      type = tuple->tag[1].data.var.type;
+      if (! sym_type_size(&type, &size)) {
+        map_clean(&tmp.map);
+        free(tmp.offset);
+        return NULL;
+      }
+    }
+    else if (! tag_size(tuple->tag + 1, &size)) {
       map_clean(&tmp.map);
       free(tmp.offset);
       return NULL;
