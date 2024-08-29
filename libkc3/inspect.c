@@ -331,3 +331,29 @@ s_str * inspect_tuple (const s_tuple *tuple, s_str *dest)
   }
   return buf_to_str(&buf, dest);
 }
+
+s_str * inspect_var (const s_var *var, s_str *dest)
+{
+  s_pretty pretty = {0};
+  sw size;
+  s_buf tmp;
+  size = buf_inspect_var_size(&pretty, var);
+  if (size < 0) {
+    err_puts("inspect_var: buf_inspect_var_size error");
+    assert(! "inspect_var: buf_inspect_var_size error");
+    return NULL;
+  }
+  if (! buf_init_alloc(&tmp, size)) {
+    err_puts("inspect_var: buf_init alloc");
+    assert(! "inspect_var: buf_init_alloc");
+    return NULL;
+  }
+  buf_inspect_var(&tmp, var);
+  if (tmp.wpos != tmp.size) {
+    err_puts("inspect_var: tmp.wpos != tmp.size");
+    assert(! "inspect_var: tmp.wpos != tmp.size");
+    buf_clean(&tmp);
+    return NULL;
+  }
+  return buf_to_str(&tmp, dest);
+}

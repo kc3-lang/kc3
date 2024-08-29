@@ -26,6 +26,7 @@
 #include "../libkc3/tag.h"
 #include "../libkc3/struct.h"
 #include "../libkc3/tuple.h"
+#include "../libkc3/var.h"
 #include "test.h"
 
 #define INSPECT_TEST_ARRAY(test, expected)                             \
@@ -188,6 +189,19 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define INSPECT_TEST_VAR(test, expected)                             \
+  do {                                                                 \
+    s_var var_test;                                                    \
+    s_str str_result;                                                  \
+    test_context("inspect_var(" # test ") -> " # expected);            \
+    var_init_1(&var_test, (test));                                     \
+    TEST_EQ(inspect_var(&var_test, &str_result), &str_result);         \
+    TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
+    TEST_EQ(str_result.size, strlen(expected));                        \
+    str_clean(&str_result);                                            \
+    test_context(NULL);                                                \
+  } while (0)
+
 TEST_CASE_PROTOTYPE(inspect_array);
 TEST_CASE_PROTOTYPE(inspect_bool);
 TEST_CASE_PROTOTYPE(inspect_call);
@@ -199,6 +213,7 @@ TEST_CASE_PROTOTYPE(inspect_str);
 TEST_CASE_PROTOTYPE(inspect_struct);
 TEST_CASE_PROTOTYPE(inspect_sym);
 TEST_CASE_PROTOTYPE(inspect_tuple);
+TEST_CASE_PROTOTYPE(inspect_var);
 
 void inspect_test (void)
 {
@@ -213,6 +228,7 @@ void inspect_test (void)
   TEST_CASE_RUN(inspect_struct);
   TEST_CASE_RUN(inspect_sym);
   TEST_CASE_RUN(inspect_tuple);
+  TEST_CASE_RUN(inspect_var);
 }
 
 TEST_CASE(inspect_array)
@@ -492,3 +508,12 @@ TEST_CASE(inspect_tuple)
                      "{{:a, :b}, {:c, :d}, {:e, :f}}");
 }
 TEST_CASE_END(inspect_tuple)
+
+TEST_CASE(inspect_var)
+{
+  INSPECT_TEST_VAR("?", "?");
+  INSPECT_TEST_VAR("(U8) ?", "(U8) ?");
+  INSPECT_TEST_VAR("(U8) ?0x123456789abcdef0",
+                   "(U8) ?0x123456789abcdef0");
+}
+TEST_CASE_END(inspect_var)

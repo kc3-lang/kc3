@@ -34,5 +34,6 @@ s_str * inspect_struct (const s_struct *s, s_str *dest);
 s_str * inspect_sym (const s_sym *sym, s_str *dest);
 s_str * inspect_tag (const s_tag *tag, s_str *dest);
 s_str * inspect_tuple (const s_tuple *tuple, s_str *dest);
+s_str * inspect_var (const s_var *var, s_str *dest);
 
 #endif /* LIBKC3_INSPECT_H */

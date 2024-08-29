@@ -611,6 +611,18 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_VAR(test, expected)                             \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_var dest = {0};                                                  \
+    test_context("buf_parse_var(" # test ")");                         \
+    buf_init_1(&buf, false, (test));                                   \
+    TEST_EQ(buf_parse_var(&buf, &dest), strlen(test));                 \
+    TEST_EQ(dest.type, expected.type);                                 \
+    TEST_EQ(dest.ptr, expected.ptr);                                   \
+    test_context(NULL);                                                \
+  } while (0)
+
 TEST_CASE_PROTOTYPE(buf_parse_array);
 TEST_CASE_PROTOTYPE(buf_parse_bool);
 TEST_CASE_PROTOTYPE(buf_parse_call);
@@ -639,6 +651,7 @@ TEST_CASE_PROTOTYPE(buf_parse_sym);
 TEST_CASE_PROTOTYPE(buf_parse_tag);
 TEST_CASE_PROTOTYPE(buf_parse_tuple);
 TEST_CASE_PROTOTYPE(buf_parse_unquote);
+TEST_CASE_PROTOTYPE(buf_parse_var);
 
 void buf_parse_test (void)
 {
@@ -670,6 +683,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_tag);
   TEST_CASE_RUN(buf_parse_tuple);
   TEST_CASE_RUN(buf_parse_unquote);
+  TEST_CASE_RUN(buf_parse_var);
 #ifdef KC3_TEST_BUF_PARSE_SU
   TEST_CASE_RUN(buf_parse_u8_binary);
   TEST_CASE_RUN(buf_parse_u8_octal);
@@ -1367,6 +1381,19 @@ TEST_CASE(buf_parse_unquote)
   BUF_PARSE_TEST_UNQUOTE("unquote(\"str\")");
 }
 TEST_CASE_END(buf_parse_unquote)
+
+TEST_CASE(buf_parse_var)
+{
+  s_var expected;
+  expected.type = &g_sym_Tag;
+  expected.ptr = NULL;
+  BUF_PARSE_TEST_VAR("?", expected);
+  expected.type = &g_sym_U8;
+  BUF_PARSE_TEST_VAR("(U8) ?", expected);
+  expected.ptr = (s_tag *)  0x123456789abcdef0;
+  BUF_PARSE_TEST_VAR("(U8) ?0x123456789abcdef0", expected);
+}
+TEST_CASE_END(buf_parse_var)
 
 TEST_CASE(buf_parse_uw)
 {

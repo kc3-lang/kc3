@@ -10,7 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <string.h>
 #include "assert.h"
+#include "buf.h"
+#include "buf_parse.h"
 #include "data.h"
 #include "sym.h"
 #include "tag.h"
@@ -42,6 +45,26 @@ s_var * var_init (s_var *var, s_tag *ptr, const s_sym *type)
   tmp.ptr = ptr;
   tmp.type = type;
   *var = tmp;
+  return var;
+}
+
+s_var * var_init_1 (s_var *var, const char *p)
+{
+  s_buf buf;
+  uw len;
+  sw r;
+  s_var tmp;
+  assert(var);
+  assert(p);
+  len = strlen(p);
+  buf_init_const(&buf, len, p);
+  buf.wpos = len;
+  r = buf_parse_var(&buf, &tmp);
+  if (r < 0 || (uw) r != len) {
+    err_puts("var_init_1: invalid var");
+    assert(! "var_init_1: invalid var");
+    return NULL;
+  }
   return var;
 }
 

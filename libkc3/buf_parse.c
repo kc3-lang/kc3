@@ -4658,8 +4658,11 @@ sw buf_parse_var (s_buf *buf, s_var *dest)
   if ((r = buf_read_1(buf, "0x")) < 0)
     goto ok;
   if (r > 0) {
+    result += r;
     if ((r = buf_parse_uw_hexadecimal(buf, &i)) < 0)
       goto restore;
+    result += r;
+    tmp.ptr = (s_tag *) i;
   }
   if (buf_peek_character_utf8(buf, &c) > 0 &&
       ! ident_character_is_reserved(c)) {
