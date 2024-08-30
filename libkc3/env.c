@@ -1790,31 +1790,23 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
     }
     else if (! tag_type(tmp.type->map.value + i, &type))
       goto ko;
-    if (s->tag && var && ! var->ptr) {
-      if (! env_eval_tag(env, s->tag + i,
-                         (s_tag *) (s8 *) tmp.data +
-                         tmp.type->offset[i]))
+    if (s->tag) {
+      if (! env_eval_tag(env, s->tag + i, &tag))
         goto ko;
+      if (! tag_to_const_pointer(&tag, type, &data)) {
+        tag_clean(&tag);
+        goto ko;
+      }
     }
     else {
-      if (s->tag) {
-        if (! env_eval_tag(env, s->tag + i, &tag))
-          goto ko;
-        if (! tag_to_const_pointer(&tag, type, &data)) {
-          tag_clean(&tag);
-          goto ko;
-        }
-      }
-      else {
-        if (! tag_to_const_pointer(tmp.type->map.value + i, type, &data))
-          goto ko;
-      }
-      if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
-                           data))
-        goto ko_init;
-      if (s->tag)
-        tag_clean(&tag);
+      if (! tag_to_const_pointer(tmp.type->map.value + i, type, &data))
+        goto ko;
     }
+    if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
+                         data))
+      goto ko_init;
+    if (s->tag)
+      tag_clean(&tag);
     i++;
   }
   *dest = tmp;
