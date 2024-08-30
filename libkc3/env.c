@@ -1802,6 +1802,11 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
       if (! tag_to_const_pointer(tmp.type->map.value + i, type, &data))
         goto ko;
     }
+    if (true) {
+      err_write_1("env_eval_struct: type = ");
+      err_inspect_sym(&type);
+      err_write_1("\n");
+    }
     if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
                          data))
       goto ko_init;
