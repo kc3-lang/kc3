@@ -1790,7 +1790,7 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
     }
     else if (! tag_type(tmp.type->map.value + i, &type))
       goto ko;
-    if (var && ! var->ptr) {
+    if (s->tag && var && ! var->ptr) {
       if (! env_eval_tag(env, s->tag + i,
                          (s_tag *) (s8 *) tmp.data +
                          tmp.type->offset[i]))
