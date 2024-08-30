@@ -239,7 +239,7 @@ s_struct * struct_init_1 (s_struct *s, const char *p)
       struct_clean(&tmp);
     return NULL;
   }
-  if (true) {
+  if (false) {
     err_write_1("\nstruct_init_1: tmp = ");
     err_inspect_struct(&tmp);
     err_write_1("\n");

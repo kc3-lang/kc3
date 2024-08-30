@@ -65,6 +65,7 @@ s_var * var_init_1 (s_var *var, const char *p)
     assert(! "var_init_1: invalid var");
     return NULL;
   }
+  *var = tmp;
   return var;
 }
 

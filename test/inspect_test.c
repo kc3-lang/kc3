@@ -189,12 +189,12 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define INSPECT_TEST_VAR(test, expected)                             \
+#define INSPECT_TEST_VAR(test, expected)                               \
   do {                                                                 \
     s_var var_test;                                                    \
     s_str str_result;                                                  \
     test_context("inspect_var(" # test ") -> " # expected);            \
-    var_init_1(&var_test, (test));                                     \
+    TEST_EQ(var_init_1(&var_test, (test)), &var_test);                 \
     TEST_EQ(inspect_var(&var_test, &str_result), &str_result);         \
     TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
     TEST_EQ(str_result.size, strlen(expected));                        \
