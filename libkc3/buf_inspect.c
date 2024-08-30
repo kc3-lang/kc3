@@ -3783,6 +3783,7 @@ sw buf_inspect_var (s_buf *buf, const s_var *var)
   if (var->type == &g_sym_Tag) {
     if ((r = buf_write_1(buf, "?")) < 0)
       return r;
+    result += r;
   }
   else {
     if ((r = buf_inspect_paren_sym(buf, var->type)) < 0)
@@ -3814,6 +3815,7 @@ sw buf_inspect_var_size (s_pretty *pretty, const s_var *var)
   if (var->type == &g_sym_Tag) {
     if ((r = buf_write_1_size(pretty, "?")) < 0)
       return r;
+    result += r;
   }
   else {
     if ((r = buf_inspect_paren_sym_size(pretty, var->type)) < 0)
