@@ -340,6 +340,55 @@ s_tag * tag_init_call_cast (s_tag *tag, const s_sym *type)
   return tag;
 }
 
+s_tag * tag_init_cast (s_tag *tag, const s_sym * const *type,
+                       s_tag *src)
+{
+  assert(tag);
+  assert(type);
+  assert(*type);
+  assert(src);
+  switch (src->type) {
+  case TAG_PTR:
+    if (*type != &g_sym_Tag)
+      break;
+    return tag_init_copy(tag, src->data.ptr.p);
+  default:
+    break;
+  }
+  err_puts("tag_init_cast: invalid cast");
+  assert(! "tag_init_cast: invalid cast");
+  return NULL;
+}
+
+s_tag * tag_init_cast_struct (s_tag *tag, const s_sym * const *type,
+                              s_tag *src)
+{
+  assert(tag);
+  assert(type);
+  assert(*type);
+  assert(src);
+  switch (src->type) {
+  case TAG_PTR:
+    if (! src->data.ptr.p)
+      return tag_init_void(tag);
+    return tag_init_struct_with_data(tag, *type, src->data.ptr.p,
+                                     false);
+  case TAG_PTR_FREE:
+    if (! src->data.ptr_free.p)
+      return tag_init_void(tag);
+    return tag_init_struct_with_data(tag, *type, src->data.ptr_free.p,
+                                     false);
+  case TAG_STRUCT:
+    if (*type == src->data.struct_.type->module)
+      return tag_init_struct_copy(tag, &src->data.struct_);
+  default:
+    break;
+  }
+  err_puts("tag_init_cast_struct: invalid cast");
+  assert(! "tag_init_cast_struct: invalid cast");
+  return NULL;
+}
+
 s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
 {
   assert(tag);
@@ -537,55 +586,6 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
   return NULL;
 }
 
-s_tag * tag_init_cast (s_tag *tag, const s_sym * const *type,
-                       s_tag *src)
-{
-  assert(tag);
-  assert(type);
-  assert(*type);
-  assert(src);
-  switch (src->type) {
-  case TAG_PTR:
-    if (*type != &g_sym_Tag)
-      break;
-    return tag_init_copy(tag, src->data.ptr.p);
-  default:
-    break;
-  }
-  err_puts("tag_init_cast: invalid cast");
-  assert(! "tag_init_cast: invalid cast");
-  return NULL;
-}
-
-s_tag * tag_init_cast_struct (s_tag *tag, const s_sym * const *type,
-                              s_tag *src)
-{
-  assert(tag);
-  assert(type);
-  assert(*type);
-  assert(src);
-  switch (src->type) {
-  case TAG_PTR:
-    if (! src->data.ptr.p)
-      return tag_init_void(tag);
-    return tag_init_struct_with_data(tag, *type, src->data.ptr.p,
-                                     false);
-  case TAG_PTR_FREE:
-    if (! src->data.ptr_free.p)
-      return tag_init_void(tag);
-    return tag_init_struct_with_data(tag, *type, src->data.ptr_free.p,
-                                     false);
-  case TAG_STRUCT:
-    if (*type == src->data.struct_.type->module)
-      return tag_init_struct_copy(tag, &src->data.struct_);
-  default:
-    break;
-  }
-  err_puts("tag_init_cast_struct: invalid cast");
-  assert(! "tag_init_cast_struct: invalid cast");
-  return NULL;
-}
-
 s_tag * tag_init_var (s_tag *tag, const s_sym *type)
 {
   s_tag tmp = {0};
@@ -599,7 +599,7 @@ s_tag * tag_init_var (s_tag *tag, const s_sym *type)
 s_tag * tag_init_void (s_tag *tag)
 {
   assert(tag);
-  *tag = (s_tag) {0};
+  memset(tag, 0, sizeof(s_tag));
   return tag;
 }
 

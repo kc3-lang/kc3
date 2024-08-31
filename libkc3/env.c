@@ -1768,6 +1768,7 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
   uw i;
   s_tag tag = {0};
   s_struct tmp = {0};
+  void    *tmp_data = NULL;
   const s_sym *type;
   s_var *var = NULL;
   assert(env);
@@ -1802,13 +1803,13 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
       if (! tag_to_const_pointer(tmp.type->map.value + i, type, &data))
         goto ko;
     }
-    if (false) {
+    if (true) {
       err_write_1("env_eval_struct: type = ");
       err_inspect_sym(&type);
       err_write_1("\n");
     }
-    if (! data_init_copy(type, (s8 *) tmp.data + tmp.type->offset[i],
-                         data))
+    tmp_data = (s8 *) tmp.data + tmp.type->offset[i];
+    if (! data_init_copy(type, tmp_data, data))
       goto ko_init;
     if (s->tag)
       tag_clean(&tag);

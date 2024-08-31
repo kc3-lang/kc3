@@ -534,7 +534,17 @@ lldb_ikc3:
 	${MAKE} -C ikc3 lldb_ikc3
 
 lldb_test:
-	${MAKE} debug
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C ekc3 debug
+	${MAKE} -C event debug
+	${MAKE} -C json debug
+	${MAKE} -C socket debug
+	${MAKE} -C http debug
+	${MAKE} -C httpd debug
 	${MAKE} -C test lldb_test
 
 test:
