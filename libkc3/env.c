@@ -1802,7 +1802,7 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
       if (! tag_to_const_pointer(tmp.type->map.value + i, type, &data))
         goto ko;
     }
-    if (true) {
+    if (false) {
       err_write_1("env_eval_struct: type = ");
       err_inspect_sym(&type);
       err_write_1("\n");
