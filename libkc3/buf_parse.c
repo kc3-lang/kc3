@@ -975,20 +975,14 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
     if (! operator_resolve(&next_op, 2, &next_op) &&
         ! operator_resolve(&next_op, 1, &next_op))
       break;
-    if (! operator_precedence(&next_op, &next_op_precedence)) {
-      r = -1;
+    if (! operator_precedence(&next_op, &next_op_precedence))
       break;
-    }
     while (1) {
-      if (r <= 0 ||
-          operator_arity(&next_op) != 2) {
+      if (operator_arity(&next_op) != 2)
         break;
-      }
       if (next_op_precedence <= op_precedence) {
-        if (! operator_is_right_associative(&next_op, &b)) {
-          r = -1;
-          break;
-        }
+        if (! operator_is_right_associative(&next_op, &b))
+          goto ok;
         if (! b ||
             next_op_precedence != op_precedence)
           break;
@@ -1000,47 +994,35 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
             op_precedence + 1 : op_precedence)) <= 0) {
         tmp2.arguments->tag.type = TAG_VOID;
         call_clean(&tmp2);
-        break;
+        goto ok;
       }
       result += r;
       tag_init_call(right);
       right->data.call = tmp2;
       if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
-        break;
+        goto ok;
       result += r;
       if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
-        break;
+        goto ok;
       if (r > 0 && c == '\n') {
-        r = -1;
-        break;
+        goto ok;
       }
       r = buf_peek_ident(buf, &next_op);
-      if (r > 0 &&
+      if (r <= 0 ||
           (! operator_resolve(&next_op, 2, &next_op) ||
-           ! operator_precedence(&next_op, &next_op_precedence))) {
-        r = 0;
-        break;
-      }
+           ! operator_precedence(&next_op, &next_op_precedence)))
+        goto ok;
     }
     if (r <= 0)
-      break;
+      goto ok;
     call_init_op(&tmp3);
     tmp3.ident = op;
-    if (true) {
-      tmp3.arguments->tag = *left;
-      list_next(tmp3.arguments)->tag = *right;
-      tag_init_call(left);
-      left->data.call = tmp3;
-    }
-    else {
-      tag_init_call(&tmp3.arguments->tag);
-      tmp3.arguments->tag.data.call = tmp;
-      list_next(tmp3.arguments)->tag = *right;
-      tmp = tmp3;
-      left = &tmp.arguments->tag;
-      right = &list_next(tmp.arguments)->tag;
-    }
+    tmp3.arguments->tag = *left;
+    list_next(tmp3.arguments)->tag = *right;
+    tag_init_call(left);
+    left->data.call = tmp3;
   }
+ ok:
   call_clean(dest);
   *dest = tmp;
   r = result;

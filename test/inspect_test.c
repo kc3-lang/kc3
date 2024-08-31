@@ -172,6 +172,20 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define INSPECT_TEST_TAG(test, expected)                               \
+  do {                                                                 \
+    s_tag tag_test;                                                    \
+    s_str str_result;                                                  \
+    test_context("inspect_tag(" # test ") -> " # expected);            \
+    tag_init_1(&tag_test, (test));                                     \
+    TEST_EQ(inspect_tag(&tag_test, &str_result), &str_result);         \
+    tag_clean(&tag_test);                                              \
+    TEST_EQ(str_result.size, strlen(expected));                        \
+    TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
+    str_clean(&str_result);                                            \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define INSPECT_TEST_TUPLE(test, expected)                             \
   do {                                                                 \
     s_tuple tuple_test;                                                \
@@ -180,12 +194,9 @@
     tuple_init_1(&tuple_test, (test));                                 \
     TEST_EQ(inspect_tuple(&tuple_test, &str_result), &str_result);     \
     tuple_clean(&tuple_test);                                          \
-    if (g_test_last_ok) {                                              \
-      TEST_EQ(str_result.size, strlen(expected));                      \
-      if (g_test_last_ok)                                              \
-        TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);   \
-      str_clean(&str_result);                                          \
-    }                                                                  \
+    TEST_EQ(str_result.size, strlen(expected));                        \
+    TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
+    str_clean(&str_result);                                            \
     test_context(NULL);                                                \
   } while (0)
 
@@ -212,6 +223,7 @@ TEST_CASE_PROTOTYPE(inspect_ratio);
 TEST_CASE_PROTOTYPE(inspect_str);
 TEST_CASE_PROTOTYPE(inspect_struct);
 TEST_CASE_PROTOTYPE(inspect_sym);
+TEST_CASE_PROTOTYPE(inspect_tag);
 TEST_CASE_PROTOTYPE(inspect_tuple);
 TEST_CASE_PROTOTYPE(inspect_var);
 
@@ -227,6 +239,7 @@ void inspect_test (void)
   TEST_CASE_RUN(inspect_str);
   TEST_CASE_RUN(inspect_struct);
   TEST_CASE_RUN(inspect_sym);
+  TEST_CASE_RUN(inspect_tag);
   TEST_CASE_RUN(inspect_tuple);
   TEST_CASE_RUN(inspect_var);
 }
@@ -499,6 +512,22 @@ TEST_CASE(inspect_sym)
                    ":\"éoà \\n\\r\\t\\v\\\"\"");
 }
 TEST_CASE_END(inspect_sym)
+
+TEST_CASE(inspect_tag)
+{
+  INSPECT_TEST_TAG("1 + 20",
+                   "1 + 20");
+  INSPECT_TEST_TAG("1 + 20 / 3",
+                   "1 + 20 / 3");
+  INSPECT_TEST_TAG("1 + 20 / 3 + 4",
+                   "1 + 20 / 3 + 4");
+  INSPECT_TEST_TAG("1 + 20 / 3 + 4 - 5",
+                   "1 + 20 / 3 + 4 - 5");
+  INSPECT_TEST_TAG("a = ? <- 1 ; 2",
+                   "a = ? <- 1 ; 2");
+}
+TEST_CASE_END(inspect_tag)
+
 
 TEST_CASE(inspect_tuple)
 {
