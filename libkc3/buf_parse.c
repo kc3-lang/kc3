@@ -944,17 +944,18 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
   if ((r = buf_peek_ident(buf, &next_op)) <= 0)
     goto restore;
   if (! operator_resolve(&next_op, 2, &next_op) ||
-      ! operator_precedence(&next_op, &op_precedence)) {
+      ! operator_precedence(&next_op, &next_op_precedence)) {
     r = 0;
     goto restore;
   }
-  while (r > 0 && op_precedence >= min_precedence) {
+  while (r > 0 && next_op_precedence >= min_precedence) {
     if ((r = buf_parse_ident(buf, &next_op)) <= 0)
       goto restore;
     result += r;
     if (! operator_resolve(&next_op, 2, &next_op))
       goto restore;
     op = next_op;
+    op_precedence = next_op_precedence;
     tmp.ident = op;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
@@ -982,9 +983,10 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
         break;
       if (next_op_precedence <= op_precedence) {
         if (! operator_is_right_associative(&next_op, &b))
-          goto ok;
-        if (! b ||
-            next_op_precedence != op_precedence)
+          goto restore;
+        if (! b)
+          break;
+        if (next_op_precedence != op_precedence)
           break;
       }
       call_init_op(&tmp2);
@@ -1004,17 +1006,14 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
       result += r;
       if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
         goto ok;
-      if (r > 0 && c == '\n') {
+      if (r > 0 && c == '\n')
         goto ok;
-      }
       r = buf_peek_ident(buf, &next_op);
       if (r <= 0 ||
           (! operator_resolve(&next_op, 2, &next_op) ||
            ! operator_precedence(&next_op, &next_op_precedence)))
         goto ok;
     }
-    if (r <= 0)
-      goto ok;
     call_init_op(&tmp3);
     tmp3.ident = op;
     tmp3.arguments->tag = *left;
@@ -3684,9 +3683,9 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   default:
-    if ((r = buf_parse_tag_special_operator(buf, dest)) != 0 ||
-        (r = buf_parse_tag_call_op(buf, dest)) != 0 ||
-        (r = buf_parse_tag_primary(buf, dest)) != 0)
+    if ((r = buf_parse_tag_special_operator(buf, dest)) ||
+        (r = buf_parse_tag_call_op(buf, dest)) ||
+        (r = buf_parse_tag_primary(buf, dest)))
       goto end;
   }
   goto restore;
