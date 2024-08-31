@@ -624,15 +624,6 @@ s_tag * tag_init_uw (s_tag *tag, uw i)
   return tag;
 }
 
-s_tag * tag_init_void (s_tag *tag)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_VOID;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_new_array (const s_sym *type, uw dimension,
                        const uw *dimensions)
 {
@@ -1338,16 +1329,6 @@ s_tag * tag_new_uw (uw i)
   return tag;
 }
 
-s_tag * tag_new_void (void)
-{
-  s_tag *tag;
-  tag = alloc(sizeof(s_tag));
-  if (! tag)
-    return NULL;
-  tag->type = TAG_VOID;
-  return tag;
-}
-
 s_tag * tag_array (s_tag *tag, const s_sym *type, uw dimension,
                    const uw *dimensions)
 {
@@ -1980,16 +1961,6 @@ s_tag * tag_uw (s_tag *tag, uw i)
   tag_clean(tag);
   tmp.type = TAG_UW;
   tmp.data.uw = i;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_void (s_tag *tag)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_VOID;
   *tag = tmp;
   return tag;
 }

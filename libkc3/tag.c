@@ -596,6 +596,13 @@ s_tag * tag_init_var (s_tag *tag, const s_sym *type)
   return tag;
 }
 
+s_tag * tag_init_void (s_tag *tag)
+{
+  assert(tag);
+  *tag = (s_tag) {0};
+  return tag;
+}
+
 s_tag * tag_integer_reduce (s_tag *tag)
 {
   s_integer *i;
@@ -1521,6 +1528,14 @@ const s_sym ** tag_var_type (const s_tag *tag, const s_sym **dest)
     return dest;
   }
   return tag_type(tag, dest);
+}
+
+s_tag * tag_void (s_tag *tag)
+{
+  assert(tag);
+  tag_clean(tag);
+  *tag = (s_tag) {0};
+  return tag;
 }
 
 bool tag_xor (const s_tag *a, const s_tag *b)

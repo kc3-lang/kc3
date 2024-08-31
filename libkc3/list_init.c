@@ -647,17 +647,6 @@ s_list * list_init_uw (s_list *list, uw i, s_list *next)
   return list;
 }
 
-s_list * list_init_void (s_list *list, s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_void(&tmp.tag))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
 s_list * list_new_array (const s_sym *type, uw dimension,
                          const uw *dimensions, s_list *next)
 {
@@ -1352,19 +1341,6 @@ s_list * list_new_uw (uw i, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_uw(&list->tag, i)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_void (s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_void(&list->tag)) {
     free(list);
     return NULL;
   }

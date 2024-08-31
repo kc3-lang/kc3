@@ -424,7 +424,7 @@ class TagInitList
                    [Arg.new("uw", "i")]),
        TagInitProto.new("var", "TAG_VAR", :init_mode_none,
                    [Arg.new("const s_sym *", "type")]),
-       TagInit.new("void", "TAG_VOID", :init_mode_none, [])])
+       TagInitProto.new("void", "TAG_VOID", :init_mode_none, [])])
   end
 
   def initialize(items)
