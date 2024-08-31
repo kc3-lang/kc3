@@ -1,5 +1,5 @@
-quote (a = ? <- 1 ; 2)
-quote to_lisp(quote (a = ? <- 1 ; 2))
+(a = ? <- 1 ; 2)
+to_lisp(quote (a = ? <- 1 ; 2))
 [operator_paren [operator_semicolumn, [operator_equal, a, [operator_assign ?, 1]], 2]]
 to_lisp(quote a = ? <- 1 ; 2)
 [operator_semicolumn, [operator_equal, a, [operator_assign ?, 1]], 2]

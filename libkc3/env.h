@@ -93,7 +93,8 @@ s_ident *     env_operator_ident (s_env *env, const s_ident *op,
 bool *        env_operator_is_right_associative (s_env *env,
                                                  const s_ident *op,
                                                  bool *dest);
-s8            env_operator_precedence (s_env *env, const s_ident *op);
+sw *          env_operator_precedence (s_env *env, const s_ident *op,
+                                       sw *dest);
 s_ident *     env_operator_resolve (s_env *env, const s_ident *op,
                                     u8 arity, s_ident *dest);
 const s_sym ** env_operator_symbol (s_env *env, const s_ident *op,

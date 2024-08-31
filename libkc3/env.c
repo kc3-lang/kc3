@@ -3038,36 +3038,38 @@ bool * env_operator_is_right_associative (s_env *env, const s_ident *op,
   return dest;
 }
 
-s8 env_operator_precedence (s_env *env, const s_ident *op)
+sw * env_operator_precedence (s_env *env, const s_ident *op, sw *dest)
 {
   s_facts_cursor cursor;
   const s_fact *fact;
-  s8 r = -1;
+  const s_sym *sym_sw = &g_sym_Sw;
   s_tag tag_op;
   s_tag tag_precedence;
   s_tag tag_var;
+  sw tmp;
   assert(env);
   assert(op);
   tag_init_ident(&tag_op, op);
   tag_init_sym(  &tag_precedence, &g_sym_operator_precedence);
-  tag_init_var(  &tag_var, &g_sym_U8);
+  tag_init_var(  &tag_var, &g_sym_Tag);
   if (! facts_with_tags(&env->facts, &cursor, &tag_op, &tag_precedence,
                         &tag_var))
-    return -1;
+    return NULL;
   if (! facts_cursor_next(&cursor, &fact))
-    return -1;
+    return NULL;
   if (fact) {
-    r = tag_var.data.u8;
+    sw_init_cast(&tmp, &sym_sw, &tag_var);
   }
   else {
     err_write_1("env_operator_precedence: precedence for operator ");
     err_write_1(op->sym->str.ptr.pchar);
     err_write_1(" not found in module ");
     err_puts(op->module->str.ptr.pchar);
-    r = -1;
+    return NULL;
   }
   facts_cursor_clean(&cursor);
-  return r;
+  *dest = tmp;
+  return dest;
 }
 
 s_ident * env_operator_resolve (s_env *env, const s_ident *op,

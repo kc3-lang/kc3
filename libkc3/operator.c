@@ -33,9 +33,9 @@ bool * operator_is_right_associative (const s_ident *op, bool *dest)
   return env_operator_is_right_associative(&g_kc3_env, op, dest);
 }
 
-s8 operator_precedence (const s_ident *op)
+sw * operator_precedence (const s_ident *op, sw *dest)
 {
-  return env_operator_precedence(&g_kc3_env, op);
+  return env_operator_precedence(&g_kc3_env, op, dest);
 }
 
 s_ident * operator_resolve (const s_ident *op, u8 arity,

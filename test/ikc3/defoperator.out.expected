@@ -5,7 +5,7 @@
               operator_associativity: :left}
 def operator_muul = %KC3.Operator{sym: :****,
                                   symbol_value: cfn Tag "tag_mul" (Tag, Tag, Result),
-                                  operator_precedence: 11}
+                                  operator_precedence: 13}
 operator_muul
 4 **** 4
 16
@@ -14,3 +14,4 @@ operator_muul
 4 **** 4 + 4
 20
 to_lisp(quote 4 **** 4 + 4)
+[operator_add, [operator_muul, 4, 4], 4]
