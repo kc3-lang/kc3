@@ -62,7 +62,7 @@ if ! [ -f ../ucd2c/ucd.c ]; then
 fi
 
 # Address Sanitizer config
-CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
+CFLAGS_ASAN="$CFLAGS -DDEBUG -O2 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
 LIBS_ASAN="$LIBS"
