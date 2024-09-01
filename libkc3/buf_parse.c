@@ -923,7 +923,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
   bool b;
   character c;
   s_tag *left;
-  bool   merge_left = true;
+  bool merge_left = false;
   s_ident next_op;
   sw next_op_precedence;
   s_ident op;
@@ -955,6 +955,16 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
     result += r;
     if (! operator_resolve(&next_op, 2, &next_op))
       goto restore;
+    if (merge_left) {
+      call_init_op(&tmp3);
+      tmp3.ident = op;
+      tmp3.arguments->tag = *left;
+      list_next(tmp3.arguments)->tag = *right;
+      tag_init_call(left);
+      left->data.call = tmp3;
+    }
+    else
+      merge_left = true;
     op = next_op;
     op_precedence = next_op_precedence;
     tmp.ident = op;
@@ -979,17 +989,11 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
       break;
     if (! operator_precedence(&next_op, &next_op_precedence))
       break;
-    while (1) {
-      if (operator_arity(&next_op) != 2)
-        break;
-      if (next_op_precedence <= op_precedence) {
-        if (! operator_is_right_associative(&next_op, &b))
-          goto restore;
-        if (! b)
-          break;
-        if (next_op_precedence != op_precedence)
-          break;
-      }
+    while ((operator_arity(&next_op) == 2 &&
+            next_op_precedence > op_precedence) ||
+           (operator_is_right_associative(&next_op, &b) &&
+            b &&
+            next_op_precedence == op_precedence)) {
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
       if ((r = buf_parse_call_op_rec
@@ -1002,7 +1006,6 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
       result += r;
       tag_init_call(right);
       right->data.call = tmp2;
-      merge_left = true;
       if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
         goto ok;
       result += r;
@@ -1016,20 +1019,6 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
            ! operator_precedence(&next_op, &next_op_precedence)))
         goto ok;
     }
-    if (merge_left) {
-      merge_left = false;
-      call_init_op(&tmp3);
-      tmp3.ident = op;
-      tmp3.arguments->tag = *left;
-      list_next(tmp3.arguments)->tag = *right;
-      tag_init_call(left);
-      left->data.call = tmp3;
-    }
-    r = buf_peek_ident(buf, &next_op);
-    if (r <= 0 ||
-        (! operator_resolve(&next_op, 2, &next_op) ||
-         ! operator_precedence(&next_op, &next_op_precedence)))
-      goto ok;
   }
  ok:
   call_clean(dest);
