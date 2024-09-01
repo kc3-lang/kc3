@@ -180,8 +180,8 @@
     tag_init_1(&tag_test, (test));                                     \
     TEST_EQ(inspect_tag(&tag_test, &str_result), &str_result);         \
     tag_clean(&tag_test);                                              \
-    TEST_EQ(str_result.size, strlen(expected));                        \
     TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
+    TEST_EQ(str_result.size, strlen(expected));                        \
     str_clean(&str_result);                                            \
     test_context(NULL);                                                \
   } while (0)
@@ -519,10 +519,10 @@ TEST_CASE(inspect_tag)
                    "1 + 20");
   INSPECT_TEST_TAG("1 + 20 / 3",
                    "1 + 20 / 3");
-  INSPECT_TEST_TAG("1 + 20 / 3 + 4",
-                   "1 + 20 / 3 + 4");
-  INSPECT_TEST_TAG("1 + 20 / 3 + 4 - 5",
-                   "1 + 20 / 3 + 4 - 5");
+  INSPECT_TEST_TAG("1 + 20 / 3 * 4",
+                   "1 + 20 / 3 * 4");
+  INSPECT_TEST_TAG("1 + 20 / 3 * 4 - 5",
+                   "1 + 20 / 3 * 4 - 5");
   INSPECT_TEST_TAG("a = ? <- 1 ; 2",
                    "a = ? <- 1 ; 2");
 }
