@@ -11,7 +11,7 @@ to_lisp(quote 1 + 20 / 3 * 4)
 1 + 20 / 3 * 4 - 5
 20
 to_lisp(quote 1 + 20 / 3 * 4 - 5)
-[operator_add, 1, [operator_sub, [operator_mul, [operator_div, 20, 3], 4], 5]]
+[operator_sub, [operator_add, 1, [operator_mul, [operator_div, 20, 3], 4], 5]]
 20 / 3 * 4 - 5
 19
 to_lisp(quote 20 / 3 * 4 - 5)
