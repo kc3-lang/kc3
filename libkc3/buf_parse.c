@@ -1774,6 +1774,8 @@ sw buf_parse_fn_clause (s_buf *buf, s_fn_clause *dest)
   fn_clause_init(&tmp, NULL);
   if ((r = buf_parse_fn_pattern(buf, &tmp.pattern)) <= 0) {
     err_puts("buf_parse_fn_clause: invalid pattern");
+    err_inspect_buf(buf);
+    err_write_1("\n");
     goto clean;
   }
   result += r;
@@ -1782,9 +1784,9 @@ sw buf_parse_fn_clause (s_buf *buf, s_fn_clause *dest)
     goto clean;
   result += r;
   if ((r = buf_parse_block(buf, &tmp.algo)) <= 0) {
-    err_inspect_fn_clause(&tmp);
+    err_puts("buf_parse_fn_clause: invalid program");
+    err_inspect_buf(buf);
     err_write_1("\n");
-    err_puts("buf_parse_fn: invalid program");
     goto clean;
   }
   result += r;
@@ -4207,7 +4209,8 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   default:
-    if ((r = buf_parse_tag_call(buf, dest)) ||
+    if ((r = buf_parse_tag_fn(buf, dest)) ||
+        (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)) ||
         (r = buf_parse_tag_sym(buf, dest)))
       goto end;

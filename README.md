@@ -4,10 +4,6 @@ KC3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
 for semantic programming, and programming the semantic web.
 
-This is a development branch, see
-[KC3 v0.1.12](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.12/)
-for a stable release.
-
 We are currently fundraising for the project to become real and
 there is a working prototype available at
 [https://git.kmx.io/kc3-lang/kc3/](https://git.kmx.io/kc3-lang/kc3/),
@@ -32,6 +28,27 @@ Supported architectures :
  - amd64
  - i386
  - sparc64
+
+
+## New in this release
+
+ - libkc3
+   - pretty printer
+     - indentation (str, if, do, fn, struct, map)
+ - ikc3
+   - facts
+     - Facts.with_tags(facts, s, p, o, fn (fact) {}) -> cursor
+ - lib
+   - File.exists?
+   - File.is_directory?
+   - File.list
+   - File.stat
+ - HTTPd v0.1.1
+   - file server (lftp)
+     - route_request
+     - error_404_page
+     - directory_page
+       - slash (lftp)
 
 
 ## Discord invite
@@ -66,6 +83,10 @@ git clone https://git.kmx.io/kc3-lang/kc3.git
 cd kc3
 git submodule init
 git submodule update
+cd fonts
+git submodule init
+git submodule update
+cd ..
 ./configure
 make
 ```
@@ -102,6 +123,11 @@ Other targets exist :
 make demo_asan
 make gdb_demo
 make lldb_demo
+```
+
+### Running the HTTPd demo
+```sh
+make test_httpd
 ```
 
 ### Running the tests
@@ -500,6 +526,25 @@ ikc3> double 21
 ```
 
 
+#### Facts
+
+The Facts module allows read and write access to a graph database
+containing facts : triples of subject, predicate, object.
+
+Examples for querying the KC3 database containing all definitions of
+the interpreter :
+
+```
+ikc3> Facts.with_tags(Facts.env_facts(), KC3, :operator, ?,
+        fn (fact) { puts(fact.object); :ok })
+operator_eq
+operator_gt
+operator_lt
+[...]
+:ok
+```
+
+
 ### kc3s
 
 Script interpreter. Works the same as ikc3 but is not interactive
@@ -519,27 +564,19 @@ serving files for display or download (Web 1.0).
 
 ## TODO
 
- - HTTPd
-   - file server (lftp)
-     - [DONE] route_request
-     - [DONE] error_404_page
-     - [DONE] directory_page
+ - HTTPd v0.2.0
    - dynamic pages
      - dynamic router
      - views
      - templates
      - MVC
- - lib
-   - [DONE] File.exists?
-   - [DONE] File.list
-   - [DONE] File.stat
  - libkc3
    - operators dispatch
      - list of matching operators (facts_with)
    - base-specific big floats
    - macro cast `(Macro) fn (x) { x }`
    - pretty printer
-     - indent
+     - [DONE] indent
      - 80 columns (`\n`)
    - tags
      - walker

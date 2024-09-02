@@ -884,40 +884,41 @@ KC3_FONT_SOURCES = \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-ThinItalic.ttf" \
 
 KC3_IMG_SOURCES = \
-	"img/c3.1.xcf" \
-	"img/c3.1080.jpg" \
-	"img/c3.1080.png" \
-	"img/c3.128.jpg" \
-	"img/c3.128.png" \
-	"img/c3.16.png" \
-	"img/c3.256.jpg" \
-	"img/c3.256.png" \
-	"img/c3.32.jpg" \
-	"img/c3.32.png" \
-	"img/c3.48.jpg" \
-	"img/c3.48.png" \
-	"img/c3.512.jpg" \
-	"img/c3.512.png" \
-	"img/c3.64.jpg" \
-	"img/c3.64.png" \
-	"img/c3.640.jpg" \
-	"img/c3.640.png" \
-	"img/c3.720.jpg" \
-	"img/c3.720.png" \
-	"img/c3.iconset/icon_128x128.png" \
-	"img/c3.iconset/icon_16x16.png" \
-	"img/c3.iconset/icon_256x256.png" \
-	"img/c3.iconset/icon_32x32.png" \
-	"img/c3.iconset/icon_512x512.png" \
-	"img/c3.iconset/icon_64x64.png" \
-	"img/c3.xcf" \
 	"img/earth.jpg" \
 	"img/earth.png" \
 	"img/flaps.256.png" \
 	"img/flaps.png" \
 	"img/fly-dead.png" \
 	"img/fly-noto.png" \
-	"img/iris-c3-004.jpeg" \
+	"img/iris-kc3-004.jpeg" \
+	"img/kc3.1.xcf" \
+	"img/kc3.1080.jpg" \
+	"img/kc3.1080.png" \
+	"img/kc3.128.jpg" \
+	"img/kc3.128.png" \
+	"img/kc3.16.jpg" \
+	"img/kc3.16.png" \
+	"img/kc3.256.jpg" \
+	"img/kc3.256.png" \
+	"img/kc3.32.jpg" \
+	"img/kc3.32.png" \
+	"img/kc3.512.jpg" \
+	"img/kc3.512.png" \
+	"img/kc3.64.jpg" \
+	"img/kc3.64.png" \
+	"img/kc3.640.jpg" \
+	"img/kc3.640.png" \
+	"img/kc3.720.jpg" \
+	"img/kc3.720.png" \
+	"img/kc3.96.jpg" \
+	"img/kc3.96.png" \
+	"img/kc3.iconset/icon_128x128.png" \
+	"img/kc3.iconset/icon_16x16.png" \
+	"img/kc3.iconset/icon_256x256.png" \
+	"img/kc3.iconset/icon_32x32.png" \
+	"img/kc3.iconset/icon_512x512.png" \
+	"img/kc3.iconset/icon_64x64.png" \
+	"img/kc3.xcf" \
 	"img/mandelbrot_f128_limit.1.png" \
 	"img/mandelbrot_f128_limit.2.png" \
 	"img/mandelbrot_f128_limit.3.png" \
@@ -1186,6 +1187,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/sym.kc3" \
 	"test/ikc3/sym.out.expected" \
 	"test/ikc3/sym.ret.expected" \
+	"test/ikc3/to_lisp.kc3" \
+	"test/ikc3/to_lisp.out.expected" \
+	"test/ikc3/to_lisp.ret.expected" \
 	"test/ikc3/tuple.err.expected" \
 	"test/ikc3/tuple.kc3" \
 	"test/ikc3/tuple.out.expected" \

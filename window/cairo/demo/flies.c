@@ -190,7 +190,7 @@ bool flies_render (s_sequence *seq)
       cairo_set_font(cr, &g_font_courier_new);
       buf_init(&buf, false, sizeof(a), a);
       buf_write_1(&buf, "In ");
-      buf_inspect_uw(&buf, fly_in);
+      buf_inspect_uw_decimal(&buf, fly_in);
       buf_write_u8(&buf, 0);
       cairo_text_extents(cr, buf.ptr.pchar, &te);
       y = board_h + board_item_h + te.height + te.y_bearing;
@@ -199,7 +199,7 @@ bool flies_render (s_sequence *seq)
       cairo_show_text(cr, buf.ptr.pchar);
       buf_init(&buf, false, sizeof(a), a);
       buf_write_1(&buf, "Out ");
-      buf_inspect_uw(&buf, fly_out);
+      buf_inspect_uw_decimal(&buf, fly_out);
       buf_write_u8(&buf, 0);
       x = board_x + board_item_w * (BOARD_SIZE / 2 + 1);
       cairo_move_to(cr, x, y);
