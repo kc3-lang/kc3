@@ -386,6 +386,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_uw(str, tag->data.uw);
   case TAG_VAR:
     return str_init_var(str, &tag->data.var);
+  case TAG_VOID:
+    return str_init_empty(str);
   default:
     break;
   }

@@ -118,9 +118,10 @@ defmodule HTTPd do
       slash = if Str.ends_with?(request.url, "/") do "" else "/" end
       real_path = "#{root_dir}#{request.url}#{slash}#{file}"
       dir? = File.is_directory?(real_path)
-      path = "#{request.url}#{slash}#{file}"
+      dir_slash = if dir? do "/" else "" end
+      path = "#{request.url}#{slash}#{file}#{dir_slash}"
       mode = if dir? do "dr-xr-xr-x" else "-r--r--r--" end
-      "<li>#{mode} <a href=\"#{path}\">#{path}</a></li>"
+      "<li>#{mode} <a href=\"#{path}\">#{file}#{dir_slash}</a></li>\n"
     }
     body = """<html>
   <head>
