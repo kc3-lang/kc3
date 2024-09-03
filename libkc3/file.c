@@ -20,6 +20,7 @@
 #include "alloc.h"
 #include "assert.h"
 #include "buf.h"
+#include "buf_fd.h"
 #include "buf_file.h"
 #include "buf_save.h"
 #include "config.h"
@@ -255,20 +256,26 @@ FILE * file_open (const char *path, const char *mode)
 
 s_buf * file_open_r (const s_str *path, s_buf *dest)
 {
-  FILE *fp;
+  sw e;
+  sw fd;
   s_buf tmp;
   assert(path);
   assert(dest);
-  fp = file_open(path->ptr.pchar, "rb");
-  if (! fp)
-    return NULL;
-  if (! buf_init_alloc(&tmp, BUF_SIZE)) {
-    fclose(fp);
+  if ((fd = open(path->ptr.pchar, O_RDONLY | O_BINARY)) < 0) {
+    e = errno;
+    err_write_1("file_open_r: ");
+    err_inspect_str(path);
+    err_write_1(": ");
+    err_puts(strerror(e));
     return NULL;
   }
-  if (! buf_file_open_r(&tmp, fp)) {
+  if (! buf_init_alloc(&tmp, BUF_SIZE)) {
+    close(fd);
+    return NULL;
+  }
+  if (! buf_fd_open_r(&tmp, fd)) {
     buf_clean(&tmp);
-    fclose(fp);
+    close(fd);
     return NULL;
   }
   *dest = tmp;
