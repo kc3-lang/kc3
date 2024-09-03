@@ -17,9 +17,7 @@ defmodule File do
 
   def list = cfn List "file_list" (Str, Result)
 
-  def open_r = cfn Buf "file_open_r" (Str, Result)
-
-  def open_w = cfn Buf "file_open_w" (Str, Result)
+  def open_r = cfn S32 "file_open_r" (Str, Result)
 
   def stat = cfn File.Stat "file_stat" (Str, Result)
 

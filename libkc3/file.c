@@ -254,11 +254,10 @@ FILE * file_open (const char *path, const char *mode)
   return fp;
 }
 
-s_buf * file_open_r (const s_str *path, s_buf *dest)
+s32 * file_open_r (const s_str *path, s32 *dest)
 {
   sw e;
-  sw fd;
-  s_buf tmp;
+  s32 fd;
   assert(path);
   assert(dest);
   if ((fd = open(path->ptr.pchar, O_RDONLY | O_BINARY)) < 0) {
@@ -269,59 +268,7 @@ s_buf * file_open_r (const s_str *path, s_buf *dest)
     err_puts(strerror(e));
     return NULL;
   }
-  if (! buf_init_alloc(&tmp, BUF_SIZE)) {
-    close(fd);
-    return NULL;
-  }
-  if (! buf_fd_open_r(&tmp, fd)) {
-    buf_clean(&tmp);
-    close(fd);
-    return NULL;
-  }
-  *dest = tmp;
-  return dest;
-}
-
-s_buf_rw * file_open_rw (const s_str *path, s_buf_rw *dest)
-{
-  s_buf_rw tmp = {0};
-  assert(path);
-  assert(dest);
-  tmp.r = alloc(sizeof(s_buf));
-  if (! file_open_r(path, tmp.r)) {
-    free(tmp.r);
-    return NULL;
-  }
-  tmp.w = alloc(sizeof(s_buf));
-  if (! file_open_w(path, tmp.w)) {
-    free(tmp.w);
-    buf_file_close(tmp.r);
-    free(tmp.r);
-    return NULL;
-  }
-  *dest = tmp;
-  return dest;
-}
-
-s_buf * file_open_w (const s_str *path, s_buf *dest)
-{
-  FILE *fp;
-  s_buf tmp;
-  assert(path);
-  assert(dest);
-  fp = file_open(path->ptr.pchar, "wb");
-  if (! fp)
-    return NULL;
-  if (! buf_init_alloc(&tmp, BUF_SIZE)) {
-    fclose(fp);
-    return NULL;
-  }
-  if (! buf_file_open_w(&tmp, fp)) {
-    buf_clean(&tmp);
-    fclose(fp);
-    return NULL;
-  }
-  *dest = tmp;
+  *dest = fd;
   return dest;
 }
 

@@ -10,7 +10,9 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <errno.h>
 #include <string.h>
+#include <unistd.h>
 #include <libkc3/kc3.h>
 #include "http_response.h"
 
@@ -95,6 +97,7 @@ sw http_response_buf_write (const s_http_response *response,
   sw    content_length = -1;
   s_str content_length_str = {0};
   s_tag default_messages = {0};
+  s32 e;
   s_ident ident = {0};
   s_buf *in;
   s_tag *key = NULL;
@@ -105,8 +108,10 @@ sw http_response_buf_write (const s_http_response *response,
   s_str str;
   s_tag tag_code = {0};
   s_tag tag_message = {0};
+  s_buf tmp;
   const s_sym *type;
   s_tag *value = NULL;
+  sw w = 0;
   assert(response);
   assert(buf);
   if (! response->protocol.size)
@@ -224,6 +229,7 @@ sw http_response_buf_write (const s_http_response *response,
     if (type == &g_sym_Str) {
       if ((r = buf_write_str(buf, &response->body.data.str)) < 0)
         return r;
+      result += r;
     }
     else if (type == &g_sym_Buf) {
       in = response->body.data.struct_.data;
@@ -234,8 +240,33 @@ sw http_response_buf_write (const s_http_response *response,
         err_inspect_str(&str);
         if ((r = buf_write(buf, str.ptr.pchar, str.size)) <= 0)
           return r;
+        result += r;
         str_clean(&str);
       }
+    }
+    else if (type == &g_sym_S32) {
+      buf_init_alloc(&tmp, BUF_SIZE);
+      while ((r = read(response->body.data.s32,
+                       tmp.ptr.p, tmp.size)) > 0) {
+        tmp.rpos = 0;
+        tmp.wpos = r;
+        while (tmp.rpos < (uw) r) {
+          if ((w = buf_write(buf, tmp.ptr.ps8 + tmp.rpos,
+                             r - tmp.rpos)) <= 0)
+            return w;
+          result += w;
+          tmp.rpos += w;
+        }
+      }
+      if (r < 0) {
+        e = errno;
+        err_write_1("http_response_buf_write: ");
+        err_inspect_s32(&response->body.data.s32);
+        err_write_1(": ");
+        err_puts(strerror(e));
+        return r;
+      }
+      close(response->body.data.s32);
     }
     else {
       err_write_1("http_response_buf_write: unknown body type: ");
@@ -243,7 +274,6 @@ sw http_response_buf_write (const s_http_response *response,
       err_write_1("\n");
       return -1;
     }
-    result += r;
   }
   return result;
 }
