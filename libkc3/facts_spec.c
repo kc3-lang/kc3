@@ -33,13 +33,13 @@ uw facts_spec_count_facts (p_facts_spec spec)
 p_facts_spec facts_spec_new_expand (p_facts_spec spec)
 {
   uw count;
+  s_facts_spec_cursor cursor;
+  s_fact fact;
+  p_facts_spec new;
+  p_facts_spec n;
   assert(spec);
   count = facts_spec_count_facts(spec);
   if (count > 0) {
-    s_facts_spec_cursor cursor;
-    s_fact fact;
-    p_facts_spec new;
-    p_facts_spec n;
     new = alloc((count * 4 + 1) * sizeof(s_tag *));
     if (! new)
       return NULL;

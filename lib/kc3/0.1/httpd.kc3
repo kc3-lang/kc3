@@ -144,9 +144,11 @@ defmodule HTTPd do
     ext = File.ext(request.url)
     path = root_dir + request.url
     if File.exists?(path) do
-      body = File.read(path)
       mime = HTTP.mime_type(ext)
-      headers = [{"Content-Type", (Str) mime}]
+      stat = File.stat(path)
+      headers = [{"Content-Type", (Str) mime},
+                 {"Content-Length", (Str) stat.st_size} ]
+      body = File.open_r(path)
       %HTTP.Response{body: body, headers: headers}
     else
       error_404_page(request)

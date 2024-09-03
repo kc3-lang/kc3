@@ -4,7 +4,7 @@ defmodule HTTP.Response do
              code: (U16) 200,
              message: "",
              headers: [{"Content-Type", "text/html"}],
-             body: ""]
+             body: ?]
 
   dlopen(__DIR__ + "../http.so")
 

@@ -36,6 +36,7 @@ extern const s_sym g_sym_Array;
 extern const s_sym g_sym_Block;
 extern const s_sym g_sym_Bool;
 extern const s_sym g_sym_Buf;
+extern const s_sym g_sym_BufRW;
 extern const s_sym g_sym_Call;
 extern const s_sym g_sym_Cfn;
 extern const s_sym g_sym_Character;

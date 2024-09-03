@@ -75,7 +75,8 @@ s_http_response * http_response_buf_parse (s_http_response *response,
     goto ok;
   if (content_length < 0)
     goto restore;
-  if (! buf_read(buf, content_length, &tmp.body))
+  tmp.body.type = TAG_STR;
+  if (! buf_read(buf, content_length, &tmp.body.data.str))
     goto restore;
  ok:
   buf_save_clean(buf, &save);
@@ -95,13 +96,16 @@ sw http_response_buf_write (const s_http_response *response,
   s_str content_length_str = {0};
   s_tag default_messages = {0};
   s_ident ident = {0};
+  s_buf *in;
   s_tag *key = NULL;
   const s_list *l = NULL;
   s_str protocol = {0};
   sw r = 0;
   sw result = 0;
+  s_str str;
   s_tag tag_code = {0};
   s_tag tag_message = {0};
+  const s_sym *type;
   s_tag *value = NULL;
   assert(response);
   assert(buf);
@@ -195,14 +199,16 @@ sw http_response_buf_write (const s_http_response *response,
     result += r;
     l = list_next(l);
   }
-  if (content_length < 0) {
+  if (content_length < 0 &&
+      response->body.type == TAG_STR) {
     if ((r = buf_write_str(buf, &content_length_str)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, ": ")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_uw_decimal(buf, &response->body.size)) < 0)
+    if ((r = buf_inspect_uw_decimal(buf,
+                                    &response->body.data.str.size)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, "\r\n")) < 0)
@@ -213,8 +219,30 @@ sw http_response_buf_write (const s_http_response *response,
     return r;
   result += r;
   if (send_body) {
-    if ((r = buf_write_str(buf, &response->body)) < 0)
-      return r;
+    if (! tag_type(&response->body, &type))
+      return -1;
+    if (type == &g_sym_Str) {
+      if ((r = buf_write_str(buf, &response->body.data.str)) < 0)
+        return r;
+    }
+    else if (type == &g_sym_Buf) {
+      in = response->body.data.struct_.data;
+      while (buf_refill(in, in->size) > 0) {
+        err_inspect_buf(in);
+        if (! buf_read_to_str(in, &str))
+          return -1;
+        err_inspect_str(&str);
+        if ((r = buf_write(buf, str.ptr.pchar, str.size)) <= 0)
+          return r;
+        str_clean(&str);
+      }
+    }
+    else {
+      err_write_1("http_response_buf_write: unknown body type: ");
+      err_inspect_sym(&type);
+      err_write_1("\n");
+      return -1;
+    }
     result += r;
   }
   return result;

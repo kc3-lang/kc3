@@ -35,7 +35,7 @@ void buf_file_close (s_buf *buf)
   buf->user_ptr = NULL;
 }
 
-bool buf_file_is_open (s_buf *buf)
+bool buf_file_is_open (const s_buf *buf)
 {
   s_buf_file *buf_file;
   assert(buf);
@@ -45,6 +45,16 @@ bool buf_file_is_open (s_buf *buf)
       return true;
   }
   return false;
+}
+
+FILE * buf_file_fp (const s_buf *buf)
+{
+  s_buf_file *buf_file;
+  assert(buf);
+  if (! buf->user_ptr)
+    return NULL;
+  buf_file = (s_buf_file *) buf->user_ptr;
+  return buf_file->fp;
 }
 
 s_buf * buf_file_open_r (s_buf *buf, FILE *fp)

@@ -46,7 +46,7 @@ struct http_response {
   u16 code;
   s_str message;
   s_list *headers;
-  s_str body;
+  s_tag body;
 };
 
 #endif /* HTTP_TYPES_H */

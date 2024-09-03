@@ -374,7 +374,7 @@ struct buf {
   s_buf_save *save;
   sw        (*seek) (s_buf *buf, sw offset, u8 whence);
   uw          size;
-  void       *user_ptr;
+  void *      user_ptr;
   uw          wpos;
 };
 

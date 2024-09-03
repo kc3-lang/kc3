@@ -29,6 +29,7 @@
 #include "list.h"
 #include "str.h"
 #include "sym.h"
+#include "tag.h"
 #include "time.h"
 #include "config.h"
 
@@ -56,6 +57,34 @@ bool file_access (const s_str *path, const s_sym *mode)
   else
     m = F_OK;
   return ! access(path->ptr.pchar, m);
+}
+
+void file_close (const s_tag *tag)
+{
+  s_buf_rw *buf_rw;
+  FILE *fp;
+  const s_sym *type;
+  if (! tag_type(tag, &type))
+    return;
+  if (type == &g_sym_Buf) {
+    fp = buf_file_fp(tag->data.struct_.data);
+    buf_file_close(tag->data.struct_.data);
+    fclose(fp);
+  }
+  else if (type == &g_sym_BufRW) {
+    buf_rw = tag->data.struct_.data;
+    fp = buf_file_fp(buf_rw->r);
+    buf_file_close(buf_rw->r);
+    fclose(fp);
+    fp = buf_file_fp(buf_rw->w);
+    buf_file_close(buf_rw->w);
+    fclose(fp);
+  }
+  else {
+    err_write_1("file_close: unknown tag type: ");
+    err_inspect_sym(&type);
+    err_write_1("\n");
+  }
 }
 
 sw file_copy (const char *from, const char *to)
@@ -222,6 +251,71 @@ FILE * file_open (const char *path, const char *mode)
     return NULL;
   }
   return fp;
+}
+
+s_buf * file_open_r (const s_str *path, s_buf *dest)
+{
+  FILE *fp;
+  s_buf tmp;
+  assert(path);
+  assert(dest);
+  fp = file_open(path->ptr.pchar, "rb");
+  if (! fp)
+    return NULL;
+  if (! buf_init_alloc(&tmp, BUF_SIZE)) {
+    fclose(fp);
+    return NULL;
+  }
+  if (! buf_file_open_r(&tmp, fp)) {
+    buf_clean(&tmp);
+    fclose(fp);
+    return NULL;
+  }
+  *dest = tmp;
+  return dest;
+}
+
+s_buf_rw * file_open_rw (const s_str *path, s_buf_rw *dest)
+{
+  s_buf_rw tmp = {0};
+  assert(path);
+  assert(dest);
+  tmp.r = alloc(sizeof(s_buf));
+  if (! file_open_r(path, tmp.r)) {
+    free(tmp.r);
+    return NULL;
+  }
+  tmp.w = alloc(sizeof(s_buf));
+  if (! file_open_w(path, tmp.w)) {
+    free(tmp.w);
+    buf_file_close(tmp.r);
+    free(tmp.r);
+    return NULL;
+  }
+  *dest = tmp;
+  return dest;
+}
+
+s_buf * file_open_w (const s_str *path, s_buf *dest)
+{
+  FILE *fp;
+  s_buf tmp;
+  assert(path);
+  assert(dest);
+  fp = file_open(path->ptr.pchar, "wb");
+  if (! fp)
+    return NULL;
+  if (! buf_init_alloc(&tmp, BUF_SIZE)) {
+    fclose(fp);
+    return NULL;
+  }
+  if (! buf_file_open_w(&tmp, fp)) {
+    buf_clean(&tmp);
+    fclose(fp);
+    return NULL;
+  }
+  *dest = tmp;
+  return dest;
 }
 
 s_str * file_pwd (s_str *dest)

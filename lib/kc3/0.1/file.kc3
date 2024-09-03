@@ -1,5 +1,7 @@
 defmodule File do
 
+  def close = cfn Void "file_close" (Tag)
+
   def exists? = cfn Bool "file_exists" (Str, Result)
 
   def ext = cfn Str "file_ext" (Str, Result)
@@ -14,6 +16,10 @@ defmodule File do
   end
 
   def list = cfn List "file_list" (Str, Result)
+
+  def open_r = cfn Buf "file_open_r" (Str, Result)
+
+  def open_w = cfn Buf "file_open_w" (Str, Result)
 
   def stat = cfn File.Stat "file_stat" (Str, Result)
 

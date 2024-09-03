@@ -20,10 +20,11 @@
 #include <stdio.h>
 #include "types.h"
 
-/* observers */
-bool    buf_file_is_open (s_buf *buf);
+/* Observers. */
+bool    buf_file_is_open (const s_buf *buf);
+FILE *  buf_file_fp (const s_buf *buf);
 
-/* modifiers */
+/* Modifiers. */
 s_buf * buf_file_open_r (s_buf *buf, FILE *fp);
 s_buf * buf_file_open_w (s_buf *buf, FILE *fp);
 void    buf_file_close (s_buf *buf);
