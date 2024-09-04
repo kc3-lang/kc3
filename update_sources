@@ -76,6 +76,9 @@ ucd2c/UCD.zip
 $(find ucd2c/UCD -type f)"
 sources KC3_EXTERNAL_SOURCES "$KC3_EXTERNAL_SOURCES"
 
+KC3_DOC_SOURCES="$(find doc -name '*.md')"
+sources KC3_DOC_SOURCES "$KC3_DOC_SOURCES"
+
 update_sources_mk
 update_sources_sh
 

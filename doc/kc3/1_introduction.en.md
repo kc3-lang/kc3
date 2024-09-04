@@ -1,0 +1,69 @@
+---
+title: 1. Introduction
+---
+
+# Introduction
+
+KC3 is currently a programming language project, inspired by C, Elixir
+and Common Lisp. It could be described as C with Elixir modules,
+pattern matching, and a semantic object system. The idea is to plug
+modules, closures, pattern matching, a graph database and
+metaprogramming into C99 with an extremely small set of dependencies.
+
+Supported operating systems (additionnal dependencies) :
+ - BSD
+ - Linux (libbsd, libmd)
+ - MacOS X (libmd)
+ - Windows (MSys2)
+
+Supported architectures :
+ - aarch64 (arm64, Apple M1, Apple M2)
+ - amd64
+ - i386
+ - sparc64
+
+
+## Modules
+
+Everything in KC3 is in a module. A module is a namespace,
+and is named with a symbol starting with a uppercase character.
+For instance `Sym` and `Str` are valid module names.
+
+Each module can define a type and a module name can also be a
+type name if the corresponding module defines a type.
+
+The module can also include definitions for functions for
+operating on the module type or other types.
+
+The default module is `KC3`, which is defined as facts (triples)
+in `lib/kc3/0.1/kc3.facts`.
+
+
+## Data types
+
+Basic data types in KC3 are :
+ - Strings : `Str`, e.g. `"Hello, world !"`
+ - Symbols : `Sym`, e.g. `:hello` or `Hello`
+ - Booleans : `Bool`, `true` or `false`
+ - Numbers
+   - Integers
+     - Small integers
+       - Signed small integers : `S8`, `S16`, `S32`, `S64`, `Sw`
+       - Unsigned small integers : `U8`, `U16`, `U32`, `U64`, `Uw`
+     - Large integers : `Integer`
+   - Rational numbers (fractions of integers) : `Ratio`, e.g. `-2/3`
+   - Floating point numbers : `F32`, `F64`, `F128`
+   - Complex numbers (i = √(-1)) : `Complex`, e.g. `1 +i 2`
+ - Lists : `List`, e.g. `[1, 2, 3]`
+ - Tuples : `Tuple`, e.g. `{:ok, 123}`
+ - Maps : `Map`, e.g. `%{id: 1, login: "dx"}`
+ - Structs : e.g. `%GL.Sphere{}`
+ - Quoted code : `Quote`, e.g. `quote 1 + 2`
+ - Identifiers : `Ident`, e.g. `quote hello`
+ - Function or operator call : `Call`, e.g. `quote sqrt(1)`, `quote 1 + 2`
+ - Code blocks : `Block`, e.g. `{ 1 + 2; 3 + 4 }`
+ - Function : `Fn`, e.g. `fn (x) { x * 2 }`
+ - C function : `Cfn`, e.g. `cfn Tag "tag_add" (Tag, Tag, Result)`
+ - Unquoted code: `Unquote`, e.g. `quote 1 + unquote(x)`
+ - Variables : `Var`, e.g. `?`
+ - Void : `Void`, e.g. `void`

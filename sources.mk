@@ -1503,3 +1503,11 @@ KC3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/extracted/DerivedNumericType.txt" \
 	"ucd2c/UCD/extracted/DerivedNumericValues.txt" \
 
+KC3_DOC_SOURCES = \
+	"doc/kc3/1_introduction.en.md" \
+	"doc/kc3/integer.en.md" \
+	"doc/kc3/list.md" \
+	"doc/kc3/map.en.md" \
+	"doc/kc3/ratio.en.md" \
+	"doc/kc3/variable.md" \
+
