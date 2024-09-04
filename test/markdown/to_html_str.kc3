@@ -1,0 +1,4 @@
+quote Markdown.to_html_str("Text.\n")
+Markdown.to_html_str("Text.\n")
+quote Markdown.to_html_str("# Title\nText.\n\n## Title 2\n")
+Markdown.to_html_str("# Title\nText.\n\n## Title 2\n")

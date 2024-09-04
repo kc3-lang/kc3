@@ -1,0 +1,4 @@
+quote Markdown.titles("Text.\n")
+Markdown.titles("Text.\n")
+quote Markdown.titles("# Title\nText.\n\n## Title 2\n")
+Markdown.titles("# Title\nText.\n\n## Title 2\n")

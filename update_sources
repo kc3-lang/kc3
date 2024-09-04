@@ -89,6 +89,7 @@ update_sources_sh
 ( cd ekc3       && ./update_sources; )
 ( cd event      && ./update_sources; )
 ( cd json       && ./update_sources; )
+( cd markdown   && ./update_sources; )
 ( cd socket     && ./update_sources; )
 ( cd http       && ./update_sources; )
 ( cd httpd      && ./update_sources; )

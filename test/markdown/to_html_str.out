@@ -1,0 +1,4 @@
+Markdown.to_html_str("Text.\n")
+"<p>Text.</p>\n"
+Markdown.to_html_str("# Title\nText.\n\n## Title 2\n")
+"<h1>Title</h1>\n<p>Text.</p>\n<h2>Title 2</h2>\n"

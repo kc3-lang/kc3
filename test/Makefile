@@ -101,6 +101,12 @@ gdb_test_json:
 gdb_test_json_asan:
 	cd json && ${GDB} ../../ikc3/.libs/ikc3_asan
 
+gdb_test_markdown:
+	cd markdown && ${GDB} ../../ikc3/.libs/ikc3_debug
+
+gdb_test_markdown_asan:
+	cd markdown && ${GDB} ../../ikc3/.libs/ikc3_asan
+
 lldb_test: debug
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
 
@@ -193,6 +199,18 @@ test_libkc3: libkc3_test
 
 test_libkc3_cov: libkc3_test_cov
 	time ./libkc3_test_cov
+
+test_markdown:
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./markdown_test
+
+test_markdown_asan:
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./markdown_test
+
+test_markdown_cov:
+	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./markdown_test
+
+test_markdown_debug:
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./markdown_test
 
 test_valgrind: libkc3_test
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./libkc3_test

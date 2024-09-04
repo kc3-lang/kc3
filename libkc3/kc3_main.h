@@ -41,6 +41,7 @@ const s_sym ** kc3_module (const s_sym **dest);
 uw *           kc3_offsetof (const s_sym * const *module,
                              const s_sym * const *field, uw *dest);
 sw             kc3_puts (const s_tag *tag);
+s_str *        kc3_str (const s_tag *tag, s_str *dest);
 
 /* Operators. */
 s_tag *      kc3_access (const s_tag *tag, const s_list * const *addr,

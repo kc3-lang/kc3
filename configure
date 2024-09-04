@@ -58,6 +58,7 @@ config_subdirs \
     ekc3 \
     event \
     json \
+    markdown \
     socket \
     http \
     httpd \

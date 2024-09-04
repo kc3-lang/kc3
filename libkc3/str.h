@@ -48,7 +48,7 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
 s_str * str_init_concatenate (s_str *str, const s_str *a,
                               const s_str *b);
 s_str * str_init_concatenate_list (s_str *str,
-                                   const s_list **list);
+                                   const s_list * const *list);
 s_str * str_init_character (s_str *str, const character src);
 s_str * str_init_copy (s_str *str, const s_str *src);
 s_str * str_init_copy_1 (s_str *str, const char *p);

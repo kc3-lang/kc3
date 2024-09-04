@@ -437,7 +437,7 @@ s_str * str_init_concatenate (s_str *str, const s_str *a,
 }
 
 s_str * str_init_concatenate_list (s_str *str,
-                                   const s_list **list)
+                                   const s_list * const *list)
 {
   const s_list *l;
   char *p;

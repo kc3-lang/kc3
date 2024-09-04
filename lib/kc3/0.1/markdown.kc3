@@ -1,0 +1,7 @@
+defmodule Markdown do
+
+  dlopen(__DIR__ + "markdown.so")
+
+  def to_html_str = cfn Str "markdown_to_html_str" (Str, Result)
+
+end
