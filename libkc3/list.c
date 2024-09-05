@@ -286,6 +286,16 @@ s_list ** list_remove_void (s_list **list)
   return list;
 }
 
+s_list ** list_tail (s_list **list)
+{
+  s_list **tail;
+  tail = list;
+  while (tail && *tail) {
+    tail = &(*tail)->next.data.list;
+  }
+  return tail;
+}
+
 s_array * list_to_array (const s_list *list, const s_sym *array_type,
                          s_array *dest)
 {

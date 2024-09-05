@@ -27,7 +27,7 @@ s_str * html_escape (const s_str *str, s_str *dest)
   s_tag tag;
   assert(str);
   assert(dest);
-  ident_init(&escape_ident, sym_1("EKC3"), sym_1("html_escape"));
+  ident_init(&escape_ident, sym_1("HTML"), sym_1("escapes"));
   if (! ident_get(&escape_ident, &escape_tag)) {
     err_puts("html_escape: ident_get");
     assert(! "html_escape: ident_get");

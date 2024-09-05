@@ -413,6 +413,18 @@ s_list * list_init_str_alloc_copy (s_list *list, uw size,
   return list;
 }
 
+s_list * list_init_str_cast (s_list *list, const s_sym * const *type,
+                             const s_tag *src, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_str_cast(&tmp.tag, type, src))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_str_concatenate (s_list *list, const s_str *a,
                                     const s_str *b, s_list *next)
 {
@@ -426,13 +438,25 @@ s_list * list_init_str_concatenate (s_list *list, const s_str *a,
 }
 
 s_list * list_init_str_concatenate_list (s_list *list,
-                                         const s_list **src,
+                                         const s_list * const *src,
                                          s_list *next)
 {
   s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_str_concatenate_list(&tmp.tag, src))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_str_copy (s_list *list, const s_str *src,
+                             s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_str_copy(&tmp.tag, src))
     return NULL;
   *list = tmp;
   return list;
@@ -1079,6 +1103,20 @@ s_list * list_new_str_alloc_copy (uw size, const char *p, s_list *next)
   return list;
 }
 
+s_list * list_new_str_cast (const s_sym * const *type,
+                            const s_tag *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_str_cast(&list->tag, type, src)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
 s_list * list_new_str_concatenate (const s_str *a, const s_str *b,
                                    s_list *next)
 {
@@ -1093,7 +1131,7 @@ s_list * list_new_str_concatenate (const s_str *a, const s_str *b,
   return list;
 }
 
-s_list * list_new_str_concatenate_list (const s_list **src,
+s_list * list_new_str_concatenate_list (const s_list * const *src,
                                         s_list *next)
 {
   s_list *list;
@@ -1101,6 +1139,19 @@ s_list * list_new_str_concatenate_list (const s_list **src,
   if (! list)
     return NULL;
   if (! tag_init_str_concatenate_list(&list->tag, src)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_str_copy (const s_str *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_str_copy(&list->tag, src)) {
     free(list);
     return NULL;
   }

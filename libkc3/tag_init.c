@@ -405,6 +405,18 @@ s_tag * tag_init_str_alloc_copy (s_tag *tag, uw size, const char *p)
   return tag;
 }
 
+s_tag * tag_init_str_cast (s_tag *tag, const s_sym * const *type,
+                           const s_tag *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_cast(&tmp.data.str, type, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_str_concatenate (s_tag *tag, const s_str *a,
                                   const s_str *b)
 {
@@ -417,12 +429,24 @@ s_tag * tag_init_str_concatenate (s_tag *tag, const s_str *a,
   return tag;
 }
 
-s_tag * tag_init_str_concatenate_list (s_tag *tag, const s_list **src)
+s_tag * tag_init_str_concatenate_list (s_tag *tag,
+                                       const s_list * const *src)
 {
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_STR;
   if (! str_init_concatenate_list(&tmp.data.str, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_str_copy (s_tag *tag, const s_str *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_copy(&tmp.data.str, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1066,6 +1090,20 @@ s_tag * tag_new_str_alloc_copy (uw size, const char *p)
   return tag;
 }
 
+s_tag * tag_new_str_cast (const s_sym * const *type, const s_tag *src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_STR;
+  if (! str_init_cast(&tag->data.str, type, src)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_str_concatenate (const s_str *a, const s_str *b)
 {
   s_tag *tag;
@@ -1080,7 +1118,7 @@ s_tag * tag_new_str_concatenate (const s_str *a, const s_str *b)
   return tag;
 }
 
-s_tag * tag_new_str_concatenate_list (const s_list **src)
+s_tag * tag_new_str_concatenate_list (const s_list * const *src)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -1088,6 +1126,20 @@ s_tag * tag_new_str_concatenate_list (const s_list **src)
     return NULL;
   tag->type = TAG_STR;
   if (! str_init_concatenate_list(&tag->data.str, src)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_str_copy (const s_str *src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_STR;
+  if (! str_init_copy(&tag->data.str, src)) {
     free(tag);
     return NULL;
   }
@@ -1727,6 +1779,19 @@ s_tag * tag_str_alloc_copy (s_tag *tag, uw size, const char *p)
   return tag;
 }
 
+s_tag * tag_str_cast (s_tag *tag, const s_sym * const *type,
+                      const s_tag *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_cast(&tmp.data.str, type, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_str_concatenate (s_tag *tag, const s_str *a, const s_str *b)
 {
   s_tag tmp = {0};
@@ -1739,13 +1804,25 @@ s_tag * tag_str_concatenate (s_tag *tag, const s_str *a, const s_str *b)
   return tag;
 }
 
-s_tag * tag_str_concatenate_list (s_tag *tag, const s_list **src)
+s_tag * tag_str_concatenate_list (s_tag *tag, const s_list * const *src)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_STR;
   if (! str_init_concatenate_list(&tmp.data.str, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_str_copy (s_tag *tag, const s_str *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_STR;
+  if (! str_init_copy(&tmp.data.str, src))
     return NULL;
   *tag = tmp;
   return tag;

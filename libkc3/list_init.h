@@ -64,11 +64,15 @@ s_list * list_init_str_1_alloc (s_list *list, const char *p,
                                 s_list *next);
 s_list * list_init_str_alloc_copy (s_list *list, uw size,
                                    const char *p, s_list *next);
+s_list * list_init_str_cast (s_list *list, const s_sym * const *type,
+                             const s_tag *src, s_list *next);
 s_list * list_init_str_concatenate (s_list *list, const s_str *a,
                                     const s_str *b, s_list *next);
 s_list * list_init_str_concatenate_list (s_list *list,
-                                         const s_list **src,
+                                         const s_list * const *src,
                                          s_list *next);
+s_list * list_init_str_copy (s_list *list, const s_str *src,
+                             s_list *next);
 s_list * list_init_str_empty (s_list *list, s_list *next);
 s_list * list_init_struct (s_list *list, const s_sym *module,
                            s_list *next);
@@ -142,10 +146,13 @@ s_list * list_new_str (char *p_free, uw size, const char *p,
 s_list * list_new_str_1 (char *p_free, const char *p, s_list *next);
 s_list * list_new_str_1_alloc (const char *p, s_list *next);
 s_list * list_new_str_alloc_copy (uw size, const char *p, s_list *next);
+s_list * list_new_str_cast (const s_sym * const *type,
+                            const s_tag *src, s_list *next);
 s_list * list_new_str_concatenate (const s_str *a, const s_str *b,
                                    s_list *next);
-s_list * list_new_str_concatenate_list (const s_list **src,
+s_list * list_new_str_concatenate_list (const s_list * const *src,
                                         s_list *next);
+s_list * list_new_str_copy (const s_str *src, s_list *next);
 s_list * list_new_str_empty (s_list *next);
 s_list * list_new_struct (const s_sym *module, s_list *next);
 s_list * list_new_struct_copy (const s_struct *src, s_list *next);
@@ -212,9 +219,13 @@ s_list * list_str (s_list *list, char *p_free, uw size, const char *p);
 s_list * list_str_1 (s_list *list, char *p_free, const char *p);
 s_list * list_str_1_alloc (s_list *list, const char *p);
 s_list * list_str_alloc_copy (s_list *list, uw size, const char *p);
+s_list * list_str_cast (s_list *list, const s_sym * const *type,
+                        const s_tag *src);
 s_list * list_str_concatenate (s_list *list, const s_str *a,
                                const s_str *b);
-s_list * list_str_concatenate_list (s_list *list, const s_list **src);
+s_list * list_str_concatenate_list (s_list *list,
+                                    const s_list * const *src);
+s_list * list_str_copy (s_list *list, const s_str *src);
 s_list * list_str_empty (s_list *list);
 s_list * list_struct (s_list *list, const s_sym *module);
 s_list * list_struct_copy (s_list *list, const s_struct *src);

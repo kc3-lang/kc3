@@ -1,0 +1,13 @@
+defmodule HTML do
+
+  dlopen(__DIR__ + "ekc3.so")
+
+  def escape = cfn Str "html_escape" (Str, Result)
+
+  def escapes = [{"&", "&amp;"},
+                 {"<", "&lt;"},
+                 {">", "&gt;"},
+                 {"\"", "&quot;"},
+                 {"'", "&#39;"}]
+
+end

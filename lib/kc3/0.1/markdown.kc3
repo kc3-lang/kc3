@@ -2,6 +2,8 @@ defmodule Markdown do
 
   dlopen(__DIR__ + "markdown.so")
 
+  def titles = cfn List "markdown_titles" (Str, Result)
+
   def to_html_str = cfn Str "markdown_to_html_str" (Str, Result)
 
 end

@@ -53,9 +53,13 @@ s_tag * tag_init_str (s_tag *tag, char *p_free, uw size, const char *p);
 s_tag * tag_init_str_1 (s_tag *tag, char *p_free, const char *p);
 s_tag * tag_init_str_1_alloc (s_tag *tag, const char *p);
 s_tag * tag_init_str_alloc_copy (s_tag *tag, uw size, const char *p);
+s_tag * tag_init_str_cast (s_tag *tag, const s_sym * const *type,
+                           const s_tag *src);
 s_tag * tag_init_str_concatenate (s_tag *tag, const s_str *a,
                                   const s_str *b);
-s_tag * tag_init_str_concatenate_list (s_tag *tag, const s_list **src);
+s_tag * tag_init_str_concatenate_list (s_tag *tag,
+                                       const s_list * const *src);
+s_tag * tag_init_str_copy (s_tag *tag, const s_str *src);
 s_tag * tag_init_str_empty (s_tag *tag);
 s_tag * tag_init_struct (s_tag *tag, const s_sym *module);
 s_tag * tag_init_struct_copy (s_tag *tag, const s_struct *src);
@@ -121,8 +125,10 @@ s_tag * tag_new_str (char *p_free, uw size, const char *p);
 s_tag * tag_new_str_1 (char *p_free, const char *p);
 s_tag * tag_new_str_1_alloc (const char *p);
 s_tag * tag_new_str_alloc_copy (uw size, const char *p);
+s_tag * tag_new_str_cast (const s_sym * const *type, const s_tag *src);
 s_tag * tag_new_str_concatenate (const s_str *a, const s_str *b);
-s_tag * tag_new_str_concatenate_list (const s_list **src);
+s_tag * tag_new_str_concatenate_list (const s_list * const *src);
+s_tag * tag_new_str_copy (const s_str *src);
 s_tag * tag_new_str_empty (void);
 s_tag * tag_new_struct (const s_sym *module);
 s_tag * tag_new_struct_copy (const s_struct *src);
@@ -185,9 +191,13 @@ s_tag * tag_str (s_tag *tag, char *p_free, uw size, const char *p);
 s_tag * tag_str_1 (s_tag *tag, char *p_free, const char *p);
 s_tag * tag_str_1_alloc (s_tag *tag, const char *p);
 s_tag * tag_str_alloc_copy (s_tag *tag, uw size, const char *p);
+s_tag * tag_str_cast (s_tag *tag, const s_sym * const *type,
+                      const s_tag *src);
 s_tag * tag_str_concatenate (s_tag *tag, const s_str *a,
                              const s_str *b);
-s_tag * tag_str_concatenate_list (s_tag *tag, const s_list **src);
+s_tag * tag_str_concatenate_list (s_tag *tag,
+                                  const s_list * const *src);
+s_tag * tag_str_copy (s_tag *tag, const s_str *src);
 s_tag * tag_str_empty (s_tag *tag);
 s_tag * tag_struct (s_tag *tag, const s_sym *module);
 s_tag * tag_struct_copy (s_tag *tag, const s_struct *src);
