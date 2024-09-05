@@ -15,11 +15,14 @@
 
 s_str * url_escape (const s_str *src, s_str *dest)
 {
+  s_buf buf;
+  character c;
   s_str *escapes;
   s_tag escapes_tag;
   s_ident ident;
   s_str s;
   sw size;
+  u8 u;
   ident_init(&ident, sym_1("URL"), sym_1("escapes"));
   if (! ident_get(&ident, &escapes_tag)) {
     err_puts("url_escape: missing URL.escapes");
@@ -40,13 +43,19 @@ s_str * url_escape (const s_str *src, s_str *dest)
     return NULL;
   s = *src;
   while (str_read_character_utf8(&s, &c) > 0) {
-    if (str_character_position(escapes, c) >= 0) {
-      if (buf_write_u8(buf, '%') < 0)
-        goto clean;
-      if (buf_write_u8_hex(buf, c) < 0)
+    /*if (c == ' ') { 
+      if (buf_write_u8(&buf, '+') < 0)
         goto clean;
     }
-    else if (buf_write_character_utf8(buf, c) < 0)
+    else*/
+    if (str_character_position(escapes, c) >= 0) {
+      if (buf_write_u8(&buf, '%') < 0)
+        goto clean;
+      u = c;
+      if (buf_u8_to_hex(&buf, &u) != 2)
+        goto clean;
+    }
+    else if (buf_write_character_utf8(&buf, c) < 0)
       goto clean;
   }
   tag_clean(&escapes_tag);
@@ -62,6 +71,7 @@ s_str * url_escape (const s_str *src, s_str *dest)
 
 sw url_escape_size (const s_str *src)
 {
+  character c;
   s_str *escapes;
   s_tag escapes_tag;
   s_ident ident;
@@ -72,16 +82,19 @@ sw url_escape_size (const s_str *src)
   if (! ident_get(&ident, &escapes_tag)) {
     err_puts("url_escape_size: missing URL.escapes");
     assert(! "url_escape_size: missing URL.escapes");
-    return NULL;
+    return -1;
   }
   if (escapes_tag.type != TAG_STR) {
     err_puts("url_escape_size: URL.escapes is not a Str");
     assert(! "url_escape_size: URL.escapes is not a Str");
-    return NULL;
+    return -1;
   }
   escapes = &escapes_tag.data.str;
   s = *src;
   while ((r = str_read_character_utf8(&s, &c)) > 0) {
+    /*if (c == ' ')
+      result += 1;
+      else*/
     if (str_character_position(escapes, c) >= 0)
       result += 3;
     else
@@ -93,5 +106,66 @@ sw url_escape_size (const s_str *src)
 
 s_str * url_unescape (const s_str *url, s_str *dest)
 {
-  
+  character c;
+  u8 digit[2];
+  s_buf in;
+  s_buf out;
+  sw r;
+  sw size;
+  u8 u;
+  assert(url);
+  assert(dest);
+  if ((size = url_unescape_size(url)) < 0)
+    return NULL;
+  if (! size)
+    return str_init_empty(dest);
+  if (! buf_init_alloc(&out, size))
+    return NULL;
+  buf_init_str_const(&in, url);
+  while ((r = buf_read_character_utf8(&in, &c)) > 0) {
+    if (c == '+') {
+      if (buf_write_u8(&out, ' ') < 0)
+        goto clean;
+    }
+    else if (c == '%') {
+      if ((r = buf_parse_digit_hex(&in, &digit[0])) <= 0)
+        goto ok;
+      if ((r = buf_parse_digit_hex(&in, &digit[1])) <= 0)
+        goto ok;
+      u = digit[0] * 16 + digit[1];
+      if (buf_write_u8(&out, u) < 0)
+        goto clean;
+    }
+    else
+      if (buf_write_character_utf8(&out, c) < 0)
+        goto clean;
+  }
+ ok:
+  buf_to_str(&out, dest);
+  return dest;
+ clean:
+  buf_clean(&out);
+  return NULL;
+}
+
+sw url_unescape_size (const s_str *url)
+{
+  character c;
+  u8 digit[2];
+  s_buf in;
+  sw r;
+  sw result = 0;
+  assert(url);
+  buf_init_str_const(&in, url);
+  while ((r = buf_read_character_utf8(&in, &c)) > 0) {
+    if (c == '%') {
+      if ((r = buf_parse_digit_hex(&in, &digit[0])) <= 0 ||
+          (r = buf_parse_digit_hex(&in, &digit[1])) <= 0)
+        return result;
+      result++;
+    }
+    else
+      result += r;
+  }
+  return result;
 }

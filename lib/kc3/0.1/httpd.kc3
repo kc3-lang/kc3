@@ -3,6 +3,7 @@ defmodule HTTPd do
   require Event
   require Facts
   require File
+  require HTML
   require HTTP
   require HTTP.Request
   require HTTP.Response
@@ -11,6 +12,7 @@ defmodule HTTPd do
   require Socket
   require Socket.Buf
   require Str
+  require URL
 
   def root_dir = "./static"
 
@@ -110,7 +112,7 @@ defmodule HTTPd do
   <body>
     <h1>404 Not Found</h1>
     <p>
-      The requested URL #{request.url} was not found on this server.
+      The requested URL #{HTML.escape(inspect(request.url))} was not found on this server.
     </p>
   </body>
 </html>

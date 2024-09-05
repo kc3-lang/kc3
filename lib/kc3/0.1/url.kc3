@@ -1,5 +1,9 @@
 defmodule URL do
 
-  def escapes = " <>'\""
+  dlopen(__DIR__ + "http.so")
+
+  def escape = cfn Str "url_escape" (Str, Result)
+
+  def escapes = "%#<>'\\\""
 
 end

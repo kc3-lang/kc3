@@ -291,3 +291,5 @@ add {KC3, :symbol, KC3.offsetof}
 replace {KC3.offsetof, :symbol_value, cfn Uw "kc3_offsetof" (Sym, Sym, Result)}
 add {KC3, :symbol, KC3.to_lisp}
 replace {KC3.to_lisp, :symbol_value, cfn Tag "to_lisp" (Tag, Result)}
+add {KC3, :symbol, KC3.inspect}
+replace {KC3.inspect, :symbol_value, cfn Str "inspect_tag" (Tag, Result)}

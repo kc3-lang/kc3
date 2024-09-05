@@ -60,6 +60,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     err_write_1("\n");
   }
   url_unescape(&url, &tmp_req.url);
+  str_clean(&url);
   if (! buf_read_until_1_into_str(buf, "\r\n", &tmp_req.protocol)) {
     err_puts("http_request_buf_parse: invalid protocol");
     goto restore;
