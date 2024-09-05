@@ -10,9 +10,10 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <string.h>
 #include <libkc3/kc3.h>
 #include "http.h"
-#include <string.h>
+#include "url.h"
 
 s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 {
@@ -22,6 +23,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_list **tail;
   s_tag tmp = {0};
   s_http_request tmp_req = {0};
+  s_str url;
   assert(req);
   assert(buf);
   buf_save_init(buf, &save);
@@ -48,15 +50,16 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     err_inspect_sym(&tmp_req.method);
     err_write_1("\n");
   }
-  if (! buf_read_until_1_into_str(buf, " ", &tmp_req.url)) {
+  if (! buf_read_until_1_into_str(buf, " ", &url)) {
     err_puts("http_request_buf_parse: invalid URL");
     goto restore;
   }
   if (false) {
     err_write_1("http_request_buf_parse: url: ");
-    err_inspect_str(&tmp_req.url);
+    err_inspect_str(&url);
     err_write_1("\n");
   }
+  url_unescape(&url, &tmp_req.url);
   if (! buf_read_until_1_into_str(buf, "\r\n", &tmp_req.protocol)) {
     err_puts("http_request_buf_parse: invalid protocol");
     goto restore;

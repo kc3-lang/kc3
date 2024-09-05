@@ -5,10 +5,12 @@ HEADERS = \
 	"http_response.h" \
 	"mime_type.h" \
 	"types.h" \
+	"url.h" \
 
 SOURCES = \
 	"http.c" \
 	"http_request.c" \
 	"http_response.c" \
 	"mime_type.c" \
+	"url.c" \
 
