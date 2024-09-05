@@ -127,7 +127,7 @@ defmodule HTTPd do
       dir_slash = if dir? do "/" else "" end
       path = "#{request.url}#{slash}#{file}#{dir_slash}"
       mode = if dir? do "dr-xr-xr-x" else "-r--r--r--" end
-      "<li>#{mode} <a href=\"#{path}\">#{file}#{dir_slash}</a></li>\n"
+      "<li>#{mode} <a href=\"#{path}\">#{file}</a>#{dir_slash}</li>\n"
     }
     body = """<html>
   <head>
