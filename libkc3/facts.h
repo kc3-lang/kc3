@@ -56,11 +56,11 @@ bool *         facts_remove_fact_tags (s_facts *facts,
 s_facts *      facts_remove_all (s_facts *facts);
 const s_fact * facts_replace_fact (s_facts *facts, const s_fact *fact);
 const s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
-                              const s_tag *predicate,
-                              const s_tag *object);
+                                   const s_tag *predicate,
+                                   const s_tag *object);
 sw             facts_save_file (s_facts *facts, const char *path);
 s_facts_transaction * facts_transaction_clean
-(s_facts_transaction *transaction);
+                 (s_facts_transaction *transaction);
 s_facts *      facts_transaction_rollback
                  (s_facts *facts,
                   const s_facts_transaction *transaction);

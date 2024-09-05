@@ -56,6 +56,11 @@ s_tag *       env_defoperator (s_env *env, const s_sym * const *name,
 const s_sym * env_defstruct (s_env *env, const s_list *spec);
 s_fact_w *    env_fact_w_eval (s_env *env, const s_fact_w *fact,
 			       s_fact_w *dest);
+s_tag *       env_facts_first_with_tags (s_env *env, s_facts *facts,
+                                         s_tag *subject,
+                                         s_tag *predicate,
+                                         s_tag *object,
+                                         s_fn *callback, s_tag *dest);
 s_tag *       env_facts_with (s_env *env, s_facts *facts, s_list **spec,
                               s_fn *callback, s_tag *dest);
 s_facts_with_cursor *

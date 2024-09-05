@@ -184,6 +184,14 @@ s_tag * kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr)
   return tag_init_struct_with_data(tag, &g_sym_Fact, ptr->p, false);
 }
 
+s_tag * kc3_facts_first_with_tags (s_facts *facts, s_tag *subject,
+                                   s_tag *predicate, s_tag *object,
+                                   s_fn *callback, s_tag *dest)
+{
+  return env_facts_with_tags(&g_kc3_env, facts, subject, predicate,
+                             object, callback, dest);
+}
+
 uw * kc3_facts_next_id (uw *dest)
 {
   assert(dest);
