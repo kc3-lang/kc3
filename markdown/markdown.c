@@ -10,8 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include <md4c.h>
-#include <md4c-html.h>
+#include "md4c.h"
+#include "md4c-html.h"
 #include <libkc3/kc3.h>
 #include "markdown.h"
 
@@ -172,7 +172,7 @@ s32 markdown_titles_leave_block (MD_BLOCKTYPE type, void *detail,
     str_list = NULL;
     str_list_tail = &str_list;
     i = 0;
-    while (i < level) {
+    while (i <= level) {
       *str_list_tail = list_new_str_cast(&sym_Str, tuple_count + i,
                                          NULL);
       str_list_tail = &(*str_list_tail)->next.data.list;
@@ -180,7 +180,6 @@ s32 markdown_titles_leave_block (MD_BLOCKTYPE type, void *detail,
       str_list_tail = &(*str_list_tail)->next.data.list;
       i++;
     }
-    // i = level
     while (i < 6) {
       tag_init_u8(tuple_count + i, 0);
       i++;

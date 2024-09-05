@@ -88,6 +88,10 @@ test/libkc3_test
 test/libkc3_test_asan
 test/libkc3_test_cov
 test/libkc3_test_debug
+test/markdown/*.diff
+test/markdown/*.err
+test/markdown/*.out
+test/markdown/*.ret
 *.tmp
 ucd2c/ucd2c
 win32/kc3*
