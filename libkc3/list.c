@@ -91,6 +91,25 @@ s_list * list_init_1 (s_list *list, const char *p, s_list *next)
   return list;
 }
 
+s_list ** list_init_append (s_list **list, const s_list * const *src,
+                            const s_tag *tag)
+{
+  const s_list *s;
+  s_list *tmp;
+  s_list **tail;
+  tmp = NULL;
+  tail = &tmp;
+  s = *src;
+  while (s) {
+    *tail = list_new_tag_copy(&s->tag, NULL);
+    tail = &(*tail)->next.data.list;
+    s = list_next(s);
+  }
+  *tail = list_new_tag_copy(tag, NULL);
+  *list = tmp;
+  return list;
+}
+
 s_list ** list_init_cast (s_list **list, const s_sym * const *type,
                           const s_tag *tag)
 {

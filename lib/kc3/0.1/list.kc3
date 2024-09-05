@@ -1,5 +1,7 @@
 defmodule List do
 
+  def append = cfn List "list_init_append" (Result, List, Tag)
+
   def cast = cfn List "list_init_cast" (Result, Sym, Tag)
 
   def has? = cfn Bool "list_has" (List, Tag, Result)
