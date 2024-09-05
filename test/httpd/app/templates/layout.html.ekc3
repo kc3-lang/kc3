@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= title %></title>
+  </head>
+  <body>
+    <%= raw EKC3.render_file("app/templates/nav.html.ekc3") %>
+    <div class="col-3">
+    </div>
+    <div class="col-9">
+      <%= raw md_html %>
+    </div>
+  </body>
+</html>

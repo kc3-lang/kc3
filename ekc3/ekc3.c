@@ -450,8 +450,9 @@ sw ekc3_render_buf (s_buf *in)
   return r;
 }
 
-sw ekc3_render_file (const s_str *path)
+s_str * ekc3_render_file (const s_str *path, s_str *dest)
 {
+  s_buf buf;
   s_tag *file_dir;
   s_tag  file_dir_save;
   s_tag *file_path;
@@ -460,6 +461,7 @@ sw ekc3_render_file (const s_str *path)
   s_buf in;
   char  in_data[BUF_SIZE];
   sw r;
+  s_str tmp;
   buf_init(&in, false, BUF_SIZE, in_data);
   fp = file_open(path->ptr.pchar, "rb");
   if (! fp)
@@ -474,7 +476,7 @@ sw ekc3_render_file (const s_str *path)
   file_path = frame_get_w(&g_kc3_env.global_frame, &g_sym___FILE__);
   file_path_save = *file_path;
   file_path->data.str = *path;
-  r = ekc3_render_buf(&in);
+  if (! ekc3_render_buf(&in, &tmp))
   tag_clean(file_dir);
   *file_dir = file_dir_save;
   *file_path = file_path_save;

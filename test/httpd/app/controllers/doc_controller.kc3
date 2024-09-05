@@ -1,0 +1,18 @@
+defmodule DocController do
+
+  def route = fn (request) {
+    if (request.method == :get) do
+      path_md = ".#{request.url}.md"
+      if File.exists?(path_md) do
+        md = File.read(path_md)
+        body = Markdown.to_html_str(md)
+        %HTTP.Response{body: body}
+      else
+        HTTPd.error_404_page(request)
+      end
+    else
+      HTTPd.error_404_page(request)
+    end
+  }
+
+end

@@ -4,6 +4,11 @@ defmodule List do
 
   def cast = cfn List "list_init_cast" (Result, Sym, Tag)
 
+  def each = fn {
+    ([], _) { :ok }
+    ([a | b], f) { f(a); each(b, f) }
+  }
+
   def has? = cfn Bool "list_has" (List, Tag, Result)
 
   def map = fn {

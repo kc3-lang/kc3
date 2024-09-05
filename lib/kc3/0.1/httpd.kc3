@@ -57,22 +57,30 @@ defmodule HTTPd do
     end
     Socket.close(socket)
   }
-    
+
+  def load_app = fn () {
+    HTTP.mime_type_load("config/mime.types")
+    controllers_dir = "app/controllers/"
+    controllers = File.list(controllers_dir)
+    List.each(controllers, fn (c) {
+      load(controllers_dir + c)
+    })
+    if (File.exists?("config/routes.kc3")) do
+      load("config/routes.kc3")
+    end
+  }
+
   def main = fn {
     () {
       host = getenv("KC3_HTTPD_HOST")
       port = getenv("KC3_HTTPD_PORT")
       event_base = Event.base_new()
-      HTTP.mime_type_load("config/mime.types")
-      if (File.exists?("config/routes.kc3")) do
-        load("config/routes")
-      end
+      load_app()
       server(host, port)
     }
     (host, port) {
-      HTTP.mime_type_load("mime.types")
       event_base = Event.base_new()
-      load("config/routes")
+      load_app()
       server(host, port)
     }
   }
