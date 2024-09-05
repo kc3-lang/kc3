@@ -409,7 +409,9 @@ bool hash_update_struct (t_hash *hash, const s_struct *s)
   while (i < s->type->map.count) {
     if (! hash_update_tag(hash, s->type->map.key + i))
       return false;
-    if (! tag_type(s->type->map.value + i, &sym))
+    if (s->type->map.value[i].type == TAG_VAR)
+      sym = s->type->map.value[i].data.var.type;
+    else if (! tag_type(s->type->map.value + i, &sym))
       return false;
     if (s->data) {
       data = (s8 *) s->data + s->type->offset[i];

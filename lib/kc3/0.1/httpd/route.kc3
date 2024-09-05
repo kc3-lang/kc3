@@ -1,0 +1,14 @@
+defmodule HTTPd.Route do
+
+  require Str
+
+  defstruct [path: "/",
+             controller: ?]
+
+  def match = fn (route, request) {
+    if Str.starts_with?(request.url, route.path) do
+      route.controller
+    end
+  }
+
+end

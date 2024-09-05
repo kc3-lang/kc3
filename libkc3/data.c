@@ -477,6 +477,8 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
     return hash_update_sw(hash, data);
   if (type == &g_sym_Sym)
     return hash_update_sym(hash, data);
+  if (type == &g_sym_Tag)
+    return hash_update_tag(hash, data);
   if (type == &g_sym_Tuple)
     return hash_update_tuple(hash, data);
   if (type == &g_sym_U8)
