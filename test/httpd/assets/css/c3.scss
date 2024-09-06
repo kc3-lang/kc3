@@ -1,0 +1,50 @@
+body.C3 {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: url('/_images/iris-c3-004.jpeg');
+    background-size: 100%;
+    background-position-y: 2.9rem;
+
+    div.container {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    h1 {
+        position: relative;
+        display: block;
+        margin: 0 auto;
+        width: 20%;
+        height: 0;
+        padding: 0 0 20% 0;
+        background: url('/_images/c3.256.png');
+        background-size: 100%;
+    }
+
+    .C3-1 {
+        position: relative;
+        display: block;
+        margin: 10% 0 33% 4%;
+        padding: 0 0 40% 0;
+        width: 45%;
+        height: 0;
+        border-radius: 1rem;
+        background: #fff;
+        font-size: 1.8vw;
+
+        & > div {
+            margin: 0;
+            padding: 3vw;
+        }
+    }
+
+    div.pixels-5-15 {
+        div.container {
+            margin: 0 auto;
+            max-width: 540px;
+        }
+    }
+}

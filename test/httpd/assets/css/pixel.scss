@@ -1,0 +1,24 @@
+.pixels-5-15 {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: #fff;
+
+    .container {
+        margin: 0 auto;
+        width: 100%;
+        max-width: 540px;
+    }
+}
+.pixel {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: solid 1px #fff;
+}
+.pixel-0 {
+    background: #000;
+}
+.pixel-1 {
+    background: #fff;
+}
