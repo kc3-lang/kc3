@@ -18,6 +18,9 @@ $code-font-size: $font-size-base * 1.1;
 @import "./pixel.scss";
 @import "./pygments.scss";
 
+pre {
+  overflow: visible;
+}
 body {
   margin: 0;
   padding: 0;

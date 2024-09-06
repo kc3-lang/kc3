@@ -2481,6 +2481,7 @@ s_env * env_init_toplevel (s_env *env)
 s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
                  s_tag *dest)
 {
+  s_frame *frame;
   uw i;
   const s_map *map;
   s_tag tmp = {0};
@@ -2488,8 +2489,13 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
   assert(tag);
   assert(block);
   assert(dest);
-  if (! env_eval_tag(env, tag, &tmp))
+  if (! (frame = frame_new(env->frame)))
     return NULL;
+  env->frame = frame;
+  if (! env_eval_tag(env, tag, &tmp)) {
+    env->frame = frame_delete(frame);
+    return NULL;
+  }
   switch(tag->type) {
   case TAG_MAP:
     map = &tag->data.map;
@@ -2505,6 +2511,7 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
     err_inspect_tag(tag);
     err_write_1("\n");
     assert(! "env_let: unsupported associative tag type");
+    env->frame = frame_delete(frame);
     return NULL;
   }
   i = 0;
@@ -2515,21 +2522,25 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
       err_inspect_tag(map->key + i);
       err_write_1("\n");
       assert(! "env_let: binding key is not a symbol");
+      env->frame = frame_delete(frame);
       return NULL;
     }
     if (! frame_binding_new_copy(env->frame,
                                  map->key[i].data.sym,
                                  map->value + i)) {
       tag_clean(&tmp);
+      env->frame = frame_delete(frame);
       return NULL;
     }
     i++;
   }
   if (! env_eval_block(env, block, dest)) {
     tag_clean(&tmp);
+    env->frame = frame_delete(frame);
     return NULL;
   }
   tag_clean(&tmp);
+  env->frame = frame_delete(frame);
   return dest;
 }
 

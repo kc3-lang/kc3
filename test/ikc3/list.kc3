@@ -52,3 +52,5 @@ List.has?([:read], :read)
 
 quote List.has?([:read], :write)
 List.has?([:read], :write)
+quote List.join(["1", "2", "3"], ", ")
+List.join(["1", "2", "3"], ", ")

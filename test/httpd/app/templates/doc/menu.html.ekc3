@@ -1,4 +1,4 @@
-<ul class="bg-gray">
+<ul>
   <%= raw List.join(List.map(index, fn (file) {
     items = if (file.type == :dir) do
               let %{index: file.items} do

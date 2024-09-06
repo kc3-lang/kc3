@@ -1,6 +1,8 @@
-<div class="col-3">
-  <%= raw menu %>
-</div>
-<div class="col-9">
-  <%= raw html %>
+<div class="row">
+  <div class="bg-gray col-3 left-col">
+    <%= raw menu %>
+  </div>
+  <div class="col-9">
+    <%= raw html %>
+  </div>
 </div>

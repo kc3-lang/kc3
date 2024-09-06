@@ -10,17 +10,24 @@ defmodule DocController do
         doc_index(rest, path_md, dir, acc)
       else
         path = dir + file
-        if (File.is_directory?(path)) do
+        end_ = if Str.ends_with?(file, ".md") do -4 else
+          if Str.ends_with?(file, ".html") do -6 else
+            if Str.ends_with?(file, ".txt") do -5 else -1 end
+          end
+        end
+        url = Str.slice(path, 1, end_)
+        if File.is_directory?(path) do
           items = doc_index(File.list(path), path_md, path + "/", [])
           item = %{type: :dir,
-                   url: Str.slice(path, 1, -1),
+                   url: url,
                    name: file,
                    items: items}
           doc_index(rest, path_md, dir, [item | acc])
         else
           item = %{type: :file,
-                   url: Str.slice(path, 1, -1),
-                   name: file}
+                   url: url,
+                   name: Str.slice(file, 0, end_),
+                   items: []}
           doc_index(rest, path_md, dir, [item | acc])
         end
       end
