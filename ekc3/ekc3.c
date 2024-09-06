@@ -400,7 +400,7 @@ s_str * ekc3_inspect_block (const s_block *block, s_str *dest)
   return dest;
 }
 
-sw ekc3_render (const p_ekc3 *ekc3)
+sw ekc3_render (s_buf *buf, const p_ekc3 *ekc3)
 {
   const s_list *l;
   sw r;
@@ -424,7 +424,7 @@ sw ekc3_render (const p_ekc3 *ekc3)
       }
     }
     else {
-      if (! (r = ekc3_render_tag(&l->tag)))
+      if (! (r = ekc3_render_tag(buf, &l->tag)))
         return r;
       result += r;
     }
@@ -433,7 +433,7 @@ sw ekc3_render (const p_ekc3 *ekc3)
   return result;
 }
 
-sw ekc3_render_buf (s_buf *in)
+s_str * ekc3_render_buf_to_str (s_buf *in, s_str *dest)
 {
   p_ekc3 ekc3;
   sw r;
@@ -441,18 +441,20 @@ sw ekc3_render_buf (s_buf *in)
   ekc3_init(&ekc3);
   r = ekc3_buf_parse(in, &ekc3);
   if (r < 0) {
-    err_puts("ekc3_render_buf: ekc3_buf_parse");
-    assert(! "ekc3_render_buf: ekc3_buf_parse");
-    return r;
+    err_puts("ekc3_render_buf_to_str: ekc3_buf_parse");
+    assert(! "ekc3_render_buf_to_str: ekc3_buf_parse");
+    return NULL;
   }
-  r = ekc3_render(&ekc3);
+  if (! ekc3_render_to_str(&ekc3, dest)) {
+    ekc3_clean(&ekc3);
+    return NULL;
+  }
   ekc3_clean(&ekc3);
-  return r;
+  return dest;
 }
 
-s_str * ekc3_render_file (const s_str *path, s_str *dest)
+s_str * ekc3_render_file_to_str (const s_str *path, s_str *dest)
 {
-  s_buf buf;
   s_tag *file_dir;
   s_tag  file_dir_save;
   s_tag *file_path;
@@ -460,15 +462,14 @@ s_str * ekc3_render_file (const s_str *path, s_str *dest)
   FILE *fp;
   s_buf in;
   char  in_data[BUF_SIZE];
-  sw r;
-  s_str tmp;
+  s_str *result;
   buf_init(&in, false, BUF_SIZE, in_data);
   fp = file_open(path->ptr.pchar, "rb");
   if (! fp)
-    return -1;
+    return NULL;
   if (! buf_file_open_r(&in, fp)) {
     fclose(fp);
-    return -1;
+    return NULL;
   }
   file_dir = frame_get_w(&g_kc3_env.global_frame, &g_sym___DIR__);
   file_dir_save = *file_dir;
@@ -476,20 +477,21 @@ s_str * ekc3_render_file (const s_str *path, s_str *dest)
   file_path = frame_get_w(&g_kc3_env.global_frame, &g_sym___FILE__);
   file_path_save = *file_path;
   file_path->data.str = *path;
-  if (! ekc3_render_buf(&in, &tmp))
+  result = ekc3_render_buf_to_str(&in, dest);
   tag_clean(file_dir);
   *file_dir = file_dir_save;
   *file_path = file_path_save;
   buf_file_close(&in);
   fclose(fp);
-  return r;
+  return result;
 }
 
-sw ekc3_render_raw_block (const s_block *block)
+sw ekc3_render_raw_block (s_buf *buf, const s_block *block)
 {
   uw i;
   sw r;
   s_tag result = {0};
+  assert(buf);
   assert(block);
   i = 1;
   while (i < block->count) {
@@ -500,16 +502,74 @@ sw ekc3_render_raw_block (const s_block *block)
   }
   switch (result.type) {
   case TAG_STR:
-    r = io_write_str(&result.data.str);
+    r = buf_write_str(buf, &result.data.str);
     break;
   default:
-    r = io_inspect_tag(&result);
+    r = buf_inspect_tag(buf, &result);
   }
   tag_clean(&result);
   return r;
 }
 
-sw ekc3_render_tag (const s_tag *tag)
+sw ekc3_render_raw_block_size (s_pretty *pretty, const s_block *block)
+{
+  uw i;
+  sw r;
+  s_tag result = {0};
+  assert(pretty);
+  assert(block);
+  i = 1;
+  while (i < block->count) {
+    tag_clean(&result);
+    if (! eval_tag(block->tag + i, &result))
+      return -1;
+    i++;
+  }
+  switch (result.type) {
+  case TAG_STR:
+    r = buf_write_str_size(pretty, &result.data.str);
+    break;
+  default:
+    r = buf_inspect_tag_size(pretty, &result);
+  }
+  tag_clean(&result);
+  return r;
+}
+
+sw ekc3_render_size (s_pretty *pretty, const p_ekc3 *ekc3)
+{
+  const s_list *l;
+  sw r;
+  sw result = 0;
+  assert(ekc3);
+  l = *ekc3;
+  while (l) {
+    if (l->tag.type == TAG_SYM &&
+        l->tag.data.sym == sym_1("silent")) {
+      l = list_next(l);
+      if (! l ||
+          l->tag.type != TAG_BLOCK) {
+        err_puts("ekc3_render: :silent without a block");
+        assert(! "ekc3_render: :silent without a block");
+        return -1;
+      }
+      if (! ekc3_eval_silent_block(&l->tag.data.block)) {
+        err_puts("ekc3_render: ekc3_eval_silent_block");
+        assert(! "ekc3_render: ekc3_eval_silent_block");
+        return -1;
+      }
+    }
+    else {
+      if (! (r = ekc3_render_tag_size(pretty, &l->tag)))
+        return r;
+      result += r;
+    }
+    l = list_next(l);
+  }
+  return result;
+}
+
+sw ekc3_render_tag (s_buf *buf, const s_tag *tag)
 {
   const s_block *block;
   s_str escaped = {0};
@@ -521,15 +581,15 @@ sw ekc3_render_tag (const s_tag *tag)
     if (block->count > 1 &&
         block->tag->type == TAG_IDENT &&
         block->tag->data.ident.sym == sym_1("raw")) {
-      if ((r = ekc3_render_raw_block(block)) < 0) {
+      if ((r = ekc3_render_raw_block(buf, block)) < 0) {
         err_puts("ekc3_render_tag: ekc3_render_raw_block");
         assert(! "ekc3_render_tag: ekc3_render_raw_block");
       }
       return r;
     }
     if (! ekc3_inspect_block(&tag->data.block, &in)) {
-      err_puts("ekc3_render_tag: ekc3_render_block_to_str");
-      assert(! "ekc3_render_tag: ekc3_render_block_to_str");
+      err_puts("ekc3_render_tag: ekc3_inspect_block");
+      assert(! "ekc3_render_tag: ekc3_inspect_block");
       return -1;
     }
     if (! html_escape(&in, &escaped)) {
@@ -539,16 +599,16 @@ sw ekc3_render_tag (const s_tag *tag)
       return -1;
     }
     str_clean(&in);
-    if ((r = io_write_str(&escaped)) < 0) {
-      err_puts("ekc3_render_tag: io_write_str 1");
-      assert(! "ekc3_render_tag: io_write_str 1");
+    if ((r = buf_write_str(buf, &escaped)) < 0) {
+      err_puts("ekc3_render_tag: buf_write_str 1");
+      assert(! "ekc3_render_tag: buf_write_str 1");
     }
     str_clean(&escaped);
     return r;
   case TAG_STR:
-    if ((r = io_write_str(&tag->data.str)) < 0) {
-      err_puts("ekc3_render_tag: io_write_str 2");
-      assert(! "ekc3_render_tag: io_write_str 2");
+    if ((r = buf_write_str(buf, &tag->data.str)) < 0) {
+      err_puts("ekc3_render_tag: buf_write_str 2");
+      assert(! "ekc3_render_tag: buf_write_str 2");
     }
     return r;
   default:
@@ -560,4 +620,77 @@ sw ekc3_render_tag (const s_tag *tag)
   err_inspect_tag(tag);
   err_write_1("\n");
   return -1;
+}
+
+sw ekc3_render_tag_size (s_pretty *pretty, const s_tag *tag)
+{
+  const s_block *block;
+  s_str escaped = {0};
+  s_str in = {0};
+  sw r;
+  switch(tag->type) {
+  case TAG_BLOCK:
+    block = &tag->data.block;
+    if (block->count > 1 &&
+        block->tag->type == TAG_IDENT &&
+        block->tag->data.ident.sym == sym_1("raw")) {
+      if ((r = ekc3_render_raw_block_size(pretty, block)) < 0) {
+        err_puts("ekc3_render_tag_size: ekc3_render_raw_block");
+        assert(! "ekc3_render_tag_size: ekc3_render_raw_block");
+      }
+      return r;
+    }
+    if (! ekc3_inspect_block(&tag->data.block, &in)) {
+      err_puts("ekc3_render_tag_size: ekc3_inspect_block");
+      assert(! "ekc3_render_tag_size: ekc3_inspect_block");
+      return -1;
+    }
+    if (! html_escape(&in, &escaped)) {
+      str_clean(&in);
+      err_puts("ekc3_render_tag_size: html_escape");
+      assert(! "ekc3_render_tag_size: html_escape");
+      return -1;
+    }
+    str_clean(&in);
+    if ((r = buf_write_str_size(pretty, &escaped)) < 0) {
+      err_puts("ekc3_render_tag_size: buf_write_str 1");
+      assert(! "ekc3_render_tag_size: buf_write_str 1");
+    }
+    str_clean(&escaped);
+    return r;
+  case TAG_STR:
+    if ((r = buf_write_str_size(pretty, &tag->data.str)) < 0) {
+      err_puts("ekc3_render_tag_size: buf_write_str 2");
+      assert(! "ekc3_render_tag_size: buf_write_str 2");
+    }
+    return r;
+  default:
+    break;
+  }
+  err_write_1("ekc3_render_tag_size: cannot render ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_write_1(": ");
+  err_inspect_tag(tag);
+  err_write_1("\n");
+  return -1;
+}
+
+s_str * ekc3_render_to_str (const p_ekc3 *ekc3, s_str *dest)
+{
+  
+  s_buf out;
+  s_pretty pretty = {0};
+  sw r;
+  assert(ekc3);
+  assert(dest);
+  if ((r = ekc3_render_size(&pretty, ekc3)) < 0)
+    return NULL;
+  if (! buf_init_alloc(&out, r))
+    return NULL;
+  if ((r = ekc3_render(&out, ekc3)) < 0) {
+    buf_clean(&out);
+    return NULL;
+  }
+  buf_to_str(&out, dest);
+  return dest;
 }

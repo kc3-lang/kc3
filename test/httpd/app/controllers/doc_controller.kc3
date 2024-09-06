@@ -5,8 +5,10 @@ defmodule DocController do
       path_md = ".#{request.url}.md"
       if File.exists?(path_md) do
         md = File.read(path_md)
-        body = Markdown.to_html_str(md)
-        %HTTP.Response{body: body}
+        md_html = Markdown.to_html_str(md)
+        title = "kc3-lang.org"
+        EKC3.render_file("app/templates/layout.html.ekc3")
+        %HTTP.Response{body: md_html}
       else
         HTTPd.error_404_page(request)
       end

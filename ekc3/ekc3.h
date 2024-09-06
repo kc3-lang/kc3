@@ -29,13 +29,19 @@ sw         ekc3_buf_parse (s_buf *buf, p_ekc3 *dest);
 sw         ekc3_buf_parse_kc3_block (s_buf *buf, s_block *dest);
 sw         ekc3_buf_parse_kc3_silent_block (s_buf *buf, s_block *dest);
 sw         ekc3_buf_peek_kc3_silent_block (s_buf *buf);
+bool       ekc3_eval_silent_block (const s_block *block);
 
 /* Observers. */
-s_str * ekc3_escape_html (const s_str *html, s_str *dest);
-sw      ekc3_render (const p_ekc3 *ekc3);
-sw      ekc3_render_block_to_str (const s_block *block, s_str *dest);
-sw      ekc3_render_buf (s_buf *in);
-sw      ekc3_render_file (const s_str *path);
-sw      ekc3_render_tag (const s_tag *tag);
+s_str * ekc3_inspect_block (const s_block *block, s_str *dest);
+sw      ekc3_render (s_buf *buf, const p_ekc3 *ekc3);
+s_str * ekc3_render_buf_to_str (s_buf *in, s_str *dest);
+s_str * ekc3_render_file_to_str (const s_str *path, s_str *dest);
+sw      ekc3_render_raw_block (s_buf *buf, const s_block *block);
+sw      ekc3_render_raw_block_size (s_pretty *pretty,
+                                    const s_block *block);
+sw      ekc3_render_size (s_pretty *pretty, const p_ekc3 *ekc3);
+s_str * ekc3_render_to_str (const p_ekc3 *ekc3, s_str *dest);
+sw      ekc3_render_tag (s_buf *buf, const s_tag *tag);
+sw      ekc3_render_tag_size (s_pretty *pretty, const s_tag *tag);
 
 #endif /* EKC3_H */
