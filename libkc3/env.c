@@ -695,12 +695,12 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       clause = fn->clauses;
       while (clause) {
         err_inspect_fn_pattern(clause->pattern);
-        err_puts("\n");
+        err_write_1("\n");
         clause = clause->next_clause;
       }
       err_puts("\nArguments :\n");
       err_inspect_fn_pattern(args);
-      err_puts("\n");
+      err_write_1("\n");
       list_delete_all(args);
       list_delete_all(env->search_modules);
       env->search_modules = search_modules;

@@ -111,7 +111,11 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
         else
           if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.sym,
                                    arg_values + i)) {
-            err_puts("cfn_apply: tag_to_ffi_pointer 5");
+            err_write_1("cfn_apply: ");
+            err_inspect_str(&cfn->name->str);
+            err_write_1(" ");
+            err_inspect_list((const s_list * const *) &args);
+            err_puts(": tag_to_ffi_pointer 5");
             assert(! "cfn_apply: tag_to_ffi_pointer 5");
             goto ko;
           }

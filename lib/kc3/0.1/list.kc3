@@ -11,6 +11,15 @@ defmodule List do
 
   def has? = cfn Bool "list_has" (List, Tag, Result)
 
+  def join = fn {
+    (list, separator) { join(list, separator, []) }
+    ([], sep, acc) { str(reverse(acc)) }
+    ([first, second | rest], sep, acc) {
+      join([second | rest], sep, [sep, first | acc])
+    }
+    ([first], sep, acc) { str(reverse([first | acc])) }
+  }
+
   def map = fn {
     ([], _) do
       []

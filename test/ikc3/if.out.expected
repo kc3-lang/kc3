@@ -48,3 +48,17 @@ else
   end
 end
 4
+if true do
+  puts(1) ; 2
+else
+  puts(3) ; 4
+end
+1
+2
+if false do
+  puts(5) ; 6
+else
+  puts(7) ; 8
+end
+7
+8

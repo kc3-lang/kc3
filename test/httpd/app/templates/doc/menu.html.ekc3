@@ -1,0 +1,14 @@
+<ul class="bg-gray">
+  <%= raw List.join(List.map(index, fn (file) {
+    items = if (file.type == :dir) do
+              let %{index: file.items} do
+                EKC3.render_file(__FILE__)
+              end
+            end
+    """
+  <li>
+    <a href="#{URL.escape(file.url)}">#{HTML.escape(file.name)}</a>
+    #{items}
+  </li>
+"""}), "\n") %>
+</ul>

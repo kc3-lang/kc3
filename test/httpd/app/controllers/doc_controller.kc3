@@ -1,12 +1,47 @@
 defmodule DocController do
 
+  require File
+
+  def doc_index = fn {
+    (path, path_md) { doc_index(path, path_md, path, []) }
+    ([], path_md, dir, acc) { List.reverse(acc) }
+    ([file | rest], path_md, dir, acc) {
+      if (Str.starts_with?(file, ".")) do
+        doc_index(rest, path_md, dir, acc)
+      else
+        path = dir + file
+        if (File.is_directory?(path)) do
+          items = doc_index(File.list(path), path_md, path + "/", [])
+          item = %{type: :dir,
+                   url: Str.slice(path, 1, -1),
+                   name: file,
+                   items: items}
+          doc_index(rest, path_md, dir, [item | acc])
+        else
+          item = %{type: :file,
+                   url: Str.slice(path, 1, -1),
+                   name: file}
+          doc_index(rest, path_md, dir, [item | acc])
+        end
+      end
+    }
+    (path, path_md, dir, acc) {
+      if (type(path) == Str) do
+        doc_index(File.list(path), path_md, dir, acc)
+      end
+    }
+  }
+
   def route = fn (request) {
     if (request.method == :get) do
       path_md = ".#{request.url}.md"
       if File.exists?(path_md) do
-        md = File.read(path_md)
-        md_html = Markdown.to_html_str(md)
+        index = doc_index("./doc/", path_md)
+        menu = EKC3.render_file("app/templates/doc/menu.html.ekc3")
         title = "kc3-lang.org"
+        md = File.read(path_md)
+        html = Markdown.to_html_str(md)
+        page = EKC3.render_file("app/templates/doc/show.html.ekc3")
         body = EKC3.render_file("app/templates/layout.html.ekc3")
         %HTTP.Response{body: body}
       else
