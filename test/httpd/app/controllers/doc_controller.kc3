@@ -7,8 +7,8 @@ defmodule DocController do
         md = File.read(path_md)
         md_html = Markdown.to_html_str(md)
         title = "kc3-lang.org"
-        EKC3.render_file("app/templates/layout.html.ekc3")
-        %HTTP.Response{body: md_html}
+        body = EKC3.render_file("app/templates/layout.html.ekc3")
+        %HTTP.Response{body: body}
       else
         HTTPd.error_404_page(request)
       end
