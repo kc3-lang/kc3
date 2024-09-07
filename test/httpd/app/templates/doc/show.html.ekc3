@@ -1,8 +1,8 @@
 <div class="row">
-  <div class="bg-gray col-3 left-col">
+  <div class="bg-gray col-12 col-md-3 left-col">
     <%= raw menu %>
   </div>
-  <div class="col-9">
+  <div class="col-12 col-md-9">
     <%= raw html %>
   </div>
 </div>

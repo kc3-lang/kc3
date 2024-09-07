@@ -140,8 +140,10 @@ h1,h2,h3,h4,h5,h6 {
     word-break: break-all;
 }
 
-.left-col {
-  min-height: 100vh;
+@media only screen and (min-width: 768px) {
+    .left-col {
+        min-height: 100vh;
+    }
 }
 
 /* LiveView specific classes for your customization */
