@@ -43,6 +43,9 @@ asan:
 	${MAKE} -C test asan
 	${MAKE} -C window asan
 
+assets:
+	make -C test/httpd/assets
+
 build:
 	${MAKE} gen
 	${MAKE} -C libtommath build
@@ -965,6 +968,7 @@ test_socket_debug:
 
 .PHONY: all \
 	asan \
+	assets \
 	build \
 	kc3.index \
 	kc3s \

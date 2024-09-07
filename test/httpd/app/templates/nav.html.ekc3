@@ -9,8 +9,15 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-text me-auto mb-2 mb-sm-0">
-        <div class="nav-item">v0.1.13</div>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <span class="navbar-text">
+            v0.1.13
+          </span>
+        </li>
+        <li class="nav-item">
+          <a class="navbar-link" href="/doc">Documentation</a>
+        </li>
       </ul>
     </div>
   </div>

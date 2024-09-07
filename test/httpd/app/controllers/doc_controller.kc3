@@ -10,6 +10,7 @@ defmodule DocController do
     ([], path_md, dir, acc) { List.reverse(acc) }
     ([file | rest], path_md, dir, acc) {
       if (Str.starts_with?(file, ".") ||
+          Str.starts_with?(file, "index.") ||
           (Str.rindex_character(file, '.') > 0 &&
            ! Str.ends_with?(file, ".md") &&
            ! Str.ends_with?(file, ".html"))) do
@@ -58,31 +59,44 @@ defmodule DocController do
     }
   }
 
+  def show_html = fn (path_html) {
+    index = doc_index("./doc/", path_html)
+    menu = EKC3.render_file("app/templates/doc/menu.html.ekc3")
+    title = "kc3-lang.org"
+    html = File.read(path_html)
+    page = EKC3.render_file("app/templates/doc/show.html.ekc3")
+    body = EKC3.render_file("app/templates/layout.html.ekc3")
+    %HTTP.Response{body: body}
+  }
+
+  def show_md = fn (path_md) {
+    index = doc_index("./doc/", path_md)
+    menu = EKC3.render_file("app/templates/doc/menu.html.ekc3")
+    title = "kc3-lang.org"
+    md = File.read(path_md)
+    html = Markdown.to_html_str(md)
+    page = EKC3.render_file("app/templates/doc/show.html.ekc3")
+    body = EKC3.render_file("app/templates/layout.html.ekc3")
+    %HTTP.Response{body: body}
+  }
+
   def route = fn (request) {
     if (request.method == :get) do
       locale = "en"
       path_html = ".#{request.url}/index.#{locale}.html"
       if File.exists?(path_html) do
-        index = doc_index("./doc/", path_html)
-        menu = EKC3.render_file("app/templates/doc/menu.html.ekc3")
-        title = "kc3-lang.org"
-        html = File.read(path_html)
-        page = EKC3.render_file("app/templates/doc/show.html.ekc3")
-        body = EKC3.render_file("app/templates/layout.html.ekc3")
-        %HTTP.Response{body: body}
+        show_html(path_html)
       else
-        path_md = ".#{request.url}.#{locale}.md"
+        path_md = ".#{request.url}/index.#{locale}.md"
         if File.exists?(path_md) do
-          index = doc_index("./doc/", path_md)
-          menu = EKC3.render_file("app/templates/doc/menu.html.ekc3")
-          title = "kc3-lang.org"
-          md = File.read(path_md)
-          html = Markdown.to_html_str(md)
-          page = EKC3.render_file("app/templates/doc/show.html.ekc3")
-          body = EKC3.render_file("app/templates/layout.html.ekc3")
-          %HTTP.Response{body: body}
+          show_md(path_md)
         else
-          HTTPd.error_404_page(request)
+          path_md = ".#{request.url}.#{locale}.md"
+          if File.exists?(path_md) do
+            show_md(path_md)
+          else
+            HTTPd.error_404_page(request)
+          end
         end
       end
     else
