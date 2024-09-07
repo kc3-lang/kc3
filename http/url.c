@@ -43,11 +43,11 @@ s_str * url_escape (const s_str *src, s_str *dest)
     return NULL;
   s = *src;
   while (str_read_character_utf8(&s, &c) > 0) {
-    /*if (c == ' ') { 
-      if (buf_write_u8(&buf, '+') < 0)
-        goto clean;
-    }
-    else*/
+    /* if (c == ' ') { 
+         if (buf_write_u8(&buf, '+') < 0)
+           goto clean;
+       }
+       else */
     if (str_character_position(escapes, c) >= 0) {
       if (buf_write_u8(&buf, '%') < 0)
         goto clean;
@@ -92,9 +92,9 @@ sw url_escape_size (const s_str *src)
   escapes = &escapes_tag.data.str;
   s = *src;
   while ((r = str_read_character_utf8(&s, &c)) > 0) {
-    /*if (c == ' ')
-      result += 1;
-      else*/
+    /* if (c == ' ')
+         result += 1;
+       else */
     if (str_character_position(escapes, c) >= 0)
       result += 3;
     else

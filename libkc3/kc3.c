@@ -251,35 +251,28 @@ s_str * kc3_getenv (const s_str *name, s_str *dest)
 s_tag * kc3_if_then_else (const s_tag *cond, const s_tag *then,
                           const s_tag *else_, s_tag *dest)
 {
-  s_call cond_cast = {0};
-  s_tag tmp = {0};
-  call_init_call_cast(&cond_cast, &g_sym_Bool);
-  if (! tag_init_copy(&list_next(cond_cast.arguments)->tag, cond)) {
-    call_clean(&cond_cast);
+  bool  cond_bool;
+  s_tag cond_eval = {0};
+  const s_sym *type;
+  if (! env_eval_tag(&g_kc3_env, cond, &cond_eval))
     return NULL;
-  }
-  if (! env_eval_call(&g_kc3_env, &cond_cast, &tmp)) {
-    call_clean(&cond_cast);
-    return NULL;
-  }
-  if (tmp.type != TAG_BOOL) {
-    tag_clean(&tmp);
-    call_clean(&cond_cast);
-    return NULL;
-  }
-  if (tmp.data.bool) {
-    if (! env_eval_tag(&g_kc3_env, then, dest)) {
-      call_clean(&cond_cast);
+  if (cond_eval.type == TAG_BOOL)
+    cond_bool = cond_eval.data.bool;
+  else {
+    type = &g_sym_Bool;
+    if (! bool_init_cast(&cond_bool, &type, &cond_eval)) {
+      tag_clean(&cond_eval);
       return NULL;
     }
-    call_clean(&cond_cast);
+  }
+  tag_clean(&cond_eval);
+  if (cond_bool) {
+    if (! env_eval_tag(&g_kc3_env, then, dest))
+      return NULL;
     return dest;
   }
-  if (! env_eval_tag(&g_kc3_env, else_, dest)) {
-    call_clean(&cond_cast);
+  if (! env_eval_tag(&g_kc3_env, else_, dest))
     return NULL;
-  }
-  call_clean(&cond_cast);
   return dest;
 }
 
