@@ -1,32 +1,51 @@
 defmodule DocController do
 
+  require EKC3
   require File
+  require List
+  require Str
 
   def doc_index = fn {
     (path, path_md) { doc_index(path, path_md, path, []) }
     ([], path_md, dir, acc) { List.reverse(acc) }
     ([file | rest], path_md, dir, acc) {
-      if (Str.starts_with?(file, ".")) do
+      if (Str.starts_with?(file, ".") ||
+          (Str.rindex_character(file, '.') > 0 &&
+           ! Str.ends_with?(file, ".md") &&
+           ! Str.ends_with?(file, ".html"))) do
         doc_index(rest, path_md, dir, acc)
       else
         path = dir + file
-        end_ = if Str.ends_with?(file, ".md") do -4 else
-          if Str.ends_with?(file, ".html") do -6 else
-            if Str.ends_with?(file, ".txt") do -5 else -1 end
-          end
-        end
-        url = Str.slice(path, 1, end_)
+        name = ^ file
+        url = Str.slice(path, 1, -1)
         if File.is_directory?(path) do
-          items = doc_index(File.list(path), path_md, path + "/", [])
+          items = doc_index(List.sort(File.list(path)), path_md,
+            path + "/", [])
           item = %{type: :dir,
                    url: url,
-                   name: file,
+                   name: name,
                    items: items}
           doc_index(rest, path_md, dir, [item | acc])
         else
+          end_ = Str.rindex_character(name, '.')
+          if (end_ > 0) do
+            name = Str.slice(name, 0, end_)
+            end_ = Str.rindex_character(name, '.')
+            if (end_ > 0) do
+              name = Str.slice(name, 0, end_)
+            end
+          end
+          end_ = Str.rindex_character(url, '.')
+          if (end_ > 0) do
+            url = Str.slice(url, 0, end_)
+            end_ = Str.rindex_character(url, '.')
+            if (end_ > 0) do
+              url = Str.slice(url, 0, end_)
+            end
+          end
           item = %{type: :file,
                    url: url,
-                   name: Str.slice(file, 0, end_),
+                   name: name,
                    items: []}
           doc_index(rest, path_md, dir, [item | acc])
         end
@@ -41,18 +60,30 @@ defmodule DocController do
 
   def route = fn (request) {
     if (request.method == :get) do
-      path_md = ".#{request.url}.md"
-      if File.exists?(path_md) do
-        index = doc_index("./doc/", path_md)
+      locale = "en"
+      path_html = ".#{request.url}/index.#{locale}.html"
+      if File.exists?(path_html) do
+        index = doc_index("./doc/", path_html)
         menu = EKC3.render_file("app/templates/doc/menu.html.ekc3")
         title = "kc3-lang.org"
-        md = File.read(path_md)
-        html = Markdown.to_html_str(md)
+        html = File.read(path_html)
         page = EKC3.render_file("app/templates/doc/show.html.ekc3")
         body = EKC3.render_file("app/templates/layout.html.ekc3")
         %HTTP.Response{body: body}
       else
-        HTTPd.error_404_page(request)
+        path_md = ".#{request.url}.#{locale}.md"
+        if File.exists?(path_md) do
+          index = doc_index("./doc/", path_md)
+          menu = EKC3.render_file("app/templates/doc/menu.html.ekc3")
+          title = "kc3-lang.org"
+          md = File.read(path_md)
+          html = Markdown.to_html_str(md)
+          page = EKC3.render_file("app/templates/doc/show.html.ekc3")
+          body = EKC3.render_file("app/templates/layout.html.ekc3")
+          %HTTP.Response{body: body}
+        else
+          HTTPd.error_404_page(request)
+        end
       end
     else
       HTTPd.error_404_page(request)

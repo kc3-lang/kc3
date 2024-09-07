@@ -56,6 +56,7 @@ bool      list_is_alist (const s_list * const *list);
 bool      list_is_plist (const s_list *list);
 sw        list_length (const s_list *list);
 s_list  * list_next (const s_list *list);
+s_list ** list_sort (const s_list * const *list, s_list **dest);
 s_list ** list_tail (s_list **list);
 s_array * list_to_array (const s_list *list, const s_sym *type,
                          s_array *dest);

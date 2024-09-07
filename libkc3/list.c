@@ -305,6 +305,31 @@ s_list ** list_remove_void (s_list **list)
   return list;
 }
 
+s_list ** list_sort (const s_list * const *list, s_list **dest)
+{
+  const s_list *l;
+  s_list *new_;
+  s_list *tmp;
+  s_list **t;
+  assert(list);
+  assert(dest);
+  tmp = NULL;
+  l = *list;
+  while (l) {
+    t = &tmp;
+    while (*t && compare_tag(&(*t)->tag, &l->tag) <= 0)
+      t = &(*t)->next.data.list;
+    if (! (new_ = list_new_tag_copy(&l->tag, *t))) {
+      list_delete_all(tmp);
+      return NULL;
+    }
+    *t = new_;
+    l = list_next(l);
+  }
+  *dest = tmp;
+  return dest;
+}
+
 s_list ** list_tail (s_list **list)
 {
   s_list **tail;

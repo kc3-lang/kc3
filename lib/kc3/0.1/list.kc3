@@ -35,4 +35,6 @@ defmodule List do
     ([a | b], acc) { reverse(b, [a | acc]) }
   }
 
+  def sort = cfn List "list_sort" (List, Result)
+
 end

@@ -472,18 +472,20 @@ s8 compare_s64_u64 (s64 a, u64 b)
 s8 compare_str (const s_str *a, const s_str *b)
 {
   int r;
+  sw size;
   assert(a);
   assert(b);
   if (a == b)
     return 0;
-  if (a->size < b->size)
-    return -1;
-  if (a->size > b->size)
-    return 1;
-  r = memcmp(a->ptr.p, b->ptr.p, a->size);
+  size = a->size < b->size ? a->size : b->size;
+  r = memcmp(a->ptr.p, b->ptr.p, size);
   if (r < 0)
     return -1;
   if (r > 0)
+    return 1;
+  if (a->size < b->size)
+    return -1;
+  if (a->size > b->size)
     return 1;
   return 0;
 }
@@ -845,6 +847,43 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       break;
     }
     break;
+  case TAG_SW:
+    switch (b->type) {
+    case TAG_F32: return compare_f32((f32) a->data.sw, b->data.f32);
+    case TAG_F64: return compare_f64((f64) a->data.sw, b->data.f64);
+    case TAG_F128:
+      return compare_f128((f128) a->data.sw, b->data.f128);
+    case TAG_INTEGER:
+      integer_init_s64(&tmp, a->data.sw);
+      r = compare_integer(&tmp, &b->data.integer);
+      integer_clean(&tmp);
+      return r;
+    case TAG_S8:  return compare_sw(a->data.sw, (sw) b->data.s8);
+    case TAG_S16: return compare_sw(a->data.sw, (sw) b->data.s16);
+    case TAG_S32: return compare_sw(a->data.sw, (sw) b->data.s32);
+    case TAG_S64: return compare_sw(a->data.sw, (sw) b->data.s64);
+    case TAG_SW:  return compare_sw(a->data.sw, b->data.sw);
+    case TAG_U8:  return compare_sw(a->data.sw, (sw) b->data.u8);
+    case TAG_U16: return compare_sw(a->data.sw, (sw) b->data.u16);
+    case TAG_U32: return compare_sw(a->data.sw, (sw) b->data.u32);
+    case TAG_U64:
+      integer_init_sw(&tmp, a->data.sw);
+      integer_init_u64(&tmp2, b->data.u64);
+      r = compare_integer(&tmp, &tmp2);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return r;
+    case TAG_UW:
+      integer_init_sw(&tmp, a->data.sw);
+      integer_init_uw(&tmp2, b->data.uw);
+      r = compare_integer(&tmp, &tmp2);
+      integer_clean(&tmp);
+      integer_clean(&tmp2);
+      return r;
+    default:
+      break;
+    }
+    break;
   case TAG_U8:
     switch (b->type) {
     case TAG_F32: return compare_f32((f32) a->data.u8, b->data.f32);
@@ -860,7 +899,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     case TAG_S16: return compare_s16((s16) a->data.u8, b->data.s16);
     case TAG_S32: return compare_s32((s32) a->data.u8, b->data.s32);
     case TAG_S64: return compare_s64((s64) a->data.u8, b->data.s64);
-    case TAG_SW:  return compare_s64((s64) a->data.u8, (s64) b->data.sw);
+    case TAG_SW:  return compare_sw((sw) a->data.u8, b->data.sw);
     case TAG_U8:  return compare_u8(a->data.u8, b->data.u8);
     case TAG_U16: return compare_u16((u16) a->data.u8, b->data.u16);
     case TAG_U32: return compare_u32((u32) a->data.u8, b->data.u32);
@@ -885,12 +924,12 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     case TAG_S16: return compare_s16((s16) a->data.u16, b->data.s16);
     case TAG_S32: return compare_s32((s32) a->data.u16, b->data.s32);
     case TAG_S64: return compare_s64((s64) a->data.u16, b->data.s64);
-    case TAG_SW:  return compare_s64((s64) a->data.u16, (s64) b->data.sw);
+    case TAG_SW:  return compare_sw((sw) a->data.u16, b->data.sw);
     case TAG_U8:  return compare_u16(a->data.u16, (u16) b->data.u8);
     case TAG_U16: return compare_u16(a->data.u16, b->data.u16);
     case TAG_U32: return compare_u32((u32) a->data.u16, b->data.u32);
     case TAG_U64: return compare_u64((u64) a->data.u16, b->data.u64);
-    case TAG_UW: return compare_u64((u64) a->data.u16, (u64) b->data.uw);
+    case TAG_UW: return compare_uw((uw) a->data.u16, b->data.uw);
     default:
       break;
     }
@@ -910,7 +949,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
     case TAG_S16: return compare_s64((s64) a->data.u32, (s64) b->data.s16);
     case TAG_S32: return compare_s64((s64) a->data.u32, (s64) b->data.s32);
     case TAG_S64: return compare_s64((s64) a->data.u32, b->data.s64);
-    case TAG_SW:  return compare_s64((s64) a->data.u32, (s64) b->data.sw);
+    case TAG_SW:  return compare_sw((sw) a->data.u32, b->data.sw);
     case TAG_U8:  return compare_u32(a->data.u32, (u32) b->data.u8);
     case TAG_U16: return compare_u32(a->data.u32, (u32) b->data.u16);
     case TAG_U32: return compare_u32((u32) a->data.u32, b->data.u32);
@@ -1063,6 +1102,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_integer_s64(&a->data.integer, b->data.s32);
     case TAG_S64:
       return compare_integer_s64(&a->data.integer, b->data.s64);
+    case TAG_SW:
+      return compare_integer_s64(&a->data.integer, b->data.sw);
     case TAG_U8:
       return compare_integer_u64(&a->data.integer, b->data.u8);
     case TAG_U16:
@@ -1071,6 +1112,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_integer_u64(&a->data.integer, b->data.u32);
     case TAG_U64:
       return compare_integer_u64(&a->data.integer, b->data.u64);
+    case TAG_UW:
+      return compare_integer_u64(&a->data.integer, b->data.uw);
     default: ;
     }
     break;
@@ -1086,6 +1129,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_s32(a->data.s8, b->data.s32);
     case TAG_S64:
       return compare_s64(a->data.s8, b->data.s64);
+    case TAG_SW:
+      return compare_s64(a->data.s8, b->data.sw);
     case TAG_U8:
       return compare_s16(a->data.s8, b->data.u8);
     case TAG_U16:
@@ -1094,6 +1139,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_s64(a->data.s8, b->data.u32);
     case TAG_U64:
       return compare_s64_u64(a->data.s8, b->data.u64);
+    case TAG_UW:
+      return compare_s64_u64(a->data.s8, b->data.uw);
     default: ;
     }
     break;
@@ -1109,6 +1156,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_s32(a->data.s16, b->data.s32);
     case TAG_S64:
       return compare_s64(a->data.s16, b->data.s64);
+    case TAG_SW:
+      return compare_sw(a->data.s16, b->data.sw);
     case TAG_U8:
       return compare_s16(a->data.s16, b->data.u8);
     case TAG_U16:
@@ -1117,6 +1166,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_s64(a->data.s16, b->data.u32);
     case TAG_U64:
       return compare_s64_u64(a->data.s16, b->data.u64);
+    case TAG_UW:
+      return compare_s64_u64(a->data.s16, b->data.uw);
     default: ;
     }
     break;
@@ -1132,6 +1183,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_s32(a->data.s32, b->data.s32);
     case TAG_S64:
       return compare_s64(a->data.s32, b->data.s64);
+    case TAG_SW:
+      return compare_sw(a->data.s32, b->data.sw);
     case TAG_U8:
       return compare_s32(a->data.s32, b->data.u8);
     case TAG_U16:
@@ -1140,6 +1193,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_s64(a->data.s32, b->data.u32);
     case TAG_U64:
       return compare_s64_u64(a->data.s32, b->data.u64);
+    case TAG_UW:
+      return compare_s64_u64(a->data.s32, b->data.uw);
     default: ;
     }
     break;
@@ -1155,6 +1210,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_s64(a->data.s64, b->data.s32);
     case TAG_S64:
       return compare_s64(a->data.s64, b->data.s64);
+    case TAG_SW:
+      return compare_s64(a->data.s64, b->data.sw);
     case TAG_U8:
       return compare_s64(a->data.s64, b->data.u8);
     case TAG_U16:
@@ -1163,6 +1220,35 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_s64(a->data.s64, b->data.u32);
     case TAG_U64:
       return compare_s64_u64(a->data.s64, b->data.u64);
+    case TAG_UW:
+      return compare_s64_u64(a->data.s64, b->data.uw);
+    default: ;
+    }
+    break;
+  case TAG_SW:
+    switch (b->type) {
+    case TAG_INTEGER:
+      return -compare_integer_s64(&b->data.integer, a->data.sw);
+    case TAG_S8:
+      return compare_sw(a->data.sw, b->data.s8);
+    case TAG_S16:
+      return compare_sw(a->data.sw, b->data.s16);
+    case TAG_S32:
+      return compare_sw(a->data.sw, b->data.s32);
+    case TAG_S64:
+      return compare_s64(a->data.sw, b->data.s64);
+    case TAG_SW:
+      return compare_sw(a->data.sw, b->data.sw);
+    case TAG_U8:
+      return compare_sw(a->data.sw, b->data.u8);
+    case TAG_U16:
+      return compare_sw(a->data.sw, b->data.u16);
+    case TAG_U32:
+      return compare_sw(a->data.sw, b->data.u32);
+    case TAG_U64:
+      return compare_s64_u64(a->data.sw, b->data.u64);
+    case TAG_UW:
+      return compare_s64_u64(a->data.sw, b->data.uw);
     default: ;
     }
     break;
@@ -1178,6 +1264,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_s32(a->data.u8, b->data.s32);
     case TAG_S64:
       return compare_s64(a->data.u8, b->data.s64);
+    case TAG_SW:
+      return compare_sw(a->data.u8, b->data.sw);
     case TAG_U8:
       return compare_u8(a->data.u8, b->data.u8);
     case TAG_U16:
@@ -1186,6 +1274,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_u32(a->data.u8, b->data.u32);
     case TAG_U64:
       return compare_u64(a->data.u8, b->data.u64);
+    case TAG_UW:
+      return compare_uw(a->data.u8, b->data.uw);
     default: ;
     }
     break;
@@ -1201,6 +1291,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_s32(a->data.u16, b->data.s32);
     case TAG_S64:
       return compare_s64(a->data.u16, b->data.s64);
+    case TAG_SW:
+      return compare_sw(a->data.u16, b->data.sw);
     case TAG_U8:
       return compare_u16(a->data.u16, b->data.u8);
     case TAG_U16:
@@ -1209,6 +1301,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_u32(a->data.u16, b->data.u32);
     case TAG_U64:
       return compare_u64(a->data.u16, b->data.u64);
+    case TAG_UW:
+      return compare_uw(a->data.u16, b->data.uw);
     default: ;
     }
     break;
@@ -1224,6 +1318,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_s64(a->data.u32, b->data.s32);
     case TAG_S64:
       return compare_s64(a->data.u32, b->data.s64);
+    case TAG_SW:
+      return compare_sw(a->data.u32, b->data.sw);
     case TAG_U8:
       return compare_u32(a->data.u32, b->data.u8);
     case TAG_U16:
@@ -1232,6 +1328,8 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return compare_u32(a->data.u32, b->data.u32);
     case TAG_U64:
       return compare_u64(a->data.u32, b->data.u64);
+    case TAG_UW:
+      return compare_uw(a->data.u32, b->data.uw);
     default: ;
     }
     break;
@@ -1247,14 +1345,45 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
       return -compare_s64_u64(b->data.s32, a->data.u64);
     case TAG_S64:
       return -compare_s64_u64(b->data.s64, a->data.u64);
+    case TAG_SW:
+      return -compare_s64_u64(b->data.sw, a->data.u64);
     case TAG_U8:
       return compare_u64(a->data.u64, b->data.u8);
     case TAG_U16:
-      return compare_u16(a->data.u64, b->data.u16);
+      return compare_u64(a->data.u64, b->data.u16);
     case TAG_U32:
-      return compare_u32(a->data.u64, b->data.u32);
+      return compare_u64(a->data.u64, b->data.u32);
     case TAG_U64:
       return compare_u64(a->data.u64, b->data.u64);
+    case TAG_UW:
+      return compare_u64(a->data.u64, b->data.uw);
+    default: ;
+    }
+    break;
+  case TAG_UW:
+    switch (b->type) {
+    case TAG_INTEGER:
+      return -compare_integer_u64(&b->data.integer, a->data.uw);
+    case TAG_S8:
+      return -compare_s64_u64(b->data.s8, a->data.uw);
+    case TAG_S16:
+      return -compare_s64_u64(b->data.s16, a->data.uw);
+    case TAG_S32:
+      return -compare_s64_u64(b->data.s32, a->data.uw);
+    case TAG_S64:
+      return -compare_s64_u64(b->data.s64, a->data.uw);
+    case TAG_SW:
+      return -compare_s64_u64(b->data.sw, a->data.uw);
+    case TAG_U8:
+      return compare_uw(a->data.uw, b->data.u8);
+    case TAG_U16:
+      return compare_uw(a->data.uw, b->data.u16);
+    case TAG_U32:
+      return compare_uw(a->data.uw, b->data.u32);
+    case TAG_U64:
+      return compare_uw(a->data.uw, b->data.u64);
+    case TAG_UW:
+      return compare_uw(a->data.uw, b->data.uw);
     default: ;
     }
     break;
