@@ -173,23 +173,18 @@ s_frame * frame_new (s_frame *next)
 s_frame * frame_replace (s_frame *frame, const s_sym *sym,
                          s_tag *value)
 {
-  s_frame *f;
   s_tag *result;
   assert(sym);
-  f = frame;
-  while (f) {
-    result = binding_get_w(f->bindings, sym);
-    if (result) {
-      tag_clean(result);
-      if (value->type == TAG_VAR) {
-        tag_init_var(result, value->data.var.type);
-        value->data.var.ptr = result->data.var.ptr;
-      }
-      else
-        tag_init_copy(result, value);
-      return frame;
+  result = binding_get_w(frame->bindings, sym);
+  if (result) {
+    tag_clean(result);
+    if (value->type == TAG_VAR) {
+      tag_init_var(result, value->data.var.type);
+      value->data.var.ptr = result->data.var.ptr;
     }
-    f = f->next;
+    else
+      tag_init_copy(result, value);
+    return frame;
   }
   return frame_binding_new_copy(frame, sym, value);
 }
