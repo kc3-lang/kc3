@@ -19,26 +19,26 @@ $code-font-size: $font-size-base * 1.1;
 @import "./pygments.scss";
 
 pre {
-  overflow: visible;
+    overflow: visible;
 }
 body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  div.container {
     margin: 0;
     padding: 0;
     width: 100%;
-    max-width: 100%;
-  }
-  font-family: computer_modern;
-  font-size: 1.3em;
+    div.container {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    font-family: computer_modern;
+    font-size: 1.3em;
 }
 
 .content {
-  margin: 0;
-  padding: 0 2rem 0 1rem;
-  max-width: 80rem;
+    margin: 0;
+    padding: 0 2rem 0 1rem;
+    max-width: 80rem;
 }
 
 a {
@@ -70,12 +70,13 @@ code {
     font-size: 1.5rem;
     padding: 0;
 } 
-.nav-link {
-    padding: 0.2rem 1rem 0 0;
+.navbar-link {
+    display: inline-block;
+    padding: 0.5rem 1rem 0 0;
 }
 .navbar-text {
     display: inline-block;
-    padding: 0.2rem 1rem 0 0;
+    padding: 0.5rem 1rem 0 0;
 }
 .doc-logo, .doc-logo-lg, .doc-logo-light, .doc-logo-light-lg {
     & > span {
@@ -144,8 +145,19 @@ h1,h2,h3,h4,h5,h6 {
     word-break: break-all;
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 576px) {
     .left-col {
         min-height: 100vh;
     }
+}
+
+.left-col {
+    padding-left: 0.75rem;
+    ul {
+        list-style: none;
+        padding-left: 0.5rem;
+    }
+}
+.left-col > ul > li {
+    padding-top: 0.5rem;
 }
