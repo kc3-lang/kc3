@@ -1,5 +1,25 @@
 # KC3
 
+## v0.1.13
+
+ - libkc3
+   - pretty printer
+     - indentation (str, if, do, fn, struct, map)
+ - ikc3
+   - facts
+     - Facts.with_tags(facts, s, p, o, fn (fact) {}) -> cursor
+ - lib
+   - File.exists?
+   - File.is_directory?
+   - File.list
+   - File.stat
+ - HTTPd v0.1.1
+   - file server (lftp)
+     - route_request
+     - error_404_page
+     - directory_page
+       - slash (lftp)
+
 ## v0.1.12
 
  Renamed C3 to KC3.

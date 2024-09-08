@@ -1,15 +1,12 @@
-# KC3 v0.1.13
+# KC3 v0.1.14
 
 KC3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
 for semantic programming, and programming the semantic web.
 
-We are currently fundraising for the project to become real and
-there is a working prototype available at
-[https://git.kmx.io/kc3-lang/kc3/](https://git.kmx.io/kc3-lang/kc3/),
-please see the
-[https://www.kmx.io/en/donations.html](https://www.kmx.io/en/donations.html)
-page for helping out.
+This is a development branch, see
+[KC3 v0.1.13](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.13/)
+for a stable release.
 
 KC3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
@@ -28,27 +25,6 @@ Supported architectures :
  - amd64
  - i386
  - sparc64
-
-
-## New in this release
-
- - libkc3
-   - pretty printer
-     - indentation (str, if, do, fn, struct, map)
- - ikc3
-   - facts
-     - Facts.with_tags(facts, s, p, o, fn (fact) {}) -> cursor
- - lib
-   - File.exists?
-   - File.is_directory?
-   - File.list
-   - File.stat
- - HTTPd v0.1.1
-   - file server (lftp)
-     - route_request
-     - error_404_page
-     - directory_page
-       - slash (lftp)
 
 
 ## Discord invite
@@ -565,11 +541,17 @@ serving files for display or download (Web 1.0).
 ## TODO
 
  - HTTPd v0.2.0
-   - dynamic pages
+   - dynamic pages (MVC)
+     - [DONE] controllers
+       - [DONE] ./app/controllers/
+     - [DONE] templates
+       - [DONE] ./app/templates/
      - dynamic router
+       - [DONE] Str.starts_with?(url, route.path)
+       - HTTPd.Router.get("/user/:id/articles/*slug/edit", UserArticlesController.show)
      - views
-     - templates
-     - MVC
+       - ./app/views/
+       
  - libkc3
    - operators dispatch
      - list of matching operators (facts_with)
