@@ -95,6 +95,8 @@ s_list ** markdown_titles (const s_str *markdown, s_list **dest)
   md_parse(markdown->ptr.pchar, markdown->size,
            &parser, &tuple);
   *dest = tuple_list->data.list;
+  tuple_list->data.list = NULL;
+  tuple_clean(&tuple);
   return dest;
 }
 
