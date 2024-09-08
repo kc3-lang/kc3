@@ -16,7 +16,7 @@
           </span>
         </li>
         <li class="nav-item">
-          <a class="navbar-link" href="/doc">Documentation</a>
+          <a class="navbar-link" href="/doc/">Documentation</a>
         </li>
       </ul>
     </div>
