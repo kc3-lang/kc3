@@ -53,7 +53,7 @@ sw buf_fd_open_r_refill (s_buf *buf)
 {
   int avail;
   s32 fd;
-  uw r;
+  sw r;
   uw size;
   assert(buf);
   assert(buf->user_ptr);
@@ -85,6 +85,8 @@ sw buf_fd_open_r_refill (s_buf *buf)
   if ((uw) avail > size)
     avail = size;
   r = read(fd, buf->ptr.pchar + buf->wpos, avail);
+  if (r < 0)
+    return r;
   if (buf->wpos + r > buf->size) {
     err_puts("buf_fd_open_r_refill: buffer overflow");
     assert(! "buf_fd_open_r_refill: buffer overflow");
