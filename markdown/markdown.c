@@ -201,6 +201,7 @@ s32 markdown_titles_leave_block (MD_BLOCKTYPE type, void *detail,
                                         (const s_list * const *)
                                         &str_list))
       return -1;
+    list_delete_all(str_list);
     if (tuple_list->type != TAG_LIST) {
       err_puts("markdown_titles_leave_block: tuple_list is not a List");
       assert(! "markdown_titles_leave_block: tuple_list is not a List");
