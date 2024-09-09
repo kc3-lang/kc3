@@ -115,7 +115,7 @@ s32 markdown_titles_enter_block (MD_BLOCKTYPE type, void *detail,
   }
   tuple_str = tuple->tag + 2;
   if (type == MD_BLOCK_H)
-    tag_init_void(tuple_str);
+    tag_void(tuple_str);
   return 0;
 }
 
@@ -207,7 +207,7 @@ s32 markdown_titles_leave_block (MD_BLOCKTYPE type, void *detail,
       assert(! "markdown_titles_leave_block: tuple_list is not a List");
       return -1;
     }
-    tag_init_void(tuple_str);
+    tag_void(tuple_str);
   }
   return 0;
 }
