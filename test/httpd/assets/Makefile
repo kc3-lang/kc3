@@ -5,7 +5,7 @@ app.css:
 	sass css/app.scss ../static/_assets/app.css
 
 app.js:
-	esbuild js/app.js --outfile=../static/_assets/app.js
+	esbuild js/app.js --bundle --target=es2016 --outdir=../static/_assets --external:/_fonts/* --external:/_images/*
 
 build: app.css app.js
 
