@@ -47,7 +47,18 @@ defmodule HTTPd do
         FD.set_blocking(socket, true)
         r = HTTP.Response.buf_write(res, client.buf_rw.w,
           req.method != :head)
-        puts("#{res.code} #{client.addr_str} #{res.message} #{req.method} #{req.url}")
+        client_addr = if client.addr_str != "127.0.0.1" do
+          client.addr_str
+        else
+          headers = req.headers
+          forwarded_for = headers["X-Forwarded-For"]
+          if (forwarded_for) do
+            forwarded_for
+          else
+            client.addr_str
+          end
+        end
+        puts("#{res.code} #{client_addr} #{req.method} #{req.url}")
         FD.set_blocking(socket, false)
       end
     end
@@ -80,7 +91,7 @@ defmodule HTTPd do
     socket = Socket.listen(host, port)
     puts("KC3 HTTPd: listening on #{host}:#{port}")
     acceptor_ev = Event.new(event_base, socket.fd, [:read, :persist],
-                                 acceptor, void)
+                            acceptor, void)
     r = Event.add(acceptor_ev, timeout)
     r = Event.dispatch(event_base)
     if r do

@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "alist.h"
 #include "array.h"
 #include "assert.h"
 #include "bool.h"
@@ -51,6 +52,14 @@ s_tag * kc3_access (const s_tag *tag, const s_list * const *key,
   switch (tag->type) {
   case TAG_ARRAY:
     return array_access(&tag->data.array, key, dest);
+  case TAG_LIST:
+    if (list_is_alist((const s_list * const *) &tag->data.list)) {
+      if (! alist_access((const s_list * const *) &tag->data.list,
+                         key, dest))
+        return tag_init_void(dest);
+      return dest;
+    }
+    break;
   case TAG_MAP:
     return map_access(&tag->data.map, key, dest);
   case TAG_STRUCT:

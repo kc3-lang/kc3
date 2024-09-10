@@ -20,10 +20,45 @@
 #include "buf_parse.h"
 #include "compare.h"
 #include "data.h"
+#include "kc3_main.h"
 #include "list.h"
 #include "sym.h"
 #include "tag.h"
 #include "tuple.h"
+
+s_tag * alist_access (const s_list * const *alist,
+                      const s_list * const *key,
+                      s_tag *dest)
+{
+  const s_tag *first;
+  const s_list *next;
+  s_tag *r;
+  s_tag tag;
+  assert(alist);
+  assert(key);
+  assert(dest);
+  if (! list_is_alist(alist)) {
+    err_puts("alist_access: not an associative list");
+    assert(! "alist_access: not an associative list");
+    return NULL;
+  }
+  first = &(*key)->tag;
+  next = list_next(*key);
+  if (! next)
+    return alist_get(alist, first, dest);
+  if (! alist_get(alist, first, &tag)) {
+    err_write_1("alist_access: alist_get(");
+    err_inspect_list(alist);
+    err_write_1(", ");
+    err_inspect_tag(first);
+    err_write_1(")\n");
+    assert(! "alist_access: alist_get");
+    return NULL;
+  }
+  r = kc3_access(&tag, &next, dest);
+  tag_clean(&tag);
+  return r;
+}
 
 s_tag * alist_get (const s_list * const *alist, const s_tag *key,
                    s_tag *dest)

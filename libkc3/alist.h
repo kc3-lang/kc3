@@ -22,6 +22,9 @@
 #include "types.h"
 
 /* Observers */
+s_tag * alist_access (const s_list * const *alist,
+                      const s_list * const *key,
+                      s_tag *dest);
 s_tag * alist_get (const s_list * const *alist, const s_tag *key,
                    s_tag *dest);
 
