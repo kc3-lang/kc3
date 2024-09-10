@@ -218,7 +218,7 @@ defmodule HTTPd do
   }
 
   def static_controller = fn (request) {
-    render = if (! Str.starts_with(request.url, "/") ||
+    render = if (! Str.starts_with?(request.url, "/") ||
                  Str.has_str?(request.url, "/..")) do
                error_404_page
              else
@@ -234,7 +234,6 @@ defmodule HTTPd do
                end
              end
     render(request)
-    end
   }
 
   def_route("/", static_controller)
