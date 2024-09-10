@@ -42,87 +42,95 @@ bool            env_sym_search_modules (s_env *env,
                                         const s_sym **dest);
 
 /* Operators. */
-bool          env_def (s_env *env, const s_ident *ident,
-                       const s_tag *value);
-const s_sym * env_def_clean (s_env *env, const s_sym *module,
-                             const s_tag *tag_clean);
-s_tag *       env_defmodule (s_env *env, const s_sym * const *name,
-                             const s_block *block, s_tag *dest);
-s_tag *       env_defoperator (s_env *env, const s_sym * const *name,
-                               const s_sym * const *sym,
-                               const s_tag *symbol_value,
-                               u8 op_precedence,
-                               const s_sym * const *op_assoc,
+bool *         env_and (s_env *env, const s_tag *a, const s_tag *b,
+                        bool *dest);
+bool           env_def (s_env *env, const s_ident *ident,
+                        const s_tag *value);
+const s_sym *  env_def_clean (s_env *env, const s_sym *module,
+                              const s_tag *tag_clean);
+s_tag *        env_defmodule (s_env *env, const s_sym * const *name,
+                              const s_block *block, s_tag *dest);
+s_tag *        env_defoperator (s_env *env, const s_sym * const *name,
+                                const s_sym * const *sym,
+                                const s_tag *symbol_value,
+                                u8 op_precedence,
+                                const s_sym * const *op_assoc,
+                                s_tag *dest);
+const s_sym *  env_defstruct (s_env *env, const s_list *spec);
+s_fact_w *     env_fact_w_eval (s_env *env, const s_fact_w *fact,
+	         	       s_fact_w *dest);
+s_tag *        env_facts_first_with_tags (s_env *env, s_facts *facts,
+                                          s_tag *subject,
+                                          s_tag *predicate,
+                                          s_tag *object,
+                                          s_fn *callback, s_tag *dest);
+s_tag *        env_facts_with (s_env *env, s_facts *facts,
+                               s_list **spec, s_fn *callback,
                                s_tag *dest);
-const s_sym * env_defstruct (s_env *env, const s_list *spec);
-s_fact_w *    env_fact_w_eval (s_env *env, const s_fact_w *fact,
-			       s_fact_w *dest);
-s_tag *       env_facts_first_with_tags (s_env *env, s_facts *facts,
-                                         s_tag *subject,
-                                         s_tag *predicate,
-                                         s_tag *object,
-                                         s_fn *callback, s_tag *dest);
-s_tag *       env_facts_with (s_env *env, s_facts *facts, s_list **spec,
-                              s_fn *callback, s_tag *dest);
 s_facts_with_cursor *
-              env_facts_with_list (s_env *env, s_facts *facts,
-                                   s_facts_with_cursor *cursor,
-                                   s_list *spec);
-s_tag *       env_facts_with_tags (s_env *env, s_facts *facts,
-                                   s_tag *subject, s_tag *predicate,
-                                   s_tag *object, s_fn *callback,
-                                   s_tag *dest);
-s_tag *       env_ident_get (s_env *env, const s_ident *ident,
-                             s_tag *dest);
-bool *        env_ident_is_special_operator (s_env *env,
-                                             const s_ident *ident,
-                                             bool *dest);
-s_tag *       env_kc3_def (s_env *env, const s_call *call, s_tag *dest);
-s_tag *       env_let (s_env *env, const s_tag *tag,
-                       const s_block *block, s_tag *dest);
-bool          env_load (s_env *env, const s_str *path);
-bool *        env_module_is_loading (s_env *env, const s_sym *module,
-                                     bool *dest);
-bool          env_module_is_loading_set (s_env *env,
-                                         const s_sym *module,
-                                         bool value);
-bool          env_module_load (s_env *env, const s_sym *module);
-bool          env_module_maybe_reload (s_env *env,
-                                       const s_sym *module);
-s8            env_operator_arity (s_env *env, const s_ident *op);
-bool *        env_operator_find (s_env *env, const s_ident *op,
-                                 bool *dest);
-s_tag *       env_operator_find_by_sym (s_env *env,
-                                        const s_sym *sym,
-                                        s_tag *dest);
-s_ident *     env_operator_ident (s_env *env, const s_ident *op,
-                                  s_ident *dest);
-bool *        env_operator_is_right_associative (s_env *env,
-                                                 const s_ident *op,
-                                                 bool *dest);
-sw *          env_operator_precedence (s_env *env, const s_ident *op,
-                                       sw *dest);
-s_ident *     env_operator_resolve (s_env *env, const s_ident *op,
-                                    u8 arity, s_ident *dest);
+               env_facts_with_list (s_env *env, s_facts *facts,
+                                    s_facts_with_cursor *cursor,
+                                    s_list *spec);
+s_tag *        env_facts_with_tags (s_env *env, s_facts *facts,
+                                    s_tag *subject, s_tag *predicate,
+                                    s_tag *object, s_fn *callback,
+                                    s_tag *dest);
+s_tag *        env_ident_get (s_env *env, const s_ident *ident,
+                              s_tag *dest);
+bool *         env_ident_is_special_operator (s_env *env,
+                                              const s_ident *ident,
+                                              bool *dest);
+s_tag *        env_kc3_def (s_env *env, const s_call *call,
+                            s_tag *dest);
+s_tag *        env_let (s_env *env, const s_tag *tag,
+                        const s_block *block, s_tag *dest);
+bool           env_load (s_env *env, const s_str *path);
+bool *         env_module_is_loading (s_env *env, const s_sym *module,
+                                      bool *dest);
+bool           env_module_is_loading_set (s_env *env,
+                                          const s_sym *module,
+                                          bool value);
+bool           env_module_load (s_env *env, const s_sym *module);
+bool           env_module_maybe_reload (s_env *env,
+                                        const s_sym *module);
+s8             env_operator_arity (s_env *env, const s_ident *op);
+bool *         env_operator_find (s_env *env, const s_ident *op,
+                                  bool *dest);
+s_tag *        env_operator_find_by_sym (s_env *env,
+                                         const s_sym *sym,
+                                         s_tag *dest);
+s_ident *      env_operator_ident (s_env *env, const s_ident *op,
+                                   s_ident *dest);
+bool *         env_operator_is_right_associative (s_env *env,
+                                                  const s_ident *op,
+                                                  bool *dest);
+sw *           env_operator_precedence (s_env *env, const s_ident *op,
+                                        sw *dest);
+s_ident *      env_operator_resolve (s_env *env, const s_ident *op,
+                                     u8 arity, s_ident *dest);
 const s_sym ** env_operator_symbol (s_env *env, const s_ident *op,
                                     const s_sym **dest);
-u8            env_special_operator_arity (s_env *env,
-                                          const s_ident *ident);
-bool *        env_struct_type_exists (s_env *env, const s_sym *module,
-                                      bool *dest);
+bool *         env_or (s_env *env, const s_tag *a, const s_tag *b,
+                       bool *dest);
+u8             env_special_operator_arity (s_env *env,
+                                           const s_ident *ident);
+bool *         env_struct_type_exists (s_env *env, const s_sym *module,
+                                       bool *dest);
 const s_struct_type **
-              env_struct_type_find (s_env *env, const s_sym *module,
-                                    const s_struct_type **dest);
-f_clean       env_struct_type_get_clean (s_env *env,
-                                         const s_sym *module);
-s_list **     env_struct_type_get_spec (s_env *env, const s_sym *module,
-                                        s_list **dest);
-bool *        env_struct_type_has_spec (s_env *env, const s_sym *module,
-                                        bool *dest);
-bool          env_tag_ident_is_bound (s_env *env,
-                                      const s_tag *tag);
-s_tag *       env_while (s_env *env, const s_tag *cond,
-                         const s_tag *body, s_tag *dest);
+               env_struct_type_find (s_env *env, const s_sym *module,
+                                     const s_struct_type **dest);
+f_clean        env_struct_type_get_clean (s_env *env,
+                                          const s_sym *module);
+s_list **      env_struct_type_get_spec (s_env *env,
+                                         const s_sym *module,
+                                         s_list **dest);
+bool *         env_struct_type_has_spec (s_env *env,
+                                         const s_sym *module,
+                                         bool *dest);
+bool           env_tag_ident_is_bound (s_env *env,
+                                       const s_tag *tag);
+s_tag *        env_while (s_env *env, const s_tag *cond,
+                          const s_tag *body, s_tag *dest);
 
 /* Evaluator. */
 bool env_eval_array (s_env *env, const s_array *array,

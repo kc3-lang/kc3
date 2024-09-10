@@ -66,6 +66,11 @@ s_tag * kc3_access (const s_tag *tag, const s_list * const *key,
   return NULL;
 }
 
+bool * kc3_and (const s_tag *a, const s_tag *b, bool *dest)
+{
+  return env_and(&g_kc3_env, a, b, dest);
+}
+
 void kc3_break (void)
 {
   err_puts("break");
@@ -326,6 +331,11 @@ uw * kc3_offsetof (const s_sym * const *module,
 s_tag * kc3_operator_find_by_sym (const s_sym * const *sym, s_tag *dest)
 {
   return env_operator_find_by_sym(&g_kc3_env, *sym, dest);
+}
+
+bool * kc3_or (const s_tag *a, const s_tag *b, bool *dest)
+{
+  return env_or(&g_kc3_env, a, b, dest);
 }
 
 s_tag * kc3_identity (const s_tag *tag, s_tag *dest)

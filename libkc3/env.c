@@ -17,6 +17,7 @@
 #include "assert.h"
 #include "binding.h"
 #include "block.h"
+#include "bool.h"
 #include "buf.h"
 #include "buf_file.h"
 #include "buf_getc.h"
@@ -67,6 +68,36 @@ static void env_clean_toplevel (s_env *env);
 static s_env * env_init_args (s_env *env, int *argc, char ***argv);
 static s_env * env_init_globals (s_env *env);
 static s_env * env_init_toplevel (s_env *env);
+
+bool * env_and (s_env *env, const s_tag *a, const s_tag *b, bool *dest)
+{
+  s_tag eval;
+  bool tmp;
+  const s_sym *type;
+  assert(env);
+  assert(a);
+  assert(b);
+  assert(dest);
+  type = &g_sym_Bool;
+  if (! env_eval_tag(env, a, &eval))
+    return NULL;
+  if (! bool_init_cast(&tmp, &type, &eval)) {
+    tag_clean(&eval);
+    return NULL;
+  }
+  tag_clean(&eval);
+  if (tmp) {
+    if (! env_eval_tag(env, b, &eval))
+      return NULL;
+    if (! bool_init_cast(&tmp, &type, &eval)) {
+      tag_clean(&eval);
+      return NULL;
+    }
+    tag_clean(&eval);
+  }
+  *dest = tmp;
+  return dest;
+}
 
 bool env_call_get (s_env *env, s_call *call)
 {
@@ -3247,6 +3278,36 @@ const s_sym ** env_operator_symbol (s_env *env, const s_ident *op,
   }
   facts_cursor_clean(&cursor);
   return result;
+}
+
+bool * env_or (s_env *env, const s_tag *a, const s_tag *b, bool *dest)
+{
+  s_tag eval;
+  bool tmp;
+  const s_sym *type;
+  assert(env);
+  assert(a);
+  assert(b);
+  assert(dest);
+  type = &g_sym_Bool;
+  if (! env_eval_tag(env, a, &eval))
+    return NULL;
+  if (! bool_init_cast(&tmp, &type, &eval)) {
+    tag_clean(&eval);
+    return NULL;
+  }
+  tag_clean(&eval);
+  if (! tmp) {
+    if (! env_eval_tag(env, b, &eval))
+      return NULL;
+    if (! bool_init_cast(&tmp, &type, &eval)) {
+      tag_clean(&eval);
+      return NULL;
+    }
+    tag_clean(&eval);
+  }
+  *dest = tmp;
+  return dest;
 }
 
 void env_pop_error_handler (s_env *env)

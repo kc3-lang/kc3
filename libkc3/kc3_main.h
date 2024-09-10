@@ -51,6 +51,7 @@ s_str *        kc3_str (const s_tag *tag, s_str *dest);
 /* Operators. */
 s_tag *      kc3_access (const s_tag *tag, const s_list * const *addr,
                          s_tag *dest);
+bool *       kc3_and (const s_tag *a, const s_tag *b, bool *dest);
 s_tag *      kc3_buf_parse_tag (s_buf *buf, s_tag *dest);
 s_tag *      kc3_def (const s_call *call, s_tag *dest);
 s_tag *      kc3_defmodule (const s_sym **name, const s_block *block,
@@ -74,6 +75,7 @@ s_tag *      kc3_identity (const s_tag *tag, s_tag *dest);
 bool         kc3_load (const s_str *path);
 s_tag *      kc3_operator_find_by_sym (const s_sym * const *sym,
                                        s_tag *dest);
+bool *       kc3_or (const s_tag *a, const s_tag *b, bool *dest);
 bool         kc3_require (const s_sym * const *module);
 s_str *      kc3_strerror (sw err_no, s_str *dest);
 

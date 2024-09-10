@@ -1147,6 +1147,7 @@ sw buf_parse_cast (s_buf *buf, s_call *dest)
 sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
 {
   s_list *arg_types = NULL;
+  bool macro = false;
   s_str name_str;
   const s_sym *name_sym;
   sw r;
@@ -1160,6 +1161,12 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   if ((r = buf_read_1(buf, "cfn")) <= 0)
     goto clean;
   result += r;
+  if ((r = buf_read_1(buf, "_macro")) < 0)
+    goto restore;
+  if (r) {
+    result += r;
+    macro = true;
+  }
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
@@ -1182,6 +1189,7 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
     goto restore;
   result += r;
   cfn_init(&tmp, name_sym, arg_types, result_type);
+  tmp.macro = macro;
   // FIXME: implement env_eval_cfn
   /*
   cfn_prep_cif(&tmp);
