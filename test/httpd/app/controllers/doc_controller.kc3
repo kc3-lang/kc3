@@ -17,7 +17,7 @@ defmodule DocController do
         doc_index(rest, path_md, dir, acc)
       else
         path = dir + file
-        name = ^ file
+        name = Str.subst(file, "_", " ")
         url = Str.slice(path, 1, -1)
         if File.is_directory?(path) do
           items = doc_index(List.sort(File.list(path)), path_md,
@@ -54,7 +54,7 @@ defmodule DocController do
     }
     (path, path_md, dir, acc) {
       if (type(path) == Str) do
-        doc_index(File.list(path), path_md, dir, acc)
+        doc_index(List.sort(File.list(path)), path_md, dir, acc)
       end
     }
   }

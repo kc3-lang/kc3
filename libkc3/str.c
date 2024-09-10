@@ -592,6 +592,67 @@ s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end)
   return str;
 }
 
+s_str * str_init_subst (s_str *str, const s_str *src,
+                        const s_str *search, const s_str *replace)
+{
+  character c;
+  s_buf in;
+  s_buf out;
+  sw r;
+  sw size;
+  assert(str);
+  assert(src);
+  assert(search);
+  assert(replace);
+  if ((size = str_init_subst_size(src, search, replace)) < 0)
+    return NULL;
+  if (! buf_init_alloc(&out, size))
+    return NULL;
+  buf_init_str_const(&in, src);
+  while (in.wpos - in.rpos >= search->size) {
+    if (buf_read_str(&in, search) > 0) {
+      if ((r = buf_write_str(&out, replace)) < 0)
+        goto clean;
+    }
+    else {
+      if ((r = buf_read_character_utf8(&in, &c)) < 0)
+        break;
+      if ((r = buf_write_character_utf8(&out, c)) < 0)
+        goto clean;
+    }
+  }
+  if ((r = buf_xfer(&out, &in, in.wpos - in.rpos)) < 0)
+    goto clean;
+  buf_to_str(&out, str);
+  return str;
+ clean:
+  buf_clean(&out);
+  return NULL;
+}
+
+sw str_init_subst_size (const s_str *src, const s_str *search,
+                        const s_str *replace)
+{
+  character c;
+  s_buf in;
+  sw r;
+  sw result = 0;
+  assert(src);
+  assert(search);
+  assert(replace);
+  buf_init_str_const(&in, src);
+  while (in.wpos - in.rpos >= search->size) {
+    if (buf_read_str(&in, search) > 0)
+      result += replace->size;
+    else {
+      if ((r = buf_read_character_utf8(&in, &c)) < 0)
+        return -1;
+      result += r;
+    }
+  }
+  return result;
+}
+
 s_str * str_init_to_lower (s_str *str, const s_str *src)
 {
   s_buf buf;

@@ -23,3 +23,6 @@ replace {Str.starts_with?, :symbol_value,
 add {Str, :symbol, Str.has_str?}
 replace {Str.has_str?, :symbol_value,
          cfn Bool "str_has_str" (Str, Str, Result)}
+add {Str, :symbol, Str.subst}
+replace {Str.subst, :symbol_value,
+         cfn Str "str_init_subst" (Result, Str, Str, Str)}

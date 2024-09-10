@@ -66,6 +66,10 @@ PROTOTYPE_STR_INIT_INT(s64);
 s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end);
 s_str * str_init_slice_utf8 (s_str *str, const s_str *src, sw start,
                              sw end);
+s_str * str_init_subst (s_str *str, const s_str *src,
+                        const s_str *search, const s_str *replace);
+sw      str_init_subst_size (const s_str *src, const s_str *search,
+                             const s_str *replace);
 PROTOTYPE_STR_INIT_STRUCT(struct);
 PROTOTYPE_STR_INIT_INT(sw);
 s_str * str_init_to_lower (s_str *str, const s_str *src);
