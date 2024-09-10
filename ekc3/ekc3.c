@@ -424,8 +424,11 @@ sw ekc3_render (s_buf *buf, const p_ekc3 *ekc3)
       }
     }
     else {
-      if (! (r = ekc3_render_tag(buf, &l->tag)))
+      if ((r = ekc3_render_tag(buf, &l->tag)) < 0) {
+        err_puts("ekc3_render: ekc3_render_tag");
+        assert(! "ekc3_render: ekc3_render_tag");
         return r;
+      }
       result += r;
     }
     l = list_next(l);
