@@ -20,3 +20,6 @@ replace {Str.slice, :symbol_value, fn (str, start, end_) {
 add {Str, :symbol, Str.starts_with?}
 replace {Str.starts_with?, :symbol_value,
          cfn Bool "str_starts_with" (Str, Str, Result)}
+add {Str, :symbol, Str.has_str?}
+replace {Str.has_str?, :symbol_value,
+         cfn Bool "str_has_str" (Str, Str, Result)}

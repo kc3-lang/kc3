@@ -553,6 +553,7 @@ serving files for display or download (Web 1.0).
        - ./app/views/
        
  - libkc3
+   - evaluation order for && and ||
    - operators dispatch
      - list of matching operators (facts_with)
    - base-specific big floats

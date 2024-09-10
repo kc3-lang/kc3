@@ -218,17 +218,23 @@ defmodule HTTPd do
   }
 
   def static_controller = fn (request) {
-    path = root_dir + request.url
-    render = if File.exists?(path) do
-      if File.is_directory?(path) do
-        directory_page
-      else
-        show_page
-      end
-    else
-      error_404_page
-    end
+    render = if (! Str.starts_with(request.url, "/") ||
+                 Str.has_str?(request.url, "/..")) do
+               error_404_page
+             else
+               path = root_dir + request.url
+               if ! File.exists?(path) do
+                 error_404_page
+               else
+                 if File.is_directory?(path) do
+                   directory_page
+                 else
+                   show_page
+                 end
+               end
+             end
     render(request)
+    end
   }
 
   def_route("/", static_controller)

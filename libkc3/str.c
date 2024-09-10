@@ -265,6 +265,25 @@ bool * str_has_reserved_characters (const s_str *src, bool *dest)
   return dest;
 }
 
+bool * str_has_str (const s_str *src, const s_str *search, bool *dest)
+{
+  uw offset;
+  offset = 0;
+  while (1) {
+    if (src->size - offset < search->size) {
+      *dest = false;
+      return dest;
+    }
+    if (! memcmp(src->ptr.pchar + offset, search->ptr.pchar,
+                 search->size)) {
+      *dest = true;
+      return dest;
+    }
+    offset++;
+  }
+  return NULL;
+}
+
 s_str * str_init (s_str *str, char *free, uw size, const char *p)
 {
   s_str tmp = {0};
