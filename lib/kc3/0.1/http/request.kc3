@@ -7,6 +7,12 @@ defmodule HTTP.Request do
 
   dlopen(__DIR__ + "../http.so")
 
+  def allowed_methods = [:delete,
+                         :get,
+                         :head,
+                         :post,
+                         :put]
+
   def buf_parse = cfn Tag "http_request_buf_parse" (Result, Buf)
 
   def buf_write = cfn Sw "http_request_buf_write" (HTTP.Request, Buf)

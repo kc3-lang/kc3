@@ -149,7 +149,7 @@ defmodule HTTPd do
   }
 
   def directory_page = fn (request) {
-    files = File.list(root_dir + request.url)
+    files = List.sort(File.list(root_dir + request.url))
     file_li = HTTPd.fn (file) {
       slash = if Str.ends_with?(request.url, "/") do "" else "/" end
       real_path = "#{root_dir}#{request.url}#{slash}#{file}"

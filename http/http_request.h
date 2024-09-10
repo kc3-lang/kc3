@@ -16,5 +16,7 @@
 #include "types.h"
 
 s_http_request * http_request_buf_parse (s_http_request *req, s_buf *buf);
+const s_sym ** http_request_buf_parse_method (s_buf *buf,
+                                              const s_sym **dest);
 
 #endif /* HTTP_REQUEST_H */
