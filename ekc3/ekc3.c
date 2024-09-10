@@ -544,6 +544,7 @@ sw ekc3_render_size (s_pretty *pretty, const p_ekc3 *ekc3)
   const s_list *l;
   sw r;
   sw result = 0;
+  assert(pretty);
   assert(ekc3);
   l = *ekc3;
   while (l) {
@@ -552,19 +553,22 @@ sw ekc3_render_size (s_pretty *pretty, const p_ekc3 *ekc3)
       l = list_next(l);
       if (! l ||
           l->tag.type != TAG_BLOCK) {
-        err_puts("ekc3_render: :silent without a block");
-        assert(! "ekc3_render: :silent without a block");
+        err_puts("ekc3_render_size: :silent without a block");
+        assert(! "ekc3_render_size: :silent without a block");
         return -1;
       }
       if (! ekc3_eval_silent_block(&l->tag.data.block)) {
-        err_puts("ekc3_render: ekc3_eval_silent_block");
-        assert(! "ekc3_render: ekc3_eval_silent_block");
+        err_puts("ekc3_render_size: ekc3_eval_silent_block");
+        assert(! "ekc3_render_size: ekc3_eval_silent_block");
         return -1;
       }
     }
     else {
-      if (! (r = ekc3_render_tag_size(pretty, &l->tag)))
+      if ((r = ekc3_render_tag_size(pretty, &l->tag)) < 0) {
+        err_puts("ekc3_render_size: ekc3_render_tag_size");
+        assert(! "ekc3_render_size: ekc3_render_tag_size");
         return r;
+      }
       result += r;
     }
     l = list_next(l);
