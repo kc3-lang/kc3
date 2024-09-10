@@ -200,29 +200,18 @@ void env_clean_toplevel (s_env *env)
   frame_delete_all(env->frame);
 }
 
-s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
+bool env_def (s_env *env, const s_ident *ident, const s_tag *value)
 {
-  s_ident *ident;
-  s_struct *s;
+  const s_struct *s;
+  s_tag tag;
   s_tag tag_ident;
   s_tag tag_module;
   s_tag tag_symbol;
   s_tag tag_symbol_value;
-  s_tag tag_value;
   (void) env;
   assert(env);
-  assert(call);
-  assert(dest);
-  if (call->ident.module != &g_sym_KC3 ||
-      call->ident.sym != &g_sym_operator_equal ||
-      call->arguments->tag.type != TAG_IDENT ||
-      ! list_next(call->arguments) ||
-      list_next(list_next(call->arguments))) {
-    err_puts("env_def: invalid assignment: expected Ident = value");
-    assert(! "env_def: invalid assignment: expected Ident = value");
-    return NULL;
-  }
-  ident = &call->arguments->tag.data.ident;
+  assert(ident);
+  assert(value);
   tag_ident.type = TAG_IDENT;
   tag_ident.data.ident.sym = ident->sym;
   if (ident->module)
@@ -233,48 +222,38 @@ s_tag * env_def (s_env *env, const s_call *call, s_tag *dest)
   tag_init_sym(&tag_symbol, &g_sym_symbol);
   if (! facts_add_tags(&env->facts, &tag_module, &tag_symbol,
                        &tag_ident))
-    return NULL;
-  if (! env_eval_tag(env, &list_next(call->arguments)->tag,
-                     &tag_value)) {
-    err_puts("env_def: env_eval_tag");
-    assert(! "env_def: env_eval_tag");
-    return NULL;
-  }
-  if (tag_value.type == TAG_STRUCT &&
-      (s = &tag_value.data.struct_) &&
+    return false;
+  if (value->type == TAG_STRUCT &&
+      (s = &value->data.struct_) &&
       s->type->module == &g_sym_KC3_Operator) {
     if (! env_defoperator(env, &tag_ident.data.ident.sym,
-                          struct_get_sym(&tag_value.data.struct_,
+                          struct_get_sym(&value->data.struct_,
                                          &g_sym_sym),
-                          struct_get_tag(&tag_value.data.struct_,
+                          struct_get_tag(&value->data.struct_,
                                          &g_sym_symbol_value),
-                          struct_get_u8(&tag_value.data.struct_,
+                          struct_get_u8(&value->data.struct_,
                                         &g_sym_operator_precedence),
-                          struct_get_sym(&tag_value.data.struct_,
+                          struct_get_sym(&value->data.struct_,
                                          &g_sym_operator_associativity),
-                          dest)) {
-      tag_clean(&tag_value);
-      return NULL;
+                          &tag)) {
+      return false;
     }
+    tag_clean(&tag);
   }
   else {
     tag_init_sym(&tag_symbol_value, &g_sym_symbol_value);
     if (! facts_replace_tags(&env->facts, &tag_ident, &tag_symbol_value,
-                             &tag_value)) {
-      tag_clean(&tag_value);
-      return NULL;
+                             value)) {
+      return false;
     }
     if (tag_ident.data.ident.module == env->current_defmodule &&
         tag_ident.data.ident.sym == &g_sym_clean) {
-      if (! env_def_clean(env, env->current_defmodule, &tag_value)) {
-        tag_clean(&tag_value);
-        return NULL;
+      if (! env_def_clean(env, env->current_defmodule, value)) {
+        return false;
       }
     }
   }
-  tag_clean(&tag_value);
-  tag_init_ident(dest, &tag_ident.data.ident);
-  return dest;
+  return true;
 }
 
 const s_sym * env_def_clean (s_env *env, const s_sym *module,
@@ -2476,6 +2455,46 @@ s_env * env_init_toplevel (s_env *env)
 {
   env->frame = frame_new(NULL);
   return env;
+}
+
+s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
+{
+  s_ident *ident;
+  s_tag tag_ident;
+  s_tag tag_value;
+  (void) env;
+  assert(env);
+  assert(call);
+  assert(dest);
+  if (call->ident.module != &g_sym_KC3 ||
+      call->ident.sym != &g_sym_operator_equal ||
+      call->arguments->tag.type != TAG_IDENT ||
+      ! list_next(call->arguments) ||
+      list_next(list_next(call->arguments))) {
+    err_puts("env_kc3_def: invalid assignment: expected Ident = value");
+    assert(! "env_kc3_def: invalid assignment: expected Ident = value");
+    return NULL;
+  }
+  ident = &call->arguments->tag.data.ident;
+  tag_ident.type = TAG_IDENT;
+  tag_ident.data.ident.sym = ident->sym;
+  if (ident->module)
+    tag_ident.data.ident.module = ident->module;
+  else
+    tag_ident.data.ident.module = env->current_defmodule;
+  if (! env_eval_tag(env, &list_next(call->arguments)->tag,
+                     &tag_value)) {
+    err_puts("env_kc3_def: env_eval_tag");
+    assert(! "env_kc3_def: env_eval_tag");
+    return NULL;
+  }
+  if (! env_def(env, ident, &tag_value)) {
+    tag_clean(&tag_value);
+    return NULL;
+  }
+  tag_clean(&tag_value);
+  tag_init_ident(dest, &tag_ident.data.ident);
+  return dest;
 }
 
 s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,

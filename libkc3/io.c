@@ -115,6 +115,14 @@ sw err_write_str (const s_str *x)
   return r;
 }
 
+sw err_write_u8 (u8 x)
+{
+  sw r;
+  if ((r = buf_write_u8(&g_kc3_env.err, x)) > 0)
+    buf_flush(&g_kc3_env.err);
+  return r;
+}
+
 sw io_flush (void)
 {
   return buf_flush(&g_kc3_env.out);
@@ -181,6 +189,14 @@ sw io_write_str (const s_str *x)
 {
   sw r;
   if ((r = buf_write_str(&g_kc3_env.out, x)) > 0)
+    buf_flush(&g_kc3_env.out);
+  return r;
+}
+
+sw io_write_u8 (u8 x)
+{
+  sw r;
+  if ((r = buf_write_u8(&g_kc3_env.out, x)) > 0)
     buf_flush(&g_kc3_env.out);
   return r;
 }

@@ -63,6 +63,15 @@ defmodule HTTPd do
     end
   end
 
+  def daemonize = fn () {
+    if (KC3.daemonize) do
+      puts("forking to background")
+      if fork() > 0 do
+        exit(0)
+      end
+    end
+  }
+
   def timeout = %Time{}
 
   def server = fn (host, port) {
@@ -72,6 +81,7 @@ defmodule HTTPd do
     acceptor_ev = Event.new(event_base, socket.fd, [:read, :persist],
                                  acceptor, void)
     r = Event.add(acceptor_ev, timeout)
+    daemonize()
     r = Event.dispatch(event_base)
     if r do
       e = errno()

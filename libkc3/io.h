@@ -32,6 +32,7 @@ sw err_puts (const char *x);
 sw err_write (const void *x, uw len);
 sw err_write_1 (const char *x);
 sw err_write_str (const s_str *x);
+sw err_write_u8 (u8 x);
 
 /* standard output */
 sw io_flush (void);
@@ -40,6 +41,7 @@ sw io_puts (const char *x);
 sw io_write (const void *x, uw len);
 sw io_write_1 (const char *x);
 sw io_write_str (const s_str *x);
+sw io_write_u8 (u8 x);
 
 PROTOTYPES_ERR_IO_INSPECT(array,           const s_array *);
 PROTOTYPES_ERR_IO_INSPECT(bool,            const bool *);

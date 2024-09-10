@@ -21,6 +21,7 @@
 #include "block.h"
 #include "bool.h"
 #include "buf.h"
+#include "buf_fd.h"
 #include "buf_file.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"

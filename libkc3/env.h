@@ -42,7 +42,8 @@ bool            env_sym_search_modules (s_env *env,
                                         const s_sym **dest);
 
 /* Operators. */
-s_tag *       env_def (s_env *env, const s_call *call, s_tag *dest);
+bool          env_def (s_env *env, const s_ident *ident,
+                       const s_tag *value);
 const s_sym * env_def_clean (s_env *env, const s_sym *module,
                              const s_tag *tag_clean);
 s_tag *       env_defmodule (s_env *env, const s_sym * const *name,
@@ -76,6 +77,7 @@ s_tag *       env_ident_get (s_env *env, const s_ident *ident,
 bool *        env_ident_is_special_operator (s_env *env,
                                              const s_ident *ident,
                                              bool *dest);
+s_tag *       env_kc3_def (s_env *env, const s_call *call, s_tag *dest);
 s_tag *       env_let (s_env *env, const s_tag *tag,
                        const s_block *block, s_tag *dest);
 bool          env_load (s_env *env, const s_str *path);

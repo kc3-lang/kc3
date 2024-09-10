@@ -272,6 +272,26 @@ s32 * file_open_r (const s_str *path, s32 *dest)
   return dest;
 }
 
+s32 * file_open_w (const s_str *path, s32 *dest)
+{
+  sw e;
+  s32 fd;
+  mode_t mode = 0777;
+  assert(path);
+  assert(dest);
+  if ((fd = open(path->ptr.pchar, O_WRONLY | O_BINARY | O_CREAT,
+                 mode)) < 0) {
+    e = errno;
+    err_write_1("file_open_w: ");
+    err_inspect_str(path);
+    err_write_1(": ");
+    err_puts(strerror(e));
+    return NULL;
+  }
+  *dest = fd;
+  return dest;
+}
+
 s_str * file_pwd (s_str *dest)
 {
   char buf[PATH_MAX];

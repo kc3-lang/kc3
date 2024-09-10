@@ -11,20 +11,83 @@
  * THIS SOFTWARE.
  */
 #include <signal.h>
+#include <string.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
 #include <libkc3/kc3.h>
 #include "config.h"
 
 int main (int argc, char **argv)
 {
+  bool    daemonize = true;
+  s_ident daemonize_ident;
+  s_tag   daemonize_value;
+  char  log_buf[64] = {0};
+  s32   log_fd = -1;
+  s_str log_str = {0};
   s_call call = {0};
   const s_sym *module = NULL;
+  char *p;
   int r = 1;
+  time_t t;
   s_tag tmp = {0};
+  const struct tm *utc = NULL;
   kc3_init(NULL, &argc, &argv);
+  if (argc > 0 && argv[0] && argv[0][0] == '-') {
+    p = argv[0] + 1;
+    while (*p) {
+      switch (*p) {
+      case 'd':
+        daemonize = false;
+        break;
+      default:
+        err_write_1("kc3_httpd: unknown flag: -");
+        err_write_u8(*p);
+        err_write_1("\n");
+        assert(! "kc3_httpd: unknown flag");
+        kc3_clean(NULL);
+        return 1;
+      }
+      p++;
+    }
+    argc--;
+    argv++;
+  }
+  if (daemonize) {
+    if ((t = time(NULL)) == -1) {
+      kc3_clean(NULL);
+      return 1;
+    }
+    if (! (utc = gmtime(&t))) {
+      kc3_clean(NULL);
+      return 1;
+    }
+    strftime(log_buf, sizeof(log_buf) - 1, "log/kc3_httpd_%F_%T.log",
+             utc);
+    str_init_1(&log_str, NULL, log_buf);
+    if (! file_open_w(&log_str, &log_fd)) {
+      str_clean(&log_str);
+      kc3_clean(NULL);
+      return 1;
+    }
+    buf_file_close(&g_kc3_env.out);
+    dup2(log_fd, 1);
+    buf_fd_open_w(&g_kc3_env.out, 1);
+    buf_file_close(&g_kc3_env.err);
+    dup2(log_fd, 2);
+    buf_fd_open_w(&g_kc3_env.err, 2);
+    buf_file_close(&g_kc3_env.in);
+    close(0);
+  }
+  ident_init(&daemonize_ident, &g_sym_KC3, sym_1("daemonize"));
+  tag_init_bool(&daemonize_value, daemonize);
+  env_def(&g_kc3_env, &daemonize_ident, &daemonize_value);
   io_puts("KC3 HTTPd loading, please wait...");
   if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
     err_puts("http_event_base_new: signal");
     assert(! "http_event_base_new: signal");
+    kc3_clean(NULL);
     return 1;
   }
   module = sym_1("HTTPd");

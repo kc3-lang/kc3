@@ -92,7 +92,7 @@ void kc3_clean (s_env *env)
 
 s_tag * kc3_def (const s_call *call, s_tag *dest)
 {
-  return env_def(&g_kc3_env, call, dest);
+  return env_kc3_def(&g_kc3_env, call, dest);
 }
 
 s_tag * kc3_defmodule (const s_sym **name, const s_block *block, s_tag *dest)

@@ -293,3 +293,12 @@ add {KC3, :symbol, KC3.to_lisp}
 replace {KC3.to_lisp, :symbol_value, cfn Tag "to_lisp" (Tag, Result)}
 add {KC3, :symbol, KC3.inspect}
 replace {KC3.inspect, :symbol_value, cfn Str "inspect_tag" (Tag, Result)}
+add {KC3, :symbol, KC3.exit_cfn}
+replace {KC3.exit_cfn, :symbol_value, cfn Void "exit" (S32)}
+add {KC3, :symbol, KC3.exit}
+replace {KC3.exit, :symbol_value, fn (exit_code) {
+  exit_cfn((S32) exit_code)
+}}
+add {KC3, :symbol, KC3.fork}
+replace {KC3.fork, :symbol_value, cfn S32 "fork" ()}
+
