@@ -46,7 +46,7 @@ defmodule HTTPd do
         res = router(req)
         FD.set_blocking(socket, true)
         r = HTTP.Response.buf_write(res, client.buf_rw.w,
-          req.method != :head)
+          req.method != HEAD)
         client_addr = if client.addr_str != "127.0.0.1" do
           client.addr_str
         else
