@@ -35,7 +35,9 @@ const s_sym ** http_request_buf_parse_method (s_buf *buf,
   tag.data.sym = sym_find(&str);
   str_clean(&str);
   if (! tag.data.sym) {
-    err_puts("http_request_buf_parse_method: method Sym not found");
+    err_write_1("http_request_buf_parse_method: method not found: ");
+    err_inspect_str(&str);
+    err_write_1("\n");
     goto restore;
   }
   ident_init(&ident, sym_1("HTTP.Request"), sym_1("allowed_methods"));
