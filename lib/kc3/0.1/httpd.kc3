@@ -17,15 +17,13 @@ defmodule HTTPd do
   def root_dir = "./static"
 
   def load_directory = fn (dir) {
-    if File.exists?(dir) do
-      if File.is_directory?(dir) do
-        files = File.list(dir)
-        List.each(files, fn (file) {
-          if (! Str.starts_with?(file, ".")) do
-            load(dir + file)
-          end
-        })
-      end
+    if File.exists?(dir) && File.is_directory?(dir) do
+      files = File.list(dir)
+      List.each(files, fn (file) {
+        if (! Str.starts_with?(file, ".")) do
+          load(dir + file)
+        end
+      })
     end
   }
 

@@ -19,27 +19,14 @@ const s_sym ** http_request_buf_parse_method (s_buf *buf,
                                               const s_sym **dest)
 {
   s_tag allowed_methods;
-  bool b;
+  s_list *m;
   s_ident ident;
   s_buf_save save;
   s_str str;
-  s_tag tag;
+  const s_sym *sym;
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  if (! buf_read_until_1_into_str(buf, " ", &str)) {
-    err_puts("http_request_buf_parse_method: no method");
-    goto clean;
-  }
-  tag.type = TAG_SYM;
-  tag.data.sym = sym_find(&str);
-  str_clean(&str);
-  if (! tag.data.sym) {
-    err_write_1("http_request_buf_parse_method: method not found: ");
-    err_inspect_str(&str);
-    err_write_1("\n");
-    goto restore;
-  }
   ident_init(&ident, sym_1("HTTP.Request"), sym_1("allowed_methods"));
   if (! ident_get(&ident, &allowed_methods)) {
     err_puts("http_request_buf_parse_method: missing"
@@ -51,23 +38,27 @@ const s_sym ** http_request_buf_parse_method (s_buf *buf,
              " HTTP.Request.allowed_methods");
     goto restore;
   }
-  if (! list_has((const s_list * const *) &allowed_methods.data.list,
-                 &tag, &b)) {
-    err_puts("http_request_buf_parse_method: list_has");
-    goto restore;
+  m = allowed_methods.data.list;
+  while (m) {
+    if (m->tag.type != TAG_SYM) {
+      err_puts("http_request_buf_parse_method: invalid"
+               " HTTP.Request.allowed_methods");
+      goto restore;
+    }
+    sym = m->tag.data.sym;
+    str_init_alloc(&str, sym->str.size + 1);
+    memcpy(str.free.pchar, sym->str.ptr.pchar, sym->str.size);
+    str.free.pchar[sym->str.size] = ' ';
+    str.free.pchar[sym->str.size + 1] = 0;
+    if (buf_read_str(buf, &str) > 0) {
+      *dest = sym;
+      buf_save_clean(buf, &save);
+      return dest;
+    }
+    m = list_next(m);
   }
-  if (! b) {
-    err_write_1("http_request_buf_parse_method: invalid method: ");
-    err_inspect_sym(&tag.data.sym);
-    err_write_1("\n");
-    goto restore;
-  }
-  *dest = tag.data.sym;
-  buf_save_clean(buf, &save);
-  return dest;
  restore:
   buf_save_restore_rpos(buf, &save);
- clean:
   buf_save_clean(buf, &save);
   return NULL;
 }
