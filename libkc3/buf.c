@@ -878,19 +878,25 @@ s_str * buf_read_until_1_into_str(s_buf *buf, const char *end, s_str *dest)
   s_buf tmp;
   buf_save_init(buf, &save);
   while (1) {
-    if ((r = buf_read_1(buf, end)) < 0)
+    if ((r = buf_read_1(buf, end)) < 0) {
+      err_puts("buf_read_until_1_into_str: buf_read_1");
       goto restore;
+    }
     if (r) {
       buf_init(&tmp, false, buf->size, buf->ptr.pchar);
       tmp.rpos = save.rpos;
       tmp.wpos = buf->rpos - strlen(end);
-      if (! buf_read_to_str(&tmp, dest))
+      if (! buf_read_to_str(&tmp, dest)) {
+        err_puts("buf_read_until_1_into_str: buf_read_to_str");
         goto restore;
+      }
       buf_save_clean(buf, &save);
       return dest;
     }
-    if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+    if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
+      err_puts("buf_read_until_1_into_str: buf_read_character_utf8");
       goto restore;
+    }
   }
  restore:
   buf_save_restore_rpos(buf, &save);
