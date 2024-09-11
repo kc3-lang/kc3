@@ -91,7 +91,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   buf_save_init(buf, &save);
   if (! http_request_buf_parse_method(buf, &tmp_req.method))
     goto restore;
-  if (false) {
+  if (true) {
     err_write_1("http_request_buf_parse: method: ");
     err_inspect_sym(&tmp_req.method);
     err_write_1("\n");
