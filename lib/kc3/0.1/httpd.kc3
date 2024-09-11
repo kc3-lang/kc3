@@ -52,12 +52,8 @@ defmodule HTTPd do
         else
           headers = req.headers
           puts(headers)
-          forwarded_for = headers["X-Forwarded-For"]
-          if (forwarded_for) do
-            forwarded_for
-          else
-            client.addr_str
-          end
+          real_ip = headers["X-Real-IP"]
+          if (real_ip) do real_ip else client.addr_str end
         end
         puts("#{res.code} #{client_addr} #{req.method} #{req.url}")
         FD.set_blocking(socket, false)
