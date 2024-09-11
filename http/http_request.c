@@ -21,6 +21,7 @@ const s_sym ** http_request_buf_parse_method (s_buf *buf,
   s_tag allowed_methods;
   s_list *m;
   s_ident ident;
+  sw r;
   s_buf_save save;
   s_str str;
   const s_sym *sym;
@@ -56,13 +57,16 @@ const s_sym ** http_request_buf_parse_method (s_buf *buf,
     memcpy(str.free.pchar, sym->str.ptr.pchar, sym->str.size);
     str.free.pchar[sym->str.size] = ' ';
     str.free.pchar[sym->str.size + 1] = 0;
-    if (buf_read_str(buf, &str) > 0) {
-      str_clean(&str);
+    if ((r = buf_read_str(buf, &str)) < 0) {
+      err_puts("http_request_buf_parse_method: buf_read_str");
+      goto restore;
+    }
+    str_clean(&str);
+    if (r) {
       *dest = sym;
       buf_save_clean(buf, &save);
       return dest;
     }
-    str_clean(&str);
     m = list_next(m);
   }
   *dest = &g_sym_Void;
