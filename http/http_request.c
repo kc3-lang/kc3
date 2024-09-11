@@ -29,39 +29,45 @@ const s_sym ** http_request_buf_parse_method (s_buf *buf,
   buf_save_init(buf, &save);
   if (! buf_read_until_1_into_str(buf, " ", &str)) {
     err_puts("http_request_buf_parse_method: no method");
-    return NULL;
+    goto clean;
   }
   tag.type = TAG_SYM;
   tag.data.sym = sym_find(&str);
   str_clean(&str);
   if (! tag.data.sym) {
     err_puts("http_request_buf_parse_method: method Sym not found");
-    return NULL;
+    goto restore;
   }
   ident_init(&ident, sym_1("HTTP.Request"), sym_1("allowed_methods"));
   if (! ident_get(&ident, &allowed_methods)) {
     err_puts("http_request_buf_parse_method: missing"
              " HTTP.Request.allowed_methods");
-    return NULL;
+    goto restore;
   }
   if (allowed_methods.type != TAG_LIST) {
     err_puts("http_request_buf_parse_method: invalid"
              " HTTP.Request.allowed_methods");
-    return NULL;
+    goto restore;
   }
   if (! list_has((const s_list * const *) &allowed_methods.data.list,
                  &tag, &b)) {
     err_puts("http_request_buf_parse_method: list_has");
-    return NULL;
+    goto restore;
   }
   if (! b) {
     err_write_1("http_request_buf_parse_method: invalid method: ");
     err_inspect_sym(&tag.data.sym);
     err_write_1("\n");
-    return NULL;
+    goto restore;
   }
   *dest = tag.data.sym;
+  buf_save_clean(buf, &save);
   return dest;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return NULL;
 }
 
 s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
