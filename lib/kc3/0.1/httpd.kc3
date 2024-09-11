@@ -43,8 +43,8 @@ defmodule HTTPd do
       req = HTTP.Request.buf_parse(client.buf_rw.r)
       if req do
         router = route_request(req)
-        res = router(req)
-        r = HTTP.Response.buf_write(res, client.buf_rw.w,
+        response = router(req)
+        r = HTTP.Response.buf_write(response, client.buf_rw.w,
           req.method != HEAD)
         client_addr = if client.addr_str != "127.0.0.1" do
           client.addr_str
@@ -53,7 +53,7 @@ defmodule HTTPd do
           real_ip = headers["X-Real-IP"]
           if (real_ip) do real_ip else client.addr_str end
         end
-        puts("#{res.code} #{client_addr} #{req.method} #{req.url}")
+        puts("#{response.code} #{client_addr} #{req.method} #{req.url}")
       else
         File.close(socket)
       end
