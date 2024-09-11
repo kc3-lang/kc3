@@ -15,10 +15,58 @@
 #include "http.h"
 #include "url.h"
 
+const s_sym ** http_request_buf_parse_method (s_buf *buf,
+                                              const s_sym **dest)
+{
+  s_tag allowed_methods;
+  bool b;
+  s_ident ident;
+  s_buf_save save;
+  s_str str;
+  s_tag tag;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if (! buf_read_until_1_into_str(buf, " ", &str)) {
+    err_puts("http_request_buf_parse_method: no method");
+    return NULL;
+  }
+  tag.type = TAG_SYM;
+  tag.data.sym = sym_find(&str);
+  str_clean(&str);
+  if (! tag.data.sym) {
+    err_puts("http_request_buf_parse_method: method Sym not found");
+    return NULL;
+  }
+  ident_init(&ident, sym_1("HTTP.Request"), sym_1("allowed_methods"));
+  if (! ident_get(&ident, &allowed_methods)) {
+    err_puts("http_request_buf_parse_method: missing"
+             " HTTP.Request.allowed_methods");
+    return NULL;
+  }
+  if (allowed_methods.type != TAG_LIST) {
+    err_puts("http_request_buf_parse_method: invalid"
+             " HTTP.Request.allowed_methods");
+    return NULL;
+  }
+  if (! list_has((const s_list * const *) &allowed_methods.data.list,
+                 &tag, &b)) {
+    err_puts("http_request_buf_parse_method: list_has");
+    return NULL;
+  }
+  if (! b) {
+    err_write_1("http_request_buf_parse_method: invalid method: ");
+    err_inspect_sym(&tag.data.sym);
+    err_write_1("\n");
+    return NULL;
+  }
+  *dest = tag.data.sym;
+  return dest;
+}
+
 s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 {
   s_str line;
-  sw r;
   s_buf_save save;
   s_list **tail;
   s_tag tmp = {0};
@@ -27,23 +75,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   assert(req);
   assert(buf);
   buf_save_init(buf, &save);
-  if ((r = buf_read_1(buf, "GET ")) < 0)
-    goto restore;
-  if (r > 0)
-    tmp_req.method = sym_1("get");
-  if ((r = buf_read_1(buf, "POST ")) < 0)
-    goto restore;
-  if (r > 0)
-    tmp_req.method = sym_1("post");
-  if ((r = buf_read_1(buf, "PUT ")) < 0)
-    goto restore;
-  if (r > 0)
-    tmp_req.method = sym_1("put");
-  if ((r = buf_read_1(buf, "HEAD ")) < 0)
-    goto restore;
-  if (r > 0)
-    tmp_req.method = sym_1("head");
-  if (! tmp_req.method)
+  if (! http_request_buf_parse_method(buf, &tmp_req.method))
     goto restore;
   if (false) {
     err_write_1("http_request_buf_parse: method: ");
