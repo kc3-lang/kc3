@@ -44,7 +44,6 @@ defmodule HTTPd do
       if req do
         router = route_request(req)
         res = router(req)
-        FD.set_blocking(socket, true)
         r = HTTP.Response.buf_write(res, client.buf_rw.w,
           req.method != HEAD)
         client_addr = if client.addr_str != "127.0.0.1" do
@@ -55,7 +54,6 @@ defmodule HTTPd do
           if (real_ip) do real_ip else client.addr_str end
         end
         puts("#{res.code} #{client_addr} #{req.method} #{req.url}")
-        FD.set_blocking(socket, false)
       else
         File.close(socket)
       end
@@ -65,7 +63,6 @@ defmodule HTTPd do
   def acceptor = fn (server_socket, events, acceptor_ev, void) do
     if List.has?(events, :read) do
       client = Socket.Buf.accept(%Socket{fd: server_socket})
-      FD.set_blocking(client.sockfd, false)
       client_ev = Event.new(event_base, client.sockfd, [:read, :persist],
         http_client, client)
       r = Event.add(client_ev, timeout)
