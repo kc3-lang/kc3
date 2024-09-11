@@ -51,12 +51,15 @@ const s_sym ** http_request_buf_parse_method (s_buf *buf,
     str.free.pchar[sym->str.size] = ' ';
     str.free.pchar[sym->str.size + 1] = 0;
     if (buf_read_str(buf, &str) > 0) {
+      str_clean(&str);
       *dest = sym;
       buf_save_clean(buf, &save);
       return dest;
     }
+    str_clean(&str);
     m = list_next(m);
   }
+  err_puts("http_request_buf_parse_method: no method");
  restore:
   buf_save_restore_rpos(buf, &save);
   buf_save_clean(buf, &save);
