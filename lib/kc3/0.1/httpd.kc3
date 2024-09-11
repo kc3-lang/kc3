@@ -51,6 +51,7 @@ defmodule HTTPd do
           client.addr_str
         else
           headers = req.headers
+          puts(headers)
           forwarded_for = headers["X-Forwarded-For"]
           if (forwarded_for) do
             forwarded_for
