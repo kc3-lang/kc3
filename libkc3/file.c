@@ -81,6 +81,8 @@ void file_close (const s_tag *tag)
     buf_file_close(buf_rw->w);
     fclose(fp);
   }
+  else if (type == &g_sym_S32)
+    close(tag->data.s32);
   else {
     err_write_1("file_close: unknown tag type: ");
     err_inspect_sym(&type);
