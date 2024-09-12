@@ -55,7 +55,7 @@ defmodule HTTPd do
         puts("#{response.code} #{client_addr} #{req.method} #{req.url}")
       else
         Event.del(client_ev)
-        Socket.close(socket)
+        File.close(socket)
       end
     end
   end
