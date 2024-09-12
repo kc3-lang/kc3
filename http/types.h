@@ -35,7 +35,7 @@ struct socket_buf {
 };
 
 struct http_request {
-  const s_sym *method;
+  s_tag method;
   s_str url;
   s_str protocol;
   s_list *headers;

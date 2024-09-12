@@ -15,62 +15,59 @@
 #include "http.h"
 #include "url.h"
 
-const s_sym ** http_request_buf_parse_method (s_buf *buf,
-                                              const s_sym **dest)
+s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
 {
-  s_tag allowed_methods;
-  s_list *m;
+  const s_list *allowed_methods;
+  s_tag allowed_methods_tag;
+  bool b;
   s_ident ident;
-  sw r;
   s_buf_save save;
   s_str str;
-  const s_sym *sym;
+  s_tag tmp = {0};
   assert(buf);
   assert(dest);
   ident_init(&ident, sym_1("HTTP.Request"), sym_1("allowed_methods"));
-  if (! ident_get(&ident, &allowed_methods)) {
+  if (! ident_get(&ident, &allowed_methods_tag)) {
     err_puts("http_request_buf_parse_method: missing"
              " HTTP.Request.allowed_methods");
     assert(!("http_request_buf_parse_method: missing"
              " HTTP.Request.allowed_methods"));
     return NULL;
   }
-  if (allowed_methods.type != TAG_LIST) {
+  if (allowed_methods_tag.type != TAG_LIST ||
+      ! allowed_methods_tag.data.list ||
+      allowed_methods_tag.data.list->tag.type != TAG_SYM) {
     err_puts("http_request_buf_parse_method: invalid"
              " HTTP.Request.allowed_methods");
     assert(!("http_request_buf_parse_method: invalid"
              " HTTP.Request.allowed_methods"));
     return NULL;
   }
+  allowed_methods = allowed_methods_tag.data.list;
   buf_save_init(buf, &save);
-  m = allowed_methods.data.list;
-  while (m) {
-    if (m->tag.type != TAG_SYM) {
-      err_puts("http_request_buf_parse_method: invalid"
-               " HTTP.Request.allowed_methods");
-      assert(!("http_request_buf_parse_method: invalid"
-               " HTTP.Request.allowed_methods"));
-      goto restore;
-    }
-    sym = m->tag.data.sym;
-    str_init_alloc(&str, sym->str.size + 1);
-    memcpy(str.free.pchar, sym->str.ptr.pchar, sym->str.size);
-    str.free.pchar[sym->str.size] = ' ';
-    str.free.pchar[sym->str.size + 1] = 0;
-    if ((r = buf_read_str(buf, &str)) < 0) {
-      err_puts("http_request_buf_parse_method: buf_read_str");
-      goto restore;
-    }
-    str_clean(&str);
-    if (r) {
-      *dest = sym;
-      buf_save_clean(buf, &save);
-      return dest;
-    }
-    m = list_next(m);
+  if (! buf_read_until_1_into_str(buf, " ", &str)) {
+    err_puts("http_request_buf_parse_method: buf_read_until_1_into_str");
+    goto restore;
   }
-  *dest = &g_sym_Void;
+  if (! (tmp.data.sym = sym_find(&str))) {
+    tmp.type = TAG_STR;
+    tmp.data.str = str;
+    buf_save_clean(buf, &save);
+    *dest = tmp;
+    return dest;
+  }
+  str_clean(&str);
+  tmp.type = TAG_SYM;
+  if (! list_has(&allowed_methods, &tmp, &b)) {
+    err_puts("http_request_buf_parse_method: list_has");
+    goto restore;
+  }
+  if (! b) {
+    tmp.type = TAG_STR;
+    tmp.data.str = tmp.data.sym->str;
+  }
   buf_save_clean(buf, &save);
+  *dest = tmp;
   return dest;
  restore:
   buf_save_restore_rpos(buf, &save);
@@ -90,10 +87,10 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   assert(buf);
   buf_save_init(buf, &save);
   if (! http_request_buf_parse_method(buf, &tmp_req.method))
-    goto restore;
+    goto clean;
   if (true) {
     err_write_1("http_request_buf_parse: method: ");
-    err_inspect_sym(&tmp_req.method);
+    err_inspect_tag(&tmp_req.method);
     err_write_1("\n");
   }
   if (! buf_read_until_1_into_str(buf, " ", &url)) {
@@ -150,6 +147,7 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
 {
   s_tag *key;
   s_list *list;
+  const s_str *method;
   sw r;
   sw result = 0;
   s_str str;
@@ -157,7 +155,19 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
   s_tag *value;
   assert(req);
   assert(buf);
-  if (! req->method->str.size) {
+  switch (req->method.type) {
+  case TAG_SYM:
+    method = &req->method.data.sym->str;
+    break;
+  case TAG_STR:
+    method = &req->method.data.str;
+    break;
+  default:
+    err_puts("http_request_buf_write: invalid method");
+    assert(! "http_request_buf_write: invalid method");
+    return -1;
+  }
+  if (! method->size) {
     err_puts("http_request_buf_write: invalid method: \"\"");
     return -1;
   }    
@@ -173,12 +183,8 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     err_puts("http_request_buf_write: invalid headers: not an AList");
     return -1;
   }
-  if (! str_init_to_upper(&str, &req->method->str))
-    return -1;
-  if ((r = buf_write_str(buf, &str)) < 0) {
-    str_clean(&str);
+  if ((r = buf_write_str(buf, method)) < 0)
     return r;
-  }
   result += r;
   str_clean(&str);
   if ((r = buf_write_1(buf, " ")) <= 0)
