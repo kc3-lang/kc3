@@ -67,5 +67,6 @@ COMPARE_PROTOTYPE(u32);
 COMPARE_PROTOTYPE(u64);
 s8 compare_unquote (const s_unquote *a, const s_unquote *b);
 COMPARE_PROTOTYPE(uw);
+s8 compare_var (const s_var *a, const s_var *b);
 
 #endif /* LIBKC3_COMPARE_H */

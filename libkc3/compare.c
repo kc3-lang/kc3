@@ -1060,7 +1060,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                             &b->data.tuple);
   case TAG_UNQUOTE:    return compare_unquote(&a->data.unquote,
                                               &b->data.unquote);
-  case TAG_VAR:        return compare_ptr(a, b);
+  case TAG_VAR:        return compare_var(&a->data.var, &b->data.var);
   case TAG_COMPLEX:
   case TAG_F32:
   case TAG_F64:
@@ -1479,3 +1479,17 @@ s8 compare_unquote (const s_unquote *a, const s_unquote *b)
 }
 
 COMPARE_DEF(uw)
+
+s8 compare_var (const s_var *a, const s_var *b)
+{
+  sw r;
+  if (a == b)
+    return 0;
+  if (!a)
+    return -1;
+  if (!b)
+    return 1;
+  if ((r = compare_sym(a->type, b->type)))
+    return r;
+  return compare_ptr(a->ptr, b->ptr);
+}
