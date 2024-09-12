@@ -52,6 +52,9 @@ defmodule HTTPd do
           if (real_ip) do real_ip else client.addr_str end
         end
         puts("#{response.code} #{client_addr} #{req.method} #{req.url}")
+      else
+        Event.del(client_ev)
+        Socket.close(socket)
       end
     end
   end
