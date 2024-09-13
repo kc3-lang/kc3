@@ -61,11 +61,11 @@ defmodule DocController do
 
   def show_html = fn (path_html) {
     index = doc_index("./doc/", path_html)
-    menu = EKC3.render_file("app/templates/doc/menu.html.ekc3")
+    menu = DocView.render_menu(index)
     title = "kc3-lang.org"
     html = File.read(path_html)
-    page = EKC3.render_file("app/templates/doc/show.html.ekc3")
-    body = EKC3.render_file("app/templates/layout.html.ekc3")
+    page = DocView.render_show(menu, html)
+    body = LayoutView.render(title, page)
     %HTTP.Response{body: body}
   }
 

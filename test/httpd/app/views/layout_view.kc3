@@ -1,0 +1,7 @@
+defmodule LayoutView do
+
+  def render = fn (title, page) {
+    EKC3.render_file("app/templates/layout.html.ekc3")
+  }
+
+end
