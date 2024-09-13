@@ -46,7 +46,8 @@ s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
   allowed_methods = allowed_methods_tag.data.list;
   buf_save_init(buf, &save);
   if (! buf_read_until_1_into_str(buf, " ", &str)) {
-    err_puts("http_request_buf_parse_method: buf_read_until_1_into_str");
+    if (false)
+      err_puts("http_request_buf_parse_method: buf_read_until_1_into_str");
     goto restore;
   }
   if (! (tmp.data.sym = sym_find(&str))) {

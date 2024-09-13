@@ -870,7 +870,8 @@ sw buf_read_u64 (s_buf *buf, u64 *p)
   return r;
 }
 
-s_str * buf_read_until_1_into_str(s_buf *buf, const char *end, s_str *dest)
+s_str * buf_read_until_1_into_str (s_buf *buf, const char *end,
+                                   s_str *dest)
 {
   character c;
   sw r;
@@ -879,7 +880,8 @@ s_str * buf_read_until_1_into_str(s_buf *buf, const char *end, s_str *dest)
   buf_save_init(buf, &save);
   while (1) {
     if ((r = buf_read_1(buf, end)) < 0) {
-      err_puts("buf_read_until_1_into_str: buf_read_1");
+      if (false)
+        err_puts("buf_read_until_1_into_str: buf_read_1");
       goto restore;
     }
     if (r) {
