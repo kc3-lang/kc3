@@ -896,7 +896,8 @@ s_str * buf_read_until_1_into_str (s_buf *buf, const char *end,
       return dest;
     }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
-      err_puts("buf_read_until_1_into_str: buf_read_character_utf8");
+      if (false)
+        err_puts("buf_read_until_1_into_str: buf_read_character_utf8");
       goto restore;
     }
   }
