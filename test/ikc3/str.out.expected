@@ -46,8 +46,7 @@
 "left"
 "#{%KC3.Operator{}}"
 "%KC3.Operator{sym: :+,\n              symbol_value: ?,\n              operator_precedence: 0,\n              operator_associativity: :left}"
-"#{%KC3.Operator{sym: :-,
-                 symbol_value: ?}}"
+"#{%KC3.Operator{sym: :-}}"
 "%KC3.Operator{sym: :-,\n              symbol_value: ?,\n              operator_precedence: 0,\n              operator_associativity: :left}"
 "#{false}"
 "false"
