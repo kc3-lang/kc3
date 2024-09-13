@@ -53,6 +53,7 @@ s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
     tmp.type = TAG_STR;
     tmp.data.str = str;
     buf_save_clean(buf, &save);
+    tag_clean(&allowed_methods_tag);
     *dest = tmp;
     return dest;
   }
@@ -67,11 +68,13 @@ s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
                  tmp.data.sym->str.ptr.pchar);
   }
   buf_save_clean(buf, &save);
+  tag_clean(&allowed_methods_tag);
   *dest = tmp;
   return dest;
  restore:
   buf_save_restore_rpos(buf, &save);
   buf_save_clean(buf, &save);
+  tag_clean(&allowed_methods_tag);
   return NULL;
 }
 
