@@ -63,8 +63,8 @@ s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
     goto restore;
   }
   if (! b) {
-    tmp.type = TAG_STR;
-    tmp.data.str = tmp.data.sym->str;
+    tag_init_str(&tmp, NULL, tmp.data.sym->str.size,
+                 tmp.data.sym->str.ptr.pchar);
   }
   buf_save_clean(buf, &save);
   *dest = tmp;
