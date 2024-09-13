@@ -2,6 +2,10 @@ defmodule EKC3 do
 
   dlopen(__DIR__ + "ekc3.so")
 
+  def load = cfn Tag "ekc3_load" (Str, Result)
+
+  def render = cfn Str "ekc3_render_to_str" (List, Result)
+
   def render_file = cfn Str "ekc3_render_file_to_str" (Str, Result)
 
 end

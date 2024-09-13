@@ -4,9 +4,7 @@
   <li>
     <a href="#{URL.escape(file.url)}">#{HTML.escape(file.name)}</a>
     #{if (file.type == :dir) do
-        let %{index: file.items} do
-          EKC3.render_file("app/templates/doc/menu.html.ekc3")
-        end
+        DocView.render_menu(file.items)
       else
         ""
       end}

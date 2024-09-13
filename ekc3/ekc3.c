@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <libkc3/kc3.h>
+#include <unistd.h>
 #include "ekc3.h"
 #include "html.h"
 
@@ -398,6 +399,30 @@ s_str * ekc3_inspect_block (const s_block *block, s_str *dest)
   }
   tag_clean(&result);
   return dest;
+}
+
+s_tag * ekc3_load (const s_str *path, s_tag *dest)
+{
+  s_buf buf;
+  s32 fd = -1;
+  s_tag tmp = {0};
+  if (! buf_init_alloc(&buf, BUF_SIZE))
+    return NULL;
+  if (! file_open_r(path, &fd))
+    goto clean;
+  if (! buf_fd_open_r(&buf, fd))
+    goto clean;
+  if (! ekc3_buf_parse(&buf, &tmp.data.list))
+    goto clean;
+  tmp.type = TAG_LIST;
+  buf_clean(&buf);
+  *dest = tmp;
+  return dest;
+ clean:
+  if (fd > 0)
+    close(fd);
+  buf_clean(&buf);
+  return NULL;
 }
 
 sw ekc3_render (s_buf *buf, const p_ekc3 *ekc3)
