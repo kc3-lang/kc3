@@ -186,7 +186,6 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
   if ((r = buf_write_str(buf, method)) < 0)
     return r;
   result += r;
-  str_clean(&str);
   if ((r = buf_write_1(buf, " ")) <= 0)
     return r;
   result += r;
