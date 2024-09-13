@@ -91,7 +91,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   buf_save_init(buf, &save);
   if (! http_request_buf_parse_method(buf, &tmp_req.method))
     goto restore;
-  if (true) {
+  if (false) {
     err_write_1("http_request_buf_parse: method: ");
     err_inspect_tag(&tmp_req.method);
     err_write_1("\n");
@@ -100,14 +100,14 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     err_puts("http_request_buf_parse: invalid URL");
     goto restore;
   }
-  if (true) {
+  if (false) {
     err_write_1("http_request_buf_parse: url: ");
     err_inspect_str(&url);
     err_write_1("\n");
   }
   url_unescape(&url, &tmp_req.url);
   str_clean(&url);
-  if (true) {
+  if (false) {
     err_write_1("http_request_buf_parse: url: ");
     err_inspect_str(&tmp_req.url);
     err_write_1("\n");
@@ -116,7 +116,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     err_puts("http_request_buf_parse: invalid protocol");
     goto restore;
   }
-  if (true) {
+  if (false) {
     err_write_1("http_request_buf_parse: protocol: ");
     err_inspect_str(&tmp_req.protocol);
     err_write_1("\n");

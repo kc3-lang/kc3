@@ -4,11 +4,11 @@ quote client = Socket.Buf.connect("localhost", "57000")
 client = Socket.Buf.connect("localhost", "57000")
 quote server_client = Socket.Buf.accept(server)
 server_client = Socket.Buf.accept(server)
-quote client_req = %HTTP.Request{method: :get,
+quote client_req = %HTTP.Request{method: GET,
                                  url: "/",
                                  protocol: "HTTP/1.1",
                                  headers: []}
-client_req = %HTTP.Request{method: :get,
+client_req = %HTTP.Request{method: GET,
                            url: "/",
                            protocol: "HTTP/1.1",
                            headers: []}
