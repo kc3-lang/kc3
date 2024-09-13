@@ -12,11 +12,11 @@ quote response = %HTTP.Response{body: "Hello, KC3 HTTP test server !"}
 response = %HTTP.Response{body: "Hello, KC3 HTTP test server !"}
 quote HTTP.Response.buf_write(response, server_client.buf_rw.w, true)
 HTTP.Response.buf_write(response, server_client.buf_rw.w, true)
-quote client_req = %HTTP.Request{method: :get,
+quote client_req = %HTTP.Request{method: GET,
                                  url: "/",
                                  protocol: "HTTP/1.1",
                                  headers: []}
-client_req = %HTTP.Request{method: :get,
+client_req = %HTTP.Request{method: GET,
                            url: "/",
                            protocol: "HTTP/1.1",
                            headers: []}
