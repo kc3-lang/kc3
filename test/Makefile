@@ -167,16 +167,16 @@ test_http_debug:
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./http_test
 
 test_httpd:
-	cd httpd && ../../httpd/.libs/kc3_httpd -d
+	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${PWD}/httpd -d
 
 test_httpd_asan:
-	cd httpd && ../../httpd/.libs/kc3_httpd_asan -d
+	${SRC_TOP}/httpd/.libs/kc3_httpd_asan -C ${PWD}/httpd -d
 
 test_httpd_cov:
-	cd httpd && ../../httpd/.libs/kc3_httpd_cov -d
+	${SRC_TOP}/httpd/.libs/kc3_httpd_cov -C ${PWD}/httpd -d
 
 test_httpd_debug:
-	cd httpd && ../../httpd/.libs/kc3_httpd_debug -d
+	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -C ${PWD}/httpd -d
 
 test_ikc3:
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test

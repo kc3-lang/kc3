@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <errno.h>
 #include <signal.h>
 #include <string.h>
 #include <sys/types.h>
@@ -23,23 +24,45 @@ int main (int argc, char **argv)
   bool    daemonize = true;
   s_ident daemonize_ident;
   s_tag   daemonize_value;
+  s32 e;
   char  log_buf[64] = {0};
   s32   log_fd = -1;
   s_str log_str = {0};
   s_call call = {0};
   const s_sym *module = NULL;
   char *p;
-  int r = 1;
+  s32 r = 1;
+  s32 skip = 0;
   time_t t;
   s_tag tmp = {0};
   const struct tm *utc = NULL;
   kc3_init(NULL, &argc, &argv);
-  if (argc > 0 && argv[0] && argv[0][0] == '-') {
+  while (argc > 0 && argv[0] && argv[0][0] == '-') {
+    skip = 1;
     p = argv[0] + 1;
     while (*p) {
       switch (*p) {
       case 'd':
         daemonize = false;
+        break;
+      case 'C':
+        if (argc <= skip || ! argv[skip]) {
+          err_puts("kc3_httpd: -C without an argument");
+          assert(! "kc3_httpd: -C without an argument");
+          kc3_clean(NULL);
+          return 1;
+        }
+        if (chdir(argv[skip])) {
+          e = errno;
+          err_write_1("kc3_httpd: chdir: ");
+          err_write_1(argv[1]);
+          err_write_1(": ");
+          err_puts(strerror(e));
+          assert(! "kc3_httpd: chdir");
+          kc3_clean(NULL);
+          return 1;
+        }
+        skip++;
         break;
       default:
         err_write_1("kc3_httpd: unknown flag: -");
@@ -51,8 +74,8 @@ int main (int argc, char **argv)
       }
       p++;
     }
-    argc--;
-    argv++;
+    argc -= skip;
+    argv += skip;
   }
   if (daemonize) {
     if ((t = time(NULL)) == -1) {
@@ -107,8 +130,10 @@ int main (int argc, char **argv)
     call.arguments = list_new_str_1(NULL, argv[0], NULL);
   else
     call.arguments = NULL;
-  if (! eval_call(&call, &tmp))
+  if (! eval_call(&call, &tmp)) {
+    err_puts("kc3_httpd: eval_call");
     goto clean;
+  }
   switch (tmp.type) {
   case TAG_U8:
     r = tmp.data.u8;
