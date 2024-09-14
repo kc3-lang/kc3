@@ -81,7 +81,8 @@ defmodule DocController do
   }
 
   def route = fn (request) {
-    if (request.method == GET) do
+    if (request.method == GET ||
+        request.method == HEAD) do
       locale = "en"
       path_html = ".#{request.url}/index.#{locale}.html"
       if File.exists?(path_html) do
