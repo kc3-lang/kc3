@@ -47,6 +47,8 @@ defmodule HTTPd do
           "Connection", "Keep-Alive")
         response = HTTP.Response.set_header(response,
           "Keep-Alive", "timeout=5, max=1000")
+        response = HTTP.Response.set_header(response,
+          "Server", "kc3_httpd")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           req.method != HEAD)
         client_addr = if client.addr_str != "127.0.0.1" do
@@ -64,7 +66,7 @@ defmodule HTTPd do
     end
   end
 
-  def timeout = %Time{tv_sec: 5}
+  def timeout = %Time{tv_sec: (Sw) 5}
 
   def acceptor = fn (server_socket, events, acceptor_ev, void) do
     if List.has?(events, :read) do
