@@ -302,7 +302,7 @@ s_tag * http_response_find_header (const s_http_response *res,
       err_write_1("\n");
       return NULL;
     }
-    if (! compare_str_case_insensitive(h->tag.data.tuple.tag->data.str,
+    if (! compare_str_case_insensitive(&h->tag.data.tuple.tag->data.str,
                                        key))
       return h->tag.data.tuple.tag + 1;
     h = list_next(h);
@@ -319,7 +319,8 @@ s_http_response * http_response_init_copy (s_http_response *res,
   tmp.code = src->code;
   if (! str_init_copy(&tmp.message, &src->message))
     goto clean;
-  if (! list_init_copy(&tmp.headers, &src->headers))
+  if (! list_init_copy(&tmp.headers,
+                       (const s_list * const *) &src->headers))
     goto clean;
   if (! tag_init_copy(&tmp.body, &src->body))
     goto clean;
@@ -351,4 +352,7 @@ s_http_response * http_response_set_header (const s_http_response *res,
   }
   *dest = tmp;
   return dest;
+ clean:
+  http_response_clean(&tmp);
+  return NULL;
 }
