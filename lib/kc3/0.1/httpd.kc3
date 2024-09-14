@@ -43,6 +43,10 @@ defmodule HTTPd do
       if req do
         router = route_request(req)
         response = router(req)
+        response = HTTP.Response.set_header(response,
+          "Connection", "Keep-Alive")
+        response = HTTP.Response.set_header(response,
+          "Keep-Alive", "timeout=5, max=1000")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           req.method != HEAD)
         client_addr = if client.addr_str != "127.0.0.1" do
@@ -59,6 +63,8 @@ defmodule HTTPd do
       end
     end
   end
+
+  def timeout = %Time{tv_sec: 5}
 
   def acceptor = fn (server_socket, events, acceptor_ev, void) do
     if List.has?(events, :read) do
@@ -78,7 +84,7 @@ defmodule HTTPd do
     end
   }
 
-  def timeout = %Time{}
+  def time_zero = %Time{}
 
   def server = fn (host, port) {
     daemonize()
@@ -87,7 +93,7 @@ defmodule HTTPd do
     puts("KC3 HTTPd: listening on #{host}:#{port}")
     acceptor_ev = Event.new(event_base, socket.fd, [:read, :persist],
                             acceptor, void)
-    r = Event.add(acceptor_ev, timeout)
+    r = Event.add(acceptor_ev, time_zero)
     r = Event.dispatch(event_base)
     if r do
       e = errno()

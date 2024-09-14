@@ -10,14 +10,16 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "assert.h"
 #include <string.h>
+#include "assert.h"
+#include "character.h"
 #include "compare.h"
 #include "complex.h"
 #include "data.h"
 #include "integer.h"
 #include "list.h"
 #include "ratio.h"
+#include "str.h"
 #include "tag.h"
 
 #define COMPARE_DEF(type)                       \
@@ -488,6 +490,37 @@ s8 compare_str (const s_str *a, const s_str *b)
   if (a->size > b->size)
     return 1;
   return 0;
+}
+
+s8 compare_str_case_insensitive (const s_str *a, const s_str *b)
+{
+  character ac;
+  s_str     as;
+  character bc;
+  s_str     bs;
+  sw r;
+  sw r2;
+  assert(a);
+  assert(b);
+  if (a == b)
+    return 0;
+  as = *a;
+  bs = *b;
+  while (1) {
+    r = str_read_character_utf8(&as, &ac);
+    r2 = str_read_character_utf8(&bs, &bc);
+    if (r <= 0 && r2 <= 0)
+      return 0;
+    if (r <= 0)
+      return -1;
+    if (r2 <= 0)
+      return 1;
+    ac = character_to_lower(ac);
+    bc = character_to_lower(bc);
+    if ((r = compare_character(ac, bc)))
+      return r;
+  }
+  return COMPARE_ERROR;
 }
 
 s8 compare_struct (const s_struct *a, const s_struct *b)

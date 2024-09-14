@@ -55,6 +55,7 @@ COMPARE_PROTOTYPE(s32);
 COMPARE_PROTOTYPE(s64);
 COMPARE_PROTOTYPE(sw);
 s8 compare_str (const s_str *a, const s_str *b);
+s8 compare_str_case_insensitive (const s_str *a, const s_str *b);
 s8 compare_struct (const s_struct *a, const s_struct *b);
 s8 compare_struct_type (const s_struct_type *a, const s_struct_type *b);
 s8 compare_sym (const s_sym *a, const s_sym *b);

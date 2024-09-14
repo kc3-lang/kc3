@@ -20,4 +20,7 @@ defmodule HTTP.Response do
   def buf_write = cfn Sw "http_response_buf_write" (HTTP.Response, Buf,
     Bool)
 
+  def set_header = cfn HTTP.Response "http_response_set_header"
+    (HTTP.Response, Str, Str, Result)
+
 end

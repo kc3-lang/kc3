@@ -277,3 +277,78 @@ sw http_response_buf_write (const s_http_response *response,
   }
   return result;
 }
+
+void http_response_clean (s_http_response *res)
+{
+  str_clean(&res->protocol);
+  str_clean(&res->message);
+  list_delete_all(res->headers);
+  tag_clean(&res->body);
+}
+
+s_tag * http_response_find_header (const s_http_response *res,
+                                   const s_str *key)
+{
+  s_list *h;
+  assert(res);
+  assert(key);
+  h = res->headers;
+  while (h) {
+    if (h->tag.type != TAG_TUPLE ||
+        h->tag.data.tuple.count != 2 ||
+        h->tag.data.tuple.tag->type != TAG_STR) {
+      err_write_1("http_response_find_header: invalid header: ");
+      err_inspect_tag(&h->tag);
+      err_write_1("\n");
+      return NULL;
+    }
+    if (! compare_str_case_insensitive(h->tag.data.tuple.tag->data.str,
+                                       key))
+      return h->tag.data.tuple.tag + 1;
+    h = list_next(h);
+  }
+  return NULL;
+}
+
+s_http_response * http_response_init_copy (s_http_response *res,
+                                           const s_http_response *src)
+{
+  s_http_response tmp = {0};
+  if (! str_init_copy(&tmp.protocol, &src->protocol))
+    return NULL;
+  tmp.code = src->code;
+  if (! str_init_copy(&tmp.message, &src->message))
+    goto clean;
+  if (! list_init_copy(&tmp.headers, &src->headers))
+    goto clean;
+  if (! tag_init_copy(&tmp.body, &src->body))
+    goto clean;
+  *res = tmp;
+  return res;
+ clean:
+  http_response_clean(&tmp);
+  return NULL;
+}
+
+s_http_response * http_response_set_header (const s_http_response *res,
+                                            const s_str *key,
+                                            const s_str *value,
+                                            s_http_response *dest)
+{
+  s_tag *header;
+  s_http_response tmp = {0};
+  if (! http_response_init_copy(&tmp, res))
+    return NULL;
+  if ((header = http_response_find_header(&tmp, key))) {
+    tag_clean(header);
+    tag_init_str_copy(header, value);
+  }
+  else {
+    if (! (tmp.headers = list_new_tuple(2, tmp.headers)))
+      goto clean;
+    tag_init_str_copy(tmp.headers->tag.data.tuple.tag, key);
+    tag_init_str_copy(tmp.headers->tag.data.tuple.tag + 1, value);
+  }
+  *dest = tmp;
+  return dest;
+}
