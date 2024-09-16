@@ -3,6 +3,7 @@ operator_add
 operator_addi
 operator_and
 operator_assign
+operator_assign_2
 operator_band
 operator_bnot
 operator_bor
@@ -35,6 +36,7 @@ operator_add
 operator_addi
 operator_and
 operator_assign
+operator_assign_2
 operator_band
 operator_bnot
 operator_bor
@@ -69,6 +71,7 @@ operator_add
 operator_addi
 operator_and
 operator_assign
+operator_assign_2
 operator_band
 operator_bnot
 operator_bor
