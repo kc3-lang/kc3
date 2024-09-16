@@ -1364,7 +1364,7 @@ sw buf_parse_cow (s_buf *buf, s_cow *cow)
       goto restore;
     result += r;
   }
-  if ((r = buf_read_1(buf, "cow(")) <= 0)
+  if ((r = buf_read_1(buf, "cow ")) <= 0)
     goto restore;
   result += r;
   if ((r = buf_ignore_spaces(buf)) < 0)
@@ -1373,12 +1373,6 @@ sw buf_parse_cow (s_buf *buf, s_cow *cow)
   if (! cow_init(&tmp, type))
     goto restore;
   if ((r = buf_parse_tag(buf, cow_read_write(&tmp))) <= 0)
-    goto restore;
-  result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
-    goto restore;
-  result += r;
-  if ((r = buf_read_1(buf, ")")) <= 0)
     goto restore;
   result += r;
   if (tmp.type != &g_sym_Tag) {
