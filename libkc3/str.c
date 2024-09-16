@@ -546,6 +546,32 @@ s_str * str_init_f (s_str *str, const char *fmt, ...)
 }
 
 DEF_STR_INIT_STRUCT(fn)
+
+s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format)
+{
+  char *buf;
+  uw size;
+  time_t t;
+  s_str tmp;
+  const struct tm *utc = NULL;
+  t = time->tv_sec;
+  if (! (utc = gmtime(&t)))
+    return NULL;
+  size = format->size * 32;
+  if (! (buf = alloc(size)))
+    return NULL;
+  if (! strftime(buf, size - 1, format->ptr.pchar, utc))
+    goto clean;
+  if (! str_init_1_alloc(&tmp, buf))
+    goto clean;
+  free(buf);
+  *str = tmp;
+  return str;
+ clean:
+  free(buf);
+  return NULL;
+}
+
 DEF_STR_INIT_PTR(list, const s_list * const *)
 DEF_STR_INIT_STRUCT(map)
 DEF_STR_INIT_PTR(ptr, const u_ptr_w *)

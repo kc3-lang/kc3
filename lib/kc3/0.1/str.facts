@@ -26,3 +26,6 @@ replace {Str.has_str?, :symbol_value,
 add {Str, :symbol, Str.subst}
 replace {Str.subst, :symbol_value,
          cfn Str "str_init_subst" (Result, Str, Str, Str)}
+add {Str, :symbol, Str.ftime}
+replace {Str.ftime, :symbol_value,
+         cfn Str "str_init_ftime" (Result, Time, Str)}

@@ -1,0 +1,4 @@
+quote %Time{}
+%Time{}
+quote Str.ftime(%Time{}, "%a, %b %d %G %T %Z")
+Str.ftime(%Time{}, "%a, %b %d %G %T %Z")

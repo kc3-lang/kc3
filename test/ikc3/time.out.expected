@@ -1,0 +1,4 @@
+%Time{tv_sec: (Sw) 0, tv_nsec: (Sw) 0}
+%Time{tv_sec: (Sw) 0, tv_nsec: (Sw) 0}
+Str.ftime(%Time{tv_sec: (Sw) 0, tv_nsec: (Sw) 0}, "%a, %b %d %G %T %Z")
+"Thu, Jan 01 1970 00:00:00 GMT"
