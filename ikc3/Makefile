@@ -46,6 +46,9 @@ gcovr:
 gdb_ikc3: debug
 	if [ -f ikc3_debug.core ]; then gdb .libs/ikc3_debug ikc3_debug.core; else gdb .libs/ikc3_debug; fi
 
+gdb_ikc3_asan: asan
+	if [ -f ikc3_debug.core ]; then gdb .libs/ikc3_asan ikc3_asan.core; else gdb .libs/ikc3_asan; fi
+
 install:
 	mkdir -p ${prefix}/bin
 	install -m 755 ikc3 ${prefix}/bin/ikc3

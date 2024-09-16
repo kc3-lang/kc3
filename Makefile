@@ -261,6 +261,12 @@ gdb_ikc3:
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 gdb_ikc3
 
+gdb_ikc3_asan:
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 gdb_ikc3_asan
+
 gdb_test:
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
