@@ -217,8 +217,10 @@ defmodule HTTPd do
     if File.exists?(path) do
       mime = HTTP.mime_type(ext)
       stat = File.stat(path)
+      last_modified = Str.ftime(stat.st_mtim, "%a, %d %b %G %T %Z")
       headers = [{"Content-Type", (Str) mime},
-                 {"Content-Length", (Str) stat.st_size} ]
+                 {"Content-Length", (Str) stat.st_size},
+                 {"Last-Modified", last_modified}]
       body = File.open_r(path)
       %HTTP.Response{body: body, headers: headers}
     else
