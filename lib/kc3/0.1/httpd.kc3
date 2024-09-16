@@ -41,8 +41,12 @@ defmodule HTTPd do
       req = void
       req = HTTP.Request.buf_parse(client.buf_rw.r)
       if req do
-        router = route_request(req)
-        response = router(req)
+        if (type(req.method) == Str) do
+          response = error_405_page(req)
+        else
+          router = route_request(req)
+          response = router(req)
+        end
         response = HTTP.Response.set_header(response,
           "Connection", "Keep-Alive")
         response = HTTP.Response.set_header(response,
@@ -160,6 +164,22 @@ defmodule HTTPd do
 </html>
 "
     %HTTP.Response{code: 404, body: body}
+  }
+
+  def error_405_page = fn (request) {
+    body = "<html>
+  <head>
+    <title>405 Method Not Allowed</title>
+  </head>
+  <body>
+    <h1>405 Method Not Allowed</h1>
+    <p>
+      The requested method #{HTML.escape(inspect(request.method))} is not accepted on this server.
+    </p>
+  </body>
+</html>
+"
+    %HTTP.Response{code: 405, body: body}
   }
 
   def directory_page = fn (request) {

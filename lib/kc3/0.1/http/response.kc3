@@ -10,6 +10,7 @@ defmodule HTTP.Response do
 
   def default_messages = [{(U16) 200, "OK"},
                           {(U16) 404, "Not Found"},
+                          {(U16) 405, "Method Not Allowed"},
                           {(U16) 500, "Internal Server Error"}]
 
   # buf_parse(buf_w, parse_body) => response
