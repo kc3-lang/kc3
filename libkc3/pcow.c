@@ -13,11 +13,28 @@
 #include "assert.h"
 #include "cow.h"
 #include "pcow.h"
+#include "tag.h"
+
+s_tag * pcow_assign (s_cow * const *cow, const s_tag *value,
+                     s_tag *dest)
+{
+  if (cow_ref(*cow) < 0)
+    return NULL;
+  if (! tag_init_copy(cow_read_write(*cow), value))
+    return NULL;
+  if (! cow_freeze(*cow)) {
+    return NULL;
+  }
+  dest->type = TAG_COW;
+  dest->data.cow = *cow;
+  return dest;
+}
 
 void pcow_clean (s_cow **p)
 {
   assert(p);
-  cow_delete(*p);
+  if (! cow_unref(*p))
+    cow_delete(*p);
 }
 
 s_cow ** pcow_init (s_cow **p, const s_sym *type)
@@ -44,15 +61,13 @@ s_cow ** pcow_init_cast (s_cow **p, const s_sym * const *type,
   return p;
 }
 
-s_cow ** pcow_init_copy (s_cow **p,
-                         const s_cow * const *src)
+s_cow ** pcow_init_copy (s_cow **p, s_cow * const *src)
 {
-  s_cow *tmp = NULL;
   assert(p);
   assert(src);
-  tmp = cow_new_copy(*src);
-  if (! tmp)
+  if (! src || ! *src)
     return NULL;
-  *p = tmp;
+  cow_ref(*src);
+  *p = *src;
   return p;
 }

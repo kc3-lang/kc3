@@ -1,0 +1,8 @@
+cow 1
+cow 1
+a = cow 1
+cow 1
+a <- 2
+cow 2
+a
+cow 2

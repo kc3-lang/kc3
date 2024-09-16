@@ -1,0 +1,8 @@
+quote cow 1
+cow 1
+quote a = cow 1
+a = cow 1
+quote a <- 2
+a <- 2
+quote a
+a

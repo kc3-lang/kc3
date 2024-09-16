@@ -245,6 +245,7 @@ struct buf_save {
 struct cow {
   const s_sym *type;
   s_list *list;
+  sw reference_count;
 };
 
 struct fact {

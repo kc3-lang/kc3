@@ -87,7 +87,7 @@ s_tag * tag_assign (const s_tag *tag, const s_tag *value, s_tag *dest)
   case TAG_VAR:
     return var_assign(&tag->data.var, value, dest);
   case TAG_COW:
-    return cow_assign(tag->data.cow, value, dest);
+    return pcow_assign(&tag->data.cow, value, dest);
   default:
     break;
   }
@@ -451,8 +451,7 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     return tag;
   case TAG_COW:
     tag->type = src->type;
-    if (! pcow_init_copy(&tag->data.cow,
-                         (const s_cow * const *) &src->data.cow))
+    if (! pcow_init_copy(&tag->data.cow, &src->data.cow))
       return NULL;
     return tag;
   case TAG_F32:

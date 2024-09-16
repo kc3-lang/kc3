@@ -53,10 +53,11 @@ s_tag *       cow_read_write (s_cow *cow);
 const s_tag * cow_resolve (const s_cow *cow);
 
 /* Operators. */
-s_tag * cow_assign (s_cow *cow, const s_tag *value, s_tag *dest);
 s_cow * cow_freeze (s_cow *cow);
 s_cow * cow_freeze_copy (s_cow *cow, const s_tag *src);
+sw      cow_ref (s_cow *cow);
 s_cow * cow_thaw (s_cow *cow);
 s_cow * cow_thaw_copy (s_cow *cow, const s_tag *src);
+sw      cow_unref (s_cow *cow);
 
 #endif /* LIBKC3_COW_H */
