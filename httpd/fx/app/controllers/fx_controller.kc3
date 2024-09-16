@@ -1,6 +1,5 @@
 defmodule FXController do
 
-  require EKC3
   require File
   require List
   require Str
@@ -62,11 +61,9 @@ defmodule FXController do
   def show_file = fn (path) {
     index = fx_index("./fx/", path)
     menu = FXView.render_menu(index)
-    title = path
-    page = FXView.render_show(menu, html)
+    page = FXView.render_show_file(menu, path)
     body = LayoutView.render(title, page)
     %HTTP.Response{body: body}
-
   }
 
   def route = fn (req) {
@@ -75,8 +72,8 @@ defmodule FXController do
         (req.url == "/fx" ||
          Str.starts_with?(req.url, "/fx/"))) do
       path = "." + req.url
-      show(path)
+      show_file(path)
     end
-  end
+  }
 
 end

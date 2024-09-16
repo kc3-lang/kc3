@@ -1,10 +1,29 @@
 defmodule FXView do
 
+  require HTML
+  require List
+  require Str
+  require URL
+
+  def path_links = fn {
+    (path) {
+      [_dot, _fx | path_list] = Str.split(path, "/")
+      path_links(path_list, "/", [])
+    }
+    ([], _, acc) { List.join(List.reverse(acc), "\n") }
+    ([first | rest], url, acc) {
+      a = """
+<a href="#{URL.escape(url + first)}">#{HTML.escape(first)}</a>
+"""
+      path_links(rest, "#{url}/#{first}/", [a | acc])
+    }
+  }
+
   def menu_template =
     EKC3.load("app/templates/fx/menu.html.ekc3")
 
-  def show_template =
-    EKC3.load("app/templates/fx/show.html.ekc3")
+  def show_file_template =
+    EKC3.load("app/templates/fx/show_file.html.ekc3")
 
   def properties_template =
     EKC3.load("app/templates/fx/properties.html.ekc3")
@@ -13,8 +32,8 @@ defmodule FXView do
     EKC3.render(menu_template)
   }
 
-  def render_show = fn (menu, html) {
-    EKC3.render(show_template)
+  def render_show_file = fn (menu, html) {
+    EKC3.render(show_file_template)
   }
 
 end
