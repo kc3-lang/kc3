@@ -12,4 +12,5 @@ RUN cd ..
 RUN ./configure
 RUN make
 RUN . ./env
+RUN make lib_links
 RUN make test
