@@ -1,0 +1,9 @@
+defmodule FXController do
+
+  def route = fn (req) do
+    if (req.method == GET || req.method == HEAD) do
+      path = "." + req.url, 
+    end
+  end
+
+end

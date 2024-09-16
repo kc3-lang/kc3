@@ -1,0 +1,13 @@
+<ul>
+  <%= raw List.join(List.map(index, fn (file) {
+    """
+  <li>
+    <a href="#{URL.escape(file.url)}">#{HTML.escape(file.name)}</a>
+    #{if (file.type == :dir) do
+        FXView.render_menu(file.items)
+      else
+        ""
+      end}
+  </li>
+"""}), "\n") %>
+</ul>

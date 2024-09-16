@@ -1,0 +1,4 @@
+def HTTPd.routes = []
+
+def_route("/fx/", FXController.route)
+def_route("/", static_controller)

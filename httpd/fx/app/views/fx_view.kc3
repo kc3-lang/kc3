@@ -1,0 +1,20 @@
+defmodule FXView do
+
+  def menu_template =
+    EKC3.load("app/templates/fx/menu.html.ekc3")
+
+  def show_template =
+    EKC3.load("app/templates/fx/show.html.ekc3")
+
+  def properties_template =
+    EKC3.load("app/templates/fx/properties.html.ekc3")
+
+  def render_menu = fn (index) {
+    EKC3.render(menu_template)
+  }
+
+  def render_show = fn (menu, html) {
+    EKC3.render(show_template)
+  }
+
+end

@@ -232,6 +232,18 @@ event_debug:
 	${MAKE} -C kc3s debug
 	${MAKE} -C event debug
 
+fx: httpd
+	httpd/.libs/kc3_httpd -C httpd/fx -d
+
+fx_asan: httpd_asan
+	httpd/.libs/kc3_httpd_asan -C httpd/fx -d
+
+fx_cov: httpd_cov
+	httpd/.libs/kc3_httpd_cov -C httpd/fx -d
+
+fx_debug: httpd_debug
+	httpd/.libs/kc3_httpd_debug -C httpd/fx -d
+
 gcovr:
 	${MAKE} -C libkc3 gcovr
 	${MAKE} -C ikc3 gcovr
@@ -254,6 +266,12 @@ gdb_demo:
 gdb_demo_gl:
 	${MAKE} debug
 	${MAKE} -C libkc3 gdb_demo_gl
+
+gdb_fx: httpd_debug
+	${MAKE} -C httpd gdb_fx
+
+gdb_fx_asan: httpd_asan
+	${MAKE} -C httpd gdb_fx_asan
 
 gdb_ikc3:
 	${MAKE} -C libtommath debug
@@ -410,6 +428,20 @@ httpd:
 	${MAKE} -C socket build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
+
+httpd_debug:
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C ekc3 debug
+	${MAKE} -C event debug
+	${MAKE} -C json debug
+	${MAKE} -C markdown debug
+	${MAKE} -C socket debug
+	${MAKE} -C http debug
+	${MAKE} -C httpd debug
 
 ikc3:
 	${MAKE} -C libtommath build
@@ -1011,7 +1043,13 @@ test_socket_debug:
 	event_asan \
 	event_cov \
 	event_debug \
+	fx \
+	fx_asan \
+	fx_cov \
+	fx_debug \
 	gcovr \
+	gdb_fx \
+	gdb_fx_asan \
 	gdb_test \
 	gdb_test_asan \
 	gdb_test_debug \

@@ -40,8 +40,26 @@ debug: kc3_httpd_debug
 distclean:
 	rm -rf ${DISTCLEANFILES}
 
+fx: kc3_httpd
+	httpd/.libs/kc3_httpd -C httpd/fx -d
+
+fx_asan: kc3_httpd_asan
+	httpd/.libs/kc3_httpd_asan -C httpd/fx -d
+
+fx_cov: kc3_httpd_cov
+	httpd/.libs/kc3_httpd_cov -C httpd/fx -d
+
+fx_debug: kc3_httpd_debug
+	httpd/.libs/kc3_httpd_debug -C httpd/fx -d
+
 gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details kc3_httpd.html
+
+gdb_fx: kc3_httpd_debug
+	cd fx && gdb ../.libs/kc3_httpd_debug
+
+gdb_fx_asan: kc3_httpd_asan
+	cd fx && gdb ../.libs/kc3_httpd_asan
 
 gdb_httpd: debug
 	if [ -f kc3_httpd_debug.core ]; then gdb .libs/kc3_httpd_debug kc3_httpd_debug.core; else gdb .libs/kc3_httpd_debug; fi
