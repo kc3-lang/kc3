@@ -229,7 +229,7 @@ to
 ```
   def reverse = fn {
     (x) { reverse(x, ()) }
-    ([], acc) { [:reversed, acc] }
+    ([], acc) { [:reversed | acc] }
     ([a | b], acc) { reverse(b, [a | acc]) }
   }
 }}
