@@ -23,10 +23,12 @@ s_var * var_init_cast (s_var *tag, const s_sym * const *type,
 s_var * var_init_copy (s_var *tag, const s_var *src);
 
 /* Observers. */
-bool * var_is_unbound (s_var *var, bool *dest);
+bool *  var_is_unbound (const s_var *var, bool *dest);
 
 /* Operators. */
-s_var * var_reset (s_var *var);
-s_var * var_set (s_var *var, const s_tag *value);
+s_tag *       var_assign (const s_var *var, const s_tag *value,
+                          s_tag *dest);
+const s_var * var_reset (const s_var *var);
+const s_var * var_set (const s_var *var, const s_tag *value);
 
 #endif /* LIBKC3_VAR_H */

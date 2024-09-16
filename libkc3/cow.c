@@ -22,6 +22,17 @@
 #include "sym.h"
 #include "tag.h"
 
+s_tag * cow_assign (s_cow *cow, const s_tag *value, s_tag *dest)
+{
+  if (! tag_init_copy(cow_read_write(cow), value))
+    return NULL;
+  if (! cow_freeze(cow))
+    return NULL;
+  dest->type = TAG_COW;
+  dest->data.cow = cow;
+  return dest;
+}
+
 void cow_clean (s_cow *cow)
 {
   assert(cow);

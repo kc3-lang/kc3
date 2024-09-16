@@ -194,14 +194,14 @@ add {KC3, :operator, KC3.operator_assign}
 replace {KC3.operator_assign, :is_a, :operator}
 replace {KC3.operator_assign, :sym, :<-}
 replace {KC3.operator_assign, :arity, 2}
-replace {KC3.operator_assign, :symbol_value, cfn Tag "var_assign" (Var, Tag, Result)}
+replace {KC3.operator_assign, :symbol_value, cfn Tag "tag_assign" (Tag, Tag, Result)}
 replace {KC3.operator_assign, :operator_precedence, 3}
 replace {KC3.operator_assign, :operator_associativity, :left}
 add {KC3, :operator, KC3.operator_assign_2}
 replace {KC3.operator_assign_2, :is_a, :operator}
 replace {KC3.operator_assign_2, :sym, :←}
 replace {KC3.operator_assign_2, :arity, 2}
-replace {KC3.operator_assign_2, :symbol_value, cfn Tag "var_assign" (Var, Tag, Result)}
+replace {KC3.operator_assign_2, :symbol_value, cfn Tag "tag_assign" (Tag, Tag, Result)}
 replace {KC3.operator_assign_2, :operator_precedence, 3}
 replace {KC3.operator_assign_2, :operator_associativity, :left}
 add {KC3, :operator, KC3.operator_equal}

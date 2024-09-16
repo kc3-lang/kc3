@@ -78,6 +78,49 @@ s8 tag_arity (const s_tag *tag)
   return -1;
 }
 
+s_tag * tag_assign (const s_tag *tag, const s_tag *value, s_tag *dest)
+{
+  assert(tag);
+  assert(value);
+  assert(dest);
+  switch (tag->type) {
+  case TAG_VAR:
+    return var_assign(&tag->data.var, value, dest);
+  case TAG_COW:
+    return cow_assign(tag->data.cow, value, dest);
+  default:
+    break;
+  }
+  err_write_1("tag_assign: cannot assign to ");
+  err_write_1(tag_type_to_string(tag->type));
+  err_write_1("\n");
+  assert(! "tag_assign: cannot assign to this tag type");
+  return NULL;
+}
+
+s_tag * tag_brackets (const s_tag *tag, const s_tag *address,
+                      s_tag *dest)
+{
+  assert(tag);
+  assert(address);
+  assert(dest);
+  switch (tag->type) {
+  case TAG_ARRAY:
+    switch (address->type) {
+    case TAG_ARRAY:
+      return array_data_tag(&tag->data.array, &address->data.array,
+                            dest);
+    default:
+      break;
+    }
+  default:
+    break;
+  }
+  err_puts("tag_brackets: invalid arguments");
+  assert(! "tag_brackets: invalid arguments");
+  return NULL;
+}
+
 s_tag * tag_cast_integer_to_s8 (s_tag *tag)
 {
   s8 i;
@@ -198,29 +241,6 @@ void tag_clean (s_tag *tag)
   case TAG_VOID:
     break;
   }
-}
-
-s_tag * tag_brackets (const s_tag *tag, const s_tag *address,
-                      s_tag *dest)
-{
-  assert(tag);
-  assert(address);
-  assert(dest);
-  switch (tag->type) {
-  case TAG_ARRAY:
-    switch (address->type) {
-    case TAG_ARRAY:
-      return array_data_tag(&tag->data.array, &address->data.array,
-                            dest);
-    default:
-      break;
-    }
-  default:
-    break;
-  }
-  err_puts("tag_brackets: invalid arguments");
-  assert(! "tag_brackets: invalid arguments");
-  return NULL;
 }
 
 void tag_delete (s_tag *tag)

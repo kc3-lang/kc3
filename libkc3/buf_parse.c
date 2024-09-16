@@ -1364,10 +1364,10 @@ sw buf_parse_cow (s_buf *buf, s_cow *cow)
       goto restore;
     result += r;
   }
-  if ((r = buf_read_1(buf, "cow ")) <= 0)
+  if ((r = buf_read_1(buf, "cow")) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_ignore_spaces(buf)) < 0)
+  if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
   if (! cow_init(&tmp, type))
@@ -4112,6 +4112,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
   switch (c) {
   case '(':
     if ((r = buf_parse_tag_var(buf, dest)) ||
+        (r = buf_parse_tag_cow(buf, dest)) ||
         (r = buf_parse_tag_number(buf, dest)) ||
         (r = buf_parse_tag_array(buf, dest)) ||
         (r = buf_parse_tag_cast(buf, dest)) ||

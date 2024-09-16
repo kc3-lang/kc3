@@ -19,7 +19,7 @@
 #include "tag.h"
 #include "var.h"
 
-s_tag * var_assign (s_var *var, const s_tag *value, s_tag *dest)
+s_tag * var_assign (const s_var *var, const s_tag *value, s_tag *dest)
 {
   assert(var);
   assert(value);
@@ -119,7 +119,7 @@ s_var * var_init_copy (s_var *var, const s_var *src)
   return var;
 }
 
-bool * var_is_unbound (s_var *var, bool *dest)
+bool * var_is_unbound (const s_var *var, bool *dest)
 {
   assert(var);
   assert(dest);
@@ -127,7 +127,7 @@ bool * var_is_unbound (s_var *var, bool *dest)
   return dest;
 }
 
-s_var * var_reset (s_var *var)
+const s_var * var_reset (const s_var *var)
 {
   s_tag tmp = {0};
   assert(var);
@@ -139,7 +139,7 @@ s_var * var_reset (s_var *var)
   return var;
 }
 
-s_var * var_set (s_var *var, const s_tag *value)
+const s_var * var_set (const s_var *var, const s_tag *value)
 {
   const s_sym *value_type;
   assert(var);

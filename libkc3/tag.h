@@ -81,12 +81,14 @@ bool    tag_to_pointer (s_tag *tag, const s_sym *type, void **dest);
 /* KC3 operators. */
 s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest);
 bool *  tag_and (const s_tag *a, const s_tag *b, bool *dest);
+s_tag * tag_assign (const s_tag *tag, const s_tag *value, s_tag *dest);
 s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *dest);
 s_tag * tag_bnot (const s_tag *tag, s_tag *dest);
 s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *dest);
 s_tag * tag_brackets (const s_tag *tag, const s_tag *address,
                       s_tag *dest);
 s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_cow (const s_tag *value, s_tag *dest);
 s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest);
 bool *  tag_lt (const s_tag *a, const s_tag *b, bool *dest);
 bool *  tag_lte (const s_tag *a, const s_tag *b, bool *dest);

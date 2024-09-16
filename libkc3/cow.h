@@ -31,7 +31,7 @@
 /* Stack-allocation compatible functions. Call cow_clean after use. */
 void    cow_clean (s_cow *cow);
 s_cow * cow_init (s_cow *cow, const s_sym *type);
-s_cow * cow_init_1 (s_cow *cow, const char *utf8);
+/* s_cow * cow_init_1 (s_cow *cow, const char *utf8); */
 s_cow * cow_init_cast (s_cow *cow, const s_sym * const *type,
                        const s_tag *tag);
 s_cow * cow_init_copy (s_cow *cow, const s_cow *src);
@@ -41,7 +41,7 @@ s_cow * cow_init_tag_copy (s_cow *cow, const s_sym *type,
 /* Heap-allocation functions. Call cow_delete after use. */
 void    cow_delete (s_cow *cow);
 s_cow * cow_new (const s_sym *type);
-s_cow * cow_new_1 (const char *utf8);
+/* s_cow * cow_new_1 (const char *utf8); */
 s_cow * cow_new_cast (const s_sym * const *type, const s_tag *tag);
 s_cow * cow_new_copy (const s_cow *src);
 s_cow * cow_new_tag_copy (const s_sym *type, const s_tag *src);
@@ -53,6 +53,7 @@ s_tag *       cow_read_write (s_cow *cow);
 const s_tag * cow_resolve (const s_cow *cow);
 
 /* Operators. */
+s_tag * cow_assign (s_cow *cow, const s_tag *value, s_tag *dest);
 s_cow * cow_freeze (s_cow *cow);
 s_cow * cow_freeze_copy (s_cow *cow, const s_tag *src);
 s_cow * cow_thaw (s_cow *cow);
