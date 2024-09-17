@@ -1,22 +1,10 @@
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand" href="/">
-      <div class="doc-logo">
-        <i class="far fa-folder-open fa-fw"></i> fx
-      </div>
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="navbar-link" href="https://kc3-lang.org/release/v0.1.13/">v0.1.13</a>
-        </li>
-        <li class="nav-item">
-          <a class="navbar-link" href="https://kc3-lang.org/doc/3_FX">Documentation</a>
-        </li>
-      </ul>
-    </div>
+    <h1>
+      <a class="navbar-brand" href="/fx">
+        <i class="far fa-folder-open fa-fw"></i>
+      </a>
+      <%= raw LayoutView.path_links(path) %>
+    </h1>
   </div>
 </nav>

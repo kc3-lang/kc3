@@ -2,6 +2,8 @@ defmodule File do
 
   def close = cfn Void "file_close" (Tag)
 
+  def dirname = cfn Str "file_dirname" (Str, Result)
+
   def exists? = cfn Bool "file_exists" (Str, Result)
 
   def ext = cfn Str "file_ext" (Str, Result)

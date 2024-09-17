@@ -8,11 +8,11 @@ defmodule FXController do
     (path, target) { fx_index(path, target, path, []) }
     ([], target, dir, acc) { List.reverse(acc) }
     ([file | rest], target, dir, acc) {
-      if (! Str.starts_with?(dir + file, target)) do
+      path = dir + file
+      if (Str.starts_with?(file, ".") ||
+          File.is_directory?(path)) do
         fx_index(rest, target, dir, acc)
       else
-        path = dir + file
-        name = Str.subst(file, "_", " ")
         url = Str.slice(path, 1, -1)
         if File.is_directory?(path) do
           #items = fx_index(List.sort(File.list(path)), target,
@@ -20,29 +20,13 @@ defmodule FXController do
           items = []
           item = %{type: :dir,
                    url: url,
-                   name: name,
+                   name: file,
                    items: items}
           fx_index(rest, target, dir, [item | acc])
         else
-          end_ = Str.rindex_character(name, '.')
-          if (end_ > 0) do
-            name = Str.slice(name, 0, end_)
-            end_ = Str.rindex_character(name, '.')
-            if (end_ > 0) do
-              name = Str.slice(name, 0, end_)
-            end
-          end
-          end_ = Str.rindex_character(url, '.')
-          if (end_ > 0) do
-            url = Str.slice(url, 0, end_)
-            end_ = Str.rindex_character(url, '.')
-            if (end_ > 0) do
-              url = Str.slice(url, 0, end_)
-            end
-          end
           item = %{type: :file,
                    url: url,
-                   name: name,
+                   name: file,
                    items: []}
           fx_index(rest, target, dir, [item | acc])
         end
@@ -55,12 +39,64 @@ defmodule FXController do
     }
   }
 
+  def get_menu_index = fn {
+    (path, target) { get_menu_index(path, target, path, []) }
+    ([], target, dir, acc) { List.reverse(acc) }
+    ([file | rest], target, dir, acc) {
+      path = dir + file
+      if (Str.starts_with?(file, ".") ||
+          ! File.is_directory?(path)) do
+        get_menu_index(rest, target, dir, acc)
+      else
+        url = Str.slice(path, 1, -1)
+        if File.is_directory?(path) do
+          items = []
+          item = %{type: :dir,
+                   url: url,
+                   name: file,
+                   items: items}
+          get_menu_index(rest, target, dir, [item | acc])
+        else
+          item = %{type: :file,
+                   url: url,
+                   name: file,
+                   items: []}
+          get_menu_index(rest, target, dir, [item | acc])
+        end
+      end
+    }
+    (path, target, dir, acc) {
+      if (type(path) == Str) do
+        get_menu_index(List.sort(File.list(path)), target, dir, acc)
+      end
+    }
+  }
+
+  def get_properties = fn (path) {
+    Facts.collect_with_tags(Facts.env_facts(), path, ?, ?,
+      fn (fact) { {fact.predicate, fact.object} })
+  }
+
   def show_file = fn (path) {
-    index = fx_index("./fx/", path)
-    menu = FXView.render_menu(index)
-    page = FXView.render_show_file(menu, path)
-    body = LayoutView.render(path, page)
-    %HTTP.Response{body: body}
+    if (File.exists?(path)) do
+      if (File.is_directory?(path)) do
+        slash = if Str.ends_with?(path, "/") do "" else "/" end
+        path = path + slash
+        menu_index = get_menu_index(path, path)
+        menu = FXView.render_index(menu_index)
+        index = fx_index(path, path)
+        file = FXView.render_index(index)
+      else
+        menu_path = File.dirname(path)
+        menu_index = get_menu_index(menu_path, path)
+        menu = FXView.render_index(menu_index)
+        file = FXView.render_show_file_preview(path)
+      end
+      properties = get_properties(path)
+      page = FXView.render_show_file(path, menu, file, properties)
+      body = LayoutView.render(path, page)
+      %HTTP.Response{body: body}
+    end
   }
 
   def route = fn (req) {

@@ -1,12 +1,29 @@
 defmodule LayoutView do
 
+  def path_links = fn {
+    (path) {
+      [_dot | path_list] = Str.split(path, "/")
+      path_links(path_list, "/", [])
+    }
+    ([], _, acc) { List.join(List.reverse(acc), "/") }
+    ([first | rest], url, acc) {
+      a = """
+<a href="#{URL.escape(url + first)}">#{HTML.escape(first)}</a>
+"""
+      path_links(rest, "#{url}#{first}/", [a | acc])
+    }
+  }
+
   def template = EKC3.load("app/templates/layout.html.ekc3")
 
   def template_nav = EKC3.load("app/templates/nav.html.ekc3")
 
-  def nav = EKC3.render(template_nav)
+  def template_footer = EKC3.load("app/templates/footer.html.ekc3")
 
-  def render = fn (title, page) {
+  def footer = EKC3.render(template_footer)
+
+  def render = fn (path, page) {
+    nav = EKC3.render(template_nav)
     EKC3.render(template)
   }
 
