@@ -14,8 +14,6 @@ defmodule HTTPd do
   require Str
   require URL
 
-  def root_dir = "./static"
-
   def load_directory = fn (dir) {
     if File.exists?(dir) && File.is_directory?(dir) do
       files = File.list(dir)
@@ -183,52 +181,6 @@ defmodule HTTPd do
     %HTTP.Response{code: 405, body: body}
   }
 
-  def directory_page = fn (request) {
-    files = List.sort(File.list(root_dir + request.url))
-    file_li = HTTPd.fn (file) {
-      slash = if Str.ends_with?(request.url, "/") do "" else "/" end
-      real_path = "#{root_dir}#{request.url}#{slash}#{file}"
-      dir? = File.is_directory?(real_path)
-      dir_slash = if dir? do "/" else "" end
-      path = "#{request.url}#{slash}#{file}#{dir_slash}"
-      mode = if dir? do "dr-xr-xr-x" else "-r--r--r--" end
-      "<li>#{mode} <a href=\"#{URL.escape(path)}\">#{HTML.escape(file)}</a>#{dir_slash}</li>\n"
-    }
-    body = """<html>
-  <head>
-    <title>Index of #{request.url}</title>
-    <style type="text/css">
-      ul { font-family: monospace; }
-    </style>
-  </head>
-  <body>
-    <h1>Index of #{request.url}</h1>
-    <ul>
-      #{str(List.map(files, file_li))}
-    </ul>
-  </body>
-</html>
-"""
-    %HTTP.Response{body: body}
-  }
-
-  def show_page = fn (request) {
-    ext = File.ext(request.url)
-    path = root_dir + request.url
-    if File.exists?(path) do
-      mime = HTTP.mime_type(ext)
-      stat = File.stat(path)
-      last_modified = Str.ftime(stat.st_mtim, "%a, %d %b %G %T %Z")
-      headers = [{"Content-Type", (Str) mime},
-                 {"Content-Length", (Str) stat.st_size},
-                 {"Last-Modified", last_modified}]
-      body = File.open_r(path)
-      %HTTP.Response{body: body, headers: headers}
-    else
-      error_404_page(request)
-    end
-  }
-  
   def routes = []
 
   def def_route = fn (path, controller) {
@@ -254,25 +206,72 @@ defmodule HTTPd do
     }
   }
 
-  def static_controller = fn (request) {
-    render = if (! Str.starts_with?(request.url, "/") ||
-                 Str.has_str?(request.url, "/..")) do
-               error_404_page
-             else
-               path = root_dir + request.url
-               if ! File.exists?(path) do
-                 error_404_page
-               else
-                 if File.is_directory?(path) do
-                   directory_page
-                 else
-                   show_page
-                 end
-               end
-             end
-    render(request)
+  def static_controller = fn (root_dir) {
+    directory_page = fn (request) {
+      files = List.sort(File.list(root_dir + request.url))
+      file_li = HTTPd.fn (file) {
+        slash = if Str.ends_with?(request.url, "/") do "" else "/" end
+        real_path = "#{root_dir}#{request.url}#{slash}#{file}"
+        dir? = File.is_directory?(real_path)
+        dir_slash = if dir? do "/" else "" end
+        path = "#{request.url}#{slash}#{file}#{dir_slash}"
+        mode = if dir? do "dr-xr-xr-x" else "-r--r--r--" end
+        "<li>#{mode} <a href=\"#{URL.escape(path)}\">#{HTML.escape(file)}</a>#{dir_slash}</li>\n"
+      }
+      body = """<html>
+  <head>
+    <title>Index of #{request.url}</title>
+    <style type="text/css">
+      ul { font-family: monospace; }
+    </style>
+  </head>
+  <body>
+    <h1>Index of #{request.url}</h1>
+    <ul>
+      #{str(List.map(files, file_li))}
+    </ul>
+  </body>
+</html>
+"""
+      %HTTP.Response{body: body}
+    }
+    show_page = fn (request) {
+      ext = File.ext(request.url)
+      path = root_dir + request.url
+      if File.exists?(path) do
+        mime = HTTP.mime_type(ext)
+        stat = File.stat(path)
+        last_modified = Str.ftime(stat.st_mtim, "%a, %d %b %G %T %Z")
+        headers = [{"Content-Type", (Str) mime},
+                   {"Content-Length", (Str) stat.st_size},
+                   {"Last-Modified", last_modified}]
+        body = File.open_r(path)
+        %HTTP.Response{body: body, headers: headers}
+      else
+        error_404_page(request)
+      end
+    }
+    fn (request) {
+      render = if (! Str.starts_with?(request.url, "/") ||
+                   Str.has_str?(request.url, "/../") ||
+                   Str.ends_with?(request.url, "/..")) do
+        error_404_page
+      else
+        path = root_dir + request.url
+        if ! File.exists?(path) do
+          error_404_page
+        else
+          if File.is_directory?(path) do
+            directory_page
+          else
+            show_page
+          end
+        end
+      end
+      render(request)
+    }
   }
 
-  def_route("/", static_controller)
+  def_route("/", static_controller("./static"))
 
 end

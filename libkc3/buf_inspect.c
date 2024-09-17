@@ -271,6 +271,46 @@ sw buf_inspect_array_size (s_pretty *pretty, const s_array *array)
   return r;
 }
 
+sw buf_inspect_binding (s_buf *buf, const s_binding *binding)
+{
+  const s_binding *b;
+  s_pretty_save pretty_save;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  pretty_save_init(&pretty_save, &buf->pretty);
+  if ((r = buf_write_1(buf, "[")) < 0)
+    goto clean;
+  result += r;
+  pretty_indent_from_column(&buf->pretty, 0);
+  b = binding;
+  while (b) {
+    if ((r = buf_inspect_ident_sym(buf, b->name)) < 0)
+      goto clean;
+    result += r;
+    if ((r = buf_write_1(buf, ": ")) < 0)
+      goto clean;
+    result += r;
+    if ((r = buf_inspect_tag(buf, &b->value)) < 0)
+      goto clean;
+    result += r;
+    b = b->next;
+    if (b) {
+      if ((r = buf_write_1(buf, ",\n")) < 0)
+        goto clean;
+      result += r;
+    }
+  }
+  if ((r = buf_write_1(buf, "]")) < 0)
+    goto clean;
+  result += r;
+  pretty_save_clean(&pretty_save, &buf->pretty);
+  return result;
+ clean:
+  pretty_save_clean(&pretty_save, &buf->pretty);
+  return r;
+}
+
 sw buf_inspect_block (s_buf *buf, const s_block *block)
 {
   s_pretty_save pretty_save;
@@ -2086,6 +2126,40 @@ sw buf_inspect_fn_size (s_pretty *pretty, const s_fn *fn)
       result += r;
   }
   return result;
+}
+
+sw buf_inspect_frame (s_buf *buf, const s_frame *frame)
+{
+  const s_frame *f;
+  s_pretty_save pretty_save;
+  sw r;
+  sw result = 0;
+  assert(buf);
+  pretty_save_init(&pretty_save, &buf->pretty);
+  if ((r = buf_write_1(buf, "[")) < 0)
+    goto clean;
+  result += r;
+  pretty_indent_from_column(&buf->pretty, 0);
+  f = frame;
+  while (f) {
+    if ((r = buf_inspect_binding(buf, f->bindings)) < 0)
+      goto clean;
+    result += r;
+    f = f->next;
+    if (f) {
+      if ((r = buf_write_1(buf, ",\n")) < 0)
+        goto clean;
+      result += r;
+    }
+  }
+  if ((r = buf_write_1(buf, "]")) < 0)
+    goto clean;
+  result += r;
+  pretty_save_clean(&pretty_save, &buf->pretty);
+  return result;
+ clean:
+  pretty_save_clean(&pretty_save, &buf->pretty);
+  return r;
 }
 
 sw buf_inspect_ident (s_buf *buf, const s_ident *ident)

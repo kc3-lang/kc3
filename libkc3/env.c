@@ -659,6 +659,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   s_list *args = NULL;
   const s_list *args_final = NULL;
   s_fn_clause *clause;
+  s_frame *env_frame;
   s_frame frame;
   const s_sym *module;
   s_list *search_modules;
@@ -675,6 +676,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     module = &g_sym_KC3;
   if (! env_module_search_modules(env, &module, &env->search_modules))
     return false;
+  env_frame = env->frame;
   clause = fn->clauses;
   if (arguments) {
     if (fn->macro || fn->special_operator)
@@ -688,7 +690,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       args_final = args;
     }
     while (clause) {
-      if (! frame_init(&frame, env->frame)) {
+      if (! frame_init(&frame, fn->frame)) {
         list_delete_all(env->search_modules);
         env->search_modules = search_modules;
         return false;
@@ -697,7 +699,8 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       if (env_eval_equal_list(env, fn->macro || fn->special_operator,
                               clause->pattern, args_final, &tmp))
         break;
-      env->frame = frame_clean(&frame);
+      env->frame = env_frame;
+      frame_clean(&frame);
       clause = clause->next_clause;
     }
     if (! clause) {
@@ -726,14 +729,16 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     list_delete_all(tmp);
     list_delete_all(env->search_modules);
     env->search_modules = search_modules;
-    env->frame = frame_clean(&frame);
+    env->frame = env_frame;
+    frame_clean(&frame);
     return false;
   }
   list_delete_all(args);
   list_delete_all(tmp);
   list_delete_all(env->search_modules);
   env->search_modules = search_modules;
-  env->frame = frame_clean(&frame);
+  env->frame = env_frame;
+  frame_clean(&frame);
   if (fn->macro) {
     if (! env_eval_tag(env, &tag, dest)) {
       tag_clean(&tag);
@@ -1276,6 +1281,8 @@ bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
     return false;
   if (! tmp.data.fn.module)
     tmp.data.fn.module = env->current_defmodule;
+  if (! (tmp.data.fn.frame = frame_new_copy(env->frame)))
+    return false;
   *dest = tmp;
   return true;
 }
@@ -1297,6 +1304,11 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
     err_write_1("env_eval_ident: unbound ident: ");
     err_inspect_ident(ident);
     err_write_1("\n");
+    if (true) {
+      err_write_1("frame: ");
+      err_inspect_frame(env->frame);
+      err_write_1("\n");
+    }
     assert(! "env_eval_ident: unbound ident");
     return false;
   }

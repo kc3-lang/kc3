@@ -25,6 +25,7 @@ s_binding * binding_init (s_binding *binding, const s_sym *name,
 s_binding * binding_delete (s_binding *binding);
 void        binding_delete_all (s_binding *binding);
 s_binding * binding_new (const s_sym *name, s_binding *next);
+s_binding * binding_new_copy (const s_binding *src);
 
 /* Observers. */
 const s_tag * binding_get (const s_binding *binding, const s_sym *name);

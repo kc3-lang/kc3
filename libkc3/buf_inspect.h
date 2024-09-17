@@ -130,6 +130,7 @@ sw buf_inspect_fn_pattern (s_buf *buf, const s_list *pattern);
 sw buf_inspect_fn_pattern_size (s_pretty *pretty,
                                 const s_list *pattern);
 sw buf_inspect_fn_size (s_pretty *pretty, const s_fn *fn);
+sw buf_inspect_frame (s_buf *buf, const s_frame *frame);
 sw buf_inspect_ident (s_buf *buf, const s_ident *ident);
 sw buf_inspect_ident_size (s_pretty *pretty, const s_ident *ident);
 sw buf_inspect_ident_sym (s_buf *buf, const s_sym *sym);

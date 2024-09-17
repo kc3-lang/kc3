@@ -1,4 +1,5 @@
 def HTTPd.routes = []
 
 def_route("/fx/", FXController.route)
-def_route("/", static_controller)
+def_route("/file/", static_controller("./fx/"))
+def_route("/", static_controller("./static/"))

@@ -41,3 +41,9 @@ do
   end
   f(2)
 end
+quote f = fn (x) { fn (y) { x * y } }
+f = fn (x) { fn (y) { x * y } }
+quote g = f(2)
+g = f(2)
+quote g(3)
+g(3)

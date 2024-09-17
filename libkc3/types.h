@@ -406,6 +406,7 @@ struct fn {
   bool macro;
   bool special_operator;
   const s_sym *module;
+  s_frame *frame;
 };
 
 struct ident {

@@ -95,3 +95,25 @@ s_binding * binding_new (const s_sym *name, s_binding *next)
   }
   return binding;
 }
+
+s_binding * binding_new_copy (const s_binding *src)
+{
+  s_binding **b;
+  s_binding  *binding;
+  const s_binding *s;
+  binding = NULL;
+  b = &binding;
+  s = src;
+  while (s) {
+    if (! (*b = binding_new(s->name, NULL)))
+      goto clean;
+    if (! tag_init_copy(&(*b)->value, &s->value))
+      goto clean;
+    b = &(*b)->next;
+    s = s->next;
+  }
+  return binding;
+ clean:
+  binding_delete_all(binding);
+  return NULL;
+}

@@ -36,3 +36,9 @@ do
 end
 Hello, world !
 4
+f = fn (x) { fn (y) { x * y } }
+fn (x) { fn (y) { x * y } }
+g = f(2)
+fn (y) { x * y }
+g(3)
+6

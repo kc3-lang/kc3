@@ -170,6 +170,28 @@ s_frame * frame_new (s_frame *next)
   return frame;
 }
 
+s_frame * frame_new_copy (const s_frame *src)
+{
+  s_frame **f;
+  s_frame  *frame;
+  const s_frame *s;
+  frame = NULL;
+  f = &frame;
+  s = src;
+  while (s) {
+    *f = frame_new(NULL);
+    if (s->bindings &&
+        ! ((*f)->bindings = binding_new_copy(s->bindings)))
+      goto clean;
+    f = &(*f)->next;
+    s = s->next;
+  }
+  return frame;
+ clean:
+  frame_delete_all(frame);
+  return NULL;
+}
+
 s_frame * frame_replace (s_frame *frame, const s_sym *sym,
                          s_tag *value)
 {

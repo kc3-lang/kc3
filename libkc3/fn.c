@@ -19,6 +19,7 @@
 #include "buf_parse.h"
 #include "fn.h"
 #include "fn_clause.h"
+#include "frame.h"
 #include "list.h"
 #include "sym.h"
 #include "tag_type.h"
@@ -41,6 +42,7 @@ void fn_clean (s_fn *fn)
 {
   assert(fn);
   fn_clause_delete_all(fn->clauses);
+  frame_delete_all(fn->frame);
 }
 
 void fn_delete (s_fn *fn)
@@ -115,6 +117,11 @@ s_fn * fn_init_copy (s_fn *fn, const s_fn *src)
   tmp.clauses = fn_clause_new_copy(src->clauses);
   tmp.macro = src->macro;
   tmp.special_operator = src->special_operator;
+  if (src->frame &&
+      ! (tmp.frame = frame_new_copy(src->frame))) {
+    fn_clean(&tmp);
+    return NULL;
+  }
   *fn = tmp;
   return fn;
 }
