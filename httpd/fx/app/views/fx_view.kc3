@@ -7,15 +7,15 @@ defmodule FXView do
 
   def path_links = fn {
     (path) {
-      [_dot, _fx | path_list] = Str.split(path, "/")
+      [_dot | path_list] = Str.split(path, "/")
       path_links(path_list, "/", [])
     }
-    ([], _, acc) { List.join(List.reverse(acc), "\n") }
+    ([], _, acc) { "/" + List.join(List.reverse(acc), "/") }
     ([first | rest], url, acc) {
       a = """
 <a href="#{URL.escape(url + first)}">#{HTML.escape(first)}</a>
 """
-      path_links(rest, "#{url}/#{first}/", [a | acc])
+      path_links(rest, "#{url}#{first}/", [a | acc])
     }
   }
 

@@ -5,27 +5,24 @@ defmodule FXController do
   require Str
 
   def fx_index = fn {
-    (path, path_md) { fx_index(path, path_md, path, []) }
-    ([], path_md, dir, acc) { List.reverse(acc) }
-    ([file | rest], path_md, dir, acc) {
-      if (Str.starts_with?(file, ".") ||
-          Str.starts_with?(file, "index.") ||
-          (Str.rindex_character(file, '.') > 0 &&
-           ! Str.ends_with?(file, ".md") &&
-           ! Str.ends_with?(file, ".html"))) do
-        fx_index(rest, path_md, dir, acc)
+    (path, target) { fx_index(path, target, path, []) }
+    ([], target, dir, acc) { List.reverse(acc) }
+    ([file | rest], target, dir, acc) {
+      if (! Str.starts_with?(dir + file, target)) do
+        fx_index(rest, target, dir, acc)
       else
         path = dir + file
         name = Str.subst(file, "_", " ")
         url = Str.slice(path, 1, -1)
         if File.is_directory?(path) do
-          items = fx_index(List.sort(File.list(path)), path_md,
-            path + "/", [])
+          #items = fx_index(List.sort(File.list(path)), target,
+          #  path + "/", [])
+          items = []
           item = %{type: :dir,
                    url: url,
                    name: name,
                    items: items}
-          fx_index(rest, path_md, dir, [item | acc])
+          fx_index(rest, target, dir, [item | acc])
         else
           end_ = Str.rindex_character(name, '.')
           if (end_ > 0) do
@@ -47,13 +44,13 @@ defmodule FXController do
                    url: url,
                    name: name,
                    items: []}
-          fx_index(rest, path_md, dir, [item | acc])
+          fx_index(rest, target, dir, [item | acc])
         end
       end
     }
-    (path, path_md, dir, acc) {
+    (path, target, dir, acc) {
       if (type(path) == Str) do
-        fx_index(List.sort(File.list(path)), path_md, dir, acc)
+        fx_index(List.sort(File.list(path)), target, dir, acc)
       end
     }
   }
@@ -62,7 +59,7 @@ defmodule FXController do
     index = fx_index("./fx/", path)
     menu = FXView.render_menu(index)
     page = FXView.render_show_file(menu, path)
-    body = LayoutView.render(title, page)
+    body = LayoutView.render(path, page)
     %HTTP.Response{body: body}
   }
 

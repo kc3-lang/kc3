@@ -2623,6 +2623,8 @@ bool env_load (s_env *env, const s_str *path)
     err_write_1("env_load: __DIR__ = ");
     err_inspect_tag(file_dir);
     err_write_1("\n");
+  }
+  if (false) {
     err_write_1("env_load: __FILE__ = ");
     err_inspect_tag(file_path);
     err_write_1("\n");

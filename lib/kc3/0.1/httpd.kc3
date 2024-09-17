@@ -20,7 +20,8 @@ defmodule HTTPd do
     if File.exists?(dir) && File.is_directory?(dir) do
       files = File.list(dir)
       List.each(files, fn (file) {
-        if (! Str.starts_with?(file, ".")) do
+        if (! Str.starts_with?(file, ".") &&
+            ! Str.ends_with?(file, "~")) do
           load(dir + file)
         end
       })

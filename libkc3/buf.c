@@ -873,38 +873,9 @@ sw buf_read_u64 (s_buf *buf, u64 *p)
 s_str * buf_read_until_1_into_str (s_buf *buf, const char *end,
                                    s_str *dest)
 {
-  character c;
-  sw r;
-  s_buf_save save;
-  s_buf tmp;
-  buf_save_init(buf, &save);
-  while (1) {
-    if ((r = buf_read_1(buf, end)) < 0) {
-      if (false)
-        err_puts("buf_read_until_1_into_str: buf_read_1");
-      goto restore;
-    }
-    if (r) {
-      buf_init(&tmp, false, buf->size, buf->ptr.pchar);
-      tmp.rpos = save.rpos;
-      tmp.wpos = buf->rpos - strlen(end);
-      if (! buf_read_to_str(&tmp, dest)) {
-        err_puts("buf_read_until_1_into_str: buf_read_to_str");
-        goto restore;
-      }
-      buf_save_clean(buf, &save);
-      return dest;
-    }
-    if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
-      if (false)
-        err_puts("buf_read_until_1_into_str: buf_read_character_utf8");
-      goto restore;
-    }
-  }
- restore:
-  buf_save_restore_rpos(buf, &save);
-  buf_save_clean(buf, &save);
-  return NULL;
+  s_str str;
+  str_init_1(&str, NULL, end);
+  return buf_read_until_str_into_str(buf, &str, dest);
 }
 
 s_str * buf_read_until_character_into_str (s_buf *buf, character end, s_str *dest)
@@ -951,7 +922,8 @@ sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
   return r;
 }
 
-s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end, s_str *dest)
+s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,
+                                     s_str *dest)
 {
   character c;
   sw r;
@@ -959,21 +931,27 @@ s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end, s_str *dest)
   s_buf tmp;
   buf_save_init(buf, &save);
   while (1) {
-    if ((r = buf_read_str(buf, end)) < 0)
+    if ((r = buf_read_str(buf, end)) < 0) {
+      if (false)
+        err_puts("buf_read_until_1_into_str: buf_read_1");
       goto restore;
+    }
     if (r) {
       buf_init(&tmp, false, buf->size, buf->ptr.pchar);
       tmp.rpos = save.rpos;
-      tmp.wpos = buf->rpos;
+      tmp.wpos = buf->rpos - end->size;
       if (! buf_read_to_str(&tmp, dest)) {
-        r = -1;
+        err_puts("buf_read_until_1_into_str: buf_read_to_str");
         goto restore;
       }
       buf_save_clean(buf, &save);
       return dest;
     }
-    if ((r = buf_read_character_utf8(buf, &c)) <= 0)
+    if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
+      if (false)
+        err_puts("buf_read_until_1_into_str: buf_read_character_utf8");
       goto restore;
+    }
   }
  restore:
   buf_save_restore_rpos(buf, &save);

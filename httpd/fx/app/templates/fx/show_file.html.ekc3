@@ -3,7 +3,7 @@
     <%= raw menu %>
   </div>
   <div class="col-12 col-sm-8 col-lg-9">
-    <h1><%= FXView.path_links(path) %></h1>
+    <h1><%= raw FXView.path_links(path) %></h1>
     <%= path %>
   </div>
 </div>

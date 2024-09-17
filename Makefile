@@ -232,17 +232,20 @@ event_debug:
 	${MAKE} -C kc3s debug
 	${MAKE} -C event debug
 
-fx: httpd
-	httpd/.libs/kc3_httpd -C httpd/fx -d
+fx: httpd fx_assets
+	${PWD}/httpd/.libs/kc3_httpd -C httpd/fx -d
 
-fx_asan: httpd_asan
-	httpd/.libs/kc3_httpd_asan -C httpd/fx -d
+fx_asan: httpd_asan fx_assets
+	${PWD}/httpd/.libs/kc3_httpd_asan -C httpd/fx -d
 
-fx_cov: httpd_cov
-	httpd/.libs/kc3_httpd_cov -C httpd/fx -d
+fx_assets:
+	${MAKE} -C httpd/fx/assets
 
-fx_debug: httpd_debug
-	httpd/.libs/kc3_httpd_debug -C httpd/fx -d
+fx_cov: httpd_cov fx_assets
+	${PWD}/httpd/.libs/kc3_httpd_cov -C httpd/fx -d
+
+fx_debug: httpd_debug fx_assets
+	${PWD}/httpd/.libs/kc3_httpd_debug -C httpd/fx -d
 
 gcovr:
 	${MAKE} -C libkc3 gcovr
@@ -1045,6 +1048,7 @@ test_socket_debug:
 	event_debug \
 	fx \
 	fx_asan \
+	fx_assets \
 	fx_cov \
 	fx_debug \
 	gcovr \
