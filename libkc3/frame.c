@@ -130,6 +130,13 @@ const s_tag * frame_get (const s_frame *frame, const s_sym *sym)
       return result;
     f = f->next;
   }
+  f = frame->fn_frame;
+  while (f) {
+    result = binding_get(f->bindings, sym);
+    if (result)
+      return result;
+    f = f->next;
+  }
   return NULL;
 }
 
@@ -145,25 +152,33 @@ s_tag * frame_get_w (s_frame *frame, const s_sym *sym)
       return result;
     f = f->next;
   }
+  f = frame->fn_frame;
+  while (f) {
+    result = binding_get_w(f->bindings, sym);
+    if (result)
+      return result;
+    f = f->next;
+  }
   return NULL;
 }
 
-s_frame * frame_init (s_frame *frame, s_frame *next)
+s_frame * frame_init (s_frame *frame, s_frame *next, s_frame *fn_frame)
 {
   s_frame tmp = {0};
   assert(frame);
   tmp.next = next;
+  tmp.fn_frame = fn_frame;
   *frame = tmp;
   return frame;
 }
 
-s_frame * frame_new (s_frame *next)
+s_frame * frame_new (s_frame *next, s_frame *fn_frame)
 {
   s_frame *frame;
   frame = alloc(sizeof(s_frame));
   if (! frame)
     return NULL;
-  if (! frame_init(frame, next)) {
+  if (! frame_init(frame, next, fn_frame)) {
     free(frame);
     return NULL;
   }
@@ -179,7 +194,7 @@ s_frame * frame_new_copy (const s_frame *src)
   f = &frame;
   s = src;
   while (s) {
-    *f = frame_new(NULL);
+    *f = frame_new(NULL, s->fn_frame);
     if (s->bindings &&
         ! ((*f)->bindings = binding_new_copy(s->bindings)))
       goto clean;

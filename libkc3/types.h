@@ -270,6 +270,7 @@ struct fn_clause {
 struct frame {
   s_binding *bindings;
   s_frame *next;
+  s_frame *fn_frame;
 };
 
 struct fact_list {

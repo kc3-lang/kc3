@@ -690,7 +690,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       args_final = args;
     }
     while (clause) {
-      if (! frame_init(&frame, fn->frame)) {
+      if (! frame_init(&frame, env->frame, fn->frame)) {
         list_delete_all(env->search_modules);
         env->search_modules = search_modules;
         return false;
@@ -721,7 +721,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     }
   }
   else {
-    frame_init(&frame, env->frame);
+    frame_init(&frame, env->frame, fn->frame);
     env->frame = &frame;
   }
   if (! env_eval_block(env, &clause->algo, &tag)) {
@@ -2528,7 +2528,7 @@ s_env * env_init_globals (s_env *env)
 {
   s_tag *file_dir;
   s_tag *file_path;
-  if (! frame_init(&env->read_time_frame, NULL))
+  if (! frame_init(&env->read_time_frame, NULL, NULL))
     return NULL;
   if (! (file_dir = frame_binding_new(&env->read_time_frame,
                                       &g_sym___DIR__)))
@@ -2541,14 +2541,14 @@ s_env * env_init_globals (s_env *env)
     return NULL;
   if (! tag_init_str_1(file_path, NULL, "stdin"))
     return NULL;
-  if (! frame_init(&env->global_frame, &env->read_time_frame))
+  if (! frame_init(&env->global_frame, &env->read_time_frame, NULL))
     return NULL;
   return env;
 }
 
 s_env * env_init_toplevel (s_env *env)
 {
-  env->frame = frame_new(NULL);
+  env->frame = frame_new(NULL, NULL);
   return env;
 }
 
@@ -2595,7 +2595,7 @@ s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
 s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
                  s_tag *dest)
 {
-  s_frame *frame;
+  s_frame frame;
   uw i;
   const s_map *map;
   s_tag tmp = {0};
@@ -2603,11 +2603,11 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
   assert(tag);
   assert(block);
   assert(dest);
-  if (! (frame = frame_new(env->frame)))
+  if (! frame_init(&frame, env->frame, NULL))
     return NULL;
-  env->frame = frame;
+  env->frame = &frame;
   if (! env_eval_tag(env, tag, &tmp)) {
-    env->frame = frame_delete(frame);
+    env->frame = frame_clean(&frame);
     return NULL;
   }
   switch(tag->type) {
@@ -2625,7 +2625,7 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
     err_inspect_tag(tag);
     err_write_1("\n");
     assert(! "env_let: unsupported associative tag type");
-    env->frame = frame_delete(frame);
+    env->frame = frame_clean(&frame);
     return NULL;
   }
   i = 0;
@@ -2636,25 +2636,25 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
       err_inspect_tag(map->key + i);
       err_write_1("\n");
       assert(! "env_let: binding key is not a symbol");
-      env->frame = frame_delete(frame);
+      env->frame = frame_clean(&frame);
       return NULL;
     }
-    if (! frame_binding_new_copy(env->frame,
+    if (! frame_binding_new_copy(&frame,
                                  map->key[i].data.sym,
                                  map->value + i)) {
       tag_clean(&tmp);
-      env->frame = frame_delete(frame);
+      env->frame = frame_clean(&frame);
       return NULL;
     }
     i++;
   }
   if (! env_eval_block(env, block, dest)) {
     tag_clean(&tmp);
-    env->frame = frame_delete(frame);
+    env->frame = frame_clean(&frame);
     return NULL;
   }
   tag_clean(&tmp);
-  env->frame = frame_delete(frame);
+  env->frame = frame_clean(&frame);
   return dest;
 }
 
