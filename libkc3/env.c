@@ -1281,7 +1281,8 @@ bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
     return false;
   if (! tmp.data.fn.module)
     tmp.data.fn.module = env->current_defmodule;
-  if (! (tmp.data.fn.frame = frame_new_copy(env->frame)))
+  if (! tmp.data.fn.frame &&
+      ! (tmp.data.fn.frame = frame_new_copy(env->frame)))
     return false;
   *dest = tmp;
   return true;
