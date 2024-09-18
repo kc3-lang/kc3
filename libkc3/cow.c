@@ -291,7 +291,6 @@ sw cow_unref (s_cow *cow)
     assert(! "cow_unref: reference count = 0");
     return -1;
   }
-  if (! --cow->reference_count)
-    cow_clean(cow);
+  cow->reference_count--;
   return cow->reference_count;
 }
