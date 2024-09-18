@@ -2078,6 +2078,7 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
       fact_w_clean(fact_w);
       goto clean;
     }
+    l = &(*l)->next.data.list;
   }
  ok:
   list_delete_all(arguments);
