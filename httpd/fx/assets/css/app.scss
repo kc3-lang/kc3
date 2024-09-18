@@ -9,9 +9,11 @@ $font-family-monospace: "courier_new", "Courier New", monospace;
 @import "./courier_new.scss";
 $code-font-size: $font-size-base * 1.1;
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
-@import "./fontawesome-5.15.4-free.scss";
-@import "./fontawesome-5.15.4-free-v4-shims.scss";
-@import "./fontawesome-5.15.4-free-v4-font-face.scss";
+$fa-font-path: "../_fonts";
+@import "../node_modules/fontawesome-free/scss/fontawesome.scss";
+@import "../node_modules/fontawesome-free/scss/brands.scss";
+@import "../node_modules/fontawesome-free/scss/regular.scss";
+@import "../node_modules/fontawesome-free/scss/solid.scss";
 
 @import "./flash.scss";
 @import "./footer.scss";

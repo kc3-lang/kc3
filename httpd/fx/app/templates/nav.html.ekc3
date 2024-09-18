@@ -2,7 +2,7 @@
   <div class="container">
     <h1>
       <a class="navbar-brand" href="/fx">
-        <i class="far fa-folder-open fa-fw"></i>
+        <i class="fas fa-folder-open fa-fw"></i>
       </a>
       <%= raw LayoutView.path_links(path) %>
     </h1>
