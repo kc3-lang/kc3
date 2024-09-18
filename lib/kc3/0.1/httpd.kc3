@@ -207,9 +207,14 @@ defmodule HTTPd do
   }
 
   def url_eat = fn {
-    ([first | rest], 0) { List.join([first | rest], "/") }
     ([], 0) { "" }
-    (url, 0) { url }
+    (url, 0) {
+      if (type(url) == List) do
+        List.join(url, "/")
+      else
+        url
+      end
+    }
     ([first | rest], i) { url_eat(rest, i - 1) }
     ([], i) { "" }
     (url, i) { "/" + url_eat(Str.split(url, "/"), i + 1) }
@@ -287,6 +292,6 @@ defmodule HTTPd do
     def_route(prefix, route)
   }
 
-  def_static_route("/", "./static/", 0)
+  def_static_route("", "./static/", 0)
 
 end
