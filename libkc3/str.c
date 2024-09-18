@@ -1065,8 +1065,6 @@ s_list ** str_split (const s_str *str, const s_str *separator,
     if (! buf_read_until_str_into_str(&buf, separator, t_str)) {
       if (! buf_read_to_str(&buf, t_str))
         goto clean;
-      if (! t_str->size)
-        *t = list_delete(*t);
       break;
     }
     t = &(*t)->next.data.list;

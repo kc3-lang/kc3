@@ -97,6 +97,8 @@ s_frame * frame_clean (s_frame *frame)
   assert(frame);
   next = frame->next;
   binding_delete_all(frame->bindings);
+  if (frame->fn_frame)
+    frame_delete_all(frame->fn_frame);
   return next;
 }
 
@@ -128,13 +130,11 @@ const s_tag * frame_get (const s_frame *frame, const s_sym *sym)
     result = binding_get(f->bindings, sym);
     if (result)
       return result;
-    f = f->next;
-  }
-  f = frame->fn_frame;
-  while (f) {
-    result = binding_get(f->bindings, sym);
-    if (result)
-      return result;
+    if (f->fn_frame) {
+      result = frame_get(f->fn_frame, sym);
+      if (result)
+        return result;
+    }
     f = f->next;
   }
   return NULL;
@@ -150,29 +150,28 @@ s_tag * frame_get_w (s_frame *frame, const s_sym *sym)
     result = binding_get_w(f->bindings, sym);
     if (result)
       return result;
-    f = f->next;
-  }
-  f = frame->fn_frame;
-  while (f) {
-    result = binding_get_w(f->bindings, sym);
-    if (result)
-      return result;
+    if (f->fn_frame) {
+      result = frame_get_w(f->fn_frame, sym);
+      if (result)
+        return result;
+    }
     f = f->next;
   }
   return NULL;
 }
 
-s_frame * frame_init (s_frame *frame, s_frame *next, s_frame *fn_frame)
+s_frame * frame_init (s_frame *frame, s_frame *next,
+                      const s_frame *fn_frame)
 {
   s_frame tmp = {0};
   assert(frame);
   tmp.next = next;
-  tmp.fn_frame = fn_frame;
+  tmp.fn_frame = frame_new_copy(fn_frame);
   *frame = tmp;
   return frame;
 }
 
-s_frame * frame_new (s_frame *next, s_frame *fn_frame)
+s_frame * frame_new (s_frame *next, const s_frame *fn_frame)
 {
   s_frame *frame;
   frame = alloc(sizeof(s_frame));

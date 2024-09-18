@@ -206,27 +206,38 @@ defmodule HTTPd do
     }
   }
 
-  def static_controller = fn (root_dir) {
-    directory_page = fn (request) {
-      files = List.sort(File.list(root_dir + request.url))
+  def url_eat = fn {
+    ([first | rest], 0) { List.join([first | rest], "/") }
+    ([], 0) { "" }
+    (url, 0) { url }
+    ([first | rest], i) { url_eat(rest, i - 1) }
+    ([], i) { "" }
+    (url, i) { "/" + url_eat(Str.split(url, "/"), i + 1) }
+  }
+    
+  def def_static_route = fn (prefix, root_dir, url_skip) {
+    directory_page = HTTPd.fn (request) {
+      url = url_eat(request.url, url_skip)
+      puts(url)                       
+      files = List.sort(File.list(root_dir + url))
       file_li = HTTPd.fn (file) {
-        slash = if Str.ends_with?(request.url, "/") do "" else "/" end
-        real_path = "#{root_dir}#{request.url}#{slash}#{file}"
+        slash = if Str.ends_with?(url, "/") do "" else "/" end
+        real_path = "#{root_dir}#{url}#{slash}#{file}"
         dir? = File.is_directory?(real_path)
         dir_slash = if dir? do "/" else "" end
-        path = "#{request.url}#{slash}#{file}#{dir_slash}"
+        path = "#{prefix}#{url}#{slash}#{file}#{dir_slash}"
         mode = if dir? do "dr-xr-xr-x" else "-r--r--r--" end
         "<li>#{mode} <a href=\"#{URL.escape(path)}\">#{HTML.escape(file)}</a>#{dir_slash}</li>\n"
       }
       body = """<html>
   <head>
-    <title>Index of #{request.url}</title>
+    <title>Index of #{prefix}#{url}</title>
     <style type="text/css">
       ul { font-family: monospace; }
     </style>
   </head>
   <body>
-    <h1>Index of #{request.url}</h1>
+    <h1>Index of #{prefix}#{url}</h1>
     <ul>
       #{str(List.map(files, file_li))}
     </ul>
@@ -235,9 +246,10 @@ defmodule HTTPd do
 """
       %HTTP.Response{body: body}
     }
-    show_page = fn (request) {
-      ext = File.ext(request.url)
-      path = root_dir + request.url
+    show_page = HTTPd.fn (request) {
+      url = url_eat(request.url, url_skip)
+      ext = File.ext(url)
+      path = root_dir + url
       if File.exists?(path) do
         mime = HTTP.mime_type(ext)
         stat = File.stat(path)
@@ -251,13 +263,15 @@ defmodule HTTPd do
         error_404_page(request)
       end
     }
-    HTTPd.fn (request) {
-      render = if (! Str.starts_with?(request.url, "/") ||
-                   Str.has_str?(request.url, "/../") ||
-                   Str.ends_with?(request.url, "/..")) do
+    route = HTTPd.fn (request) {
+      url = url_eat(request.url, url_skip)
+      puts(url)
+      render = if (! Str.starts_with?(url, "/") ||
+                   Str.has_str?(url, "/../") ||
+                   Str.ends_with?(url, "/..")) do
         error_404_page
       else
-        path = root_dir + request.url
+        path = root_dir + url
         if ! File.exists?(path) do
           error_404_page
         else
@@ -270,8 +284,9 @@ defmodule HTTPd do
       end
       render(request)
     }
+    def_route(prefix, route)
   }
 
-  def_route("/", static_controller("./static"))
+  def_static_route("/", "./static/", 0)
 
 end

@@ -1,4 +1,4 @@
 def HTTPd.routes = []
 
 def_route("/doc/", DocController.route)
-def_route("/", static_controller("./static/"))
+def_route("/", static_controller("./static/", 0))
