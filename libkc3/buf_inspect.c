@@ -2152,6 +2152,18 @@ sw buf_inspect_frame (s_buf *buf, const s_frame *frame)
       result += r;
     }
   }
+  f = frame->fn_frame;
+  while (f) {
+    if ((r = buf_inspect_binding(buf, f->bindings)) < 0)
+      goto clean;
+    result += r;
+    f = f->next;
+    if (f) {
+      if ((r = buf_write_1(buf, ",\n")) < 0)
+        goto clean;
+      result += r;
+    }
+  }
   if ((r = buf_write_1(buf, "]")) < 0)
     goto clean;
   result += r;

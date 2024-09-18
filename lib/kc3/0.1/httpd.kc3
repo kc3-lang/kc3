@@ -251,7 +251,7 @@ defmodule HTTPd do
         error_404_page(request)
       end
     }
-    fn (request) {
+    HTTPd.fn (request) {
       render = if (! Str.starts_with?(request.url, "/") ||
                    Str.has_str?(request.url, "/../") ||
                    Str.ends_with?(request.url, "/..")) do
