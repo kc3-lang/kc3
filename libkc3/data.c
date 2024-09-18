@@ -613,6 +613,8 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
     return cfn_init_copy(data, src);
   if (type == &g_sym_Character)
     return character_init_copy(data, src);
+  if (type == &g_sym_Cow)
+    return pcow_init_copy(data, src);
   if (type == &g_sym_F32)
     return f32_init_copy(data, src);
   if (type == &g_sym_F64)

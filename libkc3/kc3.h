@@ -66,6 +66,7 @@
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
+#include "pcow.h"
 #include "ptag.h"
 #include "ptr.h"
 #include "ptr_free.h"

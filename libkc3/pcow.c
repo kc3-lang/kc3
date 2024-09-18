@@ -18,6 +18,9 @@
 s_tag * pcow_assign (s_cow * const *cow, const s_tag *value,
                      s_tag *dest)
 {
+  assert(cow);
+  assert(value);
+  assert(dest);
   if (cow_ref(*cow) < 0)
     return NULL;
   if (! tag_init_copy(cow_read_write(*cow), value))
@@ -65,9 +68,16 @@ s_cow ** pcow_init_copy (s_cow **p, s_cow * const *src)
 {
   assert(p);
   assert(src);
-  if (! src || ! *src)
+  if (! src || ! *src) {
+    err_puts("pcow_init_copy: NULL src");
+    assert(! "pcow_init_copy: NULL src");
     return NULL;
-  cow_ref(*src);
+  }
+  if (cow_ref(*src) < 0) {
+    err_puts("pcow_init_copy: cow_ref");
+    assert(! "pcow_init_copy: cow_ref");
+    return NULL;
+  }
   *p = *src;
   return p;
 }
