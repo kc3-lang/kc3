@@ -1,6 +1,7 @@
 defmodule FXController do
 
   require File
+  require HTTP
   require List
   require Str
 

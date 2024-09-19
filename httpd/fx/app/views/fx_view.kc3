@@ -19,7 +19,19 @@ defmodule FXView do
   }
 
   def render_show_file_preview = fn (path) {
-    HTML.escape(path)
+    mime = HTTP.mime_type(File.ext(path))
+    mime = (Sym) first(Str.split((Str) mime, "/"))
+    file_path = "/file" + Str.slice(path, 4, -1)
+    if (mime == :image) do
+      """<img src="#{URL.escape(file_path)}" alt="#{HTML.escape(path)}" />"""
+    else
+      if (mime == :text) do
+        file = File.read(path)
+        """<pre>#{HTML.escape(file)}</pre>"""
+      else
+        HTML.escape(path)
+      end
+    end
   }
 
   def render_show_file = fn (path, menu, file, properties) {
