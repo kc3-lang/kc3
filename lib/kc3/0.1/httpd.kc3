@@ -223,7 +223,6 @@ defmodule HTTPd do
   def def_static_route = fn (prefix, root_dir, url_skip) {
     directory_page = HTTPd.fn (request) {
       url = url_eat(request.url, url_skip)
-      puts(url)                       
       files = List.sort(File.list(root_dir + url))
       file_li = HTTPd.fn (file) {
         slash = if Str.ends_with?(url, "/") do "" else "/" end
@@ -270,7 +269,6 @@ defmodule HTTPd do
     }
     route = HTTPd.fn (request) {
       url = url_eat(request.url, url_skip)
-      puts(url)
       render = if (! Str.starts_with?(url, "/") ||
                    Str.has_str?(url, "/../") ||
                    Str.ends_with?(url, "/..")) do

@@ -5,6 +5,9 @@ defmodule FXView do
   require Str
   require URL
 
+  def menu_index_template =
+    EKC3.load("app/templates/fx/menu_index.html.ekc3")
+
   def index_template =
     EKC3.load("app/templates/fx/index.html.ekc3")
 
@@ -18,26 +21,35 @@ defmodule FXView do
     EKC3.render(index_template)
   }
 
-  def render_show_file_preview = fn (path) {
+  def render_menu_index = fn (index) {
+    EKC3.render(menu_index_template)
+  }
+
+  def render_properties = fn (properties) {
+    EKC3.render(properties_template)
+  }
+
+  def render_show_file_preview = fn (path, size) {
     mime = HTTP.mime_type(File.ext(path))
-    mime = (Sym) first(Str.split((Str) mime, "/"))
+    mime_first = (Sym) first(Str.split((Str) mime, "/"))
     file_path = "/file" + Str.slice(path, 4, -1)
-    if (mime == :image) do
-      """<img src="#{URL.escape(file_path)}" alt="#{HTML.escape(path)}" />"""
+    preview = if (mime_first == :image) do
+      """<img class="#{size}" src="#{URL.escape(file_path)}" alt="#{HTML.escape(path)}" />"""
     else
-      if (mime == :text) do
+      if (mime == :"text/plain") do
         file = File.read(path)
-        """<pre>#{HTML.escape(file)}</pre>"""
+        if (size == :small && Str.size(file) > 80) do
+          file = Str.slice(file, 0, 80) + "..."
+        end
+        """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
       else
-        HTML.escape(path)
+        HTML.escape(mime)
       end
     end
+    """<div class="#{size}">#{preview}<hr /></div>"""
   }
 
   def render_show_file = fn (path, menu, file, properties) {
-    properties = List.join(List.map(properties, fn ({k, v}) {
-      """<tr><td>#{HTML.escape(k)}</td><td>#{HTML.escape(v)}</td><tr>"""
-    }), "\n")
     EKC3.render(show_file_template)
   }
 

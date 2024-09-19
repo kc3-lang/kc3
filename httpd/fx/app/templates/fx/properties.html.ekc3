@@ -1,9 +1,9 @@
 <table>
-  <%= raw List.join(List.map(properties, fn (fact) {
+  <%= raw List.join(List.map(properties, fn ({key, value}) {
     """
   <tr>
-    <td>#{HTML.escape(fact.predicate)}</td>
-    <td>#{HTML.escape(fact.object)}</td>
+    <td>#{HTML.escape(key)}</td>
+    <td>#{HTML.escape(value)}</td>
   </tr>
 """}), "\n") %>
 </table>

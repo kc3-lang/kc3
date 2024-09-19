@@ -3,7 +3,6 @@
     """
   <li>
     <a href="#{URL.escape(file.url)}">#{HTML.escape(file.name)}</a>
-    #{FXView.render_show_file_preview(file.path, :small)}
   </li>
 """}), "\n") %>
 </ul>

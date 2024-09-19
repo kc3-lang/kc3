@@ -68,6 +68,19 @@ code {
     background: #eee;
 }
 
+ul {
+    margin: 0;
+    padding: 0;
+    li {
+        list-style: none;
+        img.small {
+            aspect-ratio: auto;
+            max-width: 100%;
+            height: 128px;
+        }
+    }
+}
+
 /* navbar */
 .navbar {
     padding-top: 0.3rem;
