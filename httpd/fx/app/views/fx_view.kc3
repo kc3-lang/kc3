@@ -43,7 +43,8 @@ defmodule FXView do
         end
         """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
       else
-        HTML.escape(mime)
+        desc = system(["file", "-b", path])
+        HTML.escape(desc)
       end
     end
     """<div class="#{size}">#{preview}<hr /></div>"""
