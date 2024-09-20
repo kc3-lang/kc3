@@ -479,11 +479,13 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
   }
   if (! pid)
     kc3_system_pipe_exec(pipe_fd[1], argv, list);
+  close(pipe_fd[1]);
   if (! fd_read_until_eof(pipe_fd[0], &tmp)) {
     err_puts("kc3_system: fd_read_until_eof");
     assert(! "kc3_system: fd_read_until_eof");
     goto clean;
   }
+  close(pipe_fd[0]);
   if (waitpid(pid, &status, 0) < 0) {
     e = errno;
     err_write_1("kc3_system: waitpid: ");
@@ -512,6 +514,7 @@ void kc3_system_pipe_exec (s32 pipe_w, char **argv,
     assert(! "kc3_system: dup2(pipe_w, 1)");
     _exit(1);
   }
+  close(pipe_w);
   if (dup2(1, 2) < 0) {
     e = errno;
     err_write_1("kc3_system: dup2(1, 2): ");
