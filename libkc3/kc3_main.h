@@ -84,6 +84,7 @@ s_tag *      kc3_operator_find_by_sym (const s_sym * const *sym,
 bool *       kc3_or (const s_tag *a, const s_tag *b, bool *dest);
 bool         kc3_require (const s_sym * const *module);
 s_str *      kc3_strerror (sw err_no, s_str *dest);
+s_str *      kc3_system (const s_list * const *list, s_str *dest);
 
 /* Special operators. */
 s_tag * kc3_if_then_else (const s_tag *cond, const s_tag *then,

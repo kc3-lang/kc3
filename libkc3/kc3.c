@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "alist.h"
+#include "alloc.h"
 #include "array.h"
 #include "assert.h"
 #include "bool.h"
@@ -415,6 +416,55 @@ s_str * kc3_strerror (sw err_no, s_str *dest)
   const char *s;
   s = strerror(err_no);
   return str_init_1_alloc(dest, s);
+}
+
+s_str * kc3_system (const s_list * const *list, s_str *dest)
+{
+  char **a = NULL;
+  char **argv = NULL;
+  const s_list *l;
+  sw len;
+  pid_t pid;
+  s32 pipe_fd[2];
+  const s_str *str;
+  assert(list);
+  assert(dest);
+  if ((len = list_length(*list)) < 1) {
+    err_puts("kc3_system: empty argument list");
+    assert(! "kc3_system: empty argument list");
+    return NULL;
+  }
+  argv = alloc((len + 1) * sizeof(char *));
+  a = argv;
+  l = *list;
+  while (l) {
+    if (l->tag.type != TAG_STR) {
+      err_write_1("kc3_system: argument that is not a Str: ");
+      err_inspect_tag(&l->tag);
+      err_write_1("\n");
+      assert(! "kc3_system: argument that is not a Str");
+      goto clean;
+    }
+    str = &l->tag.data.str;
+    if (! (*a = alloc(str->size + 1)))
+      goto clean;
+    memcpy(*a, str->ptr.pchar, str->size);
+    a++;
+    l = list_next(l);
+  }
+  if (pipe(pipe_fd)) {
+    e = errno;
+    
+  if (! (pid = fork())) {
+    
+    dup2(
+    execvp(argv[0], argv);
+ clean:
+  while (a > argv) {
+    a--;
+    free(*a);
+  }
+  return NULL;
 }
 
 s_tag * kc3_while (const s_tag *cond, const s_tag *body, s_tag *dest)
