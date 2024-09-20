@@ -22,6 +22,7 @@
 #include "types.h"
 
 /* Operators. */
-bool * fd_set_blocking (s32 fd, bool blocking, bool *result);
+s_str * fd_read_until_eof (s32 fd, s_str *dest);
+bool *  fd_set_blocking (s32 fd, bool blocking, bool *result);
 
 #endif /* LIBKC3_FD_H */

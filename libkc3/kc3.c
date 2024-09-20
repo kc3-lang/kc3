@@ -15,16 +15,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include "alist.h"
 #include "alloc.h"
 #include "array.h"
 #include "assert.h"
 #include "bool.h"
 #include "buf.h"
+#include "buf_fd.h"
 #include "buf_parse.h"
 #include "call.h"
 #include "env.h"
 #include "facts_cursor.h"
+#include "fd.h"
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
@@ -43,6 +47,9 @@ const s_str g_kc3_bases_hexadecimal[2] = {{{NULL}, 16,
                                          {{NULL}, 16,
                                           {"0123456789ABCDEF"}}};
 sw          g_kc3_exit_code = 1;
+
+void kc3_system_pipe_exec (s32 pipe_fd, char **argv,
+                           const s_list * const *list);
 
 s_tag * kc3_access (const s_tag *tag, const s_list * const *key,
                     s_tag *dest)
@@ -422,11 +429,15 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
 {
   char **a = NULL;
   char **argv = NULL;
+  sw e;
   const s_list *l;
   sw len;
   pid_t pid;
   s32 pipe_fd[2];
+  s_str *r = NULL;
+  s32 status;
   const s_str *str;
+  s_str tmp;
   assert(list);
   assert(dest);
   if ((len = list_length(*list)) < 1) {
@@ -454,17 +465,68 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
   }
   if (pipe(pipe_fd)) {
     e = errno;
-    
-  if (! (pid = fork())) {
-    
-    dup2(
-    execvp(argv[0], argv);
+    err_write_1("kc3_system: pipe: ");
+    err_puts(strerror(e));
+    assert(! "kc3_system: pipe");
+    goto clean;
+  }
+  if ((pid = fork()) < 0) {
+    e = errno;
+    err_write_1("kc3_system: fork: ");
+    err_puts(strerror(e));
+    assert(! "kc3_system: fork");
+    goto clean;
+  }
+  if (! pid)
+    kc3_system_pipe_exec(pipe_fd[1], argv, list);
+  if (! fd_read_until_eof(pipe_fd[0], &tmp)) {
+    err_puts("kc3_system: fd_read_until_eof");
+    assert(! "kc3_system: fd_read_until_eof");
+    goto clean;
+  }
+  if (waitpid(pid, &status, 0) < 0) {
+    e = errno;
+    err_write_1("kc3_system: waitpid: ");
+    err_puts(strerror(e));
+    assert(! "kc3_system: waitpid");
+    goto clean;
+  }
+  *dest = tmp;
+  r = dest;
  clean:
   while (a > argv) {
     a--;
     free(*a);
   }
-  return NULL;
+  return r;
+}
+
+void kc3_system_pipe_exec (s32 pipe_w, char **argv,
+                           const s_list * const *list)
+{
+  sw e;
+  if (dup2(pipe_w, 1) < 0) {
+    e = errno;
+    err_write_1("kc3_system: dup2(pipe_w, 1): ");
+    err_puts(strerror(e));
+    assert(! "kc3_system: dup2(pipe_w, 1)");
+    _exit(1);
+  }
+  if (dup2(1, 2) < 0) {
+    e = errno;
+    err_write_1("kc3_system: dup2(1, 2): ");
+    err_puts(strerror(e));
+    assert(! "kc3_system: dup2(1, 2)");
+    _exit(1);
+  }
+  execvp(argv[0], argv);
+  e = errno;
+  err_write_1("kc3_system: execvp ");
+  err_inspect_list(list);
+  err_write_1(": ");
+  err_puts(strerror(e));
+  assert(! "kc3_system: execvp");
+  _exit(1);
 }
 
 s_tag * kc3_while (const s_tag *cond, const s_tag *body, s_tag *dest)

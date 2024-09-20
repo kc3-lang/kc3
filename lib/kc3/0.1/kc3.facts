@@ -308,4 +308,5 @@ replace {KC3.exit, :symbol_value, fn (exit_code) {
 }}
 add {KC3, :symbol, KC3.fork}
 replace {KC3.fork, :symbol_value, cfn S32 "fork" ()}
-
+add {KC3, :symbol, KC3.system}
+replace {KC3.system, :symbol_value, cfn Str "kc3_system" (List, Result)}
