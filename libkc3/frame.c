@@ -130,6 +130,10 @@ const s_tag * frame_get (const s_frame *frame, const s_sym *sym)
     result = binding_get(f->bindings, sym);
     if (result)
       return result;
+    f = f->next;
+  }
+  f = frame;
+  while (f) {
     if (f->fn_frame) {
       result = frame_get(f->fn_frame, sym);
       if (result)
@@ -150,6 +154,10 @@ s_tag * frame_get_w (s_frame *frame, const s_sym *sym)
     result = binding_get_w(f->bindings, sym);
     if (result)
       return result;
+    f = f->next;
+  }
+  f = frame;
+  while (f) {
     if (f->fn_frame) {
       result = frame_get_w(f->fn_frame, sym);
       if (result)
