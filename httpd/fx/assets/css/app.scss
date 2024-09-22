@@ -135,6 +135,19 @@ ul {
 .clear {
     clear: both;
 }
+/* video */
+div.full {
+    video.full {
+        width: 100%;
+    }
+}
+div.small {
+    video.small {
+        height: 480px;
+        max-width: 100%;
+    }
+}
+
 /* user */
 .btn-danger, .btn-danger:hover {
     color: #fff;

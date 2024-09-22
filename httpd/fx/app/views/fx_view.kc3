@@ -32,19 +32,30 @@ defmodule FXView do
   def render_show_file_preview = fn (path, size) {
     mime = HTTP.mime_type(File.ext(path))
     mime_first = (Sym) first(Str.split((Str) mime, "/"))
-    file_path = "/file" + Str.slice(path, 4, -1)
-    preview = if (mime_first == :image) do
-      """<img class="#{size}" src="#{URL.escape(file_path)}" alt="#{HTML.escape(path)}" />"""
+    if (mime_first == :image && File.size(path) > 11024024) do
+      preview = ""
     else
-      if (mime == :"text/plain") do
-        file = File.read(path)
-        if (size == :small && Str.size(file) > 80) do
-          file = Str.slice(file, 0, 80) + "..."
-        end
-        """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
+      file_path = "/file" + Str.slice(path, 4, -1)
+      preview = if (mime_first == :image) do
+        """<img class="#{size}" src="#{URL.escape(file_path)}" alt="#{HTML.escape(path)}" />"""
       else
-        desc = system(["file", "-b", path])
-        HTML.escape(desc)
+        if (mime_first == :video) do
+           """<video class="#{size}" controls><source src="#{URL.escape(file_path)}" /></video>"""
+        else
+          if (mime_first == :audio) do
+            """<audio class="#{size}" controls src="#{URL.escape(file_path)}" />"""
+          else
+            if (mime == :"text/plain") do
+              file = File.read(path)
+              if (size == :small && Str.size(file) > 80) do
+                file = Str.slice(file, 0, 80) + "..."
+              end
+              """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
+            else
+              HTML.escape(mime)
+            end
+          end
+        end
       end
     end
     """<div class="#{size}">#{preview}<hr /></div>"""

@@ -98,13 +98,19 @@ sw http_response_buf_write (const s_http_response *response,
   s_str content_length_str = {0};
   s_tag default_messages = {0};
   s32 e;
+  uw end;
+  s32 fd;
   s_ident ident = {0};
   s_buf *in;
   s_tag *key = NULL;
   const s_list *l = NULL;
+  const s_map *map;
   s_str protocol = {0};
   sw r = 0;
   sw result = 0;
+  sw s;
+  sw size;
+  uw start;
   s_str str;
   s_tag tag_code = {0};
   s_tag tag_message = {0};
@@ -246,8 +252,18 @@ sw http_response_buf_write (const s_http_response *response,
     }
     else if (type == &g_sym_S32) {
       buf_init_alloc(&tmp, BUF_SIZE);
-      while ((r = read(response->body.data.s32,
-                       tmp.ptr.p, tmp.size)) > 0) {
+      fd = response->body.data.s32;
+      while (1) {
+        if ((r = read(fd, tmp.ptr.p, tmp.size)) < 0) {
+          e = errno;
+          err_write_1("http_response_buf_write: ");
+          err_inspect_s32(&fd);
+          err_write_1(": ");
+          err_puts(strerror(e));
+          return r;
+        }
+        if (! r)
+          break;
         tmp.rpos = 0;
         tmp.wpos = r;
         while (tmp.rpos < (uw) r) {
@@ -258,15 +274,67 @@ sw http_response_buf_write (const s_http_response *response,
           tmp.rpos += w;
         }
       }
-      if (r < 0) {
+      close(fd);
+    }
+    else if (type == &g_sym_Map &&
+             (map = &response->body.data.map) &&
+             map->count == 3 &&
+             map->key[1].data.sym == sym_1("fd") &&
+             map->value[1].type == TAG_S32 &&
+             map->key[2].data.sym == sym_1("start") &&
+             map->value[2].type == TAG_UW &&
+             map->key[0].data.sym == sym_1("end") &&
+             map->value[0].type == TAG_UW) {
+      fd    = map->value[1].data.s32;
+      start = map->value[2].data.uw;
+      end   = map->value[0].data.uw;
+      if (content_length < 0 ||
+          start > end ||
+          start > (uw) content_length) {
+        err_puts("http_response_buf_write:"
+                 " 416 Requested Range Not Satisfiable");
+        assert(!("http_response_buf_write:"
+                 " 416 Requested Range Not Satisfiable"));
+        return -1;
+      }
+      size = end - start;
+      if (lseek(fd, start, SEEK_SET) < 0) {
         e = errno;
-        err_write_1("http_response_buf_write: ");
-        err_inspect_s32(&response->body.data.s32);
+        err_write_1("http_response_buf_write: lseek ");
+        err_inspect_s32(&fd);
         err_write_1(": ");
         err_puts(strerror(e));
-        return r;
+        return -1;
       }
-      close(response->body.data.s32);
+      if (size) {
+        buf_init_alloc(&tmp, BUF_SIZE);
+        while (1) {
+          s = tmp.size;
+          if (size < s)
+            s = size;
+          if ((r = read(fd, tmp.ptr.p, s)) < 0) {
+            e = errno;
+            err_write_1("http_response_buf_write: read ");
+            err_inspect_s32(&fd);
+            err_write_1(": ");
+            err_puts(strerror(e));
+            return r;
+          }
+          if (! r)
+            break;
+          size -= r;
+          tmp.rpos = 0;
+          tmp.wpos = r;
+          while (tmp.rpos < (uw) r) {
+            if ((w = buf_write(buf, tmp.ptr.ps8 + tmp.rpos,
+                               r - tmp.rpos)) <= 0)
+              return w;
+            result += w;
+            tmp.rpos += w;
+          }
+        }
+      }
+      close(fd);
     }
     else {
       err_write_1("http_response_buf_write: unknown body type: ");
