@@ -32,3 +32,5 @@ replace {Str.subst, :symbol_value,
 add {Str, :symbol, Str.split}
 replace {Str.split, :symbol_value,
          cfn List "str_split" (Str, Str, Result)}
+add {Str, :symbol, Str.size}
+replace {Str.size, :symbol_value, cfn Tag "str_size" (Str, Result)}

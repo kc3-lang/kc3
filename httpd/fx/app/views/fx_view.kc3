@@ -28,11 +28,14 @@ defmodule FXView do
   def render_properties = fn (properties) {
     EKC3.render(properties_template)
   }
-
+  
   def render_show_file_preview = fn (path, size) {
+    file_size = File.size(path)
     mime = HTTP.mime_type(File.ext(path))
     mime_first = (Sym) first(Str.split((Str) mime, "/"))
-    if (mime_first == :image && File.size(path) > 11024024) do
+    if (mime_first == :image &&
+        size == :small &&
+        file_size > 11024024) do
       preview = ""
     else
       file_path = "/file" + Str.slice(path, 4, -1)
@@ -52,13 +55,14 @@ defmodule FXView do
               end
               """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
             else
-              HTML.escape(mime)
+              HTML.escape(system(["file", "-b", path]))
             end
           end
         end
       end
     end
-    """<div class="#{size}">#{preview}<hr /></div>"""
+    """<span class="size">#{HTML.escape(human_size(file_size))}</span>
+       <div class="#{size}">#{preview}<hr /></div>"""
   }
 
   def render_show_file = fn (path, menu, file, properties) {

@@ -126,6 +126,7 @@ sw            str_peek_u32 (const s_str *str, u32 *dest);
 sw            str_peek_u64 (const s_str *str, u64 *dest);
 sw            str_position_1 (const s_str *str, const char *token);
 sw            str_rindex_character (const s_str *str, character c);
+s_tag *       str_size (const s_str *str, s_tag *dest);
 s_list **     str_split (const s_str *str, const s_str *separator,
                          s_list **dest);
 bool *        str_starts_with (const s_str *str, const s_str *start,

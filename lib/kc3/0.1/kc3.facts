@@ -310,3 +310,27 @@ add {KC3, :symbol, KC3.fork}
 replace {KC3.fork, :symbol_value, cfn S32 "fork" ()}
 add {KC3, :symbol, KC3.system}
 replace {KC3.system, :symbol_value, cfn Str "kc3_system" (List, Result)}
+add {KC3, :symbol, KC3.human_size}
+replace {KC3.human_size, :symbol_value, fn (size) {
+  if (size >= 1024 * 1024 * 1024 * 1024) do
+    s = size * 10 / 1024 / 1024 / 1024 / 1024
+    "#{s / 10}.#{s mod 10}Tb"
+  else
+    if (size >= 1024 * 1024 * 1024) do
+      s = size * 10 / 1024 / 1024 / 1024
+      "#{s / 10}.#{s mod 10}Gb"
+    else
+      if (size >= 1024 * 1024) do
+        s = size * 10 / 1024 / 1024
+        "#{s / 10}.#{s mod 10}Mb"
+      else
+        if (size >= 1024) do
+          s = size * 10 / 1024
+          "#{s / 10}.#{s mod 10}Kb"
+        else
+          "#{size}b"
+        end
+      end
+    end
+  end
+}}

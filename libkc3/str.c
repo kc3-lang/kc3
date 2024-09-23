@@ -1048,6 +1048,15 @@ sw str_rindex_character (const s_str *str, character c)
   return result;
 }
 
+s_tag * str_size (const s_str *str, s_tag *dest)
+{
+  s_tag tmp;
+  tag_init_uw(&tmp, str->size);
+  tag_integer_reduce(&tmp);
+  *dest = tmp;
+  return dest;
+}
+
 s_list ** str_split (const s_str *str, const s_str *separator,
                      s_list **dest)
 {

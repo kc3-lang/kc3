@@ -721,6 +721,11 @@ s_tag * tag_integer_reduce (s_tag *tag)
     integer_reduce(&j, tag);
     integer_clean(&j);
     return tag;
+  case TAG_SW:
+    integer_init_sw(&j, tag->data.sw);
+    integer_reduce(&j, tag);
+    integer_clean(&j);
+    return tag;
   case TAG_U8:
     integer_init_u8(&j, tag->data.u8);
     integer_reduce(&j, tag);
@@ -738,6 +743,11 @@ s_tag * tag_integer_reduce (s_tag *tag)
     return tag;
   case TAG_U64:
     integer_init_u64(&j, tag->data.u64);
+    integer_reduce(&j, tag);
+    integer_clean(&j);
+    return tag;
+  case TAG_UW:
+    integer_init_uw(&j, tag->data.uw);
     integer_reduce(&j, tag);
     integer_clean(&j);
     return tag;

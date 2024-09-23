@@ -23,6 +23,11 @@ defmodule File do
 
   def stat = cfn File.Stat "file_stat" (Str, Result)
 
+  def size = fn (path) {
+    st = stat(path)
+    st.st_size
+  }
+
   def read = cfn Str "file_read" (Str, Result)
 
 end
