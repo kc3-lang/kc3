@@ -31,37 +31,38 @@ defmodule FXView do
   
   def render_show_file_preview = fn (path, size) {
     file_size = File.size(path)
-    mime = HTTP.mime_type(File.ext(path))
+    # mime = HTTP.mime_type(File.ext(path))
+    mime = system(["file", "-bi", path])
+    puts("mime: #{inspect(mime)}")
     mime_first = (Sym) first(Str.split((Str) mime, "/"))
-    if (mime_first == :image &&
-        size == :small &&
-        file_size > 11024024) do
-      preview = ""
+    puts("mime_first: #{inspect(mime_first)}")
+    file_path = "/file" + Str.slice(path, 4, -1)
+    preview = if (mime_first == :image &&
+                  (size != :small ||
+                   file_size < 16024024)) do
+      """<img class="#{size}" src="#{URL.escape(file_path)}" alt="#{HTML.escape(path)}" />"""
     else
-      file_path = "/file" + Str.slice(path, 4, -1)
-      preview = if (mime_first == :image) do
-        """<img class="#{size}" src="#{URL.escape(file_path)}" alt="#{HTML.escape(path)}" />"""
+      if (mime_first == :video) do
+        """<video class="#{size}" controls><source src="#{URL.escape(file_path)}" /></video>"""
       else
-        if (mime_first == :video) do
-           """<video class="#{size}" controls><source src="#{URL.escape(file_path)}" /></video>"""
+        if (mime_first == :audio) do
+          """<audio class="#{size}" controls src="#{URL.escape(file_path)}" />"""
         else
-          if (mime_first == :audio) do
-            """<audio class="#{size}" controls src="#{URL.escape(file_path)}" />"""
-          else
-            if (mime == :"text/plain") do
-              file = File.read(path)
-              if (size == :small && Str.size(file) > 80) do
-                file = Str.slice(file, 0, 80) + "..."
-              end
-              """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
-            else
-              HTML.escape(system(["file", "-b", path]))
+          if (mime_first == :text ||
+              mime == "application/x-shellscript\n") do
+            file = File.read(path)
+            if (size == :small && Str.size(file) > 80) do
+              file = Str.slice(file, 0, 80) + "..."
             end
+            """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
+          else
+            ""
           end
         end
       end
     end
     """<span class="size">#{HTML.escape(human_size(file_size))}</span>
+       <span class="file">#{HTML.escape(system(["file", "-b", path]))}</span>
        <div class="#{size}">#{preview}<hr /></div>"""
   }
 

@@ -96,7 +96,12 @@ defmodule FXController do
         (req.url == "/fx" ||
          Str.starts_with?(req.url, "/fx/"))) do
       path = "." + req.url
-      show_file(path)
+      response = show_file(path)
+      if (response) do
+        response
+      else
+        error_404_page(req)
+      end
     end
   }
 

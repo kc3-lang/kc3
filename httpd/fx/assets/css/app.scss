@@ -135,6 +135,21 @@ ul {
 .clear {
     clear: both;
 }
+/* file preview */
+span.size {
+    float: right;
+    font-size: 80%;
+    display: block;
+    text-align: right;
+    width: 5em;
+}
+span.file {
+    float: right;
+    font-size: 80%;
+}
+div.small, div.full {
+    clear: both;
+}
 /* video */
 div.full {
     video.full {
@@ -195,4 +210,11 @@ h1,h2,h3,h4,h5,h6 {
 }
 .left-col > ul > li {
     padding-top: 0.5rem;
+}
+.left-col > ul > li > a {
+    display: block;
+    width: 100%;
+    &:hover {
+        background: #e8e8ff;
+    }
 }

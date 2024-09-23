@@ -58,6 +58,34 @@ else
   3 + 3
   4 + 4
 end
+quote if true || true do
+  1 + 1
+  2 + 2
+else
+  3 + 3
+  4 + 4
+end
+if true || true do
+  1 + 1
+  2 + 2
+else
+  3 + 3
+  4 + 4
+end
+quote if false || true do
+  1 + 1
+  2 + 2
+else
+  3 + 3
+  4 + 4
+end
+if false || true do
+  1 + 1
+  2 + 2
+else
+  3 + 3
+  4 + 4
+end
 quote if false do
   if false do
     1

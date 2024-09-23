@@ -34,6 +34,22 @@ else
   4 + 4
 end
 8
+if true || true do
+  1 + 1
+  2 + 2
+else
+  3 + 3
+  4 + 4
+end
+4
+if false || true do
+  1 + 1
+  2 + 2
+else
+  3 + 3
+  4 + 4
+end
+4
 if false do
   if false do
     1
