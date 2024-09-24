@@ -46,12 +46,6 @@ defmodule FXController do
                    name: file,
                    items: items}
           directory_index(rest, target, dir, [item | acc])
-        else
-          item = %{type: :file,
-                   url: url,
-                   name: file,
-                   items: []}
-          directory_index(rest, target, dir, [item | acc])
         end
       end
     }
