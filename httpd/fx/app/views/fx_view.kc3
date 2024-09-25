@@ -55,9 +55,11 @@ defmodule FXView do
             end
             """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
           else
-            file = system(["hexdump", "-C", path])
-            if (size == :small && Str.size(file) > 77) do
-              file = Str.slice(file, 0, 77) + "..."
+            file = if (size == :small) do
+              system(["sh", "-c",
+                      "hexdump -C #{Sh.escape(path)} | head -n 4"])
+            else
+              system(["hexdump", "-C", path])
             end
             """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
           end
