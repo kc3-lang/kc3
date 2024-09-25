@@ -50,13 +50,16 @@ defmodule FXView do
         else
           if (mime_first == :text ||
               mime == "application/x-shellscript\n") do
-            file = File.read(path)
-            if (size == :small && Str.size(file) > 80) do
-              file = Str.slice(file, 0, 80) + "..."
+            if (size == :small && file_size > 77) do
+              file = Str.slice(File.read_max(path, 77), 0, 77) + "..."
             end
             """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
           else
-            ""
+            file = system(["hexdump", "-C", path])
+            if (size == :small && Str.size(file) > 77) do
+              file = Str.slice(file, 0, 77) + "..."
+            end
+            """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
           end
         end
       end

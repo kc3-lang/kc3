@@ -143,6 +143,7 @@ HEADERS = \
 	"set_cursor__tag.h" \
 	"set_item__fact.h" \
 	"set_item__tag.h" \
+	"sh.h" \
 	"sha1.h" \
 	"sign.h" \
 	"skiplist__fact.h" \
@@ -312,6 +313,7 @@ SOURCES = \
 	"set_cursor__tag.c" \
 	"set_item__fact.c" \
 	"set_item__tag.c" \
+	"sh.c" \
 	"sign.c" \
 	"skiplist__fact.c" \
 	"skiplist_node__fact.c" \
@@ -590,6 +592,7 @@ LO_SOURCES = \
 	"set_cursor__tag.c" \
 	"set_item__fact.c" \
 	"set_item__tag.c" \
+	"sh.c" \
 	"sign.c" \
 	"skiplist__fact.c" \
 	"skiplist_node__fact.c" \

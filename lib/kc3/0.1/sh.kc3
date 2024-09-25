@@ -1,0 +1,9 @@
+defmodule Sh do
+
+  def allowed = "-+/=,^_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+  def escape = cfn Str "sh_escape" (Str, Result)
+
+  def reserved = "$`\\\""
+
+end

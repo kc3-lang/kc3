@@ -78,6 +78,7 @@ KC3_MAKEFILES = \
 	"http/Makefile" \
 	"http/sources.mk" \
 	"httpd/Makefile" \
+	"httpd/fx/assets/Makefile" \
 	"httpd/sources.mk" \
 	"ikc3/Makefile" \
 	"ikc3/sources.mk" \
@@ -94,6 +95,7 @@ KC3_MAKEFILES = \
 	"socket/Makefile" \
 	"socket/sources.mk" \
 	"test/Makefile" \
+	"test/httpd/assets/Makefile" \
 	"test/sources.mk" \
 	"ucd2c/Makefile" \
 	"window/Makefile" \
@@ -457,6 +459,8 @@ KC3_C_SOURCES = \
 	"libkc3/set_item__fact.h" \
 	"libkc3/set_item__tag.c" \
 	"libkc3/set_item__tag.h" \
+	"libkc3/sh.c" \
+	"libkc3/sh.h" \
 	"libkc3/sha1.h" \
 	"libkc3/sign.c" \
 	"libkc3/sign.h" \
@@ -790,6 +794,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/set/item/fact.kc3" \
 	"lib/kc3/0.1/set/item/tag.kc3" \
 	"lib/kc3/0.1/set/tag.kc3" \
+	"lib/kc3/0.1/sh.kc3" \
 	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/socket/addr.kc3" \
 	"lib/kc3/0.1/socket/buf.kc3" \
@@ -871,6 +876,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/complex.kc3" \
 	"test/ikc3/complex.out.expected" \
 	"test/ikc3/complex.ret.expected" \
+	"test/ikc3/cow.kc3" \
+	"test/ikc3/cow.out.expected" \
+	"test/ikc3/cow.ret.expected" \
 	"test/ikc3/def.kc3" \
 	"test/ikc3/def.out.expected" \
 	"test/ikc3/def.ret.expected" \
@@ -1001,6 +1009,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/sym.kc3" \
 	"test/ikc3/sym.out.expected" \
 	"test/ikc3/sym.ret.expected" \
+	"test/ikc3/time.kc3" \
+	"test/ikc3/time.out.expected" \
+	"test/ikc3/time.ret.expected" \
 	"test/ikc3/to_lisp.kc3" \
 	"test/ikc3/to_lisp.out.expected" \
 	"test/ikc3/to_lisp.ret.expected" \
@@ -1318,10 +1329,12 @@ KC3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/extracted/DerivedNumericValues.txt" \
 
 KC3_DOC_SOURCES = \
-	"doc/kc3/1_introduction.en.md" \
-	"doc/kc3/integer.en.md" \
-	"doc/kc3/list.md" \
-	"doc/kc3/map.en.md" \
-	"doc/kc3/ratio.en.md" \
-	"doc/kc3/variable.md" \
+	"doc/1_KC3/1.1_Introduction.en.md" \
+	"doc/1_KC3/1.2_Integer.en.md" \
+	"doc/1_KC3/1.3_Map.en.md" \
+	"doc/1_KC3/1.4_Ratio.en.md" \
+	"doc/1_KC3/1.5_List.en.md" \
+	"doc/1_KC3/1.6_Variable.en.md" \
+	"doc/2_HTTPd/index.en.md" \
+	"doc/index.en.md" \
 

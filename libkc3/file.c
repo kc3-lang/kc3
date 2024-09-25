@@ -308,44 +308,105 @@ s_str * file_pwd (s_str *dest)
   return dest;
 }
 
-s_str * file_read (const s_str *path, s_str *dest)
+s_str * file_read_all (const s_str *path, s_str *dest)
 {
   char *buf;
   s32 e;
   s32 fd;
+  sw pos = 0;
   uw r;
-  sw size = 0;
   struct stat sb;
   if (stat(path->ptr.pchar, &sb)) {
-    err_puts("file_read: stat");
+    e = errno;
+    err_write_1("file_read_all: stat: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_inspect_str(path);
+    err_write_1("\n");
     return NULL;
   }
   fd = open(path->ptr.pchar, O_RDONLY | O_BINARY);
   if (fd < 0) {
     e = errno;
-    err_write_1("file_read: open: ");
+    err_write_1("file_read_all: open: ");
     err_write_1(strerror(e));
     err_write_1(": ");
-    err_write_str(path);
+    err_inspect_str(path);
+    err_write_1("\n");
     return NULL;
   }
   buf = alloc(sb.st_size);
   if (! buf) {
-    err_puts("file_read: failed to allocate buf");
+    err_puts("file_read_all: failed to allocate buf");
     close(fd);
     return NULL;
   }
-  while (size < sb.st_size) {
-    if (! (r = read(fd, buf, sb.st_size))) {
-      err_puts("file_read: read = 0");
-      free(buf);
-      close(fd);
+  while (pos < sb.st_size) {
+    if ((r = read(fd, buf + pos, sb.st_size - pos)) <= 0) {
+      if (r < 0)
+        e = errno;
+      err_write_1("file_read_all: read: ");
+      if (r < 0) {
+        err_write_1(strerror(e));
+        err_write_1(": ");
+      }
+      err_inspect_str(path);
+      err_write_1("\n");
       return NULL;
     }
-    size += r;
+    pos += r;
   }
   close(fd);
   str_init(dest, buf, sb.st_size, buf);
+  return dest;
+}
+
+s_str * file_read_max (const s_str *path, uw max, s_str *dest)
+{
+  char *buf;
+  s32 e;
+  s32 fd;
+  sw r;
+  uw size;
+  s_str tmp;
+  fd = open(path->ptr.pchar, O_RDONLY | O_BINARY);
+  if (fd < 0) {
+    e = errno;
+    err_write_1("file_read_max: open: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    return NULL;
+  }
+  buf = alloc(max);
+  if (! buf) {
+    err_puts("file_read_max: failed to allocate buf");
+    close(fd);
+    return NULL;
+  }
+  if ((r = read(fd, buf, max)) < 0) {
+    e = errno;
+    err_write_1("file_read_max: read: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    free(buf);
+    close(fd);
+    return NULL;
+  }
+  size = r;
+  close(fd);
+  if (! str_init_alloc_copy(&tmp, size, buf)) {
+    err_puts("file_read_max: str_init_alloc_copy");
+    assert(! "file_read_max: str_init_alloc_copy");
+    free(buf);
+    close(fd);
+    return NULL;
+  }
+  free(buf);
+  *dest = tmp;
   return dest;
 }
 

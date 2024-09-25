@@ -35,9 +35,9 @@ s_str * html_escape (const s_str *str, s_str *dest)
   }
   if (! tag_is_alist(&escape_tag)) {
     tag_clean(&escape_tag);
-    err_puts("html_escape: EKC3.html_escape is not an associative"
+    err_puts("html_escape: HTML.escapes is not an associative"
              " List");
-    assert(!("html_escape: EKC3.html_escape is not an associative"
+    assert(!("html_escape: HTML.escapes is not an associative"
              " List"));
     return NULL;
   }
@@ -57,9 +57,9 @@ s_str * html_escape (const s_str *str, s_str *dest)
     while (e) {
       reserved = e->tag.data.tuple.tag;
       if (reserved->type != TAG_STR) {
-        err_puts("html_escape: EKC3.html_escape: reserved that is"
+        err_puts("html_escape: HTML.escapes: reserved that is"
                  " not a Str");
-        assert(!("html_escape: EKC3.html_escape: reserved that is"
+        assert(!("html_escape: HTML.escapes: reserved that is"
                  " not a Str"));
         str_clean(&tag.data.str);
         goto ko;
@@ -67,9 +67,9 @@ s_str * html_escape (const s_str *str, s_str *dest)
       if (! compare_tag(reserved, &tag)) {
         replace = e->tag.data.tuple.tag + 1;
         if (replace->type != TAG_STR) {
-          err_puts("html_escape: EKC3.html_escape: replacement that is"
+          err_puts("html_escape: HTML.escapes: replacement that is"
                    " not a Str");
-          assert(!("html_escape: EKC3.html_escape: replacement that is"
+          assert(!("html_escape: HTML.escapes: replacement that is"
                    " not a Str"));
           str_clean(&tag.data.str);
           goto ko;

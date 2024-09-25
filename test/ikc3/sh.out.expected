@@ -1,0 +1,18 @@
+Sh.escape("")
+"\"\""
+Sh.escape("a")
+"a"
+Sh.escape("ab")
+"ab"
+Sh.escape("abc")
+"abc"
+Sh.escape(";")
+"\";\""
+Sh.escape("abc;")
+"\"abc;\""
+Sh.escape("$abc")
+"\"\\$abc\""
+Sh.escape("ab c")
+"\"ab c\""
+Sh.escape("ab\nc")
+"\"ab\nc\""

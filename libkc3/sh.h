@@ -14,7 +14,7 @@
  * @file sh.h
  * @brief Run commands
  *
- * Linked list of tags.
+ * Shell commands related functions.
  */
 #ifndef LIBKC3_SH_H
 #define LIBKC3_SH_H
