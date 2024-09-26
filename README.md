@@ -48,8 +48,8 @@ sudo apt install libffi-dev libbsd-dev libevent-dev
 # use clang
 export CC=clang
 
-# update symlinks
-cd lib/kc3/0.1 && ln -sf ../../../ekc3/.libs/libekc3.so ekc3.so
+# create symlinks to libs
+make lib_links
 ```
 
 
@@ -69,7 +69,12 @@ make
 
 ### Add the sources to `LD_LIBRARY_PATH`
 ```sh
-export LD_LIBRARY_PATH=$PWD/libkc3/.libs:$PWD/ekc3/.libs:$PWD/lib/kc3/0.1
+. ./env
+```
+
+### Create symlinks to libs
+```sh
+make lib_links
 ```
 
 ### Running the OpenGL demo
