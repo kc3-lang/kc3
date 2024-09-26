@@ -84,7 +84,7 @@ defmodule FXController do
     end
   }
 
-  def route = fn (req) {
+  def fx_route = fn (req) {
     if ((req.method == GET ||
          req.method == HEAD) &&
         (req.url == "/fx" ||
@@ -95,6 +95,55 @@ defmodule FXController do
         response
       else
         error_404_page(req)
+      end
+    end
+  }
+
+  def tag_create = fn (path, tag) {
+    body = """
+<html>
+  <head>
+    <title>Tag create</title>
+  </head>
+  <body>
+    <p><h1>Tag create</h1></p>
+    <p>Tag : #{HTML.escape(inspect(tag))}</p>
+    <p>Path : #{HTML.escape(inspect(path))}</p>
+  </body>
+</html>
+"""
+    %HTTP.Response{body: body}
+  }
+
+  def tag_delete = fn (path, tag) {
+    body = """
+<html>
+  <head>
+    <title>Tag delete</title>
+  </head>
+  <body>
+    <p><h1>Tag delete</h1></p>
+    <p>Tag : #{HTML.escape(inspect(tag))}</p>
+    <p>Path : #{HTML.escape(inspect(path))}</p>
+  </body>
+</html>
+"""
+    %HTTP.Response{body: body}
+  }
+
+  def tag_route = fn (req) {
+    if (req.url == "/tag" ||
+        Str.starts_with?(req.url, "/tag/")) do
+      ["", "tag", tag | url] = Str.split(req.url, "/")     
+      path = "./fx" + req.url
+      if (req.method == GET) do
+        response = tag_create(path, tag)
+      else
+        if (req.method == DELETE) do
+          response = tag_delete(path, tag)
+        else
+          error_404_page(req)
+        end
       end
     end
   }
