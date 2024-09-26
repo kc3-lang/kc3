@@ -314,7 +314,7 @@ s_str * file_read_all (const s_str *path, s_str *dest)
   s32 e;
   s32 fd;
   sw pos = 0;
-  uw r;
+  sw r;
   struct stat sb;
   if (stat(path->ptr.pchar, &sb)) {
     e = errno;
