@@ -540,6 +540,23 @@ serving files for display or download (Web 1.0).
 
 ## TODO
 
+ - fx v0.1.0
+   - [DONE] file explorer
+   - [DONE] preview files
+     - [DONE] text
+     - [DONE] image
+     - [DONE] video
+     - [DONE] audio
+   - tags
+     - create
+       - POST "/tag/:tag/*path"
+     - delete
+       - DELETE "/tag/:tag/*path"
+   - properties
+     - create
+       - POST "/property/:property/:value/*path"
+     - delete
+       - DELETE "/property/:property/:value/*path
  - HTTPd v0.2.0
    - dynamic pages (MVC)
      - [DONE] controllers
