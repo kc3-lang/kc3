@@ -63,7 +63,7 @@ defmodule DocController do
     index = doc_index("./doc/", path_html)
     menu = DocView.render_menu(index)
     title = "kc3-lang.org"
-    html = File.read(path_html)
+    html = File.read_all(path_html)
     page = DocView.render_show(menu, html)
     body = LayoutView.render(title, page)
     %HTTP.Response{body: body}
@@ -73,7 +73,7 @@ defmodule DocController do
     index = doc_index("./doc/", path_md)
     menu = DocView.render_menu(index)
     title = "kc3-lang.org"
-    md = File.read(path_md)
+    md = File.read_all(path_md)
     html = Markdown.to_html_str(md)
     page = DocView.render_show(menu, html)
     body = LayoutView.render(title, page)

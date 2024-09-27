@@ -134,13 +134,64 @@ defmodule FXController do
   def tag_route = fn (req) {
     if (req.url == "/tag" ||
         Str.starts_with?(req.url, "/tag/")) do
-      ["", "tag", tag | url] = Str.split(req.url, "/")     
+      ["", "tag", tag | url] = Str.split(req.url, "/")
       path = "./fx" + req.url
       if (req.method == GET) do
         response = tag_create(path, tag)
       else
         if (req.method == DELETE) do
           response = tag_delete(path, tag)
+        else
+          error_404_page(req)
+        end
+      end
+    end
+  }
+
+  def property_create = fn (path, property, value) {
+    body = """
+<html>
+  <head>
+    <title>Property create</title>
+  </head>
+  <body>
+    <p><h1>Property create</h1></p>
+    <p>Path : #{HTML.escape(inspect(path))}</p>
+    <p>Property : #{HTML.escape(inspect(property))}</p>
+    <p>Value : #{HTML.escape(inspect(value))}</p>
+  </body>
+</html>
+"""
+    %HTTP.Response{body: body}
+  }
+
+  def property_delete = fn (path, property, value) {
+    body = """
+<html>
+  <head>
+    <title>Property delete</title>
+  </head>
+  <body>
+    <p><h1>Property delete</h1></p>
+    <p>Path : #{HTML.escape(inspect(path))}</p>
+    <p>Property : #{HTML.escape(inspect(property))}</p>
+    <p>Value : #{HTML.escape(inspect(value))}</p>
+  </body>
+</html>
+"""
+    %HTTP.Response{body: body}
+  }
+
+  def property_route = fn (req) {
+    if (req.url == "/property" ||
+        Str.starts_with?(req.url, "/property/")) do
+      ["", "property", property, value | url] = Str.split(req.url, "/")
+      path = "./fx" + req.url
+      if (req.method == GET) do
+        response = property_create(path, property, value)
+      else
+        if (req.method == DELETE) do
+          response = property_delete(path, property, value)
         else
           error_404_page(req)
         end

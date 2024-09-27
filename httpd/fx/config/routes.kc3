@@ -2,7 +2,7 @@ def HTTPd.routes = []
 
 def_route("/fx/", FXController.fx_route)
 def_route("/tag/", FXController.tag_route)
-#def_route("/property/", FXController.property_route)
+def_route("/property/", FXController.property_route)
 
 def_static_route("/file", "./fx/", 1)
 

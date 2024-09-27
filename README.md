@@ -36,7 +36,7 @@ Supported architectures :
 
 ### Install dependencies
 
-#### Debian / Ubuntu / PopOS
+#### Debian / Ubuntu / PopOS / Mint
 
 ```
 # install build tools
@@ -45,11 +45,11 @@ sudo apt install pkg-config clang libtool-bin make ruby time
 # install dependencies
 sudo apt install libffi-dev libbsd-dev libevent-dev
 
+# install demo dependencies
+sudo apt install libsdl2-dev libxkbcommon-dev libfreetype-dev 
+
 # use clang
 export CC=clang
-
-# create symlinks to libs
-make lib_links
 ```
 
 
