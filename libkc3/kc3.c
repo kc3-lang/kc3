@@ -27,6 +27,8 @@
 #include "buf_parse.h"
 #include "call.h"
 #include "env.h"
+#include "fact.h"
+#include "facts.h"
 #include "facts_cursor.h"
 #include "fd.h"
 #include "kc3_main.h"
@@ -205,6 +207,17 @@ s_tag * kc3_fact_subject (s_fact *fact, s_tag *dest)
 s_tag * kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr)
 {
   return tag_init_struct_with_data(tag, &g_sym_Fact, ptr->p, false);
+}
+
+s_fact_w * kc3_facts_add_tags (s_facts *facts, const s_tag *subject,
+                           const s_tag *predicate,
+                           const s_tag *object,
+                           s_fact_w *dest)
+{
+  const s_fact *fact;
+  if (! (fact = facts_add_tags(facts, subject, predicate, object)))
+    return NULL;
+  return fact_w_init_fact(dest, fact);
 }
 
 s_tag * kc3_facts_collect_with_tags (s_facts *facts,

@@ -12,7 +12,7 @@ defmodule Facts do
              rwlock_thread: (Ptr) 0,
              transaction: (Ptr) 0]
 
-  def add_tags = cfn Fact "facts_add_tags" (Facts, Tag, Tag, Tag, Result)
+  def add_tags = cfn FactW "kc3_facts_add_tags" (Facts, Tag, Tag, Tag, Result)
 
   def cast = cfn Tag "tag_init_cast_struct" (Result, Sym, Tag)
 
