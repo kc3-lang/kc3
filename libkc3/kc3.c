@@ -165,9 +165,10 @@ void ** kc3_dlopen (const s_str *path, void **dest)
   return dest;
 }
 
-s_facts * kc3_env_facts (void)
+s_facts ** kc3_env_facts (s_facts **dest)
 {
-  return &g_kc3_env.facts;
+  *dest = &g_kc3_env.facts;
+  return dest;
 }
 
 sw kc3_errno (void)

@@ -63,7 +63,7 @@ s_tag *      kc3_defoperator (const s_sym **name, const s_sym **sym,
                               s_tag *dest);
 s_tag *      kc3_defstruct (const s_list * const *spec, s_tag *dest);
 void **      kc3_dlopen (const s_str *path, void **dest);
-s_facts *    kc3_env_facts (void);
+s_facts **   kc3_env_facts (s_facts **dest);
 sw           kc3_errno (void);
 void         kc3_exit (sw code);
 s_tag *      kc3_facts_collect_with_tags (s_facts *facts,

@@ -16,8 +16,6 @@ defmodule Facts do
 
   def cast = cfn Tag "tag_init_cast_struct" (Result, Sym, Tag)
 
-  def clean = cfn Void "facts_clean" (Facts)
-
   def collect_with_tags = cfn Tag "kc3_facts_collect_with_tags" (Facts,
     Tag, Tag, Tag, Fn, Result)
 
@@ -26,7 +24,7 @@ defmodule Facts do
   def delete = cfn Void "facts_delete" (Facts)
 
   # env_facts() -> facts
-  def env_facts = cfn Ptr "kc3_env_facts" ()
+  def env_facts = cfn Ptr "kc3_env_facts" (Result)
 
   # with_tags(facts, subject, predicate, object,
   #           fn (fact) {result}) -> result
