@@ -23,19 +23,21 @@ void facts_with_cursor_clean (s_facts_with_cursor *cursor)
 {
   uw i = 0;
   assert(cursor);
-  while (i < cursor->facts_count) {
-    if (cursor->levels[i].spec) {
-      free(cursor->levels[i].spec);
-      facts_cursor_clean(&cursor->levels[i].cursor);
+  if (cursor->facts_count) {
+    while (i < cursor->facts_count) {
+      if (cursor->levels[i].spec) {
+        free(cursor->levels[i].spec);
+        facts_cursor_clean(&cursor->levels[i].cursor);
+      }
+      i++;
     }
-    i++;
-  }
-  free(cursor->levels);
-  free(cursor->spec);
-  if (pthread_mutex_destroy(&cursor->mutex)) {
-    err_puts("facts_with_cursor_clean: pthread_mutex_destroy");
-    assert(! "facts_with_cursor_clean: pthread_mutex_destroy");
-    exit(1);
+    free(cursor->levels);
+    free(cursor->spec);
+    if (pthread_mutex_destroy(&cursor->mutex)) {
+      err_puts("facts_with_cursor_clean: pthread_mutex_destroy");
+      assert(! "facts_with_cursor_clean: pthread_mutex_destroy");
+      exit(1);
+    }
   }
 }
 
@@ -128,7 +130,20 @@ const s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
     level->spec = NULL;
     if (! cursor->level) {
       cursor->facts_count = 0;
-      goto not_found;
+      free(cursor->levels);
+      free(cursor->spec);
+      if (pthread_mutex_unlock(&cursor->mutex)) {
+        err_puts("facts_with_cursor_next: pthread_mutex_unlock");
+        assert(! "facts_with_cursor_next: pthread_mutex_unlock");
+        exit(1);
+      }
+      if (pthread_mutex_destroy(&cursor->mutex)) {
+        err_puts("facts_with_cursor_next: pthread_mutex_destroy");
+        assert(! "facts_with_cursor_next: pthread_mutex_destroy");
+        exit(1);
+      }
+      *dest = NULL;
+      return dest;
     }
     cursor->level--;
   }
