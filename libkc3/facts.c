@@ -166,6 +166,12 @@ int facts_compare_pfact_id_reverse (const void *a, const void *b)
   return 0;
 }
 
+s_facts ** facts_database (s_facts **facts)
+{
+  *facts = facts_new();
+  return facts;
+}
+
 void facts_delete (s_facts *facts)
 {
   assert(facts);

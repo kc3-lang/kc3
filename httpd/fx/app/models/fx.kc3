@@ -1,0 +1,11 @@
+defmodule Fx
+
+  def db = Facts.database()
+
+  def tag_list = fn (path) {
+    Facts.collect_with_tags(db, path, :tag, tag = ?, fn (fact) {
+      tag
+    })
+  }
+
+  

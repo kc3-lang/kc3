@@ -100,6 +100,7 @@ defmodule FXController do
   }
 
   def tag_create = fn (path, tag) {
+    Fx.tag_create(
     body = """
 <html>
   <head>

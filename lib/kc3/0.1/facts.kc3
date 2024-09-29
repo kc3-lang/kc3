@@ -12,10 +12,18 @@ defmodule Facts do
              rwlock_thread: (Ptr) 0,
              transaction: (Ptr) 0]
 
+  def add_tags = cfn Fact "facts_add_tags" (Facts, Tag, Tag, Tag, Result)
+
   def cast = cfn Tag "tag_init_cast_struct" (Result, Sym, Tag)
+
+  def clean = cfn Void "facts_clean" (Facts)
 
   def collect_with_tags = cfn Tag "kc3_facts_collect_with_tags" (Facts,
     Tag, Tag, Tag, Fn, Result)
+
+  def database = cfn Ptr "facts_database" (Result)
+
+  def delete = cfn Void "facts_delete" (Facts)
 
   # env_facts() -> facts
   def env_facts = cfn Ptr "kc3_env_facts" ()
