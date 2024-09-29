@@ -165,7 +165,7 @@ void ** kc3_dlopen (const s_str *path, void **dest)
   return dest;
 }
 
-s_facts ** kc3_env_facts (s_facts **dest)
+s_facts ** kc3_env_db (s_facts **dest)
 {
   *dest = &g_kc3_env.facts;
   return dest;

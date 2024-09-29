@@ -2201,7 +2201,7 @@ sw buf_inspect_ident_size (s_pretty *pretty, const s_ident *ident)
   sw r;
   sw result = 0;
   assert(ident);
-  if (ident->module) {
+  if (ident->module && ident->module != g_kc3_env.current_defmodule) {
     if ((r = buf_inspect_sym_size(pretty, &ident->module)) < 0)
       return r;
     result += r;

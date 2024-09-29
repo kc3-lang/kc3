@@ -855,7 +855,10 @@ bool * tag_is_unbound_var (const s_tag *tag, bool *dest)
     assert(! "tag_is_unbound_var: NULL tag");
     return NULL;
   }
-  *dest = tag->type == TAG_VAR;
+  *dest = (tag->type == TAG_VAR &&
+           tag->data.var.ptr &&
+           tag->data.var.ptr->type == TAG_VAR &&
+           tag->data.var.ptr->data.var.ptr == tag->data.var.ptr);
   return dest;
 }
 

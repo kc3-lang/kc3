@@ -23,8 +23,8 @@ defmodule Facts do
 
   def delete = cfn Void "facts_delete" (Facts)
 
-  # env_facts() -> facts
-  def env_facts = cfn Ptr "kc3_env_facts" (Result)
+  # env_db() -> facts
+  def env_db = cfn Ptr "kc3_env_db" (Result)
 
   # with_tags(facts, subject, predicate, object,
   #           fn (fact) {result}) -> result

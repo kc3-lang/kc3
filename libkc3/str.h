@@ -56,6 +56,7 @@ s_str * str_init_empty (s_str *str);
 s_str * str_init_f (s_str *str, const char *fmt, ...);
 PROTOTYPE_STR_INIT_STRUCT(fn);
 s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format);
+PROTOTYPE_STR_INIT_STRUCT(ident);
 PROTOTYPE_STR_INIT(list, const s_list * const *);
 PROTOTYPE_STR_INIT_STRUCT(map);
 PROTOTYPE_STR_INIT(ptr, const u_ptr_w *);
