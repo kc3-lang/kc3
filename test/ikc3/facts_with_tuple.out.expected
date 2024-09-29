@@ -1,4 +1,4 @@
-Facts.with_tuple(Facts.env_facts(), {KC3, :operator, ?}, fn (fact) { puts(fact.object); void })
+Facts.with_tuple(Facts.env_db(), {KC3, :operator, op = ?}, fn (fact) { puts(fact.object); void })
 operator_add
 operator_addi
 operator_and

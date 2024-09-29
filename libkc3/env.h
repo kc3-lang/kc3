@@ -73,10 +73,6 @@ s_tag *        env_facts_first_with_tags (s_env *env, s_facts *facts,
 s_tag *        env_facts_with (s_env *env, s_facts *facts,
                                s_list **spec, s_fn *callback,
                                s_tag *dest);
-s_facts_with_cursor *
-               env_facts_with_list (s_env *env, s_facts *facts,
-                                    s_facts_with_cursor *cursor,
-                                    s_list *spec);
 s_tag *        env_facts_with_tags (s_env *env, s_facts *facts,
                                     s_tag *subject, s_tag *predicate,
                                     s_tag *object, s_fn *callback,

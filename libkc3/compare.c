@@ -163,6 +163,7 @@ COMPARE_DEF(f32)
 COMPARE_DEF(f64)
 COMPARE_DEF(f128)
 
+
 s8 compare_fact (const s_fact *a, const s_fact *b)
 {
   s8 r;
@@ -172,11 +173,11 @@ s8 compare_fact (const s_fact *a, const s_fact *b)
     return -1;
   if (!b)
     return 1;
-  if ((r = compare_tag(a->subject, b->subject)))
+  if ((r = compare_tag_deref(a->subject, b->subject)))
     return r;
-  if ((r = compare_tag(a->predicate, b->predicate)))
+  if ((r = compare_tag_deref(a->predicate, b->predicate)))
     return r;
-  r = compare_tag(a->object, b->object);
+  r = compare_tag_deref(a->object, b->object);
   return r;
 }
 
@@ -230,11 +231,11 @@ s8 compare_fact_pos (const s_fact *a, const s_fact *b)
     return -1;
   if (!b)
     return 1;
-  if ((r = compare_tag(a->predicate, b->predicate)))
+  if ((r = compare_tag_deref(a->predicate, b->predicate)))
     return r;
-  if ((r = compare_tag(a->object, b->object)))
+  if ((r = compare_tag_deref(a->object, b->object)))
     return r;
-  r = compare_tag(a->subject, b->subject);
+  r = compare_tag_deref(a->subject, b->subject);
   return r;
 }
 
@@ -247,11 +248,11 @@ s8 compare_fact_osp (const s_fact *a, const s_fact *b)
     return -1;
   if (!b)
     return 1;
-  if ((r = compare_tag(a->object, b->object)))
+  if ((r = compare_tag_deref(a->object, b->object)))
     return r;
-  if ((r = compare_tag(a->subject, b->subject)))
+  if ((r = compare_tag_deref(a->subject, b->subject)))
     return r;
-  r = compare_tag(a->predicate, b->predicate);
+  r = compare_tag_deref(a->predicate, b->predicate);
   return r;
 }
 
@@ -594,11 +595,11 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   s_integer tmp2 = {0};
   if (a == b)
     return 0;
-  if (!a ||
+  if (! a ||
       a == TAG_FIRST ||
       b == TAG_LAST)
     return -1;
-  if (!b ||
+  if (! b ||
       a == TAG_LAST ||
       b == TAG_FIRST)
     return 1;
@@ -1481,6 +1482,19 @@ s8 compare_tag_number (const s_tag *a, const s_tag *b)
   assert(! "compare_tag: not a number");
   abort();
   return 0;
+}
+     
+s8 compare_tag_deref (const s_tag *a, const s_tag *b)
+{
+  const s_tag *a_deref;
+  const s_tag *b_deref;
+  a_deref = a;
+  if (a_deref && a_deref->type == TAG_VAR)
+    a_deref = a_deref->data.var.ptr;
+  b_deref = b;
+  if (b_deref && b_deref->type == TAG_VAR)
+    b_deref = b_deref->data.var.ptr;
+  return compare_tag(a_deref, b_deref);
 }
 
 s8 compare_time (const s_time *a, const s_time *b)

@@ -32,8 +32,7 @@ defmodule Facts do
     Tag, Tag, Fn, Result)
 
   # with(facts, [[?, ?, ?]], fn (fact) {result}) -> result
-  def with = cfn Tag "kc3_facts_with" (Facts, List, Fn,
-    Result)
+  def with = cfn Tag "kc3_facts_with" (Facts, List, Fn, Result)
 
   # with_tags(facts, subject, predicate, object,
   #           fn (fact) {result}) -> result

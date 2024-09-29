@@ -2153,15 +2153,13 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   if (! struct_allocate(&arguments->tag.data.struct_))
     return NULL;
   fact_w = arguments->tag.data.struct_.data;
-  if (! env_facts_with_list(env, facts, &cursor, *spec))
+  if (! facts_with_list(facts, &cursor, *spec))
     return NULL;
   while (1) {
     if (! facts_with_cursor_next(&cursor, &fact))
       goto clean;
-    if (! fact) {
-      err_puts("env_facts_with: ok");
-      goto ok;
-    }
+    if (! fact)
+      break;
     tag_clean(&tmp);
     fact_w_init_fact(fact_w, fact);
     if (! env_eval_call_fn_args(env, callback, arguments, &tmp)) {
@@ -2171,7 +2169,6 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
     fact_w_clean(fact_w);
     fact_w_init(fact_w);
   }
- ok:
   list_delete_all(arguments);
   *dest = tmp;
   return dest;
@@ -2181,74 +2178,6 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   tag_clean(&tmp);
   fact_w_clean(fact_w);
   list_delete_all(arguments);
-  return NULL;
-}
-
-s_facts_with_cursor * env_facts_with_list (s_env *env, s_facts *facts,
-                                           s_facts_with_cursor *cursor,
-                                           s_list *spec)
-{
-  s_ident *ident;
-  s_list *spec_i;
-  s_list *spec_j;
-  s_list  *tmp;
-  s_list **tmp_tail;
-  s_list **tmp_tail_j;
-  p_facts_spec facts_spec = NULL;
-  s_tag *var;
-  assert(facts);
-  assert(cursor);
-  assert(spec);
-  tmp = NULL;
-  tmp_tail = &tmp;
-  spec_i = spec;
-  while (spec_i) {
-    if (spec_i->tag.type != TAG_LIST)
-      goto ko;
-    *tmp_tail = list_new(NULL);
-    (*tmp_tail)->tag.type = TAG_LIST;
-    tmp_tail_j = &(*tmp_tail)->tag.data.list;
-    spec_j = spec_i->tag.data.list;
-    while (spec_j) {
-      *tmp_tail_j = list_new(NULL);
-      if (spec_j->tag.type == TAG_IDENT &&
-          (ident = &spec_j->tag.data.ident) &&
-          ! frame_get(env->frame, ident->sym)) {
-        if (! (var = frame_binding_new(env->frame, ident->sym)))
-          goto ko;
-        tag_init_copy(&(*tmp_tail_j)->tag, var);
-      }
-      else if (! env_eval_tag(env, &spec_j->tag, &(*tmp_tail_j)->tag))
-        goto ko;
-      tmp_tail_j = &(*tmp_tail_j)->next.data.list;
-      spec_j = list_next(spec_j);
-    }
-    tmp_tail = &(*tmp_tail)->next.data.list;
-    spec_i = list_next(spec_i);
-  }
-  if (false) {
-    err_write_1("env_facts_with_list: spec = ");
-    err_inspect_list((const s_list * const *) &tmp);
-    err_write_1("\n");
-  }
-  if (! (facts_spec = facts_spec_new_list(tmp))) {
-    err_puts("env_facts_with_list: facts_spec_new_list");
-    assert(! "env_facts_with_list: facts_spec_new_list");
-    goto ko;
-  }
-  if (false) {
-    err_write_1("env_facts_with_list: spec = ");
-    err_inspect_facts_spec(facts_spec);
-    err_write_1("\n");
-  }
-  if (! facts_with(facts, cursor, facts_spec))
-    goto ko;
-  free(facts_spec);
-  list_delete_all(tmp);
-  return cursor;
- ko:
-  free(facts_spec);
-  list_delete_all(tmp);
   return NULL;
 }
 

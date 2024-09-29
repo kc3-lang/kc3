@@ -1,0 +1,33 @@
+Facts.with(Facts.env_db(), [[KC3, :operator, op = ?], [op, :sym, sym = ?]], fn (fact) { puts("#{inspect(op)} #{inspect(sym)}") ; 1 })
+operator_add :+
+operator_addi :+i
+operator_and :&&
+operator_assign :<-
+operator_assign_2 :←
+operator_band :&
+operator_bnot :~
+operator_bor :bor
+operator_brackets :"[]"
+operator_bxor :^
+operator_defstruct :defstruct
+operator_div :/
+operator_eq :==
+operator_equal :=
+operator_gt :>
+operator_gte :>=
+operator_lt :<
+operator_lte :<=
+operator_mod :mod
+operator_mul :*
+operator_neg :-
+operator_not :!
+operator_not_eq :!=
+operator_or :||
+operator_paren :"()"
+operator_pin :^
+operator_require :require
+operator_semicolumn :";"
+operator_shift_left :<<
+operator_shift_right :>>
+operator_sub :-
+1

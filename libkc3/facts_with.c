@@ -18,6 +18,7 @@
 #include "facts_cursor.h"
 #include "facts_spec.h"
 #include "facts_with.h"
+#include "list.h"
 #include "sym.h"
 #include "tag.h"
 #include "var.h"
@@ -129,6 +130,33 @@ s_facts_cursor * facts_with_3 (s_facts *facts,
   fact.predicate = predicate;
   fact.object = object;
   return facts_cursor_init(facts, cursor, facts->index_spo, &fact, &fact);
+}
+
+s_facts_with_cursor * facts_with_list (s_facts *facts,
+                                       s_facts_with_cursor *cursor,
+                                       s_list *spec)
+{
+  p_facts_spec facts_spec = NULL;
+  assert(facts);
+  assert(cursor);
+  assert(spec);
+  if (! (facts_spec = facts_spec_new_list(spec))) {
+    err_puts("facts_with_list: facts_spec_new_list");
+    assert(! "facts_with_list: facts_spec_new_list");
+    goto ko;
+  }
+  if (false) {
+    err_write_1("facts_with_list: spec = ");
+    err_inspect_facts_spec(facts_spec);
+    err_write_1("\n");
+  }
+  if (! facts_with(facts, cursor, facts_spec))
+    goto ko;
+  free(facts_spec);
+  return cursor;
+ ko:
+  free(facts_spec);
+  return NULL;
 }
 
 s_facts_cursor * facts_with_tags (s_facts *facts,
