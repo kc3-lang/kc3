@@ -15,13 +15,17 @@ Facts.add_tags(db, 4, 5, 6)
        predicate: 5,
        object: 6,
        id: (Uw) 0}
-Facts.with_tags(db, s = ?, p = ?, o = ?, fn (fact) { puts(fact) ; :ok })
-%FactW{subject: 1,
-       predicate: 2,
-       object: 3,
+Facts.with_tags(db, s = ?, p = ?, o = ?, fn (fact) { puts("#{s} #{p} #{o}") ; :ok })
+1 2 3
+4 5 6
+:ok
+Facts.add_tags(db, 7, 8, 9)
+%FactW{subject: 7,
+       predicate: 8,
+       object: 9,
        id: (Uw) 0}
-%FactW{subject: 4,
-       predicate: 5,
-       object: 6,
-       id: (Uw) 0}
+Facts.with_tags(db, s = ?, p = ?, o = ?, fn (fact) { puts("#{s} #{p} #{o}") ; :ok })
+1 2 3
+4 5 6
+7 8 9
 :ok
