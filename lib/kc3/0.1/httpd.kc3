@@ -14,27 +14,9 @@ defmodule HTTPd do
   require Str
   require URL
 
-  def load_directory = fn (dir) {
-    if File.exists?(dir) && File.is_directory?(dir) do
-      files = File.list(dir)
-      List.each(files, fn (file) {
-        if (! Str.starts_with?(file, ".") &&
-            ! Str.ends_with?(file, "~")) do
-          path = dir + file
-          if File.is_directory?(path) do
-            load_directory(path + "/")
-          else
-            load(path)
-          end
-        end
-      })
-    end
-  }
-
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
-    load_directory("app/views/")
-    load_directory("app/controllers/")
+    load_directory("app/")
     if (File.exists?("config/routes.kc3")) do
       load("config/routes.kc3")
     end

@@ -337,3 +337,21 @@ replace {KC3.human_size, :symbol_value, fn (size) {
     end
   end
 }}
+add {KC3, :symbol, KC3.load_directory}
+replace {KC3.load_directory, :symbol_value, fn (dir) {
+  if File.exists?(dir) && File.is_directory?(dir) do
+    files = File.list(dir)
+    List.each(files, fn (file) {
+      if (! Str.starts_with?(file, ".")) do
+        path = dir + file
+        if File.is_directory?(path) do
+          load_directory(path + "/")
+        else
+          if Str.ends_with?(path, ".kc3") do
+            load(path)
+          end
+        end
+      end
+    })
+  end
+}}

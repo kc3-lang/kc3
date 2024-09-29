@@ -1,4 +1,4 @@
-defmodule Fx
+defmodule Fx do
 
   def db = Facts.database()
 
@@ -8,4 +8,12 @@ defmodule Fx
     })
   }
 
-  
+  def tag_add = fn (path, tag) {
+    Facts.add_tags(db, path, :tag, tag)
+  }
+
+  def tag_remove = fn (path, tag) {
+    Facts.remove_tags(db, path, :tag, tag)
+  }
+
+end
