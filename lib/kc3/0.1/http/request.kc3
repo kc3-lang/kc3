@@ -3,7 +3,8 @@ defmodule HTTP.Request do
   defstruct [method: ?,
              url: "/",
              protocol: "HTTP/1.1",
-             headers: []]
+             headers: [],
+             body: ?]
 
   dlopen(__DIR__ + "../http.so")
 

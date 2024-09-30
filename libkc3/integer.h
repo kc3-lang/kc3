@@ -37,6 +37,7 @@ s_integer * integer_init_s8 (s_integer *a, s8 x);
 s_integer * integer_init_s16 (s_integer *a, s16 x);
 s_integer * integer_init_s32 (s_integer *a, s32 x);
 s_integer * integer_init_s64 (s_integer *a, s64 x);
+s_integer * integer_init_str (s_integer *a, const s_str *src);
 s_integer * integer_init_sw (s_integer *a, sw x);
 s_integer * integer_init_u8 (s_integer *a, u8 x);
 s_integer * integer_init_u16 (s_integer *a, u16 x);

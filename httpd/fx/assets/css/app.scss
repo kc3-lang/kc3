@@ -36,7 +36,9 @@ body {
     font-family: computer_modern;
     font-size: 1.3em;
 }
-
+input {
+    width: 90%;
+}
 nav h1, nav h1 a, nav h1 a.navbar-brand {
     color: #fff;
     font-size: 1em;
@@ -217,4 +219,8 @@ h1,h2,h3,h4,h5,h6 {
     &:hover {
         background: #e8e8ff;
     }
+}
+
+.right-col div {
+    margin: 0.3em 0;
 }

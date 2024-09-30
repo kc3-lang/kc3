@@ -12,7 +12,8 @@ defmodule Facts do
              rwlock_thread: (Ptr) 0,
              transaction: (Ptr) 0]
 
-  def add_tags = cfn FactW "kc3_facts_add_tags" (Facts, Tag, Tag, Tag, Result)
+  # returns true if fact was added or is already present
+  def add_tags = cfn Bool "kc3_facts_add_tags" (Facts, Tag, Tag, Tag, Result)
 
   def cast = cfn Tag "tag_init_cast_struct" (Result, Sym, Tag)
 
@@ -30,6 +31,9 @@ defmodule Facts do
   #           fn (fact) {result}) -> result
   def first_with_tags = cfn Tag "kc3_facts_first_with_tags" (Facts, Tag,
     Tag, Tag, Fn, Result)
+
+  # returns true if fact was removed or is already absent
+  def remove_tags = cfn Bool "kc3_facts_remove_tags" (Facts, Tag, Tag, Tag, Result)
 
   # with(facts, [[?, ?, ?]], fn (fact) {result}) -> result
   def with = cfn Tag "kc3_facts_with" (Facts, List, Fn, Result)

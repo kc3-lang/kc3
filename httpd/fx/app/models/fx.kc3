@@ -2,7 +2,15 @@ defmodule Fx do
 
   def db = Facts.database()
 
-  def tag_list = fn (path) {
+  # Facts.open(db, "db/fx.facts")
+
+  def property_index = fn (path) {
+    Facts.collect_with_tags(db, path, p = ?, o = ?, fn (fact) {
+      {p, o}
+    })
+  }
+
+  def tag_index = fn (path) {
     Facts.collect_with_tags(db, path, :tag, tag = ?, fn (fact) {
       tag
     })

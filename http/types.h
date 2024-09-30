@@ -39,6 +39,7 @@ struct http_request {
   s_str url;
   s_str protocol;
   s_list *headers;
+  s_tag body;
 };
 
 struct http_response {

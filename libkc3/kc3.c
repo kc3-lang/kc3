@@ -209,15 +209,16 @@ s_tag * kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr)
   return tag_init_struct_with_data(tag, &g_sym_Fact, ptr->p, false);
 }
 
-s_fact_w * kc3_facts_add_tags (s_facts *facts, const s_tag *subject,
+bool * kc3_facts_add_tags (s_facts *facts, const s_tag *subject,
                            const s_tag *predicate,
                            const s_tag *object,
-                           s_fact_w *dest)
+                           bool *dest)
 {
   const s_fact *fact;
   if (! (fact = facts_add_tags(facts, subject, predicate, object)))
     return NULL;
-  return fact_w_init_fact(dest, fact);
+  *dest = true;
+  return dest;
 }
 
 s_tag * kc3_facts_collect_with_tags (s_facts *facts,
@@ -243,6 +244,18 @@ uw * kc3_facts_next_id (uw *dest)
 {
   assert(dest);
   *dest = g_kc3_env.facts.next_id;
+  return dest;
+}
+
+bool * kc3_facts_remove_tags (s_facts *facts, const s_tag *subject,
+                              const s_tag *predicate,
+                              const s_tag *object,
+                              bool *dest)
+{
+  bool b;
+  if (! facts_remove_fact_tags(facts, subject, predicate, object, &b))
+    return NULL;
+  *dest = true;
   return dest;
 }
 

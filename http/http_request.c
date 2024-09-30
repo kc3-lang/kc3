@@ -81,6 +81,8 @@ s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
 
 s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 {
+  const s_str content_length_str = {{NULL}, 14, {"Content-Length"}};
+  uw          content_length_uw = 0;
   s_str line;
   s_buf_save save;
   s_list **tail;
@@ -134,7 +136,20 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     (*tail)->tag.type = TAG_STR;
     if (! http_header_split(&line, &(*tail)->tag))
       goto restore;
+    if (! compare_str_case_insensitive
+        (&content_length_str, &(*tail)->tag.data.tuple.tag->data.str)) {
+      if (! uw_init_str(&content_length_uw,
+                        &(*tail)->tag.data.tuple.tag[1].data.str))
+        goto restore;
+      tag_clean((*tail)->tag.data.tuple.tag + 1);
+      tag_init_uw((*tail)->tag.data.tuple.tag + 1, content_length_uw);
+    }
     tail = &(*tail)->next.data.list;
+  }
+  if (content_length_uw) {
+    tmp_req.body.type = TAG_STR;
+    if (! buf_read(buf, content_length_uw, &tmp_req.body.data.str))
+      goto restore;
   }
   if (! tag_init_struct(&tmp, sym_1("HTTP.Request")))
     goto restore;

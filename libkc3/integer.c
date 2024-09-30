@@ -291,6 +291,13 @@ s_integer * integer_init_f128 (s_integer *a, f128 x)
   return integer_set_f128(a, x);
 }
 
+s_integer * integer_init_ratio (s_integer *a, const s_ratio *r)
+{
+  assert(a);
+  integer_init(a);
+  return integer_set_ratio(a, r);
+}
+
 s_integer * integer_init_s8 (s_integer *a, s8 x)
 {
   assert(a);
@@ -319,11 +326,16 @@ s_integer * integer_init_s64 (s_integer *a, s64 x)
   return integer_set_s64(a, x);
 }
 
-s_integer * integer_init_ratio (s_integer *a, const s_ratio *r)
+s_integer * integer_init_str (s_integer *i, const s_str *src)
 {
-  assert(a);
-  integer_init(a);
-  return integer_set_ratio(a, r);
+  s_buf buf;
+  assert(i);
+  assert(str);
+  if (! buf_init_str_const(&buf, src))
+    return NULL;
+  if (buf_parse_integer(&buf, i) <= 0)
+    return NULL;
+  return i;
 }
 
 s_integer * integer_init_sw (s_integer *a, sw x)

@@ -56,11 +56,6 @@ defmodule FXController do
     }
   }
 
-  def get_properties = fn (path) {
-    Facts.collect_with_tags(Facts.env_facts(), path, ?, ?,
-      fn (fact) { {fact.predicate, fact.object} })
-  }
-
   def show_file = fn (path) {
     if (File.exists?(path)) do
       if (File.is_directory?(path)) do
@@ -76,7 +71,8 @@ defmodule FXController do
         menu = FXView.render_menu_index(menu_index)
         file = FXView.render_show_file_preview(path, :full)
       end
-      properties = get_properties(path)
+      properties = Fx.property_index(path)
+      tags = Fx.tag_index(path)
       properties = FXView.render_properties(properties)
       page = FXView.render_show_file(path, menu, file, properties)
       body = LayoutView.render(path, page)
@@ -117,6 +113,7 @@ defmodule FXController do
   }
 
   def tag_delete = fn (path, tag) {
+    Fx.tag_remove(path, tag)
     body = """
 <html>
   <head>
@@ -132,11 +129,9 @@ defmodule FXController do
     %HTTP.Response{body: body}
   }
 
-  def tag_route = fn (req) {
-    if (req.url == "/tag" ||
-        Str.starts_with?(req.url, "/tag/")) do
-      ["", "tag", tag | url] = Str.split(req.url, "/")
-      path = "./fx" + req.url
+  def tags_route = fn (req) {
+    ["", "tags", url] = Str.split(req.url, "/")                  
+    path = "./fx" + req.url
       if (req.method == GET) do
         response = tag_create(path, tag)
       else
@@ -183,12 +178,13 @@ defmodule FXController do
     %HTTP.Response{body: body}
   }
 
-  def property_route = fn (req) {
-    if (req.url == "/property" ||
-        Str.starts_with?(req.url, "/property/")) do
-      ["", "property", property, value | url] = Str.split(req.url, "/")
-      path = "./fx" + req.url
-      if (req.method == GET) do
+  def properties_route = fn (req) {
+    slash = if Str.ends_with?(req.url, "/") do "" else "/" end
+    url = req.url + slash
+    if (Str.starts_with?(url, "/properties/")) do
+      url = Str.slice(url, 11, -1)
+      path = "./fx" + url
+      if (req.method == POST) do
         response = property_create(path, property, value)
       else
         if (req.method == DELETE) do

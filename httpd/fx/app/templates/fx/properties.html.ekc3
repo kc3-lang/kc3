@@ -4,6 +4,33 @@
   <tr>
     <td>#{HTML.escape(key)}</td>
     <td>#{HTML.escape(value)}</td>
+    <!-- if is_admin(auth_user) do -->
+    <td>  
+      <form enctype="multipart/form-data"
+            method="DELETE"
+            target="/properties/<%= URL.escape(path) %>">
+        <input id="property_key" type="hidden" value="<%= key %>" />
+        <input id="property_value" type="hidden" value="<%= value %>" />
+      </form>
+    </td>
+    <!-- end -->
   </tr>
-"""}), "\n") %>
+  """}), "\n") %>
 </table>
+<!-- if is_admin(auth_user) do -->
+<form enctype="multipart/form-data"
+      method="POST"
+      target="/properties/<%= URL.escape(path) %>">
+  <div>
+    <label for="property_key">Key</label>
+    <input id="property_key" type="text" />
+  </div>
+  <div>
+    <label for="property_value">Value</label>
+    <input id="property_value" type="text" />
+  </div>
+  <div>
+    <button type="submit">Add property</button>
+  </div>
+</form>
+<!-- end -->

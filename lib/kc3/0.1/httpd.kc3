@@ -179,6 +179,7 @@ defmodule HTTPd do
 
   def route_request = fn {
     (request) {
+      puts("route_request #{inspect(request)}")
       route_request(request, routes)
     }
     (request, []) {
@@ -206,7 +207,7 @@ defmodule HTTPd do
     ([], i) { "" }
     (url, i) { "/" + url_eat(Str.split(url, "/"), i + 1) }
   }
-    
+
   def def_static_route = fn (prefix, root_dir, url_skip) {
     directory_page = HTTPd.fn (request) {
       url = url_eat(request.url, url_skip)
