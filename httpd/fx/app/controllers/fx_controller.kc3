@@ -81,16 +81,21 @@ defmodule FXController do
   }
 
   def fx_route = fn (req) {
-    if ((req.method == GET ||
-         req.method == HEAD) &&
-        (req.url == "/fx" ||
-         Str.starts_with?(req.url, "/fx/"))) do
-      path = "." + req.url
-      response = show_file(path)
-      if (response) do
-        response
+    if (req.method != GET &&
+        req.method != HEAD) do
+      error_405_page(req)
+    else
+      if (req.url == "/fx" ||
+          Str.starts_with?(req.url, "/fx/")) do
+        path = "." + req.url
+        response = show_file(path)
+        if (response) do
+          response
+        else
+          HTTPd.error_404_page(req)
+        end
       else
-        error_404_page(req)
+        HTTPd.error_404_page(req)
       end
     end
   }
@@ -132,13 +137,13 @@ defmodule FXController do
   def tags_route = fn (req) {
     ["", "tags", url] = Str.split(req.url, "/")                  
     path = "./fx" + req.url
-      if (req.method == GET) do
+      if (req.method == POST) do
         response = tag_create(path, tag)
       else
         if (req.method == DELETE) do
           response = tag_delete(path, tag)
         else
-          error_404_page(req)
+          error_405_page(req)
         end
       end
     end
@@ -183,16 +188,18 @@ defmodule FXController do
     url = req.url + slash
     if (Str.starts_with?(url, "/properties/")) do
       url = Str.slice(url, 11, -1)
-      path = "./fx" + url
+      path = "fx" + url
       if (req.method == POST) do
-        response = property_create(path, property, value)
+        property_create(path, property, value)
       else
         if (req.method == DELETE) do
-          response = property_delete(path, property, value)
+          property_delete(path, property, value)
         else
-          error_404_page(req)
+          error_405_page(req)
         end
       end
+    else
+      error_404_page(req)
     end
   }
 

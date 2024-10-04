@@ -1,2 +1,10 @@
-quote Facts.with(Facts.env_db(), [[KC3, :operator, op = ?], [op, :sym, sym = ?]], fn (fact) { puts("#{inspect(op)} #{inspect(sym)}"); 1 })
-Facts.with(Facts.env_db(), [[KC3, :operator, op = ?], [op, :sym, sym = ?]], fn (fact) { puts("#{inspect(op)} #{inspect(sym)}"); 1 })
+quote Facts.with(Facts.env_db(), [[KC3, :operator, op = ?],
+                                  [op, :sym, sym = ?]], fn (fact) {
+  puts("#{inspect(op)} #{inspect(sym)}")
+  1
+})
+Facts.with(Facts.env_db(), [[KC3, :operator, op = ?],
+                            [op, :sym, sym = ?]], fn (fact) {
+  puts("#{inspect(op)} #{inspect(sym)}")
+  1
+})

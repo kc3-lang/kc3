@@ -179,7 +179,6 @@ defmodule HTTPd do
 
   def route_request = fn {
     (request) {
-      puts("route_request #{inspect(request)}")
       route_request(request, routes)
     }
     (request, []) {

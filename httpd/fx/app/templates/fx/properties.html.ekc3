@@ -6,11 +6,15 @@
     <td>#{HTML.escape(value)}</td>
     <!-- if is_admin(auth_user) do -->
     <td>  
-      <form enctype="multipart/form-data"
-            method="DELETE"
-            target="/properties/<%= URL.escape(path) %>">
-        <input id="property_key" type="hidden" value="<%= key %>" />
-        <input id="property_value" type="hidden" value="<%= value %>" />
+      <form action="/properties/<%= URL.escape(path) %>"
+            enctype="multipart/form-data"
+            method="DELETE">
+        <input id="property_key"
+               type="hidden"
+               value="#{HTML.escape(key)}" />
+        <input id="property_value"
+               type="hidden"
+               value="#{HTML.escape(value)}" />
       </form>
     </td>
     <!-- end -->
@@ -18,9 +22,9 @@
   """}), "\n") %>
 </table>
 <!-- if is_admin(auth_user) do -->
-<form enctype="multipart/form-data"
-      method="POST"
-      target="/properties/<%= URL.escape(path) %>">
+<form action="/properties/<%= URL.escape(path) %>"
+      enctype="multipart/form-data"
+      method="POST">
   <div>
     <label for="property_key">Key</label>
     <input id="property_key" type="text" />

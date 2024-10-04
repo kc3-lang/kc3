@@ -363,6 +363,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_array(str, &tag->data.array);
   case TAG_BOOL:
     return str_init_bool(str, tag->data.bool);
+  case TAG_CFN:
+    return str_init_cfn(str, &tag->data.cfn);
   case TAG_CHARACTER:
     return str_init_character(str, tag->data.character);
   case TAG_FN:
@@ -424,6 +426,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   assert(! "str_init_cast: cannot cast to Str");
   return NULL;
 }
+
+DEF_STR_INIT_STRUCT(cfn)
 
 s_str * str_init_character (s_str *str, const character src)
 {

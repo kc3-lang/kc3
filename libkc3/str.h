@@ -49,6 +49,7 @@ s_str * str_init_concatenate (s_str *str, const s_str *a,
                               const s_str *b);
 s_str * str_init_concatenate_list (s_str *str,
                                    const s_list * const *list);
+PROTOTYPE_STR_INIT_STRUCT(cfn);
 s_str * str_init_character (s_str *str, const character src);
 s_str * str_init_copy (s_str *str, const s_str *src);
 s_str * str_init_copy_1 (s_str *str, const char *p);

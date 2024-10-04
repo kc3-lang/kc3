@@ -330,7 +330,7 @@ s_integer * integer_init_str (s_integer *i, const s_str *src)
 {
   s_buf buf;
   assert(i);
-  assert(str);
+  assert(src);
   if (! buf_init_str_const(&buf, src))
     return NULL;
   if (buf_parse_integer(&buf, i) <= 0)
