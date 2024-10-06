@@ -46,7 +46,7 @@ sudo apt install pkg-config clang libtool-bin make ruby time
 sudo apt install libffi-dev libbsd-dev libevent-dev
 
 # install demo dependencies
-sudo apt install libsdl2-dev libxkbcommon-dev libfreetype-dev 
+sudo apt install glew libfreetype-dev libsdl2-dev libxkbcommon-dev
 
 # use clang
 export CC=clang
