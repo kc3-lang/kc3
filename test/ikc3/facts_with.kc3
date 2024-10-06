@@ -1,10 +1,10 @@
 quote Facts.with(Facts.env_db(), [[KC3, :operator, op = ?],
-                                  [op, :sym, sym = ?]], fn (fact) {
+                                  [op, :sym, sym = ?]], fn (fact) do
   puts("#{inspect(op)} #{inspect(sym)}")
   1
-})
+end)
 Facts.with(Facts.env_db(), [[KC3, :operator, op = ?],
-                            [op, :sym, sym = ?]], fn (fact) {
+                            [op, :sym, sym = ?]], fn (fact) do
   puts("#{inspect(op)} #{inspect(sym)}")
   1
-})
+end)

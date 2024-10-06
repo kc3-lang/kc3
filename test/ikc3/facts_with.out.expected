@@ -1,4 +1,7 @@
-Facts.with(Facts.env_db(), [[KC3, :operator, op = ?], [op, :sym, sym = ?]], fn (fact) { puts("#{inspect(op)} #{inspect(sym)}") ; 1 })
+Facts.with(Facts.env_db(), [[KC3, :operator, op = ?], [op, :sym, sym = ?]], fn (fact) do
+  puts("#{inspect(op)} #{inspect(sym)}")
+  1
+end)
 operator_add :+
 operator_addi :+i
 operator_and :&&
