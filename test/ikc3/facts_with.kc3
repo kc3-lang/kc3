@@ -8,3 +8,13 @@ Facts.with(Facts.env_db(), [[KC3, :operator, op = ?],
   puts("#{inspect(op)} #{inspect(sym)}")
   1
 end)
+quote Facts.with(Facts.env_db(), [[KC3, :operator, op = ?],
+                            [op, rel = ?, value = ?]], fn (fact) do
+  puts("#{inspect(op)} #{inspect(rel)} #{inspect(value)}")
+  2
+end)
+Facts.with(Facts.env_db(), [[KC3, :operator, op = ?],
+                            [op, rel = ?, value = ?]], fn (fact) do
+  puts("#{inspect(op)} #{inspect(rel)} #{inspect(value)}")
+  2
+end)

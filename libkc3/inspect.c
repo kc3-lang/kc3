@@ -296,14 +296,14 @@ s_str * inspect_tag (const s_tag *tag, s_str *dest)
   assert(tag);
   assert(dest);
   if ((size = buf_inspect_tag_size(&pretty, tag)) < 0) {
-    err_puts("tag_inspect: size error");
-    assert(! "tag_inspect: size error");
+    err_puts("inspect_tag: buf_inspect_tag_size: error");
+    assert(! "inspect_tag: buf_inspect_tag_size: error");
     return NULL;
   }
   buf_init_alloc(&buf, size);
   if (buf_inspect_tag(&buf, tag) != size) {
-    err_puts("tag_inspect: inspect error");
-    assert(! "tag_inspect: inspect error");
+    err_puts("inspect_tag: buf_inspect_tag: error");
+    assert(! "inspect_tag: buf_inspect_tag: error");
     return NULL;
   }
   return buf_to_str(&buf, dest);

@@ -23,7 +23,7 @@
 </table>
 <!-- if is_admin(auth_user) do -->
 <form action="/properties/<%= URL.escape(path) %>"
-      enctype="multipart/form-data"
+      enctype="application/x-www-form-urlencoded"
       method="POST">
   <div>
     <label for="property_key">Key</label>

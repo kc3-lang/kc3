@@ -184,22 +184,38 @@ defmodule FXController do
   }
 
   def properties_route = fn (req) {
-    slash = if Str.ends_with?(req.url, "/") do "" else "/" end
-    url = req.url + slash
-    if (Str.starts_with?(url, "/properties/")) do
-      url = Str.slice(url, 11, -1)
-      path = "fx" + url
+    url = if (req.url == "/properties/fx") do
+      req.url + "/"
+    else
+      req.url
+    end
+    if Str.starts_with?(url, "/properties/fx/") do
+      url = Str.slice(url, 12, -1)
       if (req.method == POST) do
-        property_create(path, property, value)
+        property = req.body.property_key
+        value = req.body.property_value
+        if property == void ||
+           value == void do
+          HTTPd.error_404_page(req)
+        else
+          property_create(url, property, value)
+        end
       else
         if (req.method == DELETE) do
-          property_delete(path, property, value)
+          property = req.body.property_key
+          value = req.body.property_value
+          if property == void ||
+            value == void do
+            HTTPd.error_404_page(req)
+          else
+            property_delete(url, property, value)
+          end
         else
-          error_405_page(req)
+          HTTPd.error_405_page(req)
         end
       end
     else
-      error_404_page(req)
+      HTTPd.error_404_page(req)
     end
   }
 

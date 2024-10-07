@@ -150,6 +150,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     tmp_req.body.type = TAG_STR;
     if (! buf_read(buf, content_length_uw, &tmp_req.body.data.str))
       goto restore;
+    err_inspect_str(&tmp_req.body.data.str);
   }
   if (! tag_init_struct(&tmp, sym_1("HTTP.Request")))
     goto restore;

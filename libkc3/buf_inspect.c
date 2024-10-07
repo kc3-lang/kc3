@@ -1333,28 +1333,26 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
 
 sw buf_inspect_cfn_size (s_pretty *pretty, const s_cfn *cfn)
 {
-  s_list *arg_type;
   sw r;
   sw result = 0;
   assert(cfn);
+  if ((r = buf_write_1_size(pretty, "cfn ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_sym_size(pretty, &cfn->result_type)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1_size(pretty, " ")) < 0)
+    return r;
+  result += r;
   if ((r = buf_inspect_str_size(pretty, &cfn->name->str)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1_size(pretty, "(")) < 0)
+  if ((r = buf_write_1_size(pretty, " ")) < 0)
     return r;
   result += r;
-  arg_type = cfn->arg_types;
-  while (arg_type) {
-    if ((r = buf_inspect_tag_size(pretty, &arg_type->tag)) < 0)
-      return r;
-    arg_type = list_next(arg_type);
-    if (arg_type) {
-      if ((r = buf_write_1_size(pretty, ", ")) < 0)
-        return r;
-      result += r;
-    }
-  }
-  if ((r = buf_write_1_size(pretty, ")")) < 0)
+  if ((r = buf_inspect_list_size(pretty, (const s_list * const *)
+                                 &cfn->arg_types)) < 0)
     return r;
   result += r;
   return result;
