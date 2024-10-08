@@ -26,3 +26,5 @@ Facts.with_tags(db, s = ?, p = ?, o = ?, fn (fact) { puts("#{s} #{p} #{o}") ; :o
 1 2 3
 7 8 9
 :ok
+Facts.delete(db)
+void
