@@ -136,8 +136,26 @@ defmodule HTTPd do
     %HTTP.Response{body: body}
   }
 
+  def error_400_page = fn (request) {
+    body = """
+<html>
+  <head>
+    <title>400 Bad Request</title>
+  </head>
+  <body>
+    <h1>400 Bad Request</h1>
+    <p>
+      The request is invalid and could not be treated by the server.
+    </p>
+  </body>
+</html>
+"""
+    %HTTP.Response{code: 404, body: body}
+  }
+
   def error_404_page = fn (request) {
-    body = "<html>
+    body = """
+<html>
   <head>
     <title>404 Not Found</title>
   </head>
@@ -148,12 +166,13 @@ defmodule HTTPd do
     </p>
   </body>
 </html>
-"
+"""
     %HTTP.Response{code: 404, body: body}
   }
 
   def error_405_page = fn (request) {
-    body = "<html>
+    body = """
+<html>
   <head>
     <title>405 Method Not Allowed</title>
   </head>
@@ -164,7 +183,7 @@ defmodule HTTPd do
     </p>
   </body>
 </html>
-"
+"""
     %HTTP.Response{code: 405, body: body}
   }
 
@@ -218,9 +237,10 @@ defmodule HTTPd do
         dir_slash = if dir? do "/" else "" end
         path = "#{prefix}#{url}#{slash}#{file}#{dir_slash}"
         mode = if dir? do "dr-xr-xr-x" else "-r--r--r--" end
-        "<li>#{mode} <a href=\"#{URL.escape(path)}\">#{HTML.escape(file)}</a>#{dir_slash}</li>\n"
+        """<li>#{mode} <a href="#{URL.escape(path)}">#{HTML.escape(file)}</a>#{dir_slash}</li>\n"""
       }
-      body = """<html>
+      body = """
+<html>
   <head>
     <title>Index of #{prefix}#{url}</title>
     <style type="text/css">

@@ -83,7 +83,7 @@ defmodule FXController do
   def fx_route = fn (req) {
     if (req.method != GET &&
         req.method != HEAD) do
-      error_405_page(req)
+      HTTPd.error_405_page(req)
     else
       if (req.url == "/fx" ||
           Str.starts_with?(req.url, "/fx/")) do
@@ -184,34 +184,26 @@ defmodule FXController do
   }
 
   def properties_route = fn (req) {
-    url = if (req.url == "/properties/fx") do
+    url = if req.url == "/properties/fx" do
       req.url + "/"
     else
       req.url
     end
-    if Str.starts_with?(url, "/properties/fx/") do
-      url = Str.slice(url, 12, -1)
-      if (req.method == POST) do
-        property = req.body.property_key
-        value = req.body.property_value
-        if property == void ||
-           value == void do
-          HTTPd.error_404_page(req)
-        else
-          property_create(url, property, value)
-        end
+    if (Str.starts_with?(url, "/properties/fx/")) do
+      path = Str.slice(url, 12, -1)
+      property = req.body.property_key
+      value = req.body.property_value
+      if (property == void || value == void) do
+        HTTPd.error_400_page(req)
       else
-        if (req.method == DELETE) do
-          property = req.body.property_key
-          value = req.body.property_value
-          if property == void ||
-            value == void do
-            HTTPd.error_404_page(req)
-          else
-            property_delete(url, property, value)
-          end
+        if (req.method == POST) do
+          property_create(path, property, value)
         else
-          HTTPd.error_405_page(req)
+          if (req.method == DELETE) do
+            property_delete(path, property, value)
+          else
+            HTTPd.error_405_page(req)
+          end
         end
       end
     else
