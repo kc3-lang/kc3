@@ -1,8 +1,8 @@
 %HTTP.Request{method: GET,
+              body: void,
               url: "/",
               protocol: "HTTP/1.1",
-              headers: [],
-              body: void}
+              headers: []}
 %HTTP.Response{protocol: "HTTP/1.1",
                code: (U16) 200,
                message: "OK",

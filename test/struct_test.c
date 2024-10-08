@@ -65,6 +65,7 @@ TEST_CASE_END(struct_test_fact_w)
 TEST_CASE(struct_test_http_request)
 {
   STRUCT_TEST_OFFSETOF(s_http_request, HTTP.Request, method);
+  STRUCT_TEST_OFFSETOF(s_http_request, HTTP.Request, body);
   STRUCT_TEST_OFFSETOF(s_http_request, HTTP.Request, url);
   STRUCT_TEST_OFFSETOF(s_http_request, HTTP.Request, protocol);
   STRUCT_TEST_OFFSETOF(s_http_request, HTTP.Request, headers);

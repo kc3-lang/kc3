@@ -81,14 +81,22 @@ s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
 
 s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 {
+  s_tag  body;
+  s_str *body_str;
   const s_str content_length_str = {{NULL}, 14, {"Content-Length"}};
   uw          content_length_uw = 0;
+  s_str      *content_type;
+  const s_str content_type_str = {{NULL}, 12, {"Content-Type"}};
+  s_str *key;
   s_str line;
   s_buf_save save;
   s_list **tail;
   s_tag tmp = {0};
   s_http_request tmp_req = {0};
-  s_str url;
+  s_str       url;
+  const s_str urlencoded = {{NULL}, 33,
+                            {"application/x-www-form-urlencoded"}};
+  s_str *value;
   assert(req);
   assert(buf);
   buf_save_init(buf, &save);
@@ -136,21 +144,34 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     (*tail)->tag.type = TAG_STR;
     if (! http_header_split(&line, &(*tail)->tag))
       goto restore;
-    if (! compare_str_case_insensitive
-        (&content_length_str, &(*tail)->tag.data.tuple.tag->data.str)) {
-      if (! uw_init_str(&content_length_uw,
-                        &(*tail)->tag.data.tuple.tag[1].data.str))
+    key   = &(*tail)->tag.data.tuple.tag[0].data.str;
+    value = &(*tail)->tag.data.tuple.tag[1].data.str;
+    if (! compare_str_case_insensitive(&content_length_str, key)) {
+      if (! uw_init_str(&content_length_uw, value))
         goto restore;
       tag_clean((*tail)->tag.data.tuple.tag + 1);
       tag_init_uw((*tail)->tag.data.tuple.tag + 1, content_length_uw);
     }
+    if (! compare_str_case_insensitive(&content_type_str, key))
+      content_type = value;
     tail = &(*tail)->next.data.list;
   }
   if (content_length_uw) {
     tmp_req.body.type = TAG_STR;
-    if (! buf_read(buf, content_length_uw, &tmp_req.body.data.str))
+    body_str = &tmp_req.body.data.str;
+    if (! buf_read(buf, content_length_uw, body_str))
       goto restore;
-    err_inspect_str(&tmp_req.body.data.str);
+    if (true) {
+      err_inspect_str(body_str);
+      err_write_1("\n");
+    }
+    if (content_type &&
+        ! compare_str_case_insensitive(&urlencoded, content_type)) {
+      if (! url_www_form_decode(body_str, &body))
+        goto restore;
+      str_clean(body_str);
+      tmp_req.body = body;
+    }
   }
   if (! tag_init_struct(&tmp, sym_1("HTTP.Request")))
     goto restore;

@@ -10,11 +10,14 @@
             enctype="multipart/form-data"
             method="DELETE">
         <input id="property_key"
+               name="property_key"
                type="hidden"
                value="#{HTML.escape(key)}" />
         <input id="property_value"
+               name="property_value"
                type="hidden"
                value="#{HTML.escape(value)}" />
+        <button type="submit"><i class="fa fa-remove" /></button>
       </form>
     </td>
     <!-- end -->
@@ -22,16 +25,17 @@
   """}), "\n") %>
 </table>
 <!-- if is_admin(auth_user) do -->
-<form action="/properties/<%= URL.escape(path) %>"
+<form id="new_property"
+      action="/properties/<%= URL.escape(path) %>"
       enctype="application/x-www-form-urlencoded"
       method="POST">
   <div>
     <label for="property_key">Key</label>
-    <input id="property_key" type="text" />
+    <input id="property_key" name="property_key" type="text" />
   </div>
   <div>
     <label for="property_value">Value</label>
-    <input id="property_value" type="text" />
+    <input id="property_value" name="property_value" type="text" />
   </div>
   <div>
     <button type="submit">Add property</button>

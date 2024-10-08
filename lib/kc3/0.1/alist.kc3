@@ -1,0 +1,5 @@
+defmodule AList do
+
+  def to_map = cfn Map "map_init_from_alist" (Result, List)
+
+end

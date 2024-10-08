@@ -188,6 +188,38 @@ s_map * map_init_copy (s_map *map, const s_map *src)
   return NULL;
 }
 
+s_map * map_init_from_alist (s_map *map, const s_list * const *alist)
+{
+  sw i = 0;
+  const s_list *a;
+  sw len;
+  s_map tmp = {0};
+  assert(map);
+  len = list_length(*alist);
+  if (! list_is_alist(alist)) {
+    err_write_1("map_init_from_alist: not an alist: ");
+    err_inspect_list(alist);
+    err_write_1("\n");
+    assert(! "map_init_from_alist: not an alist");
+  }
+  map_init(&tmp, len);
+  a = *alist;
+  while (i < len) {
+    if (! tag_init_copy(tmp.key + i, a->tag.data.tuple.tag) ||
+        ! tag_init_copy(tmp.value + i, a->tag.data.tuple.tag + 1))
+      goto ko;
+    a = list_next(a);
+    i++;
+  }
+  if (! map_sort(&tmp))
+    goto ko;
+  *map = tmp;
+  return map;
+ ko:
+  map_clean(&tmp);
+  return NULL;
+}
+
 s_map * map_init_from_lists (s_map *map, const s_list *keys,
                              const s_list *values)
 {

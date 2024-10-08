@@ -953,6 +953,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_LIST;
     return true;
   }
+  if (sym == &g_sym_Map) {
+    *dest = TAG_MAP;
+    return true;
+  }
   if (sym == &g_sym_Ptag) {
     *dest = TAG_PTAG;
     return true;

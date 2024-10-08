@@ -169,3 +169,48 @@ sw url_unescape_size (const s_str *url)
   }
   return result;
 }
+
+s_tag * url_www_form_decode (const s_str *src, s_tag *dest)
+{
+  s_buf buf;
+  s_str key = {0};
+  s_list *list;
+  s_list **tail;
+  s_tag tmp = {0};
+  s_str value = {0};
+  buf_init_str_const(&buf, src);
+  list = NULL;
+  tail = &list;
+  while (1) {
+    if (! buf_read_until_1_into_str(&buf, "=", &key))
+      break;
+    if (! buf_read_until_1_into_str(&buf, "&", &value) &&
+        ! buf_read_to_str(&buf, &value)) {
+      str_clean(&key);
+      goto clean;
+    }
+    *tail = list_new_tuple(2, NULL);
+    (*tail)->tag.data.tuple.tag[0].type = TAG_STR;
+    (*tail)->tag.data.tuple.tag[1].type = TAG_STR;
+    if (! url_unescape(&key, &(*tail)->tag.data.tuple.tag[0].data.str)) {
+      str_clean(&key);
+      str_clean(&value);
+      goto clean;
+    }
+    if (! url_unescape(&value,
+                       &(*tail)->tag.data.tuple.tag[1].data.str)) {
+      str_clean(&key);
+      str_clean(&value);
+      goto clean;
+    }
+    str_clean(&key);
+    str_clean(&value);
+  }
+  tmp.type = TAG_LIST;
+  tmp.data.list = list;
+  *dest = tmp;
+  return dest;
+ clean:
+  list_delete_all(list);
+  return NULL;
+}

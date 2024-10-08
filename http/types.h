@@ -36,10 +36,10 @@ struct socket_buf {
 
 struct http_request {
   s_tag method;
+  s_tag body;
   s_str url;
   s_str protocol;
   s_list *headers;
-  s_tag body;
 };
 
 struct http_response {
