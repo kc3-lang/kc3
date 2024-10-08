@@ -85,7 +85,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_str *body_str;
   const s_str content_length_str = {{NULL}, 14, {"Content-Length"}};
   uw          content_length_uw = 0;
-  s_str      *content_type;
+  s_str      *content_type = NULL;
   const s_str content_type_str = {{NULL}, 12, {"Content-Type"}};
   s_str *key;
   s_str line;
