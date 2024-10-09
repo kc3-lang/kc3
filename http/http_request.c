@@ -13,71 +13,8 @@
 #include <string.h>
 #include <libkc3/kc3.h>
 #include "http.h"
+#include "http_request.h"
 #include "url.h"
-
-s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
-{
-  const s_list *allowed_methods;
-  s_tag allowed_methods_tag;
-  bool b;
-  s_ident ident;
-  s_buf_save save;
-  s_str str;
-  s_tag tmp = {0};
-  assert(buf);
-  assert(dest);
-  ident_init(&ident, sym_1("HTTP.Request"), sym_1("allowed_methods"));
-  if (! ident_get(&ident, &allowed_methods_tag)) {
-    err_puts("http_request_buf_parse_method: missing"
-             " HTTP.Request.allowed_methods");
-    assert(!("http_request_buf_parse_method: missing"
-             " HTTP.Request.allowed_methods"));
-    return NULL;
-  }
-  if (allowed_methods_tag.type != TAG_LIST ||
-      ! allowed_methods_tag.data.list ||
-      allowed_methods_tag.data.list->tag.type != TAG_SYM) {
-    err_puts("http_request_buf_parse_method: invalid"
-             " HTTP.Request.allowed_methods");
-    assert(!("http_request_buf_parse_method: invalid"
-             " HTTP.Request.allowed_methods"));
-    return NULL;
-  }
-  allowed_methods = allowed_methods_tag.data.list;
-  buf_save_init(buf, &save);
-  if (! buf_read_until_1_into_str(buf, " ", &str)) {
-    if (false)
-      err_puts("http_request_buf_parse_method: buf_read_until_1_into_str");
-    goto restore;
-  }
-  if (! (tmp.data.sym = sym_find(&str))) {
-    tmp.type = TAG_STR;
-    tmp.data.str = str;
-    buf_save_clean(buf, &save);
-    tag_clean(&allowed_methods_tag);
-    *dest = tmp;
-    return dest;
-  }
-  str_clean(&str);
-  tmp.type = TAG_SYM;
-  if (! list_has(&allowed_methods, &tmp, &b)) {
-    err_puts("http_request_buf_parse_method: list_has");
-    goto restore;
-  }
-  if (! b) {
-    tag_init_str(&tmp, NULL, tmp.data.sym->str.size,
-                 tmp.data.sym->str.ptr.pchar);
-  }
-  buf_save_clean(buf, &save);
-  tag_clean(&allowed_methods_tag);
-  *dest = tmp;
-  return dest;
- restore:
-  buf_save_restore_rpos(buf, &save);
-  buf_save_clean(buf, &save);
-  tag_clean(&allowed_methods_tag);
-  return NULL;
-}
 
 s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 {
@@ -89,16 +26,20 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   const s_str content_type_str = {{NULL}, 12, {"Content-Type"}};
   s_str *key;
   s_str line;
+  s_tag method_key = {0};
+  s_tag method_value = {0};
   s_buf_save save;
   s_list **tail;
   s_tag tmp = {0};
   s_http_request tmp_req = {0};
   s_str       url;
-  const s_str urlencoded = {{NULL}, 33,
-                            {"application/x-www-form-urlencoded"}};
+  static const s_str urlencoded =
+    {{NULL}, 33, {"application/x-www-form-urlencoded"}};
   s_str *value;
   assert(req);
   assert(buf);
+  if (method_key.type == TAG_VOID)
+    tag_init_str_1(&method_key, NULL, "_method");
   buf_save_init(buf, &save);
   if (! http_request_buf_parse_method(buf, &tmp_req.method))
     goto restore;
@@ -174,6 +115,13 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         err_inspect_tag(&body);
         err_write_1("\n");
       }
+      if (! alist_get((const s_list * const *) &body.data.list,
+                      &method_key, &method_value))
+        goto restore;
+      if (! http_request_method_from_str(&method_value.data.str,
+                                         &tmp_req.method))
+        goto restore;
+      tag_clean(&method_value);
       str_clean(body_str);
       tmp_req.body = body;
     }
@@ -192,6 +140,31 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   buf_save_clean(buf, &save);
   *req = tmp;
   return req;
+}
+
+s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
+{
+  s_buf_save save;
+  s_str str;
+  s_tag tmp = {0};
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if (! buf_read_until_1_into_str(buf, " ", &str)) {
+    if (false)
+      err_puts("http_request_buf_parse_method: buf_read_until_1_into_str");
+    goto restore;
+  }
+  if (! http_request_method_from_str(&str, &tmp))
+    goto restore;
+  str_clean(&str);
+  buf_save_clean(buf, &save);
+  *dest = tmp;
+  return dest;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+  buf_save_clean(buf, &save);
+  return NULL;
 }
 
 sw http_request_buf_write (s_http_request *req, s_buf *buf)
@@ -295,4 +268,56 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     return r;
   result += r;
   return result;
+}
+
+s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
+{
+  const s_list *allowed_methods;
+  s_tag allowed_methods_tag;
+  bool b;
+  s_ident ident;
+  s_tag tmp = {0};
+  assert(str);
+  assert(dest);
+  ident_init(&ident, sym_1("HTTP.Request"), sym_1("allowed_methods"));
+  if (! ident_get(&ident, &allowed_methods_tag)) {
+    err_puts("http_request_method_from_str: missing"
+             " HTTP.Request.allowed_methods");
+    assert(!("http_request_method_from_str: missing"
+             " HTTP.Request.allowed_methods"));
+    return NULL;
+  }
+  if (allowed_methods_tag.type != TAG_LIST ||
+      ! allowed_methods_tag.data.list ||
+      allowed_methods_tag.data.list->tag.type != TAG_SYM) {
+    err_puts("http_request_method_from_str: invalid"
+             " HTTP.Request.allowed_methods");
+    assert(!("http_request_method_from_str: invalid"
+             " HTTP.Request.allowed_methods"));
+    goto clean;
+  }
+  allowed_methods = allowed_methods_tag.data.list;
+  if (! (tmp.data.sym = sym_find(str))) {
+    tmp.type = TAG_STR;
+    if (! str_init_copy(&tmp.data.str, str))
+      goto clean;
+    tag_clean(&allowed_methods_tag);
+    *dest = tmp;
+    return dest;
+  }
+  tmp.type = TAG_SYM;
+  if (! list_has(&allowed_methods, &tmp, &b)) {
+    err_puts("http_request_method_from_str: list_has");
+    goto clean;
+  }
+  if (! b) {
+    tag_init_str(&tmp, NULL, tmp.data.sym->str.size,
+                 tmp.data.sym->str.ptr.pchar);
+  }
+  tag_clean(&allowed_methods_tag);
+  *dest = tmp;
+  return dest;
+ clean:
+  tag_clean(&allowed_methods_tag);
+  return NULL;
 }

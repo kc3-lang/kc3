@@ -1,3 +1,10 @@
 %{module: KC3.Facts.Dump,
   version: 1}
+add {"fx/img/toast.128.png", "0", "1"}
 add {"fx/img/toast.128.png", "123", "456"}
+add {"fx/img/toast.128.png", "reason", "persistence"}
+add {"fx/img/toast.128.png", "salut", "raphael"}
+add {"fx/img/toast.128.png", "why_toast", "because_it_works"}
+remove {"fx/img/toast.128.png", "0", "1"}
+remove {"fx/img/toast.128.png", "123", "456"}
+remove {"fx/img/toast.128.png", "reason", "persistence"}

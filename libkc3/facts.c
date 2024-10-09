@@ -596,6 +596,8 @@ sw facts_open_file (s_facts *facts, const s_str *path)
     return r;
   result += r;
   buf_file_close(&in);
+  if (facts_dump_file(facts, path->ptr.pchar) < 0)
+    return -1;
   fp = file_open(path->ptr.pchar, "ab");
   if (! fp)
     return -1;
