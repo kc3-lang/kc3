@@ -109,6 +109,13 @@ defmodule HTTPd do
     }
   }
 
+  def redirect_to = fn (url) {
+    %HTTP.Response{code: 303,
+                   message: "See other",
+                   headers: [{"Location", url}],
+                   body: ""}
+  }
+
   def debug_page = fn (request) {
     body = "<html>
   <head>

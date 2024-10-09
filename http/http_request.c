@@ -169,6 +169,11 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         ! compare_str_case_insensitive(&urlencoded, content_type)) {
       if (! url_www_form_decode(body_str, &body))
         goto restore;
+      if (true) {
+        err_write_1("http_request_buf_parse: body: ");
+        err_inspect_tag(&body);
+        err_write_1("\n");
+      }
       str_clean(body_str);
       tmp_req.body = body;
     }

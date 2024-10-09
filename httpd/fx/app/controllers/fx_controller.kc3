@@ -150,49 +150,26 @@ defmodule FXController do
   }
 
   def property_create = fn (path, property, value) {
-    body = """
-<html>
-  <head>
-    <title>Property create</title>
-  </head>
-  <body>
-    <p><h1>Property create</h1></p>
-    <p>Path : #{HTML.escape(inspect(path))}</p>
-    <p>Property : #{HTML.escape(inspect(property))}</p>
-    <p>Value : #{HTML.escape(inspect(value))}</p>
-  </body>
-</html>
-"""
-    %HTTP.Response{body: body}
+    Fx.property_add(path, property, value)
+    HTTPd.redirect_to("/" + path)
   }
 
   def property_delete = fn (path, property, value) {
-    body = """
-<html>
-  <head>
-    <title>Property delete</title>
-  </head>
-  <body>
-    <p><h1>Property delete</h1></p>
-    <p>Path : #{HTML.escape(inspect(path))}</p>
-    <p>Property : #{HTML.escape(inspect(property))}</p>
-    <p>Value : #{HTML.escape(inspect(value))}</p>
-  </body>
-</html>
-"""
-    %HTTP.Response{body: body}
+    Fx.property_remove(path, property, value)
+    HTTPd.redirect_to("/" + path)
   }
 
   def properties_route = fn (req) {
-    url = if req.url == "/properties/fx" do
+    url = if (req.url == "/properties/fx") do
       req.url + "/"
     else
       req.url
     end
-    if (Str.starts_with?(url, "/properties/fx/")) do
+    if Str.starts_with?(url, "/properties/fx/") do
       path = Str.slice(url, 12, -1)
-      property = req.body.property_key
-      value = req.body.property_value
+      body = req.body
+      property = body["property_key"]
+      value = body["property_value"]
       if (property == void || value == void) do
         HTTPd.error_400_page(req)
       else

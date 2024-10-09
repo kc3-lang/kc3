@@ -6,18 +6,23 @@
     <td>#{HTML.escape(value)}</td>
     <!-- if is_admin(auth_user) do -->
     <td>  
-      <form action="/properties/<%= URL.escape(path) %>"
-            enctype="multipart/form-data"
-            method="DELETE">
-        <input id="property_key"
+      <form id="delete_property"
+            action="/properties/#{URL.escape(path)}"
+            enctype="application/x-www-form-urlencoded"
+            method="POST">
+        <input id="delete_method"
+               name="_method"
+               type="hidden"
+               value="DELETE" />
+        <input id="delete_property_key"
                name="property_key"
                type="hidden"
                value="#{HTML.escape(key)}" />
-        <input id="property_value"
+        <input id="delete_property_value"
                name="property_value"
                type="hidden"
                value="#{HTML.escape(value)}" />
-        <button type="submit"><i class="fa fa-remove" /></button>
+        <button type="submit"><i class="fas fa-trash" /></button>
       </form>
     </td>
     <!-- end -->
@@ -30,12 +35,12 @@
       enctype="application/x-www-form-urlencoded"
       method="POST">
   <div>
-    <label for="property_key">Key</label>
-    <input id="property_key" name="property_key" type="text" />
+    <label for="new_property_key">Key</label>
+    <input id="new_property_key" name="property_key" type="text" />
   </div>
   <div>
-    <label for="property_value">Value</label>
-    <input id="property_value" name="property_value" type="text" />
+    <label for="new_property_value">Value</label>
+    <input id="new_property_value" name="property_value" type="text" />
   </div>
   <div>
     <button type="submit">Add property</button>

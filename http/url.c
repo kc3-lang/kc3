@@ -205,6 +205,7 @@ s_tag * url_www_form_decode (const s_str *src, s_tag *dest)
     }
     str_clean(&key);
     str_clean(&value);
+    tail = &(*tail)->next.data.list;
   }
   tmp.type = TAG_LIST;
   tmp.data.list = list;

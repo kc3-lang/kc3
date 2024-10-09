@@ -32,6 +32,8 @@ defmodule Facts do
   def first_with_tags = cfn Tag "kc3_facts_first_with_tags" (Facts, Tag,
     Tag, Tag, Fn, Result)
 
+  def open = cfn Sw "facts_open_file" (Facts, Str)
+
   # returns true if fact was removed or is already absent
   def remove_tags = cfn Bool "kc3_facts_remove_tags" (Facts, Tag, Tag, Tag, Result)
 
