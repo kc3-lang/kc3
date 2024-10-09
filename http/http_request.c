@@ -115,13 +115,12 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         err_inspect_tag(&body);
         err_write_1("\n");
       }
-      if (! alist_get((const s_list * const *) &body.data.list,
-                      &method_key, &method_value))
-        goto restore;
-      if (! http_request_method_from_str(&method_value.data.str,
-                                         &tmp_req.method))
-        goto restore;
-      tag_clean(&method_value);
+      if (alist_get((const s_list * const *) &body.data.list,
+                    &method_key, &method_value)) {
+        http_request_method_from_str(&method_value.data.str,
+                                     &tmp_req.method);
+        tag_clean(&method_value);
+      }
       str_clean(body_str);
       tmp_req.body = body;
     }
