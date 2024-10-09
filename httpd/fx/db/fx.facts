@@ -1,0 +1,3 @@
+%{module: KC3.Facts.Dump,
+  version: 1}
+add {"fx/img/toast.128.png", "123", "456"}
