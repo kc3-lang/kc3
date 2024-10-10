@@ -38,7 +38,7 @@ defmodule FXView do
     # puts("mime_first: #{inspect(mime_first)}")
     file_path = "/file" + Str.slice(path, 4, -1)
     preview = if (mime_first == :image) do
-      if (size == :small && file_size > 16024024)) do
+      if (size == :small && file_size > 16024024) do
         ""
       else
         """<img class="#{size}" src="#{URL.escape(file_path)}" alt="#{HTML.escape(path)}" />"""
