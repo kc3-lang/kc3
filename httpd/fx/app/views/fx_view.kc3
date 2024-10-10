@@ -61,9 +61,9 @@ defmodule FXView do
           else
             file = if (size == :small) do
               sh_path = Sh.escape(path)
-              file = system(["sh", "-c",
-                             "head -c 80 #{sh_path} | hexdump -C"])
-              Str.slice(file, 0, 77) + "..."
+              Str.slice(system(["sh", "-c",
+                                "head -c 80 #{sh_path} | hexdump -C"]),
+                0, 77) + "..."
             else
               system(["hexdump", "-C", path])
             end
