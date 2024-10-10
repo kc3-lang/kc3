@@ -37,10 +37,12 @@ defmodule FXView do
     mime_first = (Sym) first(Str.split((Str) mime, "/"))
     # puts("mime_first: #{inspect(mime_first)}")
     file_path = "/file" + Str.slice(path, 4, -1)
-    preview = if (mime_first == :image &&
-                  (size != :small ||
-                   file_size < 16024024)) do
-      """<img class="#{size}" src="#{URL.escape(file_path)}" alt="#{HTML.escape(path)}" />"""
+    preview = if (mime_first == :image) do
+      if (size == :small && file_size > 16024024)) do
+        ""
+      else
+        """<img class="#{size}" src="#{URL.escape(file_path)}" alt="#{HTML.escape(path)}" />"""
+      end
     else
       if (mime_first == :video) do
         """<video class="#{size}" controls><source src="#{URL.escape(file_path)}" /></video>"""
@@ -59,8 +61,9 @@ defmodule FXView do
           else
             file = if (size == :small) do
               sh_path = Sh.escape(path)
-              system(["sh", "-c",
-                      "hexdump -C #{sh_path} | head -n 4"])
+              Str.slice(system(["sh", "-c",
+                                "head -c 80 #{sh_path} | hexdump -C"]),
+                0, 77) + "..."
             else
               system(["hexdump", "-C", path])
             end
