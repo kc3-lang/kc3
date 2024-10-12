@@ -51,13 +51,14 @@ defmodule FXView do
           """<audio class="#{size}" controls src="#{URL.escape(file_path)}" />"""
         else
           if (mime_first == :text ||
+              Str.starts_with?(mime, "application/javascript") ||
               mime == "application/x-shellscript\n") do
             file = if (size == :small && file_size > 77) do
               Str.slice(File.read_max(path, 77), 0, 77) + "..."
             else
               File.read_all(path)
             end
-            """<pre class="#{size}">#{HTML.escape(file)}</pre>"""
+            """<pre class="#{size}"><code class="language-#{File.ext(path)}">#{HTML.escape(file)}</code>    </pre>"""
           else
             file = if (size == :small) do
               sh_path = Sh.escape(path)

@@ -1,8 +1,10 @@
-import $ from "jquery"
+import $ from "jquery";
 window.$ = $;
 window.jQuery = $;
 
-import "bootstrap"
+import "bootstrap";
+import hljs from "highlight.js";
+import "./fx";
 
-import "./kmx_anim"
-import "./pixel"
+import "./kmx_anim";
+import "./pixel";

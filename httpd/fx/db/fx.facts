@@ -1,5 +1,6 @@
 %{module: KC3.Facts.Dump,
   version: 1}
+add {"fx/", "tag", "software"}
 add {"fx/img/", "hello", "paul"}
 add {"fx/img/flaps.256.png", "is_a", "animation"}
 add {"fx/img/flaps.256.png", "is_a", "motion picture"}
@@ -9,4 +10,3 @@ add {"fx/img/toast.128.png", "salut", "raphael"}
 add {"fx/img/toast.128.png", "tag", "picture"}
 add {"fx/img/toast.128.png", "tag", "toast"}
 add {"fx/img/toast.128.png", "why_toast", "because_it_works"}
-add {"fx/", "tag", "software"}
