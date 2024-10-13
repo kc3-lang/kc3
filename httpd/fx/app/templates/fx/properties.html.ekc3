@@ -22,7 +22,7 @@
                name="property_value"
                type="hidden"
                value="#{HTML.escape(value)}" />
-        <button type="submit"><i class="fas fa-trash" /></button>
+        <button type="submit"><i class="fas fa-trash"></i></button>
       </form>
     </td>
     <!-- end -->
