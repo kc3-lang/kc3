@@ -545,23 +545,32 @@ serving files for display or download (Web 1.0).
 
 ## TODO
 
- - fx v0.1.0
+ - [DONE] facts database in KC3
+   - [DONE] new database (Ptr)
+   - [DONE] add_tags
+   - [DONE] remove_tags
+   - [DONE] with_tags
+   - [DONE] with
+ - fx v0.2.0
    - [DONE] file explorer
    - [DONE] preview files
      - [DONE] text
      - [DONE] image
      - [DONE] video
      - [DONE] audio
+     - [DONE] binary (hexdump -C)
    - tags
      - create
        - POST "/tag/:tag/*path"
      - delete
        - DELETE "/tag/:tag/*path"
+     - recursive
    - properties
-     - create
-       - POST "/property/:property/:value/*path"
-     - delete
-       - DELETE "/property/:property/:value/*path
+     - [DONE] create
+       - [DONE] POST "/property/:property/:value/*path"
+     - [DONE] delete
+       - [DONE] DELETE "/property/:property/:value/*path
+     - recursive
  - HTTPd v0.2.0
    - dynamic pages (MVC)
      - [DONE] controllers
@@ -571,15 +580,14 @@ serving files for display or download (Web 1.0).
      - dynamic router
        - [DONE] Str.starts_with?(url, route.path)
        - HTTPd.Router.get("/user/:id/articles/*slug/edit", UserArticlesController.show)
-     - views
-       - ./app/views/
-       
+     - [DONE] views
+       - [DONE] ./app/views/
  - libkc3
-   - evaluation order for && and ||
+   - [DONE] evaluation order for && and ||
    - operators dispatch
      - list of matching operators (facts_with)
    - base-specific big floats
-   - macro cast `(Macro) fn (x) { x }`
+   - macro cast : `(Macro) fn (x) { x }`
    - pretty printer
      - [DONE] indent
      - 80 columns (`\n`)
@@ -594,11 +602,12 @@ serving files for display or download (Web 1.0).
    - math
      - arbitrary precision floating point numbers (decimals)
    - map
-     - get (get key value)
+     - [DONE] access
+     - [DONE] get (get key value)
      - put (return a new map)
    - struct
-     - access
-     - get
+     - [DONE] access
+     - [DONE] get
      - put
    - enums
    - unions
