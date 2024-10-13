@@ -2,7 +2,11 @@ defmodule LayoutView do
 
   def template = EKC3.load("app/templates/layout.html.ekc3")
 
+  def template_footer = EKC3.load("app/templates/footer.html.ekc3")
+
   def template_nav = EKC3.load("app/templates/nav.html.ekc3")
+
+  def footer = EKC3.render(template_footer)
 
   def nav = EKC3.render(template_nav)
 

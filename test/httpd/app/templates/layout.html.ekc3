@@ -15,5 +15,6 @@
   <body>
     <%= raw nav %>
     <%= raw page %>
+    <%= raw footer %>
   </body>
 </html>

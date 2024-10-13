@@ -9,3 +9,4 @@ add {"fx/img/toast.128.png", "salut", "raphael"}
 add {"fx/img/toast.128.png", "tag", "picture"}
 add {"fx/img/toast.128.png", "tag", "toast"}
 add {"fx/img/toast.128.png", "why_toast", "because_it_works"}
+add {"fx/", "tag", "software"}
