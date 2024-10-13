@@ -80,18 +80,20 @@ defmodule HTTPd do
 
   def server = fn (host, port) {
     daemonize()
-    event_base = Event.base_new()
-    socket = Socket.listen(host, port)
-    puts("KC3 HTTPd: listening on #{host}:#{port}")
-    acceptor_ev = Event.new(event_base, socket.fd, [:read, :persist],
-                            acceptor, void)
-    r = Event.add(acceptor_ev, time_zero)
-    r = Event.dispatch(event_base)
-    if r do
-      e = errno()
-      puts("KC3 HTTPd: event dispatch error: #{strerror(e)}")
+    if event_base = Event.base_new() do
+      if socket = Socket.listen(host, port) do
+        puts("KC3 HTTPd: listening on #{host}:#{port}")
+        acceptor_ev = Event.new(event_base, socket.fd, [:read, :persist],
+          acceptor, void)
+        r = Event.add(acceptor_ev, time_zero)
+        r = Event.dispatch(event_base)
+        if r do
+          e = errno()
+          puts("KC3 HTTPd: event dispatch error: #{strerror(e)}")
+        end
+        Socket.close(socket)
+      end
     end
-    Socket.close(socket)
   }
 
   def main = fn {

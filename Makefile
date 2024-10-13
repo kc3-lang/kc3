@@ -233,19 +233,19 @@ event_debug:
 	${MAKE} -C event debug
 
 fx: httpd fx_assets
-	${PWD}/httpd/.libs/kc3_httpd -C httpd/fx -d
+	${PWD}/httpd/.libs/kc3_httpd -C httpd/fx -d 0.0.0.0 58001
 
 fx_asan: httpd_asan fx_assets
-	${PWD}/httpd/.libs/kc3_httpd_asan -C httpd/fx -d
+	${PWD}/httpd/.libs/kc3_httpd_asan -C httpd/fx -d 0.0.0.0 58001
 
 fx_assets:
 	${MAKE} -C httpd/fx/assets
 
 fx_cov: httpd_cov fx_assets
-	${PWD}/httpd/.libs/kc3_httpd_cov -C httpd/fx -d
+	${PWD}/httpd/.libs/kc3_httpd_cov -C httpd/fx -d 0.0.0.0 58001
 
 fx_debug: httpd_debug fx_assets
-	${PWD}/httpd/.libs/kc3_httpd_debug -C httpd/fx -d
+	${PWD}/httpd/.libs/kc3_httpd_debug -C httpd/fx -d 0.0.0.0 58001
 
 gcovr:
 	${MAKE} -C libkc3 gcovr

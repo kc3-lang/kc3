@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "bootstrap": "^5.3.3",
+    "fontawesome-free": "^1.0.4",
+    "highlight.js": "^11.10.0",
     "jquery": "^3.7.1"
   }
 }

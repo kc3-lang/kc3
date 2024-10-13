@@ -32278,18 +32278,16 @@ code {
   align-items: baseline;
 }
 
+.navbar-brand, .navbar-link, .navbar-text {
+  display: inline-block;
+  font-size: 1.3rem;
+}
+
 .navbar-brand {
-  font-size: 1.5rem;
-  padding: 0;
+  padding: 0.5rem 0 0 0;
 }
 
-.navbar-link {
-  display: inline-block;
-  padding: 0.5rem 1rem 0 0;
-}
-
-.navbar-text {
-  display: inline-block;
+.navbar-link, .navbar-text {
   padding: 0.5rem 1rem 0 0;
 }
 

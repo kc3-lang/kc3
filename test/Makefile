@@ -166,17 +166,20 @@ test_http_cov:
 test_http_debug:
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./http_test
 
-test_httpd:
-	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${PWD}/httpd -d
+test_httpd: test_httpd_assets
+	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${PWD}/httpd -d 0.0.0.0 58000
 
-test_httpd_asan:
-	${SRC_TOP}/httpd/.libs/kc3_httpd_asan -C ${PWD}/httpd -d
+test_httpd_asan: test_httpd_assets
+	${SRC_TOP}/httpd/.libs/kc3_httpd_asan -C ${PWD}/httpd -d 0.0.0.0 58000
 
-test_httpd_cov:
-	${SRC_TOP}/httpd/.libs/kc3_httpd_cov -C ${PWD}/httpd -d
+test_httpd_assets:
+	${MAKE} -C httpd/assets
 
-test_httpd_debug:
-	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -C ${PWD}/httpd -d
+test_httpd_cov: test_httpd_assets
+	${SRC_TOP}/httpd/.libs/kc3_httpd_cov -C ${PWD}/httpd -d 0.0.0.0 58000
+
+test_httpd_debug: test_httpd_assets
+	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -C ${PWD}/httpd -d 0.0.0.0 58000
 
 test_ikc3:
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test
@@ -243,6 +246,11 @@ test_valgrind: libkc3_test
 	test_asan \
 	test_cov \
 	test_debug \
+	test_httpd \
+	test_httpd_asan \
+	test_httpd_assets \
+	test_httpd_cov \
+	test_httpd_debug \
 	test_ikc3 \
 	test_ikc3 \
 	test_valgrind
