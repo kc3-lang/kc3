@@ -45,7 +45,6 @@ defmodule HTTPd do
           client.addr_str
         else
           headers = req.headers
-          puts(headers)
           real_ip = headers["X-Real-IP"]
           if (real_ip) do real_ip else client.addr_str end
         end
