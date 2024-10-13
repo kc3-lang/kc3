@@ -1,0 +1,73 @@
+# KC3 installation
+
+There are no binary release from now, you must install from sources.
+
+## Get the sources
+
+### From git
+
+#### From [kmx.io git forge](https://git.kmx.io/kc3-lang/kc3)
+
+```sh
+git clone https://git.kmx.io/kc3-lang/kc3.git
+```
+
+#### From [Github](https://github.com/kc3-lang/kc3)
+
+```sh
+git clone https://github/kc3-lang/kc3.git
+```
+
+### Clone submodules also
+
+```sh
+cd kc3
+git submodule init
+git submodule update
+cd fonts
+git submodule init
+git submodule update
+cd ..
+```
+
+## Install from sources
+
+### Install dependencies
+
+#### Debian / Ubuntu / PopOS / Mint
+
+```sh
+# install build tools
+sudo apt install pkg-config clang libtool-bin make ruby time
+
+# install dependencies
+sudo apt install libffi-dev libbsd-dev libevent-dev
+
+# install demo dependencies
+sudo apt install glew libfreetype-dev libsdl2-dev libxkbcommon-dev
+```
+
+
+### Compilation
+```sh
+./configure
+make -j8
+```
+
+### Add the sources to `LD_LIBRARY_PATH`
+```sh
+. ./env
+```
+
+### Create symlinks to libs
+```sh
+make lib_links
+```
+
+---
+
+Top : [KC3 README.md](README.md)
+
+Previous : [KC3 README.md](README.md)
+
+Next : [KC3 testing guide](TESTING.md)
