@@ -56,7 +56,7 @@ defmodule FXController do
     }
   }
 
-  def show_file = fn (path) {
+  def show_file = fn (path, url) {
     if (File.exists?(path)) do
       if (File.is_directory?(path)) do
         slash = if Str.ends_with?(path, "/") do "" else "/" end
@@ -75,7 +75,7 @@ defmodule FXController do
       tags = Fx.tag_index(path)
       properties = FXView.render_properties(properties)
       page = FXView.render_show_file(path, menu, file, properties)
-      body = LayoutView.render(path, page)
+      body = LayoutView.render(path, page, url)
       %HTTP.Response{body: body}
     end
   }
