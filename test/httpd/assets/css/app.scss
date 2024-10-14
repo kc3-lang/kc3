@@ -212,6 +212,20 @@ h1,h2,h3,h4,h5,h6 {
         padding-left: 0.5rem;
     }
 }
+.left-col {
+    padding-left: 0.75rem;
+    ul {
+        list-style: none;
+        padding-left: 0.5rem;
+    }
+}
 .left-col > ul > li {
     padding-top: 0.5rem;
+}
+.left-col > ul > li > a {
+    display: block;
+    width: 100%;
+    &:hover {
+        background: #e8e8ff;
+    }
 }

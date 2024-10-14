@@ -40,8 +40,8 @@ OBJECTS_COV="$(c2ext .cov.lo "$LO_SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
-LDFLAGS="-export-dynamic $LDFLAGS -rdynamic"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
+LDFLAGS="-export-dynamic $LDFLAGS -rdynamic -pthread"
 config_asan
 config_gnu
 config_i386
