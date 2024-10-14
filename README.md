@@ -32,33 +32,10 @@ Supported architectures :
 [Join us on kmx.io Discord server !](https://discord.gg/A4MWkpUDsG)
 
 
-## Guides
+## [Guides](https://kc3-lang.org/doc/3_Guides)
 
-### [Installation](INSTALL.md)
-
-Follow the [KC3 installation guide](INSTALL.md).
-
-
-### [Tests](TESTING.md)
-
-Follow the [KC3 testing guide](TESTING.md)
-
-
-### [Usage](USAGE.md)
-
-Follow the [KC3 usage guide](USAGE.md)
-
-
-### [Structure](STRUCTURE.md)
-
-Follow the [KC3 structure guide](STRUCTURE.md)
-
-
-### [Tutorial and examples](TUTORIAL.md)
-
-Follow the [KC3 tutorial and examples guide](TUTORIAL.md) .
-
-
+Follow the [KC3 guides](https://kc3-lang.org/doc/3_Guides) to discover how to use KC3 for
+your own projects.
 
 
 ## TODO

@@ -8,9 +8,8 @@ defmodule LayoutView do
 
   def footer = EKC3.render(template_footer)
 
-  def nav = EKC3.render(template_nav)
-
-  def render = fn (title, page) {
+  def render = fn (title, page, url) {
+    nav = EKC3.render(template_nav)
     EKC3.render(template)
   }
 

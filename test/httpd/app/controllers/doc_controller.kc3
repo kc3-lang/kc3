@@ -59,24 +59,24 @@ defmodule DocController do
     }
   }
 
-  def show_html = fn (path_html) {
+  def show_html = fn (path_html, url) {
     index = doc_index("./doc/", path_html)
     menu = DocView.render_menu(index)
     title = "kc3-lang.org"
     html = File.read_all(path_html)
     page = DocView.render_show(menu, html)
-    body = LayoutView.render(title, page)
+    body = LayoutView.render(title, page, url)
     %HTTP.Response{body: body}
   }
 
-  def show_md = fn (path_md) {
+  def show_md = fn (path_md, url) {
     index = doc_index("./doc/", path_md)
     menu = DocView.render_menu(index)
     title = "kc3-lang.org"
     md = File.read_all(path_md)
     html = Markdown.to_html_str(md)
     page = DocView.render_show(menu, html)
-    body = LayoutView.render(title, page)
+    body = LayoutView.render(title, page, url)
     %HTTP.Response{body: body}
   }
 
@@ -86,15 +86,15 @@ defmodule DocController do
       locale = "en"
       path_html = ".#{request.url}/index.#{locale}.html"
       if File.exists?(path_html) do
-        show_html(path_html)
+        show_html(path_html, request.url)
       else
         path_md = ".#{request.url}/index.#{locale}.md"
         if File.exists?(path_md) do
-          show_md(path_md)
+          show_md(path_md, request.url)
         else
           path_md = ".#{request.url}.#{locale}.md"
           if File.exists?(path_md) do
-            show_md(path_md)
+            show_md(path_md, request.url)
           else
             HTTPd.error_404_page(request)
           end
