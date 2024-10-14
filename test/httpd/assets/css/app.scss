@@ -20,6 +20,35 @@ $code-font-size: $font-size-base * 1.1;
 @import "./footer.scss";
 @import "./pixel.scss";
 
+/* file preview */
+span.size {
+    float: right;
+    font-size: 80%;
+    display: block;
+    text-align: right;
+    width: 5em;
+}
+span.file {
+    float: right;
+    font-size: 80%;
+}
+div.small, div.full {
+    clear: both;
+}
+/* video */
+div.full {
+    video.full {
+        width: 100%;
+    }
+}
+div.small {
+    video.small {
+        height: 480px;
+        max-width: 100%;
+    }
+}
+
+/* reset */
 pre {
     overflow: visible;
 }
@@ -35,6 +64,9 @@ body {
     }
     font-family: computer_modern;
     font-size: 1.3em;
+}
+input {
+    width: 90%;
 }
 
 .content {
