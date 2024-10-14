@@ -75,7 +75,25 @@ defmodule FXView do
             else
               File.read_all(path)
             end
-            """<pre class="#{size}"><code class="language-#{File.ext(path)}">#{HTML.escape(file)}</code>    </pre>"""
+            ext = File.ext(path)
+            class = if (ext == "kc3" ||
+                        ext == "ekc3" ||
+                        ext == "facts") do
+              "class=\"language-elixir\""
+            else
+              if (ext != "") do
+                "class=\"language-#{ext}\""
+              else
+                if (File.name(path) == "GNUmakefile" ||
+                    File.name(path) == "Makefile" ||
+                    File.name(path) == "makefile") do
+                  "class=\"language-make\""
+                else
+                  ""
+                end
+              end
+            end
+            """<pre class="#{size}"><code #{class}>#{HTML.escape(file)}</code>    </pre>"""
           else
             file = if (size == :small) do
               sh_path = Sh.escape(path)

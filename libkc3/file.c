@@ -151,7 +151,7 @@ s_str * file_dirname (const s_str *path, s_str *dest)
   sw dirsep_pos;
   assert(path);
   assert(dest);
-  if ((dirsep_pos = str_rindex_character(path, '/')) < 0)
+  if ((dirsep_pos = str_rindex_character(path, '/', 0, -1)) < 0)
     return str_init(dest, NULL, 2, "./");
   if (! dirsep_pos)
     return str_init(dest, NULL, 1, "/");
@@ -172,7 +172,7 @@ s_str * file_ext (const s_str *path, s_str *dest)
   sw dot_pos;
   assert(path);
   assert(dest);
-  if ((dot_pos = str_rindex_character(path, '.')) <= 0)
+  if ((dot_pos = str_rindex_character(path, '.', 0, -1)) <= 0)
     return str_init_empty(dest);
   return str_init_slice(dest, path, dot_pos + 1, -1);
 }
@@ -237,6 +237,18 @@ s_time * file_mtime (const s_str *path, s_time *dest)
 #endif
   *dest = tmp;
   return dest;
+}
+
+s_str * file_name (const s_str *path, s_str *dest)
+{
+  sw slash_pos;
+  assert(path);
+  assert(dest);
+  if ((slash_pos = str_rindex_character(path, '/', 0, -1)) < 0)
+    return str_init_copy(dest, path);
+  if (slash_pos - (sw) path->size < -1)
+    return str_init_slice(dest, path, slash_pos + 1, -1);
+  return str_init_empty(dest);
 }
 
 FILE * file_open (const char *path, const char *mode)

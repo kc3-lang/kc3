@@ -30,6 +30,7 @@ sw            file_copy (const char *from, const char *to);
 s_str *       file_dirname (const s_str *path, s_str *dest);
 s_str *       file_ext (const s_str *path, s_str *dest);
 s_time *      file_mtime (const s_str *path, s_time *dest);
+s_str *       file_name (const s_str *path, s_str *dest);
 s_str *       file_read_max (const s_str *path, uw max, s_str *dest);
 s_str *       file_read_all (const s_str *path, s_str *dest);
 s_str *       file_search (const s_str *suffix, const s_sym *mode,

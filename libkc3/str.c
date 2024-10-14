@@ -1040,17 +1040,36 @@ sw str_read_character_utf8 (s_str *str, character *c)
   return size;
 }
 
-sw str_rindex_character (const s_str *str, character c)
+sw str_rindex_character (const s_str *str, character c, sw start,
+                         sw end)
 {
-  uw i = 0;
+  uw end_pos;
+  uw pos = 0;
+  sw r;
   sw result = -1;
   s_str s = {0};
   character tmp = 0;
+  uw start_pos;
+  assert(str);
+  if (! str_sw_pos_to_uw(start, str->size, &start_pos)) {
+    err_write_1("str_rindex_character: str_sw_pos_to_uw start: ");
+    err_inspect_str(str);
+    err_write_1("\n");
+    return -1;
+  }
+  if (! str_sw_pos_to_uw(end, str->size, &end_pos)) {
+    err_write_1("str_rindex_character: str_sw_pos_to_uw end: ");
+    err_inspect_str(str);
+    err_write_1("\n");
+    return -1;
+  }
   s = *str;
-  while (str_read_character_utf8(&s, &tmp) > 0) {
-    if (c == tmp)
-      result = i;
-    i++;
+  while ((r = str_read_character_utf8(&s, &tmp)) > 0 &&
+         pos < end_pos) {
+    if (pos >= start_pos &&
+        c == tmp)
+      result = pos;
+    pos += r;
   }
   return result;
 }

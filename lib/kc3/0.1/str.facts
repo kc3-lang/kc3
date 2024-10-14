@@ -13,9 +13,19 @@ replace {Str.ftime, :symbol_value,
 add {Str, :symbol, Str.has_str?}
 replace {Str.has_str?, :symbol_value,
          cfn Bool "str_has_str" (Str, Str, Result)}
+add {Str, :symbol, Str.rindex_character_cfn}
+replace {Str.rindex_character_cfn, :symbol_value,
+         cfn Sw "str_rindex_character" (Str, Character, Sw, Sw)}
 add {Str, :symbol, Str.rindex_character}
 replace {Str.rindex_character, :symbol_value,
-         cfn Sw "str_rindex_character" (Str, Character)}
+         Str.fn {
+           (str, character, start, end_) {
+             rindex_character_cfn(str, character, (Sw) start, (Sw) end_)
+           }
+           (str, character) {
+             rindex_character_cfn(str, character, (Sw) 0, (Sw) -1)
+           }
+         }}
 add {Str, :symbol, Str.slice_cfn}
 replace {Str.slice_cfn, :symbol_value,
          cfn Str "str_init_slice" (Result, Str, Sw, Sw)}

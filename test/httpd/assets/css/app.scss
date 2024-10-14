@@ -106,6 +106,7 @@ code {
 }
 .navbar-brand {
     padding: 0.5rem 0 0 0;
+    margin: 0;
 }
 .navbar-link, .navbar-text {
     padding: 0.5rem 1rem 0 0;
@@ -116,7 +117,8 @@ code {
         margin: 0 0.3em;
     }
     display: inline-block;
-    padding: 0 0.5em 0 0;
+    padding: 0 0.5rem 0 0;
+    margin: 0;
     color: $gray-200;
 }
 .doc-logo, .doc-logo-lg {
@@ -134,9 +136,20 @@ code {
     font-size: 4em;
 }
 /* nav2 */
-nav h2 {
-    font-size: 1.3rem;
+nav.navbar.nav2 {
+    background: #555;
+    font-size: 1.2rem;
     color: #fff;
+    padding: 0;
+    .doc-logo {
+        padding: 0;
+    }
+    .navbar-brand {
+        padding: 0;
+    }
+    a {
+        color: #fff;
+    }
 }
 
 /* misc */

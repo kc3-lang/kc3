@@ -1,10 +1,12 @@
-<nav class="navbar navbar-dark bg-dark">
+<nav class="navbar nav2 navbar-dark-1 bg-dark-1">
   <div class="container">
-    <h2>
+    <div>
       <a class="navbar-brand" href="/fx">
-        <i class="fas fa-folder-open fa-fw"></i>
+        <div class="doc-logo">
+          <span><i class="fas fa-folder-open fa-fw"></i></span>
+        </div>
       </a>
       <%= raw FXView.path_links(path) %>
-    </h2>
+    </div>
   </div>
 </nav>
