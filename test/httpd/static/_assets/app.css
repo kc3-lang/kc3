@@ -32119,6 +32119,12 @@ code {
   font-size: 4em;
 }
 
+/* nav2 */
+nav h2, nav .h2 {
+  font-size: 1.3rem;
+  color: #fff;
+}
+
 /* misc */
 .avatar-lg {
   float: left;
