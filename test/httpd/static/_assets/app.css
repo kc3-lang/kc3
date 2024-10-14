@@ -32227,6 +32227,10 @@ code {
   margin-right: 0.5em;
 }
 
+.right {
+  float: right;
+}
+
 .clear {
   clear: both;
 }

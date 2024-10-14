@@ -1,6 +1,6 @@
 <footer class="bg-dark">
   <a href="https://kmx.io/">kmx.io</a>
-  <span class="float-right">
+  <span class="right">
     <a href="https://git.kmx.io/kc3-lang/kc3">kc3_httpd</a>
     <a href="https://kc3-lang.org/release/v0.1.13/">v0.1.13</a>
   </span>
