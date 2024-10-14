@@ -2,7 +2,7 @@
 
 ## KC3
 
-```
+```c
 /* kc3
  * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
  *
@@ -18,7 +18,7 @@
 ```
 
 ## Linenoise
-```
+```plaintext
 Copyright (c) 2010-2014, Salvatore Sanfilippo <antirez at gmail dot com>
 Copyright (c) 2010-2013, Pieter Noordhuis <pcnoordhuis at gmail dot com>
 
@@ -47,7 +47,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
 ## Unicode Character Database
-```
+```plaintext
 UNICODE, INC. LICENSE AGREEMENT - DATA FILES AND SOFTWARE
 
 See Terms of Use <https://www.unicode.org/copyright.html>
