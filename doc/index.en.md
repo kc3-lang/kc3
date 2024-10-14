@@ -5,6 +5,8 @@ The KC3 programming language documentation.
 
 ## Index
 
-[KC3](1_KC3/) core language.
+[1 KC3](1_KC3/) core language.
 
-[HTTPd](2_HTTPd/) web server.
+[2 HTTPd](2_HTTPd/) web server.
+
+[3 Guides](3_Guides/) about KC3.

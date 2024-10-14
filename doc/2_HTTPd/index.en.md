@@ -53,3 +53,11 @@ The main layout for the application is stated in
 `./app/templates/layout.html.ekc3` and `./app/templates/nav.html.ekc3`.
 Notice the `.html.ekc3` extension, these are HTML files with embedded KC3.
 See the [EKC3](/doc/EKC3) documentation for more information on these files.
+
+---
+
+Top : [KC3 Documentation](/doc/)
+
+Previous : [1 KC3](/doc/1_KC3/)
+
+Next : [3 Guides](/doc/3_Guides/)
