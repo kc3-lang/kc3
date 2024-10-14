@@ -3,8 +3,12 @@ window.$ = $;
 window.jQuery = $;
 
 import "bootstrap";
-import hljs from "highlight.js";
-import "./fx";
 
+import hljs from "highlight.js";
+$(function () {
+    hljs.highlightAll();
+});
+
+import "./fx";
 import "./kmx_anim";
 import "./pixel";

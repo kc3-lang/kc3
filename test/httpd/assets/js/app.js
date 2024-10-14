@@ -1,8 +1,14 @@
-import $ from "jquery"
+import $ from "jquery";
 window.$ = $;
 window.jQuery = $;
 
-import "bootstrap"
+import "bootstrap";
 
-import "./kmx_anim"
-import "./pixel"
+import hljs from "highlight.js";
+$(function () {
+    hljs.highlightAll();
+});
+
+import "./fx";
+import "./kmx_anim";
+import "./pixel";

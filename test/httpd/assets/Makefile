@@ -7,10 +7,13 @@ app.css:
 app.js:
 	esbuild js/app.js --bundle --target=es2016 --outdir=../static/_assets --external:/_fonts/* --external:/_images/*
 
-build: app.css app.js
+build: npm app.css app.js
 
-css: app.css
+css: npm app.css
 
-js: app.js
+js: npm app.js
 
-.PHONY: all app.css app.js build css js
+npm:
+	npm i
+
+.PHONY: all app.css app.js build css js npm

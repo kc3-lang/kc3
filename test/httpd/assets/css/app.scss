@@ -13,10 +13,12 @@ $code-font-size: $font-size-base * 1.1;
 @import "./fontawesome-5.15.4-free-v4-shims.scss";
 @import "./fontawesome-5.15.4-free-v4-font-face.scss";
 
+// @import "../node_modules/highlight.js/scss/default.scss";
+@import "../node_modules/highlight.js/scss/github.scss";
+
 @import "./flash.scss";
 @import "./footer.scss";
 @import "./pixel.scss";
-@import "./pygments.scss";
 
 pre {
     overflow: visible;
