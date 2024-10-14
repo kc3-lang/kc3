@@ -83,11 +83,11 @@ defmodule FXController do
   def fx_route = fn (request) {
     if (request.method != GET &&
         request.method != HEAD) do
-      HTTPd.error_405_page(req)
+      HTTPd.error_405_page(request)
     else
       if (request.url == "/fx" ||
           Str.starts_with?(request.url, "/fx/")) do
-        path = "." + req.url
+        path = "." + request.url
         response = show_file(path, request.url)
         if (response) do
           response
