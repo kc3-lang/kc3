@@ -79,6 +79,7 @@
 #include "s32.h"
 #include "s64.h"
 #include "sequence.h"
+#include "sh.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
