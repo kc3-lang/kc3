@@ -41,3 +41,9 @@
   , ## comment 15
   :c ## comment 16
   } ## comment 17
+quote {a, b} = {1, 2}
+{a, b} = {1, 2}
+quote a
+a
+quote b
+b

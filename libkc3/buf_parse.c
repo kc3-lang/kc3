@@ -3684,7 +3684,8 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
     goto restore;
   switch (c) {
   case '{':
-    if ((r = buf_parse_tag_tuple(buf, dest)) ||
+    if ((r = buf_parse_tag_call_op(buf, dest)) ||
+        (r = buf_parse_tag_tuple(buf, dest)) ||
         (r = buf_parse_tag_block(buf, dest)))
       goto end;
     goto restore;

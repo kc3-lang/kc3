@@ -1254,13 +1254,28 @@ bool env_eval_equal_tuple (s_env *env, bool macro, const s_tuple *a,
   assert(a);
   assert(b);
   assert(dest);
-  if (a->count != b->count)
+  if (a->count != b->count) {
+    err_write_1("env_eval_equal_tuple: tuple arity mismatch between"
+                "\n  ");
+    err_inspect_tuple(a);
+    err_write_1("\nand\n  ");
+    err_inspect_tuple(b);
+    err_write_1("\n");
+    assert(! "env_eval_equal_tuple: tuple arity mismatch");
     return false;
+  }
   tuple_init(&tmp, a->count);
   i = 0;
   while (i < a->count) {
     if (! env_eval_equal_tag(env, macro, a->tag + i, b->tag + i,
                              tmp.tag + i)) {
+      err_write_1("env_eval_equal_tuple: tuple tag mismatch between"
+                  "\n  ");
+      err_inspect_tuple(a);
+      err_write_1("\nand\n  ");
+      err_inspect_tuple(b);
+      err_write_1("\n");
+      assert(! "env_eval_equal_tuple: tuple tag mismatch");
       tuple_clean(&tmp);
       return false;
     }
