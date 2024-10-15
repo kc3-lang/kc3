@@ -57226,7 +57226,7 @@
   });
 
   // js/app.js
-  var import_jquery4 = __toESM(require_jquery());
+  var import_jquery3 = __toESM(require_jquery());
 
   // node_modules/@popperjs/core/lib/index.js
   var lib_exports = {};
@@ -58902,14 +58902,14 @@
   var isRTL = () => document.documentElement.dir === "rtl";
   var defineJQueryPlugin = (plugin) => {
     onDOMContentLoaded(() => {
-      const $5 = getjQuery();
-      if ($5) {
+      const $4 = getjQuery();
+      if ($4) {
         const name = plugin.NAME;
-        const JQUERY_NO_CONFLICT = $5.fn[name];
-        $5.fn[name] = plugin.jQueryInterface;
-        $5.fn[name].Constructor = plugin;
-        $5.fn[name].noConflict = () => {
-          $5.fn[name] = JQUERY_NO_CONFLICT;
+        const JQUERY_NO_CONFLICT = $4.fn[name];
+        $4.fn[name] = plugin.jQueryInterface;
+        $4.fn[name].Constructor = plugin;
+        $4.fn[name].noConflict = () => {
+          $4.fn[name] = JQUERY_NO_CONFLICT;
           return plugin.jQueryInterface;
         };
       }
@@ -59108,16 +59108,16 @@
       if (typeof event !== "string" || !element) {
         return null;
       }
-      const $5 = getjQuery();
+      const $4 = getjQuery();
       const typeEvent = getTypeEvent(event);
       const inNamespace = event !== typeEvent;
       let jQueryEvent = null;
       let bubbles = true;
       let nativeDispatch = true;
       let defaultPrevented = false;
-      if (inNamespace && $5) {
-        jQueryEvent = $5.Event(event, args);
-        $5(element).trigger(jQueryEvent);
+      if (inNamespace && $4) {
+        jQueryEvent = $4.Event(event, args);
+        $4(element).trigger(jQueryEvent);
         bubbles = !jQueryEvent.isPropagationStopped();
         nativeDispatch = !jQueryEvent.isImmediatePropagationStopped();
         defaultPrevented = jQueryEvent.isDefaultPrevented();
@@ -62370,14 +62370,8 @@
   var import_lib = __toESM(require_lib(), 1);
   var es_default = import_lib.default;
 
-  // js/fx.js
-  var import_jquery = __toESM(require_jquery());
-  (0, import_jquery.default)(function() {
-    es_default.highlightAll();
-  });
-
   // js/kmx_anim.js
-  var import_jquery2 = __toESM(require_jquery());
+  var import_jquery = __toESM(require_jquery());
 
   // js/kmx_colors.js
   var kmx_colors = {
@@ -62434,21 +62428,21 @@
   function getRandomInt(max2) {
     return Math.floor(Math.random() * max2);
   }
-  (0, import_jquery2.default)(function() {
+  (0, import_jquery.default)(function() {
     setInterval(function() {
       const i = getRandomInt(kmx_colors_default.index.length);
       const name = kmx_colors_default.index[i];
       const color = kmx_colors_default[name];
       const x = (getRandomInt(99) - 48) * 2e-3;
-      (0, import_jquery2.default)("a").css("text-shadow", "0 0 0");
-      (0, import_jquery2.default)("a:hover").css("text-shadow", x + "em 0 0 " + color);
+      (0, import_jquery.default)("a").css("text-shadow", "0 0 0");
+      (0, import_jquery.default)("a:hover").css("text-shadow", x + "em 0 0 " + color);
     }, 200);
   });
 
   // js/pixel.js
-  var import_jquery3 = __toESM(require_jquery());
-  (0, import_jquery3.default)(function() {
-    (0, import_jquery3.default)(".pixel").click(function(event) {
+  var import_jquery2 = __toESM(require_jquery());
+  (0, import_jquery2.default)(function() {
+    (0, import_jquery2.default)(".pixel").click(function(event) {
       const el = event.target;
       if (el.classList.contains("pixel-0")) {
         el.classList.remove("pixel-0");
@@ -62461,8 +62455,11 @@
   });
 
   // js/app.js
-  window.$ = import_jquery4.default;
-  window.jQuery = import_jquery4.default;
+  window.$ = import_jquery3.default;
+  window.jQuery = import_jquery3.default;
+  (0, import_jquery3.default)(function() {
+    es_default.highlightAll();
+  });
 })();
 /*! Bundled license information:
 

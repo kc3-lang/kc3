@@ -19,9 +19,6 @@ defmodule FXView do
     }
   }
 
-  def nav2_template =
-    EKC3.load("app/templates/fx/nav2.html.ekc3")
-
   def menu_index_template =
     EKC3.load("app/templates/fx/menu_index.html.ekc3")
 
@@ -113,7 +110,7 @@ defmodule FXView do
   }
 
   def render_show_file = fn (path, menu, file, properties) {
-    nav2 = EKC3.render(nav2_template)
+    nav2 = LayoutView.render_nav2()
     EKC3.render(show_file_template)
   }
 
