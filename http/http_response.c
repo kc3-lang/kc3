@@ -98,7 +98,7 @@ sw http_response_buf_write (const s_http_response *response,
   s_str content_length_str = {0};
   s_tag default_messages = {0};
   s32 e;
-  uw end;
+  sw end;
   s32 fd;
   s_ident ident = {0};
   s_buf *in;
@@ -110,7 +110,7 @@ sw http_response_buf_write (const s_http_response *response,
   sw result = 0;
   sw s;
   sw size;
-  uw start;
+  sw start;
   s_str str;
   s_tag tag_code = {0};
   s_tag tag_message = {0};
@@ -282,15 +282,19 @@ sw http_response_buf_write (const s_http_response *response,
              map->key[1].data.sym == sym_1("fd") &&
              map->value[1].type == TAG_S32 &&
              map->key[2].data.sym == sym_1("start") &&
-             map->value[2].type == TAG_UW &&
-             map->key[0].data.sym == sym_1("end") &&
-             map->value[0].type == TAG_UW) {
+             map->value[2].type == TAG_SW &&
+             map->key[0].data.sym == sym_1("end_") &&
+             map->value[0].type == TAG_SW) {
       fd    = map->value[1].data.s32;
-      start = map->value[2].data.uw;
-      end   = map->value[0].data.uw;
+      start = map->value[2].data.sw;
+      end   = map->value[0].data.sw;
+      if (start < 0)
+        start = content_length + start + 1;
+      if (end < 0)
+        end = content_length + end + 1;
       if (content_length < 0 ||
           start > end ||
-          start > (uw) content_length) {
+          start > content_length) {
         err_puts("http_response_buf_write:"
                  " 416 Requested Range Not Satisfiable");
         assert(!("http_response_buf_write:"

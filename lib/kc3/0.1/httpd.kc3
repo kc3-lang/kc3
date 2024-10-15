@@ -237,6 +237,29 @@ defmodule HTTPd do
     (url, i) { "/" + url_eat(Str.split(url, "/"), i + 1) }
   }
 
+  def parse_range = fn {
+    (false) { { (Sw) 0, (Sw) -1 } }
+    (range) {
+      if Str.starts_with?(range, "bytes=") do
+        range = Str.slice(range, 6, -1)
+        [start, end_] = Str.split(range, "-")
+        if start do
+          start = (Sw) start
+          end_ = if end_ != "" do
+            (Sw) end_
+          else
+            (Sw) -1
+          end
+          { start, end_ }
+        else
+          { (Sw) 0, (Sw) -1 }
+        end
+      else
+        { (Sw) 0, (Sw) -1 }
+      end
+    }
+  }
+    
   def def_static_route = fn (prefix, root_dir, url_skip) {
     directory_page = HTTPd.fn (request) {
       url = url_eat(request.url, url_skip)
@@ -281,11 +304,13 @@ defmodule HTTPd do
             header_value
           end
         end)
-        puts("Range: #{inspect(range)}")
+        {range_start, range_end} = parse_range(range)
         headers = [{"Content-Type", (Str) mime},
                    {"Content-Length", (Str) stat.st_size},
+                   {"Content-Range", "bytes=#{range_start}-#{range_end}"}
                    {"Last-Modified", last_modified}]
-        body = File.open_r(path)
+        fd = File.open_r(path)
+        body = %{fd: fd, start: range_start, end_: range_end}
         %HTTP.Response{body: body, headers: headers}
       else
         error_404_page(request)

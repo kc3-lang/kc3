@@ -70,6 +70,10 @@ s32 * s32_init_cast
   case TAG_S8:
     *s = (s32) tag->data.s8;
     return s;
+  case TAG_STR:
+    if (! s32_init_str(s, &tag->data.str))
+      return NULL;
+    return s;
   case TAG_U8:
     *s = (s32) tag->data.u8;
     return s;
