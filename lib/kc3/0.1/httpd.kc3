@@ -39,6 +39,8 @@ defmodule HTTPd do
           "Keep-Alive", "timeout=5, max=1000")
         response = HTTP.Response.set_header(response,
           "Server", "kc3_httpd")
+        response = HTTP.Response.set_header(response,
+          "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           req.method != HEAD)
         client_addr = if client.addr_str != "127.0.0.1" do
@@ -274,6 +276,12 @@ defmodule HTTPd do
         mime = HTTP.mime_type(ext)
         stat = File.stat(path)
         last_modified = Str.ftime(stat.st_mtim, "%a, %d %b %G %T %Z")
+        range = List.find_if(request.headers, fn ({header_name, header_value}) do
+          if ! Compare.str_case_insensitive("Range", header_name) do
+            header_value
+          end
+        end)
+        puts("Range: #{inspect(range)}")
         headers = [{"Content-Type", (Str) mime},
                    {"Content-Length", (Str) stat.st_size},
                    {"Last-Modified", last_modified}]

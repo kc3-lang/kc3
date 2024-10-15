@@ -1,0 +1,5 @@
+defmodule Compare do
+
+  def str_case_insensitive = cfn S8 "compare_str_case_insensitive" (Str, Str)
+
+end

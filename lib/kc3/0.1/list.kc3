@@ -9,6 +9,18 @@ defmodule List do
     ([a | b], f) { f(a); each(b, f) }
   }
 
+  def find_if = fn {
+    ([], _) { false }
+    ([a | b], f) do
+      c = f(a)
+      if c do
+        c
+      else
+        find_if(b, f)
+      end              
+    end
+  }
+
   def has? = cfn Bool "list_has" (List, Tag, Result)
 
   def join = fn {
