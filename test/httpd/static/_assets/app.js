@@ -6424,8 +6424,7 @@
          * @param {CompiledMode} mode
          */
         constructor(mode) {
-          if (mode.data === void 0)
-            mode.data = {};
+          if (mode.data === void 0) mode.data = {};
           this.data = mode.data;
           this.isMatchIgnored = false;
         }
@@ -6492,8 +6491,7 @@
          *
          * @param {Node} node */
         openNode(node) {
-          if (!emitsWrappingTags(node))
-            return;
+          if (!emitsWrappingTags(node)) return;
           const className = scopeToCSSClass(
             node.scope,
             { prefix: this.classPrefix }
@@ -6505,8 +6503,7 @@
          *
          * @param {Node} node */
         closeNode(node) {
-          if (!emitsWrappingTags(node))
-            return;
+          if (!emitsWrappingTags(node)) return;
           this.buffer += SPAN_CLOSE;
         }
         /**
@@ -6557,8 +6554,7 @@
           return void 0;
         }
         closeAllNodes() {
-          while (this.closeNode())
-            ;
+          while (this.closeNode()) ;
         }
         toJSON() {
           return JSON.stringify(this.rootNode, null, 4);
@@ -6588,10 +6584,8 @@
          * @param {Node} node
          */
         static _collapse(node) {
-          if (typeof node === "string")
-            return;
-          if (!node.children)
-            return;
+          if (typeof node === "string") return;
+          if (!node.children) return;
           if (node.children.every((el) => typeof el === "string")) {
             node.children = [node.children.join("")];
           } else {
@@ -6631,8 +6625,7 @@
          */
         __addSublanguage(emitter, name) {
           const node = emitter.root;
-          if (name)
-            node.scope = `language:${name}`;
+          if (name) node.scope = `language:${name}`;
           this.add(node);
         }
         toHTML() {
@@ -6645,10 +6638,8 @@
         }
       };
       function source(re) {
-        if (!re)
-          return null;
-        if (typeof re === "string")
-          return re;
+        if (!re) return null;
+        if (typeof re === "string") return re;
         return re.source;
       }
       function lookahead(re) {
@@ -6737,8 +6728,7 @@
           relevance: 0,
           /** @type {ModeCallback} */
           "on:begin": (m, resp) => {
-            if (m.index !== 0)
-              resp.ignoreMatch();
+            if (m.index !== 0) resp.ignoreMatch();
           }
         }, opts);
       };
@@ -6888,8 +6878,7 @@
             },
             /** @type {ModeCallback} */
             "on:end": (m, resp) => {
-              if (resp.data._beginMatch !== m[1])
-                resp.ignoreMatch();
+              if (resp.data._beginMatch !== m[1]) resp.ignoreMatch();
             }
           }
         );
@@ -6934,39 +6923,30 @@
         }
       }
       function beginKeywords(mode, parent) {
-        if (!parent)
-          return;
-        if (!mode.beginKeywords)
-          return;
+        if (!parent) return;
+        if (!mode.beginKeywords) return;
         mode.begin = "\\b(" + mode.beginKeywords.split(" ").join("|") + ")(?!\\.)(?=\\b|\\s)";
         mode.__beforeBegin = skipIfHasPrecedingDot;
         mode.keywords = mode.keywords || mode.beginKeywords;
         delete mode.beginKeywords;
-        if (mode.relevance === void 0)
-          mode.relevance = 0;
+        if (mode.relevance === void 0) mode.relevance = 0;
       }
       function compileIllegal(mode, _parent) {
-        if (!Array.isArray(mode.illegal))
-          return;
+        if (!Array.isArray(mode.illegal)) return;
         mode.illegal = either(...mode.illegal);
       }
       function compileMatch(mode, _parent) {
-        if (!mode.match)
-          return;
-        if (mode.begin || mode.end)
-          throw new Error("begin & end are not supported with match");
+        if (!mode.match) return;
+        if (mode.begin || mode.end) throw new Error("begin & end are not supported with match");
         mode.begin = mode.match;
         delete mode.match;
       }
       function compileRelevance(mode, _parent) {
-        if (mode.relevance === void 0)
-          mode.relevance = 1;
+        if (mode.relevance === void 0) mode.relevance = 1;
       }
       var beforeMatchExt = (mode, parent) => {
-        if (!mode.beforeMatch)
-          return;
-        if (mode.starts)
-          throw new Error("beforeMatch cannot be used with starts");
+        if (!mode.beforeMatch) return;
+        if (mode.starts) throw new Error("beforeMatch cannot be used with starts");
         const originalMode = Object.assign({}, mode);
         Object.keys(mode).forEach((key) => {
           delete mode[key];
@@ -7041,8 +7021,7 @@
         console.log(`WARN: ${message}`, ...args);
       };
       var deprecated = (version2, message) => {
-        if (seenDeprecations[`${version2}/${message}`])
-          return;
+        if (seenDeprecations[`${version2}/${message}`]) return;
         console.log(`Deprecated as of ${version2}. ${message}`);
         seenDeprecations[`${version2}/${message}`] = true;
       };
@@ -7062,8 +7041,7 @@
         mode[key]._multi = true;
       }
       function beginMultiClass(mode) {
-        if (!Array.isArray(mode.begin))
-          return;
+        if (!Array.isArray(mode.begin)) return;
         if (mode.skip || mode.excludeBegin || mode.returnBegin) {
           error("skip, excludeBegin, returnBegin not compatible with beginScope: {}");
           throw MultiClassError;
@@ -7076,8 +7054,7 @@
         mode.begin = _rewriteBackreferences(mode.begin, { joinWith: "" });
       }
       function endMultiClass(mode) {
-        if (!Array.isArray(mode.end))
-          return;
+        if (!Array.isArray(mode.end)) return;
         if (mode.skip || mode.excludeEnd || mode.returnEnd) {
           error("skip, excludeEnd, returnEnd not compatible with endScope: {}");
           throw MultiClassError;
@@ -7158,8 +7135,7 @@
           }
           // @ts-ignore
           getMatcher(index) {
-            if (this.multiRegexes[index])
-              return this.multiRegexes[index];
+            if (this.multiRegexes[index]) return this.multiRegexes[index];
             const matcher = new MultiRegex();
             this.rules.slice(index).forEach(([re, opts]) => matcher.addRule(re, opts));
             matcher.compile();
@@ -7175,8 +7151,7 @@
           // @ts-ignore
           addRule(re, opts) {
             this.rules.push([re, opts]);
-            if (opts.type === "begin")
-              this.count++;
+            if (opts.type === "begin") this.count++;
           }
           /** @param {string} s */
           exec(s) {
@@ -7184,8 +7159,7 @@
             m.lastIndex = this.lastIndex;
             let result = m.exec(s);
             if (this.resumingScanAtSamePosition()) {
-              if (result && result.index === this.lastIndex)
-                ;
+              if (result && result.index === this.lastIndex) ;
               else {
                 const m2 = this.getMatcher(0);
                 m2.lastIndex = this.lastIndex + 1;
@@ -7217,8 +7191,7 @@
             /** @type CompiledMode */
             mode
           );
-          if (mode.isCompiled)
-            return cmode;
+          if (mode.isCompiled) return cmode;
           [
             scopeClassName,
             // do this early so compiler extensions generally don't have to worry about
@@ -7250,25 +7223,20 @@
           }
           cmode.keywordPatternRe = langRe(keywordPattern, true);
           if (parent) {
-            if (!mode.begin)
-              mode.begin = /\B|\b/;
+            if (!mode.begin) mode.begin = /\B|\b/;
             cmode.beginRe = langRe(cmode.begin);
-            if (!mode.end && !mode.endsWithParent)
-              mode.end = /\B|\b/;
-            if (mode.end)
-              cmode.endRe = langRe(cmode.end);
+            if (!mode.end && !mode.endsWithParent) mode.end = /\B|\b/;
+            if (mode.end) cmode.endRe = langRe(cmode.end);
             cmode.terminatorEnd = source(cmode.end) || "";
             if (mode.endsWithParent && parent.terminatorEnd) {
               cmode.terminatorEnd += (mode.end ? "|" : "") + parent.terminatorEnd;
             }
           }
-          if (mode.illegal)
-            cmode.illegalRe = langRe(
-              /** @type {RegExp | string} */
-              mode.illegal
-            );
-          if (!mode.contains)
-            mode.contains = [];
+          if (mode.illegal) cmode.illegalRe = langRe(
+            /** @type {RegExp | string} */
+            mode.illegal
+          );
+          if (!mode.contains) mode.contains = [];
           mode.contains = [].concat(...mode.contains.map(function(c) {
             return expandOrCloneMode(c === "self" ? mode : c);
           }));
@@ -7285,8 +7253,7 @@
           cmode.matcher = buildModeRegex(cmode);
           return cmode;
         }
-        if (!language.compilerExtensions)
-          language.compilerExtensions = [];
+        if (!language.compilerExtensions) language.compilerExtensions = [];
         if (language.contains && language.contains.includes("self")) {
           throw new Error("ERR: contains `self` is not supported at the top-level of a language.  See documentation.");
         }
@@ -7297,8 +7264,7 @@
         );
       }
       function dependencyOnParent(mode) {
-        if (!mode)
-          return false;
+        if (!mode) return false;
         return mode.endsWithParent || dependencyOnParent(mode.starts);
       }
       function expandOrCloneMode(mode) {
@@ -7415,8 +7381,7 @@
                 emitter.addText(buf);
                 buf = "";
                 keywordHits[word] = (keywordHits[word] || 0) + 1;
-                if (keywordHits[word] <= MAX_KEYWORD_HITS)
-                  relevance += keywordRelevance;
+                if (keywordHits[word] <= MAX_KEYWORD_HITS) relevance += keywordRelevance;
                 if (kind.startsWith("_")) {
                   buf += match[0];
                 } else {
@@ -7433,8 +7398,7 @@
             emitter.addText(buf);
           }
           function processSubLanguage() {
-            if (modeBuffer === "")
-              return;
+            if (modeBuffer === "") return;
             let result2 = null;
             if (typeof top2.subLanguage === "string") {
               if (!languages[top2.subLanguage]) {
@@ -7461,8 +7425,7 @@
             modeBuffer = "";
           }
           function emitKeyword(keyword, scope) {
-            if (keyword === "")
-              return;
+            if (keyword === "") return;
             emitter.startScope(scope);
             emitter.addText(keyword);
             emitter.endScope();
@@ -7509,8 +7472,7 @@
               if (mode["on:end"]) {
                 const resp = new Response(mode);
                 mode["on:end"](match, resp);
-                if (resp.isMatchIgnored)
-                  matched = false;
+                if (resp.isMatchIgnored) matched = false;
               }
               if (matched) {
                 while (mode.endsParent && mode.parent) {
@@ -7538,11 +7500,9 @@
             const resp = new Response(newMode);
             const beforeCallbacks = [newMode.__beforeBegin, newMode["on:begin"]];
             for (const cb of beforeCallbacks) {
-              if (!cb)
-                continue;
+              if (!cb) continue;
               cb(match, resp);
-              if (resp.isMatchIgnored)
-                return doIgnore(lexeme);
+              if (resp.isMatchIgnored) return doIgnore(lexeme);
             }
             if (newMode.skip) {
               modeBuffer += lexeme;
@@ -7675,8 +7635,7 @@
                 }
                 top2.matcher.lastIndex = index;
                 const match = top2.matcher.exec(codeToHighlight);
-                if (!match)
-                  break;
+                if (!match) break;
                 const beforeMatch = codeToHighlight.substring(index, match.index);
                 const processedCount = processLexeme(beforeMatch, match);
                 index = match.index + processedCount;
@@ -7745,8 +7704,7 @@
           );
           results.unshift(plaintext);
           const sorted = results.sort((a, b) => {
-            if (a.relevance !== b.relevance)
-              return b.relevance - a.relevance;
+            if (a.relevance !== b.relevance) return b.relevance - a.relevance;
             if (a.language && b.language) {
               if (getLanguage(a.language).supersetOf === b.language) {
                 return 1;
@@ -7769,8 +7727,7 @@
         function highlightElement(element) {
           let node = null;
           const language = blockLanguage(element);
-          if (shouldNotHighlight(language))
-            return;
+          if (shouldNotHighlight(language)) return;
           fire(
             "before:highlightElement",
             { el: element, language }
@@ -7835,8 +7792,7 @@
           blocks.forEach(highlightElement);
         }
         function boot() {
-          if (wantsHighlight)
-            highlightAll();
+          if (wantsHighlight) highlightAll();
         }
         if (typeof window !== "undefined" && window.addEventListener) {
           window.addEventListener("DOMContentLoaded", boot, false);
@@ -7854,8 +7810,7 @@
             }
             lang = PLAINTEXT_LANGUAGE;
           }
-          if (!lang.name)
-            lang.name = languageName;
+          if (!lang.name) lang.name = languageName;
           languages[languageName] = lang;
           lang.rawDefinition = languageDefinition.bind(null, hljs);
           if (lang.aliases) {
@@ -20385,10 +20340,8 @@
         return new RegExp(value.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"), "m");
       }
       function source(re) {
-        if (!re)
-          return null;
-        if (typeof re === "string")
-          return re;
+        if (!re) return null;
+        if (typeof re === "string") return re;
         return re.source;
       }
       function lookahead(re) {
@@ -26755,8 +26708,7 @@
         relevance: 0
       };
       function recurRegex(re, substitution, depth) {
-        if (depth === -1)
-          return "";
+        if (depth === -1) return "";
         return re.replace(substitution, (_) => {
           return recurRegex(re, substitution, depth - 1);
         });
@@ -38098,8 +38050,7 @@
             begin: SYMBOL_RE,
             // for performance out of fear of regex.either(...Mathematica.SYSTEM_SYMBOLS)
             "on:begin": (match, response) => {
-              if (!SYSTEM_SYMBOLS_SET.has(match[0]))
-                response.ignoreMatch();
+              if (!SYSTEM_SYMBOLS_SET.has(match[0])) response.ignoreMatch();
             }
           },
           {
@@ -41686,8 +41637,7 @@
             resp.data._beginMatch = m[1] || m[2];
           },
           "on:end": (m, resp) => {
-            if (resp.data._beginMatch !== m[1])
-              resp.ignoreMatch();
+            if (resp.data._beginMatch !== m[1]) resp.ignoreMatch();
           }
         };
         const NOWDOC = hljs.END_SAME_AS_BEGIN({
@@ -52075,10 +52025,8 @@
   var require_swift = __commonJS({
     "node_modules/highlight.js/lib/languages/swift.js"(exports, module) {
       function source(re) {
-        if (!re)
-          return null;
-        if (typeof re === "string")
-          return re;
+        if (!re) return null;
+        if (typeof re === "string") return re;
         return re.source;
       }
       function lookahead(re) {
@@ -58276,8 +58224,7 @@
       };
       for (var _i = numberOfChecks; _i > 0; _i--) {
         var _ret = _loop(_i);
-        if (_ret === "break")
-          break;
+        if (_ret === "break") break;
       }
     }
     if (state.placement !== firstFittingPlacement) {
@@ -62513,6 +62460,15 @@
   (0, import_jquery3.default)(function() {
     es_default.highlightAll();
   });
+  var test = document.getElementsByTagName("video");
+  for (i = 0; i <= test.length; i++) {
+    testa = function(i2) {
+      test[i2++];
+    };
+    (0, import_jquery3.default)(test[i]).attr("ended", testa);
+  }
+  var testa;
+  var i;
 })();
 /*! Bundled license information:
 

@@ -167,19 +167,19 @@ test_http_debug:
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./http_test
 
 test_httpd: test_httpd_assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${PWD}/httpd -d 0.0.0.0 58000
+	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd -d 0.0.0.0 58000
 
 test_httpd_asan: test_httpd_assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd_asan -C ${PWD}/httpd -d 0.0.0.0 58000
+	${SRC_TOP}/httpd/.libs/kc3_httpd_asan -C ${SRC_TOP}/httpd -d 0.0.0.0 58000
 
 test_httpd_assets:
 	${MAKE} -C httpd/assets
 
 test_httpd_cov: test_httpd_assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd_cov -C ${PWD}/httpd -d 0.0.0.0 58000
+	${SRC_TOP}/httpd/.libs/kc3_httpd_cov -C ${SRC_TOP}/httpd -d 0.0.0.0 58000
 
 test_httpd_debug: test_httpd_assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -C ${PWD}/httpd -d 0.0.0.0 58000
+	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -C ${SRC_TOP}/httpd -d 0.0.0.0 58000
 
 test_ikc3:
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test
