@@ -15,6 +15,7 @@
 #include "array.h"
 #include "assert.h"
 #include "block.h"
+#include "bool.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
@@ -971,9 +972,11 @@ s_tag * tag_new_copy (const s_tag *src)
 bool * tag_not (const s_tag *tag, bool *dest)
 {
   bool b;
+  const s_sym *type;
   assert(tag);
   assert(dest);
-  if (! bool_init_cast(&b, tag)) {
+  type = &g_sym_Bool;
+  if (! bool_init_cast(&b, &type, tag)) {
     err_write_1("tag_not: bool_init_cast: ");
     err_inspect_tag(tag);
     err_write_1("\n");
