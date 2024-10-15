@@ -970,11 +970,17 @@ s_tag * tag_new_copy (const s_tag *src)
 
 bool * tag_not (const s_tag *tag, bool *dest)
 {
-  s_tag f;
+  bool b;
   assert(tag);
   assert(dest);
-  tag_init_bool(&f, false);
-  *dest = compare_tag(tag, &f) == 0 ? true : false;
+  if (! bool_init_cast(&b, tag)) {
+    err_write_1("tag_not: bool_init_cast: ");
+    err_inspect_tag(tag);
+    err_write_1("\n");
+    assert(! "tag_not: bool_init_cast");
+    return NULL;
+  }
+  *dest = ! b;
   return dest;
 }
 
