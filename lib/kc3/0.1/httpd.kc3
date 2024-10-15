@@ -307,7 +307,7 @@ defmodule HTTPd do
         {range_start, range_end} = parse_range(range)
         headers = [{"Content-Type", (Str) mime},
                    {"Content-Length", (Str) stat.st_size},
-                   {"Content-Range", "bytes=#{range_start}-#{range_end}"}
+                   {"Content-Range", "bytes=#{range_start}-#{range_end}"},
                    {"Last-Modified", last_modified}]
         fd = File.open_r(path)
         body = %{fd: fd, start: range_start, end_: range_end}
