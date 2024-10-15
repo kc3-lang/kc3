@@ -30,3 +30,5 @@ quote ! ! false
 ! ! false
 quote ! ! true
 ! ! true
+quote ! 0
+! 0
