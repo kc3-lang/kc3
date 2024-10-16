@@ -238,8 +238,8 @@ defmodule HTTPd do
   }
 
   def parse_range = fn {
-    (false) { { (Sw) 0, (Sw) -1 } }
-    (range) {
+    (false, max) { { (Sw) 0, (Sw) max } }
+    (range, max) {
       if Str.starts_with?(range, "bytes=") do
         range = Str.slice(range, 6, -1)
         [start, end_] = Str.split(range, "-")
@@ -248,14 +248,14 @@ defmodule HTTPd do
           end_ = if end_ != "" do
             (Sw) end_
           else
-            (Sw) -1
+            (Sw) max
           end
           { start, end_ }
         else
-          { (Sw) 0, (Sw) -1 }
+          { (Sw) 0, (Sw) max }
         end
       else
-        { (Sw) 0, (Sw) -1 }
+        { (Sw) 0, (Sw) max }
       end
     }
   }
@@ -304,7 +304,8 @@ defmodule HTTPd do
             header_value
           end
         end)
-        {range_start, range_end} = parse_range(range)
+        {range_start, range_end} = parse_range(range, stat.st_size)
+        length = range_end - range_start
         headers = [{"Content-Type", (Str) mime},
                    {"Content-Length", (Str) stat.st_size},
                    {"Content-Range", "bytes=#{range_start}-#{range_end}"},
