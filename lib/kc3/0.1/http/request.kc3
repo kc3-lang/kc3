@@ -18,4 +18,12 @@ defmodule HTTP.Request do
 
   def buf_write = cfn Sw "http_request_buf_write" (HTTP.Request, Buf)
 
+  def header = fn (request, header_name) {
+    List.find_if(request.headers, fn ({h_name, h_value}) do
+      if ! Compare.str_case_insensitive(header_name, h_name) do
+        h_value
+      end
+    end)
+  }
+
 end

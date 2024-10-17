@@ -24,14 +24,14 @@ defmodule HTTPd do
 
   def http_client = fn (socket, events, client_ev, client) do
     if List.has?(events, :read) do
-      req = void
-      req = HTTP.Request.buf_parse(client.buf_rw.r)
-      if req do
-        if (type(req.method) == Str) do
-          response = error_405_page(req)
+      request = void
+      request = HTTP.Request.buf_parse(client.buf_rw.r)
+      if request do
+        if (type(request.method) == Str) do
+          response = error_405_page(request)
         else
-          router = route_request(req)
-          response = router(req)
+          router = route_request(request)
+          response = router(request)
         end
         response = HTTP.Response.set_header(response,
           "Connection", "Keep-Alive")
@@ -42,15 +42,16 @@ defmodule HTTPd do
         response = HTTP.Response.set_header(response,
           "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
-          req.method != HEAD)
+          request.method != HEAD)
         client_addr = if client.addr_str != "127.0.0.1" do
           client.addr_str
         else
-          headers = req.headers
+          headers = request.headers
           real_ip = headers["X-Real-IP"]
           if (real_ip) do real_ip else client.addr_str end
         end
-        puts("#{response.code} #{client_addr} #{req.method} #{req.url}")
+        user_agent = HTTP.Request.header(request, "User-Agent")
+        puts("#{response.code} #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
       else
         Event.del(client_ev)
         File.close(socket)
@@ -140,7 +141,7 @@ defmodule HTTPd do
       Hello from #{__FILE__}
     </p>
     <h2>Request</h2>
-    <pre><code>#{req}</code></pre>
+    <pre><code>#{request}</code></pre>
   </body>
 </html>
 "
@@ -299,13 +300,8 @@ defmodule HTTPd do
         mime = HTTP.mime_type(ext)
         stat = File.stat(path)
         last_modified = Str.ftime(stat.st_mtim, "%a, %d %b %G %T %Z")
-        range = List.find_if(request.headers, fn ({header_name, header_value}) do
-          if ! Compare.str_case_insensitive("Range", header_name) do
-            header_value
-          end
-        end)
+        range = HTTP.Request.header(request, "Range")
         {range_start, range_end} = parse_range(range, stat.st_size)
-        length = range_end - range_start
         headers = [{"Content-Type", (Str) mime},
                    {"Content-Length", (Str) stat.st_size},
                    {"Content-Range", "bytes=#{range_start}-#{range_end}"},
