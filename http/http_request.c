@@ -102,7 +102,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     body_str = &tmp_req.body.data.str;
     if (! buf_read(buf, content_length_uw, body_str))
       goto restore;
-    if (true) {
+    if (false) {
       err_inspect_str(body_str);
       err_write_1("\n");
     }
