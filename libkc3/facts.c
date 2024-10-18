@@ -442,7 +442,14 @@ s_facts * facts_lock_clean (s_facts *facts)
 
 s_facts * facts_lock_init (s_facts *facts)
 {
+  uw i;
   assert(facts);
+  if (true) {
+    i = (uw) &facts->rwlock;
+    err_write_1("facts_lock_init: ");
+    err_inspect_uw_hexadecimal(&i);
+    err_write_1("\n");
+  }
   if (pthread_rwlock_init(&facts->rwlock, NULL)) {
     err_puts("facts_lock_init: pthread_rwlock_init");
     assert(! "facts_lock_init: pthread_rwlock_init");
@@ -455,15 +462,43 @@ s_facts * facts_lock_init (s_facts *facts)
 
 s_facts * facts_lock_r (s_facts *facts)
 {
+  sw e;
+  uw i;
   pthread_t thread;
   assert(facts);
   thread = pthread_self();
-  if (facts->rwlock_thread != thread &&
-      pthread_rwlock_rdlock(&facts->rwlock)) {
-    err_puts("facts_lock_r: pthread_rwlock_rdlock");
-    assert(! "facts_lock_r: pthread_rwlock_rdlock");
-    abort();
-    return NULL;
+  if (facts->rwlock_thread != thread) {
+    if (true) {
+      i = (uw) &facts->rwlock;
+      err_write_1("facts_lock_r: ");
+      err_inspect_uw_hexadecimal(&i);
+      err_write_1("\n");
+    }
+    if ((e = pthread_rwlock_rdlock(&facts->rwlock))) {
+      err_write_1("facts_lock_r: pthread_rwlock_rdlock: ");
+      switch (e) {
+      case EAGAIN:
+        err_puts("the maximum number of read locks on this lock has"
+                 " been exceeded");
+        break;
+      case EDEADLK:
+        err_puts("the current thread already owns this lock for"
+                 " writing");
+        break;
+      case EINVAL:
+        err_puts("invalid lock");
+        break;
+      case ENOMEM:
+        err_puts("not enough memory to initialize the lock");
+        break;
+      default:
+        err_puts("unknown error");
+        break;
+      }
+      assert(! "facts_lock_r: pthread_rwlock_rdlock");
+      abort();
+      return NULL;
+    }
   }
   return facts;
 }

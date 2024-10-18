@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <string.h>
+#include <strings.h>
 #include "alloc.h"
 #include "array.h"
 #include "assert.h"
@@ -47,6 +48,10 @@
 #include "tuple.h"
 #include "unquote.h"
 #include "var.h"
+
+#ifdef __APPLE__
+# define explicit_bzero(p, size) bzero(p, size)
+#endif
 
 s_tag g_tag_first;
 s_tag g_tag_last;

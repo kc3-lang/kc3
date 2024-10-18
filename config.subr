@@ -557,43 +557,43 @@ update_build_lib() {
 }
 
 update_build_objc() {
-    OBJCC_MAIN=.build_objcc_main.tmp
-    OBJCC_ASAN=.build_objcc_asan.tmp
-    OBJCC_COV=.build_objcc_cov.tmp
-    OBJCC_DEBUG=.build_objcc_debug.tmp
+    OBJC_MAIN=.build_objc_main.tmp
+    OBJC_ASAN=.build_objc_asan.tmp
+    OBJC_COV=.build_objc_cov.tmp
+    OBJC_DEBUG=.build_objc_debug.tmp
     mkdir -p .build
 
-    echo "#!/bin/sh" >> ${OBJCC_ASAN}
-    echo "# gen by configure" >> ${OBJCC_ASAN}
-    echo "OBJCC=\"${OBJCC}\"" >> ${OBJCC_ASAN}
-    echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${OBJCC_ASAN}
-    echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${OBJCC_ASAN}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJCC_ASAN}
-    update_and_chmod 755 ${OBJCC_ASAN} .build_objcc_asan
+    echo "#!/bin/sh" >> ${OBJC_ASAN}
+    echo "# gen by configure" >> ${OBJC_ASAN}
+    echo "OBJC=\"${OBJC}\"" >> ${OBJC_ASAN}
+    echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${OBJC_ASAN}
+    echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${OBJC_ASAN}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJC_ASAN}
+    update_and_chmod 755 ${OBJC_ASAN} .build_objc_asan
 
-    echo "#!/bin/sh" >> ${OBJCC_COV}
-    echo "# gen by configure" >> ${OBJCC_COV}
-    echo "OBJCC=\"${OBJCC}\"" >> ${OBJCC_COV}
-    echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${OBJCC_COV}
-    echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${OBJCC_COV}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJCC_COV}
-    update_and_chmod 755 ${OBJCC_COV} .build_objcc_cov
+    echo "#!/bin/sh" >> ${OBJC_COV}
+    echo "# gen by configure" >> ${OBJC_COV}
+    echo "OBJC=\"${OBJC}\"" >> ${OBJC_COV}
+    echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${OBJC_COV}
+    echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${OBJC_COV}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJC_COV}
+    update_and_chmod 755 ${OBJC_COV} .build_objc_cov
 
-    echo "#!/bin/sh" >> ${OBJCC_DEBUG}
-    echo "# gen by configure" >> ${OBJCC_DEBUG}
-    echo "OBJCC=\"${OBJCC}\"" >> ${OBJCC_DEBUG}
-    echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${OBJCC_DEBUG}
-    echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${OBJCC_DEBUG}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJCC_DEBUG}
-    update_and_chmod 755 ${OBJCC_DEBUG} .build_objcc_debug
+    echo "#!/bin/sh" >> ${OBJC_DEBUG}
+    echo "# gen by configure" >> ${OBJC_DEBUG}
+    echo "OBJC=\"${OBJC}\"" >> ${OBJC_DEBUG}
+    echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${OBJC_DEBUG}
+    echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${OBJC_DEBUG}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJC_DEBUG}
+    update_and_chmod 755 ${OBJC_DEBUG} .build_objc_debug
 
-    echo "#!/bin/sh" >> ${OBJCC_MAIN}
-    echo "# gen by configure" >> ${OBJCC_MAIN}
-    echo "OBJCC=\"${OBJCC}\"" >> ${OBJCC_MAIN}
-    echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${OBJCC_MAIN}
-    echo "CFLAGS=\"${CFLAGS}\"" >> ${OBJCC_MAIN}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJCC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJCC_MAIN}
-    update_and_chmod 755 ${OBJCC_MAIN} .build_objcc_main
+    echo "#!/bin/sh" >> ${OBJC_MAIN}
+    echo "# gen by configure" >> ${OBJC_MAIN}
+    echo "OBJC=\"${OBJC}\"" >> ${OBJC_MAIN}
+    echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${OBJC_MAIN}
+    echo "CFLAGS=\"${CFLAGS}\"" >> ${OBJC_MAIN}
+    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${OBJC_MAIN}
+    update_and_chmod 755 ${OBJC_MAIN} .build_objc_main
 }
 
 update_build_prog() {
@@ -822,14 +822,14 @@ echo "LIBTOOL = $LIBTOOL" >> ${CONFIG_MK}
 #echo "SWIFTC = $SWIFTC" >> ${CONFIG_MK}
 #echo "HAVE_SWIFT = $HAVE_SWIFT" >> ${CONFIG_MK}
 
-if [ "x$OBJCC" = "x" ]; then
+if [ "x$OBJC" = "x" ]; then
     if test -x "$(which clang 2>/dev/null)"; then
-        OBJCC="$(which clang)"
+        OBJC="$(which clang)"
     else
-        OBJCC=clang
+        OBJC=clang
     fi
 fi
-echo "OBJCC = $OBJCC" >> ${CONFIG_MK}
+echo "OBJC = $OBJC" >> ${CONFIG_MK}
 
 PREFIX="${PREFIX:-/usr/local}"
 echo "PREFIX = $PREFIX" >> ${CONFIG_MK}

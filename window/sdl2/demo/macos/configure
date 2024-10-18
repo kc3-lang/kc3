@@ -37,6 +37,13 @@ echo "APP_ASAN = ${APP_ASAN}" >> ${CONFIG_MK}
 echo "APP_COV = ${APP_COV}" >> ${CONFIG_MK}
 echo "APP_DEBUG = ${APP_DEBUG}" >> ${CONFIG_MK}
 
+update_build
+update_build_objc
+update_build_prog
+
+build_lo
+build_prog
+
 APP_PROG=${APP}/Contents/MacOS/${PROG}
 APP_PROG_ASAN=${APP_ASAN}/Contents/MacOS/${PROG_ASAN}
 APP_PROG_COV=${APP_COV}/Contents/MacOS/${PROG_COV}
