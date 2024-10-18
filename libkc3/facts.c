@@ -444,7 +444,7 @@ s_facts * facts_lock_init (s_facts *facts)
 {
   uw i;
   assert(facts);
-  if (true) {
+  if (false) {
     i = (uw) &facts->rwlock;
     err_write_1("facts_lock_init: ");
     err_inspect_uw_hexadecimal(&i);
@@ -468,7 +468,7 @@ s_facts * facts_lock_r (s_facts *facts)
   assert(facts);
   thread = pthread_self();
   if (facts->rwlock_thread != thread) {
-    if (true) {
+    if (false) {
       i = (uw) &facts->rwlock;
       err_write_1("facts_lock_r: ");
       err_inspect_uw_hexadecimal(&i);
