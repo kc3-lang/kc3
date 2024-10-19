@@ -18,6 +18,14 @@
 #include "sym.h"
 #include "tag.h"
 
+s_frame * frame_binding_delete (s_frame *frame, const s_sym *name)
+{
+  s_binding **b;
+  b = binding_find(&frame->bindings, name);
+  *b = binding_delete(*b);
+  return frame;
+}
+
 s_tag * frame_binding_new (s_frame *frame, const s_sym *name)
 {
   s_binding *b;
@@ -53,12 +61,15 @@ s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
   return frame;
 }
 
-s_frame * frame_binding_delete (s_frame *frame, const s_sym *name)
+s_tag * frame_binding_new_var (s_frame *frame)
 {
-  s_binding **b;
-  b = binding_find(&frame->bindings, name);
-  *b = binding_delete(*b);
-  return frame;
+  s_binding *b;
+  b = binding_new(NULL, frame->bindings);
+  if (! b)
+    return NULL;
+  frame->bindings = b;
+  tag_init_var(&b->value, &g_sym_Tag);
+  return &b->value;
 }
 
 s_frame * frame_binding_replace (s_frame *frame, const s_sym *name,

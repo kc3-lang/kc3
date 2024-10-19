@@ -1,4 +1,12 @@
+quote a = 1
 a = 1
+quote b = 1
 b = 1
+quote c = 2
 c = 2
+quote [d, e] = [1, 2]
 [d, e] = [1, 2]
+quote {1, 2} = {f, g}
+{1, 2} = {f, g}
+quote ? = 1
+? = 1

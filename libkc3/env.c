@@ -60,6 +60,7 @@
 #include "tag_init.h"
 #include "time.h"
 #include "tuple.h"
+#include "var.h"
 
 s_env g_kc3_env;
 
@@ -991,16 +992,38 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
 {
   bool is_unbound_a;
   bool is_unbound_b;
+  bool is_var_a = false;
+  bool is_var_b = false;
   s_tag tmp_a;
   s_tag tmp_b;
+  s_tag *var_a;
+  s_tag *var_b;
   assert(env);
   assert(a);
   assert(b);
   assert(dest);
   tag_init_void(&tmp_a);
   tag_init_void(&tmp_b);
-  is_unbound_a = a->type == TAG_IDENT;
-  is_unbound_b = ! macro && b->type == TAG_IDENT;
+  if (a->type == TAG_VAR) {
+    if (! a->data.var.ptr) {
+      if (! (var_a = frame_binding_new_var(env->frame)))
+        return false;
+      a = var_a;
+    }
+    if (! tag_is_unbound_var(a, &is_var_a))
+      return false;
+  }
+  if (b->type == TAG_VAR) {
+    if (! b->data.var.ptr) {
+      if (! (var_b = frame_binding_new_var(env->frame)))
+        return false;
+      b = var_b;
+    }
+    if (! tag_is_unbound_var(b, &is_var_b))
+      return false;
+  }
+  is_unbound_a = a->type == TAG_IDENT || is_var_a;
+  is_unbound_b = ! macro && (b->type == TAG_IDENT || is_var_b);
   if (is_unbound_a && is_unbound_b) {
     err_write_1("env_eval_equal_tag: unbound equal on both sides: ");
     err_inspect_ident(&a->data.ident);
@@ -1019,8 +1042,14 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
       tag_init_copy(dest, b);
     else
       env_eval_tag(env, b, dest);
-    if (! frame_replace(env->frame, a->data.ident.sym, dest))
-      return false;
+    if (is_var_a) {
+      if (! var_set(&a->data.var, dest))
+        return false;
+    }
+    else {
+      if (! frame_replace(env->frame, a->data.ident.sym, dest))
+        return false;
+    }
     return true;
   }
   if (is_unbound_b) {
@@ -1028,8 +1057,14 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
       tag_init_copy(dest, a);
     else
       env_eval_tag(env, a, dest);
-    if (! frame_replace(env->frame, b->data.ident.sym, dest))
-      return false;
+    if (is_var_b) {
+      if (! var_set(&b->data.var, dest))
+        return false;
+    }
+    else {
+      if (! frame_replace(env->frame, b->data.ident.sym, dest))
+        return false;
+    }
     return true;
   }
   if (! macro &&
