@@ -1022,8 +1022,8 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     if (! tag_is_unbound_var(b, &is_var_b))
       return false;
   }
-  is_unbound_a = a->type == TAG_IDENT || is_var_a;
-  is_unbound_b = ! macro && (b->type == TAG_IDENT || is_var_b);
+  is_unbound_a = a->type == TAG_IDENT;
+  is_unbound_b = ! macro && (b->type == TAG_IDENT);
   if (is_unbound_a && is_unbound_b) {
     err_write_1("env_eval_equal_tag: unbound equal on both sides: ");
     err_inspect_ident(&a->data.ident);
@@ -1037,7 +1037,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     err_write_1("\n");
     return false;
   }
-  if (is_unbound_a) {
+  if (is_unbound_a || is_var_a) {
     if (macro)
       tag_init_copy(dest, b);
     else
@@ -1052,7 +1052,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
     }
     return true;
   }
-  if (is_unbound_b) {
+  if (is_unbound_b || is_var_b) {
     if (macro)
       tag_init_copy(dest, a);
     else
