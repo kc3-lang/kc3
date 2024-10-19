@@ -26,6 +26,17 @@ Supported architectures :
  - i386
  - sparc64
 
+## New in this release
+
+ - pretty printer
+   - auto indent KC3 code
+ - facts database (triple store) in KC3
+   - new database (Ptr)
+   - add_tags
+   - remove_tags
+   - with_tags
+   - with
+
 
 ## Discord invite
 
@@ -34,18 +45,12 @@ Supported architectures :
 
 ## [Guides](https://kc3-lang.org/doc/3_Guides)
 
-Follow the [KC3 guides](https://kc3-lang.org/doc/3_Guides) to discover how to use KC3 for
-your own projects.
+Follow the [KC3 guides](https://kc3-lang.org/doc/3_Guides)
+to discover how to use KC3 for your own projects.
 
 
 ## TODO
 
- - [DONE] facts database in KC3
-   - [DONE] new database (Ptr)
-   - [DONE] add_tags
-   - [DONE] remove_tags
-   - [DONE] with_tags
-   - [DONE] with
  - fx v0.2.0
    - [DONE] file explorer
    - [DONE] preview files
@@ -54,6 +59,7 @@ your own projects.
      - [DONE] video
      - [DONE] audio
      - [DONE] binary (hexdump -C)
+     - chaining of audio and video previews (folder as a playlist)
    - tags
      - create
        - POST "/tag/:tag/*path"
@@ -62,9 +68,9 @@ your own projects.
      - recursive
    - properties
      - [DONE] create
-       - [DONE] POST "/property/:property/:value/*path"
+       - [DONE] POST "/properties/*path"
      - [DONE] delete
-       - [DONE] DELETE "/property/:property/:value/*path
+       - [DONE] DELETE "/properties/*path
      - recursive
  - HTTPd v0.2.0
    - dynamic pages (MVC)
@@ -78,13 +84,12 @@ your own projects.
      - [DONE] views
        - [DONE] ./app/views/
  - libkc3
-   - [DONE] evaluation order for && and ||
    - operators dispatch
      - list of matching operators (facts_with)
    - base-specific big floats
    - macro cast : `(Macro) fn (x) { x }`
    - pretty printer
-     - [DONE] indent
+     - [DONE] auto indent KC3 code
      - 80 columns (`\n`)
    - tags
      - walker
