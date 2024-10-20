@@ -30,8 +30,7 @@ defmodule HTTPd do
         if (type(request.method) == Str) do
           response = error_405_page(request)
         else
-          router = route_request(request)
-          response = router(request)
+          response = route_and_render_request(request)
         end
         response = HTTP.Response.set_header(response,
           "Connection", "Keep-Alive")
@@ -208,18 +207,19 @@ defmodule HTTPd do
     def HTTPd.routes = tmp
   }
 
-  def route_request = fn {
+  def route_and_render_request = fn {
     (request) {
-      route_request(request, routes)
+      route_and_render_request(request, routes)
     }
     (request, []) {
-      error_404_page
+      error_404_page(request)
     }
     (request, [route | next_routes]) {
-      if (controller = HTTPd.Route.match(route, request)) do
-        controller
+      if ((controller = HTTPd.Route.match(route, request)) &&
+          (response = controller(request)))
+        response
       else
-        route_request(request, next_routes)
+        route_and_render_request(request, next_routes)
       end
     }
   }
