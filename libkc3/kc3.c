@@ -39,6 +39,7 @@
 #include "struct_type.h"
 #include "sym.h"
 #include "tag.h"
+#include "u8.h"
 
 const s_str g_kc3_base_binary = {{NULL}, 2, {"01"}};
 const s_str g_kc3_base_octal = {{NULL}, 8, {"01234567"}};
@@ -88,6 +89,11 @@ s_tag * kc3_access (const s_tag *tag, const s_list * const *key,
 bool * kc3_and (const s_tag *a, const s_tag *b, bool *dest)
 {
   return env_and(&g_kc3_env, a, b, dest);
+}
+
+s_list ** kc3_args (s_list **dest)
+{
+  return env_args(&g_kc3_env, dest);
 }
 
 void kc3_break (void)
@@ -178,9 +184,17 @@ sw kc3_errno (void)
   return errno;
 }
 
-void kc3_exit (sw code)
+void kc3_exit (s_tag *code)
 {
-  exit((int) code);
+  u8 code_u8;
+  const s_sym *type;
+  type = &g_sym_U8;
+  if (! u8_init_cast(&code_u8, &type, code)) {
+    err_puts("kc3_exit: u8_init_cast");
+    assert(! "kc3_exit: u8_init_cast");
+    return;
+  }
+  exit((int) code_u8);
 }
 
 s_tag * kc3_fact_object (s_fact *fact, s_tag *dest)

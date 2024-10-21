@@ -30,6 +30,7 @@ s_env * kc3_init (s_env *env, int *argc, char ***argv);
 void    kc3_clean (s_env *env);
 
 /* Observers. */
+s_list **      kc3_args (s_list **dest);
 s_tag *        kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr);
 s_tag *        kc3_fact_object (s_fact *fact, s_tag *dest);
 s_tag *        kc3_fact_predicate (s_fact *fact, s_tag *dest);
@@ -65,7 +66,7 @@ s_tag *      kc3_defstruct (const s_list * const *spec, s_tag *dest);
 void **      kc3_dlopen (const s_str *path, void **dest);
 s_facts **   kc3_env_db (s_facts **dest);
 sw           kc3_errno (void);
-void         kc3_exit (sw code);
+void         kc3_exit (s_tag *code);
 bool *       kc3_facts_add_tags (s_facts *facts, const s_tag *subject,
                                  const s_tag *predicate,
                                  const s_tag *object,

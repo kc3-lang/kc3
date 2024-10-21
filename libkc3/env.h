@@ -22,6 +22,7 @@ void    env_clean (s_env *env);
 s_env * env_init (s_env *env, int *argc, char ***argv);
 
 /* Observers. */
+s_list **       env_args (s_env *env, s_list **dest);
 const s_tag *   env_frames_get (const s_env *env, const s_sym *name);
 s_ident *       env_ident_resolve_module (s_env *env,
                                           const s_ident *ident,

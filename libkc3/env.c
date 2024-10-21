@@ -100,6 +100,27 @@ bool * env_and (s_env *env, const s_tag *a, const s_tag *b, bool *dest)
   return dest;
 }
 
+s_list ** env_args (s_env *env, s_list **dest)
+{
+  sw i;
+  s_list *tmp;
+  s_list **tail;
+  tmp = NULL;
+  tail = &tmp;
+  i = 0;
+  while (i < env->argc) {
+    if (! (*tail = list_new_str_1(NULL, env->argv[i], NULL)))
+      goto clean;
+    tail = &(*tail)->next.data.list;
+    i++;
+  }
+  *dest = tmp;
+  return dest;
+ clean:
+  list_delete_all(tmp);
+  return NULL;
+}
+
 bool env_call_get (s_env *env, s_call *call)
 {
   s_facts_cursor cursor;
