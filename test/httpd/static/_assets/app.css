@@ -32092,11 +32092,11 @@ code.hljs {
   margin: 0.75em 0;
 }
 
-.footer {
+footer {
   background: #242124;
   padding: 1em;
 }
-.footer a, .footer a:hover {
+footer a, footer a:hover {
   color: #f8681c;
 }
 
