@@ -1,6 +1,18 @@
 # [The KC3 programming language documentation](https://kc3-lang.org/doc)
 
-KC3 stands for "kmx.io C3 programming language".
+KC3 stands for "kmx.io C11 with a triple store" and is a
+programming language based on C11 and a triple store (facts).
+
+Core features of the language require the triple store to be fast,
+the operations on the triple store are O(log(n, 2.5)) so for
+one billion triples the number of instructions would be less than 30.
+
+The triple store is content addressed memory : you can add data and
+it will be deduplicated (even for structs) and you can remove data
+that you know might be in the database.
+
+Caveats : KC3 is still a prototype and we will phase optimizations in
+when more money comes along.
 
 
 ## Index
