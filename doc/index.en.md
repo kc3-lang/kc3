@@ -16,5 +16,5 @@
 [kmx.io](https://www.kmx.io/) is the company that created and
 maintains the KC3 programming language.
 
-[kmxgit](https://git.kmx.io/) is kmx.io git forge where we host the KC3
-code repository.
+[kmxgit](https://git.kmx.io/) is the git forge by kmx.io where we
+host the [KC3 sources git repository](https://git.kmx.io/kc3-lang/kc3).
