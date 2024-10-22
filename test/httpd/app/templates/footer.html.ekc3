@@ -1,7 +1,110 @@
+<div class="pixels-5-15">
+  <div class="container">
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-0"></div>
+    <div class="pixel pixel-0"></div>
+    <div class="pixel pixel-0"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-0"></div>
+    <div class="pixel pixel-0"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+
+    <div class="pixel pixel-0"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-0"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+    <div class="pixel pixel-1"></div>
+  </div>
+</div>
 <footer class="bg-dark">
-  <a href="https://kmx.io/">kmx.io</a>
-  <span class="right">
-    <a href="https://git.kmx.io/kc3-lang/kc3">kc3_httpd</a>
-    <a href="https://kc3-lang.org/release/v0.1.13/">v0.1.13</a>
-  </span>
+  <div class="container">
+    <a href="https://www.kmx.io/" target="_blank"><i class="fas fa-circle"></i> Copyright 2020-2024 kmx.io</a> &nbsp; &nbsp;
+    <a href="mailto:contact@kmx.io"><i class="fas fa-envelope"></i> mail</a> &nbsp; &nbsp;
+    <a href="https://discord.gg/nUAr57YKsh" target="_blank"><i class="fab fa-discord"></i> discord</a>
+    <span class="right">
+      <a href="https://git.kmx.io/kc3-lang/kc3">kc3_httpd</a>
+      <a href="https://kc3-lang.org/release/v0.1.13/">v0.1.13</a>
+    </span>
+  </div>
 </footer>
