@@ -222,7 +222,7 @@ h1,h2,h3,h4,h5,h6 {
 .left-col > ul > li {
     padding-top: 0.5rem;
 }
-.left-col > ul > li > a {
+.left-col ul > li > a {
     display: block;
     width: 100%;
     &:hover {

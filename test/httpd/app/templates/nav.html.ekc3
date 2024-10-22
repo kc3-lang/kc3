@@ -13,9 +13,11 @@
         <li class="nav-item">
           <a class="navbar-link" href="/release/v0.1.13/">v0.1.13</a>
         </li>
+        <!--
         <li class="nav-item">
           <a class="navbar-link" href="/fx/">Browse</a>
         </li>
+        -->
         <li class="nav-item">
           <a class="navbar-link" href="/doc/">Documentation</a>
         </li>
