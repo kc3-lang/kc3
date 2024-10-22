@@ -1,5 +1,8 @@
 # [The KC3 programming language documentation](https://kc3-lang.org/doc)
 
+KC3 stands for "kmx.io C3 programming language".
+
+
 ## Index
 
 [1 KC3](1_KC3/) core language.
