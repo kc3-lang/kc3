@@ -9,6 +9,18 @@ defmodule List do
     ([a | b], f) { f(a); each(b, f) }
   }
 
+  def filter = fn {
+    (list, f) { filter(list, f, []) }
+    ([], _, acc) { List.reverse(acc) }
+    ([first | rest], f, acc) {
+      if (result = f(first)) do
+        filter(rest, f, [result | acc])
+      else
+        filter(rest, f, acc)
+      end
+    }
+  }
+
   def find_if = fn {
     ([], _) { false }
     ([a | b], f) do
