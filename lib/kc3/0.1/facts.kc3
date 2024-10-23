@@ -37,6 +37,9 @@ defmodule Facts do
   # returns true if fact was removed or is already absent
   def remove_tags = cfn Bool "kc3_facts_remove_tags" (Facts, Tag, Tag, Tag, Result)
 
+  # returns true if fact was added or is already present
+  def replace_tags = cfn Bool "kc3_facts_replace_tags" (Facts, Tag, Tag, Tag, Result)
+
   # with(facts, [[?, ?, ?]], fn (fact) {result}) -> result
   def with = cfn Tag "kc3_facts_with" (Facts, List, Fn, Result)
 

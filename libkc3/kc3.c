@@ -273,6 +273,19 @@ bool * kc3_facts_remove_tags (s_facts *facts, const s_tag *subject,
   return dest;
 }
 
+bool * kc3_facts_replace_tags (s_facts *facts,
+                               const s_tag *subject,
+                               const s_tag *predicate,
+                               const s_tag *object,
+                               bool *dest)
+{
+  const s_fact *fact;
+  if (! (fact = facts_replace_tags(facts, subject, predicate, object)))
+    return NULL;
+  *dest = true;
+  return dest;
+}
+
 s_tag * kc3_facts_with (s_facts *facts, s_list **spec,
                         s_fn *callback, s_tag *dest)
 {

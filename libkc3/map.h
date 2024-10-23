@@ -43,9 +43,9 @@ const s_sym ** map_get_type (const s_map *map, const s_tag *key,
                              const s_sym **dest);
 const s_sym ** map_get_var_type (const s_map *map, const s_tag *key,
                                  const s_sym **dest);
-s_map *        map_update (const s_map *map, const s_tag *key,
-                           const s_tag *value, s_map *dest);
-s_map *        map_update_list (const s_map *map, const s_list *alist,
-                                s_map *dest);
+s_map *        map_put (const s_map *map, const s_tag *key,
+                        const s_tag *value, s_map *dest);
+s_map *        map_put_list (const s_map *map, const s_list *alist,
+                             s_map *dest);
 
 #endif /* LIBKC3_MAP_H */

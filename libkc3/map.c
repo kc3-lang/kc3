@@ -364,7 +364,7 @@ s_map * map_sort (s_map *map)
   return map;
 }
 
-s_map * map_update (const s_map *map, const s_tag *key,
+s_map * map_put (const s_map *map, const s_tag *key,
                     const s_tag *value, s_map *dest)
 {
   s_map tmp = {0};
@@ -384,7 +384,7 @@ s_map * map_update (const s_map *map, const s_tag *key,
   return NULL;
 }
 
-s_map * map_update_list (const s_map *map, const s_list *alist, s_map *dest)
+s_map * map_put_list (const s_map *map, const s_list *alist, s_map *dest)
 {
   const s_list *i = NULL;
   s_map tmp = {0};
@@ -394,8 +394,8 @@ s_map * map_update_list (const s_map *map, const s_list *alist, s_map *dest)
   while (i) {
     assert(i->tag.type == TAG_TUPLE && i->tag.data.tuple.count == 2);
     if (i->tag.type != TAG_TUPLE || i->tag.data.tuple.count != 2) {
-      err_puts("map_update_list: not an associative list");
-      assert(! "map_update_list: not an associative list");
+      err_puts("map_put_list: not an associative list");
+      assert(! "map_put_list: not an associative list");
       goto ko;
     }
     if (! map_set(&tmp, i->tag.data.tuple.tag, i->tag.data.tuple.tag + 1))
