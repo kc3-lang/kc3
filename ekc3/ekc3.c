@@ -532,6 +532,9 @@ sw ekc3_render_raw_block (s_buf *buf, const s_block *block)
   case TAG_STR:
     r = buf_write_str(buf, &result.data.str);
     break;
+  case TAG_VOID:
+    r = 0;
+    break;
   default:
     r = buf_inspect_tag(buf, &result);
   }
