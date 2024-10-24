@@ -16,9 +16,9 @@ defmodule HTTPd do
 
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
-    load_directory("app/models")
-    load_directory("app/controllers")
-    load_directory("app/views")
+    load_directory("app/models/")
+    load_directory("app/controllers/")
+    load_directory("app/views/")
     if (File.exists?("config/routes.kc3")) do
       load("config/routes.kc3")
     end
