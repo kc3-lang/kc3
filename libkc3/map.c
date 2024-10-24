@@ -86,7 +86,7 @@ s_tag * map_get (const s_map *map, const s_tag *key, s_tag *value)
 {
   uw i = 0;
   while (i < map->count) {
-    if (compare_tag(key, map->key + i) == 0)
+    if (! compare_tag(key, map->key + i))
       return tag_init_copy(value, map->value + i);
     i++;
   }
@@ -120,6 +120,20 @@ const s_sym ** map_get_var_type (const s_map *map, const s_tag *key,
   err_write_1("map_get_type: ");
   err_inspect_tag(key);
   err_puts(": key not found");
+  return NULL;
+}
+
+uw * map_index (const s_map *map, const s_tag *key, uw *dest)
+{
+  uw i;
+  i = 0;
+  while (i < map->count) {
+    if (! compare_tag(key, map->key + i)) {
+      *dest = i;
+      return dest;
+    }
+    i++;
+  }
   return NULL;
 }
 
@@ -324,20 +338,6 @@ s_map * map_new_from_lists (const s_list *keys, const s_list *values)
   
 }
 
-s_map * map_set (s_map *map, const s_tag *key, const s_tag *value)
-{
-  uw i = 0;
-  while (i < map->count) {
-    if (compare_tag(key, map->key + i) == 0) {
-      if (! tag_init_copy(map->value + i, value))
-        return NULL;
-      return map;
-    }
-    i++;
-  }
-  return NULL;
-}
-
 /* bubble sort */
 s_map * map_sort (s_map *map)
 {
@@ -367,22 +367,44 @@ s_map * map_sort (s_map *map)
 s_map * map_put (const s_map *map, const s_tag *key,
                  const s_tag *value, s_map *dest)
 {
-  s_map tmp = {0};
-  uw i = 0;
-  map_init_copy(&tmp, map);
-  while (i < map->count) {
-    if (compare_tag(key, tmp.key + i) == 0) {
-      tag_clean(tmp.value + i);
-      if (! tag_init_copy(tmp.value + i, value))
+  s_map tmp;
+  uw i;
+  uw j;
+  if (map_index(map, key, &i)) {
+    if (! map_init(&tmp, map->count))
+      return NULL;
+    j = 0;
+    while (j < tmp.count) {
+      if (! tag_init_copy(tmp.key + j, map->key + j))
         goto ko;
-      *dest = tmp;
-      return dest;
+      if (i == j) {
+        if (! tag_init_copy(tmp.value + j, value))
+          goto ko;
+      }
+      else {
+        if (! tag_init_copy(tmp.value + j, map->value + j))
+          goto ko;
+      }
+      j++;
     }
-    i++;
   }
- ko:
-  map_clean(&tmp);
-  return NULL;
+  else {
+    if (! map_init(&tmp, map->count + 1))
+      return NULL;
+    j = 0;
+    while (j < map->count) {
+      if (! tag_init_copy(tmp.key + j, map->key + j))
+        goto ko;
+      if (i == j) {
+        if (! tag_init_copy(tmp.value + j, value))
+          goto ko;
+      }
+      else {
+        if (! tag_init_copy(tmp.value + j, map->value + j))
+          goto ko;
+      }
+      j++;
+    }
 }
 
 s_map * map_put_list (const s_map *map, const s_list *alist, s_map *dest)

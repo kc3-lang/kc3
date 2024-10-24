@@ -31,18 +31,19 @@ s_map * map_new_1 (const char *p);
 s_map * map_new_from_lists (const s_list *keys, const s_list *values);
 
 /* Operators. */
-s_map * map_set (s_map *map, const s_tag *key, const s_tag *value);
 s_map * map_sort (s_map *map);
 
 /* Observers. */
 s_tag *        map_access (const s_map *map, const s_list * const *key,
                            s_tag *value);
 s_map *        map_cast (const s_tag *tag, s_map *map);
-s_tag *        map_get (const s_map *map, const s_tag *key, s_tag *dest);
+s_tag *        map_get (const s_map *map, const s_tag *key,
+                        s_tag *dest);
 const s_sym ** map_get_type (const s_map *map, const s_tag *key,
                              const s_sym **dest);
 const s_sym ** map_get_var_type (const s_map *map, const s_tag *key,
                                  const s_sym **dest);
+uw *           map_index (const s_map *map, const s_tag *key, uw *dest);
 s_map *        map_put (const s_map *map, const s_tag *key,
                         const s_tag *value, s_map *dest);
 s_map *        map_put_list (const s_map *map, const s_list *alist,
