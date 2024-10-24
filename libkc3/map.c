@@ -365,14 +365,15 @@ s_map * map_sort (s_map *map)
 }
 
 s_map * map_put (const s_map *map, const s_tag *key,
-                    const s_tag *value, s_map *dest)
+                 const s_tag *value, s_map *dest)
 {
   s_map tmp = {0};
   uw i = 0;
   map_init_copy(&tmp, map);
   while (i < map->count) {
-    if (compare_tag(key, map->key + i) == 0) {
-      if (! tag_init_copy(map->value + i, value))
+    if (compare_tag(key, tmp.key + i) == 0) {
+      tag_clean(tmp.value + i);
+      if (! tag_init_copy(tmp.value + i, value))
         goto ko;
       *dest = tmp;
       return dest;
