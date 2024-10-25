@@ -338,32 +338,6 @@ s_map * map_new_from_lists (const s_list *keys, const s_list *values)
   
 }
 
-/* bubble sort */
-s_map * map_sort (s_map *map)
-{
-  uw i;
-  uw j;
-  s_tag k;
-  s_tag v;
-  i = map->count;
-  while (i > 0) {
-    i--;
-    j = 1;
-    while (j <= i) {
-      if (compare_tag(map->key + j, map->key + (j - 1)) < 0) {
-        k = map->key[j];
-        v = map->value[j];
-        map->key[j] = map->key[j - 1];
-        map->value[j] = map->value[j - 1];
-        map->key[j - 1] = k;
-        map->value[j - 1] = v;
-      }
-      j++;
-    }
-  }
-  return map;
-}
-
 s_map * map_put (const s_map *map, const s_tag *key,
                  const s_tag *value, s_map *dest)
 {
@@ -395,18 +369,25 @@ s_map * map_put (const s_map *map, const s_tag *key,
     while (j < map->count) {
       if (! tag_init_copy(tmp.key + j, map->key + j))
         goto ko;
-      if (i == j) {
-        if (! tag_init_copy(tmp.value + j, value))
-          goto ko;
-      }
-      else {
-        if (! tag_init_copy(tmp.value + j, map->value + j))
-          goto ko;
-      }
+      if (! tag_init_copy(tmp.value + j, map->value + j))
+        goto ko;
       j++;
     }
+    if (! tag_init_copy(tmp.key + j, key))
+      goto ko;
+    if (! tag_init_copy(tmp.value + j, value))
+      goto ko;
+    if (! map_sort(&tmp))
+      goto ko;
+  }
+  *dest = tmp;
+  return dest;
+ ko:
+  map_clean(&tmp);
+  return NULL;
 }
 
+/*
 s_map * map_put_list (const s_map *map, const s_list *alist, s_map *dest)
 {
   const s_list *i = NULL;
@@ -430,4 +411,31 @@ s_map * map_put_list (const s_map *map, const s_list *alist, s_map *dest)
  ko:
   map_clean(&tmp);
   return NULL;
+}
+*/
+
+/* bubble sort */
+s_map * map_sort (s_map *map)
+{
+  uw i;
+  uw j;
+  s_tag k;
+  s_tag v;
+  i = map->count;
+  while (i > 0) {
+    i--;
+    j = 1;
+    while (j <= i) {
+      if (compare_tag(map->key + j, map->key + (j - 1)) < 0) {
+        k = map->key[j];
+        v = map->value[j];
+        map->key[j] = map->key[j - 1];
+        map->value[j] = map->value[j - 1];
+        map->key[j - 1] = k;
+        map->value[j - 1] = v;
+      }
+      j++;
+    }
+  }
+  return map;
 }
