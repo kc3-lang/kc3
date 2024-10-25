@@ -57,6 +57,7 @@ void kc3_system_pipe_exec (s32 pipe_fd, char **argv,
 s_tag * kc3_access (const s_tag *tag, const s_list * const *key,
                     s_tag *dest)
 {
+  s_struct s = {0};
   assert(tag);
   assert(key);
   assert(dest);
@@ -75,6 +76,12 @@ s_tag * kc3_access (const s_tag *tag, const s_list * const *key,
     return map_access(&tag->data.map, key, dest);
   case TAG_STRUCT:
     return struct_access(&tag->data.struct_, key, dest);
+  case TAG_TIME:
+    if (! struct_init_with_data(&s, &g_sym_Time,
+                                (s_time *) &tag->data.time,
+                                false))
+      return NULL;
+    return struct_access(&s, key, dest);
   default:
     break;
   }
