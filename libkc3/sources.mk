@@ -86,6 +86,7 @@ HEADERS = \
 	"compare.h" \
 	"complex.h" \
 	"cow.h" \
+	"crypt.h" \
 	"data.h" \
 	"env.h" \
 	"error.h" \
@@ -257,6 +258,7 @@ SOURCES = \
 	"compare.c" \
 	"complex.c" \
 	"cow.c" \
+	"crypt.c" \
 	"data.c" \
 	"env.c" \
 	"error.c" \
@@ -536,6 +538,7 @@ LO_SOURCES = \
 	"compare.c" \
 	"complex.c" \
 	"cow.c" \
+	"crypt.c" \
 	"data.c" \
 	"env.c" \
 	"error.c" \

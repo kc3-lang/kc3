@@ -1,0 +1,8 @@
+defmodule Crypt do
+
+  def check_password = cfn Bool "crypt_check_password" (Str, Str,
+    Result)
+
+  def hash_password = cfn Str "crypt_hash_password" (Str, Result)
+
+end
