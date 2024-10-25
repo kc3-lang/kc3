@@ -15,8 +15,11 @@
 #include <string.h>
 #include <unistd.h>
 #include "assert.h"
+#include "config.h"
 #include "crypt.h"
 #include "str.h"
+
+#if HAVE_CRYPT_NEWHASH
 
 bool * crypt_check_password (const s_str *pass, const s_str *hash,
                              bool *dest)
@@ -55,3 +58,50 @@ s_str * crypt_hash_password (const s_str *pass, s_str *dest)
   }
   return str_init_copy_1(dest, hash);
 }
+
+#else
+
+/* SHA512 password hash */
+
+bool * crypt_check_password (const s_str *pass, const s_str *hash,
+                             bool *dest)
+{
+  sw e;
+  assert(pass);
+  assert(hash);
+  assert(dest);
+  if (bcrypt_checkpass(pass->ptr.pchar, hash->ptr.pchar)) {
+    if (errno != EACCES) {
+      e = errno;
+      err_write_1("crypt_check_password: ");
+      err_write_1(strerror(e));
+      err_write_1("\n");
+    }
+    *dest = false;
+  }
+  else
+    *dest = true;
+  return dest;
+}
+
+s_str * crypt_hash_password (const s_sym * const *hash,
+                             const s_str *pass, s_str *dest)
+{
+  sw e;
+  char hash[_PASSWORD_LEN] = {0};
+  char *salt = NULL;
+  assert(pass);
+  assert(dest);
+  if (! (salt = bcrypt_
+  if (crypt_newhash(pass->ptr.pchar, "bcrypt,a", hash,
+                    sizeof(hash))) {
+    e = errno;
+    err_write_1("crypt_hash_password: ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    return NULL;
+  }
+  return str_init_copy_1(dest, hash);
+}
+
+#endif

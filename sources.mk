@@ -340,6 +340,7 @@ KC3_C_SOURCES = \
 	"libkc3/cow.h" \
 	"libkc3/crypt.c" \
 	"libkc3/crypt.h" \
+	"libkc3/crypt_sha512.c" \
 	"libkc3/data.c" \
 	"libkc3/data.h" \
 	"libkc3/env.c" \

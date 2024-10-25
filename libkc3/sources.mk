@@ -259,6 +259,7 @@ SOURCES = \
 	"complex.c" \
 	"cow.c" \
 	"crypt.c" \
+	"crypt_sha512.c" \
 	"data.c" \
 	"env.c" \
 	"error.c" \
@@ -539,6 +540,7 @@ LO_SOURCES = \
 	"complex.c" \
 	"cow.c" \
 	"crypt.c" \
+	"crypt_sha512.c" \
 	"data.c" \
 	"env.c" \
 	"error.c" \
