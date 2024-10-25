@@ -2,4 +2,6 @@ defmodule Struct do
 
   def offset = cfn Uw "struct_offset" (Struct, Sym, Result)
 
+  def put = cfn Tag "kc3_struct_put" (Tag, Sym, Tag, Result)
+
 end

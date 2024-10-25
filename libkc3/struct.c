@@ -449,6 +449,23 @@ uw * struct_offset (const s_struct *s, const s_sym * const *key,
   return dest;
 }
 
+s_struct * struct_put (const s_struct *s, const s_sym *key,
+                       const s_tag *value, s_struct *dest)
+{
+  s_struct tmp;
+  if (! struct_init_copy(&tmp, s)) {
+    err_puts("struct_put: struct_init_copy");
+    return NULL;
+  }
+  if (! struct_set(&tmp, key, value)) {
+    err_puts("struct_put: struct_set");
+    struct_clean(&tmp);
+    return NULL;
+  }
+  *dest = tmp;
+  return dest;
+}
+
 s_struct * struct_set (s_struct *s, const s_sym *key,
                        const s_tag *value)
 {
@@ -464,19 +481,32 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
   while (i < s->type->map.count) {
     if (s->type->map.key[i].type == TAG_SYM &&
         s->type->map.key[i].data.sym == key) {
-      if (! tag_type(s->type->map.value + i, &type_sym))
+      if (! tag_type(s->type->map.value + i, &type_sym)) {
+        err_puts("struct_set: tag_type");
+        assert(! "struct_set: tag_type");
         return NULL;
+      }
       if (type_sym == &g_sym_Var)
         type_sym = s->type->map.value[i].data.var.type;
       data = (s8 *) s->data + s->type->offset[i];
-      if (! tag_to_const_pointer(value, type_sym, &data_src))
+      if (! tag_to_const_pointer(value, type_sym, &data_src)) {
+        err_puts("struct_set: tag_to_const_pointer");
+        assert(! "struct_set: tag_to_const_pointer");
         return NULL;
+      }
       data_clean(type_sym, data);
-      if (! data_init_copy(type_sym, data, data_src))
+      if (! data_init_copy(type_sym, data, data_src)) {
+        err_puts("struct_set: data_init_copy");
+        assert(! "struct_set: data_init_copy");
         return NULL;
+      }
       return s;
     }
     i++;
   }
+  err_write_1("struct_set: key not found: ");
+  err_inspect_sym(&key);
+  err_write_1("\n");
+  assert(! "struct_set: key not found");
   return NULL;
 }

@@ -64,5 +64,7 @@ const s_sym ** struct_get_var_type (const s_struct *s, const s_sym *key,
 uw *           struct_offset (const s_struct *s,
                               const s_sym * const *key,
                               uw *dest);
+s_struct *     struct_put (const s_struct *s, const s_sym *key,
+                           const s_tag *value, s_struct *dest);
 
 #endif /* LIBKC3_STRUCT_H */

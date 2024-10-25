@@ -393,6 +393,11 @@ void kc3_license (void)
 
 bool kc3_load (const s_str *path)
 {
+  if (true) {
+    err_write_1("kc3_load: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+  }
   return env_load(&g_kc3_env, path);
 }
 
@@ -487,6 +492,26 @@ s_str * kc3_strerror (sw err_no, s_str *dest)
   const char *s;
   s = strerror(err_no);
   return str_init_1_alloc(dest, s);
+}
+
+s_tag * kc3_struct_put (const s_tag *s, const s_sym * const *key,
+                        const s_tag *value, s_tag *dest)
+{
+  s_struct tmp;
+  assert(s);
+  assert(key);
+  assert(value);
+  assert(dest);
+  if (s->type != TAG_STRUCT) {
+    err_puts("kc3_struct_put: not a struct");
+    assert(! "kc3_struct_put: not a struct");
+    return NULL;
+  }
+  if (! struct_put(&s->data.struct_, *key, value, &tmp))
+    return NULL;
+  dest->type = TAG_STRUCT;
+  dest->data.struct_ = tmp;
+  return dest;
 }
 
 s_str * kc3_system (const s_list * const *list, s_str *dest)
