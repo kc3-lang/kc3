@@ -26,10 +26,12 @@ bool * crypt_check_password (const s_str *pass, const s_str *hash,
   assert(hash);
   assert(dest);
   if (crypt_checkpass(pass->ptr.pchar, hash->ptr.pchar)) {
-    e = errno;
-    err_write_1("crypt_check_password: ");
-    err_write_1(strerror(e));
-    err_write_1("\n");
+    if (errno != EACCES) {
+      e = errno;
+      err_write_1("crypt_check_password: ");
+      err_write_1(strerror(e));
+      err_write_1("\n");
+    }
     *dest = false;
   }
   else
