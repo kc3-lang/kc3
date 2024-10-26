@@ -49,6 +49,12 @@ const s_str g_kc3_bases_hexadecimal[2] = {{{NULL}, 16,
                                            {"0123456789abcdef"}},
                                          {{NULL}, 16,
                                           {"0123456789ABCDEF"}}};
+const s_str g_kc3_base64 = {{NULL}, 64, {"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                         "abcdefghijklmnopqrstuvwxyz"
+                                         "0123456789+/"}};
+const s_str g_kc3_base64url = {{NULL}, 64, {"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                            "abcdefghijklmnopqrstuvwxyz"
+                                            "0123456789-_"}};
 sw          g_kc3_exit_code = 1;
 
 void kc3_system_pipe_exec (s32 pipe_fd, char **argv,

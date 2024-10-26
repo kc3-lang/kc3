@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <math.h>
 #include <stdarg.h>
 #include <string.h>
 #include "alloc.h"
@@ -30,12 +31,14 @@
 #include "call.h"
 #include "character.h"
 #include "ident.h"
+#include "kc3_main.h"
 #include "list.h"
 #include "operator.h"
 #include "str.h"
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
+#include "uw.h"
 
 #define DEF_STR_INIT(name, type)                                       \
   s_str * str_init_ ## name (s_str *str, type x)                       \
@@ -583,6 +586,74 @@ DEF_STR_INIT_PTR(list, const s_list * const *)
 DEF_STR_INIT_STRUCT(map)
 DEF_STR_INIT_PTR(ptr, const u_ptr_w *)
 DEF_STR_INIT_PTR(ptr_free, const u_ptr_w *)
+
+s_str * str_init_random_base64 (const s_tag *len, s_str *dest)
+{
+  const s_sym *type;
+  char *random_bytes;
+  uw    random_bytes_len;
+  char *result;
+  uw    result_len;
+  uw i;
+  uw j;
+  uw k;
+  uw u;
+  type = &g_sym_Uw;
+  if (! uw_init_cast(&result_len, &type, len)) {
+    err_write_1("str_init_random_base64: cannot cast to Uw: ");
+    err_inspect_tag(len);
+    err_write_1("\n");
+    return NULL;
+  }
+  random_bytes_len = ceil(log2(pow(64, result_len)) / 8);
+  if (! (random_bytes = alloc(random_bytes_len)))
+    return NULL;
+  if (! (result = alloc(result_len + 1))) {
+    free(random_bytes);
+    return NULL;
+  }
+  arc4random_buf(random_bytes, random_bytes_len);
+  i = 0;
+  j = 0;
+  while (i + 3 <= random_bytes_len &&
+         j < result_len) {
+    u = ((random_bytes[i] << 16) +
+         (random_bytes[i + 1] << 8) +
+         random_bytes[i + 2]);
+    k = 0;
+    while (k < 4 &&
+           j < result_len) {
+      result[j] = g_kc3_base64url.ptr.pchar[u % 64];
+      u /= 64;
+      j++;
+      k++;
+    }
+  }
+  if (random_bytes_len - i == 2) {
+    u = ((random_bytes[i] << 8) +
+         random_bytes[i + 1]);
+    k = 0;
+    while (j < result_len) {
+      result[j] = g_kc3_base64url.ptr.pchar[u % 64];
+      u /= 64;
+      j++;
+      k++;
+    }
+  }
+  else if (random_bytes_len - i == 1) {
+    u = random_bytes[i];
+    k = 0;
+    while (j < result_len) {
+      result[j] = g_kc3_base64url.ptr.pchar[u % 64];
+      u /= 64;
+      j++;
+      k++;
+    }
+  }
+  free(random_bytes);
+  return str_init(dest, result, result_len, result);
+}
+
 DEF_STR_INIT_INT(s8)
 DEF_STR_INIT_INT(s16)
 DEF_STR_INIT_INT(s32)
