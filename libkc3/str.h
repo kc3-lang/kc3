@@ -62,7 +62,7 @@ PROTOTYPE_STR_INIT(list, const s_list * const *);
 PROTOTYPE_STR_INIT_STRUCT(map);
 PROTOTYPE_STR_INIT(ptr, const u_ptr_w *);
 PROTOTYPE_STR_INIT(ptr_free, const u_ptr_w *);
-s_str * str_init_random_base64 (const s_tag *len, s_str *dest);
+s_str * str_init_random_base64 (s_str *str, const s_tag *len);
 PROTOTYPE_STR_INIT_INT(s8);
 PROTOTYPE_STR_INIT_INT(s16);
 PROTOTYPE_STR_INIT_INT(s32);

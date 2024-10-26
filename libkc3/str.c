@@ -587,7 +587,7 @@ DEF_STR_INIT_STRUCT(map)
 DEF_STR_INIT_PTR(ptr, const u_ptr_w *)
 DEF_STR_INIT_PTR(ptr_free, const u_ptr_w *)
 
-s_str * str_init_random_base64 (const s_tag *len, s_str *dest)
+s_str * str_init_random_base64 (s_str *str, const s_tag *len)
 {
   const s_sym *type;
   char *random_bytes;
@@ -651,7 +651,7 @@ s_str * str_init_random_base64 (const s_tag *len, s_str *dest)
     }
   }
   free(random_bytes);
-  return str_init(dest, result, result_len, result);
+  return str_init(str, result, result_len, result);
 }
 
 DEF_STR_INIT_INT(s8)
