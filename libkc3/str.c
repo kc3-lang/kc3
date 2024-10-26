@@ -619,7 +619,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
          j < result_len) {
     u = ((random_bytes[i] << 16) +
          (random_bytes[i + 1] << 8) +
-         random_bytes[i + 2]);
+         (random_bytes[i + 2]));
     k = 0;
     while (k < 4 &&
            j < result_len) {
@@ -628,6 +628,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
       j++;
       k++;
     }
+    i += 3;
   }
   if (random_bytes_len - i == 2) {
     u = ((random_bytes[i] << 8) +
