@@ -21,8 +21,8 @@
 
 #include "types.h"
 
-bool * crypt_check_password (const s_str *pass, const s_str *hash,
-                             bool *dest);
+bool *  crypt_check_password (const s_str *pass, const s_str *hash,
+                              bool *dest);
 s_str * crypt_hash_password (const s_str *pass, s_str *dest);
 s_str * crypt_sha512 (const s_str *key, const s_str *setting,
                       s_str *dest);
