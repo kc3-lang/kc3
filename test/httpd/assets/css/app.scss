@@ -112,6 +112,9 @@ code {
 }
 .navbar-link, .navbar-text {
     padding: 0.5rem 1rem 0 0;
+    &.active {
+        text-decoration: underline;
+    }
 }
 .doc-logo, .doc-logo-lg, .doc-logo-light, .doc-logo-light-lg {
     & > span {
@@ -229,5 +232,9 @@ h1,h2,h3,h4,h5,h6 {
     width: 100%;
     &:hover {
         background: #e8e8ff;
+    }
+    &.active {
+        background: #e6e6ff;
+        text-decoration: underline;
     }
 }

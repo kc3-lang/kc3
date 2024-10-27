@@ -1,8 +1,9 @@
 <ul>
   <%= raw List.join(List.map(index, fn (file) {
+    class = if (file.url == url) do " class=\"active\"" else "" end
     """
   <li>
-    <a href="#{URL.escape(file.url)}">#{HTML.escape(file.name)}</a>
+    <a#{class} href="#{URL.escape(file.url)}">#{HTML.escape(file.name)}</a>
     #{if (file.type == :dir) do
         DocView.render_menu(file.items)
       else
