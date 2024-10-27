@@ -67,16 +67,13 @@ bool * crypt_check_password (const s_str *pass, const s_str *hash,
                              bool *dest)
 {
   sw e;
+  s_str str;
   assert(pass);
   assert(hash);
   assert(dest);
-  if (bcrypt_checkpass(pass->ptr.pchar, hash->ptr.pchar)) {
-    if (errno != EACCES) {
-      e = errno;
-      err_write_1("crypt_check_password: ");
-      err_write_1(strerror(e));
-      err_write_1("\n");
-    }
+  if (! crypt_sha512(pass, hash, &str)) {
+    err_puts("crypt_check_password: crypt_sha512");
+    assert(! "crypt_check_password: crypt_sha512");
     *dest = false;
   }
   else
@@ -84,24 +81,27 @@ bool * crypt_check_password (const s_str *pass, const s_str *hash,
   return dest;
 }
 
-s_str * crypt_hash_password (const s_sym * const *hash,
-                             const s_str *pass, s_str *dest)
+s_str * crypt_hash_password (const s_str *pass, s_str *dest)
 {
-  sw e;
-  char hash[_PASSWORD_LEN] = {0};
-  char *salt = NULL;
-  assert(pass);
-  assert(dest);
-  if (! (salt = bcrypt_
-  if (crypt_newhash(pass->ptr.pchar, "bcrypt,a", hash,
-                    sizeof(hash))) {
-    e = errno;
-    err_write_1("crypt_hash_password: ");
-    err_write_1(strerror(e));
-    err_write_1("\n");
+  s_str prefix = {{NULL}, 17, {"$6$rounds=123456$"}};
+  s_str salt;
+  s_str config;
+  s_str hash;
+  if (! str_init_random_base64(&salt, 16))
+    return NULL;
+  if (! str_init_concatenate(&config, &prefix, &salt)) {
+    str_clean(&salt);
     return NULL;
   }
-  return str_init_copy_1(dest, hash);
+  if (! crypt_sha512(pass, &config, &hash)) {
+    str_clean(&config);
+    str_clean(&salt);
+    return NULL;
+  }
+  str_clean(&config);
+  str_clean(&salt);
+  *dest = hash;
+  return dest;
 }
 
 #endif
