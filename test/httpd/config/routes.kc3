@@ -7,4 +7,6 @@ def_route("/doc/", DocController.route)
 # def_route("/properties/", FXController.properties_route)
 # def_static_route("/file", "./fx/", 1)
 
+def_route("/", PageController.route)
+
 def_static_route("", "./static/", 0)

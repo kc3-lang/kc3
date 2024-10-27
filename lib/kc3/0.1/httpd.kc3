@@ -298,6 +298,10 @@ defmodule HTTPd do
       url = url_eat(request.url, url_skip)
       ext = File.ext(url)
       path = root_dir + url
+      if (! File.exists?(path)) do
+        slash = if Str.ends_with?(path, "/") do "" else "/" end
+        path = "#{path}#{slash}index.html"
+      end
       if File.exists?(path) do
         mime = HTTP.mime_type(ext)
         stat = File.stat(path)
@@ -311,8 +315,6 @@ defmodule HTTPd do
         fd = File.open_r(path)
         body = %{fd: fd, start: range_start, end_: range_end}
         %HTTP.Response{body: body, headers: headers}
-      else
-        error_404_page(request)
       end
     }
     route = HTTPd.fn (request) {

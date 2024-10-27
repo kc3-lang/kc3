@@ -1,0 +1,9 @@
+defmodule PageView do
+
+  def show_template = EKC3.load("app/templates/page/show.html.ekc3")
+
+  def render_show = fn (html) {
+    EKC3.render(show_template)
+  }
+
+end

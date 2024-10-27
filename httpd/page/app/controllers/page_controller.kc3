@@ -1,0 +1,53 @@
+defmodule PageController do
+
+  require EKC3
+  require File
+  require List
+  require Str
+
+  def show_html = fn (path_html, url) {
+    title = "kc3-lang.org"
+    name = File.name(path_html)
+    slug = Str.slice(name, 0, -9)
+    slug = Str.subst(slug, " ", "-")
+    slug = Str.subst(slug, ".", "-")
+    html = File.read_all(path_html)
+    page = PageView.render_show(html)
+    body = LayoutView.render(slug, title, page, url)
+    %HTTP.Response{body: body}
+  }
+
+  def show_md = fn (path_md, url) {
+    title = "kc3-lang.org"
+    md = File.read_all(path_md)
+    [title | _] = Markdown.titles(md)
+    slug = Str.subst(title, " ", "-")
+    html = Markdown.to_html_str(md)
+    page = PageView.render_show(html)
+    body = LayoutView.render(title, page, url)
+    %HTTP.Response{body: body}
+  }
+
+  def route = fn (request) {
+    if (request.method == GET ||
+        request.method == HEAD) do
+      locale = "en"
+      slash = if Str.ends_with?(request.url, "/") do "" else "/" end
+      path_html = "./pages#{request.url}#{slash}index.#{locale}.html"
+      if File.exists?(path_html) do
+        show_html(path_html, request.url)
+      else
+        path_md = "./pages#{request.url}#{slash}index.#{locale}.md"
+        if File.exists?(path_md) do
+          show_md(path_md, request.url)
+        else
+          path_md = "./pages#{request.url}.#{locale}.md"
+          if File.exists?(path_md) do
+            show_md(path_md, request.url)
+          end
+        end
+      end
+    end
+  }
+
+end

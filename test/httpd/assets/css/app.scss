@@ -16,6 +16,7 @@ $code-font-size: $font-size-base * 1.1;
 // @import "../node_modules/highlight.js/scss/default.scss";
 @import "../node_modules/highlight.js/scss/github.scss";
 
+@import "./kc3.scss";
 @import "./flash.scss";
 @import "./footer.scss";
 @import "./pixel.scss";
@@ -104,9 +105,10 @@ code {
     display: inline-block;
     font-size: 1.3rem;
 }
-.navbar-brand {
-    padding: 0.5rem 0 0 0;
-    margin: 0;
+@media only screen and (min-width: 992px) {
+    .navbar-brand {
+        padding-top: 0.5rem;
+    }
 }
 .navbar-link, .navbar-text {
     padding: 0.5rem 1rem 0 0;

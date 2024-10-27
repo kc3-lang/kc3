@@ -12,7 +12,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/_images/kc3.32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/_images/kc3.16.png">
   </head>
-  <body>
+  <body class="<%= slug %>">
     <%= raw nav %>
     <%= raw page %>
     <%= raw footer %>

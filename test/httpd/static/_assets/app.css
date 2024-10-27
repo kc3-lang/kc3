@@ -32071,6 +32071,50 @@ code.hljs {
   /* purposely ignored */
 }
 
+.kc3 {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background: url("/_images/iris-kc3-004.jpeg");
+  background-size: 100%;
+}
+.kc3 div.container {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+}
+.kc3 h1, .kc3 .h1 {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  width: 20%;
+  height: 0;
+  padding: 15% 0 15% 0;
+  background: url("/_images/kc3.256.png") no-repeat;
+  background-size: 100%;
+  background-position-y: 30%;
+}
+.kc3 .kc3-1 {
+  position: relative;
+  display: block;
+  margin: 10% 0 25% 4%;
+  padding: 0 0 40% 0;
+  width: 45%;
+  height: 0;
+  border-radius: 1rem;
+  background: #fff;
+  font-size: 1.8vw;
+}
+.kc3 .kc3-1 > div {
+  margin: 0;
+  padding: 3vw;
+}
+.kc3 div.pixels-5-15 div.container {
+  margin: 0 auto;
+  max-width: 540px;
+}
+
 .flash-error {
   color: #d00;
   border: solid 2px;
@@ -32125,9 +32169,7 @@ footer a, footer a:hover {
 
 .pixel-1 {
   background: #fff;
-}
-
-/* file preview */
+} /* file preview */
 span.size {
   float: right;
   font-size: 80%;
@@ -32219,11 +32261,11 @@ code {
   font-size: 1.3rem;
 }
 
-.navbar-brand {
-  padding: 0.5rem 0 0 0;
-  margin: 0;
+@media only screen and (min-width: 992px) {
+  .navbar-brand {
+    padding-top: 0.5rem;
+  }
 }
-
 .navbar-link, .navbar-text {
   padding: 0.5rem 1rem 0 0;
 }

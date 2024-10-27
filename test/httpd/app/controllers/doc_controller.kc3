@@ -63,9 +63,12 @@ defmodule DocController do
     index = doc_index("./doc/", path_html)
     menu = DocView.render_menu(index)
     title = "kc3-lang.org"
+    slug = Str.slice(name, 0, -9)
+    slug = Str.subst(slug, " ", "-")
+    slug = Str.subst(slug, ".", "-")
     html = File.read_all(path_html)
     page = DocView.render_show(menu, html)
-    body = LayoutView.render(title, page, url)
+    body = LayoutView.render(slug, title, page, url)
     %HTTP.Response{body: body}
   }
 
@@ -74,9 +77,11 @@ defmodule DocController do
     menu = DocView.render_menu(index)
     title = "kc3-lang.org"
     md = File.read_all(path_md)
+    [title | _] = Markdown.titles(md)
+    slug = Str.subst(title, " ", "-")
     html = Markdown.to_html_str(md)
     page = DocView.render_show(menu, html)
-    body = LayoutView.render(title, page, url)
+    body = LayoutView.render(slug, title, page, url)
     %HTTP.Response{body: body}
   }
 
