@@ -43,7 +43,7 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 LDFLAGS="$LDFLAGS -rdynamic"
 config_asan
 config_gnu
@@ -53,7 +53,7 @@ pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
-LIBS="$LIBS -pthread -lm"
+LIBS="$LIBS -lm"
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"

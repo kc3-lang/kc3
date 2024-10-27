@@ -29,7 +29,7 @@ PROG_DEBUG=ikc3_debug
 . ./sources.sh
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC -pthread"
 LDFLAGS="$LDFLAGS -rdynamic"
 config_asan
 config_gnu
@@ -40,7 +40,7 @@ pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
 pkg_config wineditline
-LIBS="$LIBS -pthread"
+LIBS="$LIBS"
 
 if pkg-config wineditline; then
     echo "#define HAVE_WINEDITLINE 1" >> ${CONFIG_H}

@@ -41,7 +41,7 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
-LDFLAGS="-export-dynamic $LDFLAGS -rdynamic -pthread"
+LDFLAGS="-export-dynamic $LDFLAGS -rdynamic"
 config_asan
 config_gnu
 config_i386
@@ -56,7 +56,7 @@ config_define PREFIX "\"${PREFIX}\""
 config_have_crypt_newhash
 config_have_stat_mtim
 update_config_h
-LIBS="$LIBS -lm -pthread -rpath ${PREFIX}/lib"
+LIBS="$LIBS -lm -lpthread -rpath ${PREFIX}/lib"
 
 if ! [ -f ../ucd2c/ucd.c ]; then
     touch ../ucd2c/ucd.c
