@@ -7,13 +7,13 @@ defmodule Crypt do
 
   def sha512 = cfn Str "crypt_sha512" (Str, Str, Result)
 
+  def sha512_check_password = fn (password, hash) {
+    hash == sha512(password, hash)
+  }
+
   def sha512_hash_password = fn (password) {
     salt = Str.random_base64(16)
     sha512(password, "$6$rounds=123456$#{salt}$")
-  }
-
-  def sha512_check_password = fn (password, hash) {
-    hash == sha512(password, hash)
   }
 
 end
