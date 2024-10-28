@@ -202,6 +202,7 @@ sw io_write_u8 (u8 x)
 }
 
 DEF_ERR_IO_INSPECT(array,           const s_array *)
+DEF_ERR_IO_INSPECT(block,           const s_block *)
 DEF_ERR_IO_INSPECT(call,            const s_call *)
 DEF_ERR_IO_INSPECT(character,       const character *)
 DEF_ERR_IO_INSPECT(f32,             const f32 *)

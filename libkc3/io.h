@@ -44,6 +44,7 @@ sw io_write_str (const s_str *x);
 sw io_write_u8 (u8 x);
 
 PROTOTYPES_ERR_IO_INSPECT(array,           const s_array *);
+PROTOTYPES_ERR_IO_INSPECT(block,           const s_block *);
 PROTOTYPES_ERR_IO_INSPECT(bool,            const bool *);
 PROTOTYPES_ERR_IO_INSPECT(buf,             const s_buf *);
 PROTOTYPES_ERR_IO_INSPECT(call,            const s_call *);
