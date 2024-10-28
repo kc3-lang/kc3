@@ -339,7 +339,7 @@ static char * sha512_crypt(const char *key, const char *setting, char *output)
 
   /* DS = sha(repeat-salt) */
   sha512_init(&ctx);
-  for (i = 0; i < 16 + md[0]; i++)
+  for (i = 0; (s32) i < 16 + md[0]; i++)
     sha512_update(&ctx, salt, slen);
   sha512_sum(&ctx, smd);
 

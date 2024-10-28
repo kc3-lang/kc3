@@ -18,6 +18,7 @@
 #include "config.h"
 #include "crypt.h"
 #include "str.h"
+#include "tag.h"
 
 #if HAVE_CRYPT_NEWHASH
 
@@ -66,7 +67,6 @@ s_str * crypt_hash_password (const s_str *pass, s_str *dest)
 bool * crypt_check_password (const s_str *pass, const s_str *hash,
                              bool *dest)
 {
-  sw e;
   s_str str;
   assert(pass);
   assert(hash);
@@ -83,11 +83,13 @@ bool * crypt_check_password (const s_str *pass, const s_str *hash,
 
 s_str * crypt_hash_password (const s_str *pass, s_str *dest)
 {
-  s_str prefix = {{NULL}, 17, {"$6$rounds=123456$"}};
-  s_str salt;
   s_str config;
   s_str hash;
-  if (! str_init_random_base64(&salt, 16))
+  s_str prefix = {{NULL}, 17, {"$6$rounds=123456$"}};
+  s_str salt;
+  s_tag tag;
+  tag_init_uw(&tag, 16);
+  if (! str_init_random_base64(&salt, &tag))
     return NULL;
   if (! str_init_concatenate(&config, &prefix, &salt)) {
     str_clean(&salt);
