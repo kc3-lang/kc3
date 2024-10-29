@@ -285,6 +285,8 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
   assert(src);
   assert(src->type);
   tmp.type = src->type;
+  if (! tmp.type->size)
+    return NULL;
   if (src->data) {
     tmp.data = alloc(tmp.type->size);
     if (! tmp.data)

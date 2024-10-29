@@ -2203,8 +2203,10 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   assert(dest);
   if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(&arguments->tag.data.struct_))
+  if (! struct_allocate(&arguments->tag.data.struct_)) {
+    list_delete_all(arguments);
     return NULL;
+  }
   fact_w = arguments->tag.data.struct_.data;
   if (! facts_with_tags(facts, &cursor, subject, predicate, object))
     return NULL;
