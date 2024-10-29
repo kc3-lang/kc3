@@ -3393,6 +3393,7 @@ sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
 {
   s_array offset_array;
   uw offset_array_dimension;
+  s_pretty_save pretty_save;
   sw r;
   sw result = 0;
   assert(buf);
@@ -3400,19 +3401,24 @@ sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
   assert(sym_is_module(st->module));
   assert(st->offset);
   assert(st->size);
-  if ((r = buf_write_1(buf, "%StructType{module: ")) < 0)
+  if ((r = buf_write_1(buf, "%StructType{")) < 0)
+    return r;
+  result += r;
+  pretty_save_init(&pretty_save, &buf->pretty);
+  pretty_indent_from_column(&buf->pretty, 0);
+  if ((r = buf_write_1(buf, "module: ")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_sym(buf, &st->module)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1(buf, ", map: ")) < 0)
+  if ((r = buf_write_1(buf, ",\nmap: ")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_map(buf, &st->map)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1(buf, ", offset: ")) < 0)
+  if ((r = buf_write_1(buf, ",\noffset: ")) < 0)
     return r;
   result += r;
   offset_array_dimension = st->map.count;
@@ -3424,7 +3430,7 @@ sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
   }
   result += r;
   array_clean(&offset_array);
-  if ((r = buf_write_1(buf, ", size: ")) < 0)
+  if ((r = buf_write_1(buf, ",\nsize: ")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_uw(buf, &st->size)) < 0)
@@ -3433,6 +3439,7 @@ sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
   if ((r = buf_write_1(buf, "}")) < 0)
     return r;
   result += r;
+  pretty_save_clean(&pretty_save, &buf->pretty);
   return result;
 }
 

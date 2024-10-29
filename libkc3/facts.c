@@ -651,15 +651,6 @@ sw facts_open_file_create (s_facts *facts, const s_str *path)
   fp = file_open(path->ptr.pchar, "wb");
   if (! fp)
     return -1;
-  if (facts_count(facts)) {
-    /* TODO: clear facts
-       facts_close(facts);
-       facts_remove_all(facts);
-    */
-    err_puts("facts_open_file: not implemented");
-    assert(! "facts_open_file: not implemented");
-    return -1;
-  }
   out = buf_new_alloc(BUF_SIZE);
   buf_file_open_w(out, fp);
   if ((r = facts_dump(facts, out)) < 0)

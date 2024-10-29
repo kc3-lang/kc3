@@ -122,6 +122,7 @@ s_fn * fn_init_copy (s_fn *fn, const s_fn *src)
     fn_clean(&tmp);
     return NULL;
   }
+  tmp.ident = src->ident;
   *fn = tmp;
   return fn;
 }

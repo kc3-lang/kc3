@@ -33,6 +33,7 @@ int main (int argc, char **argv)
   char *p;
   s32 r = 1;
   s32 skip = 0;
+  s_str str;
   time_t t;
   s_tag tmp = {0};
   const struct tm *utc = NULL;
@@ -42,6 +43,22 @@ int main (int argc, char **argv)
     p = argv[0] + 1;
     while (*p) {
       switch (*p) {
+      case 'D':
+        if (argc <= skip || ! argv[skip]) {
+          err_puts("kc3_httpd: -D without an argument");
+          assert(! "kc3_httpd: -D without an argument");
+          kc3_clean(NULL);
+          return 1;
+        }
+        str_init_1(&str, NULL, argv[1]);
+        if (! facts_open_file(&g_kc3_env.facts, &str)) {
+          err_puts("kc3_httpd: -D: facts_open_file");
+          assert(! "kc3_httpd: -D: facts_open_file");
+          kc3_clean(NULL);
+          return 1;
+        }
+        skip++;
+        break;
       case 'd':
         daemonize = false;
         break;
