@@ -2215,6 +2215,8 @@ sw buf_inspect_ident_size (s_pretty *pretty, const s_ident *ident)
 
 sw buf_inspect_ident_sym (s_buf *buf, const s_sym *sym)
 {
+  if (! sym)
+    return buf_write_1(buf, "void");
   if (sym->str.size == 0)
     return buf_write_1(buf, "_\"\"");
   if (sym_has_ident_reserved_characters(sym))

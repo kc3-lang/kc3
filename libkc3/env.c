@@ -759,7 +759,10 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     frame_clean(&frame);
     return false;
   }
-  tag_init_ident(&trace->tag, &fn->ident);
+  tag_init_list(&trace->tag, list_new_ident
+                (&fn->ident, list_new_copy
+                 (args)));
+  env->stacktrace = trace;
   if (! env_eval_block(env, &clause->algo, &tag)) {
     list_delete_all(args);
     list_delete_all(tmp);
@@ -769,6 +772,8 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     frame_clean(&frame);
     return false;
   }
+  assert(env->stacktrace == trace);
+  env->stacktrace = list_delete(env->stacktrace);
   list_delete_all(args);
   list_delete_all(tmp);
   list_delete_all(env->search_modules);
