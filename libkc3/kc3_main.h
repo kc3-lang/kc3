@@ -49,6 +49,7 @@ const s_sym ** kc3_module (const s_sym **dest);
 uw *           kc3_offsetof (const s_sym * const *module,
                              const s_sym * const *field, uw *dest);
 sw             kc3_puts (const s_tag *tag);
+s_list **      kc3_stacktrace (s_list **dest);
 s_str *        kc3_str (const s_tag *tag, s_str *dest);
 s_tag *        kc3_struct_put (const s_tag *s,
                                const s_sym * const *key,

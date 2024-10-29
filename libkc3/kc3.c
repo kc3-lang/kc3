@@ -484,6 +484,11 @@ s_list ** kc3_search_modules (s_list **dest)
   return env_search_modules(&g_kc3_env, dest);
 }
 
+s_list ** kc3_stacktrace (s_list **dest)
+{
+  return env_stacktrace(&g_kc3_env, dest);
+}
+
 s_str * kc3_str (const s_tag *tag, s_str *dest)
 {
   const s_sym *sym;

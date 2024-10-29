@@ -13,7 +13,9 @@
 #include "alloc.h"
 #include "assert.h"
 #include "binding.h"
+#include "fn.h"
 #include "frame.h"
+#include "ident.h"
 #include "list.h"
 #include "sym.h"
 #include "tag.h"
@@ -41,23 +43,25 @@ s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
                                   s_tag *value)
 {
   s_tag *tag;
-  frame_binding_new(frame, name);
-  tag = binding_get_w(frame->bindings, name);
-  if (tag == NULL) {
-    err_puts("frame_binding_new_copy: binding new");
-    assert(! "frame_binding_new_copy: binding new");
+  if (! (tag = frame_binding_new(frame, name))) {
+    err_puts("frame_binding_new_copy: frame_binding_new");
+    assert(! "frame_binding_new_copy: frame_binding_new");
     return NULL;
   }
   if (value->type == TAG_VAR) {
     tag_init_var(tag, value->data.var.type);
     value->data.var.ptr = tag->data.var.ptr;
   }
-  else if (! tag_init_copy(tag, value)) {
-    err_puts("frame_binding_new_copy: tag_init_copy");
-    assert(! "frame_binding_new_copy: tag_init_copy");
-    frame = frame_binding_delete(frame, name);
-    return NULL;
-  }
+  else {
+    if (! tag_init_copy(tag, value)) {
+      err_puts("frame_binding_new_copy: tag_init_copy");
+      assert(! "frame_binding_new_copy: tag_init_copy");
+      frame = frame_binding_delete(frame, name);
+      return NULL;
+    }
+    if (tag->type == TAG_FN)
+      fn_set_name_if_null(&tag->data.fn, NULL, name);
+  }    
   return frame;
 }
 
@@ -237,8 +241,15 @@ s_frame * frame_replace (s_frame *frame, const s_sym *sym,
       tag_init_var(result, value->data.var.type);
       value->data.var.ptr = result->data.var.ptr;
     }
-    else
-      tag_init_copy(result, value);
+    else {
+      if (! tag_init_copy(result, value)) {
+        err_puts("frame_replace: tag_init_copy");
+        assert(! "frame_replace: tag_init_copy");
+        return NULL;
+      }
+      if (result->type == TAG_FN)
+        fn_set_name_if_null(&result->data.fn, NULL, sym);
+    }
     return frame;
   }
   return frame_binding_new_copy(frame, sym, value);

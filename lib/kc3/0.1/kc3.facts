@@ -353,3 +353,5 @@ replace {KC3.load_directory, :symbol_value, fn (dir) {
 }}
 add {KC3, :symbol, KC3.args}
 replace {KC3.args, :symbol_value, cfn List "kc3_args" (Result)}
+add {KC3, :symbol, KC3.stacktrace}
+replace {KC3.stacktrace, :symbol_value, cfn List "kc3_stacktrace" (Result)}

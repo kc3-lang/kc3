@@ -402,14 +402,6 @@ struct file_stat {
   s_time st_ctim; /* Time of last status change */
 };
 
-struct fn {
-  s_fn_clause *clauses;
-  bool macro;
-  bool special_operator;
-  const s_sym *module;
-  s_frame *frame;
-};
-
 struct ident {
   const s_sym *module;
   const s_sym *sym;
@@ -463,6 +455,15 @@ struct cfn {
   ffi_cif cif;
   bool macro;
   bool special_operator;
+};
+
+struct fn {
+  s_fn_clause *clauses;
+  bool macro;
+  bool special_operator;
+  s_ident ident;
+  const s_sym *module;
+  s_frame *frame;
 };
 
 struct log {
@@ -571,7 +572,7 @@ struct complex {
 
 struct error_handler
 {
-  s_list *backtrace;
+  s_list *stacktrace;
   jmp_buf jmp_buf;
   s_error_handler *next;
   s_tag tag;
@@ -705,7 +706,7 @@ struct env {
   sw                argc;
   char            **argv;
   s_str             argv0_dir;
-  s_list           *backtrace;
+  s_list           *stacktrace;
   const s_sym      *current_defmodule;
   s_buf             err;
   s_error_handler  *error_handler;

@@ -149,3 +149,13 @@ s_fn * fn_new_copy (const s_fn *src)
   }
   return fn;
 }
+
+s_fn * fn_set_name_if_null (s_fn *fn, const s_sym *module,
+                            const s_sym *name)
+{
+  if (! fn->ident.sym) {
+    fn->ident.module = module;
+    fn->ident.sym = name;
+  }
+  return fn;
+}

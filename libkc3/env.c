@@ -183,8 +183,11 @@ bool env_call_get (s_env *env, s_call *call)
     err_puts(" :symbol_value not found");
     return false;
   }
-  if (tag_var.type == TAG_FN)
+  if (tag_var.type == TAG_FN) {
     call->fn = fn_new_copy(&tag_var.data.fn);
+    fn_set_name_if_null(call->fn, call->ident.module,
+                        call->ident.sym);
+  }
   else if (tag_var.type == TAG_CFN)
     call->cfn = cfn_new_copy(&tag_var.data.cfn);
   else {
@@ -488,7 +491,7 @@ void env_error_tag (s_env *env, const s_tag *tag)
   error_handler = env->error_handler;
   if (error_handler) {
     tag_init_copy(&error_handler->tag, tag);
-    error_handler->backtrace = env->backtrace;
+    error_handler->stacktrace = list_new_copy(env->stacktrace);
     env_longjmp(env, &error_handler->jmp_buf);
     /* never reached */
     return;
@@ -687,6 +690,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   s_list *search_modules;
   s_tag tag;
   s_list *tmp = NULL;
+  s_list *trace;
   assert(env);
   assert(fn);
   assert(dest);
@@ -746,6 +750,16 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     frame_init(&frame, env->frame, fn->frame);
     env->frame = &frame;
   }
+  if (! (trace = list_new(env->stacktrace))) {
+    list_delete_all(args);
+    list_delete_all(tmp);
+    list_delete_all(env->search_modules);
+    env->search_modules = search_modules;
+    env->frame = env_frame;
+    frame_clean(&frame);
+    return false;
+  }
+  tag_init_ident(&trace->tag, &fn->ident);
   if (! env_eval_block(env, &clause->algo, &tag)) {
     list_delete_all(args);
     list_delete_all(tmp);
@@ -3411,6 +3425,14 @@ s_list ** env_search_modules (s_env *env, s_list **dest)
   assert(env->search_modules);
   assert(env->search_modules->tag.type == TAG_SYM);
   return list_init_copy(dest, (const s_list * const *) &env->search_modules);
+}
+
+s_list ** env_stacktrace (s_env *env, s_list **dest)
+{
+  assert(env);
+  assert(dest);
+  *dest = list_new_copy(env->stacktrace);
+  return dest;
 }
 
 bool env_sym_search_modules (s_env *env, const s_sym *sym,

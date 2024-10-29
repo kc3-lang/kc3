@@ -23,6 +23,6 @@
   } while (0)
 
 void error_print (s_buf *buf, const s_error_handler *error_handler);
-void error_print_backtrace (s_buf *buf, const s_list *backtrace);
+void error_print_stacktrace (s_buf *buf, const s_list *stacktrace);
 
 #endif /* LIBKC3_ERROR_H */

@@ -1,38 +1,34 @@
 defmodule Fx do
 
-  def db = Facts.database()
-
-  Facts.open(db, "db/fx.facts")
-
   def property_index = fn (path) {
     if Str.starts_with?(path, "./") do
       path = Str.slice(path, 2, -1)
     end
-    Facts.collect_with_tags(db, path, p = ?, o = ?, fn (fact) {
+    Facts.collect_with_tags(Config.db, path, p = ?, o = ?, fn (fact) {
       {p, o}
     })
   }
 
   def property_add = fn (path, property, value) {
-    Facts.add_tags(db, path, property, value)
+    Facts.add_tags(Config.db, path, property, value)
   }
 
   def property_remove = fn (path, property, value) {
-    Facts.remove_tags(db, path, property, value)
+    Facts.remove_tags(Config.db, path, property, value)
   }
 
   def tag_index = fn (path) {
-    Facts.collect_with_tags(db, path, :tag, tag = ?, fn (fact) {
+    Facts.collect_with_tags(Config.db, path, :tag, tag = ?, fn (fact) {
       tag
     })
   }
 
   def tag_add = fn (path, tag) {
-    Facts.add_tags(db, path, :tag, tag)
+    Facts.add_tags(Config.db, path, :tag, tag)
   }
 
   def tag_remove = fn (path, tag) {
-    Facts.remove_tags(db, path, :tag, tag)
+    Facts.remove_tags(Config.db, path, :tag, tag)
   }
 
 end

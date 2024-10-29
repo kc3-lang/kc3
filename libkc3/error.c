@@ -21,14 +21,14 @@ void error_print (s_buf *buf, const s_error_handler *error_handler)
 {
   buf_write_1(buf, "error: ");
   buf_inspect_tag(buf, &error_handler->tag);
-  buf_write_1(buf, "\nBacktrace:\n");
-  error_print_backtrace(buf, error_handler->backtrace);
+  buf_write_1(buf, "\nStacktrace:\n");
+  error_print_stacktrace(buf, error_handler->stacktrace);
 }
 
-void error_print_backtrace (s_buf *buf, const s_list *backtrace)
+void error_print_stacktrace (s_buf *buf, const s_list *stacktrace)
 {
-  while (backtrace) {
-    buf_inspect_tag(buf, &backtrace->tag);
+  while (stacktrace) {
+    buf_inspect_tag(buf, &stacktrace->tag);
     buf_write_1(buf, "\n");
   }
 }

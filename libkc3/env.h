@@ -38,6 +38,7 @@ s_list **       env_module_search_modules (s_env *env,
                                            const s_sym * const *module,
                                            s_list **dest);
 s_list **       env_search_modules (s_env *env, s_list **dest);
+s_list **       env_stacktrace (s_env *env, s_list **dest);
 bool            env_sym_search_modules (s_env *env,
                                         const s_sym *sym,
                                         const s_sym **dest);
