@@ -336,7 +336,7 @@ replace {KC3.human_size, :symbol_value, fn (size) {
 add {KC3, :symbol, KC3.load_directory}
 replace {KC3.load_directory, :symbol_value, fn (dir) {
   if File.exists?(dir) && File.is_directory?(dir) do
-    files = File.list(dir)
+    files = List.sort(File.list(dir))
     List.each(files, fn (file) {
       if (! Str.starts_with?(file, ".")) do
         path = dir + file
