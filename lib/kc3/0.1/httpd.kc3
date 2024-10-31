@@ -236,9 +236,7 @@ defmodule HTTPd do
     }
     (request, [route | next_routes]) {
       if ((controller = HTTPd.Route.match(route, request)) &&
-          (response = let(request.params, do
-             controller(request)
-           end)))
+          (response = let(request.params, controller(request))))
         response
       else
         route_and_render_request(request, next_routes)
