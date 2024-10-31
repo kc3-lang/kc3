@@ -1134,6 +1134,10 @@ uw * sym_type_size (const s_sym * const *type, uw *dest)
     *dest = sizeof(s_list *);
     return dest;
   }
+  if (*type == &g_sym_Map) {
+    *dest = sizeof(s_map);
+    return dest;
+  }
   if (*type == &g_sym_Ptag) {
     *dest = sizeof(p_tag);
     return dest;

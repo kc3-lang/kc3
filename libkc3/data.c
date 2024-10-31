@@ -629,6 +629,8 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
     return integer_init_copy(data, src);
   if (type == &g_sym_List)
     return list_init_copy(data, src);
+  if (type == &g_sym_Map)
+    return map_init_copy(data, src);
   if (type == &g_sym_Ptag)
     return ptag_init_copy(data, src);
   if (type == &g_sym_Ptr)

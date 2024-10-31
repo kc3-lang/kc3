@@ -4,7 +4,8 @@ defmodule HTTP.Request do
              body: ?,
              url: "/",
              protocol: "HTTP/1.1",
-             headers: []]
+             headers: [],
+             params: %{}]
 
   dlopen(__DIR__ + "../http.so")
 

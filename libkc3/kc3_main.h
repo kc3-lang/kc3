@@ -100,6 +100,7 @@ s_tag *      kc3_facts_with_tags (s_facts *facts, s_tag *subject,
                                   s_fn *callback, s_tag *dest);
 s_tag *      kc3_identity (const s_tag *tag, s_tag *dest);
 s_tag *      kc3_integer_reduce (const s_tag *tag, s_tag *dest);
+s_tag *      kc3_let (const s_tag *vars, const s_tag *tag, s_tag *dest);
 bool         kc3_load (const s_str *path);
 s_tag *      kc3_operator_find_by_sym (const s_sym * const *sym,
                                        s_tag *dest);

@@ -86,8 +86,8 @@ bool *         env_ident_is_special_operator (s_env *env,
                                               bool *dest);
 s_tag *        env_kc3_def (s_env *env, const s_call *call,
                             s_tag *dest);
-s_tag *        env_let (s_env *env, const s_tag *tag,
-                        const s_block *block, s_tag *dest);
+s_tag *        env_let (s_env *env, const s_tag *vars, const s_tag *tag,
+                        s_tag *dest);
 bool           env_load (s_env *env, const s_str *path);
 bool *         env_module_is_loading (s_env *env, const s_sym *module,
                                       bool *dest);

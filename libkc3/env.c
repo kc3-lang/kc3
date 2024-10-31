@@ -2615,7 +2615,7 @@ s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
   return dest;
 }
 
-s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
+s_tag * env_let (s_env *env, const s_tag *vars, const s_tag *tag,
                  s_tag *dest)
 {
   s_frame frame;
@@ -2623,22 +2623,22 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
   const s_map *map;
   s_tag tmp = {0};
   assert(env);
+  assert(vars);
   assert(tag);
-  assert(block);
   assert(dest);
   if (! frame_init(&frame, env->frame, NULL))
     return NULL;
   env->frame = &frame;
-  if (! env_eval_tag(env, tag, &tmp)) {
+  if (! env_eval_tag(env, vars, &tmp)) {
     env->frame = frame_clean(&frame);
     return NULL;
   }
-  switch(tag->type) {
+  switch(tmp.type) {
   case TAG_MAP:
-    map = &tag->data.map;
+    map = &tmp.data.map;
     break;
   case TAG_STRUCT:
-    map = &tag->data.struct_.type->map;
+    map = &tmp.data.struct_.type->map;
     break;
   default:
     tag_clean(&tmp);
@@ -2671,7 +2671,7 @@ s_tag * env_let (s_env *env, const s_tag *tag, const s_block *block,
     }
     i++;
   }
-  if (! env_eval_block(env, block, dest)) {
+  if (! env_eval_tag(env, tag, dest)) {
     tag_clean(&tmp);
     env->frame = frame_clean(&frame);
     return NULL;

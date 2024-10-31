@@ -25,6 +25,7 @@ defmodule HTTPd do
     if (File.exists?("config/routes.kc3")) do
       load("config/routes.kc3")
     end
+    load_directory("app/plugs/")
   }
 
   def http_client = fn (socket, events, client_ev, client) do
@@ -35,6 +36,7 @@ defmodule HTTPd do
         if (type(request.method) == Str) do
           response = error_405_page(request)
         else
+          request = plug_request(request)
           response = route_and_render_request(request)
         end
         response = HTTP.Response.set_header(response,
@@ -203,6 +205,19 @@ defmodule HTTPd do
     %HTTP.Response{code: 405, body: body}
   }
 
+  def plugs = []
+
+  def def_plug = fn (plug) {
+    tmp = List.append(HTTPd.plugs, plug)
+    def HTTPd.plugs = tmp
+  }
+
+  def plug_request = fn {
+    (request) { plug_request(request, plugs) }
+    (request, []) { request }
+    (request, [plug | rest]) { plug_request(plug(request), rest) }
+  }
+
   def routes = []
 
   def def_route = fn (path, controller) {
@@ -221,7 +236,9 @@ defmodule HTTPd do
     }
     (request, [route | next_routes]) {
       if ((controller = HTTPd.Route.match(route, request)) &&
-          (response = controller(request)))
+          (response = let(request.params, do
+             controller(request)
+           end)))
         response
       else
         route_and_render_request(request, next_routes)
