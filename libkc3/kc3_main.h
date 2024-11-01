@@ -83,6 +83,11 @@ s_tag *      kc3_facts_collect_with_tags (s_facts *facts,
                                           s_tag *object,
                                           s_fn *callback,
                                           s_tag *dest);
+s_tag *      kc3_facts_first_with (s_facts *facts, s_list **spec,
+                                   s_fn *callback, s_tag *dest);
+s_tag *      kc3_facts_first_with_tags (s_facts *facts, s_tag *subject,
+                                        s_tag *predicate, s_tag *object,
+                                        s_fn *callback, s_tag *dest);
 bool *       kc3_facts_remove_tags (s_facts *facts,
                                     const s_tag *subject,
                                     const s_tag *predicate,

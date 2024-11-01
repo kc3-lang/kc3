@@ -27,8 +27,10 @@ defmodule Facts do
   # env_db() -> facts
   def env_db = cfn Ptr "kc3_env_db" (Result)
 
-  # with_tags(facts, subject, predicate, object,
-  #           fn (fact) {result}) -> result
+  def first_with = cfn Tag "kc3_facts_first_with" (Facts, List, Fn, Result)
+
+  # first_with_tags(facts, subject, predicate, object,
+  #                 fn (fact) {result}) -> result
   def first_with_tags = cfn Tag "kc3_facts_first_with_tags" (Facts, Tag,
     Tag, Tag, Fn, Result)
 

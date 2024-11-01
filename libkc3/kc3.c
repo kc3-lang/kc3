@@ -259,12 +259,18 @@ s_tag * kc3_facts_collect_with_tags (s_facts *facts,
                                      predicate, object, callback, dest);
 }
 
+s_tag * kc3_facts_first_with (s_facts *facts, s_list **spec,
+                              s_fn *callback, s_tag *dest)
+{
+  return env_facts_first_with(&g_kc3_env, facts, spec, callback, dest);
+}
+
 s_tag * kc3_facts_first_with_tags (s_facts *facts, s_tag *subject,
                                    s_tag *predicate, s_tag *object,
                                    s_fn *callback, s_tag *dest)
 {
-  return env_facts_with_tags(&g_kc3_env, facts, subject, predicate,
-                             object, callback, dest);
+  return env_facts_first_with_tags(&g_kc3_env, facts, subject,
+                                   predicate, object, callback, dest);
 }
 
 uw * kc3_facts_next_id (uw *dest)

@@ -2184,6 +2184,57 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
   return NULL;
 }
 
+s_tag * env_facts_first_with (s_env *env, s_facts *facts,
+                              s_list **spec,
+                              s_fn *callback, s_tag *dest)
+{
+  s_list *arguments;
+  s_facts_with_cursor cursor = {0};
+  const s_fact *fact = NULL;
+  s_fact_w *fact_w = NULL;
+  s_tag tmp = {0};
+  assert(env);
+  assert(facts);
+  assert(spec);
+  assert(callback);
+  assert(dest);
+  if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
+    return NULL;
+  if (! struct_allocate(&arguments->tag.data.struct_)) {
+    list_delete_all(arguments);
+    return NULL;
+  }
+  fact_w = arguments->tag.data.struct_.data;
+  if (! facts_with_list(facts, &cursor, *spec))
+    return NULL;
+  if (! facts_with_cursor_next(&cursor, &fact))
+    goto clean;
+  if (! fact)
+    goto ok;
+  if (! fact_w_init_fact(fact_w, fact))
+    goto clean;
+  if (! env_eval_call_fn_args(env, callback, arguments, &tmp)) {
+    goto clean;
+  }
+  fact_w_clean(fact_w);
+  fact_w_init(fact_w);
+ ok:
+  list_delete_all(arguments);
+  if (true) {
+    err_write_1("env_facts_first_with: ");
+    err_inspect_tag(&tmp);
+    err_write_1("\n");
+  }
+  *dest = tmp;
+  return dest;
+ clean:
+  facts_with_cursor_clean(&cursor);
+  tag_clean(&tmp);
+  fact_w_clean(fact_w);
+  list_delete_all(arguments);
+  return NULL;  
+}
+
 s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
                                    s_tag *subject, s_tag *predicate,
                                    s_tag *object, s_fn *callback,
