@@ -24,6 +24,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   uw          content_length_uw = 0;
   s_str      *content_type = NULL;
   const s_str content_type_str = {{NULL}, 12, {"Content-Type"}};
+  const s_str cookie_str = {{NULL}, 6, {"Cookie"}};
   s_str *key;
   s_str line;
   s_tag method_key = {0};
@@ -93,8 +94,10 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       tag_clean((*tail)->tag.data.tuple.tag + 1);
       tag_init_uw((*tail)->tag.data.tuple.tag + 1, content_length_uw);
     }
-    if (! compare_str_case_insensitive(&content_type_str, key))
+    else if (! compare_str_case_insensitive(&content_type_str, key))
       content_type = value;
+    else if (! compare_str_case_insensitive(&cookie_str, key))
+      http_request_cookie_add(&tmp_req, value);
     tail = &(*tail)->next.data.list;
   }
   if (content_length_uw) {
@@ -110,7 +113,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         ! compare_str_case_insensitive(&urlencoded, content_type)) {
       if (! url_www_form_decode(body_str, &body))
         goto restore;
-      if (true) {
+      if (false) {
         err_write_1("http_request_buf_parse: body: ");
         err_inspect_tag(&body);
         err_write_1("\n");
@@ -267,6 +270,57 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     return r;
   result += r;
   return result;
+}
+
+s_http_request * http_request_cookie_add (s_http_request *req,
+                                          s_str *cookies)
+{
+  sw eq_pos;
+  s_list *s;
+  const s_str  separator = {{NULL}, 2, {"; "}};
+  s_list *split;
+  s_list **tail;
+  s_tuple *tuple;
+  tail = list_tail(&req->cookies);
+  if (! str_split(cookies, &separator, &split))
+    return NULL;
+  s = split;
+  while (s) {
+    if (s->tag.type != TAG_STR) {
+      err_puts("http_request_cookie_add: not a Str");
+      assert(! "http_request_cookie_add: not a Str");
+      goto ko;
+    }
+    if ((eq_pos = str_position_1(&s->tag.data.str, "=")) < 0)
+      goto next;
+    if (! (*tail = list_new_tuple(2, NULL))) {
+      err_puts("http_request_cookie_add: list_new_tuple");
+      assert(! "http_request_cookie_add: list_new_tuple");
+      goto ko;
+    }
+    tuple = &(*tail)->tag.data.tuple;
+    tuple->tag[0].type = TAG_STR;
+    tuple->tag[1].type = TAG_STR;
+    if (! str_init_slice(&tuple->tag[0].data.str, &s->tag.data.str,
+                         0, eq_pos)) {
+      err_puts("http_request_cookie_add: str_init_slice 1");
+      assert(! "http_request_cookie_add: str_init_slice 1");
+      goto ko;
+    }
+    if (! str_init_slice(&tuple->tag[1].data.str, &s->tag.data.str,
+                         eq_pos + 1, -1)) {
+      err_puts("http_request_cookie_add: str_init_slice 2");
+      assert(! "http_request_cookie_add: str_init_slice 2");
+      goto ko;
+    }
+  next:
+    s = list_next(s);
+  }
+  list_delete_all(split);
+  return req;
+ ko:
+  list_delete_all(split);
+  return NULL;
 }
 
 s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)

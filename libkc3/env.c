@@ -2218,7 +2218,7 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
   }
  ok:
   list_delete_all(arguments);
-  if (true) {
+  if (false) {
     err_write_1("env_facts_first_with: ");
     err_inspect_tag(&tmp);
     err_write_1("\n");

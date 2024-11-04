@@ -40,6 +40,8 @@ struct http_request {
   s_str url;
   s_str protocol;
   s_list *headers;
+  s_list *cookies;
+  s_map params;
 };
 
 struct http_response {
