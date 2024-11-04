@@ -34,8 +34,12 @@ s_tag * map_access (const s_map *map, const s_list * const *key,
   assert(dest);
   first = &(*key)->tag;
   next = list_next(*key);
-  if (! next)
-    return map_get(map, first, dest);
+  if (! next) {
+    if (! map_get(map, first, dest)) {
+      tag_init_void(dest);
+      return dest;
+    }
+  }
   if (! map_get(map, first, &tag)) {
     err_write_1("map_access: map_get(");
     err_inspect_map(map);

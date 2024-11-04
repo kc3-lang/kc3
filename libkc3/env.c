@@ -2216,8 +2216,6 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
   if (! env_eval_call_fn_args(env, callback, arguments, &tmp)) {
     goto clean;
   }
-  fact_w_clean(fact_w);
-  fact_w_init(fact_w);
  ok:
   list_delete_all(arguments);
   if (true) {
@@ -2230,7 +2228,6 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
  clean:
   facts_with_cursor_clean(&cursor);
   tag_clean(&tmp);
-  fact_w_clean(fact_w);
   list_delete_all(arguments);
   return NULL;  
 }
@@ -2270,7 +2267,6 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   if (! env_eval_call_fn_args(env, callback, arguments, &tmp)) {
     goto clean;
   }
-  fact_w_clean(fact_w);
  ok:
   list_delete_all(arguments);
   *dest = tmp;
@@ -2278,7 +2274,6 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
  clean:
   facts_cursor_clean(&cursor);
   tag_clean(&tmp);
-  fact_w_clean(fact_w);
   list_delete_all(arguments);
   return NULL;  
 }
