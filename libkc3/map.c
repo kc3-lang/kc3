@@ -35,10 +35,9 @@ s_tag * map_access (const s_map *map, const s_list * const *key,
   first = &(*key)->tag;
   next = list_next(*key);
   if (! next) {
-    if (! map_get(map, first, dest)) {
+    if (! map_get(map, first, dest))
       tag_init_void(dest);
-      return dest;
-    }
+    return dest;
   }
   if (! map_get(map, first, &tag)) {
     err_write_1("map_access: map_get(");
