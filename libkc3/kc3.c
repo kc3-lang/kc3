@@ -357,21 +357,21 @@ s_str * kc3_getenv (const s_str *name, s_str *dest)
 s_tag * kc3_if_then_else (const s_tag *cond, const s_tag *then,
                           const s_tag *else_, s_tag *dest)
 {
-  bool  cond_bool;
+  bool  cond_bool = false;
   s_tag cond_eval = {0};
   const s_sym *type;
-  if (! env_eval_tag(&g_kc3_env, cond, &cond_eval))
-    return NULL;
-  if (cond_eval.type == TAG_BOOL)
-    cond_bool = cond_eval.data.bool;
-  else {
-    type = &g_sym_Bool;
-    if (! bool_init_cast(&cond_bool, &type, &cond_eval)) {
-      tag_clean(&cond_eval);
-      return NULL;
+  if (env_eval_tag(&g_kc3_env, cond, &cond_eval)) {
+    if (cond_eval.type == TAG_BOOL)
+      cond_bool = cond_eval.data.bool;
+    else {
+      type = &g_sym_Bool;
+      if (! bool_init_cast(&cond_bool, &type, &cond_eval)) {
+        tag_clean(&cond_eval);
+        return NULL;
+      }
     }
+    tag_clean(&cond_eval);
   }
-  tag_clean(&cond_eval);
   if (cond_bool) {
     if (! env_eval_tag(&g_kc3_env, then, dest))
       return NULL;
