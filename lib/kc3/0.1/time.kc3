@@ -4,4 +4,6 @@ defmodule Time do
 
   def now = cfn Time "time_init_now" (Result)
 
+  def from_str = cfn Time "time_init_str" (Result, Str)
+
 end

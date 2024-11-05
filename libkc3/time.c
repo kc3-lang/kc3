@@ -99,6 +99,20 @@ s_time * time_init_now (s_time *time)
   return time;
 }
 
+s_time * time_init_str (s_time *time, const s_str *src)
+{
+  struct tm t = {0};
+  s_time tmp = {0};
+  sscanf(src->ptr.pchar, "%d-%d-%d %d:%d:%d",
+         &t.tm_year, &t.tm_mon, &t.tm_mday,
+         &t.tm_hour, &t.tm_min, &t.tm_sec);
+  t.tm_year -= 1900;
+  t.tm_mon -= 1;
+  tmp.tv_sec = timegm(&t);
+  *time = tmp;
+  return time;
+}
+
 s_timespec * time_sub (const s_timespec *a, const s_timespec *b, s_timespec *dest)
 {
   if ((a->tv_nsec - b->tv_nsec) < 0) {

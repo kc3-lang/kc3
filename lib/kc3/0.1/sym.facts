@@ -11,8 +11,8 @@ add {Sym, :symbol, Sym.anon_serial}
 replace {Sym.anon_serial, :symbol_value, 0}
 add {Sym, :symbol, Sym.anon}
 replace {Sym.anon, :symbol_value, Sym.fn (prefix) {
-  while Sym.find("#{prefix}-#{anon_serial}") do
+  while Sym.find("#{prefix}_#{anon_serial}") do
     def Sym.anon_serial = Sym.anon_serial + 1
   end
-  (Sym) "#{prefix}-#{anon_serial}"
+  (Sym) "#{prefix}_#{anon_serial}"
 }}

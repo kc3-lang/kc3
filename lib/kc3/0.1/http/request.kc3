@@ -4,6 +4,7 @@ defmodule HTTP.Request do
              body: ?,
              url: "/",
              protocol: "HTTP/1.1",
+             client_addr: "",
              headers: [],
              cookies: [],
              params: %{}]

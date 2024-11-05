@@ -39,6 +39,7 @@ struct http_request {
   s_tag body;
   s_str url;
   s_str protocol;
+  s_str client_addr;
   s_list *headers;
   s_list *cookies;
   s_map params;

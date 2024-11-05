@@ -27,6 +27,7 @@ s_time * time_init (s_time *time);
 s_time * time_init_add (s_time *time, const s_time *a, const s_time *b);
 s_time * time_init_copy (s_time *time, const s_time *src);
 s_time * time_init_now (s_time *time);
+s_time * time_init_str (s_time *time, const s_str *src);
 
 /* Observers */
 f64 *   time_to_f64 (const s_timespec *time, f64 *dest);
