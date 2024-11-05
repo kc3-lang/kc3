@@ -31,6 +31,7 @@ s_time * time_init_str (s_time *time, const s_str *src);
 
 /* Observers */
 f64 *   time_to_f64 (const s_timespec *time, f64 *dest);
+s_str * time_to_str (const s_time *time, s_str *dest);
 s_tag * time_to_tag (const s_timespec *time, s_tag *dest);
 
 /* Operators */

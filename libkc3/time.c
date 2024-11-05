@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include "alloc.h"
 #include "assert.h"
+#include "str.h"
 #include "tag.h"
 #include "time.h"
 
@@ -129,6 +130,25 @@ f64 * time_to_f64 (const s_timespec *time, f64 *dest)
 {
   *dest = (f64) time->tv_sec + (f64) time->tv_nsec * 0.000000001;
   return dest;
+}
+
+s_str * time_to_str (const s_time *time, s_str *dest)
+{
+  char a[64] = {0};
+  time_t t;
+  const struct tm *tm;
+  t = time->tv_sec;
+  if (! (tm = gmtime(&t))) {
+    err_puts("time_to_str: gmtime");
+    assert(! "time_to_str: gmtime");
+    return NULL;
+  }
+  if (! strftime(a, sizeof(a), "%F %T", tm)) {
+    err_puts("time_to_str: strftime");
+    assert(! "time_to_str: strftime");
+    return NULL;
+  }
+  return str_init_copy_1(dest, a);
 }
 
 s_tag * time_to_tag (const s_timespec *time, s_tag *dest)

@@ -6,4 +6,6 @@ defmodule Time do
 
   def from_str = cfn Time "time_init_str" (Result, Str)
 
+  def to_str = cfn Str "time_to_str" (Time, Result)
+
 end
