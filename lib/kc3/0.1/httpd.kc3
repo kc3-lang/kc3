@@ -181,7 +181,7 @@ defmodule HTTPd do
   <body>
     <h1>404 Not Found</h1>
     <p>
-      The requested URL #{HTML.escape(inspect(request.url))} was not found on this server.
+      The requested URL #{HTML.escape(inspect(request.url))} for method #{HTML.escape(inspect(request.method))} was not found on this server.
     </p>
   </body>
 </html>
