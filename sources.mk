@@ -946,7 +946,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/buf_rw.kc3" \
 	"lib/kc3/0.1/compare.kc3" \
 	"lib/kc3/0.1/complex.facts" \
-	"lib/kc3/0.1/config.kc3" \
 	"lib/kc3/0.1/cow.kc3" \
 	"lib/kc3/0.1/crypt.kc3" \
 	"lib/kc3/0.1/ekc3.kc3" \
@@ -971,6 +970,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/vertex.kc3" \
 	"lib/kc3/0.1/html.kc3" \
 	"lib/kc3/0.1/http.kc3" \
+	"lib/kc3/0.1/http/.#response.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
 	"lib/kc3/0.1/http/response.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
