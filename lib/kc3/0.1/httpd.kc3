@@ -169,7 +169,7 @@ defmodule HTTPd do
   </body>
 </html>
 """
-    %HTTP.Response{code: 404, body: body}
+    %HTTP.Response{code: 400, body: body}
   }
 
   def error_404_page = fn (request) {
