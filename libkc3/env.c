@@ -1260,6 +1260,7 @@ bool env_eval_equal_time (s_env *env, bool macro, const s_time *a,
   s_tag  a_tag[2] = {0};
   s_tag *b2;
   s_tag  b_tag[2] = {0};
+  const s_sym *sym_Sw = &g_sym_Sw;
   s_time tmp = {0};
   s_tag  tmp_tag[2] = {0};
   assert(env);
@@ -1280,41 +1281,22 @@ bool env_eval_equal_time (s_env *env, bool macro, const s_time *a,
     b2[1].type = TAG_SW;
     b2[1].data.sw = b->tv_nsec;
   }
-  if (a->tag || b->tag) {
-    if (! time_allocate(&tmp))
-      return false;
-  }
-  else
-    tmp.tag = tmp_tag;
-  if (! env_eval_equal_tag(env, macro, a2, b2, tmp.tag)) {
-    free(tmp.tag);
+  if (! env_eval_equal_tag(env, macro, a2, b2, tmp_tag)) {
     return false;
   }
   if (! env_eval_equal_tag(env, macro, a2 + 1, b2 + 1, tmp.tag + 1)) {
-    tag_clean(tmp.tag);
-    free(tmp.tag);
+    tag_clean(tmp_tag);
     return false;
   }
-  if (! (a->tag || b->tag)) {
-    if (tmp_tag[0].type != TAG_SW) {
-      err_puts("env_eval_equal_time: tv_sec is not a Sw");
-      assert(! "env_eval_equal_time: tv_sec is not a Sw");
-      tag_clean(tmp.tag + 1);
-      tag_clean(tmp.tag);
-      free(tmp.tag);
-      return false;
-    }
-    tmp.tv_sec = tmp_tag[0].data.sw;
-    if (tmp_tag[1].type != TAG_SW) {
-      err_puts("env_eval_equal_time: tv_nsec is not a Sw");
-      assert(! "env_eval_equal_time: tv_nsec is not a Sw");
-      tag_clean(tmp.tag + 1);
-      tag_clean(tmp.tag);
-      free(tmp.tag);
-      return false;
-    }
-    tmp.tv_nsec = tmp_tag[1].data.sw;
-    tmp.tag = NULL;
+  if (! sw_init_cast(&tmp.tv_sec, &sym_Sw, tmp_tag)) {
+    tag_clean(tmp_tag + 1);
+    tag_clean(tmp_tag);
+    return false;
+  }
+  if (! sw_init_cast(&tmp.tv_nsec, &sym_Sw, tmp_tag + 1)) {
+    tag_clean(tmp_tag + 1);
+    tag_clean(tmp_tag);
+    return false;
   }
   *dest = tmp;
   return true;
