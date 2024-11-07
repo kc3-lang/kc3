@@ -1284,7 +1284,7 @@ bool env_eval_equal_time (s_env *env, bool macro, const s_time *a,
   if (! env_eval_equal_tag(env, macro, a2, b2, tmp_tag)) {
     return false;
   }
-  if (! env_eval_equal_tag(env, macro, a2 + 1, b2 + 1, tmp.tag + 1)) {
+  if (! env_eval_equal_tag(env, macro, a2 + 1, b2 + 1, tmp_tag + 1)) {
     tag_clean(tmp_tag);
     return false;
   }
