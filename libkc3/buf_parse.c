@@ -4357,6 +4357,10 @@ sw buf_parse_time (s_buf *buf, s_time *dest)
   if ((r = buf_read_1(buf, "%Time{")) <= 0)
     goto clean;
   result += r;
+  if (! time_allocate(&tmp))
+    goto restore;
+  tag_init_sw(tmp.tag, 0);
+  tag_init_sw(tmp.tag + 1, 0);
   if ((r = buf_parse_comments(buf)) < 0)
     goto restore;
   result += r;
@@ -4382,9 +4386,6 @@ sw buf_parse_time (s_buf *buf, s_time *dest)
       if ((r = buf_ignore_spaces(buf)) < 0)
         goto restore;
       result += r;
-      if (! tmp.tag &&
-          ! time_allocate(&tmp))
-        goto restore;
       if ((r = buf_parse_tag(buf, tmp.tag)) <= 0)
         goto restore;
       if ((r = buf_parse_comments(buf)) < 0)

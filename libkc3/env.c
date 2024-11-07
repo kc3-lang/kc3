@@ -1289,11 +1289,15 @@ bool env_eval_equal_time (s_env *env, bool macro, const s_time *a,
     return false;
   }
   if (! sw_init_cast(&tmp.tv_sec, &sym_Sw, tmp_tag)) {
+    err_puts("env_eval_equal_time: sw_init_cast (tv_sec)");
+    assert(! "env_eval_equal_time: sw_init_cast (tv_sec)");
     tag_clean(tmp_tag + 1);
     tag_clean(tmp_tag);
     return false;
   }
   if (! sw_init_cast(&tmp.tv_nsec, &sym_Sw, tmp_tag + 1)) {
+    err_puts("env_eval_equal_time: sw_init_cast (tv_nsec)");
+    assert(! "env_eval_equal_time: sw_init_cast (tv_nsec)");
     tag_clean(tmp_tag + 1);
     tag_clean(tmp_tag);
     return false;
@@ -1378,6 +1382,11 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
     err_inspect_ident(ident);
     err_write_1("\n");
     if (true) {
+      err_puts("env_eval_ident: stacktrace:");
+      err_inspect_list((const s_list * const *) &env->stacktrace);
+      err_write_1("\n");
+    }
+    if (false) {
       err_write_1("frame: ");
       err_inspect_frame(env->frame);
       err_write_1("\n");
@@ -2008,6 +2017,7 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
 
 bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
 {
+  const s_sym *sym_Sw = &g_sym_Sw;
   s_tag tag[2] = {0};
   s_tag tmp = {0};
   tmp.type = TAG_TIME;
@@ -2018,9 +2028,7 @@ bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
       tag_clean(tag);
       return false;
     }
-    if (tag[0].type == TAG_SW)
-      tmp.data.time.tv_sec = tag[0].data.sw;
-    else if (tag[0].type != TAG_VOID) {
+    if (! sw_init_cast(&tmp.data.time.tv_sec, &sym_Sw, tag)) {
       err_write_1("env_eval_time: tv_sec is not a Sw: ");
       err_inspect_tag(tag);
       err_write_1("\n");
@@ -2029,9 +2037,7 @@ bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
       tag_clean(tag);
       return false;
     }
-    if (tag[1].type == TAG_SW)
-      tmp.data.time.tv_nsec = tag[1].data.sw;
-    else if (tag[1].type != TAG_VOID) {
+    if (! sw_init_cast(&tmp.data.time.tv_nsec, &sym_Sw, tag + 1)) {
       err_write_1("env_eval_time: tv_nsec is not a Sw: ");
       err_inspect_tag(tag + 1);
       err_write_1("\n");
@@ -2040,6 +2046,10 @@ bool env_eval_time (s_env *env, const s_time *time, s_tag *dest)
       tag_clean(tag);
       return false;
     }
+  }
+  else {
+    tmp.data.time.tv_sec = time->tv_sec;
+    tmp.data.time.tv_nsec = time->tv_nsec;
   }
   *dest = tmp;
   return true;

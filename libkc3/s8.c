@@ -101,6 +101,11 @@ s8 * s8_init_cast
     err_inspect_sym(type);
     err_puts(" aka S8");
   }
+  if (true) {
+    err_puts("s8_cast: stacktrace:");
+    err_inspect_list((const s_list * const *) &g_kc3_env.stacktrace);
+    err_write_1("\n");
+  }
   assert(! "s8_cast: cannot cast to S8");
   return NULL;
 }

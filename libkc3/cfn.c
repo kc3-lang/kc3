@@ -38,6 +38,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   void *result = NULL;
   s_tag tmp = {0};
   s_tag tmp2 = {0};
+  s_list *trace;
   assert(cfn);
   assert(cfn->arity == cfn->cif.nargs);
   num_args = list_length(args);
@@ -126,6 +127,12 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
   }
   if (cfn->ptr.f) {
+    if (! (trace = list_new(g_kc3_env.stacktrace)))
+      goto ko;
+    tag_init_list(&trace->tag, list_new_sym
+                  (cfn->name, list_new_copy
+                   (args)));
+    g_kc3_env.stacktrace = trace;
     ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
     if (cfn->arg_result) {
       if (result_pointer != arg_pointer_result) {

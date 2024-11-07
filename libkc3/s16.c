@@ -101,6 +101,11 @@ s16 * s16_init_cast
     err_inspect_sym(type);
     err_puts(" aka S16");
   }
+  if (true) {
+    err_puts("s16_cast: stacktrace:");
+    err_inspect_list((const s_list * const *) &g_kc3_env.stacktrace);
+    err_write_1("\n");
+  }
   assert(! "s16_cast: cannot cast to S16");
   return NULL;
 }

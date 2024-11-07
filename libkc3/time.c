@@ -67,17 +67,21 @@ s_time * time_init_add (s_time *time, const s_time *a, const s_time *b)
 
 s_time * time_init_copy (s_time *time, const s_time *src)
 {
-  const s_sym *sym_Sw = &g_sym_Sw;
   s_time tmp = {0};
+  tmp.tv_sec = src->tv_sec;
+  tmp.tv_nsec = src->tv_nsec;
   if (src->tag) {
-    if (! sw_init_cast(&tmp.tv_sec, &sym_Sw, src->tag))
+    if (! time_allocate(&tmp))
       return NULL;
-    if (! sw_init_cast(&tmp.tv_nsec, &sym_Sw, src->tag + 1))
+    if (! tag_init_copy(tmp.tag, src->tag)) {
+      free(tmp.tag);
       return NULL;
-  }
-  else {
-    tmp.tv_sec = src->tv_sec;
-    tmp.tv_nsec = src->tv_nsec;
+    }
+    if (! tag_init_copy(tmp.tag + 1, src->tag + 1)) {
+      tag_clean(tmp.tag);
+      free(tmp.tag);
+      return NULL;
+    }
   }
   *time = tmp;
   return time;
