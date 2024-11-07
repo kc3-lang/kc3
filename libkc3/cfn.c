@@ -153,6 +153,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
     else
       *dest = tmp;
+    g_kc3_env.stacktrace = list_delete(trace);
   }
   else {
     err_puts("cfn_apply: NULL function pointer");
