@@ -1811,6 +1811,7 @@ bool env_eval_quote_time (s_env *env, const s_time *time, s_tag *dest)
   else {
     tmp.tv_sec = time->tv_sec;
     tmp.tv_nsec = time->tv_nsec;
+    tmp.tag = NULL;
   }
   dest->type = TAG_TIME;
   dest->data.time = tmp;

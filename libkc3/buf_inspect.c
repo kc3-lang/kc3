@@ -3731,18 +3731,47 @@ sw buf_inspect_time (s_buf *buf, const s_time *time)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(buf, "%Time{tv_sec: ")) < 0)
+  bool sec;
+  if ((r = buf_write_1(buf, "%Time{")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sw(buf, &time->tv_sec)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1(buf, ", tv_nsec: ")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_sw(buf, &time->tv_nsec)) < 0)
-    return r;
-  result += r;
+  if ((sec = time->tag ?
+       time->tag->type != TAG_SW || time->tag->data.sw :
+       time->tv_sec)) {
+    if ((r = buf_write_1(buf, "tv_sec: ")) < 0)
+      return r;
+    result += r;
+    if (time->tag) {
+      if ((r = buf_inspect_tag(buf, time->tag)) < 0)
+        return r;
+    }
+    else {
+      if ((r = buf_inspect_sw_decimal(buf, &time->tv_sec)) < 0)
+        return r;
+    }
+    result += r;
+  }
+  if (time->tag ?
+      time->tag[1].type != TAG_SW || time->tag[1].data.sw :
+      time->tv_nsec) {
+    if (sec) {
+      if ((r = buf_write_1(buf, ", ")) < 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_write_1(buf, "tv_nsec: ")) < 0)
+      return r;
+    result += r;
+    if (time->tag) {
+      if ((r = buf_inspect_tag(buf, time->tag + 1)) < 0)
+        return r;
+    }
+    else {
+      if ((r = buf_inspect_sw_decimal(buf, &time->tv_nsec)) < 0)
+        return r;
+    }
+    result += r;
+  }
   if ((r = buf_write_1(buf, "}")) < 0)
     return r;
   result += r;
