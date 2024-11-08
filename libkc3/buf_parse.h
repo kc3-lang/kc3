@@ -142,6 +142,8 @@ sw buf_parse_tag_unquote (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_var (s_buf *buf, s_tag *dest);
 sw buf_parse_tag_void (s_buf *buf, s_tag *dest);
 sw buf_parse_time (s_buf *buf, s_time *dest);
+sw buf_parse_time_as_sw (s_buf *buf, s_time *dest);
+sw buf_parse_time_as_tags (s_buf *buf, s_time *dest);
 sw buf_parse_tuple (s_buf *buf, s_tuple *dest);
 sw buf_parse_u64_hex (s_buf *buf, u64 *dest);
 sw buf_parse_unquote (s_buf *buf, s_unquote *dest);

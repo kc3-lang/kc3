@@ -65,6 +65,21 @@ s_time * time_init_add (s_time *time, const s_time *a, const s_time *b)
   return time;
 }
 
+s_time * time_init_cast (s_time *time, const s_sym * const *type,
+                         const s_tag *src)
+{
+  assert(time);
+  assert(type);
+  assert(*type);
+  assert(src);
+  (void) type;
+  if (src->type == TAG_TIME)
+    return time_init_copy(time, &src->data.time);
+  err_puts("time_init_cast: cannot cast to Time");
+  assert(! "time_init_cast: cannot cast to Time");
+  return NULL;
+}
+
 s_time * time_init_copy (s_time *time, const s_time *src)
 {
   s_time tmp = {0};

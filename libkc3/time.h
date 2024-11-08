@@ -25,6 +25,8 @@
 void     time_clean (s_time *time);
 s_time * time_init (s_time *time);
 s_time * time_init_add (s_time *time, const s_time *a, const s_time *b);
+s_time * time_init_cast (s_time *time, const s_sym * const *type,
+                         const s_tag *src);
 s_time * time_init_copy (s_time *time, const s_time *src);
 s_time * time_init_now (s_time *time);
 s_time * time_init_str (s_time *time, const s_str *src);

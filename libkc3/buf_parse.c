@@ -4350,6 +4350,125 @@ sw buf_parse_tag_void (s_buf *buf, s_tag *dest)
 sw buf_parse_time (s_buf *buf, s_time *dest)
 {
   sw r;
+  (r = buf_parse_time_as_sw(buf, dest)) > 0 ||
+    (r = buf_parse_time_as_tags(buf, dest));
+  return r;
+}
+
+sw buf_parse_time_as_sw (s_buf *buf, s_time *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_time tmp = {0};
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "%Time{")) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_parse_comments(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "}")) < 0)
+    goto restore;
+  if (r > 0) {
+    result += r;
+    *dest = tmp;
+    r = result;
+    goto clean;
+  }
+  while (1) {
+    if ((r = buf_read_1(buf, "tv_sec:")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_parse_sw(buf, &tmp.tv_sec)) <= 0)
+        goto restore;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_read_1(buf, "}")) < 0)
+        goto restore;
+      if (r > 0) {
+        result += r;
+        *dest = tmp;
+        r = result;
+        goto clean;
+      }
+      if ((r = buf_read_1(buf, ",")) < 0)
+        goto restore;
+      if (r > 0) {
+        result += r;
+        if ((r = buf_parse_comments(buf)) < 0)
+          goto restore;
+        result += r;
+        if ((r = buf_ignore_spaces(buf)) < 0)
+          goto restore;
+        result += r;
+      }
+    }
+    if ((r = buf_read_1(buf, "tv_nsec:")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_parse_sw(buf, &tmp.tv_nsec)) <= 0)
+        goto restore;
+      if ((r = buf_parse_comments(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_ignore_spaces(buf)) < 0)
+        goto restore;
+      result += r;
+      if ((r = buf_read_1(buf, "}")) < 0)
+        goto restore;
+      if (r > 0) {
+        result += r;
+        *dest = tmp;
+        r = result;
+        goto clean;
+      }
+      if ((r = buf_read_1(buf, ",")) < 0)
+        goto restore;
+      if (r > 0) {
+        result += r;
+        if ((r = buf_parse_comments(buf)) < 0)
+          goto restore;
+        result += r;
+        if ((r = buf_ignore_spaces(buf)) < 0)
+          goto restore;
+        result += r;
+      }
+    }
+  }
+  r = -1;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+  time_clean(&tmp);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_time_as_tags (s_buf *buf, s_time *dest)
+{
+  sw r;
   sw result = 0;
   s_buf_save save;
   s_time tmp = {0};
@@ -4424,9 +4543,6 @@ sw buf_parse_time (s_buf *buf, s_time *dest)
       if ((r = buf_ignore_spaces(buf)) < 0)
         goto restore;
       result += r;
-      if (! tmp.tag &&
-          ! time_allocate(&tmp))
-        goto restore;
       if ((r = buf_parse_tag(buf, tmp.tag + 1)) <= 0)
         goto restore;
       if ((r = buf_parse_comments(buf)) < 0)

@@ -71,6 +71,8 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
     return buf_inspect_sym(buf, data);
   if (type == &g_sym_Tag)
     return buf_inspect_tag(buf, data);
+  if (type == &g_sym_Time)
+    return buf_inspect_time(buf, data);
   if (type == &g_sym_Tuple)
     return buf_inspect_tuple(buf, data);
   if (type == &g_sym_U8)
@@ -161,6 +163,8 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_sym_size(pretty, data);
   if (type == &g_sym_Tag)
     return buf_inspect_tag_size(pretty, data);
+  if (type == &g_sym_Time)
+    return buf_inspect_time_size(pretty, data);
   if (type == &g_sym_Tuple)
     return buf_inspect_tuple_size(pretty, data);
   if (type == &g_sym_U8)
@@ -293,6 +297,10 @@ bool data_clean (const s_sym *type, void *data)
     tag_clean(data);
     return true;
   }
+  if (type == &g_sym_Time) {
+    time_clean(data);
+    return true;
+  }
   if (type == &g_sym_Tuple) {
     tuple_clean(data);
     return true;
@@ -390,6 +398,8 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
     return compare_sw(*(sw *) a, *(sw *) b);
   if (type == &g_sym_Sym)
     return compare_sym(a, b);
+  if (type == &g_sym_Time)
+    return compare_time(a, b);
   if (type == &g_sym_Tuple)
     return compare_tuple(a, b);
   if (type == &g_sym_U8)
@@ -479,6 +489,8 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
     return hash_update_sym(hash, data);
   if (type == &g_sym_Tag)
     return hash_update_tag(hash, data);
+  if (type == &g_sym_Time)
+    return hash_update_time(hash, data);
   if (type == &g_sym_Tuple)
     return hash_update_tuple(hash, data);
   if (type == &g_sym_U8)
@@ -569,6 +581,8 @@ void * data_init_cast (void *data, const s_sym * const *type,
     return sym_init_cast(data, type, tag);
   if (t == &g_sym_Tag)
     return tag_init_copy(data, tag);
+  if (t == &g_sym_Time)
+    return time_init_cast(data, type, tag);
   if (t == &g_sym_Tuple)
     return tuple_init_cast(data, type, tag);
   if (t == &g_sym_U8)
@@ -659,6 +673,8 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
     return sym_init_copy(data, src);
   if (type == &g_sym_Tag)
     return tag_init_copy(data, src);
+  if (type == &g_sym_Time)
+    return time_init_copy(data, src);
   if (type == &g_sym_Tuple)
     return tuple_init_copy(data, src);
   if (type == &g_sym_U8)
