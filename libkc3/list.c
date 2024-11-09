@@ -356,13 +356,15 @@ s_list ** list_sort_by (const s_list * const *list, const s_fn *compare,
   l = *list;
   while (l) {
     t = &tmp;
-    if (! tag_init_copy(&arg1->tag, &(*t)->tag))
-      goto ko;
-    if (! tag_init_copy(&arg2->tag, &l->tag))
-      goto ko;
     while (*t) {
+      if (! tag_init_copy(&arg1->tag, &(*t)->tag))
+        goto ko;
+      if (! tag_init_copy(&arg2->tag, &l->tag))
+        goto ko;
       if (! eval_fn_call(compare, arg1, &tag))
         goto ko;
+      tag_void(&arg1->tag);
+      tag_void(&arg2->tag);
       if (! bool_init_cast(&b, &sym_Bool, &tag)) {
         tag_clean(&tag);
         goto ko;
