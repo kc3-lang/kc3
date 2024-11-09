@@ -10,6 +10,29 @@ pattern matching, and a semantic object system. The idea is to plug
 modules, closures, pattern matching, a graph database and
 metaprogramming into C99 with an extremely small set of dependencies.
 
+The pure C11 `libkc3` library is a full KC3 parser and interpreter.
+
+`ikc3` is the interactive interpreter (verbose).
+
+`kc3s` is the script interpreter (same as ikc3 but terse).
+
+There are several C libraries which are installed in `lib/kc3/0.1`
+using the `make lib_links` command.
+
+There is a web server in httpd : `kc3_httpd`.
+
+All binaries can be compiled for four targets :
+ - __main__ : speed optimizations from GCC/Clang -O2 and
+   debug code like `assert` is disabled.
+ - __debug__ : no optimization and debug code like `assert` is enabled
+ - __cov__ : code coverage instrumentation (breaks `dlsym` and thus
+   all `Cfn` at the moment)
+ - __asan__ : memory safety instrumentation with ASAN, an absolutely
+   awesome tool to detect all memory leaks, double free, segmentation
+   faults, invalid read, invalid write, general memory corruption
+   errors, etc., just run the __asan__ target for a full report at
+   process exit, the report being empty if all is ok.
+
 Supported operating systems (additional dependencies) :
  - BSD
  - Linux (libbsd, libmd)
@@ -25,11 +48,18 @@ Supported architectures :
 To install and test KC3 for yourself, you can follow the
 [KC3 Installation Guide](https://kc3-lang.org/doc/3_Guides/3.1_Install).
 
-There are four programs now written in KC3 :
+## Users
+
+There are now four full applications written in KC3 that we know of :
  - The KC3 Cairo demo which you can run with `make demo`
  - The KC3 SDL2 OpenGL demo which you can run with `make demo_gl`
- - The [KC3 website](https://kc3-lang.org/) which you can launch locally with `make test_httpd`
- - The [www.kmx.io website](https://www.kmx.io/) which is closed source.
+ - The [KC3 website](https://kc3-lang.org/) which you can launch
+   locally with `make test_httpd` with all the KC3 releases and
+   documentation.
+ - The [www.kmx.io website](https://www.kmx.io/) which is closed
+   source and is hosted on kmx.io servers in France using OpenBSD
+   everywhere. We donate to OpenBSD every month because a healthy
+   software ecosystem is a funded ecosystem.
 
 
 ## New in this release
