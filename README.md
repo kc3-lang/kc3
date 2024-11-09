@@ -4,10 +4,6 @@ KC3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
 for semantic programming, and programming the semantic web.
 
-This is a development branch, see
-[KC3 v0.1.13](https://git.kmx.io/kc3-lang/kc3/_tree/v0.1.13/)
-for a stable release.
-
 KC3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
 pattern matching, and a semantic object system. The idea is to plug
@@ -26,16 +22,55 @@ Supported architectures :
  - i386
  - sparc64
 
+To install and test KC3 for yourself, you can follow the
+[KC3 Installation Guide](https://kc3-lang.org/doc/3_Guides/3.1_Install).
+
+There are four programs now written in KC3 :
+ - The KC3 Cairo demo which you can run with `make demo`
+ - The KC3 SDL2 OpenGL demo which you can run with `make demo_gl`
+ - The [KC3 website](https://kc3-lang.org/) which you can launch locally with `make test_httpd`
+ - The [www.kmx.io website](https://www.kmx.io/) which is closed source.
+
+
 ## New in this release
 
  - pretty printer
    - auto indent KC3 code
+ - map
+   - access
+   - get (get key value)
+   - put (return a new map)
+ - struct
+   - access
+   - get
+   - put
  - facts database (triple store) in KC3
    - new database (Ptr)
    - add_tags
    - remove_tags
    - with_tags
    - with
+ - HTTPd v0.2.0
+   - dynamic pages (MVC)
+     - controllers are defined in `./app/controllers/`
+     - templates are defined in `./app/templates/`
+     - dynamic router is defined in `./config.router.kc3`
+       - For now we don't match request method and just match the start of
+         the URL with `Str.starts_with?(url, route.path)`
+     - views are defined in `./app/views/`
+ - fx v0.2.0
+   - file explorer
+   - preview files
+     - text
+     - image
+     - video
+     - audio
+     - binary (hexdump -C)
+   - properties
+     - create
+       - POST "/properties/*path"
+     - delete
+       - DELETE "/properties/*path
 
 
 ## Discord invite
@@ -52,14 +87,7 @@ to discover how to use KC3 for your own projects.
 ## TODO
 
  - fx v0.2.0
-   - [DONE] file explorer
-   - [DONE] preview files
-     - [DONE] text
-     - [DONE] image
-     - [DONE] video
-     - [DONE] audio
-     - [DONE] binary (hexdump -C)
-     - chaining of audio and video previews (folder as a playlist)
+   - chaining of audio and video previews (folder as a playlist)
    - tags
      - create
        - POST "/tag/:tag/*path"
@@ -67,29 +95,16 @@ to discover how to use KC3 for your own projects.
        - DELETE "/tag/:tag/*path"
      - recursive
    - properties
-     - [DONE] create
-       - [DONE] POST "/properties/*path"
-     - [DONE] delete
-       - [DONE] DELETE "/properties/*path
      - recursive
- - HTTPd v0.2.0
-   - dynamic pages (MVC)
-     - [DONE] controllers
-       - [DONE] ./app/controllers/
-     - [DONE] templates
-       - [DONE] ./app/templates/
-     - dynamic router
-       - [DONE] Str.starts_with?(url, route.path)
-       - HTTPd.Router.get("/user/:id/articles/*slug/edit", UserArticlesController.show)
-     - [DONE] views
-       - [DONE] ./app/views/
+ - HTTPd v0.2.1
+   - dynamic router
+     - HTTPd.Router.get("/user/:id/articles/*slug/edit", UserArticlesController.show)
  - libkc3
    - operators dispatch
      - list of matching operators (facts_with)
    - base-specific big floats
    - macro cast : `(Macro) fn (x) { x }`
    - pretty printer
-     - [DONE] auto indent KC3 code
      - 80 columns (`\n`)
    - tags
      - walker
@@ -101,14 +116,6 @@ to discover how to use KC3 for your own projects.
      - with ignore variables
    - math
      - arbitrary precision floating point numbers (decimals)
-   - map
-     - [DONE] access
-     - [DONE] get (get key value)
-     - put (return a new map)
-   - struct
-     - [DONE] access
-     - [DONE] get
-     - put
    - enums
    - unions
    - errors (setjmp, longjmp)
