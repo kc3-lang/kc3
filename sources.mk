@@ -938,7 +938,6 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
-	"lib/kc3/0.1/.#file.kc3" \
 	"lib/kc3/0.1/alist.kc3" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bool.facts" \
@@ -970,7 +969,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/vertex.kc3" \
 	"lib/kc3/0.1/html.kc3" \
 	"lib/kc3/0.1/http.kc3" \
-	"lib/kc3/0.1/http/.#response.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
 	"lib/kc3/0.1/http/response.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
@@ -1541,7 +1539,6 @@ KC3_DOC_SOURCES = \
 	"doc/1_KC3/1.4_Ratio.en.md" \
 	"doc/1_KC3/1.5_List.en.md" \
 	"doc/1_KC3/1.6_Variable.en.md" \
-	"doc/2_HTTPd/.#index.en.md" \
 	"doc/2_HTTPd/index.en.md" \
 	"doc/3_Guides/3.1_Install.en.md" \
 	"doc/3_Guides/3.2_Testing.en.md" \
