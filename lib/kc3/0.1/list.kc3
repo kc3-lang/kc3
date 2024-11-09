@@ -61,4 +61,6 @@ defmodule List do
 
   def sort = cfn List "list_sort" (List, Result)
 
+  def sort_by = cfn List "list_sort_by" (List, Fn, Result)
+
 end

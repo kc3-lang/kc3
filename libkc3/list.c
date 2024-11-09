@@ -14,11 +14,13 @@
 #include "alloc.h"
 #include "assert.h"
 #include "array.h"
+#include "bool.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "compare.h"
 #include "data.h"
+#include "eval.h"
 #include "list.h"
 #include "sym.h"
 #include "tag.h"
@@ -328,6 +330,60 @@ s_list ** list_sort (const s_list * const *list, s_list **dest)
   }
   *dest = tmp;
   return dest;
+}
+
+s_list ** list_sort_by (const s_list * const *list, const s_fn *compare,
+                        s_list **dest)
+{
+  s_list *arg1;
+  s_list *arg2;
+  bool b;
+  const s_list *l;
+  s_list *new_;
+  const s_sym *sym_Bool = &g_sym_Bool;
+  s_list *tmp;
+  s_list **t;
+  s_tag tag;
+  assert(list);
+  assert(dest);
+  if (! (arg2 = list_new(NULL)))
+    return NULL;
+  if (! (arg1 = list_new(arg2))) {
+    list_delete(arg2);
+    return NULL;
+  }
+  tmp = NULL;
+  l = *list;
+  while (l) {
+    t = &tmp;
+    if (! tag_init_copy(&arg1->tag, &(*t)->tag))
+      goto ko;
+    if (! tag_init_copy(&arg2->tag, &l->tag))
+      goto ko;
+    while (*t) {
+      if (! eval_fn_call(compare, arg1, &tag))
+        goto ko;
+      if (! bool_init_cast(&b, &sym_Bool, &tag)) {
+        tag_clean(&tag);
+        goto ko;
+      }
+      tag_clean(&tag);
+      if (! b)
+        break;
+      t = &(*t)->next.data.list;
+    }
+    if (! (new_ = list_new_tag_copy(&l->tag, *t)))
+      goto ko;
+    *t = new_;
+    l = list_next(l);
+  }
+  list_delete_all(arg1);
+  *dest = tmp;
+  return dest;
+ ko:
+  list_delete_all(tmp);
+  list_delete_all(arg1);
+  return NULL;
 }
 
 s_list ** list_tail (s_list **list)
