@@ -4,6 +4,9 @@ KC3 is a programming language with meta-programmation and a graph
 database embedded into the language. It aims to be the language
 for semantic programming, and programming the semantic web.
 
+This is a stable release, for the development branch see
+[the KC3 git repository master branch](https://git.kmx.io/kc3-lang/kc3).
+
 KC3 is currently a programming language project, inspired by C, Elixir
 and Common Lisp. It could be described as C with Elixir modules,
 pattern matching, and a semantic object system. The idea is to plug
