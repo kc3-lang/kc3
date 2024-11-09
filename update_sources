@@ -53,9 +53,8 @@ sources KC3_TEST_HTTP_SOURCES "$KC3_TEST_HTTP_SOURCES"
 KC3_TEST_HTTPD_SOURCES="$(ls test/httpd/.keep)"
 sources KC3_TEST_HTTPD_SOURCES "$KC3_TEST_HTTPD_SOURCES"
 
-KC3_OTHER_SOURCES="AUTHORS
+KC3_OTHER_SOURCES="$(ls *.md)
 Makefile
-README.md
 config.subr
 configure
 env

@@ -27,6 +27,9 @@ all:
 	${MAKE} -C test all
 	${MAKE} -C window all
 
+include config.mk
+include sources.mk
+
 asan:
 	${MAKE} gen
 	${MAKE} -C libtommath asan
@@ -1175,6 +1178,3 @@ test_socket_debug:
 	test_socket_asan \
 	test_socket_cov \
 	test_socket_debug
-
-include config.mk
-include sources.mk

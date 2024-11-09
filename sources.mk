@@ -1266,7 +1266,11 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/.keep" \
 
 KC3_OTHER_SOURCES = \
-	"AUTHORS" \
+	"AUTHORS.md" \
+	"BUGS.md" \
+	"CONTRIBUTING.md" \
+	"ChangeLog.md" \
+	"LICENSE.md" \
 	"Makefile" \
 	"README.md" \
 	"config.subr" \

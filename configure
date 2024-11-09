@@ -30,8 +30,6 @@ require_pkg_config
 
 KC3_VERSION="$(cat kc3.version)"
 echo "KC3_VERSION = $KC3_VERSION" >> ${CONFIG_MK}
-echo "kc3-${KC3_VERSION}.tar.gz: $(tr '\n' ' ' < kc3.index)" \
-     >> ${CONFIG_MK}
 
 config_asan
 echo "HAVE_ASAN = ${HAVE_ASAN}" >> ${CONFIG_MK}
