@@ -3721,8 +3721,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   default:
-    if ((r = buf_parse_tag_special_operator(buf, dest)) ||
-        (r = buf_parse_tag_call_op(buf, dest)) ||
+    if ((r = buf_parse_tag_call_op(buf, dest)) ||
         (r = buf_parse_tag_primary(buf, dest)))
       goto end;
   }
@@ -4030,8 +4029,9 @@ sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
   }
-  if ((r = buf_parse_tag_brackets(buf, dest)) != 0 ||
-      (r = buf_parse_tag_primary_2(buf, dest)) != 0)
+  if ((r = buf_parse_tag_special_operator(buf, dest)) ||
+      (r = buf_parse_tag_brackets(buf, dest)) ||
+      (r = buf_parse_tag_primary_2(buf, dest)))
     goto end;
   goto restore;
  end:
