@@ -2842,7 +2842,7 @@ sw buf_inspect_str (s_buf *buf, const s_str *str)
   if (! str_has_reserved_characters(str, &b))
     return -1;
   if (b)
-    return buf_inspect_str_reserved(buf, str);
+    return buf_inspect_str_reserved(buf, str, true);
   buf_save_init(buf, &save);
   if ((r = buf_write_character_utf8(buf, '"')) <= 0)
     goto clean;
@@ -3023,29 +3023,36 @@ sw buf_inspect_str_eval (s_buf *buf, const s_list *list)
   sw r;
   sw result = 0;
   const s_tag *tag;
-  if ((r = buf_write_1(buf, "\"")) < 0)
+  if ((r = buf_write_1(buf, "\"")) <= 0)
     return r;
+  result += r;
   l = list;
   while (l) {
     if (l->tag.type == TAG_STR) {
-      if ((r = buf_write_str_without_indent(buf, &l->tag.data.str)) < 0)
+      if ((r = buf_inspect_str_reserved(buf, &l->tag.data.str,
+                                        false)) <= 0)
         return r;
+      result += r;
     }
     else {
-      if ((r = buf_write_1(buf, "#{")) < 0)
+      if ((r = buf_write_1(buf, "#{")) <= 0)
         return r;
+      result += r;
       tag = &l->tag;
       if (tag_is_cast(tag, &g_sym_Str))
         tag = &list_next(tag->data.call.arguments)->tag;
-      if ((r = buf_inspect_tag(buf, tag)) < 0)
+      if ((r = buf_inspect_tag(buf, tag)) <= 0)
         return r;
-      if ((r = buf_write_1(buf, "}")) < 0)
+      result += r;
+      if ((r = buf_write_1(buf, "}")) <= 0)
         return r;
+      result += r;
     }
     l = list_next(l);
   }
-  if ((r = buf_write_1(buf, "\"")) < 0)
+  if ((r = buf_write_1(buf, "\"")) <= 0)
     return r;
+  result += r;
   return result;
 }
 
@@ -3055,49 +3062,54 @@ sw buf_inspect_str_eval_size (s_pretty *pretty, const s_list *list)
   sw r;
   sw result = 0;
   const s_tag *tag;
-  if ((r = buf_write_1_size(pretty, "\"")) < 0)
+  if ((r = buf_write_1_size(pretty, "\"")) <= 0)
     return r;
+  result += r;
   l = list;
   while (l) {
     if (l->tag.type == TAG_STR) {
-      if ((r = buf_write_str_without_indent_size(pretty,
-                                                 &l->tag.data.str)) < 0)
+      if ((r = buf_inspect_str_reserved_size(pretty, &l->tag.data.str,
+                                             false)) <= 0)
         return r;
+      result += r;
     }
     else {
-      if ((r = buf_write_1_size(pretty, "#{")) < 0)
+      if ((r = buf_write_1_size(pretty, "#{")) <= 0)
         return r;
+      result += r;
       tag = &l->tag;
       if (tag_is_cast(tag, &g_sym_Str))
         tag = &list_next(tag->data.call.arguments)->tag;
-      if ((r = buf_inspect_tag_size(pretty, tag)) < 0)
+      if ((r = buf_inspect_tag_size(pretty, tag)) <= 0)
         return r;
-      if ((r = buf_write_1_size(pretty, "}")) < 0)
+      result += r;
+      if ((r = buf_write_1_size(pretty, "}")) <= 0)
         return r;
+      result += r;
     }
     l = list_next(l);
   }
-  if ((r = buf_write_1_size(pretty, "\"")) < 0)
+  if ((r = buf_write_1_size(pretty, "\"")) <= 0)
     return r;
+  result += r;
   return result;
 }
 
 /* keep in sync with buf_inspect_str_reserved_size */
-sw buf_inspect_str_reserved (s_buf *buf, const s_str *str)
+sw buf_inspect_str_reserved (s_buf *buf, const s_str *str, bool quotes)
 {
   u8 byte;
   character c;
-  sw r;
+  sw r = 1;
   sw result = 0;
   s_str s;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_write_1(buf, "\"")) <= 0) {
-    if (! r)
-      r = -1;
-    goto clean;
+  if (quotes) {
+    if ((r = buf_write_1(buf, "\"")) <= 0)
+      goto clean;
+    result += r;
   }
-  result += r;
   s = *str;
   while (r) {
     if ((r = str_read_character_utf8(&s, &c)) < 0)
@@ -3115,9 +3127,11 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str)
       result += r;
     }
   }
-  if ((r = buf_write_character_utf8(buf, '"')) <= 0)
-    goto restore;
-  result += r;
+  if (quotes) {
+    if ((r = buf_write_1(buf, "\"")) <= 0)
+      goto restore;
+    result += r;
+  }
   r = result;
   goto clean;
  restore:
@@ -3130,16 +3144,19 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str)
 }
 
 /* keep in sync with buf_inspect_str_reserved */
-sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str)
+sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str,
+                                  bool quotes)
 {
   u8 byte;
   character c;
-  sw r;
+  sw r = 1;
   sw result = 0;
   s_str s;
-  if ((r = buf_write_1_size(pretty, "\"")) < 0)
-    return r;
-  result += r;
+  if (quotes) {
+    if ((r = buf_write_1_size(pretty, "\"")) <= 0)
+      return r;
+    result += r;
+  }
   s = *str;
   while (r) {
     if ((r = str_read_character_utf8(&s, &c)) < 0)
@@ -3156,9 +3173,11 @@ sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str)
       result += r;
     }
   }
-  if ((r = buf_write_1_size(pretty, "\"")) < 0)
-    return r;
-  result += r;
+  if (quotes) {
+    if ((r = buf_write_1_size(pretty, "\"")) <= 0)
+      return r;
+    result += r;
+  }
   return result;
  restore:
   return -1;
@@ -3172,7 +3191,7 @@ sw buf_inspect_str_size (s_pretty *pretty, const s_str *str)
   if (! str_has_reserved_characters(str, &b))
     return -1;
   if (b)
-    return buf_inspect_str_reserved_size(pretty, str);
+    return buf_inspect_str_reserved_size(pretty, str, true);
   if ((r = buf_write_1_size(pretty, "\"")) < 0)
     return r;
   result += r;
@@ -3782,18 +3801,47 @@ sw buf_inspect_time_size (s_pretty *pretty, const s_time *time)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_write_1_size(pretty, "%Time{tv_sec: ")) < 0)
+  bool sec;
+  if ((r = buf_write_1_size(pretty, "%Time{")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sw_size(pretty, &time->tv_sec)) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1_size(pretty, ", tv_nsec: ")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_inspect_sw_size(pretty, &time->tv_nsec)) < 0)
-    return r;
-  result += r;
+  if ((sec = time->tag ?
+       time->tag->type != TAG_SW || time->tag->data.sw :
+       time->tv_sec)) {
+    if ((r = buf_write_1_size(pretty, "tv_sec: ")) < 0)
+      return r;
+    result += r;
+    if (time->tag) {
+      if ((r = buf_inspect_tag_size(pretty, time->tag)) < 0)
+        return r;
+    }
+    else {
+      if ((r = buf_inspect_sw_decimal_size(pretty, &time->tv_sec)) < 0)
+        return r;
+    }
+    result += r;
+  }
+  if (time->tag ?
+      time->tag[1].type != TAG_SW || time->tag[1].data.sw :
+      time->tv_nsec) {
+    if (sec) {
+      if ((r = buf_write_1_size(pretty, ", ")) < 0)
+        return r;
+      result += r;
+    }
+    if ((r = buf_write_1_size(pretty, "tv_nsec: ")) < 0)
+      return r;
+    result += r;
+    if (time->tag) {
+      if ((r = buf_inspect_tag_size(pretty, time->tag + 1)) < 0)
+        return r;
+    }
+    else {
+      if ((r = buf_inspect_sw_decimal_size(pretty, &time->tv_nsec)) < 0)
+        return r;
+    }
+    result += r;
+  }
   if ((r = buf_write_1_size(pretty, "}")) < 0)
     return r;
   result += r;

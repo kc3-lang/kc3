@@ -33,6 +33,7 @@
 #include "fn_clause.h"
 #include "frame.h"
 #include "ident.h"
+#include "inspect.h"
 #include "integer.h"
 #include "list.h"
 #include "map.h"
@@ -1641,7 +1642,7 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_tag(buf, &tmp.subject)) <= 0)
+  if ((r = buf_parse_static_tag(buf, &tmp.subject)) <= 0)
     goto restore;
   result += r;
   if ((r = buf_parse_comments(buf)) < 0)
@@ -1659,7 +1660,7 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_tag(buf, &tmp.predicate)) <= 0)
+  if ((r = buf_parse_static_tag(buf, &tmp.predicate)) <= 0)
     goto restore;
   result += r;
   if ((r = buf_parse_comments(buf)) < 0)
@@ -1677,7 +1678,7 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_tag(buf, &tmp.object)) <= 0)
+  if ((r = buf_parse_static_tag(buf, &tmp.object)) <= 0)
     goto restore;
   result += r;
   if ((r = buf_parse_comments(buf)) < 0)
@@ -3098,6 +3099,37 @@ sw buf_parse_quote (s_buf *buf, s_quote *dest)
   return r;
 }
 
+sw buf_parse_ratio (s_buf *buf, s_ratio *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_ratio tmp = {0};
+  buf_save_init(buf, &save);
+  if ((r = buf_parse_integer(buf, &tmp.numerator)) <= 0)
+    goto clean;
+  result += r;
+  if ((r = buf_read_1(buf, "/")) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_integer(buf, &tmp.denominator)) <= 0)
+    goto restore;
+  result += r;
+  if (! integer_is_positive(&tmp.denominator)) {
+    r = -1;
+    goto restore;
+  }
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  ratio_clean(&tmp);
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_special_operator (s_buf *buf, s_call *dest)
 {
   bool b;
@@ -3185,37 +3217,36 @@ sw buf_parse_special_operator (s_buf *buf, s_call *dest)
   return r;
 }
 
-sw buf_parse_ratio (s_buf *buf, s_ratio *dest)
+sw buf_parse_static_tag (s_buf *buf, s_tag *tag)
 {
   sw r;
-  sw result = 0;
   s_buf_save save;
-  s_ratio tmp = {0};
+  s_str str;
+  s_tag tmp;
+  assert(buf);
+  assert(tag);
   buf_save_init(buf, &save);
-  if ((r = buf_parse_integer(buf, &tmp.numerator)) <= 0)
-    goto clean;
-  result += r;
-  if ((r = buf_read_1(buf, "/")) <= 0)
-    goto restore;
-  result += r;
-  if ((r = buf_parse_integer(buf, &tmp.denominator)) <= 0)
-    goto restore;
-  result += r;
-  if (! integer_is_positive(&tmp.denominator)) {
-    r = -1;
-    goto restore;
+  if ((r = buf_parse_tag(buf, &tmp)) <= 0)
+    return r;
+  if (tmp.type == TAG_CALL &&
+      (! tmp.data.call.ident.module ||
+       tmp.data.call.ident.module == &g_sym_KC3) &&
+      tmp.data.call.ident.sym == &g_sym_str &&
+      tmp.data.call.arguments &&
+      tmp.data.call.arguments->tag.type == TAG_LIST) {
+    tag_void(&tmp);
+    buf_save_restore_rpos(buf, &save);
+    if ((r = buf_parse_str(buf, &str)) <= 0)
+      goto clean;
+    tmp.type = TAG_STR;
+    tmp.data.str = str;
   }
-  *dest = tmp;
-  r = result;
-  goto clean;
- restore:
-  ratio_clean(&tmp);
-  buf_save_restore_rpos(buf, &save);
+  *tag = tmp;
  clean:
   buf_save_clean(buf, &save);
   return r;
 }
-
+      
 sw buf_parse_str (s_buf *buf, s_str *dest)
 {
   u8 b;

@@ -222,6 +222,7 @@ s_str * inspect_str (const s_str *str, s_str *dest)
 {
   s_buf buf;
   s_pretty pretty = {0};
+  sw r;
   sw size;
   size = buf_inspect_str_size(&pretty, str);
   if (size < 0) {
@@ -229,13 +230,42 @@ s_str * inspect_str (const s_str *str, s_str *dest)
     assert(! "inspect_str: buf_inspect_str_size");
     return NULL;
   }
-  buf_init_alloc(&buf, size);
-  buf_inspect_str(&buf, str);
-  assert(buf.wpos == buf.size);
-  if (buf.wpos != buf.size) {
+  if (! buf_init_alloc(&buf, size))
+    return NULL;
+  r = buf_inspect_str(&buf, str);
+  if (r != size) {
     buf_clean(&buf);
     err_puts("inspect_str: buf_inspect_str");
     assert(! "inspect_str: buf_inspect_str");
+    return NULL;
+  }
+  return buf_to_str(&buf, dest);
+}
+
+s_str * inspect_str_eval (const s_list *list, s_str *dest)
+{
+  s_buf buf;
+  s_pretty pretty = {0};
+  sw r;
+  sw size;
+  size = buf_inspect_str_eval_size(&pretty, list);
+  if (size < 0) {
+    err_puts("inspect_str: buf_inspect_str_size");
+    assert(! "inspect_str: buf_inspect_str_size");
+    return NULL;
+  }
+  if (! buf_init_alloc(&buf, size))
+    return NULL;
+  if ((r = buf_inspect_str_eval(&buf, list)) <= 0) {
+    buf_clean(&buf);
+    err_puts("inspect_str: buf_inspect_str_eval <= 0");
+    assert(! "inspect_str: buf_inspect_str_eval <= 0");
+    return NULL;
+  }
+  if (r != size) {
+    buf_clean(&buf);
+    err_puts("inspect_str: buf_inspect_str_eval != size");
+    assert(! "inspect_str: buf_inspect_str_eval != size");
     return NULL;
   }
   return buf_to_str(&buf, dest);

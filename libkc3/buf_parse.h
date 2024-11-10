@@ -97,6 +97,7 @@ sw buf_parse_ptr_free (s_buf *buf, u_ptr_w *dest);
 sw buf_parse_quote (s_buf *buf, s_quote *dest);
 sw buf_parse_ratio (s_buf *buf, s_ratio *dest);
 sw buf_parse_special_operator (s_buf *buf, s_call *dest);
+sw buf_parse_static_tag (s_buf *buf, s_tag *tag);
 sw buf_parse_str (s_buf *buf, s_str *dest);
 sw buf_parse_str_character (s_buf *buf, character *dest);
 sw buf_parse_str_character_unicode (s_buf *buf, character *dest);
