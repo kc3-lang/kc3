@@ -60,6 +60,39 @@ void list_f_clean (s_list **list)
     l = list_delete(l);
 }
 
+s_list ** list_filter (const s_list * const *list, const s_fn *f,
+                       s_list **dest)
+{
+  s_list *arg;
+  const s_list *l;
+  s_list **tail;
+  s_list *tmp;
+  if (! (arg = list_new(NULL)))
+    return NULL;
+  tmp = NULL;
+  tail = &tmp;
+  l = *list;
+  while (l) {
+    if (! tag_copy(&arg->tag, &l->tag))
+      goto ko;
+    *tail = list_new(NULL);
+    if (! eval_fn_call(f, arg, &(*tail)->tag))
+      goto ko;
+    if ((*tail)->tag.type == TAG_VOID)
+      *tail = list_delete(*tail);
+    else
+      tail = &(*tail)->next.data.list;
+    l = list_next(l);
+  }
+  list_delete_all(arg);
+  *dest = tmp;
+  return dest;
+ ko:
+  list_delete_all(tmp);
+  list_delete_all(arg);
+  return NULL;
+}
+
 bool * list_has (const s_list * const *list, const s_tag *tag,
                  bool *dest)
 {
@@ -222,10 +255,12 @@ s_list ** list_map (const s_list * const *list, const s_fn *f,
     tail = &(*tail)->next.data.list;
     l = list_next(l);
   }
+  list_delete_all(arg);
   *dest = tmp;
   return dest;
  ko:
   list_delete_all(tmp);
+  list_delete_all(arg);
   return NULL;
 }
 
@@ -261,6 +296,7 @@ s_list * list_new_1 (const char *p)
   }
   return list;
 }
+
 /* FIXME: does not work on circular lists */
 s_list * list_new_copy (const s_list *src)
 {
