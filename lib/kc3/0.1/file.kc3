@@ -19,6 +19,32 @@ defmodule File do
 
   def list = cfn List "file_list" (Str, Result)
 
+  def list_files_recursive = fn {
+    (dir) { list_files_recursive(dir, "", []) }
+    ([], dir, acc) { List.sort(acc) }
+    ([file | rest], dir, acc) {
+      if (Str.starts_with?(file, ".") ||
+          Str.ends_with?(file, "~"))
+        list_files_recursive(rest, dir, acc) # skip
+      else
+        path = dir + file
+        if (File.is_directory?(path)) do
+          acc2 = list_files_recursive(File.list(path), path + "/", acc)
+          list_files_recursive(rest, dir, acc2)
+        else
+          list_files_recursive(rest, dir, [path | acc])
+        end
+      end
+    }
+    (path, dir, acc) {
+      if (File.is_directory?(path)) do
+        list_files_recursive(File.list(path), path + "/", acc)
+      else
+        list_files_recursive(rest, dir, [path | acc])
+      end
+    }
+  }
+
   def name = cfn Str "file_name" (Str, Result)
 
   def open_r = cfn S32 "file_open_r" (Str, Result)
