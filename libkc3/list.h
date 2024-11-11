@@ -55,6 +55,8 @@ bool *    list_has (const s_list * const *list, const s_tag *tag,
 bool      list_is_alist (const s_list * const *list);
 bool      list_is_plist (const s_list *list);
 sw        list_length (const s_list *list);
+s_list ** list_map (const s_list * const *list, const s_fn *f,
+                    s_list **dest);
 s_list  * list_next (const s_list *list);
 s_list ** list_sort (const s_list * const *list, s_list **dest);
 s_list ** list_tail (s_list **list);

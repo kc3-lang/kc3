@@ -166,7 +166,9 @@ BUF_INSPECT_S_PROTOTYPES(8);
 BUF_INSPECT_S_PROTOTYPES(16);
 BUF_INSPECT_S_PROTOTYPES(32);
 BUF_INSPECT_S_PROTOTYPES(64);
-BUF_INSPECT_S_PROTOTYPES(w);
+sw buf_inspect_stacktrace (s_buf *buf, const s_list *stacktrace);
+sw buf_inspect_stacktrace_size (s_pretty *pretty,
+                                const s_list *stacktrace);
 sw buf_inspect_str (s_buf *buf, const s_str *str);
 sw buf_inspect_str_byte (s_buf *buf, const u8 *byte);
 sw buf_inspect_str_byte_size (s_pretty *pretty, const u8 *byte);
@@ -185,6 +187,7 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s);
 sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st);
 sw buf_inspect_struct_type_size (s_pretty *pretty,
                                  const s_struct_type *st);
+BUF_INSPECT_S_PROTOTYPES(w);
 sw buf_inspect_sym (s_buf *buf, const s_sym * const *sym);
 sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym);
 sw buf_inspect_sym_reserved_size (s_pretty *pretty, const s_sym *sym);

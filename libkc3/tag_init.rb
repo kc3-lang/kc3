@@ -81,14 +81,6 @@ end
     ! ["1", "copy", "list"].include?(name)
   end
 
-  def list_proto
-    if with_list?
-      "s_list * list_#{name_suffix} (s_list *list#{comma_args_proto});"
-    else
-      ""
-    end
-  end
-  
   def list_init_proto
     if with_list?
       "s_list * list_init_#{name_suffix} (s_list *list#{comma_args_proto}, s_list *next);"
@@ -451,11 +443,6 @@ class TagInitList
     protos.join "\n"
   end
 
-  def list_proto
-    protos = @items.map &:list_proto
-    protos.join "\n"
-  end
-
   def list_init_proto
     protos = @items.map &:list_init_proto
     protos.join "\n"
@@ -631,9 +618,6 @@ list_init_h.content = """#{h_header("LIBKC3_LIST_INIT_H")}
 
 /* Heap-allocation functions, call list_delete after use. */
 #{inits.list_new_proto.c_word_wrap}
-
-/* Setters. */
-#{inits.list_proto.c_word_wrap}
 
 #{h_footer("LIBKC3_LIST_INIT_H")}
 """

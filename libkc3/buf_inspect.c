@@ -2831,6 +2831,38 @@ sw buf_inspect_ratio_size (s_pretty *pretty, const s_ratio *ratio)
   return result;
 }
 
+sw buf_inspect_stacktrace (s_buf *buf, const s_list *stacktrace)
+{
+  s_pretty_save pretty_save;
+  sw r;
+  sw result = 0;
+  const s_list *s;
+  assert(buf);
+  pretty_save_init(&pretty_save, &buf->pretty);
+  pretty_indent_at_column(&buf->pretty, 0);
+  if ((r = buf_write_1(buf, "Stacktrace:\n")) < 0)
+    return r;
+  result += r;
+  s = stacktrace;
+  while (s) {
+    if ((r = buf_write_1(buf, " ")) < 0)
+      return r;
+    result += r;
+    if ((r = buf_inspect_tag(buf, &s->tag)) < 0)
+      return r;
+    result += r;
+    if ((r = buf_write_1(buf, "\n")) < 0)
+      return r;    
+    result += r;
+    s = list_next(s);
+  }
+  pretty_save_clean(&pretty_save, &buf->pretty);
+  return result;
+}
+
+sw buf_inspect_stacktrace_size (s_pretty *pretty,
+                                const s_list *stacktrace);
+
 sw buf_inspect_str (s_buf *buf, const s_str *str)
 {
   bool b = false;

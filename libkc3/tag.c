@@ -249,6 +249,12 @@ void tag_clean (s_tag *tag)
   }
 }
 
+s_tag * tag_copy (s_tag *tag, const s_tag *src)
+{
+  tag_clean(tag);
+  return tag_init_copy(tag, src);
+}
+
 void tag_delete (s_tag *tag)
 {
   tag_clean(tag);

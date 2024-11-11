@@ -44,14 +44,7 @@ defmodule List do
     ([first], sep, acc) { str(reverse([first | acc])) }
   }
 
-  def map = fn {
-    ([], _) do
-      []
-    end
-    ([a | b], f) do
-      [f(a) | map(b, f)]
-    end
-  }
+  def map = cfn List "list_map" (List, Fn, Result)
 
   def reverse = fn {
     (x) { reverse(x, []) }

@@ -201,6 +201,34 @@ sw list_length (const s_list *list)
   return length;
 }
 
+s_list ** list_map (const s_list * const *list, const s_fn *f,
+                    s_list **dest)
+{
+  s_list *arg;
+  const s_list *l;
+  s_list **tail;
+  s_list *tmp;
+  if (! (arg = list_new(NULL)))
+    return NULL;
+  tmp = NULL;
+  tail = &tmp;
+  l = *list;
+  while (l) {
+    if (! tag_copy(&arg->tag, &l->tag))
+      goto ko;
+    *tail = list_new(NULL);
+    if (! eval_fn_call(f, arg, &(*tail)->tag))
+      goto ko;
+    tail = &(*tail)->next.data.list;
+    l = list_next(l);
+  }
+  *dest = tmp;
+  return dest;
+ ko:
+  list_delete_all(tmp);
+  return NULL;
+}
+
 s_list * list_next (const s_list *list)
 {
   assert(list);
