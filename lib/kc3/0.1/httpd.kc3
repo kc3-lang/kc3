@@ -338,15 +338,11 @@ defmodule HTTPd do
     }
     route = HTTPd.fn (request) {
       url = url_eat(request.url, url_skip)
-      render = if (! Str.starts_with?(url, "/") ||
-                   Str.has_str?(url, "/../") ||
-                   Str.ends_with?(url, "/..")) do
-        error_404_page
-      else
+      render = if (Str.starts_with?(url, "/") &&
+                   ! Str.has_str?(url, "/../") &&
+                   ! Str.ends_with?(url, "/..")) do
         path = root_dir + url
-        if ! File.exists?(path) do
-          error_404_page
-        else
+        if File.exists?(path) do
           if File.is_directory?(path) do
             directory_page
           else
@@ -354,7 +350,9 @@ defmodule HTTPd do
           end
         end
       end
-      render(request)
+      if render do
+        render(request)
+      end
     }
     def_route(prefix, route)
   }
