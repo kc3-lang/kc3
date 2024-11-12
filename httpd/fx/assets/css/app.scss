@@ -14,7 +14,9 @@ $fa-font-path: "../_fonts";
 @import "../node_modules/fontawesome-free/scss/brands.scss";
 @import "../node_modules/fontawesome-free/scss/regular.scss";
 @import "../node_modules/fontawesome-free/scss/solid.scss";
-@import "../node_modules/highlight.js/scss/default.scss";
+
+// @import "../node_modules/highlight.js/scss/default.scss";
+@import "../node_modules/highlight.js/scss/github.scss";
 
 @import "./flash.scss";
 @import "./footer.scss";
