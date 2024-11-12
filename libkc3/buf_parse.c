@@ -4381,9 +4381,10 @@ sw buf_parse_tag_void (s_buf *buf, s_tag *dest)
 sw buf_parse_time (s_buf *buf, s_time *dest)
 {
   sw r;
-  (r = buf_parse_time_as_sw(buf, dest)) > 0 ||
-    (r = buf_parse_time_as_tags(buf, dest));
-  return r;
+  if ((r = buf_parse_time_as_sw(buf, dest)) > 0 ||
+      (r = buf_parse_time_as_tags(buf, dest)))
+    return r;
+  return 0;
 }
 
 sw buf_parse_time_as_sw (s_buf *buf, s_time *dest)
