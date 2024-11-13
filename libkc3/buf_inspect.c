@@ -2848,12 +2848,19 @@ sw buf_inspect_stacktrace (s_buf *buf, const s_list *stacktrace)
     if ((r = buf_write_1(buf, " ")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_tag(buf, &s->tag)) < 0)
-      return r;
-    result += r;
-    if ((r = buf_write_1(buf, "\n")) < 0)
-      return r;    
-    result += r;
+    if (s->tag.type == TAG_LIST) {
+      if ((r = buf_inspect_tag(buf, &s->tag.data.list->tag)) < 0)
+        return r;
+      result += r;
+      if ((r = buf_write_1(buf, "\n")) < 0)
+        return r;    
+      result += r;
+    }
+    else {
+      if ((r = buf_write_1(buf, "???\n")) < 0)
+        return r;    
+      result += r;
+    }
     s = list_next(s);
   }
   pretty_save_clean(&pretty_save, &buf->pretty);
