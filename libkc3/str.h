@@ -29,7 +29,7 @@
 #define PROTOTYPE_STR_INIT(name, type)                          \
   s_str * str_init_ ## name (s_str *str, type x)
 
-#define PROTOTYPE_STR_INIT_INT(type)                            \
+#define PROTOTYPE_STR_INIT_DIRECT(type)                            \
   s_str * str_init_ ## type (s_str *str, type x)
 
 #define PROTOTYPE_STR_INIT_STRUCT(type)                         \
@@ -55,7 +55,10 @@ s_str * str_init_copy (s_str *str, const s_str *src);
 s_str * str_init_copy_1 (s_str *str, const char *p);
 s_str * str_init_empty (s_str *str);
 s_str * str_init_f (s_str *str, const char *fmt, ...);
-PROTOTYPE_STR_INIT_STRUCT(fn);
+PROTOTYPE_STR_INIT_DIRECT(f32);
+PROTOTYPE_STR_INIT_DIRECT(f64);
+PROTOTYPE_STR_INIT_DIRECT(f128);
+PROTOTYPE_STR_INIT(callable, s_callable *);
 s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format);
 PROTOTYPE_STR_INIT_STRUCT(ident);
 PROTOTYPE_STR_INIT(list, const s_list * const *);
@@ -63,10 +66,10 @@ PROTOTYPE_STR_INIT_STRUCT(map);
 PROTOTYPE_STR_INIT(ptr, const u_ptr_w *);
 PROTOTYPE_STR_INIT(ptr_free, const u_ptr_w *);
 s_str * str_init_random_base64 (s_str *str, const s_tag *len);
-PROTOTYPE_STR_INIT_INT(s8);
-PROTOTYPE_STR_INIT_INT(s16);
-PROTOTYPE_STR_INIT_INT(s32);
-PROTOTYPE_STR_INIT_INT(s64);
+PROTOTYPE_STR_INIT_DIRECT(s8);
+PROTOTYPE_STR_INIT_DIRECT(s16);
+PROTOTYPE_STR_INIT_DIRECT(s32);
+PROTOTYPE_STR_INIT_DIRECT(s64);
 s_str * str_init_slice (s_str *str, const s_str *src, sw start, sw end);
 s_str * str_init_slice_utf8 (s_str *str, const s_str *src, sw start,
                              sw end);
@@ -75,15 +78,15 @@ s_str * str_init_subst (s_str *str, const s_str *src,
 sw      str_init_subst_size (const s_str *src, const s_str *search,
                              const s_str *replace);
 PROTOTYPE_STR_INIT_STRUCT(struct);
-PROTOTYPE_STR_INIT_INT(sw);
+PROTOTYPE_STR_INIT_DIRECT(sw);
 s_str * str_init_to_lower (s_str *str, const s_str *src);
 s_str * str_init_to_upper (s_str *str, const s_str *src);
 PROTOTYPE_STR_INIT_STRUCT(tuple);
-PROTOTYPE_STR_INIT_INT(u8);
-PROTOTYPE_STR_INIT_INT(u16);
-PROTOTYPE_STR_INIT_INT(u32);
-PROTOTYPE_STR_INIT_INT(u64);
-PROTOTYPE_STR_INIT_INT(uw);
+PROTOTYPE_STR_INIT_DIRECT(u8);
+PROTOTYPE_STR_INIT_DIRECT(u16);
+PROTOTYPE_STR_INIT_DIRECT(u32);
+PROTOTYPE_STR_INIT_DIRECT(u64);
+PROTOTYPE_STR_INIT_DIRECT(uw);
 PROTOTYPE_STR_INIT_STRUCT(var);
 s_str * str_init_vf (s_str *str, const char *fmt, va_list ap);
 

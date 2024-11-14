@@ -304,7 +304,7 @@ class TagInitList
        TagInit.new("character", "TAG_CHARACTER", :init_mode_direct,
                    [Arg.new("character", "c")]),
        TagInitProto.new("copy", nil, :init_mode_none,
-                        [Arg.new("const s_tag *", "src")]),
+                        [Arg.new("s_tag *", "src")]),
        TagInit.new("complex", "TAG_COMPLEX", :init_mode_direct,
                    [Arg.new("s_complex *", "c")]),
        TagInit.new("f32", "TAG_F32", :init_mode_direct,
@@ -313,8 +313,8 @@ class TagInitList
                    [Arg.new("f64", "f")]),
        TagInit.new("f128", "TAG_F128", :init_mode_direct,
                    [Arg.new("f128", "f")]),
-       TagInit.new("fn", "copy", "TAG_FN", :init_mode_init,
-                   [Arg.new("const s_fn *", "fn")]),
+       #TagInit.new("fn", "copy", "TAG_FN", :init_mode_init,
+       #            [Arg.new("const s_fn *", "fn")]),
        TagInit.new("ident", "TAG_IDENT", :init_mode_direct,
                    [Arg.new("const s_ident *", "ident")]),
        TagInit1.new("ident", "1", "TAG_IDENT", :init_mode_init),
@@ -530,6 +530,7 @@ tag_init_c.content = <<EOF
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "call.h"
+#include "callable.h"
 #include "cfn.h"
 #include "compare.h"
 #include "env.h"
@@ -585,6 +586,7 @@ list_init_c.content = <<EOF
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "call.h"
+#include "callable.h"
 #include "cfn.h"
 #include "compare.h"
 #include "env.h"

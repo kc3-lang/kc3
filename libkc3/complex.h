@@ -22,7 +22,7 @@ s_complex * complex_init (s_complex *c);
 s_complex * complex_init_1 (s_complex *c, const s8 *p);
 s_complex * complex_init_cast (s_complex *c, const s_sym * const *type,
                                const s_tag *src);
-s_complex * complex_init_copy (s_complex *c, const s_complex *src);
+s_complex * complex_init_copy (s_complex *c, s_complex *src);
 s_complex * complex_init_f32 (s_complex *c, f32 src);
 s_complex * complex_init_f64 (s_complex *c, f64 src);
 s_complex * complex_init_f128 (s_complex *c, f128 src);
@@ -61,7 +61,7 @@ s_complex * complex_new_cast (const s_sym * const *type,
 s_complex * complex_new_div (const s_complex *a, const s_complex *b);
 s_complex * complex_new_mul (const s_complex *a, const s_complex *b);
 s_complex * complex_new_sub (const s_complex *a, const s_complex *b);
-s_complex * complex_new_copy (const s_complex *a);
+s_complex * complex_new_copy (s_complex *a);
 
 /* Observers */
 bool complex_is_zero (const s_complex *c);

@@ -22,10 +22,7 @@
 #include "types.h"
 
 /* Observers */
-s_tag * alist_access (const s_list * const *alist,
-                      const s_list * const *key,
-                      s_tag *dest);
-s_tag * alist_get (const s_list * const *alist, const s_tag *key,
-                   s_tag *dest);
+s_tag * alist_access (s_list *alist, s_list *key, s_tag *dest);
+s_tag * alist_get (s_list *alist, s_tag *key, s_tag *dest);
 
 #endif /* LIBKC3_ALIST_H */

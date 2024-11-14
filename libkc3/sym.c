@@ -34,6 +34,7 @@ const s_sym g_sym_Bool            = {{{NULL},  4, {"Bool"}}};
 const s_sym g_sym_Buf             = {{{NULL},  3, {"Buf"}}};
 const s_sym g_sym_BufRW           = {{{NULL},  5, {"BufRW"}}};
 const s_sym g_sym_Call            = {{{NULL},  4, {"Call"}}};
+const s_sym g_sym_Callable        = {{{NULL},  8, {"Callable"}}};
 const s_sym g_sym_Cfn             = {{{NULL},  3, {"Cfn"}}};
 const s_sym g_sym_Character       = {{{NULL},  9, {"Character"}}};
 const s_sym g_sym_Char__star      = {{{NULL},  5, {"Char*"}}};
@@ -350,6 +351,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Buf, NULL);
   sym_register(&g_sym_BufRW, NULL);
   sym_register(&g_sym_Call, NULL);
+  sym_register(&g_sym_Callable, NULL);
   sym_register(&g_sym_Cfn, NULL);
   sym_register(&g_sym_Character, NULL);
   sym_register(&g_sym_Char__star, NULL);
@@ -551,7 +553,9 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = false;
     return must_clean;
   }
-  if (sym == &g_sym_Cfn) {
+  if (sym == &g_sym_Callable ||
+      sym == &g_sym_Cfn ||
+      sym == &g_sym_Fn) {
     *must_clean = true;
     return must_clean;
   }
@@ -577,10 +581,6 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
   }
   if (sym == &g_sym_F128) {
     *must_clean = false;
-    return must_clean;
-  }
-  if (sym == &g_sym_Fn) {
-    *must_clean = true;
     return must_clean;
   }
   if (sym == &g_sym_Integer) {
@@ -744,6 +744,12 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
     *dest = &ffi_type_pointer;
     return true;
   }
+  if (sym == &g_sym_Callable ||
+      sym == &g_sym_Cfn ||
+      sym == &g_sym_Fn) {
+    *dest = &ffi_type_pointer;
+    return true;
+  }
   if (sym == &g_sym_Char__star) {
     *dest = &ffi_type_pointer;
     return true;
@@ -770,10 +776,6 @@ bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
   }
   if (sym == &g_sym_F128) {
     *dest = &ffi_type_longdouble;
-    return true;
-  }
-  if (sym == &g_sym_Fn) {
-    *dest = &ffi_type_pointer;
     return true;
   }
   if (sym == &g_sym_Integer) {
@@ -909,8 +911,10 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     *dest = TAG_CALL;
     return true;
   }
-  if (sym == &g_sym_Cfn) {
-    *dest = TAG_CFN;
+  if (sym == &g_sym_Callable ||
+      sym == &g_sym_Cfn ||
+      sym == &g_sym_Fn) {
+    *dest = TAG_CALLABLE;
     return true;
   }
   if (sym == &g_sym_Character) {
@@ -935,10 +939,6 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   }
   if (sym == &g_sym_F128) {
     *dest = TAG_F128;
-    return true;
-  }
-  if (sym == &g_sym_Fn) {
-    *dest = TAG_FN;
     return true;
   }
   if (sym == &g_sym_Ident) {
@@ -1086,8 +1086,10 @@ uw * sym_type_size (const s_sym * const *type, uw *dest)
     *dest = sizeof(s_call);
     return dest;
   }
-  if (*type == &g_sym_Cfn) {
-    *dest = sizeof(s_cfn);
+  if (*type == &g_sym_Callable ||
+      *type == &g_sym_Cfn ||
+      *type == &g_sym_Fn) {
+    *dest = sizeof(p_callable);
     return dest;
   }
   if (*type == &g_sym_Character) {
@@ -1116,10 +1118,6 @@ uw * sym_type_size (const s_sym * const *type, uw *dest)
   }
   if (*type == &g_sym_Fact) {
     *dest = sizeof(s_fact);
-    return dest;
-  }
-  if (*type == &g_sym_Fn) {
-    *dest = sizeof(s_fn);
     return dest;
   }
   if (*type == &g_sym_Ident) {

@@ -85,6 +85,12 @@ typedef enum {
 } e_bool;
 
 typedef enum {
+  CALLABLE_VOID = 0,
+  CALLABLE_CFN,
+  CALLABLE_FN
+} e_callable_type;
+
+typedef enum {
   FACT_ACTION_ADD,
   FACT_ACTION_REMOVE,
   FACT_ACTION_REPLACE
@@ -96,7 +102,7 @@ typedef enum {
   TAG_BLOCK,
   TAG_BOOL,
   TAG_CALL,
-  TAG_CFN,
+  TAG_CALLABLE,
   TAG_CHARACTER,
   TAG_COMPLEX,
   TAG_COW,
@@ -104,7 +110,6 @@ typedef enum {
   TAG_F64,
   TAG_F128,
   TAG_FACT,
-  TAG_FN,
   TAG_INTEGER,
   TAG_RATIO,
   TAG_SW,
@@ -145,6 +150,7 @@ typedef struct buf_fd                  s_buf_fd;
 typedef struct buf_rw                  s_buf_rw;
 typedef struct buf_save                s_buf_save;
 typedef struct call                    s_call;
+typedef struct callable                s_callable;
 typedef struct cfn                     s_cfn;
 typedef struct complex                 s_complex;
 typedef struct cow                     s_cow;
@@ -195,19 +201,20 @@ typedef struct unwind_protect          s_unwind_protect;
 typedef struct var                     s_var;
 
 /* unions */
-typedef union ptr_     u_ptr;
-typedef union ptr_w    u_ptr_w;
-typedef union tag_data u_tag_data;
-typedef union tag_type u_tag_type;
+typedef union callable_data u_callable_data;
+typedef union ptr_          u_ptr;
+typedef union ptr_w         u_ptr_w;
+typedef union tag_data      u_tag_data;
 
 /* typedefs */
-typedef u32           character;
-typedef s_tag       **p_facts_spec;
-typedef s_tag        *t_facts_spec[];
-typedef SHA1_CTX      t_hash;
-typedef const s_sym  *p_sym;
-typedef const s_tag  *p_tag;
-typedef u64           t_skiplist_height;
+typedef s_callable * p_callable;
+typedef u32          character;
+typedef s_tag **     p_facts_spec;
+typedef s_tag *      t_facts_spec[];
+typedef SHA1_CTX     t_hash;
+typedef const s_sym *p_sym;
+typedef const s_tag *p_tag;
+typedef u64          t_skiplist_height;
 
 /* function typedefs */
 typedef void (* f_clean) (void *x);
@@ -249,9 +256,9 @@ struct cow {
 };
 
 struct fact {
-  const s_tag *subject;
-  const s_tag *predicate;
-  const s_tag *object;
+  s_tag *subject;
+  s_tag *predicate;
+  s_tag *object;
   uw id; /* serial id */
 };
 
@@ -322,7 +329,7 @@ struct struct_ {
   void *data;
   bool free_data;
   s_tag *tag;
-  const s_struct_type *type;
+  s_struct_type *type;
 };
 
 struct sym_list {
@@ -382,7 +389,7 @@ struct buf {
 
 struct facts_spec_cursor {
   p_facts_spec spec;
-  const s_tag *subject;
+  s_tag *subject;
   uw pos;
 };
 
@@ -434,15 +441,14 @@ struct buf_rw {
 };
 
 struct call {
-  /* key */
   s_ident ident;
   s_list *arguments;
-  /* value */
-  s_cfn *cfn;
-  s_fn *fn;
+  p_callable callable;
 };
 
 struct cfn {
+  bool macro;
+  bool special_operator;
   const s_sym *name;
   union {
     void (*f) (void);
@@ -453,15 +459,14 @@ struct cfn {
   bool arg_result;
   s_list *arg_types;
   ffi_cif cif;
-  bool macro;
-  bool special_operator;
+  bool ready;
 };
 
 struct fn {
-  s_fn_clause *clauses;
   bool macro;
   bool special_operator;
   s_ident ident;
+  s_fn_clause *clauses;
   const s_sym *module;
   s_frame *frame;
 };
@@ -499,14 +504,25 @@ struct array {
   const s_sym *element_type;
 };
 
+union callable_data {
+  s_cfn cfn;
+  s_fn fn;
+};
+
 /* 5 */
+
+struct callable {
+  e_callable_type type;
+  sw reference_count;
+  u_callable_data data;
+};
 
 union tag_data {
   s_array       array;
   s_block       block;
   bool          bool;
   s_call        call;
-  s_cfn         cfn;
+  p_callable    callable;
   character     character;
   s_complex    *complex;
   s_cow        *cow;
@@ -514,7 +530,6 @@ union tag_data {
   f64           f64;
   f128          f128;
   s_fact        fact;
-  s_fn          fn;
   s_ident       ident;
   s_integer     integer;
   s_list       *list;
@@ -656,7 +671,7 @@ TYPEDEF_SET_CURSOR(fact);
 
 #define TYPEDEF_SKIPLIST_NODE(name, type)                              \
   typedef struct skiplist_node__##name {                               \
-    const type name;                                                         \
+    type name;                                                         \
     u8 height;                                                         \
   } s_skiplist_node__##name
 
@@ -727,7 +742,7 @@ struct env {
 
 struct facts_with_cursor_level {
   s_facts_cursor cursor;
-  const s_fact *fact;
+  s_fact *fact;
   p_facts_spec spec;
 };
 

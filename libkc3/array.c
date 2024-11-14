@@ -23,12 +23,11 @@
 #include "sym.h"
 #include "tag.h"
 
-s_tag * array_access (const s_array *a, const s_list * const *key,
-                      s_tag *dest)
+s_tag * array_access (s_array *a, s_list *key, s_tag *dest)
 {
   s_array address;
   s_tag *r;
-  if (! list_to_array(*key, &g_sym_Uw_brackets, &address)) {
+  if (! list_to_array(key, &g_sym_Uw_brackets, &address)) {
     err_puts("array_access: list_to_array");
     assert(! "array_access: list_to_array");
     return NULL;
@@ -108,7 +107,7 @@ void * array_data (const s_array *a, const uw *address)
 }
 
 s_array * array_data_set (s_array *a, const uw *address,
-                          const void *data)
+                          void *data)
 {
   void *a_data;
   assert(a);

@@ -16,7 +16,7 @@
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "call.h"
-#include "cfn.h"
+#include "callable.h"
 #include "facts.h"
 #include "facts_cursor.h"
 #include "facts_with.h"
@@ -30,10 +30,8 @@ void call_clean (s_call *call)
 {
   assert(call);
   list_delete_all(call->arguments);
-  if (call->cfn)
-    cfn_delete(call->cfn);
-  if (call->fn)
-    fn_delete(call->fn);
+  if (call->callable)
+    callable_delete(call->callable);
 }
 
 bool call_get (s_call *call)
@@ -90,7 +88,7 @@ s_call * call_init_call_cast (s_call *call, const s_sym *type)
 }
 
 s_call * call_init_cast (s_call *call, const s_sym * const *type,
-                         const s_tag *tag)
+                         s_tag *tag)
 {
   assert(call);
   assert(type);
@@ -114,20 +112,16 @@ s_call * call_init_cast (s_call *call, const s_sym * const *type,
   return NULL;
 }
 
-s_call * call_init_copy (s_call *call, const s_call *src)
+s_call * call_init_copy (s_call *call, s_call *src)
 {
   s_call tmp = {0};
   assert(src);
   assert(call);
   if (! ident_init_copy(&tmp.ident, &src->ident) ||
-      ! list_init_copy(&tmp.arguments,
-                       (const s_list * const *) &src->arguments))
+      ! list_init_copy(&tmp.arguments, &src->arguments))
     return NULL;
-  // FIXME: copy cfn and fn ?
-  if (src->cfn)
-    tmp.cfn = cfn_new_copy(src->cfn);
-  if (src->fn)
-    tmp.fn = fn_new_copy(src->fn);
+  if (src->callable)
+    tmp.callable = callable_new_ref(src->callable);
   *call = tmp;
   return call;
 }

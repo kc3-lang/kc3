@@ -26,12 +26,12 @@
 #include "tag.h"
 #include "tuple.h"
 
-s_tag * alist_access (const s_list * const *alist,
-                      const s_list * const *key,
+s_tag * alist_access (s_list *alist,
+                      s_list *key,
                       s_tag *dest)
 {
-  const s_tag *first;
-  const s_list *next;
+  s_tag *first;
+  s_list *next;
   s_tag *r;
   s_tag tag;
   assert(alist);
@@ -42,8 +42,8 @@ s_tag * alist_access (const s_list * const *alist,
     assert(! "alist_access: not an associative list");
     return NULL;
   }
-  first = &(*key)->tag;
-  next = list_next(*key);
+  first = &key->tag;
+  next = list_next(key);
   if (! next)
     return alist_get(alist, first, dest);
   if (! alist_get(alist, first, &tag)) {
@@ -60,15 +60,14 @@ s_tag * alist_access (const s_list * const *alist,
   return r;
 }
 
-s_tag * alist_get (const s_list * const *alist, const s_tag *key,
-                   s_tag *dest)
+s_tag * alist_get (s_list *alist, s_tag *key, s_tag *dest)
 {
-  const s_list *l;
+  s_list *l;
   assert(alist);
   assert(list_is_alist(alist));
   assert(key);
   assert(dest);
-  l = *alist;
+  l = alist;
   while (l) {
     if (! compare_tag(&l->tag.data.tuple.tag[0], key))
       return tag_init_copy(dest, l->tag.data.tuple.tag + 1);

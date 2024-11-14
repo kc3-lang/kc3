@@ -55,7 +55,7 @@ bool           tag_is_struct (const s_tag *tag, const s_sym *module);
 bool *         tag_is_unbound_var (const s_tag *tag, bool *dest);
 bool           tag_is_zero(const s_tag *tag);
 s8             tag_number_compare (const s_tag *a, const s_tag *b);
-const s_tag *  tag_resolve_cow (const s_tag *tag);
+s_tag *        tag_resolve_cow (s_tag *tag);
 uw *           tag_size (const s_tag *tag, uw *dest);
 ffi_type       tag_to_ffi_type(const s_tag *tag);
 const s_sym ** tag_type (const s_tag *tag, const s_sym **type);
@@ -73,8 +73,8 @@ s_tag * tag_integer_cast_to_u64 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_cast_to_u8 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_reduce (s_tag *tag);
 s_tag * tag_list_1 (s_tag *tag, const char *p);
-bool    tag_to_const_pointer (const s_tag *tag, const s_sym *type,
-                              const void **dest);
+bool    tag_to_const_pointer (s_tag *tag, const s_sym *type,
+                              void **dest);
 bool    tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest);
 bool    tag_to_pointer (s_tag *tag, const s_sym *type, void **dest);
 

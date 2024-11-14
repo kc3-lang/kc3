@@ -25,6 +25,7 @@
 #include "buf_parse.h"
 #include "buf_save.h"
 #include "call.h"
+#include "callable.h"
 #include "cfn.h"
 #include "compare.h"
 #include "complex.h"
@@ -70,7 +71,7 @@ static s_env * env_init_args (s_env *env, int *argc, char ***argv);
 static s_env * env_init_globals (s_env *env);
 static s_env * env_init_toplevel (s_env *env);
 
-bool * env_and (s_env *env, const s_tag *a, const s_tag *b, bool *dest)
+bool * env_and (s_env *env, s_tag *a, s_tag *b, bool *dest)
 {
   s_tag eval;
   bool tmp;
@@ -124,8 +125,8 @@ s_list ** env_args (s_env *env, s_list **dest)
 bool env_call_get (s_env *env, s_call *call)
 {
   s_facts_cursor cursor;
-  const s_fact *fact;
-  const s_fact *found;
+  s_fact *fact;
+  s_fact *found;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_macro;
@@ -183,33 +184,20 @@ bool env_call_get (s_env *env, s_call *call)
     err_puts(" :symbol_value not found");
     return false;
   }
-  if (tag_var.type == TAG_FN) {
-    call->fn = fn_new_copy(&tag_var.data.fn);
-    fn_set_name_if_null(call->fn, call->ident.module,
-                        call->ident.sym);
-  }
-  else if (tag_var.type == TAG_CFN)
-    call->cfn = cfn_new_copy(&tag_var.data.cfn);
-  else {
+  if (tag_var.type != TAG_CALLABLE) {
     err_write_1("env_call_get: ");
     err_inspect_ident(&call->ident);
-    err_puts(" is not a function");
+    err_puts(" is not a Callable");
     facts_cursor_clean(&cursor);
     return false;
   }
+  call->callable = callable_new_ref(tag_var.data.callable);
+  if (call->callable->type == CALLABLE_FN) {
+    fn_set_name_if_null(&call->callable->data.fn,
+                        call->ident.module,
+                        call->ident.sym);
+  }
   facts_cursor_clean(&cursor);
-  if (! facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
-                                &tag_macro, &found)) {
-    err_puts("env_call_get: facts_find_fact_by_tags 3");
-    assert(! "env_call_get: facts_find_fact_by_tags 3");
-    return false;
-  }
-  if (found) {
-    if (call->fn)
-      call->fn->macro = true;
-    if (call->cfn)
-      call->cfn->macro = true;
-  }
   if (! facts_find_fact_by_tags(&env->facts, &tag_ident, &tag_is_a,
                                 &tag_special_operator, &found)) {
     err_puts("env_call_get: facts_find_fact_by_tags 4");
@@ -217,10 +205,18 @@ bool env_call_get (s_env *env, s_call *call)
     return false;
   }
   if (found) {
-    if (call->fn)
-      call->fn->special_operator = true;
-    if (call->cfn)
-      call->cfn->special_operator = true;
+    switch (call->callable->type) {
+    case CALLABLE_CFN:
+      call->callable->data.cfn.special_operator = true;
+      break;
+    case CALLABLE_FN:
+      call->callable->data.fn.special_operator = true;
+      break;
+    case CALLABLE_VOID:
+      err_puts("env_call_get: void callable");
+      assert(! "env_call_get: void callable");
+      break;
+    }
   }
   return true;
 }
@@ -256,7 +252,7 @@ void env_clean_toplevel (s_env *env)
   frame_delete_all(env->frame);
 }
 
-bool env_def (s_env *env, const s_ident *ident, const s_tag *value)
+bool env_def (s_env *env, const s_ident *ident, s_tag *value)
 {
   const s_struct *s;
   s_tag tag;
@@ -328,7 +324,8 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
     assert(! "env_def_clean: module struct type not found");
     return NULL;
   }
-  if (clean->type != TAG_CFN) {
+  if (clean->type != TAG_CALLABLE ||
+      clean->data.callable->type != CALLABLE_CFN) {
     err_write_1("env_def_clean: module ");
     err_inspect_sym(&module);
     err_write_1(": clean method must be a Cfn");
@@ -336,7 +333,8 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
     return NULL;
   }
   tag_init_sym(&tag_module_name, module);
-  tag_init_struct_type_update_clean(&tag_st, st, &clean->data.cfn);
+  tag_init_struct_type_update_clean(&tag_st, st,
+                                    &clean->data.callable->data.cfn);
   tag_init_sym(&tag_struct_type, &g_sym_struct_type);
   if (! facts_replace_tags(&env->facts, &tag_module_name,
                            &tag_struct_type, &tag_st)) {
@@ -390,7 +388,7 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
 
 s_tag * env_defoperator (s_env *env, const s_sym * const *name,
                          const s_sym * const *sym,
-                         const s_tag *symbol_value,
+                         s_tag *symbol_value,
                          u8 op_precedence,
                          const s_sym * const *op_assoc,
                          s_tag *dest)
@@ -483,7 +481,7 @@ void env_error_f (s_env *env, const char *fmt, ...)
   env_error_tag(env, &tag);
 }
 
-void env_error_tag (s_env *env, const s_tag *tag)
+void env_error_tag (s_env *env, s_tag *tag)
 {
   s_error_handler *error_handler;
   assert(env);
@@ -581,7 +579,7 @@ bool env_eval_block (s_env *env, const s_block *block, s_tag *dest)
   return env_eval_tag(env, block->tag + i, dest);
 }
 
-bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
+bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
 {
   s_call c = {0};
   bool result;
@@ -596,22 +594,19 @@ bool env_eval_call (s_env *env, const s_call *call, s_tag *dest)
     err_write_1("\n");
     return false;
   }
-  if (c.cfn)
-    result = env_eval_call_cfn(env, &c, dest);
-  else if (c.fn)
-    result = env_eval_call_fn(env, &c, dest);
-  else {
+  if (! c.callable || c.callable->type == CALLABLE_VOID) {
     err_write_1("env_eval_call: could not resolve call ");
     err_inspect_ident(&c.ident);
     err_write_1("\n");
     result = false;
   }
+  result = env_eval_callable(env, c.callable, dest);
   call_clean(&c);
   return result;
 }
 
 // FIXME: better error message (cite call function name if any)
-bool env_eval_call_arguments (s_env *env, const s_list *args,
+bool env_eval_call_arguments (s_env *env, s_list *args,
                               s_list **dest)
 {
   s_list **tail;
@@ -633,26 +628,44 @@ bool env_eval_call_arguments (s_env *env, const s_list *args,
   return true;
 }
 
-bool env_eval_call_cfn (s_env *env, const s_call *call, s_tag *dest)
+bool env_eval_call_callable (s_env *env, const s_call *call,
+                             s_tag *dest)
+{
+  switch (call->callable->type) {
+  case CALLABLE_CFN:
+    return env_eval_call_cfn_args(env, &call->callable->data.cfn,
+                                  call->arguments, dest);
+  case CALLABLE_FN:
+    return env_eval_call_fn_args(env, &call->callable->data.fn,
+                                 call->arguments, dest);
+  case CALLABLE_VOID:
+    err_puts("env_eval_call_callable: CALLABLE_VOID");
+    assert(! "env_eval_call_callable: CALLABLE_VOID");
+    return false;
+  }
+  err_puts("env_eval_call_callable: unknown callable type");
+  assert(! "env_eval_call_callable: unknown callable type");
+  return false;
+}
+
+bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
+                             s_tag *dest)
 {
   s_list *args = NULL;
   s_list *args_final = NULL;
-  s_cfn *cfn;
   //s_frame frame;
   s_tag tag;
   assert(env);
   assert(call);
   assert(dest);
-  cfn = call->cfn;
-  assert(cfn);
   //if (! frame_init(&frame, env->frame))
   //  return false;
   //env->frame = &frame;
-  if (call->arguments) {
+  if (arguments) {
     if (cfn->macro || cfn->special_operator)
-      args_final = call->arguments;
+      args_final = arguments;
     else {
-      if (! env_eval_call_arguments(env, call->arguments, &args)) {
+      if (! env_eval_call_arguments(env, arguments, &args)) {
         //env->frame = frame_clean(&frame);
         return false;
       }
@@ -675,14 +688,21 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
-  return env_eval_call_fn_args(env, call->fn, call->arguments, dest);
+  if (! call->callable ||
+      call->callable->type != CALLABLE_FN) {
+    err_puts("env_eval_call_fn: not a Fn");
+    assert(! "env_eval_call_fn: not a Fn");
+    return false;
+  }
+  return env_eval_call_fn_args(env, &call->callable->data.fn,
+                               call->arguments, dest);
 }
 
 bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
-                            const s_list *arguments, s_tag *dest)
+                            s_list *arguments, s_tag *dest)
 {
   s_list *args = NULL;
-  const s_list *args_final = NULL;
+  s_list *args_final = NULL;
   s_fn_clause *clause;
   s_frame *env_frame;
   s_frame frame;
@@ -802,13 +822,8 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   tmp = *call;
   if (tmp.ident.module == NULL &&
       (value = env_frames_get(env, tmp.ident.sym))) {
-    if (value->type == TAG_CFN) {
-      tmp.cfn = cfn_new_copy(&value->data.cfn);
-      *call = tmp;
-      return true;
-    }
-    else if (value->type == TAG_FN) {
-      tmp.fn = fn_new_copy(&value->data.fn);
+    if (value->type == TAG_CALLABLE) {
+      tmp.callable = callable_new_ref(value->data.callable);
       *call = tmp;
       return true;
     }
@@ -849,24 +864,48 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   return true;
 }
 
-bool env_eval_cfn (s_env *env, const s_cfn *cfn, s_tag *dest)
+bool env_eval_callable (s_env *env, s_callable *callable,
+                        s_tag *dest)
 {
-  s_cfn tmp = {0};
-  assert(cfn);
+  s_callable *tmp = NULL;
+  assert(env);
+  assert(callable);
   assert(dest);
   (void) env;
-  if (! cfn_init_copy(&tmp, cfn))
+  if (! (tmp = callable_new_ref(callable)))
     return false;
-  if (! cfn_prep_cif(&tmp))
+  switch (tmp->type) {
+  case CALLABLE_CFN:
+    if (! tmp->data.cfn.ready) {
+      if (! cfn_prep_cif(&tmp->data.cfn))
+        goto ko;
+      if (! cfn_link(&tmp->data.cfn))
+        goto ko;
+      tmp->data.cfn.ready = true;
+    }
+    break;
+  case CALLABLE_FN:
+    if (! tmp->data.fn.module)
+      tmp->data.fn.module = env->current_defmodule;
+    if (! tmp->data.fn.frame &&
+        ! (tmp->data.fn.frame = frame_new_copy(env->frame)))
+      return false;
+    break;
+  case CALLABLE_VOID:
+    err_puts("env_eval_callable: CALLABLE_VOID");
+    assert(! "env_eval_callable: CALLABLE_VOID");
     return false;
-  if (! cfn_link(&tmp))
-    return false;
-  dest->type = TAG_CFN;
-  dest->data.cfn = tmp;
+  }
+  dest->type = TAG_CALLABLE;
+  dest->data.callable = tmp;
   return true;
+ ko:
+  if (tmp)
+    callable_delete(tmp);
+  return false;
 }
 
-bool env_eval_complex (s_env *env, const s_complex *c, s_tag *dest)
+bool env_eval_complex (s_env *env, s_complex *c, s_tag *dest)
 {
   s_complex *tmp = NULL;
   assert(env);
@@ -889,7 +928,7 @@ bool env_eval_complex (s_env *env, const s_complex *c, s_tag *dest)
   return true;
 }
 
-bool env_eval_cow (s_env *env, const s_cow *cow, s_tag *dest)
+bool env_eval_cow (s_env *env, s_cow *cow, s_tag *dest)
 {
   s_cow *tmp = NULL;
   assert(env);
@@ -909,8 +948,8 @@ bool env_eval_cow (s_env *env, const s_cow *cow, s_tag *dest)
   return true;
 }
 
-bool env_eval_equal_cow (s_env *env, const s_cow *a,
-                         const s_cow *b, s_cow **dest)
+bool env_eval_equal_cow (s_env *env, s_cow *a,
+                         s_cow *b, s_cow **dest)
 {
   s8 r;
   s_cow *tmp = {0};
@@ -937,8 +976,8 @@ bool env_eval_equal_cow (s_env *env, const s_cow *a,
   return true;
 }
 
-bool env_eval_equal_list (s_env *env, bool macro, const s_list *a,
-                          const s_list *b, s_list **dest)
+bool env_eval_equal_list (s_env *env, bool macro, s_list *a,
+                          s_list *b, s_list **dest)
 {
   s_list *a_next;
   s_list *b_next;
@@ -1027,8 +1066,8 @@ bool env_eval_equal_map (s_env *env, bool macro, const s_map *a,
   return true;
 }
 
-bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
-                         const s_tag *b, s_tag *dest)
+bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
+                         s_tag *b, s_tag *dest)
 {
   bool is_unbound_a;
   bool is_unbound_b;
@@ -1209,10 +1248,9 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
   case TAG_BLOCK:
   case TAG_BOOL:
   case TAG_CALL:
-  case TAG_CFN:
+  case TAG_CALLABLE:
   case TAG_CHARACTER:
   case TAG_FACT:
-  case TAG_FN:
   case TAG_IDENT:
   case TAG_PTAG:
   case TAG_PTR:
@@ -1253,8 +1291,8 @@ bool env_eval_equal_tag (s_env *env, bool macro, const s_tag *a,
   return false;
 }
 
-bool env_eval_equal_time (s_env *env, bool macro, const s_time *a,
-                          const s_time *b, s_time *dest)
+bool env_eval_equal_time (s_env *env, bool macro, s_time *a,
+                          s_time *b, s_time *dest)
 {
   s_tag *a2;
   s_tag  a_tag[2] = {0};
@@ -1306,8 +1344,8 @@ bool env_eval_equal_time (s_env *env, bool macro, const s_time *a,
   return true;
 }
 
-bool env_eval_equal_tuple (s_env *env, bool macro, const s_tuple *a,
-                           const s_tuple *b, s_tuple *dest)
+bool env_eval_equal_tuple (s_env *env, bool macro, s_tuple *a,
+                           s_tuple *b, s_tuple *dest)
 {
   uw i;
   s_tuple tmp = {0};
@@ -1346,27 +1384,9 @@ bool env_eval_equal_tuple (s_env *env, bool macro, const s_tuple *a,
   return true;
 }
 
-bool env_eval_fn (s_env *env, const s_fn *fn, s_tag *dest)
-{
-  s_tag tmp = {0};
-  assert(env);
-  assert(fn);
-  assert(dest);
-  tmp.type = TAG_FN;
-  if (! fn_init_copy(&tmp.data.fn, fn))
-    return false;
-  if (! tmp.data.fn.module)
-    tmp.data.fn.module = env->current_defmodule;
-  if (! tmp.data.fn.frame &&
-      ! (tmp.data.fn.frame = frame_new_copy(env->frame)))
-    return false;
-  *dest = tmp;
-  return true;
-}
-
 bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
 {
-  const s_tag *tag;
+  s_tag *tag;
   s_tag tmp = {0};
   s_ident tmp_ident;
   assert(env);
@@ -1383,7 +1403,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
     err_write_1("\n");
     if (true) {
       err_puts("env_eval_ident: stacktrace:");
-      err_inspect_list((const s_list * const *) &env->stacktrace);
+      err_inspect_list(env->stacktrace);
       err_write_1("\n");
     }
     if (false) {
@@ -1414,7 +1434,7 @@ bool env_eval_ident_is_bound (s_env *env, const s_ident *ident)
   return false;
 }
 
-bool env_eval_list (s_env *env, const s_list *list, s_tag *dest)
+bool env_eval_list (s_env *env, s_list *list, s_tag *dest)
 {
   s_list *next;
   s_list *tmp = NULL;
@@ -1440,7 +1460,7 @@ bool env_eval_list (s_env *env, const s_list *list, s_tag *dest)
   return false;
 }
 
-bool env_eval_map (s_env *env, const s_map *map, s_tag *dest)
+bool env_eval_map (s_env *env, s_map *map, s_tag *dest)
 {
   s_map tmp = {0};
   uw i = 0;
@@ -1464,7 +1484,7 @@ bool env_eval_map (s_env *env, const s_map *map, s_tag *dest)
   return false;
 }
 
-bool env_eval_quote (s_env *env, const s_quote *quote, s_tag *dest)
+bool env_eval_quote (s_env *env, s_quote *quote, s_tag *dest)
 {
   bool r;
   assert(env);
@@ -1476,7 +1496,7 @@ bool env_eval_quote (s_env *env, const s_quote *quote, s_tag *dest)
   return r;
 }
 
-bool env_eval_quote_array (s_env *env, const s_array *array,
+bool env_eval_quote_array (s_env *env, s_array *array,
                            s_tag *dest)
 {
   uw i;
@@ -1514,7 +1534,7 @@ bool env_eval_quote_array (s_env *env, const s_array *array,
   return false;
 }
 
-bool env_eval_quote_block (s_env *env, const s_block *block, s_tag *dest)
+bool env_eval_quote_block (s_env *env, s_block *block, s_tag *dest)
 {
   uw i = 0;
   s_block tmp = {0};
@@ -1535,9 +1555,9 @@ bool env_eval_quote_block (s_env *env, const s_block *block, s_tag *dest)
   return false;
 }
 
-bool env_eval_quote_call (s_env *env, const s_call *call, s_tag *dest)
+bool env_eval_quote_call (s_env *env, s_call *call, s_tag *dest)
 {
-  const s_list *arg;
+  s_list *arg;
   s_call        tmp = {0};
   s_list **tmp_arg_last;
   assert(call);
@@ -1553,16 +1573,8 @@ bool env_eval_quote_call (s_env *env, const s_call *call, s_tag *dest)
     tmp_arg_last = &(*tmp_arg_last)->next.data.list;
     arg = list_next(arg);
   }
-  if (call->cfn) {
-    tmp.cfn = cfn_new_copy(call->cfn);
-    if (! tmp.cfn)
-      goto ko;
-  }
-  if (call->fn) {
-    tmp.fn = fn_new_copy(call->fn);
-    if (! tmp.fn)
-      goto ko;
-  }
+  if (call->callable)
+    tmp.callable = callable_new_ref(call->callable);
   dest->type = TAG_CALL;
   dest->data.call = tmp;
   return true;
@@ -1571,7 +1583,7 @@ bool env_eval_quote_call (s_env *env, const s_call *call, s_tag *dest)
   return false;
 }
 
-bool env_eval_quote_complex (s_env *env, const s_complex *c,
+bool env_eval_quote_complex (s_env *env, s_complex *c,
                              s_tag *dest)
 {
   s_tag tmp = {0};
@@ -1591,7 +1603,7 @@ bool env_eval_quote_complex (s_env *env, const s_complex *c,
   return true;
 }
 
-bool env_eval_quote_cow (s_env *env, const s_cow *cow,
+bool env_eval_quote_cow (s_env *env, s_cow *cow,
                          s_tag *dest)
 {
   s_tag tmp = {0};
@@ -1612,7 +1624,7 @@ bool env_eval_quote_cow (s_env *env, const s_cow *cow,
   return true;
 }
 
-bool env_eval_quote_list (s_env *env, const s_list *list, s_tag *dest)
+bool env_eval_quote_list (s_env *env, s_list *list, s_tag *dest)
 {
   s_list *next = NULL;
   s_list *tmp = NULL;
@@ -1640,7 +1652,7 @@ bool env_eval_quote_list (s_env *env, const s_list *list, s_tag *dest)
   return false;
 }
 
-bool env_eval_quote_map (s_env *env, const s_map *map, s_tag *dest)
+bool env_eval_quote_map (s_env *env, s_map *map, s_tag *dest)
 {
   s_map tmp = {0};
   uw i = 0;
@@ -1663,7 +1675,7 @@ bool env_eval_quote_map (s_env *env, const s_map *map, s_tag *dest)
   return false;
 }
 
-bool env_eval_quote_quote (s_env *env, const s_quote *quote, s_tag *dest)
+bool env_eval_quote_quote (s_env *env, s_quote *quote, s_tag *dest)
 {
   bool r;
   s_quote tmp = {0};
@@ -1683,7 +1695,7 @@ bool env_eval_quote_quote (s_env *env, const s_quote *quote, s_tag *dest)
   return true;
 }
 
-bool env_eval_quote_struct (s_env *env, const s_struct *s, s_tag *dest)
+bool env_eval_quote_struct (s_env *env, s_struct *s, s_tag *dest)
 {
   uw i;
   s_struct *t;
@@ -1717,7 +1729,7 @@ bool env_eval_quote_struct (s_env *env, const s_struct *s, s_tag *dest)
 }
 
 // Like tag_init_copy excepted that the unquote parts get evaluated.
-bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
+bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
 {
   assert(env);
   assert(tag);
@@ -1749,13 +1761,12 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_quote_unquote(env, &tag->data.unquote, dest);
   case TAG_VOID:
   case TAG_BOOL:
-  case TAG_CFN:
+  case TAG_CALLABLE:
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
   case TAG_F128:
   case TAG_FACT:
-  case TAG_FN:
   case TAG_IDENT:
   case TAG_INTEGER:
   case TAG_PTAG:
@@ -1785,7 +1796,7 @@ bool env_eval_quote_tag (s_env *env, const s_tag *tag, s_tag *dest)
   return false;
 }
 
-bool env_eval_quote_time (s_env *env, const s_time *time, s_tag *dest)
+bool env_eval_quote_time (s_env *env, s_time *time, s_tag *dest)
 {
   s_time tmp = {0};
   assert(env);
@@ -1818,7 +1829,7 @@ bool env_eval_quote_time (s_env *env, const s_time *time, s_tag *dest)
   return true;
 }
 
-bool env_eval_quote_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
+bool env_eval_quote_tuple (s_env *env, s_tuple *tuple, s_tag *dest)
 {
   uw i = 0;
   s_tuple tmp = {0};
@@ -1839,7 +1850,8 @@ bool env_eval_quote_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
   return false;
 }
 
-bool env_eval_quote_unquote (s_env *env, const s_unquote *unquote, s_tag *dest)
+bool env_eval_quote_unquote (s_env *env, s_unquote *unquote,
+                             s_tag *dest)
 {
   bool r;
   s_tag tmp = {0};
@@ -1869,7 +1881,7 @@ bool env_eval_quote_unquote (s_env *env, const s_unquote *unquote, s_tag *dest)
 
 bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
 {
-  const void *data = NULL;
+  void *data = NULL;
   uw i;
   s_tag tag = {0};
   s_struct tmp = {0};
@@ -1943,7 +1955,7 @@ bool env_eval_struct_tag (s_env *env, const s_struct *s, s_tag *dest)
   return true;
 }
 
-bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
+bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
 {
   assert(env);
   assert(tag);
@@ -1958,14 +1970,12 @@ bool env_eval_tag (s_env *env, const s_tag *tag, s_tag *dest)
     return env_eval_block(env, &tag->data.block, dest);
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
-  case TAG_CFN:
-    return env_eval_cfn(env, &tag->data.cfn, dest);
+  case TAG_CALLABLE:
+    return env_eval_callable(env, tag->data.callable, dest);
   case TAG_COMPLEX:
     return env_eval_complex(env, tag->data.complex, dest);
   case TAG_COW:
     return env_eval_cow(env, tag->data.cow, dest);
-  case TAG_FN:
-    return env_eval_fn(env, &tag->data.fn, dest);
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
   case TAG_LIST:
@@ -2089,14 +2099,14 @@ bool env_eval_var (s_env *env, const s_var *var, s_tag *dest)
   return true;
 }
 
-s_fact_w * env_fact_w_eval (s_env *env, const s_fact_w *fact,
+s_fact_w * env_fact_w_eval (s_env *env, s_fact_w *fact,
 			    s_fact_w *dest)
 {
   s_fact_w tmp = {0};
   assert(env);
   assert(fact);
   assert(dest);
-  if (fact->subject.type == TAG_CFN) {
+  if (fact->subject.type == TAG_CALLABLE) {
     if (! env_eval_tag(env, &fact->subject, &tmp.subject))
       return NULL;
   }
@@ -2104,7 +2114,7 @@ s_fact_w * env_fact_w_eval (s_env *env, const s_fact_w *fact,
     if (! tag_init_copy(&tmp.subject, &fact->subject))
       return NULL;
   }
-  if (fact->predicate.type == TAG_CFN) {
+  if (fact->predicate.type == TAG_CALLABLE) {
     if (! env_eval_tag(env, &fact->predicate, &tmp.predicate))
       return NULL;
   }
@@ -2112,7 +2122,7 @@ s_fact_w * env_fact_w_eval (s_env *env, const s_fact_w *fact,
     if (! tag_init_copy(&tmp.predicate, &fact->predicate))
       return NULL;
   }
-  if (fact->object.type == TAG_CFN) {
+  if (fact->object.type == TAG_CALLABLE) {
     if (! env_eval_tag(env, &fact->object, &tmp.object))
       return NULL;
   }
@@ -2192,7 +2202,7 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
 {
   s_list *arguments;
   s_facts_cursor cursor = {0};
-  const s_fact *fact = NULL;
+  s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_list **l;
   s_list  *list;
@@ -2241,7 +2251,7 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
 {
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
-  const s_fact *fact = NULL;
+  s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_tag tmp = {0};
   assert(env);
@@ -2290,7 +2300,7 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
 {
   s_list *arguments;
   s_facts_cursor cursor = {0};
-  const s_fact *fact = NULL;
+  s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_tag tmp = {0};
   assert(env);
@@ -2334,7 +2344,7 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
 {
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
-  const s_fact *fact = NULL;
+  s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_tag tmp = {0};
   if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
@@ -2423,7 +2433,7 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
 {
   s_list *arguments;
   s_facts_cursor cursor = {0};
-  const s_fact *fact = NULL;
+  s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_tag tmp = {0};
   if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
@@ -2460,9 +2470,9 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
   return NULL;
 }
 
-const s_tag * env_frames_get (const s_env *env, const s_sym *name)
+s_tag * env_frames_get (s_env *env, const s_sym *name)
 {
-  const s_tag *tag;
+  s_tag *tag;
   if ((tag = frame_get(env->frame, name)) ||
       (tag = frame_get(&env->global_frame, name)))
     return tag;
@@ -2472,7 +2482,7 @@ const s_tag * env_frames_get (const s_env *env, const s_sym *name)
 s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
 {
   s_facts_with_cursor cursor;
-  const s_fact *fact;
+  s_fact *fact;
   const s_sym *module;
   s_tag tag_ident;
   s_tag tag_is_a;
@@ -2526,20 +2536,6 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
   }
   facts_with_cursor_clean(&cursor);
   if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
-        &tag_ident, &tag_is_a, &tag_macro, NULL, NULL }))
-    return NULL;
-  if (! facts_with_cursor_next(&cursor, &fact)) {
-    facts_with_cursor_clean(&cursor);
-    return NULL;
-  }
-  if (fact) {
-    if (tmp.type == TAG_CFN)
-      tmp.data.cfn.macro = true;
-    else if (tmp.type == TAG_FN)
-      tmp.data.fn.macro = true;
-  }
-  facts_with_cursor_clean(&cursor);
-  if (! facts_with(&env->facts, &cursor, (t_facts_spec) {
         &tag_ident, &tag_is_a, &tag_special_operator, NULL, NULL}))
     return NULL;
   if (! facts_with_cursor_next(&cursor, &fact)) {
@@ -2547,10 +2543,21 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
     return NULL;
   }
   if (fact) {
-    if (tmp.type == TAG_CFN)
-      tmp.data.cfn.special_operator = true;
-    else if (tmp.type == TAG_FN)
-      tmp.data.fn.special_operator = true;
+    if (tmp.type == TAG_CALLABLE) {
+      switch (tmp.data.callable->type) {
+      case CALLABLE_CFN:
+        tmp.data.callable->data.cfn.special_operator = true;
+        break;
+      case CALLABLE_FN:
+        tmp.data.callable->data.fn.special_operator = true;
+        break;
+      case CALLABLE_VOID:
+        err_puts("env_ident_get: CALLABLE_VOID");
+        assert(! "env_ident_get: CALLABLE_VOID");
+        facts_with_cursor_clean(&cursor);
+        return NULL;
+      }
+    }
   }
   facts_with_cursor_clean(&cursor);
   *dest = tmp;
@@ -2561,7 +2568,7 @@ bool * env_ident_is_special_operator (s_env *env,
                                       const s_ident *ident,
                                       bool *dest)
 {
-  const s_fact *fact;
+  s_fact *fact;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_special_operator;
@@ -2759,12 +2766,12 @@ s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
   return dest;
 }
 
-s_tag * env_let (s_env *env, const s_tag *vars, const s_tag *tag,
+s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
                  s_tag *dest)
 {
   s_frame frame;
   uw i;
-  const s_map *map;
+  s_map *map;
   s_tag tmp = {0};
   assert(env);
   assert(vars);
@@ -2783,6 +2790,7 @@ s_tag * env_let (s_env *env, const s_tag *vars, const s_tag *tag,
     break;
   case TAG_STRUCT:
     map = &tmp.data.struct_.type->map;
+    // FIXME
     break;
   default:
     tag_clean(&tmp);
@@ -2920,7 +2928,7 @@ const s_sym ** env_module (s_env *env, const s_sym **dest)
 bool env_module_ensure_loaded (s_env *env, const s_sym *module)
 {
   bool b;
-  const s_fact *fact;
+  s_fact *fact;
   s_tag tag_module_name;
   s_tag tag_is_a;
   s_tag tag_module;
@@ -2957,7 +2965,7 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
                              const s_ident *ident, bool *dest)
 {
   s_facts_with_cursor cursor;
-  const s_fact *fact = NULL;
+  s_fact *fact = NULL;
   s_tag tag_ident;
   s_tag tag_module_name;
   s_tag tag_operator;
@@ -3021,7 +3029,7 @@ bool * env_module_has_symbol (s_env *env, const s_sym *module,
 bool * env_module_is_loading (s_env *env, const s_sym *module,
                               bool *dest)
 {
-  const s_fact *fact;
+  s_fact *fact;
   s_tag tag_module;
   s_tag tag_is_loading;
   s_tag tag_true;
@@ -3133,7 +3141,7 @@ const s_time ** env_module_load_time (s_env *env, const s_sym *module,
                                       const s_time **dest)
 {
   s_facts_with_cursor cursor;
-  const s_fact *fact;
+  s_fact *fact;
   s_tag tag_module_name;
   s_tag tag_load_time;
   s_tag tag_time_var;
@@ -3231,7 +3239,7 @@ s_list ** env_module_search_modules (s_env *env,
 s8 env_operator_arity (s_env *env, const s_ident *op)
 {
   s_facts_cursor cursor;
-  const s_fact *fact;
+  s_fact *fact;
   s8 r = -1;
   s_tag tag_op;
   s_tag tag_arity;
@@ -3259,7 +3267,7 @@ s8 env_operator_arity (s_env *env, const s_ident *op)
 
 bool * env_operator_find (s_env *env, const s_ident *op, bool *dest)
 {
-  const s_fact *fact;
+  s_fact *fact;
   s_tag tag_is_a;
   s_tag tag_op;
   s_tag tag_operator;
@@ -3280,7 +3288,7 @@ s_tag * env_operator_find_by_sym (s_env *env,
                                   s_tag *dest)
 {
   s_facts_with_cursor cursor;
-  const s_fact *fact;
+  s_fact *fact;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_operator;
@@ -3362,7 +3370,7 @@ s_ident * env_operator_ident (s_env *env, const s_ident *op,
 bool * env_operator_is_right_associative (s_env *env, const s_ident *op,
                                           bool *dest)
 {
-  const s_fact *fact;
+  s_fact *fact;
   s_tag tag_assoc;
   s_tag tag_op;
   s_tag tag_right;
@@ -3381,7 +3389,7 @@ bool * env_operator_is_right_associative (s_env *env, const s_ident *op,
 sw * env_operator_precedence (s_env *env, const s_ident *op, sw *dest)
 {
   s_facts_cursor cursor;
-  const s_fact *fact;
+  s_fact *fact;
   const s_sym *sym_sw = &g_sym_Sw;
   s_tag tag_op;
   s_tag tag_precedence;
@@ -3416,7 +3424,7 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
                                 u8 arity, s_ident *dest)
 {
   s_facts_with_cursor cursor;
-  const s_fact *fact;
+  s_fact *fact;
   s_tag tag_arity;
   s_tag tag_arity_u8;
   s_tag tag_is_a;
@@ -3483,7 +3491,7 @@ const s_sym ** env_operator_symbol (s_env *env, const s_ident *op,
                                     const s_sym **dest)
 {
   s_facts_cursor cursor;
-  const s_fact *fact;
+  s_fact *fact;
   const s_sym **result = NULL;
   s_tag tag_op;
   s_tag tag_sym_sym;
@@ -3513,7 +3521,7 @@ const s_sym ** env_operator_symbol (s_env *env, const s_ident *op,
   return result;
 }
 
-bool * env_or (s_env *env, const s_tag *a, const s_tag *b, bool *dest)
+bool * env_or (s_env *env, s_tag *a, s_tag *b, bool *dest)
 {
   s_tag eval;
   bool tmp;
@@ -3575,7 +3583,7 @@ s_list ** env_search_modules (s_env *env, s_list **dest)
   assert(dest);
   assert(env->search_modules);
   assert(env->search_modules->tag.type == TAG_SYM);
-  return list_init_copy(dest, (const s_list * const *) &env->search_modules);
+  return list_init_copy(dest, &env->search_modules);
 }
 
 s_list ** env_stacktrace (s_env *env, s_list **dest)
@@ -3633,7 +3641,7 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
       err_write_1(": search_module: ");
       err_inspect_sym(&module);
       err_write_1(" ");
-      err_inspect_list((const s_list * const *) &search_module);
+      err_inspect_list(search_module);
       err_puts(" -> not found");
     }
     search_module = list_next(search_module);
@@ -3642,7 +3650,7 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
     err_write_1("env_sym_search_modules: ");
     err_inspect_sym(&sym);
     err_write_1(": search_module: ");
-    err_inspect_list((const s_list * const *) &env->search_modules);
+    err_inspect_list(env->search_modules);
     err_write_1(" -> false\n");
   }
   *dest = NULL;
@@ -3653,7 +3661,7 @@ u8 env_special_operator_arity (s_env *env, const s_ident *ident)
 {
   u8 arity;
   s_facts_cursor cursor;
-  const s_fact *fact;
+  s_fact *fact;
   s_tag tag_arity;
   s_tag tag_ident;
   s_tag tag_var;
@@ -3693,7 +3701,7 @@ bool * env_struct_type_exists (s_env *env, const s_sym *module,
                                bool *dest)
 {
   s_facts_cursor cursor;
-  const s_fact *fact;
+  s_fact *fact;
   s_tag tag_struct_type;
   s_tag tag_module;
   s_tag tag_var;
@@ -3720,7 +3728,7 @@ const s_struct_type ** env_struct_type_find (s_env *env,
                                              const s_struct_type **dest)
 {
   s_facts_with_cursor cursor;
-  const s_fact *found;
+  s_fact *found;
   s_tag tag_struct_type;
   s_tag tag_module;
   s_tag tag_var;
@@ -3776,7 +3784,7 @@ const s_struct_type ** env_struct_type_find (s_env *env,
 f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
 {
   s_facts_with_cursor cursor;
-  const s_fact *found;
+  s_fact *found;
   s_tag tag_clean;
   s_tag tag_module;
   s_tag tag_var;
@@ -3793,7 +3801,8 @@ f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  if (found->object->type != TAG_CFN) {
+  if (found->object->type != TAG_CALLABLE ||
+      found->object->data.callable->type != CALLABLE_CFN) {
     tag_type(found->object, &type);
     err_write_1("env_struct_type_get_clean: ");
     err_inspect_sym(&module);
@@ -3804,17 +3813,17 @@ f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  if (found->object->data.cfn.arity != 1) {
+  if (found->object->data.callable->data.cfn.arity != 1) {
     err_write_1("env_struct_type_get_clean: ");
     err_inspect_sym(&module);
     err_write_1(": clean arity is ");
-    err_inspect_u8(&found->object->data.cfn.arity);
+    err_inspect_u8(&found->object->data.callable->data.cfn.arity);
     err_write_1(", it should be 1.\n");
     assert(! "env_struct_type_get_clean: invalid arity");
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  tmp = (f_clean) found->object->data.cfn.ptr.f;
+  tmp = (f_clean) found->object->data.callable->data.cfn.ptr.f;
   facts_with_cursor_clean(&cursor);
   return tmp;
 }
@@ -3823,7 +3832,7 @@ s_list ** env_struct_type_get_spec (s_env *env,
                                     const s_sym *module,
                                     s_list **dest)
 {
-  const s_fact *found;
+  s_fact *found;
   s_tag tag_defstruct;
   s_tag tag_module;
   s_tag tag_var;
@@ -3862,7 +3871,7 @@ bool * env_struct_type_has_spec (s_env *env, const s_sym *module,
                                  bool *dest)
 {
   s_facts_cursor cursor;
-  const s_fact *fact;
+  s_fact *fact;
   s_tag tag_defstruct;
   s_tag tag_module;
   s_tag tag_var;
@@ -3909,7 +3918,7 @@ s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_block *cleanup,
   return dest;
 }
 
-s_tag * env_while (s_env *env, const s_tag *cond, const s_tag *body,
+s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
                    s_tag *dest)
 {
   s_tag  cond_bool = {0};

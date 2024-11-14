@@ -113,7 +113,7 @@ s_str * inspect_call (const s_call *call, s_str *dest)
   return buf_to_str(&buf, dest);
 }
 
-s_str * inspect_cow (const s_cow *cow, s_str *dest)
+s_str * inspect_cow (s_cow *cow, s_str *dest)
 {
   s_buf buf;
   s_pretty pretty = {0};

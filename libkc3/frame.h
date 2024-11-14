@@ -28,9 +28,6 @@ s_frame * frame_new_copy (const s_frame *src);
 s_frame * frame_delete (s_frame *frame);
 void      frame_delete_all (s_frame *frame);
 
-/* Observers. */
-const s_tag * frame_get (const s_frame *frame, const s_sym *sym);
-
 /* Operators. */
 s_tag *   frame_binding_new (s_frame *frame, const s_sym *name);
 s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
@@ -38,7 +35,8 @@ s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
 s_tag *   frame_binding_new_var (s_frame *frame);
 s_frame * frame_binding_delete (s_frame *frame, const s_sym *name);
 s_frame * frame_binding_replace (s_frame *frame, const s_sym *name,
-                                 const s_tag *value);
+                                 s_tag *value);
+s_tag *   frame_get (s_frame *frame, const s_sym *sym);
 s_tag *   frame_get_w (s_frame *frame, const s_sym *sym);
 s_frame * frame_replace (s_frame *frame, const s_sym *sym,
                          s_tag *value);

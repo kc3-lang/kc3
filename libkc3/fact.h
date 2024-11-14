@@ -17,20 +17,20 @@
 
 /* Stack-allocation compatible functions */
 #define    fact_clean(fact) do {} while(0)
-s_fact *   fact_init (s_fact *fact, const s_tag *subject,
-                      const s_tag *predicate, const s_tag *object);
+s_fact *   fact_init (s_fact *fact, s_tag *subject,
+                      s_tag *predicate, s_tag *object);
 s_fact *   fact_init_cast (s_fact *fact, const s_sym * const *type,
-                           const s_tag *tag);
+                           s_tag *tag);
 s_fact *   fact_init_copy (s_fact *fact, const s_fact *src);
 s_fact_w * fact_w_init (s_fact_w *fact);
-s_fact_w * fact_w_init_fact (s_fact_w *fact, const s_fact *src);
+s_fact_w * fact_w_init_fact (s_fact_w *fact, s_fact *src);
 void       fact_w_clean (s_fact_w *fact);
 
 /* Observers */
 uw *     fact_hash_uw (const s_fact *fact, uw *dest);
-void     fact_r (const s_fact_w *fact, s_fact *dest);
 
 /* Operators */
-s_fact_w * fact_w_eval (const s_fact_w *fact, s_fact_w *dest);
+void       fact_r (s_fact_w *fact, s_fact *dest);
+s_fact_w * fact_w_eval (s_fact_w *fact, s_fact_w *dest);
 
 #endif /* LIBKC3_FACT_H */

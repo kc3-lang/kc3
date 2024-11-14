@@ -39,6 +39,7 @@
 #include "buf_rw.h"
 #include "buf_save.h"
 #include "call.h"
+#include "callable.h"
 #include "ceiling.h"
 #include "cfn.h"
 #include "character.h"

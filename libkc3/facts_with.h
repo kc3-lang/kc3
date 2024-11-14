@@ -27,18 +27,18 @@ s_facts_cursor *      facts_with_0 (s_facts *facts,
 
 s_facts_cursor *      facts_with_1_2 (s_facts *facts,
                                       s_facts_cursor *cursor,
-                                      const s_tag *subject,
-                                      const s_tag *predicate,
-                                      const s_tag *object,
+                                      s_tag *subject,
+                                      s_tag *predicate,
+                                      s_tag *object,
                                       s_var *var_subject,
                                       s_var *var_predicate,
                                       s_var *var_object);
 
 s_facts_cursor *      facts_with_3 (s_facts *facts,
                                     s_facts_cursor *cursor,
-                                    const s_tag *subject,
-                                    const s_tag *predicate,
-                                    const s_tag *object);
+                                    s_tag *subject,
+                                    s_tag *predicate,
+                                    s_tag *object);
 
 s_facts_with_cursor * facts_with_list (s_facts *facts,
                                        s_facts_with_cursor *cursor,

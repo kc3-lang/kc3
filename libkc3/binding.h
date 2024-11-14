@@ -25,15 +25,12 @@ s_binding * binding_init (s_binding *binding, const s_sym *name,
 s_binding * binding_delete (s_binding *binding);
 void        binding_delete_all (s_binding *binding);
 s_binding * binding_new (const s_sym *name, s_binding *next);
-s_binding * binding_new_copy (const s_binding *src);
-
-/* Observers. */
-const s_tag * binding_get (const s_binding *binding, const s_sym *name);
-const s_tag * binding_is_bound (const s_binding *binding,
-                                const s_sym *name);
+s_binding * binding_new_copy (s_binding *src);
 
 /* Operators. */
-s_tag * binding_get_w (s_binding *binding, const s_sym *name);
+s_tag *      binding_get_w (s_binding *binding, const s_sym *name);
 s_binding ** binding_find (s_binding **binding, const s_sym *name);
+s_tag *      binding_get (s_binding *binding, const s_sym *name);
+s_tag *      binding_is_bound (s_binding *binding, const s_sym *name);
 
 #endif /* LIBC3_BINDING_H */

@@ -17,6 +17,7 @@
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "call.h"
+#include "callable.h"
 #include "cfn.h"
 #include "compare.h"
 #include "env.h"
@@ -131,17 +132,6 @@ s_tag * tag_init_f128 (s_tag *tag, f128 f)
   assert(tag);
   tmp.type = TAG_F128;
   tmp.data.f128 = f;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_init_fn_copy (s_tag *tag, const s_fn *fn)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_FN;
-  if (! fn_init_copy(&tmp.data.fn, fn))
-    return NULL;
   *tag = tmp;
   return tag;
 }
@@ -754,20 +744,6 @@ s_tag * tag_new_f128 (f128 f)
     return NULL;
   tag->type = TAG_F128;
   tag->data.f128 = f;
-  return tag;
-}
-
-s_tag * tag_new_fn_copy (const s_fn *fn)
-{
-  s_tag *tag;
-  tag = alloc(sizeof(s_tag));
-  if (! tag)
-    return NULL;
-  tag->type = TAG_FN;
-  if (! fn_init_copy(&tag->data.fn, fn)) {
-    free(tag);
-    return NULL;
-  }
   return tag;
 }
 
@@ -1480,18 +1456,6 @@ s_tag * tag_f128 (s_tag *tag, f128 f)
   tag_clean(tag);
   tmp.type = TAG_F128;
   tmp.data.f128 = f;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_fn_copy (s_tag *tag, const s_fn *fn)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_FN;
-  if (! fn_init_copy(&tmp.data.fn, fn))
-    return NULL;
   *tag = tmp;
   return tag;
 }

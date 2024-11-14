@@ -60,7 +60,7 @@ PROTOTYPES_ERR_IO_INSPECT(fn_pattern,      const s_list *);
 PROTOTYPES_ERR_IO_INSPECT(frame,           const s_frame *);
 PROTOTYPES_ERR_IO_INSPECT(ident,           const s_ident *);
 PROTOTYPES_ERR_IO_INSPECT(integer,         const s_integer *);
-PROTOTYPES_ERR_IO_INSPECT(list,            const s_list * const *);
+PROTOTYPES_ERR_IO_INSPECT(list,            const s_list *);
 PROTOTYPES_ERR_IO_INSPECT(map,             const s_map *);
 PROTOTYPES_ERR_IO_INSPECT(pointer,         const void *);
 PROTOTYPES_ERR_IO_INSPECT(ptr,             const u_ptr_w *);

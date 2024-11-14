@@ -1114,6 +1114,25 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
   return r;
 }
 
+sw buf_parse_callable (s_buf *buf, s_callable *dest)
+{
+  sw r;
+  s_callable tmp = {0};
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_cfn(buf, &tmp.data.cfn)) > 0) {
+    tmp.type = CALLABLE_CFN;
+    tmp.reference_count = 1;
+    *dest = tmp;
+  }
+  else if ((r = buf_parse_fn(buf, &tmp.data.fn)) > 0) {
+    tmp.type = CALLABLE_FN;
+    tmp.reference_count = 1;
+    *dest = tmp;
+  }
+  return r;
+}
+
 sw buf_parse_cast (s_buf *buf, s_call *dest)
 {
   const s_sym *module = NULL;
@@ -3833,6 +3852,16 @@ sw buf_parse_tag_call_op_unary (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_callable (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_callable(buf, dest->data.callable)) > 0)
+    dest->type = TAG_CALLABLE;
+  return r;
+}
+
 sw buf_parse_tag_cast (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -3840,16 +3869,6 @@ sw buf_parse_tag_cast (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_cast(buf, &dest->data.call)) > 0)
     dest->type = TAG_CALL;
-  return r;
-}
-
-sw buf_parse_tag_cfn (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_cfn(buf, &dest->data.cfn)) > 0)
-    dest->type = TAG_CFN;
   return r;
 }
 
@@ -3903,27 +3922,17 @@ sw buf_parse_tag_f64 (s_buf *buf, s_tag *dest)
   return r;
 }
 
-sw buf_parse_tag_fn (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_fn(buf, &dest->data.fn)) > 0)
-    dest->type = TAG_FN;
-  return r;
-}
-
 sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
 {
   sw r;
-  const s_tag *tag;
+  s_tag *tag;
   assert(buf);
   assert(dest);
   r = buf_parse_ident(buf, &dest->data.ident);
   if (r > 0) {
     if (! dest->data.ident.module &&
-        (tag = frame_get(&g_kc3_env.read_time_frame,
-                         dest->data.ident.sym)))
+        (tag = frame_get_w(&g_kc3_env.read_time_frame,
+                           dest->data.ident.sym)))
       tag_init_copy(dest, tag);
     else
       dest->type = TAG_IDENT;

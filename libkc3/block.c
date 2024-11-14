@@ -76,7 +76,7 @@ s_block * block_init_1 (s_block *block, const char *p)
   return block;
 }
 
-s_block * block_init_cast (s_block *block, const s_tag *tag)
+s_block * block_init_cast (s_block *block, s_tag *tag)
 {
   switch (tag->type) {
   case TAG_BLOCK:
@@ -91,7 +91,7 @@ s_block * block_init_cast (s_block *block, const s_tag *tag)
   return NULL;
 }
 
-s_block * block_init_copy (s_block *block, const s_block *src)
+s_block * block_init_copy (s_block *block, s_block *src)
 {
   uw i = 0;
   assert(src);
@@ -106,10 +106,10 @@ s_block * block_init_copy (s_block *block, const s_block *src)
 }
 
 s_block * block_init_from_list (s_block *block,
-                                const s_list * const *list)
+                                s_list **list)
 {
   uw i;
-  const s_list *l;
+  s_list *l;
   uw len;
   s_block tmp;
   assert(block);

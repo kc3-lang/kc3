@@ -41,30 +41,31 @@ s_struct * struct_new_copy (const s_struct *src);
 s_struct * struct_new_with_data (const s_sym *module, void *data);
 
 /* Operators. */
+s_tag *    struct_access (s_struct *s,
+                          s_list *key,
+                          s_tag *dest);
+s_tag *    struct_access_sym (s_struct *s, const s_sym *key,
+                              s_tag *dest);
 s_struct * struct_allocate (s_struct *s);
+s_tag *    struct_get_tag (s_struct *s, const s_sym *key);
+void *     struct_get_w (s_struct *s, const s_sym *key);
+s_struct * struct_put (s_struct *s, const s_sym *key,
+                       s_tag *value, s_struct *dest);
 s_struct * struct_set (s_struct *s, const s_sym *key,
-                       const s_tag *value);
+                       s_tag *value);
 
 /* Observers. */
-s_tag *        struct_access (const s_struct *s,
-                              const s_list * const *key,
-                              s_tag *dest);
-s_tag *        struct_access_sym (const s_struct *s, const s_sym *key,
-                                  s_tag *dest);
 uw *           struct_find_key_index (const s_struct *s,
                                       const s_sym *key, uw *dest);
 const void *   struct_get (const s_struct *s, const s_sym *key);
 const s_sym ** struct_get_type (const s_struct *s, const s_sym *key,
                                 const s_sym **dest);
 const s_sym ** struct_get_sym (const s_struct *s, const s_sym *key);
-const s_tag *  struct_get_tag (const s_struct *s, const s_sym *key);
 u8             struct_get_u8 (const s_struct *s, const s_sym *key);
 const s_sym ** struct_get_var_type (const s_struct *s, const s_sym *key,
                                     const s_sym **dest);
 uw *           struct_offset (const s_struct *s,
                               const s_sym * const *key,
                               uw *dest);
-s_struct *     struct_put (const s_struct *s, const s_sym *key,
-                           const s_tag *value, s_struct *dest);
 
 #endif /* LIBKC3_STRUCT_H */

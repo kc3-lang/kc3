@@ -15,7 +15,7 @@
 sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
 {
   s_struct s = {0};
-  const s_struct_type *st;
+  s_struct_type *st;
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
     return buf_inspect_array(buf, data);
@@ -23,8 +23,10 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
     return buf_inspect_bool(buf, data);
   if (type == &g_sym_Call)
     return buf_inspect_call(buf, data);
-  if (type == &g_sym_Cfn)
-    return buf_inspect_cfn(buf, data);
+  if (type == &g_sym_Callable ||
+      type == &g_sym_Cfn ||
+      type == &g_sym_Fn)
+    return buf_inspect_callable(buf, *(p_callable *) data);
   if (type == &g_sym_Character)
     return buf_inspect_character(buf, data);
   if (type == &g_sym_F32)
@@ -33,8 +35,6 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
     return buf_inspect_f64(buf, data);
   if (type == &g_sym_Fact)
     return buf_inspect_fact(buf, data);
-  if (type == &g_sym_Fn)
-    return buf_inspect_fn(buf, data);
   if (type == &g_sym_Ident)
     return buf_inspect_ident(buf, data);
   if (type == &g_sym_Integer)
@@ -107,7 +107,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
                           const void *data)
 {
   s_struct s = {0};
-  const s_struct_type *st;
+  s_struct_type *st;
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
     return buf_inspect_array_size(pretty, data);
@@ -115,8 +115,10 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_bool_size(pretty, data);
   if (type == &g_sym_Call)
     return buf_inspect_call_size(pretty, data);
-  if (type == &g_sym_Cfn)
-    return buf_inspect_cfn_size(pretty, data);
+  if (type == &g_sym_Callable ||
+      type == &g_sym_Cfn ||
+      type == &g_sym_Fn)
+    return buf_inspect_callable_size(pretty, *(p_callable *) data);
   if (type == &g_sym_Character)
     return buf_inspect_character_size(pretty, data);
   if (type == &g_sym_F32)
@@ -125,8 +127,6 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_f64_size(pretty, data);
   if (type == &g_sym_Fact)
     return buf_inspect_fact_size(pretty, data);
-  if (type == &g_sym_Fn)
-    return buf_inspect_fn_size(pretty, data);
   if (type == &g_sym_Ident)
     return buf_inspect_ident_size(pretty, data);
   if (type == &g_sym_Integer)
@@ -198,7 +198,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
 bool data_clean (const s_sym *type, void *data)
 {
   s_struct s = {0};
-  const s_struct_type *st;
+  s_struct_type *st;
   assert(type);
   if (! data)
     return true;
@@ -214,8 +214,10 @@ bool data_clean (const s_sym *type, void *data)
     call_clean(data);
     return true;
   }
-  if (type == &g_sym_Cfn) {
-    cfn_clean(data);
+  if (type == &g_sym_Callable ||
+      type == &g_sym_Cfn ||
+      type == &g_sym_Fn) {
+    p_callable_clean(data);
     return true;
   }
   if (type == &g_sym_Character) {
@@ -228,10 +230,6 @@ bool data_clean (const s_sym *type, void *data)
     return true;
   }
   if (type == &g_sym_Fact) {
-    return true;
-  }
-  if (type == &g_sym_Fn) {
-    fn_clean(data);
     return true;
   }
   if (type == &g_sym_Ident) {
@@ -346,7 +344,7 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
 {
   s_struct sa = {0};
   s_struct sb = {0};
-  const s_struct_type *st;
+  s_struct_type *st;
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
     return compare_array(a, b);
@@ -354,8 +352,10 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
     return compare_bool(*(bool *) a, *(bool *) b);
   if (type == &g_sym_Call)
     return compare_call(a, b);
-  if (type == &g_sym_Cfn)
-    return compare_cfn(a, b);
+  if (type == &g_sym_Callable ||
+      type == &g_sym_Cfn ||
+      type == &g_sym_Fn)
+    return compare_callable(*(p_callable *) a, *(p_callable *) b);
   if (type == &g_sym_Character)
     return compare_character(*(character *) a, *(character *) b);
   if (type == &g_sym_F32)
@@ -364,8 +364,6 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
     return compare_f64(*(f64 *) a, *(f64 *) b);
   if (type == &g_sym_Fact)
     return compare_fact(a, b);
-  if (type == &g_sym_Fn)
-    return compare_fn(a, b);
   if (type == &g_sym_Ident)
     return compare_ident(a, b);
   if (type == &g_sym_Integer)
@@ -435,7 +433,7 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
 bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
 {
   s_struct s = {0};
-  const s_struct_type *st;
+  s_struct_type *st;
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
     return hash_update_array(hash, data);
@@ -443,18 +441,20 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
     return hash_update_bool(hash, data);
   if (type == &g_sym_Call)
     return hash_update_call(hash, data);
-  if (type == &g_sym_Cfn)
-    return hash_update_cfn(hash, data);
+  if (type == &g_sym_Callable ||
+      type == &g_sym_Cfn ||
+      type == &g_sym_Fn)
+    return hash_update_callable(hash, *(p_callable *) data);
   if (type == &g_sym_Character)
-    return hash_update_character(hash, data);
+    return hash_update_character(hash, *(character *) data);
   if (type == &g_sym_F32)
-    return hash_update_f32(hash, data);
+    return hash_update_f32(hash, *(f32 *) data);
   if (type == &g_sym_F64)
-    return hash_update_f64(hash, data);
+    return hash_update_f64(hash, *(f64 *) data);
+  if (type == &g_sym_F128)
+    return hash_update_f128(hash, *(f128 *) data);
   if (type == &g_sym_Fact)
     return hash_update_fact(hash, data);
-  if (type == &g_sym_Fn)
-    return hash_update_fn(hash, data);
   if (type == &g_sym_Ident)
     return hash_update_ident(hash, data);
   if (type == &g_sym_Integer)
@@ -470,13 +470,13 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
   if (type == &g_sym_Quote)
     return hash_update_quote(hash, data);
   if (type == &g_sym_S8)
-    return hash_update_s8(hash, data);
+    return hash_update_s8(hash, *(s8 *) data);
   if (type == &g_sym_S16)
-    return hash_update_s16(hash, data);
+    return hash_update_s16(hash, *(s16 *) data);
   if (type == &g_sym_S32)
-    return hash_update_s32(hash, data);
+    return hash_update_s32(hash, *(s32 *) data);
   if (type == &g_sym_S64)
-    return hash_update_s64(hash, data);
+    return hash_update_s64(hash, *(s64 *) data);
   if (type == &g_sym_Str)
     return hash_update_str(hash, data);
   if (type == &g_sym_Struct)
@@ -484,7 +484,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
   if (type == &g_sym_StructType)
     return hash_update_struct_type(hash, data);
   if (type == &g_sym_Sw)
-    return hash_update_sw(hash, data);
+    return hash_update_sw(hash, *(sw *) data);
   if (type == &g_sym_Sym)
     return hash_update_sym(hash, data);
   if (type == &g_sym_Tag)
@@ -494,19 +494,19 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
   if (type == &g_sym_Tuple)
     return hash_update_tuple(hash, data);
   if (type == &g_sym_U8)
-    return hash_update_u8(hash, data);
+    return hash_update_u8(hash, *(u8 *) data);
   if (type == &g_sym_U16)
-    return hash_update_u16(hash, data);
+    return hash_update_u16(hash, *(u16 *) data);
   if (type == &g_sym_U32)
-    return hash_update_u32(hash, data);
+    return hash_update_u32(hash, *(u32 *) data);
   if (type == &g_sym_U64)
-    return hash_update_u64(hash, data);
+    return hash_update_u64(hash, *(u64 *) data);
   if (type == &g_sym_Uw)
-    return hash_update_uw(hash, data);
+    return hash_update_uw(hash, *(uw *) data);
   if (type == &g_sym_Var)
     return hash_update_var(hash, data);
   if (type == &g_sym_Void)
-    return hash_update_void(hash, data);
+    return hash_update_void(hash);
   if (! struct_type_find(type, &st))
     return false;
   if (st) {
@@ -522,10 +522,10 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
 }
 
 void * data_init_cast (void *data, const s_sym * const *type,
-                       const s_tag *tag)
+                       s_tag *tag)
 {
   s_struct s = {0};
-  const s_struct_type *st;
+  s_struct_type *st;
   const s_sym *t;
   t = *type;
   if (t == &g_sym_Array ||
@@ -535,8 +535,10 @@ void * data_init_cast (void *data, const s_sym * const *type,
     return bool_init_cast(data, type, tag);
   if (t == &g_sym_Call)
     return call_init_cast(data, type, tag);
-  if (t == &g_sym_Cfn)
-    return cfn_init_cast(data, type, tag);
+  if (t == &g_sym_Callable ||
+      t == &g_sym_Cfn ||
+      t == &g_sym_Fn)
+    return p_callable_init_cast(data, type, tag);
   if (t == &g_sym_Character)
     return character_init_cast(data, type, tag);
   if (t == &g_sym_F32)
@@ -545,8 +547,6 @@ void * data_init_cast (void *data, const s_sym * const *type,
     return f64_init_cast(data, type, tag);
   if (t == &g_sym_Fact)
     return fact_init_cast(data, type, tag);
-  if (t == &g_sym_Fn)
-    return fn_init_cast(data, type, tag);
   if (t == &g_sym_Ident)
     return ident_init_cast(data, type, tag);
   if (t == &g_sym_Integer)
@@ -613,9 +613,9 @@ void * data_init_cast (void *data, const s_sym * const *type,
   return NULL;
 }
 
-void * data_init_copy (const s_sym *type, void *data, const void *src)
+void * data_init_copy (const s_sym *type, void *data, void *src)
 {
-  const s_struct_type *st;
+  s_struct_type *st;
   if (type == &g_sym_Array ||
       sym_is_array_type(type))
     return array_init_copy(data, src);
@@ -623,8 +623,10 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
     return bool_init_copy(data, src);
   if (type == &g_sym_Call)
     return call_init_copy(data, src);
-  if (type == &g_sym_Cfn)
-    return cfn_init_copy(data, src);
+  if (type == &g_sym_Callable ||
+      type == &g_sym_Cfn ||
+      type == &g_sym_Fn)
+    return p_callable_init_copy(data, src);
   if (type == &g_sym_Character)
     return character_init_copy(data, src);
   if (type == &g_sym_Cow)
@@ -635,8 +637,6 @@ void * data_init_copy (const s_sym *type, void *data, const void *src)
     return f64_init_copy(data, src);
   if (type == &g_sym_Fact)
     return fact_init_copy(data, src);
-  if (type == &g_sym_Fn)
-    return fn_init_copy(data, src);
   if (type == &g_sym_Ident)
     return ident_init_copy(data, src);
   if (type == &g_sym_Integer)

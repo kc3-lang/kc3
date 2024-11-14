@@ -21,6 +21,7 @@
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "call.h"
+#include "callable.h"
 #include "cfn.h"
 #include "compare.h"
 #include "cow.h"
@@ -72,11 +73,16 @@ bool * tag_and (const s_tag *a, const s_tag *b, bool *dest)
 
 s8 tag_arity (const s_tag *tag)
 {
-  switch (tag->type) {
-  case TAG_CFN: return cfn_arity(&tag->data.cfn);
-  case TAG_FN:  return fn_arity(&tag->data.fn);
-  default:
-    break;
+  if (tag->type == TAG_CALLABLE &&
+      tag->data.callable) {
+    switch (tag->data.callable->type) {
+    case CALLABLE_CFN:
+      return cfn_arity(&tag->data.callable->data.cfn);
+    case CALLABLE_FN:
+      return fn_arity(&tag->data.callable->data.fn);
+    case CALLABLE_VOID:
+      break;
+    }
   }
   return -1;
 }
@@ -203,10 +209,11 @@ void tag_clean (s_tag *tag)
   case TAG_ARRAY:       array_clean(&tag->data.array);      break;
   case TAG_BLOCK:       block_clean(&tag->data.block);      break;
   case TAG_CALL:        call_clean(&tag->data.call);        break;
-  case TAG_CFN:         cfn_clean(&tag->data.cfn);          break;
+  case TAG_CALLABLE:
+    p_callable_clean(&tag->data.callable);
+    break;
   case TAG_COMPLEX:     pcomplex_clean(&tag->data.complex); break;
   case TAG_COW:         pcow_clean(&tag->data.cow);         break;
-  case TAG_FN:          fn_clean(&tag->data.fn);            break;
   case TAG_INTEGER:     integer_clean(&tag->data.integer);  break;
   case TAG_LIST:        list_delete_all(tag->data.list);    break;
   case TAG_MAP:         map_clean(&tag->data.map);          break;
@@ -418,7 +425,7 @@ s_tag * tag_init_cast_struct (s_tag *tag, const s_sym * const *type,
   return NULL;
 }
 
-s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
+s_tag * tag_init_copy (s_tag *tag, s_tag *src)
 {
   assert(tag);
   assert(src);
@@ -442,9 +449,10 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
     if (! call_init_copy(&tag->data.call, &src->data.call))
       return NULL;
     return tag;
-  case TAG_CFN:
+  case TAG_CALLABLE:
     tag->type = src->type;
-    if (! cfn_init_copy(&tag->data.cfn, &src->data.cfn))
+    if (! p_callable_init_copy(&tag->data.callable,
+                               &src->data.callable))
       return NULL;
     return tag;
   case TAG_CHARACTER:
@@ -478,11 +486,6 @@ s_tag * tag_init_copy (s_tag *tag, const s_tag *src)
   case TAG_FACT:
     tag->type = src->type;
     tag->data.fact = src->data.fact;
-    return tag;
-  case TAG_FN:
-    tag->type = src->type;
-    if (! fn_init_copy(&tag->data.fn, &src->data.fn))
-      return NULL;
     return tag;
   case TAG_IDENT:
     tag->type = src->type;
@@ -803,10 +806,9 @@ bool tag_is_number (const s_tag *tag)
   case TAG_BLOCK:
   case TAG_BOOL:
   case TAG_CALL:
-  case TAG_CFN:
+  case TAG_CALLABLE:
   case TAG_CHARACTER:
   case TAG_FACT:
-  case TAG_FN:
   case TAG_LIST:
   case TAG_MAP:
   case TAG_PTAG:
@@ -1053,8 +1055,8 @@ uw * tag_size (const s_tag *tag, uw *dest)
   return dest;
 }
 
-bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
-                           const void **dest)
+bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
+                           void **dest)
 {
   e_tag_type tag_type;
   if (type == &g_sym_Tag) {
@@ -1076,7 +1078,7 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   case TAG_BLOCK:       *dest = &tag->data.block;       return true;
   case TAG_BOOL:        *dest = &tag->data.bool;        return true;
   case TAG_CALL:        *dest = &tag->data.call;        return true;
-  case TAG_CFN:         *dest = &tag->data.cfn;         return true;
+  case TAG_CALLABLE:    *dest = &tag->data.callable;    return true;
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;
   case TAG_COMPLEX:     *dest = &tag->data.complex;     return true;
   case TAG_COW:         *dest = &tag->data.cow;         return true;
@@ -1084,7 +1086,6 @@ bool tag_to_const_pointer (const s_tag *tag, const s_sym *type,
   case TAG_F64:         *dest = &tag->data.f64;         return true;
   case TAG_F128:        *dest = &tag->data.f128;        return true;
   case TAG_FACT:        *dest = &tag->data.fact;        return true;
-  case TAG_FN:          *dest = &tag->data.fn;          return true;
   case TAG_IDENT:       *dest = &tag->data.ident;       return true;
   case TAG_INTEGER:     *dest = &tag->data.integer;     return true;
   case TAG_SW:          *dest = &tag->data.sw;          return true;
@@ -1167,9 +1168,15 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
-  case TAG_CFN:
-    if (type == &g_sym_Cfn) {
-      *dest = &tag->data.cfn;
+  case TAG_CALLABLE:
+    if (type == &g_sym_Callable ||
+        (type == &g_sym_Cfn &&
+         tag->data.callable &&
+         tag->data.callable->type == CALLABLE_CFN) ||
+        (type == &g_sym_Fn &&
+         tag->data.callable
+         tag->data.callable->type == CALLABLE_FN)) {
+      *dest = &tag->data.callable;
       return true;
     }
     goto invalid_cast;
@@ -1213,12 +1220,6 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_FACT:
     if (type == &g_sym_Fact) {
       *dest = &tag->data.fact;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_FN:
-    if (type == &g_sym_Fn) {
-      *dest = &tag->data.fn;
       return true;
     }
     goto invalid_cast;
@@ -1450,7 +1451,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_BLOCK:       *dest = &tag->data.block;       return true;
   case TAG_BOOL:        *dest = &tag->data.bool;        return true;
   case TAG_CALL:        *dest = &tag->data.call;        return true;
-  case TAG_CFN:         *dest = &tag->data.cfn;         return true;
+  case TAG_CALLABLE:    *dest = &tag->data.callable;    return true;
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;
   case TAG_COMPLEX:     *dest = &tag->data.complex;     return true;
   case TAG_COW:         *dest = &tag->data.cow;         return true;
@@ -1458,7 +1459,6 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_F64:         *dest = &tag->data.f64;         return true;
   case TAG_F128:        *dest = &tag->data.f128;        return true;
   case TAG_FACT:        *dest = &tag->data.fact;        return true;
-  case TAG_FN:          *dest = &tag->data.fn;          return true;
   case TAG_IDENT:       *dest = &tag->data.ident;       return true;
   case TAG_INTEGER:     *dest = &tag->data.integer;     return true;
   case TAG_LIST:        *dest = &tag->data.list;        return true;
@@ -1518,50 +1518,61 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   assert(tag);
   assert(dest);
   switch (tag->type) {
-  case TAG_VOID:        *dest = &g_sym_Void;       return dest;
+  case TAG_VOID:         *dest = &g_sym_Void;       return dest;
   case TAG_ARRAY:
     *dest = tag->data.array.array_type;
     return dest;
-  case TAG_BLOCK:       *dest = &g_sym_Block;      return dest;
-  case TAG_BOOL:        *dest = &g_sym_Bool;       return dest;
-  case TAG_CALL:        *dest = &g_sym_Call;       return dest;
-  case TAG_CFN:         *dest = &g_sym_Cfn;        return dest;
-  case TAG_CHARACTER:   *dest = &g_sym_Character;  return dest;
-  case TAG_COMPLEX:     *dest = &g_sym_Complex;    return dest;
-  case TAG_COW:         *dest = &g_sym_Cow;        return dest;
-  case TAG_F32:         *dest = &g_sym_F32;        return dest;
-  case TAG_F64:         *dest = &g_sym_F64;        return dest;
-  case TAG_F128:        *dest = &g_sym_F128;       return dest;
-  case TAG_FACT:        *dest = &g_sym_Fact;       return dest;
-  case TAG_FN:          *dest = &g_sym_Fn;         return dest;
-  case TAG_IDENT:       *dest = &g_sym_Ident;      return dest;
-  case TAG_INTEGER:     *dest = &g_sym_Integer;    return dest;
-  case TAG_SW:          *dest = &g_sym_Sw;         return dest;
-  case TAG_S64:         *dest = &g_sym_S64;        return dest;
-  case TAG_S32:         *dest = &g_sym_S32;        return dest;
-  case TAG_S16:         *dest = &g_sym_S16;        return dest;
-  case TAG_S8:          *dest = &g_sym_S8;         return dest;
-  case TAG_U8:          *dest = &g_sym_U8;         return dest;
-  case TAG_U16:         *dest = &g_sym_U16;        return dest;
-  case TAG_U32:         *dest = &g_sym_U32;        return dest;
-  case TAG_U64:         *dest = &g_sym_U64;        return dest;
-  case TAG_UW:          *dest = &g_sym_Uw;         return dest;
-  case TAG_LIST:        *dest = &g_sym_List;       return dest;
-  case TAG_MAP:         *dest = &g_sym_Map;        return dest;
-  case TAG_PTAG:        *dest = &g_sym_Ptag;       return dest;
-  case TAG_PTR:         *dest = &g_sym_Ptr;        return dest;
-  case TAG_PTR_FREE:    *dest = &g_sym_PtrFree;    return dest;
-  case TAG_QUOTE:       *dest = &g_sym_Quote;      return dest;
-  case TAG_RATIO:       *dest = &g_sym_Ratio;      return dest;
-  case TAG_STR:         *dest = &g_sym_Str;        return dest;
-  case TAG_STRUCT:      *dest = tag->data.struct_.type->module;
-                                                   return dest;
-  case TAG_STRUCT_TYPE: *dest = &g_sym_StructType; return dest;
-  case TAG_SYM:         *dest = &g_sym_Sym;        return dest;
-  case TAG_TIME:        *dest = &g_sym_Time;       return dest;
-  case TAG_TUPLE:       *dest = &g_sym_Tuple;      return dest;
-  case TAG_UNQUOTE:     *dest = &g_sym_Unquote;    return dest;
-  case TAG_VAR:         *dest = &g_sym_Var;        return dest;
+  case TAG_BLOCK:        *dest = &g_sym_Block;      return dest;
+  case TAG_BOOL:         *dest = &g_sym_Bool;       return dest;
+  case TAG_CALL:         *dest = &g_sym_Call;       return dest;
+  case TAG_CALLABLE:
+    if (tag->data.callable) {
+      switch (tag->data.callable->type) {
+      case CALLABLE_FN:  *dest = &g_sym_Fn;         return dest;
+      case CALLABLE_CFN: *dest = &g_sym_Cfn;        return dest;
+      case CALLABLE_VOID:
+        err_puts("tag_type: CALLABLE_VOID");
+        assert(! "tag_type: CALLABLE_VOID");
+        return NULL;
+      }
+    }
+    *dest = &g_sym_Callable;
+    return dest;
+  case TAG_CHARACTER:    *dest = &g_sym_Character;  return dest;
+  case TAG_COMPLEX:      *dest = &g_sym_Complex;    return dest;
+  case TAG_COW:          *dest = &g_sym_Cow;        return dest;
+  case TAG_F32:          *dest = &g_sym_F32;        return dest;
+  case TAG_F64:          *dest = &g_sym_F64;        return dest;
+  case TAG_F128:         *dest = &g_sym_F128;       return dest;
+  case TAG_FACT:         *dest = &g_sym_Fact;       return dest;
+  case TAG_IDENT:        *dest = &g_sym_Ident;      return dest;
+  case TAG_INTEGER:      *dest = &g_sym_Integer;    return dest;
+  case TAG_SW:           *dest = &g_sym_Sw;         return dest;
+  case TAG_S64:          *dest = &g_sym_S64;        return dest;
+  case TAG_S32:          *dest = &g_sym_S32;        return dest;
+  case TAG_S16:          *dest = &g_sym_S16;        return dest;
+  case TAG_S8:           *dest = &g_sym_S8;         return dest;
+  case TAG_U8:           *dest = &g_sym_U8;         return dest;
+  case TAG_U16:          *dest = &g_sym_U16;        return dest;
+  case TAG_U32:          *dest = &g_sym_U32;        return dest;
+  case TAG_U64:          *dest = &g_sym_U64;        return dest;
+  case TAG_UW:           *dest = &g_sym_Uw;         return dest;
+  case TAG_LIST:         *dest = &g_sym_List;       return dest;
+  case TAG_MAP:          *dest = &g_sym_Map;        return dest;
+  case TAG_PTAG:         *dest = &g_sym_Ptag;       return dest;
+  case TAG_PTR:          *dest = &g_sym_Ptr;        return dest;
+  case TAG_PTR_FREE:     *dest = &g_sym_PtrFree;    return dest;
+  case TAG_QUOTE:        *dest = &g_sym_Quote;      return dest;
+  case TAG_RATIO:        *dest = &g_sym_Ratio;      return dest;
+  case TAG_STR:          *dest = &g_sym_Str;        return dest;
+  case TAG_STRUCT:       *dest = tag->data.struct_.type->module;
+                                                    return dest;
+  case TAG_STRUCT_TYPE:  *dest = &g_sym_StructType; return dest;
+  case TAG_SYM:          *dest = &g_sym_Sym;        return dest;
+  case TAG_TIME:         *dest = &g_sym_Time;       return dest;
+  case TAG_TUPLE:        *dest = &g_sym_Tuple;      return dest;
+  case TAG_UNQUOTE:      *dest = &g_sym_Unquote;    return dest;
+  case TAG_VAR:          *dest = &g_sym_Var;        return dest;
   }
   err_puts("tag_type: invalid tag type");
   assert(! "tag_type: invalid tag type");

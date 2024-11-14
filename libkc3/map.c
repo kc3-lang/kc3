@@ -22,18 +22,18 @@
 #include "map.h"
 #include "tag.h"
 
-s_tag * map_access (const s_map *map, const s_list * const *key,
+s_tag * map_access (const s_map *map, s_list *key,
                     s_tag *dest)
 {
-  const s_tag *first;
-  const s_list *next;
+  s_tag *first;
+  s_list *next;
   s_tag *r;
   s_tag tag;
   assert(map);
   assert(key);
   assert(dest);
-  first = &(*key)->tag;
-  next = list_next(*key);
+  first = &key->tag;
+  next = list_next(key);
   if (! next) {
     if (! map_get(map, first, dest))
       tag_init_void(dest);
@@ -205,14 +205,14 @@ s_map * map_init_copy (s_map *map, const s_map *src)
   return NULL;
 }
 
-s_map * map_init_from_alist (s_map *map, const s_list * const *alist)
+s_map * map_init_from_alist (s_map *map, s_list *alist)
 {
   sw i = 0;
-  const s_list *a;
+  s_list *a;
   sw len;
   s_map tmp = {0};
   assert(map);
-  len = list_length(*alist);
+  len = list_length(alist);
   if (! list_is_alist(alist)) {
     err_write_1("map_init_from_alist: not an alist: ");
     err_inspect_list(alist);
@@ -220,7 +220,7 @@ s_map * map_init_from_alist (s_map *map, const s_list * const *alist)
     assert(! "map_init_from_alist: not an alist");
   }
   map_init(&tmp, len);
-  a = *alist;
+  a = alist;
   while (i < len) {
     if (! tag_init_copy(tmp.key + i, a->tag.data.tuple.tag) ||
         ! tag_init_copy(tmp.value + i, a->tag.data.tuple.tag + 1))
@@ -237,14 +237,14 @@ s_map * map_init_from_alist (s_map *map, const s_list * const *alist)
   return NULL;
 }
 
-s_map * map_init_from_lists (s_map *map, const s_list *keys,
-                             const s_list *values)
+s_map * map_init_from_lists (s_map *map, s_list *keys,
+                             s_list *values)
 {
   sw i = 0;
-  const s_list *k;
+  s_list *k;
   sw len;
   s_map tmp = {0};
-  const s_list *v;
+  s_list *v;
   assert(map);
   if ((len = list_length(keys)) != list_length(values)) {
     err_puts("map_init_from_lists:"

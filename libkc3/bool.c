@@ -59,9 +59,8 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_ARRAY:
   case TAG_BLOCK:
   case TAG_CALL:
-  case TAG_CFN:
+  case TAG_CALLABLE:
   case TAG_FACT:
-  case TAG_FN:
   case TAG_IDENT:
   case TAG_LIST:
   case TAG_MAP:

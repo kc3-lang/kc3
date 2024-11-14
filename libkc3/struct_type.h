@@ -43,15 +43,16 @@ void            struct_type_delete (s_struct_type *st);
 s_struct_type * struct_type_new (const s_sym *module,
                                  const s_list *spec);
 /* Observers. */
-void *                 struct_type_copy_data (const s_struct_type *st,
-                                              void *dest,
-                                              const void *src);
-bool *                 struct_type_exists (const s_sym *module,
-                                           bool *dest);
-const s_struct_type ** struct_type_find (const s_sym *module,
-                                         const s_struct_type **dest);
-uw *                   struct_type_find_key_index
-(const s_struct_type *st, const s_sym *key, uw *dest);
-uw                     struct_type_padding (uw offset, uw size);
+void *           struct_type_copy_data (const s_struct_type *st,
+                                        void *dest,
+                                        const void *src);
+bool *           struct_type_exists (const s_sym *module,
+                                     bool *dest);
+s_struct_type ** struct_type_find (const s_sym *module,
+                                   s_struct_type **dest);
+uw *             struct_type_find_key_index (s_struct_type *st,
+                                             const s_sym *key,
+                                             uw *dest);
+uw               struct_type_padding (uw offset, uw size);
 
 #endif /* LIBKC3_STRUCT_TYPE_H */

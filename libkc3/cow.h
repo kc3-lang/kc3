@@ -33,31 +33,31 @@ void    cow_clean (s_cow *cow);
 s_cow * cow_init (s_cow *cow, const s_sym *type);
 /* s_cow * cow_init_1 (s_cow *cow, const char *utf8); */
 s_cow * cow_init_cast (s_cow *cow, const s_sym * const *type,
-                       const s_tag *tag);
-s_cow * cow_init_copy (s_cow *cow, const s_cow *src);
+                       s_tag *tag);
+s_cow * cow_init_copy (s_cow *cow, s_cow *src);
 s_cow * cow_init_tag_copy (s_cow *cow, const s_sym *type,
-                           const s_tag *src);
+                           s_tag *src);
 
 /* Heap-allocation functions. Call cow_delete after use. */
 void    cow_delete (s_cow *cow);
 s_cow * cow_new (const s_sym *type);
 /* s_cow * cow_new_1 (const char *utf8); */
-s_cow * cow_new_cast (const s_sym * const *type, const s_tag *tag);
-s_cow * cow_new_copy (const s_cow *src);
-s_cow * cow_new_tag_copy (const s_sym *type, const s_tag *src);
+s_cow * cow_new_cast (const s_sym * const *type, s_tag *tag);
+s_cow * cow_new_copy (s_cow *src);
+s_cow * cow_new_tag_copy (const s_sym *type, s_tag *src);
 
 /* Observers. */
 s_str *       cow_inspect (const s_cow *cow, s_str *dest);
-const s_tag * cow_read_only (const s_cow *cow);
+s_tag *       cow_read_only (s_cow *cow);
 s_tag *       cow_read_write (s_cow *cow);
 const s_tag * cow_resolve (const s_cow *cow);
 
 /* Operators. */
 s_cow * cow_freeze (s_cow *cow);
-s_cow * cow_freeze_copy (s_cow *cow, const s_tag *src);
+s_cow * cow_freeze_copy (s_cow *cow, s_tag *src);
 sw      cow_ref (s_cow *cow);
 s_cow * cow_thaw (s_cow *cow);
-s_cow * cow_thaw_copy (s_cow *cow, const s_tag *src);
+s_cow * cow_thaw_copy (s_cow *cow, s_tag *src);
 sw      cow_unref (s_cow *cow);
 
 #endif /* LIBKC3_COW_H */

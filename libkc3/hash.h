@@ -16,7 +16,7 @@
 #include "types.h"
 
 #define HASH_UPDATE_PROTOTYPE(type)                           \
-  bool hash_update_##type (t_hash *hash, const type *x)
+  bool hash_update_##type (t_hash *hash, type x)
 
 void hash_clean (t_hash *hash);
 void hash_init (t_hash *hash);
@@ -28,11 +28,12 @@ bool hash_update_array (t_hash *hash, const s_array *a);
 bool hash_update_block (t_hash *hash, const s_block *block);
 bool hash_update_bool (t_hash *hash, const bool *b);
 bool hash_update_call (t_hash *hash, const s_call *call);
+bool hash_update_callable (t_hash *hash, const s_callable *call);
 bool hash_update_cfn (t_hash *hash, const s_cfn *cfn);
 HASH_UPDATE_PROTOTYPE(char);
 HASH_UPDATE_PROTOTYPE(character);
 bool hash_update_complex (t_hash *hash, const s_complex *c);
-bool hash_update_cow (t_hash *hash, const s_cow *cow);
+bool hash_update_cow (t_hash *hash, s_cow *cow);
 HASH_UPDATE_PROTOTYPE(f32);
 HASH_UPDATE_PROTOTYPE(f64);
 HASH_UPDATE_PROTOTYPE(f128);
@@ -66,6 +67,6 @@ HASH_UPDATE_PROTOTYPE(u64);
 bool hash_update_unquote (t_hash *hash, const s_unquote *unquote);
 HASH_UPDATE_PROTOTYPE(uw);
 bool hash_update_var (t_hash *hash, const s_tag *tag);
-bool hash_update_void (t_hash *hash, const s_tag *tag);
+bool hash_update_void (t_hash *hash);
 
 #endif /* LIBKC3_HASH_H */

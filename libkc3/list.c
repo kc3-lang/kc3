@@ -60,11 +60,11 @@ void list_f_clean (s_list **list)
     l = list_delete(l);
 }
 
-s_list ** list_filter (const s_list * const *list, const s_fn *f,
+s_list ** list_filter (s_list **list, s_callable *function,
                        s_list **dest)
 {
   s_list *arg;
-  const s_list *l;
+  s_list *l;
   s_list **tail;
   s_list *tmp;
   if (! (arg = list_new(NULL)))
@@ -76,7 +76,7 @@ s_list ** list_filter (const s_list * const *list, const s_fn *f,
     if (! tag_copy(&arg->tag, &l->tag))
       goto ko;
     *tail = list_new(NULL);
-    if (! eval_fn_call(f, arg, &(*tail)->tag))
+    if (! eval_callable_call(function, arg, &(*tail)->tag))
       goto ko;
     if ((*tail)->tag.type == TAG_VOID)
       *tail = list_delete(*tail);
@@ -126,10 +126,10 @@ s_list * list_init_1 (s_list *list, const char *p, s_list *next)
   return list;
 }
 
-s_list ** list_init_append (s_list **list, const s_list * const *src,
-                            const s_tag *tag)
+s_list ** list_init_append (s_list **list, s_list **src,
+                            s_tag *tag)
 {
-  const s_list *s;
+  s_list *s;
   s_list *tmp;
   s_list **tail;
   tmp = NULL;
@@ -146,15 +146,14 @@ s_list ** list_init_append (s_list **list, const s_list * const *src,
 }
 
 s_list ** list_init_cast (s_list **list, const s_sym * const *type,
-                          const s_tag *tag)
+                          s_tag *tag)
 {
   assert(list);
   assert(type);
   assert(tag);
   switch (tag->type) {
   case TAG_LIST:
-    return list_init_copy(list,
-                          (const s_list * const *) &tag->data.list);
+    return list_init_copy(list, &tag->data.list);
   default:
     break;
   }
@@ -171,7 +170,7 @@ s_list ** list_init_cast (s_list **list, const s_sym * const *type,
   return NULL;
 }
 
-s_list ** list_init_copy (s_list **list, const s_list * const *src)
+s_list ** list_init_copy (s_list **list, s_list **src)
 {
   s_list *tmp = NULL;
   assert(src);
@@ -182,7 +181,7 @@ s_list ** list_init_copy (s_list **list, const s_list * const *src)
   return list;
 }
 
-s_list * list_init_tag_copy (s_list *list, const s_tag *tag, s_list *next)
+s_list * list_init_tag_copy (s_list *list, s_tag *tag, s_list *next)
 {
   assert(list);
   assert(tag);
@@ -192,13 +191,13 @@ s_list * list_init_tag_copy (s_list *list, const s_tag *tag, s_list *next)
   return list;
 }
 
-bool list_is_alist (const s_list * const *list)
+bool list_is_alist (const s_list *list)
 {
   const s_list *l;
   assert(list);
   if (! list)
     return false;
-  l = *list;
+  l = list;
   while (l) {
     if (l->tag.type != TAG_TUPLE ||
         l->tag.data.tuple.count != 2)
@@ -234,11 +233,11 @@ sw list_length (const s_list *list)
   return length;
 }
 
-s_list ** list_map (const s_list * const *list, const s_fn *f,
+s_list ** list_map (s_list **list, s_callable *function,
                     s_list **dest)
 {
   s_list *arg;
-  const s_list *l;
+  s_list *l;
   s_list **tail;
   s_list *tmp;
   if (! (arg = list_new(NULL)))
@@ -250,7 +249,7 @@ s_list ** list_map (const s_list * const *list, const s_fn *f,
     if (! tag_copy(&arg->tag, &l->tag))
       goto ko;
     *tail = list_new(NULL);
-    if (! eval_fn_call(f, arg, &(*tail)->tag))
+    if (! eval_callable_call(function, arg, &(*tail)->tag))
       goto ko;
     tail = &(*tail)->next.data.list;
     l = list_next(l);
@@ -298,11 +297,11 @@ s_list * list_new_1 (const char *p)
 }
 
 /* FIXME: does not work on circular lists */
-s_list * list_new_copy (const s_list *src)
+s_list * list_new_copy (s_list *src)
 {
   s_list **i;
   s_list *next;
-  const s_list *s;
+  s_list *s;
   s_list *list;
   list = NULL;
   i = &list;
@@ -339,7 +338,7 @@ s_list * list_new_list (s_list *x, s_list *next)
   return dest;
 }
 
-s_list * list_new_tag_copy (const s_tag *x, s_list *next)
+s_list * list_new_tag_copy (s_tag *x, s_list *next)
 {
   s_list *dest;
   dest = list_new(next);
@@ -371,9 +370,9 @@ s_list ** list_remove_void (s_list **list)
   return list;
 }
 
-s_list ** list_sort (const s_list * const *list, s_list **dest)
+s_list ** list_sort (s_list **list, s_list **dest)
 {
-  const s_list *l;
+  s_list *l;
   s_list *new_;
   s_list *tmp;
   s_list **t;
@@ -396,13 +395,13 @@ s_list ** list_sort (const s_list * const *list, s_list **dest)
   return dest;
 }
 
-s_list ** list_sort_by (const s_list * const *list, const s_fn *compare,
+s_list ** list_sort_by (s_list **list, s_callable *compare,
                         s_list **dest)
 {
   s_list *arg1;
   s_list *arg2;
   bool b;
-  const s_list *l;
+  s_list *l;
   s_list *new_;
   const s_sym *sym_Bool = &g_sym_Bool;
   s_list *tmp;
@@ -425,7 +424,7 @@ s_list ** list_sort_by (const s_list * const *list, const s_fn *compare,
         goto ko;
       if (! tag_init_copy(&arg2->tag, &l->tag))
         goto ko;
-      if (! eval_fn_call(compare, arg1, &tag))
+      if (! eval_callable_call(compare, arg1, &tag))
         goto ko;
       tag_void(&arg1->tag);
       tag_void(&arg2->tag);
@@ -462,11 +461,11 @@ s_list ** list_tail (s_list **list)
   return tail;
 }
 
-s_array * list_to_array (const s_list *list, const s_sym *array_type,
+s_array * list_to_array (s_list *list, const s_sym *array_type,
                          s_array *dest)
 {
   s8 *data;
-  const s_list *l;
+  s_list *l;
   uw len;
   bool must_clean;
   uw size;

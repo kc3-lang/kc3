@@ -29,8 +29,8 @@ uw * fact_hash_uw (const s_fact *fact, uw *dest)
   return dest;
 }
 
-s_fact * fact_init (s_fact *fact, const s_tag *subject,
-                    const s_tag *predicate, const s_tag *object)
+s_fact * fact_init (s_fact *fact, s_tag *subject,
+                    s_tag *predicate, s_tag *object)
 {
   assert(fact);
   fact->subject = subject;
@@ -41,7 +41,7 @@ s_fact * fact_init (s_fact *fact, const s_tag *subject,
 }
 
 s_fact * fact_init_cast (s_fact *fact, const s_sym * const *type,
-                         const s_tag *tag)
+                         s_tag *tag)
 {
   assert(fact);
   assert(type);
@@ -73,7 +73,7 @@ s_fact * fact_init_copy (s_fact *fact, const s_fact *src)
   return fact;
 }
 
-void fact_r (const s_fact_w *fact, s_fact *dest)
+void fact_r (s_fact_w *fact, s_fact *dest)
 {
   s_fact tmp = {0};
   tmp.subject = &fact->subject;
@@ -90,7 +90,7 @@ void fact_w_clean (s_fact_w *fact)
   tag_clean(&fact->object);
 }
 
-s_fact_w * fact_w_eval (const s_fact_w *fact, s_fact_w *dest)
+s_fact_w * fact_w_eval (s_fact_w *fact, s_fact_w *dest)
 {
   return env_fact_w_eval(&g_kc3_env, fact, dest);
 }
@@ -104,7 +104,7 @@ s_fact_w * fact_w_init (s_fact_w *fact)
 }
 
 s_fact_w * fact_w_init_cast (s_fact_w *fact, const s_sym * const *type,
-                             const s_tag *tag)
+                             s_tag *tag)
 {
   assert(fact);
   assert(type);
@@ -129,7 +129,7 @@ s_fact_w * fact_w_init_cast (s_fact_w *fact, const s_sym * const *type,
   return NULL;
 }
 
-s_fact_w * fact_w_init_fact (s_fact_w *fact, const s_fact *src)
+s_fact_w * fact_w_init_fact (s_fact_w *fact, s_fact *src)
 {
   s_fact_w tmp = {0};
   if (! tag_init_copy(&tmp.subject, src->subject))

@@ -60,7 +60,7 @@ sw          g_kc3_exit_code = 1;
 void kc3_system_pipe_exec (s32 pipe_fd, char **argv,
                            const s_list * const *list);
 
-s_tag * kc3_access (const s_tag *tag, const s_list * const *key,
+s_tag * kc3_access (s_tag *tag, s_list **key,
                     s_tag *dest)
 {
   s_struct s = {0};
@@ -69,37 +69,36 @@ s_tag * kc3_access (const s_tag *tag, const s_list * const *key,
   assert(dest);
   switch (tag->type) {
   case TAG_ARRAY:
-    return array_access(&tag->data.array, key, dest);
+    return array_access(&tag->data.array, *key, dest);
   case TAG_LIST:
-    if (list_is_alist((const s_list * const *) &tag->data.list)) {
-      if (! alist_access((const s_list * const *) &tag->data.list,
-                         key, dest))
+    if (list_is_alist(tag->data.list)) {
+      if (! alist_access(tag->data.list, *key, dest))
         return tag_init_void(dest);
       return dest;
     }
     break;
   case TAG_MAP:
-    return map_access(&tag->data.map, key, dest);
+    return map_access(&tag->data.map, *key, dest);
   case TAG_STRUCT:
-    return struct_access(&tag->data.struct_, key, dest);
+    return struct_access(&tag->data.struct_, *key, dest);
   case TAG_TIME:
     if (! struct_init_with_data(&s, &g_sym_Time,
                                 (s_time *) &tag->data.time,
                                 false))
       return NULL;
-    return struct_access(&s, key, dest);
+    return struct_access(&s, *key, dest);
   default:
     break;
   }
   err_write_1("kc3_access: cannot access tag type ");
   err_write_1(tag_type_to_string(tag->type));
   err_write_1(" for key ");
-  err_inspect_list(key);
+  err_inspect_list(*key);
   err_write_1("\n");
   return NULL;
 }
 
-bool * kc3_and (const s_tag *a, const s_tag *b, bool *dest)
+bool * kc3_and (s_tag *a, s_tag *b, bool *dest)
 {
   return env_and(&g_kc3_env, a, b, dest);
 }
@@ -144,10 +143,10 @@ s_tag * kc3_defmodule (const s_sym **name, const s_block *block, s_tag *dest)
 }
 
 s_tag * kc3_defoperator (const s_sym **name, const s_sym **sym,
-                        const s_tag *symbol_value,
-                        u8 operator_precedence,
-                        const s_sym **operator_associativity,
-                        s_tag *dest)
+                         s_tag *symbol_value,
+                         u8 operator_precedence,
+                         const s_sym **operator_associativity,
+                         s_tag *dest)
 {
   return env_defoperator(&g_kc3_env, name, sym, symbol_value,
                          operator_precedence,
@@ -236,9 +235,9 @@ s_tag * kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr)
   return tag_init_struct_with_data(tag, &g_sym_Fact, ptr->p, false);
 }
 
-bool * kc3_facts_add_tags (s_facts *facts, const s_tag *subject,
-                           const s_tag *predicate,
-                           const s_tag *object,
+bool * kc3_facts_add_tags (s_facts *facts, s_tag *subject,
+                           s_tag *predicate,
+                           s_tag *object,
                            bool *dest)
 {
   const s_fact *fact;
@@ -287,9 +286,9 @@ uw * kc3_facts_next_id (uw *dest)
   return dest;
 }
 
-bool * kc3_facts_remove_tags (s_facts *facts, const s_tag *subject,
-                              const s_tag *predicate,
-                              const s_tag *object,
+bool * kc3_facts_remove_tags (s_facts *facts, s_tag *subject,
+                              s_tag *predicate,
+                              s_tag *object,
                               bool *dest)
 {
   bool b;
@@ -300,9 +299,9 @@ bool * kc3_facts_remove_tags (s_facts *facts, const s_tag *subject,
 }
 
 bool * kc3_facts_replace_tags (s_facts *facts,
-                               const s_tag *subject,
-                               const s_tag *predicate,
-                               const s_tag *object,
+                               s_tag *subject,
+                               s_tag *predicate,
+                               s_tag *object,
                                bool *dest)
 {
   const s_fact *fact;
@@ -366,9 +365,14 @@ s_str * kc3_getenv (const s_str *name, s_str *dest)
   return str_init_1(dest, NULL, p);
 }
 
+s_tag * kc3_identity (s_tag *tag, s_tag *dest)
+{
+  return tag_init_copy(dest, tag);
+}
+
 /* Special operator. */
-s_tag * kc3_if_then_else (const s_tag *cond, const s_tag *then,
-                          const s_tag *else_, s_tag *dest)
+s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
+                          s_tag *else_, s_tag *dest)
 {
   bool  cond_bool = false;
   s_tag cond_eval = {0};
@@ -402,7 +406,7 @@ s_env * kc3_init (s_env *env, int *argc, char ***argv)
   return env_init(env, argc, argv);
 }
 
-s_tag * kc3_integer_reduce (const s_tag *tag, s_tag *dest)
+s_tag * kc3_integer_reduce (s_tag *tag, s_tag *dest)
 {
   s_tag tmp;
   if (! tag_init_copy(&tmp, tag))
@@ -412,7 +416,7 @@ s_tag * kc3_integer_reduce (const s_tag *tag, s_tag *dest)
   return dest;
 }
 
-s_tag * kc3_let (const s_tag *vars, const s_tag *tag, s_tag *dest)
+s_tag * kc3_let (s_tag *vars, s_tag *tag, s_tag *dest)
 {
   return env_let(&g_kc3_env, vars, tag, dest);
 }
@@ -448,7 +452,7 @@ uw * kc3_offsetof (const s_sym * const *module,
                    const s_sym * const *key, uw *dest)
 {
   uw i = 0;
-  const s_struct_type *st;
+  s_struct_type *st;
   if (! struct_type_find(*module, &st) ||
       ! st ||
       ! struct_type_find_key_index(st, *key, &i))
@@ -462,14 +466,9 @@ s_tag * kc3_operator_find_by_sym (const s_sym * const *sym, s_tag *dest)
   return env_operator_find_by_sym(&g_kc3_env, *sym, dest);
 }
 
-bool * kc3_or (const s_tag *a, const s_tag *b, bool *dest)
+bool * kc3_or (s_tag *a, s_tag *b, bool *dest)
 {
   return env_or(&g_kc3_env, a, b, dest);
-}
-
-s_tag * kc3_identity (const s_tag *tag, s_tag *dest)
-{
-  return tag_init_copy(dest, tag);
 }
 
 sw kc3_puts (const s_tag *tag)
@@ -531,8 +530,8 @@ s_str * kc3_strerror (sw err_no, s_str *dest)
   return str_init_1_alloc(dest, s);
 }
 
-s_tag * kc3_struct_put (const s_tag *s, const s_sym * const *key,
-                        const s_tag *value, s_tag *dest)
+s_tag * kc3_struct_put (s_tag *s, const s_sym * const *key,
+                        s_tag *value, s_tag *dest)
 {
   s_struct tmp;
   assert(s);
@@ -651,14 +650,14 @@ void kc3_system_pipe_exec (s32 pipe_w, char **argv,
   execvp(argv[0], argv);
   e = errno;
   err_write_1("kc3_system: execvp ");
-  err_inspect_list(list);
+  err_inspect_list(*list);
   err_write_1(": ");
   err_puts(strerror(e));
   assert(! "kc3_system: execvp");
   _exit(1);
 }
 
-s_tag * kc3_while (const s_tag *cond, const s_tag *body, s_tag *dest)
+s_tag * kc3_while (s_tag *cond, s_tag *body, s_tag *dest)
 {
   return env_while(&g_kc3_env, cond, body, dest);
 }

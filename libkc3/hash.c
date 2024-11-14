@@ -22,13 +22,13 @@
 #include "tag_type.h"
 
 #define HASH_UPDATE_DEF(type)                                          \
-  bool hash_update_##type (t_hash *hash, const type *x)                \
+  bool hash_update_##type (t_hash *hash, type x)                       \
   {                                                                    \
-    const char t[] = #type;                                              \
+    const char t[] = #type;                                            \
     assert(hash);                                                      \
     assert(x);                                                         \
     return hash_update(hash, t, sizeof(t)) &&                          \
-      hash_update(hash, x, sizeof(type));                              \
+      hash_update(hash, &x, sizeof(x));                                \
   }
 
 void hash_clean (t_hash *hash)
@@ -176,7 +176,7 @@ bool hash_update_complex (t_hash *hash, const s_complex *c)
   return true;
 }
 
-bool hash_update_cow (t_hash *hash, const s_cow *cow)
+bool hash_update_cow (t_hash *hash, s_cow *cow)
 {
   const s8 type[] = "cow";
   assert(hash);
@@ -234,7 +234,7 @@ bool hash_update_fn_clauses (t_hash *hash, const s_fn_clause *clauses)
     count++;
     f = f->next_clause;
   }
-  if (! hash_update_uw(hash, &count))
+  if (! hash_update_uw(hash, count))
     return false;
   f = clauses;
   while (f) {
@@ -256,7 +256,7 @@ bool hash_update_ident (t_hash *hash, const s_ident *ident)
     return false;
   if (ident->module) {
     if (! hash_update_sym(hash, &ident->module) ||
-        ! hash_update_char(hash, "."))
+        ! hash_update_char(hash, '.'))
       return false;
   }
   return hash_update_sym(hash, &ident->sym);
@@ -294,7 +294,7 @@ bool hash_update_list (t_hash *hash, const s_list * const *list)
   l = *list;
   count = list_length(l);
   if (! hash_update(hash, type, sizeof(type)) ||
-      ! hash_update_uw(hash, &count))
+      ! hash_update_uw(hash, count))
     return false;
   if (l) {
     while (l) {
@@ -441,11 +441,11 @@ bool hash_update_struct_type (t_hash *hash, const s_struct_type *st)
     return false;
   i = 0;
   while (i < st->map.count) {
-    if (! hash_update_uw(hash, st->offset + i))
+    if (! hash_update_uw(hash, st->offset[i]))
       return false;
     i++;
   }
-  return hash_update_uw(hash, &st->size);
+  return hash_update_uw(hash, st->size);
 }
 
 bool hash_update_sym (t_hash *hash, const s_sym * const *sym)
@@ -467,23 +467,23 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   if (! hash_update(hash, type, strlen(type)))
     return false;
   tag_type = tag->type;
-  if (! hash_update_u8(hash, &tag_type))
+  if (! hash_update_u8(hash, tag_type))
     return false;
   switch (tag->type) {
   case TAG_ARRAY:   return hash_update_array(hash, &tag->data.array);
   case TAG_BLOCK:   return hash_update_block(hash, &tag->data.block);
   case TAG_BOOL:    return hash_update_bool(hash, &tag->data.bool);
   case TAG_CALL:    return hash_update_call(hash, &tag->data.call);
-  case TAG_CFN:     return hash_update_cfn(hash, &tag->data.cfn);
+  case TAG_CALLABLE:
+    return hash_update_callable(hash, tag->data.callable);
   case TAG_CHARACTER:
-    return hash_update_character(hash, &tag->data.character);
+    return hash_update_character(hash, tag->data.character);
   case TAG_COMPLEX: return hash_update_complex(hash, tag->data.complex);
   case TAG_COW:     return hash_update_cow(hash, tag->data.cow);
-  case TAG_F32:     return hash_update_f32(hash, &tag->data.f32);
-  case TAG_F64:     return hash_update_f64(hash, &tag->data.f64);
-  case TAG_F128:    return hash_update_f128(hash, &tag->data.f128);
+  case TAG_F32:     return hash_update_f32(hash, tag->data.f32);
+  case TAG_F64:     return hash_update_f64(hash, tag->data.f64);
+  case TAG_F128:    return hash_update_f128(hash, tag->data.f128);
   case TAG_FACT:    return hash_update_fact(hash, &tag->data.fact);
-  case TAG_FN:      return hash_update_fn(hash, &tag->data.fn);
   case TAG_IDENT:   return hash_update_ident(hash, &tag->data.ident);
   case TAG_INTEGER:
     return hash_update_integer(hash, &tag->data.integer);
@@ -497,11 +497,11 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
     return hash_update_ptr_free(hash, &tag->data.ptr_free);
   case TAG_QUOTE:   return hash_update_quote(hash, &tag->data.quote);
   case TAG_RATIO:   return hash_update_ratio(hash, &tag->data.ratio);
-  case TAG_S8:      return hash_update_s8(hash, &tag->data.s8);
-  case TAG_S16:     return hash_update_s16(hash, &tag->data.s16);
-  case TAG_S32:     return hash_update_s32(hash, &tag->data.s32);
-  case TAG_S64:     return hash_update_s64(hash, &tag->data.s64);
-  case TAG_SW:      return hash_update_sw(hash, &tag->data.sw);
+  case TAG_S8:      return hash_update_s8(hash, tag->data.s8);
+  case TAG_S16:     return hash_update_s16(hash, tag->data.s16);
+  case TAG_S32:     return hash_update_s32(hash, tag->data.s32);
+  case TAG_S64:     return hash_update_s64(hash, tag->data.s64);
+  case TAG_SW:      return hash_update_sw(hash, tag->data.sw);
   case TAG_STR:     return hash_update_str(hash, &tag->data.str);
   case TAG_STRUCT:  return hash_update_struct(hash, &tag->data.struct_);
   case TAG_STRUCT_TYPE:
@@ -509,15 +509,15 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_SYM:     return hash_update_sym(hash, &tag->data.sym);
   case TAG_TIME:    return hash_update_time(hash, &tag->data.time);
   case TAG_TUPLE:   return hash_update_tuple(hash, &tag->data.tuple);
-  case TAG_U8:      return hash_update_u8(hash, &tag->data.u8);
-  case TAG_U16:     return hash_update_u16(hash, &tag->data.u16);
-  case TAG_U32:     return hash_update_u32(hash, &tag->data.u32);
-  case TAG_U64:     return hash_update_u64(hash, &tag->data.u64);
+  case TAG_U8:      return hash_update_u8(hash, tag->data.u8);
+  case TAG_U16:     return hash_update_u16(hash, tag->data.u16);
+  case TAG_U32:     return hash_update_u32(hash, tag->data.u32);
+  case TAG_U64:     return hash_update_u64(hash, tag->data.u64);
   case TAG_UNQUOTE:
     return hash_update_unquote(hash, &tag->data.unquote);
-  case TAG_UW:      return hash_update_uw(hash, &tag->data.uw);
+  case TAG_UW:      return hash_update_uw(hash, tag->data.uw);
   case TAG_VAR:     return hash_update_var(hash, tag);
-  case TAG_VOID:    return hash_update_void(hash, tag);
+  case TAG_VOID:    return hash_update_void(hash);
   }
   err_puts("hash_update_tag: unknown tag type");
   assert(! "hash_update_tag: unknown tag type");
@@ -540,8 +540,8 @@ bool hash_update_time (t_hash *hash, const s_time *time)
       return false;
     return true;
   }
-  if (! hash_update_sw(hash, &time->tv_sec) ||
-      ! hash_update_sw(hash, &time->tv_nsec))
+  if (! hash_update_sw(hash, time->tv_sec) ||
+      ! hash_update_sw(hash, time->tv_nsec))
     return false;
   return true;
 }
@@ -588,11 +588,9 @@ bool hash_update_var (t_hash *hash, const s_tag *tag)
     hash_update_sym(hash, &tag->data.var.type);
 }
 
-bool hash_update_void (t_hash *hash, const s_tag *tag)
+bool hash_update_void (t_hash *hash)
 {
   char type[] = "void";
   assert(hash);
-  assert(tag);
-  (void) tag;
   return hash_update(hash, type, strlen(type));
 }

@@ -84,6 +84,7 @@ s_fn * fn_init_1 (s_fn *fn, const char *p)
   return fn;
 }
 
+/*
 s_fn * fn_init_cast (s_fn *fn, const s_sym * const *type, const s_tag *tag)
 {
   assert(fn);
@@ -107,6 +108,7 @@ s_fn * fn_init_cast (s_fn *fn, const s_sym * const *type, const s_tag *tag)
   assert(! "fn_init_cast: cannot cast to Fn");
   return NULL;
 }
+*/
 
 s_fn * fn_init_copy (s_fn *fn, const s_fn *src)
 {

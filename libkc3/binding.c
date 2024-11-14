@@ -47,9 +47,9 @@ s_binding ** binding_find (s_binding **binding, const s_sym *name)
   return NULL;
 }
 
-const s_tag * binding_get (const s_binding *binding, const s_sym *name)
+s_tag * binding_get (s_binding *binding, const s_sym *name)
 {
-  const s_binding *b;
+  s_binding *b;
   b = binding;
   while (b) {
     if (b->name == name)
@@ -96,11 +96,11 @@ s_binding * binding_new (const s_sym *name, s_binding *next)
   return binding;
 }
 
-s_binding * binding_new_copy (const s_binding *src)
+s_binding * binding_new_copy (s_binding *src)
 {
   s_binding **b;
   s_binding  *binding;
-  const s_binding *s;
+  s_binding *s;
   binding = NULL;
   b = &binding;
   s = src;

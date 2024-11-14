@@ -21,16 +21,16 @@
 
 #include "types.h"
 
-/* stack-allocation compatible functions */
+/* Stack-allocation compatible functions, call fn_clause_clean
+   after use. */
 void          fn_clause_clean (s_fn_clause *clause);
-s_fn_clause * fn_clause_init (s_fn_clause *clause, s_fn_clause *next_clause);
+s_fn_clause * fn_clause_init (s_fn_clause *clause,
+                              s_fn_clause *next_clause);
 
-/* constructors */
-s_fn_clause * fn_clause_new (s_fn_clause *next_clause);
-s_fn_clause * fn_clause_new_copy (const s_fn_clause *src);
-
-/* destructors */
+/* Heap-allocation functions, call fn_clause_delete* after use. */
 s_fn_clause * fn_clause_delete (s_fn_clause *clause);
 void          fn_clause_delete_all (s_fn_clause *clause);
+s_fn_clause * fn_clause_new (s_fn_clause *next_clause);
+s_fn_clause * fn_clause_new_copy (s_fn_clause *src);
 
-#endif /* LIBKC3_FN_H */
+#endif /* LIBKC3_FN_CLAUSE_H */

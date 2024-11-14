@@ -21,8 +21,8 @@ s_map * map_init (s_map *map, uw count);
 s_map * map_init_1 (s_map *map, const char *p);
 s_map * map_init_cast (s_map *map, const s_tag *tag);
 s_map * map_init_copy (s_map *map, const s_map *src);
-s_map * map_init_from_lists (s_map *map, const s_list *keys,
-                             const s_list *values);
+s_map * map_init_from_lists (s_map *map, s_list *keys, s_list *values);
+s_map * map_init_from_alist (s_map *map, s_list *alist);
 
 /* Heap allocation functions, call map_delete after use. */
 void    map_delete (s_map *map);
@@ -34,7 +34,7 @@ s_map * map_new_from_lists (const s_list *keys, const s_list *values);
 s_map * map_sort (s_map *map);
 
 /* Observers. */
-s_tag *        map_access (const s_map *map, const s_list * const *key,
+s_tag *        map_access (const s_map *map, s_list *key,
                            s_tag *value);
 s_map *        map_cast (const s_tag *tag, s_map *map);
 s_tag *        map_get (const s_map *map, const s_tag *key,

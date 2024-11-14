@@ -59,8 +59,10 @@ s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
       frame = frame_binding_delete(frame, name);
       return NULL;
     }
-    if (tag->type == TAG_FN)
-      fn_set_name_if_null(&tag->data.fn, NULL, name);
+    if (tag->type == TAG_CALLABLE &&
+        tag->data.callable &&
+        tag->data.callable->type == CALLABLE_FN)
+      fn_set_name_if_null(&tag->data.callable->data.fn, NULL, name);
   }    
   return frame;
 }
@@ -77,7 +79,7 @@ s_tag * frame_binding_new_var (s_frame *frame)
 }
 
 s_frame * frame_binding_replace (s_frame *frame, const s_sym *name,
-                                 const s_tag *value)
+                                 s_tag *value)
 {
   s_tag *tag;
   tag = binding_get_w(frame->bindings, name);
@@ -135,10 +137,10 @@ void frame_delete_all (s_frame *frame)
     f = frame_delete(f);
 }
 
-const s_tag * frame_get (const s_frame *frame, const s_sym *sym)
+s_tag * frame_get (s_frame *frame, const s_sym *sym)
 {
-  const s_frame *f;
-  const s_tag *result;
+  s_frame *f;
+  s_tag *result;
   assert(sym);
   f = frame;
   while (f) {
@@ -247,8 +249,10 @@ s_frame * frame_replace (s_frame *frame, const s_sym *sym,
         assert(! "frame_replace: tag_init_copy");
         return NULL;
       }
-      if (result->type == TAG_FN)
-        fn_set_name_if_null(&result->data.fn, NULL, sym);
+      if (result->type == TAG_CALLABLE &&
+          result->data.callable &&
+          result->data.callable->type == CALLABLE_FN)
+        fn_set_name_if_null(&result->data.callable->data.fn, NULL, sym);
     }
     return frame;
   }

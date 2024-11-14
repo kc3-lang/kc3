@@ -115,7 +115,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
             err_write_1("cfn_apply: ");
             err_inspect_str(&cfn->name->str);
             err_write_1(" ");
-            err_inspect_list((const s_list * const *) &args);
+            err_inspect_list(args);
             err_puts(": tag_to_ffi_pointer 5");
             assert(! "cfn_apply: tag_to_ffi_pointer 5");
             goto ko;
@@ -139,7 +139,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
         err_write_1("cfn_apply: ");
         err_inspect_str(&cfn->name->str);
         err_write_1(" ");
-        err_inspect_list((const s_list * const *) &args);
+        err_inspect_list(args);
         err_write_1(": ");
         err_inspect_pointer(result_pointer);
         err_write_1(" != ");
@@ -216,6 +216,7 @@ s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
   return cfn;
 }
 
+/*
 s_cfn * cfn_init_cast (s_cfn *cfn, const s_sym * const *type,
                        const s_tag *tag)
 {
@@ -238,6 +239,7 @@ s_cfn * cfn_init_cast (s_cfn *cfn, const s_sym * const *type,
   assert(! "cfn_init_cast: cannot cast to Cfn");
   return NULL;
 }
+*/
 
 s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
 {

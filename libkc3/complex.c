@@ -169,7 +169,7 @@ s_complex * complex_init_cast (s_complex *c, const s_sym * const *type,
   return NULL;
 }
 
-s_complex * complex_init_copy (s_complex *c, const s_complex *src)
+s_complex * complex_init_copy (s_complex *c, s_complex *src)
 {
   assert(c);
   assert(src);
@@ -297,7 +297,7 @@ s_complex * complex_new_sub (const s_complex *a, const s_complex *b)
   return c;
 }
 
-s_complex * complex_new_copy (const s_complex *src)
+s_complex * complex_new_copy (s_complex *src)
 {
   s_complex *c;
   assert(src);

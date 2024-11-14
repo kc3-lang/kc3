@@ -72,6 +72,16 @@ sw err_inspect_buf (const s_buf *buf)
   return err_write(buf->ptr.pchar + pos, buf->rpos - pos);
 }
 
+sw err_inspect_list (const s_list *x)
+{
+  sw r;
+  r = buf_inspect_list(&g_kc3_env.err, &x);
+  if (r < 0)
+    return r;
+  buf_flush(&g_kc3_env.err);
+  return r;
+}
+
 sw err_inspect_tag_type (e_tag_type type)
 {
   return err_write_1(tag_type_to_string(type));
@@ -213,7 +223,6 @@ DEF_ERR_IO_INSPECT(fn_clause,       const s_fn_clause *)
 DEF_ERR_IO_INSPECT(fn_pattern,      const s_list *)
 DEF_ERR_IO_INSPECT(frame,           const s_frame *)
 DEF_ERR_IO_INSPECT(ident,           const s_ident *)
-DEF_ERR_IO_INSPECT(list,            const s_list * const *)
 DEF_ERR_IO_INSPECT(map,             const s_map *)
 DEF_ERR_IO_INSPECT(pointer,         const void *)
 DEF_ERR_IO_INSPECT(ptr,             const u_ptr_w *)

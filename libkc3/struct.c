@@ -26,18 +26,17 @@
 #include "tag.h"
 #include "tag_type.h"
 
-s_tag * struct_access (const s_struct *s, const s_list * const *key,
-                       s_tag *dest)
+s_tag * struct_access (s_struct *s, s_list *key, s_tag *dest)
 {
-  const s_tag *first;
-  const s_list *next;
+  s_tag *first;
+  s_list *next;
   s_tag *r;
   s_tag tag;
   assert(s);
   assert(key);
   assert(dest);
-  first = &(*key)->tag;
-  next = list_next(*key);
+  first = &key->tag;
+  next = list_next(key);
   if (first->type != TAG_SYM) {
     err_write_1("struct_access: key is not a Sym: (");
     err_inspect_struct(s);
@@ -63,16 +62,16 @@ s_tag * struct_access (const s_struct *s, const s_list * const *key,
   return r;
 }
 
-s_tag * struct_access_sym (const s_struct *s, const s_sym *key, s_tag *dest)
+s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
 {
-  const void *data;
+  void *data;
   const s_struct_type *st;
   const s_sym *type;
   s_tag tmp = {0};
   void *tmp_data;
   if (! struct_get_var_type(s, key, &type))
     return NULL;    
-  data = struct_get(s, key);
+  data = struct_get_w(s, key);
   if (! data)
     return NULL;
   if (type != &g_sym_Tag) {
@@ -196,6 +195,17 @@ const s_sym ** struct_get_var_type (const s_struct *s, const s_sym *key,
   s_tag tag_key;
   tag_init_sym(&tag_key, key);
   return map_get_var_type(&s->type->map, &tag_key, dest);
+}
+
+void * struct_get_w (s_struct *s, const s_sym *key)
+{
+  uw i = 0;
+  assert(s);
+  assert(key);
+  if (! struct_find_key_index(s, key, &i))
+    return NULL;
+  assert(i < s->type->map.count);
+  return (u8 *) s->data + s->type->offset[i];
 }
 
 s_struct * struct_init (s_struct *s, const s_sym *module)
@@ -451,8 +461,8 @@ uw * struct_offset (const s_struct *s, const s_sym * const *key,
   return dest;
 }
 
-s_struct * struct_put (const s_struct *s, const s_sym *key,
-                       const s_tag *value, s_struct *dest)
+s_struct * struct_put (s_struct *s, const s_sym *key,
+                       s_tag *value, s_struct *dest)
 {
   s_struct tmp;
   if (! struct_init_copy(&tmp, s)) {
@@ -469,10 +479,10 @@ s_struct * struct_put (const s_struct *s, const s_sym *key,
 }
 
 s_struct * struct_set (s_struct *s, const s_sym *key,
-                       const s_tag *value)
+                       s_tag *value)
 {
   void *data;
-  const void *data_src;
+  void *data_src;
   uw i;
   const s_sym *type_sym;
   assert(s);

@@ -97,13 +97,35 @@ s8 compare_call (const s_call *a, const s_call *b)
   s8 r;
   if (a == b)
     return 0;
-  if (!a)
+  if (! a)
     return -1;
-  if (!b)
+  if (! b)
     return 1;
   if ((r = compare_ident(&a->ident, &b->ident)))
     return r;
   return compare_list(a->arguments, b->arguments);
+}
+
+s8 compare_callable (const s_callable *a, const s_callable *b)
+{
+  if (a == b)
+    return 0;
+  if (! a)
+    return -1;
+  if (! b)
+    return 1;
+  if (a->type < b->type)
+    return -1;
+  if (a->type > b->type)
+    return 1;
+  switch (a->type) {
+  case CALLABLE_VOID: return 0;
+  case CALLABLE_CFN:  return compare_cfn(&a->data.cfn, &b->data.cfn);
+  case CALLABLE_FN:   return compare_fn(&a->data.fn, &b->data.fn);
+  }
+  err_puts("compare_callable: error");
+  assert(! "compare_callable: error");
+  return COMPARE_ERROR;
 }
 
 s8 compare_cfn (const s_cfn *a, const s_cfn *b)
@@ -1119,13 +1141,13 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_BOOL:       return compare_bool(a->data.bool, b->data.bool);
   case TAG_CALL:       return compare_call(&a->data.call,
                                            &b->data.call);
-  case TAG_CFN:        return compare_cfn(&a->data.cfn, &b->data.cfn);
+  case TAG_CALLABLE:   return compare_callable(a->data.callable,
+                                               b->data.callable);
   case TAG_CHARACTER:  return compare_character(a->data.character,
                                                 b->data.character);
   case TAG_COW:        return compare_cow(a->data.cow, b->data.cow);
   case TAG_FACT:       return compare_fact(&a->data.fact,
                                            &b->data.fact);
-  case TAG_FN:         return compare_fn(&a->data.fn, &b->data.fn);
   case TAG_IDENT:      return compare_ident(&a->data.ident,
                                             &b->data.ident);
   case TAG_LIST:       return compare_list(a->data.list, b->data.list);

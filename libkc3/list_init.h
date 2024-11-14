@@ -29,7 +29,6 @@ s_list * list_init_complex (s_list *list, s_complex *c, s_list *next);
 s_list * list_init_f32 (s_list *list, f32 f, s_list *next);
 s_list * list_init_f64 (s_list *list, f64 f, s_list *next);
 s_list * list_init_f128 (s_list *list, f128 f, s_list *next);
-s_list * list_init_fn_copy (s_list *list, const s_fn *fn, s_list *next);
 s_list * list_init_ident (s_list *list, const s_ident *ident,
                           s_list *next);
 s_list * list_init_ident_1 (s_list *list, const char *p, s_list *next);
@@ -119,7 +118,6 @@ s_list * list_new_complex (s_complex *c, s_list *next);
 s_list * list_new_f32 (f32 f, s_list *next);
 s_list * list_new_f64 (f64 f, s_list *next);
 s_list * list_new_f128 (f128 f, s_list *next);
-s_list * list_new_fn_copy (const s_fn *fn, s_list *next);
 s_list * list_new_ident (const s_ident *ident, s_list *next);
 s_list * list_new_ident_1 (const char *p, s_list *next);
 s_list * list_new_integer_1 (const char *p, s_list *next);

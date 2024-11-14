@@ -16,7 +16,7 @@
 #include "types.h"
 
 void facts_with_cursor_clean (s_facts_with_cursor *cursor);
-const s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
-                                        const s_fact **dest);
+s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
+                                  s_fact **dest);
 
 #endif /* LIBKC3_FACTS_WITH_CURSOR_H */

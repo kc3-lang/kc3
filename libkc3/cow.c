@@ -47,7 +47,7 @@ s_cow * cow_freeze (s_cow *cow)
   return cow;
 }
 
-s_cow * cow_freeze_copy (s_cow *cow, const s_tag *src)
+s_cow * cow_freeze_copy (s_cow *cow, s_tag *src)
 {
   s_list *tmp = NULL;
   assert(cow);
@@ -95,7 +95,7 @@ s_cow * cow_init_1 (s_cow *cow, const char *utf8)
 }
 
 s_cow * cow_init_cast (s_cow *cow, const s_sym * const *type,
-                       const s_tag *tag)
+                       s_tag *tag)
 {
   void *data;
   s_cow tmp;
@@ -120,7 +120,7 @@ s_cow * cow_init_cast (s_cow *cow, const s_sym * const *type,
   return cow;
 }
 
-s_cow * cow_init_copy (s_cow *cow, const s_cow *src)
+s_cow * cow_init_copy (s_cow *cow, s_cow *src)
 {
   s_cow tmp = {0};
   assert(cow);
@@ -135,7 +135,7 @@ s_cow * cow_init_copy (s_cow *cow, const s_cow *src)
 }
 
 s_cow * cow_init_tag_copy (s_cow *cow, const s_sym *type,
-                           const s_tag *src)
+                           s_tag *src)
 {
   assert(cow);
   assert(src);
@@ -187,7 +187,7 @@ s_cow * cow_new_1 (const char *utf8)
   return cow;
 }
 
-s_cow * cow_new_cast (const s_sym * const *type, const s_tag *tag)
+s_cow * cow_new_cast (const s_sym * const *type, s_tag *tag)
 {
   s_cow *cow;
   cow = alloc(sizeof(s_cow));
@@ -200,7 +200,7 @@ s_cow * cow_new_cast (const s_sym * const *type, const s_tag *tag)
   return cow;
 }
 
-s_cow * cow_new_copy (const s_cow *src)
+s_cow * cow_new_copy (s_cow *src)
 {
   s_cow *cow;
   cow = alloc(sizeof(s_cow));
@@ -213,7 +213,7 @@ s_cow * cow_new_copy (const s_cow *src)
   return cow;
 }
 
-s_cow * cow_new_tag_copy (const s_sym *type, const s_tag *src)
+s_cow * cow_new_tag_copy (const s_sym *type, s_tag *src)
 {
   s_cow *cow;
   cow = alloc(sizeof(s_cow));
@@ -226,7 +226,7 @@ s_cow * cow_new_tag_copy (const s_sym *type, const s_tag *src)
   return cow;
 }
 
-const s_tag * cow_read_only (const s_cow *cow)
+s_tag * cow_read_only (s_cow *cow)
 {
   assert(cow);
   assert(cow->list);
@@ -270,7 +270,7 @@ s_cow * cow_thaw (s_cow *cow)
   return cow;
 }
 
-s_cow * cow_thaw_copy (s_cow *cow, const s_tag *src)
+s_cow * cow_thaw_copy (s_cow *cow, s_tag *src)
 {
   s_tag tmp = {0};
   assert(cow);

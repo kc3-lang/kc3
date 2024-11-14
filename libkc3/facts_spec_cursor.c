@@ -28,8 +28,8 @@ facts_spec_cursor_init (s_facts_spec_cursor *cursor,
 bool facts_spec_cursor_next (s_facts_spec_cursor *cursor,
                              s_fact *fact)
 {
-  const s_tag *predicate;
-  const s_tag *object;
+  s_tag *predicate;
+  s_tag *object;
   assert(cursor);
   assert(fact);
   do {
