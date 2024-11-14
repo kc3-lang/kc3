@@ -2312,21 +2312,33 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   return NULL;
 }
 
-s_tag * env_facts_with_macro (s_env *env, s_facts *facts, s_list **spec,
-                              s_block *block, s_tag *dest)
+s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
+                              s_tag *block_tag, s_tag *dest)
 {
   s_facts_with_cursor cursor = {0};
   const s_fact *fact = NULL;
-  s_tag spec_tag = {0};
+  s_facts *facts;
+  s_tag    facts_eval;
+  s_list *spec = NULL;
+  s_tag   spec_eval = {0};
   s_tag tmp = {0};
-  if (! env_eval_list(env, *spec, &spec_tag))
+  if (! env_eval_tag(env, facts_tag, &facts_eval))
     return NULL;
-  if (spec_tag.type != TAG_LIST) {
+  if (facts_eval.type != TAG_PTR) {
+    err_puts("env_facts_with_macro: facts is not a Ptr");
+    assert(! "env_facts_with_macro: facts is not a Ptr");
+    return NULL;
+  }
+  facts = facts_eval.data.ptr.p;
+  if (! env_eval_tag(env, spec_tag, &spec_eval))
+    return NULL;
+  if (spec_eval.type != TAG_LIST) {
     err_puts("env_facts_with_macro: spec is not a List");
     assert(! "env_facts_with_macro: spec is not a List");
     return NULL;
   }
-  if (! facts_with_list(facts, &cursor, spec_tag.data.list))
+  spec = spec_eval.data.list;
+  if (! facts_with_list(facts, &cursor, spec))
     return NULL;
   while (1) {
     if (! facts_with_cursor_next(&cursor, &fact))
@@ -2334,15 +2346,15 @@ s_tag * env_facts_with_macro (s_env *env, s_facts *facts, s_list **spec,
     if (! fact)
       break;
     tag_clean(&tmp);
-    if (! env_eval_block(env, block, &tmp)) {
+    if (! env_eval_tag(env, block_tag, &tmp)) {
       goto clean;
     }
   }
   *dest = tmp;
   return dest;
  clean:
-  err_puts("env_facts_with: error");
-  assert(! "env_facts_with: error");
+  err_puts("env_facts_with_macro: error");
+  assert(! "env_facts_with_macro: error");
   tag_clean(&tmp);
   return NULL;
 }

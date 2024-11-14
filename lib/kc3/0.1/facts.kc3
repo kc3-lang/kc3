@@ -46,7 +46,7 @@ defmodule Facts do
   def with = cfn Tag "kc3_facts_with" (Facts, List, Fn, Result)
 
   # with_macro(facts, [[?, ?, ?]], do result end) -> result
-  def with_macro = cfn_macro Tag "kc3_facts_with_macro" (Facts, List, Block, Result)
+  def with_macro = cfn_macro Tag "kc3_facts_with_macro" (Tag, Tag, Tag, Result)
 
   # with_tags(facts, subject, predicate, object,
   #           fn (fact) {result}) -> result
