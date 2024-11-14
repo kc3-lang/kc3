@@ -2312,6 +2312,41 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   return NULL;
 }
 
+s_tag * env_facts_with_macro (s_env *env, s_facts *facts, s_list **spec,
+                              s_block *block, s_tag *dest)
+{
+  s_facts_with_cursor cursor = {0};
+  const s_fact *fact = NULL;
+  s_tag spec_tag = {0};
+  s_tag tmp = {0};
+  if (! env_eval_list(env, *spec, &spec_tag))
+    return NULL;
+  if (spec_tag.type != TAG_LIST) {
+    err_puts("env_facts_with_macro: spec is not a List");
+    assert(! "env_facts_with_macro: spec is not a List");
+    return NULL;
+  }
+  if (! facts_with_list(facts, &cursor, spec_tag.data.list))
+    return NULL;
+  while (1) {
+    if (! facts_with_cursor_next(&cursor, &fact))
+      goto clean;
+    if (! fact)
+      break;
+    tag_clean(&tmp);
+    if (! env_eval_block(env, block, &tmp)) {
+      goto clean;
+    }
+  }
+  *dest = tmp;
+  return dest;
+ clean:
+  err_puts("env_facts_with: error");
+  assert(! "env_facts_with: error");
+  tag_clean(&tmp);
+  return NULL;
+}
+
 s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
                              s_tag *predicate, s_tag *object,
                              s_fn *callback, s_tag *dest)

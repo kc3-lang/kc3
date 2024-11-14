@@ -78,6 +78,9 @@ s_tag *        env_facts_first_with_tags (s_env *env, s_facts *facts,
 s_tag *        env_facts_with (s_env *env, s_facts *facts,
                                s_list **spec, s_fn *callback,
                                s_tag *dest);
+s_tag *        env_facts_with_macro (s_env *env, s_facts *facts,
+                                     s_list **spec, s_block *block,
+                                     s_tag *dest);
 s_tag *        env_facts_with_tags (s_env *env, s_facts *facts,
                                     s_tag *subject, s_tag *predicate,
                                     s_tag *object, s_fn *callback,
