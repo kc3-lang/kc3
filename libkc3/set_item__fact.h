@@ -23,7 +23,7 @@
 #include "types.h"
 
 s_set_item__fact *
-set_item_new__fact (const s_fact *data, uw hash, s_set_item__fact *next);
+set_item_new__fact (s_fact *data, uw hash, s_set_item__fact *next);
 
 void
 set_item_delete__fact (s_set_item__fact *x);

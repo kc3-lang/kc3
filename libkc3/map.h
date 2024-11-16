@@ -28,7 +28,7 @@ s_map * map_init_from_alist (s_map *map, s_list *alist);
 void    map_delete (s_map *map);
 s_map * map_new (uw size);
 s_map * map_new_1 (const char *p);
-s_map * map_new_from_lists (const s_list *keys, const s_list *values);
+s_map * map_new_from_lists (s_list *keys, s_list *values);
 
 /* Operators. */
 s_map * map_sort (s_map *map);
@@ -44,8 +44,8 @@ const s_sym ** map_get_type (const s_map *map, const s_tag *key,
 const s_sym ** map_get_var_type (const s_map *map, const s_tag *key,
                                  const s_sym **dest);
 uw *           map_index (const s_map *map, const s_tag *key, uw *dest);
-s_map *        map_put (const s_map *map, const s_tag *key,
-                        const s_tag *value, s_map *dest);
+s_map *        map_put (s_map *map, s_tag *key,
+                        s_tag *value, s_map *dest);
 /*
 s_map *        map_put_list (const s_map *map, const s_list *alist,
                              s_map *dest);

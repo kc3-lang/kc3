@@ -103,7 +103,7 @@ sw * sw_init_cast
   }
   if (true) {
     err_puts("sw_cast: stacktrace:");
-    err_inspect_list((const s_list * const *) &g_kc3_env.stacktrace);
+    err_inspect_list(g_kc3_env.stacktrace);
     err_write_1("\n");
   }
   assert(! "sw_cast: cannot cast to Sw");

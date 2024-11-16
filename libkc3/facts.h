@@ -47,7 +47,7 @@ s_facts * facts_lock_unlock_w (s_facts *facts);
 s_facts * facts_lock_w (s_facts *facts);
 #endif
 sw        facts_open_file (s_facts *facts, const s_str *path);
-s_tag *   facts_ref_tag (s_facts *facts, const s_tag *tag);
+s_tag *   facts_ref_tag (s_facts *facts, s_tag *tag);
 bool *    facts_remove_fact (s_facts *facts, const s_fact *fact,
                              bool *dest);
 bool *    facts_remove_fact_tags (s_facts *facts,
@@ -59,15 +59,14 @@ s_facts * facts_remove_all (s_facts *facts);
 s_fact *  facts_replace_fact (s_facts *facts, s_fact *fact);
 s_fact *  facts_replace_tags (s_facts *facts, s_tag *subject,
                               s_tag *predicate, s_tag *object);
-sw             facts_save_file (s_facts *facts, const char *path);
-s_facts_transaction * facts_transaction_clean
-                 (s_facts_transaction *transaction);
-s_facts *      facts_transaction_rollback
-                 (s_facts *facts,
-                  const s_facts_transaction *transaction);
-void           facts_transaction_start
-                 (s_facts *facts, s_facts_transaction *transaction);
-bool           facts_unref_tag (s_facts *facts, const s_tag *tag);
+sw        facts_save_file (s_facts *facts, const char *path);
+s_facts_transaction *
+          facts_transaction_clean (s_facts_transaction *transaction);
+s_facts * facts_transaction_rollback
+(s_facts *facts, const s_facts_transaction *transaction);
+void      facts_transaction_start
+(s_facts *facts, s_facts_transaction *transaction);
+bool      facts_unref_tag (s_facts *facts, const s_tag *tag);
 
 /* Observers */
 sw        facts_dump (s_facts *facts, s_buf *buf);

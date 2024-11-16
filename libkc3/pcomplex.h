@@ -21,8 +21,8 @@ void         pcomplex_clean (s_complex **p);
 s_complex ** pcomplex_init (s_complex **p);
 s_complex ** pcomplex_init_cast (s_complex **p,
                                  const s_sym * const *type,
-                                 const s_tag *src);
+                                 s_tag *src);
 s_complex ** pcomplex_init_copy (s_complex **p,
-				 const s_complex * const *src);
+				 s_complex **src);
 
 #endif /* LIBKC3_PCOMPLEX_H */

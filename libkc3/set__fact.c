@@ -19,7 +19,7 @@
 #include "set_item__fact.h"
 
 s_set_item__fact *
-set_add__fact (s_set__fact *set, const s_fact *data)
+set_add__fact (s_set__fact *set, s_fact *data)
 {
   uw hash;
   assert(set);
@@ -33,7 +33,7 @@ set_add__fact (s_set__fact *set, const s_fact *data)
 }
 
 s_set_item__fact *
-set_add_collision__fact (s_set__fact *set, const s_fact *data, uw hash, s_set_item__fact *item)
+set_add_collision__fact (s_set__fact *set, s_fact *data, uw hash, s_set_item__fact *item)
 {
   s_set_item__fact *new_item;
   new_item = set_item_new__fact(data, hash, item->next);
@@ -44,7 +44,7 @@ set_add_collision__fact (s_set__fact *set, const s_fact *data, uw hash, s_set_it
 }
 
 s_set_item__fact *
-set_add_h__fact (s_set__fact *set, const s_fact *data, uw hash)
+set_add_h__fact (s_set__fact *set, s_fact *data, uw hash)
 {
   uw h;
   s_set_item__fact *i;

@@ -19,11 +19,10 @@
 void     pcow_clean (s_cow **p);
 s_cow ** pcow_init (s_cow **p, const s_sym *type);
 s_cow ** pcow_init_cast (s_cow **p, const s_sym * const *type,
-                         const s_tag *src);
-s_cow ** pcow_init_copy (s_cow **p, s_cow * const *src);
+                         s_tag *src);
+s_cow ** pcow_init_copy (s_cow **p, s_cow **src);
 
 /* Operators. */
-s_tag * pcow_assign (s_cow * const *cow, const s_tag *value,
-                     s_tag *dest);
+s_tag * pcow_assign (s_cow **cow, s_tag *value, s_tag *dest);
 
 #endif /* LIBKC3_PCOW_H */

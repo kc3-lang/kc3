@@ -16,17 +16,16 @@
 
 #include "types.h"
 
-s_set_item__fact *
-set_add__fact (s_set__fact *set, const s_fact *data);
-
-s_set_item__fact *
-set_add_collision__fact (s_set__fact *set, const s_fact *data, uw hash, s_set_item__fact *item);
-
-s_set_item__fact *
-set_add_h__fact (s_set__fact *set, const s_fact *data, uw hash);
+/* Stack-allocation compatible functions, call set_clean__fact
+   after use. */
 
 void
 set_clean__fact (s_set__fact *set);
+
+s_set__fact *
+set_init__fact (s_set__fact *set, uw max);
+
+/* Observers. */
 
 s_set_item__fact *
 set_get__fact (const s_set__fact *set, const s_fact *data);
@@ -40,8 +39,16 @@ set_get_hash__fact (const s_set__fact *set, uw hash);
 s_set_item__fact *
 set_get_hash_next__fact (const s_set_item__fact *item);
 
-s_set__fact *
-set_init__fact (s_set__fact *set, uw max);
+/* Operators. */
+
+s_set_item__fact *
+set_add__fact (s_set__fact *set, s_fact *data);
+
+s_set_item__fact *
+set_add_collision__fact (s_set__fact *set, s_fact *data, uw hash, s_set_item__fact *item);
+
+s_set_item__fact *
+set_add_h__fact (s_set__fact *set, s_fact *data, uw hash);
 
 bool
 set_remove__fact (s_set__fact *set, const s_fact *data);

@@ -16,17 +16,16 @@
 
 #include "types.h"
 
-s_set_item___NAME$ *
-set_add___NAME$ (s_set___NAME$ *set, const _TYPE$ *data);
-
-s_set_item___NAME$ *
-set_add_collision___NAME$ (s_set___NAME$ *set, const _TYPE$ *data, uw hash, s_set_item___NAME$ *item);
-
-s_set_item___NAME$ *
-set_add_h___NAME$ (s_set___NAME$ *set, const _TYPE$ *data, uw hash);
+/* Stack-allocation compatible functions, call set_clean___NAME$
+   after use. */
 
 void
 set_clean___NAME$ (s_set___NAME$ *set);
+
+s_set___NAME$ *
+set_init___NAME$ (s_set___NAME$ *set, uw max);
+
+/* Observers. */
 
 s_set_item___NAME$ *
 set_get___NAME$ (const s_set___NAME$ *set, const _TYPE$ *data);
@@ -40,8 +39,16 @@ set_get_hash___NAME$ (const s_set___NAME$ *set, uw hash);
 s_set_item___NAME$ *
 set_get_hash_next___NAME$ (const s_set_item___NAME$ *item);
 
-s_set___NAME$ *
-set_init___NAME$ (s_set___NAME$ *set, uw max);
+/* Operators. */
+
+s_set_item___NAME$ *
+set_add___NAME$ (s_set___NAME$ *set, _TYPE$ *data);
+
+s_set_item___NAME$ *
+set_add_collision___NAME$ (s_set___NAME$ *set, _TYPE$ *data, uw hash, s_set_item___NAME$ *item);
+
+s_set_item___NAME$ *
+set_add_h___NAME$ (s_set___NAME$ *set, _TYPE$ *data, uw hash);
 
 bool
 set_remove___NAME$ (s_set___NAME$ *set, const _TYPE$ *data);

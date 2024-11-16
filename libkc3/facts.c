@@ -739,7 +739,7 @@ sw facts_open_log (s_facts *facts, s_buf *buf)
   return result;
 }
 
-s_tag * facts_ref_tag (s_facts *facts, const s_tag *tag)
+s_tag * facts_ref_tag (s_facts *facts, s_tag *tag)
 {
   s_set_item__tag *item;
   assert(facts);

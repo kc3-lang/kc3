@@ -21,14 +21,14 @@ void quote_clean (s_quote *quote)
   tag_delete(quote->tag);
 }
 
-s_quote * quote_init (s_quote *quote, const s_tag *tag)
+s_quote * quote_init (s_quote *quote, s_tag *tag)
 {
   quote->tag = tag_new_copy(tag);
   return quote;
 }
 
 s_quote * quote_init_cast (s_quote *quote, const s_sym * const *type,
-                           const s_tag *tag)
+                           s_tag *tag)
 {
   assert(quote);
   assert(type);
@@ -52,7 +52,7 @@ s_quote * quote_init_cast (s_quote *quote, const s_sym * const *type,
   return NULL;
 }
 
-s_quote * quote_init_copy (s_quote *quote, const s_quote *src)
+s_quote * quote_init_copy (s_quote *quote, s_quote *src)
 {
   quote->tag = tag_new_copy(src->tag);
   return quote;

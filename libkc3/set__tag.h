@@ -16,17 +16,16 @@
 
 #include "types.h"
 
-s_set_item__tag *
-set_add__tag (s_set__tag *set, const s_tag *data);
-
-s_set_item__tag *
-set_add_collision__tag (s_set__tag *set, const s_tag *data, uw hash, s_set_item__tag *item);
-
-s_set_item__tag *
-set_add_h__tag (s_set__tag *set, const s_tag *data, uw hash);
+/* Stack-allocation compatible functions, call set_clean__tag
+   after use. */
 
 void
 set_clean__tag (s_set__tag *set);
+
+s_set__tag *
+set_init__tag (s_set__tag *set, uw max);
+
+/* Observers. */
 
 s_set_item__tag *
 set_get__tag (const s_set__tag *set, const s_tag *data);
@@ -40,8 +39,16 @@ set_get_hash__tag (const s_set__tag *set, uw hash);
 s_set_item__tag *
 set_get_hash_next__tag (const s_set_item__tag *item);
 
-s_set__tag *
-set_init__tag (s_set__tag *set, uw max);
+/* Operators. */
+
+s_set_item__tag *
+set_add__tag (s_set__tag *set, s_tag *data);
+
+s_set_item__tag *
+set_add_collision__tag (s_set__tag *set, s_tag *data, uw hash, s_set_item__tag *item);
+
+s_set_item__tag *
+set_add_h__tag (s_set__tag *set, s_tag *data, uw hash);
 
 bool
 set_remove__tag (s_set__tag *set, const s_tag *data);

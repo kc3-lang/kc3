@@ -23,7 +23,7 @@
 #include "types.h"
 
 s_set_item__tag *
-set_item_new__tag (const s_tag *data, uw hash, s_set_item__tag *next);
+set_item_new__tag (s_tag *data, uw hash, s_set_item__tag *next);
 
 void
 set_item_delete__tag (s_set_item__tag *x);

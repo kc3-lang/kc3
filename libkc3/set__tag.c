@@ -19,7 +19,7 @@
 #include "set_item__tag.h"
 
 s_set_item__tag *
-set_add__tag (s_set__tag *set, const s_tag *data)
+set_add__tag (s_set__tag *set, s_tag *data)
 {
   uw hash;
   assert(set);
@@ -33,7 +33,7 @@ set_add__tag (s_set__tag *set, const s_tag *data)
 }
 
 s_set_item__tag *
-set_add_collision__tag (s_set__tag *set, const s_tag *data, uw hash, s_set_item__tag *item)
+set_add_collision__tag (s_set__tag *set, s_tag *data, uw hash, s_set_item__tag *item)
 {
   s_set_item__tag *new_item;
   new_item = set_item_new__tag(data, hash, item->next);
@@ -44,7 +44,7 @@ set_add_collision__tag (s_set__tag *set, const s_tag *data, uw hash, s_set_item_
 }
 
 s_set_item__tag *
-set_add_h__tag (s_set__tag *set, const s_tag *data, uw hash)
+set_add_h__tag (s_set__tag *set, s_tag *data, uw hash)
 {
   uw h;
   s_set_item__tag *i;

@@ -327,7 +327,7 @@ s_map * map_new_1 (const char *p)
   return map;
 }
 
-s_map * map_new_from_lists (const s_list *keys, const s_list *values)
+s_map * map_new_from_lists (s_list *keys, s_list *values)
 {
   s_map *map;
   map = alloc(sizeof(s_map));
@@ -341,8 +341,8 @@ s_map * map_new_from_lists (const s_list *keys, const s_list *values)
   
 }
 
-s_map * map_put (const s_map *map, const s_tag *key,
-                 const s_tag *value, s_map *dest)
+s_map * map_put (s_map *map, s_tag *key,
+                 s_tag *value, s_map *dest)
 {
   s_map tmp;
   uw i;

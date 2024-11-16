@@ -17,10 +17,10 @@
 
 /* Stack-allocation compatible functions, call quote_clean after use. */
 void      quote_clean (s_quote *quote);
-s_quote * quote_init (s_quote *quote, const s_tag *tag);
+s_quote * quote_init (s_quote *quote, s_tag *tag);
 s_quote * quote_init_1 (s_quote *quote, const s8 *p);
 s_quote * quote_init_cast (s_quote *quote, const s_sym * const *type,
-                           const s_tag *src);
-s_quote * quote_init_copy (s_quote *quote, const s_quote *src);
+                           s_tag *src);
+s_quote * quote_init_copy (s_quote *quote, s_quote *src);
 
 #endif /* LIBKC3_QUOTE_H */
