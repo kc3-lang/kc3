@@ -65,18 +65,17 @@ bool module_maybe_reload (const s_sym *module)
 s_str * module_path (const s_sym *module, const s_str *prefix,
                      const char *ext, s_str *dest)
 {
+  char a[BUF_SIZE];
   character b = 0;
   character c;
   s_buf in;
   s_buf out;
-  sw out_size;
   sw r;
   s_str *result;
   assert(dest);
   assert(module);
   buf_init_str(&in, false, (s_str *) &module->str);
-  out_size = module_path_size(module, prefix, ext);
-  buf_init_alloc(&out, out_size);
+  buf_init(&out, false, sizeof(a), a);
   if ((r = buf_write_str(&out, prefix)) < 0)
     goto error;
   while ((r = buf_read_character_utf8(&in, &c)) > 0) {
@@ -99,39 +98,13 @@ s_str * module_path (const s_sym *module, const s_str *prefix,
   }
   if ((r = buf_write_1(&out, ext)) < 0)
     goto error;
-  result = buf_to_str(&out, dest);
+  if (! (result = buf_read_to_str(&out, dest)))
+    goto error;
+  buf_clean(&out);
   return result;
  error:
   buf_clean(&out);
   err_puts("module_path: error");
   assert(! "module_path: error");
   return NULL;
-}
-
-sw module_path_size (const s_sym *module, const s_str *prefix, const char *ext)
-{
-  character b = 0;
-  character c;
-  s_buf in;
-  sw r;
-  sw result;
-  assert(prefix);
-  assert(module);
-  buf_init_str(&in, false, (s_str *) &module->str);
-  result = prefix->size;
-  while ((r = buf_read_character_utf8(&in, &c)) > 0) {
-    if (c == '.')
-      c = '/';
-    else if (character_is_uppercase(c)) {
-      if (character_is_lowercase(b))
-        result += strlen("_");
-      b = c;
-      c = character_to_lower(c);
-    }
-    else
-      b = c;
-    result += character_utf8_size(c);
-  }
-  result += strlen(ext);
-  return result;
 }

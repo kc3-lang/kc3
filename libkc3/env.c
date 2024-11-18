@@ -2705,8 +2705,7 @@ s_env * env_init_args (s_env *env, int *argc, char ***argv)
     str_init_1(&argv0, NULL, env->argv[0]);
     file_dirname(&argv0, &dir);
     buf_init(&buf, false, sizeof(a), a);
-    if ((r = buf_write_str(&buf, &dir)) < 0 ||
-        (r = buf_write_u8(&buf, '/') < 0)) {
+    if ((r = buf_write_str(&buf, &dir)) < 0) {
       str_clean(&dir);
       goto ko;
     }
@@ -2868,6 +2867,11 @@ bool env_load (s_env *env, const s_str *path)
   s_tag tmp = {0};
   assert(env);
   assert(path);
+  if (true) {
+    err_write_1("env_load: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+  }
   if (! buf_init_alloc(&buf, BUF_SIZE))
     return false;
   if (! buf_getc_open_r(&buf, path->ptr.pchar)) {

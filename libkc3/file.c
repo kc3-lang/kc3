@@ -432,7 +432,7 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
   s_buf_save save;
   const s_str *str;
   s_str tmp = {0};
-  buf_init(&buf, false, PATH_MAX, buf_s);
+  buf_init(&buf, false, sizeof(buf_s), buf_s);
   if ((r = buf_write_str(&buf, &g_kc3_env.argv0_dir)) < 0)
     return NULL;
   buf_save_init(&buf, &save);
@@ -442,10 +442,15 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
       buf_save_restore_rpos(&buf, &save);
       buf_save_restore_wpos(&buf, &save);
       str = &path->tag.data.str;
-      if ((r = buf_write_str(&buf, str)) < 0 ||
-          (str->ptr.pchar[str->size - 1] != '/' &&
-           (r = buf_write_1(&buf, "/")) < 0) ||
-          (r = buf_write_str(&buf, suffix)) < 0)
+      if ((r = buf_write_str(&buf, str)) < 0)
+        return NULL;
+      if (str->size > 0 &&
+          str->ptr.pchar[str->size - 1] != '/' &&
+          suffix->size > 0 &&
+          suffix->ptr.pchar[0] != '/' &&
+          (r = buf_write_1(&buf, "/")) < 0)
+        return NULL;
+      if ((r = buf_write_str(&buf, suffix)) < 0)
         return NULL;
       buf_read_to_str(&buf, &tmp);
       //io_inspect_str(&tmp);

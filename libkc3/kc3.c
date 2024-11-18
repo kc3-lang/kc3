@@ -430,11 +430,6 @@ void kc3_license (void)
 
 bool kc3_load (const s_str *path)
 {
-  if (true) {
-    err_write_1("kc3_load: ");
-    err_inspect_str(path);
-    err_write_1("\n");
-  }
   return env_load(&g_kc3_env, path);
 }
 
