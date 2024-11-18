@@ -1,4 +1,4 @@
 %Time{}
 %Time{}
-Str.ftime(%Time{}, "%a, %b %d %G %T %Z")
-"Thu, Jan 01 1970 00:00:00 GMT"
+Str.ftime(%Time{}, "%a, %b %d %G %T")
+"Thu, Jan 01 1970 00:00:00"
