@@ -248,9 +248,9 @@ bool * kc3_facts_add_tags (s_facts *facts, s_tag *subject,
 }
 
 s_tag * kc3_facts_collect_with (s_facts *facts, s_list **spec,
-                                s_fn *callback, s_tag *dest)
+                                p_callable *callback, s_tag *dest)
 {
-  return env_facts_collect_with(&g_kc3_env, facts, spec, callback,
+  return env_facts_collect_with(&g_kc3_env, facts, spec, *callback,
                                 dest);
 }
 

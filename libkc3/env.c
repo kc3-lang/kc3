@@ -2158,11 +2158,11 @@ s_fact_w * env_fact_w_eval (s_env *env, s_fact_w *fact,
 
 s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
                                 s_list **spec,
-                                s_fn *callback, s_tag *dest)
+                                s_callable *callback, s_tag *dest)
 {
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
-  const s_fact *fact = NULL;
+  s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_list **l;
   s_list  *list;
@@ -2192,7 +2192,8 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
     if (! fact_w_init_fact(fact_w, fact))
       goto clean;
     *l = list_new(NULL);
-    if (! env_eval_call_fn_args(env, callback, arguments, &(*l)->tag)) {
+    if (! env_eval_call_callable_args(env, callback, arguments,
+                                      &(*l)->tag)) {
       goto clean;
     }
     l = &(*l)->next.data.list;
@@ -2406,7 +2407,7 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
                               s_tag *block_tag, s_tag *dest)
 {
   s_facts_with_cursor cursor = {0};
-  const s_fact *fact = NULL;
+  s_fact *fact = NULL;
   s_facts *facts;
   s_tag    facts_eval;
   s_list *spec = NULL;

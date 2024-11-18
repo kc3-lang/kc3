@@ -61,7 +61,8 @@ const s_sym *  env_defstruct (s_env *env, s_list *spec);
 s_fact_w *     env_fact_w_eval (s_env *env, s_fact_w *fact,
 	         	       s_fact_w *dest);
 s_tag *        env_facts_collect_with (s_env *env, s_facts *facts,
-                                       s_list **spec, s_fn *callback,
+                                       s_list **spec,
+                                       s_callable *callback,
                                        s_tag *dest);
 s_tag *        env_facts_collect_with_tags (s_env *env, s_facts *facts,
                                             s_tag *subject,
