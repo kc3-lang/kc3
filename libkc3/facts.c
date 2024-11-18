@@ -19,6 +19,7 @@
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "compare.h"
+#include "config.h"
 #include "fact.h"
 #include "fact_list.h"
 #include "facts.h"
