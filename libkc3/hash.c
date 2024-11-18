@@ -26,7 +26,6 @@
   {                                                                    \
     const char t[] = #type;                                            \
     assert(hash);                                                      \
-    assert(x);                                                         \
     return hash_update(hash, t, sizeof(t)) &&                          \
       hash_update(hash, &x, sizeof(x));                                \
   }

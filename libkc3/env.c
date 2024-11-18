@@ -600,7 +600,7 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
     err_write_1("\n");
     result = false;
   }
-  result = env_eval_callable(env, c.callable, dest);
+  result = env_eval_call_callable(env, &c, dest);
   call_clean(&c);
   return result;
 }
@@ -645,6 +645,28 @@ bool env_eval_call_callable (s_env *env, const s_call *call,
   }
   err_puts("env_eval_call_callable: unknown callable type");
   assert(! "env_eval_call_callable: unknown callable type");
+  return false;
+}
+
+bool env_eval_call_callable_args (s_env *env,
+                                  s_callable *callable,
+                                  s_list *arguments,
+                                  s_tag *dest)
+{
+  switch (callable->type) {
+  case CALLABLE_CFN:
+    return env_eval_call_cfn_args(env, &callable->data.cfn,
+                                  arguments, dest);
+  case CALLABLE_FN:
+    return env_eval_call_fn_args(env, &callable->data.fn,
+                                 arguments, dest);
+  case CALLABLE_VOID:
+    err_puts("env_eval_call_callable_args: CALLABLE_VOID");
+    assert(! "env_eval_call_callable_args: CALLABLE_VOID");
+    return false;
+  }
+  err_puts("env_eval_call_callable_args: unknown callable type");
+  assert(! "env_eval_call_callable_args: unknown callable type");
   return false;
 }
 
@@ -2197,7 +2219,7 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
                                      s_tag *subject,
                                      s_tag *predicate,
                                      s_tag *object,
-                                     s_fn *callback,
+                                     s_callable *callback,
                                      s_tag *dest)
 {
   s_list *arguments;
@@ -2226,9 +2248,9 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
     if (! fact_w_init_fact(fact_w, fact))
       goto clean;
     *l = list_new(NULL);
-    if (! env_eval_call_fn_args(env, callback, arguments, &(*l)->tag)) {
+    if (! env_eval_call_callable_args(env, callback, arguments,
+                                      &(*l)->tag))
       goto clean;
-    }
     l = &(*l)->next.data.list;
   }
  ok:
@@ -2247,7 +2269,7 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
 
 s_tag * env_facts_first_with (s_env *env, s_facts *facts,
                               s_list **spec,
-                              s_fn *callback, s_tag *dest)
+                              s_callable *callback, s_tag *dest)
 {
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
@@ -2274,7 +2296,7 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
     goto ok;
   if (! fact_w_init_fact(fact_w, fact))
     goto clean;
-  if (! env_eval_call_fn_args(env, callback, arguments, &tmp)) {
+  if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
     goto clean;
   }
  ok:
@@ -2295,7 +2317,7 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
 
 s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
                                    s_tag *subject, s_tag *predicate,
-                                   s_tag *object, s_fn *callback,
+                                   s_tag *object, s_callable *callback,
                                    s_tag *dest)
 {
   s_list *arguments;
@@ -2325,7 +2347,7 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
     goto ok;
   if (! fact_w_init_fact(fact_w, fact))
     goto clean;
-  if (! env_eval_call_fn_args(env, callback, arguments, &tmp)) {
+  if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
     goto clean;
   }
  ok:
@@ -2340,7 +2362,7 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
 }
 
 s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
-                        s_fn *callback, s_tag *dest)
+                        s_callable *callback, s_tag *dest)
 {
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
@@ -2361,7 +2383,7 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
       break;
     tag_clean(&tmp);
     fact_w_init_fact(fact_w, fact);
-    if (! env_eval_call_fn_args(env, callback, arguments, &tmp)) {
+    if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
       fact_w_clean(fact_w);
       goto clean;
     }
@@ -2429,7 +2451,7 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
 
 s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
                              s_tag *predicate, s_tag *object,
-                             s_fn *callback, s_tag *dest)
+                             s_callable *callback, s_tag *dest)
 {
   s_list *arguments;
   s_facts_cursor cursor = {0};
@@ -2453,7 +2475,7 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
     fact_w_clean(fact_w);
     if (! fact_w_init_fact(fact_w, fact))
       goto clean;
-    if (! env_eval_call_fn_args(env, callback, arguments, &tmp)) {
+    if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
       fact_w_clean(fact_w);
       goto clean;
     }

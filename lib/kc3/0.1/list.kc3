@@ -34,7 +34,7 @@ defmodule List do
     ([first], sep, acc) { str(reverse([first | acc])) }
   }
 
-  def map = cfn List "list_map" (List, Fn, Result)
+  def map = cfn List "list_map" (List, Callable, Result)
 
   def reverse = fn {
     (x) { reverse(x, []) }
@@ -44,6 +44,6 @@ defmodule List do
 
   def sort = cfn List "list_sort" (List, Result)
 
-  def sort_by = cfn List "list_sort_by" (List, Fn, Result)
+  def sort_by = cfn List "list_sort_by" (List, Callable, Result)
 
 end

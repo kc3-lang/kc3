@@ -60,7 +60,7 @@ void list_f_clean (s_list **list)
     l = list_delete(l);
 }
 
-s_list ** list_filter (s_list **list, s_callable *function,
+s_list ** list_filter (s_list **list, p_callable *function,
                        s_list **dest)
 {
   s_list *arg;
@@ -76,7 +76,7 @@ s_list ** list_filter (s_list **list, s_callable *function,
     if (! tag_copy(&arg->tag, &l->tag))
       goto ko;
     *tail = list_new(NULL);
-    if (! eval_callable_call(function, arg, &(*tail)->tag))
+    if (! eval_callable_call(*function, arg, &(*tail)->tag))
       goto ko;
     if ((*tail)->tag.type == TAG_VOID)
       *tail = list_delete(*tail);
@@ -233,7 +233,7 @@ sw list_length (const s_list *list)
   return length;
 }
 
-s_list ** list_map (s_list **list, s_callable *function,
+s_list ** list_map (s_list **list, p_callable *function,
                     s_list **dest)
 {
   s_list *arg;
@@ -249,7 +249,7 @@ s_list ** list_map (s_list **list, s_callable *function,
     if (! tag_copy(&arg->tag, &l->tag))
       goto ko;
     *tail = list_new(NULL);
-    if (! eval_callable_call(function, arg, &(*tail)->tag))
+    if (! eval_callable_call(*function, arg, &(*tail)->tag))
       goto ko;
     tail = &(*tail)->next.data.list;
     l = list_next(l);
@@ -395,7 +395,7 @@ s_list ** list_sort (s_list **list, s_list **dest)
   return dest;
 }
 
-s_list ** list_sort_by (s_list **list, s_callable *compare,
+s_list ** list_sort_by (s_list **list, p_callable *compare,
                         s_list **dest)
 {
   s_list *arg1;
@@ -424,7 +424,7 @@ s_list ** list_sort_by (s_list **list, s_callable *compare,
         goto ko;
       if (! tag_init_copy(&arg2->tag, &l->tag))
         goto ko;
-      if (! eval_callable_call(compare, arg1, &tag))
+      if (! eval_callable_call(*compare, arg1, &tag))
         goto ko;
       tag_void(&arg1->tag);
       tag_void(&arg2->tag);

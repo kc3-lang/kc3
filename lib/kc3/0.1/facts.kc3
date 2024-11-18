@@ -21,7 +21,7 @@ defmodule Facts do
     Fn, Result)
 
   def collect_with_tags = cfn Tag "kc3_facts_collect_with_tags" (Facts,
-    Tag, Tag, Tag, Fn, Result)
+    Tag, Tag, Tag, Callable, Result)
 
   def database = cfn Ptr "facts_database" (Result)
 
@@ -30,12 +30,12 @@ defmodule Facts do
   # env_db() -> facts
   def env_db = cfn Ptr "kc3_env_db" (Result)
 
-  def first_with = cfn Tag "kc3_facts_first_with" (Facts, List, Fn, Result)
+  def first_with = cfn Tag "kc3_facts_first_with" (Facts, List, Callable, Result)
 
   # first_with_tags(facts, subject, predicate, object,
   #                 fn (fact) {result}) -> result
   def first_with_tags = cfn Tag "kc3_facts_first_with_tags" (Facts, Tag,
-    Tag, Tag, Fn, Result)
+    Tag, Tag, Callable, Result)
 
   def open = cfn Sw "facts_open_file" (Facts, Str)
 
@@ -46,7 +46,7 @@ defmodule Facts do
   def replace_tags = cfn Bool "kc3_facts_replace_tags" (Facts, Tag, Tag, Tag, Result)
 
   # with(facts, [[?, ?, ?]], fn (fact) {result}) -> result
-  def with = cfn Tag "kc3_facts_with" (Facts, List, Fn, Result)
+  def with = cfn Tag "kc3_facts_with" (Facts, List, Callable, Result)
 
   # with_macro(facts, [[?, ?, ?]], do result end) -> result
   def with_macro = cfn_macro Tag "kc3_facts_with_macro" (Tag, Tag, Tag, Result)
@@ -54,10 +54,10 @@ defmodule Facts do
   # with_tags(facts, subject, predicate, object,
   #           fn (fact) {result}) -> result
   def with_tags = cfn Tag "kc3_facts_with_tags" (Facts, Tag, Tag, Tag,
-    Fn, Result)
+    Callable, Result)
 
   # with_tuple(facts, tuple, fn (fact) {result}) -> result
-  def with_tuple = cfn Tag "kc3_facts_with_tuple" (Facts, Tuple, Fn,
+  def with_tuple = cfn Tag "kc3_facts_with_tuple" (Facts, Tuple, Callable,
     Result)
 
 end

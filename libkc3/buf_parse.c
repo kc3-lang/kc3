@@ -1114,7 +1114,7 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
   return r;
 }
 
-sw buf_parse_callable (s_buf *buf, s_callable *dest)
+sw buf_parse_callable (s_buf *buf, p_callable *dest)
 {
   sw r;
   s_callable tmp = {0};
@@ -1123,12 +1123,14 @@ sw buf_parse_callable (s_buf *buf, s_callable *dest)
   if ((r = buf_parse_cfn(buf, &tmp.data.cfn)) > 0) {
     tmp.type = CALLABLE_CFN;
     tmp.reference_count = 1;
-    *dest = tmp;
+    *dest = alloc(sizeof(s_callable));
+    **dest = tmp;
   }
   else if ((r = buf_parse_fn(buf, &tmp.data.fn)) > 0) {
     tmp.type = CALLABLE_FN;
     tmp.reference_count = 1;
-    *dest = tmp;
+    *dest = alloc(sizeof(s_callable));
+    **dest = tmp;
   }
   return r;
 }
@@ -3857,7 +3859,7 @@ sw buf_parse_tag_callable (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_callable(buf, dest->data.callable)) > 0)
+  if ((r = buf_parse_callable(buf, &dest->data.callable)) > 0)
     dest->type = TAG_CALLABLE;
   return r;
 }

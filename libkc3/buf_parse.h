@@ -55,7 +55,7 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest);
 sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence);
 sw buf_parse_call_op_unary (s_buf *buf, s_call *dest);
 sw buf_parse_call_paren (s_buf *buf, s_call *dest);
-sw buf_parse_callable (s_buf *buf, s_callable *dest);
+sw buf_parse_callable (s_buf *buf, p_callable *dest);
 sw buf_parse_cast (s_buf *buf, s_call *dest);
 sw buf_parse_cfn (s_buf *buf, s_cfn *dest);
 sw buf_parse_character (s_buf *buf, character *dest);

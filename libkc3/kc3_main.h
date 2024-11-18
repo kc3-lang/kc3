@@ -41,7 +41,8 @@ s_tag *        kc3_facts_first_with_tags (s_facts *facts,
                                           s_tag *subject,
                                           s_tag *predicate,
                                           s_tag *object,
-                                          s_fn *callback, s_tag *dest);
+                                          p_callable *callback,
+                                          s_tag *dest);
 uw *           kc3_facts_next_id (uw *dest);
 s_str *        kc3_getenv (const s_str *name, s_str *dest);
 void           kc3_license (void);
@@ -80,13 +81,14 @@ s_tag *      kc3_facts_collect_with_tags (s_facts *facts,
                                           s_tag *subject,
                                           s_tag *predicate,
                                           s_tag *object,
-                                          s_fn *callback,
+                                          p_callable *callback,
                                           s_tag *dest);
 s_tag *      kc3_facts_first_with (s_facts *facts, s_list **spec,
-                                   s_fn *callback, s_tag *dest);
+                                   p_callable *callback, s_tag *dest);
 s_tag *      kc3_facts_first_with_tags (s_facts *facts, s_tag *subject,
                                         s_tag *predicate, s_tag *object,
-                                        s_fn *callback, s_tag *dest);
+                                        p_callable *callback,
+                                        s_tag *dest);
 bool *       kc3_facts_remove_tags (s_facts *facts,
                                     s_tag *subject,
                                     s_tag *predicate,
@@ -98,12 +100,12 @@ bool *       kc3_facts_replace_tags (s_facts *facts,
                                      s_tag *object,
                                      bool *dest);
 s_tag *      kc3_facts_with (s_facts *facts, s_list **spec,
-                             s_fn *callback, s_tag *dest);
+                             p_callable *callback, s_tag *dest);
 s_tag *      kc3_facts_with_macro (s_tag *facts_tag, s_tag *spec_tag,
                                    s_tag *block_tag, s_tag *dest);
 s_tag *      kc3_facts_with_tags (s_facts *facts, s_tag *subject,
                                   s_tag *predicate, s_tag *object,
-                                  s_fn *callback, s_tag *dest);
+                                  p_callable *callback, s_tag *dest);
 s_tag *      kc3_identity (s_tag *tag, s_tag *dest);
 s_tag *      kc3_integer_reduce (s_tag *tag, s_tag *dest);
 s_tag *      kc3_let (s_tag *vars, s_tag *tag, s_tag *dest);

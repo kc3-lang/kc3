@@ -61,11 +61,11 @@ s_list ** list_tail (s_list **list);
 s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *dest);
 
 /* Operators */
-s_list ** list_filter (s_list **list, s_callable *function,
+s_list ** list_filter (s_list **list, p_callable *function,
                        s_list **dest);
-s_list ** list_map (s_list **list, s_callable *function, s_list **dest);
+s_list ** list_map (s_list **list, p_callable *function, s_list **dest);
 s_list ** list_remove_void (s_list **list);
-s_list ** list_sort_by (s_list **list, s_callable *compare,
+s_list ** list_sort_by (s_list **list, p_callable *compare,
                         s_list **dest);
 s_array * list_to_array (s_list *list, const s_sym *type,
                          s_array *dest);

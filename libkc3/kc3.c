@@ -258,25 +258,26 @@ s_tag * kc3_facts_collect_with_tags (s_facts *facts,
                                      s_tag *subject,
                                      s_tag *predicate,
                                      s_tag *object,
-                                     s_fn *callback,
+                                     p_callable *callback,
                                      s_tag *dest)
 {
   return env_facts_collect_with_tags(&g_kc3_env, facts, subject,
-                                     predicate, object, callback, dest);
+                                     predicate, object, *callback,
+                                     dest);
 }
 
 s_tag * kc3_facts_first_with (s_facts *facts, s_list **spec,
-                              s_fn *callback, s_tag *dest)
+                              p_callable *callback, s_tag *dest)
 {
-  return env_facts_first_with(&g_kc3_env, facts, spec, callback, dest);
+  return env_facts_first_with(&g_kc3_env, facts, spec, *callback, dest);
 }
 
 s_tag * kc3_facts_first_with_tags (s_facts *facts, s_tag *subject,
                                    s_tag *predicate, s_tag *object,
-                                   s_fn *callback, s_tag *dest)
+                                   p_callable *callback, s_tag *dest)
 {
   return env_facts_first_with_tags(&g_kc3_env, facts, subject,
-                                   predicate, object, callback, dest);
+                                   predicate, object, *callback, dest);
 }
 
 uw * kc3_facts_next_id (uw *dest)
@@ -312,9 +313,9 @@ bool * kc3_facts_replace_tags (s_facts *facts,
 }
 
 s_tag * kc3_facts_with (s_facts *facts, s_list **spec,
-                        s_fn *callback, s_tag *dest)
+                        p_callable *callback, s_tag *dest)
 {
-  return env_facts_with(&g_kc3_env, facts, spec, callback, dest);
+  return env_facts_with(&g_kc3_env, facts, spec, *callback, dest);
 }
 
 s_tag * kc3_facts_with_macro (s_tag *facts_tag, s_tag *spec_tag,
@@ -325,14 +326,14 @@ s_tag * kc3_facts_with_macro (s_tag *facts_tag, s_tag *spec_tag,
 
 s_tag * kc3_facts_with_tags (s_facts *facts, s_tag *subject,
                              s_tag *predicate, s_tag *object,
-                             s_fn *callback, s_tag *dest)
+                             p_callable *callback, s_tag *dest)
 {
   return env_facts_with_tags(&g_kc3_env, facts, subject, predicate,
-                             object, callback, dest);
+                             object, *callback, dest);
 }
 
 s_tag * kc3_facts_with_tuple (s_facts *facts, s_tuple *tuple,
-                              s_fn *callback, s_tag *dest)
+                              p_callable *callback, s_tag *dest)
 {
   assert(facts);
   assert(tuple);
@@ -344,8 +345,8 @@ s_tag * kc3_facts_with_tuple (s_facts *facts, s_tuple *tuple,
     return NULL;
   }
   return env_facts_with_tags(&g_kc3_env, facts, tuple->tag,
-                             tuple->tag + 1, tuple->tag + 2, callback,
-                             dest);
+                             tuple->tag + 1, tuple->tag + 2,
+                             *callback, dest);
 }
 
 s_tag * kc3_quote_cfn (const s_sym **sym, s_tag *dest)

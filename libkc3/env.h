@@ -67,25 +67,27 @@ s_tag *        env_facts_collect_with_tags (s_env *env, s_facts *facts,
                                             s_tag *subject,
                                             s_tag *predicate,
                                             s_tag *object,
-                                            s_fn *callback,
+                                            s_callable *callback,
                                             s_tag *dest);
 s_tag *        env_facts_first_with (s_env *env, s_facts *facts,
-                                     s_list **spec, s_fn *callback,
+                                     s_list **spec,
+                                     s_callable *callback,
                                      s_tag *dest);
 s_tag *        env_facts_first_with_tags (s_env *env, s_facts *facts,
                                           s_tag *subject,
                                           s_tag *predicate,
                                           s_tag *object,
-                                          s_fn *callback, s_tag *dest);
+                                          s_callable *callback,
+                                          s_tag *dest);
 s_tag *        env_facts_with (s_env *env, s_facts *facts,
-                               s_list **spec, s_fn *callback,
+                               s_list **spec, s_callable *callback,
                                s_tag *dest);
 s_tag *        env_facts_with_macro (s_env *env, s_tag *facts_tag,
                                      s_tag *spec_tag, s_tag *block_tag,
                                      s_tag *dest);
 s_tag *        env_facts_with_tags (s_env *env, s_facts *facts,
                                     s_tag *subject, s_tag *predicate,
-                                    s_tag *object, s_fn *callback,
+                                    s_tag *object, s_callable *callback,
                                     s_tag *dest);
 s_tag *        env_ident_get (s_env *env, const s_ident *ident,
                               s_tag *dest);
@@ -155,8 +157,10 @@ bool env_eval_call (s_env *env, s_call *call,
                     s_tag *dest);
 bool env_eval_call_arguments (s_env *env, s_list *args,
                               s_list **dest);
+bool env_eval_call_callable (s_env *env, const s_call *call,
+                             s_tag *dest);
 bool env_eval_call_callable_args (s_env *env,
-                                  const s_callable *callable,
+                                  s_callable *callable,
                                   s_list *arguments,
                                   s_tag *dest);
 bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
