@@ -351,6 +351,7 @@ KC3_C_SOURCES = \
 	"libkc3/error_handler.h" \
 	"libkc3/eval.c" \
 	"libkc3/eval.h" \
+	"libkc3/explicit_bzero.h" \
 	"libkc3/f128.c" \
 	"libkc3/f128.h" \
 	"libkc3/f32.c" \
@@ -464,6 +465,7 @@ KC3_C_SOURCES = \
 	"libkc3/set_item__tag.h" \
 	"libkc3/sh.c" \
 	"libkc3/sh.h" \
+	"libkc3/sha1.c" \
 	"libkc3/sha1.h" \
 	"libkc3/sign.c" \
 	"libkc3/sign.h" \
