@@ -22,12 +22,12 @@ p_callable * p_callable_init (p_callable *callable);
 p_callable * p_callable_init_cast (p_callable *callable,
                                    const s_sym * const *type,
                                    const s_tag *tag);
-s_callable * p_callable_init_copy (p_callable *callable,
+p_callable * p_callable_init_copy (p_callable *callable,
                                    p_callable *src);
 
 /* Heap-allocation functions, call callable_delete after use. */
-s_callable * callable_delete (s_callable *callable);
-s_callable * callable_new (s_callable *callable);
+void         callable_delete (s_callable *callable);
+s_callable * callable_new (void);
 s_callable * callable_new_ref (s_callable *callable);
 
 #endif /* LIBKC3_CALLABLE_H */

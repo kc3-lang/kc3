@@ -16,7 +16,7 @@
 #include "sym.h"
 #include "tag.h"
 
-s_tag * tag_addi (const s_tag *a, const s_tag *b, s_tag *dest)
+s_tag * tag_addi (s_tag *a, s_tag *b, s_tag *dest)
 {
   s_complex *c;
   s_complex ca = {0};

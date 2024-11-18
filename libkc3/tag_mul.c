@@ -17,7 +17,7 @@
 #include "ratio.h"
 #include "tag.h"
 
-s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest)
+s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest)
 {
   s_complex c = {0};
   s_ratio r = {0};

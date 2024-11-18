@@ -256,7 +256,7 @@ sw ekc3_buf_parse_kc3_block (s_buf *buf, s_block *dest)
     result += r;
     tail = &(*tail)->next.data.list;
   }
-  if (! block_init_from_list(&tmp, (const s_list * const*) &list)) {
+  if (! block_init_from_list(&tmp, &list)) {
     list_delete_all(list);
     err_puts("ekc3_buf_parse_kc3_block: block_init_from_list");
     assert(! "ekc3_buf_parse_kc3_block: block_init_from_list");

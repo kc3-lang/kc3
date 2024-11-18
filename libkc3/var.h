@@ -19,16 +19,16 @@
 s_var * var_init (s_var *var, s_tag *ptr, const s_sym *type);
 s_var * var_init_1 (s_var *var, const char *p);
 s_var * var_init_cast (s_var *tag, const s_sym * const *type,
-                       const s_tag *src);
+                       s_tag *src);
 s_var * var_init_copy (s_var *tag, const s_var *src);
 
 /* Observers. */
 bool *  var_is_unbound (const s_var *var, bool *dest);
 
 /* Operators. */
-s_tag *       var_assign (const s_var *var, const s_tag *value,
+s_tag *       var_assign (const s_var *var, s_tag *value,
                           s_tag *dest);
 const s_var * var_reset (const s_var *var);
-const s_var * var_set (const s_var *var, const s_tag *value);
+const s_var * var_set (const s_var *var, s_tag *value);
 
 #endif /* LIBKC3_VAR_H */

@@ -28,8 +28,8 @@ s_struct * struct_init_cast (s_struct *s, const s_sym * const *type,
                              const s_tag *tag);
 s_struct * struct_init_copy (s_struct *s, const s_struct *src);
 s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
-                                   const s_list *keys,
-                                   const s_list *values);
+                                   s_list *keys,
+                                   s_list *values);
 s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
                                   void *data, bool free_data);
 

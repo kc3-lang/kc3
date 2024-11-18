@@ -151,6 +151,25 @@ bool hash_update_call (t_hash *hash, const s_call *call)
     hash_update_list(hash, (const s_list * const *) &call->arguments);
 }
 
+bool hash_update_callable (t_hash *hash, const s_callable *callable)
+{
+  const char type[] = "callable";
+  assert(hash);
+  assert(callable);
+  if (! hash_update(hash, type, sizeof(type)) ||
+      ! hash_update_u8(hash, callable->type))
+    return false;
+  switch (callable->type) {
+  case CALLABLE_CFN:  return hash_update_cfn(hash, &callable->data.cfn);
+  case CALLABLE_FN:   return hash_update_fn(hash, &callable->data.fn);
+  case CALLABLE_VOID: return true;
+  }
+  err_puts("hash_update_callable: invalid callable type");
+  assert(! "hash_update_callable: invalid callable type");
+  return false;
+}
+  
+
 bool hash_update_cfn (t_hash *hash, const s_cfn *cfn)
 {
   const char type[] = "cfn";

@@ -17,7 +17,7 @@
 #include "ratio.h"
 #include "tag.h"
 
-s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest)
+s_tag * tag_sub (s_tag *a, s_tag *b, s_tag *dest)
 {
   s_complex c;
   s_integer tmp = {0};

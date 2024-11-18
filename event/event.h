@@ -21,7 +21,8 @@ void                kc3_event_delete (struct event *ev);
 struct event *      kc3_event_new (struct event_base **event_base,
                                    s32 fd,
                                    const s_list * const *events,
-                                   const s_fn *callback, s_tag *arg);
+                                   const s_callable *callback,
+                                   s_tag *arg);
 
 /* Operators. */
 s32  kc3_event_add (struct event **ev, s_time *time);

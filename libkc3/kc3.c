@@ -153,7 +153,7 @@ s_tag * kc3_defoperator (const s_sym **name, const s_sym **sym,
                          operator_associativity, dest);
 }
 
-s_tag * kc3_defstruct (const s_list * const *spec, s_tag *dest)
+s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
 {
   s_tag tmp = {0};
   assert(spec);

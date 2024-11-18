@@ -20,13 +20,13 @@ void unquote_clean (s_unquote *unquote)
   tag_delete(unquote->tag);
 }
 
-s_unquote * unquote_init (s_unquote *unquote, const s_tag *tag)
+s_unquote * unquote_init (s_unquote *unquote, s_tag *tag)
 {
   unquote->tag = tag_new_copy(tag);
   return unquote;
 }
 
-s_unquote * unquote_init_cast (s_unquote *unquote, const s_tag *tag)
+s_unquote * unquote_init_cast (s_unquote *unquote, s_tag *tag)
 {
   switch (tag->type) {
   case TAG_UNQUOTE:
@@ -41,7 +41,7 @@ s_unquote * unquote_init_cast (s_unquote *unquote, const s_tag *tag)
   return NULL;
 }
 
-s_unquote * unquote_init_copy (s_unquote *unquote, const s_unquote *src)
+s_unquote * unquote_init_copy (s_unquote *unquote, s_unquote *src)
 {
   unquote->tag = tag_new_copy(src->tag);
   return unquote;

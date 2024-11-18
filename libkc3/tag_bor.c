@@ -14,7 +14,7 @@
 #include "integer.h"
 #include "tag.h"
 
-s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *result)
+s_tag * tag_bor (s_tag *a, s_tag *b, s_tag *result)
 {
   s_integer tmp = {0};
   s_integer tmp2 = {0};

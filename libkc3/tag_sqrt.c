@@ -25,7 +25,7 @@
 #include "u64.h"
 #include "uw.h"
 
-s_tag * tag_sqrt (const s_tag *tag, s_tag *dest)
+s_tag * tag_sqrt (s_tag *tag, s_tag *dest)
 {
   switch (tag->type) {
   case TAG_INTEGER: return integer_sqrt(&tag->data.integer, dest);

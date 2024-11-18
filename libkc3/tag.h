@@ -50,7 +50,6 @@ bool           tag_ident_is_bound (const s_tag *tag);
 bool           tag_is_alist (const s_tag *tag);
 bool           tag_is_bound_var (const s_tag *tag);
 bool           tag_is_cast (const s_tag *tag, const s_sym *type);
-bool           tag_is_number (const s_tag *tag);
 bool           tag_is_struct (const s_tag *tag, const s_sym *module);
 bool *         tag_is_unbound_var (const s_tag *tag, bool *dest);
 bool           tag_is_zero(const s_tag *tag);
@@ -72,6 +71,7 @@ s_tag * tag_integer_cast_to_u32 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_cast_to_u64 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_cast_to_u8 (const s_tag *tag, s_tag *dest);
 s_tag * tag_integer_reduce (s_tag *tag);
+bool    tag_is_number (s_tag *tag);
 s_tag * tag_list_1 (s_tag *tag, const char *p);
 bool    tag_to_const_pointer (s_tag *tag, const s_sym *type,
                               void **dest);
@@ -79,33 +79,33 @@ bool    tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest);
 bool    tag_to_pointer (s_tag *tag, const s_sym *type, void **dest);
 
 /* KC3 operators. */
-s_tag * tag_add (const s_tag *a, const s_tag *b, s_tag *dest);
-bool *  tag_and (const s_tag *a, const s_tag *b, bool *dest);
-s_tag * tag_assign (const s_tag *tag, const s_tag *value, s_tag *dest);
-s_tag * tag_band (const s_tag *a, const s_tag *b, s_tag *dest);
-s_tag * tag_bnot (const s_tag *tag, s_tag *dest);
-s_tag * tag_bor (const s_tag *a, const s_tag *b, s_tag *dest);
-s_tag * tag_brackets (const s_tag *tag, const s_tag *address,
+s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest);
+bool *  tag_and (s_tag *a, s_tag *b, bool *dest);
+s_tag * tag_assign (s_tag *tag, s_tag *value, s_tag *dest);
+s_tag * tag_band (s_tag *a, s_tag *b, s_tag *dest);
+s_tag * tag_bnot (s_tag *tag, s_tag *dest);
+s_tag * tag_bor (s_tag *a, s_tag *b, s_tag *dest);
+s_tag * tag_brackets (s_tag *tag, s_tag *address,
                       s_tag *dest);
-s_tag * tag_bxor (const s_tag *a, const s_tag *b, s_tag *dest);
-s_tag * tag_cow (const s_tag *value, s_tag *dest);
-s_tag * tag_div (const s_tag *a, const s_tag *b, s_tag *dest);
-bool *  tag_lt (const s_tag *a, const s_tag *b, bool *dest);
-bool *  tag_lte (const s_tag *a, const s_tag *b, bool *dest);
-bool *  tag_gt (const s_tag *a, const s_tag *b, bool *dest);
-bool *  tag_gte (const s_tag *a, const s_tag *b, bool *dest);
-bool *  tag_eq (const s_tag *a, const s_tag *b, bool *dest);
-s_tag * tag_equal (const s_tag *a, const s_tag *b, s_tag *dest);
-s_tag * tag_mod (const s_tag *a, const s_tag *b, s_tag *dest);
-s_tag * tag_mul (const s_tag *a, const s_tag *b, s_tag *dest);
-s_tag * tag_neg (const s_tag *tag, s_tag *dest);
-bool *  tag_not (const s_tag *tag, bool *dest);
-bool *  tag_not_eq (const s_tag *a, const s_tag *b, bool *dest);
-bool *  tag_or (const s_tag *a, const s_tag *b, bool *dest);
-s_tag * tag_paren (const s_tag *tag, s_tag *dest);
-s_tag * tag_shift_left (const s_tag *a, const s_tag *b, s_tag *dest);
-s_tag * tag_shift_right (const s_tag *a, const s_tag *b, s_tag *dest);
-s_tag * tag_sqrt (const s_tag *tag, s_tag *dest);
-s_tag * tag_sub (const s_tag *a, const s_tag *b, s_tag *dest);
+s_tag * tag_bxor (s_tag *a, s_tag *b, s_tag *dest);
+s_tag * tag_cow (s_tag *value, s_tag *dest);
+s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest);
+bool *  tag_lt (s_tag *a, s_tag *b, bool *dest);
+bool *  tag_lte (s_tag *a, s_tag *b, bool *dest);
+bool *  tag_gt (s_tag *a, s_tag *b, bool *dest);
+bool *  tag_gte (s_tag *a, s_tag *b, bool *dest);
+bool *  tag_eq (s_tag *a, s_tag *b, bool *dest);
+s_tag * tag_equal (s_tag *a, s_tag *b, s_tag *dest);
+s_tag * tag_mod (s_tag *a, s_tag *b, s_tag *dest);
+s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest);
+s_tag * tag_neg (s_tag *tag, s_tag *dest);
+bool *  tag_not (s_tag *tag, bool *dest);
+bool *  tag_not_eq (s_tag *a, s_tag *b, bool *dest);
+bool *  tag_or (s_tag *a, s_tag *b, bool *dest);
+s_tag * tag_paren (s_tag *tag, s_tag *dest);
+s_tag * tag_shift_left (s_tag *a, s_tag *b, s_tag *dest);
+s_tag * tag_shift_right (s_tag *a, s_tag *b, s_tag *dest);
+s_tag * tag_sqrt (s_tag *tag, s_tag *dest);
+s_tag * tag_sub (s_tag *a, s_tag *b, s_tag *dest);
 
 #endif /* LIBKC3_TAG_H */

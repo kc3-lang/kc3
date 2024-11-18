@@ -67,8 +67,8 @@ bool * struct_type_exists (const s_sym *module, bool *dest)
   return env_struct_type_exists(&g_kc3_env, module, dest);
 }
 
-const s_struct_type ** struct_type_find (const s_sym *module,
-                                         const s_struct_type **dest)
+s_struct_type ** struct_type_find (const s_sym *module,
+                                   s_struct_type **dest)
 {
   return env_struct_type_find(&g_kc3_env, module, dest);
 }

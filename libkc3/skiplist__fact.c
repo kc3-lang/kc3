@@ -127,7 +127,7 @@ skiplist_init__fact (s_skiplist__fact *skiplist, u8 max_height, f64 spacing)
 }
 
 s_skiplist_node__fact *
-skiplist_insert__fact (s_skiplist__fact *skiplist, const s_fact * fact)
+skiplist_insert__fact (s_skiplist__fact *skiplist, s_fact * fact)
 {
   s_skiplist_node__fact *pred;
   s_skiplist_node__fact *next;

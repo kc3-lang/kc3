@@ -14,7 +14,7 @@
 #include "integer.h"
 #include "tag.h"
 
-s_tag * tag_bnot (const s_tag *tag, s_tag *result)
+s_tag * tag_bnot (s_tag *tag, s_tag *result)
 {
   assert(tag);
   assert(result);

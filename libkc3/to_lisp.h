@@ -21,9 +21,9 @@
 
 #include "types.h"
 
-s_tag * to_lisp (const s_tag *tag, s_tag *dest);
-s_tag * to_lisp_call (const s_call *call, s_tag *dest);
-s_tag * to_lisp_list (const s_list *list, s_tag *dest);
-s_tag * to_lisp_tuple (const s_tuple *call, s_tag *dest);
+s_tag * to_lisp (s_tag *tag, s_tag *dest);
+s_tag * to_lisp_call (s_call *call, s_tag *dest);
+s_tag * to_lisp_list (s_list *list, s_tag *dest);
+s_tag * to_lisp_tuple (s_tuple *call, s_tag *dest);
 
 #endif /* LIBKC3_TO_LISP_H */

@@ -38,21 +38,22 @@ void kc3_event_callback (int fd, short events, void *tag_tuple)
 {
   s_tag  *arg;
   s_list *arguments;
+  p_callable callable;
   struct event *ev;
   s_list       *events_list;
-  s_fn *fn;
   s_tag *tag;
   s_tag tmp;
   tag = tag_tuple;
   if (tag->type != TAG_TUPLE ||
       tag->data.tuple.count != 3 ||
-      tag->data.tuple.tag[0].type != TAG_FN ||
+      tag->data.tuple.tag[0].type != TAG_CALLABLE ||
+      ! (callable = tag->data.tuple.tag[0].data.callable) ||
+      callable->type == CALLABLE_VOID ||
       tag->data.tuple.tag[1].type != TAG_PTR) {
     err_puts("kc3_event_callback: invalid arg");
     assert(! "kc3_event_callback: invalid arg");
     abort();
   }
-  fn = &tag->data.tuple.tag[0].data.fn;
   ev = tag->data.tuple.tag[1].data.ptr.p;
   arg = tag->data.tuple.tag + 2;
   events_list = NULL;
@@ -70,7 +71,8 @@ void kc3_event_callback (int fd, short events, void *tag_tuple)
                            (events_list, list_new_ptr
                             (ev, list_new_tag_copy
                              (arg, NULL))));
-  if (! env_eval_call_fn_args(&g_kc3_env, fn, arguments, &tmp)) {
+  if (! env_eval_call_callable_args(&g_kc3_env, callable, arguments,
+                                    &tmp)) {
     err_puts("kc3_event_callback: callback failed");
     assert(! "kc3_event_callback: callback failed");
     abort();
@@ -90,7 +92,7 @@ struct event_base * kc3_event_base_new (void)
 
 struct event * kc3_event_new (struct event_base **event_base, s32 fd,
                                const s_list * const *events,
-                               const s_fn *callback, s_tag *arg)
+                               const s_callable *callback, s_tag *arg)
 {
   const s_list *e;
   struct event *ev;
@@ -119,7 +121,7 @@ struct event * kc3_event_new (struct event_base **event_base, s32 fd,
     assert(! "kc3_event_new: event_new");
     return NULL;
   }
-  tag_init_fn_copy(tag->data.tuple.tag, callback);
+  tag_init_callable_copy(tag->data.tuple.tag, callback);
   tag_init_copy(tag->data.tuple.tag + 2, arg);
   tag_init_ptr(tag->data.tuple.tag + 1, ev);
   return ev;

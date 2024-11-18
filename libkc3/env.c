@@ -311,7 +311,7 @@ bool env_def (s_env *env, const s_ident *ident, s_tag *value)
 const s_sym * env_def_clean (s_env *env, const s_sym *module,
                              const s_tag *clean)
 {
-  const s_struct_type *st;
+  s_struct_type *st;
   s_tag tag_module_name;
   s_tag tag_st;
   s_tag tag_struct_type;
@@ -451,7 +451,7 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
   return dest;
 }
 
-const s_sym * env_defstruct (s_env *env, const s_list *spec)
+const s_sym * env_defstruct (s_env *env, s_list *spec)
 {
   s_tag tag_module_name;
   s_tag tag_st;
@@ -656,7 +656,7 @@ bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
   //s_frame frame;
   s_tag tag;
   assert(env);
-  assert(call);
+  assert(cfn);
   assert(dest);
   //if (! frame_init(&frame, env->frame))
   //  return false;
@@ -3723,9 +3723,9 @@ bool * env_struct_type_exists (s_env *env, const s_sym *module,
   return dest;
 }
 
-const s_struct_type ** env_struct_type_find (s_env *env,
-                                             const s_sym *module,
-                                             const s_struct_type **dest)
+s_struct_type ** env_struct_type_find (s_env *env,
+                                       const s_sym *module,
+                                       s_struct_type **dest)
 {
   s_facts_with_cursor cursor;
   s_fact *found;

@@ -65,7 +65,7 @@ s_tag * struct_access (s_struct *s, s_list *key, s_tag *dest)
 s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
 {
   void *data;
-  const s_struct_type *st;
+  s_struct_type *st;
   const s_sym *type;
   s_tag tmp = {0};
   void *tmp_data;
@@ -171,7 +171,7 @@ const s_sym ** struct_get_sym (const s_struct *s, const s_sym *key)
   return (const s_sym **) struct_get(s, key);
 }
 
-const s_tag * struct_get_tag (const s_struct *s, const s_sym *key)
+s_tag * struct_get_tag (s_struct *s, const s_sym *key)
 {
   return (s_tag *) struct_get(s, key);
 }
@@ -334,13 +334,13 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
 }
 
 s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
-                                   const s_list *keys,
-                                   const s_list *values)
+                                   s_list *keys,
+                                   s_list *values)
 {
   uw i;
-  const s_list *k;
+  s_list *k;
   s_struct tmp = {0};
-  const s_list *v;
+  s_list *v;
   assert(s);
   assert(module);
   assert(list_length(keys) == list_length(values));

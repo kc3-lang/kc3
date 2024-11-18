@@ -15,7 +15,7 @@
 #include "ratio.h"
 #include "tag.h"
 
-s_tag * tag_neg (const s_tag *tag, s_tag *dest)
+s_tag * tag_neg (s_tag *tag, s_tag *dest)
 {
   s_integer tmp = {0};
   switch (tag->type) {

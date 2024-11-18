@@ -21,7 +21,7 @@
 #include "tag.h"
 #include "to_lisp.h"
 
-s_tag * to_lisp (const s_tag *tag, s_tag *dest)
+s_tag * to_lisp (s_tag *tag, s_tag *dest)
 {
   assert(tag);
   assert(dest);
@@ -37,7 +37,7 @@ s_tag * to_lisp (const s_tag *tag, s_tag *dest)
   }
 }
 
-s_tag * to_lisp_call (const s_call *call, s_tag *dest)
+s_tag * to_lisp_call (s_call *call, s_tag *dest)
 {
   s_tag arguments;
   s_list *list;
@@ -55,9 +55,9 @@ s_tag * to_lisp_call (const s_call *call, s_tag *dest)
   return tag_init_list(dest, list);
 }
 
-s_tag * to_lisp_list (const s_list *list, s_tag *dest)
+s_tag * to_lisp_list (s_list *list, s_tag *dest)
 {
-  const s_list *list_i;
+  s_list *list_i;
   s_list **tail;
   s_list *tmp;
   tmp = NULL;
@@ -76,7 +76,7 @@ s_tag * to_lisp_list (const s_list *list, s_tag *dest)
   return NULL;
 }
 
-s_tag * to_lisp_tuple (const s_tuple *tuple, s_tag *dest)
+s_tag * to_lisp_tuple (s_tuple *tuple, s_tag *dest)
 {
   uw i;
   s_tag tmp = {0};

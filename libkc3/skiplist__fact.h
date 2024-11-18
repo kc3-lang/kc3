@@ -42,7 +42,7 @@ s_skiplist__fact *
 skiplist_init__fact (s_skiplist__fact *skiplist, u8 max_height, f64 spacing);
 
 s_skiplist_node__fact *
-skiplist_insert__fact (s_skiplist__fact *skiplist, const s_fact * value);
+skiplist_insert__fact (s_skiplist__fact *skiplist, s_fact * value);
 
 s_skiplist__fact *
 skiplist_new__fact (u8 max_height, f64 spacing);

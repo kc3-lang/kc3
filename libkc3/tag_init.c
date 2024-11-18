@@ -222,8 +222,8 @@ s_tag * tag_init_map_1 (s_tag *tag, const char *p)
   return tag;
 }
 
-s_tag * tag_init_map_from_lists (s_tag *tag, const s_list *keys,
-                                 const s_list *values)
+s_tag * tag_init_map_from_lists (s_tag *tag, s_list *keys,
+                                 s_list *values)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -256,7 +256,7 @@ s_tag * tag_init_ptr_free (s_tag *tag, void *p)
   return tag;
 }
 
-s_tag * tag_init_quote_copy (s_tag *tag, const s_quote *quote)
+s_tag * tag_init_quote_copy (s_tag *tag, s_quote *quote)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -289,7 +289,7 @@ s_tag * tag_init_ratio (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_init_ratio_copy (s_tag *tag, const s_ratio *r)
+s_tag * tag_init_ratio_copy (s_tag *tag, s_ratio *r)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -464,7 +464,7 @@ s_tag * tag_init_struct (s_tag *tag, const s_sym *module)
   return tag;
 }
 
-s_tag * tag_init_struct_copy (s_tag *tag, const s_struct *src)
+s_tag * tag_init_struct_copy (s_tag *tag, s_struct *src)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -489,7 +489,7 @@ s_tag * tag_init_struct_with_data (s_tag *tag, const s_sym *module,
 }
 
 s_tag * tag_init_struct_type (s_tag *tag, const s_sym *module,
-                              const s_list *spec)
+                              s_list *spec)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -544,7 +544,7 @@ s_tag * tag_init_tuple (s_tag *tag, uw count)
   return tag;
 }
 
-s_tag * tag_init_tuple_2 (s_tag *tag, const s_tag *a, const s_tag *b)
+s_tag * tag_init_tuple_2 (s_tag *tag, s_tag *a, s_tag *b)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -617,7 +617,7 @@ s_tag * tag_init_u64 (s_tag *tag, u64 i)
   return tag;
 }
 
-s_tag * tag_init_unquote_copy (s_tag *tag, const s_unquote *unquote)
+s_tag * tag_init_unquote_copy (s_tag *tag, s_unquote *unquote)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -853,8 +853,7 @@ s_tag * tag_new_map_1 (const char *p)
   return tag;
 }
 
-s_tag * tag_new_map_from_lists (const s_list *keys,
-                                const s_list *values)
+s_tag * tag_new_map_from_lists (s_list *keys, s_list *values)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -896,7 +895,7 @@ s_tag * tag_new_ptr_free (void *p)
   return tag;
 }
 
-s_tag * tag_new_quote_copy (const s_quote *quote)
+s_tag * tag_new_quote_copy (s_quote *quote)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -938,7 +937,7 @@ s_tag * tag_new_ratio (void)
   return tag;
 }
 
-s_tag * tag_new_ratio_copy (const s_ratio *r)
+s_tag * tag_new_ratio_copy (s_ratio *r)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -1150,7 +1149,7 @@ s_tag * tag_new_struct (const s_sym *module)
   return tag;
 }
 
-s_tag * tag_new_struct_copy (const s_struct *src)
+s_tag * tag_new_struct_copy (s_struct *src)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -1180,7 +1179,7 @@ s_tag * tag_new_struct_with_data (const s_sym *module, void *data,
   return tag;
 }
 
-s_tag * tag_new_struct_type (const s_sym *module, const s_list *spec)
+s_tag * tag_new_struct_type (const s_sym *module, s_list *spec)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -1246,7 +1245,7 @@ s_tag * tag_new_tuple (uw count)
   return tag;
 }
 
-s_tag * tag_new_tuple_2 (const s_tag *a, const s_tag *b)
+s_tag * tag_new_tuple_2 (s_tag *a, s_tag *b)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -1332,7 +1331,7 @@ s_tag * tag_new_u64 (u64 i)
   return tag;
 }
 
-s_tag * tag_new_unquote_copy (const s_unquote *unquote)
+s_tag * tag_new_unquote_copy (s_unquote *unquote)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -1554,8 +1553,7 @@ s_tag * tag_map_1 (s_tag *tag, const char *p)
   return tag;
 }
 
-s_tag * tag_map_from_lists (s_tag *tag, const s_list *keys,
-                            const s_list *values)
+s_tag * tag_map_from_lists (s_tag *tag, s_list *keys, s_list *values)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1591,7 +1589,7 @@ s_tag * tag_ptr_free (s_tag *tag, void *p)
   return tag;
 }
 
-s_tag * tag_quote_copy (s_tag *tag, const s_quote *quote)
+s_tag * tag_quote_copy (s_tag *tag, s_quote *quote)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1627,7 +1625,7 @@ s_tag * tag_ratio (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_ratio_copy (s_tag *tag, const s_ratio *r)
+s_tag * tag_ratio_copy (s_tag *tag, s_ratio *r)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1816,7 +1814,7 @@ s_tag * tag_struct (s_tag *tag, const s_sym *module)
   return tag;
 }
 
-s_tag * tag_struct_copy (s_tag *tag, const s_struct *src)
+s_tag * tag_struct_copy (s_tag *tag, s_struct *src)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1842,8 +1840,7 @@ s_tag * tag_struct_with_data (s_tag *tag, const s_sym *module,
   return tag;
 }
 
-s_tag * tag_struct_type (s_tag *tag, const s_sym *module,
-                         const s_list *spec)
+s_tag * tag_struct_type (s_tag *tag, const s_sym *module, s_list *spec)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1903,7 +1900,7 @@ s_tag * tag_tuple (s_tag *tag, uw count)
   return tag;
 }
 
-s_tag * tag_tuple_2 (s_tag *tag, const s_tag *a, const s_tag *b)
+s_tag * tag_tuple_2 (s_tag *tag, s_tag *a, s_tag *b)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1983,7 +1980,7 @@ s_tag * tag_u64 (s_tag *tag, u64 i)
   return tag;
 }
 
-s_tag * tag_unquote_copy (s_tag *tag, const s_unquote *unquote)
+s_tag * tag_unquote_copy (s_tag *tag, s_unquote *unquote)
 {
   s_tag tmp = {0};
   assert(tag);

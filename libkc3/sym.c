@@ -542,7 +542,7 @@ s_sym_list * sym_list_new (const s_sym *sym, s_sym *free_sym,
 
 bool * sym_must_clean (const s_sym *sym, bool *must_clean)
 {
-  const s_struct_type *st;
+  s_struct_type *st;
   if (sym_is_array_type(sym))
     sym = sym_array_type(sym);
   if (sym == &g_sym_Block) {
@@ -1068,7 +1068,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
 
 uw * sym_type_size (const s_sym * const *type, uw *dest)
 {
-  const s_struct_type *st;
+  s_struct_type *st;
   if (*type == &g_sym_Array ||
       sym_is_array_type(*type)) {
     *dest = sizeof(s_array);

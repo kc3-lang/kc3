@@ -356,6 +356,7 @@ s_str * str_init_alloc_copy (s_str *str, uw size, const char *p)
 
 DEF_STR_INIT_STRUCT(array)
 DEF_STR_INIT(bool, bool)
+DEF_STR_INIT_STRUCT(callable)
 
 s_str * str_init_cast (s_str *str, const s_sym * const *type,
                        const s_tag *tag)

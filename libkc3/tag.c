@@ -60,7 +60,7 @@ s_tag * tag_1 (s_tag *tag, const char *p)
   return tag_init_1(tag, p);
 }
 
-bool * tag_and (const s_tag *a, const s_tag *b, bool *dest)
+bool * tag_and (s_tag *a, s_tag *b, bool *dest)
 {
   s_tag f;
   assert(a);
@@ -87,7 +87,7 @@ s8 tag_arity (const s_tag *tag)
   return -1;
 }
 
-s_tag * tag_assign (const s_tag *tag, const s_tag *value, s_tag *dest)
+s_tag * tag_assign (s_tag *tag, s_tag *value, s_tag *dest)
 {
   assert(tag);
   assert(value);
@@ -107,8 +107,7 @@ s_tag * tag_assign (const s_tag *tag, const s_tag *value, s_tag *dest)
   return NULL;
 }
 
-s_tag * tag_brackets (const s_tag *tag, const s_tag *address,
-                      s_tag *dest)
+s_tag * tag_brackets (s_tag *tag, s_tag *address, s_tag *dest)
 {
   assert(tag);
   assert(address);
@@ -253,7 +252,7 @@ void tag_clean (s_tag *tag)
   }
 }
 
-s_tag * tag_copy (s_tag *tag, const s_tag *src)
+s_tag * tag_copy (s_tag *tag, s_tag *src)
 {
   tag_clean(tag);
   return tag_init_copy(tag, src);
@@ -265,7 +264,7 @@ void tag_delete (s_tag *tag)
   free(tag);
 }
 
-bool * tag_eq (const s_tag *a, const s_tag *b, bool *dest)
+bool * tag_eq (s_tag *a, s_tag *b, bool *dest)
 {
   assert(a);
   assert(b);
@@ -274,7 +273,7 @@ bool * tag_eq (const s_tag *a, const s_tag *b, bool *dest)
   return dest;
 }
 
-s_tag * tag_equal (const s_tag *a, const s_tag *b, s_tag *dest)
+s_tag * tag_equal (s_tag *a, s_tag *b, s_tag *dest)
 {
   assert(a);
   assert(b);
@@ -284,7 +283,7 @@ s_tag * tag_equal (const s_tag *a, const s_tag *b, s_tag *dest)
   return dest;
 }
 
-bool * tag_gt (const s_tag *a, const s_tag *b, bool *dest)
+bool * tag_gt (s_tag *a, s_tag *b, bool *dest)
 {
   assert(a);
   assert(b);
@@ -293,7 +292,7 @@ bool * tag_gt (const s_tag *a, const s_tag *b, bool *dest)
   return dest;
 }
 
-bool * tag_gte (const s_tag *a, const s_tag *b, bool *dest)
+bool * tag_gte (s_tag *a, s_tag *b, bool *dest)
 {
   assert(a);
   assert(b);
@@ -462,7 +461,6 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
   case TAG_COMPLEX:
     tag->type = src->type;
     if (! pcomplex_init_copy(&tag->data.complex,
-                             (const s_complex * const *)
                              &src->data.complex))
       return NULL;
     return tag;
@@ -498,9 +496,7 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     return tag;
   case TAG_LIST:
     tag->type = src->type;
-    if (! list_init_copy(&tag->data.list,
-                         (const s_list * const *)
-                         &src->data.list))
+    if (! list_init_copy(&tag->data.list, &src->data.list))
       return NULL;
     return tag;
   case TAG_MAP:
@@ -776,7 +772,7 @@ bool tag_is_alist (const s_tag *tag)
     return false;
   if (tag->type != TAG_LIST)
     return false;
-  return list_is_alist((const s_list * const *) &tag->data.list);
+  return list_is_alist(tag->data.list);
 }
 
 bool tag_is_bound_var (const s_tag *tag)
@@ -796,7 +792,7 @@ bool tag_is_cast (const s_tag *tag, const s_sym *type)
           tag->data.call.ident.sym == &g_sym_cast);
 }
 
-bool tag_is_number (const s_tag *tag)
+bool tag_is_number (s_tag *tag)
 {
   assert(tag);
   tag = tag_resolve_cow(tag);
@@ -926,7 +922,7 @@ s_tag * tag_list_1 (s_tag *tag, const char *p)
   return tag;
 }
 
-bool * tag_lt (const s_tag *a, const s_tag *b, bool *dest)
+bool * tag_lt (s_tag *a, s_tag *b, bool *dest)
 {
   assert(a);
   assert(b);
@@ -935,7 +931,7 @@ bool * tag_lt (const s_tag *a, const s_tag *b, bool *dest)
   return dest;
 }
 
-bool * tag_lte (const s_tag *a, const s_tag *b, bool *dest)
+bool * tag_lte (s_tag *a, s_tag *b, bool *dest)
 {
   assert(a);
   assert(b);
@@ -966,7 +962,7 @@ s_tag * tag_new_1 (const char *p)
   return dest;
 }
 
-s_tag * tag_new_copy (const s_tag *src)
+s_tag * tag_new_copy (s_tag *src)
 {
   s_tag *dest;
   dest = alloc(sizeof(s_tag));
@@ -979,7 +975,7 @@ s_tag * tag_new_copy (const s_tag *src)
   return dest;
 }
 
-bool * tag_not (const s_tag *tag, bool *dest)
+bool * tag_not (s_tag *tag, bool *dest)
 {
   bool b;
   const s_sym *type;
@@ -997,7 +993,7 @@ bool * tag_not (const s_tag *tag, bool *dest)
   return dest;
 }
 
-bool * tag_not_eq (const s_tag *a, const s_tag *b, bool *dest)
+bool * tag_not_eq (s_tag *a, s_tag *b, bool *dest)
 {
   assert(a);
   assert(b);
@@ -1006,7 +1002,7 @@ bool * tag_not_eq (const s_tag *a, const s_tag *b, bool *dest)
   return dest;
 }
 
-bool * tag_or (const s_tag *a, const s_tag *b, bool *dest)
+bool * tag_or (s_tag *a, s_tag *b, bool *dest)
 {
   s_tag f;
   assert(a);
@@ -1018,14 +1014,14 @@ bool * tag_or (const s_tag *a, const s_tag *b, bool *dest)
   return dest;
 }
 
-s_tag * tag_paren (const s_tag *tag, s_tag *dest)
+s_tag * tag_paren (s_tag *tag, s_tag *dest)
 {
   assert(tag);
   assert(dest);
   return tag_init_copy(dest, tag);
 }
 
-const s_tag * tag_resolve_cow (const s_tag *tag)
+s_tag * tag_resolve_cow (s_tag *tag)
 {
   while (tag->type == TAG_COW)
     tag = cow_read_only(tag->data.cow);
@@ -1037,7 +1033,7 @@ const s_tag * tag_resolve_cow (const s_tag *tag)
   return tag;
 }
 
-s_tag * tag_semicolumn (const s_tag *a, const s_tag *b, s_tag *dest)
+s_tag * tag_semicolumn (const s_tag *a, s_tag *b, s_tag *dest)
 {
   (void) a;
   return tag_init_copy(dest, b);
@@ -1170,12 +1166,11 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_CALLABLE:
     if (type == &g_sym_Callable ||
-        (type == &g_sym_Cfn &&
-         tag->data.callable &&
-         tag->data.callable->type == CALLABLE_CFN) ||
-        (type == &g_sym_Fn &&
-         tag->data.callable
-         tag->data.callable->type == CALLABLE_FN)) {
+        (tag->data.callable &&
+         ((type == &g_sym_Cfn &&
+           tag->data.callable->type == CALLABLE_CFN) ||
+          (type == &g_sym_Fn &&
+           tag->data.callable->type == CALLABLE_FN)))) {
       *dest = &tag->data.callable;
       return true;
     }

@@ -42,7 +42,7 @@ s_skiplist___NAME$ *
 skiplist_init___NAME$ (s_skiplist___NAME$ *skiplist, u8 max_height, f64 spacing);
 
 s_skiplist_node___NAME$ *
-skiplist_insert___NAME$ (s_skiplist___NAME$ *skiplist, const _TYPE$ value);
+skiplist_insert___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ value);
 
 s_skiplist___NAME$ *
 skiplist_new___NAME$ (u8 max_height, f64 spacing);

@@ -1247,6 +1247,40 @@ sw buf_inspect_call_str_size (s_pretty *pretty, const s_call *call)
   return buf_inspect_str_eval_size(pretty, call->arguments->tag.data.list);
 }
 
+sw buf_inspect_callable (s_buf *buf, const s_callable *callable)
+{
+  switch (callable->type) {
+  case CALLABLE_CFN:
+    return buf_inspect_cfn(buf, &callable->data.cfn);
+  case CALLABLE_FN:
+    return buf_inspect_fn(buf, &callable->data.fn);
+  case CALLABLE_VOID:
+    err_puts("buf_inspect_callable: CALLABLE_VOID");
+    assert(! "buf_inspect_callable: CALLABLE_VOID");
+    return -1;
+  }
+  err_puts("buf_inspect_callable: unknown callable type");
+  assert(! "buf_inspect_callable: unknown callable type");
+  return -1;
+}
+
+sw buf_inspect_callable_size (s_pretty *pretty, const s_callable *callable)
+{
+  switch (callable->type) {
+  case CALLABLE_CFN:
+    return buf_inspect_cfn_size(pretty, &callable->data.cfn);
+  case CALLABLE_FN:
+    return buf_inspect_fn_size(pretty, &callable->data.fn);
+  case CALLABLE_VOID:
+    err_puts("buf_inspect_callable_size: CALLABLE_VOID");
+    assert(! "buf_inspect_callable_size: CALLABLE_VOID");
+    return -1;
+  }
+  err_puts("buf_inspect_callable_size: unknown callable type");
+  assert(! "buf_inspect_callable_size: unknown callable type");
+  return -1;
+}
+
 sw buf_inspect_cast (s_buf *buf, const s_call *call)
 {
   s_tag *arg;

@@ -81,7 +81,7 @@ s_tuple * tuple_init_1 (s_tuple *tuple, const char *p)
   return tuple;
 }
 
-s_tuple * tuple_init_2 (s_tuple *tuple, const s_tag *a, const s_tag *b)
+s_tuple * tuple_init_2 (s_tuple *tuple, s_tag *a, s_tag *b)
 {
   tuple_init(tuple, 2);
   tag_init_copy(tuple->tag + 0, a);
@@ -90,7 +90,7 @@ s_tuple * tuple_init_2 (s_tuple *tuple, const s_tag *a, const s_tag *b)
 }
 
 s_tuple * tuple_init_cast (s_tuple *tuple, const s_sym * const *type,
-                           const s_tag *tag)
+                           s_tag *tag)
 {
   switch (tag->type) {
   case TAG_TUPLE:
@@ -111,7 +111,7 @@ s_tuple * tuple_init_cast (s_tuple *tuple, const s_sym * const *type,
   return NULL;
 }
 
-s_tuple * tuple_init_copy (s_tuple *tuple, const s_tuple *src)
+s_tuple * tuple_init_copy (s_tuple *tuple, s_tuple *src)
 {
   uw i = 0;
   assert(src);

@@ -65,7 +65,7 @@ s_tag *      kc3_defoperator (const s_sym **name, const s_sym **sym,
                               u8 operator_precedence,
                               const s_sym **operator_associativity,
                               s_tag *dest);
-s_tag *      kc3_defstruct (const s_list * const *spec, s_tag *dest);
+s_tag *      kc3_defstruct (s_list **spec, s_tag *dest);
 void **      kc3_dlopen (const s_str *path, void **dest);
 s_facts **   kc3_env_db (s_facts **dest);
 sw           kc3_errno (void);

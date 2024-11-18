@@ -18,10 +18,9 @@
 /* Stack-allocation compatible functions, call unquote_clean
    after use. */
 void        unquote_clean (s_unquote *unquote);
-s_unquote * unquote_init (s_unquote *unquote, const s_tag *tag);
+s_unquote * unquote_init (s_unquote *unquote, s_tag *tag);
 s_unquote * unquote_init_1 (s_unquote *unquote, const s8 *p);
-s_unquote * unquote_init_cast (s_unquote *unquote, const s_tag *src);
-s_unquote * unquote_init_copy (s_unquote *unquote,
-                               const s_unquote *src);
+s_unquote * unquote_init_cast (s_unquote *unquote, s_tag *src);
+s_unquote * unquote_init_copy (s_unquote *unquote, s_unquote *src);
 
 #endif /* LIBKC3_UNQUOTE_H */

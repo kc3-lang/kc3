@@ -25,10 +25,10 @@
 /* Stack allocation compatible functions */
 s_tuple * tuple_init (s_tuple *tuple, uw count);
 s_tuple * tuple_init_1 (s_tuple *tuple, const char *p);
-s_tuple * tuple_init_2 (s_tuple *tuple, const s_tag *a, const s_tag *b);
+s_tuple * tuple_init_2 (s_tuple *tuple, s_tag *a, s_tag *b);
 s_tuple * tuple_init_cast (s_tuple *tuple, const s_sym * const *type,
-                           const s_tag *tag);
-s_tuple * tuple_init_copy (s_tuple *tuple, const s_tuple *src);
+                           s_tag *tag);
+s_tuple * tuple_init_copy (s_tuple *tuple, s_tuple *src);
 void      tuple_clean (s_tuple *tuple);
 
 /* Constructors, call tuple_delete after use */
@@ -42,6 +42,6 @@ void tuple_delete (s_tuple *tuple);
 s_tuple * tuple_1 (s_tuple *tuple, const char *p);
 
 /* Observers */
-s_list * tuple_to_list (const s_tuple *tuple, s_list **list);
+s_list * tuple_to_list (s_tuple *tuple, s_list **list);
 
 #endif /* LIBKC3_TUPLE_H */

@@ -4189,7 +4189,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
     goto restore;
   case 'c':
     if ((r = buf_parse_tag_cow(buf, dest)) ||
-        (r = buf_parse_tag_cfn(buf, dest)) ||
+        (r = buf_parse_tag_callable(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
@@ -4220,7 +4220,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
     goto restore;
   case 'f':
   case 'm':
-    if ((r = buf_parse_tag_fn(buf, dest)))
+    if ((r = buf_parse_tag_callable(buf, dest)))
       goto end;
     // fall through
   case 't':
@@ -4256,7 +4256,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   default:
-    if ((r = buf_parse_tag_fn(buf, dest)) ||
+    if ((r = buf_parse_tag_callable(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)) ||
         (r = buf_parse_tag_sym(buf, dest)))

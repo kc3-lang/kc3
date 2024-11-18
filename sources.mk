@@ -324,6 +324,8 @@ KC3_C_SOURCES = \
 	"libkc3/buf_save.h" \
 	"libkc3/call.c" \
 	"libkc3/call.h" \
+	"libkc3/callable.c" \
+	"libkc3/callable.h" \
 	"libkc3/cast.c" \
 	"libkc3/cast.h" \
 	"libkc3/ceiling.c" \

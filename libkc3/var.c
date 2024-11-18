@@ -19,7 +19,7 @@
 #include "tag.h"
 #include "var.h"
 
-s_tag * var_assign (const s_var *var, const s_tag *value, s_tag *dest)
+s_tag * var_assign (const s_var *var, s_tag *value, s_tag *dest)
 {
   assert(var);
   assert(value);
@@ -70,7 +70,7 @@ s_var * var_init_1 (s_var *var, const char *p)
 }
 
 s_var * var_init_cast (s_var *var, const s_sym * const *type,
-                       const s_tag *src)
+                       s_tag *src)
 {
   void *data;
   s_tag tag = {0};
@@ -139,7 +139,7 @@ const s_var * var_reset (const s_var *var)
   return var;
 }
 
-const s_var * var_set (const s_var *var, const s_tag *value)
+const s_var * var_set (const s_var *var, s_tag *value)
 {
   const s_sym *value_type;
   assert(var);

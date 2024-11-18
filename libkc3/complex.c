@@ -44,7 +44,7 @@ DEF_COMPLEX_INIT(u32)
 DEF_COMPLEX_INIT(u64)
 DEF_COMPLEX_INIT(uw)
 
-s_complex * complex_add (const s_complex *a, const s_complex *b,
+s_complex * complex_add (s_complex *a, s_complex *b,
                          s_complex *dest)
 {
   assert(a);
@@ -69,7 +69,7 @@ void complex_delete (s_complex *c)
   free(c);
 }
 
-s_complex * complex_div (const s_complex *a, const s_complex *b,
+s_complex * complex_div (s_complex *a, s_complex *b,
                          s_complex *dest)
 {
   s_tag axbx;
@@ -116,7 +116,7 @@ s_complex * complex_init (s_complex *c)
 }
 
 s_complex * complex_init_cast (s_complex *c, const s_sym * const *type,
-                               const s_tag *src)
+                               s_tag *src)
 {
   assert(c);
   assert(src);
@@ -186,7 +186,7 @@ s_complex * complex_init_integer (s_complex *c, const s_integer *src)
   return c;
 }
 
-s_complex * complex_init_ratio (s_complex *c, const s_ratio *src)
+s_complex * complex_init_ratio (s_complex *c, s_ratio *src)
 {
   assert(c);
   tag_init_ratio_copy(&c->x, src);
@@ -194,7 +194,7 @@ s_complex * complex_init_ratio (s_complex *c, const s_ratio *src)
   return c;
 }
 
-s_complex * complex_mul (const s_complex *a, const s_complex *b,
+s_complex * complex_mul (s_complex *a, s_complex *b,
                          s_complex *dest)
 {
   s_tag axbx;
@@ -230,7 +230,7 @@ s_complex * complex_new (void)
   return c;
 }
 
-s_complex * complex_new_add (const s_complex *a, const s_complex *b)
+s_complex * complex_new_add (s_complex *a, s_complex *b)
 {
   s_complex *c;
   c = alloc(sizeof(s_complex));
@@ -244,7 +244,7 @@ s_complex * complex_new_add (const s_complex *a, const s_complex *b)
 }
 
 s_complex * complex_new_cast (const s_sym * const *type,
-                              const s_tag *src)
+                              s_tag *src)
 {
   s_complex *c;
   assert(src);
@@ -258,7 +258,7 @@ s_complex * complex_new_cast (const s_sym * const *type,
   return c;
 }
 
-s_complex * complex_new_div (const s_complex *a, const s_complex *b)
+s_complex * complex_new_div (s_complex *a, s_complex *b)
 {
   s_complex *c;
   c = alloc(sizeof(s_complex));
@@ -271,7 +271,7 @@ s_complex * complex_new_div (const s_complex *a, const s_complex *b)
   return c;
 }
 
-s_complex * complex_new_mul (const s_complex *a, const s_complex *b)
+s_complex * complex_new_mul (s_complex *a, s_complex *b)
 {
   s_complex *c;
   c = alloc(sizeof(s_complex));
@@ -284,7 +284,7 @@ s_complex * complex_new_mul (const s_complex *a, const s_complex *b)
   return c;
 }
 
-s_complex * complex_new_sub (const s_complex *a, const s_complex *b)
+s_complex * complex_new_sub (s_complex *a, s_complex *b)
 {
   s_complex *c;
   c = alloc(sizeof(s_complex));
@@ -311,7 +311,7 @@ s_complex * complex_new_copy (s_complex *src)
   return c;
 }
 
-s_complex * complex_sub (const s_complex *a, const s_complex *b,
+s_complex * complex_sub (s_complex *a, s_complex *b,
                          s_complex *dest)
 {
   assert(a);
@@ -322,7 +322,7 @@ s_complex * complex_sub (const s_complex *a, const s_complex *b,
   return dest;
 }
 
-s_tag * complex_norm (const s_complex *c, s_tag *dest)
+s_tag * complex_norm (s_complex *c, s_tag *dest)
 {
   s_complex d;
   s_tag sum;
@@ -344,7 +344,7 @@ bool complex_is_zero(const s_complex *c)
   return tag_is_zero(&c->x) && tag_is_zero(&c->y);
 }
 
-f32 complex_to_f32 (const s_complex *c)
+f32 complex_to_f32 (s_complex *c)
 {
   s_tag norm;
   const s_sym *type;
@@ -356,7 +356,7 @@ f32 complex_to_f32 (const s_complex *c)
   return x;
 }
 
-f64 complex_to_f64 (const s_complex *c)
+f64 complex_to_f64 (s_complex *c)
 {
   s_tag norm;
   const s_sym *type;
@@ -368,7 +368,7 @@ f64 complex_to_f64 (const s_complex *c)
   return x;
 }
 
-f128 complex_to_f128 (const s_complex *c)
+f128 complex_to_f128 (s_complex *c)
 {
   s_tag norm;
   const s_sym *type;

@@ -144,7 +144,7 @@ s8 compare_cfn (const s_cfn *a, const s_cfn *b)
 
 COMPARE_DEF(character)
 
-s8 compare_complex (const s_complex *a, const s_complex *b)
+s8 compare_complex (s_complex *a, s_complex *b)
 {
   s_tag aa = {0};
   s_tag ax2 = {0};

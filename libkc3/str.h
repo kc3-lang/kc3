@@ -58,7 +58,7 @@ s_str * str_init_f (s_str *str, const char *fmt, ...);
 PROTOTYPE_STR_INIT_DIRECT(f32);
 PROTOTYPE_STR_INIT_DIRECT(f64);
 PROTOTYPE_STR_INIT_DIRECT(f128);
-PROTOTYPE_STR_INIT(callable, s_callable *);
+PROTOTYPE_STR_INIT_STRUCT(callable);
 s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format);
 PROTOTYPE_STR_INIT_STRUCT(ident);
 PROTOTYPE_STR_INIT(list, const s_list * const *);
