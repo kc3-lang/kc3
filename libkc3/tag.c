@@ -390,7 +390,7 @@ s_tag * tag_init_callable_copy (s_tag *tag, p_callable *src)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_CALL;
+  tmp.type = TAG_CALLABLE;
   if (! p_callable_init_copy(&tmp.data.callable, src))
     return NULL;
   *tag = tmp;

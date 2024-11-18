@@ -44,14 +44,36 @@ void kc3_event_callback (int fd, short events, void *tag_tuple)
   s_tag *tag;
   s_tag tmp;
   tag = tag_tuple;
-  if (tag->type != TAG_TUPLE ||
-      tag->data.tuple.count != 3 ||
-      tag->data.tuple.tag[0].type != TAG_CALLABLE ||
-      ! (callable = tag->data.tuple.tag[0].data.callable) ||
-      callable->type == CALLABLE_VOID ||
-      tag->data.tuple.tag[1].type != TAG_PTR) {
-    err_puts("kc3_event_callback: invalid arg");
-    assert(! "kc3_event_callback: invalid arg");
+  if (tag->type != TAG_TUPLE) {
+    err_puts("kc3_event_callback: invalid arg: not a Tuple");
+    assert(! "kc3_event_callback: invalid arg: not a Tuple");
+    abort();
+  }
+  if (tag->data.tuple.count != 3) {
+    err_puts("kc3_event_callback: invalid arg: tuple size != 3");
+    assert(! "kc3_event_callback: invalid arg: tuple size != 3");
+    abort();
+  }
+  if (tag->data.tuple.tag[0].type != TAG_CALLABLE) {
+    err_puts("kc3_event_callback: invalid arg: not a Callable"
+             " (Cfn or Fn)");
+    assert(!("kc3_event_callback: invalid arg: not a Callable"
+             " (Cfn or Fn)"));
+    abort();
+  }
+  if (! (callable = tag->data.tuple.tag[0].data.callable)) {
+    err_puts("kc3_event_callback: invalid arg: ! callable");
+    assert(! "kc3_event_callback: invalid arg: ! callable");
+    abort();
+  }
+  if (callable->type == CALLABLE_VOID) {
+    err_puts("kc3_event_callback: invalid arg: CALLABLE_VOID");
+    assert(! "kc3_event_callback: invalid arg: CALLABLE_VOID");
+    abort();
+  }
+  if (tag->data.tuple.tag[1].type != TAG_PTR) {
+    err_puts("kc3_event_callback: invalid arg 2: not a Ptr");
+    assert(! "kc3_event_callback: invalid arg 2: not a Ptr");
     abort();
   }
   ev = tag->data.tuple.tag[1].data.ptr.p;
