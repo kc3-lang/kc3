@@ -25,6 +25,7 @@
 #include "compare.h"
 #include "cow.h"
 #include "env.h"
+#include "explicit_bzero.h"
 #include "fn.h"
 #include "frame.h"
 #include "hash.h"
@@ -48,10 +49,6 @@
 #include "tuple.h"
 #include "unquote.h"
 #include "var.h"
-
-#ifdef __APPLE__
-# define explicit_bzero(p, size) bzero(p, size)
-#endif
 
 s_tag g_tag_first;
 s_tag g_tag_last;

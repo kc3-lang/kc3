@@ -92,6 +92,7 @@ HEADERS = \
 	"error.h" \
 	"error_handler.h" \
 	"eval.h" \
+	"explicit_bzero.h" \
 	"f128.h" \
 	"f32.h" \
 	"f64.h" \
@@ -317,6 +318,7 @@ SOURCES = \
 	"set_item__fact.c" \
 	"set_item__tag.c" \
 	"sh.c" \
+	"sha1.c" \
 	"sign.c" \
 	"skiplist__fact.c" \
 	"skiplist_node__fact.c" \
@@ -598,6 +600,7 @@ LO_SOURCES = \
 	"set_item__fact.c" \
 	"set_item__tag.c" \
 	"sh.c" \
+	"sha1.c" \
 	"sign.c" \
 	"skiplist__fact.c" \
 	"skiplist_node__fact.c" \

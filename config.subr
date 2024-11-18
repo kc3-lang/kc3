@@ -150,6 +150,15 @@ config_define() {
     echo "#define $1 $2" >> "${CONFIG_H}"
 }
 
+config_have() {
+    if "$2"; then
+        echo "#define HAVE_$1 1" >> "${CONFIG_H}"
+    else
+        echo "#define HAVE_$1 0" >> "${CONFIG_H}"
+    fi
+    eval "HAVE_$1=$2"
+}
+
 config_have_bcrypt() {
     OUT=".config_have_bcrypt"
     OUT_C=".config_have_bcrypt.c"
@@ -191,6 +200,14 @@ config_have_crypt_newhash() {
     fi
     rm -f "$OUT_C"
     rm -f "$OUT"
+}
+
+config_have_pthread() {
+    if [ "x$(uname)" = "xDarwin" ]; then
+        config_have PTHREAD false
+    else
+        config_have PTHREAD true
+    fi
 }
 
 config_have_stat_mtim() {

@@ -55,6 +55,7 @@ config_include sha1_h sys/types.h sha1.h HAVE_SHA1_H
 config_define PREFIX "\"${PREFIX}\""
 config_have_crypt_newhash
 config_have_stat_mtim
+config_have_pthread
 update_config_h
 LIBS="$LIBS -lm -lpthread -rpath ${PREFIX}/lib"
 

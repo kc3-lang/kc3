@@ -14,6 +14,7 @@
 #define LIBKC3_FACTS_CURSOR_H
 
 #include "types.h"
+#include "config.h"
 
 /* Stack allocation compatible functions */
 void             facts_cursor_clean (s_facts_cursor *cursor);
@@ -24,10 +25,12 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
                                     s_fact *end);
 
 /* Modifiers */
+#if HAVE_PTHREAD
 s_facts_cursor * facts_cursor_lock (s_facts_cursor *cursor);
 s_facts_cursor * facts_cursor_lock_clean (s_facts_cursor *cursor);
 s_facts_cursor * facts_cursor_lock_init (s_facts_cursor *cursor);
 s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor);
+#endif
 const s_fact **  facts_cursor_next (s_facts_cursor *cursor,
                                     const s_fact **dest);
 

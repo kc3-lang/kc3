@@ -14,6 +14,7 @@
 #define LIBKC3_FACTS_H
 
 #include "types.h"
+#include "config.h"
 
 #define FACTS_EXT ".facts"
 
@@ -38,12 +39,14 @@ void           facts_close (s_facts *facts);
 sw             facts_load (s_facts *facts, s_buf *buf,
                            const s_str *path);
 sw             facts_load_file (s_facts *facts, const s_str *path);
+#if HAVE_PTHREAD
 s_facts *      facts_lock_clean (s_facts *facts);
 s_facts *      facts_lock_init (s_facts *facts);
 s_facts *      facts_lock_r (s_facts *facts);
 s_facts *      facts_lock_unlock_r (s_facts *facts);
 s_facts *      facts_lock_unlock_w (s_facts *facts);
 s_facts *      facts_lock_w (s_facts *facts);
+#endif
 sw             facts_open_file (s_facts *facts, const s_str *path);
 const s_tag *  facts_ref_tag (s_facts *facts, const s_tag *tag);
 bool *         facts_remove_fact (s_facts *facts, const s_fact *fact,

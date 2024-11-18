@@ -12,6 +12,7 @@
  */
 #include <stdlib.h>
 #include "assert.h"
+#include "config.h"
 #include "facts.h"
 #include "facts_cursor.h"
 #include "skiplist__fact.h"
@@ -29,7 +30,9 @@ void facts_cursor_clean (s_facts_cursor *cursor)
     var_reset(&cursor->var_predicate);
   if (cursor->var_object.ptr)
     var_reset(&cursor->var_object);
+#if HAVE_PTHREAD
   facts_cursor_lock_clean(cursor);
+#endif
 }
 
 s_facts_cursor * facts_cursor_init (s_facts *facts,
@@ -63,13 +66,17 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
     tmp.end.object    = TAG_LAST;
   }
   tmp.facts = facts;
+#if HAVE_PTHREAD
   if (! facts_cursor_lock_init(&tmp)) {
     facts_cursor_clean(&tmp);
     return NULL;
   }
+#endif
   *cursor = tmp;
   return cursor;
 }
+
+#if HAVE_PTHREAD
 
 s_facts_cursor * facts_cursor_lock (s_facts_cursor *cursor)
 {
@@ -119,14 +126,18 @@ s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor)
   return cursor;
 }
 
+#endif /* HAVE_PTHREAD */
+
 const s_fact ** facts_cursor_next (s_facts_cursor *cursor,
                                    const s_fact **dest)
 {
   const s_fact *fact;
   const s_sym *type;
   assert(cursor);
+#if HAVE_PTHREAD
   if (! facts_cursor_lock(cursor))
     return NULL;
+#endif
   if (cursor->node) {
   next:
     cursor->node = SKIPLIST_NODE_NEXT__fact(cursor->node, 0);
@@ -141,7 +152,9 @@ const s_fact ** facts_cursor_next (s_facts_cursor *cursor,
       var_reset(&cursor->var_predicate);
     if (cursor->var_object.ptr)
       var_reset(&cursor->var_object);
+#if HAVE_PTHREAD
     facts_cursor_lock_unlock(cursor);
+#endif
     *dest = NULL;
     return dest;
   }
@@ -176,7 +189,9 @@ const s_fact ** facts_cursor_next (s_facts_cursor *cursor,
     if (! var_set(&cursor->var_object, fact->object))
       goto ko;
   }
+#if HAVE_PTHREAD
   facts_cursor_lock_unlock(cursor);
+#endif
   *dest = fact;
   return dest;
  ko:
@@ -186,6 +201,8 @@ const s_fact ** facts_cursor_next (s_facts_cursor *cursor,
     var_reset(&cursor->var_predicate);
   if (cursor->var_object.ptr)
     var_reset(&cursor->var_object);
+#if HAVE_PTHREAD
   facts_cursor_lock_unlock(cursor);
+#endif
   return NULL;
 }

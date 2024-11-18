@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "assert.h"
+#include "explicit_bzero.h"
 #include "io.h"
 #include "str.h"
 #include "types.h"

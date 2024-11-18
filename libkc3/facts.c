@@ -48,29 +48,39 @@ const s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
   s_set_item__fact *item;
   assert(facts);
   assert(fact);
+#if HAVE_PTHREAD
   if (! facts_lock_w(facts))
     return NULL;
+#endif
   tmp.subject = facts_ref_tag(facts, fact->subject);
   if (! tmp.subject) {
+#if HAVE_PTHREAD
     facts_lock_unlock_w(facts);
+#endif
     return NULL;
   }
   tmp.predicate = facts_ref_tag(facts, fact->predicate);
   if (! tmp.predicate) {
     facts_unref_tag(facts, tmp.subject);
+#if HAVE_PTHREAD
     facts_lock_unlock_w(facts);
+#endif
     return NULL;
   }
   tmp.object = facts_ref_tag(facts, fact->object);
   if (! tmp.object) {
     facts_unref_tag(facts, tmp.subject);
     facts_unref_tag(facts, tmp.predicate);
+#if HAVE_PTHREAD
     facts_lock_unlock_w(facts);
+#endif
     return NULL;
   }
   tmp.id = 0;
   if ((item = set_get__fact(&facts->facts, &tmp))) {
+#if HAVE_PTHREAD
     facts_lock_unlock_w(facts);
+#endif
     return &item->data;
   }
   tmp.id = facts->next_id;
@@ -107,13 +117,17 @@ const s_fact * facts_add_fact (s_facts *facts, const s_fact *fact)
     goto ko;
   }
   facts->next_id++;
+#if HAVE_PTHREAD
   facts_lock_unlock_w(facts);
+#endif
   return f;
  ko:
   facts_unref_tag(facts, tmp.subject);
   facts_unref_tag(facts, tmp.predicate);
   facts_unref_tag(facts, tmp.object);
+#if HAVE_PTHREAD
   facts_lock_unlock_w(facts);
+#endif
   return NULL;
 }
 
@@ -136,7 +150,9 @@ void facts_clean (s_facts *facts)
   skiplist_delete__fact(facts->index_spo);
   set_clean__fact(&facts->facts);
   set_clean__tag(&facts->tags);
+#if HAVE_PTHREAD
   facts_lock_clean(facts);
+#endif
 }
 
 void facts_close (s_facts *facts)
@@ -198,7 +214,9 @@ sw facts_dump (s_facts *facts, s_buf *buf)
                        "  version: 1}\n")) < 0)
     return r;
   result += r;
+#if HAVE_PTHREAD
   facts_lock_r(facts);
+#endif
   facts_with_0(facts, &cursor, &subject.data.var, &predicate.data.var,
                &object.data.var);
   if (! facts_cursor_next(&cursor, &fact))
@@ -218,7 +236,9 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   }
   r = result;
  clean:
+#if HAVE_PTHREAD
   facts_lock_unlock_r(facts);
+#endif
   return r;
 }
 
@@ -248,8 +268,10 @@ const s_fact ** facts_find_fact (s_facts *facts, const s_fact *fact,
   s_set_item__fact *item;
   assert(facts);
   assert(fact);
+#if HAVE_PTHREAD
   if (! facts_lock_r(facts))
     return NULL;
+#endif
   if (! facts_find_tag(facts, fact->subject, &f.subject))
     return NULL;
   if (! facts_find_tag(facts, fact->predicate, &f.predicate))
@@ -260,7 +282,9 @@ const s_fact ** facts_find_fact (s_facts *facts, const s_fact *fact,
   if (f.subject && f.predicate && f.object &&
       (item = set_get__fact((const s_set__fact *) &facts->facts, &f)))
     *dest = &item->data;
+#if HAVE_PTHREAD
   facts_lock_unlock_r(facts);
+#endif
   return dest;
 }
 
@@ -280,12 +304,16 @@ const s_tag ** facts_find_tag (s_facts *facts, const s_tag *tag,
   s_set_item__tag *item;
   assert(facts);
   assert(tag);
+#if HAVE_PTHREAD
   if (! facts_lock_r(facts))
     return NULL;
+#endif
   *dest = NULL;
   if ((item = set_get__tag(&facts->tags, tag)))
     *dest = &item->data;
+#if HAVE_PTHREAD
   facts_lock_unlock_r(facts);
+#endif
   return dest;
 }
 
@@ -306,7 +334,9 @@ s_facts * facts_init (s_facts *facts)
   tmp.index_osp = skiplist_new__fact(max_height, spacing);
   assert(tmp.index_osp);
   tmp.index_osp->compare = compare_fact_osp;
+#if HAVE_PTHREAD
   facts_lock_init(facts);
+#endif
   tmp.next_id = 1;
   *facts = tmp;
   return facts;
@@ -331,7 +361,9 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
     return -1;
   }
   result += r;
+#if HAVE_PTHREAD
   facts_lock_w(facts);
+#endif
   while (1) {
     if ((r = buf_read_1(buf, "replace ")) < 0)
       break;
@@ -403,10 +435,14 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
     fact_w_clean(&fact);
     fact_w_clean(&fact_eval);
   }
+#if HAVE_PTHREAD
   facts_lock_unlock_w(facts);
+#endif
   return result;
  ko:
+#if HAVE_PTHREAD
   facts_lock_unlock_w(facts);
+#endif
   return -1;
 }
 
@@ -428,6 +464,8 @@ sw facts_load_file (s_facts *facts, const s_str *path)
   fclose(fp);
   return result;
 }
+
+#if HAVE_PTHREAD
 
 s_facts * facts_lock_clean (s_facts *facts)
 {
@@ -551,6 +589,8 @@ s_facts * facts_lock_w (s_facts *facts)
   facts->rwlock_count++;
   return facts;
 }
+
+#endif /* HAVE_PTHREAD */
 
 sw facts_log_add (s_log *log, const s_fact *fact)
 {
@@ -764,7 +804,9 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
   const s_fact *found;
   assert(facts);
   assert(fact);
+#if HAVE_PTHREAD
   facts_lock_w(facts);
+#endif
   if (! facts_find_fact(facts, fact, &found))
     return NULL;
   *dest = false;
@@ -781,7 +823,9 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
     facts_unref_tag(facts, f.object);
     *dest = true;
   }
+#if HAVE_PTHREAD
   facts_lock_unlock_w(facts);
+#endif
   return dest;
 }
 
@@ -824,22 +868,30 @@ const s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
   assert(predicate);
   assert(object);
   tag_init_var(&var, &g_sym_Tag);
+#if HAVE_PTHREAD
   if (! facts_lock_w(facts))
     return NULL;
+#endif
   if (! facts_with_tags(facts, &cursor, (s_tag *) subject,
                         (s_tag *) predicate, &var)) {
+#if HAVE_PTHREAD
     facts_lock_unlock_w(facts);
+#endif
     return NULL;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
+#if HAVE_PTHREAD
     facts_lock_unlock_w(facts);
+#endif
     return NULL;
   }
   while (fact) {
     list = list_new(list);
     list->tag.data.fact = *fact;
     if (! facts_cursor_next(&cursor, &fact)) {
+#if HAVE_PTHREAD
       facts_lock_unlock_w(facts);
+#endif
       list_delete_all(list);
       return NULL;
     }
@@ -850,7 +902,9 @@ const s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
         ! b) {
       list_delete_all(list);
       facts_transaction_rollback(facts, &transaction);
+#if HAVE_PTHREAD
       facts_lock_unlock_w(facts);
+#endif
       return NULL;
     }
     list = list_delete(list);
@@ -858,7 +912,9 @@ const s_fact * facts_replace_tags (s_facts *facts, const s_tag *subject,
   facts_cursor_clean(&cursor);
   fact = facts_add_tags(facts, subject, predicate, object);
   facts_transaction_end(facts, &transaction);
+#if HAVE_PTHREAD
   facts_lock_unlock_w(facts);
+#endif
   return fact;
 }
 
