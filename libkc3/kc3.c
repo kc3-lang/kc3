@@ -248,6 +248,13 @@ bool * kc3_facts_add_tags (s_facts *facts, const s_tag *subject,
   return dest;
 }
 
+s_tag * kc3_facts_collect_with (s_facts *facts, s_list **spec,
+                                s_fn *callback, s_tag *dest)
+{
+  return env_facts_collect_with(&g_kc3_env, facts, spec, callback,
+                                dest);
+}
+
 s_tag * kc3_facts_collect_with_tags (s_facts *facts,
                                      s_tag *subject,
                                      s_tag *predicate,

@@ -17,6 +17,9 @@ defmodule Facts do
 
   def cast = cfn Tag "tag_init_cast_struct" (Result, Sym, Tag)
 
+  def collect_with = cfn Tag "kc3_facts_collect_with" (Facts, List,
+    Fn, Result)
+
   def collect_with_tags = cfn Tag "kc3_facts_collect_with_tags" (Facts,
     Tag, Tag, Tag, Fn, Result)
 

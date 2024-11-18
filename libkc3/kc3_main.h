@@ -77,6 +77,8 @@ bool *       kc3_facts_add_tags (s_facts *facts, const s_tag *subject,
                                  const s_tag *predicate,
                                  const s_tag *object,
                                  bool *dest);
+s_tag *      kc3_facts_collect_with (s_facts *facts, s_list **spec,
+                                     s_fn *callback, s_tag *dest);
 s_tag *      kc3_facts_collect_with_tags (s_facts *facts,
                                           s_tag *subject,
                                           s_tag *predicate,
