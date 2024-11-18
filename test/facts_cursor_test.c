@@ -112,7 +112,7 @@ TEST_CASE_END(facts_cursor_init)
 TEST_CASE(facts_cursor_next)
 {
   s_facts_cursor cursor;
-  const s_fact *cursor_fact;
+  s_fact *cursor_fact;
   uw i = 0;
   char *p[24] = {
     "-0x10000000000000000",

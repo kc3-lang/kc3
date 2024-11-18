@@ -375,6 +375,28 @@ s_tag * tag_init_call_cast (s_tag *tag, const s_sym *type)
   return tag;
 }
 
+s_tag * tag_init_callable (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_CALL;
+  if (! p_callable_init(&tmp.data.callable))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_callable_copy (s_tag *tag, p_callable *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_CALL;
+  if (! p_callable_init_copy(&tmp.data.callable, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_cast (s_tag *tag, const s_sym * const *type,
                        s_tag *src)
 {

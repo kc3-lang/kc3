@@ -17,7 +17,7 @@ const s_sym ** http_mime_type (const s_str *ext, const s_sym **dest)
 {
   s_facts_cursor cursor;
   const s_sym *default_mime_type;
-  const s_fact *fact = NULL;
+  s_fact *fact = NULL;
   s_tag tag_ext = {0};
   s_tag tag_mime_type_sym;
   s_tag tag_mime_type_value;
@@ -122,8 +122,7 @@ bool http_mime_type_buf_parse_type (s_buf *buf)
   return false;
 }
 
-bool http_mime_type_def (const s_tag *ext,
-                         const s_sym * const *mime_type)
+bool http_mime_type_def (s_tag *ext, const s_sym * const *mime_type)
 {
   s_tag tag_mime_type_sym;
   s_tag tag_mime_type_value;

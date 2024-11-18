@@ -21,6 +21,8 @@ s_tag * tag_init_array (s_tag *tag, const s_sym *type, uw dimension,
 s_tag * tag_init_array_copy (s_tag *tag, const s_array *a);
 s_tag * tag_init_bool (s_tag *tag, bool b);
 s_tag * tag_init_call (s_tag *tag);
+s_tag * tag_init_callable (s_tag *tag);
+s_tag * tag_init_callable_copy (s_tag *tag, p_callable *src);
 s_tag * tag_init_character (s_tag *tag, character c);
 s_tag * tag_init_copy (s_tag *tag, s_tag *src);
 s_tag * tag_init_complex (s_tag *tag, s_complex *c);
@@ -92,6 +94,8 @@ s_tag * tag_new_array (const s_sym *type, uw dimension,
 s_tag * tag_new_array_copy (const s_array *a);
 s_tag * tag_new_bool (bool b);
 s_tag * tag_new_call (void);
+s_tag * tag_new_callable (void);
+s_tag * tag_new_callable_copy (p_callable *src);
 s_tag * tag_new_character (character c);
 s_tag * tag_new_copy (s_tag *src);
 s_tag * tag_new_complex (s_complex *c);
@@ -156,6 +160,8 @@ s_tag * tag_array (s_tag *tag, const s_sym *type, uw dimension,
 s_tag * tag_array_copy (s_tag *tag, const s_array *a);
 s_tag * tag_bool (s_tag *tag, bool b);
 s_tag * tag_call (s_tag *tag);
+s_tag * tag_callable (s_tag *tag);
+s_tag * tag_callable_copy (s_tag *tag, p_callable *src);
 s_tag * tag_character (s_tag *tag, character c);
 s_tag * tag_copy (s_tag *tag, s_tag *src);
 s_tag * tag_complex (s_tag *tag, s_complex *c);

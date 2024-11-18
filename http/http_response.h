@@ -19,14 +19,16 @@
    after use. */
 void              http_response_clean (s_http_response *res);
 s_http_response * http_response_init_copy (s_http_response *res,
-                                           const s_http_response *src);
+                                           s_http_response *src);
 
 /* Observers. */
 sw                http_response_buf_write (const s_http_response *res,
                                            s_buf *buf, bool send_body);
 s_tag *           http_response_find_header (const s_http_response *res,
                                              const s_str *key);
-s_http_response * http_response_set_header (const s_http_response *res,
+
+/* Operators. */
+s_http_response * http_response_set_header (s_http_response *res,
                                             const s_str *key,
                                             const s_str *value,
                                             s_http_response *dest);

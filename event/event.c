@@ -91,8 +91,8 @@ struct event_base * kc3_event_base_new (void)
 }
 
 struct event * kc3_event_new (struct event_base **event_base, s32 fd,
-                               const s_list * const *events,
-                               const s_callable *callback, s_tag *arg)
+                              const s_list * const *events,
+                              p_callable *callback, s_tag *arg)
 {
   const s_list *e;
   struct event *ev;
@@ -127,7 +127,7 @@ struct event * kc3_event_new (struct event_base **event_base, s32 fd,
   return ev;
  invalid_event_list:
   err_write_1("kc3_event_new: invalid event list: ");
-  err_inspect_list(events);
+  err_inspect_list(*events);
   assert(! "kc3_event_new: invalid event list");
   return NULL;
 }

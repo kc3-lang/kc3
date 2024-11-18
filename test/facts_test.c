@@ -77,7 +77,7 @@ TEST_CASE(facts_add)
     "-0x10000000000000000",
     NULL
   };
-  const s_fact *pf;
+  s_fact *pf;
   s_fact fact[24];
   s_facts facts;
   facts_init(&facts);
@@ -156,7 +156,7 @@ TEST_CASE_END(facts_dump_file)
 TEST_CASE(facts_find)
 {
   bool b;
-  const s_fact *f;
+  s_fact *f;
   uw i = 0;
   char *p[24] = {
     "\"a\"",
@@ -186,7 +186,7 @@ TEST_CASE(facts_find)
   };
   s_fact fact[24];
   s_facts facts;
-  const s_fact *pf;
+  s_fact *pf;
   facts_init(&facts);
   while (p[i]) {
     fact_test_init_1(fact + i, p[i]);
@@ -232,7 +232,7 @@ TEST_CASE_END(facts_init_clean)
 
 TEST_CASE(facts_load)
 {
-  const s_fact *f;
+  s_fact *f;
   uw i = 0;
   char *p[24] = {
     "\"a\"",
@@ -402,7 +402,7 @@ TEST_CASE_END(facts_new_delete)
 TEST_CASE(facts_open_file)
 {
   bool b;
-  const s_fact *f;
+  s_fact *f;
   uw i = 0;
   char *p[24] = {
     "\"a\"",

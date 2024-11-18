@@ -35,8 +35,7 @@ s_tag *            array_data_tag (const s_array *a,
 /* Operators */
 s_tag *   array_access (s_array *a, s_list *key, s_tag *dest);
 s_array * array_allocate (s_array *a);
-s_array * array_data_set (s_array *a, const uw *address,
-                          void *data);
+s_array * array_data_set (s_array *a, const uw *address, void *data);
 s_array * array_free (s_array *a);
 
 #endif /* LIBKC3_ARRAY_H */

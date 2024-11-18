@@ -31,7 +31,7 @@ void facts_with_test (void)
 TEST_CASE(facts_with_)
 {
   s_facts_with_cursor cursor;
-  const s_fact *f;
+  s_fact *f;
   s_fact fact;
   s_facts facts;
   sw i = 0;
@@ -232,7 +232,7 @@ TEST_CASE_END(facts_with_)
 TEST_CASE(facts_with_tags)
 {
   s_facts_cursor cursor;
-  const s_fact *f;
+  s_fact *f;
   s_fact fact;
   s_facts facts;
   sw i = 0;

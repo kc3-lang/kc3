@@ -153,7 +153,7 @@ sw http_response_buf_write (const s_http_response *response,
       tag_clean(&default_messages);
       return -1;
     }
-    if (alist_get((const s_list * const *) &default_messages.data.list,
+    if (alist_get(default_messages.data.list,
                   &tag_code, &tag_message)) {
       if (tag_message.type != TAG_STR) {
         err_puts("http_response_buf_write: invalid default message:"
@@ -383,7 +383,7 @@ s_tag * http_response_find_header (const s_http_response *res,
 }
 
 s_http_response * http_response_init_copy (s_http_response *res,
-                                           const s_http_response *src)
+                                           s_http_response *src)
 {
   s_http_response tmp = {0};
   if (! str_init_copy(&tmp.protocol, &src->protocol))
@@ -391,8 +391,7 @@ s_http_response * http_response_init_copy (s_http_response *res,
   tmp.code = src->code;
   if (! str_init_copy(&tmp.message, &src->message))
     goto clean;
-  if (! list_init_copy(&tmp.headers,
-                       (const s_list * const *) &src->headers))
+  if (! list_init_copy(&tmp.headers, &src->headers))
     goto clean;
   if (! tag_init_copy(&tmp.body, &src->body))
     goto clean;
@@ -403,7 +402,7 @@ s_http_response * http_response_init_copy (s_http_response *res,
   return NULL;
 }
 
-s_http_response * http_response_set_header (const s_http_response *res,
+s_http_response * http_response_set_header (s_http_response *res,
                                             const s_str *key,
                                             const s_str *value,
                                             s_http_response *dest)

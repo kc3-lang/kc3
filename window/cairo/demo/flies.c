@@ -46,7 +46,7 @@ static void fly_init (s_map *map)
   board = &map->value[0].data.array;
   in    = &map->value[1].data.uw;
   t     = &map->value[3].data.f64;
-  array_data_set(board, address, &g_board_item_fly);
+  array_data_set(board, address, (void *) &g_board_item_fly);
   *t = 0.0;
   (*in)++;
 }
@@ -77,7 +77,7 @@ bool flies_load (s_sequence *seq)
     j = 0;
     while (j < BOARD_SIZE) {
       address[1] = j;
-      array_data_set(board, address, &g_board_item_space);
+      array_data_set(board, address, (void *) &g_board_item_space);
       j++;
     }
     i++;
@@ -86,40 +86,40 @@ bool flies_load (s_sequence *seq)
   while (i < BOARD_SIZE) {
     address[0] = i;
     address[1] = 0;
-    array_data_set(board, address, &g_board_item_block);
+    array_data_set(board, address, (void *) &g_board_item_block);
     address[1] = BOARD_SIZE - 1;
-    array_data_set(board, address, &g_board_item_block);
+    array_data_set(board, address, (void *) &g_board_item_block);
     address[0] = 0;
     address[1] = i;
-    array_data_set(board, address, &g_board_item_block);
+    array_data_set(board, address, (void *) &g_board_item_block);
     address[0] = BOARD_SIZE - 1;
-    array_data_set(board, address, &g_board_item_block);
+    array_data_set(board, address, (void *) &g_board_item_block);
     i++;
   }
   address[0] = BOARD_SIZE / 2;
   address[1] = 0;
-  array_data_set(board, address, &g_board_item_space);
+  array_data_set(board, address, (void *) &g_board_item_space);
   address[1] = BOARD_SIZE - 1;
-  array_data_set(board, address, &g_board_item_space);
+  array_data_set(board, address, (void *) &g_board_item_space);
   address[1] = BOARD_SIZE / 2;
   i = 1;
   while (i <= BOARD_SIZE / 2) {
     address[0] = i;
-    array_data_set(board, address, &g_board_item_block);
+    array_data_set(board, address, (void *) &g_board_item_block);
     i++;
   }
   address[0] = BOARD_SIZE / 2;
   j = BOARD_SIZE / 4;
   while (j < BOARD_SIZE / 2) {
     address[1] = j;
-    array_data_set(board, address, &g_board_item_block);
+    array_data_set(board, address, (void *) &g_board_item_block);
     j++;
   }
   address[1] = BOARD_SIZE * 3 / 4;
   i = BOARD_SIZE / 4;
   while (i < BOARD_SIZE - 1) {
     address[0] = i;
-    array_data_set(board, address, &g_board_item_block);
+    array_data_set(board, address, (void *) &g_board_item_block);
     i++;
   }
   fly_init(map);
@@ -230,7 +230,7 @@ bool flies_render (s_sequence *seq)
                               cr, 0, 0);
             if (address[0] == BOARD_SIZE / 2 &&
                 address[1] == BOARD_SIZE - 1) {
-              array_data_set(board, address, &g_board_item_space);
+              array_data_set(board, address, (void *) &g_board_item_space);
               (*fly_out)++;
               fly_init(map);
               break;
@@ -277,8 +277,9 @@ bool flies_render (s_sequence *seq)
                                                     fly_address)) &&
                     *board_item == g_board_item_space) {
                   array_data_set(board, fly_prev_address,
-                                 &g_board_item_space);
-                  array_data_set(board, fly_address, &g_board_item_fly);
+                                 (void *) &g_board_item_space);
+                  array_data_set(board, fly_address,
+                                 (void *) &g_board_item_fly);
                   direction_prev = direction;
                   break;
                 }
@@ -290,7 +291,8 @@ bool flies_render (s_sequence *seq)
             }
             *fly_time += 1;
             if (*fly_time > FLY_TIME_MAX) {
-              array_data_set(board, fly_address, &g_board_item_dead_fly);
+              array_data_set(board, fly_address,
+                             (void *) &g_board_item_dead_fly);
               fly_init(map);
             }
             break;

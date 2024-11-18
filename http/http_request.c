@@ -118,7 +118,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         err_inspect_tag(&body);
         err_write_1("\n");
       }
-      if (alist_get((const s_list * const *) &body.data.list,
+      if (alist_get(body.data.list,
                     &method_key, &method_value)) {
         http_request_method_from_str(&method_value.data.str,
                                      &tmp_req.method);
@@ -205,7 +205,7 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
     err_puts("http_request_buf_write: invalid protocol: \"\"");
     return -1;
   }    
-  if (! list_is_alist((const s_list * const *) &req->headers)) {
+  if (! list_is_alist(req->headers)) {
     err_puts("http_request_buf_write: invalid headers: not an AList");
     return -1;
   }
