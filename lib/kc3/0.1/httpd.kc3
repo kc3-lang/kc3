@@ -56,6 +56,8 @@ defmodule HTTPd do
           if (real_ip) do real_ip else client.addr_str end
         end
         request = Struct.put(request, :client_addr, client_addr)
+        user_agent = HTTP.Request.header(request, "User-Agent")
+        puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
         if (type(request.method) == Str) do
           response = error_405_page(request)
         else
@@ -72,7 +74,6 @@ defmodule HTTPd do
           "Accept-Ranges", "bytes")
         r = HTTP.Response.buf_write(response, client.buf_rw.w,
           request.method != HEAD)
-        user_agent = HTTP.Request.header(request, "User-Agent")
         puts("#{response.code} #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
       else
         Event.del(client_ev)
