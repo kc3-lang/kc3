@@ -28,6 +28,9 @@ KC3_CONFIGURES = \
 	"libtommath/configure" \
 	"libtommath/sources.sh" \
 	"libtommath/update_sources" \
+	"markdown/configure" \
+	"markdown/sources.sh" \
+	"markdown/update_sources" \
 	"socket/configure" \
 	"socket/sources.sh" \
 	"socket/update_sources" \
@@ -92,6 +95,11 @@ KC3_MAKEFILES = \
 	"libkc3/sources.mk" \
 	"libtommath/Makefile" \
 	"libtommath/sources.mk" \
+	"markdown/Makefile" \
+	"markdown/md4c/build/Makefile" \
+	"markdown/md4c/build/md2html/Makefile" \
+	"markdown/md4c/build/src/Makefile" \
+	"markdown/sources.mk" \
 	"socket/Makefile" \
 	"socket/sources.mk" \
 	"test/Makefile" \
@@ -538,6 +546,24 @@ KC3_C_SOURCES = \
 	"libkc3/var.h" \
 	"libkc3/void.c" \
 	"libkc3/void.h" \
+	"markdown/entity.c" \
+	"markdown/entity.h" \
+	"markdown/markdown.c" \
+	"markdown/markdown.h" \
+	"markdown/md4c-html.c" \
+	"markdown/md4c-html.h" \
+	"markdown/md4c.c" \
+	"markdown/md4c.h" \
+	"markdown/md4c/md2html/cmdline.c" \
+	"markdown/md4c/md2html/cmdline.h" \
+	"markdown/md4c/md2html/md2html.c" \
+	"markdown/md4c/src/entity.c" \
+	"markdown/md4c/src/entity.h" \
+	"markdown/md4c/src/md4c-html.c" \
+	"markdown/md4c/src/md4c-html.h" \
+	"markdown/md4c/src/md4c.c" \
+	"markdown/md4c/src/md4c.h" \
+	"markdown/md4c/test/fuzzers/fuzz-mdhtml.c" \
 	"socket/socket.c" \
 	"socket/socket.h" \
 	"socket/socket_addr.c" \
@@ -942,6 +968,7 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
+	"lib/kc3/0.1/.#file.kc3" \
 	"lib/kc3/0.1/alist.kc3" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bool.facts" \
@@ -973,6 +1000,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/vertex.kc3" \
 	"lib/kc3/0.1/html.kc3" \
 	"lib/kc3/0.1/http.kc3" \
+	"lib/kc3/0.1/http/.#response.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
 	"lib/kc3/0.1/http/response.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
@@ -1547,6 +1575,7 @@ KC3_DOC_SOURCES = \
 	"doc/1_KC3/1.4_Ratio.en.md" \
 	"doc/1_KC3/1.5_List.en.md" \
 	"doc/1_KC3/1.6_Variable.en.md" \
+	"doc/2_HTTPd/.#index.en.md" \
 	"doc/2_HTTPd/index.en.md" \
 	"doc/3_Guides/3.1_Install.en.md" \
 	"doc/3_Guides/3.2_Testing.en.md" \
