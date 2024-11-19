@@ -69,5 +69,6 @@ s_list ** list_sort_by (s_list **list, p_callable *compare,
                         s_list **dest);
 s_array * list_to_array (s_list *list, const s_sym *type,
                          s_array *dest);
+s_list ** list_unique (s_list **list, s_list **dest);
 
 #endif /* LIBKC3_LIST_H */

@@ -520,3 +520,30 @@ s_array * list_to_array (s_list *list, const s_sym *array_type,
   free(tmp.dimensions);
   return NULL;
 }
+
+s_list ** list_unique (s_list **list, s_list **dest)
+{
+  bool found;
+  s_list *l;
+  s_list **tail;
+  s_list *tmp = NULL;
+  assert(list);
+  assert(dest);
+  tail = &tmp;
+  l = *list;
+  while (l) {
+    if (! list_has((const s_list * const *) &tmp, &l->tag, &found))
+      goto ko;
+    if (! found) {
+      if (! (*tail = list_new_tag_copy(&l->tag, NULL)))
+        goto ko;
+      tail = &(*tail)->next.data.list;
+    }
+    l = list_next(l);
+  }
+  *dest = tmp;
+  return dest;
+ ko:
+  list_delete_all(tmp);
+  return NULL;
+}

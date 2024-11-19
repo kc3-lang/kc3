@@ -46,4 +46,6 @@ defmodule List do
 
   def sort_by = cfn List "list_sort_by" (List, Callable, Result)
 
+  def unique = cfn List "list_unique" (List, Result)
+
 end
