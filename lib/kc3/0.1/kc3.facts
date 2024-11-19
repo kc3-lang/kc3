@@ -282,6 +282,8 @@ add {KC3, :symbol, KC3.puts}
 replace {KC3.puts, :symbol_value, cfn Sw "kc3_puts" (Tag)}
 add {KC3, :symbol, KC3.load}
 replace {KC3.load, :symbol_value, cfn Bool "kc3_load" (Str)}
+add {KC3, :symbol, KC3.maybe_reload}
+replace {KC3.maybe_reload, :symbol_value, cfn Bool "kc3_maybe_reload" (Str)}
 add {KC3, :symbol, KC3.must_clean}
 replace {KC3.must_clean, :symbol_value, cfn Bool "kc3_must_clean" (Sym, Result)}
 add {KC3, :symbol, KC3.while}
@@ -345,6 +347,24 @@ replace {KC3.load_directory, :symbol_value, fn (dir) {
         else
           if Str.ends_with?(path, ".kc3") do
             load(path)
+          end
+        end
+      end
+    })
+  end
+}}
+add {KC3, :symbol, KC3.maybe_reload_directory}
+replace {KC3.maybe_reload_directory, :symbol_value, fn (dir) {
+  if File.exists?(dir) && File.is_directory?(dir) do
+    files = List.sort(File.list(dir))
+    List.each(files, fn (file) {
+      if (! Str.starts_with?(file, ".")) do
+        path = dir + file
+        if File.is_directory?(path) do
+          maybe_reload_directory(path + "/")
+        else
+          if Str.ends_with?(path, ".kc3") do
+            maybe_reload(path)
           end
         end
       end

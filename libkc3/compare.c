@@ -119,9 +119,9 @@ s8 compare_callable (const s_callable *a, const s_callable *b)
   if (a->type > b->type)
     return 1;
   switch (a->type) {
-  case CALLABLE_VOID: return 0;
   case CALLABLE_CFN:  return compare_cfn(&a->data.cfn, &b->data.cfn);
   case CALLABLE_FN:   return compare_fn(&a->data.fn, &b->data.fn);
+  case CALLABLE_VOID: return 0;
   }
   err_puts("compare_callable: error");
   assert(! "compare_callable: error");

@@ -2,6 +2,19 @@ defmodule URL do
 
   dlopen(__DIR__ + "http.so")
 
+  def eat = fn {
+    ([], _) { "/" }
+    (url, 0) {
+      if (type(url) == List) do
+        "/" + List.join(url, "/")
+      else
+        url
+      end
+    }
+    ([first | rest], i) { eat(rest, i - 1) }
+    (url, i) { eat(Str.split(url, "/"), i + 1) }
+  }
+
   def escape = cfn Str "url_escape" (Str, Result)
 
   def escapes = "%#<>'\\\""

@@ -28,8 +28,23 @@ defmodule HTTPd do
     load_directory("app/plugs/")
   }
 
+  def maybe_reload_app = fn () {
+    maybe_reload(__FILE__)
+    maybe_reload_directory("app/models/")
+    if (File.exists?("config/db.kc3")) do
+      maybe_reload("config/db.kc3")
+    end
+    maybe_reload_directory("app/controllers/")
+    maybe_reload_directory("app/views/")
+    if (File.exists?("config/routes.kc3")) do
+      maybe_reload("config/routes.kc3")
+    end
+    maybe_reload_directory("app/plugs/")
+  }
+
   def http_client = fn (socket, events, client_ev, client) do
     if List.has?(events, :read) do
+      maybe_reload_app()                        
       request = void
       request = HTTP.Request.buf_parse(client.buf_rw.r)
       if request do
@@ -245,20 +260,6 @@ defmodule HTTPd do
     }
   }
 
-  def url_eat = fn {
-    ([], 0) { "" }
-    (url, 0) {
-      if (type(url) == List) do
-        List.join(url, "/")
-      else
-        url
-      end
-    }
-    ([first | rest], i) { url_eat(rest, i - 1) }
-    ([], i) { "" }
-    (url, i) { "/" + url_eat(Str.split(url, "/"), i + 1) }
-  }
-
   def parse_range = fn {
     (false, max) { { (Sw) 0, (Sw) max } }
     (range, max) {
@@ -283,8 +284,9 @@ defmodule HTTPd do
   }
     
   def def_static_route = fn (prefix, root_dir, url_skip) {
+    puts("def_static_route: #{inspect(prefix)}, #{inspect(root_dir)}, #{url_skip}")
     directory_page = HTTPd.fn (request) {
-      url = url_eat(request.url, url_skip)
+      url = URL.eat(request.url, url_skip)
       files = List.sort(File.list(root_dir + url))
       file_li = HTTPd.fn (file) {
         slash = if Str.ends_with?(url, "/") do "" else "/" end
@@ -314,7 +316,7 @@ defmodule HTTPd do
       %HTTP.Response{body: body}
     }
     show_page = HTTPd.fn (request) {
-      url = url_eat(request.url, url_skip)
+      url = URL.eat(request.url, url_skip)
       ext = File.ext(url)
       path = root_dir + url
       if (! File.exists?(path)) do
@@ -337,11 +339,15 @@ defmodule HTTPd do
       end
     }
     route = HTTPd.fn (request) {
-      url = url_eat(request.url, url_skip)
+      puts("def_static_route: route: request.url: #{inspect(request.url)}")
+      puts("def_static_route: route: url_skip: #{url_skip}")
+      url = URL.eat(request.url, url_skip)
+      puts("def_static_route: route: url: #{inspect(url)}")
       render = if (Str.starts_with?(url, "/") &&
                    ! Str.has_str?(url, "/../") &&
                    ! Str.ends_with?(url, "/..")) do
         path = root_dir + url
+        puts("def_static_route: route: path: #{inspect(path)}")
         if File.exists?(path) do
           if File.is_directory?(path) do
             directory_page

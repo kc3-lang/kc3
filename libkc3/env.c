@@ -894,10 +894,10 @@ bool env_eval_callable (s_env *env, s_callable *callable,
   assert(callable);
   assert(dest);
   (void) env;
-  if (! (tmp = callable_new_ref(callable)))
-    return false;
-  switch (tmp->type) {
+  switch (callable->type) {
   case CALLABLE_CFN:
+    if (! (tmp = callable_new_ref(callable)))
+      return false;
     if (! tmp->data.cfn.ready) {
       if (! cfn_prep_cif(&tmp->data.cfn))
         goto ko;
@@ -905,19 +905,22 @@ bool env_eval_callable (s_env *env, s_callable *callable,
         goto ko;
       tmp->data.cfn.ready = true;
     }
-    break;
+    goto ok;
   case CALLABLE_FN:
+    if (! (tmp = callable_new_copy(callable)))
+      return false;
     if (! tmp->data.fn.module)
       tmp->data.fn.module = env->current_defmodule;
-    if (! tmp->data.fn.frame &&
-        ! (tmp->data.fn.frame = frame_new_copy(env->frame)))
-      return false;
-    break;
+    if (! (tmp->data.fn.frame = frame_new_copy(env->frame)))
+      goto ko;
+    goto ok;
   case CALLABLE_VOID:
     err_puts("env_eval_callable: CALLABLE_VOID");
     assert(! "env_eval_callable: CALLABLE_VOID");
     return false;
   }
+  goto ko;
+ ok:
   dest->type = TAG_CALLABLE;
   dest->data.callable = tmp;
   return true;
@@ -2862,6 +2865,8 @@ bool env_load (s_env *env, const s_str *path)
   s_tag  file_dir_save;
   s_tag *file_path;
   s_tag  file_path_save;
+  s_tag load_time = {0};
+  s_tag now = {0};
   sw r;
   s_tag tag = {0};
   s_tag tmp = {0};
@@ -2919,6 +2924,12 @@ bool env_load (s_env *env, const s_str *path)
   *file_path = file_path_save;
   buf_getc_close(&buf);
   buf_clean(&buf);
+  tag = (s_tag) {0};
+  tag.type = TAG_STR;
+  tag.data.str = *path;
+  tag_init_time_now(&now);
+  tag_init_sym(&load_time, &g_sym_load_time);
+  facts_replace_tags(&env->facts, &tag, &load_time, &now);
   return true;
  ko:
   tag_clean(file_dir);
@@ -2927,6 +2938,45 @@ bool env_load (s_env *env, const s_str *path)
   buf_getc_close(&buf);
   buf_clean(&buf);
   return false;
+}
+
+bool env_maybe_reload (s_env *env, const s_str *path)
+{
+  s_facts_cursor cursor;
+  s_fact *fact = NULL;
+  s_tag load_time = {0};
+  s_tag load_time_sym = {0};
+  s_tag mtime = {0};
+  s_tag path_tag = {0};
+  bool r;
+  path_tag.type = TAG_STR;
+  path_tag.data.str = *path;
+  tag_init_sym(&load_time_sym, &g_sym_load_time);
+  tag_init_var(&load_time, &g_sym_Time);
+  if (! facts_with_tags(&env->facts, &cursor, &path_tag, &load_time_sym,
+                        &load_time))
+    return false;
+  if (! facts_cursor_next(&cursor, &fact))
+    return false;
+  if (! fact) {
+    err_write_1("env_maybe_reload: no load time for ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    assert(! "env_maybe_reload: no load time");
+    return false;
+  }
+  if (load_time.type != TAG_TIME)
+    abort();
+  mtime.type = TAG_TIME;
+  if (! file_mtime(path, &mtime.data.time)) {
+    facts_cursor_clean(&cursor);
+    return false;
+  }
+  r = true;
+  if (compare_tag(&load_time, &mtime) == COMPARE_LT)
+    r = env_load(env, path);
+  facts_cursor_clean(&cursor);
+  return r;
 }
 
 void env_longjmp (s_env *env, jmp_buf *jmp_buf)

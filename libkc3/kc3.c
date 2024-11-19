@@ -433,6 +433,11 @@ bool kc3_load (const s_str *path)
   return env_load(&g_kc3_env, path);
 }
 
+bool kc3_maybe_reload (const s_str *path)
+{
+  return env_maybe_reload(&g_kc3_env, path);
+}
+
 const s_sym ** kc3_module (const s_sym **dest)
 {
   return env_module(&g_kc3_env, dest);

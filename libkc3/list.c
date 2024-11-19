@@ -194,9 +194,6 @@ s_list * list_init_tag_copy (s_list *list, s_tag *tag, s_list *next)
 bool list_is_alist (const s_list *list)
 {
   const s_list *l;
-  assert(list);
-  if (! list)
-    return false;
   l = list;
   while (l) {
     if (l->tag.type != TAG_TUPLE ||

@@ -47,6 +47,31 @@ s_callable * callable_new (void)
   return callable;
 }
 
+s_callable * callable_new_copy (s_callable *src)
+{
+  s_callable *tmp;
+  if (! (tmp = callable_new()))
+    return NULL;
+  tmp->type = src->type;
+  switch (src->type) {
+  case CALLABLE_CFN:
+    if (! cfn_init_copy(&tmp->data.cfn, &src->data.cfn))
+      goto ko;
+    break;
+  case CALLABLE_FN:
+    if (! fn_init_copy(&tmp->data.fn, &src->data.fn))
+      goto ko;
+    break;
+  case CALLABLE_VOID:
+    break;
+  }
+  tmp->reference_count = 1;
+  return tmp;
+ ko:
+  free(tmp);
+  return NULL;
+}
+
 s_callable * callable_new_ref (s_callable *callable)
 {
   assert(callable);

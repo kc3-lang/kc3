@@ -28,6 +28,7 @@ p_callable * p_callable_init_copy (p_callable *callable,
 /* Heap-allocation functions, call callable_delete after use. */
 void         callable_delete (s_callable *callable);
 s_callable * callable_new (void);
+s_callable * callable_new_copy (s_callable *callable);
 s_callable * callable_new_ref (s_callable *callable);
 
 #endif /* LIBKC3_CALLABLE_H */

@@ -100,6 +100,7 @@ s_tag *        env_kc3_def (s_env *env, const s_call *call,
 s_tag *        env_let (s_env *env, s_tag *vars, s_tag *tag,
                         s_tag *dest);
 bool           env_load (s_env *env, const s_str *path);
+bool           env_maybe_reload (s_env *env, const s_str *path);
 bool *         env_module_is_loading (s_env *env, const s_sym *module,
                                       bool *dest);
 bool           env_module_is_loading_set (s_env *env,
