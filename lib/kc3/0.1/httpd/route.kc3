@@ -6,7 +6,8 @@ defmodule HTTPd.Route do
              controller: ?]
 
   def match = fn (route, request) {
-    if (route.path == "/" ||
+    if (route.path == "" ||
+        route.path == "/" ||
         (Str.ends_with?(route.path, "/") &&
          request.url == Str.slice(route.path, 0, -2)) ||
         Str.starts_with?(request.url, route.path)) do
