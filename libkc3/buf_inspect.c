@@ -1575,9 +1575,13 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
       return r;
     result += r;
   }
-  if ((r = buf_write_1(buf, "f")) <= 0)
-    return r;
+  /*
+  if (false) {
+    if ((r = buf_write_1(buf, "f")) <= 0)
+      return r;
+  }
   result += r;
+  */
   return result;
 }
 
@@ -1647,9 +1651,13 @@ sw buf_inspect_f32_size (s_pretty *pretty, const f32 *f)
       return r;
     result += r;
   }
-  if ((r = buf_write_1_size(pretty, "f")) <= 0)
-    return r;
+  /*
+  if (false) {
+    if ((r = buf_write_1_size(pretty, "f")) <= 0)
+      return r;
+  }
   result += r;
+  */
   return result;
 }
 
@@ -1880,8 +1888,15 @@ sw buf_inspect_f128_size (s_pretty *pretty, const f128 *x)
   assert(x);
   exp = 0.0;
   y = *x;
-  if (y == 0.0)
-    return buf_write_1_size(pretty, "0.0");
+  if ((r = buf_write_1_size(pretty, "(F128) ")) < 0)
+    return r;
+  result += r;
+  if (y == 0.0) {
+    if ((r = buf_write_1_size(pretty, "0.0")) < 0)
+      return r;
+    result += r;
+    return result;
+  }
   if (y < 0) {
     if ((r = buf_write_1_size(pretty, "-")) <= 0)
       return r;

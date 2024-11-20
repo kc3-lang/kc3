@@ -10,7 +10,7 @@ quote {1, 2} = {f, g}
 {1, 2} = {f, g}
 quote ? = 1
 ? = 1
-quote to_lisp(quote a = 1 && b = 2)
-to_lisp(quote a = 1 && b = 2)
-quote if (a = 1 && b = 2) do {a, b} end
-if (a = 1 && b = 2) do {a, b} end
+quote to_lisp(quote (a = 1) && (b = 2))
+to_lisp(quote (a = 1) && (b = 2))
+quote if (a = 1) && (b = 2) do {a, b} end
+if (a = 1) && (b = 2) do {a, b} end
