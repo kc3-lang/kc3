@@ -170,7 +170,7 @@ test_httpd: test_httpd_assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd -d 0.0.0.0 58000
 
 test_httpd_asan: test_httpd_assets
-	${SRC_TOP}/httpd/.libs/kc3_httpd_asan -C ${SRC_TOP}/httpd -d 0.0.0.0 58000
+	${SRC_TOP}/httpd/.libs/kc3_httpd_asan -C ${SRC_TOP}/test/httpd -d 0.0.0.0 58000
 
 test_httpd_assets:
 	${MAKE} -C httpd/assets
