@@ -1517,8 +1517,15 @@ sw buf_inspect_f32 (s_buf *buf, const f32 *f)
   assert(f);
   exp = 0;
   x = *f;
-  if (x == 0.0)
-    return buf_write_1(buf, "0.0f");
+  if ((r = buf_write_1(buf, "(F32) ")) < 0)
+    return r;
+  result += r;
+  if (x == 0.0f) {
+    if ((r = buf_write_1(buf, "0.0")) < 0)
+      return r;
+    result += r;
+    return result;
+  }
   if (x < 0) {
     if ((r = buf_write_1(buf, "-")) <= 0)
       return r;
@@ -1586,8 +1593,15 @@ sw buf_inspect_f32_size (s_pretty *pretty, const f32 *f)
   assert(f);
   exp = 0;
   x = *f;
-  if (x == 0.0)
-    return buf_write_1_size(pretty, "0.0f");
+  if ((r = buf_write_1_size(pretty, "(F32) ")) < 0)
+    return r;
+  result += r;
+  if (x == 0.0f) {
+    if ((r = buf_write_1_size(pretty, "0.0")) < 0)
+      return r;
+    result += r;
+    return result;
+  }
   if (x < 0) {
     if ((r = buf_write_1_size(pretty, "-")) <= 0)
       return r;
@@ -1651,8 +1665,15 @@ sw buf_inspect_f64 (s_buf *buf, const f64 *f)
   assert(f);
   exp = 0.0;
   x = *f;
-  if (x == 0.0)
-    return buf_write_1(buf, "0.0");
+  if ((r = buf_write_1(buf, "(F64) ")) < 0)
+    return r;
+  result += r;
+  if (x == 0.0f) {
+    if ((r = buf_write_1(buf, "0.0")) < 0)
+      return r;
+    result += r;
+    return result;
+  }
   if (x < 0) {
     if ((r = buf_write_1(buf, "-")) <= 0)
       return r;
@@ -1717,8 +1738,15 @@ sw buf_inspect_f64_size (s_pretty *pretty, const f64 *f)
   assert(f);
   exp = 0.0;
   x = *f;
-  if (x == 0.0)
-    return buf_write_1_size(pretty, "0.0");
+  if ((r = buf_write_1_size(pretty, "(F64) ")) < 0)
+    return r;
+  result += r;
+  if (x == 0.0f) {
+    if ((r = buf_write_1_size(pretty, "0.0")) < 0)
+      return r;
+    result += r;
+    return result;
+  }
   if (x < 0) {
     if ((r = buf_write_1_size(pretty, "-")) <= 0)
       return r;
@@ -1779,8 +1807,15 @@ sw buf_inspect_f128 (s_buf *buf, const f128 *x)
   assert(x);
   exp = 0.0;
   y = *x;
-  if (y == 0.0)
-    return buf_write_1(buf, "0.0");
+  if ((r = buf_write_1(buf, "(F128) ")) < 0)
+    return r;
+  result += r;
+  if (y == 0.0) {
+    if ((r = buf_write_1(buf, "0.0")) < 0)
+      return r;
+    result += r;
+    return result;
+  }
   if (y < 0) {
     if ((r = buf_write_1(buf, "-")) <= 0)
       return r;
@@ -1826,7 +1861,7 @@ sw buf_inspect_f128 (s_buf *buf, const f128 *x)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_s64(buf, &exp)) <= 0)
+    if ((r = buf_inspect_s64_decimal(buf, &exp)) <= 0)
       return r;
     result += r;
   }

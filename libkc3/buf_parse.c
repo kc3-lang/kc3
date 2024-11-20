@@ -1532,13 +1532,21 @@ sw buf_parse_f32 (s_buf *buf, f32 *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(F32)")) < 0)
+    goto restore;
+  result += r;
+  if (r > 0) {
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
   if ((r = buf_parse_digit_dec(buf, &digit)) <= 0)
     goto restore;
-  tmp = digit;
   result += r;
+  tmp = digit;
   while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
-    tmp = tmp * 10 + digit;
     result += r;
+    tmp = tmp * 10 + digit;
   }
   if (r < 0 ||
       (r = buf_read_1(buf, ".")) <= 0)
@@ -1563,9 +1571,9 @@ sw buf_parse_f32 (s_buf *buf, f32 *dest)
       exp = exp * 10 + digit;
       result += r;
     }
-    tmp *= pow(10, exp_sign * exp);
+    tmp *= powf(10, exp_sign * exp);
   }
-  if ((r = buf_read_1(buf, "f")) <= 0)
+  if ((r = buf_read_1(buf, "f")) < 0)
     goto restore;
   result += r;
   if ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
@@ -1595,6 +1603,14 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest) {
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(F64)")) < 0)
+    goto restore;
+  result += r;
+  if (r > 0) {
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
   if ((r = buf_parse_digit_dec(buf, &digit)) <= 0)
     goto restore;
   tmp = digit;
@@ -1625,15 +1641,81 @@ sw buf_parse_f64 (s_buf *buf, f64 *dest) {
       r = buf_read_1(buf, "+");
       if (r < 0)
         goto restore;
-      if (r > 0) {
-        result += r;
-      }
+      result += r;
       while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
-        exp = exp * 10 + digit;
         result += r;
+        exp = exp * 10 + digit;
       }
     }
     tmp *= pow(10, exp_sign * exp);
+  }
+  *dest = tmp;
+  r = result;
+  goto clean;
+  restore:
+  buf_save_restore_rpos(buf, &save);
+  clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_f128 (s_buf *buf, f128 *dest) {
+  sw r;
+  sw result = 0;
+  u8 digit;
+  s_buf_save save;
+  f128 tmp = 0;
+  s64 exp = 0;
+  s8  exp_sign = 1;
+  uw i;
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(F128)")) < 0)
+    goto restore;
+  result += r;
+  if (r > 0) {
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
+  if ((r = buf_parse_digit_dec(buf, &digit)) <= 0)
+    goto restore;
+  tmp = digit;
+  result += r;
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    tmp = tmp * 10 + digit;
+    result += r;
+  }
+  if (r < 0 ||
+      (r = buf_read_1(buf, ".")) <= 0)
+    goto restore;
+  result += r;
+  i = 10;
+  while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+    result += r;
+    tmp += (f128) digit / i;
+    i *= 10;
+  }
+  if ((r = buf_read_1(buf, "e")) > 0) {
+    result += r;
+    if ((r = buf_read_1(buf, "-")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      exp_sign = -1;
+    }
+    else {
+      r = buf_read_1(buf, "+");
+      if (r < 0)
+        goto restore;
+      result += r;
+      while ((r = buf_parse_digit_dec(buf, &digit)) > 0) {
+        result += r;
+        exp = exp * 10 + digit;
+      }
+    }
+    tmp *= powl(10, exp_sign * exp);
   }
   *dest = tmp;
   r = result;
@@ -3924,6 +4006,16 @@ sw buf_parse_tag_f64 (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_f128 (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_f128(buf, &dest->data.f128)) > 0)
+    dest->type = TAG_F128;
+  return r;
+}
+
 sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -4007,10 +4099,13 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  r = buf_parse_tag_f32(buf, dest);
+  r = buf_parse_tag_f128(buf, dest);
   if (r > 0)
     return r;
   r = buf_parse_tag_f64(buf, dest);
+  if (r > 0)
+    return r;
+  r = buf_parse_tag_f32(buf, dest);
   if (r > 0)
     return r;
   r = buf_parse_tag_ratio(buf, dest);
