@@ -38,6 +38,7 @@ int main (int argc, char **argv)
   s_tag tmp = {0};
   const struct tm *utc = NULL;
   kc3_init(NULL, &argc, &argv);
+  g_kc3_env.trace = true;
   while (argc > 0 && argv[0] && argv[0][0] == '-') {
     skip = 1;
     p = argv[0] + 1;

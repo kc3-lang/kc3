@@ -736,6 +736,7 @@ struct env {
   s_frame           read_time_frame;
   s_list           *search_modules;
   s_list           *search_modules_default;
+  bool              trace;
   uw                unquote_level;
   s_unwind_protect *unwind_protect;
 };

@@ -2659,6 +2659,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
 {
   s_str path;
   assert(env);
+  env->trace = false;
   if (! env_init_args(env, argc, argv))
     return NULL;
   sym_init_g_sym();
@@ -2879,7 +2880,7 @@ bool env_load (s_env *env, const s_str *path)
   s_tag tmp = {0};
   assert(env);
   assert(path);
-  if (true) {
+  if (env->trace) {
     err_write_1("env_load: ");
     err_inspect_str(path);
     err_write_1("\n");
