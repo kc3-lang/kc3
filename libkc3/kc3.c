@@ -73,10 +73,11 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
   case TAG_LIST:
     if (list_is_alist(tag->data.list)) {
       if (! alist_access(tag->data.list, *key, dest))
-        return tag_init_void(dest);
+        return list_access(tag->data.list, *key, dest);
       return dest;
     }
-    break;
+    else
+      return list_access(tag->data.list, *key, dest);
   case TAG_MAP:
     return map_access(&tag->data.map, *key, dest);
   case TAG_STRUCT:
@@ -426,6 +427,13 @@ void kc3_license (void)
 {
   buf_write_1(&g_kc3_env.out, g_kc3_license);
   buf_flush(&g_kc3_env.out);
+}
+
+s_array * kc3_list_to_array (s_list **list,
+                             const s_sym * const *array_type,
+                             s_array *dest)
+{
+  return list_to_array(*list, *array_type, dest);
 }
 
 bool kc3_load (const s_str *path)

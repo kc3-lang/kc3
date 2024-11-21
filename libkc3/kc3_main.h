@@ -109,6 +109,9 @@ s_tag *      kc3_facts_with_tags (s_facts *facts, s_tag *subject,
 s_tag *      kc3_identity (s_tag *tag, s_tag *dest);
 s_tag *      kc3_integer_reduce (s_tag *tag, s_tag *dest);
 s_tag *      kc3_let (s_tag *vars, s_tag *tag, s_tag *dest);
+s_array *    kc3_list_to_array (s_list **list,
+                                const s_sym * const *array_type,
+                                s_array *dest);
 bool         kc3_load (const s_str *path);
 bool         kc3_maybe_reload (const s_str *path);
 s_tag *      kc3_operator_find_by_sym (const s_sym * const *sym,

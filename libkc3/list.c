@@ -21,10 +21,59 @@
 #include "compare.h"
 #include "data.h"
 #include "eval.h"
+#include "kc3_main.h"
 #include "list.h"
 #include "sym.h"
 #include "tag.h"
 #include "tuple.h"
+#include "uw.h"
+
+s_tag * list_access (s_list *list, s_list *key, s_tag *dest)
+{
+  s_tag  *key_first;
+  s_list *key_next;
+  s_tag *r;
+  const s_sym *sym_Uw = &g_sym_Uw;
+  s_tag tag;
+  uw i;
+  assert(list);
+  assert(key);
+  assert(dest);
+  key_first = &key->tag;
+  if (! uw_init_cast(&i, &sym_Uw, key_first)) {
+    err_puts("list_access: invalid key");
+    assert(! "list_access: invalid key");
+    return NULL;
+  }
+  key_next = list_next(key);
+  if (! key_next)
+    return list_at(list, i, dest);
+  if (! list_at(list, i, &tag))
+    return NULL;
+  r = kc3_access(&tag, &key_next, dest);
+  tag_clean(&tag);
+  return r;
+}
+
+s_tag * list_at (s_list *list, uw position, s_tag *dest)
+{
+  s_list *l;
+  uw p;
+  assert(list);
+  assert(dest);
+  l = list;
+  p = position;
+  while (p) {
+    p--;
+    l = list_next(l);
+    if (! l) {
+      err_puts("list_at: position exceeds list length");
+      assert(! "list_at: position exceeds list length");
+      return NULL;
+    }
+  }
+  return tag_init_copy(dest, &l->tag);
+}
 
 void list_clean (s_list *list)
 {

@@ -49,6 +49,8 @@ s_list * list_new_str_1 (char *free, const char *p, s_list *next);
 s_list * list_new_tag_copy (s_tag *tag, s_list *next);
 
 /* Observers */
+s_tag *   list_at (s_list *list, uw position, s_tag *dest);
+s_tag *   list_access (s_list *list, s_list *key, s_tag *dest);
 s_list ** list_cast (const s_tag *tag, s_list **list);
 bool *    list_has (const s_list * const *list, const s_tag *tag,
                     bool *dest);
