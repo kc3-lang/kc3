@@ -54,20 +54,22 @@ u8 * u8_init_cast
   case TAG_RATIO:
     *u = ratio_to_u8(&tag->data.ratio);
     return u;
-  case TAG_SW:
-    *u = (u8) tag->data.sw;
-    return u;
-  case TAG_S64:
-    *u = (u8) tag->data.s64;
-    return u;
-  case TAG_S32:
-    *u = (u8) tag->data.s32;
+  case TAG_S8:
+    *u = (u8) tag->data.s8;
     return u;
   case TAG_S16:
     *u = (u8) tag->data.s16;
     return u;
-  case TAG_S8:
-    *u = (u8) tag->data.s8;
+  case TAG_S32:
+    *u = (u8) tag->data.s32;
+    return u;
+  case TAG_S64:
+    *u = (u8) tag->data.s64;
+    return u;
+  case TAG_STR:
+    return u8_init_str(u, &tag->data.str);
+  case TAG_SW:
+    *u = (u8) tag->data.sw;
     return u;
   case TAG_U8:
     *u = (u8) tag->data.u8;

@@ -1938,7 +1938,7 @@ sw buf_inspect_f128_size (s_pretty *pretty, const f128 *x)
         return r;
       result += r;
     }
-    if ((r = buf_inspect_s64_size(pretty, &exp)) <= 0)
+    if ((r = buf_inspect_s64_decimal_size(pretty, &exp)) <= 0)
       return r;
     result += r;
   }

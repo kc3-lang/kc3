@@ -373,6 +373,12 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_callable(str, tag->data.callable);
   case TAG_CHARACTER:
     return str_init_character(str, tag->data.character);
+  case TAG_F32:
+    return str_init_f32(str, tag->data.f32);
+  case TAG_F64:
+    return str_init_f64(str, tag->data.f64);
+  case TAG_F128:
+    return str_init_f128(str, tag->data.f128);
   case TAG_IDENT:
     return str_init_ident(str, &tag->data.ident);
   case TAG_LIST:
@@ -553,6 +559,189 @@ s_str * str_init_f (s_str *str, const char *fmt, ...)
   va_end(ap);
   *str = tmp;
   return str;
+}
+
+s_str * str_init_f32 (s_str *str, f32 x)
+{
+  char a[32];
+  s_buf buf;
+  s64 exp;
+  u8 i;
+  u8 j;
+  sw r;
+  buf_init(&buf, false, sizeof(a), a);
+  exp = 0.0;
+  if (x == 0.0) {
+    if ((r = buf_write_1(&buf, "0.0")) < 0)
+      return NULL;
+    goto ok;
+  }
+  if (x < 0) {
+    if ((r = buf_write_1(&buf, "-")) <= 0)
+      return NULL;
+    x = -x;
+  }
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
+      exp++;
+    }
+  else
+    while (x < 1.0) {
+      x *= 10.0;
+      exp--;
+    }
+  i = (u8) x;
+  x -= i;
+  i += '0';
+  if ((r = buf_write_character_utf8(&buf, i)) <= 0)
+    return NULL;
+  if ((r = buf_write_1(&buf, ".")) <= 0)
+    return NULL;
+  j = 6;
+  do {
+    x *= 10;
+    i = (u8) x;
+    x -= i;
+    i += '0';
+    if ((r = buf_write_character_utf8(&buf, i)) <= 0)
+      return NULL;
+    j--;
+  } while (x > pow(0.1, j) && j);
+  if (exp) {
+    if ((r = buf_write_1(&buf, "e")) <= 0)
+      return NULL;
+    if (exp > 0) {
+      if ((r = buf_write_1(&buf, "+")) <= 0)
+        return NULL;
+    }
+    if ((r = buf_inspect_s64_decimal(&buf, &exp)) <= 0)
+      return NULL;
+  }
+ ok:
+  return buf_read_to_str(&buf, str);
+}
+
+s_str * str_init_f64 (s_str *str, f64 x)
+{
+  char a[32];
+  s_buf buf;
+  s64 exp;
+  u8 i;
+  u8 j;
+  sw r;
+  buf_init(&buf, false, sizeof(a), a);
+  exp = 0.0;
+  if (x == 0.0) {
+    if ((r = buf_write_1(&buf, "0.0")) < 0)
+      return NULL;
+    goto ok;
+  }
+  if (x < 0) {
+    if ((r = buf_write_1(&buf, "-")) <= 0)
+      return NULL;
+    x = -x;
+  }
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
+      exp++;
+    }
+  else
+    while (x < 1.0) {
+      x *= 10.0;
+      exp--;
+    }
+  i = (u8) x;
+  x -= i;
+  i += '0';
+  if ((r = buf_write_character_utf8(&buf, i)) <= 0)
+    return NULL;
+  if ((r = buf_write_1(&buf, ".")) <= 0)
+    return NULL;
+  j = 14;
+  do {
+    x *= 10;
+    i = (u8) x;
+    x -= i;
+    i += '0';
+    if ((r = buf_write_character_utf8(&buf, i)) <= 0)
+      return NULL;
+    j--;
+  } while (x > pow(0.1, j) && j);
+  if (exp) {
+    if ((r = buf_write_1(&buf, "e")) <= 0)
+      return NULL;
+    if (exp > 0) {
+      if ((r = buf_write_1(&buf, "+")) <= 0)
+        return NULL;
+    }
+    if ((r = buf_inspect_s64_decimal(&buf, &exp)) <= 0)
+      return NULL;
+  }
+ ok:
+  return buf_read_to_str(&buf, str);
+}
+
+s_str * str_init_f128 (s_str *str, f128 x)
+{
+  char a[128];
+  s_buf buf;
+  s64 exp;
+  u8 i;
+  u8 j;
+  sw r;
+  buf_init(&buf, false, sizeof(a), a);
+  exp = 0.0;
+  if (x == 0.0) {
+    if ((r = buf_write_1(&buf, "0.0")) < 0)
+      return NULL;
+    goto ok;
+  }
+  if (x < 0) {
+    if ((r = buf_write_1(&buf, "-")) <= 0)
+      return NULL;
+    x = -x;
+  }
+  if (x >= 1.0)
+    while (x >= 10.0) {
+      x /= 10.0;
+      exp++;
+    }
+  else
+    while (x < 1.0) {
+      x *= 10.0;
+      exp--;
+    }
+  i = (u8) x;
+  x -= i;
+  i += '0';
+  if ((r = buf_write_character_utf8(&buf, i)) <= 0)
+    return NULL;
+  if ((r = buf_write_1(&buf, ".")) <= 0)
+    return NULL;
+  j = 33;
+  do {
+    x *= 10;
+    i = (u8) x;
+    x -= i;
+    i += '0';
+    if ((r = buf_write_character_utf8(&buf, i)) <= 0)
+      return NULL;
+    j--;
+  } while (x > pow(0.1, j) && j);
+  if (exp) {
+    if ((r = buf_write_1(&buf, "e")) <= 0)
+      return NULL;
+    if (exp > 0) {
+      if ((r = buf_write_1(&buf, "+")) <= 0)
+        return NULL;
+    }
+    if ((r = buf_inspect_s64_decimal(&buf, &exp)) <= 0)
+      return NULL;
+  }
+ ok:
+  return buf_read_to_str(&buf, str);
 }
 
 DEF_STR_INIT_STRUCT(fn)

@@ -71,9 +71,7 @@ sw * sw_init_cast
     *s = (sw) tag->data.s8;
     return s;
   case TAG_STR:
-    if (! sw_init_str(s, &tag->data.str))
-      return NULL;
-    return s;
+    return sw_init_str(s, &tag->data.str);
   case TAG_U8:
     *s = (sw) tag->data.u8;
     return s;

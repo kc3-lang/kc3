@@ -71,9 +71,7 @@ s64 * s64_init_cast
     *s = (s64) tag->data.s8;
     return s;
   case TAG_STR:
-    if (! s64_init_str(s, &tag->data.str))
-      return NULL;
-    return s;
+    return s64_init_str(s, &tag->data.str);
   case TAG_U8:
     *s = (s64) tag->data.u8;
     return s;

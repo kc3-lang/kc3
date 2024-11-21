@@ -71,9 +71,7 @@ s_bits$ * s_bits$_init_cast
     *s = (s_bits$) tag->data.s8;
     return s;
   case TAG_STR:
-    if (! s_bits$_init_str(s, &tag->data.str))
-      return NULL;
-    return s;
+    return s_bits$_init_str(s, &tag->data.str);
   case TAG_U8:
     *s = (s_bits$) tag->data.u8;
     return s;
