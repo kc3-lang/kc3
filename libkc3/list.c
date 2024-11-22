@@ -40,11 +40,8 @@ s_tag * list_access (s_list *list, s_list *key, s_tag *dest)
   assert(key);
   assert(dest);
   key_first = &key->tag;
-  if (! uw_init_cast(&i, &sym_Uw, key_first)) {
-    err_puts("list_access: invalid key");
-    assert(! "list_access: invalid key");
-    return NULL;
-  }
+  if (! uw_init_cast(&i, &sym_Uw, key_first))
+    return tag_init_void(dest);
   key_next = list_next(key);
   if (! key_next)
     return list_at(list, i, dest);
