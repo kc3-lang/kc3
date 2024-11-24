@@ -1,6 +1,12 @@
 %{module: KC3.Facts.Dump,
   version: 1}
 add {"fx/", "tag", "software"}
+add {"fx/home/.../X/pb/(Please Cum Inside Me 1-19)/", "tag", "r"}
+add {"fx/home/.../X/pb/(Please Cum Inside Me 1-19)/", "tag", "s"}
+add {"fx/home/.../X/pb/110% Natural 1-19/", "tag", "a"}
+add {"fx/home/.../X/pb/A2M ", "tag", "scene"}
+add {"fx/home/.../X/pb/A2M #10/", "tag", "scene"}
+add {"fx/home/.../X/pb/ASIAN PERSUASION 2_(20070612)_{CRITICAL X}/", "tag", "r"}
 add {"fx/http/", "salut", "labrass"}
 add {"fx/http/config.h", "123", "456"}
 add {"fx/img/", "hello", "paul"}
