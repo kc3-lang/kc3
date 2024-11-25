@@ -13,7 +13,12 @@
 #ifndef HTTP_TYPES_H
 #define HTTP_TYPES_H
 
-#include <sys/socket.h>
+#ifdef WIN32
+# include <winsock2.h>
+#else
+# include <sys/socket.h>
+#endif
+
 #include <libkc3/types.h>
 
 /* 1 */

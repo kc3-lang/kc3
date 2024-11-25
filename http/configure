@@ -46,6 +46,7 @@ LDFLAGS="-export-dynamic $LDFLAGS -rdynamic"
 config_asan
 config_gnu
 config_i386
+config_win32
 pkg_config libbsd-overlay
 pkg_config libevent
 pkg_config libffi

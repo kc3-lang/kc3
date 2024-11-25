@@ -399,6 +399,16 @@ config_subdirs() {
     done
 }
 
+config_win32() {
+    if uname -s | grep -qi mingw32; then
+	HAVE_WIN32=true
+	CPPFLAGS="$CPPFLAGS -mwin32 -municode -DWIN32"
+    else
+	HAVE_WIN32=false
+    fi
+    echo "HAVE_WIN32 = ${HAVE_WIN32}" >> ${CONFIG_MK}
+}
+
 cpp_o_rule() {
     "$CXX" $CPPFLAGS $CXXFLAGS -M "$1" || {
         echo "$1" | sed -e 's/^\(.*\)\.cpp$/\1.o: \1.cpp/'
