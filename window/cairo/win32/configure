@@ -15,7 +15,7 @@ set -e
 
 export SRC_TOP="$(dirname "$PWD")"
 
-. ../../../../config.subr
+. ../../../config.subr
 
 LIB=libkc3_window_cairo_win32.la
 LIB_ASAN=libkc3_window_cairo_win32_asan.la
@@ -41,7 +41,7 @@ OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
 # Common config for all targets
-CPPFLAGS="-I../../../../libffi/include -I../../../.. $CPPFLAGS"
+CPPFLAGS="-I../../.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
 LDFLAGS="--shared $LDFLAGS"
 LIBS="$LIBS -rpath ${PREFIX}/lib"
