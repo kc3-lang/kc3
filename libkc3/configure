@@ -45,6 +45,10 @@ LDFLAGS="-export-dynamic $LDFLAGS -rdynamic"
 config_asan
 config_gnu
 config_i386
+config_win32
+if $HAVE_WIN32; then
+    CPPFLAGS="$CPPFLAGS -I../sys_wait_h/"
+fi
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd

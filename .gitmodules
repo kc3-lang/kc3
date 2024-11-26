@@ -15,3 +15,6 @@
 [submodule "libmd"]
 	path = libmd
 	url = https://git.hadrons.org/git/libmd.git
+[submodule "sys_wait_h"]
+	path = sys_wait_h
+	url = https://github.com/win32ports/sys_wait_h

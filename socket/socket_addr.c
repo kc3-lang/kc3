@@ -12,11 +12,15 @@
  */
 #include <errno.h>
 #include <string.h>
-#include <netdb.h>
-#include <netinet/in.h>
+
+#ifndef WIN32
+# include <netdb.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+#endif
+
 #include <unistd.h>
 #include <libkc3/kc3.h>
-#include <arpa/inet.h>
 #include "socket.h"
 #include "socket_buf.h"
 
