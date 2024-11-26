@@ -86,10 +86,7 @@ defmodule FXController do
        (request.url == "/fx" ||
         Str.starts_with?(request.url, "/fx/")) do
       path = "." + request.url
-      response = show_file(path, request.url)
-      if (response) do
-        response
-      end
+      show_file(path, request.url)
     end
   }
 

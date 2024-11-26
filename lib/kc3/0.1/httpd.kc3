@@ -139,7 +139,7 @@ defmodule HTTPd do
   def redirect_to = fn (url) {
     %HTTP.Response{code: 303,
                    message: "See other",
-                   headers: [{"Location", url}],
+                   headers: [{"Location", URL.escape(url)}],
                    body: ""}
   }
 
