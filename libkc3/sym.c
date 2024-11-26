@@ -454,6 +454,19 @@ const s_sym ** sym_init_str (const s_sym **sym, const s_str *src)
   return sym;
 }
 
+uw * sym_list_size (uw *dest)
+{
+  uw size = 0;
+  const s_sym_list *l;
+  l = g_sym_list;
+  while (l) {
+    size += sizeof(s_sym) + l->sym->str.size + 1;
+    l = l->next;
+  }
+  *dest = size;
+  return dest;
+}
+
 bool sym_register (const s_sym *sym, s_sym *free_sym)
 {
   s_sym_list *tmp = NULL;

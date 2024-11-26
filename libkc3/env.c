@@ -224,6 +224,13 @@ bool env_call_get (s_env *env, s_call *call)
 void env_clean (s_env *env)
 {
   assert(env);
+  if (false) {
+    uw size;
+    sym_list_size(&size);
+    err_write_1("env_clean: g_sym_list: ");
+    err_inspect_uw_decimal(&size);
+    err_write_1("\n");
+  }
   //facts_save_file(&env->facts, "debug.facts"); // debug
   env_clean_globals(env);
   env_clean_toplevel(env);

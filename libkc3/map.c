@@ -121,8 +121,10 @@ const s_sym ** map_get_var_type (const s_map *map, const s_tag *key,
     i++;
   }
   err_write_1("map_get_type: ");
+  err_inspect_map(map);
+  err_write_1("\nkey not found: ");
   err_inspect_tag(key);
-  err_puts(": key not found");
+  err_write_1("\n");
   return NULL;
 }
 

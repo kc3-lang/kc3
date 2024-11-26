@@ -46,16 +46,18 @@ s_tag * struct_access (s_struct *s, s_list *key, s_tag *dest)
     assert(! "struct_access: key is not a Sym");
     return NULL;
   }
-  if (! next)
-    return struct_access_sym(s, first->data.sym, dest);
   if (! struct_access_sym(s, first->data.sym, &tag)) {
-    err_write_1("struct_access: map_get(");
+    err_write_1("struct_access: struct_access_sym(");
     err_inspect_struct(s);
     err_write_1(", ");
     err_inspect_tag(first);
     err_write_1(")\n");
-    assert(! "struct_access: map_get");
+    assert(! "struct_access: map_access_sym");
     return NULL;
+  }
+  if (! next) {
+    *dest = tag;
+    return dest;
   }
   r = kc3_access(&tag, &next, dest);
   tag_clean(&tag);
