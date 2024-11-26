@@ -291,6 +291,25 @@ bool list_is_plist (const s_list *list)
   return true;
 }
 
+s_tag * list_last (s_list **list, s_tag *dest)
+{
+  s_list *l;
+  s_list *last;
+  s_tag tag = {0};
+  last = NULL;
+  l = *list;
+  while (l) {
+    last = l;
+    l = list_next(l);
+  }
+  if (last) {
+    if (! tag_init_copy(&tag, &last->tag))
+      return NULL;
+  }
+  *dest = tag;
+  return dest;
+}
+
 sw list_length (const s_list *list)
 {
   sw length = 0;

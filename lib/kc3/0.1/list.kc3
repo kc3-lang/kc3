@@ -31,6 +31,8 @@ defmodule List do
     ([first], sep, acc) { str(reverse([first | acc])) }
   }
 
+  def last = cfn Tag "list_last" (List, Result)
+
   def map = cfn List "list_map" (List, Callable, Result)
 
   def reverse = fn {

@@ -35,3 +35,5 @@ List.each([1, 2, 3], fn (x) { puts(x) })
 2
 3
 true
+List.last([1, 2, 3])
+3
