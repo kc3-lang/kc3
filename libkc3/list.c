@@ -97,6 +97,31 @@ void list_delete_all (s_list *list)
     list = list_delete(list);
 }
 
+bool * list_each (s_list **list, p_callable *function, bool *dest)
+{
+  s_list *arg;
+  s_list *l;
+  s_tag tmp;
+  if (! (arg = list_new(NULL)))
+    return NULL;
+  l = *list;
+  while (l) {
+    if (! tag_copy(&arg->tag, &l->tag))
+      goto ko;
+    if (! eval_callable_call(*function, arg, &tmp))
+      goto ko;
+    tag_clean(&tmp);
+    l = list_next(l);
+  }
+  list_delete_all(arg);
+  *dest = true;
+  return dest;
+ ko:
+  tag_clean(&tmp);
+  list_delete_all(arg);
+  return NULL;
+}
+
 void list_f_clean (s_list **list)
 {
   s_list *l;

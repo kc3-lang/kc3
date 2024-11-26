@@ -4,12 +4,9 @@ defmodule List do
 
   def cast = cfn List "list_init_cast" (Result, Sym, Tag)
 
-  def each = fn {
-    ([], _) { :ok }
-    ([a | b], f) { f(a); each(b, f) }
-  }
+  def each = cfn Bool "list_each" (List, Callable, Result)
 
-  def filter = cfn List "list_filter" (List, Fn, Result)
+  def filter = cfn List "list_filter" (List, Callable, Result)
 
   def find_if = fn {
     ([], _) { false }

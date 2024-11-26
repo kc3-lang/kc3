@@ -40,17 +40,15 @@
      ## comment 8b
   ]  ## comment 9
      ## comment 9b
-
 quote List.map([1, 2, 3, 4], fn (x) { x * 2 })
 List.map([1, 2, 3, 4], fn (x) { x * 2 })
-
 quote List.reverse([1, 2, 3, 4])
 List.reverse([1, 2, 3, 4])
-
 quote List.has?([:read], :read)
 List.has?([:read], :read)
-
 quote List.has?([:read], :write)
 List.has?([:read], :write)
 quote List.join(["1", "2", "3"], ", ")
 List.join(["1", "2", "3"], ", ")
+quote List.each([1, 2, 3], fn (x) { puts(x) })
+List.each([1, 2, 3], fn (x) { puts(x) })

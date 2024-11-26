@@ -63,6 +63,7 @@ s_list ** list_tail (s_list **list);
 s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *dest);
 
 /* Operators */
+bool *    list_each (s_list **list, p_callable *function, bool *dest);
 s_list ** list_filter (s_list **list, p_callable *function,
                        s_list **dest);
 s_list ** list_map (s_list **list, p_callable *function, s_list **dest);
