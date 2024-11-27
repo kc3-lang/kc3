@@ -9,9 +9,3 @@
 [submodule "fonts"]
 	path = fonts
 	url = https://git.kmx.io/kc3-lang/fonts.git
-[submodule "markdown/md4c"]
-	path = markdown/md4c
-	url = https://git.kmx.io/kc3-lang/md4c.git
-[submodule "libmd"]
-	path = libmd
-	url = https://git.hadrons.org/git/libmd.git
