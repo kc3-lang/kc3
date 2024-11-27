@@ -13,7 +13,10 @@
 #include <errno.h>
 #include <string.h>
 
-#ifndef WIN32
+#ifdef WIN32
+# include <winsock2.h>
+# include <ws2tcpip.h>
+#else
 # include <netdb.h>
 # include <netinet/in.h>
 #endif
@@ -131,7 +134,7 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
     err_write_1(", ");
     err_write_1(service->ptr.pchar);
     err_write_1("): getaddrinfo: ");
-    err_puts(gai_strerror(e));
+    err_puts((const char *) gai_strerror(e));
     assert(! "socket_buf_init_connect: getaddrinfo");
     return NULL;
   }

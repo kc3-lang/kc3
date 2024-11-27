@@ -31,16 +31,19 @@ PROG_DEBUG=kc3_httpd_debug
 # Common config for all targets
 CPPFLAGS="-I .."
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC"
-LDFLAGS="$LDFLAGS -rdynamic"
 config_asan
 config_gnu
 config_i386
+config_win32
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
 config_define PREFIX "\"${PREFIX}\""
+if ! $HAVE_WIN32; then
+    LDFLAGS="$LDFLAGS -rdynamic"
+fi
 LIBS="$LIBS -pthread"
 update_config_h
 

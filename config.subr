@@ -206,7 +206,11 @@ config_have_pthread() {
     if [ "x$(uname)" = "xDarwin" ]; then
         config_have PTHREAD false
     else
-        config_have PTHREAD true
+	if uname -s | grep -qi mingw; then
+            config_have PTHREAD false
+	else
+            config_have PTHREAD true
+	fi
     fi
 }
 

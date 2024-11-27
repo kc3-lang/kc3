@@ -21,11 +21,11 @@
 int main (int argc, char **argv)
 {
   s_window_cairo window;
-  if (! c3_init(NULL, argc, argv))
+  if (! kc3_init(NULL, &argc, &argv))
     return 1;
-  c3_window_cairo_init();
+  kc3_window_cairo_init();
   window_cairo_init(&window, 0, 0, 800, 600,
-                    "C3.Window.Cairo.Win32 demo",
+                    "KC3.Window.Cairo.Win32 demo",
                     WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
   window.button = window_cairo_demo_button;
   window.key    = window_cairo_demo_key;
@@ -33,8 +33,8 @@ int main (int argc, char **argv)
   window.render = window_cairo_demo_render;
   window.resize = window_cairo_demo_resize;
   if (! window_cairo_win32_run(&window))
-    return g_c3_exit_code;
-  c3_window_cairo_clean();
-  c3_clean(NULL);
+    return g_kc3_exit_code;
+  kc3_window_cairo_clean();
+  kc3_clean(NULL);
   return 0;
 }

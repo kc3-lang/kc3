@@ -43,7 +43,6 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -I.."
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
-LDFLAGS="$LDFLAGS -rdynamic"
 config_asan
 config_gnu
 config_i386
@@ -53,6 +52,9 @@ pkg_config libffi
 pkg_config libmd
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
+if ! $HAVE_WIN32; then
+    LDFLAGS="$LDFLAGS -rdynamic"
+fi
 LIBS="$LIBS -lpthread -lm"
 
 # Asan config

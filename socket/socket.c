@@ -13,7 +13,10 @@
 #include <errno.h>
 #include <string.h>
 
-#ifndef WIN32
+#ifdef WIN32
+# include <winsock2.h>
+# include <ws2tcpip.h>
+#else
 # include <netdb.h>
 # include <netinet/in.h>
 #endif
@@ -63,6 +66,7 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
   struct addrinfo *res0;
   s32 e;
   const char *error_reason = "error";
+  s32 i;
   t_socket sockfd;
   assert(s);
   assert(host);
@@ -74,7 +78,7 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
     err_write_1(", ");
     err_write_1(service->ptr.pchar);
     err_write_1("): getaddrinfo: ");
-    err_puts(gai_strerror(e));
+    err_puts((char *) gai_strerror(e));
     assert(! "socket_init_listen: getaddrinfo");
     return NULL;
   }
@@ -88,8 +92,9 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
       error_reason = "socket_init_listen: socket: ";
       goto next;
     }
-    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int) {1},
-                   sizeof(int)) < 0) {
+    i = 1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (void *) &i,
+		   sizeof(i)) < 0) {
       error_reason = "setsockopt(SO_REUSEADDR)";
       goto next;
     }

@@ -104,7 +104,7 @@ int main (int argc, char **argv)
       kc3_clean(NULL);
       return 1;
     }
-    strftime(log_buf, sizeof(log_buf) - 1, "log/kc3_httpd_%F_%T.log",
+    strftime(log_buf, sizeof(log_buf) - 1, "log/kc3_httpd_%Y-%m-%d_%H:%M:%S.log",
              utc);
     str_init_1(&log_str, NULL, log_buf);
     if (! file_open_w(&log_str, &log_fd)) {
@@ -125,12 +125,14 @@ int main (int argc, char **argv)
   tag_init_bool(&daemonize_value, daemonize);
   env_def(&g_kc3_env, &daemonize_ident, &daemonize_value);
   io_puts("KC3 HTTPd loading, please wait...");
+#ifndef WIN32
   if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
     err_puts("http_event_base_new: signal");
     assert(! "http_event_base_new: signal");
     kc3_clean(NULL);
     return 1;
   }
+#endif
   module = sym_1("HTTPd");
   if (! module_load(module)) {
     kc3_clean(NULL);

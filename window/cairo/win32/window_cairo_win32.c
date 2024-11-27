@@ -107,7 +107,7 @@ bool window_cairo_win32_run (s_window_cairo *window)
   wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
   wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
   wc.lpszMenuName  = NULL;
-  wc.lpszClassName = "Libc3WindowCairoWin32";
+  wc.lpszClassName = "Libkc3WindowCairoWin32";
   wc.hIconSm       = LoadIcon(NULL, IDI_APPLICATION);
   if (!RegisterClassEx(&wc)) {
     MessageBox(NULL, "Window Registration Failed!", "Error!",
@@ -115,7 +115,7 @@ bool window_cairo_win32_run (s_window_cairo *window)
     return 0;
   }
   hwnd = CreateWindowEx(WS_EX_CLIENTEDGE,
-                        "Libc3WindowCairoWin32",
+                        "Libkc3WindowCairoWin32",
                         window->title,
                         WS_OVERLAPPEDWINDOW,
                         window->x, window->y, window->w, window->h,
