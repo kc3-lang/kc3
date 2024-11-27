@@ -20,6 +20,10 @@
 
 #include "types.h"
 
+#ifdef WIN32
+#define timegm _mkgmtime
+#endif
+
 /* Stack-allocation compatible functions. Call time_clean if
    time_init argument allocate was true. */
 void     time_clean (s_time *time);

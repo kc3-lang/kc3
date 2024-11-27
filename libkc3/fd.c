@@ -14,6 +14,11 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
+
+#ifdef WIN32
+# include <winsock2.h>
+#endif
+
 #include "assert.h"
 #include "buf.h"
 #include "fd.h"
@@ -65,6 +70,15 @@ s_str * fd_read_until_eof (s32 fd, s_str *dest)
 
 bool * fd_set_blocking (s32 fd, bool blocking, bool *result)
 {
+#ifdef WIN32
+  unsigned long b;
+  b = blocking;
+  if (ioctlsocket(fd, FIONBIO, &b) != NO_ERROR) {
+    err_puts("fd_set_blocking: ioctlsocket");
+    assert(! "fd_set_blocking: ioctlsocket");
+    return NULL;
+  }
+#else
   s32 flags;
   flags = fcntl(fd, F_GETFL);
   if (flags == -1)
@@ -75,6 +89,7 @@ bool * fd_set_blocking (s32 fd, bool blocking, bool *result)
     flags &= ~ (s32) O_NONBLOCK;
   if (fcntl(fd, F_SETFL, flags) == -1)
     return NULL;
+#endif
   *result = true;
   return result;
 }

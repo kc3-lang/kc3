@@ -156,7 +156,7 @@ s_str * time_to_str (const s_time *time, s_str *dest)
     assert(! "time_to_str: gmtime");
     return NULL;
   }
-  if (! strftime(a, sizeof(a), "%F %T", tm)) {
+  if (! strftime(a, sizeof(a), "%Y-%m-%d %H:%M:%S", tm)) {
     err_puts("time_to_str: strftime");
     assert(! "time_to_str: strftime");
     return NULL;

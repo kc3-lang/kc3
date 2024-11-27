@@ -173,6 +173,7 @@ HEADERS = \
 	"uw.h" \
 	"var.h" \
 	"void.h" \
+	"wait.h" \
 
 SOURCES = \
 	"abs.c" \
@@ -359,6 +360,7 @@ SOURCES = \
 	"uw.c" \
 	"var.c" \
 	"void.c" \
+	"wait.c" \
 
 LO_SOURCES = \
 	"" \
@@ -642,4 +644,5 @@ LO_SOURCES = \
 	"uw.c" \
 	"var.c" \
 	"void.c" \
+	"wait.c" \
 

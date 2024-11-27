@@ -492,8 +492,13 @@ s_file_stat * file_stat (const s_str *path, s_file_stat *dest)
   tmp.st_gid = sb.st_gid;
   tmp.st_rdev = sb.st_rdev;
   tmp.st_size = sb.st_size;
+#ifdef WIN32
+  tmp.st_blksize = 0;
+  tmp.st_blocks = 0;
+#else
   tmp.st_blksize = sb.st_blksize;
   tmp.st_blocks = sb.st_blocks;
+#endif
 #if HAVE_STAT_MTIM
 # ifdef __APPLE__
   tmp.st_atim.tv_sec  = sb.st_mtimespec.tv_sec;

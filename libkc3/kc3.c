@@ -15,7 +15,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/wait.h>
+
+#ifndef WIN32
+# include <sys/wait.h>
+#endif
+
 #include <unistd.h>
 #include "alist.h"
 #include "alloc.h"
@@ -57,8 +61,10 @@ const s_str g_kc3_base64url = {{NULL}, 64, {"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                             "0123456789-_"}};
 sw          g_kc3_exit_code = 1;
 
+#ifndef WIN32
 void kc3_system_pipe_exec (s32 pipe_fd, char **argv,
                            const s_list * const *list);
+#endif
 
 s_tag * kc3_access (s_tag *tag, s_list **key,
                     s_tag *dest)
@@ -561,6 +567,11 @@ s_tag * kc3_struct_put (s_tag *s, const s_sym * const *key,
 
 s_str * kc3_system (const s_list * const *list, s_str *dest)
 {
+#ifdef WIN32
+  (void) list;
+  (void) dest;
+  return NULL;
+#else
   char **a = NULL;
   char **argv = NULL;
   sw e;
@@ -635,6 +646,7 @@ s_str * kc3_system (const s_list * const *list, s_str *dest)
     free(*a);
   }
   return r;
+#endif
 }
 
 void kc3_system_pipe_exec (s32 pipe_w, char **argv,

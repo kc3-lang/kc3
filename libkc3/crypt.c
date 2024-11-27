@@ -10,8 +10,11 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <sys/types.h>
 #include <errno.h>
+#ifndef WIN32
 #include <pwd.h>
+#endif
 #include <string.h>
 #include <unistd.h>
 #include "assert.h"

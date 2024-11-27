@@ -216,7 +216,7 @@ int main (int argc, char **argv)
 {
   char buf[BUFSZ];
   unsigned long lineno;
-  s_ucd *ucd = calloc(sizeof(s_ucd), UCD_MAX);
+  s_ucd *ucd = calloc(UCD_MAX, sizeof(s_ucd));
   (void) argc;
   (void) argv;
   lineno = 0;
