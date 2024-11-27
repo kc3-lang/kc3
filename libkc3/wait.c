@@ -21,11 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-#include "wait.h"
-
 #ifdef WIN32
 
 #include <stdlib.h>
+#include "wait.h"
 
 int __filter_anychild (PROCESSENTRY32W * pe, DWORD pid)
 {
@@ -198,5 +197,9 @@ pid_t wait4(pid_t pid, int * status, int options, struct rusage * rusage)
 {
     return __waitpid_internal(pid, status, options, NULL, rusage);
 }
+
+#else
+
+void _kc3_wait (void) {}
 
 #endif

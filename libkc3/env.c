@@ -1435,7 +1435,7 @@ bool env_eval_ident (s_env *env, const s_ident *ident, s_tag *dest)
     err_write_1("\n");
     if (true) {
       err_puts("env_eval_ident: stacktrace:");
-      err_inspect_list(env->stacktrace);
+      err_inspect_stacktrace(env->stacktrace);
       err_write_1("\n");
     }
     if (false) {
