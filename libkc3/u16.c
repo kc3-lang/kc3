@@ -116,8 +116,12 @@ u16 * u16_init_str (u16 *u, const s_str *str)
   u16 tmp = 0;
   buf_init_str_const(&buf, str);
   if (buf_parse_u16(&buf, &tmp) <= 0) {
-    err_puts("u16_init_str: buf_parse_u16");
-    assert(! "u16_init_str: buf_parse_u16");
+    if (false) {
+      err_puts("u16_init_str: buf_parse_u16");
+      err_inspect_stacktrace(g_kc3_env.stacktrace);
+      err_write_1("\n");
+      assert(! "u16_init_str: buf_parse_u16");
+    }
     return NULL;
   }
   *u = tmp;

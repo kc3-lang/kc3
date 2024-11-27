@@ -116,8 +116,12 @@ u8 * u8_init_str (u8 *u, const s_str *str)
   u8 tmp = 0;
   buf_init_str_const(&buf, str);
   if (buf_parse_u8(&buf, &tmp) <= 0) {
-    err_puts("u8_init_str: buf_parse_u8");
-    assert(! "u8_init_str: buf_parse_u8");
+    if (false) {
+      err_puts("u8_init_str: buf_parse_u8");
+      err_inspect_stacktrace(g_kc3_env.stacktrace);
+      err_write_1("\n");
+      assert(! "u8_init_str: buf_parse_u8");
+    }
     return NULL;
   }
   *u = tmp;

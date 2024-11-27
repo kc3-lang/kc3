@@ -116,8 +116,12 @@ uw * uw_init_str (uw *u, const s_str *str)
   uw tmp = 0;
   buf_init_str_const(&buf, str);
   if (buf_parse_uw(&buf, &tmp) <= 0) {
-    err_puts("uw_init_str: buf_parse_uw");
-    assert(! "uw_init_str: buf_parse_uw");
+    if (false) {
+      err_puts("uw_init_str: buf_parse_uw");
+      err_inspect_stacktrace(g_kc3_env.stacktrace);
+      err_write_1("\n");
+      assert(! "uw_init_str: buf_parse_uw");
+    }
     return NULL;
   }
   *u = tmp;

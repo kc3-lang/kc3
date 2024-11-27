@@ -116,8 +116,12 @@ u_bits$ * u_bits$_init_str (u_bits$ *u, const s_str *str)
   u_bits$ tmp = 0;
   buf_init_str_const(&buf, str);
   if (buf_parse_u_bits$(&buf, &tmp) <= 0) {
-    err_puts("u_bits$_init_str: buf_parse_u_bits$");
-    assert(! "u_bits$_init_str: buf_parse_u_bits$");
+    if (false) {
+      err_puts("u_bits$_init_str: buf_parse_u_bits$");
+      err_inspect_stacktrace(g_kc3_env.stacktrace);
+      err_write_1("\n");
+      assert(! "u_bits$_init_str: buf_parse_u_bits$");
+    }
     return NULL;
   }
   *u = tmp;

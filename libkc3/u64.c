@@ -116,8 +116,12 @@ u64 * u64_init_str (u64 *u, const s_str *str)
   u64 tmp = 0;
   buf_init_str_const(&buf, str);
   if (buf_parse_u64(&buf, &tmp) <= 0) {
-    err_puts("u64_init_str: buf_parse_u64");
-    assert(! "u64_init_str: buf_parse_u64");
+    if (false) {
+      err_puts("u64_init_str: buf_parse_u64");
+      err_inspect_stacktrace(g_kc3_env.stacktrace);
+      err_write_1("\n");
+      assert(! "u64_init_str: buf_parse_u64");
+    }
     return NULL;
   }
   *u = tmp;
