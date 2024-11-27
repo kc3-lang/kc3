@@ -131,4 +131,9 @@ s_tag * kc3_while (s_tag *cond, s_tag *body, s_tag *dest);
 /* debug */
 void kc3_break (void);
 
+/* miscelleanous */
+#ifdef WIN32
+int fork (void);
+#endif
+
 #endif /* LIBKC3_KC3_MAIN_H */

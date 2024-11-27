@@ -66,6 +66,13 @@ void kc3_system_pipe_exec (s32 pipe_fd, char **argv,
                            const s_list * const *list);
 #endif
 
+#ifdef WIN32
+int fork (void)
+{
+  return -1;
+}
+#endif
+
 s_tag * kc3_access (s_tag *tag, s_list **key,
                     s_tag *dest)
 {
