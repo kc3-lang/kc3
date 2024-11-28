@@ -41,6 +41,8 @@ elif uname | grep -q Linux; then
     ARCH=linux
 elif uname | grep -q Darwin; then
     ARCH=darwin
+elif uname -s | grep -qi mingw; then
+    ARCH=windows
 fi
 echo "ARCH = $ARCH" >> ${CONFIG_MK}
 

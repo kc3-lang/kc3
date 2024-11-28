@@ -615,6 +615,14 @@ lib_links_linux_debug:
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so lib/kc3/0.1/markdown.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.so lib/kc3/0.1/socket.so
 
+lib_links_windows:
+	ln -sf ../../../ekc3/.libs/libekc3-0.dll lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event-0.dll lib/kc3/0.1/event.so
+	ln -sf ../../../http/.libs/libkc3_http-0.dll lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json-0.dll lib/kc3/0.1/json.so
+	ln -sf ../../../markdown/.libs/libkc3_markdown-0.dll lib/kc3/0.1/markdown.so
+	ln -sf ../../../socket/.libs/libkc3_socket-0.dll lib/kc3/0.1/socket.so
+
 libkc3_gcovr:
 	${MAKE} clean_cov
 	${MAKE} libkc3_test_cov

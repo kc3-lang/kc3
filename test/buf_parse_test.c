@@ -1390,8 +1390,8 @@ TEST_CASE(buf_parse_var)
   BUF_PARSE_TEST_VAR("?", expected);
   expected.type = &g_sym_U8;
   BUF_PARSE_TEST_VAR("(U8) ?", expected);
-  expected.ptr = (s_tag *)  0x123456789abcdef0;
-  BUF_PARSE_TEST_VAR("(U8) ?0x123456789abcdef0", expected);
+  expected.ptr = (s_tag *)  0x12345678;
+  BUF_PARSE_TEST_VAR("(U8) ?0x12345678", expected);
 }
 TEST_CASE_END(buf_parse_var)
 

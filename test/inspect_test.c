@@ -542,7 +542,7 @@ TEST_CASE(inspect_var)
 {
   INSPECT_TEST_VAR("?", "?");
   INSPECT_TEST_VAR("(U8) ?", "(U8) ?");
-  INSPECT_TEST_VAR("(U8) ?0x123456789abcdef0",
-                   "(U8) ?0x123456789abcdef0");
+  INSPECT_TEST_VAR("(U8) ?0x12345678",
+                   "(U8) ?0x12345678");
 }
 TEST_CASE_END(inspect_var)

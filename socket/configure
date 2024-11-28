@@ -54,6 +54,9 @@ pkg_config libmd
 config_define PREFIX "\"${PREFIX}\""
 update_config_h
 LIBS="$LIBS -lm -rpath ${PREFIX}/lib"
+if $HAVE_WIN32; then
+    LIBS="$LIBS -lws2_32"
+fi
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
