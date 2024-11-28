@@ -44,12 +44,14 @@
 TEST_CASE_PROTOTYPE(struct_test_fact_w);
 TEST_CASE_PROTOTYPE(struct_test_http_request);
 TEST_CASE_PROTOTYPE(struct_test_http_response);
+TEST_CASE_PROTOTYPE(struct_test_time);
 
 void struct_test (void)
 {
   TEST_CASE_RUN(struct_test_fact_w);
   TEST_CASE_RUN(struct_test_http_request);
   TEST_CASE_RUN(struct_test_http_response);
+  TEST_CASE_RUN(struct_test_time);
 }
 
 TEST_CASE(struct_test_fact_w)
@@ -83,3 +85,11 @@ TEST_CASE(struct_test_http_response)
   STRUCT_TEST_SIZEOF(  s_http_response, HTTP.Response);
 }
 TEST_CASE_END(struct_test_http_response)
+
+TEST_CASE(struct_test_time)
+{
+  STRUCT_TEST_OFFSETOF(s_time, Time, tv_sec);
+  STRUCT_TEST_OFFSETOF(s_time, Time, tv_nsec);
+  STRUCT_TEST_SIZEOF(  s_time, Time);
+}
+TEST_CASE_END(struct_test_time)
