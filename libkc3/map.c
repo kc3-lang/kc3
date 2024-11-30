@@ -275,14 +275,15 @@ s_map * map_init_from_lists (s_map *map, s_list *keys,
   return NULL;
 }
 
-s_list ** map_map (const s_map *map, const s_fn *fn, s_list **result)
+s_list ** map_map (const s_map *map, s_callable *callable,
+                   s_list **result)
 {
   s_list *args = NULL;
   uw i = 0;
   s_list **t = NULL;
   s_list *tmp = NULL;
   assert(map);
-  assert(fn);
+  assert(callable);
   assert(result);
   t = &tmp;
   *t = NULL;
@@ -290,7 +291,7 @@ s_list ** map_map (const s_map *map, const s_fn *fn, s_list **result)
     args = list_new_tag_copy(map->key + i,
                              list_new_tag_copy(map->value + i, NULL));
     *t = list_new(NULL);
-    if (! eval_fn_call(fn, args, &(*t)->tag)) {
+    if (! eval_callable_call(callable, args, &(*t)->tag)) {
       list_delete_all(args);
       list_delete_all(tmp);
       return NULL;
