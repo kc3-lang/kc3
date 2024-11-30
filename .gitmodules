@@ -10,5 +10,5 @@
 	path = fonts
 	url = https://git.kmx.io/kc3-lang/fonts.git
 [submodule "smtp-client"]
-	path = smtp-client
+	path = smtp
 	url = https://git.kmx.io/kc3-lang/smtp-client.git
