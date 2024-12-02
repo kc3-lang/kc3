@@ -380,6 +380,16 @@ s_str * kc3_getenv (const s_str *name, s_str *dest)
   return str_init_1(dest, NULL, p);
 }
 
+sw kc3_getpid (void)
+{
+  return getpid();
+}
+
+sw kc3_getppid (void)
+{
+  return getppid();
+}
+
 s_tag * kc3_identity (s_tag *tag, s_tag *dest)
 {
   return tag_init_copy(dest, tag);

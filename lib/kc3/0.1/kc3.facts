@@ -375,3 +375,9 @@ add {KC3, :symbol, KC3.args}
 replace {KC3.args, :symbol_value, cfn List "kc3_args" (Result)}
 add {KC3, :symbol, KC3.stacktrace}
 replace {KC3.stacktrace, :symbol_value, cfn List "kc3_stacktrace" (Result)}
+add {KC3, :symbol, KC3.pause}
+replace {KC3.pause, :symbol_value, cfn S32 "pause" ()}
+add {KC3, :symbol, KC3.getpid}
+replace {KC3.getpid, :symbol_value, cfn Sw "kc3_getpid" ()}
+add {KC3, :symbol, KC3.getppid}
+replace {KC3.getppid, :symbol_value, cfn Sw "kc3_getppid" ()}
