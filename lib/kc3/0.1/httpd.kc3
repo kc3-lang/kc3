@@ -96,8 +96,8 @@ defmodule HTTPd do
   def daemonize = fn () {
     if (KC3.daemonize) do
       puts("forking to background")
-      if fork() > 0 do
-        exit(0)
+      if (pid = fork()) > 0 do
+        _exit(0)
       end
     end
   }
@@ -105,9 +105,9 @@ defmodule HTTPd do
   def time_zero = %Time{}
 
   def server = fn (host, port) {
-    daemonize()
-    if event_base = Event.base_new() do
-      if socket = Socket.listen(host, port) do
+    if socket = Socket.listen(host, port) do
+      daemonize()
+      if event_base = Event.base_new() do
         puts("KC3 HTTPd: listening on #{host}:#{port}")
         load_app()
         acceptor_ev = Event.new(event_base, socket.fd, [:read, :persist],

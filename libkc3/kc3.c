@@ -12,6 +12,7 @@
  */
 #include <dlfcn.h>
 #include <errno.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,6 +32,7 @@
 #include "buf_parse.h"
 #include "call.h"
 #include "env.h"
+#include "eval.h"
 #include "fact.h"
 #include "facts.h"
 #include "facts_cursor.h"
@@ -38,6 +40,7 @@
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
+#include "s32.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -221,6 +224,19 @@ void kc3_exit (s_tag *code)
     return;
   }
   exit((int) code_u8);
+}
+
+void kc3__exit (s_tag *code)
+{
+  u8 code_u8;
+  const s_sym *type;
+  type = &g_sym_U8;
+  if (! u8_init_cast(&code_u8, &type, code)) {
+    err_puts("kc3__exit: u8_init_cast");
+    assert(! "kc3__exit: u8_init_cast");
+    return;
+  }
+  _exit((int) code_u8);
 }
 
 s_tag * kc3_fact_object (s_fact *fact, s_tag *dest)
@@ -693,6 +709,44 @@ void kc3_system_pipe_exec (s32 pipe_w, char **argv,
   err_puts(strerror(e));
   assert(! "kc3_system: execvp");
   _exit(1);
+}
+
+s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
+{
+  pthread_t t;
+  s_tag *tmp;
+  t = thread->p;
+  if (pthread_join(t, (void **) &tmp)) {
+    err_puts("kc3_thread_delete: pthread_join");
+    assert(! "kc3_thread_delete: pthread_join");
+    return NULL;
+  }
+  *dest = *tmp;
+  free(tmp);
+  return dest;
+}
+
+u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
+{
+  if (pthread_create((pthread_t *) &dest->p, NULL, kc3_thread_start,
+                     *start)) {
+    err_puts("kc3_thread_new: pthread_create");
+    assert(! "kc3_thread_new: pthread_create");
+    return NULL;
+  }
+  return dest;
+}
+
+void * kc3_thread_start (void *arg)
+{
+  s_callable *start;
+  s_tag *tag;
+  start = arg;
+  if (! (tag = tag_new()))
+    return NULL;
+  if (! eval_callable_call(start, NULL, tag))
+    return NULL;
+  return tag;
 }
 
 s_tag * kc3_while (s_tag *cond, s_tag *body, s_tag *dest)

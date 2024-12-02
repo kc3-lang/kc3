@@ -124,6 +124,9 @@ s_str *      kc3_strerror (sw err_no, s_str *dest);
 s_tag *      kc3_struct_put (s_tag *s, const s_sym * const *key,
                              s_tag *value, s_tag *dest);
 s_str *      kc3_system (const s_list * const *list, s_str *dest);
+s_tag *      kc3_thread_delete (u_ptr_w *thread, s_tag *dest);
+u_ptr_w *    kc3_thread_new (u_ptr_w *dest, p_callable *start);
+void *       kc3_thread_start (void *arg);
 
 /* Special operators. */
 s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,

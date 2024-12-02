@@ -1,0 +1,7 @@
+defmodule Thread do
+
+  def delete = cfn Tag "kc3_thread_delete" (Ptr, Result)
+
+  def new = cfn Ptr "kc3_thread_new" (Result, Callable)
+
+end

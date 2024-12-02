@@ -304,6 +304,8 @@ add {KC3, :symbol, KC3.inspect}
 replace {KC3.inspect, :symbol_value, cfn Str "inspect_tag" (Tag, Result)}
 add {KC3, :symbol, KC3.exit}
 replace {KC3.exit, :symbol_value, cfn Void "kc3_exit" (Tag)}
+add {KC3, :symbol, KC3._exit}
+replace {KC3._exit, :symbol_value, cfn Void "kc3__exit" (Tag)}
 add {KC3, :symbol, KC3.fork}
 replace {KC3.fork, :symbol_value, cfn S32 "fork" ()}
 add {KC3, :symbol, KC3.system}

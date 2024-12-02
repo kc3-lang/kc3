@@ -24,7 +24,6 @@ bool eval_callable_call (s_callable *callable, s_list *arguments,
                          s_tag *dest)
 {
   assert(callable);
-  assert(arguments);
   assert(dest);
   if (! callable) {
     err_puts("eval_callable_call: NULL callable");

@@ -63,7 +63,7 @@
 #include "tuple.h"
 #include "var.h"
 
-s_env g_kc3_env;
+thread_local s_env g_kc3_env;
 
 static void env_clean_globals (s_env *env);
 static void env_clean_toplevel (s_env *env);
