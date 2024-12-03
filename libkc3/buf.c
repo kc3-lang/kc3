@@ -1382,6 +1382,7 @@ sw buf_write_u8 (s_buf *buf, u8 x)
   return size;
 }
 
+// XXX endianness
 sw buf_write_u16 (s_buf *buf, u16 x)
 {
   const sw size = 2;

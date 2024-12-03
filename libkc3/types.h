@@ -58,13 +58,13 @@ typedef int8_t             s8;
 typedef int16_t            s16;
 typedef int32_t            s32;
 typedef int64_t            s64;
-typedef long long          s128;
+//XXX (32 bits) typedef long long          s128;
 typedef long               sw;
 typedef uint8_t            u8;
 typedef uint16_t           u16;
 typedef uint32_t           u32;
 typedef uint64_t           u64;
-typedef unsigned long long u128;
+//XXX (32 bits) typedef unsigned long long u128;
 typedef unsigned long      uw;
 
 #ifdef SW_MAX
@@ -204,6 +204,7 @@ typedef struct queue                   s_queue;
 typedef struct quote                   s_quote;
 typedef struct ratio                   s_ratio;
 typedef struct sequence                s_sequence;
+typedef struct serialize               s_serialize;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
 typedef struct struct_type             s_struct_type;
@@ -499,6 +500,11 @@ struct log {
 struct ratio {
   s_integer numerator;
   s_integer denominator;
+};
+
+struct serialize {
+  s_buf heap;
+  s_buf buf;
 };
 
 struct sym {
