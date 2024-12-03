@@ -351,6 +351,8 @@ KC3_C_SOURCES = \
 	"libkc3/crypt_sha512.c" \
 	"libkc3/data.c" \
 	"libkc3/data.h" \
+	"libkc3/deserialize.c" \
+	"libkc3/deserialize.h" \
 	"libkc3/env.c" \
 	"libkc3/env.h" \
 	"libkc3/error.c" \
@@ -453,6 +455,7 @@ KC3_C_SOURCES = \
 	"libkc3/s8.h" \
 	"libkc3/sequence.c" \
 	"libkc3/sequence.h" \
+	"libkc3/serialize.c" \
 	"libkc3/serialize.h" \
 	"libkc3/set.c.in" \
 	"libkc3/set.h.in" \

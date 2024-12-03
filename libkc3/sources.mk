@@ -89,6 +89,7 @@ HEADERS = \
 	"cow.h" \
 	"crypt.h" \
 	"data.h" \
+	"deserialize.h" \
 	"env.h" \
 	"error.h" \
 	"error_handler.h" \
@@ -266,6 +267,7 @@ SOURCES = \
 	"crypt.c" \
 	"crypt_sha512.c" \
 	"data.c" \
+	"deserialize.c" \
 	"env.c" \
 	"error.c" \
 	"error_handler.c" \
@@ -315,6 +317,7 @@ SOURCES = \
 	"s64.c" \
 	"s8.c" \
 	"sequence.c" \
+	"serialize.c" \
 	"set__fact.c" \
 	"set__tag.c" \
 	"set_cursor__fact.c" \
@@ -550,6 +553,7 @@ LO_SOURCES = \
 	"crypt.c" \
 	"crypt_sha512.c" \
 	"data.c" \
+	"deserialize.c" \
 	"env.c" \
 	"error.c" \
 	"error_handler.c" \
@@ -599,6 +603,7 @@ LO_SOURCES = \
 	"s64.c" \
 	"s8.c" \
 	"sequence.c" \
+	"serialize.c" \
 	"set__fact.c" \
 	"set__tag.c" \
 	"set_cursor__fact.c" \
