@@ -52,7 +52,7 @@ int main (int argc, char **argv)
           return 1;
         }
         str_init_1(&str, NULL, argv[1]);
-        if (! facts_open_file(&g_kc3_env->facts, &str)) {
+        if (! facts_open_file(g_kc3_env->facts, &str)) {
           err_puts("kc3_httpd: -D: facts_open_file");
           assert(! "kc3_httpd: -D: facts_open_file");
           kc3_clean(NULL);
@@ -112,13 +112,13 @@ int main (int argc, char **argv)
       kc3_clean(NULL);
       return 1;
     }
-    buf_file_close(&g_kc3_env->out);
+    buf_file_close(g_kc3_env->out);
     dup2(log_fd, 1);
-    buf_fd_open_w(&g_kc3_env->out, 1);
-    buf_file_close(&g_kc3_env->err);
+    buf_fd_open_w(g_kc3_env->out, 1);
+    buf_file_close(g_kc3_env->err);
     dup2(log_fd, 2);
-    buf_fd_open_w(&g_kc3_env->err, 2);
-    buf_file_close(&g_kc3_env->in);
+    buf_fd_open_w(g_kc3_env->err, 2);
+    buf_file_close(g_kc3_env->in);
     close(0);
   }
   ident_init(&daemonize_ident, &g_sym_KC3, sym_1("daemonize"));

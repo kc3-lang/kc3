@@ -48,19 +48,19 @@ sw ikc3_run (void)
   sw r;
   s_tag result;
   while (1) {
-    r = buf_ignore_spaces(&g_kc3_env->in);
+    r = buf_ignore_spaces(g_kc3_env->in);
     if (r < 0)
       return 0;
-    r = buf_parse_comments(&g_kc3_env->in);
+    r = buf_parse_comments(g_kc3_env->in);
     if (r < 0)
       return 0;
-    r = buf_parse_tag(&g_kc3_env->in, &input);
+    r = buf_parse_tag(g_kc3_env->in, &input);
     if (r > 0) {
       if (! eval_tag(&input, &result)) {
         tag_clean(&input);
         continue;
       }
-      if (buf_inspect_tag(&g_kc3_env->out, &result) < 0) {
+      if (buf_inspect_tag(g_kc3_env->out, &result) < 0) {
 	tag_clean(&input);
 	tag_clean(&result);
         return 0;
@@ -70,11 +70,11 @@ sw ikc3_run (void)
     }
     if (r < 0 ||
         (r == 0 &&
-         (r = buf_ignore_character(&g_kc3_env->in)) <= 0))
+         (r = buf_ignore_character(g_kc3_env->in)) <= 0))
       return 0;
-    if ((r = buf_write_1(&g_kc3_env->out, "\n")) < 0)
+    if ((r = buf_write_1(g_kc3_env->out, "\n")) < 0)
       return 0;
-    if ((r = buf_flush(&g_kc3_env->out)) < 0)
+    if ((r = buf_flush(g_kc3_env->out)) < 0)
       return 0;
   }
   return 0;
@@ -89,16 +89,12 @@ int main (int argc, char **argv)
   s_tag *file_path;
   s_tag  file_path_save;
   FILE *fp = 0;
-  char  in_data[BUF_SIZE];
-  s_buf in_original;
   sw r;
   if (argc < 1)
     return usage("ikc3");
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
   env = g_kc3_env;
-  in_original = env->in;
-  buf_init(&env->in, false, sizeof(in_data), in_data);
   while (argc) {
     if (! strcmp("--load", *argv) ||
         ! strcmp("-l", *argv)) {
@@ -123,25 +119,25 @@ int main (int argc, char **argv)
         r = 1;
         goto clean;
       }
-      if (! buf_file_open_r(&env->in, fp)) {
+      if (! buf_file_open_r(env->in, fp)) {
         r = -1;
         goto clean;
       }
-      file_dir = frame_get_w(&env->global_frame, &g_sym___DIR__);
+      file_dir = frame_get_w(env->global_frame, &g_sym___DIR__);
       file_dir_save = *file_dir;
-      file_path = frame_get_w(&env->global_frame, &g_sym___FILE__);
+      file_path = frame_get_w(env->global_frame, &g_sym___FILE__);
       file_path_save = *file_path;
       tag_init_str_1(file_path, NULL, argv[1]);
       file_dir->type = TAG_STR;
       if (! file_dirname(&file_path->data.str, &file_dir->data.str)) {
-        buf_file_close(&env->in);
+        buf_file_close(env->in);
         r = -1;
         goto clean;
       }
       r = ikc3_run();
       *file_dir = file_dir_save;
       *file_path = file_path_save;
-      buf_file_close(&env->in);
+      buf_file_close(env->in);
       fclose(fp);
       if (r)
         goto clean;
@@ -156,18 +152,17 @@ int main (int argc, char **argv)
       break;
   }
 #if HAVE_WINEDITLINE
-  buf_wineditline_open_r(&env->in, "ikc3> ", ".ikc3_history");
+  buf_wineditline_open_r(env->in, "ikc3> ", ".ikc3_history");
 #else
-  buf_linenoise_open_r(&env->in, "ikc3> ", ".ikc3_history");
+  buf_linenoise_open_r(env->in, "ikc3> ", ".ikc3_history");
 #endif
   r = ikc3_run();
 #if HAVE_WINEDITLINE
-  buf_wineditline_close(&env->in, ".ikc3_history");
+  buf_wineditline_close(env->in, ".ikc3_history");
 #else
-  buf_linenoise_close(&env->in, ".ikc3_history");
+  buf_linenoise_close(env->in, ".ikc3_history");
 #endif
  clean:
-  env->in = in_original;
   kc3_clean(NULL);
   return r;
 }

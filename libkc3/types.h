@@ -739,17 +739,17 @@ struct facts_cursor {
 struct env {
   sw                argc;
   char            **argv;
-  s_str             argv0_dir;
+  s_str            *argv0_dir;
   s_list           *stacktrace;
   const s_sym      *current_defmodule;
-  s_buf             err;
+  s_buf            *err;
   s_error_handler  *error_handler;
-  s_facts           facts;
+  s_facts          *facts;
   s_frame          *frame;
-  s_frame           global_frame;
-  s_buf             in;
-  s_str             module_path;
-  s_buf             out;
+  s_frame          *global_frame;
+  s_buf            *in;
+  s_str            *module_path;
+  s_buf            *out;
   s_list           *path;
   uw                quote_level;
   s_frame           read_time_frame;

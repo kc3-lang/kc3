@@ -204,7 +204,7 @@ void ** kc3_dlopen (const s_str *path, void **dest)
 
 s_facts ** kc3_env_db (s_facts **dest)
 {
-  *dest = &g_kc3_env->facts;
+  *dest = g_kc3_env->facts;
   return dest;
 }
 
@@ -313,7 +313,7 @@ s_tag * kc3_facts_first_with_tags (s_facts *facts, s_tag *subject,
 uw * kc3_facts_next_id (uw *dest)
 {
   assert(dest);
-  *dest = g_kc3_env->facts.next_id;
+  *dest = g_kc3_env->facts->next_id;
   return dest;
 }
 
@@ -464,8 +464,7 @@ s_tag * kc3_let (s_tag *vars, s_tag *tag, s_tag *dest)
 
 void kc3_license (void)
 {
-  buf_write_1(&g_kc3_env->out, g_kc3_license);
-  buf_flush(&g_kc3_env->out);
+  io_write_1(g_kc3_license);
 }
 
 s_array * kc3_list_to_array (s_list **list,
@@ -739,16 +738,25 @@ s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
 u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
 {
   s_tag *tag;
-  if (! (tag = tag_new_tuple(2)))
+  if (! (tag = tag_new_tuple(3)))
     return NULL;
-  if (! tag_init_callable_copy(tag->data.tuple.tag + 1, start))
+  if (! tag_init_callable_copy(tag->data.tuple.tag + 1, start)) {
+    tag_delete(tag);
     return NULL;
+  }
+  tag->data.tuple.tag[2].type = TAG_PTR;
+  if (! (tag->data.tuple.tag[2].data.ptr.p = env_new_copy(g_kc3_env))) {
+    tag_delete(tag);
+    return NULL;
+  }
   if (pthread_create((pthread_t *) &dest->p, NULL, kc3_thread_start,
                      tag)) {
     err_puts("kc3_thread_new: pthread_create");
     assert(! "kc3_thread_new: pthread_create");
+    tag_delete(tag);
     return NULL;
   }
+  tag_delete(tag);
   return dest;
 }
 
@@ -758,8 +766,9 @@ void * kc3_thread_start (void *arg)
   s_callable *start;
   tag = arg;
   if (tag->type != TAG_TUPLE ||
-      tag->data.tuple.count != 2 ||
-      tag->data.tuple.tag[1].type != TAG_CALLABLE) {
+      tag->data.tuple.count != 3 ||
+      tag->data.tuple.tag[1].type != TAG_CALLABLE ||
+      tag->data.tuple.tag[2].type != TAG_PTR) {
     err_puts("kc3_thread_start: invalid argument");
     assert(! "kc3_thread_start: invalid argument");
     return NULL;

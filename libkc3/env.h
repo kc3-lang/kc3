@@ -20,6 +20,12 @@ extern thread_local s_env *g_kc3_env;
 /* Stack allocation compatible functions, call env_clean after use. */
 void    env_clean (s_env *env);
 s_env * env_init (s_env *env, int *argc, char ***argv);
+s_env * env_init_copy (s_env *env, s_env *src);
+
+/* Heap allocation functions, call env_delete after use. */
+void    env_delete (s_env *env);
+s_env * env_new (int *argc, char ***argv);
+s_env * env_new_copy (s_env *src);
 
 /* Observers. */
 s_list **       env_args (s_env *env, s_list **dest);
