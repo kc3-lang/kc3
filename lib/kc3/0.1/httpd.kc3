@@ -106,8 +106,6 @@ defmodule HTTPd do
 
   def server_thread = fn () {
     if event_base = Event.base_new() do
-      puts("KC3 HTTPd: listening on #{host}:#{port}")
-      load_app()
       acceptor_ev = Event.new(event_base, socket.fd, [:read, :persist],
         acceptor, void)
       r = Event.add(acceptor_ev, time_zero)
@@ -123,6 +121,8 @@ defmodule HTTPd do
   def server = fn (host, port) {
     def socket = Socket.listen(host, port)
     daemonize()
+    puts("KC3 HTTPd: listening on #{host}:#{port}")
+    load_app()
     threads = List.map(List.count(1), fn (x) {
       Thread.new(server_thread)
     })
@@ -244,8 +244,8 @@ defmodule HTTPd do
 
   def def_route = fn (path, controller) {
     tmp = List.append(HTTPd.routes,
-                     %HTTPd.Route{path: path,
-                                  controller: controller})
+      %HTTPd.Route{path: path,
+                   controller: controller})
     def HTTPd.routes = tmp
   }
 
