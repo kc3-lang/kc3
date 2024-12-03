@@ -5,6 +5,86 @@ defmodule HTTPd.Route do
   defstruct [path: "/",
              controller: ?]
 
+  def def_static_route = fn (prefix, root_dir, url_skip) {
+    #puts("def_static_route: #{inspect(prefix)}, #{inspect(root_dir)}, #{url_skip}")
+    directory_page = HTTPd.fn (request) {
+      url = URL.eat(request.url, url_skip)
+      files = List.sort(File.list(root_dir + url))
+      file_li = HTTPd.fn (file) {
+        slash = if Str.ends_with?(url, "/") do "" else "/" end
+        real_path = "#{root_dir}#{url}#{slash}#{file}"
+        dir? = File.is_directory?(real_path)
+        dir_slash = if dir? do "/" else "" end
+        path = "#{prefix}#{url}#{slash}#{file}#{dir_slash}"
+        mode = if dir? do "dr-xr-xr-x" else "-r--r--r--" end
+        """<li>#{mode} <a href="#{URL.escape(path)}">#{HTML.escape(file)}</a>#{dir_slash}</li>\n"""
+      }
+      body = """
+<html>
+  <head>
+    <title>Index of #{prefix}#{url}</title>
+    <style type="text/css">
+      ul { font-family: monospace; }
+    </style>
+  </head>
+  <body>
+    <h1>Index of #{prefix}#{url}</h1>
+    <ul>
+      #{str(List.map(files, file_li))}
+    </ul>
+  </body>
+</html>
+"""
+      %HTTP.Response{body: body}
+    }
+    show_page = HTTPd.fn (request) {
+      url = URL.eat(request.url, url_skip)
+      ext = File.ext(url)
+      path = root_dir + url
+      if (! File.exists?(path)) do
+        slash = if Str.ends_with?(path, "/") do "" else "/" end
+        path = "#{path}#{slash}index.html"
+      end
+      if File.exists?(path) do
+        mime = HTTP.mime_type(ext)
+        stat = File.stat(path)
+        last_modified = Str.ftime(stat.st_mtim, "%a, %d %b %G %T %Z")
+        range = HTTP.Request.header(request, "Range")
+        {range_start, range_end} = parse_range(range, stat.st_size)
+        headers = [{"Content-Type", (Str) mime},
+                   {"Content-Length", (Str) stat.st_size},
+                   {"Content-Range", "bytes=#{range_start}-#{range_end}"},
+                   {"Last-Modified", last_modified}]
+        fd = File.open_r(path)
+        body = %{fd: fd, start: range_start, end_: range_end}
+        %HTTP.Response{body: body, headers: headers}
+      end
+    }
+    route = HTTPd.fn (request) {
+      #puts("def_static_route: route: request.url: #{inspect(request.url)}")
+      #puts("def_static_route: route: url_skip: #{url_skip}")
+      url = URL.eat(request.url, url_skip)
+      #puts("def_static_route: route: url: #{inspect(url)}")
+      render = if (Str.starts_with?(url, "/") &&
+                   ! Str.has_str?(url, "/../") &&
+                   ! Str.ends_with?(url, "/..")) do
+        path = root_dir + url
+        #puts("def_static_route: route: path: #{inspect(path)}")
+        if File.exists?(path) do
+          if File.is_directory?(path) do
+            directory_page
+          else
+            show_page
+          end
+        end
+      end
+      if render do
+        render(request)
+      end
+    }
+    HTTPd.def_route(prefix, route)
+  }
+
   def match = fn (route, request) {
     if (route.path == "" ||
         route.path == "/" ||
