@@ -250,7 +250,7 @@ void env_clean (s_env *env)
 
 void env_clean_globals (s_env *env)
 {
-  frame_clean(env->global_frame);
+  frame_delete(env->global_frame);
   frame_clean(&env->read_time_frame);
 }
 
