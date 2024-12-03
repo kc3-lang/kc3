@@ -4,6 +4,18 @@ defmodule List do
 
   def cast = cfn List "list_init_cast" (Result, Sym, Tag)
 
+  def count = fn {
+    (n) { count(n, []) }
+    (0, acc) { acc }
+    (n, acc) {
+      if n > 0 do
+        count(n - 1, [n | acc])
+      else
+        []
+      end
+    }
+  }
+
   def each = cfn Bool "list_each" (List, Callable, Result)
 
   def filter = cfn List "list_filter" (List, Callable, Result)

@@ -166,6 +166,18 @@ test_http_cov:
 test_http_debug:
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./http_test
 
+test_httpd:
+	${MAKE} -C httpd main
+
+test_httpd_asan:
+	${MAKE} -C httpd asan
+
+test_httpd_cov:
+	${MAKE} -C httpd cov
+
+test_httpd_debug:
+	${MAKE} -C httpd debug
+
 test_ikc3:
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test
 

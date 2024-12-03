@@ -2754,7 +2754,7 @@ s_env * env_init_copy (s_env *env, s_env *src)
   tmp.err = src->err;
   //tmp.error_handler = NULL;
   tmp.facts = src->facts;
-  //tmp.frame = NULL;
+  tmp.frame = frame_new_copy(src->frame);
   tmp.global_frame = src->global_frame;
   tmp.in = src->in;
   tmp.module_path = src->module_path;
