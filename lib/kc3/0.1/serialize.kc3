@@ -1,0 +1,5 @@
+defmodule Serialize do
+
+  def tag = cfn Bool "kc3_serialize_tag" (Ptr, Tag)
+
+end

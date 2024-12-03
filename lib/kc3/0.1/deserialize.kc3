@@ -1,0 +1,5 @@
+defmodule Deserialize do
+
+  def tag = cfn Tag "kc3_deserialize_tag" (Buf, Result)
+
+end
