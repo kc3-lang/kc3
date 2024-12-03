@@ -123,11 +123,10 @@ defmodule HTTPd do
   def server = fn (host, port) {
     def socket = Socket.listen(host, port)
     daemonize()
-    i = 1
-    while i > 0 do
+    threads = List.map(List.count(1), fn (x) {
       Thread.new(server_thread)
-      i = i - 1
-    end
+    })
+    List.map(threads, Thread.delete)
   }
 
   def main = fn {
