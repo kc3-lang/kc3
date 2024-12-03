@@ -11,6 +11,8 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
+#include "alloc.h"
+#include "buf.h"
 #include "serialize.h"
 
 void serialize_clean (s_serialize *serialize)
@@ -19,10 +21,25 @@ void serialize_clean (s_serialize *serialize)
   (void) serialize;
 }
 
+void serialize_delete (s_serialize *serialize)
+{
+  serialize_clean(serialize);
+  free(serialize);
+}
+
 s_serialize * serialize_init (s_serialize *serialize)
 {
   s_serialize tmp = {0};
   *serialize = tmp;
+  return serialize;
+}
+
+s_serialize * serialize_new ()
+{
+  s_serialize *serialize;
+  if (! (serialize = alloc(sizeof(s_serialize))))
+    return NULL;
+  serialize_init(serialize);
   return serialize;
 }
 
@@ -38,8 +55,16 @@ s_serialize * serialize_character (s_serialize *serialize,
 s_serialize * serialize_list (s_serialize *serialize,
                               const s_list *list);
 
-s_serialize * serialize_tag (s_serialize *serialize,
-                             const s_tag *tag);
+s_serialize * serialize_tag (s_serialize *serialize, const s_tag *tag)
+{
+  switch (tag->type){
+  case TAG_U8: return serialize_u8(serialize, tag->data.u8);
+  default:     break;
+  }
+  err_puts("serialize_tag: not implemented");
+  assert(! "serialize_tag: not implemented");
+  return NULL;
+}
 
 s_serialize * serialize_tuple (s_serialize *serialize,
                                const s_tuple *tuple);
@@ -58,8 +83,9 @@ s_serialize * serialize_sw (s_serialize *serialize, sw x);
 
 s_serialize * serialize_u8 (s_serialize *serialize, u8 x)
 {
+  sw r;
   assert(serialize);
-  if ((r = buf_write_u8(serialize->buf, x)) < 0)
+  if ((r = buf_write_u8(&serialize->buf, x)) < 0)
     return NULL;
   return serialize;
 }
