@@ -101,12 +101,14 @@ int main (int argc, char **argv)
   s_tag  file_path_save;
   FILE *fp;
   char  in_data[BUF_SIZE];
+  s_buf in_original;
   sw r;
   if (argc < 1)
     return usage(argv[0]);
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
   env = g_kc3_env;
+  in_original = *env->in;
   buf_init(env->in, false, sizeof(in_data), in_data);
   while (argc) {
     if (! strcmp("--load", *argv) ||
@@ -155,6 +157,7 @@ int main (int argc, char **argv)
   }
   r = kc3s_run();
  clean:
+  *env->in = in_original;
   kc3_clean(NULL);
   return r;
 }

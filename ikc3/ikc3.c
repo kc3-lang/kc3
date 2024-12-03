@@ -89,12 +89,14 @@ int main (int argc, char **argv)
   s_tag *file_path;
   s_tag  file_path_save;
   FILE *fp = 0;
+  s_buf in_original;
   sw r;
   if (argc < 1)
     return usage("ikc3");
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
   env = g_kc3_env;
+  in_original = *env->in;
   while (argc) {
     if (! strcmp("--load", *argv) ||
         ! strcmp("-l", *argv)) {
@@ -163,6 +165,7 @@ int main (int argc, char **argv)
   buf_linenoise_close(env->in, ".ikc3_history");
 #endif
  clean:
+  *env->in = in_original;
   kc3_clean(NULL);
   return r;
 }
