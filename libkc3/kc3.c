@@ -713,25 +713,25 @@ void kc3_system_pipe_exec (s32 pipe_w, char **argv,
 s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
 {
   pthread_t t;
-  s_tag *tmp;
-  t = thread->p;
-  if (pthread_join(t, (void **) &tmp)) {
+  s_tag *tag;
+  t = (pthread_t) thread->p;
+  if (pthread_join(t, (void **) &tag)) {
     err_puts("kc3_thread_delete: pthread_join");
     assert(! "kc3_thread_delete: pthread_join");
     return NULL;
   }
-  if (tmp->type != TAG_TUPLE ||
-      tmp->data.tuple.count != 2) {
+  if (tag->type != TAG_TUPLE ||
+      tag->data.tuple.count != 3) {
     err_puts("kc3_thread_delete: invalid value");
     assert(! "kc3_thread_delete: invalid value");
-    tag_delete(tmp);
+    tag_delete(tag);
     return NULL;
   }
-  if (! tag_init_copy(dest, tmp->data.tuple.tag)) {
-    tag_delete(tmp);
+  if (! tag_init_copy(dest, tag->data.tuple.tag)) {
+    tag_delete(tag);
     return NULL;
   }
-  tag_delete(tmp);
+  tag_delete(tag);
   return dest;
 }
 
@@ -745,7 +745,7 @@ u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
     return NULL;
   }
   tag->data.tuple.tag[2].type = TAG_PTR;
-  if (! (tag->data.tuple.tag[2].data.ptr.p = env_new_copy(g_kc3_env))) {
+  if (! (tag->data.tuple.tag[2].data.ptr.p = g_kc3_env)) {
     tag_delete(tag);
     return NULL;
   }
@@ -756,7 +756,6 @@ u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
     tag_delete(tag);
     return NULL;
   }
-  tag_delete(tag);
   return dest;
 }
 
@@ -765,15 +764,32 @@ void * kc3_thread_start (void *arg)
   s_tag *tag;
   s_callable *start;
   tag = arg;
-  if (tag->type != TAG_TUPLE ||
-      tag->data.tuple.count != 3 ||
-      tag->data.tuple.tag[1].type != TAG_CALLABLE ||
-      tag->data.tuple.tag[2].type != TAG_PTR) {
-    err_puts("kc3_thread_start: invalid argument");
-    assert(! "kc3_thread_start: invalid argument");
+  if (tag->type != TAG_TUPLE) {
+    err_puts("kc3_thread_start: invalid argument: not a tuple");
+    assert(! "kc3_thread_start: invalid argument: not a tuple");
+    return NULL;
+  }
+  if (tag->data.tuple.count != 3) {
+    err_puts("kc3_thread_start: invalid argument:"
+             " tuple arity mismatch");
+    assert(!("kc3_thread_start: invalid argument:"
+             " tuple arity mismatch"));
+    return NULL;
+  }
+  if (tag->data.tuple.tag[1].type != TAG_CALLABLE) {
+    err_puts("kc3_thread_start: invalid argument:"
+             " not a Callable (Fn or Cfn)");
+    assert(!("kc3_thread_start: invalid argument:"
+             " not a Callable (Fn or Cfn)"));
+    return NULL;
+  }
+  if (tag->data.tuple.tag[2].type != TAG_PTR) {
+    err_puts("kc3_thread_start: invalid argument: not a Ptr");
+    assert(! "kc3_thread_start: invalid argument: not a Ptr");
     return NULL;
   }
   start = tag->data.tuple.tag[1].data.callable;
+  g_kc3_env = env_new_copy((s_env *) tag->data.tuple.tag[2].data.ptr.p);
   if (! eval_callable_call(start, NULL, tag->data.tuple.tag))
     return NULL;
   return tag;
