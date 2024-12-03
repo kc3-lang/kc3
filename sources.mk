@@ -972,6 +972,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/complex.facts" \
 	"lib/kc3/0.1/cow.kc3" \
 	"lib/kc3/0.1/crypt.kc3" \
+	"lib/kc3/0.1/deserialize.kc3" \
 	"lib/kc3/0.1/ekc3.kc3" \
 	"lib/kc3/0.1/event.kc3" \
 	"lib/kc3/0.1/f128.facts" \
@@ -1013,6 +1014,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/s32.facts" \
 	"lib/kc3/0.1/s64.facts" \
 	"lib/kc3/0.1/s8.facts" \
+	"lib/kc3/0.1/serialize.kc3" \
 	"lib/kc3/0.1/set.kc3" \
 	"lib/kc3/0.1/set/fact.kc3" \
 	"lib/kc3/0.1/set/item/fact.kc3" \

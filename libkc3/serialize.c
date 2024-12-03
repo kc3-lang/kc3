@@ -34,7 +34,7 @@ s_serialize * serialize_init (s_serialize *serialize)
   return serialize;
 }
 
-s_serialize * serialize_new ()
+s_serialize * serialize_new (void)
 {
   s_serialize *serialize;
   if (! (serialize = alloc(sizeof(s_serialize))))

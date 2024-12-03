@@ -41,6 +41,7 @@
 #include "list.h"
 #include "map.h"
 #include "s32.h"
+#include "serialize.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
