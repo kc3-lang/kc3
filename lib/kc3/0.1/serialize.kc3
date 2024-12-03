@@ -1,5 +1,9 @@
 defmodule Serialize do
 
+  def delete = cfn Void "kc3_serialize_delete" (Ptr)
+
+  def new = cfn Ptr "kc3_serialize_new" (Result)
+
   def tag = cfn Bool "kc3_serialize_tag" (Ptr, Tag)
 
 end

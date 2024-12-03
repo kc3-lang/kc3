@@ -34,7 +34,6 @@ s_tag * alist_access (s_list *alist,
   s_list *next;
   s_tag *r;
   s_tag tag;
-  assert(alist);
   assert(key);
   assert(dest);
   if (! list_is_alist(alist)) {
