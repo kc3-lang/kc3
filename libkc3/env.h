@@ -15,7 +15,7 @@
 
 #include "types.h"
 
-extern thread_local s_env g_kc3_env;
+extern thread_local s_env *g_kc3_env;
 
 /* Stack allocation compatible functions, call env_clean after use. */
 void    env_clean (s_env *env);

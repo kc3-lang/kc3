@@ -118,7 +118,7 @@ u32 * u32_init_str (u32 *u, const s_str *str)
   if (buf_parse_u32(&buf, &tmp) <= 0) {
     if (false) {
       err_puts("u32_init_str: buf_parse_u32");
-      err_inspect_stacktrace(g_kc3_env.stacktrace);
+      err_inspect_stacktrace(g_kc3_env->stacktrace);
       err_write_1("\n");
       assert(! "u32_init_str: buf_parse_u32");
     }

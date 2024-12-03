@@ -18,6 +18,7 @@
 #include "buf_inspect.h"
 #include "buf_parse.h"
 #include "data.h"
+#include "eval.h"
 #include "io.h"
 #include "list.h"
 #include "sym.h"
@@ -236,7 +237,7 @@ s_array * array_init_1 (s_array *array, const char *p)
       array_clean(&tmp);
     return NULL;
   }
-  if (! env_eval_array(&g_kc3_env, &tmp, array)) {
+  if (! eval_array(&tmp, array)) {
     err_puts("array_init_1: env_eval_array");
     assert(! "array_init_1: env_eval_array");
     array_clean(&tmp);

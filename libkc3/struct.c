@@ -256,7 +256,7 @@ s_struct * struct_init_1 (s_struct *s, const char *p)
     err_inspect_struct(&tmp);
     err_write_1("\n");
   }
-  if (! env_eval_struct(&g_kc3_env, &tmp, &tmp2)) {
+  if (! env_eval_struct(g_kc3_env, &tmp, &tmp2)) {
     err_puts("struct_init_1: env_eval_struct");
     assert(! "struct_init_1: env_eval_struct");
     struct_clean(&tmp);

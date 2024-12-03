@@ -433,10 +433,10 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
   const s_str *str;
   s_str tmp = {0};
   buf_init(&buf, false, sizeof(buf_s), buf_s);
-  if ((r = buf_write_str(&buf, &g_kc3_env.argv0_dir)) < 0)
+  if ((r = buf_write_str(&buf, &g_kc3_env->argv0_dir)) < 0)
     return NULL;
   buf_save_init(&buf, &save);
-  path = g_kc3_env.path;
+  path = g_kc3_env->path;
   while (path) {
     if (path->tag.type == TAG_STR) {
       buf_save_restore_rpos(&buf, &save);

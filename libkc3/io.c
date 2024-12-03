@@ -30,10 +30,10 @@
   sw err_inspect_ ## name (type x)                                     \
   {                                                                    \
     sw r;                                                              \
-    r = buf_inspect_ ## name(&g_kc3_env.err, x);                        \
+    r = buf_inspect_ ## name(&g_kc3_env->err, x);                        \
     if (r < 0)                                                         \
       return r;                                                        \
-    buf_flush(&g_kc3_env.err);                                          \
+    buf_flush(&g_kc3_env->err);                                          \
     return r;                                                          \
   }
 
@@ -41,10 +41,10 @@
   sw io_inspect_ ## name (type x)                                      \
   {                                                                    \
     sw r;                                                              \
-    r = buf_inspect_ ## name(&g_kc3_env.out, x);                        \
+    r = buf_inspect_ ## name(&g_kc3_env->out, x);                        \
     if (r < 0)                                                         \
       return r;                                                        \
-    buf_flush(&g_kc3_env.out);                                          \
+    buf_flush(&g_kc3_env->out);                                          \
     return r;                                                          \
   }
 
@@ -56,7 +56,7 @@
 
 sw err_flush (void)
 {
-  return buf_flush(&g_kc3_env.err);
+  return buf_flush(&g_kc3_env->err);
 }
 
 sw err_inspect (const s_tag *x)
@@ -75,10 +75,10 @@ sw err_inspect_buf (const s_buf *buf)
 sw err_inspect_list (const s_list *x)
 {
   sw r;
-  r = buf_inspect_list(&g_kc3_env.err, &x);
+  r = buf_inspect_list(&g_kc3_env->err, &x);
   if (r < 0)
     return r;
-  buf_flush(&g_kc3_env.err);
+  buf_flush(&g_kc3_env->err);
   return r;
 }
 
@@ -91,64 +91,64 @@ sw err_puts (const char *x)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(&g_kc3_env.err, x)) < 0)
+  if ((r = buf_write_1(&g_kc3_env->err, x)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_u8(&g_kc3_env.err, '\n')) < 0)
+  if ((r = buf_write_u8(&g_kc3_env->err, '\n')) < 0)
     return r;
   result += r;
-  buf_flush(&g_kc3_env.err);
+  buf_flush(&g_kc3_env->err);
   return result;
 }
 
 sw err_write (const void *x, uw len)
 {
   sw r;
-  if ((r = buf_write(&g_kc3_env.err, x, len)) > 0)
-    buf_flush(&g_kc3_env.err);
+  if ((r = buf_write(&g_kc3_env->err, x, len)) > 0)
+    buf_flush(&g_kc3_env->err);
   return r;
 }
 
 sw err_write_1 (const char *x)
 {
   sw r;
-  if ((r = buf_write_1(&g_kc3_env.err, x)) > 0)
-    buf_flush(&g_kc3_env.err);
+  if ((r = buf_write_1(&g_kc3_env->err, x)) > 0)
+    buf_flush(&g_kc3_env->err);
   return r;
 }
 
 sw err_write_str (const s_str *x)
 {
   sw r;
-  if ((r = buf_write_str(&g_kc3_env.err, x)) > 0)
-    buf_flush(&g_kc3_env.err);
+  if ((r = buf_write_str(&g_kc3_env->err, x)) > 0)
+    buf_flush(&g_kc3_env->err);
   return r;
 }
 
 sw err_write_u8 (u8 x)
 {
   sw r;
-  if ((r = buf_write_u8(&g_kc3_env.err, x)) > 0)
-    buf_flush(&g_kc3_env.err);
+  if ((r = buf_write_u8(&g_kc3_env->err, x)) > 0)
+    buf_flush(&g_kc3_env->err);
   return r;
 }
 
 sw io_flush (void)
 {
-  return buf_flush(&g_kc3_env.out);
+  return buf_flush(&g_kc3_env->out);
 }
 
 sw io_inspect (const s_tag *x)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_inspect_tag(&g_kc3_env.out, x)) < 0)
+  if ((r = buf_inspect_tag(&g_kc3_env->out, x)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_u8(&g_kc3_env.out, '\n')) < 0)
+  if ((r = buf_write_u8(&g_kc3_env->out, '\n')) < 0)
     return r;
   result += r;
-  buf_flush(&g_kc3_env.out);
+  buf_flush(&g_kc3_env->out);
   return result;
 }
 
@@ -169,45 +169,45 @@ sw io_puts (const char *x)
 {
   sw r;
   sw result = 0;
-  if ((r = buf_write_1(&g_kc3_env.out, x)) < 0)
+  if ((r = buf_write_1(&g_kc3_env->out, x)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_u8(&g_kc3_env.out, '\n')) < 0)
+  if ((r = buf_write_u8(&g_kc3_env->out, '\n')) < 0)
     return r;
   result += r;
-  buf_flush(&g_kc3_env.out);
+  buf_flush(&g_kc3_env->out);
   return result;
 }
 
 sw io_write (const void *x, uw len)
 {
   sw r;
-  if ((r = buf_write(&g_kc3_env.out, x, len)) > 0)
-    buf_flush(&g_kc3_env.out);
+  if ((r = buf_write(&g_kc3_env->out, x, len)) > 0)
+    buf_flush(&g_kc3_env->out);
   return r;
 }
 
 sw io_write_1 (const char *x)
 {
   sw r;
-  if ((r = buf_write_1(&g_kc3_env.out, x)) > 0)
-    buf_flush(&g_kc3_env.out);
+  if ((r = buf_write_1(&g_kc3_env->out, x)) > 0)
+    buf_flush(&g_kc3_env->out);
   return r;
 }
 
 sw io_write_str (const s_str *x)
 {
   sw r;
-  if ((r = buf_write_str(&g_kc3_env.out, x)) > 0)
-    buf_flush(&g_kc3_env.out);
+  if ((r = buf_write_str(&g_kc3_env->out, x)) > 0)
+    buf_flush(&g_kc3_env->out);
   return r;
 }
 
 sw io_write_u8 (u8 x)
 {
   sw r;
-  if ((r = buf_write_u8(&g_kc3_env.out, x)) > 0)
-    buf_flush(&g_kc3_env.out);
+  if ((r = buf_write_u8(&g_kc3_env->out, x)) > 0)
+    buf_flush(&g_kc3_env->out);
   return r;
 }
 

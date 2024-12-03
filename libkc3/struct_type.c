@@ -64,13 +64,13 @@ void struct_type_delete (s_struct_type *st)
 
 bool * struct_type_exists (const s_sym *module, bool *dest)
 {
-  return env_struct_type_exists(&g_kc3_env, module, dest);
+  return env_struct_type_exists(g_kc3_env, module, dest);
 }
 
 s_struct_type ** struct_type_find (const s_sym *module,
                                    s_struct_type **dest)
 {
-  return env_struct_type_find(&g_kc3_env, module, dest);
+  return env_struct_type_find(g_kc3_env, module, dest);
 }
 
 uw * struct_type_find_key_index (const s_struct_type *st,

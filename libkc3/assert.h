@@ -23,8 +23,8 @@ void abort (void);
   do {                                                                 \
     sw assert_line = __LINE__;                                         \
     if (! (test)) {                                                    \
-      if (g_kc3_env.argv && g_kc3_env.argv[0]) {                       \
-        err_write_1(g_kc3_env.argv[0]);                                \
+      if (g_kc3_env->argv && g_kc3_env->argv[0]) {                       \
+        err_write_1(g_kc3_env->argv[0]);                                \
         err_write_1(": ");                                             \
       }                                                                \
       err_write_1("assertion failed: ");                               \

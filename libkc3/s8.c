@@ -101,7 +101,7 @@ s8 * s8_init_cast
   }
   if (true) {
     err_puts("s8_cast: stacktrace:");
-    err_inspect_list(g_kc3_env.stacktrace);
+    err_inspect_list(g_kc3_env->stacktrace);
     err_write_1("\n");
   }
   assert(! "s8_cast: cannot cast to S8");

@@ -53,7 +53,7 @@ int main (int argc, char **argv)
 {
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
-  test_init(g_kc3_env.argv[0], &argc, &argv);
+  test_init(g_kc3_env->argv[0], &argc, &argv);
   TEST_TARGET(types);
   TEST_TARGET(array);
   TEST_TARGET(bool);

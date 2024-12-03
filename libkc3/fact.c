@@ -92,7 +92,7 @@ void fact_w_clean (s_fact_w *fact)
 
 s_fact_w * fact_w_eval (s_fact_w *fact, s_fact_w *dest)
 {
-  return env_fact_w_eval(&g_kc3_env, fact, dest);
+  return env_fact_w_eval(g_kc3_env, fact, dest);
 }
 
 s_fact_w * fact_w_init (s_fact_w *fact)

@@ -101,7 +101,7 @@ s_bits$ * s_bits$_init_cast
   }
   if (true) {
     err_puts("s_bits$_cast: stacktrace:");
-    err_inspect_list(g_kc3_env.stacktrace);
+    err_inspect_list(g_kc3_env->stacktrace);
     err_write_1("\n");
   }
   assert(! "s_bits$_cast: cannot cast to S_bits$");

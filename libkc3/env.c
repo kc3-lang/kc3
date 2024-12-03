@@ -63,7 +63,7 @@
 #include "tuple.h"
 #include "var.h"
 
-thread_local s_env g_kc3_env;
+thread_local s_env *g_kc3_env = NULL;
 
 static void env_clean_globals (s_env *env);
 static void env_clean_toplevel (s_env *env);
@@ -790,7 +790,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       err_inspect_fn_pattern(args);
       err_write_1("\n");
       err_puts("stacktrace:");
-      err_inspect_stacktrace(g_kc3_env.stacktrace);
+      err_inspect_stacktrace(env->stacktrace);
       err_write_1("\n");
       list_delete_all(args);
       list_delete_all(env->search_modules);
@@ -2668,7 +2668,10 @@ s_ident * env_ident_resolve_module (s_env *env,
 s_env * env_init (s_env *env, int *argc, char ***argv)
 {
   s_str path;
-  assert(env);
+  if (! env)
+    env = g_kc3_env = alloc(sizeof(s_env));
+  if (! env)
+    return NULL;
   env->trace = false;
   if (! env_init_args(env, argc, argv))
     return NULL;

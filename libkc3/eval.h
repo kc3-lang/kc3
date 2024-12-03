@@ -15,6 +15,7 @@
 
 #include "types.h"
 
+bool eval_array (s_array *array, s_array *dest);
 bool eval_call (s_call *call, s_tag *dest);
 bool eval_call_function (s_call *call,
                          s_tag *dest);

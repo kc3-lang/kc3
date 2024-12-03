@@ -15,5 +15,5 @@
 
 u8 special_operator_arity (const s_ident *ident)
 {
-  return env_special_operator_arity(&g_kc3_env, ident);
+  return env_special_operator_arity(g_kc3_env, ident);
 }

@@ -93,8 +93,7 @@ void kc3_event_callback (int fd, short events, void *tag_tuple)
                            (events_list, list_new_ptr
                             (ev, list_new_tag_copy
                              (arg, NULL))));
-  if (! env_eval_call_callable_args(&g_kc3_env, callable, arguments,
-                                    &tmp)) {
+  if (! eval_callable_call(callable, arguments, &tmp)) {
     err_puts("kc3_event_callback: callback failed");
     assert(! "kc3_event_callback: callback failed");
     abort();

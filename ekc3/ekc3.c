@@ -499,10 +499,10 @@ s_str * ekc3_render_file_to_str (const s_str *path, s_str *dest)
     fclose(fp);
     return NULL;
   }
-  file_dir = frame_get_w(&g_kc3_env.global_frame, &g_sym___DIR__);
+  file_dir = frame_get_w(&g_kc3_env->global_frame, &g_sym___DIR__);
   file_dir_save = *file_dir;
   file_dirname(path, &file_dir->data.str);
-  file_path = frame_get_w(&g_kc3_env.global_frame, &g_sym___FILE__);
+  file_path = frame_get_w(&g_kc3_env->global_frame, &g_sym___FILE__);
   file_path_save = *file_path;
   file_path->data.str = *path;
   result = ekc3_render_buf_to_str(&in, dest);
