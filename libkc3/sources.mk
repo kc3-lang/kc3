@@ -140,6 +140,7 @@ HEADERS = \
 	"s64.h" \
 	"s8.h" \
 	"sequence.h" \
+	"serialize.h" \
 	"set__fact.h" \
 	"set__tag.h" \
 	"set_cursor__fact.h" \
