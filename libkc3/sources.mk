@@ -136,6 +136,7 @@ HEADERS = \
 	"queue.h" \
 	"quote.h" \
 	"ratio.h" \
+	"rwlock.h" \
 	"s16.h" \
 	"s32.h" \
 	"s64.h" \
@@ -312,6 +313,7 @@ SOURCES = \
 	"queue.c" \
 	"quote.c" \
 	"ratio.c" \
+	"rwlock.c" \
 	"s16.c" \
 	"s32.c" \
 	"s64.c" \
@@ -598,6 +600,7 @@ LO_SOURCES = \
 	"queue.c" \
 	"quote.c" \
 	"ratio.c" \
+	"rwlock.c" \
 	"s16.c" \
 	"s32.c" \
 	"s64.c" \

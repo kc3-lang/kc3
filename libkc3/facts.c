@@ -30,6 +30,7 @@
 #include "io.h"
 #include "list.h"
 #include "log.h"
+#include "rwlock.h"
 #include "set__fact.h"
 #include "set__tag.h"
 #include "set_cursor__fact.h"
@@ -50,13 +51,13 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   assert(facts);
   assert(fact);
 #if HAVE_PTHREAD
-  if (! facts_lock_w(facts))
+  if (! rwlock_w(&facts->rwlock))
     return NULL;
 #endif
   tmp.subject = facts_ref_tag(facts, fact->subject);
   if (! tmp.subject) {
 #if HAVE_PTHREAD
-    facts_lock_unlock_w(facts);
+    rwlock_unlock_w(&facts->rwlock);
 #endif
     return NULL;
   }
@@ -64,7 +65,7 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   if (! tmp.predicate) {
     facts_unref_tag(facts, tmp.subject);
 #if HAVE_PTHREAD
-    facts_lock_unlock_w(facts);
+    rwlock_unlock_w(&facts->rwlock);
 #endif
     return NULL;
   }
@@ -73,14 +74,14 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
     facts_unref_tag(facts, tmp.subject);
     facts_unref_tag(facts, tmp.predicate);
 #if HAVE_PTHREAD
-    facts_lock_unlock_w(facts);
+    rwlock_unlock_w(&facts->rwlock);
 #endif
     return NULL;
   }
   tmp.id = 0;
   if ((item = set_get__fact(&facts->facts, &tmp))) {
 #if HAVE_PTHREAD
-    facts_lock_unlock_w(facts);
+    rwlock_unlock_w(&facts->rwlock);
 #endif
     return &item->data;
   }
@@ -119,7 +120,7 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   }
   facts->next_id++;
 #if HAVE_PTHREAD
-  facts_lock_unlock_w(facts);
+  rwlock_unlock_w(&facts->rwlock);
 #endif
   return f;
  ko:
@@ -127,7 +128,7 @@ s_fact * facts_add_fact (s_facts *facts, s_fact *fact)
   facts_unref_tag(facts, tmp.predicate);
   facts_unref_tag(facts, tmp.object);
 #if HAVE_PTHREAD
-  facts_lock_unlock_w(facts);
+  rwlock_unlock_w(&facts->rwlock);
 #endif
   return NULL;
 }
@@ -151,7 +152,7 @@ void facts_clean (s_facts *facts)
   set_clean__fact(&facts->facts);
   set_clean__tag(&facts->tags);
 #if HAVE_PTHREAD
-  facts_lock_clean(facts);
+  rwlock_clean(&facts->rwlock);
 #endif
 }
 
@@ -215,7 +216,7 @@ sw facts_dump (s_facts *facts, s_buf *buf)
     return r;
   result += r;
 #if HAVE_PTHREAD
-  facts_lock_r(facts);
+  rwlock_r(&facts->rwlock);
 #endif
   facts_with_0(facts, &cursor, &subject.data.var, &predicate.data.var,
                &object.data.var);
@@ -237,7 +238,7 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   r = result;
  clean:
 #if HAVE_PTHREAD
-  facts_lock_unlock_r(facts);
+  rwlock_unlock_r(&facts->rwlock);
 #endif
   return r;
 }
@@ -269,7 +270,7 @@ s_fact ** facts_find_fact (s_facts *facts, const s_fact *fact,
   assert(facts);
   assert(fact);
 #if HAVE_PTHREAD
-  if (! facts_lock_r(facts))
+  if (! rwlock_r(&facts->rwlock))
     return NULL;
 #endif
   if (! facts_find_tag(facts, fact->subject, &f.subject))
@@ -283,7 +284,7 @@ s_fact ** facts_find_fact (s_facts *facts, const s_fact *fact,
       (item = set_get__fact(&facts->facts, &f)))
     *dest = &item->data;
 #if HAVE_PTHREAD
-  facts_lock_unlock_r(facts);
+  rwlock_unlock_r(&facts->rwlock);
 #endif
   return dest;
 }
@@ -302,14 +303,14 @@ s_tag ** facts_find_tag (s_facts *facts, const s_tag *tag, s_tag **dest)
   assert(facts);
   assert(tag);
 #if HAVE_PTHREAD
-  if (! facts_lock_r(facts))
+  if (! rwlock_r(&facts->rwlock))
     return NULL;
 #endif
   *dest = NULL;
   if ((item = set_get__tag(&facts->tags, tag)))
     *dest = &item->data;
 #if HAVE_PTHREAD
-  facts_lock_unlock_r(facts);
+  rwlock_unlock_r(&facts->rwlock);
 #endif
   return dest;
 }
@@ -332,7 +333,7 @@ s_facts * facts_init (s_facts *facts)
   assert(tmp.index_osp);
   tmp.index_osp->compare = compare_fact_osp;
 #if HAVE_PTHREAD
-  facts_lock_init(facts);
+  rwlock_init(&facts->rwlock);
 #endif
   tmp.next_id = 1;
   *facts = tmp;
@@ -359,7 +360,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   }
   result += r;
 #if HAVE_PTHREAD
-  facts_lock_w(facts);
+  rwlock_w(&facts->rwlock);
 #endif
   while (1) {
     if ((r = buf_read_1(buf, "replace ")) < 0)
@@ -433,12 +434,12 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
     fact_w_clean(&fact_eval);
   }
 #if HAVE_PTHREAD
-  facts_lock_unlock_w(facts);
+  rwlock_unlock_w(&facts->rwlock);
 #endif
   return result;
  ko:
 #if HAVE_PTHREAD
-  facts_lock_unlock_w(facts);
+  rwlock_unlock_w(&facts->rwlock);
 #endif
   return -1;
 }
@@ -461,133 +462,6 @@ sw facts_load_file (s_facts *facts, const s_str *path)
   fclose(fp);
   return result;
 }
-
-#if HAVE_PTHREAD
-
-s_facts * facts_lock_clean (s_facts *facts)
-{
-  assert(facts);
-  if (pthread_rwlock_destroy(&facts->rwlock)) {
-    err_puts("facts_lock_clean: pthread_rwlock_destroy");
-    assert(! "facts_lock_clean: pthread_rwlock_destroy");
-    return NULL;
-  }
-  return facts;
-}
-
-s_facts * facts_lock_init (s_facts *facts)
-{
-  uw i;
-  assert(facts);
-  if (false) {
-    i = (uw) &facts->rwlock;
-    err_write_1("facts_lock_init: ");
-    err_inspect_uw_hexadecimal(&i);
-    err_write_1("\n");
-  }
-  if (pthread_rwlock_init(&facts->rwlock, NULL)) {
-    err_puts("facts_lock_init: pthread_rwlock_init");
-    assert(! "facts_lock_init: pthread_rwlock_init");
-    return NULL;
-  }
-  facts->rwlock_count = 0;
-  facts->rwlock_thread = 0;
-  return facts;
-}
-
-s_facts * facts_lock_r (s_facts *facts)
-{
-  sw e;
-  uw i;
-  pthread_t thread;
-  assert(facts);
-  thread = pthread_self();
-  if (facts->rwlock_thread != thread) {
-    if (false) {
-      i = (uw) &facts->rwlock;
-      err_write_1("facts_lock_r: ");
-      err_inspect_uw_hexadecimal(&i);
-      err_write_1("\n");
-    }
-    if ((e = pthread_rwlock_rdlock(&facts->rwlock))) {
-      err_write_1("facts_lock_r: pthread_rwlock_rdlock: ");
-      switch (e) {
-      case EAGAIN:
-        err_puts("the maximum number of read locks on this lock has"
-                 " been exceeded");
-        break;
-      case EDEADLK:
-        err_puts("the current thread already owns this lock for"
-                 " writing");
-        break;
-      case EINVAL:
-        err_puts("invalid lock");
-        break;
-      case ENOMEM:
-        err_puts("not enough memory to initialize the lock");
-        break;
-      default:
-        err_puts("unknown error");
-        break;
-      }
-      assert(! "facts_lock_r: pthread_rwlock_rdlock");
-      abort();
-      return NULL;
-    }
-  }
-  return facts;
-}
-
-s_facts * facts_lock_unlock_r (s_facts *facts)
-{
-  pthread_t thread;
-  assert(facts);
-  thread = pthread_self();
-  if (facts->rwlock_thread != thread &&
-      pthread_rwlock_unlock(&facts->rwlock)) {
-    err_puts("facts_lock_unlock_r: pthread_rwlock_unlock");
-    assert(! "facts_lock_unlock_r: pthread_rwlock_unlock");
-    abort();
-    return NULL;
-  }
-  return facts;
-}
-
-s_facts * facts_lock_unlock_w (s_facts *facts)
-{
-  assert(facts);
-  assert(facts->rwlock_count);
-  facts->rwlock_count--;
-  if (! facts->rwlock_count) {
-    facts->rwlock_thread = 0;
-    if (pthread_rwlock_unlock(&facts->rwlock)) {
-      err_puts("facts_lock_unlock_w: pthread_rwlock_unlock");
-      assert(! "facts_lock_unlock_w: pthread_rwlock_unlock");
-      return NULL;
-    }
-  }
-  return facts;
-}
-
-s_facts * facts_lock_w (s_facts *facts)
-{
-  pthread_t thread;
-  assert(facts);
-  thread = pthread_self();
-  if (facts->rwlock_thread != thread) {
-    if (pthread_rwlock_wrlock(&facts->rwlock)) {
-      err_puts("facts_lock_w: pthread_rwlock_wrlock");
-      assert(! "facts_lock_w: pthread_rwlock_wrlock");
-      return NULL;
-    }
-    facts->rwlock_thread = thread;
-    facts->rwlock_count = 0;
-  }
-  facts->rwlock_count++;
-  return facts;
-}
-
-#endif /* HAVE_PTHREAD */
 
 sw facts_log_add (s_log *log, const s_fact *fact)
 {
@@ -802,7 +676,7 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
   assert(facts);
   assert(fact);
 #if HAVE_PTHREAD
-  facts_lock_w(facts);
+  rwlock_w(&facts->rwlock);
 #endif
   if (! facts_find_fact(facts, fact, &found))
     return NULL;
@@ -821,7 +695,7 @@ bool * facts_remove_fact (s_facts *facts, const s_fact *fact,
     *dest = true;
   }
 #if HAVE_PTHREAD
-  facts_lock_unlock_w(facts);
+  rwlock_unlock_w(&facts->rwlock);
 #endif
   return dest;
 }
@@ -866,19 +740,19 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   assert(object);
   tag_init_var(&var, &g_sym_Tag);
 #if HAVE_PTHREAD
-  if (! facts_lock_w(facts))
+  if (! rwlock_w(&facts->rwlock))
     return NULL;
 #endif
   if (! facts_with_tags(facts, &cursor, (s_tag *) subject,
                         (s_tag *) predicate, &var)) {
 #if HAVE_PTHREAD
-    facts_lock_unlock_w(facts);
+    rwlock_unlock_w(&facts->rwlock);
 #endif
     return NULL;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
 #if HAVE_PTHREAD
-    facts_lock_unlock_w(facts);
+    rwlock_unlock_w(&facts->rwlock);
 #endif
     return NULL;
   }
@@ -887,7 +761,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
     list->tag.data.fact = *fact;
     if (! facts_cursor_next(&cursor, &fact)) {
 #if HAVE_PTHREAD
-      facts_lock_unlock_w(facts);
+      rwlock_unlock_w(&facts->rwlock);
 #endif
       list_delete_all(list);
       return NULL;
@@ -900,7 +774,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
       list_delete_all(list);
       facts_transaction_rollback(facts, &transaction);
 #if HAVE_PTHREAD
-      facts_lock_unlock_w(facts);
+      rwlock_unlock_w(&facts->rwlock);
 #endif
       return NULL;
     }
@@ -910,7 +784,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   fact = facts_add_tags(facts, subject, predicate, object);
   facts_transaction_end(facts, &transaction);
 #if HAVE_PTHREAD
-  facts_lock_unlock_w(facts);
+  rwlock_unlock_w(&facts->rwlock);
 #endif
   return fact;
 }

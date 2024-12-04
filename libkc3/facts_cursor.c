@@ -15,6 +15,7 @@
 #include "config.h"
 #include "facts.h"
 #include "facts_cursor.h"
+#include "rwlock.h"
 #include "skiplist__fact.h"
 #include "skiplist_node__fact.h"
 #include "sym.h"
@@ -86,7 +87,7 @@ s_facts_cursor * facts_cursor_lock (s_facts_cursor *cursor)
     assert(! "facts_cursor_lock: pthread_mutex_lock");
     return NULL;
   }
-  facts_lock_r(cursor->facts);
+  rwlock_r(&cursor->facts->rwlock);
   return cursor;
 }
 
@@ -116,7 +117,7 @@ s_facts_cursor * facts_cursor_lock_init (s_facts_cursor *cursor)
 s_facts_cursor * facts_cursor_lock_unlock (s_facts_cursor *cursor)
 {
   assert(cursor);
-  facts_lock_unlock_r(cursor->facts);
+  rwlock_unlock_r(&cursor->facts->rwlock);
   if (pthread_mutex_unlock(&cursor->mutex)) {
     err_puts("facts_cursor_lock_unlock: pthread_mutex_unlock");
     assert(! "facts_cursor_lock_unlock: pthread_mutex_unlock");

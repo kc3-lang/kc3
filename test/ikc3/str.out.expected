@@ -57,7 +57,7 @@
 "#{(Uw) 0}"
 "0"
 "#{%Buf{}}"
-"%Buf{column: (Sw) 0,\n     flush: (Ptr) 0x0,\n     free: false,\n     line: (Sw) 0,\n     ptr: (Ptr) 0x0,\n     read_only: false,\n     refill: (Ptr) 0x0,\n     rpos: (Uw) 0,\n     save: (Ptr) 0x0,\n     seek: (Ptr) 0x0,\n     size: (Uw) 0,\n     user_ptr: (Ptr) 0x0,\n     wpos: (Uw) 0}"
+"%Buf{column: (Sw) 0,\n     flush: (Ptr) 0x0,\n     free: false,\n     line: (Sw) 0,\n     ptr: (Ptr) 0x0,\n     read_only: false,\n     refill: (Ptr) 0x0,\n     rpos: (Uw) 0,\n     rwlock: %Rwlock{rwlock: (Ptr) 0x0,\n                     count: (Sw) 0,\n                     thread: (Ptr) 0x0},\n     save: (Ptr) 0x0,\n     seek: (Ptr) 0x0,\n     size: (Uw) 0,\n     user_ptr: (Ptr) 0x0,\n     wpos: (Uw) 0}"
 "#{%BufRW{}}"
 "%BufRW{r: (Ptr) 0x0,\n       w: (Ptr) 0x0}"
 "#{(U8[]) {{0, 0},

@@ -203,6 +203,7 @@ typedef struct pretty_save             s_pretty_save;
 typedef struct queue                   s_queue;
 typedef struct quote                   s_quote;
 typedef struct ratio                   s_ratio;
+typedef struct rwlock                  s_rwlock;
 typedef struct sequence                s_sequence;
 typedef struct serialize               s_serialize;
 typedef struct str                     s_str;
@@ -345,6 +346,12 @@ struct quote {
   s_tag *tag;
 };
 
+struct rwlock {
+  pthread_rwlock_t rwlock;
+  sw               count;
+  pthread_t        thread;
+};
+
 struct struct_ {
   void *data;
   bool free_data;
@@ -400,7 +407,7 @@ struct buf {
   bool              read_only;
   sw              (*refill) (s_buf *buf);
   uw                rpos;
-  pthread_rwlock_t *rwlock;
+  s_rwlock          rwlock;
   s_buf_save       *save;
   sw              (*seek) (s_buf *buf, sw offset, u8 whence);
   uw                size;
@@ -723,9 +730,7 @@ struct facts {
   s_skiplist__fact    *index_osp;
   s_log               *log;
   uw                   next_id;
-  pthread_rwlock_t     rwlock;
-  sw                   rwlock_count;
-  pthread_t            rwlock_thread;
+  s_rwlock             rwlock;
   s_facts_transaction *transaction;
 };
 

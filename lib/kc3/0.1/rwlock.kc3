@@ -1,0 +1,7 @@
+defmodule Rwlock do
+
+  defstruct [rwlock: (Ptr) 0,
+             count: (Sw) 0,
+             thread: (Ptr) 0]
+
+end

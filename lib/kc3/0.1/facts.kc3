@@ -7,9 +7,7 @@ defmodule Facts do
              index_osp: (Ptr) 0,
              log: (Ptr) 0,
              next_id: (Uw) 0,
-             rwlock: (Ptr) 0,
-             rwlock_count: (Sw) 0,
-             rwlock_thread: (Ptr) 0,
+             rwlock: %Rwlock{},
              transaction: (Ptr) 0]
 
   # returns true if fact was added or is already present

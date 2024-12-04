@@ -19,13 +19,14 @@
 #include "error.h"
 #include "pretty.h"
 #include "ratio.h"
+#include "rwlock.h"
 #include "str.h"
 #include "sym.h"
 
 void buf_clean (s_buf *buf)
 {
   assert(buf);
-  buf_lock_clean(buf);
+  rwlock_clean(&buf->rwlock);
   if (buf->free)
     free(buf->ptr.p);
 }
@@ -195,7 +196,7 @@ s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
   tmp.line = 1;
   tmp.ptr.pchar = p;
   tmp.size = size;
-  buf_lock_init(&tmp);
+  rwlock_init(&tmp.rwlock);
   *buf = tmp;
   return buf;
 }
@@ -298,54 +299,6 @@ s_buf * buf_init_str_copy (s_buf *buf, const s_str *str)
   tmp.wpos = str->size;
   *buf = tmp;
   return buf;
-}
-
-void buf_lock_clean (s_buf *buf)
-{
-  if (pthread_rwlock_destroy(buf->rwlock)) {
-    err_puts("buf_lock_init: pthread_rwlock_destroy");
-    assert(! "buf_lock_init: pthread_rwlock_destroy");
-    abort();
-  }
-  free(buf->rwlock);
-}
-
-void buf_lock_init (s_buf *buf)
-{
-  if (! (buf->rwlock = alloc(sizeof(pthread_rwlock_t))))
-    abort();
-  if (pthread_rwlock_init(buf->rwlock, NULL)) {
-    err_puts("buf_lock_init: pthread_rwlock_init");
-    assert(! "buf_lock_init: pthread_rwlock_init");
-    abort();
-  }
-}
-
-void buf_lock_r (s_buf *buf)
-{
-  if (pthread_rwlock_rdlock(buf->rwlock)) {
-    err_puts("buf_lock_init: pthread_rwlock_rdlock");
-    assert(! "buf_lock_init: pthread_rwlock_rdlock");
-    abort();
-  }
-}
-
-void buf_lock_unlock (s_buf *buf)
-{
-  if (pthread_rwlock_unlock(buf->rwlock)) {
-    err_puts("buf_lock_init: pthread_rwlock_unlock");
-    assert(! "buf_lock_init: pthread_rwlock_unlock");
-    abort();
-  }
-}
-
-void buf_lock_w (s_buf *buf)
-{
-  if (pthread_rwlock_wrlock(buf->rwlock)) {
-    err_puts("buf_lock_init: pthread_rwlock_wrlock");
-    assert(! "buf_lock_init: pthread_rwlock_wrlock");
-    abort();
-  }
 }
 
 s_buf * buf_new (bool p_free, uw size, char *p)
