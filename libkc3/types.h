@@ -392,19 +392,20 @@ struct var {
 /* 2 */
 
 struct buf {
-  sw        (*flush) (s_buf *buf);
-  bool        free;
-  sw          line;
-  s_pretty    pretty;
-  u_ptr_w     ptr;
-  bool        read_only;
-  sw        (*refill) (s_buf *buf);
-  uw          rpos;
-  s_buf_save *save;
-  sw        (*seek) (s_buf *buf, sw offset, u8 whence);
-  uw          size;
-  void *      user_ptr;
-  uw          wpos;
+  sw              (*flush) (s_buf *buf);
+  bool              free;
+  sw                line;
+  s_pretty          pretty;
+  u_ptr_w           ptr;
+  bool              read_only;
+  sw              (*refill) (s_buf *buf);
+  uw                rpos;
+  pthread_rwlock_t *rwlock;
+  s_buf_save       *save;
+  sw              (*seek) (s_buf *buf, sw offset, u8 whence);
+  uw                size;
+  void *            user_ptr;
+  uw                wpos;
 };
 
 struct facts_spec_cursor {
