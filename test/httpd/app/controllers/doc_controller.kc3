@@ -63,9 +63,10 @@ defmodule DocController do
     index = doc_index("./doc/", path_html)
     menu = DocView.render_menu(index)
     title = "kc3-lang.org"
-    slug = Str.slice(name, 0, -9)
+    slug = Str.slice(path_html, 0, -9)
     slug = Str.subst(slug, " ", "-")
     slug = Str.subst(slug, ".", "-")
+    slug = Str.subst(slug, "/", "-")
     html = File.read_all(path_html)
     page = DocView.render_show(menu, html)
     body = LayoutView.render(slug, title, page, url)

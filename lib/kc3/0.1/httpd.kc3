@@ -118,16 +118,22 @@ defmodule HTTPd do
     end
   }
 
+  def enable_threads = true
+
   def server = fn (host, port) {
     def socket = Socket.listen(host, port)
     if socket do
       daemonize()
       puts("KC3 HTTPd: listening on #{host}:#{port}")
       load_app()
-      threads = List.map(List.count(1), fn (x) {
-        Thread.new(HTTPd.server_thread)
-      })
-      List.map(threads, Thread.delete)
+      if enable_threads do
+        threads = List.map(List.count(8), fn (x) {
+          Thread.new(HTTPd.server_thread)
+        })
+        List.map(threads, Thread.delete)
+      else
+        HTTPd.server_thread()
+      end
       0
     else
       puts("KC3 HTTPd: cannot listen on #{host}:#{port}")

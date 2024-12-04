@@ -251,7 +251,7 @@ void env_clean (s_env *env)
 void env_clean_globals (s_env *env)
 {
   frame_delete(env->global_frame);
-  frame_clean(&env->read_time_frame);
+  frame_delete(env->read_time_frame);
 }
 
 void env_clean_toplevel (s_env *env)
@@ -2761,7 +2761,7 @@ s_env * env_init_copy (s_env *env, s_env *src)
   tmp.out = src->out;
   tmp.path = src->path;
   tmp.quote_level = src->quote_level;
-  if (! frame_init(&tmp.read_time_frame, NULL, NULL))
+  if (! (tmp.read_time_frame = frame_new(NULL, NULL)))
     return NULL;
   tmp.search_modules = src->search_modules_default;
   tmp.search_modules_default = src->search_modules_default;
@@ -2776,12 +2776,12 @@ s_env * env_init_globals (s_env *env)
 {
   s_tag *file_dir;
   s_tag *file_path;
-  if (! frame_init(&env->read_time_frame, NULL, NULL))
+  if (! (env->read_time_frame = frame_new(NULL, NULL)))
     return NULL;
-  if (! (file_dir = frame_binding_new(&env->read_time_frame,
+  if (! (file_dir = frame_binding_new(env->read_time_frame,
                                       &g_sym___DIR__)))
     return NULL;
-  if (! (file_path = frame_binding_new(&env->read_time_frame,
+  if (! (file_path = frame_binding_new(env->read_time_frame,
                                        &g_sym___FILE__)))
     return NULL;
   file_dir->type = TAG_STR;
@@ -2789,7 +2789,7 @@ s_env * env_init_globals (s_env *env)
     return NULL;
   if (! tag_init_str_1(file_path, NULL, "stdin"))
     return NULL;
-  if (! (env->global_frame = frame_new(&env->read_time_frame, NULL)))
+  if (! (env->global_frame = frame_new(env->read_time_frame, NULL)))
     return NULL;
   return env;
 }
