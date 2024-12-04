@@ -25,6 +25,12 @@
 
 #define BUF_SIZE 10240
 
+#define PROTO_BUF_PEEK(type)                                           \
+  sw buf_peek_ ## type (s_buf *buf, type *dest)
+
+#define PROTO_BUF_READ(type)                                           \
+  sw buf_read_ ## type (s_buf *buf, type *dest)
+
 /* Stack-allocation compatible functions, call buf_clean after use. */
 void    buf_clean (s_buf *buf);
 s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p);
@@ -54,19 +60,21 @@ sw      buf_ignore_spaces (s_buf *buf);
 sw      buf_ignore_spaces_but_newline (s_buf *buf);
 sw      buf_peek_1 (s_buf *buf, const char *p);
 sw      buf_peek_character_utf8 (s_buf *buf, character *p);
-sw      buf_peek_f32 (s_buf *buf, f32 *p);
-sw      buf_peek_f64 (s_buf *buf, f64 *p);
+PROTO_BUF_PEEK(f32);
+PROTO_BUF_PEEK(f64);
 sw      buf_peek_next_character_utf8 (s_buf *buf, character *p);
-sw      buf_peek_s8 (s_buf *buf, s8 *p);
-sw      buf_peek_s16 (s_buf *buf, s16 *p);
-sw      buf_peek_s32 (s_buf *buf, s32 *p);
-sw      buf_peek_s64 (s_buf *buf, s64 *p);
+PROTO_BUF_PEEK(s8);
+PROTO_BUF_PEEK(s16);
+PROTO_BUF_PEEK(s32);
+PROTO_BUF_PEEK(s64);
+PROTO_BUF_PEEK(sw);
 sw      buf_peek_str (s_buf *buf, const s_str *src);
 sw      buf_peek_to_str (s_buf *buf, s_str *dest);
-sw      buf_peek_u8 (s_buf *buf, u8 *p);
-sw      buf_peek_u16 (s_buf *buf, u16 *p);
-sw      buf_peek_u32 (s_buf *buf, u32 *p);
-sw      buf_peek_u64 (s_buf *buf, u64 *p);
+PROTO_BUF_PEEK(u8);
+PROTO_BUF_PEEK(u16);
+PROTO_BUF_PEEK(u32);
+PROTO_BUF_PEEK(u64);
+PROTO_BUF_PEEK(uw);
 sw      buf_read_integer (s_buf *buf, s_integer *dst);
 sw      buf_read_character_utf8 (s_buf *buf, character *p);
 s_str * buf_read (s_buf *buf, uw size, s_str *dest);

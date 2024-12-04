@@ -45,6 +45,7 @@
     test_context("buf_ignore(" # test ", " # count ")");               \
     buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_ignore(&buf, (count)), expected);                      \
+    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)  
   
@@ -55,6 +56,7 @@
     buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_peek_1(&buf, (test)), strlen(test));                   \
     TEST_EQ(buf.rpos, 0);                                              \
+    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -78,6 +80,7 @@
     buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_read_1(&buf, (test)), strlen(test));                   \
     TEST_EQ(buf.rpos, strlen(test));                                   \
+    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -87,6 +90,7 @@
     test_context("buf_read_1(" # data ", " # test ") -> " # result);   \
     buf_init_1(&buf, false, (data));                                   \
     TEST_EQ(buf_read_1(&buf, (test)), (result));                       \
+    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -110,6 +114,8 @@
     buf_init_1(&buf, false, (test));                                   \
     TEST_ASSERT(buf_read_n(&buf, &c) >= 0);                            \
     TEST_EQ(c, result);                                                \
+    buf_clean(&buf);                                                   \
+    test_context(NULL);                                                \
   } while (0)
 
 #define BUF_TEST_READ_TO_STR(test)                                     \
@@ -121,6 +127,7 @@
     TEST_EQ(buf_read_to_str(&buf, &result), &result);                  \
     TEST_EQ(buf.rpos, strlen(test));                                   \
     str_clean(&result);                                                \
+    buf_clean(&buf);                                                   \
     test_context(NULL);                                                \
   } while (0)
 
@@ -348,13 +355,20 @@ TEST_CASE(buf_peek_s8)
   s8 byte;
   buf_init(&buf, false, sizeof(a), a);
   TEST_EQ(buf.rpos, 0);
-  TEST_EQ(buf_peek_s8(&buf, &byte), 0);
+  TEST_EQ(buf_peek_s8(&buf, &byte), -1);
   TEST_EQ(buf.rpos, 0);
   buf.wpos = 1;
   TEST_EQ(buf_peek_s8(&buf, &byte), 1);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(byte, 'A');
   TEST_EQ(buf.wpos, 1);
+  buf.wpos = 4;
+  buf.rpos = 1;
+  TEST_EQ(buf_peek_s8(&buf, &byte), 1);
+  TEST_EQ(buf.rpos, 1);
+  TEST_EQ(byte, 'B');
+  TEST_EQ(buf.wpos, 4);
+  buf_clean(&buf);
 }
 TEST_CASE_END(buf_peek_s8)
 
@@ -500,29 +514,35 @@ TEST_CASE(buf_read_s8)
   s_buf buf;
   s8 byte;
   buf_init(&buf, false, sizeof(a), a);
-  TEST_EQ(buf_read_s8(&buf, &byte), 0);
-  TEST_EQ(buf_read_s8(&buf, &byte), 0);
+  TEST_EQ(buf_read_s8(&buf, &byte), -1);
+  TEST_EQ(buf_read_s8(&buf, &byte), -1);
   buf.wpos = 1;
   TEST_EQ(buf_read_s8(&buf, &byte), 1);
   TEST_EQ(byte, 'A');
   TEST_EQ(buf.rpos, 1);
-  TEST_EQ(buf_read_s8(&buf, &byte), 0);
-  TEST_EQ(buf_read_s8(&buf, &byte), 0);
+  TEST_EQ(buf.wpos, 1);
+  TEST_EQ(buf_read_s8(&buf, &byte), -1);
+  TEST_EQ(buf.rpos, 1);
+  TEST_EQ(buf.wpos, 1);
+  TEST_EQ(buf_read_s8(&buf, &byte), -1);
+  TEST_EQ(buf.rpos, 1);
+  TEST_EQ(buf.wpos, 1);
   buf.wpos = 5;
   TEST_EQ(buf_read_s8(&buf, &byte), 1);
-  TEST_EQ(byte, 'B');
   TEST_EQ(buf.rpos, 2);
+  TEST_EQ(buf.wpos, 5);
+  TEST_EQ(byte, 'B');
   TEST_EQ(buf_read_s8(&buf, &byte), 1);
-  TEST_EQ(byte, 'C');
   TEST_EQ(buf.rpos, 3);
+  TEST_EQ(byte, 'C');
   TEST_EQ(buf_read_s8(&buf, &byte), 1);
   TEST_EQ(byte, 'D');
   TEST_EQ(buf.rpos, 4);
   TEST_EQ(buf_read_s8(&buf, &byte), 1);
   TEST_EQ(byte, 'E');
   TEST_EQ(buf.rpos, 5);
-  TEST_EQ(buf_read_s8(&buf, &byte), 0);
-  TEST_EQ(buf_read_s8(&buf, &byte), 0);
+  TEST_EQ(buf_read_s8(&buf, &byte), -1);
+  TEST_EQ(buf_read_s8(&buf, &byte), -1);
   buf.wpos = 8;
   TEST_EQ(buf_read_s8(&buf, &byte), 1);
   TEST_EQ(byte, 'F');
@@ -533,7 +553,7 @@ TEST_CASE(buf_read_s8)
   TEST_EQ(buf_read_s8(&buf, &byte), 1);
   TEST_EQ(byte, 'H');
   TEST_EQ(buf.rpos, 8);
-  TEST_EQ(buf_read_s8(&buf, &byte), 0);
+  TEST_EQ(buf_read_s8(&buf, &byte), -1);
   buf_clean(&buf);
 }
 TEST_CASE_END(buf_read_s8)
