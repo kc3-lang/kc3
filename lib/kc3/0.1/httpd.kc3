@@ -12,6 +12,7 @@ defmodule HTTPd do
   require Socket
   require Socket.Buf
   require Str
+  require Thread
   require URL
 
   def load_app = fn () {

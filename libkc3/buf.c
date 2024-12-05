@@ -53,7 +53,7 @@
     }                                                                  \
     *dest = *((type *) (buf->ptr.pchar + buf->rpos));                  \
     r = size;                                                          \
-clean:                                                                 \
+  clean:                                                               \
     rwlock_unlock_w(&buf->rwlock);                                     \
     return r;                                                          \
   }
@@ -91,8 +91,10 @@ void buf_delete (s_buf *buf)
 
 void buf_empty (s_buf *buf)
 {
+  rwlock_w(&buf->rwlock);
   buf->wpos = 0;
   buf->rpos = 0;
+  rwlock_unlock_w(&buf->rwlock);
 }
 
 sw buf_f (s_buf *buf, const char *fmt, ...)
@@ -122,19 +124,21 @@ sw buf_ignore (s_buf *buf, uw size)
   assert(buf);
   if (size == 0)
     return 0;
+  rwlock_w(&buf->rwlock);
   if ((r = buf_refill(buf, size)) < 0) {
     err_puts("buf_ignore: buf_refill");
-    return r;
+    goto clean;
   }
   if ((uw) r < size) {
     if (false)
       err_puts("buf_ignore: buf_refill < size");
-    return -1;
+    r = -1;
+    goto clean;
   }
   while (i < size) {
     if ((r = buf_read_character_utf8(buf, &c)) < 0) {
       err_puts("buf_ignore: buf_read_character_utf8");
-      return r;
+      goto clean;
     }
     if (r > 0) {
       i += r;
@@ -142,7 +146,7 @@ sw buf_ignore (s_buf *buf, uw size)
     }
     if ((r = buf_read_u8(buf, &b)) < 0) {
       err_puts("buf_ignore: buf_read_u8");
-      return r;
+      goto clean;
     }
     if (r > 0) {
         buf->pretty.column++;
@@ -150,10 +154,14 @@ sw buf_ignore (s_buf *buf, uw size)
       continue;
     }
     err_puts("buf_ignore: failed to read");
-    return -1;
+    r = -1;
+    goto clean;
   }
   assert(i == size);
-  return size;
+  r = size;
+ clean:
+  rwlock_unlock_w(&buf->rwlock);  
+  return r;
 }
 
 sw buf_ignore_line (s_buf *buf)
@@ -162,16 +170,20 @@ sw buf_ignore_line (s_buf *buf)
   sw csize;
   sw r;
   sw result = 0;
+  rwlock_w(&buf->rwlock);
   while ((r = buf_peek_character_utf8(buf, &c)) > 0) {
     csize = r;
     if ((r = buf_ignore(buf, csize)) < 0)
-      return r;
+      goto clean;
     result += csize;
     if (c == '\n')
       break;
   }
   if (r < 0)
-    return r;
+    goto clean;
+  r = result;
+ clean:
+  rwlock_unlock_w(&buf->rwlock);
   return result;
 }
 
@@ -183,6 +195,7 @@ sw buf_ignore_newline (s_buf *buf)
   sw result = 0;
   s_buf_save save;
   assert(buf);
+  rwlock_w(&buf->rwlock);
   buf_save_init(buf, &save);
   while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
          character_is_space(c)) {
@@ -199,6 +212,7 @@ sw buf_ignore_newline (s_buf *buf)
   r = 0;
  clean:
   buf_save_clean(buf, &save);
+  rwlock_unlock_w(&buf->rwlock);
   return r;
 }
 
@@ -209,16 +223,20 @@ sw buf_ignore_spaces (s_buf *buf)
   sw r;
   sw result = 0;
   assert(buf);
+  rwlock_w(&buf->rwlock);
   while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
          character_is_space(c)) {
     csize = r;
     if ((r = buf_ignore(buf, csize)) < 0)
-      return r;
+      goto clean;
     result += csize;
   }
   if (! result && r < 0)
-    return r;
-  return result;
+    goto clean;
+  r = result;
+ clean:
+  rwlock_unlock_w(&buf->rwlock);
+  return r;
 }
 
 sw buf_ignore_spaces_but_newline (s_buf *buf)
@@ -228,15 +246,19 @@ sw buf_ignore_spaces_but_newline (s_buf *buf)
   sw r;
   sw result = 0;
   assert(buf);
+  rwlock_w(&buf->rwlock);
   while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
          character_is_space(c) &&
          c != '\n') {
     csize = r;
     if ((r = buf_ignore(buf, csize)) < 0)
-      return r;
+      goto clean;
     result += csize;
   }
-  return result;
+  r = result;
+ clean:
+  rwlock_unlock_w(&buf->rwlock);
+  return r;
 }
 
 s_buf * buf_init (s_buf *buf, bool p_free, uw size, char *p)
@@ -312,7 +334,7 @@ s_buf * buf_init_alloc (s_buf *buf, uw size)
   char *p;
   assert(buf);
   if (! size)
-    return buf_init(buf, false, 0, NULL);
+    return buf_init(buf, false, 0, "");
   p = alloc(size + 1);
   if (! p)
     return NULL;

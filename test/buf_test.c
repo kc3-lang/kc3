@@ -510,7 +510,7 @@ TEST_CASE_END(buf_read_f64)
 
 TEST_CASE(buf_read_s8)
 {
-  char a[8] = "ABCDEFGH";
+  char a[8] = "ABCDEFG";
   s_buf buf;
   s8 byte;
   buf_init(&buf, false, sizeof(a), a);
@@ -543,16 +543,14 @@ TEST_CASE(buf_read_s8)
   TEST_EQ(buf.rpos, 5);
   TEST_EQ(buf_read_s8(&buf, &byte), -1);
   TEST_EQ(buf_read_s8(&buf, &byte), -1);
-  buf.wpos = 8;
+  buf.wpos = 7;
   TEST_EQ(buf_read_s8(&buf, &byte), 1);
   TEST_EQ(byte, 'F');
   TEST_EQ(buf.rpos, 6);
   TEST_EQ(buf_read_s8(&buf, &byte), 1);
   TEST_EQ(byte, 'G');
   TEST_EQ(buf.rpos, 7);
-  TEST_EQ(buf_read_s8(&buf, &byte), 1);
-  TEST_EQ(byte, 'H');
-  TEST_EQ(buf.rpos, 8);
+  TEST_EQ(buf_read_s8(&buf, &byte), -1);
   TEST_EQ(buf_read_s8(&buf, &byte), -1);
   buf_clean(&buf);
 }
