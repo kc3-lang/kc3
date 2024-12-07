@@ -173,6 +173,7 @@ typedef struct callable                s_callable;
 typedef struct cfn                     s_cfn;
 typedef struct complex                 s_complex;
 typedef struct cow                     s_cow;
+typedef struct deserialize             s_deserialize;
 typedef struct env                     s_env;
 typedef struct error_handler           s_error_handler;
 typedef struct fact                    s_fact;
@@ -488,6 +489,12 @@ struct cfn {
   s_list *arg_types;
   ffi_cif cif;
   bool ready;
+};
+
+struct deserialize {
+  s_map map;
+  s_tuple tuple;
+  s_buf buf;
 };
 
 struct fn {
