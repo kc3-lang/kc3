@@ -1,22 +1,14 @@
-quote (t = Thread.new(fn () {
-  puts("ok from thread")
-  :ok_from_thread
-})); void
-(t = Thread.new(fn () {
-  puts("ok from thread")
-  :ok_from_thread
-})); void
-quote Thread.delete(t)
-Thread.delete(t)
+quote if t = Thread.new(fn () { puts("ok from thread"); :ok_from_thread }) do
+  Thread.delete(t)
+end
+if t = Thread.new(fn () { puts("ok from thread"); :ok_from_thread }) do
+  Thread.delete(t)
+end
 quote name = "Plop"
 name = "Plop"
-quote (t = Thread.new(fn () {
-  puts("Hello #{name} from thread")
-  :ok_from_thread
-})); void
-(t = Thread.new(fn () {
-  puts("Hello #{name} from thread")
-  :ok_from_thread
-})); void
-quote Thread.delete(t)
-Thread.delete(t)
+quote if t = Thread.new(fn () { puts("Hello #{name} from thread"); :ok_from_thread }) do
+  Thread.delete(t)
+end
+if t = Thread.new(fn () { puts("Hello #{name} from thread"); :ok_from_thread }) do
+  Thread.delete(t)
+end

@@ -16,6 +16,7 @@
 #include <string.h>
 #include "cfn.h"
 #include "list.h"
+#include "mutex.h"
 #include "str.h"
 #include "struct.h"
 #include "sym.h"
@@ -187,6 +188,7 @@ void cfn_clean (s_cfn *cfn)
   list_delete_all(cfn->arg_types);
   if (cfn->cif.nargs)
     free(cfn->cif.arg_types);
+  mutex_clean(&cfn->mutex);
 }
 
 void cfn_delete (s_cfn *cfn)
@@ -212,6 +214,7 @@ s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
   }
   tmp.arity = arity;
   tmp.result_type = result_type;
+  mutex_init(&tmp.mutex);
   *cfn = tmp;
   return cfn;
 }
@@ -299,15 +302,17 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
   s_list *a;
   ffi_type **arg_ffi_type = NULL;
   u8 i = 0;
+  s_cfn *result = NULL;
   ffi_type *result_ffi_type;
   ffi_status status;
   assert(cfn);
+  mutex_lock(&cfn->mutex);
   if (! sym_to_ffi_type(cfn->result_type, NULL, &result_ffi_type))
-    return NULL;
+    goto clean;
   if (cfn->arity) {
     arg_ffi_type = alloc((cfn->arity + 1) * sizeof(ffi_type *));
     if (! arg_ffi_type)
-      return NULL;
+      goto clean;
     a = cfn->arg_types;
     while (a) {
       assert(i < cfn->arity);
@@ -316,11 +321,11 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
         err_puts(tag_type_to_string(a->tag.type));
         assert(! "cfn_prep_cif: invalid type");
         free(arg_ffi_type);
-        return NULL;
+        goto clean;
       }
       if (! sym_to_ffi_type(a->tag.data.sym, result_ffi_type, arg_ffi_type + i)) {
         free(arg_ffi_type);
-        return NULL;
+        goto clean;
       }
       if (a->tag.data.sym == &g_sym_Result) {
         cfn->arg_result = true;
@@ -336,19 +341,22 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
   if (status == FFI_BAD_TYPEDEF) {
     err_puts("cfn_prep_cif: ffi_prep_cif: FFI_BAD_TYPEDEF");
     assert(! "cfn_prep_cif: ffi_prep_cif: FFI_BAD_TYPEDEF");
-    return NULL;
+    goto clean;
   }
   if (status == FFI_BAD_ABI) {
     err_puts("cfn_prep_cif: ffi_prep_cif: FFI_BAD_ABI");
     assert(! "cfn_prep_cif: ffi_prep_cif: FFI_BAD_ABI");
-    return NULL;
+    goto clean;
   }
   if (status != FFI_OK) {
     err_puts("cfn_prep_cif: ffi_prep_cif: error");
     assert(! "cfn_prep_cif: ffi_prep_cif: error");
-    return NULL;
+    goto clean;
   }
-  return cfn;
+  result = cfn;
+ clean:
+  mutex_unlock(&cfn->mutex);
+  return result;
 }
 
 s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
