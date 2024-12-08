@@ -198,6 +198,7 @@ typedef struct fact_list               s_fact_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct map                     s_map;
+typedef struct mutex                   s_mutex;
 typedef struct operator                s_operator;
 typedef struct pretty                  s_pretty;
 typedef struct pretty_save             s_pretty_save;
@@ -311,6 +312,10 @@ struct map {
   uw count;
   s_tag *key; /* sorted (see tag_compare) */
   s_tag *value;
+};
+
+struct mutex {
+  pthread_mutex_t mutex;
 };
 
 struct pretty {
@@ -489,6 +494,7 @@ struct cfn {
   s_list *arg_types;
   ffi_cif cif;
   bool ready;
+  s_mutex mutex;
 };
 
 struct deserialize {
@@ -794,7 +800,7 @@ struct facts_with_cursor {
   s_facts_with_cursor_level *levels;
   uw level;
   p_facts_spec spec;
-  pthread_mutex_t mutex;
+  s_mutex mutex;
 };
 
 #endif /* LIBKC3_TYPES_H */

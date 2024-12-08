@@ -126,6 +126,7 @@ HEADERS = \
 	"log.h" \
 	"map.h" \
 	"module.h" \
+	"mutex.h" \
 	"operator.h" \
 	"pcomplex.h" \
 	"pcow.h" \
@@ -303,6 +304,7 @@ SOURCES = \
 	"log.c" \
 	"map.c" \
 	"module.c" \
+	"mutex.c" \
 	"operator.c" \
 	"pcomplex.c" \
 	"pcow.c" \
@@ -590,6 +592,7 @@ LO_SOURCES = \
 	"log.c" \
 	"map.c" \
 	"module.c" \
+	"mutex.c" \
 	"operator.c" \
 	"pcomplex.c" \
 	"pcow.c" \

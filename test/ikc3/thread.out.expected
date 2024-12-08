@@ -1,0 +1,16 @@
+t = Thread.new(fn () {
+  puts("ok from thread")
+  :ok_from_thread
+}); void
+void
+Thread.delete(t)
+:ok_from_thread
+name = "Plop"
+"Plop"
+(t = Thread.new(fn () {
+  puts("Hello #{name} from thread")
+  :ok_from_thread
+})); void
+void
+Thread.delete(t)
+:ok_from_thread

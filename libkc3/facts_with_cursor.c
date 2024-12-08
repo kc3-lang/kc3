@@ -18,6 +18,7 @@
 #include "facts_spec.h"
 #include "facts_with.h"
 #include "facts_with_cursor.h"
+#include "mutex.h"
 
 void facts_with_cursor_clean (s_facts_with_cursor *cursor)
 {
@@ -33,11 +34,7 @@ void facts_with_cursor_clean (s_facts_with_cursor *cursor)
     }
     free(cursor->levels);
     free(cursor->spec);
-    if (pthread_mutex_destroy(&cursor->mutex)) {
-      err_puts("facts_with_cursor_clean: pthread_mutex_destroy");
-      assert(! "facts_with_cursor_clean: pthread_mutex_destroy");
-      exit(1);
-    }
+    mutex_clean(&cursor->mutex);
   }
 }
 
@@ -52,12 +49,7 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
     *dest = NULL;
     return dest;
   }
-  if (pthread_mutex_lock(&cursor->mutex)) {
-    err_puts("facts_with_cursor_next: pthread_mutex_lock");
-    assert(! "facts_with_cursor_next: pthread_mutex_lock");
-    exit(1);
-    return NULL;
-  }
+  mutex_lock(&cursor->mutex);
   if (cursor->level == cursor->facts_count) {
     level = &cursor->levels[cursor->facts_count - 1];
 #ifdef DEBUG_FACTS
@@ -77,12 +69,8 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
     err_flush(err);
 #endif
     if (level->fact) {
-      if (pthread_mutex_unlock(&cursor->mutex)) {
-        err_puts("facts_with_cursor_next: pthread_mutex_unlock");
-        assert(! "facts_with_cursor_next: pthread_mutex_unlock");
-        exit(1);
-      }
       *dest = level->fact;
+      mutex_unlock(&cursor->mutex);
       return dest;
     }
     free(level->spec);
@@ -132,34 +120,18 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
       goto not_found;
     cursor->level--;
   }
-  if (pthread_mutex_unlock(&cursor->mutex)) {
-    err_puts("facts_with_cursor_next: pthread_mutex_unlock");
-    assert(! "facts_with_cursor_next: pthread_mutex_unlock");
-    exit(1);
-  }
+  mutex_unlock(&cursor->mutex);
   *dest = fact;
   return dest;
  not_found:
   cursor->facts_count = 0;
   free(cursor->levels);
   free(cursor->spec);
-  if (pthread_mutex_unlock(&cursor->mutex)) {
-    err_puts("facts_with_cursor_next: pthread_mutex_unlock");
-    assert(! "facts_with_cursor_next: pthread_mutex_unlock");
-    abort();
-  }
-  if (pthread_mutex_destroy(&cursor->mutex)) {
-    err_puts("facts_with_cursor_next: pthread_mutex_destroy");
-    assert(! "facts_with_cursor_next: pthread_mutex_destroy");
-    abort();
-  }
+  mutex_unlock(&cursor->mutex);
+  mutex_clean(&cursor->mutex);
   *dest = NULL;
   return dest;
  ko:
-  if (pthread_mutex_unlock(&cursor->mutex)) {
-    err_puts("facts_with_cursor_next: pthread_mutex_unlock");
-    assert(! "facts_with_cursor_next: pthread_mutex_unlock");
-    exit(1);
-  }
+  mutex_unlock(&cursor->mutex);
   return NULL;
 }

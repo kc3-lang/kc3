@@ -19,6 +19,7 @@
 #include "facts_spec.h"
 #include "facts_with.h"
 #include "list.h"
+#include "mutex.h"
 #include "sym.h"
 #include "tag.h"
 #include "var.h"
@@ -50,11 +51,7 @@ s_facts_with_cursor * facts_with (s_facts *facts,
     }
     /* facts_spec_sort(tmp.spec); */
   }
-  if (pthread_mutex_init(&tmp.mutex, NULL)) {
-    err_puts("facts_with: pthread_mutex_init");
-    assert(! "facts_with: pthread_mutex_init");
-    return NULL;
-  }
+  mutex_init(&tmp.mutex);
   *cursor = tmp;
   return cursor;
 }
