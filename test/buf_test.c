@@ -350,10 +350,10 @@ TEST_CASE_END(buf_peek_character_utf8)
 
 TEST_CASE(buf_peek_s8)
 {
-  char a[4] = "ABCD";
+  char a[5] = "ABCD";
   s_buf buf;
   s8 byte;
-  buf_init(&buf, false, sizeof(a), a);
+  buf_init_const(&buf, sizeof(a), a);
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(buf_peek_s8(&buf, &byte), -1);
   TEST_EQ(buf.rpos, 0);
@@ -362,12 +362,17 @@ TEST_CASE(buf_peek_s8)
   TEST_EQ(buf.rpos, 0);
   TEST_EQ(byte, 'A');
   TEST_EQ(buf.wpos, 1);
-  buf.wpos = 4;
+  buf.rpos = 1;
+  TEST_EQ(buf_peek_s8(&buf, &byte), -1);
+  TEST_EQ(buf.rpos, 1);
+  TEST_EQ(byte, 'A');
+  TEST_EQ(buf.wpos, 1);
+  buf.wpos = 3;
   buf.rpos = 1;
   TEST_EQ(buf_peek_s8(&buf, &byte), 1);
   TEST_EQ(buf.rpos, 1);
   TEST_EQ(byte, 'B');
-  TEST_EQ(buf.wpos, 4);
+  TEST_EQ(buf.wpos, 3);
   buf_clean(&buf);
 }
 TEST_CASE_END(buf_peek_s8)
@@ -513,7 +518,7 @@ TEST_CASE(buf_read_s8)
   char a[8] = "ABCDEFG";
   s_buf buf;
   s8 byte;
-  buf_init(&buf, false, sizeof(a), a);
+  buf_init_const(&buf, sizeof(a), a);
   TEST_EQ(buf_read_s8(&buf, &byte), -1);
   TEST_EQ(buf_read_s8(&buf, &byte), -1);
   buf.wpos = 1;
@@ -522,9 +527,11 @@ TEST_CASE(buf_read_s8)
   TEST_EQ(buf.rpos, 1);
   TEST_EQ(buf.wpos, 1);
   TEST_EQ(buf_read_s8(&buf, &byte), -1);
+  TEST_EQ(byte, 'A');
   TEST_EQ(buf.rpos, 1);
   TEST_EQ(buf.wpos, 1);
   TEST_EQ(buf_read_s8(&buf, &byte), -1);
+  TEST_EQ(byte, 'A');
   TEST_EQ(buf.rpos, 1);
   TEST_EQ(buf.wpos, 1);
   buf.wpos = 5;
