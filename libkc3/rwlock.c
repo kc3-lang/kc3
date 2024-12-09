@@ -30,14 +30,7 @@ void rwlock_clean (s_rwlock *rwlock)
 
 s_rwlock * rwlock_init (s_rwlock *rwlock)
 {
-  uw i;
   assert(rwlock);
-  if (false) {
-    i = (uw) rwlock->rwlock;
-    err_write_1("rwlock_init: ");
-    err_inspect_uw_hexadecimal(&i);
-    err_write_1("\n");
-  }
   if (pthread_rwlock_init(&rwlock->rwlock, NULL)) {
     err_puts("rwlock_init: pthread_rwlock_init");
     assert(! "rwlock_init: pthread_rwlock_init");
