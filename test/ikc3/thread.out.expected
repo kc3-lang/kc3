@@ -1,16 +1,12 @@
-t = Thread.new(fn () {
-  puts("ok from thread")
-  :ok_from_thread
-}); void
-void
-Thread.delete(t)
+if t = Thread.new(fn () { puts("ok from thread") ; :ok_from_thread }) do
+  Thread.delete(t)
+end
+ok from thread
 :ok_from_thread
 name = "Plop"
 "Plop"
-(t = Thread.new(fn () {
-  puts("Hello #{name} from thread")
-  :ok_from_thread
-})); void
-void
-Thread.delete(t)
+if t = Thread.new(fn () { puts("Hello #{name} from thread") ; :ok_from_thread }) do
+  Thread.delete(t)
+end
+Hello Plop from thread
 :ok_from_thread
