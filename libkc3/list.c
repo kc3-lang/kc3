@@ -36,7 +36,6 @@ s_tag * list_access (s_list *list, s_list *key, s_tag *dest)
   const s_sym *sym_Uw = &g_sym_Uw;
   s_tag tag;
   uw i;
-  assert(list);
   assert(key);
   assert(dest);
   key_first = &key->tag;
