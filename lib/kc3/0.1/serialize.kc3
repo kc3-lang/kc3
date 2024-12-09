@@ -6,4 +6,6 @@ defmodule Serialize do
 
   def tag = cfn Bool "kc3_serialize_tag" (Ptr, Tag)
 
+  def to_str = cfn Str "kc3_serialize_to_str" (Ptr, Result)
+
 end

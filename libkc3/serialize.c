@@ -31,7 +31,8 @@ DEF_SERIALIZE(bool)
 void serialize_clean (s_serialize *serialize)
 {
   assert(serialize);
-  (void) serialize;
+  buf_clean(&serialize->buf);
+  buf_clean(&serialize->heap);
 }
 
 void serialize_delete (s_serialize *serialize)
@@ -40,12 +41,23 @@ void serialize_delete (s_serialize *serialize)
   free(serialize);
 }
 
+s_serialize * serialize_character (s_serialize *serialize,
+                                   character c)
+{
+  return serialize_u32(serialize, c);
+}
+
 s_serialize * serialize_init (s_serialize *serialize)
 {
   s_serialize tmp = {0};
+  buf_init_alloc(&tmp.heap, 1024024);
+  buf_init_alloc(&tmp.buf, 1024024);
   *serialize = tmp;
   return serialize;
 }
+
+s_serialize * serialize_list (s_serialize *serialize,
+                              const s_list *list);
 
 s_serialize * serialize_new (void)
 {
@@ -56,40 +68,63 @@ s_serialize * serialize_new (void)
   return serialize;
 }
 
-s_str * serialize_to_buf (const s_serialize *serialize, s_buf *buf);
+DEF_SERIALIZE(s8)
+DEF_SERIALIZE(s16)
+DEF_SERIALIZE(s32)
+DEF_SERIALIZE(s64)
 
-s_str * serialize_to_str (const s_serialize *serialize, s_str *dest);
+s_serialize * serialize_str (s_serialize *serialize, const s_str *src)
+{
+  sw r;
+  assert(serialize);
+  assert(src);
+  if (! serialize_u32(serialize, src->size))
+    return NULL;
+  if ((r = buf_write(&serialize->buf, src->ptr.pchar, src->size)) <= 0)
+    return NULL;
+  return serialize;
+}
 
-s_serialize * serialize_bool (s_serialize *serialize, bool b);
-
-s_serialize * serialize_character (s_serialize *serialize,
-                                   character c);
-
-s_serialize * serialize_list (s_serialize *serialize,
-                              const s_list *list);
+DEF_SERIALIZE(sw)
 
 s_serialize * serialize_tag (s_serialize *serialize, const s_tag *tag)
 {
   switch (tag->type){
-  case TAG_U8: return serialize_u8(serialize, tag->data.u8);
-  default:     break;
+  case TAG_BOOL: return serialize_bool(serialize, tag->data.bool);
+  case TAG_CHARACTER:
+    return serialize_character(serialize, tag->data.character);
+  case TAG_S8:   return serialize_s8(serialize, tag->data.s8);
+  case TAG_S16:  return serialize_s16(serialize, tag->data.s16);
+  case TAG_S32:  return serialize_s32(serialize, tag->data.s32);
+  case TAG_S64:  return serialize_s64(serialize, tag->data.s64);
+  case TAG_STR:  return serialize_str(serialize, &tag->data.str);
+  case TAG_SW:   return serialize_sw(serialize, tag->data.sw);
+  case TAG_U8:   return serialize_u8(serialize, tag->data.u8);
+  case TAG_U16:  return serialize_u16(serialize, tag->data.u16);
+  case TAG_U32:  return serialize_u32(serialize, tag->data.u32);
+  case TAG_U64:  return serialize_u64(serialize, tag->data.u64);
+  case TAG_UW:   return serialize_uw(serialize, tag->data.uw);
+  default:       break;
   }
   err_puts("serialize_tag: not implemented");
   assert(! "serialize_tag: not implemented");
   return NULL;
 }
 
+sw serialize_to_buf (s_serialize *serialize, s_buf *buf)
+{
+  return buf_xfer(&serialize->buf, buf,
+                  serialize->buf.wpos - serialize->buf.rpos);
+}
+
+s_str * serialize_to_str (s_serialize *serialize, s_str *dest)
+{
+  return buf_read_to_str(&serialize->buf, dest);
+}
+
 s_serialize * serialize_tuple (s_serialize *serialize,
                                const s_tuple *tuple);
 
-DEF_SERIALIZE(s8)
-DEF_SERIALIZE(s16)
-DEF_SERIALIZE(s32)
-DEF_SERIALIZE(s64)
-
-s_serialize * serialize_str (s_serialize *serialize, const s_str *str);
-
-DEF_SERIALIZE(sw)
 DEF_SERIALIZE(u8)
 DEF_SERIALIZE(u16)
 DEF_SERIALIZE(u32)

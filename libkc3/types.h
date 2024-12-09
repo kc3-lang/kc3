@@ -454,7 +454,7 @@ struct integer {
 
 struct str {
   u_ptr_w free;        /**< Pointer to free or NULL. */
-  uw      size;        /**< Size in bytes. */
+  u32     size;        /**< Size in bytes. */
   u_ptr   ptr;         /**< Pointer to memory. */
 };
 
@@ -561,6 +561,7 @@ struct callable {
   e_callable_type type;
   sw reference_count;
   u_callable_data data;
+  s_mutex mutex;
 };
 
 union tag_data {

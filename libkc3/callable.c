@@ -16,12 +16,13 @@
 #include "callable.h"
 #include "cfn.h"
 #include "fn.h"
+#include "mutex.h"
 #include "tag.h"
 
 void callable_delete (s_callable *callable)
 {
   assert(callable);
-  /* FIXME: lock callable lock. */
+  mutex_lock(&callable->mutex);
   if (callable->reference_count <= 0)
     goto clean;
   if (--callable->reference_count > 0)
@@ -31,12 +32,12 @@ void callable_delete (s_callable *callable)
   case CALLABLE_FN:  fn_clean(&callable->data.fn);   break;
   case CALLABLE_VOID:                                break;
   }
-  /* FIXME: unlock callable lock. */
+  mutex_unlock(&callable->mutex);
+  mutex_clean(&callable->mutex);
   free(callable);
   return;
  clean:
-  /* FIXME: unlock callable lock. */
-  return;
+  mutex_unlock(&callable->mutex);
 }
 
 s_callable * callable_new (void)
@@ -44,6 +45,7 @@ s_callable * callable_new (void)
   s_callable *callable;
   if (! (callable = alloc(sizeof(s_callable))))
     return NULL;
+  mutex_init(&callable->mutex);
   return callable;
 }
 
@@ -75,8 +77,14 @@ s_callable * callable_new_copy (s_callable *src)
 s_callable * callable_new_ref (s_callable *callable)
 {
   assert(callable);
-  assert(callable->reference_count > 0);
+  mutex_lock(&callable->mutex);
+  if (callable->reference_count <= 0) {
+    err_puts("callable_new_ref: reference count <= 0");
+    assert(! "callable_new_ref: reference count <= 0");
+    abort();
+  }
   callable->reference_count++;
+  mutex_unlock(&callable->mutex);
   return callable;
 }
 

@@ -550,11 +550,28 @@ s_list ** kc3_search_modules (s_list **dest)
   return env_search_modules(g_kc3_env, dest);
 }
 
+void kc3_serialize_delete (s_serialize **serialize)
+{
+  serialize_delete(*serialize);
+}
+
+s_serialize ** kc3_serialize_new (s_serialize **serialize)
+{
+  assert(serialize);
+  *serialize = serialize_new();
+  return serialize;
+}
+
 bool kc3_serialize_tag (s_serialize **serialize, const s_tag *tag)
 {
   if (! serialize_tag(*serialize, tag))
     return false;
   return true;
+}
+
+s_str * kc3_serialize_to_str (s_serialize **serialize, s_str *dest)
+{
+  return serialize_to_str(*serialize, dest);
 }
 
 s_list ** kc3_stacktrace (s_list **dest)

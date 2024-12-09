@@ -30,9 +30,9 @@
 void          serialize_clean (s_serialize *serialize);
 s_serialize * serialize_init (s_serialize *serialize);
 
-/* Observers. */
-s_str * serialize_to_buf (const s_serialize *serialize, s_buf *buf);
-s_str * serialize_to_str (const s_serialize *serialize, s_str *dest);
+/* Heap-allocation functions, call serialize_delete after use. */
+void          serialize_delete (s_serialize *serialize);
+s_serialize * serialize_new (void);
 
 /* Operators. */
 PROTO_SERIALIZE(bool);
@@ -41,6 +41,10 @@ s_serialize * serialize_list (s_serialize *serialize,
                               const s_list *list);
 s_serialize * serialize_tag (s_serialize *serialize,
                              const s_tag *tag);
+sw            serialize_to_buf (s_serialize *serialize,
+                                s_buf *buf);
+s_str *       serialize_to_str (s_serialize *serialize,
+                                s_str *dest);
 s_serialize * serialize_tuple (s_serialize *serialize,
                                const s_tuple *tuple);
 PROTO_SERIALIZE(s8);
