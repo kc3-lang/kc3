@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include "types.h"
 
-#define BUF_SIZE 1024024
+#define BUF_SIZE 65536
 
 #define PROTO_BUF_PEEK(type)                                           \
   sw buf_peek_ ## type (s_buf *buf, type *dest)

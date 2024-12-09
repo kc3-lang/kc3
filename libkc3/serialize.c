@@ -15,6 +15,19 @@
 #include "buf.h"
 #include "serialize.h"
 
+#define DEF_SERIALIZE(type)                                            \
+  s_serialize * serialize_ ## type (s_serialize *serialize,            \
+                                    type src)                          \
+  {                                                                    \
+    sw r;                                                              \
+    assert(serialize);                                                 \
+    if ((r = buf_write_ ## type(&serialize->buf, src)) <= 0)           \
+      return NULL;                                                     \
+    return serialize;                                                  \
+  }
+
+DEF_SERIALIZE(bool)
+
 void serialize_clean (s_serialize *serialize)
 {
   assert(serialize);
@@ -69,31 +82,16 @@ s_serialize * serialize_tag (s_serialize *serialize, const s_tag *tag)
 s_serialize * serialize_tuple (s_serialize *serialize,
                                const s_tuple *tuple);
 
-s_serialize * serialize_s8 (s_serialize *serialize, s8 x);
-
-s_serialize * serialize_s16 (s_serialize *serialize, s16 x);
-
-s_serialize * serialize_s32 (s_serialize *serialize, s32 x);
-
-s_serialize * serialize_s64 (s_serialize *serialize, s64 x);
+DEF_SERIALIZE(s8)
+DEF_SERIALIZE(s16)
+DEF_SERIALIZE(s32)
+DEF_SERIALIZE(s64)
 
 s_serialize * serialize_str (s_serialize *serialize, const s_str *str);
 
-s_serialize * serialize_sw (s_serialize *serialize, sw x);
-
-s_serialize * serialize_u8 (s_serialize *serialize, u8 x)
-{
-  sw r;
-  assert(serialize);
-  if ((r = buf_write_u8(&serialize->buf, x)) < 0)
-    return NULL;
-  return serialize;
-}
-
-s_serialize * serialize_u16 (s_serialize *serialize, u16 x);
-
-s_serialize * serialize_u32 (s_serialize *serialize, u32 x);
-
-s_serialize * serialize_u64 (s_serialize *serialize, u64 x);
-
-s_serialize * serialize_uw (s_serialize *serialize, uw x);
+DEF_SERIALIZE(sw)
+DEF_SERIALIZE(u8)
+DEF_SERIALIZE(u16)
+DEF_SERIALIZE(u32)
+DEF_SERIALIZE(u64)
+DEF_SERIALIZE(uw)

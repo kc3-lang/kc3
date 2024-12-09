@@ -21,6 +21,10 @@
 
 #include "types.h"
 
+#define PROTO_SERIALIZE(type)                                          \
+  s_serialize * serialize_ ## type (s_serialize *serialize,            \
+                                    type src)
+
 /* Stack-allocation compatible functions, call serialize_clean
    after use. */
 void          serialize_clean (s_serialize *serialize);
@@ -31,25 +35,24 @@ s_str * serialize_to_buf (const s_serialize *serialize, s_buf *buf);
 s_str * serialize_to_str (const s_serialize *serialize, s_str *dest);
 
 /* Operators. */
-s_serialize * serialize_bool (s_serialize *serialize, bool b);
-s_serialize * serialize_character (s_serialize *serialize,
-                                   character c);
+PROTO_SERIALIZE(bool);
+PROTO_SERIALIZE(character);
 s_serialize * serialize_list (s_serialize *serialize,
                               const s_list *list);
 s_serialize * serialize_tag (s_serialize *serialize,
                              const s_tag *tag);
 s_serialize * serialize_tuple (s_serialize *serialize,
                                const s_tuple *tuple);
-s_serialize * serialize_s8 (s_serialize *serialize, s8 x);
-s_serialize * serialize_s16 (s_serialize *serialize, s16 x);
-s_serialize * serialize_s32 (s_serialize *serialize, s32 x);
-s_serialize * serialize_s64 (s_serialize *serialize, s64 x);
+PROTO_SERIALIZE(s8);
+PROTO_SERIALIZE(s16);
+PROTO_SERIALIZE(s32);
+PROTO_SERIALIZE(s64);
 s_serialize * serialize_str (s_serialize *serialize, const s_str *str);
-s_serialize * serialize_sw (s_serialize *serialize, sw x);
-s_serialize * serialize_u8 (s_serialize *serialize, u8 x);
-s_serialize * serialize_u16 (s_serialize *serialize, u16 x);
-s_serialize * serialize_u32 (s_serialize *serialize, u32 x);
-s_serialize * serialize_u64 (s_serialize *serialize, u64 x);
-s_serialize * serialize_uw (s_serialize *serialize, uw x);
+PROTO_SERIALIZE(sw);
+PROTO_SERIALIZE(u8);
+PROTO_SERIALIZE(u16);
+PROTO_SERIALIZE(u32);
+PROTO_SERIALIZE(u64);
+PROTO_SERIALIZE(uw);
 
 #endif /* LIBKC3_SERIALIZE_H */
