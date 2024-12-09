@@ -13,6 +13,7 @@
 #include "assert.h"
 #include "alloc.h"
 #include "buf.h"
+#include "list.h"
 #include "serialize.h"
 
 #define DEF_SERIALIZE(type)                                            \
@@ -56,8 +57,24 @@ s_serialize * serialize_init (s_serialize *serialize)
   return serialize;
 }
 
+/* Works the same as serialize_tuple. */
 s_serialize * serialize_list (s_serialize *serialize,
-                              const s_list *list);
+                              const s_list *list)
+{
+  const s_list *l;
+  u32 len;
+  assert(serialize);
+  len = list_length(list);
+  if (! serialize_u32(serialize, len))
+    return NULL;
+  l = list;
+  while (l) {
+    if (! serialize_tag(serialize, &l->tag))
+      return NULL;
+    l = list_next(l);
+  }
+  return serialize;
+}
 
 s_serialize * serialize_new (void)
 {
@@ -123,7 +140,21 @@ s_str * serialize_to_str (s_serialize *serialize, s_str *dest)
 }
 
 s_serialize * serialize_tuple (s_serialize *serialize,
-                               const s_tuple *tuple);
+                               const s_tuple *tuple)
+{
+  uw i;
+  assert(serialize);
+  assert(tuple);
+  if (! serialize_u32(serialize, tuple->count))
+    return NULL;
+  i = 0;
+  while (i < tuple->count) {
+    if (! serialize_tag(serialize, tuple->tag + i))
+      return NULL;
+    i++;
+  }
+  return serialize;
+}
 
 DEF_SERIALIZE(u8)
 DEF_SERIALIZE(u16)
