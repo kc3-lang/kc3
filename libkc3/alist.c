@@ -62,7 +62,6 @@ s_tag * alist_access (s_list *alist,
 s_tag * alist_get (s_list *alist, s_tag *key, s_tag *dest)
 {
   s_list *l;
-  assert(alist);
   assert(list_is_alist(alist));
   assert(key);
   assert(dest);

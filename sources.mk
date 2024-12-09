@@ -355,6 +355,7 @@ KC3_C_SOURCES = \
 	"libkc3/deserialize.h" \
 	"libkc3/env.c" \
 	"libkc3/env.h" \
+	"libkc3/env_fork.c" \
 	"libkc3/error.c" \
 	"libkc3/error.h" \
 	"libkc3/error_handler.c" \
@@ -919,6 +920,72 @@ KC3_FONT_SOURCES = \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-SemiBoldItalic.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-Thin.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-ThinItalic.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-Bold.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-BoldItalic.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-CondensedBold.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-CondensedBoldItalic.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-CondensedExtraBold.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-CondensedExtraBoldItalic.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-CondensedItalic.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-CondensedLight.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-CondensedLightItalic.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-CondensedRegular.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-CondensedSemiBold.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-CondensedSemiBoldItalic.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-ExtraBold.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-ExtraBoldItalic.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-Italic.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-Light.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-LightItalic.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-Regular.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-SemiBold.ttf" \
+	"fonts/opensans/fonts/noto-set/ttf/OpenSans-SemiBoldItalic.ttf" \
+	"fonts/opensans/fonts/noto-set/variable/OpenSans-Italic[wdth,wght].ttf" \
+	"fonts/opensans/fonts/noto-set/variable/OpenSans[wdth,wght].ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-Bold.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-BoldItalic.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-CondensedBold.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-CondensedBoldItalic.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-CondensedExtraBold.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-CondensedExtraBoldItalic.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-CondensedItalic.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-CondensedLight.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-CondensedLightItalic.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-CondensedRegular.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-CondensedSemiBold.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-CondensedSemiBoldItalic.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-ExtraBold.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-ExtraBoldItalic.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-Italic.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-Light.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-LightItalic.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-Regular.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-SemiBold.ttf" \
+	"fonts/opensans/fonts/ttf/OpenSans-SemiBoldItalic.ttf" \
+	"fonts/opensans/fonts/variable/OpenSans-Italic[wdth,wght].ttf" \
+	"fonts/opensans/fonts/variable/OpenSans[wdth,wght].ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Italic-wg300wd100.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Italic-wg300wd75.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Italic-wg400wd100.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Italic-wg400wd75.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Italic-wg600wd100.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Italic-wg600wd75.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Italic-wg700wd100.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Italic-wg700wd75.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Italic-wg800wd100.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Italic-wg800wd75.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Italic.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg300wd100.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg300wd75.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg400wd100.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg400wd75.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg600wd100.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg600wd75.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg700wd100.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg700wd75.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg800wd100.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg800wd75.ttf" \
+	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman.ttf" \
 
 KC3_IMG_SOURCES = \
 	"img/earth.jpg" \
@@ -966,7 +1033,6 @@ KC3_IMG_SOURCES = \
 	"img/toast.png" \
 
 KC3_LIB_SOURCES = \
-	"lib/kc3/0.1/.#file.kc3" \
 	"lib/kc3/0.1/alist.kc3" \
 	"lib/kc3/0.1/array.kc3" \
 	"lib/kc3/0.1/bool.facts" \
@@ -999,7 +1065,6 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/vertex.kc3" \
 	"lib/kc3/0.1/html.kc3" \
 	"lib/kc3/0.1/http.kc3" \
-	"lib/kc3/0.1/http/.#response.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
 	"lib/kc3/0.1/http/response.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
@@ -1580,7 +1645,6 @@ KC3_DOC_SOURCES = \
 	"doc/1_KC3/1.4_Ratio.en.md" \
 	"doc/1_KC3/1.5_List.en.md" \
 	"doc/1_KC3/1.6_Variable.en.md" \
-	"doc/2_HTTPd/.#index.en.md" \
 	"doc/2_HTTPd/index.en.md" \
 	"doc/3_Guides/3.1_Install.en.md" \
 	"doc/3_Guides/3.2_Testing.en.md" \

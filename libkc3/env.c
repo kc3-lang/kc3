@@ -2741,37 +2741,6 @@ s_env * env_init_args (s_env *env, int *argc, char ***argv)
   return env;
 }
 
-s_env * env_init_copy (s_env *env, s_env *src)
-{
-  s_env tmp = {0};
-  assert(env);
-  assert(src);
-  tmp.argc = src->argc;
-  tmp.argv = src->argv;
-  tmp.argv0_dir = src->argv0_dir;
-  //tmp.stacktrace = NULL;
-  tmp.current_defmodule = &g_sym_KC3;
-  tmp.err = src->err;
-  //tmp.error_handler = NULL;
-  tmp.facts = src->facts;
-  tmp.frame = frame_new_copy(src->frame);
-  tmp.global_frame = src->global_frame;
-  tmp.in = src->in;
-  tmp.module_path = src->module_path;
-  tmp.out = src->out;
-  tmp.path = src->path;
-  tmp.quote_level = src->quote_level;
-  if (! (tmp.read_time_frame = frame_new(NULL, NULL)))
-    return NULL;
-  tmp.search_modules = src->search_modules_default;
-  tmp.search_modules_default = src->search_modules_default;
-  tmp.trace = src->trace;
-  //tmp.unquote_level = 0;
-  //tmp.unwind_protect = NULL;
-  *env = tmp;
-  return env;
-}
-
 s_env * env_init_globals (s_env *env)
 {
   s_tag *file_dir;
@@ -3360,18 +3329,6 @@ s_list ** env_module_search_modules (s_env *env,
   }
   *dest = tmp2;
   return dest;
-}
-
-s_env * env_new_copy (s_env *src)
-{
-  s_env *env;
-  if (! (env = alloc(sizeof(s_env))))
-    return NULL;
-  if (! env_init_copy(env, src)) {
-    free(env);
-    return NULL;
-  }
-  return env;
 }
 
 s8 env_operator_arity (s_env *env, const s_ident *op)

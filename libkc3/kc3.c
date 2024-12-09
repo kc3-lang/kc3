@@ -32,6 +32,7 @@
 #include "buf_parse.h"
 #include "call.h"
 #include "env.h"
+#include "env_fork.h"
 #include "eval.h"
 #include "fact.h"
 #include "facts.h"
@@ -814,7 +815,7 @@ void * kc3_thread_start (void *arg)
     return NULL;
   }
   start = tag->data.tuple.tag[1].data.callable;
-  g_kc3_env = env_new_copy((s_env *) tag->data.tuple.tag[2].data.ptr.p);
+  g_kc3_env = env_fork_new((s_env *) tag->data.tuple.tag[2].data.ptr.p);
   if (! eval_callable_call(start, NULL, tag->data.tuple.tag))
     return NULL;
   return tag;

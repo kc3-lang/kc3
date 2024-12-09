@@ -271,6 +271,7 @@ SOURCES = \
 	"data.c" \
 	"deserialize.c" \
 	"env.c" \
+	"env_fork.c" \
 	"error.c" \
 	"error_handler.c" \
 	"eval.c" \
@@ -559,6 +560,7 @@ LO_SOURCES = \
 	"data.c" \
 	"deserialize.c" \
 	"env.c" \
+	"env_fork.c" \
 	"error.c" \
 	"error_handler.c" \
 	"eval.c" \
