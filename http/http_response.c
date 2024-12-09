@@ -218,8 +218,8 @@ sw http_response_buf_write (const s_http_response *response,
     if ((r = buf_write_1(buf, ": ")) < 0)
       return r;
     result += r;
-    if ((r = buf_inspect_uw_decimal(buf,
-                                    &response->body.data.str.size)) < 0)
+    r = buf_inspect_u32_decimal(buf, &response->body.data.str.size);
+    if (r < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, "\r\n")) < 0)
