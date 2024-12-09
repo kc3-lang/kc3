@@ -119,7 +119,7 @@ defmodule HTTPd do
     end
   }
 
-  def thread_count = 1
+  def thread_count = 8
 
   def server = fn (host, port) {
     def socket = Socket.listen(host, port)
