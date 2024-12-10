@@ -818,6 +818,7 @@ void * kc3_thread_start (void *arg)
   g_kc3_env = env_fork_new((s_env *) tag->data.tuple.tag[2].data.ptr.p);
   if (! eval_callable_call(start, NULL, tag->data.tuple.tag))
     return NULL;
+  env_fork_delete(g_kc3_env);
   return tag;
 }
 

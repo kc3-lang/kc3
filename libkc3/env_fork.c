@@ -27,6 +27,13 @@ void env_fork_clean (s_env *env)
   //tmp.unwind_protect = NULL;
 }
 
+void env_fork_delete (s_env *env)
+{
+  assert(env);
+  env_fork_clean(env);
+  free(env);
+}
+
 s_env * env_fork_init (s_env *env, s_env *src)
 {
   s_env tmp = {0};
