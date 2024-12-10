@@ -63,4 +63,6 @@ config_subdirs \
     http \
     httpd \
     test \
-    window
+    window \
+    gtk4
+

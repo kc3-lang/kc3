@@ -6,6 +6,9 @@ KC3_CONFIGURES = \
 	"event/configure" \
 	"event/sources.sh" \
 	"event/update_sources" \
+	"gtk4/configure" \
+	"gtk4/sources.sh" \
+	"gtk4/update_sources" \
 	"http/configure" \
 	"http/sources.sh" \
 	"http/update_sources" \
@@ -78,6 +81,8 @@ KC3_MAKEFILES = \
 	"ekc3/sources.mk" \
 	"event/Makefile" \
 	"event/sources.mk" \
+	"gtk4/Makefile" \
+	"gtk4/sources.mk" \
 	"http/Makefile" \
 	"http/sources.mk" \
 	"httpd/Makefile" \
@@ -136,6 +141,12 @@ KC3_C_SOURCES = \
 	"ekc3/types.h" \
 	"event/event.c" \
 	"event/event.h" \
+	"gtk4/kc3_glib.c" \
+	"gtk4/kc3_glib.h" \
+	"gtk4/kc3_gtk4.h" \
+	"gtk4/types.h" \
+	"gtk4/window.c" \
+	"gtk4/window.h" \
 	"http/http.c" \
 	"http/http.h" \
 	"http/http_request.c" \
@@ -356,6 +367,7 @@ KC3_C_SOURCES = \
 	"libkc3/env.c" \
 	"libkc3/env.h" \
 	"libkc3/env_fork.c" \
+	"libkc3/env_fork.h" \
 	"libkc3/error.c" \
 	"libkc3/error.h" \
 	"libkc3/error_handler.c" \
@@ -1063,6 +1075,9 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/vec2.kc3" \
 	"lib/kc3/0.1/gl/vec3.kc3" \
 	"lib/kc3/0.1/gl/vertex.kc3" \
+	"lib/kc3/0.1/gtk4.kc3" \
+	"lib/kc3/0.1/gtk4/widget.kc3" \
+	"lib/kc3/0.1/gtk4/window.kc3" \
 	"lib/kc3/0.1/html.kc3" \
 	"lib/kc3/0.1/http.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \

@@ -26,6 +26,7 @@ all:
 	${MAKE} -C httpd all
 	${MAKE} -C test all
 	${MAKE} -C window all
+	${MAKE} -C gtk4 all
 
 include config.mk
 include sources.mk
@@ -45,6 +46,7 @@ asan:
 	${MAKE} -C httpd asan
 	${MAKE} -C test asan
 	${MAKE} -C window asan
+	${MAKE} -C gtk4 asan
 
 assets:
 	make -C test/httpd/assets
@@ -65,6 +67,7 @@ build:
 	${MAKE} -C httpd build
 	${MAKE} -C test build
 	${MAKE} -C window build
+	${MAKE} -C gtk4 build
 
 clean:
 	${MAKE} -C libtommath clean
@@ -81,6 +84,7 @@ clean:
 	${MAKE} -C httpd clean
 	${MAKE} -C test clean
 	${MAKE} -C window clean
+	${MAKE} -C gtk4 clean
 
 clean_cov:
 	${MAKE} -C libtommath clean_cov
@@ -96,6 +100,7 @@ clean_cov:
 	${MAKE} -C httpd clean_cov
 	${MAKE} -C test clean_cov
 	${MAKE} -C window clean_cov
+	${MAKE} -C gtk4 clean_cov
 
 cov:
 	${MAKE} gen
@@ -112,6 +117,7 @@ cov:
 	${MAKE} -C httpd cov
 	${MAKE} -C test cov
 	${MAKE} -C window cov
+	${MAKE} -C gtk4 cov
 
 debug:
 	${MAKE} -C libtommath debug
@@ -128,6 +134,7 @@ debug:
 	${MAKE} -C httpd debug
 	${MAKE} -C test debug
 	${MAKE} -C window debug
+	${MAKE} -C gtk4 debug
 
 demo: build
 	${MAKE} -C window demo
@@ -170,6 +177,7 @@ distclean:
 	${MAKE} -C httpd distclean
 	${MAKE} -C test distclean
 	${MAKE} -C window distclean
+	${MAKE} -C gtk4 distclean
 
 ekc3:
 	${MAKE} -C libtommath build
@@ -408,6 +416,42 @@ gdb_test_markdown_asan:
 gen:
 	${MAKE} -C libkc3 gen
 
+gtk4:
+	${MAKE} gen
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c build
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C gtk4 build
+
+gtk4_asan:
+	${MAKE} gen
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c asan
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C gtk4 asan
+
+gtk4_cov:
+	${MAKE} gen
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c cov
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C kc3s cov
+	${MAKE} -C gtk4 cov
+
+gtk4_debug:
+	${MAKE} gen
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c debug
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C gtk4 debug
+
 http:
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
@@ -562,6 +606,7 @@ lib_links_debug:
 lib_links_bsd:
 	ln -sf ../../../ekc3/.libs/libekc3.so.0.0 lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/.libs/libkc3_event.so.0.0 lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4.so.0.0 lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/.libs/libkc3_http.so.0.0 lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json.so.0.0 lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown.so.0.0 lib/kc3/0.1/markdown.so
@@ -570,6 +615,7 @@ lib_links_bsd:
 lib_links_bsd_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug.so.0.0 lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/.libs/libkc3_event_debug.so.0.0 lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4_debug.so.0.0 lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/.libs/libkc3_http_debug.so.0.0 lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json_debug.so.0.0 lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so.0.0 lib/kc3/0.1/markdown.so
@@ -578,6 +624,7 @@ lib_links_bsd_debug:
 lib_links_darwin:
 	ln -sf ../../../ekc3/.libs/libekc3.0.dylib lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/.libs/libkc3_event.0.dylib lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4.0.dylib lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/.libs/libkc3_http.0.dylib lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json.0.dylib lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown.0.dylib lib/kc3/0.1/markdown.so
@@ -586,6 +633,7 @@ lib_links_darwin:
 lib_links_darwin_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug.0.dylib lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/.libs/libkc3_event_debug.0.dylib lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4_debug.0.dylib lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/.libs/libkc3_http_debug.0.dylib lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json_debug.0.dylib lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.0.dylib lib/kc3/0.1/markdown.so
@@ -594,6 +642,7 @@ lib_links_darwin_debug:
 lib_links_linux:
 	ln -sf ../../../ekc3/.libs/libekc3.so lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/.libs/libkc3_event.so lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4.so lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/.libs/libkc3_http.so lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json.so lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown.so lib/kc3/0.1/markdown.so
@@ -602,6 +651,7 @@ lib_links_linux:
 lib_links_linux_asan:
 	ln -sf ../../../ekc3/.libs/libekc3_asan.so lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/.libs/libkc3_event_asan.so lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4_asan.so lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/.libs/libkc3_http_asan.so lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json_asan.so lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown_asan.so lib/kc3/0.1/markdown.so
@@ -610,6 +660,7 @@ lib_links_linux_asan:
 lib_links_linux_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug.so lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/.libs/libkc3_event_debug.so lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4_debug.so lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/.libs/libkc3_http_debug.so lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json_debug.so lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so lib/kc3/0.1/markdown.so
@@ -618,6 +669,7 @@ lib_links_linux_debug:
 lib_links_windows:
 	ln -sf ../../../ekc3/.libs/libekc3-0.dll lib/kc3/0.1/ekc3.so
 	ln -sf ../../../event/.libs/libkc3_event-0.dll lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4-0.dll lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/.libs/libkc3_http-0.dll lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json-0.dll lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown-0.dll lib/kc3/0.1/markdown.so
@@ -1112,6 +1164,10 @@ test_socket_debug:
 	gdb_test_socket \
 	gdb_test_socket_asan \
 	gdb_test_socket_debug \
+	gtk4 \
+	gtk4_asan \
+	gtk4_cov \
+	gtk4_debug \
 	http \
 	http_asan \
 	http_cov \

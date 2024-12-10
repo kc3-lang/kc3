@@ -91,6 +91,7 @@ HEADERS = \
 	"data.h" \
 	"deserialize.h" \
 	"env.h" \
+	"env_fork.h" \
 	"error.h" \
 	"error_handler.h" \
 	"eval.h" \

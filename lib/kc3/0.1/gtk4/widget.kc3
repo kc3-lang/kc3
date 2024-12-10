@@ -1,0 +1,7 @@
+defmodule Gtk4.Widget do
+
+  dlopen(__DIR__ + "../gtk4.so")
+
+  # deftype Ptr
+
+end
