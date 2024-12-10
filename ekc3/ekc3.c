@@ -560,6 +560,9 @@ sw ekc3_render_raw_block_size (s_pretty *pretty, const s_block *block)
   case TAG_STR:
     r = buf_write_str_size(pretty, &result.data.str);
     break;
+  case TAG_VOID:
+    r = 0;
+    break;
   default:
     r = buf_inspect_tag_size(pretty, &result);
   }
