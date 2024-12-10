@@ -78,6 +78,7 @@ test/http/*.diff
 test/http/*.err
 test/http/*.out
 test/http/*.ret
+test/httpd/*.bin
 test/ikc3/.ikc3_history
 test/ikc3/.gdb_history
 test/ikc3/*.diff

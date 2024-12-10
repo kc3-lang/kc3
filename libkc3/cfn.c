@@ -198,6 +198,24 @@ void cfn_delete (s_cfn *cfn)
   free(cfn);
 }
 
+bool cfn_eval (s_cfn *cfn)
+{
+  assert(cfn);
+  mutex_lock(&cfn->mutex);
+  if (! cfn->ready) {
+    if (! cfn_prep_cif(cfn))
+      goto ko;
+    if (! cfn_link(cfn))
+      goto ko;
+    cfn->ready = true;
+  }
+  mutex_unlock(&cfn->mutex);
+  return true;
+ ko:
+  mutex_unlock(&cfn->mutex);
+  return false;
+}
+
 s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
                   const s_sym *result_type)
 {
@@ -269,6 +287,7 @@ s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
   tmp.ptr = src->ptr;
   tmp.macro = src->macro;
   tmp.special_operator = src->special_operator;
+  mutex_init(&tmp.mutex);
   *cfn = tmp;
   return cfn;
 }
@@ -282,6 +301,7 @@ s_cfn * cfn_link (s_cfn *cfn)
     err_write_1(": ");
     err_puts(dlerror());
     assert(! "cfn_link: dlsym failed");
+    mutex_unlock(&cfn->mutex);
     return NULL;
   }
   return cfn;
@@ -306,7 +326,10 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
   ffi_type *result_ffi_type;
   ffi_status status;
   assert(cfn);
-  mutex_lock(&cfn->mutex);
+  if (cfn->ready) {
+    result = cfn;
+    goto clean;
+  }
   if (! sym_to_ffi_type(cfn->result_type, NULL, &result_ffi_type))
     goto clean;
   if (cfn->arity) {
@@ -323,7 +346,8 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
         free(arg_ffi_type);
         goto clean;
       }
-      if (! sym_to_ffi_type(a->tag.data.sym, result_ffi_type, arg_ffi_type + i)) {
+      if (! sym_to_ffi_type(a->tag.data.sym, result_ffi_type,
+                            arg_ffi_type + i)) {
         free(arg_ffi_type);
         goto clean;
       }
@@ -353,9 +377,9 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
     assert(! "cfn_prep_cif: ffi_prep_cif: error");
     goto clean;
   }
+  cfn->ready = true;
   result = cfn;
  clean:
-  mutex_unlock(&cfn->mutex);
   return result;
 }
 

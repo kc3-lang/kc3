@@ -908,13 +908,8 @@ bool env_eval_callable (s_env *env, s_callable *callable,
   case CALLABLE_CFN:
     if (! (tmp = callable_new_ref(callable)))
       return false;
-    if (! tmp->data.cfn.ready) {
-      if (! cfn_prep_cif(&tmp->data.cfn))
-        goto ko;
-      if (! cfn_link(&tmp->data.cfn))
-        goto ko;
-      tmp->data.cfn.ready = true;
-    }
+    if (! cfn_eval(&tmp->data.cfn))
+      return false;
     goto ok;
   case CALLABLE_FN:
     if (! (tmp = callable_new_copy(callable)))

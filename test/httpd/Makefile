@@ -19,4 +19,9 @@ debug: assets
 run: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
 
+VEGETA_RATE = 10
+
+vegeta:
+	vegeta attack -rate=${VEGETA_RATE} -duration=20s < vegeta-targets.txt | tee vegeta-result.rate\=${VEGETA_RATE}.bin | vegeta plot > vegeta-result.rate\=${VEGETA_RATE}.html
+
 .PHONY: assets asan cov debug main run

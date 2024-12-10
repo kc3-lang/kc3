@@ -1,0 +1,9 @@
+GET http://127.0.0.1:15004/
+GET http://127.0.0.1:15004/test.txt
+GET http://127.0.0.1:15004/test.html
+GET http://127.0.0.1:15004/release
+GET http://127.0.0.1:15004/release/
+GET http://127.0.0.1:15004/doc
+GET http://127.0.0.1:15004/doc/
+GET http://127.0.0.1:15004/doc/1_KC3
+GET http://127.0.0.1:15004/doc/1_KC3/

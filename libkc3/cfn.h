@@ -27,11 +27,12 @@ s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src);
 void    cfn_delete (s_cfn *cfn);
 s_cfn * cfn_new_copy (const s_cfn *src);
 
-/* Observers */
+/* Observers. */
 s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest);
 s8      cfn_arity (const s_cfn *cfn);
 
-/* Modifiers */
+/* Operators. */
+bool    cfn_eval (s_cfn *cfn);
 s_cfn * cfn_link (s_cfn *cfn);
 s_cfn * cfn_prep_cif (s_cfn *cfn);
 
