@@ -1,0 +1,9 @@
+GET http://kc3-lang.org/
+GET http://kc3-lang.org/test.txt
+GET http://kc3-lang.org/test.html
+GET http://kc3-lang.org/release
+GET http://kc3-lang.org/release/
+GET http://kc3-lang.org/doc
+GET http://kc3-lang.org/doc/
+GET http://kc3-lang.org/doc/1_KC3
+GET http://kc3-lang.org/doc/1_KC3/
