@@ -19,9 +19,22 @@ debug: assets
 run: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
 
-VEGETA_RATE = 10
+VEGETA_RATES = 10 20
 
-vegeta:
-	vegeta attack -rate=${VEGETA_RATE} -duration=20s < vegeta-targets.txt | tee vegeta-result.rate\=${VEGETA_RATE}.bin | vegeta plot > vegeta-result.rate\=${VEGETA_RATE}.html
+vegeta_local:
+	for RATE in ${VEGETA_RATES}; do \
+		vegeta attack -rate=$$RATE -duration=20s < \
+			vegeta-targets.local.txt | \
+		tee vegeta-result.rate$$RATE.local.bin | \
+		vegeta plot > vegeta-result.rate$$RATE.local.html; \
+	done
+
+vegeta_production:
+	for RATE in ${VEGETA_RATES}; do \
+		vegeta attack -rate=$$RATE -duration=20s < \
+			vegeta-targets.production.txt | \
+		tee vegeta-result.rate$$RATE.production.bin | \
+		vegeta plot > vegeta-result.rate$$RATE.production.html; \
+	done
 
 .PHONY: assets asan cov debug main run
