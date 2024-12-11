@@ -22,6 +22,8 @@ GtkWidget ** kc3_gtk4_window_new (GtkWidget **window);
 
 /* Operators. */
 void kc3_gtk4_window_present (GtkWindow **window);
+void kc3_gtk4_window_set_child (GtkWindow **window,
+                                GtkWidget **child);
 void kc3_gtk4_window_set_title (GtkWindow **window, const s_str *title);
 void kc3_gtk4_set_default_size(GtkWindow **window, uw width, uw height);
 

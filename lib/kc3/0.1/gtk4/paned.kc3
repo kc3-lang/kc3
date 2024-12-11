@@ -1,0 +1,5 @@
+defmodule Gtk4.Paned do
+
+  def new = cfn Ptr "kc3_gtk3_paned_new" (Result)
+
+end

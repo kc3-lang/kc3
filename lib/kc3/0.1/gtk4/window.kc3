@@ -9,6 +9,8 @@ defmodule Gtk4.Window do
 
   def present = cfn Void "kc3_gtk4_window_present" (Ptr)
 
+  def set_child = cfn Void "kc3_gtk4_window_set_child" (Ptr, Ptr)
+
   def set_title = cfn Void "kc3_gtk4_window_set_title" (Ptr, Str)
 
 end

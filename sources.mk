@@ -144,6 +144,8 @@ KC3_C_SOURCES = \
 	"gtk4/kc3_glib.c" \
 	"gtk4/kc3_glib.h" \
 	"gtk4/kc3_gtk4.h" \
+	"gtk4/paned.c" \
+	"gtk4/paned.h" \
 	"gtk4/types.h" \
 	"gtk4/window.c" \
 	"gtk4/window.h" \
@@ -1076,6 +1078,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/vec3.kc3" \
 	"lib/kc3/0.1/gl/vertex.kc3" \
 	"lib/kc3/0.1/gtk4.kc3" \
+	"lib/kc3/0.1/gtk4/paned.kc3" \
 	"lib/kc3/0.1/gtk4/widget.kc3" \
 	"lib/kc3/0.1/gtk4/window.kc3" \
 	"lib/kc3/0.1/html.kc3" \

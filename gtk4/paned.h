@@ -10,14 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef KC3_GLIB_H
-#define KC3_GLIB_H
+#ifndef KC3_GTK4_PANED_H
+#define KC3_GTK4_PANED_H
 
 #include "types.h"
 
-extern bool g_kc3_g_main_stop;
+/* Heap-allocation functions. */
+GtkWidget ** kc3_gtk4_paned_new (GtkWidget **ptr,
+                                 const s_sym * const *orientation);
 
-void   kc3_g_main (void);
-bool * kc3_g_main_context_iteration (bool *dest);
-
-#endif /* KC3_GLIB_H */
+#endif /* KC3_GTK4_PANED_H */

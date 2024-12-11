@@ -1,0 +1,8 @@
+defmodule Gtk4.Application do
+
+  def delete = cfn Void "kc3_gtk4_application_delete" (Ptr)
+
+  # new(name, id) -> app
+  def new = cfn Ptr "kc3_gtk4_application_new" (Str, Str, Result)
+
+end

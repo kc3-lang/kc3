@@ -12,6 +12,19 @@
  */
 #include "window.h"
 
+void kc3_gtk4_window_set_default_size (GtkWindow **window, uw width,
+				       uw height)
+{
+  gtk_window_set_default_size(*window, width, height);
+}
+
+GtkWindow ** kc3_gtk4_window (GObject **ptr, GtkWindow **dest)
+{
+  if (! (*dest = GTK_WINDOW(*ptr)))
+    return NULL;
+  return dest;
+}
+
 void kc3_gtk4_window_destroy (GtkWindow **window)
 {
   gtk_window_destroy(*window);
@@ -29,13 +42,8 @@ void kc3_gtk4_window_present (GtkWindow **window)
   gtk_window_present(*window);
 }
 
-void kc3_gtk4_window_set_title (GtkWindow **window, const s_str *title)
+void kc3_gtk4_window_set_child (GtkWindow **window,
+                                GtkWidget **child)
 {
-  gtk_window_set_title(*window, title->ptr.pchar);
-}
-
-void kc3_gtk4_window_set_default_size (GtkWindow **window, uw width,
-				       uw height)
-{
-  gtk_window_set_default_size(*window, width, height);
+  gtk_window_set_child(*window, *child);
 }

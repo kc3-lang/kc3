@@ -1,0 +1,9 @@
+#!/usr/bin/env ikc3
+
+defmodule Kmsg do
+
+  require Gtk4
+
+  def main () {
+    app = Gtk4.Application.new("Kmsg", "io.kmx.kmsg")
+    status = Gtk4.Application.run(app, 

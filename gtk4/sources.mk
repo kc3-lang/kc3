@@ -2,10 +2,13 @@
 HEADERS = \
 	"kc3_glib.h" \
 	"kc3_gtk4.h" \
+	"paned.h" \
 	"types.h" \
 	"window.h" \
 
 SOURCES = \
+	"application.c" \
 	"kc3_glib.c" \
+	"paned.c" \
 	"window.c" \
 
