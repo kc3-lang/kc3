@@ -1,0 +1,8 @@
+defmodule Gtk4.ApplicationWindow do
+
+  # new(app) -> Gtk4.ApplicationWindow
+  def new = cfn Ptr "kc3_gtk4_application_window_new" (Ptr, Result)
+
+  def delete = cfn Void "kc3_gtk4_application_window_delete" (Ptr)
+
+end

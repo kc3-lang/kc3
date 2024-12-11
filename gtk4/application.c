@@ -20,7 +20,7 @@ void kc3_gtk4_application_delete (GtkApplication **app)
 
 s32 kc3_gtk4_application_run (GtkApplication **app)
 {
-  return g_application_run(G_APPLICATION(*app), g_kc3_env->argc,
+  return g_application_run(G_APPLICATION(*app), 1,
                            g_kc3_env->argv);
 }
 

@@ -10,16 +10,19 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef KC3_GLIB_H
-#define KC3_GLIB_H
+#include "application_window.h"
 
-#include "types.h"
+void kc3_gtk4_application_window_delete (GtkWindow **window)
+{
+  g_object_unref(G_OBJECT(*window));
+}
 
-extern bool g_kc3_g_main_stop;
-
-void   kc3_g_main (void);
-bool * kc3_g_main_context_iteration (bool *dest);
-void   kc3_g_signal_connect (GObject **instance, const s_str *signal,
-			     p_callable *callback);
-
-#endif /* KC3_GLIB_H */
+GtkWidget ** kc3_gtk4_application_window_new (GtkApplication **app,
+                                              GtkWidget **window)
+{
+  GtkWidget *tmp;
+  if (! (tmp = gtk_application_window_new(*app)))
+    return NULL;
+  *window = tmp;
+  return window;
+}

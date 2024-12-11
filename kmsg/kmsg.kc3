@@ -8,6 +8,8 @@ defmodule Kmsg do
     window = Gtk4.ApplicationWindow.new(app)
     Gtk4.Window.set_title(window, "Kmsg")
     Gtk4.Window.set_default_size(window, (Uw) 1080, (Uw) 720)
+    paned = Gtk4.Paned.new(:horizontal)
+    Gtk4.Window.set_child(window, paned)
     Gtk4.Window.present(window)
   }
 
@@ -15,7 +17,7 @@ defmodule Kmsg do
     puts("Kmsg.main: starting, please wait...")
     Gtk4.init()
     app = Gtk4.Application.new("Kmsg", "io.kmx.kmsg")
-    Gtk4.signal_connect(app, "activate", activate)
+    Gtk4.signal_connect(app, "activate", Kmsg.activate)
     status = Gtk4.Application.run(app)
     puts("Kmsg.main: exiting: #{inspect(status)}")
     Gtk4.Application.delete(app)

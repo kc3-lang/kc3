@@ -13,7 +13,7 @@
 all:
 	${MAKE} gen
 	${MAKE} -C libtommath all
-	${MAKE} -C ucd2c all
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 all
 	${MAKE} -C ikc3 all
 	${MAKE} -C kc3s all
@@ -54,7 +54,7 @@ assets:
 build:
 	${MAKE} gen
 	${MAKE} -C libtommath build
-	${MAKE} -C ucd2c build
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
@@ -299,6 +299,10 @@ gdb_ikc3_asan:
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 gdb_ikc3_asan
 
+gdb_kmsg:
+	${MAKE} kmsg_debug
+	${MAKE} -C kmsg gdb
+
 gdb_test:
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
@@ -419,7 +423,7 @@ gen:
 gtk4:
 	${MAKE} gen
 	${MAKE} -C libtommath build
-	${MAKE} -C ucd2c build
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
@@ -428,7 +432,7 @@ gtk4:
 gtk4_asan:
 	${MAKE} gen
 	${MAKE} -C libtommath asan
-	${MAKE} -C ucd2c asan
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C kc3s asan
@@ -437,7 +441,7 @@ gtk4_asan:
 gtk4_cov:
 	${MAKE} gen
 	${MAKE} -C libtommath cov
-	${MAKE} -C ucd2c cov
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C kc3s cov
@@ -446,7 +450,7 @@ gtk4_cov:
 gtk4_debug:
 	${MAKE} gen
 	${MAKE} -C libtommath debug
-	${MAKE} -C ucd2c debug
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
@@ -597,11 +601,21 @@ kc3.index: sources.mk Makefile
 kmsg:
 	${MAKE} gen
 	${MAKE} -C libtommath build
-	${MAKE} -C ucd2c build
+	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C kc3s build
 	${MAKE} -C gtk4 build
+	${MAKE} -C kmsg
+
+kmsg_debug:
+	${MAKE} gen
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C gtk4 debug
 	${MAKE} -C kmsg
 
 lib_links:
@@ -723,7 +737,7 @@ lldb_test:
 	${MAKE} -C test lldb_test
 
 markdown:
-	${MAKE} -C libtommath build
+	${MAKE} -C libtommath buildOA
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build

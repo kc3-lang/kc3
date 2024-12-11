@@ -1,5 +1,7 @@
 defmodule Gtk4.Paned do
 
-  def new = cfn Ptr "kc3_gtk3_paned_new" (Result)
+  # new(:horizontal)
+  # new(:vertical)
+  def new = cfn Ptr "kc3_gtk4_paned_new" (Result, Sym)
 
 end

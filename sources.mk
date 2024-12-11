@@ -141,6 +141,10 @@ KC3_C_SOURCES = \
 	"ekc3/types.h" \
 	"event/event.c" \
 	"event/event.h" \
+	"gtk4/application.c" \
+	"gtk4/application.h" \
+	"gtk4/application_window.c" \
+	"gtk4/application_window.h" \
 	"gtk4/kc3_glib.c" \
 	"gtk4/kc3_glib.h" \
 	"gtk4/kc3_gtk4.h" \
@@ -1078,6 +1082,8 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/vec3.kc3" \
 	"lib/kc3/0.1/gl/vertex.kc3" \
 	"lib/kc3/0.1/gtk4.kc3" \
+	"lib/kc3/0.1/gtk4/application.kc3" \
+	"lib/kc3/0.1/gtk4/application_window.kc3" \
 	"lib/kc3/0.1/gtk4/paned.kc3" \
 	"lib/kc3/0.1/gtk4/widget.kc3" \
 	"lib/kc3/0.1/gtk4/window.kc3" \

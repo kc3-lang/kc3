@@ -2,15 +2,18 @@ defmodule Gtk4.Window do
 
   dlopen(__DIR__ + "../gtk4.so")
 
-  def destroy = cfn Void "kc3_gtk4_window_destroy" (Ptr)
+  def delete = cfn Void "kc3_gtk4_window_destroy" (Ptr)
   
-  # Call destroy after use.
+  # Call delete after use.
   def new = cfn Ptr "kc3_gtk4_window_new" (Result)
 
+  # present(window)
   def present = cfn Void "kc3_gtk4_window_present" (Ptr)
 
+  # set_child(window, child)
   def set_child = cfn Void "kc3_gtk4_window_set_child" (Ptr, Ptr)
 
+  # set_title(window, child)
   def set_title = cfn Void "kc3_gtk4_window_set_title" (Ptr, Str)
 
   def set_default_size = cfn Void "kc3_gtk4_window_set_default_size" (Ptr, Uw, Uw)

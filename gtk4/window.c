@@ -47,3 +47,8 @@ void kc3_gtk4_window_set_child (GtkWindow **window,
 {
   gtk_window_set_child(*window, *child);
 }
+
+void kc3_gtk4_window_set_title (GtkWindow **window, const s_str *title)
+{
+  gtk_window_set_title(*window, title->ptr.pchar);
+}

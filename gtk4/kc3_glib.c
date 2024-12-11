@@ -15,6 +15,9 @@
 
 bool g_kc3_g_main_stop = false;
 
+static void kc3_g_signal_callback (GObject *object,
+                                   s_callable *callback);
+
 bool * kc3_g_main_context_iteration (bool *dest)
 {
   *dest = g_main_context_iteration(NULL, TRUE);
@@ -27,7 +30,8 @@ void kc3_g_main (void)
     g_main_context_iteration(NULL, TRUE);
 }
 
-void kc3_g_signal_callback (GObject *object, s_callable *callback)
+static void kc3_g_signal_callback (GObject *object,
+                                   s_callable *callback)
 {
   s_list *arguments;
   s_tag tag;
@@ -39,12 +43,12 @@ void kc3_g_signal_callback (GObject *object, s_callable *callback)
 }
 
 void kc3_g_signal_connect (GObject **instance, const s_str *signal,
-			   s_callable *callback)
+			   p_callable *callback)
 {
   assert(instance);
   assert(signal);
   assert(callback);
   g_signal_connect(*instance, signal->ptr.pchar,
 		   G_CALLBACK(kc3_g_signal_callback),
-		   callback);
+		   *callback);
 }
