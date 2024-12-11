@@ -14,10 +14,11 @@
 #include <libkc3/sym.h>
 #include "paned.h"
 
-GtkWidget ** kc3_gtk4_paned_new (GtkWidget **ptr,
-                                 const s_sym * const *orientation)
+GtkWidget ** kc3_gtk4_paned_new (const s_sym * const *orientation,
+                                 GtkWidget **dest)
 {
   GtkOrientation o;
+  GtkWidget *tmp;
   if (*orientation == sym_1("horizontal"))
     o = GTK_ORIENTATION_HORIZONTAL;
   else if (*orientation == sym_1("vertical"))
@@ -29,7 +30,44 @@ GtkWidget ** kc3_gtk4_paned_new (GtkWidget **ptr,
              " :horizontal or :vertical."));
     return NULL;
   }
-  if (! (*ptr = gtk_paned_new(o)))
+  if (! (tmp = gtk_paned_new(o)))
     return NULL;
-  return ptr;
+  *dest = tmp;
+  return dest;
+}
+
+void kc3_gtk4_paned_set_end_child (GtkPaned **paned,
+                                   GtkWidget **child)
+{
+  gtk_paned_set_end_child(GTK_PANED(*paned), GTK_WIDGET(*child));
+}
+
+void kc3_gtk4_paned_set_resize_end_child (GtkPaned **paned,
+                                            bool value)
+{
+  gtk_paned_set_resize_end_child(GTK_PANED(*paned), value);
+}
+
+void kc3_gtk4_paned_set_shrink_end_child (GtkPaned **paned,
+                                            bool value)
+{
+  gtk_paned_set_shrink_end_child(GTK_PANED(*paned), value);
+}
+
+void kc3_gtk4_paned_set_resize_start_child (GtkPaned **paned,
+                                            bool value)
+{
+  gtk_paned_set_resize_start_child(GTK_PANED(*paned), value);
+}
+
+void kc3_gtk4_paned_set_shrink_start_child (GtkPaned **paned,
+                                            bool value)
+{
+  gtk_paned_set_shrink_start_child(GTK_PANED(*paned), value);
+}
+
+void kc3_gtk4_paned_set_start_child (GtkPaned **paned,
+                                     GtkWidget **child)
+{
+  gtk_paned_set_end_child(GTK_PANED(*paned), GTK_WIDGET(*child));
 }

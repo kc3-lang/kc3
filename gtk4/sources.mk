@@ -6,6 +6,7 @@ HEADERS = \
 	"kc3_glib.h" \
 	"kc3_gtk4.h" \
 	"paned.h" \
+	"text.h" \
 	"types.h" \
 	"window.h" \
 
@@ -15,5 +16,6 @@ SOURCES = \
 	"entry_buffer.c" \
 	"kc3_glib.c" \
 	"paned.c" \
+	"text.c" \
 	"window.c" \
 

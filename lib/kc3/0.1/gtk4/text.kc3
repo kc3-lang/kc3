@@ -1,0 +1,8 @@
+defmodule Gtk4.Text do
+
+  def new = cfn Ptr "kc3_gtk4_text_new" (Result)
+
+  def new_with_buffer = cfn Ptr "kc3_gtk4_text_new_with_buffer" (Ptr,
+    Result)
+
+end

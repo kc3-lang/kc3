@@ -1,0 +1,7 @@
+defmodule Gtk4.EntryBuffer do
+
+  def new = cfn Ptr "kc3_gtk4_entry_buffer_new" (Str, Result)
+
+  def set_text = cfn Void "kc3_gtk4_entry_buffer_set_text" (Ptr, Str)
+
+end
