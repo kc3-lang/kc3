@@ -300,7 +300,13 @@ gdb_ikc3_asan:
 	${MAKE} -C ikc3 gdb_ikc3_asan
 
 gdb_kmsg:
-	${MAKE} kmsg_debug
+	${MAKE} gen
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C gtk4 debug
 	${MAKE} -C kmsg gdb
 
 gdb_test:
