@@ -34,3 +34,8 @@ void kc3_gtk4_window_set_title (GtkWindow **window, const s_str *title)
   gtk_window_set_title(*window, title->ptr.pchar);
 }
 
+void kc3_gtk4_window_set_default_size (GtkWindow **window, uw width,
+				       uw height)
+{
+  gtk_window_set_default_size(*window, width, height);
+}
