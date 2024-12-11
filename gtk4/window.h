@@ -17,10 +17,11 @@
 
 /* Heap-allocation functions, call kc3_gtk4_window_destroy
    after use. */
-void         kc3_gtk4_window_destroy (GtkWindow **ptr);
-GtkWidget ** kc3_gtk4_window_new (GtkWidget **ptr);
+void         kc3_gtk4_window_destroy (GtkWindow **window);
+GtkWidget ** kc3_gtk4_window_new (GtkWidget **window);
 
 /* Operators. */
-void kc3_gtk4_window_present (GtkWindow **ptr);
+void kc3_gtk4_window_present (GtkWindow **window);
+void kc3_gtk4_window_set_title (GtkWindow **window, const s_str *title);
 
 #endif /* KC3_GTK4_WINDOW_H */

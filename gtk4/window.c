@@ -12,19 +12,25 @@
  */
 #include "window.h"
 
-void kc3_gtk4_window_destroy (GtkWindow **ptr)
+void kc3_gtk4_window_destroy (GtkWindow **window)
 {
-  gtk_window_destroy(*ptr);
+  gtk_window_destroy(*window);
 }
 
-GtkWidget ** kc3_gtk4_window_new (GtkWidget **ptr)
+GtkWidget ** kc3_gtk4_window_new (GtkWidget **window)
 {
-  if (! (*ptr = gtk_window_new()))
+  if (! (*window = gtk_window_new()))
     return NULL;
-  return ptr;
+  return window;
 }
 
-void kc3_gtk4_window_present (GtkWindow **ptr)
+void kc3_gtk4_window_present (GtkWindow **window)
 {
-  gtk_window_present(*ptr);
+  gtk_window_present(*window);
 }
+
+void kc3_gtk4_window_set_title (GtkWindow **window, const s_str *title)
+{
+  gtk_window_set_title(*window, title->ptr.pchar);
+}
+

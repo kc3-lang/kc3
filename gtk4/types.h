@@ -14,5 +14,6 @@
 #define KC3_GTK4_TYPES_H
 
 #include <gtk/gtk.h>
+#include <libkc3/types.h>
 
 #endif /* KC3_GTK4_TYPES_H */
