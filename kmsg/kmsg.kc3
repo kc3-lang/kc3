@@ -17,7 +17,7 @@ defmodule Kmsg do
     eb2 = Gtk4.EntryBuffer.new("Test 2")
     text2 = Gtk4.Text.new_with_buffer(eb2)
     Gtk4.Paned.set_end_child(paned, text2)
-    Gtk4.Paned.set_resize_end_child(paned, true)
+    Gtk4.Paned.set_resize_end_child(paned, false)
     Gtk4.Paned.set_shrink_end_child(paned, false)
     Gtk4.Window.set_child(window, paned)
     Gtk4.Window.present(window)
