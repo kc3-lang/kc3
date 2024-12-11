@@ -5,4 +5,6 @@ defmodule Gtk4.Application do
   # new(name, id) -> app
   def new = cfn Ptr "kc3_gtk4_application_new" (Str, Str, Result)
 
+  def run = cfn S32 "kc3_gtk4_application_run" (Ptr)
+
 end

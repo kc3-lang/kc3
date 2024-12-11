@@ -6,4 +6,11 @@ defmodule Kmsg do
 
   def main () {
     app = Gtk4.Application.new("Kmsg", "io.kmx.kmsg")
-    status = Gtk4.Application.run(app, 
+    
+    status = Gtk4.Application.run(app)
+    Gtk4.Application.delete(app)
+  }
+
+end
+
+main()

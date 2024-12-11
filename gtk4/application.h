@@ -23,6 +23,6 @@ GtkApplication ** kc3_gtk4_application_new (const s_str *name,
                                             GtkApplication **dest);
 
 /* Operators. */
-sw application_run (GtkApplication **app);
+s32 kc3_gtk4_application_run (GtkApplication **app);
 
 #endif /* KC3_GTK4_APPLICATION_H */
