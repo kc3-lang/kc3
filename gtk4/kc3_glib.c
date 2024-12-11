@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <libkc3/kc3.h>
 #include "kc3_glib.h"
 
 bool g_kc3_g_main_stop = false;
@@ -24,4 +25,26 @@ void kc3_g_main (void)
 {
   while (! g_kc3_g_main_stop)
     g_main_context_iteration(NULL, TRUE);
+}
+
+void kc3_g_signal_callback (GObject *object, s_callable *callback)
+{
+  s_list *arguments;
+  s_tag tag;
+  if (! (arguments = list_new_ptr(object, NULL)))
+    return;
+  eval_callable_call(callback, arguments, &tag);
+  tag_clean(&tag);
+  list_delete_all(arguments);
+}
+
+void kc3_g_signal_connect (GObject **instance, const s_str *signal,
+			   s_callable *callback)
+{
+  assert(instance);
+  assert(signal);
+  assert(callback);
+  g_signal_connect(*instance, signal->ptr.pchar,
+		   G_CALLBACK(kc3_g_signal_callback),
+		   callback);
 }

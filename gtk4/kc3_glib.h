@@ -19,5 +19,7 @@ extern bool g_kc3_g_main_stop;
 
 void   kc3_g_main (void);
 bool * kc3_g_main_context_iteration (bool *dest);
+void   kc3_g_signal_connect (GObject **instance, const s_str *signal,
+			     s_callable *callback);
 
 #endif /* KC3_GLIB_H */
