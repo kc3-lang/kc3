@@ -13,4 +13,6 @@ defmodule Gtk4.Window do
 
   def set_title = cfn Void "kc3_gtk4_window_set_title" (Ptr, Str)
 
+  def set_default_size = cfn Void "kc3_gtk4_window_set_default_size" (Ptr, Uw, Uw)
+
 end
