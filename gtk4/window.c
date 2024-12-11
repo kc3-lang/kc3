@@ -15,7 +15,7 @@
 void kc3_gtk4_window_set_default_size (GtkWindow **window, uw width,
 				       uw height)
 {
-  gtk_window_set_default_size(*window, width, height);
+  gtk_window_set_default_size(GTK_WINDOW(*window), width, height);
 }
 
 GtkWindow ** kc3_gtk4_window (GObject **ptr, GtkWindow **dest)
@@ -27,7 +27,7 @@ GtkWindow ** kc3_gtk4_window (GObject **ptr, GtkWindow **dest)
 
 void kc3_gtk4_window_destroy (GtkWindow **window)
 {
-  gtk_window_destroy(*window);
+  gtk_window_destroy(GTK_WINDOW(*window));
 }
 
 GtkWidget ** kc3_gtk4_window_new (GtkWidget **window)
@@ -39,16 +39,16 @@ GtkWidget ** kc3_gtk4_window_new (GtkWidget **window)
 
 void kc3_gtk4_window_present (GtkWindow **window)
 {
-  gtk_window_present(*window);
+  gtk_window_present(GTK_WINDOW(*window));
 }
 
 void kc3_gtk4_window_set_child (GtkWindow **window,
                                 GtkWidget **child)
 {
-  gtk_window_set_child(*window, *child);
+  gtk_window_set_child(GTK_WINDOW(*window), GTK_WIDGET(*child));
 }
 
 void kc3_gtk4_window_set_title (GtkWindow **window, const s_str *title)
 {
-  gtk_window_set_title(*window, title->ptr.pchar);
+  gtk_window_set_title(GTK_WINDOW(*window), title->ptr.pchar);
 }
