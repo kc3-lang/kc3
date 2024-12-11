@@ -145,6 +145,8 @@ KC3_C_SOURCES = \
 	"gtk4/application.h" \
 	"gtk4/application_window.c" \
 	"gtk4/application_window.h" \
+	"gtk4/entry_buffer.c" \
+	"gtk4/entry_buffer.h" \
 	"gtk4/kc3_glib.c" \
 	"gtk4/kc3_glib.h" \
 	"gtk4/kc3_gtk4.h" \
