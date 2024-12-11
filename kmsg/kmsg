@@ -4,21 +4,23 @@ defmodule Kmsg do
 
   require Gtk4
 
-  def activate (app) {
+  def activate = fn (app) {
     window = Gtk4.ApplicationWindow.new(app)
     Gtk4.Window.set_title(window, "Kmsg")
     Gtk4.Window.set_default_size(window, (Uw) 1080, (Uw) 720)
     Gtk4.Window.present(window)
   }
 
-  def main () {
+  def main = fn () {
+    puts("Kmsg.main: starting, please wait...")
     Gtk4.init()
     app = Gtk4.Application.new("Kmsg", "io.kmx.kmsg")
     Gtk4.signal_connect(app, "activate", activate)
     status = Gtk4.Application.run(app)
+    puts("Kmsg.main: exiting: #{inspect(status)}")
     Gtk4.Application.delete(app)
   }
 
 end
 
-main()
+Kmsg.main()
