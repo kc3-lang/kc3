@@ -19,6 +19,8 @@ debug: assets
 run: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
 
+test: vegeta_local
+
 VEGETA_RATES = 10 20
 
 vegeta_local:
@@ -37,4 +39,4 @@ vegeta_production:
 		vegeta plot > vegeta-result.rate$$RATE.production.html; \
 	done
 
-.PHONY: assets asan cov debug main run
+.PHONY: assets asan cov debug main run test vegeta_local vegeta_production

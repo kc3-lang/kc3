@@ -594,6 +594,16 @@ kc3.index: sources.mk Makefile
 	sort -u < kc3.index.tmp > kc3.index
 	rm kc3.index.tmp
 
+kmsg:
+	${MAKE} gen
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c build
+	${MAKE} -C libkc3 build
+	${MAKE} -C ikc3 build
+	${MAKE} -C kc3s build
+	${MAKE} -C gtk4 build
+	${MAKE} -C kmsg
+
 lib_links:
 	${MAKE} lib_links_${ARCH}
 
@@ -1185,6 +1195,7 @@ test_socket_debug:
 	json_asan \
 	json_cov \
 	json_debug \
+	kmsg \
 	lib_links \
 	lib_links_asan \
 	lib_links_debug \
