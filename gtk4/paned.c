@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <libkc3/assert.h>
+#include <libkc3/s32.h>
 #include <libkc3/sym.h>
 #include "paned.h"
 
@@ -36,38 +37,58 @@ GtkWidget ** kc3_gtk4_paned_new (GtkWidget **dest,
   return dest;
 }
 
-void kc3_gtk4_paned_set_end_child (GtkPaned **paned,
-                                   GtkWidget **child)
+GtkPaned ** kc3_gtk4_paned_set_end_child (GtkPaned **paned,
+                                          GtkWidget **child)
 {
   gtk_paned_set_end_child(GTK_PANED(*paned), GTK_WIDGET(*child));
+  return paned;
 }
 
-void kc3_gtk4_paned_set_resize_end_child (GtkPaned **paned,
-                                            bool value)
+GtkPaned ** kc3_gtk4_paned_set_position (GtkPaned **paned,
+                                         s_tag *position)
+{
+  s32 p;
+  const s_sym *sym_S32;
+  if (! s32_init_cast(&p, &sym_S32, position)) {
+    err_puts("kc3_gtk4_paned_set_position: invalid position");
+    assert(! "kc3_gtk4_paned_set_position: invalid position");
+    return NULL;
+  }
+  gtk_paned_set_position(GTK_PANED(*paned), p);
+  return paned;
+}
+
+GtkPaned ** kc3_gtk4_paned_set_resize_end_child (GtkPaned **paned,
+                                                 bool value)
 {
   gtk_paned_set_resize_end_child(GTK_PANED(*paned), value);
+  return paned;
 }
 
-void kc3_gtk4_paned_set_shrink_end_child (GtkPaned **paned,
-                                            bool value)
+GtkPaned ** kc3_gtk4_paned_set_shrink_end_child (GtkPaned **paned,
+                                                 bool value)
 {
   gtk_paned_set_shrink_end_child(GTK_PANED(*paned), value);
+  return paned;
 }
 
-void kc3_gtk4_paned_set_resize_start_child (GtkPaned **paned,
-                                            bool value)
+GtkPaned ** kc3_gtk4_paned_set_resize_start_child (GtkPaned **paned,
+                                                   bool value)
 {
   gtk_paned_set_resize_start_child(GTK_PANED(*paned), value);
+  return paned;
 }
 
-void kc3_gtk4_paned_set_shrink_start_child (GtkPaned **paned,
-                                            bool value)
+GtkPaned ** kc3_gtk4_paned_set_shrink_start_child (GtkPaned **paned,
+                                                   bool value)
 {
   gtk_paned_set_shrink_start_child(GTK_PANED(*paned), value);
+  return paned;
 }
 
-void kc3_gtk4_paned_set_start_child (GtkPaned **paned,
-                                     GtkWidget **child)
+GtkPaned ** kc3_gtk4_paned_set_start_child (GtkPaned **paned,
+                                            GtkWidget **child)
 {
   gtk_paned_set_end_child(GTK_PANED(*paned), GTK_WIDGET(*child));
+  return paned;
 }

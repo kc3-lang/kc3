@@ -2,6 +2,8 @@ defmodule Gtk4.Widget do
 
   dlopen(__DIR__ + "../gtk4.so")
 
-  # deftype Ptr
+  def set_halign = cfn Ptr "kc3_gtk4_widget_set_halign" (Ptr, Sym)
+
+  def set_size_request = cfn Ptr "kc3_gtk4_widget_set_size_request" (Ptr, Tag, Tag)
 
 end

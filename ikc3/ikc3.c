@@ -146,6 +146,11 @@ int main (int argc, char **argv)
       argc -= 2;
       argv += 2;
     }
+    else if (argc > 0 && ! strcmp("--trace", *argv)) {
+      g_kc3_env->trace = true;
+      argc--;
+      argv++;
+    }
     else if (argc == 1 && ! strcmp("--quit", *argv)) {
       r = 0;
       goto clean;

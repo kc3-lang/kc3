@@ -20,13 +20,13 @@ GtkWidget ** kc3_gtk4_paned_new (GtkWidget **widget,
                                  const s_sym * const *orientation);
 
 /* Operators. */
-void kc3_gtk4_paned_set_end_child (GtkPaned **paned,
-                                   GtkWidget **child);
-void kc3_gtk4_paned_set_resize_start_child (GtkPaned **paned,
-                                            bool value);
-void kc3_gtk4_paned_set_shrink_start_child (GtkPaned **paned,
-                                            bool value);
-void kc3_gtk4_paned_set_start_child (GtkPaned **paned,
-                                     GtkWidget **child);
+GtkPaned ** kc3_gtk4_paned_set_end_child (GtkPaned **paned,
+                                          GtkWidget **child);
+GtkPaned ** kc3_gtk4_paned_set_resize_start_child (GtkPaned **paned,
+                                                   bool value);
+GtkPaned ** kc3_gtk4_paned_set_shrink_start_child (GtkPaned **paned,
+                                                   bool value);
+GtkPaned ** kc3_gtk4_paned_set_start_child (GtkPaned **paned,
+                                            GtkWidget **child);
 
 #endif /* KC3_GTK4_PANED_H */
