@@ -431,11 +431,11 @@ s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
       }
     }
     tag_clean(&cond_eval);
-  }
-  if (cond_bool) {
-    if (! env_eval_tag(g_kc3_env, then, dest))
-      return NULL;
-    return dest;
+    if (cond_bool) {
+      if (! env_eval_tag(g_kc3_env, then, dest))
+        return NULL;
+      return dest;
+    }
   }
   if (! env_eval_tag(g_kc3_env, else_, dest))
     return NULL;
