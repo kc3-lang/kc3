@@ -8,7 +8,10 @@ defmodule Kmsg do
     window = Gtk4.ApplicationWindow.new(app)
     Gtk4.Window.set_title(window, "Kmsg")
     Gtk4.Window.set_default_size(window, (Uw) 640, (Uw) 480)
-    #paned = Gtk4.Paned.new(:horizontal)
+    paned = Gtk4.Paned.new(:horizontal)
+    frame1 = Gtk4.Frame.new()
+    frame2 = Gtk4.Frame.new()
+    Gtk4.Widget.set_size_request(paned, 200, -1);
     eb1 = Gtk4.EntryBuffer.new("Test 1")
     text1 = Gtk4.Text.new_with_buffer(eb1)
     ##Gtk4.Widget.set_size_request(text1, -1, -1)
