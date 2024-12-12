@@ -19,11 +19,16 @@ void kc3_gtk4_frame_delete (GtkFrame **frame)
   g_object_unref(*frame);
 }
 
-GtkWidget ** kc3_gtk4_frame_new (GtkWidget **dest)
+GtkWidget ** kc3_gtk4_frame_new (GtkWidget **dest, const s_str *label)
 {
+  const char *l;
   GtkWidget *tmp;
-  if (! (tmp = gtk_frame_new(NULL)))
+  l = (label && label->size) ? label->ptr.pchar : NULL;
+  if (! (tmp = gtk_frame_new(l))) {
+    err_puts("kc3_gtk4_frame_new: error");
+    assert(! "kc3_gtk4_frame_new: error");
     return NULL;
+  }
   *dest = tmp;
   return dest;
 }

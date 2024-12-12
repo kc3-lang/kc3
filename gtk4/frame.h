@@ -18,7 +18,7 @@
 /* Heap-allocation functions, call kc3_gtk4_frame_delete
    after use. */
 void         kc3_gtk4_frame_delete (GtkFrame **app);
-GtkWidget ** kc3_gtk4_frame_new (GtkWidget **dest);
+GtkWidget ** kc3_gtk4_frame_new (GtkWidget **dest, const s_str *label);
 
 /* Operators. */
 

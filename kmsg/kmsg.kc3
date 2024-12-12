@@ -3,25 +3,31 @@
 defmodule Kmsg do
 
   require Gtk4
+  require Gtk4.Application
+  require Gtk4.ApplicationWindow
+  require Gtk4.Frame
+  require Gtk4.Paned
+  require Gtk4.Widget
+  require Gtk4.Window
 
   def activate = fn (app) {
     window = Gtk4.ApplicationWindow.new(app)
     Gtk4.Window.set_title(window, "Kmsg")
     Gtk4.Window.set_default_size(window, (Uw) 640, (Uw) 480)
     paned = Gtk4.Paned.new(:horizontal)
-    Gtk4.Widget.set_size_request(paned, 200, -1);
+    Gtk4.Widget.set_size_request(paned, 200, 200);
     frame1 = Gtk4.Frame.new("Frame 1")
     Gtk4.Paned.set_start_child(paned, frame1)
     Gtk4.Paned.set_resize_start_child(paned, true)
     Gtk4.Paned.set_shrink_start_child(paned, false)
-    Gtk4.Widget.set_size_request(frame1, 50, -1)
-    frame2 = Gtk4.Frame.new("Frame 2" )
+    Gtk4.Widget.set_size_request(frame1, 50, 50)
+    frame2 = Gtk4.Frame.new("Frame 2")
     Gtk4.Paned.set_end_child(paned, frame2)
     Gtk4.Paned.set_resize_end_child(paned, false)
     Gtk4.Paned.set_shrink_end_child(paned, false)
-    Gtk4.Widget.set_size_request(frame2, 50, -1)
-    Gtk4.Paned.set_position(paned, 192);
+    Gtk4.Widget.set_size_request(frame2, 50, 50)
     Gtk4.Window.set_child(window, paned)
+    Gtk4.Paned.set_position(paned, 240);
     Gtk4.Window.present(window)
   }
 
@@ -33,6 +39,7 @@ defmodule Kmsg do
     status = Gtk4.Application.run(app)
     puts("Kmsg.main: exiting: #{inspect(status)}")
     Gtk4.Application.delete(app)
+    status
   }
 
 end

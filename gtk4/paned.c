@@ -89,6 +89,6 @@ GtkPaned ** kc3_gtk4_paned_set_shrink_start_child (GtkPaned **paned,
 GtkPaned ** kc3_gtk4_paned_set_start_child (GtkPaned **paned,
                                             GtkWidget **child)
 {
-  gtk_paned_set_end_child(GTK_PANED(*paned), GTK_WIDGET(*child));
+  gtk_paned_set_start_child(GTK_PANED(*paned), GTK_WIDGET(*child));
   return paned;
 }

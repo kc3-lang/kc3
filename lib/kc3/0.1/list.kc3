@@ -32,6 +32,8 @@ defmodule List do
     end
   }
 
+  def first = fn ([a | _]) { a }
+
   def has? = cfn Bool "list_has" (List, Tag, Result)
 
   def join = fn {
