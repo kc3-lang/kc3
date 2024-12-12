@@ -22,6 +22,8 @@ GtkWidget ** kc3_gtk4_paned_new (GtkWidget **widget,
 /* Operators. */
 GtkPaned ** kc3_gtk4_paned_set_end_child (GtkPaned **paned,
                                           GtkWidget **child);
+GtkPaned ** kc3_gtk4_paned_set_position (GtkPaned **paned,
+                                         s_tag *position);
 GtkPaned ** kc3_gtk4_paned_set_resize_start_child (GtkPaned **paned,
                                                    bool value);
 GtkPaned ** kc3_gtk4_paned_set_shrink_start_child (GtkPaned **paned,

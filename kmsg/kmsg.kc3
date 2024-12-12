@@ -11,15 +11,16 @@ defmodule Kmsg do
     paned = Gtk4.Paned.new(:horizontal)
     Gtk4.Widget.set_size_request(paned, 200, -1);
     frame1 = Gtk4.Frame.new("Frame 1")
-    Gtk4.Widget.set_size_request(frame1, 50, -1)
     Gtk4.Paned.set_start_child(paned, frame1)
     Gtk4.Paned.set_resize_start_child(paned, true)
     Gtk4.Paned.set_shrink_start_child(paned, false)
+    Gtk4.Widget.set_size_request(frame1, 50, -1)
     frame2 = Gtk4.Frame.new("Frame 2" )
-    Gtk4.Widget.set_size_request(frame2, 50, -1)
     Gtk4.Paned.set_end_child(paned, frame2)
     Gtk4.Paned.set_resize_end_child(paned, false)
     Gtk4.Paned.set_shrink_end_child(paned, false)
+    Gtk4.Widget.set_size_request(frame2, 50, -1)
+    Gtk4.Paned.set_position(paned, 192);
     Gtk4.Window.set_child(window, paned)
     Gtk4.Window.present(window)
   }
