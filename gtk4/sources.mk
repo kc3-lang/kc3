@@ -9,6 +9,7 @@ HEADERS = \
 	"paned.h" \
 	"text.h" \
 	"types.h" \
+	"widget.h" \
 	"window.h" \
 
 SOURCES = \
@@ -19,5 +20,6 @@ SOURCES = \
 	"kc3_glib.c" \
 	"paned.c" \
 	"text.c" \
+	"widget.c" \
 	"window.c" \
 

@@ -147,12 +147,18 @@ KC3_C_SOURCES = \
 	"gtk4/application_window.h" \
 	"gtk4/entry_buffer.c" \
 	"gtk4/entry_buffer.h" \
+	"gtk4/frame.c" \
+	"gtk4/frame.h" \
 	"gtk4/kc3_glib.c" \
 	"gtk4/kc3_glib.h" \
 	"gtk4/kc3_gtk4.h" \
 	"gtk4/paned.c" \
 	"gtk4/paned.h" \
+	"gtk4/text.c" \
+	"gtk4/text.h" \
 	"gtk4/types.h" \
+	"gtk4/widget.c" \
+	"gtk4/widget.h" \
 	"gtk4/window.c" \
 	"gtk4/window.h" \
 	"http/http.c" \
@@ -1086,7 +1092,10 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gtk4.kc3" \
 	"lib/kc3/0.1/gtk4/application.kc3" \
 	"lib/kc3/0.1/gtk4/application_window.kc3" \
+	"lib/kc3/0.1/gtk4/entry_buffer.kc3" \
+	"lib/kc3/0.1/gtk4/frame.kc3" \
 	"lib/kc3/0.1/gtk4/paned.kc3" \
+	"lib/kc3/0.1/gtk4/text.kc3" \
 	"lib/kc3/0.1/gtk4/widget.kc3" \
 	"lib/kc3/0.1/gtk4/window.kc3" \
 	"lib/kc3/0.1/html.kc3" \
