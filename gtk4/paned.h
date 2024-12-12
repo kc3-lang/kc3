@@ -16,8 +16,8 @@
 #include "types.h"
 
 /* Heap-allocation functions. */
-GtkWidget ** kc3_gtk4_paned_new (const s_sym * const *orientation,
-                                 GtkWidget **dest);
+GtkWidget ** kc3_gtk4_paned_new (GtkWidget **widget,
+                                 const s_sym * const *orientation);
 
 /* Operators. */
 void kc3_gtk4_paned_set_end_child (GtkPaned **paned,

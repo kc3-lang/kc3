@@ -1,0 +1,5 @@
+defmodule Gtk4.Frame do
+
+  def new = cfn Ptr "kc3_gtk4_frame_new" (Result, Str)
+
+end

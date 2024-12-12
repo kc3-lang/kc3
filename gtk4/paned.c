@@ -14,8 +14,8 @@
 #include <libkc3/sym.h>
 #include "paned.h"
 
-GtkWidget ** kc3_gtk4_paned_new (const s_sym * const *orientation,
-                                 GtkWidget **dest)
+GtkWidget ** kc3_gtk4_paned_new (GtkWidget **dest,
+                                 const s_sym * const *orientation)
 {
   GtkOrientation o;
   GtkWidget *tmp;

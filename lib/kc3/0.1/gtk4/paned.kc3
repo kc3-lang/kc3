@@ -2,7 +2,7 @@ defmodule Gtk4.Paned do
 
   # new(:horizontal)
   # new(:vertical)
-  def new = cfn Ptr "kc3_gtk4_paned_new" (Sym, Result)
+  def new = cfn Ptr "kc3_gtk4_paned_new" (Result, Sym)
 
   # set_end_child(paned, child)
   def set_end_child = cfn Void "kc3_gtk4_paned_set_end_child" (Ptr,

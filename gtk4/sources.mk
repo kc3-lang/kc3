@@ -3,6 +3,7 @@ HEADERS = \
 	"application.h" \
 	"application_window.h" \
 	"entry_buffer.h" \
+	"frame.h" \
 	"kc3_glib.h" \
 	"kc3_gtk4.h" \
 	"paned.h" \
@@ -14,6 +15,7 @@ SOURCES = \
 	"application.c" \
 	"application_window.c" \
 	"entry_buffer.c" \
+	"frame.c" \
 	"kc3_glib.c" \
 	"paned.c" \
 	"text.c" \
