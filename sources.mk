@@ -145,6 +145,10 @@ KC3_C_SOURCES = \
 	"gtk4/application.h" \
 	"gtk4/application_window.c" \
 	"gtk4/application_window.h" \
+	"gtk4/box.c" \
+	"gtk4/box.h" \
+	"gtk4/button.c" \
+	"gtk4/button.h" \
 	"gtk4/entry_buffer.c" \
 	"gtk4/entry_buffer.h" \
 	"gtk4/frame.c" \
@@ -1092,6 +1096,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gtk4.kc3" \
 	"lib/kc3/0.1/gtk4/application.kc3" \
 	"lib/kc3/0.1/gtk4/application_window.kc3" \
+	"lib/kc3/0.1/gtk4/button.kc3" \
 	"lib/kc3/0.1/gtk4/entry_buffer.kc3" \
 	"lib/kc3/0.1/gtk4/frame.kc3" \
 	"lib/kc3/0.1/gtk4/paned.kc3" \

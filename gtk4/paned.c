@@ -48,7 +48,7 @@ GtkPaned ** kc3_gtk4_paned_set_position (GtkPaned **paned,
                                          s_tag *position)
 {
   s32 p;
-  const s_sym *sym_S32;
+  const s_sym *sym_S32 = &g_sym_S32;
   if (! s32_init_cast(&p, &sym_S32, position)) {
     err_puts("kc3_gtk4_paned_set_position: invalid position");
     assert(! "kc3_gtk4_paned_set_position: invalid position");

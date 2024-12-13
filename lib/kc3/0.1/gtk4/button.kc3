@@ -1,0 +1,5 @@
+defmodule Gtk4.Button do
+
+  def new = cfn Ptr "kc3_gtk4_button_new" (Result)
+
+end
