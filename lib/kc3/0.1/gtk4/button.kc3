@@ -2,4 +2,7 @@ defmodule Gtk4.Button do
 
   def new = cfn Ptr "kc3_gtk4_button_new" (Result)
 
+  def new_with_label = cfn Ptr "kc3_gtk4_button_new_with_label" (Result,
+    Str)
+
 end

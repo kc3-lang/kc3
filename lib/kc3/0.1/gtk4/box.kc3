@@ -1,0 +1,8 @@
+defmodule Gtk4.Box do
+
+  # new(orientation, spacing) => widget
+  def new = cfn Ptr "kc3_gtk4_box_new" (Result, Sym, Tag)
+
+  def append = cfn Void "kc3_gtk4_box_append" (Ptr, Ptr)
+
+end

@@ -1096,6 +1096,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gtk4.kc3" \
 	"lib/kc3/0.1/gtk4/application.kc3" \
 	"lib/kc3/0.1/gtk4/application_window.kc3" \
+	"lib/kc3/0.1/gtk4/box.kc3" \
 	"lib/kc3/0.1/gtk4/button.kc3" \
 	"lib/kc3/0.1/gtk4/entry_buffer.kc3" \
 	"lib/kc3/0.1/gtk4/frame.kc3" \

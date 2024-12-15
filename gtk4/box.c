@@ -15,9 +15,14 @@
 #include <libkc3/sym.h>
 #include "box.h"
 
-GtkWidget ** kc3_gtk4_box_new (GtkWidget ** dest,
-			     const s_sym * const *orientation,
-			     s_tag *spacing)
+void kc3_gtk4_box_append (GtkBox **box, GtkWidget **child)
+{
+  gtk_box_append(*box, *child);
+}
+
+GtkWidget ** kc3_gtk4_box_new (GtkWidget **dest,
+                               const s_sym * const *orientation,
+                               s_tag *spacing)
 {
   GtkOrientation o;
   s32 s;
@@ -44,4 +49,3 @@ GtkWidget ** kc3_gtk4_box_new (GtkWidget ** dest,
   *dest = tmp;
   return dest;
 }
-

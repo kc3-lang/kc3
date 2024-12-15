@@ -15,6 +15,9 @@
 
 #include "types.h"
 
+/* Heap-allocation functions. */
 GtkWidget ** kc3_gtk4_button_new (GtkWidget ** dest);
-
+GtkWidget ** kc3_gtk4_button_new_with_label (GtkWidget **dest,
+                                             s_str *label);
+                                 
 #endif /* KC3_GTK4_BUTTON_H */

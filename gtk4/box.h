@@ -15,8 +15,12 @@
 
 #include "types.h"
 
-GtkWidget ** kc3_gtk4_box_new (GtkWidget ** dest,
-			       const s_sym * const *orientation ,
+/* Heap-allocation functions. */
+GtkWidget ** kc3_gtk4_box_new (GtkWidget **dest,
+			       const s_sym * const *orientation,
 			       s_tag *spacing);
+
+/* Operators. */
+void kc3_gtk4_box_append (GtkBox **box, GtkWidget **child);
 
 #endif /* KC3_GTK4_BOX_H */
