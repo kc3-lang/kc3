@@ -109,6 +109,11 @@ int main (int argc, char **argv)
         r = 1;
         goto clean;
       }
+      if (g_kc3_env->trace) {
+        err_write_1("ikc3: load: ");
+        err_write_1(argv[1]);
+        err_write_1("\n");
+      }
       fp = file_open(argv[1], "rb");
       if (! fp) {
         e = errno;
