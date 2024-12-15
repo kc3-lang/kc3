@@ -43,6 +43,12 @@ GtkWidget ** kc3_gtk4_widget_set_halign (GtkWidget **widget,
   return widget;
 }
 
+void kc3_gtk4_widget_set_hexpand (GtkWidget **widget,
+                                  bool expand)
+{
+  gtk_widget_set_hexpand(*widget, expand);
+}
+
 GtkWidget ** kc3_gtk4_widget_set_size_request (GtkWidget **widget,
                                                const s_tag *width,
                                                const s_tag *height)
@@ -60,4 +66,10 @@ GtkWidget ** kc3_gtk4_widget_set_size_request (GtkWidget **widget,
   }
   gtk_widget_set_size_request(*widget, w, h);
   return widget;
+}
+
+void kc3_gtk4_widget_set_vexpand (GtkWidget **widget,
+                                  bool expand)
+{
+  gtk_widget_set_vexpand(*widget, expand);
 }

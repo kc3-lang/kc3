@@ -9,6 +9,7 @@ defmodule Kmsg do
   require Gtk4.Button
   require Gtk4.Frame
   require Gtk4.Paned
+  require Gtk4.TextView
   require Gtk4.Widget
   require Gtk4.Window
 
@@ -25,16 +26,20 @@ defmodule Kmsg do
     Gtk4.Widget.set_size_request(frame1, 50, 50)
     box1 = Gtk4.Box.new(:vertical, 0)
     frame2 = Gtk4.Frame.new("Frame 2")
+    Gtk4.Widget.set_vexpand(frame2, true)
     Gtk4.Paned.set_resize_end_child(paned, false)
     Gtk4.Paned.set_shrink_end_child(paned, false)
     Gtk4.Widget.set_size_request(frame2, 50, 50)
     Gtk4.Box.append(box1, frame2)
     box2 = Gtk4.Box.new(:horizontal, 0)
-    button = Gtk4.Button.new_with_label("Send")
-    Gtk4.Box.append(box2, button)
     Gtk4.Box.append(box1, box2)
     Gtk4.Paned.set_end_child(paned, box1)
     Gtk4.Window.set_child(window, paned)
+    text_view = Gtk4.TextView.new()
+    Gtk4.Widget.set_hexpand(text_view, true)
+    Gtk4.Box.append(box2, text_view)
+    button = Gtk4.Button.new_with_label("Send")
+    Gtk4.Box.append(box2, button)
     Gtk4.Paned.set_position(paned, 240);
     Gtk4.Window.present(window)
   }

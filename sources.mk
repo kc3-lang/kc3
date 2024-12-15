@@ -160,6 +160,8 @@ KC3_C_SOURCES = \
 	"gtk4/paned.h" \
 	"gtk4/text.c" \
 	"gtk4/text.h" \
+	"gtk4/text_view.c" \
+	"gtk4/text_view.h" \
 	"gtk4/types.h" \
 	"gtk4/widget.c" \
 	"gtk4/widget.h" \
@@ -1102,6 +1104,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gtk4/frame.kc3" \
 	"lib/kc3/0.1/gtk4/paned.kc3" \
 	"lib/kc3/0.1/gtk4/text.kc3" \
+	"lib/kc3/0.1/gtk4/text_view.kc3" \
 	"lib/kc3/0.1/gtk4/widget.kc3" \
 	"lib/kc3/0.1/gtk4/window.kc3" \
 	"lib/kc3/0.1/html.kc3" \

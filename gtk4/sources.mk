@@ -10,6 +10,7 @@ HEADERS = \
 	"kc3_gtk4.h" \
 	"paned.h" \
 	"text.h" \
+	"text_view.h" \
 	"types.h" \
 	"widget.h" \
 	"window.h" \
@@ -24,6 +25,7 @@ SOURCES = \
 	"kc3_glib.c" \
 	"paned.c" \
 	"text.c" \
+	"text_view.c" \
 	"widget.c" \
 	"window.c" \
 
