@@ -1,0 +1,8 @@
+defmodule Gtk4.ScrolledWindow do
+
+  def new = cfn Ptr "kc3_gtk4_scrolled_window_new" (Result)
+
+  # set_child(scrolled_window, widget) -> void
+  def set_child = cfn Void "kc3_gtk4_scrolled_window_set_child" (Ptr, Ptr)
+
+end
