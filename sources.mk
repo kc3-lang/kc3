@@ -156,6 +156,8 @@ KC3_C_SOURCES = \
 	"gtk4/kc3_glib.c" \
 	"gtk4/kc3_glib.h" \
 	"gtk4/kc3_gtk4.h" \
+	"gtk4/label.c" \
+	"gtk4/label.h" \
 	"gtk4/list_box.c" \
 	"gtk4/list_box.h" \
 	"gtk4/paned.c" \
@@ -1106,6 +1108,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gtk4/button.kc3" \
 	"lib/kc3/0.1/gtk4/entry_buffer.kc3" \
 	"lib/kc3/0.1/gtk4/frame.kc3" \
+	"lib/kc3/0.1/gtk4/label.kc3" \
 	"lib/kc3/0.1/gtk4/list_box.kc3" \
 	"lib/kc3/0.1/gtk4/paned.kc3" \
 	"lib/kc3/0.1/gtk4/scrolled_window.kc3" \

@@ -1,0 +1,6 @@
+defmodule Gtk4.Label do
+
+  # new(orientation, spacing) => widget
+  def new = cfn Ptr "kc3_gtk4_label_new" (Result, Str)
+
+end
