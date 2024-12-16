@@ -8,6 +8,7 @@ HEADERS = \
 	"frame.h" \
 	"kc3_glib.h" \
 	"kc3_gtk4.h" \
+	"list_box.h" \
 	"paned.h" \
 	"text.h" \
 	"text_view.h" \
@@ -23,6 +24,7 @@ SOURCES = \
 	"entry_buffer.c" \
 	"frame.c" \
 	"kc3_glib.c" \
+	"list_box.c" \
 	"paned.c" \
 	"text.c" \
 	"text_view.c" \

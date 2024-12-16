@@ -8,6 +8,7 @@ defmodule Kmsg do
   require Gtk4.Box
   require Gtk4.Button
   require Gtk4.Frame
+  require Gtk4.ListBox
   require Gtk4.Paned
   require Gtk4.TextView
   require Gtk4.Widget
@@ -19,8 +20,9 @@ defmodule Kmsg do
     Gtk4.Window.set_default_size(window, (Uw) 640, (Uw) 480)
     paned = Gtk4.Paned.new(:horizontal)
     Gtk4.Widget.set_size_request(paned, 200, 200);
-    frame1 = Gtk4.Frame.new("Frame 1")
-    Gtk4.Paned.set_start_child(paned, frame1)
+    # frame1 = Gtk4.Frame.new("Frame 1")
+    list_box1 = Gtk4.ListBox.new()    
+    Gtk4.Paned.set_start_child(paned, list_box1)
     Gtk4.Paned.set_resize_start_child(paned, true)
     Gtk4.Paned.set_shrink_start_child(paned, false)
     Gtk4.Widget.set_size_request(frame1, 50, 50)

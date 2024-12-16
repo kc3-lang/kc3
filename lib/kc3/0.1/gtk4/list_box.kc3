@@ -1,0 +1,7 @@
+defmodule Gtk4.ListBox do
+
+  def new = cfn Ptr "kc3_gtk4_list_box_new" (Result)
+
+  def append = cfn Void "kc3_gtk4_list_box_append" (Ptr, Ptr)
+
+end
