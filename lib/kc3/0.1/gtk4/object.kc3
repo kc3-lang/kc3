@@ -1,0 +1,5 @@
+defmodule Gtk4.Object do
+
+  def unref = cfn Void "kc3_gtk4_object_unref" (Ptr)
+
+end
