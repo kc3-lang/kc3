@@ -1,0 +1,5 @@
+defmodule Gtk4.MenuItem do
+
+  def new = cfn Ptr "kc3_gtk4_menu_item_new" (Result, Str, Str)
+
+end
