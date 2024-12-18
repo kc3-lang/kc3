@@ -24,8 +24,9 @@ GtkApplication ** kc3_gtk4_application_new (GtkApplication **dest,
 
 /* Operators. */
 s32  kc3_gtk4_application_run (GtkApplication **app);
-void kc3_gtk4_application_set_app_menu (GtkApplication **app,
-                                        GMenuModel **menu);
+void kc3_gtk4_application_set_accel_for_action (GtkApplication **app,
+                                                const s_str *action,
+                                                const s_str *accel);
 void kc3_gtk4_application_set_menubar (GtkApplication **app,
                                        GMenuModel **menu);
 

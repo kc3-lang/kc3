@@ -38,18 +38,17 @@ s32 kc3_gtk4_application_run (GtkApplication **app)
                            g_kc3_env->argv);
 }
 
-/*
-void kc3_gtk4_application_set_app_menu (GtkApplication **app,
-                                        GMenuModel **menu)
+void kc3_gtk4_application_set_accel_for_action (GtkApplication **app,
+                                                const s_str *action,
+                                                const s_str *accel)
 {
-  assert(app);
-  assert(*app);
-  assert(menu);
-  assert(*menu);
-  gtk_application_set_app_menu(GTK_APPLICATION(*app),
-                               G_MENU_MODEL(*menu));
+  gtk_application_set_accels_for_action(GTK_APPLICATION(*app),
+                                        action->ptr.pchar,
+                                        (const char *[]) {
+                                          accel->ptr.pchar,
+                                          NULL
+                                        });
 }
-*/
 
 void kc3_gtk4_application_set_menubar (GtkApplication **app,
                                        GMenuModel **menu)
