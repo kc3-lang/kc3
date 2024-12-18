@@ -3,6 +3,7 @@
 defmodule Kmsg do
 
   require Gtk4
+  require Gtk4.ActionMap
   require Gtk4.Application
   require Gtk4.ApplicationWindow
   require Gtk4.Box
@@ -14,6 +15,7 @@ defmodule Kmsg do
   require Gtk4.MenuItem
   require Gtk4.Paned
   require Gtk4.ScrolledWindow
+  require Gtk4.SimpleAction
   require Gtk4.TextView
   require Gtk4.Widget
   require Gtk4.Window
@@ -65,9 +67,10 @@ defmodule Kmsg do
     button = Gtk4.Button.new_with_label("Send")
     Gtk4.Box.append(box2, button)
     Gtk4.Paned.set_position(paned, 240);
-    connect_action = Gtk4.SimpleAction.new("app.connect")
+    connect_action = Gtk4.SimpleAction.new("connect")
     Gtk4.signal_connect(connect_action, "activate", Kmsg.connect, void)
     Gtk4.ActionMap.add_action(app, connect_action)
+    Gtk4.Application.set_accel_for_action(app, "connect", "<Control>N");
     menu = Gtk4.Menu.new()
     file_menu = Gtk4.Menu.new()
     item = Gtk4.MenuItem.new("Connect", "app.connect")
