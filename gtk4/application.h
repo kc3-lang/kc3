@@ -18,12 +18,14 @@
 /* Heap-allocation functions, call kc3_gtk4_application_delete
    after use. */
 void              kc3_gtk4_application_delete (GtkApplication **app);
-GtkApplication ** kc3_gtk4_application_new (const s_str *name,
-                                            const s_str *id,
-                                            GtkApplication **dest);
+GtkApplication ** kc3_gtk4_application_new (GtkApplication **dest,
+                                            const s_str *name,
+                                            const s_str *id);
 
 /* Operators. */
 s32  kc3_gtk4_application_run (GtkApplication **app);
+void kc3_gtk4_application_set_app_menu (GtkApplication **app,
+                                        GMenuModel **menu);
 void kc3_gtk4_application_set_menubar (GtkApplication **app,
                                        GMenuModel **menu);
 

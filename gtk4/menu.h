@@ -20,5 +20,7 @@ GMenu ** kc3_gtk4_menu_new (GMenu **dest);
 
 /* Operators. */
 void kc3_gtk4_menu_append_item (GMenu **menu, GMenuItem **item);
+void kc3_gtk4_menu_append_section (GMenu **menu, const s_str *title,
+                                   GMenuModel **section);
 
 #endif /* KC3_GTK4_MENU_H */

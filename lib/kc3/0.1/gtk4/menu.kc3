@@ -6,4 +6,7 @@ defmodule Gtk4.Menu do
 
   def append_item = cfn Void "kc3_gtk4_menu_append_item" (Ptr, Ptr)
 
+  def append_section = cfn Void "kc3_gtk4_menu_append_section" (Ptr,
+    Str, Ptr)
+
 end

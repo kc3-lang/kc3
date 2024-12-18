@@ -10,24 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "menu.h"
+#ifndef KC3_GTK4_ACTION_MAP_H
+#define KC3_GTK4_ACTION_MAP_H
 
-void kc3_gtk4_menu_append_item (GMenu **menu, GMenuItem **item)
-{
-  g_menu_append_item(*menu, *item);
-}
+#include "types.h"
 
-void kc3_gtk4_menu_append_section (GMenu **menu, const s_str *title,
-                                   GMenuModel **section)
-{
-  g_menu_append_section(*menu, title->ptr.pchar, *section);
-}
+void kc3_gtk4_action_map_add_action (GActionMap **map,
+                                     GAction **action);
 
-GMenu ** kc3_gtk4_menu_new (GMenu **dest)
-{
-  GMenu *tmp;
-  if (! (tmp = g_menu_new()))
-    return NULL;
-  *dest = tmp;
-  return dest;
-}
+#endif /* KC3_GTK4_ACTION_MAP_H */

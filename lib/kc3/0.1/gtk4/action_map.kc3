@@ -1,0 +1,5 @@
+defmodule Gtk4.ActionMap do
+
+  def add_action = cfn Void "kc3_gtk4_action_map_add_action" (Ptr, Ptr)
+
+end

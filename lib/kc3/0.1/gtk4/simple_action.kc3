@@ -1,0 +1,6 @@
+defmodule Gtk4.SimpleAction do
+
+  # new(name, id) -> app
+  def new = cfn Ptr "kc3_gtk4_simple_action_new" (Result, Str)
+
+end

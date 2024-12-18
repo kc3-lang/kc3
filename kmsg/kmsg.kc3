@@ -19,6 +19,10 @@ defmodule Kmsg do
   require Gtk4.Window
   require List
 
+  def connect = fn (action, void) {
+    
+  }
+
   def activate = fn (app, void) {
     window = Gtk4.ApplicationWindow.new(app)
     Gtk4.Window.set_title(window, "Kmsg")
@@ -61,9 +65,13 @@ defmodule Kmsg do
     button = Gtk4.Button.new_with_label("Send")
     Gtk4.Box.append(box2, button)
     Gtk4.Paned.set_position(paned, 240);
+    connect_action = Gtk4.SimpleAction.new("app.connect")
+    Gtk4.ActionMap.add_action(app, connect_action)
     menu = Gtk4.Menu.new()
+    file_menu = Gtk4.Menu.new()
     item = Gtk4.MenuItem.new("Connect", "app.connect")
-    Gtk4.Menu.append_item(menu, item)
+    Gtk4.Menu.append_item(file_menu, item)
+    Gtk4.Menu.append_section(menu, "File", file_menu)
     Gtk4.Application.set_menubar(app, menu)
     Gtk4.Window.present(window)
   }
