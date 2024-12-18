@@ -5,13 +5,19 @@ HEADERS = \
 	"box.h" \
 	"button.h" \
 	"entry_buffer.h" \
+	"file.h" \
 	"frame.h" \
 	"kc3_glib.h" \
 	"kc3_gtk4.h" \
 	"label.h" \
 	"list_box.h" \
+	"menu.h" \
+	"menu_item.h" \
+	"object.h" \
 	"paned.h" \
 	"scrolled_window.h" \
+	"signal.h" \
+	"simple_action.h" \
 	"text.h" \
 	"text_view.h" \
 	"types.h" \
@@ -24,12 +30,18 @@ SOURCES = \
 	"box.c" \
 	"button.c" \
 	"entry_buffer.c" \
+	"file.c" \
 	"frame.c" \
 	"kc3_glib.c" \
 	"label.c" \
 	"list_box.c" \
+	"menu.c" \
+	"menu_item.c" \
+	"object.c" \
 	"paned.c" \
 	"scrolled_window.c" \
+	"signal.c" \
+	"simple_action.c" \
 	"text.c" \
 	"text_view.c" \
 	"widget.c" \

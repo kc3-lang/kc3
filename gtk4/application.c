@@ -18,12 +18,6 @@ void kc3_gtk4_application_delete (GtkApplication **app)
   g_object_unref(*app);
 }
 
-s32 kc3_gtk4_application_run (GtkApplication **app)
-{
-  return g_application_run(G_APPLICATION(*app), 1,
-                           g_kc3_env->argv);
-}
-
 GtkApplication ** kc3_gtk4_application_new (const s_str *name,
                                             const s_str *id,
                                             GtkApplication **dest)
@@ -36,4 +30,16 @@ GtkApplication ** kc3_gtk4_application_new (const s_str *name,
     return NULL;
   *dest = tmp;
   return dest;
+}
+
+s32 kc3_gtk4_application_run (GtkApplication **app)
+{
+  return g_application_run(G_APPLICATION(*app), 1,
+                           g_kc3_env->argv);
+}
+
+void kc3_gtk4_application_set_menubar (GtkApplication **app,
+                                       GMenuModel **menu)
+{
+  gtk_application_set_menubar(*app, *menu);
 }

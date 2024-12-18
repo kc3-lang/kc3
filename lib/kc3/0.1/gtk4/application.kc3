@@ -7,4 +7,8 @@ defmodule Gtk4.Application do
 
   def run = cfn S32 "kc3_gtk4_application_run" (Ptr)
 
+  # set_menubar(app, menu)
+  def set_menubar = cfn Void "kc3_gtk4_application_set_menubar" (Ptr,
+    Ptr)
+
 end

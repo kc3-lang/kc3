@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/io/kmx/kmsg">
+    <file alias="gtk/menus.ui">menus.ui</file>
+    <file>kmsg.css</file>
+  </gresource>
+</gresources>

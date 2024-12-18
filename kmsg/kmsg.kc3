@@ -10,12 +10,16 @@ defmodule Kmsg do
   require Gtk4.Frame
   require Gtk4.Label
   require Gtk4.ListBox
+  require Gtk4.Menu
+  require Gtk4.MenuItem
   require Gtk4.Paned
+  require Gtk4.ScrolledWindow
   require Gtk4.TextView
   require Gtk4.Widget
   require Gtk4.Window
+  require List
 
-  def activate = fn (app) {
+  def activate = fn (app, void) {
     window = Gtk4.ApplicationWindow.new(app)
     Gtk4.Window.set_title(window, "Kmsg")
     Gtk4.Window.set_default_size(window, (Uw) 640, (Uw) 480)
@@ -57,6 +61,10 @@ defmodule Kmsg do
     button = Gtk4.Button.new_with_label("Send")
     Gtk4.Box.append(box2, button)
     Gtk4.Paned.set_position(paned, 240);
+    menu = Gtk4.Menu.new()
+    item = Gtk4.MenuItem.new("Connect", "app.connect")
+    Gtk4.Menu.append_item(menu, item)
+    Gtk4.Application.set_menubar(app, menu)
     Gtk4.Window.present(window)
   }
 
@@ -64,7 +72,7 @@ defmodule Kmsg do
     puts("Kmsg.main: starting, please wait...")
     Gtk4.init()
     app = Gtk4.Application.new("Kmsg", "io.kmx.kmsg")
-    Gtk4.signal_connect(app, "activate", Kmsg.activate)
+    Gtk4.signal_connect(app, "activate", Kmsg.activate, void)
     status = Gtk4.Application.run(app)
     puts("Kmsg.main: exiting: #{inspect(status)}")
     Gtk4.Application.delete(app)

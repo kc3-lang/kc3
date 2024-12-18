@@ -188,11 +188,11 @@ void ** kc3_dlopen (const s_str *path, void **dest)
 {
   assert(path);
   assert(dest);
-#if DEBUG_KC3_DLOPEN
-  err_write_1("kc3_dlopen: ");
-  err_inspect_str(path);
-  err_write_1("\n");
-#endif
+  if (g_kc3_env->trace) {
+    err_write_1("kc3_dlopen: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+  }
   *dest = dlopen(path->ptr.pchar, RTLD_LAZY | RTLD_GLOBAL);
   if (! *dest) {
     err_write_1("kc3_dlopen: ");
