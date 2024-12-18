@@ -61,6 +61,7 @@ macos/kc3-v*
 node_modules/
 *.o
 release/
+*.so
 .test
 .test_ko
 .test_ok
