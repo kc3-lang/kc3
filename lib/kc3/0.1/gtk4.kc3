@@ -11,7 +11,7 @@ defmodule Gtk4 do
   def main_context_iteration =
     cfn Bool "kc3_g_main_context_iteration" (Result)
 
-  def signal_connect = cfn Void "kc3_g_signal_connect" (Ptr, Str,
-    Callable)
+  def signal_connect = cfn Void "kc3_gtk4_signal_connect" (Ptr, Str,
+    Callable, Tag)
 
 end

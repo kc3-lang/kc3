@@ -15,8 +15,10 @@
 
 bool g_kc3_g_main_stop = false;
 
+/*
 static void kc3_g_signal_callback (GObject *object,
                                    s_callable *callback);
+*/
 
 bool * kc3_g_main_context_iteration (bool *dest)
 {
@@ -30,6 +32,7 @@ void kc3_g_main (void)
     g_main_context_iteration(NULL, TRUE);
 }
 
+/*
 static void kc3_g_signal_callback (GObject *object,
                                    s_callable *callback)
 {
@@ -52,3 +55,4 @@ void kc3_g_signal_connect (GObject **instance, const s_str *signal,
 		   G_CALLBACK(kc3_g_signal_callback),
 		   *callback);
 }
+*/
