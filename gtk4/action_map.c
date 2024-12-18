@@ -20,5 +20,5 @@ void kc3_gtk4_action_map_add_action (GActionMap **map,
   assert(*map);
   assert(action);
   assert(*action);
-  g_action_map_add_action(*map, *action);
+  g_action_map_add_action(G_ACTION_MAP(*map), G_ACTION(*action));
 }

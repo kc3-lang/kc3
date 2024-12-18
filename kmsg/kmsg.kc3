@@ -20,7 +20,7 @@ defmodule Kmsg do
   require List
 
   def connect = fn (action, void) {
-    
+    puts("Kmsg.connect")
   }
 
   def activate = fn (app, void) {
@@ -66,6 +66,7 @@ defmodule Kmsg do
     Gtk4.Box.append(box2, button)
     Gtk4.Paned.set_position(paned, 240);
     connect_action = Gtk4.SimpleAction.new("app.connect")
+    Gtk4.signal_connect(connect_action, "activate", Kmsg.connect, void)
     Gtk4.ActionMap.add_action(app, connect_action)
     menu = Gtk4.Menu.new()
     file_menu = Gtk4.Menu.new()
