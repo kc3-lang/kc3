@@ -22,6 +22,17 @@ defmodule Kmsg do
 
   def on_connect = fn (action, void) {
     puts("Kmsg.connect")
+    window = Gtk4.Window.new()
+    Gtk4.Window.set_title(window, "Kmsg: Connect")
+    vbox = Gtk4.Box.new(:vertical, 0)
+    hbox = Gtk4.Box.new(:horizontal, 0)
+    label = Gtk4.Label.new("Host")
+    button = Gtk4.Button.new_with_label("Ok")
+    Gtk4.Box.append(hbox, label)
+    Gtk4.Box.append(vbox, hbox)
+    Gtk4.Box.append(vbox, button)
+    Gtk4.Window.set_child(window, vbox)
+    Gtk4.Window.present(window)
   }
 
   def on_send = fn (action, window) {
