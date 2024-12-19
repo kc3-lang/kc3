@@ -19,5 +19,7 @@
 GtkWidget ** kc3_gtk4_entry_new (GtkWidget **dest);
 
 /* Operators. */
+s_str * kc3_gtk4_entry_get_text (GtkEntry **entry, s_str *dest);
+void    kc3_gtk4_entry_set_text (GtkEntry **entry, s_str *text);
 
 #endif /* KC3_GTK4_ENTRY_H */

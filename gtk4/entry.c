@@ -40,3 +40,14 @@ s_str * kc3_gtk4_entry_get_text (GtkEntry **entry, s_str *dest)
   }
   return str_init_1_alloc(dest, s);
 }
+
+void kc3_gtk4_entry_set_text (GtkEntry **entry, s_str *text)
+{
+  GtkEntryBuffer *buffer;
+  if (! (buffer = gtk_entry_get_buffer(GTK_ENTRY(*entry)))) {
+    err_puts("kc3_gtk4_entry_set_text: gtk_entry_get_buffer");
+    assert(! "kc3_gtk4_entry_set_text: gtk_entry_get_buffer");
+    return;
+  }
+  gtk_entry_buffer_set_text(buffer, text->ptr.pchar, text->size);
+}

@@ -2,4 +2,8 @@ defmodule Gtk4.Entry do
 
   def new = cfn Ptr "kc3_gtk4_entry_new" (Result)
 
+  def get_text = cfn Str "kc3_gtk4_entry_get_text" (Ptr, Result)
+
+  def set_text = cfn Void "kc3_gtk4_entry_set_text" (Ptr, Str)
+
 end

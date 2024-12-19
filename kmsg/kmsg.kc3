@@ -20,7 +20,7 @@ defmodule Kmsg do
   require Gtk4.Window
   require List
 
-  def connect = fn (action, void) {
+  def on_connect = fn (action, void) {
     puts("Kmsg.connect")
     window = Gtk4.Window.new()
     Gtk4.Window.set_title(window, "Kmsg: Connect")
@@ -58,24 +58,24 @@ defmodule Kmsg do
       Gtk4.ListBox.append(channels, label)
       label
     })
-    Gtk4.ScrolledWindow.set_child(scrolled_window1, list_box1)
+    Gtk4.ScrolledWindow.set_child(scrolled_window1, channels)
     Gtk4.Paned.set_start_child(paned, scrolled_window1)
     Gtk4.Paned.set_resize_start_child(paned, true)
     Gtk4.Paned.set_shrink_start_child(paned, false)
     box1 = Gtk4.Box.new(:vertical, 0)
     scrolled_window2 = Gtk4.ScrolledWindow.new()
-    list_box2 = Gtk4.ListBox.new()
-    Gtk4.Widget.set_vexpand(list_box2, true)
+    list_box = Gtk4.ListBox.new()
+    Gtk4.Widget.set_vexpand(list_box, true)
     labels2 = List.map(List.count(200), fn (x) {
       label = Gtk4.Label.new("<b>thodg</b>: Message <i>with <b>markup</b></i> !")
       Gtk4.Label.set_use_markup(label, true)
       Gtk4.Widget.set_halign(label, :start)
-      Gtk4.ListBox.append(list_box2, label)
+      Gtk4.ListBox.append(list_box, label)
       label
     })
     Gtk4.Paned.set_resize_end_child(paned, false)
     Gtk4.Paned.set_shrink_end_child(paned, false)
-    Gtk4.ScrolledWindow.set_child(scrolled_window2, list_box2)
+    Gtk4.ScrolledWindow.set_child(scrolled_window2, list_box)
     Gtk4.Box.append(box1, scrolled_window2)
     box2 = Gtk4.Box.new(:horizontal, 0)
     Gtk4.Box.append(box1, box2)
@@ -89,7 +89,7 @@ defmodule Kmsg do
       %{window: window, text_view: text_view})
     Gtk4.Box.append(box2, button)
     Gtk4.Paned.set_position(paned, 240);
-    connect_action = Gtk4.SimpleAction.new("connect", Kmsg.connect, void)
+    connect_action = Gtk4.SimpleAction.new("connect", Kmsg.on_connect, void)
     Gtk4.ActionMap.add_action(app, connect_action)
     Gtk4.Application.set_accel_for_action(app, "app.connect", "<Control>N");
     menu = Gtk4.Menu.new()
