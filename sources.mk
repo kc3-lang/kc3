@@ -151,6 +151,8 @@ KC3_C_SOURCES = \
 	"gtk4/box.h" \
 	"gtk4/button.c" \
 	"gtk4/button.h" \
+	"gtk4/entry.c" \
+	"gtk4/entry.h" \
 	"gtk4/entry_buffer.c" \
 	"gtk4/entry_buffer.h" \
 	"gtk4/file.c" \

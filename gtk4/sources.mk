@@ -5,6 +5,7 @@ HEADERS = \
 	"application_window.h" \
 	"box.h" \
 	"button.h" \
+	"entry.h" \
 	"entry_buffer.h" \
 	"file.h" \
 	"frame.h" \
@@ -31,6 +32,7 @@ SOURCES = \
 	"application_window.c" \
 	"box.c" \
 	"button.c" \
+	"entry.c" \
 	"entry_buffer.c" \
 	"file.c" \
 	"frame.c" \
