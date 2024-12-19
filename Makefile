@@ -622,7 +622,7 @@ kmsg_debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C kc3s debug
 	${MAKE} -C gtk4 debug
-	${MAKE} -C kmsg
+	${MAKE} -C kmsg run_debug
 
 lib_links:
 	${MAKE} lib_links_${ARCH}
