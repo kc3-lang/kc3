@@ -24,6 +24,10 @@ defmodule Kmsg do
     puts("Kmsg.connect")
   }
 
+  def send = fn (action, window) {
+    puts("Kmsg.send")
+  }
+
   def activate = fn (app, void) {
     window = Gtk4.ApplicationWindow.new(app)
     Gtk4.Window.set_title(window, "Kmsg")
@@ -65,6 +69,7 @@ defmodule Kmsg do
     Gtk4.Widget.set_hexpand(text_view, true)
     Gtk4.Box.append(box2, text_view)
     button = Gtk4.Button.new_with_label("Send")
+    Gtk4.signal_connect(button, "activate", Kmsg.send, window)
     Gtk4.Box.append(box2, button)
     Gtk4.Paned.set_position(paned, 240);
     connect_action = Gtk4.SimpleAction.new("connect", Kmsg.connect, void)
