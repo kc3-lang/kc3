@@ -19,5 +19,6 @@
 GtkWidget ** kc3_gtk4_label_new (GtkWidget **dest, s_str *str);
 
 /* Operators. */
+void kc3_gtk4_label_set_use_markup (GtkLabel **label, bool use_markup);
 
 #endif /* KC3_GTK4_LABEL_H */

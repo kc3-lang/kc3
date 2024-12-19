@@ -16,6 +16,8 @@
 #include "types.h"
 
 GSimpleAction ** kc3_gtk4_simple_action_new (GSimpleAction **dest,
-                                             const s_str *name);
-
+                                             const s_str *name,
+                                             p_callable *callable,
+                                             s_tag *data);
+  
 #endif /* KC3_GTK4_SIMPLE_ACTION_H */

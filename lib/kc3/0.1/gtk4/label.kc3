@@ -3,4 +3,7 @@ defmodule Gtk4.Label do
   # new(orientation, spacing) => widget
   def new = cfn Ptr "kc3_gtk4_label_new" (Result, Str)
 
+  def set_use_markup = cfn Void "kc3_gtk4_label_set_use_markup" (Ptr,
+    Bool)
+
 end

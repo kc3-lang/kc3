@@ -1,5 +1,4 @@
 #!/usr/bin/env ikc3
-
 defmodule Kmsg do
 
   require Gtk4
@@ -48,7 +47,8 @@ defmodule Kmsg do
     list_box2 = Gtk4.ListBox.new()
     Gtk4.Widget.set_vexpand(list_box2, true)
     labels2 = List.map(List.count(200), fn (x) {
-      label = Gtk4.Label.new("thodg: message")
+      label = Gtk4.Label.new("<b>thodg</b>: Message <i>with <b>markup</b></i> !")
+      Gtk4.Label.set_use_markup(label, true)
       Gtk4.Widget.set_halign(label, :start)
       Gtk4.ListBox.append(list_box2, label)
       label
@@ -67,10 +67,9 @@ defmodule Kmsg do
     button = Gtk4.Button.new_with_label("Send")
     Gtk4.Box.append(box2, button)
     Gtk4.Paned.set_position(paned, 240);
-    connect_action = Gtk4.SimpleAction.new("connect")
-    Gtk4.signal_connect(connect_action, "activate", Kmsg.connect, void)
+    connect_action = Gtk4.SimpleAction.new("connect", Kmsg.connect, void)
     Gtk4.ActionMap.add_action(app, connect_action)
-    Gtk4.Application.set_accel_for_action(app, "connect", "<Control>N");
+    Gtk4.Application.set_accel_for_action(app, "app.connect", "<Control>N");
     menu = Gtk4.Menu.new()
     file_menu = Gtk4.Menu.new()
     item = Gtk4.MenuItem.new("Connect", "app.connect")
@@ -92,5 +91,4 @@ defmodule Kmsg do
   }
 
 end
-
 Kmsg.main()

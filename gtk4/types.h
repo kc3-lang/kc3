@@ -16,4 +16,15 @@
 #include <gtk/gtk.h>
 #include <libkc3/types.h>
 
+typedef struct action_callback s_action_callback;
+
+/* 1 */
+
+struct action_callback {
+  GSimpleAction *action;
+  s_callable *callable;
+  s_tag tag;
+  s_action_callback *next;
+};
+
 #endif /* KC3_GTK4_TYPES_H */
