@@ -23,3 +23,20 @@ GtkWidget ** kc3_gtk4_entry_new (GtkWidget **dest)
   *dest = tmp;
   return dest;
 }
+
+s_str * kc3_gtk4_entry_get_text (GtkEntry **entry, s_str *dest)
+{
+  GtkEntryBuffer *buffer;
+  const char *s;
+  if (! (buffer = gtk_entry_get_buffer(GTK_ENTRY(*entry)))) {
+    err_puts("kc3_gtk4_entry_get_text: gtk_entry_get_buffer");
+    assert(! "kc3_gtk4_entry_get_text: gtk_entry_get_buffer");
+    return NULL;
+  }
+  if (! (s = gtk_entry_buffer_get_text(buffer))) {
+    err_puts("kc3_gtk4_entry_get_text: gtk_entry_buffer_get_text");
+    assert(! "kc3_gtk4_entry_get_text: gtk_entry_buffer_get_text");
+    return NULL;
+  }
+  return str_init_1_alloc(dest, s);
+}

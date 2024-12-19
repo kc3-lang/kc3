@@ -10,7 +10,31 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <libkc3/kc3.h>
 #include "text_view.h"
+
+s_str * kc3_gtk4_text_view_get_text (GtkTextView **text_view,
+                                     s_str *dest)
+{
+  GtkTextBuffer *buffer;
+  GtkTextIter end;
+  char *s;
+  GtkTextIter start;
+  assert(text_view);
+  assert(dest);
+  if (! (buffer = gtk_text_view_get_buffer(*text_view))) {
+    err_puts("kc3_gtk4_text_view_get_text: gtk_text_view_get_buffer");
+    assert(! "kc3_gtk4_text_view_get_text: gtk_text_view_get_buffer");
+    return NULL;
+  }
+  gtk_text_buffer_get_bounds(buffer, &start, &end);
+  if (! (s = gtk_text_buffer_get_text(buffer, &start, &end, false))) {
+    err_puts("kc3_gtk4_text_view_get_text: gtk_text_buffer_get_text");
+    assert(! "kc3_gtk4_text_view_get_text: gtk_text_buffer_get_text");
+    return NULL;
+  }
+  return str_init_1_alloc(dest, s);
+}
 
 GtkWidget ** kc3_gtk4_text_view_new (GtkWidget **dest)
 {
@@ -29,4 +53,18 @@ GtkWidget ** kc3_gtk4_text_view_new_with_buffer (GtkWidget **dest,
     return NULL;
   *dest = tmp;
   return dest;
+}
+
+void kc3_gtk4_text_view_set_text (GtkTextView **text_view,
+                                  s_str *text)
+{
+  GtkTextBuffer *buffer;
+  assert(text_view);
+  assert(dest);
+  if (! (buffer = gtk_text_view_get_buffer(*text_view))) {
+    err_puts("kc3_gtk4_text_view_set_text: gtk_text_view_get_buffer");
+    assert(! "kc3_gtk4_text_view_set_text: gtk_text_view_get_buffer");
+    return;
+  }
+  gtk_text_buffer_set_text(buffer, text->ptr.pchar, text->size);
 }

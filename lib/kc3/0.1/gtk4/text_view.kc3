@@ -5,4 +5,6 @@ defmodule Gtk4.TextView do
   def new_with_buffer = cfn Ptr "kc3_gtk4_text_view_new_with_buffer"
     (Result, Ptr)
 
+  def get_text = cfn Str "kc3_gtk4_text_view_get_text" (Ptr, Result)
+
 end

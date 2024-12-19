@@ -20,4 +20,8 @@ GtkWidget ** kc3_gtk4_text_view_new (GtkWidget **dest);
 GtkWidget ** kc3_gtk4_text_view_new_with_buffer (GtkWidget **dest,
                                                  GtkTextBuffer **tb);
 
+/* Operators. */
+s_str * kc3_gtk4_text_view_get_text (GtkTextView **text_view,
+                                     s_str *dest);
+
 #endif /* KC3_GTK4_TEXT_VIEW_H */
