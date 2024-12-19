@@ -1406,13 +1406,13 @@ uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
     *dest = (uw) pos;
   }
   else {
-    if (max_pos > SW_MAX || pos >= (sw) -max_pos)
+    if (max_pos > SW_MAX || pos + 1 >= (sw) -max_pos)
       *dest = max_pos + pos + 1;
     else {
       err_write_1("str_sw_pos_to_uw: index too low: ");
       err_inspect_sw(&pos);
       err_write_1(" < -");
-      err_inspect_uw(&max_pos);
+      err_inspect_uw_decimal(&max_pos);
       err_write_1("\n");
       assert(! "str_sw_pos_to_uw: index too low");
       return NULL;
