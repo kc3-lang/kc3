@@ -51,7 +51,9 @@ s_facts_with_cursor * facts_with (s_facts *facts,
     }
     /* facts_spec_sort(tmp.spec); */
   }
+#if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
+#endif
   *cursor = tmp;
   return cursor;
 }

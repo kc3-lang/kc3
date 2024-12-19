@@ -22,7 +22,9 @@
 void callable_delete (s_callable *callable)
 {
   assert(callable);
+#if HAVE_PTHREAD
   mutex_lock(&callable->mutex);
+#endif
   if (callable->reference_count <= 0)
     goto clean;
   if (--callable->reference_count > 0)
@@ -32,12 +34,17 @@ void callable_delete (s_callable *callable)
   case CALLABLE_FN:  fn_clean(&callable->data.fn);   break;
   case CALLABLE_VOID:                                break;
   }
+#if HAVE_PTHREAD
   mutex_unlock(&callable->mutex);
   mutex_clean(&callable->mutex);
+#endif
   free(callable);
   return;
  clean:
+#if HAVE_PTHREAD
   mutex_unlock(&callable->mutex);
+#endif
+  return;
 }
 
 s_callable * callable_new (void)
@@ -45,7 +52,9 @@ s_callable * callable_new (void)
   s_callable *callable;
   if (! (callable = alloc(sizeof(s_callable))))
     return NULL;
+#if HAVE_PTHREAD
   mutex_init(&callable->mutex);
+#endif
   return callable;
 }
 
@@ -77,14 +86,18 @@ s_callable * callable_new_copy (s_callable *src)
 s_callable * callable_new_ref (s_callable *callable)
 {
   assert(callable);
+#if HAVE_PTHREAD
   mutex_lock(&callable->mutex);
+#endif
   if (callable->reference_count <= 0) {
     err_puts("callable_new_ref: reference count <= 0");
     assert(! "callable_new_ref: reference count <= 0");
     abort();
   }
   callable->reference_count++;
+#if HAVE_PTHREAD
   mutex_unlock(&callable->mutex);
+#endif
   return callable;
 }
 

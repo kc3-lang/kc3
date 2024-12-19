@@ -21,6 +21,8 @@
 
 #include "types.h"
 
+#if HAVE_PTHREAD
+
 /* Stack-allocation compatible functions, call mutex_clean after use. */
 void      mutex_clean (s_mutex *mutex);
 s_mutex * mutex_init (s_mutex *mutex);
@@ -32,5 +34,7 @@ s_mutex * mutex_new (void);
 /* Operators. */
 void mutex_lock (s_mutex *mutex);
 void mutex_unlock (s_mutex *mutex);
+
+#endif /* HAVE_PTHREAD */
 
 #endif /* LIBKC3_MUTEX_H */

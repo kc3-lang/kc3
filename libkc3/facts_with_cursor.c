@@ -34,7 +34,9 @@ void facts_with_cursor_clean (s_facts_with_cursor *cursor)
     }
     free(cursor->levels);
     free(cursor->spec);
+#if HAVE_PTHREAD
     mutex_clean(&cursor->mutex);
+#endif
   }
 }
 
@@ -49,7 +51,9 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
     *dest = NULL;
     return dest;
   }
+#if HAVE_PTHREAD
   mutex_lock(&cursor->mutex);
+#endif
   if (cursor->level == cursor->facts_count) {
     level = &cursor->levels[cursor->facts_count - 1];
 #ifdef DEBUG_FACTS
@@ -70,7 +74,9 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
 #endif
     if (level->fact) {
       *dest = level->fact;
+#if HAVE_PTHREAD
       mutex_unlock(&cursor->mutex);
+#endif
       return dest;
     }
     free(level->spec);
@@ -120,18 +126,24 @@ s_fact ** facts_with_cursor_next (s_facts_with_cursor *cursor,
       goto not_found;
     cursor->level--;
   }
+#if HAVE_PTHREAD
   mutex_unlock(&cursor->mutex);
+#endif
   *dest = fact;
   return dest;
  not_found:
   cursor->facts_count = 0;
   free(cursor->levels);
   free(cursor->spec);
+#if HAVE_PTHREAD
   mutex_unlock(&cursor->mutex);
   mutex_clean(&cursor->mutex);
+#endif
   *dest = NULL;
   return dest;
  ko:
+#if HAVE_PTHREAD
   mutex_unlock(&cursor->mutex);
+#endif
   return NULL;
 }

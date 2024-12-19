@@ -160,7 +160,11 @@ s_struct_type * struct_type_init (s_struct_type *st,
   if (sizeof(long) == 4)
     tmp.size = (offset + 3) / 4 * 4;
   else
+#ifdef __APPLE__
+    tmp.size = (offset + 7) / 8 * 8;
+#else
     tmp.size = (offset + 15) / 16 * 16;
+#endif
   *st = tmp;
   return st;
 }

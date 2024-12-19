@@ -188,7 +188,9 @@ void cfn_clean (s_cfn *cfn)
   list_delete_all(cfn->arg_types);
   if (cfn->cif.nargs)
     free(cfn->cif.arg_types);
+#if HAVE_PTHREAD
   mutex_clean(&cfn->mutex);
+#endif
 }
 
 void cfn_delete (s_cfn *cfn)
@@ -201,7 +203,9 @@ void cfn_delete (s_cfn *cfn)
 bool cfn_eval (s_cfn *cfn)
 {
   assert(cfn);
+#if HAVE_PTHREAD
   mutex_lock(&cfn->mutex);
+#endif
   if (! cfn->ready) {
     if (! cfn_prep_cif(cfn))
       goto ko;
@@ -209,10 +213,14 @@ bool cfn_eval (s_cfn *cfn)
       goto ko;
     cfn->ready = true;
   }
+#if HAVE_PTHREAD
   mutex_unlock(&cfn->mutex);
+#endif
   return true;
  ko:
+#if HAVE_PTHREAD
   mutex_unlock(&cfn->mutex);
+#endif
   return false;
 }
 
@@ -232,7 +240,9 @@ s_cfn * cfn_init (s_cfn *cfn, const s_sym *name, s_list *arg_types,
   }
   tmp.arity = arity;
   tmp.result_type = result_type;
+#if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
+#endif
   *cfn = tmp;
   return cfn;
 }
@@ -287,7 +297,9 @@ s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
   tmp.ptr = src->ptr;
   tmp.macro = src->macro;
   tmp.special_operator = src->special_operator;
+#if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
+#endif
   *cfn = tmp;
   return cfn;
 }
@@ -301,7 +313,9 @@ s_cfn * cfn_link (s_cfn *cfn)
     err_write_1(": ");
     err_puts(dlerror());
     assert(! "cfn_link: dlsym failed");
+#if HAVE_PTHREAD
     mutex_unlock(&cfn->mutex);
+#endif
     return NULL;
   }
   return cfn;

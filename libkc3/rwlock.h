@@ -15,6 +15,8 @@
 
 #include "types.h"
 
+#if HAVE_PTHREAD
+
 /* Stack-allocation compatible functions, call rwlock_clean
    after use. */
 void       rwlock_clean (s_rwlock *rwlock);
@@ -25,5 +27,7 @@ s_rwlock * rwlock_r (s_rwlock *rwlock);
 s_rwlock * rwlock_unlock_r (s_rwlock *rwlock);
 s_rwlock * rwlock_unlock_w (s_rwlock *rwlock);
 s_rwlock * rwlock_w (s_rwlock *rwlock);
+
+#endif /* HAVE_PTHREAD */
 
 #endif /* LIBKC3_RWLOCK_H */
