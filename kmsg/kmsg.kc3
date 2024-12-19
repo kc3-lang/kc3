@@ -20,11 +20,11 @@ defmodule Kmsg do
   require Gtk4.Window
   require List
 
-  def connect = fn (action, void) {
+  def on_connect = fn (action, void) {
     puts("Kmsg.connect")
   }
 
-  def send = fn (action, window) {
+  def on_send = fn (action, window) {
     puts("Kmsg.send")
   }
 
@@ -69,10 +69,10 @@ defmodule Kmsg do
     Gtk4.Widget.set_hexpand(text_view, true)
     Gtk4.Box.append(box2, text_view)
     button = Gtk4.Button.new_with_label("Send")
-    Gtk4.signal_connect(button, "activate", Kmsg.send, window)
+    Gtk4.signal_connect(button, "clicked", Kmsg.on_send, window)
     Gtk4.Box.append(box2, button)
     Gtk4.Paned.set_position(paned, 240);
-    connect_action = Gtk4.SimpleAction.new("connect", Kmsg.connect, void)
+    connect_action = Gtk4.SimpleAction.new("connect", Kmsg.on_connect, void)
     Gtk4.ActionMap.add_action(app, connect_action)
     Gtk4.Application.set_accel_for_action(app, "app.connect", "<Control>N");
     menu = Gtk4.Menu.new()
