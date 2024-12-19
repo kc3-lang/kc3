@@ -20,15 +20,17 @@ defmodule Kmsg do
   require Gtk4.Window
   require List
 
-  def on_connect = fn (action, void) {
+  def connect = fn (action, void) {
     puts("Kmsg.connect")
     window = Gtk4.Window.new()
     Gtk4.Window.set_title(window, "Kmsg: Connect")
-    vbox = Gtk4.Box.new(:vertical, 0)
+    vbox = Gtk4.Box.new(:vertical, 1)
     hbox = Gtk4.Box.new(:horizontal, 0)
     label = Gtk4.Label.new("Host")
     button = Gtk4.Button.new_with_label("Ok")
+    entry = Gtk4.Entry.new()
     Gtk4.Box.append(hbox, label)
+    Gtk4.Box.append(hbox, entry)
     Gtk4.Box.append(vbox, hbox)
     Gtk4.Box.append(vbox, button)
     Gtk4.Window.set_child(window, vbox)
@@ -87,7 +89,7 @@ defmodule Kmsg do
       %{window: window, text_view: text_view})
     Gtk4.Box.append(box2, button)
     Gtk4.Paned.set_position(paned, 240);
-    connect_action = Gtk4.SimpleAction.new("connect", Kmsg.on_connect, void)
+    connect_action = Gtk4.SimpleAction.new("connect", Kmsg.connect, void)
     Gtk4.ActionMap.add_action(app, connect_action)
     Gtk4.Application.set_accel_for_action(app, "app.connect", "<Control>N");
     menu = Gtk4.Menu.new()

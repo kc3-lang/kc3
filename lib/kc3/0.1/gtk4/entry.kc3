@@ -1,5 +1,5 @@
 defmodule Gtk4.Entry do
 
-  def new = cfn Ptr "kc3_gtk4_entry_new" ()
+  def new = cfn Ptr "kc3_gtk4_entry_new" (Result)
 
 end
