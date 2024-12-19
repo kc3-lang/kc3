@@ -55,13 +55,20 @@ GtkWidget ** kc3_gtk4_text_view_new_with_buffer (GtkWidget **dest,
   return dest;
 }
 
+void kc3_gtk4_text_view_set_monospace (GtkTextView **text_view,
+                                       bool monospace)
+{
+  assert(text_view);
+  gtk_text_view_set_monospace(GTK_TEXT_VIEW(*text_view), monospace);
+}
+
 void kc3_gtk4_text_view_set_text (GtkTextView **text_view,
                                   s_str *text)
 {
   GtkTextBuffer *buffer;
   assert(text_view);
   assert(dest);
-  if (! (buffer = gtk_text_view_get_buffer(*text_view))) {
+  if (! (buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(*text_view)))) {
     err_puts("kc3_gtk4_text_view_set_text: gtk_text_view_get_buffer");
     assert(! "kc3_gtk4_text_view_set_text: gtk_text_view_get_buffer");
     return;
