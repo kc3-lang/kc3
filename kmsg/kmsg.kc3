@@ -38,10 +38,10 @@ defmodule Kmsg do
   }
 
   def on_send = fn (action, %{window: window,
-                              text_view: text_view}) {
-    message = Gtk4.TextView.get_text(text_view)
+                              text_view_w: text_view_w}) {
+    message = Gtk4.TextView.get_text(text_view_w)
     puts("Kmsg.send #{inspect(message)}")
-    Gtk4.TextView.set_text(text_view, "")
+    Gtk4.TextView.set_text(text_view_w, "")
   }
 
   def activate = fn (app, void) {
@@ -81,12 +81,13 @@ defmodule Kmsg do
     Gtk4.Box.append(box1, box2)
     Gtk4.Paned.set_end_child(paned, box1)
     Gtk4.Window.set_child(window, paned)
-    text_view = Gtk4.TextView.new()
-    Gtk4.Widget.set_hexpand(text_view, true)
-    Gtk4.Box.append(box2, text_view)
+    text_view_w = Gtk4.TextView.new()
+    Gtk4.TextView.set_monospace(text_view_w, true)
+    Gtk4.Widget.set_hexpand(text_view_w, true)
+    Gtk4.Box.append(box2, text_view_w)
     button = Gtk4.Button.new_with_label("Send")
     Gtk4.signal_connect(button, "clicked", Kmsg.on_send,
-      %{window: window, text_view: text_view})
+      %{window: window, text_view_w: text_view_w})
     Gtk4.Box.append(box2, button)
     Gtk4.Paned.set_position(paned, 240);
     connect_action = Gtk4.SimpleAction.new("connect", Kmsg.on_connect, void)

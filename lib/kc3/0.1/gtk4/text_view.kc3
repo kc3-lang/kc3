@@ -7,7 +7,7 @@ defmodule Gtk4.TextView do
 
   def get_text = cfn Str "kc3_gtk4_text_view_get_text" (Ptr, Result)
 
-  def set_monospace = cfn Void "gtk_text_view_set_monospace" (Ptr, Bool)
+  def set_monospace = cfn Void "kc3_gtk4_text_view_set_monospace" (Ptr, Bool)
 
   def set_text = cfn Void "kc3_gtk4_text_view_set_text" (Ptr, Str)
 
