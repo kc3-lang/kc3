@@ -12,10 +12,12 @@
  */
 #include <string.h>
 
-#ifndef __APPLE__
+#if (! (defined(__APPLE__) || defined(__OpenBSD__)))
 #include <sys/sysinfo.h>
 #endif
 
+#include <sys/types.h>
+#include <sys/sysctl.h>
 #include <unistd.h>
 #include "alloc.h"
 #include "array.h"
@@ -172,7 +174,7 @@ bool env_call_get (s_env *env, s_call *call)
       return false;
     }
   }
-  if (! facts_with_tags(env->facts, &cursor, &tag_ident,
+  if (! facts_with_tags (env->facts, &cursor, &tag_ident,
                         &tag_symbol_value, &tag_var)) {
     err_puts("env_call_get: facts_with_tags");
     assert(! "env_call_get: facts_with_tags");
@@ -2765,11 +2767,29 @@ s_env * env_init_globals (s_env *env)
                                   &g_sym_ncpu)))
     return NULL;
 #if HAVE_PTHREAD
+# if (defined(__OpenBSD__))
+  {
+    s32 mib[2];
+    s32 hw_ncpu;
+    uw len;
+    mib[0] = CTL_HW;
+    mib[1] = HW_NCPU;
+    len = sizeof(hw_ncpu);
+    if (sysctl(mib, 2, &hw_ncpu, &len, NULL, 0) == -1){
+      err_puts("env_init_globals: sysctl(hw.ncpu)");
+      assert(! "env_init_globals: sysctl(hw.ncpu)");
+      return NULL;
+    }
+    tag_init_u8(ncpu, hw_ncpu);
+  }
+# else
   tag_init_u8(ncpu, get_nprocs());
+# endif
 #else
   tag_init_u8(ncpu, 1);
 #endif
   return env;
+ 
 }
 
 s_env * env_init_toplevel (s_env *env)
