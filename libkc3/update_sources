@@ -124,5 +124,8 @@ LO_SOURCES="$SOURCES
 "
 sources LO_SOURCES "$LO_SOURCES"
 
+SOURCES_CXX="$(ls *.cxx)"
+sources SOURCES_CXX "$SOURCES_CXX"
+
 update_sources_mk
 update_sources_sh

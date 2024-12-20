@@ -22,6 +22,9 @@ ucd2c/ucd.h
 ucd2c/ucd2c.c"
 sources KC3_C_SOURCES "$KC3_C_SOURCES"
 
+KC3_CXX_SOURCES="$(find ekc3 event gtk4 http httpd ikc3 json kc3c kc3s libkc3 markdown socket window test -name "[a-z]*.cxx" -or -name "[a-z]*.hxx" -or -name "[a-z]*.cxx.in" -or -name "[a-z]*.hxx.in")"
+sources KC3_CXX_SOURCES "$KC3_CXX_SOURCES"
+
 KC3_FONT_SOURCES="$(find fonts -name '*.otf' -or -name '*.ttf')"
 sources KC3_FONT_SOURCES "$KC3_FONT_SOURCES"
 

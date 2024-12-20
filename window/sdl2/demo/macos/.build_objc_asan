@@ -1,6 +1,0 @@
-#!/bin/sh
-# gen by configure
-OBJC="/usr/bin/clang"
-CPPFLAGS=""
-CFLAGS=""
-/opt/homebrew/bin/glibtool --tag=CC --mode=compile ${OBJC} ${CPPFLAGS} ${CFLAGS} -c "$1" -o "$2" >> .build/log 2>&1

@@ -661,3 +661,6 @@ LO_SOURCES = \
 	"void.c" \
 	"wait.c" \
 
+SOURCES_CXX = \
+	"ncpu.cxx" \
+

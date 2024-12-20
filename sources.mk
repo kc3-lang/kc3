@@ -780,6 +780,10 @@ KC3_C_SOURCES = \
 	"window/window.c" \
 	"window/window.h" \
 
+KC3_CXX_SOURCES = \
+	"libkc3/ncpu.cxx" \
+	"libkc3/ncpu.hxx" \
+
 KC3_FONT_SOURCES = \
 	"fonts/Computer Modern/cmunbl-webfont.ttf" \
 	"fonts/Computer Modern/cmunbl.otf" \
@@ -1123,6 +1127,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gtk4/application_window.kc3" \
 	"lib/kc3/0.1/gtk4/box.kc3" \
 	"lib/kc3/0.1/gtk4/button.kc3" \
+	"lib/kc3/0.1/gtk4/entry.kc3" \
 	"lib/kc3/0.1/gtk4/entry_buffer.kc3" \
 	"lib/kc3/0.1/gtk4/file.kc3" \
 	"lib/kc3/0.1/gtk4/frame.kc3" \

@@ -33,14 +33,15 @@ echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
 . ./sources.sh
 
-OBJECTS="$(c2ext .main.lo "$LO_SOURCES")"
+OBJECTS="$(c2ext .main.lo "$LO_SOURCES") $(cxx2ext .main.lo "$SOURCES_CXX")"
 echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
-OBJECTS_ASAN="$(c2ext .asan.lo "$LO_SOURCES")"
-OBJECTS_COV="$(c2ext .cov.lo "$LO_SOURCES")"
-OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES")"
+OBJECTS_ASAN="$(c2ext .asan.lo "$LO_SOURCES") $(cxx2ext .asan.lo "$SOURCES_CXX")"
+OBJECTS_COV="$(c2ext .cov.lo "$LO_SOURCES") $(cxx2ext .cov.lo "$SOURCES_CXX")"
+OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES") $(cxx2ext .debug.lo "$SOURCES_CXX")"
 
 # Common config for all targets
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
+CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe -pthread"
 LDFLAGS="-export-dynamic $LDFLAGS -rdynamic"
 config_asan
 config_gnu
@@ -72,18 +73,22 @@ fi
 CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O2 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
+CXXFLAGS_ASAN="$CXXFLAGS -DDEBUG -O2 -g"
+CXXFLAGS_ASAN="$CXXFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
 LIBS_ASAN="$LIBS"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
 CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
+CXXFLAGS_COV="$CXXFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS --coverage"
 LIBS_COV="$LIBS -lgcov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
+CXXFLAGS_DEBUG="$CXXFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
 LIBS_DEBUG="$LIBS"
 
@@ -93,6 +98,11 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
+DEFAULT_CXXFLAGS="-O2 -fPIC"
+if [ "x$ENV_CXXFLAGS" = "x" ]; then
+    CXXFLAGS="$CXXFLAGS $DEFAULT_CXXFLAGS"
+fi
+CXXFLAGS="$CXXFLAGS -DNDEBUG"
 LIBS="$LIBS"
 
 make -f gen.mk
@@ -101,28 +111,34 @@ echo "LIB = $LIB" >> ${CONFIG_MK}
 echo "HAVE_ASAN = $HAVE_ASAN" >> ${CONFIG_MK}
 echo "CPPFLAGS = $CPPFLAGS" >> ${CONFIG_MK}
 echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
+echo "CXXFLAGS = $CXXFLAGS" >> ${CONFIG_MK}
 echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
 echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
 echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
+echo "CXXFLAGS_ASAN = $CXXFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
 echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
 echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
+echo "CXXFLAGS_COV = $CXXFLAGS_COV" >> ${CONFIG_MK}
 echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
 echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
 echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
+echo "CXXFLAGS_DEBUG = $CXXFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
-update_build
+update_build_c
+update_build_cxx
 update_build_lib
 
 build_lo
+build_lo_cxx
 build_lib
 
 update_config_mk
