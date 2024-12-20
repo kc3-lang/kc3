@@ -728,6 +728,20 @@ s_tag * kc3_struct_put (s_tag *s, const s_sym * const *key,
   return dest;
 }
 
+s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
+{
+  s32 mib[64];
+  s32 mib_len = 0;
+  s32 i;
+  const s_list *l;
+  l = list;
+  while (l) {
+    if (l->tag.type != TAG_SYM) {
+      err_puts("kc3_sysctl: argument is not a Sym list")
+      assert(! "kc3_sysctl: argument is not a Sym list")
+    l = list_next(l);
+  }
+}
 s_str * kc3_system (const s_list * const *list, s_str *dest)
 {
 #ifdef WIN32
