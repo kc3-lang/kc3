@@ -97,6 +97,7 @@ const s_sym g_sym_is_loading      = {{{NULL}, 10, {"is_loading"}}};
 const s_sym g_sym_load_time       = {{{NULL},  9, {"load_time"}}};
 const s_sym g_sym_macro           = {{{NULL},  5, {"macro"}}};
 const s_sym g_sym_module          = {{{NULL},  6, {"module"}}};
+const s_sym g_sym_ncpu            = {{{NULL},  4, {"ncpu"}}};
 const s_sym g_sym_operator        = {{{NULL},  8, {"operator"}}};
 const s_sym g_sym_operator_associativity =
   {{{NULL}, 22, {"operator_associativity"}}};
@@ -414,6 +415,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_load_time, NULL);
   sym_register(&g_sym_macro, NULL);
   sym_register(&g_sym_module, NULL);
+  sym_register(&g_sym_ncpu, NULL);
   sym_register(&g_sym_operator, NULL);
   sym_register(&g_sym_operator_associativity, NULL);
   sym_register(&g_sym_operator_equal, NULL);

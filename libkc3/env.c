@@ -11,6 +11,11 @@
  * THIS SOFTWARE.
  */
 #include <string.h>
+
+#ifndef __APPLE__
+#include <sys/sysinfo.h>
+#endif
+
 #include <unistd.h>
 #include "alloc.h"
 #include "array.h"
@@ -2740,6 +2745,7 @@ s_env * env_init_globals (s_env *env)
 {
   s_tag *file_dir;
   s_tag *file_path;
+  s_tag *ncpu;
   if (! (env->read_time_frame = frame_new(NULL, NULL)))
     return NULL;
   if (! (file_dir = frame_binding_new(env->read_time_frame,
@@ -2755,6 +2761,14 @@ s_env * env_init_globals (s_env *env)
     return NULL;
   if (! (env->global_frame = frame_new(env->read_time_frame, NULL)))
     return NULL;
+  if (! (ncpu = frame_binding_new(env->read_time_frame,
+                                  &g_sym_ncpu)))
+    return NULL;
+#if HAVE_PTHREAD
+  tag_init_u8(ncpu, get_nprocs());
+#else
+  tag_init_u8(ncpu, 1);
+#endif
   return env;
 }
 

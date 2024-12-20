@@ -101,6 +101,7 @@ extern const s_sym g_sym_is_loading;
 extern const s_sym g_sym_load_time;
 extern const s_sym g_sym_macro;
 extern const s_sym g_sym_module;
+extern const s_sym g_sym_ncpu;
 extern const s_sym g_sym_operator;
 extern const s_sym g_sym_operator_associativity;
 extern const s_sym g_sym_operator_equal;
