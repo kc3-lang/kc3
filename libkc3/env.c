@@ -2228,7 +2228,7 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
   facts_with_cursor_clean(&cursor);
   tag_clean(&tmp);
   list_delete_all(arguments);
-  return NULL;  
+  return NULL;
 }
 
 s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
@@ -2329,7 +2329,7 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
   facts_with_cursor_clean(&cursor);
   tag_clean(&tmp);
   list_delete_all(arguments);
-  return NULL;  
+  return NULL;
 }
 
 s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
@@ -2376,7 +2376,7 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   facts_cursor_clean(&cursor);
   tag_clean(&tmp);
   list_delete_all(arguments);
-  return NULL;  
+  return NULL;
 }
 
 s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
@@ -2789,7 +2789,7 @@ s_env * env_init_globals (s_env *env)
   tag_init_u8(ncpu, 1);
 #endif
   return env;
- 
+
 }
 
 s_env * env_init_toplevel (s_env *env)

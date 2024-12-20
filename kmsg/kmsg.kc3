@@ -21,9 +21,9 @@ defmodule Kmsg do
   require List
 
   def on_connect_ok = fn (action, void){
-   puts("Kmsg.connect_ok") 
+   puts("Kmsg.connect_ok")
   }
-  
+
   def on_connect = fn (action, void) {
     puts("Kmsg.connect")
     window = Gtk4.Window.new()
