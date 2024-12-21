@@ -107,7 +107,7 @@ DEF_SERIALIZE(sw)
 s_serialize * serialize_tag (s_serialize *serialize, const s_tag *tag)
 {
   switch (tag->type){
-  case TAG_BOOL: return serialize_bool(serialize, tag->data.bool);
+  case TAG_BOOL: return serialize_bool(serialize, tag->data.bool_);
   case TAG_CHARACTER:
     return serialize_character(serialize, tag->data.character);
   case TAG_S8:   return serialize_s8(serialize, tag->data.s8);

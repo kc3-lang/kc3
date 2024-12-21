@@ -368,7 +368,7 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   case TAG_ARRAY:
     return str_init_array(str, &tag->data.array);
   case TAG_BOOL:
-    return str_init_bool(str, tag->data.bool);
+    return str_init_bool(str, tag->data.bool_);
   case TAG_CALLABLE:
     return str_init_callable(str, tag->data.callable);
   case TAG_CHARACTER:

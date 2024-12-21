@@ -38,7 +38,7 @@ s64 * s64_init_cast
   (void) type;
   switch (tag->type) {
   case TAG_BOOL:
-    *s = tag->data.bool ? 1 : 0;
+    *s = tag->data.bool_ ? 1 : 0;
     return s;
   case TAG_CHARACTER:
     *s = (s64) tag->data.character;

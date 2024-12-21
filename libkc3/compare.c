@@ -1138,7 +1138,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                             &b->data.array);
   case TAG_BLOCK:      return compare_block(&a->data.block,
                                             &b->data.block);
-  case TAG_BOOL:       return compare_bool(a->data.bool, b->data.bool);
+  case TAG_BOOL:       return compare_bool(a->data.bool_, b->data.bool_);
   case TAG_CALL:       return compare_call(&a->data.call,
                                            &b->data.call);
   case TAG_CALLABLE:   return compare_callable(a->data.callable,

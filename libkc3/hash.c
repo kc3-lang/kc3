@@ -490,7 +490,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   switch (tag->type) {
   case TAG_ARRAY:   return hash_update_array(hash, &tag->data.array);
   case TAG_BLOCK:   return hash_update_block(hash, &tag->data.block);
-  case TAG_BOOL:    return hash_update_bool(hash, &tag->data.bool);
+  case TAG_BOOL:    return hash_update_bool(hash, &tag->data.bool_);
   case TAG_CALL:    return hash_update_call(hash, &tag->data.call);
   case TAG_CALLABLE:
     return hash_update_callable(hash, tag->data.callable);

@@ -58,7 +58,7 @@ TEST_CASE(cfn_apply)
   tag_init_bool(&args->tag, false);
   TEST_EQ(cfn_apply(&a, args, &result), &result);
   TEST_EQ(result.type, TAG_BOOL);
-  TEST_EQ(result.data.bool, true);
+  TEST_EQ(result.data.bool_, true);
   list_delete_all(args);
   cfn_clean(&a);
 }

@@ -28,7 +28,7 @@ f32 * f32_init_cast (f32 *x, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_BOOL:
-    *x = tag->data.bool ? 1.0f : 0.0f;
+    *x = tag->data.bool_ ? 1.0f : 0.0f;
     return x;
   case TAG_CHARACTER:
     *x = (f32) tag->data.character;

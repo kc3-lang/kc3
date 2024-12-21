@@ -781,8 +781,8 @@ KC3_C_SOURCES = \
 	"window/window.h" \
 
 KC3_CXX_SOURCES = \
-	"libkc3/ncpu.cxx" \
-	"libkc3/ncpu.hxx" \
+	"libkc3/std.cxx" \
+	"libkc3/std.hxx" \
 
 KC3_FONT_SOURCES = \
 	"fonts/Computer Modern/cmunbl-webfont.ttf" \

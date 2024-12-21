@@ -17,43 +17,47 @@ cd "$(dirname "$0")"
 
 build_lib() {
     echo >> ${CONFIG_MK}
-    echo "$LIB_ASAN: $OBJECTS_ASAN .build/lib_asan" >> ${CONFIG_MK}
-    echo "	.build/lib_asan $LIB_ASAN" >> ${CONFIG_MK}
+    echo "$LIB_ASAN: $OBJECTS_ASAN build_lib_asan" >> ${CONFIG_MK}
+    echo "	./build_lib_asan $LIB_ASAN" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    echo "$LIB_COV: $OBJECTS_COV .build/lib_cov" >> ${CONFIG_MK}
-    echo "	.build/lib_cov $LIB_COV" >> ${CONFIG_MK}
+    echo "$LIB_COV: $OBJECTS_COV build_lib_cov" >> ${CONFIG_MK}
+    echo "	./build_lib_cov $LIB_COV" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    echo "$LIB_DEBUG: $OBJECTS_DEBUG .build/lib_debug" >> ${CONFIG_MK}
-    echo "	.build/lib_debug $LIB_DEBUG" >> ${CONFIG_MK}
+    echo "$LIB_DEBUG: $OBJECTS_DEBUG build_lib_debug" >> ${CONFIG_MK}
+    echo "	./build_lib_debug $LIB_DEBUG" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    echo "$LIB: $OBJECTS .build/lib_main" >> ${CONFIG_MK}
-    echo "	.build/lib_main $LIB" >> ${CONFIG_MK}
+    echo "$LIB: $OBJECTS build_lib_main" >> ${CONFIG_MK}
+    echo "	./build_lib_main $LIB" >> ${CONFIG_MK}
 }
 
 build_lo() {
+    build_lo_c
+}
+
+build_lo_c() {
     for SRC in $SOURCES; do
         echo >> ${CONFIG_MK}
         SRC_ASAN_LO="$(c2ext .asan.lo "$SRC")"
-        c_ext_rule .asan.lo "$SRC" .build/c_asan >> ${CONFIG_MK}
-        echo "	.build/c_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
+        c_ext_rule .asan.lo "$SRC" build_c_asan >> ${CONFIG_MK}
+        echo "	./build_c_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
         SRC_COV_LO="$(c2ext .cov.lo "$SRC")"
-        c_ext_rule .cov.lo "$SRC" .build/c_cov >> ${CONFIG_MK}
-        echo "	.build/c_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
+        c_ext_rule .cov.lo "$SRC" build_c_cov >> ${CONFIG_MK}
+        echo "	./build_c_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
         SRC_DEBUG_LO="$(c2ext .debug.lo "$SRC")"
-        c_ext_rule .debug.lo "$SRC" .build/c_debug >> ${CONFIG_MK}
-        echo "	.build/c_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
+        c_ext_rule .debug.lo "$SRC" build_c_debug >> ${CONFIG_MK}
+        echo "	./build_c_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
         SRC_LO="$(c2ext .main.lo "$SRC")"
-        c_ext_rule .main.lo "$SRC" .build/c_main >> ${CONFIG_MK}
-        echo "	.build/c_main $SRC $SRC_LO" >> ${CONFIG_MK}
+        c_ext_rule .main.lo "$SRC" build_c_main >> ${CONFIG_MK}
+        echo "	./build_c_main $SRC $SRC_LO" >> ${CONFIG_MK}
     done
 }
 
@@ -61,23 +65,23 @@ build_lo_cxx() {
     for SRC in $SOURCES_CXX; do
         echo >> ${CONFIG_MK}
         SRC_ASAN_LO="$(cxx2ext .asan.lo "$SRC")"
-        cxx_ext_rule .asan.lo "$SRC" .build/cxx_asan >> ${CONFIG_MK}
-        echo "	.build/cxx_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
+        cxx_ext_rule .asan.lo "$SRC" build_cxx_asan >> ${CONFIG_MK}
+        echo "	./build_cxx_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
         SRC_COV_LO="$(cxx2ext .cov.lo "$SRC")"
-        cxx_ext_rule .cov.lo "$SRC" .build/cxx_cov >> ${CONFIG_MK}
-        echo "	.build/cxx_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
+        cxx_ext_rule .cov.lo "$SRC" build_cxx_cov >> ${CONFIG_MK}
+        echo "	./build_cxx_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
         SRC_DEBUG_LO="$(cxx2ext .debug.lo "$SRC")"
-        cxx_ext_rule .debug.lo "$SRC" .build/cxx_debug >> ${CONFIG_MK}
-        echo "	.build/cxx_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
+        cxx_ext_rule .debug.lo "$SRC" build_cxx_debug >> ${CONFIG_MK}
+        echo "	./build_cxx_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
         SRC_LO="$(cxx2ext .main.lo "$SRC")"
-        cxx_ext_rule .main.lo "$SRC" .build/cxx_main >> ${CONFIG_MK}
-        echo "	.build/cxx_main $SRC $SRC_LO" >> ${CONFIG_MK}
+        cxx_ext_rule .main.lo "$SRC" build_cxx_main >> ${CONFIG_MK}
+        echo "	./build_cxx_main $SRC $SRC_LO" >> ${CONFIG_MK}
     done
 }
 
@@ -85,45 +89,45 @@ build_lo_objc() {
     for SRC in $OBJC_SOURCES; do
         echo >> ${CONFIG_MK}
         SRC_ASAN_LO="$(objc2ext .asan.lo "$SRC")"
-        objc_ext_rule .asan.lo "$SRC" .build/objc_asan >> ${CONFIG_MK}
-        echo "	.build/objc_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
+        objc_ext_rule .asan.lo "$SRC" build_objc_asan >> ${CONFIG_MK}
+        echo "	./build_objc_asan $SRC $SRC_ASAN_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
         SRC_COV_LO="$(objc2ext .cov.lo "$SRC")"
-        objc_ext_rule .cov.lo "$SRC" .build/objc_cov >> ${CONFIG_MK}
-        echo "	.build/objc_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
+        objc_ext_rule .cov.lo "$SRC" build_objc_cov >> ${CONFIG_MK}
+        echo "	./build_objc_cov $SRC $SRC_COV_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
         SRC_DEBUG_LO="$(objc2ext .debug.lo "$SRC")"
-        objc_ext_rule .debug.lo "$SRC" .build/objc_debug >> ${CONFIG_MK}
-        echo "	.build/objc_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
+        objc_ext_rule .debug.lo "$SRC" build_objc_debug >> ${CONFIG_MK}
+        echo "	./build_objc_debug $SRC $SRC_DEBUG_LO" >> ${CONFIG_MK}
 
         echo >> ${CONFIG_MK}
         SRC_MAIN_LO="$(objc2ext .main.lo "$SRC")"
-        objc_ext_rule .main.lo "$SRC" .build/objc_main >> ${CONFIG_MK}
-        echo "	.build/objc_main $SRC $SRC_MAIN_LO" >> ${CONFIG_MK}
+        objc_ext_rule .main.lo "$SRC" build_objc_main >> ${CONFIG_MK}
+        echo "	./build_objc_main $SRC $SRC_MAIN_LO" >> ${CONFIG_MK}
     done
 }
 
 build_prog() {
     echo >> ${CONFIG_MK}
-    echo "$PROG_ASAN: $LOCAL_LIBS_ASAN $OBJECTS_ASAN .build/prog_asan" \
+    echo "$PROG_ASAN: $LOCAL_LIBS_ASAN $OBJECTS_ASAN build_prog_asan" \
          >> ${CONFIG_MK}
-    echo "	.build/prog_asan $PROG_ASAN" >> ${CONFIG_MK}
+    echo "	./build_prog_asan $PROG_ASAN" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    echo "$PROG_COV: $LOCAL_LIBS_COV $OBJECTS_COV .build/prog_cov" \
+    echo "$PROG_COV: $LOCAL_LIBS_COV $OBJECTS_COV build_prog_cov" \
          >> ${CONFIG_MK}
-    echo "	.build/prog_cov $PROG_COV" >> ${CONFIG_MK}
+    echo "	./build_prog_cov $PROG_COV" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    echo "$PROG_DEBUG: $LOCAL_LIBS_DEBUG $OBJECTS_DEBUG .build/prog_debug" \
+    echo "$PROG_DEBUG: $LOCAL_LIBS_DEBUG $OBJECTS_DEBUG build_prog_debug" \
          >> ${CONFIG_MK}
-    echo "	.build/prog_debug $PROG_DEBUG" >> ${CONFIG_MK}
+    echo "	./build_prog_debug $PROG_DEBUG" >> ${CONFIG_MK}
 
     echo >> ${CONFIG_MK}
-    echo "$PROG: $LOCAL_LIBS $OBJECTS .build/prog_main" >> ${CONFIG_MK}
-    echo "	.build/prog_main $PROG" >> ${CONFIG_MK}
+    echo "$PROG: $LOCAL_LIBS $OBJECTS build_prog_main" >> ${CONFIG_MK}
+    echo "	./build_prog_main $PROG" >> ${CONFIG_MK}
 }
 
 c_o_rule() {
@@ -478,22 +482,20 @@ cpp2prog() {
 }
 
 cxx_o_rule() {
-    "$CXX" $CXXFLAGS $CXXFLAGS -M "$1" || {
-        echo "$1" | sed -e 's/^\(.*\)\.cxx$/\1.o: \1.cxx/'
-    }
-    echo "$1: $2" | sed -e 's/^\(.*\)\.cxx: $/\1.o: /'
+    echo "$1" | sed -e 's/^\(.*\)\.cxx$/\1.o: \1.cxx/'
+    echo "$1: $2" | sed -e 's/^\(.*\)\.cxx:/\1.o:/'
 }
 
 cxx_ext_rule() {
-    cxx_o_rule "$2" "$3" | sed -e "s/[.]o:/$1:/"
+    cxx_o_rule "$2" "$3" | sed -e "s/\.o:/$1:/"
 }
 
 cxx_lo_rule() {
-    cxx_ext_rule .lo "$1" "$2"
+    cxx_ext_rule .lo "$1"
 }
 
 cxx_prog_rule() {
-    { cxx_o_rule "$1" "$2" || exit 1; } | sed -e 's/[.]o:/:/'
+    { cxx_o_rule "$1" || exit 1; } | sed -e 's/[.]o:/:/'
 }
 
 cxx2ext() {
@@ -591,10 +593,10 @@ update_build() {
 }
 
 update_build_c() {
-    BUILD_C_MAIN=.build/c_main.tmp
-    BUILD_C_ASAN=.build/c_asan.tmp
-    BUILD_C_COV=.build/c_cov.tmp
-    BUILD_C_DEBUG=.build/c_debug.tmp
+    BUILD_C_MAIN=build_c_main.tmp
+    BUILD_C_ASAN=build_c_asan.tmp
+    BUILD_C_COV=build_c_cov.tmp
+    BUILD_C_DEBUG=build_c_debug.tmp
     mkdir -p .build
 
     COMPILE="${LIBTOOL} --tag=CC --mode=compile"
@@ -608,7 +610,7 @@ update_build_c() {
     echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_C_ASAN}
     echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_C_ASAN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_ASAN}
-    update_and_chmod 755 ${BUILD_C_ASAN} .build/c_asan
+    update_and_chmod 755 ${BUILD_C_ASAN} build_c_asan
 
     echo "#!/bin/sh" >> ${BUILD_C_COV}
     echo "# gen by configure" >> ${BUILD_C_COV}
@@ -617,7 +619,7 @@ update_build_c() {
     echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_C_COV}
     echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_C_COV}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_COV}
-    update_and_chmod 755 ${BUILD_C_COV} .build/c_cov
+    update_and_chmod 755 ${BUILD_C_COV} build_c_cov
 
     echo "#!/bin/sh" >> ${BUILD_C_DEBUG}
     echo "# gen by configure" >> ${BUILD_C_DEBUG}
@@ -626,7 +628,7 @@ update_build_c() {
     echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_C_DEBUG}
     echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_C_DEBUG}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_DEBUG}
-    update_and_chmod 755 ${BUILD_C_DEBUG} .build/c_debug
+    update_and_chmod 755 ${BUILD_C_DEBUG} build_c_debug
 
     echo "#!/bin/sh" >> ${BUILD_C_MAIN}
     echo "# gen by configure" >> ${BUILD_C_MAIN}
@@ -635,62 +637,62 @@ update_build_c() {
     echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_C_MAIN}
     echo "CFLAGS=\"${CFLAGS}\"" >> ${BUILD_C_MAIN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_C_MAIN}
-    update_and_chmod 755 ${BUILD_C_MAIN} .build/c_main
+    update_and_chmod 755 ${BUILD_C_MAIN} build_c_main
 }
 
 update_build_cxx() {
-    BUILD_CXX_MAIN=.build/cxx_main.tmp
-    BUILD_CXX_ASAN=.build/cxx_asan.tmp
-    BUILD_CXX_COV=.build/cxx_cov.tmp
-    BUILD_CXX_DEBUG=.build/cxx_debug.tmp
+    BUILD_CXX_MAIN=build_cxx_main.tmp
+    BUILD_CXX_ASAN=build_cxx_asan.tmp
+    BUILD_CXX_COV=build_cxx_cov.tmp
+    BUILD_CXX_DEBUG=build_cxx_debug.tmp
     mkdir -p .build
 
-    COMPILE="${LIBTOOL} --tag=CC --mode=compile"
-    COMPILE="$COMPILE \${CC} \${CPPFLAGS} \${CFLAGS}"
+    COMPILE="${LIBTOOL} --tag=CXX --mode=compile"
+    COMPILE="$COMPILE \${CXX} \${CPPFLAGS} \${CXXFLAGS}"
     COMPILE="$COMPILE -c \"\$1\" -o \"\$2\""
 
     echo "#!/bin/sh" >> ${BUILD_CXX_ASAN}
     echo "# gen by configure" >> ${BUILD_CXX_ASAN}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_CXX_ASAN}
-    echo "CC=\"${CC}\"" >> ${BUILD_CXX_ASAN}
+    echo "CXX=\"${CXX}\"" >> ${BUILD_CXX_ASAN}
     echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_CXX_ASAN}
-    echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_CXX_ASAN}
+    echo "CXXFLAGS=\"${CXXFLAGS_ASAN}\"" >> ${BUILD_CXX_ASAN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_ASAN}
-    update_and_chmod 755 ${BUILD_CXX_ASAN} .build/cxx_asan
+    update_and_chmod 755 ${BUILD_CXX_ASAN} build_cxx_asan
 
     echo "#!/bin/sh" >> ${BUILD_CXX_COV}
     echo "# gen by configure" >> ${BUILD_CXX_COV}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_CXX_COV}
-    echo "CC=\"${CC}\"" >> ${BUILD_CXX_COV}
+    echo "CXX=\"${CXX}\"" >> ${BUILD_CXX_COV}
     echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_CXX_COV}
-    echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_CXX_COV}
+    echo "CXXFLAGS=\"${CXXFLAGS_COV}\"" >> ${BUILD_CXX_COV}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_COV}
-    update_and_chmod 755 ${BUILD_CXX_COV} .build/cxx_cov
+    update_and_chmod 755 ${BUILD_CXX_COV} build_cxx_cov
 
     echo "#!/bin/sh" >> ${BUILD_CXX_DEBUG}
     echo "# gen by configure" >> ${BUILD_CXX_DEBUG}
     echo "LOG=\".build/\$1.debug.log\"" >> ${BUILD_CXX_DEBUG}
-    echo "CC=\"${CC}\"" >> ${BUILD_CXX_DEBUG}
+    echo "CXX=\"${CXX}\"" >> ${BUILD_CXX_DEBUG}
     echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_CXX_DEBUG}
-    echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_CXX_DEBUG}
+    echo "CXXFLAGS=\"${CXXFLAGS_DEBUG}\"" >> ${BUILD_CXX_DEBUG}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_DEBUG}
-    update_and_chmod 755 ${BUILD_CXX_DEBUG} .build/cxx_debug
+    update_and_chmod 755 ${BUILD_CXX_DEBUG} build_cxx_debug
 
     echo "#!/bin/sh" >> ${BUILD_CXX_MAIN}
     echo "# gen by configure" >> ${BUILD_CXX_MAIN}
     echo "LOG=\".build/\$1.main.log\"" >> ${BUILD_CXX_MAIN}
-    echo "CC=\"${CC}\"" >> ${BUILD_CXX_MAIN}
+    echo "CXX=\"${CXX}\"" >> ${BUILD_CXX_MAIN}
     echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_CXX_MAIN}
-    echo "CFLAGS=\"${CFLAGS}\"" >> ${BUILD_CXX_MAIN}
+    echo "CXXFLAGS=\"${CXXFLAGS}\"" >> ${BUILD_CXX_MAIN}
     echo "$COMPILE > \"\$LOG\" 2>&1 || $COMPILE" >> ${BUILD_CXX_MAIN}
-    update_and_chmod 755 ${BUILD_CXX_MAIN} .build/cxx_main
+    update_and_chmod 755 ${BUILD_CXX_MAIN} build_cxx_main
 }
 
 update_build_lib() {
-    BUILD_LIB_MAIN=.build/lib_main.tmp
-    BUILD_LIB_ASAN=.build/lib_asan.tmp
-    BUILD_LIB_COV=.build/lib_cov.tmp
-    BUILD_LIB_DEBUG=.build/lib_debug.tmp
+    BUILD_LIB_MAIN=build_lib_main.tmp
+    BUILD_LIB_ASAN=build_lib_asan.tmp
+    BUILD_LIB_COV=build_lib_cov.tmp
+    BUILD_LIB_DEBUG=build_lib_debug.tmp
     mkdir -p .build
 
     LINK="${LIBTOOL} --tag=CC --mode=link "
@@ -707,7 +709,7 @@ update_build_lib() {
     echo "LIBS=\"${LIBS_ASAN}\"" >> ${BUILD_LIB_ASAN}
     echo >> ${BUILD_LIB_ASAN}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_ASAN}
-    update_and_chmod 755 ${BUILD_LIB_ASAN} .build/lib_asan
+    update_and_chmod 755 ${BUILD_LIB_ASAN} build_lib_asan
 
     echo "#!/bin/sh" >> ${BUILD_LIB_COV}
     echo "# gen by configure" >> ${BUILD_LIB_COV}
@@ -719,7 +721,7 @@ update_build_lib() {
     echo "LIBS=\"${LIBS_COV}\"" >> ${BUILD_LIB_COV}
     echo >> ${BUILD_LIB_COV}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_COV}
-    update_and_chmod 755 ${BUILD_LIB_COV} .build/lib_cov
+    update_and_chmod 755 ${BUILD_LIB_COV} build_lib_cov
 
     echo "#!/bin/sh" >> ${BUILD_LIB_DEBUG}
     echo "# gen by configure" >> ${BUILD_LIB_DEBUG}
@@ -731,7 +733,7 @@ update_build_lib() {
     echo "LIBS=\"${LIBS_DEBUG}\"" >> ${BUILD_LIB_DEBUG}
     echo >> ${BUILD_LIB_DEBUG}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_DEBUG}
-    update_and_chmod 755 ${BUILD_LIB_DEBUG} .build/lib_debug
+    update_and_chmod 755 ${BUILD_LIB_DEBUG} build_lib_debug
 
     echo "#!/bin/sh" >> ${BUILD_LIB_MAIN}
     echo "# gen by configure" >> ${BUILD_LIB_MAIN}
@@ -743,14 +745,14 @@ update_build_lib() {
     echo "LIBS=\"${LIBS}\"" >> ${BUILD_LIB_MAIN}
     echo >> ${BUILD_LIB_MAIN}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_LIB_MAIN}
-    update_and_chmod 755 ${BUILD_LIB_MAIN} .build/lib_main
+    update_and_chmod 755 ${BUILD_LIB_MAIN} build_lib_main
 }
 
 update_build_objc() {
-    BUILD_OBJC_MAIN=.build/objc_main.tmp
-    BUILD_OBJC_ASAN=.build/objc_asan.tmp
-    BUILD_OBJC_COV=.build/objc_cov.tmp
-    BUILD_OBJC_DEBUG=.build/objc_debug.tmp
+    BUILD_OBJC_MAIN=build_objc_main.tmp
+    BUILD_OBJC_ASAN=build_objc_asan.tmp
+    BUILD_OBJC_COV=build_objc_cov.tmp
+    BUILD_OBJC_DEBUG=build_objc_debug.tmp
     mkdir -p .build
 
     echo "#!/bin/sh" >> ${BUILD_OBJC_ASAN}
@@ -759,7 +761,7 @@ update_build_objc() {
     echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_OBJC_ASAN}
     echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_OBJC_ASAN}
     echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${BUILD_OBJC_ASAN}
-    update_and_chmod 755 ${BUILD_OBJC_ASAN} .build/objc_asan
+    update_and_chmod 755 ${BUILD_OBJC_ASAN} build_objc_asan
 
     echo "#!/bin/sh" >> ${BUILD_OBJC_COV}
     echo "# gen by configure" >> ${BUILD_OBJC_COV}
@@ -767,7 +769,7 @@ update_build_objc() {
     echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_OBJC_COV}
     echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_OBJC_COV}
     echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${BUILD_OBJC_COV}
-    update_and_chmod 755 ${BUILD_OBJC_COV} .build/objc_cov
+    update_and_chmod 755 ${BUILD_OBJC_COV} build_objc_cov
 
     echo "#!/bin/sh" >> ${BUILD_OBJC_DEBUG}
     echo "# gen by configure" >> ${BUILD_OBJC_DEBUG}
@@ -775,7 +777,7 @@ update_build_objc() {
     echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_OBJC_DEBUG}
     echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_OBJC_DEBUG}
     echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${BUILD_OBJC_DEBUG}
-    update_and_chmod 755 ${BUILD_OBJC_DEBUG} .build/objc_debug
+    update_and_chmod 755 ${BUILD_OBJC_DEBUG} build_objc_debug
 
     echo "#!/bin/sh" >> ${BUILD_OBJC_MAIN}
     echo "# gen by configure" >> ${BUILD_OBJC_MAIN}
@@ -783,14 +785,14 @@ update_build_objc() {
     echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_OBJC_MAIN}
     echo "CFLAGS=\"${CFLAGS}\"" >> ${BUILD_OBJC_MAIN}
     echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${BUILD_OBJC_MAIN}
-    update_and_chmod 755 ${BUILD_OBJC_MAIN} .build/objc_main
+    update_and_chmod 755 ${BUILD_OBJC_MAIN} build_objc_main
 }
 
 update_build_prog() {
-    BUILD_PROG_MAIN=.build/prog_main.tmp
-    BUILD_PROG_ASAN=.build/prog_asan.tmp
-    BUILD_PROG_COV=.build/prog_cov.tmp
-    BUILD_PROG_DEBUG=.build/prog_debug.tmp
+    BUILD_PROG_MAIN=build_prog_main.tmp
+    BUILD_PROG_ASAN=build_prog_asan.tmp
+    BUILD_PROG_COV=build_prog_cov.tmp
+    BUILD_PROG_DEBUG=build_prog_debug.tmp
     mkdir -p .build
 
     LINK="${LIBTOOL} --tag=CC --mode=link"
@@ -807,7 +809,7 @@ update_build_prog() {
     echo "LIBS=\"${LIBS_ASAN}\"" >> ${BUILD_PROG_ASAN}
     echo >> ${BUILD_PROG_ASAN}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_PROG_ASAN}
-    update_and_chmod 755 ${BUILD_PROG_ASAN} .build/prog_asan
+    update_and_chmod 755 ${BUILD_PROG_ASAN} build_prog_asan
 
     echo "#!/bin/sh" >> ${BUILD_PROG_COV}
     echo "# gen by configure" >> ${BUILD_PROG_COV}
@@ -819,7 +821,7 @@ update_build_prog() {
     echo "LIBS=\"${LIBS_COV}\"" >> ${BUILD_PROG_COV}
     echo >> ${BUILD_PROG_COV}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_PROG_COV}
-    update_and_chmod 755 ${BUILD_PROG_COV} .build/prog_cov
+    update_and_chmod 755 ${BUILD_PROG_COV} build_prog_cov
 
     echo "#!/bin/sh" >> ${BUILD_PROG_DEBUG}
     echo "# gen by configure" >> ${BUILD_PROG_DEBUG}
@@ -831,19 +833,19 @@ update_build_prog() {
     echo "LIBS=\"${LIBS_DEBUG}\"" >> ${BUILD_PROG_DEBUG}
     echo >> ${BUILD_PROG_DEBUG}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_PROG_DEBUG}
-    update_and_chmod 755 ${BUILD_PROG_DEBUG} .build/prog_debug
+    update_and_chmod 755 ${BUILD_PROG_DEBUG} build_prog_debug
 
     echo "#!/bin/sh" >> ${BUILD_PROG_MAIN}
     echo "# gen by configure" >> ${BUILD_PROG_MAIN}
     echo "LOG=\".build/\$1.main.log\"" >> ${BUILD_PROG_MAIN}
     echo "CC=\"${CC}\"" >> ${BUILD_PROG_MAIN}
-    echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_PROG_MAIN}
+    echo "CFLAGS=\"${CFLAGS}\"" >> ${BUILD_PROG_MAIN}
     echo "LDFLAGS=\"${LDFLAGS}\"" >> ${BUILD_PROG_MAIN}
     echo "OBJECTS=\"${OBJECTS}\"" >> ${BUILD_PROG_MAIN}
     echo "LIBS=\"${LIBS}\"" >> ${BUILD_PROG_MAIN}
     echo >> ${BUILD_PROG_MAIN}
     echo "$LINK > \"\$LOG\" 2>&1 || $LINK" >> ${BUILD_PROG_MAIN}
-    update_and_chmod 755 ${BUILD_PROG_MAIN} .build/prog_main
+    update_and_chmod 755 ${BUILD_PROG_MAIN} build_prog_main
 }
 
 update_file() {

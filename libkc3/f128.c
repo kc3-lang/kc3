@@ -28,7 +28,7 @@ f128 * f128_init_cast (f128 *x, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_BOOL:
-    *x = tag->data.bool ? 1.0 : 0.0;
+    *x = tag->data.bool_ ? 1.0 : 0.0;
     return x;
   case TAG_CHARACTER:
     *x = (f128) tag->data.character;

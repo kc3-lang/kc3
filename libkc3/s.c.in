@@ -38,7 +38,7 @@ s_bits$ * s_bits$_init_cast
   (void) type;
   switch (tag->type) {
   case TAG_BOOL:
-    *s = tag->data.bool ? 1 : 0;
+    *s = tag->data.bool_ ? 1 : 0;
     return s;
   case TAG_CHARACTER:
     *s = (s_bits$) tag->data.character;

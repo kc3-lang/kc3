@@ -3871,7 +3871,7 @@ sw buf_parse_tag_bool (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_bool(buf, &dest->data.bool)) > 0)
+  if ((r = buf_parse_bool(buf, &dest->data.bool_)) > 0)
     dest->type = TAG_BOOL;
   return r;
 }

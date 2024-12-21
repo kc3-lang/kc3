@@ -317,7 +317,7 @@ s_tag * tag_bor (s_tag *a, s_tag *b, s_tag *result)
     switch (b->type) {
     case TAG_BOOL:
       return tag_init_u8(result, a->data.u8 |
-                         (b->data.bool ? 1 : 0));
+                         (b->data.bool_ ? 1 : 0));
     case TAG_CHARACTER:
       return tag_init_u32(result, a->data.u8 | b->data.character);
     case TAG_INTEGER:
@@ -354,7 +354,7 @@ s_tag * tag_bor (s_tag *a, s_tag *b, s_tag *result)
     switch (b->type) {
     case TAG_BOOL:
       return tag_init_u16(result, a->data.u16 |
-                         (b->data.bool ? 1 : 0));
+                         (b->data.bool_ ? 1 : 0));
     case TAG_CHARACTER:
       return tag_init_u32(result, a->data.u16 | b->data.character);
     case TAG_INTEGER:
@@ -391,7 +391,7 @@ s_tag * tag_bor (s_tag *a, s_tag *b, s_tag *result)
     switch (b->type) {
     case TAG_BOOL:
       return tag_init_u32(result, a->data.u32 |
-                         (b->data.bool ? 1 : 0));
+                         (b->data.bool_ ? 1 : 0));
     case TAG_CHARACTER:
       return tag_init_u32(result, a->data.u32 | b->data.character);
     case TAG_INTEGER:
@@ -428,7 +428,7 @@ s_tag * tag_bor (s_tag *a, s_tag *b, s_tag *result)
     switch (b->type) {
     case TAG_BOOL:
       return tag_init_u64(result, a->data.u64 |
-                         (b->data.bool ? 1 : 0));
+                         (b->data.bool_ ? 1 : 0));
     case TAG_CHARACTER:
       return tag_init_u64(result, a->data.u64 | b->data.character);
     case TAG_INTEGER:
@@ -525,7 +525,7 @@ s_tag * tag_bor (s_tag *a, s_tag *b, s_tag *result)
     switch (b->type) {
     case TAG_BOOL:
       return tag_init_uw(result, a->data.uw |
-                         (b->data.bool ? 1 : 0));
+                         (b->data.bool_ ? 1 : 0));
     case TAG_CHARACTER:
       return tag_init_uw(result, a->data.uw | b->data.character);
     case TAG_INTEGER:

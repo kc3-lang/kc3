@@ -4057,7 +4057,7 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
       goto ko;
     if (cond_bool.type != TAG_BOOL)
       goto ko;
-    if (! cond_bool.data.bool)
+    if (! cond_bool.data.bool_)
       break;
     if (! env_eval_tag(env, body, &tmp))
       goto ko;

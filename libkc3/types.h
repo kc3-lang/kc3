@@ -24,6 +24,10 @@
 #include "sha1.h"
 #include "../libtommath/tommath.h"
 
+#ifdef __cplusplus
+extern "C" {
+#else
+
 #ifdef bool
 # undef bool
 #endif
@@ -52,6 +56,8 @@
 #  error "Cannot define thread_local"
 # endif
 #endif
+
+#endif /* __cplusplus */
 
 /* Basic integer types. */
 typedef int8_t             s8;
@@ -95,13 +101,22 @@ typedef double      f64;
 typedef long double f128;
 
 /* Boolean : true or false. */
+#ifdef __cplusplus
+typedef u8 BOOL;
+#else
 typedef u8 bool;
+#endif
 
 /* enums */
+
+#ifndef __cplusplus
+
 typedef enum {
   false = 0,
   true = 1
 } e_bool;
+
+#endif /* __cplusplus */
 
 typedef enum {
   CALLABLE_VOID = 0,
@@ -199,7 +214,7 @@ typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct map                     s_map;
 typedef struct mutex                   s_mutex;
-typedef struct operator                s_operator;
+typedef struct operator_               s_operator;
 typedef struct pretty                  s_pretty;
 typedef struct pretty_save             s_pretty_save;
 typedef struct queue                   s_queue;
@@ -567,7 +582,7 @@ struct callable {
 union tag_data {
   s_array       array;
   s_block       block;
-  bool          bool;
+  bool          bool_;
   s_call        call;
   p_callable    callable;
   character     character;
@@ -659,7 +674,7 @@ struct list {
   s_tag next;
 };
 
-struct operator {
+struct operator_ {
   const s_sym *sym;
   const s_sym *operator_associativity;
   sw           operator_precedence;
@@ -803,5 +818,9 @@ struct facts_with_cursor {
   p_facts_spec spec;
   s_mutex mutex;
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LIBKC3_TYPES_H */

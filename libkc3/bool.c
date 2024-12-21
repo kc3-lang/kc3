@@ -29,7 +29,7 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   assert(type);
   assert(tag);
   switch (tag->type) {
-  case TAG_BOOL:      *b = tag->data.bool;                     return b;
+  case TAG_BOOL:      *b = tag->data.bool_;                    return b;
   case TAG_CHARACTER: *b = (bool) tag->data.character;         return b;
   case TAG_COMPLEX:   *b = ! complex_is_zero(tag->data.complex);
                                                                return b;

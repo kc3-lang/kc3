@@ -10,8 +10,25 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "ncpu.hxx"
+/**
+ * @file std.hxx
+ * @brief Standard C++ library.
+ *
+ * Functions of the C++ std:: library.
+ */
+#ifndef LIBKC3_STD_HXX
+#define LIBKC3_STD_HXX
 
-sw ncpu (void) {
-  return std::thread::hardware_concurrency();
+#include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+sw std_thread_hardware_concurrency (void);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* LIBKC3_STD_HXX */

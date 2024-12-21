@@ -10,21 +10,13 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/**
- * @file ncpu.hh
- * @brief Number of CPUs and threads.
- *
- * Function that returns the number of CPU cores and threads.
- */
-#ifndef LIBKC3_NCPU_HXX
-#define LIBKC3_NCPU_HXX
+#include <thread>
+#include "std.hxx"
 
 extern "C" {
 
-#include "types.h"
-
-  sw ncpu (void);
+  sw std_thread_hardware_concurrency (void) {
+    return std::thread::hardware_concurrency();
+  }
 
 }
-
-#endif /* LIBKC3_NCPU_HXX */

@@ -38,7 +38,7 @@ s32 * s32_init_cast
   (void) type;
   switch (tag->type) {
   case TAG_BOOL:
-    *s = tag->data.bool ? 1 : 0;
+    *s = tag->data.bool_ ? 1 : 0;
     return s;
   case TAG_CHARACTER:
     *s = (s32) tag->data.character;

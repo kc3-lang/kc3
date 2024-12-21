@@ -37,7 +37,7 @@ u32 * u32_init_cast
   (void) type;
   switch (tag->type) {
   case TAG_BOOL:
-    *u = tag->data.bool ? 1 : 0;
+    *u = tag->data.bool_ ? 1 : 0;
     return u;
   case TAG_CHARACTER:
     *u = (u32) tag->data.character;

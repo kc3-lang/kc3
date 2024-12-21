@@ -107,6 +107,12 @@ s_tag * tag_assign (s_tag *tag, s_tag *value, s_tag *dest)
   return NULL;
 }
 
+s_tag * tag_bool (s_tag *tag, bool b)
+{
+  tag_clean(tag);
+  return tag_init_bool(tag, b);
+}
+
 s_tag * tag_brackets (s_tag *tag, s_tag *address, s_tag *dest)
 {
   assert(tag);
@@ -365,6 +371,15 @@ s_tag * tag_init_1 (s_tag *tag, const char *p)
   return tag;
 }
 
+s_tag * tag_init_bool (s_tag *tag, bool b)
+{
+  s_tag tmp = {0};
+  tmp.type = TAG_BOOL;
+  tmp.data.bool_ = b;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_call_cast (s_tag *tag, const s_sym *type)
 {
   s_tag tmp = {0};
@@ -458,7 +473,7 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     return tag;
   case TAG_BOOL:
     tag->type = src->type;
-    tag->data.bool = src->data.bool;
+    tag->data.bool_ = src->data.bool_;
     return tag;
   case TAG_BLOCK:
     tag->type = src->type;
@@ -1094,7 +1109,7 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   switch (tag_type) {
   case TAG_ARRAY:       *dest = &tag->data.array;       return true;
   case TAG_BLOCK:       *dest = &tag->data.block;       return true;
-  case TAG_BOOL:        *dest = &tag->data.bool;        return true;
+  case TAG_BOOL:        *dest = &tag->data.bool_;        return true;
   case TAG_CALL:        *dest = &tag->data.call;        return true;
   case TAG_CALLABLE:    *dest = &tag->data.callable;    return true;
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;
@@ -1176,7 +1191,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_BOOL:
     if (type == &g_sym_Bool) {
-      *dest = &tag->data.bool;
+      *dest = &tag->data.bool_;
       return true;
     }
     goto invalid_cast;
@@ -1466,7 +1481,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   switch (tag_type) {
   case TAG_ARRAY:       *dest = &tag->data.array;       return true;
   case TAG_BLOCK:       *dest = &tag->data.block;       return true;
-  case TAG_BOOL:        *dest = &tag->data.bool;        return true;
+  case TAG_BOOL:        *dest = &tag->data.bool_;        return true;
   case TAG_CALL:        *dest = &tag->data.call;        return true;
   case TAG_CALLABLE:    *dest = &tag->data.callable;    return true;
   case TAG_CHARACTER:   *dest = &tag->data.character;   return true;

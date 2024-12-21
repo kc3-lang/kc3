@@ -3708,7 +3708,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   switch(tag->type) {
   case TAG_ARRAY:   return buf_inspect_array(buf, &tag->data.array);
   case TAG_BLOCK:   return buf_inspect_block(buf, &tag->data.block);
-  case TAG_BOOL:    return buf_inspect_bool(buf, &tag->data.bool);
+  case TAG_BOOL:    return buf_inspect_bool(buf, &tag->data.bool_);
   case TAG_CALL:    return buf_inspect_call(buf, &tag->data.call);
   case TAG_CALLABLE:
     return buf_inspect_callable(buf, tag->data.callable);
@@ -3768,7 +3768,7 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
   case TAG_BLOCK:
     return buf_inspect_block_size(pretty, &tag->data.block);
   case TAG_BOOL:
-    return buf_inspect_bool_size(pretty, &tag->data.bool);
+    return buf_inspect_bool_size(pretty, &tag->data.bool_);
   case TAG_CALL:
     return buf_inspect_call_size(pretty, &tag->data.call);
   case TAG_CALLABLE:

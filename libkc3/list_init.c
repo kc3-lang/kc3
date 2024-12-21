@@ -64,17 +64,6 @@ s_list * list_init_array_copy (s_list *list, const s_array *a,
   return list;
 }
 
-s_list * list_init_bool (s_list *list, bool b, s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_bool(&tmp.tag, b))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
 s_list * list_init_call (s_list *list, s_list *next)
 {
   s_list tmp = {0};
@@ -681,19 +670,6 @@ s_list * list_new_array_copy (const s_array *a, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_array_copy(&list->tag, a)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_bool (bool b, s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_bool(&list->tag, b)) {
     free(list);
     return NULL;
   }

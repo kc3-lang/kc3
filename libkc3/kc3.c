@@ -422,7 +422,7 @@ s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
   const s_sym *type;
   if (env_eval_tag(g_kc3_env, cond, &cond_eval)) {
     if (cond_eval.type == TAG_BOOL)
-      cond_bool = cond_eval.data.bool;
+      cond_bool = cond_eval.data.bool_;
     else {
       type = &g_sym_Bool;
       if (! bool_init_cast(&cond_bool, &type, &cond_eval)) {

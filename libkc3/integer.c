@@ -142,7 +142,7 @@ s_integer * integer_init_cast (s_integer *a, const s_sym * const *type,
   (void) type;
   switch (tag->type) {
   case TAG_BOOL:
-    return integer_init_u8(a, tag->data.bool ? 1 : 0);
+    return integer_init_u8(a, tag->data.bool_ ? 1 : 0);
   case TAG_CHARACTER:
     return integer_init_u32(a, tag->data.character);
   case TAG_F32:

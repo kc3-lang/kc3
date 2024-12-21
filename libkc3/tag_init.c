@@ -65,16 +65,6 @@ s_tag * tag_init_array_copy (s_tag *tag, const s_array *a)
   return tag;
 }
 
-s_tag * tag_init_bool (s_tag *tag, bool b)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_BOOL;
-  tmp.data.bool = b;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_init_call (s_tag *tag)
 {
   s_tag tmp = {0};
@@ -664,17 +654,6 @@ s_tag * tag_new_array_copy (const s_array *a)
     free(tag);
     return NULL;
   }
-  return tag;
-}
-
-s_tag * tag_new_bool (bool b)
-{
-  s_tag *tag;
-  tag = alloc(sizeof(s_tag));
-  if (! tag)
-    return NULL;
-  tag->type = TAG_BOOL;
-  tag->data.bool = b;
   return tag;
 }
 
@@ -1377,17 +1356,6 @@ s_tag * tag_array_copy (s_tag *tag, const s_array *a)
   tmp.type = TAG_ARRAY;
   if (! array_init_copy(&tmp.data.array, a))
     return NULL;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_bool (s_tag *tag, bool b)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_BOOL;
-  tmp.data.bool = b;
   *tag = tmp;
   return tag;
 }
