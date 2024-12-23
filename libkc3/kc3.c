@@ -734,13 +734,27 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
   s32 mib_len = 0;
   s32 i;
   const s_list *l;
-  l = list;
+  l = *list;
   while (l) {
     if (l->tag.type != TAG_SYM) {
-      err_puts("kc3_sysctl: argument is not a Sym list")
-      assert(! "kc3_sysctl: argument is not a Sym list")
+      err_puts("kc3_sysctl: argument is not a Sym list");
+      assert(! "kc3_sysctl: argument is not a Sym list");
+    }
+    if (l->tag.data.sym == sym_1("hw"))
+      mib[mib_len] = CTL_HW;
+    else if (l->tag.data.sym == sym_1("kern"))
+      mib[mib_len] = CTL_KERN;
+    else {
+      err_write_1("kc3_sysctl: invalid argument: ");
+      err_inspect_sym(l->tag.data.sym);
+      err_write_1("\n");
+      assert("kc3_sysctl: invalid argument")
+      return NULL;
+    }
+    mib_len++;
     l = list_next(l);
   }
+  if (sysctl(mib, mib_len,
 }
 s_str * kc3_system (const s_list * const *list, s_str *dest)
 {
