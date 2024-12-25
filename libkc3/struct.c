@@ -191,6 +191,11 @@ u8 struct_get_u8 (const s_struct *s, const s_sym *key)
   return *(u8 *) struct_get(s, key);
 }
 
+uw struct_get_uw (const s_struct *s, const s_sym *key)
+{
+  return *(uw *) struct_get(s, key);
+}
+
 const s_sym ** struct_get_var_type (const s_struct *s, const s_sym *key,
                                     const s_sym **dest)
 {
@@ -204,6 +209,11 @@ void * struct_get_w (s_struct *s, const s_sym *key)
   uw i = 0;
   assert(s);
   assert(key);
+  if (! s->data) {
+    err_puts("struct_get_w: struct is not allocated");
+    assert(! "struct_get_w: struct is not allocated");
+    return NULL;
+  }
   if (! struct_find_key_index(s, key, &i))
     return NULL;
   assert(i < s->type->map.count);

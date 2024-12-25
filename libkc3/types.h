@@ -174,6 +174,7 @@ typedef enum {
 } e_tag_type;
 
 /* structs */
+typedef struct alloc                   s_alloc;
 typedef struct arg                     s_arg;
 typedef struct array                   s_array;
 typedef struct array_dimension         s_array_dimension;
@@ -264,7 +265,12 @@ typedef bool (* f_sequence_button) (s_sequence *seq, u8 button, sw x,
 #define SKIPLIST_HEIGHT_MAX U64_MAX
 
 /* 1 */
-  
+
+struct alloc {
+  uw size;
+  void *start;
+};
+
 struct array_dimension {
   uw count;
   uw item_size;
@@ -454,8 +460,8 @@ struct file_stat {
   uw st_blksize;  /* Block size for filesystem I/O */
   uw st_blocks;   /* Number of 512B blocks allocated */
   s_time st_atim; /* Time of last access */
-  s_time st_mtim; /* Time of last modification */
   s_time st_ctim; /* Time of last status change */
+  s_time st_mtim; /* Time of last modification */
 };
 
 struct ident {
@@ -737,6 +743,7 @@ TYPEDEF_SET_CURSOR(fact);
     u8 height;                                                         \
   } s_skiplist_node__##name
 
+TYPEDEF_SKIPLIST_NODE(alloc, s_alloc *);
 TYPEDEF_SKIPLIST_NODE(fact, s_fact *);
 
 #define TYPEDEF_SKIPLIST(name, type)                                   \
@@ -747,6 +754,7 @@ TYPEDEF_SKIPLIST_NODE(fact, s_fact *);
     u8 max_height;                                                     \
   } s_skiplist__##name
 
+TYPEDEF_SKIPLIST(alloc, s_alloc *);
 TYPEDEF_SKIPLIST(fact, s_fact *);
 
 /* 8 */

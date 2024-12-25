@@ -6,6 +6,11 @@ KC3_CONFIGURES = \
 	"event/configure" \
 	"event/sources.sh" \
 	"event/update_sources" \
+	"fs/configure" \
+	"fs/fuse/configure" \
+	"fs/fuse/sources.sh" \
+	"fs/fuse/update_sources" \
+	"fs/update_sources" \
 	"gtk4/configure" \
 	"gtk4/sources.sh" \
 	"gtk4/update_sources" \
@@ -81,6 +86,9 @@ KC3_MAKEFILES = \
 	"ekc3/sources.mk" \
 	"event/Makefile" \
 	"event/sources.mk" \
+	"fs/Makefile" \
+	"fs/fuse/Makefile" \
+	"fs/fuse/sources.mk" \
 	"gtk4/Makefile" \
 	"gtk4/sources.mk" \
 	"http/Makefile" \
@@ -141,6 +149,9 @@ KC3_C_SOURCES = \
 	"ekc3/types.h" \
 	"event/event.c" \
 	"event/event.h" \
+	"fs/OpenBSD/kc3fs.h" \
+	"fs/fuse/mount_kc3fs.c" \
+	"fs/fuse/types.h" \
 	"gtk4/action_map.c" \
 	"gtk4/action_map.h" \
 	"gtk4/application.c" \
@@ -542,10 +553,14 @@ KC3_C_SOURCES = \
 	"libkc3/sign.h" \
 	"libkc3/skiplist.c.in" \
 	"libkc3/skiplist.h.in" \
+	"libkc3/skiplist__alloc.c" \
+	"libkc3/skiplist__alloc.h" \
 	"libkc3/skiplist__fact.c" \
 	"libkc3/skiplist__fact.h" \
 	"libkc3/skiplist_node.c.in" \
 	"libkc3/skiplist_node.h.in" \
+	"libkc3/skiplist_node__alloc.c" \
+	"libkc3/skiplist_node__alloc.h" \
 	"libkc3/skiplist_node__fact.c" \
 	"libkc3/skiplist_node__fact.h" \
 	"libkc3/special_operator.c" \
@@ -1113,6 +1128,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/fd.kc3" \
 	"lib/kc3/0.1/file.kc3" \
 	"lib/kc3/0.1/file/stat.kc3" \
+	"lib/kc3/0.1/file_stat.kc3" \
 	"lib/kc3/0.1/gl/dvec2.kc3" \
 	"lib/kc3/0.1/gl/dvec3.kc3" \
 	"lib/kc3/0.1/gl/object.kc3" \
@@ -1156,6 +1172,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/list.kc3" \
 	"lib/kc3/0.1/map.facts" \
 	"lib/kc3/0.1/markdown.kc3" \
+	"lib/kc3/0.1/parse.kc3" \
 	"lib/kc3/0.1/ptr.facts" \
 	"lib/kc3/0.1/ptr_free.facts" \
 	"lib/kc3/0.1/ratio.facts" \

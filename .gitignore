@@ -25,6 +25,10 @@ current_test
 *.dll
 .DS_Store
 *.exe
+fs/fuse/mount_kc3fs
+fs/fuse/mount_kc3fs_asan
+fs/fuse/mount_kc3fs_cov
+fs/fuse/mount_kc3fs_debug
 *.gcno
 *.html
 httpd.log

@@ -469,7 +469,6 @@ s_file_stat * file_stat (const s_str *path, s_file_stat *dest)
 {
   s32 e;
   struct stat sb;
-  s_file_stat tmp = {0};
   assert(path);
   assert(dest);
   if (stat(path->ptr.pchar, &sb)) {
@@ -480,44 +479,117 @@ s_file_stat * file_stat (const s_str *path, s_file_stat *dest)
     err_puts(path->ptr.pchar);
     return NULL;
   }
-  tmp.st_dev = sb.st_dev;
-  tmp.st_ino = sb.st_ino;
-  tmp.st_mode = NULL;
-  if (sb.st_mode & S_IFREG)
+  return file_stat_init_struct_stat(dest, &sb);
+}
+
+s_file_stat * file_stat_init_struct_stat (s_file_stat *dest,
+                                          const struct stat *sb)
+{
+  s_file_stat tmp = {0};
+  assert(dest);
+  assert(sb);
+  tmp.st_dev = sb->st_dev;
+  tmp.st_ino = sb->st_ino;
+  tmp.st_mode = 0;
+  if (sb->st_mode & S_IFREG)
     tmp.st_mode = list_new_sym(&g_sym_file, tmp.st_mode);
-  else if (sb.st_mode & S_IFDIR)
+  else if (sb->st_mode & S_IFDIR)
     tmp.st_mode = list_new_sym(&g_sym_directory, tmp.st_mode);
-  tmp.st_nlink = sb.st_nlink;
-  tmp.st_uid = sb.st_uid;
-  tmp.st_gid = sb.st_gid;
-  tmp.st_rdev = sb.st_rdev;
-  tmp.st_size = sb.st_size;
+  tmp.st_nlink = sb->st_nlink;
+  tmp.st_uid = sb->st_uid;
+  tmp.st_gid = sb->st_gid;
+  tmp.st_rdev = sb->st_rdev;
+  tmp.st_size = sb->st_size;
 #ifdef WIN32
   tmp.st_blksize = 0;
   tmp.st_blocks = 0;
 #else
-  tmp.st_blksize = sb.st_blksize;
-  tmp.st_blocks = sb.st_blocks;
+  tmp.st_blksize = sb->st_blksize;
+  tmp.st_blocks = sb->st_blocks;
 #endif
 #if HAVE_STAT_MTIM
 # ifdef __APPLE__
-  tmp.st_atim.tv_sec  = sb.st_mtimespec.tv_sec;
-  tmp.st_atim.tv_nsec = sb.st_mtimespec.tv_nsec;
+  tmp.st_atim.tv_sec  = sb->st_mtimespec.tv_sec;
+  tmp.st_atim.tv_nsec = sb->st_mtimespec.tv_nsec;
 # else
-  tmp.st_atim.tv_sec  = sb.st_atim.tv_sec;
-  tmp.st_atim.tv_nsec = sb.st_atim.tv_nsec;
-  tmp.st_mtim.tv_sec  = sb.st_mtim.tv_sec;
-  tmp.st_mtim.tv_nsec = sb.st_mtim.tv_nsec;
-  tmp.st_ctim.tv_sec  = sb.st_ctim.tv_sec;
-  tmp.st_ctim.tv_nsec = sb.st_ctim.tv_nsec;
+  tmp.st_atim.tv_sec  = sb->st_atim.tv_sec;
+  tmp.st_atim.tv_nsec = sb->st_atim.tv_nsec;
+  tmp.st_mtim.tv_sec  = sb->st_mtim.tv_sec;
+  tmp.st_mtim.tv_nsec = sb->st_mtim.tv_nsec;
+  tmp.st_ctim.tv_sec  = sb->st_ctim.tv_sec;
+  tmp.st_ctim.tv_nsec = sb->st_ctim.tv_nsec;
 # endif
 #else
-  tmp.st_atim.tv_sec  = sb.st_atime;
+  tmp.st_atim.tv_sec  = sb->st_atime;
   tmp.st_atim.tv_nsec = 0;
-  tmp.st_mtim.tv_sec  = sb.st_mtime;
+  tmp.st_mtim.tv_sec  = sb->st_mtime;
   tmp.st_mtim.tv_nsec = 0;
-  tmp.st_ctim.tv_sec  = sb.st_ctime;
+  tmp.st_ctim.tv_sec  = sb->st_ctime;
   tmp.st_ctim.tv_nsec = 0;
+#endif
+  *dest = tmp;
+  return dest;
+}
+
+struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
+                                        struct stat *dest)
+{
+  bool b;
+  s_tag tag_sym_directory;
+  s_tag tag_sym_file;
+  struct stat tmp = {0};
+  assert(file_stat);
+  assert(dest);
+  tmp.st_dev = file_stat->st_dev;
+  tmp.st_ino = file_stat->st_ino;
+  tmp.st_mode = 0;
+  tag_init_sym(&tag_sym_file, &g_sym_file);
+  if (! list_has((const s_list * const *) &file_stat->st_mode,
+                 &tag_sym_file, &b)) {
+    err_puts("file_stat_to_struct_stat: list_has(:file)");
+    err_puts("file_stat_to_struct_stat: list_has(:file)");
+  }
+  if (b)
+    tmp.st_mode |= S_IFREG;
+  else {
+    tag_init_sym(&tag_sym_directory, &g_sym_directory);
+    if (! list_has((const s_list * const *) &file_stat->st_mode,
+                   &tag_sym_directory, &b)) {
+      err_puts("file_stat_to_struct_stat: list_has(:directory)");
+      err_puts("file_stat_to_struct_stat: list_has(:directory)");
+    }
+    if (b)
+      tmp.st_mode |= S_IFDIR;
+  }
+  tmp.st_nlink = file_stat->st_nlink;
+  tmp.st_uid = file_stat->st_uid;
+  tmp.st_gid = file_stat->st_gid;
+  tmp.st_rdev = file_stat->st_rdev;
+  tmp.st_size = file_stat->st_size;
+#ifndef WIN32
+  tmp.st_blksize = file_stat->st_blksize;
+  tmp.st_blocks = file_stat->st_blocks;
+#endif
+#if HAVE_STAT_MTIM
+# ifdef __APPLE__
+  tmp.st_atimespec.tv_sec = file_stat->st_atim.tv_sec;
+  tmp.st_atimespec.tv_nsec = file_stat->st_atim.tv_nsec;
+  tmp.st_ctimespec.tv_sec = file_stat->st_ctim.tv_sec;
+  tmp.st_ctimespec.tv_nsec = file_stat->st_ctim.tv_nsec;
+  tmp.st_mtimespec.tv_sec = file_stat->st_mtim.tv_sec;
+  tmp.st_mtimespec.tv_nsec = file_stat->st_mtim.tv_nsec;
+# else
+  tmp.st_atim.tv_sec  = file_stat->st_atim.tv_sec;
+  tmp.st_atim.tv_nsec = file_stat->st_atim.tv_nsec;
+  tmp.st_ctim.tv_sec  = file_stat->st_ctim.tv_sec;
+  tmp.st_ctim.tv_nsec = file_stat->st_ctim.tv_nsec;
+  tmp.st_mtim.tv_sec  = file_stat->st_mtim.tv_sec;
+  tmp.st_mtim.tv_nsec = file_stat->st_mtim.tv_nsec;
+# endif
+#else
+  tmp.st_atime = file_stat->st_atim.tv_sec;
+  tmp.st_ctime = file_stat->st_ctim.tv_sec;
+  tmp.st_mtime = file_stat->st_mtim.tv_sec;
 #endif
   *dest = tmp;
   return dest;

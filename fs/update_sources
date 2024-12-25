@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+. ../config.subr
+
+echo "$PWD/update_sources"
+
+( cd fuse && ./update_sources; )

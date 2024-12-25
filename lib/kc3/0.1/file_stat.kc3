@@ -1,0 +1,17 @@
+defmodule FileStat do
+
+  defstruct [st_dev: (Uw) 0,
+             st_ino: (Uw) 0,
+             st_mode: [],
+             st_nlink: (Uw) 0,
+             st_uid: (Uw) 0,
+             st_gid: (Uw) 0,
+             st_rdev: (Uw) 0,
+             st_size: (Uw) 0,
+             st_blksize: (Uw) 0,
+             st_blocks: (Uw) 0,
+             st_atim: %Time{},
+             st_ctim: %Time{},
+             st_mtim: %Time{}]
+
+end

@@ -119,6 +119,7 @@ bool         kc3_maybe_reload (const s_str *path);
 s_tag *      kc3_operator_find_by_sym (const s_sym * const *sym,
                                        s_tag *dest);
 bool *       kc3_or (s_tag *a, s_tag *b, bool *dest);
+s_tag *      kc3_parse_tag (s_tag *tag, const s_str *src);
 bool         kc3_require (const s_sym * const *module);
 s_str *      kc3_strerror (sw err_no, s_str *dest);
 s_tag *      kc3_struct_put (s_tag *s, const s_sym * const *key,

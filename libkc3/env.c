@@ -2726,15 +2726,26 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
 
 s_env * env_init_args (s_env *env, int *argc, char ***argv)
 {
+  s32 argc_prev = 0;
   s_str argv0;
   assert(env);
   if (argc && argv && *argc && *argv) {
-    env->argc = (*argc)--;
-    env->argv = (*argv)++;
+    (*argc)--;
+    (*argv)++;
     str_init_1(&argv0, NULL, env->argv[0]);
     if (! (env->argv0_dir = alloc(sizeof(s_str))))
       return NULL;
     file_dirname(&argv0, env->argv0_dir);
+    while (*argc > 0 && *argc != argc_prev) {
+      argc_prev = *argc;
+      if (**argv && ! strcmp(**argv, "--trace")) {
+        env->trace = true;
+        (*argc)--;
+        (*argv)++;
+      }
+    }
+    env->argc = *argc;
+    env->argv = *argv;
     return env;
   }
   env->argc = 0;

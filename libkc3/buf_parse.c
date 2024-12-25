@@ -4530,6 +4530,7 @@ sw buf_parse_time_as_sw (s_buf *buf, s_time *dest)
       result += r;
       if ((r = buf_parse_sw(buf, &tmp.tv_sec)) <= 0)
         goto restore;
+      result += r;
       if ((r = buf_parse_comments(buf)) < 0)
         goto restore;
       result += r;
@@ -4568,6 +4569,7 @@ sw buf_parse_time_as_sw (s_buf *buf, s_time *dest)
       result += r;
       if ((r = buf_parse_sw(buf, &tmp.tv_nsec)) <= 0)
         goto restore;
+      result += r;
       if ((r = buf_parse_comments(buf)) < 0)
         goto restore;
       result += r;

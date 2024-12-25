@@ -350,6 +350,11 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   sw result = 0;
   assert(facts);
   assert(buf);
+  if (g_kc3_env->trace) {
+    err_write_1("facts_load: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+  }
   if ((r = buf_read_1(buf,
                       "%{module: KC3.Facts.Dump,\n"
                       "  version: 1}\n")) <= 0) {

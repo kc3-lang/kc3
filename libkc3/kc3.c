@@ -520,6 +520,24 @@ bool * kc3_or (s_tag *a, s_tag *b, bool *dest)
   return env_or(g_kc3_env, a, b, dest);
 }
 
+s_tag * kc3_parse_tag (s_tag *tag, const s_str *src)
+{
+  s_buf buf;
+  sw r;
+  buf_init_str_const(&buf, src);
+  r = buf_parse_tag(&buf, tag);
+  if (r < 0 || (uw) r != src->size) {
+    err_write_1("kc3_parse_tag: invalid tag: ");
+    err_inspect_sw_decimal(&r);
+    err_write_1(" != ");
+    err_inspect_u32_decimal(&src->size);
+    err_write_1("\n");
+    assert(! "kc3_parse_tag: invalid tag");
+    return NULL;
+  }
+  return tag;
+}
+
 sw kc3_puts (const s_tag *tag)
 {
   sw r;

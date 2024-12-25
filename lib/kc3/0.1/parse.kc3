@@ -1,0 +1,5 @@
+defmodule Parse do
+
+  def tag = cfn Tag "kc3_parse_tag" (Result, Str)
+
+end

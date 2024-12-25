@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "../libkc3/kc3.h"
+#include <libkc3/kc3.h>
 #include "../linenoise/linenoise.h"
 
 typedef struct buf_linenoise {

@@ -10,14 +10,12 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-CLEANFILES = *.a ikc3 ikc3_asan ikc3_cov ikc3_debug *.css *.gcno *.html *.o .libs *.lo
+CLEANFILES = *.a mount_kc3fs mount_kc3fs_asan mount_kc3fs_cov mount_kc3fs_debug *.css *.gcno *.html *.o .libs *.lo
 
 CLEANFILES_COV = *.css *.gcda *.html .libs/*.gcda
 CLEANFILES += ${CLEANFILES_COV}
 
 DISTCLEANFILES = ${CLEANFILES} config.mk
-
-build: ikc3
 
 all:
 	${MAKE} build
@@ -25,7 +23,9 @@ all:
 	${MAKE} debug
 	if ${HAVE_ASAN}; then ${MAKE} asan; fi
 
-asan: ikc3_asan
+build: mount_kc3fs
+
+asan: mount_kc3fs_asan
 
 clean:
 	rm -rf ${CLEANFILES}
@@ -33,41 +33,40 @@ clean:
 clean_cov:
 	rm -rf ${CLEANFILES_COV}
 
-cov:   ikc3_cov
+cov:   mount_kc3fs_cov
 
-debug: ikc3_debug
+debug: mount_kc3fs_debug
 
 distclean:
 	rm -rf ${DISTCLEANFILES}
 
 gcovr:
-	gcovr --gcov-executable ${GCOV} --html-details ikc3.html
+	gcovr --gcov-executable ${GCOV} --html-details kc3fs.html
 
-gdb_ikc3: debug
-	if [ -f ikc3_debug.core ]; then gdb .libs/ikc3_debug ikc3_debug.core; else gdb .libs/ikc3_debug; fi
+gdb_kc3fs: debug
+	if [ -f kc3fs_debug.core ]; then gdb .libs/kc3fs_debug kc3fs_debug.core; else gdb .libs/kc3fs_debug; fi
 
-gdb_ikc3_asan: asan
-	if [ -f ikc3_debug.core ]; then gdb .libs/ikc3_asan ikc3_asan.core; else gdb .libs/ikc3_asan; fi
+gdb_kc3fs_asan: asan
+	if [ -f kc3fs_debug.core ]; then gdb .libs/kc3fs_asan kc3fs_asan.core; else gdb .libs/kc3fs_asan; fi
 
 install:
 	mkdir -p ${prefix}/bin
-	install -m 755 .libs/ikc3 ${prefix}/bin/ikc3
+	install -m 755 .libs/mount_kc3fs ${prefix}/bin/mount_kc3fs
 
-lldb_ikc3: debug
-	if [ -f ikc3_debug.core ]; then lldb .libs/ikc3_debug ikc3_debug.core; else lldb .libs/ikc3_debug; fi
+lldb_kc3fs: debug
+	if [ -f kc3fs_debug.core ]; then lldb .libs/kc3fs_debug kc3fs_debug.core; else lldb .libs/kc3fs_debug; fi
 
 .PHONY: \
 	all \
 	asan \
-	build \
 	clean \
 	clean_cov \
 	cov \
 	debug \
 	distclean \
-	gdb_ikc3 \
+	gdb_kc3fs \
 	install \
-	lldb_ikc3 \
+	lldb_kc3fs \
 	update_sources \
 
 include config.mk

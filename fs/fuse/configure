@@ -15,21 +15,21 @@ set -e
 
 echo "$PWD/configure"
 
-export SRC_TOP="$(dirname "$PWD")"
+export SRC_TOP="$(dirname "$(dirname "$PWD")")"
 
-CONFIG_H_PREFIX=IKC3_
+CONFIG_H_PREFIX=KC3_FS_
 
-. ../config.subr
+. ../../config.subr
 
-PROG=ikc3
-PROG_ASAN=ikc3_asan
-PROG_COV=ikc3_cov
-PROG_DEBUG=ikc3_debug
+PROG=mount_kc3fs
+PROG_ASAN=mount_kc3fs_asan
+PROG_COV=mount_kc3fs_cov
+PROG_DEBUG=mount_kc3fs_debug
 
 . ./sources.sh
 
 # Common config for all targets
-CPPFLAGS="-I.. $CPPFLAGS"
+CPPFLAGS="-I../.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -fPIC -pthread"
 config_asan
 config_gnu
@@ -38,23 +38,13 @@ config_win32
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd
+pkg_config fuse
 config_lib libmd -lmd 2>/dev/null
 config_lib dl -ldl 2>/dev/null
-pkg_config wineditline
 if ! $HAVE_WIN32; then
     LDFLAGS="$LDFLAGS -rdynamic"
 fi
 LIBS="$LIBS"
-
-if pkg-config wineditline; then
-    echo "#define HAVE_WINEDITLINE 1" >> ${CONFIG_H}
-    HAVE_WINEDITLINE=true
-    SOURCES="$SOURCES $SOURCES_WINEDITLINE"
-else
-    echo "#define HAVE_WINEDITLINE 0" >> ${CONFIG_H}
-    HAVE_WINEDITLINE=false
-    SOURCES="$SOURCES $SOURCES_LINENOISE"
-fi
 
 update_config_h
 
@@ -76,15 +66,15 @@ CPPFLAGS_ASAN="$CPPFLAGS"
 CFLAGS_ASAN="$CFLAGS -DDEBUG -O1 -g"
 CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBKC3_ASAN=../libkc3/libkc3_asan.la
+LIBKC3_ASAN=../../libkc3/libkc3_asan.la
 LOCAL_LIBS_ASAN="$LIBKC3_ASAN"
 LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
-CFLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
+FLAGS_COV="$CFLAGS -fprofile-arcs -ftest-coverage"
 LDFLAGS_COV="$LDFLAGS --coverage"
-LIBKC3_COV=../libkc3/libkc3_cov.la
+LIBKC3_COV=../../libkc3/libkc3_cov.la
 LOCAL_LIBS_COV="$LIBKC3_COV"
 LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 
@@ -92,7 +82,7 @@ LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 CPPFLAGS_DEBUG="$CPPFLAGS"
 CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
 LDFLAGS_DEBUG="$LDFLAGS"
-LIBKC3_DEBUG=../libkc3/libkc3_debug.la
+LIBKC3_DEBUG=../../libkc3/libkc3_debug.la
 LOCAL_LIBS_DEBUG="$LIBKC3_DEBUG"
 LIBS_DEBUG="$LOCAL_LIBS_DEBUG $LIBS"
 
@@ -102,7 +92,7 @@ if [ "x$ENV_CFLAGS" = "x" ]; then
     CFLAGS="$CFLAGS $DEFAULT_CFLAGS"
 fi
 CFLAGS="$CFLAGS -DNDEBUG"
-LIBKC3=../libkc3/libkc3.la
+LIBKC3=../../libkc3/libkc3.la
 LOCAL_LIBS="$LIBKC3"
 LIBS="$LOCAL_LIBS $LIBS"
 
@@ -112,25 +102,22 @@ echo "CFLAGS = $CFLAGS" >> ${CONFIG_MK}
 echo "LDFLAGS = $LDFLAGS" >> ${CONFIG_MK}
 echo "LIBS = $LIBS" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
-echo "CPPFLAGS_ASAN = $CPPFLAGS_ASAN" >> ${CONFIG_MK}
 echo "CFLAGS_ASAN = $CFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LDFLAGS_ASAN = $LDFLAGS_ASAN" >> ${CONFIG_MK}
 echo "LIBS_ASAN = $LIBS_ASAN" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
-echo "CPPFLAGS_COV = $CPPFLAGS_COV" >> ${CONFIG_MK}
 echo "CFLAGS_COV = $CFLAGS_COV" >> ${CONFIG_MK}
 echo "LDFLAGS_COV = $LDFLAGS_COV" >> ${CONFIG_MK}
 echo "LIBS_COV = $LIBS_COV" >> ${CONFIG_MK}
 echo >> ${CONFIG_MK}
-echo "CPPFLAGS_DEBUG = $CPPFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
-update_build_c
+update_build
 update_build_prog
 
-build_lo_c
+build_lo
 build_prog
 
 update_config_mk

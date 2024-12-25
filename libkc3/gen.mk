@@ -78,6 +78,8 @@ GENERATED_FILES = \
 	set_cursor__tag.c set_cursor__tag.h \
 	set_item__fact.c set_item__fact.h \
 	set_item__tag.c set_item__tag.h \
+	skiplist__alloc.c skiplist__alloc.h \
+	skiplist_node__alloc.c skiplist_node__alloc.h \
 	skiplist__fact.c skiplist__fact.h \
 	skiplist_node__fact.c skiplist_node__fact.h \
 	s8.c s8.h s16.c s16.h s32.c s32.h s64.c s64.h sw.c sw.h \
@@ -611,6 +613,22 @@ set_item__fact.h: set_item.h.in gen.mk
 
 set_item__fact.c: set_item.c.in gen.mk
 	${SED_FACT} < set_item.c.in > set_item__fact.c
+
+SED_ALLOC = sed \
+	-e 's/_NAME[$$]/alloc/g' \
+	-e 's/_TYPE[$$]/s_alloc */g'
+
+skiplist__alloc.h: skiplist.h.in gen.mk
+	${SED_ALLOC} < skiplist.h.in > skiplist__alloc.h
+
+skiplist__alloc.c: skiplist.c.in gen.mk
+	${SED_ALLOC} < skiplist.c.in > skiplist__alloc.c
+
+skiplist_node__alloc.h: skiplist_node.h.in gen.mk
+	${SED_ALLOC} < skiplist_node.h.in > skiplist_node__alloc.h
+
+skiplist_node__alloc.c: skiplist_node.c.in gen.mk
+	${SED_ALLOC} < skiplist_node.c.in > skiplist_node__alloc.c
 
 SED_FACT_P = sed \
 	-e 's/_NAME[$$]/fact/g' \
