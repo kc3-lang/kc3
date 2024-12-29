@@ -553,14 +553,10 @@ KC3_C_SOURCES = \
 	"libkc3/sign.h" \
 	"libkc3/skiplist.c.in" \
 	"libkc3/skiplist.h.in" \
-	"libkc3/skiplist__alloc.c" \
-	"libkc3/skiplist__alloc.h" \
 	"libkc3/skiplist__fact.c" \
 	"libkc3/skiplist__fact.h" \
 	"libkc3/skiplist_node.c.in" \
 	"libkc3/skiplist_node.h.in" \
-	"libkc3/skiplist_node__alloc.c" \
-	"libkc3/skiplist_node__alloc.h" \
 	"libkc3/skiplist_node__fact.c" \
 	"libkc3/skiplist_node__fact.h" \
 	"libkc3/special_operator.c" \

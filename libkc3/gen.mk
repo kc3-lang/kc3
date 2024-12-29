@@ -78,8 +78,6 @@ GENERATED_FILES = \
 	set_cursor__tag.c set_cursor__tag.h \
 	set_item__fact.c set_item__fact.h \
 	set_item__tag.c set_item__tag.h \
-	skiplist__alloc.c skiplist__alloc.h \
-	skiplist_node__alloc.c skiplist_node__alloc.h \
 	skiplist__fact.c skiplist__fact.h \
 	skiplist_node__fact.c skiplist_node__fact.h \
 	s8.c s8.h s16.c s16.h s32.c s32.h s64.c s64.h sw.c sw.h \

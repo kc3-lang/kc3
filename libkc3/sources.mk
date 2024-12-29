@@ -154,9 +154,7 @@ HEADERS = \
 	"sh.h" \
 	"sha1.h" \
 	"sign.h" \
-	"skiplist__alloc.h" \
 	"skiplist__fact.h" \
-	"skiplist_node__alloc.h" \
 	"skiplist_node__fact.h" \
 	"special_operator.h" \
 	"str.h" \
@@ -335,9 +333,7 @@ SOURCES = \
 	"sh.c" \
 	"sha1.c" \
 	"sign.c" \
-	"skiplist__alloc.c" \
 	"skiplist__fact.c" \
-	"skiplist_node__alloc.c" \
 	"skiplist_node__fact.c" \
 	"special_operator.c" \
 	"str.c" \
@@ -626,9 +622,7 @@ LO_SOURCES = \
 	"sh.c" \
 	"sha1.c" \
 	"sign.c" \
-	"skiplist__alloc.c" \
 	"skiplist__fact.c" \
-	"skiplist_node__alloc.c" \
 	"skiplist_node__fact.c" \
 	"special_operator.c" \
 	"str.c" \
