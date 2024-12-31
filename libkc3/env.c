@@ -11,13 +11,17 @@
  * THIS SOFTWARE.
  */
 #include <string.h>
+#include <sys/types.h>
 
-#if (! (defined(__APPLE__) || defined(__OpenBSD__)))
-#include <sys/sysinfo.h>
+#if (defined(__APPLE__) ||      \
+     defined(__FreeBSD__) ||    \
+     defined(__NetBSD__) ||     \
+     defined(__OpenBSD__))
+# include <sys/sysctl.h>
+#else
+# include <sys/sysinfo.h>
 #endif
 
-#include <sys/types.h>
-#include <sys/sysctl.h>
 #include <unistd.h>
 #include "alloc.h"
 #include "array.h"
@@ -2730,8 +2734,8 @@ s_env * env_init_args (s_env *env, int *argc, char ***argv)
   s_str argv0;
   assert(env);
   if (argc && argv && *argc && *argv) {
-    (*argc)--;
-    (*argv)++;
+    env->argc = (*argc)--;
+    env->argv = (*argv)++;
     str_init_1(&argv0, NULL, env->argv[0]);
     if (! (env->argv0_dir = alloc(sizeof(s_str))))
       return NULL;
@@ -2744,8 +2748,6 @@ s_env * env_init_args (s_env *env, int *argc, char ***argv)
         (*argv)++;
       }
     }
-    env->argc = *argc;
-    env->argv = *argv;
     return env;
   }
   env->argc = 0;
