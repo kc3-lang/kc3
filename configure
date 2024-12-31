@@ -64,5 +64,5 @@ config_subdirs \
     httpd \
     test \
     window \
-    gtk4
-
+    gtk4 \
+    fs
