@@ -12,6 +12,7 @@
  */
 #include <errno.h>
 #include <fuse.h>
+#include <fuse_opt.h>
 #include <string.h>
 #include <libkc3/kc3.h>
 #include "types.h"
@@ -212,10 +213,9 @@ static int fs_init (void)
 
 int main (int argc, char **argv)
 {
-  int argc1;
+  int    argc1;
   char **argv1;
-  int argc2;
-  char *argv2[3] = {0};
+  struct fuse_args args;
   int r = 1;
   argc1 = argc;
   argv1 = argv;
@@ -227,10 +227,19 @@ int main (int argc, char **argv)
   }
   if ((r = fs_init()))
     goto clean;
-  argc2 = 1;
-  argv2[0] = argv[0];
-  argv2[1] = argv[argc];
-  r = fuse_main(argc2, argv2, &g_fsops, NULL);
+  args = (struct fuse_args) FUSE_ARGS_INIT(argc, argv);
+  if (fuse_opt_add_arg(&args, "-o") == -1) {
+    err_puts("mount_kc3fs: fuse_opt_add_arg(-o)");
+    r = 1;
+    goto clean;
+  }
+  if (fuse_opt_add_arg(&args, "fuse_version=2.6") == -1) {
+    err_puts("mount_kc3fs: fuse_opt_add_arg(fuse_version)");
+    r = 1;
+    goto clean;
+  }
+  r = fuse_main(args.argc, args.argv, &g_fsops, NULL);
+  fuse_opt_free_args(&args);
  clean:
   kc3_clean(NULL);
   return r;
