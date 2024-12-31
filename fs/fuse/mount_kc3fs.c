@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <errno.h>
+#define FUSE_USE_VERSION 26
 #include <fuse.h>
 #include <fuse_opt.h>
 #include <string.h>
