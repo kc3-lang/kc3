@@ -239,7 +239,11 @@ int main (int argc, char **argv)
     r = 1;
     goto clean;
   }
+#ifdef __OpenBSD__
   r = fuse_main(args.argc, args.argv, &g_fsops, NULL);
+#else
+  r = fuse_main(args.argc, args.argv, &g_fsops);
+#endif
   fuse_opt_free_args(&args);
  clean:
   kc3_clean(NULL);
