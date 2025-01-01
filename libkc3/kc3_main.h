@@ -110,6 +110,7 @@ s_tag *      kc3_facts_with_tags (s_facts *facts, s_tag *subject,
                                   p_callable *callback, s_tag *dest);
 s_tag *      kc3_identity (s_tag *tag, s_tag *dest);
 s_tag *      kc3_integer_reduce (s_tag *tag, s_tag *dest);
+bool         kc3_killpg (sw process_group, const s_sym * const *signal);
 s_tag *      kc3_let (s_tag *vars, s_tag *tag, s_tag *dest);
 s_array *    kc3_list_to_array (s_list **list,
                                 const s_sym * const *array_type,

@@ -1,0 +1,19 @@
+defmodule Metric do
+
+  def get = fn (key) {
+    count = Facts.first_with_tags(Config.db, key, :metric_hits, count = ?,
+      fn (x) { count })
+     if is_integer?(count) do
+      count
+    else
+      0
+    end
+  }
+
+  def hit = fn (key) {
+    count = Metric.get(key) + 1
+    Facts.replace_tags(Config.db, key, :metric_hits, count)
+    count
+  }
+
+end

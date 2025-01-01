@@ -383,3 +383,7 @@ add {KC3, :symbol, KC3.getpid}
 replace {KC3.getpid, :symbol_value, cfn Sw "kc3_getpid" ()}
 add {KC3, :symbol, KC3.getppid}
 replace {KC3.getppid, :symbol_value, cfn Sw "kc3_getppid" ()}
+add {KC3, :symbol, KC3.killpg}
+replace {KC3.killpg, :symbol_value, cfn Bool "kc3_killpg" (Sw, Sym)}
+add {KC3, :symbol, KC3.is_integer?}
+replace {KC3.is_integer?, :symbol_value, cfn Bool "tag_is_integer" (Tag)}

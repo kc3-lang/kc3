@@ -13,6 +13,7 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -457,6 +458,92 @@ s_tag * kc3_integer_reduce (s_tag *tag, s_tag *dest)
   tag_integer_reduce(&tmp);
   *dest = tmp;
   return dest;
+}
+
+bool kc3_killpg (sw process_group, const s_sym * const *signal)
+{
+  sw e;
+  s32 sig = -1;
+  if      (*signal == sym_1("SIGHUP"))
+    sig = SIGHUP;
+  else if (*signal == sym_1("SIGINT"))
+    sig = SIGINT;
+  else if (*signal == sym_1("SIGQUIT"))
+    sig = SIGQUIT;
+  else if (*signal == sym_1("SIGILL"))
+    sig = SIGILL;
+  else if (*signal == sym_1("SIGTRAP"))
+    sig = SIGTRAP;
+  else if (*signal == sym_1("SIGABRT"))
+    sig = SIGABRT;
+  else if (*signal == sym_1("SIGEMT"))
+    sig = SIGEMT;
+  else if (*signal == sym_1("SIGFPE"))
+    sig = SIGFPE;
+  else if (*signal == sym_1("SIGKILL"))
+    sig = SIGKILL;
+  else if (*signal == sym_1("SIGBUS"))
+    sig = SIGBUS;
+  else if (*signal == sym_1("SIGSEGV"))
+    sig = SIGSEGV;
+  else if (*signal == sym_1("SIGSYS"))
+    sig = SIGSYS;
+  else if (*signal == sym_1("SIGPIPE"))
+    sig = SIGPIPE;
+  else if (*signal == sym_1("SIGALRM"))
+    sig = SIGALRM;
+  else if (*signal == sym_1("SIGTERM"))
+    sig = SIGTERM;
+  else if (*signal == sym_1("SIGURG"))
+    sig = SIGURG;
+  else if (*signal == sym_1("SIGSTOP"))
+    sig = SIGSTOP;
+  else if (*signal == sym_1("SIGTSTP"))
+    sig = SIGTSTP;
+  else if (*signal == sym_1("SIGCONT"))
+    sig = SIGCONT;
+  else if (*signal == sym_1("SIGCHLD"))
+    sig = SIGCHLD;
+  else if (*signal == sym_1("SIGTTIN"))
+    sig = SIGTTIN;
+  else if (*signal == sym_1("SIGTTOU"))
+    sig = SIGTTOU;
+  else if (*signal == sym_1("SIGIO"))
+    sig = SIGIO;
+  else if (*signal == sym_1("SIGXCPU"))
+    sig = SIGXCPU;
+  else if (*signal == sym_1("SIGXFSZ"))
+    sig = SIGXFSZ;
+  else if (*signal == sym_1("SIGVTALRM"))
+    sig = SIGVTALRM;
+  else if (*signal == sym_1("SIGPROF"))
+    sig = SIGPROF;
+  else if (*signal == sym_1("SIGWINCH"))
+    sig = SIGWINCH;
+  else if (*signal == sym_1("SIGINFO"))
+    sig = SIGINFO;
+  else if (*signal == sym_1("SIGUSR1"))
+    sig = SIGUSR1;
+  else if (*signal == sym_1("SIGUSR2"))
+    sig = SIGUSR2;
+  else if (*signal == sym_1("SIGTHR"))
+    sig = SIGTHR;
+  else {
+    err_write_1("kc3_killpg: unknown signal: ");
+    err_inspect_sym(signal);
+    err_write_1("\n");
+    assert(! "kc3_killpg: unknown signal");
+    return false;
+  }
+  if (killpg(process_group, sig)) {
+    e = errno;
+    err_write_1("kc3_killpg: killpg: ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    assert(! "kc3_killpg: killpg");
+    return false;
+  }
+  return true;
 }
 
 s_tag * kc3_let (s_tag *vars, s_tag *tag, s_tag *dest)
