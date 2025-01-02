@@ -21,6 +21,7 @@ all:
 	${MAKE} -C event all
 	${MAKE} -C json all
 	${MAKE} -C markdown all
+	${MAKE} -C smtp all
 	${MAKE} -C socket all
 	${MAKE} -C http all
 	${MAKE} -C httpd all
@@ -42,6 +43,7 @@ asan:
 	${MAKE} -C event asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
+	${MAKE} -C smtp asan
 	${MAKE} -C socket asan
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
@@ -64,6 +66,7 @@ build:
 	${MAKE} -C event build
 	${MAKE} -C json build
 	${MAKE} -C markdown build
+	${MAKE} -C smtp build
 	${MAKE} -C socket build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
@@ -82,6 +85,7 @@ clean:
 	${MAKE} -C event clean
 	${MAKE} -C json clean
 	${MAKE} -C markdown clean
+	${MAKE} -C smtp clean
 	${MAKE} -C socket clean
 	${MAKE} -C http clean
 	${MAKE} -C httpd clean
@@ -99,6 +103,7 @@ clean_cov:
 	${MAKE} -C event clean_cov
 	${MAKE} -C json clean_cov
 	${MAKE} -C markdown clean_cov
+	${MAKE} -C smtp clean_cov
 	${MAKE} -C socket clean_cov
 	${MAKE} -C http clean_cov
 	${MAKE} -C httpd clean_cov
@@ -117,6 +122,7 @@ cov:
 	${MAKE} -C event cov
 	${MAKE} -C json cov
 	${MAKE} -C markdown cov
+	${MAKE} -C smtp cov
 	${MAKE} -C socket cov
 	${MAKE} -C http cov
 	${MAKE} -C httpd cov
@@ -135,6 +141,7 @@ debug:
 	${MAKE} -C event debug
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
+	${MAKE} -C smtp debug
 	${MAKE} -C socket debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
@@ -179,6 +186,7 @@ distclean:
 	${MAKE} -C event distclean
 	${MAKE} -C json distclean
 	${MAKE} -C markdown distclean
+	${MAKE} -C smtp distclean
 	${MAKE} -C socket distclean
 	${MAKE} -C http distclean
 	${MAKE} -C httpd distclean
@@ -274,6 +282,7 @@ gcovr:
 	${MAKE} -C event gcovr
 	${MAKE} -C json gcovr
 	${MAKE} -C markdown gcovr
+	${MAKE} -C smtp gcovr
 	${MAKE} -C socket gcovr
 	${MAKE} -C http gcovr
 	${MAKE} -C httpd gcovr
@@ -341,6 +350,7 @@ gdb_test_http:
 	${MAKE} -C kc3s debug
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
+	${MAKE} -C smtp debug
 	${MAKE} -C socket debug
 	${MAKE} -C http debug
 	${MAKE} -C test gdb_test_http
@@ -353,6 +363,7 @@ gdb_test_http_asan:
 	${MAKE} -C kc3s asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
+	${MAKE} -C smtp asan
 	${MAKE} -C socket asan
 	${MAKE} -C http asan
 	${MAKE} -C test gdb_test_http_asan
@@ -367,6 +378,7 @@ gdb_test_httpd:
 	${MAKE} -C event debug
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
+	${MAKE} -C smtp debug
 	${MAKE} -C socket debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
@@ -382,6 +394,7 @@ gdb_test_httpd_asan:
 	${MAKE} -C event asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
+	${MAKE} -C smtp asan
 	${MAKE} -C socket asan
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
@@ -554,6 +567,7 @@ install:
 	${MAKE} -C event install
 	${MAKE} -C json install
 	${MAKE} -C markdown install
+	${MAKE} -C smtp install
 	${MAKE} -C socket install
 	${MAKE} -C http install
 	${MAKE} -C httpd install
@@ -652,7 +666,8 @@ lib_links_bsd:
 	ln -sf ../../../gtk4/.libs/libkc3_gtk4.so.0.0 lib/kc3/0.1/gtk4.so
 	ln -sf ../../../http/.libs/libkc3_http.so.0.0 lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json.so.0.0 lib/kc3/0.1/json.so
-	ln -sf ../../../markdown/.libs/libkc3_markdown.so.0.0 lib/kc3/0.1/markdown.so
+	ln -sf ../../../markdown/.libs/libkc3_markdown.so.0.0 lib/kc3/0.1/markown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp.so.0.0 lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket.so.0.0 lib/kc3/0.1/socket.so
 
 lib_links_bsd_debug:
@@ -662,6 +677,7 @@ lib_links_bsd_debug:
 	ln -sf ../../../http/.libs/libkc3_http_debug.so.0.0 lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json_debug.so.0.0 lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so.0.0 lib/kc3/0.1/markdown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp_debug.so.0.0 lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.so.0.0 lib/kc3/0.1/socket.so
 
 lib_links_darwin:
@@ -671,6 +687,7 @@ lib_links_darwin:
 	ln -sf ../../../http/.libs/libkc3_http.0.dylib lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json.0.dylib lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown.0.dylib lib/kc3/0.1/markdown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp.so.0.dylib lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket.0.dylib lib/kc3/0.1/socket.so
 
 lib_links_darwin_debug:
@@ -680,6 +697,7 @@ lib_links_darwin_debug:
 	ln -sf ../../../http/.libs/libkc3_http_debug.0.dylib lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json_debug.0.dylib lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.0.dylib lib/kc3/0.1/markdown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp_debug.so.0.dylib lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.0.dylib lib/kc3/0.1/socket.so
 
 lib_links_linux:
@@ -689,6 +707,7 @@ lib_links_linux:
 	ln -sf ../../../http/.libs/libkc3_http.so lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json.so lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown.so lib/kc3/0.1/markdown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp.so lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket.so lib/kc3/0.1/socket.so
 
 lib_links_linux_asan:
@@ -698,6 +717,7 @@ lib_links_linux_asan:
 	ln -sf ../../../http/.libs/libkc3_http_asan.so lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json_asan.so lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown_asan.so lib/kc3/0.1/markdown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp_asan.so lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_asan.so lib/kc3/0.1/socket.so
 
 lib_links_linux_debug:
@@ -707,6 +727,7 @@ lib_links_linux_debug:
 	ln -sf ../../../http/.libs/libkc3_http_debug.so lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json_debug.so lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown_debug.so lib/kc3/0.1/markdown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp_debug.so lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_debug.so lib/kc3/0.1/socket.so
 
 lib_links_windows:
@@ -716,6 +737,7 @@ lib_links_windows:
 	ln -sf ../../../http/.libs/libkc3_http-0.dll lib/kc3/0.1/http.so
 	ln -sf ../../../json/.libs/libkc3_json-0.dll lib/kc3/0.1/json.so
 	ln -sf ../../../markdown/.libs/libkc3_markdown-0.dll lib/kc3/0.1/markdown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp-0.dll lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket-0.dll lib/kc3/0.1/socket.so
 
 libkc3_gcovr:
@@ -751,6 +773,7 @@ lldb_test:
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
 	${MAKE} -C socket debug
+	${MAKE} -C smtp debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
 	${MAKE} -C test lldb_test
@@ -793,6 +816,7 @@ test:
 	${MAKE} -C event build
 	${MAKE} -C json build
 	${MAKE} -C markdown build
+	${MAKE} -C smtp build
 	${MAKE} -C socket build
 	${MAKE} -C http build
 	${MAKE} -C httpd build
@@ -809,6 +833,7 @@ test_asan:
 	${MAKE} -C event asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
+	${MAKE} -C smtp asan
 	${MAKE} -C socket asan
 	${MAKE} -C http asan
 	${MAKE} -C httpd asan
@@ -824,6 +849,7 @@ test_cov:
 	${MAKE} -C event cov clean_cov
 	${MAKE} -C json cov clean_cov
 	${MAKE} -C markdown cov clean_cov
+	${MAKE} -C smtp cov clean_cov
 	${MAKE} -C socket cov clean_cov
 	${MAKE} -C http cov clean_cov
 	${MAKE} -C httpd cov clean_cov
@@ -839,6 +865,7 @@ test_debug:
 	${MAKE} -C event debug
 	${MAKE} -C json debug
 	${MAKE} -C markdown debug
+	${MAKE} -C smtp debug
 	${MAKE} -C socket debug
 	${MAKE} -C http debug
 	${MAKE} -C httpd debug
@@ -895,6 +922,7 @@ test_http:
 	${MAKE} -C kc3s build
 	${MAKE} -C json build
 	${MAKE} -C markdown build
+	${MAKE} -C smtp build
 	${MAKE} -C socket build
 	${MAKE} -C http build
 	${MAKE} -C test test_http
@@ -907,6 +935,7 @@ test_http_asan:
 	${MAKE} -C kc3s asan
 	${MAKE} -C json asan
 	${MAKE} -C markdown asan
+	${MAKE} -C smtp asan
 	${MAKE} -C socket asan
 	${MAKE} -C http asan
 	${MAKE} -C test test_http_asan
@@ -919,6 +948,7 @@ test_http_cov:
 	${MAKE} -C kc3s cov
 	${MAKE} -C json cov
 	${MAKE} -C markdown cov
+	${MAKE} -C smtp cov
 	${MAKE} -C socket cov
 	${MAKE} -C http cov
 	${MAKE} -C test test_http_cov
