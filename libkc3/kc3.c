@@ -32,6 +32,7 @@
 #include "buf_fd.h"
 #include "buf_parse.h"
 #include "call.h"
+#include "deserialize.h"
 #include "env.h"
 #include "env_fork.h"
 #include "eval.h"
@@ -183,6 +184,31 @@ s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
   tmp.data.sym = env_defstruct(g_kc3_env, *spec);
   *dest = tmp;
   return dest;
+}
+
+void kc3_deserialize_delete (s_deserialize **ds)
+{
+  deserialize_delete(*ds);
+}
+
+bool kc3_deserialize_from_str (s_deserialize **ds, s_str *str)
+{
+  return deserialize_from_str(*ds, str);
+}
+
+s_deserialize ** kc3_deserialize_new (s_deserialize **ds)
+{
+  s_deserialize *tmp;
+  tmp = deserialize_new();
+  if (! tmp)
+    return NULL;
+  *ds = tmp;
+  return ds;
+}
+
+s_tag * kc3_deserialize_tag (s_deserialize **ds, s_tag *dest)
+{
+  return deserialize_tag(*ds, dest);
 }
 
 void ** kc3_dlopen (const s_str *path, void **dest)

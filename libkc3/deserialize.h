@@ -21,8 +21,14 @@
 
 #include "types.h"
 
+/* Heap-allocation functions, call deserialize_delete after use. */
+s_deserialize * deserialize_new (void);
+void            deserialize_delete (s_deserialize *ds);
+
+/* Operators. */
 bool *      deserialize_bool (s_deserialize *ds, bool *dest);
 character * deserialize_character (s_deserialize *ds, character *c);
+bool        deserialize_from_str (s_deserialize *ds, s_str *str);
 s_list **   deserialize_list (s_deserialize *ds, s_list **list);
 s_tag *     deserialize_tag (s_deserialize *ds,  s_tag *tag);
 s_tuple *   deserialize_tuple (s_deserialize *ds, s_tuple *tuple);

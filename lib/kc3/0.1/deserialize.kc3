@@ -1,5 +1,19 @@
 defmodule Deserialize do
 
-  def tag = cfn Tag "kc3_deserialize_tag" (Buf, Result)
+  def delete = cfn Void "kc3_deserialize_delete" (Ptr)
+
+  def from_str = cfn Bool "kc3_deserialize_from_str" (Ptr, Str)
+
+  def new = cfn Ptr "kc3_deserialize_new" (Result)
+
+  def str_to_tag = fn (str) {
+    ds = Deserialize.new()
+    Deserialize.from_str(ds, str)
+    tag = Deserialize.tag(ds)
+    Deserialize.delete(ds)
+    tag
+  }
+
+  def tag = cfn Tag "kc3_deserialize_tag" (Ptr, Result)
 
 end

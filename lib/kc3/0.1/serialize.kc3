@@ -8,4 +8,12 @@ defmodule Serialize do
 
   def to_str = cfn Str "kc3_serialize_to_str" (Ptr, Result)
 
+  def tag_to_str = fn (tag) {
+    s = Serialize.new()
+    Serialize.tag(s, tag)
+    str = Serialize.to_str(s)
+    Serialize.delete(s)
+    str
+  }
+
 end
