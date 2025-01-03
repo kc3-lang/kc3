@@ -1,7 +1,0 @@
-#!/bin/sh
-# gen by configure
-LOG=".build/$1.debug.log"
-CC="cc"
-CPPFLAGS=""
-CFLAGS=" -W -Wall -Werror -std=c11 -pedantic -pipe -pthread -I/usr/local/include -fprofile-arcs -ftest-coverage"
-/usr/local/bin/libtool --tag=CC --mode=compile ${CC} ${CPPFLAGS} ${CFLAGS} -c "$1" -o "$2" > "$LOG" 2>&1 || /usr/local/bin/libtool --tag=CC --mode=compile ${CC} ${CPPFLAGS} ${CFLAGS} -c "$1" -o "$2"
