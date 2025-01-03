@@ -59,6 +59,7 @@ config_subdirs \
     event \
     json \
     markdown \
+    smtp \
     socket \
     http \
     httpd \
