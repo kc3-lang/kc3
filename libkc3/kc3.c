@@ -18,6 +18,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __OpenBSD__
+# include <sys/sysctl.h>
+#endif
+
 #ifndef WIN32
 # include <sys/wait.h>
 #endif
@@ -756,32 +760,126 @@ s_tag * kc3_struct_put (s_tag *s, const s_sym * const *key,
 
 s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
 {
+  s32 e;
+  const s_list *l;
   s32 mib[64];
   s32 mib_len = 0;
-  s32 i;
-  const s_list *l;
+  s_tag  tmp = {0};
+  size_t tmp_data_size;
   l = *list;
-  while (l) {
-    if (l->tag.type != TAG_SYM) {
-      err_puts("kc3_sysctl: argument is not a Sym list");
-      assert(! "kc3_sysctl: argument is not a Sym list");
+  if (! l ||
+      l->tag.type != TAG_SYM) {
+    err_puts("kc3_sysctl: argument is not a Sym list");
+    assert(! "kc3_sysctl: argument is not a Sym list");
+  }
+  if (l->tag.data.sym == sym_1("ddb")) {
+    mib[mib_len] = CTL_DDB;
+    mib_len++;
+    l = list_next(l);
+    
+  }
+  else if (l->tag.data.sym == sym_1("debug")) {
+    mib[mib_len] = CTL_DEBUG;
+    mib_len++;
+    l = list_next(l);
+    
+  }
+  else if (l->tag.data.sym == sym_1("fs")) {
+    mib[mib_len] = CTL_FS;
+    mib_len++;
+    l = list_next(l);
+    
+  }
+  else if (l->tag.data.sym == sym_1("hw")) {
+    mib[mib_len] = CTL_HW;
+    mib_len++;
+    if ((l = list_next(l))) {
+      if (l->tag.data.sym == sym_1("ncpu")) {
+        mib[mib_len] = HW_NCPU;
+        mib_len++;
+        l = list_next(l);
+        if (! l)
+          tmp.type = TAG_S32;
+      }
+      else if (l->tag.data.sym == sym_1("ncpufound")) {
+        mib[mib_len] = HW_NCPUFOUND;
+        mib_len++;
+        l = list_next(l);
+        if (! l)
+          tmp.type = TAG_S32;
+      }
+      else if (l->tag.data.sym == sym_1("ncpuonline")) {
+        mib[mib_len] = HW_NCPUONLINE;
+        mib_len++;
+        l = list_next(l);
+        if (! l)
+          tmp.type = TAG_S32;
+      }
+      else if (l->tag.data.sym == sym_1("pagesize")) {
+        mib[mib_len] = HW_PAGESIZE;
+        mib_len++;
+        l = list_next(l);
+        if (! l)
+          tmp.type = TAG_S32;
+      }
+      else if (l->tag.data.sym == sym_1("physmem64")) {
+        mib[mib_len] = HW_PHYSMEM64;
+        mib_len++;
+        l = list_next(l);
+        if (! l)
+          tmp.type = TAG_S64;
+      }
     }
-    if (l->tag.data.sym == sym_1("hw"))
-      mib[mib_len] = CTL_HW;
-    else if (l->tag.data.sym == sym_1("kern"))
-      mib[mib_len] = CTL_KERN;
-    else {
-      err_write_1("kc3_sysctl: invalid argument: ");
-      err_inspect_sym(l->tag.data.sym);
-      err_write_1("\n");
-      assert("kc3_sysctl: invalid argument")
-      return NULL;
-    }
+  }
+  else if (l->tag.data.sym == sym_1("kern")) {
+    mib[mib_len] = CTL_KERN;
     mib_len++;
     l = list_next(l);
   }
-  if (sysctl(mib, mib_len,
+  else if (l->tag.data.sym == sym_1("machdep")) {
+    mib[mib_len] = CTL_MACHDEP;
+    mib_len++;
+    l = list_next(l);
+  }
+  else if (l->tag.data.sym == sym_1("net")) {
+    mib[mib_len] = CTL_NET;
+    mib_len++;
+    l = list_next(l);
+  }
+  else if (l->tag.data.sym == sym_1("vfs")) {
+    mib[mib_len] = CTL_VFS;
+    mib_len++;
+    l = list_next(l);
+  }
+  else if (l->tag.data.sym == sym_1("vm")) {
+    mib[mib_len] = CTL_VM;
+    mib_len++;
+    l = list_next(l);
+  }
+  if (! tmp.type) {
+    err_write_1("kc3_sysctl: invalid argument: ");
+    if (l)
+      err_inspect_sym(&l->tag.data.sym);
+    else
+      err_inspect_list(*list);
+    err_write_1("\n");
+    assert("kc3_sysctl: invalid argument");
+    return NULL;
+  }
+  tmp_data_size = sizeof(tmp.data);
+  if (sysctl(mib, mib_len, &tmp.data, &tmp_data_size, NULL, 0) < 0) {
+    e = errno;
+    err_write_1("kc3_sysctl: sysctl: ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    assert("kc3_sysctl: sysctl");
+    return NULL;
+  }
+  assert(tmp_data_size <= sizeof(tmp.data));
+  *dest = tmp;
+  return dest;
 }
+
 s_str * kc3_system (const s_list * const *list, s_str *dest)
 {
 #ifdef WIN32
