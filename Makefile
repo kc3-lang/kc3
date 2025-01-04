@@ -162,16 +162,32 @@ demo_cov: cov
 demo_debug: debug
 	${MAKE} -C window demo_debug
 
-demo_gl: build
+demo_gl:
+	${MAKE} gen
+	${MAKE} -C libtommath build
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 build
 	${MAKE} -C window demo_gl
 
 demo_gl_asan: asan
+	${MAKE} gen
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
 	${MAKE} -C window demo_gl_asan
 
 demo_gl_cov: cov
+	${MAKE} gen
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
 	${MAKE} -C window demo_gl_cov
 
 demo_gl_debug: debug
+	${MAKE} gen
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
 	${MAKE} -C window demo_gl_debug
 
 dist: kc3-${KC3_VERSION}.tar.gz

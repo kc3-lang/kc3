@@ -506,8 +506,10 @@ bool kc3_killpg (sw process_group, const s_sym * const *signal)
     sig = SIGTRAP;
   else if (*signal == sym_1("SIGABRT"))
     sig = SIGABRT;
+#ifdef __OpenBSD__
   else if (*signal == sym_1("SIGEMT"))
     sig = SIGEMT;
+#endif
   else if (*signal == sym_1("SIGFPE"))
     sig = SIGFPE;
   else if (*signal == sym_1("SIGKILL"))
@@ -550,14 +552,18 @@ bool kc3_killpg (sw process_group, const s_sym * const *signal)
     sig = SIGPROF;
   else if (*signal == sym_1("SIGWINCH"))
     sig = SIGWINCH;
+#ifdef __OpenBSD__
   else if (*signal == sym_1("SIGINFO"))
     sig = SIGINFO;
+#endif
   else if (*signal == sym_1("SIGUSR1"))
     sig = SIGUSR1;
   else if (*signal == sym_1("SIGUSR2"))
     sig = SIGUSR2;
+#ifdef __OpenBSD__
   else if (*signal == sym_1("SIGTHR"))
     sig = SIGTHR;
+#endif
   else {
     err_write_1("kc3_killpg: unknown signal: ");
     err_inspect_sym(signal);
@@ -758,8 +764,10 @@ s_tag * kc3_struct_put (s_tag *s, const s_sym * const *key,
   return dest;
 }
 
+
 s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
 {
+#ifdef __OpenBSD__
   s32 e;
   const s_list *l;
   s32 mib[64];
@@ -878,6 +886,11 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
   assert(tmp_data_size <= sizeof(tmp.data));
   *dest = tmp;
   return dest;
+#else
+  (void) dest;
+  (void) list;
+  return NULL;
+#endif
 }
 
 s_str * kc3_system (const s_list * const *list, s_str *dest)
