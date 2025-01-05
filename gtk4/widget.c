@@ -27,13 +27,17 @@ GtkWidget ** kc3_gtk4_widget_set_halign (GtkWidget **widget,
     a = GTK_ALIGN_END;
   else if (*align == sym_1("center"))
     a = GTK_ALIGN_CENTER;
+#if GTK_VERSION_MINOR >= 12
   else if (*align == sym_1("baseline_fill"))
     a = GTK_ALIGN_BASELINE_FILL;
+#endif
   else if (*align == sym_1("baseline"))
     //a = GTK_ALIGN_BASELINE;
     a = GTK_ALIGN_CENTER + 1;
+#if GTK_VERSION_MINOR >= 12
   else if (*align == sym_1("baseline_center"))
     a = GTK_ALIGN_BASELINE_CENTER;
+#endif
   else {
     err_puts("kc3_gtk4_widget_set_halign: invalid alignement");
     assert(! "kc3_gtk4_widget_set_halign: invalid alignement");
