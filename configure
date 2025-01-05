@@ -35,7 +35,9 @@ config_asan
 echo "HAVE_ASAN = ${HAVE_ASAN}" >> ${CONFIG_MK}
 
 ARCH="unknown"
-if uname | grep -iq bsd; then
+if uname | grep -iq freebsd; then
+    ARCH=freebsd
+elif uname | grep -iq bsd; then
     ARCH=bsd
 elif uname | grep -q Linux; then
     ARCH=linux
