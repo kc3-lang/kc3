@@ -26,11 +26,31 @@
 #include "socket.h"
 #include "socket_buf.h"
 
+void socket_clean (void)
+{
+#ifdef WIN32
+  WSACleanup();
+#endif
+}
+
 void socket_close (p_socket s)
 {
   assert(s);
   close(*s);
   *s = -1;
+}
+
+bool socket_init (void)
+{
+#ifdef WIN32
+  static WSADATA wsa_data;
+  s32 r;
+  if ((r = WSAStartup(MAKEWORD(2,2), &wsa_data))) {
+    printf("WSAStartup failed with error: %d\n", r);
+    return false;
+  }
+#endif
+  return true;
 }
 
 p_socket socket_init_accept (p_socket s, p_socket listening)

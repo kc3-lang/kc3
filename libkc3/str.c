@@ -13,6 +13,7 @@
 #include <math.h>
 #include <stdarg.h>
 #include <string.h>
+#include <time.h>
 #include "alloc.h"
 #include "assert.h"
 #include "buf.h"
@@ -749,18 +750,26 @@ DEF_STR_INIT_STRUCT(fn)
 s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format)
 {
   char *buf;
+  sw r;
   uw size;
   time_t t;
   s_str tmp;
   const struct tm *utc = NULL;
   t = time->tv_sec;
-  if (! (utc = gmtime(&t)))
+  if (! (utc = gmtime(&t))) {
+    err_puts("str_init_ftime: gmtime");
+    assert(! "str_init_ftime: gmtime");
     return NULL;
+  }
   size = format->size * 32;
   if (! (buf = alloc(size)))
     return NULL;
-  if (! strftime(buf, size - 1, format->ptr.pchar, utc))
+  r = strftime(buf, size, format->ptr.pchar, utc);
+  if ((! r) || (r == (sw) size)) {
+    err_puts("str_init_ftime: strftime");
+    assert(! "str_init_ftime: strftime");
     goto clean;
+  }
   if (! str_init_1_alloc(&tmp, buf))
     goto clean;
   free(buf);

@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <stdlib.h>
+#include <time.h>
 #include "alloc.h"
 #include "assert.h"
 #include "str.h"
