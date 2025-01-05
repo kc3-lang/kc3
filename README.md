@@ -80,6 +80,7 @@ There are now four full applications written in KC3 that we know of :
    - remove_tags
    - with_tags
    - with
+   - with_macro
  - HTTPd v0.2.0
    - dynamic pages (MVC)
      - controllers are defined in `./app/controllers/`
@@ -88,6 +89,9 @@ There are now four full applications written in KC3 that we know of :
        - For now we don't match request method and just match the start of
          the URL with `Str.starts_with?(url, route.path)`
      - views are defined in `./app/views/`
+   - threads
+     - env_fork_init
+     - env_fork_clean
  - fx v0.2.0
    - file explorer
    - preview files
@@ -137,7 +141,7 @@ to discover how to use KC3 for your own projects.
    - pretty printer
      - 80 columns (`\n`)
    - tags
-     - walker
+     - generic walker
      - height function `(TAG_VOID: 1, TAG_TUPLE: (1+ (max (height tuple->tags))))`
      - has_ident
      - collect_idents
