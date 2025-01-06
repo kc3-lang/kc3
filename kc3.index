@@ -298,7 +298,20 @@ fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg700wd75.ttf
 fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg800wd100.ttf
 fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg800wd75.ttf
 fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman.ttf
+fs/Makefile
+fs/OpenBSD/kc3fs.h
+fs/configure
+fs/fuse/Makefile
+fs/fuse/configure
+fs/fuse/mount_kc3fs.c
+fs/fuse/sources.mk
+fs/fuse/sources.sh
+fs/fuse/types.h
+fs/fuse/update_sources
+fs/update_sources
 gtk4/Makefile
+gtk4/action_map.c
+gtk4/action_map.h
 gtk4/application.c
 gtk4/application.h
 gtk4/application_window.c
@@ -308,6 +321,8 @@ gtk4/box.h
 gtk4/button.c
 gtk4/button.h
 gtk4/configure
+gtk4/entry.c
+gtk4/entry.h
 gtk4/entry_buffer.c
 gtk4/entry_buffer.h
 gtk4/file.c
@@ -331,6 +346,8 @@ gtk4/paned.c
 gtk4/paned.h
 gtk4/scrolled_window.c
 gtk4/scrolled_window.h
+gtk4/signal.c
+gtk4/signal.h
 gtk4/simple_action.c
 gtk4/simple_action.h
 gtk4/sources.mk
@@ -465,6 +482,7 @@ lib/kc3/0.1/facts/cursor.kc3
 lib/kc3/0.1/fd.kc3
 lib/kc3/0.1/file.kc3
 lib/kc3/0.1/file/stat.kc3
+lib/kc3/0.1/file_stat.kc3
 lib/kc3/0.1/gl/dvec2.kc3
 lib/kc3/0.1/gl/dvec3.kc3
 lib/kc3/0.1/gl/object.kc3
@@ -474,10 +492,12 @@ lib/kc3/0.1/gl/vec2.kc3
 lib/kc3/0.1/gl/vec3.kc3
 lib/kc3/0.1/gl/vertex.kc3
 lib/kc3/0.1/gtk4.kc3
+lib/kc3/0.1/gtk4/action_map.kc3
 lib/kc3/0.1/gtk4/application.kc3
 lib/kc3/0.1/gtk4/application_window.kc3
 lib/kc3/0.1/gtk4/box.kc3
 lib/kc3/0.1/gtk4/button.kc3
+lib/kc3/0.1/gtk4/entry.kc3
 lib/kc3/0.1/gtk4/entry_buffer.kc3
 lib/kc3/0.1/gtk4/file.kc3
 lib/kc3/0.1/gtk4/frame.kc3
@@ -488,6 +508,7 @@ lib/kc3/0.1/gtk4/menu_item.kc3
 lib/kc3/0.1/gtk4/object.kc3
 lib/kc3/0.1/gtk4/paned.kc3
 lib/kc3/0.1/gtk4/scrolled_window.kc3
+lib/kc3/0.1/gtk4/simple_action.kc3
 lib/kc3/0.1/gtk4/text.kc3
 lib/kc3/0.1/gtk4/text_view.kc3
 lib/kc3/0.1/gtk4/widget.kc3
@@ -505,6 +526,8 @@ lib/kc3/0.1/kc3/operator.kc3
 lib/kc3/0.1/list.kc3
 lib/kc3/0.1/map.facts
 lib/kc3/0.1/markdown.kc3
+lib/kc3/0.1/metric.kc3
+lib/kc3/0.1/parse.kc3
 lib/kc3/0.1/ptr.facts
 lib/kc3/0.1/ptr_free.facts
 lib/kc3/0.1/ratio.facts
@@ -879,6 +902,8 @@ libkc3/sources.mk
 libkc3/sources.sh
 libkc3/special_operator.c
 libkc3/special_operator.h
+libkc3/std.cxx
+libkc3/std.hxx
 libkc3/str.c
 libkc3/str.h
 libkc3/struct.c
@@ -1145,6 +1170,16 @@ markdown/md4c.h
 markdown/sources.mk
 markdown/sources.sh
 markdown/update_sources
+smtp/Makefile
+smtp/configure
+smtp/kc3_smtp.c
+smtp/kc3_smtp.h
+smtp/smtp.c
+smtp/smtp.h
+smtp/sources.mk
+smtp/sources.sh
+smtp/types.h
+smtp/update_sources
 socket/Makefile
 socket/configure
 socket/socket.c

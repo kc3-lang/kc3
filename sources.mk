@@ -39,6 +39,9 @@ KC3_CONFIGURES = \
 	"markdown/configure" \
 	"markdown/sources.sh" \
 	"markdown/update_sources" \
+	"smtp/configure" \
+	"smtp/sources.sh" \
+	"smtp/update_sources" \
 	"socket/configure" \
 	"socket/sources.sh" \
 	"socket/update_sources" \
@@ -110,6 +113,8 @@ KC3_MAKEFILES = \
 	"libtommath/sources.mk" \
 	"markdown/Makefile" \
 	"markdown/sources.mk" \
+	"smtp/Makefile" \
+	"smtp/sources.mk" \
 	"socket/Makefile" \
 	"socket/sources.mk" \
 	"test/Makefile" \
@@ -628,6 +633,11 @@ KC3_C_SOURCES = \
 	"markdown/md4c-html.h" \
 	"markdown/md4c.c" \
 	"markdown/md4c.h" \
+	"smtp/kc3_smtp.c" \
+	"smtp/kc3_smtp.h" \
+	"smtp/smtp.c" \
+	"smtp/smtp.h" \
+	"smtp/types.h" \
 	"socket/socket.c" \
 	"socket/socket.h" \
 	"socket/socket_addr.c" \
