@@ -1,0 +1,10 @@
+defmodule SMTP do
+
+  dlopen(__DIR__ + "smtp.so")
+
+  def close = cfn Bool "kc3_smtp_close" (Ptr)
+
+  # open(server, port, security, flags, cafile, dest)
+  def open = cfn Ptr "kc3_smtp_open" (Str, Str, Sym, Sym, Str, Result)
+
+end
