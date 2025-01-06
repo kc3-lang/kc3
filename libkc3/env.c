@@ -82,31 +82,33 @@ static s_env * env_init_args (s_env *env, int *argc, char ***argv);
 static s_env * env_init_globals (s_env *env);
 static s_env * env_init_toplevel (s_env *env);
 
-bool * env_and (s_env *env, s_tag *a, s_tag *b, bool *dest)
+s_tag * env_and (s_env *env, s_tag *a, s_tag *b, s_tag *dest)
 {
   s_tag eval;
-  bool tmp;
-  const s_sym *type;
+  bool p;
+  s_tag tmp;
+  const s_sym *sym_Bool = &g_sym_Bool;
   assert(env);
   assert(a);
   assert(b);
   assert(dest);
-  type = &g_sym_Bool;
   if (! env_eval_tag(env, a, &eval))
     return NULL;
-  if (! bool_init_cast(&tmp, &type, &eval)) {
+  if (! bool_init_cast(&p, &type, &eval)) {
     tag_clean(&eval);
     return NULL;
   }
   tag_clean(&eval);
-  if (tmp) {
+  tag_init_bool(&tmp, false);
+  if (p) {
     if (! env_eval_tag(env, b, &eval))
       return NULL;
-    if (! bool_init_cast(&tmp, &type, &eval)) {
+    if (! bool_init_cast(&p, &type, &eval)) {
       tag_clean(&eval);
       return NULL;
     }
-    tag_clean(&eval);
+    if (p)
+      tmp = eval;
   }
   *dest = tmp;
   return dest;

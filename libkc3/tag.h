@@ -81,7 +81,7 @@ bool    tag_to_pointer (s_tag *tag, const s_sym *type, void **dest);
 
 /* KC3 operators. */
 s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest);
-bool *  tag_and (s_tag *a, s_tag *b, bool *dest);
+s_tag * tag_and (s_tag *a, s_tag *b, s_tag *dest);
 s_tag * tag_assign (s_tag *tag, s_tag *value, s_tag *dest);
 s_tag * tag_band (s_tag *a, s_tag *b, s_tag *dest);
 s_tag * tag_bnot (s_tag *tag, s_tag *dest);
@@ -102,7 +102,7 @@ s_tag * tag_mul (s_tag *a, s_tag *b, s_tag *dest);
 s_tag * tag_neg (s_tag *tag, s_tag *dest);
 bool *  tag_not (s_tag *tag, bool *dest);
 bool *  tag_not_eq (s_tag *a, s_tag *b, bool *dest);
-bool *  tag_or (s_tag *a, s_tag *b, bool *dest);
+s_tag * tag_or (s_tag *a, s_tag *b, s_tag *dest);
 s_tag * tag_paren (s_tag *tag, s_tag *dest);
 s_tag * tag_shift_left (s_tag *a, s_tag *b, s_tag *dest);
 s_tag * tag_shift_right (s_tag *a, s_tag *b, s_tag *dest);

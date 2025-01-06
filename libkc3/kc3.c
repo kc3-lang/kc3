@@ -123,7 +123,7 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
   return NULL;
 }
 
-bool * kc3_and (s_tag *a, s_tag *b, bool *dest)
+s_tag * kc3_and (s_tag *a, s_tag *b, s_tag *dest)
 {
   return env_and(g_kc3_env, a, b, dest);
 }
@@ -638,7 +638,7 @@ s_tag * kc3_operator_find_by_sym (const s_sym * const *sym, s_tag *dest)
   return env_operator_find_by_sym(g_kc3_env, *sym, dest);
 }
 
-bool * kc3_or (s_tag *a, s_tag *b, bool *dest)
+s_tag * kc3_or (s_tag *a, s_tag *b, s_tag *dest)
 {
   return env_or(g_kc3_env, a, b, dest);
 }

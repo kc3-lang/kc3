@@ -2,7 +2,13 @@ defmodule SMTP do
 
   dlopen(__DIR__ + "smtp.so")
 
+  # address_add(smtp, address_type, address, name)
+  def address_add = cfn Bool "kc3_smtp_address_add" (Ptr, Sym, Str, Str)
+
   def close = cfn Bool "kc3_smtp_close" (Ptr)
+
+  # header_add(smtp, header_name, value)
+  def header_add = cfn Bool "kc3_smtp_header_add" (Ptr, Str, Str)
 
   # open(server, port, security, flags, cafile, dest)
   def open = cfn Ptr "kc3_smtp_open" (Str, Str, Sym, Sym, Str, Result)

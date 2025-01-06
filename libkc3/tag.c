@@ -60,15 +60,32 @@ s_tag * tag_1 (s_tag *tag, const char *p)
   return tag_init_1(tag, p);
 }
 
-bool * tag_and (s_tag *a, s_tag *b, bool *dest)
+s_tag * tag_and (s_tag *a, s_tag *b, s_tag *dest)
 {
-  s_tag f;
+  bool p;
+  const s_sym *sym_Bool = &g_sym_Bool;
   assert(a);
   assert(b);
   assert(dest);
-  tag_init_bool(&f, false);
-  *dest = compare_tag(a, &f) != 0 && compare_tag(b, &f) != 0 ? 1 : 0;
-  return dest;
+  if (! bool_init_cast(&p, &sym_Bool, a)) {
+    err_write_1("tag_and: cannot cast to Bool: ");
+    err_inspect_tag(a);
+    err_write_1("\n");
+    assert(! "tag_and: cannot cast to Bool");
+    return NULL;
+  }
+  if (! p)
+    return tag_init_bool(dest, false);
+  if (! bool_init_cast(&p, &sym_Bool, b)) {
+    err_write_1("tag_and: cannot cast to Bool: ");
+    err_inspect_tag(b);
+    err_write_1("\n");
+    assert(! "tag_and: cannot cast to Bool");
+    return NULL;
+  }
+  if (! p)
+    return tag_init_bool(dest, false);
+  return tag_init_copy(dest, b);
 }
 
 s8 tag_arity (const s_tag *tag)
@@ -1094,16 +1111,32 @@ bool * tag_not_eq (s_tag *a, s_tag *b, bool *dest)
   return dest;
 }
 
-bool * tag_or (s_tag *a, s_tag *b, bool *dest)
+s_tag * tag_or (s_tag *a, s_tag *b, s_tag *dest)
 {
-  s_tag f;
+  bool p;
+  const s_sym *sym_Bool = &g_sym_Bool;
   assert(a);
   assert(b);
   assert(dest);
-  tag_init_bool(&f, false);
-  *dest = compare_tag(a, &f) != 0 ||
-          compare_tag(b, &f) != 0 ? 1 : 0;
-  return dest;
+  if (! bool_init_cast(&p, &sym_Bool, a)) {
+    err_write_1("tag_or: cannot cast to Bool: ");
+    err_inspect_tag(a);
+    err_write_1("\n");
+    assert(! "tag_or: cannot cast to Bool");
+    return NULL;
+  }
+  if (p)
+    return tag_init_copy(dest, a);
+  if (! bool_init_cast(&p, &sym_Bool, b)) {
+    err_write_1("tag_or: cannot cast to Bool: ");
+    err_inspect_tag(b);
+    err_write_1("\n");
+    assert(! "tag_or: cannot cast to Bool");
+    return NULL;
+  }
+  if (p)
+    return tag_init_copy(dest, b);
+  return tag_init_bool(dest, false);
 }
 
 s_tag * tag_paren (s_tag *tag, s_tag *dest)
