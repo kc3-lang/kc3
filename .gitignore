@@ -1,5 +1,6 @@
 *~
 *.a
+bank/
 .build/
 build_c_asan
 build_c_cov
