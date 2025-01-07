@@ -55,7 +55,7 @@ operator_and :is_a :operator
 operator_and :operator_associativity :left
 operator_and :operator_precedence 5
 operator_and :sym :&&
-operator_and :symbol_value cfn Bool "kc3_and" (Tag, Tag, Result)
+operator_and :symbol_value cfn Tag "kc3_and" (Tag, Tag, Result)
 operator_assign :arity 2
 operator_assign :is_a :operator
 operator_assign :operator_associativity :left
@@ -182,7 +182,7 @@ operator_or :is_a :operator
 operator_or :operator_associativity :left
 operator_or :operator_precedence 4
 operator_or :sym :||
-operator_or :symbol_value cfn Bool "kc3_or" (Tag, Tag, Result)
+operator_or :symbol_value cfn Tag "kc3_or" (Tag, Tag, Result)
 operator_paren :arity 1
 operator_paren :is_a :operator
 operator_paren :operator_associativity :left

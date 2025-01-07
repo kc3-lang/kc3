@@ -180,14 +180,14 @@ add {KC3, :operator, KC3.operator_and}
 replace {KC3.operator_and, :is_a, :operator}
 replace {KC3.operator_and, :sym, :&&}
 replace {KC3.operator_and, :arity, 2}
-replace {KC3.operator_and, :symbol_value, cfn_macro Bool "kc3_and" (Tag, Tag, Result)}
+replace {KC3.operator_and, :symbol_value, cfn_macro Tag "kc3_and" (Tag, Tag, Result)}
 replace {KC3.operator_and, :operator_precedence, 5}
 replace {KC3.operator_and, :operator_associativity, :left}
 add {KC3, :operator, KC3.operator_or}
 replace {KC3.operator_or, :is_a, :operator}
 replace {KC3.operator_or, :sym, :||}
 replace {KC3.operator_or, :arity, 2}
-replace {KC3.operator_or, :symbol_value, cfn_macro Bool "kc3_or" (Tag, Tag, Result)}
+replace {KC3.operator_or, :symbol_value, cfn_macro Tag "kc3_or" (Tag, Tag, Result)}
 replace {KC3.operator_or, :operator_precedence, 4}
 replace {KC3.operator_or, :operator_associativity, :left}
 add {KC3, :operator, KC3.operator_assign}

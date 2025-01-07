@@ -94,7 +94,7 @@ s_tag * env_and (s_env *env, s_tag *a, s_tag *b, s_tag *dest)
   assert(dest);
   if (! env_eval_tag(env, a, &eval))
     return NULL;
-  if (! bool_init_cast(&p, &type, &eval)) {
+  if (! bool_init_cast(&p, &sym_Bool, &eval)) {
     tag_clean(&eval);
     return NULL;
   }
@@ -103,7 +103,7 @@ s_tag * env_and (s_env *env, s_tag *a, s_tag *b, s_tag *dest)
   if (p) {
     if (! env_eval_tag(env, b, &eval))
       return NULL;
-    if (! bool_init_cast(&p, &type, &eval)) {
+    if (! bool_init_cast(&p, &sym_Bool, &eval)) {
       tag_clean(&eval);
       return NULL;
     }
@@ -3660,34 +3660,38 @@ const s_sym ** env_operator_symbol (s_env *env, const s_ident *op,
   return result;
 }
 
-bool * env_or (s_env *env, s_tag *a, s_tag *b, bool *dest)
+s_tag * env_or (s_env *env, s_tag *a, s_tag *b, s_tag *dest)
 {
   s_tag eval;
-  bool tmp;
-  const s_sym *type;
+  bool p;
+  const s_sym *sym_Bool = &g_sym_Bool;
   assert(env);
   assert(a);
   assert(b);
   assert(dest);
-  type = &g_sym_Bool;
   if (! env_eval_tag(env, a, &eval))
     return NULL;
-  if (! bool_init_cast(&tmp, &type, &eval)) {
+  if (! bool_init_cast(&p, &sym_Bool, &eval)) {
     tag_clean(&eval);
     return NULL;
   }
-  tag_clean(&eval);
-  if (! tmp) {
-    if (! env_eval_tag(env, b, &eval))
-      return NULL;
-    if (! bool_init_cast(&tmp, &type, &eval)) {
-      tag_clean(&eval);
-      return NULL;
-    }
-    tag_clean(&eval);
+  if (p) {
+    *dest = eval;
+    return dest;
   }
-  *dest = tmp;
-  return dest;
+  tag_clean(&eval);
+  if (! env_eval_tag(env, b, &eval))
+    return NULL;
+  if (! bool_init_cast(&p, &sym_Bool, &eval)) {
+    tag_clean(&eval);
+    return NULL;
+  }
+  if (p) {
+    *dest = eval;
+    return dest;
+  }
+  tag_clean(&eval);
+  return tag_init_bool(dest, false);
 }
 
 void env_pop_error_handler (s_env *env)
