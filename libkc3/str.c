@@ -36,6 +36,7 @@
 #include "list.h"
 #include "operator.h"
 #include "str.h"
+#include "sw.h"
 #include "sym.h"
 #include "tag.h"
 #include "tag_type.h"
@@ -790,21 +791,30 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
 {
   const s_sym *type;
   char *random_bytes;
-  uw    random_bytes_len;
+  sw    random_bytes_len;
   char *result;
-  uw    result_len;
+  sw    result_len;
   uw i;
   uw j;
   uw k;
   uw u;
   type = &g_sym_Uw;
-  if (! uw_init_cast(&result_len, &type, len)) {
+  if (! sw_init_cast(&result_len, &type, len)) {
     err_write_1("str_init_random_base64: cannot cast to Uw: ");
     err_inspect_tag(len);
     err_write_1("\n");
     return NULL;
   }
-  random_bytes_len = ceil(log2(pow(64, result_len)) / 8);
+  if (result_len < 0)
+    return NULL;
+  random_bytes_len = result_len / 3;
+  if (random_bytes_len <= 0)
+    return NULL;
+  if (true) {
+    err_write_1("str_init_random_base64: random_bytes_len: ");
+    err_inspect_sw_decimal(&random_bytes_len);
+    err_write_1("\n");
+  }
   if (! (random_bytes = alloc(random_bytes_len)))
     return NULL;
   if (! (result = alloc(result_len + 1))) {
@@ -814,14 +824,14 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
   arc4random_buf(random_bytes, random_bytes_len);
   i = 0;
   j = 0;
-  while (i + 3 <= random_bytes_len &&
-         j < result_len) {
+  while (i + 3 <= (uw) random_bytes_len &&
+         j < (uw) result_len) {
     u = ((random_bytes[i] << 16) +
          (random_bytes[i + 1] << 8) +
          (random_bytes[i + 2]));
     k = 0;
     while (k < 4 &&
-           j < result_len) {
+           j < (uw) result_len) {
       result[j] = g_kc3_base64url.ptr.pchar[u % 64];
       u /= 64;
       j++;
@@ -833,7 +843,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
     u = ((random_bytes[i] << 8) +
          random_bytes[i + 1]);
     k = 0;
-    while (j < result_len) {
+    while (j < (uw) result_len) {
       result[j] = g_kc3_base64url.ptr.pchar[u % 64];
       u /= 64;
       j++;
@@ -843,7 +853,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
   else if (random_bytes_len - i == 1) {
     u = random_bytes[i];
     k = 0;
-    while (j < result_len) {
+    while (j < (uw) result_len) {
       result[j] = g_kc3_base64url.ptr.pchar[u % 64];
       u /= 64;
       j++;

@@ -37,7 +37,7 @@ typedef struct sha512 {
 #define SALT_MAX 16
 #define ROUNDS_DEFAULT 12345
 #define ROUNDS_MIN 1000
-#define ROUNDS_MAX 9999999
+#define ROUNDS_MAX 999999999
 
 static const u8 b64[] =
   "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -290,7 +290,7 @@ static char * sha512_crypt(const char *key, const char *setting, char *output)
      * including non-portable hashes that depend on
      * the host's value of ULONG_MAX.
      */
-    salt += sizeof "rounds=" - 1;
+    salt += sizeof("rounds=") - 1;
     if (! isdigit(*salt))
       return 0;
     u = strtoul(salt, &end, 10);

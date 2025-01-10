@@ -23,7 +23,7 @@
 #include "str.h"
 #include "tag.h"
 
-#if HAVE_CRYPT_NEWHASH
+#if HAVE_CRYPT_NEWHASH && 0
 
 bool * crypt_check_password (const s_str *pass, const s_str *hash,
                              bool *dest)

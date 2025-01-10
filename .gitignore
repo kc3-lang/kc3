@@ -14,6 +14,10 @@ build_lib_asan
 build_lib_cov
 build_lib_debug
 build_lib_main
+build_objc_asan
+build_objc_cov
+build_objc_debug
+build_objc_main
 build_prog_asan
 build_prog_cov
 build_prog_debug
