@@ -807,7 +807,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
   }
   if (result_len < 0)
     return NULL;
-  random_bytes_len = result_len / 3;
+  random_bytes_len = result_len * 6;
   if (random_bytes_len <= 0)
     return NULL;
   if (true) {
