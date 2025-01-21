@@ -9,7 +9,7 @@ $(function () {
     hljs.highlightAll();
 });
 
-import "./fx";
+//import "./fx";
 import "./kmx_anim";
 import "./pixel";
 

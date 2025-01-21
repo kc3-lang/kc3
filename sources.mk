@@ -1195,6 +1195,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/set/item/tag.kc3" \
 	"lib/kc3/0.1/set/tag.kc3" \
 	"lib/kc3/0.1/sh.kc3" \
+	"lib/kc3/0.1/smtp.kc3" \
 	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/socket/addr.kc3" \
 	"lib/kc3/0.1/socket/buf.kc3" \
@@ -1469,7 +1470,38 @@ KC3_TEST_HTTP_SOURCES = \
 	"test/http_test" \
 
 KC3_TEST_HTTPD_SOURCES = \
-	"test/httpd/.keep" \
+	"test/httpd/app/controllers/doc_controller.kc3" \
+	"test/httpd/app/controllers/page_controller.kc3" \
+	"test/httpd/app/templates/doc/menu.html.ekc3" \
+	"test/httpd/app/templates/doc/show.html.ekc3" \
+	"test/httpd/app/templates/footer.html.ekc3" \
+	"test/httpd/app/templates/layout.html.ekc3" \
+	"test/httpd/app/templates/nav.html.ekc3" \
+	"test/httpd/app/views/doc_view.kc3" \
+	"test/httpd/app/views/layout_view.kc3" \
+	"test/httpd/app/views/page_view.kc3" \
+	"test/httpd/assets/css/app.scss" \
+	"test/httpd/assets/css/computer_modern.scss" \
+	"test/httpd/assets/css/courier_new.scss" \
+	"test/httpd/assets/css/flash.scss" \
+	"test/httpd/assets/css/fontawesome-5.15.4-free-v4-font-face.scss" \
+	"test/httpd/assets/css/fontawesome-5.15.4-free-v4-shims.scss" \
+	"test/httpd/assets/css/fontawesome-5.15.4-free.scss" \
+	"test/httpd/assets/css/footer.scss" \
+	"test/httpd/assets/css/kc3.scss" \
+	"test/httpd/assets/css/kmx_colors.scss" \
+	"test/httpd/assets/css/pixel.scss" \
+	"test/httpd/assets/css/pygments.scss" \
+	"test/httpd/assets/js/app.js" \
+	"test/httpd/assets/js/kmx_anim.js" \
+	"test/httpd/assets/js/kmx_colors.js" \
+	"test/httpd/assets/js/pixel.js" \
+	"test/httpd/assets/package-lock.json" \
+	"test/httpd/assets/package.json" \
+	"test/httpd/config/db.kc3" \
+	"test/httpd/config/mime.types" \
+	"test/httpd/config/routes.kc3" \
+	"test/httpd/db/app.facts" \
 
 KC3_OTHER_SOURCES = \
 	"AUTHORS.md" \

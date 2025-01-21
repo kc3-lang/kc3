@@ -37,7 +37,7 @@ Supported operating systems (additional dependencies) :
  - BSD
  - Linux (libbsd, libmd)
  - MacOS X (libmd)
- - Windows (MSys2)
+ - Windows (MSys2) (no network)
 
 Supported architectures :
  - aarch64 (arm64, Apple M1, Apple M2)
@@ -74,7 +74,7 @@ There are now four full applications written in KC3 that we know of :
    - access
    - get
    - put
- - facts database (triple store) in KC3
+ - facts database (triple store) accessible from KC3
    - new database (Ptr)
    - add_tags
    - remove_tags
@@ -83,12 +83,16 @@ There are now four full applications written in KC3 that we know of :
    - with_macro
  - HTTPd v0.2.0
    - dynamic pages (MVC)
+     - models are defined in `./app/models/`
      - controllers are defined in `./app/controllers/`
      - templates are defined in `./app/templates/`
-     - dynamic router is defined in `./config.router.kc3`
+     - views are defined in `./app/views/`
+     - dynamic router is defined in `./config/router.kc3`
        - For now we don't match request method and just match the start of
          the URL with `Str.starts_with?(url, route.path)`
-     - views are defined in `./app/views/`
+       - If there is no route or no controller or the controller does
+         not return a HTTP response, a 404 error is returned. Other
+         frameworks like Ruby on Rails or Phoenix do return a 500...
    - threads
      - env_fork_init
      - env_fork_clean
@@ -120,7 +124,7 @@ to discover how to use KC3 for your own projects.
 
 ## TODO
 
- - fx v0.2.0
+ - fx
    - chaining of audio and video previews (folder as a playlist)
    - tags
      - create
@@ -130,9 +134,9 @@ to discover how to use KC3 for your own projects.
      - recursive
    - properties
      - recursive
- - HTTPd v0.2.1
+ - HTTPd
    - dynamic router
-     - HTTPd.Router.get("/user/:id/articles/*slug/edit", UserArticlesController.show)
+     - def_route(:get, "/user/:id/articles/*slug/edit", UserArticlesController.edit)
  - libkc3
    - operators dispatch
      - list of matching operators (facts_with)

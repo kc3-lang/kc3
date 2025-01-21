@@ -228,7 +228,7 @@ bool env_call_get (s_env *env, s_call *call)
     case CALLABLE_VOID:
       err_puts("env_call_get: void callable");
       assert(! "env_call_get: void callable");
-      break;
+      abort();
     }
   }
   return true;
@@ -452,6 +452,7 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
                &g_sym_operator_associativity);
   tag_init_sym(&tag_op_assoc_value,
                *op_assoc);
+  // FIXME: transaction ?
   facts_add_tags(env->facts, &tag_module_name, &tag_operator,
                  &tag_ident);
   facts_replace_tags(env->facts, &tag_ident, &tag_is_a, &tag_operator);
@@ -467,6 +468,7 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
   facts_replace_tags(env->facts, &tag_ident,
                      &tag_op_assoc_rel,
                      &tag_op_assoc_value);
+  // FIXME: transaction
   *dest = tag_ident;
   return dest;
 }
