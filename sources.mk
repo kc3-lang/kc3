@@ -1069,12 +1069,24 @@ KC3_FONT_SOURCES = \
 KC3_HTTPD_SOURCES = \
 	"httpd/fx/app/controllers/fx_controller.kc3" \
 	"httpd/fx/app/models/fx.kc3" \
+	"httpd/fx/app/templates/footer.html.ekc3" \
+	"httpd/fx/app/templates/fx/index.html.ekc3" \
+	"httpd/fx/app/templates/fx/menu.html.ekc3" \
+	"httpd/fx/app/templates/fx/menu_index.html.ekc3" \
+	"httpd/fx/app/templates/fx/nav2.html.ekc3" \
+	"httpd/fx/app/templates/fx/properties.html.ekc3" \
+	"httpd/fx/app/templates/fx/show.html.ekc3" \
+	"httpd/fx/app/templates/fx/show_file.html.ekc3" \
+	"httpd/fx/app/templates/layout.html.ekc3" \
+	"httpd/fx/app/templates/nav.html.ekc3" \
 	"httpd/fx/app/views/fx_view.kc3" \
 	"httpd/fx/app/views/layout_view.kc3" \
 	"httpd/fx/config/db.kc3" \
 	"httpd/fx/config/routes.kc3" \
 	"httpd/fx/db/app.facts" \
 	"httpd/page/app/controllers/page_controller.kc3" \
+	"httpd/page/app/templates/page/menu.html.ekc3" \
+	"httpd/page/app/templates/page/show.html.ekc3" \
 	"httpd/page/app/views/page_view.kc3" \
 
 KC3_IMG_SOURCES = \
@@ -1488,6 +1500,8 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/app/templates/footer.html.ekc3" \
 	"test/httpd/app/templates/layout.html.ekc3" \
 	"test/httpd/app/templates/nav.html.ekc3" \
+	"test/httpd/app/templates/page/menu.html.ekc3" \
+	"test/httpd/app/templates/page/show.html.ekc3" \
 	"test/httpd/app/views/doc_view.kc3" \
 	"test/httpd/app/views/layout_view.kc3" \
 	"test/httpd/app/views/page_view.kc3" \
