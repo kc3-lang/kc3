@@ -156,7 +156,7 @@ to discover how to use KC3 for your own projects.
      - negative facts : 4 + 2n = not 3 + 2n
      - with ignore variables
    - math
-     - arbitrary precision floating point numbers with base (decimals)
+     - arbitrary precision floating point numbers (decimals)
    - enums
    - unions
    - errors (setjmp, longjmp)

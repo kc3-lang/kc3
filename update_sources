@@ -28,7 +28,7 @@ sources KC3_CXX_SOURCES "$KC3_CXX_SOURCES"
 KC3_FONT_SOURCES="$(find fonts -name '*.otf' -or -name '*.ttf')"
 sources KC3_FONT_SOURCES "$KC3_FONT_SOURCES"
 
-KC3_HTTPD_SOURCES="$(find httpd -name '*.ekc3' -or -name '*.facts' -or -name '*.kc3')"
+KC3_HTTPD_SOURCES="$(find httpd -name '*.ekc3' -or -name '*.facts' -or -name '*.kc3' -or -name 'mime.types')"
 sources KC3_HTTPD_SOURCES "$KC3_HTTPD_SOURCES"
 
 KC3_IMG_SOURCES="$(find img -name '*.png' -or -name '*.jpg' -or -name '*.jpeg' -or -name '*.xcf')"
@@ -56,10 +56,13 @@ KC3_TEST_HTTP_SOURCES="$(ls test/http/*.expected test/http/*.kc3)
 test/http_test"
 sources KC3_TEST_HTTP_SOURCES "$KC3_TEST_HTTP_SOURCES"
 
-KC3_TEST_HTTPD_SOURCES="$(find test/httpd/app test/httpd/fx test/httpd/page test/httpd/config test/httpd/db -name '*.ekc3' -or -name '*.kc3' -or -name '*.facts' -or -name mime.types)
+KC3_TEST_HTTPD_SOURCES="$(find test/httpd/app test/httpd/config test/httpd/db -name '*.ekc3' -or -name '*.kc3' -or -name '*.facts' -or -name mime.types)
 $(ls test/httpd/assets/package*.json)
 $(find test/httpd/assets/js -name '*.js')
-$(find test/httpd/assets/css -name '*.scss')"
+$(find test/httpd/assets/css -name '*.scss')
+$(find test/httpd/static)
+$(find test/httpd/pages)
+test/httpd/doc"
 sources KC3_TEST_HTTPD_SOURCES "$KC3_TEST_HTTPD_SOURCES"
 
 KC3_OTHER_SOURCES="$(ls *.md)
