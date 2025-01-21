@@ -1066,6 +1066,17 @@ KC3_FONT_SOURCES = \
 	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman-wg800wd75.ttf" \
 	"fonts/opensans/original source/TTF_VTT_source/OpenSans-Roman.ttf" \
 
+KC3_HTTPD_SOURCES = \
+	"httpd/fx/app/controllers/fx_controller.kc3" \
+	"httpd/fx/app/models/fx.kc3" \
+	"httpd/fx/app/views/fx_view.kc3" \
+	"httpd/fx/app/views/layout_view.kc3" \
+	"httpd/fx/config/db.kc3" \
+	"httpd/fx/config/routes.kc3" \
+	"httpd/fx/db/app.facts" \
+	"httpd/page/app/controllers/page_controller.kc3" \
+	"httpd/page/app/views/page_view.kc3" \
+
 KC3_IMG_SOURCES = \
 	"img/earth.jpg" \
 	"img/earth.png" \

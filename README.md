@@ -67,20 +67,22 @@ There are now four full applications written in KC3 that we know of :
  - pretty printer
    - auto indent KC3 code
  - map
-   - access
-   - get (get key value)
-   - put (return a new map)
+   - `access`
+   - `get` (get key value)
+   - `put` (return a new map)
  - struct
-   - access
-   - get
-   - put
+   - `access`
+   - `get`
+   - `put`
  - facts database (triple store) accessible from KC3
-   - new database (Ptr)
-   - add_tags
-   - remove_tags
-   - with_tags
-   - with
-   - with_macro
+   - `new database (Ptr)`
+   - `add_tags`
+   - `collect_with`
+   - `collect_with_tags`
+   - `remove_tags`
+   - `with_tags`
+   - `with`
+   - `with_macro`
  - HTTPd v0.2.0
    - dynamic pages (MVC)
      - models are defined in `./app/models/`
@@ -94,8 +96,9 @@ There are now four full applications written in KC3 that we know of :
          not return a HTTP response, a 404 error is returned. Other
          frameworks like Ruby on Rails or Phoenix do return a 500...
    - threads
-     - env_fork_init
-     - env_fork_clean
+     - `env_fork_init`
+     - `env_fork_clean`
+     - `Thread.new(fn)`
  - fx v0.2.0
    - file explorer
    - preview files
@@ -153,7 +156,7 @@ to discover how to use KC3 for your own projects.
      - negative facts : 4 + 2n = not 3 + 2n
      - with ignore variables
    - math
-     - arbitrary precision floating point numbers (decimals)
+     - arbitrary precision floating point numbers with base (decimals)
    - enums
    - unions
    - errors (setjmp, longjmp)

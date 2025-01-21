@@ -1,1 +1,2 @@
-../../../httpd/fx/db/fx.facts
+%{module: KC3.Facts.Dump,
+  version: 1}
