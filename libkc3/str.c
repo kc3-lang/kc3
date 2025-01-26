@@ -806,6 +806,11 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
     return NULL;
   }
   random_bytes_len = (result_len + 2) / 3;
+  if (false) {
+    err_write_1("str_init_random_base64: random_bytes_len: ");
+    err_inspect_sw_decimal(&random_bytes_len);
+    err_write_1("\n");
+  }
   if (! (random_bytes = alloc(random_bytes_len)))
     return NULL;
   if (! (result = alloc(result_len + 1))) {
