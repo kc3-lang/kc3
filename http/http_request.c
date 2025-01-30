@@ -21,7 +21,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   bool b;
   s_tag  body;
   s_str *body_str;
-  s_str boundary;
+  s_str boundary = {0};
   const s_str content_length_str = {{NULL}, 14, {"Content-Length"}};
   uw          content_length_uw = 0;
   s_str      *content_type = NULL;
@@ -104,35 +104,46 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       http_request_cookie_add(&tmp_req, value);
     tail = &(*tail)->next.data.list;
   }
+  if (content_type && content_length_uw) {
     if (true) {
       err_write_1("http_request_buf_parse: content_type ");
       err_inspect_str(content_type);
       err_write_1("\n");
-    }
-  if (content_type &&
-      str_starts_with_case_insensitive(content_type,
-                                       &multipart_form_data,
-                                       &b) && b) {
-    if (! str_init_slice(&boundary, content_type,
-                         multipart_form_data.size, -1))
-      goto restore;
-    if (true) {
-      err_write_1("http_request_buf_parse: boundary ");
-      err_inspect_str(&boundary);
+      err_write_1("http_request_buf_parse: content_length_uw ");
+      err_inspect_uw_decimal(&content_length_uw);
       err_write_1("\n");
     }
-  }
-  else if (content_type &&
-           content_length_uw) {
+    if (str_starts_with_case_insensitive(content_type,
+                                         &multipart_form_data,
+                                         &b) && b) {
+      if (! str_init_slice(&boundary, content_type,
+                           multipart_form_data.size, -1))
+        goto restore;
+      if (true) {
+        err_write_1("http_request_buf_parse: boundary ");
+        err_inspect_str(&boundary);
+        err_write_1("\n");
+      }
       tmp_req.body.type = TAG_STR;
       body_str = &tmp_req.body.data.str;
-    if (! buf_read(buf, content_length_uw, body_str))
-      goto restore;
-    if (false) {
-      err_inspect_str(body_str);
-      err_write_1("\n");
+      if (! buf_read(buf, content_length_uw, body_str))
+        goto restore;
+      if (true) {
+        err_write_1("http_request_buf_parse: body ");
+        err_inspect_str(body_str);
+        err_write_1("\n");
+      }
     }
-    if (! compare_str_case_insensitive(content_type, &urlencoded)) {
+    else if (! compare_str_case_insensitive(content_type,
+                                            &urlencoded)) {
+      tmp_req.body.type = TAG_STR;
+      body_str = &tmp_req.body.data.str;
+      if (! buf_read(buf, content_length_uw, body_str))
+        goto restore;
+      if (false) {
+        err_inspect_str(body_str);
+        err_write_1("\n");
+      }
       if (! url_www_form_decode(body_str, &body))
         goto restore;
       if (false) {
