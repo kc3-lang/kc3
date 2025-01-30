@@ -12,3 +12,6 @@
 [submodule "smtp"]
 	path = smtp
 	url = https://git.kmx.io/kc3-lang/smtp.git
+[submodule "window/sdl2/kubz"]
+	path = window/sdl2/kubz
+	url = https://git.kmx.io/kc3-lang/kubz.git
