@@ -33,6 +33,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_tag method_value = {0};
   static const s_str multipart_form_data =
     {{NULL}, 30, {"multipart/form-data; boundary="}};
+  s_list            *multipart_headers = NULL;
   s_buf_save save;
   s_list **tail;
   s_tag tmp = {0};
@@ -124,14 +125,29 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         err_inspect_str(&boundary);
         err_write_1("\n");
       }
-      tmp_req.body.type = TAG_STR;
-      body_str = &tmp_req.body.data.str;
-      if (! buf_read(buf, content_length_uw, body_str))
-        goto restore;
-      if (true) {
-        err_write_1("http_request_buf_parse: body ");
-        err_inspect_str(body_str);
-        err_write_1("\n");
+      while (1) {
+        multipart_headers = NULL;
+        tail = &multipart_headers;
+        while (1) {
+          if (! buf_read_until_1_into_str(buf, "\r\n", &line)) {
+            err_puts("http_request_buf_parse: invalid header");
+            goto restore;
+          }
+          if (line.size == 0)
+            break;
+          *tail = list_new(NULL);
+          (*tail)->tag.type = TAG_STR;
+          if (! http_header_split(&line, &(*tail)->tag))
+            goto restore;
+          key   = &(*tail)->tag.data.tuple.tag[0].data.str;
+          value = &(*tail)->tag.data.tuple.tag[1].data.str;
+          tail = &(*tail)->next.data.list;
+        }
+        err_inspect_list(multipart_headers);
+        list_delete_all(multipart_headers);
+        if (buf_read_1(buf, "--") <= 0 ||
+            buf_read_str(buf, &boundary) <= 0)
+          break;
       }
     }
     else if (! compare_str_case_insensitive(content_type,
