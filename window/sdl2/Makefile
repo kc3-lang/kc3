@@ -21,6 +21,7 @@ DISTCLEANFILES = ${CLEANFILES} config.h config.mk
 build:
 	${MAKE} ${LIB}
 	${MAKE} -C demo build
+	${MAKE} -C kubz build
 
 all:
 	${MAKE} build

@@ -1,4 +1,4 @@
-export LD_LIBRARY_PATH="$PWD/libkc3/.libs:$PWD/ekc3/.libs:$PWD/http/.libs:$PWD/markdown/.libs:$PWD/lib/kc3/0.1:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$PWD/libkc3/.libs:$PWD/ekc3/.libs:$PWD/http/.libs:$PWD/markdown/.libs:$PWD/lib/kc3/0.1:$PWD/window/.libs:$PWD/window/sdl2/.libs:$LD_LIBRARY_PATH"
 export DYLD_LIBRARY_PATH="$PWD/libkc3/.libs:$PWD/ekc3/.libs:$PWD/http/.libs:$PWD/markdown/.libs:$PWD/lib/kc3/0.1:$DYLD_LIBRARY_PATH"
 export KC3_HTTPD_HOST=0.0.0.0
 export KC3_HTTPD_PORT=58000

@@ -1405,6 +1405,42 @@ bool * str_starts_with (const s_str *str, const s_str *start,
   return dest;
 }
 
+bool * str_starts_with_case_insensitive (const s_str *str,
+                                         const s_str *start,
+                                         bool *dest)
+{
+  character str_c;
+  s_str     str_i;
+  character start_c;
+  s_str     start_i;
+  assert(str);
+  assert(start);
+  if (! start->size) {
+    *dest = true;
+    return dest;
+  }
+  if (str->size < start->size) {
+    *dest = false;
+    return dest;
+  }
+  str_i = *str;
+  start_i = *start;
+  while (start_i.size > 0) {
+    if (str_read_character_utf8(&start_i, &start_c) < 0)
+      return NULL;
+    if (str_read_character_utf8(&str_i, &str_c) < 0)
+      return NULL;
+    start_c = character_to_lower(start_c);
+    str_c = character_to_lower(str_c);
+    if (start_c != str_c) {
+      *dest = false;
+      return dest;
+    }
+  }
+  *dest = true;
+  return dest;
+}
+
 uw * str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest)
 {
   assert(dest);

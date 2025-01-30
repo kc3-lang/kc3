@@ -35,7 +35,8 @@ bool window_animate (s_window *window)
   seq->frame++;
   seq->t = t;
   /* printf("window_animate: %f\n", t); */
-  if (t > seq->duration &&
+  if (seq->duration > 0 &&
+      t > seq->duration &&
       ! window_set_sequence_pos(window, (window->sequence_pos + 1) %
                                 window->sequence_count))
     return false;

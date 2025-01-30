@@ -138,6 +138,9 @@ s_list **     str_split (const s_str *str, const s_str *separator,
                          s_list **dest);
 bool *        str_starts_with (const s_str *str, const s_str *start,
                                bool *dest);
+bool *        str_starts_with_case_insensitive (const s_str *str,
+                                                const s_str *start,
+                                                bool *dest);
 uw *          str_sw_pos_to_uw (sw pos, uw max_pos, uw *dest);
 s_str *       str_to_hex (const s_str *str, s_str *dest);
 s_ident *     str_to_ident (const s_str *str, s_ident *dest);
