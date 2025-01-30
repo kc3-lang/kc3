@@ -104,47 +104,50 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       http_request_cookie_add(&tmp_req, value);
     tail = &(*tail)->next.data.list;
   }
-  if (content_length_uw) {
-    tmp_req.body.type = TAG_STR;
-    body_str = &tmp_req.body.data.str;
+    if (true) {
+      err_write_1("http_request_buf_parse: content_type ");
+      err_inspect_str(content_type);
+      err_write_1("\n");
+    }
+  if (content_type &&
+      str_starts_with_case_insensitive(content_type,
+                                       &multipart_form_data,
+                                       &b) && b) {
+    if (! str_init_slice(&boundary, content_type,
+                         multipart_form_data.size, -1))
+      goto restore;
+    if (true) {
+      err_write_1("http_request_buf_parse: boundary ");
+      err_inspect_str(&boundary);
+      err_write_1("\n");
+    }
+  }
+  else if (content_type &&
+           content_length_uw) {
+      tmp_req.body.type = TAG_STR;
+      body_str = &tmp_req.body.data.str;
     if (! buf_read(buf, content_length_uw, body_str))
       goto restore;
     if (false) {
       err_inspect_str(body_str);
       err_write_1("\n");
     }
-    if (content_type) {
-      if (! compare_str_case_insensitive(&urlencoded, content_type)) {
-        if (! url_www_form_decode(body_str, &body))
-          goto restore;
-        if (false) {
-          err_write_1("http_request_buf_parse: body: ");
-          err_inspect_tag(&body);
-          err_write_1("\n");
-        }
-        if (alist_get(body.data.list,
-                      &method_key, &method_value)) {
-          http_request_method_from_str(&method_value.data.str,
-                                       &tmp_req.method);
-          tag_clean(&method_value);
-        }
-        str_clean(body_str);
-        tmp_req.body = body;
+    if (! compare_str_case_insensitive(content_type, &urlencoded)) {
+      if (! url_www_form_decode(body_str, &body))
+        goto restore;
+      if (false) {
+        err_write_1("http_request_buf_parse: body: ");
+        err_inspect_tag(&body);
+        err_write_1("\n");
       }
-    }
-    if (! str_starts_with_case_insensitive(content_type,
-                                           &multipart_form_data,
-                                           &b)) {
-      if (b) {
-        if (! str_init_slice(&boundary, content_type,
-                             multipart_form_data.size, -1))
-          goto restore;
-        if (true) {
-          err_write_1("http_request_buf_parse: boundary ");
-          err_inspect_str(&boundary);
-          err_write_1("\n");
-        }
+      if (alist_get(body.data.list,
+                    &method_key, &method_value)) {
+        http_request_method_from_str(&method_value.data.str,
+                                     &tmp_req.method);
+        tag_clean(&method_value);
       }
+      str_clean(body_str);
+      tmp_req.body = body;
     }
   }
   if (! tag_init_struct(&tmp, sym_1("HTTP.Request")))

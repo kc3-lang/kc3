@@ -36,6 +36,9 @@ replace {Str.slice, :symbol_value, fn (str, start, end_) {
 add {Str, :symbol, Str.starts_with?}
 replace {Str.starts_with?, :symbol_value,
          cfn Bool "str_starts_with" (Str, Str, Result)}
+add {Str, :symbol, Str.starts_with_case_insensitive?}
+replace {Str.starts_with_case_insensitive?, :symbol_value,
+         cfn Bool "str_starts_with_case_insensitive" (Str, Str, Result)}
 add {Str, :symbol, Str.subst}
 replace {Str.subst, :symbol_value,
          cfn Str "str_init_subst" (Result, Str, Str, Str)}
