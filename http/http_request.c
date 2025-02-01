@@ -22,6 +22,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_tag  body;
   s_str *body_str;
   s_str boundary = {0};
+  s_str boundary_newline = {0};
   s_str boundary_tmp = {0};
   const s_str content_disposition_str = {{NULL}, 19,
                                          {"Content-Disposition"}};
@@ -158,6 +159,9 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       if (! str_init_concatenate(&boundary, &dash, &boundary_tmp))
         goto restore;
       str_clean(&boundary_tmp);
+      boundary_tmp = (s_str) {0};
+      if (! str_init_concatenate(&boundary_newline, &newline, &boundary))
+        goto restore;
       if (true) {
         err_write_1("http_request_buf_parse: boundary ");
         err_inspect_str(&boundary);
@@ -165,17 +169,24 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         if (false) { // XXX debug
           buf_xfer(g_kc3_env->err, buf, 100);
           buf_flush(g_kc3_env->err);
+          goto restore;
         }
       }
-      if (buf_read_str(buf, &boundary) <= 0)
+      if (buf_read_str(buf, &boundary) <= 0) {
+        err_puts("http_request_buf_parse: invalid first multipart"
+                 " boundary");
         goto restore;
+      }
+      if (buf_read_str(buf, &newline) <= 0) {
+        err_puts("http_request_buf_parse: invalid first multipart"
+                 " boundary newline");
+        goto restore;
+      }
       while (1) {
-        if (buf_read_str(buf, &newline) <= 0)
-          break;
         multipart_headers = NULL;
         tail = &multipart_headers;
         while (1) {
-          if (! buf_read_until_1_into_str(buf, "\r\n", &line)) {
+          if (! buf_read_until_str_into_str(buf, &newline, &line)) {
             err_puts("http_request_buf_parse: invalid multipart"
                      " header");
             goto restore;
@@ -186,6 +197,11 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           (*tail)->tag.type = TAG_STR;
           if (! http_header_split(&line, &(*tail)->tag))
             goto restore;
+          if ((*tail)->tag.type != TAG_TUPLE) {
+            err_puts("http_request_buf_parse: http_header_split did not"
+                     " return a Tuple");
+            goto restore;
+          }
           key   = &(*tail)->tag.data.tuple.tag[0].data.str;
           value = &(*tail)->tag.data.tuple.tag[1].data.str;
           if (! compare_str_case_insensitive
@@ -204,7 +220,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             }
             if (buf_read_1(&header_buf, "; filename=\"") > 0) {
               if (! buf_read_until_1_into_str(&header_buf, "\"",
-                                              &filename)) {
+                                              &filename) ||
+                  str_character_position(&filename, '/') >= 0) {
                 err_puts("http_request_buf_parse: invalid filename");
                 goto restore;
               }
@@ -214,11 +231,9 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
                        " disposition header");
               goto restore;
             }
-          }
+          } // if (! compare_str_case_insensitive(key, &content_disposition_str))
           tail = &(*tail)->next.data.list;
         }
-        if (buf_read_str(buf, &dash) <= 0)
-          goto restore;
         err_write_1("http_request_buf_parse: multipart headers = ");
         err_inspect_list(multipart_headers);
         err_write_1("\n");
@@ -229,36 +244,60 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         err_inspect_str(&filename);
         err_write_1("\n");
         if (filename.size) {
-          if (! buf_init_alloc(&path_buf, 4096))
+          if (! buf_init_alloc(&path_buf, 4096)) {
+            err_puts("http_request_buf_parse: buf_init_alloc(path_buf)");
             goto restore;
-          if (buf_write_str(&path_buf, &prefix.data.str) <= 0)
+          }
+          if (buf_write_str(&path_buf, &prefix.data.str) <= 0) {
+            err_puts("http_request_buf_parse:"
+                     " buf_write_str(path_buf, prefix)");
             goto restore;
-          if (! str_init_random_base64(&path_random, &random_len))
+          }
+          if (! str_init_random_base64(&path_random, &random_len)) {
+            err_puts("http_request_buf_parse: str_init_random_base64");
             goto restore;
-          if (buf_write_str(&path_buf, &path_random) <= 0)
+          }
+          if (buf_write_str(&path_buf, &path_random) <= 0) {
+            err_puts("http_request_buf_parse:"
+                     " buf_write_str(path_buf, path_random)");
             goto restore;
+          }
           str_clean(&path_random);
-          if (buf_write_1(&path_buf, "_") <= 0)
+          if (buf_write_1(&path_buf, "_") <= 0) {
+            err_puts("http_request_buf_parse:"
+                     " buf_write_1(path_buf, \"_\")");
             goto restore;
-          if (buf_write_str(&path_buf, &filename) <= 0)
+          }
+          if (buf_write_str(&path_buf, &filename) <= 0) {
+            err_puts("http_request_buf_parse:"
+                     " buf_write_str(path_buf, filename)");
             goto restore;
-          if (! buf_read_to_str(&path_buf, &path))
+          }
+          if (! buf_read_to_str(&path_buf, &path)) {
+            err_puts("http_request_buf_parse:"
+                     " buf_read_to_str(path_buf, path)");
             goto restore;
+          }
           buf_clean(&path_buf);
           if (true) {
             err_write_1("http_request_buf_parse: path: ");
             err_inspect_str(&path);
           }
-          if (! buf_read_str(buf, &boundary))
-            goto restore;
+          
+          if (buf_read_str(buf, &newline) <= 0) {
+          if (buf_read_str(buf, &boundary) > 0) {
+            if (buf_read_str(buf, &dash) >
+            if (buf_read_str(buf, &newline) <= 0) {
+              err_puts("http_request_buf_parse:"
+                       " buf_read_str(buf, newline)");
+              goto restore;
+            }
         }
-        else {
-          if (buf_read_str(buf, &newline) <= 0)
-            goto restore;
+        else { // if (filename.size)
           if (! buf_read_until_str_into_str(buf, &boundary,
                                             &multipart_value)) {
             err_puts("http_request_buf_parse: failed to parse"
-                     " multipart body");
+                     " multipart value");
             goto restore;
           }
           multipart_value_tag.type = TAG_STR;
@@ -266,8 +305,17 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           tmp_req.body.data.list =
             list_new_tuple_2(&multipart_name, &multipart_value_tag,
                              tmp_req.body.data.list);
-        }
+          if (buf_read_str(buf, &newline) <= 0) {
+            err_puts("http_request_buf_parse:"
+                     " buf_read_str(buf, newline)");
+            goto restore;
+          }
+        } // else if (filename.size)
         list_delete_all(multipart_headers);
+      } // while(1)
+      if (buf_read_str(buf, &dash) <= 0) {
+        err_puts("http_request_buf_parse: missing final dashes");
+        goto restore;
       }
     }
     else if (! compare_str_case_insensitive(content_type,

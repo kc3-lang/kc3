@@ -110,6 +110,8 @@ bool          str_character_is_reserved (character c);
 sw            str_character_position (const s_str *str, character c);
 bool *        str_ends_with (const s_str *str, const s_str *end,
                              bool *dest);
+bool *        str_has_characters (const s_str *src, const s_str *chars,
+                                  bool *dest);
 bool *        str_has_reserved_characters (const s_str *src,
                                            bool *dest);
 bool *        str_has_str (const s_str *src, const s_str *search,

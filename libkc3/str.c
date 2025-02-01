@@ -250,6 +250,27 @@ bool * str_ends_with (const s_str *str, const s_str *end, bool *dest)
   return dest;
 }
 
+bool * str_has_characters (const s_str *src, const s_str *chars,
+                           bool *dest)
+{
+  character c;
+  sw r;
+  s_str str;
+  str_init(&str, NULL, src->size, src->ptr.p);
+  while (str.size > 0) {
+    if ((r = str_read_character_utf8(&str, &c)) < 0)
+      return NULL;
+    if (! r)
+      break;
+    if (str_character_position(chars, c) >= 0) {
+      *dest = true;
+      return dest;
+    }
+  }
+  *dest = false;
+  return dest;
+}
+
 bool * str_has_reserved_characters (const s_str *src, bool *dest)
 {
   character c;
@@ -805,7 +826,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
     err_write_1("\n");
     return NULL;
   }
-  random_bytes_len = (result_len + 2) / 3;
+  random_bytes_len = (result_len + 1) * 3 / 4;
   if (false) {
     err_write_1("str_init_random_base64: random_bytes_len: ");
     err_inspect_sw_decimal(&random_bytes_len);
