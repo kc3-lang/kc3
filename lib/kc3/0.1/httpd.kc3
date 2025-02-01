@@ -59,6 +59,7 @@ defmodule HTTPd do
         request = Struct.put(request, :client_addr, client_addr)
         user_agent = HTTP.Request.header(request, "User-Agent")
         puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
+        puts("HTTPd.http_client: request.body = #{inspect(request.body)}")
         if (type(request.method) == Str) do
           response = error_405_page(request)
         else
@@ -119,7 +120,8 @@ defmodule HTTPd do
     end
   }
 
-  def thread_count = ncpu
+  def thread_count = 1
+  #def thread_count = ncpu
 
   def server = fn (host, port) {
     def socket = Socket.listen(host, port)

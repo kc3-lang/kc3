@@ -594,3 +594,38 @@ struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
   *dest = tmp;
   return dest;
 }
+
+bool file_write (const s_str *path, const s_str *data)
+{
+  s32 e;
+  s32 fd;
+  sw pos = 0;
+  sw w;
+  fd = open(path->ptr.pchar, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY);
+  if (fd < 0) {
+    e = errno;
+    err_write_1("file_write: open: ");
+    err_write_1(strerror(e));
+    err_write_1(": ");
+    err_inspect_str(path);
+    err_write_1("\n");
+    return false;
+  }
+  while (pos < data->size) {
+    if ((w = write(fd, data->ptr.pchar, data->size - pos)) <= 0) {
+      if (w < 0)
+        e = errno;
+      err_write_1("file_write: write: ");
+      if (w < 0) {
+        err_write_1(strerror(e));
+        err_write_1(": ");
+      }
+      err_inspect_str(path);
+      err_write_1("\n");
+      return false;
+    }
+    pos += w;
+  }
+  close(fd);
+  return true;
+}

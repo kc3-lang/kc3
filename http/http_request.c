@@ -22,18 +22,35 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_tag  body;
   s_str *body_str;
   s_str boundary = {0};
+  s_str boundary_tmp = {0};
+  const s_str content_disposition_str = {{NULL}, 19,
+                                         {"Content-Disposition"}};
   const s_str content_length_str = {{NULL}, 14, {"Content-Length"}};
   uw          content_length_uw = 0;
   s_str      *content_type = NULL;
   const s_str content_type_str = {{NULL}, 12, {"Content-Type"}};
   const s_str cookie_str = {{NULL}, 6, {"Cookie"}};
+  const s_str dash = {{NULL}, 2, {"--"}};
+  s_str filename = {0};
+  s_buf header_buf = {0};
   s_str *key;
   s_str line;
-  s_tag method_key = {0};
+  static s_tag method_key = {0};
   s_tag method_value = {0};
   static const s_str multipart_form_data =
     {{NULL}, 30, {"multipart/form-data; boundary="}};
   s_list            *multipart_headers = NULL;
+  s_tag              multipart_name = {0};
+  s_str              multipart_value = {0};
+  s_tag              multipart_value_tag = {0};
+  const s_str newline = {{NULL}, 2, {"\r\n"}};
+  s_str path;
+  s_buf path_buf;
+  s_str path_random;
+  static s_tag   prefix;
+  static s_ident prefix_ident;
+  static s_tag   random_len;
+  static s_ident random_len_ident;
   s_buf_save save;
   s_list **tail;
   s_tag tmp = {0};
@@ -44,8 +61,25 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_str *value;
   assert(req);
   assert(buf);
-  if (method_key.type == TAG_VOID)
+  if (method_key.type == TAG_VOID) { // init static variables
     tag_init_str_1(&method_key, NULL, "_method");
+    prefix_ident.module = sym_1("HTTP.Upload");
+    prefix_ident.sym = sym_1("tmp_filename_prefix");
+    if (! env_ident_get(g_kc3_env, &prefix_ident, &prefix) ||
+        prefix.type != TAG_STR) {
+      err_puts("http_request_buf_parse: invalid"
+               " HTTP.Upload.tmp_filename_prefix");
+      goto restore;
+    }
+    random_len_ident.module = sym_1("HTTP.Upload");
+    random_len_ident.sym = sym_1("tmp_filename_random_length");
+    if (! env_ident_get(g_kc3_env, &random_len_ident, &random_len) ||
+        random_len.type != TAG_U8) {
+      err_puts("http_request_buf_parse: invalid"
+               " HTTP.Upload.tmp_filename_random_length");
+      goto restore;
+    }
+  }
   buf_save_init(buf, &save);
   if (! http_request_buf_parse_method(buf, &tmp_req.method))
     goto restore;
@@ -117,20 +151,33 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     if (str_starts_with_case_insensitive(content_type,
                                          &multipart_form_data,
                                          &b) && b) {
-      if (! str_init_slice(&boundary, content_type,
+      tag_init_list(&tmp_req.body, NULL);
+      if (! str_init_slice(&boundary_tmp, content_type,
                            multipart_form_data.size, -1))
         goto restore;
+      if (! str_init_concatenate(&boundary, &dash, &boundary_tmp))
+        goto restore;
+      str_clean(&boundary_tmp);
       if (true) {
         err_write_1("http_request_buf_parse: boundary ");
         err_inspect_str(&boundary);
         err_write_1("\n");
+        if (false) { // XXX debug
+          buf_xfer(g_kc3_env->err, buf, 100);
+          buf_flush(g_kc3_env->err);
+        }
       }
+      if (buf_read_str(buf, &boundary) <= 0)
+        goto restore;
       while (1) {
+        if (buf_read_str(buf, &newline) <= 0)
+          break;
         multipart_headers = NULL;
         tail = &multipart_headers;
         while (1) {
           if (! buf_read_until_1_into_str(buf, "\r\n", &line)) {
-            err_puts("http_request_buf_parse: invalid header");
+            err_puts("http_request_buf_parse: invalid multipart"
+                     " header");
             goto restore;
           }
           if (line.size == 0)
@@ -141,13 +188,86 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             goto restore;
           key   = &(*tail)->tag.data.tuple.tag[0].data.str;
           value = &(*tail)->tag.data.tuple.tag[1].data.str;
+          if (! compare_str_case_insensitive
+                 (key, &content_disposition_str)) {
+            buf_init_str_const(&header_buf, value);
+            if (buf_read_1(&header_buf, "form-data; name=\"") <= 0) {
+              err_puts("http_request_buf_parse: unknown content"
+                       " disposition");
+              goto restore;
+            }
+            multipart_name.type = TAG_STR;
+            if (! buf_read_until_1_into_str
+                (&header_buf, "\"", &multipart_name.data.str)) {
+              err_puts("http_request_buf_parse: invalid name");
+              goto restore;
+            }
+            if (buf_read_1(&header_buf, "; filename=\"") > 0) {
+              if (! buf_read_until_1_into_str(&header_buf, "\"",
+                                              &filename)) {
+                err_puts("http_request_buf_parse: invalid filename");
+                goto restore;
+              }
+            }
+            if (header_buf.rpos != header_buf.wpos) {
+              err_puts("http_request_buf_parse: failed to parse content"
+                       " disposition header");
+              goto restore;
+            }
+          }
           tail = &(*tail)->next.data.list;
         }
+        if (buf_read_str(buf, &dash) <= 0)
+          goto restore;
+        err_write_1("http_request_buf_parse: multipart headers = ");
         err_inspect_list(multipart_headers);
+        err_write_1("\n");
+        err_write_1("http_request_buf_parse: multipart name = ");
+        err_inspect_str(&multipart_name.data.str);
+        err_write_1("\n");
+        err_write_1("http_request_buf_parse: filename = ");
+        err_inspect_str(&filename);
+        err_write_1("\n");
+        if (filename.size) {
+          if (! buf_init_alloc(&path_buf, 4096))
+            goto restore;
+          if (buf_write_str(&path_buf, &prefix.data.str) <= 0)
+            goto restore;
+          if (! str_init_random_base64(&path_random, &random_len))
+            goto restore;
+          if (buf_write_str(&path_buf, &path_random) <= 0)
+            goto restore;
+          str_clean(&path_random);
+          if (buf_write_1(&path_buf, "_") <= 0)
+            goto restore;
+          if (buf_write_str(&path_buf, &filename) <= 0)
+            goto restore;
+          if (! buf_read_to_str(&path_buf, &path))
+            goto restore;
+          buf_clean(&path_buf);
+          if (true) {
+            err_write_1("http_request_buf_parse: path: ");
+            err_inspect_str(&path);
+          }
+          if (! buf_read_str(buf, &boundary))
+            goto restore;
+        }
+        else {
+          if (buf_read_str(buf, &newline) <= 0)
+            goto restore;
+          if (! buf_read_until_str_into_str(buf, &boundary,
+                                            &multipart_value)) {
+            err_puts("http_request_buf_parse: failed to parse"
+                     " multipart body");
+            goto restore;
+          }
+          multipart_value_tag.type = TAG_STR;
+          multipart_value_tag.data.str = multipart_value;
+          tmp_req.body.data.list =
+            list_new_tuple_2(&multipart_name, &multipart_value_tag,
+                             tmp_req.body.data.list);
+        }
         list_delete_all(multipart_headers);
-        if (buf_read_1(buf, "--") <= 0 ||
-            buf_read_str(buf, &boundary) <= 0)
-          break;
       }
     }
     else if (! compare_str_case_insensitive(content_type,
@@ -186,6 +306,9 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   *((s_http_request *) tmp.data.struct_.data) = tmp_req;
   goto clean;
  restore:
+  list_delete_all(multipart_headers);
+  str_clean(&boundary_tmp);
+  str_clean(&boundary);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);

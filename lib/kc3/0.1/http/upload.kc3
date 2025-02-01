@@ -1,0 +1,11 @@
+defmodule HTTP.Upload do
+
+  defstruct [filename: "",
+             size: ?,
+             tmp_filename: ""]
+
+  def tmp_filename_prefix = "upload/tmp/"
+
+  def tmp_filename_random_length = 24
+
+end
