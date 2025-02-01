@@ -280,8 +280,9 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           }
           buf_clean(&path_buf);
           if (true) {
-            err_write_1("http_request_buf_parse: path: ");
+            err_write_1("http_request_buf_parse: path = ");
             err_inspect_str(&path);
+            err_write_1("\n");
           }
           
           if (buf_read_str(buf, &newline) <= 0) {
