@@ -177,6 +177,8 @@ bool file_ensure_directory (const s_str *path, const s_tag *mode)
     }
     if ((file_exists(&dir, &b)) && b)
       return true;
+    if (! file_ensure_directory(&dir, mode))
+      return false;
     if (! u32_init_cast(&m, &sym_U32, mode))
       return false;
     if (mkdir(dir.ptr.pchar, m)) {

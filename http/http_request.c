@@ -287,8 +287,10 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             err_inspect_str(&path);
             err_write_1("\n");
           }
-          if (! file_ensure_directory(&path, &mode))
+          if (! file_ensure_directory(&path, &mode)) {
+	    err_puts("http_request_buf_parse,file_ensure_directory");
             goto restore;
+	  }
           if (! buf_read_until_str_into_file(buf, &boundary_newline,
                                              &path)) {
             err_puts("http_request_buf_parse:"
