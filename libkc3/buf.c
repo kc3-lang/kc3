@@ -11,13 +11,16 @@
  * THIS SOFTWARE.
  */
 #include <string.h>
+#include <unistd.h>
 #include "alloc.h"
 #include "assert.h"
 #include "buf.h"
+#include "buf_fd.h"
 #include "buf_save.h"
 #include "character.h"
 #include "config.h"
 #include "error.h"
+#include "file.h"
 #include "pretty.h"
 #include "ratio.h"
 #include "rwlock.h"
@@ -1000,6 +1003,80 @@ sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
   return r;
 }
 
+bool buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
+                                  s_buf *dest)
+{
+  u8 c;
+  sw r;
+  s_buf_save save;
+#if HAVE_PTHREAD
+  rwlock_w(&buf->rwlock);
+  rwlock_w(&dest->rwlock);
+#endif
+  buf_save_init(buf, &save);
+  while (1) {
+    if ((r = buf_read_str(buf, end)) < 0) {
+      if (true)
+        err_puts("buf_read_until_str_into_buf: buf_read_str");
+      goto restore;
+    }
+    if (r)
+      goto clean;
+    if ((r = buf_read_u8(buf, &c)) <= 0) {
+      if (true)
+        err_puts("buf_read_until_str_into_buf: buf_read_u8");
+      goto restore;
+    }
+    if ((r = buf_write_u8(dest, c)) <= 0) {
+      if (true)
+        err_puts("buf_read_until_str_into_buf: buf_write_u8");
+      goto restore;
+    }
+  }
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(&dest->rwlock);
+#endif
+  return r > 0 ? true : false;
+}
+
+bool buf_read_until_str_into_file (s_buf *buf, const s_str *end,
+                                   s_str *path)
+{
+  s32 fd;
+  s_buf dest = {0};
+  if (! file_open_w(path, &fd)) {
+    err_puts("buf_read_until_str_into_file: file_open_w");
+    return false;
+  }
+  if (! buf_init_alloc(&dest, end->size + 1)) {
+    err_puts("buf_read_until_str_into_file: buf_init_alloc");
+    close(fd);
+    return false;
+  }
+  if (! buf_fd_open_w(&dest, fd)) {
+    err_puts("buf_read_until_str_into_file: buf_fd_open_w");
+    buf_clean(&dest);
+    close(fd);
+    return false;
+  }
+  if (! buf_read_until_str_into_buf(buf, end, &dest)) {
+    err_puts("buf_read_until_str_into_file: buf_read_until_str_into_buf");
+    buf_fd_close(&dest);
+    buf_clean(&dest);
+    close(fd);
+    return false;
+  }
+  buf_fd_close(&dest);
+  buf_clean(&dest);
+  close(fd);
+  return true;
+}
+
 s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,
                                      s_str *dest)
 {
@@ -1015,7 +1092,7 @@ s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,
   while (1) {
     if ((r = buf_read_str(buf, end)) < 0) {
       if (false)
-        err_puts("buf_read_until_1_into_str: buf_read_1");
+        err_puts("buf_read_until_str_into_str: buf_read_str");
       goto restore;
     }
     if (r) {
@@ -1023,7 +1100,7 @@ s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,
       tmp.rpos = save.rpos;
       tmp.wpos = buf->rpos - end->size;
       if (! buf_read_to_str(&tmp, dest)) {
-        err_puts("buf_read_until_1_into_str: buf_read_to_str");
+        err_puts("buf_read_until_str_into_str: buf_read_to_str");
         goto restore;
       }
       result = dest;
@@ -1031,7 +1108,7 @@ s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,
     }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
       if (false)
-        err_puts("buf_read_until_1_into_str: buf_read_character_utf8");
+        err_puts("buf_read_until_str_into_str: buf_read_character_utf8");
       goto restore;
     }
   }

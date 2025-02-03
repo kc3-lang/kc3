@@ -32,7 +32,7 @@
 #include "sym.h"
 #include "tag.h"
 #include "time.h"
-#include "config.h"
+#include "u32.h"
 
 #ifndef O_BINARY
 # define O_BINARY 0
@@ -156,6 +156,38 @@ s_str * file_dirname (const s_str *path, s_str *dest)
   if (! dirsep_pos)
     return str_init(dest, NULL, 1, "/");
   return str_init_slice(dest, path, 0, dirsep_pos + 1);
+}
+
+bool file_ensure_directory (const s_str *path, const s_tag *mode)
+{
+  bool b;
+  s_str dir = {0};
+  s32 e;
+  u32 m;
+  sw pos;
+  static const s_sym *sym_U32 = &g_sym_U32;
+  if ((pos = str_character_position_last(path, '/')) > 0 &&
+      pos < path->size - 1) {
+    if (! str_init_slice(&dir, path, 0, pos))
+      return false;
+    if (true) {
+      err_write_1("file_ensure_directory: dir = ");
+      err_inspect_str(&dir);
+      err_write_1("\n");
+    }
+    if ((file_exists(&dir, &b)) && b)
+      return true;
+    if (! u32_init_cast(&m, &sym_U32, mode))
+      return false;
+    if (mkdir(dir.ptr.pchar, m)) {
+      e = errno;
+      err_write_1("file_ensure_directory: mkdir: ");
+      err_inspect_str(&dir);
+      err_write_1(": ");
+      err_write_1(strerror(e));
+    }
+  }
+  return true;
 }
 
 bool * file_exists (const s_str *path, bool *dest)
@@ -293,7 +325,11 @@ s32 * file_open_w (const s_str *path, s32 *dest)
   static const mode_t mode = 0666;
   assert(path);
   assert(dest);
-  if ((fd = open(path->ptr.pchar, O_WRONLY | O_BINARY | O_CREAT,
+  if ((fd = open(path->ptr.pchar,
+                 O_CREAT |
+                 O_TRUNC |
+                 O_WRONLY |
+                 O_BINARY,
                  mode)) < 0) {
     e = errno;
     err_write_1("file_open_w: ");

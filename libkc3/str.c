@@ -219,6 +219,28 @@ sw str_character_position (const s_str *str, character c)
   return -1;
 }
 
+sw str_character_position_last (const s_str *str, character c)
+{
+  sw i = 0;
+  sw j = -1;
+  sw r = 0;
+  s_str tmp = {0};
+  character tmp_c = 0;
+  assert(str);
+  tmp = *str;
+  while (tmp.size &&
+         (r = str_read_character_utf8(&tmp, &tmp_c)) > 0) {
+    if (c == tmp_c)
+      j = i;
+    i++;
+  }
+  if (r < 0) {
+    err_puts("str_character_position: invalid str character utf8");
+    assert(! "str_character_position: invalid str character utf8");
+  }
+  return j;
+}
+
 void str_clean (s_str *str)
 {
   assert(str);

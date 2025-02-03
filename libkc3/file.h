@@ -33,6 +33,7 @@ s_file_stat * file_stat_init_struct_stat (s_file_stat *dest,
 bool          file_access (const s_str *path, const s_sym *mode);
 sw            file_copy (const char *from, const char *to);
 s_str *       file_dirname (const s_str *path, s_str *dest);
+bool *        file_exists (const s_str *path, bool *dest);
 s_str *       file_ext (const s_str *path, s_str *dest);
 s_time *      file_mtime (const s_str *path, s_time *dest);
 s_str *       file_name (const s_str *path, s_str *dest);
@@ -43,6 +44,8 @@ s_str *       file_search (const s_str *suffix, const s_sym *mode,
 s_file_stat * file_stat (const s_str *path, s_file_stat *dest);
 
 /* Operators. */
+bool          file_ensure_directory (const s_str *path,
+                                     const s_tag *mode);
 s_str *       file_pwd (s_str *dest);
 FILE *        file_open (const char *path, const char *mode);
 s32 *         file_open_r (const s_str *path, s32 *dest);
