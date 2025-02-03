@@ -32,7 +32,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   const s_str content_type_str = {{NULL}, 12, {"Content-Type"}};
   const s_str cookie_str = {{NULL}, 6, {"Cookie"}};
   const s_str dash = {{NULL}, 2, {"--"}};
-  s_str filename = {0};
+  s_tag filename = {0};
   s_buf header_buf = {0};
   s_str *key;
   s_str line;
@@ -46,18 +46,21 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_str              multipart_value = {0};
   s_tag              multipart_value_tag = {0};
   const s_str newline = {{NULL}, 2, {"\r\n"}};
-  s_str path;
+  s_tag path = {0};
   s_buf path_buf;
   s_str path_random;
-  static s_tag   prefix;
+  static s_tag   prefix = {0};
   static s_ident prefix_ident;
   sw r;
-  static s_tag   random_len;
+  static s_tag   random_len = {0};
   static s_ident random_len_ident;
   s_buf_save save;
+  s_tag size;
+  const s_sym *sym_Upload;
   s_list **tail;
   s_tag tmp = {0};
   s_http_request tmp_req = {0};
+  s_tag upload = {0};
   s_str       url;
   static const s_str urlencoded =
     {{NULL}, 33, {"application/x-www-form-urlencoded"}};
@@ -83,6 +86,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       goto restore;
     }
     tag_init_u32(&mode, 0700);
+    sym_Upload = sym_1("Upload");
   }
   buf_save_init(buf, &save);
   if (! http_request_buf_parse_method(buf, &tmp_req.method))
@@ -220,10 +224,11 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
               err_puts("http_request_buf_parse: invalid name");
               goto restore;
             }
+	    filename.type = TAG_STR;
             if (buf_read_1(&header_buf, "; filename=\"") > 0) {
               if (! buf_read_until_1_into_str(&header_buf, "\"",
-                                              &filename) ||
-                  str_character_position(&filename, '/') >= 0) {
+                                              &filename.data.str) ||
+                  str_character_position(&filename.data.str, '/') >= 0) {
                 err_puts("http_request_buf_parse: invalid filename");
                 goto restore;
               }
@@ -243,9 +248,9 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         err_inspect_str(&multipart_name.data.str);
         err_write_1("\n");
         err_write_1("http_request_buf_parse: filename = ");
-        err_inspect_str(&filename);
+        err_inspect_str(&filename.data.str);
         err_write_1("\n");
-        if (filename.size) {
+        if (filename.data.str.size) {
           if (! buf_init_alloc(&path_buf, 4096)) {
             err_puts("http_request_buf_parse: buf_init_alloc(path_buf)");
             goto restore;
@@ -271,12 +276,13 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
                      " buf_write_1(path_buf, \"_\")");
             goto restore;
           }
-          if (buf_write_str(&path_buf, &filename) <= 0) {
+          if (buf_write_str(&path_buf, &filename.data.str) <= 0) {
             err_puts("http_request_buf_parse:"
                      " buf_write_str(path_buf, filename)");
             goto restore;
           }
-          if (! buf_read_to_str(&path_buf, &path)) {
+	  path.type = TAG_STR;
+          if (! buf_read_to_str(&path_buf, &path.data.str)) {
             err_puts("http_request_buf_parse:"
                      " buf_read_to_str(path_buf, path)");
             goto restore;
@@ -284,21 +290,39 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           buf_clean(&path_buf);
           if (true) {
             err_write_1("http_request_buf_parse: path = ");
-            err_inspect_str(&path);
+            err_inspect_str(&path.data.str);
             err_write_1("\n");
           }
-          if (! file_ensure_directory(&path, &mode)) {
+          if (! file_ensure_directory(&path.data.str, &mode)) {
 	    err_puts("http_request_buf_parse,file_ensure_directory");
             goto restore;
 	  }
-          if (! buf_read_until_str_into_file(buf, &boundary_newline,
-                                             &path)) {
+	  size.type = TAG_SW;
+          if ((size.data.sw = buf_read_until_str_into_file
+	       (buf, &boundary_newline, &path.data.str)) < 0) {
             err_puts("http_request_buf_parse:"
                      " buf_read_until_str_into_file");
             goto restore;
           }
+	  upload.type = TAG_STRUCT;
+	  if (! struct_init(&upload.data.struct_, sym_Upload))
+	    goto restore;
+	  if (! struct_allocate(&upload.data.struct_))
+	    goto restore;
+	  if (! struct_set(&upload.data.struct_, sym_1("filename"),
+			   &filename))
+	    goto restore;
+	  if (! struct_set(&upload.data.struct_, sym_1("size"),
+			   &size))
+	    goto restore;
+	  if (! struct_set(&upload.data.struct_, sym_1("tmp_path"),
+			   &path))
+	    goto restore;
+          tmp_req.body.data.list =
+            list_new_tuple_2(&multipart_name, &upload,
+                             tmp_req.body.data.list);	  
         }
-        else { // if (filename.size)
+        else { // if (filename.data.str.size)
           if (! buf_read_until_str_into_str(buf, &boundary,
                                             &multipart_value)) {
             err_puts("http_request_buf_parse: failed to parse"
@@ -310,7 +334,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           tmp_req.body.data.list =
             list_new_tuple_2(&multipart_name, &multipart_value_tag,
                              tmp_req.body.data.list);
-        } // else if (filename.size)
+        } // else if (filename.data.str.size)
         list_delete_all(multipart_headers);
         if ((r = buf_read_str(buf, &dash)) < 0) {
           err_puts("http_request_buf_parse: buf_read_str(buf, dash)");

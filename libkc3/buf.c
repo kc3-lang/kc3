@@ -1003,11 +1003,12 @@ sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
   return r;
 }
 
-bool buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
-                                  s_buf *dest)
+sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
+				s_buf *dest)
 {
   u8 c;
   sw r;
+  sw result = 0;
   s_buf_save save;
 #if HAVE_PTHREAD
   rwlock_w(&buf->rwlock);
@@ -1032,6 +1033,7 @@ bool buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
         err_puts("buf_read_until_str_into_buf: buf_write_u8");
       goto restore;
     }
+    result++;
   }
  restore:
   buf_save_restore_rpos(buf, &save);
@@ -1041,40 +1043,41 @@ bool buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
   rwlock_unlock_w(&buf->rwlock);
   rwlock_unlock_w(&dest->rwlock);
 #endif
-  return r > 0 ? true : false;
+  return r > 0 ? result : -1;
 }
 
-bool buf_read_until_str_into_file (s_buf *buf, const s_str *end,
+sw buf_read_until_str_into_file (s_buf *buf, const s_str *end,
                                    s_str *path)
 {
   s32 fd;
   s_buf dest = {0};
+  sw r;
   if (! file_open_w(path, &fd)) {
     err_puts("buf_read_until_str_into_file: file_open_w");
-    return false;
+    return -1;
   }
   if (! buf_init_alloc(&dest, end->size + 1)) {
     err_puts("buf_read_until_str_into_file: buf_init_alloc");
     close(fd);
-    return false;
+    return -1;
   }
   if (! buf_fd_open_w(&dest, fd)) {
     err_puts("buf_read_until_str_into_file: buf_fd_open_w");
     buf_clean(&dest);
     close(fd);
-    return false;
+    return -1;
   }
-  if (! buf_read_until_str_into_buf(buf, end, &dest)) {
+  if ((r = buf_read_until_str_into_buf(buf, end, &dest)) < 0) {
     err_puts("buf_read_until_str_into_file: buf_read_until_str_into_buf");
     buf_fd_close(&dest);
     buf_clean(&dest);
     close(fd);
-    return false;
+    return -1;
   }
   buf_fd_close(&dest);
   buf_clean(&dest);
   close(fd);
-  return true;
+  return r;
 }
 
 s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,

@@ -2,7 +2,7 @@ defmodule HTTP.Upload do
 
   defstruct [filename: "",
              size: ?,
-             tmp_filename: ""]
+             tmp_path: ""]
 
   def tmp_filename_prefix = "upload/tmp/"
 
