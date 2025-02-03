@@ -121,3 +121,7 @@ update_config_mk
 env_reset
 
 config_subdirs demo
+
+if test -d kubz; then
+    config_subdirs kubz
+fi

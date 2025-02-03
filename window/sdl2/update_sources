@@ -28,3 +28,6 @@ update_sources_mk
 update_sources_sh
 
 ( cd demo && ./update_sources; )
+if test -d kubz; then
+    ( cd kubz && ./update_sources; )
+fi
