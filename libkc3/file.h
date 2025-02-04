@@ -46,6 +46,7 @@ s_file_stat * file_stat (const s_str *path, s_file_stat *dest);
 /* Operators. */
 bool          file_ensure_directory (const s_str *path,
                                      const s_tag *mode);
+bool          file_mv (const s_str *src, const s_str *dest);
 s_str *       file_pwd (s_str *dest);
 FILE *        file_open (const char *path, const char *mode);
 s32 *         file_open_r (const s_str *path, s32 *dest);

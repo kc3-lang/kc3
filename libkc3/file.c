@@ -273,6 +273,26 @@ s_time * file_mtime (const s_str *path, s_time *dest)
   return dest;
 }
 
+bool file_mv (const s_str *src, const s_str *dest)
+{
+  sw e;
+  if (link(dest->ptr.pchar, src->ptr.pchar)) {
+    e = errno;
+    err_write_1("file_mv: link: ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    return false;
+  }
+  if (unlink(src->ptr.pchar)) {
+    e = errno;
+    err_write_1("file_mv: unlink: ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    return false;
+  }
+  return true;
+}
+
 s_str * file_name (const s_str *path, s_str *dest)
 {
   sw slash_pos;
