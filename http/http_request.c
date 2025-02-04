@@ -56,7 +56,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   static s_ident random_len_ident;
   s_buf_save save;
   s_tag size;
-  const s_sym *sym_Upload;
+  static const s_sym *sym_Upload;
   s_list **tail;
   s_tag tmp = {0};
   s_http_request tmp_req = {0};
@@ -86,7 +86,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       goto restore;
     }
     tag_init_u32(&mode, 0700);
-    sym_Upload = sym_1("Upload");
+    sym_Upload = sym_1("HTTP.Upload");
   }
   buf_save_init(buf, &save);
   if (! http_request_buf_parse_method(buf, &tmp_req.method))
