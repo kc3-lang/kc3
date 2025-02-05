@@ -5,8 +5,8 @@ HEADERS = \
 	"application_window.h" \
 	"box.h" \
 	"button.h" \
-	"entry.h" \
 	"entry_buffer.h" \
+	"entry.h" \
 	"file.h" \
 	"frame.h" \
 	"kc3_glib.h" \
@@ -32,8 +32,8 @@ SOURCES = \
 	"application_window.c" \
 	"box.c" \
 	"button.c" \
-	"entry.c" \
 	"entry_buffer.c" \
+	"entry.c" \
 	"file.c" \
 	"frame.c" \
 	"kc3_glib.c" \

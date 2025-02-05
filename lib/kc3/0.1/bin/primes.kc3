@@ -1,0 +1,16 @@
+defmodule Primes do
+
+  def eratosthene_sieve = fn (max) {
+
+  }
+
+  def mersenne_prime = fn (n) {
+    i = 2
+    while (n > 0) do
+      i = (2 ** i) - 1
+      n = n - 1
+    end
+    i
+  }
+
+end

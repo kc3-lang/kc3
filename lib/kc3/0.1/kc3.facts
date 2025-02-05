@@ -57,6 +57,13 @@ replace {KC3.operator_require, :arity, 1}
 replace {KC3.operator_require, :symbol_value, cfn Bool "kc3_require" (Sym)}
 replace {KC3.operator_require, :operator_precedence, 14}
 replace {KC3.operator_require, :operator_associativity, :none}
+add {KC3, :operator, KC3.operator_pow}
+replace {KC3.operator_mul, :is_a, :operator}
+replace {KC3.operator_mul, :sym, :**}
+replace {KC3.operator_mul, :arity, 2}
+replace {KC3.operator_mul, :symbol_value, cfn Tag "tag_pow" (Tag, Tag, Result)}
+replace {KC3.operator_mul, :operator_precedence, 14}
+replace {KC3.operator_mul, :operator_associativity, :right}
 add {KC3, :operator, KC3.operator_div}
 replace {KC3.operator_div, :is_a, :operator}
 replace {KC3.operator_div, :sym, :/}

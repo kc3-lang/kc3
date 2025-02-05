@@ -1,5 +1,55 @@
 # KC3
 
+## v0.1.14
+ - pretty printer
+   - auto indent KC3 code
+ - map
+   - `access`
+   - `get` (get key value)
+   - `put` (return a new map)
+ - struct
+   - `access`
+   - `get`
+   - `put`
+ - facts database (triple store) accessible from KC3
+   - `new database (Ptr)`
+   - `add_tags`
+   - `collect_with`
+   - `collect_with_tags`
+   - `remove_tags`
+   - `with_tags`
+   - `with`
+   - `with_macro`
+ - HTTPd v0.2.0
+   - dynamic pages (MVC)
+     - models are defined in `./app/models/`
+     - controllers are defined in `./app/controllers/`
+     - templates are defined in `./app/templates/`
+     - views are defined in `./app/views/`
+     - dynamic router is defined in `./config/router.kc3`
+       - For now we don't match request method and just match the start of
+         the URL with `Str.starts_with?(url, route.path)`
+       - If there is no route or no controller or the controller does
+         not return a HTTP response, a 404 error is returned. Other
+         frameworks like Ruby on Rails or Phoenix do return a 500...
+   - threads
+     - `env_fork_init`
+     - `env_fork_clean`
+     - `Thread.new(fn)`
+ - fx v0.2.0
+   - file explorer
+   - preview files
+     - text
+     - image
+     - video
+     - audio
+     - binary (hexdump -C)
+   - properties
+     - create
+       - POST "/properties/*path"
+     - delete
+       - DELETE "/properties/*path
+
 ## v0.1.13
 
  - libkc3

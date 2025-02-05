@@ -63,6 +63,7 @@ s_complex * complex_new_cast (const s_sym * const *type,
                               s_tag *src);
 s_complex * complex_new_div (s_complex *a, s_complex *b);
 s_complex * complex_new_mul (s_complex *a, s_complex *b);
+s_complex * complex_new_pow (s_complex *a, s_complex *b);
 s_complex * complex_new_sub (s_complex *a, s_complex *b);
 s_complex * complex_new_copy (s_complex *a);
 
