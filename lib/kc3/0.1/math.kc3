@@ -1,0 +1,24 @@
+defmodule Math do
+
+  def pow = fn (a, b) {
+    if (type(b) == F32) do
+      F32.pow((F32) a, b)
+    else
+      if (type(b) == F64) do
+        F64.pow((F64) a, b)
+      else
+        if (type(b) == F128) do
+          F128.pow((F128) a, b)
+        else
+          c = 1
+          while (b > 0) do
+            c = c * a
+            b = b - 1
+          end
+          c
+        end
+      end
+    end
+  }
+
+end

@@ -595,7 +595,6 @@ KC3_C_SOURCES = \
 	"libkc3/tag_mod.c" \
 	"libkc3/tag_mul.c" \
 	"libkc3/tag_neg.c" \
-	"libkc3/tag_pow.c" \
 	"libkc3/tag_shift_left.c" \
 	"libkc3/tag_shift_right.c" \
 	"libkc3/tag_sqrt.c" \

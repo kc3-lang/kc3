@@ -353,7 +353,6 @@ SOURCES = \
 	"tag_mod.c" \
 	"tag_mul.c" \
 	"tag_neg.c" \
-	"tag_pow.c" \
 	"tag_shift_left.c" \
 	"tag_shift_right.c" \
 	"tag_sqrt.c" \
@@ -643,7 +642,6 @@ LO_SOURCES = \
 	"tag_mod.c" \
 	"tag_mul.c" \
 	"tag_neg.c" \
-	"tag_pow.c" \
 	"tag_shift_left.c" \
 	"tag_shift_right.c" \
 	"tag_sqrt.c" \
