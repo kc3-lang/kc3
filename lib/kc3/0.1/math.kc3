@@ -21,4 +21,61 @@ defmodule Math do
     end
   }
 
+  def mersenne_prime = fn (n) {
+    (1 << n) - 1
+  }
+
+  def mersenne_prime_test = fn (max) {
+    d = void
+    i = 1
+    while ((i < max) && (! d)) do
+      p = mersenne_prime(i)
+      puts("mersenne_prime(#{i}) = #{p}")
+      d = greatest_divisor(p)
+      if d do
+        puts(" XXX #{d}")
+      end
+      i = i + 1
+    end
+    if d do
+      {i, p, d, (p / d)}
+    else
+      {:ok, max}
+    end
+  }
+
+  def greatest_divisor = fn (a) {
+    b = a / 2
+    while ((b > 1) && (a mod b)) do
+      b = b - 1
+    end
+    if b <= 1 do
+      void
+    else
+      b
+    end
+  }
+
+  def lowest_divisor = fn (a) {
+    b = 2
+    max = a / 2
+    while ((b < max) && (a mod b)) do
+      b = b + 1
+    end
+    if b <= 1 do
+      void
+    else
+      b
+    end
+  }
+
+  def next_prime = fn (a) {
+    b = greatest_divisor(a)
+    while b do
+      a = a + 1
+      b = greatest_divisor(a)
+    end
+    a
+  }
+
 end
