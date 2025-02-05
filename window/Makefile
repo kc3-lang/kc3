@@ -82,6 +82,9 @@ gdb_demo: debug
 gdb_demo_gl: debug
 	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 gdb_demo; fi
 
+gdb_kubz: debug
+	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 gdb_kubz; fi
+
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/window
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libkc3/window

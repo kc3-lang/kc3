@@ -32,20 +32,25 @@ all:
 asan:
 	${MAKE} ${LIB_ASAN}
 	${MAKE} -C demo asan
+	${MAKE} -C kubz asan
 
 clean:
 	rm -rf ${CLEANFILES}
 	${MAKE} -C demo clean
+	${MAKE} -C kubz clean
 
 clean_cov:
+	${MAKE} -C demo clean_cov
 	${MAKE} -C demo clean_cov
 
 cov:
 	${MAKE} ${LIB_COV}
 	${MAKE} -C demo cov
+	${MAKE} -C demo cov
 
 debug:
 	${MAKE} ${LIB_DEBUG}
+	${MAKE} -C demo debug
 	${MAKE} -C demo debug
 
 demo: build
@@ -63,16 +68,21 @@ demo_debug: debug
 distclean:
 	rm -rf ${DISTCLEANFILES}
 	${MAKE} -C demo distclean
+	${MAKE} -C demo distclean
 
 gcovr:
+	${MAKE} -C demo gcovr
 	${MAKE} -C demo gcovr
 
 gdb_demo: debug
 	${MAKE} -C demo gdb_demo
 
+gdb_kubz: debug
+	${MAKE} -C kubz gdb_kubz
+
 install:
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libc3/window/sdl2
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libc3/window/sdl2
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/window/sdl2
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libkc3/window/sdl2
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/lib
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
 	${LIBTOOL} --finish ${prefix}/lib

@@ -344,6 +344,9 @@ gdb_kmsg:
 	${MAKE} -C gtk4 debug
 	${MAKE} -C kmsg gdb
 
+gdb_kubz: debug
+	${MAKE} -C window gdb_kubz
+
 gdb_test:
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
@@ -677,6 +680,18 @@ kmsg_debug:
 	${MAKE} -C kc3s debug
 	${MAKE} -C gtk4 debug
 	${MAKE} -C kmsg run_debug
+
+kubz:
+	${MAKE} build
+	window/sdl2/kubz/.libs/kubz
+
+kubz_asan:
+	${MAKE} asan
+	window/sdl2/kubz/.libs/kubz_asan
+
+kubz_debug:
+	${MAKE} debug
+	window/sdl2/kubz/.libs/kubz_debug
 
 lib_links:
 	${MAKE} lib_links_${ARCH}

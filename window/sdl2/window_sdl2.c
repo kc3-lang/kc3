@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 #include <err.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <xkbcommon/xkbcommon.h>
 #include <libkc3/kc3.h>
@@ -34,8 +35,12 @@ static void gl_debug (GLenum source, GLenum type, GLuint id,
   (void) severity;
   (void) length;
   (void) user_param;
-  err_write_1("gl_debug_callback: ");
-  err_puts(message);
+  if (g_kc3_env && g_kc3_env->err) {
+    err_write_1("gl_debug_callback: ");
+    err_puts(message);
+  }
+  else
+    fprintf(stderr, "gl_debug_callback: %s\n", message);
 }
 
 void window_sdl2_clean (s_window_sdl2 *window)
