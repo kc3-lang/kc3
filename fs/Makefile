@@ -10,38 +10,39 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-build: fuse
+#build: fuse
+build:
 
 all:
 	${MAKE} build
 	${MAKE} debug
 
 fuse:
-	${MAKE} -C fuse
+#	${MAKE} -C fuse
 
 fuse_asan:
-	${MAKE} -C fuse asan
+#	${MAKE} -C fuse asan
 
 clean:
-	${MAKE} -C fuse clean
+#	${MAKE} -C fuse clean
 
 clean_cov:
-	${MAKE} -C fuse clean_cov
+#	${MAKE} -C fuse clean_cov
 
 cov:
-	${MAKE} -C fuse cov
+#	${MAKE} -C fuse cov
 
 debug:
-	${MAKE} -C fuse debug
+#	${MAKE} -C fuse debug
 
 distclean:
-	${MAKE} -C fuse distclean
+#	${MAKE} -C fuse distclean
 
 gcovr:
-	${MAKE} -C fuse gcovr
+#	${MAKE} -C fuse gcovr
 
 install:
-	${MAKE} -C fuse install
+#	${MAKE} -C fuse install
 
 .PHONY: \
 	all \

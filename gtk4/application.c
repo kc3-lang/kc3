@@ -26,7 +26,7 @@ GtkApplication ** kc3_gtk4_application_new (GtkApplication **dest,
   assert(name);
   g_set_application_name(name->ptr.pchar);
   if (! (tmp = gtk_application_new(id->ptr.pchar,
-                                   G_APPLICATION_DEFAULT_FLAGS)))
+                                   G_APPLICATION_FLAGS_NONE)))
     return NULL;
   *dest = tmp;
   return dest;

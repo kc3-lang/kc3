@@ -290,7 +290,7 @@ s32 * file_open_w (const s_str *path, s32 *dest)
 {
   sw e;
   s32 fd;
-  mode_t mode = 0777;
+  static const mode_t mode = 0666;
   assert(path);
   assert(dest);
   if ((fd = open(path->ptr.pchar, O_WRONLY | O_BINARY | O_CREAT,
@@ -599,9 +599,11 @@ bool file_write (const s_str *path, const s_str *data)
 {
   s32 e;
   s32 fd;
+  static const mode_t mode = 0666;
   sw pos = 0;
   sw w;
-  fd = open(path->ptr.pchar, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY);
+  fd = open(path->ptr.pchar, O_CREAT | O_TRUNC | O_WRONLY | O_BINARY,
+	    mode);
   if (fd < 0) {
     e = errno;
     err_write_1("file_write: open: ");
