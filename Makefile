@@ -658,6 +658,16 @@ kmsg:
 	${MAKE} -C gtk4 build
 	${MAKE} -C kmsg
 
+kmsg_asan:
+	${MAKE} gen
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C gtk4 asan
+	${MAKE} -C kmsg run_asan
+
 kmsg_debug:
 	${MAKE} gen
 	${MAKE} -C libtommath debug
