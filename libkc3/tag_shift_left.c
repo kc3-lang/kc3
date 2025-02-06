@@ -112,8 +112,8 @@ s_tag * tag_shift_left (s_tag *a, s_tag *b, s_tag *result)
       return result;
     case TAG_INTEGER:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, &b->data.integer),
-                   &result->data.integer);
+      integer_lshift(&a->data.integer, integer_to_sw(&b->data.integer),
+                     &result->data.integer);
       return result;
     case TAG_SW:
       result->type = TAG_INTEGER;
