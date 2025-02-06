@@ -1,5 +1,8 @@
 defmodule HTTP.Request do
 
+  require Compare
+  require List
+
   defstruct [method: ?,
              body: ?,
              url: "/",

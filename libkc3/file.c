@@ -151,8 +151,11 @@ s_str * file_dirname (const s_str *path, s_str *dest)
   sw dirsep_pos;
   assert(path);
   assert(dest);
-  if ((dirsep_pos = str_rindex_character(path, '/', 0, -1)) < 0)
-    return str_init(dest, NULL, 2, "./");
+  if (path->size == 1 && path->ptr.pchar[0] == '/')
+    return NULL;
+  if ((dirsep_pos = str_rindex_character(path, '/', 0, -2)) < 0) {
+    return str_init(dest, NULL, 0, "");
+  }
   if (! dirsep_pos)
     return str_init(dest, NULL, 1, "/");
   return str_init_slice(dest, path, 0, dirsep_pos + 1);
@@ -161,35 +164,63 @@ s_str * file_dirname (const s_str *path, s_str *dest)
 bool file_ensure_directory (const s_str *path, const s_tag *mode)
 {
   bool b;
-  s_str dir = {0};
+  s_str dirname;
+  s_str dir;
   s32 e;
   u32 m;
-  sw pos;
   static const s_sym *sym_U32 = &g_sym_U32;
-  if ((pos = str_character_position_last(path, '/')) > 0 &&
-      pos < path->size - 1) {
-    if (! str_init_slice(&dir, path, 0, pos))
-      return false;
-    if (true) {
-      err_write_1("file_ensure_directory: dir = ");
-      err_inspect_str(&dir);
-      err_write_1("\n");
+  if (true) {
+    err_write_1("file_ensure_directory: ");
+    err_inspect_str(path);
+    err_write_1("\n");
+  }
+  if (! file_exists(path, &b))
+    return false;
+  if (b)
+    return true;
+  if (file_dirname(path, &dirname)) {
+    if (str_ends_with_1(&dirname, "/", &b) && b) {
+      if (! str_init_slice(&dir, &dirname, 0, -2))
+        return false;
+      str_clean(&dirname);
     }
-    if ((file_exists(&dir, &b)) && b)
-      return true;
-    if (! file_ensure_directory(&dir, mode))
-      return false;
-    if (! u32_init_cast(&m, &sym_U32, mode))
-      return false;
-    if (mkdir(dir.ptr.pchar, m)) {
-      e = errno;
-      err_write_1("file_ensure_directory: mkdir: ");
-      err_inspect_str(&dir);
-      err_write_1(": ");
-      err_write_1(strerror(e));
+    else
+      dir = dirname;
+    if (dir.size > 0) {
+      if (! file_ensure_directory(&dir, mode)) {
+        str_clean(&dir);
+        return false;
+      }
     }
+    str_clean(&dir);
+  }
+  if (! u32_init_cast(&m, &sym_U32, mode))
+    return false;
+  if (true) {
+    io_write_1("file_ensure_directory: MKDIR ");
+    io_inspect_str(path);
+    io_write_1("\n");
+  }
+  if (mkdir(path->ptr.pchar, m)) {
+    e = errno;
+    err_write_1("file_ensure_directory: mkdir: ");
+    err_inspect_str(path);
+    err_write_1(": ");
+    err_write_1(strerror(e));
+    return false;
   }
   return true;
+}
+
+bool file_ensure_parent_directory (const s_str *path, const s_tag *mode)
+{
+  bool b;
+  s_str dir;
+  if (! file_dirname(path, &dir))
+    return false;
+  b = file_ensure_directory(&dir, mode);
+  str_clean(&dir);
+  return b;
 }
 
 bool * file_exists (const s_str *path, bool *dest)

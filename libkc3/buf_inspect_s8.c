@@ -60,14 +60,13 @@ sw buf_inspect_s8_size (s_pretty *pretty, const s8 *s)
       return r;
     result += r;
   }
+  u = *s;
   if (*s < 0) {
     if ((r = buf_write_1_size(pretty, "-")) < 0)
       return r;
     result += r;
     u = -*s;
   }
-  else
-    u = *s;
   if ((r = buf_inspect_u8_decimal_size(pretty, &u)) < 0)
     return r;
   result += r;

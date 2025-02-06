@@ -112,6 +112,8 @@ sw            str_character_position_last (const s_str *str,
                                            character c);
 bool *        str_ends_with (const s_str *str, const s_str *end,
                              bool *dest);
+bool *        str_ends_with_1 (const s_str *str, const char *end,
+                               bool *dest);
 bool *        str_has_characters (const s_str *src, const s_str *chars,
                                   bool *dest);
 bool *        str_has_reserved_characters (const s_str *src,

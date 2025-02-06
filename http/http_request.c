@@ -293,7 +293,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             err_inspect_str(&path.data.str);
             err_write_1("\n");
           }
-          if (! file_ensure_directory(&path.data.str, &mode)) {
+          if (! file_ensure_parent_directory(&path.data.str, &mode)) {
 	    err_puts("http_request_buf_parse,file_ensure_directory");
             goto restore;
 	  }

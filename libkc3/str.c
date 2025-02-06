@@ -272,6 +272,12 @@ bool * str_ends_with (const s_str *str, const s_str *end, bool *dest)
   return dest;
 }
 
+bool * str_ends_with_1 (const s_str *str, const char *end, bool *dest)
+{
+  s_str end_str = {{NULL}, strlen(end), {end}};
+  return str_ends_with(str, &end_str, dest);
+}
+
 bool * str_has_characters (const s_str *src, const s_str *chars,
                            bool *dest)
 {

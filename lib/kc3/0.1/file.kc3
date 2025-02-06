@@ -4,6 +4,10 @@ defmodule File do
 
   def dirname = cfn Str "file_dirname" (Str, Result)
 
+  def ensure_directory = cfn Bool "file_ensure_directory" (Str)
+
+  def ensure_parent_directory = cfn Bool "file_ensure_directory" (Str)
+
   def exists? = cfn Bool "file_exists" (Str, Result)
 
   def ext = cfn Str "file_ext" (Str, Result)
