@@ -684,6 +684,22 @@ struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
   return dest;
 }
 
+bool * file_unlink (const s_str *path, bool *dest)
+{
+  sw e;
+  if (unlink(path->ptr.pchar)) {
+    e = errno;
+    err_write_1("file_unlink: unlink: ");
+    err_inspect_str(path);
+    err_write_1(": ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    return NULL;
+  }
+  *dest = true;
+  return dest;
+}
+
 bool file_write (const s_str *path, const s_str *data)
 {
   s32 e;

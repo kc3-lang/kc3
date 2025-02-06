@@ -66,4 +66,6 @@ defmodule File do
 
   def read_max = fn (path, max) { read_max_cfn(path, (Uw) max) }
 
+  def unlink = cfn Bool "file_unlink" (Str, Result)
+
 end
