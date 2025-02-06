@@ -3512,7 +3512,7 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
         }
       }
       if (display &&
-          i <= display_last &&
+          i < display_last &&
           i < s->type->map.count - 1) {
         if ((r = buf_write_1_size(pretty, ",\n")) < 0)
           goto clean;
