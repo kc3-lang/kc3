@@ -21,7 +21,7 @@ defmodule Math do
     end
   }
 
-  def mersenne_prime = fn (n) {
+  def mersenne_number = fn (n) {
     (1 << n) - 1
   }
 
@@ -29,8 +29,8 @@ defmodule Math do
     d = void
     i = 1
     while ((i < max) && (! d)) do
-      p = mersenne_prime(i)
-      puts("mersenne_prime(#{i}) = #{p}")
+      p = mersenne_number(i)
+      puts("mersenne_number(#{i}) = #{p}")
       d = greatest_divisor(p)
       if d do
         puts(" XXX #{d}")
@@ -58,11 +58,11 @@ defmodule Math do
 
   def lowest_divisor = fn (a) {
     b = 2
-    max = a / 2
+    max = a / 2 + 1
     while ((b < max) && (a mod b)) do
       b = b + 1
     end
-    if b <= 1 do
+    if b == max do
       void
     else
       b
