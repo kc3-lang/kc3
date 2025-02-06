@@ -1,5 +1,5 @@
 /* kc3
- * Copyright 2022,2023,2024 kmx.io <contact@kmx.io>
+ * Copyright 2022-2025 kmx.io <contact@kmx.io>
  *
  * Permission is hereby granted to use this software granted the above
  * copyright notice and this permission paragraph are included in all
@@ -10,22 +10,12 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef KC3_GTK4_TYPES_H
-#define KC3_GTK4_TYPES_H
+#ifndef KC3_GTK4_GSK_GL_RENDERER_H
+#define KC3_GTK4_GSK_GL_RENDERER_H
 
-#include <gtk/gtk.h>
-#include <gsk/gsk.h>
-#include <libkc3/types.h>
+#include "types.h"
 
-typedef struct action_callback s_action_callback;
+/* Heap-allocation functions. */
+GskRenderer ** kc3_gtk4_gsk_gl_renderer_new (GskRenderer **dest);
 
-/* 1 */
-
-struct action_callback {
-  GSimpleAction *action;
-  s_callable *callable;
-  s_tag tag;
-  s_action_callback *next;
-};
-
-#endif /* KC3_GTK4_TYPES_H */
+#endif /* KC3_GTK4_GSK_GL_RENDERER_H */

@@ -10,22 +10,19 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef KC3_GTK4_TYPES_H
-#define KC3_GTK4_TYPES_H
+#include <libkc3/kc3.h>
+#include "gsk_gl_renderer.h"
 
-#include <gtk/gtk.h>
-#include <gsk/gsk.h>
-#include <libkc3/types.h>
-
-typedef struct action_callback s_action_callback;
-
-/* 1 */
-
-struct action_callback {
-  GSimpleAction *action;
-  s_callable *callable;
-  s_tag tag;
-  s_action_callback *next;
-};
-
-#endif /* KC3_GTK4_TYPES_H */
+GskRenderer ** kc3_gtk4_gsk_gl_renderer_new (GskRenderer **dest)
+{
+  /*
+  GskRenderer *tmp = NULL;
+  assert(dest);
+  if (! (tmp = gsk_gl_renderer_new()))
+    return NULL;
+  *dest = tmp;
+  return dest;
+  */
+  (void) dest;
+  return NULL;
+}

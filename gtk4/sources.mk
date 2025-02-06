@@ -9,6 +9,7 @@ HEADERS = \
 	"entry.h" \
 	"file.h" \
 	"frame.h" \
+	"gsk_gl_renderer.h" \
 	"kc3_glib.h" \
 	"kc3_gtk4.h" \
 	"label.h" \
@@ -36,6 +37,7 @@ SOURCES = \
 	"entry.c" \
 	"file.c" \
 	"frame.c" \
+	"gsk_gl_renderer.c" \
 	"kc3_glib.c" \
 	"label.c" \
 	"list_box.c" \

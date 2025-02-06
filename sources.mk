@@ -180,6 +180,8 @@ KC3_C_SOURCES = \
 	"gtk4/file.h" \
 	"gtk4/frame.c" \
 	"gtk4/frame.h" \
+	"gtk4/gsk_gl_renderer.c" \
+	"gtk4/gsk_gl_renderer.h" \
 	"gtk4/kc3_glib.c" \
 	"gtk4/kc3_glib.h" \
 	"gtk4/kc3_gtk4.h" \
@@ -1218,6 +1220,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/list.kc3" \
 	"lib/kc3/0.1/map.facts" \
 	"lib/kc3/0.1/markdown.kc3" \
+	"lib/kc3/0.1/math.kc3" \
 	"lib/kc3/0.1/metric.kc3" \
 	"lib/kc3/0.1/parse.kc3" \
 	"lib/kc3/0.1/prime.kc3" \
