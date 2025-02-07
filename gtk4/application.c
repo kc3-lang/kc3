@@ -13,6 +13,10 @@
 #include <libkc3/assert.h>
 #include "application.h"
 
+#if GLIB_CHECK_VERSION(2, 74, 0)
+# define G_APPLICATION_DEFAULT_FLAGS 0
+#endif
+
 void kc3_gtk4_application_delete (GtkApplication **app)
 {
   g_object_unref(*app);
@@ -26,7 +30,7 @@ GtkApplication ** kc3_gtk4_application_new (GtkApplication **dest,
   assert(name);
   g_set_application_name(name->ptr.pchar);
   if (! (tmp = gtk_application_new(id->ptr.pchar,
-                                   G_APPLICATION_FLAGS_NONE)))
+                                   G_APPLICATION_DEFAULT_FLAGS)))
     return NULL;
   *dest = tmp;
   return dest;
