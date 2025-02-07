@@ -79,6 +79,7 @@ to discover how to use KC3 for your own projects.
 ## TODO
 
  - HTTPd
+   - OAuth2 / jwt
    - dynamic router
      - def_route(:get, "/user/:id/articles/*slug/edit", UserArticlesController.edit)
  - fx
