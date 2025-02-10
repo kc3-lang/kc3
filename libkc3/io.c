@@ -30,10 +30,10 @@
   sw err_inspect_ ## name (type x)                                     \
   {                                                                    \
     sw r;                                                              \
-    r = buf_inspect_ ## name(g_kc3_env->err, x);                        \
+    r = buf_inspect_ ## name(g_kc3_env->err, x);                       \
     if (r < 0)                                                         \
       return r;                                                        \
-    buf_flush(g_kc3_env->err);                                          \
+    buf_flush(g_kc3_env->err);                                         \
     return r;                                                          \
   }
 
@@ -41,10 +41,10 @@
   sw io_inspect_ ## name (type x)                                      \
   {                                                                    \
     sw r;                                                              \
-    r = buf_inspect_ ## name(g_kc3_env->out, x);                        \
+    r = buf_inspect_ ## name(g_kc3_env->out, x);                       \
     if (r < 0)                                                         \
       return r;                                                        \
-    buf_flush(g_kc3_env->out);                                          \
+    buf_flush(g_kc3_env->out);                                         \
     return r;                                                          \
   }
 

@@ -28,7 +28,7 @@ all:
 	${MAKE} -C test all
 	${MAKE} -C window all
 	${MAKE} -C gtk4 all
-	${MAKE} -C fs all
+#	${MAKE} -C fs all
 
 include config.mk
 include sources.mk
@@ -50,7 +50,7 @@ asan:
 	${MAKE} -C test asan
 	${MAKE} -C window asan
 	${MAKE} -C gtk4 asan
-	${MAKE} -C fs asan
+#	${MAKE} -C fs asan
 
 assets:
 	make -C test/httpd/assets
@@ -73,7 +73,7 @@ build:
 	${MAKE} -C test build
 	${MAKE} -C window build
 	${MAKE} -C gtk4 build
-	${MAKE} -C fs build
+#	${MAKE} -C fs build
 
 clean:
 	${MAKE} -C libtommath clean
@@ -92,7 +92,7 @@ clean:
 	${MAKE} -C test clean
 	${MAKE} -C window clean
 	${MAKE} -C gtk4 clean
-	${MAKE} -C fs clean
+#	${MAKE} -C fs clean
 
 clean_cov:
 	${MAKE} -C libtommath clean_cov
@@ -110,7 +110,7 @@ clean_cov:
 	${MAKE} -C test clean_cov
 	${MAKE} -C window clean_cov
 	${MAKE} -C gtk4 clean_cov
-	${MAKE} -C fs clean_cov
+#	${MAKE} -C fs clean_cov
 
 cov:
 	${MAKE} gen
@@ -129,7 +129,7 @@ cov:
 	${MAKE} -C test cov
 	${MAKE} -C window cov
 	${MAKE} -C gtk4 cov
-	${MAKE} -C fs cov
+#	${MAKE} -C fs cov
 
 debug:
 	${MAKE} -C libtommath debug
@@ -148,7 +148,7 @@ debug:
 	${MAKE} -C test debug
 	${MAKE} -C window debug
 	${MAKE} -C gtk4 debug
-	${MAKE} -C fs debug
+#	${MAKE} -C fs debug
 
 demo: build
 	${MAKE} -C window demo
@@ -209,7 +209,7 @@ distclean:
 	${MAKE} -C test distclean
 	${MAKE} -C window distclean
 	${MAKE} -C gtk4 distclean
-	${MAKE} -C fs distclean
+#	${MAKE} -C fs distclean
 
 ekc3:
 	${MAKE} -C libtommath build
@@ -305,7 +305,7 @@ gcovr:
 	${MAKE} -C test gcovr
 	${MAKE} -C window gcovr
 	${MAKE} -C gtk4 gcovr
-	${MAKE} -C fs gcovr
+#	${MAKE} -C fs gcovr
 	if [ -d "$$HOME/Downloads/kc3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
 gdb_demo:
@@ -592,7 +592,7 @@ install:
 	${MAKE} -C httpd install
 	${MAKE} -C window install
 	${MAKE} -C gtk4 install
-	${MAKE} -C fs install
+#	${MAKE} -C fs install
 
 json:
 	${MAKE} -C libtommath build
