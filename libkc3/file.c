@@ -242,6 +242,22 @@ s_str * file_ext (const s_str *path, s_str *dest)
   return str_init_slice(dest, path, dot_pos + 1, -1);
 }
 
+bool * file_link (const s_str *from, const s_str *to, bool *dest)
+{
+  sw e;
+  if (link(from->ptr.pchar, to->ptr.pchar)) {
+    e = errno;
+    err_write_1("file_link: link: ");
+    err_inspect_str(to);
+    err_write_1(": ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    return NULL;
+  }
+  *dest = true;
+  return dest;
+}
+
 s_list ** file_list (const s_str *path, s_list **dest)
 {
   DIR           *dir;

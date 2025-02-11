@@ -18,9 +18,9 @@ defmodule HTTP.Upload do
       upload = Struct.put(upload, :replace, true)
     end
     if errors == %{} do
-      {:error, upload, errors}
-    else
       {:ok, upload}
+    else
+      {:error, upload, errors}
     end
   }
 

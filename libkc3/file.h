@@ -48,6 +48,7 @@ bool          file_ensure_directory (const s_str *path,
                                      const s_tag *mode);
 bool          file_ensure_parent_directory (const s_str *path,
                                             const s_tag *mode);
+bool *        file_link (const s_str *from, const s_str *to, bool *dest);
 bool          file_mv (const s_str *src, const s_str *dest);
 s_str *       file_pwd (s_str *dest);
 FILE *        file_open (const char *path, const char *mode);
@@ -55,5 +56,6 @@ s32 *         file_open_r (const s_str *path, s32 *dest);
 s32 *         file_open_w (const s_str *path, s32 *dest);
 struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
                                         struct stat *dest);
+bool *        file_unlink (const s_str *path, bool *dest);
 
 #endif /* LIBKC3_FILE_H */
