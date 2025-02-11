@@ -89,7 +89,7 @@ u64 * u64_init_cast
   default:
     break;
   }
-  err_write_1("u64_cast: cannot cast ");
+  err_write_1("u64_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
   if (*type == &g_sym_U64)
     err_puts(" to U64");
@@ -98,7 +98,8 @@ u64 * u64_init_cast
     err_inspect_sym(type);
     err_puts(" aka U64");
   }
-  assert(! "u64_cast: cannot cast to U64");
+  err_inspect_stacktrace(g_kc3_env->stacktrace);
+  assert(! "u64_init_cast: cannot cast to U64");
   return NULL;
 }
 

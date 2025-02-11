@@ -89,7 +89,7 @@ uw * uw_init_cast
   default:
     break;
   }
-  err_write_1("uw_cast: cannot cast ");
+  err_write_1("uw_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
   if (*type == &g_sym_Uw)
     err_puts(" to Uw");
@@ -98,7 +98,8 @@ uw * uw_init_cast
     err_inspect_sym(type);
     err_puts(" aka Uw");
   }
-  assert(! "uw_cast: cannot cast to Uw");
+  err_inspect_stacktrace(g_kc3_env->stacktrace);
+  assert(! "uw_init_cast: cannot cast to Uw");
   return NULL;
 }
 

@@ -89,7 +89,7 @@ u8 * u8_init_cast
   default:
     break;
   }
-  err_write_1("u8_cast: cannot cast ");
+  err_write_1("u8_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
   if (*type == &g_sym_U8)
     err_puts(" to U8");
@@ -98,7 +98,8 @@ u8 * u8_init_cast
     err_inspect_sym(type);
     err_puts(" aka U8");
   }
-  assert(! "u8_cast: cannot cast to U8");
+  err_inspect_stacktrace(g_kc3_env->stacktrace);
+  assert(! "u8_init_cast: cannot cast to U8");
   return NULL;
 }
 

@@ -89,7 +89,7 @@ u_bits$ * u_bits$_init_cast
   default:
     break;
   }
-  err_write_1("u_bits$_cast: cannot cast ");
+  err_write_1("u_bits$_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
   if (*type == &g_sym_U_bits$)
     err_puts(" to U_bits$");
@@ -98,7 +98,8 @@ u_bits$ * u_bits$_init_cast
     err_inspect_sym(type);
     err_puts(" aka U_bits$");
   }
-  assert(! "u_bits$_cast: cannot cast to U_bits$");
+  err_inspect_stacktrace(g_kc3_env->stacktrace);
+  assert(! "u_bits$_init_cast: cannot cast to U_bits$");
   return NULL;
 }
 
