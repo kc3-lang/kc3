@@ -224,7 +224,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
               err_puts("http_request_buf_parse: invalid name");
               goto restore;
             }
-	    filename.type = TAG_STR;
+            tag_clean(&filename);
+            tag_init_str_empty(&filename);
             if (buf_read_1(&header_buf, "; filename=\"") > 0) {
               if (! buf_read_until_1_into_str(&header_buf, "\"",
                                               &filename.data.str) ||
@@ -323,7 +324,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
                              tmp_req.body.data.list);	  
         }
         else { // if (filename.data.str.size)
-          if (! buf_read_until_str_into_str(buf, &boundary,
+          if (! buf_read_until_str_into_str(buf, &boundary_newline,
                                             &multipart_value)) {
             err_puts("http_request_buf_parse: failed to parse"
                      " multipart value");
