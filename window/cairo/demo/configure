@@ -53,6 +53,10 @@ pkg_config libmd
 pkg_config cairo
 pkg_config xkbcommon
 config_define PREFIX "\"${PREFIX}\""
+config_lib_have COCOA -framework Cocoa
+if $HAVE_COCOA; then
+    config_objc_include_have COCOA '#import <Cocoa/Cocoa.h>'
+fi
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
@@ -122,3 +126,7 @@ build_lo
 build_lib
 
 update_config_mk
+
+if ${HAVE_COCOA}; then
+    config_subdirs macos
+fi
