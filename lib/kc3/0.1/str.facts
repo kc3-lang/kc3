@@ -49,3 +49,5 @@ add {Str, :symbol, Str.size}
 replace {Str.size, :symbol_value, cfn Tag "str_size" (Str, Result)}
 add {Str, :symbol, Str.random_base64}
 replace {Str.random_base64, :symbol_value, cfn Str "str_init_random_base64" (Result, Tag)}
+add {Str, :symbol, Str.has_characters?}
+replace {Str.has_characters?, :symbol_value, cfn Bool "str_has_characters" (Str, Str, Result)}

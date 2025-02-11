@@ -1,8 +1,20 @@
 defmodule HTTP.Upload do
 
   defstruct [filename: "",
+             replace: false,
              size: ?,
              tmp_path: ""]
+
+  def changeset = fn (upload, params) {
+    errors = %{}
+    if (params["filename"] && params["filename"] != "") do
+      if (Str.has_characters?(params["filename"], "\\/")) do
+        errors = Map.put(errors, "filename", "Cannot contain directory separators.")
+      else
+        upload = Struct.put(upload, :filename, params["filename"])
+      end
+    end
+  }
 
   def tmp_filename_prefix = "upload/tmp/"
 
