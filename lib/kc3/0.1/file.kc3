@@ -4,9 +4,12 @@ defmodule File do
 
   def dirname = cfn Str "file_dirname" (Str, Result)
 
-  def ensure_directory = cfn Bool "file_ensure_directory" (Str)
+  # ensure_directory(path, mode) => success
+  def ensure_directory = cfn Bool "file_ensure_directory" (Str, Tag)
 
-  def ensure_parent_directory = cfn Bool "file_ensure_directory" (Str)
+  # ensure_parent_directory(path, mode) => success
+  def ensure_parent_directory = cfn Bool "file_ensure_directory" (Str,
+    Tag)
 
   def exists? = cfn Bool "file_exists" (Str, Result)
 
