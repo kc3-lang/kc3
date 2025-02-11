@@ -148,15 +148,15 @@ bool window_sdl2_run (s_window_sdl2 *window)
   if (! g_window_sdl2_initialized) {
     //SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
     if (SDL_Init(SDL_INIT_VIDEO)) {
-      warnx("window_sdl2_run: SDL initialization failed: %s",
-            SDL_GetError());
+      err_write_1("window_sdl2_run: SDL initialization failed: ");
+      err_puts(SDL_GetError());
       return false;
     }
     g_window_sdl2_initialized = true;
   }
   if (SDL_VideoInit(NULL)) {
-    warnx("window_sdl2_run: SDL_VideoInit failed: %s",
-          SDL_GetError());
+    err_write_1("window_sdl2_run: SDL_VideoInit failed: ");
+    err_puts(SDL_GetError());
     return false;
   }
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -205,15 +205,15 @@ bool window_sdl2_run (s_window_sdl2 *window)
     err_puts(version);
   } else {
     err_puts("window_sdl2_run: failed to retrieve OpenGL version");
-    version = "unknown"
+    version = "unknown";
   }
   if (glDebugMessageCallback) {
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback((GLDEBUGPROC) gl_debug, NULL);
   }
   if (SDL_GL_MakeCurrent(sdl_window, context) < 0) {
-    warnx("window_sdl2_run: failed to make OpenGL context current: %s",
-          SDL_GetError());
+    err_write_1("window_sdl2_run: failed to make OpenGL context current: ");
+    err_write_1(SDL_GetError());
     goto ko;
   }
   int gl_w = window->w;
