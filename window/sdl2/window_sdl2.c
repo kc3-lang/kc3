@@ -205,7 +205,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
     err_puts(version);
   } else {
     err_puts("window_sdl2_run: failed to retrieve OpenGL version");
-    goto ko;
+    version = "unknown"
   }
   if (glDebugMessageCallback) {
     glEnable(GL_DEBUG_OUTPUT);
