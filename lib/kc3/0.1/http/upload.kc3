@@ -14,6 +14,14 @@ defmodule HTTP.Upload do
         upload = Struct.put(upload, :filename, params["filename"])
       end
     end
+    if (params["replace"] && params["replace"] == "replace") do
+      upload = Struct.put(upload, :replace, true)
+    end
+    if errors == %{} do
+      {:error, upload, errors}
+    else
+      {:ok, upload}
+    end
   }
 
   def tmp_filename_prefix = "upload/tmp/"
