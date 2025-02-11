@@ -93,6 +93,9 @@ to discover how to use KC3 for your own projects.
    - properties
      - recursive
  - libkc3
+   - serialization / deserialization
+   - reference counting in all data structures
+   - pass by reference in all data structures
    - operators dispatch
      - list of matching operators (facts_with)
    - base-specific big floats
