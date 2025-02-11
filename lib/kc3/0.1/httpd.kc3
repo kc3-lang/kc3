@@ -90,7 +90,6 @@ defmodule HTTPd do
         request = Struct.put(request, :client_addr, client_addr)
         user_agent = HTTP.Request.header(request, "User-Agent")
         puts("--- #{client_addr} #{request.method} #{request.url} #{inspect(user_agent)}")
-        puts("HTTPd.http_client: request.body = #{request.body}")
         if (type(request.method) == Str) do
           response = error_405_page(request)
         else
