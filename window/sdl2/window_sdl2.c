@@ -139,7 +139,6 @@ s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
 
 bool window_sdl2_run (s_window_sdl2 *window)
 {
-  SDL_GLContext context;
   int mouse_x, mouse_y;
   int quit = 0;
   SDL_Event sdl_event;
@@ -154,11 +153,13 @@ bool window_sdl2_run (s_window_sdl2 *window)
     }
     g_window_sdl2_initialized = true;
   }
+  /*
   if (SDL_VideoInit(NULL)) {
     err_write_1("window_sdl2_run: SDL_VideoInit failed: ");
     err_puts(SDL_GetError());
     return false;
   }
+  */
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -182,21 +183,27 @@ bool window_sdl2_run (s_window_sdl2 *window)
   }
   SDL_SetWindowBordered(sdl_window, SDL_TRUE);
   window->sdl_window = sdl_window;
-  context = SDL_GL_CreateContext(sdl_window);
-  if (! context) {
-    warnx("window_sdl2_run: failed to create OpenGL context: %s",
-          SDL_GetError());
+  window->context = SDL_GL_CreateContext(sdl_window);
+  if (! window->context) {
+    fprintf(stderr, "window_sdl2_run:"
+            " failed to create OpenGL context: %s\n",
+            SDL_GetError());
     return false;
+  }
+  if (SDL_GL_MakeCurrent(window->sdl_window, window->context)) {
+    err_write_1("window_sdl2_run: failed to make OpenGL context current: ");
+    err_write_1(SDL_GetError());
+    goto ko;
   }
   GLenum gl_error = glGetError();
   if (gl_error != GL_NO_ERROR) {
-    warnx("OpenGL initialization error: %s\n",
+    fprintf(stderr, "OpenGL initialization error: %s\n",
           gl_error_string(gl_error));
     goto ko;
   }
-  glewExperimental = GL_TRUE;
+  //glewExperimental = GL_TRUE;
   if (glewInit() != GLEW_OK) {
-    warnx("window_sdl2_run: failed to initialize GLEW");
+    fprintf(stderr, "window_sdl2_run: failed to initialize GLEW");
     goto ko;
   }
   const char * version = (const char *) glGetString(GL_VERSION);
@@ -210,11 +217,6 @@ bool window_sdl2_run (s_window_sdl2 *window)
   if (glDebugMessageCallback) {
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback((GLDEBUGPROC) gl_debug, NULL);
-  }
-  if (SDL_GL_MakeCurrent(sdl_window, context) < 0) {
-    err_write_1("window_sdl2_run: failed to make OpenGL context current: ");
-    err_write_1(SDL_GetError());
-    goto ko;
   }
   int gl_w = window->w;
   int gl_h = window->h;
@@ -305,17 +307,23 @@ bool window_sdl2_run (s_window_sdl2 *window)
     }
     assert(glGetError() == GL_NO_ERROR);
     //glDrawBuffer(GL_BACK);
+    if (SDL_GL_MakeCurrent(window->sdl_window, window->context)) {
+      fprintf(stderr, "window_sdl2_run:"
+              " failed to make OpenGL context current: %s\n",
+              SDL_GetError());
+      return false;
+    }
     if (! window->render(window)) {
       err_puts("window_sdl2_run: window->render => false");
       quit = 1;
     }
-    SDL_GL_SwapWindow(sdl_window);
+    SDL_GL_SwapWindow(window->sdl_window);
   }
-  SDL_GL_DeleteContext(context);
-  SDL_DestroyWindow(sdl_window);
+  SDL_GL_DeleteContext(window->context);
+  SDL_DestroyWindow(window->sdl_window);
   return true;
  ko:
-  SDL_GL_DeleteContext(context);
-  SDL_DestroyWindow(sdl_window);
+  SDL_GL_DeleteContext(window->context);
+  SDL_DestroyWindow(window->sdl_window);
   return false;
 }

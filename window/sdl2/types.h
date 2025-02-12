@@ -280,6 +280,7 @@ struct window_sdl2 {
   float dpi;
   float dpi_w;
   float dpi_h;
+  SDL_GLContext       *context;
 };
 
 /* 2 */

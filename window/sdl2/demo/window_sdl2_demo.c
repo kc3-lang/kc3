@@ -166,7 +166,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
                      "fonts/Courier New/Courier New.ttf",
                      point_per_pixel))
     return false;
-  if (! gl_text_init_1(&g_text_seq_title, &g_font_courier_new, ""))
+  if (! gl_text_init_1(&g_text_seq_title, &g_font_courier_new, "0"))
     return false;
   if (! gl_text_init_1(&g_text_fps, &g_font_courier_new, "0.00"))
     return false;

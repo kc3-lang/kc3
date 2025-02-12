@@ -314,7 +314,7 @@ gdb_demo:
 
 gdb_demo_gl:
 	${MAKE} debug
-	${MAKE} -C libkc3 gdb_demo_gl
+	${MAKE} -C window/sdl2 gdb_demo
 
 gdb_fx: httpd_debug
 	${MAKE} -C httpd gdb_fx
@@ -816,7 +816,7 @@ lldb_demo:
 
 lldb_demo_gl:
 	${MAKE} debug
-	${MAKE} -C libkc3 lldb_demo_gl
+	${MAKE} -C window/sdl2 lldb_demo
 
 lldb_ikc3:
 	${MAKE} debug
