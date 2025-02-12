@@ -909,6 +909,7 @@ s_str * str_init_random_base64 (s_str *str, const s_tag *len)
   return str_init(str, result, result_len, result);
 }
 
+DEF_STR_INIT_STRUCT(ratio)
 DEF_STR_INIT_INT(s8)
 DEF_STR_INIT_INT(s16)
 DEF_STR_INIT_INT(s32)
