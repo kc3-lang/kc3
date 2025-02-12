@@ -19,5 +19,8 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . ../config.subr
 
-config_subdirs \
-    fuse
+config_fuse
+
+if ${HAVE_FUSE}; then
+    config_subdirs fuse
+fi
