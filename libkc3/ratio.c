@@ -399,6 +399,32 @@ s_ratio * ratio_neg (const s_ratio *r, s_ratio *dest)
   return dest;
 }
 
+s_ratio * ratio_pow (const s_ratio *a, const s_ratio *b,
+                           s_ratio *dest)
+{
+  s_ratio tmp = {0};
+  s_integer one = {0};
+  assert(a);
+  assert(b);
+  assert(dest);
+  assert(integer_is_positive(&a->denominator));
+  assert(integer_is_positive(&b->denominator));
+  integer_init_u8(&one, 1);
+  if (! integer_mul(&a->numerator, &b->numerator, &tmp.numerator))
+    return NULL;
+  if (! integer_mul(&a->denominator, &b->denominator,
+                    &tmp.denominator)) {
+    integer_clean(&tmp.numerator);
+    return NULL;
+  }
+  if (! ratio_simplify(&tmp, dest)) {
+    ratio_clean(&tmp);
+    return NULL;
+  }
+  ratio_clean(&tmp);
+  return dest;
+}
+
 s_ratio * ratio_simplify (s_ratio *r, s_ratio *dest)
 {
   s_ratio tmp;
