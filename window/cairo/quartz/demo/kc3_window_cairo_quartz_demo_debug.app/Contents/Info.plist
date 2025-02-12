@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleExecutable</key>
-	<string>c3_window_cairo_quartz_demo_cov</string>
+	<string>kc3_window_cairo_quartz_demo_debug</string>
 	<key>CFBundleIconFile</key>
-	<string>c3</string>
+	<string>kc3</string>
 	<key>CFBundleIdentifier</key>
-	<string>io.kmx.c3-window-cairo-quartz-demo-cov</string>
+	<string>io.kmx.kc3-demo</string>
 </dict>
 </plist>

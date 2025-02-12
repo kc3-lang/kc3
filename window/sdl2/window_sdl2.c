@@ -142,7 +142,6 @@ bool window_sdl2_run (s_window_sdl2 *window)
   int mouse_x, mouse_y;
   int quit = 0;
   SDL_Event sdl_event;
-  SDL_Window *sdl_window;
   assert(window);
   if (! g_window_sdl2_initialized) {
     //SDL_SetHint(SDL_HINT_VIDEO_HIGHDPI_DISABLED, "1");
@@ -153,13 +152,11 @@ bool window_sdl2_run (s_window_sdl2 *window)
     }
     g_window_sdl2_initialized = true;
   }
-  /*
   if (SDL_VideoInit(NULL)) {
     err_write_1("window_sdl2_run: SDL_VideoInit failed: ");
     err_puts(SDL_GetError());
     return false;
   }
-  */
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
@@ -169,21 +166,20 @@ bool window_sdl2_run (s_window_sdl2 *window)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
                       SDL_GL_CONTEXT_PROFILE_CORE);
-  sdl_window = SDL_CreateWindow(window->title,
+  window->sdl_window = SDL_CreateWindow(window->title,
                                 window->x, window->y,
                                 window->w, window->h,
                                 SDL_WINDOW_ALLOW_HIGHDPI |
                                 SDL_WINDOW_OPENGL |
                                 SDL_WINDOW_RESIZABLE |
 				SDL_WINDOW_SHOWN);
-  if (! sdl_window) {
+  if (! window->sdl_window) {
     warnx("window_sdl2_run: failed to create window: %s",
           SDL_GetError());
     return false;
   }
-  SDL_SetWindowBordered(sdl_window, SDL_TRUE);
-  window->sdl_window = sdl_window;
-  window->context = SDL_GL_CreateContext(sdl_window);
+  SDL_SetWindowBordered(window->sdl_window, SDL_TRUE);
+  window->context = SDL_GL_CreateContext(window->sdl_window);
   if (! window->context) {
     fprintf(stderr, "window_sdl2_run:"
             " failed to create OpenGL context: %s\n",
@@ -201,7 +197,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
           gl_error_string(gl_error));
     goto ko;
   }
-  //glewExperimental = GL_TRUE;
+  glewExperimental = GL_TRUE;
   if (glewInit() != GLEW_OK) {
     fprintf(stderr, "window_sdl2_run: failed to initialize GLEW");
     goto ko;
@@ -220,11 +216,11 @@ bool window_sdl2_run (s_window_sdl2 *window)
   }
   int gl_w = window->w;
   int gl_h = window->h;
-  SDL_GL_GetDrawableSize(sdl_window, &gl_w, &gl_h);
+  SDL_GL_GetDrawableSize(window->sdl_window, &gl_w, &gl_h);
   window->gl_w = gl_w;
   window->gl_h = gl_h;
   int display_index;
-  display_index = SDL_GetWindowDisplayIndex(sdl_window);
+  display_index = SDL_GetWindowDisplayIndex(window->sdl_window);
   if (display_index < 0) {
     err_write_1("window_sdl2_run: failed to get display index: ");
     err_puts(SDL_GetError());
@@ -294,7 +290,7 @@ bool window_sdl2_run (s_window_sdl2 *window)
           assert(glGetError() == GL_NO_ERROR);
           window->w = sdl_event.window.data1;
           window->h = sdl_event.window.data2;
-          SDL_GL_GetDrawableSize(sdl_window, &gl_w, &gl_h);
+          SDL_GL_GetDrawableSize(window->sdl_window, &gl_w, &gl_h);
           assert(glGetError() == GL_NO_ERROR);
           window->gl_w = gl_w;
           window->gl_h = gl_h;
