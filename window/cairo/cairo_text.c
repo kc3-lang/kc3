@@ -16,22 +16,9 @@
 void cairo_text_outline (cairo_t *cr, double x, double y,
                          const char *p)
 {
-  printf("1 %s\n", cairo_status_to_string(cairo_status(cr)));
-  if (cairo_status(cr))
-    abort();
-  cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 1.0);
-  printf("2 %s\n", cairo_status_to_string(cairo_status(cr)));
-  if (cairo_status(cr))
-    abort();
+  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
   cairo_move_to(cr, x - 1.0, y - 1.0);
-  printf("3 %s\n", cairo_status_to_string(cairo_status(cr)));
-  if (cairo_status(cr))
-    abort();
   cairo_show_text(cr, p);
-  printf("4 %d %s\n", cairo_status(cr),
-         cairo_status_to_string(cairo_status(cr)));
-  if (cairo_status(cr))
-    abort();
   cairo_move_to(cr, x - 1.0, y);
   cairo_show_text(cr, p);
   cairo_move_to(cr, x - 1.0, y + 1.0);
@@ -46,7 +33,7 @@ void cairo_text_outline (cairo_t *cr, double x, double y,
   cairo_show_text(cr, p);
   cairo_move_to(cr, x + 1.0, y + 1.0);
   cairo_show_text(cr, p);
-  cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
+  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
   cairo_move_to(cr, x, y);
   cairo_show_text(cr, p);
 }
