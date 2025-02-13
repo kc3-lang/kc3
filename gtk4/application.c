@@ -13,9 +13,7 @@
 #include <libkc3/assert.h>
 #include "application.h"
 
-#if GLIB_CHECK_VERSION(2, 74, 0)
-# define G_APPLICATION_DEFAULT_FLAGS 0
-#endif
+#define G_APPLICATION_DEFAULT_FLAGS 0
 
 void kc3_gtk4_application_delete (GtkApplication **app)
 {
