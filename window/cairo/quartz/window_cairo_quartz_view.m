@@ -66,7 +66,7 @@
 
 - (void)mouseDown:(NSEvent *)event {
   NSPoint p = [event locationInWindow];
-  if (! self.window_cairo->button(self.window_cairo, 0, p.x, p.y)) {
+  if (! self.window_cairo->button(self.window_cairo, 1, p.x, p.y)) {
     [self.window close];
     [self.window release];
     [[NSApplication sharedApplication] stop:nil];
@@ -83,7 +83,7 @@
   }
 }
 
-- (void)rightMouseDown:(NSEvent *)event {
+- (void)otherMouseDown:(NSEvent *)event {
   NSPoint p = [event locationInWindow];
   if (! self.window_cairo->button(self.window_cairo, 2, p.x, p.y)) {
     [self.window close];
@@ -92,5 +92,30 @@
   }
 }
 
+- (void)rightMouseDown:(NSEvent *)event {
+  NSPoint p = [event locationInWindow];
+  if (! self.window_cairo->button(self.window_cairo, 3, p.x, p.y)) {
+    [self.window close];
+    [self.window release];
+    [[NSApplication sharedApplication] stop:nil];
+  }
+}
+
+- (void)scrollWheel:(NSEvent *)event {
+  u8 button = 0;
+  NSPoint p = [event locationInWindow];
+  if (event.deltaY < 0)
+    button = 5;
+  else if (event.deltaY > 0)
+    button = 4;
+  if (button) {
+    if (! self.window_cairo->button(self.window_cairo, button, p.x,
+                                    p.y)) {
+      [self.window close];
+      [self.window release];
+      [[NSApplication sharedApplication] stop:nil];
+    }
+  }
+}
 @end
 

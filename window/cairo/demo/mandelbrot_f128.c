@@ -12,7 +12,9 @@
  */
 #include <math.h>
 #include <libkc3/kc3.h>
+#include "../cairo_font.h"
 #include "../cairo_text.h"
+#include "window_cairo_demo.h"
 #include "mandelbrot_f128.h"
 
 static cairo_surface_t *g_mandelbrot_f128_surface = NULL;
@@ -47,7 +49,7 @@ bool mandelbrot_f128_button (s_sequence *seq, u8 button, sw x, sw y)
   next_z = &map->value[3].data.f128;
   if (button == 1) {
     *next_x = *next_x + *next_z * (x - (f128) win->w / 2);
-    *next_y = *next_y + *next_z * (y - (f128) win->h / 2);
+    *next_y = *next_y + *next_z * ((f128) win->h / 2 - y);
   }
   else if (button == 5) {
     *next_z = *next_z * exp2l(0.5);
@@ -161,6 +163,8 @@ bool mandelbrot_f128_render (s_sequence *seq)
   buf_write_1(&buf, "x: ");
   buf_inspect_f128(&buf, &next_x);
   buf_write_u8(&buf, 0);
+  cairo_font_set(cr, &g_font_courier_new);
+  cairo_set_font_size(cr, 20);
   cairo_text_outline(cr, 20, win->h - 100, a);
   buf_init(&buf, false, sizeof(a), a);
   buf_write_1(&buf, "y: ");
