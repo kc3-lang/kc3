@@ -138,18 +138,20 @@ bool window_cairo_demo_render (s_window_cairo *window)
     return false;
   /* text */
   cairo_identity_matrix(cr);
+  cairo_font_set(cr, &g_font_courier_new);
   cairo_set_font_size(cr, 20);
-  cairo_set_font(cr, &g_font_courier_new);
   cairo_text_extents(cr, seq->title, &te);
+  /*
   cairo_text_outline(cr, 20.0, window->h - te.height - te.y_bearing - 20,
               seq->title);
+  */
   /* progress bar */
-  cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
+  cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 1.0);
   cairo_rectangle(cr, 19, window->h - 12,
                   (window->w - 40.0) * seq->t / seq->duration + 2,
                   4);
   cairo_fill(cr);
-  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
+  cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
   cairo_rectangle(cr, 20, window->h - 11,
                   (window->w - 40.0) * seq->t / seq->duration,
                   2);

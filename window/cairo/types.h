@@ -18,10 +18,16 @@
 #ifndef LIBKC3_WINDOW_CAIRO_TYPES_H
 #define LIBKC3_WINDOW_CAIRO_TYPES_H
 
+#include "config.h"
+
 #include <cairo.h>
+
+#if ! HAVE_COCOA
 #include <cairo-ft.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#endif
+
 #include <png.h>
 #include <libkc3/types.h>
 #include "../types.h"
@@ -57,7 +63,9 @@ typedef void (*f_window_cairo_unload) (s_window_cairo *window);
 
 struct cairo_font {
   cairo_font_face_t *cairo_font_face;
+#if ! HAVE_COCOA
   FT_Face ft_face;
+#endif
   s_str path;
   s_str real_path;
 };

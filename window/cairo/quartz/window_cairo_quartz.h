@@ -17,6 +17,7 @@
 #include "../types.h"
 #include "../window_cairo.h"
 
-bool window_cairo_quartz_run (s_window_cairo *window);
+cairo_font_face_t * window_cairo_quartz_load_font (const char *path);
+bool                window_cairo_quartz_run (s_window_cairo *window);
 
 #endif /* LIBKC3_WINDOW_CAIRO_XCB_H */

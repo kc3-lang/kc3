@@ -15,10 +15,12 @@
 #include <xkbcommon/xkbcommon.h>
 #include <libkc3/tag.h>
 #include "../window.h"
+#include "cairo_font.h"
 #include "window_cairo.h"
 
 void kc3_window_cairo_clean (void)
 {
+  kc3_window_cairo_font_clean();
 }
 
 void kc3_window_cairo_init (void)

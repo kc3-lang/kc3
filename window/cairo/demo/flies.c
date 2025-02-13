@@ -187,7 +187,7 @@ bool flies_render (s_sequence *seq)
       cairo_fill(cr);
       cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
       cairo_set_font_size(cr, board_item_h);
-      cairo_set_font(cr, &g_font_courier_new);
+      cairo_font_set(cr, &g_font_courier_new);
       buf_init(&buf, false, sizeof(a), a);
       buf_write_1(&buf, "In ");
       buf_inspect_uw_decimal(&buf, fly_in);

@@ -12,6 +12,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <cairo/cairo-xcb.h>
 #include <libkc3/kc3.h>
 #include <xcb/xcb.h>

@@ -17,6 +17,8 @@ echo "$PWD/configure"
 
 export SRC_TOP="$(dirname "$PWD")"
 
+CONFIG_H_PREFIX=LIBKC3_WINDOW_CAIRO_QUARTZ
+
 . ../../../config.subr
 
 LIB=libkc3_window_cairo_quartz.la
@@ -57,11 +59,15 @@ config_asan
 config_gnu
 config_i386
 pkg_config cairo
+pkg_config cairo-fc
 pkg_config cairo-ft
-config_lib COCOA -framework Cocoa
+pkg_config cairo-quartz
+pkg_config cairo-quartz-font
 pkg_config libffi
 pkg_config libmd
 pkg_config xkbcommon
+config_cocoa
+update_config_h
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"
@@ -111,7 +117,7 @@ echo "CFLAGS_DEBUG = $CFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LDFLAGS_DEBUG = $LDFLAGS_DEBUG" >> ${CONFIG_MK}
 echo "LIBS_DEBUG = $LIBS_DEBUG" >> ${CONFIG_MK}
 
-update_build
+update_build_c
 update_build_objc
 update_build_lib
 

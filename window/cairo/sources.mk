@@ -12,3 +12,6 @@ SOURCES = \
 	"cairo_text.c" \
 	"window_cairo.c" \
 
+OBJC_SOURCES = \
+	"cairo_font_quartz.m" \
+

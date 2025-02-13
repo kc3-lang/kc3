@@ -7,6 +7,6 @@
 	<key>CFBundleIconFile</key>
 	<string>kc3</string>
 	<key>CFBundleIdentifier</key>
-	<string>io.kmx.kc3-demo</string>
+	<string>io.kmx.kc3-demo-debug</string>
 </dict>
 </plist>

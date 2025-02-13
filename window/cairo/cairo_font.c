@@ -12,12 +12,13 @@
  */
 #include <libkc3/kc3.h>
 #include "cairo_font.h"
+#include "config.h"
+
+#if ! HAVE_COCOA
 
 static FT_Library *g_cairo_font_ft = NULL;
 
-static FT_Library * cairo_font_ft (void);
-
-void c3_window_cairo_font_clean (void)
+void kc3_window_cairo_font_clean (void)
 {
   if (g_cairo_font_ft) {
     FT_Done_FreeType(*g_cairo_font_ft);
@@ -25,16 +26,7 @@ void c3_window_cairo_font_clean (void)
   }
 }
 
-void cairo_font_clean (s_cairo_font *font)
-{
-  assert(font);
-  cairo_font_face_destroy(font->cairo_font_face);
-  FT_Done_Face(font->ft_face);
-  str_clean(&font->path);
-  str_clean(&font->real_path);
-}
-
-static FT_Library * cairo_font_ft (void)
+FT_Library * cairo_font_ft (void)
 {
   if (! g_cairo_font_ft) {
     g_cairo_font_ft = malloc(sizeof(FT_Library));
@@ -73,12 +65,28 @@ s_cairo_font * cairo_font_init (s_cairo_font *font, const char *path)
     str_clean(&font->real_path);
     return NULL;
   }
-  font->cairo_font_face = cairo_ft_font_face_create_for_ft_face
-    (font->ft_face, 0);
+  if (! (font->cairo_font_face =
+         cairo_ft_font_face_create_for_ft_face(font->ft_face, 0))) {
+    err_puts("cairo_font_init: cairo_ft_font_face_create_for_ft_face");
+    return NULL;
+  }
   return font;
 }
 
-void cairo_set_font (cairo_t *cr, const s_cairo_font *font)
+#endif // if HAVE_COCOA
+
+void cairo_font_clean (s_cairo_font *font)
+{
+  assert(font);
+  cairo_font_face_destroy(font->cairo_font_face);
+#if ! HAVE_COCOA
+  FT_Done_Face(font->ft_face);
+#endif
+  str_clean(&font->path);
+  str_clean(&font->real_path);
+}
+
+void cairo_font_set (cairo_t *cr, const s_cairo_font *font)
 {
   cairo_set_font_face(cr, font->cairo_font_face);
 }

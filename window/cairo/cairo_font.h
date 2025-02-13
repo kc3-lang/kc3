@@ -10,17 +10,26 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#ifndef LIBKC3_WINDOW_CAIRO_CAIRO_FONT_H
-#define LIBKC3_WINDOW_CAIRO_CAIRO_FONT_H
+#ifndef LIBKC3_WINDOW_CAIRO_FONT_H
+#define LIBKC3_WINDOW_CAIRO_FONT_H
 
 #include "types.h"
+
+/* Library functions, call kc3_window_cairo_font_clean after
+   running. */
+void * cairo_font_ft (void);
+#if HAVE_COCOA
+# define kc3_window_cairo_font_clean()
+#else
+void kc3_window_cairo_font_clean (void);
+#endif
 
 /* Stack-allocation compatible functions, call cairo_font_clean
    after use. */
 void           cairo_font_clean (s_cairo_font *font);
 s_cairo_font * cairo_font_init (s_cairo_font *font, const char *path);
 
-/* Observers */
-void cairo_set_font (cairo_t *cr, const s_cairo_font *font);
+/* Cairo operators. */
+void cairo_font_set (cairo_t *cr, const s_cairo_font *font);
 
-#endif /* LIBKC3_WINDOW_CAIRO_CAIRO_FONT_H */
+#endif /* LIBKC3_WINDOW_CAIRO_FONT_H */

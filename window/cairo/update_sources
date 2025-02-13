@@ -24,6 +24,9 @@ sources HEADERS "$HEADERS"
 SOURCES="$(ls *.c)"
 sources SOURCES "$SOURCES"
 
+OBJC_SOURCES="$(ls *.m)"
+sources OBJC_SOURCES "$OBJC_SOURCES"
+
 update_sources_mk
 update_sources_sh
 

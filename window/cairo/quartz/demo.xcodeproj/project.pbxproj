@@ -16,6 +16,11 @@
 			path = demo;
 			sourceTree = "<group>";
 		};
+		2A9DCA492D5D75F300DAD734 /* kc3_demo */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = kc3_demo;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +37,7 @@
 		2A9DC8942D5CFD5800DAD734 = {
 			isa = PBXGroup;
 			children = (
+				2A9DCA492D5D75F300DAD734 /* kc3_demo */,
 				2A9DC89F2D5CFD5800DAD734 /* demo */,
 				2A9DC89E2D5CFD5800DAD734 /* Products */,
 			);
@@ -62,6 +68,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				2A9DC89F2D5CFD5800DAD734 /* demo */,
+				2A9DCA492D5D75F300DAD734 /* kc3_demo */,
 			);
 			name = kc3_demo;
 			packageProductDependencies = (

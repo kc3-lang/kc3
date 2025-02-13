@@ -14,6 +14,8 @@
 #import "window_cairo_quartz.h"
 #import "window_cairo_quartz_app_delegate.h"
 
+#include <cairo-quartz.h>
+
 bool window_cairo_quartz_run (s_window_cairo *window)
 {
   @autoreleasepool {

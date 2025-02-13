@@ -812,7 +812,7 @@ license:
 
 lldb_demo:
 	${MAKE} debug
-	${MAKE} -C libkc3 lldb_demo
+	${MAKE} -C window/cairo lldb_demo
 
 lldb_demo_gl:
 	${MAKE} debug

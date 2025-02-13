@@ -23,6 +23,7 @@ void cairo_sprite_blit (const s_cairo_sprite *sprite, uw frame,
   cairo_set_source_surface(cr, sprite->surface[frame], 0, 0);
   cairo_rectangle(cr, x, y, sprite->w, sprite->h);
   cairo_fill(cr);
+  cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);
 }
 
 void cairo_sprite_clean (s_cairo_sprite *sprite)
