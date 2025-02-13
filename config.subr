@@ -183,10 +183,13 @@ config_cocoa() {
     if $LIBTOOL --tag CC --mode link ${OBJC} ${OBJCFLAGS} \
                 "$OUT_M" ${LIBS} -framework Cocoa -o "$OUT" >/dev/null 2>&1; then
         eval "HAVE_COCOA=true"
-        echo "HAVE_COCOA = true" >> ${CONFIG_MK}
+        echo "HAVE_COCOA = true" >> "${CONFIG_MK}"
+        echo "#define HAVE_COCOA 1" >> "${CONFIG_H}"
+        LIBS="$LIBS -framework Cocoa"
     else
         eval "HAVE_COCOA=false"
-        echo "HAVE_COCOA = false" >> ${CONFIG_MK}
+        echo "HAVE_COCOA = false" >> "${CONFIG_MK}"
+        echo "#define HAVE_COCOA 0" >> "${CONFIG_H}"
     fi
     rm -f "$OUT" "$OUT_M"
 }
@@ -793,14 +796,16 @@ update_build_objc() {
     BUILD_OBJC_ASAN=build_objc_asan.tmp
     BUILD_OBJC_COV=build_objc_cov.tmp
     BUILD_OBJC_DEBUG=build_objc_debug.tmp
+    COMPILE="${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\""
     mkdir -p .build
+    LOG=".build/log"
 
     echo "#!/bin/sh" >> ${BUILD_OBJC_ASAN}
     echo "# gen by configure" >> ${BUILD_OBJC_ASAN}
     echo "OBJC=\"${OBJC}\"" >> ${BUILD_OBJC_ASAN}
     echo "CPPFLAGS=\"${CPPFLAGS_ASAN}\"" >> ${BUILD_OBJC_ASAN}
     echo "CFLAGS=\"${CFLAGS_ASAN}\"" >> ${BUILD_OBJC_ASAN}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${BUILD_OBJC_ASAN}
+    echo "${COMPILE} >> ${LOG} 2>&1 || ${COMPILE}" >> ${BUILD_OBJC_ASAN}
     update_and_chmod 755 ${BUILD_OBJC_ASAN} build_objc_asan
 
     echo "#!/bin/sh" >> ${BUILD_OBJC_COV}
@@ -808,7 +813,7 @@ update_build_objc() {
     echo "OBJC=\"${OBJC}\"" >> ${BUILD_OBJC_COV}
     echo "CPPFLAGS=\"${CPPFLAGS_COV}\"" >> ${BUILD_OBJC_COV}
     echo "CFLAGS=\"${CFLAGS_COV}\"" >> ${BUILD_OBJC_COV}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${BUILD_OBJC_COV}
+    echo "${COMPILE} >> ${LOG} 2>&1 || ${COMPILE}" >> ${BUILD_OBJC_COV}
     update_and_chmod 755 ${BUILD_OBJC_COV} build_objc_cov
 
     echo "#!/bin/sh" >> ${BUILD_OBJC_DEBUG}
@@ -816,7 +821,7 @@ update_build_objc() {
     echo "OBJC=\"${OBJC}\"" >> ${BUILD_OBJC_DEBUG}
     echo "CPPFLAGS=\"${CPPFLAGS_DEBUG}\"" >> ${BUILD_OBJC_DEBUG}
     echo "CFLAGS=\"${CFLAGS_DEBUG}\"" >> ${BUILD_OBJC_DEBUG}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${BUILD_OBJC_DEBUG}
+    echo "${COMPILE} >> ${LOG} 2>&1 || ${COMPILE}" >> ${BUILD_OBJC_DEBUG}
     update_and_chmod 755 ${BUILD_OBJC_DEBUG} build_objc_debug
 
     echo "#!/bin/sh" >> ${BUILD_OBJC_MAIN}
@@ -824,7 +829,7 @@ update_build_objc() {
     echo "OBJC=\"${OBJC}\"" >> ${BUILD_OBJC_MAIN}
     echo "CPPFLAGS=\"${CPPFLAGS}\"" >> ${BUILD_OBJC_MAIN}
     echo "CFLAGS=\"${CFLAGS}\"" >> ${BUILD_OBJC_MAIN}
-    echo "${LIBTOOL} --tag=CC --mode=compile \${OBJC} \${CPPFLAGS} \${CFLAGS} -c \"\$1\" -o \"\$2\" >> .build/log 2>&1" >> ${BUILD_OBJC_MAIN}
+    echo "${COMPILE} >> ${LOG} 2>&1 || ${COMPILE}" >> ${BUILD_OBJC_MAIN}
     update_and_chmod 755 ${BUILD_OBJC_MAIN} build_objc_main
 }
 
