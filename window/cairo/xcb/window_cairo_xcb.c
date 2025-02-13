@@ -44,7 +44,7 @@ bool window_cairo_xcb_event (s_window_cairo *window,
     event_button = (xcb_button_press_event_t *) event;
     if (! window->button(window, event_button->detail,
                          event_button->event_x,
-                         event_button->event_y))
+                         window->h - event_button->event_y))
       goto ko;
     break;
   case XCB_EXPOSE:

@@ -34,8 +34,6 @@ echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 . ./sources.sh
 
 OBJECTS="$(c2ext .main.lo "$SOURCES")"
-OBJECTS="$OBJECTS $(objc2ext .main.lo "$OBJC_SOURCES")"
-echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
 OBJECTS_ASAN="$OBJECTS_ASAN $(objc2ext .asan.lo "$OBJC_SOURCES")"
 OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
@@ -63,6 +61,11 @@ pkg_config freetype2
 pkg_config xkbcommon
 config_cocoa
 update_config_h
+
+if ${HAVE_COCOA}; then
+    OBJECTS="$OBJECTS $(objc2ext .main.lo "$OBJC_SOURCES")"
+    echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
+fi
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"

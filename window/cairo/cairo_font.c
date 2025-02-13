@@ -26,7 +26,7 @@ void kc3_window_cairo_font_clean (void)
   }
 }
 
-FT_Library * cairo_font_ft (void)
+void * cairo_font_ft (void)
 {
   if (! g_cairo_font_ft) {
     g_cairo_font_ft = malloc(sizeof(FT_Library));

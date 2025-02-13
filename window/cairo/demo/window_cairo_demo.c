@@ -37,9 +37,9 @@ bool window_cairo_demo_button (s_window_cairo *window, u8 button,
   io_write_1("kc3_window_cairo_demo_button: ");
   io_inspect_u8(&button);
   io_write_1(" (");
-  io_inspect_sw(&x);
+  io_inspect_sw_decimal(&x);
   io_write_1(", ");
-  io_inspect_sw(&y);
+  io_inspect_sw_decimal(&y);
   io_puts(")");
   if (window->seq->button &&
       ! window->seq->button(window->seq, button, x, y))
