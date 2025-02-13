@@ -31,6 +31,7 @@ void fn_test (void);
 void ident_test (void);
 void inspect_test (void);
 void list_test (void);
+void ratio_test (void);
 void set__fact_test (void);
 void set__tag_test (void);
 void skiplist__fact_test (void);
@@ -81,6 +82,7 @@ int main (int argc, char **argv)
   TEST_TARGET(facts_with);
   TEST_TARGET(env);
   TEST_TARGET(struct);
+  TEST_TARGET(ratio);
   test_summary();
   test_clean();
   kc3_clean(NULL);
