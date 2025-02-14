@@ -19,7 +19,9 @@
      defined(__OpenBSD__))
 # include <sys/sysctl.h>
 #else
-# include <sys/sysinfo.h>
+# if ! (defined(WIN32) || defined(WIN64))
+#  include <sys/sysinfo.h>
+# endif
 #endif
 
 #include <unistd.h>

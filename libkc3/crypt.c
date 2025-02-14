@@ -12,7 +12,7 @@
  */
 #include <sys/types.h>
 #include <errno.h>
-#ifndef WIN32
+#if ! (defined(WIN32) || defined(WIN64))
 #include <pwd.h>
 #endif
 #include <string.h>

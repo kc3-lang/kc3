@@ -44,6 +44,8 @@ LDFLAGS="--shared ${LDFLAGS}"
 config_asan
 config_gnu
 config_i386
+config_win32
+config_win64
 pkg_config libbsd-overlay
 pkg_config libmd
 pkg_config freetype2
@@ -57,6 +59,7 @@ config_lib OPENGL -framework OpenGL
 pkg_config sdl2
 config_define PREFIX "\"${PREFIX}\""
 LIBS="$LIBS -rpath ${PREFIX}/lib"
+update_config_h
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"

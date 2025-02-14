@@ -18,6 +18,10 @@
 #ifndef LIBKC3_WINDOW_SDL2_TYPES_H
 #define LIBKC3_WINDOW_SDL2_TYPES_H
 
+#if defined(WIN32) || defined(WIN64)
+# include <windef.h>
+#endif
+
 #include <GL/glew.h>
 #include <SDL.h>
 #include <SDL_opengl.h>

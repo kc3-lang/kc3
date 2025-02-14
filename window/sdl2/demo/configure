@@ -51,22 +51,27 @@ CFLAGS="$CFLAGS -W -Wall -Werror -Wno-error=unknown-pragmas"
 CFLAGS="$CFLAGS -std=c11 -pedantic -pipe"
 LIBS="$LIBS -lm"
 config_asan
+config_cocoa
 config_gnu
 config_i386
+config_win32
+config_win64
 pkg_config libbsd-overlay
 pkg_config libmd
 pkg_config freetype2
 pkg_config gl
 pkg_config glew
 pkg_config glu
-pkg_config glut
 pkg_config libffi
 pkg_config libpng
-config_lib OPENGL -framework OpenGL
+if ${HAVE_COCOA}; then
+    config_lib OPENGL -framework OpenGL
+fi
 config_lib OPENGL -lopengl32 -lglu32
 config_lib OPENMP -fopenmp
 config_define HAVE_OPENMP "${HAVE_OPENMP}"
 pkg_config sdl2
+update_config_h
 
 # Asan config
 CPPFLAGS_ASAN="$CPPFLAGS"

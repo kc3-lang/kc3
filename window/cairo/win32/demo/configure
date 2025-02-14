@@ -18,9 +18,9 @@ export SRC_TOP="$(dirname "$PWD")"
 . ../../../../config.subr
 
 PROG=c3_window_cairo_win32_demo
-PROG_ASAN=c3_window_cairo_win32_demo_asan
-PROG_COV=c3_window_cairo_win32_demo_cov
-PROG_DEBUG=c3_window_cairo_win32_demo_debug
+PROG_ASAN=kc3_window_cairo_win32_demo_asan
+PROG_COV=kc3_window_cairo_win32_demo_cov
+PROG_DEBUG=kc3_window_cairo_win32_demo_debug
 
 echo "PROG = $PROG" >> ${CONFIG_MK}
 echo "PROG_ASAN = $PROG_ASAN" >> ${CONFIG_MK}
@@ -44,7 +44,7 @@ OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c99 -pedantic"
+CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic"
 CPPFLAGS="-I../../../.. $CPPFLAGS"
 config_asan
 config_gnu
@@ -53,6 +53,7 @@ pkg_config libbsd-overlay
 pkg_config cairo
 pkg_config cairo-win32
 LIBS="$LIBS"
+update_config_h
 
 # Asan config
 CFLAGS_ASAN="$CFLAGS -fsanitize=address -O1 -fno-omit-frame-pointer -g"
