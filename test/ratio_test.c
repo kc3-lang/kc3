@@ -41,7 +41,6 @@
     sw result_den;                                                     \
     s_buf buf;                                                         \
     s_ratio ratio;                                                     \
-    s_str str;                                                         \
     test_context("buf_parse_ratio(" # test ") -> "                     \
                  # expected_num "/" # expected_den);                   \
     buf_init_1_const(&buf, (test));                                    \
@@ -50,7 +49,6 @@
     result_den = integer_to_sw(&ratio.denominator);                    \
     TEST_EQ(result_num, expected_num);                                 \
     TEST_EQ(result_den, expected_den);                                 \
-    str_clean(&str);                                                   \
     ratio_clean(&ratio);                                               \
     test_context(NULL);                                                \
   } while (0)
