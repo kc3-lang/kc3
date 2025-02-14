@@ -17,7 +17,7 @@ export SRC_TOP="$(dirname "$PWD")"
 
 . ../../../../config.subr
 
-PROG=c3_window_cairo_win32_demo
+PROG=kc3_window_cairo_win32_demo
 PROG_ASAN=kc3_window_cairo_win32_demo_asan
 PROG_COV=kc3_window_cairo_win32_demo_cov
 PROG_DEBUG=kc3_window_cairo_win32_demo_debug
