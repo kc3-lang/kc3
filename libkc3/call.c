@@ -36,7 +36,7 @@ void call_clean (s_call *call)
 
 bool call_get (s_call *call)
 {
-  return env_call_get(g_kc3_env, call);
+  return env_call_get(env_global(), call);
 }
 
 s_call * call_init (s_call *call)

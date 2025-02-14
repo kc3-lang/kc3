@@ -32,10 +32,10 @@ bool             window_cairo_run (s_window_cairo *window);
 /* Callbacks. */
 bool window_cairo_button_default (s_window_cairo *window, u8 button,
                                   sw x, sw y);
-bool window_cairo_key_default (s_window_cairo *window, uw keysym);
+bool window_cairo_key_default (s_window_cairo *window, u32 keysym);
 bool window_cairo_load_default (s_window_cairo *window);
-bool window_cairo_motion_default (s_window_cairo *window, sw x, sw y);
+bool window_cairo_motion_default (s_window_cairo *window, s64 x, s64 y);
 bool window_cairo_render_default (s_window_cairo *window);
-bool window_cairo_resize_default (s_window_cairo *window, uw w, uw h);
+bool window_cairo_resize_default (s_window_cairo *window, u64 w, u64 h);
 
 #endif /* LIBKC3_WINDOW_CAIRO_H */

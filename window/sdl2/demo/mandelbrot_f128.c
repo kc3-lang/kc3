@@ -208,7 +208,7 @@ static bool mandelbrot_f128_resize (s_sequence *seq)
     return false;
   if (! array_allocate(pixels))
     return false;
-  printf("mandelbrot_f128_resize: %lux%lu\n", win->w, win->h);
+  printf("mandelbrot_f128_resize: %llux%llu\n", win->w, win->h);
   return true;
 }
 
@@ -315,6 +315,6 @@ static bool mandelbrot_f128_update (s_sequence *seq)
   buf_write_1(&buf, "\nz: ");
   buf_inspect_f128(&buf, &next_z);
   gl_text_update_buf(&g_mandelbrot_f128_text, &buf);
-  printf("mandelbrot_f128_update: %lux%lu\n", win->w, win->h);
+  printf("mandelbrot_f128_update: %llux%llu\n", win->w, win->h);
   return true;
 }

@@ -26,40 +26,40 @@
 
 bool module_ensure_loaded (const s_sym *module)
 {
-  return env_module_ensure_loaded(g_kc3_env, module);
+  return env_module_ensure_loaded(env_global(), module);
 }
 
 bool * module_has_ident (const s_sym *module, const s_ident *ident,
                          bool *dest)
 {
-  return env_module_has_ident(g_kc3_env, module, ident, dest);
+  return env_module_has_ident(env_global(), module, ident, dest);
 }
 
 bool * module_has_symbol (const s_sym *module, const s_sym *sym,
                           bool *dest)
 {
-  return env_module_has_symbol(g_kc3_env, module, sym, dest);
+  return env_module_has_symbol(env_global(), module, sym, dest);
 }
 
 bool * module_is_loading (const s_sym *module, bool *dest)
 {
-  return env_module_is_loading(g_kc3_env, module, dest);
+  return env_module_is_loading(env_global(), module, dest);
 }
 
 bool module_load (const s_sym *module)
 {
-  return env_module_load(g_kc3_env, module);
+  return env_module_load(env_global(), module);
 }
 
 const s_time ** module_load_time (const s_sym *module,
                                   const s_time **dest)
 {
-  return env_module_load_time(g_kc3_env, module, dest);
+  return env_module_load_time(env_global(), module, dest);
 }
 
 bool module_maybe_reload (const s_sym *module)
 {
-  return env_module_maybe_reload(g_kc3_env, module);
+  return env_module_maybe_reload(env_global(), module);
 }
 
 s_str * module_path (const s_sym *module, const s_str *prefix,

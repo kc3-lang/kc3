@@ -4018,14 +4018,16 @@ sw buf_parse_tag_f128 (s_buf *buf, s_tag *dest)
 
 sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
 {
+  s_env *env;
   sw r;
   s_tag *tag;
   assert(buf);
   assert(dest);
+  env = env_global();
   r = buf_parse_ident(buf, &dest->data.ident);
   if (r > 0) {
     if (! dest->data.ident.module &&
-        (tag = frame_get_w(g_kc3_env->read_time_frame,
+        (tag = frame_get_w(env->read_time_frame,
                            dest->data.ident.sym)))
       tag_init_copy(dest, tag);
     else

@@ -301,7 +301,7 @@ s_tag * tag_equal (s_tag *a, s_tag *b, s_tag *dest)
   assert(a);
   assert(b);
   assert(dest);
-  if (! env_eval_equal_tag (g_kc3_env, false, a, b, dest))
+  if (! env_eval_equal_tag (env_global(), false, a, b, dest))
     return NULL;
   return dest;
 }
@@ -353,7 +353,7 @@ uw * tag_hash_uw (const s_tag *tag, uw *dest)
 
 bool tag_ident_is_bound (const s_tag *tag)
 {
-  return env_tag_ident_is_bound(g_kc3_env, tag);
+  return env_tag_ident_is_bound(env_global(), tag);
 }
 
 s_tag * tag_init (s_tag *tag)

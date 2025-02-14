@@ -21,7 +21,7 @@
   do {                                                                 \
     const s_str *a_ = (a);                                             \
     const s_str *b_ = (b);                                             \
-    sw tmp = compare_str(a_, b_);                                      \
+    s8 tmp = compare_str(a_, b_);                                      \
     if (tmp == expected) {                                             \
       g_test_assert_count++;                                           \
       g_test_assert_ok++;                                              \
@@ -30,7 +30,7 @@
       test_ko();                                                       \
       fprintf(stderr, "\n%sAssertion failed in %s:%d %s\n"             \
               "compare_str(%s, %s) == %s\n"                            \
-              "Expected %s got %ld.%s\n",                              \
+              "Expected %s got %d.%s\n",                               \
               TEST_COLOR_KO,                                           \
               __FILE__, __LINE__, __func__,                            \
               # a, # b, # expected, # expected, tmp,                   \

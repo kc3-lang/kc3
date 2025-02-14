@@ -40,24 +40,24 @@ typedef struct window_cairo s_window_cairo;
 
 /* return false to break event loop */
 typedef bool (*f_window_cairo_button) (s_window_cairo *window,
-                                       u8 button, sw x, sw y);
+                                       u8 button, s64 x, s64 y);
 
 /* return false to break event loop */
-typedef bool (*f_window_cairo_key) (s_window_cairo *window, uw keysym);
+typedef bool (*f_window_cairo_key) (s_window_cairo *window, u32 keysym);
 
 /* return false to break event loop */
 typedef bool (*f_window_cairo_load) (s_window_cairo *window);
 
 /* return false to break event loop */
-typedef bool (*f_window_cairo_motion) (s_window_cairo *window, sw x,
-                                       sw y);
+typedef bool (*f_window_cairo_motion) (s_window_cairo *window, s64 x,
+                                       s64 y);
 
 /* return false to break event loop */
 typedef bool (*f_window_cairo_render) (s_window_cairo *window);
 
 /* return false to break event loop */
 typedef bool (*f_window_cairo_resize) (s_window_cairo *window,
-                                       uw w, uw h);
+                                       u64 w, u64 h);
 
 typedef void (*f_window_cairo_unload) (s_window_cairo *window);
 

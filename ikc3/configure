@@ -35,6 +35,7 @@ config_asan
 config_gnu
 config_i386
 config_win32
+config_win64
 pkg_config libbsd-overlay
 pkg_config libffi
 pkg_config libmd

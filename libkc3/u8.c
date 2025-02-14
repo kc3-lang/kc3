@@ -98,7 +98,7 @@ u8 * u8_init_cast
     err_inspect_sym(type);
     err_puts(" aka U8");
   }
-  err_inspect_stacktrace(g_kc3_env->stacktrace);
+  err_inspect_stacktrace(env_global()->stacktrace);
   assert(! "u8_init_cast: cannot cast to U8");
   return NULL;
 }
@@ -119,7 +119,7 @@ u8 * u8_init_str (u8 *u, const s_str *str)
   if (buf_parse_u8(&buf, &tmp) <= 0) {
     if (false) {
       err_puts("u8_init_str: buf_parse_u8");
-      err_inspect_stacktrace(g_kc3_env->stacktrace);
+      err_inspect_stacktrace(env_global()->stacktrace);
       err_write_1("\n");
       assert(! "u8_init_str: buf_parse_u8");
     }

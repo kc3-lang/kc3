@@ -125,12 +125,12 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
 
 s_tag * kc3_and (s_tag *a, s_tag *b, s_tag *dest)
 {
-  return env_and(g_kc3_env, a, b, dest);
+  return env_and(env_global(), a, b, dest);
 }
 
 s_list ** kc3_args (s_list **dest)
 {
-  return env_args(g_kc3_env, dest);
+  return env_args(env_global(), dest);
 }
 
 void kc3_break (void)
@@ -152,19 +152,19 @@ s_tag * kc3_buf_parse_tag (s_buf *buf, s_tag *dest)
 void kc3_clean (s_env *env)
 {
   if (! env)
-    env = g_kc3_env;
+    env = env_global();
   env_clean(env);
   sym_delete_all();
 }
 
 s_tag * kc3_def (const s_call *call, s_tag *dest)
 {
-  return env_kc3_def(g_kc3_env, call, dest);
+  return env_kc3_def(env_global(), call, dest);
 }
 
 s_tag * kc3_defmodule (const s_sym **name, const s_block *block, s_tag *dest)
 {
-  return env_defmodule(g_kc3_env, name, block, dest);
+  return env_defmodule(env_global(), name, block, dest);
 }
 
 s_tag * kc3_defoperator (const s_sym **name, const s_sym **sym,
@@ -173,7 +173,7 @@ s_tag * kc3_defoperator (const s_sym **name, const s_sym **sym,
                          const s_sym **operator_associativity,
                          s_tag *dest)
 {
-  return env_defoperator(g_kc3_env, name, sym, symbol_value,
+  return env_defoperator(env_global(), name, sym, symbol_value,
                          operator_precedence,
                          operator_associativity, dest);
 }
@@ -185,7 +185,7 @@ s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
   if (! spec)
     return NULL;
   tmp.type = TAG_SYM;
-  tmp.data.sym = env_defstruct(g_kc3_env, *spec);
+  tmp.data.sym = env_defstruct(env_global(), *spec);
   *dest = tmp;
   return dest;
 }
@@ -219,7 +219,7 @@ void ** kc3_dlopen (const s_str *path, void **dest)
 {
   assert(path);
   assert(dest);
-  if (g_kc3_env->trace) {
+  if (env_global()->trace) {
     err_write_1("kc3_dlopen: ");
     err_inspect_str(path);
     err_write_1("\n");
@@ -237,7 +237,7 @@ void ** kc3_dlopen (const s_str *path, void **dest)
 
 s_facts ** kc3_env_db (s_facts **dest)
 {
-  *dest = g_kc3_env->facts;
+  *dest = env_global()->facts;
   return dest;
 }
 
@@ -313,7 +313,7 @@ bool * kc3_facts_add_tags (s_facts *facts, s_tag *subject,
 s_tag * kc3_facts_collect_with (s_facts *facts, s_list **spec,
                                 p_callable *callback, s_tag *dest)
 {
-  return env_facts_collect_with(g_kc3_env, facts, spec, *callback,
+  return env_facts_collect_with(env_global(), facts, spec, *callback,
                                 dest);
 }
 
@@ -324,7 +324,7 @@ s_tag * kc3_facts_collect_with_tags (s_facts *facts,
                                      p_callable *callback,
                                      s_tag *dest)
 {
-  return env_facts_collect_with_tags(g_kc3_env, facts, subject,
+  return env_facts_collect_with_tags(env_global(), facts, subject,
                                      predicate, object, *callback,
                                      dest);
 }
@@ -332,21 +332,21 @@ s_tag * kc3_facts_collect_with_tags (s_facts *facts,
 s_tag * kc3_facts_first_with (s_facts *facts, s_list **spec,
                               p_callable *callback, s_tag *dest)
 {
-  return env_facts_first_with(g_kc3_env, facts, spec, *callback, dest);
+  return env_facts_first_with(env_global(), facts, spec, *callback, dest);
 }
 
 s_tag * kc3_facts_first_with_tags (s_facts *facts, s_tag *subject,
                                    s_tag *predicate, s_tag *object,
                                    p_callable *callback, s_tag *dest)
 {
-  return env_facts_first_with_tags(g_kc3_env, facts, subject,
+  return env_facts_first_with_tags(env_global(), facts, subject,
                                    predicate, object, *callback, dest);
 }
 
 uw * kc3_facts_next_id (uw *dest)
 {
   assert(dest);
-  *dest = g_kc3_env->facts->next_id;
+  *dest = env_global()->facts->next_id;
   return dest;
 }
 
@@ -378,20 +378,20 @@ bool * kc3_facts_replace_tags (s_facts *facts,
 s_tag * kc3_facts_with (s_facts *facts, s_list **spec,
                         p_callable *callback, s_tag *dest)
 {
-  return env_facts_with(g_kc3_env, facts, spec, *callback, dest);
+  return env_facts_with(env_global(), facts, spec, *callback, dest);
 }
 
 s_tag * kc3_facts_with_macro (s_tag *facts_tag, s_tag *spec_tag,
                               s_tag *block_tag, s_tag *dest)
 {
-  return env_facts_with_macro(g_kc3_env, facts_tag, spec_tag, block_tag, dest);
+  return env_facts_with_macro(env_global(), facts_tag, spec_tag, block_tag, dest);
 }
 
 s_tag * kc3_facts_with_tags (s_facts *facts, s_tag *subject,
                              s_tag *predicate, s_tag *object,
                              p_callable *callback, s_tag *dest)
 {
-  return env_facts_with_tags(g_kc3_env, facts, subject, predicate,
+  return env_facts_with_tags(env_global(), facts, subject, predicate,
                              object, *callback, dest);
 }
 
@@ -407,7 +407,7 @@ s_tag * kc3_facts_with_tuple (s_facts *facts, s_tuple *tuple,
     assert(! "kc3_facts_with_tuple: tuple count < 3");
     return NULL;
   }
-  return env_facts_with_tags(g_kc3_env, facts, tuple->tag,
+  return env_facts_with_tags(env_global(), facts, tuple->tag,
                              tuple->tag + 1, tuple->tag + 2,
                              *callback, dest);
 }
@@ -434,10 +434,12 @@ sw kc3_getpid (void)
   return getpid();
 }
 
+#if ! (defined(WIN32) || defined(WIN64))
 sw kc3_getppid (void)
 {
   return getppid();
 }
+#endif
 
 s_tag * kc3_identity (s_tag *tag, s_tag *dest)
 {
@@ -451,7 +453,7 @@ s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
   bool  cond_bool = false;
   s_tag cond_eval = {0};
   const s_sym *type;
-  if (env_eval_tag(g_kc3_env, cond, &cond_eval)) {
+  if (env_eval_tag(env_global(), cond, &cond_eval)) {
     if (cond_eval.type == TAG_BOOL)
       cond_bool = cond_eval.data.bool_;
     else {
@@ -463,12 +465,12 @@ s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
     }
     tag_clean(&cond_eval);
     if (cond_bool) {
-      if (! env_eval_tag(g_kc3_env, then, dest))
+      if (! env_eval_tag(env_global(), then, dest))
         return NULL;
       return dest;
     }
   }
-  if (! env_eval_tag(g_kc3_env, else_, dest))
+  if (! env_eval_tag(env_global(), else_, dest))
     return NULL;
   return dest;
 }
@@ -476,7 +478,7 @@ s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
 s_env * kc3_init (s_env *env, int *argc, char ***argv)
 {
   if (! env)
-    env = g_kc3_env;
+    env = env_global();
   return env_init(env, argc, argv);
 }
 
@@ -490,6 +492,7 @@ s_tag * kc3_integer_reduce (s_tag *tag, s_tag *dest)
   return dest;
 }
 
+#if ! (defined(WIN32) || defined(WIN64))
 bool kc3_killpg (sw process_group, const s_sym * const *signal)
 {
   sw e;
@@ -581,10 +584,11 @@ bool kc3_killpg (sw process_group, const s_sym * const *signal)
   }
   return true;
 }
+#endif
 
 s_tag * kc3_let (s_tag *vars, s_tag *tag, s_tag *dest)
 {
-  return env_let(g_kc3_env, vars, tag, dest);
+  return env_let(env_global(), vars, tag, dest);
 }
 
 void kc3_license (void)
@@ -601,17 +605,17 @@ s_array * kc3_list_to_array (s_list **list,
 
 bool kc3_load (const s_str *path)
 {
-  return env_load(g_kc3_env, path);
+  return env_load(env_global(), path);
 }
 
 bool kc3_maybe_reload (const s_str *path)
 {
-  return env_maybe_reload(g_kc3_env, path);
+  return env_maybe_reload(env_global(), path);
 }
 
 const s_sym ** kc3_module (const s_sym **dest)
 {
-  return env_module(g_kc3_env, dest);
+  return env_module(env_global(), dest);
 }
 
 bool * kc3_must_clean (const s_sym * const *sym, bool *dest)
@@ -635,12 +639,12 @@ uw * kc3_offsetof (const s_sym * const *module,
 
 s_tag * kc3_operator_find_by_sym (const s_sym * const *sym, s_tag *dest)
 {
-  return env_operator_find_by_sym(g_kc3_env, *sym, dest);
+  return env_operator_find_by_sym(env_global(), *sym, dest);
 }
 
 s_tag * kc3_or (s_tag *a, s_tag *b, s_tag *dest)
 {
-  return env_or(g_kc3_env, a, b, dest);
+  return env_or(env_global(), a, b, dest);
 }
 
 s_tag * kc3_parse_tag (s_tag *tag, const s_str *src)
@@ -684,12 +688,12 @@ sw kc3_puts (const s_tag *tag)
 
 bool kc3_require (const s_sym * const *module)
 {
-  return env_module_ensure_loaded(g_kc3_env, *module);
+  return env_module_ensure_loaded(env_global(), *module);
 }
 
 s_list ** kc3_search_modules (s_list **dest)
 {
-  return env_search_modules(g_kc3_env, dest);
+  return env_search_modules(env_global(), dest);
 }
 
 void kc3_serialize_delete (s_serialize **serialize)
@@ -718,7 +722,7 @@ s_str * kc3_serialize_to_str (s_serialize **serialize, s_str *dest)
 
 s_list ** kc3_stacktrace (s_list **dest)
 {
-  return env_stacktrace(g_kc3_env, dest);
+  return env_stacktrace(env_global(), dest);
 }
 
 s_str * kc3_str (const s_tag *tag, s_str *dest)
@@ -1041,7 +1045,7 @@ u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
     return NULL;
   }
   tag->data.tuple.tag[2].type = TAG_PTR;
-  if (! (tag->data.tuple.tag[2].data.ptr.p = env_fork_new(g_kc3_env))) {
+  if (! (tag->data.tuple.tag[2].data.ptr.p = env_fork_new(env_global()))) {
     tag_delete(tag);
     return NULL;
   }
@@ -1057,6 +1061,7 @@ u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
 
 void * kc3_thread_start (void *arg)
 {
+  s_env *env;
   s_tag *tag;
   s_callable *start;
   tag = arg;
@@ -1085,14 +1090,15 @@ void * kc3_thread_start (void *arg)
     return NULL;
   }
   start = tag->data.tuple.tag[1].data.callable;
-  g_kc3_env = tag->data.tuple.tag[2].data.ptr.p;
+  env = tag->data.tuple.tag[2].data.ptr.p;
+  env_global_set(env);
   if (! eval_callable_call(start, NULL, tag->data.tuple.tag))
     return NULL;
-  env_fork_delete(g_kc3_env);
+  env_fork_delete(env);
   return tag;
 }
 
 s_tag * kc3_while (s_tag *cond, s_tag *body, s_tag *dest)
 {
-  return env_while(g_kc3_env, cond, body, dest);
+  return env_while(env_global(), cond, body, dest);
 }

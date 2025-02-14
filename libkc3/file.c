@@ -168,6 +168,7 @@ bool file_ensure_directory (const s_str *path, const s_tag *mode)
   s_str dir;
   s32 e;
   u32 m;
+  s32 r;
   static const s_sym *sym_U32 = &g_sym_U32;
   if (true) {
     err_write_1("file_ensure_directory: ");
@@ -201,7 +202,12 @@ bool file_ensure_directory (const s_str *path, const s_tag *mode)
     io_inspect_str(path);
     io_write_1("\n");
   }
-  if (mkdir(path->ptr.pchar, m)) {
+#if defined(WIN32) || defined(WIN64)
+  r = mkdir(path->ptr.pchar);
+#else
+  r = mkdir(path->ptr.pchar, m);
+#endif
+  if (r) {
     e = errno;
     err_write_1("file_ensure_directory: mkdir: ");
     err_inspect_str(path);
@@ -242,21 +248,41 @@ s_str * file_ext (const s_str *path, s_str *dest)
   return str_init_slice(dest, path, dot_pos + 1, -1);
 }
 
-bool * file_link (const s_str *from, const s_str *to, bool *dest)
+bool file_rename (const s_str *from, const s_str *to)
+{
+  sw e;
+  if (rename(from->ptr.pchar, to->ptr.pchar)) {
+    e = errno;
+    err_write_1("file_rename: rename: ");
+    err_inspect_str(from);
+    err_write_1(": ");
+    err_inspect_str(to);
+    err_write_1(": ");
+    err_write_1(strerror(e));
+    err_write_1("\n");
+    return false;
+  }
+  return true;
+}
+
+#if ! (defined(WIN32) || defined(WIN64))
+bool file_link (const s_str *from, const s_str *to)
 {
   sw e;
   if (link(from->ptr.pchar, to->ptr.pchar)) {
     e = errno;
     err_write_1("file_link: link: ");
+    err_inspect_str(from);
+    err_write_1(": ");
     err_inspect_str(to);
     err_write_1(": ");
     err_write_1(strerror(e));
     err_write_1("\n");
-    return NULL;
+    return false;
   }
-  *dest = true;
-  return dest;
+  return true;
 }
+#endif
 
 s_list ** file_list (const s_str *path, s_list **dest)
 {
@@ -318,26 +344,6 @@ s_time * file_mtime (const s_str *path, s_time *dest)
 #endif
   *dest = tmp;
   return dest;
-}
-
-bool file_mv (const s_str *src, const s_str *dest)
-{
-  sw e;
-  if (link(dest->ptr.pchar, src->ptr.pchar)) {
-    e = errno;
-    err_write_1("file_mv: link: ");
-    err_write_1(strerror(e));
-    err_write_1("\n");
-    return false;
-  }
-  if (unlink(src->ptr.pchar)) {
-    e = errno;
-    err_write_1("file_mv: unlink: ");
-    err_write_1(strerror(e));
-    err_write_1("\n");
-    return false;
-  }
-  return true;
 }
 
 s_str * file_name (const s_str *path, s_str *dest)
@@ -530,6 +536,7 @@ s_str * file_read_max (const s_str *path, uw max, s_str *dest)
 s_str * file_search (const s_str *suffix, const s_sym *mode,
                      s_str *dest)
 {
+  s_env *env;
   char buf_s[PATH_MAX];
   s_buf buf;
   const s_list *path;
@@ -537,11 +544,12 @@ s_str * file_search (const s_str *suffix, const s_sym *mode,
   s_buf_save save;
   const s_str *str;
   s_str tmp = {0};
+  env = env_global();
   buf_init(&buf, false, sizeof(buf_s), buf_s);
-  if ((r = buf_write_str(&buf, g_kc3_env->argv0_dir)) < 0)
+  if ((r = buf_write_str(&buf, env->argv0_dir)) < 0)
     return NULL;
   buf_save_init(&buf, &save);
-  path = g_kc3_env->path;
+  path = env->path;
   while (path) {
     if (path->tag.type == TAG_STR) {
       buf_save_restore_rpos(&buf, &save);
@@ -700,7 +708,8 @@ struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
   return dest;
 }
 
-bool * file_unlink (const s_str *path, bool *dest)
+#if ! (defined(WIN32) || defined(WIN64))
+bool file_unlink (const s_str *path)
 {
   sw e;
   if (unlink(path->ptr.pchar)) {
@@ -712,9 +721,9 @@ bool * file_unlink (const s_str *path, bool *dest)
     err_write_1("\n");
     return NULL;
   }
-  *dest = true;
-  return dest;
+  return true;
 }
+#endif
 
 bool file_write (const s_str *path, const s_str *data)
 {

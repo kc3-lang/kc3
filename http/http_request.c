@@ -32,6 +32,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   const s_str content_type_str = {{NULL}, 12, {"Content-Type"}};
   const s_str cookie_str = {{NULL}, 6, {"Cookie"}};
   const s_str dash = {{NULL}, 2, {"--"}};
+  s_env *env;
   s_tag filename = {0};
   s_buf header_buf = {0};
   s_str *key;
@@ -67,11 +68,12 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_str *value;
   assert(req);
   assert(buf);
+  env = env_global();
   if (method_key.type == TAG_VOID) { // init static variables
     tag_init_str_1(&method_key, NULL, "_method");
     prefix_ident.module = sym_1("HTTP.Upload");
     prefix_ident.sym = sym_1("tmp_filename_prefix");
-    if (! env_ident_get(g_kc3_env, &prefix_ident, &prefix) ||
+    if (! env_ident_get(env, &prefix_ident, &prefix) ||
         prefix.type != TAG_STR) {
       err_puts("http_request_buf_parse: invalid"
                " HTTP.Upload.tmp_filename_prefix");
@@ -79,7 +81,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     }
     random_len_ident.module = sym_1("HTTP.Upload");
     random_len_ident.sym = sym_1("tmp_filename_random_length");
-    if (! env_ident_get(g_kc3_env, &random_len_ident, &random_len) ||
+    if (! env_ident_get(env, &random_len_ident, &random_len) ||
         random_len.type != TAG_U8) {
       err_puts("http_request_buf_parse: invalid"
                " HTTP.Upload.tmp_filename_random_length");
@@ -174,8 +176,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         err_inspect_str(&boundary);
         err_write_1("\n");
         if (false) { // XXX debug
-          buf_xfer(g_kc3_env->err, buf, 100);
-          buf_flush(g_kc3_env->err);
+          buf_xfer(env->err, buf, 100);
+          buf_flush(env->err);
           goto restore;
         }
       }

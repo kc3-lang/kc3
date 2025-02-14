@@ -40,13 +40,13 @@ s_gl_text   g_text_fps = {0};
 s_gl_text   g_text_seq_title = {0};
 
 static bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
-                                     sw x, sw y);
+                                     s64 x, s64 y);
 static bool window_sdl2_demo_key (s_window_sdl2 *window,
                                   SDL_Keysym *keysym);
 static bool window_sdl2_demo_load (s_window_sdl2 *window);
 static bool window_sdl2_demo_render (s_window_sdl2 *window);
 static bool window_sdl2_demo_resize (s_window_sdl2 *window,
-                                     uw w, uw h);
+                                     u64 w, u64 h);
 static void window_sdl2_demo_unload (s_window_sdl2 *window);
 
 int main (int argc, char **argv)
@@ -84,11 +84,11 @@ int main (int argc, char **argv)
 }
 
 bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
-                              sw x, sw y)
+                              s64 x, s64 y)
 {
   assert(window);
   (void) window;
-  printf("kc3_window_sdl2_demo_button: %lu (%ld, %ld)\n", (uw) button, x, y);
+  printf("kc3_window_sdl2_demo_button: %u (%lld, %lld)\n", button, x, y);
   if (window->seq && window->seq->button &&
       ! window->seq->button(window->seq, button, x, y))
     return false;
@@ -155,7 +155,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   err_write_1("\n");
   if (window->sequence_count != WINDOW_SDL2_DEMO_SEQUENCE_COUNT) {
     fprintf(stderr, "window_sdl2_demo_load: "
-            "window->sequence_count = %lu\n", window->sequence_count);
+            "window->sequence_count = %llu\n", window->sequence_count);
     assert(window->sequence_count == WINDOW_SDL2_DEMO_SEQUENCE_COUNT);
     return false;
   }
@@ -276,7 +276,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
 }
 
 bool window_sdl2_demo_resize (s_window_sdl2 *window,
-                              uw w, uw h)
+                              u64 w, u64 h)
 {
   assert(window);
   (void) window;

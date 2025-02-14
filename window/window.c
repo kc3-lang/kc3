@@ -79,11 +79,11 @@ s_window * window_init (s_window *window,
   return window;
 }
 
-bool window_set_sequence_pos (s_window *window, uw sequence_pos)
+bool window_set_sequence_pos (s_window *window, u32 sequence_pos)
 {
   s_sequence *seq;
   assert(window);
-  printf("window_set_sequence_pos %lu\n", sequence_pos);
+  printf("window_set_sequence_pos %lu\n", (unsigned long) sequence_pos);
   if (sequence_pos >= window->sequence_count)
     return false;
   seq = window->sequence + sequence_pos;

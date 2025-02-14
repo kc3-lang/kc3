@@ -25,6 +25,7 @@ int main (int argc, char **argv)
   s_ident daemonize_ident;
   s_tag   daemonize_value;
   s32 e;
+  s_env *env;
   char  log_buf[64] = {0};
   s32   log_fd = -1;
   s_str log_str = {0};
@@ -38,7 +39,8 @@ int main (int argc, char **argv)
   s_tag tmp = {0};
   const struct tm *utc = NULL;
   kc3_init(NULL, &argc, &argv);
-  g_kc3_env->trace = true;
+  env = env_global();
+  env->trace = true;
   while (argc > 0 && argv[0] && argv[0][0] == '-') {
     skip = 1;
     p = argv[0] + 1;
@@ -52,7 +54,7 @@ int main (int argc, char **argv)
           return 1;
         }
         str_init_1(&str, NULL, argv[1]);
-        if (! facts_open_file(g_kc3_env->facts, &str)) {
+        if (! facts_open_file(env->facts, &str)) {
           err_puts("kc3_httpd: -D: facts_open_file");
           assert(! "kc3_httpd: -D: facts_open_file");
           kc3_clean(NULL);
@@ -112,20 +114,20 @@ int main (int argc, char **argv)
       kc3_clean(NULL);
       return 1;
     }
-    buf_file_close(g_kc3_env->out);
+    buf_file_close(env->out);
     dup2(log_fd, 1);
-    buf_fd_open_w(g_kc3_env->out, 1);
-    buf_file_close(g_kc3_env->err);
+    buf_fd_open_w(env->out, 1);
+    buf_file_close(env->err);
     dup2(log_fd, 2);
-    buf_fd_open_w(g_kc3_env->err, 2);
-    buf_file_close(g_kc3_env->in);
+    buf_fd_open_w(env->err, 2);
+    buf_file_close(env->in);
     close(0);
   }
   ident_init(&daemonize_ident, &g_sym_KC3, sym_1("daemonize"));
   tag_init_bool(&daemonize_value, daemonize);
-  env_def(g_kc3_env, &daemonize_ident, &daemonize_value);
+  env_def(env, &daemonize_ident, &daemonize_value);
   io_puts("KC3 HTTPd loading, please wait...");
-#ifndef WIN32
+#if ! (defined(WIN32) || defined(WIN64))
   if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
     err_puts("http_event_base_new: signal");
     assert(! "http_event_base_new: signal");

@@ -29,13 +29,15 @@ static void gl_debug (GLenum source, GLenum type, GLuint id,
                       GLenum severity, GLsizei length,
                       const GLchar* message, const void* user_param)
 {
+  s_env *env;
   (void) source;
   (void) type;
   (void) id;
   (void) severity;
   (void) length;
   (void) user_param;
-  if (g_kc3_env && g_kc3_env->err) {
+  env = env_global();
+  if (env && env->err) {
     err_write_1("gl_debug_callback: ");
     err_puts(message);
   }
@@ -49,14 +51,14 @@ void window_sdl2_clean (s_window_sdl2 *window)
 }
 
 bool window_sdl2_default_button_cb (s_window_sdl2 *window, u8 button,
-                                    sw x, sw y)
+                                    s64 x, s64 y)
 {
   assert(window);
   (void) window;
   (void) button;
   (void) x;
   (void) y;
-  printf("window_sdl2_default_button_cb: %d (%ld, %ld)\n",
+  printf("window_sdl2_default_button_cb: %d (%lld, %lld)\n",
          (int) button, x, y);
   return true;
 }
@@ -80,7 +82,7 @@ bool window_sdl2_default_load_cb (s_window_sdl2 *window)
   return true;
 }
 
-bool window_sdl2_default_motion_cb (s_window_sdl2 *window, sw x, sw y)
+bool window_sdl2_default_motion_cb (s_window_sdl2 *window, s64 x, s64 y)
 {
   assert(window);
   (void) window;
@@ -100,13 +102,13 @@ bool window_sdl2_default_render_cb (s_window_sdl2 *window)
   return true;
 }
 
-bool window_sdl2_default_resize_cb (s_window_sdl2 *window, uw w, uw h)
+bool window_sdl2_default_resize_cb (s_window_sdl2 *window, u64 w, u64 h)
 {
   assert(window);
   (void) window;
   (void) w;
   (void) h;
-  printf("window_sdl2_default_resize_cb: %lu x %lu\n", w, h);
+  printf("window_sdl2_default_resize_cb: %llu x %llu\n", w, h);
   return true;
 }
 
@@ -118,7 +120,7 @@ void window_sdl2_default_unload_cb (s_window_sdl2 *window)
 }
 
 s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
-                                  sw x, sw y, uw w, uw h,
+                                  s64 x, s64 y, u64 w, u64 h,
                                   const char *title,
                                   uw sequence_count)
 {

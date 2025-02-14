@@ -44,23 +44,25 @@ sw buf_ignore_character (s_buf *buf)
 
 sw ikc3_run (void)
 {
+  s_env *env;
   s_tag input;
   sw r;
   s_tag result;
+  env = env_global();
   while (1) {
-    r = buf_ignore_spaces(g_kc3_env->in);
+    r = buf_ignore_spaces(env->in);
     if (r < 0)
       return 0;
-    r = buf_parse_comments(g_kc3_env->in);
+    r = buf_parse_comments(env->in);
     if (r < 0)
       return 0;
-    r = buf_parse_tag(g_kc3_env->in, &input);
+    r = buf_parse_tag(env->in, &input);
     if (r > 0) {
       if (! eval_tag(&input, &result)) {
         tag_clean(&input);
         continue;
       }
-      if (buf_inspect_tag(g_kc3_env->out, &result) < 0) {
+      if (buf_inspect_tag(env->out, &result) < 0) {
 	tag_clean(&input);
 	tag_clean(&result);
         return 0;
@@ -70,11 +72,11 @@ sw ikc3_run (void)
     }
     if (r < 0 ||
         (r == 0 &&
-         (r = buf_ignore_character(g_kc3_env->in)) <= 0))
+         (r = buf_ignore_character(env->in)) <= 0))
       return 0;
-    if ((r = buf_write_1(g_kc3_env->out, "\n")) < 0)
+    if ((r = buf_write_1(env->out, "\n")) < 0)
       return 0;
-    if ((r = buf_flush(g_kc3_env->out)) < 0)
+    if ((r = buf_flush(env->out)) < 0)
       return 0;
   }
   return 0;
@@ -95,7 +97,7 @@ int main (int argc, char **argv)
     return usage("ikc3");
   if (! kc3_init(NULL, &argc, &argv))
     return 1;
-  env = g_kc3_env;
+  env = env_global();
   in_original = *env->in;
   while (argc) {
     if (! strcmp("--load", *argv) ||
@@ -109,7 +111,7 @@ int main (int argc, char **argv)
         r = 1;
         goto clean;
       }
-      if (g_kc3_env->trace) {
+      if (env->trace) {
         err_write_1("ikc3: load: ");
         err_write_1(argv[1]);
         err_write_1("\n");
@@ -152,7 +154,7 @@ int main (int argc, char **argv)
       argv += 2;
     }
     else if (argc > 0 && ! strcmp("--trace", *argv)) {
-      g_kc3_env->trace = true;
+      env->trace = true;
       argc--;
       argv++;
     }

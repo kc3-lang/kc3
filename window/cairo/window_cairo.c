@@ -52,25 +52,25 @@ s_window_cairo * window_cairo_init (s_window_cairo *window,
 }
 
 bool window_cairo_button_default (s_window_cairo *window, u8 button,
-                                  sw x, sw y)
+                                  s64 x, s64 y)
 {
   assert(window);
   (void) window;
   (void) button;
   (void) x;
   (void) y;
-  printf("window_cairo_button_default: %d (%ld, %ld)\n",
+  printf("window_cairo_button_default: %d (%lld, %lld)\n",
          (int) button, x, y);
   return true;
 }
 
-bool window_cairo_key_default (s_window_cairo *window, uw keysym)
+bool window_cairo_key_default (s_window_cairo *window, u32 keysym)
 {
   char keysym_name[64];
   assert(window);
   (void) window;
   xkb_keysym_get_name(keysym, keysym_name, sizeof(keysym_name));
-  printf("window_cairo_key_default: %lu %s\n", keysym, keysym_name);
+  printf("window_cairo_key_default: %u %s\n", keysym, keysym_name);
   return true;
 }
 
@@ -82,14 +82,14 @@ bool window_cairo_load_default (s_window_cairo *window)
   return true;
 }
 
-bool window_cairo_motion_default (s_window_cairo *window, sw x, sw y)
+bool window_cairo_motion_default (s_window_cairo *window, s64 x, s64 y)
 {
   assert(window);
   (void) window;
   (void) x;
   (void) y;
   /*
-  printf("window_cairo_motion_default (%ld, %ld)\n", x, y);
+  printf("window_cairo_motion_default (%lld, %lld)\n", x, y);
   */
   return true;
 }
@@ -107,12 +107,12 @@ bool window_cairo_render_default (s_window_cairo *window)
   return true;
 }
 
-bool window_cairo_resize_default (s_window_cairo *window, uw w, uw h)
+bool window_cairo_resize_default (s_window_cairo *window, u64 w, u64 h)
 {
   assert(window);
   (void) window;
   (void) w;
   (void) h;
-  printf("window_cairo_resize_default: %lu x %lu\n", w, h);
+  printf("window_cairo_resize_default: %llu x %llu\n", w, h);
   return true;
 }

@@ -30,16 +30,16 @@ s_cairo_font g_font_computer_modern = {0};
 s_cairo_font g_font_courier_new = {0};
 
 bool window_cairo_demo_button (s_window_cairo *window, u8 button,
-                               sw x, sw y)
+                               s64 x, s64 y)
 {
   assert(window);
   (void) window;
   io_write_1("kc3_window_cairo_demo_button: ");
   io_inspect_u8(&button);
   io_write_1(" (");
-  io_inspect_sw_decimal(&x);
+  io_inspect_s64_decimal(&x);
   io_write_1(", ");
-  io_inspect_sw_decimal(&y);
+  io_inspect_s64_decimal(&y);
   io_puts(")");
   if (window->seq->button &&
       ! window->seq->button(window->seq, button, x, y))
@@ -47,7 +47,7 @@ bool window_cairo_demo_button (s_window_cairo *window, u8 button,
   return true;
 }
 
-bool window_cairo_demo_key (s_window_cairo *window, uw keysym)
+bool window_cairo_demo_key (s_window_cairo *window, u32 keysym)
 {
   char keysym_name[64];
   assert(window);
@@ -71,11 +71,13 @@ bool window_cairo_demo_key (s_window_cairo *window, uw keysym)
       return false;
     break;
   default:
-    xkb_keysym_get_name(keysym, keysym_name, sizeof(keysym_name));
-    io_write_1("kc3_window_cairo_demo_key: ");
-    io_inspect_uw(&keysym);
-    io_write_1(" ");
-    io_puts(keysym_name);
+    if (true) {
+      xkb_keysym_get_name(keysym, keysym_name, sizeof(keysym_name));
+      io_write_1("kc3_window_cairo_demo_key: ");
+      io_inspect_u32_decimal(&keysym);
+      io_write_1(" ");
+      io_puts(keysym_name);
+    }
   }
   return true;
 }
@@ -162,8 +164,7 @@ bool window_cairo_demo_render (s_window_cairo *window)
   return true;
 }
 
-bool window_cairo_demo_resize (s_window_cairo *window,
-                                  uw w, uw h)
+bool window_cairo_demo_resize (s_window_cairo *window, u64 w, u64 h)
 {
   assert(window);
   (void) window;

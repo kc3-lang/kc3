@@ -57,7 +57,7 @@ bool ident_first_character_is_reserved (character c)
 
 s_tag * ident_get (const s_ident *ident, s_tag *dest)
 {
-  return env_ident_get(g_kc3_env, ident, dest);
+  return env_ident_get(env_global(), ident, dest);
 }
 
 s_ident * ident_init (s_ident *ident, const s_sym *module,
@@ -110,12 +110,12 @@ s_ident * ident_init_copy (s_ident *ident, const s_ident *src)
 
 bool * ident_is_special_operator (const s_ident *ident, bool *dest)
 {
-  return env_ident_is_special_operator(g_kc3_env, ident, dest);
+  return env_ident_is_special_operator(env_global(), ident, dest);
 }
 
 s_ident * ident_resolve_module (const s_ident *ident, s_ident *dest)
 {
-  return env_ident_resolve_module(g_kc3_env, ident, dest);
+  return env_ident_resolve_module(env_global(), ident, dest);
 }
 
 bool ident_to_tag_type (const s_ident *ident, e_tag_type *dest)

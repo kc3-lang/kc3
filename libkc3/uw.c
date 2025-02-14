@@ -98,7 +98,7 @@ uw * uw_init_cast
     err_inspect_sym(type);
     err_puts(" aka Uw");
   }
-  err_inspect_stacktrace(g_kc3_env->stacktrace);
+  err_inspect_stacktrace(env_global()->stacktrace);
   assert(! "uw_init_cast: cannot cast to Uw");
   return NULL;
 }
@@ -119,7 +119,7 @@ uw * uw_init_str (uw *u, const s_str *str)
   if (buf_parse_uw(&buf, &tmp) <= 0) {
     if (false) {
       err_puts("uw_init_str: buf_parse_uw");
-      err_inspect_stacktrace(g_kc3_env->stacktrace);
+      err_inspect_stacktrace(env_global()->stacktrace);
       err_write_1("\n");
       assert(! "uw_init_str: buf_parse_uw");
     }

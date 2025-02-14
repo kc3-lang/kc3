@@ -15,7 +15,9 @@
 
 #include "types.h"
 
-extern thread_local s_env *g_kc3_env;
+/* Global singletons. */
+s_env * env_global (void);
+void    env_global_set (s_env *env);
 
 /* Stack allocation compatible functions, call env_clean after use. */
 void    env_clean (s_env *env);

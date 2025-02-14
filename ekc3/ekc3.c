@@ -483,6 +483,7 @@ s_str * ekc3_render_buf_to_str (s_buf *in, s_str *dest)
 
 s_str * ekc3_render_file_to_str (const s_str *path, s_str *dest)
 {
+  s_env *env;
   s_tag *file_dir;
   s_tag  file_dir_save;
   s_tag *file_path;
@@ -491,6 +492,7 @@ s_str * ekc3_render_file_to_str (const s_str *path, s_str *dest)
   s_buf in;
   char  in_data[BUF_SIZE];
   s_str *result;
+  env = env_global();
   buf_init(&in, false, BUF_SIZE, in_data);
   fp = file_open(path->ptr.pchar, "rb");
   if (! fp)
@@ -499,10 +501,10 @@ s_str * ekc3_render_file_to_str (const s_str *path, s_str *dest)
     fclose(fp);
     return NULL;
   }
-  file_dir = frame_get_w(g_kc3_env->global_frame, &g_sym___DIR__);
+  file_dir = frame_get_w(env->global_frame, &g_sym___DIR__);
   file_dir_save = *file_dir;
   file_dirname(path, &file_dir->data.str);
-  file_path = frame_get_w(g_kc3_env->global_frame, &g_sym___FILE__);
+  file_path = frame_get_w(env->global_frame, &g_sym___FILE__);
   file_path_save = *file_path;
   file_path->data.str = *path;
   result = ekc3_render_buf_to_str(&in, dest);

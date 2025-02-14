@@ -128,12 +128,12 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
   }
   if (cfn->ptr.f) {
-    if (! (trace = list_new(g_kc3_env->stacktrace)))
+    if (! (trace = list_new(env_global()->stacktrace)))
       goto ko;
     tag_init_list(&trace->tag, list_new_sym
                   (cfn->name, list_new_copy
                    (args)));
-    g_kc3_env->stacktrace = trace;
+    env_global()->stacktrace = trace;
     ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
     if (cfn->arg_result) {
       if (result_pointer != arg_pointer_result) {
@@ -153,7 +153,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
     else
       *dest = tmp;
-    g_kc3_env->stacktrace = list_delete(trace);
+    env_global()->stacktrace = list_delete(trace);
   }
   else {
     err_puts("cfn_apply: NULL function pointer");

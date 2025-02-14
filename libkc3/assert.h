@@ -22,15 +22,17 @@ void abort (void);
 # define assert(test)                                                  \
   do {                                                                 \
     sw assert_line = __LINE__;                                         \
+    s_env *env;                                                        \
+    env = env_global();                                                \
     if (! (test)) {                                                    \
-      if (g_kc3_env->argv && g_kc3_env->argv[0]) {                       \
-        err_write_1(g_kc3_env->argv[0]);                                \
+      if (env->argv && env->argv[0]) {                                 \
+        err_write_1(env->argv[0]);                                     \
         err_write_1(": ");                                             \
       }                                                                \
       err_write_1("assertion failed: ");                               \
       err_write_1(__FILE__);                                           \
       err_write_1(":");                                                \
-      err_inspect_sw_decimal(&assert_line);                                    \
+      err_inspect_sw_decimal(&assert_line);                            \
       err_write_1(": ");                                               \
       err_write_1(__func__);                                           \
       err_write_1(": ");                                               \

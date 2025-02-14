@@ -63,7 +63,7 @@ typedef struct window_sdl2  s_window_sdl2;
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_button) (s_window_sdl2 *window,
-                                      u8 button, sw x, sw y);
+                                      u8 button, s64 x, s64 y);
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_key) (s_window_sdl2 *window,
@@ -73,15 +73,15 @@ typedef bool (*f_window_sdl2_key) (s_window_sdl2 *window,
 typedef bool (*f_window_sdl2_load) (s_window_sdl2 *window);
 
 /* return false to break event loop */
-typedef bool (*f_window_sdl2_motion) (s_window_sdl2 *window, sw x,
-                                      sw y);
+typedef bool (*f_window_sdl2_motion) (s_window_sdl2 *window, s64 x,
+                                      s64 y);
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_render) (s_window_sdl2 *window);
 
 /* return false to break event loop */
 typedef bool (*f_window_sdl2_resize) (s_window_sdl2 *window,
-                                      uw w, uw h);
+                                      u64 w, u64 h);
 
 typedef bool (*f_window_sdl2_sequence_load) (s_sequence *seq,
                                              s_window_sdl2 *window);

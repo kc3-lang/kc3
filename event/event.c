@@ -34,7 +34,11 @@ s32 kc3_event_del (struct event **ev)
      expects a tag of the form
      {fn ((S32) fd, (List) events, (Ptr) ev, (Tag) Arg) {void},
       arg} */
-void kc3_event_callback (int fd, short events, void *tag_tuple)
+#if defined(WIN64)
+static void kc3_event_callback (long long fd, short events, void *tag_tuple)
+#else
+static void kc3_event_callback (int fd, short events, void *tag_tuple)
+#endif
 {
   s_tag  *arg;
   s_list *arguments;

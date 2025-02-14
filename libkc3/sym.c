@@ -726,7 +726,7 @@ const s_sym * sym_new (const s_str *src)
 
 bool sym_search_modules (const s_sym *sym, const s_sym **dest)
 {
-  return env_sym_search_modules(g_kc3_env, sym, dest);
+  return env_sym_search_modules(env_global(), sym, dest);
 }
 
 bool sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,

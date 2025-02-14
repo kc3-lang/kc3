@@ -486,11 +486,13 @@ config_win32() {
 
 config_win64() {
     if uname -s | grep -qi mingw64; then
+	HAVE_WIN32=true
 	HAVE_WIN64=true
-	CPPFLAGS="$CPPFLAGS -DWIN64"
+	CPPFLAGS="$CPPFLAGS -DWIN32 -DWIN64"
     else
 	HAVE_WIN64=false
     fi
+    echo "HAVE_WIN32 = ${HAVE_WIN32}" >> ${CONFIG_MK}
     echo "HAVE_WIN64 = ${HAVE_WIN64}" >> ${CONFIG_MK}
 }
 

@@ -21,11 +21,11 @@ extern s_cairo_font g_font_computer_modern;
 extern s_cairo_font g_font_courier_new;
 
 bool window_cairo_demo_button (s_window_cairo *window, u8 button,
-                               sw x, sw y);
-bool window_cairo_demo_key (s_window_cairo *window, uw keysym);
+                               s64 x, s64 y);
+bool window_cairo_demo_key (s_window_cairo *window, u32 keysym);
 bool window_cairo_demo_load (s_window_cairo *window);
 bool window_cairo_demo_render (s_window_cairo *window);
-bool window_cairo_demo_resize (s_window_cairo *window, uw w, uw h);
+bool window_cairo_demo_resize (s_window_cairo *window, u64 w, u64 h);
 void window_cairo_demo_unload (s_window_cairo *window);
 
 #endif /* LIBKC3_WINDOW_CAIRO_DEMO_H */

@@ -20,12 +20,12 @@
    after use. */
 void       window_clean (s_window *window);
 s_window * window_init (s_window *window,
-                        sw x, sw y, uw w, uw h,
+                        s64 x, s64 y, u64 w, u64 h,
                         const char *title,
-                        uw sequence_count);
+                        u64 sequence_count);
 
 /* Operators. */
 bool window_animate (s_window *window);
-bool window_set_sequence_pos (s_window *window, uw sequence_pos);
+bool window_set_sequence_pos (s_window *window, u32 sequence_pos);
 
 #endif /* LIBKC3_WINDOW_H */

@@ -76,7 +76,7 @@
 #include "tuple.h"
 #include "var.h"
 
-thread_local s_env *g_kc3_env = NULL;
+static thread_local s_env *g_kc3_env = NULL;
 
 static void env_clean_globals (s_env *env);
 static void env_clean_toplevel (s_env *env);
@@ -2524,6 +2524,16 @@ s_tag * env_frames_get (s_env *env, const s_sym *name)
       (tag = frame_get(env->global_frame, name)))
     return tag;
   return NULL;
+}
+
+s_env * env_global (void)
+{
+  return g_kc3_env;
+}
+
+void env_global_set (s_env *env)
+{
+  g_kc3_env = env;
 }
 
 s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)

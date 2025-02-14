@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include <assert.h>
-#include <err.h>
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,8 +31,10 @@ unsigned long read_hex (const char **src) {
       result += c - 'A' + 10;
     else if ('a' <= c && c <= 'f')
       result += c - 'a' + 10;
-    else
-      errx(1, "invalid character in index: %c", c);
+    else {
+      fprintf(stderr, "invalid character in index: %c", c);
+      exit(1);
+    }
     (*src)++;
   }
   if (c == ';')
@@ -71,11 +72,11 @@ void ucd_parse (s_ucd ucd[UCD_MAX], char *line,
   char *sep;
   size_t size;
 #define UCD_PARSE_UNKNOWN_CATEGORY \
-  warnx("line %lu: unknown category : %c%c", lineno, p[0], p[1])
+  fprintf(stderr, "line %lu: unknown category : %c%c", lineno, p[0], p[1])
   p = line;
   i = read_hex((const char **) &p);
   if (i >= UCD_MAX) {
-    warnx("%lu > UCD_MAX", i);
+    fprintf(stderr, "%lu > UCD_MAX", i);
     goto error;
   }
   ucd[i].flags = 0;
@@ -162,7 +163,8 @@ void ucd_parse (s_ucd ucd[UCD_MAX], char *line,
       default: UCD_PARSE_UNKNOWN_CATEGORY;
       }
       break;
-    default: warnx("line %lu: unknown category: '%c'", lineno, *p);
+    default:
+      fprintf(stderr, "line %lu: unknown category: '%c'", lineno, *p);
     }
     if (*p != ';')
       p++;
@@ -171,7 +173,7 @@ void ucd_parse (s_ucd ucd[UCD_MAX], char *line,
   }
   return;
  error:
-  warnx("invalid entry line %lu: %s", lineno, line);
+  fprintf(stderr, "invalid entry line %lu: %s", lineno, line);
 }
 
 void ucd_write_c (s_ucd ucd[UCD_MAX])

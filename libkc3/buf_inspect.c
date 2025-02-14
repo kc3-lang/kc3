@@ -2258,13 +2258,15 @@ sw buf_inspect_frame (s_buf *buf, const s_frame *frame)
 
 sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
 {
+  s_env *env;
   sw r;
   sw result = 0;
   assert(buf);
   assert(ident);
+  env = env_global();
   result = 0;
   // FIXME
-  if (ident->module && ident->module != g_kc3_env->current_defmodule) {
+  if (ident->module && ident->module != env->current_defmodule) {
     if ((r = buf_inspect_sym(buf, &ident->module)) < 0)
       return r;
     result += r;
@@ -2280,10 +2282,12 @@ sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
 
 sw buf_inspect_ident_size (s_pretty *pretty, const s_ident *ident)
 {
+  s_env *env;
   sw r;
   sw result = 0;
   assert(ident);
-  if (ident->module && ident->module != g_kc3_env->current_defmodule) {
+  env = env_global();
+  if (ident->module && ident->module != env->current_defmodule) {
     if ((r = buf_inspect_sym_size(pretty, &ident->module)) < 0)
       return r;
     result += r;

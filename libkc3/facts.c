@@ -350,7 +350,7 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
   sw result = 0;
   assert(facts);
   assert(buf);
-  if (g_kc3_env->trace) {
+  if (env_global()->trace) {
     err_write_1("facts_load: ");
     err_inspect_str(path);
     err_write_1("\n");
