@@ -3,3 +3,5 @@
 replace {Ratio, :is_a, :module}
 replace {Ratio, :symbol, Ratio.cast}
 replace {Ratio.cast, :symbol_value, cfn Ratio "ratio_init_cast" (Result, Sym, Tag)}
+add {Ratio, :symbol, Ratio.pow}
+replace {Ratio.pow, :symbol_value, cfn Ratio "ratio_pow" (Ratio, Ratio, Result)}
