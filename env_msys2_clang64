@@ -1,0 +1,3 @@
+export CC=cc
+export CFLAGS="-I/clang64/include"
+export LDFLAGS="-L/clang64/lib -L/mingw32/lib -lshlwapi -ldl"
