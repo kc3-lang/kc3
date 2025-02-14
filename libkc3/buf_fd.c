@@ -10,18 +10,17 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-#include "alloc.h"
-#include "assert.h"
-#include <errno.h>
-#include <string.h>
-
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64)
 # include <winsock2.h>
 #else
 # include <sys/ioctl.h>
 #endif
 
+#include <errno.h>
+#include <string.h>
 #include <unistd.h>
+#include "alloc.h"
+#include "assert.h"
 #include "buf.h"
 #include "buf_fd.h"
 #include "buf_save.h"
@@ -76,7 +75,7 @@ sw buf_fd_open_r_refill (s_buf *buf)
   size = buf->size - buf->wpos;
   fd = ((s_buf_fd *) (buf->user_ptr))->fd;
   //r = read(fd, buf->ptr.pchar + buf->wpos, size);
-#ifdef WIN32
+#if defined(WIN32) || defined(WIN64)
   WSAIoctl(fd, FIONREAD, NULL, 0, &avail, sizeof(avail), NULL, NULL, NULL);
 #else
   if (ioctl(fd, FIONREAD, &avail) == -1) {

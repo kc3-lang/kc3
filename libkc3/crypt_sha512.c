@@ -291,7 +291,7 @@ static char * sha512_crypt(const char *key, const char *setting, char *output)
      * the host's value of ULONG_MAX.
      */
     salt += sizeof("rounds=") - 1;
-    if (! isdigit(*salt))
+    if (! isdigit((int) *salt))
       return 0;
     u = strtoul(salt, &end, 10);
     if (*end != '$')

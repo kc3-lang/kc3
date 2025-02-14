@@ -484,6 +484,16 @@ config_win32() {
     echo "HAVE_WIN32 = ${HAVE_WIN32}" >> ${CONFIG_MK}
 }
 
+config_win64() {
+    if uname -s | grep -qi mingw64; then
+	HAVE_WIN64=true
+	CPPFLAGS="$CPPFLAGS -DWIN64"
+    else
+	HAVE_WIN64=false
+    fi
+    echo "HAVE_WIN64 = ${HAVE_WIN64}" >> ${CONFIG_MK}
+}
+
 cpp_o_rule() {
     "$CXX" $CPPFLAGS $CXXFLAGS -M "$1" || {
         echo "$1" | sed -e 's/^\(.*\)\.cpp$/\1.o: \1.cpp/'

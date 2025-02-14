@@ -47,6 +47,7 @@ config_asan
 config_gnu
 config_i386
 config_win32
+config_win64
 if $HAVE_WIN32; then
     CPPFLAGS="$CPPFLAGS -I../sys_wait_h/"
 fi
@@ -61,7 +62,7 @@ config_have_stat_mtim
 config_have_pthread
 update_config_h
 LIBS="$LIBS -lm -lpthread -rpath ${PREFIX}/lib"
-if $HAVE_WIN32; then
+if $HAVE_WIN32 || $HAVE_WIN64; then
     LIBS="$LIBS -lws2_32"
 fi
 
