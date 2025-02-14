@@ -37,7 +37,7 @@ GtkApplication ** kc3_gtk4_application_new (GtkApplication **dest,
 s32 kc3_gtk4_application_run (GtkApplication **app)
 {
   return g_application_run(G_APPLICATION(*app), 1,
-                           g_kc3_env->argv);
+                           env_global()->argv);
 }
 
 void kc3_gtk4_application_set_accel_for_action (GtkApplication **app,
