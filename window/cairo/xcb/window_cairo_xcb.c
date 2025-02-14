@@ -32,6 +32,7 @@ bool window_cairo_xcb_event (s_window_cairo *window,
                              xcb_pixmap_t *pixmap,
                              cairo_surface_t **surface,
                              xcb_window_t xcb_window,
+                             xcb_intern_atom_reply_t *delete_reply,
                              xcb_generic_event_t *event,
                              struct xkb_state *xkb_state)
 {
@@ -87,6 +88,15 @@ bool window_cairo_xcb_event (s_window_cairo *window,
                          event_motion->event_y))
       goto ko;
     break;
+  case XCB_CLIENT_MESSAGE:
+    if((*(xcb_client_message_event_t *) event).data.data32[0] ==
+       (*delete_reply).atom) {
+      printf("window close\n");
+      // callback ?
+      g_kc3_exit_code = 0;
+      goto ko;
+    }
+    break;
   default:
     printf("event type %d\n", event->response_type & ~0x80);
   }
@@ -100,9 +110,13 @@ bool window_cairo_xcb_event (s_window_cairo *window,
 bool window_cairo_xcb_run (s_window_cairo *window)
 {
   xcb_connection_t *conn;
+  xcb_intern_atom_cookie_t cookie;
+  xcb_intern_atom_cookie_t cookie2;
   xcb_generic_event_t *event;
   xcb_pixmap_t pixmap;
   bool r;
+  xcb_intern_atom_reply_t* protocols_reply;
+  xcb_intern_atom_reply_t* delete_reply;
   xcb_screen_t *screen;
   xcb_visualtype_t *screen_visual;
   s_timespec sleep;
@@ -139,11 +153,13 @@ bool window_cairo_xcb_run (s_window_cairo *window)
   screen_visual = xcb_screen_visual_type(screen);
   xcb_window = xcb_generate_id(conn);
   value_mask = XCB_CW_EVENT_MASK;
-  value_list = (u32[]) {XCB_EVENT_MASK_BUTTON_PRESS |
-                        XCB_EVENT_MASK_EXPOSURE |
-                        XCB_EVENT_MASK_KEY_PRESS |
-                        XCB_EVENT_MASK_POINTER_MOTION |
-                        XCB_EVENT_MASK_STRUCTURE_NOTIFY};
+  value_list = (u32[]) {
+    XCB_EVENT_MASK_BUTTON_PRESS |
+    XCB_EVENT_MASK_EXPOSURE |
+    XCB_EVENT_MASK_KEY_PRESS |
+    XCB_EVENT_MASK_POINTER_MOTION |
+    XCB_EVENT_MASK_STRUCTURE_NOTIFY
+  };
   xcb_create_window(conn, XCB_COPY_FROM_PARENT, xcb_window,
                     screen->root, window->x, window->y,
                     window->w, window->h, 0,
@@ -153,6 +169,13 @@ bool window_cairo_xcb_run (s_window_cairo *window)
   xcb_change_property(conn, XCB_PROP_MODE_REPLACE, xcb_window,
                       XCB_ATOM_WM_NAME, XCB_ATOM_STRING, 8,
                       strlen(window->title), window->title);
+  cookie = xcb_intern_atom(conn, 1, 12, "WM_PROTOCOLS");
+  protocols_reply = xcb_intern_atom_reply(conn, cookie, 0);
+  cookie2 = xcb_intern_atom(conn, 0, 16, "WM_DELETE_WINDOW");
+  delete_reply = xcb_intern_atom_reply(conn, cookie2, 0);
+  xcb_change_property(conn, XCB_PROP_MODE_REPLACE, xcb_window,
+                      (*protocols_reply).atom, 4, 32, 1,
+                      &(*delete_reply).atom);
   xcb_map_window(conn, xcb_window);
   pixmap = xcb_generate_id(conn);
   xcb_create_pixmap(conn, screen->root_depth, pixmap, xcb_window,
@@ -168,6 +191,7 @@ bool window_cairo_xcb_run (s_window_cairo *window)
       if (! (r = window_cairo_xcb_event(window, conn, screen,
                                         screen_visual, &pixmap,
                                         &surface, xcb_window,
+                                        delete_reply,
                                         event, xkb_state)))
         goto clean;
     }
