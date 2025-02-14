@@ -31,16 +31,6 @@ echo "LIB_ASAN = $LIB_ASAN" >> ${CONFIG_MK}
 echo "LIB_COV = $LIB_COV" >> ${CONFIG_MK}
 echo "LIB_DEBUG = $LIB_DEBUG" >> ${CONFIG_MK}
 
-. ./sources.sh
-
-OBJECTS="$(c2ext .main.lo "$SOURCES")"
-OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
-OBJECTS_ASAN="$OBJECTS_ASAN $(objc2ext .asan.lo "$OBJC_SOURCES")"
-OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
-OBJECTS_COV="$OBJECTS_COV $(objc2ext .cov.lo "$OBJC_SOURCES")"
-OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
-OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.lo "$OBJC_SOURCES")"
-
 # Common config for all targets
 CPPFLAGS="-I../.. $CPPFLAGS"
 OBJCFLAGS="$CFLAGS -W -Wall -Werror"
@@ -62,10 +52,29 @@ pkg_config xkbcommon
 config_cocoa
 update_config_h
 
+. ./sources.sh
+
+OBJECTS="$(c2ext .main.lo "$SOURCES")"
 if ${HAVE_COCOA}; then
     OBJECTS="$OBJECTS $(objc2ext .main.lo "$OBJC_SOURCES")"
-    echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
 fi
+OBJECTS_ASAN="$(c2ext .asan.lo "$SOURCES")"
+if ${HAVE_COCOA}; then
+    OBJECTS_ASAN="$OBJECTS_ASAN $(objc2ext .asan.lo "$OBJC_SOURCES")"
+fi
+OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
+if ${HAVE_COCOA}; then
+    OBJECTS_COV="$OBJECTS_COV $(objc2ext .cov.lo "$OBJC_SOURCES")"
+fi
+OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
+if ${HAVE_COCOA}; then
+    OBJECTS_DEBUG="$OBJECTS_DEBUG $(objc2ext .debug.lo "$OBJC_SOURCES")"
+fi
+
+echo "OBJECTS = $OBJECTS" >> ${CONFIG_MK}
+echo "OBJECTS_ASAN = $OBJECTS_ASAN" >> ${CONFIG_MK}
+echo "OBJECTS_COV = $OBJECTS_COV" >> ${CONFIG_MK}
+echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
