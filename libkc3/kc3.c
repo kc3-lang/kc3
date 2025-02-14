@@ -434,12 +434,16 @@ sw kc3_getpid (void)
   return getpid();
 }
 
-#if ! (defined(WIN32) || defined(WIN64))
 sw kc3_getppid (void)
 {
+#if defined(WIN32) || defined(WIN64)
+  err_puts("kc3_getppid: not implemented");
+  assert(! "kc3_getppid: not implemented");
+  abort();
+#else
   return getppid();
-}
 #endif
+}
 
 s_tag * kc3_identity (s_tag *tag, s_tag *dest)
 {
@@ -492,9 +496,15 @@ s_tag * kc3_integer_reduce (s_tag *tag, s_tag *dest)
   return dest;
 }
 
-#if ! (defined(WIN32) || defined(WIN64))
 bool kc3_killpg (sw process_group, const s_sym * const *signal)
 {
+#if (defined(WIN32) || defined(WIN64))
+  (void) process_group;
+  (void) signal;
+  err_puts("kc3_killpg: not implemented");
+  assert(! "kc3_killpg: not implemented");
+  abort();
+#else
   sw e;
   s32 sig = -1;
   if      (*signal == sym_1("SIGHUP"))
@@ -583,8 +593,8 @@ bool kc3_killpg (sw process_group, const s_sym * const *signal)
     return false;
   }
   return true;
-}
 #endif
+}
 
 s_tag * kc3_let (s_tag *vars, s_tag *tag, s_tag *dest)
 {
