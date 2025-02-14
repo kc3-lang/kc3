@@ -514,20 +514,18 @@ s_integer * integer_new_copy (const s_integer *src)
   return a;
 }
 
-s_integer * integer_pow (const s_integer *a, const s_integer *b,
-                         s_integer *dest)
+s_integer * integer_expt_u32 (const s_integer *a, u32 b,
+			      s_integer *dest)
 {
   sw r;
   assert(a);
   assert(b);
   assert(dest);
   integer_init(dest);
-  // FIXME
-  if ((r = mp_exptmod(&a->mp_int, &b->mp_int, &dest->mp_int, &dest->mp_int))
-      != MP_OKAY) {
-    err_write_1("integer_pow: ");
+  if ((r = mp_expt_u32(&a->mp_int, b, &dest->mp_int)) != MP_OKAY) {
+    err_write_1("integer_expt_u32: ");
     err_puts(mp_error_to_string(r));
-    assert(! "integer_pow: mp_exptmod");
+    assert(! "integer_expt_u32: mp_expt_u32");
     return NULL;
   }
   return dest;

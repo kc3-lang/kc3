@@ -55,13 +55,20 @@
 
 #define RATIO_TEST_POW(base, exponent, expected)                       \
   do {                                                                 \
-    s_ratio ratio;                                                     \
-    s_str str;                                                         \
-    str_init_1(&str, NULL, base);                                      \
-    test_context("ratio_pow(" # base ", " # exponent ") => "           \
-                 # expected);                                          \
-    str_clean(&str);                                                   \
-    ratio_clean(&ratio);                                               \
+  s_ratio test_ratio;						       \
+    s_ratio base_ratio;                                                \
+    s_ratio exponent_ratio;                                            \
+    s_ratio expected_ratio;                                            \
+    test_context("ratio_pow(" # base ", " # exponent ") => "	       \
+    # expected);						       \
+    ratio_init_1(&base_ratio, base);				       \
+    ratio_init_1(&exponent_ratio, exponent);			       \
+    ratio_init_1(&expected_ratio, expected);			       \
+    ratio_pow(&base_ratio, &exponent_ratio, &test_ratio);	       \
+    ratio_clean(&test_ratio);					       \
+    ratio_clean(&base_ratio);				               \
+    ratio_clean(&exponent_ratio);				       \
+    ratio_clean(&expected_ratio);				       \
     test_context(NULL);                                                \
   } while (0)
 
@@ -71,7 +78,9 @@ TEST_CASE_PROTOTYPE(ratio_pow);
 
 void ratio_test (void)
 {
+  TEST_CASE_RUN(ratio_init_1);
   TEST_CASE_RUN(ratio_parse);
+  TEST_CASE_RUN(ratio_pow);
 }
 
 TEST_CASE(ratio_init_1)

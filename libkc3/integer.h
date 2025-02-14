@@ -83,8 +83,8 @@ s_integer * integer_mod (const s_integer *a, const s_integer *b,
 s_integer * integer_mul (const s_integer *a, const s_integer *b,
                          s_integer *dest);
 s_integer * integer_neg (const s_integer *a, s_integer *dest);
-s_integer * integer_pow (const s_integer *a, const s_integer *b,
-                         s_integer *dest);
+s_integer * integer_expt_u32 (const s_integer *a, u32 b,
+			      s_integer *dest);
 s_tag *     integer_sqrt (const s_integer *a, s_tag *dest);
 s_integer * integer_sqrt_positive (const s_integer *a, s_integer *dest);
 s_integer * integer_sub (const s_integer *a, const s_integer *b,

@@ -404,14 +404,25 @@ s_ratio * ratio_pow (const s_ratio *a, const s_ratio *b,
 {
   s_ratio tmp = {0};
   s_integer one = {0};
+  s_integer u32_max;
+  u32 n;
   assert(a);
   assert(b);
   assert(dest);
   assert(integer_is_positive(&a->denominator));
   assert(integer_is_positive(&b->denominator));
+  integer_init_u32(&u32_max, U32_MAX);
+  if (compare_integer(&u32_max, &b->numerator) < 0) {
+    err_puts("ratio_pow: b > U32_MAX");
+    assert(! "ratio_pow: b > U32_MAX");
+    integer_clean(&u32_max);
+    return NULL;
+  }
+  integer_clean(&u32_max);
+  n = integer_to_u32(&b->numerator);
   integer_init_u8(&one, 1);
-  integer_pow(&a->numerator, &b->numerator, &tmp.numerator);
-  integer_pow(&a->denominator, &b->numerator, &tmp.denominator); 
+  integer_expt_u32(&a->numerator, n, &tmp.numerator);
+  integer_expt_u32(&a->denominator, n, &tmp.denominator); 
   if (! ratio_simplify(&tmp, dest)) {
     ratio_clean(&tmp);
     return NULL;
