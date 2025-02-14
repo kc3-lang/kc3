@@ -1,5 +1,5 @@
 #!/bin/sh
-## c3
+## kc3
 ## Copyright 2022,2023 kmx.io <contact@kmx.io>
 ##
 ## Permission is hereby granted to use this software granted the above
@@ -13,11 +13,11 @@
 
 set -e
 
-export SRC_TOP="$(dirname "$(pwd)")"
+export SRC_TOP="$(dirname "$(dirname "$(pwd)")")"
 
-. ../config.subr
+. ../../config.subr
 
-C3_VERSION="$(cat ../c3.version)"
-echo "C3_VERSION = $C3_VERSION" >> ${CONFIG_MK}
+KC3_VERSION="$(cat ../../kc3.version)"
+echo "KC3_VERSION = $KC3_VERSION" >> ${CONFIG_MK}
 
 update_config_mk
