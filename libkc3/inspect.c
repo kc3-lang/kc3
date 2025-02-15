@@ -331,13 +331,23 @@ s_str * inspect_tag (const s_tag *tag, s_str *dest)
     assert(! "inspect_tag: buf_inspect_tag_size: error");
     return NULL;
   }
+  if (false) {
+    err_write_1("inspect_tag: size = ");
+    err_inspect_sw_decimal(&size);
+    err_write_1("\n");
+  }
   buf_init_alloc(&buf, size);
   if ((r = buf_inspect_tag(&buf, tag)) != size) {
     err_write_1("inspect_tag: buf_inspect_tag: expected ");
     err_inspect_sw_decimal(&size);
     err_write_1(" got ");
     err_inspect_sw_decimal(&r);
+    err_write_1(", buffer :");
+    err_inspect_buf(&buf);
     err_write_1("\n");
+    buf_to_str(&buf, dest);
+    err_write_str(dest);
+    err_flush();
     assert(! "inspect_tag: buf_inspect_tag: error");
     return NULL;
   }

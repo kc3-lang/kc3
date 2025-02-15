@@ -131,6 +131,7 @@ sw        buf_write_1 (s_buf *buf, const char *p);
 sw        buf_write_1_size (s_pretty *pretty, const char *p);
 PROTO_BUF_WRITE(bool);
 sw        buf_write_character_utf8 (s_buf *buf, character c);
+sw        buf_write_character_utf8_size (s_pretty *pretty, character c);
 PROTO_BUF_WRITE(f32);
 PROTO_BUF_WRITE(f64);
 PROTO_BUF_WRITE(f128);

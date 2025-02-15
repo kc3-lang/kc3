@@ -109,23 +109,45 @@ sw buf_inspect_uw_base_digits (const s_str *base,
 sw buf_inspect_uw_base_size (s_pretty *pretty, const s_str *base,
                                   const uw *u)
 {
-  character c;
-  uw digit;
-  uw radix;
+  character *c;
+  u8 digit;
+  sw i;
+  sw r;
   sw result = 0;
+  uw radix;
+  sw size;
+  character zero;
   uw u_;
   u_ = *u;
-  if (u_ == 0)
-    return 1;
+  if (u_ == 0) {
+    if (str_character(base, 0, &zero) < 0)
+      return -1;
+    return buf_write_character_utf8_size(pretty, zero);
+  }
+  size = buf_inspect_uw_base_digits(base, u);
+  c = alloc(size * sizeof(character));
   radix = base->size;
+  i = 0;
   while (u_ > 0) {
     digit = u_ % radix;
     u_ /= radix;
-    if (str_character(base, digit, &c) < 0)
-      return -1;
-    result += buf_inspect_str_character_size(pretty, &c);
+    if (str_character(base, digit, c + i) < 0) {
+      r = -1;
+      goto restore;
+    }
+    i++;
   }
-  return result;
+  while (i--) {
+    if ((r = buf_write_character_utf8_size(pretty, c[i])) < 0)
+      goto restore;
+    result += r;
+  }
+  r = result;
+  goto clean;
+ restore:
+ clean:
+  free(c);
+  return r;
 }
 
 sw buf_inspect_uw_size (s_pretty *pretty, const uw *u)
