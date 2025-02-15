@@ -88,7 +88,13 @@ bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
 {
   assert(window);
   (void) window;
-  printf("kc3_window_sdl2_demo_button: %u (%lld, %lld)\n", button, x, y);
+  err_write_1("window_sdl2_demo_button: ");
+  err_inspect_u8(&button);
+  err_write_1(" (");
+  err_inspect_s64(&x);
+  err_write_1(", ");
+  err_inspect_s64(&y);
+  err_puts(")");
   if (window->seq && window->seq->button &&
       ! window->seq->button(window->seq, button, x, y))
     return false;
@@ -97,6 +103,7 @@ bool window_sdl2_demo_button (s_window_sdl2 *window, u8 button,
 
 bool window_sdl2_demo_key (s_window_sdl2 *window, SDL_Keysym *keysym)
 {
+  s32 k;
   assert(window);
   assert(keysym);
   (void) window;
@@ -139,7 +146,10 @@ bool window_sdl2_demo_key (s_window_sdl2 *window, SDL_Keysym *keysym)
       return false;
     break;
   default:
-    printf("kc3_window_sdl2_demo_key: %d\n", keysym->sym);
+    k = keysym->sym;
+    err_write_1("window_sdl2_demo_key: ");
+    err_inspect_s32_decimal(&k);
+    err_write_1("\n");
   }
   return true;
 }
@@ -154,8 +164,9 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   err_inspect_f32(&point_per_pixel);
   err_write_1("\n");
   if (window->sequence_count != WINDOW_SDL2_DEMO_SEQUENCE_COUNT) {
-    fprintf(stderr, "window_sdl2_demo_load: "
-            "window->sequence_count = %llu\n", window->sequence_count);
+    err_write_1("window_sdl2_demo_load: window->sequence_count = ");
+    err_inspect_u64_decimal(&window->sequence_count);
+    err_write_1("\n");
     assert(window->sequence_count == WINDOW_SDL2_DEMO_SEQUENCE_COUNT);
     return false;
   }

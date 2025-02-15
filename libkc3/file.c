@@ -719,7 +719,7 @@ bool file_unlink (const s_str *path)
     err_write_1(": ");
     err_write_1(strerror(e));
     err_write_1("\n");
-    return NULL;
+    return false;
   }
   return true;
 }

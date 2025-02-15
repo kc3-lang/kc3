@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <xkbcommon/xkbcommon.h>
+#include <libkc3/io.h>
 #include <libkc3/tag.h>
 #include "../window.h"
 #include "cairo_font.h"
@@ -56,11 +57,13 @@ bool window_cairo_button_default (s_window_cairo *window, u8 button,
 {
   assert(window);
   (void) window;
-  (void) button;
-  (void) x;
-  (void) y;
-  printf("window_cairo_button_default: %d (%lld, %lld)\n",
-         (int) button, x, y);
+  err_write_1("window_cairo_button_default: ");
+  err_inspect_u8(&button);
+  err_write_1(" (");
+  err_inspect_s64_decimal(&x);
+  err_write_1(", ");
+  err_inspect_s64_decimal(&y);
+  err_write_1("\n");
   return true;
 }
 
@@ -70,7 +73,10 @@ bool window_cairo_key_default (s_window_cairo *window, u32 keysym)
   assert(window);
   (void) window;
   xkb_keysym_get_name(keysym, keysym_name, sizeof(keysym_name));
-  printf("window_cairo_key_default: %u %s\n", keysym, keysym_name);
+  err_write_1("window_cairo_key_default: ");
+  err_inspect_u32_decimal(&keysym);
+  err_write_1(" ");
+  err_puts(keysym_name);
   return true;
 }
 
@@ -78,7 +84,7 @@ bool window_cairo_load_default (s_window_cairo *window)
 {
   assert(window);
   (void) window;
-  printf("window_cairo_load_default\n");
+  err_puts("window_cairo_load_default");
   return true;
 }
 
@@ -103,7 +109,7 @@ bool window_cairo_render_default (s_window_cairo *window)
   cairo_set_source_rgb(cr, 1, 1, 1);
   cairo_rectangle(cr, 0, 0, window->w, window->h);
   cairo_fill(cr);
-  printf("window_cairo_render_default\n");
+  err_puts("window_cairo_render_default");
   return true;
 }
 
@@ -113,6 +119,10 @@ bool window_cairo_resize_default (s_window_cairo *window, u64 w, u64 h)
   (void) window;
   (void) w;
   (void) h;
-  printf("window_cairo_resize_default: %llu x %llu\n", w, h);
+  err_write_1("window_cairo_resize_default: ");
+  err_inspect_u64(&w);
+  err_write_1(" x ");
+  err_inspect_u64(&h);
+  err_write_1("\n");
   return true;
 }

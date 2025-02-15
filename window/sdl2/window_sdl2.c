@@ -58,19 +58,27 @@ bool window_sdl2_default_button_cb (s_window_sdl2 *window, u8 button,
   (void) button;
   (void) x;
   (void) y;
-  printf("window_sdl2_default_button_cb: %d (%lld, %lld)\n",
-         (int) button, x, y);
+  err_write_1("window_sdl2_default_button_cb: ");
+  err_inspect_u8(&button);
+  err_write_1(" (");
+  err_inspect_s64(&x);
+  err_write_1(", ");
+  err_inspect_s64(&y);
+  err_puts(")");
   return true;
 }
 
 bool window_sdl2_default_key_cb (s_window_sdl2 *window,
                                  SDL_Keysym *keysym)
 {
+  s32 k;
   assert(window);
   assert(keysym);
   (void) window;
-  (void) keysym;
-  printf("window_sdl2_default_key_cb: %d\n", keysym->sym);
+  k = keysym->sym;
+  err_write_1("window_sdl2_default_key_cb: ");
+  err_inspect_s32_decimal(&k);
+  err_write_1("\n");
   return true;
 }
 
@@ -78,7 +86,7 @@ bool window_sdl2_default_load_cb (s_window_sdl2 *window)
 {
   assert(window);
   (void) window;
-  printf("window_sdl2_default_load_cb\n");
+  err_puts("window_sdl2_default_load_cb");
   return true;
 }
 
@@ -98,7 +106,7 @@ bool window_sdl2_default_render_cb (s_window_sdl2 *window)
 {
   assert(window);
   (void) window;
-  printf("window_sdl2_default_render_cb\n");
+  err_puts("window_sdl2_default_render_cb");
   return true;
 }
 
@@ -108,7 +116,11 @@ bool window_sdl2_default_resize_cb (s_window_sdl2 *window, u64 w, u64 h)
   (void) window;
   (void) w;
   (void) h;
-  printf("window_sdl2_default_resize_cb: %llu x %llu\n", w, h);
+  err_write_1("window_sdl2_default_resize_cb: ");
+  err_inspect_u64_decimal(&w);
+  err_write_1(" x ");
+  err_inspect_u64_decimal(&h);
+  err_write_1("\n");
   return true;
 }
 
@@ -116,7 +128,7 @@ void window_sdl2_default_unload_cb (s_window_sdl2 *window)
 {
   assert(window);
   (void) window;
-  printf("window_sdl2_default_unload_cb\n");
+  err_puts("window_sdl2_default_unload_cb");
 }
 
 s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
