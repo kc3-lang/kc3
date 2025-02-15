@@ -39,36 +39,7 @@ OBJECTS_ASAN="$(c2ext .asan.lo "$LO_SOURCES") $(cxx2ext .asan.lo "$SOURCES_CXX")
 OBJECTS_COV="$(c2ext .cov.lo "$LO_SOURCES") $(cxx2ext .cov.lo "$SOURCES_CXX")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$LO_SOURCES") $(cxx2ext .debug.lo "$SOURCES_CXX")"
 
-# Common config for all targets
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
-CXXFLAGS="$CXXFLAGS -W -Wall -Werror -std=c++11 -pedantic -pipe -pthread"
-LDFLAGS="-export-dynamic $LDFLAGS -rdynamic"
-config_asan
-config_gnu
-config_i386
-config_win32
-config_win64
-if $HAVE_WIN32; then
-    CPPFLAGS="$CPPFLAGS -I../sys_wait_h/"
-fi
-pkg_config libbsd-overlay
-pkg_config libffi
-pkg_config libmd
-config_lib libmd -lmd 2>/dev/null
-config_lib dl -ldl
-config_define PREFIX "\"${PREFIX}\""
-config_have_crypt_newhash
-config_have_stat_mtim
-config_have_pthread
-update_config_h
-LIBS="$LIBS -lm -lpthread -rpath ${PREFIX}/lib"
-if $HAVE_WIN32 || $HAVE_WIN64; then
-    LIBS="$LIBS -lws2_32"
-fi
-
-if ! [ -f ../ucd2c/ucd.c ]; then
-    touch ../ucd2c/ucd.c
-fi
+. "${SRC_TOP}/config_common"
 
 # Address Sanitizer config
 CPPFLAGS_ASAN="$CPPFLAGS"
