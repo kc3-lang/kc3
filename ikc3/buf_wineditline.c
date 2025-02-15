@@ -44,11 +44,9 @@ s_buf * buf_wineditline_open_r (s_buf *buf, const char *prompt,
   s_buf_wineditline *buf_wineditline;
   assert(buf);
   buf->line = 0;
-  buf_wineditline = malloc(sizeof(s_buf_wineditline));
-  if (! buf_wineditline) {
-    err_puts("buf_wineditline_open_r: failed to allocate memory");
+  buf_wineditline = alloc(sizeof(s_buf_wineditline));
+  if (! buf_wineditline)
     return NULL;
-  }
   buf_init(&buf_wineditline->buf, false, 1, "");
   buf_wineditline->eof = false;
   if (isatty(STDIN_FILENO))
@@ -93,6 +91,13 @@ sw buf_wineditline_refill_wineditline (s_buf *buf)
   uw size;
   assert(buf);
   assert(buf->user_ptr);
+  if (! buf->user_ptr) {
+    err_puts("buf_wineditline_refill_wineditline: buf is not"
+             " initialized");
+    assert(!("buf_wineditline_refill_wineditline: buf is not"
+             " initialized"));
+    abort();
+  }
   if (buf->rpos > buf->wpos ||
       buf->wpos > buf->size)
     return -1;
@@ -102,10 +107,13 @@ sw buf_wineditline_refill_wineditline (s_buf *buf)
   buf_wineditline = buf->user_ptr;
   if (buf_wineditline->eof)
     return -1;
-  buf_wineditline_len = buf_wineditline->buf.wpos - buf_wineditline->buf.rpos;
+  buf_wineditline_len =
+    buf_wineditline->buf.wpos - buf_wineditline->buf.rpos;
   if (buf_wineditline_len == 0) {
-    free(buf_wineditline->buf.ptr.p);
-    if (! (buf_wineditline->buf.ptr.p = readline(buf_wineditline->prompt))) {
+    if (buf_wineditline->buf.free)
+      free(buf_wineditline->buf.ptr.p);
+    if (! (buf_wineditline->buf.ptr.p =
+           readline(buf_wineditline->prompt))) {
       buf_wineditline->eof = true;
       buf_wineditline->buf.rpos =
         buf_wineditline->buf.wpos =
