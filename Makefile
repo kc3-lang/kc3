@@ -866,37 +866,10 @@ markdown_debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C markdown debug
 
-test:
-	${MAKE} -C libtommath build
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 build
-	${MAKE} -C ikc3 build
-	${MAKE} -C kc3s build
-	${MAKE} -C ekc3 build
-	${MAKE} -C event build
-	${MAKE} -C json build
-	${MAKE} -C markdown build
-	${MAKE} -C smtp build
-	${MAKE} -C socket build
-	${MAKE} -C http build
-	${MAKE} -C httpd build
+test: build
 	${MAKE} -C test test
-	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
 
-test_asan:
-	${MAKE} -C libtommath asan
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 asan
-	${MAKE} -C ikc3 asan
-	${MAKE} -C kc3s asan
-	${MAKE} -C ekc3 asan
-	${MAKE} -C event asan
-	${MAKE} -C json asan
-	${MAKE} -C markdown asan
-	${MAKE} -C smtp asan
-	${MAKE} -C socket asan
-	${MAKE} -C http asan
-	${MAKE} -C httpd asan
+test_asan: asan
 	${MAKE} -C test test_asan
 
 test_cov:
