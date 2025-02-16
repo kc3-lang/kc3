@@ -24,14 +24,14 @@ void kc3_window_cairo_init (void);
    after use. */
 void             window_cairo_clean (s_window_cairo *window);
 s_window_cairo * window_cairo_init (s_window_cairo *window,
-                                    sw x, sw y, uw w, uw h,
+                                    s64 x, s64 y, u64 w, u64 h,
                                     const char *title,
-                                    uw sequence_count);
+                                    u64 sequence_count);
 bool             window_cairo_run (s_window_cairo *window);
 
 /* Callbacks. */
 bool window_cairo_button_default (s_window_cairo *window, u8 button,
-                                  sw x, sw y);
+                                  s64 x, s64 y);
 bool window_cairo_key_default (s_window_cairo *window, u32 keysym);
 bool window_cairo_load_default (s_window_cairo *window);
 bool window_cairo_motion_default (s_window_cairo *window, s64 x, s64 y);

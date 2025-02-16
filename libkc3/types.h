@@ -257,8 +257,8 @@ typedef u64          t_skiplist_height;
 /* function typedefs */
 typedef void (* f_clean) (void *x);
 typedef bool (* f_sequence) (s_sequence *seq);
-typedef bool (* f_sequence_button) (s_sequence *seq, u8 button, sw x,
-                                    sw y);
+typedef bool (* f_sequence_button) (s_sequence *seq, u8 button, s64 x,
+                                    s64 y);
 
 #define CHARACTER_MAX S32_MAX
 #define SKIPLIST_HEIGHT_MAX U64_MAX

@@ -73,13 +73,13 @@ struct cairo_font {
 struct cairo_sprite {
   s_str path;
   s_str real_path;
-  uw total_w;
-  uw total_h;
-  uw dim_x;
-  uw dim_y;
-  uw frame_count;
-  uw w;
-  uw h;
+  u64 total_w;
+  u64 total_h;
+  u64 dim_x;
+  u64 dim_y;
+  u64 frame_count;
+  u64 w;
+  u64 h;
   //ILuint *il_image;
   cairo_surface_t **surface;
 };
@@ -99,10 +99,10 @@ struct rgba {
 
 /* Subtype of s_window. See libkc3/window/types.h */
 struct window_cairo {
-  sw                    x;
-  sw                    y;
-  uw                    w;
-  uw                    h;
+  s64                   x;
+  s64                   y;
+  u64                   w;
+  u64                   h;
   bool                  fullscreen;
   f_window_cairo_button button;
   f_window_cairo_key    key;
@@ -113,8 +113,8 @@ struct window_cairo {
   f_window_cairo_resize resize;
   s_sequence           *seq;
   s_sequence           *sequence;
-  uw                    sequence_count;
-  uw                    sequence_pos;
+  u64                   sequence_count;
+  u64                   sequence_pos;
   s_tag                 tag; // TODO: move sequence to tag
   const char           *title;
   f_window_cairo_unload unload;

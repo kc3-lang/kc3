@@ -261,10 +261,10 @@ struct vec4 {
 
 /* Subtype of s_window. See libkc3/window/types.h */
 struct window_sdl2 {
-  sw                   x;
-  sw                   y;
-  uw                   w;
-  uw                   h;
+  s64                  x;
+  s64                  y;
+  u64                  w;
+  u64                  h;
   bool                 fullscreen;
   f_window_sdl2_button button;
   f_window_sdl2_key    key;
@@ -275,13 +275,13 @@ struct window_sdl2 {
   f_window_sdl2_resize resize;
   s_sequence          *seq;
   s_sequence          *sequence;
-  uw                   sequence_count;
-  uw                   sequence_pos;
+  u64                  sequence_count;
+  u64                  sequence_pos;
   s_tag                tag; // TODO: move sequence to tag
   const char          *title;
   f_window_sdl2_unload unload;
-  uw gl_w;
-  uw gl_h;
+  u64 gl_w;
+  u64 gl_h;
   float dpi;
   float dpi_w;
   float dpi_h;
@@ -292,8 +292,8 @@ struct window_sdl2 {
 
 struct gl_cylinder {
   s_gl_object object;
-  uw segments_u;
-  uw segments_v;
+  u64 segments_u;
+  u64 segments_v;
 };
 
 struct gl_light {
@@ -309,14 +309,14 @@ struct gl_material {
 
 struct gl_sphere {
   s_gl_object object;
-  uw segments_u;
-  uw segments_v;
+  u64 segments_u;
+  u64 segments_v;
 };
 
 struct gl_square {
   s_gl_object object;
-  uw segments_u;
-  uw segments_v;
+  u64 segments_u;
+  u64 segments_v;
 };
 
 struct gl_vertex {
@@ -334,15 +334,15 @@ struct sdl2_sprite {
   s_gl_object object;
   s_str path;
   s_str real_path;
-  uw total_w;
-  uw total_h;
-  uw dim_x;
-  uw dim_y;
-  uw frame_count;
-  uw w;
-  uw h;
-  uw tex_w;
-  uw tex_h;
+  u64 total_w;
+  u64 total_h;
+  u64 dim_x;
+  u64 dim_y;
+  u64 frame_count;
+  u64 w;
+  u64 h;
+  u64 tex_w;
+  u64 tex_h;
   GLuint *texture;
 };
 

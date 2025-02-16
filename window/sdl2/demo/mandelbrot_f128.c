@@ -27,7 +27,7 @@ static GLuint g_mandelbrot_f128_texture = 0;
 static bool mandelbrot_f128_resize (s_sequence *seq);
 static bool mandelbrot_f128_update (s_sequence *seq);
 
-bool mandelbrot_f128_button (s_sequence *seq, u8 button, sw x, sw y)
+bool mandelbrot_f128_button (s_sequence *seq, u8 button, s64 x, s64 y)
 {
   s_map *map;
   f128 *next_x;
