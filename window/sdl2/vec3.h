@@ -28,7 +28,9 @@ s_vec3 * vec3_new_copy (const s_vec3 *src);
 s_vec3 * vec3_new_zero (void);
 
 /* Operators. */
-void vec3_normalize (s_vec3 *p);
+void     vec3_normalize (s_vec3 *p);
+s_vec3 * vec3_interpolate (const s_vec3 *a, const s_vec3 *b, f32 t,
+                           s_vec3 *dest);
 
 /* Observers. */
 f32 vec3_norm (const s_vec3 *p);

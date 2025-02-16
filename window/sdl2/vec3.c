@@ -67,6 +67,15 @@ s_vec3 * vec3_init_zero (s_vec3 *p)
   return p;
 }
 
+s_vec3 * vec3_interpolate (const s_vec3 *a, const s_vec3 *b, f32 t,
+                           s_vec3 *dest)
+{
+  dest->x = (b->x - a->x) * t + a->x;
+  dest->y = (b->y - a->y) * t + a->y;
+  dest->z = (b->z - a->z) * t + a->z;
+  return dest;
+}
+
 void vec3_delete (s_vec3 *p)
 {
   free(p);
