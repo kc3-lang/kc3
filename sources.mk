@@ -1566,6 +1566,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/doc" \
 	"test/httpd/pages" \
 	"test/httpd/pages/index.en.html" \
+	"test/httpd/pages/index.en.html~" \
 	"test/httpd/static" \
 	"test/httpd/static/_assets" \
 	"test/httpd/static/_assets/app.css" \
