@@ -1,17 +1,17 @@
-# C3 v0.1.0
+# KC3 Authors
 
+## KC3 v0.1.13, v0.1.14
+ - Thomas de Grivel (lead)
+ - Baptiste Le Glaunec
+ - Jeremy JEANNE
+
+## KC3 v0.1.12
  - Thomas de Grivel
 
-# 2022 internship
-
+## 2022 internship
+ - Thomas de Grivel (lead)
  - Jean-Cyprien Roux
  - Baptiste Le Glaunec
 
-# KC3 v0.1.12
-
+## C3 v0.1.0
  - Thomas de Grivel
-
-# 2024 internships
-
- - Baptiste Le Glaunec
- - Jeremy JEANNE
