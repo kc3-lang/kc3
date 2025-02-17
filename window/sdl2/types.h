@@ -38,6 +38,7 @@ typedef struct dmat4        s_dmat4;
 typedef struct dvec2        s_dvec2;
 typedef struct dvec3        s_dvec3;
 typedef struct dvec4        s_dvec4;
+typedef struct gl_box       s_gl_box;
 typedef struct gl_camera    s_gl_camera;
 typedef struct gl_cylinder  s_gl_cylinder;
 typedef struct gl_font      s_gl_font;
@@ -289,6 +290,12 @@ struct window_sdl2 {
 };
 
 /* 2 */
+
+struct gl_box {
+  s_gl_object object;
+  u64 segments_u;
+  u64 segments_v;
+};
 
 struct gl_cylinder {
   s_gl_object object;

@@ -65,6 +65,12 @@ demo_cov: cov
 demo_debug: debug
 	${MAKE} -C demo demo_debug
 
+demo_kubz: build
+	${MAKE} -C kubz demo
+
+demo_kubz_debug: debug
+	${MAKE} -C kubz demo_debug
+
 distclean:
 	rm -rf ${DISTCLEANFILES}
 	${MAKE} -C demo distclean
@@ -86,6 +92,9 @@ install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/lib
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
 	${LIBTOOL} --finish ${prefix}/lib
+
+kubz: all
+	${MAKE} -C kubz all
 
 lldb_demo: debug
 	${MAKE} -C demo lldb_demo

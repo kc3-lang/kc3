@@ -4,6 +4,7 @@ HEADERS = \
 	"dmat4.h" \
 	"dvec2.h" \
 	"dvec3.h" \
+	"gl_box.h" \
 	"gl_camera.h" \
 	"gl_cylinder.h" \
 	"gl_deprecated.h" \
@@ -29,6 +30,7 @@ SOURCES = \
 	"dmat4.c" \
 	"dvec2.c" \
 	"dvec3.c" \
+	"gl_box.c" \
 	"gl_camera.c" \
 	"gl_cylinder.c" \
 	"gl_deprecated.c" \
