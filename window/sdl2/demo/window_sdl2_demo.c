@@ -233,6 +233,10 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
 bool window_sdl2_demo_render (s_window_sdl2 *window)
 {
   s_sequence *seq;
+  const s_rgb text_color[2] = {
+    {1.0f, 1.0f, 1.0f},
+    {0.0f, 0.0f, 0.0f}
+  };
   assert(window);
   assert(glGetError() == GL_NO_ERROR);
   if (! window_animate((s_window *) window))
@@ -259,7 +263,7 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   gl_text_update_1(&g_text_seq_title, seq->title);
   mat4_init_identity(&g_ortho.model_matrix);
   gl_ortho_text_render_outline(&g_ortho, &g_text_seq_title,
-                               20.0f, 30.0f);
+                               20.0f, 30.0f, text_color, text_color + 1);
   /* progress bar */
   mat4_init_identity(&g_ortho.model_matrix);
   glDisable(GL_BLEND);
@@ -281,7 +285,8 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   gl_text_update_1(&g_text_fps, fps);
   glEnable(GL_BLEND);
   gl_ortho_text_render_outline(&g_ortho, &g_text_fps,
-                               20, window->h - 30);
+                               20, window->h - 30, text_color,
+                               text_color + 1);
   gl_ortho_render_end(&g_ortho);
   return true;
 }

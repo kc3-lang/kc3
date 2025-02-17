@@ -38,7 +38,9 @@ void         gl_ortho_text_render (s_gl_ortho *ortho,
                                    const s_gl_text *text);
 void         gl_ortho_text_render_outline (s_gl_ortho *ortho,
                                            s_gl_text *text,
-                                           f64 x, f64 y);
+                                           f64 x, f64 y,
+                                           const s_rgb *outline_color,
+                                           const s_rgb *color);
 void         gl_ortho_update_model_matrix (s_gl_ortho *ortho);
 void         gl_ortho_update_view_matrix (s_gl_ortho *ortho);
 void         gl_ortho_vtext_render (s_gl_ortho *ortho,

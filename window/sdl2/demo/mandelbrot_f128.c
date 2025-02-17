@@ -119,6 +119,10 @@ bool mandelbrot_f128_render (s_sequence *seq)
   f128 next_x;
   f128 next_y;
   f128 next_z;
+  const s_rgb text_color[2] = {
+    {1.0f, 1.0f, 1.0f},
+    {0.0f, 0.0f, 0.0f}
+  };
   uw *w;
   s_window_sdl2 *win;
   f128 *x;
@@ -181,7 +185,7 @@ bool mandelbrot_f128_render (s_sequence *seq)
   gl_ortho_bind_texture(&g_ortho, g_mandelbrot_f128_texture);
   gl_ortho_rect(&g_ortho, 0, 0, win->w, win->h);
   gl_ortho_text_render_outline(&g_ortho, &g_mandelbrot_f128_text,
-                               20.0, 66.0);
+                               20.0, 66.0, text_color, text_color + 1);
   return true;
 }
 
