@@ -881,45 +881,13 @@ test: build
 test_asan: asan
 	${MAKE} -C test test_asan
 
-test_cov:
-	${MAKE} -C libtommath cov clean_cov
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 cov clean_cov
-	${MAKE} -C ikc3 cov clean_cov
-	${MAKE} -C kc3s cov clean_cov
-	${MAKE} -C ekc3 cov clean_cov
-	${MAKE} -C event cov clean_cov
-	${MAKE} -C json cov clean_cov
-	${MAKE} -C markdown cov clean_cov
-	${MAKE} -C smtp cov clean_cov
-	${MAKE} -C socket cov clean_cov
-	${MAKE} -C http cov clean_cov
-	${MAKE} -C httpd cov clean_cov
+test_cov: cov
 	${MAKE} -C test test_cov
 
-test_debug:
-	${MAKE} -C libtommath debug
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 debug
-	${MAKE} -C ikc3 debug
-	${MAKE} -C kc3s debug
-	${MAKE} -C ekc3 debug
-	${MAKE} -C event debug
-	${MAKE} -C json debug
-	${MAKE} -C markdown debug
-	${MAKE} -C smtp debug
-	${MAKE} -C socket debug
-	${MAKE} -C http debug
-	${MAKE} -C httpd debug
+test_debug: debug
 	${MAKE} -C test test_debug
 
-test_ekc3:
-	${MAKE} -C libtommath build
-	${MAKE} -C ucd2c
-	${MAKE} -C libkc3 build
-	${MAKE} -C ikc3 build
-	${MAKE} -C kc3s build
-	${MAKE} -C ekc3 build
+test_ekc3: ekc3
 	${MAKE} -C test test_ekc3
 
 test_ekc3_asan:
