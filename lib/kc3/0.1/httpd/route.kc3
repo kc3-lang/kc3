@@ -51,7 +51,8 @@ defmodule HTTPd.Route do
         last_modified = Str.ftime(stat.st_mtim, "%a, %d %b %G %T %Z")
         range = HTTP.Request.header(request, "Range")
         {range_start, range_end} = parse_range(range, stat.st_size)
-        headers = [{"Content-Type", (Str) mime},
+        headers = [{"Content-Disposition", "inline"},
+		   {"Content-Type", (Str) mime},
                    {"Content-Length", (Str) stat.st_size},
                    {"Content-Range", "bytes=#{range_start}-#{range_end}"},
                    {"Last-Modified", last_modified}]
