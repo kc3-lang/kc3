@@ -24,7 +24,8 @@ defmodule File do
     end
   end
 
-  def link = cfn Bool "file_link" (Str, Str, Result)
+  # link(old, new) => success
+  def link = cfn Bool "file_link" (Str, Str)
 
   def list = cfn List "file_list" (Str, Result)
 
@@ -71,6 +72,9 @@ defmodule File do
 
   def read_max = fn (path, max) { read_max_cfn(path, (Uw) max) }
 
-  def unlink = cfn Bool "file_unlink" (Str, Result)
+  # rename(old, new) => success
+  def rename = cfn Bool "file_rename" (Str, Str)
+
+  def unlink = cfn Bool "file_unlink" (Str)
 
 end

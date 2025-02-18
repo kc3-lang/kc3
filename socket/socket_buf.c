@@ -44,6 +44,8 @@ void socket_buf_close (s_socket_buf *sb)
     socket_addr_delete(sb->addr);
 }
 
+#define MAX_UPLOAD_SIZE (128 * 1024 * 1024)
+
 s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
                                 struct sockaddr *addr,
                                 u32 addr_len)
@@ -53,7 +55,7 @@ s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
   assert(sockfd >= 0);
   assert(addr);
   assert(addr_len);
-  if (! buf_rw_init_alloc(&tmp.buf_rw, BUF_SIZE)) {
+  if (! buf_rw_init_alloc(&tmp.buf_rw, MAX_UPLOAD_SIZE + 1024)) {
     err_puts("socket_buf_init: buf_rw_init_alloc");
     assert(! "socket_buf_init: buf_rw_init_alloc");
     return NULL;
