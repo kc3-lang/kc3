@@ -190,6 +190,12 @@ demo_gl_debug: debug
 	${MAKE} -C libkc3 debug
 	${MAKE} -C window demo_gl_debug
 
+demo_kubz: build
+	${MAKE} -C window/sdl2/kubz demo
+
+demo_kubz_debug: debug
+	${MAKE} -C window/sdl2/kubz demo_debug
+
 dist: kc3-${KC3_VERSION}.tar.gz
 
 distclean:
@@ -321,6 +327,9 @@ gdb_fx: httpd_debug
 
 gdb_fx_asan: httpd_asan
 	${MAKE} -C httpd gdb_fx_asan
+
+gdb_kubz: debug
+	${MAKE} -C window/sdl2/kubz demo_debug
 
 gdb_ikc3:
 	${MAKE} -C libtommath debug
