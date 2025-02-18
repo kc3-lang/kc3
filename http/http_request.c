@@ -107,6 +107,9 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     err_inspect_str(&url);
     err_write_1("\n");
   }
+  char *query;
+  query = strchr(url.ptr.pchar, '?');
+  url.size = url.ptr.pchar - query;
   url_unescape(&url, &tmp_req.url);
   str_clean(&url);
   if (false) {
