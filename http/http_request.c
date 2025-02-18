@@ -52,6 +52,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   s_str path_random;
   static s_tag   prefix = {0};
   static s_ident prefix_ident;
+  s_list *           query_split;
+  static const s_str query_separator = {{NULL}, 1, {"?"}};
   sw r;
   static s_tag   random_len = {0};
   static s_ident random_len_ident;
@@ -109,9 +111,6 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     err_inspect_str(&url);
     err_write_1("\n");
   }
-  // ---
-  s_list *           query_split;
-  static const s_str query_separator = {{NULL}, 1, {"?"}};
   if (! str_split(&url, &query_separator, &query_split)) {
     err_puts("http_request_buf_parse: str_split(url, '?')");
     goto restore;
@@ -122,11 +121,8 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     goto restore;
   }
   str_clean(&url);
-  str_init_copy(&url, &query_split->tag.data.str);
+  url_unescape(&query_split->tag.data.str, &tmp_req.url);
   list_delete_all(query_split);
-  // ---
-  url_unescape(&url, &tmp_req.url);
-  str_clean(&url);
   if (false) {
     err_write_1("http_request_buf_parse: url: ");
     err_inspect_str(&tmp_req.url);
@@ -168,7 +164,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     tail = &(*tail)->next.data.list;
   }
   if (content_type && content_length_uw) {
-    if (true) {
+    if (false) {
       err_write_1("http_request_buf_parse: content_type ");
       err_inspect_str(content_type);
       err_write_1("\n");
@@ -189,15 +185,10 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       boundary_tmp = (s_str) {0};
       if (! str_init_concatenate(&boundary_newline, &newline, &boundary))
         goto restore;
-      if (true) {
+      if (false) {
         err_write_1("http_request_buf_parse: boundary ");
         err_inspect_str(&boundary);
         err_write_1("\n");
-        if (false) { // XXX debug
-          buf_xfer(env->err, buf, 100);
-          buf_flush(env->err);
-          goto restore;
-        }
       }
       if (buf_read_str(buf, &boundary) <= 0) {
         err_puts("http_request_buf_parse: invalid first multipart"
@@ -262,15 +253,17 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           } // if (! compare_str_case_insensitive(key, &content_disposition_str))
           tail = &(*tail)->next.data.list;
         }
-        err_write_1("http_request_buf_parse: multipart headers = ");
-        err_inspect_list(multipart_headers);
-        err_write_1("\n");
-        err_write_1("http_request_buf_parse: multipart name = ");
-        err_inspect_str(&multipart_name.data.str);
-        err_write_1("\n");
-        err_write_1("http_request_buf_parse: filename = ");
-        err_inspect_str(&filename.data.str);
-        err_write_1("\n");
+        if (false) {
+          err_write_1("http_request_buf_parse: multipart headers = ");
+          err_inspect_list(multipart_headers);
+          err_write_1("\n");
+          err_write_1("http_request_buf_parse: multipart name = ");
+          err_inspect_str(&multipart_name.data.str);
+          err_write_1("\n");
+          err_write_1("http_request_buf_parse: filename = ");
+          err_inspect_str(&filename.data.str);
+          err_write_1("\n");
+        }
         if (filename.data.str.size) {
           if (! buf_init_alloc(&path_buf, 4096)) {
             err_puts("http_request_buf_parse: buf_init_alloc(path_buf)");
@@ -309,7 +302,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
             goto restore;
           }
           buf_clean(&path_buf);
-          if (true) {
+          if (false) {
             err_write_1("http_request_buf_parse: path = ");
             err_inspect_str(&path.data.str);
             err_write_1("\n");
