@@ -295,6 +295,7 @@ struct gl_box {
   s_gl_object object;
   u32 segments_u;
   u32 segments_v;
+  u32 segments_w;
 };
 
 struct gl_cylinder {

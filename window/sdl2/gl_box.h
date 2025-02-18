@@ -19,11 +19,12 @@
    use. */
 void       gl_box_clean (s_gl_box *box);
 s_gl_box * gl_box_init (s_gl_box *box, u32 segments_u,
-                        u32 segments_v);
+                        u32 segments_v, u32 segments_w);
 
 /* Heap-allocation functions, call gl_box_delete after use. */
 void       gl_box_delete (s_gl_box *box);
-s_gl_box * gl_box_new (u32 segments_u, u32 segments_v);
+s_gl_box * gl_box_new (u32 segments_u, u32 segments_v,
+                       u32 segments_w);
 
 /* Observers. */
 void          gl_box_render (const s_gl_box *box);
