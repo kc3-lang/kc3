@@ -770,6 +770,8 @@ KC3_C_SOURCES = \
 	"window/sdl2/dvec2.h" \
 	"window/sdl2/dvec3.c" \
 	"window/sdl2/dvec3.h" \
+	"window/sdl2/gl_box.c" \
+	"window/sdl2/gl_box.h" \
 	"window/sdl2/gl_camera.c" \
 	"window/sdl2/gl_camera.h" \
 	"window/sdl2/gl_cylinder.c" \
@@ -802,10 +804,18 @@ KC3_C_SOURCES = \
 	"window/sdl2/kubz/console.h" \
 	"window/sdl2/kubz/game.c" \
 	"window/sdl2/kubz/game.h" \
+	"window/sdl2/kubz/help.c" \
+	"window/sdl2/kubz/help.h" \
+	"window/sdl2/kubz/info.c" \
+	"window/sdl2/kubz/info.h" \
 	"window/sdl2/kubz/intro.c" \
 	"window/sdl2/kubz/intro.h" \
 	"window/sdl2/kubz/kubz.c" \
 	"window/sdl2/kubz/kubz.h" \
+	"window/sdl2/kubz/marching_cubes.c" \
+	"window/sdl2/kubz/marching_cubes.h" \
+	"window/sdl2/kubz/menu.c" \
+	"window/sdl2/kubz/menu.h" \
 	"window/sdl2/kubz/types.h" \
 	"window/sdl2/mat3.h" \
 	"window/sdl2/mat4.c" \
@@ -1187,6 +1197,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/file.kc3" \
 	"lib/kc3/0.1/file/stat.kc3" \
 	"lib/kc3/0.1/file_stat.kc3" \
+	"lib/kc3/0.1/gl/box.kc3" \
 	"lib/kc3/0.1/gl/dvec2.kc3" \
 	"lib/kc3/0.1/gl/dvec3.kc3" \
 	"lib/kc3/0.1/gl/object.kc3" \

@@ -266,8 +266,8 @@ typedef bool (* f_sequence_button) (s_sequence *seq, u8 button, s64 x,
 /* 1 */
 
 struct array_dimension {
-  u64 count;
-  u64 item_size;
+  uw count;
+  uw item_size;
 };
 
 struct block {
