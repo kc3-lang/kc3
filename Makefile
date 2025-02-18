@@ -198,6 +198,9 @@ demo_kubz_debug: debug
 
 dist: kc3-${KC3_VERSION}.tar.gz
 
+dist_msys2_clang64: all
+	${MAKE} -C msys2/clang64
+
 distclean:
 	${MAKE} -C libtommath distclean
 	${MAKE} -C ucd2c distclean

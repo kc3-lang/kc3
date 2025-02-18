@@ -29,14 +29,23 @@ ${DEST_TMP}:
 	cp -a /clang64/bin/libdl.dll ${DEST_TMP}/test
 	cp -a /clang64/bin/libmd-0.dll ${DEST_TMP}
 	cp -a /clang64/bin/libmd-0.dll ${DEST_TMP}/test
-	cp -a "${SRC_TOP}"/libkc3/.libs/msys-kc3*-0.dll ${DEST_TMP}
-	cp -a "${SRC_TOP}"/libkc3/.libs/msys-kc3*-0.dll ${DEST_TMP}/test
-	cp -a "${SRC_TOP}"/window/.libs/msys-kc3_window*-0.dll ${DEST_TMP}
-	cp -a "${SRC_TOP}"/window/cairo/.libs/msys-kc3_window_cairo*-0.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/libkc3/.libs/libkc3*-0.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/libkc3/.libs/libkc3*-0.dll ${DEST_TMP}/test
+	cp -a "${SRC_TOP}"/window/.libs/libkc3_window*-0.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/window/cairo/.libs/libkc3_window_cairo*-0.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/window/cairo/demo/.libs/libkc3_window_cairo_demo*-0.dll ${DEST_TMP}
+	cp -a "${SRC_TOP}"/window/cairo/win32/.libs/libkc3_window_cairo_win32*-0.dll ${DEST_TMP}
 #	cp -a /clang64/bin/libgcc_s_seh-1.dll ${DEST_TMP}
 	cp -a /clang64/bin/libcairo-2.dll ${DEST_TMP}
 #	cp -a "${SRC_TOP}/window/cairo/win32/.libs/libkc3_window_cairo_win32*-0.dll" ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/cairo/win32/demo/.libs/kc3_window_cairo_win32_demo.exe" ${DEST_TMP}
+	cp -a "${SRC_TOP}/window/cairo/win32/demo/.libs/kc3_window_cairo_win32_demo_debug.exe" ${DEST_TMP}
+	cp -a "${SRC_TOP}/window/sdl2/demo/.libs/kc3_window_sdl2_demo.exe" ${DEST_TMP}
+	cp -a "${SRC_TOP}/window/sdl2/demo/.libs/kc3_window_sdl2_demo_debug.exe" ${DEST_TMP}
+	cp -a "${SRC_TOP}/window/sdl2/kubz/.libs/kubz.exe" ${DEST_TMP}
+	cp -a "${SRC_TOP}/window/sdl2/kubz/.libs/kubz_debug.exe" ${DEST_TMP}
+	cp -a /clang64/bin/glew32.dll ${DEST_TMP}
+	cp -a /clang64/bin/SDL2.dll ${DEST_TMP}
 	cp -a /clang64/bin/libxkbcommon-0.dll ${DEST_TMP}
 	cp -a /clang64/bin/libwinpthread-1.dll ${DEST_TMP}
 #	cp -a /clang64/bin/libstdc++-6.dll ${DEST_TMP}
@@ -55,7 +64,12 @@ ${DEST_TMP}:
 	cp -a /clang64/bin/libglib-2.0-0.dll ${DEST_TMP}
 	cp -a /clang64/bin/libgraphite2.dll ${DEST_TMP}
 	cp -a /clang64/bin/libpcre2-8-0.dll ${DEST_TMP}
-	cp -a "${SRC_TOP}"/lib ${DEST_TMP}/
+	cp -a /clang64/bin/libc++.dll ${DEST_TMP}
+	cp -a /clang64/bin/libffi-8.dll ${DEST_TMP}
+	mkdir -p ${DEST_TMP}/fonts
+	cp -RL "${SRC_TOP}"/fonts/Courier\ New ${DEST_TMP}/fonts/
+	cp -RL "${SRC_TOP}"/fonts/Noto\ Sans ${DEST_TMP}/fonts/
+	cp -RL "${SRC_TOP}"/lib ${DEST_TMP}/
 	cp -a "${SRC_TOP}"/kc3s/.libs/kc3s*.exe ${DEST_TMP}
 	cp -a "${SRC_TOP}"/ikc3/.libs/ikc3*.exe ${DEST_TMP}
 	cp -a "${SRC_TOP}"/test/.libs/libkc3*.exe ${DEST_TMP}/test

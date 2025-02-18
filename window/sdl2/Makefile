@@ -41,17 +41,17 @@ clean:
 
 clean_cov:
 	${MAKE} -C demo clean_cov
-	${MAKE} -C demo clean_cov
+	${MAKE} -C kubz clean_cov
 
 cov:
 	${MAKE} ${LIB_COV}
 	${MAKE} -C demo cov
-	${MAKE} -C demo cov
+	${MAKE} -C kubz cov
 
 debug:
 	${MAKE} ${LIB_DEBUG}
 	${MAKE} -C demo debug
-	${MAKE} -C demo debug
+	${MAKE} -C kubz debug
 
 demo: build
 	${MAKE} -C demo demo
@@ -74,11 +74,11 @@ demo_kubz_debug: debug
 distclean:
 	rm -rf ${DISTCLEANFILES}
 	${MAKE} -C demo distclean
-	${MAKE} -C demo distclean
+	${MAKE} -C kubz distclean
 
 gcovr:
 	${MAKE} -C demo gcovr
-	${MAKE} -C demo gcovr
+	${MAKE} -C kubz gcovr
 
 gdb_demo: debug
 	${MAKE} -C demo gdb_demo
