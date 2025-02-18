@@ -52,7 +52,7 @@ defmodule HTTPd.Route do
         range = HTTP.Request.header(request, "Range")
         {range_start, range_end} = parse_range(range, stat.st_size)
         headers = [{"Content-Disposition", "inline"},
-		   {"Content-Type", (Str) mime},
+                   {"Content-Type", (Str) mime},
                    {"Content-Length", (Str) stat.st_size},
                    {"Content-Range", "bytes=#{range_start}-#{range_end}"},
                    {"Last-Modified", last_modified}]
