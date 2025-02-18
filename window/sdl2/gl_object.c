@@ -15,8 +15,8 @@
 #include "gl_object.h"
 #include "gl_vertex.h"
 
-s_gl_object * gl_object_allocate (s_gl_object *object, u64 vertex_count,
-                                  u64 triangle_count)
+s_gl_object * gl_object_allocate (s_gl_object *object, uw vertex_count,
+                                  uw triangle_count)
 {
   assert(object);
   assert(vertex_count);

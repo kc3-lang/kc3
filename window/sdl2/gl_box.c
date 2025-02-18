@@ -33,8 +33,7 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
   u32 i;
   u32 j;
   u32 k;
-  f32 t;
-  u32 v;
+  u32 plane;
   s_gl_vertex *vertex;
   s_gl_box tmp = {0};
   s_gl_triangle *triangle;
@@ -59,7 +58,6 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
     return NULL;
   vertex = tmp.object.vertex.data;
   k = 0;
-  t = -0.5;
   while (k < 2) {
     j = 0;
     while (j < seg_v + 1) {
@@ -67,10 +65,10 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
       while (i < seg_u + 1) {
         vertex->pos_x = (f32) i / seg_u - 0.5f;
         vertex->pos_y = (f32) j / seg_v - 0.5f;
-        vertex->pos_z = t;
+        vertex->pos_z = k - 0.5f;;
         vertex->normal_x = 0.0f;
         vertex->normal_y = 0.0f;
-        vertex->normal_z = t * 2.0f;
+        vertex->normal_z = k * 2 - 1;
         vertex->tex_coord_x = (f32) i / seg_u;
         vertex->tex_coord_y = (f32) j / seg_v;
         vertex++;
@@ -78,20 +76,18 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
       }
       j++;
     }
-    t += 1.0f;
     k++;
   }
   k = 0;
-  t = -0.5f;
   while (k < 2) {
     j = 0;
     while (j < seg_w + 1) {
       i = 0;
       while (i < seg_v + 1) {
-        vertex->pos_x = k;
+        vertex->pos_x = k - 0.5f;
         vertex->pos_y = (f32) i / seg_v - 0.5f;
         vertex->pos_z = (f32) j / seg_w - 0.5f;
-        vertex->normal_x = k * 2.0f;
+        vertex->normal_x = k * 2 - 1;
         vertex->normal_y = 0.0f;
         vertex->normal_z = 0.0f;
         vertex->tex_coord_x = (f32) i / seg_v;
@@ -101,21 +97,19 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
       }
       j++;
     }
-    t += 1.0f;
     k++;
   }
   k = 0;
-  t = -0.5f;
   while (k < 2) {
     j = 0;
     while (j < seg_u + 1) {
       i = 0;
       while (i < seg_w + 1) {
         vertex->pos_x = (f32) j / seg_u - 0.5f;
-        vertex->pos_y = k;
+        vertex->pos_y = k - 0.5f;
         vertex->pos_z = (f32) i / seg_w - 0.5f;
         vertex->normal_x = 0.0f;
-        vertex->normal_y = k * 2.0f;
+        vertex->normal_y = k * 2 - 1;
         vertex->normal_z = 0.0f;
         vertex->tex_coord_x = (f32) i / seg_w;
         vertex->tex_coord_y = (f32) j / seg_u;
@@ -126,7 +120,7 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
     }
     k++;
   }
-  v = 0;
+  plane = 0;
   triangle = tmp.object.triangle.data;
   k = 0;
   while (k < 2) {
@@ -134,19 +128,19 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
     while (j < seg_v) {
       i = 0;
       while (i < seg_u) {
-        triangle->a = v +  i      * (seg_u + 1) + j;
-        triangle->b = v + (i + 1) * (seg_u + 1) + j;
-        triangle->c = v + (i + 1) * (seg_u + 1) + j + 1;
+        triangle->a = plane +  j      * (seg_u + 1) + i;
+        triangle->b = plane +  j      * (seg_u + 1) + i + 1;
+        triangle->c = plane + (j + 1) * (seg_u + 1) + i + 1;
         triangle++;
-        triangle->a = v +  i      * (seg_u + 1) + j;
-        triangle->b = v + (i + 1) * (seg_u + 1) + j + 1;
-        triangle->c = v +  i      * (seg_u + 1) + j + 1;
+        triangle->a = plane +  j      * (seg_u + 1) + i;
+        triangle->b = plane + (j + 1) * (seg_u + 1) + i + 1;
+        triangle->c = plane + (j + 1) * (seg_u + 1) + i;
         triangle++;
         i++;
       }
       j++;
     }
-    v += (seg_u + 1) * (seg_v + 1);
+    plane += (seg_u + 1) * (seg_v + 1);
     k++;
   }
   k = 0;
@@ -155,19 +149,19 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
     while (j < seg_w) {
       i = 0;
       while (i < seg_v) {
-        triangle->a = v +  i      * (seg_v + 1) + j;
-        triangle->b = v + (i + 1) * (seg_v + 1) + j;
-        triangle->c = v + (i + 1) * (seg_v + 1) + j + 1;
+        triangle->a = plane +  j      * (seg_v + 1) + i;
+        triangle->b = plane +  j      * (seg_v + 1) + i + 1;
+        triangle->c = plane + (j + 1) * (seg_v + 1) + i + 1;
         triangle++;
-        triangle->a = v +  i      * (seg_v + 1) + j;
-        triangle->b = v + (i + 1) * (seg_v + 1) + j + 1;
-        triangle->c = v +  i      * (seg_v + 1) + j + 1;
+        triangle->a = plane +  j      * (seg_v + 1) + i;
+        triangle->b = plane + (j + 1) * (seg_v + 1) + i + 1;
+        triangle->c = plane + (j + 1) * (seg_v + 1) + i;
         triangle++;
         i++;
       }
       j++;
     }
-    v += (seg_v + 1) * (seg_w + 1);
+    plane += (seg_v + 1) * (seg_w + 1);
     k++;
   }
   k = 0;
@@ -176,19 +170,19 @@ s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v, u32 seg_w)
     while (j < seg_u) {
       i = 0;
       while (i < seg_w) {
-        triangle->a = v +  i      * (seg_w + 1) + j;
-        triangle->b = v + (i + 1) * (seg_w + 1) + j;
-        triangle->c = v + (i + 1) * (seg_w + 1) + j + 1;
+        triangle->a = plane +  j      * (seg_w + 1) + i;
+        triangle->b = plane +  j      * (seg_w + 1) + i + 1;
+        triangle->c = plane + (j + 1) * (seg_w + 1) + i + 1;
         triangle++;
-        triangle->a = v +  i      * (seg_w + 1) + j;
-        triangle->b = v + (i + 1) * (seg_w + 1) + j + 1;
-        triangle->c = v +  i      * (seg_w + 1) + j + 1;
+        triangle->a = plane +  j      * (seg_w + 1) + i;
+        triangle->b = plane + (j + 1) * (seg_w + 1) + i + 1;
+        triangle->c = plane + (j + 1) * (seg_w + 1) + i;
         triangle++;
         i++;
       }
       j++;
     }
-    v += (seg_w + 1) * (seg_u + 1);
+    plane += (seg_w + 1) * (seg_u + 1);
     k++;
   }
   *box = tmp;

@@ -16,7 +16,7 @@
 
 s_gl_lines * gl_lines_allocate (s_gl_lines *lines, u32 lines_count)
 {
-  u64 vertex_count;
+  uw vertex_count;
   assert(lines);
   assert(lines_count);
   vertex_count = lines_count * 2;

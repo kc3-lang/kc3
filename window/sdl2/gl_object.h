@@ -25,8 +25,8 @@ void          gl_object_delete (s_gl_object *object);
 s_gl_object * gl_object_new (void);
 
 /* Operators. */
-s_gl_object * gl_object_allocate (s_gl_object *object, u64 vertex_count,
-                                  u64 index_count);
+s_gl_object * gl_object_allocate (s_gl_object *object, uw vertex_count,
+                                  uw index_count);
 void          gl_object_transform (s_gl_object *object,
                                    const s_mat4 *matrix);
 bool          gl_object_update (s_gl_object *object);
