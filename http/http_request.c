@@ -98,7 +98,9 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     err_inspect_tag(&tmp_req.method);
     err_write_1("\n");
   }
-  if (! buf_read_until_1_into_str(buf, " ", &url)) {
+  if (! buf_read_until_1_into_str(buf, " ", &url) ||
+      url.size < 1 ||
+      url.ptr.pchar[0] != '/') {
     err_puts("http_request_buf_parse: invalid URL");
     goto restore;
   }
@@ -107,9 +109,22 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     err_inspect_str(&url);
     err_write_1("\n");
   }
-  char *query;
-  query = strchr(url.ptr.pchar, '?');
-  url.size = url.ptr.pchar - query;
+  // ---
+  s_list *           query_split;
+  static const s_str query_separator = {{NULL}, 1, {"?"}};
+  if (! str_split(&url, &query_separator, &query_split)) {
+    err_puts("http_request_buf_parse: str_split(url, '?')");
+    goto restore;
+  }
+  if (query_split->tag.type != TAG_STR) {
+    err_puts("http_request_buf_parse: query_split first tag is"
+	     " not a Str");
+    goto restore;
+  }
+  str_clean(&url);
+  str_init_copy(&url, &query_split->tag.data.str);
+  list_delete_all(query_split);
+  // ---
   url_unescape(&url, &tmp_req.url);
   str_clean(&url);
   if (false) {
