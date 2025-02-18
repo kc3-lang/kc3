@@ -22,11 +22,11 @@ void gl_cylinder_clean (s_gl_cylinder *cylinder)
 }
 
 s_gl_cylinder * gl_cylinder_init (s_gl_cylinder *cylinder,
-                                  uw segments_u, uw segments_v)
+                                  u32 segments_u, u32 segments_v)
 {
   f64 angle;
-  uw i;
-  uw j;
+  u32 i;
+  u32 j;
   s_vec3 *p;
   f64 z;
   assert(cylinder);

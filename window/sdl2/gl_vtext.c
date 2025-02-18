@@ -109,25 +109,25 @@ bool gl_vtext_render_to_texture (s_gl_text *text)
 {
   character c;
   u8 *data;
-  uw  data_w;
-  uw  data_h;
+  u32  data_w;
+  u32  data_h;
   u8 *data_pixel;
-  uw  data_size;
-  uw  data_x;
-  uw  data_y;
+  u32  data_size;
+  u32  data_x;
+  u32  data_y;
   FT_Face face;
   const s_gl_font *font;
   FT_GlyphSlot glyph;
   FT_UInt glyph_index;
-  uw i;
-  uw j;
-  uw line_height;
-  uw max_ascent;
-  uw max_descent;
+  u32 i;
+  u32 j;
+  u32 line_height;
+  u32 max_ascent;
+  u32 max_descent;
   s_str s;
   f32 scale_y;
-  uw x;
-  uw y;
+  u32 x;
+  u32 y;
   assert(text);
   assert(text->font);
   assert(text->texture);
@@ -206,7 +206,7 @@ bool gl_vtext_render_to_texture (s_gl_text *text)
   return true;
 }
 
-bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
+bool gl_vtext_render_to_texture_random (s_gl_text *text, u32 len)
 {
   FT_UInt *glyphs;
   u8 *data;
@@ -221,8 +221,8 @@ bool gl_vtext_render_to_texture_random (s_gl_text *text, uw len)
   FT_GlyphSlot glyph;
   FT_UInt glyph_index;
   sw i;
-  uw j;
-  uw k;
+  u32 j;
+  u32 k;
   sw line_height;
   sw max_ascent;
   sw max_descent;

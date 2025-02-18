@@ -29,10 +29,10 @@ void gl_square_delete (s_gl_square *square)
   free(square);
 }
 
-s_gl_square * gl_square_init (s_gl_square *square, uw seg_u, uw seg_v)
+s_gl_square * gl_square_init (s_gl_square *square, u32 seg_u, u32 seg_v)
 {
-  uw i;
-  uw j;
+  u32 i;
+  u32 j;
   s_gl_square tmp = {0};
   s_gl_triangle *triangle;
   s_gl_vertex *vertex;
@@ -87,7 +87,7 @@ s_gl_square * gl_square_init (s_gl_square *square, uw seg_u, uw seg_v)
   return square;
 }
 
-s_gl_square * gl_square_new (uw segments_u, uw segments_v)
+s_gl_square * gl_square_new (u32 segments_u, u32 segments_v)
 {
   s_gl_square *square;
   square = calloc(1, sizeof(s_gl_square));

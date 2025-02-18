@@ -23,7 +23,7 @@ void            window_sdl2_clean (s_window_sdl2 *window);
 s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
                                   s64 x, s64 y, u64 w, u64 h,
                                   const char *title,
-                                  uw sequence_count);
+                                  u32 sequence_count);
 
 /* Operators. */
 bool             window_sdl2_run (s_window_sdl2 *window);

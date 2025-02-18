@@ -134,7 +134,7 @@ void window_sdl2_default_unload_cb (s_window_sdl2 *window)
 s_window_sdl2 * window_sdl2_init (s_window_sdl2 *window,
                                   s64 x, s64 y, u64 w, u64 h,
                                   const char *title,
-                                  uw sequence_count)
+                                  u32 sequence_count)
 {
   s_window_sdl2 tmp = {0};
   assert(window);

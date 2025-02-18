@@ -28,9 +28,9 @@ s_gl_sprite g_sprite_earth = {0};
 
 bool earth_load (s_sequence *seq)
 {
+  s_gl_camera *camera;
   s_map *map;
   s_mat4 matrix;
-  s_gl_camera *camera;
   s_gl_sphere *sphere;
   const f32    sphere_radius = 5.0;
   s_window_sdl2 *window;

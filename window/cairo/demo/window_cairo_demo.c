@@ -87,7 +87,7 @@ bool window_cairo_demo_load (s_window_cairo *window)
   assert(window);
   if (window->sequence_count != WINDOW_CAIRO_DEMO_SEQUENCE_COUNT) {
     err_write_1("window_cairo_demo_load: window->sequence_count = ");
-    err_inspect_u64(&window->sequence_count);
+    err_inspect_u32(&window->sequence_count);
     err_write_1("\n");
     assert(window->sequence_count == WINDOW_CAIRO_DEMO_SEQUENCE_COUNT);
     return false;

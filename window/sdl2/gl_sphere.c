@@ -28,12 +28,12 @@ void gl_sphere_delete (s_gl_sphere *sphere)
   free(sphere);
 }
 
-s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw seg_u, uw seg_v)
+s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, u32 seg_u, u32 seg_v)
 {
   f64 angle_i;
   f64 angle_j;
-  uw i;
-  uw j;
+  u32 i;
+  u32 j;
   s_gl_vertex *vertex;
   f64 r;
   s_gl_sphere tmp = {0};
@@ -93,7 +93,7 @@ s_gl_sphere * gl_sphere_init (s_gl_sphere *sphere, uw seg_u, uw seg_v)
   return sphere;
 }
 
-s_gl_sphere * gl_sphere_new (uw segments_u, uw segments_v)
+s_gl_sphere * gl_sphere_new (u32 segments_u, u32 segments_v)
 {
   s_gl_sphere *sphere;
   sphere = calloc(1, sizeof(s_gl_sphere));
@@ -117,11 +117,11 @@ void gl_sphere_render (const s_gl_sphere *sphere)
 /*
 void gl_sphere_render_wireframe (const s_gl_sphere *sphere)
 {
-  uw i;
-  uw j;
+  u32 i;
+  u32 j;
   s_gl_3d *p[3];
-  uw seg_u;
-  uw seg_v;
+  u32 seg_u;
+  u32 seg_v;
   assert(sphere);
   seg_u = sphere->segments_u;
   seg_v = sphere->segments_v;

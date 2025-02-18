@@ -16,7 +16,7 @@
 #include "types.h"
 
 s_gl_cylinder * gl_cylinder_init (s_gl_cylinder *cylinder,
-                                  uw segments_u, uw segments_v);
+                                  u32 segments_u, u32 segments_v);
 void            gl_cylinder_render (const s_gl_cylinder *cylinder);
 
 #endif /* GL_CYLINDER_H */

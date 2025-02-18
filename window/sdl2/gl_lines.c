@@ -14,9 +14,9 @@
 #include "gl_lines.h"
 #include "gl_vertex.h"
 
-s_gl_lines * gl_lines_allocate (s_gl_lines *lines, uw lines_count)
+s_gl_lines * gl_lines_allocate (s_gl_lines *lines, u32 lines_count)
 {
-  uw vertex_count;
+  u64 vertex_count;
   assert(lines);
   assert(lines_count);
   vertex_count = lines_count * 2;
@@ -46,7 +46,7 @@ s_gl_lines * gl_lines_init (s_gl_lines *lines)
   return lines;
 }
 
-void gl_lines_render (const s_gl_lines *lines, uw lines_count)
+void gl_lines_render (const s_gl_lines *lines, u32 lines_count)
 {
   assert(lines);
   if (lines_count > lines->vertex.count / 2)
@@ -60,7 +60,7 @@ void gl_lines_render (const s_gl_lines *lines, uw lines_count)
   assert(glGetError() == GL_NO_ERROR);
 }
 
-bool gl_lines_update (s_gl_lines *lines, uw lines_count)
+bool gl_lines_update (s_gl_lines *lines, u32 lines_count)
 {
   //GLenum gl_error;
   assert(lines);

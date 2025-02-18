@@ -15,8 +15,8 @@
 #include "gl_object.h"
 #include "gl_vertex.h"
 
-s_gl_object * gl_object_allocate (s_gl_object *object, uw vertex_count,
-                                  uw triangle_count)
+s_gl_object * gl_object_allocate (s_gl_object *object, u64 vertex_count,
+                                  u64 triangle_count)
 {
   assert(object);
   assert(vertex_count);
@@ -101,7 +101,7 @@ void gl_object_render_wireframe (const s_gl_object *object)
 
 void gl_object_transform (s_gl_object *object, const s_mat4 *matrix)
 {
-  uw i;
+  u32 i;
   s_gl_vertex *vertex;
   assert(object);
   assert(matrix);

@@ -276,8 +276,8 @@ struct window_sdl2 {
   f_window_sdl2_resize resize;
   s_sequence          *seq;
   s_sequence          *sequence;
-  u64                  sequence_count;
-  u64                  sequence_pos;
+  u32                  sequence_count;
+  u32                  sequence_pos;
   s_tag                tag; // TODO: move sequence to tag
   const char          *title;
   f_window_sdl2_unload unload;
@@ -293,14 +293,14 @@ struct window_sdl2 {
 
 struct gl_box {
   s_gl_object object;
-  u64 segments_u;
-  u64 segments_v;
+  u32 segments_u;
+  u32 segments_v;
 };
 
 struct gl_cylinder {
   s_gl_object object;
-  u64 segments_u;
-  u64 segments_v;
+  u32 segments_u;
+  u32 segments_v;
 };
 
 struct gl_light {
@@ -316,14 +316,14 @@ struct gl_material {
 
 struct gl_sphere {
   s_gl_object object;
-  u64 segments_u;
-  u64 segments_v;
+  u32 segments_u;
+  u32 segments_v;
 };
 
 struct gl_square {
   s_gl_object object;
-  u64 segments_u;
-  u64 segments_v;
+  u32 segments_u;
+  u32 segments_v;
 };
 
 struct gl_vertex {

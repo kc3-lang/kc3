@@ -25,12 +25,12 @@ void         gl_lines_delete (s_gl_lines *lines);
 s_gl_lines * gl_lines_new (void);
 
 /* Operators. */
-s_gl_lines * gl_lines_allocate (s_gl_lines *lines, uw lines_count);
-bool         gl_lines_update (s_gl_lines *lines, uw lines_count);
+s_gl_lines * gl_lines_allocate (s_gl_lines *lines, u32 lines_count);
+bool         gl_lines_update (s_gl_lines *lines, u32 lines_count);
 
 /* Observers. */
-void         gl_lines_render (const s_gl_lines *lines, uw lines_count);
+void         gl_lines_render (const s_gl_lines *lines, u32 lines_count);
 void         gl_lines_render_wireframe (const s_gl_lines *lines,
-                                        uw lines_count);
+                                        u32 lines_count);
 
 #endif /* GL_LINES_H */

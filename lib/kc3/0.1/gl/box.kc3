@@ -1,0 +1,10 @@
+defmodule GL.Box do
+
+  defstruct [object: %GL.Object{},
+             segments_u: (U32) 1,
+             segments_v: (U32) 1,
+             segments_w: (U32) 1]
+
+  def clean = cfn Void "gl_box_clean" (GL.Box)
+
+end

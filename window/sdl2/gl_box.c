@@ -28,12 +28,12 @@ void gl_box_delete (s_gl_box *box)
   free(box);
 }
 
-s_gl_box * gl_box_init (s_gl_box *box, uw seg_u, uw seg_v)
+s_gl_box * gl_box_init (s_gl_box *box, u32 seg_u, u32 seg_v)
 {
   f64 angle_i;
   f64 angle_j;
-  uw i;
-  uw j;
+  u32 i;
+  u32 j;
   s_gl_vertex *vertex;
   f64 r;
   s_gl_box tmp = {0};
@@ -93,7 +93,7 @@ s_gl_box * gl_box_init (s_gl_box *box, uw seg_u, uw seg_v)
   return box;
 }
 
-s_gl_box * gl_box_new (uw segments_u, uw segments_v)
+s_gl_box * gl_box_new (u32 segments_u, u32 segments_v)
 {
   s_gl_box *box;
   box = calloc(1, sizeof(s_gl_box));
@@ -117,11 +117,11 @@ void gl_box_render (const s_gl_box *box)
 /*
 void gl_box_render_wireframe (const s_gl_box *box)
 {
-  uw i;
-  uw j;
+  u32 i;
+  u32 j;
   s_gl_3d *p[3];
-  uw seg_u;
-  uw seg_v;
+  u32 seg_u;
+  u32 seg_v;
   assert(box);
   seg_u = box->segments_u;
   seg_v = box->segments_v;

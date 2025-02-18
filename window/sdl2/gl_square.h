@@ -18,12 +18,12 @@
 /* Stack-allocation compatible functions, call gl_square_clean after
    use. */
 void          gl_square_clean (s_gl_square *square);
-s_gl_square * gl_square_init (s_gl_square *square, uw segments_u,
-                              uw segments_v);
+s_gl_square * gl_square_init (s_gl_square *square, u32 segments_u,
+                              u32 segments_v);
 
 /* Heap-allocation functions, call gl_square_delete after use. */
 void          gl_square_delete (s_gl_square *square);
-s_gl_square * gl_square_new (uw segments_u, uw segments_v);
+s_gl_square * gl_square_new (u32 segments_u, u32 segments_v);
 
 /* Observers. */
 void          gl_square_render (const s_gl_square *square);

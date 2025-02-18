@@ -61,8 +61,8 @@ struct window {
   f_window_resize resize;
   s_sequence     *seq;
   s_sequence     *sequence;
-  u64             sequence_count;
-  u64             sequence_pos;
+  u32             sequence_count;
+  u32             sequence_pos;
   s_tag           tag; // TODO: move sequence to tag
   const char     *title;
   f_window_unload unload;

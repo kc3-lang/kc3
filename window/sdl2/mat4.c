@@ -60,6 +60,11 @@ sw mat4_buf_inspect (s_buf *buf, const s_mat4 *matrix)
   return result;
 }
 
+void mat4_delete (s_mat4 *m)
+{
+  free(m);
+}
+
 s_mat4 * mat4_init_copy (s_mat4 *m, const s_mat4 *src)
 {
   assert(m);
@@ -145,9 +150,40 @@ s_mat4 * mat4_init_zero (s_mat4 *m)
   return m;
 }
 
-void mat4_delete (s_mat4 *m)
+s_mat4 * mat4_mult_mat4 (const s_mat4 *a, const s_mat4 *b, s_mat4 *dest)
 {
-  free(m);
+  s_mat4 m;
+  assert(a);
+  assert(b);
+  m.xx = a->xx * b->xx + a->xy * b->yx + a->xz * b->zx + a->xt * b->tx;
+  m.xy = a->xx * b->xy + a->xy * b->yy + a->xz * b->zy + a->xt * b->ty;
+  m.xz = a->xx * b->xz + a->xy * b->yz + a->xz * b->zz + a->xt * b->tz;
+  m.xt = a->xx * b->xt + a->xy * b->yt + a->xz * b->zt + a->xt * b->tt;
+  m.yx = a->yx * b->xx + a->yy * b->yx + a->yz * b->zx + a->yt * b->tx;
+  m.yy = a->yx * b->xy + a->yy * b->yy + a->yz * b->zy + a->yt * b->ty;
+  m.yz = a->yx * b->xz + a->yy * b->yz + a->yz * b->zz + a->yt * b->tz;
+  m.yt = a->yx * b->xt + a->yy * b->yt + a->yz * b->zt + a->yt * b->tt;
+  m.zx = a->zx * b->xx + a->zy * b->yx + a->zz * b->zx + a->zt * b->tx;
+  m.zy = a->zx * b->xy + a->zy * b->yy + a->zz * b->zy + a->zt * b->ty;
+  m.zz = a->zx * b->xz + a->zy * b->yz + a->zz * b->zz + a->zt * b->tz;
+  m.zt = a->zx * b->xt + a->zy * b->yt + a->zz * b->zt + a->zt * b->tt;
+  m.tx = a->tx * b->xx + a->ty * b->yx + a->tz * b->zx + a->tt * b->tx;
+  m.ty = a->tx * b->xy + a->ty * b->yy + a->tz * b->zy + a->tt * b->ty;
+  m.tz = a->tx * b->xz + a->ty * b->yz + a->tz * b->zz + a->tt * b->tz;
+  m.tt = a->tx * b->xt + a->ty * b->yt + a->tz * b->zt + a->tt * b->tt;
+  *dest = m;
+  return dest;
+}
+
+s_vec3 * mat4_mult_vec3 (const s_mat4 *a, const s_vec3 *b, s_vec3 *dest)
+{
+  assert(a);
+  assert(b);
+  assert(dest);
+  dest->x = a->xx * b->x + a->xy * b->y + a->xz * b->z + a->xt;
+  dest->y = a->yx * b->x + a->yy * b->y + a->yz * b->z + a->yt;
+  dest->z = a->zx * b->x + a->zy * b->y + a->zz * b->z + a->zt;
+  return dest;
 }
 
 s_mat4 * mat4_new_copy (const s_mat4 *src)
@@ -216,31 +252,6 @@ s_mat4 * mat4_perspective (s_mat4 *m, f32 fov_y,
   perspective.zt = -1.0;
   perspective.tz = 2.0 * z_near * z_far / dz;
   return mat4_mult_mat4(&perspective, m, m);
-}
-
-s_mat4 * mat4_mult_mat4 (const s_mat4 *a, const s_mat4 *b, s_mat4 *dest)
-{
-  s_mat4 m;
-  assert(a);
-  assert(b);
-  m.xx = a->xx * b->xx + a->xy * b->yx + a->xz * b->zx + a->xt * b->tx;
-  m.xy = a->xx * b->xy + a->xy * b->yy + a->xz * b->zy + a->xt * b->ty;
-  m.xz = a->xx * b->xz + a->xy * b->yz + a->xz * b->zz + a->xt * b->tz;
-  m.xt = a->xx * b->xt + a->xy * b->yt + a->xz * b->zt + a->xt * b->tt;
-  m.yx = a->yx * b->xx + a->yy * b->yx + a->yz * b->zx + a->yt * b->tx;
-  m.yy = a->yx * b->xy + a->yy * b->yy + a->yz * b->zy + a->yt * b->ty;
-  m.yz = a->yx * b->xz + a->yy * b->yz + a->yz * b->zz + a->yt * b->tz;
-  m.yt = a->yx * b->xt + a->yy * b->yt + a->yz * b->zt + a->yt * b->tt;
-  m.zx = a->zx * b->xx + a->zy * b->yx + a->zz * b->zx + a->zt * b->tx;
-  m.zy = a->zx * b->xy + a->zy * b->yy + a->zz * b->zy + a->zt * b->ty;
-  m.zz = a->zx * b->xz + a->zy * b->yz + a->zz * b->zz + a->zt * b->tz;
-  m.zt = a->zx * b->xt + a->zy * b->yt + a->zz * b->zt + a->zt * b->tt;
-  m.tx = a->tx * b->xx + a->ty * b->yx + a->tz * b->zx + a->tt * b->tx;
-  m.ty = a->tx * b->xy + a->ty * b->yy + a->tz * b->zy + a->tt * b->ty;
-  m.tz = a->tx * b->xz + a->ty * b->yz + a->tz * b->zz + a->tt * b->tz;
-  m.tt = a->tx * b->xt + a->ty * b->yt + a->tz * b->zt + a->tt * b->tt;
-  *dest = m;
-  return dest;
 }
 
 s_mat4 * mat4_scale (s_mat4 *m, f32 x, f32 y, f32 z)

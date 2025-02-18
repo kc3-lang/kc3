@@ -47,17 +47,6 @@ s_vec3 * vec3_init_normalize (s_vec3 *p, const s_vec3 *src)
   return p;
 }
 
-s_vec3 * mat4_mult_vec3 (const s_mat4 *a, const s_vec3 *b, s_vec3 *dest)
-{
-  assert(a);
-  assert(b);
-  assert(dest);
-  dest->x = a->xx * b->x + a->xy * b->y + a->xz * b->z + a->xt;
-  dest->y = a->yx * b->x + a->yy * b->y + a->yz * b->z + a->yt;
-  dest->z = a->zx * b->x + a->zy * b->y + a->zz * b->z + a->zt;
-  return dest;
-}
-
 s_vec3 * vec3_init_zero (s_vec3 *p)
 {
   assert(p);

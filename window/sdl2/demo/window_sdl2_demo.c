@@ -165,7 +165,7 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
   err_write_1("\n");
   if (window->sequence_count != WINDOW_SDL2_DEMO_SEQUENCE_COUNT) {
     err_write_1("window_sdl2_demo_load: window->sequence_count = ");
-    err_inspect_u64_decimal(&window->sequence_count);
+    err_inspect_u32_decimal(&window->sequence_count);
     err_write_1("\n");
     assert(window->sequence_count == WINDOW_SDL2_DEMO_SEQUENCE_COUNT);
     return false;
