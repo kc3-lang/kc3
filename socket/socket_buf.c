@@ -44,7 +44,7 @@ void socket_buf_close (s_socket_buf *sb)
     socket_addr_delete(sb->addr);
 }
 
-#define MAX_UPLOAD_SIZE (128 * 1024 * 1024)
+#define MAX_UPLOAD_SIZE (16 * 1024 * 1024)
 
 s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
                                 struct sockaddr *addr,
