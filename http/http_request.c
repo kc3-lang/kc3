@@ -57,7 +57,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   sw r;
   static s_tag   random_len = {0};
   static s_ident random_len_ident;
-  s_buf_save save;
+  //s_buf_save save;
   s_tag size;
   static const s_sym *sym_Upload;
   s_list **tail;
@@ -92,7 +92,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     tag_init_u32(&mode, 0700);
     sym_Upload = sym_1("HTTP.Upload");
   }
-  buf_save_init(buf, &save);
+  //buf_save_init(buf, &save);
   if (! http_request_buf_parse_method(buf, &tmp_req.method))
     goto restore;
   if (false) {
@@ -402,21 +402,21 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
   if (boundary_tmp.ptr.pchar != boundary.ptr.pchar)
     str_clean(&boundary_tmp);
   str_clean(&boundary);
-  buf_save_restore_rpos(buf, &save);
+  //buf_save_restore_rpos(buf, &save);
  clean:
-  buf_save_clean(buf, &save);
+  //buf_save_clean(buf, &save);
   *req = tmp;
   return req;
 }
 
 s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
 {
-  s_buf_save save;
+  //s_buf_save save;
   s_str str;
   s_tag tmp = {0};
   assert(buf);
   assert(dest);
-  buf_save_init(buf, &save);
+  //buf_save_init(buf, &save);
   if (! buf_read_until_1_into_str(buf, " ", &str)) {
     if (false)
       err_puts("http_request_buf_parse_method: buf_read_until_1_into_str");
@@ -425,12 +425,12 @@ s_tag * http_request_buf_parse_method (s_buf *buf, s_tag *dest)
   if (! http_request_method_from_str(&str, &tmp))
     goto restore;
   str_clean(&str);
-  buf_save_clean(buf, &save);
+  //buf_save_clean(buf, &save);
   *dest = tmp;
   return dest;
  restore:
-  buf_save_restore_rpos(buf, &save);
-  buf_save_clean(buf, &save);
+  //buf_save_restore_rpos(buf, &save);
+  //buf_save_clean(buf, &save);
   return NULL;
 }
 
