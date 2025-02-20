@@ -18,6 +18,11 @@
 f32 * f32_init_cast (f32 *x, const s_sym * const *type,
                      const s_tag *tag);
 f32 * f32_init_copy (f32 *x, const f32 *src);
+
+/* Observers. */
+f32 f32_clamp (f32 x, f32 min, f32 max);
+
+/* Operators. */
 f32 * f32_random (f32 *x);
 
 #endif /* LIBKC3_F32_H */

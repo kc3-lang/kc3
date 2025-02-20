@@ -20,6 +20,11 @@
 #include "tag_type.h"
 #include "u32.h"
 
+f32 f32_clamp (f32 x, f32 min, f32 max)
+{
+  return ((x < min) ? min : ((x > max) ? max : x));
+}
+
 f32 * f32_init_cast (f32 *x, const s_sym * const *type,
                      const s_tag *tag)
 {

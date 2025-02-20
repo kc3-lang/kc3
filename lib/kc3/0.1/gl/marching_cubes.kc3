@@ -1,0 +1,12 @@
+defmodule GL.MarchingCubes do
+
+  defstruct [object: %GL.Object{},
+             triangle_count: (Uw) 0,
+             dimension_x: (U32) 0,
+             dimension_y: (U32) 0,
+             dimension_z: (U32) 0,
+             size: %GL.Vec3{},
+             field: (Ptr) 0,
+             threshold: (F32) 0.0]
+
+end
