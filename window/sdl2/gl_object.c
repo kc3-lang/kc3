@@ -83,6 +83,37 @@ void gl_object_render (const s_gl_object *object)
   assert(glGetError() == GL_NO_ERROR);
 }
 
+void gl_object_render_points (const s_gl_object *object, u32 count)
+{
+  GLenum error;
+  assert(object);
+  assert(glGetError() == GL_NO_ERROR);
+  glBindVertexArray(object->gl_vao);
+  assert(glGetError() == GL_NO_ERROR);
+  glDrawArrays(GL_POINTS, 0, count);
+  if ((error = glGetError()) != GL_NO_ERROR) {
+    err_write_1("gl_object_render_points: glDrawArrays: ");
+    err_puts(gl_error_string(error));
+    assert(! "gl_object_render_points: glDrawArrays");
+  }
+}
+
+void gl_object_render_triangles (const s_gl_object *object,
+                                 u32 triangle_count)
+{
+  GLenum error;
+  assert(object);
+  assert(glGetError() == GL_NO_ERROR);
+  glBindVertexArray(object->gl_vao);
+  assert(glGetError() == GL_NO_ERROR);
+  glDrawArrays(GL_TRIANGLES, 0, triangle_count * 3);
+  if ((error = glGetError()) != GL_NO_ERROR) {
+    err_write_1("gl_object_render_triangles: glDrawArrays: ");
+    err_puts(gl_error_string(error));
+    assert(! "gl_object_render_triangles: glDrawArrays");
+  }
+}
+
 void gl_object_render_wireframe (const s_gl_object *object)
 {
   assert(object);

@@ -209,6 +209,18 @@ void gl_box_render (const s_gl_box *box)
   gl_object_render(&box->object);
 }
 
+void gl_box_render_points (const s_gl_box *box)
+{
+  assert(box);
+  gl_object_render_points(&box->object, box->object.vertex.count);
+}
+
+void gl_box_render_triangles (const s_gl_box *box)
+{
+  assert(box);
+  gl_object_render_triangles(&box->object,
+                             box->object.vertex.count - 2 / 3);
+}
 
 void gl_box_render_wireframe (const s_gl_box *box)
 {

@@ -27,7 +27,9 @@ s_gl_box * gl_box_new (u32 segments_u, u32 segments_v,
                        u32 segments_w);
 
 /* Observers. */
-void          gl_box_render (const s_gl_box *box);
-void          gl_box_render_wireframe (const s_gl_box *box);
+void gl_box_render (const s_gl_box *box);
+void gl_box_render_points (const s_gl_box *box);
+void gl_box_render_triangles (const s_gl_box *box);
+void gl_box_render_wireframe (const s_gl_box *box);
 
 #endif /* GL_BOX_H */
