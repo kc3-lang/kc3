@@ -3,7 +3,7 @@ defmodule Metric do
   def get = fn (key) {
     count = Facts.first_with_tags(Config.db, key, :metric_hits, count = ?,
       fn (x) { count })
-     if is_integer?(count) do
+    if is_integer?(count) do
       count
     else
       0
