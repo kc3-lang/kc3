@@ -21,6 +21,7 @@ s_mat4 * mat4_init_identity (s_mat4 *m);
 s_mat4 * mat4_init_product (s_mat4 *m, const s_mat4 *a,
                             const s_mat4 *b);
 s_mat4 * mat4_init_scale (s_mat4 *m, f32 x, f32 y, f32 z);
+s_mat4 * mat4_init_translate (s_mat4 *m, f32 x, f32 y, f32 z);
 s_mat4 * mat4_init_zero (s_mat4 *m);
 
 /* Heap-allocation functions, call mat4_delete after use. */

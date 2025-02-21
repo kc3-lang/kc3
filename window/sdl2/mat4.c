@@ -140,6 +140,16 @@ s_mat4 * mat4_init_scale (s_mat4 *m, f32 x, f32 y, f32 z)
   return m;
 }
 
+s_mat4 * mat4_init_translate (s_mat4 *m, f32 x, f32 y, f32 z)
+{
+  assert(m);
+  m->xx = 1.0; m->xy = 0.0; m->xz = 0.0; m->xt = x;
+  m->yx = 0.0; m->yy = 1.0; m->yz = 0.0; m->yt = y;
+  m->zx = 0.0; m->zy = 0.0; m->zz = 1.0; m->zt = z;
+  m->tx = 0.0; m->ty = 0.0; m->tz = 0.0; m->tt = 1.0;
+  return m;
+}
+
 s_mat4 * mat4_init_zero (s_mat4 *m)
 {
   assert(m);
