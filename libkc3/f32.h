@@ -23,6 +23,6 @@ f32 * f32_init_copy (f32 *x, const f32 *src);
 f32 f32_clamp (f32 x, f32 min, f32 max);
 
 /* Operators. */
-f32 f32_random ();
+f32 f32_random (void);
 
 #endif /* LIBKC3_F32_H */

@@ -104,7 +104,7 @@ f32 * f32_init_copy (f32 *x, const f32 *src)
   return x;
 }
 
-f32 f32_random ()
+f32 f32_random (void)
 {
   u32 i;
   const u32 max = ((u32) 1 << 24) - 1;
