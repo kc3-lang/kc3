@@ -15,6 +15,42 @@
 #include "vec3.h"
 #include "gl_vertex.h"
 
+sw buf_inspect_gl_vertex (s_buf *buf, const s_gl_vertex *v)
+{
+  sw r;
+  sw result = 0;
+  assert(buf);
+  assert(v);
+  if ((r = buf_write_1(buf, "%GL.Vertex{pos_x: ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_f32(buf, &v->pos_x)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ", pos_y: ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_f32(buf, &v->pos_y)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, ", pos_z: ")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_f32(buf, &v->pos_z)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1(buf, "}")) < 0)
+    return r;
+  result += r;
+  buf_flush(buf);
+  return result;
+}
+
+sw err_inspect_gl_vertex (const s_gl_vertex *v)
+{
+  return buf_inspect_gl_vertex(env_global()->err, v);
+}
+
 void gl_vertex_attrib (void)
 {
   assert(glGetError() == GL_NO_ERROR);

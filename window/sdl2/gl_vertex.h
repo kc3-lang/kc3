@@ -15,7 +15,12 @@
 
 #include "types.h"
 
+/* Operators. */
 void gl_vertex_attrib (void);
 void gl_vertex_transform (s_gl_vertex *vertex, const s_mat4 *matrix);
+
+/* Observers. */
+sw buf_inspect_gl_vertex (s_buf *buf, const s_gl_vertex *v);
+sw err_inspect_gl_vertex (const s_gl_vertex *v);
 
 #endif /* GL_VERTEX_H */
