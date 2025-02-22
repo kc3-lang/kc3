@@ -155,16 +155,18 @@ s_integer * integer_init_cast (s_integer *a, const s_sym * const *type,
     return integer_init_copy(a, &tag->data.integer);
   case TAG_RATIO:
     return integer_init_ratio(a, &tag->data.ratio);
-  case TAG_SW:
-    return integer_init_sw(a, tag->data.sw);
-  case TAG_S64:
-    return integer_init_s64(a, tag->data.s64);
-  case TAG_S32:
-    return integer_init_s32(a, tag->data.s32);
-  case TAG_S16:
-    return integer_init_s16(a, tag->data.s16);
   case TAG_S8:
     return integer_init_s8(a, tag->data.s8);
+  case TAG_S16:
+    return integer_init_s16(a, tag->data.s16);
+  case TAG_S32:
+    return integer_init_s32(a, tag->data.s32);
+  case TAG_S64:
+    return integer_init_s64(a, tag->data.s64);
+  case TAG_STR:
+    return integer_init_str(a, &tag->data.str);
+  case TAG_SW:
+    return integer_init_sw(a, tag->data.sw);
   case TAG_U8:
     return integer_init_u8(a, tag->data.u8);
   case TAG_U16:

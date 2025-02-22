@@ -79,6 +79,7 @@ to discover how to use KC3 for your own projects.
 ## TODO
 
  - HTTPd
+   - limit acceptor loop according to ncpu
    - OAuth2 / jwt
    - dynamic router
      - def_route(:get, "/user/:id/articles/*slug/edit", UserArticlesController.edit)
