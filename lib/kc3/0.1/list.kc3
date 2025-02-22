@@ -55,6 +55,8 @@ defmodule List do
     ([a | b], acc) { reverse(b, [a | acc]) }
   }
 
+  def slice = cfn List "list_slice" (List, Tag, Tag, Result)
+
   def sort = cfn List "list_sort" (List, Result)
 
   def sort_by = cfn List "list_sort_by" (List, Callable, Result)

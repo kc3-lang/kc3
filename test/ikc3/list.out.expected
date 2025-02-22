@@ -37,3 +37,5 @@ List.each([1, 2, 3], fn (x) { puts(x) })
 true
 List.last([1, 2, 3])
 3
+List.slice([1, 2, 3, 4, 5], 2, 4)
+[3, 4]

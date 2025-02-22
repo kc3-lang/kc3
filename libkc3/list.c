@@ -24,6 +24,7 @@
 #include "kc3_main.h"
 #include "list.h"
 #include "sym.h"
+#include "sw.h"
 #include "tag.h"
 #include "tuple.h"
 #include "uw.h"
@@ -454,6 +455,39 @@ s_list ** list_remove_void (s_list **list)
   }
   *list = tmp;
   return list;
+}
+
+s_list ** list_slice (s_list **list, s_tag *start_tag, s_tag *end_tag,
+                      s_list **dest)
+{
+  const s_sym *sym_Sw;
+  sw end;
+  sw i;
+  s_list *l;
+  sw start;
+  s_list **tail;
+  s_list *tmp = NULL;
+  assert(list);
+  assert(start_tag);
+  assert(end_tag);
+  assert(dest);
+  if (! sw_init_cast(&start, &sym_Sw, start_tag))
+    return NULL;
+  if (! sw_init_cast(&end, &sym_Sw, end_tag))
+    return NULL;
+  tail = &tmp;
+  i = 0;
+  l = *list;
+  while (l && i < end) {
+    if (i >= start) {
+      *tail = list_new_tag_copy(&l->tag, NULL);
+      tail = &(*tail)->next.data.list;
+    }
+    i++;
+    l = list_next(l);
+  }
+  *dest = tmp;
+  return dest;
 }
 
 s_list ** list_sort (s_list **list, s_list **dest)
