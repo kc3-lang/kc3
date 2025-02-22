@@ -606,6 +606,15 @@ void kc3_license (void)
   io_write_1(g_kc3_license);
 }
 
+s_tag * kc3_list_length (const s_list **list, s_tag *dest)
+{
+  s_tag tmp = {0};
+  tag_init_sw(&tmp, list_length(*list));
+  tag_integer_reduce(&tmp);
+  *dest = tmp;
+  return dest;
+}
+
 s_array * kc3_list_to_array (s_list **list,
                              const s_sym * const *array_type,
                              s_array *dest)

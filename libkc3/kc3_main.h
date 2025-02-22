@@ -48,6 +48,7 @@ s_str *        kc3_getenv (const s_str *name, s_str *dest);
 sw             kc3_getpid (void);
 sw             kc3_getppid (void);
 void           kc3_license (void);
+s_tag *        kc3_list_length (const s_list **list, s_tag *dest);
 const s_sym ** kc3_module (const s_sym **dest);
 uw *           kc3_offsetof (const s_sym * const *module,
                              const s_sym * const *field, uw *dest);

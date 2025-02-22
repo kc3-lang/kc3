@@ -47,6 +47,8 @@ defmodule List do
 
   def last = cfn Tag "list_last" (List, Result)
 
+  def length = cfn Tag "kc3_list_length" (List, Result)
+
   def map = cfn List "list_map" (List, Callable, Result)
 
   def reverse = fn {

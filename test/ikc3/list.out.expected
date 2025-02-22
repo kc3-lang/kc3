@@ -39,3 +39,11 @@ List.last([1, 2, 3])
 3
 List.slice([1, 2, 3, 4, 5], 2, 4)
 [3, 4]
+List.length([])
+0
+List.length([1])
+1
+List.length([1, 2])
+2
+List.length([1, 2, 3, 4, 5])
+5
