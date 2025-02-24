@@ -49,7 +49,7 @@ const s_sym g_sym_Fn              = {{{NULL},  2, {"Fn"}}};
 const s_sym g_sym_Ident           = {{{NULL},  5, {"Ident"}}};
 const s_sym g_sym_Integer         = {{{NULL},  7, {"Integer"}}};
 const s_sym g_sym_KC3             = {{{NULL},  3, {"KC3"}}};
-const s_sym g_sym_KC3_Operator    = {{{NULL}, 12, {"KC3.Operator"}}};
+const s_sym g_sym_KC3_Op          = {{{NULL},  6, {"KC3.Op"}}};
 const s_sym g_sym_List            = {{{NULL},  4, {"List"}}};
 const s_sym g_sym_Map             = {{{NULL},  3, {"Map"}}};
 const s_sym g_sym_Ptag            = {{{NULL},  4, {"Ptag"}}};
@@ -98,13 +98,13 @@ const s_sym g_sym_load_time       = {{{NULL},  9, {"load_time"}}};
 const s_sym g_sym_macro           = {{{NULL},  5, {"macro"}}};
 const s_sym g_sym_module          = {{{NULL},  6, {"module"}}};
 const s_sym g_sym_ncpu            = {{{NULL},  4, {"ncpu"}}};
-const s_sym g_sym_operator        = {{{NULL},  8, {"operator"}}};
-const s_sym g_sym_operator_associativity =
-  {{{NULL}, 22, {"operator_associativity"}}};
-const s_sym g_sym_operator_equal  = {{{NULL}, 14, {"operator_equal"}}};
-const s_sym g_sym_operator_pin    = {{{NULL}, 12, {"operator_pin"}}};
-const s_sym g_sym_operator_precedence =
-  {{{NULL}, 19, {"operator_precedence"}}};
+const s_sym g_sym_op              = {{{NULL},  2, {"op"}}};
+const s_sym g_sym_op_associativity =
+  {{{NULL}, 16, {"op_associativity"}}};
+const s_sym g_sym_op_callable     = {{{NULL}, 11, {"op_callable"}}};
+const s_sym g_sym_op_equal        = {{{NULL},  8, {"op_equal"}}};
+const s_sym g_sym_op_pin          = {{{NULL},  6, {"op_pin"}}};
+const s_sym g_sym_op_precedence   = {{{NULL}, 13, {"op_precedence"}}};
 const s_sym g_sym_persist         = {{{NULL},  7, {"persist"}}};
 const s_sym g_sym_r               = {{{NULL},  1, {"r"}}};
 const s_sym g_sym_read            = {{{NULL},  4, {"read"}}};
@@ -367,7 +367,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_Ident, NULL);
   sym_register(&g_sym_Integer, NULL);
   sym_register(&g_sym_KC3, NULL);
-  sym_register(&g_sym_KC3_Operator, NULL);
+  sym_register(&g_sym_KC3_Op, NULL);
   sym_register(&g_sym_List, NULL);
   sym_register(&g_sym_Map, NULL);
   sym_register(&g_sym_Ptag, NULL);
@@ -416,11 +416,12 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_macro, NULL);
   sym_register(&g_sym_module, NULL);
   sym_register(&g_sym_ncpu, NULL);
-  sym_register(&g_sym_operator, NULL);
-  sym_register(&g_sym_operator_associativity, NULL);
-  sym_register(&g_sym_operator_equal, NULL);
-  sym_register(&g_sym_operator_pin, NULL);
-  sym_register(&g_sym_operator_precedence, NULL);
+  sym_register(&g_sym_op, NULL);
+  sym_register(&g_sym_op_associativity, NULL);
+  sym_register(&g_sym_op_callable, NULL);
+  sym_register(&g_sym_op_equal, NULL);
+  sym_register(&g_sym_op_pin, NULL);
+  sym_register(&g_sym_op_precedence, NULL);
   sym_register(&g_sym_persist, NULL);
   sym_register(&g_sym_r, NULL);
   sym_register(&g_sym_read, NULL);

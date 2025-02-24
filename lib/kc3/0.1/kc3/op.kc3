@@ -1,9 +1,9 @@
-defmodule KC3.Operator do
+defmodule KC3.Op do
 
   defstruct [sym: :+,
              arity: 2,
-             operator_precedence: 0,
-             operator_associativity: :left,
+             precedence: 0,
+             associativity: :left,
 	     callable: (Callable) ?]
 
   def find_by_sym = cfn Tag "kc3_operator_find_by_sym" (Sym, Result)

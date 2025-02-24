@@ -64,10 +64,7 @@ s_tag *      kc3_buf_parse_tag (s_buf *buf, s_tag *dest);
 s_tag *      kc3_def (const s_call *call, s_tag *dest);
 s_tag *      kc3_defmodule (const s_sym **name, const s_block *block,
                             s_tag *dest);
-s_tag *      kc3_defoperator (const s_sym **name, const s_sym **sym,
-                              s_tag *symbol_value,
-                              u8 operator_precedence,
-                              const s_sym **operator_associativity,
+s_tag *      kc3_defoperator (const s_sym **name, s_op *op,
                               s_tag *dest);
 s_tag *      kc3_defstruct (s_list **spec, s_tag *dest);
 void **      kc3_dlopen (const s_str *path, void **dest);

@@ -65,6 +65,8 @@
 #include "list.h"
 #include "map.h"
 #include "module.h"
+#include "op.h"
+#include "ops.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -78,8 +80,8 @@
 
 static thread_local s_env *g_kc3_env = NULL;
 
-static void env_clean_globals (s_env *env);
-static void env_clean_toplevel (s_env *env);
+static void    env_clean_globals (s_env *env);
+static void    env_clean_toplevel (s_env *env);
 static s_env * env_init_args (s_env *env, int *argc, char ***argv);
 static s_env * env_init_globals (s_env *env);
 static s_env * env_init_toplevel (s_env *env);
@@ -146,7 +148,7 @@ bool env_call_get (s_env *env, s_call *call)
   s_tag tag_is_a;
   s_tag tag_macro;
   s_tag tag_module_name;
-  s_tag tag_operator;
+  s_tag tag_op;
   s_tag tag_special_operator;
   s_tag tag_symbol;
   s_tag tag_symbol_value;
@@ -155,7 +157,7 @@ bool env_call_get (s_env *env, s_call *call)
   tag_init_sym(  &tag_is_a, &g_sym_is_a);
   tag_init_sym(  &tag_macro, &g_sym_macro);
   tag_init_sym(  &tag_module_name, call->ident.module);
-  tag_init_sym(  &tag_operator, &g_sym_operator);
+  tag_init_sym(  &tag_op, &g_sym_op);
   tag_init_sym(  &tag_special_operator, &g_sym_special_operator);
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
   tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
@@ -168,7 +170,7 @@ bool env_call_get (s_env *env, s_call *call)
   }
   if (! fact) {
     if (! facts_find_fact_by_tags(env->facts, &tag_module_name,
-                                  &tag_operator, &tag_ident, &fact)) {
+                                  &tag_op, &tag_ident, &fact)) {
       err_puts("env_call_get: facts_find_fact_by_tags 2");
       assert(! "env_call_get: facts_find_fact_by_tags 2");
       return false;
@@ -299,19 +301,10 @@ bool env_def (s_env *env, const s_ident *ident, s_tag *value)
     return false;
   if (value->type == TAG_STRUCT &&
       (s = &value->data.struct_) &&
-      s->type->module == &g_sym_KC3_Operator) {
+      s->type->module == &g_sym_KC3_Op) {
     if (! env_defoperator(env, &tag_ident.data.ident.sym,
-                          struct_get_sym(&value->data.struct_,
-                                         &g_sym_sym),
-                          struct_get_tag(&value->data.struct_,
-                                         &g_sym_symbol_value),
-                          struct_get_u8(&value->data.struct_,
-                                        &g_sym_operator_precedence),
-                          struct_get_sym(&value->data.struct_,
-                                         &g_sym_operator_associativity),
-                          &tag)) {
+                          value->data.struct_.data, &tag))
       return false;
-    }
     tag_clean(&tag);
   }
   else {
@@ -409,15 +402,10 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
 }
 
 s_tag * env_defoperator (s_env *env, const s_sym * const *name,
-                         const s_sym * const *sym,
-                         s_tag *symbol_value,
-                         u8 op_precedence,
-                         const s_sym * const *op_assoc,
-                         s_tag *dest)
+                         s_op *op, s_tag *dest)
 {
-  s8 arity;
   s_tag tag_module_name;
-  s_tag tag_operator;
+  s_tag tag_op;
   s_tag tag_ident;
   s_tag tag_is_a;
   s_tag tag_sym_sym;
@@ -425,51 +413,50 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
   s_tag tag_arity_sym;
   s_tag tag_arity_u8;
   s_tag tag_symbol_value;
+  s_tag tag_op_assoc_rel;
+  s_tag tag_op_assoc_u8;
+  s_tag tag_op_callable;
   s_tag tag_op_precedence_sym;
   s_tag tag_op_precedence_u8;
-  s_tag tag_op_assoc_rel;
-  s_tag tag_op_assoc_value;
   tag_init_sym(&tag_module_name, env->current_defmodule);
-  tag_init_sym(&tag_operator, &g_sym_operator);
+  tag_init_sym(&tag_op, &g_sym_op);
   tag_ident.type = TAG_IDENT;
   tag_ident.data.ident.module = env->current_defmodule;
   tag_ident.data.ident.sym = *name;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_sym_sym, &g_sym_sym);
-  tag_init_sym(&tag_sym_value, *sym);
+  tag_init_sym(&tag_sym_value, op->sym);
   tag_init_sym(&tag_arity_sym, &g_sym_arity);
-  arity = tag_arity(symbol_value);
-  if (arity < 1) {
+  if (op->arity < 1) {
     err_write_1("env_defoperator: invalid arity: ");
-    err_inspect_s8(&arity);
+    err_inspect_u8(&op->arity);
     err_write_1("\n");
     assert(! "env_defoperator: invalid arity");
   };
-  tag_init_u8( &tag_arity_u8, arity);
+  tag_init_u8( &tag_arity_u8, op->arity);
   tag_init_sym(&tag_symbol_value, &g_sym_symbol_value);
   tag_init_sym(&tag_op_precedence_sym,
-               &g_sym_operator_precedence);
-  tag_init_u8( &tag_op_precedence_u8, op_precedence);
-  tag_init_sym(&tag_op_assoc_rel,
-               &g_sym_operator_associativity);
-  tag_init_sym(&tag_op_assoc_value,
-               *op_assoc);
+               &g_sym_op_precedence);
+  tag_init_u8( &tag_op_precedence_u8, op->precedence);
+  tag_init_sym(&tag_op_assoc_rel, &g_sym_op_associativity);
+  tag_init_u8(&tag_op_assoc_u8, op->associativity);
   // FIXME: transaction ?
-  facts_add_tags(env->facts, &tag_module_name, &tag_operator,
+  facts_add_tags(env->facts, &tag_module_name, &tag_op,
                  &tag_ident);
-  facts_replace_tags(env->facts, &tag_ident, &tag_is_a, &tag_operator);
+  facts_replace_tags(env->facts, &tag_ident, &tag_is_a, &tag_op);
   facts_replace_tags(env->facts, &tag_ident, &tag_sym_sym,
                      &tag_sym_value);
   facts_replace_tags(env->facts, &tag_ident, &tag_arity_sym,
                      &tag_arity_u8);
+  tag_init_callable_copy(&tag_op_callable, &op->callable);
   facts_replace_tags(env->facts, &tag_ident, &tag_symbol_value,
-                     symbol_value);
+                     &tag_op_callable);
   facts_replace_tags(env->facts, &tag_ident,
                      &tag_op_precedence_sym,
                      &tag_op_precedence_u8);
   facts_replace_tags(env->facts, &tag_ident,
                      &tag_op_assoc_rel,
-                     &tag_op_assoc_value);
+                     &tag_op_assoc_u8);
   // FIXME: transaction
   *dest = tag_ident;
   return dest;
@@ -2829,7 +2816,7 @@ s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
   assert(call);
   assert(dest);
   if (call->ident.module != &g_sym_KC3 ||
-      call->ident.sym != &g_sym_operator_equal ||
+      call->ident.sym != &g_sym_op_equal ||
       call->arguments->tag.type != TAG_IDENT ||
       ! list_next(call->arguments) ||
       list_next(list_next(call->arguments))) {
@@ -3113,14 +3100,14 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
   s_fact *fact = NULL;
   s_tag tag_ident;
   s_tag tag_module_name;
-  s_tag tag_operator;
+  s_tag tag_op;
   s_tag tag_sym_value;
   s_tag tag_sym_sym;
   s_tag tag_symbol;
   s_tag tag_var;
   tag_init_ident(&tag_ident, ident);
   tag_init_sym(  &tag_module_name, module);
-  tag_init_sym(  &tag_operator, &g_sym_operator);
+  tag_init_sym(  &tag_op, &g_sym_op);
   tag_init_sym(  &tag_sym_value, ident->sym);
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
   if (! facts_find_fact_by_tags(env->facts, &tag_module_name,
@@ -3134,7 +3121,7 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
     return dest;
   }
   if (! facts_find_fact_by_tags(env->facts, &tag_module_name,
-                                &tag_operator, &tag_ident, &fact)) {
+                                &tag_op, &tag_ident, &fact)) {
     err_puts("env_module_has_ident: facts_find_fact_by_tags 2");
     assert(! "env_module_has_ident: facts_find_fact_by_tags 2");
     return NULL;
@@ -3146,7 +3133,7 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
   tag_init_sym(&tag_sym_sym, &g_sym_sym);
   tag_init_var(&tag_var, &g_sym_Ident);
   if (! facts_with(env->facts, &cursor, (t_facts_spec) {
-        &tag_module_name, &tag_operator, &tag_var, NULL,
+        &tag_module_name, &tag_op, &tag_var, NULL,
         &tag_var, &tag_sym_sym, &tag_sym_value, NULL, NULL})) {
     err_puts("env_module_has_ident: facts_with");
     assert(! "env_module_has_ident: facts_with");
@@ -3415,14 +3402,14 @@ bool * env_operator_find (s_env *env, const s_ident *op, bool *dest)
   s_fact *fact;
   s_tag tag_is_a;
   s_tag tag_op;
-  s_tag tag_operator;
+  s_tag tag_op_sym;
   assert(env);
   assert(op);
   tag_init_sym(  &tag_is_a, &g_sym_is_a);
   tag_init_ident(&tag_op, op);
-  tag_init_sym(  &tag_operator, &g_sym_operator);
+  tag_init_sym(  &tag_op_sym, &g_sym_op);
   if (! facts_find_fact_by_tags(env->facts, &tag_op, &tag_is_a,
-                                &tag_operator, &fact))
+                                &tag_op_sym, &fact))
     return NULL;
   *dest = fact ? true : false;
   return dest;
@@ -3434,58 +3421,53 @@ s_tag * env_operator_find_by_sym (s_env *env,
 {
   s_facts_with_cursor cursor;
   s_fact *fact;
+  s_op *op;
+  s_tag tag_callable;
   s_tag tag_ident;
   s_tag tag_is_a;
-  s_tag tag_operator;
-  s_tag tag_operator_associativity;
-  s_tag tag_operator_associativity_sym;
-  s_tag tag_operator_precedence;
-  s_tag tag_operator_precedence_sym;
+  s_tag tag_op;
+  s_tag tag_op_associativity;
+  s_tag tag_op_associativity_sym;
+  s_tag tag_op_callable_sym;
+  s_tag tag_op_precedence;
+  s_tag tag_op_precedence_sym;
   s_tag tag_sym;
   s_tag tag_sym_sym;
-  s_tag tag_symbol_value;
-  s_tag tag_symbol_value_sym;
   s_tag         tmp = {0};
   tag_init_var(&tag_ident, &g_sym_Ident);
   tag_init_sym(&tag_is_a, &g_sym_is_a);
-  tag_init_sym(&tag_operator, &g_sym_operator);
-  tag_init_var(&tag_operator_associativity, &g_sym_Sym);
-  tag_init_sym(&tag_operator_associativity_sym,
-               &g_sym_operator_associativity);
-  tag_init_var(&tag_operator_precedence, &g_sym_U8);
-  tag_init_sym(&tag_operator_precedence_sym,
-               &g_sym_operator_precedence);
-  tag_init_sym(&tag_operator, &g_sym_operator);
+  tag_init_sym(&tag_op, &g_sym_op);
+  tag_init_var(&tag_op_associativity, &g_sym_U8);
+  tag_init_sym(&tag_op_associativity_sym,
+               &g_sym_op_associativity);
+  tag_init_var(&tag_op_precedence, &g_sym_U8);
+  tag_init_sym(&tag_op_precedence_sym,
+               &g_sym_op_precedence);
+  tag_init_sym(&tag_op, &g_sym_op);
   tag_init_sym(&tag_sym, sym);
   tag_init_sym(&tag_sym_sym, &g_sym_sym);
-  tag_init_var(&tag_symbol_value, &g_sym_Tag);
-  tag_init_sym(&tag_symbol_value_sym, &g_sym_symbol_value);
+  tag_init_var(&tag_callable, &g_sym_Callable);
+  tag_init_sym(&tag_op_callable_sym, &g_sym_symbol_value);
   if (! facts_with(env->facts, &cursor, (t_facts_spec) {
-        &tag_ident, &tag_is_a, &tag_operator,
+        &tag_ident, &tag_is_a, &tag_op,
         &tag_sym_sym, &tag_sym,
-        &tag_operator_associativity_sym, &tag_operator_associativity,
-        &tag_operator_precedence_sym, &tag_operator_precedence,
-        &tag_symbol_value_sym, &tag_symbol_value, NULL, NULL}))
+        &tag_op_associativity_sym, &tag_op_associativity,
+        &tag_op_precedence_sym, &tag_op_precedence,
+        &tag_op_callable_sym, &tag_callable, NULL, NULL}))
     return NULL;
   if (! facts_with_cursor_next(&cursor, &fact))
     return NULL;
   if (! fact)
     return NULL;
-  if (! tag_init_struct(&tmp, &g_sym_KC3_Operator))
+  if (! tag_init_struct(&tmp, &g_sym_KC3_Op))
     goto clean;
   if (! struct_allocate(&tmp.data.struct_))
     goto clean;
-  if (! struct_set(&tmp.data.struct_, &g_sym_sym, &tag_sym))
-    goto clean;
-  if (! struct_set(&tmp.data.struct_, &g_sym_symbol_value,
-                   &tag_symbol_value))
-    goto clean;
-  if (! struct_set(&tmp.data.struct_, &g_sym_operator_precedence,
-                   &tag_operator_precedence))
-    goto clean;
-  if (! struct_set(&tmp.data.struct_, &g_sym_operator_associativity,
-                   &tag_operator_associativity))
-    goto clean;
+  op = tmp.data.struct_.data;
+  op->sym = tag_sym.data.sym;
+  op->callable = callable_new_ref(tag_callable.data.callable);
+  op->precedence = tag_op_precedence.data.u8;
+  op->associativity = tag_op_associativity.data.u8;
   facts_with_cursor_clean(&cursor);
   *dest = tmp;
   return dest;
@@ -3521,7 +3503,7 @@ bool * env_operator_is_right_associative (s_env *env, const s_ident *op,
   s_tag tag_right;
   assert(env);
   assert(op);
-  tag_init_sym(  &tag_assoc, &g_sym_operator_associativity);
+  tag_init_sym(  &tag_assoc, &g_sym_op_associativity);
   tag_init_ident(&tag_op, op);
   tag_init_sym(  &tag_right, &g_sym_right);
   if (! facts_find_fact_by_tags(env->facts, &tag_op, &tag_assoc,
@@ -3543,7 +3525,7 @@ sw * env_operator_precedence (s_env *env, const s_ident *op, sw *dest)
   assert(env);
   assert(op);
   tag_init_ident(&tag_op, op);
-  tag_init_sym(  &tag_precedence, &g_sym_operator_precedence);
+  tag_init_sym(  &tag_precedence, &g_sym_op_precedence);
   tag_init_var(  &tag_var, &g_sym_Tag);
   if (! facts_with_tags(env->facts, &cursor, &tag_op, &tag_precedence,
                         &tag_var))
@@ -3565,6 +3547,11 @@ sw * env_operator_precedence (s_env *env, const s_ident *op, sw *dest)
   return dest;
 }
 
+s_op * env_op_resolve (s_env *env, const s_ident *op, u8 arity)
+{
+  return ops_get(env->ops, op->sym, arity);
+}
+
 s_ident * env_operator_resolve (s_env *env, const s_ident *op,
                                 u8 arity, s_ident *dest)
 {
@@ -3575,7 +3562,7 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
   s_tag tag_is_a;
   s_tag tag_module;
   s_tag tag_module_name;
-  s_tag tag_operator;
+  s_tag tag_op;
   s_tag tag_var;
   s_tag tag_sym_sym;
   s_tag tag_sym_value;
@@ -3586,13 +3573,13 @@ s_ident * env_operator_resolve (s_env *env, const s_ident *op,
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_module, &g_sym_module);
   tag_init_sym(&tag_module_name, tmp.module);
-  tag_init_sym(&tag_operator, &g_sym_operator);
+  tag_init_sym(&tag_op, &g_sym_op);
   tag_init_var(&tag_var, &g_sym_Ident);
   tag_init_sym(&tag_sym_sym, &g_sym_sym);
   tag_init_sym(&tag_sym_value, tmp.sym);
   if (! facts_with(env->facts, &cursor, (t_facts_spec) {
         &tag_module_name, &tag_is_a, &tag_module,
-        &tag_operator, &tag_var, NULL,
+        &tag_op, &tag_var, NULL,
         &tag_var, &tag_sym_sym, &tag_sym_value,
         &tag_arity, &tag_arity_u8,
         NULL, NULL })) {

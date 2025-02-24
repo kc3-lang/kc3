@@ -58,11 +58,7 @@ const s_sym *  env_def_clean (s_env *env, const s_sym *module,
 s_tag *        env_defmodule (s_env *env, const s_sym * const *name,
                               const s_block *block, s_tag *dest);
 s_tag *        env_defoperator (s_env *env, const s_sym * const *name,
-                                const s_sym * const *sym,
-                                s_tag *symbol_value,
-                                u8 op_precedence,
-                                const s_sym * const *op_assoc,
-                                s_tag *dest);
+                                s_op *op, s_tag *dest);
 const s_sym *  env_defstruct (s_env *env, s_list *spec);
 s_fact_w *     env_fact_w_eval (s_env *env, s_fact_w *fact,
 	         	       s_fact_w *dest);

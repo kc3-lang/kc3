@@ -131,6 +131,12 @@ typedef enum {
 } e_fact_action;
 
 typedef enum {
+  OP_ASSOCIATIVITY_NONE = 0,
+  OP_ASSOCIATIVITY_LEFT = 1,
+  OP_ASSOCIATIVITY_RIGHT = 2
+} e_op_associativity;
+
+typedef enum {
   TAG_VOID = 0,
   TAG_ARRAY,
   TAG_BLOCK,
@@ -205,6 +211,8 @@ typedef struct float_s                 s_float;
 typedef struct fn                      s_fn;
 typedef struct fn_clause               s_fn_clause;
 typedef struct frame                   s_frame;
+typedef struct ht                      s_ht;
+typedef struct ht_item                 s_ht_item;
 typedef struct ident                   s_ident;
 typedef struct integer                 s_integer;
 typedef struct integer_fraction        s_integer_fraction;
@@ -214,7 +222,8 @@ typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct map                     s_map;
 typedef struct mutex                   s_mutex;
-typedef struct operator_               s_operator;
+typedef struct op                      s_op;
+typedef struct ops                     s_ops;
 typedef struct pretty                  s_pretty;
 typedef struct pretty_save             s_pretty_save;
 typedef struct queue                   s_queue;
@@ -321,6 +330,21 @@ struct frame {
 struct fact_list {
   s_fact *fact;
   s_fact_list *next;
+};
+
+struct ht {
+  const s_sym *type;
+  uw count;
+  uw item_size;
+  uw size;
+  s_ht_item **items;
+  uw (* hash) (void *data);
+  s8 (* compare) (void *a, void *b);
+};
+
+struct ht_item {
+  void *data;
+  s_ht_item *next;
 };
 
 struct map {
@@ -674,11 +698,16 @@ struct list {
   s_tag next;
 };
 
-struct operator_ {
+struct op {
   const s_sym *sym;
-  const s_sym *operator_associativity;
-  sw           operator_precedence;
-  s_tag        symbol_value;
+  u8           arity;
+  u8           precedence;
+  u8           associativity;
+  s_callable  *callable;
+};
+
+struct ops {
+  s_ht ht;
 };
 
 struct sequence {
@@ -790,6 +819,7 @@ struct env {
   s_frame          *global_frame;
   s_buf            *in;
   s_str            *module_path;
+  s_ops            *ops;
   s_buf            *out;
   s_list           *path;
   uw                quote_level;

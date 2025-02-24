@@ -15,11 +15,11 @@ KC3_CONFIGURES = \
 	"gtk4/sources.sh" \
 	"gtk4/update_sources" \
 	"http/configure" \
-	"http/sources.sh" \
-	"http/update_sources" \
 	"httpd/configure" \
 	"httpd/sources.sh" \
 	"httpd/update_sources" \
+	"http/sources.sh" \
+	"http/update_sources" \
 	"ikc3/configure" \
 	"ikc3/sources.sh" \
 	"ikc3/update_sources" \
@@ -93,16 +93,16 @@ KC3_MAKEFILES = \
 	"ekc3/sources.mk" \
 	"event/Makefile" \
 	"event/sources.mk" \
-	"fs/Makefile" \
 	"fs/fuse/Makefile" \
 	"fs/fuse/sources.mk" \
+	"fs/Makefile" \
 	"gtk4/Makefile" \
 	"gtk4/sources.mk" \
+	"httpd/fx/assets/Makefile" \
+	"httpd/Makefile" \
+	"httpd/sources.mk" \
 	"http/Makefile" \
 	"http/sources.mk" \
-	"httpd/Makefile" \
-	"httpd/fx/assets/Makefile" \
-	"httpd/sources.mk" \
 	"ikc3/Makefile" \
 	"ikc3/sources.mk" \
 	"json/Makefile" \
@@ -110,8 +110,8 @@ KC3_MAKEFILES = \
 	"kc3c/Makefile" \
 	"kc3s/Makefile" \
 	"kc3s/sources.mk" \
-	"libkc3/Makefile" \
 	"libkc3/gen.mk" \
+	"libkc3/Makefile" \
 	"libkc3/sources.mk" \
 	"libtommath/Makefile" \
 	"libtommath/sources.mk" \
@@ -121,35 +121,35 @@ KC3_MAKEFILES = \
 	"smtp/sources.mk" \
 	"socket/Makefile" \
 	"socket/sources.mk" \
-	"test/Makefile" \
-	"test/httpd/Makefile" \
 	"test/httpd/assets/Makefile" \
+	"test/httpd/Makefile" \
+	"test/Makefile" \
 	"test/sources.mk" \
 	"ucd2c/Makefile" \
-	"window/Makefile" \
-	"window/cairo/Makefile" \
 	"window/cairo/demo/Makefile" \
 	"window/cairo/demo/sources.mk" \
-	"window/cairo/quartz/Makefile" \
+	"window/cairo/Makefile" \
 	"window/cairo/quartz/demo/Makefile" \
 	"window/cairo/quartz/demo/sources.mk" \
+	"window/cairo/quartz/Makefile" \
 	"window/cairo/quartz/sources.mk" \
 	"window/cairo/sources.mk" \
-	"window/cairo/win32/Makefile" \
 	"window/cairo/win32/demo/Makefile" \
 	"window/cairo/win32/demo/sources.mk" \
+	"window/cairo/win32/Makefile" \
 	"window/cairo/win32/sources.mk" \
-	"window/cairo/xcb/Makefile" \
 	"window/cairo/xcb/demo/Makefile" \
 	"window/cairo/xcb/demo/sources.mk" \
+	"window/cairo/xcb/Makefile" \
 	"window/cairo/xcb/sources.mk" \
-	"window/sdl2/Makefile" \
-	"window/sdl2/demo/Makefile" \
+	"window/Makefile" \
 	"window/sdl2/demo/macos/Makefile" \
+	"window/sdl2/demo/Makefile" \
 	"window/sdl2/demo/sources.mk" \
-	"window/sdl2/kubz/Makefile" \
 	"window/sdl2/kubz/macos/Makefile" \
+	"window/sdl2/kubz/Makefile" \
 	"window/sdl2/kubz/sources.mk" \
+	"window/sdl2/Makefile" \
 	"window/sdl2/sources.mk" \
 	"window/sources.mk" \
 
@@ -161,9 +161,9 @@ KC3_C_SOURCES = \
 	"ekc3/types.h" \
 	"event/event.c" \
 	"event/event.h" \
-	"fs/OpenBSD/kc3fs.h" \
 	"fs/fuse/mount_kc3fs.c" \
 	"fs/fuse/types.h" \
+	"fs/OpenBSD/kc3fs.h" \
 	"gtk4/action_map.c" \
 	"gtk4/action_map.h" \
 	"gtk4/application.c" \
@@ -174,10 +174,10 @@ KC3_C_SOURCES = \
 	"gtk4/box.h" \
 	"gtk4/button.c" \
 	"gtk4/button.h" \
-	"gtk4/entry.c" \
-	"gtk4/entry.h" \
 	"gtk4/entry_buffer.c" \
 	"gtk4/entry_buffer.h" \
+	"gtk4/entry.c" \
+	"gtk4/entry.h" \
 	"gtk4/file.c" \
 	"gtk4/file.h" \
 	"gtk4/frame.c" \
@@ -216,6 +216,8 @@ KC3_C_SOURCES = \
 	"gtk4/widget.h" \
 	"gtk4/window.c" \
 	"gtk4/window.h" \
+	"httpd/httpd.c" \
+	"httpd/httpd.h" \
 	"http/http.c" \
 	"http/http.h" \
 	"http/http_request.c" \
@@ -227,8 +229,6 @@ KC3_C_SOURCES = \
 	"http/types.h" \
 	"http/url.c" \
 	"http/url.h" \
-	"httpd/httpd.c" \
-	"httpd/httpd.h" \
 	"ikc3/buf_linenoise.c" \
 	"ikc3/buf_linenoise.h" \
 	"ikc3/buf_wineditline.c" \
@@ -259,7 +259,6 @@ KC3_C_SOURCES = \
 	"libkc3/bool.c" \
 	"libkc3/bool.h" \
 	"libkc3/buf.c" \
-	"libkc3/buf.h" \
 	"libkc3/buf_fd.c" \
 	"libkc3/buf_fd.h" \
 	"libkc3/buf_file.c" \
@@ -268,120 +267,119 @@ KC3_C_SOURCES = \
 	"libkc3/buf_getc.h" \
 	"libkc3/buf_getchar.c" \
 	"libkc3/buf_getchar.h" \
+	"libkc3/buf.h" \
 	"libkc3/buf_inspect.c" \
 	"libkc3/buf_inspect.h" \
-	"libkc3/buf_inspect_s.c.in" \
-	"libkc3/buf_inspect_s.h.in" \
-	"libkc3/buf_inspect_s16.c" \
-	"libkc3/buf_inspect_s16.h" \
 	"libkc3/buf_inspect_s16_binary.c" \
 	"libkc3/buf_inspect_s16_binary.h" \
+	"libkc3/buf_inspect_s16.c" \
 	"libkc3/buf_inspect_s16_decimal.c" \
 	"libkc3/buf_inspect_s16_decimal.h" \
+	"libkc3/buf_inspect_s16.h" \
 	"libkc3/buf_inspect_s16_hexadecimal.c" \
 	"libkc3/buf_inspect_s16_hexadecimal.h" \
 	"libkc3/buf_inspect_s16_octal.c" \
 	"libkc3/buf_inspect_s16_octal.h" \
-	"libkc3/buf_inspect_s32.c" \
-	"libkc3/buf_inspect_s32.h" \
 	"libkc3/buf_inspect_s32_binary.c" \
 	"libkc3/buf_inspect_s32_binary.h" \
+	"libkc3/buf_inspect_s32.c" \
 	"libkc3/buf_inspect_s32_decimal.c" \
 	"libkc3/buf_inspect_s32_decimal.h" \
+	"libkc3/buf_inspect_s32.h" \
 	"libkc3/buf_inspect_s32_hexadecimal.c" \
 	"libkc3/buf_inspect_s32_hexadecimal.h" \
 	"libkc3/buf_inspect_s32_octal.c" \
 	"libkc3/buf_inspect_s32_octal.h" \
-	"libkc3/buf_inspect_s64.c" \
-	"libkc3/buf_inspect_s64.h" \
 	"libkc3/buf_inspect_s64_binary.c" \
 	"libkc3/buf_inspect_s64_binary.h" \
+	"libkc3/buf_inspect_s64.c" \
 	"libkc3/buf_inspect_s64_decimal.c" \
 	"libkc3/buf_inspect_s64_decimal.h" \
+	"libkc3/buf_inspect_s64.h" \
 	"libkc3/buf_inspect_s64_hexadecimal.c" \
 	"libkc3/buf_inspect_s64_hexadecimal.h" \
 	"libkc3/buf_inspect_s64_octal.c" \
 	"libkc3/buf_inspect_s64_octal.h" \
-	"libkc3/buf_inspect_s8.c" \
-	"libkc3/buf_inspect_s8.h" \
 	"libkc3/buf_inspect_s8_binary.c" \
 	"libkc3/buf_inspect_s8_binary.h" \
+	"libkc3/buf_inspect_s8.c" \
 	"libkc3/buf_inspect_s8_decimal.c" \
 	"libkc3/buf_inspect_s8_decimal.h" \
+	"libkc3/buf_inspect_s8.h" \
 	"libkc3/buf_inspect_s8_hexadecimal.c" \
 	"libkc3/buf_inspect_s8_hexadecimal.h" \
 	"libkc3/buf_inspect_s8_octal.c" \
 	"libkc3/buf_inspect_s8_octal.h" \
 	"libkc3/buf_inspect_s_base.c.in" \
 	"libkc3/buf_inspect_s_base.h.in" \
-	"libkc3/buf_inspect_sw.c" \
-	"libkc3/buf_inspect_sw.h" \
+	"libkc3/buf_inspect_s.c.in" \
+	"libkc3/buf_inspect_s.h.in" \
 	"libkc3/buf_inspect_sw_binary.c" \
 	"libkc3/buf_inspect_sw_binary.h" \
+	"libkc3/buf_inspect_sw.c" \
 	"libkc3/buf_inspect_sw_decimal.c" \
 	"libkc3/buf_inspect_sw_decimal.h" \
+	"libkc3/buf_inspect_sw.h" \
 	"libkc3/buf_inspect_sw_hexadecimal.c" \
 	"libkc3/buf_inspect_sw_hexadecimal.h" \
 	"libkc3/buf_inspect_sw_octal.c" \
 	"libkc3/buf_inspect_sw_octal.h" \
-	"libkc3/buf_inspect_u.c.in" \
-	"libkc3/buf_inspect_u.h.in" \
-	"libkc3/buf_inspect_u16.c" \
-	"libkc3/buf_inspect_u16.h" \
 	"libkc3/buf_inspect_u16_binary.c" \
 	"libkc3/buf_inspect_u16_binary.h" \
+	"libkc3/buf_inspect_u16.c" \
 	"libkc3/buf_inspect_u16_decimal.c" \
 	"libkc3/buf_inspect_u16_decimal.h" \
+	"libkc3/buf_inspect_u16.h" \
 	"libkc3/buf_inspect_u16_hexadecimal.c" \
 	"libkc3/buf_inspect_u16_hexadecimal.h" \
 	"libkc3/buf_inspect_u16_octal.c" \
 	"libkc3/buf_inspect_u16_octal.h" \
-	"libkc3/buf_inspect_u32.c" \
-	"libkc3/buf_inspect_u32.h" \
 	"libkc3/buf_inspect_u32_binary.c" \
 	"libkc3/buf_inspect_u32_binary.h" \
+	"libkc3/buf_inspect_u32.c" \
 	"libkc3/buf_inspect_u32_decimal.c" \
 	"libkc3/buf_inspect_u32_decimal.h" \
+	"libkc3/buf_inspect_u32.h" \
 	"libkc3/buf_inspect_u32_hexadecimal.c" \
 	"libkc3/buf_inspect_u32_hexadecimal.h" \
 	"libkc3/buf_inspect_u32_octal.c" \
 	"libkc3/buf_inspect_u32_octal.h" \
-	"libkc3/buf_inspect_u64.c" \
-	"libkc3/buf_inspect_u64.h" \
 	"libkc3/buf_inspect_u64_binary.c" \
 	"libkc3/buf_inspect_u64_binary.h" \
+	"libkc3/buf_inspect_u64.c" \
 	"libkc3/buf_inspect_u64_decimal.c" \
 	"libkc3/buf_inspect_u64_decimal.h" \
+	"libkc3/buf_inspect_u64.h" \
 	"libkc3/buf_inspect_u64_hexadecimal.c" \
 	"libkc3/buf_inspect_u64_hexadecimal.h" \
 	"libkc3/buf_inspect_u64_octal.c" \
 	"libkc3/buf_inspect_u64_octal.h" \
-	"libkc3/buf_inspect_u8.c" \
-	"libkc3/buf_inspect_u8.h" \
 	"libkc3/buf_inspect_u8_binary.c" \
 	"libkc3/buf_inspect_u8_binary.h" \
+	"libkc3/buf_inspect_u8.c" \
 	"libkc3/buf_inspect_u8_decimal.c" \
 	"libkc3/buf_inspect_u8_decimal.h" \
+	"libkc3/buf_inspect_u8.h" \
 	"libkc3/buf_inspect_u8_hexadecimal.c" \
 	"libkc3/buf_inspect_u8_hexadecimal.h" \
 	"libkc3/buf_inspect_u8_octal.c" \
 	"libkc3/buf_inspect_u8_octal.h" \
 	"libkc3/buf_inspect_u_base.c.in" \
 	"libkc3/buf_inspect_u_base.h.in" \
-	"libkc3/buf_inspect_uw.c" \
-	"libkc3/buf_inspect_uw.h" \
+	"libkc3/buf_inspect_u.c.in" \
+	"libkc3/buf_inspect_u.h.in" \
 	"libkc3/buf_inspect_uw_binary.c" \
 	"libkc3/buf_inspect_uw_binary.h" \
+	"libkc3/buf_inspect_uw.c" \
 	"libkc3/buf_inspect_uw_decimal.c" \
 	"libkc3/buf_inspect_uw_decimal.h" \
+	"libkc3/buf_inspect_uw.h" \
 	"libkc3/buf_inspect_uw_hexadecimal.c" \
 	"libkc3/buf_inspect_uw_hexadecimal.h" \
 	"libkc3/buf_inspect_uw_octal.c" \
 	"libkc3/buf_inspect_uw_octal.h" \
 	"libkc3/buf_parse.c" \
 	"libkc3/buf_parse.h" \
-	"libkc3/buf_parse_s.c.in" \
-	"libkc3/buf_parse_s.h.in" \
 	"libkc3/buf_parse_s16.c" \
 	"libkc3/buf_parse_s16.h" \
 	"libkc3/buf_parse_s32.c" \
@@ -390,10 +388,10 @@ KC3_C_SOURCES = \
 	"libkc3/buf_parse_s64.h" \
 	"libkc3/buf_parse_s8.c" \
 	"libkc3/buf_parse_s8.h" \
+	"libkc3/buf_parse_s.c.in" \
+	"libkc3/buf_parse_s.h.in" \
 	"libkc3/buf_parse_sw.c" \
 	"libkc3/buf_parse_sw.h" \
-	"libkc3/buf_parse_u.c.in" \
-	"libkc3/buf_parse_u.h.in" \
 	"libkc3/buf_parse_u16.c" \
 	"libkc3/buf_parse_u16.h" \
 	"libkc3/buf_parse_u32.c" \
@@ -402,16 +400,18 @@ KC3_C_SOURCES = \
 	"libkc3/buf_parse_u64.h" \
 	"libkc3/buf_parse_u8.c" \
 	"libkc3/buf_parse_u8.h" \
+	"libkc3/buf_parse_u.c.in" \
+	"libkc3/buf_parse_u.h.in" \
 	"libkc3/buf_parse_uw.c" \
 	"libkc3/buf_parse_uw.h" \
 	"libkc3/buf_rw.c" \
 	"libkc3/buf_rw.h" \
 	"libkc3/buf_save.c" \
 	"libkc3/buf_save.h" \
-	"libkc3/call.c" \
-	"libkc3/call.h" \
 	"libkc3/callable.c" \
 	"libkc3/callable.h" \
+	"libkc3/call.c" \
+	"libkc3/call.h" \
 	"libkc3/cast.c" \
 	"libkc3/cast.h" \
 	"libkc3/ceiling.c" \
@@ -434,9 +434,9 @@ KC3_C_SOURCES = \
 	"libkc3/deserialize.c" \
 	"libkc3/deserialize.h" \
 	"libkc3/env.c" \
-	"libkc3/env.h" \
 	"libkc3/env_fork.c" \
 	"libkc3/env_fork.h" \
+	"libkc3/env.h" \
 	"libkc3/error.c" \
 	"libkc3/error.h" \
 	"libkc3/error_handler.c" \
@@ -450,39 +450,41 @@ KC3_C_SOURCES = \
 	"libkc3/f32.h" \
 	"libkc3/f64.c" \
 	"libkc3/f64.h" \
-	"libkc3/fact.c" \
-	"libkc3/fact.h" \
 	"libkc3/fact_action.c" \
 	"libkc3/fact_action.h" \
+	"libkc3/fact.c" \
+	"libkc3/fact.h" \
 	"libkc3/fact_list.c" \
 	"libkc3/fact_list.h" \
 	"libkc3/facts.c" \
-	"libkc3/facts.h" \
 	"libkc3/facts_cursor.c" \
 	"libkc3/facts_cursor.h" \
+	"libkc3/facts.h" \
 	"libkc3/facts_spec.c" \
-	"libkc3/facts_spec.h" \
 	"libkc3/facts_spec_cursor.c" \
 	"libkc3/facts_spec_cursor.h" \
+	"libkc3/facts_spec.h" \
 	"libkc3/facts_transaction.c" \
 	"libkc3/facts_transaction.h" \
 	"libkc3/facts_with.c" \
-	"libkc3/facts_with.h" \
 	"libkc3/facts_with_cursor.c" \
 	"libkc3/facts_with_cursor.h" \
+	"libkc3/facts_with.h" \
 	"libkc3/fd.c" \
 	"libkc3/fd.h" \
 	"libkc3/file.c" \
 	"libkc3/file.h" \
 	"libkc3/float.h" \
 	"libkc3/fn.c" \
-	"libkc3/fn.h" \
 	"libkc3/fn_clause.c" \
 	"libkc3/fn_clause.h" \
+	"libkc3/fn.h" \
 	"libkc3/frame.c" \
 	"libkc3/frame.h" \
 	"libkc3/hash.c" \
 	"libkc3/hash.h" \
+	"libkc3/ht.c" \
+	"libkc3/ht.h" \
 	"libkc3/ident.c" \
 	"libkc3/ident.h" \
 	"libkc3/inspect.c" \
@@ -509,6 +511,9 @@ KC3_C_SOURCES = \
 	"libkc3/mutex.h" \
 	"libkc3/operator.c" \
 	"libkc3/operator.h" \
+	"libkc3/op.h" \
+	"libkc3/ops.c" \
+	"libkc3/ops.h" \
 	"libkc3/pcomplex.c" \
 	"libkc3/pcomplex.h" \
 	"libkc3/pcow.c" \
@@ -518,9 +523,9 @@ KC3_C_SOURCES = \
 	"libkc3/ptag.c" \
 	"libkc3/ptag.h" \
 	"libkc3/ptr.c" \
-	"libkc3/ptr.h" \
 	"libkc3/ptr_free.c" \
 	"libkc3/ptr_free.h" \
+	"libkc3/ptr.h" \
 	"libkc3/queue.c" \
 	"libkc3/queue.h" \
 	"libkc3/quote.c" \
@@ -529,8 +534,6 @@ KC3_C_SOURCES = \
 	"libkc3/ratio.h" \
 	"libkc3/rwlock.c" \
 	"libkc3/rwlock.h" \
-	"libkc3/s.c.in" \
-	"libkc3/s.h.in" \
 	"libkc3/s16.c" \
 	"libkc3/s16.h" \
 	"libkc3/s32.c" \
@@ -539,42 +542,44 @@ KC3_C_SOURCES = \
 	"libkc3/s64.h" \
 	"libkc3/s8.c" \
 	"libkc3/s8.h" \
+	"libkc3/s.c.in" \
 	"libkc3/sequence.c" \
 	"libkc3/sequence.h" \
 	"libkc3/serialize.c" \
 	"libkc3/serialize.h" \
 	"libkc3/set.c.in" \
-	"libkc3/set.h.in" \
-	"libkc3/set__fact.c" \
-	"libkc3/set__fact.h" \
-	"libkc3/set__tag.c" \
-	"libkc3/set__tag.h" \
 	"libkc3/set_cursor.c.in" \
-	"libkc3/set_cursor.h.in" \
 	"libkc3/set_cursor__fact.c" \
 	"libkc3/set_cursor__fact.h" \
+	"libkc3/set_cursor.h.in" \
 	"libkc3/set_cursor__tag.c" \
 	"libkc3/set_cursor__tag.h" \
+	"libkc3/set__fact.c" \
+	"libkc3/set__fact.h" \
+	"libkc3/set.h.in" \
 	"libkc3/set_item.c.in" \
-	"libkc3/set_item.h.in" \
 	"libkc3/set_item__fact.c" \
 	"libkc3/set_item__fact.h" \
+	"libkc3/set_item.h.in" \
 	"libkc3/set_item__tag.c" \
 	"libkc3/set_item__tag.h" \
-	"libkc3/sh.c" \
-	"libkc3/sh.h" \
+	"libkc3/set__tag.c" \
+	"libkc3/set__tag.h" \
 	"libkc3/sha1.c" \
 	"libkc3/sha1.h" \
+	"libkc3/sh.c" \
+	"libkc3/sh.h" \
+	"libkc3/s.h.in" \
 	"libkc3/sign.c" \
 	"libkc3/sign.h" \
 	"libkc3/skiplist.c.in" \
-	"libkc3/skiplist.h.in" \
 	"libkc3/skiplist__fact.c" \
 	"libkc3/skiplist__fact.h" \
+	"libkc3/skiplist.h.in" \
 	"libkc3/skiplist_node.c.in" \
-	"libkc3/skiplist_node.h.in" \
 	"libkc3/skiplist_node__fact.c" \
 	"libkc3/skiplist_node__fact.h" \
+	"libkc3/skiplist_node.h.in" \
 	"libkc3/special_operator.c" \
 	"libkc3/special_operator.h" \
 	"libkc3/str.c" \
@@ -587,15 +592,15 @@ KC3_C_SOURCES = \
 	"libkc3/sw.h" \
 	"libkc3/sym.c" \
 	"libkc3/sym.h" \
-	"libkc3/tag.c" \
-	"libkc3/tag.h" \
 	"libkc3/tag_add.c" \
 	"libkc3/tag_addi.c" \
 	"libkc3/tag_band.c" \
 	"libkc3/tag_bnot.c" \
 	"libkc3/tag_bor.c" \
 	"libkc3/tag_bxor.c" \
+	"libkc3/tag.c" \
 	"libkc3/tag_div.c" \
+	"libkc3/tag.h" \
 	"libkc3/tag_init.c" \
 	"libkc3/tag_init.h" \
 	"libkc3/tag_mod.c" \
@@ -614,8 +619,6 @@ KC3_C_SOURCES = \
 	"libkc3/tuple.c" \
 	"libkc3/tuple.h" \
 	"libkc3/types.h" \
-	"libkc3/u.c.in" \
-	"libkc3/u.h.in" \
 	"libkc3/u16.c" \
 	"libkc3/u16.h" \
 	"libkc3/u32.c" \
@@ -626,6 +629,8 @@ KC3_C_SOURCES = \
 	"libkc3/u8.h" \
 	"libkc3/ucd.c" \
 	"libkc3/ucd.h" \
+	"libkc3/u.c.in" \
+	"libkc3/u.h.in" \
 	"libkc3/unquote.c" \
 	"libkc3/unquote.h" \
 	"libkc3/uw.c" \
@@ -640,21 +645,21 @@ KC3_C_SOURCES = \
 	"markdown/entity.h" \
 	"markdown/markdown.c" \
 	"markdown/markdown.h" \
-	"markdown/md4c-html.c" \
-	"markdown/md4c-html.h" \
 	"markdown/md4c.c" \
 	"markdown/md4c.h" \
+	"markdown/md4c-html.c" \
+	"markdown/md4c-html.h" \
 	"smtp/kc3_smtp.c" \
 	"smtp/kc3_smtp.h" \
 	"smtp/smtp.c" \
 	"smtp/smtp.h" \
 	"smtp/types.h" \
-	"socket/socket.c" \
-	"socket/socket.h" \
 	"socket/socket_addr.c" \
 	"socket/socket_addr.h" \
 	"socket/socket_buf.c" \
 	"socket/socket_buf.h" \
+	"socket/socket.c" \
+	"socket/socket.h" \
 	"socket/types.h" \
 	"test/array_test.c" \
 	"test/bool_test.c" \
@@ -678,11 +683,11 @@ KC3_C_SOURCES = \
 	"test/compare_test.c" \
 	"test/compare_test.h" \
 	"test/env_test.c" \
-	"test/fact_test.c" \
-	"test/fact_test.h" \
 	"test/facts_cursor_test.c" \
 	"test/facts_test.c" \
 	"test/facts_with_test.c" \
+	"test/fact_test.c" \
+	"test/fact_test.h" \
 	"test/fn_test.c" \
 	"test/hash_test.c" \
 	"test/ident_test.c" \
@@ -702,8 +707,8 @@ KC3_C_SOURCES = \
 	"test/test.h" \
 	"test/tuple_test.c" \
 	"test/types_test.c" \
-	"ucd2c/ucd.h" \
 	"ucd2c/ucd2c.c" \
+	"ucd2c/ucd.h" \
 	"window/cairo/cairo_font.c" \
 	"window/cairo/cairo_font.h" \
 	"window/cairo/cairo_sprite.c" \
@@ -725,10 +730,10 @@ KC3_C_SOURCES = \
 	"window/cairo/quartz/demo/window_cairo_quartz_demo.c" \
 	"window/cairo/quartz/quartz_to_xkbcommon.c" \
 	"window/cairo/quartz/quartz_to_xkbcommon.h" \
-	"window/cairo/quartz/window_cairo_quartz.h" \
 	"window/cairo/quartz/window_cairo_quartz_app_delegate.h" \
-	"window/cairo/quartz/window_cairo_quartz_view.h" \
+	"window/cairo/quartz/window_cairo_quartz.h" \
 	"window/cairo/quartz/window_cairo_quartz_view_controller.h" \
+	"window/cairo/quartz/window_cairo_quartz_view.h" \
 	"window/cairo/quartz/xkbquartz.h" \
 	"window/cairo/types.h" \
 	"window/cairo/win32/demo/window_cairo_win32_demo.c" \
@@ -838,222 +843,222 @@ KC3_CXX_SOURCES = \
 	"libkc3/std.hxx" \
 
 KC3_FONT_SOURCES = \
-	"fonts/Computer Modern/cmunbl-webfont.ttf" \
 	"fonts/Computer Modern/cmunbl.otf" \
-	"fonts/Computer Modern/cmunbx-webfont.ttf" \
+	"fonts/Computer Modern/cmunbl-webfont.ttf" \
+	"fonts/Computer Modern/cmunbxo.otf" \
 	"fonts/Computer Modern/cmunbx.otf" \
 	"fonts/Computer Modern/cmunbxo-webfont.ttf" \
-	"fonts/Computer Modern/cmunbxo.otf" \
-	"fonts/Computer Modern/cmunrm-webfont.ttf" \
+	"fonts/Computer Modern/cmunbx-webfont.ttf" \
 	"fonts/Computer Modern/cmunrm.otf" \
-	"fonts/Computer Modern/cmunsi-webfont.ttf" \
+	"fonts/Computer Modern/cmunrm-webfont.ttf" \
 	"fonts/Computer Modern/cmunsi.otf" \
-	"fonts/Computer Modern/cmunsl-webfont.ttf" \
+	"fonts/Computer Modern/cmunsi-webfont.ttf" \
 	"fonts/Computer Modern/cmunsl.otf" \
-	"fonts/Computer Modern/cmunss-webfont.ttf" \
+	"fonts/Computer Modern/cmunsl-webfont.ttf" \
 	"fonts/Computer Modern/cmunss.otf" \
-	"fonts/Computer Modern/cmunsx-webfont.ttf" \
+	"fonts/Computer Modern/cmunss-webfont.ttf" \
 	"fonts/Computer Modern/cmunsx.otf" \
-	"fonts/Courier New/Courier New.ttf" \
-	"fonts/Courier/fonts/OGCourier-Bold.otf" \
-	"fonts/Courier/fonts/OGCourier-Bold.ttf" \
+	"fonts/Computer Modern/cmunsx-webfont.ttf" \
 	"fonts/Courier/fonts/OGCourier-BoldItalic.otf" \
 	"fonts/Courier/fonts/OGCourier-BoldItalic.ttf" \
+	"fonts/Courier/fonts/OGCourier-Bold.otf" \
+	"fonts/Courier/fonts/OGCourier-Bold.ttf" \
 	"fonts/Courier/fonts/OGCourier-Italic.otf" \
 	"fonts/Courier/fonts/OGCourier-Italic.ttf" \
 	"fonts/Courier/fonts/OGCourier.otf" \
 	"fonts/Courier/fonts/OGCourier.ttf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.otf" \
-	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.ttf" \
 	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-BoldItalic.otf" \
 	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-BoldItalic.ttf" \
+	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.otf" \
+	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Bold.ttf" \
 	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Italic.otf" \
 	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot-Italic.ttf" \
 	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot.otf" \
 	"fonts/Courier/fonts/zero-dot/OGCourierZeroDot.ttf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.otf" \
-	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.ttf" \
 	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-BoldItalic.otf" \
 	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-BoldItalic.ttf" \
+	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.otf" \
+	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Bold.ttf" \
 	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Italic.otf" \
 	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash-Italic.ttf" \
 	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash.otf" \
 	"fonts/Courier/fonts/zero-slash/OGCourierZeroSlash.ttf" \
-	"fonts/Courier/sfd/OGCourier-Bold.sfd.ttf" \
+	"fonts/Courier New/Courier New.ttf" \
 	"fonts/Courier/sfd/OGCourier-BoldItalic.sfd.ttf" \
+	"fonts/Courier/sfd/OGCourier-Bold.sfd.ttf" \
 	"fonts/Courier/sfd/OGCourier-Italic.sfd.ttf" \
 	"fonts/Courier/sfd/OGCourier.sfd.ttf" \
+	"fonts/Inter/extras/otf/Inter-BlackItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-Black.otf" \
+	"fonts/Inter/extras/otf/Inter-BoldItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-Bold.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-BlackItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Black.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-BoldItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Bold.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-ExtraBoldItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-ExtraBold.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-ExtraLightItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-ExtraLight.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Italic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-LightItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Light.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-MediumItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Medium.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Regular.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-SemiBoldItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-SemiBold.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-ThinItalic.otf" \
+	"fonts/Inter/extras/otf/InterDisplay-Thin.otf" \
+	"fonts/Inter/extras/otf/Inter-ExtraBoldItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-ExtraBold.otf" \
+	"fonts/Inter/extras/otf/Inter-ExtraLightItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-ExtraLight.otf" \
+	"fonts/Inter/extras/otf/Inter-Italic.otf" \
+	"fonts/Inter/extras/otf/Inter-LightItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-Light.otf" \
+	"fonts/Inter/extras/otf/Inter-MediumItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-Medium.otf" \
+	"fonts/Inter/extras/otf/Inter-Regular.otf" \
+	"fonts/Inter/extras/otf/Inter-SemiBoldItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-SemiBold.otf" \
+	"fonts/Inter/extras/otf/Inter-ThinItalic.otf" \
+	"fonts/Inter/extras/otf/Inter-Thin.otf" \
+	"fonts/Inter/extras/ttf/Inter-BlackItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Black.ttf" \
+	"fonts/Inter/extras/ttf/Inter-BoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Bold.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-BlackItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Black.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-BoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Bold.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-ExtraBoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-ExtraBold.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-ExtraLightItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-ExtraLight.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Italic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-LightItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Light.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-MediumItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Medium.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Regular.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-SemiBoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-SemiBold.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-ThinItalic.ttf" \
+	"fonts/Inter/extras/ttf/InterDisplay-Thin.ttf" \
+	"fonts/Inter/extras/ttf/Inter-ExtraBoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-ExtraBold.ttf" \
+	"fonts/Inter/extras/ttf/Inter-ExtraLightItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-ExtraLight.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Italic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-LightItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Light.ttf" \
+	"fonts/Inter/extras/ttf/Inter-MediumItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Medium.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Regular.ttf" \
+	"fonts/Inter/extras/ttf/Inter-SemiBoldItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-SemiBold.ttf" \
+	"fonts/Inter/extras/ttf/Inter-ThinItalic.ttf" \
+	"fonts/Inter/extras/ttf/Inter-Thin.ttf" \
 	"fonts/Inter/InterVariable-Italic.ttf" \
 	"fonts/Inter/InterVariable.ttf" \
-	"fonts/Inter/extras/otf/Inter-Black.otf" \
-	"fonts/Inter/extras/otf/Inter-BlackItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-Bold.otf" \
-	"fonts/Inter/extras/otf/Inter-BoldItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-ExtraBold.otf" \
-	"fonts/Inter/extras/otf/Inter-ExtraBoldItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-ExtraLight.otf" \
-	"fonts/Inter/extras/otf/Inter-ExtraLightItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-Italic.otf" \
-	"fonts/Inter/extras/otf/Inter-Light.otf" \
-	"fonts/Inter/extras/otf/Inter-LightItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-Medium.otf" \
-	"fonts/Inter/extras/otf/Inter-MediumItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-Regular.otf" \
-	"fonts/Inter/extras/otf/Inter-SemiBold.otf" \
-	"fonts/Inter/extras/otf/Inter-SemiBoldItalic.otf" \
-	"fonts/Inter/extras/otf/Inter-Thin.otf" \
-	"fonts/Inter/extras/otf/Inter-ThinItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Black.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-BlackItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Bold.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-BoldItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-ExtraBold.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-ExtraBoldItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-ExtraLight.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-ExtraLightItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Italic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Light.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-LightItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Medium.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-MediumItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Regular.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-SemiBold.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-SemiBoldItalic.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-Thin.otf" \
-	"fonts/Inter/extras/otf/InterDisplay-ThinItalic.otf" \
-	"fonts/Inter/extras/ttf/Inter-Black.ttf" \
-	"fonts/Inter/extras/ttf/Inter-BlackItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Bold.ttf" \
-	"fonts/Inter/extras/ttf/Inter-BoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-ExtraBold.ttf" \
-	"fonts/Inter/extras/ttf/Inter-ExtraBoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-ExtraLight.ttf" \
-	"fonts/Inter/extras/ttf/Inter-ExtraLightItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Italic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Light.ttf" \
-	"fonts/Inter/extras/ttf/Inter-LightItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Medium.ttf" \
-	"fonts/Inter/extras/ttf/Inter-MediumItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Regular.ttf" \
-	"fonts/Inter/extras/ttf/Inter-SemiBold.ttf" \
-	"fonts/Inter/extras/ttf/Inter-SemiBoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/Inter-Thin.ttf" \
-	"fonts/Inter/extras/ttf/Inter-ThinItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Black.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-BlackItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Bold.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-BoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-ExtraBold.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-ExtraBoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-ExtraLight.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-ExtraLightItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Italic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Light.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-LightItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Medium.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-MediumItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Regular.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-SemiBold.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-SemiBoldItalic.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-Thin.ttf" \
-	"fonts/Inter/extras/ttf/InterDisplay-ThinItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Black.ttf" \
 	"fonts/Noto Sans/NotoSans-BlackItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Bold.ttf" \
+	"fonts/Noto Sans/NotoSans-Black.ttf" \
 	"fonts/Noto Sans/NotoSans-BoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-ExtraBold.ttf" \
-	"fonts/Noto Sans/NotoSans-ExtraBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-ExtraLight.ttf" \
-	"fonts/Noto Sans/NotoSans-ExtraLightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Italic-VariableFont_wdth,wght.ttf" \
-	"fonts/Noto Sans/NotoSans-Italic.ttf" \
-	"fonts/Noto Sans/NotoSans-Light.ttf" \
-	"fonts/Noto Sans/NotoSans-LightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Medium.ttf" \
-	"fonts/Noto Sans/NotoSans-MediumItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Regular.ttf" \
-	"fonts/Noto Sans/NotoSans-SemiBold.ttf" \
-	"fonts/Noto Sans/NotoSans-SemiBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-Thin.ttf" \
-	"fonts/Noto Sans/NotoSans-ThinItalic.ttf" \
-	"fonts/Noto Sans/NotoSans-VariableFont_wdth,wght.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Black.ttf" \
+	"fonts/Noto Sans/NotoSans-Bold.ttf" \
 	"fonts/Noto Sans/NotoSans_Condensed-BlackItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Bold.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Black.ttf" \
 	"fonts/Noto Sans/NotoSans_Condensed-BoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-ExtraBold.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Bold.ttf" \
 	"fonts/Noto Sans/NotoSans_Condensed-ExtraBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-ExtraLight.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-ExtraBold.ttf" \
 	"fonts/Noto Sans/NotoSans_Condensed-ExtraLightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-ExtraLight.ttf" \
 	"fonts/Noto Sans/NotoSans_Condensed-Italic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Light.ttf" \
 	"fonts/Noto Sans/NotoSans_Condensed-LightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Medium.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Light.ttf" \
 	"fonts/Noto Sans/NotoSans_Condensed-MediumItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Medium.ttf" \
 	"fonts/Noto Sans/NotoSans_Condensed-Regular.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-SemiBold.ttf" \
 	"fonts/Noto Sans/NotoSans_Condensed-SemiBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_Condensed-Thin.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-SemiBold.ttf" \
 	"fonts/Noto Sans/NotoSans_Condensed-ThinItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Black.ttf" \
+	"fonts/Noto Sans/NotoSans_Condensed-Thin.ttf" \
+	"fonts/Noto Sans/NotoSans-ExtraBoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-ExtraBold.ttf" \
 	"fonts/Noto Sans/NotoSans_ExtraCondensed-BlackItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Bold.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Black.ttf" \
 	"fonts/Noto Sans/NotoSans_ExtraCondensed-BoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraBold.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Bold.ttf" \
 	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraLight.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraBold.ttf" \
 	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraLightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-ExtraLight.ttf" \
 	"fonts/Noto Sans/NotoSans_ExtraCondensed-Italic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Light.ttf" \
 	"fonts/Noto Sans/NotoSans_ExtraCondensed-LightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Medium.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Light.ttf" \
 	"fonts/Noto Sans/NotoSans_ExtraCondensed-MediumItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Medium.ttf" \
 	"fonts/Noto Sans/NotoSans_ExtraCondensed-Regular.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-SemiBold.ttf" \
 	"fonts/Noto Sans/NotoSans_ExtraCondensed-SemiBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_ExtraCondensed-Thin.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-SemiBold.ttf" \
 	"fonts/Noto Sans/NotoSans_ExtraCondensed-ThinItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Black.ttf" \
+	"fonts/Noto Sans/NotoSans_ExtraCondensed-Thin.ttf" \
+	"fonts/Noto Sans/NotoSans-ExtraLightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-ExtraLight.ttf" \
+	"fonts/Noto Sans/NotoSans-Italic.ttf" \
+	"fonts/Noto Sans/NotoSans-Italic-VariableFont_wdth,wght.ttf" \
+	"fonts/Noto Sans/NotoSans-LightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-Light.ttf" \
+	"fonts/Noto Sans/NotoSans-MediumItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-Medium.ttf" \
+	"fonts/Noto Sans/NotoSans-Regular.ttf" \
+	"fonts/Noto Sans/NotoSans-SemiBoldItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-SemiBold.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-BlackItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Bold.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Black.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-BoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraBold.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Bold.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraLight.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraBold.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraLightItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-ExtraLight.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-Italic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Light.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-LightItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Medium.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Light.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-MediumItalic.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Medium.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-Regular.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-SemiBold.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-SemiBoldItalic.ttf" \
-	"fonts/Noto Sans/NotoSans_SemiCondensed-Thin.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-SemiBold.ttf" \
 	"fonts/Noto Sans/NotoSans_SemiCondensed-ThinItalic.ttf" \
-	"fonts/opensans/hinted_ttfs/OpenSans-Bold.ttf" \
+	"fonts/Noto Sans/NotoSans_SemiCondensed-Thin.ttf" \
+	"fonts/Noto Sans/NotoSans-ThinItalic.ttf" \
+	"fonts/Noto Sans/NotoSans-Thin.ttf" \
+	"fonts/Noto Sans/NotoSans-VariableFont_wdth,wght.ttf" \
 	"fonts/opensans/hinted_ttfs/OpenSans-BoldItalic.ttf" \
+	"fonts/opensans/hinted_ttfs/OpenSans-Bold.ttf" \
 	"fonts/opensans/hinted_ttfs/OpenSans-CondBold.ttf" \
-	"fonts/opensans/hinted_ttfs/OpenSans-CondLight.ttf" \
 	"fonts/opensans/hinted_ttfs/OpenSans-CondLightItalic.ttf" \
-	"fonts/opensans/hinted_ttfs/OpenSans-ExtraBold.ttf" \
+	"fonts/opensans/hinted_ttfs/OpenSans-CondLight.ttf" \
 	"fonts/opensans/hinted_ttfs/OpenSans-ExtraBoldItalic.ttf" \
+	"fonts/opensans/hinted_ttfs/OpenSans-ExtraBold.ttf" \
 	"fonts/opensans/hinted_ttfs/OpenSans-Italic.ttf" \
-	"fonts/opensans/hinted_ttfs/OpenSans-Light.ttf" \
 	"fonts/opensans/hinted_ttfs/OpenSans-LightItalic.ttf" \
+	"fonts/opensans/hinted_ttfs/OpenSans-Light.ttf" \
 	"fonts/opensans/hinted_ttfs/OpenSans-Regular.ttf" \
-	"fonts/opensans/hinted_ttfs/OpenSans-SemiBold.ttf" \
 	"fonts/opensans/hinted_ttfs/OpenSans-SemiBoldItalic.ttf" \
-	"fonts/opensans/ttfs/OpenSans-Bold.ttf" \
+	"fonts/opensans/hinted_ttfs/OpenSans-SemiBold.ttf" \
 	"fonts/opensans/ttfs/OpenSans-BoldItalic.ttf" \
+	"fonts/opensans/ttfs/OpenSans-Bold.ttf" \
 	"fonts/opensans/ttfs/OpenSans-CondBold.ttf" \
-	"fonts/opensans/ttfs/OpenSans-CondLight.ttf" \
 	"fonts/opensans/ttfs/OpenSans-CondLightItalic.ttf" \
-	"fonts/opensans/ttfs/OpenSans-ExtraBold.ttf" \
+	"fonts/opensans/ttfs/OpenSans-CondLight.ttf" \
 	"fonts/opensans/ttfs/OpenSans-ExtraBoldItalic.ttf" \
+	"fonts/opensans/ttfs/OpenSans-ExtraBold.ttf" \
 	"fonts/opensans/ttfs/OpenSans-Italic.ttf" \
-	"fonts/opensans/ttfs/OpenSans-Light.ttf" \
 	"fonts/opensans/ttfs/OpenSans-LightItalic.ttf" \
+	"fonts/opensans/ttfs/OpenSans-Light.ttf" \
 	"fonts/opensans/ttfs/OpenSans-Regular.ttf" \
 
 KC3_HTTPD_SOURCES = \
@@ -1065,8 +1070,8 @@ KC3_HTTPD_SOURCES = \
 	"httpd/fx/app/templates/fx/menu_index.html.ekc3" \
 	"httpd/fx/app/templates/fx/nav2.html.ekc3" \
 	"httpd/fx/app/templates/fx/properties.html.ekc3" \
-	"httpd/fx/app/templates/fx/show.html.ekc3" \
 	"httpd/fx/app/templates/fx/show_file.html.ekc3" \
+	"httpd/fx/app/templates/fx/show.html.ekc3" \
 	"httpd/fx/app/templates/layout.html.ekc3" \
 	"httpd/fx/app/templates/nav.html.ekc3" \
 	"httpd/fx/app/views/fx_view.kc3" \
@@ -1088,7 +1093,6 @@ KC3_IMG_SOURCES = \
 	"img/fly-dead.png" \
 	"img/fly-noto.png" \
 	"img/iris-kc3-004.jpeg" \
-	"img/kc3.1.xcf" \
 	"img/kc3.1024.png" \
 	"img/kc3.1080.jpg" \
 	"img/kc3.1080.png" \
@@ -1096,33 +1100,38 @@ KC3_IMG_SOURCES = \
 	"img/kc3.128.png" \
 	"img/kc3.16.jpg" \
 	"img/kc3.16.png" \
+	"img/kc3.1.xcf" \
 	"img/kc3.256.jpg" \
 	"img/kc3.256.png" \
 	"img/kc3.32.jpg" \
 	"img/kc3.32.png" \
 	"img/kc3.512.jpg" \
 	"img/kc3.512.png" \
-	"img/kc3.64.jpg" \
-	"img/kc3.64.png" \
 	"img/kc3.640.jpg" \
 	"img/kc3.640.png" \
+	"img/kc3.64.jpg" \
+	"img/kc3.64.png" \
 	"img/kc3.720.jpg" \
 	"img/kc3.720.png" \
 	"img/kc3.96.jpg" \
 	"img/kc3.96.png" \
-	"img/kc3.iconset/icon_128x128.png" \
 	"img/kc3.iconset/icon_128x128@2x.png" \
-	"img/kc3.iconset/icon_16x16.png" \
+	"img/kc3.iconset/icon_128x128.png" \
 	"img/kc3.iconset/icon_16x16@2x.png" \
-	"img/kc3.iconset/icon_256x256.png" \
+	"img/kc3.iconset/icon_16x16.png" \
 	"img/kc3.iconset/icon_256x256@2x.png" \
-	"img/kc3.iconset/icon_32x32.png" \
+	"img/kc3.iconset/icon_256x256.png" \
 	"img/kc3.iconset/icon_32x32@2x.png" \
-	"img/kc3.iconset/icon_512x512.png" \
+	"img/kc3.iconset/icon_32x32.png" \
 	"img/kc3.iconset/icon_512x512@2x.png" \
-	"img/kc3.iconset/icon_64x64.png" \
+	"img/kc3.iconset/icon_512x512.png" \
 	"img/kc3.iconset/icon_64x64@2x.png" \
+	"img/kc3.iconset/icon_64x64.png" \
 	"img/kc3.xcf" \
+	"img/kmx.logo.text.256.a10.png" \
+	"img/kmx.logo.text.256.a20.png" \
+	"img/kmx.logo.text.256.a50.png" \
+	"img/kmx.logo.text.256.png" \
 	"img/mandelbrot_f128_limit.1.png" \
 	"img/mandelbrot_f128_limit.2.png" \
 	"img/mandelbrot_f128_limit.3.png" \
@@ -1150,9 +1159,9 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/f32.facts" \
 	"lib/kc3/0.1/f64.facts" \
 	"lib/kc3/0.1/fact.kc3" \
-	"lib/kc3/0.1/fact_w.kc3" \
-	"lib/kc3/0.1/facts.kc3" \
 	"lib/kc3/0.1/facts/cursor.kc3" \
+	"lib/kc3/0.1/facts.kc3" \
+	"lib/kc3/0.1/fact_w.kc3" \
 	"lib/kc3/0.1/fd.kc3" \
 	"lib/kc3/0.1/file.kc3" \
 	"lib/kc3/0.1/file/stat.kc3" \
@@ -1167,20 +1176,20 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gl/vec2.kc3" \
 	"lib/kc3/0.1/gl/vec3.kc3" \
 	"lib/kc3/0.1/gl/vertex.kc3" \
-	"lib/kc3/0.1/gtk4.kc3" \
 	"lib/kc3/0.1/gtk4/action_map.kc3" \
 	"lib/kc3/0.1/gtk4/application.kc3" \
 	"lib/kc3/0.1/gtk4/application_window.kc3" \
 	"lib/kc3/0.1/gtk4/box.kc3" \
 	"lib/kc3/0.1/gtk4/button.kc3" \
-	"lib/kc3/0.1/gtk4/entry.kc3" \
 	"lib/kc3/0.1/gtk4/entry_buffer.kc3" \
+	"lib/kc3/0.1/gtk4/entry.kc3" \
 	"lib/kc3/0.1/gtk4/file.kc3" \
 	"lib/kc3/0.1/gtk4/frame.kc3" \
+	"lib/kc3/0.1/gtk4.kc3" \
 	"lib/kc3/0.1/gtk4/label.kc3" \
 	"lib/kc3/0.1/gtk4/list_box.kc3" \
-	"lib/kc3/0.1/gtk4/menu.kc3" \
 	"lib/kc3/0.1/gtk4/menu_item.kc3" \
+	"lib/kc3/0.1/gtk4/menu.kc3" \
 	"lib/kc3/0.1/gtk4/object.kc3" \
 	"lib/kc3/0.1/gtk4/paned.kc3" \
 	"lib/kc3/0.1/gtk4/scrolled_window.kc3" \
@@ -1190,16 +1199,17 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/gtk4/widget.kc3" \
 	"lib/kc3/0.1/gtk4/window.kc3" \
 	"lib/kc3/0.1/html.kc3" \
+	"lib/kc3/0.1/httpd.kc3" \
+	"lib/kc3/0.1/httpd/route.kc3" \
 	"lib/kc3/0.1/http.kc3" \
 	"lib/kc3/0.1/http/request.kc3" \
 	"lib/kc3/0.1/http/response.kc3" \
 	"lib/kc3/0.1/http/upload.kc3" \
-	"lib/kc3/0.1/httpd.kc3" \
-	"lib/kc3/0.1/httpd/route.kc3" \
 	"lib/kc3/0.1/integer.facts" \
 	"lib/kc3/0.1/json.kc3" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
+	"lib/kc3/0.1/kc3/op.kc3" \
 	"lib/kc3/0.1/list.kc3" \
 	"lib/kc3/0.1/map.facts" \
 	"lib/kc3/0.1/markdown.kc3" \
@@ -1216,16 +1226,16 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/s64.facts" \
 	"lib/kc3/0.1/s8.facts" \
 	"lib/kc3/0.1/serialize.kc3" \
-	"lib/kc3/0.1/set.kc3" \
 	"lib/kc3/0.1/set/fact.kc3" \
 	"lib/kc3/0.1/set/item/fact.kc3" \
 	"lib/kc3/0.1/set/item/tag.kc3" \
+	"lib/kc3/0.1/set.kc3" \
 	"lib/kc3/0.1/set/tag.kc3" \
 	"lib/kc3/0.1/sh.kc3" \
 	"lib/kc3/0.1/smtp.kc3" \
-	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/socket/addr.kc3" \
 	"lib/kc3/0.1/socket/buf.kc3" \
+	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/str.facts" \
 	"lib/kc3/0.1/struct.kc3" \
 	"lib/kc3/0.1/sw.facts" \
@@ -1244,10 +1254,10 @@ KC3_LIB_SOURCES = \
 
 KC3_OBJC_SOURCES = \
 	"window/cairo/cairo_font_quartz.m" \
-	"window/cairo/quartz/window_cairo_quartz.m" \
 	"window/cairo/quartz/window_cairo_quartz_app_delegate.m" \
-	"window/cairo/quartz/window_cairo_quartz_view.m" \
+	"window/cairo/quartz/window_cairo_quartz.m" \
 	"window/cairo/quartz/window_cairo_quartz_view_controller.m" \
+	"window/cairo/quartz/window_cairo_quartz_view.m" \
 
 KC3_TEST_SOURCES = \
 	"test/buf_parse_test_su.rb" \
@@ -1263,8 +1273,8 @@ KC3_TEST_SOURCES = \
 	"test/facts_test_open_file.3.in.facts" \
 	"test/facts_test_save.expected.facts" \
 	"test/replace_lines.rb" \
-	"test/test.rb" \
 	"test/test_case_end.rb" \
+	"test/test.rb" \
 	"test/zero" \
 
 KC3_TEST_IKC3_SOURCES = \
@@ -1310,14 +1320,14 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/cow.out.expected" \
 	"test/ikc3/cow.ret.expected" \
 	"test/ikc3/def.kc3" \
-	"test/ikc3/def.out.expected" \
-	"test/ikc3/def.ret.expected" \
 	"test/ikc3/defmodule.kc3" \
 	"test/ikc3/defmodule.out.expected" \
 	"test/ikc3/defmodule.ret.expected" \
 	"test/ikc3/defoperator.kc3" \
 	"test/ikc3/defoperator.out.expected" \
 	"test/ikc3/defoperator.ret.expected" \
+	"test/ikc3/def.out.expected" \
+	"test/ikc3/def.ret.expected" \
 	"test/ikc3/defstruct.kc3" \
 	"test/ikc3/defstruct.out.expected" \
 	"test/ikc3/defstruct.ret.expected" \
@@ -1342,11 +1352,11 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/fn.out.expected" \
 	"test/ikc3/fn.ret.expected" \
 	"test/ikc3/gl.kc3" \
-	"test/ikc3/gl.out.expected" \
-	"test/ikc3/gl.ret.expected" \
 	"test/ikc3/globals.kc3" \
 	"test/ikc3/globals.out.expected" \
 	"test/ikc3/globals.ret.expected" \
+	"test/ikc3/gl.out.expected" \
+	"test/ikc3/gl.ret.expected" \
 	"test/ikc3/hello.err.expected" \
 	"test/ikc3/hello.kc3" \
 	"test/ikc3/hello.out.expected" \
@@ -1361,10 +1371,6 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/inspect.kc3" \
 	"test/ikc3/inspect.out.expected" \
 	"test/ikc3/inspect.ret.expected" \
-	"test/ikc3/integer.kc3" \
-	"test/ikc3/integer.lisp" \
-	"test/ikc3/integer.out.expected" \
-	"test/ikc3/integer.ret.expected" \
 	"test/ikc3/integer_add.kc3" \
 	"test/ikc3/integer_add.out.expected" \
 	"test/ikc3/integer_add.ret.expected" \
@@ -1389,6 +1395,8 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/integer_gt.kc3" \
 	"test/ikc3/integer_gt.out.expected" \
 	"test/ikc3/integer_gt.ret.expected" \
+	"test/ikc3/integer.kc3" \
+	"test/ikc3/integer.lisp" \
 	"test/ikc3/integer_lt.kc3" \
 	"test/ikc3/integer_lt.out.expected" \
 	"test/ikc3/integer_lt.ret.expected" \
@@ -1401,6 +1409,8 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/integer_neg.kc3" \
 	"test/ikc3/integer_neg.out.expected" \
 	"test/ikc3/integer_neg.ret.expected" \
+	"test/ikc3/integer.out.expected" \
+	"test/ikc3/integer.ret.expected" \
 	"test/ikc3/integer_sub.kc3" \
 	"test/ikc3/integer_sub.out.expected" \
 	"test/ikc3/integer_sub.ret.expected" \
@@ -1448,6 +1458,7 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/sym.kc3" \
 	"test/ikc3/sym.out.expected" \
 	"test/ikc3/sym.ret.expected" \
+	"test/ikc3_test" \
 	"test/ikc3/thread.kc3" \
 	"test/ikc3/thread.out.expected" \
 	"test/ikc3/thread.ret.expected" \
@@ -1467,14 +1478,13 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/void.kc3" \
 	"test/ikc3/void.out.expected" \
 	"test/ikc3/void.ret.expected" \
-	"test/ikc3_test" \
 
 KC3_TEST_EKC3_SOURCES = \
+	"test/ekc3_test" \
 	"test/ekc3/title.html.ekc3" \
 	"test/ekc3/title.kc3" \
 	"test/ekc3/title.out.expected" \
 	"test/ekc3/title.ret.expected" \
-	"test/ekc3_test" \
 
 KC3_TEST_HTTP_SOURCES = \
 	"test/http/01_socket_buf.kc3" \
@@ -1517,9 +1527,9 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/assets/css/computer_modern.scss" \
 	"test/httpd/assets/css/courier_new.scss" \
 	"test/httpd/assets/css/flash.scss" \
+	"test/httpd/assets/css/fontawesome-5.15.4-free.scss" \
 	"test/httpd/assets/css/fontawesome-5.15.4-free-v4-font-face.scss" \
 	"test/httpd/assets/css/fontawesome-5.15.4-free-v4-shims.scss" \
-	"test/httpd/assets/css/fontawesome-5.15.4-free.scss" \
 	"test/httpd/assets/css/footer.scss" \
 	"test/httpd/assets/css/kc3.scss" \
 	"test/httpd/assets/css/kmx_colors.scss" \
@@ -1529,8 +1539,8 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/assets/js/kmx_anim.js" \
 	"test/httpd/assets/js/kmx_colors.js" \
 	"test/httpd/assets/js/pixel.js" \
-	"test/httpd/assets/package-lock.json" \
 	"test/httpd/assets/package.json" \
+	"test/httpd/assets/package-lock.json" \
 	"test/httpd/config/db.kc3" \
 	"test/httpd/config/mime.types" \
 	"test/httpd/config/routes.kc3" \
@@ -1538,71 +1548,70 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/doc" \
 	"test/httpd/pages" \
 	"test/httpd/pages/index.en.html" \
-	"test/httpd/pages/index.en.html~" \
 	"test/httpd/static" \
 	"test/httpd/static/_assets" \
 	"test/httpd/static/_assets/app.css" \
 	"test/httpd/static/_assets/app.css.map" \
 	"test/httpd/static/_assets/app.js" \
+	"test/httpd/static/doc" \
+	"test/httpd/static/doc/.keep" \
+	"test/httpd/static/favicon.ico" \
 	"test/httpd/static/_fonts" \
-	"test/httpd/static/_fonts/FontAwesome.otf" \
-	"test/httpd/static/_fonts/OpenSans-Bold.ttf" \
-	"test/httpd/static/_fonts/OpenSans-BoldItalic.ttf" \
-	"test/httpd/static/_fonts/OpenSans-CondensedBold.ttf" \
-	"test/httpd/static/_fonts/OpenSans-CondensedBoldItalic.ttf" \
-	"test/httpd/static/_fonts/OpenSans-CondensedExtraBold.ttf" \
-	"test/httpd/static/_fonts/OpenSans-CondensedExtraBoldItalic.ttf" \
-	"test/httpd/static/_fonts/OpenSans-CondensedItalic.ttf" \
-	"test/httpd/static/_fonts/OpenSans-CondensedLight.ttf" \
-	"test/httpd/static/_fonts/OpenSans-CondensedLightItalic.ttf" \
-	"test/httpd/static/_fonts/OpenSans-CondensedRegular.ttf" \
-	"test/httpd/static/_fonts/OpenSans-CondensedSemiBold.ttf" \
-	"test/httpd/static/_fonts/OpenSans-CondensedSemiBoldItalic.ttf" \
-	"test/httpd/static/_fonts/OpenSans-ExtraBold.ttf" \
-	"test/httpd/static/_fonts/OpenSans-ExtraBoldItalic.ttf" \
-	"test/httpd/static/_fonts/OpenSans-Italic.ttf" \
-	"test/httpd/static/_fonts/OpenSans-Light.ttf" \
-	"test/httpd/static/_fonts/OpenSans-LightItalic.ttf" \
-	"test/httpd/static/_fonts/OpenSans-Regular.ttf" \
-	"test/httpd/static/_fonts/OpenSans-SemiBold.ttf" \
-	"test/httpd/static/_fonts/OpenSans-SemiBoldItalic.ttf" \
 	"test/httpd/static/_fonts/computer_modern.woff" \
 	"test/httpd/static/_fonts/courier_new.woff" \
 	"test/httpd/static/_fonts/courier_new.woff2" \
+	"test/httpd/static/_fonts/FontAwesome.otf" \
 	"test/httpd/static/_fonts/fontawesome-webfont.woff" \
 	"test/httpd/static/_fonts/fontawesome-webfont.woff2" \
 	"test/httpd/static/_fonts/free-fa-brands-400.woff2" \
 	"test/httpd/static/_fonts/free-fa-solid-900.woff2" \
+	"test/httpd/static/_fonts/OpenSans-BoldItalic.ttf" \
+	"test/httpd/static/_fonts/OpenSans-Bold.ttf" \
+	"test/httpd/static/_fonts/OpenSans-CondensedBoldItalic.ttf" \
+	"test/httpd/static/_fonts/OpenSans-CondensedBold.ttf" \
+	"test/httpd/static/_fonts/OpenSans-CondensedExtraBoldItalic.ttf" \
+	"test/httpd/static/_fonts/OpenSans-CondensedExtraBold.ttf" \
+	"test/httpd/static/_fonts/OpenSans-CondensedItalic.ttf" \
+	"test/httpd/static/_fonts/OpenSans-CondensedLightItalic.ttf" \
+	"test/httpd/static/_fonts/OpenSans-CondensedLight.ttf" \
+	"test/httpd/static/_fonts/OpenSans-CondensedRegular.ttf" \
+	"test/httpd/static/_fonts/OpenSans-CondensedSemiBoldItalic.ttf" \
+	"test/httpd/static/_fonts/OpenSans-CondensedSemiBold.ttf" \
+	"test/httpd/static/_fonts/OpenSans-ExtraBoldItalic.ttf" \
+	"test/httpd/static/_fonts/OpenSans-ExtraBold.ttf" \
+	"test/httpd/static/_fonts/OpenSans-Italic.ttf" \
+	"test/httpd/static/_fonts/OpenSans-LightItalic.ttf" \
+	"test/httpd/static/_fonts/OpenSans-Light.ttf" \
+	"test/httpd/static/_fonts/OpenSans-Regular.ttf" \
+	"test/httpd/static/_fonts/OpenSans-SemiBoldItalic.ttf" \
+	"test/httpd/static/_fonts/OpenSans-SemiBold.ttf" \
+	"test/httpd/static/fx" \
+	"test/httpd/static/fx/.keep" \
 	"test/httpd/static/_images" \
 	"test/httpd/static/_images/iris-kc3-004.jpeg" \
-	"test/httpd/static/_images/kc3.1.xcf" \
 	"test/httpd/static/_images/kc3.1080.jpg" \
 	"test/httpd/static/_images/kc3.1080.png" \
 	"test/httpd/static/_images/kc3.128.jpg" \
 	"test/httpd/static/_images/kc3.128.png" \
 	"test/httpd/static/_images/kc3.16.jpg" \
 	"test/httpd/static/_images/kc3.16.png" \
+	"test/httpd/static/_images/kc3.1.xcf" \
 	"test/httpd/static/_images/kc3.256.jpg" \
 	"test/httpd/static/_images/kc3.256.png" \
 	"test/httpd/static/_images/kc3.32.jpg" \
 	"test/httpd/static/_images/kc3.32.png" \
 	"test/httpd/static/_images/kc3.512.jpg" \
 	"test/httpd/static/_images/kc3.512.png" \
-	"test/httpd/static/_images/kc3.64.jpg" \
-	"test/httpd/static/_images/kc3.64.png" \
 	"test/httpd/static/_images/kc3.640.jpg" \
 	"test/httpd/static/_images/kc3.640.png" \
+	"test/httpd/static/_images/kc3.64.jpg" \
+	"test/httpd/static/_images/kc3.64.png" \
 	"test/httpd/static/_images/kc3.720.jpg" \
 	"test/httpd/static/_images/kc3.720.png" \
 	"test/httpd/static/_images/kc3.96.jpg" \
 	"test/httpd/static/_images/kc3.96.png" \
 	"test/httpd/static/_images/kc3.icns" \
 	"test/httpd/static/_images/kc3.xcf" \
-	"test/httpd/static/doc" \
-	"test/httpd/static/doc/.keep" \
-	"test/httpd/static/favicon.ico" \
-	"test/httpd/static/fx" \
-	"test/httpd/static/fx/.keep" \
 	"test/httpd/static/release" \
 	"test/httpd/static/test <&%>.html" \
 	"test/httpd/static/test.html" \
@@ -1611,24 +1620,22 @@ KC3_TEST_HTTPD_SOURCES = \
 KC3_OTHER_SOURCES = \
 	"AUTHORS.md" \
 	"BUGS.md" \
-	"CONTRIBUTING.md" \
 	"ChangeLog.md" \
-	"LICENSE.md" \
-	"Makefile" \
-	"README.md" \
 	"config.subr" \
 	"configure" \
+	"CONTRIBUTING.md" \
 	"env" \
 	"kc3.index" \
 	"kc3.version" \
 	"libkc3/tag_init.rb" \
 	"license.h" \
+	"LICENSE.md" \
+	"Makefile" \
+	"README.md" \
 	"sources.mk" \
 	"sources.sh" \
 
 KC3_EXTERNAL_SOURCES = \
-	"libtommath/LICENSE" \
-	"libtommath/README.md" \
 	"libtommath/bn_cutoffs.c" \
 	"libtommath/bn_deprecated.c" \
 	"libtommath/bn_mp_2expt.c" \
@@ -1648,18 +1655,18 @@ KC3_EXTERNAL_SOURCES = \
 	"libtommath/bn_mp_copy.c" \
 	"libtommath/bn_mp_count_bits.c" \
 	"libtommath/bn_mp_decr.c" \
-	"libtommath/bn_mp_div.c" \
 	"libtommath/bn_mp_div_2.c" \
 	"libtommath/bn_mp_div_2d.c" \
 	"libtommath/bn_mp_div_3.c" \
+	"libtommath/bn_mp_div.c" \
 	"libtommath/bn_mp_div_d.c" \
 	"libtommath/bn_mp_dr_is_modulus.c" \
 	"libtommath/bn_mp_dr_reduce.c" \
 	"libtommath/bn_mp_dr_setup.c" \
 	"libtommath/bn_mp_error_to_string.c" \
 	"libtommath/bn_mp_exch.c" \
-	"libtommath/bn_mp_expt_u32.c" \
 	"libtommath/bn_mp_exptmod.c" \
+	"libtommath/bn_mp_expt_u32.c" \
 	"libtommath/bn_mp_exteuclid.c" \
 	"libtommath/bn_mp_fread.c" \
 	"libtommath/bn_mp_from_sbin.c" \
@@ -1691,22 +1698,22 @@ KC3_EXTERNAL_SOURCES = \
 	"libtommath/bn_mp_init_ul.c" \
 	"libtommath/bn_mp_init_ull.c" \
 	"libtommath/bn_mp_invmod.c" \
-	"libtommath/bn_mp_is_square.c" \
 	"libtommath/bn_mp_iseven.c" \
 	"libtommath/bn_mp_isodd.c" \
+	"libtommath/bn_mp_is_square.c" \
 	"libtommath/bn_mp_kronecker.c" \
 	"libtommath/bn_mp_lcm.c" \
 	"libtommath/bn_mp_log_u32.c" \
 	"libtommath/bn_mp_lshd.c" \
-	"libtommath/bn_mp_mod.c" \
 	"libtommath/bn_mp_mod_2d.c" \
+	"libtommath/bn_mp_mod.c" \
 	"libtommath/bn_mp_mod_d.c" \
 	"libtommath/bn_mp_montgomery_calc_normalization.c" \
 	"libtommath/bn_mp_montgomery_reduce.c" \
 	"libtommath/bn_mp_montgomery_setup.c" \
-	"libtommath/bn_mp_mul.c" \
 	"libtommath/bn_mp_mul_2.c" \
 	"libtommath/bn_mp_mul_2d.c" \
+	"libtommath/bn_mp_mul.c" \
 	"libtommath/bn_mp_mul_d.c" \
 	"libtommath/bn_mp_mulmod.c" \
 	"libtommath/bn_mp_neg.c" \
@@ -1725,11 +1732,11 @@ KC3_EXTERNAL_SOURCES = \
 	"libtommath/bn_mp_radix_smap.c" \
 	"libtommath/bn_mp_rand.c" \
 	"libtommath/bn_mp_read_radix.c" \
-	"libtommath/bn_mp_reduce.c" \
 	"libtommath/bn_mp_reduce_2k.c" \
 	"libtommath/bn_mp_reduce_2k_l.c" \
 	"libtommath/bn_mp_reduce_2k_setup.c" \
 	"libtommath/bn_mp_reduce_2k_setup_l.c" \
+	"libtommath/bn_mp_reduce.c" \
 	"libtommath/bn_mp_reduce_is_2k.c" \
 	"libtommath/bn_mp_reduce_is_2k_l.c" \
 	"libtommath/bn_mp_reduce_setup.c" \
@@ -1797,65 +1804,25 @@ KC3_EXTERNAL_SOURCES = \
 	"libtommath/etc/mont.c" \
 	"libtommath/etc/pprime.c" \
 	"libtommath/etc/tune.c" \
+	"libtommath/LICENSE" \
 	"libtommath/mtest/logtab.h" \
-	"libtommath/mtest/mpi-config.h" \
-	"libtommath/mtest/mpi-types.h" \
 	"libtommath/mtest/mpi.c" \
+	"libtommath/mtest/mpi-config.h" \
 	"libtommath/mtest/mpi.h" \
+	"libtommath/mtest/mpi-types.h" \
 	"libtommath/mtest/mtest.c" \
-	"libtommath/tommath.h" \
+	"libtommath/README.md" \
 	"libtommath/tommath_class.h" \
 	"libtommath/tommath_cutoffs.h" \
+	"libtommath/tommath.h" \
 	"libtommath/tommath_private.h" \
 	"libtommath/tommath_superclass.h" \
-	"linenoise/LICENSE" \
-	"linenoise/README.markdown" \
 	"linenoise/example.c" \
+	"linenoise/LICENSE" \
 	"linenoise/linenoise.c" \
 	"linenoise/linenoise.h" \
-	"ucd2c/UCD.zip" \
+	"linenoise/README.markdown" \
 	"ucd2c/UCD/ArabicShaping.txt" \
-	"ucd2c/UCD/BidiBrackets.txt" \
-	"ucd2c/UCD/BidiCharacterTest.txt" \
-	"ucd2c/UCD/BidiMirroring.txt" \
-	"ucd2c/UCD/BidiTest.txt" \
-	"ucd2c/UCD/Blocks.txt" \
-	"ucd2c/UCD/CJKRadicals.txt" \
-	"ucd2c/UCD/CaseFolding.txt" \
-	"ucd2c/UCD/CompositionExclusions.txt" \
-	"ucd2c/UCD/DerivedAge.txt" \
-	"ucd2c/UCD/DerivedCoreProperties.txt" \
-	"ucd2c/UCD/DerivedNormalizationProps.txt" \
-	"ucd2c/UCD/EastAsianWidth.txt" \
-	"ucd2c/UCD/EmojiSources.txt" \
-	"ucd2c/UCD/EquivalentUnifiedIdeograph.txt" \
-	"ucd2c/UCD/HangulSyllableType.txt" \
-	"ucd2c/UCD/Index.txt" \
-	"ucd2c/UCD/IndicPositionalCategory.txt" \
-	"ucd2c/UCD/IndicSyllabicCategory.txt" \
-	"ucd2c/UCD/Jamo.txt" \
-	"ucd2c/UCD/LineBreak.txt" \
-	"ucd2c/UCD/NameAliases.txt" \
-	"ucd2c/UCD/NamedSequences.txt" \
-	"ucd2c/UCD/NamedSequencesProv.txt" \
-	"ucd2c/UCD/NamesList.txt" \
-	"ucd2c/UCD/NormalizationCorrections.txt" \
-	"ucd2c/UCD/NormalizationTest.txt" \
-	"ucd2c/UCD/NushuSources.txt" \
-	"ucd2c/UCD/PropList.txt" \
-	"ucd2c/UCD/PropertyAliases.txt" \
-	"ucd2c/UCD/PropertyValueAliases.txt" \
-	"ucd2c/UCD/ReadMe.txt" \
-	"ucd2c/UCD/ScriptExtensions.txt" \
-	"ucd2c/UCD/Scripts.txt" \
-	"ucd2c/UCD/SpecialCasing.txt" \
-	"ucd2c/UCD/StandardizedVariants.txt" \
-	"ucd2c/UCD/TangutSources.txt" \
-	"ucd2c/UCD/USourceData.txt" \
-	"ucd2c/UCD/USourceGlyphs.pdf" \
-	"ucd2c/UCD/USourceRSChart.pdf" \
-	"ucd2c/UCD/UnicodeData.txt" \
-	"ucd2c/UCD/VerticalOrientation.txt" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakProperty.txt" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/LineBreakTest.txt" \
@@ -1863,9 +1830,23 @@ KC3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/auxiliary/SentenceBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/WordBreakProperty.txt" \
 	"ucd2c/UCD/auxiliary/WordBreakTest.txt" \
-	"ucd2c/UCD/emoji/ReadMe.txt" \
+	"ucd2c/UCD/BidiBrackets.txt" \
+	"ucd2c/UCD/BidiCharacterTest.txt" \
+	"ucd2c/UCD/BidiMirroring.txt" \
+	"ucd2c/UCD/BidiTest.txt" \
+	"ucd2c/UCD/Blocks.txt" \
+	"ucd2c/UCD/CaseFolding.txt" \
+	"ucd2c/UCD/CJKRadicals.txt" \
+	"ucd2c/UCD/CompositionExclusions.txt" \
+	"ucd2c/UCD/DerivedAge.txt" \
+	"ucd2c/UCD/DerivedCoreProperties.txt" \
+	"ucd2c/UCD/DerivedNormalizationProps.txt" \
+	"ucd2c/UCD/EastAsianWidth.txt" \
 	"ucd2c/UCD/emoji/emoji-data.txt" \
 	"ucd2c/UCD/emoji/emoji-variation-sequences.txt" \
+	"ucd2c/UCD/emoji/ReadMe.txt" \
+	"ucd2c/UCD/EmojiSources.txt" \
+	"ucd2c/UCD/EquivalentUnifiedIdeograph.txt" \
 	"ucd2c/UCD/extracted/DerivedBidiClass.txt" \
 	"ucd2c/UCD/extracted/DerivedBinaryProperties.txt" \
 	"ucd2c/UCD/extracted/DerivedCombiningClass.txt" \
@@ -1878,6 +1859,34 @@ KC3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/extracted/DerivedName.txt" \
 	"ucd2c/UCD/extracted/DerivedNumericType.txt" \
 	"ucd2c/UCD/extracted/DerivedNumericValues.txt" \
+	"ucd2c/UCD/HangulSyllableType.txt" \
+	"ucd2c/UCD/Index.txt" \
+	"ucd2c/UCD/IndicPositionalCategory.txt" \
+	"ucd2c/UCD/IndicSyllabicCategory.txt" \
+	"ucd2c/UCD/Jamo.txt" \
+	"ucd2c/UCD/LineBreak.txt" \
+	"ucd2c/UCD/NameAliases.txt" \
+	"ucd2c/UCD/NamedSequencesProv.txt" \
+	"ucd2c/UCD/NamedSequences.txt" \
+	"ucd2c/UCD/NamesList.txt" \
+	"ucd2c/UCD/NormalizationCorrections.txt" \
+	"ucd2c/UCD/NormalizationTest.txt" \
+	"ucd2c/UCD/NushuSources.txt" \
+	"ucd2c/UCD/PropertyAliases.txt" \
+	"ucd2c/UCD/PropertyValueAliases.txt" \
+	"ucd2c/UCD/PropList.txt" \
+	"ucd2c/UCD/ReadMe.txt" \
+	"ucd2c/UCD/ScriptExtensions.txt" \
+	"ucd2c/UCD/Scripts.txt" \
+	"ucd2c/UCD/SpecialCasing.txt" \
+	"ucd2c/UCD/StandardizedVariants.txt" \
+	"ucd2c/UCD/TangutSources.txt" \
+	"ucd2c/UCD/UnicodeData.txt" \
+	"ucd2c/UCD/USourceData.txt" \
+	"ucd2c/UCD/USourceGlyphs.pdf" \
+	"ucd2c/UCD/USourceRSChart.pdf" \
+	"ucd2c/UCD/VerticalOrientation.txt" \
+	"ucd2c/UCD.zip" \
 
 KC3_DOC_SOURCES = \
 	"doc/1_KC3/1.1_Introduction.en.md" \

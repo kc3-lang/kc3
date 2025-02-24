@@ -167,15 +167,9 @@ s_tag * kc3_defmodule (const s_sym **name, const s_block *block, s_tag *dest)
   return env_defmodule(env_global(), name, block, dest);
 }
 
-s_tag * kc3_defoperator (const s_sym **name, const s_sym **sym,
-                         s_tag *symbol_value,
-                         u8 operator_precedence,
-                         const s_sym **operator_associativity,
-                         s_tag *dest)
+s_tag * kc3_defoperator (const s_sym **name, s_op *op, s_tag *dest)
 {
-  return env_defoperator(env_global(), name, sym, symbol_value,
-                         operator_precedence,
-                         operator_associativity, dest);
+  return env_defoperator(env_global(), name, op, dest);
 }
 
 s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
