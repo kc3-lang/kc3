@@ -414,7 +414,7 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
   s_tag tag_arity_u8;
   s_tag tag_symbol_value;
   s_tag tag_op_assoc_rel;
-  s_tag tag_op_assoc_value;
+  s_tag tag_op_assoc_u8;
   s_tag tag_op_callable;
   s_tag tag_op_precedence_sym;
   s_tag tag_op_precedence_u8;
@@ -3498,16 +3498,16 @@ bool * env_operator_is_right_associative (s_env *env, const s_ident *op,
                                           bool *dest)
 {
   s_fact *fact;
-  s_tag tag_assoc;
   s_tag tag_op;
-  s_tag tag_right;
+  s_tag tag_op_assoc_right;
+  s_tag tag_op_assoc_sym;
   assert(env);
   assert(op);
-  tag_init_sym(  &tag_assoc, &g_sym_op_associativity);
   tag_init_ident(&tag_op, op);
-  tag_init_sym(  &tag_right, &g_sym_right);
-  if (! facts_find_fact_by_tags(env->facts, &tag_op, &tag_assoc,
-                                &tag_right, &fact))
+  tag_init_u8(   &tag_op_assoc_right, OP_ASSOCIATIVITY_RIGHT);
+  tag_init_sym(  &tag_op_assoc_sym, &g_sym_op_associativity);
+  if (! facts_find_fact_by_tags(env->facts, &tag_op, &tag_op_assoc_sym,
+                                &tag_op_assoc_right, &fact))
     return NULL;
   *dest = fact ? true : false;
   return dest;
