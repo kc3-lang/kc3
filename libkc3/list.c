@@ -460,7 +460,7 @@ s_list ** list_remove_void (s_list **list)
 s_list ** list_slice (s_list **list, s_tag *start_tag, s_tag *end_tag,
                       s_list **dest)
 {
-  const s_sym *sym_Sw;
+  const s_sym *sym_Sw = &g_sym_Sw;
   sw end;
   sw i;
   s_list *l;
