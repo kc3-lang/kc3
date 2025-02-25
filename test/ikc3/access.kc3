@@ -36,8 +36,8 @@ quote map["a"]["b"]
 map["a"]["b"]
 quote map["a"]["b"]["c"]
 map["a"]["b"]["c"]
-quote op = %KC3.Operator{symbol_value: void}
-op = %KC3.Operator{symbol_value: void}
+quote op = %KC3.Operator{callable: fn (a, b) { a + b }}
+op = %KC3.Operator{callable: fn (a, b) { a + b }}
 quote op.sym
 op.sym
 quote op[:sym]

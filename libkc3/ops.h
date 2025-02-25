@@ -19,6 +19,10 @@
 void    ops_clean (s_ops *ops);
 s_ops * ops_init (s_ops *ops);
 
+/* Heap-allocation compatible functions, call ops_delete after use. */
+void    ops_delete (s_ops *ops);
+s_ops * ops_new (void);
+
 /* Observers. */
 s8     ops_compare (const s_op *a, const s_op *b);
 s_op * ops_get (s_ops *ops, const s_sym *sym, u8 arity);

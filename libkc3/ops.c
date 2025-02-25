@@ -10,6 +10,8 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include <stdlib.h>
+#include "alloc.h"
 #include "assert.h"
 #include "compare.h"
 #include "hash.h"
@@ -20,11 +22,13 @@
 
 bool ops_add (s_ops *ops, s_op *op)
 {
+  assert(ops);
   return ht_add(&ops->ht, op);
 }
 
 void ops_clean (s_ops *ops)
 {
+  assert(ops);
   ht_clean(&ops->ht);
 }
 
@@ -35,6 +39,13 @@ s8 ops_compare (const s_op *a, const s_op *b)
   if (! r)
     r = compare_u8(a->arity, b->arity);
   return r;
+}
+
+void ops_delete (s_ops *ops)
+{
+  assert(ops);
+  ops_clean(ops);
+  free(ops);
 }
 
 s_op * ops_get (s_ops *ops, const s_sym *sym, u8 arity)
@@ -63,10 +74,23 @@ uw ops_hash (const s_op *op)
 s_ops * ops_init (s_ops *ops)
 {
   s_ops tmp = {0};
+  assert(ops);
   if (! ht_init(&tmp.ht, &g_sym_KC3_Op, 256))
     return NULL;
   tmp.ht.compare = (s8 (*) (void *, void *)) ops_compare;
   tmp.ht.hash = (uw (*) (void *)) ops_hash;
   tmp.ht.new_ref = (void * (*) (void *)) op_new_ref;
+  return ops;
+}
+
+s_ops * ops_new (void)
+{
+  s_ops *ops;
+  if (! (ops = alloc(sizeof(s_ops))))
+    return NULL;
+  if (! ops_init(ops)) {
+    free(ops);
+    return NULL;
+  }
   return ops;
 }

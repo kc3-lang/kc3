@@ -253,6 +253,7 @@ void env_clean (s_env *env)
   env_clean_toplevel(env);
   error_handler_delete_all(env->error_handler);
   facts_delete(env->facts);
+  ops_delete(env->ops);
   buf_file_close(env->in);
   buf_delete(env->in);
   buf_file_close(env->out);
@@ -2720,6 +2721,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     env_clean(env);
     return NULL;
   }
+  env->ops = ops_new();
   return env;
 }
 

@@ -456,21 +456,18 @@ TEST_CASE_END(inspect_str)
 
 TEST_CASE(inspect_struct)
 {
-  INSPECT_TEST_STRUCT("%KC3.Operator{symbol_value: 1}",
-                      "%KC3.Operator{sym: :+,\n"
-                      "              symbol_value: 1,\n"
-                      "              operator_precedence: 0,\n"
-                      "              operator_associativity: :left}");
-  INSPECT_TEST_STRUCT("%KC3.Operator{symbol_value: void}",
-                      "%KC3.Operator{sym: :+,\n"
-                      "              symbol_value: void,\n"
-                      "              operator_precedence: 0,\n"
-                      "              operator_associativity: :left}");
-  INSPECT_TEST_STRUCT("%KC3.Operator{sym: :-, symbol_value: void}",
-                      "%KC3.Operator{sym: :-,\n"
-                      "              symbol_value: void,\n"
-                      "              operator_precedence: 0,\n"
-                      "              operator_associativity: :left}");
+  INSPECT_TEST_STRUCT("%KC3.Op{callable: fn (a, b) { a + b }}",
+                      "%KC3.Op{sym: :+,\n"
+                      "        arity: 2,\n"
+                      "        precedence: 0,\n"
+                      "        associativity: 1,\n"
+                      "        callable: fn (a, b) { a + b }}");
+  INSPECT_TEST_STRUCT("%KC3.Op{sym: :-, callable: fn (a, b) { a + b }}",
+                      "%KC3.Op{sym: :-,\n"
+                      "        arity: 2,\n"
+                      "        precedence: 0,\n"
+                      "        associativity: 1,\n"
+                      "        callable: fn (a, b) { a + b },\n");
 }
 TEST_CASE_END(inspect_struct)
 
