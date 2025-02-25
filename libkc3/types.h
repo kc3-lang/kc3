@@ -334,12 +334,13 @@ struct fact_list {
 
 struct ht {
   const s_sym *type;
-  uw count;
-  uw item_size;
-  uw size;
-  s_ht_item **items;
-  uw (* hash) (void *data);
-  s8 (* compare) (void *a, void *b);
+  uw           count;
+  uw           item_size;
+  uw           size;
+  s_ht_item  **items;
+  s8        (* compare) (void *a, void *b);
+  uw        (* hash) (void *data);
+  void *    (* new_ref) (void *a);
 };
 
 struct ht_item {

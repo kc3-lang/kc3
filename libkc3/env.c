@@ -414,7 +414,7 @@ s_tag * env_defoperator (s_env *env, const s_sym * const *name,
   s_tag tag_arity_u8;
   s_tag tag_symbol_value;
   s_tag tag_op_assoc_rel;
-  s_tag tag_op_assoc_u8;
+  s_tag tag_op_assoc_value;
   s_tag tag_op_callable;
   s_tag tag_op_precedence_sym;
   s_tag tag_op_precedence_u8;

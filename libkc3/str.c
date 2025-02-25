@@ -432,6 +432,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_f128(str, tag->data.f128);
   case TAG_IDENT:
     return str_init_ident(str, &tag->data.ident);
+  case TAG_INTEGER:
+    return str_init_integer(str, &tag->data.integer);
   case TAG_LIST:
     return str_init_list(str, (const s_list * const *) &tag->data.list);
   case TAG_MAP:
@@ -831,6 +833,7 @@ s_str * str_init_ftime (s_str *str, s_time *time, const s_str *format)
 }
 
 DEF_STR_INIT_STRUCT(ident)
+DEF_STR_INIT_STRUCT(integer)
 DEF_STR_INIT_PTR(list, const s_list * const *)
 DEF_STR_INIT_STRUCT(map)
 DEF_STR_INIT_PTR(ptr, const u_ptr_w *)
