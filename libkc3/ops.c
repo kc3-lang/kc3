@@ -14,6 +14,7 @@
 #include "compare.h"
 #include "hash.h"
 #include "ht.h"
+#include "op.h"
 #include "ops.h"
 #include "sym.h"
 
@@ -66,5 +67,6 @@ s_ops * ops_init (s_ops *ops)
     return NULL;
   tmp.ht.compare = (s8 (*) (void *, void *)) ops_compare;
   tmp.ht.hash = (uw (*) (void *)) ops_hash;
+  tmp.ht.new_ref = (void * (*) (void *)) op_new_ref;
   return ops;
 }

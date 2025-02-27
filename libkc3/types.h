@@ -704,7 +704,8 @@ struct op {
   u8           arity;
   u8           precedence;
   u8           associativity;
-  s_callable  *callable;
+  p_callable   callable;
+  sw           ref_count;
 };
 
 struct ops {

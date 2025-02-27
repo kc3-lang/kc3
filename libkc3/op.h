@@ -19,4 +19,9 @@
 void   op_clean (s_op *op);
 s_op * op_init (s_op *op);
 
+/* Heap-allocation compatible functions, call op_delete after use. */
+void   op_delete (s_op *op);
+s_op * op_new (void);
+s_op * op_new_ref (s_op *op);
+
 #endif /* LIBKC3_OP_H */

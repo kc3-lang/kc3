@@ -19,7 +19,8 @@
 bool ht_add (s_ht *ht, void *data)
 {
   uw hash = ht->hash(data);
-  return ht_add_hash(ht, data, hash);
+  void *ref = ht->new_ref(data);
+  return ht_add_hash(ht, ref, hash);
 }
 
 bool ht_add_hash (s_ht *ht, void *data, uw hash)
