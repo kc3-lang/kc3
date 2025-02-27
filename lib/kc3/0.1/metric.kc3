@@ -1,13 +1,17 @@
 defmodule Metric do
 
-  def get = fn (key) {
+  def normalize = fn (key) {
     if (key != "/" && Str.ends_with?(key, "/")) do
-      key = Str.slice(key, 0, -2)
+      Str.slice(key, 0, -2)
+    else
+      key
     end
-    puts(inspect(key))
+  end
+
+  def get = fn (key) {
+    key = normalize(key)
     count = Facts.first_with_tags(Config.db, key, :metric_hits, count = ?,
       fn (x) { count })
-    puts(inspect(count))
     if is_integer?(count) do
       count
     else
@@ -16,6 +20,7 @@ defmodule Metric do
   }
 
   def hit = fn (key) {
+    key = normalize(key)
     count = Metric.get(key) + 1
     Facts.replace_tags(Config.db, key, :metric_hits, count)
     count
