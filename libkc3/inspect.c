@@ -275,7 +275,7 @@ s_str * inspect_struct (const s_struct *s, s_str *dest)
 {
   s_pretty pretty = {0};
   sw size;
-  s_buf tmp;
+  s_buf tmp = {0};
   size = buf_inspect_struct_size(&pretty, s);
   if (size < 0) {
     err_puts("inspect_struct: buf_inspect_struct_size error");

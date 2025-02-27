@@ -3793,8 +3793,6 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_call_size(pretty, &tag->data.call);
   case TAG_CALLABLE:
     return buf_inspect_callable_size(pretty, tag->data.callable);
-    //case TAG_CFN:
-    //return buf_inspect_cfn_size(pretty, &tag->data.cfn);
   case TAG_CHARACTER:
     return buf_inspect_character_size(pretty, &tag->data.character);
   case TAG_COMPLEX:
@@ -3809,8 +3807,6 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_f128_size(pretty, &tag->data.f128);
   case TAG_FACT:
     return buf_inspect_fact_size(pretty, &tag->data.fact);
-    //case TAG_FN:
-    //return buf_inspect_fn_size(pretty, &tag->data.fn);
   case TAG_IDENT:
     return buf_inspect_ident_size(pretty, &tag->data.ident);
   case TAG_INTEGER:
