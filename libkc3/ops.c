@@ -11,6 +11,8 @@
  * THIS SOFTWARE.
  */
 #include "assert.h"
+#include "compare.h"
+#include "hash.h"
 #include "ht.h"
 #include "ops.h"
 #include "sym.h"
@@ -25,6 +27,15 @@ void ops_clean (s_ops *ops)
   ht_clean(&ops->ht);
 }
 
+s8 ops_compare (const s_op *a, const s_op *b)
+{
+  s8 r;
+  r = compare_sym(a->sym, b->sym);
+  if (! r)
+    r = compare_u8(a->arity, b->arity);
+  return r;
+}
+
 s_op * ops_get (s_ops *ops, const s_sym *sym, u8 arity)
 {
   s_op op;
@@ -36,9 +47,24 @@ s_op * ops_get (s_ops *ops, const s_sym *sym, u8 arity)
   return ht_get(&ops->ht, &op);
 }
 
+uw ops_hash (const s_op *op)
+{
+  t_hash h;
+  uw u;
+  hash_init(&h);
+  hash_update_sym(&h, &op->sym);
+  hash_update_u8(&h, op->arity);
+  u = hash_to_uw(&h);
+  hash_clean(&h);
+  return u;
+}
+
 s_ops * ops_init (s_ops *ops)
 {
-  if (! ht_init(&ops->ht, &g_sym_KC3_Op, 1024))
+  s_ops tmp = {0};
+  if (! ht_init(&tmp.ht, &g_sym_KC3_Op, 256))
     return NULL;
+  tmp.ht.compare = (s8 (*) (void *, void *)) ops_compare;
+  tmp.ht.hash = (uw (*) (void *)) ops_hash;
   return ops;
 }

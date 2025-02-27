@@ -20,7 +20,9 @@ void    ops_clean (s_ops *ops);
 s_ops * ops_init (s_ops *ops);
 
 /* Observers. */
+s8     ops_compare (const s_op *a, const s_op *b);
 s_op * ops_get (s_ops *ops, const s_sym *sym, u8 arity);
+uw     ops_hash (const s_op *op);
 
 /* Operators. */
 bool ops_add (s_ops *ops, s_op *op);
