@@ -6,7 +6,7 @@ defmodule Metric do
     else
       key
     end
-  end
+  }
 
   def get = fn (key) {
     key = normalize(key)
