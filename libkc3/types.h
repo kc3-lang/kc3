@@ -335,7 +335,6 @@ struct fact_list {
 struct ht {
   const s_sym *type;
   uw           count;
-  uw           item_size;
   uw           size;
   s_ht_item  **items;
   s8        (* compare) (void *a, void *b);

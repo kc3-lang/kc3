@@ -16,6 +16,7 @@
 #include "ht.h"
 #include "ht_item.h"
 
+/* Returns true if data was added or is already present. */
 bool ht_add (s_ht *ht, void *data)
 {
   uw hash = ht->hash(data);
@@ -23,6 +24,7 @@ bool ht_add (s_ht *ht, void *data)
   return ht_add_hash(ht, ref, hash);
 }
 
+/* Returns true if data was added or is already present. */
 bool ht_add_hash (s_ht *ht, void *data, uw hash)
 {
   s8 c;
@@ -30,13 +32,17 @@ bool ht_add_hash (s_ht *ht, void *data, uw hash)
   s_ht_item *item;
   assert(ht);
   assert(data);
+  /* FIXME: lock / unlock */
   index = hash % ht->count;
   item = ht->items[index];
   while (item && (c = ht->compare(item, data)) < 0)
     item = item->next;
+  if (c == 0)
+    return true;
   if (! (item = ht_item_new(data, ht->items[index])))
     return false;
   ht->items[index] = item;
+  ht->count++;
   return true;
 }
 

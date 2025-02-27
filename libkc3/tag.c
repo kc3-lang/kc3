@@ -881,11 +881,11 @@ bool tag_is_integer (s_tag *tag)
   case TAG_IDENT:
     return false;
   case TAG_INTEGER:
-  case TAG_SW:
-  case TAG_S64:
-  case TAG_S32:
-  case TAG_S16:
   case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_SW:
   case TAG_U8:
   case TAG_U16:
   case TAG_U32:
