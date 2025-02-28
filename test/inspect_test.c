@@ -467,7 +467,7 @@ TEST_CASE(inspect_struct)
                       "        arity: 2,\n"
                       "        precedence: 0,\n"
                       "        associativity: 1,\n"
-                      "        callable: fn (a, b) { a + b },\n");
+                      "        callable: fn (a, b) { a + b }}");
 }
 TEST_CASE_END(inspect_struct)
 
