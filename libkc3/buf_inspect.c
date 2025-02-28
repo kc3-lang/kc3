@@ -2128,7 +2128,7 @@ sw buf_inspect_fn_pattern (s_buf *buf, const s_list *pattern)
   sw r;
   sw result = 0;
   assert(buf);
-  if ((r = buf_write_character_utf8(buf, '(')) <= 0)
+  if ((r = buf_write_1(buf, "(")) < 0)
     return r;
   result += r;
   while (pattern) {
@@ -2175,10 +2175,20 @@ sw buf_inspect_fn_pattern_size (s_pretty *pretty, const s_list *pattern)
 sw buf_inspect_fn_size (s_pretty *pretty, const s_fn *fn)
 {
   const s_fn_clause *clause;
+  s_ident ident;
   sw r;
   sw result = 0;
+  assert(pretty);
   assert(fn);
-  if ((r = buf_write_1_size(pretty, "fn ")) < 0)
+  if (fn->macro)
+    ident.sym = &g_sym_macro;
+  else
+    ident.sym = &g_sym_fn;
+  ident.module = fn->module;
+  if ((r = buf_inspect_ident_size(pretty, &ident)) < 0)
+    return r;
+  result += r;
+  if ((r = buf_write_1_size(pretty, " ")) < 0)
     return r;
   result += r;
   clause = fn->clauses;
@@ -2187,7 +2197,7 @@ sw buf_inspect_fn_size (s_pretty *pretty, const s_fn *fn)
     if ((r = buf_write_1_size(pretty, "{\n")) < 0)
       return r;
     result += r;
-    while (fn) {
+    while (clause) {
       if ((r = buf_write_1_size(pretty, "  ")) < 0)
         return r;
       result += r;
@@ -2205,7 +2215,8 @@ sw buf_inspect_fn_size (s_pretty *pretty, const s_fn *fn)
   }
   else {
     if ((r = buf_inspect_fn_clause_size(pretty, clause)) < 0)
-      result += r;
+      return r;
+    result += r;
   }
   return result;
 }
@@ -3358,19 +3369,27 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
   assert(buf);
   assert(s);
   assert(sym_is_module(s->type->module));
-  if ((r = buf_write_1(buf, "%")) < 0)
+  if ((r = buf_write_1(buf, "%")) < 0) {
+    assert(! "buf_inspect_struct: buf_write_1: %");
     return r;
+  }
   result += r;
   if (! sym_is_module(s->type->module)) {
     err_puts("buf_inspect_struct: sym_is_module(s->type->module)");
     assert(! "buf_inspect_struct: sym_is_module(s->type->module)");
     return -1;
   }
-  if ((r = buf_write_str_without_indent(buf, &s->type->module->str)) < 0)
+  if ((r =
+       buf_write_str_without_indent(buf,
+                                    &s->type->module->str)) < 0) {
+    assert(! "buf_inspect_struct: buf_write_str_without_indent: module");
     return r;
+  }
   result += r;
-  if ((r = buf_write_1(buf, "{")) < 0)
+  if ((r = buf_write_1(buf, "{")) < 0) {
+    assert(! "buf_inspect_struct: buf_write_1: {");
     return r;
+  }
   result += r;
   pretty_save_init(&pretty_save, &buf->pretty);
   pretty_indent_from_column(&buf->pretty, 0);
@@ -3399,39 +3418,54 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
           goto clean;
         }
         if (sym_has_reserved_characters(k->data.sym)) {
-          if ((r = buf_inspect_str(buf, &k->data.sym->str)) < 0)
+          if ((r = buf_inspect_str(buf, &k->data.sym->str)) < 0) {
+            assert(! "buf_inspect_struct: buf_inspect_str: k");
             goto clean;
+          }
         }
-        else
-          if ((r = buf_write_str_without_indent(buf,
-                                                &k->data.sym->str)) < 0)
+        else {
+          r = buf_write_str_without_indent(buf, &k->data.sym->str);
+          if (r < 0) {
+            assert(! "buf_inspect_struct: buf_write_str_without_ident: k");
             goto clean;
+          }
+        }
         result += r;
-        if ((r = buf_write_1(buf, ": ")) < 0)
+        if ((r = buf_write_1(buf, ": ")) < 0) {
+          assert(! "buf_inspect_struct: buf_write_1(\": \")");
           goto clean;
+        }
         result += r;
         if (s->data) {
           if (s->type->map.value[i].type == TAG_VAR)
             type = s->type->map.value[i].data.var.type;
-          else if (! tag_type(s->type->map.value + i, &type))
+          else if (! tag_type(s->type->map.value + i, &type)) {
+            assert(! "buf_inspect_struct: tag_type");
             goto clean;
+          }
           assert(s->type->offset[i] < s->type->size);
           if ((r = data_buf_inspect(buf, type, (char *) s->data +
-                                    s->type->offset[i])) < 0)
+                                    s->type->offset[i])) < 0) {
+            assert(! "buf_inspect_struct: data_buf_inspect");
             goto clean;
+          }
           result += r;
         }
         else if (s->tag) {
-          if ((r = buf_inspect_tag(buf, s->tag + i)) < 0)
+          if ((r = buf_inspect_tag(buf, s->tag + i)) < 0) {
+            assert(! "buf_inspect_struct: buf_inspect_tag");
             goto clean;
+          }
           result += r;
         }
       }
       if (display &&
           i < display_last &&
           i < s->type->map.count - 1) {
-        if ((r = buf_write_1(buf, ",\n")) < 0)
+        if ((r = buf_write_1(buf, ",\n")) < 0) {
+          assert(! "buf_inspect_struct: buf_write_1(\",\\n\")");
           goto clean;
+        }
         result += r;
       }
       i++;
@@ -3732,7 +3766,6 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_CALL:    return buf_inspect_call(buf, &tag->data.call);
   case TAG_CALLABLE:
     return buf_inspect_callable(buf, tag->data.callable);
-    //case TAG_CFN:     return buf_inspect_cfn(buf, &tag->data.cfn);
   case TAG_CHARACTER:
     return buf_inspect_character(buf, &tag->data.character);
   case TAG_COMPLEX: return buf_inspect_complex(buf, tag->data.complex);
@@ -3741,7 +3774,6 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_F64:     return buf_inspect_f64(buf, &tag->data.f64);
   case TAG_F128:    return buf_inspect_f128(buf, &tag->data.f128);
   case TAG_FACT:    return buf_inspect_fact(buf, &tag->data.fact);
-    //case TAG_FN:      return buf_inspect_fn(buf, &tag->data.fn);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
   case TAG_LIST:
