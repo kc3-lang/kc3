@@ -1,228 +1,228 @@
-Facts.with(Facts.env_db(), [[KC3, :operator, op = ?], [op, :sym, sym = ?]], fn (fact) do
+Facts.with(Facts.env_db(), [[KC3, :op, op = ?], [op, :sym, sym = ?]], fn (fact) do
   puts("#{inspect(op)} #{inspect(sym)}")
   1
 end)
-operator_add :+
-operator_addi :+i
-operator_and :&&
-operator_assign :<-
-operator_assign_2 :←
-operator_band :&
-operator_bnot :~
-operator_bor :bor
-operator_brackets :"[]"
-operator_bxor :^
-operator_defstruct :defstruct
-operator_div :/
-operator_eq :==
-operator_equal :=
-operator_gt :>
-operator_gte :>=
-operator_lt :<
-operator_lte :<=
-operator_mod :mod
-operator_mul :*
-operator_neg :-
-operator_not :!
-operator_not_eq :!=
-operator_or :||
-operator_paren :"()"
-operator_pin :^
-operator_require :require
-operator_semicolumn :";"
-operator_shift_left :<<
-operator_shift_right :>>
-operator_sub :-
+op_add :+
+op_addi :+i
+op_and :&&
+op_assign :<-
+op_assign_2 :←
+op_band :&
+op_bnot :~
+op_bor :bor
+op_brackets :"[]"
+op_bxor :^
+op_defstruct :defstruct
+op_div :/
+op_eq :==
+op_equal :=
+op_gt :>
+op_gte :>=
+op_lt :<
+op_lte :<=
+op_mod :mod
+op_mul :*
+op_neg :-
+op_not :!
+op_not_eq :!=
+op_or :||
+op_paren :"()"
+op_pin :^
+op_require :require
+op_semicolumn :";"
+op_shift_left :<<
+op_shift_right :>>
+op_sub :-
 1
-Facts.with(Facts.env_db(), [[KC3, :operator, op = ?], [op, rel = ?, value = ?]], fn (fact) do
+Facts.with(Facts.env_db(), [[KC3, :op, op = ?], [op, rel = ?, value = ?]], fn (fact) do
   puts("#{inspect(op)} #{inspect(rel)} #{inspect(value)}")
   2
 end)
-operator_add :arity 2
-operator_add :is_a :operator
-operator_add :operator_associativity :left
-operator_add :operator_precedence 12
-operator_add :sym :+
-operator_add :symbol_value cfn Tag "tag_add" (Tag, Tag, Result)
-operator_addi :arity 2
-operator_addi :is_a :operator
-operator_addi :operator_associativity :left
-operator_addi :operator_precedence 12
-operator_addi :sym :+i
-operator_addi :symbol_value cfn Tag "tag_addi" (Tag, Tag, Result)
-operator_and :arity 2
-operator_and :is_a :operator
-operator_and :operator_associativity :left
-operator_and :operator_precedence 5
-operator_and :sym :&&
-operator_and :symbol_value cfn Tag "kc3_and" (Tag, Tag, Result)
-operator_assign :arity 2
-operator_assign :is_a :operator
-operator_assign :operator_associativity :left
-operator_assign :operator_precedence 3
-operator_assign :sym :<-
-operator_assign :symbol_value cfn Tag "tag_assign" (Tag, Tag, Result)
-operator_assign_2 :arity 2
-operator_assign_2 :is_a :operator
-operator_assign_2 :operator_associativity :left
-operator_assign_2 :operator_precedence 3
-operator_assign_2 :sym :←
-operator_assign_2 :symbol_value cfn Tag "tag_assign" (Tag, Tag, Result)
-operator_band :arity 2
-operator_band :is_a :operator
-operator_band :operator_associativity :left
-operator_band :operator_precedence 8
-operator_band :sym :&
-operator_band :symbol_value cfn Tag "tag_band" (Tag, Tag, Result)
-operator_bnot :arity 1
-operator_bnot :is_a :operator
-operator_bnot :operator_associativity :right
-operator_bnot :operator_precedence 14
-operator_bnot :sym :~
-operator_bnot :symbol_value cfn Tag "tag_bnot" (Tag, Result)
-operator_bor :arity 2
-operator_bor :is_a :operator
-operator_bor :operator_associativity :left
-operator_bor :operator_precedence 6
-operator_bor :sym :bor
-operator_bor :symbol_value cfn Tag "tag_bor" (Tag, Tag, Result)
-operator_brackets :arity 2
-operator_brackets :is_a :operator
-operator_brackets :operator_associativity :left
-operator_brackets :operator_precedence 15
-operator_brackets :sym :"[]"
-operator_brackets :symbol_value cfn Tag "kc3_access" (Tag, List, Result)
-operator_bxor :arity 2
-operator_bxor :is_a :operator
-operator_bxor :operator_associativity :left
-operator_bxor :operator_precedence 7
-operator_bxor :sym :^
-operator_bxor :symbol_value cfn Tag "tag_bxor" (Tag, Tag, Result)
-operator_defstruct :arity 1
-operator_defstruct :is_a :operator
-operator_defstruct :operator_associativity :none
-operator_defstruct :operator_precedence 14
-operator_defstruct :sym :defstruct
-operator_defstruct :symbol_value cfn Tag "kc3_defstruct" (List, Result)
-operator_div :arity 2
-operator_div :is_a :operator
-operator_div :operator_associativity :left
-operator_div :operator_precedence 13
-operator_div :sym :/
-operator_div :symbol_value cfn Tag "tag_div" (Tag, Tag, Result)
-operator_eq :arity 2
-operator_eq :is_a :operator
-operator_eq :operator_associativity :left
-operator_eq :operator_precedence 9
-operator_eq :sym :==
-operator_eq :symbol_value cfn Bool "tag_eq" (Tag, Tag, Result)
-operator_equal :arity 2
-operator_equal :is_a :operator
-operator_equal :is_a :special_operator
-operator_equal :operator_associativity :right
-operator_equal :operator_precedence 2
-operator_equal :sym :=
-operator_equal :symbol_value cfn Tag "tag_equal" (Tag, Tag, Result)
-operator_gt :arity 2
-operator_gt :is_a :operator
-operator_gt :operator_associativity :left
-operator_gt :operator_precedence 10
-operator_gt :sym :>
-operator_gt :symbol_value cfn Bool "tag_gt" (Tag, Tag, Result)
-operator_gte :arity 2
-operator_gte :is_a :operator
-operator_gte :operator_associativity :left
-operator_gte :operator_precedence 10
-operator_gte :sym :>=
-operator_gte :symbol_value cfn Bool "tag_gte" (Tag, Tag, Result)
-operator_lt :arity 2
-operator_lt :is_a :operator
-operator_lt :operator_associativity :left
-operator_lt :operator_precedence 10
-operator_lt :sym :<
-operator_lt :symbol_value cfn Bool "tag_lt" (Tag, Tag, Result)
-operator_lte :arity 2
-operator_lte :is_a :operator
-operator_lte :operator_associativity :left
-operator_lte :operator_precedence 10
-operator_lte :sym :<=
-operator_lte :symbol_value cfn Bool "tag_lte" (Tag, Tag, Result)
-operator_mod :arity 2
-operator_mod :is_a :operator
-operator_mod :operator_associativity :left
-operator_mod :operator_precedence 13
-operator_mod :sym :mod
-operator_mod :symbol_value cfn Tag "tag_mod" (Tag, Tag, Result)
-operator_mul :arity 2
-operator_mul :is_a :operator
-operator_mul :operator_associativity :left
-operator_mul :operator_precedence 13
-operator_mul :sym :*
-operator_mul :symbol_value cfn Tag "tag_mul" (Tag, Tag, Result)
-operator_neg :arity 1
-operator_neg :is_a :operator
-operator_neg :operator_associativity :right
-operator_neg :operator_precedence 14
-operator_neg :sym :-
-operator_neg :symbol_value cfn Tag "tag_neg" (Tag, Result)
-operator_not :arity 1
-operator_not :is_a :operator
-operator_not :operator_associativity :right
-operator_not :operator_precedence 14
-operator_not :sym :!
-operator_not :symbol_value cfn Bool "tag_not" (Tag, Result)
-operator_not_eq :arity 2
-operator_not_eq :is_a :operator
-operator_not_eq :operator_associativity :left
-operator_not_eq :operator_precedence 9
-operator_not_eq :sym :!=
-operator_not_eq :symbol_value cfn Bool "tag_not_eq" (Tag, Tag, Result)
-operator_or :arity 2
-operator_or :is_a :operator
-operator_or :operator_associativity :left
-operator_or :operator_precedence 4
-operator_or :sym :||
-operator_or :symbol_value cfn Tag "kc3_or" (Tag, Tag, Result)
-operator_paren :arity 1
-operator_paren :is_a :operator
-operator_paren :operator_associativity :left
-operator_paren :operator_precedence 16
-operator_paren :sym :"()"
-operator_paren :symbol_value cfn Tag "tag_paren" (Tag, Result)
-operator_pin :arity 1
-operator_pin :is_a :operator
-operator_pin :operator_associativity :right
-operator_pin :operator_precedence 14
-operator_pin :sym :^
-operator_pin :symbol_value cfn Tag "kc3_identity" (Tag, Result)
-operator_require :arity 1
-operator_require :is_a :operator
-operator_require :operator_associativity :none
-operator_require :operator_precedence 14
-operator_require :sym :require
-operator_require :symbol_value cfn Bool "kc3_require" (Sym)
-operator_semicolumn :arity 2
-operator_semicolumn :is_a :operator
-operator_semicolumn :operator_associativity :left
-operator_semicolumn :operator_precedence 1
-operator_semicolumn :sym :";"
-operator_semicolumn :symbol_value cfn Tag "tag_semicolumn" (Tag, Tag, Result)
-operator_shift_left :arity 2
-operator_shift_left :is_a :operator
-operator_shift_left :operator_associativity :left
-operator_shift_left :operator_precedence 11
-operator_shift_left :sym :<<
-operator_shift_left :symbol_value cfn Tag "tag_shift_left" (Tag, Tag, Result)
-operator_shift_right :arity 2
-operator_shift_right :is_a :operator
-operator_shift_right :operator_associativity :left
-operator_shift_right :operator_precedence 11
-operator_shift_right :sym :>>
-operator_shift_right :symbol_value cfn Tag "tag_shift_right" (Tag, Tag, Result)
-operator_sub :arity 2
-operator_sub :is_a :operator
-operator_sub :operator_associativity :left
-operator_sub :operator_precedence 12
-operator_sub :sym :-
-operator_sub :symbol_value cfn Tag "tag_sub" (Tag, Tag, Result)
+op_add :arity 2
+op_add :is_a :op
+op_add :op_associativity :left
+op_add :op_precedence 12
+op_add :sym :+
+op_add :symbol_value cfn Tag "tag_add" (Tag, Tag, Result)
+op_addi :arity 2
+op_addi :is_a :op
+op_addi :op_associativity :left
+op_addi :op_precedence 12
+op_addi :sym :+i
+op_addi :symbol_value cfn Tag "tag_addi" (Tag, Tag, Result)
+op_and :arity 2
+op_and :is_a :op
+op_and :op_associativity :left
+op_and :op_precedence 5
+op_and :sym :&&
+op_and :symbol_value cfn Tag "kc3_and" (Tag, Tag, Result)
+op_assign :arity 2
+op_assign :is_a :op
+op_assign :op_associativity :left
+op_assign :op_precedence 3
+op_assign :sym :<-
+op_assign :symbol_value cfn Tag "tag_assign" (Tag, Tag, Result)
+op_assign_2 :arity 2
+op_assign_2 :is_a :op
+op_assign_2 :op_associativity :left
+op_assign_2 :op_precedence 3
+op_assign_2 :sym :←
+op_assign_2 :symbol_value cfn Tag "tag_assign" (Tag, Tag, Result)
+op_band :arity 2
+op_band :is_a :op
+op_band :op_associativity :left
+op_band :op_precedence 8
+op_band :sym :&
+op_band :symbol_value cfn Tag "tag_band" (Tag, Tag, Result)
+op_bnot :arity 1
+op_bnot :is_a :op
+op_bnot :op_associativity :right
+op_bnot :op_precedence 14
+op_bnot :sym :~
+op_bnot :symbol_value cfn Tag "tag_bnot" (Tag, Result)
+op_bor :arity 2
+op_bor :is_a :op
+op_bor :op_associativity :left
+op_bor :op_precedence 6
+op_bor :sym :bor
+op_bor :symbol_value cfn Tag "tag_bor" (Tag, Tag, Result)
+op_brackets :arity 2
+op_brackets :is_a :op
+op_brackets :op_associativity :left
+op_brackets :op_precedence 15
+op_brackets :sym :"[]"
+op_brackets :symbol_value cfn Tag "kc3_access" (Tag, List, Result)
+op_bxor :arity 2
+op_bxor :is_a :op
+op_bxor :op_associativity :left
+op_bxor :op_precedence 7
+op_bxor :sym :^
+op_bxor :symbol_value cfn Tag "tag_bxor" (Tag, Tag, Result)
+op_defstruct :arity 1
+op_defstruct :is_a :op
+op_defstruct :op_associativity :none
+op_defstruct :op_precedence 14
+op_defstruct :sym :defstruct
+op_defstruct :symbol_value cfn Tag "kc3_defstruct" (List, Result)
+op_div :arity 2
+op_div :is_a :op
+op_div :op_associativity :left
+op_div :op_precedence 13
+op_div :sym :/
+op_div :symbol_value cfn Tag "tag_div" (Tag, Tag, Result)
+op_eq :arity 2
+op_eq :is_a :op
+op_eq :op_associativity :left
+op_eq :op_precedence 9
+op_eq :sym :==
+op_eq :symbol_value cfn Bool "tag_eq" (Tag, Tag, Result)
+op_equal :arity 2
+op_equal :is_a :op
+op_equal :is_a :special_operator
+op_equal :op_associativity :right
+op_equal :op_precedence 2
+op_equal :sym :=
+op_equal :symbol_value cfn Tag "tag_equal" (Tag, Tag, Result)
+op_gt :arity 2
+op_gt :is_a :op
+op_gt :op_associativity :left
+op_gt :op_precedence 10
+op_gt :sym :>
+op_gt :symbol_value cfn Bool "tag_gt" (Tag, Tag, Result)
+op_gte :arity 2
+op_gte :is_a :op
+op_gte :op_associativity :left
+op_gte :op_precedence 10
+op_gte :sym :>=
+op_gte :symbol_value cfn Bool "tag_gte" (Tag, Tag, Result)
+op_lt :arity 2
+op_lt :is_a :op
+op_lt :op_associativity :left
+op_lt :op_precedence 10
+op_lt :sym :<
+op_lt :symbol_value cfn Bool "tag_lt" (Tag, Tag, Result)
+op_lte :arity 2
+op_lte :is_a :op
+op_lte :op_associativity :left
+op_lte :op_precedence 10
+op_lte :sym :<=
+op_lte :symbol_value cfn Bool "tag_lte" (Tag, Tag, Result)
+op_mod :arity 2
+op_mod :is_a :op
+op_mod :op_associativity :left
+op_mod :op_precedence 13
+op_mod :sym :mod
+op_mod :symbol_value cfn Tag "tag_mod" (Tag, Tag, Result)
+op_mul :arity 2
+op_mul :is_a :op
+op_mul :op_associativity :left
+op_mul :op_precedence 13
+op_mul :sym :*
+op_mul :symbol_value cfn Tag "tag_mul" (Tag, Tag, Result)
+op_neg :arity 1
+op_neg :is_a :op
+op_neg :op_associativity :right
+op_neg :op_precedence 14
+op_neg :sym :-
+op_neg :symbol_value cfn Tag "tag_neg" (Tag, Result)
+op_not :arity 1
+op_not :is_a :op
+op_not :op_associativity :right
+op_not :op_precedence 14
+op_not :sym :!
+op_not :symbol_value cfn Bool "tag_not" (Tag, Result)
+op_not_eq :arity 2
+op_not_eq :is_a :op
+op_not_eq :op_associativity :left
+op_not_eq :op_precedence 9
+op_not_eq :sym :!=
+op_not_eq :symbol_value cfn Bool "tag_not_eq" (Tag, Tag, Result)
+op_or :arity 2
+op_or :is_a :op
+op_or :op_associativity :left
+op_or :op_precedence 4
+op_or :sym :||
+op_or :symbol_value cfn Tag "kc3_or" (Tag, Tag, Result)
+op_paren :arity 1
+op_paren :is_a :op
+op_paren :op_associativity :left
+op_paren :op_precedence 16
+op_paren :sym :"()"
+op_paren :symbol_value cfn Tag "tag_paren" (Tag, Result)
+op_pin :arity 1
+op_pin :is_a :op
+op_pin :op_associativity :right
+op_pin :op_precedence 14
+op_pin :sym :^
+op_pin :symbol_value cfn Tag "kc3_identity" (Tag, Result)
+op_require :arity 1
+op_require :is_a :op
+op_require :op_associativity :none
+op_require :op_precedence 14
+op_require :sym :require
+op_require :symbol_value cfn Bool "kc3_require" (Sym)
+op_semicolumn :arity 2
+op_semicolumn :is_a :op
+op_semicolumn :op_associativity :left
+op_semicolumn :op_precedence 1
+op_semicolumn :sym :";"
+op_semicolumn :symbol_value cfn Tag "tag_semicolumn" (Tag, Tag, Result)
+op_shift_left :arity 2
+op_shift_left :is_a :op
+op_shift_left :op_associativity :left
+op_shift_left :op_precedence 11
+op_shift_left :sym :<<
+op_shift_left :symbol_value cfn Tag "tag_shift_left" (Tag, Tag, Result)
+op_shift_right :arity 2
+op_shift_right :is_a :op
+op_shift_right :op_associativity :left
+op_shift_right :op_precedence 11
+op_shift_right :sym :>>
+op_shift_right :symbol_value cfn Tag "tag_shift_right" (Tag, Tag, Result)
+op_sub :arity 2
+op_sub :is_a :op
+op_sub :op_associativity :left
+op_sub :op_precedence 12
+op_sub :sym :-
+op_sub :symbol_value cfn Tag "tag_sub" (Tag, Tag, Result)
 2

@@ -1,12 +1,13 @@
-%KC3.Operator{symbol_value: void}
-%KC3.Operator{sym: :+,
-              symbol_value: void,
-              operator_precedence: 0,
-              operator_associativity: :left}
-def operator_muul = %KC3.Operator{sym: :****,
-                                  symbol_value: cfn Tag "tag_mul" (Tag, Tag, Result),
-                                  operator_precedence: 13}
-operator_muul
+%KC3.Op{callable: fn (a, b) { a + b }}
+%KC3.Op{sym: :+,
+        arity: 2,
+        precedence: 0,
+        associativity: 1,
+        callable: fn (a, b) { a + b }}
+def op_muul = %KC3.Op{sym: :****,
+                      precedence: 13,
+                      callable: cfn Tag "tag_mul" (Tag, Tag, Result)}
+op_muul
 4 **** 4
 16
 4 **** 4 **** 4
@@ -14,4 +15,4 @@ operator_muul
 4 **** 4 + 4
 20
 to_lisp(quote 4 **** 4 + 4)
-[operator_add, [operator_muul, 4, 4], 4]
+[op_add, [op_muul, 4, 4], 4]

@@ -11,7 +11,7 @@ c = 2
 ? = 1
 1
 to_lisp(quote (a = 1) && (b = 2))
-[operator_and, [operator_paren, [operator_equal, a, 1]], [operator_paren, [operator_equal, b, 2]]]
+[op_and, [op_paren, [op_equal, a, 1]], [op_paren, [op_equal, b, 2]]]
 if (a = 1) && (b = 2) do
   {a, b}
 end
