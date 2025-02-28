@@ -305,14 +305,14 @@ struct gl_cylinder {
 };
 
 struct gl_light {
-  s_vec4 position; // in camera coordinates
-  s_rgb intensity;
+  s_vec4 position; // in camera coordinates, w == 0 -> directional
+  s_rgb intensity; //                        w != 0 -> positional
 };
 
 struct gl_material {
   f32 roughness;
   bool metal;
-  s_rgba color;
+  s_rgb color;
 };
 
 struct gl_sphere {
@@ -368,8 +368,7 @@ struct gl_camera {
   s_mat4 view_matrix;
   s_mat4 model_matrix;
   GLint  light_count;
-  s_vec3 light_pos[GL_CAMERA_LIGHT_MAX];
-  s_vec3 light_pos_cam[GL_CAMERA_LIGHT_MAX];
+  s_vec4 light_pos[GL_CAMERA_LIGHT_MAX];
   s_rgb  light_color[GL_CAMERA_LIGHT_MAX];
   GLuint gl_projection_matrix_loc;
   GLuint gl_view_matrix_loc;

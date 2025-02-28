@@ -92,6 +92,9 @@ bool earth_render (s_sequence *seq)
     *camera_rot_x_speed *= -1.0;
   camera->rotation.z += seq->dt * EARTH_CAMERA_ROTATION_Z_SPEED *
     M_PI * 2.0f;
+  camera->light_count = 1;
+  camera->light_pos[0] = (s_vec4) { 1.0f, 0.0f, 0.0f, 0.0f };
+  camera->light_color[0] = (s_rgb) { 1.0f, 0.98f, 0.95f };
   assert(glGetError() == GL_NO_ERROR);
   gl_camera_render(camera);
   assert(glGetError() == GL_NO_ERROR);

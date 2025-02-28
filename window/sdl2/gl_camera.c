@@ -45,14 +45,14 @@ static const char * g_gl_camera_fragment_shader_src =
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
   "uniform int uLightCount;\n"
-  "uniform vec3 uLightPos[16];       // Light position in cam. coords.\n"
+  "uniform vec4 uLightPos[16];       // Light position in cam. coords.\n"
   "uniform vec3 uLightColor[16];\n"
   "uniform struct MaterialInfo {\n"
   "  float Rough;     // Roughness\n"
   "  bool Metal;      // Metallic (true) or dielectric (false)\n"
-  "  vec4 Color;      // Diffuse color for dielectrics, f0 for metallic\n"
+  "  vec3 Color;      // Diffuse color for dielectrics, f0 for metallic\n"
   "} uMaterial;\n"
-  "float ggxDistribution (float nDotH) {\n"
+  "float ggxDistribution( float nDotH ) {\n"
   "  float alpha2 = uMaterial.Rough * uMaterial.Rough *\n"
   "                 uMaterial.Rough * uMaterial.Rough;\n"
   "  float d = (nDotH * nDotH) * (alpha2 - 1) + 1;\n"
@@ -63,48 +63,51 @@ static const char * g_gl_camera_fragment_shader_src =
   "  float denom = dotProd * (1 - k) + k;\n"
   "  return 1.0 / denom;\n"
   "}\n"
-  "vec4 schlickFresnel( float lDotH ) {\n"
-  "  vec4 f0 = vec4(0.04, 0.04, 0.04, 1.0);\n"
+  "vec3 schlickFresnel( float lDotH ) {\n"
+  "  vec3 f0 = vec3(0.04);\n"
   "  if( uMaterial.Metal ) {\n"
   "    f0 = uMaterial.Color;\n"
   "  }\n"
   "  return f0 + (1 - f0) * pow(1.0 - lDotH, 5);\n"
   "}\n"
-  "vec4 microfacetModel (int lightIdx, vec3 pos, vec3 n, vec4 color) {\n"
-  "  vec4 diffuseBrdf = vec4(0.0, 0.0, 0.0, 1.0);  // Metallic\n"
+  "vec3 microfacetModel (int lightIdx, vec3 pos, vec3 n) {\n"
+  "  vec3 diffuseBrdf = vec3(0.0, 0.0, 0.0);  // Metallic\n"
   "  if (! uMaterial.Metal) {\n"
-  "    diffuseBrdf = color;\n"
+  "    diffuseBrdf = uMaterial.Color;\n"
   "  }\n"
   "  vec3 l = vec3(0.0);\n"
   "  vec3 lightI = uLightColor[lightIdx];\n"
-  "  l = uLightPos[lightIdx] - pos;\n"
-  "  float dist = length(l);\n"
-  "  l = normalize(l);\n"
-  "  lightI /= (dist * dist);\n"
+  "  if (uLightPos[lightIdx].w == 0.0) {\n"
+  "    l = normalize(uLightPos[lightIdx].xyz);\n"
+  "  }\n"
+  "  else {\n"
+  "    l = uLightPos[lightIdx].xyz - pos;\n"
+  "    float dist = length(l);\n"
+  "    l = normalize(l);\n"
+  "    lightI /= dist * dist;\n"
+  "  }\n"
   "  vec3 v = normalize(-pos);\n"
   "  vec3 h = normalize(v + l);\n"
   "  float nDotH = dot(n, h);\n"
   "  float lDotH = dot(l, h);\n"
   "  float nDotL = max(dot(n, l), 0.0);\n"
   "  float nDotV = dot(n, v);\n"
-  "  vec4 specBrdf = 0.25 * ggxDistribution(nDotH) *\n"
+  "  vec3 specBrdf = 0.25 * ggxDistribution(nDotH) *\n"
   "    schlickFresnel(lDotH) * geomSmith(nDotL) * geomSmith(nDotV);\n"
-  "  return (diffuseBrdf + PI * specBrdf) * vec4(lightI, 1.0) * nDotL;\n"
+  "  return (diffuseBrdf + PI * specBrdf) * lightI * nDotL;\n"
   "}\n"
   "void main() {\n"
   "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
-  "  if (uEnableTex2D) {\n"
-  "    oColor = texColor * uMaterial.Color;\n"
-  "  }\n"
-  "  else\n"
-  "    oColor = uMaterial.Color;\n"
-  "  vec4 sum = vec4(0);\n"
+  "  oColor = vec4(uMaterial.Color, 1.0f);\n"
+  "  if (uEnableTex2D)\n"
+  "    oColor *= texColor;\n"
+  "  vec3 sum = vec3(0);\n"
   "  vec3 n = normalize(ioNormal);\n"
   "  for (int i = 0; i < uLightCount; i++) {\n"
-  "    sum += microfacetModel(i, ioPos, n, oColor);\n"
+  "    sum = sum + microfacetModel(i, ioPos, n);\n"
   "  }\n"
-  "  sum = pow(sum, vec4(1.0 / 2.2));\n"
-  "  oColor += sum;\n"
+  "  sum = pow(sum, vec3(1.0f / 2.2f));\n"
+  "  oColor *= vec4(sum, 1.0);\n"
   "}\n";
 
 void gl_camera_bind_texture (s_gl_camera *camera, GLuint texture)
@@ -147,7 +150,7 @@ void gl_camera_material (s_gl_camera *camera, const s_gl_material *material)
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(camera->gl_material_metal_loc, material->metal);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform4fv(camera->gl_material_color_loc, 1, &material->color.r);
+  glUniform3fv(camera->gl_material_color_loc, 1, &material->color.r);
   assert(glGetError() == GL_NO_ERROR);
 }
 
@@ -174,8 +177,8 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   camera->rotation.y = 0.0f;
   camera->rotation.z = 0.0f;
   camera->light_count = 1;
-  camera->light_pos[0] = (s_vec3) {-100, 0, 0};
-  camera->light_color[0] = (s_rgb) {1, 1, 1};
+  camera->light_pos[0] = (s_vec4) {-40.0f, 0.0f, 0.0f, 1.0f};
+  camera->light_color[0] = (s_rgb) {1.0f, 1.0f, 1.0f};
   vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_shader, 1, &g_gl_camera_vertex_shader_src,
                  NULL);
@@ -202,38 +205,50 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   glAttachShader(camera->gl_shader_program, vertex_shader);
   glAttachShader(camera->gl_shader_program, fragment_shader);
   glLinkProgram(camera->gl_shader_program);
+  assert(glGetError() == GL_NO_ERROR);
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_projection_matrix_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uProjectionMatrix");
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_view_matrix_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uViewMatrix");
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_model_matrix_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uModelMatrix");
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_enable_tex2d_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uEnableTex2D");
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_tex2d_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uTex2D");
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_light_pos_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uLightPos");
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_light_color_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uLightColor");
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_material_rough_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uMaterial.Rough");
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_material_metal_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uMaterial.Metal");
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_material_color_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uMaterial.Color");
+  assert(glGetError() == GL_NO_ERROR);
   return camera;
 }
 
@@ -255,7 +270,7 @@ s_gl_camera * gl_camera_new (uw w, uw h)
 void gl_camera_render (s_gl_camera *camera)
 {
   s_mat4 matrix;
-  const s_gl_material material = {0.1, false, {1, 1, 1, 1}};
+  const s_gl_material material = {0.1f, false, {1.0f, 1.0f, 1.0f}};
   assert(camera);
   assert(glGetError() == GL_NO_ERROR);
   mat4_init_identity(&camera->projection_matrix);
@@ -273,9 +288,11 @@ void gl_camera_render (s_gl_camera *camera)
                    &(s_vec3) { 0.0f, 0.0f, 1.0f });
   mat4_init_identity(&camera->model_matrix);
   mat4_init_copy(&matrix, &camera->view_matrix);
+  /*
   for (int i = 0; i < camera->light_count; i++)
     mat4_mult_vec3(&matrix, camera->light_pos + i,
                    camera->light_pos_cam + i);
+  */
   glUseProgram(camera->gl_shader_program);
   assert(glGetError() == GL_NO_ERROR);
   glUniformMatrix4fv(camera->gl_projection_matrix_loc, 1, GL_FALSE,
@@ -291,8 +308,8 @@ void gl_camera_render (s_gl_camera *camera)
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(camera->gl_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
-  glUniform3fv(camera->gl_light_pos_loc, camera->light_count,
-               &camera->light_pos_cam[0].x);
+  glUniform4fv(camera->gl_light_pos_loc, camera->light_count,
+               &camera->light_pos[0].x);
   assert(glGetError() == GL_NO_ERROR);
   glUniform3fv(camera->gl_light_color_loc, camera->light_count,
                &camera->light_color[0].r);
