@@ -24,9 +24,9 @@ void    ops_delete (s_ops *ops);
 s_ops * ops_new (void);
 
 /* Observers. */
-s8     ops_compare (const s_op *a, const s_op *b);
+s8     ops_compare_op (const s_op *a, const s_op *b);
 s_op * ops_get (s_ops *ops, const s_sym *sym, u8 arity);
-uw     ops_hash (const s_op *op);
+uw     ops_hash_op (const s_op *op);
 
 /* Operators. */
 bool ops_add (s_ops *ops, s_op *op);

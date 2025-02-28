@@ -20,6 +20,7 @@
 #include "ops.h"
 #include "sym.h"
 
+/* Returns true if op was added or is already present. */
 bool ops_add (s_ops *ops, s_op *op)
 {
   assert(ops);
@@ -32,7 +33,7 @@ void ops_clean (s_ops *ops)
   ht_clean(&ops->ht);
 }
 
-s8 ops_compare (const s_op *a, const s_op *b)
+s8 ops_compare_op (const s_op *a, const s_op *b)
 {
   s8 r;
   r = compare_sym(a->sym, b->sym);
@@ -59,7 +60,7 @@ s_op * ops_get (s_ops *ops, const s_sym *sym, u8 arity)
   return ht_get(&ops->ht, &op);
 }
 
-uw ops_hash (const s_op *op)
+uw ops_hash_op (const s_op *op)
 {
   t_hash h;
   uw u;
@@ -77,8 +78,8 @@ s_ops * ops_init (s_ops *ops)
   assert(ops);
   if (! ht_init(&tmp.ht, &g_sym_KC3_Op, 256))
     return NULL;
-  tmp.ht.compare = (s8 (*) (void *, void *)) ops_compare;
-  tmp.ht.hash = (uw (*) (void *)) ops_hash;
+  tmp.ht.compare = (s8 (*) (void *, void *)) ops_compare_op;
+  tmp.ht.hash = (uw (*) (void *)) ops_hash_op;
   tmp.ht.new_ref = (void * (*) (void *)) op_new_ref;
   return ops;
 }
