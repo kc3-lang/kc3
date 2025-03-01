@@ -331,9 +331,6 @@ gdb_fx: httpd_debug
 gdb_fx_asan: httpd_asan
 	${MAKE} -C httpd gdb_fx_asan
 
-gdb_kubz: debug
-	${MAKE} -C window/sdl2/kubz demo_debug
-
 gdb_ikc3:
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
