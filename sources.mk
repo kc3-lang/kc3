@@ -513,8 +513,6 @@ KC3_C_SOURCES = \
 	"libkc3/mutex.h" \
 	"libkc3/op.c" \
 	"libkc3/op.h" \
-	"libkc3/operator.c" \
-	"libkc3/operator.h" \
 	"libkc3/ops.c" \
 	"libkc3/ops.h" \
 	"libkc3/pcomplex.c" \
@@ -1208,11 +1206,14 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/http/upload.kc3" \
 	"lib/kc3/0.1/httpd.kc3" \
 	"lib/kc3/0.1/httpd/route.kc3" \
+	"lib/kc3/0.1/init.kc3" \
 	"lib/kc3/0.1/integer.facts" \
 	"lib/kc3/0.1/json.kc3" \
+	"lib/kc3/0.1/kc3.1.kc3" \
 	"lib/kc3/0.1/kc3.facts" \
 	"lib/kc3/0.1/kc3/op.kc3" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
+	"lib/kc3/0.1/kc3/ops.kc3" \
 	"lib/kc3/0.1/list.kc3" \
 	"lib/kc3/0.1/map.facts" \
 	"lib/kc3/0.1/markdown.kc3" \
@@ -1250,6 +1251,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/u32.facts" \
 	"lib/kc3/0.1/u64.facts" \
 	"lib/kc3/0.1/u8.facts" \
+	"lib/kc3/0.1/unit.kc3" \
 	"lib/kc3/0.1/url.kc3" \
 	"lib/kc3/0.1/uw.facts" \
 	"lib/kc3/0.1/var.facts" \
