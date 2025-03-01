@@ -25,8 +25,11 @@ void callable_delete (s_callable *callable)
 #if HAVE_PTHREAD
   mutex_lock(&callable->mutex);
 #endif
-  if (callable->reference_count <= 0)
+  if (callable->reference_count <= 0) {
+    err_puts("callable_delete: invalid ref count");
+    assert(! "callable_delete: invalid ref count");
     goto clean;
+  }
   if (--callable->reference_count > 0)
     goto clean;
   switch (callable->type) {
@@ -52,6 +55,7 @@ s_callable * callable_new (void)
   s_callable *callable;
   if (! (callable = alloc(sizeof(s_callable))))
     return NULL;
+  callable->reference_count = 1;
 #if HAVE_PTHREAD
   mutex_init(&callable->mutex);
 #endif
@@ -64,7 +68,7 @@ s_callable * callable_new_copy (s_callable *src)
   if (! (tmp = callable_new()))
     return NULL;
   tmp->type = src->type;
-  switch (src->type) {
+  switch (tmp->type) {
   case CALLABLE_CFN:
     if (! cfn_init_copy(&tmp->data.cfn, &src->data.cfn))
       goto ko;

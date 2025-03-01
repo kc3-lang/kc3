@@ -19,12 +19,12 @@
 
 /* Stack-allocation compatible functions, call ht_item_clean
    after use. */ 
-void        ht_item_clean (s_ht_item *ht);
-s_ht_item * ht_item_init (s_ht_item *ht, void *data, s_ht_item *next);
+void        ht_item_clean (s_ht *ht, s_ht_item *item);
+s_ht_item * ht_item_init (s_ht_item *item, void *data, s_ht_item *next);
 
 /* Heap allocation compatible functions, call ht_item_delete
    after use. */
-void        ht_item_delete (s_ht_item *ht);
+s_ht_item * ht_item_delete (s_ht *ht, s_ht_item *item);
 s_ht_item * ht_item_new (void *data, s_ht_item *next);
 
 #endif /* LIBKC3_HT_ITEM_H */

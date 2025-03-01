@@ -117,7 +117,7 @@ s_struct * struct_allocate (s_struct *s)
 void struct_clean (s_struct *s)
 {
   uw i;
-  const s_sym *sym;
+  const s_sym *type;
   assert(s);
   assert(s->type);
   if (s->data) {
@@ -126,8 +126,12 @@ void struct_clean (s_struct *s)
     if (s->type->must_clean) {
       i = 0;
       while (i < s->type->map.count) {
-        if (tag_type(s->type->map.value + i, &sym))
-          data_clean(sym, (s8 *) s->data + s->type->offset[i]);
+        if (s->type->map.value[i].type == TAG_VAR)
+          type = s->type->map.value[i].data.var.type;
+        else if (! tag_type(s->type->map.value + i, &type))
+          goto ko;
+        data_clean(type, (s8 *) s->data + s->type->offset[i]);
+      ko:
         i++;
       }
     }

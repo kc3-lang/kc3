@@ -249,11 +249,11 @@ void env_clean (s_env *env)
     err_write_1("\n");
   }
   //facts_save_file(env->facts, "debug.facts"); // debug
+  ops_delete(env->ops);
   env_clean_globals(env);
   env_clean_toplevel(env);
   error_handler_delete_all(env->error_handler);
   facts_delete(env->facts);
-  ops_delete(env->ops);
   buf_file_close(env->in);
   buf_delete(env->in);
   buf_file_close(env->out);
@@ -904,6 +904,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
 bool env_eval_callable (s_env *env, s_callable *callable,
                         s_tag *dest)
 {
+  s_callable c = {0};
   s_callable *tmp = NULL;
   assert(env);
   assert(callable);
@@ -917,12 +918,12 @@ bool env_eval_callable (s_env *env, s_callable *callable,
       return false;
     goto ok;
   case CALLABLE_FN:
-    if (! (tmp = callable_new_copy(callable)))
+    c = *callable;
+    c.data.fn.frame = env->frame;
+    if (! (tmp = callable_new_copy(&c)))
       return false;
     if (! tmp->data.fn.module)
       tmp->data.fn.module = env->current_defmodule;
-    if (! (tmp->data.fn.frame = frame_new_copy(env->frame)))
-      goto ko;
     goto ok;
   case CALLABLE_VOID:
     err_puts("env_eval_callable: CALLABLE_VOID");

@@ -340,6 +340,7 @@ struct ht {
   s8        (* compare) (void *a, void *b);
   uw        (* hash) (void *data);
   void *    (* new_ref) (void *a);
+  void      (* delete_ref) (void *a);
 };
 
 struct ht_item {

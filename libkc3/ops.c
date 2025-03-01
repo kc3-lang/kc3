@@ -81,6 +81,8 @@ s_ops * ops_init (s_ops *ops)
   tmp.ht.compare = (s8 (*) (void *, void *)) ops_compare_op;
   tmp.ht.hash = (uw (*) (void *)) ops_hash_op;
   tmp.ht.new_ref = (void * (*) (void *)) op_new_ref;
+  tmp.ht.delete_ref = (void (*) (void *)) op_delete;
+  *ops = tmp;
   return ops;
 }
 

@@ -48,7 +48,13 @@ bool ht_add_hash (s_ht *ht, void *data, uw hash)
 
 void ht_clean (s_ht *ht)
 {
+  uw i = 0;
   assert(ht);
+  while (i < ht->size) {
+    while (ht->items[i])
+      ht->items[i] = ht_item_delete(ht, ht->items[i]);
+    i++;
+  }
   free(ht->items);
 }
 
@@ -78,7 +84,8 @@ s_ht * ht_init (s_ht *ht, const s_sym *type, uw size)
   assert(size);
   tmp.type = type;
   tmp.size = size;
-  tmp.items = alloc(size * sizeof(s_ht_item));
+  if (! (tmp.items = alloc(size * sizeof(s_ht_item *))))
+    return NULL;
   *ht = tmp;
   return ht;
 }

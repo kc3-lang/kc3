@@ -13,18 +13,24 @@
 #include <stdlib.h>
 #include "alloc.h"
 #include "assert.h"
+#include "ht.h"
 #include "ht_item.h"
 
-void ht_item_clean (s_ht_item *ht_item)
+void ht_item_clean (s_ht *ht, s_ht_item *ht_item)
 {
   assert(ht_item);
-  (void) ht_item;
+  ht->delete_ref(ht_item->data);
 }
 
-void ht_item_delete (s_ht_item *ht_item)
+s_ht_item * ht_item_delete (s_ht *ht, s_ht_item *ht_item)
 {
-  ht_item_clean(ht_item);
+  s_ht_item *next;
+  assert(ht);
+  assert(ht_item);
+  next = ht_item->next;
+  ht_item_clean(ht, ht_item);
   free(ht_item);
+  return next;
 }
 
 s_ht_item * ht_item_init (s_ht_item *ht_item, void *data,
