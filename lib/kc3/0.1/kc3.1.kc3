@@ -1,0 +1,64 @@
+require File
+require List
+require Str
+
+def human_size = fn (size) {
+  size = integer_reduce(size)
+  if (size >= 1024 * 1024 * 1024 * 1024) do
+    s = size * 10 / 1024 / 1024 / 1024 / 1024
+    "#{s / 10}.#{s mod 10}Tb"
+  else
+    if (size >= 1024 * 1024 * 1024) do
+      s = size * 10 / 1024 / 1024 / 1024
+      "#{s / 10}.#{s mod 10}Gb"
+    else
+      if (size >= 1024 * 1024) do
+        s = size * 10 / 1024 / 1024
+        "#{s / 10}.#{s mod 10}Mb"
+      else
+        if (size >= 1024) do
+          s = size * 10 / 1024
+          "#{s / 10}.#{s mod 10}Kb"
+        else
+          "#{size}b"
+        end
+      end
+    end
+  end
+}
+
+def load_directory = fn (dir) {
+  if File.exists?(dir) && File.is_directory?(dir) do
+    files = List.sort(File.list(dir))
+    List.each(files, fn (file) {
+      if (! Str.starts_with?(file, ".")) do
+        path = dir + file
+        if File.is_directory?(path) do
+          load_directory(path + "/")
+        else
+          if Str.ends_with?(path, ".kc3") do
+            load(path)
+          end
+        end
+      end
+    })
+  end
+}
+
+def maybe_reload_directory = fn (dir) {
+  if File.exists?(dir) && File.is_directory?(dir) do
+    files = List.sort(File.list(dir))
+    List.each(files, fn (file) {
+      if (! Str.starts_with?(file, ".")) do
+        path = dir + file
+        if File.is_directory?(path) do
+          maybe_reload_directory(path + "/")
+        else
+          if Str.ends_with?(path, ".kc3") do
+            maybe_reload(path)
+          end
+        end
+      end
+    })
+  end
+}

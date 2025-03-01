@@ -569,6 +569,10 @@ bool * sym_must_clean (const s_sym *sym, bool *must_clean)
     *must_clean = false;
     return must_clean;
   }
+  if (sym == &g_sym_Call) {
+    *must_clean = true;
+    return must_clean;
+  }
   if (sym == &g_sym_Callable ||
       sym == &g_sym_Cfn ||
       sym == &g_sym_Fn) {

@@ -57,8 +57,7 @@ const s_sym *  env_def_clean (s_env *env, const s_sym *module,
                               const s_tag *tag_clean);
 s_tag *        env_defmodule (s_env *env, const s_sym * const *name,
                               const s_block *block, s_tag *dest);
-s_tag *        env_defoperator (s_env *env, const s_sym * const *name,
-                                s_op *op, s_tag *dest);
+s_tag *        env_defoperator (s_env *env, s_op *op, s_tag *dest);
 const s_sym *  env_defstruct (s_env *env, s_list *spec);
 s_fact_w *     env_fact_w_eval (s_env *env, s_fact_w *fact,
 	         	       s_fact_w *dest);
@@ -111,23 +110,6 @@ bool           env_module_is_loading_set (s_env *env,
 bool           env_module_load (s_env *env, const s_sym *module);
 bool           env_module_maybe_reload (s_env *env,
                                         const s_sym *module);
-s8             env_operator_arity (s_env *env, const s_ident *op);
-bool *         env_operator_find (s_env *env, const s_ident *op,
-                                  bool *dest);
-s_tag *        env_operator_find_by_sym (s_env *env,
-                                         const s_sym *sym,
-                                         s_tag *dest);
-s_ident *      env_operator_ident (s_env *env, const s_ident *op,
-                                   s_ident *dest);
-bool *         env_operator_is_right_associative (s_env *env,
-                                                  const s_ident *op,
-                                                  bool *dest);
-sw *           env_operator_precedence (s_env *env, const s_ident *op,
-                                        sw *dest);
-s_ident *      env_operator_resolve (s_env *env, const s_ident *op,
-                                     u8 arity, s_ident *dest);
-const s_sym ** env_operator_symbol (s_env *env, const s_ident *op,
-                                    const s_sym **dest);
 s_tag *        env_or (s_env *env, s_tag *a, s_tag *b, s_tag *dest);
 u8             env_special_operator_arity (s_env *env,
                                            const s_ident *ident);

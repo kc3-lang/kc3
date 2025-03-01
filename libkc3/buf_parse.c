@@ -37,7 +37,8 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
-#include "operator.h"
+#include "op.h"
+#include "ops.h"
 #include "ratio.h"
 #include "special_operator.h"
 #include "str.h"
@@ -682,11 +683,8 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   if (! address) {
     goto restore;
   }
-  ident_init(&tmp.ident, NULL, &g_sym__brackets);
-  if (! operator_resolve(&tmp.ident, 2, &tmp.ident)) {
-    err_puts("buf_parse_brackets: could not resolve operator []");
-    goto restore;
-  }
+  tmp.ident.module = &g_sym_KC3;
+  tmp.ident.sym = &g_sym__brackets;
   arg_addr->type = TAG_LIST;
   arg_addr->data.list = addr;
   *dest = tmp;
@@ -877,8 +875,9 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
 
 sw buf_parse_call_op (s_buf *buf, s_call *dest)
 {
-  s_ident op;
-  sw op_precedence;
+  s_ident ident;
+  s_op  *op;
+  s_ops *ops;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -898,10 +897,10 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_peek_ident(buf, &op)) <= 0)
+  if ((r = buf_peek_ident(buf, &ident)) <= 0)
     goto restore;
-  if (! operator_resolve(&op, 2, &op) ||
-      ! operator_precedence(&op, &op_precedence)) {
+  ops = env_global()->ops;
+  if (! (op = ops_get(ops, ident.sym, 2))) {
     r = 0;
     goto restore;
   }
@@ -920,16 +919,15 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   return r;
 }
 
-sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
+sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
 {
-  bool b;
   character c;
   s_tag *left;
   bool merge_left = false;
-  s_ident next_op;
-  sw next_op_precedence;
-  s_ident op;
-  sw op_precedence;
+  s_ident next_ident;
+  s_op   *next_op;
+  s_op  *op;
+  s_ops *ops;
   sw r;
   sw result = 0;
   s_tag *right;
@@ -944,22 +942,23 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
   left = &tmp.arguments->tag;
   right = &list_next(tmp.arguments)->tag;
   tag_init_copy(left, &dest->arguments->tag);
-  if ((r = buf_peek_ident(buf, &next_op)) <= 0)
+  if ((r = buf_peek_ident(buf, &next_ident)) <= 0)
     goto restore;
-  if (! operator_resolve(&next_op, 2, &next_op) ||
-      ! operator_precedence(&next_op, &next_op_precedence)) {
+  ops = env_global()->ops;
+  if (! (next_op = ops_get(ops, next_ident.sym, 2))) {
     r = 0;
     goto restore;
   }
-  while (r > 0 && next_op_precedence >= min_precedence) {
-    if ((r = buf_parse_ident(buf, &next_op)) <= 0)
+  while (r > 0 && next_op->precedence >= min_precedence) {
+    if ((r = buf_parse_ident(buf, &next_ident)) <= 0)
       goto restore;
     result += r;
-    if (! operator_resolve(&next_op, 2, &next_op))
+    if (! (next_op = ops_get(ops, next_ident.sym, 2)))
       goto restore;
     if (merge_left) {
       call_init_op(&tmp3);
-      tmp3.ident = op;
+      tmp3.ident.module = NULL;
+      tmp3.ident.sym = op->sym;
       tmp3.arguments->tag = *left;
       list_next(tmp3.arguments)->tag = *right;
       tag_init_call(left);
@@ -968,8 +967,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
     else
       merge_left = true;
     op = next_op;
-    op_precedence = next_op_precedence;
-    tmp.ident = op;
+    tmp.ident.module = NULL;
+    tmp.ident.sym = op->sym;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
@@ -983,24 +982,21 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
       break;
     if (r > 0 && c == '\n')
       break;
-    r = buf_peek_ident(buf, &next_op);
+    r = buf_peek_ident(buf, &next_ident);
     if (r <= 0)
       break;
-    if (! operator_resolve(&next_op, 2, &next_op) &&
-        ! operator_resolve(&next_op, 1, &next_op))
+    if (! (next_op = ops_get(ops, next_ident.sym, 2)) &&
+        ! (next_op = ops_get(ops, next_ident.sym, 1)))
       break;
-    if (! operator_precedence(&next_op, &next_op_precedence))
-      break;
-    while ((operator_arity(&next_op) == 2 &&
-            next_op_precedence > op_precedence) ||
-           (operator_is_right_associative(&next_op, &b) &&
-            b &&
-            next_op_precedence == op_precedence)) {
+    while ((next_op->arity == 2 &&
+            next_op->precedence > op->precedence) ||
+           (next_op->associativity == OP_ASSOCIATIVITY_RIGHT &&
+            next_op->precedence == op->precedence)) {
       call_init_op(&tmp2);
       tmp2.arguments->tag = *right;
       if ((r = buf_parse_call_op_rec
-           (buf, &tmp2, (next_op_precedence > op_precedence) ?
-            op_precedence + 1 : op_precedence)) <= 0) {
+           (buf, &tmp2, (next_op->precedence > op->precedence) ?
+            op->precedence + 1 : op->precedence)) <= 0) {
         tmp2.arguments->tag.type = TAG_VOID;
         call_clean(&tmp2);
         goto ok;
@@ -1015,10 +1011,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
         goto ok;
       if (r > 0 && c == '\n')
         goto ok;
-      r = buf_peek_ident(buf, &next_op);
-      if (r <= 0 ||
-          (! operator_resolve(&next_op, 2, &next_op) ||
-           ! operator_precedence(&next_op, &next_op_precedence)))
+      r = buf_peek_ident(buf, &next_ident);
+      if (r <= 0 || ! (next_op = ops_get(ops, next_ident.sym, 2)))
         goto ok;
     }
   }
@@ -1037,6 +1031,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, sw min_precedence)
 
 sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
 {
+  s_op  *op;
+  s_ops *ops;
   sw r;
   sw result = 0;
   s_buf_save save;
@@ -1048,7 +1044,8 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
   if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0)
     goto restore;
   result += r;
-  if (! operator_resolve(&tmp.ident, 1, &tmp.ident)) {
+  ops = env_global()->ops;
+  if (! (op = ops_get(ops, tmp.ident.sym, 1))) {
     if (false) {
       err_write_1("buf_parse_call_op_unary: ");
       err_inspect_ident(&tmp.ident);
@@ -1085,8 +1082,7 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
     goto restore;
   result += r;
   call_init_op_unary(&tmp);
-  ident_init_1(&tmp.ident, "()");
-  if (! operator_resolve(&tmp.ident, 1, &tmp.ident)) {
+  if (! ops_get(env_global()->ops, &g_sym__paren, 1)) {
     assert(! "buf_parse_call_paren: could not resolve operator ()");
     r = -1;
     goto restore;

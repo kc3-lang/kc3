@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 #include "env.h"
-#include "operator.h"
 
 u8 special_operator_arity (const s_ident *ident)
 {

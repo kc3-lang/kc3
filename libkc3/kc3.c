@@ -167,9 +167,40 @@ s_tag * kc3_defmodule (const s_sym **name, const s_block *block, s_tag *dest)
   return env_defmodule(env_global(), name, block, dest);
 }
 
-s_tag * kc3_defoperator (const s_sym **name, s_op *op, s_tag *dest)
+s_tag * kc3_defoperator (s_tag *op_tag, s_tag *dest)
 {
-  return env_defoperator(env_global(), name, op, dest);
+  s_env *env;
+  s_tag tag = {0};
+  if (! op_tag || op_tag->type != TAG_STRUCT ||
+      op_tag->data.struct_.type->module != &g_sym_KC3_Op) {
+    err_puts("kc3_defoperator: not a KC3.Op struct");
+    assert(! "kc3_defoperator: not a KC3.Op struct");
+    return NULL;
+  }
+  env = env_global();
+  if (! op_tag->data.struct_.data) {
+    tag.type = TAG_STRUCT;
+    if (! env_eval_struct(env, &op_tag->data.struct_,
+                          &tag.data.struct_)) {
+      err_puts("kc3_defoperator: env_eval_struct");
+      assert(! "kc3_defoperator: env_eval_struct");
+      return NULL;
+    }
+    if (! env_defoperator(env, tag.data.struct_.data, dest)) {
+      err_puts("kc3_defoperator: env_defoperator 1");
+      assert(! "kc3_defoperator: env_defoperator 1");
+      tag_clean(&tag);
+      return NULL;
+    }
+    return dest;
+  }
+  if (! env_defoperator(env, op_tag->data.struct_.data, dest)) {
+    err_puts("kc3_defoperator: env_defoperator 2");
+    assert(! "kc3_defoperator: env_defoperator 2");
+    tag_clean(&tag);
+    return NULL;
+  }
+  return dest;
 }
 
 s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
@@ -648,11 +679,6 @@ uw * kc3_offsetof (const s_sym * const *module,
     return NULL;
   *dest = st->offset[i];
   return dest;
-}
-
-s_tag * kc3_operator_find_by_sym (const s_sym * const *sym, s_tag *dest)
-{
-  return env_operator_find_by_sym(env_global(), *sym, dest);
 }
 
 s_tag * kc3_or (s_tag *a, s_tag *b, s_tag *dest)

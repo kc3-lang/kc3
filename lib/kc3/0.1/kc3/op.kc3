@@ -1,14 +1,10 @@
 defmodule KC3.Op do
 
-  def associativity_left = 1
-  def associativity_right = 2
-
   defstruct [sym: :+,
              arity: 2,
              precedence: 0,
-             associativity: associativity_left,
-             callable: (Callable) ?]
-
-  def find_by_sym = cfn Tag "kc3_operator_find_by_sym" (Sym, Result)
+             associativity: 1,
+             callable: (Callable) ?,
+             ref_count: (Sw) 1]
 
 end

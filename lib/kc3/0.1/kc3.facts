@@ -1,224 +1,6 @@
 %{module: KC3.Facts.Dump,
   version: 1}
 replace {KC3, :is_a, :module}
-replace {KC3, :op, KC3.op_paren}
-replace {KC3.op_paren, :is_a, :op}
-replace {KC3.op_paren, :sym, :"()"}
-replace {KC3.op_paren, :arity, 1}
-replace {KC3.op_paren, :symbol_value, cfn Tag "tag_paren" (Tag, Result)}
-replace {KC3.op_paren, :op_precedence, 16}
-replace {KC3.op_paren, :op_associativity, :left}
-add {KC3, :op, KC3.op_brackets}
-replace {KC3.op_brackets, :is_a, :op}
-replace {KC3.op_brackets, :sym, :"[]"}
-replace {KC3.op_brackets, :arity, 2}
-replace {KC3.op_brackets, :symbol_value, cfn Tag "kc3_access" (Tag, List, Result)}
-replace {KC3.op_brackets, :op_precedence, 15}
-replace {KC3.op_brackets, :op_associativity, :left}
-add {KC3, :op, KC3.op_bnot}
-replace {KC3.op_bnot, :is_a, :op}
-replace {KC3.op_bnot, :sym, :~}
-replace {KC3.op_bnot, :arity, 1}
-replace {KC3.op_bnot, :symbol_value, cfn Tag "tag_bnot" (Tag, Result)}
-replace {KC3.op_bnot, :op_precedence, 14}
-replace {KC3.op_bnot, :op_associativity, :right}
-add {KC3, :op, KC3.op_defstruct}
-replace {KC3.op_defstruct, :is_a, :op}
-replace {KC3.op_defstruct, :sym, :defstruct}
-replace {KC3.op_defstruct, :arity, 1}
-replace {KC3.op_defstruct, :symbol_value, cfn Tag "kc3_defstruct" (List, Result)}
-replace {KC3.op_defstruct, :op_precedence, 14}
-replace {KC3.op_defstruct, :op_associativity, :none}
-add {KC3, :op, KC3.op_neg}
-replace {KC3.op_neg, :is_a, :op}
-replace {KC3.op_neg, :sym, :-}
-replace {KC3.op_neg, :arity, 1}
-replace {KC3.op_neg, :symbol_value, cfn Tag "tag_neg" (Tag, Result)}
-replace {KC3.op_neg, :op_precedence, 14}
-replace {KC3.op_neg, :op_associativity, :right}
-add {KC3, :op, KC3.op_not}
-replace {KC3.op_not, :is_a, :op}
-replace {KC3.op_not, :sym, :!}
-replace {KC3.op_not, :arity, 1}
-replace {KC3.op_not, :symbol_value, cfn Bool "tag_not" (Tag, Result)}
-replace {KC3.op_not, :op_precedence, 14}
-replace {KC3.op_not, :op_associativity, :right}
-add {KC3, :op, KC3.op_pin}
-replace {KC3.op_pin, :is_a, :op}
-replace {KC3.op_pin, :sym, :^}
-replace {KC3.op_pin, :arity, 1}
-replace {KC3.op_pin, :symbol_value, cfn Tag "kc3_identity" (Tag, Result)}
-replace {KC3.op_pin, :op_precedence, 14}
-replace {KC3.op_pin, :op_associativity, :right}
-add {KC3, :op, KC3.op_require}
-replace {KC3.op_require, :is_a, :op}
-replace {KC3.op_require, :sym, :require}
-replace {KC3.op_require, :arity, 1}
-replace {KC3.op_require, :symbol_value, cfn Bool "kc3_require" (Sym)}
-replace {KC3.op_require, :op_precedence, 14}
-replace {KC3.op_require, :op_associativity, :none}
-add {KC3, :op, KC3.op_div}
-replace {KC3.op_div, :is_a, :op}
-replace {KC3.op_div, :sym, :/}
-replace {KC3.op_div, :arity, 2}
-replace {KC3.op_div, :symbol_value, cfn Tag "tag_div" (Tag, Tag, Result)}
-replace {KC3.op_div, :op_precedence, 13}
-replace {KC3.op_div, :op_associativity, :left}
-add {KC3, :op, KC3.op_mod}
-replace {KC3.op_mod, :is_a, :op}
-replace {KC3.op_mod, :sym, :mod}
-replace {KC3.op_mod, :arity, 2}
-replace {KC3.op_mod, :symbol_value, cfn Tag "tag_mod" (Tag, Tag, Result)}
-replace {KC3.op_mod, :op_precedence, 13}
-replace {KC3.op_mod, :op_associativity, :left}
-add {KC3, :op, KC3.op_mul}
-replace {KC3.op_mul, :is_a, :op}
-replace {KC3.op_mul, :sym, :*}
-replace {KC3.op_mul, :arity, 2}
-replace {KC3.op_mul, :symbol_value, cfn Tag "tag_mul" (Tag, Tag, Result)}
-replace {KC3.op_mul, :op_precedence, 13}
-replace {KC3.op_mul, :op_associativity, :left}
-add {KC3, :op, KC3.op_add}
-replace {KC3.op_add, :is_a, :op}
-replace {KC3.op_add, :sym, :+}
-replace {KC3.op_add, :arity, 2}
-replace {KC3.op_add, :symbol_value, cfn Tag "tag_add" (Tag, Tag, Result)}
-replace {KC3.op_add, :op_precedence, 12}
-replace {KC3.op_add, :op_associativity, :left}
-add {KC3, :op, KC3.op_addi}
-replace {KC3.op_addi, :is_a, :op}
-replace {KC3.op_addi, :sym, :+i}
-replace {KC3.op_addi, :arity, 2}
-replace {KC3.op_addi, :symbol_value, cfn Tag "tag_addi" (Tag, Tag, Result)}
-replace {KC3.op_addi, :op_precedence, 12}
-replace {KC3.op_addi, :op_associativity, :left}
-add {KC3, :op, KC3.op_sub}
-replace {KC3.op_sub, :is_a, :op}
-replace {KC3.op_sub, :sym, :-}
-replace {KC3.op_sub, :arity, 2}
-replace {KC3.op_sub, :symbol_value, cfn Tag "tag_sub" (Tag, Tag, Result)}
-replace {KC3.op_sub, :op_precedence, 12}
-replace {KC3.op_sub, :op_associativity, :left}
-add {KC3, :op, KC3.op_shift_left}
-replace {KC3.op_shift_left, :is_a, :op}
-replace {KC3.op_shift_left, :sym, :<<}
-replace {KC3.op_shift_left, :arity, 2}
-replace {KC3.op_shift_left, :symbol_value, cfn Tag "tag_shift_left" (Tag, Tag, Result)}
-replace {KC3.op_shift_left, :op_precedence, 11}
-replace {KC3.op_shift_left, :op_associativity, :left}
-add {KC3, :op, KC3.op_shift_right}
-replace {KC3.op_shift_right, :is_a, :op}
-replace {KC3.op_shift_right, :sym, :>>}
-replace {KC3.op_shift_right, :arity, 2}
-replace {KC3.op_shift_right, :symbol_value, cfn Tag "tag_shift_right" (Tag, Tag, Result)}
-replace {KC3.op_shift_right, :op_precedence, 11}
-replace {KC3.op_shift_right, :op_associativity, :left}
-add {KC3, :op, KC3.op_lt}
-replace {KC3.op_lt, :is_a, :op}
-replace {KC3.op_lt, :sym, :<}
-replace {KC3.op_lt, :arity, 2}
-replace {KC3.op_lt, :symbol_value, cfn Bool "tag_lt" (Tag, Tag, Result)}
-replace {KC3.op_lt, :op_precedence, 10}
-replace {KC3.op_lt, :op_associativity, :left}
-add {KC3, :op, KC3.op_lte}
-replace {KC3.op_lte, :sym, :<=}
-replace {KC3.op_lte, :is_a, :op}
-replace {KC3.op_lte, :arity, 2}
-replace {KC3.op_lte, :symbol_value, cfn Bool "tag_lte" (Tag, Tag, Result)}
-replace {KC3.op_lte, :op_precedence, 10}
-replace {KC3.op_lte, :op_associativity, :left}
-add {KC3, :op, KC3.op_gt}
-replace {KC3.op_gt, :sym, :>}
-replace {KC3.op_gt, :is_a, :op}
-replace {KC3.op_gt, :arity, 2}
-replace {KC3.op_gt, :symbol_value, cfn Bool "tag_gt" (Tag, Tag, Result)}
-replace {KC3.op_gt, :op_precedence, 10}
-replace {KC3.op_gt, :op_associativity, :left}
-add {KC3, :op, KC3.op_gte}
-replace {KC3.op_gte, :sym, :>=}
-replace {KC3.op_gte, :is_a, :op}
-replace {KC3.op_gte, :arity, 2}
-replace {KC3.op_gte, :symbol_value, cfn Bool "tag_gte" (Tag, Tag, Result)}
-replace {KC3.op_gte, :op_precedence, 10}
-replace {KC3.op_gte, :op_associativity, :left}
-add {KC3, :op, KC3.op_eq}
-replace {KC3.op_eq, :is_a, :op}
-replace {KC3.op_eq, :sym, :==}
-replace {KC3.op_eq, :arity, 2}
-replace {KC3.op_eq, :symbol_value, cfn Bool "tag_eq" (Tag, Tag, Result)}
-replace {KC3.op_eq, :op_precedence, 9}
-replace {KC3.op_eq, :op_associativity, :left}
-add {KC3, :op, KC3.op_not_eq}
-replace {KC3.op_not_eq, :is_a, :op}
-replace {KC3.op_not_eq, :sym, :!=}
-replace {KC3.op_not_eq, :arity, 2}
-replace {KC3.op_not_eq, :symbol_value, cfn Bool "tag_not_eq" (Tag, Tag, Result)}
-replace {KC3.op_not_eq, :op_precedence, 9}
-replace {KC3.op_not_eq, :op_associativity, :left}
-add {KC3, :op, KC3.op_band}
-replace {KC3.op_band, :is_a, :op}
-replace {KC3.op_band, :sym, :&}
-replace {KC3.op_band, :arity, 2}
-replace {KC3.op_band, :symbol_value, cfn Tag "tag_band" (Tag, Tag, Result)}
-replace {KC3.op_band, :op_precedence, 8}
-replace {KC3.op_band, :op_associativity, :left}
-add {KC3, :op, KC3.op_bxor}
-replace {KC3.op_bxor, :is_a, :op}
-replace {KC3.op_bxor, :sym, :^}
-replace {KC3.op_bxor, :arity, 2}
-replace {KC3.op_bxor, :symbol_value, cfn Tag "tag_bxor" (Tag, Tag, Result)}
-replace {KC3.op_bxor, :op_precedence, 7}
-replace {KC3.op_bxor, :op_associativity, :left}
-add {KC3, :op, KC3.op_bor}
-replace {KC3.op_bor, :is_a, :op}
-replace {KC3.op_bor, :sym, :bor}
-replace {KC3.op_bor, :arity, 2}
-replace {KC3.op_bor, :symbol_value, cfn Tag "tag_bor" (Tag, Tag, Result)}
-replace {KC3.op_bor, :op_precedence, 6}
-replace {KC3.op_bor, :op_associativity, :left}
-add {KC3, :op, KC3.op_and}
-replace {KC3.op_and, :is_a, :op}
-replace {KC3.op_and, :sym, :&&}
-replace {KC3.op_and, :arity, 2}
-replace {KC3.op_and, :symbol_value, cfn_macro Tag "kc3_and" (Tag, Tag, Result)}
-replace {KC3.op_and, :op_precedence, 5}
-replace {KC3.op_and, :op_associativity, :left}
-add {KC3, :op, KC3.op_or}
-replace {KC3.op_or, :is_a, :op}
-replace {KC3.op_or, :sym, :||}
-replace {KC3.op_or, :arity, 2}
-replace {KC3.op_or, :symbol_value, cfn_macro Tag "kc3_or" (Tag, Tag, Result)}
-replace {KC3.op_or, :op_precedence, 4}
-replace {KC3.op_or, :op_associativity, :left}
-add {KC3, :op, KC3.op_assign}
-replace {KC3.op_assign, :is_a, :op}
-replace {KC3.op_assign, :sym, :<-}
-replace {KC3.op_assign, :arity, 2}
-replace {KC3.op_assign, :symbol_value, cfn Tag "tag_assign" (Tag, Tag, Result)}
-replace {KC3.op_assign, :op_precedence, 3}
-replace {KC3.op_assign, :op_associativity, :left}
-add {KC3, :op, KC3.op_assign_2}
-replace {KC3.op_assign_2, :is_a, :op}
-replace {KC3.op_assign_2, :sym, :←}
-replace {KC3.op_assign_2, :arity, 2}
-replace {KC3.op_assign_2, :symbol_value, cfn Tag "tag_assign" (Tag, Tag, Result)}
-replace {KC3.op_assign_2, :op_precedence, 3}
-replace {KC3.op_assign_2, :op_associativity, :left}
-add {KC3, :op, KC3.op_equal}
-replace {KC3.op_equal, :is_a, :op}
-replace {KC3.op_equal, :arity, 2}
-add {KC3.op_equal, :is_a, :special_operator}
-replace {KC3.op_equal, :sym, :=}
-replace {KC3.op_equal, :symbol_value, cfn Tag "tag_equal" (Tag, Tag, Result)}
-replace {KC3.op_equal, :op_precedence, 2}
-replace {KC3.op_equal, :op_associativity, :right}
-add {KC3, :op, KC3.op_semicolumn}
-replace {KC3.op_semicolumn, :is_a, :op}
-replace {KC3.op_semicolumn, :arity, 2}
-replace {KC3.op_semicolumn, :sym, :";"}
-replace {KC3.op_semicolumn, :symbol_value, cfn Tag "tag_semicolumn" (Tag, Tag, Result)}
-replace {KC3.op_semicolumn, :op_precedence, 1}
-replace {KC3.op_semicolumn, :op_associativity, :left}
 replace {KC3, :symbol, KC3.license}
 replace {KC3.license, :symbol_value, cfn Void "kc3_license" ()}
 add {KC3, :symbol, KC3.break}
@@ -235,19 +17,6 @@ add {KC3, :symbol, KC3.getenv}
 replace {KC3.getenv, :symbol_value, cfn Str "kc3_getenv" (Str, Result)}
 add {KC3, :symbol, KC3.dlopen}
 replace {KC3.dlopen, :symbol_value, cfn Ptr "kc3_dlopen" (Str, Result)}
-add {KC3, :symbol, KC3.first}
-replace {KC3.first, :symbol_value, fn {
- ([a | _b]) { a }
- ({a, _b}) { a }
- ({a, _b, _c}) { a }
- ({a, _b, _c, _d}) { a }
-}}
-add {KC3, :symbol, KC3.fib}
-replace {KC3.fib, :symbol_value, fn {
-  (0) { 1 }
-  (1) { 1 }
-  (x) { if x < 0 do 0 else fib(x - 1) + fib(x - 2) end }
-}}
 add {KC3, :symbol, KC3.sqrt}
 replace {KC3.sqrt, :symbol_value, cfn Tag "tag_sqrt" (Tag, Result)}
 add {KC3, :symbol, KC3.hash}
@@ -265,9 +34,13 @@ replace {KC3.quote_cfn, :arity, 1}
 replace {KC3.quote_cfn, :is_a, :special_operator}
 replace {KC3.quote_cfn, :symbol_value, cfn Tag "kc3_quote_cfn" (Sym, Result)}
 add {KC3, :symbol, KC3.defoperator}
-replace {KC3.defoperator, :arity, 2}
+replace {KC3.defoperator, :arity, 1}
 replace {KC3.defoperator, :is_a, :special_operator}
-replace {KC3.defoperator, :symbol_value, cfn Tag "kc3_defoperator" (Sym, KC3.Op, Result)}
+replace {KC3.defoperator, :symbol_value, cfn Tag "kc3_defoperator" (Tag, Result)}
+add {KC3, :symbol, KC3.defstruct}
+replace {KC3.defstruct, :arity, 1}
+replace {KC3.defstruct, :is_a, :special_operator}
+replace {KC3.defstruct, :symbol_value, cfn Tag "kc3_defstruct" (List, Result)}
 add {KC3, :symbol, KC3.module}
 replace {KC3.module, :symbol_value, cfn Sym "kc3_module" (Result)}
 add {KC3, :symbol, KC3.search_modules}
@@ -286,6 +59,8 @@ add {KC3, :symbol, KC3.maybe_reload}
 replace {KC3.maybe_reload, :symbol_value, cfn Bool "kc3_maybe_reload" (Str)}
 add {KC3, :symbol, KC3.must_clean}
 replace {KC3.must_clean, :symbol_value, cfn Bool "kc3_must_clean" (Sym, Result)}
+add {KC3, :symbol, KC3.require}
+replace {KC3.require, :symbol_value, cfn Bool "kc3_require" (Sym)}
 add {KC3, :symbol, KC3.while}
 replace {KC3.while, :arity, 2}
 replace {KC3.while, :is_a, :special_operator}
@@ -312,67 +87,6 @@ add {KC3, :symbol, KC3.system}
 replace {KC3.system, :symbol_value, cfn Str "kc3_system" (List, Result)}
 add {KC3, :symbol, KC3.integer_reduce}
 replace {KC3.integer_reduce, :symbol_value, cfn Tag "kc3_integer_reduce" (Tag, Result)}
-add {KC3, :symbol, KC3.human_size}
-replace {KC3.human_size, :symbol_value, fn (size) {
-  size = integer_reduce(size)
-  if (size >= 1024 * 1024 * 1024 * 1024) do
-    s = size * 10 / 1024 / 1024 / 1024 / 1024
-    "#{s / 10}.#{s mod 10}Tb"
-  else
-    if (size >= 1024 * 1024 * 1024) do
-      s = size * 10 / 1024 / 1024 / 1024
-      "#{s / 10}.#{s mod 10}Gb"
-    else
-      if (size >= 1024 * 1024) do
-        s = size * 10 / 1024 / 1024
-        "#{s / 10}.#{s mod 10}Mb"
-      else
-        if (size >= 1024) do
-          s = size * 10 / 1024
-          "#{s / 10}.#{s mod 10}Kb"
-        else
-          "#{size}b"
-        end
-      end
-    end
-  end
-}}
-add {KC3, :symbol, KC3.load_directory}
-replace {KC3.load_directory, :symbol_value, fn (dir) {
-  if File.exists?(dir) && File.is_directory?(dir) do
-    files = List.sort(File.list(dir))
-    List.each(files, fn (file) {
-      if (! Str.starts_with?(file, ".")) do
-        path = dir + file
-        if File.is_directory?(path) do
-          load_directory(path + "/")
-        else
-          if Str.ends_with?(path, ".kc3") do
-            load(path)
-          end
-        end
-      end
-    })
-  end
-}}
-add {KC3, :symbol, KC3.maybe_reload_directory}
-replace {KC3.maybe_reload_directory, :symbol_value, fn (dir) {
-  if File.exists?(dir) && File.is_directory?(dir) do
-    files = List.sort(File.list(dir))
-    List.each(files, fn (file) {
-      if (! Str.starts_with?(file, ".")) do
-        path = dir + file
-        if File.is_directory?(path) do
-          maybe_reload_directory(path + "/")
-        else
-          if Str.ends_with?(path, ".kc3") do
-            maybe_reload(path)
-          end
-        end
-      end
-    })
-  end
-}}
 add {KC3, :symbol, KC3.args}
 replace {KC3.args, :symbol_value, cfn List "kc3_args" (Result)}
 add {KC3, :symbol, KC3.stacktrace}

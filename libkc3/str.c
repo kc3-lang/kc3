@@ -34,7 +34,6 @@
 #include "ident.h"
 #include "kc3_main.h"
 #include "list.h"
-#include "operator.h"
 #include "str.h"
 #include "sw.h"
 #include "sym.h"

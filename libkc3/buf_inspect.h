@@ -87,9 +87,9 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call);
 sw buf_inspect_call_if_then_else_size (s_pretty *pretty,
                                        const s_call *call);
 sw buf_inspect_call_op (s_buf *buf, const s_call *call,
-                        sw op_precedence);
+                        u8 op_precedence);
 sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
-                             sw op_precedence);
+                             u8 op_precedence);
 sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call);
 sw buf_inspect_call_op_unary_size (s_pretty *pretty,
                                    const s_call *call);

@@ -51,7 +51,7 @@ void ops_delete (s_ops *ops)
 
 s_op * ops_get (s_ops *ops, const s_sym *sym, u8 arity)
 {
-  s_op op;
+  s_op op = {0};
   assert(ops);
   assert(sym);
   assert(arity);

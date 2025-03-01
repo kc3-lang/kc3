@@ -64,8 +64,7 @@ s_tag *      kc3_buf_parse_tag (s_buf *buf, s_tag *dest);
 s_tag *      kc3_def (const s_call *call, s_tag *dest);
 s_tag *      kc3_defmodule (const s_sym **name, const s_block *block,
                             s_tag *dest);
-s_tag *      kc3_defoperator (const s_sym **name, s_op *op,
-                              s_tag *dest);
+s_tag *      kc3_defoperator (s_tag *op_tag, s_tag *dest);
 s_tag *      kc3_defstruct (s_list **spec, s_tag *dest);
 void **      kc3_dlopen (const s_str *path, void **dest);
 s_facts **   kc3_env_db (s_facts **dest);
@@ -115,8 +114,6 @@ s_array *    kc3_list_to_array (s_list **list,
                                 s_array *dest);
 bool         kc3_load (const s_str *path);
 bool         kc3_maybe_reload (const s_str *path);
-s_tag *      kc3_operator_find_by_sym (const s_sym * const *sym,
-                                       s_tag *dest);
 s_tag *      kc3_or (s_tag *a, s_tag *b, s_tag *dest);
 s_tag *      kc3_parse_tag (s_tag *tag, const s_str *src);
 bool         kc3_require (const s_sym * const *module);

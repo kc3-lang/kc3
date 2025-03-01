@@ -26,6 +26,11 @@
 #include "list.h"
 #include "tag.h"
 
+sw call_arity (const s_call *call)
+{
+  return list_length(call->arguments);
+}
+
 void call_clean (s_call *call)
 {
   assert(call);
