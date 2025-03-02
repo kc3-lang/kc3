@@ -1,27 +1,15 @@
-/*
-MIT License
-
-Copyright (c) 2019 win32ports
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
+/* kc3
+ * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+ *
+ * Permission is hereby granted to use this software granted the above
+ * copyright notice and this permission paragraph are included in all
+ * copies and substantial portions of this software.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+ * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+ * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
 #pragma once
 
 #ifndef SYS_WAIT_H

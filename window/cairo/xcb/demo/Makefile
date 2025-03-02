@@ -1,5 +1,5 @@
 ## kc3
-## Copyright 2022-2024 kmx.io <contact@kmx.io>
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
 ##
 ## Permission is hereby granted to use this software granted the above
 ## copyright notice and this permission paragraph are included in all
