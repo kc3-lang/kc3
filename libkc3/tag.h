@@ -104,6 +104,7 @@ bool *  tag_not (s_tag *tag, bool *dest);
 bool *  tag_not_eq (s_tag *a, s_tag *b, bool *dest);
 s_tag * tag_or (s_tag *a, s_tag *b, s_tag *dest);
 s_tag * tag_paren (s_tag *tag, s_tag *dest);
+s_tag * tag_semicolon (const s_tag *a, s_tag *b, s_tag *dest);
 s_tag * tag_shift_left (s_tag *a, s_tag *b, s_tag *dest);
 s_tag * tag_shift_right (s_tag *a, s_tag *b, s_tag *dest);
 s_tag * tag_sqrt (s_tag *tag, s_tag *dest);

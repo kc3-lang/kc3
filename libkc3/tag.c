@@ -1158,7 +1158,7 @@ s_tag * tag_resolve_cow (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_semicolumn (const s_tag *a, s_tag *b, s_tag *dest)
+s_tag * tag_semicolon (const s_tag *a, s_tag *b, s_tag *dest)
 {
   (void) a;
   return tag_init_copy(dest, b);

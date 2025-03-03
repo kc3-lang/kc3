@@ -29,6 +29,7 @@
 sw err_flush (void);
 sw err_inspect (const s_tag *x);
 sw err_puts (const char *x);
+sw err_stacktrace (void);
 sw err_write (const void *x, uw len);
 sw err_write_1 (const char *x);
 sw err_write_str (const s_str *x);
@@ -38,6 +39,7 @@ sw err_write_u8 (u8 x);
 sw io_flush (void);
 sw io_inspect (const s_tag *x);
 sw io_puts (const char *x);
+sw io_stacktrace (void);
 sw io_write (const void *x, uw len);
 sw io_write_1 (const char *x);
 sw io_write_str (const s_str *x);

@@ -27,16 +27,17 @@ SOURCES = \
 	"character_test.c" \
 	"compare_test.c" \
 	"env_test.c" \
-	"fact_test.c" \
 	"facts_cursor_test.c" \
 	"facts_test.c" \
 	"facts_with_test.c" \
+	"fact_test.c" \
 	"fn_test.c" \
 	"hash_test.c" \
 	"ident_test.c" \
 	"inspect_test.c" \
 	"libkc3_test.c" \
 	"list_test.c" \
+	"ops_test.c" \
 	"ratio_test.c" \
 	"set__fact_test.c" \
 	"set__tag_test.c" \

@@ -1086,6 +1086,22 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   return false;
 }
 
+bool sym_type_is_integer (const s_sym * const *type)
+{
+  const s_sym *t = *type;
+  return (t == &g_sym_Integer ||
+          t == &g_sym_S8      ||
+          t == &g_sym_S16     ||
+          t == &g_sym_S32     ||
+          t == &g_sym_S64     ||
+          t == &g_sym_Sw      ||
+          t == &g_sym_U8      ||
+          t == &g_sym_U16     ||
+          t == &g_sym_U32     ||
+          t == &g_sym_U64     ||
+          t == &g_sym_Uw);
+}
+
 uw * sym_type_size (const s_sym * const *type, uw *dest)
 {
   s_struct_type *st;

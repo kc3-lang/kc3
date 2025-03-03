@@ -32,8 +32,16 @@ sw buf_parse_s64 (s_buf *buf, s64 *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(S64)")) < 0)
+    goto restore;
+  if (r) {
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
   if ((r = buf_read_1(buf, "-")) < 0)
-    goto clean;
+    goto restore;
   if (r > 0) {
     result += r;
     negative = true;

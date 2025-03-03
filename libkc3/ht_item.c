@@ -33,25 +33,24 @@ s_ht_item * ht_item_delete (s_ht *ht, s_ht_item *ht_item)
   return next;
 }
 
-s_ht_item * ht_item_init (s_ht_item *ht_item, void *data,
+s_ht_item * ht_item_init (s_ht *ht, s_ht_item *ht_item, void *data,
                           s_ht_item *next)
 {
   s_ht_item tmp = {0};
   assert(ht_item);
   assert(data);
-  assert(next);
-  tmp.data = data;
+  tmp.data = ht->new_ref(data);
   tmp.next = next;
   *ht_item = tmp;
   return ht_item;
 }
   
-s_ht_item * ht_item_new (void *data, s_ht_item *next)
+s_ht_item * ht_item_new (s_ht *ht, void *data, s_ht_item *next)
 {
   s_ht_item *item;
   if (! (item = alloc(sizeof(s_ht_item))))
     return NULL;
-  if (! ht_item_init(item, data, next)) {
+  if (! ht_item_init(ht, item, data, next)) {
     free(item);
     return NULL;
   }

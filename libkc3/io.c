@@ -87,6 +87,11 @@ sw err_inspect_tag_type (e_tag_type type)
   return err_write_1(tag_type_to_string(type));
 }
 
+sw err_stacktrace (void)
+{
+  return err_inspect_stacktrace(env_global()->stacktrace);
+}
+
 sw err_puts (const char *x)
 {
   sw r;
@@ -163,6 +168,11 @@ sw io_inspect_buf (const s_buf *buf)
 sw io_inspect_tag_type (e_tag_type type)
 {
   return io_write_1(tag_type_to_string(type));
+}
+
+sw io_stacktrace (void)
+{
+  return io_inspect_stacktrace(env_global()->stacktrace);
 }
 
 sw io_puts (const char *x)

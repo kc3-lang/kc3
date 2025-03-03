@@ -20,8 +20,7 @@
 bool ht_add (s_ht *ht, void *data)
 {
   uw hash = ht->hash(data);
-  void *ref = ht->new_ref(data);
-  return ht_add_hash(ht, ref, hash);
+  return ht_add_hash(ht, data, hash);
 }
 
 /* Returns true if data was added or is already present. */
@@ -29,19 +28,23 @@ bool ht_add_hash (s_ht *ht, void *data, uw hash)
 {
   s8 c;
   uw index;
-  s_ht_item *item;
+  s_ht_item **item;
+  s_ht_item  *item_new;
   assert(ht);
+  assert(ht->size);
   assert(data);
   /* FIXME: lock / unlock */
-  index = hash % ht->count;
-  item = ht->items[index];
-  while (item && (c = ht->compare(item, data)) < 0)
-    item = item->next;
-  if (c == 0)
-    return true;
-  if (! (item = ht_item_new(data, ht->items[index])))
+  index = hash % ht->size;
+  item = &ht->items[index];
+  while (*item && (c = ht->compare(*item, data)) < 0)
+    item = &(*item)->next;
+  if (*item && ! c) {
+    *item = ht_item_delete(ht, *item);
+    ht->count--;
+  }
+  if (! (item_new = ht_item_new(ht, data, *item)))
     return false;
-  ht->items[index] = item;
+  *item = item_new;
   ht->count++;
   return true;
 }

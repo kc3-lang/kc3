@@ -32,8 +32,16 @@ sw buf_parse_s16 (s_buf *buf, s16 *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(S16)")) < 0)
+    goto restore;
+  if (r) {
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
   if ((r = buf_read_1(buf, "-")) < 0)
-    goto clean;
+    goto restore;
   if (r > 0) {
     result += r;
     negative = true;

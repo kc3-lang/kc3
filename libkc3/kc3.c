@@ -178,28 +178,20 @@ s_tag * kc3_defoperator (s_tag *op_tag, s_tag *dest)
     return NULL;
   }
   env = env_global();
-  if (! op_tag->data.struct_.data) {
-    tag.type = TAG_STRUCT;
-    if (! env_eval_struct(env, &op_tag->data.struct_,
-                          &tag.data.struct_)) {
-      err_puts("kc3_defoperator: env_eval_struct");
-      assert(! "kc3_defoperator: env_eval_struct");
-      return NULL;
-    }
-    if (! env_defoperator(env, tag.data.struct_.data, dest)) {
-      err_puts("kc3_defoperator: env_defoperator 1");
-      assert(! "kc3_defoperator: env_defoperator 1");
-      tag_clean(&tag);
-      return NULL;
-    }
-    return dest;
+  tag.type = TAG_STRUCT;
+  if (! env_eval_struct(env, &op_tag->data.struct_,
+                        &tag.data.struct_)) {
+    err_puts("kc3_defoperator: env_eval_struct");
+    assert(! "kc3_defoperator: env_eval_struct");
+    return NULL;
   }
-  if (! env_defoperator(env, op_tag->data.struct_.data, dest)) {
-    err_puts("kc3_defoperator: env_defoperator 2");
-    assert(! "kc3_defoperator: env_defoperator 2");
+  if (! env_defoperator(env, tag.data.struct_.data, dest)) {
+    err_puts("kc3_defoperator: env_defoperator 1");
+    assert(! "kc3_defoperator: env_defoperator 1");
     tag_clean(&tag);
     return NULL;
   }
+  tag_clean(&tag);
   return dest;
 }
 

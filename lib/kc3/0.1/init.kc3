@@ -5,63 +5,236 @@ defoperator %KC3.Op{sym: :"()",
                     associativity: 1,
                     callable: cfn Tag "tag_paren" (Tag, Result)}
 
-def human_size = fn (size) {
-  size = integer_reduce(size)
-  if (size >= 1024 * 1024 * 1024 * 1024) do
-    s = size * 10 / 1024 / 1024 / 1024 / 1024
-    "#{s / 10}.#{s mod 10}Tb"
-  else
-    if (size >= 1024 * 1024 * 1024) do
-      s = size * 10 / 1024 / 1024 / 1024
-      "#{s / 10}.#{s mod 10}Gb"
-    else
-      if (size >= 1024 * 1024) do
-        s = size * 10 / 1024 / 1024
-        "#{s / 10}.#{s mod 10}Mb"
-      else
-        if (size >= 1024) do
-          s = size * 10 / 1024
-          "#{s / 10}.#{s mod 10}Kb"
-        else
-          "#{size}b"
-        end
-      end
-    end
-  end
-}
+defoperator %KC3.Op{sym: :"[]",
+                    arity: 2,
+                    precedence: 15,
+                    associativity: 1,
+                    callable: cfn Tag "kc3_access" (Tag, List, Result)}
 
-def load_directory = fn (dir) {
-  if File.exists?(dir) && File.is_directory?(dir) do
-    files = List.sort(File.list(dir))
-    List.each(files, fn (file) {
-      if (! Str.starts_with?(file, ".")) do
-        path = dir + file
-        if File.is_directory?(path) do
-          load_directory(path + "/")
-        else
-          if Str.ends_with?(path, ".kc3") do
-            load(path)
-          end
-        end
-      end
-    })
-  end
-}
+defoperator %KC3.Op{sym: :~,
+                    arity: 1,
+                    precedence: 14,
+                    associativity: 2,
+                    callable: cfn Tag "tag_bnot" (Tag, Result)}
 
-def maybe_reload_directory = fn (dir) {
-  if File.exists?(dir) && File.is_directory?(dir) do
-    files = List.sort(File.list(dir))
-    List.each(files, fn (file) {
-      if (! Str.starts_with?(file, ".")) do
-        path = dir + file
-        if File.is_directory?(path) do
-          maybe_reload_directory(path + "/")
-        else
-          if Str.ends_with?(path, ".kc3") do
-            maybe_reload(path)
-          end
-        end
-      end
-    })
-  end
-}
+defoperator %KC3.Op{sym: :-,
+                    arity: 1,
+                    precedence: 14,
+                    associativity: 2,
+                    callable: cfn Tag "tag_neg" (Tag, Result)}
+
+defoperator %KC3.Op{sym: :!,
+                    arity: 1,
+                    precedence: 14,
+                    associativity: 2,
+                    callable: cfn Tag "tag_not" (Tag, Result)}
+
+defoperator %KC3.Op{sym: :^,
+                    arity: 1,
+                    precedence: 14,
+                    associativity: 2,
+                    callable: cfn Tag "kc3_identity" (Tag, Result)}
+
+defoperator %KC3.Op{sym: :/,
+                    arity: 2,
+                    precedence: 13,
+                    associativity: 1,
+                    callable: cfn Tag "tag_div" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :mod,
+                    arity: 2,
+                    precedence: 13,
+                    associativity: 1,
+                    callable: cfn Tag "tag_mod" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :*,
+                    arity: 2,
+                    precedence: 13,
+                    associativity: 1,
+                    callable: cfn Tag "tag_mul" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :+,
+                    arity: 2,
+                    precedence: 12,
+                    associativity: 1,
+                    callable: cfn Tag "tag_add" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :+i,
+                    arity: 2,
+                    precedence: 12,
+                    associativity: 1,
+                    callable: cfn Tag "tag_addi" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :-,
+                    arity: 2,
+                    precedence: 12,
+                    associativity: 1,
+                    callable: cfn Tag "tag_sub" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :<<,
+                    arity: 2,
+                    precedence: 11,
+                    associativity: 1,
+                    callable: cfn Tag "tag_shift_left" (Tag, Tag,
+                      Result)}
+
+defoperator %KC3.Op{sym: :>>,
+                    arity: 2,
+                    precedence: 11,
+                    associativity: 1,
+                    callable: cfn Tag "tag_shift_right" (Tag, Tag,
+                      Result)}
+
+defoperator %KC3.Op{sym: :<,
+                    arity: 2,
+                    precedence: 10,
+                    associativity: 1,
+                    callable: cfn Bool "tag_lt" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :<=,
+                    arity: 2,
+                    precedence: 10,
+                    associativity: 1,
+                    callable: cfn Bool "tag_lte" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :>,
+                    arity: 2,
+                    precedence: 10,
+                    associativity: 1,
+                    callable: cfn Bool "tag_gt" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :>=,
+                    arity: 2,
+                    precedence: 10,
+                    associativity: 1,
+                    callable: cfn Bool "tag_gte" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :==,
+                    arity: 2,
+                    precedence: 9,
+                    associativity: 1,
+                    callable: cfn Bool "tag_eq" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :!=,
+                    arity: 2,
+                    precedence: 9,
+                    associativity: 1,
+                    callable: cfn Bool "tag_not_eq" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :&,
+                    arity: 2,
+                    precedence: 8,
+                    associativity: 1,
+                    callable: cfn Tag "tag_band" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :^,
+                    arity: 2,
+                    precedence: 7,
+                    associativity: 1,
+                    callable: cfn Tag "tag_bxor" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :bor,
+                    arity: 2,
+                    precedence: 6,
+                    associativity: 1,
+                    callable: cfn Tag "tag_bor" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :&&,
+                    arity: 2,
+                    precedence: 5,
+                    associativity: 1,
+                    callable: cfn Tag "kc3_and" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :||,
+                    arity: 2,
+                    precedence: 4,
+                    associativity: 1,
+                    callable: cfn Tag "kc3_or" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :<-,
+                    arity: 2,
+                    precedence: 3,
+                    associativity: 1,
+                    callable: cfn Tag "tag_assign" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :←,
+                    arity: 2,
+                    precedence: 3,
+                    associativity: 1,
+                    callable: cfn Tag "tag_assign" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :=,
+                    arity: 2,
+                    precedence: 2,
+                    associativity: 2,
+                    callable: cfn Tag "tag_equal" (Tag, Tag, Result)}
+
+defoperator %KC3.Op{sym: :";",
+                    arity: 2,
+                    precedence: 1,
+                    associativity: 1,
+                    callable: cfn Tag "tag_semicolon" (Tag, Tag, Result)}
+
+puts("init.kc3: done with operators")
+
+#def human_size = fn (size) {
+#  size = integer_reduce(size)
+#  if (size >= 1024 * 1024 * 1024 * 1024) do
+#    s = size * 10 / 1024 / 1024 / 1024 / 1024
+#    "#{s / 10}.#{s mod 10}Tb"
+#  else
+#    if (size >= 1024 * 1024 * 1024) do
+#      s = size * 10 / 1024 / 1024 / 1024
+#      "#{s / 10}.#{s mod 10}Gb"
+#    else
+#      if (size >= 1024 * 1024) do
+#        s = size * 10 / 1024 / 1024
+#        "#{s / 10}.#{s mod 10}Mb"
+#      else
+#        if (size >= 1024) do
+#          s = size * 10 / 1024
+#          "#{s / 10}.#{s mod 10}Kb"
+#        else
+#          "#{size}b"
+#        end
+#      end
+#    end
+#  end
+#}
+#
+#def load_directory = fn (dir) {
+#  if File.exists?(dir) && File.is_directory?(dir) do
+#    files = List.sort(File.list(dir))
+#    List.each(files, fn (file) {
+#      if (! Str.starts_with?(file, ".")) do
+#        path = dir + file
+#        if File.is_directory?(path) do
+#          load_directory(path + "/")
+#        else
+#          if Str.ends_with?(path, ".kc3") do
+#            load(path)
+#          end
+#        end
+#      end
+#    })
+#  end
+#}
+#
+#def maybe_reload_directory = fn (dir) {
+#  if File.exists?(dir) && File.is_directory?(dir) do
+#    files = List.sort(File.list(dir))
+#    List.each(files, fn (file) {
+#      if (! Str.starts_with?(file, ".")) do
+#        path = dir + file
+#        if File.is_directory?(path) do
+#          maybe_reload_directory(path + "/")
+#        else
+#          if Str.ends_with?(path, ".kc3") do
+#            maybe_reload(path)
+#          end
+#        end
+#      end
+#    })
+#  end
+#}
+#

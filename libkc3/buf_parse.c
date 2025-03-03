@@ -27,6 +27,7 @@
 #include "character.h"
 #include "complex.h"
 #include "cow.h"
+#include "data.h"
 #include "env.h"
 #include "fact.h"
 #include "fn.h"
@@ -1082,11 +1083,7 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
     goto restore;
   result += r;
   call_init_op_unary(&tmp);
-  if (! ops_get(env_global()->ops, &g_sym__paren, 1)) {
-    assert(! "buf_parse_call_paren: could not resolve operator ()");
-    r = -1;
-    goto restore;
-  }
+  tmp.ident.sym = &g_sym__paren;
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
@@ -4094,7 +4091,12 @@ sw buf_parse_tag_module_name (s_buf *buf, s_tag *dest)
 
 sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
 {
+  void *data = NULL;
+  s_tag i = {0};
   sw r;
+  sw result = 0;
+  s_buf_save save = {0};
+  const s_sym *type = NULL;
   assert(buf);
   assert(dest);
   r = buf_parse_tag_f128(buf, dest);
@@ -4109,12 +4111,42 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
   r = buf_parse_tag_ratio(buf, dest);
   if (r > 0)
     return r;
-  r = buf_parse_tag_integer(buf, dest);
-  if (r > 0) {
-    tag_integer_reduce(dest);
-    return r;
+  buf_save_init(buf, &save);
+  if ((r = buf_parse_paren_sym(buf, &type)) > 0) {
+    if (! sym_type_is_integer(&type)) {
+      r = 0;
+      goto restore;
+    }
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
   }
-  return 0;
+  if ((r = buf_parse_tag_integer(buf, &i)) <= 0)
+    goto restore;
+  result += r;
+  if (type) {
+    sym_to_tag_type(type, &dest->type);
+    if (! tag_to_pointer(dest, type, &data)) {
+      r = -1;
+      goto clean;
+    }
+    if (! data_init_cast(data, &type, &i)) {
+      r = -1;
+      goto clean;
+    }
+  }
+  else {
+    *dest = i;
+    tag_integer_reduce(dest);
+  }
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_tag_primary (s_buf *buf, s_tag *dest)
