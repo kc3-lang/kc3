@@ -817,7 +817,8 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
     }
   }
   arity = call_arity(&tmp);
-  if (arity && (op = ops_get(env->ops, tmp.ident.sym, arity))) {
+  if (arity && arity <= U8_MAX &&
+      (op = ops_get(env->ops, tmp.ident.sym, arity))) {
     tmp.callable = callable_new_ref(op->callable);
     *call = tmp;
     return true;
@@ -2779,8 +2780,7 @@ s_tag * env_kc3_def (s_env *env, const s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
-  if (call->ident.module != &g_sym_KC3 ||
-      call->ident.sym != &g_sym_op_equal ||
+  if (call->ident.sym != &g_sym__equal ||
       call->arguments->tag.type != TAG_IDENT ||
       ! list_next(call->arguments) ||
       list_next(list_next(call->arguments))) {

@@ -40,19 +40,17 @@ TEST_CASE(env_eval_call)
   s_env env;
   s_call call;
   s_tag result;
-  s_tag expected;
   env_init(&env, 0, NULL);
   test_context("env_eval_call(1 + 2) -> 3");
   call_init(&call);
-  call.ident.module = sym_1("KC3");
-  call.ident.sym = sym_1("op_add");
+  call.ident.module = NULL;
+  call.ident.sym = sym_1("+");
   call.arguments = list_new_1("[1, 2]");
-  tag_init_u8(&expected, 3);
   TEST_ASSERT(env_eval_call(&env, &call, &result));
-  TEST_EQ(compare_tag(&result, &expected), 0);
+  TEST_EQ(result.type, TAG_U8);
+  TEST_EQ(result.data.u8, 3);
   call_clean(&call);
   tag_clean(&result);
-  tag_clean(&expected);
   env_clean(&env);
   test_context(NULL);
 }
@@ -164,7 +162,7 @@ TEST_CASE(env_module_load)
 {
   s_env env;
   env_init(&env, 0, NULL);
-  TEST_ASSERT(env_module_load(&env, sym_1("KC3.Operator")));
+  TEST_ASSERT(env_module_load(&env, sym_1("KC3.Op")));
   env_clean(&env);
 }
 TEST_CASE_END(env_module_load)

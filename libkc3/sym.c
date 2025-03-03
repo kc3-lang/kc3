@@ -340,6 +340,8 @@ const s_sym ** sym_init_copy (const s_sym **sym,
 
 void sym_init_g_sym (void)
 {
+  if (g_sym_list)
+    return;
   sym_register(&g_sym___DIR__, NULL);
   sym_register(&g_sym___FILE__, NULL);
   sym_register(&g_sym__brackets, NULL);

@@ -461,13 +461,15 @@ TEST_CASE(inspect_struct)
                       "        arity: 2,\n"
                       "        precedence: 0,\n"
                       "        associativity: 1,\n"
-                      "        callable: fn (a, b) { a + b }}");
+                      "        callable: fn (a, b) { a + b },\n"
+                      "        ref_count: (Sw) 1}");
   INSPECT_TEST_STRUCT("%KC3.Op{sym: :-, callable: fn (a, b) { a + b }}",
                       "%KC3.Op{sym: :-,\n"
                       "        arity: 2,\n"
                       "        precedence: 0,\n"
                       "        associativity: 1,\n"
-                      "        callable: fn (a, b) { a + b }}");
+                      "        callable: fn (a, b) { a + b },\n"
+                      "        ref_count: (Sw) 1}");
 }
 TEST_CASE_END(inspect_struct)
 
