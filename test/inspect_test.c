@@ -459,6 +459,7 @@ TEST_CASE(inspect_struct)
   INSPECT_TEST_STRUCT("%KC3.Op{callable: fn (a, b) { a + b }}",
                       "%KC3.Op{sym: :+,\n"
                       "        arity: 2,\n"
+                      "        special: false,\n"
                       "        precedence: 0,\n"
                       "        associativity: 1,\n"
                       "        callable: fn (a, b) { a + b },\n"
@@ -466,6 +467,7 @@ TEST_CASE(inspect_struct)
   INSPECT_TEST_STRUCT("%KC3.Op{sym: :-, callable: fn (a, b) { a + b }}",
                       "%KC3.Op{sym: :-,\n"
                       "        arity: 2,\n"
+                      "        special: false,\n"
                       "        precedence: 0,\n"
                       "        associativity: 1,\n"
                       "        callable: fn (a, b) { a + b },\n"

@@ -165,6 +165,7 @@ defoperator %KC3.Op{sym: :←,
 
 defoperator %KC3.Op{sym: :=,
                     arity: 2,
+                    special: true,
                     precedence: 2,
                     associativity: 2,
                     callable: cfn Tag "tag_equal" (Tag, Tag, Result)}

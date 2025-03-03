@@ -702,6 +702,7 @@ struct list {
 struct op {
   const s_sym *sym;
   u8           arity;
+  bool         special;
   u8           precedence;
   u8           associativity;
   p_callable   callable;

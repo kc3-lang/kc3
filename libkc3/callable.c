@@ -105,6 +105,26 @@ s_callable * callable_new_ref (s_callable *callable)
   return callable;
 }
 
+s_callable * callable_set_special (s_callable *callable, bool special)
+{
+  assert(callable);
+  switch (callable->type) {
+  case CALLABLE_CFN:
+    callable->data.cfn.special_operator = special;
+    return callable;
+  case CALLABLE_FN:
+    callable->data.fn.special_operator = special;
+    return callable;
+  case CALLABLE_VOID:
+    err_puts("callable_set_special: CALLABLE_TYPE_VOID");
+    assert(! "callable_set_special: CALLABLE_TYPE_VOID");
+    return NULL;
+  }
+  err_puts("callable_set_special: unknown callable type");
+  assert(! "callable_set_special: unknown callable type");
+  return NULL;
+}
+
 void p_callable_clean (p_callable *callable)
 {
   callable_delete(*callable);

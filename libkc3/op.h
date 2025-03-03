@@ -26,4 +26,8 @@ s_op * op_new (void);
 s_op * op_new_copy (const s_op *src);
 s_op * op_new_ref (s_op *op);
 
+/* Operators. */
+s_op * op_set_special (s_op *op, bool special);
+s_op * op_set_callable (s_op *op, s_callable *callable);
+
 #endif /* LIBKC3_OP_H */

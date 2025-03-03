@@ -831,6 +831,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   if (arity && arity <= U8_MAX &&
       (op = ops_get(env_global()->ops, tmp.ident.sym, arity))) {
     tmp.callable = callable_new_ref(op->callable);
+    
     *call = tmp;
     return true;
   }

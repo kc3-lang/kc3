@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include "alloc.h"
 #include "assert.h"
+#include "callable.h"
 #include "compare.h"
 #include "hash.h"
 #include "ht.h"
@@ -30,6 +31,8 @@ bool ops_add (s_ops *ops, s_op *op)
   assert(op->associativity == 1 || op->associativity == 2);
   assert(op->callable);
   assert(op->ref_count > 0);
+  if (op->special)
+    callable_set_special(op->callable, op->special);
   return ht_add(&ops->ht, op);
 }
 

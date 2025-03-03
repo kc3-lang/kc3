@@ -2,6 +2,7 @@ defmodule KC3.Op do
 
   defstruct [sym: :+,
              arity: 2,
+             special: false,
              precedence: 0,
              associativity: 1,
              callable: (Callable) ?,

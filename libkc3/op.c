@@ -94,3 +94,17 @@ s_op * op_new_ref (s_op *op)
   op->ref_count++;
   return op;
 }
+
+s_op * op_set_callable (s_op *op, s_callable *callable)
+{
+  op->callable = callable_new_ref(callable);
+  callable_set_special(op->callable, op->special);
+  return op;
+}
+
+s_op * op_set_special (s_op *op, bool special)
+{
+  op->special = special;
+  callable_set_special(op->callable, special);
+  return op;
+}

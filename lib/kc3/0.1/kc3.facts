@@ -43,6 +43,10 @@ replace {KC3.defstruct, :is_a, :special_operator}
 replace {KC3.defstruct, :symbol_value, cfn Tag "kc3_defstruct" (List, Result)}
 add {KC3, :symbol, KC3.module}
 replace {KC3.module, :symbol_value, cfn Sym "kc3_module" (Result)}
+add {KC3, :symbol, KC3.require}
+replace {KC3.require, :arity, 1}
+replace {KC3.require, :is_a, :special_operator}
+replace {KC3.require, :symbol_value, cfn Tag "kc3_require" (Sym, Result)}
 add {KC3, :symbol, KC3.search_modules}
 replace {KC3.search_modules, :symbol_value, cfn List "kc3_search_modules" (Result)}
 add {KC3, :symbol, KC3.access}
