@@ -1000,19 +1000,20 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
 
 sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
 {
-  sw arity;
+  s_ident ident = {0};
   s_op  *op;
   s_ops *ops;
   sw r;
   sw result = 0;
   assert(buf);
   assert(call);
-  arity = call_arity(call);
   ops = env_global()->ops;
-  op = ops_get(ops, call->ident.sym, arity);
+  if (! (op = ops_get(ops, call->ident.sym, 1)))
+    return -1;
   if (op->sym == &g_sym__paren)
     return buf_inspect_call_paren(buf, call);
-  if ((r = buf_inspect_sym(buf, &op->sym)) < 0)
+  ident.sym = op->sym;
+  if ((r = buf_inspect_ident(buf, &ident)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
@@ -2822,7 +2823,7 @@ sw buf_inspect_ptr (s_buf *buf, const u_ptr_w *ptr)
   if ((r = buf_write_1(buf, "(Ptr) 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) &ptr->p)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal(buf, &ptr->uw)) < 0)
     return r;
   result += r;
   return result;

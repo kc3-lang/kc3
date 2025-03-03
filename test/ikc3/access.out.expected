@@ -47,9 +47,11 @@ map["a"]["b"]["c"]
 op = %KC3.Op{callable: fn (a, b) { a + b }}
 %KC3.Op{sym: :+,
         arity: 2,
+        special: false,
         precedence: 0,
         associativity: 1,
-        callable: fn (a, b) { a + b }}
+        callable: fn (a, b) { a + b },
+        ref_count: (Sw) 1}
 op.sym
 :+
 op[:sym]

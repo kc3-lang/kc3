@@ -371,15 +371,17 @@ struct pretty_save {
 union ptr_ {
   const void *p;
   const char *pchar;
-  const s8 *ps8;
-  const u8 *pu8;
+  const s8   *ps8;
+  const u8   *pu8;
+  uw          uw;
 };
 
 union ptr_w {
   void *p;
   char *pchar;
-  s8 *ps8;
-  u8 *pu8;
+  s8   *ps8;
+  u8   *pu8;
+  uw    uw;
 };
 
 struct queue {

@@ -27,7 +27,7 @@ defoperator %KC3.Op{sym: :!,
                     arity: 1,
                     precedence: 14,
                     associativity: 2,
-                    callable: cfn Tag "tag_not" (Tag, Result)}
+                    callable: cfn Bool "tag_not" (Tag, Result)}
 
 defoperator %KC3.Op{sym: :^,
                     arity: 1,
