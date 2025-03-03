@@ -21,6 +21,7 @@
 #include "config.h"
 #include "error.h"
 #include "file.h"
+#include "list.h"
 #include "pretty.h"
 #include "ratio.h"
 #include "rwlock.h"
@@ -1003,6 +1004,61 @@ sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
   return r;
 }
 
+sw buf_read_until_list_into_buf (s_buf *buf, const s_list *end,
+                                 s_buf *dest)
+{
+  u8 c;
+  const s_list *e;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+#if HAVE_PTHREAD
+  rwlock_w(&buf->rwlock);
+  rwlock_w(&dest->rwlock);
+#endif
+  buf_save_init(buf, &save);
+  while (1) {
+    e = end;
+    while (e) {
+      if (e->tag.type != TAG_STR ||
+          e->tag.data.str.size <= 0) {
+        err_puts("buf_read_until_list_into_buf: not a Str");
+        assert(! "buf_read_until_list_into_buf: not a Str");
+        goto restore;
+      }
+      if ((r = buf_read_str(buf, &e->tag.data.str)) < 0) {
+        if (true)
+          err_puts("buf_read_until_str_into_buf: buf_read_str");
+        goto restore;
+      }
+      if (r) {
+        result += r;
+        goto clean;
+      }
+      e = list_next(e);
+    }
+    if ((r = buf_read_u8(buf, &c)) <= 0) {
+      if (true)
+        err_puts("buf_read_until_str_into_buf: buf_read_u8");
+      goto restore;
+    }
+    if ((r = buf_write_u8(dest, c)) <= 0) {
+      if (true)
+        err_puts("buf_read_until_str_into_buf: buf_write_u8");
+      goto restore;
+    }
+    result++;
+  }
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&buf->rwlock);
+  rwlock_unlock_w(&dest->rwlock);
+#endif
+  return r > 0 ? result : -1;
+}
 sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
 				s_buf *dest)
 {

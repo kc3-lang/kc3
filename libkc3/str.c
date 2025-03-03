@@ -1440,6 +1440,35 @@ s_list ** str_split (const s_str *str, const s_str *separator,
   return NULL;
 }
 
+s_list ** str_split_list (const s_str *str,
+                          const s_list * const *sep,
+                          s_list **dest)
+{
+  s_buf buf;
+  s_str   *t_str;
+  s_list **t;
+  s_list  *tmp;
+  buf_init_str_const(&buf, str);
+  tmp = NULL;
+  t = &tmp;
+  while (1) {
+    *t = list_new(NULL);
+    (*t)->tag.type = TAG_STR;
+    t_str = &(*t)->tag.data.str;
+    if (! buf_read_until_list_into_str(&buf, *sep, t_str)) {
+      if (! buf_read_to_str(&buf, t_str))
+        goto clean;
+      break;
+    }
+    t = &(*t)->next.data.list;
+  }
+  *dest = tmp;
+  return dest;
+ clean:
+  list_delete_all(tmp);
+  return NULL;
+}
+
 bool * str_starts_with (const s_str *str, const s_str *start,
                         bool *dest)
 {

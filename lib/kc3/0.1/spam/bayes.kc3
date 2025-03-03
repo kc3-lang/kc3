@@ -1,0 +1,14 @@
+defmodule Spam.Bayes do
+  learn = fn (type, doc) {
+    error = "Unknown error"
+    r = if type(doc) = Str do
+      if List.has?([:spam, :ham]) = true do
+        words = Str.split_list(doc, [".", ",", ";", ":", "!", "'", "(", ")", "{", "}", "?", "/", " ", "\n", "\t", "\r" "\l"
+      end
+    end
+    if r do
+      {:ok, r}
+    else
+      {:error, error}
+    end
+  }
