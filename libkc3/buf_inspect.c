@@ -905,7 +905,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, u8 op_precedence)
   if ((r = buf_write_1(buf, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sym(buf, &op->sym)) < 0)
+  if ((r = buf_inspect_ident(buf, &call->ident)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
@@ -913,8 +913,8 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, u8 op_precedence)
   result += r;
   paren = false;
   if (right->type == TAG_CALL) {
-    op = ops_get(ops, right->data.call.ident.sym,
-                 call_arity(&right->data.call));
+    arity = call_arity(&right->data.call);
+    op = arity ? ops_get(ops, right->data.call.ident.sym, arity) : NULL;
     if (op && op->precedence < op_precedence) {
       paren = true;
       if ((r = buf_write_1(buf, "(")) < 0)
@@ -970,7 +970,7 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
   if ((r = buf_write_1_size(pretty, " ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sym_size(pretty, &op->sym)) < 0)
+  if ((r = buf_inspect_ident_size(pretty, &call->ident)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1_size(pretty, " ")) < 0)
@@ -978,8 +978,8 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
   result += r;
   paren = false;
   if (right->type == TAG_CALL) {
-    op = ops_get(ops, right->data.call.ident.sym,
-                 call_arity(&right->data.call));
+    arity = call_arity(&right->data.call);
+    op = arity ? ops_get(ops, right->data.call.ident.sym, arity) : NULL;
     if (op && op->precedence < op_precedence) {
       paren = true;
       if ((r = buf_write_1_size(pretty, "(")) < 0)
