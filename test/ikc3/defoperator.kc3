@@ -1,7 +1,7 @@
 quote %KC3.Op{callable: fn (a, b) { a + b }}
 %KC3.Op{callable: fn (a, b) { a + b }}
-quote def op_muul = %KC3.Op{sym: :****, callable: cfn Tag "tag_mul" (Tag, Tag, Result), precedence: 13}
-def op_muul = %KC3.Op{sym: :****, callable: cfn Tag "tag_mul" (Tag, Tag, Result), precedence: 13}
+quote defoperator %KC3.Op{sym: :****, arity: 2, precedence: 13, associativity: 1, callable: cfn Tag "tag_mul" (Tag, Tag, Result)}
+defoperator %KC3.Op{sym: :****, arity: 2, precedence: 13, associativity: 1, callable: cfn Tag "tag_mul" (Tag, Tag, Result)}
 quote 4 **** 4
 4 **** 4
 quote 4 **** 4 **** 4

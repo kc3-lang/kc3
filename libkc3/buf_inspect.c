@@ -2866,7 +2866,7 @@ sw buf_inspect_ptr_size (s_pretty *pretty, const u_ptr_w *ptr)
   if ((r = buf_write_1_size(pretty, "(Ptr) 0x")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_uw_hexadecimal_size(pretty, (uw *) &ptr->p)) < 0)
+  if ((r = buf_inspect_uw_hexadecimal_size(pretty, &ptr->uw)) < 0)
     return r;
   result += r;
   return result;
