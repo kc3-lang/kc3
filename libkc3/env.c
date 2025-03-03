@@ -390,6 +390,7 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   return result;
 }
 
+/* FIXME: multiple env and env->ops. See env_eval_call_resolve. */
 s_tag * env_defoperator (s_env *env, s_op *op, s_tag *dest)
 {
   s_tag tag_sym = {0};
@@ -825,6 +826,8 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
     err_inspect_sym(&tmp.ident.sym);
     err_write_1("\n");
   }
+  /* FIXME: multiple env and env->ops. See env_defoperator. */
+  /* Quickfix is to use env_global() as is done in kc3_defoperator. */
   if (arity && arity <= U8_MAX &&
       (op = ops_get(env_global()->ops, tmp.ident.sym, arity))) {
     tmp.callable = callable_new_ref(op->callable);

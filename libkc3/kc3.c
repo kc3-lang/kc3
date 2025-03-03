@@ -167,6 +167,7 @@ s_tag * kc3_defmodule (const s_sym **name, const s_block *block, s_tag *dest)
   return env_defmodule(env_global(), name, block, dest);
 }
 
+/* FIXME: multiple env and env->ops. See env_defoperator. */
 s_tag * kc3_defoperator (s_tag *op_tag, s_tag *dest)
 {
   s_env *env;
