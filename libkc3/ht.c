@@ -33,8 +33,8 @@ bool ht_add_hash (s_ht *ht, void *data, uw hash)
   assert(ht->size);
   assert(data);
   /* FIXME: lock / unlock */
-  item = &ht->items[hash % ht->size];
-  while (*item && (c = ht->compare(*item, data)) < 0)
+  item = ht->items + hash % ht->size;
+  while (*item && (c = ht->compare((*item)->data, data)) < 0)
     item = &(*item)->next;
   if (*item && ! c) {
     *item = ht_item_delete(ht, *item);
@@ -70,7 +70,7 @@ void * ht_get_hash (s_ht *ht, void *data, uw hash)
   sw c = -1;
   s_ht_item *item;
   item = ht->items[hash % ht->size];
-  while (item && (c = ht->compare(item, data)) < 0)
+  while (item && (c = ht->compare(item->data, data)) < 0)
     item = item->next;
   if (item && ! c)
     return item->data;

@@ -534,20 +534,22 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   if (call->ident.sym == &g_sym_cast)
     return buf_inspect_cast(buf, call);
   arity = call_arity(call);
-  if (arity > U8_MAX) {
-    err_puts("buf_inspect_call: invalid call arity");
-    assert(! "buf_inspect_call: invalid call arity");
-    return -1;
-  }
-  ops = env_global()->ops;
-  op = ops_get(ops, call->ident.sym, arity);
-  if (op) {
-    if (op->sym == &g_sym__brackets)
-      return buf_inspect_call_brackets(buf, call);
-    if (arity == 1)
-      return buf_inspect_call_op_unary(buf, call);
-    if (arity == 2 && op->precedence)
-      return buf_inspect_call_op(buf, call, op->precedence);
+  if (arity) {
+    if (arity > U8_MAX) {
+      err_puts("buf_inspect_call: invalid call arity");
+      assert(! "buf_inspect_call: invalid call arity");
+      return -1;
+    }
+    ops = env_global()->ops;
+    op = arity ? ops_get(ops, call->ident.sym, arity) : NULL;
+    if (op) {
+      if (op->sym == &g_sym__brackets)
+        return buf_inspect_call_brackets(buf, call);
+      if (arity == 1)
+        return buf_inspect_call_op_unary(buf, call);
+      if (arity == 2 && op->precedence)
+        return buf_inspect_call_op(buf, call, op->precedence);
+    }
   }
   if (! ident_is_special_operator(&call->ident, &b))
     return -1;
@@ -869,6 +871,7 @@ sw buf_inspect_call_if_then_else_size (s_pretty *pretty, const s_call *call)
 
 sw buf_inspect_call_op (s_buf *buf, const s_call *call, u8 op_precedence)
 {
+  sw arity;
   s_tag *left;
   s_op *op = NULL;
   s_ops *ops = NULL;
@@ -882,8 +885,8 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, u8 op_precedence)
   paren = false;
   ops = env_global()->ops;
   if (left->type == TAG_CALL) {
-    op = ops_get(ops, left->data.call.ident.sym,
-                 call_arity(&left->data.call));
+    arity = call_arity(&left->data.call);
+    op = arity ? ops_get(ops, left->data.call.ident.sym, arity) : NULL;
     if (op && op->precedence < op_precedence) {
       paren = true;
       if ((r = buf_write_1(buf, "(")) < 0)
@@ -933,6 +936,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, u8 op_precedence)
 sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
                              u8 op_precedence)
 {
+  sw arity;
   s_tag *left;
   s_op *op = NULL;
   s_ops *ops = NULL;
@@ -946,8 +950,8 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
   paren = false;
   ops = env_global()->ops;
   if (left->type == TAG_CALL) {
-    op = ops_get(ops, left->data.call.ident.sym,
-                 call_arity(&left->data.call));
+    arity = call_arity(&left->data.call);
+    op = arity ? ops_get(ops, left->data.call.ident.sym, arity) : NULL;
     if (op && op->precedence < op_precedence) {
       paren = true;
       if ((r = buf_write_1_size(pretty, "(")) < 0)
@@ -1105,20 +1109,22 @@ sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
   if (call->ident.sym == &g_sym_cast)
     return buf_inspect_cast_size(pretty, call);
   arity = call_arity(call);
-  if (arity > U8_MAX) {
-    err_puts("buf_inspect_call_size: invalid call arity");
-    assert(! "buf_inspect_call_size: invalid call arity");
-    return -1;
-  }
-  ops = env_global()->ops;
-  op = ops_get(ops, call->ident.sym, arity);
-  if (op) {
-    if (op->sym == &g_sym__brackets)
-      return buf_inspect_call_brackets_size(pretty, call);
-    if (arity == 1)
-      return buf_inspect_call_op_unary_size(pretty, call);
-    if (arity == 2 && op->precedence)
-      return buf_inspect_call_op_size(pretty, call, op->precedence);
+  if (arity) {
+    if (arity > U8_MAX) {
+      err_puts("buf_inspect_call_size: invalid call arity");
+      assert(! "buf_inspect_call_size: invalid call arity");
+      return -1;
+    }
+    ops = env_global()->ops;
+    op = arity ? ops_get(ops, call->ident.sym, arity) : NULL;
+    if (op) {
+      if (op->sym == &g_sym__brackets)
+        return buf_inspect_call_brackets_size(pretty, call);
+      if (arity == 1)
+        return buf_inspect_call_op_unary_size(pretty, call);
+      if (arity == 2 && op->precedence)
+        return buf_inspect_call_op_size(pretty, call, op->precedence);
+    }
   }
   if (! ident_is_special_operator(&call->ident, &b))
     return -1;

@@ -393,14 +393,20 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
 s_tag * env_defoperator (s_env *env, s_op *op, s_tag *dest)
 {
   s_tag tag_sym = {0};
+  s_op *tmp;
   assert(env);
   assert(op);
   assert(dest);
   assert(env->ops);
   assert(op->sym);
   assert(op->arity);
-  if (! ops_add(env->ops, op))
+  if (! (tmp = op_new_copy(op)))
     return NULL;
+  if (! ops_add(env->ops, tmp)) {
+    op_delete(tmp);
+    return NULL;
+  }
+  op_delete(tmp);
   tag_init_sym(&tag_sym, op->sym);
   *dest = tag_sym;
   return dest;
@@ -794,7 +800,9 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
 
 bool env_eval_call_resolve (s_env *env, s_call *call)
 {
+  sw arity;
   bool b;
+  s_op *op;
   s_call tmp = {0};
   const s_tag *value;
   assert(env);
@@ -807,6 +815,12 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
       *call = tmp;
       return true;
     }
+  }
+  arity = call_arity(&tmp);
+  if (arity && (op = ops_get(env->ops, tmp.ident.sym, arity))) {
+    tmp.callable = callable_new_ref(op->callable);
+    *call = tmp;
+    return true;
   }
   if (! env_ident_resolve_module(env, &tmp.ident, &tmp.ident)) {
     err_puts("env_eval_call_resolve: env_ident_resolve_module");

@@ -18,10 +18,12 @@
 /* Stack-allocation compatible functions, call op_clean after use. */
 void   op_clean (s_op *op);
 s_op * op_init (s_op *op);
+s_op * op_init_copy (s_op *op, const s_op *src);
 
 /* Heap-allocation compatible functions, call op_delete after use. */
 void   op_delete (s_op *op);
 s_op * op_new (void);
+s_op * op_new_copy (const s_op *src);
 s_op * op_new_ref (s_op *op);
 
 #endif /* LIBKC3_OP_H */

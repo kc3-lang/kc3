@@ -44,6 +44,19 @@ s_op * op_init (s_op *op)
   return op;
 }
 
+s_op * op_init_copy (s_op *op, const s_op *src)
+{
+  s_op tmp = {0};
+  tmp.sym = src->sym;
+  tmp.arity = src->arity;
+  tmp.precedence = src->precedence;
+  tmp.associativity = src->associativity;
+  tmp.callable = callable_new_ref(src->callable);
+  tmp.ref_count = 1;
+  *op = tmp;
+  return op;
+}
+
 s_op * op_new (void)
 {
   s_op *op;
@@ -51,6 +64,19 @@ s_op * op_new (void)
   if (! op)
     return NULL;
   if (! op_init(op)) {
+    free(op);
+    return NULL;
+  }
+  return op;
+}
+
+s_op * op_new_copy (const s_op *src)
+{
+  s_op *op;
+  op = alloc(sizeof(s_op));
+  if (! op)
+    return NULL;
+  if (! op_init_copy(op, src)) {
     free(op);
     return NULL;
   }
