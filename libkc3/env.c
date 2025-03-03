@@ -252,18 +252,28 @@ void env_clean (s_env *env)
   env_clean_globals(env);
   env_clean_toplevel(env);
   error_handler_delete_all(env->error_handler);
+  env->error_handler = NULL;
   facts_delete(env->facts);
+  env->facts = NULL;
   ops_delete(env->ops);
+  env->ops = NULL;
   buf_file_close(env->in);
   buf_delete(env->in);
+  env->in = NULL;
   buf_file_close(env->out);
   buf_delete(env->out);
+  env->out = NULL;
   buf_file_close(env->err);
   buf_delete(env->err);
+  env->err = NULL;
   str_delete(env->argv0_dir);
+  env->argv0_dir = NULL;
   str_delete(env->module_path);
+  env->module_path = NULL;
   list_delete_all(env->path);
+  env->path = NULL;
   list_delete_all(env->search_modules_default);
+  env->search_modules_default = NULL;
 }
 
 void env_clean_globals (s_env *env)
@@ -831,7 +841,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   if (arity && arity <= U8_MAX &&
       (op = ops_get(env_global()->ops, tmp.ident.sym, arity))) {
     tmp.callable = callable_new_ref(op->callable);
-    
+    callable_set_special(tmp.callable, op->special);
     *call = tmp;
     return true;
   }

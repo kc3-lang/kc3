@@ -154,7 +154,8 @@ void kc3_clean (s_env *env)
   if (! env)
     env = env_global();
   env_clean(env);
-  sym_delete_all();
+  if (env == env_global())
+    sym_delete_all();
 }
 
 s_tag * kc3_def (const s_call *call, s_tag *dest)

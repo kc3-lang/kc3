@@ -1396,10 +1396,11 @@ sw buf_write (s_buf *buf, const void *data, uw len)
 sw buf_write_1 (s_buf *buf, const char *p)
 {
   s_str str;
-  assert(buf);
-  assert(p);
-  str_init_1(&str, NULL, p);
-  return buf_write_str(buf, &str);
+  if (buf && p) {
+    str_init_1(&str, NULL, p);
+    return buf_write_str(buf, &str);
+  }
+  return -1;
 }
 
 sw buf_write_1_size (s_pretty *pretty, const char *p)

@@ -49,6 +49,7 @@ s_op * op_init_copy (s_op *op, const s_op *src)
   s_op tmp = {0};
   tmp.sym = src->sym;
   tmp.arity = src->arity;
+  tmp.special = src->special;
   tmp.precedence = src->precedence;
   tmp.associativity = src->associativity;
   tmp.callable = callable_new_ref(src->callable);
