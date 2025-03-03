@@ -207,6 +207,8 @@ void sym_delete (s_sym *sym)
 void sym_delete_all (void)
 {
   s_sym_list *sym_list;
+  if (true)
+    err_puts("sym_delete_all");
   sym_list = g_sym_list;
   g_sym_list = NULL;
   while (sym_list) {

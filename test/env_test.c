@@ -37,7 +37,7 @@ void env_test (void)
 
 TEST_CASE(env_eval_call)
 {
-  s_env env;
+  s_env env = {0};
   s_call call;
   s_tag result;
   env_init(&env, 0, NULL);

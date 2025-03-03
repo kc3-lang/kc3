@@ -249,11 +249,11 @@ void env_clean (s_env *env)
     err_write_1("\n");
   }
   //facts_save_file(env->facts, "debug.facts"); // debug
-  ops_delete(env->ops);
   env_clean_globals(env);
   env_clean_toplevel(env);
   error_handler_delete_all(env->error_handler);
   facts_delete(env->facts);
+  ops_delete(env->ops);
   buf_file_close(env->in);
   buf_delete(env->in);
   buf_file_close(env->out);
@@ -806,6 +806,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   s_call tmp = {0};
   const s_tag *value;
   assert(env);
+  assert(env->ops);
   assert(call);
   tmp = *call;
   if (tmp.ident.module == NULL &&
@@ -817,8 +818,15 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
     }
   }
   arity = call_arity(&tmp);
+  if (false) {
+    err_write_1("env_eval_call_resolve: arity = ");
+    err_inspect_sw(&arity);
+    err_write_1(" sym = ");
+    err_inspect_sym(&tmp.ident.sym);
+    err_write_1("\n");
+  }
   if (arity && arity <= U8_MAX &&
-      (op = ops_get(env->ops, tmp.ident.sym, arity))) {
+      (op = ops_get(env_global()->ops, tmp.ident.sym, arity))) {
     tmp.callable = callable_new_ref(op->callable);
     *call = tmp;
     return true;
