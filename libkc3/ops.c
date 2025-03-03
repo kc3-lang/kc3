@@ -24,6 +24,12 @@
 bool ops_add (s_ops *ops, s_op *op)
 {
   assert(ops);
+  assert(op);
+  assert(op->sym);
+  assert(op->arity);
+  assert(op->associativity == 1 || op->associativity == 2);
+  assert(op->callable);
+  assert(op->ref_count > 0);
   return ht_add(&ops->ht, op);
 }
 

@@ -27,15 +27,13 @@ bool ht_add (s_ht *ht, void *data)
 bool ht_add_hash (s_ht *ht, void *data, uw hash)
 {
   s8 c;
-  uw index;
   s_ht_item **item;
   s_ht_item  *item_new;
   assert(ht);
   assert(ht->size);
   assert(data);
   /* FIXME: lock / unlock */
-  index = hash % ht->size;
-  item = &ht->items[index];
+  item = &ht->items[hash % ht->size];
   while (*item && (c = ht->compare(*item, data)) < 0)
     item = &(*item)->next;
   if (*item && ! c) {
@@ -69,12 +67,12 @@ void * ht_get (s_ht *ht, void *data)
 
 void * ht_get_hash (s_ht *ht, void *data, uw hash)
 {
-  sw c;
+  sw c = -1;
   s_ht_item *item;
   item = ht->items[hash % ht->size];
   while (item && (c = ht->compare(item, data)) < 0)
     item = item->next;
-  if (! c)
+  if (item && ! c)
     return item->data;
   return NULL;
 }
