@@ -23,10 +23,15 @@
 /* Stack-allocation compatible functions, call pstruct_clean
    after use. */
 void       pstruct_clean (p_struct *s);
-s_struct * pstruct_init (p_struct *s, const s_sym *module);
-s_struct * pstruct_init_copy (p_struct *s, p_struct src);
-s_struct * pstruct_init_type (p_struct *s, const s_struct_type *type);
-s_struct * pstruct_init_with_data (p_struct *s, const s_sym *module,
+p_struct * pstruct_init (p_struct *s, const s_sym *module);
+p_struct * pstruct_init_1 (p_struct *s, const char *p);
+p_struct * pstruct_init_cast (p_struct *s, const s_sym * const *type,
+                              const s_tag *tag);
+p_struct * pstruct_init_copy (p_struct *s, p_struct src);
+p_struct * pstruct_init_put (p_struct *s, p_struct src,
+                             const s_sym *key, s_tag *value);
+p_struct * pstruct_init_type (p_struct *s, const s_struct_type *type);
+p_struct * pstruct_init_with_data (p_struct *s, const s_sym *module,
                                    void *data, bool free_data);
 
 #endif /* LIBKC3_STRUCT_H */

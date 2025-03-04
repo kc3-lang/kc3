@@ -248,42 +248,6 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
   return s;
 }
 
-p_struct * pstruct_init_1 (p_struct *s, const char *p)
-{
-  s_buf buf;
-  uw len;
-  sw r;
-  p_struct tmp = NULL;
-  p_struct tmp2 = NULL;
-  assert(s);
-  assert(p);
-  len = strlen(p);
-  buf_init_const(&buf, len, p);
-  buf.wpos = len;
-  r = buf_parse_pstruct(&buf, &tmp);
-  if (r < 0 || (uw) r != len) {
-    err_puts("struct_init_1: invalid struct");
-    assert(! "struct_init_1: invalid struct");
-    if (r > 0)
-      pstruct_clean(&tmp);
-    return NULL;
-  }
-  if (false) {
-    err_write_1("\nstruct_init_1: tmp = ");
-    err_inspect_struct(tmp);
-    err_write_1("\n");
-  }
-  if (! env_eval_struct(env_global(), tmp, &tmp2)) {
-    err_puts("struct_init_1: env_eval_struct");
-    assert(! "struct_init_1: env_eval_struct");
-    pstruct_clean(&tmp);
-    return NULL;
-  }
-  pstruct_clean(&tmp);
-  *s = tmp2;
-  return s;
-}
-
 s_struct * struct_init_copy (s_struct *s, const s_struct *src)
 {
   uw i;
@@ -412,20 +376,6 @@ s_struct * struct_new (const s_sym *module)
   return s;
 }
 
-s_struct * struct_new_1 (const char *p)
-{
-  s_struct *s;
-  assert(p);
-  s = alloc(sizeof(s_struct));
-  if (! s)
-    return NULL;
-  if (! struct_init_1(s, p)) {
-    free(s);
-    return NULL;
-  }
-  return s;
-}
-
 s_struct * struct_new_copy (const s_struct *src)
 {
   s_struct *s;
@@ -452,6 +402,20 @@ s_struct * struct_new_ref (s_struct *src)
   return src;
 }
 
+s_struct * struct_new_type (const s_struct_type *st)
+{
+  s_struct *s;
+  assert(st);
+  s = alloc(sizeof(s_struct));
+  if (! s)
+    return NULL;
+  if (! struct_init_type(s, st)) {
+    free(s);
+    return NULL;
+  }
+  return s;
+}
+
 uw * struct_offset (const s_struct *s, const s_sym * const *key,
                     uw *dest)
 {
@@ -467,23 +431,6 @@ uw * struct_offset (const s_struct *s, const s_sym * const *key,
   }
   assert(i < s->type->map.count);
   *dest = s->type->offset[i];
-  return dest;
-}
-
-s_struct * struct_put (s_struct *s, const s_sym *key,
-                       s_tag *value, s_struct *dest)
-{
-  s_struct tmp;
-  if (! struct_init_copy(&tmp, s)) {
-    err_puts("struct_put: struct_init_copy");
-    return NULL;
-  }
-  if (! struct_set(&tmp, key, value)) {
-    err_puts("struct_put: struct_set");
-    struct_clean(&tmp);
-    return NULL;
-  }
-  *dest = tmp;
   return dest;
 }
 

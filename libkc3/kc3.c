@@ -805,7 +805,7 @@ s_tag * kc3_struct_put (s_tag *s, const s_sym * const *key,
     assert(! "kc3_struct_put: not a struct");
     return NULL;
   }
-  if (! (tmp = struct_new_put(s->data.pstruct, *key, value)))
+  if (! pstruct_init_put(&tmp, s->data.pstruct, *key, value))
     return NULL;
   dest->type = TAG_PSTRUCT;
   dest->data.pstruct = tmp;

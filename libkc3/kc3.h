@@ -73,6 +73,7 @@
 #include "ptr_free.h"
 #include "module.h"
 #include "pretty.h"
+#include "pstruct.h"
 #include "quote.h"
 #include "s8.h"
 #include "s16.h"

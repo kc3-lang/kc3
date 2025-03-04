@@ -318,6 +318,7 @@ SOURCES = \
 	"pcomplex.c" \
 	"pcow.c" \
 	"pretty.c" \
+	"pstruct.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
@@ -611,6 +612,7 @@ LO_SOURCES = \
 	"pcomplex.c" \
 	"pcow.c" \
 	"pretty.c" \
+	"pstruct.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \

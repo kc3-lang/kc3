@@ -524,7 +524,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
 void * data_init_cast (void *data, const s_sym * const *type,
                        s_tag *tag)
 {
-  s_struct s = {0};
+  p_struct s = NULL;
   s_struct_type *st;
   const s_sym *t;
   t = *type;
@@ -572,7 +572,7 @@ void * data_init_cast (void *data, const s_sym * const *type,
   if (t == &g_sym_Str)
     return str_init_cast(data, type, tag);
   if (t == &g_sym_Struct)
-    return struct_init_cast(data, type, tag);
+    return pstruct_init_cast(data, type, tag);
   if (t == &g_sym_StructType)
     return struct_type_init_cast(data, type, tag);
   if (t == &g_sym_Sw)
@@ -602,9 +602,9 @@ void * data_init_cast (void *data, const s_sym * const *type,
   if (! struct_type_find(t, &st))
     return NULL;
   if (st) {
-    s.type = st;
-    s.data = data;
-    return struct_init_cast(&s, type, tag);
+    pstruct_init_type(&s, st);
+    s->data = data;
+    return pstruct_init_cast(&s, type, tag);
   }
   err_write_1("data_init_cast: unknown type: ");
   err_inspect_sym(type);

@@ -521,6 +521,7 @@ KC3_C_SOURCES = \
 	"libkc3/pcow.h" \
 	"libkc3/pretty.c" \
 	"libkc3/pretty.h" \
+	"libkc3/pstruct.c" \
 	"libkc3/pstruct.h" \
 	"libkc3/ptag.c" \
 	"libkc3/ptag.h" \
