@@ -428,6 +428,22 @@ s_struct * struct_new_type (s_struct_type *st)
   return s;
 }
 
+s_struct * struct_new_with_data (const s_sym *module, void *data,
+                                 bool free_data)
+{
+  s_struct *s;
+  assert(module);
+  assert(data);
+  s = alloc(sizeof(s_struct));
+  if (! s)
+    return NULL;
+  if (! struct_init_with_data(s, module, data, free_data)) {
+    free(s);
+    return NULL;
+  }
+  return s;
+}
+
 uw * struct_offset (const s_struct *s, const s_sym * const *key,
                     uw *dest)
 {

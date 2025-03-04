@@ -50,13 +50,14 @@ bool earth_load (s_sequence *seq)
   if (! tag_map(&seq->tag, 3))
     return false;
   map = &seq->tag.data.map;
-  tag_init_sym(               map->key + 0, sym_1("camera"));
-  tag_init_ptr_free(        map->value + 0, camera);
-  tag_init_sym(               map->key + 1, sym_1("camera_rot_x_speed"));
-  tag_init_f64(             map->value + 1, 0.01);
-  tag_init_sym(               map->key + 2, sym_1("sphere"));
-  tag_init_struct_with_data(map->value + 2, sym_1("GL.Sphere"),
-                            sphere, false);
+  tag_init_sym(                map->key + 0, sym_1("camera"));
+  tag_init_ptr_free(         map->value + 0, camera);
+  tag_init_sym(                map->key + 1,
+               sym_1("camera_rot_x_speed"));
+  tag_init_f64(              map->value + 1, 0.01);
+  tag_init_sym(                map->key + 2, sym_1("sphere"));
+  tag_init_pstruct_with_data(map->value + 2, sym_1("GL.Sphere"),
+                             sphere, false);
   return true;
 }
 
@@ -78,13 +79,13 @@ bool earth_render (s_sequence *seq)
   map = &seq->tag.data.map;
   if (map->value[0].type != TAG_PTR_FREE ||
       map->value[1].type != TAG_F64 ||
-      map->value[2].type != TAG_STRUCT) {
+      map->value[2].type != TAG_PSTRUCT) {
     err_puts("earth_render: invalid map");
     return false;
   }
   camera             =  map->value[0].data.ptr_free.p;
   camera_rot_x_speed = &map->value[1].data.f64;
-  sphere             =  map->value[2].data.struct_.data;
+  sphere             =  map->value[2].data.pstruct->data;
   gl_camera_set_aspect_ratio(camera, window->w, window->h);
   camera->rotation.x += seq->dt * (*camera_rot_x_speed) *
     M_PI * 2.0f;

@@ -238,7 +238,7 @@ sw http_response_buf_write (const s_http_response *response,
       result += r;
     }
     else if (type == &g_sym_Buf) {
-      in = response->body.data.struct_.data;
+      in = response->body.data.pstruct->data;
       while (buf_refill(in, in->size) > 0) {
         err_inspect_buf(in);
         if (! buf_read_to_str(in, &str))

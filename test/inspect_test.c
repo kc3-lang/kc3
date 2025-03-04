@@ -20,11 +20,12 @@
 #include "../libkc3/inspect.h"
 #include "../libkc3/integer.h"
 #include "../libkc3/list.h"
+#include "../libkc3/pstruct.h"
 #include "../libkc3/ratio.h"
 #include "../libkc3/str.h"
+#include "../libkc3/struct.h"
 #include "../libkc3/sym.h"
 #include "../libkc3/tag.h"
-#include "../libkc3/struct.h"
 #include "../libkc3/tuple.h"
 #include "../libkc3/var.h"
 #include "test.h"
@@ -145,16 +146,16 @@
   do {                                                                 \
     s_pretty pretty = {0};                                             \
     s_str result;                                                      \
-    s_struct struct_test = {0};                                        \
+    p_struct struct_test = NULL;                                       \
     assert(test);                                                      \
     test_context("inspect_struct(" # test ") -> " # expected);         \
-    TEST_EQ(struct_init_1(&struct_test, (test)), &struct_test);        \
-    TEST_EQ(inspect_struct(&struct_test, &result), &result);           \
+    TEST_EQ(pstruct_init_1(&struct_test, (test)), &struct_test);       \
+    TEST_EQ(inspect_struct(struct_test, &result), &result);            \
     TEST_STRNCMP(result.ptr.p, (expected), result.size);               \
-    TEST_EQ(buf_inspect_struct_size(&pretty, &struct_test),            \
+    TEST_EQ(buf_inspect_struct_size(&pretty, struct_test),             \
             strlen(expected));                                         \
     str_clean(&result);                                                \
-    struct_clean(&struct_test);                                        \
+    pstruct_clean(&struct_test);                                       \
     test_context(NULL);                                                \
   } while (0)
 

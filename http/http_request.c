@@ -318,18 +318,18 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
                      " buf_read_until_str_into_file");
             goto restore;
           }
-	  upload.type = TAG_STRUCT;
-	  if (! struct_init(&upload.data.struct_, sym_Upload))
+	  upload.type = TAG_PSTRUCT;
+	  if (! pstruct_init(&upload.data.pstruct, sym_Upload))
 	    goto restore;
-	  if (! struct_allocate(&upload.data.struct_))
+	  if (! struct_allocate(upload.data.pstruct))
 	    goto restore;
-	  if (! struct_set(&upload.data.struct_, sym_1("filename"),
+	  if (! struct_set(upload.data.pstruct, sym_1("filename"),
 			   &filename))
 	    goto restore;
-	  if (! struct_set(&upload.data.struct_, sym_1("size"),
+	  if (! struct_set(upload.data.pstruct, sym_1("size"),
 			   &size))
 	    goto restore;
-	  if (! struct_set(&upload.data.struct_, sym_1("tmp_path"),
+	  if (! struct_set(upload.data.pstruct, sym_1("tmp_path"),
 			   &path))
 	    goto restore;
           tmp_req.body.data.list =
@@ -389,13 +389,13 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       tmp_req.body = body;
     }
   }
-  if (! tag_init_struct(&tmp, sym_1("HTTP.Request")))
+  if (! tag_init_pstruct(&tmp, sym_1("HTTP.Request")))
     goto restore;
-  if (! struct_allocate(&tmp.data.struct_)) {
+  if (! struct_allocate(tmp.data.pstruct)) {
     tag_void(&tmp);
     goto restore;
   }
-  *((s_http_request *) tmp.data.struct_.data) = tmp_req;
+  *((s_http_request *) tmp.data.pstruct->data) = tmp_req;
   goto clean;
  restore:
   list_delete_all(multipart_headers);
