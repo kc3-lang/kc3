@@ -1,4 +1,4 @@
 (a = ? <- 1 ; 2)
 a = ? <- 1 ; 2
 to_lisp(quote a = ? <- 1 ; 2)
-[op_semicolumn, [op_equal, a, [op_assign, ?, 1]], 2]
+[;, [=, a, [<-, ?, 1]], 2]

@@ -40,27 +40,28 @@ u_ptr_w * ptr_init_cast (u_ptr_w *p,
   assert(type);
   assert(tag);
   switch (tag->type) {
-  case TAG_F32: p->p = (void *) ((uw) tag->data.f32);  return p;
-  case TAG_F64: p->p = (void *) ((uw) tag->data.f64);  return p;
+  case TAG_F32:      p->p = (void *) ((uw) tag->data.f32); return p;
+  case TAG_F64:      p->p = (void *) ((uw) tag->data.f64); return p;
   case TAG_INTEGER:
-    p->p = (void *) integer_to_uw(&tag->data.integer); return p;
-  case TAG_PTR: *p = tag->data.ptr;                    return p;
-  case TAG_PTR_FREE: p->p = tag->data.ptr_free.p;      return p;
-  case TAG_S8:  p->p = (void *) ((uw) tag->data.s8);   return p;
-  case TAG_S16: p->p = (void *) ((uw) tag->data.s16);  return p;
-  case TAG_S32: p->p = (void *) ((uw) tag->data.s32);  return p;
-  case TAG_S64: p->p = (void *) ((uw) tag->data.s64);  return p;
-  case TAG_SW:  p->p = (void *) ((uw) tag->data.sw);   return p;
-  case TAG_U8:  p->p = (void *) ((uw) tag->data.u8);   return p;
-  case TAG_U16: p->p = (void *) ((uw) tag->data.u16);  return p;
-  case TAG_U32: p->p = (void *) ((uw) tag->data.u32);  return p;
-  case TAG_U64: p->p = (void *) ((uw) tag->data.u64);  return p;
-  case TAG_UW:  p->p = (void *) ((uw) tag->data.uw);   return p;
-  case TAG_VAR: p->p = tag->data.var.ptr;              return p;
+    p->p = (void *) integer_to_uw(&tag->data.integer);     return p;
+  case TAG_PTR:        *p = tag->data.ptr;                 return p;
+  case TAG_PTR_FREE: p->p = tag->data.ptr_free.p;          return p;
+  case TAG_S8:       p->p = (void *) ((uw) tag->data.s8);  return p;
+  case TAG_S16:    p->p = (void *) ((uw) tag->data.s16);   return p;
+  case TAG_S32:    p->p = (void *) ((uw) tag->data.s32);   return p;
+  case TAG_S64:    p->p = (void *) ((uw) tag->data.s64);   return p;
+  case TAG_STRUCT: p->p = tag->data.struct_.data;          return p;
+  case TAG_SW:     p->p = (void *) ((uw) tag->data.sw);    return p;
+  case TAG_U8:     p->p = (void *) ((uw) tag->data.u8);    return p;
+  case TAG_U16:    p->p = (void *) ((uw) tag->data.u16);   return p;
+  case TAG_U32:    p->p = (void *) ((uw) tag->data.u32);   return p;
+  case TAG_U64:    p->p = (void *) ((uw) tag->data.u64);   return p;
+  case TAG_UW:     p->p = (void *) ((uw) tag->data.uw);    return p;
+  case TAG_VAR:    p->p = tag->data.var.ptr;               return p;
   default:
     break;
   }
-  err_write_1("ptr_cast: cannot cast ");
+  err_write_1("ptr_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
   if (*type == &g_sym_Ptr)
     err_puts(" to Ptr");
@@ -69,7 +70,7 @@ u_ptr_w * ptr_init_cast (u_ptr_w *p,
     err_inspect_sym(type);
     err_puts(" aka Ptr");
   }
-  assert(! "ptr_cast: cannot cast to Ptr");
+  assert(! "ptr_init_cast: cannot cast to Ptr");
   return NULL;
 }
 

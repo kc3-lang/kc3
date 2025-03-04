@@ -1,14 +1,14 @@
-quote Facts.with_tags(Facts.env_db(), KC3, :op, op = ?, fn (fact) {
+quote Facts.with_tags(Facts.env_db(), op = ?, :is_a, :op, fn (fact) {
   puts(op)
   2
 })
-Facts.with_tags(Facts.env_db(), KC3, :op, op = ?, fn (fact) {
+Facts.with_tags(Facts.env_db(), op = ?, :is_a, :op, fn (fact) {
   puts(op)
   2
 })
 quote op = ? ; void
 op = ? ; void
-quote Facts.with_tags(Facts.env_db(), KC3, :op, op, fn (fact) {
+quote Facts.with_tags(Facts.env_db(), op, :is_a, :op, fn (fact) {
   puts(op)
   3
 })
@@ -18,13 +18,13 @@ Facts.with_tags(Facts.env_db(), KC3, :op, op, fn (fact) {
 })
 quote type(op)
 type(op)
-quote op = quote KC3.op_eq
-op = quote KC3.op_eq
-quote Facts.with_tags(Facts.env_db(), KC3, :op, op, fn (fact) {
-  puts(op)
+quote sym = :+
+sym = :+
+quote Facts.with_tags(Facts.env_db(), op = ?, :sym, sym, fn (fact) {
+  puts((KC3.Op) op)
   4
 })
-Facts.with_tags(Facts.env_db(), KC3, :op, op, fn (fact) {
-  puts(op)
+Facts.with_tags(Facts.env_db(), op = ?, :sym, sym, fn (fact) {
+  puts((KC3.Op) op)
   4
 })

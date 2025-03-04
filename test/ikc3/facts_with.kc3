@@ -1,16 +1,20 @@
-quote Facts.with(Facts.env_db(), [[KC3, :op, op = ?]], fn (fact) do
-  puts("#{inspect(op)} #{inspect(op.sym)}")
+quote Facts.with(Facts.env_db(), [[op = ?, :is_a, :op],
+                                  [op, :sym, sym = ?]],
+  fn (fact) do
+    puts("#{inspect(sym) #{inspect((KC3.Op) op)}")
+    1
+  end
+)
+Facts.with(Facts.env_db(), [[op = ?, :is_a, :op],
+                            [op, :sym, sym = ?]], fn (fact) do
+  puts("#{inspect(sym) #{inspect((KC3.Op) op)}")
   1
 end)
-Facts.with(Facts.env_db(), [[KC3, :op, op = ?]], fn (fact) do
-  puts("#{inspect(op)} #{inspect(op.sym)}")
-  1
-end)
-quote Facts.with(Facts.env_db(), [[KC3, :op, op = ?]], fn (fact) do
-  puts("#{inspect(op)}")
+quote Facts.with(Facts.env_db(), [[op = ?, :is_a, :op]], fn (fact) do
+  puts("#{inspect((KC3.Op) op)}")
   2
 end)
-Facts.with(Facts.env_db(), [[KC3, :op, op = ?]], fn (fact) do
-  puts("#{inspect(op)}")
+Facts.with(Facts.env_db(), [[op = ?, :is_a, :op]], fn (fact) do
+  puts("#{inspect((KC3.Op) op)}")
   2
 end)
