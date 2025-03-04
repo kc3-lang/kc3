@@ -343,6 +343,17 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
   return NULL;
 }
 
+s_struct * struct_init_type (s_struct *s, s_struct_type *st)
+{
+  s_struct tmp = {0};
+  assert(s);
+  assert(st);
+  tmp.type = st;
+  tmp.ref_count = 1;
+  *s = tmp;
+  return s;
+}
+
 s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
                                   void *data, bool free_data)
 {
@@ -359,6 +370,7 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
   }
   tmp.data = data;
   tmp.free_data = free_data;
+  tmp.ref_count = 1;
   *s = tmp;
   return s;
 }
@@ -402,7 +414,7 @@ s_struct * struct_new_ref (s_struct *src)
   return src;
 }
 
-s_struct * struct_new_type (const s_struct_type *st)
+s_struct * struct_new_type (s_struct_type *st)
 {
   s_struct *s;
   assert(st);
