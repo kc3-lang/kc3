@@ -56,3 +56,8 @@ replace {Str.random_base64, :symbol_value,
 add {Str, :symbol, Str.has_characters?}
 replace {Str.has_characters?, :symbol_value,
          cfn Bool "str_has_characters" (Str, Str, Result)}
+add {Str, :symbol, Str.split_words}
+replace {Str.split_words, :symbol_value,
+         fn (doc) {
+           Str.split_list(doc, [".", ",", ";", ":", "!", "'", "(", ")", "{", "}", "?", "/", " ", "\n", "\t", "\r", "\l"])
+        }}

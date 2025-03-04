@@ -16,6 +16,16 @@ defmodule List do
     }
   }
 
+  def count_items = fn {
+    (list) { count_items(list, %{}) }
+    ([], map) { map }
+    ([first | rest], map) {
+      count = if map[first] do map[first] else 0 end
+      map = Map.put(map, first, count + 1)
+      count_items(rest, map)
+    }
+  }
+
   def each = cfn Bool "list_each" (List, Callable, Result)
 
   def filter = cfn List "list_filter" (List, Callable, Result)

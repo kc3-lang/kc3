@@ -3,7 +3,7 @@ defmodule Spam.Bayes do
     error = "Unknown error"
     r = if type(doc) = Str do
       if List.has?([:spam, :ham]) = true do
-        words = Str.split_list(doc, [".", ",", ";", ":", "!", "'", "(", ")", "{", "}", "?", "/", " ", "\n", "\t", "\r" "\l"
+        words = Str.split_words(doc)
       end
     end
     if r do
