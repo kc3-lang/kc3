@@ -47,13 +47,13 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_UW:          *dest = sizeof(uw);            return true;
   case TAG_LIST:        *dest = sizeof(s_list *);      return true;
   case TAG_MAP:         *dest = sizeof(s_map);         return true;
+  case TAG_PSTRUCT:     *dest = sizeof(p_struct);      return true;
   case TAG_PTAG:        *dest = sizeof(p_tag);         return true;
   case TAG_PTR:
   case TAG_PTR_FREE:    *dest = sizeof(void *);        return true;
   case TAG_QUOTE:       *dest = sizeof(s_quote);       return true;
   case TAG_RATIO:       *dest = sizeof(s_ratio);       return true;
   case TAG_STR:         *dest = sizeof(s_str);         return true;
-  case TAG_STRUCT:      *dest = sizeof(s_struct);      return true;
   case TAG_STRUCT_TYPE: *dest = sizeof(s_struct_type); return true;
   case TAG_SYM:         *dest = sizeof(s_sym *);       return true;
   case TAG_TIME:        *dest = sizeof(s_time);        return true;
@@ -85,6 +85,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_INTEGER:     *dest = &ffi_type_pointer;    return true;
   case TAG_LIST:        *dest = &ffi_type_pointer;    return true;
   case TAG_MAP:         *dest = &ffi_type_pointer;    return true;
+  case TAG_PSTRUCT:     *dest = &ffi_type_pointer;    return true;
   case TAG_PTAG:        *dest = &ffi_type_pointer;    return true;
   case TAG_PTR:         *dest = &ffi_type_pointer;    return true;
   case TAG_PTR_FREE:    *dest = &ffi_type_pointer;    return true;
@@ -96,7 +97,6 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_S64:         *dest = &ffi_type_sint64;     return true;
   case TAG_SW:          *dest = &ffi_type_slong;      return true;
   case TAG_STR:         *dest = &ffi_type_pointer;    return true;
-  case TAG_STRUCT:      *dest = &ffi_type_pointer;    return true;
   case TAG_STRUCT_TYPE: *dest = &ffi_type_pointer;    return true;
   case TAG_SYM:         *dest = &ffi_type_pointer;    return true;
   case TAG_TIME :       *dest = &ffi_type_pointer;    return true;
@@ -145,13 +145,13 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_UW:          return "Uw";
   case TAG_LIST:        return "List";
   case TAG_MAP:         return "Map";
+  case TAG_PSTRUCT:     return "Struct";
   case TAG_PTAG:        return "Ptag";
   case TAG_PTR:         return "Ptr";
   case TAG_PTR_FREE:    return "PtrFree";
   case TAG_QUOTE:       return "Quote";
   case TAG_RATIO:       return "Ratio";
   case TAG_STR:         return "Str";
-  case TAG_STRUCT:      return "Struct";
   case TAG_STRUCT_TYPE: return "StructType";
   case TAG_SYM:         return "Sym";
   case TAG_TIME:        return "Time";

@@ -135,6 +135,7 @@ HEADERS = \
 	"pcomplex.h" \
 	"pcow.h" \
 	"pretty.h" \
+	"pstruct.h" \
 	"ptag.h" \
 	"ptr.h" \
 	"ptr_free.h" \

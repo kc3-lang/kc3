@@ -3131,6 +3131,20 @@ sw buf_parse_pcow (s_buf *buf, s_cow **c)
   return r;
 }
 
+sw buf_parse_pstruct (s_buf *buf, p_struct *dest)
+{
+  sw r;
+  p_struct tmp;
+  if (! (tmp = struct_new(NULL)))
+    return -1;
+  if ((r = buf_parse_struct(buf, tmp)) <= 0) {
+    free(tmp);
+    return r;
+  }
+  *dest = tmp;
+  return r;
+}
+
 sw buf_parse_ptag (s_buf *buf, p_tag *dest)
 {
   (void) buf;
@@ -4403,7 +4417,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
   case '%':
     if ((r = buf_parse_tag_map(buf, dest)) ||
         (r = buf_parse_tag_time(buf, dest)) ||
-        (r = buf_parse_tag_struct(buf, dest)))
+        (r = buf_parse_tag_pstruct(buf, dest)))
       goto end;
     goto restore;
   case '"':
@@ -4444,6 +4458,16 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_tag_pstruct (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pstruct(buf, &dest->data.pstruct)) > 0)
+    dest->type = TAG_PSTRUCT;
   return r;
 }
 
@@ -4502,16 +4526,6 @@ sw buf_parse_tag_str (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   return buf_parse_str_eval(buf, dest);
-}
-
-sw buf_parse_tag_struct (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_struct(buf, &dest->data.struct_)) > 0)
-    dest->type = TAG_STRUCT;
-  return r;
 }
 
 sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)

@@ -164,12 +164,12 @@ typedef enum {
   TAG_UW,
   TAG_LIST,
   TAG_MAP,
+  TAG_PSTRUCT,
   TAG_PTAG,
   TAG_PTR,
   TAG_PTR_FREE,
   TAG_QUOTE,
   TAG_STR,
-  TAG_STRUCT,
   TAG_STRUCT_TYPE,
   TAG_SYM,
   TAG_TIME,
@@ -255,10 +255,11 @@ typedef union tag_data      u_tag_data;
 
 /* typedefs */
 typedef s_callable * p_callable;
-typedef u32          character;
+typedef u32            character;
 typedef s_tag **     p_facts_spec;
 typedef s_tag *      t_facts_spec[];
 typedef SHA1_CTX     t_hash;
+typedef s_struct *   p_struct;
 typedef const s_sym *p_sym;
 typedef const s_tag *p_tag;
 typedef u64          t_skiplist_height;
@@ -405,6 +406,7 @@ struct struct_ {
   bool free_data;
   s_tag *tag;
   s_struct_type *type;
+  sw ref_count;
 };
 
 struct sym_list {
@@ -623,13 +625,13 @@ union tag_data {
   s_integer     integer;
   s_list       *list;
   s_map         map;
+  p_struct      pstruct;
   p_tag         ptag;
   u_ptr_w       ptr;
   u_ptr_w       ptr_free;
   s_quote       quote;
   s_ratio       ratio;
   s_str         str;
-  s_struct      struct_;
   s_struct_type struct_type;
   const s_sym  *sym;
   s8            s8;

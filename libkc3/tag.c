@@ -36,6 +36,7 @@
 #include "map.h"
 #include "pcomplex.h"
 #include "pcow.h"
+#include "pstruct.h"
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
@@ -239,11 +240,11 @@ void tag_clean (s_tag *tag)
   case TAG_INTEGER:     integer_clean(&tag->data.integer);  break;
   case TAG_LIST:        list_delete_all(tag->data.list);    break;
   case TAG_MAP:         map_clean(&tag->data.map);          break;
+  case TAG_PSTRUCT:     pstruct_clean(&tag->data.pstruct);  break;
   case TAG_PTR_FREE:    ptr_free_clean(&tag->data.ptr);     break;
   case TAG_QUOTE:       quote_clean(&tag->data.quote);      break;
   case TAG_RATIO:       ratio_clean(&tag->data.ratio);      break;
   case TAG_STR:         str_clean(&tag->data.str);          break;
-  case TAG_STRUCT:      struct_clean(&tag->data.struct_);   break;
   case TAG_STRUCT_TYPE: struct_type_clean(&tag->data.struct_type);
                                                             break;
   case TAG_TIME:        time_clean(&tag->data.time);        break;
@@ -460,16 +461,16 @@ s_tag * tag_init_cast_struct (s_tag *tag, const s_sym * const *type,
   case TAG_PTR:
     if (! src->data.ptr.p)
       return tag_init_void(tag);
-    return tag_init_struct_with_data(tag, *type, src->data.ptr.p,
-                                     false);
+    return tag_init_pstruct_with_data(tag, *type, src->data.ptr.p,
+                                      false);
   case TAG_PTR_FREE:
     if (! src->data.ptr_free.p)
       return tag_init_void(tag);
-    return tag_init_struct_with_data(tag, *type, src->data.ptr_free.p,
-                                     false);
-  case TAG_STRUCT:
-    if (*type == src->data.struct_.type->module)
-      return tag_init_struct_copy(tag, &src->data.struct_);
+    return tag_init_pstruct_with_data(tag, *type, src->data.ptr_free.p,
+                                      false);
+  case TAG_PSTRUCT:
+    if (*type == src->data.pstruct->type->module)
+      return tag_init_pstruct_copy(tag, &src->data.pstruct);
   default:
     break;
   }
@@ -558,6 +559,11 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     if (! map_init_copy(&tag->data.map, &src->data.map))
       return NULL;
     return tag;
+  case TAG_PSTRUCT:
+    tag->type = src->type;
+    if (! pstruct_init_copy(&tag->data.pstruct, &src->data.pstruct))
+      return NULL;
+    return tag;
   case TAG_PTAG:
     tag->type = src->type;
     tag->data.ptag = src->data.ptag;
@@ -599,11 +605,6 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
   case TAG_STR:
     tag->type = src->type;
     if (! str_init_copy(&tag->data.str, &src->data.str))
-      return NULL;
-    return tag;
-  case TAG_STRUCT:
-    tag->type = src->type;
-    if (! struct_init_copy(&tag->data.struct_, &src->data.struct_))
       return NULL;
     return tag;
   case TAG_STRUCT_TYPE:
@@ -865,13 +866,13 @@ bool tag_is_integer (s_tag *tag)
   case TAG_FACT:
   case TAG_LIST:
   case TAG_MAP:
+  case TAG_PSTRUCT:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
   case TAG_QUOTE:
   case TAG_RATIO:
   case TAG_STR:
-  case TAG_STRUCT:
   case TAG_STRUCT_TYPE:
   case TAG_SYM:
   case TAG_TIME:
@@ -916,12 +917,12 @@ bool tag_is_number (s_tag *tag)
   case TAG_FACT:
   case TAG_LIST:
   case TAG_MAP:
+  case TAG_PSTRUCT:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
   case TAG_QUOTE:
   case TAG_STR:
-  case TAG_STRUCT:
   case TAG_STRUCT_TYPE:
   case TAG_SYM:
   case TAG_TIME:
@@ -959,8 +960,8 @@ bool tag_is_number (s_tag *tag)
 bool tag_is_struct (const s_tag *tag, const s_sym *module)
 {
   return tag &&
-    tag->type == TAG_STRUCT &&
-    tag->data.struct_.type->module == module;
+    tag->type == TAG_PSTRUCT &&
+    tag->data.pstruct->type->module == module;
 }
 
 bool * tag_is_unbound_var (const s_tag *tag, bool *dest)
@@ -1229,7 +1230,7 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   case TAG_STR:         *dest = &tag->data.str;         return true;
   case TAG_STRUCT:
     if (type == &g_sym_Struct) {
-      *dest = &tag->data.struct_;
+      *dest = tag->data.pstruct;
       return true;
     }
     if (type == tag->data.struct_.type->module) {
@@ -1412,7 +1413,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_STRUCT:
     if (type == &g_sym_Struct) {
-      *dest = &tag->data.struct_;
+      *dest = tag->data.pstruct;
       return true;
     }
     if (type == &g_sym_Ptr) {
@@ -1596,7 +1597,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_STR:         *dest = &tag->data.str;         return true;
   case TAG_STRUCT:
     if (type == &g_sym_Struct) {
-      *dest = &tag->data.struct_;
+      *dest = tag->data.pstruct;
       return true;
     }
     if (type == tag->data.struct_.type->module) {
@@ -1623,7 +1624,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
  invalid_cast:
   err_write_1("tag_to_pointer: invalid cast from ");
   if (tag->type == TAG_STRUCT)
-    err_inspect_sym(&tag->data.struct_.type->module);
+    err_inspect_sym(&tag->data.pstruct->type->module);
   else
     err_write_1(tag_type_to_string(tag->type));
   err_write_1(" to ");

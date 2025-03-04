@@ -443,36 +443,36 @@ s_tag * tag_init_str_empty (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_init_struct (s_tag *tag, const s_sym *module)
+s_tag * tag_init_pstruct (s_tag *tag, const s_sym *module)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_STRUCT;
-  if (! struct_init(&tmp.data.struct_, module))
+  tmp.type = TAG_PSTRUCT;
+  if (! pstruct_init(&tmp.data.pstruct, module))
     return NULL;
   *tag = tmp;
   return tag;
 }
 
-s_tag * tag_init_struct_copy (s_tag *tag, s_struct *src)
+s_tag * tag_init_pstruct_copy (s_tag *tag, p_struct *src)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_STRUCT;
-  if (! struct_init_copy(&tmp.data.struct_, src))
+  tmp.type = TAG_PSTRUCT;
+  if (! pstruct_init_copy(&tmp.data.pstruct, src))
     return NULL;
   *tag = tmp;
   return tag;
 }
 
-s_tag * tag_init_struct_with_data (s_tag *tag, const s_sym *module,
-                                   void *data, bool free_data)
+s_tag * tag_init_pstruct_with_data (s_tag *tag, const s_sym *module,
+                                    void *data, bool free_data)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_STRUCT;
-  if (! struct_init_with_data(&tmp.data.struct_, module, data,
-                              free_data))
+  tmp.type = TAG_PSTRUCT;
+  if (! pstruct_init_with_data(&tmp.data.pstruct, module, data,
+                               free_data))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1114,44 +1114,44 @@ s_tag * tag_new_str_empty (void)
   return tag;
 }
 
-s_tag * tag_new_struct (const s_sym *module)
+s_tag * tag_new_pstruct (const s_sym *module)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_STRUCT;
-  if (! struct_init(&tag->data.struct_, module)) {
+  tag->type = TAG_PSTRUCT;
+  if (! pstruct_init(&tag->data.pstruct, module)) {
     free(tag);
     return NULL;
   }
   return tag;
 }
 
-s_tag * tag_new_struct_copy (s_struct *src)
+s_tag * tag_new_pstruct_copy (p_struct *src)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_STRUCT;
-  if (! struct_init_copy(&tag->data.struct_, src)) {
+  tag->type = TAG_PSTRUCT;
+  if (! pstruct_init_copy(&tag->data.pstruct, src)) {
     free(tag);
     return NULL;
   }
   return tag;
 }
 
-s_tag * tag_new_struct_with_data (const s_sym *module, void *data,
-                                  bool free_data)
+s_tag * tag_new_pstruct_with_data (const s_sym *module, void *data,
+                                   bool free_data)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_STRUCT;
-  if (! struct_init_with_data(&tag->data.struct_, module, data,
-                              free_data)) {
+  tag->type = TAG_PSTRUCT;
+  if (! pstruct_init_with_data(&tag->data.pstruct, module, data,
+                               free_data)) {
     free(tag);
     return NULL;
   }
@@ -1770,39 +1770,39 @@ s_tag * tag_str_empty (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_struct (s_tag *tag, const s_sym *module)
+s_tag * tag_pstruct (s_tag *tag, const s_sym *module)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_STRUCT;
-  if (! struct_init(&tmp.data.struct_, module))
+  tmp.type = TAG_PSTRUCT;
+  if (! pstruct_init(&tmp.data.pstruct, module))
     return NULL;
   *tag = tmp;
   return tag;
 }
 
-s_tag * tag_struct_copy (s_tag *tag, s_struct *src)
+s_tag * tag_pstruct_copy (s_tag *tag, p_struct *src)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_STRUCT;
-  if (! struct_init_copy(&tmp.data.struct_, src))
+  tmp.type = TAG_PSTRUCT;
+  if (! pstruct_init_copy(&tmp.data.pstruct, src))
     return NULL;
   *tag = tmp;
   return tag;
 }
 
-s_tag * tag_struct_with_data (s_tag *tag, const s_sym *module,
-                              void *data, bool free_data)
+s_tag * tag_pstruct_with_data (s_tag *tag, const s_sym *module,
+                               void *data, bool free_data)
 {
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_STRUCT;
-  if (! struct_init_with_data(&tmp.data.struct_, module, data,
-                              free_data))
+  tmp.type = TAG_PSTRUCT;
+  if (! pstruct_init_with_data(&tmp.data.pstruct, module, data,
+                               free_data))
     return NULL;
   *tag = tmp;
   return tag;

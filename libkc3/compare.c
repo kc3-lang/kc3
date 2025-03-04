@@ -1159,8 +1159,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_QUOTE:      return compare_quote(&a->data.quote,
                                             &b->data.quote);
   case TAG_STR:        return compare_str(&a->data.str, &b->data.str);
-  case TAG_STRUCT:     return compare_struct(&a->data.struct_,
-                                             &b->data.struct_);
+  case TAG_PSTRUCT:    return compare_struct(a->data.pstruct,
+                                             b->data.pstruct);
   case TAG_STRUCT_TYPE:return compare_struct_type(&a->data.struct_type,
                                                   &b->data.struct_type);
   case TAG_SYM:        return compare_str(&a->data.sym->str,

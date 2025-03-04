@@ -62,10 +62,10 @@ s_tag * tag_init_str_concatenate_list (s_tag *tag,
                                        const s_list * const *src);
 s_tag * tag_init_str_copy (s_tag *tag, const s_str *src);
 s_tag * tag_init_str_empty (s_tag *tag);
-s_tag * tag_init_struct (s_tag *tag, const s_sym *module);
-s_tag * tag_init_struct_copy (s_tag *tag, s_struct *src);
-s_tag * tag_init_struct_with_data (s_tag *tag, const s_sym *module,
-                                   void *data, bool free_data);
+s_tag * tag_init_pstruct (s_tag *tag, const s_sym *module);
+s_tag * tag_init_pstruct_copy (s_tag *tag, p_struct *src);
+s_tag * tag_init_pstruct_with_data (s_tag *tag, const s_sym *module,
+                                    void *data, bool free_data);
 s_tag * tag_init_struct_type (s_tag *tag, const s_sym *module,
                               s_list *spec);
 s_tag * tag_init_struct_type_update_clean (s_tag *tag,
@@ -131,10 +131,10 @@ s_tag * tag_new_str_concatenate (const s_str *a, const s_str *b);
 s_tag * tag_new_str_concatenate_list (const s_list * const *src);
 s_tag * tag_new_str_copy (const s_str *src);
 s_tag * tag_new_str_empty (void);
-s_tag * tag_new_struct (const s_sym *module);
-s_tag * tag_new_struct_copy (s_struct *src);
-s_tag * tag_new_struct_with_data (const s_sym *module, void *data,
-                                  bool free_data);
+s_tag * tag_new_pstruct (const s_sym *module);
+s_tag * tag_new_pstruct_copy (p_struct *src);
+s_tag * tag_new_pstruct_with_data (const s_sym *module, void *data,
+                                   bool free_data);
 s_tag * tag_new_struct_type (const s_sym *module, s_list *spec);
 s_tag * tag_new_struct_type_update_clean (const s_struct_type *st,
                                           const s_cfn *clean);
@@ -200,10 +200,10 @@ s_tag * tag_str_concatenate_list (s_tag *tag,
                                   const s_list * const *src);
 s_tag * tag_str_copy (s_tag *tag, const s_str *src);
 s_tag * tag_str_empty (s_tag *tag);
-s_tag * tag_struct (s_tag *tag, const s_sym *module);
-s_tag * tag_struct_copy (s_tag *tag, s_struct *src);
-s_tag * tag_struct_with_data (s_tag *tag, const s_sym *module,
-                              void *data, bool free_data);
+s_tag * tag_pstruct (s_tag *tag, const s_sym *module);
+s_tag * tag_pstruct_copy (s_tag *tag, p_struct *src);
+s_tag * tag_pstruct_with_data (s_tag *tag, const s_sym *module,
+                               void *data, bool free_data);
 s_tag * tag_struct_type (s_tag *tag, const s_sym *module, s_list *spec);
 s_tag * tag_struct_type_update_clean (s_tag *tag,
                                       const s_struct_type *st,

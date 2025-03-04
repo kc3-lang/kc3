@@ -75,13 +75,13 @@ s_list * list_init_str_concatenate_list (s_list *list,
 s_list * list_init_str_copy (s_list *list, const s_str *src,
                              s_list *next);
 s_list * list_init_str_empty (s_list *list, s_list *next);
-s_list * list_init_struct (s_list *list, const s_sym *module,
-                           s_list *next);
-s_list * list_init_struct_copy (s_list *list, s_struct *src,
-                                s_list *next);
-s_list * list_init_struct_with_data (s_list *list, const s_sym *module,
-                                     void *data, bool free_data,
-                                     s_list *next);
+s_list * list_init_pstruct (s_list *list, const s_sym *module,
+                            s_list *next);
+s_list * list_init_pstruct_copy (s_list *list, p_struct *src,
+                                 s_list *next);
+s_list * list_init_pstruct_with_data (s_list *list,
+                                      const s_sym *module, void *data,
+                                      bool free_data, s_list *next);
 s_list * list_init_struct_type (s_list *list, const s_sym *module,
                                 s_list *spec, s_list *next);
 s_list * list_init_struct_type_update_clean (s_list *list,
@@ -155,10 +155,10 @@ s_list * list_new_str_concatenate_list (const s_list * const *src,
                                         s_list *next);
 s_list * list_new_str_copy (const s_str *src, s_list *next);
 s_list * list_new_str_empty (s_list *next);
-s_list * list_new_struct (const s_sym *module, s_list *next);
-s_list * list_new_struct_copy (s_struct *src, s_list *next);
-s_list * list_new_struct_with_data (const s_sym *module, void *data,
-                                    bool free_data, s_list *next);
+s_list * list_new_pstruct (const s_sym *module, s_list *next);
+s_list * list_new_pstruct_copy (p_struct *src, s_list *next);
+s_list * list_new_pstruct_with_data (const s_sym *module, void *data,
+                                     bool free_data, s_list *next);
 s_list * list_new_struct_type (const s_sym *module, s_list *spec,
                                s_list *next);
 s_list * list_new_struct_type_update_clean (const s_struct_type *st,

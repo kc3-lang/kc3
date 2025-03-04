@@ -41,7 +41,7 @@ class TagInit
     @args_proto_comma = ""
     @comma_args = ""
     @comma_args_proto = ""
-    @data_name = @name == "struct" ? "struct_" : @name
+    @data_name = @name
 
     @args_list.each do |arg|
       @first_arg_deref ||= arg.type != "const s_sym *" &&
@@ -381,11 +381,11 @@ class TagInitList
        TagInit.new("str", "copy", "TAG_STR", :init_mode_init,
                    [Arg.new("const s_str *", "src")]),
        TagInit.new("str", "empty", "TAG_STR", :init_mode_init, []),
-       TagInit.new("struct", "TAG_STRUCT", :init_mode_init,
+       TagInit.new("pstruct", "TAG_PSTRUCT", :init_mode_init,
                    [Arg.new("const s_sym *", "module")]),
-       TagInit.new("struct", "copy", "TAG_STRUCT", :init_mode_init,
-                   [Arg.new("s_struct *", "src")]),
-       TagInit.new("struct", "with_data", "TAG_STRUCT", :init_mode_init,
+       TagInit.new("pstruct", "copy", "TAG_PSTRUCT", :init_mode_init,
+                   [Arg.new("p_struct *", "src")]),
+       TagInit.new("pstruct", "with_data", "TAG_PSTRUCT", :init_mode_init,
                    [Arg.new("const s_sym *", "module"),
                     Arg.new("void *", "data"),
                     Arg.new("bool", "free_data")]),

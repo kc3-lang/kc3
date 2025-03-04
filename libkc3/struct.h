@@ -11,7 +11,7 @@
  * THIS SOFTWARE.
  */
 /**
- * @file tag.h
+ * @file struct.h
  * @brief Struct : %Module{key: value, ...}
  *
  */
@@ -38,6 +38,7 @@ void       struct_delete (s_struct *s);
 s_struct * struct_new (const s_sym *module);
 s_struct * struct_new_1 (const char *p);
 s_struct * struct_new_copy (const s_struct *src);
+s_struct * struct_new_ref (s_struct *src);
 s_struct * struct_new_with_data (const s_sym *module, void *data);
 
 /* Operators. */

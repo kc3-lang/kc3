@@ -180,6 +180,8 @@ if false do
   puts("init.kc3: done with operators")
 end
 
+def KC3.Op.cast = cfn KC3.Op "op_init_cast" (Result, Sym, Tag)
+
 def human_size = fn (size) {
   size = integer_reduce(size)
   if (size >= 1024 * 1024 * 1024 * 1024) do

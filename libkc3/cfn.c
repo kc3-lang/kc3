@@ -17,6 +17,7 @@
 #include "cfn.h"
 #include "list.h"
 #include "mutex.h"
+#include "pstruct.h"
 #include "str.h"
 #include "struct.h"
 #include "sym.h"
@@ -407,14 +408,14 @@ s_tag * cfn_tag_init (s_tag *tag, const s_sym *type)
     assert(! "cfn_tag_init: invalid type");
     return NULL;
   }
-  if (tmp.type == TAG_STRUCT) {
-    if (! struct_init(&tmp.data.struct_, type)) {
+  if (tmp.type == TAG_PSTRUCT) {
+    if (! pstruct_init(&tmp.data.pstruct, type)) {
       err_write_1("cfn_tag_init: struct_init: ");
       err_puts(type->str.ptr.pchar);
       assert(! "cfn_tag_init: struct_init");
       return NULL;
     }
-    if (! struct_allocate(&tmp.data.struct_)) {
+    if (! struct_allocate(tmp.data.pstruct)) {
       err_write_1("cfn_tag_init: struct_allocate: ");
       err_puts(type->str.ptr.pchar);
       assert(! "cfn_tag_init: struct_allocate");

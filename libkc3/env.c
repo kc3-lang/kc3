@@ -67,6 +67,7 @@
 #include "module.h"
 #include "op.h"
 #include "ops.h"
+#include "pstruct.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -1258,10 +1259,10 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     return env_eval_equal_map(env, macro, &a->data.map, &b->data.map,
                               &dest->data.map);
   /*
-  case TAG_STRUCT:
-    dest->type = TAG_STRUCT;
-    return env_eval_equal_struct(env, macro, &a->data.struct_,
-                                 &b->data.struct_, &dest->data.struct_);
+  case TAG_PSTRUCT:
+    dest->type = TAG_PSTRUCT;
+    return env_eval_equal_struct(env, macro, a->data.pstruct,
+                                 b->data.pstruct, &dest->data.pstruct);
   */
   case TAG_TIME:
     dest->type = TAG_TIME;
@@ -1279,12 +1280,12 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_CHARACTER:
   case TAG_FACT:
   case TAG_IDENT:
+  case TAG_PSTRUCT:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
   case TAG_QUOTE:
   case TAG_STR:
-  case TAG_STRUCT:
   case TAG_STRUCT_TYPE:
   case TAG_SYM:
   case TAG_VAR:
@@ -1717,33 +1718,33 @@ bool env_eval_quote_quote (s_env *env, s_quote *quote, s_tag *dest)
 bool env_eval_quote_struct (s_env *env, s_struct *s, s_tag *dest)
 {
   uw i;
-  s_struct *t;
   s_tag tmp = {0};
   assert(env);
   assert(s);
   assert(dest);
-  tmp.type = TAG_STRUCT;
-  t = &tmp.data.struct_;
+  tmp.type = TAG_PSTRUCT;
   if (s->data || ! s->tag) {
-    if (! struct_init_copy(t, s))
+    if (! pstruct_init_copy(&tmp.data.pstruct, &s))
       return false;
     *dest = tmp;
     return true;
   }
-  t->type = s->type;
-  t->tag = alloc(t->type->map.count * sizeof(s_tag));
-  if (! t->tag)
+  pstruct_init(&tmp.data.pstruct, NULL);
+  tmp.data.pstruct->type = s->type;
+  tmp.data.pstruct->tag = alloc(tmp.data.pstruct->type->map.count *
+                                sizeof(s_tag));
+  if (! tmp.data.pstruct->tag)
     return false;
   i = 0;
-  while (i < t->type->map.count) {
-    if (! env_eval_quote_tag(env, s->tag + i, t->tag + i))
+  while (i < tmp.data.pstruct->type->map.count) {
+    if (! env_eval_quote_tag(env, s->tag + i,
+                             tmp.data.pstruct->tag + i))
       goto ko;
     i++;
   }
   *dest = tmp;
   return true;
  ko:
-  struct_clean(t);
   return false;
 }
 
@@ -1768,10 +1769,10 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_quote_list(env, tag->data.list, dest);
   case TAG_MAP:
     return env_eval_quote_map(env, &tag->data.map, dest);
+  case TAG_PSTRUCT:
+    return env_eval_quote_struct(env, tag->data.pstruct, dest);
   case TAG_QUOTE:
     return env_eval_quote_quote(env, &tag->data.quote, dest);
-  case TAG_STRUCT:
-    return env_eval_quote_struct(env, &tag->data.struct_, dest);
   case TAG_TIME:
     return env_eval_quote_time(env, &tag->data.time, dest);
   case TAG_TUPLE:
@@ -1898,12 +1899,12 @@ bool env_eval_quote_unquote (s_env *env, s_unquote *unquote,
   return true;
 }
 
-bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
+bool env_eval_struct (s_env *env, const s_struct *s, p_struct *dest)
 {
   void *data = NULL;
   uw i;
   s_tag tag = {0};
-  s_struct tmp = {0};
+  s_struct *tmp = NULL;
   void    *tmp_data = NULL;
   const s_sym *type;
   s_var *var = NULL;
@@ -1911,7 +1912,7 @@ bool env_eval_struct (s_env *env, const s_struct *s, s_struct *dest)
   assert(s);
   assert(dest);
   if (s->data) {
-    if (! struct_init_copy(&tmp, s))
+    if (! pstruct_init_copy(&tmp, &s))
       return false;
     *dest = tmp;
     return true;

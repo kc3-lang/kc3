@@ -521,6 +521,7 @@ KC3_C_SOURCES = \
 	"libkc3/pcow.h" \
 	"libkc3/pretty.c" \
 	"libkc3/pretty.h" \
+	"libkc3/pstruct.h" \
 	"libkc3/ptag.c" \
 	"libkc3/ptag.h" \
 	"libkc3/ptr.c" \
@@ -695,6 +696,7 @@ KC3_C_SOURCES = \
 	"test/inspect_test.c" \
 	"test/libkc3_test.c" \
 	"test/list_test.c" \
+	"test/ops_test.c" \
 	"test/ratio_test.c" \
 	"test/set__fact_test.c" \
 	"test/set__tag_test.c" \

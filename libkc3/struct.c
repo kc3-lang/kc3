@@ -82,8 +82,8 @@ s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
     if (! struct_type_find(type, &st))
       return NULL;
     if (st) {
-      tmp.data.struct_.type = st;
-      if (! struct_allocate(&tmp.data.struct_))
+      tag_init_pstruct(&tmp, type);
+      if (! struct_allocate(tmp.data.pstruct))
         return NULL;
     }
   }
@@ -228,19 +228,21 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
 {
   s_struct tmp = {0};
   assert(s);
-  assert(module);
-  if (! struct_type_find(module, &tmp.type)) {
-    err_write_1("struct_init: struct_type_find(");
-    err_inspect_sym(&module);
-    err_puts(")");
-    return NULL;
+  if (module) {
+    if (! struct_type_find(module, &tmp.type)) {
+      err_write_1("struct_init: struct_type_find(");
+      err_inspect_sym(&module);
+      err_puts(")");
+      return NULL;
+    }
+    if (! tmp.type) {
+      err_write_1("struct_init: struct_type not found: ");
+      err_inspect_sym(&module);
+      err_write_1("\n");
+      return NULL;
+    }
   }
-  if (! tmp.type) {
-    err_write_1("struct_init: struct_type not found: ");
-    err_inspect_sym(&module);
-    err_write_1("\n");
-    return NULL;
-  }
+  tmp.ref_count = 1;
   *s = tmp;
   return s;
 }
@@ -420,7 +422,6 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
 s_struct * struct_new (const s_sym *module)
 {
   s_struct *s;
-  assert(module);
   s = alloc(sizeof(s_struct));
   if (! s)
     return NULL;
@@ -457,6 +458,18 @@ s_struct * struct_new_copy (const s_struct *src)
     return NULL;
   }
   return s;
+}
+
+s_struct * struct_new_ref (s_struct *src)
+{
+  assert(src);
+  if (src->ref_count <= 0) {
+    err_puts("struct_new_ref: invalid reference count");
+    assert(! "struct_new_ref: invalid reference count");
+    return NULL;
+  }
+  src->ref_count++;
+  return src;
 }
 
 uw * struct_offset (const s_struct *s, const s_sym * const *key,

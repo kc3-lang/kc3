@@ -1022,7 +1022,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     return true;
   }
   if (sym == &g_sym_Struct) {
-    *dest = TAG_STRUCT;
+    *dest = TAG_PSTRUCT;
     return true;
   }
   if (sym == &g_sym_StructType) {
@@ -1080,7 +1080,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
   if (! struct_type_exists(sym, &b))
     return false;
   if (b) {
-    *dest = TAG_STRUCT;
+    *dest = TAG_PSTRUCT;
     return true;
   }
   err_write_1("sym_to_tag_type: unknown type: ");

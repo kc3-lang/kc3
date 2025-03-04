@@ -15,6 +15,7 @@
 #include "assert.h"
 #include "callable.h"
 #include "op.h"
+#include "sym.h"
 
 void op_clean (s_op *op)
 {
@@ -42,6 +43,27 @@ s_op * op_init (s_op *op)
   tmp.ref_count = 1;
   *op = tmp;
   return op;
+}
+
+s_op * op_init_cast (s_op *op, const s_sym * const *type, s_tag *src)
+{
+  s_op *tmp;
+  assert(op);
+  assert(type);
+  assert(*type);
+  assert(src);
+  if (!type || *type != &g_sym_KC3_Op)
+    return NULL;
+  switch (src->type) {
+  case TAG_PTR:
+    tmp = src->data.ptr.p;
+    return op_init_copy(op, tmp);
+  default:
+    break;
+  }
+  err_puts("op_init_cast: cannot cast");
+  assert(! "op_init_cast: cannot cast");
+  return NULL;
 }
 
 s_op * op_init_copy (s_op *op, const s_op *src)
