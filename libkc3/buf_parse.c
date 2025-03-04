@@ -3142,20 +3142,58 @@ sw buf_parse_ptag (s_buf *buf, p_tag *dest)
 
 sw buf_parse_ptr (s_buf *buf, u_ptr_w *dest)
 {
-  (void) buf;
-  (void) dest;
-  assert(! "buf_parse_ptr: not implemented");
-  err_puts("buf_parse_ptr: not implemented");
-  return -1;
+  s_integer i = {0};
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(Ptr)")) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_integer(buf, &i)) <= 0)
+    goto restore;
+  result += r;
+  if (! integer_is_zero(&i))
+    goto restore;
+  dest->p = NULL;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_ptr_free (s_buf *buf, u_ptr_w *dest)
 {
-  (void) buf;
-  (void) dest;
-  assert(! "buf_parse_ptr_free: not implemented");
-  err_puts("buf_parse_ptr_free: not implemented");
-  return -1;
+  s_integer i = {0};
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  buf_save_init(buf, &save);
+  if ((r = buf_read_1(buf, "(PtrFree)")) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_ignore_spaces(buf)) < 0)
+    goto restore;
+  result += r;
+  if ((r = buf_parse_integer(buf, &i)) <= 0)
+    goto restore;
+  result += r;
+  if (! integer_is_zero(&i))
+    goto restore;
+  dest->p = NULL;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
 }
 
 sw buf_parse_quote (s_buf *buf, s_quote *dest)
@@ -4285,6 +4323,8 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
     if ((r = buf_parse_tag_var(buf, dest)) ||
         (r = buf_parse_tag_cow(buf, dest)) ||
         (r = buf_parse_tag_number(buf, dest)) ||
+        (r = buf_parse_tag_ptr(buf, dest)) ||
+        (r = buf_parse_tag_ptr_free(buf, dest)) ||
         (r = buf_parse_tag_array(buf, dest)) ||
         (r = buf_parse_tag_cast(buf, dest)) ||
         (r = buf_parse_tag_call_paren(buf, dest)))
@@ -4404,6 +4444,26 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_tag_ptr (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_ptr(buf, &dest->data.ptr)) > 0)
+    dest->type = TAG_PTR;
+  return r;
+}
+
+sw buf_parse_tag_ptr_free (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_ptr_free(buf, &dest->data.ptr_free)) > 0)
+    dest->type = TAG_PTR;
   return r;
 }
 

@@ -199,12 +199,17 @@ s_tag * kc3_defoperator (s_tag *op_tag, s_tag *dest)
 
 s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
 {
+  s_tag tag;
   s_tag tmp = {0};
   assert(spec);
   if (! spec)
     return NULL;
+  if (! env_eval_list(env_global(), *spec, &tag))
+    return NULL;
+  if (tag.type != TAG_LIST)
+    return NULL;
   tmp.type = TAG_SYM;
-  tmp.data.sym = env_defstruct(env_global(), *spec);
+  tmp.data.sym = env_defstruct(env_global(), tag.data.list);
   *dest = tmp;
   return dest;
 }
