@@ -28,6 +28,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "pstruct.h"
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
@@ -454,7 +455,7 @@ s_tag * tag_init_pstruct (s_tag *tag, const s_sym *module)
   return tag;
 }
 
-s_tag * tag_init_pstruct_copy (s_tag *tag, p_struct *src)
+s_tag * tag_init_pstruct_copy (s_tag *tag, p_struct  src)
 {
   s_tag tmp = {0};
   assert(tag);
@@ -1128,7 +1129,7 @@ s_tag * tag_new_pstruct (const s_sym *module)
   return tag;
 }
 
-s_tag * tag_new_pstruct_copy (p_struct *src)
+s_tag * tag_new_pstruct_copy (p_struct  src)
 {
   s_tag *tag;
   tag = alloc(sizeof(s_tag));
@@ -1782,7 +1783,7 @@ s_tag * tag_pstruct (s_tag *tag, const s_sym *module)
   return tag;
 }
 
-s_tag * tag_pstruct_copy (s_tag *tag, p_struct *src)
+s_tag * tag_pstruct_copy (s_tag *tag, p_struct  src)
 {
   s_tag tmp = {0};
   assert(tag);

@@ -77,7 +77,7 @@ s_list * list_init_str_copy (s_list *list, const s_str *src,
 s_list * list_init_str_empty (s_list *list, s_list *next);
 s_list * list_init_pstruct (s_list *list, const s_sym *module,
                             s_list *next);
-s_list * list_init_pstruct_copy (s_list *list, p_struct *src,
+s_list * list_init_pstruct_copy (s_list *list, p_struct  src,
                                  s_list *next);
 s_list * list_init_pstruct_with_data (s_list *list,
                                       const s_sym *module, void *data,
@@ -156,7 +156,7 @@ s_list * list_new_str_concatenate_list (const s_list * const *src,
 s_list * list_new_str_copy (const s_str *src, s_list *next);
 s_list * list_new_str_empty (s_list *next);
 s_list * list_new_pstruct (const s_sym *module, s_list *next);
-s_list * list_new_pstruct_copy (p_struct *src, s_list *next);
+s_list * list_new_pstruct_copy (p_struct  src, s_list *next);
 s_list * list_new_pstruct_with_data (const s_sym *module, void *data,
                                      bool free_data, s_list *next);
 s_list * list_new_struct_type (const s_sym *module, s_list *spec,

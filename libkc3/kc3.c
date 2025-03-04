@@ -47,6 +47,7 @@
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
+#include "pstruct.h"
 #include "s32.h"
 #include "serialize.h"
 #include "str.h"
@@ -87,7 +88,7 @@ int fork (void)
 s_tag * kc3_access (s_tag *tag, s_list **key,
                     s_tag *dest)
 {
-  s_struct s = {0};
+  p_struct s = NULL;
   assert(tag);
   assert(key);
   assert(dest);
@@ -104,14 +105,19 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
       return list_access(tag->data.list, *key, dest);
   case TAG_MAP:
     return map_access(&tag->data.map, *key, dest);
-  case TAG_STRUCT:
-    return struct_access(&tag->data.struct_, *key, dest);
+  case TAG_PSTRUCT:
+    return struct_access(tag->data.pstruct, *key, dest);
   case TAG_TIME:
-    if (! struct_init_with_data(&s, &g_sym_Time,
-                                (s_time *) &tag->data.time,
-                                false))
+    if (! pstruct_init_with_data(&s, &g_sym_Time,
+                                 (s_time *) &tag->data.time,
+                                 false))
       return NULL;
-    return struct_access(&s, *key, dest);
+    if (! struct_access(s, *key, dest)) {
+      pstruct_clean(&s);
+      return NULL;
+    }
+    pstruct_clean(&s);
+    return dest;
   default:
     break;
   }
@@ -173,21 +179,21 @@ s_tag * kc3_defoperator (s_tag *op_tag, s_tag *dest)
 {
   s_env *env;
   s_tag tag = {0};
-  if (! op_tag || op_tag->type != TAG_STRUCT ||
-      op_tag->data.struct_.type->module != &g_sym_KC3_Op) {
+  if (! op_tag || op_tag->type != TAG_PSTRUCT ||
+      op_tag->data.pstruct->type->module != &g_sym_KC3_Op) {
     err_puts("kc3_defoperator: not a KC3.Op struct");
     assert(! "kc3_defoperator: not a KC3.Op struct");
     return NULL;
   }
   env = env_global();
-  tag.type = TAG_STRUCT;
-  if (! env_eval_struct(env, &op_tag->data.struct_,
-                        &tag.data.struct_)) {
+  tag.type = TAG_PSTRUCT;
+  if (! env_eval_struct(env, op_tag->data.pstruct,
+                        &tag.data.pstruct)) {
     err_puts("kc3_defoperator: env_eval_struct");
     assert(! "kc3_defoperator: env_eval_struct");
     return NULL;
   }
-  if (! env_defoperator(env, tag.data.struct_.data, dest)) {
+  if (! env_defoperator(env, tag.data.pstruct->data, dest)) {
     err_puts("kc3_defoperator: env_defoperator 1");
     assert(! "kc3_defoperator: env_defoperator 1");
     tag_clean(&tag);
@@ -319,7 +325,7 @@ s_tag * kc3_fact_subject (s_fact *fact, s_tag *dest)
 
 s_tag * kc3_fact_from_ptr (s_tag *tag, u_ptr_w *ptr)
 {
-  return tag_init_struct_with_data(tag, &g_sym_Fact, ptr->p, false);
+  return tag_init_pstruct_with_data(tag, &g_sym_Fact, ptr->p, false);
 }
 
 bool * kc3_facts_add_tags (s_facts *facts, s_tag *subject,
@@ -789,20 +795,20 @@ s_str * kc3_strerror (sw err_no, s_str *dest)
 s_tag * kc3_struct_put (s_tag *s, const s_sym * const *key,
                         s_tag *value, s_tag *dest)
 {
-  s_struct tmp;
+  p_struct tmp;
   assert(s);
   assert(key);
   assert(value);
   assert(dest);
-  if (s->type != TAG_STRUCT) {
+  if (s->type != TAG_PSTRUCT) {
     err_puts("kc3_struct_put: not a struct");
     assert(! "kc3_struct_put: not a struct");
     return NULL;
   }
-  if (! struct_put(&s->data.struct_, *key, value, &tmp))
+  if (! (tmp = struct_new_put(s->data.pstruct, *key, value)))
     return NULL;
-  dest->type = TAG_STRUCT;
-  dest->data.struct_ = tmp;
+  dest->type = TAG_PSTRUCT;
+  dest->data.pstruct = tmp;
   return dest;
 }
 

@@ -68,12 +68,12 @@ void file_close (const s_tag *tag)
   if (! tag_type(tag, &type))
     return;
   if (type == &g_sym_Buf) {
-    fp = buf_file_fp(tag->data.struct_.data);
-    buf_file_close(tag->data.struct_.data);
+    fp = buf_file_fp(tag->data.pstruct->data);
+    buf_file_close(tag->data.pstruct->data);
     fclose(fp);
   }
   else if (type == &g_sym_BufRW) {
-    buf_rw = tag->data.struct_.data;
+    buf_rw = tag->data.pstruct->data;
     fp = buf_file_fp(buf_rw->r);
     buf_file_close(buf_rw->r);
     fclose(fp);

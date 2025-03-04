@@ -38,6 +38,8 @@ void       struct_delete (s_struct *s);
 s_struct * struct_new (const s_sym *module);
 s_struct * struct_new_1 (const char *p);
 s_struct * struct_new_copy (const s_struct *src);
+s_struct * struct_new_put (s_struct *s, const s_sym *key,
+                           s_tag *value);
 s_struct * struct_new_ref (s_struct *src);
 s_struct * struct_new_with_data (const s_sym *module, void *data);
 
@@ -50,8 +52,6 @@ s_tag *    struct_access_sym (s_struct *s, const s_sym *key,
 s_struct * struct_allocate (s_struct *s);
 s_tag *    struct_get_tag (s_struct *s, const s_sym *key);
 void *     struct_get_w (s_struct *s, const s_sym *key);
-s_struct * struct_put (s_struct *s, const s_sym *key,
-                       s_tag *value, s_struct *dest);
 s_struct * struct_set (s_struct *s, const s_sym *key,
                        s_tag *value);
 
