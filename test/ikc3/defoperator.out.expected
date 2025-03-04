@@ -1,13 +1,15 @@
 %KC3.Op{callable: fn (a, b) { a + b }}
 %KC3.Op{sym: :+,
         arity: 2,
+        special: false,
         precedence: 0,
         associativity: 1,
-        callable: fn (a, b) { a + b }}
-def op_muul = %KC3.Op{sym: :****,
-                      precedence: 13,
-                      callable: cfn Tag "tag_mul" (Tag, Tag, Result)}
-op_muul
+        callable: fn (a, b) { a + b },
+        ref_count: (Sw) 1}
+defoperator %KC3.Op{sym: :****,
+                    precedence: 13,
+                    callable: cfn Tag "tag_mul" (Tag, Tag, Result)}
+:****
 4 **** 4
 16
 4 **** 4 **** 4
@@ -15,4 +17,4 @@ op_muul
 4 **** 4 + 4
 20
 to_lisp(quote 4 **** 4 + 4)
-[op_add, [op_muul, 4, 4], 4]
+[+, [****, 4, 4], 4]

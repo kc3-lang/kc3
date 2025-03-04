@@ -26,7 +26,7 @@ void * ht_get (s_ht *ht, void *data);
 void * ht_get_hash (s_ht *ht, void *data, uw hash);
 
 /* Operators. */
-bool ht_add (s_ht *ht, void *data);
-bool ht_add_hash (s_ht *ht, void *data, uw hash);
+void * ht_add (s_ht *ht, void *data);
+void * ht_add_hash (s_ht *ht, void *data, uw hash);
 
 #endif /* LIBKC3_HT_H */

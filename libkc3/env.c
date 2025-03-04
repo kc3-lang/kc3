@@ -403,6 +403,8 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
 /* FIXME: multiple env and env->ops. See env_eval_call_resolve. */
 s_tag * env_defoperator (s_env *env, s_op *op, s_tag *dest)
 {
+  s_tag tag_op_ptr;
+  s_tag tag_op_sym;
   s_tag tag_sym = {0};
   s_op *tmp;
   assert(env);
@@ -413,12 +415,15 @@ s_tag * env_defoperator (s_env *env, s_op *op, s_tag *dest)
   assert(op->arity);
   if (! (tmp = op_new_copy(op)))
     return NULL;
-  if (! ops_add(env->ops, tmp)) {
+  if (! (op = ops_add(env->ops, tmp))) {
     op_delete(tmp);
     return NULL;
   }
-  op_delete(tmp);
-  tag_init_sym(&tag_sym, op->sym);
+  tag_init_ptr(&tag_op_ptr, tmp);
+  tag_init_sym(&tag_op_sym, &g_sym_op);
+  tag_init_sym(&tag_sym, tmp->sym);
+  if (! facts_add_tags(env->facts, &tag_op_ptr, &tag_op_sym, &tag_sym))
+    return NULL;
   *dest = tag_sym;
   return dest;
 }

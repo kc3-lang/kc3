@@ -17,14 +17,14 @@
 #include "ht_item.h"
 
 /* Returns true if data was added or is already present. */
-bool ht_add (s_ht *ht, void *data)
+void * ht_add (s_ht *ht, void *data)
 {
   uw hash = ht->hash(data);
   return ht_add_hash(ht, data, hash);
 }
 
 /* Returns true if data was added or is already present. */
-bool ht_add_hash (s_ht *ht, void *data, uw hash)
+void * ht_add_hash (s_ht *ht, void *data, uw hash)
 {
   s8 c;
   s_ht_item **item;
@@ -40,11 +40,14 @@ bool ht_add_hash (s_ht *ht, void *data, uw hash)
     *item = ht_item_delete(ht, *item);
     ht->count--;
   }
-  if (! (item_new = ht_item_new(ht, data, *item)))
-    return false;
+  if (! (item_new = ht_item_new(ht, data, *item))) {
+    err_puts("ht_add_hash: ht_item_new");
+    assert(! "ht_add_hash: ht_item_new");
+    return NULL;
+  }
   *item = item_new;
   ht->count++;
-  return true;
+  return item_new->data;
 }
 
 void ht_clean (s_ht *ht)

@@ -29,6 +29,6 @@ s_op * ops_get (s_ops *ops, const s_sym *sym, u8 arity);
 uw     ops_hash_op (const s_op *op);
 
 /* Operators. */
-bool ops_add (s_ops *ops, s_op *op);
+s_op * ops_add (s_ops *ops, s_op *op);
 
 #endif /* LIBKC3_OPS_H */

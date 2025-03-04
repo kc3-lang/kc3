@@ -22,7 +22,7 @@
 #include "sym.h"
 
 /* Returns true if op was added or is already present. */
-bool ops_add (s_ops *ops, s_op *op)
+s_op * ops_add (s_ops *ops, s_op *op)
 {
   assert(ops);
   assert(op);
