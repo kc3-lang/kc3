@@ -92,6 +92,7 @@ sw buf_parse_map_key_tag (s_buf *buf, s_tag *dest);
 sw buf_parse_module_name (s_buf *buf, const s_sym **dest);
 sw buf_parse_new_tag (s_buf *buf, s_tag **dest);
 sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest);
+sw buf_parse_pstruct (s_buf *buf, p_struct *dest);
 sw buf_parse_ptag (s_buf *buf, p_tag *dest);
 sw buf_parse_ptr (s_buf *buf, u_ptr_w *dest);
 sw buf_parse_ptr_free (s_buf *buf, u_ptr_w *dest);

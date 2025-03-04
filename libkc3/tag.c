@@ -470,7 +470,7 @@ s_tag * tag_init_cast_struct (s_tag *tag, const s_sym * const *type,
                                       false);
   case TAG_PSTRUCT:
     if (*type == src->data.pstruct->type->module)
-      return tag_init_pstruct_copy(tag, &src->data.pstruct);
+      return tag_init_pstruct_copy(tag, src->data.pstruct);
   default:
     break;
   }
@@ -561,7 +561,7 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     return tag;
   case TAG_PSTRUCT:
     tag->type = src->type;
-    if (! pstruct_init_copy(&tag->data.pstruct, &src->data.pstruct))
+    if (! pstruct_init_copy(&tag->data.pstruct, src->data.pstruct))
       return NULL;
     return tag;
   case TAG_PTAG:
@@ -1222,19 +1222,13 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   case TAG_UW:          *dest = &tag->data.uw;          return true;
   case TAG_LIST:        *dest = &tag->data.list;        return true;
   case TAG_MAP:         *dest = &tag->data.map;         return true;
-  case TAG_PTAG:        *dest = &tag->data.ptag;        return true;
-  case TAG_PTR:         *dest = &tag->data.ptr.p;       return true;
-  case TAG_PTR_FREE:    *dest = &tag->data.ptr_free.p;  return true;
-  case TAG_QUOTE:       *dest = &tag->data.quote;       return true;
-  case TAG_RATIO:       *dest = &tag->data.ratio;       return true;
-  case TAG_STR:         *dest = &tag->data.str;         return true;
-  case TAG_STRUCT:
+  case TAG_PSTRUCT:
     if (type == &g_sym_Struct) {
       *dest = tag->data.pstruct;
       return true;
     }
-    if (type == tag->data.struct_.type->module) {
-      *dest = tag->data.struct_.data;
+    if (type == tag->data.pstruct->type->module) {
+      *dest = tag->data.pstruct->data;
       assert(*dest);
       return true;
     }
@@ -1245,6 +1239,12 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
     err_write_1("\n");
     assert(! "tag_to_const_pointer: cannot cast");
     return false;
+  case TAG_PTAG:        *dest = &tag->data.ptag;        return true;
+  case TAG_PTR:         *dest = &tag->data.ptr.p;       return true;
+  case TAG_PTR_FREE:    *dest = &tag->data.ptr_free.p;  return true;
+  case TAG_QUOTE:       *dest = &tag->data.quote;       return true;
+  case TAG_RATIO:       *dest = &tag->data.ratio;       return true;
+  case TAG_STR:         *dest = &tag->data.str;         return true;
   case TAG_STRUCT_TYPE: *dest = &tag->data.struct_type; return true;
   case TAG_SYM:         *dest = &tag->data.sym;         return true;
   case TAG_TIME:        *dest = &tag->data.time;        return true;
@@ -1368,6 +1368,22 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
+  case TAG_PSTRUCT:
+    if (type == &g_sym_Struct) {
+      *dest = tag->data.pstruct;
+      return true;
+    }
+    if (type == &g_sym_Ptr) {
+      *dest = &tag->data.pstruct->data;
+      assert(*dest);
+      return true;
+    }
+    if (type == tag->data.pstruct->type->module) {
+      *dest = tag->data.pstruct->data;
+      assert(*dest);
+      return true;
+    }
+    goto invalid_cast;
   case TAG_PTAG:
     if (type == &g_sym_Ptag) {
       *dest = (void *) tag->data.ptag;
@@ -1408,22 +1424,6 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     }
     if (type == &g_sym_Char__star) {
       *dest = (void *) tag->data.str.ptr.pchar;
-      return true;
-    }
-    goto invalid_cast;
-  case TAG_STRUCT:
-    if (type == &g_sym_Struct) {
-      *dest = tag->data.pstruct;
-      return true;
-    }
-    if (type == &g_sym_Ptr) {
-      *dest = &tag->data.struct_.data;
-      assert(*dest);
-      return true;
-    }
-    if (type == tag->data.struct_.type->module) {
-      *dest = tag->data.struct_.data;
-      assert(*dest);
       return true;
     }
     goto invalid_cast;
@@ -1595,13 +1595,13 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_S16:         *dest = &tag->data.s16;         return true;
   case TAG_S8:          *dest = &tag->data.s8;          return true;
   case TAG_STR:         *dest = &tag->data.str;         return true;
-  case TAG_STRUCT:
+  case TAG_PSTRUCT:
     if (type == &g_sym_Struct) {
       *dest = tag->data.pstruct;
       return true;
     }
-    if (type == tag->data.struct_.type->module) {
-      *dest = tag->data.struct_.data;
+    if (type == tag->data.pstruct->type->module) {
+      *dest = tag->data.pstruct->data;
       return true;
     }
     goto invalid_cast;
@@ -1623,7 +1623,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   return false;
  invalid_cast:
   err_write_1("tag_to_pointer: invalid cast from ");
-  if (tag->type == TAG_STRUCT)
+  if (tag->type == TAG_PSTRUCT)
     err_inspect_sym(&tag->data.pstruct->type->module);
   else
     err_write_1(tag_type_to_string(tag->type));
@@ -1686,7 +1686,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_QUOTE:        *dest = &g_sym_Quote;      return dest;
   case TAG_RATIO:        *dest = &g_sym_Ratio;      return dest;
   case TAG_STR:          *dest = &g_sym_Str;        return dest;
-  case TAG_STRUCT:       *dest = tag->data.struct_.type->module;
+  case TAG_PSTRUCT:      *dest = tag->data.pstruct->type->module;
                                                     return dest;
   case TAG_STRUCT_TYPE:  *dest = &g_sym_StructType; return dest;
   case TAG_SYM:          *dest = &g_sym_Sym;        return dest;

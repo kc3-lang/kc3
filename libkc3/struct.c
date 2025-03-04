@@ -20,6 +20,7 @@
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
+#include "pstruct.h"
 #include "struct.h"
 #include "struct_type.h"
 #include "sym.h"
@@ -247,61 +248,40 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
   return s;
 }
 
-s_struct * struct_init_1 (s_struct *s, const char *p)
+p_struct * pstruct_init_1 (p_struct *s, const char *p)
 {
   s_buf buf;
   uw len;
   sw r;
-  s_struct tmp = {0};
-  s_struct tmp2 = {0};
+  p_struct tmp = NULL;
+  p_struct tmp2 = NULL;
   assert(s);
   assert(p);
   len = strlen(p);
   buf_init_const(&buf, len, p);
   buf.wpos = len;
-  r = buf_parse_struct(&buf, &tmp);
+  r = buf_parse_pstruct(&buf, &tmp);
   if (r < 0 || (uw) r != len) {
     err_puts("struct_init_1: invalid struct");
     assert(! "struct_init_1: invalid struct");
     if (r > 0)
-      struct_clean(&tmp);
+      pstruct_clean(&tmp);
     return NULL;
   }
   if (false) {
     err_write_1("\nstruct_init_1: tmp = ");
-    err_inspect_struct(&tmp);
+    err_inspect_struct(tmp);
     err_write_1("\n");
   }
-  if (! env_eval_struct(env_global(), &tmp, &tmp2)) {
+  if (! env_eval_struct(env_global(), tmp, &tmp2)) {
     err_puts("struct_init_1: env_eval_struct");
     assert(! "struct_init_1: env_eval_struct");
-    struct_clean(&tmp);
+    pstruct_clean(&tmp);
     return NULL;
   }
-  struct_clean(&tmp);
+  pstruct_clean(&tmp);
   *s = tmp2;
   return s;
-}
-
-s_struct * struct_init_cast (s_struct *s, const s_sym * const *type,
-                             const s_tag *tag)
-{
-  assert(s);
-  assert(tag);
-  switch (tag->type) {
-  case TAG_STRUCT:
-    if (*type == tag->data.struct_.type->module)
-      return struct_init_copy(s, &tag->data.struct_);
-  default:
-    break;
-  }
-  err_write_1("struct_init_cast: cannot cast ");
-  err_write_1(tag_type_to_string(tag->type));
-  err_write_1(" to %");
-  err_inspect_sym(type);
-  err_write_1("{}\n");
-  assert(! "struct_init_cast: cannot cast to Struct");
-  return NULL;
 }
 
 s_struct * struct_init_copy (s_struct *s, const s_struct *src)

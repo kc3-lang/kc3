@@ -437,6 +437,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_list(str, (const s_list * const *) &tag->data.list);
   case TAG_MAP:
     return str_init_map(str, &tag->data.map);
+  case TAG_PSTRUCT:
+    return str_init_struct(str, tag->data.pstruct);
   case TAG_PTR:
     return str_init_ptr(str, &tag->data.ptr);
   case TAG_PTR_FREE:
@@ -451,8 +453,6 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_s64(str, tag->data.s64);
   case TAG_STR:
     return str_init_copy(str, &tag->data.str);
-  case TAG_STRUCT:
-    return str_init_struct(str, &tag->data.struct_);
   case TAG_SYM:
     return str_init_copy(str, &tag->data.sym->str);
   case TAG_SW:
