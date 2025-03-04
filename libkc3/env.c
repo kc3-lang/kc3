@@ -1724,7 +1724,7 @@ bool env_eval_quote_struct (s_env *env, s_struct *s, s_tag *dest)
   assert(dest);
   tmp.type = TAG_PSTRUCT;
   if (s->data || ! s->tag) {
-    if (! pstruct_init_copy(&tmp.data.pstruct, &s))
+    if (! pstruct_init_copy(&tmp.data.pstruct, s))
       return false;
     *dest = tmp;
     return true;
@@ -1899,12 +1899,12 @@ bool env_eval_quote_unquote (s_env *env, s_unquote *unquote,
   return true;
 }
 
-bool env_eval_struct (s_env *env, const s_struct *s, p_struct *dest)
+bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
 {
   void *data = NULL;
   uw i;
   s_tag tag = {0};
-  s_struct *tmp = NULL;
+  p_struct tmp = NULL;
   void    *tmp_data = NULL;
   const s_sym *type;
   s_var *var = NULL;
@@ -1912,21 +1912,22 @@ bool env_eval_struct (s_env *env, const s_struct *s, p_struct *dest)
   assert(s);
   assert(dest);
   if (s->data) {
-    if (! pstruct_init_copy(&tmp, &s))
+    if (! pstruct_init_copy(&tmp, s))
       return false;
     *dest = tmp;
     return true;
   }
-  tmp.type = s->type;
-  if (! struct_allocate(&tmp))
+  if (! pstruct_init_type(&tmp, s->type))
+    return false;
+  if (! struct_allocate(tmp))
     return false;
   i = 0;
-  while (i < tmp.type->map.count) {
-    if (tmp.type->map.value[i].type == TAG_VAR) {
-      var = &tmp.type->map.value[i].data.var;
+  while (i < tmp->type->map.count) {
+    if (tmp->type->map.value[i].type == TAG_VAR) {
+      var = &tmp->type->map.value[i].data.var;
       type = var->type;
     }
-    else if (! tag_type(tmp.type->map.value + i, &type))
+    else if (! tag_type(tmp->type->map.value + i, &type))
       goto ko;
     if (s->tag) {
       if (! env_eval_tag(env, s->tag + i, &tag))
@@ -1937,7 +1938,7 @@ bool env_eval_struct (s_env *env, const s_struct *s, p_struct *dest)
       }
     }
     else {
-      if (! tag_to_const_pointer(tmp.type->map.value + i, type, &data))
+      if (! tag_to_const_pointer(tmp->type->map.value + i, type, &data))
         goto ko;
     }
     if (false) {
@@ -1945,7 +1946,7 @@ bool env_eval_struct (s_env *env, const s_struct *s, p_struct *dest)
       err_inspect_sym(&type);
       err_write_1("\n");
     }
-    tmp_data = (s8 *) tmp.data + tmp.type->offset[i];
+    tmp_data = (s8 *) tmp->data + tmp->type->offset[i];
     if (! data_init_copy(type, tmp_data, data))
       goto ko_init;
     if (s->tag)
@@ -1958,20 +1959,20 @@ bool env_eval_struct (s_env *env, const s_struct *s, p_struct *dest)
   err_write_1("env_eval_struct: invalid type ");
   err_write_1(tag_type_to_string(tag.type));
   err_write_1(" for key ");
-  err_write_1(tmp.type->map.key[i].data.sym->str.ptr.pchar);
+  err_write_1(tmp->type->map.key[i].data.sym->str.ptr.pchar);
   err_write_1(", expected ");
-  err_puts(tag_type_to_string(tmp.type->map.value[i].type));
+  err_puts(tag_type_to_string(tmp->type->map.value[i].type));
   tag_clean(&tag);
  ko:
-  struct_clean(&tmp);
+  pstruct_clean(&tmp);
   return false;
 }
 
-bool env_eval_struct_tag (s_env *env, const s_struct *s, s_tag *dest)
+bool env_eval_struct_tag (s_env *env, s_struct *s, s_tag *dest)
 {
-  if (! env_eval_struct(env, s, &dest->data.struct_))
+  if (! env_eval_struct(env, s, &dest->data.pstruct))
     return false;
-  dest->type = TAG_STRUCT;
+  dest->type = TAG_PSTRUCT;
   return true;
 }
 
@@ -2002,10 +2003,10 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_list(env, tag->data.list, dest);
   case TAG_MAP:
     return env_eval_map(env, &tag->data.map, dest);
+  case TAG_PSTRUCT:
+    return env_eval_struct_tag(env, tag->data.pstruct, dest);
   case TAG_QUOTE:
     return env_eval_quote(env, &tag->data.quote, dest);
-  case TAG_STRUCT:
-    return env_eval_struct_tag(env, &tag->data.struct_, dest);
   case TAG_TIME:
     return env_eval_time(env, &tag->data.time, dest);
   case TAG_TUPLE:
@@ -2170,13 +2171,13 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
   assert(spec);
   assert(callback);
   assert(dest);
-  if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(&arguments->tag.data.struct_)) {
+  if (! struct_allocate(arguments->tag.data.pstruct)) {
     list_delete_all(arguments);
     return NULL;
   }
-  fact_w = arguments->tag.data.struct_.data;
+  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_list(facts, &cursor, *spec))
     return NULL;
   list = NULL;
@@ -2228,11 +2229,11 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
   s_list **l;
   s_list  *list;
   s_tag tmp = {0};
-  if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(&arguments->tag.data.struct_))
+  if (! struct_allocate(arguments->tag.data.pstruct))
     return NULL;
-  fact_w = arguments->tag.data.struct_.data;
+  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_tags(facts, &cursor, subject, predicate, object))
     return NULL;
   list = NULL;
@@ -2280,13 +2281,13 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
   assert(spec);
   assert(callback);
   assert(dest);
-  if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(&arguments->tag.data.struct_)) {
+  if (! struct_allocate(arguments->tag.data.pstruct)) {
     list_delete_all(arguments);
     return NULL;
   }
-  fact_w = arguments->tag.data.struct_.data;
+  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_list(facts, &cursor, *spec))
     return NULL;
   if (! facts_with_cursor_next(&cursor, &fact))
@@ -2332,13 +2333,13 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   assert(object);
   assert(callback);
   assert(dest);
-  if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(&arguments->tag.data.struct_)) {
+  if (! struct_allocate(arguments->tag.data.pstruct)) {
     list_delete_all(arguments);
     return NULL;
   }
-  fact_w = arguments->tag.data.struct_.data;
+  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_tags(facts, &cursor, subject, predicate, object))
     return NULL;
   if (! facts_cursor_next(&cursor, &fact))
@@ -2370,11 +2371,11 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_tag tmp = {0};
-  if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(&arguments->tag.data.struct_))
+  if (! struct_allocate(arguments->tag.data.pstruct))
     return NULL;
-  fact_w = arguments->tag.data.struct_.data;
+  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_list(facts, &cursor, *spec))
     return NULL;
   while (1) {
@@ -2463,11 +2464,11 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
   s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_tag tmp = {0};
-  if (! (arguments = list_new_struct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
-  if (! struct_allocate(&arguments->tag.data.struct_))
+  if (! struct_allocate(arguments->tag.data.pstruct))
     return NULL;
-  fact_w = arguments->tag.data.struct_.data;
+  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_tags(facts, &cursor, subject, predicate, object))
     return NULL;
   while (1) {
@@ -2866,8 +2867,8 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
   case TAG_MAP:
     map = &tmp.data.map;
     break;
-  case TAG_STRUCT:
-    map = &tmp.data.struct_.type->map;
+  case TAG_PSTRUCT:
+    map = &tmp.data.pstruct->type->map;
     // FIXME
     break;
   default:
