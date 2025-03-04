@@ -1004,50 +1004,50 @@ sw buf_read_until_space_into_str (s_buf *buf, s_str *dest)
   return r;
 }
 
-sw buf_read_until_list_into_buf (s_buf *buf, const s_list *end,
-                                 s_buf *dest)
+s_str * buf_read_until_list_into_str (s_buf *buf,
+                                      const s_list * const *end,
+                                      s_str *dest)
 {
-  u8 c;
   const s_list *e;
+  character c;
   sw r;
-  sw result = 0;
+  s_str *result = NULL;
   s_buf_save save;
+  s_buf tmp;
 #if HAVE_PTHREAD
   rwlock_w(&buf->rwlock);
-  rwlock_w(&dest->rwlock);
 #endif
   buf_save_init(buf, &save);
   while (1) {
-    e = end;
-    while (e) {
-      if (e->tag.type != TAG_STR ||
-          e->tag.data.str.size <= 0) {
-        err_puts("buf_read_until_list_into_buf: not a Str");
-        assert(! "buf_read_until_list_into_buf: not a Str");
-        goto restore;
-      }
+    e = *end;
+    if (e->tag.type != TAG_STR || ! e->tag.data.str.size) {
+      err_puts("buf_read_until_list_into_str: invalid end List of Str");
+      assert(! "buf_read_until_list_into_str: invalid end List of Str");
+    }
+    while (e){
       if ((r = buf_read_str(buf, &e->tag.data.str)) < 0) {
-        if (true)
-          err_puts("buf_read_until_str_into_buf: buf_read_str");
+        if (false)
+          err_puts("buf_read_until_str_into_str: buf_read_str");
         goto restore;
       }
       if (r) {
-        result += r;
+        buf_init(&tmp, false, buf->size, buf->ptr.pchar);
+        tmp.rpos = save.rpos;
+        tmp.wpos = buf->rpos - e->tag.data.str.size;
+        if (! buf_read_to_str(&tmp, dest)) {
+          err_puts("buf_read_until_str_into_str: buf_read_to_str");
+          goto restore;
+        }
+        result = dest;
         goto clean;
       }
       e = list_next(e);
     }
-    if ((r = buf_read_u8(buf, &c)) <= 0) {
-      if (true)
-        err_puts("buf_read_until_str_into_buf: buf_read_u8");
+    if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
+      if (false)
+        err_puts("buf_read_until_str_into_str: buf_read_character_utf8");
       goto restore;
     }
-    if ((r = buf_write_u8(dest, c)) <= 0) {
-      if (true)
-        err_puts("buf_read_until_str_into_buf: buf_write_u8");
-      goto restore;
-    }
-    result++;
   }
  restore:
   buf_save_restore_rpos(buf, &save);
@@ -1055,10 +1055,10 @@ sw buf_read_until_list_into_buf (s_buf *buf, const s_list *end,
   buf_save_clean(buf, &save);
 #if HAVE_PTHREAD
   rwlock_unlock_w(&buf->rwlock);
-  rwlock_unlock_w(&dest->rwlock);
 #endif
-  return r > 0 ? result : -1;
+  return result;
 }
+
 sw buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
 				s_buf *dest)
 {

@@ -106,6 +106,10 @@ s_str *   buf_read_until_character_into_str (s_buf *buf, character end,
                                              s_str *dest);
 sw        buf_read_until_list_into_buf (s_buf *buf, const s_list *end,
                                         s_buf *dest);
+s_str * buf_read_until_list_into_str (s_buf *buf,
+                                      const s_list * const *end,
+                                      s_str *dest);
+
 sw        buf_read_until_space_into_str (s_buf *buf, s_str *dest);
 sw        buf_read_until_str_into_buf (s_buf *buf, const s_str *end,
                                        s_buf *dest);

@@ -1455,7 +1455,7 @@ s_list ** str_split_list (const s_str *str,
     *t = list_new(NULL);
     (*t)->tag.type = TAG_STR;
     t_str = &(*t)->tag.data.str;
-    if (! buf_read_until_list_into_str(&buf, *sep, t_str)) {
+    if (! buf_read_until_list_into_str(&buf, sep, t_str)) {
       if (! buf_read_to_str(&buf, t_str))
         goto clean;
       break;
