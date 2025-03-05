@@ -22,7 +22,6 @@
 void pstruct_clean (p_struct *s)
 {
   struct_delete(*s);
-  *s = NULL;
 }
 
 p_struct * pstruct_init (p_struct *s, const s_sym *module)

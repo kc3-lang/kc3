@@ -263,6 +263,7 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
   assert(s);
   assert(src);
   assert(src->type);
+  tmp.ref_count = 1;
   tmp.type = src->type;
   if (! tmp.type->size)
     return NULL;
