@@ -31,6 +31,13 @@ void cow_clean (s_cow *cow)
 void cow_delete (s_cow *cow)
 {
   assert(cow);
+  if (cow->ref_count <= 0) {
+    err_puts("cow_delete: invalid reference count");
+    assert(! "cow_delete: invalid reference count");
+    return;
+  }
+  if (--cow->ref_count)
+    return;
   cow_clean(cow);
   free(cow);
 }
@@ -67,7 +74,7 @@ s_cow * cow_init (s_cow *cow, const s_sym *type)
   assert(type);
   tmp.type = type;
   tmp.list = list_new(NULL);
-  tmp.reference_count = 1;
+  tmp.ref_count = 1;
   *cow = tmp;
   return cow;
 }
@@ -115,7 +122,7 @@ s_cow * cow_init_cast (s_cow *cow, const s_sym * const *type,
   if (! data_init_cast(data, type, tag))
     return NULL;
   cow_freeze(&tmp);
-  tmp.reference_count = 1;
+  tmp.ref_count = 1;
   *cow = tmp;
   return cow;
 }
@@ -126,7 +133,7 @@ s_cow * cow_init_copy (s_cow *cow, s_cow *src)
   assert(cow);
   assert(src);
   tmp.type = src->type;
-  tmp.reference_count = 1;
+  tmp.ref_count = 1;
   tmp.list = list_new_copy(src->list);
   if (! tmp.list)
     return NULL;
@@ -153,7 +160,7 @@ s_cow * cow_init_tag_copy (s_cow *cow, const s_sym *type,
     }
   }
   tmp.type = type;
-  tmp.reference_count = 1;
+  tmp.ref_count = 1;
   tmp.list = list_new_tag_copy(src, NULL);
   if (! tmp.list)
     return NULL;
@@ -213,6 +220,18 @@ s_cow * cow_new_copy (s_cow *src)
   return cow;
 }
 
+s_cow * cow_new_ref (s_cow *cow)
+{
+  assert(cow);
+  if (cow->ref_count <= 0) {
+    err_puts("cow_new_ref: invalid reference count");
+    assert(! "cow_new_ref: invalid reference count");
+    return NULL;
+  }
+  cow->ref_count++;
+  return cow;
+}
+
 s_cow * cow_new_tag_copy (const s_sym *type, s_tag *src)
 {
   s_cow *cow;
@@ -239,17 +258,6 @@ s_tag * cow_read_write (s_cow *cow)
   assert(cow);
   assert(cow->list);
   return &cow->list->tag;
-}
-
-sw cow_ref (s_cow *cow)
-{
-  assert(cow);
-  if (! cow->reference_count) {
-    err_puts("cow_ref: reference count = 0");
-    assert(! "cow_ref: reference count = 0");
-    return -1;
-  }
-  return ++cow->reference_count;
 }
 
 s_cow * cow_thaw (s_cow *cow)
@@ -281,16 +289,4 @@ s_cow * cow_thaw_copy (s_cow *cow, s_tag *src)
   tag_clean(&cow->list->tag);
   cow->list->tag = tmp;
   return cow;
-}
-
-sw cow_unref (s_cow *cow)
-{
-  assert(cow);
-  if (! cow->reference_count) {
-    err_puts("cow_unref: reference count = 0");
-    assert(! "cow_unref: reference count = 0");
-    return -1;
-  }
-  cow->reference_count--;
-  return cow->reference_count;
 }

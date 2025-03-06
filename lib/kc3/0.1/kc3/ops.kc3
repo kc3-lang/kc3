@@ -1,0 +1,5 @@
+defmodule KC3.Ops do
+
+  def get = cfn KC3.Op "kc3_ops_get" (Sym, U8)
+
+end

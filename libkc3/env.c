@@ -1923,34 +1923,42 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
     return false;
   i = 0;
   while (i < tmp->type->map.count) {
-    if (tmp->type->map.value[i].type == TAG_VAR) {
-      var = &tmp->type->map.value[i].data.var;
-      type = var->type;
-    }
-    else if (! tag_type(tmp->type->map.value + i, &type))
+    if (tmp->type->map.key[i].type != TAG_SYM) {
+      err_puts("env_eval_struct: struct type key is not a Sym");
+      assert(! "env_eval_struct: struct type key is not a Sym");
       goto ko;
-    if (s->tag) {
-      if (! env_eval_tag(env, s->tag + i, &tag))
-        goto ko;
-      if (! tag_to_const_pointer(&tag, type, &data)) {
-        tag_clean(&tag);
-        goto ko;
+    }
+    if (tmp->type->map.key[i].data.sym->str.ptr.pchar[0] != '_') {
+      if (tmp->type->map.value[i].type == TAG_VAR) {
+        var = &tmp->type->map.value[i].data.var;
+        type = var->type;
       }
-    }
-    else {
-      if (! tag_to_const_pointer(tmp->type->map.value + i, type, &data))
+      else if (! tag_type(tmp->type->map.value + i, &type))
         goto ko;
+      if (s->tag) {
+        if (! env_eval_tag(env, s->tag + i, &tag))
+          goto ko;
+        if (! tag_to_const_pointer(&tag, type, &data)) {
+          tag_clean(&tag);
+          goto ko;
+        }
+      }
+      else {
+        if (! tag_to_const_pointer(tmp->type->map.value + i, type,
+                                   &data))
+          goto ko;
+      }
+      if (false) {
+        err_write_1("env_eval_struct: type = ");
+        err_inspect_sym(&type);
+        err_write_1("\n");
+      }
+      tmp_data = (s8 *) tmp->data + tmp->type->offset[i];
+      if (! data_init_copy(type, tmp_data, data))
+        goto ko_init;
+      if (s->tag)
+        tag_clean(&tag);
     }
-    if (false) {
-      err_write_1("env_eval_struct: type = ");
-      err_inspect_sym(&type);
-      err_write_1("\n");
-    }
-    tmp_data = (s8 *) tmp->data + tmp->type->offset[i];
-    if (! data_init_copy(type, tmp_data, data))
-      goto ko_init;
-    if (s->tag)
-      tag_clean(&tag);
     i++;
   }
   *dest = tmp;

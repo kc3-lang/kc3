@@ -274,14 +274,16 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src)
     tmp.free_data = true;
     i = 0;
     while (i < tmp.type->map.count) {
-      if (tmp.type->map.value[i].type == TAG_VAR)
-        type = tmp.type->map.value[i].data.var.type;
-      else if (! tag_type(tmp.type->map.value + i, &type))
-        goto ko;
-      if (! data_init_copy(type,
-                           (s8 *) tmp.data + tmp.type->offset[i],
-                           (s8 *) src->data + tmp.type->offset[i]))
-        goto ko;
+      if (tmp.type->map.key[i].data.sym->str.ptr.pchar[0] != '_') {
+        if (tmp.type->map.value[i].type == TAG_VAR)
+          type = tmp.type->map.value[i].data.var.type;
+        else if (! tag_type(tmp.type->map.value + i, &type))
+          goto ko;
+        if (! data_init_copy(type,
+                             (s8 *) tmp.data + tmp.type->offset[i],
+                             (s8 *) src->data + tmp.type->offset[i]))
+          goto ko;
+      }
       i++;
     }
   }
@@ -331,10 +333,12 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
         assert(! "struct_init_from_lists: key that is not a symbol");
         goto ko;
       }
-      if (k->tag.data.sym == tmp.type->map.key[i].data.sym) {
-        if (! tag_init_copy(tmp.tag + i, &v->tag))
-          goto ko;
-        goto next;
+      if (k->tag.data.sym->str.ptr.pchar[0] != '_') {
+        if (k->tag.data.sym == tmp.type->map.key[i].data.sym) {
+          if (! tag_init_copy(tmp.tag + i, &v->tag))
+            goto ko;
+          goto next;
+        }
       }
       k = list_next(k);
       v = list_next(v);
@@ -483,8 +487,19 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
   assert(value);
   i = 0;
   while (i < s->type->map.count) {
-    if (s->type->map.key[i].type == TAG_SYM &&
-        s->type->map.key[i].data.sym == key) {
+    if (s->type->map.key[i].type != TAG_SYM) {
+      err_puts("struct_set: struct type map key is not a Sym");
+      assert(! "struct_set: struct type map key is not a Sym");
+      return NULL;
+    }
+    if (s->type->map.key[i].data.sym == key) {
+      if (s->type->map.key[i].data.sym->str.ptr.pchar[0] == '_') {
+        err_write_1("struct_set: cannot set read only member ");
+        err_inspect_sym(&s->type->map.key[i].data.sym);
+        err_write_1("\n");
+        assert(! "struct_set: cannot set read only member");
+        return NULL;
+      }
       if (! tag_type(s->type->map.value + i, &type_sym)) {
         err_puts("struct_set: tag_type");
         assert(! "struct_set: tag_type");

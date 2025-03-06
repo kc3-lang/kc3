@@ -1115,13 +1115,13 @@ sw buf_parse_callable (s_buf *buf, p_callable *dest)
   assert(dest);
   if ((r = buf_parse_cfn(buf, &tmp.data.cfn)) > 0) {
     tmp.type = CALLABLE_CFN;
-    tmp.reference_count = 1;
+    tmp.ref_count = 1;
     *dest = alloc(sizeof(s_callable));
     **dest = tmp;
   }
   else if ((r = buf_parse_fn(buf, &tmp.data.fn)) > 0) {
     tmp.type = CALLABLE_FN;
-    tmp.reference_count = 1;
+    tmp.ref_count = 1;
     *dest = alloc(sizeof(s_callable));
     **dest = tmp;
   }

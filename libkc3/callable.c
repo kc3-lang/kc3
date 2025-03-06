@@ -25,12 +25,12 @@ void callable_delete (s_callable *callable)
 #if HAVE_PTHREAD
   mutex_lock(&callable->mutex);
 #endif
-  if (callable->reference_count <= 0) {
+  if (callable->ref_count <= 0) {
     err_puts("callable_delete: invalid ref count");
     assert(! "callable_delete: invalid ref count");
     goto clean;
   }
-  if (--callable->reference_count > 0)
+  if (--callable->ref_count > 0)
     goto clean;
   switch (callable->type) {
   case CALLABLE_CFN: cfn_clean(&callable->data.cfn); break;
@@ -55,7 +55,7 @@ s_callable * callable_new (void)
   s_callable *callable;
   if (! (callable = alloc(sizeof(s_callable))))
     return NULL;
-  callable->reference_count = 1;
+  callable->ref_count = 1;
 #if HAVE_PTHREAD
   mutex_init(&callable->mutex);
 #endif
@@ -80,7 +80,7 @@ s_callable * callable_new_copy (s_callable *src)
   case CALLABLE_VOID:
     break;
   }
-  tmp->reference_count = 1;
+  tmp->ref_count = 1;
   return tmp;
  ko:
   free(tmp);
@@ -93,12 +93,12 @@ s_callable * callable_new_ref (s_callable *callable)
 #if HAVE_PTHREAD
   mutex_lock(&callable->mutex);
 #endif
-  if (callable->reference_count <= 0) {
-    err_puts("callable_new_ref: reference count <= 0");
-    assert(! "callable_new_ref: reference count <= 0");
+  if (callable->ref_count <= 0) {
+    err_puts("callable_new_ref: invalid reference count");
+    assert(! "callable_new_ref: invalid reference count");
     abort();
   }
-  callable->reference_count++;
+  callable->ref_count++;
 #if HAVE_PTHREAD
   mutex_unlock(&callable->mutex);
 #endif
@@ -127,7 +127,13 @@ s_callable * callable_set_special (s_callable *callable, bool special)
 
 void p_callable_clean (p_callable *callable)
 {
-  callable_delete(*callable);
+  bool nullify;
+  if (*callable) {
+    nullify = (*callable)->ref_count == 1;
+    callable_delete(*callable);
+    if (nullify)
+      *callable = NULL;
+  }
 }
 
 p_callable * p_callable_init (p_callable *callable)

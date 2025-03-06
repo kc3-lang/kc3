@@ -44,7 +44,7 @@ u_ptr_w * ptr_init_cast (u_ptr_w *p,
   case TAG_F64:      p->p = (void *) ((uw) tag->data.f64); return p;
   case TAG_INTEGER:
     p->p = (void *) integer_to_uw(&tag->data.integer);     return p;
-  case TAG_PSTRUCT:  p->p = tag->data.pstruct->data;       return p;
+  case TAG_PSTRUCT:  p->p = tag->data.pstruct;             return p;
   case TAG_PTR:      p->p = tag->data.ptr.p;               return p;
   case TAG_PTR_FREE: p->p = tag->data.ptr_free.p;          return p;
   case TAG_S8:       p->p = (void *) ((uw) tag->data.s8);  return p;

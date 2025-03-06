@@ -78,6 +78,8 @@ p_struct * pstruct_init_cast (p_struct *s, const s_sym * const *type,
   case TAG_PSTRUCT:
     if (*type == tag->data.pstruct->type->module)
       return pstruct_init_copy(s, tag->data.pstruct);
+  case TAG_PTR:
+    return pstruct_init_copy(s, tag->data.ptr.p);
   default:
     break;
   }
@@ -118,7 +120,7 @@ p_struct * pstruct_init_put (p_struct *s, s_struct *src,
   return s;
 }
 
-p_struct * pstruct_init_type (p_struct *s, const s_struct_type *st)
+p_struct * pstruct_init_type (p_struct *s, s_struct_type *st)
 {
   p_struct tmp;
   if (! (tmp = struct_new_type(st)))

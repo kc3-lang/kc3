@@ -300,7 +300,7 @@ struct buf_save {
 struct cow {
   const s_sym *type;
   s_list *list;
-  sw reference_count;
+  sw ref_count;
 };
 
 struct fact {
@@ -603,7 +603,7 @@ union callable_data {
 
 struct callable {
   e_callable_type type;
-  sw reference_count;
+  sw ref_count;
   u_callable_data data;
   s_mutex mutex;
 };

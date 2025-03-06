@@ -44,6 +44,7 @@ s_cow * cow_new (const s_sym *type);
 /* s_cow * cow_new_1 (const char *utf8); */
 s_cow * cow_new_cast (const s_sym * const *type, s_tag *tag);
 s_cow * cow_new_copy (s_cow *src);
+s_cow * cow_new_ref (s_cow *src);
 s_cow * cow_new_tag_copy (const s_sym *type, s_tag *src);
 
 /* Observers. */
@@ -55,9 +56,7 @@ const s_tag * cow_resolve (const s_cow *cow);
 /* Operators. */
 s_cow * cow_freeze (s_cow *cow);
 s_cow * cow_freeze_copy (s_cow *cow, s_tag *src);
-sw      cow_ref (s_cow *cow);
 s_cow * cow_thaw (s_cow *cow);
 s_cow * cow_thaw_copy (s_cow *cow, s_tag *src);
-sw      cow_unref (s_cow *cow);
 
 #endif /* LIBKC3_COW_H */
