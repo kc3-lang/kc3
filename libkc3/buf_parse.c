@@ -2357,28 +2357,29 @@ sw buf_parse_integer_unsigned_dec (s_buf *buf, s_integer *dest)
   const mp_digit radix = 10;
   sw r;
   u8 digit;
-  int result = 0;
+  sw result = 0;
   s_buf_save save;
+  s_integer tmp = {0};
   buf_save_init(buf, &save);
   if ((r = buf_parse_digit_dec(buf, &digit)) <= 0)
     goto clean;
   result += r;
-  if (! integer_init_u8(dest, digit))
+  if (! integer_init_u8(&tmp, digit))
     goto error;
   while ((r = buf_read_1(buf, "_")) >= 0 &&
          (result += r,
           (r = buf_parse_digit_dec(buf, &digit)) > 0)) {
     result += r;
-    if (mp_mul_d(&dest->mp_int, radix, &dest->mp_int) != MP_OKAY ||
-        mp_add_d(&dest->mp_int, digit, &dest->mp_int) != MP_OKAY)
+    if (mp_mul_d(&tmp.mp_int, radix, &tmp.mp_int) != MP_OKAY ||
+        mp_add_d(&tmp.mp_int, digit, &tmp.mp_int) != MP_OKAY)
       goto error;
   }
-  if (result > 0)
-    r = result;
+  *dest = tmp;
+  r = result;
   goto clean;
  error:
   r = -1;
-  integer_clean(dest);
+  integer_clean(&tmp);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -4181,11 +4182,11 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
     sym_to_tag_type(type, &dest->type);
     if (! tag_to_pointer(dest, type, &data)) {
       r = -1;
-      goto clean;
+      goto restore;
     }
     if (! data_init_cast(data, &type, &i)) {
       r = -1;
-      goto clean;
+      goto restore;
     }
   }
   else {
@@ -4195,6 +4196,7 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
   r = result;
   goto clean;
  restore:
+  tag_clean(&i);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
