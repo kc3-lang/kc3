@@ -420,7 +420,7 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
     assert(! "env_defoperator: invalid operator, expected %KC3.Op{}");
   }
   op = tag_op->data.pstruct->data;
-  if (! ops_add(env->ops, op))
+  if (! ops_add(env->ops, tag_op))
     return false;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_sym, op->sym);
@@ -823,7 +823,9 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
 {
   sw arity;
   bool b;
-  s_op *op;
+  s_op *op = NULL;
+  s_tag op_tag = {0};
+  s_ops *ops = NULL;
   s_call tmp = {0};
   const s_tag *value;
   assert(env);
@@ -848,12 +850,15 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   }
   /* FIXME: multiple env and env->ops. See env_defoperator. */
   /* Quickfix is to use env_global() as is done in kc3_defoperator. */
-  if (arity && arity <= U8_MAX &&
-      (op = ops_get(env_global()->ops, tmp.ident.sym, arity))) {
-    tmp.callable = callable_new_ref(op->callable);
-    callable_set_special(tmp.callable, op->special);
-    *call = tmp;
-    return true;
+  if (arity && arity <= 2) {
+    ops = env_global()->ops;
+    if (ops_get(ops, tmp.ident.sym, arity, &op_tag)) {
+      op = op_tag.data.pstruct->data;
+      tmp.callable = callable_new_ref(op->callable);
+      callable_set_special(tmp.callable, op->special);
+      *call = tmp;
+      return true;
+    }
   }
   if (! env_ident_resolve_module(env, &tmp.ident, &tmp.ident)) {
     err_puts("env_eval_call_resolve: env_ident_resolve_module");
