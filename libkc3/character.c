@@ -72,6 +72,18 @@ character * character_init_copy (character *c, const character *src)
   return c;
 }
 
+bool   character_is_alphabetic (character c)
+{
+  return (c < UCD_MAX &&
+          g_ucd[c].flags & UCD_LETTER);
+}
+
+bool  character_is_alphanum (character c)
+{
+  return (c < UCD_MAX &&
+          g_ucd[c].flags & (UCD_NUMBER_DIGIT | UCD_LETTER));  
+}
+
 bool character_is_digit (character c)
 {
   return ('0' <= c && c <= '9');

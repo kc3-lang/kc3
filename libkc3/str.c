@@ -1403,6 +1403,33 @@ sw str_rindex_character (const s_str *str, character c, sw start,
   return result;
 }
 
+s_list ** str_split_words (const s_str *str,s_list **dest)
+{
+  s_buf buf;
+  s_str   *t_str;
+  s_list **t;
+  s_list  *tmp;
+  buf_init_str_const(&buf, str);
+  tmp = NULL;
+  t = &tmp;
+  while (1) {
+    *t = list_new(NULL);
+    (*t)->tag.type = TAG_STR;
+    t_str = &(*t)->tag.data.str;
+    if (! buf_read_until_str_into_str(&buf, separator, t_str)) {
+      if (! buf_read_to_str(&buf, t_str))
+        goto clean;
+      break;
+    }
+    t = &(*t)->next.data.list;
+  }
+  *dest = tmp;
+  return dest;
+ clean:
+  list_delete_all(tmp);
+  return NULL;  
+}
+
 s_tag * str_size (const s_str *str, s_tag *dest)
 {
   s_tag tmp;
