@@ -702,7 +702,6 @@ struct op {
   u8           precedence;
   u8           associativity;
   p_callable   callable;
-  sw           ref_count;
 };
 
 struct ops {

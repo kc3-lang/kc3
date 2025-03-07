@@ -5,7 +5,6 @@ defmodule KC3.Op do
              special: false,
              precedence: 0,
              associativity: 1,
-             callable: (Callable) ?,
-             ref_count: (Sw) 1]
+             callable: (Callable) ?]
 
 end

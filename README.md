@@ -94,9 +94,9 @@ to discover how to use KC3 for your own projects.
    - properties
      - recursive
  - libkc3
-   - operators dispatch table
-     - update_operators (from db to table)
-     - defoperator (calls update_operators)
+   - hash table (ht.h, ht.c)
+   - operators hash table
+     - defoperator
      - list of matching operators (facts_with)
    - special operators dispatch table
    - serialization / deserialization

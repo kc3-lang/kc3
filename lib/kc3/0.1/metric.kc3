@@ -1,7 +1,7 @@
 defmodule Metric do
 
   def normalize = fn (key) {
-    key = URL.decode(key)
+    key = URL.unescape(key)
     if (key != "/" && Str.ends_with?(key, "/")) do
       Str.slice(key, 0, -2)
     else

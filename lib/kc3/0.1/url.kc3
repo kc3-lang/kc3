@@ -19,4 +19,6 @@ defmodule URL do
 
   def escapes = "%+#<>'\\\""
 
+  def unescape = cfn Str "url_unescape" (Str, Result)
+
 end
