@@ -516,6 +516,7 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   sw arity;
   bool b;
   s_op *op = NULL;
+  s_tag op_tag = {0};
   s_ops *ops = NULL;
   sw r;
   sw result = 0;
@@ -534,15 +535,19 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
   if (call->ident.sym == &g_sym_cast)
     return buf_inspect_cast(buf, call);
   arity = call_arity(call);
-  if (arity) {
-    if (arity > U8_MAX) {
-      err_puts("buf_inspect_call: invalid call arity");
-      assert(! "buf_inspect_call: invalid call arity");
-      return -1;
-    }
+  if (arity > 0 && arity <= 2) {
     ops = env_global()->ops;
-    op = arity ? ops_get(ops, call->ident.sym, arity) : NULL;
-    if (op) {
+    if (ops_get(ops, call->ident.sym, arity, &op_tag)) {
+      if (op_tag.type != TAG_PSTRUCT ||
+          ! op_tag.data.pstruct ||
+          op_tag.data.pstruct->type->module != &g_sym_KC3_Op) {
+        err_puts("buf_inspect_call: ops_get did not return a valid"
+                 " %KC3.Op{}");
+        assert(!("buf_inspect_call: ops_get did not return a valid"
+                 " %KC3.Op{}"));
+        return -1;
+      }
+      op = op_tag.data.pstruct->data;
       if (op->sym == &g_sym__brackets)
         return buf_inspect_call_brackets(buf, call);
       if (arity == 1)
@@ -874,6 +879,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, u8 op_precedence)
   sw arity;
   s_tag *left;
   s_op *op = NULL;
+  s_tag op_tag = {0};
   s_ops *ops = NULL;
   bool paren;
   sw r;
@@ -886,12 +892,23 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, u8 op_precedence)
   ops = env_global()->ops;
   if (left->type == TAG_CALL) {
     arity = call_arity(&left->data.call);
-    op = arity ? ops_get(ops, left->data.call.ident.sym, arity) : NULL;
-    if (op && op->precedence < op_precedence) {
-      paren = true;
-      if ((r = buf_write_1(buf, "(")) < 0)
-        return r;
-      result += r;
+    if (ops_get(ops, left->data.call.ident.sym, arity, &op_tag)) {
+      if (op_tag.type != TAG_PSTRUCT ||
+          ! op_tag.data.pstruct ||
+          op_tag.data.pstruct->type->module != &g_sym_KC3_Op) {
+        err_puts("buf_inspect_call_op: left: ops_get did not return"
+                 " a valid %KC3.Op{}");
+        assert(!("buf_inspect_call_op: left: ops_get did not return"
+                 " a valid %KC3.Op{}"));
+        return -1;
+      }
+      op = op_tag.data.pstruct->data;
+      if (op->precedence < op_precedence) {
+        paren = true;
+        if ((r = buf_write_1(buf, "(")) < 0)
+          return r;
+        result += r;
+      }
     }
   }
   if ((r = buf_inspect_tag(buf, left)) < 0)
@@ -914,12 +931,23 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, u8 op_precedence)
   paren = false;
   if (right->type == TAG_CALL) {
     arity = call_arity(&right->data.call);
-    op = arity ? ops_get(ops, right->data.call.ident.sym, arity) : NULL;
-    if (op && op->precedence < op_precedence) {
-      paren = true;
-      if ((r = buf_write_1(buf, "(")) < 0)
-        return r;
-      result += r;
+    if (ops_get(ops, right->data.call.ident.sym, arity, &op_tag)) {
+      if (op_tag.type != TAG_PSTRUCT ||
+          ! op_tag.data.pstruct ||
+          op_tag.data.pstruct->type->module != &g_sym_KC3_Op) {
+        err_puts("buf_inspect_call_op: right: ops_get did not return"
+                 " a valid %KC3.Op{}");
+        assert(!("buf_inspect_call_op: right: ops_get did not return"
+                 " a valid %KC3.Op{}"));
+        return -1;
+      }
+      op = op_tag.data.pstruct->data;
+      if (op->precedence < op_precedence) {
+        paren = true;
+        if ((r = buf_write_1(buf, "(")) < 0)
+          return r;
+        result += r;
+      }
     }
   }
   if ((r = buf_inspect_tag(buf, right)) < 0)
@@ -939,6 +967,7 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
   sw arity;
   s_tag *left;
   s_op *op = NULL;
+  s_tag op_tag = {0};
   s_ops *ops = NULL;
   bool paren;
   sw r;
@@ -951,12 +980,23 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
   ops = env_global()->ops;
   if (left->type == TAG_CALL) {
     arity = call_arity(&left->data.call);
-    op = arity ? ops_get(ops, left->data.call.ident.sym, arity) : NULL;
-    if (op && op->precedence < op_precedence) {
-      paren = true;
-      if ((r = buf_write_1_size(pretty, "(")) < 0)
-        return r;
-      result += r;
+    if (ops_get(ops, left->data.call.ident.sym, arity, &op_tag)) {
+      if (op_tag.type != TAG_PSTRUCT ||
+          ! op_tag.data.pstruct ||
+          op_tag.data.pstruct->type->module != &g_sym_KC3_Op) {
+        err_puts("buf_inspect_call_op_size: left: ops_get did not"
+                 " return a valid %KC3.Op{}");
+        assert(!("buf_inspect_call_op_size: left: ops_get did not"
+                 " return a valid %KC3.Op{}"));
+        return -1;
+      }
+      op = op_tag.data.pstruct->data;
+      if (op->precedence < op_precedence) {
+        paren = true;
+        if ((r = buf_write_1_size(pretty, "(")) < 0)
+          return r;
+        result += r;
+      }
     }
   }
   if ((r = buf_inspect_tag_size(pretty, left)) < 0)
@@ -979,12 +1019,23 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
   paren = false;
   if (right->type == TAG_CALL) {
     arity = call_arity(&right->data.call);
-    op = arity ? ops_get(ops, right->data.call.ident.sym, arity) : NULL;
-    if (op && op->precedence < op_precedence) {
-      paren = true;
-      if ((r = buf_write_1_size(pretty, "(")) < 0)
-        return r;
-      result += r;
+    if (ops_get(ops, right->data.call.ident.sym, arity, &op_tag)) {
+      if (op_tag.type != TAG_PSTRUCT ||
+          ! op_tag.data.pstruct ||
+          op_tag.data.pstruct->type->module != &g_sym_KC3_Op) {
+        err_puts("buf_inspect_call_op: right: ops_get did not return"
+                 " a valid %KC3.Op{}");
+        assert(!("buf_inspect_call_op: right: ops_get did not return"
+                 " a valid %KC3.Op{}"));
+        return -1;
+      }
+      op = op_tag.data.pstruct->data;
+      if (op->precedence < op_precedence) {
+        paren = true;
+        if ((r = buf_write_1_size(pretty, "(")) < 0)
+          return r;
+        result += r;
+      }
     }
   }
   if ((r = buf_inspect_tag_size(pretty, right)) < 0)
@@ -1002,14 +1053,25 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
 {
   s_ident ident = {0};
   s_op  *op;
+  s_tag  op_tag = {0};
   s_ops *ops;
   sw r;
   sw result = 0;
   assert(buf);
   assert(call);
   ops = env_global()->ops;
-  if (! (op = ops_get(ops, call->ident.sym, 1)))
+  if (! ops_get(ops, call->ident.sym, 1, &op_tag))
     return -1;
+  if (op_tag.type != TAG_PSTRUCT ||
+      ! op_tag.data.pstruct ||
+      op_tag.data.pstruct->type->module != &g_sym_KC3_Op) {
+    err_puts("buf_inspect_call_op: right: ops_get did not return"
+             " a valid %KC3.Op{}");
+    assert(!("buf_inspect_call_op: right: ops_get did not return"
+             " a valid %KC3.Op{}"));
+    return -1;
+  }
+  op = op_tag.data.pstruct->data;
   if (op->sym == &g_sym__paren)
     return buf_inspect_call_paren(buf, call);
   ident.sym = op->sym;
@@ -1029,6 +1091,7 @@ sw buf_inspect_call_op_unary_size (s_pretty *pretty, const s_call *call)
 {
   sw arity;
   s_op  *op;
+  s_tag  op_tag = {0};
   s_ops *ops;
   sw r;
   sw result = 0;
@@ -1036,11 +1099,27 @@ sw buf_inspect_call_op_unary_size (s_pretty *pretty, const s_call *call)
   assert(call);
   arity = call_arity(call);
   ops = env_global()->ops;
-  op = ops_get(ops, call->ident.sym, arity);
-  if (op->sym == &g_sym__paren)
+  if (! ops_get(ops, call->ident.sym, 1, &op_tag))
+    return -1;
+  if (op_tag.type != TAG_PSTRUCT ||
+      ! op_tag.data.pstruct ||
+      op_tag.data.pstruct->type->module != &g_sym_KC3_Op) {
+    err_puts("buf_inspect_call_op: right: ops_get did not return"
+             " a valid %KC3.Op{}");
+    assert(!("buf_inspect_call_op: right: ops_get did not return"
+             " a valid %KC3.Op{}"));
+    return -1;
+  }
+  op = op_tag.data.pstruct->data;
+  if (op->sym == &g_sym__paren) {
+    tag_clean(&op_tag);
     return buf_inspect_call_paren_size(pretty, call);
-  if ((r = buf_inspect_sym_size(pretty, &op->sym)) < 0)
+  }
+  if ((r = buf_inspect_sym_size(pretty, &op->sym)) < 0) {
+    tag_clean(&op_tag);
     return r;
+  }
+  tag_clean(&op_tag);
   result += r;
   if ((r = buf_write_1_size(pretty, " ")) < 0)
     return r;

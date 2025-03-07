@@ -24,7 +24,6 @@ s_op * op_init_copy (s_op *op, const s_op *src);
 void   op_delete (s_op *op);
 s_op * op_new (void);
 s_op * op_new_copy (const s_op *src);
-s_op * op_new_ref (s_op *op);
 
 /* Operators. */
 s_op * op_set_special (s_op *op, bool special);

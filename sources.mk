@@ -485,8 +485,6 @@ KC3_C_SOURCES = \
 	"libkc3/hash.h" \
 	"libkc3/ht.c" \
 	"libkc3/ht.h" \
-	"libkc3/ht_item.c" \
-	"libkc3/ht_item.h" \
 	"libkc3/ident.c" \
 	"libkc3/ident.h" \
 	"libkc3/inspect.c" \

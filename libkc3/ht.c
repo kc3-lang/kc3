@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include "alloc.h"
 #include "assert.h"
+#include "compare.h"
+#include "hash.h"
 #include "ht.h"
 #include "list.h"
 
@@ -62,21 +64,21 @@ void ht_clean (s_ht *ht)
   free(ht->items);
 }
 
-s_tag * ht_get (s_ht *ht, s_tag *tag)
+s_tag * ht_get (s_ht *ht, s_tag *key, s_tag *dest)
 {
   uw hash = ht->hash(tag);
-  return ht_get_hash(ht, tag, hash);
+  return ht_get_hash(ht, key, hash, dest);
 }
 
-s_tag * ht_get_hash (s_ht *ht, s_tag *tag, uw hash)
+s_tag * ht_get_hash (s_ht *ht, s_tag *key, uw hash, s_tag *dest)
 {
   sw c = -1;
   s_list *item;
   item = ht->items[hash % ht->size];
   while (item && (c = ht->compare(item->tag, tag)) < 0)
     item = item->next;
-  if (item && ! c)
-    return item->tag;
+  if (item && ! c) {
+    return tag_init_copy(dest, &item->tag);
   return NULL;
 }
 
@@ -92,8 +94,6 @@ s_ht * ht_init (s_ht *ht, const s_sym *type, uw size)
     return NULL;
   tmp.compare = compare_tag;
   tmp.hash = hash_tag;
-  tmp.init_copy = tag_init_copy;
-  tmp.clean = tag_clean;
   *ht = tmp;
   return ht;
 }

@@ -26,44 +26,15 @@ void op_clean (s_op *op)
 void op_delete (s_op *op)
 {
   assert(op);
-  if (op->ref_count <= 0) {
-    err_puts("op_delete: invalid reference count");
-    assert(! "op_delete: invalid reference count");
-    return;
-  }
-  if (! --op->ref_count) {
-    op_clean(op);
-    free(op);
-  }
+  op_clean(op);
+  free(op);
 }
 
 s_op * op_init (s_op *op)
 {
   s_op tmp = {0};
-  tmp.ref_count = 1;
   *op = tmp;
   return op;
-}
-
-s_op * op_init_cast (s_op *op, const s_sym * const *type, s_tag *src)
-{
-  s_op *tmp;
-  assert(op);
-  assert(type);
-  assert(*type);
-  assert(src);
-  if (!type || *type != &g_sym_KC3_Op)
-    return NULL;
-  switch (src->type) {
-  case TAG_PTR:
-    tmp = src->data.ptr.p;
-    return op_init_copy(op, tmp);
-  default:
-    break;
-  }
-  err_puts("op_init_cast: cannot cast");
-  assert(! "op_init_cast: cannot cast");
-  return NULL;
 }
 
 s_op * op_init_copy (s_op *op, const s_op *src)
@@ -75,7 +46,6 @@ s_op * op_init_copy (s_op *op, const s_op *src)
   tmp.precedence = src->precedence;
   tmp.associativity = src->associativity;
   tmp.callable = callable_new_ref(src->callable);
-  tmp.ref_count = 1;
   *op = tmp;
   return op;
 }
@@ -103,18 +73,6 @@ s_op * op_new_copy (const s_op *src)
     free(op);
     return NULL;
   }
-  return op;
-}
-
-s_op * op_new_ref (s_op *op)
-{
-  assert(op);
-  if (op->ref_count <= 0) {
-    err_puts("op_new_ref: invalid reference count");
-    assert(! "op_new_ref: invalid reference count");
-    return NULL;
-  }
-  op->ref_count++;
   return op;
 }
 

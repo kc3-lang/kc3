@@ -22,7 +22,7 @@
 #include "sym.h"
 
 /* Returns true if op was added or is already present. */
-s_op * ops_add (s_ops *ops, s_op *op)
+s_op * ops_add (s_ops *ops, s_tag *op)
 {
   assert(ops);
   assert(op);
@@ -42,9 +42,23 @@ void ops_clean (s_ops *ops)
   ht_clean(&ops->ht);
 }
 
-s8 ops_compare_op (const s_op *a, const s_op *b)
+s8 ops_compare_tag (const s_tag *a, const s_tag *b)
 {
   s8 r;
+  if (a == b)
+    return 0;
+  if (! a)
+    return -1;
+  if (! b)
+    return 1;
+  if (a->type != TAG_PSTRUCT ||
+      a->data.pstruct->type.module != &g_sym_KC3_Op ||
+      b->type != TAG_PSTRUCT ||
+      b->data.pstruct->type.module != &g_sym_KC3_Op) {
+    err_puts("ops_compare_tag: argument is not a %KC3.Op{}");
+    assert(! "ops_compare_tag: argument is not a %KC3.Op{}");
+    abort();
+  }
   r = compare_sym(a->sym, b->sym);
   if (! r)
     r = compare_u8(a->arity, b->arity);
@@ -58,15 +72,18 @@ void ops_delete (s_ops *ops)
   free(ops);
 }
 
-s_op * ops_get (s_ops *ops, const s_sym *sym, u8 arity)
+s_tag * ops_get (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
 {
   s_op op = {0};
+  s_tag op_tag = {0};
   assert(ops);
-  assert(sym);
-  assert(arity);
+  if (! sym || ! arity)
+    return NULL;
   op.sym = sym;
   op.arity = arity;
-  return ht_get(&ops->ht, &op);
+  if (! tag_init_pstruct_with_data(op_tag, &g_sym_KC3_Op, &op, false))
+    return NULL;
+  ht_get(&ops->ht, &);
 }
 
 uw ops_hash_op (const s_op *op)
@@ -87,10 +104,8 @@ s_ops * ops_init (s_ops *ops)
   assert(ops);
   if (! ht_init(&tmp.ht, &g_sym_KC3_Op, 256))
     return NULL;
-  tmp.ht.compare = (s8 (*) (void *, void *)) ops_compare_op;
-  tmp.ht.hash = (uw (*) (void *)) ops_hash_op;
-  tmp.ht.new_ref = (void * (*) (void *)) op_new_ref;
-  tmp.ht.delete_ref = (void (*) (void *)) op_delete;
+  tmp.ht.compare = ops_compare_tag;
+  tmp.ht.hash = ops_hash_tag;
   *ops = tmp;
   return ops;
 }
