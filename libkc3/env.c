@@ -823,6 +823,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
 {
   sw arity;
   bool b;
+  s_env *global_env;
   s_op *op = NULL;
   s_tag op_tag = {0};
   s_ops *ops = NULL;
@@ -850,8 +851,9 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   }
   /* FIXME: multiple env and env->ops. See env_defoperator. */
   /* Quickfix is to use env_global() as is done in kc3_defoperator. */
-  if (arity && arity <= 2) {
-    ops = env_global()->ops;
+  global_env = env_global();
+  if (global_env->loaded && arity >= 1 && arity <= 2) {
+    ops = global_env->ops;
     if (ops_get(ops, tmp.ident.sym, arity, &op_tag)) {
       op = op_tag.data.pstruct->data;
       tmp.callable = callable_new_ref(op->callable);
@@ -2681,6 +2683,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     env = g_kc3_env = alloc(sizeof(s_env));
   if (! env)
     return NULL;
+  env->loaded = false;
   env->trace = false;
   if (! env_init_args(env, argc, argv))
     return NULL;
@@ -2731,6 +2734,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     env_clean(env);
     return NULL;
   }
+  env->loaded = true;
   return env;
 }
 

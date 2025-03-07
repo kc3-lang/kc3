@@ -816,6 +816,7 @@ struct env {
   s_frame          *frame;
   s_frame          *global_frame;
   s_buf            *in;
+  bool              loaded;
   s_str            *module_path;
   s_ops            *ops;
   s_buf            *out;
