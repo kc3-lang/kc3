@@ -402,37 +402,35 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
 }
 
 /* FIXME: multiple env and env->ops. See env_eval_call_resolve. */
-s_tag * env_defoperator (s_env *env, s_op *op, s_tag *dest)
+bool env_defoperator (s_env *env, s_tag *tag_op)
 {
-  s_tag tag_is_a;
-  s_tag tag_op_ptr;
-  s_tag tag_op_sym;
+  s_op *op;
+  s_tag tag_is_a = {0};
   s_tag tag_sym = {0};
-  s_tag tag_sym_sym;
-  s_op *tmp;
+  s_tag tag_sym_op = {0};
+  s_tag tag_sym_sym = {0};
   assert(env);
-  assert(op);
-  assert(dest);
+  assert(tag_op);
   assert(env->ops);
-  assert(op->sym);
-  assert(op->arity);
-  if (! (tmp = op_new_copy(op)))
-    return NULL;
-  if (! (op = ops_add(env->ops, tmp))) {
-    op_delete(tmp);
-    return NULL;
+  if (! tag_op ||
+      tag_op->type != TAG_PSTRUCT ||
+      ! tag_op->data.pstruct ||
+      tag_op->data.pstruct->type->module != &g_sym_KC3_Op) {
+    err_puts("env_defoperator: invalid operator, expected %KC3.Op{}");
+    assert(! "env_defoperator: invalid operator, expected %KC3.Op{}");
   }
+  op = tag_op->data.pstruct->data;
+  if (! ops_add(env->ops, op))
+    return false;
   tag_init_sym(&tag_is_a, &g_sym_is_a);
-  tag_init_ptr(&tag_op_ptr, tmp);
-  tag_init_sym(&tag_op_sym, &g_sym_op);
+  tag_init_sym(&tag_sym, op->sym);
+  tag_init_sym(&tag_sym_op, &g_sym_op);
   tag_init_sym(&tag_sym_sym, &g_sym_sym);
-  tag_init_sym(&tag_sym, tmp->sym);
-  if (! facts_add_tags(env->facts, &tag_op_ptr, &tag_is_a, &tag_op_sym))
-    return NULL;
-  if (! facts_add_tags(env->facts, &tag_op_ptr, &tag_sym_sym, &tag_sym))
-    return NULL;
-  *dest = tag_sym;
-  return dest;
+  if (! facts_add_tags(env->facts, tag_op, &tag_is_a, &tag_sym_op))
+    return false;
+  if (! facts_add_tags(env->facts, tag_op, &tag_sym_sym, &tag_sym))
+    return false;
+  return true;
 }
 
 const s_sym * env_defstruct (s_env *env, s_list *spec)

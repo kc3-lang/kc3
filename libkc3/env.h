@@ -57,7 +57,7 @@ const s_sym *  env_def_clean (s_env *env, const s_sym *module,
                               const s_tag *tag_clean);
 s_tag *        env_defmodule (s_env *env, const s_sym * const *name,
                               const s_block *block, s_tag *dest);
-s_tag *        env_defoperator (s_env *env, s_op *op, s_tag *dest);
+bool           env_defoperator (s_env *env, s_tag *tag_op);
 const s_sym *  env_defstruct (s_env *env, s_list *spec);
 s_fact_w *     env_fact_w_eval (s_env *env, s_fact_w *fact,
 	         	       s_fact_w *dest);

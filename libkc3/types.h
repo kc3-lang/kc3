@@ -212,7 +212,6 @@ typedef struct fn                      s_fn;
 typedef struct fn_clause               s_fn_clause;
 typedef struct frame                   s_frame;
 typedef struct ht                      s_ht;
-typedef struct ht_item                 s_ht_item;
 typedef struct ident                   s_ident;
 typedef struct integer                 s_integer;
 typedef struct integer_fraction        s_integer_fraction;
@@ -337,16 +336,9 @@ struct ht {
   const s_sym *type;
   uw           count;
   uw           size;
-  s_ht_item  **items;
-  s8        (* compare) (void *a, void *b);
-  uw        (* hash) (void *data);
-  void *    (* new_ref) (void *a);
-  void      (* delete_ref) (void *a);
-};
-
-struct ht_item {
-  void *data;
-  s_ht_item *next;
+  s_list     **items;
+  s8        (* compare) (const s_tag *a, const s_tag *b);
+  uw        (* hash) (const s_tag *tag);
 };
 
 struct map {

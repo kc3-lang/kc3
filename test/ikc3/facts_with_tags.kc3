@@ -1,19 +1,19 @@
 quote Facts.with_tags(Facts.env_db(), op = ?, :is_a, :op, fn (fact) {
-  puts(op)
+  puts((KC3.Op) op)
   2
 })
 Facts.with_tags(Facts.env_db(), op = ?, :is_a, :op, fn (fact) {
-  puts(op)
+  puts((KC3.Op) op)
   2
 })
 quote op = ? ; void
 op = ? ; void
 quote Facts.with_tags(Facts.env_db(), op, :is_a, :op, fn (fact) {
-  puts(op)
+  puts((KC3.Op) op)
   3
 })
 Facts.with_tags(Facts.env_db(), KC3, :op, op, fn (fact) {
-  puts(op)
+  puts((KC3.Op) op)
   3
 })
 quote type(op)

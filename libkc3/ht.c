@@ -14,40 +14,40 @@
 #include "alloc.h"
 #include "assert.h"
 #include "ht.h"
-#include "ht_item.h"
+#include "list.h"
 
-/* Returns true if data was added or is already present. */
-void * ht_add (s_ht *ht, void *data)
+/* Returns true if tag was added or is already present. */
+s_tag * ht_add (s_ht *ht, s_tag *tag)
 {
-  uw hash = ht->hash(data);
-  return ht_add_hash(ht, data, hash);
+  uw hash = ht->hash(tag);
+  return ht_add_hash(ht, tag, hash);
 }
 
-/* Returns true if data was added or is already present. */
-void * ht_add_hash (s_ht *ht, void *data, uw hash)
+/* Returns true if tag was added or is already present. */
+s_tag * ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
 {
   s8 c;
-  s_ht_item **item;
-  s_ht_item  *item_new;
+  s_list **item;
+  s_list  *item_new;
   assert(ht);
   assert(ht->size);
-  assert(data);
+  assert(tag);
   /* FIXME: lock / unlock */
   item = ht->items + hash % ht->size;
-  while (*item && (c = ht->compare((*item)->data, data)) < 0)
+  while (*item && (c = ht->compare((*item)->tag, tag)) < 0)
     item = &(*item)->next;
   if (*item && ! c) {
     *item = ht_item_delete(ht, *item);
     ht->count--;
   }
-  if (! (item_new = ht_item_new(ht, data, *item))) {
+  if (! (item_new = ht_item_new(ht, tag, *item))) {
     err_puts("ht_add_hash: ht_item_new");
     assert(! "ht_add_hash: ht_item_new");
     return NULL;
   }
   *item = item_new;
   ht->count++;
-  return item_new->data;
+  return item_new->tag;
 }
 
 void ht_clean (s_ht *ht)
@@ -62,21 +62,21 @@ void ht_clean (s_ht *ht)
   free(ht->items);
 }
 
-void * ht_get (s_ht *ht, void *data)
+s_tag * ht_get (s_ht *ht, s_tag *tag)
 {
-  uw hash = ht->hash(data);
-  return ht_get_hash(ht, data, hash);
+  uw hash = ht->hash(tag);
+  return ht_get_hash(ht, tag, hash);
 }
 
-void * ht_get_hash (s_ht *ht, void *data, uw hash)
+s_tag * ht_get_hash (s_ht *ht, s_tag *tag, uw hash)
 {
   sw c = -1;
-  s_ht_item *item;
+  s_list *item;
   item = ht->items[hash % ht->size];
-  while (item && (c = ht->compare(item->data, data)) < 0)
+  while (item && (c = ht->compare(item->tag, tag)) < 0)
     item = item->next;
   if (item && ! c)
-    return item->data;
+    return item->tag;
   return NULL;
 }
 
@@ -88,8 +88,12 @@ s_ht * ht_init (s_ht *ht, const s_sym *type, uw size)
   assert(size);
   tmp.type = type;
   tmp.size = size;
-  if (! (tmp.items = alloc(size * sizeof(s_ht_item *))))
+  if (! (tmp.items = alloc(size * sizeof(s_list *))))
     return NULL;
+  tmp.compare = compare_tag;
+  tmp.hash = hash_tag;
+  tmp.init_copy = tag_init_copy;
+  tmp.clean = tag_clean;
   *ht = tmp;
   return ht;
 }

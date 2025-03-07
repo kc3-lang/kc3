@@ -10,7 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/** ht.h: Hash tables
+/** ht.h: Hash table of tags
  */
 #ifndef LIBKC3_HT_H
 #define LIBKC3_HT_H
@@ -22,11 +22,11 @@ void   ht_clean (s_ht *ht);
 s_ht * ht_init (s_ht *ht, const s_sym *type, uw size);
 
 /* Observers. */
-void * ht_get (s_ht *ht, void *data);
-void * ht_get_hash (s_ht *ht, void *data, uw hash);
+s_tag * ht_get (s_ht *ht, s_tag *tag);
+s_tag * ht_get_hash (s_ht *ht, s_tag *tag, uw hash);
 
 /* Operators. */
-void * ht_add (s_ht *ht, void *data);
-void * ht_add_hash (s_ht *ht, void *data, uw hash);
+s_tag * ht_add (s_ht *ht, s_tag *tag);
+s_tag * ht_add_hash (s_ht *ht, s_tag *tag, uw hash);
 
 #endif /* LIBKC3_HT_H */

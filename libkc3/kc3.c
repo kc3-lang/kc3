@@ -175,31 +175,30 @@ s_tag * kc3_defmodule (const s_sym **name, const s_block *block, s_tag *dest)
 }
 
 /* FIXME: multiple env and env->ops. See env_defoperator. */
-s_tag * kc3_defoperator (s_tag *op_tag, s_tag *dest)
+s_tag * kc3_defoperator (s_tag *tag_op, s_tag *dest)
 {
   s_env *env;
-  s_tag tag = {0};
-  if (! op_tag || op_tag->type != TAG_PSTRUCT ||
-      op_tag->data.pstruct->type->module != &g_sym_KC3_Op) {
-    err_puts("kc3_defoperator: not a KC3.Op struct");
-    assert(! "kc3_defoperator: not a KC3.Op struct");
+  s_tag tmp = {0};
+  if (! tag_op || tag_op->type != TAG_PSTRUCT ||
+      tag_op->data.pstruct->type->module != &g_sym_KC3_Op) {
+    err_puts("kc3_defoperator: not a %KC3.Op{}");
+    assert(! "kc3_defoperator: not a %KC3.Op{}");
     return NULL;
   }
   env = env_global();
-  tag.type = TAG_PSTRUCT;
-  if (! env_eval_struct(env, op_tag->data.pstruct,
-                        &tag.data.pstruct)) {
+  tmp.type = TAG_PSTRUCT;
+  if (! env_eval_struct(env, tag_op->data.pstruct,
+                        &tmp.data.pstruct)) {
     err_puts("kc3_defoperator: env_eval_struct");
     assert(! "kc3_defoperator: env_eval_struct");
     return NULL;
   }
-  if (! env_defoperator(env, tag.data.pstruct->data, dest)) {
+  if (! env_defoperator(env, &tmp)) {
     err_puts("kc3_defoperator: env_defoperator 1");
     assert(! "kc3_defoperator: env_defoperator 1");
-    tag_clean(&tag);
     return NULL;
   }
-  tag_clean(&tag);
+  *dest = tmp;
   return dest;
 }
 
