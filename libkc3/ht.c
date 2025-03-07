@@ -17,16 +17,17 @@
 #include "hash.h"
 #include "ht.h"
 #include "list.h"
+#include "tag.h"
 
 /* Returns true if tag was added or is already present. */
-s_tag * ht_add (s_ht *ht, s_tag *tag)
+bool ht_add (s_ht *ht, s_tag *tag)
 {
   uw hash = ht->hash(tag);
   return ht_add_hash(ht, tag, hash);
 }
 
 /* Returns true if tag was added or is already present. */
-s_tag * ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
+bool ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
 {
   s8 c;
   s_list **item;
@@ -36,20 +37,20 @@ s_tag * ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
   assert(tag);
   /* FIXME: lock / unlock */
   item = ht->items + hash % ht->size;
-  while (*item && (c = ht->compare((*item)->tag, tag)) < 0)
-    item = &(*item)->next;
+  while (*item && (c = ht->compare(&(*item)->tag, tag)) < 0)
+    item = &(*item)->next.data.list;
   if (*item && ! c) {
-    *item = ht_item_delete(ht, *item);
+    *item = list_delete(*item);
     ht->count--;
   }
-  if (! (item_new = ht_item_new(ht, tag, *item))) {
+  if (! (item_new = list_new_tag_copy(tag, *item))) {
     err_puts("ht_add_hash: ht_item_new");
     assert(! "ht_add_hash: ht_item_new");
-    return NULL;
+    return false;
   }
   *item = item_new;
   ht->count++;
-  return item_new->tag;
+  return true;
 }
 
 void ht_clean (s_ht *ht)
@@ -58,7 +59,7 @@ void ht_clean (s_ht *ht)
   assert(ht);
   while (i < ht->size) {
     while (ht->items[i])
-      ht->items[i] = ht_item_delete(ht, ht->items[i]);
+      ht->items[i] = list_delete(ht->items[i]);
     i++;
   }
   free(ht->items);
@@ -66,7 +67,7 @@ void ht_clean (s_ht *ht)
 
 s_tag * ht_get (s_ht *ht, s_tag *key, s_tag *dest)
 {
-  uw hash = ht->hash(tag);
+  uw hash = ht->hash(key);
   return ht_get_hash(ht, key, hash, dest);
 }
 
@@ -75,9 +76,9 @@ s_tag * ht_get_hash (s_ht *ht, s_tag *key, uw hash, s_tag *dest)
   sw c = -1;
   s_list *item;
   item = ht->items[hash % ht->size];
-  while (item && (c = ht->compare(item->tag, tag)) < 0)
-    item = item->next;
-  if (item && ! c) {
+  while (item && (c = ht->compare(&item->tag, key)) < 0)
+    item = list_next(item);
+  if (item && ! c)
     return tag_init_copy(dest, &item->tag);
   return NULL;
 }

@@ -16,6 +16,7 @@
 #include "../libkc3/op.h"
 #include "../libkc3/ops.h"
 #include "../libkc3/sym.h"
+#include "../libkc3/tag.h"
 #include "test.h"
 
 TEST_CASE_PROTOTYPE(ops_init_clean);
@@ -55,17 +56,19 @@ TEST_CASE(ops_add)
 {
   s_ops *ops;
   s_op *op;
+  s_tag op_tag = {0};
   test_context("ops_add");
   TEST_ASSERT((ops = ops_new()));
-  TEST_ASSERT((op = op_new()));
+  TEST_EQ(tag_init_pstruct(&op_tag, &g_sym_KC3_Op), &op_tag);
+  op = op_tag.data.pstruct->data;
   op->sym = sym_1("+");
   op->arity = 2;
   op->precedence = 1;
   op->associativity = 1;
   op->callable = callable_new();
-  TEST_ASSERT(ops_add(ops, op));
+  TEST_ASSERT(ops_add(ops, &op_tag));
   TEST_EQ(ops->ht.count, 1);
-  op_delete(op);
+  tag_clean(&op_tag);
   ops_delete(ops);
   test_context(NULL);
 }
@@ -75,23 +78,26 @@ TEST_CASE(ops_get)
 {
   s_ops *ops;
   s_op *op;
-  test_context("ops_get");
+  s_tag op_tag = {0};
+  test_context("ops_add");
   TEST_ASSERT((ops = ops_new()));
-  TEST_ASSERT((op = op_new()));
+  TEST_EQ(tag_init_pstruct(&op_tag, &g_sym_KC3_Op), &op_tag);
+  op = op_tag.data.pstruct->data;
   op->sym = sym_1("+");
   op->arity = 2;
-  op->precedence = 3;
+  op->precedence = 1;
   op->associativity = 1;
   op->callable = callable_new();
-  TEST_ASSERT(ops_add(ops, op));
+  TEST_ASSERT(ops_add(ops, &op_tag));
   TEST_EQ(ops->ht.count, 1);
-  op_delete(op);
-  TEST_EQ(op->ref_count, 1);
-  TEST_ASSERT((op = ops_get(ops, sym_1("+"), 2)));
+  tag_clean(&op_tag);
+  op_tag = (s_tag) {0};
+  TEST_ASSERT(ops_get(ops, sym_1("+"), 2, &op_tag));
   TEST_EQ(op->sym, sym_1("+"));
   TEST_EQ(op->arity, 2);
   TEST_EQ(op->precedence, 3);
   TEST_EQ(op->associativity, 1);
+  tag_clean(&op_tag);
   ops_delete(ops);
   test_context(NULL);
 }

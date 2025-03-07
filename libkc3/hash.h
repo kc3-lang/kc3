@@ -20,6 +20,7 @@
 
 void hash_clean (t_hash *hash);
 void hash_init (t_hash *hash);
+uw   hash_tag (const s_tag *tag);
 uw   hash_to_uw (t_hash *hash);
 u64  hash_to_u64 (t_hash *hash);
 bool hash_update (t_hash *hash, const void *data, uw size);

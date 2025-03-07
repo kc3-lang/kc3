@@ -41,6 +41,18 @@ void hash_init (t_hash *hash)
   SHA1Init(hash);
 }
 
+uw hash_tag (const s_tag *tag)
+{
+  t_hash hash;
+  uw h;
+  hash_init(&hash);
+  if (! hash_update_tag(&hash, tag))
+    abort();
+  h = hash_to_uw(&hash);
+  hash_clean(&hash);
+  return h;
+}
+
 uw hash_to_uw (t_hash *hash)
 {
   u8 digest[SHA1_DIGEST_LENGTH];

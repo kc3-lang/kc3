@@ -29,6 +29,6 @@ s_tag * ops_get (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest);
 uw      ops_hash_tag (const s_tag *op);
 
 /* Operators. */
-s_tag * ops_add (s_ops *ops, s_tag *op);
+bool ops_add (s_ops *ops, s_tag *op_tag);
 
 #endif /* LIBKC3_OPS_H */

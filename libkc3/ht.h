@@ -26,7 +26,7 @@ s_tag * ht_get (s_ht *ht, s_tag *key, s_tag *dest);
 s_tag * ht_get_hash (s_ht *ht, s_tag *tag, uw hash, s_tag *dest);
 
 /* Operators. */
-s_tag * ht_add (s_ht *ht, s_tag *tag);
-s_tag * ht_add_hash (s_ht *ht, s_tag *tag, uw hash);
+bool ht_add (s_ht *ht, s_tag *tag);
+bool ht_add_hash (s_ht *ht, s_tag *tag, uw hash);
 
 #endif /* LIBKC3_HT_H */
