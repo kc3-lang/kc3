@@ -877,7 +877,7 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
 sw buf_parse_call_op (s_buf *buf, s_call *dest)
 {
   s_ident ident;
-  s_op  *op;
+  s_tag  op_tag = {0};
   s_ops *ops;
   sw r;
   sw result = 0;
@@ -901,10 +901,11 @@ sw buf_parse_call_op (s_buf *buf, s_call *dest)
   if ((r = buf_peek_ident(buf, &ident)) <= 0)
     goto restore;
   ops = env_global()->ops;
-  if (! (op = ops_get(ops, ident.sym, 2))) {
+  if (! ops_get(ops, ident.sym, 2, &op_tag)) {
     r = 0;
     goto restore;
   }
+  tag_clean(&op_tag);
   if ((r = buf_parse_call_op_rec(buf, &tmp, 0)) <= 0)
     goto restore;
   result += r;
@@ -926,6 +927,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   s_tag *left;
   bool merge_left = false;
   s_ident next_ident;
+  s_tag   next_op_tag = {0};
   s_op   *next_op;
   s_op  *op;
   s_ops *ops;
@@ -946,16 +948,20 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   if ((r = buf_peek_ident(buf, &next_ident)) <= 0)
     goto restore;
   ops = env_global()->ops;
-  if (! (next_op = ops_get(ops, next_ident.sym, 2))) {
+  if (! ops_get(ops, next_ident.sym, 2, &next_op_tag)) {
     r = 0;
     goto restore;
   }
+  next_op = next_op_tag.data.pstruct->data;
   while (r > 0 && next_op->precedence >= min_precedence) {
     if ((r = buf_parse_ident(buf, &next_ident)) <= 0)
       goto restore;
     result += r;
-    if (! (next_op = ops_get(ops, next_ident.sym, 2)))
+    if (! ops_get(ops, next_ident.sym, 2, &next_op_tag)) {
+      r = 0;
       goto restore;
+    }
+    next_op = next_op_tag.data.pstruct->data;
     if (merge_left) {
       call_init_op(&tmp3);
       tmp3.ident.module = NULL;
@@ -986,9 +992,10 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     r = buf_peek_ident(buf, &next_ident);
     if (r <= 0)
       break;
-    if (! (next_op = ops_get(ops, next_ident.sym, 2)) &&
-        ! (next_op = ops_get(ops, next_ident.sym, 1)))
+    if (! ops_get(ops, next_ident.sym, 2, &next_op_tag) &&
+        ! ops_get(ops, next_ident.sym, 1, &next_op_tag))
       break;
+    next_op = next_op_tag.data.pstruct->data;
     while ((next_op->arity == 2 &&
             next_op->precedence > op->precedence) ||
            (next_op->associativity == OP_ASSOCIATIVITY_RIGHT &&
@@ -1013,8 +1020,9 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       if (r > 0 && c == '\n')
         goto ok;
       r = buf_peek_ident(buf, &next_ident);
-      if (r <= 0 || ! (next_op = ops_get(ops, next_ident.sym, 2)))
+      if (r <= 0 || ! (ops_get(ops, next_ident.sym, 2, &next_op_tag)))
         goto ok;
+      next_op = next_op_tag.data.pstruct->data;
     }
   }
  ok:
@@ -1032,7 +1040,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
 
 sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
 {
-  s_op  *op;
+  s_tag  op_tag = {0};
   s_ops *ops;
   sw r;
   sw result = 0;
@@ -1046,7 +1054,7 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
     goto restore;
   result += r;
   ops = env_global()->ops;
-  if (! (op = ops_get(ops, tmp.ident.sym, 1))) {
+  if (! ops_get(ops, tmp.ident.sym, 1, &op_tag)) {
     if (false) {
       err_write_1("buf_parse_call_op_unary: ");
       err_inspect_ident(&tmp.ident);
@@ -1054,6 +1062,7 @@ sw buf_parse_call_op_unary (s_buf *buf, s_call *dest)
     }
     goto restore;
   }
+  tag_clean(&op_tag);
   buf_save_clean(buf, &save);
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto clean;
