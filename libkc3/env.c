@@ -258,10 +258,8 @@ void env_clean (s_env *env)
   env->error_handler = NULL;
   facts_delete(env->facts);
   env->facts = NULL;
-  if (env->ops) {
-    ops_delete(env->ops);
-    env->ops = NULL;
-  }
+  ops_delete(env->ops);
+  env->ops = NULL;
   buf_file_close(env->in);
   buf_delete(env->in);
   env->in = NULL;
