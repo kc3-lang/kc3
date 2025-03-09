@@ -511,8 +511,6 @@ s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
 
 s_env * kc3_init (s_env *env, int *argc, char ***argv)
 {
-  if (! env)
-    env = env_global();
   return env_init(env, argc, argv);
 }
 

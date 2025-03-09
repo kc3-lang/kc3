@@ -258,8 +258,10 @@ void env_clean (s_env *env)
   env->error_handler = NULL;
   facts_delete(env->facts);
   env->facts = NULL;
-  ops_delete(env->ops);
-  env->ops = NULL;
+  if (env->ops) {
+    ops_delete(env->ops);
+    env->ops = NULL;
+  }
   buf_file_close(env->in);
   buf_delete(env->in);
   env->in = NULL;
@@ -277,6 +279,8 @@ void env_clean (s_env *env)
   env->path = NULL;
   list_delete_all(env->search_modules_default);
   env->search_modules_default = NULL;
+  if (g_kc3_env_global == env)
+    g_kc3_env_global = env->parent_env;
 }
 
 void env_clean_globals (s_env *env)
@@ -1062,6 +1066,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     env = g_kc3_env_default = alloc(sizeof(s_env));
   if (! env)
     return NULL;
+  env->parent_env = g_kc3_env_global;
+  g_kc3_env_global = env;
   *env = (s_env) {0};
   if (! env_init_args(env, argc, argv))
     return NULL;
@@ -1100,8 +1106,7 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->current_defmodule = &g_sym_KC3;
   env->search_modules_default = list_new_sym(&g_sym_KC3, NULL);
   env->search_modules = env->search_modules_default;
-  if (env == g_kc3_env_default)
-    env->ops = ops_new();
+  env->ops = ops_new();
   if (! env_module_load(env, &g_sym_KC3)) {
     env_clean(env);
     return NULL;
