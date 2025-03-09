@@ -438,6 +438,11 @@ sw facts_load (s_facts *facts, s_buf *buf, const s_str *path)
     fact_w_clean(&fact);
     fact_w_clean(&fact_eval);
   }
+  if (env_global()->trace) {
+    err_write_1("facts_load: ");
+    err_inspect_str(path);
+    err_write_1(": OK\n");
+  }
 #if HAVE_PTHREAD
   rwlock_unlock_w(&facts->rwlock);
 #endif

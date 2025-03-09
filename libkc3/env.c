@@ -852,7 +852,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   /* FIXME: multiple env and env->ops. See env_defoperator. */
   /* Quickfix is to use env_global() as is done in kc3_defoperator. */
   global_env = env_global();
-  if (global_env->loaded && arity >= 1 && arity <= 2) {
+  if (arity >= 1 && arity <= 2) {
     ops = global_env->ops;
     if (ops_get(ops, tmp.ident.sym, arity, &op_tag)) {
       op = op_tag.data.pstruct->data;
@@ -2627,13 +2627,19 @@ bool * env_ident_is_special_operator (s_env *env,
   assert(env);
   assert(ident);
   tag_ident.type = TAG_IDENT;
-  if (! env_ident_resolve_module(env, ident, &tag_ident.data.ident))
+  if (! env_ident_resolve_module(env, ident, &tag_ident.data.ident)) {
+    err_puts("env_ident_is_special_operator: env_ident_resolve_module");
+    assert(! "env_ident_is_special_operator: env_ident_resolve_module");
     return NULL;
+  }
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_special_operator, &g_sym_special_operator);
   if (! facts_find_fact_by_tags(env->facts, &tag_ident, &tag_is_a,
-                                &tag_special_operator, &fact))
+                                &tag_special_operator, &fact)) {
+    err_puts("env_ident_is_special_operator: facts_find_fact_by_tag");
+    assert(! "env_ident_is_special_operator: facts_find_fact_by_tag");
     return NULL;
+  }
   *dest = fact ? true : false;
   return dest;
 }
@@ -2730,11 +2736,11 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     env_clean(env);
     return NULL;
   }
+  env->loaded = true;
   if (! env_module_load(env, sym_1("Init"))) {
     env_clean(env);
     return NULL;
   }
-  env->loaded = true;
   return env;
 }
 
@@ -2999,6 +3005,11 @@ bool env_load (s_env *env, const s_str *path)
   tag_init_time_now(&now);
   tag_init_sym(&load_time, &g_sym_load_time);
   facts_replace_tags(env->facts, &tag, &load_time, &now);
+  if (env->trace) {
+    err_write_1("env_load: ");
+    err_inspect_str(path);
+    err_write_1(": OK\n");
+  }
   return true;
  ko:
   tag_clean(file_dir);

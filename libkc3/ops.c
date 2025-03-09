@@ -19,6 +19,7 @@
 #include "ht.h"
 #include "op.h"
 #include "ops.h"
+#include "struct_type.h"
 #include "sym.h"
 #include "tag.h"
 
@@ -100,15 +101,22 @@ void ops_delete (s_ops *ops)
 
 s_tag * ops_get (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
 {
-  s_op op = {0};
-  s_tag op_tag = {0};
+  s_op     op = {0};
+  s_struct op_struct = {0};
+  s_tag    op_tag = {0};
   assert(ops);
-  if (! sym || ! arity)
+  if (! env_global()->loaded || ! sym || ! arity)
     return NULL;
+  op_tag.type = TAG_PSTRUCT;
+  op_tag.data.pstruct = &op_struct;
+  op_struct.data = &op;
+  if (! struct_type_find(&g_sym_KC3_Op, &op_struct.type))
+    return NULL;
+  if (! op_struct.type)
+    return NULL;
+  op_struct.ref_count = 1;
   op.sym = sym;
   op.arity = arity;
-  if (! tag_init_pstruct_with_data(&op_tag, &g_sym_KC3_Op, &op, false))
-    return NULL;
   if (! ht_get(&ops->ht, &op_tag, dest))
     return NULL;
   return dest;

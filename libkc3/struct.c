@@ -378,6 +378,7 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
     err_write_1("struct_init_with_data: struct_type not found: ");
     err_inspect_sym(&module);
     err_write_1("\n");
+    assert(! "struct_init_with_data: struct_type not found");
     return NULL;
   }
   tmp.data = data;
