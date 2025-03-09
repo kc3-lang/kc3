@@ -16,8 +16,10 @@
 #include "types.h"
 
 /* Global singletons. */
+s_env * env_default (void);
+void    env_default_set (s_env *env);
 s_env * env_global (void);
-void    env_global_set (s_env *env);
+bool    env_global_set (s_env *env);
 
 /* Stack allocation compatible functions, call env_clean after use. */
 void    env_clean (s_env *env);

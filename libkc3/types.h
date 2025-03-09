@@ -820,6 +820,7 @@ struct env {
   s_str            *module_path;
   s_ops            *ops;
   s_buf            *out;
+  s_env            *parent_env;
   s_list           *path;
   uw                quote_level;
   s_frame          *read_time_frame;

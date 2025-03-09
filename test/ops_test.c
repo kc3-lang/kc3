@@ -15,6 +15,7 @@
 #include "../libkc3/callable.h"
 #include "../libkc3/op.h"
 #include "../libkc3/ops.h"
+#include "../libkc3/struct.h"
 #include "../libkc3/sym.h"
 #include "../libkc3/tag.h"
 #include "test.h"
@@ -60,6 +61,7 @@ TEST_CASE(ops_add)
   test_context("ops_add");
   TEST_ASSERT((ops = ops_new()));
   TEST_EQ(tag_init_pstruct(&op_tag, &g_sym_KC3_Op), &op_tag);
+  struct_allocate(op_tag.data.pstruct);
   op = op_tag.data.pstruct->data;
   op->sym = sym_1("+");
   op->arity = 2;
@@ -82,10 +84,11 @@ TEST_CASE(ops_get)
   test_context("ops_add");
   TEST_ASSERT((ops = ops_new()));
   TEST_EQ(tag_init_pstruct(&op_tag, &g_sym_KC3_Op), &op_tag);
+  struct_allocate(op_tag.data.pstruct);
   op = op_tag.data.pstruct->data;
   op->sym = sym_1("+");
   op->arity = 2;
-  op->precedence = 1;
+  op->precedence = 3;
   op->associativity = 1;
   op->callable = callable_new();
   TEST_ASSERT(ops_add(ops, &op_tag));
@@ -93,6 +96,11 @@ TEST_CASE(ops_get)
   tag_clean(&op_tag);
   op_tag = (s_tag) {0};
   TEST_ASSERT(ops_get(ops, sym_1("+"), 2, &op_tag));
+  TEST_EQ(op_tag.type, TAG_PSTRUCT);
+  TEST_ASSERT(op_tag.data.pstruct);
+  TEST_ASSERT(op_tag.data.pstruct->type);
+  TEST_EQ(op_tag.data.pstruct->type->module, sym_1("KC3.Op"));
+  TEST_ASSERT((op = op_tag.data.pstruct->data));
   TEST_EQ(op->sym, sym_1("+"));
   TEST_EQ(op->arity, 2);
   TEST_EQ(op->precedence, 3);
