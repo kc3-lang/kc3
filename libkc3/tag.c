@@ -26,6 +26,7 @@
 #include "compare.h"
 #include "cow.h"
 #include "env.h"
+#include "env_eval.h"
 #include "explicit_bzero.h"
 #include "fn.h"
 #include "frame.h"

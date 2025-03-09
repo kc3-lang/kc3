@@ -15,6 +15,7 @@
 #include "assert.h"
 #include "buf.h"
 #include "buf_parse.h"
+#include "eval.h"
 #include "pstruct.h"
 #include "struct.h"
 #include "tag.h"
@@ -58,7 +59,7 @@ p_struct * pstruct_init_1 (p_struct *s, const char *p)
     err_inspect_struct(tmp);
     err_write_1("\n");
   }
-  if (! env_eval_struct(env_global(), tmp, &tmp2)) {
+  if (! eval_struct(tmp, &tmp2)) {
     err_puts("struct_init_1: env_eval_struct");
     assert(! "struct_init_1: env_eval_struct");
     pstruct_clean(&tmp);

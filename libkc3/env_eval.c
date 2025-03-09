@@ -23,6 +23,7 @@
 #include "cow.h"
 #include "data.h"
 #include "env.h"
+#include "env_eval.h"
 #include "fn.h"
 #include "frame.h"
 #include "ident.h"

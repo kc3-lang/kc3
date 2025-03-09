@@ -23,7 +23,7 @@ void abort (void);
   do {                                                                 \
     sw assert_line = __LINE__;                                         \
     s_env *env;                                                        \
-    env = env_global();                                                \
+    env = env_default();                                               \
     if (! (test)) {                                                    \
       if (env->argv && env->argv[0]) {                                 \
         err_write_1(env->argv[0]);                                     \

@@ -90,6 +90,7 @@ HEADERS = \
 	"crypt.h" \
 	"data.h" \
 	"deserialize.h" \
+	"env_eval.h" \
 	"env_fork.h" \
 	"env.h" \
 	"error.h" \

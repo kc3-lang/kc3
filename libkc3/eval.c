@@ -12,7 +12,7 @@
  */
 #include <stdlib.h>
 #include "assert.h"
-#include "env.h"
+#include "env_eval.h"
 
 bool eval_array (s_array *array, s_array *dest)
 {
@@ -64,6 +64,13 @@ bool eval_fn_call (const s_fn *fn, s_list *args, s_tag *dest)
   s_env *env;
   env = env_global();
   return env_eval_call_fn_args(env, fn, args, dest);
+}
+
+bool eval_struct (s_struct *s, s_struct **dest)
+{
+  s_env *env;
+  env = env_global();
+  return env_eval_struct(env, s, dest);
 }
 
 bool eval_tag (s_tag *tag, s_tag *dest)

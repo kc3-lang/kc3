@@ -45,6 +45,7 @@
 #include "cow.h"
 #include "data.h"
 #include "env.h"
+#include "env_eval.h"
 #include "error.h"
 #include "error_handler.h"
 #include "fact.h"
@@ -1099,7 +1100,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->current_defmodule = &g_sym_KC3;
   env->search_modules_default = list_new_sym(&g_sym_KC3, NULL);
   env->search_modules = env->search_modules_default;
-  env->ops = ops_new();
+  if (env == g_kc3_env_default)
+    env->ops = ops_new();
   if (! env_module_load(env, &g_sym_KC3)) {
     env_clean(env);
     return NULL;
@@ -1109,6 +1111,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     env_clean(env);
     return NULL;
   }
+  if (env != g_kc3_env_default)
+    env_global_set(env);
   return env;
 }
 

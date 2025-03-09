@@ -27,6 +27,7 @@ bool eval_fn_call (const s_fn *fn, s_list *arguments,
                    s_tag *dest);
 bool eval_ident (const s_ident *ident, s_tag *dest);
 bool eval_progn (s_list *program, s_tag *dest);
+bool eval_struct (s_struct *s, p_struct *dest);
 bool eval_tag (s_tag *tag, s_tag *dest);
 
 #endif /* LIBKC3_EVAL_H */

@@ -38,6 +38,7 @@
 #include "call.h"
 #include "deserialize.h"
 #include "env.h"
+#include "env_eval.h"
 #include "env_fork.h"
 #include "eval.h"
 #include "fact.h"

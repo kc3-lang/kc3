@@ -46,6 +46,7 @@
 #include "compare.h"
 #include "data.h"
 #include "env.h"
+#include "env_eval.h"
 #include "error.h"
 #include "eval.h"
 #include "f32.h"
