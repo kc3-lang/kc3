@@ -1225,7 +1225,7 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   case TAG_MAP:         *dest = &tag->data.map;         return true;
   case TAG_PSTRUCT:
     if (type == &g_sym_Struct) {
-      *dest = tag->data.pstruct;
+      *dest = &tag->data.pstruct;
       return true;
     }
     if (type == tag->data.pstruct->type->module) {
@@ -1585,6 +1585,16 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_INTEGER:     *dest = &tag->data.integer;     return true;
   case TAG_LIST:        *dest = &tag->data.list;        return true;
   case TAG_MAP:         *dest = &tag->data.map;         return true;
+  case TAG_PSTRUCT:
+    if (type == &g_sym_Struct) {
+      *dest = &tag->data.pstruct;
+      return true;
+    }
+    if (type == tag->data.pstruct->type->module) {
+      *dest = tag->data.pstruct->data;
+      return true;
+    }
+    goto invalid_cast;
   case TAG_PTAG:        *dest = &tag->data.ptag;        return true;
   case TAG_PTR:         *dest = &tag->data.ptr.p;       return true;
   case TAG_PTR_FREE:    *dest = &tag->data.ptr_free.p;  return true;
@@ -1596,16 +1606,6 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_S16:         *dest = &tag->data.s16;         return true;
   case TAG_S8:          *dest = &tag->data.s8;          return true;
   case TAG_STR:         *dest = &tag->data.str;         return true;
-  case TAG_PSTRUCT:
-    if (type == &g_sym_Struct) {
-      *dest = tag->data.pstruct;
-      return true;
-    }
-    if (type == tag->data.pstruct->type->module) {
-      *dest = tag->data.pstruct->data;
-      return true;
-    }
-    goto invalid_cast;
   case TAG_STRUCT_TYPE: *dest = &tag->data.struct_type; return true;
   case TAG_SYM:         *dest = &tag->data.sym;         return true;
   case TAG_TIME:        *dest = &tag->data.time;        return true;

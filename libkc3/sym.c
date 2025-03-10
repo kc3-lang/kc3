@@ -733,6 +733,25 @@ const s_sym * sym_new (const s_str *src)
   return sym;
 }
 
+const s_sym * sym_new_anon (const s_str *prefix)
+{
+  const s_str underscore = {{NULL], 1, {"_"}};
+  static uw serial = 0;
+  s_list *list;
+  s_str str = {0};
+  list = list_new(list_new(list_new_uw(serial, NULL)));
+  list_next(list)->tag.type = TAG_STR;
+  list_next(list)->tag.data.str = underscore;
+  while (1) {
+    if (! str_init_concatenate_list(&str, &list)) {
+      err_puts("sym_new_anon: str_init_concatenate_list");
+      return NULL;
+  while sym_find("#{prefix}_#{anon_serial}") do
+    def Sym.anon_serial = Sym.anon_serial + 1
+  end
+  (Sym) "#{prefix}_#{anon_serial}"
+}}
+
 bool sym_search_modules (const s_sym *sym, const s_sym **dest)
 {
   return env_sym_search_modules(env_global(), sym, dest);
@@ -1217,7 +1236,7 @@ uw * sym_type_size (const s_sym * const *type, uw *dest)
     return dest;
   }
   if (*type == &g_sym_Struct) {
-    *dest = sizeof(s_struct);
+    *dest = sizeof(p_struct);
     return dest;
   }
   if (*type == &g_sym_StructType) {

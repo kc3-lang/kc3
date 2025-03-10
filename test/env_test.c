@@ -154,7 +154,7 @@ TEST_CASE_END(env_eval_tag)
 TEST_CASE(env_init_clean)
 {
   s_env env;
-  env_init(&env, 0, NULL);
+  TEST_ASSERT(env_init(&env, 0, NULL));
   env_clean(&env);
 }
 TEST_CASE_END(env_init_clean)

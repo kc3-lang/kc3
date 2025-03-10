@@ -22,9 +22,9 @@ void abort (void);
 # define assert(test)                                                  \
   do {                                                                 \
     sw assert_line = __LINE__;                                         \
-    s_env *env;                                                        \
-    env = env_default();                                               \
     if (! (test)) {                                                    \
+      s_env *env;                                                      \
+      env = env_default();                                             \
       if (env->argv && env->argv[0]) {                                 \
         err_write_1(env->argv[0]);                                     \
         err_write_1(": ");                                             \

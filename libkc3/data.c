@@ -62,7 +62,7 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
   if (type == &g_sym_Str)
     return buf_inspect_str(buf, data);
   if (type == &g_sym_Struct)
-    return buf_inspect_struct(buf, data);
+    return buf_inspect_struct(buf, * (p_struct *) data);
   if (type == &g_sym_StructType)
     return buf_inspect_struct_type(buf, data);
   if (type == &g_sym_Sw)
@@ -154,7 +154,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
   if (type == &g_sym_Str)
     return buf_inspect_str_size(pretty, data);
   if (type == &g_sym_Struct)
-    return buf_inspect_struct_size(pretty, data);
+    return buf_inspect_struct_size(pretty, * (p_struct *) data);
   if (type == &g_sym_StructType)
     return buf_inspect_struct_type_size(pretty, data);
   if (type == &g_sym_Sw)
@@ -278,7 +278,7 @@ bool data_clean (const s_sym *type, void *data)
     return true;
   }
   if (type == &g_sym_Struct) {
-    struct_clean(data);
+    pstruct_clean(data);
     return true;
   }
   if (type == &g_sym_StructType) {
@@ -345,9 +345,6 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
   s_struct sa = {0};
   s_struct sb = {0};
   s_struct_type *st;
-  if (type == &g_sym_Array ||
-      sym_is_array_type(type))
-    return compare_array(a, b);
   if (type == &g_sym_Bool)
     return compare_bool(*(bool *) a, *(bool *) b);
   if (type == &g_sym_Call)
@@ -414,15 +411,20 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
     return compare_ptr(a, b);
   if (type == &g_sym_Void)
     return 0;
-  if (! struct_type_find(type, &st))
-    return COMPARE_ERROR;
-  if (st) {
-    sa.type = st;
-    sa.data = (void *) a;
-    sb.type = st;
-    sb.data = (void *) b;
-    return compare_struct(&sa, &sb);
+  if (env_global()->loaded) {
+    if (! struct_type_find(type, &st))
+      return COMPARE_ERROR;
+    if (st) {
+      sa.type = st;
+      sa.data = (void *) a;
+      sb.type = st;
+      sb.data = (void *) b;
+      return compare_struct(&sa, &sb);
+    }
   }
+  if (type == &g_sym_Array ||
+      sym_is_array_type(type))
+    return compare_array(a, b);
   err_write_1("data_compare: unknown type: ");
   err_inspect_sym(&type);
   err_write_1("\n");
@@ -480,7 +482,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
   if (type == &g_sym_Str)
     return hash_update_str(hash, data);
   if (type == &g_sym_Struct)
-    return hash_update_struct(hash, data);
+    return hash_update_struct(hash, * (p_struct *) data);
   if (type == &g_sym_StructType)
     return hash_update_struct_type(hash, data);
   if (type == &g_sym_Sw)
@@ -602,7 +604,7 @@ void * data_init_cast (void *data, const s_sym * const *type,
   if (! struct_type_find(t, &st))
     return NULL;
   if (st) {
-    pstruct_init_type(&s, st);
+    s->type = st;
     s->data = data;
     return pstruct_init_cast(&s, type, tag);
   }
@@ -664,7 +666,7 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_Str)
     return str_init_copy(data, src);
   if (type == &g_sym_Struct)
-    return struct_init_copy(data, src);
+    return pstruct_init_copy(data, src);
   if (type == &g_sym_StructType)
     return struct_type_init_copy(data, src);
   if (type == &g_sym_Sw)

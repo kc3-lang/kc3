@@ -417,10 +417,10 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   return result;
 }
 
-/* FIXME: multiple env and env->ops. See env_eval_call_resolve. */
 bool env_defoperator (s_env *env, s_tag *tag_op)
 {
   s_op *op;
+  s_tag tag_id = {0};
   s_tag tag_is_a = {0};
   s_tag tag_sym = {0};
   s_tag tag_sym_op = {0};
@@ -438,6 +438,7 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
   op = tag_op->data.pstruct->data;
   if (! ops_add(env->ops, tag_op))
     return false;
+  tag_init_sym(&tag_id, 
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_sym, op->sym);
   tag_init_sym(&tag_sym_op, &g_sym_op);
