@@ -260,6 +260,18 @@ s_list * list_init_pstruct_with_data (s_list *list,
   return list;
 }
 
+s_list * list_init_pstruct_with_type (s_list *list, s_struct_type *st,
+                                      s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pstruct_with_type(&tmp.tag, st))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_pstruct_type (s_list *list, const s_sym *module,
                                  s_list *spec, s_list *next)
 {
@@ -895,6 +907,19 @@ s_list * list_new_pstruct_with_data (const s_sym *module, void *data,
     return NULL;
   if (! tag_init_pstruct_with_data(&list->tag, module, data,
                                    free_data)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pstruct_with_type (s_struct_type *st, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pstruct_with_type(&list->tag, st)) {
     free(list);
     return NULL;
   }

@@ -52,6 +52,8 @@ s_list * list_init_pstruct_copy (s_list *list, p_struct  src,
 s_list * list_init_pstruct_with_data (s_list *list,
                                       const s_sym *module, void *data,
                                       bool free_data, s_list *next);
+s_list * list_init_pstruct_with_type (s_list *list, s_struct_type *st,
+                                      s_list *next);
 s_list * list_init_pstruct_type (s_list *list, const s_sym *module,
                                  s_list *spec, s_list *next);
 s_list * list_init_pstruct_type_clean (s_list *list,
@@ -135,6 +137,7 @@ s_list * list_new_pstruct (const s_sym *module, s_list *next);
 s_list * list_new_pstruct_copy (p_struct  src, s_list *next);
 s_list * list_new_pstruct_with_data (const s_sym *module, void *data,
                                      bool free_data, s_list *next);
+s_list * list_new_pstruct_with_type (s_struct_type *st, s_list *next);
 s_list * list_new_pstruct_type (const s_sym *module, s_list *spec,
                                 s_list *next);
 s_list * list_new_pstruct_type_clean (const s_struct_type *st,

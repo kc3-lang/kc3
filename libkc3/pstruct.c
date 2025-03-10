@@ -77,7 +77,7 @@ p_struct * pstruct_init_cast (p_struct *s, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_PSTRUCT:
-    if (*type == tag->data.pstruct->type->module)
+    if (*type == tag->data.pstruct->struct_type->module)
       return pstruct_init_copy(s, tag->data.pstruct);
     break;
   case TAG_PTR:
@@ -107,7 +107,7 @@ p_struct * pstruct_init_put (p_struct *s, s_struct *src,
                              const s_sym *key, s_tag *value)
 {
   p_struct tmp;
-  if (! pstruct_init_type(&tmp, src->type))
+  if (! pstruct_init_with_type(&tmp, src->struct_type))
     return NULL;
   if (! struct_init_copy(tmp, src)) {
     err_puts("struct_put: struct_init_copy");
@@ -122,20 +122,20 @@ p_struct * pstruct_init_put (p_struct *s, s_struct *src,
   return s;
 }
 
-p_struct * pstruct_init_type (p_struct *s, s_struct_type *st)
-{
-  p_struct tmp;
-  if (! (tmp = struct_new_type(st)))
-    return NULL;
-  *s = tmp;
-  return s;
-}
-
 p_struct * pstruct_init_with_data (p_struct *s, const s_sym *module,
                                    void *data, bool free_data)
 {
   p_struct tmp;
   if (! (tmp = struct_new_with_data(module, data, free_data)))
+    return NULL;
+  *s = tmp;
+  return s;
+}
+
+p_struct * pstruct_init_with_type (p_struct *s, s_struct_type *st)
+{
+  p_struct tmp;
+  if (! (tmp = struct_new_with_type(st)))
     return NULL;
   *s = tmp;
   return s;

@@ -32,7 +32,7 @@ bool ops_add (s_ops *ops, s_tag *op_tag)
   if (! op_tag ||
       op_tag->type != TAG_PSTRUCT ||
       ! op_tag->data.pstruct ||
-      op_tag->data.pstruct->type->module != &g_sym_KC3_Op ||
+      op_tag->data.pstruct->struct_type->module != &g_sym_KC3_Op ||
       ! op_tag->data.pstruct->data) {
     err_puts("ops_add: invalid op");
     assert(! "ops_add: invalid op");
@@ -73,13 +73,13 @@ s8 ops_compare_tag (const s_tag *a, const s_tag *b)
   if (! b)
     return 1;
   if (a->type != TAG_PSTRUCT ||
-      a->data.pstruct->type->module != &g_sym_KC3_Op) {
+      a->data.pstruct->struct_type->module != &g_sym_KC3_Op) {
     err_puts("ops_compare_tag: argument a is not a %KC3.Op{}");
     assert(! "ops_compare_tag: argument a is not a %KC3.Op{}");
     abort();
   }
   if (b->type != TAG_PSTRUCT ||
-      b->data.pstruct->type->module != &g_sym_KC3_Op) {
+      b->data.pstruct->struct_type->module != &g_sym_KC3_Op) {
     err_puts("ops_compare_tag: argument b is not a %KC3.Op{}");
     assert(! "ops_compare_tag: argument b is not a %KC3.Op{}");
     abort();
@@ -110,9 +110,9 @@ s_tag * ops_get (s_ops *ops, const s_sym *sym, u8 arity, s_tag *dest)
   op_tag.type = TAG_PSTRUCT;
   op_tag.data.pstruct = &op_struct;
   op_struct.data = &op;
-  if (! struct_type_find(&g_sym_KC3_Op, &op_struct.type))
+  if (! struct_type_find(&g_sym_KC3_Op, &op_struct.struct_type))
     return NULL;
-  if (! op_struct.type)
+  if (! op_struct.struct_type)
     return NULL;
   op_struct.ref_count = 1;
   op.sym = sym;
@@ -130,8 +130,8 @@ uw ops_hash_tag (const s_tag *op_tag)
   assert(op_tag);
   assert(op_tag->type == TAG_PSTRUCT);
   assert(op_tag->data.pstruct);
-  assert(op_tag->data.pstruct->type);
-  assert(op_tag->data.pstruct->type->module == &g_sym_KC3_Op);
+  assert(op_tag->data.pstruct->struct_type);
+  assert(op_tag->data.pstruct->struct_type->module == &g_sym_KC3_Op);
   assert(op_tag->data.pstruct->data);
   op = op_tag->data.pstruct->data;
   hash_init(&hash);

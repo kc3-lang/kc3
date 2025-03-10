@@ -432,19 +432,19 @@ bool hash_update_struct (t_hash *hash, const s_struct *s)
   assert(hash);
   assert(s);
   if (! hash_update(hash, type, sizeof(type)) ||
-      ! hash_update_sym(hash, &s->type->module) ||
-      ! hash_update(hash, &s->type->map.count,
-                    sizeof(s->type->map.count)))
+      ! hash_update_sym(hash, &s->struct_type->module) ||
+      ! hash_update(hash, &s->struct_type->map.count,
+                    sizeof(s->struct_type->map.count)))
     return false;
-  while (i < s->type->map.count) {
-    if (! hash_update_tag(hash, s->type->map.key + i))
+  while (i < s->struct_type->map.count) {
+    if (! hash_update_tag(hash, s->struct_type->map.key + i))
       return false;
-    if (s->type->map.value[i].type == TAG_VAR)
-      sym = s->type->map.value[i].data.var.type;
-    else if (! tag_type(s->type->map.value + i, &sym))
+    if (s->struct_type->map.value[i].type == TAG_VAR)
+      sym = s->struct_type->map.value[i].data.var.type;
+    else if (! tag_type(s->struct_type->map.value + i, &sym))
       return false;
     if (s->data) {
-      data = (s8 *) s->data + s->type->offset[i];
+      data = (s8 *) s->data + s->struct_type->offset[i];
       if (! data_hash_update(sym, hash, data))
         return false;
     }

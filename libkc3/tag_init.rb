@@ -345,6 +345,8 @@ class TagInitList
                    [Arg.new("const s_sym *", "module"),
                     Arg.new("void *", "data"),
                     Arg.new("bool", "free_data")]),
+       TagInit.new("pstruct", "with_type", "TAG_PSTRUCT", :init_mode_init,
+                   [Arg.new("s_struct_type *", "st")]),
        TagInit.new("pstruct_type", "TAG_PSTRUCT_TYPE", :init_mode_init,
                    [Arg.new("const s_sym *", "module"),
                     Arg.new("s_list *", "spec")]),

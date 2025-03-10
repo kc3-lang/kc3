@@ -261,6 +261,17 @@ s_tag * tag_init_pstruct_with_data (s_tag *tag, const s_sym *module,
   return tag;
 }
 
+s_tag * tag_init_pstruct_with_type (s_tag *tag, s_struct_type *st)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PSTRUCT;
+  if (! pstruct_init_with_type(&tmp.data.pstruct, st))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_pstruct_type (s_tag *tag, const s_sym *module,
                                s_list *spec)
 {
@@ -886,6 +897,20 @@ s_tag * tag_new_pstruct_with_data (const s_sym *module, void *data,
   tag->type = TAG_PSTRUCT;
   if (! pstruct_init_with_data(&tag->data.pstruct, module, data,
                                free_data)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_pstruct_with_type (s_struct_type *st)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_PSTRUCT;
+  if (! pstruct_init_with_type(&tag->data.pstruct, st)) {
     free(tag);
     return NULL;
   }
@@ -1567,6 +1592,18 @@ s_tag * tag_pstruct_with_data (s_tag *tag, const s_sym *module,
   tmp.type = TAG_PSTRUCT;
   if (! pstruct_init_with_data(&tmp.data.pstruct, module, data,
                                free_data))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_pstruct_with_type (s_tag *tag, s_struct_type *st)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PSTRUCT;
+  if (! pstruct_init_with_type(&tmp.data.pstruct, st))
     return NULL;
   *tag = tmp;
   return tag;

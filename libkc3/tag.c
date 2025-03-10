@@ -471,7 +471,7 @@ s_tag * tag_init_cast_struct (s_tag *tag, const s_sym * const *type,
     return tag_init_pstruct_with_data(tag, *type, src->data.ptr_free.p,
                                       false);
   case TAG_PSTRUCT:
-    if (*type == src->data.pstruct->type->module)
+    if (*type == src->data.pstruct->struct_type->module)
       return tag_init_pstruct_copy(tag, src->data.pstruct);
   default:
     break;
@@ -963,7 +963,7 @@ bool tag_is_struct (const s_tag *tag, const s_sym *module)
 {
   return tag &&
     tag->type == TAG_PSTRUCT &&
-    tag->data.pstruct->type->module == module;
+    tag->data.pstruct->struct_type->module == module;
 }
 
 bool * tag_is_unbound_var (const s_tag *tag, bool *dest)
@@ -1229,7 +1229,7 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
       *dest = &tag->data.pstruct;
       return true;
     }
-    if (type == tag->data.pstruct->type->module) {
+    if (type == tag->data.pstruct->struct_type->module) {
       *dest = tag->data.pstruct->data;
       assert(*dest);
       return true;
@@ -1380,7 +1380,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       assert(*dest);
       return true;
     }
-    if (type == tag->data.pstruct->type->module) {
+    if (type == tag->data.pstruct->struct_type->module) {
       *dest = tag->data.pstruct->data;
       assert(*dest);
       return true;
@@ -1591,7 +1591,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
       *dest = &tag->data.pstruct;
       return true;
     }
-    if (type == tag->data.pstruct->type->module) {
+    if (type == tag->data.pstruct->struct_type->module) {
       *dest = tag->data.pstruct->data;
       return true;
     }
@@ -1626,7 +1626,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
  invalid_cast:
   err_write_1("tag_to_pointer: invalid cast from ");
   if (tag->type == TAG_PSTRUCT)
-    err_inspect_sym(&tag->data.pstruct->type->module);
+    err_inspect_sym(&tag->data.pstruct->struct_type->module);
   else
     err_write_1(tag_type_to_string(tag->type));
   err_write_1(" to ");
@@ -1688,8 +1688,8 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_QUOTE:        *dest = &g_sym_Quote;      return dest;
   case TAG_RATIO:        *dest = &g_sym_Ratio;      return dest;
   case TAG_STR:          *dest = &g_sym_Str;        return dest;
-  case TAG_PSTRUCT:      *dest = tag->data.pstruct->type->module;
-                                                    return dest;
+  case TAG_PSTRUCT:
+    *dest = tag->data.pstruct->struct_type->module; return dest;
   case TAG_PSTRUCT_TYPE: *dest = &g_sym_StructType; return dest;
   case TAG_SYM:          *dest = &g_sym_Sym;        return dest;
   case TAG_TIME:         *dest = &g_sym_Time;       return dest;

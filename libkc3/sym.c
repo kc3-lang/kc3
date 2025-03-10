@@ -1256,7 +1256,7 @@ uw * sym_type_size (const s_sym * const *type, uw *dest)
     return dest;
   }
   if (*type == &g_sym_StructType) {
-    *dest = sizeof(s_struct_type);
+    *dest = sizeof(p_struct_type);
     return dest;
   }
   if (*type == &g_sym_Sw) {

@@ -27,18 +27,18 @@ s_struct * struct_init_copy (s_struct *s, const s_struct *src);
 s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
                                    s_list *keys,
                                    s_list *values);
-s_struct * struct_init_type (s_struct *s, s_struct_type *type);
 s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
                                   void *data, bool free_data);
+s_struct * struct_init_with_type (s_struct *s, p_struct_type type);
 
 /* Heap-allocation functions, call struct_delete after use. */
 void       struct_delete (s_struct *s);
 s_struct * struct_new (const s_sym *module);
 s_struct * struct_new_copy (const s_struct *src);
 s_struct * struct_new_ref (s_struct *src);
-s_struct * struct_new_type (s_struct_type *type);
 s_struct * struct_new_with_data (const s_sym *module, void *data,
                                  bool free_data);
+s_struct * struct_new_with_type (p_struct_type type);
 
 /* Operators. */
 s_tag *    struct_access (s_struct *s,

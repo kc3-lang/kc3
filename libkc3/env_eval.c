@@ -1290,14 +1290,13 @@ bool env_eval_quote_struct (s_env *env, s_struct *s, s_tag *dest)
     *dest = tmp;
     return true;
   }
-  pstruct_init(&tmp.data.pstruct, NULL);
-  tmp.data.pstruct->type = s->type;
-  tmp.data.pstruct->tag = alloc(tmp.data.pstruct->type->map.count *
+  pstruct_init_with_type(&tmp.data.pstruct, s->struct_type);
+  tmp.data.pstruct->tag = alloc(tmp.data.pstruct->struct_type->map.count *
                                 sizeof(s_tag));
   if (! tmp.data.pstruct->tag)
     return false;
   i = 0;
-  while (i < tmp.data.pstruct->type->map.count) {
+  while (i < tmp.data.pstruct->struct_type->map.count) {
     if (! env_eval_quote_tag(env, s->tag + i,
                              tmp.data.pstruct->tag + i))
       goto ko;
@@ -1478,23 +1477,23 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
     *dest = tmp;
     return true;
   }
-  if (! pstruct_init_type(&tmp, s->type))
+  if (! pstruct_init_with_type(&tmp, s->struct_type))
     return false;
   if (! struct_allocate(tmp))
     return false;
   i = 0;
-  while (i < tmp->type->map.count) {
-    if (tmp->type->map.key[i].type != TAG_SYM) {
+  while (i < tmp->struct_type->map.count) {
+    if (tmp->struct_type->map.key[i].type != TAG_SYM) {
       err_puts("env_eval_struct: struct type key is not a Sym");
       assert(! "env_eval_struct: struct type key is not a Sym");
       goto ko;
     }
-    if (tmp->type->map.key[i].data.sym->str.ptr.pchar[0] != '_') {
-      if (tmp->type->map.value[i].type == TAG_VAR) {
-        var = &tmp->type->map.value[i].data.var;
+    if (tmp->struct_type->map.key[i].data.sym->str.ptr.pchar[0] != '_') {
+      if (tmp->struct_type->map.value[i].type == TAG_VAR) {
+        var = &tmp->struct_type->map.value[i].data.var;
         type = var->type;
       }
-      else if (! tag_type(tmp->type->map.value + i, &type))
+      else if (! tag_type(tmp->struct_type->map.value + i, &type))
         goto ko;
       if (s->tag) {
         if (! env_eval_tag(env, s->tag + i, &tag))
@@ -1505,7 +1504,7 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
         }
       }
       else {
-        if (! tag_to_const_pointer(tmp->type->map.value + i, type,
+        if (! tag_to_const_pointer(tmp->struct_type->map.value + i, type,
                                    &data))
           goto ko;
       }
@@ -1514,7 +1513,7 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
         err_inspect_sym(&type);
         err_write_1("\n");
       }
-      tmp_data = (s8 *) tmp->data + tmp->type->offset[i];
+      tmp_data = (s8 *) tmp->data + tmp->struct_type->offset[i];
       if (! data_init_copy(type, tmp_data, data))
         goto ko_init;
       if (s->tag)
@@ -1528,9 +1527,9 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
   err_write_1("env_eval_struct: invalid type ");
   err_write_1(tag_type_to_string(tag.type));
   err_write_1(" for key ");
-  err_write_1(tmp->type->map.key[i].data.sym->str.ptr.pchar);
+  err_write_1(tmp->struct_type->map.key[i].data.sym->str.ptr.pchar);
   err_write_1(", expected ");
-  err_puts(tag_type_to_string(tmp->type->map.value[i].type));
+  err_puts(tag_type_to_string(tmp->struct_type->map.value[i].type));
   tag_clean(&tag);
  ko:
   pstruct_clean(&tmp);

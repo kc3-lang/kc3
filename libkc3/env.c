@@ -278,8 +278,15 @@ void env_clean (s_env *env)
   env->path = NULL;
   list_delete_all(env->search_modules_default);
   env->search_modules_default = NULL;
-  if (g_kc3_env_global == env)
-    g_kc3_env_global = env->parent_env;
+  if (g_kc3_env_default == env)
+    sym_delete_all();
+  g_kc3_env_default = NULL;
+  if (g_kc3_env_global == env) {
+    if (env->parent_env)
+      g_kc3_env_global = env->parent_env;
+    else
+      g_kc3_env_global = g_kc3_env_default;
+  }
 }
 
 void env_clean_globals (s_env *env)
@@ -432,7 +439,7 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
   if (! tag_op ||
       tag_op->type != TAG_PSTRUCT ||
       ! tag_op->data.pstruct ||
-      tag_op->data.pstruct->type->module != &g_sym_KC3_Op) {
+      tag_op->data.pstruct->struct_type->module != &g_sym_KC3_Op) {
     err_puts("env_defoperator: invalid operator, expected %KC3.Op{}");
     assert(! "env_defoperator: invalid operator, expected %KC3.Op{}");
   }
@@ -1264,7 +1271,7 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
     map = &tmp.data.map;
     break;
   case TAG_PSTRUCT:
-    map = &tmp.data.pstruct->type->map;
+    map = &tmp.data.pstruct->struct_type->map;
     // FIXME
     break;
   default:
