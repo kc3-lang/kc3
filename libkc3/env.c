@@ -252,14 +252,14 @@ void env_clean (s_env *env)
     err_write_1("\n");
   }
   //facts_save_file(env->facts, "debug.facts"); // debug
+  ops_delete(env->ops);
+  env->ops = NULL;
   env_clean_globals(env);
   env_clean_toplevel(env);
   error_handler_delete_all(env->error_handler);
   env->error_handler = NULL;
   facts_delete(env->facts);
   env->facts = NULL;
-  ops_delete(env->ops);
-  env->ops = NULL;
   buf_file_close(env->in);
   buf_delete(env->in);
   env->in = NULL;
@@ -438,14 +438,14 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
   op = tag_op->data.pstruct->data;
   if (! ops_add(env->ops, tag_op))
     return false;
-  tag_init_sym(&tag_id, 
+  tag_init_sym(&tag_id, sym_anon(&g_sym_op.str));
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_sym, op->sym);
   tag_init_sym(&tag_sym_op, &g_sym_op);
   tag_init_sym(&tag_sym_sym, &g_sym_sym);
-  if (! facts_add_tags(env->facts, tag_op, &tag_is_a, &tag_sym_op))
+  if (! facts_add_tags(env->facts, &tag_id, &tag_is_a, &tag_sym_op))
     return false;
-  if (! facts_add_tags(env->facts, tag_op, &tag_sym_sym, &tag_sym))
+  if (! facts_add_tags(env->facts, &tag_id, &tag_sym_sym, &tag_sym))
     return false;
   return true;
 }

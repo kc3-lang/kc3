@@ -17,6 +17,7 @@
 #include "character.h"
 #include "compare.h"
 #include "ident.h"
+#include "list.h"
 #include "str.h"
 #include "struct_type.h"
 #include "sym.h"
@@ -138,6 +139,40 @@ const s_sym * sym_1 (const char *p)
   s_str stra;
   str_init_1(&stra, NULL, p);
   return str_to_sym(&stra);
+}
+
+const s_sym * sym_anon (const s_str *prefix)
+{
+  s_list *list;
+  static uw serial = 0;
+  s_str    *serial_str = NULL;
+  s_str str = {0};
+  const s_sym *tmp = NULL;
+  const s_str underscore = {{NULL}, 1, {"_"}};
+  list = list_new(list_new(list_new(NULL)));
+  list_next(list_next(list))->tag.type = TAG_STR;
+  serial_str = &list_next(list_next(list))->tag.data.str;
+  list_next(list)->tag.type = TAG_STR;
+  list_next(list)->tag.data.str = underscore;
+  list->tag.type = TAG_STR;
+  list->tag.data.str = *prefix;
+  while (1) {
+    serial++;
+    str_init_uw(serial_str, serial);
+    if (! str_init_concatenate_list(&str,
+                                    (const s_list * const *) &list)) {
+      err_puts("sym_new_anon: str_init_concatenate_list");
+      assert(! "sym_new_anon: str_init_concatenate_list");
+      return NULL;
+    }
+    if (! sym_find(&str)) {
+      tmp = str_to_sym(&str);
+      list_delete_all(list);
+      return tmp;
+    }
+  }
+  list_delete_all(list);
+  return NULL;
 }
 
 const s_sym * sym_array_type (const s_sym *sym)
@@ -732,25 +767,6 @@ const s_sym * sym_new (const s_str *src)
   g_sym_list = tmp;
   return sym;
 }
-
-const s_sym * sym_new_anon (const s_str *prefix)
-{
-  const s_str underscore = {{NULL], 1, {"_"}};
-  static uw serial = 0;
-  s_list *list;
-  s_str str = {0};
-  list = list_new(list_new(list_new_uw(serial, NULL)));
-  list_next(list)->tag.type = TAG_STR;
-  list_next(list)->tag.data.str = underscore;
-  while (1) {
-    if (! str_init_concatenate_list(&str, &list)) {
-      err_puts("sym_new_anon: str_init_concatenate_list");
-      return NULL;
-  while sym_find("#{prefix}_#{anon_serial}") do
-    def Sym.anon_serial = Sym.anon_serial + 1
-  end
-  (Sym) "#{prefix}_#{anon_serial}"
-}}
 
 bool sym_search_modules (const s_sym *sym, const s_sym **dest)
 {

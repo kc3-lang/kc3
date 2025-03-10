@@ -141,9 +141,9 @@ const s_sym ** sym_init_str (const s_sym **sym, const s_str *src);
 bool           sym_register (const s_sym *sym, s_sym *free_sym);
 
 /* Heap-allocation functions, call sym_delete_all at exit. */
+const s_sym * sym_anon (const s_str *prefix);
 void          sym_delete_all (void);
 const s_sym * sym_new (const s_str *src);
-const s_sym * sym_new_anon (const s_str *prefix);
 
 /* Observers */
 const s_sym * sym_array_type (const s_sym *sym);
