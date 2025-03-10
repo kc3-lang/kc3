@@ -158,8 +158,6 @@ s_tag * kc3_buf_parse_tag (s_buf *buf, s_tag *dest)
 
 void kc3_clean (s_env *env)
 {
-  if (! env)
-    env = env_default();
   env_clean(env);
 }
 
