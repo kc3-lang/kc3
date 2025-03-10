@@ -389,7 +389,7 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
   if (type == &g_sym_Str)
     return compare_str(a, b);
   if (type == &g_sym_Struct)
-    return compare_struct(a, b);
+    return compare_struct(*(p_struct *) a, * (p_struct *) b);
   if (type == &g_sym_StructType)
     return compare_struct_type(a, b);
   if (type == &g_sym_Sw)
