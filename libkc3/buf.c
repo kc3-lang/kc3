@@ -1181,6 +1181,49 @@ s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,
   return result;
 }
 
+s_str * buf_read_word_into_str(s_buf *buf, s_str *dest)
+{
+  character c;
+  sw r;
+  s_str *result = NULL;
+  s_buf_save save;
+  s_buf tmp;
+  buf_save_init(buf, &save);  
+#if HAVE_PTHREAD
+  rwlock_w(&buf->rwlock);
+#endif
+  while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
+         ! character_is_alphanum(c)) {
+    buf_ignore(buf, r);
+  }    
+  while (1) {
+    if ((r = buf_read_character_utf8(buf, &c)) < 0) {
+      if (false)
+        err_puts("buf_read_word_into_str: buf_read_character_utf8");
+      goto restore;
+    }
+    if (r && ! character_is_alphanum(c)) {
+      buf_init(&tmp, false, buf->size, buf->ptr.pchar);
+      tmp.rpos = save.rpos;
+      tmp.wpos = buf->rpos - r;
+      if (! buf_read_to_str(&tmp, dest)) {
+        err_puts("buf_read_word_into_str: buf_read_to_str");
+        goto restore;
+      }
+      result = dest;
+      goto clean;
+    }
+  }
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&buf->rwlock);
+#endif
+  return result;
+}
+
 DEF_BUF_READ(uw)
 
 sw buf_refill (s_buf *buf, sw size)

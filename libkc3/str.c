@@ -1403,11 +1403,11 @@ sw str_rindex_character (const s_str *str, character c, sw start,
   return result;
 }
 
-s_list ** str_split_words (const s_str *str,s_list **dest)
+s_list ** str_split_words (const s_str *str, s_list **dest)
 {
   s_buf buf;
-  s_str   *t_str;
   s_list **t;
+  s_str   *t_str;
   s_list  *tmp;
   buf_init_str_const(&buf, str);
   tmp = NULL;
@@ -1416,7 +1416,7 @@ s_list ** str_split_words (const s_str *str,s_list **dest)
     *t = list_new(NULL);
     (*t)->tag.type = TAG_STR;
     t_str = &(*t)->tag.data.str;
-    if (! buf_read_until_str_into_str(&buf, separator, t_str)) {
+    if (! buf_read_word_into_str(&buf, t_str)) {
       if (! buf_read_to_str(&buf, t_str))
         goto clean;
       break;
@@ -1443,6 +1443,7 @@ s_list ** str_split (const s_str *str, const s_str *separator,
                      s_list **dest)
 {
   s_buf buf;
+  const s_str *sep = separator;
   s_str   *t_str;
   s_list **t;
   s_list  *tmp;
@@ -1453,7 +1454,7 @@ s_list ** str_split (const s_str *str, const s_str *separator,
     *t = list_new(NULL);
     (*t)->tag.type = TAG_STR;
     t_str = &(*t)->tag.data.str;
-    if (! buf_read_until_str_into_str(&buf, separator, t_str)) {
+    if (! buf_read_until_str_into_str(&buf, sep, t_str)) {
       if (! buf_read_to_str(&buf, t_str))
         goto clean;
       break;

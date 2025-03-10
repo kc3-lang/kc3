@@ -96,6 +96,7 @@ sw        buf_read_str (s_buf *buf, const s_str *src);
 PROTO_BUF_READ(sw);
 sw        buf_read_sym (s_buf *buf, const s_sym *src);
 s_str *   buf_read_to_str (s_buf *buf, s_str *dest);
+s_str *   buf_read_word_into_str(s_buf *buf, s_str *dest); 
 PROTO_BUF_READ(u8);
 PROTO_BUF_READ(u16);
 PROTO_BUF_READ(u32);

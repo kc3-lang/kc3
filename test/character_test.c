@@ -16,6 +16,7 @@
 #include "test.h"
 
 TEST_CASE_PROTOTYPE(character_1);
+TEST_CASE_PROTOTYPE(character_is_alphanum);
 TEST_CASE_PROTOTYPE(character_is_digit);
 TEST_CASE_PROTOTYPE(character_is_lowercase);
 TEST_CASE_PROTOTYPE(character_is_space);
@@ -26,6 +27,7 @@ TEST_CASE_PROTOTYPE(character_utf8_size);
 void character_test (void)
 {
   TEST_CASE_RUN(character_1);
+  TEST_CASE_RUN(character_is_alphanum);
   TEST_CASE_RUN(character_is_digit);
   TEST_CASE_RUN(character_is_lowercase);
   TEST_CASE_RUN(character_is_space);
@@ -73,6 +75,52 @@ TEST_CASE(character_1)
   TEST_EQ(character_1("ꝝ"), 42845);
 }
 TEST_CASE_END(character_1)
+
+TEST_CASE(character_is_alphanum)
+{
+  character c;
+  for (c = -10; c < 40; c++)
+    TEST_ASSERT(! character_is_alphanum(c));
+  TEST_ASSERT(! character_is_alphanum('\x00'));
+  TEST_ASSERT(! character_is_alphanum('\x01'));
+  TEST_ASSERT(! character_is_alphanum('\r'));
+  TEST_ASSERT(! character_is_alphanum('\n'));
+  TEST_ASSERT(! character_is_alphanum(' '));
+  TEST_ASSERT(! character_is_alphanum('_'));
+  TEST_ASSERT(character_is_alphanum('0'));
+  TEST_ASSERT(character_is_alphanum('1'));
+  TEST_ASSERT(character_is_alphanum('2'));
+  TEST_ASSERT(character_is_alphanum('3'));
+  TEST_ASSERT(character_is_alphanum('4'));
+  TEST_ASSERT(character_is_alphanum('5'));
+  TEST_ASSERT(character_is_alphanum('6'));
+  TEST_ASSERT(character_is_alphanum('7'));
+  TEST_ASSERT(character_is_alphanum('8'));
+  TEST_ASSERT(character_is_alphanum('9'));
+  TEST_ASSERT(character_is_alphanum('A'));
+  TEST_ASSERT(character_is_alphanum('B'));
+  TEST_ASSERT(character_is_alphanum('C'));
+  TEST_ASSERT(character_is_alphanum('X'));
+  TEST_ASSERT(character_is_alphanum('Y'));
+  TEST_ASSERT(character_is_alphanum('Z'));
+  TEST_ASSERT(character_is_alphanum(character_1("À")));
+  TEST_ASSERT(character_is_alphanum(character_1("É")));
+  TEST_ASSERT(character_is_alphanum(character_1("Π")));
+  TEST_ASSERT(character_is_alphanum(character_1("Ꝝ")));
+  TEST_ASSERT(! character_is_alphanum(character_1("꒴")));
+  TEST_ASSERT(character_is_alphanum(character_1("𐅀")));
+  TEST_ASSERT(character_is_alphanum('a'));
+  TEST_ASSERT(character_is_alphanum('b'));
+  TEST_ASSERT(character_is_alphanum('c'));
+  TEST_ASSERT(character_is_alphanum('x'));
+  TEST_ASSERT(character_is_alphanum('y'));
+  TEST_ASSERT(character_is_alphanum('z'));
+  TEST_ASSERT(character_is_alphanum(character_1("à")));
+  TEST_ASSERT(character_is_alphanum(character_1("é")));
+  TEST_ASSERT(character_is_alphanum(character_1("π")));
+  TEST_ASSERT(character_is_alphanum(character_1("ꝝ")));
+}
+TEST_CASE_END(character_is_alphanum)
 
 TEST_CASE(character_is_digit)
 {
