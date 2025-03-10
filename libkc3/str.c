@@ -1262,8 +1262,8 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
 
 sw str_peek_character_utf8 (const s_str *str, character *c)
 {
-  assert(str);
-  assert(c);
+  //assert(str);
+  //assert(c);
   const u8 *b;
   u8 x[4];
   const u8 _00000111 = 0x07;

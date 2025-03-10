@@ -159,9 +159,9 @@ s_tag * kc3_buf_parse_tag (s_buf *buf, s_tag *dest)
 void kc3_clean (s_env *env)
 {
   if (! env)
-    env = env_global();
+    env = env_default();
   env_clean(env);
-  if (env == env_global())
+  if (env == env_default())
     sym_delete_all();
 }
 
