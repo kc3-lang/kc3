@@ -575,7 +575,15 @@ s8 compare_struct (const s_struct *a, const s_struct *b)
   if (! b->data)
     return 1;
   while (i < a->type->map.count) {
-    tag_type(a->type->map.value + i, &type);
+    if (a->type->map.value[i].type == TAG_VAR)
+      type = a->type->map.value[i].data.var.type;
+    else {
+      if (! tag_type(a->type->map.value + i, &type)) {
+        err_puts("compare_struct: tag_type");
+        assert(! "compare_struct: tag_type");
+        abort();
+      }
+    }
     r = data_compare(type, (s8 *) a->data + a->type->offset[i],
                      (s8 *) b->data + b->type->offset[i]);
     if (r)
