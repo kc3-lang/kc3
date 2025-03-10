@@ -1419,9 +1419,14 @@ s_list ** str_split_words (const s_str *str, s_list **dest)
     if (! buf_read_word_into_str(&buf, t_str)) {
       if (! buf_read_to_str(&buf, t_str))
         goto clean;
+      if (! t_str->size)
+        *t = list_delete(*t);
       break;
     }
-    t = &(*t)->next.data.list;
+    if (t_str->size)
+      t = &(*t)->next.data.list;
+    else
+      *t = list_delete(*t);
   }
   *dest = tmp;
   return dest;

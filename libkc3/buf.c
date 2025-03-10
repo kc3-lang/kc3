@@ -1185,17 +1185,18 @@ s_str * buf_read_word_into_str(s_buf *buf, s_str *dest)
 {
   character c;
   sw r;
+  sw r1 = 0;
   s_str *result = NULL;
   s_buf_save save;
   s_buf tmp;
-  buf_save_init(buf, &save);  
+  buf_save_init(buf, &save);
 #if HAVE_PTHREAD
   rwlock_w(&buf->rwlock);
 #endif
   while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
          ! character_is_alphanum(c)) {
     buf_ignore(buf, r);
-  }    
+  }
   while (1) {
     if ((r = buf_read_character_utf8(buf, &c)) < 0) {
       if (false)
@@ -1203,9 +1204,15 @@ s_str * buf_read_word_into_str(s_buf *buf, s_str *dest)
       goto restore;
     }
     if (r && ! character_is_alphanum(c)) {
+      r1 = r;
+      while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
+             ! character_is_alphanum(c)) {
+        buf_ignore(buf, r);
+        r1 += r;
+      }
       buf_init(&tmp, false, buf->size, buf->ptr.pchar);
       tmp.rpos = save.rpos;
-      tmp.wpos = buf->rpos - r;
+      tmp.wpos = buf->rpos - r1;
       if (! buf_read_to_str(&tmp, dest)) {
         err_puts("buf_read_word_into_str: buf_read_to_str");
         goto restore;

@@ -119,6 +119,7 @@ TEST_CASE(character_is_alphanum)
   TEST_ASSERT(character_is_alphanum(character_1("é")));
   TEST_ASSERT(character_is_alphanum(character_1("π")));
   TEST_ASSERT(character_is_alphanum(character_1("ꝝ")));
+  TEST_ASSERT(! character_is_alphanum('!'));
 }
 TEST_CASE_END(character_is_alphanum)
 
