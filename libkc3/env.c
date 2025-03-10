@@ -1114,8 +1114,6 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     env_clean(env);
     return NULL;
   }
-  if (env != g_kc3_env_default)
-    env_global_set(env);
   return env;
 }
 
