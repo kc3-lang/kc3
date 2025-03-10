@@ -57,6 +57,11 @@ add {Str, :symbol, Str.has_characters?}
 replace {Str.has_characters?, :symbol_value,
          cfn Bool "str_has_characters" (Str, Str, Result)}
 add {Str, :symbol, Str.split_words}
-replace {Str.split_words, :symbol_value, fn (doc) { Str.split_list(doc, [".", ",", ";", ":", "!", "'", "\"", "(", ")", "{", "}", "?", "\\", "/", "_", " ", "\#", "\n", "\t", "\r", "\l"])}}
+replace {Str.split_words, :symbol_value, cfn List "str_split_words" (Str, Result)}
 add {Str, :symbol, Str.count_words}
-replace {Str.count_words, :symbol_value, fn (doc) { List.count_items(Str.split_words(doc)) }}
+replace {Str.count_words, :symbol_value, fn (doc) {
+  List.count_items(List.map(Str.split_words(doc), Str.to_lower))
+}}
+add {Str, :symbol, Str.to_lower}
+replace {Str.to_lower, :symbol_value,
+         cfn Str "str_init_to_lower" (Result, Str)}
