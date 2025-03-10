@@ -522,6 +522,8 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
                             &tag->data.list);
   case TAG_MAP:     return hash_update_map(hash, &tag->data.map);
   case TAG_PSTRUCT: return hash_update_struct(hash, tag->data.pstruct);
+  case TAG_PSTRUCT_TYPE:
+    return hash_update_struct_type(hash, tag->data.pstruct_type);
   case TAG_PTAG:    return hash_update_ptag(hash, &tag->data.ptag);
   case TAG_PTR:     return hash_update_ptr(hash, &tag->data.ptr);
   case TAG_PTR_FREE:
@@ -534,8 +536,6 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_S64:     return hash_update_s64(hash, tag->data.s64);
   case TAG_SW:      return hash_update_sw(hash, tag->data.sw);
   case TAG_STR:     return hash_update_str(hash, &tag->data.str);
-  case TAG_STRUCT_TYPE:
-    return hash_update_struct_type(hash, &tag->data.struct_type);
   case TAG_SYM:     return hash_update_sym(hash, &tag->data.sym);
   case TAG_TIME:    return hash_update_time(hash, &tag->data.time);
   case TAG_TUPLE:   return hash_update_tuple(hash, &tag->data.tuple);

@@ -136,6 +136,7 @@ HEADERS = \
 	"pcow.h" \
 	"pretty.h" \
 	"pstruct.h" \
+	"pstruct_type.h" \
 	"ptag.h" \
 	"ptr.h" \
 	"ptr_free.h" \
@@ -319,6 +320,7 @@ SOURCES = \
 	"pcow.c" \
 	"pretty.c" \
 	"pstruct.c" \
+	"pstruct_type.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
@@ -613,6 +615,7 @@ LO_SOURCES = \
 	"pcow.c" \
 	"pretty.c" \
 	"pstruct.c" \
+	"pstruct_type.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \

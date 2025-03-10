@@ -29,6 +29,7 @@
 #include "list.h"
 #include "map.h"
 #include "pstruct.h"
+#include "pstruct_type.h"
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
@@ -217,6 +218,68 @@ s_list * list_init_map_from_lists (s_list *list, s_list *keys,
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_map_from_lists(&tmp.tag, keys, values))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pstruct (s_list *list, const s_sym *module,
+                            s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pstruct(&tmp.tag, module))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pstruct_copy (s_list *list, p_struct  src,
+                                 s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pstruct_copy(&tmp.tag, src))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pstruct_with_data (s_list *list,
+                                      const s_sym *module, void *data,
+                                      bool free_data, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pstruct_with_data(&tmp.tag, module, data, free_data))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pstruct_type (s_list *list, const s_sym *module,
+                                 s_list *spec, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pstruct_type(&tmp.tag, module, spec))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pstruct_type_clean (s_list *list,
+                                       const s_struct_type *st,
+                                       const s_cfn *clean, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pstruct_type_clean(&tmp.tag, st, clean))
     return NULL;
   *list = tmp;
   return list;
@@ -447,69 +510,6 @@ s_list * list_init_str_empty (s_list *list, s_list *next)
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_str_empty(&tmp.tag))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
-s_list * list_init_pstruct (s_list *list, const s_sym *module,
-                            s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pstruct(&tmp.tag, module))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
-s_list * list_init_pstruct_copy (s_list *list, p_struct  src,
-                                 s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pstruct_copy(&tmp.tag, src))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
-s_list * list_init_pstruct_with_data (s_list *list,
-                                      const s_sym *module, void *data,
-                                      bool free_data, s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pstruct_with_data(&tmp.tag, module, data, free_data))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
-s_list * list_init_struct_type (s_list *list, const s_sym *module,
-                                s_list *spec, s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_struct_type(&tmp.tag, module, spec))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
-s_list * list_init_struct_type_update_clean (s_list *list,
-                                             const s_struct_type *st,
-                                             const s_cfn *clean,
-                                             s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_struct_type_update_clean(&tmp.tag, st, clean))
     return NULL;
   *list = tmp;
   return list;
@@ -860,6 +860,75 @@ s_list * list_new_map_from_lists (s_list *keys, s_list *values,
   return list;
 }
 
+s_list * list_new_pstruct (const s_sym *module, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pstruct(&list->tag, module)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pstruct_copy (p_struct  src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pstruct_copy(&list->tag, src)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pstruct_with_data (const s_sym *module, void *data,
+                                     bool free_data, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pstruct_with_data(&list->tag, module, data,
+                                   free_data)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pstruct_type (const s_sym *module, s_list *spec,
+                                s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pstruct_type(&list->tag, module, spec)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pstruct_type_clean (const s_struct_type *st,
+                                      const s_cfn *clean, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pstruct_type_clean(&list->tag, st, clean)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
 s_list * list_new_ptr (void *p, s_list *next)
 {
   s_list *list;
@@ -1118,76 +1187,6 @@ s_list * list_new_str_empty (s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_str_empty(&list->tag)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_pstruct (const s_sym *module, s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_pstruct(&list->tag, module)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_pstruct_copy (p_struct  src, s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_pstruct_copy(&list->tag, src)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_pstruct_with_data (const s_sym *module, void *data,
-                                     bool free_data, s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_pstruct_with_data(&list->tag, module, data,
-                                   free_data)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_struct_type (const s_sym *module, s_list *spec,
-                               s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_struct_type(&list->tag, module, spec)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_struct_type_update_clean (const s_struct_type *st,
-                                            const s_cfn *clean,
-                                            s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_struct_type_update_clean(&list->tag, st, clean)) {
     free(list);
     return NULL;
   }

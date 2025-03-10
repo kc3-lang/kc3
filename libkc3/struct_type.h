@@ -29,12 +29,9 @@ void            struct_type_clean (s_struct_type *st);
 s_struct_type * struct_type_init (s_struct_type *st,
                                   const s_sym *module,
                                   const s_list *spec);
-s_struct_type * struct_type_init_cast (s_struct_type *st,
-                                       const s_sym * const *type,
-                                       const s_tag *src);
-s_struct_type * struct_type_init_update_clean (s_struct_type *st,
-                                               const s_struct_type *src,
-                                               const s_cfn *clean);
+s_struct_type * struct_type_init_clean (s_struct_type *st,
+                                        const s_struct_type *src,
+                                        const s_cfn *clean);
 s_struct_type * struct_type_init_copy (s_struct_type *st,
                                        const s_struct_type *src);
 
@@ -42,6 +39,8 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
 void            struct_type_delete (s_struct_type *st);
 s_struct_type * struct_type_new (const s_sym *module,
                                  const s_list *spec);
+s_struct_type * struct_type_new_ref (s_struct_type *src);
+
 /* Observers. */
 void *           struct_type_copy_data (const s_struct_type *st,
                                         void *dest,

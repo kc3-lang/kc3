@@ -69,6 +69,7 @@
 #include "op.h"
 #include "ops.h"
 #include "pstruct.h"
+#include "pstruct_type.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -252,14 +253,14 @@ void env_clean (s_env *env)
     err_write_1("\n");
   }
   //facts_save_file(env->facts, "debug.facts"); // debug
-  ops_delete(env->ops);
-  env->ops = NULL;
   env_clean_globals(env);
   env_clean_toplevel(env);
   error_handler_delete_all(env->error_handler);
   env->error_handler = NULL;
   facts_delete(env->facts);
   env->facts = NULL;
+  ops_delete(env->ops);
+  env->ops = NULL;
   buf_file_close(env->in);
   buf_delete(env->in);
   env->in = NULL;
@@ -352,8 +353,8 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
     return NULL;
   }
   tag_init_sym(&tag_module_name, module);
-  tag_init_struct_type_update_clean(&tag_st, st,
-                                    &clean->data.callable->data.cfn);
+  tag_init_pstruct_type_clean(&tag_st, st,
+                              &clean->data.callable->data.cfn);
   tag_init_sym(&tag_struct_type, &g_sym_struct_type);
   if (! facts_replace_tags(env->facts, &tag_module_name,
                            &tag_struct_type, &tag_st)) {
@@ -456,7 +457,7 @@ const s_sym * env_defstruct (s_env *env, s_list *spec)
   s_tag tag_st;
   s_tag tag_struct_type;
   tag_init_sym(&tag_module_name, env->current_defmodule);
-  tag_init_struct_type(&tag_st, env->current_defmodule, spec);
+  tag_init_pstruct_type(&tag_st, env->current_defmodule, spec);
   tag_init_sym(&tag_struct_type, &g_sym_struct_type);
   if (! facts_replace_tags(env->facts, &tag_module_name,
                            &tag_struct_type, &tag_st)) {
@@ -2015,7 +2016,7 @@ s_struct_type ** env_struct_type_find (s_env *env,
     *dest = NULL;
     return dest;
   }
-  if (found->object->type != TAG_STRUCT_TYPE) {
+  if (found->object->type != TAG_PSTRUCT_TYPE) {
     tag_type(found->object, &type);
     err_write_1("env_struct_type_find: module ");
     err_inspect_sym(&module);
@@ -2026,7 +2027,7 @@ s_struct_type ** env_struct_type_find (s_env *env,
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  *dest = &found->object->data.struct_type;
+  *dest = found->object->data.pstruct_type;
   facts_with_cursor_clean(&cursor);
   return dest;
 }

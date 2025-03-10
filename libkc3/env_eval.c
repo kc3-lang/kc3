@@ -840,12 +840,12 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_FACT:
   case TAG_IDENT:
   case TAG_PSTRUCT:
+  case TAG_PSTRUCT_TYPE:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
   case TAG_QUOTE:
   case TAG_STR:
-  case TAG_STRUCT_TYPE:
   case TAG_SYM:
   case TAG_VAR:
     if (compare_tag(a, b)) {
@@ -1350,6 +1350,7 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_FACT:
   case TAG_IDENT:
   case TAG_INTEGER:
+  case TAG_PSTRUCT_TYPE:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
@@ -1359,7 +1360,6 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_S32:
   case TAG_S64:
   case TAG_STR:
-  case TAG_STRUCT_TYPE:
   case TAG_SW:
   case TAG_SYM:
   case TAG_U8:
@@ -1589,16 +1589,16 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_F128:
   case TAG_FACT:
   case TAG_INTEGER:
-  case TAG_RATIO:
+  case TAG_PSTRUCT_TYPE:
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
+  case TAG_RATIO:
   case TAG_S8:
   case TAG_S16:
   case TAG_S32:
   case TAG_S64:
   case TAG_STR:
-  case TAG_STRUCT_TYPE:
   case TAG_SW:
   case TAG_SYM:
   case TAG_U8:

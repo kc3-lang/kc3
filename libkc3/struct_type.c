@@ -37,17 +37,20 @@ void * struct_type_copy_data (const s_struct_type *st, void *dest,
   uw count;
   uw i;
   uw offset;
-  const s_sym *sym;
+  const s_sym *type;
   assert(st);
   assert(dest);
   assert(src);
   i = 0;
   count = st->map.count;
   while (i < count) {
-    if (! tag_type(st->map.value + i, &sym))
-      return NULL;
+    if (st->map.value[i].type == TAG_VAR)
+      type = st->map.value[i].data.var.type;
+    else
+      if (! tag_type(st->map.value + i, &type))
+        return NULL;
     offset = st->offset[i];
-    if (! data_init_copy(sym, (s8 *) dest + offset,
+    if (! data_init_copy(type, (s8 *) dest + offset,
                          (s8 *) src + offset))
       return NULL;
     i++;
@@ -58,8 +61,15 @@ void * struct_type_copy_data (const s_struct_type *st, void *dest,
 void struct_type_delete (s_struct_type *st)
 {
   assert(st);
-  struct_type_clean(st);
-  free(st);
+  if (st->ref_count <= 0) {
+    err_puts("struct_type_delete: invalid reference count");
+    assert(! "struct_type_delete: invalid reference count");
+    abort();
+  }
+  if (! --st->ref_count) {
+    struct_type_clean(st);
+    free(st);
+  }
 }
 
 bool * struct_type_exists (const s_sym *module, bool *dest)
@@ -159,47 +169,14 @@ s_struct_type * struct_type_init (s_struct_type *st,
   }
   if (sizeof(long) == 4)
     tmp.size = (offset + 3) / 4 * 4;
-  else
+  else {
 #ifdef __APPLE__
     tmp.size = (offset + 7) / 8 * 8;
 #else
     tmp.size = (offset + 15) / 16 * 16;
 #endif
-  *st = tmp;
-  return st;
-}
-
-s_struct_type * struct_type_init_cast (s_struct_type *st,
-                                       const s_sym * const *type,
-                                       const s_tag *tag)
-{
-  assert(st);
-  assert(tag);
-  switch (tag->type) {
-  case TAG_STRUCT_TYPE:
-    if (*type == &g_sym_StructType)
-      return struct_type_init_copy(st, &tag->data.struct_type);
-  default:
-    break;
   }
-  err_write_1("struct_type_init_cast: cannot cast ");
-  err_write_1(tag_type_to_string(tag->type));
-  err_puts(" to StructType");
-  assert(! "struct_type_init_cast: cannot cast to StructType");
-  return NULL;
-}
-
-s_struct_type * struct_type_init_update_clean (s_struct_type *st,
-                                               const s_struct_type *src,
-                                               const s_cfn *clean)
-{
-  s_struct_type tmp = {0};
-  assert(st);
-  assert(src);
-  assert(clean);
-  if (! struct_type_init_copy(&tmp, src))
-    return NULL;
-  tmp.clean = (f_clean) clean->ptr.f;
+  tmp.ref_count = 1;
   *st = tmp;
   return st;
 }
@@ -224,6 +201,7 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
   }
   memcpy(tmp.offset, src->offset, tmp.map.count * sizeof(uw));
   tmp.size = src->size;
+  tmp.ref_count = 1;
   *st = tmp;
   return st;
 }
@@ -258,6 +236,17 @@ s_struct_type * struct_type_new (const s_sym *module,
     return NULL;
   }
   return st;
+}
+
+s_struct_type * struct_type_new_ref (s_struct_type *src)
+{
+  if (src->ref_count <= 0) {
+    err_puts("struct_type_new_ref: invalid reference count");
+    assert(! "struct_type_new_ref: invalid reference count");
+    return NULL;
+  }
+  src->ref_count++;
+  return src;
 }
 
 uw struct_type_padding (uw offset, uw size)

@@ -64,7 +64,7 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
   if (type == &g_sym_Struct)
     return buf_inspect_struct(buf, * (p_struct *) data);
   if (type == &g_sym_StructType)
-    return buf_inspect_struct_type(buf, data);
+    return buf_inspect_struct_type(buf, * (p_struct_type *) data);
   if (type == &g_sym_Sw)
     return buf_inspect_sw(buf, data);
   if (type == &g_sym_Sym)
@@ -156,7 +156,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
   if (type == &g_sym_Struct)
     return buf_inspect_struct_size(pretty, * (p_struct *) data);
   if (type == &g_sym_StructType)
-    return buf_inspect_struct_type_size(pretty, data);
+    return buf_inspect_struct_type_size(pretty, * (p_struct_type *) data);
   if (type == &g_sym_Sw)
     return buf_inspect_sw_size(pretty, data);
   if (type == &g_sym_Sym)
@@ -282,7 +282,7 @@ bool data_clean (const s_sym *type, void *data)
     return true;
   }
   if (type == &g_sym_StructType) {
-    struct_type_clean(data);
+    pstruct_type_clean(data);
     return true;
   }
   if (type == &g_sym_Sw) {
@@ -388,7 +388,8 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
   if (type == &g_sym_Struct)
     return compare_struct(*(p_struct *) a, * (p_struct *) b);
   if (type == &g_sym_StructType)
-    return compare_struct_type(a, b);
+    return compare_struct_type(* (p_struct_type *) a,
+                               * (p_struct_type *) b);
   if (type == &g_sym_Sw)
     return compare_sw(*(sw *) a, *(sw *) b);
   if (type == &g_sym_Sym)
@@ -484,7 +485,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
   if (type == &g_sym_Struct)
     return hash_update_struct(hash, * (p_struct *) data);
   if (type == &g_sym_StructType)
-    return hash_update_struct_type(hash, data);
+    return hash_update_struct_type(hash, * (p_struct_type *) data);
   if (type == &g_sym_Sw)
     return hash_update_sw(hash, *(sw *) data);
   if (type == &g_sym_Sym)
@@ -576,7 +577,7 @@ void * data_init_cast (void *data, const s_sym * const *type,
   if (t == &g_sym_Struct)
     return pstruct_init_cast(data, type, tag);
   if (t == &g_sym_StructType)
-    return struct_type_init_cast(data, type, tag);
+    return pstruct_type_init_cast(data, type, tag);
   if (t == &g_sym_Sw)
     return sw_init_cast(data, type, tag);
   if (t == &g_sym_Sym)
@@ -668,7 +669,7 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_Struct)
     return pstruct_init_copy(data, src);
   if (type == &g_sym_StructType)
-    return struct_type_init_copy(data, src);
+    return pstruct_type_init_copy(data, src);
   if (type == &g_sym_Sw)
     return sw_init_copy(data, src);
   if (type == &g_sym_Sym)

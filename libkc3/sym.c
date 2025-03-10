@@ -1061,7 +1061,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     return true;
   }
   if (sym == &g_sym_StructType) {
-    *dest = TAG_STRUCT_TYPE;
+    *dest = TAG_PSTRUCT_TYPE;
     return true;
   }
   if (sym == &g_sym_Sw) {

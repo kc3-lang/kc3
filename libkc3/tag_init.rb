@@ -337,6 +337,21 @@ class TagInitList
        TagInit.new("map", "from_lists", "TAG_MAP", :init_mode_init,
                    [Arg.new("s_list *", "keys"),
                     Arg.new("s_list *", "values")]),
+       TagInit.new("pstruct", "TAG_PSTRUCT", :init_mode_init,
+                   [Arg.new("const s_sym *", "module")]),
+       TagInit.new("pstruct", "copy", "TAG_PSTRUCT", :init_mode_init,
+                   [Arg.new("p_struct ", "src")]),
+       TagInit.new("pstruct", "with_data", "TAG_PSTRUCT", :init_mode_init,
+                   [Arg.new("const s_sym *", "module"),
+                    Arg.new("void *", "data"),
+                    Arg.new("bool", "free_data")]),
+       TagInit.new("pstruct_type", "TAG_PSTRUCT_TYPE", :init_mode_init,
+                   [Arg.new("const s_sym *", "module"),
+                    Arg.new("s_list *", "spec")]),
+       TagInit.new("pstruct_type", "clean", "TAG_PSTRUCT_TYPE",
+                   :init_mode_init,
+                   [Arg.new("const s_struct_type *", "st"),
+                    Arg.new("const s_cfn *", "clean")]),
        TagInit.new("ptr", "TAG_PTR", :init_mode_init,
                    [Arg.new("void *", "p")]),
        TagInit.new("ptr_free", "TAG_PTR_FREE", :init_mode_init,
@@ -381,21 +396,6 @@ class TagInitList
        TagInit.new("str", "copy", "TAG_STR", :init_mode_init,
                    [Arg.new("const s_str *", "src")]),
        TagInit.new("str", "empty", "TAG_STR", :init_mode_init, []),
-       TagInit.new("pstruct", "TAG_PSTRUCT", :init_mode_init,
-                   [Arg.new("const s_sym *", "module")]),
-       TagInit.new("pstruct", "copy", "TAG_PSTRUCT", :init_mode_init,
-                   [Arg.new("p_struct ", "src")]),
-       TagInit.new("pstruct", "with_data", "TAG_PSTRUCT", :init_mode_init,
-                   [Arg.new("const s_sym *", "module"),
-                    Arg.new("void *", "data"),
-                    Arg.new("bool", "free_data")]),
-       TagInit.new("struct_type", "TAG_STRUCT_TYPE", :init_mode_init,
-                   [Arg.new("const s_sym *", "module"),
-                    Arg.new("s_list *", "spec")]),
-       TagInit.new("struct_type", "update_clean", "TAG_STRUCT_TYPE",
-                   :init_mode_init,
-                   [Arg.new("const s_struct_type *", "st"),
-                    Arg.new("const s_cfn *", "clean")]),
        TagInit.new("sw", "TAG_SW", :init_mode_direct,
                    [Arg.new("sw", "i")]),
        TagInit.new("sym", "TAG_SYM", :init_mode_direct,
@@ -545,6 +545,7 @@ tag_init_c.content = <<EOF
 #include "list.h"
 #include "map.h"
 #include "pstruct.h"
+#include "pstruct_type.h"
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
@@ -602,6 +603,7 @@ list_init_c.content = <<EOF
 #include "list.h"
 #include "map.h"
 #include "pstruct.h"
+#include "pstruct_type.h"
 #include "ptr.h"
 #include "ptr_free.h"
 #include "quote.h"
