@@ -81,7 +81,7 @@ bool   character_is_alphabetic (character c)
 bool  character_is_alphanum (character c)
 {
   return (c < UCD_MAX &&
-          g_ucd[c].flags & (UCD_NUMBER_DIGIT | UCD_LETTER));  
+          g_ucd[c].flags & (UCD_NUMBER | UCD_LETTER));  
 }
 
 bool character_is_digit (character c)
