@@ -1,9 +1,31 @@
 defmodule Spam.Bayes do
-  learn = fn (type, doc) {
+
+  def classes = [:spam, :ham]
+
+  def db = Facts.database()
+
+  #if Facts.open(db, "db/spam.facts") do :ok else end
+
+  def p_s = 0.8
+
+  def p_h = 1.0 - p_s
+
+  def p_m_s = fn (m) {
+    p = Facts.first_with_tags(db, m, :spam_bayes_p_m_s, p = ?,
+                 fn (fact) { p })
+    p || 0.0
+  }
+
+  def learn_p_m_s = fn (m, p) {
+    Facts.replace_tags(db, m, :spam_bayes_p_m_s, p)
+  }
+
+  def learn = fn (class, doc) {
     error = "Unknown error"
     r = if type(doc) = Str do
-      if List.has?([:spam, :ham]) = true do
-        words = Str.split_words(doc)
+      if List.has?(classes, class) = true do
+        words = List.map(Str.split_words(doc), Str.to_lower)
+        puts("#{type} : #{inspect(words)}")
       end
     end
     if r do
@@ -12,3 +34,5 @@ defmodule Spam.Bayes do
       {:error, error}
     end
   }
+
+end
