@@ -41,9 +41,7 @@ s_struct * struct_new_with_data (const s_sym *module, void *data,
 s_struct * struct_new_with_type (p_struct_type type);
 
 /* Operators. */
-s_tag *    struct_access (s_struct *s,
-                          s_list *key,
-                          s_tag *dest);
+s_tag *    struct_access (s_struct *s, s_list *key, s_tag *dest);
 s_tag *    struct_access_sym (s_struct *s, const s_sym *key,
                               s_tag *dest);
 s_struct * struct_allocate (s_struct *s);

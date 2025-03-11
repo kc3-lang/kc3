@@ -77,7 +77,7 @@ s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
   data = struct_get_w(s, key);
   if (! data)
     return NULL;
-  if (type != &g_sym_Tag) {
+  if (type != &g_sym_Tag && type != &g_sym_Time) {
     if (! sym_to_tag_type(type, &tmp.type))
       return NULL;
     if (! struct_type_find(type, &st))
@@ -195,8 +195,12 @@ const s_sym ** struct_get_type (const s_struct *s, const s_sym *key,
                                 const s_sym **dest)
 {
   s_tag tag_key;
+  const s_sym *tmp = NULL;
   tag_init_sym(&tag_key, key);
-  return map_get_type(&s->struct_type->map, &tag_key, dest);
+  if (! map_get_type(&s->struct_type->map, &tag_key, &tmp))
+    return NULL;
+  *dest = tmp;
+  return NULL;
 }
 
 u8 struct_get_u8 (const s_struct *s, const s_sym *key)

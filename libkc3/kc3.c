@@ -56,6 +56,7 @@
 #include "struct_type.h"
 #include "sym.h"
 #include "tag.h"
+#include "time.h"
 #include "u8.h"
 
 const s_str g_kc3_base_binary = {{NULL}, 2, {"01"}};
@@ -89,7 +90,6 @@ int fork (void)
 s_tag * kc3_access (s_tag *tag, s_list **key,
                     s_tag *dest)
 {
-  p_struct s = NULL;
   assert(tag);
   assert(key);
   assert(dest);
@@ -109,16 +109,7 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
   case TAG_PSTRUCT:
     return struct_access(tag->data.pstruct, *key, dest);
   case TAG_TIME:
-    if (! pstruct_init_with_data(&s, &g_sym_Time,
-                                 (s_time *) &tag->data.time,
-                                 false))
-      return NULL;
-    if (! struct_access(s, *key, dest)) {
-      pstruct_clean(&s);
-      return NULL;
-    }
-    pstruct_clean(&s);
-    return dest;
+    return time_access(&tag->data.time, *key, dest);
   default:
     break;
   }

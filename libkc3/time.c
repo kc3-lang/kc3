@@ -20,6 +20,24 @@
 #include "tag.h"
 #include "time.h"
 
+s_tag * time_access (s_time *time, s_list *key, s_tag *dest)
+{
+  s_tag *k;
+  assert(time);
+  assert(key);
+  assert(dest);
+  if (! key)
+    return NULL;
+  k = &key->tag;
+  if (k->type != TAG_SYM)
+    return NULL;
+  if (k->data.sym == &g_sym_tv_sec)
+    return tag_init_uw(dest, time->tv_sec);
+  if (k->data.sym == &g_sym_tv_nsec)
+    return tag_init_uw(dest, time->tv_nsec);
+  return NULL;
+}
+
 s_time * time_allocate (s_time *time)
 {
   time->tag = alloc(2 * sizeof(s_tag));

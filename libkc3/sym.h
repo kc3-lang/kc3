@@ -125,6 +125,8 @@ extern const s_sym g_sym_symbol;
 extern const s_sym g_sym_symbol_value;
 extern const s_sym g_sym_then;
 extern const s_sym g_sym_timeout;
+extern const s_sym g_sym_tv_nsec;
+extern const s_sym g_sym_tv_sec;
 extern const s_sym g_sym_w;
 extern const s_sym g_sym_write;
 extern const s_sym g_sym_wx;

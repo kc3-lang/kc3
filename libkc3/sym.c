@@ -124,6 +124,8 @@ const s_sym g_sym_symbol          = {{{NULL},  6, {"symbol"}}};
 const s_sym g_sym_symbol_value    = {{{NULL}, 12, {"symbol_value"}}};
 const s_sym g_sym_then            = {{{NULL},  4, {"then"}}};
 const s_sym g_sym_timeout         = {{{NULL},  7, {"timeout"}}};
+const s_sym g_sym_tv_nsec         = {{{NULL},  7, {"tv_nsec"}}};
+const s_sym g_sym_tv_sec          = {{{NULL},  6, {"tv_sec"}}};
 const s_sym g_sym_w               = {{{NULL},  1, {"w"}}};
 const s_sym g_sym_write           = {{{NULL},  5, {"write"}}};
 const s_sym g_sym_wx              = {{{NULL},  2, {"wx"}}};
@@ -479,6 +481,8 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_symbol_value, NULL);
   sym_register(&g_sym_then, NULL);
   sym_register(&g_sym_timeout, NULL);
+  sym_register(&g_sym_tv_nsec, NULL);
+  sym_register(&g_sym_tv_sec, NULL);
   sym_register(&g_sym_w, NULL);
   sym_register(&g_sym_write, NULL);
   sym_register(&g_sym_wx, NULL);
