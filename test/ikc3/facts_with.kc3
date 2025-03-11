@@ -2,20 +2,20 @@ require KC3.Op
 quote Facts.with(Facts.env_db(), [[op = ?, :is_a, :op],
                                   [op, :op_sym, sym = ?]],
   fn (fact) {
-    puts("#{inspect(sym) #{inspect(op)}")
+    puts("#{inspect(sym)} #{inspect(op)}")
     1
   }
 )
 Facts.with(Facts.env_db(), [[op = ?, :is_a, :op],
                             [op, :op_sym, sym = ?]], fn (fact) {
-  puts("#{inspect(sym) #{inspect(op)}")
+  puts("#{inspect(sym)} #{inspect(op)}")
   1
 })
-quote Facts.with(Facts.env_db(), [[op = ?, :is_a, :op]], fn (fact) {
-  puts("#{inspect(op)}")
+quote Facts.with(Facts.env_db(), [[op = ?, :op_sym, sym = ?]], fn (fact) {
+  puts("#{inspect(sym)} #{inspect(op)}")
   2
 })
-Facts.with(Facts.env_db(), [[op = ?, :is_a, :op]], fn (fact) {
-  puts("#{inspect(op)}")
+Facts.with(Facts.env_db(), [[op = ?, :op_sym, sym = ?]], fn (fact) {
+  puts("#{inspect(sym)} #{inspect(op)}")
   2
 })

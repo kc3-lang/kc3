@@ -18,10 +18,12 @@
 /* Stack-allocation compatible functions, call ops_clean after use. */
 void    ops_clean (s_ops *ops);
 s_ops * ops_init (s_ops *ops);
+s_ops * ops_init_copy (s_ops *ops, s_ops *src);
 
 /* Heap-allocation compatible functions, call ops_delete after use. */
 void    ops_delete (s_ops *ops);
 s_ops * ops_new (void);
+s_ops * ops_new_copy (s_ops *src);
 
 /* Observers. */
 s8      ops_compare_tag (const s_tag *a, const s_tag *b);
