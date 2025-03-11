@@ -438,7 +438,7 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
   s_tag tag_is_a = {0};
   s_tag tag_sym = {0};
   s_tag tag_sym_op = {0};
-  s_tag tag_sym_sym = {0};
+  s_tag tag_sym_op_sym = {0};
   assert(env);
   assert(tag_op);
   assert(env->ops);
@@ -456,10 +456,10 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_sym, op->sym);
   tag_init_sym(&tag_sym_op, &g_sym_op);
-  tag_init_sym(&tag_sym_sym, &g_sym_sym);
+  tag_init_sym(&tag_sym_op_sym, &g_sym_op_sym);
   if (! facts_add_tags(env->facts, &tag_id, &tag_is_a, &tag_sym_op))
     return false;
-  if (! facts_add_tags(env->facts, &tag_id, &tag_sym_sym, &tag_sym))
+  if (! facts_add_tags(env->facts, &tag_id, &tag_sym_op_sym, &tag_sym))
     return false;
   return true;
 }

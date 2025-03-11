@@ -106,6 +106,7 @@ const s_sym g_sym_op_callable     = {{{NULL}, 11, {"op_callable"}}};
 const s_sym g_sym_op_equal        = {{{NULL},  8, {"op_equal"}}};
 const s_sym g_sym_op_pin          = {{{NULL},  6, {"op_pin"}}};
 const s_sym g_sym_op_precedence   = {{{NULL}, 13, {"op_precedence"}}};
+const s_sym g_sym_op_sym          = {{{NULL},  6, {"op_sym"}}};
 const s_sym g_sym_persist         = {{{NULL},  7, {"persist"}}};
 const s_sym g_sym_r               = {{{NULL},  1, {"r"}}};
 const s_sym g_sym_read            = {{{NULL},  4, {"read"}}};
@@ -461,6 +462,7 @@ void sym_init_g_sym (void)
   sym_register(&g_sym_op_equal, NULL);
   sym_register(&g_sym_op_pin, NULL);
   sym_register(&g_sym_op_precedence, NULL);
+  sym_register(&g_sym_op_sym, NULL);
   sym_register(&g_sym_persist, NULL);
   sym_register(&g_sym_r, NULL);
   sym_register(&g_sym_read, NULL);

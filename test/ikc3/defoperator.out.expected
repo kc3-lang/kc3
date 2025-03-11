@@ -4,12 +4,16 @@
         special: false,
         precedence: 0,
         associativity: 1,
-        callable: fn (a, b) { a + b },
-        ref_count: (Sw) 1}
+        callable: fn (a, b) { a + b }}
 defoperator %KC3.Op{sym: :****,
                     precedence: 13,
                     callable: cfn Tag "tag_mul" (Tag, Tag, Result)}
-:****
+%KC3.Op{sym: :****,
+        arity: 2,
+        special: false,
+        precedence: 13,
+        associativity: 1,
+        callable: cfn Tag "tag_mul" (Tag, Tag, Result)}
 4 **** 4
 16
 4 **** 4 **** 4

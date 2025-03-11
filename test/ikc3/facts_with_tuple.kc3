@@ -1,8 +1,8 @@
-quote Facts.with_tuple(Facts.env_db(), {KC3, :op, op = ?}, fn (fact) {
+quote Facts.with_tuple(Facts.env_db(), {op = ?, :op_sym, sym = ?}, fn (fact) {
   puts(fact.object)
   void
 })
-Facts.with_tuple(Facts.env_db(), {KC3, :op, op = ?}, fn (fact) {
+Facts.with_tuple(Facts.env_db(), {op = ?, :op_sym, sym = ?}, fn (fact) {
   puts(fact.object)
   void
 })

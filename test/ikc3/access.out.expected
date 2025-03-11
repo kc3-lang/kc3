@@ -50,8 +50,7 @@ op = %KC3.Op{callable: fn (a, b) { a + b }}
         special: false,
         precedence: 0,
         associativity: 1,
-        callable: fn (a, b) { a + b },
-        ref_count: (Sw) 1}
+        callable: fn (a, b) { a + b }}
 op.sym
 :+
 op[:sym]
