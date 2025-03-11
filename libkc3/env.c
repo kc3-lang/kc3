@@ -1080,8 +1080,6 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   if (! env)
     return NULL;
   env->parent_env = g_kc3_env_global;
-  if (! env->parent_env)
-    env->parent_env = env;
   g_kc3_env_global = env;
   *env = (s_env) {0};
   if (! env_init_args(env, argc, argv))

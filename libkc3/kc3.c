@@ -1048,6 +1048,11 @@ void kc3_system_pipe_exec (s32 pipe_w, char **argv,
   _exit(1);
 }
 
+s32 kc3_tag_type (const s_tag *tag)
+{
+  return tag->type;
+}
+
 s_tag * kc3_thread_delete (u_ptr_w *thread, s_tag *dest)
 {
   pthread_t t;

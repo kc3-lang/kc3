@@ -24,7 +24,11 @@ void abort (void);
     sw assert_line = __LINE__;                                         \
     if (! (test)) {                                                    \
       s_env *env;                                                      \
-      env = env_default();                                             \
+      env = env_global();                                              \
+      if (! env)                                                       \
+        env = env_default();                                           \
+      if (! env)                                                       \
+        abort();                                                       \
       if (env->argv && env->argv[0]) {                                 \
         err_write_1(env->argv[0]);                                     \
         err_write_1(": ");                                             \

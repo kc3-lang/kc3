@@ -4691,14 +4691,6 @@ sw buf_parse_time_as_sw (s_buf *buf, s_time *dest)
       if ((r = buf_ignore_spaces(buf)) < 0)
         goto restore;
       result += r;
-      if ((r = buf_read_1(buf, "}")) < 0)
-        goto restore;
-      if (r > 0) {
-        result += r;
-        *dest = tmp;
-        r = result;
-        goto clean;
-      }
       if ((r = buf_read_1(buf, ",")) < 0)
         goto restore;
       if (r > 0) {
@@ -4710,6 +4702,14 @@ sw buf_parse_time_as_sw (s_buf *buf, s_time *dest)
           goto restore;
         result += r;
       }
+    }
+    if ((r = buf_read_1(buf, "}")) < 0)
+      goto restore;
+    if (r > 0) {
+      result += r;
+      *dest = tmp;
+      r = result;
+      goto clean;
     }
   }
   r = -1;
