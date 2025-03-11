@@ -168,6 +168,7 @@ s_ops * ops_init_copy (s_ops *ops, s_ops *src)
   while (i < tmp.ht.size) {
     if (src->ht.items[i])
       tmp.ht.items[i] = list_new_copy(src->ht.items[i]);
+    i++;
   }
   tmp.ht.count = src->ht.count;
   *ops = tmp;

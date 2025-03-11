@@ -130,16 +130,16 @@ test_cov:
 	time ./libkc3_test_cov
 	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./ekc3_test
-	IKC3=${SRC_TOP}/ikc3s/ikc3s_cov time ./json_test
-	IKC3=${SRC_TOP}/ikc3s/ikc3s_cov time ./markdown_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./json_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./markdown_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./http_test
 
 test_debug: libkc3_test_debug
 	time ./libkc3_test_debug
 	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./ekc3_test
-	IKC3=${SRC_TOP}/ikc3s/ikc3s_debug time ./json_test
-	IKC3=${SRC_TOP}/ikc3s/ikc3s_debug time ./markdown_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./json_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./markdown_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./http_test
 
 test_ekc3:
