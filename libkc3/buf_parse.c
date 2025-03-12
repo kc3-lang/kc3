@@ -4160,6 +4160,7 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
   sw r;
   sw result = 0;
   s_buf_save save = {0};
+  s_tag tmp = {0};
   const s_sym *type = NULL;
   assert(buf);
   assert(dest);
@@ -4190,8 +4191,8 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
     goto restore;
   result += r;
   if (type) {
-    sym_to_tag_type(type, &dest->type);
-    if (! tag_to_pointer(dest, type, &data)) {
+    sym_to_tag_type(type, &tmp.type);
+    if (! tag_to_pointer(&tmp, type, &data)) {
       r = -1;
       goto restore;
     }
@@ -4199,6 +4200,8 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
       r = -1;
       goto restore;
     }
+    tag_clean(&i);
+    *dest = tmp;
   }
   else {
     tag_integer_reduce(&i);
