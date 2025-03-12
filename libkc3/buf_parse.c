@@ -2369,6 +2369,7 @@ sw buf_parse_integer_unsigned_dec (s_buf *buf, s_integer *dest)
   sw result = 0;
   s_buf_save save;
   s_integer tmp = {0};
+  s_integer tmp2 = {0};
   buf_save_init(buf, &save);
   if ((r = buf_parse_digit_dec(buf, &digit)) <= 0)
     goto clean;
@@ -2379,9 +2380,10 @@ sw buf_parse_integer_unsigned_dec (s_buf *buf, s_integer *dest)
          (result += r,
           (r = buf_parse_digit_dec(buf, &digit)) > 0)) {
     result += r;
-    if (mp_mul_d(&tmp.mp_int, radix, &tmp.mp_int) != MP_OKAY ||
-        mp_add_d(&tmp.mp_int, digit, &tmp.mp_int) != MP_OKAY)
+    if (mp_mul_d(&tmp.mp_int, radix, &tmp2.mp_int) != MP_OKAY ||
+        mp_add_d(&tmp2.mp_int, digit, &tmp.mp_int) != MP_OKAY)
       goto error;
+    integer_clean(&tmp2);
   }
   *dest = tmp;
   r = result;
@@ -4199,8 +4201,8 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
     }
   }
   else {
+    tag_integer_reduce(&i);
     *dest = i;
-    tag_integer_reduce(dest);
   }
   r = result;
   goto clean;

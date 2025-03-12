@@ -792,9 +792,6 @@ s_tag * tag_integer_reduce (s_tag *tag)
     integer_clean(&j);
     return tag;
   case TAG_U8:
-    integer_init_u8(&j, tag->data.u8);
-    integer_reduce(&j, tag);
-    integer_clean(&j);
     return tag;
   case TAG_U16:
     integer_init_u16(&j, tag->data.u16);
