@@ -47,3 +47,7 @@ List.length([1, 2])
 2
 List.length([1, 2, 3, 4, 5])
 5
+type(":")
+Str
+[":"]
+[":"]
