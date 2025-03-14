@@ -3998,8 +3998,8 @@ sw buf_parse_tag_callable (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_callable(buf, &dest->data.callable)) > 0)
-    dest->type = TAG_CALLABLE;
+  if ((r = buf_parse_callable(buf, &dest->data.pcallable)) > 0)
+    dest->type = TAG_PCALLABLE;
   return r;
 }
 

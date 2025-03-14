@@ -68,6 +68,7 @@
 #include "module.h"
 #include "op.h"
 #include "ops.h"
+#include "pcallable.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "str.h"
@@ -205,16 +206,17 @@ bool env_call_get (s_env *env, s_call *call)
     err_puts(" :symbol_value not found");
     return false;
   }
-  if (tag_var.type != TAG_CALLABLE) {
+  if (tag_var.type != TAG_PCALLABLE) {
     err_write_1("env_call_get: ");
     err_inspect_ident(&call->ident);
     err_puts(" is not a Callable");
     facts_cursor_clean(&cursor);
     return false;
   }
-  call->callable = callable_new_ref(tag_var.data.callable);
-  if (call->callable->type == CALLABLE_FN) {
-    fn_set_name_if_null(&call->callable->data.fn,
+  if (! pcallable_init_copy(&call->pcallable, &tag_var.data.pcallable))
+    return false;
+  if (call->pcallable->type == CALLABLE_FN) {
+    fn_set_name_if_null(&call->pcallable->data.fn,
                         call->ident.module,
                         call->ident.sym);
   }
@@ -226,12 +228,12 @@ bool env_call_get (s_env *env, s_call *call)
     return false;
   }
   if (found) {
-    switch (call->callable->type) {
+    switch (call->pcallable->type) {
     case CALLABLE_CFN:
-      call->callable->data.cfn.special_operator = true;
+      call->pcallable->data.cfn.special_operator = true;
       break;
     case CALLABLE_FN:
-      call->callable->data.fn.special_operator = true;
+      call->pcallable->data.fn.special_operator = true;
       break;
     case CALLABLE_VOID:
       err_puts("env_call_get: void callable");
@@ -357,8 +359,8 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
     assert(! "env_def_clean: module struct type not found");
     return NULL;
   }
-  if (clean->type != TAG_CALLABLE ||
-      clean->data.callable->type != CALLABLE_CFN) {
+  if (clean->type != TAG_PCALLABLE ||
+      clean->data.pcallable->type != CALLABLE_CFN) {
     err_write_1("env_def_clean: module ");
     err_inspect_sym(&module);
     err_write_1(": clean method must be a Cfn");
@@ -367,7 +369,7 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
   }
   tag_init_sym(&tag_module_name, module);
   tag_init_pstruct_type_clean(&tag_st, st,
-                              &clean->data.callable->data.cfn);
+                              &clean->data.pcallable->data.cfn);
   tag_init_sym(&tag_struct_type, &g_sym_struct_type);
   if (! facts_replace_tags(env->facts, &tag_module_name,
                            &tag_struct_type, &tag_st)) {
@@ -522,7 +524,7 @@ s_fact_w * env_fact_w_eval (s_env *env, s_fact_w *fact,
   assert(env);
   assert(fact);
   assert(dest);
-  if (fact->subject.type == TAG_CALLABLE) {
+  if (fact->subject.type == TAG_PCALLABLE) {
     if (! env_eval_tag(env, &fact->subject, &tmp.subject))
       return NULL;
   }
@@ -530,7 +532,7 @@ s_fact_w * env_fact_w_eval (s_env *env, s_fact_w *fact,
     if (! tag_init_copy(&tmp.subject, &fact->subject))
       return NULL;
   }
-  if (fact->predicate.type == TAG_CALLABLE) {
+  if (fact->predicate.type == TAG_PCALLABLE) {
     if (! env_eval_tag(env, &fact->predicate, &tmp.predicate))
       return NULL;
   }
@@ -538,7 +540,7 @@ s_fact_w * env_fact_w_eval (s_env *env, s_fact_w *fact,
     if (! tag_init_copy(&tmp.predicate, &fact->predicate))
       return NULL;
   }
-  if (fact->object.type == TAG_CALLABLE) {
+  if (fact->object.type == TAG_PCALLABLE) {
     if (! env_eval_tag(env, &fact->object, &tmp.object))
       return NULL;
   }
@@ -985,13 +987,13 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
     return NULL;
   }
   if (fact) {
-    if (tmp.type == TAG_CALLABLE) {
-      switch (tmp.data.callable->type) {
+    if (tmp.type == TAG_PCALLABLE) {
+      switch (tmp.data.pcallable->type) {
       case CALLABLE_CFN:
-        tmp.data.callable->data.cfn.special_operator = true;
+        tmp.data.pcallable->data.cfn.special_operator = true;
         break;
       case CALLABLE_FN:
-        tmp.data.callable->data.fn.special_operator = true;
+        tmp.data.pcallable->data.fn.special_operator = true;
         break;
       case CALLABLE_VOID:
         err_puts("env_ident_get: CALLABLE_VOID");
@@ -1148,6 +1150,11 @@ s_env * env_init_args (s_env *env, int *argc, char ***argv)
       argc_prev = *argc;
       if (**argv && ! strcmp(**argv, "--trace")) {
         env->trace = true;
+        (*argc)--;
+        (*argv)++;
+      }
+      if (**argv && ! strcmp(**argv, "--copy")) {
+        env->pass_by_copy = true;
         (*argc)--;
         (*argv)++;
       }
@@ -2065,8 +2072,8 @@ f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  if (found->object->type != TAG_CALLABLE ||
-      found->object->data.callable->type != CALLABLE_CFN) {
+  if (found->object->type != TAG_PCALLABLE ||
+      found->object->data.pcallable->type != CALLABLE_CFN) {
     tag_type(found->object, &type);
     err_write_1("env_struct_type_get_clean: ");
     err_inspect_sym(&module);
@@ -2077,17 +2084,17 @@ f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  if (found->object->data.callable->data.cfn.arity != 1) {
+  if (found->object->data.pcallable->data.cfn.arity != 1) {
     err_write_1("env_struct_type_get_clean: ");
     err_inspect_sym(&module);
     err_write_1(": clean arity is ");
-    err_inspect_u8(&found->object->data.callable->data.cfn.arity);
+    err_inspect_u8(&found->object->data.pcallable->data.cfn.arity);
     err_write_1(", it should be 1.\n");
     assert(! "env_struct_type_get_clean: invalid arity");
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
-  tmp = (f_clean) found->object->data.callable->data.cfn.ptr.f;
+  tmp = (f_clean) found->object->data.pcallable->data.cfn.ptr.f;
   facts_with_cursor_clean(&cursor);
   return tmp;
 }

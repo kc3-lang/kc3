@@ -142,7 +142,6 @@ typedef enum {
   TAG_BLOCK,
   TAG_BOOL,
   TAG_CALL,
-  TAG_CALLABLE,
   TAG_CHARACTER,
   TAG_COMPLEX,
   TAG_COW,
@@ -164,6 +163,7 @@ typedef enum {
   TAG_UW,
   TAG_LIST,
   TAG_MAP,
+  TAG_PCALLABLE,
   TAG_PSTRUCT,
   TAG_PSTRUCT_TYPE,
   TAG_PTAG,
@@ -515,7 +515,7 @@ struct buf_rw {
 struct call {
   s_ident ident;
   s_list *arguments;
-  p_callable callable;
+  p_callable pcallable;
 };
 
 struct cfn {
@@ -607,7 +607,6 @@ union tag_data {
   s_block       block;
   bool          bool_;
   s_call        call;
-  p_callable    callable;
   character     character;
   s_complex    *complex;
   s_cow        *cow;
@@ -619,6 +618,7 @@ union tag_data {
   s_integer     integer;
   s_list       *list;
   s_map         map;
+  p_callable    pcallable;
   p_struct      pstruct;
   p_struct_type pstruct_type;
   p_tag         ptag;
@@ -703,7 +703,7 @@ struct op {
   bool         special;
   u8           precedence;
   u8           associativity;
-  p_callable   callable;
+  p_callable   pcallable;
 };
 
 struct ops {
@@ -823,6 +823,7 @@ struct env {
   s_ops            *ops;
   s_buf            *out;
   s_env            *parent_env;
+  bool              pass_by_copy;
   s_list           *path;
   uw                quote_level;
   s_frame          *read_time_frame;

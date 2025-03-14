@@ -419,8 +419,6 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_array(str, &tag->data.array);
   case TAG_BOOL:
     return str_init_bool(str, tag->data.bool_);
-  case TAG_CALLABLE:
-    return str_init_callable(str, tag->data.callable);
   case TAG_CHARACTER:
     return str_init_character(str, tag->data.character);
   case TAG_F32:
@@ -437,6 +435,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_list(str, (const s_list * const *) &tag->data.list);
   case TAG_MAP:
     return str_init_map(str, &tag->data.map);
+  case TAG_PCALLABLE:
+    return str_init_callable(str, tag->data.pcallable);
   case TAG_PSTRUCT:
     return str_init_struct(str, tag->data.pstruct);
   case TAG_PTR:

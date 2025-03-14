@@ -59,10 +59,10 @@ s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
       frame = frame_binding_delete(frame, name);
       return NULL;
     }
-    if (tag->type == TAG_CALLABLE &&
-        tag->data.callable &&
-        tag->data.callable->type == CALLABLE_FN)
-      fn_set_name_if_null(&tag->data.callable->data.fn, NULL, name);
+    if (tag->type == TAG_PCALLABLE &&
+        tag->data.pcallable &&
+        tag->data.pcallable->type == CALLABLE_FN)
+      fn_set_name_if_null(&tag->data.pcallable->data.fn, NULL, name);
   }    
   return frame;
 }
@@ -249,10 +249,11 @@ s_frame * frame_replace (s_frame *frame, const s_sym *sym,
         assert(! "frame_replace: tag_init_copy");
         return NULL;
       }
-      if (result->type == TAG_CALLABLE &&
-          result->data.callable &&
-          result->data.callable->type == CALLABLE_FN)
-        fn_set_name_if_null(&result->data.callable->data.fn, NULL, sym);
+      if (result->type == TAG_PCALLABLE &&
+          result->data.pcallable &&
+          result->data.pcallable->type == CALLABLE_FN)
+        fn_set_name_if_null(&result->data.pcallable->data.fn, NULL,
+                            sym);
     }
     return frame;
   }

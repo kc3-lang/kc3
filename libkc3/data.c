@@ -217,7 +217,7 @@ bool data_clean (const s_sym *type, void *data)
   if (type == &g_sym_Callable ||
       type == &g_sym_Cfn ||
       type == &g_sym_Fn) {
-    p_callable_clean(data);
+    pcallable_clean(data);
     return true;
   }
   if (type == &g_sym_Character) {
@@ -541,7 +541,7 @@ void * data_init_cast (void *data, const s_sym * const *type,
   if (t == &g_sym_Callable ||
       t == &g_sym_Cfn ||
       t == &g_sym_Fn)
-    return p_callable_init_cast(data, type, tag);
+    return pcallable_init_cast(data, type, tag);
   if (t == &g_sym_Character)
     return character_init_cast(data, type, tag);
   if (t == &g_sym_F32)
@@ -626,7 +626,7 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_Callable ||
       type == &g_sym_Cfn ||
       type == &g_sym_Fn)
-    return p_callable_init_copy(data, src);
+    return pcallable_init_copy(data, src);
   if (type == &g_sym_Character)
     return character_init_copy(data, src);
   if (type == &g_sym_Cow)

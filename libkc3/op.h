@@ -18,12 +18,12 @@
 /* Stack-allocation compatible functions, call op_clean after use. */
 void   op_clean (s_op *op);
 s_op * op_init (s_op *op);
-s_op * op_init_copy (s_op *op, const s_op *src);
+s_op * op_init_copy (s_op *op, s_op *src);
 
 /* Heap-allocation compatible functions, call op_delete after use. */
 void   op_delete (s_op *op);
 s_op * op_new (void);
-s_op * op_new_copy (const s_op *src);
+s_op * op_new_copy (s_op *src);
 
 /* Operators. */
 s_op * op_set_special (s_op *op, bool special);

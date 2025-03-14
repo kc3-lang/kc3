@@ -30,6 +30,7 @@
 #include "list.h"
 #include "map.h"
 #include "ops.h"
+#include "pcallable.h"
 #include "pstruct.h"
 #include "struct.h"
 #include "sw.h"
@@ -130,7 +131,7 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
     err_write_1("\n");
     return false;
   }
-  if (! c.callable || c.callable->type == CALLABLE_VOID) {
+  if (! c.pcallable || c.pcallable->type == CALLABLE_VOID) {
     err_write_1("env_eval_call: could not resolve call ");
     err_inspect_ident(&c.ident);
     err_write_1("\n");
@@ -167,12 +168,12 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
 bool env_eval_call_callable (s_env *env, const s_call *call,
                              s_tag *dest)
 {
-  switch (call->callable->type) {
+  switch (call->pcallable->type) {
   case CALLABLE_CFN:
-    return env_eval_call_cfn_args(env, &call->callable->data.cfn,
+    return env_eval_call_cfn_args(env, &call->pcallable->data.cfn,
                                   call->arguments, dest);
   case CALLABLE_FN:
-    return env_eval_call_fn_args(env, &call->callable->data.fn,
+    return env_eval_call_fn_args(env, &call->pcallable->data.fn,
                                  call->arguments, dest);
   case CALLABLE_VOID:
     err_puts("env_eval_call_callable: CALLABLE_VOID");
@@ -246,13 +247,13 @@ bool env_eval_call_fn (s_env *env, const s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
-  if (! call->callable ||
-      call->callable->type != CALLABLE_FN) {
+  if (! call->pcallable ||
+      call->pcallable->type != CALLABLE_FN) {
     err_puts("env_eval_call_fn: not a Fn");
     assert(! "env_eval_call_fn: not a Fn");
     return false;
   }
-  return env_eval_call_fn_args(env, &call->callable->data.fn,
+  return env_eval_call_fn_args(env, &call->pcallable->data.fn,
                                call->arguments, dest);
 }
 
@@ -382,15 +383,16 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   s_tag op_tag = {0};
   s_ops *ops = NULL;
   s_call tmp = {0};
-  const s_tag *value;
+  s_tag *value;
   assert(env);
   assert(env->ops);
   assert(call);
   tmp = *call;
   if (tmp.ident.module == NULL &&
       (value = env_frames_get(env, tmp.ident.sym))) {
-    if (value->type == TAG_CALLABLE) {
-      tmp.callable = callable_new_ref(value->data.callable);
+    if (value->type == TAG_PCALLABLE) {
+      if (! pcallable_init_copy(&tmp.pcallable, &value->data.pcallable))
+        return false;
       *call = tmp;
       return true;
     }
@@ -410,8 +412,9 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
     ops = global_env->ops;
     if (ops_get(ops, tmp.ident.sym, arity, &op_tag)) {
       op = op_tag.data.pstruct->data;
-      tmp.callable = callable_new_ref(op->callable);
-      callable_set_special(tmp.callable, op->special);
+      if (! pcallable_init_copy(&tmp.pcallable, &op->pcallable))
+        return false;
+      callable_set_special(tmp.pcallable, op->special);
       *call = tmp;
       return true;
     }
@@ -463,7 +466,7 @@ bool env_eval_callable (s_env *env, s_callable *callable,
   (void) env;
   switch (callable->type) {
   case CALLABLE_CFN:
-    if (! (tmp = callable_new_ref(callable)))
+    if (! pcallable_init_copy(&tmp, &callable))
       return false;
     if (! cfn_eval(&tmp->data.cfn))
       return false;
@@ -483,12 +486,12 @@ bool env_eval_callable (s_env *env, s_callable *callable,
   }
   goto ko;
  ok:
-  dest->type = TAG_CALLABLE;
-  dest->data.callable = tmp;
+  dest->type = TAG_PCALLABLE;
+  dest->data.pcallable = tmp;
   return true;
  ko:
   if (tmp)
-    callable_delete(tmp);
+    pcallable_clean(&tmp);
   return false;
 }
 
@@ -835,10 +838,10 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_BLOCK:
   case TAG_BOOL:
   case TAG_CALL:
-  case TAG_CALLABLE:
   case TAG_CHARACTER:
   case TAG_FACT:
   case TAG_IDENT:
+  case TAG_PCALLABLE:
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
   case TAG_PTAG:
@@ -1154,8 +1157,9 @@ bool env_eval_quote_call (s_env *env, s_call *call, s_tag *dest)
     tmp_arg_last = &(*tmp_arg_last)->next.data.list;
     arg = list_next(arg);
   }
-  if (call->callable)
-    tmp.callable = callable_new_ref(call->callable);
+  if (call->pcallable &&
+      ! pcallable_init_copy(&tmp.pcallable, &call->pcallable))
+    goto ko;
   dest->type = TAG_CALL;
   dest->data.call = tmp;
   return true;
@@ -1341,7 +1345,6 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_quote_unquote(env, &tag->data.unquote, dest);
   case TAG_VOID:
   case TAG_BOOL:
-  case TAG_CALLABLE:
   case TAG_CHARACTER:
   case TAG_F32:
   case TAG_F64:
@@ -1349,6 +1352,7 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_FACT:
   case TAG_IDENT:
   case TAG_INTEGER:
+  case TAG_PCALLABLE:
   case TAG_PSTRUCT_TYPE:
   case TAG_PTAG:
   case TAG_PTR:
@@ -1559,8 +1563,6 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_block(env, &tag->data.block, dest);
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
-  case TAG_CALLABLE:
-    return env_eval_callable(env, tag->data.callable, dest);
   case TAG_COMPLEX:
     return env_eval_complex(env, tag->data.complex, dest);
   case TAG_COW:
@@ -1571,6 +1573,8 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_list(env, tag->data.list, dest);
   case TAG_MAP:
     return env_eval_map(env, &tag->data.map, dest);
+  case TAG_PCALLABLE:
+    return env_eval_callable(env, tag->data.pcallable, dest);
   case TAG_PSTRUCT:
     return env_eval_struct_tag(env, tag->data.pstruct, dest);
   case TAG_QUOTE:

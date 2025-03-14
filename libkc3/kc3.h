@@ -73,6 +73,7 @@
 #include "ptr.h"
 #include "ptr_free.h"
 #include "module.h"
+#include "pcallable.h"
 #include "pretty.h"
 #include "pstruct.h"
 #include "pstruct_type.h"

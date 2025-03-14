@@ -28,6 +28,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "pcallable.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "ptr.h"
@@ -73,6 +74,28 @@ s_tag * tag_init_call (s_tag *tag)
   assert(tag);
   tmp.type = TAG_CALL;
   if (! call_init(&tmp.data.call))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_pcallable (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PCALLABLE;
+  if (! pcallable_init(&tmp.data.pcallable))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_pcallable_copy (s_tag *tag, p_callable *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PCALLABLE;
+  if (! pcallable_init_copy(&tmp.data.pcallable, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -678,6 +701,34 @@ s_tag * tag_new_call (void)
     return NULL;
   tag->type = TAG_CALL;
   if (! call_init(&tag->data.call)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_pcallable (void)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_PCALLABLE;
+  if (! pcallable_init(&tag->data.pcallable)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_pcallable_copy (p_callable *src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_PCALLABLE;
+  if (! pcallable_init_copy(&tag->data.pcallable, src)) {
     free(tag);
     return NULL;
   }
@@ -1393,6 +1444,30 @@ s_tag * tag_call (s_tag *tag)
   tag_clean(tag);
   tmp.type = TAG_CALL;
   if (! call_init(&tmp.data.call))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_pcallable (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PCALLABLE;
+  if (! pcallable_init(&tmp.data.pcallable))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_pcallable_copy (s_tag *tag, p_callable *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PCALLABLE;
+  if (! pcallable_init_copy(&tmp.data.pcallable, src))
     return NULL;
   *tag = tmp;
   return tag;

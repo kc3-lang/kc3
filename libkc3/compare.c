@@ -1149,8 +1149,6 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_BOOL:       return compare_bool(a->data.bool_, b->data.bool_);
   case TAG_CALL:       return compare_call(&a->data.call,
                                            &b->data.call);
-  case TAG_CALLABLE:   return compare_callable(a->data.callable,
-                                               b->data.callable);
   case TAG_CHARACTER:  return compare_character(a->data.character,
                                                 b->data.character);
   case TAG_COW:        return compare_cow(a->data.cow, b->data.cow);
@@ -1160,6 +1158,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                             &b->data.ident);
   case TAG_LIST:       return compare_list(a->data.list, b->data.list);
   case TAG_MAP:        return compare_map(&a->data.map, &b->data.map);
+  case TAG_PCALLABLE:  return compare_callable(a->data.pcallable,
+                                               b->data.pcallable);
   case TAG_PSTRUCT:    return compare_struct(a->data.pstruct,
                                              b->data.pstruct);
   case TAG_PSTRUCT_TYPE:

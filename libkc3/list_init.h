@@ -23,9 +23,9 @@ s_list * list_init_array_copy (s_list *list, const s_array *a,
                                s_list *next);
 s_list * list_init_bool (s_list *list, bool b, s_list *next);
 s_list * list_init_call (s_list *list, s_list *next);
-s_list * list_init_callable (s_list *list, s_list *next);
-s_list * list_init_callable_copy (s_list *list, p_callable *src,
-                                  s_list *next);
+s_list * list_init_pcallable (s_list *list, s_list *next);
+s_list * list_init_pcallable_copy (s_list *list, p_callable *src,
+                                   s_list *next);
 s_list * list_init_character (s_list *list, character c, s_list *next);
 
 s_list * list_init_complex (s_list *list, s_complex *c, s_list *next);
@@ -115,8 +115,8 @@ s_list * list_new_array (const s_sym *type, uw dimension,
 s_list * list_new_array_copy (const s_array *a, s_list *next);
 s_list * list_new_bool (bool b, s_list *next);
 s_list * list_new_call (s_list *next);
-s_list * list_new_callable (s_list *next);
-s_list * list_new_callable_copy (p_callable *src, s_list *next);
+s_list * list_new_pcallable (s_list *next);
+s_list * list_new_pcallable_copy (p_callable *src, s_list *next);
 s_list * list_new_character (character c, s_list *next);
 
 s_list * list_new_complex (s_complex *c, s_list *next);

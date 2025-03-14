@@ -301,9 +301,9 @@ class TagInitList
        TagInitProto.new("bool", "TAG_BOOL", :init_mode_direct,
                         [Arg.new("bool", "b")]),
        TagInit.new("call", "TAG_CALL", :init_mode_init, []),
-       TagInitProto.new("callable", "TAG_CALLABLE", :init_mode_init, []),
-       TagInitProto.new("callable", "copy", "TAG_CALLABLE", :init_mode_init,
-                   [Arg.new("p_callable *", "src")]),
+       TagInit.new("pcallable", "TAG_PCALLABLE", :init_mode_init, []),
+       TagInit.new("pcallable", "copy", "TAG_PCALLABLE",
+                   :init_mode_init, [Arg.new("p_callable *", "src")]),
        TagInit.new("character", "TAG_CHARACTER", :init_mode_direct,
                    [Arg.new("character", "c")]),
        TagInitProto.new("copy", nil, :init_mode_none,
@@ -546,6 +546,7 @@ tag_init_c.content = <<EOF
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "pcallable.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "ptr.h"
@@ -604,6 +605,7 @@ list_init_c.content = <<EOF
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "pcallable.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "ptr.h"

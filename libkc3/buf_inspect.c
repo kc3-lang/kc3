@@ -3845,8 +3845,6 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_BLOCK:   return buf_inspect_block(buf, &tag->data.block);
   case TAG_BOOL:    return buf_inspect_bool(buf, &tag->data.bool_);
   case TAG_CALL:    return buf_inspect_call(buf, &tag->data.call);
-  case TAG_CALLABLE:
-    return buf_inspect_callable(buf, tag->data.callable);
   case TAG_CHARACTER:
     return buf_inspect_character(buf, &tag->data.character);
   case TAG_COMPLEX: return buf_inspect_complex(buf, tag->data.complex);
@@ -3860,6 +3858,8 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_LIST:
     return buf_inspect_list(buf, (const s_list **) &tag->data.list);
   case TAG_MAP:     return buf_inspect_map(buf, &tag->data.map);
+  case TAG_PCALLABLE:
+    return buf_inspect_callable(buf, tag->data.pcallable);
   case TAG_PSTRUCT: return buf_inspect_struct(buf, tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:
     return buf_inspect_struct_type(buf, tag->data.pstruct_type);
@@ -3904,8 +3904,6 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_bool_size(pretty, &tag->data.bool_);
   case TAG_CALL:
     return buf_inspect_call_size(pretty, &tag->data.call);
-  case TAG_CALLABLE:
-    return buf_inspect_callable_size(pretty, tag->data.callable);
   case TAG_CHARACTER:
     return buf_inspect_character_size(pretty, &tag->data.character);
   case TAG_COMPLEX:
@@ -3929,6 +3927,8 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
                                  (const s_list **) &tag->data.list);
   case TAG_MAP:
     return buf_inspect_map_size(pretty, &tag->data.map);
+  case TAG_PCALLABLE:
+    return buf_inspect_callable_size(pretty, tag->data.pcallable);
   case TAG_PSTRUCT:
     return buf_inspect_struct_size(pretty, tag->data.pstruct);
   case TAG_PSTRUCT_TYPE:

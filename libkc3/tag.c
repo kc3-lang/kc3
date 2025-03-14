@@ -35,6 +35,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "pcallable.h"
 #include "pcomplex.h"
 #include "pcow.h"
 #include "pstruct.h"
@@ -93,13 +94,13 @@ s_tag * tag_and (s_tag *a, s_tag *b, s_tag *dest)
 
 s8 tag_arity (const s_tag *tag)
 {
-  if (tag->type == TAG_CALLABLE &&
-      tag->data.callable) {
-    switch (tag->data.callable->type) {
+  if (tag->type == TAG_PCALLABLE &&
+      tag->data.pcallable) {
+    switch (tag->data.pcallable->type) {
     case CALLABLE_CFN:
-      return cfn_arity(&tag->data.callable->data.cfn);
+      return cfn_arity(&tag->data.pcallable->data.cfn);
     case CALLABLE_FN:
-      return fn_arity(&tag->data.callable->data.fn);
+      return fn_arity(&tag->data.pcallable->data.fn);
     case CALLABLE_VOID:
       break;
     }
@@ -231,27 +232,25 @@ void tag_clean (s_tag *tag)
 {
   assert(tag);
   switch (tag->type) {
-  case TAG_ARRAY:       array_clean(&tag->data.array);      break;
-  case TAG_BLOCK:       block_clean(&tag->data.block);      break;
-  case TAG_CALL:        call_clean(&tag->data.call);        break;
-  case TAG_CALLABLE:
-    p_callable_clean(&tag->data.callable);
-    break;
-  case TAG_COMPLEX:     pcomplex_clean(&tag->data.complex); break;
-  case TAG_COW:         pcow_clean(&tag->data.cow);         break;
-  case TAG_INTEGER:     integer_clean(&tag->data.integer);  break;
-  case TAG_LIST:        list_delete_all(tag->data.list);    break;
-  case TAG_MAP:         map_clean(&tag->data.map);          break;
-  case TAG_PSTRUCT:     pstruct_clean(&tag->data.pstruct);  break;
+  case TAG_ARRAY:       array_clean(&tag->data.array);         break;
+  case TAG_BLOCK:       block_clean(&tag->data.block);         break;
+  case TAG_CALL:        call_clean(&tag->data.call);           break;
+  case TAG_PCALLABLE:   pcallable_clean(&tag->data.pcallable); break;
+  case TAG_COMPLEX:     pcomplex_clean(&tag->data.complex);    break;
+  case TAG_COW:         pcow_clean(&tag->data.cow);            break;
+  case TAG_INTEGER:     integer_clean(&tag->data.integer);     break;
+  case TAG_LIST:        list_delete_all(tag->data.list);       break;
+  case TAG_MAP:         map_clean(&tag->data.map);             break;
+  case TAG_PSTRUCT:     pstruct_clean(&tag->data.pstruct);     break;
   case TAG_PSTRUCT_TYPE:
-    pstruct_type_clean(&tag->data.pstruct_type);            break;
-  case TAG_PTR_FREE:    ptr_free_clean(&tag->data.ptr);     break;
-  case TAG_QUOTE:       quote_clean(&tag->data.quote);      break;
-  case TAG_RATIO:       ratio_clean(&tag->data.ratio);      break;
-  case TAG_STR:         str_clean(&tag->data.str);          break;
-  case TAG_TIME:        time_clean(&tag->data.time);        break;
-  case TAG_TUPLE:       tuple_clean(&tag->data.tuple);      break;
-  case TAG_UNQUOTE:     unquote_clean(&tag->data.unquote);  break;
+    pstruct_type_clean(&tag->data.pstruct_type);               break;
+  case TAG_PTR_FREE:    ptr_free_clean(&tag->data.ptr);        break;
+  case TAG_QUOTE:       quote_clean(&tag->data.quote);         break;
+  case TAG_RATIO:       ratio_clean(&tag->data.ratio);         break;
+  case TAG_STR:         str_clean(&tag->data.str);             break;
+  case TAG_TIME:        time_clean(&tag->data.time);           break;
+  case TAG_TUPLE:       tuple_clean(&tag->data.tuple);         break;
+  case TAG_UNQUOTE:     unquote_clean(&tag->data.unquote);     break;
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:
@@ -415,7 +414,7 @@ s_tag * tag_init_callable (s_tag *tag)
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_CALL;
-  if (! p_callable_init(&tmp.data.callable))
+  if (! pcallable_init(&tmp.data.pcallable))
     return NULL;
   *tag = tmp;
   return tag;
@@ -425,8 +424,8 @@ s_tag * tag_init_callable_copy (s_tag *tag, p_callable *src)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_CALLABLE;
-  if (! p_callable_init_copy(&tmp.data.callable, src))
+  tmp.type = TAG_PCALLABLE;
+  if (! pcallable_init_copy(&tmp.data.pcallable, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -505,10 +504,10 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     if (! call_init_copy(&tag->data.call, &src->data.call))
       return NULL;
     return tag;
-  case TAG_CALLABLE:
+  case TAG_PCALLABLE:
     tag->type = src->type;
-    if (! p_callable_init_copy(&tag->data.callable,
-                               &src->data.callable))
+    if (! pcallable_init_copy(&tag->data.pcallable,
+                              &src->data.pcallable))
       return NULL;
     return tag;
   case TAG_CHARACTER:
@@ -856,7 +855,7 @@ bool tag_is_integer (s_tag *tag)
   case TAG_BLOCK:
   case TAG_BOOL:
   case TAG_CALL:
-  case TAG_CALLABLE:
+  case TAG_PCALLABLE:
   case TAG_CHARACTER:
   case TAG_COMPLEX:
   case TAG_F32:
@@ -911,7 +910,7 @@ bool tag_is_number (s_tag *tag)
   case TAG_BLOCK:
   case TAG_BOOL:
   case TAG_CALL:
-  case TAG_CALLABLE:
+  case TAG_PCALLABLE:
   case TAG_CHARACTER:
   case TAG_FACT:
   case TAG_LIST:
@@ -1199,7 +1198,7 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   case TAG_BLOCK:        *dest = &tag->data.block;        return true;
   case TAG_BOOL:         *dest = &tag->data.bool_;        return true;
   case TAG_CALL:         *dest = &tag->data.call;         return true;
-  case TAG_CALLABLE:     *dest = &tag->data.callable;     return true;
+  case TAG_PCALLABLE:     *dest = &tag->data.pcallable;     return true;
   case TAG_CHARACTER:    *dest = &tag->data.character;    return true;
   case TAG_COMPLEX:      *dest = &tag->data.complex;      return true;
   case TAG_COW:          *dest = &tag->data.cow;          return true;
@@ -1289,14 +1288,14 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
-  case TAG_CALLABLE:
+  case TAG_PCALLABLE:
     if (type == &g_sym_Callable ||
-        (tag->data.callable &&
+        (tag->data.pcallable &&
          ((type == &g_sym_Cfn &&
-           tag->data.callable->type == CALLABLE_CFN) ||
+           tag->data.pcallable->type == CALLABLE_CFN) ||
           (type == &g_sym_Fn &&
-           tag->data.callable->type == CALLABLE_FN)))) {
-      *dest = &tag->data.callable;
+           tag->data.pcallable->type == CALLABLE_FN)))) {
+      *dest = &tag->data.pcallable;
       return true;
     }
     goto invalid_cast;
@@ -1571,7 +1570,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_BLOCK:        *dest = &tag->data.block;        return true;
   case TAG_BOOL:         *dest = &tag->data.bool_;        return true;
   case TAG_CALL:         *dest = &tag->data.call;         return true;
-  case TAG_CALLABLE:     *dest = &tag->data.callable;     return true;
+  case TAG_PCALLABLE:     *dest = &tag->data.pcallable;     return true;
   case TAG_CHARACTER:    *dest = &tag->data.character;    return true;
   case TAG_COMPLEX:      *dest = &tag->data.complex;      return true;
   case TAG_COW:          *dest = &tag->data.cow;          return true;
@@ -1645,9 +1644,9 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_BLOCK:        *dest = &g_sym_Block;      return dest;
   case TAG_BOOL:         *dest = &g_sym_Bool;       return dest;
   case TAG_CALL:         *dest = &g_sym_Call;       return dest;
-  case TAG_CALLABLE:
-    if (tag->data.callable) {
-      switch (tag->data.callable->type) {
+  case TAG_PCALLABLE:
+    if (tag->data.pcallable) {
+      switch (tag->data.pcallable->type) {
       case CALLABLE_FN:  *dest = &g_sym_Fn;         return dest;
       case CALLABLE_CFN: *dest = &g_sym_Cfn;        return dest;
       case CALLABLE_VOID:

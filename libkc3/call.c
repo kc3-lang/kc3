@@ -24,6 +24,7 @@
 #include "fn.h"
 #include "ident.h"
 #include "list.h"
+#include "pcallable.h"
 #include "tag.h"
 
 sw call_arity (const s_call *call)
@@ -35,8 +36,8 @@ void call_clean (s_call *call)
 {
   assert(call);
   list_delete_all(call->arguments);
-  if (call->callable)
-    callable_delete(call->callable);
+  if (call->pcallable)
+    pcallable_clean(&call->pcallable);
 }
 
 bool call_get (s_call *call)
@@ -125,8 +126,12 @@ s_call * call_init_copy (s_call *call, s_call *src)
   if (! ident_init_copy(&tmp.ident, &src->ident) ||
       ! list_init_copy(&tmp.arguments, &src->arguments))
     return NULL;
-  if (src->callable)
-    tmp.callable = callable_new_ref(src->callable);
+  if (src->pcallable) {
+    if (! pcallable_init_copy(&tmp.pcallable, &src->pcallable)) {
+      list_delete_all(tmp.arguments);
+      return NULL;
+    }
+  }
   *call = tmp;
   return call;
 }

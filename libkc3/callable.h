@@ -15,16 +15,6 @@
 
 #include "types.h"
 
-/* Heap pointer manipulation functions. Call p_callable_clean
-   after use. */
-void         p_callable_clean (p_callable *callable);
-p_callable * p_callable_init (p_callable *callable);
-p_callable * p_callable_init_cast (p_callable *callable,
-                                   const s_sym * const *type,
-                                   const s_tag *tag);
-p_callable * p_callable_init_copy (p_callable *callable,
-                                   p_callable *src);
-
 /* Heap-allocation functions, call callable_delete after use. */
 void         callable_delete (s_callable *callable);
 s_callable * callable_new (void);

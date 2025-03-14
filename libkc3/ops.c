@@ -46,13 +46,13 @@ bool ops_add (s_ops *ops, s_tag *op_tag)
       op->arity > 2 ||
       op->associativity < 1 ||
       op->associativity > 2 ||
-      ! op->callable) {
+      ! op->pcallable) {
     err_puts("ops_add: invalid op");
     assert(! "ops_add: invalid op");
     return false;
   }
   if (op->special)
-    callable_set_special(op->callable, true);
+    callable_set_special(op->pcallable, true);
   return ht_add(&ops->ht, op_tag);
 }
 

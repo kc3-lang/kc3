@@ -28,6 +28,7 @@
 #include "integer.h"
 #include "list.h"
 #include "map.h"
+#include "pcallable.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "ptr.h"
@@ -72,6 +73,29 @@ s_list * list_init_call (s_list *list, s_list *next)
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_call(&tmp.tag))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pcallable (s_list *list, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pcallable(&tmp.tag))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pcallable_copy (s_list *list, p_callable *src,
+                                   s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pcallable_copy(&tmp.tag, src))
     return NULL;
   *list = tmp;
   return list;
@@ -696,6 +720,32 @@ s_list * list_new_call (s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_call(&list->tag)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pcallable (s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pcallable(&list->tag)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pcallable_copy (p_callable *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pcallable_copy(&list->tag, src)) {
     free(list);
     return NULL;
   }
