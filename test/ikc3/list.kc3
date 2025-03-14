@@ -64,5 +64,7 @@ quote List.length([1, 2])
 List.length([1, 2])
 quote List.length([1, 2, 3, 4, 5])
 List.length([1, 2, 3, 4, 5])
-quote [":", "!"]
-[":", "!"]
+quote type(":")
+type(":")
+quote [":"]
+[":"]

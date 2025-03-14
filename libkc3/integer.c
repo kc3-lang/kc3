@@ -641,7 +641,7 @@ s_integer * integer_set_ratio (s_integer *a, const s_ratio *r)
 s_integer * integer_set_sw (s_integer *a, sw x)
 {
   assert(a);
-  mp_set_l(&a->mp_int, x);
+  mp_set_i64(&a->mp_int, x);
   return a;
 }
 

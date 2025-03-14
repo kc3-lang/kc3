@@ -65,6 +65,15 @@ There are now four full applications written in KC3 that we know of :
 
 ## New in this release
 
+ - libkc3
+   - hash table (ht.h, ht.c)
+   - operators hash table
+     - defoperator
+     - list of matching operators (facts_with)
+   - pass by reference and reference counting in a few data structures
+     - Struct
+     - StructType
+
 ## Discord invite
 
 [Join us on kmx.io Discord server !](https://discord.gg/A4MWkpUDsG)
@@ -79,7 +88,7 @@ to discover how to use KC3 for your own projects.
 ## TODO
 
  - HTTPd
-   - limit acceptor loop according to ncpu
+   - limit acceptor loop
    - OAuth2 / jwt
    - dynamic router
      - def_route(:get, "/user/:id/articles/*slug/edit", UserArticlesController.edit)
@@ -94,14 +103,9 @@ to discover how to use KC3 for your own projects.
    - properties
      - recursive
  - libkc3
-   - hash table (ht.h, ht.c)
-   - operators hash table
-     - defoperator
-     - list of matching operators (facts_with)
    - special operators dispatch table
    - serialization / deserialization
-   - reference counting in all data structures
-   - pass by reference in all data structures
+   - pass by reference and reference counting in all data structures
    - base-specific big floats
    - macro cast : `(Macro) fn (x) { x }`
    - pretty printer
