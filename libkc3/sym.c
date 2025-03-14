@@ -224,6 +224,8 @@ bool sym_character_is_reserved (character c)
 {
   return (character_is_space(c) ||
           c == '#' ||
+          c == '"' ||
+          c == '\'' ||
           c == '(' ||
           c == ')' ||
           c == ',' ||
