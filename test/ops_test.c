@@ -99,8 +99,8 @@ TEST_CASE(ops_get)
   TEST_ASSERT(ops_get(ops, sym_1("+"), 2, &op_tag));
   TEST_EQ(op_tag.type, TAG_PSTRUCT);
   TEST_ASSERT(op_tag.data.pstruct);
-  TEST_ASSERT(op_tag.data.pstruct->struct_type);
-  TEST_EQ(op_tag.data.pstruct->struct_type->module, sym_1("KC3.Op"));
+  TEST_ASSERT(op_tag.data.pstruct->pstruct_type);
+  TEST_EQ(op_tag.data.pstruct->pstruct_type->module, sym_1("KC3.Op"));
   TEST_ASSERT((op = op_tag.data.pstruct->data));
   TEST_EQ(op->sym, sym_1("+"));
   TEST_EQ(op->arity, 2);

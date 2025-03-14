@@ -555,14 +555,13 @@ s8 compare_struct (const s_struct *a, const s_struct *b)
   assert(b);
   if (a == b)
     return 0;
-  r = compare_struct_type(a->struct_type, b->struct_type);
-  if (r)
+  if ((r = compare_struct_type(a->pstruct_type, b->pstruct_type)))
     return r;
   if (! a->data && ! b->data) {
     if (a->tag == b->tag)
       return 0;
     i = 0;
-    while (i < a->struct_type->map.count) {
+    while (i < a->pstruct_type->map.count) {
       r = compare_tag(a->tag + i, b->tag + i);
       if (r)
         return r;
@@ -574,18 +573,18 @@ s8 compare_struct (const s_struct *a, const s_struct *b)
     return -1;
   if (! b->data)
     return 1;
-  while (i < a->struct_type->map.count) {
-    if (a->struct_type->map.value[i].type == TAG_VAR)
-      type = a->struct_type->map.value[i].data.var.type;
+  while (i < a->pstruct_type->map.count) {
+    if (a->pstruct_type->map.value[i].type == TAG_VAR)
+      type = a->pstruct_type->map.value[i].data.var.type;
     else {
-      if (! tag_type(a->struct_type->map.value + i, &type)) {
+      if (! tag_type(a->pstruct_type->map.value + i, &type)) {
         err_puts("compare_struct: tag_type");
         assert(! "compare_struct: tag_type");
         abort();
       }
     }
-    r = data_compare(type, (s8 *) a->data + a->struct_type->offset[i],
-                     (s8 *) b->data + b->struct_type->offset[i]);
+    r = data_compare(type, (s8 *) a->data + a->pstruct_type->offset[i],
+                     (s8 *) b->data + b->pstruct_type->offset[i]);
     if (r)
       return r;
   }

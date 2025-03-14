@@ -77,7 +77,7 @@ p_struct * pstruct_init_cast (p_struct *s, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_PSTRUCT:
-    if (*type == tag->data.pstruct->struct_type->module)
+    if (*type == tag->data.pstruct->pstruct_type->module)
       return pstruct_init_copy(s, tag->data.pstruct);
     break;
   case TAG_PTR:
@@ -107,7 +107,7 @@ p_struct * pstruct_init_put (p_struct *s, s_struct *src,
                              const s_sym *key, s_tag *value)
 {
   p_struct tmp;
-  if (! pstruct_init_with_type(&tmp, src->struct_type))
+  if (! pstruct_init_with_type(&tmp, src->pstruct_type))
     return NULL;
   if (! struct_init_copy(tmp, src)) {
     err_puts("struct_put: struct_init_copy");

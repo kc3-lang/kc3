@@ -447,7 +447,7 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
   if (! tag_op ||
       tag_op->type != TAG_PSTRUCT ||
       ! tag_op->data.pstruct ||
-      tag_op->data.pstruct->struct_type->module != &g_sym_KC3_Op) {
+      tag_op->data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
     err_puts("env_defoperator: invalid operator, expected %KC3.Op{}");
     assert(! "env_defoperator: invalid operator, expected %KC3.Op{}");
   }
@@ -1284,7 +1284,7 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
     map = &tmp.data.map;
     break;
   case TAG_PSTRUCT:
-    map = &tmp.data.pstruct->struct_type->map;
+    map = &tmp.data.pstruct->pstruct_type->map;
     // FIXME
     break;
   default:

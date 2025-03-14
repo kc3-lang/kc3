@@ -92,7 +92,7 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
   if (! struct_type_find(type, &st))
     return -1;
   if (st) {
-    s.struct_type = st;
+    s.pstruct_type = st;
     s.data = (void *) data;
     return buf_inspect_struct(buf, &s);
   }
@@ -184,7 +184,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
   if (! struct_type_find(type, &st))
     return -1;
   if (st) {
-    s.struct_type = st;
+    s.pstruct_type = st;
     s.data = (void *) data;
     return buf_inspect_struct_size(pretty, &s);
   }
@@ -328,7 +328,8 @@ bool data_clean (const s_sym *type, void *data)
   if (! struct_type_find(type, &st))
     return false;
   if (st) {
-    s.struct_type = struct_type_new_ref(st);
+    if (! pstruct_type_init_copy(&s.pstruct_type, &st))
+      return false;
     s.data = data;
     struct_clean(&s);
     return true;
@@ -416,9 +417,9 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
     if (! struct_type_find(type, &st))
       return COMPARE_ERROR;
     if (st) {
-      sa.struct_type = st;
+      sa.pstruct_type = st;
       sa.data = (void *) a;
-      sb.struct_type = st;
+      sb.pstruct_type = st;
       sb.data = (void *) b;
       return compare_struct(&sa, &sb);
     }
@@ -513,7 +514,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
   if (! struct_type_find(type, &st))
     return false;
   if (st) {
-    s.struct_type = st;
+    s.pstruct_type = st;
     s.data = (void *) data;
     return hash_update_struct(hash, &s);
   }

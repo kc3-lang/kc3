@@ -540,7 +540,7 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
     if (ops_get(ops, call->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->struct_type->module != &g_sym_KC3_Op) {
+          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call: ops_get did not return a valid"
                  " %KC3.Op{}");
         assert(!("buf_inspect_call: ops_get did not return a valid"
@@ -895,7 +895,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, u8 op_precedence)
     if (ops_get(ops, left->data.call.ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->struct_type->module != &g_sym_KC3_Op) {
+          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call_op: left: ops_get did not return"
                  " a valid %KC3.Op{}");
         assert(!("buf_inspect_call_op: left: ops_get did not return"
@@ -934,7 +934,7 @@ sw buf_inspect_call_op (s_buf *buf, const s_call *call, u8 op_precedence)
     if (ops_get(ops, right->data.call.ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->struct_type->module != &g_sym_KC3_Op) {
+          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call_op: right: ops_get did not return"
                  " a valid %KC3.Op{}");
         assert(!("buf_inspect_call_op: right: ops_get did not return"
@@ -983,7 +983,7 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
     if (ops_get(ops, left->data.call.ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->struct_type->module != &g_sym_KC3_Op) {
+          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call_op_size: left: ops_get did not"
                  " return a valid %KC3.Op{}");
         assert(!("buf_inspect_call_op_size: left: ops_get did not"
@@ -1022,7 +1022,7 @@ sw buf_inspect_call_op_size (s_pretty *pretty, const s_call *call,
     if (ops_get(ops, right->data.call.ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->struct_type->module != &g_sym_KC3_Op) {
+          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call_op: right: ops_get did not return"
                  " a valid %KC3.Op{}");
         assert(!("buf_inspect_call_op: right: ops_get did not return"
@@ -1064,7 +1064,7 @@ sw buf_inspect_call_op_unary (s_buf *buf, const s_call *call)
     return -1;
   if (op_tag.type != TAG_PSTRUCT ||
       ! op_tag.data.pstruct ||
-      op_tag.data.pstruct->struct_type->module != &g_sym_KC3_Op) {
+      op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
     err_puts("buf_inspect_call_op: right: ops_get did not return"
              " a valid %KC3.Op{}");
     assert(!("buf_inspect_call_op: right: ops_get did not return"
@@ -1101,7 +1101,7 @@ sw buf_inspect_call_op_unary_size (s_pretty *pretty, const s_call *call)
     return -1;
   if (op_tag.type != TAG_PSTRUCT ||
       ! op_tag.data.pstruct ||
-      op_tag.data.pstruct->struct_type->module != &g_sym_KC3_Op) {
+      op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
     err_puts("buf_inspect_call_op: right: ops_get did not return"
              " a valid %KC3.Op{}");
     assert(!("buf_inspect_call_op: right: ops_get did not return"
@@ -1193,7 +1193,7 @@ sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
     if (ops_get(ops, call->ident.sym, arity, &op_tag)) {
       if (op_tag.type != TAG_PSTRUCT ||
           ! op_tag.data.pstruct ||
-          op_tag.data.pstruct->struct_type->module != &g_sym_KC3_Op) {
+          op_tag.data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
         err_puts("buf_inspect_call: ops_get did not return a valid"
                  " %KC3.Op{}");
         assert(!("buf_inspect_call: ops_get did not return a valid"
@@ -3449,20 +3449,20 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
   const s_sym *type;
   assert(buf);
   assert(s);
-  assert(sym_is_module(s->struct_type->module));
+  assert(sym_is_module(s->pstruct_type->module));
   if ((r = buf_write_1(buf, "%")) < 0) {
     assert(! "buf_inspect_struct: buf_write_1: %");
     return r;
   }
   result += r;
-  if (! sym_is_module(s->struct_type->module)) {
-    err_puts("buf_inspect_struct: sym_is_module(s->struct_type->module)");
-    assert(! "buf_inspect_struct: sym_is_module(s->struct_type->module)");
+  if (! sym_is_module(s->pstruct_type->module)) {
+    err_puts("buf_inspect_struct: sym_is_module(s->pstruct_type->module)");
+    assert(! "buf_inspect_struct: sym_is_module(s->pstruct_type->module)");
     return -1;
   }
   if ((r =
        buf_write_str_without_indent(buf,
-                                    &s->struct_type->module->str)) < 0) {
+                                    &s->pstruct_type->module->str)) < 0) {
     assert(! "buf_inspect_struct: buf_write_str_without_indent: module");
     return r;
   }
@@ -3476,18 +3476,18 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
   pretty_indent_from_column(&buf->pretty, 0);
   if (s->data || s->tag) {
     i = 0;
-    while (i < s->struct_type->map.count) {
+    while (i < s->pstruct_type->map.count) {
       if (s->data ||
-          compare_tag(s->tag + i, s->struct_type->map.value + i))
+          compare_tag(s->tag + i, s->pstruct_type->map.value + i))
         display_last = i;
       i++;
     }
     i = 0;
-    while (i < s->struct_type->map.count) {
+    while (i < s->pstruct_type->map.count) {
       display = s->data ||
-        compare_tag(s->tag + i, s->struct_type->map.value + i);
+        compare_tag(s->tag + i, s->pstruct_type->map.value + i);
       if (display) {
-        k = s->struct_type->map.key + i;
+        k = s->pstruct_type->map.key + i;
         if (k->type != TAG_SYM) {
           err_write_1("buf_inspect_struct: key type is not a symbol: ");
           err_inspect_tag(k);
@@ -3518,15 +3518,15 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
         }
         result += r;
         if (s->data) {
-          if (s->struct_type->map.value[i].type == TAG_VAR)
-            type = s->struct_type->map.value[i].data.var.type;
-          else if (! tag_type(s->struct_type->map.value + i, &type)) {
+          if (s->pstruct_type->map.value[i].type == TAG_VAR)
+            type = s->pstruct_type->map.value[i].data.var.type;
+          else if (! tag_type(s->pstruct_type->map.value + i, &type)) {
             assert(! "buf_inspect_struct: tag_type");
             goto clean;
           }
-          assert(s->struct_type->offset[i] < s->struct_type->size);
+          assert(s->pstruct_type->offset[i] < s->pstruct_type->size);
           if ((r = data_buf_inspect(buf, type, (char *) s->data +
-                                    s->struct_type->offset[i])) < 0) {
+                                    s->pstruct_type->offset[i])) < 0) {
             assert(! "buf_inspect_struct: data_buf_inspect");
             goto clean;
           }
@@ -3542,7 +3542,7 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
       }
       if (display &&
           i < display_last &&
-          i < s->struct_type->map.count - 1) {
+          i < s->pstruct_type->map.count - 1) {
         if ((r = buf_write_1(buf, ",\n")) < 0) {
           assert(! "buf_inspect_struct: buf_write_1(\",\\n\")");
           goto clean;
@@ -3574,17 +3574,17 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
   const s_sym *type;
   assert(pretty);
   assert(s);
-  assert(sym_is_module(s->struct_type->module));
+  assert(sym_is_module(s->pstruct_type->module));
   if ((r = buf_write_1_size(pretty, "%")) < 0)
     return r;
   result += r;
-  if (! sym_is_module(s->struct_type->module)) {
-    err_puts("buf_inspect_struct: sym_is_module(s->struct_type->module)");
-    assert(! "buf_inspect_struct: sym_is_module(s->struct_type->module)");
+  if (! sym_is_module(s->pstruct_type->module)) {
+    err_puts("buf_inspect_struct: sym_is_module(s->pstruct_type->module)");
+    assert(! "buf_inspect_struct: sym_is_module(s->pstruct_type->module)");
     return -1;
   }
   if ((r = buf_write_str_without_indent_size
-       (pretty, &s->struct_type->module->str)) < 0)
+       (pretty, &s->pstruct_type->module->str)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1_size(pretty, "{")) < 0)
@@ -3594,18 +3594,18 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
   pretty_indent_from_column(pretty, 0);
   if (s->data || s->tag) {
     i = 0;
-    while (i < s->struct_type->map.count) {
+    while (i < s->pstruct_type->map.count) {
       if (s->data ||
-          compare_tag(s->tag + i, s->struct_type->map.value + i))
+          compare_tag(s->tag + i, s->pstruct_type->map.value + i))
         display_last = i;
       i++;
     }
     i = 0;
-    while (i < s->struct_type->map.count) {
+    while (i < s->pstruct_type->map.count) {
       display = s->data ||
-        compare_tag(s->tag + i, s->struct_type->map.value + i);
+        compare_tag(s->tag + i, s->pstruct_type->map.value + i);
       if (display) {
-        k = s->struct_type->map.key + i;
+        k = s->pstruct_type->map.key + i;
         if (k->type != TAG_SYM) {
           err_write_1("buf_inspect_struct: key type is not a symbol: ");
           err_inspect_tag(k);
@@ -3629,14 +3629,14 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
           goto clean;
         result += r;
         if (s->data) {
-          if (s->struct_type->map.value[i].type == TAG_VAR)
-            type = s->struct_type->map.value[i].data.var.type;
-          else if (! tag_type(s->struct_type->map.value + i, &type))
+          if (s->pstruct_type->map.value[i].type == TAG_VAR)
+            type = s->pstruct_type->map.value[i].data.var.type;
+          else if (! tag_type(s->pstruct_type->map.value + i, &type))
             goto clean;
-          assert(s->struct_type->offset[i] < s->struct_type->size);
+          assert(s->pstruct_type->offset[i] < s->pstruct_type->size);
           if ((r = data_buf_inspect_size(pretty, type,
                                          (char *) s->data +
-                                         s->struct_type->offset[i])) < 0)
+                                         s->pstruct_type->offset[i])) < 0)
             goto clean;
           result += r;
         }
@@ -3648,7 +3648,7 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
       }
       if (display &&
           i < display_last &&
-          i < s->struct_type->map.count - 1) {
+          i < s->pstruct_type->map.count - 1) {
         if ((r = buf_write_1_size(pretty, ",\n")) < 0)
           goto clean;
         result += r;

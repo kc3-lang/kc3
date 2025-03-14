@@ -23,7 +23,7 @@
 /* Stack-allocation compatible functions, call struct_clean after use. */
 void       struct_clean (s_struct *s);
 s_struct * struct_init (s_struct *s, const s_sym *module);
-s_struct * struct_init_copy (s_struct *s, const s_struct *src);
+s_struct * struct_init_copy (s_struct *s, s_struct *src);
 s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
                                    s_list *keys,
                                    s_list *values);
@@ -34,7 +34,7 @@ s_struct * struct_init_with_type (s_struct *s, p_struct_type type);
 /* Heap-allocation functions, call struct_delete after use. */
 void       struct_delete (s_struct *s);
 s_struct * struct_new (const s_sym *module);
-s_struct * struct_new_copy (const s_struct *src);
+s_struct * struct_new_copy (s_struct *src);
 s_struct * struct_new_ref (s_struct *src);
 s_struct * struct_new_with_data (const s_sym *module, void *data,
                                  bool free_data);

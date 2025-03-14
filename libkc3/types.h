@@ -398,7 +398,7 @@ struct struct_ {
   void *data;
   bool free_data;
   s_tag *tag;
-  p_struct_type struct_type;
+  p_struct_type pstruct_type;
   sw ref_count;
 };
 

@@ -168,7 +168,7 @@ s_tag * kc3_defoperator (s_tag *tag_op, s_tag *dest)
   s_env *env;
   s_tag tmp = {0};
   if (! tag_op || tag_op->type != TAG_PSTRUCT ||
-      tag_op->data.pstruct->struct_type->module != &g_sym_KC3_Op) {
+      tag_op->data.pstruct->pstruct_type->module != &g_sym_KC3_Op) {
     err_puts("kc3_defoperator: not a %KC3.Op{}");
     assert(! "kc3_defoperator: not a %KC3.Op{}");
     return NULL;
