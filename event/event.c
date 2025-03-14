@@ -58,14 +58,14 @@ static void kc3_event_callback (int fd, short events, void *tag_tuple)
     assert(! "kc3_event_callback: invalid arg: tuple size != 3");
     abort();
   }
-  if (tag->data.tuple.tag[0].type != TAG_CALLABLE) {
+  if (tag->data.tuple.tag[0].type != TAG_PCALLABLE) {
     err_puts("kc3_event_callback: invalid arg: not a Callable"
              " (Cfn or Fn)");
     assert(!("kc3_event_callback: invalid arg: not a Callable"
              " (Cfn or Fn)"));
     abort();
   }
-  if (! (callable = tag->data.tuple.tag[0].data.callable)) {
+  if (! (callable = tag->data.tuple.tag[0].data.pcallable)) {
     err_puts("kc3_event_callback: invalid arg: ! callable");
     assert(! "kc3_event_callback: invalid arg: ! callable");
     abort();
@@ -146,7 +146,7 @@ struct event * kc3_event_new (struct event_base **event_base, s32 fd,
     assert(! "kc3_event_new: event_new");
     return NULL;
   }
-  tag_init_callable_copy(tag->data.tuple.tag, callback);
+  tag_init_pcallable_copy(tag->data.tuple.tag, callback);
   tag_init_copy(tag->data.tuple.tag + 2, arg);
   tag_init_ptr(tag->data.tuple.tag + 1, ev);
   return ev;

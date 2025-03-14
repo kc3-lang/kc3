@@ -75,9 +75,9 @@ GSimpleAction ** kc3_gtk4_simple_action_new (GSimpleAction **dest,
   cb->action = tmp;
   cb->next = g_action_callbacks;
   g_action_callbacks = cb;
-  if (! (p_callable_init_copy(&cb->callable, callable))) {
-    err_puts("kc3_gtk4_simple_action_new: p_callable_init_copy");
-    assert(! "kc3_gtk4_simple_action_new: p_callable_init_copy");
+  if (! (pcallable_init_copy(&cb->callable, callable))) {
+    err_puts("kc3_gtk4_simple_action_new: pcallable_init_copy");
+    assert(! "kc3_gtk4_simple_action_new: pcallable_init_copy");
     return NULL;
   }
   if (! (tag_init_copy(&cb->tag, data))) {

@@ -14,6 +14,7 @@
 #include <libkc3/callable.h>
 #include <libkc3/eval.h>
 #include <libkc3/list.h>
+#include <libkc3/pcallable.h>
 #include <libkc3/tag.h>
 #include <libkc3/tuple.h>
 #include "signal.h"
@@ -25,12 +26,12 @@ void kc3_gtk4_signal_callback (GObject *object, s_tuple *tuple)
   s_tag tag;
   s_list *tmp;
   if (tuple->count != 2 ||
-      tuple->tag[0].type != TAG_CALLABLE) {
+      tuple->tag[0].type != TAG_PCALLABLE) {
     err_puts("kc3_gtk4_signal_callback: invalid tuple");
     assert(! "kc3_gtk4_signal_callback: invalid tuple");
     abort();
   }
-  callable = tuple->tag->data.callable;
+  callable = tuple->tag->data.pcallable;
   if (! callable ||
       callable->type == CALLABLE_VOID) {
     err_puts("kc3_gtk4_signal_callback: invalid callable");
@@ -69,10 +70,10 @@ void kc3_gtk4_signal_connect (GObject **object,
     assert(! "kc3_gtk4_signal_connect: tuple_new");
     abort();
   }
-  tuple->tag->type = TAG_CALLABLE;
-  if (! p_callable_init_copy(&tuple->tag->data.callable, callback)) {
-    err_puts("kc3_gtk4_signal_connect: p_callable_init_copy");
-    assert(! "kc3_gtk4_signal_connect: p_callable_init_copy");
+  tuple->tag->type = TAG_PCALLABLE;
+  if (! pcallable_init_copy(&tuple->tag->data.pcallable, callback)) {
+    err_puts("kc3_gtk4_signal_connect: pcallable_init_copy");
+    assert(! "kc3_gtk4_signal_connect: pcallable_init_copy");
     abort();
   }
   if (! tag_init_copy(tuple->tag + 1, data)) {

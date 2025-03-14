@@ -15,6 +15,7 @@
 #include "../libkc3/callable.h"
 #include "../libkc3/op.h"
 #include "../libkc3/ops.h"
+#include "../libkc3/pcallable.h"
 #include "../libkc3/struct.h"
 #include "../libkc3/sym.h"
 #include "../libkc3/tag.h"
@@ -67,7 +68,7 @@ TEST_CASE(ops_add)
   op->arity = 2;
   op->precedence = 1;
   op->associativity = 1;
-  op->callable = callable_new();
+  TEST_ASSERT(pcallable_init(&op->pcallable));
   TEST_ASSERT(ops_add(ops, &op_tag));
   TEST_EQ(ops->ht.count, 1);
   tag_clean(&op_tag);
@@ -90,7 +91,7 @@ TEST_CASE(ops_get)
   op->arity = 2;
   op->precedence = 3;
   op->associativity = 1;
-  op->callable = callable_new();
+  TEST_ASSERT(pcallable_init(&op->pcallable));
   TEST_ASSERT(ops_add(ops, &op_tag));
   TEST_EQ(ops->ht.count, 1);
   tag_clean(&op_tag);
