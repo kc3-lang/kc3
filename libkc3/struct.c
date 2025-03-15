@@ -274,8 +274,6 @@ s_struct * struct_init_copy (s_struct *s, s_struct *src)
   tmp.ref_count = 1;
   if (! pstruct_type_init_copy(&tmp.pstruct_type, &src->pstruct_type))
     return NULL;
-  if (! tmp.pstruct_type->size)
-    return NULL;
   if (src->data) {
     tmp.data = alloc(tmp.pstruct_type->size);
     if (! tmp.data)
@@ -376,15 +374,15 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
   assert(module);
   if (! struct_type_find(module, &st))
     return NULL;
-  if (! pstruct_type_init_copy(&tmp.pstruct_type, &st))
-    return NULL;
-  if (! tmp.pstruct_type) {
+  if (! st) {
     err_write_1("struct_init_with_data: struct_type not found: ");
     err_inspect_sym(&module);
     err_write_1("\n");
     assert(! "struct_init_with_data: struct_type not found");
     return NULL;
   }
+  if (! pstruct_type_init_copy(&tmp.pstruct_type, &st))
+    return NULL;
   tmp.data = data;
   tmp.free_data = free_data;
   tmp.ref_count = 1;
