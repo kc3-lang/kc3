@@ -515,6 +515,8 @@ KC3_C_SOURCES = \
 	"libkc3/op.h" \
 	"libkc3/ops.c" \
 	"libkc3/ops.h" \
+	"libkc3/pcallable.c" \
+	"libkc3/pcallable.h" \
 	"libkc3/pcomplex.c" \
 	"libkc3/pcomplex.h" \
 	"libkc3/pcow.c" \
@@ -1245,6 +1247,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/socket.kc3" \
 	"lib/kc3/0.1/socket/addr.kc3" \
 	"lib/kc3/0.1/socket/buf.kc3" \
+	"lib/kc3/0.1/spam/bayes.kc3" \
 	"lib/kc3/0.1/str.facts" \
 	"lib/kc3/0.1/struct.kc3" \
 	"lib/kc3/0.1/sw.facts" \
