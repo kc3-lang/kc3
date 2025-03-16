@@ -78,15 +78,17 @@ s_tag * struct_access_sym (s_struct *s, const s_sym *key, s_tag *dest)
   data = struct_get_w(s, key);
   if (! data)
     return NULL;
-  if (type != &g_sym_Tag && type != &g_sym_Time) {
+  if (type != &g_sym_Tag) {
     if (! sym_to_tag_type(type, &tmp.type))
       return NULL;
-    if (! struct_type_find(type, &st))
-      return NULL;
-    if (st) {
-      tag_init_pstruct_with_type(&tmp, st);
-      if (! struct_allocate(tmp.data.pstruct))
+    if (type != &g_sym_Time) {
+      if (! struct_type_find(type, &st))
         return NULL;
+      if (st) {
+        tag_init_pstruct_with_type(&tmp, st);
+        if (! struct_allocate(tmp.data.pstruct))
+          return NULL;
+      }
     }
   }
   if (! tag_to_pointer(&tmp, type, &tmp_data))
