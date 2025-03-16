@@ -285,16 +285,16 @@ void env_clean (s_env *env)
   env->path = NULL;
   list_delete_all(env->search_modules_default);
   env->search_modules_default = NULL;
-  if (g_kc3_env_default == env) {
-    sym_delete_all();
-    free(g_kc3_env_default);
-    g_kc3_env_default = NULL;
-  }
   if (g_kc3_env_global == env) {
     if (env->parent_env)
       g_kc3_env_global = env->parent_env;
     else
       g_kc3_env_global = g_kc3_env_default;
+  }
+  if (g_kc3_env_default == env) {
+    sym_delete_all();
+    free(g_kc3_env_default);
+    g_kc3_env_default = NULL;
   }
 }
 

@@ -415,6 +415,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
       if (! pcallable_init_copy(&tmp.pcallable, &op->pcallable))
         return false;
       callable_set_special(tmp.pcallable, op->special);
+      tag_clean(&op_tag);
       *call = tmp;
       return true;
     }
