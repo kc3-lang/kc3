@@ -73,6 +73,8 @@ There are now four full applications written in KC3 that we know of :
    - pass by reference and reference counting in a few data structures
      - Struct
      - StructType
+   - optional pass by copy (--copy) for use with ASAN.
+   
 
 ## Discord invite
 
