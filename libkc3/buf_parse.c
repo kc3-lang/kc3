@@ -930,6 +930,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   s_tag   next_op_tag = {0};
   s_op   *next_op;
   s_op  *op;
+  s_tag  op_tag = {0};
   s_ops *ops;
   sw r;
   sw result = 0;
@@ -947,6 +948,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   tag_init_copy(left, &dest->arguments->tag);
   if ((r = buf_peek_ident(buf, &next_ident)) <= 0)
     goto restore;
+  // FIXME: acquire read-only lock for ops
   ops = env_global()->ops;
   if (! ops_get(ops, next_ident.sym, 2, &next_op_tag)) {
     r = 0;
@@ -954,6 +956,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
   }
   next_op = next_op_tag.data.pstruct->data;
   while (r > 0 && next_op->precedence >= min_precedence) {
+    tag_clean(&next_op_tag);
+    next_op_tag = (s_tag) {0};
     if ((r = buf_parse_ident(buf, &next_ident)) <= 0)
       goto restore;
     result += r;
@@ -973,7 +977,13 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     }
     else
       merge_left = true;
-    op = next_op;
+    tag_clean(&op_tag);
+    op_tag = (s_tag) {0};
+    if (! tag_init_copy(&op_tag, &next_op_tag)) {
+      r = -1;
+      goto restore;
+    }
+    op = op_tag.data.pstruct->data;
     tmp.ident.module = NULL;
     tmp.ident.sym = op->sym;
     if ((r = buf_ignore_spaces(buf)) < 0)
@@ -989,6 +999,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       break;
     if (r > 0 && c == '\n')
       break;
+    tag_clean(&next_op_tag);
+    next_op_tag = (s_tag) {0};
     r = buf_peek_ident(buf, &next_ident);
     if (r <= 0)
       break;
@@ -1019,6 +1031,8 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
         goto ok;
       if (r > 0 && c == '\n')
         goto ok;
+      tag_clean(&next_op_tag);
+      next_op_tag = (s_tag) {0};
       r = buf_peek_ident(buf, &next_ident);
       if (r <= 0 || ! (ops_get(ops, next_ident.sym, 2, &next_op_tag)))
         goto ok;
@@ -1026,12 +1040,16 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     }
   }
  ok:
+  tag_clean(&next_op_tag);
+  tag_clean(&op_tag);
   call_clean(dest);
   *dest = tmp;
   r = result;
   goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
+  tag_clean(&next_op_tag);
+  tag_clean(&op_tag);
   call_clean(&tmp);
  clean:
   buf_save_clean(buf, &save);
@@ -3182,8 +3200,11 @@ sw buf_parse_ptr (s_buf *buf, u_ptr_w *dest)
   if ((r = buf_parse_integer(buf, &i)) <= 0)
     goto restore;
   result += r;
-  if (! integer_is_zero(&i))
+  if (! integer_is_zero(&i)) {
+    integer_clean(&i);
     goto restore;
+  }
+  integer_clean(&i);
   dest->p = NULL;
   r = result;
   goto clean;

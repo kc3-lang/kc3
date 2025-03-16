@@ -128,7 +128,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
   assert(st);
   assert(module);
   assert(spec);
-  if (true) {
+  if (false) {
     err_write_1("struct_type_init: ");
     err_inspect_sym(&module);
     err_write_1("\n");
