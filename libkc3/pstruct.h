@@ -26,8 +26,8 @@ void       pstruct_clean (p_struct *s);
 p_struct * pstruct_init (p_struct *s, const s_sym *module);
 p_struct * pstruct_init_1 (p_struct *s, const char *p);
 p_struct * pstruct_init_cast (p_struct *s, const s_sym * const *type,
-                              const s_tag *tag);
-p_struct * pstruct_init_copy (p_struct *s, p_struct src);
+                              s_tag *tag);
+p_struct * pstruct_init_copy (p_struct *s, p_struct *src);
 p_struct * pstruct_init_put (p_struct *s, p_struct src,
                              const s_sym *key, s_tag *value);
 p_struct * pstruct_init_with_data (p_struct *s, const s_sym *module,

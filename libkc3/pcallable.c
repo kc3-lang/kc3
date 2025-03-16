@@ -68,7 +68,11 @@ p_callable * pcallable_init_copy (p_callable *callable,
                                   p_callable *src)
 {
   p_callable tmp;
-  if (! (tmp = callable_new_ref(*src)))
+  if (env_global()->pass_by_copy)
+    tmp = callable_new_copy(*src);
+  else
+    tmp = callable_new_ref(*src);
+  if (! tmp)
     return NULL;
   *callable = tmp;
   return callable;

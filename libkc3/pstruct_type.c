@@ -58,7 +58,11 @@ p_struct_type * pstruct_type_init_copy (p_struct_type *st,
                                         p_struct_type *src)
 {
   s_struct_type *tmp;
-  if (! (tmp = struct_type_new_ref(*src)))
+  if (env_global()->pass_by_copy)
+    tmp = struct_type_new_copy(*src);
+  else
+    tmp = struct_type_new_ref(*src);
+  if (! tmp)
     return NULL;
   *st = tmp;
   return st;

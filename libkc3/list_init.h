@@ -47,7 +47,7 @@ s_list * list_init_map_from_lists (s_list *list, s_list *keys,
                                    s_list *values, s_list *next);
 s_list * list_init_pstruct (s_list *list, const s_sym *module,
                             s_list *next);
-s_list * list_init_pstruct_copy (s_list *list, p_struct  src,
+s_list * list_init_pstruct_copy (s_list *list, p_struct *src,
                                  s_list *next);
 s_list * list_init_pstruct_with_data (s_list *list,
                                       const s_sym *module, void *data,
@@ -134,7 +134,7 @@ s_list * list_new_map_1 (const char *p, s_list *next);
 s_list * list_new_map_from_lists (s_list *keys, s_list *values,
                                   s_list *next);
 s_list * list_new_pstruct (const s_sym *module, s_list *next);
-s_list * list_new_pstruct_copy (p_struct  src, s_list *next);
+s_list * list_new_pstruct_copy (p_struct *src, s_list *next);
 s_list * list_new_pstruct_with_data (const s_sym *module, void *data,
                                      bool free_data, s_list *next);
 s_list * list_new_pstruct_with_type (s_struct_type *st, s_list *next);

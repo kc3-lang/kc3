@@ -471,7 +471,7 @@ s_tag * tag_init_cast_struct (s_tag *tag, const s_sym * const *type,
                                       false);
   case TAG_PSTRUCT:
     if (*type == src->data.pstruct->pstruct_type->module)
-      return tag_init_pstruct_copy(tag, src->data.pstruct);
+      return tag_init_pstruct_copy(tag, &src->data.pstruct);
   default:
     break;
   }
@@ -562,7 +562,13 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     return tag;
   case TAG_PSTRUCT:
     tag->type = src->type;
-    if (! pstruct_init_copy(&tag->data.pstruct, src->data.pstruct))
+    if (! pstruct_init_copy(&tag->data.pstruct, &src->data.pstruct))
+      return NULL;
+    return tag;
+  case TAG_PSTRUCT_TYPE:
+    tag->type = src->type;
+    if (! pstruct_type_init_copy(&tag->data.pstruct_type,
+                                 &src->data.pstruct_type))
       return NULL;
     return tag;
   case TAG_PTAG:
@@ -608,12 +614,6 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     if (! str_init_copy(&tag->data.str, &src->data.str))
       return NULL;
     return tag;
-  case TAG_PSTRUCT_TYPE:
-    tag->type = src->type;
-    if (! pstruct_type_init_copy(&tag->data.pstruct_type,
-                                 &src->data.pstruct_type))
-      return NULL;
-    return tag;
   case TAG_SW:
     tag->type = src->type;
     tag->data.sw = src->data.sw;
@@ -632,11 +632,6 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     if (! tuple_init_copy(&tag->data.tuple, &src->data.tuple))
       return NULL;
     return tag;
-  case TAG_UNQUOTE:
-    tag->type = src->type;
-    if (! unquote_init_copy(&tag->data.unquote, &src->data.unquote))
-      return NULL;
-    return tag;
   case TAG_U8:
     tag->type = src->type;
     tag->data.u8 = src->data.u8;
@@ -652,6 +647,11 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
   case TAG_U64:
     tag->type = src->type;
     tag->data.u64 = src->data.u64;
+    return tag;
+  case TAG_UNQUOTE:
+    tag->type = src->type;
+    if (! unquote_init_copy(&tag->data.unquote, &src->data.unquote))
+      return NULL;
     return tag;
   case TAG_UW:
     tag->type = src->type;

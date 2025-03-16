@@ -340,7 +340,7 @@ class TagInitList
        TagInit.new("pstruct", "TAG_PSTRUCT", :init_mode_init,
                    [Arg.new("const s_sym *", "module")]),
        TagInit.new("pstruct", "copy", "TAG_PSTRUCT", :init_mode_init,
-                   [Arg.new("p_struct ", "src")]),
+                   [Arg.new("p_struct *", "src")]),
        TagInit.new("pstruct", "with_data", "TAG_PSTRUCT", :init_mode_init,
                    [Arg.new("const s_sym *", "module"),
                     Arg.new("void *", "data"),

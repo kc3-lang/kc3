@@ -1283,24 +1283,25 @@ bool env_eval_quote_quote (s_env *env, s_quote *quote, s_tag *dest)
 bool env_eval_quote_struct (s_env *env, s_struct *s, s_tag *dest)
 {
   uw i;
+  p_struct_type st;
   s_tag tmp = {0};
   assert(env);
   assert(s);
   assert(dest);
   tmp.type = TAG_PSTRUCT;
   if (s->data || ! s->tag) {
-    if (! pstruct_init_copy(&tmp.data.pstruct, s))
+    if (! pstruct_init_copy(&tmp.data.pstruct, &s))
       return false;
     *dest = tmp;
     return true;
   }
   pstruct_init_with_type(&tmp.data.pstruct, s->pstruct_type);
-  tmp.data.pstruct->tag = alloc(tmp.data.pstruct->pstruct_type->map.count *
-                                sizeof(s_tag));
+  st = tmp.data.pstruct->pstruct_type;
+  tmp.data.pstruct->tag = alloc(st->map.count * sizeof(s_tag));
   if (! tmp.data.pstruct->tag)
     return false;
   i = 0;
-  while (i < tmp.data.pstruct->pstruct_type->map.count) {
+  while (i < st->map.count) {
     if (! env_eval_quote_tag(env, s->tag + i,
                              tmp.data.pstruct->tag + i))
       goto ko;
@@ -1477,7 +1478,7 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
   assert(s);
   assert(dest);
   if (s->data) {
-    if (! pstruct_init_copy(&tmp, s))
+    if (! pstruct_init_copy(&tmp, &s))
       return false;
     *dest = tmp;
     return true;

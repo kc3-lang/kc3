@@ -27,6 +27,13 @@
 void struct_type_clean (s_struct_type *st)
 {
   assert(st);
+  if (false) {
+    err_write_1("struct_type_clean: ");
+    err_inspect_struct_type(st);
+    err_write_1("\n");
+    err_stacktrace();
+    abort();
+  }
   map_clean(&st->map);
   free(st->offset);
 }
@@ -61,15 +68,20 @@ void * struct_type_copy_data (const s_struct_type *st, void *dest,
 void struct_type_delete (s_struct_type *st)
 {
   assert(st);
-  if (st->ref_count <= 0) {
-    err_puts("struct_type_delete: invalid reference count");
-    assert(! "struct_type_delete: invalid reference count");
-    abort();
+  if (env_global()->pass_by_copy) {
+    assert(st->ref_count == 1);
   }
-  if (! --st->ref_count) {
-    struct_type_clean(st);
-    free(st);
+  else {
+    if (st->ref_count <= 0) {
+      err_puts("struct_type_delete: invalid reference count");
+      assert(! "struct_type_delete: invalid reference count");
+      abort();
+    }
+    if (--st->ref_count)
+      return;
   }
+  struct_type_clean(st);
+  free(st);
 }
 
 bool * struct_type_exists (const s_sym *module, bool *dest)
@@ -116,6 +128,11 @@ s_struct_type * struct_type_init (s_struct_type *st,
   assert(st);
   assert(module);
   assert(spec);
+  if (true) {
+    err_write_1("struct_type_init: ");
+    err_inspect_sym(&module);
+    err_write_1("\n");
+  }
   count = list_length(spec);
   tmp.module = module;
   if (! map_init(&tmp.map, count))
@@ -232,6 +249,20 @@ s_struct_type * struct_type_new (const s_sym *module,
   if (! st)
     return NULL;
   if (! struct_type_init(st, module, spec)) {
+    free(st);
+    return NULL;
+  }
+  return st;
+}
+
+s_struct_type * struct_type_new_copy (const s_struct_type *src)
+{
+  s_struct_type *st;
+  assert(src);
+  st = alloc(sizeof(s_struct_type));
+  if (! st)
+    return NULL;
+  if (! struct_type_init_copy(st, src)) {
     free(st);
     return NULL;
   }

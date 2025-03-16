@@ -25,13 +25,15 @@ void callable_delete (s_callable *callable)
 #if HAVE_PTHREAD
   mutex_lock(&callable->mutex);
 #endif
-  if (callable->ref_count <= 0) {
-    err_puts("callable_delete: invalid ref count");
-    assert(! "callable_delete: invalid ref count");
-    goto clean;
+  if (! env_global()->pass_by_copy) {
+    if (callable->ref_count <= 0) {
+      err_puts("callable_delete: invalid ref count");
+      assert(! "callable_delete: invalid ref count");
+      goto clean;
+    }
+    if (--callable->ref_count > 0)
+      goto clean;
   }
-  if (--callable->ref_count > 0)
-    goto clean;
   switch (callable->type) {
   case CALLABLE_CFN: cfn_clean(&callable->data.cfn); break;
   case CALLABLE_FN:  fn_clean(&callable->data.fn);   break;

@@ -240,17 +240,24 @@ void * struct_get_w (s_struct *s, const s_sym *key)
 
 s_struct * struct_init (s_struct *s, const s_sym *module)
 {
+  p_struct_type st = NULL;
   s_struct tmp = {0};
   assert(s);
   if (module) {
-    if (! struct_type_find(module, &tmp.pstruct_type)) {
+    if (! struct_type_find(module, &st)) {
       err_write_1("struct_init: struct_type_find(");
       err_inspect_sym(&module);
       err_puts(")");
       return NULL;
     }
-    if (! tmp.pstruct_type) {
+    if (! st) {
       err_write_1("struct_init: struct_type not found: ");
+      err_inspect_sym(&module);
+      err_write_1("\n");
+      return NULL;
+    }
+    if (! pstruct_type_init_copy(&tmp.pstruct_type, &st)) {
+      err_write_1("struct_init: pstruct_type_init_copy: ");
       err_inspect_sym(&module);
       err_write_1("\n");
       return NULL;

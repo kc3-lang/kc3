@@ -111,6 +111,7 @@ lldb_test: debug
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
 
 test: libkc3_test
+	time ./libkc3_test --copy
 	time ./libkc3_test
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s time ./ekc3_test
@@ -119,6 +120,7 @@ test: libkc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s time ./http_test
 
 test_asan: libkc3_test_asan
+	time ./libkc3_test_asan --copy
 	time ./libkc3_test_asan
 	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./ekc3_test
@@ -127,6 +129,7 @@ test_asan: libkc3_test_asan
 	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./http_test
 
 test_cov:
+	time ./libkc3_test_cov --copy
 	time ./libkc3_test_cov
 	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./ekc3_test
@@ -135,6 +138,7 @@ test_cov:
 	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./http_test
 
 test_debug: libkc3_test_debug
+	time ./libkc3_test_debug --copy
 	time ./libkc3_test_debug
 	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./ikc3_test
 	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./ekc3_test

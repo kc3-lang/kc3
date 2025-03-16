@@ -259,7 +259,7 @@ s_list * list_init_pstruct (s_list *list, const s_sym *module,
   return list;
 }
 
-s_list * list_init_pstruct_copy (s_list *list, p_struct  src,
+s_list * list_init_pstruct_copy (s_list *list, p_struct *src,
                                  s_list *next)
 {
   s_list tmp = {0};
@@ -935,7 +935,7 @@ s_list * list_new_pstruct (const s_sym *module, s_list *next)
   return list;
 }
 
-s_list * list_new_pstruct_copy (p_struct  src, s_list *next)
+s_list * list_new_pstruct_copy (p_struct *src, s_list *next)
 {
   s_list *list;
   list = list_new(next);

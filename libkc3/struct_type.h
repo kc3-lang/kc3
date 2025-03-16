@@ -39,6 +39,7 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
 void            struct_type_delete (s_struct_type *st);
 s_struct_type * struct_type_new (const s_sym *module,
                                  const s_list *spec);
+s_struct_type * struct_type_new_copy (const s_struct_type *src);
 s_struct_type * struct_type_new_ref (s_struct_type *src);
 
 /* Observers. */

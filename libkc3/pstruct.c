@@ -71,14 +71,14 @@ p_struct * pstruct_init_1 (p_struct *s, const char *p)
 }
 
 p_struct * pstruct_init_cast (p_struct *s, const s_sym * const *type,
-                              const s_tag *tag)
+                              s_tag *tag)
 {
   assert(s);
   assert(tag);
   switch (tag->type) {
   case TAG_PSTRUCT:
     if (*type == tag->data.pstruct->pstruct_type->module)
-      return pstruct_init_copy(s, tag->data.pstruct);
+      return pstruct_init_copy(s, &tag->data.pstruct);
     break;
   case TAG_PTR:
     return pstruct_init_copy(s, tag->data.ptr.p);
@@ -94,10 +94,14 @@ p_struct * pstruct_init_cast (p_struct *s, const s_sym * const *type,
   return NULL;
 }
 
-p_struct * pstruct_init_copy (p_struct *s, p_struct src)
+p_struct * pstruct_init_copy (p_struct *s, p_struct *src)
 {
   p_struct tmp;
-  if (! (tmp = struct_new_ref(src)))
+  if (env_global()->pass_by_copy)
+    tmp = struct_new_copy(*src);
+  else
+    tmp = struct_new_ref(*src);
+  if (! tmp)
     return NULL;
   *s = tmp;
   return s;
