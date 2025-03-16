@@ -170,10 +170,12 @@ const s_sym * sym_anon (const s_str *prefix)
     }
     if (! sym_find(&str)) {
       tmp = str_to_sym(&str);
+      str_clean(&str);
       list_delete_all(list);
       return tmp;
     }
   }
+  str_clean(&str);
   list_delete_all(list);
   return NULL;
 }

@@ -204,6 +204,7 @@ s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
   tmp.type = TAG_SYM;
   tmp.data.sym = env_defstruct(env_global(), tag.data.list);
   *dest = tmp;
+  tag_clean(&tag);
   return dest;
 }
 
