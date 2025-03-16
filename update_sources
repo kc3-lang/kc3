@@ -53,6 +53,7 @@ test/ekc3_test"
 sources KC3_TEST_EKC3_SOURCES "$KC3_TEST_EKC3_SOURCES"
 
 KC3_TEST_HTTP_SOURCES="$(ls test/http/*.expected test/http/*.kc3)
+test/http/mime.types
 test/http_test"
 sources KC3_TEST_HTTP_SOURCES "$KC3_TEST_HTTP_SOURCES"
 
@@ -65,8 +66,17 @@ $(find test/httpd/pages)
 test/httpd/doc"
 sources KC3_TEST_HTTPD_SOURCES "$KC3_TEST_HTTPD_SOURCES"
 
+KC3_TEST_JSON_SOURCES="$(ls test/json/*.expected test/json/*.kc3)
+test/json_test"
+sources KC3_TEST_JSON_SOURCES "$KC3_TEST_JSON_SOURCES"
+
+KC3_TEST_MARKDOWN_SOURCES="$(ls test/markdown/*.expected test/markdown/*.kc3)
+test/markdown_test"
+sources KC3_TEST_MARKDOWN_SOURCES "$KC3_TEST_MARKDOWN_SOURCES"
+
 KC3_OTHER_SOURCES="$(ls *.md)
 Makefile
+config_common
 config.subr
 configure
 env
