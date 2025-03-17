@@ -455,7 +455,7 @@ bool env_defoperator (s_env *env, s_tag *tag_op)
   op = tag_op->data.pstruct->data;
   if (! ops_add(env->ops, tag_op))
     return false;
-  tag_init_sym(&tag_id, sym_anon(&g_sym_op.str));
+  tag_init_sym_anon(&tag_id, &g_sym_op.str);
   tag_init_sym(&tag_is_a, &g_sym_is_a);
   tag_init_sym(&tag_sym, op->sym);
   tag_init_sym(&tag_sym_op, &g_sym_op);

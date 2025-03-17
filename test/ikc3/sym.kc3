@@ -28,3 +28,7 @@ Z
 :🤩
 quote GL.Sphere
 GL.Sphere
+quote Sym.anon("plop")
+Sym.anon("plop")
+quote Sym.anon("plop")
+Sym.anon("plop")

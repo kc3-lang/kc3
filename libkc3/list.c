@@ -581,8 +581,8 @@ s_list ** list_tail (s_list **list)
   return tail;
 }
 
-s_tag * list_to_array (s_list *list, const s_sym *array_type,
-                       s_tag *dest)
+s_array * list_to_array (s_list *list, const s_sym *array_type,
+                         s_array *dest)
 {
   s8 *data;
   s_list *l;

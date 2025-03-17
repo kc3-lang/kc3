@@ -134,6 +134,7 @@ extern const s_sym g_sym_x;
 
 const s_sym  * sym_1 (const char *p);
 const s_sym ** sym_init_1 (const s_sym **sym, const char *p);
+const s_sym ** sym_init_anon (const s_sym **sym, const s_str *prefix);
 const s_sym ** sym_init_cast (const s_sym **sym,
                               const s_sym * const *type,
                               const s_tag *tag);
@@ -144,9 +145,8 @@ const s_sym ** sym_init_str (const s_sym **sym, const s_str *src);
 bool           sym_register (const s_sym *sym, s_sym *free_sym);
 
 /* Heap-allocation functions, call sym_delete_all at exit. */
-const s_sym * sym_anon (const s_str *prefix);
-void          sym_delete_all (void);
-const s_sym * sym_new (const s_str *src);
+void           sym_delete_all (void);
+const s_sym *  sym_new (const s_str *src);
 
 /* Observers */
 const s_sym * sym_array_type (const s_sym *sym);

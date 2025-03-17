@@ -92,6 +92,8 @@ s_list * list_init_str_copy (s_list *list, const s_str *src,
 s_list * list_init_str_empty (s_list *list, s_list *next);
 s_list * list_init_sw (s_list *list, sw i, s_list *next);
 s_list * list_init_sym (s_list *list, const s_sym *sym, s_list *next);
+s_list * list_init_sym_anon (s_list *list, const s_str *src,
+                             s_list *next);
 s_list * list_init_tuple (s_list *list, uw count, s_list *next);
 s_list * list_init_tuple_2 (s_list *list, s_tag *a, s_tag *b,
                             s_list *next);
@@ -168,6 +170,7 @@ s_list * list_new_str_copy (const s_str *src, s_list *next);
 s_list * list_new_str_empty (s_list *next);
 s_list * list_new_sw (sw i, s_list *next);
 s_list * list_new_sym (const s_sym *sym, s_list *next);
+s_list * list_new_sym_anon (const s_str *src, s_list *next);
 s_list * list_new_tuple (uw count, s_list *next);
 s_list * list_new_tuple_2 (s_tag *a, s_tag *b, s_list *next);
 s_list * list_new_time (s_list *next);

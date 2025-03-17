@@ -144,42 +144,6 @@ const s_sym * sym_1 (const char *p)
   return str_to_sym(&stra);
 }
 
-const s_sym * sym_anon (const s_str *prefix)
-{
-  s_list *list;
-  static uw serial = 0;
-  s_str    *serial_str = NULL;
-  s_str str = {0};
-  const s_sym *tmp = NULL;
-  const s_str underscore = {{NULL}, 1, {"_"}};
-  list = list_new(list_new(list_new(NULL)));
-  list_next(list_next(list))->tag.type = TAG_STR;
-  serial_str = &list_next(list_next(list))->tag.data.str;
-  list_next(list)->tag.type = TAG_STR;
-  list_next(list)->tag.data.str = underscore;
-  list->tag.type = TAG_STR;
-  list->tag.data.str = *prefix;
-  while (1) {
-    serial++;
-    str_init_uw(serial_str, serial);
-    if (! str_init_concatenate_list(&str,
-                                    (const s_list * const *) &list)) {
-      err_puts("sym_new_anon: str_init_concatenate_list");
-      assert(! "sym_new_anon: str_init_concatenate_list");
-      return NULL;
-    }
-    if (! sym_find(&str)) {
-      tmp = str_to_sym(&str);
-      str_clean(&str);
-      list_delete_all(list);
-      return tmp;
-    }
-  }
-  str_clean(&str);
-  list_delete_all(list);
-  return NULL;
-}
-
 const s_sym * sym_array_type (const s_sym *sym)
 {
   s_buf buf;
@@ -343,6 +307,45 @@ const s_sym ** sym_init_1 (const s_sym **sym, const char *p)
   assert(p);
   *sym = sym_1(p);
   return sym;
+}
+
+const s_sym ** sym_init_anon (const s_sym **sym, const s_str *prefix)
+{
+  s_list *list;
+  static uw serial = 0;
+  s_str    *serial_str = NULL;
+  s_str str = {0};
+  const s_sym *tmp = NULL;
+  const s_str underscore = {{NULL}, 1, {"_"}};
+  list = list_new(list_new(list_new(NULL)));
+  list_next(list_next(list))->tag.type = TAG_STR;
+  serial_str = &list_next(list_next(list))->tag.data.str;
+  list_next(list)->tag.type = TAG_STR;
+  list_next(list)->tag.data.str = underscore;
+  list->tag.type = TAG_STR;
+  str_init_copy(&list->tag.data.str, prefix);
+  while (1) {
+    serial++;
+    str_clean(serial_str);
+    str_init_uw(serial_str, serial);
+    if (! str_init_concatenate_list(&str,
+                                    (const s_list * const *) &list)) {
+      err_puts("sym_new_anon: str_init_concatenate_list");
+      assert(! "sym_new_anon: str_init_concatenate_list");
+      break;
+    }
+    if (! sym_find(&str)) {
+      tmp = str_to_sym(&str);
+      str_clean(&str);
+      list_delete_all(list);
+      *sym = tmp;
+      return sym;
+    }
+    str_clean(&str);
+  }
+  str_clean(&str);
+  list_delete_all(list);
+  return NULL;
 }
 
 const s_sym ** sym_init_cast (const s_sym **sym,

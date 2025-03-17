@@ -131,6 +131,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   if (cfn->ptr.f) {
     if (! (trace = list_new(env_global()->stacktrace)))
       goto ko;
+    // FIXME: error handling
     tag_init_list(&trace->tag, list_new_sym
                   (cfn->name, list_new_copy
                    (args)));

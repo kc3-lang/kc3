@@ -559,6 +559,17 @@ s_tag * tag_init_sym (s_tag *tag, const s_sym *sym)
   return tag;
 }
 
+s_tag * tag_init_sym_anon (s_tag *tag, const s_str *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_SYM;
+  if (! sym_init_anon(&tmp.data.sym, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_tuple (s_tag *tag, uw count)
 {
   s_tag tmp = {0};
@@ -1287,6 +1298,20 @@ s_tag * tag_new_sym (const s_sym *sym)
   return tag;
 }
 
+s_tag * tag_new_sym_anon (const s_str *src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_SYM;
+  if (! sym_init_anon(&tag->data.sym, src)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
 s_tag * tag_new_tuple (uw count)
 {
   s_tag *tag;
@@ -1964,6 +1989,18 @@ s_tag * tag_sym (s_tag *tag, const s_sym *sym)
   tag_clean(tag);
   tmp.type = TAG_SYM;
   tmp.data.sym = sym;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_sym_anon (s_tag *tag, const s_str *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_SYM;
+  if (! sym_init_anon(&tmp.data.sym, src))
+    return NULL;
   *tag = tmp;
   return tag;
 }
