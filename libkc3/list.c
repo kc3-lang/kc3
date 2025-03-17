@@ -581,8 +581,8 @@ s_list ** list_tail (s_list **list)
   return tail;
 }
 
-s_array * list_to_array (s_list *list, const s_sym *array_type,
-                         s_array *dest)
+s_tag * list_to_array (s_list *list, const s_sym *array_type,
+                       s_tag *dest)
 {
   s8 *data;
   s_list *l;
@@ -594,6 +594,11 @@ s_array * list_to_array (s_list *list, const s_sym *array_type,
   assert(array_type);
   assert(dest);
   len = list_length(list);
+  if (! sym_is_array_type(array_type)) {
+    err_puts("list_to_array: not an array type");
+    assert(! "list_to_array: not an array type");
+    return NULL;
+  }
   tmp.array_type = array_type;
   tmp.element_type = sym_array_type(array_type);
   if (! sym_type_size(&tmp.element_type, &size))
