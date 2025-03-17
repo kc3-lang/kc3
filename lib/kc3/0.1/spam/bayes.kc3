@@ -11,28 +11,37 @@ defmodule Spam.Bayes do
   def p_h = 1.0 - p_s
 
   def p_m_s = fn (m) {
-    p = Facts.first_with_tags(db, m, :spam_bayes_p_m_s, p = ?,
-                 fn (fact) { p })
-    p || 0.0
+    count_m_s = Facts.first_with_tags(db, m, :spam_bayes_m_s,
+      count_m_s = ?, fn (fact) { count_m_s }) || 0
+    count_m_h = Facts.first_with_tags(db, m, :spam_bayes_m_h,
+      count_m_h = ?, fn (fact) { count_m_h)) || 0
+    count_m_s / (count_m_s + count_m_h + 1)
   }
 
-  def learn_p_m_s = fn (m, p) {
-    Facts.replace_tags(db, m, :spam_bayes_p_m_s, p)
-  }
-
-  def learn = fn (class, doc) {
-    error = "Unknown error"
-    r = if type(doc) = Str do
-      if List.has?(classes, class) = true do
-        words = List.map(Str.split_words(doc), Str.to_lower)
-        puts("#{type} : #{inspect(words)}")
-      end
-    end
-    if r do
-      {:ok, r}
+  def learn_word = fn (m, type) {
+    if type == :spam do
+      count = Facts.first_with(db, m, :spam_bayes_m_s, count = ?,
+        fn (facts) { count }) || 0
+      count = count + 1
+      Facts.replace_tags(db, m, :spam_bayes_m_s, count)
     else
-      {:error, error}
+      count = Facts.first_with(db, m, :spam_bayes_m_h, count = ?,
+        fn (facts) { count }) || 0
+      count = count + 1
+      Facts.replace_tags(db, m, :spam_bayes_m_h, count)
+    end
+  }
+  
+  def learn = fn (class, doc) {
+    if List.has?(classes, class) = true do
+      words = List.map(Str.split_words(doc), Str.to_lower)
+      List.each(words, fn (m) { learn_word(m, type) })
     end
   }
 
+  def is_spam? = fn (doc) {
+    words = List.map(Str.split_words(doc), Str.to_lower)
+    p_i = List.to_array(List.map(words, fn (m) { p_m_s(m) }), F128[])
+  }  
+    
 end
