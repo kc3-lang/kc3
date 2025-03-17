@@ -115,12 +115,15 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
   default:
     break;
   }
-  err_write_1("kc3_access: cannot access tag type ");
-  err_write_1(tag_type_to_string(tag->type));
-  err_write_1(" for key ");
-  err_inspect_list(*key);
-  err_write_1("\n");
-  return NULL;
+  if (false) {
+    err_write_1("kc3_access: cannot access tag type ");
+    err_write_1(tag_type_to_string(tag->type));
+    err_write_1(" for key ");
+    err_inspect_list(*key);
+    err_write_1("\n");
+    return NULL;
+  }
+  return tag_init_void(dest);
 }
 
 s_tag * kc3_and (s_tag *a, s_tag *b, s_tag *dest)
