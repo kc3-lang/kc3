@@ -141,12 +141,14 @@ defoperator %KC3.Op{sym: :bor,
 
 defoperator %KC3.Op{sym: :&&,
                     arity: 2,
+                    special: true,
                     precedence: 5,
                     associativity: 1,
                     callable: cfn Tag "kc3_and" (Tag, Tag, Result)}
 
 defoperator %KC3.Op{sym: :||,
                     arity: 2,
+                    special: true,
                     precedence: 4,
                     associativity: 1,
                     callable: cfn Tag "kc3_or" (Tag, Tag, Result)}
