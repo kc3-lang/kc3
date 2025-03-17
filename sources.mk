@@ -1521,6 +1521,7 @@ KC3_TEST_HTTP_SOURCES = \
 	"test/http/07_client_server.kc3" \
 	"test/http/07_client_server.out.expected" \
 	"test/http/07_client_server.ret.expected" \
+	"test/http/mime.types" \
 	"test/http_test" \
 
 KC3_TEST_HTTPD_SOURCES = \
@@ -1631,6 +1632,30 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/static/test.html" \
 	"test/httpd/static/test.txt" \
 
+KC3_TEST_JSON_SOURCES = \
+	"test/json/basics.kc3" \
+	"test/json/basics.out.expected" \
+	"test/json/basics.ret.expected" \
+	"test/json/inspect.kc3" \
+	"test/json/inspect.out.expected" \
+	"test/json/inspect.ret.expected" \
+	"test/json/recursive.kc3" \
+	"test/json/recursive.out.expected" \
+	"test/json/recursive.ret.expected" \
+	"test/json/to_str.kc3" \
+	"test/json/to_str.out.expected" \
+	"test/json/to_str.ret.expected" \
+	"test/json_test" \
+
+KC3_TEST_MARKDOWN_SOURCES = \
+	"test/markdown/titles.kc3" \
+	"test/markdown/titles.out.expected" \
+	"test/markdown/titles.ret.expected" \
+	"test/markdown/to_html_str.kc3" \
+	"test/markdown/to_html_str.out.expected" \
+	"test/markdown/to_html_str.ret.expected" \
+	"test/markdown_test" \
+
 KC3_OTHER_SOURCES = \
 	"AUTHORS.md" \
 	"BUGS.md" \
@@ -1640,6 +1665,7 @@ KC3_OTHER_SOURCES = \
 	"Makefile" \
 	"README.md" \
 	"config.subr" \
+	"config_common" \
 	"configure" \
 	"env" \
 	"kc3.index" \
