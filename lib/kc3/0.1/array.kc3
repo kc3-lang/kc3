@@ -1,5 +1,7 @@
 defmodule Array do
 
+  def dimension = cfn Tag "kc3_array_dimension" (Array, Tag, Result)
+  
   def cast = cfn Array "array_init_cast" (Result, Sym, Tag)
 
   def data = cfn Tag "array_data_tag" (Tag, Tag, Result)

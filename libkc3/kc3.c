@@ -58,6 +58,7 @@
 #include "tag.h"
 #include "time.h"
 #include "u8.h"
+#include "uw.h"
 
 const s_str g_kc3_base_binary = {{NULL}, 2, {"01"}};
 const s_str g_kc3_base_octal = {{NULL}, 8, {"01234567"}};
@@ -134,6 +135,26 @@ s_tag * kc3_and (s_tag *a, s_tag *b, s_tag *dest)
 s_list ** kc3_args (s_list **dest)
 {
   return env_args(env_global(), dest);
+}
+
+s_tag * kc3_array_dimension(s_array *a, s_tag *index, s_tag *dest)
+{
+  uw index_uw;
+  const s_sym *sym_Uw = &g_sym_Uw;
+  s_tag tmp = {0};
+  assert(a);
+  assert(index);
+  assert(dest);
+  if (! uw_init_cast(&index_uw, &sym_Uw, index))
+    return NULL;
+  if (index_uw > a->dimension) {
+    err_puts("kc3_array_dimension: out of bound dimension index");
+    assert(! "kc3_array_dimension: out of bound dimension index");
+    return NULL;
+  }
+  tag_init_uw(&tmp, a->dimensions[index_uw].count);
+  *dest = tmp;
+  return dest;
 }
 
 void kc3_break (void)
