@@ -69,12 +69,15 @@ There are now four full applications written in KC3 that we know of :
    - hash table (ht.h, ht.c)
    - operators hash table
      - defoperator
-     - list of matching operators (facts_with)
+     - ops_get
+     - facts_add/replace
    - pass by reference and reference counting in a few data structures
+     - Callable (Fn, Cfn)
      - Struct
      - StructType
    - optional pass by copy (--copy) for use with ASAN.
-   
+     - `env_init_args --copy`
+
 
 ## Discord invite
 

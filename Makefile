@@ -877,22 +877,22 @@ markdown_debug:
 	${MAKE} -C ikc3 debug
 	${MAKE} -C markdown debug
 
-test: build
+test: build lib_links
 	${MAKE} -C test test
 
-test_asan: asan
+test_asan: asan lib_links_asan
 	${MAKE} -C test test_asan
 
-test_cov: cov
+test_cov: cov lib_links_cov
 	${MAKE} -C test test_cov
 
-test_debug: debug
+test_debug: debug lib_links_debug
 	${MAKE} -C test test_debug
 
-test_ekc3: ekc3
+test_ekc3: ekc3 lib_links
 	${MAKE} -C test test_ekc3
 
-test_ekc3_asan:
+test_ekc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
@@ -901,7 +901,7 @@ test_ekc3_asan:
 	${MAKE} -C ekc3 asan
 	${MAKE} -C test test_ekc3_asan
 
-test_ekc3_cov:
+test_ekc3_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
@@ -910,7 +910,7 @@ test_ekc3_cov:
 	${MAKE} -C ekc3 cov
 	${MAKE} -C test test_ekc3_cov
 
-test_ekc3_debug:
+test_ekc3_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -919,14 +919,14 @@ test_ekc3_debug:
 	${MAKE} -C ekc3 debug
 	${MAKE} -C test test_ekc3_debug
 
-test_gcovr:
+test_gcovr: lib_links_cov
 	${MAKE} clean_cov
 	${MAKE} test_libkc3_cov
 	${MAKE} test_ikc3_cov
 	${MAKE} test_ekc3_cov
 	${MAKE} gcovr
 
-test_http:
+test_http: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
@@ -939,7 +939,7 @@ test_http:
 	${MAKE} -C http build
 	${MAKE} -C test test_http
 
-test_http_asan:
+test_http_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
@@ -952,7 +952,7 @@ test_http_asan:
 	${MAKE} -C http asan
 	${MAKE} -C test test_http_asan
 
-test_http_cov:
+test_http_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
@@ -965,7 +965,7 @@ test_http_cov:
 	${MAKE} -C http cov
 	${MAKE} -C test test_http_cov
 
-test_http_debug:
+test_http_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -977,7 +977,7 @@ test_http_debug:
 	${MAKE} -C http debug
 	${MAKE} -C test test_http_debug
 
-test_httpd:
+test_httpd: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
@@ -992,7 +992,7 @@ test_httpd:
 	${MAKE} -C httpd build
 	${MAKE} -C test test_httpd
 
-test_httpd_asan:
+test_httpd_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
@@ -1007,7 +1007,7 @@ test_httpd_asan:
 	${MAKE} -C httpd asan
 	${MAKE} -C test test_httpd_asan
 
-test_httpd_cov:
+test_httpd_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
@@ -1022,7 +1022,7 @@ test_httpd_cov:
 	${MAKE} -C httpd cov
 	${MAKE} -C test test_httpd_cov
 
-test_httpd_debug:
+test_httpd_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -1037,35 +1037,35 @@ test_httpd_debug:
 	${MAKE} -C httpd debug
 	${MAKE} -C test test_httpd_debug
 
-test_ikc3:
+test_ikc3: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C ikc3 build
 	${MAKE} -C test test_ikc3
 
-test_ikc3_asan:
+test_ikc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C test test_ikc3_asan
 
-test_ikc3_cov:
+test_ikc3_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
 	${MAKE} -C ikc3 cov
 	${MAKE} -C test test_ikc3_cov
 
-test_ikc3_debug:
+test_ikc3_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C test test_ikc3_debug
 
-test_json:
+test_json: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
@@ -1073,7 +1073,7 @@ test_json:
 	${MAKE} -C json build
 	${MAKE} -C test test_json
 
-test_json_asan:
+test_json_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
@@ -1081,7 +1081,7 @@ test_json_asan:
 	${MAKE} -C json asan
 	${MAKE} -C test test_json_asan
 
-test_json_cov:
+test_json_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
@@ -1089,7 +1089,7 @@ test_json_cov:
 	${MAKE} -C json cov
 	${MAKE} -C test test_json_cov
 
-test_json_debug:
+test_json_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -1097,25 +1097,25 @@ test_json_debug:
 	${MAKE} -C json debug
 	${MAKE} -C test test_json_debug
 
-test_libkc3:
+test_libkc3: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
 	${MAKE} -C test test_libkc3
 
-test_libkc3_cov:
+test_libkc3_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
 	${MAKE} -C test test_libkc3_cov
 
-test_libkc3_debug:
+test_libkc3_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
 	${MAKE} -C test test_libkc3_debug
 
-test_markdown:
+test_markdown: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
@@ -1123,7 +1123,7 @@ test_markdown:
 	${MAKE} -C markdown build
 	${MAKE} -C test test_markdown
 
-test_markdown_asan:
+test_markdown_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
@@ -1131,7 +1131,7 @@ test_markdown_asan:
 	${MAKE} -C markdown asan
 	${MAKE} -C test test_markdown_asan
 
-test_markdown_cov:
+test_markdown_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
@@ -1139,7 +1139,7 @@ test_markdown_cov:
 	${MAKE} -C markdown cov
 	${MAKE} -C test test_markdown_cov
 
-test_markdown_debug:
+test_markdown_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -1147,7 +1147,7 @@ test_markdown_debug:
 	${MAKE} -C markdown debug
 	${MAKE} -C test test_markdown_debug
 
-test_socket:
+test_socket: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 build
@@ -1156,7 +1156,7 @@ test_socket:
 	${MAKE} -C socket build
 	${MAKE} -C test test_socket
 
-test_socket_asan:
+test_socket_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
@@ -1165,7 +1165,7 @@ test_socket_asan:
 	${MAKE} -C socket asan
 	${MAKE} -C test test_socket_asan
 
-test_socket_cov:
+test_socket_cov: lib_links_cov
 	${MAKE} -C libtommath cov
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 cov
@@ -1174,7 +1174,7 @@ test_socket_cov:
 	${MAKE} -C socket cov
 	${MAKE} -C test test_socket_cov
 
-test_socket_debug:
+test_socket_debug: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
