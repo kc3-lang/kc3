@@ -12,7 +12,7 @@ defmodule Spam.Bayes do
     count_m_s = Facts.first_with_tags(db, m, :spam_bayes_m_s,
       count_m_s = ?, fn (fact) { count_m_s }) || 0
     count_m_h = Facts.first_with_tags(db, m, :spam_bayes_m_h,
-      count_m_h = ?, fn (fact) { count_m_h)) || 0
+      count_m_h = ?, fn (fact) { count_m_h }) || 0
     count_m_s / (count_m_s + count_m_h + 1)
   }
 
@@ -49,7 +49,32 @@ defmodule Spam.Bayes do
       product_h = product_h * (1.0 - p_i[i])
       i = i + 1
     end
-    product_s / (product_s + product_h)
+    (product_s / (product_s + product_h)) > 0.5
   }  
+  
+  def unlearn = fn (class, doc) {
+    if List.has?(classes, class) = true do
+      words = List.map(Str.split_words(doc), Str.to_lower)
+      List.each(words, fn (m) { unlearn_word(m, type) })
+    end
+  }
+
+  def unlearn_word = fn (m, type) {
+    if type == :spam do
+      count = Facts.first_with(db, m, :spam_bayes_m_s, count = ?,
+        fn (facts) { count }) || 0
+      if count > 0 do
+        count = count - 1
+        Facts.replace_tags(db, m, :spam_bayes_m_s, count)
+      end
+    else
+      count = Facts.first_with(db, m, :spam_bayes_m_h, count = ?,
+        fn (facts) { count }) || 0
+     if count > 0 do
+        count = count - 1
+        Facts.replace_tags(db, m, :spam_bayes_m_h, count)
+      end
+    end
+  }
     
 end
