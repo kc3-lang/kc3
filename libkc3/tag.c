@@ -1266,7 +1266,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
   switch (tag->type) {
   case TAG_ARRAY:
     if (type == &g_sym_Array) {
-      *dest = tag->data.array.data;
+      *dest = &tag->data.array;
       return true;
     }
     goto invalid_cast;
