@@ -2,9 +2,7 @@ defmodule Spam.Bayes do
 
   def classes = [:spam, :ham]
 
-  def db = Facts.database()
-
-  #if Facts.open(db, "db/spam.facts") do :ok else end
+  def db = Config.spam_db
 
   def p_s = 0.8
 
@@ -42,6 +40,16 @@ defmodule Spam.Bayes do
   def is_spam? = fn (doc) {
     words = List.map(Str.split_words(doc), Str.to_lower)
     p_i = List.to_array(List.map(words, fn (m) { p_m_s(m) }), F128[])
+    dim = Array.dimension(p_i, 0)
+    product_s = 1.0
+    product_h = 1.0
+    i = 0
+    while i < dim do
+      product_s = product_s * p_i[i]
+      product_h = product_h * (1.0 - p_i[i])
+      i = i + 1
+    end
+    product_s / (product_s + product_h)
   }  
     
 end
