@@ -1,5 +1,10 @@
 defmodule Metric do
 
+  require Facts
+  require Integer
+  require Str
+  require URL
+
   def normalize = fn (key) {
     key = URL.unescape(key)
     if (key != "/" && Str.ends_with?(key, "/")) do
