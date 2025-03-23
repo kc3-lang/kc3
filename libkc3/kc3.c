@@ -462,15 +462,15 @@ s_tag * kc3_quote_cfn (const s_sym **sym, s_tag *dest)
   return tag_init_sym(dest, *sym);
 }
 
-s_str * kc3_getenv (const s_str *name, s_str *dest)
+s_tag * kc3_getenv (const s_str *name, s_tag *dest)
 {
   char *p;
   assert(name);
   assert(dest);
   p = getenv(name->ptr.pchar);
   if (! p)
-    return NULL;
-  return str_init_1(dest, NULL, p);
+    return tag_init_void(dest);
+  return tag_init_str_1(dest, NULL, p);
 }
 
 sw kc3_getpid (void)

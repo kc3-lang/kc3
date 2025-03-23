@@ -44,7 +44,7 @@ s_tag *        kc3_facts_first_with_tags (s_facts *facts,
                                           p_callable *callback,
                                           s_tag *dest);
 uw *           kc3_facts_next_id (uw *dest);
-s_str *        kc3_getenv (const s_str *name, s_str *dest);
+s_tag *        kc3_getenv (const s_str *name, s_tag *dest);
 sw             kc3_getpid (void);
 sw             kc3_getppid (void);
 void           kc3_license (void);

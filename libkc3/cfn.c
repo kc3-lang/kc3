@@ -155,7 +155,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
     else
       *dest = tmp;
-    assert(env_global()->stacktrace == trace)
+    assert(env_global()->stacktrace == trace);
     env_global()->stacktrace = list_delete(trace);
   }
   else {

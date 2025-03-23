@@ -1286,18 +1286,22 @@ sw buf_parse_comment (s_buf *buf)
   sw r1;
   sw result = 0;
   s_buf_save save;
+  buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "#")) <= 0)
-    return r;
+    goto clean;
   result += r;
-  while ((r = buf_peek_character_utf8(buf, &c)) > 0 &&
-         c != '\n') {
+  while (1) {
+    if ((r = buf_peek_character_utf8(buf, &c)) <= 0)
+      goto restore;
     csize = r;
-    if ((r = buf_ignore(buf, csize)) < 0)
-      return r;
+    if ((r = buf_ignore(buf, csize)) <= 0)
+      goto restore;
     result += csize;
+    if (c == '\n')
+      break;
   }
   while (1) {
-    buf_save_init(buf, &save);
+    buf_save_update(buf, &save);
     if ((r = buf_ignore_spaces(buf)) <= 0)
       goto clean;
     r1 = r;
@@ -1317,7 +1321,6 @@ sw buf_parse_comment (s_buf *buf)
     }
     if (r < 0)
       goto clean;
-    buf_save_clean(buf, &save);
   }
  restore:
   buf_save_restore_rpos(buf, &save);

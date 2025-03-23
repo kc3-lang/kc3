@@ -14,7 +14,7 @@ replace {KC3.type, :symbol_value, cfn Sym "tag_type" (Tag, Result)}
 add {KC3, :symbol, KC3.facts_next_id}
 replace {KC3.facts_next_id, :symbol_value, cfn Uw "kc3_facts_next_id" (Result)}
 add {KC3, :symbol, KC3.getenv}
-replace {KC3.getenv, :symbol_value, cfn Str "kc3_getenv" (Str, Result)}
+replace {KC3.getenv, :symbol_value, cfn Tag "kc3_getenv" (Str, Result)}
 add {KC3, :symbol, KC3.dlopen}
 replace {KC3.dlopen, :symbol_value, cfn Ptr "kc3_dlopen" (Str, Result)}
 add {KC3, :symbol, KC3.sqrt}

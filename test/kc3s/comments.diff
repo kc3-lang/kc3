@@ -1,8 +1,0 @@
---- comments.out.expected	2025-03-23 13:05:12.237823198 +0100
-+++ comments.out	2025-03-23 13:11:11.112361758 +0100
-@@ -1 +1,5 @@
-+env_eval_ident: unbound ident: kc3
-+env_eval_ident: stacktrace:
-+Stacktrace:
-+
- ok
