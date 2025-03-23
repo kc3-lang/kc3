@@ -1,0 +1,121 @@
+defmodule Kpkg do
+
+  require Kpkg.Package
+
+  def dir = do
+    dir = if kpg_dir = getenv("KPKG_DIR") do
+      kpkg_dir
+    else
+      if home = getenv("HOME") do
+        "#{home}/kpkg/"
+      end
+    end
+    if Str.ends_with?(dir, "/") do
+      dir
+    else
+      dir + "/"
+    end
+  end
+
+  def db = Facts.database()
+
+  def defpackage = fn (package) {
+    Facts.add_tags(db, package.name, :is_a, Kpkg.Package)
+    Facts.replace_tags(db, package.name,
+      :kpkg_package_depends_on, package.depends_on)
+    Facts.replace_tags(db, package.name,
+      :kpkg_package_dir, package.dir)
+    Facts.replace_tags(db, package.name,
+      :kpkg_package_git, package.git)
+    Facts.replace_tags(db, package.name,
+      :kpkg_package_module, package.module)
+  }
+
+  def defalias = fn (name, target) {
+    Facts.add_tags(db, name, :is_a, Kpkg.Package.Alias)
+    Facts.add_tags(db, name, :kpkg_package_alias_target, target)
+  }
+
+  def get_kpkg_package = fn (name) {
+    Facts.first_with(db, [[name, :is_a, Kpkg.Package],
+                          [name, :kpkg_package_dir, dir = ?],
+                          [name, :kpkg_package_git, git = ?],
+                          [name, :kpkg_package_module, module = ?]],
+      fn (fact) { %Kpkg.Package{name: name, dir: dir, git: git,
+                                module: module} })
+  }
+  
+  def get_kpkg_package_alias = fn (name) {
+    if name = Sym.find(name) do
+      while (new_name = Facts.first_with_tags(db, name,
+               :kpkg_package_alias_target, new_name = ?,
+               fn (fact) { new_name })) do
+        name = new_name
+      end
+      name
+    end
+  }
+        
+  def get_package = fn (name) {
+    if name = get_kpkg_package_alias(name) do
+      get_kpkg_package(name)
+    end
+  }
+
+  def info = fn (pkg, tree) {
+    puts("#{pkg}")
+    puts("tree: #{tree}")
+  }
+
+  def load = fn () {
+    File.ensure_directory(dir, 0o755)
+    Kpkg.Package.load_all()
+  }
+
+  def main = fn {
+    ([]) {
+      puts("""
+Usage: KPKG_DIR=~/kpkg kpkg PKG [OPTIONS] COMMAND [ARG ...] ...
+ Options :
+  --tree TREE           work on $TREE
+ Source directory commands :
+  checkout              into src/$DIR/$TREE
+  clone                 into git/$DIR
+  clean-source-tree     clean src/$DIR/$TREE
+  clean-source-git      clean git/$DIR
+  clean-sources         clean src/$DIR and git/$DIR
+ Build commands :
+  configure
+  clean-configure       remove configure-done tag
+  build                 run parallel build
+  clean-build           remove object files
+""")
+      0
+    }
+    ([name | rest]) {
+       load()
+       if pkg = get_package(name) do
+         main_args(pkg, rest)
+       else
+         puts("kpkg: package not found: #{name}")
+         1
+       end
+     }
+  }
+
+  def main_args = fn {
+    (pkg, args) { main_args(pkg, "master", args, 0) }
+    (pkg, tree, ["--tree", tree_arg | rest], 0) {
+      main_args(pkg, tree_arg, rest, 0)
+    }
+    (pkg, tree, ["checkout" | rest], 0) {
+      main_args(pkg, tree, rest, fetch(pkg, tree))
+    }
+    (pkg, tree, [], 0) {
+      info(pkg, tree)
+      0
+    }
+    (pkg, tree, args, ret) { ret }
+  }
+
+end

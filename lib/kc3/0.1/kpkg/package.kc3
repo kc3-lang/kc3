@@ -1,1 +1,14 @@
-../../../../kpkg/package.kc3
+defmodule Kpkg.Package do
+
+  defstruct [name: (Sym) ?,
+             depends_on: [],
+             dir: "org/subdir/repo",
+             git: "https://github.com/dir.git",
+             make: "make",
+             module: Module]
+
+  def load_all = fn () {
+    load_directory(__DIR__ + "repos/")
+  }
+
+end

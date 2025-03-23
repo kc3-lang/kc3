@@ -1,0 +1,10 @@
+defmodule Kpkg.Repos.Kc3 do
+
+  Kpkg.defpackage(%Kpkg.Package{name: :kc3,
+                                depends_on: [:libbsd, :libmd],
+                                dir: "kc3-lang/kc3",
+                                git: "https://git.kmx.io/kc3-lang/kc3.git",
+                                module: module()})
+
+end
+

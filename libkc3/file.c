@@ -170,7 +170,7 @@ bool file_ensure_directory (const s_str *path, const s_tag *mode)
   u32 m;
   s32 r;
   static const s_sym *sym_U32 = &g_sym_U32;
-  if (true) {
+  if (false) {
     err_write_1("file_ensure_directory: ");
     err_inspect_str(path);
     err_write_1("\n");
