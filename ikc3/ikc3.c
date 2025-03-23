@@ -165,6 +165,7 @@ int main (int argc, char **argv)
     else
       break;
   }
+  *env->in = in_original;
 #if HAVE_WINEDITLINE
   buf_wineditline_open_r(env->in, "ikc3> ", ".ikc3_history");
 #else
