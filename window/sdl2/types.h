@@ -367,6 +367,7 @@ struct gl_camera {
   s_mat4 projection_matrix;
   s_mat4 view_matrix;
   s_mat4 model_matrix;
+  s_rgb  ambiant_light_color;
   GLint  light_count;
   s_vec4 light_pos[GL_CAMERA_LIGHT_MAX];
   s_rgb  light_color[GL_CAMERA_LIGHT_MAX];
@@ -375,11 +376,9 @@ struct gl_camera {
   GLuint gl_model_matrix_loc;
   GLuint gl_enable_tex2d_loc;
   GLuint gl_tex2d_loc;
+  GLuint gl_ambiant_light_color_loc;
   GLuint gl_light_pos_loc;
   GLuint gl_light_color_loc;
-  GLuint gl_material_rough_loc;
-  GLuint gl_material_metal_loc;
-  GLuint gl_material_color_loc;
   GLuint gl_shader_program;
 };
 

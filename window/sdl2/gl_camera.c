@@ -26,6 +26,50 @@ static const char * g_gl_camera_vertex_shader_src =
   "uniform mat4 uProjectionMatrix;\n"
   "uniform mat4 uViewMatrix;\n"
   "uniform mat4 uModelMatrix;\n"
+  "void main () {\n"
+  "  gl_Position = uProjectionMatrix * uViewMatrix *\n"
+  "    uModelMatrix * vec4(iPos, 1.0);\n"
+  "  ioNormal = iNormal;\n"
+  "  ioPos = vec3(gl_Position);\n"
+  "  ioTexCoord = iTexCoord;\n"
+  "}\n";
+
+static const char * g_gl_camera_fragment_shader_src =
+  "#version 330 core\n"
+  "const float PI = 3.141592653;\n"
+  "in vec3 ioNormal;\n"
+  "in vec3 ioPos;\n"
+  "in vec2 ioTexCoord;\n"
+  "out vec4 oColor;\n"
+  "uniform bool uEnableTex2D;\n"
+  "uniform sampler2D uTex2D;\n"
+  "uniform vec3 uAmbiantLightColor;\n"
+  "uniform int uLightCount;\n"
+  "uniform vec4 uLightPos[16];       // Light position in cam. coords.\n"
+  "uniform vec3 uLightColor[16];\n"
+  "void main() {\n"
+  "  vec4 ambiantColor;"
+  "  vec4 texColor = texture(uTex2D, ioTexCoord);\n"
+  "  if (uEnableTex2D)\n"
+  "    oColor = texColor;\n"
+  "  else\n"
+  "    oColor = vec4(1.0f);\n"
+  "  ambiantColor = oColor * vec4(uAmbiantLightColor, 1.0f);\n"
+  "  oColor = ambiantColor;\n"
+  "}\n";
+
+/*
+static const char * g_gl_camera_vertex_shader_src =
+  "#version 330 core\n"
+  "layout (location = 0) in vec3 iPos;\n"
+  "layout (location = 1) in vec3 iNormal;\n"
+  "layout (location = 2) in vec2 iTexCoord;\n"
+  "out vec3 ioNormal;\n"
+  "out vec3 ioPos;\n"
+  "out vec2 ioTexCoord;\n"
+  "uniform mat4 uProjectionMatrix;\n"
+  "uniform mat4 uViewMatrix;\n"
+  "uniform mat4 uModelMatrix;\n"
   "\n"
   "void main() {\n"
   "  gl_Position = vec4(uProjectionMatrix * uViewMatrix *\n"
@@ -109,6 +153,7 @@ static const char * g_gl_camera_fragment_shader_src =
   "  sum = pow(sum, vec3(1.0f / 2.2f));\n"
   "  oColor *= vec4(sum, 1.0);\n"
   "}\n";
+*/
 
 void gl_camera_bind_texture (s_gl_camera *camera, GLuint texture)
 {
@@ -141,19 +186,6 @@ void gl_camera_clean (s_gl_camera *camera)
   glDeleteProgram(camera->gl_shader_program);
 }
 
-void gl_camera_material (s_gl_camera *camera, const s_gl_material *material)
-{
-  assert(camera);
-  assert(material);
-  assert(glGetError() == GL_NO_ERROR);
-  glUniform1f(camera->gl_material_rough_loc, material->roughness);
-  assert(glGetError() == GL_NO_ERROR);
-  glUniform1i(camera->gl_material_metal_loc, material->metal);
-  assert(glGetError() == GL_NO_ERROR);
-  glUniform3fv(camera->gl_material_color_loc, 1, &material->color.r);
-  assert(glGetError() == GL_NO_ERROR);
-}
-
 void gl_camera_delete (s_gl_camera *camera)
 {
   gl_camera_clean(camera);
@@ -176,6 +208,7 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   camera->rotation.x = M_PI / 2.0;
   camera->rotation.y = 0.0f;
   camera->rotation.z = 0.0f;
+  camera->ambiant_light_color = (s_rgb) {1.0f, 1.0f, 1.0f};
   camera->light_count = 1;
   camera->light_pos[0] = (s_vec4) {-40.0f, 0.0f, 0.0f, 1.0f};
   camera->light_color[0] = (s_rgb) {1.0f, 1.0f, 1.0f};
@@ -229,6 +262,10 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
     glGetUniformLocation(camera->gl_shader_program,
                          "uTex2D");
   assert(glGetError() == GL_NO_ERROR);
+  camera->gl_ambiant_light_color_loc =
+    glGetUniformLocation(camera->gl_shader_program,
+                         "uAmbiantLightColor");
+  assert(glGetError() == GL_NO_ERROR);
   camera->gl_light_pos_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uLightPos");
@@ -236,18 +273,6 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   camera->gl_light_color_loc =
     glGetUniformLocation(camera->gl_shader_program,
                          "uLightColor");
-  assert(glGetError() == GL_NO_ERROR);
-  camera->gl_material_rough_loc =
-    glGetUniformLocation(camera->gl_shader_program,
-                         "uMaterial.Rough");
-  assert(glGetError() == GL_NO_ERROR);
-  camera->gl_material_metal_loc =
-    glGetUniformLocation(camera->gl_shader_program,
-                         "uMaterial.Metal");
-  assert(glGetError() == GL_NO_ERROR);
-  camera->gl_material_color_loc =
-    glGetUniformLocation(camera->gl_shader_program,
-                         "uMaterial.Color");
   assert(glGetError() == GL_NO_ERROR);
   return camera;
 }
@@ -270,7 +295,6 @@ s_gl_camera * gl_camera_new (uw w, uw h)
 void gl_camera_render (s_gl_camera *camera)
 {
   s_mat4 matrix;
-  const s_gl_material material = {0.1f, false, {1.0f, 1.0f, 1.0f}};
   assert(camera);
   assert(glGetError() == GL_NO_ERROR);
   mat4_init_identity(&camera->projection_matrix);
@@ -308,13 +332,14 @@ void gl_camera_render (s_gl_camera *camera)
   assert(glGetError() == GL_NO_ERROR);
   glUniform1i(camera->gl_tex2d_loc, 0);
   assert(glGetError() == GL_NO_ERROR);
+  glUniform3fv(camera->gl_ambiant_light_color_loc, 1,
+               &camera->ambiant_light_color.r);
+  assert(glGetError() == GL_NO_ERROR);
   glUniform4fv(camera->gl_light_pos_loc, camera->light_count,
                &camera->light_pos[0].x);
   assert(glGetError() == GL_NO_ERROR);
   glUniform3fv(camera->gl_light_color_loc, camera->light_count,
                &camera->light_color[0].r);
-  assert(glGetError() == GL_NO_ERROR);
-  gl_camera_material(camera, &material);
   assert(glGetError() == GL_NO_ERROR);
   glDisable(GL_CULL_FACE);
   assert(glGetError() == GL_NO_ERROR);
