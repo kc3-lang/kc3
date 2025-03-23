@@ -21,5 +21,6 @@ uw      buf_save_min_rpos (const s_buf *buf);
 uw      buf_save_min_wpos (const s_buf *buf);
 s_buf * buf_save_restore_rpos (s_buf *buf, const s_buf_save *save);
 s_buf * buf_save_restore_wpos (s_buf *buf, const s_buf_save *save);
+s_buf * buf_save_update (s_buf *buf, s_buf_save *save);
 
 #endif /* LIBKC3_BUF_SAVE */
