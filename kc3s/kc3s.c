@@ -65,31 +65,24 @@ sw kc3s_run (void)
   sw r;
   s_tag result;
   env = env_global();
-  while ((r = buf_ignore_spaces(env->in)) >= 0) {
-    if ((r = buf_parse_tag(env->in, &input)) > 0) {
+  while (1) {
+    if ((r = buf_parse_comments(env->in)) < 0)
+      break;
+    if ((r = buf_ignore_spaces(env->in)) < 0)
+      break;
+    if ((r = buf_parse_tag(env->in, &input)) < 0)
+      break;
+    if (r > 0) {
       if (! eval_tag(&input, &result)) {
         tag_clean(&input);
         continue;
       }
-      /*
-      if (buf_inspect_tag(env->out, &result) < 0) {
-	tag_clean(&input);
-	tag_clean(&result);
-        break;
-      }
-      */
       tag_clean(&input);
       tag_clean(&result);
-      /*
-      buf_write_u8(env->out, '\n');
-      if ((r = buf_flush(env->out)) < 0)
-        break;
-      */
     }
-    if (r < 0 ||
-        (r == 0 &&
-         (r = buf_ignore_character(env->in)) <= 0))
-      break;
+    else
+      if ((r = buf_ignore_character(env->in)) <= 0)
+        break;
   }
   return 0;
 }
@@ -157,6 +150,7 @@ int main (int argc, char **argv)
     else
       break;
   }
+  *env->in = in_original;
   r = kc3s_run();
  clean:
   *env->in = in_original;

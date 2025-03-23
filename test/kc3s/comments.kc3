@@ -1,0 +1,5 @@
+#!/usr/bin/env kc3s
+# -*- elixir -*-
+# kc3
+# Copyright from 2020 to 2025 kmx.io <contact@kmx.io>
+puts("ok")

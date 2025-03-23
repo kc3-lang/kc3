@@ -1097,6 +1097,33 @@ test_json_debug: lib_links_debug
 	${MAKE} -C json debug
 	${MAKE} -C test test_json_debug
 
+test_kc3s: kc3s lib_links
+	${MAKE} -C test test_kc3s
+
+test_kc3s_asan: lib_links_asan
+	${MAKE} -C libtommath asan
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 asan
+	${MAKE} -C ikc3 asan
+	${MAKE} -C kc3s asan
+	${MAKE} -C test test_ekc3_asan
+
+test_kc3s_cov: lib_links_cov
+	${MAKE} -C libtommath cov
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 cov
+	${MAKE} -C ikc3 cov
+	${MAKE} -C kc3s cov
+	${MAKE} -C test test_kc3s_cov
+
+test_kc3s_debug: lib_links_debug
+	${MAKE} -C libtommath debug
+	${MAKE} -C ucd2c
+	${MAKE} -C libkc3 debug
+	${MAKE} -C ikc3 debug
+	${MAKE} -C kc3s debug
+	${MAKE} -C test test_kc3s_debug
+
 test_libkc3: lib_links
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
