@@ -15,3 +15,6 @@
 [submodule "window/sdl2/kubz"]
 	path = window/sdl2/kubz
 	url = https://git.kmx.io/kc3-lang/kubz.git
+[submodule "kpkg"]
+	path = kpkg
+	url = https://git.kmx.io/kc3-lang/kpkg.git
