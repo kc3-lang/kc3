@@ -39,7 +39,7 @@ defmodule Spam.Bayes do
 
   def is_spam? = fn (doc) {
     words = List.map(Str.split_words(doc), Str.to_lower)
-    p_i = List.to_array(List.map(words, fn (m) { p_m_s(m) }), F128[])
+    p_i = List.to_array(List.map(words, fn (m) { Spam.Bayes.p_m_s(m) }), F128[])
     dim = Array.dimension(p_i, 0)
     product_s = 1.0
     product_h = 1.0
