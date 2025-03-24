@@ -4,7 +4,7 @@ defmodule Spam.Bayes do
 
   def db = Config.spam_db
 
-  def p_s = 0.8
+  def p_s = 0.5
 
   def p_h = 1.0 - p_s
 
@@ -50,7 +50,7 @@ defmodule Spam.Bayes do
       i = i + 1
     end
     (product_s / (product_s + product_h)) > 0.5
-  }  
+  }
   
   def unlearn = fn (class, doc) {
     if List.has?(classes, class) = true do
