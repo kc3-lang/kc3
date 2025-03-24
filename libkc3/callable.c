@@ -25,7 +25,9 @@ void callable_delete (s_callable *callable)
 #if HAVE_PTHREAD
   mutex_lock(&callable->mutex);
 #endif
-  if (! env_global()->pass_by_copy) {
+  if (env_global()->pass_by_copy)
+    assert(callable->ref_count == 1);
+  else {
     if (callable->ref_count <= 0) {
       err_puts("callable_delete: invalid ref count");
       assert(! "callable_delete: invalid ref count");

@@ -68,9 +68,8 @@ void * struct_type_copy_data (const s_struct_type *st, void *dest,
 void struct_type_delete (s_struct_type *st)
 {
   assert(st);
-  if (env_global()->pass_by_copy) {
+  if (env_global()->pass_by_copy)
     assert(st->ref_count == 1);
-  }
   else {
     if (st->ref_count <= 0) {
       err_puts("struct_type_delete: invalid reference count");
