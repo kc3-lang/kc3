@@ -44,7 +44,7 @@ defmodule Spam.Bayes do
     product_s = 1.0
     product_h = 1.0
     i = 0
-    while i < dim do
+    while (i < dim) do
       product_s = product_s * p_i[i]
       product_h = product_h * (1.0 - p_i[i])
       i = i + 1
