@@ -148,6 +148,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
         err_write_1(" != ");
         err_inspect_pointer(arg_pointer_result);
         err_write_1("\n");
+        assert(env_global()->stacktrace == trace);
+        env_global()->stacktrace = list_delete(trace);
         goto ko;
       }
       tag_clean(&tmp);

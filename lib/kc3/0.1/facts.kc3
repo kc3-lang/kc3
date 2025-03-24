@@ -1,5 +1,7 @@
 defmodule Facts do
 
+  require FactW
+
   defstruct [tags: %Set.Tag{},
              facts: %Set.Fact{},
              index_spo: (Ptr) 0,

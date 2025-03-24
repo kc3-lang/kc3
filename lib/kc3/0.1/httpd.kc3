@@ -16,6 +16,9 @@ defmodule HTTPd do
   require Thread
   require URL
 
+  def concurrent_requests = 0
+  def concurrent_requests_max = 128
+
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")
     load_directory("app/models/")
@@ -76,10 +79,11 @@ defmodule HTTPd do
 
   def http_client = fn (socket, events, client_ev, client) do
     if List.has?(events, :read) do
+      def concurrent_requests = concurrent_requests + 1
       # maybe_reload_app()
       request = void
       request = HTTP.Request.buf_parse(client.buf_rw.r)
-      if request do
+      result = if request do
         client_addr = if client.addr_str != "127.0.0.1" do
           client.addr_str
         else
@@ -112,13 +116,16 @@ defmodule HTTPd do
         Event.del(client_ev)
         File.close(socket)
       end
+      def concurrent_requests = concurrent_requests - 1
+      result
     end
   end
 
   def timeout = %Time{tv_sec: 5}
 
   def acceptor = fn (server_socket, events, acceptor_ev, void) do
-    if List.has?(events, :read) do
+    if List.has?(events, :read) &&
+       concurrent_requests < concurrent_requests_max do
       client = Socket.Buf.accept(%Socket{fd: server_socket})
       client_ev = Event.new(event_base, client.sockfd, [:read, :persist],
         http_client, client)

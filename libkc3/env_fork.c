@@ -15,6 +15,7 @@
 #include "env.h"
 #include "env_fork.h"
 #include "frame.h"
+#include "list.h"
 #include "ops.h"
 #include "sym.h"
 
