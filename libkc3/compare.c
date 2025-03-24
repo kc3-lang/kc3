@@ -691,6 +691,30 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       break;
     }
     break;
+  case TAG_F128:
+    switch (b->type) {
+    case TAG_COMPLEX:
+      return compare_f128(a->data.f128, complex_to_f128(b->data.complex));
+    case TAG_F32: return compare_f128(a->data.f128, b->data.f32);
+    case TAG_F64: return compare_f128(a->data.f128, (f128) b->data.f64);
+    case TAG_F128:
+      return compare_f128(a->data.f128, b->data.f128);
+    case TAG_INTEGER:
+      return compare_f128(a->data.f128, integer_to_f128(&b->data.integer));
+    case TAG_S8:  return compare_f128(a->data.f128, (f128) b->data.s8);
+    case TAG_S16: return compare_f128(a->data.f128, (f128) b->data.s16);
+    case TAG_S32: return compare_f128(a->data.f128, (f128) b->data.s32);
+    case TAG_S64: return compare_f128(a->data.f128, (f128) b->data.s64);
+    case TAG_SW:  return compare_f128(a->data.f128, (f128) b->data.sw);
+    case TAG_U8:  return compare_f128(a->data.f128, (f128) b->data.u8);
+    case TAG_U16: return compare_f128(a->data.f128, (f128) b->data.u16);
+    case TAG_U32: return compare_f128(a->data.f128, (f128) b->data.u32);
+    case TAG_U64: return compare_f128(a->data.f128, (f128) b->data.u64);
+    case TAG_UW:  return compare_f128(a->data.f128, (f128) b->data.uw);
+    default:
+      break;
+    }
+    break;
   case TAG_INTEGER:
     switch (b->type) {
     case TAG_F32: return compare_f64(integer_to_f64(&a->data.integer),
