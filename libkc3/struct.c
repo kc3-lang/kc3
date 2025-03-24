@@ -156,13 +156,17 @@ void struct_clean (s_struct *s)
 void struct_delete (s_struct *s)
 {
   assert(s);
-  if (s->ref_count <= 0) {
-    err_puts("struct_delete: invalid reference count");
-    assert(! "struct_delete: invalid reference count");
-    return;
+  if (env_global()->pass_by_copy)
+    assert(s->ref_count == 1);
+  else {
+    if (s->ref_count <= 0) {
+      err_puts("struct_delete: invalid reference count");
+      assert(! "struct_delete: invalid reference count");
+      return;
+    }
+    if (--s->ref_count)
+      return;
   }
-  if (--s->ref_count)
-    return;
   struct_clean(s);
   free(s);
 }
