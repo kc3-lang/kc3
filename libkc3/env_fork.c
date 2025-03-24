@@ -57,6 +57,7 @@ s_env * env_fork_init (s_env *env, s_env *src)
   if (! (tmp.ops = ops_new_copy(src->ops)))
     return NULL;
   tmp.out = src->out;
+  tmp.pass_by_copy = src->pass_by_copy;
   tmp.path = src->path;
   tmp.quote_level = src->quote_level;
   if (! (tmp.read_time_frame = frame_new(NULL, NULL)))
