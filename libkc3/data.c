@@ -33,6 +33,8 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
     return buf_inspect_f32(buf, data);
   if (type == &g_sym_F64)
     return buf_inspect_f64(buf, data);
+  if (type == &g_sym_F128)
+    return buf_inspect_f128(buf, data);
   if (type == &g_sym_Fact)
     return buf_inspect_fact(buf, data);
   if (type == &g_sym_Ident)
@@ -125,6 +127,8 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_f32_size(pretty, data);
   if (type == &g_sym_F64)
     return buf_inspect_f64_size(pretty, data);
+  if (type == &g_sym_F128)
+    return buf_inspect_f128_size(pretty, data);
   if (type == &g_sym_Fact)
     return buf_inspect_fact_size(pretty, data);
   if (type == &g_sym_Ident)
@@ -227,6 +231,9 @@ bool data_clean (const s_sym *type, void *data)
     return true;
   }
   if (type == &g_sym_F64) {
+    return true;
+  }
+  if (type == &g_sym_F128) {
     return true;
   }
   if (type == &g_sym_Fact) {
@@ -360,6 +367,8 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
     return compare_f32(*(f64 *) a, *(f64 *) b);
   if (type == &g_sym_F64)
     return compare_f64(*(f64 *) a, *(f64 *) b);
+  if (type == &g_sym_F128)
+    return compare_f128(*(f128 *) a, *(f128 *) b);
   if (type == &g_sym_Fact)
     return compare_fact(a, b);
   if (type == &g_sym_Ident)
@@ -549,6 +558,8 @@ void * data_init_cast (void *data, const s_sym * const *type,
     return f32_init_cast(data, type, tag);
   if (t == &g_sym_F64)
     return f64_init_cast(data, type, tag);
+  if (t == &g_sym_F128)
+    return f128_init_cast(data, type, tag);
   if (t == &g_sym_Fact)
     return fact_init_cast(data, type, tag);
   if (t == &g_sym_Ident)
@@ -636,6 +647,8 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
     return f32_init_copy(data, src);
   if (type == &g_sym_F64)
     return f64_init_copy(data, src);
+  if (type == &g_sym_F128)
+    return f128_init_copy(data, src);
   if (type == &g_sym_Fact)
     return fact_init_copy(data, src);
   if (type == &g_sym_Ident)

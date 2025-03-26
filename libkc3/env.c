@@ -1791,7 +1791,7 @@ s_list ** env_module_search_modules (s_env *env,
 
 s_tag * env_or (s_env *env, s_tag *a, s_tag *b, s_tag *dest)
 {
-  s_tag eval;
+  s_tag eval = {0};
   bool p;
   const s_sym *sym_Bool = &g_sym_Bool;
   assert(env);

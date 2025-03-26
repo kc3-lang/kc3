@@ -1355,6 +1355,7 @@ s_tag * tag_add (s_tag *a, s_tag *b, s_tag *dest)
   err_write_1(tag_type_to_string(a->type));
   err_write_1(" + ");
   err_puts(tag_type_to_string(b->type));
+  err_stacktrace();
   assert(! "tag_add: invalid tag type");
   return NULL;
 }

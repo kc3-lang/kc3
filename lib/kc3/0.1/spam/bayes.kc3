@@ -10,10 +10,10 @@ defmodule Spam.Bayes do
 
   def p_m_s = fn (m) {
     count_m_s = Facts.first_with_tags(db, m, :spam_bayes_m_s,
-      count_m_s = ?, fn (fact) { count_m_s }) || 0
+      count_m_s = ?, fn (fact) { count_m_s }) || 1
     count_m_h = Facts.first_with_tags(db, m, :spam_bayes_m_h,
-      count_m_h = ?, fn (fact) { count_m_h }) || 0
-    count_m_s / (count_m_s + count_m_h + 1)
+      count_m_h = ?, fn (fact) { count_m_h }) || 1
+    count_m_s / (count_m_s + count_m_h)
   }
 
   def learn_word = fn (m, type) {

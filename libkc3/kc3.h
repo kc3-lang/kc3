@@ -51,6 +51,7 @@
 #include "eval.h"
 #include "f32.h"
 #include "f64.h"
+#include "f128.h"
 #include "fact.h"
 #include "facts.h"
 #include "facts_cursor.h"
