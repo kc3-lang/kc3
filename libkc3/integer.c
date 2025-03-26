@@ -252,7 +252,7 @@ s_integer * integer_init_1 (s_integer *i, const char *p)
   s_buf buf;
   assert(i);
   assert(p);
-  // FIXME
+  // FIXME: error handling
   buf_init_1_const(&buf, p);
   buf_parse_integer(&buf, i);
   return i;
