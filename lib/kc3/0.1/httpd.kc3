@@ -17,7 +17,7 @@ defmodule HTTPd do
   require URL
 
   def concurrent_requests = 0
-  def concurrent_requests_max = 128
+  def concurrent_requests_max = 1000
 
   def load_app = fn () {
     HTTP.mime_type_load("config/mime.types")

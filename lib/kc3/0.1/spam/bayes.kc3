@@ -4,10 +4,6 @@ defmodule Spam.Bayes do
 
   def db = Config.spam_db
 
-  def p_s = 0.5
-
-  def p_h = 1.0 - p_s
-
   def p_m_s = fn (m) {
     count_m_s = Facts.first_with_tags(db, m, :spam_bayes_m_s,
       count_m_s = ?, fn (fact) { count_m_s }) || 1
