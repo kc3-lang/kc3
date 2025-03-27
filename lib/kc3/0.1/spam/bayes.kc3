@@ -33,7 +33,7 @@ defmodule Spam.Bayes do
     end
   }
 
-  def is_spam? = fn (doc) {
+  def spamicity = fn (doc) {
     words = List.map(Str.split_words(doc), Str.to_lower)
     p_i = List.to_array(List.map(words, fn (m) { Spam.Bayes.p_m_s(m) }), F128[])
     dim = Array.dimension(p_i, 0)
@@ -45,9 +45,13 @@ defmodule Spam.Bayes do
       product_h = product_h * (1.0 - p_i[i])
       i = i + 1
     end
-    (product_s / (product_s + product_h)) > 0.5
+    (product_s / (product_s + product_h))
   }
-  
+
+  def is_spam? = fn (doc) {
+    spamicity(doc) > 0.5
+  }
+
   def unlearn = fn (class, doc) {
     if List.has?(classes, class) = true do
       words = List.map(Str.split_words(doc), Str.to_lower)
