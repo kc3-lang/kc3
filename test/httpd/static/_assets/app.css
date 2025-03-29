@@ -32146,10 +32146,6 @@ pre.wrap {
   white-space: pre-wrap;
 }
 
-code {
-  background: #eee;
-}
-
 /* navbar */
 .navbar {
   padding-top: 0.3rem;
