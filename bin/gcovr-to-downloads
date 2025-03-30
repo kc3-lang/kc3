@@ -1,4 +1,4 @@
 #!/bin/sh
-rm -rf ~/Downloads/c3_gcovr/
-find ic3 libc3 libtommath test -name '*.html' -or -name '*.css' | \
-    cpio -pd ~/Downloads/c3_gcovr/
+rm -rf ~/Downloads/kc3_gcovr/
+find ekc3 http httpd ikc3 json kc3s libkc3 libtommath test window gtk4 fs -name '*.html' -or -name '*.css' | \
+    cpio -pd ~/Downloads/kc3_gcovr/

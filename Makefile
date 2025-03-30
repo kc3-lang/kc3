@@ -710,6 +710,9 @@ lib_links:
 lib_links_asan:
 	${MAKE} lib_links_${ARCH}_asan
 
+lib_links_cov:
+	${MAKE} lib_links_${ARCH}_cov
+
 lib_links_debug:
 	${MAKE} lib_links_${ARCH}_debug
 
@@ -790,6 +793,16 @@ lib_links_linux_asan:
 	ln -sf ../../../markdown/.libs/libkc3_markdown_asan.so lib/kc3/0.1/markdown.so
 	ln -sf ../../../smtp/.libs/libkc3_smtp_asan.so lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket_asan.so lib/kc3/0.1/socket.so
+
+lib_links_linux_cov:
+	ln -sf ../../../ekc3/.libs/libekc3_cov.so lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event_cov.so lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4_cov.so lib/kc3/0.1/gtk4.so
+	ln -sf ../../../http/.libs/libkc3_http_cov.so lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json_cov.so lib/kc3/0.1/json.so
+	ln -sf ../../../markdown/.libs/libkc3_markdown_cov.so lib/kc3/0.1/markdown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp_cov.so lib/kc3/0.1/smtp.so
+	ln -sf ../../../socket/.libs/libkc3_socket_cov.so lib/kc3/0.1/socket.so
 
 lib_links_linux_debug:
 	ln -sf ../../../ekc3/.libs/libekc3_debug.so lib/kc3/0.1/ekc3.so

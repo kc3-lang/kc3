@@ -64,6 +64,9 @@ distclean:
 	rm -rf ${DISTCLEANFILES}
 	${MAKE} -C demo distclean
 
+gcovr:
+	${MAKE} -C demo gcovr
+
 gdb_demo: debug
 	${MAKE} -C demo gdb_demo
 
