@@ -12,8 +12,8 @@ defmodule Spam.Bayes do
     count_m_s / (count_m_s + count_m_h)
   }
 
-  def learn_word = fn (m, type) {
-    if type == :spam do
+  def learn_word = fn (m, class) {
+    if class == :spam do
       count = Facts.first_with(db, m, :spam_bayes_m_s, count = ?,
         fn (facts) { count }) || 0
       count = count + 1
@@ -29,7 +29,7 @@ defmodule Spam.Bayes do
   def learn = fn (class, doc) {
     if List.has?(classes, class) = true do
       words = List.map(Str.split_words(doc), Str.to_lower)
-      List.each(words, fn (m) { learn_word(m, type) })
+      List.each(words, fn (m) { learn_word(m, class) })
     end
   }
 
@@ -55,12 +55,12 @@ defmodule Spam.Bayes do
   def unlearn = fn (class, doc) {
     if List.has?(classes, class) = true do
       words = List.map(Str.split_words(doc), Str.to_lower)
-      List.each(words, fn (m) { unlearn_word(m, type) })
+      List.each(words, fn (m) { unlearn_word(m, class) })
     end
   }
 
-  def unlearn_word = fn (m, type) {
-    if type == :spam do
+  def unlearn_word = fn (m, class) {
+    if class == :spam do
       count = Facts.first_with(db, m, :spam_bayes_m_s, count = ?,
         fn (facts) { count }) || 0
       if count > 0 do
