@@ -629,11 +629,11 @@ union tag_data {
   s_str         str;
   const s_sym  *sym;
   s8            s8;
-  s_time        time;
   s16           s16;
   s32           s32;
   s64           s64;
   sw            sw;
+  s_time        time;
   s_tuple       tuple;
   u8            u8;
   u16           u16;
