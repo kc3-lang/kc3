@@ -40,6 +40,8 @@ s_tag * list_access (s_list *list, s_list *key, s_tag *dest)
   assert(key);
   assert(dest);
   key_first = &key->tag;
+  if (! tag_is_number(key_first))
+    return tag_init_void(dest);
   if (! uw_init_cast(&i, &sym_Uw, key_first))
     return tag_init_void(dest);
   key_next = list_next(key);
