@@ -1,5 +1,10 @@
-quote (Ptr) 0
-(Ptr) 0
-quote (Ptr) 1
-buf_parse_ptr: non-null Ptr
-void
+(Ptr) 0x0
+(Ptr) 0x0
+buf_parse_ptr: non-null Ptr 0x1
+buf_parse_ptr: non-null Ptr 0x1
+buf_parse_ptr: non-null Ptr 0x1
+buf_parse_ptr: non-null Ptr 0x1
+(Ptr) 0x0
+buf_parse_ptr: non-null Ptr 0x1
+buf_parse_ptr: non-null Ptr 0x1
+(Ptr) 0x0
