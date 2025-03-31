@@ -2454,8 +2454,13 @@ sw buf_inspect_ident_sym_size (s_pretty *pretty, const s_sym *sym)
 
 sw buf_inspect_integer (s_buf *buf, const s_integer *x)
 {
+  return buf_inspect_integer_decimal(buf, x);
+}
+
+sw buf_inspect_integer_decimal (s_buf *buf, const s_integer *x)
+{
   s_buf buf_tmp;
-  mp_digit d;
+  mp_digit digit;
   sw result = 0;
   size_t maxlen;
   u8 p;
@@ -2477,11 +2482,56 @@ sw buf_inspect_integer (s_buf *buf, const s_integer *x)
   }
   buf_init_alloc(&buf_tmp, maxlen);
   while (! MP_IS_ZERO(&t)) {
-    if (mp_div_d(&t, radix, &t, &d) != MP_OKAY)
+    if (mp_div_d(&t, radix, &t, &digit) != MP_OKAY)
       goto error;
-    p = '0' + d;
+    p = '0' + digit;
     if (p > '9')
       goto error;
+    buf_write_character_utf8(&buf_tmp, p);
+    result++;
+  }
+  buf_xfer_reverse(&buf_tmp, buf);
+  mp_clear(&t);
+  buf_clean(&buf_tmp);
+  return result;
+ error:
+  mp_clear(&t);
+  buf_clean(&buf_tmp);
+  return -1;
+}
+
+sw buf_inspect_integer_hexadecimal (s_buf *buf, const s_integer *x)
+{
+  s_buf buf_tmp;
+  mp_digit digit;
+  sw result = 0;
+  size_t maxlen;
+  u8 p;
+  const mp_digit radix = 16;
+  s32 size = 0;
+  mp_int t;
+  if (MP_IS_ZERO(&x->mp_int))
+    return buf_write_character_utf8(buf, '0');
+  if (mp_radix_size(&x->mp_int, radix, &size) != MP_OKAY)
+    return -1;
+  maxlen = size;
+  if (mp_init_copy(&t, &x->mp_int) != MP_OKAY)
+    return -1;
+  if (t.sign == MP_NEG) {
+    t.sign = MP_ZPOS;
+    maxlen--;
+    buf_write_character_utf8(buf, '-');
+    result++;
+  }
+  buf_init_alloc(&buf_tmp, maxlen);
+  while (! MP_IS_ZERO(&t)) {
+    if (mp_div_d(&t, radix, &t, &digit) != MP_OKAY ||
+        digit > radix)
+      goto error;
+    if (digit <= 9)
+      p = '0' + digit;
+    else
+      p = 'a' + digit - 10;
     buf_write_character_utf8(&buf_tmp, p);
     result++;
   }

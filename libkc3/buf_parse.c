@@ -3221,6 +3221,9 @@ sw buf_parse_ptr (s_buf *buf, u_ptr_w *dest)
     goto restore;
   result += r;
   if (! integer_is_zero(&i)) {
+    err_write_1("buf_parse_ptr: (Ptr) 0x");
+    err_inspect_integer_hexadecimal(&i);
+    err_write_1("\n");
     integer_clean(&i);
     goto restore;
   }
