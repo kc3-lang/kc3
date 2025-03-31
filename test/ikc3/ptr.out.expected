@@ -1,0 +1,5 @@
+quote (Ptr) 0
+(Ptr) 0
+quote (Ptr) 1
+buf_parse_ptr: non-null Ptr
+void
