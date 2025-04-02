@@ -1,0 +1,3 @@
+  <url>
+    <loc><%= prefix_url %><%= url %></loc>
+  </url>

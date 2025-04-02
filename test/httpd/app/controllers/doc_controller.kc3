@@ -59,6 +59,52 @@ defmodule DocController do
     }
   }
 
+  def doc_index_sitemap = fn {
+    (path) { doc_index_sitemap(path, path, []) }
+    ([], dir, acc) { List.sort(acc) }
+    ([file | rest], dir, acc) {
+      if (Str.starts_with?(file, ".") ||
+          Str.starts_with?(file, "index.") ||
+          (Str.rindex_character(file, '.') > 0 &&
+           ! Str.ends_with?(file, ".md") &&
+           ! Str.ends_with?(file, ".html"))) do
+        doc_index_sitemap(rest, dir, acc)
+      else
+        path = dir + file
+        name = Str.subst(file, "_", " ")
+        url = Str.slice(path, 1, -1)
+        if File.is_directory?(path) do
+          items = doc_index_sitemap(List.sort(File.list(path)),
+            path + "/", acc)
+          doc_index_sitemap(rest, dir, [url | items])
+        else
+          end_ = Str.rindex_character(name, '.')
+          if (end_ > 0) do
+            name = Str.slice(name, 0, end_)
+            end_ = Str.rindex_character(name, '.')
+            if (end_ > 0) do
+              name = Str.slice(name, 0, end_)
+            end
+          end
+          end_ = Str.rindex_character(url, '.')
+          if (end_ > 0) do
+            url = Str.slice(url, 0, end_)
+            end_ = Str.rindex_character(url, '.')
+            if (end_ > 0) do
+              url = Str.slice(url, 0, end_)
+            end
+          end
+          doc_index_sitemap(rest, dir, [url | acc])
+        end
+      end
+    }
+    (path, dir, acc) {
+      if (type(path) == Str) do
+        doc_index_sitemap(List.sort(File.list(path)), dir, acc)
+      end
+    }
+  }
+    
   def show_html = fn (path_html, url) {
     index = doc_index("./doc/", path_html)
     menu = DocView.render_menu(index)

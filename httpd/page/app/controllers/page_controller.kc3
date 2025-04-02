@@ -5,6 +5,50 @@ defmodule PageController do
   require List
   require Str
 
+  def page_index = fn {
+    (path) { page_index(path, path, []) }
+    ([], dir, acc) { List.reverse(acc) }
+    ([file | rest], dir, acc) {
+      if (Str.starts_with?(file, ".") ||
+          Str.starts_with?(file, "index.") ||
+          (Str.rindex_character(file, '.') > 0 &&
+           ! Str.ends_with?(file, ".md") &&
+           ! Str.ends_with?(file, ".html"))) do
+        page_index(rest, dir, acc)
+      else
+        path = dir + file
+        url = Str.slice(path, 1, -1)
+        if File.is_directory?(path) do
+          items = page_index(List.sort(File.list(path)), path + "/", acc)
+          page_index(rest, dir, items)
+        else
+          end_ = Str.rindex_character(name, '.')
+          if (end_ > 0) do
+            name = Str.slice(name, 0, end_)
+            end_ = Str.rindex_character(name, '.')
+            if (end_ > 0) do
+              name = Str.slice(name, 0, end_)
+            end
+          end
+          end_ = Str.rindex_character(url, '.')
+          if (end_ > 0) do
+            url = Str.slice(url, 0, end_)
+            end_ = Str.rindex_character(url, '.')
+            if (end_ > 0) do
+              url = Str.slice(url, 0, end_)
+            end
+          end
+          page_index(rest, dir, [url | acc])
+        end
+      end
+    }
+    (path, dir, acc) {
+      if (type(path) == Str) do
+        page_index(List.sort(File.list(path)), dir, acc)
+      end
+    }
+  }
+
   def show_html = fn (path_html, url) {
     title = "kc3-lang.org"
     name = File.name(path_html)

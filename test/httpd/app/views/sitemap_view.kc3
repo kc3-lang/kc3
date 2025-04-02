@@ -1,0 +1,22 @@
+defmodule SitemapView do
+
+  require EKC3
+  require List
+
+  def template = EKC3.load("app/templates/sitemap/sitemap.xml.ekc3")
+
+  def template_doc = EKC3.load("app/templates/sitemap/sitemap_doc.xml.ekc3")
+
+  def template_page = EKC3.load("app/templates/sitemap/sitemap_page.xml.ekc3")
+
+  def render_doc = fn (url) { EKC3.render(template_doc) }
+
+  def render_page = fn (url) { EKC3.render(template_page) }
+
+  def render = fn (prefix_url, doc_index, page_index) {
+    doc_index = List.join(List.map(doc_index, SitemapView.render_doc), "\n")
+    page_index = List.join(List.map(page_index, SitemapView.render_page), "\n")
+    EKC3.render(template)
+  }
+
+end

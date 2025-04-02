@@ -1,0 +1,15 @@
+defmodule SitemapController do
+
+  def route = fn (request) {
+    if ((request.url == "/sitemap.xml") &&
+        ((request.method == HEAD) ||
+         (request.method == GET))) do
+      doc_index = DocController.doc_index_sitemap("./doc/")
+      page_index = PageController.page_index("./pages/")
+      xml = SitemapView.render("https://kc3-lang.org",
+        doc_index, page_index)
+      %HTTP.Response{body: xml, headers: [{"Content-Type", "text/xml"}]}
+    end
+  }
+
+end
