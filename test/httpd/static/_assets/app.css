@@ -32071,6 +32071,10 @@ footer a, footer a:hover {
   background: #fff;
 }
 
+div.page {
+  padding-top: 3em;
+}
+
 /* file preview */
 span.size {
   float: right;
@@ -32148,6 +32152,9 @@ pre.wrap {
 
 /* navbar */
 .navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
   padding-top: 0.3rem;
 }
 .navbar > .container-fluid, .navbar > .container-sm, .navbar > .container-md, .navbar > .container-lg, .navbar > .container-xl, .navbar > .container-xxl {

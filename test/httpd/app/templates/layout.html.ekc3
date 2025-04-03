@@ -14,7 +14,10 @@
   </head>
   <body class="<%= slug %>">
     <%= raw nav %>
-    <%= raw page %>
+    <div class="page">
+      <%= raw page %>
+    </div>
     <%= raw footer %>
+    </div>
   </body>
 </html>

@@ -21,6 +21,10 @@ $code-font-size: $font-size-base * 1.1;
 @import "./footer.scss";
 @import "./pixel.scss";
 
+// page
+div.page {
+    padding-top: 3em;
+}
 /* file preview */
 span.size {
     float: right;
@@ -93,6 +97,9 @@ pre.wrap {
 
 /* navbar */
 .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
     padding-top: 0.3rem;
     & > .container-fluid {
         align-items: baseline;
