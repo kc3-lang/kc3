@@ -56,6 +56,7 @@ static const char * g_gl_camera_fragment_shader_src =
   "    oColor = vec4(1.0f);\n"
   "  ambiantColor = oColor * vec4(uAmbiantLightColor, 1.0f);\n"
   "  oColor = ambiantColor;\n"
+  "  //oColor = vec4(vec3(gl_FragCoord.z), 1.0);\n"
   "}\n";
 
 /*
@@ -200,7 +201,7 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   assert(camera);
   gl_camera_set_aspect_ratio(camera, w, h);
   camera->clip_z_far = 10.0f;
-  camera->clip_z_near = 0.1f;
+  camera->clip_z_near = 1.0f;
   camera->fov_y = 90.0f;
   camera->position.x = 0.0f;
   camera->position.y = 0.0f;
