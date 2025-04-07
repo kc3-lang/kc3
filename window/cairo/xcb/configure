@@ -40,7 +40,7 @@ OBJECTS_COV="$(c2ext .cov.lo "$SOURCES")"
 OBJECTS_DEBUG="$(c2ext .debug.lo "$SOURCES")"
 
 # Common config for all targets
-CPPFLAGS="$CPPFLAGS -I../../.."
+CPPFLAGS="-I../../.. $CPPFLAGS"
 CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe"
 LDFLAGS="--shared ${LDFLAGS}"
 config_asan
