@@ -78,8 +78,8 @@ gdb_demo: debug
 install:
 	install -m 755 -d ${prefix}/bin
 	install -m 755 .libs/${PROG} ${prefix}/bin/${PROG}
-	install -m 755 .libs/${PROG_ASAN} ${prefix}/bin/${PROG_ASAN}
-	install -m 755 .libs/${PROG_COV} ${prefix}/bin/${PROG_COV}
+	if ${HAVE_ASAN}; then install -m 755 .libs/${PROG_ASAN} ${prefix}/bin/${PROG_ASAN}; fi
+	if ${HAVE_COV}; then install -m 755 .libs/${PROG_COV} ${prefix}/bin/${PROG_COV}; fi
 	install -m 755 .libs/${PROG_DEBUG} ${prefix}/bin/${PROG_DEBUG}
 
 lldb_demo: debug
