@@ -615,6 +615,49 @@ install:
 	${MAKE} -C window install
 	${MAKE} -C gtk4 install
 #	${MAKE} -C fs install
+	${MAKE} install_lib_links
+
+install_lib_links:
+	${MAKE} install_lib_links_${ARCH}
+
+install_lib_links_bsd:
+	ln -sf ../../libekc3.so.0.0 ${prefix}/lib/kc3/0.1/ekc3.so
+	ln -sf ../../libkc3_event.so.0.0 ${prefix}/lib/kc3/0.1/event.so
+	ln -sf ../../libkc3_gtk4.so.0.0 ${prefix}/lib/kc3/0.1/gtk4.so
+	ln -sf ../../libkc3_http.so.0.0 ${prefix}/lib/kc3/0.1/http.so
+	ln -sf ../../libkc3_json.so.0.0 ${prefix}/lib/kc3/0.1/json.so
+	ln -sf ../../libkc3_markdown.so.0.0 ${prefix}/lib/kc3/0.1/markdown.so
+	ln -sf ../../libkc3_smtp.so.0.0 ${prefix}/lib/kc3/0.1/smtp.so
+	ln -sf ../../libkc3_socket.so.0.0 ${prefix}/lib/kc3/0.1/socket.so
+
+install_lib_links_darwin:
+	ln -sf ../../libekc3.0.dylib ${prefix}/lib/kc3/0.1/ekc3.so
+	ln -sf ../../libkc3_event.0.dylib ${prefix}/lib/kc3/0.1/event.so
+	ln -sf ../../libkc3_gtk4.0.dylib ${prefix}/lib/kc3/0.1/gtk4.so
+	ln -sf ../../libkc3_http.0.dylib ${prefix}/lib/kc3/0.1/http.so
+	ln -sf ../../libkc3_json.0.dylib ${prefix}/lib/kc3/0.1/json.so
+	ln -sf ../../libkc3_markdown.0.dylib ${prefix}/lib/kc3/0.1/markdown.so
+	ln -sf ../../libkc3_smtp.so.0.dylib ${prefix}/lib/kc3/0.1/smtp.so
+	ln -sf ../../libkc3_socket.0.dylib ${prefix}/lib/kc3/0.1/socket.so
+
+install_lib_links_freebsd:
+	ln -sf ../../libekc3.so.0.0.0 ${prefix}/lib/kc3/0.1/ekc3.so
+	ln -sf ../../libkc3_event.so.0.0.0 ${prefix}/lib/kc3/0.1/event.so
+	ln -sf ../../libkc3_gtk4.so.0.0.0 ${prefix}/lib/kc3/0.1/gtk4.so
+	ln -sf ../../libkc3_http.so.0.0.0 ${prefix}/lib/kc3/0.1/http.so
+	ln -sf ../../libkc3_json.so.0.0.0 ${prefix}/lib/kc3/0.1/json.so
+	ln -sf ../../libkc3_markdown.so.0.0.0 ${prefix}/lib/kc3/0.1/markdown.so
+	ln -sf ../../libkc3_socket.so.0.0.0 ${prefix}/lib/kc3/0.1/socket.so
+
+install_lib_links_linux:
+	ln -sf ../../libekc3.so ${prefix}/lib/kc3/0.1/ekc3.so
+	ln -sf ../../libkc3_event.so ${prefix}/lib/kc3/0.1/event.so
+	ln -sf ../../libkc3_gtk4.so ${prefix}/lib/kc3/0.1/gtk4.so
+	ln -sf ../../libkc3_http.so ${prefix}/lib/kc3/0.1/http.so
+	ln -sf ../../libkc3_json.so ${prefix}/lib/kc3/0.1/json.so
+	ln -sf ../../libkc3_markdown.so ${prefix}/lib/kc3/0.1/markdown.so
+	ln -sf ../../libkc3_smtp.so ${prefix}/lib/kc3/0.1/smtp.so
+	ln -sf ../../libkc3_socket.so ${prefix}/lib/kc3/0.1/socket.so
 
 json:
 	${MAKE} -C libtommath build
