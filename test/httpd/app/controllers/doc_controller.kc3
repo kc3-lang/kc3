@@ -113,6 +113,7 @@ defmodule DocController do
     slug = Str.subst(slug, " ", "-")
     slug = Str.subst(slug, ".", "-")
     slug = Str.subst(slug, "/", "-")
+    slug = "doc #{slug}"
     html = File.read_all(path_html)
     page = DocView.render_show(menu, html)
     body = LayoutView.render(slug, title, page, url)
@@ -126,6 +127,9 @@ defmodule DocController do
     md = File.read_all(path_md)
     [title | _] = Markdown.titles(md)
     slug = Str.subst(title, " ", "-")
+    slug = Str.subst(slug, ".", "-")
+    slug = Str.subst(slug, "/", "-")
+    slug = "doc #{slug}"
     html = Markdown.to_html_str(md)
     page = DocView.render_show(menu, html)
     body = LayoutView.render(slug, title, page, url)
