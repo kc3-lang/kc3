@@ -1104,8 +1104,8 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->facts = facts_new();
   env->path = list_new_str_1
     (NULL, "./", list_new_str_1
-     (NULL, "../", list_new_str_1
-      (NULL, "../share/kc3/", list_new_str_1
+     (NULL, "./share/kc3/", list_new_str_1
+      (NULL, "../", list_new_str_1
        (NULL, "../Resources/", list_new_str_1
         (NULL, "../../", list_new_str_1
          (NULL, "../../../", list_new_str_1
