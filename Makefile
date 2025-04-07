@@ -588,6 +588,12 @@ ikc3_gcovr:
 	${MAKE} gcovr
 
 install:
+	${INSTALL} -m 0755 -d ${prefix}/lib/kc3
+	${INSTALL} -m 0755 -d ${prefix}/lib/kc3/0.1
+	find lib -type d | while read F; do \
+	    ${INSTALL} -m 0755 -d ${prefix}/$$F; done
+	find lib -name '*.facts' -or -name '*.kc3' | while read F; do \
+	    ${INSTALL} -m 0644 $$F ${prefix}/$$F; done
 	${MAKE} -C libtommath install
 	${MAKE} -C libkc3 install
 	${MAKE} -C ikc3 install
