@@ -588,6 +588,7 @@ ikc3_gcovr:
 	${MAKE} gcovr
 
 install:
+	${MAKE} -C libtommath install
 	${MAKE} -C libkc3 install
 	${MAKE} -C ikc3 install
 	${MAKE} -C kc3s install
