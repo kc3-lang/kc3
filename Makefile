@@ -591,9 +591,13 @@ install:
 	${INSTALL} -m 0755 -d ${prefix}/lib/kc3
 	${INSTALL} -m 0755 -d ${prefix}/lib/kc3/0.1
 	find lib -type d | while read F; do \
-	    ${INSTALL} -m 0755 -d ${prefix}/$$F; done
+	    ${INSTALL} -m 0755 -d ${prefix}/"$$F"; done
 	find lib -name '*.facts' -or -name '*.kc3' | while read F; do \
-	    ${INSTALL} -m 0644 $$F ${prefix}/$$F; done
+	    ${INSTALL} -m 0644 $$F ${prefix}/"$$F"; done
+	find img -type d | while read F; do \
+	    ${INSTALL} -m 0755 -d ${prefix}/share/kc3/"$$F"; done
+	find img | while read F; do \
+	    ${INSTALL} -m 0644 "$$F" ${prefix}/share/kc3/"$$F"; done
 	${MAKE} -C libtommath install
 	${MAKE} -C libkc3 install
 	${MAKE} -C ikc3 install
