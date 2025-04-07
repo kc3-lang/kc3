@@ -92,6 +92,8 @@ install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/lib
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
 	${LIBTOOL} --finish ${prefix}/lib
+	${MAKE} -C demo install
+	! test -d kubz || ${MAKE} -C kubz install
 
 kubz: all
 	${MAKE} -C kubz all
