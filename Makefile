@@ -594,6 +594,7 @@ install:
 	    ${INSTALL} -m 0755 -d ${prefix}/"$$F"; done
 	find lib -name '*.facts' -or -name '*.kc3' | while read F; do \
 	    ${INSTALL} -m 0644 $$F ${prefix}/"$$F"; done
+	${INSTALL} -m 0755 -d ${prefix}/share/kc3
 	${INSTALL} -m 0755 -d ${prefix}/share/kc3/img
 	find img | while read F; do \
 	    ${INSTALL} -m 0644 "$$F" ${prefix}/share/kc3/"$$F"; done
