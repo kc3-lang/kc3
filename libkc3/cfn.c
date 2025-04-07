@@ -106,6 +106,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
           if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.sym,
                                    arg_pointers + i)) {
             err_puts("cfn_apply: tag_to_ffi_pointer 4");
+            err_stacktrace();
             assert(! "cfn_apply: tag_to_ffi_pointer 4");
             goto ko;
           }

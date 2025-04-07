@@ -105,3 +105,5 @@ add {KC3, :symbol, KC3.is_integer?}
 replace {KC3.is_integer?, :symbol_value, cfn Bool "tag_is_integer" (Tag)}
 add {KC3, :symbol, KC3.sysctl}
 replace {KC3.sysctl, :symbol_value, cfn Tag "kc3_sysctl" (Result, List)}
+add {KC3, :symbol, KC3.nil}
+replace {KC3.nil, :symbol_value, void}
