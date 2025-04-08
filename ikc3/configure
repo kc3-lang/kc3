@@ -79,7 +79,7 @@ CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
 LIBKC3_ASAN=../libkc3/libkc3_asan.la
 LOCAL_LIBS_ASAN="$LIBKC3_ASAN"
-LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS"
+LIBS_ASAN="$LOCAL_LIBS_ASAN $LIBS -lasan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
