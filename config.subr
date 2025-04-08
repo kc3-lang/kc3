@@ -171,7 +171,10 @@ c2prog() {
 }
 
 config_asan() {
+    PREV_CFLAGS="$CFLAGS"
+    CFLAGS="$CFLAGS -fsanitize=address"
     config_lib_have ASAN -lasan
+    CFLAGS="$PREV_CFLAGS"
 }
 
 config_cocoa() {
