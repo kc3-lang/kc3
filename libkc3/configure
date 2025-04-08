@@ -48,7 +48,7 @@ CFLAGS_ASAN="$CFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 CXXFLAGS_ASAN="$CXXFLAGS -DDEBUG -O2 -g"
 CXXFLAGS_ASAN="$CXXFLAGS_ASAN -fsanitize=address -fno-omit-frame-pointer"
 LDFLAGS_ASAN="$LDFLAGS"
-LIBS_ASAN="$LIBS"
+LIBS_ASAN="$LIBS -lasan"
 
 # Coverage config
 CPPFLAGS_COV="$CPPFLAGS"
