@@ -1193,7 +1193,7 @@ s_env * env_init_globals (s_env *env)
                                   &g_sym_ncpu)))
     return NULL;
 #if HAVE_PTHREAD
-# if (defined(__OpenBSD__))
+# if (defined(__FreeBSD__) || defined(__OpenBSD__))
   {
     s32 mib[2];
     s32 hw_ncpu;
