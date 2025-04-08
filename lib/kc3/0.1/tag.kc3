@@ -2,6 +2,8 @@ defmodule Tag do
 
   def cast = cfn Tag "tag_init_cast" (Result, Sym, Tag)
 
+  def from_str = cfn Tag "tag_init_from_str" (Result, Str)
+
   def type = cfn S32 "kc3_tag_type" (Tag)
 
 end

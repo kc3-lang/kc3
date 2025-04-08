@@ -374,17 +374,17 @@ s_tag * tag_init_1 (s_tag *tag, const char *p)
   if (! p)
     return tag;
   len = strlen(p);
-  buf_init(&buf, false, len, (char *) p); // buf is read-only
+  buf_init_const(&buf, len, p);
   buf.wpos = len;
   r = buf_parse_tag(&buf, tag);
   if (r < 0 || (uw) r != len) {
-    err_write_1("invalid tag: \"");
+    err_write_1("tag_init_1: invalid tag: \"");
     err_write_1(p);
     err_write_1("\", ");
     err_inspect_uw(&len);
     err_write_1(" != ");
     err_inspect_sw(&r);
-    assert(! "invalid tag");
+    assert(! "tag_init_1: invalid tag");
     return NULL;
   }
   return tag;
@@ -667,6 +667,30 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
   err_puts("tag_init_copy: invalid tag type");
   assert(! "tag_init_copy: invalid tag type");
   return NULL;
+}
+
+s_tag * tag_init_from_str (s_tag *tag, s_str *str)
+{
+  s_buf buf;
+  sw r;
+  assert(tag);
+  tag_init_void(tag);
+  if (! str->size)
+    return tag;
+  buf_init_const(&buf, str->size, str->ptr.pchar);
+  buf.wpos = str->size;
+  r = buf_parse_tag(&buf, tag);
+  if (r < 0 || (uw) r != str->size) {
+    err_write_1("tag_init_str: invalid tag: ");
+    err_inspect_str(str);
+    err_write_1(", ");
+    err_inspect_u32_decimal(&str->size);
+    err_write_1(" != ");
+    err_inspect_sw(&r);
+    assert(! "tag_init_str: invalid tag");
+    return NULL;
+  }
+  return tag;
 }
 
 s_tag * tag_init_var (s_tag *tag, const s_sym *type)
