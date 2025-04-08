@@ -948,6 +948,7 @@ markdown_debug:
 
 test: build lib_links
 	${MAKE} -C test test
+	if ${HAVE_ASAN}; then ${MAKE} test_asan; fi
 
 test_asan: asan lib_links_asan
 	${MAKE} -C test test_asan
