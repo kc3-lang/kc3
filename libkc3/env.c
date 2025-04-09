@@ -1106,12 +1106,13 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     (NULL, "./", list_new_str_1
      (NULL, "./share/kc3/", list_new_str_1
       (NULL, "../", list_new_str_1
-       (NULL, "../Resources/", list_new_str_1
-        (NULL, "../../", list_new_str_1
-         (NULL, "../../../", list_new_str_1
-          (NULL, "../../../../", list_new_str_1
-           (NULL, "../../../../../", list_new_str_1
-            (NULL, "../../../../../../", NULL)))))))));
+       (NULL, "../share/kc3/", list_new_str_1
+        (NULL, "../Resources/", list_new_str_1
+         (NULL, "../../", list_new_str_1
+          (NULL, "../../../", list_new_str_1
+           (NULL, "../../../../", list_new_str_1
+            (NULL, "../../../../../", list_new_str_1
+             (NULL, "../../../../../../", NULL))))))))));
   str_init_1(&path, NULL, "lib/kc3/0.1/");
   if (! (env->module_path = alloc(sizeof(s_str))))
     return NULL;
