@@ -224,17 +224,23 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 .left-col {
+    height: 100%;
+    top: 0;
+    position: fixed;
+    overflow: hidden;
     padding-left: 0.75rem;
+    padding-bottom: 3em;
+    ;
     ul {
+        overflow: scroll;
         list-style: none;
         padding-left: 0.5rem;
     }
 }
 .left-col {
-    margin-left: -10em;
     position: fixed;
     overflow: scroll;
-    bottom: 0;
+    left: 0;
     top: 3em;
     padding-left: 0.75rem;
     ul {
