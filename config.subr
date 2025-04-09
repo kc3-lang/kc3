@@ -178,7 +178,7 @@ config_asan() {
     echo "int main (void) { malloc(1); return 0; }" >> "$OUT_C"
     if $LIBTOOL --tag CC --mode link ${CC} ${CPPFLAGS} ${CFLAGS} \
                 -fsanitize-address -fno-omit-frame-pointer \
-                "$OUT_C" ${LIBS} -lasan -o "$OUT" >/dev/null 2>&1; then
+                "$OUT_C" ${LIBS} -lasan -o "$OUT"; then
         eval "HAVE_$NAME=true"
         echo "HAVE_$NAME = true" >> ${CONFIG_MK}
     else
