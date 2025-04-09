@@ -50,6 +50,7 @@ PROTOTYPES_ERR_IO_INSPECT(block,               const s_block *);
 PROTOTYPES_ERR_IO_INSPECT(bool,                const bool *);
 PROTOTYPES_ERR_IO_INSPECT(buf,                 const s_buf *);
 PROTOTYPES_ERR_IO_INSPECT(call,                const s_call *);
+PROTOTYPES_ERR_IO_INSPECT(callable,            const s_callable *);
 PROTOTYPES_ERR_IO_INSPECT(cfn,                 const s_cfn *);
 PROTOTYPES_ERR_IO_INSPECT(character,           const character *);
 PROTOTYPES_ERR_IO_INSPECT(f32,                 const f32 *);
@@ -68,6 +69,7 @@ PROTOTYPES_ERR_IO_INSPECT(list,                const s_list *);
 PROTOTYPES_ERR_IO_INSPECT(map,                 const s_map *);
 PROTOTYPES_ERR_IO_INSPECT(pointer,             const void *);
 PROTOTYPES_ERR_IO_INSPECT(ptr,                 const u_ptr_w *);
+PROTOTYPES_ERR_IO_INSPECT(ratio,               const s_ratio *);
 PROTOTYPES_ERR_IO_INSPECT(s8,                  const s8 *);
 PROTOTYPES_ERR_IO_INSPECT(s8_decimal,          const s8 *);
 PROTOTYPES_ERR_IO_INSPECT(s8_hexadecimal,      const s8 *);
@@ -106,5 +108,6 @@ PROTOTYPES_ERR_IO_INSPECT(u64_hexadecimal,     const u64 *);
 PROTOTYPES_ERR_IO_INSPECT(uw,                  const uw *);
 PROTOTYPES_ERR_IO_INSPECT(uw_decimal,          const uw *);
 PROTOTYPES_ERR_IO_INSPECT(uw_hexadecimal,      const uw *);
+PROTOTYPES_ERR_IO_INSPECT(var,                 const s_var *);
 
 #endif /* LIBKC3_IO_H */

@@ -32,6 +32,7 @@
 #include "call.h"
 #include "character.h"
 #include "ident.h"
+#include "io.h"
 #include "kc3_main.h"
 #include "list.h"
 #include "str.h"
@@ -159,6 +160,7 @@
     }                                                                  \
     if ((r = buf_inspect_ ## name(&buf, x)) < 0) {                     \
       err_puts("str_init_" # name ": buf_inspect_" # name " < 0");     \
+      err_inspect_ ## name(x);                                         \
       buf_clean(&buf);                                                 \
       return NULL;                                                     \
     }                                                                  \
