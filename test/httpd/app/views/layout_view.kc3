@@ -1,16 +1,21 @@
 defmodule LayoutView do
 
-  def template = EKC3.load("app/templates/layout.html.ekc3")
+  def template = fn () {
+    EKC3.load("app/templates/layout.html.ekc3")
+  }
+  
+  def template_footer = fn () {
+    EKC3.load("app/templates/footer.html.ekc3")
+  }
 
-  def template_footer = EKC3.load("app/templates/footer.html.ekc3")
-
-  def template_nav = EKC3.load("app/templates/nav.html.ekc3")
-
-  def footer = EKC3.render(template_footer)
+  def template_nav = fn () {
+    EKC3.load("app/templates/nav.html.ekc3")
+  }
 
   def render = fn (slug, title, page, url) {
-    nav = EKC3.render(template_nav)
-    EKC3.render(template)
+    nav = EKC3.render(template_nav())
+    footer = EKC3.render(template_footer())
+    EKC3.render(template())
   }
 
 end

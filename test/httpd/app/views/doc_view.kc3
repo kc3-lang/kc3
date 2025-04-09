@@ -1,15 +1,19 @@
 defmodule DocView do
 
-  def menu_template = EKC3.load("app/templates/doc/menu.html.ekc3")
-
-  def show_template = EKC3.load("app/templates/doc/show.html.ekc3")
+  def template_menu = fn () {
+    EKC3.load("app/templates/doc/menu.html.ekc3")
+  }
+  
+  def template_show = fn () {
+    EKC3.load("app/templates/doc/show.html.ekc3")
+  }
 
   def render_menu = fn (index) {
-    EKC3.render(menu_template)
+    EKC3.render(template_menu())
   }
 
   def render_show = fn (menu, html) {
-    EKC3.render(show_template)
+    EKC3.render(template_show())
   }
 
 end
