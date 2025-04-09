@@ -31,6 +31,7 @@ defmodule HTTPd do
       load("config/routes.kc3")
     end
     load_directory("app/plugs/")
+    puts("HTTPd.load_app: done")
   }
 
   def maybe_reload_app = fn () {
