@@ -32084,8 +32084,8 @@ footer a, footer a:hover {
 }
 
 div.page {
-  padding-left: 1em;
-  padding-top: 3em;
+  padding-left: 0;
+  padding-top: 3rem;
 }
 
 /* file preview */
@@ -32169,6 +32169,7 @@ pre.wrap {
   top: 0;
   width: 100%;
   padding-top: 0.3rem;
+  z-index: 1000;
 }
 .navbar > .container-fluid, .navbar > .container-sm, .navbar > .container-md, .navbar > .container-lg, .navbar > .container-xl, .navbar > .container-xxl {
   align-items: baseline;
