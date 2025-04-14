@@ -32065,7 +32065,7 @@ footer a, footer a:hover {
 .pixels-5-15 .container {
   margin: 0 auto;
   width: 100%;
-  max-width: 540px;
+  max-width: 560px;
 }
 
 .pixel {
@@ -32083,15 +32083,8 @@ footer a, footer a:hover {
   background: #fff;
 }
 
-footer {
-  margin-left: 10em;
-}
-
-.page {
-  margin-left: 10em;
-}
-
 div.page {
+  padding-left: 1em;
   padding-top: 3em;
 }
 
@@ -32294,32 +32287,16 @@ h1 a, .h1 a, h2 a, .h2 a, h3 a, .h3 a, h4 a, .h4 a, h5 a, .h5 a, h6 a, .h6 a {
   word-break: break-all;
 }
 
-@media only screen and (min-width: 576px) {
-  .left-col {
-    min-height: 100vh;
-  }
-}
 .left-col {
-  height: 100%;
-  top: 0;
-  position: fixed;
-  overflow: scroll;
-  padding-left: 0.75rem;
-  bottom: 0;
-}
-.left-col ul {
-  list-style: none;
-  padding-left: 0.5rem;
-}
-
-.left-col {
-  position: fixed;
-  overflow: scroll;
-  left: 0;
   top: 3em;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  overflow: scroll;
   padding-left: 0.75rem;
 }
 .left-col ul {
+  overflow: scroll;
   list-style: none;
   padding-left: 0.5rem;
 }
