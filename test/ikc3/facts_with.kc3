@@ -19,3 +19,8 @@ Facts.with(Facts.env_db(), [[op = ?, :op_sym, sym = ?]], fn (fact) {
   puts("#{inspect(sym)} #{inspect(op)}")
   2
 })
+def count = 0
+Facts.with_transaction(Facts.env_db(), do
+  def count = count + 1
+end)
+count

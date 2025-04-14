@@ -343,6 +343,17 @@ s_list * list_init_ptr_free (s_list *list, void *p, s_list *next)
   return list;
 }
 
+s_list * list_init_quote (s_list *list, s_tag *src, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_quote(&tmp.tag, src))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_quote_copy (s_list *list, s_quote *quote,
                                s_list *next)
 {
@@ -1036,6 +1047,19 @@ s_list * list_new_ptr_free (void *p, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_ptr_free(&list->tag, p)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_quote (s_tag *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_quote(&list->tag, src)) {
     free(list);
     return NULL;
   }

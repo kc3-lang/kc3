@@ -13,15 +13,17 @@ defmodule Facts do
              transaction: (Ptr) 0]
 
   # returns true if fact was added or is already present
-  def add_tags = cfn Bool "kc3_facts_add_tags" (Facts, Tag, Tag, Tag, Result)
+  def add_tags =
+    cfn Bool "kc3_facts_add_tags" (Facts, Tag, Tag, Tag, Result)
 
   def cast = cfn Tag "tag_init_cast_struct" (Result, Sym, Tag)
 
-  def collect_with = cfn Tag "kc3_facts_collect_with" (Facts, List,
-    Fn, Result)
+  def collect_with =
+    cfn Tag "kc3_facts_collect_with" (Facts, List, Fn, Result)
 
-  def collect_with_tags = cfn Tag "kc3_facts_collect_with_tags" (Facts,
-    Tag, Tag, Tag, Callable, Result)
+  def collect_with_tags =
+    cfn Tag "kc3_facts_collect_with_tags" (Facts, Tag, Tag, Tag,
+      Callable, Result)
 
   def database = cfn Ptr "facts_database" (Result)
 
@@ -30,31 +32,42 @@ defmodule Facts do
   # env_db() -> facts
   def env_db = cfn Ptr "kc3_env_db" (Result)
 
-  def first_with = cfn Tag "kc3_facts_first_with" (Facts, List, Callable, Result)
+  def first_with =
+    cfn Tag "kc3_facts_first_with" (Facts, List, Callable, Result)
 
   # first_with_tags(facts, subject, predicate, object,
   #                 fn (fact) {result}) -> result
-  def first_with_tags = cfn Tag "kc3_facts_first_with_tags" (Facts, Tag,
-    Tag, Tag, Callable, Result)
+  def first_with_tags =
+    cfn Tag "kc3_facts_first_with_tags" (Facts, Tag, Tag, Tag, Callable,
+      Result)
 
-  def open = cfn Sw "facts_open_file" (Facts, Str)
+  def open =
+    cfn Sw "facts_open_file" (Facts, Str)
 
   # returns true if fact was removed or is already absent
-  def remove_tags = cfn Bool "kc3_facts_remove_tags" (Facts, Tag, Tag, Tag, Result)
+  def remove_tags =
+    cfn Bool "kc3_facts_remove_tags" (Facts, Tag, Tag, Tag, Result)
 
   # returns true if fact was added or is already present
-  def replace_tags = cfn Bool "kc3_facts_replace_tags" (Facts, Tag, Tag, Tag, Result)
+  def replace_tags =
+    cfn Bool "kc3_facts_replace_tags" (Facts, Tag, Tag, Tag, Result)
 
   # with(facts, [[?, ?, ?]], fn (fact) {result}) -> result
-  def with = cfn Tag "kc3_facts_with" (Facts, List, Callable, Result)
+  def with =
+    cfn Tag "kc3_facts_with" (Facts, List, Callable, Result)
 
   # with_macro(facts, [[?, ?, ?]], do result end) -> result
-  def with_macro = cfn_macro Tag "kc3_facts_with_macro" (Tag, Tag, Tag, Result)
+  def with_macro =
+    cfn_macro Tag "kc3_facts_with_macro" (Tag, Tag, Tag, Result)
 
   # with_tags(facts, subject, predicate, object,
   #           fn (fact) {result}) -> result
-  def with_tags = cfn Tag "kc3_facts_with_tags" (Facts, Tag, Tag, Tag,
-    Callable, Result)
+  def with_tags =
+    cfn Tag "kc3_facts_with_tags" (Facts, Tag, Tag, Tag, Callable,
+      Result)
+
+  def with_transaction =
+    cfn_macro Tag "kc3_facts_with_transaction" (Tag, Tag, Result)
 
   # with_tuple(facts, tuple, fn (fact) {result}) -> result
   def with_tuple = cfn Tag "kc3_facts_with_tuple" (Facts, Tuple, Callable,

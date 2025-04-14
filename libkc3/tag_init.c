@@ -342,6 +342,17 @@ s_tag * tag_init_ptr_free (s_tag *tag, void *p)
   return tag;
 }
 
+s_tag * tag_init_quote (s_tag *tag, s_tag *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_QUOTE;
+  if (! quote_init(&tmp.data.quote, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
 s_tag * tag_init_quote_copy (s_tag *tag, s_quote *quote)
 {
   s_tag tmp = {0};
@@ -1030,6 +1041,20 @@ s_tag * tag_new_ptr_free (void *p)
     return NULL;
   tag->type = TAG_PTR_FREE;
   if (! ptr_free_init(&tag->data.ptr_free, p)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_quote (s_tag *src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_QUOTE;
+  if (! quote_init(&tag->data.quote, src)) {
     free(tag);
     return NULL;
   }
@@ -1753,6 +1778,18 @@ s_tag * tag_ptr_free (s_tag *tag, void *p)
   tag_clean(tag);
   tmp.type = TAG_PTR_FREE;
   if (! ptr_free_init(&tmp.data.ptr_free, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_quote (s_tag *tag, s_tag *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_QUOTE;
+  if (! quote_init(&tmp.data.quote, src))
     return NULL;
   *tag = tmp;
   return tag;

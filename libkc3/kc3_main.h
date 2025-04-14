@@ -106,6 +106,8 @@ s_tag *      kc3_facts_with_macro (s_tag *facts_tag, s_tag *spec_tag,
 s_tag *      kc3_facts_with_tags (s_facts *facts, s_tag *subject,
                                   s_tag *predicate, s_tag *object,
                                   p_callable *callback, s_tag *dest);
+s_tag *      kc3_facts_with_transaction (s_tag *facts_arg,
+                                         s_tag *tag_arg, s_tag *dest);
 s_tag *      kc3_identity (s_tag *tag, s_tag *dest);
 s_tag *      kc3_integer_reduce (s_tag *tag, s_tag *dest);
 bool         kc3_killpg (sw process_group, const s_sym * const *signal);

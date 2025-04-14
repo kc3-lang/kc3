@@ -439,6 +439,13 @@ s_tag * kc3_facts_with_tags (s_facts *facts, s_tag *subject,
                              object, *callback, dest);
 }
 
+s_tag * kc3_facts_with_transaction (s_tag *facts_arg, s_tag *tag_arg,
+                                    s_tag *dest)
+{
+  return env_facts_with_transaction(env_global(), facts_arg, tag_arg,
+                                    dest);
+}
+
 s_tag * kc3_facts_with_tuple (s_facts *facts, s_tuple *tuple,
                               p_callable *callback, s_tag *dest)
 {

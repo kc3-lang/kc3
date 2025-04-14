@@ -897,6 +897,39 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
   return NULL;
 }
 
+s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
+                                    s_tag *tag_arg, s_tag *dest)
+{
+  s_tag facts_tag = {0};
+  s_facts *facts;
+  s_tag tmp = {0};
+  s_facts_transaction transaction = {0};
+  if (! facts_transaction_init(&transaction))
+    return NULL;
+  if (! env_eval_tag(env, facts_arg, &facts_tag)) {
+    facts_transaction_clean(&transaction);
+    return NULL;
+  }
+  if (facts_tag.type != TAG_PTR) {
+    err_puts("env_with_transaction: first arg is not a Ptr to Facts");
+    tag_clean(&facts_tag);
+    facts_transaction_clean(&transaction);
+    return NULL;
+  }
+  facts = facts_tag.data.ptr.p;
+  facts_transaction_start(facts, &transaction);
+  if (! env_eval_tag(env, tag_arg, &tmp)) {
+    tag_clean(&facts_tag);
+    facts_transaction_clean(&transaction);
+    return NULL;
+  }
+  facts_transaction_end(facts, &transaction);
+  tag_clean(&facts_tag);
+  facts_transaction_clean(&transaction);
+  *dest = tmp;
+  return dest;
+}
+
 s_tag * env_frames_get (s_env *env, const s_sym *name)
 {
   s_tag *tag;

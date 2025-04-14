@@ -77,6 +77,8 @@ There are now four full applications written in KC3 that we know of :
      - StructType
    - optional pass by copy (--copy) for use with ASAN.
      - `env_init_args --copy`
+   - documentation
+     - document all basic types (see <kc3-lang.org/doc>)
 
 
 ## Discord invite

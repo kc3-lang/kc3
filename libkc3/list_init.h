@@ -62,6 +62,7 @@ s_list * list_init_pstruct_type_clean (s_list *list,
                                        s_list *next);
 s_list * list_init_ptr (s_list *list, void *p, s_list *next);
 s_list * list_init_ptr_free (s_list *list, void *p, s_list *next);
+s_list * list_init_quote (s_list *list, s_tag *src, s_list *next);
 s_list * list_init_quote_copy (s_list *list, s_quote *quote,
                                s_list *next);
 s_list * list_init_ratio_1 (s_list *list, const char *p, s_list *next);
@@ -146,6 +147,7 @@ s_list * list_new_pstruct_type_clean (const s_struct_type *st,
                                       const s_cfn *clean, s_list *next);
 s_list * list_new_ptr (void *p, s_list *next);
 s_list * list_new_ptr_free (void *p, s_list *next);
+s_list * list_new_quote (s_tag *src, s_list *next);
 s_list * list_new_quote_copy (s_quote *quote, s_list *next);
 s_list * list_new_ratio_1 (const char *p, s_list *next);
 s_list * list_new_ratio (s_list *next);

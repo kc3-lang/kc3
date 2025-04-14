@@ -93,6 +93,8 @@ s_tag *        env_facts_with_tags (s_env *env, s_facts *facts,
                                     s_tag *subject, s_tag *predicate,
                                     s_tag *object, s_callable *callback,
                                     s_tag *dest);
+s_tag *        env_facts_with_transaction (s_env *env, s_tag *facts_arg,
+                                           s_tag *tag_arg, s_tag *dest);
 s_tag *        env_ident_get (s_env *env, const s_ident *ident,
                               s_tag *dest);
 bool *         env_ident_is_special_operator (s_env *env,

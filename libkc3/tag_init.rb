@@ -358,6 +358,8 @@ class TagInitList
                    [Arg.new("void *", "p")]),
        TagInit.new("ptr_free", "TAG_PTR_FREE", :init_mode_init,
                    [Arg.new("void *", "p")]),
+       TagInit.new("quote", "TAG_QUOTE", :init_mode_init,
+                   [Arg.new("s_tag *", "src")]),
        TagInit.new("quote", "copy", "TAG_QUOTE", :init_mode_init,
                    [Arg.new("s_quote *", "quote")]),
        TagInit1.new("ratio", "1", "TAG_RATIO", :init_mode_init),
