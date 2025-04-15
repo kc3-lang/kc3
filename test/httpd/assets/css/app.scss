@@ -27,34 +27,6 @@ div.page {
     padding-left: 0;
     padding-top: 3rem;
 }
-/* file preview */
-span.size {
-    float: right;
-    font-size: 80%;
-    display: block;
-    text-align: right;
-    width: 5em;
-}
-span.file {
-    float: right;
-    font-size: 80%;
-}
-div.small, div.full {
-    clear: both;
-}
-/* video */
-div.full {
-    video.full {
-        width: 100%;
-    }
-}
-div.small {
-    video.small {
-        height: 480px;
-        max-width: 100%;
-    }
-}
-
 /* reset */
 pre {
     overflow: visible;
@@ -219,7 +191,7 @@ h1,h2,h3,h4,h5,h6 {
     overflow: scroll;
     padding-left: 0.75rem;
     ul {
-        overflow: scroll;
+        overflow: visible;
         list-style: none;
         padding-left: 0.5rem;
     }
