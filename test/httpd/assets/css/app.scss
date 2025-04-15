@@ -187,7 +187,6 @@ h1,h2,h3,h4,h5,h6 {
     top: 3em;
     bottom: 0;
     left: 0;
-    position: fixed;
     overflow: scroll;
     padding-left: 0.75rem;
     ul {
@@ -208,5 +207,10 @@ h1,h2,h3,h4,h5,h6 {
     &.active {
         background: #e6e6ff;
         text-decoration: underline;
+    }
+}
+@media only screen and (min-width: 576px) {
+    .left-col {
+        position: fixed;
     }
 }
