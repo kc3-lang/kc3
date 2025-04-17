@@ -17,7 +17,7 @@
 #include "facts.h"
 #include "facts_transaction.h"
 #include "list.h"
-#include "types.h"
+#include "rwlock.h"
 
 s_facts_transaction * facts_transaction_clean
 (s_facts_transaction *transaction)
@@ -38,6 +38,9 @@ void facts_transaction_end (s_facts *facts,
     abort();
   }
   facts->transaction = facts_transaction_clean(transaction);
+#if HAVE_PTHREAD
+  rwlock_unlock_w(&facts->rwlock);
+#endif
 }
 
 bool facts_transaction_find (s_facts *facts,
@@ -118,6 +121,10 @@ void facts_transaction_start (s_facts *facts,
 {
   assert(facts);
   assert(transaction);
+#if HAVE_PTHREAD
+  if (! rwlock_w(&facts->rwlock))
+    return;
+#endif
   transaction->log = NULL;
   transaction->next = facts->transaction;
   facts->transaction = transaction;

@@ -919,6 +919,7 @@ s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
   facts = facts_tag.data.ptr.p;
   facts_transaction_start(facts, &transaction);
   if (! env_eval_tag(env, tag_arg, &tmp)) {
+    facts_transaction_end(facts, &transaction);
     tag_clean(&facts_tag);
     facts_transaction_clean(&transaction);
     return NULL;
@@ -2034,7 +2035,7 @@ s_struct_type ** env_struct_type_find (s_env *env,
                                        const s_sym *module,
                                        s_struct_type **dest)
 {
-  s_facts_with_cursor cursor;
+  s_facts_cursor cursor;
   s_fact *found;
   s_tag tag_struct_type;
   s_tag tag_module;
@@ -2044,7 +2045,7 @@ s_struct_type ** env_struct_type_find (s_env *env,
   assert(module);
   tag_init_sym(&tag_module, module);
   tag_init_sym(&tag_struct_type, &g_sym_struct_type);
-  tag_init_var(&tag_var, &g_sym_Tag);
+  tag_init_var(&tag_var, &g_sym_StructType);
   if (! env_module_maybe_reload(env, module)) {
     err_write_1("env_struct_type_find: env_module_maybe_reload(");
     err_inspect_sym(&module);
@@ -2052,23 +2053,22 @@ s_struct_type ** env_struct_type_find (s_env *env,
     assert(! "env_struct_type_find: env_module_maybe_reload");
     return NULL;
   }
-  if (! facts_with(env->facts, &cursor, (t_facts_spec) {
-                   &tag_module, &tag_struct_type, &tag_var,
-                   NULL, NULL })) {
-    err_write_1("env_struct_type_find: facts_with(");
+  if (! facts_with_tags(env->facts, &cursor,
+                        &tag_module, &tag_struct_type, &tag_var)) {
+    err_write_1("env_struct_type_find: facts_with_tags(");
     err_inspect_sym(&module);
     err_puts(", :struct_type, ?)");
     assert(! "env_struct_type_find: facts_with");
     return NULL;
   }
-  if (! facts_with_cursor_next(&cursor, &found)) {
+  if (! facts_cursor_next(&cursor, &found)) {
     err_puts("env_struct_type_find: facts_with_cursor_next");
     assert(! "env_struct_type_find: facts_with_cursor_next");
-    facts_with_cursor_clean(&cursor);
+    facts_cursor_clean(&cursor);
     return NULL;
   }
   if (! found) {
-    facts_with_cursor_clean(&cursor);
+    facts_cursor_clean(&cursor);
     *dest = NULL;
     return dest;
   }
@@ -2080,11 +2080,11 @@ s_struct_type ** env_struct_type_find (s_env *env,
     err_inspect_sym(&type);
     err_write_1("\n");
     assert(! "env_struct_type_find: invalid struct_type");
-    facts_with_cursor_clean(&cursor);
+    facts_cursor_clean(&cursor);
     return NULL;
   }
   *dest = found->object->data.pstruct_type;
-  facts_with_cursor_clean(&cursor);
+  facts_cursor_clean(&cursor);
   return dest;
 }
 
