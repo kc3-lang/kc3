@@ -297,12 +297,6 @@ struct buf_save {
   uw wpos;
 };
 
-struct cow {
-  const s_sym *type;
-  s_list *list;
-  sw ref_count;
-};
-
 struct fact {
   s_tag *subject;
   s_tag *predicate;
@@ -459,6 +453,13 @@ struct buf {
   uw                wpos;
 };
 
+struct cow {
+  const s_sym *type;
+  s_list *list;
+  s_mutex mutex;
+  sw ref_count;
+};
+
 struct facts_spec_cursor {
   p_facts_spec spec;
   s_tag *subject;
@@ -503,6 +504,7 @@ struct struct_type {
   bool must_clean;
   uw *offset;
   uw size;
+  s_mutex mutex;
   sw ref_count;
 };
 
@@ -598,9 +600,9 @@ union callable_data {
 
 struct callable {
   e_callable_type type;
-  sw ref_count;
   u_callable_data data;
   s_mutex mutex;
+  sw ref_count;
 };
 
 union tag_data {
@@ -696,6 +698,7 @@ struct fact_w {
 struct list {
   s_tag tag;
   s_tag next;
+  s_mutex mutex;
   sw ref_count;
 };
 
@@ -831,6 +834,7 @@ struct env {
   s_frame          *read_time_frame;
   s_list           *search_modules;
   s_list           *search_modules_default;
+  bool              silence_errors;
   bool              trace;
   uw                unquote_level;
   s_unwind_protect *unwind_protect;

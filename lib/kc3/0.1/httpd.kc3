@@ -317,7 +317,7 @@ defmodule HTTPd do
       error_404_page(request)
     }
     (request, [route | next_routes]) {
-      response = if ((controller = HTTPd.Route.match(route, request))) do
+      response = if (controller = HTTPd.Route.match(route, request)) do
         let(request.params, controller(request))
       end
       response || route_and_render_request(request, next_routes)

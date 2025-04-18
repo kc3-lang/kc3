@@ -507,8 +507,12 @@ s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
 {
   bool  cond_bool = false;
   s_tag cond_eval = {0};
+  bool silence_errors;
   const s_sym *type;
+  silence_errors = env_global()->silence_errors;
+  env_global()->silence_errors = true;
   if (env_eval_tag(env_global(), cond, &cond_eval)) {
+    env_global()->silence_errors = silence_errors;
     if (cond_eval.type == TAG_BOOL)
       cond_bool = cond_eval.data.bool_;
     else {
@@ -525,6 +529,8 @@ s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
       return dest;
     }
   }
+  else
+    env_global()->silence_errors = silence_errors;
   if (! env_eval_tag(env_global(), else_, dest))
     return NULL;
   return dest;

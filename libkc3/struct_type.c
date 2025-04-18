@@ -17,6 +17,7 @@
 #include "env.h"
 #include "list.h"
 #include "map.h"
+#include "mutex.h"
 #include "struct.h"
 #include "struct_type.h"
 #include "sym.h"
@@ -71,13 +72,23 @@ void struct_type_delete (s_struct_type *st)
   if (env_global()->pass_by_copy)
     assert(st->ref_count == 1);
   else {
+#ifdef HAVE_PTHREAD
+    mutex_lock(&st->mutex);
+#endif
     if (st->ref_count <= 0) {
       err_puts("struct_type_delete: invalid reference count");
       assert(! "struct_type_delete: invalid reference count");
       abort();
     }
-    if (--st->ref_count)
+    if (--st->ref_count) {
+#ifdef HAVE_PTHREAD
+      mutex_unlock(&st->mutex);
+#endif
       return;
+    }
+#ifdef HAVE_PTHREAD
+    mutex_unlock(&st->mutex);
+#endif
   }
   struct_type_clean(st);
   free(st);
@@ -193,6 +204,9 @@ s_struct_type * struct_type_init (s_struct_type *st,
 #endif
   }
   tmp.ref_count = 1;
+#ifdef HAVE_PTHREAD
+  mutex_init(&tmp.mutex);
+#endif
   *st = tmp;
   return st;
 }
@@ -218,6 +232,9 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
   memcpy(tmp.offset, src->offset, tmp.map.count * sizeof(uw));
   tmp.size = src->size;
   tmp.ref_count = 1;
+#ifdef HAVE_PTHREAD
+  mutex_init(&tmp.mutex);
+#endif
   *st = tmp;
   return st;
 }
@@ -268,15 +285,25 @@ s_struct_type * struct_type_new_copy (const s_struct_type *src)
   return st;
 }
 
-s_struct_type * struct_type_new_ref (s_struct_type *src)
+s_struct_type * struct_type_new_ref (s_struct_type *st)
 {
-  if (src->ref_count <= 0) {
+  assert(st);
+#ifdef HAVE_PTHREAD
+  mutex_lock(&st->mutex);
+#endif
+  if (st->ref_count <= 0) {
     err_puts("struct_type_new_ref: invalid reference count");
     assert(! "struct_type_new_ref: invalid reference count");
+#ifdef HAVE_PTHREAD
+    mutex_unlock(&st->mutex);
+#endif
     return NULL;
   }
-  src->ref_count++;
-  return src;
+  st->ref_count++;
+#ifdef HAVE_PTHREAD
+  mutex_unlock(&st->mutex);
+#endif
+  return st;
 }
 
 uw struct_type_padding (uw offset, uw size)
