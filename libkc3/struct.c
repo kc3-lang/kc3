@@ -20,6 +20,7 @@
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
+#include "mutex.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "struct.h"
@@ -159,16 +160,30 @@ void struct_delete (s_struct *s)
   if (env_global()->pass_by_copy)
     assert(s->ref_count == 1);
   else {
+#ifdef HAVE_PTHREAD
+    mutex_lock(&s->mutex);
+#endif
     if (s->ref_count <= 0) {
       err_puts("struct_delete: invalid reference count");
       assert(! "struct_delete: invalid reference count");
+#ifdef HAVE_PTHREAD
+      mutex_unlock(&s->mutex);
+#endif
       return;
     }
-    if (--s->ref_count)
+    if (--s->ref_count) {
+#ifdef HAVE_PTHREAD
+      mutex_unlock(&s->mutex);
+#endif
       return;
+    }
+#ifdef HAVE_PTHREAD
+    mutex_unlock(&s->mutex);
+#endif
   }
   struct_clean(s);
   free(s);
+  return;
 }
 
 uw * struct_find_key_index (const s_struct *s, const s_sym *key,
@@ -441,16 +456,22 @@ s_struct * struct_new_copy (s_struct *src)
   return s;
 }
 
-s_struct * struct_new_ref (s_struct *src)
+s_struct * struct_new_ref (s_struct *s)
 {
-  assert(src);
-  if (src->ref_count <= 0) {
+  assert(s);
+#ifdef HAVE_PTHREAD
+  mutex_lock(&s->mutex);
+#endif
+  if (s->ref_count <= 0) {
     err_puts("struct_new_ref: invalid reference count");
     assert(! "struct_new_ref: invalid reference count");
     return NULL;
   }
-  src->ref_count++;
-  return src;
+  s->ref_count++;
+#ifdef HAVE_PTHREAD
+  mutex_unlock(&s->mutex);
+#endif
+  return s;
 }
 
 s_struct * struct_new_with_data (const s_sym *module, void *data,

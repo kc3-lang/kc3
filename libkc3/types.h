@@ -399,6 +399,7 @@ struct struct_ {
   bool free_data;
   s_tag *tag;
   p_struct_type pstruct_type;
+  s_mutex mutex;
   sw ref_count;
 };
 
