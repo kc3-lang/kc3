@@ -285,6 +285,9 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
     }
   }
   tmp.ref_count = 1;
+#ifdef HAVE_PTHREAD
+  mutex_init(&tmp.mutex);
+#endif
   *s = tmp;
   return s;
 }
@@ -336,6 +339,9 @@ s_struct * struct_init_copy (s_struct *s, s_struct *src)
       i++;
     }
   }
+#ifdef HAVE_PTHREAD
+  mutex_init(&tmp.mutex);
+#endif
   *s = tmp;
   return s;
  ko:
@@ -414,6 +420,9 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
   tmp.data = data;
   tmp.free_data = free_data;
   tmp.ref_count = 1;
+#ifdef HAVE_PTHREAD
+  mutex_init(&tmp.mutex);
+#endif
   *s = tmp;
   return s;
 }
@@ -425,6 +434,9 @@ s_struct * struct_init_with_type (s_struct *s, s_struct_type *st)
   assert(st);
   pstruct_type_init_copy(&tmp.pstruct_type, &st);
   tmp.ref_count = 1;
+#ifdef HAVE_PTHREAD
+  mutex_init(&tmp.mutex);
+#endif
   *s = tmp;
   return s;
 }
