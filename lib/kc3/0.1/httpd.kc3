@@ -303,10 +303,12 @@ defmodule HTTPd do
   def routes = []
 
   def def_route = fn (path, controller) {
-    tmp = List.append(HTTPd.routes,
-      %HTTPd.Route{path: path,
-                   controller: controller})
-    def HTTPd.routes = tmp
+    Facts.with_transaction(Facts.env_db(), do
+      tmp = List.append(HTTPd.routes,
+        %HTTPd.Route{path: path,
+                     controller: controller})
+      def HTTPd.routes = tmp
+    end)
   }
 
   def route_and_render_request = fn {

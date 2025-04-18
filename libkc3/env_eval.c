@@ -666,7 +666,6 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   bool is_var_b = false;
   s_tag tmp_a;
   s_tag tmp_b;
-  const s_sym *type = NULL;
   s_tag *var_a;
   s_tag *var_b;
   assert(env);
@@ -810,11 +809,9 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   if (a->type != b->type) {
     if (! env->silence_errors) {
       err_write_1("env_eval_equal_tag: type mismatch: ");
-      tag_type(a, &type);
-      err_inspect_sym(&type);
+      err_inspect_tag(a);
       err_write_1(" != ");
-      tag_type(b, &type);
-      err_inspect_sym(&type);
+      err_inspect_tag(b);
       err_write_1("\n");
       err_stacktrace();
     }
