@@ -3536,8 +3536,10 @@ sw buf_inspect_str_size (s_pretty *pretty, const s_str *str)
     return buf_inspect_str_reserved_size(pretty, str, true);
   if ((r = buf_write_1_size(pretty, "\"")) < 0)
     return r;
+  result += r; 
+  if ((r = buf_write_str_size(pretty, str)) < 0)
+    return r;
   result += r;
-  result += str->size;
   if ((r = buf_write_1_size(pretty, "\"")) < 0)
     return r;
   result += r;
