@@ -3286,30 +3286,77 @@ sw buf_inspect_str_character (s_buf *buf, const character *c)
 
 sw buf_inspect_str_character_size (s_pretty *pretty, const character *c)
 {
-  sw csize;
-  sw size;
-  (void) pretty;
+  char b[4];
+  s_buf char_buf;
+  int i;
+  sw r;
+  sw result = 0;
+  sw result1 = 0;
   if (! str_character_is_reserved(*c))
-    return character_utf8_size(*c);
-  size = 0;
+    return buf_write_character_utf8_size(pretty, *c);
+  if ((r = buf_write_1_size(pretty, "\\")) <= 0)
+    goto restore;
+  result += r;
   switch (*c) {
   case '\0':
+    if ((r = buf_write_character_utf8_size(pretty, '0')) <= 0)
+      goto restore;
+    break;
   case '\n':
+    if ((r = buf_write_character_utf8_size(pretty, 'n')) <= 0)
+      goto restore;
+    break;
   case '\r':
+    if ((r = buf_write_character_utf8_size(pretty, 'r')) <= 0)
+      goto restore;
+    break;
   case '\t':
+    if ((r = buf_write_character_utf8_size(pretty, 't')) <= 0)
+      goto restore;
+    break;
   case '\v':
+    if ((r = buf_write_character_utf8_size(pretty, 'v')) <= 0)
+      goto restore;
+    break;
   case '\"':
+    if ((r = buf_write_character_utf8_size(pretty, '"')) <= 0)
+      goto restore;
+    break;
   case '\'':
+    if ((r = buf_write_character_utf8_size(pretty, '\'')) <= 0)
+      goto restore;
+    break;
   case '\\':
-    size += 2;
+    if ((r = buf_write_character_utf8_size(pretty, '\\')) <= 0)
+      goto restore;
     break;
   default:
-    csize = character_utf8_size(*c);
-    if (csize <= 0)
-      return -1;
-    size += csize * 4;
+    buf_init(&char_buf, false, sizeof(b), b);
+    if ((r = buf_write_character_utf8(&char_buf, *c)) <= 0)
+      goto restore;
+    i = r - 1;
+    if ((r = buf_write_character_utf8_size(pretty, 'x')) != 1)
+      goto restore;
+    result1 += r;
+    r = 2;
+    result1 += r;
+    while (i--) {
+      if ((r = buf_write_1_size(pretty, "\\x")) != 2)
+        goto restore;
+      result1 += r;
+      r = 2;
+      result1 += r;
+    }
+    r = result1;
   }
-  return size;
+  result += r;
+  r = result;
+  goto clean;
+ restore:
+  if (r >= 0)
+    r = -1;
+ clean:
+  return r;
 }
 
 sw buf_inspect_str_eval (s_buf *buf, const s_list *list)
