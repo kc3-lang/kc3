@@ -32092,6 +32092,9 @@ div.page {
 pre {
   overflow: visible;
 }
+pre code {
+  overflow: visible;
+}
 
 body {
   margin: 0;
