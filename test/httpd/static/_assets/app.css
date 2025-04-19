@@ -32095,6 +32095,9 @@ pre {
 pre code {
   overflow-x: visible;
 }
+pre code.hljs {
+  overflow-x: visible;
+}
 
 body {
   margin: 0;
