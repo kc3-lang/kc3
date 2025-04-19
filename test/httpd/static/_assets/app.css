@@ -32093,7 +32093,7 @@ pre {
   overflow: visible;
 }
 pre code {
-  overflow: visible;
+  overflow-x: visible;
 }
 
 body {
