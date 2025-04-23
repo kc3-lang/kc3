@@ -40,6 +40,7 @@ ${DEST_TMP}:
 #	cp -a "${SRC_TOP}/window/cairo/win32/.libs/libkc3_window_cairo_win32*-0.dll" ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/cairo/win32/demo/.libs/kc3_window_cairo_win32_demo.exe" ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/cairo/win32/demo/.libs/kc3_window_cairo_win32_demo_debug.exe" ${DEST_TMP}
+	cp -a "${SRC_TOP}"/window/sdl2/.libs/libkc3_window_sdl2*-0.dll ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/sdl2/demo/.libs/kc3_window_sdl2_demo.exe" ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/sdl2/demo/.libs/kc3_window_sdl2_demo_debug.exe" ${DEST_TMP}
 	cp -a "${SRC_TOP}/window/sdl2/kubz/.libs/kubz.exe" ${DEST_TMP}
