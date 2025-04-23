@@ -17,6 +17,7 @@
 #include "../gl_font.h"
 #include "../gl_lines.h"
 #include "../mat4.h"
+#include "../gl_object.h"
 #include "../gl_ortho.h"
 #include "../gl_square.h"
 #include "../gl_text.h"
@@ -156,6 +157,7 @@ bool window_sdl2_demo_key (s_window_sdl2 *window, SDL_Keysym *keysym)
 
 bool window_sdl2_demo_load (s_window_sdl2 *window)
 {
+  s_gl_object obj = {0};
   f32 point_per_pixel;
   assert(window);
   assert(glGetError() == GL_NO_ERROR);
@@ -227,6 +229,9 @@ bool window_sdl2_demo_load (s_window_sdl2 *window)
                 matrix_load, matrix_render,
                 matrix_unload, window);
   window_set_sequence_pos((s_window *) window, 0);
+  goto ok;
+  gl_object_clean(&obj);
+ ok:
   return true;
 }
 
