@@ -49,8 +49,8 @@ gcovr:
 	gcovr --gcov-executable ${GCOV} --html-details libkc3_web.html
 
 install:
-	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/ekc3
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libkc3/ekc3
+	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libkc3/http
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libkc3/http
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/lib
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB_DEBUG} ${prefix}/lib
@@ -60,6 +60,11 @@ test:
 
 update_sources:
 	./update_sources
+
+uninstall:
+	rm -rf ${prefix}/include/libkc3/http
+	rm -f ${prefix}/lib/${LIB}
+	rm -f ${prefix}/lib/${LIB_DEBUG}
 
 .PHONY: \
 	all \
@@ -73,6 +78,7 @@ update_sources:
 	install \
 	test \
 	update_sources \
+	uninstall
 
 include config.mk
 include sources.mk

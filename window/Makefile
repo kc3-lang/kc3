@@ -107,6 +107,12 @@ test:
 update_sources:
 	./update_sources
 
+uninstall:
+	rm -rf ${prefix}/include/libkc3/window
+	rm -f ${prefix}/lib/${LIB}
+	if ${HAVE_CAIRO}; then ${MAKE} -C cairo uninstall; fi
+	if ${HAVE_SDL2}; then ${MAKE} -C sdl2 uninstall; fi
+
 .PHONY: \
 	all \
 	asan \
@@ -129,7 +135,8 @@ update_sources:
 	lldb_demo \
 	lldb_demo_gl \
 	test \
-	update_sources
+	update_sources \
+	uninstall
 
 include config.mk
 include sources.mk

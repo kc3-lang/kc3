@@ -880,6 +880,16 @@ lib_links_windows:
 	ln -sf ../../../smtp/.libs/libkc3_smtp-0.dll lib/kc3/0.1/smtp.so
 	ln -sf ../../../socket/.libs/libkc3_socket-0.dll lib/kc3/0.1/socket.so
 
+lib_links_windows_debug:
+	ln -sf ../../../ekc3/.libs/libekc3_debug-0.dll lib/kc3/0.1/ekc3.so
+	ln -sf ../../../event/.libs/libkc3_event_debug-0.dll lib/kc3/0.1/event.so
+	ln -sf ../../../gtk4/.libs/libkc3_gtk4_debug-0.dll lib/kc3/0.1/gtk4.so
+	ln -sf ../../../http/.libs/libkc3_http_debug-0.dll lib/kc3/0.1/http.so
+	ln -sf ../../../json/.libs/libkc3_json_debug-0.dll lib/kc3/0.1/json.so
+	ln -sf ../../../markdown/.libs/libkc3_markdown_debug-0.dll lib/kc3/0.1/markdown.so
+	ln -sf ../../../smtp/.libs/libkc3_smtp_debug-0.dll lib/kc3/0.1/smtp.so
+	ln -sf ../../../socket/.libs/libkc3_socket_debug-0.dll lib/kc3/0.1/socket.so
+
 libkc3_gcovr:
 	${MAKE} clean_cov
 	${MAKE} libkc3_test_cov
@@ -1280,6 +1290,25 @@ test_socket_debug: lib_links_debug
 	${MAKE} -C socket debug
 	${MAKE} -C test test_socket_debug
 
+uninstall:
+	rm -rf ${prefix}/lib/kc3
+	rm -rf ${prefix}/share/kc3
+	${MAKE} -C libtommath uninstall
+	${MAKE} -C libkc3 uninstall
+	${MAKE} -C ikc3 uninstall
+	${MAKE} -C kc3s uninstall
+	${MAKE} -C ekc3 uninstall
+	${MAKE} -C event uninstall
+	${MAKE} -C json uninstall
+	${MAKE} -C markdown uninstall
+	${MAKE} -C smtp uninstall
+	${MAKE} -C socket uninstall
+	${MAKE} -C http uninstall
+	${MAKE} -C httpd uninstall
+	${MAKE} -C window uninstall
+	${MAKE} -C gtk4 uninstall
+#	${MAKE} -C fs uninstall
+
 .PHONY: all \
 	asan \
 	assets \
@@ -1424,4 +1453,5 @@ test_socket_debug: lib_links_debug
 	test_socket \
 	test_socket_asan \
 	test_socket_cov \
-	test_socket_debug
+	test_socket_debug \
+	uninstall

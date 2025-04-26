@@ -72,7 +72,7 @@ void struct_type_delete (s_struct_type *st)
   if (env_global()->pass_by_copy)
     assert(st->ref_count == 1);
   else {
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
     mutex_lock(&st->mutex);
 #endif
     if (st->ref_count <= 0) {
@@ -81,12 +81,12 @@ void struct_type_delete (s_struct_type *st)
       abort();
     }
     if (--st->ref_count) {
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
       mutex_unlock(&st->mutex);
 #endif
       return;
     }
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
     mutex_unlock(&st->mutex);
 #endif
   }
@@ -204,7 +204,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
 #endif
   }
   tmp.ref_count = 1;
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
 #endif
   *st = tmp;
@@ -232,7 +232,7 @@ s_struct_type * struct_type_init_copy (s_struct_type *st,
   memcpy(tmp.offset, src->offset, tmp.map.count * sizeof(uw));
   tmp.size = src->size;
   tmp.ref_count = 1;
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
   mutex_init(&tmp.mutex);
 #endif
   *st = tmp;
@@ -288,19 +288,19 @@ s_struct_type * struct_type_new_copy (const s_struct_type *src)
 s_struct_type * struct_type_new_ref (s_struct_type *st)
 {
   assert(st);
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
   mutex_lock(&st->mutex);
 #endif
   if (st->ref_count <= 0) {
     err_puts("struct_type_new_ref: invalid reference count");
     assert(! "struct_type_new_ref: invalid reference count");
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
     mutex_unlock(&st->mutex);
 #endif
     return NULL;
   }
   st->ref_count++;
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
   mutex_unlock(&st->mutex);
 #endif
   return st;

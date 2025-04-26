@@ -85,6 +85,9 @@ lldb_demo: debug
 update_sources:
 	./update_sources
 
+uninstall:
+	rm -f ${prefix}/bin/${PROG}
+
 .PHONY: \
 	all \
 	asan \
@@ -102,6 +105,7 @@ update_sources:
 	install \
 	lldb_demo \
 	update_sources \
+	uninstall
 
 include config.mk
 include sources.mk

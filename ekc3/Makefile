@@ -61,6 +61,11 @@ test:
 update_sources:
 	./update_sources
 
+uninstall:
+	rm -rf ${prefix}/include/libkc3/ekc3
+	rm -f ${prefix}/lib/${LIB}
+	rm -f ${prefix}/lib/${LIB_DEBUG}
+
 .PHONY: \
 	all \
 	asan \
@@ -73,6 +78,7 @@ update_sources:
 	install \
 	test \
 	update_sources \
+	uninstall
 
 include config.mk
 include sources.mk

@@ -46,6 +46,9 @@ config_gnu
 config_i386
 config_win32
 config_win64
+if $HAVE_WIN32; then
+    LIBS="$LIBS -lglu32 -lopengl32"
+fi
 pkg_config libbsd-overlay
 pkg_config libmd
 pkg_config freetype2

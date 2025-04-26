@@ -240,6 +240,18 @@ test_markdown_cov:
 test_markdown_debug:
 	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./markdown_test
 
+test_socket:
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./socket_test
+
+test_socket_asan:
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./socket_test
+
+test_socket_cov:
+	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./socket_test
+
+test_socket_debug:
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./socket_test
+
 test_valgrind: libkc3_test
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./libkc3_test
 
@@ -272,6 +284,7 @@ test_valgrind: libkc3_test
 	test_httpd_debug \
 	test_ikc3 \
 	test_kc3s \
+	test_socket \
 	test_valgrind
 
 include config.mk

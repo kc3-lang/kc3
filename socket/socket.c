@@ -26,10 +26,18 @@
 #include "socket.h"
 #include "socket_buf.h"
 
+
+#if (defined(WIN32) || defined(WIN64))
+static bool g_socket_init = false;
+#endif
+
 void socket_clean (void)
 {
-#ifdef WIN32
-  WSACleanup();
+#if (defined(WIN32) || defined(WIN64))
+  if (g_socket_init) {
+    WSACleanup();
+    g_socket_init = false;
+  }
 #endif
 }
 
@@ -42,12 +50,16 @@ void socket_close (p_socket s)
 
 bool socket_init (void)
 {
-#ifdef WIN32
+#if (defined(WIN32) || defined(WIN64))
   static WSADATA wsa_data;
   s32 r;
-  if ((r = WSAStartup(MAKEWORD(2,2), &wsa_data))) {
-    printf("WSAStartup failed with error: %d\n", r);
-    return false;
+  if (! g_socket_init) {
+    printf("socket_init: WSAStartup\n");
+    if ((r = WSAStartup(MAKEWORD(2,2), &wsa_data))) {
+      printf("socket_init: WSAStartup failed with error: %d\n", r);
+      return false;
+    }
+    g_socket_init = true;
   }
 #endif
   return true;
@@ -90,7 +102,8 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
   t_socket sockfd;
   assert(s);
   assert(host);
-  hints.ai_family = AF_INET;
+  if (! socket_init())
+    return NULL;
   e = getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0);
   if (e) {
     err_write_1("socket_init_listen(");
@@ -98,6 +111,8 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
     err_write_1(", ");
     err_write_1(service->ptr.pchar);
     err_write_1("): getaddrinfo: ");
+    err_inspect_s32_decimal(&e);
+    err_write_1(" ");
     err_puts((char *) gai_strerror(e));
     assert(! "socket_init_listen: getaddrinfo");
     return NULL;

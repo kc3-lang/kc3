@@ -64,6 +64,11 @@ test:
 update_sources:
 	./update_sources
 
+uninstall:
+	rm -rf ${prefix}/include/libkc3
+	rm -f ${prefix}/lib/${LIB}
+	rm -f ${prefix}/lib/${LIB_DEBUG}
+
 .PHONY: \
 	all \
 	asan \

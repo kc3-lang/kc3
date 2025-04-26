@@ -50,7 +50,10 @@ install:
 	mkdir -p ${prefix}/bin
 	install -m 755 .libs/kc3s ${prefix}/bin/kc3s
 
-.PHONY: all asan cov debug clean clean_cov distclean
+uninstall:
+	rm -f ${prefix}/bin/kc3s
+
+.PHONY: all asan cov debug clean clean_cov distclean install uninstall
 
 include config.mk
 include sources.mk

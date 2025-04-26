@@ -67,11 +67,15 @@ distclean:
 gdb_demo: debug
 	${MAKE} -C demo gdb_demo
 
+install:
+
 test: build
 	${MAKE} -C demo test
 
 update_sources:
 	./update_sources
+
+uninstall:
 
 .PHONY: \
 	all \
@@ -86,7 +90,8 @@ update_sources:
 	gen \
 	install \
 	test \
-	update_sources
+	update_sources \
+	uninstall
 
 include config.mk
 include sources.mk

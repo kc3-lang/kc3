@@ -51,10 +51,13 @@ gdb_ikc3_asan: asan
 
 install:
 	mkdir -p ${prefix}/bin
-	install -m 755 .libs/ikc3 ${prefix}/bin/ikc3
+	${INSTALL} -m 755 .libs/ikc3 ${prefix}/bin/ikc3
 
 lldb_ikc3: debug
 	if [ -f ikc3_debug.core ]; then lldb .libs/ikc3_debug ikc3_debug.core; else lldb .libs/ikc3_debug; fi
+
+uninstall:
+	rm -f ${prefix}/bin/ikc3
 
 .PHONY: \
 	all \
@@ -69,6 +72,7 @@ lldb_ikc3: debug
 	install \
 	lldb_ikc3 \
 	update_sources \
+	uninstall
 
 include config.mk
 include sources.mk

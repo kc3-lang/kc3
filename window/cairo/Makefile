@@ -104,6 +104,13 @@ test:
 update_sources:
 	./update_sources
 
+uninstall:
+	rm -rf ${prefix}/include/libkc3/window/cairo
+	rm -f ${prefix}/lib/${LIB}
+	if ${HAVE_COCOA}; then ${MAKE} -C quartz uninstall; fi
+	if ${HAVE_WIN32}; then ${MAKE} -C win32 uninstall; fi
+	if ${HAVE_XCB}; then ${MAKE} -C xcb uninstall; fi
+
 .PHONY: \
 	all \
 	asan \
@@ -120,7 +127,8 @@ update_sources:
 	install \
 	lldb_demo \
 	test \
-	update_sources
+	update_sources \
+	uninstall
 
 include config.mk
 include sources.mk

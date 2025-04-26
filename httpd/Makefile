@@ -66,10 +66,13 @@ gdb_httpd: debug
 
 install:
 	mkdir -p ${prefix}/bin
-	install -m 755 .libs/kc3_httpd ${prefix}/bin/kc3_httpd
+	${INSTALL} -m 755 .libs/kc3_httpd ${prefix}/bin/kc3_httpd
 
 lldb_httpd: debug
 	if [ -f kc3_httpd_debug.core ]; then lldb .libs/kc3_httpd_debug kc3_httpd_debug.core; else lldb .libs/kc3_httpd_debug; fi
+
+uninstall:
+	rm -f ${prefix}/bin/kc3_httpd
 
 .PHONY: \
 	all \
@@ -83,6 +86,7 @@ lldb_httpd: debug
 	install \
 	lldb_httpd \
 	update_sources \
+	uninstall
 
 include config.mk
 include sources.mk

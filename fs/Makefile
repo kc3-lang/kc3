@@ -43,6 +43,9 @@ gcovr:
 install:
 #	${MAKE} -C fuse install
 
+uninstall:
+#	${MAKE} -C fuse uninstall
+
 .PHONY: \
 	all \
 	asan \
@@ -52,4 +55,5 @@ install:
 	debug \
 	distclean \
 	fuse \
-	install
+	install \
+	uninstall

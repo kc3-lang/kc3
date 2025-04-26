@@ -16,6 +16,8 @@
 #ifdef WIN32
 # include <winsock2.h>
 # include <ws2tcpip.h>
+# undef errno
+# define errno WSAGetLastError()
 #else
 # include <netdb.h>
 # include <netinet/in.h>
@@ -23,6 +25,7 @@
 
 #include <unistd.h>
 #include <libkc3/kc3.h>
+#include "socket.h"
 #include "socket_addr.h"
 #include "socket_buf.h"
 
@@ -126,6 +129,8 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   assert(sb);
   assert(host);
   assert(service);
+  if (! socket_init())
+    return NULL;
   hints.ai_family = AF_INET;
   e = getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0);
   if (e) {
@@ -134,7 +139,9 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
     err_write_1(", ");
     err_write_1(service->ptr.pchar);
     err_write_1("): getaddrinfo: ");
-    err_puts((const char *) gai_strerror(e));
+    err_inspect_s32_decimal(&e);
+    err_write_1(" ");
+    err_puts((const char *) gai_strerrorA(e));
     assert(! "socket_buf_init_connect: getaddrinfo");
     return NULL;
   }

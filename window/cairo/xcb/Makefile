@@ -84,6 +84,11 @@ test: build
 update_sources:
 	./update_sources
 
+uninstall:
+	rm -rf ${prefix}/include/libc3/window/cairo/xcb
+	rm -f ${prefix}/lib/${LIB}
+	${MAKE} -C demo uninstall
+
 .PHONY: \
 	all \
 	asan \

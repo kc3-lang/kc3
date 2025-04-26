@@ -107,6 +107,12 @@ test:
 update_sources:
 	./update_sources
 
+uninstall:
+	rm -rf ${prefix}/include/libkc3/window/sdl2
+	rm -f ${prefix}/lib/${LIB}
+	${MAKE} -C demo uninstall
+	! test -d kubz || ${MAKE} -C kubz uninstall
+
 .PHONY: \
 	all \
 	asan \
@@ -124,6 +130,7 @@ update_sources:
 	lldb_demo \
 	test \
 	update_sources \
+	uninstall
 
 include config.mk
 include sources.mk
