@@ -141,7 +141,7 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
     err_write_1("): getaddrinfo: ");
     err_inspect_s32_decimal(&e);
     err_write_1(" ");
-    err_puts((const char *) gai_strerrorA(e));
+    err_puts((const char *) gai_strerror(e));
     assert(! "socket_buf_init_connect: getaddrinfo");
     return NULL;
   }
