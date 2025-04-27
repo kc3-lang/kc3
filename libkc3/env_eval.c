@@ -267,6 +267,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   s_frame frame;
   const s_sym *module;
   s_list *search_modules;
+  bool silence_errors;
   s_tag tag;
   s_list *tmp = NULL;
   s_list *trace;
@@ -283,6 +284,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     return false;
   env_frame = env->frame;
   clause = fn->clauses;
+  silence_errors = env->silence_errors;
   if (arguments) {
     if (fn->macro || fn->special_operator)
       args_final = arguments;
@@ -297,19 +299,26 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     while (clause) {
       if (! frame_init(&frame, env->frame, fn->frame)) {
         list_delete_all(env->search_modules);
+        env->silence_errors = silence_errors;
         env->search_modules = search_modules;
         return false;
       }
       env->frame = &frame;
+      env->silence_errors = true;
       if (env_eval_equal_list(env, fn->macro || fn->special_operator,
-                              clause->pattern, args_final, &tmp))
+                              clause->pattern, args_final, &tmp)) {
+        env->silence_errors = silence_errors;
         break;
+      }
+      env->silence_errors = silence_errors;
       env->frame = env_frame;
       frame_clean(&frame);
       clause = clause->next_clause;
     }
     if (! clause) {
-      err_puts("env_eval_call_fn_args: no clause matching.\nTried clauses :\n");
+      err_write_1("env_eval_call_fn_args: ");
+      err_inspect_ident(&fn->ident);
+      err_puts(": no clause matching, tried clauses :");
       clause = fn->clauses;
       while (clause) {
         err_inspect_fn_pattern(clause->pattern);

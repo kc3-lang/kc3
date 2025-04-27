@@ -61,16 +61,12 @@ defmodule HTTPd.Route do
         %HTTP.Response{body: body, headers: headers}
       end
     }
-    route = HTTPd.fn (request) {
-      #puts("def_static_route: route: request.url: #{inspect(request.url)}")
-      #puts("def_static_route: route: url_skip: #{url_skip}")
+    static_route = HTTPd.fn (request) {
       url = URL.eat(request.url, url_skip)
-      #puts("def_static_route: route: url: #{inspect(url)}")
       render = if (Str.starts_with?(url, "/") &&
                    ! Str.has_str?(url, "/../") &&
                    ! Str.ends_with?(url, "/..")) do
         path = root_dir + url
-        #puts("def_static_route: route: path: #{inspect(path)}")
         if File.exists?(path) do
           if File.is_directory?(path) do
             directory_page
@@ -83,7 +79,7 @@ defmodule HTTPd.Route do
         render(request)
       end
     }
-    HTTPd.def_route(prefix, route)
+    HTTPd.def_route(prefix, static_route)
   }
 
   def match = fn (route, request) {
