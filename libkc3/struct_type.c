@@ -135,6 +135,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
   s_struct_type tmp = {0};
   const s_tuple *tuple;
   const s_sym *type;
+  bool win64 = false;
   assert(st);
   assert(module);
   assert(spec);
@@ -194,7 +195,10 @@ s_struct_type * struct_type_init (s_struct_type *st,
     i++;
     s = list_next(s);
   }
-  if (sizeof(long) == 4 && ! WIN64)
+#ifdef WIN64
+  win64 = true;
+#endif
+  if (sizeof(long) == 4 && ! win64)
     tmp.size = (offset + 3) / 4 * 4;
   else {
 #ifdef __APPLE__
