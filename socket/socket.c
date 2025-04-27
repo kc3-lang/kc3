@@ -54,7 +54,7 @@ bool socket_init (void)
   static WSADATA wsa_data;
   s32 r;
   if (! g_socket_init) {
-    printf("socket_init: WSAStartup\n");
+    //printf("socket_init: WSAStartup\n");
     if ((r = WSAStartup(MAKEWORD(2,2), &wsa_data))) {
       printf("socket_init: WSAStartup failed with error: %d\n", r);
       return false;
@@ -80,7 +80,7 @@ p_socket socket_init_accept (p_socket s, p_socket listening)
   if (tmp < 0) {
     e = errno;
     err_write_1("socket_init_accept: ");
-    err_inspect_s32(listening);
+    err_inspect_s64(listening);
     err_write_1(": accept: ");
     err_puts(strerror(e));
     assert(! "socket_init_accept: accept");

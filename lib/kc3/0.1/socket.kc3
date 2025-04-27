@@ -1,6 +1,6 @@
 defmodule Socket do
 
-  defstruct [fd: (S32) -1]
+  defstruct [fd: (S64) -1]
 
   dlopen(__DIR__ + "socket.so")
 
@@ -11,7 +11,5 @@ defmodule Socket do
   def init = cfn Bool "socket_init" ()
 
   def listen = cfn Socket "socket_init_listen" (Result, Str, Str)
-
-  true = init()
 
 end

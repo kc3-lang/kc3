@@ -99,7 +99,7 @@ s_socket_buf * socket_buf_init_accept (s_socket_buf *sb, p_socket listening)
   if (sockfd < 0) {
     e = errno;
     err_write_1("socket_buf_init_accept: ");
-    err_inspect_s32(listening);
+    err_inspect_s64_decimal(listening);
     err_write_1(": accept: ");
     err_puts(strerror(e));
     assert(! "socket_buf_init_accept: accept");
@@ -124,6 +124,7 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   struct addrinfo *res0;
   s32 e;
   const char *error_reason = "error";
+  s32 r;
   t_socket sockfd;
   s_socket_buf tmp;
   assert(sb);
@@ -155,17 +156,20 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
       error_reason = "socket_buf_init_connect: socket: ";
       goto next;
     }
-    if (connect(sockfd, res->ai_addr, res->ai_addrlen) < 0) {
+    if ((r = connect(sockfd, res->ai_addr, res->ai_addrlen)) < 0) {
       e = errno;
       error_reason = "socket_buf_init_connect: connect: ";
       goto next;
     }
     break;
   next:
+    if (sockfd >= 0)
+      close(sockfd);
     res = res->ai_next;
   }
   if (sockfd < 0) {
     err_write_1(error_reason);
+    err_inspect_s32_decimal(&r);
     err_puts(strerror(e));
     assert(! "socket_buf_init_connect");
     return NULL;

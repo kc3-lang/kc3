@@ -26,7 +26,7 @@
 #include <libkc3/types.h>
 
 /* 1 */
-typedef s32                  t_socket;
+typedef s64                  t_socket;
 typedef struct socket_buf    s_socket_buf;
 typedef struct http_request  s_http_request;
 typedef struct http_response s_http_response;
