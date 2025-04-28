@@ -589,6 +589,8 @@ struct array {
   s_tag *tags;
   const s_sym *array_type;
   const s_sym *element_type;
+  s_mutex *mutex;
+  sw ref_count;
 };
 
 union callable_data {
