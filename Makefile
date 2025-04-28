@@ -587,7 +587,7 @@ ikc3_gcovr:
 	${MAKE} ikc3_test_cov
 	${MAKE} gcovr
 
-install:
+install: lib_links
 	${INSTALL} -m 0755 -d ${prefix}/lib/kc3
 	${INSTALL} -m 0755 -d ${prefix}/lib/kc3/0.1
 	find lib/kc3/ -type d | while read F; do \
