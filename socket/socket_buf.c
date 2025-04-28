@@ -25,7 +25,7 @@
 
 #include <unistd.h>
 #include <libkc3/kc3.h>
-#include "socket.h"
+#include "./socket.h"
 #include "socket_addr.h"
 #include "socket_buf.h"
 
@@ -132,7 +132,6 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   assert(service);
   if (! socket_init())
     return NULL;
-  hints.ai_family = AF_INET;
   e = getaddrinfo(host->ptr.pchar, service->ptr.pchar, &hints, &res0);
   if (e) {
     err_write_1("socket_buf_init_connect(");
@@ -170,6 +169,9 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   if (sockfd < 0) {
     err_write_1(error_reason);
     err_inspect_s32_decimal(&r);
+    err_write_1(" ");
+    err_inspect_s32_decimal(&e);
+    err_write_1(" ");
     err_puts(strerror(e));
     assert(! "socket_buf_init_connect");
     return NULL;
