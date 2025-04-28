@@ -61,7 +61,7 @@ test:
 update_sources:
 	./update_sources
 
-install:
+uninstall:
 	rm -rf ${prefix}/include/libkc3/gtk4
 	rm -f ${prefix}/lib/${LIB}
 	rm -f ${prefix}/lib/${LIB_DEBUG}
