@@ -82,7 +82,7 @@ There are now four full applications written in KC3 that we know of :
      - `env_init_args --copy`
    - documentation
      - document all basic types (see <kc3-lang.org/doc>)
-
+     - document facts module
 
 ## Discord invite
 
@@ -117,6 +117,9 @@ to discover how to use KC3 for your own projects.
    - special operators hash table
    - serialization / deserialization
    - pass by reference and reference counting in all data structures
+     - cow
+     - list
+     - array
    - base-specific big floats
    - macro cast : `(Macro) fn (x) { x }`
    - pretty printer
