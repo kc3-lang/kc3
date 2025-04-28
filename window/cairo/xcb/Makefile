@@ -72,7 +72,7 @@ gdb_demo: debug
 
 install:
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/include/libc3/window/cairo/xcb
-	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libc3/window/cairo/xcb
+	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${HEADERS} ${prefix}/include/libkc3/window/cairo/xcb
 	${INSTALL} -o ${OWNER} -g ${GROUP} -m 0755 -d ${prefix}/lib
 	${LIBTOOL} --tag=CC --mode=install ${INSTALL} -o ${OWNER} -g ${GROUP} -m 0644 ${LIB} ${prefix}/lib
 	${LIBTOOL} --finish ${prefix}/lib
@@ -85,7 +85,7 @@ update_sources:
 	./update_sources
 
 uninstall:
-	rm -rf ${prefix}/include/libc3/window/cairo/xcb
+	rm -rf ${prefix}/include/libkc3/window/cairo/xcb
 	rm -f ${prefix}/lib/${LIB}
 	${MAKE} -C demo uninstall
 

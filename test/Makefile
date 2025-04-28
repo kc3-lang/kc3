@@ -111,68 +111,68 @@ lldb_test: debug
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
 
 test: libkc3_test
-	time ./libkc3_test --copy
-	time ./libkc3_test
-	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test
-	KC3S=${SRC_TOP}/kc3s/kc3s time ./kc3s_test
-	KC3S=${SRC_TOP}/kc3s/kc3s time ./ekc3_test
-	IKC3=${SRC_TOP}/ikc3/ikc3 time ./json_test
-	IKC3=${SRC_TOP}/ikc3/ikc3 time ./markdown_test
-	KC3S=${SRC_TOP}/kc3s/kc3s time ./http_test
+	time ./.libs/libkc3_test --copy
+	time ./.libs/libkc3_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3 time ./ikc3_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s time ./kc3s_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s time ./ekc3_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3 time ./json_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3 time ./markdown_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s time ./http_test
 
 test_asan: libkc3_test_asan
 	time ./libkc3_test_asan --copy
 	time ./libkc3_test_asan
-	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./ikc3_test
-	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./kc3s_test
-	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./ekc3_test
-	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./json_test
-	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./markdown_test
-	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./http_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_asan time ./ikc3_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_asan time ./kc3s_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_asan time ./ekc3_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_asan time ./json_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_asan time ./markdown_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_asan time ./http_test
 
 test_cov:
 	time ./libkc3_test_cov --copy
 	time ./libkc3_test_cov
-	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./ikc3_test
-	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./kc3s_test
-	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./ekc3_test
-	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./json_test
-	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./markdown_test
-	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./http_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_cov time ./ikc3_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_cov time ./kc3s_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_cov time ./ekc3_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_cov time ./json_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_cov time ./markdown_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_cov time ./http_test
 
 test_debug: libkc3_test_debug
 	time ./libkc3_test_debug --copy
 	time ./libkc3_test_debug
-	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./ikc3_test
-	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./kc3s_test
-	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./ekc3_test
-	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./json_test
-	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./markdown_test
-	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./http_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_debug time ./ikc3_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_debug time ./kc3s_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_debug time ./ekc3_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_debug time ./json_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_debug time ./markdown_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_debug time ./http_test
 
 test_ekc3:
-	KC3S=${SRC_TOP}/kc3s/kc3s time ./ekc3_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s time ./ekc3_test
 
 test_ekc3_asan:
-	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./ekc3_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_asan time ./ekc3_test
 
 test_ekc3_cov:
-	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./ekc3_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_cov time ./ekc3_test
 
 test_ekc3_debug:
-	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./ekc3_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_debug time ./ekc3_test
 
 test_http:
-	KC3S=${SRC_TOP}/kc3s/kc3s time ./http_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s time ./http_test
 
 test_http_asan:
-	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./http_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_asan time ./http_test
 
 test_http_cov:
-	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./http_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_cov time ./http_test
 
 test_http_debug:
-	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./http_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_debug time ./http_test
 
 test_httpd:
 	${MAKE} -C httpd main
@@ -187,40 +187,40 @@ test_httpd_debug:
 	${MAKE} -C httpd debug
 
 test_ikc3:
-	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3 time ./ikc3_test
 
 test_ikc3_asan:
-	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./ikc3_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_asan time ./ikc3_test
 
 test_ikc3_cov:
-	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./ikc3_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_cov time ./ikc3_test
 
 test_ikc3_debug:
-	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./ikc3_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_debug time ./ikc3_test
 
 test_json:
-	IKC3=${SRC_TOP}/ikc3/ikc3 time ./json_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3 time ./json_test
 
 test_json_asan:
-	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./json_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_asan time ./json_test
 
 test_json_cov:
-	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./json_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_cov time ./json_test
 
 test_json_debug:
-	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./json_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_debug time ./json_test
 
 test_kc3s:
-	KC3S=${SRC_TOP}/kc3s/kc3s time ./kc3s_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s time ./kc3s_test
 
 test_kc3s_asan:
-	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./kc3s_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_asan time ./kc3s_test
 
 test_kc3s_cov:
-	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./kc3s_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_cov time ./kc3s_test
 
 test_kc3s_debug:
-	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./kc3s_test
+	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_debug time ./kc3s_test
 
 test_libkc3: libkc3_test
 	time ./libkc3_test
@@ -229,28 +229,28 @@ test_libkc3_cov: libkc3_test_cov
 	time ./libkc3_test_cov
 
 test_markdown:
-	IKC3=${SRC_TOP}/ikc3/ikc3 time ./markdown_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3 time ./markdown_test
 
 test_markdown_asan:
-	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./markdown_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_asan time ./markdown_test
 
 test_markdown_cov:
-	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./markdown_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_cov time ./markdown_test
 
 test_markdown_debug:
-	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./markdown_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_debug time ./markdown_test
 
 test_socket:
-	IKC3=${SRC_TOP}/ikc3/ikc3 time ./socket_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3 time ./socket_test
 
 test_socket_asan:
-	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./socket_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_asan time ./socket_test
 
 test_socket_cov:
-	IKC3=${SRC_TOP}/ikc3/ikc3_cov time ./socket_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_cov time ./socket_test
 
 test_socket_debug:
-	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./socket_test
+	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_debug time ./socket_test
 
 test_valgrind: libkc3_test
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./libkc3_test

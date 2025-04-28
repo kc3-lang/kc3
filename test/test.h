@@ -65,7 +65,8 @@
               "Expected %lld got %lld.%s\n",                           \
               TEST_COLOR_KO,                                           \
               __FILE__, __LINE__, __func__,                            \
-              # test, # expected, TEST_EQ_expected, TEST_EQ_test,      \
+              # expected, # test,                                      \
+              TEST_EQ_expected, TEST_EQ_test,                          \
               TEST_COLOR_RESET);                                       \
       return 1;                                                        \
     }                                                                  \
