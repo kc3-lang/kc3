@@ -116,6 +116,12 @@ to discover how to use KC3 for your own projects.
    - defspecial
    - special operators hash table
    - serialization / deserialization
+     - to buf
+     - to str
+     - to file
+     - from buf
+     - from str
+     - from file
    - pass by reference and reference counting in all data structures
      - cow
      - list
