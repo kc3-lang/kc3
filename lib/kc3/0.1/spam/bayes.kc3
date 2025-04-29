@@ -27,7 +27,7 @@ defmodule Spam.Bayes do
   }
   
   def learn = fn (class, doc) {
-    if List.has?(classes, class) = true do
+    if List.has?(classes, class) do
       words = List.map(Str.split_words(doc), Str.to_lower)
       List.each(words, fn (m) { learn_word(m, class) })
     end
