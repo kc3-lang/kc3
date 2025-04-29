@@ -42,21 +42,21 @@ s_str * inspect_array (const s_array *array, s_str *dest)
   return buf_to_str(&tmp, dest);
 }
 
-s_str * inspect_block (const s_block *x, s_str *dest)
+s_str * inspect_do_block (const s_do_block *x, s_str *dest)
 {
   s_buf buf;
   s_pretty pretty = {0};
   sw r;
   sw size;
-  size = buf_inspect_block_size(&pretty, x);
+  size = buf_inspect_do_block_size(&pretty, x);
   if (size < 0) {
-    err_puts("inspect_block: buf_inspect_block_size error");
-    assert(! "inspect_block: buf_inspect_block_size error");
+    err_puts("inspect_do_block: buf_inspect_do_block_size error");
+    assert(! "inspect_do_block: buf_inspect_do_block_size error");
     return NULL;
   }
   if (! buf_init_alloc(&buf, size))
     return NULL;
-  if ((r = buf_inspect_block(&buf, x)) < 0)
+  if ((r = buf_inspect_do_block(&buf, x)) < 0)
     goto error;
   assert(r == size);
   if (r != size)

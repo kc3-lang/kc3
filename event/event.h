@@ -19,7 +19,7 @@
 struct event_base * kc3_event_base_new (void);
 void                kc3_event_delete (struct event *ev);
 struct event *      kc3_event_new (struct event_base **event_base,
-                                   s32 fd,
+                                   s64 fd,
                                    const s_list * const *events,
                                    p_callable *callback,
                                    s_tag *arg);

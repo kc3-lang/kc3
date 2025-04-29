@@ -57,7 +57,7 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_PTR:       *b = tag->data.ptr.p != 0;               return b;
   case TAG_PTR_FREE:  *b = tag->data.ptr_free.p != 0;          return b;
   case TAG_ARRAY:
-  case TAG_BLOCK:
+  case TAG_DO_BLOCK:
   case TAG_CALL:
   case TAG_FACT:
   case TAG_IDENT:

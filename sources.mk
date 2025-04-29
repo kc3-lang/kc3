@@ -254,8 +254,6 @@ KC3_C_SOURCES = \
 	"libkc3/assert.h" \
 	"libkc3/binding.c" \
 	"libkc3/binding.h" \
-	"libkc3/block.c" \
-	"libkc3/block.h" \
 	"libkc3/bool.c" \
 	"libkc3/bool.h" \
 	"libkc3/buf.c" \
@@ -433,6 +431,8 @@ KC3_C_SOURCES = \
 	"libkc3/data.h" \
 	"libkc3/deserialize.c" \
 	"libkc3/deserialize.h" \
+	"libkc3/do_block.c" \
+	"libkc3/do_block.h" \
 	"libkc3/env.c" \
 	"libkc3/env.h" \
 	"libkc3/env_eval.c" \
@@ -1221,6 +1221,9 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/kc3/op.kc3" \
 	"lib/kc3/0.1/kc3/operator.kc3" \
 	"lib/kc3/0.1/kc3/ops.kc3" \
+	"lib/kc3/0.1/kpkg.kc3" \
+	"lib/kc3/0.1/kpkg/package.kc3" \
+	"lib/kc3/0.1/kpkg/repos/kc3.kc3" \
 	"lib/kc3/0.1/list.kc3" \
 	"lib/kc3/0.1/map.facts" \
 	"lib/kc3/0.1/markdown.kc3" \
@@ -1448,6 +1451,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/plist.kc3" \
 	"test/ikc3/plist.out.expected" \
 	"test/ikc3/plist.ret.expected" \
+	"test/ikc3/ptr.kc3" \
+	"test/ikc3/ptr.out.expected" \
+	"test/ikc3/ptr.ret.expected" \
 	"test/ikc3/puts.kc3" \
 	"test/ikc3/puts.out.expected" \
 	"test/ikc3/puts.ret.expected" \
@@ -1527,6 +1533,7 @@ KC3_TEST_HTTP_SOURCES = \
 KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/app/controllers/doc_controller.kc3" \
 	"test/httpd/app/controllers/page_controller.kc3" \
+	"test/httpd/app/controllers/sitemap_controller.kc3" \
 	"test/httpd/app/templates/doc/menu.html.ekc3" \
 	"test/httpd/app/templates/doc/show.html.ekc3" \
 	"test/httpd/app/templates/footer.html.ekc3" \
@@ -1534,9 +1541,13 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/app/templates/nav.html.ekc3" \
 	"test/httpd/app/templates/page/menu.html.ekc3" \
 	"test/httpd/app/templates/page/show.html.ekc3" \
+	"test/httpd/app/templates/sitemap/sitemap.xml.ekc3" \
+	"test/httpd/app/templates/sitemap/sitemap_doc.xml.ekc3" \
+	"test/httpd/app/templates/sitemap/sitemap_page.xml.ekc3" \
 	"test/httpd/app/views/doc_view.kc3" \
 	"test/httpd/app/views/layout_view.kc3" \
 	"test/httpd/app/views/page_view.kc3" \
+	"test/httpd/app/views/sitemap_view.kc3" \
 	"test/httpd/assets/css/app.scss" \
 	"test/httpd/assets/css/computer_modern.scss" \
 	"test/httpd/assets/css/courier_new.scss" \
@@ -1550,6 +1561,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/assets/css/pixel.scss" \
 	"test/httpd/assets/css/pygments.scss" \
 	"test/httpd/assets/js/app.js" \
+	"test/httpd/assets/js/doc.js" \
 	"test/httpd/assets/js/kmx_anim.js" \
 	"test/httpd/assets/js/kmx_colors.js" \
 	"test/httpd/assets/js/pixel.js" \
@@ -1875,6 +1887,7 @@ KC3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/DerivedAge.txt" \
 	"ucd2c/UCD/DerivedCoreProperties.txt" \
 	"ucd2c/UCD/DerivedNormalizationProps.txt" \
+	"ucd2c/UCD/DoNotEmit.txt" \
 	"ucd2c/UCD/EastAsianWidth.txt" \
 	"ucd2c/UCD/EmojiSources.txt" \
 	"ucd2c/UCD/EquivalentUnifiedIdeograph.txt" \
@@ -1887,6 +1900,7 @@ KC3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/NameAliases.txt" \
 	"ucd2c/UCD/NamedSequences.txt" \
 	"ucd2c/UCD/NamedSequencesProv.txt" \
+	"ucd2c/UCD/NamesList.html" \
 	"ucd2c/UCD/NamesList.txt" \
 	"ucd2c/UCD/NormalizationCorrections.txt" \
 	"ucd2c/UCD/NormalizationTest.txt" \
@@ -1904,13 +1918,18 @@ KC3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/USourceGlyphs.pdf" \
 	"ucd2c/UCD/USourceRSChart.pdf" \
 	"ucd2c/UCD/UnicodeData.txt" \
+	"ucd2c/UCD/Unikemet.txt" \
 	"ucd2c/UCD/VerticalOrientation.txt" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakProperty.txt" \
+	"ucd2c/UCD/auxiliary/GraphemeBreakTest.html" \
 	"ucd2c/UCD/auxiliary/GraphemeBreakTest.txt" \
+	"ucd2c/UCD/auxiliary/LineBreakTest.html" \
 	"ucd2c/UCD/auxiliary/LineBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/SentenceBreakProperty.txt" \
+	"ucd2c/UCD/auxiliary/SentenceBreakTest.html" \
 	"ucd2c/UCD/auxiliary/SentenceBreakTest.txt" \
 	"ucd2c/UCD/auxiliary/WordBreakProperty.txt" \
+	"ucd2c/UCD/auxiliary/WordBreakTest.html" \
 	"ucd2c/UCD/auxiliary/WordBreakTest.txt" \
 	"ucd2c/UCD/emoji/ReadMe.txt" \
 	"ucd2c/UCD/emoji/emoji-data.txt" \
@@ -1929,12 +1948,32 @@ KC3_EXTERNAL_SOURCES = \
 	"ucd2c/UCD/extracted/DerivedNumericValues.txt" \
 
 KC3_DOC_SOURCES = \
-	"doc/1_KC3/1.1_Introduction.en.md" \
-	"doc/1_KC3/1.2_Integer.en.md" \
-	"doc/1_KC3/1.3_Map.en.md" \
-	"doc/1_KC3/1.4_Ratio.en.md" \
-	"doc/1_KC3/1.5_List.en.md" \
-	"doc/1_KC3/1.6_Variable.en.md" \
+	"doc/1_KC3/.#1.05_List.en.md" \
+	"doc/1_KC3/1.01_Introduction.en.md" \
+	"doc/1_KC3/1.02_Array.en.md" \
+	"doc/1_KC3/1.03_Block.en.md" \
+	"doc/1_KC3/1.04_Bool.en.md" \
+	"doc/1_KC3/1.05_Callable.en.md" \
+	"doc/1_KC3/1.06_Call.en.md" \
+	"doc/1_KC3/1.07_Character.en.md" \
+	"doc/1_KC3/1.08_Complex.en.md" \
+	"doc/1_KC3/1.09_Cow.en.md" \
+	"doc/1_KC3/1.10_F32.en.md" \
+	"doc/1_KC3/1.11_F64.en.md" \
+	"doc/1_KC3/1.12_F128.en.md" \
+	"doc/1_KC3/1.13_Ident.en.md" \
+	"doc/1_KC3/1.14_Integer.en.md" \
+	"doc/1_KC3/1.15_List.en.md" \
+	"doc/1_KC3/1.16_Map.en.md" \
+	"doc/1_KC3/1.17_Ptr.en.md" \
+	"doc/1_KC3/1.18_Quote.en.md" \
+	"doc/1_KC3/1.19_Ratio.en.md" \
+	"doc/1_KC3/1.20_Str.en.md" \
+	"doc/1_KC3/1.21_Struct.en.md" \
+	"doc/1_KC3/1.22_Sym.en.md" \
+	"doc/1_KC3/1.23_Tuple.en.md" \
+	"doc/1_KC3/1.24_Variable.en.md" \
+	"doc/1_KC3/1.25_Facts.en.md" \
 	"doc/2_HTTPd/index.en.md" \
 	"doc/3_Guides/3.1_Install.en.md" \
 	"doc/3_Guides/3.2_Testing.en.md" \

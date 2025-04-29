@@ -63,7 +63,7 @@ s_tag *      kc3_access (s_tag *tag, s_list **addr,
 s_tag *      kc3_and (s_tag *a, s_tag *b, s_tag *dest);
 s_tag *      kc3_buf_parse_tag (s_buf *buf, s_tag *dest);
 s_tag *      kc3_def (const s_call *call, s_tag *dest);
-s_tag *      kc3_defmodule (const s_sym **name, const s_block *block,
+s_tag *      kc3_defmodule (const s_sym **name, const s_do_block *do_block,
                             s_tag *dest);
 s_tag *      kc3_defoperator (s_tag *op_tag, s_tag *dest);
 s_tag *      kc3_defstruct (s_list **spec, s_tag *dest);
@@ -102,7 +102,7 @@ bool *       kc3_facts_replace_tags (s_facts *facts,
 s_tag *      kc3_facts_with (s_facts *facts, s_list **spec,
                              p_callable *callback, s_tag *dest);
 s_tag *      kc3_facts_with_macro (s_tag *facts_tag, s_tag *spec_tag,
-                                   s_tag *block_tag, s_tag *dest);
+                                   s_tag *do_block_tag, s_tag *dest);
 s_tag *      kc3_facts_with_tags (s_facts *facts, s_tag *subject,
                                   s_tag *predicate, s_tag *object,
                                   p_callable *callback, s_tag *dest);

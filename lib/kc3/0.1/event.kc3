@@ -11,7 +11,7 @@ defmodule Event do
   # base_new() returns a (struct event_base *)
   def base_new = cfn Ptr "event_base_new" ()
 
-  def new = cfn Ptr "kc3_event_new" (Ptr, S32, List, Callable, Tag)
+  def new = cfn Ptr "kc3_event_new" (Ptr, S64, List, Callable, Tag)
 
   def version = cfn Str "kc3_event_version" (Result)
 

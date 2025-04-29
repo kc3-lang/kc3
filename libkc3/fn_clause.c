@@ -14,7 +14,7 @@
 #include "assert.h"
 #include "arg.h"
 #include "binding.h"
-#include "block.h"
+#include "do_block.h"
 #include "fn_clause.h"
 #include "list.h"
 
@@ -22,7 +22,7 @@ void fn_clause_clean (s_fn_clause *fn_clause)
 {
   assert(fn_clause);
   list_delete_all(fn_clause->pattern);
-  block_clean(&fn_clause->algo);
+  do_block_clean(&fn_clause->algo);
 }
 
 s_fn_clause * fn_clause_delete (s_fn_clause *fn_clause)
@@ -68,7 +68,7 @@ s_fn_clause * fn_clause_new_copy (s_fn_clause *src)
     *tail = fn_clause_new(NULL);
     (*tail)->arity = src->arity;
     (*tail)->pattern = list_new_copy(src->pattern);
-    block_init_copy(&(*tail)->algo, &src->algo);
+    do_block_init_copy(&(*tail)->algo, &src->algo);
     tail = &(*tail)->next_clause;
     src = src->next_clause;
   }

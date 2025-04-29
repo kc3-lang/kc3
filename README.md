@@ -113,6 +113,7 @@ to discover how to use KC3 for your own projects.
    - properties
      - recursive
  - libkc3
+   - rename block into do_block
    - defspecial
    - special operators hash table
    - serialization / deserialization

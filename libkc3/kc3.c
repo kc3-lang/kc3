@@ -183,9 +183,10 @@ s_tag * kc3_def (const s_call *call, s_tag *dest)
   return env_kc3_def(env_global(), call, dest);
 }
 
-s_tag * kc3_defmodule (const s_sym **name, const s_block *block, s_tag *dest)
+s_tag * kc3_defmodule (const s_sym **name, const s_do_block *do_block,
+                       s_tag *dest)
 {
-  return env_defmodule(env_global(), name, block, dest);
+  return env_defmodule(env_global(), name, do_block, dest);
 }
 
 /* FIXME: multiple env and env->ops. See env_defoperator. */
@@ -376,7 +377,8 @@ s_tag * kc3_facts_collect_with_tags (s_facts *facts,
 s_tag * kc3_facts_first_with (s_facts *facts, s_list **spec,
                               p_callable *callback, s_tag *dest)
 {
-  return env_facts_first_with(env_global(), facts, spec, *callback, dest);
+  return env_facts_first_with(env_global(), facts, spec, *callback,
+                              dest);
 }
 
 s_tag * kc3_facts_first_with_tags (s_facts *facts, s_tag *subject,
@@ -426,9 +428,10 @@ s_tag * kc3_facts_with (s_facts *facts, s_list **spec,
 }
 
 s_tag * kc3_facts_with_macro (s_tag *facts_tag, s_tag *spec_tag,
-                              s_tag *block_tag, s_tag *dest)
+                              s_tag *do_block_tag, s_tag *dest)
 {
-  return env_facts_with_macro(env_global(), facts_tag, spec_tag, block_tag, dest);
+  return env_facts_with_macro(env_global(), facts_tag, spec_tag,
+                              do_block_tag, dest);
 }
 
 s_tag * kc3_facts_with_tags (s_facts *facts, s_tag *subject,

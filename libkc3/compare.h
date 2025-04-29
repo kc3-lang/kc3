@@ -24,7 +24,7 @@
   s8 compare_##type (type a, type b)
 
 s8 compare_array (const s_array *a, const s_array *b);
-s8 compare_block (const s_block *a, const s_block *b);
+s8 compare_do_block (const s_do_block *a, const s_do_block *b);
 s8 compare_bool (bool a, bool b);
 s8 compare_call (const s_call *a, const s_call *b);
 s8 compare_callable (const s_callable *a, const s_callable *b);

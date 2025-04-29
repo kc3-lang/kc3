@@ -26,7 +26,7 @@ u64  hash_to_u64 (t_hash *hash);
 bool hash_update (t_hash *hash, const void *data, uw size);
 bool hash_update_1 (t_hash *hash, const char *p);
 bool hash_update_array (t_hash *hash, const s_array *a);
-bool hash_update_block (t_hash *hash, const s_block *block);
+bool hash_update_do_block (t_hash *hash, const s_do_block *do_block);
 bool hash_update_bool (t_hash *hash, const bool *b);
 bool hash_update_call (t_hash *hash, const s_call *call);
 bool hash_update_callable (t_hash *hash, const s_callable *call);

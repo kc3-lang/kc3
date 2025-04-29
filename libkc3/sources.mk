@@ -7,7 +7,6 @@ HEADERS = \
 	"array.h" \
 	"assert.h" \
 	"binding.h" \
-	"block.h" \
 	"bool.h" \
 	"buf.h" \
 	"buf_fd.h" \
@@ -90,6 +89,7 @@ HEADERS = \
 	"crypt.h" \
 	"data.h" \
 	"deserialize.h" \
+	"do_block.h" \
 	"env.h" \
 	"env_eval.h" \
 	"env_fork.h" \
@@ -193,7 +193,6 @@ SOURCES = \
 	"arg.c" \
 	"array.c" \
 	"binding.c" \
-	"block.c" \
 	"bool.c" \
 	"buf.c" \
 	"buf_fd.c" \
@@ -277,6 +276,7 @@ SOURCES = \
 	"crypt_sha512.c" \
 	"data.c" \
 	"deserialize.c" \
+	"do_block.c" \
 	"env.c" \
 	"env_eval.c" \
 	"env_fork.c" \
@@ -489,7 +489,6 @@ LO_SOURCES = \
 	"arg.c" \
 	"array.c" \
 	"binding.c" \
-	"block.c" \
 	"bool.c" \
 	"buf.c" \
 	"buf_fd.c" \
@@ -573,6 +572,7 @@ LO_SOURCES = \
 	"crypt_sha512.c" \
 	"data.c" \
 	"deserialize.c" \
+	"do_block.c" \
 	"env.c" \
 	"env_eval.c" \
 	"env_fork.c" \

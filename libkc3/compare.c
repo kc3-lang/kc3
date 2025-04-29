@@ -59,7 +59,7 @@ s8 compare_array (const s_array *a, const s_array *b)
   return 0;
 }
 
-s8 compare_block (const s_block *a, const s_block *b)
+s8 compare_do_block (const s_do_block *a, const s_do_block *b)
 {
   uw i = 0;
   s8 r;
@@ -314,7 +314,7 @@ s8 compare_fn_clause (const s_fn_clause *a, const s_fn_clause *b)
       return 1;
     if ((r = compare_list(a->pattern, b->pattern)))
       return r;
-    if ((r = compare_block(&a->algo, &b->algo)))
+    if ((r = compare_do_block(&a->algo, &b->algo)))
       return r;
     a = a->next_clause;
     b = b->next_clause;
@@ -1167,8 +1167,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_VOID:       return 0;
   case TAG_ARRAY:      return compare_array(&a->data.array,
                                             &b->data.array);
-  case TAG_BLOCK:      return compare_block(&a->data.block,
-                                            &b->data.block);
+  case TAG_DO_BLOCK:   return compare_do_block(&a->data.do_block,
+                                               &b->data.do_block);
   case TAG_BOOL:       return compare_bool(a->data.bool_, b->data.bool_);
   case TAG_CALL:       return compare_call(&a->data.call,
                                            &b->data.call);

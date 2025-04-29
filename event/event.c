@@ -32,7 +32,7 @@ s32 kc3_event_del (struct event **ev)
 
 /* kc3_event_callback
      expects a tag of the form
-     {fn ((S32) fd, (List) events, (Ptr) ev, (Tag) Arg) {void},
+     {fn ((S64) fd, (List) events, (Ptr) ev, (Tag) Arg) {void},
       arg} */
 #if defined(WIN64)
 static void kc3_event_callback (long long fd, short events, void *tag_tuple)
@@ -93,7 +93,7 @@ static void kc3_event_callback (int fd, short events, void *tag_tuple)
     events_list = list_new_sym(&g_sym_signal, events_list);
   if (events & EV_TIMEOUT)
     events_list = list_new_sym(&g_sym_timeout, events_list);
-  arguments = list_new_s32(fd, list_new_list
+  arguments = list_new_s64(fd, list_new_list
                            (events_list, list_new_ptr
                             (ev, list_new_tag_copy
                              (arg, NULL))));
@@ -115,7 +115,7 @@ struct event_base * kc3_event_base_new (void)
   return event_base_new();
 }
 
-struct event * kc3_event_new (struct event_base **event_base, s32 fd,
+struct event * kc3_event_new (struct event_base **event_base, s64 fd,
                               const s_list * const *events,
                               p_callable *callback, s_tag *arg)
 {

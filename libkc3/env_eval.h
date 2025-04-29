@@ -20,7 +20,7 @@ bool env_eval_array (s_env *env, const s_array *array,
                      s_array *dest);
 bool env_eval_array_tag (s_env *env, const s_array *array,
                          s_tag *dest);
-bool env_eval_block (s_env *env, const s_block *block,
+bool env_eval_do_block (s_env *env, const s_do_block *do_block,
                      s_tag *dest);
 bool env_eval_call (s_env *env, s_call *call,
                     s_tag *dest);
@@ -45,9 +45,9 @@ bool env_eval_callable (s_env *env, s_callable *callable,
 bool env_eval_complex (s_env *env, s_complex *c,
                        s_tag *dest);
 bool env_eval_cow (s_env *env, s_cow *cow, s_tag *dest);
-bool env_eval_equal_block (s_env *env, bool macro,
-                           s_block *a, s_block *b,
-                           s_block *dest);
+bool env_eval_equal_do_block (s_env *env, bool macro,
+                           s_do_block *a, s_do_block *b,
+                           s_do_block *dest);
 bool env_eval_equal_list (s_env *env, bool macro,
                           s_list *a, s_list *b,
                           s_list **dest);
@@ -79,7 +79,7 @@ bool env_eval_quote (s_env *env, s_quote *quote,
                      s_tag *dest);
 bool env_eval_quote_array (s_env *env, s_array *array,
                            s_tag *dest);
-bool env_eval_quote_block (s_env *env, s_block *block,
+bool env_eval_quote_do_block (s_env *env, s_do_block *do_block,
                            s_tag *dest);
 bool env_eval_quote_call (s_env *env, s_call *call, s_tag *dest);
 bool env_eval_quote_complex (s_env *env, s_complex *c,

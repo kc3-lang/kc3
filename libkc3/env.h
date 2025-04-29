@@ -58,7 +58,7 @@ bool           env_def (s_env *env, const s_ident *ident, s_tag *value);
 const s_sym *  env_def_clean (s_env *env, const s_sym *module,
                               const s_tag *tag_clean);
 s_tag *        env_defmodule (s_env *env, const s_sym * const *name,
-                              const s_block *block, s_tag *dest);
+                              const s_do_block *do_block, s_tag *dest);
 bool           env_defoperator (s_env *env, s_tag *tag_op);
 const s_sym *  env_defstruct (s_env *env, s_list *spec);
 s_fact_w *     env_fact_w_eval (s_env *env, s_fact_w *fact,
@@ -87,7 +87,8 @@ s_tag *        env_facts_with (s_env *env, s_facts *facts,
                                s_list **spec, s_callable *callback,
                                s_tag *dest);
 s_tag *        env_facts_with_macro (s_env *env, s_tag *facts_tag,
-                                     s_tag *spec_tag, s_tag *block_tag,
+                                     s_tag *spec_tag,
+                                     s_tag *do_block_tag,
                                      s_tag *dest);
 s_tag *        env_facts_with_tags (s_env *env, s_facts *facts,
                                     s_tag *subject, s_tag *predicate,

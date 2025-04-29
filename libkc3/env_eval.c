@@ -14,7 +14,7 @@
 #include "alloc.h"
 #include "array.h"
 #include "assert.h"
-#include "block.h"
+#include "do_block.h"
 #include "call.h"
 #include "callable.h"
 #include "cfn.h"
@@ -97,23 +97,24 @@ bool env_eval_array_tag (s_env *env, const s_array *array, s_tag *dest)
   return true;
 }
 
-bool env_eval_block (s_env *env, const s_block *block, s_tag *dest)
+bool env_eval_do_block (s_env *env, const s_do_block *do_block,
+                        s_tag *dest)
 {
   uw i = 0;
   s_tag tmp = {0};
   assert(env);
-  assert(block);
+  assert(do_block);
   assert(dest);
-  if (! block->count) {
+  if (! do_block->count) {
     tag_init_void(dest);
     return true;
   }
-  while (i < block->count - 1) {
-    if (env_eval_tag(env, block->tag + i, &tmp))
+  while (i < do_block->count - 1) {
+    if (env_eval_tag(env, do_block->tag + i, &tmp))
       tag_clean(&tmp);
     i++;
   }
-  return env_eval_tag(env, block->tag + i, dest);
+  return env_eval_tag(env, do_block->tag + i, dest);
 }
 
 bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
@@ -354,7 +355,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
                 (&fn->ident, list_new_copy
                  (args)));
   env->stacktrace = trace;
-  if (! env_eval_block(env, &clause->algo, &tag)) {
+  if (! env_eval_do_block(env, &clause->algo, &tag)) {
     list_delete_all(args);
     list_delete_all(tmp);
     list_delete_all(env->search_modules);
@@ -853,7 +854,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     return env_eval_equal_tuple(env, macro, &a->data.tuple,
                                 &b->data.tuple, &dest->data.tuple);
   case TAG_ARRAY:
-  case TAG_BLOCK:
+  case TAG_DO_BLOCK:
   case TAG_BOOL:
   case TAG_CALL:
   case TAG_CHARACTER:
@@ -1136,24 +1137,25 @@ bool env_eval_quote_array (s_env *env, s_array *array,
   return false;
 }
 
-bool env_eval_quote_block (s_env *env, s_block *block, s_tag *dest)
+bool env_eval_quote_do_block (s_env *env, s_do_block *do_block,
+                              s_tag *dest)
 {
   uw i = 0;
-  s_block tmp = {0};
+  s_do_block tmp = {0};
   assert(env);
-  assert(block);
+  assert(do_block);
   assert(dest);
-  block_init(&tmp, block->count);
-  while (i < block->count) {
-    if (! env_eval_quote_tag(env, block->tag + i, tmp.tag + i))
+  do_block_init(&tmp, do_block->count);
+  while (i < do_block->count) {
+    if (! env_eval_quote_tag(env, do_block->tag + i, tmp.tag + i))
       goto ko;
     i++;
   }
-  dest->type = TAG_BLOCK;
-  dest->data.block = tmp;
+  dest->type = TAG_DO_BLOCK;
+  dest->data.do_block = tmp;
   return true;
  ko:
-  block_clean(&tmp);
+  do_block_clean(&tmp);
   return false;
 }
 
@@ -1340,8 +1342,8 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   switch (tag->type) {
   case TAG_ARRAY:
     return env_eval_quote_array(env, &tag->data.array, dest);
-  case TAG_BLOCK:
-    return env_eval_quote_block(env, &tag->data.block, dest);
+  case TAG_DO_BLOCK:
+    return env_eval_quote_do_block(env, &tag->data.do_block, dest);
   case TAG_CALL:
     return env_eval_quote_call(env, &tag->data.call, dest);
   case TAG_COMPLEX:
@@ -1580,8 +1582,8 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
     return true;
   case TAG_ARRAY:
     return env_eval_array_tag(env, &tag->data.array, dest);
-  case TAG_BLOCK:
-    return env_eval_block(env, &tag->data.block, dest);
+  case TAG_DO_BLOCK:
+    return env_eval_do_block(env, &tag->data.do_block, dest);
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
   case TAG_COMPLEX:

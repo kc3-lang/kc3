@@ -16,7 +16,6 @@
 #include "alloc.h"
 #include "array.h"
 #include "assert.h"
-#include "block.h"
 #include "buf.h"
 #include "buf_inspect.h"
 #include "buf_parse.h"
@@ -28,6 +27,7 @@
 #include "complex.h"
 #include "cow.h"
 #include "data.h"
+#include "do_block.h"
 #include "env.h"
 #include "fact.h"
 #include "fn.h"
@@ -411,14 +411,14 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   return r;
 }
 
-sw buf_parse_block (s_buf *buf, s_block *block)
+sw buf_parse_do_block (s_buf *buf, s_do_block *do_block)
 {
   sw r;
   sw result = 0;
   s_buf_save save;
   bool short_form = false;
   assert(buf);
-  assert(block);
+  assert(do_block);
   buf_save_init(buf, &save);
   if ((r = buf_read_sym(buf, &g_sym_do)) < 0)
     goto clean;
@@ -429,20 +429,20 @@ sw buf_parse_block (s_buf *buf, s_block *block)
   }
   result += r;
   if ((r = buf_parse_comments(buf)) < 0) {
-    err_puts("buf_parse_block: buf_parse_comments");
-    assert(! "buf_parse_block: buf_parse_comments");
+    err_puts("buf_parse_do_block: buf_parse_comments");
+    assert(! "buf_parse_do_block: buf_parse_comments");
     goto restore;
   }
   result += r;
   if ((r = buf_ignore_spaces(buf)) <= 0) {
-    err_puts("buf_parse_block: buf_ignore_spaces");
-    assert(! "buf_parse_block: buf_ignore_spaces");
+    err_puts("buf_parse_do_block: buf_ignore_spaces");
+    assert(! "buf_parse_do_block: buf_ignore_spaces");
     goto restore;
   }
   result += r;
-  if ((r = buf_parse_block_inner(buf, short_form, block)) < 0) {
-    err_puts("buf_parse_block: buf_parse_block_inner < 0");
-    assert(! "buf_parse_block: buf_parse_block_inner < 0");
+  if ((r = buf_parse_do_block_inner(buf, short_form, do_block)) < 0) {
+    err_puts("buf_parse_do_block: buf_parse_do_block_inner < 0");
+    assert(! "buf_parse_do_block: buf_parse_do_block_inner < 0");
     goto restore;
   }
   if (! r)
@@ -457,7 +457,8 @@ sw buf_parse_block (s_buf *buf, s_block *block)
   return r;
 }
 
-sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
+sw buf_parse_do_block_inner (s_buf *buf, bool short_form,
+                             s_do_block *do_block)
 {
   s_list **i;
   sw j;
@@ -468,110 +469,110 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
   sw result = 0;
   s_buf_save save;
   s_tag tag;
-  s_block tmp;
+  s_do_block tmp;
   i = &list;
   *i = NULL;
   buf_save_init(buf, &save);
   while (1) {
     if (short_form) {
       if ((r = buf_read_1(buf, "}")) < 0) {
-        err_puts("buf_parse_block_inner: buf_read_1 \"}\"");
+        err_puts("buf_parse_do_block_inner: buf_read_1 \"}\"");
         err_inspect_buf(buf);
         err_write_1("\n");
-        assert(! "buf_parse_block_inner: buf_read_1 \"}\"");
+        assert(! "buf_parse_do_block_inner: buf_read_1 \"}\"");
         goto restore;
       }
     }
     else if ((r = buf_read_sym(buf, &g_sym_end)) < 0) {
-      err_puts("buf_parse_block_inner: buf_read_sym :end");
+      err_puts("buf_parse_do_block_inner: buf_read_sym :end");
       err_inspect_buf(buf);
       err_write_1("\n");
-      assert(! "buf_parse_block_inner: buf_read_sym :end");
+      assert(! "buf_parse_do_block_inner: buf_read_sym :end");
       goto restore;
     }
     if (r > 0)
       goto ok;
     if ((r = buf_parse_tag(buf, &tag)) < 0) {
-      err_puts("buf_parse_block_inner: buf_parse_tag");
+      err_puts("buf_parse_do_block_inner: buf_parse_tag");
       err_inspect_buf(buf);
       err_write_1("\n");
-      assert(! "buf_parse_block_inner: buf_parse_tag");
+      assert(! "buf_parse_do_block_inner: buf_parse_tag");
       goto restore;
     }
     result += r;
     if (r > 0) {
       *i = list_new(NULL);
       if (! *i) {
-        err_puts("buf_parse_block_inner: list_new");
-        assert(! "buf_parse_block_inner: list_new");
+        err_puts("buf_parse_do_block_inner: list_new");
+        assert(! "buf_parse_do_block_inner: list_new");
         goto restore;
       }
       (*i)->tag = tag;
       i = &(*i)->next.data.list;
     }
     if ((r = buf_parse_comments(buf)) < 0) {
-      err_puts("buf_parse_block_inner: buf_parse_comments 1");
+      err_puts("buf_parse_do_block_inner: buf_parse_comments 1");
       err_inspect_buf(buf);
       err_write_1("\n");
-      assert(! "buf_parse_block_inner: buf_parse_comments 1");
+      assert(! "buf_parse_do_block_inner: buf_parse_comments 1");
       goto restore;
     }
     result += r;
     if ((r = buf_ignore_spaces_but_newline(buf)) < 0) {
-      err_puts("buf_parse_block_inner:"
+      err_puts("buf_parse_do_block_inner:"
                " buf_ignore_spaces_but_newline 1");
       err_inspect_buf(buf);
       err_write_1("\n");
-      assert(!("buf_parse_block_inner:"
+      assert(!("buf_parse_do_block_inner:"
                " buf_ignore_spaces_but_newline 1"));
       goto restore;
     }
     result += r;
     if (short_form) {
       if ((r = buf_read_1(buf, "}")) < 0) {
-        err_puts("buf_parse_block_inner: buf_read_1 \"}\" < 0");
-        assert(! "buf_parse_block_inner: buf_read_1 \"}\" < 0");
+        err_puts("buf_parse_do_block_inner: buf_read_1 \"}\" < 0");
+        assert(! "buf_parse_do_block_inner: buf_read_1 \"}\" < 0");
         goto restore;
       }
     }
     else if ((r = buf_read_sym(buf, &g_sym_end)) < 0) {
-      err_puts("buf_parse_block_inner: buf_read_sym :end < 0");
-      assert(! "buf_parse_block_inner: buf_read_sym :end < 0");
+      err_puts("buf_parse_do_block_inner: buf_read_sym :end < 0");
+      assert(! "buf_parse_do_block_inner: buf_read_sym :end < 0");
       goto restore;
     }
     if (r > 0)
       goto ok;
     if ((r = buf_read_1(buf, "\n")) < 0) {
-      err_write_1("buf_parse_block_inner: line ");
+      err_write_1("buf_parse_do_block_inner: line ");
       err_inspect_sw_decimal(&buf->line);
       err_puts(": missing separator: ");
       err_inspect_buf(buf);
       err_write_1("\n");
-      assert(! "buf_parse_block_inner: missing separator");
+      assert(! "buf_parse_do_block_inner: missing separator");
       goto restore;
     }
     if (! r) {
       if ((r = buf_read_1(buf, ";")) <= 0) {
-        err_write_1("buf_parse_block_inner: line ");
+        err_write_1("buf_parse_do_block_inner: line ");
         err_inspect_sw_decimal(&buf->line);
         err_puts(": missing separator: ");
         err_inspect_buf(buf);
         err_write_1("\n");
-        assert(! "buf_parse_block_inner: missing separator");
+        assert(! "buf_parse_do_block_inner: missing separator");
         goto restore;
       }
     }
     result += r;
     if ((r = buf_parse_comments(buf)) < 0) {
-      err_puts("buf_parse_block_inner: buf_parse_comments 2");
-      assert(! "buf_parse_block_inner: buf_parse_comments 2");
+      err_puts("buf_parse_do_block_inner: buf_parse_comments 2");
+      assert(! "buf_parse_do_block_inner: buf_parse_comments 2");
       goto restore;
     }
     result += r;
     if ((r = buf_ignore_spaces_but_newline(buf)) < 0) {
-      err_puts("buf_parse_block_inner:"
+      err_puts("buf_parse_do_block_inner:"
                " buf_ignore_spaces_but_newline 2");
-      assert(!("buf_parse_block_inner:"
+      assert(!("buf_parse_do_block_inner:"
                " buf_ignore_spaces_but_newline 2"));
       goto restore;
     }
@@ -588,7 +589,7 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
  ok:
   result += r;
   j = list_length(list);
-  if (! block_init(&tmp, j)) {
+  if (! do_block_init(&tmp, j)) {
     r = -2;
     goto clean;
   }
@@ -601,7 +602,7 @@ sw buf_parse_block_inner (s_buf *buf, bool short_form, s_block *block)
     l++;
   }
   tmp.short_form = short_form;
-  *block = tmp;
+  *do_block = tmp;
   r = result;
   goto clean;
 }
@@ -1930,7 +1931,7 @@ sw buf_parse_fn_clause (s_buf *buf, s_fn_clause *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto clean;
   result += r;
-  if ((r = buf_parse_block(buf, &tmp.algo)) <= 0) {
+  if ((r = buf_parse_do_block(buf, &tmp.algo)) <= 0) {
     err_puts("buf_parse_fn_clause: invalid program");
     err_inspect_buf(buf);
     err_write_1("\n");
@@ -2153,8 +2154,9 @@ sw buf_parse_if (s_buf *buf, s_call *dest)
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
-    else_->type = TAG_BLOCK;
-    if ((r = buf_parse_block_inner(buf, false, &else_->data.block)) <= 0)
+    else_->type = TAG_DO_BLOCK;
+    if ((r = buf_parse_do_block_inner(buf, false,
+                                      &else_->data.do_block)) <= 0)
       goto restore;
     result += r;
   }
@@ -2180,7 +2182,7 @@ sw buf_parse_if_then (s_buf *buf, s_tag *dest, bool *has_else)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_block tmp;
+  s_do_block tmp;
   buf_save_init(buf, &save);
   if ((r = buf_read_sym(buf, &g_sym_then)) < 0)
     goto restore;
@@ -2260,7 +2262,7 @@ sw buf_parse_if_then (s_buf *buf, s_tag *dest, bool *has_else)
  ok:
   result += r;
   j = list_length(list);
-  if (! block_init(&tmp, j)) {
+  if (! do_block_init(&tmp, j)) {
     r = -2;
     goto restore;
   }
@@ -2272,8 +2274,8 @@ sw buf_parse_if_then (s_buf *buf, s_tag *dest, bool *has_else)
     k = list_next(k);
     l++;
   }
-  dest->type = TAG_BLOCK;
-  dest->data.block = tmp;
+  dest->type = TAG_DO_BLOCK;
+  dest->data.do_block = tmp;
   r = result;
   goto clean;
 
@@ -3920,7 +3922,7 @@ sw buf_parse_tag (s_buf *buf, s_tag *dest)
   case '{':
     if ((r = buf_parse_tag_call_op(buf, dest)) ||
         (r = buf_parse_tag_tuple(buf, dest)) ||
-        (r = buf_parse_tag_block(buf, dest)))
+        (r = buf_parse_tag_do_block(buf, dest)))
       goto end;
     goto restore;
   default:
@@ -3956,13 +3958,13 @@ sw buf_parse_tag_array (s_buf *buf, s_tag *dest)
   return r;
 }
 
-sw buf_parse_tag_block (s_buf *buf, s_tag *dest)
+sw buf_parse_tag_do_block (s_buf *buf, s_tag *dest)
 {
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_block(buf, &dest->data.block)) > 0)
-    dest->type = TAG_BLOCK;
+  if ((r = buf_parse_do_block(buf, &dest->data.do_block)) > 0)
+    dest->type = TAG_DO_BLOCK;
   return r;
 }
 
@@ -4435,7 +4437,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   case 'd':
-    if ((r = buf_parse_tag_block(buf, dest)) ||
+    if ((r = buf_parse_tag_do_block(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;

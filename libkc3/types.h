@@ -139,7 +139,7 @@ typedef enum {
 typedef enum {
   TAG_VOID = 0,
   TAG_ARRAY,
-  TAG_BLOCK,
+  TAG_DO_BLOCK,
   TAG_BOOL,
   TAG_CALL,
   TAG_CHARACTER,
@@ -184,7 +184,7 @@ typedef struct arg                     s_arg;
 typedef struct array                   s_array;
 typedef struct array_dimension         s_array_dimension;
 typedef struct binding                 s_binding;
-typedef struct block                   s_block;
+typedef struct do_block                s_do_block;
 typedef struct buf                     s_buf;
 typedef struct buf_fd                  s_buf_fd;
 typedef struct buf_rw                  s_buf_rw;
@@ -280,7 +280,7 @@ struct array_dimension {
   uw item_size;
 };
 
-struct block {
+struct do_block {
   uw count;
   s_tag *tag;
   bool short_form;
@@ -312,7 +312,7 @@ struct facts_transaction {
 struct fn_clause {
   uw arity;
   s_list *pattern;
-  s_block algo;
+  s_do_block algo;
   s_fn_clause *next_clause;
 };
 
@@ -609,7 +609,7 @@ struct callable {
 
 union tag_data {
   s_array       array;
-  s_block       block;
+  s_do_block    do_block;
   bool          bool_;
   s_call        call;
   character     character;

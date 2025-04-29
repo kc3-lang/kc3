@@ -972,7 +972,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     return true;
   }
   if (sym == &g_sym_Block) {
-    *dest = TAG_BLOCK;
+    *dest = TAG_DO_BLOCK;
     return true;
   }
   if (sym == &g_sym_Bool) {
@@ -1163,7 +1163,7 @@ uw * sym_type_size (const s_sym * const *type, uw *dest)
     return dest;
   }
   if (*type == &g_sym_Block) {
-    *dest = sizeof(s_block);
+    *dest = sizeof(s_do_block);
     return dest;
   }
   if (*type == &g_sym_Bool) {

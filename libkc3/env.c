@@ -29,7 +29,7 @@
 #include "array.h"
 #include "assert.h"
 #include "binding.h"
-#include "block.h"
+#include "do_block.h"
 #include "bool.h"
 #include "buf.h"
 #include "buf_file.h"
@@ -395,7 +395,7 @@ void env_default_set (s_env *env)
 
 // FIXME: transaction ?
 s_tag * env_defmodule (s_env *env, const s_sym * const *name,
-                       const s_block *block, s_tag *dest)
+                       const s_do_block *do_block, s_tag *dest)
 {
   const s_sym *prev_defmodule;
   s_tag *result = NULL;
@@ -407,7 +407,7 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   assert(env);
   assert(name);
   assert(*name);
-  assert(block);
+  assert(do_block);
   assert(dest);
   prev_defmodule = env->current_defmodule;
   env_module_is_loading_set(env, *name, true);
@@ -421,7 +421,7 @@ s_tag * env_defmodule (s_env *env, const s_sym * const *name,
   if (! facts_add_tags(env->facts, &tag_module_name, &tag_is_a,
                        &tag_module))
     goto clean;
-  if (! env_eval_block(env, block, &tmp))
+  if (! env_eval_do_block(env, do_block, &tmp))
     goto clean;
   tag_clean(&tmp);
   tag_init_sym(dest, *name);
@@ -805,7 +805,7 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
 }
 
 s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
-                              s_tag *block_tag, s_tag *dest)
+                              s_tag *do_block_tag, s_tag *dest)
 {
   s_facts_with_cursor cursor = {0};
   s_fact *fact = NULL;
@@ -838,7 +838,7 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
     if (! fact)
       goto ok;
     tag_clean(&tmp);
-    if (! env_eval_tag(env, block_tag, &tmp)) {
+    if (! env_eval_tag(env, do_block_tag, &tmp)) {
       goto clean;
     }
   }
@@ -2207,7 +2207,8 @@ bool env_tag_ident_is_bound (s_env *env, const s_tag *tag)
      env_ident_get(env, &tag->data.ident, &tmp));
 }
 
-s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_block *cleanup,
+s_tag * env_unwind_protect (s_env *env, s_tag *protected,
+                            s_do_block *cleanup,
                             s_tag *dest)
 {
   s_tag tmp = {0};
@@ -2216,12 +2217,12 @@ s_tag * env_unwind_protect (s_env *env, s_tag *protected, s_block *cleanup,
   assert(protected);
   if (setjmp(unwind_protect.buf)) {
     env_pop_unwind_protect(env);
-    env_eval_block(env, cleanup, &tmp);
+    env_eval_do_block(env, cleanup, &tmp);
     longjmp(*unwind_protect.jmp, 1);
   }
   env_eval_tag(env, protected, dest);
   env_pop_unwind_protect(env);
-  env_eval_block(env, cleanup, &tmp);
+  env_eval_do_block(env, cleanup, &tmp);
   return dest;
 }
 
