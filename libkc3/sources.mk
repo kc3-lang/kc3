@@ -7,6 +7,7 @@ HEADERS = \
 	"array.h" \
 	"assert.h" \
 	"binding.h" \
+	"block.h" \
 	"bool.h" \
 	"buf.h" \
 	"buf_fd.h" \

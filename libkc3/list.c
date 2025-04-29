@@ -137,7 +137,9 @@ s_list ** list_filter (s_list **list, p_callable *function,
                        s_list **dest)
 {
   s_list *arg;
+  bool b;
   s_list *l;
+  const s_sym *sym_Bool = &g_sym_Bool;
   s_list **tail;
   s_list *tmp;
   if (! (arg = list_new(NULL)))
@@ -151,10 +153,12 @@ s_list ** list_filter (s_list **list, p_callable *function,
     *tail = list_new(NULL);
     if (! eval_callable_call(*function, arg, &(*tail)->tag))
       goto ko;
-    if ((*tail)->tag.type == TAG_VOID)
-      *tail = list_delete(*tail);
-    else
+    if (! bool_init_cast(&b, &sym_Bool, &(*tail)->tag))
+      goto ko;
+    if (b)
       tail = &(*tail)->next.data.list;
+    else
+      *tail = list_delete(*tail);
     l = list_next(l);
   }
   list_delete_all(arg);

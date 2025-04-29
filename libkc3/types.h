@@ -184,7 +184,7 @@ typedef struct arg                     s_arg;
 typedef struct array                   s_array;
 typedef struct array_dimension         s_array_dimension;
 typedef struct binding                 s_binding;
-typedef struct do_block                s_do_block;
+typedef struct block                   s_block;
 typedef struct buf                     s_buf;
 typedef struct buf_fd                  s_buf_fd;
 typedef struct buf_rw                  s_buf_rw;
@@ -195,6 +195,7 @@ typedef struct cfn                     s_cfn;
 typedef struct complex                 s_complex;
 typedef struct cow                     s_cow;
 typedef struct deserialize             s_deserialize;
+typedef struct do_block                s_do_block;
 typedef struct env                     s_env;
 typedef struct error_handler           s_error_handler;
 typedef struct fact                    s_fact;
@@ -280,12 +281,6 @@ struct array_dimension {
   uw item_size;
 };
 
-struct do_block {
-  uw count;
-  s_tag *tag;
-  bool short_form;
-};
-
 struct buf_fd {
   s32 fd;
 };
@@ -295,6 +290,12 @@ struct buf_save {
   uw line;
   uw rpos;
   uw wpos;
+};
+
+struct do_block {
+  uw count;
+  s_tag *tag;
+  bool short_form;
 };
 
 struct fact {
@@ -668,6 +669,12 @@ struct binding {
   const s_sym *name;
   s_tag value;
   s_binding *next;
+};
+
+struct block {
+  s_tag name;
+  jmp_buf buf;
+  s_block *next;
 };
 
 struct complex {

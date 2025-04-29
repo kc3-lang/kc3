@@ -1828,18 +1828,19 @@ s_list ** env_module_search_modules (s_env *env,
 s_tag * env_or (s_env *env, s_tag *a, s_tag *b, s_tag *dest)
 {
   s_tag eval = {0};
-  bool p;
+  bool p = false;
+  bool silence_errors;
   const s_sym *sym_Bool = &g_sym_Bool;
   assert(env);
   assert(a);
   assert(b);
   assert(dest);
-  if (! env_eval_tag(env, a, &eval))
-    return NULL;
-  if (! bool_init_cast(&p, &sym_Bool, &eval)) {
-    tag_clean(&eval);
-    return NULL;
+  silence_errors = env->silence_errors;
+  env->silence_errors = true;
+  if (env_eval_tag(env, a, &eval)) {
+    bool_init_cast(&p, &sym_Bool, &eval);
   }
+  env->silence_errors = silence_errors;
   if (p) {
     *dest = eval;
     return dest;

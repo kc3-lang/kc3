@@ -254,6 +254,7 @@ KC3_C_SOURCES = \
 	"libkc3/assert.h" \
 	"libkc3/binding.c" \
 	"libkc3/binding.h" \
+	"libkc3/block.h" \
 	"libkc3/bool.c" \
 	"libkc3/bool.h" \
 	"libkc3/buf.c" \
