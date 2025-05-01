@@ -194,6 +194,7 @@ SOURCES = \
 	"arg.c" \
 	"array.c" \
 	"binding.c" \
+	"block.c" \
 	"bool.c" \
 	"buf.c" \
 	"buf_fd.c" \
@@ -490,6 +491,7 @@ LO_SOURCES = \
 	"arg.c" \
 	"array.c" \
 	"binding.c" \
+	"block.c" \
 	"bool.c" \
 	"buf.c" \
 	"buf_fd.c" \

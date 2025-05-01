@@ -672,8 +672,9 @@ struct binding {
 };
 
 struct block {
-  s_tag name;
   jmp_buf buf;
+  const s_sym *name;
+  s_tag tag;
   s_block *next;
 };
 
@@ -824,7 +825,7 @@ struct env {
   sw                argc;
   char            **argv;
   s_str            *argv0_dir;
-  s_list           *stacktrace;
+  s_block          *block;
   const s_sym      *current_defmodule;
   s_buf            *err;
   s_error_handler  *error_handler;
@@ -844,6 +845,7 @@ struct env {
   s_list           *search_modules;
   s_list           *search_modules_default;
   bool              silence_errors;
+  s_list           *stacktrace;
   bool              trace;
   uw                unquote_level;
   s_unwind_protect *unwind_protect;

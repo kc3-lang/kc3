@@ -94,7 +94,8 @@ replace {KC3.integer_reduce, :symbol_value, cfn Tag "kc3_integer_reduce" (Tag, R
 add {KC3, :symbol, KC3.args}
 replace {KC3.args, :symbol_value, cfn List "kc3_args" (Result)}
 add {KC3, :symbol, KC3.stacktrace}
-replace {KC3.stacktrace, :symbol_value, cfn List "kc3_stacktrace" (Result)}
+replace {KC3.stacktrace, :symbol_value,
+         cfn List "kc3_stacktrace" (Result)}
 add {KC3, :symbol, KC3.getpid}
 replace {KC3.getpid, :symbol_value, cfn Sw "kc3_getpid" ()}
 add {KC3, :symbol, KC3.getppid}
@@ -102,8 +103,23 @@ replace {KC3.getppid, :symbol_value, cfn Sw "kc3_getppid" ()}
 add {KC3, :symbol, KC3.killpg}
 replace {KC3.killpg, :symbol_value, cfn Bool "kc3_killpg" (Sw, Sym)}
 add {KC3, :symbol, KC3.is_integer?}
-replace {KC3.is_integer?, :symbol_value, cfn Bool "tag_is_integer" (Tag)}
+replace {KC3.is_integer?, :symbol_value,
+         cfn Bool "tag_is_integer" (Tag)}
 add {KC3, :symbol, KC3.sysctl}
 replace {KC3.sysctl, :symbol_value, cfn Tag "kc3_sysctl" (Result, List)}
 add {KC3, :symbol, KC3.nil}
 replace {KC3.nil, :symbol_value, void}
+add {KC3, :symbol, KC3.block}
+replace {KC3.block, :arity, 2}
+replace {KC3.block, :is_a, :special_operator}
+replace {KC3.block, :symbol_value,
+         cfn Tag "kc3_block" (Tag, Tag, Result)}
+add {KC3, :symbol, KC3.return}
+replace {KC3.return, :arity, 1}
+replace {KC3.return, :is_a, :special_operator}
+replace {KC3.return, :symbol_value, cfn Void "kc3_return" (Tag)}
+add {KC3, :symbol, KC3.return_from}
+replace {KC3.return_from, :arity, 2}
+replace {KC3.return_from, :is_a, :special_operator}
+replace {KC3.return_from, :symbol_value,
+         cfn Void "kc3_return_from" (Sym, Tag)}

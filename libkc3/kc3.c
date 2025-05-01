@@ -31,6 +31,7 @@
 #include "alloc.h"
 #include "array.h"
 #include "assert.h"
+#include "block.h"
 #include "bool.h"
 #include "buf.h"
 #include "buf_fd.h"
@@ -153,6 +154,37 @@ s_tag * kc3_array_dimension(s_array *a, s_tag *index, s_tag *dest)
     return NULL;
   }
   tag_init_uw(&tmp, a->dimensions[index_uw].count);
+  *dest = tmp;
+  return dest;
+}
+
+s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
+{
+  s_block block;
+  const s_sym *name_sym = NULL;
+  s_tag tmp = {0};
+  switch (name->type) {
+  case TAG_SYM:
+    name_sym = name->data.sym;
+  case TAG_VOID:
+    break;
+  default:
+    err_puts("kc3_block: first argument must be a Sym or void");
+    err_stacktrace();
+    return NULL;
+  }
+  if (! block_init(&block, name_sym))
+    return NULL;
+  if (setjmp(block.buf)) {
+    tag_init_copy(dest, &block.tag);
+    block_clean(&block);
+    return dest;
+  }
+  if (! env_eval_tag(env_global(), do_block, &tmp)) {
+    block_clean(&block);
+    return NULL;
+  }
+  block_clean(&block);
   *dest = tmp;
   return dest;
 }
@@ -761,6 +793,46 @@ sw kc3_puts (const s_tag *tag)
 bool kc3_require (const s_sym * const *module)
 {
   return env_module_ensure_loaded(env_global(), *module);
+}
+
+void kc3_return (s_tag *value)
+{
+  s_block *block;
+  s_env *env;
+  s32 exit_code = -1;
+  const s_sym *sym_S32 = &g_sym_S32;
+  s_tag tmp = {0};
+  assert(value);
+  env = env_global();
+  assert(env);
+  block = env_global()->block;
+  if (! env_eval_tag(env, value, &tmp)) {
+    err_write_1("kc3_return: env_eval_tag(");
+    err_inspect_tag(value);
+    err_write_1(")\n");
+  }
+  if (! block) {
+    s32_init_cast(&exit_code, &sym_S32, &tmp);
+    tag_clean(&tmp);
+    exit(exit_code);
+  }
+  block_return(block, &tmp);
+}
+
+void kc3_return_from (const s_sym **name, s_tag *value)
+{
+  s_env *env;
+  s_tag tmp = {0};
+  assert(name);
+  assert(value);
+  env = env_global();
+  assert(env);
+  if (! env_eval_tag(env, value, &tmp)) {
+    err_write_1("kc3_return: env_eval_tag(");
+    err_inspect_tag(value);
+    err_write_1(")\n");
+  }
+  block_return_from(*name, &tmp);
 }
 
 s_list ** kc3_search_modules (s_list **dest)

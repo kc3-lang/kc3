@@ -12,9 +12,10 @@
  */
 /**
  * @file block.h
- * @brief A block of code (a tuple of tags).
+ * @brief A return or return_from block.
  *
- * A block is a tuple of tags representing code.
+ * A block has a symbolic name which can be NULL, a tag value to be
+ * returned, and a next pointer to restore the environment.
  */
 #ifndef LIBKC3_BLOCK_H
 #define LIBKC3_BLOCK_H
@@ -22,7 +23,15 @@
 #include "types.h"
 
 /* Stack-allocation compatible functions, call block_clean after use. */
-s_block * block_init (s_block *block);
+s_block * block_init (s_block *block, const s_sym *name);
 void      block_clean (s_block *block);
+
+/* Observers. */
+s_block ** block_find (const s_sym *name);
+
+/* Operators. */
+void block_jump (s_block *block);
+void block_return (s_block *block, s_tag *value);
+void block_return_from (const s_sym *name, s_tag *value);
 
 #endif /* LIBKC3_BLOCK_H */
