@@ -14,7 +14,7 @@
 #include "alloc.h"
 #include "array.h"
 #include "assert.h"
-#include "do_block.h"
+#include "block.h"
 #include "call.h"
 #include "callable.h"
 #include "cfn.h"
@@ -22,6 +22,7 @@
 #include "complex.h"
 #include "cow.h"
 #include "data.h"
+#include "do_block.h"
 #include "env.h"
 #include "env_eval.h"
 #include "fn.h"
@@ -263,6 +264,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
 {
   s_list *args = NULL;
   s_list *args_final = NULL;
+  s_block block = {0};
   s_fn_clause *clause;
   s_frame *env_frame;
   s_frame frame;
@@ -355,7 +357,8 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
                 (&fn->ident, list_new_copy
                  (args)));
   env->stacktrace = trace;
-  if (! env_eval_do_block(env, &clause->algo, &tag)) {
+  if (! block_init(&block, fn->ident.sym)) {
+    env->stacktrace = list_delete(env->stacktrace);
     list_delete_all(args);
     list_delete_all(tmp);
     list_delete_all(env->search_modules);
@@ -364,6 +367,23 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     frame_clean(&frame);
     return false;
   }
+  if (setjmp(block.buf)) {
+    tag_init_copy(&tag, &block.tag);
+    goto ok;
+  }
+  if (! env_eval_do_block(env, &clause->algo, &tag)) {
+    block_clean(&block);
+    env->stacktrace = list_delete(env->stacktrace);
+    list_delete_all(args);
+    list_delete_all(tmp);
+    list_delete_all(env->search_modules);
+    env->search_modules = search_modules;
+    env->frame = env_frame;
+    frame_clean(&frame);
+    return false;
+  }
+ ok:
+  block_clean(&block);
   assert(env->stacktrace == trace);
   env->stacktrace = list_delete(env->stacktrace);
   list_delete_all(args);

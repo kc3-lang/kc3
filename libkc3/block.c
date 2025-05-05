@@ -37,6 +37,7 @@ void block_clean (s_block *block)
   assert(block);
   env = env_global();
   assert(env);
+  assert(env->block == block);
   env->block = block->next;
   tag_clean(&block->tag);
 }
