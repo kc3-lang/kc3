@@ -1,6 +1,6 @@
 def HTTPd.routes = []
 
-def_route("/doc/", DocController.route)
+def_route("/", DocController.route)
 
 # def_route("/fx/", FXController.fx_route)
 # def_route("/tags/", FXController.tags_route)
