@@ -55,7 +55,7 @@ s_block ** block_find (const s_sym *name)
 
 void block_jump (s_block *block)
 {
-  longjmp(block->buf, 1);
+  env_longjmp(env_global(), &block->buf);
 }
 
 void block_return (s_block *block, s_tag *value)

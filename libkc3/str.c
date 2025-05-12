@@ -177,6 +177,25 @@
     return buf_to_str(&buf, str);                                      \
   }
 
+s_tag * str_access (const s_str *str, s_list *key, s_tag *dest)
+{
+  uw pos;
+  const s_sym *sym_Uw = &g_sym_Uw;
+  character tmp;
+  assert(str);
+  if (! key ||
+      list_next(key) ||
+      ! uw_init_cast(&pos, &sym_Uw, &key->tag) ||
+      str_character(str, pos, &tmp) <= 0) {
+    err_puts("str_access: invalid key");
+    err_stacktrace();
+    return tag_init_void(dest);
+  }
+  dest->type = TAG_CHARACTER;
+  dest->data.character = tmp;
+  return dest;
+}
+
 sw str_character (const s_str *str, uw position, character *dest)
 {
   character c;

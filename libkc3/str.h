@@ -105,6 +105,7 @@ s_str * str_new_vf (const char *fmt, va_list ap);
 void str_delete (s_str *str);
 
 /* Observers */
+s_tag *       str_access (const s_str *str, s_list *key, s_tag *dest);
 sw            str_character (const s_str *str, uw position,
                              character *dest);
 character     str_character_escape (character c);

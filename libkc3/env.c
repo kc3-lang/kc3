@@ -1493,8 +1493,9 @@ bool env_maybe_reload (s_env *env, const s_str *path)
 
 void env_longjmp (s_env *env, jmp_buf *jmp_buf)
 {
+  s_unwind_protect *unwind_protect;
   if (env->unwind_protect && *jmp_buf > env->unwind_protect->buf) {
-    s_unwind_protect *unwind_protect = env->unwind_protect;
+    unwind_protect = env->unwind_protect;
     while (unwind_protect->next && *jmp_buf > unwind_protect->next->buf) {
       unwind_protect->jmp = &unwind_protect->next->buf;
       unwind_protect = unwind_protect->next;

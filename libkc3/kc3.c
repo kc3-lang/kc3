@@ -110,6 +110,8 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
     return map_access(&tag->data.map, *key, dest);
   case TAG_PSTRUCT:
     return struct_access(tag->data.pstruct, *key, dest);
+  case TAG_STR:
+    return str_access(&tag->data.str, *key, dest);
   case TAG_TIME:
     return time_access(&tag->data.time, *key, dest);
   case TAG_VOID:
