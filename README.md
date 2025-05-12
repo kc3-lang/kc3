@@ -83,6 +83,11 @@ There are now four full applications written in KC3 that we know of :
    - documentation
      - document all basic types (see <kc3-lang.org/doc>)
      - document facts module
+   - rename block into do_block
+   - implement named blocks, return and return_from like in Common Lisp
+   - add a named block to function evaluation to implement return from
+     functions. The first name you give to the function is the name of
+     the function implicit block.
 
 ## Discord invite
 
@@ -113,7 +118,7 @@ to discover how to use KC3 for your own projects.
    - properties
      - recursive
  - libkc3
-   - rename block into do_block
+   - unwind-protect
    - defspecial
    - special operators hash table
    - serialization / deserialization
@@ -151,9 +156,6 @@ to discover how to use KC3 for your own projects.
      - when
      - unless
      - switch/case/cond
-   - unwind protect
-   - functions
-     - return
    - livebook
      - gaussian
    - buf_sha256
