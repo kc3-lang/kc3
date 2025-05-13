@@ -5,3 +5,103 @@ end, puts("b"))
 a
 b
 1
+unwind_protect(do
+  unwind_protect(do
+    puts("a")
+    1
+  end, puts("b"))
+end, puts("c"))
+a
+b
+c
+1
+unwind_protect(do
+  unwind_protect(do
+    unwind_protect(do
+      puts("a")
+      1
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+a
+b
+c
+d
+1
+block :a unwind_protect(do
+  puts("a")
+  return 1
+  2
+end, puts("b"))
+a
+b
+1
+block :a unwind_protect(do
+  unwind_protect(do
+    puts("a")
+    return 1
+    2
+  end, puts("b"))
+end, puts("c"))
+a
+b
+c
+1
+block :a unwind_protect(do
+  unwind_protect(do
+    unwind_protect(do
+      puts("a")
+      return 1
+      2
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+a
+b
+c
+d
+1
+unwind_protect(do
+  block :a unwind_protect(do
+    unwind_protect(do
+      puts("a")
+      return 1
+      2
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+a
+b
+c
+d
+1
+unwind_protect(do
+  unwind_protect(do
+    block :a unwind_protect(do
+      puts("a")
+      return 1
+      2
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+a
+b
+c
+d
+1
+unwind_protect(do
+  unwind_protect(do
+    unwind_protect(do
+      block :a do
+        puts("a")
+        return 1
+        2
+      end
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+a
+b
+c
+d
+1

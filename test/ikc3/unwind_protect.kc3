@@ -1,10 +1,136 @@
 quote unwind_protect(do
   puts("a")
   1
-end,
-  puts("b"))
+end, puts("b"))
 unwind_protect(do
   puts("a")
   1
-end,
-  puts("b"))
+end, puts("b"))
+quote unwind_protect(do
+  unwind_protect(do
+    puts("a")
+    1
+  end, puts("b"))
+end, puts("c"))
+unwind_protect(do
+  unwind_protect(do
+    puts("a")
+    1
+  end, puts("b"))
+end, puts("c"))
+quote unwind_protect(do
+  unwind_protect(do
+    unwind_protect(do
+      puts("a")
+      1
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+unwind_protect(do
+  unwind_protect(do
+    unwind_protect(do
+      puts("a")
+      1
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+quote block :a unwind_protect(do
+  puts("a")
+  return 1
+  2
+end, puts("b"))
+block :a unwind_protect(do
+  puts("a")
+  return 1
+  2
+end, puts("b"))
+quote block :a unwind_protect(do
+  unwind_protect(do
+    puts("a")
+    return 1
+    2
+  end, puts("b"))
+end, puts("c"))
+block :a unwind_protect(do
+  unwind_protect(do
+    puts("a")
+    return 1
+    2
+  end, puts("b"))
+end, puts("c"))
+quote block :a unwind_protect(do
+  unwind_protect(do
+    unwind_protect(do
+      puts("a")
+      return 1
+      2
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+block :a unwind_protect(do
+  unwind_protect(do
+    unwind_protect(do
+      puts("a")
+      return 1
+      2
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+quote unwind_protect(do
+  block :a unwind_protect(do
+    unwind_protect(do
+      puts("a")
+      return 1
+      2
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+unwind_protect(do
+  block :a unwind_protect(do
+    unwind_protect(do
+      puts("a")
+      return 1
+      2
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+quote unwind_protect(do
+  unwind_protect(do
+    block :a unwind_protect(do
+      puts("a")
+      return 1
+      2
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+unwind_protect(do
+  unwind_protect(do
+    block :a unwind_protect(do
+      puts("a")
+      return 1
+      2
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+quote unwind_protect(do
+  unwind_protect(do
+    unwind_protect(do
+      block :a do
+        puts("a")
+        return 1
+        2
+      end
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
+unwind_protect(do
+  unwind_protect(do
+    unwind_protect(do
+      block :a do
+        puts("a")
+        return 1
+        2
+      end
+    end, puts("b"))
+  end, puts("c"))
+end, puts("d"))
