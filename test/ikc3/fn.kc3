@@ -47,3 +47,19 @@ quote g = f(2)
 g = f(2)
 quote g(3)
 g(3)
+quote h = fn (x) {
+  unwind_protect(do
+    puts("a")
+    return x * 2
+    -1
+  end, puts("b"))
+}
+h = fn (x) {
+  unwind_protect(do
+    puts("a")
+    return x * 2
+    -1
+  end, puts("b"))
+}
+quote h(21)
+h(21)

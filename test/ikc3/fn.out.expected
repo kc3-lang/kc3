@@ -42,3 +42,17 @@ g = f(2)
 fn (y) { x * y }
 g(3)
 6
+h = fn (x) { unwind_protect(do
+    puts("a")
+    return x * 2
+    -1
+  end, puts("b")) }
+fn (x) { unwind_protect(do
+    puts("a")
+    return x * 2
+    -1
+  end, puts("b")) }
+h(21)
+a
+b
+42
