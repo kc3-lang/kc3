@@ -61,6 +61,10 @@ s_tag *        env_defmodule (s_env *env, const s_sym * const *name,
                               const s_do_block *do_block, s_tag *dest);
 bool           env_defoperator (s_env *env, s_tag *tag_op);
 const s_sym *  env_defstruct (s_env *env, s_list *spec);
+void           env_error_handler_pop (s_env *env,
+                                      s_error_handler *eh);
+void           env_error_handler_push (s_env *env,
+                                       s_error_handler *eh);
 s_fact_w *     env_fact_w_eval (s_env *env, s_fact_w *fact,
 	         	       s_fact_w *dest);
 s_tag *        env_facts_collect_with (s_env *env, s_facts *facts,
@@ -133,6 +137,13 @@ bool *         env_struct_type_has_spec (s_env *env,
                                          bool *dest);
 bool           env_tag_ident_is_bound (s_env *env,
                                        const s_tag *tag);
+s_tag *        env_unwind_protect (s_env *env, s_tag *protected,
+                                   s_tag *cleanup,
+                                   s_tag *dest);
+void           env_unwind_protect_pop (s_env *env,
+                                       s_unwind_protect *up);
+void           env_unwind_protect_push (s_env *env,
+                                        s_unwind_protect *up);
 s_tag *        env_while (s_env *env, s_tag *cond, s_tag *body,
                           s_tag *dest);
 

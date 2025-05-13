@@ -1,0 +1,10 @@
+quote unwind_protect(do
+  puts("a")
+  1
+end,
+  puts("b"))
+unwind_protect(do
+  puts("a")
+  1
+end,
+  puts("b"))

@@ -497,6 +497,25 @@ void env_error_f (s_env *env, const char *fmt, ...)
   env_error_tag(env, &tag);
 }
 
+void env_error_handler_pop (s_env *env, s_error_handler *eh)
+{
+  assert(env);
+  assert(eh);
+  if (env->error_handler != eh) {
+    err_puts("env_error_handler_pop: mismatch");
+    assert(! "env_error_handler_pop: mismatch");
+    abort();
+  }
+  env->error_handler = error_handler_delete(env->error_handler);
+}
+
+void env_error_handler_push (s_env *env, s_error_handler *eh)
+{
+  tag_init_void(&eh->tag);
+  eh->next = env->error_handler;
+  env->error_handler = eh;
+}
+
 void env_error_tag (s_env *env, s_tag *tag)
 {
   s_error_handler *error_handler;
@@ -1861,32 +1880,6 @@ s_tag * env_or (s_env *env, s_tag *a, s_tag *b, s_tag *dest)
   return tag_init_bool(dest, false);
 }
 
-void env_pop_error_handler (s_env *env)
-{
-  if (env->error_handler)
-    env->error_handler = error_handler_delete(env->error_handler);
-}
-
-void env_pop_unwind_protect (s_env *env)
-{
-  if (env->unwind_protect)
-    env->unwind_protect = env->unwind_protect->next;
-}
-
-void env_push_error_handler (s_env *env, s_error_handler *error_handler)
-{
-  tag_init_void(&error_handler->tag);
-  error_handler->next = env->error_handler;
-  env->error_handler = error_handler;
-}
-
-void env_push_unwind_protect (s_env *env,
-                              s_unwind_protect *unwind_protect)
-{
-  unwind_protect->next = env->unwind_protect;
-  env->unwind_protect = unwind_protect;
-}
-
 s_list ** env_search_modules (s_env *env, s_list **dest)
 {
   assert(env);
@@ -2210,22 +2203,51 @@ bool env_tag_ident_is_bound (s_env *env, const s_tag *tag)
 }
 
 s_tag * env_unwind_protect (s_env *env, s_tag *protected,
-                            s_do_block *cleanup,
+                            s_tag *cleanup,
                             s_tag *dest)
 {
+  s_tag discard = {0};
   s_tag tmp = {0};
   s_unwind_protect unwind_protect;
   assert(env);
   assert(protected);
+  env_unwind_protect_push(env, &unwind_protect);
   if (setjmp(unwind_protect.buf)) {
-    env_pop_unwind_protect(env);
-    env_eval_do_block(env, cleanup, &tmp);
+    env_unwind_protect_pop(env, &unwind_protect);
+    env_eval_tag(env, cleanup, &discard);
+    tag_clean(&discard);
     longjmp(*unwind_protect.jmp, 1);
   }
-  env_eval_tag(env, protected, dest);
-  env_pop_unwind_protect(env);
-  env_eval_do_block(env, cleanup, &tmp);
+  if (! env_eval_tag(env, protected, &tmp)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    env_eval_tag(env, cleanup, &discard);
+    tag_clean(&discard);
+    return NULL;
+  }
+  env_unwind_protect_pop(env, &unwind_protect);
+  env_eval_tag(env, cleanup, &discard);
+  tag_clean(&discard);
+  *dest = tmp;
   return dest;
+}
+
+void env_unwind_protect_pop (s_env *env, s_unwind_protect *up)
+{
+  assert(env);
+  assert(up);
+  if (env->unwind_protect != up) {
+    err_puts("env_unwind_protect_pop: mismatch");
+    assert(! "env_unwind_protect_pop: mismatch");
+    abort();
+  }
+  env->unwind_protect = env->unwind_protect->next;
+}
+
+void env_unwind_protect_push (s_env *env,
+                              s_unwind_protect *unwind_protect)
+{
+  unwind_protect->next = env->unwind_protect;
+  env->unwind_protect = unwind_protect;
 }
 
 s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,

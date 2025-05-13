@@ -1249,6 +1249,12 @@ void * kc3_thread_start (void *arg)
   return tag;
 }
 
+s_tag * kc3_unwind_protect (s_tag *protected, s_tag *cleanup,
+                            s_tag *dest)
+{
+  return env_unwind_protect(env_global(), protected, cleanup, dest);
+}
+
 s_tag * kc3_while (s_tag *cond, s_tag *body, s_tag *dest)
 {
   return env_while(env_global(), cond, body, dest);

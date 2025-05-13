@@ -1,79 +1,38 @@
-quote do
+quote block :abc do
   1
-end
-do
-  1
-end
-quote do
-  1
-  2
-end
-do
-  1
-  2
-end
-quote do
-  1
-  2
+  return 2
   3
 end
-do
+block :abc do
   1
-  2
+  return 2
   3
 end
-quote do 1 end
-do 1 end
-quote do 1; 2 end
-do 1; 2 end
-quote do 1; 2; 3 end
-do 1; 2; 3 end
-quote do
-  1 + 1
-  2 + 2
-  3 + 3
+quote block :abc do
+  1
+  return_from :abc 2
+  3
 end
-do
-  1 + 1
-  2 + 2
-  3 + 3
+block :abc do
+  1
+  return_from :abc 2
+  3
 end
-quote do
-  1 + 1
-  2 + unquote(1 + 1)
-  unquote(3 + 3)
-end
-quote do
-
-  def cast = cfn S32 "s32_init_cast" (Result, Sym, Tag)
-
-end
-do
-
-  def cast = cfn S32 "s32_init_cast" (Result, Sym, Tag)
-
-end
-quote do
-  do
-    1
+quote block :a do
+  1
+  block :b do
+    2
+    return_from :a 3
+    4
   end
+  5
 end
-do
-  do
-    1
+block :a do
+  1
+  block :b do
+    2
+    return_from :a 3
+    4
   end
-end
-quote do
-  do
-    do
-      1
-    end
-  end
-end
-do
-  do
-    do
-      1
-    end
-  end
+  5
 end

@@ -123,3 +123,6 @@ replace {KC3.return_from, :arity, 2}
 replace {KC3.return_from, :is_a, :special_operator}
 replace {KC3.return_from, :symbol_value,
          cfn Void "kc3_return_from" (Sym, Tag)}
+add {KC3, :symbol, KC3.unwind_protect}
+replace {KC3.unwind_protect, :symbol_value,
+         cfn_macro Tag "kc3_unwind_protect" (Tag, Tag, Result)}

@@ -61,7 +61,6 @@ s32            kc3_tag_type (const s_tag *tag);
 s_tag *      kc3_access (s_tag *tag, s_list **addr,
                          s_tag *dest);
 s_tag *      kc3_and (s_tag *a, s_tag *b, s_tag *dest);
-s_tag *      kc3_block (s_tag *name, s_tag *do_block, s_tag *dest);
 s_tag *      kc3_buf_parse_tag (s_buf *buf, s_tag *dest);
 s_tag *      kc3_def (const s_call *call, s_tag *dest);
 s_tag *      kc3_defmodule (const s_sym **name, const s_do_block *do_block,
@@ -121,8 +120,6 @@ bool         kc3_maybe_reload (const s_str *path);
 s_tag *      kc3_or (s_tag *a, s_tag *b, s_tag *dest);
 s_tag *      kc3_parse_tag (s_tag *tag, const s_str *src);
 bool         kc3_require (const s_sym * const *module);
-void         kc3_return (s_tag *value);
-void         kc3_return_from (const s_sym **name, s_tag *value);
 s_str *      kc3_strerror (sw err_no, s_str *dest);
 s_tag *      kc3_struct_put (s_tag *s, const s_sym * const *key,
                              s_tag *value, s_tag *dest);
@@ -132,8 +129,13 @@ u_ptr_w *    kc3_thread_new (u_ptr_w *dest, p_callable *start);
 void *       kc3_thread_start (void *arg);
 
 /* Special operators. */
+s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest);
 s_tag * kc3_if_then_else (s_tag *cond, s_tag *then,
                           s_tag *else_, s_tag *dest);
+void    kc3_return (s_tag *value);
+void    kc3_return_from (const s_sym **name, s_tag *value);
+s_tag * kc3_unwind_protect (s_tag *protected, s_tag *cleanup,
+                            s_tag *dest);
 s_tag * kc3_while (s_tag *cond, s_tag *body, s_tag *dest);
 
 /* debug */
