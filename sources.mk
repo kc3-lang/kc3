@@ -1349,6 +1349,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/defstruct.kc3" \
 	"test/ikc3/defstruct.out.expected" \
 	"test/ikc3/defstruct.ret.expected" \
+	"test/ikc3/do_block.kc3" \
+	"test/ikc3/do_block.out.expected" \
+	"test/ikc3/do_block.ret.expected" \
 	"test/ikc3/equal.err.expected" \
 	"test/ikc3/equal.kc3" \
 	"test/ikc3/equal.out.expected" \
@@ -1492,6 +1495,9 @@ KC3_TEST_IKC3_SOURCES = \
 	"test/ikc3/tuple.kc3" \
 	"test/ikc3/tuple.out.expected" \
 	"test/ikc3/tuple.ret.expected" \
+	"test/ikc3/unwind_protect.kc3" \
+	"test/ikc3/unwind_protect.out.expected" \
+	"test/ikc3/unwind_protect.ret.expected" \
 	"test/ikc3/var.kc3" \
 	"test/ikc3/var.out.expected" \
 	"test/ikc3/var.ret.expected" \
@@ -1951,6 +1957,7 @@ KC3_EXTERNAL_SOURCES = \
 
 KC3_DOC_SOURCES = \
 	"doc/1_KC3/.#1.05_List.en.md" \
+	"doc/1_KC3/.#1.26_Named_block.en.md" \
 	"doc/1_KC3/1.01_Introduction.en.md" \
 	"doc/1_KC3/1.02_Array.en.md" \
 	"doc/1_KC3/1.03_Block.en.md" \
@@ -1976,12 +1983,16 @@ KC3_DOC_SOURCES = \
 	"doc/1_KC3/1.23_Tuple.en.md" \
 	"doc/1_KC3/1.24_Variable.en.md" \
 	"doc/1_KC3/1.25_Facts.en.md" \
+	"doc/1_KC3/1.26_Named_block.en.md" \
 	"doc/2_HTTPd/index.en.md" \
+	"doc/2_HTTPd/index.fr.md" \
 	"doc/3_Guides/3.1_Install.en.md" \
 	"doc/3_Guides/3.2_Testing.en.md" \
 	"doc/3_Guides/3.3_Usage.en.md" \
 	"doc/3_Guides/3.4_Structure.en.md" \
 	"doc/3_Guides/3.5_Tutorial.en.md" \
+	"doc/3_Guides/3.5_Tutorial.fr.md" \
 	"doc/3_Guides/index.en.md" \
 	"doc/index.en.md" \
+	"doc/index.fr.md" \
 
