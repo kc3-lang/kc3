@@ -24,14 +24,18 @@ defmodule DocController do
         if File.is_directory?(path) do
           if List.find_if(acc, fn (item) {
                 item.type == :dir &&
-                item.url == :url
+                item.base_url == url
             }) do
             doc_index(rest, path_md, dir, acc)
           else
             items = doc_index(List.sort(File.list(path)), path_md,
               path + "/", [])
+            url_locale = if locale == "en" do url else
+              "/#{locale}#{url}"
+            end
             item = %{type: :dir,
-                     url: url,
+                     base_url: url,
+                     url: url_locale,
                      name: name,
                      items: items}
             doc_index(rest, path_md, dir, [item | acc])
@@ -55,12 +59,16 @@ defmodule DocController do
           end
           if List.find_if(acc, fn (item) {
                 item.type == :file &&
-                item.url == url
+                item.base_url == url
             }) do
             doc_index(rest, path_md, dir, acc)
           else
+            url_locale = if locale == "en" do url else
+              "/#{locale}#{url}"
+            end
             item = %{type: :file,
-                     url: url,
+                     base_url: url,
+                     url: url_locale,
                      name: name,
                      items: []}
             doc_index(rest, path_md, dir, [item | acc])
@@ -129,7 +137,7 @@ defmodule DocController do
       end
     }
   }
-    
+
   def show_html = fn (path_html, url) {
     index = doc_index("./doc/", path_html)
     menu = DocView.render_menu(index)
@@ -163,7 +171,6 @@ defmodule DocController do
 
     
   def route_locale = fn (url, locale) {
-    puts("route_locale: #{url},#{locale}")
     path_html = ".#{url}/index.#{locale}.html"
     if File.exists?(path_html) do
       show_html(path_html, url)
@@ -184,17 +191,18 @@ defmodule DocController do
     url = request.url
     if (request.method == GET ||
       request.method == HEAD) do
-      locale = if (url[0] == '/' && (Str.size(url) == 3 ||
-                                     url[3] == '/')) do
+      locale = if (url[0] == '/' &&
+                   (Str.size(url) == 3 ||
+                    url[3] == '/')) do
         l = "#{url[1]}#{url[2]}"
         if List.has?(available_locales, l) do
           url = Str.slice(url, 3, -1)
           l
         end
       end || "en"
-      if (Str.starts_with?(url, "/doc/") ||  
-          url == "/doc") do   
-        route_locale(url, locale)
+      if (Str.starts_with?(url, "/doc/") ||
+          url == "/doc") do
+        route_locale(url, locale) || route_locale(url, "en")
       end
     end
   }

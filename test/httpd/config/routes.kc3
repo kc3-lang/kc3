@@ -20,7 +20,7 @@ defmodule Route do
        List.has?(DocController.available_locales, locale) do
       "/#{locale}#{URL.escape(path)}"
     else
-      URL.encode(path)
+      URL.escape(path)
     end
   }
   
