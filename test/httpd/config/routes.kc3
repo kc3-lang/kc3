@@ -12,3 +12,16 @@ def_route("/sitemap.xml", SitemapController.route)
 def_route("/", PageController.route)
 
 HTTPd.Route.def_static_route("", "./static/", 0)
+
+defmodule Route do
+
+  def doc = fn (path, locale) {
+    if locale != "en" &&
+       List.has?(DocController.available_locales, locale) do
+      "/#{locale}#{URL.escape(path)}"
+    else
+      URL.encode(path)
+    end
+  }
+  
+end

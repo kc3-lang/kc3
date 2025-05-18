@@ -21,6 +21,14 @@
         <li class="nav-item">
           <a class="navbar-link<%= if Str.starts_with?(url, "/doc/") do " active" end %>" href="/doc/">Documentation</a>
         </li>
+        <%= raw str(List.map(DocController.available_locales,
+              fn (l) {
+                active = if locale == l do " active" end
+                """
+        <li class="nav-item right">
+          <a class="navbar-link#{active}" href="#{Route.doc(url, l)}">#{HTML.escape(l)}</a>
+        </li>"""
+              })) %>
       </ul>
     </div>
   </div>
