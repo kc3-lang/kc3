@@ -138,7 +138,7 @@ defmodule DocController do
     }
   }
 
-  def show_html = fn (path_html, url) {
+  def show_html = fn (path_html, url, locale) {
     index = doc_index("./doc/", path_html)
     menu = DocView.render_menu(index)
     title = "kc3-lang.org"
@@ -153,7 +153,7 @@ defmodule DocController do
     %HTTP.Response{body: body}
   }
 
-  def show_md = fn (path_md, url) {
+  def show_md = fn (path_md, url, locale) {
     index = doc_index("./doc/", path_md)
     menu = DocView.render_menu(index)
     title = "kc3-lang.org"
@@ -168,20 +168,19 @@ defmodule DocController do
     body = LayoutView.render(slug, title, page, url)
     %HTTP.Response{body: body}
   }
-
     
-  def route_locale = fn (url, locale) {
+  def route_locale = fn (url, url_locale, locale) {
     path_html = ".#{url}/index.#{locale}.html"
     if File.exists?(path_html) do
-      show_html(path_html, url)
+      show_html(path_html, url, url_locale)
     else
       path_md = ".#{url}/index.#{locale}.md"
       if File.exists?(path_md) do
-        show_md(path_md, url)
+        show_md(path_md, url, url_locale)
       else
         path_md = ".#{url}.#{locale}.md"
         if File.exists?(path_md) do
-          show_md(path_md, url)
+          show_md(path_md, url, url_locale)
         end
       end
     end
@@ -202,7 +201,7 @@ defmodule DocController do
       end || "en"
       if (Str.starts_with?(url, "/doc/") ||
           url == "/doc") do
-        route_locale(url, locale) || route_locale(url, "en")
+        route_locale(url, locale, locale) || route_locale(url, locale, "en")
       end
     end
   }
