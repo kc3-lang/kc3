@@ -139,6 +139,7 @@ defmodule DocController do
 
     
   def route_locale = fn (url, locale) {
+    puts("route_locale: #{url},#{locale}")
     path_html = ".#{url}/index.#{locale}.html"
     if File.exists?(path_html) do
       show_html(path_html, url)
@@ -157,18 +158,18 @@ defmodule DocController do
   
   def route = fn (request) {
     url = request.url
-    slash = if Str.ends_with?(url, "/") do "" else "/" end
-    url = url + slash
     if (request.method == GET ||
       request.method == HEAD) do
-      locale = if (url[0] == '/' && url[3] == '/') do
+      locale = if (url[0] == '/' && (Str.size(url) == 3 ||
+                                     url[3] == '/')) do
         l = "#{url[1]}#{url[2]}"
         if List.has?(available_locales, l) do
           url = Str.slice(url, 3, -1)
           l
         end
       end || "en"
-      if Str.starts_with?(url, "/doc/") do
+      if (Str.starts_with?(url, "/doc/") ||  
+          url == "/doc") do   
         route_locale(url, locale)
       end
     end
