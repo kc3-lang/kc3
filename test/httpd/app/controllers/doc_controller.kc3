@@ -94,7 +94,8 @@ defmodule DocController do
           doc_index_sitemap(rest, dir, [url | items])
         else
           if locale = List.find_if(available_locales, fn (locale) {
-            Str.has_str?(url, ".#{locale}.")
+            Str.has_str?(path, ".#{locale}.")
+            locale
           }) && locale != "en" do
             url = "#{locale}/#{url}"
           end
