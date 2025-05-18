@@ -93,6 +93,11 @@ defmodule DocController do
             path + "/", acc)
           doc_index_sitemap(rest, dir, [url | items])
         else
+          if locale = List.find_if(available_locales, fn (locale) {
+            Str.has_str?(url, ".#{locale}.")
+          }) && locale != "en" do
+            url = "#{locale}/#{url}"
+          end
           end_ = Str.rindex_character(name, '.')
           if (end_ > 0) do
             name = Str.slice(name, 0, end_)
