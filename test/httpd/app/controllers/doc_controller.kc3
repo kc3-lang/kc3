@@ -21,13 +21,20 @@ defmodule DocController do
         name = Str.subst(file, "_", " ")
         url = Str.slice(path, 1, -1)
         if File.is_directory?(path) do
-          items = doc_index(List.sort(File.list(path)), path_md,
-            path + "/", [])
-          item = %{type: :dir,
-                   url: url,
-                   name: name,
-                   items: items}
-          doc_index(rest, path_md, dir, [item | acc])
+          if List.find_if(acc, fn (item) {
+                item.type == :dir &&
+                item.url == :url
+            }) do
+            doc_index(rest, path_md, dir, acc)
+          else
+            items = doc_index(List.sort(File.list(path)), path_md,
+              path + "/", [])
+            item = %{type: :dir,
+                     url: url,
+                     name: name,
+                     items: items}
+            doc_index(rest, path_md, dir, [item | acc])
+          end
         else
           end_ = Str.rindex_character(name, '.')
           if (end_ > 0) do
@@ -45,11 +52,18 @@ defmodule DocController do
               url = Str.slice(url, 0, end_)
             end
           end
-          item = %{type: :file,
-                   url: url,
-                   name: name,
-                   items: []}
-          doc_index(rest, path_md, dir, [item | acc])
+          if List.find_if(acc, fn (item) {
+                item.type == :file &&
+                item.url == url
+            }) do
+            doc_index(rest, path_md, dir, acc)
+          else
+            item = %{type: :file,
+                     url: url,
+                     name: name,
+                     items: []}
+            doc_index(rest, path_md, dir, [item | acc])
+          end
         end
       end
     }
