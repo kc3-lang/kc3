@@ -6,6 +6,7 @@ defmodule DocController do
   require Str
 
   def available_locales = ["en", "fr"]
+
   def doc_index = fn {
     (path, path_md) { doc_index(path, path_md, path, []) }
     ([], path_md, dir, acc) { List.reverse(acc) }
@@ -93,10 +94,11 @@ defmodule DocController do
             path + "/", acc)
           doc_index_sitemap(rest, dir, [url | items])
         else
-          if locale = List.find_if(available_locales, fn (locale) {
-            Str.has_str?(path, ".#{locale}.")
-            locale
-          }) && locale != "en" do
+          locale = List.find_if(DocController.available_locales,
+            fn (locale) {
+              if Str.has_str?(path, ".#{locale}.") do locale end
+           })
+          if locale && locale != "en" do
             url = "#{locale}/#{url}"
           end
           end_ = Str.rindex_character(name, '.')
