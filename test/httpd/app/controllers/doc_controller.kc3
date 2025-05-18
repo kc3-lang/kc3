@@ -96,10 +96,12 @@ defmodule DocController do
         else
           locale = List.find_if(DocController.available_locales,
             fn (locale) {
-              if Str.has_str?(path, ".#{locale}.") do locale end
-           })
+              if Str.has_str?(path, ".#{locale}.") do
+                locale
+              end
+            })
           if locale && locale != "en" do
-            url = "#{locale}/#{url}"
+            url = "/#{locale}#{url}"
           end
           end_ = Str.rindex_character(name, '.')
           if (end_ > 0) do
