@@ -328,15 +328,6 @@ struct fact_list {
   s_fact_list *next;
 };
 
-struct ht {
-  const s_sym *type;
-  uw           count;
-  uw           size;
-  s_list     **items;
-  s8        (* compare) (const s_tag *a, const s_tag *b);
-  uw        (* hash) (const s_tag *tag);
-};
-
 struct map {
   uw count;
   s_tag *key; /* sorted (see tag_compare) */
@@ -481,6 +472,16 @@ struct file_stat {
   s_time st_atim; /* Time of last access */
   s_time st_ctim; /* Time of last status change */
   s_time st_mtim; /* Time of last modification */
+};
+
+struct ht {
+  s8        (* compare) (const s_tag *a, const s_tag *b);
+  uw           count;
+  uw        (* hash) (const s_tag *tag);
+  s_list     **items;
+  s_rwlock     rwlock;
+  uw           size;
+  const s_sym *type;
 };
 
 struct ident {
