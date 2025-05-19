@@ -1,7 +1,7 @@
 # [Documentation du langage de programmation KC3](https://kc3-lang.org/doc)
 
 KC3 signifie "kmx.io C11 avec des triplets" et est un
-langage de programmation basé sur C11 et des triplets (faits).
+langage de programmation basé sur C11 et des triplets (des faits).
 
 Les fonctionnalités principales du langage reposent sur l'accès aux
 triplets, qui doit être rapide : les opérations effectuées sont en
