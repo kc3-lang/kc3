@@ -66,9 +66,6 @@ void ht_clean (s_ht *ht)
 {
   uw i = 0;
   assert(ht);
-#ifdef HAVE_PTHREAD
-  rwlock_w(&ht->rwlock);
-#endif
   while (i < ht->size) {
     while (ht->items[i])
       ht->items[i] = list_delete(ht->items[i]);
@@ -76,7 +73,6 @@ void ht_clean (s_ht *ht)
   }
   free(ht->items);
 #ifdef HAVE_PTHREAD
-  rwlock_unlock_w(&ht->rwlock);
   rwlock_clean(&ht->rwlock);
 #endif
 }
@@ -97,8 +93,18 @@ s_tag * ht_get_hash (s_ht *ht, s_tag *key, uw hash, s_tag *dest)
   item = ht->items[hash % ht->size];
   while (item && (c = ht->compare(&item->tag, key)) < 0)
     item = list_next(item);
-  if (item && ! c)
-    return tag_init_copy(dest, &item->tag);
+  if (item && ! c) {
+    if (! tag_init_copy(dest, &item->tag)) {
+#ifdef HAVE_PTHREAD
+      rwlock_unlock_r(&ht->rwlock);
+#endif
+      return NULL;
+    }
+#ifdef HAVE_PTHREAD
+    rwlock_unlock_r(&ht->rwlock);
+#endif
+    return dest;
+  }
 #ifdef HAVE_PTHREAD
   rwlock_unlock_r(&ht->rwlock);
 #endif
