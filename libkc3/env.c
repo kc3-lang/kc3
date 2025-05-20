@@ -600,14 +600,15 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
       goto clean;
     if (! fact)
       goto ok;
-    fact_w_clean(&fact_w);
     if (! fact_w_init_fact(&fact_w, fact))
       goto clean;
     *l = list_new(NULL);
     if (! env_eval_call_callable_args(env, callback, arguments,
                                       &(*l)->tag)) {
+      fact_w_clean(&fact_w);
       goto clean;
     }
+    fact_w_clean(&fact_w);
     l = &(*l)->next.data.list;
   }
  ok:
@@ -638,15 +639,13 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
   s_list *arguments;
   s_facts_cursor cursor = {0};
   s_fact *fact = NULL;
-  s_fact_w *fact_w = NULL;
+  s_fact_w fact_w = {0};
   s_list **l;
   s_list  *list;
   s_tag tmp = {0};
-  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct_with_data(&g_sym_FactW, &fact_w,
+                                                false, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct))
-    return NULL;
-  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_tags(facts, &cursor, subject, predicate, object))
     return NULL;
   list = NULL;
@@ -657,13 +656,13 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
     if (! fact) {
       goto ok;
     }
-    fact_w_clean(fact_w);
-    if (! fact_w_init_fact(fact_w, fact))
+    if (! fact_w_init_fact(&fact_w, fact))
       goto clean;
     *l = list_new(NULL);
     if (! env_eval_call_callable_args(env, callback, arguments,
                                       &(*l)->tag))
       goto clean;
+    fact_w_clean(&fact_w);
     l = &(*l)->next.data.list;
   }
  ok:
@@ -674,7 +673,6 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
   return dest;
  clean:
   facts_cursor_clean(&cursor);
-  fact_w_clean(fact_w);
   list_delete_all(list);
   list_delete_all(arguments);
   return NULL;
@@ -687,31 +685,29 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
   s_fact *fact = NULL;
-  s_fact_w *fact_w = NULL;
+  s_fact_w fact_w = {0};
   s_tag tmp = {0};
   assert(env);
   assert(facts);
   assert(spec);
   assert(callback);
   assert(dest);
-  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct_with_data(&g_sym_FactW, &fact_w,
+                                                false, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct)) {
-    list_delete_all(arguments);
-    return NULL;
-  }
-  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_list(facts, &cursor, *spec))
     return NULL;
   if (! facts_with_cursor_next(&cursor, &fact))
     goto clean;
   if (! fact)
     goto ok;
-  if (! fact_w_init_fact(fact_w, fact))
+  if (! fact_w_init_fact(&fact_w, fact))
     goto clean;
   if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
+    fact_w_clean(&fact_w);
     goto clean;
   }
+  fact_w_clean(&fact_w);
   facts_with_cursor_clean(&cursor);
  ok:
   list_delete_all(arguments);
@@ -737,7 +733,7 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   s_list *arguments;
   s_facts_cursor cursor = {0};
   s_fact *fact = NULL;
-  s_fact_w *fact_w = NULL;
+  s_fact_w fact_w = {0};
   s_tag tmp = {0};
   assert(env);
   assert(facts);
@@ -746,24 +742,22 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   assert(object);
   assert(callback);
   assert(dest);
-  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct_with_data(&g_sym_FactW, &fact_w,
+                                                false, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct)) {
-    list_delete_all(arguments);
-    return NULL;
-  }
-  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_tags(facts, &cursor, subject, predicate, object))
     return NULL;
   if (! facts_cursor_next(&cursor, &fact))
     goto clean;
   if (! fact)
     goto ok;
-  if (! fact_w_init_fact(fact_w, fact))
+  if (! fact_w_init_fact(&fact_w, fact))
     goto clean;
   if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
+    fact_w_clean(&fact_w);
     goto clean;
   }
+  fact_w_clean(&fact_w);
   facts_cursor_clean(&cursor);
  ok:
   list_delete_all(arguments);
@@ -782,13 +776,11 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
   s_fact *fact = NULL;
-  s_fact_w *fact_w = NULL;
+  s_fact_w fact_w = {0};
   s_tag tmp = {0};
-  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct_with_data(&g_sym_FactW, &fact_w,
+                                                false, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct))
-    return NULL;
-  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_list(facts, &cursor, *spec))
     return NULL;
   while (1) {
@@ -797,13 +789,12 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
     if (! fact)
       goto ok;
     tag_clean(&tmp);
-    fact_w_init_fact(fact_w, fact);
+    fact_w_init_fact(&fact_w, fact);
     if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
-      fact_w_clean(fact_w);
+      fact_w_clean(&fact_w);
       goto clean;
     }
-    fact_w_clean(fact_w);
-    fact_w_init(fact_w);
+    fact_w_clean(&fact_w);
   }
   facts_with_cursor_clean(&cursor);
  ok:
@@ -814,7 +805,6 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   err_puts("env_facts_with: error");
   assert(! "env_facts_with: error");
   tag_clean(&tmp);
-  fact_w_clean(fact_w);
   list_delete_all(arguments);
   return NULL;
 }
@@ -875,13 +865,11 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
   s_list *arguments;
   s_facts_cursor cursor = {0};
   s_fact *fact = NULL;
-  s_fact_w *fact_w = NULL;
+  s_fact_w fact_w = {0};
   s_tag tmp = {0};
-  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct_with_data(&g_sym_FactW, &fact_w,
+                                                false, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct))
-    return NULL;
-  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_tags(facts, &cursor, subject, predicate, object))
     return NULL;
   while (1) {
@@ -891,13 +879,13 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
       goto ok;
     }
     tag_clean(&tmp);
-    fact_w_clean(fact_w);
-    if (! fact_w_init_fact(fact_w, fact))
+    if (! fact_w_init_fact(&fact_w, fact))
       goto clean;
     if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
-      fact_w_clean(fact_w);
+      fact_w_clean(&fact_w);
       goto clean;
     }
+    fact_w_clean(&fact_w);
   }
   facts_cursor_clean(&cursor);
  ok:
@@ -907,7 +895,6 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
  clean:
   facts_cursor_clean(&cursor);
   tag_clean(&tmp);
-  fact_w_clean(fact_w);
   list_delete_all(arguments);
   return NULL;
 }
@@ -919,6 +906,7 @@ s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
   s_facts *facts;
   s_tag tmp = {0};
   s_facts_transaction transaction = {0};
+  s_unwind_protect unwind_protect;
   if (! facts_transaction_init(&transaction))
     return NULL;
   if (! env_eval_tag(env, facts_arg, &facts_tag)) {
@@ -926,19 +914,32 @@ s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
     return NULL;
   }
   if (facts_tag.type != TAG_PTR) {
-    err_puts("env_with_transaction: first arg is not a Ptr to Facts");
+    err_puts("env_facts_with_transaction: first arg is not a Ptr to"
+             " Facts");
+    assert(!("env_facts_with_transaction: first arg is not a Ptr to"
+             " Facts"));
     tag_clean(&facts_tag);
     facts_transaction_clean(&transaction);
     return NULL;
   }
   facts = facts_tag.data.ptr.p;
   facts_transaction_start(facts, &transaction);
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    facts_transaction_end(facts, &transaction);
+    tag_clean(&facts_tag);
+    facts_transaction_clean(&transaction);
+    longjmp(*unwind_protect.jmp, 1);
+  }
   if (! env_eval_tag(env, tag_arg, &tmp)) {
+    env_unwind_protect_pop(env, &unwind_protect);
     facts_transaction_end(facts, &transaction);
     tag_clean(&facts_tag);
     facts_transaction_clean(&transaction);
     return NULL;
   }
+  env_unwind_protect_pop(env, &unwind_protect);
   facts_transaction_end(facts, &transaction);
   tag_clean(&facts_tag);
   facts_transaction_clean(&transaction);
