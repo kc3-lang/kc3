@@ -579,7 +579,7 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
   s_fact *fact = NULL;
-  s_fact_w *fact_w = NULL;
+  s_fact_w fact_w = {0};
   s_list **l;
   s_list  *list;
   s_tag tmp = {0};
@@ -588,13 +588,9 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
   assert(spec);
   assert(callback);
   assert(dest);
-  if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
+  if (! (arguments = list_new_pstruct_with_data(&g_sym_FactW, &fact_w,
+                                                false, NULL)))
     return NULL;
-  if (! struct_allocate(arguments->tag.data.pstruct)) {
-    list_delete_all(arguments);
-    return NULL;
-  }
-  fact_w = arguments->tag.data.pstruct->data;
   if (! facts_with_list(facts, &cursor, *spec))
     return NULL;
   list = NULL;
@@ -604,8 +600,8 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
       goto clean;
     if (! fact)
       goto ok;
-    fact_w_clean(fact_w);
-    if (! fact_w_init_fact(fact_w, fact))
+    fact_w_clean(&fact_w);
+    if (! fact_w_init_fact(&fact_w, fact))
       goto clean;
     *l = list_new(NULL);
     if (! env_eval_call_callable_args(env, callback, arguments,
