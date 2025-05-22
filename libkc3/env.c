@@ -778,11 +778,19 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   s_fact *fact = NULL;
   s_fact_w fact_w = {0};
   s_tag tmp = {0};
+  s_unwind_protect unwind_protect;
   if (! (arguments = list_new_pstruct_with_data(&g_sym_FactW, &fact_w,
                                                 false, NULL)))
     return NULL;
   if (! facts_with_list(facts, &cursor, *spec))
     return NULL;
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    fact_w_clean(&fact_w);
+    facts_with_cursor_clean(&cursor);
+    longjmp(*unwind_protect.jmp, 1);
+  }
   while (1) {
     if (! facts_with_cursor_next(&cursor, &fact))
       goto clean;
@@ -798,6 +806,7 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   }
   facts_with_cursor_clean(&cursor);
  ok:
+  env_unwind_protect_pop(env, &unwind_protect);
   list_delete_all(arguments);
   *dest = tmp;
   return dest;
@@ -806,11 +815,12 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   assert(! "env_facts_with: error");
   tag_clean(&tmp);
   list_delete_all(arguments);
+  env_unwind_protect_pop(env, &unwind_protect);
   return NULL;
 }
 
 s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
-                              s_tag *do_block_tag, s_tag *dest)
+                              s_tag *tag, s_tag *dest)
 {
   s_facts_with_cursor cursor = {0};
   s_fact *fact = NULL;
@@ -819,6 +829,7 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
   s_list *spec = NULL;
   s_tag   spec_eval = {0};
   s_tag tmp = {0};
+  s_unwind_protect unwind_protect;
   if (! env_eval_tag(env, facts_tag, &facts_eval))
     return NULL;
   if (facts_eval.type != TAG_PTR) {
@@ -837,13 +848,20 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
   spec = spec_eval.data.list;
   if (! facts_with_list(facts, &cursor, spec))
     return NULL;
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    tag_clean(&tmp);
+    facts_with_cursor_clean(&cursor);
+    longjmp(*unwind_protect.jmp, 1);
+  }
   while (1) {
     if (! facts_with_cursor_next(&cursor, &fact))
       goto clean;
     if (! fact)
       goto ok;
     tag_clean(&tmp);
-    if (! env_eval_tag(env, do_block_tag, &tmp)) {
+    if (! env_eval_tag(env, tag, &tmp)) {
       goto clean;
     }
   }
@@ -854,6 +872,7 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
  clean:
   err_puts("env_facts_with_macro: error");
   assert(! "env_facts_with_macro: error");
+  facts_with_cursor_clean(&cursor);
   tag_clean(&tmp);
   return NULL;
 }
