@@ -687,6 +687,7 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
   s_fact *fact = NULL;
   s_fact_w fact_w = {0};
   s_tag tmp = {0};
+  s_unwind_protect unwind_protect;
   assert(env);
   assert(facts);
   assert(spec);
@@ -703,10 +704,19 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
     goto ok;
   if (! fact_w_init_fact(&fact_w, fact))
     goto clean;
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    fact_w_clean(&fact_w);
+    facts_with_cursor_clean(&cursor);
+    longjmp(*unwind_protect.jmp, 1);
+  }
   if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
+    env_unwind_protect_pop(env, &unwind_protect);
     fact_w_clean(&fact_w);
     goto clean;
   }
+  env_unwind_protect_pop(env, &unwind_protect);
   fact_w_clean(&fact_w);
   facts_with_cursor_clean(&cursor);
  ok:
@@ -735,6 +745,7 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   s_fact *fact = NULL;
   s_fact_w fact_w = {0};
   s_tag tmp = {0};
+  s_unwind_protect unwind_protect;
   assert(env);
   assert(facts);
   assert(subject);
@@ -753,10 +764,19 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
     goto ok;
   if (! fact_w_init_fact(&fact_w, fact))
     goto clean;
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    facts_cursor_clean(&cursor);
+    fact_w_clean(&fact_w);
+    longjmp(*unwind_protect.jmp, 1);
+  }
   if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
+    env_unwind_protect_pop(env, &unwind_protect);
     fact_w_clean(&fact_w);
     goto clean;
   }
+  env_unwind_protect_pop(env, &unwind_protect);
   fact_w_clean(&fact_w);
   facts_cursor_clean(&cursor);
  ok:
@@ -794,8 +814,10 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   while (1) {
     if (! facts_with_cursor_next(&cursor, &fact))
       goto clean;
-    if (! fact)
+    if (! fact) {
+      env_unwind_protect_pop(env, &unwind_protect);
       goto ok;
+    }
     tag_clean(&tmp);
     fact_w_init_fact(&fact_w, fact);
     if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
@@ -803,10 +825,11 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
       goto clean;
     }
     fact_w_clean(&fact_w);
+    fact_w_init(&fact_w);
   }
+  env_unwind_protect_pop(env, &unwind_protect);
   facts_with_cursor_clean(&cursor);
  ok:
-  env_unwind_protect_pop(env, &unwind_protect);
   list_delete_all(arguments);
   *dest = tmp;
   return dest;
