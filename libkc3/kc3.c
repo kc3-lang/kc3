@@ -163,8 +163,11 @@ s_tag * kc3_array_dimension(s_array *a, s_tag *index, s_tag *dest)
 s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
 {
   s_block block;
+  s_env *env;
   const s_sym *name_sym = NULL;
   s_tag tmp = {0};
+  s_unwind_protect unwind_protect;
+  env = env_global();
   switch (name->type) {
   case TAG_SYM:
     name_sym = name->data.sym;
@@ -179,10 +182,15 @@ s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
     return NULL;
   if (setjmp(block.buf)) {
     tag_init_copy(dest, &block.tag);
-    block_clean(&block);
     return dest;
   }
-  if (! env_eval_tag(env_global(), do_block, &tmp)) {
+  env_unwind_protect_push(env, &unwind_protect);
+  if (setjmp(unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &unwind_protect);
+    block_clean(&block);
+    longjmp(*unwind_protect.jmp, 1);
+  }
+  if (! env_eval_tag(env, do_block, &tmp)) {
     block_clean(&block);
     return NULL;
   }

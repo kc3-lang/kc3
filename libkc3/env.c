@@ -838,6 +838,7 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   assert(! "env_facts_with: error");
   tag_clean(&tmp);
   list_delete_all(arguments);
+  facts_with_cursor_clean(&cursor);
   env_unwind_protect_pop(env, &unwind_protect);
   return NULL;
 }

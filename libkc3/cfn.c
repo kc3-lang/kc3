@@ -35,14 +35,17 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   void **result_pointer = NULL;
   u8 arity;
   s_list *cfn_arg_types;
+  s_env *env;
   sw i = 0;
   sw num_args;
   void *result = NULL;
   s_tag tmp = {0};
   s_tag tmp2 = {0};
   s_list *trace;
+  s_unwind_protect unwind_protect;
   assert(cfn);
   assert(cfn->arity == cfn->cif.nargs);
+  env = env_global();
   num_args = list_length(args);
   arity = cfn->arity - (cfn->arg_result ? 1 : 0);
   if (arity != num_args) {
@@ -130,14 +133,21 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
   }
   if (cfn->ptr.f) {
-    if (! (trace = list_new(env_global()->stacktrace)))
+    if (! (trace = list_new(env->stacktrace)))
       goto ko;
-    // FIXME: error handling
     tag_init_list(&trace->tag, list_new_sym
                   (cfn->name, list_new_copy
                    (args)));
-    env_global()->stacktrace = trace;
+    env->stacktrace = trace;
+    env_unwind_protect_push(env, &unwind_protect);
+    if (setjmp(unwind_protect.buf)) {
+      env_unwind_protect_pop(env, &unwind_protect);
+      assert(env_global()->stacktrace == trace);
+      env->stacktrace = list_delete(trace);
+      longjmp(*unwind_protect.jmp, 1);
+    }
     ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
+    env_unwind_protect_pop(env, &unwind_protect);
     if (cfn->arg_result) {
       if (result_pointer != arg_pointer_result) {
         err_write_1("cfn_apply: ");
@@ -149,8 +159,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
         err_write_1(" != ");
         err_inspect_pointer(arg_pointer_result);
         err_write_1("\n");
-        assert(env_global()->stacktrace == trace);
-        env_global()->stacktrace = list_delete(trace);
+        assert(env->stacktrace == trace);
+        env->stacktrace = list_delete(trace);
         goto ko;
       }
       tag_clean(&tmp);
@@ -158,8 +168,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     }
     else
       *dest = tmp;
-    assert(env_global()->stacktrace == trace);
-    env_global()->stacktrace = list_delete(trace);
+    assert(env->stacktrace == trace);
+    env->stacktrace = list_delete(trace);
   }
   else {
     err_puts("cfn_apply: NULL function pointer");
