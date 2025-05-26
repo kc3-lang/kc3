@@ -1,0 +1,6 @@
+defmodule Config do
+
+  def available_locales = ["en",
+                           "fr"]
+
+end

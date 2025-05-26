@@ -19,16 +19,16 @@
         </li>
         -->
         <li class="nav-item">
-          <a class="navbar-link<%= if Str.starts_with?(url, "/doc/") || Str.starts_with?(url, "/#{locale}/doc/") do " active" end %>" href="<%= if locale != "en" do "/#{locale}" end %>/doc/">Documentation</a>
+          <a class="navbar-link<%= if Str.starts_with?(url, "/doc/") || Str.starts_with?(url, "/#{locale}/doc/") do " active" end %>" href="/<%= locale %>/doc/">Documentation</a>
         </li>
       </ul>
       <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-auto me-0">
-        <%= raw str(List.map(DocController.available_locales,
+        <%= raw str(List.map(Config.available_locales,
               fn (l) {
                 active = if locale == l do " active" end
                 """
         <li class="nav-item ml-auto">
-          <a class="navbar-link#{active}" href="#{Route.doc(url, l)}">#{HTML.escape(l)}</a>
+          <a class="navbar-link#{active}" href="#{Route.locale(url, locale, l)}">#{HTML.escape(l)}</a>
         </li>"""
         })) %>
       </ul>

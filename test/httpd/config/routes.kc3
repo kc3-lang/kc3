@@ -16,12 +16,22 @@ HTTPd.Route.def_static_route("", "./static/", 0)
 defmodule Route do
 
   def doc = fn (path, locale) {
-    if locale != "en" &&
-       List.has?(DocController.available_locales, locale) do
-      "/#{locale}#{URL.escape(path)}"
+    if List.has?(Config.available_locales, locale) do
+      "/#{URL.escape(locale)}#{URL.escape(path)}"
     else
       URL.escape(path)
     end
   }
-  
+
+  def locale = fn (url, url_locale, locale) {
+    if Str.starts_with?(url, "/#{url_locale}") do
+      url = Str.slice(url, Str.size(url_locale) + 1, -1)
+    end
+    if List.has?(Config.available_locales, locale) do
+      "/#{URL.escape(locale)}#{URL.escape(url)}"
+    else
+      URL.escape(url)
+    end
+  }
+
 end

@@ -49,7 +49,7 @@ defmodule PageController do
     }
   }
 
-  def show_html = fn (path_html, url) {
+  def show_html = fn (path_html, url, locale) {
     title = "kc3-lang.org"
     name = File.name(path_html)
     slug = Str.slice(name, 0, -9)
@@ -61,7 +61,7 @@ defmodule PageController do
     %HTTP.Response{body: body}
   }
 
-  def show_md = fn (path_md, url) {
+  def show_md = fn (path_md, url, locale) {
     title = "kc3-lang.org"
     md = File.read_all(path_md)
     [title | _] = Markdown.titles(md)
@@ -72,25 +72,38 @@ defmodule PageController do
     %HTTP.Response{body: body}
   }
 
-  def route = fn (request) {
-    if (request.method == GET ||
-        request.method == HEAD) do
-      locale = "en"
-      slash = if Str.ends_with?(request.url, "/") do "" else "/" end
-      path_html = "./pages#{request.url}#{slash}index.#{locale}.html"
-      if File.exists?(path_html) do
-        show_html(path_html, request.url)
+  def route_locale = fn (url, url_locale, locale) {
+    slash = if Str.ends_with?(url, "/") do "" else "/" end
+    path_html = "./pages#{url}#{slash}index.#{locale}.html"
+    if File.exists?(path_html) do
+      show_html(path_html, url, url_locale)
+    else
+      path_md = "./pages#{url}#{slash}index.#{locale}.md"
+      if File.exists?(path_md) do
+        show_md(path_md, url, url_locale)
       else
-        path_md = "./pages#{request.url}#{slash}index.#{locale}.md"
+        path_md = "./pages#{request.url}.#{locale}.md"
         if File.exists?(path_md) do
-          show_md(path_md, request.url)
-        else
-          path_md = "./pages#{request.url}.#{locale}.md"
-          if File.exists?(path_md) do
-            show_md(path_md, request.url)
-          end
+          show_md(path_md, url, url_locale)
         end
       end
+    end
+  }
+
+  def route = fn (request) {
+    url = request.url
+    if (request.method == GET ||
+        request.method == HEAD) do
+      locale = if (url[0] == '/' &&
+                   (Str.size(url) == 3 ||
+                    url[3] == '/')) do
+        l = "#{url[1]}#{url[2]}"
+        if List.has?(Config.available_locales, l) do
+          url = Str.slice(url, 3, -1)
+          l
+        end
+      end || "en"
+      route_locale(url, locale, locale) || route_locale(url, locale, "en")
     end
   }
 
