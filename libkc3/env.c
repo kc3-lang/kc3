@@ -872,22 +872,24 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
   spec = spec_eval.data.list;
   if (! facts_with_list(facts, &cursor, spec))
     return NULL;
-  env_unwind_protect_push(env, &unwind_protect);
-  if (setjmp(unwind_protect.buf)) {
-    env_unwind_protect_pop(env, &unwind_protect);
-    tag_clean(&tmp);
-    facts_with_cursor_clean(&cursor);
-    longjmp(*unwind_protect.jmp, 1);
-  }
   while (1) {
     if (! facts_with_cursor_next(&cursor, &fact))
       goto clean;
     if (! fact)
       goto ok;
     tag_clean(&tmp);
+    env_unwind_protect_push(env, &unwind_protect);
+    if (setjmp(unwind_protect.buf)) {
+      env_unwind_protect_pop(env, &unwind_protect);
+      tag_clean(&tmp);
+      facts_with_cursor_clean(&cursor);
+      longjmp(*unwind_protect.jmp, 1);
+    }
     if (! env_eval_tag(env, tag, &tmp)) {
+      env_unwind_protect_pop(env, &unwind_protect);
       goto clean;
     }
+    env_unwind_protect_pop(env, &unwind_protect);
   }
   facts_with_cursor_clean(&cursor);
  ok:
