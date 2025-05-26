@@ -111,14 +111,14 @@ lldb_test: debug
 	if [ -f libkc3_test_debug.core ]; then lldb .libs/libkc3_test_debug libkc3_test_debug.core; else lldb .libs/libkc3_test_debug; fi
 
 test: libkc3_test
-	time ./.libs/libkc3_test --copy
-	time ./.libs/libkc3_test
-	IKC3=${SRC_TOP}/ikc3/.libs/ikc3 time ./ikc3_test
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s time ./kc3s_test
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s time ./ekc3_test
-	IKC3=${SRC_TOP}/ikc3/.libs/ikc3 time ./json_test
-	IKC3=${SRC_TOP}/ikc3/.libs/ikc3 time ./markdown_test
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s time ./http_test
+	time ./libkc3_test --copy
+	time ./libkc3_test
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./ikc3_test
+	KC3S=${SRC_TOP}/kc3s/kc3s time ./kc3s_test
+	KC3S=${SRC_TOP}/kc3s/kc3s time ./ekc3_test
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./json_test
+	IKC3=${SRC_TOP}/ikc3/ikc3 time ./markdown_test
+	KC3S=${SRC_TOP}/kc3s/kc3s time ./http_test
 
 test_asan: libkc3_test_asan
 	time ./libkc3_test_asan --copy
