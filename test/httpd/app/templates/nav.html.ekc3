@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand" href="/">
+    <a class="navbar-brand" href="/<%= locale %>">
       <div class="doc-logo">
         <span><b>&#11042;</b></span> kc3-lang
       </div>
