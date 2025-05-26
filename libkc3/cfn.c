@@ -29,19 +29,20 @@ static s_tag * cfn_tag_init (s_tag *tag, const s_sym *type);
 s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
 {
   s_list *a;
-  void **arg_pointer_result = NULL;
-  void **arg_pointers = NULL;
-  void **arg_values = NULL;
+  void ** volatile arg_pointer_result = NULL;
+  void ** volatile arg_pointers = NULL;
+  void ** volatile arg_values = NULL;
   void **result_pointer = NULL;
   u8 arity;
   s_list *cfn_arg_types;
   s_env *env;
   sw i = 0;
   sw num_args;
+  void *p;
   void *result = NULL;
   s_tag tmp = {0};
   s_tag tmp2 = {0};
-  s_list *trace;
+  s_list * volatile trace;
   s_unwind_protect unwind_protect;
   assert(cfn);
   assert(cfn->arity == cfn->cif.nargs);
@@ -95,29 +96,30 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       if (cfn_arg_types->tag.data.sym == &g_sym_Result) {
         assert(cfn->cif.rtype == &ffi_type_pointer);
         cfn_tag_init(&tmp2, cfn->result_type);
-        if (! tag_to_ffi_pointer(&tmp2, cfn->result_type,
-                                 arg_pointers + i)) {
+        if (! tag_to_ffi_pointer(&tmp2, cfn->result_type, &p)) {
           err_puts("cfn_apply: tag_to_ffi_pointer 3");
           assert(! "cfn_apply: tag_to_ffi_pointer 3");
           goto ko;
         }
+        arg_pointers[i] = p;
         arg_values[i] = &arg_pointers[i];
-        arg_pointer_result = arg_pointers[i];
+        arg_pointer_result = p;
       }
       else {
         if (cfn->cif.arg_types[i] == &ffi_type_pointer) {
           if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.sym,
-                                   arg_pointers + i)) {
+                                   &p)) {
             err_puts("cfn_apply: tag_to_ffi_pointer 4");
             err_stacktrace();
             assert(! "cfn_apply: tag_to_ffi_pointer 4");
             goto ko;
           }
+          arg_pointers[i] = p;
           arg_values[i] = &arg_pointers[i];
         }
-        else
+        else {
           if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.sym,
-                                   arg_values + i)) {
+                                   &p)) {
             err_write_1("cfn_apply: ");
             err_inspect_str(&cfn->name->str);
             err_write_1(" ");
@@ -126,6 +128,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
             assert(! "cfn_apply: tag_to_ffi_pointer 5");
             goto ko;
           }
+          arg_values[i] = p;
+        }
         a = list_next(a);
       }
       cfn_arg_types = list_next(cfn_arg_types);
@@ -144,6 +148,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       env_unwind_protect_pop(env, &unwind_protect);
       assert(env_global()->stacktrace == trace);
       env->stacktrace = list_delete(trace);
+      free(arg_pointers);
+      free(arg_values);
       longjmp(*unwind_protect.jmp, 1);
     }
     ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);

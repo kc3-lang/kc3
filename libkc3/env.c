@@ -680,7 +680,7 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
 
 s_tag * env_facts_first_with (s_env *env, s_facts *facts,
                               s_list **spec,
-                              s_callable *callback, s_tag *dest)
+                              s_callable *callback, s_tag * volatile dest)
 {
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
@@ -738,7 +738,7 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
 s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
                                    s_tag *subject, s_tag *predicate,
                                    s_tag *object, s_callable *callback,
-                                   s_tag *dest)
+                                   s_tag * volatile dest)
 {
   s_list *arguments;
   s_facts_cursor cursor = {0};
@@ -791,7 +791,7 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
 }
 
 s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
-                        s_callable *callback, s_tag *dest)
+                        s_callable *callback, s_tag * volatile dest)
 {
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
@@ -844,7 +844,7 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
 }
 
 s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
-                              s_tag *tag, s_tag *dest)
+                              s_tag *tag, s_tag * volatile dest)
 {
   s_facts_with_cursor cursor = {0};
   s_fact *fact = NULL;
@@ -943,7 +943,7 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
 }
 
 s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
-                                    s_tag *tag_arg, s_tag *dest)
+                                    s_tag *tag_arg, s_tag * volatile dest)
 {
   s_tag facts_tag = {0};
   s_facts *facts;
@@ -2244,7 +2244,7 @@ bool env_tag_ident_is_bound (s_env *env, const s_tag *tag)
 
 s_tag * env_unwind_protect (s_env *env, s_tag *protected,
                             s_tag *cleanup,
-                            s_tag *dest)
+                            s_tag * volatile dest)
 {
   s_tag discard = {0};
   s_tag tmp = {0};

@@ -30,7 +30,7 @@ bool ht_add (s_ht *ht, s_tag *tag)
 /* Returns true if tag was added or is already present. */
 bool ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
 {
-  s8 c;
+  s8 c = -1;
   s_list **item;
   s_list  *item_new;
   assert(ht);

@@ -263,7 +263,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
                             s_list *arguments, s_tag *dest)
 {
   s_list *args = NULL;
-  s_list *args_final = NULL;
+  s_list * volatile args_final = NULL;
   s_block block = {0};
   s_fn_clause *clause;
   s_frame *env_frame;
@@ -326,6 +326,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
         env->silence_errors = silence_errors;
         env->frame = env_frame;
         frame_clean(&frame);
+        list_delete_all(args);
         longjmp(*unwind_protect.jmp, 1);
       }
       if (env_eval_equal_list(env, fn->macro || fn->special_operator,

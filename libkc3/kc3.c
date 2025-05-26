@@ -160,7 +160,7 @@ s_tag * kc3_array_dimension(s_array *a, s_tag *index, s_tag *dest)
   return dest;
 }
 
-s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
+s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag * volatile dest)
 {
   s_block block;
   s_env *env;
