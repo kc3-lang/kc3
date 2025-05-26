@@ -36,7 +36,7 @@ bool ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
   assert(ht);
   assert(ht->size);
   assert(tag);
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
   rwlock_w(&ht->rwlock);
 #endif
   item = ht->items + hash % ht->size;
@@ -49,14 +49,14 @@ bool ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
   if (! (item_new = list_new_tag_copy(tag, *item))) {
     err_puts("ht_add_hash: ht_item_new");
     assert(! "ht_add_hash: ht_item_new");
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
     rwlock_unlock_w(&ht->rwlock);
 #endif
     return false;
   }
   *item = item_new;
   ht->count++;
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
   rwlock_unlock_w(&ht->rwlock);
 #endif
   return true;
@@ -72,7 +72,7 @@ void ht_clean (s_ht *ht)
     i++;
   }
   free(ht->items);
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
   rwlock_clean(&ht->rwlock);
 #endif
 }
@@ -87,7 +87,7 @@ s_tag * ht_get_hash (s_ht *ht, s_tag *key, uw hash, s_tag *dest)
 {
   sw c = -1;
   s_list *item;
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
   rwlock_r(&ht->rwlock);
 #endif
   item = ht->items[hash % ht->size];
@@ -95,17 +95,17 @@ s_tag * ht_get_hash (s_ht *ht, s_tag *key, uw hash, s_tag *dest)
     item = list_next(item);
   if (item && ! c) {
     if (! tag_init_copy(dest, &item->tag)) {
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
       rwlock_unlock_r(&ht->rwlock);
 #endif
       return NULL;
     }
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
     rwlock_unlock_r(&ht->rwlock);
 #endif
     return dest;
   }
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
   rwlock_unlock_r(&ht->rwlock);
 #endif
   return NULL;
@@ -123,7 +123,7 @@ s_ht * ht_init (s_ht *ht, const s_sym *type, uw size)
     return NULL;
   tmp.compare = compare_tag;
   tmp.hash = hash_tag;
-#ifdef HAVE_PTHREAD
+#if HAVE_PTHREAD
   rwlock_init(&tmp.rwlock);
 #endif
   *ht = tmp;

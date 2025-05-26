@@ -37,6 +37,9 @@ void struct_type_clean (s_struct_type *st)
   }
   map_clean(&st->map);
   free(st->offset);
+#if HAVE_PTHREAD
+  mutex_clean(&st->mutex);
+#endif
 }
 
 void * struct_type_copy_data (const s_struct_type *st, void *dest,

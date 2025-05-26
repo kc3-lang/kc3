@@ -125,6 +125,10 @@ void struct_clean (s_struct *s)
   const s_sym *type;
   assert(s);
   assert(s->pstruct_type);
+#if HAVE_PTHREAD
+  if (s->mutex.mutex)
+    mutex_clean(&s->mutex);
+#endif
   if (s->data) {
     if (s->pstruct_type->clean)
       s->pstruct_type->clean(s->data);
@@ -183,7 +187,6 @@ void struct_delete (s_struct *s)
   }
   struct_clean(s);
   free(s);
-  return;
 }
 
 uw * struct_find_key_index (const s_struct *s, const s_sym *key,

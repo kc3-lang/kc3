@@ -448,7 +448,7 @@ struct buf {
 struct cow {
   const s_sym *type;
   s_list *list;
-  s_mutex mutex;
+  s_mutex mutex; // TODO
   sw ref_count;
 };
 
