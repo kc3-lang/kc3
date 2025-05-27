@@ -67,3 +67,36 @@ struct sockaddr * socket_addr_new_copy (const struct sockaddr *addr,
     memcpy(sa, addr, len);
     return sa;
 }
+
+s32 socket_addr_port(const struct sockaddr *addr)
+{
+  if (addr->sa_family == AF_INET) {
+    const struct sockaddr_in *ipv4 = (const struct sockaddr_in *) addr;
+    return ntohs(ipv4->sin_port);
+  }
+  else if (addr->sa_family == AF_INET6) {
+    const struct sockaddr_in6 *ipv6 = (const struct sockaddr_in6 *) addr;
+    return ntohs(ipv6->sin6_port);
+  }
+  else {
+    return -1;
+  }
+}
+
+int socket_addr_port_set (struct sockaddr *addr, s32 port)
+{
+    if (addr->sa_family == AF_INET) {
+        struct sockaddr_in *ipv4 = (struct sockaddr_in *) addr;
+        ipv4->sin_port = htons(port);
+        return 0;
+    }
+    else if (addr->sa_family == AF_INET6) {
+        struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *) addr;
+        ipv6->sin6_port = htons(port);
+        return 0;
+    }
+    else {
+        // Unsupported address family
+        return -1;
+    }
+}

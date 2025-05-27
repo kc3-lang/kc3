@@ -21,8 +21,8 @@
 #include "types.h"
 
 /* Operators. */
-s_buf * buf_fd_open_r (s_buf *buf, s32 fd);
-s_buf * buf_fd_open_w (s_buf *buf, s32 fd);
+s_buf * buf_fd_open_r (s_buf *buf, s64 fd);
+s_buf * buf_fd_open_w (s_buf *buf, s64 fd);
 void    buf_fd_close (s_buf *buf);
 
 #endif /* LIBKC3_BUF_FD_H */

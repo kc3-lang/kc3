@@ -39,7 +39,7 @@ void buf_fd_close (s_buf *buf)
   buf->user_ptr = NULL;
 }
 
-s_buf * buf_fd_open_r (s_buf *buf, s32 fd)
+s_buf * buf_fd_open_r (s_buf *buf, s64 fd)
 {
   s_buf_fd *buf_fd;
   assert(buf);
@@ -56,8 +56,8 @@ s_buf * buf_fd_open_r (s_buf *buf, s32 fd)
 
 sw buf_fd_open_r_refill (s_buf *buf)
 {
-  int avail;
-  s32 fd;
+  s32 avail;
+  s64 fd;
   sw r;
   uw size;
   assert(buf);
@@ -105,7 +105,7 @@ sw buf_fd_open_r_refill (s_buf *buf)
   return r;
 }
 
-s_buf * buf_fd_open_w (s_buf *buf, s32 fd)
+s_buf * buf_fd_open_w (s_buf *buf, s64 fd)
 {
   s_buf_fd *buf_fd;
   assert(buf);

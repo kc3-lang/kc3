@@ -52,11 +52,11 @@ bool socket_init (void)
 {
 #if (defined(WIN32) || defined(WIN64))
   static WSADATA wsa_data;
-  s32 r;
+  s64 r;
   if (! g_socket_init) {
     //printf("socket_init: WSAStartup\n");
     if ((r = WSAStartup(MAKEWORD(2,2), &wsa_data))) {
-      printf("socket_init: WSAStartup failed with error: %d\n", r);
+      printf("socket_init: WSAStartup failed with error: %lld\n", r);
       return false;
     }
     g_socket_init = true;
@@ -71,7 +71,7 @@ p_socket socket_init_accept (p_socket s, p_socket listening)
   struct sockaddr_in addr_in = {0};
   socklen_t          addr_len;
   sw e;
-  t_socket tmp;
+  s64 tmp;
   assert(s);
   assert(listening);
   addr = (struct sockaddr *) &addr_in;
@@ -99,7 +99,7 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
   s32 e;
   const char *error_reason = "error";
   s32 i;
-  t_socket sockfd;
+  s64 sockfd;
   assert(s);
   assert(host);
   if (! socket_init())

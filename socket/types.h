@@ -39,7 +39,7 @@ struct socket_buf {
   struct sockaddr *addr;
   u32              addr_len;
   s_str            addr_str;
-  t_socket sockfd;
+  s64 sockfd;
   s_buf_rw buf_rw;
 };
 

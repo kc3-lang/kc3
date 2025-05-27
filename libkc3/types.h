@@ -282,7 +282,7 @@ struct array_dimension {
 };
 
 struct buf_fd {
-  s32 fd;
+  s64 fd;
 };
 
 struct buf_save {

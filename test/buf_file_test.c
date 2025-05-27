@@ -33,7 +33,7 @@ TEST_CASE(buf_file_open_r_close)
   char b[16];
   s_buf buf;
   FILE *fp;
-  fp = fopen("/dev/null", "r");
+  fp = fopen("zero", "r");
   assert(fp);
   buf_init(&buf, false, sizeof(b), b);
   TEST_EQ(buf_file_open_r(&buf, fp), &buf);

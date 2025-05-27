@@ -23,4 +23,10 @@ struct sockaddr * socket_addr_new (u32 len);
 struct sockaddr * socket_addr_new_copy (const struct sockaddr *addr,
                                         u32 len);
 
+/* Observers. */
+s32 socket_addr_port(const struct sockaddr *addr);
+
+/* Operators. */
+s32 socket_addr_port_set(const struct sockaddr *addr, s32 port);
+
 #endif /* SOCKET_H */

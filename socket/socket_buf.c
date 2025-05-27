@@ -47,7 +47,7 @@ void socket_buf_close (s_socket_buf *sb)
     socket_addr_delete(sb->addr);
 }
 
-s_socket_buf * socket_buf_init (s_socket_buf *sb, t_socket sockfd,
+s_socket_buf * socket_buf_init (s_socket_buf *sb, s64 sockfd,
                                 struct sockaddr *addr,
                                 u32 addr_len)
 {
@@ -89,7 +89,7 @@ s_socket_buf * socket_buf_init_accept (s_socket_buf *sb, p_socket listening)
   struct sockaddr_storage addr_storage = {0};
   socklen_t               addr_len;
   sw e;
-  t_socket sockfd;
+  s64 sockfd;
   s_socket_buf tmp = {0};
   assert(sb);
   assert(listening);
@@ -122,10 +122,13 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   struct addrinfo hints = {0};
   struct addrinfo *res;
   struct addrinfo *res0;
+  struct addrinfo *res_last;
   s32 e;
-  const char *error_reason = "error";
-  s32 r;
-  t_socket sockfd;
+  const char *error_reason = "error: ";
+  char ipstr[128] = {0};
+  s32 port = -1;
+  s64 r;
+  s64 sockfd;
   s_socket_buf tmp;
   assert(sb);
   assert(host);
@@ -149,26 +152,59 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   sockfd = -1;
   res = res0;
   while (res) {
+    res_last  = res;
+    if (! socket_addr_port(res->ai_addr)) {
+      e = errno;
+      error_reason = "getaddrinfo port 0: ";
+      goto next;
+    }
     sockfd = socket(res->ai_family, SOCK_STREAM, res->ai_protocol);
     if (sockfd < 0) {
       e = errno;
-      error_reason = "socket_buf_init_connect: socket: ";
+      error_reason = "socket: ";
       goto next;
     }
     if ((r = connect(sockfd, res->ai_addr, res->ai_addrlen)) < 0) {
       e = errno;
-      error_reason = "socket_buf_init_connect: connect: ";
+      error_reason = "connect: ";
       goto next;
     }
     break;
   next:
-    if (sockfd >= 0)
+    if (sockfd >= 0) {
       close(sockfd);
+      sockfd = -1;
+    }
     res = res->ai_next;
   }
   if (sockfd < 0) {
+    err_write_1("socket_buf_init_connect(");
+    err_write_1(host->ptr.pchar);
+    err_write_1(", ");
+    err_write_1(service->ptr.pchar);
+    err_write_1("): ");
+    if (res_last) {
+      if (res_last->ai_family == AF_INET) {
+        struct sockaddr_in *ipv4 = (struct sockaddr_in *) res_last->ai_addr;
+        inet_ntop(AF_INET, &(ipv4->sin_addr), ipstr, sizeof(ipstr));
+        err_write_1(ipstr);
+        err_write_1(" ");
+        port = socket_addr_port(res_last->ai_addr);
+        err_inspect_s32_decimal(&port);
+        err_write_1(": ");
+      }
+      else if (res_last->ai_family == AF_INET6) {
+        struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *) res_last->ai_addr;
+        inet_ntop(AF_INET6, &(ipv6->sin6_addr), ipstr, sizeof(ipstr));
+        err_write_1(ipstr);
+        err_write_1(" ");
+        port = socket_addr_port(res_last->ai_addr);
+        err_inspect_s32_decimal(&port);
+        err_write_1(": ");
+      }
+    }
     err_write_1(error_reason);
-    err_inspect_s32_decimal(&r);
+    err_inspect_s64_decimal(&r);
     err_write_1(" ");
     err_inspect_s32_decimal(&e);
     err_write_1(" ");

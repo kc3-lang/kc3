@@ -143,36 +143,36 @@ test_cov:
 test_debug: libkc3_test_debug
 	time ./libkc3_test_debug --copy
 	time ./libkc3_test_debug
-	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_debug time ./ikc3_test
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_debug time ./kc3s_test
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_debug time ./ekc3_test
-	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_debug time ./json_test
-	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_debug time ./markdown_test
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_debug time ./http_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./ikc3_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./kc3s_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./ekc3_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./json_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./markdown_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./http_test
 
 test_ekc3:
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s time ./ekc3_test
+	KC3S=${SRC_TOP}/kc3s/kc3s time ./ekc3_test
 
 test_ekc3_asan:
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_asan time ./ekc3_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./ekc3_test
 
 test_ekc3_cov:
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_cov time ./ekc3_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./ekc3_test
 
 test_ekc3_debug:
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_debug time ./ekc3_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./ekc3_test
 
 test_http:
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s time ./http_test
+	KC3S=${SRC_TOP}/kc3s/kc3s time ./http_test
 
 test_http_asan:
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_asan time ./http_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./http_test
 
 test_http_cov:
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_cov time ./http_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_cov time ./http_test
 
 test_http_debug:
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_debug time ./http_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_debug time ./http_test
 
 test_httpd:
 	${MAKE} -C httpd main
@@ -196,7 +196,7 @@ test_ikc3_cov:
 	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_cov time ./ikc3_test
 
 test_ikc3_debug:
-	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_debug time ./ikc3_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_debug time ./ikc3_test
 
 test_json:
 	IKC3=${SRC_TOP}/ikc3/.libs/ikc3 time ./json_test

@@ -659,6 +659,16 @@ install_lib_links_linux:
 	ln -sf ../../libkc3_smtp.so ${prefix}/lib/kc3/0.1/smtp.so
 	ln -sf ../../libkc3_socket.so ${prefix}/lib/kc3/0.1/socket.so
 
+install_lib_links_windows:
+	ln -sf ../../../bin/libekc3-0.dll ${prefix}/lib/kc3/0.1/ekc3.so
+	ln -sf ../../../bin/libkc3_event-0.dll ${prefix}/lib/kc3/0.1/event.so
+	ln -sf ../../../bin/libkc3_gtk4-0.dll ${prefix}/lib/kc3/0.1/gtk4.so
+	ln -sf ../../../bin/libkc3_http-0.dll ${prefix}/lib/kc3/0.1/http.so
+	ln -sf ../../../bin/libkc3_json-0.dll ${prefix}/lib/kc3/0.1/json.so
+	ln -sf ../../../bin/libkc3_markdown-0.dll ${prefix}/lib/kc3/0.1/markdown.so
+	ln -sf ../../../bin/libkc3_smtp-0.dll ${prefix}/lib/kc3/0.1/smtp.so
+	ln -sf ../../../bin/libkc3_socket-0.dll ${prefix}/lib/kc3/0.1/socket.so
+
 json:
 	${MAKE} -C libtommath build
 	${MAKE} -C ucd2c
