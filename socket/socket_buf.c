@@ -21,6 +21,7 @@
 #else
 # include <netdb.h>
 # include <netinet/in.h>
+# include <arpa/inet.h>
 #endif
 
 #include <unistd.h>
@@ -122,7 +123,7 @@ s_socket_buf * socket_buf_init_connect (s_socket_buf *sb,
   struct addrinfo hints = {0};
   struct addrinfo *res;
   struct addrinfo *res0;
-  struct addrinfo *res_last;
+  struct addrinfo *res_last = NULL;
   s32 e;
   const char *error_reason = "error: ";
   char ipstr[128] = {0};

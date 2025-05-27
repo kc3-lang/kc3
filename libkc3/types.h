@@ -386,6 +386,7 @@ struct struct_ {
   s_tag *tag;
   p_struct_type pstruct_type;
   s_mutex mutex;
+  bool    mutex_ready;
   sw ref_count;
 };
 
