@@ -4,8 +4,6 @@ defmodule Socket do
 
   dlopen(__DIR__ + "socket.so")
 
-  def clean = cfn Void "socket_clean" ()
-
   def close = cfn Void "socket_close" (Socket)
 
   def init = cfn Bool "socket_init" ()

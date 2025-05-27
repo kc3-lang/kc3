@@ -99,7 +99,7 @@ p_socket socket_init_listen (p_socket s, const s_str *host,
   s32 e;
   const char *error_reason = "error";
   s32 i;
-  s64 sockfd;
+  t_socket sockfd;
   assert(s);
   assert(host);
   if (! socket_init())
