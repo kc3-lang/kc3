@@ -1,9 +1,9 @@
 quote server = Socket.listen("localhost", "57000")
 server = Socket.listen("localhost", "57000")
-quote client = Socket.Buf.connect("localhost", "57000")
-client = Socket.Buf.connect("localhost", "57000")
-quote server_client = Socket.Buf.accept(server)
-server_client = Socket.Buf.accept(server)
+quote (client = Socket.Buf.connect("localhost", "57000")) ; void
+(client = Socket.Buf.connect("localhost", "57000")) ; void
+quote (server_client = Socket.Buf.accept(server)) ; void
+(server_client = Socket.Buf.accept(server)) ; void
 quote Socket.Buf.close(server_client)
 Socket.Buf.close(server_client)
 quote Socket.Buf.close(client)

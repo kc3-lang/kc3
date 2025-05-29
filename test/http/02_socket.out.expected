@@ -1,0 +1,2 @@
+%Socket{}
+%Socket{fd: (S64) -1}

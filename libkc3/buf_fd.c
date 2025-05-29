@@ -144,14 +144,17 @@ sw buf_fd_open_w_flush (s_buf *buf)
   buf_fd = buf->user_ptr;
   bytes = 0;
   while (bytes < size) {
-    if ((w = write(buf_fd->fd, buf->ptr.pchar + bytes,
-                   size - bytes)) < 0) {
-      e = errno;
-      err_write_1("buf_fd_open_w_flush: write: ");
-      err_puts(strerror(e));
-      return -1;
+    if ((w = send(buf_fd->fd, buf->ptr.pchar + bytes,
+                  size - bytes, 0)) < 0) {
+      if ((w = write(buf_fd->fd, buf->ptr.pchar + bytes,
+                     size - bytes)) < 0) {
+        e = errno;
+        err_write_1("buf_fd_open_w_flush: write: ");
+        err_puts(strerror(e));
+        return -1;
+      }
+      bytes += w;
     }
-    bytes += w;
   }
   buf->wpos -= size;
   save = buf->save;
