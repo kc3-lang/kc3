@@ -1,0 +1,2 @@
+def f = fn () { res = %HTTP.Response{body: "a#{:a}"} }
+f

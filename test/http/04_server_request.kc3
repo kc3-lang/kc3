@@ -1,9 +1,9 @@
-quote server = Socket.listen("localhost", "57000")
-server = Socket.listen("localhost", "57000")
-quote client = Socket.Buf.connect("localhost", "57000")
-client = Socket.Buf.connect("localhost", "57000")
-quote server_client = Socket.accept(server)
-server_client = Socket.Buf.accept(server)
+quote (server = Socket.listen("127.0.0.1", "57000")) ; void
+(server = Socket.listen("127.0.0.1", "57000")) ; void
+quote (client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
+(client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
+quote (server_client = Socket.accept(server)) ; void
+(server_client = Socket.Buf.accept(server)) ; void
 quote Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n")
 Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n")
 quote req = HTTP.Request.buf_parse(server_client.buf_rw.r)

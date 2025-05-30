@@ -1,0 +1,60 @@
+(server = Socket.listen("127.0.0.1", "57000")) ; void
+void
+(client = Socket.Buf.connect("127.0.0.1", "57000")) ; void
+void
+(server_client = Socket.accept(server)) ; void
+void
+Buf.write_str(client.buf_rw.w, "GET / HTTP/1.0\r\n\r\n")
+(Sw) 18
+req = HTTP.Request.buf_parse(server_client.buf_rw.r)
+%HTTP.Request{method: GET,
+              body: void,
+              url: "/",
+              protocol: "HTTP/1.0",
+              client_addr: "",
+              headers: [],
+              cookies: [],
+              params: %{}}
+response = %HTTP.Response{body: "Hello, KC3 HTTP test server !"}
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "",
+               headers: [{"Content-Type", "text/html"}],
+               body: "Hello, KC3 HTTP test server !"}
+HTTP.Response.buf_write(response, server_client.buf_rw.w, true)
+(Sw) 93
+client_req = %HTTP.Request{method: GET}
+%HTTP.Request{method: GET,
+              body: ?,
+              url: "/",
+              protocol: "HTTP/1.1",
+              client_addr: "",
+              headers: [],
+              cookies: [],
+              params: %{}}
+HTTP.Request.buf_write(client_req, client.buf_rw.w)
+(Sw) 18
+HTTP.Request.buf_parse(server_client.buf_rw.r)
+%HTTP.Request{method: GET,
+              body: void,
+              url: "/",
+              protocol: "HTTP/1.1",
+              client_addr: "",
+              headers: [],
+              cookies: [],
+              params: %{}}
+HTTP.Response.buf_write(response, server_client.buf_rw.w, true)
+(Sw) 93
+HTTP.Response.buf_parse(client.buf_rw.r, true)
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "OK",
+               headers: [{"Content-Type", "text/html"},
+                         {"Content-Length", "29"}],
+               body: "Hello, KC3 HTTP test server !"}
+Socket.Buf.close(client)
+void
+Socket.Buf.close(server_client)
+void
+Socket.close(server)
+void

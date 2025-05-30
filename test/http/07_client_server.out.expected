@@ -1,3 +1,21 @@
+(server = Socket.listen("localhost", "57000")) ; void
+void
+(client = Socket.Buf.connect("localhost", "57000")) ; void
+void
+(server_client = Socket.Buf.accept(server)) ; void
+void
+client_req = %HTTP.Request{method: GET}
+%HTTP.Request{method: GET,
+              body: ?,
+              url: "/",
+              protocol: "HTTP/1.1",
+              client_addr: "",
+              headers: [],
+              cookies: [],
+              params: %{}}
+HTTP.Request.buf_write(client_req, client.buf_rw.w)
+(Sw) 18
+req = HTTP.Request.buf_parse(server_client.buf_rw.r)
 %HTTP.Request{method: GET,
               body: void,
               url: "/",
@@ -6,9 +24,36 @@
               headers: [],
               cookies: [],
               params: %{}}
+puts(req)
+%HTTP.Request{method: GET,
+              body: void,
+              url: "/",
+              protocol: "HTTP/1.1",
+              client_addr: "",
+              headers: [],
+              cookies: [],
+              params: %{}}
+(Sw) 225
+res = HTTP.Response.buf_write(%HTTP.Response{body: "Hello !"}, server_client.buf_rw.w, true)
+(Sw) 70
+client_response = HTTP.Response.buf_parse(client.buf_rw.r, true)
 %HTTP.Response{protocol: "HTTP/1.1",
                code: (U16) 200,
                message: "OK",
                headers: [{"Content-Type", "text/html"},
                          {"Content-Length", "7"}],
                body: "Hello !"}
+puts(client_response)
+%HTTP.Response{protocol: "HTTP/1.1",
+               code: (U16) 200,
+               message: "OK",
+               headers: [{"Content-Type", "text/html"},
+                         {"Content-Length", "7"}],
+               body: "Hello !"}
+(Sw) 238
+Socket.Buf.close(server_client)
+void
+Socket.Buf.close(client)
+void
+Socket.close(server)
+void

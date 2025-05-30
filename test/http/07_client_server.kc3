@@ -1,9 +1,9 @@
-quote server = Socket.listen("localhost", "57000")
-server = Socket.listen("localhost", "57000")
-quote client = Socket.Buf.connect("localhost", "57000")
-client = Socket.Buf.connect("localhost", "57000")
-quote server_client = Socket.Buf.accept(server)
-server_client = Socket.Buf.accept(server)
+quote (server = Socket.listen("localhost", "57000")) ; void
+(server = Socket.listen("localhost", "57000")) ; void
+quote (client = Socket.Buf.connect("localhost", "57000")) ; void
+(client = Socket.Buf.connect("localhost", "57000")) ; void
+quote (server_client = Socket.Buf.accept(server)) ; void
+(server_client = Socket.Buf.accept(server)) ; void
 quote client_req = %HTTP.Request{method: GET,
                                  url: "/",
                                  protocol: "HTTP/1.1",

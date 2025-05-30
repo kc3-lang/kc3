@@ -1,0 +1,2 @@
+HTTP.mime_type_load("" + "mime.types")
+true

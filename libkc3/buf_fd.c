@@ -13,7 +13,9 @@
 #if defined(WIN32) || defined(WIN64)
 # include <winsock2.h>
 #else
+# include <sys/types.h>
 # include <sys/ioctl.h>
+# include <sys/socket.h>
 #endif
 
 #include <errno.h>
@@ -145,7 +147,7 @@ sw buf_fd_open_w_flush (s_buf *buf)
   bytes = 0;
   while (bytes < size) {
     if ((w = send(buf_fd->fd, buf->ptr.pchar + bytes,
-                  size - bytes, 0)) < 0) {
+                  size - bytes, MSG_NOSIGNAL)) < 0) {
       if ((w = write(buf_fd->fd, buf->ptr.pchar + bytes,
                      size - bytes)) < 0) {
         e = errno;
@@ -153,8 +155,8 @@ sw buf_fd_open_w_flush (s_buf *buf)
         err_puts(strerror(e));
         return -1;
       }
-      bytes += w;
     }
+    bytes += w;
   }
   buf->wpos -= size;
   save = buf->save;
