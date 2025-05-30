@@ -123,12 +123,12 @@ test: libkc3_test
 test_asan: libkc3_test_asan
 	time ./libkc3_test_asan --copy
 	time ./libkc3_test_asan
-	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_asan time ./ikc3_test
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_asan time ./kc3s_test
-	KC3S=${SRC_TOP}/kc3s/.libs/kc3s_asan time ./ekc3_test
-	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_asan time ./json_test
-	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_asan time ./markdown_test
-	IKC3=${SRC_TOP}/ikc3/.libs/ikc3_asan time ./http_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./ikc3_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./kc3s_test
+	KC3S=${SRC_TOP}/kc3s/kc3s_asan time ./ekc3_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./json_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./markdown_test
+	IKC3=${SRC_TOP}/ikc3/ikc3_asan time ./http_test
 
 test_cov:
 	time ./libkc3_test_cov --copy
