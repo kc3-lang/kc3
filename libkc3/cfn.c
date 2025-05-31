@@ -26,7 +26,7 @@
 
 static s_tag * cfn_tag_init (s_tag *tag, const s_sym *type);
 
-s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
+s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag * volatile dest)
 {
   s_list *a;
   void ** volatile arg_pointer_result = NULL;
