@@ -180,27 +180,27 @@ s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag * volatile dest)
     err_stacktrace();
     return NULL;
   }
-  if (! block_init(&block, name_sym))
+  if (! block_init(&jump.block, name_sym))
     return NULL;
-  env_unwind_protect_push(env, &unwind_protect);
-  if (setjmp(unwind_protect.buf)) {
-    env_unwind_protect_pop(env, &unwind_protect);
-    block_clean(&block);
-    longjmp(*unwind_protect.jmp, 1);
+  env_unwind_protect_push(env, &jump.unwind_protect);
+  if (setjmp(jump.unwind_protect.buf)) {
+    env_unwind_protect_pop(env, &jump.unwind_protect);
+    block_clean(&jump.block);
+    longjmp(*jump.unwind_protect.jmp, 1);
   }
-  if (setjmp(block.buf)) {
-    tag_init_copy(dest, &block.tag);
-    env_unwind_protect_pop(env, &unwind_protect);
-    block_clean(&block);
+  if (setjmp(jump.block.buf)) {
+    *dest = jump.block.tag;
+    env_unwind_protect_pop(env, &jump.unwind_protect);
+    block_clean(&jump.block);
     return dest;
   }
   if (! env_eval_tag(env, do_block, &tmp)) {
-    env_unwind_protect_pop(env, &unwind_protect);
-    block_clean(&block);
+    env_unwind_protect_pop(env, &jump.unwind_protect);
+    block_clean(&jump.block);
     return NULL;
   }
-  env_unwind_protect_pop(env, &unwind_protect);
-  block_clean(&block);
+  env_unwind_protect_pop(env, &jump.unwind_protect);
+  block_clean(&jump.block);
   *dest = tmp;
   return dest;
 }
