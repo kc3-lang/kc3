@@ -162,7 +162,7 @@ s_tag * kc3_array_dimension(s_array *a, s_tag *index, s_tag *dest)
 
 s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag * volatile dest)
 {
-  s_env *env;
+  s_env * volatile env;
   const s_sym *name_sym = NULL;
   s_tag tmp = {0};
   struct {
