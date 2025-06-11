@@ -118,6 +118,7 @@ to discover how to use KC3 for your own projects.
    - properties
      - recursive
  - libkc3
+   - hash-table as a KC3 value (map ?)
    - unwind-protect
    - defspecial
    - special operators hash table
@@ -129,9 +130,11 @@ to discover how to use KC3 for your own projects.
      - from str
      - from file
    - pass by reference and reference counting in all data structures
-     - cow
-     - list
      - array
+     - cow
+     - frame
+     - list
+     - map
    - base-specific big floats
    - macro cast : `(Macro) fn (x) { x }`
    - pretty printer
