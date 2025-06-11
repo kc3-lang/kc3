@@ -317,33 +317,33 @@ gcovr:
 #	${MAKE} -C fs gcovr
 	if [ -d "$$HOME/Downloads/kc3_gcovr" ]; then bin/gcovr-to-downloads; fi
 
-gdb_demo:
+gdb_demo: lib_links_debug
 	${MAKE} debug
 	${MAKE} -C libkc3 gdb_demo
 
-gdb_demo_gl:
+gdb_demo_gl: lib_links_debug
 	${MAKE} debug
 	${MAKE} -C window/sdl2 gdb_demo
 
-gdb_fx: httpd_debug
+gdb_fx: httpd_debug lib_links_debug
 	${MAKE} -C httpd gdb_fx
 
-gdb_fx_asan: httpd_asan
+gdb_fx_asan: httpd_asan lib_links_asan
 	${MAKE} -C httpd gdb_fx_asan
 
-gdb_ikc3:
+gdb_ikc3: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 gdb_ikc3
 
-gdb_ikc3_asan:
+gdb_ikc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 gdb_ikc3_asan
 
-gdb_kmsg:
+gdb_kmsg: lib_links_debug
 	${MAKE} gen
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
@@ -353,16 +353,16 @@ gdb_kmsg:
 	${MAKE} -C gtk4 debug
 	${MAKE} -C kmsg gdb
 
-gdb_kubz: debug
+gdb_kubz: debug lib_links_debug
 	${MAKE} -C window gdb_kubz
 
-gdb_test:
+gdb_test: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
 	${MAKE} -C test gdb_test
 
-gdb_test_ekc3:
+gdb_test_ekc3: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -370,7 +370,7 @@ gdb_test_ekc3:
 	${MAKE} -C kc3s debug
 	${MAKE} -C test gdb_test_ekc3
 
-gdb_test_http:
+gdb_test_http: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -383,7 +383,7 @@ gdb_test_http:
 	${MAKE} -C http debug
 	${MAKE} -C test gdb_test_http
 
-gdb_test_http_asan:
+gdb_test_http_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
@@ -396,7 +396,7 @@ gdb_test_http_asan:
 	${MAKE} -C http asan
 	${MAKE} -C test gdb_test_http_asan
 
-gdb_test_httpd:
+gdb_test_httpd: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -412,7 +412,7 @@ gdb_test_httpd:
 	${MAKE} -C httpd debug
 	${MAKE} -C test gdb_test_httpd
 
-gdb_test_httpd_asan:
+gdb_test_httpd_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
@@ -428,21 +428,21 @@ gdb_test_httpd_asan:
 	${MAKE} -C httpd asan
 	${MAKE} -C test gdb_test_httpd_asan
 
-gdb_test_ikc3:
+gdb_test_ikc3: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
 	${MAKE} -C ikc3 debug
 	${MAKE} -C test gdb_test_ikc3
 
-gdb_test_ikc3_asan:
+gdb_test_ikc3_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
 	${MAKE} -C ikc3 asan
 	${MAKE} -C test gdb_test_ikc3_asan
 
-gdb_test_json:
+gdb_test_json: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -450,7 +450,7 @@ gdb_test_json:
 	${MAKE} -C json debug
 	${MAKE} -C test gdb_test_json
 
-gdb_test_json_asan:
+gdb_test_json_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
@@ -458,7 +458,7 @@ gdb_test_json_asan:
 	${MAKE} -C json asan
 	${MAKE} -C test gdb_test_json_asan
 
-gdb_test_markdown:
+gdb_test_markdown: lib_links_debug
 	${MAKE} -C libtommath debug
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 debug
@@ -466,7 +466,7 @@ gdb_test_markdown:
 	${MAKE} -C markdown debug
 	${MAKE} -C test gdb_test_markdown
 
-gdb_test_markdown_asan:
+gdb_test_markdown_asan: lib_links_asan
 	${MAKE} -C libtommath asan
 	${MAKE} -C ucd2c
 	${MAKE} -C libkc3 asan
