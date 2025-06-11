@@ -24,7 +24,6 @@ s_block * block_init (s_block *block, const s_sym *name)
   env = env_global();
   assert(env);
   tmp.name = name;
-  tag_init_void(&tmp.tag);
   tmp.next = env->block;
   *block = tmp;
   env->block = block;
@@ -39,7 +38,6 @@ void block_clean (s_block *block)
   assert(env);
   assert(env->block == block);
   env->block = block->next;
-  tag_clean(&block->tag);
 }
 
 s_block ** block_find (const s_sym *name)
@@ -56,12 +54,14 @@ s_block ** block_find (const s_sym *name)
 void block_jump (s_block *block)
 {
   env_longjmp(env_global(), &block->buf);
+  abort();
 }
 
 void block_return (s_block *block, s_tag *value)
 {
   block->tag = *value;
   block_jump(block);
+  abort();
 }
 
 void block_return_from (const s_sym *name, s_tag *value)
@@ -79,4 +79,5 @@ void block_return_from (const s_sym *name, s_tag *value)
     abort();
   }
   block_return(*block, value);
+  abort();
 }
