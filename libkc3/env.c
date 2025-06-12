@@ -85,11 +85,11 @@
 static thread_local s_env *g_kc3_env_default = NULL;
 static thread_local s_env *g_kc3_env_global = NULL;
 
-static void    env_clean_globals (s_env *env);
-static void    env_clean_toplevel (s_env *env);
-static s_env * env_init_args (s_env *env, int *argc, char ***argv);
-static s_env * env_init_globals (s_env *env);
-static s_env * env_init_toplevel (s_env *env);
+static s_env * env_args_init (s_env *env, int *argc, char ***argv);
+static void    env_globals_clean (s_env *env);
+static s_env * env_globals_init (s_env *env);
+static void    env_toplevel_clean (s_env *env);
+static s_env * env_toplevel_init (s_env *env);
 
 s_tag * env_and (s_env *env, s_tag *a, s_tag *b, s_tag *dest)
 {
@@ -142,6 +142,39 @@ s_list ** env_args (s_env *env, s_list **dest)
  clean:
   list_delete_all(tmp);
   return NULL;
+}
+
+s_env * env_args_init (s_env *env, int *argc, char ***argv)
+{
+  s32 argc_prev = 0;
+  s_str argv0;
+  assert(env);
+  if (argc && argv && *argc && *argv) {
+    env->argc = (*argc)--;
+    env->argv = (*argv)++;
+    str_init_1(&argv0, NULL, env->argv[0]);
+    if (! (env->argv0_dir = alloc(sizeof(s_str))))
+      return NULL;
+    file_dirname(&argv0, env->argv0_dir);
+    while (*argc > 0 && *argc != argc_prev) {
+      argc_prev = *argc;
+      if (**argv && ! strcmp(**argv, "--trace")) {
+        env->trace = true;
+        (*argc)--;
+        (*argv)++;
+      }
+      if (**argv && ! strcmp(**argv, "--copy")) {
+        env->pass_by_copy = true;
+        (*argc)--;
+        (*argv)++;
+      }
+    }
+    return env;
+  }
+  env->argc = 0;
+  env->argv = NULL;
+  env->argv0_dir = str_new_1(NULL, "./");
+  return env;
 }
 
 bool env_call_get (s_env *env, s_call *call)
@@ -260,8 +293,8 @@ void env_clean (s_env *env)
     err_write_1("\n");
   }
   //facts_save_file(env->facts, "debug.facts"); // debug
-  env_clean_globals(env);
-  env_clean_toplevel(env);
+  env_globals_clean(env);
+  env_toplevel_clean(env);
   error_handler_delete_all(env->error_handler);
   env->error_handler = NULL;
   facts_delete(env->facts);
@@ -296,17 +329,6 @@ void env_clean (s_env *env)
     free(g_kc3_env_default);
     g_kc3_env_default = NULL;
   }
-}
-
-void env_clean_globals (s_env *env)
-{
-  frame_delete(env->global_frame);
-  frame_delete(env->read_time_frame);
-}
-
-void env_clean_toplevel (s_env *env)
-{
-  frame_delete_all(env->frame);
 }
 
 bool env_def (s_env *env, const s_ident *ident, s_tag *value)
@@ -1054,6 +1076,61 @@ bool env_global_set (s_env *env)
   return true;
 }
 
+void env_globals_clean (s_env *env)
+{
+  frame_delete(env->global_frame);
+  frame_delete(env->read_time_frame);
+}
+
+s_env * env_globals_init (s_env *env)
+{
+  s_tag *file_dir;
+  s_tag *file_path;
+  s_tag *ncpu;
+  if (! (env->read_time_frame = frame_new(NULL, NULL)))
+    return NULL;
+  if (! (file_dir = frame_binding_new(env->read_time_frame,
+                                      &g_sym___DIR__)))
+    return NULL;
+  if (! (file_path = frame_binding_new(env->read_time_frame,
+                                       &g_sym___FILE__)))
+    return NULL;
+  file_dir->type = TAG_STR;
+  if (! file_pwd(&file_dir->data.str))
+    return NULL;
+  if (! tag_init_str_1(file_path, NULL, "stdin"))
+    return NULL;
+  if (! (env->global_frame = frame_new(env->read_time_frame, NULL)))
+    return NULL;
+  if (! (ncpu = frame_binding_new(env->read_time_frame,
+                                  &g_sym_ncpu)))
+    return NULL;
+#if HAVE_PTHREAD
+# if (defined(__FreeBSD__) || defined(__OpenBSD__))
+  {
+    s32 mib[2];
+    s32 hw_ncpu;
+    uw len;
+    mib[0] = CTL_HW;
+    mib[1] = HW_NCPU;
+    len = sizeof(hw_ncpu);
+    if (sysctl(mib, 2, &hw_ncpu, &len, NULL, 0) == -1){
+      err_puts("env_globals_init: sysctl(hw.ncpu)");
+      assert(! "env_globals_init: sysctl(hw.ncpu)");
+      return NULL;
+    }
+    tag_init_u8(ncpu, hw_ncpu);
+  }
+# else
+  tag_init_u8(ncpu, get_nprocs());
+# endif
+#else
+  tag_init_u8(ncpu, 1);
+#endif
+  return env;
+
+}
+
 s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
 {
   s_facts_with_cursor cursor;
@@ -1215,12 +1292,12 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
   env->parent_env = g_kc3_env_global;
   g_kc3_env_global = env;
   *env = (s_env) {0};
-  if (! env_init_args(env, argc, argv))
+  if (! env_args_init(env, argc, argv))
     return NULL;
   sym_init_g_sym();
-  if (! env_init_toplevel(env))
+  if (! env_toplevel_init(env))
     return NULL;
-  if (! env_init_globals(env))
+  if (! env_globals_init(env))
     return NULL;
   if (! (env->in = buf_new_alloc(BUF_SIZE)))
     return NULL;
@@ -1264,94 +1341,6 @@ s_env * env_init (s_env *env, int *argc, char ***argv)
     env_clean(env);
     return NULL;
   }
-  return env;
-}
-
-s_env * env_init_args (s_env *env, int *argc, char ***argv)
-{
-  s32 argc_prev = 0;
-  s_str argv0;
-  assert(env);
-  if (argc && argv && *argc && *argv) {
-    env->argc = (*argc)--;
-    env->argv = (*argv)++;
-    str_init_1(&argv0, NULL, env->argv[0]);
-    if (! (env->argv0_dir = alloc(sizeof(s_str))))
-      return NULL;
-    file_dirname(&argv0, env->argv0_dir);
-    while (*argc > 0 && *argc != argc_prev) {
-      argc_prev = *argc;
-      if (**argv && ! strcmp(**argv, "--trace")) {
-        env->trace = true;
-        (*argc)--;
-        (*argv)++;
-      }
-      if (**argv && ! strcmp(**argv, "--copy")) {
-        env->pass_by_copy = true;
-        (*argc)--;
-        (*argv)++;
-      }
-    }
-    return env;
-  }
-  env->argc = 0;
-  env->argv = NULL;
-  env->argv0_dir = str_new_1(NULL, "./");
-  return env;
-}
-
-s_env * env_init_globals (s_env *env)
-{
-  s_tag *file_dir;
-  s_tag *file_path;
-  s_tag *ncpu;
-  if (! (env->read_time_frame = frame_new(NULL, NULL)))
-    return NULL;
-  if (! (file_dir = frame_binding_new(env->read_time_frame,
-                                      &g_sym___DIR__)))
-    return NULL;
-  if (! (file_path = frame_binding_new(env->read_time_frame,
-                                       &g_sym___FILE__)))
-    return NULL;
-  file_dir->type = TAG_STR;
-  if (! file_pwd(&file_dir->data.str))
-    return NULL;
-  if (! tag_init_str_1(file_path, NULL, "stdin"))
-    return NULL;
-  if (! (env->global_frame = frame_new(env->read_time_frame, NULL)))
-    return NULL;
-  if (! (ncpu = frame_binding_new(env->read_time_frame,
-                                  &g_sym_ncpu)))
-    return NULL;
-#if HAVE_PTHREAD
-# if (defined(__FreeBSD__) || defined(__OpenBSD__))
-  {
-    s32 mib[2];
-    s32 hw_ncpu;
-    uw len;
-    mib[0] = CTL_HW;
-    mib[1] = HW_NCPU;
-    len = sizeof(hw_ncpu);
-    if (sysctl(mib, 2, &hw_ncpu, &len, NULL, 0) == -1){
-      err_puts("env_init_globals: sysctl(hw.ncpu)");
-      assert(! "env_init_globals: sysctl(hw.ncpu)");
-      return NULL;
-    }
-    tag_init_u8(ncpu, hw_ncpu);
-  }
-# else
-  tag_init_u8(ncpu, get_nprocs());
-# endif
-#else
-  tag_init_u8(ncpu, 1);
-#endif
-  return env;
-
-}
-
-s_env * env_init_toplevel (s_env *env)
-{
-  env->frame = frame_new(NULL, NULL);
   return env;
 }
 
@@ -2277,6 +2266,17 @@ bool env_tag_ident_is_bound (s_env *env, const s_tag *tag)
   return tag->type == TAG_IDENT &&
     (env_frames_get(env, tag->data.ident.sym) ||
      env_ident_get(env, &tag->data.ident, &tmp));
+}
+
+void env_toplevel_clean (s_env *env)
+{
+  frame_delete_all(env->frame);
+}
+
+s_env * env_toplevel_init (s_env *env)
+{
+  env->frame = frame_new(NULL, NULL);
+  return env;
 }
 
 s_tag * env_unwind_protect (s_env *env, s_tag *protected,
