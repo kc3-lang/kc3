@@ -151,6 +151,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag * volatile dest)
       free(arg_pointers);
       free(arg_values);
       longjmp(*unwind_protect.jmp, 1);
+      abort();
     }
     ffi_call(&cfn->cif, cfn->ptr.f, result, arg_values);
     env_unwind_protect_pop(env, &unwind_protect);
