@@ -22,6 +22,7 @@
 #include "buf_parse_uw.h"
 #include "buf_save.h"
 #include "call.h"
+#include "callable.h"
 #include "cfn.h"
 #include "character.h"
 #include "complex.h"
@@ -1137,21 +1138,29 @@ sw buf_parse_call_paren (s_buf *buf, s_call *dest)
 
 sw buf_parse_callable (s_buf *buf, p_callable *dest)
 {
+  s_cfn cfn = {0};
+  s_fn fn = {0};
   sw r;
-  s_callable tmp = {0};
+  p_callable tmp = NULL;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_cfn(buf, &tmp.data.cfn)) > 0) {
-    tmp.type = CALLABLE_CFN;
-    tmp.ref_count = 1;
-    *dest = alloc(sizeof(s_callable));
-    **dest = tmp;
+  if ((r = buf_parse_cfn(buf, &cfn)) > 0) {
+    if (! (tmp = callable_new())) {
+      cfn_clean(&cfn);
+      return -1;
+    }
+    tmp->type = CALLABLE_CFN;
+    tmp->data.cfn = cfn;
+    *dest = tmp;
   }
-  else if ((r = buf_parse_fn(buf, &tmp.data.fn)) > 0) {
-    tmp.type = CALLABLE_FN;
-    tmp.ref_count = 1;
-    *dest = alloc(sizeof(s_callable));
-    **dest = tmp;
+  else if ((r = buf_parse_fn(buf, &fn)) > 0) {
+    if (! (tmp = callable_new())) {
+      fn_clean(&fn);
+      return -1;
+    }
+    tmp->type = CALLABLE_FN;
+    tmp->data.fn = fn;
+    *dest = tmp;
   }
   return r;
 }
