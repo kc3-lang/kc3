@@ -2323,6 +2323,7 @@ void env_unwind_protect_pop (s_env *env, s_unwind_protect *up)
 void env_unwind_protect_push (s_env *env,
                               s_unwind_protect *unwind_protect)
 {
+  unwind_protect->jmp = NULL;
   unwind_protect->next = env->unwind_protect;
   env->unwind_protect = unwind_protect;
 }
