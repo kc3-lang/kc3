@@ -2203,6 +2203,7 @@ sw buf_inspect_fn_clause_size (s_pretty *pretty,
 {
   sw r;
   sw result = 0;
+  assert(pretty);
   assert(clause);
   if ((r = buf_inspect_fn_pattern_size(pretty, clause->pattern)) < 0)
     return r;
@@ -2235,7 +2236,7 @@ sw buf_inspect_fn_pattern (s_buf *buf, const s_list *pattern)
       result += r;
     }
   }
-  if ((r = buf_write_character_utf8(buf, ')')) < 0)
+  if ((r = buf_write_1(buf, ")")) < 0)
     return r;
   result += r;
   return result;
@@ -3835,29 +3836,37 @@ sw buf_inspect_struct_type_size (s_pretty *pretty, const s_struct_type *st)
 {
   s_array offset_array;
   uw offset_array_dimension;
+  s_pretty_save pretty_save;
   sw r;
   sw result = 0;
+  assert(pretty);
   assert(st);
   assert(sym_is_module(st->module));
   assert(st->offset);
   assert(st->size);
-  if ((r = buf_write_1_size(pretty, "%StructType{module: ")) < 0)
+  if ((r = buf_write_1_size(pretty, "%StructType{")) < 0)
+    return r;
+  result += r;
+  pretty_save_init(&pretty_save, pretty);
+  pretty_indent_from_column(pretty, 0);
+  if ((r = buf_write_1_size(pretty, "module: ")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_sym_size(pretty, &st->module)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1_size(pretty, ", map: ")) < 0)
+  if ((r = buf_write_1_size(pretty, ",\nmap: ")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_map_size(pretty, &st->map)) < 0)
     return r;
   result += r;
-  if ((r = buf_write_1_size(pretty, ", offset: ")) < 0)
+  if ((r = buf_write_1_size(pretty, ",\noffset: ")) < 0)
     return r;
   result += r;
   offset_array_dimension = st->map.count;
-  array_init(&offset_array, &g_sym_Uw, 1, &offset_array_dimension);
+  array_init(&offset_array, &g_sym_Uw_brackets, 1,
+             &offset_array_dimension);
   offset_array.data = st->offset;
   if ((r = buf_inspect_array_size(pretty, &offset_array)) < 0) {
     array_clean(&offset_array);
@@ -3865,7 +3874,7 @@ sw buf_inspect_struct_type_size (s_pretty *pretty, const s_struct_type *st)
   }
   result += r;
   array_clean(&offset_array);
-  if ((r = buf_write_1_size(pretty, ", size: ")) < 0)
+  if ((r = buf_write_1_size(pretty, ",\nsize: ")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_uw_size(pretty, &st->size)) < 0)
@@ -3874,6 +3883,7 @@ sw buf_inspect_struct_type_size (s_pretty *pretty, const s_struct_type *st)
   if ((r = buf_write_1_size(pretty, "}")) < 0)
     return r;
   result += r;
+  pretty_save_clean(&pretty_save, pretty);
   return result;
 }
 
