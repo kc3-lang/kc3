@@ -870,10 +870,8 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
     }
     tag_clean(&tmp);
     fact_w_init_fact(fact_w, fact);
-    if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
-      fact_w_clean(fact_w);
+    if (! env_eval_call_callable_args(env, callback, arguments, &tmp))
       goto clean;
-    }
     fact_w_clean(fact_w);
     fact_w_init(fact_w);
   }
@@ -886,10 +884,10 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
  clean:
   err_puts("env_facts_with: error");
   assert(! "env_facts_with: error");
+  env_unwind_protect_pop(env, &unwind_protect);
   tag_clean(&tmp);
   list_delete_all(arguments);
   facts_with_cursor_clean(&cursor);
-  env_unwind_protect_pop(env, &unwind_protect);
   return NULL;
 }
 
@@ -955,13 +953,15 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
 
 s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
                              s_tag *predicate, s_tag *object,
-                             s_callable *callback, s_tag *dest)
+                             s_callable *callback,
+                             s_tag * volatile dest)
 {
   s_list *arguments;
   s_facts_cursor cursor = {0};
   s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_tag tmp = {0};
+  s_unwind_protect unwind_protect;
   if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
   if (! struct_allocate(arguments->tag.data.pstruct)) {
@@ -979,13 +979,21 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
     if (! fact) {
       goto ok;
     }
-    tag_clean(&tmp);
+    tag_void(&tmp);
     if (! fact_w_init_fact(fact_w, fact))
       goto clean;
+    env_unwind_protect_push(env, &unwind_protect);
+    if (setjmp(unwind_protect.buf)) {
+      env_unwind_protect_pop(env, &unwind_protect);
+      facts_cursor_clean(&cursor);
+      list_delete_all(arguments);
+      longjmp(*unwind_protect.jmp, 1);
+    }
     if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
-      fact_w_clean(fact_w);
+      env_unwind_protect_pop(env, &unwind_protect);
       goto clean;
     }
+    env_unwind_protect_pop(env, &unwind_protect);
     fact_w_clean(fact_w);
     fact_w_init(fact_w);
   }
@@ -1578,17 +1586,19 @@ bool env_maybe_reload (s_env *env, const s_str *path)
 
 void env_longjmp (s_env *env, jmp_buf *jmp_buf)
 {
-  s_unwind_protect *unwind_protect;
-  if (env->unwind_protect && *jmp_buf > env->unwind_protect->buf) {
-    unwind_protect = env->unwind_protect;
-    while (unwind_protect->next && *jmp_buf > unwind_protect->next->buf) {
-      unwind_protect->jmp = &unwind_protect->next->buf;
-      unwind_protect = unwind_protect->next;
+  s_unwind_protect *up;
+  up = env->unwind_protect;
+  if (up && up->buf < *jmp_buf) {
+    while (up->next && up->next->buf < *jmp_buf) {
+      up->jmp = &up->next->buf;
+      up = up->next;
     }
-    unwind_protect->jmp = jmp_buf;
+    up->jmp = jmp_buf;
     longjmp(env->unwind_protect->buf, 1);
+    abort();
   }
   longjmp(*jmp_buf, 1);
+  abort();
 }
 
 const s_sym ** env_module (s_env *env, const s_sym **dest)
@@ -2317,15 +2327,20 @@ void env_unwind_protect_pop (s_env *env, s_unwind_protect *up)
     assert(! "env_unwind_protect_pop: mismatch");
     abort();
   }
-  env->unwind_protect = env->unwind_protect->next;
+  env->unwind_protect = up->next;
 }
 
 void env_unwind_protect_push (s_env *env,
-                              s_unwind_protect *unwind_protect)
+                              s_unwind_protect *up)
 {
-  unwind_protect->jmp = NULL;
-  unwind_protect->next = env->unwind_protect;
-  env->unwind_protect = unwind_protect;
+  if (env->unwind_protect == up) {
+    err_puts("env_unwind_protect_push: deadlock");
+    assert(! "env_unwind_protect_push: deadlock");
+    abort();
+  }
+  up->jmp = NULL;
+  up->next = env->unwind_protect;
+  env->unwind_protect = up;
 }
 
 s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
