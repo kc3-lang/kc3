@@ -1413,10 +1413,6 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
   case TAG_MAP:
     map = &tmp.data.map;
     break;
-  case TAG_PSTRUCT:
-    map = &tmp.data.pstruct->pstruct_type->map;
-    // FIXME
-    break;
   default:
     tag_clean(&tmp);
     err_write_1("env_let: unsupported associative tag type: ");
@@ -2235,7 +2231,7 @@ s_list ** env_struct_type_get_spec (s_env *env,
     return NULL;
   if (tmp.type != TAG_LIST ||
       ! list_is_plist(tmp.data.list)) {
-    err_write_1("env_get_struct_type_spec: module ");
+    err_write_1("env_struct_type_get_spec: module ");
     err_write_1(module->str.ptr.pchar);
     err_puts(" has a defstruct that is not a property list");
     tag_clean(&tmp);
@@ -2285,6 +2281,7 @@ void env_toplevel_clean (s_env *env)
 
 s_env * env_toplevel_init (s_env *env)
 {
+  assert(! env->frame);
   env->frame = frame_new(NULL, NULL);
   return env;
 }

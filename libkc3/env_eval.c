@@ -125,7 +125,6 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
   assert(env);
   assert(call);
   assert(dest);
-  (void) call;
   call_init_copy(&c, call);
   if (c.pcallable)
     pcallable_clean(&c.pcallable);
