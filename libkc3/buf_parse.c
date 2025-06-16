@@ -724,8 +724,8 @@ sw buf_parse_call (s_buf *buf, s_call *dest)
   goto clean;
  restore:
   buf_save_restore_rpos(buf, &save);
-  call_clean(&tmp);
  clean:
+  call_clean(&tmp);
   buf_save_clean(buf, &save);
   return r;
 }
