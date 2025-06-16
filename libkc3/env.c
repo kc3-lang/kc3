@@ -812,16 +812,15 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   if (setjmp(unwind_protect.buf)) {
     env_unwind_protect_pop(env, &unwind_protect);
     facts_cursor_clean(&cursor);
-    fact_w_clean(fact_w);
+    list_delete_all(arguments);
     longjmp(*unwind_protect.jmp, 1);
   }
   if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
     env_unwind_protect_pop(env, &unwind_protect);
-    fact_w_clean(fact_w);
+    list_delete_all(arguments);
     goto clean;
   }
   env_unwind_protect_pop(env, &unwind_protect);
-  fact_w_clean(fact_w);
   facts_cursor_clean(&cursor);
  ok:
   list_delete_all(arguments);
