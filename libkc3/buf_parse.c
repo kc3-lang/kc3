@@ -708,13 +708,15 @@ sw buf_parse_call (s_buf *buf, s_call *dest)
   sw r;
   sw result = 0;
   s_buf_save save;
-  s_call tmp;
+  s_call tmp = {0};
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
   call_init(&tmp);
-  if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0)
+  if ((r = buf_parse_ident(buf, &tmp.ident)) <= 0) {
+    call_clean(&tmp);
     goto clean;
+  }
   result += r;
   if ((r = buf_parse_call_args_paren(buf, &tmp)) <= 0)
     goto restore;
@@ -725,7 +727,6 @@ sw buf_parse_call (s_buf *buf, s_call *dest)
  restore:
   buf_save_restore_rpos(buf, &save);
  clean:
-  call_clean(&tmp);
   buf_save_clean(buf, &save);
   return r;
 }
