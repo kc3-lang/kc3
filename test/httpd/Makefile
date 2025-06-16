@@ -27,6 +27,9 @@ cov: assets
 debug: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd_debug -C ${SRC_TOP}/test/httpd -d 127.0.0.1 15004
 
+gdb: assets
+	if [ -f kc3_httpd_debug.core ]; then gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug kc3_httpd_debug.core; else gdb ${SRC_TOP}/httpd/.libs/kc3_httpd_debug; fi
+
 run: assets
 	${SRC_TOP}/httpd/.libs/kc3_httpd -C ${SRC_TOP}/test/httpd 127.0.0.1 15004
 
