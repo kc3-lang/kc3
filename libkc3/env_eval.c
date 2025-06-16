@@ -404,6 +404,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   env_unwind_protect_push(env, &jump.unwind_do);
   if (setjmp(jump.unwind_do.buf)) {
     env_unwind_protect_pop(env, &jump.unwind_do);
+    block_clean(&jump.block);
     assert(env->stacktrace == trace);
     env->stacktrace = list_delete(env->stacktrace);
     list_delete_all(args);
@@ -429,6 +430,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     return false;
   }
   env_unwind_protect_pop(env, &jump.unwind_do);
+  block_clean(&jump.block);
   assert(env->stacktrace == trace);
   env->stacktrace = list_delete(env->stacktrace);
   list_delete_all(args);
@@ -438,7 +440,6 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   assert(env->frame == &frame);
   env->frame = env_frame;
  ok:
-  block_clean(&jump.block);
   if (fn->macro) {
     env_unwind_protect_push(env, &jump.unwind_macro);
     if (setjmp(jump.unwind_macro.buf)) {
