@@ -20,7 +20,6 @@
 void pstruct_type_clean (p_struct_type *st)
 {
   struct_type_delete(*st);
-  *st = NULL;
 }
 
 p_struct_type * pstruct_type_init (p_struct_type *st,
