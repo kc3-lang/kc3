@@ -137,6 +137,38 @@ void frame_delete_all (s_frame *frame)
     f = frame_delete(f);
 }
 
+void frame_delete_rec (s_frame *frame)
+{
+  s_env *env;
+  s_frame *next = NULL;
+  env = env_global();
+  if (env->cleaning)
+    return;
+  while (frame) {
+#if HAVE_PTHREAD
+    mutex_lock(&frame->mutex);
+#endif
+    next = frame->next;
+    if (frame->ref_count <= 0) {
+      err_puts("frame_delete: invalid reference count");
+      assert(! "frame_delete: invalid reference count");
+      abort();
+    }
+    if (--frame->ref_count) {
+#if HAVE_PTHREAD
+      mutex_unlock(&frame->mutex);
+#endif
+      return;
+    }
+#if HAVE_PTHREAD
+    mutex_unlock(&frame->mutex);
+#endif
+    frame_clean(frame);
+    free(frame);
+    frame = next;
+  }
+}
+
 s_tag * frame_get (s_frame *frame, const s_sym *sym)
 {
   s_frame *f;
