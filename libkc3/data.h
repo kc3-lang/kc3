@@ -25,7 +25,7 @@ sw     data_buf_inspect (s_buf *buf, const s_sym *type, const void *v);
 sw     data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
                               const void *v);
 bool   data_clean (const s_sym *type, void *v);
-bool   data_compare (const s_sym *type, const void *a, const void *b);
+s8     data_compare (const s_sym *type, const void *a, const void *b);
 bool   data_hash_update (const s_sym *type, t_hash *hash,
                          const void *s);
 void * data_init_cast (void *v, const s_sym * const *type,

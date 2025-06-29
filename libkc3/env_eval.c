@@ -568,6 +568,7 @@ bool env_eval_callable (s_env *env, s_callable *callable,
       return false;
     if (! tmp->data.fn.module)
       tmp->data.fn.module = env->current_defmodule;
+    tmp->data.fn.frame = env_frame_new_capture(env, &tmp->data.fn);
     goto ok;
   case CALLABLE_VOID:
     err_puts("env_eval_callable: CALLABLE_VOID");

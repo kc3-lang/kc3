@@ -94,6 +94,7 @@ HEADERS = \
 	"env.h" \
 	"env_eval.h" \
 	"env_fork.h" \
+	"env_frame_capture.h" \
 	"error.h" \
 	"error_handler.h" \
 	"eval.h" \
@@ -282,6 +283,7 @@ SOURCES = \
 	"env.c" \
 	"env_eval.c" \
 	"env_fork.c" \
+	"env_frame_capture.c" \
 	"error.c" \
 	"error_handler.c" \
 	"eval.c" \
@@ -579,6 +581,7 @@ LO_SOURCES = \
 	"env.c" \
 	"env_eval.c" \
 	"env_fork.c" \
+	"env_frame_capture.c" \
 	"error.c" \
 	"error_handler.c" \
 	"eval.c" \

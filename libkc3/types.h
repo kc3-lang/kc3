@@ -262,7 +262,7 @@ typedef SHA1_CTX       t_hash;
 typedef s_struct *     p_struct;
 typedef s_struct_type *p_struct_type;
 typedef const s_sym *  p_sym;
-typedef const s_tag *  p_tag;
+typedef s_tag *        p_tag;
 typedef u64            t_skiplist_height;
 
 /* function typedefs */

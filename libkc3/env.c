@@ -46,6 +46,7 @@
 #include "data.h"
 #include "env.h"
 #include "env_eval.h"
+#include "env_frame_capture.h"
 #include "error.h"
 #include "error_handler.h"
 #include "fact.h"
@@ -370,9 +371,6 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
                              const s_tag *clean)
 {
   s_struct_type *st;
-  s_tag tag_module_name;
-  s_tag tag_st;
-  s_tag tag_struct_type;
   if (! env_struct_type_find(env, module, &st))
     return NULL;
   if (! st) {
@@ -390,16 +388,7 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
     assert(! "env_def_clean: module clean method must be a Cfn");
     return NULL;
   }
-  tag_init_sym(&tag_module_name, module);
-  tag_init_pstruct_type_clean(&tag_st, st,
-                              &clean->data.pcallable->data.cfn);
-  tag_init_sym(&tag_struct_type, &g_sym_struct_type);
-  if (! facts_replace_tags(env->facts, &tag_module_name,
-                           &tag_struct_type, &tag_st)) {
-    tag_clean(&tag_st);
-    return NULL;
-  }
-  tag_clean(&tag_st);
+  st->clean = (f_clean) clean->data.pcallable->data.cfn.ptr.f;
   return module;
 }
 
@@ -1056,6 +1045,39 @@ s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
   return dest;
 }
 
+s_frame * env_frame_new_capture (s_env *env, s_fn *fn)
+{
+  s_fn_clause *clause;
+  s_frame *frame;
+  uw i;
+  s_list *pattern;
+  assert(env);
+  assert(fn);
+  frame = frame_new(NULL, NULL);
+  clause = fn->clauses;
+  while (clause) {
+    pattern = clause->pattern;
+    while (pattern) {
+      if (! env_frame_capture_tag(env, frame, &pattern->tag)) {
+        frame_delete(frame);
+        return NULL;
+      }
+      pattern = list_next(pattern);
+    }
+    i = 0;
+    while (i < clause->algo.count) {
+      if (! env_frame_capture_tag(env, frame,
+                                  clause->algo.tag + i)) {
+        frame_delete(frame);
+        return NULL;
+      }
+      i++;
+    }
+    clause = clause->next_clause;
+  }
+  return frame;
+}
+  
 s_tag * env_frames_get (s_env *env, const s_sym *name)
 {
   s_tag *tag;

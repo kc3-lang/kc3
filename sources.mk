@@ -441,6 +441,8 @@ KC3_C_SOURCES = \
 	"libkc3/env_eval.h" \
 	"libkc3/env_fork.c" \
 	"libkc3/env_fork.h" \
+	"libkc3/env_frame_capture.c" \
+	"libkc3/env_frame_capture.h" \
 	"libkc3/error.c" \
 	"libkc3/error.h" \
 	"libkc3/error_handler.c" \
@@ -1250,6 +1252,7 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/sh.kc3" \
 	"lib/kc3/0.1/smtp.kc3" \
 	"lib/kc3/0.1/socket.kc3" \
+	"lib/kc3/0.1/socket/.#buf.kc3" \
 	"lib/kc3/0.1/socket/addr.kc3" \
 	"lib/kc3/0.1/socket/buf.kc3" \
 	"lib/kc3/0.1/spam/bayes.kc3" \
@@ -1575,6 +1578,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/assets/js/pixel.js" \
 	"test/httpd/assets/package-lock.json" \
 	"test/httpd/assets/package.json" \
+	"test/httpd/config/app.kc3" \
 	"test/httpd/config/db.kc3" \
 	"test/httpd/config/mime.types" \
 	"test/httpd/config/routes.kc3" \
@@ -1583,6 +1587,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/pages" \
 	"test/httpd/pages/index.en.html" \
 	"test/httpd/pages/index.en.html~" \
+	"test/httpd/pages/index.fr.html" \
 	"test/httpd/static" \
 	"test/httpd/static/_assets" \
 	"test/httpd/static/_assets/app.css" \
@@ -1959,40 +1964,72 @@ KC3_DOC_SOURCES = \
 	"doc/1_KC3/.#1.05_List.en.md" \
 	"doc/1_KC3/.#1.26_Named_block.en.md" \
 	"doc/1_KC3/1.01_Introduction.en.md" \
+	"doc/1_KC3/1.01_Introduction.fr.md" \
 	"doc/1_KC3/1.02_Array.en.md" \
+	"doc/1_KC3/1.02_Array.fr.md" \
 	"doc/1_KC3/1.03_Block.en.md" \
+	"doc/1_KC3/1.03_Block.fr.md" \
 	"doc/1_KC3/1.04_Bool.en.md" \
+	"doc/1_KC3/1.04_Bool.fr.md" \
 	"doc/1_KC3/1.05_Callable.en.md" \
+	"doc/1_KC3/1.05_Callable.fr.md" \
 	"doc/1_KC3/1.06_Call.en.md" \
+	"doc/1_KC3/1.06_Call.fr.md" \
 	"doc/1_KC3/1.07_Character.en.md" \
+	"doc/1_KC3/1.07_Character.fr.md" \
 	"doc/1_KC3/1.08_Complex.en.md" \
+	"doc/1_KC3/1.08_Complex.fr.md" \
 	"doc/1_KC3/1.09_Cow.en.md" \
+	"doc/1_KC3/1.09_Cow.fr.md" \
 	"doc/1_KC3/1.10_F32.en.md" \
+	"doc/1_KC3/1.10_F32.fr.md" \
 	"doc/1_KC3/1.11_F64.en.md" \
+	"doc/1_KC3/1.11_F64.fr.md" \
 	"doc/1_KC3/1.12_F128.en.md" \
+	"doc/1_KC3/1.12_F128.fr.md" \
 	"doc/1_KC3/1.13_Ident.en.md" \
+	"doc/1_KC3/1.13_Ident.fr.md" \
 	"doc/1_KC3/1.14_Integer.en.md" \
+	"doc/1_KC3/1.14_Integer.fr.md" \
 	"doc/1_KC3/1.15_List.en.md" \
+	"doc/1_KC3/1.15_List.fr.md" \
 	"doc/1_KC3/1.16_Map.en.md" \
+	"doc/1_KC3/1.16_Map.fr.md" \
 	"doc/1_KC3/1.17_Ptr.en.md" \
+	"doc/1_KC3/1.17_Ptr.fr.md" \
 	"doc/1_KC3/1.18_Quote.en.md" \
+	"doc/1_KC3/1.18_Quote.fr.md" \
 	"doc/1_KC3/1.19_Ratio.en.md" \
+	"doc/1_KC3/1.19_Ratio.fr.md" \
 	"doc/1_KC3/1.20_Str.en.md" \
+	"doc/1_KC3/1.20_Str.fr.md" \
 	"doc/1_KC3/1.21_Struct.en.md" \
+	"doc/1_KC3/1.21_Struct.fr.md" \
 	"doc/1_KC3/1.22_Sym.en.md" \
+	"doc/1_KC3/1.22_Sym.fr.md" \
 	"doc/1_KC3/1.23_Tuple.en.md" \
+	"doc/1_KC3/1.23_Tuple.fr.md" \
 	"doc/1_KC3/1.24_Variable.en.md" \
+	"doc/1_KC3/1.24_Variable.fr.md" \
 	"doc/1_KC3/1.25_Facts.en.md" \
+	"doc/1_KC3/1.25_Facts.fr.md" \
 	"doc/1_KC3/1.26_Named_block.en.md" \
+	"doc/1_KC3/1.26_Named_block.fr.md" \
 	"doc/2_HTTPd/index.en.md" \
 	"doc/2_HTTPd/index.fr.md" \
 	"doc/3_Guides/3.1_Install.en.md" \
+	"doc/3_Guides/3.1_Install.fr.md" \
 	"doc/3_Guides/3.2_Testing.en.md" \
+	"doc/3_Guides/3.2_Testing.fr.md" \
 	"doc/3_Guides/3.3_Usage.en.md" \
+	"doc/3_Guides/3.3_Usage.fr.md" \
 	"doc/3_Guides/3.4_Structure.en.md" \
+	"doc/3_Guides/3.4_Structure.fr.md" \
 	"doc/3_Guides/3.5_Tutorial.en.md" \
 	"doc/3_Guides/3.5_Tutorial.fr.md" \
 	"doc/3_Guides/index.en.md" \
+	"doc/3_Guides/index.fr.md" \
+	"doc/4_Misc/4.1_ChatGPT.md" \
 	"doc/index.en.md" \
 	"doc/index.fr.md" \
 

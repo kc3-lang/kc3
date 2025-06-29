@@ -348,7 +348,7 @@ bool data_clean (const s_sym *type, void *data)
   return false;
 }
 
-bool data_compare (const s_sym *type, const void *a, const void *b)
+s8 data_compare (const s_sym *type, const void *a, const void *b)
 {
   s_struct sa = {0};
   s_struct sb = {0};
@@ -378,7 +378,7 @@ bool data_compare (const s_sym *type, const void *a, const void *b)
   if (type == &g_sym_List)
     return compare_list(a, b);
   if (type == &g_sym_Ptag)
-    return compare_ptag(a, b);
+    return compare_ptag((const p_tag) a, (const p_tag) b);
   if (type == &g_sym_Ptr)
     return compare_ptr(a, b);
   if (type == &g_sym_PtrFree)
