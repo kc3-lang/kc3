@@ -12,6 +12,7 @@
  */
 #include "assert.h"
 #include "env_frame_capture.h"
+#include "frame.h"
 #include "list.h"
 
 s_frame * env_frame_capture_array (s_env *env, s_frame *frame,
@@ -109,10 +110,18 @@ s_frame * env_frame_capture_fn (s_env *env, s_frame *frame,
 s_frame * env_frame_capture_ident (s_env *env, s_frame *frame,
                                    s_ident *ident)
 {
+  s_tag *value;
+  s_tag tag_void = {0};
   assert(env);
   assert(frame);
   assert(ident);
-  
+  if (ident->module)
+    return frame;
+  value = env_frames_get(env, ident->sym);
+  if (! value)
+    value = &tag_void;
+  if (! frame_replace(frame, ident->sym, value))
+    return NULL;
   return frame;
 }
 
