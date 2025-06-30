@@ -27,6 +27,7 @@ s_frame * env_frame_capture_cow (s_env *env, s_frame *frame,
                                  s_cow *cow);
 s_frame * env_frame_capture_fact (s_env *env, s_frame *frame,
                                   s_fact *fact);
+s_frame * env_frame_capture_fn (s_env *env, s_frame *frame, s_fn *fn);
 s_frame * env_frame_capture_ident (s_env *env, s_frame *frame,
                                    s_ident *ident);
 s_frame * env_frame_capture_list (s_env *env, s_frame *frame,

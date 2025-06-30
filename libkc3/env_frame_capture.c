@@ -12,6 +12,7 @@
  */
 #include "assert.h"
 #include "env_frame_capture.h"
+#include "list.h"
 
 s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
                                  s_tag *tag)
@@ -82,4 +83,104 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
   err_puts("env_frame_capture_tag: unknown tag type");
   assert(! "env_frame_capture_tag: unknown tag type");
   return NULL;
+}
+
+s_frame * env_frame_capture_callable (s_env *env, s_frame *frame,
+                                      s_callable *c)
+{
+  assert(env);
+  assert(frame);
+  assert(c);
+  switch (c->type) {
+  case CALLABLE_VOID:
+  case CALLABLE_CFN:
+    return frame;
+  case CALLABLE_FN:
+    return env_frame_capture_fn(env, frame, &c->data.fn);
+  }
+  err_puts("env_frame_capture_callable: unknown callable type");
+  assert(! "env_frame_capture_callable: unknown callable type");
+  return NULL;
+}
+
+s_frame * env_frame_capture_do_block (s_env *env, s_frame *frame,
+                                      s_do_block *do_block)
+{
+  uw i = 0;
+  assert(env);
+  assert(frame);
+  assert(do_block);
+  while (i < do_block->count) {
+    if (! env_frame_capture_tag(env, frame, do_block->tag + i))
+      return NULL;
+    i++;
+  }
+  return frame;
+}
+
+s_frame * env_frame_capture_fn (s_env *env, s_frame *frame,
+                                s_fn *fn)
+{
+  s_fn_clause *clause;
+  assert(env);
+  assert(frame);
+  assert(fn);
+  clause = fn->clauses;
+  while (clause) {
+    if (! env_frame_capture_list(env, frame, clause->pattern))
+      return NULL;
+    if (! env_frame_capture_do_block(env, frame, &clause->algo))
+      return NULL;
+    clause = clause->next_clause;
+  }
+  return frame;
+}
+
+s_frame * env_frame_capture_list (s_env *env, s_frame *frame,
+                                  s_list *list)
+{
+  s_list *l = list;
+  assert(env);
+  assert(frame);
+  assert(list);
+  while (l) {
+    if (! env_frame_capture_tag(env, frame, &l->tag))
+      return NULL;
+    l = list_next(l);
+  }
+  return frame;
+}
+
+s_frame * env_frame_capture_quote (s_env *env, s_frame *frame,
+                                   s_quote *quote)
+{
+  assert(env);
+  assert(frame);
+  assert(quote);
+  if (! env_frame_capture_tag(env, frame, quote->tag))
+    return NULL;
+  return frame;
+}
+
+s_frame * env_frame_capture_unquote (s_env *env, s_frame *frame,
+                                     s_unquote *unquote)
+{
+  assert(env);
+  assert(frame);
+  assert(unquote);
+  if (! env_frame_capture_tag(env, frame, unquote->tag))
+    return NULL;
+  return frame;
+}
+
+s_frame * env_frame_capture_var (s_env *env, s_frame *frame,
+                                 s_var *var)
+{
+  assert(env);
+  assert(frame);
+  assert(var);
+  if (var->ptr &&
+      ! env_frame_capture_tag(env, frame, var->ptr))
+    return NULL;
+  return frame;
 }
