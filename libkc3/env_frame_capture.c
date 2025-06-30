@@ -14,75 +14,32 @@
 #include "env_frame_capture.h"
 #include "list.h"
 
-s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
-                                 s_tag *tag)
+s_frame * env_frame_capture_array (s_env *env, s_frame *frame,
+                                   s_array *array)
+{
+  uw i = 0;
+  assert(env);
+  assert(frame);
+  assert(array);
+  if (array->tags && ! array->data) {
+    while (i < array->count) {
+      if (! env_frame_capture_tag(env, frame, array->tags + i))
+        return NULL;
+      i++;
+    }
+  }
+  return frame;
+}
+
+s_frame * env_frame_capture_call (s_env *env, s_frame *frame,
+                                  s_call *call)
 {
   assert(env);
   assert(frame);
-  assert(tag);
-  switch (tag->type) {
-  case TAG_ARRAY:
-    return env_frame_capture_array(env, frame, &tag->data.array);
-  case TAG_DO_BLOCK:
-    return env_frame_capture_do_block(env, frame, &tag->data.do_block);
-  case TAG_CALL:
-    return env_frame_capture_call(env, frame, &tag->data.call);
-  case TAG_COW:
-    return env_frame_capture_cow(env, frame, tag->data.cow);
-  case TAG_FACT:
-    return env_frame_capture_fact(env, frame, &tag->data.fact);
-  case TAG_LIST:
-    return env_frame_capture_list(env, frame, tag->data.list);
-  case TAG_MAP:
-    return env_frame_capture_map(env, frame, &tag->data.map);
-  case TAG_PTAG:
-    return env_frame_capture_tag(env, frame, tag->data.ptag);
-  case TAG_QUOTE:
-    return env_frame_capture_quote(env, frame, &tag->data.quote);
-  case TAG_TUPLE:
-    return env_frame_capture_tuple(env, frame, &tag->data.tuple);
-  case TAG_UNQUOTE:
-    return env_frame_capture_unquote(env, frame, &tag->data.unquote);
-  case TAG_VAR:
-    return env_frame_capture_var(env, frame, &tag->data.var);
-  case TAG_IDENT:
-    return env_frame_capture_ident(env, frame, &tag->data.ident);
-  case TAG_PCALLABLE:
-    return env_frame_capture_callable(env, frame, tag->data.pcallable);
-  case TAG_PSTRUCT:
-    return env_frame_capture_struct(env, frame, tag->data.pstruct);
-  case TAG_PSTRUCT_TYPE:
-    return env_frame_capture_struct_type(env, frame,
-                                         tag->data.pstruct_type);
-  case TAG_BOOL:
-  case TAG_CHARACTER:
-  case TAG_COMPLEX:
-  case TAG_F32:
-  case TAG_F64:
-  case TAG_F128:
-  case TAG_INTEGER:
-  case TAG_PTR:
-  case TAG_PTR_FREE:
-  case TAG_RATIO:
-  case TAG_S8:
-  case TAG_S16:
-  case TAG_S32:
-  case TAG_S64:
-  case TAG_STR:
-  case TAG_SW:
-  case TAG_SYM:
-  case TAG_TIME:
-  case TAG_U8:
-  case TAG_U16:
-  case TAG_U32:
-  case TAG_U64:
-  case TAG_UW:
-  case TAG_VOID:
-    return frame;
-  }
-  err_puts("env_frame_capture_tag: unknown tag type");
-  assert(! "env_frame_capture_tag: unknown tag type");
-  return NULL;
+  assert(call);
+  if (! env_frame_capture_ident(env, frame, &call->ident))
+    return NULL;
+  return env_frame_capture_list(env, frame, call->arguments);
 }
 
 s_frame * env_frame_capture_callable (s_env *env, s_frame *frame,
@@ -118,6 +75,19 @@ s_frame * env_frame_capture_do_block (s_env *env, s_frame *frame,
   return frame;
 }
 
+s_frame * env_frame_capture_fact (s_env *env, s_frame *frame,
+                                  s_fact *fact)
+{
+  assert(env);
+  assert(frame);
+  assert(fact);
+  if (! env_frame_capture_tag(env, frame, fact->subject) ||
+      ! env_frame_capture_tag(env, frame, fact->predicate) ||
+      ! env_frame_capture_tag(env, frame, fact->object))
+    return NULL;
+  return frame;
+}
+
 s_frame * env_frame_capture_fn (s_env *env, s_frame *frame,
                                 s_fn *fn)
 {
@@ -136,6 +106,16 @@ s_frame * env_frame_capture_fn (s_env *env, s_frame *frame,
   return frame;
 }
 
+s_frame * env_frame_capture_ident (s_env *env, s_frame *frame,
+                                   s_ident *ident)
+{
+  assert(env);
+  assert(frame);
+  assert(ident);
+  
+  return frame;
+}
+
 s_frame * env_frame_capture_list (s_env *env, s_frame *frame,
                                   s_list *list)
 {
@@ -151,6 +131,21 @@ s_frame * env_frame_capture_list (s_env *env, s_frame *frame,
   return frame;
 }
 
+s_frame * env_frame_capture_map (s_env *env, s_frame *frame,
+                                 s_map *map)
+{
+  uw i = 0;
+  assert(env);
+  assert(frame);
+  assert(map);
+  while (i < map->count) {
+    if (! env_frame_capture_tag(env, frame, map->value + i))
+      return NULL;
+    i++;
+  }
+  return frame;
+}
+
 s_frame * env_frame_capture_quote (s_env *env, s_frame *frame,
                                    s_quote *quote)
 {
@@ -159,6 +154,106 @@ s_frame * env_frame_capture_quote (s_env *env, s_frame *frame,
   assert(quote);
   if (! env_frame_capture_tag(env, frame, quote->tag))
     return NULL;
+  return frame;
+}
+
+s_frame * env_frame_capture_struct (s_env *env, s_frame *frame,
+                                    s_struct *s)
+{
+  uw i = 0;
+  assert(env);
+  assert(frame);
+  assert(s);
+  if (s->tag && ! s->data) {
+    while (i < s->pstruct_type->map.count) {
+      if (! env_frame_capture_tag(env, frame, s->tag + i))
+        return NULL;
+      i++;
+    }
+  }
+  return frame;
+}
+
+s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
+                                 s_tag *tag)
+{
+  assert(env);
+  assert(frame);
+  assert(tag);
+  switch (tag->type) {
+  case TAG_ARRAY:
+    return env_frame_capture_array(env, frame, &tag->data.array);
+  case TAG_DO_BLOCK:
+    return env_frame_capture_do_block(env, frame, &tag->data.do_block);
+  case TAG_CALL:
+    return env_frame_capture_call(env, frame, &tag->data.call);
+  case TAG_FACT:
+    return env_frame_capture_fact(env, frame, &tag->data.fact);
+  case TAG_LIST:
+    return env_frame_capture_list(env, frame, tag->data.list);
+  case TAG_MAP:
+    return env_frame_capture_map(env, frame, &tag->data.map);
+  case TAG_PTAG:
+    return env_frame_capture_tag(env, frame, tag->data.ptag);
+  case TAG_QUOTE:
+    return env_frame_capture_quote(env, frame, &tag->data.quote);
+  case TAG_TUPLE:
+    return env_frame_capture_tuple(env, frame, &tag->data.tuple);
+  case TAG_UNQUOTE:
+    return env_frame_capture_unquote(env, frame, &tag->data.unquote);
+  case TAG_VAR:
+    return env_frame_capture_var(env, frame, &tag->data.var);
+  case TAG_IDENT:
+    return env_frame_capture_ident(env, frame, &tag->data.ident);
+  case TAG_PCALLABLE:
+    return env_frame_capture_callable(env, frame, tag->data.pcallable);
+  case TAG_PSTRUCT:
+    return env_frame_capture_struct(env, frame, tag->data.pstruct);
+  case TAG_BOOL:
+  case TAG_CHARACTER:
+  case TAG_COMPLEX:
+  case TAG_COW:
+  case TAG_F32:
+  case TAG_F64:
+  case TAG_F128:
+  case TAG_INTEGER:
+  case TAG_PSTRUCT_TYPE:
+  case TAG_PTR:
+  case TAG_PTR_FREE:
+  case TAG_RATIO:
+  case TAG_S8:
+  case TAG_S16:
+  case TAG_S32:
+  case TAG_S64:
+  case TAG_STR:
+  case TAG_SW:
+  case TAG_SYM:
+  case TAG_TIME:
+  case TAG_U8:
+  case TAG_U16:
+  case TAG_U32:
+  case TAG_U64:
+  case TAG_UW:
+  case TAG_VOID:
+    return frame;
+  }
+  err_puts("env_frame_capture_tag: unknown tag type");
+  assert(! "env_frame_capture_tag: unknown tag type");
+  return NULL;
+}
+
+s_frame * env_frame_capture_tuple (s_env *env, s_frame *frame,
+                                   s_tuple *tuple)
+{
+  uw i = 0;
+  assert(env);
+  assert(frame);
+  assert(tuple);
+  while (i < tuple->count) {
+    if (! env_frame_capture_tag(env, frame, tuple->tag + i))
+      return NULL;
+    i++;
+  }
   return frame;
 }
 

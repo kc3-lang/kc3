@@ -23,8 +23,6 @@ s_frame * env_frame_capture_call (s_env *env, s_frame *frame,
                                   s_call *call);
 s_frame * env_frame_capture_callable (s_env *env, s_frame *frame,
                                       s_callable *callable);
-s_frame * env_frame_capture_cow (s_env *env, s_frame *frame,
-                                 s_cow *cow);
 s_frame * env_frame_capture_fact (s_env *env, s_frame *frame,
                                   s_fact *fact);
 s_frame * env_frame_capture_fn (s_env *env, s_frame *frame, s_fn *fn);
