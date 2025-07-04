@@ -131,7 +131,6 @@ s_frame * env_frame_capture_list (s_env *env, s_frame *frame,
   s_list *l = list;
   assert(env);
   assert(frame);
-  assert(list);
   while (l) {
     if (! env_frame_capture_tag(env, frame, &l->tag))
       return NULL;

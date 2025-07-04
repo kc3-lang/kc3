@@ -1053,7 +1053,7 @@ s_frame * env_frame_new_capture (s_env *env, s_fn *fn)
   s_list *pattern;
   assert(env);
   assert(fn);
-  frame = frame_new(NULL, NULL);
+  frame = frame_new(NULL);
   clause = fn->clauses;
   while (clause) {
     pattern = clause->pattern;
@@ -1116,7 +1116,7 @@ s_env * env_globals_init (s_env *env)
   s_tag *file_dir;
   s_tag *file_path;
   s_tag *ncpu;
-  if (! (env->read_time_frame = frame_new(NULL, NULL)))
+  if (! (env->read_time_frame = frame_new(NULL)))
     return NULL;
   if (! (file_dir = frame_binding_new(env->read_time_frame,
                                       &g_sym___DIR__)))
@@ -1129,7 +1129,7 @@ s_env * env_globals_init (s_env *env)
     return NULL;
   if (! tag_init_str_1(file_path, NULL, "stdin"))
     return NULL;
-  if (! (env->global_frame = frame_new(env->read_time_frame, NULL)))
+  if (! (env->global_frame = frame_new(env->read_time_frame)))
     return NULL;
   if (! (ncpu = frame_binding_new(env->read_time_frame,
                                   &g_sym_ncpu)))
@@ -1423,7 +1423,7 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
   assert(vars);
   assert(tag);
   assert(dest);
-  if (! frame_init(&frame, env->frame, NULL))
+  if (! frame_init(&frame, env->frame))
     return NULL;
   env->frame = &frame;
   if (! env_eval_tag(env, vars, &tmp)) {
@@ -2297,13 +2297,15 @@ bool env_tag_ident_is_bound (s_env *env, const s_tag *tag)
 
 void env_toplevel_clean (s_env *env)
 {
-  frame_delete_all(env->frame);
+  frame_clean(&env->toplevel_frame);
 }
 
 s_env * env_toplevel_init (s_env *env)
 {
   assert(! env->frame);
-  env->frame = frame_new(NULL, NULL);
+  if (! frame_init(&env->toplevel_frame, NULL))
+    return NULL;
+  env->frame = &env->toplevel_frame;
   return env;
 }
 

@@ -17,11 +17,11 @@
 
 /* Stack-allocation compatible functions, call frame_clean after use. */
 s_frame * frame_clean (s_frame *frame);
-s_frame * frame_init (s_frame *frame, s_frame *next,
-                      const s_frame *fn_frame);
+s_frame * frame_init (s_frame *frame, s_frame *next);
+s_frame * frame_init_copy (s_frame *frame, s_frame *src);
 
 /* Constructors. */
-s_frame * frame_new (s_frame *next, const s_frame *fn_frame);
+s_frame * frame_new (s_frame *next);
 s_frame * frame_new_copy (const s_frame *src);
 
 /* Destructors. */

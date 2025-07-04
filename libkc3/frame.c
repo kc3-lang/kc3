@@ -114,8 +114,6 @@ s_frame * frame_clean (s_frame *frame)
   assert(frame);
   next = frame->next;
   binding_delete_all(frame->bindings);
-  if (frame->fn_frame)
-    frame_delete_all(frame->fn_frame);
   return next;
 }
 
@@ -149,15 +147,6 @@ s_tag * frame_get (s_frame *frame, const s_sym *sym)
       return result;
     f = f->next;
   }
-  f = frame;
-  while (f) {
-    if (f->fn_frame) {
-      result = frame_get(f->fn_frame, sym);
-      if (result)
-        return result;
-    }
-    f = f->next;
-  }
   return NULL;
 }
 
@@ -173,36 +162,38 @@ s_tag * frame_get_w (s_frame *frame, const s_sym *sym)
       return result;
     f = f->next;
   }
-  f = frame;
-  while (f) {
-    if (f->fn_frame) {
-      result = frame_get_w(f->fn_frame, sym);
-      if (result)
-        return result;
-    }
-    f = f->next;
-  }
   return NULL;
 }
 
-s_frame * frame_init (s_frame *frame, s_frame *next,
-                      const s_frame *fn_frame)
+s_frame * frame_init (s_frame *frame, s_frame *next)
 {
   s_frame tmp = {0};
   assert(frame);
   tmp.next = next;
-  tmp.fn_frame = frame_new_copy(fn_frame);
+  *frame = tmp;
+  return frame;
+}
+s_frame * frame_init_copy (s_frame *frame, s_frame *src)
+{
+  s_frame tmp = {0};
+  if (! frame_init(&tmp, NULL))
+    return NULL;
+  if (src->bindings &&
+      ! (tmp.bindings = binding_new_copy(src->bindings))) {
+    frame_clean(&tmp);
+    return NULL;
+  }
   *frame = tmp;
   return frame;
 }
 
-s_frame * frame_new (s_frame *next, const s_frame *fn_frame)
+s_frame * frame_new (s_frame *next)
 {
   s_frame *frame;
   frame = alloc(sizeof(s_frame));
   if (! frame)
     return NULL;
-  if (! frame_init(frame, next, fn_frame)) {
+  if (! frame_init(frame, next)) {
     free(frame);
     return NULL;
   }
@@ -218,7 +209,7 @@ s_frame * frame_new_copy (const s_frame *src)
   f = &frame;
   s = src;
   while (s) {
-    *f = frame_new(NULL, s->fn_frame);
+    *f = frame_new(NULL);
     if (s->bindings &&
         ! ((*f)->bindings = binding_new_copy(s->bindings)))
       goto clean;

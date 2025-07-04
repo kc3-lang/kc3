@@ -51,7 +51,7 @@ s_env * env_fork_init (s_env *env, s_env *src)
   //tmp.error_handler = NULL;
   tmp.facts = src->facts;
   tmp.frame = frame_new_copy(src->frame);
-  tmp.global_frame = src->global_frame;
+  tmp.global_frame = frame_new_copy(src->global_frame);
   tmp.in = src->in;
   tmp.loaded = true;
   tmp.module_path = src->module_path;
@@ -61,10 +61,12 @@ s_env * env_fork_init (s_env *env, s_env *src)
   tmp.pass_by_copy = src->pass_by_copy;
   tmp.path = src->path;
   tmp.quote_level = src->quote_level;
-  if (! (tmp.read_time_frame = frame_new(NULL, NULL)))
+  if (! (tmp.read_time_frame = frame_new(NULL)))
     return NULL;
   tmp.search_modules = src->search_modules_default;
   tmp.search_modules_default = src->search_modules_default;
+  if (! frame_init_copy(&tmp.toplevel_frame, &src->toplevel_frame))
+    return NULL;
   tmp.trace = src->trace;
   //tmp.unquote_level = 0;
   //tmp.unwind_protect = NULL;

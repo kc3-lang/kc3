@@ -320,7 +320,6 @@ struct fn_clause {
 struct frame {
   s_binding *bindings;
   s_frame *next;
-  s_frame *fn_frame;
 };
 
 struct fact_list {
@@ -848,6 +847,7 @@ struct env {
   s_list           *search_modules_default;
   bool              silence_errors;
   s_list           *stacktrace;
+  s_frame           toplevel_frame;
   bool              trace;
   uw                unquote_level;
   s_unwind_protect *unwind_protect;

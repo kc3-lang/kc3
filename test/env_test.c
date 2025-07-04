@@ -65,7 +65,7 @@ TEST_CASE(env_eval_equal_tag)
   s_tag y;
   s_tag z;
   env_init(&env, 0, NULL);
-  env.frame = frame_init(&frame, env.frame, NULL);
+  env.frame = frame_init(&frame, env.frame);
   test_context("x = 1");
   TEST_ASSERT(env_eval_equal_tag(&env, false,
                                  tag_init_1(&x, "x"),
@@ -77,7 +77,7 @@ TEST_CASE(env_eval_equal_tag)
   env.frame = frame_clean(&frame);
   env_clean(&env);
   env_init(&env, 0, NULL);
-  env.frame = frame_init(&frame, env.frame, NULL);
+  env.frame = frame_init(&frame, env.frame);
   test_context("x = (1, 2]");
   TEST_ASSERT(env_eval_equal_tag(&env, false,
                                  tag_init_1(&x, "x"),
@@ -89,7 +89,7 @@ TEST_CASE(env_eval_equal_tag)
   env.frame = frame_clean(&frame);
   env_clean(&env);
   env_init(&env, 0, NULL);
-  env.frame = frame_init(&frame, env.frame, NULL);
+  env.frame = frame_init(&frame, env.frame);
   test_context("[] = []");
   TEST_ASSERT(env_eval_equal_tag(&env, false,
                                  tag_1(&x, "[]"),
@@ -100,7 +100,7 @@ TEST_CASE(env_eval_equal_tag)
   env.frame = frame_clean(&frame);
   env_clean(&env);
   env_init(&env, 0, NULL);
-  env.frame = frame_init(&frame, env.frame, NULL);
+  env.frame = frame_init(&frame, env.frame);
   test_context("[a, b] = [1, 2]");
   TEST_ASSERT(env_eval_equal_tag(&env, false,
                                  tag_1(&x, "[a, b]"),
@@ -113,7 +113,7 @@ TEST_CASE(env_eval_equal_tag)
   env.frame = frame_clean(&frame);
   env_clean(&env);
   env_init(&env, 0, NULL);
-  env.frame = frame_init(&frame, env.frame, NULL);
+  env.frame = frame_init(&frame, env.frame);
   test_context("x = [1, 2]");
   TEST_ASSERT(env_eval_equal_tag(&env, false,
                                  tag_1(&x, "[a | b]"),
