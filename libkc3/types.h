@@ -65,13 +65,13 @@ typedef int16_t            s16;
 typedef int32_t            s32;
 typedef int64_t            s64;
 //XXX (32 bits) typedef long long          s128;
-typedef intptr_t           sw;
+typedef intptr_t           sw;  // signed word
 typedef uint8_t            u8;
 typedef uint16_t           u16;
 typedef uint32_t           u32;
 typedef uint64_t           u64;
 //XXX (32 bits) typedef unsigned long long u128;
-typedef uintptr_t          uw;
+typedef uintptr_t          uw;  // unsigned word
 
 #ifdef SW_MAX
 #undef SW_MAX

@@ -30,10 +30,10 @@
   sw err_inspect_ ## name (type x)                                     \
   {                                                                    \
     sw r;                                                              \
-    r = buf_inspect_ ## name(env_global()->err, x);                       \
+    r = buf_inspect_ ## name(env_global()->err, x);                    \
     if (r < 0)                                                         \
       return r;                                                        \
-    buf_flush(env_global()->err);                                         \
+    buf_flush(env_global()->err);                                      \
     return r;                                                          \
   }
 
@@ -41,10 +41,10 @@
   sw io_inspect_ ## name (type x)                                      \
   {                                                                    \
     sw r;                                                              \
-    r = buf_inspect_ ## name(env_global()->out, x);                       \
+    r = buf_inspect_ ## name(env_global()->out, x);                    \
     if (r < 0)                                                         \
       return r;                                                        \
-    buf_flush(env_global()->out);                                         \
+    buf_flush(env_global()->out);                                      \
     return r;                                                          \
   }
 

@@ -80,7 +80,7 @@ uninstall:
 	gen \
 	install \
 	test \
-	update_sources \
+	update_sources
 
 include config.mk
 include sources.mk
