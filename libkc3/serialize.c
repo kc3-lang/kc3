@@ -51,8 +51,12 @@ s_serialize * serialize_character (s_serialize *serialize,
 s_serialize * serialize_init (s_serialize *serialize)
 {
   s_serialize tmp = {0};
-  buf_init_alloc(&tmp.heap, 1024024);
-  buf_init_alloc(&tmp.buf, 1024024);
+  if (buf_init_alloc(&tmp.heap, 1024024) == NULL)
+    return NULL;
+  if (buf_init_alloc(&tmp.buf, 1024024) == NULL) {
+    buf_delete(&tmp.buf);
+    return NULL;
+  }
   *serialize = tmp;
   return serialize;
 }
@@ -81,7 +85,10 @@ s_serialize * serialize_new (void)
   s_serialize *serialize;
   if (! (serialize = alloc(sizeof(s_serialize))))
     return NULL;
-  serialize_init(serialize);
+  if (serialize_init(serialize) == NULL) {
+    free(serialize);
+    return NULL;
+  }
   return serialize;
 }
 
