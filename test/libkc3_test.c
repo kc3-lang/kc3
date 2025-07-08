@@ -31,6 +31,7 @@ void fn_test (void);
 void ident_test (void);
 void inspect_test (void);
 void list_test (void);
+void marshall_test (void);
 void ops_test (void);
 void ratio_test (void);
 void set__fact_test (void);
@@ -85,6 +86,7 @@ int main (int argc, char **argv)
   TEST_TARGET(struct);
   TEST_TARGET(ratio);
   TEST_TARGET(env);
+  TEST_TARGET(marshall);
   test_summary();
   test_clean();
   kc3_clean(NULL);

@@ -42,7 +42,7 @@ echo "OBJECTS_DEBUG = $OBJECTS_DEBUG" >> ${CONFIG_MK}
 
 # Common config for all targets
 CPPFLAGS="$CPPFLAGS -I.."
-CFLAGS="$CFLAGS -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
+CFLAGS="$CFLAGS -g3 -W -Wall -Werror -std=c11 -pedantic -pipe -pthread"
 config_asan
 config_gnu
 config_i386
@@ -76,7 +76,7 @@ LIBS_COV="$LOCAL_LIBS_COV $LIBS -lgcov"
 
 # Debug config
 CPPFLAGS_DEBUG="$CPPFLAGS"
-CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g"
+CFLAGS_DEBUG="$CFLAGS -DDEBUG -O0 -g3"
 LDFLAGS_DEBUG="$LDFLAGS"
 LIBKC3_DEBUG=../libkc3/libkc3_debug.la
 LOCAL_LIBS_DEBUG="$LIBKC3_DEBUG"
