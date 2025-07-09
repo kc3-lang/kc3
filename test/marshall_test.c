@@ -13,38 +13,42 @@
 
 #include <assert.h>
 #include <endian.h>
-#include <string.h>
-#include "../libkc3/io.h"
 #include "../libkc3/marshall.h"
 #include "test.h"
-#include <limits.h>
+
+#define MARSHALL_TEST(type, test, expected)                            \
+  do {                                                                 \
+    s_serialize s = {0};                                               \
+    TEST_ASSERT(serialize_init(&s));                                   \
+    TEST_ASSERT(serialize_ ## type (&s, (type) (test)));               \
+    TEST_MEM_EQ(s.buf.ptr.pu8, sizeof(type),                           \
+      (expected), sizeof(expected) - 1);                               \
+  } while (0)
 
 void marshal_test (void);
+
+TEST_CASE_PROTOTYPE(marshall_u8);
+TEST_CASE_PROTOTYPE(marshall_u16);
 TEST_CASE_PROTOTYPE(marshall_u32);
+TEST_CASE_PROTOTYPE(marshall_u64);
+
+TEST_CASE_PROTOTYPE(marshall_s8);
+TEST_CASE_PROTOTYPE(marshall_s16);
+TEST_CASE_PROTOTYPE(marshall_s32);
+TEST_CASE_PROTOTYPE(marshall_s64);
 
 void marshall_test (void)
 {
+  TEST_CASE_RUN(marshall_u8);
+  TEST_CASE_RUN(marshall_u16);
   TEST_CASE_RUN(marshall_u32);
+  TEST_CASE_RUN(marshall_u64);
+
+  TEST_CASE_RUN(marshall_s8);
+  TEST_CASE_RUN(marshall_s16);
+  TEST_CASE_RUN(marshall_s32);
+  TEST_CASE_RUN(marshall_s64);
 }
-
-
-#define MARSHALL_TEST(type, test, expected)                           \
-  do {                                                                \
-    uw i = 0;                                                         \
-    const char *e = (expected);                                       \
-    s_serialize s = {0};                                              \
-    type val = (test);                                                \
-    const s_str str = {.free = {0}, .size = sizeof(type),             \
-      .ptr = {e}};                                                    \
-    TEST_ASSERT(sizeof(type) == sizeof(expected) - 1);                \
-    TEST_ASSERT(serialize_init(&s));                                  \
-    TEST_ASSERT(serialize_ ## type(&s, val));                         \
-    while (i < str.size) {                                            \
-      TEST_EQ(s.buf.ptr.pchar[i], str.ptr.pchar[i]);                  \
-      i++;                                                            \
-    }                                                                 \
-  } while (0)
-
 
 #define MARSHALL_TEST_U8(test, expected) \
   MARSHALL_TEST(u8, test, expected)
@@ -58,12 +62,93 @@ void marshall_test (void)
 #define MARSHALL_TEST_U64(test, expected) \
   MARSHALL_TEST(u64, test, expected)
 
+#define MARSHALL_TEST_UW(test, expected) \
+  MARSHALL_TEST(uw, test, expected)
+
+#define MARSHALL_TEST_S8(test, expected) \
+  MARSHALL_TEST(s8, test, expected)
+
+#define MARSHALL_TEST_S16(test, expected) \
+  MARSHALL_TEST(s16, test, expected)
+
+#define MARSHALL_TEST_S32(test, expected) \
+  MARSHALL_TEST(s32, test, expected)
+
+#define MARSHALL_TEST_S64(test, expected) \
+  MARSHALL_TEST(s64, test, expected)
+
+#define MARSHALL_TEST_SW(test, expected) \
+  MARSHALL_TEST(sw, test, expected)
+
+
+TEST_CASE(marshall_s8)
+{
+  MARSHALL_TEST_S8(0, "\0");
+  MARSHALL_TEST_S8(0xAB, "\xAB");
+}
+TEST_CASE_END(marshall_s8)
+
+TEST_CASE(marshall_s16)
+{
+  MARSHALL_TEST_S16(0, "\0\0");
+  MARSHALL_TEST_S16(-1, "\xFF\xFF");
+}
+TEST_CASE_END(marshall_s16)
+
+TEST_CASE(marshall_s32)
+{
+  MARSHALL_TEST_S32(0, "\0\0\0\0");
+  MARSHALL_TEST_S32(~0, "\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_S32(0xDEADBEEF, "\xEF\xBE\xAD\xDE");
+  MARSHALL_TEST_S32(0xDEADCAFE, "\xFE\xCA\xAD\xDE");
+  MARSHALL_TEST_S32(0xFEEDBABE, "\xBE\xBA\xED\xFE");
+}
+TEST_CASE_END(marshall_s32)
+
+TEST_CASE(marshall_s64)
+{
+  MARSHALL_TEST_S64(0, "\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_S64(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+}
+TEST_CASE_END(marshall_s64)
+
+TEST_CASE(marshall_sw)
+{
+  MARSHALL_TEST_SW(0, "\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_SW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+}
+TEST_CASE_END(marshall_sw)
+
+
+TEST_CASE(marshall_u8)
+{
+  MARSHALL_TEST_U8(0xFF, "\xFF");
+  MARSHALL_TEST_U8(0xFF, "\xFF");
+}
+TEST_CASE_END(marshall_u8)
+
+TEST_CASE(marshall_u16)
+{
+  MARSHALL_TEST_U16(0xFFFF, "\xFF\xFF");
+}
+TEST_CASE_END(marshall_u16)
+
 TEST_CASE(marshall_u32)
 {
-  MARSHALL_TEST_U8(0xFF,        "\xFF\0\0\0");
-  MARSHALL_TEST_U16(0xFFFF,     "\xFF\xFF\0\0");
   MARSHALL_TEST_U32(0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
+}
+TEST_CASE_END(marshall_u32)
+
+TEST_CASE(marshall_u64)
+{
   MARSHALL_TEST_U64(0xFFFFFFFFFFFFFFFF,
     "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
-TEST_CASE_END(marshall_u32)
+TEST_CASE_END(marshall_u64)
+
+TEST_CASE(marshall_uw)
+{
+  MARSHALL_TEST_UW(0, "\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+}
+TEST_CASE_END(marshall_uw)

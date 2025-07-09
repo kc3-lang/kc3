@@ -15,6 +15,7 @@
 
 #include <float.h>
 #include <stdio.h>
+#include "../libkc3/buf.h"
 
 #define TEST_COLOR_KO "\033[0;91m"
 #define TEST_COLOR_OK "\033[0;92m"
@@ -136,6 +137,16 @@
     }                                                                  \
   } while (0)
 
+#define TEST_MEM_EQ(p1, buf1_size, p2, buf2_size)                      \
+  {                                                                    \
+    size_t i = 0;                                                      \
+    TEST_EQ(buf1_size, buf2_size);                                     \
+    while (i < buf1_size) {                                            \
+      TEST_EQ(((u8 *) p1)[i], ((u8 *) p2)[i]);                         \
+      i++;                                                             \
+    }                                                                  \
+  }
+
 #define TEST_STR_COMPARE(a, b, expected)                               \
   do {                                                                 \
     sw TEST_STR_COMPARE_tmp = str_compare(a, b);                       \
@@ -201,5 +212,4 @@ void test_summary (void);
 int  test_target (const char *target);
 
 #endif /* TEST_H */
-
 
