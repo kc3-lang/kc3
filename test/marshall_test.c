@@ -17,6 +17,7 @@
 #include "../libkc3/io.h"
 #include "../libkc3/marshall.h"
 #include "test.h"
+#include <limits.h>
 
 void marshal_test (void);
 TEST_CASE_PROTOTYPE(marshall_u32);
@@ -26,22 +27,43 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_u32);
 }
 
+
+#define MARSHALL_TEST(type, test, expected)                           \
+  do {                                                                \
+    uw i = 0;                                                         \
+    const char *e = (expected);                                       \
+    s_serialize s = {0};                                              \
+    type val = (test);                                                \
+    const s_str str = {.free = {0}, .size = sizeof(type),             \
+      .ptr = {e}};                                                    \
+    TEST_ASSERT(sizeof(type) == sizeof(expected) - 1);                \
+    TEST_ASSERT(serialize_init(&s));                                  \
+    TEST_ASSERT(serialize_ ## type(&s, val));                         \
+    while (i < str.size) {                                            \
+      TEST_EQ(s.buf.ptr.pchar[i], str.ptr.pchar[i]);                  \
+      i++;                                                            \
+    }                                                                 \
+  } while (0)
+
+
+#define MARSHALL_TEST_U8(test, expected) \
+  MARSHALL_TEST(u8, test, expected)
+
+#define MARSHALL_TEST_U16(test, expected) \
+  MARSHALL_TEST(u16, test, expected)
+
+#define MARSHALL_TEST_U32(test, expected) \
+  MARSHALL_TEST(u32, test, expected)
+
+#define MARSHALL_TEST_U64(test, expected) \
+  MARSHALL_TEST(u64, test, expected)
+
 TEST_CASE(marshall_u32)
 {
-  s_serialize s = {0};
-  intptr_t value = 0xDEADBEEF;
-  const s_str str = {.free = {0}, .size = 4,
-    .ptr = {"\xEF\xBE\xAD\xDE"}};
-
-  TEST_ASSERT(serialize_init(&s));
-  TEST_ASSERT(serialize_u32(&s, value));
-
-  err_inspect_buf(&s.buf);
-  err_write_1("\n");
-
-  TEST_EQ(s.buf.ptr.pchar[0], str.ptr.pchar[0]);
-  TEST_EQ(s.buf.ptr.pchar[1], str.ptr.pchar[1]);
-  TEST_EQ(s.buf.ptr.pchar[2], str.ptr.pchar[2]);
-  TEST_EQ(s.buf.ptr.pchar[3], str.ptr.pchar[3]);
+  MARSHALL_TEST_U8(0xFF,        "\xFF\0\0\0");
+  MARSHALL_TEST_U16(0xFFFF,     "\xFF\xFF\0\0");
+  MARSHALL_TEST_U32(0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_U64(0xFFFFFFFFFFFFFFFF,
+    "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_u32)
