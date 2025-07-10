@@ -21,7 +21,6 @@
   {                                                                    \
     sw r;                                                              \
     src = _Generic(src,                                                \
-                   character: htole32(src),                            \
                    s16:       htole16(src),                            \
                    s32:       htole32(src),                            \
                    s64:       htole64(src),                            \
@@ -36,7 +35,14 @@
   }
 
 DEF_MARSHALL(bool)
-DEF_MARSHALL(character)
+
+s_marshall * marshall_character (s_marshall *marshall, character src)
+{
+  sw r;
+  if ((r = buf_write_character_utf8(&marshall->buf, src)) <= 0)
+    return NULL;
+  return marshall;
+}
 
 void marshall_clean (s_marshall *marshall)
 {
@@ -49,12 +55,6 @@ void marshall_delete (s_marshall *marshall)
 {
   marshall_clean(marshall);
   free(marshall);
-}
-
-s_marshall * marshall_character (s_marshall *marshall,
-                                   character c)
-{
-  return marshall_u32(marshall, c);
 }
 
 s_marshall * marshall_init (s_marshall *marshall)

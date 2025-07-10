@@ -122,11 +122,11 @@ TEST_CASE_END(marshall_sw)
 TEST_CASE(marshall_to_buf)
 {
   s_marshall s = {0};
-  char b[] = {"Hello world!"};
+  char b[] = {0};
   s_buf buf = {0};
   buf_init(&buf, false, sizeof(b), b);
   TEST_ASSERT(marshall_init(&s));
-  TEST_ASSERT(marshall_to_buf(&s, &buf));
+  TEST_EQ(marshall_to_buf(&s, &buf), 0);
   TEST_MEM_EQ(buf.ptr.pu8, buf.wpos, s.buf.ptr.pu8, s.buf.wpos);
 }
 TEST_CASE_END(marshall_to_buf)
@@ -134,7 +134,7 @@ TEST_CASE_END(marshall_to_buf)
 
 TEST_CASE(marshall_u8)
 {
-  MARSHALL_TEST_U8(0x00, "\xFF");
+  MARSHALL_TEST_U8(0x00, "\x00");
   MARSHALL_TEST_U8(0xFF, "\xFF");
 }
 TEST_CASE_END(marshall_u8)
