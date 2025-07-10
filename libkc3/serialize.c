@@ -17,10 +17,14 @@
 #include "serialize.h"
 
 #define DEF_SERIALIZE(type)                                            \
-  s_serialize * serialize_ ## type (s_serialize *serialize,            \
-                                    type src)                          \
+  s_serialize * serialize_ ## type (s_serialize *serialize, type src)  \
   {                                                                    \
     sw r;                                                              \
+    src = _Generic(src,                                                \
+      s16: htole16(src), u16: htole16(src),                            \
+      s32: htole32(src), u32: htole32(src),                            \
+      s64: htole64(src), u64: htole64(src),                            \
+      default: src);                                                   \
     assert(serialize);                                                 \
     if ((r = buf_write_ ## type(&serialize->buf, src)) <= 0)           \
       return NULL;                                                     \
