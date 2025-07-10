@@ -1,21 +1,22 @@
 # TODO
 
 - [ ] Refactor
-	- [ ] de/serialise.c
-	- [ ] s_serialize -> s_marshall
+	- [DONE] serialise.c/h -> marshall.c/h
+    - [ ] deserialize.c/h -> marshall_read.c/h
+	- [DONE] s_serialize -> s_marshall
 
-- [ ] Marshall
-    - [ ] write
-        - [ ] signed/unsigned
-        - [ ] str
-        - [ ] pointers
-        - [ ] tag
-            - [ ] tuple
-            - [ ] ...
-    - [ ] load
-        - [ ] signed/unsigned
-        - [ ] str
-        - [ ] pointers
-        - [ ] tag
-            - [ ] tuple
-            - [ ] ...
+- [ ] Marshall (write)
+    - [ ] signed/unsigned
+    - [ ] str
+    - [ ] pointers
+    - [ ] tuple
+    - [ ] autres types ...
+    - [ ] tag
+
+- [ ] marshall_read
+    - [ ] signed/unsigned
+    - [ ] str
+    - [ ] pointers
+    - [ ] tag
+        - [ ] tuple
+        - [ ] ...

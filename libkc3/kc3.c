@@ -48,9 +48,9 @@
 #include "kc3_main.h"
 #include "list.h"
 #include "map.h"
+#include "marshall.h"
 #include "pstruct.h"
 #include "s32.h"
-#include "serialize.h"
 #include "str.h"
 #include "struct.h"
 #include "struct_type.h"
@@ -732,6 +732,30 @@ bool kc3_load (const s_str *path)
   return env_load(env_global(), path);
 }
 
+void kc3_marshall_delete (s_marshall **marshall)
+{
+  marshall_delete(*marshall);
+}
+
+s_marshall ** kc3_marshall_new (s_marshall **marshall)
+{
+  assert(marshall);
+  *marshall = marshall_new();
+  return marshall;
+}
+
+bool kc3_marshall_tag (s_marshall **marshall, const s_tag *tag)
+{
+  if (! marshall_tag(*marshall, tag))
+    return false;
+  return true;
+}
+
+s_str * kc3_marshall_to_str (s_marshall **marshall, s_str *dest)
+{
+  return marshall_to_str(*marshall, dest);
+}
+
 bool kc3_maybe_reload (const s_str *path)
 {
   return env_maybe_reload(env_global(), path);
@@ -853,30 +877,6 @@ void kc3_return_from (const s_sym **name, s_tag *value)
 s_list ** kc3_search_modules (s_list **dest)
 {
   return env_search_modules(env_global(), dest);
-}
-
-void kc3_serialize_delete (s_serialize **serialize)
-{
-  serialize_delete(*serialize);
-}
-
-s_serialize ** kc3_serialize_new (s_serialize **serialize)
-{
-  assert(serialize);
-  *serialize = serialize_new();
-  return serialize;
-}
-
-bool kc3_serialize_tag (s_serialize **serialize, const s_tag *tag)
-{
-  if (! serialize_tag(*serialize, tag))
-    return false;
-  return true;
-}
-
-s_str * kc3_serialize_to_str (s_serialize **serialize, s_str *dest)
-{
-  return serialize_to_str(*serialize, dest);
 }
 
 s_list ** kc3_stacktrace (s_list **dest)

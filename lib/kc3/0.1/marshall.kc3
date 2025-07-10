@@ -1,0 +1,19 @@
+defmodule Marshall do
+
+  def delete = cfn Void "kc3_marshall_delete" (Ptr)
+
+  def new = cfn Ptr "kc3_marshall_new" (Result)
+
+  def tag = cfn Bool "kc3_marshall_tag" (Ptr, Tag)
+
+  def to_str = cfn Str "kc3_marshall_to_str" (Ptr, Result)
+
+  def tag_to_str = fn (tag) {
+    s = Marshall.new()
+    Marshall.tag(s, tag)
+    str = Marshall.to_str(s)
+    Marshall.delete(s)
+    str
+  }
+
+end
