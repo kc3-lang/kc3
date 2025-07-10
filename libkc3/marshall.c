@@ -36,6 +36,7 @@
   }
 
 DEF_MARSHALL(bool)
+DEF_MARSHALL(character)
 
 void marshall_clean (s_marshall *marshall)
 {
