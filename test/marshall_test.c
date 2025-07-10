@@ -37,6 +37,8 @@ TEST_CASE_PROTOTYPE(marshall_s16);
 TEST_CASE_PROTOTYPE(marshall_s32);
 TEST_CASE_PROTOTYPE(marshall_s64);
 
+TEST_CASE_PROTOTYPE(marshall_to_buf);
+
 void marshall_test (void)
 {
   TEST_CASE_RUN(marshall_u8);
@@ -48,6 +50,8 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_s16);
   TEST_CASE_RUN(marshall_s32);
   TEST_CASE_RUN(marshall_s64);
+
+  TEST_CASE_RUN(marshall_to_buf);
 }
 
 #define MARSHALL_TEST_U8(test, expected) \
@@ -118,6 +122,20 @@ TEST_CASE(marshall_sw)
   MARSHALL_TEST_SW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_sw)
+
+
+TEST_CASE(marshall_to_buf)
+{
+  s_serialize s = {0};
+  char b[] = {"Hello world!"};
+  s_buf buf = {0};
+  buf_init(&buf, false, sizeof(b), b);
+  TEST_ASSERT(serialize_init(&s));
+  TEST_ASSERT(serialize_to_buf(&s, &buf));
+
+  TEST_MEM_EQ(buf.ptr.pu8, buf.wpos, s.buf.ptr.pu8, s.buf.wpos);
+}
+TEST_CASE_END(marshall_to_buf)
 
 
 TEST_CASE(marshall_u8)
