@@ -16,9 +16,8 @@
 
 #include "types.h"
 
-#define PROTO_MARSHALL(type)                                          \
-  s_marshall * marshall_ ## type (s_marshall *marshall,            \
-                                  type src)
+#define PROTO_MARSHALL(name, type)                                    \
+  s_marshall * marshall_ ## name (s_marshall *marshall, type src)
 
 /* Stack-allocation compatible functions, call marshall_clean
    after use. */
@@ -30,28 +29,27 @@ void         marshall_delete (s_marshall *marshall);
 s_marshall * marshall_new (void);
 
 /* Operators. */
-PROTO_MARSHALL(bool);
-PROTO_MARSHALL(character);
-s_marshall * marshall_list (s_marshall *marshall,
-                            const s_list *list);
-s_marshall * marshall_tag (s_marshall *marshall,
-                           const s_tag *tag);
+PROTO_MARSHALL(bool ,bool);
+PROTO_MARSHALL(character, character);
+PROTO_MARSHALL(list, const s_list *);
+PROTO_MARSHALL(s8, s8);
+PROTO_MARSHALL(s16, s16);
+PROTO_MARSHALL(s32, s32);
+PROTO_MARSHALL(s64, s64);
+PROTO_MARSHALL(str, const s_str *);
+PROTO_MARSHALL(sw,  sw);
+PROTO_MARSHALL(tag, const s_tag *);
+PROTO_MARSHALL(tuple, const s_tuple *);
+PROTO_MARSHALL(u8,  u8);
+PROTO_MARSHALL(u16, u16);
+PROTO_MARSHALL(u32, u32);
+PROTO_MARSHALL(u64, u64);
+PROTO_MARSHALL(uw, uw);
+
+/* Export. */
 sw           marshall_to_buf (s_marshall *marshall,
                               s_buf *buf);
 s_str *      marshall_to_str (s_marshall *marshall,
                               s_str *dest);
-s_marshall * marshall_tuple (s_marshall *marshall,
-                             const s_tuple *tuple);
-PROTO_MARSHALL(s8);
-PROTO_MARSHALL(s16);
-PROTO_MARSHALL(s32);
-PROTO_MARSHALL(s64);
-s_marshall * marshall_str (s_marshall *marshall, const s_str *str);
-PROTO_MARSHALL(sw);
-PROTO_MARSHALL(u8);
-PROTO_MARSHALL(u16);
-PROTO_MARSHALL(u32);
-PROTO_MARSHALL(u64);
-PROTO_MARSHALL(uw);
 
 #endif /* LIBKC3_MARSHALL_H */
