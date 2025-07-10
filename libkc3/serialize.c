@@ -16,6 +16,9 @@
 #include "list.h"
 #include "serialize.h"
 
+/*
+** STD C11 Generic auto inferencer. Working on OpenBSD.
+*/
 #define DEF_SERIALIZE(type)                                            \
   s_serialize * serialize_ ## type (s_serialize *serialize, type src)  \
   {                                                                    \
