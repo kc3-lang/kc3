@@ -14,13 +14,13 @@
 #include "alloc.h"
 #include "buf.h"
 #include "list.h"
-#include "serialize.h"
+#include "marshall.h"
 
 /*
 ** STD C11 Generic auto inferencer. Working on OpenBSD.
 */
-#define DEF_SERIALIZE(type)                                            \
-  s_serialize * serialize_ ## type (s_serialize *serialize, type src)  \
+#define DEF_MARSHALL(type)                                            \
+  s_marshall * marshall_ ## type (s_marshall *marshall, type src)  \
   {                                                                    \
     sw r;                                                              \
     src = _Generic(src,                                                \
@@ -28,151 +28,151 @@
       s32: htole32(src), u32: htole32(src),                            \
       s64: htole64(src), u64: htole64(src),                            \
       default: src);                                                   \
-    assert(serialize);                                                 \
-    if ((r = buf_write_ ## type(&serialize->buf, src)) <= 0)           \
+    assert(marshall);                                                 \
+    if ((r = buf_write_ ## type(&marshall->buf, src)) <= 0)           \
       return NULL;                                                     \
-    return serialize;                                                  \
+    return marshall;                                                  \
   }
 
-DEF_SERIALIZE(bool)
+DEF_MARSHALL(bool)
 
-void serialize_clean (s_serialize *serialize)
+void marshall_clean (s_marshall *marshall)
 {
-  assert(serialize);
-  buf_clean(&serialize->buf);
-  buf_clean(&serialize->heap);
+  assert(marshall);
+  buf_clean(&marshall->buf);
+  buf_clean(&marshall->heap);
 }
 
-void serialize_delete (s_serialize *serialize)
+void marshall_delete (s_marshall *marshall)
 {
-  serialize_clean(serialize);
-  free(serialize);
+  marshall_clean(marshall);
+  free(marshall);
 }
 
-s_serialize * serialize_character (s_serialize *serialize,
+s_marshall * marshall_character (s_marshall *marshall,
                                    character c)
 {
-  return serialize_u32(serialize, c);
+  return marshall_u32(marshall, c);
 }
 
-s_serialize * serialize_init (s_serialize *serialize)
+s_marshall * marshall_init (s_marshall *marshall)
 {
-  s_serialize tmp = {0};
+  s_marshall tmp = {0};
   if (buf_init_alloc(&tmp.heap, 1024024) == NULL)
     return NULL;
   if (buf_init_alloc(&tmp.buf, 1024024) == NULL) {
     buf_delete(&tmp.buf);
     return NULL;
   }
-  *serialize = tmp;
-  return serialize;
+  *marshall = tmp;
+  return marshall;
 }
 
-/* Works the same as serialize_tuple. */
-s_serialize * serialize_list (s_serialize *serialize,
+/* Works the same as marshall_tuple. */
+s_marshall * marshall_list (s_marshall *marshall,
                               const s_list *list)
 {
   const s_list *l;
   u32 len;
-  assert(serialize);
+  assert(marshall);
   len = list_length(list);
-  if (! serialize_u32(serialize, len))
+  if (! marshall_u32(marshall, len))
     return NULL;
   l = list;
   while (l) {
-    if (! serialize_tag(serialize, &l->tag))
+    if (! marshall_tag(marshall, &l->tag))
       return NULL;
     l = list_next(l);
   }
-  return serialize;
+  return marshall;
 }
 
-s_serialize * serialize_new (void)
+s_marshall * marshall_new (void)
 {
-  s_serialize *serialize;
-  if (! (serialize = alloc(sizeof(s_serialize))))
+  s_marshall *marshall;
+  if (! (marshall = alloc(sizeof(s_marshall))))
     return NULL;
-  if (serialize_init(serialize) == NULL) {
-    free(serialize);
+  if (marshall_init(marshall) == NULL) {
+    free(marshall);
     return NULL;
   }
-  return serialize;
+  return marshall;
 }
 
-DEF_SERIALIZE(s8)
-DEF_SERIALIZE(s16)
-DEF_SERIALIZE(s32)
-DEF_SERIALIZE(s64)
+DEF_MARSHALL(s8)
+DEF_MARSHALL(s16)
+DEF_MARSHALL(s32)
+DEF_MARSHALL(s64)
 
-s_serialize * serialize_str (s_serialize *serialize, const s_str *src)
+s_marshall * marshall_str (s_marshall *marshall, const s_str *src)
 {
   sw r;
-  assert(serialize);
+  assert(marshall);
   assert(src);
-  if (! serialize_u32(serialize, src->size))
+  if (! marshall_u32(marshall, src->size))
     return NULL;
-  if ((r = buf_write(&serialize->buf, src->ptr.pchar, src->size)) <= 0)
+  if ((r = buf_write(&marshall->buf, src->ptr.pchar, src->size)) <= 0)
     return NULL;
-  return serialize;
+  return marshall;
 }
 
-DEF_SERIALIZE(sw)
+DEF_MARSHALL(sw)
 
-s_serialize * serialize_tag (s_serialize *serialize, const s_tag *tag)
+s_marshall * marshall_tag (s_marshall *marshall, const s_tag *tag)
 {
-  serialize_u8(serialize, tag->type);
+  marshall_u8(marshall, tag->type);
   switch (tag->type){
-  case TAG_BOOL: return serialize_bool(serialize, tag->data.bool_);
+  case TAG_BOOL: return marshall_bool(marshall, tag->data.bool_);
   case TAG_CHARACTER:
-    return serialize_character(serialize, tag->data.character);
-  case TAG_S8:   return serialize_s8(serialize, tag->data.s8);
-  case TAG_S16:  return serialize_s16(serialize, tag->data.s16);
-  case TAG_S32:  return serialize_s32(serialize, tag->data.s32);
-  case TAG_S64:  return serialize_s64(serialize, tag->data.s64);
-  case TAG_STR:  return serialize_str(serialize, &tag->data.str);
-  case TAG_SW:   return serialize_sw(serialize, tag->data.sw);
-  case TAG_U8:   return serialize_u8(serialize, tag->data.u8);
-  case TAG_U16:  return serialize_u16(serialize, tag->data.u16);
-  case TAG_U32:  return serialize_u32(serialize, tag->data.u32);
-  case TAG_U64:  return serialize_u64(serialize, tag->data.u64);
-  case TAG_UW:   return serialize_uw(serialize, tag->data.uw);
+    return marshall_character(marshall, tag->data.character);
+  case TAG_S8:   return marshall_s8(marshall, tag->data.s8);
+  case TAG_S16:  return marshall_s16(marshall, tag->data.s16);
+  case TAG_S32:  return marshall_s32(marshall, tag->data.s32);
+  case TAG_S64:  return marshall_s64(marshall, tag->data.s64);
+  case TAG_STR:  return marshall_str(marshall, &tag->data.str);
+  case TAG_SW:   return marshall_sw(marshall, tag->data.sw);
+  case TAG_U8:   return marshall_u8(marshall, tag->data.u8);
+  case TAG_U16:  return marshall_u16(marshall, tag->data.u16);
+  case TAG_U32:  return marshall_u32(marshall, tag->data.u32);
+  case TAG_U64:  return marshall_u64(marshall, tag->data.u64);
+  case TAG_UW:   return marshall_uw(marshall, tag->data.uw);
   default:       break;
   }
-  err_puts("serialize_tag: not implemented");
-  assert(! "serialize_tag: not implemented");
+  err_puts("marshall_tag: not implemented");
+  assert(! "marshall_tag: not implemented");
   return NULL;
 }
 
-sw serialize_to_buf (s_serialize *serialize, s_buf *buf)
+sw marshall_to_buf (s_marshall *marshall, s_buf *buf)
 {
-  return buf_xfer(&serialize->buf, buf,
-                  serialize->buf.wpos - serialize->buf.rpos);
+  return buf_xfer(&marshall->buf, buf,
+                  marshall->buf.wpos - marshall->buf.rpos);
 }
 
-s_str * serialize_to_str (s_serialize *serialize, s_str *dest)
+s_str * marshall_to_str (s_marshall *marshall, s_str *dest)
 {
-  return buf_read_to_str(&serialize->buf, dest);
+  return buf_read_to_str(&marshall->buf, dest);
 }
 
-s_serialize * serialize_tuple (s_serialize *serialize,
+s_marshall * marshall_tuple (s_marshall *marshall,
                                const s_tuple *tuple)
 {
   uw i;
-  assert(serialize);
+  assert(marshall);
   assert(tuple);
-  if (! serialize_u32(serialize, tuple->count))
+  if (! marshall_u32(marshall, tuple->count))
     return NULL;
   i = 0;
   while (i < tuple->count) {
-    if (! serialize_tag(serialize, tuple->tag + i))
+    if (! marshall_tag(marshall, tuple->tag + i))
       return NULL;
     i++;
   }
-  return serialize;
+  return marshall;
 }
 
-DEF_SERIALIZE(u8)
-DEF_SERIALIZE(u16)
-DEF_SERIALIZE(u32)
-DEF_SERIALIZE(u64)
-DEF_SERIALIZE(uw)
+DEF_MARSHALL(u8)
+DEF_MARSHALL(u16)
+DEF_MARSHALL(u32)
+DEF_MARSHALL(u64)
+DEF_MARSHALL(uw)

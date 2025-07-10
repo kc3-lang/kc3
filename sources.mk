@@ -1241,6 +1241,8 @@ KC3_LIB_SOURCES = \
 	"lib/kc3/0.1/list.kc3" \
 	"lib/kc3/0.1/map.facts" \
 	"lib/kc3/0.1/markdown.kc3" \
+	"lib/kc3/0.1/marshall.kc3" \
+	"lib/kc3/0.1/marshall_read.kc3" \
 	"lib/kc3/0.1/math.kc3" \
 	"lib/kc3/0.1/metric.kc3" \
 	"lib/kc3/0.1/parse.kc3" \
