@@ -16,22 +16,23 @@
 #include "list.h"
 #include "marshall.h"
 
-/*
-** STD C11 Generic auto inferencer. Working on OpenBSD.
-*/
-#define DEF_MARSHALL(type)                                            \
-  s_marshall * marshall_ ## type (s_marshall *marshall, type src)  \
+#define DEF_MARSHALL(type)                                             \
+  s_marshall * marshall_ ## type (s_marshall *marshall, type src)      \
   {                                                                    \
     sw r;                                                              \
     src = _Generic(src,                                                \
-      s16: htole16(src), u16: htole16(src),                            \
-      s32: htole32(src), u32: htole32(src),                            \
-      s64: htole64(src), u64: htole64(src),                            \
-      default: src);                                                   \
-    assert(marshall);                                                 \
-    if ((r = buf_write_ ## type(&marshall->buf, src)) <= 0)           \
+                   character: htole32(src),                            \
+                   s16:       htole16(src),                            \
+                   s32:       htole32(src),                            \
+                   s64:       htole64(src),                            \
+                   u16:       htole16(src),                            \
+                   u32:       htole32(src),                            \
+                   u64:       htole64(src),                            \
+                   default: src);                                      \
+    assert(marshall);                                                  \
+    if ((r = buf_write_ ## type(&marshall->buf, src)) <= 0)            \
       return NULL;                                                     \
-    return marshall;                                                  \
+    return marshall;                                                   \
   }
 
 DEF_MARSHALL(bool)

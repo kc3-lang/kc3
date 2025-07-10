@@ -711,7 +711,7 @@ struct fact_w {
 struct list {
   s_tag tag;
   s_tag next;
-  s_mutex mutex;
+  s_mutex mutex; // TODO
   sw ref_count;
 };
 
