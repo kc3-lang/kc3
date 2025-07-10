@@ -194,7 +194,6 @@ typedef struct callable                s_callable;
 typedef struct cfn                     s_cfn;
 typedef struct complex                 s_complex;
 typedef struct cow                     s_cow;
-typedef struct deserialize             s_deserialize;
 typedef struct do_block                s_do_block;
 typedef struct env                     s_env;
 typedef struct error_handler           s_error_handler;
@@ -222,6 +221,7 @@ typedef struct list                    s_list_map;
 typedef struct log                     s_log;
 typedef struct loop_context            s_loop_context;
 typedef struct map                     s_map;
+typedef struct marshall                s_marshall;
 typedef struct mutex                   s_mutex;
 typedef struct op                      s_op;
 typedef struct ops                     s_ops;
@@ -232,7 +232,6 @@ typedef struct quote                   s_quote;
 typedef struct ratio                   s_ratio;
 typedef struct rwlock                  s_rwlock;
 typedef struct sequence                s_sequence;
-typedef struct serialize               s_serialize;
 typedef struct str                     s_str;
 typedef struct struct_                 s_struct;
 typedef struct struct_type             s_struct_type;
@@ -549,12 +548,6 @@ struct cfn {
   s_mutex mutex;
 };
 
-struct deserialize {
-  s_map map;
-  s_tuple tuple;
-  s_buf buf;
-};
-
 struct fn {
   bool macro;
   bool special_operator;
@@ -575,7 +568,7 @@ struct ratio {
   s_integer denominator;
 };
 
-struct serialize {
+struct marshall {
   s_buf heap;
   s_buf buf;
 };

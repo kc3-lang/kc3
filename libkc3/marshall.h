@@ -11,9 +11,47 @@
  * THIS SOFTWARE.
  */
 
-#ifndef LIBKC3_MARSHALLING_H
-    #define LIBKC3_MARSHALLING_H
+#ifndef LIBKC3_MARSHALL_H
+#define LIBKC3_MARSHALL_H
 
-    #include "serialize.h"
+#include "types.h"
 
-#endif
+#define PROTO_MARSHALL(type)                                          \
+  s_marshall * marshall_ ## type (s_marshall *marshall,            \
+                                  type src)
+
+/* Stack-allocation compatible functions, call marshall_clean
+   after use. */
+void         marshall_clean (s_marshall *marshall);
+s_marshall * marshall_init (s_marshall *marshall);
+
+/* Heap-allocation functions, call marshall_delete after use. */
+void         marshall_delete (s_marshall *marshall);
+s_marshall * marshall_new (void);
+
+/* Operators. */
+PROTO_MARSHALL(bool);
+PROTO_MARSHALL(character);
+s_marshall * marshall_list (s_marshall *marshall,
+                            const s_list *list);
+s_marshall * marshall_tag (s_marshall *marshall,
+                           const s_tag *tag);
+sw           marshall_to_buf (s_marshall *marshall,
+                              s_buf *buf);
+s_str *      marshall_to_str (s_marshall *marshall,
+                              s_str *dest);
+s_marshall * marshall_tuple (s_marshall *marshall,
+                             const s_tuple *tuple);
+PROTO_MARSHALL(s8);
+PROTO_MARSHALL(s16);
+PROTO_MARSHALL(s32);
+PROTO_MARSHALL(s64);
+s_marshall * marshall_str (s_marshall *marshall, const s_str *str);
+PROTO_MARSHALL(sw);
+PROTO_MARSHALL(u8);
+PROTO_MARSHALL(u16);
+PROTO_MARSHALL(u32);
+PROTO_MARSHALL(u64);
+PROTO_MARSHALL(uw);
+
+#endif /* LIBKC3_MARSHALL_H */

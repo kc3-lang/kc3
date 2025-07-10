@@ -431,8 +431,6 @@ KC3_C_SOURCES = \
 	"libkc3/crypt_sha512.c" \
 	"libkc3/data.c" \
 	"libkc3/data.h" \
-	"libkc3/deserialize.c" \
-	"libkc3/deserialize.h" \
 	"libkc3/do_block.c" \
 	"libkc3/do_block.h" \
 	"libkc3/env.c" \
@@ -1561,6 +1559,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/app/controllers/sitemap_controller.kc3" \
 	"test/httpd/app/templates/doc/menu.html.ekc3" \
 	"test/httpd/app/templates/doc/show.html.ekc3" \
+	"test/httpd/app/templates/.#footer.html.ekc3" \
 	"test/httpd/app/templates/footer.html.ekc3" \
 	"test/httpd/app/templates/layout.html.ekc3" \
 	"test/httpd/app/templates/nav.html.ekc3" \
@@ -1602,6 +1601,7 @@ KC3_TEST_HTTPD_SOURCES = \
 	"test/httpd/pages/index.en.html" \
 	"test/httpd/pages/index.en.html~" \
 	"test/httpd/pages/index.fr.html" \
+	"test/httpd/pages/index.fr.html~" \
 	"test/httpd/static" \
 	"test/httpd/static/_assets" \
 	"test/httpd/static/_assets/app.css" \
@@ -1713,6 +1713,7 @@ KC3_OTHER_SOURCES = \
 	"license.h" \
 	"sources.mk" \
 	"sources.sh" \
+	"TODO.md" \
 
 KC3_EXTERNAL_SOURCES = \
 	"libtommath/LICENSE" \

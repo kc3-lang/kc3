@@ -17,13 +17,13 @@
 #include "test.h"
 
 #define MARSHALL_TEST(type, test, expected)                            \
-  do {                                                                 \
-    s_serialize s = {0};                                               \
-    TEST_ASSERT(serialize_init(&s));                                   \
-    TEST_ASSERT(serialize_ ## type (&s, (type) (test)));               \
-    TEST_MEM_EQ(s.buf.ptr.pu8, sizeof(type),                           \
+  {                                                                    \
+    s_marshall m = {0};                                                \
+    TEST_ASSERT(marshall_init(&m));                                    \
+    TEST_ASSERT(marshall_ ## type (&m, (type) (test)));                \
+    TEST_MEM_EQ(m.buf.ptr.pu8, sizeof(type),                           \
       (expected), sizeof(expected) - 1);                               \
-  } while (0)
+  }
 
 void marshal_test (void);
 
@@ -126,12 +126,12 @@ TEST_CASE_END(marshall_sw)
 
 TEST_CASE(marshall_to_buf)
 {
-  s_serialize s = {0};
+  s_marshall s = {0};
   char b[] = {"Hello world!"};
   s_buf buf = {0};
   buf_init(&buf, false, sizeof(b), b);
-  TEST_ASSERT(serialize_init(&s));
-  TEST_ASSERT(serialize_to_buf(&s, &buf));
+  TEST_ASSERT(marshall_init(&s));
+  TEST_ASSERT(marshall_to_buf(&s, &buf));
 
   TEST_MEM_EQ(buf.ptr.pu8, buf.wpos, s.buf.ptr.pu8, s.buf.wpos);
 }
