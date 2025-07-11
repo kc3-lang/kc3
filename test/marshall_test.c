@@ -66,6 +66,8 @@ TEST_CASE_PROTOTYPE(marshall_s16);
 TEST_CASE_PROTOTYPE(marshall_s32);
 TEST_CASE_PROTOTYPE(marshall_s64);
 TEST_CASE_PROTOTYPE(marshall_to_buf);
+TEST_CASE_PROTOTYPE(marshall_save_to_file);
+TEST_CASE_PROTOTYPE(marshall_read_from_file);
 
 void marshall_test (void)
 {
@@ -78,6 +80,8 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_s32);
   TEST_CASE_RUN(marshall_s64);
   TEST_CASE_RUN(marshall_to_buf);
+  TEST_CASE_RUN(marshall_save_to_file);
+  TEST_CASE_RUN(marshall_read_from_file);
 }
 
 TEST_CASE(marshall_s8)
@@ -164,3 +168,27 @@ TEST_CASE(marshall_uw)
   MARSHALL_TEST_UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_uw)
+
+TEST_CASE(marshall_save_to_file)
+{
+  u32 value = 42;
+  s_marshall m = {0};
+  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_u32(&m, value));
+  
+  TEST_EQ(marshall_save_to_file(&m, "./file_test.msh"), 0);
+}
+TEST_CASE_END(marshall_write_to_file)
+
+TEST_CASE(marshall_read_from_file)
+{
+  u32 value = 0;
+  s_marshall *m;
+
+  TEST_ASSERT(
+    (m = marshall_read_from_file("./file_test.msh")) != NULL);
+  MARSHALL_READ(m, u32, value);
+  TEST_EQ(value, 42);
+  marshall_delete(m);
+}
+TEST_CASE_END(marshall_read_from_file)
