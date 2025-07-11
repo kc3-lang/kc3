@@ -125,7 +125,7 @@ TEST_CASE(marshall_to_buf)
   char b[] = {0};
   s_buf buf = {0};
   buf_init(&buf, false, sizeof(b), b);
-  TEST_ASSERT(marshall_init(&s));
+  TEST_ASSERT(marshall_init(&s) != NULL);
   TEST_EQ(marshall_to_buf(&s, &buf), 0);
   TEST_MEM_EQ(buf.ptr.pu8, buf.wpos, s.buf.ptr.pu8, s.buf.wpos);
 }
