@@ -28,6 +28,9 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   assert(b);
   assert(type);
   assert(tag);
+  if (tag->type == TAG_PVAR &&
+      tag->data.pvar->bound) 
+    tag = &tag->data.pvar->tag;
   switch (tag->type) {
   case TAG_BOOL:      *b = tag->data.bool_;                    return b;
   case TAG_CHARACTER: *b = (bool) tag->data.character;         return b;
@@ -72,7 +75,6 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_TIME:
   case TAG_TUPLE:
   case TAG_UNQUOTE:
-  case TAG_VAR:       *b = true;                               return b;
   case TAG_VOID:      *b = false;                              return b;
   default:
     err_write_1("bool_cast: cannot cast ");

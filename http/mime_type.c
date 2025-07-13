@@ -24,15 +24,14 @@ const s_sym ** http_mime_type (const s_str *ext, const s_sym **dest)
   if ((tag_ext.data.sym = sym_find(ext)))
     tag_ext.type = TAG_SYM;
   tag_init_sym(&tag_mime_type_sym, sym_1("mime_type"));
-  tag_init_var(&tag_mime_type_value, &g_sym_Sym);
+  tag_init_pvar(&tag_mime_type_value, &g_sym_Sym);
   default_mime_type = sym_1("application/octet-stream");
   if (! facts_with_tags(env_global()->facts, &cursor, &tag_ext,
                         &tag_mime_type_sym, &tag_mime_type_value))
     goto default_mime_type;
   if (! facts_cursor_next(&cursor, &fact) ||
       ! fact ||
-      tag_mime_type_value.type != TAG_SYM ||
-      ! tag_mime_type_value.data.sym)
+      ! tag_mime_type_value.data.pvar->tag.data.sym)
     goto default_mime_type;
   *dest = tag_mime_type_value.data.sym;
   return dest;

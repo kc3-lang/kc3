@@ -20,6 +20,7 @@
 #include "facts_with.h"
 #include "list.h"
 #include "mutex.h"
+#include "pvar.h"
 #include "sym.h"
 #include "tag.h"
 #include "var.h"
@@ -60,16 +61,16 @@ s_facts_with_cursor * facts_with (s_facts *facts,
 
 s_facts_cursor * facts_with_0 (s_facts *facts,
                                s_facts_cursor *cursor,
-                               s_var *var_subject,
-                               s_var *var_predicate,
-                               s_var *var_object)
+                               p_var pvar_subject,
+                               p_var pvar_predicate,
+                               p_var pvar_object)
 {
   assert(facts);
   assert(cursor);
   facts_cursor_init(facts, cursor, facts->index_spo, NULL, NULL);
-  var_init_copy(&cursor->var_subject, var_subject);
-  var_init_copy(&cursor->var_predicate, var_predicate);
-  var_init_copy(&cursor->var_object, var_object);
+  pvar_init_copy(&cursor->pvar_subject, &pvar_subject);
+  pvar_init_copy(&cursor->pvar_predicate, &pvar_predicate);
+  pvar_init_copy(&cursor->pvar_object, &pvar_object);
   return cursor;
 }
 
@@ -78,9 +79,9 @@ s_facts_cursor * facts_with_1_2 (s_facts *facts,
                                  s_tag *subject,
                                  s_tag *predicate,
                                  s_tag *object,
-                                 s_var *var_subject,
-                                 s_var *var_predicate,
-                                 s_var *var_object)
+                                 p_var pvar_subject,
+                                 p_var pvar_predicate,
+                                 p_var pvar_object)
 {
   s_fact start;
   s_fact end;
@@ -90,26 +91,26 @@ s_facts_cursor * facts_with_1_2 (s_facts *facts,
   assert(subject);
   assert(predicate);
   assert(object);
-  assert(var_subject || var_predicate || var_object);
-  start.subject   = var_subject   ? TAG_FIRST : subject;
-  start.predicate = var_predicate ? TAG_FIRST : predicate;
-  start.object    = var_object    ? TAG_FIRST : object;
-  end.subject   = var_subject   ? TAG_LAST : subject;
-  end.predicate = var_predicate ? TAG_LAST : predicate;
-  end.object    = var_object    ? TAG_LAST : object;
-  if (! var_subject && var_object)
+  assert(pvar_subject || pvar_predicate || pvar_object);
+  start.subject   = pvar_subject   ? TAG_FIRST : subject;
+  start.predicate = pvar_predicate ? TAG_FIRST : predicate;
+  start.object    = pvar_object    ? TAG_FIRST : object;
+  end.subject   = pvar_subject   ? TAG_LAST : subject;
+  end.predicate = pvar_predicate ? TAG_LAST : predicate;
+  end.object    = pvar_object    ? TAG_LAST : object;
+  if (! pvar_subject && pvar_object)
     tree = facts->index_spo;
-  else if (! var_predicate)
+  else if (! pvar_predicate)
     tree = facts->index_pos;
   else
     tree = facts->index_osp;
   facts_cursor_init(facts, cursor, tree, &start, &end);
-  if (var_subject)
-    var_init_copy(&cursor->var_subject, var_subject);
-  if (var_predicate)
-    var_init_copy(&cursor->var_predicate, var_predicate);
-  if (var_object)
-    var_init_copy(&cursor->var_object, var_object);
+  if (pvar_subject)
+    pvar_init_copy(&cursor->pvar_subject, &pvar_subject);
+  if (pvar_predicate)
+    pvar_init_copy(&cursor->pvar_predicate, &pvar_predicate);
+  if (pvar_object)
+    pvar_init_copy(&cursor->pvar_object, &pvar_object);
   return cursor;
 }
 
@@ -165,9 +166,9 @@ s_facts_cursor * facts_with_tags (s_facts *facts,
                                   s_tag *object)
 {
   bool unbound;
-  s_var *var_subject = NULL;
-  s_var *var_predicate = NULL;
-  s_var *var_object = NULL;
+  p_var pvar_subject = NULL;
+  p_var pvar_predicate = NULL;
+  p_var pvar_object = NULL;
   assert(facts);
   assert(cursor);
   assert(subject);
@@ -176,22 +177,22 @@ s_facts_cursor * facts_with_tags (s_facts *facts,
   if (! tag_is_unbound_var(subject, &unbound))
     return NULL;
   if (unbound)
-    var_subject = &subject->data.var;
+    pvar_subject = subject->data.pvar;
   if (! tag_is_unbound_var(predicate, &unbound))
     return NULL;
   if (unbound)
-    var_predicate = &predicate->data.var;
+    pvar_predicate = predicate->data.pvar;
   if (! tag_is_unbound_var(object, &unbound))
     return NULL;
   if (unbound)
-    var_object = &object->data.var;
-  if (var_subject && var_predicate && var_object)
-    return facts_with_0(facts, cursor, var_subject, var_predicate,
-                        var_object);
-  if (! (var_subject || var_predicate || var_object))
+    pvar_object = object->data.pvar;
+  if (pvar_subject && pvar_predicate && pvar_object)
+    return facts_with_0(facts, cursor, pvar_subject, pvar_predicate,
+                        pvar_object);
+  if (! (pvar_subject || pvar_predicate || pvar_object))
     return facts_with_3(facts, cursor, subject, predicate, object);
   return facts_with_1_2(facts, cursor, subject, predicate, object,
-                        var_subject, var_predicate, var_object);
+                        pvar_subject, pvar_predicate, pvar_object);
 }
 
 s_facts_cursor * facts_with_tuple (s_facts *facts,

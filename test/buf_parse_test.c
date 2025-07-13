@@ -470,6 +470,18 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_PVAR(test, type, expected)                      \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_var *dest = NULL;                                                \
+    test_context("buf_parse_pvar(" # test ")");                        \
+    buf_init_1(&buf, false, (test));                                   \
+    TEST_EQ(buf_parse_pvar(&buf, &dest), strlen(test));                \
+    TEST_EQ(dest->type, (type));                                       \
+    TEST_EQ(dest, (expected));                                         \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_PARSE_TEST_STR(test, expected)                             \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -611,18 +623,6 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define BUF_PARSE_TEST_VAR(test, expected)                             \
-  do {                                                                 \
-    s_buf buf;                                                         \
-    s_var dest = {0};                                                  \
-    test_context("buf_parse_var(" # test ")");                         \
-    buf_init_1(&buf, false, (test));                                   \
-    TEST_EQ(buf_parse_var(&buf, &dest), strlen(test));                 \
-    TEST_EQ(dest.type, expected.type);                                 \
-    TEST_EQ(dest.ptr, expected.ptr);                                   \
-    test_context(NULL);                                                \
-  } while (0)
-
 TEST_CASE_PROTOTYPE(buf_parse_array);
 TEST_CASE_PROTOTYPE(buf_parse_bool);
 TEST_CASE_PROTOTYPE(buf_parse_call);
@@ -644,6 +644,7 @@ TEST_CASE_PROTOTYPE(buf_parse_integer_oct);
 TEST_CASE_PROTOTYPE(buf_parse_integer_bin);
 TEST_CASE_PROTOTYPE(buf_parse_ident);
 TEST_CASE_PROTOTYPE(buf_parse_list);
+TEST_CASE_PROTOTYPE(buf_parse_pvar);
 TEST_CASE_PROTOTYPE(buf_parse_str);
 TEST_CASE_PROTOTYPE(buf_parse_str_character);
 TEST_CASE_PROTOTYPE(buf_parse_str_u8);
@@ -651,7 +652,6 @@ TEST_CASE_PROTOTYPE(buf_parse_sym);
 TEST_CASE_PROTOTYPE(buf_parse_tag);
 TEST_CASE_PROTOTYPE(buf_parse_tuple);
 TEST_CASE_PROTOTYPE(buf_parse_unquote);
-TEST_CASE_PROTOTYPE(buf_parse_var);
 
 void buf_parse_test (void)
 {
@@ -683,7 +683,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_tag);
   TEST_CASE_RUN(buf_parse_tuple);
   TEST_CASE_RUN(buf_parse_unquote);
-  TEST_CASE_RUN(buf_parse_var);
+  TEST_CASE_RUN(buf_parse_pvar);
 #ifdef KC3_TEST_BUF_PARSE_SU
   TEST_CASE_RUN(buf_parse_u8_binary);
   TEST_CASE_RUN(buf_parse_u8_octal);
@@ -1382,16 +1382,14 @@ TEST_CASE(buf_parse_unquote)
 }
 TEST_CASE_END(buf_parse_unquote)
 
-TEST_CASE(buf_parse_var)
+TEST_CASE(buf_parse_pvar)
 {
-  s_var expected;
-  expected.type = &g_sym_Tag;
-  expected.ptr = NULL;
-  BUF_PARSE_TEST_VAR("?", expected);
-  expected.type = &g_sym_U8;
-  BUF_PARSE_TEST_VAR("(U8) ?", expected);
-  expected.ptr = (s_tag *)  0x12345678;
-  BUF_PARSE_TEST_VAR("(U8) ?0x12345678", expected);
+  s_var *expected = NULL;
+  BUF_PARSE_TEST_PVAR("?", (uw) &g_sym_Tag, expected);
+  BUF_PARSE_TEST_PVAR("(U8) ?", (uw) &g_sym_U8, expected);
+  expected = (s_var *)       0x12345678;
+  BUF_PARSE_TEST_PVAR("(U8) ?0x12345678", (uw) &g_sym_U8, expected);
+  BUF_PARSE_TEST_PVAR("?0x12345678", (uw) &g_sym_Tag, expected);
 }
 TEST_CASE_END(buf_parse_var)
 

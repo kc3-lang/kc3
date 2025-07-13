@@ -42,6 +42,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_PTAG:         *dest = sizeof(p_tag);         return true;
   case TAG_PTR:
   case TAG_PTR_FREE:     *dest = sizeof(void *);        return true;
+  case TAG_PVAR:         *dest = sizeof(p_var);         return true;
   case TAG_QUOTE:        *dest = sizeof(s_quote);       return true;
   case TAG_RATIO:        *dest = sizeof(s_ratio);       return true;
   case TAG_S8:           *dest = sizeof(s8);            return true;
@@ -59,7 +60,6 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_U64:          *dest = sizeof(u64);           return true;
   case TAG_UNQUOTE:      *dest = sizeof(s_unquote);     return true;
   case TAG_UW:           *dest = sizeof(uw);            return true;
-  case TAG_VAR:          *dest = sizeof(s_tag);         return true;
   }
   err_puts("tag_type_size: invalid tag type");
   assert(! "tag_type_size: invalid tag type");
@@ -90,6 +90,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_PTAG:         *dest = &ffi_type_pointer;    return true;
   case TAG_PTR:          *dest = &ffi_type_pointer;    return true;
   case TAG_PTR_FREE:     *dest = &ffi_type_pointer;    return true;
+  case TAG_PVAR:         *dest = &ffi_type_pointer;    return true;
   case TAG_QUOTE:        *dest = &ffi_type_pointer;    return true;
   case TAG_RATIO:        *dest = &ffi_type_pointer;    return true;
   case TAG_S8:           *dest = &ffi_type_sint8;      return true;
@@ -107,7 +108,6 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_U64:          *dest = &ffi_type_uint64;     return true;
   case TAG_UNQUOTE:      *dest = &ffi_type_pointer;    return true;
   case TAG_UW:           *dest = &ffi_type_ulong;      return true;
-  case TAG_VAR:          *dest = &ffi_type_pointer;    return true;
   case TAG_VOID:         *dest = &ffi_type_void;       return true;
   }
   err_puts("tag_type_to_ffi_type: invalid tag type");
@@ -140,6 +140,7 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_PTAG:         return "Ptag";
   case TAG_PTR:          return "Ptr";
   case TAG_PTR_FREE:     return "PtrFree";
+  case TAG_PVAR:         return "Var";
   case TAG_QUOTE:        return "Quote";
   case TAG_RATIO:        return "Ratio";
   case TAG_S8:           return "S8";
@@ -157,7 +158,6 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_U64:          return "U64";
   case TAG_UNQUOTE:      return "Unquote";
   case TAG_UW:           return "Uw";
-  case TAG_VAR:          return "Var";
   }
   err_puts("tag_type_to_string: invalid tag type");
   assert(! "tag_type_to_string: invalid tag type");

@@ -110,6 +110,6 @@ bool env_eval_time (s_env *env, const s_time *time,
                     s_tag *dest);
 bool env_eval_tuple (s_env *env, const s_tuple *tuple,
                      s_tag *dest);
-bool env_eval_var (s_env *env, const s_var *var, s_tag *dest);
+bool env_eval_var (s_env *env, s_var *var, s_tag *dest);
 
 #endif /* LIBKC3_ENV_EVAL_H */

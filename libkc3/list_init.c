@@ -33,6 +33,7 @@
 #include "pstruct_type.h"
 #include "ptr.h"
 #include "ptr_free.h"
+#include "pvar.h"
 #include "quote.h"
 #include "ratio.h"
 #include "str.h"
@@ -338,6 +339,28 @@ s_list * list_init_ptr_free (s_list *list, void *p, s_list *next)
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_ptr_free(&tmp.tag, p))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pvar (s_list *list, const s_sym *type, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pvar(&tmp.tag, type))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pvar_copy (s_list *list, p_var *src, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pvar_copy(&tmp.tag, src))
     return NULL;
   *list = tmp;
   return list;
@@ -1047,6 +1070,32 @@ s_list * list_new_ptr_free (void *p, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_ptr_free(&list->tag, p)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pvar (const s_sym *type, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pvar(&list->tag, type)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pvar_copy (p_var *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pvar_copy(&list->tag, src)) {
     free(list);
     return NULL;
   }

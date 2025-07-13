@@ -207,9 +207,9 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   s_tag subject;
   assert(facts);
   assert(buf);
-  tag_init_var(&subject, &g_sym_Tag);
-  tag_init_var(&predicate, &g_sym_Tag);
-  tag_init_var(&object, &g_sym_Tag);
+  tag_init_pvar(&subject, &g_sym_Tag);
+  tag_init_pvar(&predicate, &g_sym_Tag);
+  tag_init_pvar(&object, &g_sym_Tag);
   if ((r = buf_write_1(buf,
                        "%{module: KC3.Facts.Dump,\n"
                        "  version: 1}\n")) < 0)
@@ -218,8 +218,8 @@ sw facts_dump (s_facts *facts, s_buf *buf)
 #if HAVE_PTHREAD
   rwlock_r(&facts->rwlock);
 #endif
-  facts_with_0(facts, &cursor, &subject.data.var, &predicate.data.var,
-               &object.data.var);
+  facts_with_0(facts, &cursor, subject.data.pvar, predicate.data.pvar,
+               object.data.pvar);
   if (! facts_cursor_next(&cursor, &fact))
     goto clean;
   while (fact) {
@@ -743,18 +743,18 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   s_fact *fact;
   s_list *list = NULL;
   s_facts_transaction transaction;
-  s_tag var;
+  s_tag pvar;
   assert(facts);
   assert(subject);
   assert(predicate);
   assert(object);
-  tag_init_var(&var, &g_sym_Tag);
+  tag_init_pvar(&pvar, &g_sym_Tag);
 #if HAVE_PTHREAD
   if (! rwlock_w(&facts->rwlock))
     return NULL;
 #endif
   if (! facts_with_tags(facts, &cursor, (s_tag *) subject,
-                        (s_tag *) predicate, &var)) {
+                        (s_tag *) predicate, &pvar)) {
 #if HAVE_PTHREAD
     rwlock_unlock_w(&facts->rwlock);
 #endif

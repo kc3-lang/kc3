@@ -51,6 +51,8 @@ s_tag * tag_init_pstruct_type_clean (s_tag *tag,
                                      const s_cfn *clean);
 s_tag * tag_init_ptr (s_tag *tag, void *p);
 s_tag * tag_init_ptr_free (s_tag *tag, void *p);
+s_tag * tag_init_pvar (s_tag *tag, const s_sym *type);
+s_tag * tag_init_pvar_copy (s_tag *tag, p_var *src);
 s_tag * tag_init_quote (s_tag *tag, s_tag *src);
 s_tag * tag_init_quote_copy (s_tag *tag, s_quote *quote);
 s_tag * tag_init_ratio_1 (s_tag *tag, const char *p);
@@ -88,7 +90,6 @@ s_tag * tag_init_u32 (s_tag *tag, u32 i);
 s_tag * tag_init_u64 (s_tag *tag, u64 i);
 s_tag * tag_init_unquote_copy (s_tag *tag, s_unquote *unquote);
 s_tag * tag_init_uw (s_tag *tag, uw i);
-s_tag * tag_init_var (s_tag *tag, const s_sym *type);
 s_tag * tag_init_void (s_tag *tag);
 
 /* Heap-allocation functions, call tag_delete after use. */
@@ -124,6 +125,8 @@ s_tag * tag_new_pstruct_type_clean (const s_struct_type *st,
                                     const s_cfn *clean);
 s_tag * tag_new_ptr (void *p);
 s_tag * tag_new_ptr_free (void *p);
+s_tag * tag_new_pvar (const s_sym *type);
+s_tag * tag_new_pvar_copy (p_var *src);
 s_tag * tag_new_quote (s_tag *src);
 s_tag * tag_new_quote_copy (s_quote *quote);
 s_tag * tag_new_ratio_1 (const char *p);
@@ -157,7 +160,6 @@ s_tag * tag_new_u32 (u32 i);
 s_tag * tag_new_u64 (u64 i);
 s_tag * tag_new_unquote_copy (s_unquote *unquote);
 s_tag * tag_new_uw (uw i);
-s_tag * tag_new_var (const s_sym *type);
 s_tag * tag_new_void (void);
 
 /* Setters. */
@@ -194,6 +196,8 @@ s_tag * tag_pstruct_type_clean (s_tag *tag, const s_struct_type *st,
                                 const s_cfn *clean);
 s_tag * tag_ptr (s_tag *tag, void *p);
 s_tag * tag_ptr_free (s_tag *tag, void *p);
+s_tag * tag_pvar (s_tag *tag, const s_sym *type);
+s_tag * tag_pvar_copy (s_tag *tag, p_var *src);
 s_tag * tag_quote (s_tag *tag, s_tag *src);
 s_tag * tag_quote_copy (s_tag *tag, s_quote *quote);
 s_tag * tag_ratio_1 (s_tag *tag, const char *p);
@@ -230,7 +234,6 @@ s_tag * tag_u32 (s_tag *tag, u32 i);
 s_tag * tag_u64 (s_tag *tag, u64 i);
 s_tag * tag_unquote_copy (s_tag *tag, s_unquote *unquote);
 s_tag * tag_uw (s_tag *tag, uw i);
-s_tag * tag_var (s_tag *tag, const s_sym *type);
 s_tag * tag_void (s_tag *tag);
 
 #endif /* LIBKC3_TAG_INIT_H */

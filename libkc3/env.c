@@ -191,7 +191,7 @@ bool env_call_get (s_env *env, s_call *call)
   s_tag tag_special_operator;
   s_tag tag_symbol;
   s_tag tag_symbol_value;
-  s_tag tag_var;
+  s_tag tag_pvar;
   tag_init_ident(&tag_ident, &call->ident);
   tag_init_sym(  &tag_is_a, &g_sym_is_a);
   tag_init_sym(  &tag_macro, &g_sym_macro);
@@ -200,7 +200,7 @@ bool env_call_get (s_env *env, s_call *call)
   tag_init_sym(  &tag_special_operator, &g_sym_special_operator);
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
   tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
-  tag_init_var(  &tag_var, &g_sym_Tag);
+  tag_init_pvar( &tag_pvar, &g_sym_Callable);
   if (! facts_find_fact_by_tags(env->facts, &tag_module_name,
                                 &tag_symbol, &tag_ident, &fact)) {
     err_puts("env_call_get: facts_find_fact_by_tags 1");
@@ -224,7 +224,7 @@ bool env_call_get (s_env *env, s_call *call)
     }
   }
   if (! facts_with_tags (env->facts, &cursor, &tag_ident,
-                        &tag_symbol_value, &tag_var)) {
+                        &tag_symbol_value, &tag_pvar)) {
     err_puts("env_call_get: facts_with_tags");
     assert(! "env_call_get: facts_with_tags");
     return false;
@@ -240,14 +240,8 @@ bool env_call_get (s_env *env, s_call *call)
     err_puts(" :symbol_value not found");
     return false;
   }
-  if (tag_var.type != TAG_PCALLABLE) {
-    err_write_1("env_call_get: ");
-    err_inspect_ident(&call->ident);
-    err_puts(" is not a Callable");
-    facts_cursor_clean(&cursor);
-    return false;
-  }
-  if (! pcallable_init_copy(&call->pcallable, &tag_var.data.pcallable))
+  if (! pcallable_init_copy(&call->pcallable,
+                            &tag_pvar.data.pvar->tag.data.pcallable))
     return false;
   if (call->pcallable->type == CALLABLE_FN) {
     fn_set_name_if_null(&call->pcallable->data.fn,
@@ -1169,11 +1163,11 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
   s_tag tag_is_a;
   s_tag tag_macro;
   s_tag tag_module;
+  s_tag tag_pvar;
   s_tag tag_special_operator;
   s_tag tag_sym;
   s_tag tag_symbol;
   s_tag tag_symbol_value;
-  s_tag tag_var;
   s_tag tmp = {0};
   module = ident->module;
   if (! module) {
@@ -1196,13 +1190,13 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
   tag_init_sym(  &tag_sym, ident->sym);
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
   tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
-  tag_init_var(  &tag_var, &g_sym_Tag);
+  tag_init_pvar( &tag_pvar, &g_sym_Tag);
   if (! facts_find_fact_by_tags(env->facts, &tag_module, &tag_symbol,
                                 &tag_ident, &fact) ||
       ! fact)
     return NULL;
   if (! facts_with(env->facts, &cursor, (t_facts_spec) {
-        &tag_ident, &tag_symbol_value, &tag_var,
+        &tag_ident, &tag_symbol_value, &tag_pvar,
         NULL, NULL }))
     return NULL;
   if (! facts_with_cursor_next(&cursor, &fact)) {
@@ -1211,7 +1205,7 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
   }
   if (! fact)
     return NULL;
-  if (! tag_init_copy(&tmp, &tag_var)) {
+  if (! tag_init_copy(&tmp, &tag_pvar.data.pvar->tag)) {
     facts_with_cursor_clean(&cursor);
     return NULL;
   }
@@ -1574,7 +1568,7 @@ bool env_maybe_reload (s_env *env, const s_str *path)
   path_tag.type = TAG_STR;
   path_tag.data.str = *path;
   tag_init_sym(&load_time_sym, &g_sym_load_time);
-  tag_init_var(&load_time, &g_sym_Time);
+  tag_init_pvar(&load_time, &g_sym_Time);
   if (! facts_with_tags(env->facts, &cursor, &path_tag, &load_time_sym,
                         &load_time))
     return false;
@@ -1587,7 +1581,7 @@ bool env_maybe_reload (s_env *env, const s_str *path)
     assert(! "env_maybe_reload: no load time");
     return false;
   }
-  if (load_time.type != TAG_TIME)
+  if (load_time.data.pvar->tag.type != TAG_TIME)
     abort();
   mtime.type = TAG_TIME;
   if (! file_mtime(path, &mtime.data.time)) {
@@ -1595,7 +1589,7 @@ bool env_maybe_reload (s_env *env, const s_str *path)
     return false;
   }
   r = true;
-  if (compare_tag(&load_time, &mtime) == COMPARE_LT)
+  if (compare_tag(&load_time.data.pvar->tag, &mtime) == COMPARE_LT)
     r = env_load(env, path);
   facts_cursor_clean(&cursor);
   return r;
@@ -1671,10 +1665,10 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
   s_tag tag_ident;
   s_tag tag_module_name;
   s_tag tag_op;
+  s_tag tag_pvar;
   s_tag tag_sym_value;
   s_tag tag_sym_sym;
   s_tag tag_symbol;
-  s_tag tag_var;
   tag_init_ident(&tag_ident, ident);
   tag_init_sym(  &tag_module_name, module);
   tag_init_sym(  &tag_op, &g_sym_op);
@@ -1701,10 +1695,10 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
     return dest;
   }
   tag_init_sym(&tag_sym_sym, &g_sym_sym);
-  tag_init_var(&tag_var, &g_sym_Ident);
+  tag_init_pvar(&tag_pvar, &g_sym_Ident);
   if (! facts_with(env->facts, &cursor, (t_facts_spec) {
-        &tag_module_name, &tag_op, &tag_var, NULL,
-        &tag_var, &tag_sym_sym, &tag_sym_value, NULL, NULL})) {
+        &tag_module_name, &tag_op, &tag_pvar, NULL,
+        &tag_pvar, &tag_sym_sym, &tag_sym_value, NULL, NULL})) {
     err_puts("env_module_has_ident: facts_with");
     assert(! "env_module_has_ident: facts_with");
     return NULL;
@@ -1846,12 +1840,12 @@ const s_time ** env_module_load_time (s_env *env, const s_sym *module,
   s_fact *fact;
   s_tag tag_module_name;
   s_tag tag_load_time;
-  s_tag tag_time_var;
+  s_tag tag_time_pvar;
   tag_init_sym(&tag_module_name, module);
   tag_init_sym(&tag_load_time, &g_sym_load_time);
-  tag_init_var(&tag_time_var, &g_sym_Time);
+  tag_init_pvar(&tag_time_pvar, &g_sym_Time);
   if (! facts_with(env->facts, &cursor, (t_facts_spec) {
-        &tag_module_name, &tag_load_time, &tag_time_var, NULL, NULL }))
+        &tag_module_name, &tag_load_time, &tag_time_pvar, NULL, NULL }))
     return NULL;
   if (! facts_with_cursor_next(&cursor, &fact)) {
     facts_with_cursor_clean(&cursor);
@@ -2060,20 +2054,21 @@ u8 env_special_operator_arity (s_env *env, const s_ident *ident)
   s_fact *fact;
   s_tag tag_arity;
   s_tag tag_ident;
-  s_tag tag_var;
+  s_tag tag_pvar;
   assert(env);
   assert(ident);
   tag_ident.type = TAG_IDENT;
   env_ident_resolve_module(env, ident, &tag_ident.data.ident);
   tag_init_sym(  &tag_arity, &g_sym_arity);
-  tag_init_var(  &tag_var, &g_sym_U8);
+  tag_init_pvar( &tag_pvar, &g_sym_U8);
   if (! facts_with_tags(env->facts, &cursor,
-                        &tag_ident, &tag_arity, &tag_var))
+                        &tag_ident, &tag_arity, &tag_pvar))
     return 0;
   if (! facts_cursor_next(&cursor, &fact))
     return 0;
   if (fact) {
-    if (tag_var.type != TAG_U8 || ! tag_var.data.u8) {
+    if (tag_pvar.data.pvar->tag.type != TAG_U8 ||
+        ! tag_pvar.data.pvar->tag.data.u8) {
       err_write_1("env_special_operator_arity: "
                   "invalid arity for special operator ");
       err_inspect_ident(&tag_ident.data.ident);
@@ -2081,7 +2076,7 @@ u8 env_special_operator_arity (s_env *env, const s_ident *ident)
       facts_cursor_clean(&cursor);
       return 0;
     }
-    arity = tag_var.data.u8;
+    arity = tag_pvar.data.pvar->tag.data.u8;
     facts_cursor_clean(&cursor);
     return arity;
   }
@@ -2100,17 +2095,17 @@ bool * env_struct_type_exists (s_env *env, const s_sym *module,
   s_fact *fact;
   s_tag tag_struct_type;
   s_tag tag_module;
-  s_tag tag_var;
+  s_tag tag_pvar;
   assert(env);
   assert(module);
   assert(dest);
   tag_init_sym(&tag_module, module);
   tag_init_sym(&tag_struct_type, &g_sym_struct_type);
-  tag_init_var(&tag_var, &g_sym_Tag);
+  tag_init_pvar(&tag_pvar, &g_sym_Tag);
   if (! env_module_maybe_reload(env, module))
     return NULL;
   if (! facts_with_tags(env->facts, &cursor, &tag_module,
-                        &tag_struct_type, &tag_var))
+                        &tag_struct_type, &tag_pvar))
     return NULL;
   if (! facts_cursor_next(&cursor, &fact))
     return NULL;
@@ -2127,13 +2122,13 @@ s_struct_type ** env_struct_type_find (s_env *env,
   s_fact *found;
   s_tag tag_struct_type;
   s_tag tag_module;
-  s_tag tag_var;
+  s_tag tag_pvar;
   const s_sym *type;
   assert(env);
   assert(module);
-  tag_init_sym(&tag_module, module);
-  tag_init_sym(&tag_struct_type, &g_sym_struct_type);
-  tag_init_var(&tag_var, &g_sym_StructType);
+  tag_init_sym( &tag_module, module);
+  tag_init_sym( &tag_struct_type, &g_sym_struct_type);
+  tag_init_pvar(&tag_pvar, &g_sym_StructType);
   if (! env_module_maybe_reload(env, module)) {
     err_write_1("env_struct_type_find: env_module_maybe_reload(");
     err_inspect_sym(&module);
@@ -2142,7 +2137,7 @@ s_struct_type ** env_struct_type_find (s_env *env,
     return NULL;
   }
   if (! facts_with_tags(env->facts, &cursor,
-                        &tag_module, &tag_struct_type, &tag_var)) {
+                        &tag_module, &tag_struct_type, &tag_pvar)) {
     err_write_1("env_struct_type_find: facts_with_tags(");
     err_inspect_sym(&module);
     err_puts(", :struct_type, ?)");
@@ -2182,14 +2177,14 @@ f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
   s_fact *found;
   s_tag tag_clean;
   s_tag tag_module;
-  s_tag tag_var;
+  s_tag tag_pvar;
   f_clean tmp = {0};
   const s_sym *type;
-  tag_init_sym(&tag_module, module);
-  tag_init_sym(&tag_clean, &g_sym_clean);
-  tag_init_var(&tag_var, &g_sym_Tag);
+  tag_init_sym( &tag_module, module);
+  tag_init_sym( &tag_clean, &g_sym_clean);
+  tag_init_pvar(&tag_pvar, &g_sym_Tag);
   facts_with(env->facts, &cursor, (t_facts_spec) {
-      &tag_module, &tag_clean, &tag_var, NULL, NULL });
+      &tag_module, &tag_clean, &tag_pvar, NULL, NULL });
   if (! facts_with_cursor_next(&cursor, &found))
     return NULL;
   if (! found) {
@@ -2230,16 +2225,16 @@ s_list ** env_struct_type_get_spec (s_env *env,
   s_fact *found;
   s_tag tag_defstruct;
   s_tag tag_module;
-  s_tag tag_var;
+  s_tag tag_pvar;
   s_tag tmp = {0};
   assert(env);
   assert(module);
   assert(dest);
-  tag_init_sym(&tag_defstruct, &g_sym_defstruct);
-  tag_init_sym(&tag_module, module);
-  tag_init_var(&tag_var, &g_sym_Tag);
+  tag_init_sym( &tag_defstruct, &g_sym_defstruct);
+  tag_init_sym( &tag_module, module);
+  tag_init_pvar(&tag_pvar, &g_sym_Tag);
   if (! facts_find_fact_by_tags(env->facts, &tag_module,
-                                &tag_defstruct, &tag_var, &found))
+                                &tag_defstruct, &tag_pvar, &found))
     return NULL;
   if (! found) {
     err_write_1("env_struct_type_get_spec: ");
@@ -2248,7 +2243,7 @@ s_list ** env_struct_type_get_spec (s_env *env,
     assert(! "env_struct_type_get_spec: defstruct not found");
     return NULL;
   }
-  if (! env_eval_tag(env, &tag_var, &tmp))
+  if (! env_eval_tag(env, &tag_pvar, &tmp))
     return NULL;
   if (tmp.type != TAG_LIST ||
       ! list_is_plist(tmp.data.list)) {
@@ -2269,14 +2264,14 @@ bool * env_struct_type_has_spec (s_env *env, const s_sym *module,
   s_fact *fact;
   s_tag tag_defstruct;
   s_tag tag_module;
-  s_tag tag_var;
+  s_tag tag_pvar;
   assert(env);
   assert(module);
-  tag_init_sym(&tag_defstruct, &g_sym_defstruct);
-  tag_init_sym(&tag_module, module);
-  tag_init_var(&tag_var, &g_sym_Tag);
+  tag_init_sym( &tag_defstruct, &g_sym_defstruct);
+  tag_init_sym( &tag_module, module);
+  tag_init_pvar(&tag_pvar, &g_sym_Tag);
   if (! facts_with_tags(env->facts, &cursor, &tag_module,
-                        &tag_defstruct, &tag_var))
+                        &tag_defstruct, &tag_pvar))
     return NULL;
   if (! facts_cursor_next(&cursor, &fact))
     return NULL;

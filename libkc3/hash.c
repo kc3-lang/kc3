@@ -439,8 +439,8 @@ bool hash_update_struct (t_hash *hash, const s_struct *s)
   while (i < s->pstruct_type->map.count) {
     if (! hash_update_tag(hash, s->pstruct_type->map.key + i))
       return false;
-    if (s->pstruct_type->map.value[i].type == TAG_VAR)
-      sym = s->pstruct_type->map.value[i].data.var.type;
+    if (s->pstruct_type->map.value[i].type == TAG_PVAR)
+      sym = s->pstruct_type->map.value[i].data.pvar->type;
     else if (! tag_type(s->pstruct_type->map.value + i, &sym))
       return false;
     if (s->data) {
@@ -530,6 +530,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_PTR:     return hash_update_ptr(hash, &tag->data.ptr);
   case TAG_PTR_FREE:
     return hash_update_ptr_free(hash, &tag->data.ptr_free);
+  case TAG_PVAR:    return hash_update_var(hash, tag->data.pvar);
   case TAG_QUOTE:   return hash_update_quote(hash, &tag->data.quote);
   case TAG_RATIO:   return hash_update_ratio(hash, &tag->data.ratio);
   case TAG_S8:      return hash_update_s8(hash, tag->data.s8);
@@ -548,7 +549,6 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_UNQUOTE:
     return hash_update_unquote(hash, &tag->data.unquote);
   case TAG_UW:      return hash_update_uw(hash, tag->data.uw);
-  case TAG_VAR:     return hash_update_var(hash, tag);
   case TAG_VOID:    return hash_update_void(hash);
   }
   err_puts("hash_update_tag: unknown tag type");
@@ -610,14 +610,15 @@ bool hash_update_unquote (t_hash *hash, const s_unquote *unquote)
 
 HASH_UPDATE_DEF(uw)
 
-bool hash_update_var (t_hash *hash, const s_tag *tag)
+bool hash_update_var (t_hash *hash, const s_var *var)
 {
   char type[] = "var";
   assert(hash);
-  assert(tag);
-  assert(tag->type == TAG_VAR);
-  return hash_update(hash, type, strlen(type)) &&
-    hash_update_sym(hash, &tag->data.var.type);
+  assert(var);
+  if (! hash_update(hash, type, strlen(type)) ||
+      ! hash_update_u64(hash, (u64) var))
+    return false;
+  return true;
 }
 
 bool hash_update_void (t_hash *hash)

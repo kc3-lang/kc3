@@ -55,8 +55,8 @@ void * struct_type_copy_data (const s_struct_type *st, void *dest,
   i = 0;
   count = st->map.count;
   while (i < count) {
-    if (st->map.value[i].type == TAG_VAR)
-      type = st->map.value[i].data.var.type;
+    if (st->map.value[i].type == TAG_PVAR)
+      type = st->map.value[i].data.pvar->type;
     else
       if (! tag_type(st->map.value + i, &type))
         return NULL;
@@ -169,8 +169,8 @@ s_struct_type * struct_type_init (s_struct_type *st,
       return NULL;
     }
     tuple = &s->tag.data.tuple;
-    if (tuple->tag[1].type == TAG_VAR) {
-      type = tuple->tag[1].data.var.type;
+    if (tuple->tag[1].type == TAG_PVAR) {
+      type = tuple->tag[1].data.pvar->type;
       if (! sym_type_size(&type, &size)) {
         map_clean(&tmp.map);
         free(tmp.offset);

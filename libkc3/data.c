@@ -326,7 +326,7 @@ bool data_clean (const s_sym *type, void *data)
     return true;
   }
   if (type == &g_sym_Var) {
-    tag_clean(data);
+    var_delete(data);
     return true;
   }
   if (type == &g_sym_Void) {
@@ -419,7 +419,7 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
   if (type == &g_sym_Uw)
     return compare_uw(*(uw *) a, *(uw *) b);
   if (type == &g_sym_Var)
-    return compare_ptr(a, b);
+    return compare_var(a, b);
   if (type == &g_sym_Void)
     return 0;
   if (env_global()->loaded) {
@@ -611,7 +611,7 @@ void * data_init_cast (void *data, const s_sym * const *type,
   if (t == &g_sym_Uw)
     return uw_init_cast(data, type, tag);
   if (t == &g_sym_Var)
-    return var_init_cast(data, type, tag);
+    return pvar_init_cast(data, type, tag);
   if (t == &g_sym_Void)
     return data;
   if (! struct_type_find(t, &st))

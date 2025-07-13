@@ -35,8 +35,7 @@ s_tag * frame_binding_new (s_frame *frame, const s_sym *name)
   if (! b)
     return NULL;
   frame->bindings = b;
-  tag_init_var(&b->value, &g_sym_Tag);
-  return &b->value;
+  return tag_init_void(&b->value);
 }
 
 s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
@@ -48,10 +47,8 @@ s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
     assert(! "frame_binding_new_copy: frame_binding_new");
     return NULL;
   }
-  if (value->type == TAG_VAR) {
-    tag_init_var(tag, value->data.var.type);
-    value->data.var.ptr = tag->data.var.ptr;
-  }
+  if (value->type == TAG_PVAR)
+    tag_init_pvar_copy(tag, &tag->data.pvar);
   else {
     if (! tag_init_copy(tag, value)) {
       err_puts("frame_binding_new_copy: tag_init_copy");
@@ -74,7 +71,7 @@ s_tag * frame_binding_new_var (s_frame *frame)
   if (! b)
     return NULL;
   frame->bindings = b;
-  tag_init_var(&b->value, &g_sym_Tag);
+  tag_init_pvar(&b->value, &g_sym_Tag);
   return &b->value;
 }
 
@@ -230,9 +227,8 @@ s_frame * frame_replace (s_frame *frame, const s_sym *sym,
   result = binding_get_w(frame->bindings, sym);
   if (result) {
     tag_clean(result);
-    if (value->type == TAG_VAR) {
-      tag_init_var(result, value->data.var.type);
-      value->data.var.ptr = result->data.var.ptr;
+    if (value->type == TAG_PVAR) {
+      tag_init_pvar_copy(result, &value->data.pvar);
     }
     else {
       if (! tag_init_copy(result, value)) {

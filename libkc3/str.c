@@ -464,6 +464,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_ptr(str, &tag->data.ptr);
   case TAG_PTR_FREE:
     return str_init_ptr_free(str, &tag->data.ptr_free);
+  case TAG_PVAR:
+    return str_init_var(str, tag->data.pvar);
   case TAG_S8:
     return str_init_s8(str, tag->data.s8);
   case TAG_S16:
@@ -490,8 +492,6 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_u64(str, tag->data.u64);
   case TAG_UW:
     return str_init_uw(str, tag->data.uw);
-  case TAG_VAR:
-    return str_init_var(str, &tag->data.var);
   case TAG_VOID:
     return str_init_empty(str);
   default:

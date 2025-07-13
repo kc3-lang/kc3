@@ -41,6 +41,7 @@
 #include "map.h"
 #include "op.h"
 #include "ops.h"
+#include "pvar.h"
 #include "ratio.h"
 #include "special_operator.h"
 #include "str.h"
@@ -3277,6 +3278,66 @@ sw buf_parse_ptr_free (s_buf *buf, u_ptr_w *dest)
   return r;
 }
 
+sw buf_parse_pvar (s_buf *buf, p_var *dest)
+{
+  character c;
+  uw i;
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  p_var tmp = NULL;
+  const s_sym *type = NULL;
+  assert(buf);
+  (void) dest;
+  buf_save_init(buf, &save);
+  type = &g_sym_Tag;
+  if ((r = buf_parse_paren_sym(buf, &type)) < 0)
+    goto clean;
+  result += r;
+  if (r) {
+    if ((r = buf_ignore_spaces(buf)) <= 0)
+      goto restore;
+    result += r;
+  }
+  if ((r = buf_read_1(buf, "?")) <= 0)
+    goto restore;
+  result += r;
+  if ((r = buf_read_1(buf, "0x")) < 0)
+    goto ok;
+  if (r > 0) {
+    result += r;
+    if ((r = buf_parse_uw_hexadecimal(buf, &i)) <= 0)
+      goto restore;
+    result += r;
+    tmp = (p_var) i;
+    if (buf_peek_character_utf8(buf, &c) > 0 &&
+        ! ident_character_is_reserved(c)) {
+      r = 0;
+      goto restore;
+    }
+    goto ok;
+  }
+  else {
+    if (! pvar_init(&tmp, type)) {
+      r = -1;
+      goto restore;
+    }
+    if ((r = buf_parse_tag(buf, &tmp->tag)) <= 0)
+      goto ok;
+    tmp->bound = 1;
+    result += r;
+  }
+ ok:
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
 sw buf_parse_quote (s_buf *buf, s_quote *dest)
 {
   s_quote quote;
@@ -4405,7 +4466,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
     goto restore;
   switch (c) {
   case '(':
-    if ((r = buf_parse_tag_var(buf, dest)) ||
+    if ((r = buf_parse_tag_pvar(buf, dest)) ||
         (r = buf_parse_tag_cow(buf, dest)) ||
         (r = buf_parse_tag_number(buf, dest)) ||
         (r = buf_parse_tag_ptr(buf, dest)) ||
@@ -4416,7 +4477,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   case '?':
-    if ((r = buf_parse_tag_var(buf, dest)))
+    if ((r = buf_parse_tag_pvar(buf, dest)))
       goto end;
     goto restore;
   case 'v':
@@ -4562,6 +4623,16 @@ sw buf_parse_tag_ptr_free (s_buf *buf, s_tag *dest)
   return r;
 }
 
+sw buf_parse_tag_pvar (s_buf *buf, s_tag *dest)
+{
+  sw r;
+  assert(buf);
+  assert(dest);
+  if ((r = buf_parse_pvar(buf, &dest->data.pvar)) > 0)
+    dest->type = TAG_PVAR;
+  return r;
+}
+
 sw buf_parse_tag_quote (s_buf *buf, s_tag *dest)
 {
   sw r;
@@ -4636,16 +4707,6 @@ sw buf_parse_tag_unquote (s_buf *buf, s_tag *dest)
   assert(dest);
   if ((r = buf_parse_unquote(buf, &dest->data.unquote)) > 0)
     dest->type = TAG_UNQUOTE;
-  return r;
-}
-
-sw buf_parse_tag_var (s_buf *buf, s_tag *dest)
-{
-  sw r;
-  assert(buf);
-  assert(dest);
-  if ((r = buf_parse_var(buf, &dest->data.var)) > 0)
-    dest->type = TAG_VAR;
   return r;
 }
 
@@ -5048,54 +5109,6 @@ sw buf_parse_unquote (s_buf *buf, s_unquote *dest)
     goto clean;
   result += r;
   *dest = unquote;
-  r = result;
-  goto clean;
- restore:
-  buf_save_restore_rpos(buf, &save);
- clean:
-  buf_save_clean(buf, &save);
-  return r;
-}
-
-sw buf_parse_var (s_buf *buf, s_var *dest)
-{
-  character c;
-  uw i;
-  sw r;
-  sw result = 0;
-  s_buf_save save;
-  s_var tmp = {0};
-  assert(buf);
-  (void) dest;
-  buf_save_init(buf, &save);
-  tmp.type = &g_sym_Tag;
-  if ((r = buf_parse_paren_sym(buf, &tmp.type)) < 0)
-    goto clean;
-  result += r;
-  if (r) {
-    if ((r = buf_ignore_spaces(buf)) <= 0)
-      goto restore;
-    result += r;
-  }
-  if ((r = buf_read_1(buf, "?")) <= 0)
-    goto restore;
-  result += r;
-  if ((r = buf_read_1(buf, "0x")) < 0)
-    goto ok;
-  if (r > 0) {
-    result += r;
-    if ((r = buf_parse_uw_hexadecimal(buf, &i)) < 0)
-      goto restore;
-    result += r;
-    tmp.ptr = (s_tag *) i;
-  }
-  if (buf_peek_character_utf8(buf, &c) > 0 &&
-      ! ident_character_is_reserved(c)) {
-    r = 0;
-    goto restore;
-  }
- ok:
-  *dest = tmp;
   r = result;
   goto clean;
  restore:

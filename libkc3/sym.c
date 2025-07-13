@@ -1118,7 +1118,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     return true;
   }
   if (sym == &g_sym_Var) {
-    *dest = TAG_VAR;
+    *dest = TAG_PVAR;
     return true;
   }
   if (sym == &g_sym_Void) {
@@ -1313,7 +1313,7 @@ uw * sym_type_size (const s_sym * const *type, uw *dest)
     return dest;
   }
   if (*type == &g_sym_Var) {
-    *dest = sizeof(s_var);
+    *dest = sizeof(p_var);
     return dest;
   }
   if (*type == &g_sym_Void) {

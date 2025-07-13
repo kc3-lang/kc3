@@ -135,8 +135,8 @@ void struct_clean (s_struct *s)
     if (s->pstruct_type->must_clean) {
       i = 0;
       while (i < s->pstruct_type->map.count) {
-        if (s->pstruct_type->map.value[i].type == TAG_VAR)
-          type = s->pstruct_type->map.value[i].data.var.type;
+        if (s->pstruct_type->map.value[i].type == TAG_PVAR)
+          type = s->pstruct_type->map.value[i].data.pvar->type;
         else if (! tag_type(s->pstruct_type->map.value + i, &type))
           goto ko;
         data_clean(type, (s8 *) s->data + s->pstruct_type->offset[i]);
@@ -319,8 +319,8 @@ s_struct * struct_init_copy (s_struct *s, s_struct *src)
       key = tmp.pstruct_type->map.key + i;
       value = tmp.pstruct_type->map.value + i;
       if (key->data.sym->str.ptr.pchar[0] != '_') {
-        if (value->type == TAG_VAR)
-          type = value->data.var.type;
+        if (value->type == TAG_PVAR)
+          type = value->data.pvar->type;
         else if (! tag_type(value, &type))
           goto ko;
         if (! data_init_copy(type, (s8 *) tmp.data +
@@ -573,7 +573,7 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
         return NULL;
       }
       if (type_sym == &g_sym_Var)
-        type_sym = s->pstruct_type->map.value[i].data.var.type;
+        type_sym = s->pstruct_type->map.value[i].data.pvar->type;
       data = (s8 *) s->data + s->pstruct_type->offset[i];
       if (! tag_to_const_pointer(value, type_sym, &data_src)) {
         err_puts("struct_set: tag_to_const_pointer");

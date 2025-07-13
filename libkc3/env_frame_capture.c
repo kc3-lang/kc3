@@ -111,15 +111,16 @@ s_frame * env_frame_capture_ident (s_env *env, s_frame *frame,
                                    s_ident *ident)
 {
   s_tag *value;
-  s_tag tag_void = {0};
   assert(env);
   assert(frame);
   assert(ident);
   if (ident->module)
     return frame;
-  value = env_frames_get(env, ident->sym);
-  if (! value)
-    value = &tag_void;
+  else {
+    value = env_frames_get(env, ident->sym);
+    if (! value)
+      return frame;
+  }
   if (! frame_replace(frame, ident->sym, value))
     return NULL;
   return frame;
@@ -203,14 +204,14 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
     return env_frame_capture_map(env, frame, &tag->data.map);
   case TAG_PTAG:
     return env_frame_capture_tag(env, frame, tag->data.ptag);
+  case TAG_PVAR:
+    return env_frame_capture_var(env, frame, tag->data.pvar);
   case TAG_QUOTE:
     return env_frame_capture_quote(env, frame, &tag->data.quote);
   case TAG_TUPLE:
     return env_frame_capture_tuple(env, frame, &tag->data.tuple);
   case TAG_UNQUOTE:
     return env_frame_capture_unquote(env, frame, &tag->data.unquote);
-  case TAG_VAR:
-    return env_frame_capture_var(env, frame, &tag->data.var);
   case TAG_IDENT:
     return env_frame_capture_ident(env, frame, &tag->data.ident);
   case TAG_PCALLABLE:
@@ -282,8 +283,8 @@ s_frame * env_frame_capture_var (s_env *env, s_frame *frame,
   assert(env);
   assert(frame);
   assert(var);
-  if (var->ptr &&
-      ! env_frame_capture_tag(env, frame, var->ptr))
+  if (var->bound &&
+      ! env_frame_capture_tag(env, frame, &var->tag))
     return NULL;
   return frame;
 }

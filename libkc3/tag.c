@@ -42,6 +42,7 @@
 #include "pstruct_type.h"
 #include "ptr.h"
 #include "ptr_free.h"
+#include "pvar.h"
 #include "quote.h"
 #include "ratio.h"
 #include "str.h"
@@ -114,8 +115,8 @@ s_tag * tag_assign (s_tag *tag, s_tag *value, s_tag *dest)
   assert(value);
   assert(dest);
   switch (tag->type) {
-  case TAG_VAR:
-    return var_assign(&tag->data.var, value, dest);
+  case TAG_PVAR:
+    return var_assign(tag->data.pvar, value, dest);
   case TAG_COW:
     return pcow_assign(&tag->data.cow, value, dest);
   default:
@@ -245,6 +246,7 @@ void tag_clean (s_tag *tag)
   case TAG_PSTRUCT_TYPE:
     pstruct_type_clean(&tag->data.pstruct_type);               break;
   case TAG_PTR_FREE:    ptr_free_clean(&tag->data.ptr);        break;
+  case TAG_PVAR:        pvar_clean(&tag->data.pvar);           break;
   case TAG_QUOTE:       quote_clean(&tag->data.quote);         break;
   case TAG_RATIO:       ratio_clean(&tag->data.ratio);         break;
   case TAG_STR:         str_clean(&tag->data.str);             break;
@@ -271,7 +273,6 @@ void tag_clean (s_tag *tag)
   case TAG_U32:
   case TAG_U64:
   case TAG_UW:
-  case TAG_VAR:
   case TAG_VOID:
     break;
   }
@@ -583,6 +584,10 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     tag->type = src->type;
     tag->data.ptr_free = src->data.ptr_free;
     return tag;
+  case TAG_PVAR:
+    tag->type = src->type;
+    pvar_init_copy(&tag->data.pvar, &src->data.pvar);
+    return tag;
   case TAG_QUOTE:
     tag->type = src->type;
     if (! quote_init_copy(&tag->data.quote, &src->data.quote))
@@ -657,10 +662,6 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     tag->type = src->type;
     tag->data.uw = src->data.uw;
     return tag;
-  case TAG_VAR:
-    tag->type = src->type;
-    var_init_copy(&tag->data.var, &src->data.var);
-    return tag;
   case TAG_VOID:
     return tag_init_void(tag);
   }
@@ -693,15 +694,17 @@ s_tag * tag_init_from_str (s_tag *tag, s_str *str)
   return tag;
 }
 
-s_tag * tag_init_var (s_tag *tag, const s_sym *type)
+/*
+s_tag * tag_init_pvar (s_tag *tag, const s_sym *type)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_VAR;
-  var_init(&tmp.data.var, tag, type);
+  tmp.type = TAG_PVAR;
+  pvar_init(&tmp.data.pvar, type);
   *tag = tmp;
   return tag;
 }
+*/
 
 s_tag * tag_init_void (s_tag *tag)
 {
@@ -852,13 +855,6 @@ bool tag_is_alist (const s_tag *tag)
   return list_is_alist(tag->data.list);
 }
 
-bool tag_is_bound_var (const s_tag *tag)
-{
-  assert(tag);
-  return (tag &&
-          tag->type != TAG_VAR);
-}
-
 bool tag_is_cast (const s_tag *tag, const s_sym *type)
 {
   assert(tag);
@@ -893,6 +889,7 @@ bool tag_is_integer (s_tag *tag)
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
+  case TAG_PVAR:
   case TAG_QUOTE:
   case TAG_RATIO:
   case TAG_STR:
@@ -900,7 +897,6 @@ bool tag_is_integer (s_tag *tag)
   case TAG_TIME:
   case TAG_TUPLE:
   case TAG_UNQUOTE:
-  case TAG_VAR:
   case TAG_IDENT:
     return false;
   case TAG_INTEGER:
@@ -944,13 +940,13 @@ bool tag_is_number (s_tag *tag)
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
+  case TAG_PVAR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
   case TAG_TIME:
   case TAG_TUPLE:
   case TAG_UNQUOTE:
-  case TAG_VAR:
   case TAG_IDENT:
     return false;
   case TAG_COMPLEX:
@@ -994,14 +990,12 @@ bool * tag_is_unbound_var (const s_tag *tag, bool *dest)
     assert(! "tag_is_unbound_var: NULL tag");
     return NULL;
   }
-  *dest = (tag->type == TAG_VAR &&
-           tag->data.var.ptr &&
-           tag->data.var.ptr->type == TAG_VAR &&
-           tag->data.var.ptr->data.var.ptr == tag->data.var.ptr);
+  *dest = (tag->type == TAG_PVAR &&
+           ! tag->data.pvar->bound);
   return dest;
 }
 
-bool tag_is_zero(const s_tag *tag)
+bool tag_is_zero (const s_tag *tag)
 {
   assert(tag);
   switch (tag->type) {
@@ -1265,6 +1259,8 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   case TAG_PTAG:         *dest = &tag->data.ptag;         return true;
   case TAG_PTR:          *dest = &tag->data.ptr.p;        return true;
   case TAG_PTR_FREE:     *dest = &tag->data.ptr_free.p;   return true;
+  case TAG_PVAR:
+    return tag_to_const_pointer(&tag->data.pvar->tag, type, dest);
   case TAG_QUOTE:        *dest = &tag->data.quote;        return true;
   case TAG_RATIO:        *dest = &tag->data.ratio;        return true;
   case TAG_STR:          *dest = &tag->data.str;          return true;
@@ -1272,7 +1268,6 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   case TAG_TIME:         *dest = &tag->data.time;         return true;
   case TAG_TUPLE:        *dest = &tag->data.tuple;        return true;
   case TAG_UNQUOTE:      *dest = &tag->data.unquote;      return true;
-  case TAG_VAR:          *dest = &tag->data.var;          return true;
   case TAG_VOID:         *dest = NULL;                    return true;
   }
   err_write_1("tag_to_const_pointer: invalid tag type: ");
@@ -1433,6 +1428,12 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     }
     *dest = tag->data.ptr.p;
     return true;
+  case TAG_PVAR:
+    if (type == &g_sym_Var) {
+      *dest = tag->data.pvar;
+      return true;
+    }
+    goto invalid_cast;
   case TAG_QUOTE:
     if (type == &g_sym_Quote) {
       *dest = &tag->data.quote;
@@ -1547,12 +1548,6 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
-  case TAG_VAR:
-    if (type == &g_sym_Var) {
-      *dest = &tag->data.var;
-      return true;
-    }
-    goto invalid_cast;
   case TAG_VOID:
     if (type == &g_sym_Void) {
       *dest = NULL;
@@ -1620,6 +1615,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_PTAG:         *dest = &tag->data.ptag;         return true;
   case TAG_PTR:          *dest = &tag->data.ptr.p;        return true;
   case TAG_PTR_FREE:     *dest = &tag->data.ptr_free.p;   return true;
+  case TAG_PVAR:         *dest = tag->data.pvar;          return true;
   case TAG_QUOTE:        *dest = &tag->data.quote;        return true;
   case TAG_RATIO:        *dest = &tag->data.ratio;        return true;
   case TAG_SW:           *dest = &tag->data.sw;           return true;
@@ -1637,7 +1633,6 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_U64:          *dest = &tag->data.u64;          return true;
   case TAG_UNQUOTE:      *dest = &tag->data.unquote;      return true;
   case TAG_UW:           *dest = &tag->data.uw;           return true;
-  case TAG_VAR:          *dest = &tag->data.var;          return true;
   case TAG_VOID:         *dest = NULL;                    return true;
   }
   err_puts("tag_to_pointer: invalid tag type");
@@ -1708,6 +1703,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_PSTRUCT_TYPE: *dest = &g_sym_StructType;  return dest;
   case TAG_PTR:          *dest = &g_sym_Ptr;         return dest;
   case TAG_PTR_FREE:     *dest = &g_sym_PtrFree;     return dest;
+  case TAG_PVAR:         *dest = &g_sym_Var;         return dest;
   case TAG_QUOTE:        *dest = &g_sym_Quote;       return dest;
   case TAG_RATIO:        *dest = &g_sym_Ratio;       return dest;
   case TAG_STR:          *dest = &g_sym_Str;         return dest;
@@ -1715,7 +1711,6 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_TIME:         *dest = &g_sym_Time;        return dest;
   case TAG_TUPLE:        *dest = &g_sym_Tuple;       return dest;
   case TAG_UNQUOTE:      *dest = &g_sym_Unquote;     return dest;
-  case TAG_VAR:          *dest = &g_sym_Var;         return dest;
   }
   err_puts("tag_type: invalid tag type");
   assert(! "tag_type: invalid tag type");
@@ -1726,8 +1721,8 @@ const s_sym ** tag_var_type (const s_tag *tag, const s_sym **dest)
 {
   assert(tag);
   assert(dest);
-  if (tag->type == TAG_VAR) {
-    *dest = tag->data.var.type;
+  if (tag->type == TAG_PVAR) {
+    *dest = tag->data.pvar->type;
     return dest;
   }
   return tag_type(tag, dest);

@@ -33,6 +33,7 @@
 #include "ops.h"
 #include "pcallable.h"
 #include "pstruct.h"
+#include "pvar.h"
 #include "struct.h"
 #include "sw.h"
 #include "tag.h"
@@ -775,23 +776,21 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   assert(dest);
   tag_init_void(&tmp_a);
   tag_init_void(&tmp_b);
-  if (a->type == TAG_VAR) {
-    if (! a->data.var.ptr) {
+  if (a->type == TAG_PVAR) {
+    if (! a->data.pvar->bound) {
       if (! (var_a = frame_binding_new_var(env->frame)))
         return false;
       a = var_a;
     }
-    if (! tag_is_unbound_var(a, &is_var_a))
-      return false;
+    is_var_a = true;
   }
-  if (b->type == TAG_VAR) {
-    if (! b->data.var.ptr) {
+  if (b->type == TAG_PVAR) {
+    if (! b->data.pvar->bound) {
       if (! (var_b = frame_binding_new_var(env->frame)))
         return false;
       b = var_b;
     }
-    if (! tag_is_unbound_var(b, &is_var_b))
-      return false;
+    is_var_b = true;
   }
   is_unbound_a = a->type == TAG_IDENT;
   is_unbound_b = ! macro && (b->type == TAG_IDENT);
@@ -814,7 +813,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     else
       env_eval_tag(env, b, dest);
     if (is_var_a) {
-      if (! var_set(&a->data.var, dest))
+      if (! var_set(a->data.pvar, dest))
         return false;
     }
     else {
@@ -829,7 +828,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     else
       env_eval_tag(env, a, dest);
     if (is_var_b) {
-      if (! var_set(&b->data.var, dest))
+      if (! var_set(b->data.pvar, dest))
         return false;
     }
     else {
@@ -957,10 +956,10 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
+  case TAG_PVAR:
   case TAG_QUOTE:
   case TAG_STR:
   case TAG_SYM:
-  case TAG_VAR:
     if (compare_tag(a, b)) {
       err_puts("env_eval_equal_tag: value mismatch");
       err_stacktrace();
@@ -1470,6 +1469,7 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_PTAG:
   case TAG_PTR:
   case TAG_PTR_FREE:
+  case TAG_PVAR:
   case TAG_RATIO:
   case TAG_S8:
   case TAG_S16:
@@ -1483,7 +1483,6 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_U32:
   case TAG_U64:
   case TAG_UW:
-  case TAG_VAR:
     if (! tag_init_copy(dest, tag))
       return false;
     return true;
@@ -1585,7 +1584,6 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
   p_struct tmp = NULL;
   void    *tmp_data = NULL;
   const s_sym *type;
-  s_var *var = NULL;
   assert(env);
   assert(s);
   assert(dest);
@@ -1608,9 +1606,8 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
       goto ko;
     }
     if (key->data.sym->str.ptr.pchar[0] != '_') {
-      if (tmp->pstruct_type->map.value[i].type == TAG_VAR) {
-        var = &tmp->pstruct_type->map.value[i].data.var;
-        type = var->type;
+      if (tmp->pstruct_type->map.value[i].type == TAG_PVAR) {
+        type = tmp->pstruct_type->map.value[i].data.pvar->type;
       }
       else if (! tag_type(tmp->pstruct_type->map.value + i, &type))
         goto ko;
@@ -1692,14 +1689,14 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_callable(env, tag->data.pcallable, dest);
   case TAG_PSTRUCT:
     return env_eval_struct_tag(env, tag->data.pstruct, dest);
+  case TAG_PVAR:
+    return env_eval_var(env, tag->data.pvar, dest);
   case TAG_QUOTE:
     return env_eval_quote(env, &tag->data.quote, dest);
   case TAG_TIME:
     return env_eval_time(env, &tag->data.time, dest);
   case TAG_TUPLE:
     return env_eval_tuple(env, &tag->data.tuple, dest);
-  case TAG_VAR:
-    return env_eval_var(env, &tag->data.var, dest);
   case TAG_BOOL:
   case TAG_CHARACTER:
   case TAG_F32:
@@ -1792,17 +1789,18 @@ bool env_eval_tuple (s_env *env, const s_tuple *tuple, s_tag *dest)
   return true;
 }
 
-bool env_eval_var (s_env *env, const s_var *var, s_tag *dest)
+bool env_eval_var (s_env *env, s_var *var, s_tag *dest)
 {
   s_tag tmp = {0};
   assert(env);
   assert(var);
   assert(dest);
   (void) env;
-  if (var->ptr && var->ptr->type != TAG_VAR)
-    return tag_init_copy(dest, var->ptr) ? true : false;
-  tmp.type = TAG_VAR;
-  tmp.data.var = *var;
+  if (var->bound)
+    return tag_init_copy(dest, &var->tag) ? true : false;
+  tmp.type = TAG_PVAR;
+  if (! pvar_init(&tmp.data.pvar, var->type))
+    return false;
   *dest = tmp;
   return true;
 }

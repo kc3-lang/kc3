@@ -33,6 +33,7 @@
 #include "pstruct_type.h"
 #include "ptr.h"
 #include "ptr_free.h"
+#include "pvar.h"
 #include "quote.h"
 #include "ratio.h"
 #include "str.h"
@@ -337,6 +338,28 @@ s_tag * tag_init_ptr_free (s_tag *tag, void *p)
   assert(tag);
   tmp.type = TAG_PTR_FREE;
   if (! ptr_free_init(&tmp.data.ptr_free, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_pvar (s_tag *tag, const s_sym *type)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PVAR;
+  if (! pvar_init(&tmp.data.pvar, type))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_pvar_copy (s_tag *tag, p_var *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PVAR;
+  if (! pvar_init_copy(&tmp.data.pvar, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -1041,6 +1064,34 @@ s_tag * tag_new_ptr_free (void *p)
     return NULL;
   tag->type = TAG_PTR_FREE;
   if (! ptr_free_init(&tag->data.ptr_free, p)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_pvar (const s_sym *type)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_PVAR;
+  if (! pvar_init(&tag->data.pvar, type)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_pvar_copy (p_var *src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_PVAR;
+  if (! pvar_init_copy(&tag->data.pvar, src)) {
     free(tag);
     return NULL;
   }
@@ -1778,6 +1829,30 @@ s_tag * tag_ptr_free (s_tag *tag, void *p)
   tag_clean(tag);
   tmp.type = TAG_PTR_FREE;
   if (! ptr_free_init(&tmp.data.ptr_free, p))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_pvar (s_tag *tag, const s_sym *type)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PVAR;
+  if (! pvar_init(&tmp.data.pvar, type))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_pvar_copy (s_tag *tag, p_var *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PVAR;
+  if (! pvar_init_copy(&tmp.data.pvar, src))
     return NULL;
   *tag = tmp;
   return tag;

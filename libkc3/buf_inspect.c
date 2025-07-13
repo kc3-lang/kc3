@@ -3618,8 +3618,8 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
         }
         result += r;
         if (s->data) {
-          if (s->pstruct_type->map.value[i].type == TAG_VAR)
-            type = s->pstruct_type->map.value[i].data.var.type;
+          if (s->pstruct_type->map.value[i].type == TAG_PVAR)
+            type = s->pstruct_type->map.value[i].data.pvar->type;
           else if (! tag_type(s->pstruct_type->map.value + i, &type)) {
             assert(! "buf_inspect_struct: tag_type");
             goto clean;
@@ -3729,8 +3729,8 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
           goto clean;
         result += r;
         if (s->data) {
-          if (s->pstruct_type->map.value[i].type == TAG_VAR)
-            type = s->pstruct_type->map.value[i].data.var.type;
+          if (s->pstruct_type->map.value[i].type == TAG_PVAR)
+            type = s->pstruct_type->map.value[i].data.pvar->type;
           else if (! tag_type(s->pstruct_type->map.value + i, &type))
             goto clean;
           assert(s->pstruct_type->offset[i] < s->pstruct_type->size);
@@ -3977,6 +3977,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_PTR:     return buf_inspect_ptr(buf, &tag->data.ptr);
   case TAG_PTR_FREE:
     return buf_inspect_ptr_free(buf, &tag->data.ptr_free);
+  case TAG_PVAR:    return buf_inspect_var(buf, tag->data.pvar);
   case TAG_QUOTE:   return buf_inspect_quote(buf, &tag->data.quote);
   case TAG_RATIO:   return buf_inspect_ratio(buf, &tag->data.ratio);
   case TAG_S8:      return buf_inspect_s8(buf, &tag->data.s8);
@@ -3994,7 +3995,6 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_U64:     return buf_inspect_u64(buf, &tag->data.u64);
   case TAG_UNQUOTE: return buf_inspect_unquote(buf, &tag->data.unquote);
   case TAG_UW:      return buf_inspect_uw(buf, &tag->data.uw);
-  case TAG_VAR:     return buf_inspect_var(buf, &tag->data.var);
   case TAG_VOID:    return buf_inspect_void(buf, NULL);
   }
   err_puts("buf_inspect_tag: unknown tag_type");
@@ -4049,6 +4049,8 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_ptr_size(pretty, &tag->data.ptr);
   case TAG_PTR_FREE:
     return buf_inspect_ptr_free_size(pretty, &tag->data.ptr_free);
+  case TAG_PVAR:
+    return buf_inspect_var_size(pretty, tag->data.pvar);
   case TAG_QUOTE:
     return buf_inspect_quote_size(pretty, &tag->data.quote);
   case TAG_RATIO:
@@ -4083,8 +4085,6 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_unquote_size(pretty, &tag->data.unquote);
   case TAG_UW:
     return buf_inspect_uw_size(pretty, &tag->data.uw);
-  case TAG_VAR:
-    return buf_inspect_var_size(pretty, &tag->data.var);
   case TAG_VOID:
     return buf_inspect_void_size(pretty, NULL);
   }
@@ -4330,15 +4330,12 @@ sw buf_inspect_var (s_buf *buf, const s_var *var)
       return r;
     result += r;
   }
-  if (var->ptr) {
-    if ((r = buf_write_1(buf, "0x")) < 0)
-      return r;
-    result += r;
-    if ((r = buf_inspect_uw_hexadecimal
-         (buf, (uw *) &var->ptr)) < 0)
-      return r;
-    result += r;
-  }
+  if ((r = buf_write_1(buf, "0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) &var)) < 0)
+    return r;
+  result += r;
   return result;
 }
 
@@ -4362,15 +4359,12 @@ sw buf_inspect_var_size (s_pretty *pretty, const s_var *var)
       return r;
     result += r;
   }
-  if (var->ptr) {
-    if ((r = buf_write_1_size(pretty, "0x")) < 0)
-      return r;
-    result += r;
-    if ((r = buf_inspect_uw_hexadecimal_size
-         (pretty, (uw *) &var->ptr)) < 0)
-      return r;
-    result += r;
-  }
+  if ((r = buf_write_1_size(pretty, "0x")) < 0)
+    return r;
+  result += r;
+  if ((r = buf_inspect_uw_hexadecimal_size(pretty, (uw *) &var)) < 0)
+    return r;
+  result += r;
   return result;
 }
 

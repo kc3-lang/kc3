@@ -358,6 +358,10 @@ class TagInitList
                    [Arg.new("void *", "p")]),
        TagInit.new("ptr_free", "TAG_PTR_FREE", :init_mode_init,
                    [Arg.new("void *", "p")]),
+       TagInit.new("pvar", "TAG_PVAR", :init_mode_init,
+                   [Arg.new("const s_sym *", "type")]),
+       TagInit.new("pvar", "copy", "TAG_PVAR", :init_mode_init,
+                   [Arg.new("p_var *", "src")]),
        TagInit.new("quote", "TAG_QUOTE", :init_mode_init,
                    [Arg.new("s_tag *", "src")]),
        TagInit.new("quote", "copy", "TAG_QUOTE", :init_mode_init,
@@ -428,8 +432,6 @@ class TagInitList
                    [Arg.new("s_unquote *", "unquote")]),
        TagInit.new("uw", "TAG_UW", :init_mode_direct,
                    [Arg.new("uw", "i")]),
-       TagInitProto.new("var", "TAG_VAR", :init_mode_none,
-                   [Arg.new("const s_sym *", "type")]),
        TagInitProto.new("void", "TAG_VOID", :init_mode_none, [])])
   end
 
@@ -555,6 +557,7 @@ tag_init_c.content = <<EOF
 #include "pstruct_type.h"
 #include "ptr.h"
 #include "ptr_free.h"
+#include "pvar.h"
 #include "quote.h"
 #include "ratio.h"
 #include "str.h"
@@ -614,6 +617,7 @@ list_init_c.content = <<EOF
 #include "pstruct_type.h"
 #include "ptr.h"
 #include "ptr_free.h"
+#include "pvar.h"
 #include "quote.h"
 #include "ratio.h"
 #include "str.h"

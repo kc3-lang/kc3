@@ -47,6 +47,7 @@ u_ptr_w * ptr_init_cast (u_ptr_w *p,
   case TAG_PSTRUCT:  p->p = tag->data.pstruct;             return p;
   case TAG_PTR:      p->p = tag->data.ptr.p;               return p;
   case TAG_PTR_FREE: p->p = tag->data.ptr_free.p;          return p;
+  case TAG_PVAR:     p->p = &tag->data.pvar->tag;          return p;
   case TAG_S8:       p->p = (void *) ((uw) tag->data.s8);  return p;
   case TAG_S16:      p->p = (void *) ((uw) tag->data.s16); return p;
   case TAG_S32:      p->p = (void *) ((uw) tag->data.s32); return p;
@@ -57,7 +58,6 @@ u_ptr_w * ptr_init_cast (u_ptr_w *p,
   case TAG_U32:      p->p = (void *) ((uw) tag->data.u32); return p;
   case TAG_U64:      p->p = (void *) ((uw) tag->data.u64); return p;
   case TAG_UW:       p->p = (void *) ((uw) tag->data.uw);  return p;
-  case TAG_VAR:      p->p = tag->data.var.ptr;             return p;
   default:
     break;
   }

@@ -62,6 +62,8 @@ s_list * list_init_pstruct_type_clean (s_list *list,
                                        s_list *next);
 s_list * list_init_ptr (s_list *list, void *p, s_list *next);
 s_list * list_init_ptr_free (s_list *list, void *p, s_list *next);
+s_list * list_init_pvar (s_list *list, const s_sym *type, s_list *next);
+s_list * list_init_pvar_copy (s_list *list, p_var *src, s_list *next);
 s_list * list_init_quote (s_list *list, s_tag *src, s_list *next);
 s_list * list_init_quote_copy (s_list *list, s_quote *quote,
                                s_list *next);
@@ -109,7 +111,6 @@ s_list * list_init_u64 (s_list *list, u64 i, s_list *next);
 s_list * list_init_unquote_copy (s_list *list, s_unquote *unquote,
                                  s_list *next);
 s_list * list_init_uw (s_list *list, uw i, s_list *next);
-s_list * list_init_var (s_list *list, const s_sym *type, s_list *next);
 s_list * list_init_void (s_list *list, s_list *next);
 
 /* Heap-allocation functions, call list_delete after use. */
@@ -147,6 +148,8 @@ s_list * list_new_pstruct_type_clean (const s_struct_type *st,
                                       const s_cfn *clean, s_list *next);
 s_list * list_new_ptr (void *p, s_list *next);
 s_list * list_new_ptr_free (void *p, s_list *next);
+s_list * list_new_pvar (const s_sym *type, s_list *next);
+s_list * list_new_pvar_copy (p_var *src, s_list *next);
 s_list * list_new_quote (s_tag *src, s_list *next);
 s_list * list_new_quote_copy (s_quote *quote, s_list *next);
 s_list * list_new_ratio_1 (const char *p, s_list *next);
@@ -185,7 +188,6 @@ s_list * list_new_u32 (u32 i, s_list *next);
 s_list * list_new_u64 (u64 i, s_list *next);
 s_list * list_new_unquote_copy (s_unquote *unquote, s_list *next);
 s_list * list_new_uw (uw i, s_list *next);
-s_list * list_new_var (const s_sym *type, s_list *next);
 s_list * list_new_void (s_list *next);
 
 #endif /* LIBKC3_LIST_INIT_H */

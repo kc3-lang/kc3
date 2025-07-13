@@ -79,6 +79,7 @@
 #include "pretty.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
+#include "pvar.h"
 #include "quote.h"
 #include "s8.h"
 #include "s16.h"

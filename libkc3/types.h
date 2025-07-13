@@ -169,13 +169,13 @@ typedef enum {
   TAG_PTAG,
   TAG_PTR,
   TAG_PTR_FREE,
+  TAG_PVAR,
   TAG_QUOTE,
   TAG_STR,
   TAG_SYM,
   TAG_TIME,
   TAG_TUPLE,
   TAG_UNQUOTE,
-  TAG_VAR,
   TAG_IDENT
 } e_tag_type;
 
@@ -264,6 +264,7 @@ typedef s_struct_type *p_struct_type;
 typedef const s_sym *  p_sym;
 typedef s_tag *        p_tag;
 typedef u64            t_skiplist_height;
+typedef s_var *        p_var;
 
 /* function typedefs */
 typedef void (* f_clean) (void *x);
@@ -419,11 +420,6 @@ struct unwind_protect {
   jmp_buf buf;
   jmp_buf *jmp;
   s_unwind_protect *next;
-};
-
-struct var {
-  s_tag *ptr;
-  const s_sym *type;
 };
 
 /* 2 */
@@ -631,6 +627,7 @@ union tag_data {
   p_tag         ptag;
   u_ptr_w       ptr;
   u_ptr_w       ptr_free;
+  p_var         pvar;
   s_quote       quote;
   s_ratio       ratio;
   s_str         str;
@@ -648,7 +645,6 @@ union tag_data {
   u64           u64;
   s_unquote     unquote;
   uw            uw;
-  s_var         var;
 };
 
 /* 6 */
@@ -794,6 +790,14 @@ TYPEDEF_SKIPLIST_NODE(fact, s_fact *);
 
 TYPEDEF_SKIPLIST(fact, s_fact *);
 
+struct var {
+  const s_sym *type;
+  s_mutex      mutex;
+  sw           ref_count;
+  s_tag        tag;
+  bool         bound;
+};
+
 /* 8 */
 
 struct facts {
@@ -814,9 +818,9 @@ struct facts_cursor {
   s_skiplist_node__fact *node;
   s_fact start;
   s_fact end;
-  s_var var_subject;
-  s_var var_predicate;
-  s_var var_object;
+  p_var pvar_subject;
+  p_var pvar_predicate;
+  p_var pvar_object;
   pthread_mutex_t mutex;
 };
 

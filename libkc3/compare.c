@@ -574,8 +574,8 @@ s8 compare_struct (const s_struct *a, const s_struct *b)
   if (! b->data)
     return 1;
   while (i < a->pstruct_type->map.count) {
-    if (a->pstruct_type->map.value[i].type == TAG_VAR)
-      type = a->pstruct_type->map.value[i].data.var.type;
+    if (a->pstruct_type->map.value[i].type == TAG_PVAR)
+      type = a->pstruct_type->map.value[i].data.pvar->type;
     else {
       if (! tag_type(a->pstruct_type->map.value + i, &type)) {
         err_puts("compare_struct: tag_type");
@@ -1192,6 +1192,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_PTR:        return compare_ptr(a->data.ptr.p, b->data.ptr.p);
   case TAG_PTR_FREE:   return compare_ptr(a->data.ptr_free.p,
                                           b->data.ptr_free.p);
+  case TAG_PVAR:       return compare_var(a->data.pvar, b->data.pvar);
   case TAG_QUOTE:      return compare_quote(&a->data.quote,
                                             &b->data.quote);
   case TAG_STR:        return compare_str(&a->data.str, &b->data.str);
@@ -1203,7 +1204,6 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                             &b->data.tuple);
   case TAG_UNQUOTE:    return compare_unquote(&a->data.unquote,
                                               &b->data.unquote);
-  case TAG_VAR:        return compare_var(&a->data.var, &b->data.var);
   case TAG_COMPLEX:
   case TAG_F32:
   case TAG_F64:
@@ -1543,11 +1543,11 @@ s8 compare_tag_deref (const s_tag *a, const s_tag *b)
   const s_tag *a_deref;
   const s_tag *b_deref;
   a_deref = a;
-  if (a_deref && a_deref->type == TAG_VAR)
-    a_deref = a_deref->data.var.ptr;
+  if (a_deref && a_deref->type == TAG_PVAR)
+    a_deref = &a_deref->data.pvar->tag;
   b_deref = b;
-  if (b_deref && b_deref->type == TAG_VAR)
-    b_deref = b_deref->data.var.ptr;
+  if (b_deref && b_deref->type == TAG_PVAR)
+    b_deref = &b_deref->data.pvar->tag;
   return compare_tag(a_deref, b_deref);
 }
 
@@ -1645,7 +1645,8 @@ s8 compare_var (const s_var *a, const s_var *b)
     return -1;
   if (!b)
     return 1;
-  if ((r = compare_sym(a->type, b->type)))
+  if ((r = compare_sym(a->type, b->type)) ||
+      (r = compare_bool(a->bound, b->bound)))
     return r;
-  return compare_ptr(a->ptr, b->ptr);
+  return compare_tag(&a->tag, &b->tag);
 }
