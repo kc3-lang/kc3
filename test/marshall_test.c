@@ -14,16 +14,18 @@
 #include <assert.h>
 #include <endian.h>
 #include "../libkc3/marshall.h"
+#include "../libkc3/str.h"
 #include "test.h"
 
 #define MARSHALL_TEST(type, test, expected)                            \
-  {                                                                    \
+  do {                                                                 \
     s_marshall m = {0};                                                \
     TEST_ASSERT(marshall_init(&m));                                    \
     TEST_ASSERT(marshall_ ## type (&m, (type) (test)));                \
     TEST_MEM_EQ(m.buf.ptr.pu8, sizeof(type),                           \
       (expected), sizeof(expected) - 1);                               \
-  }
+    marshall_clean(&m);                                                \
+  } while (0)
 
 #define MARSHALL_TEST_U8(test, expected)        \
   MARSHALL_TEST(u8, test, expected)
@@ -61,10 +63,12 @@ TEST_CASE_PROTOTYPE(marshall_u8);
 TEST_CASE_PROTOTYPE(marshall_u16);
 TEST_CASE_PROTOTYPE(marshall_u32);
 TEST_CASE_PROTOTYPE(marshall_u64);
+TEST_CASE_PROTOTYPE(marshall_uw);
 TEST_CASE_PROTOTYPE(marshall_s8);
 TEST_CASE_PROTOTYPE(marshall_s16);
 TEST_CASE_PROTOTYPE(marshall_s32);
 TEST_CASE_PROTOTYPE(marshall_s64);
+TEST_CASE_PROTOTYPE(marshall_sw);
 TEST_CASE_PROTOTYPE(marshall_to_buf);
 TEST_CASE_PROTOTYPE(marshall_to_file);
 TEST_CASE_PROTOTYPE(marshall_to_str);
@@ -75,10 +79,12 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_u16);
   TEST_CASE_RUN(marshall_u32);
   TEST_CASE_RUN(marshall_u64);
+  TEST_CASE_RUN(marshall_uw);
   TEST_CASE_RUN(marshall_s8);
   TEST_CASE_RUN(marshall_s16);
   TEST_CASE_RUN(marshall_s32);
   TEST_CASE_RUN(marshall_s64);
+  TEST_CASE_RUN(marshall_sw);
   TEST_CASE_RUN(marshall_to_buf);
   TEST_CASE_RUN(marshall_to_str);
   TEST_CASE_RUN(marshall_to_file);
@@ -131,6 +137,7 @@ TEST_CASE(marshall_to_buf)
   buf_init(&buf, false, sizeof(b), b);
   TEST_ASSERT(marshall_init(&m) != NULL);
   TEST_EQ(marshall_to_buf(&m, &buf), sizeof(s_marshall_header));
+  marshall_clean(&m);
 }
 TEST_CASE_END(marshall_to_buf)
 
@@ -143,17 +150,26 @@ TEST_CASE(marshall_to_file)
   TEST_EQ(marshall_to_file(&m, ".marshall_test_to_file"),
           sizeof(s_marshall_header) +
           sizeof(u32));
+  marshall_clean(&m);
 }
 TEST_CASE_END(marshall_to_file)
 
 TEST_CASE(marshall_to_str)
 {
-  u32 value = 42;
+  u32 value = 424242;
   s_marshall m = {0};
   s_str str = {0};
+  s_str expected = {0};
   TEST_ASSERT(marshall_init(&m));
   TEST_ASSERT(marshall_u32(&m, value));
   TEST_EQ(marshall_to_str(&m, &str), &str);
+  marshall_clean(&m);
+  expected = (s_str) {{0}, 28, {"\0\0\0\0\0\0\0\0"
+                                "\0\0\0\0\0\0\0\0"
+                                "\0\0\0\0\0\0\0\x04"
+                                "\0\0\0\0"}};
+  TEST_STR_EQ(str, expected);
+  str_clean(&str);
 }
 TEST_CASE_END(marshall_to_str)
 

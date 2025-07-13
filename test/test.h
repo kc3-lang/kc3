@@ -167,6 +167,27 @@
     }                                                                  \
   } while (0)
 
+#define TEST_STR_EQ(test, expected)                                    \
+  do {                                                                 \
+    s_str test_str = (test);                                           \
+    s_str expected_str = (expected);                                   \
+    sw i = 0;                                                          \
+    TEST_EQ(test_str.size, expected_str.size);                         \
+    while (i < test_str.size) {                                        \
+      if (test_str.ptr.pchar[i] != expected_str.ptr.pchar[i]) {        \
+        test_ko();                                                     \
+        fprintf(stderr, "\n%sTEST_STR_EQ failed in %s:%d %s\n"         \
+                "Expected %s got %s.%s\n",                             \
+                TEST_COLOR_KO,                                         \
+                __FILE__, __LINE__, __func__,                          \
+                # test, # expected,                                    \
+                TEST_COLOR_RESET);                                     \
+        return 1;                                                      \
+      }                                                                \
+      i++;                                                             \
+    }                                                                  \
+  } while (0)
+
 #define TEST_STRNCMP(test, result, bytes)                              \
   do {                                                                 \
     const char *TEST_STRNCMP_tmp = (test);                             \
