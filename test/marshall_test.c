@@ -13,6 +13,7 @@
 
 #include <assert.h>
 #include <endian.h>
+#include "../libkc3/file.h"
 #include "../libkc3/marshall.h"
 #include "../libkc3/str.h"
 #include "test.h"
@@ -145,11 +146,18 @@ TEST_CASE(marshall_to_file)
 {
   u32 value = 42;
   s_marshall m = {0};
+  s_str path = {0};
   TEST_ASSERT(marshall_init(&m));
   TEST_ASSERT(marshall_u32(&m, value));
-  TEST_EQ(marshall_to_file(&m, ".marshall_test_to_file"),
+  TEST_EQ(marshall_to_file(&m, ".marshall_test_to_file.1.kc3m"),
           sizeof(s_marshall_header) +
           sizeof(u32));
+  TEST_EQ(test_file_compare(".marshall_test_to_file.1.kc3m",
+                             "marshall_test_to_file.1.expected.kc3m"),
+          0);
+  TEST_EQ(str_init_1(&path, NULL, ".marshall_test_to_file.1.kc3m"),
+          &path);
+  TEST_ASSERT(file_unlink(&path));
   marshall_clean(&m);
 }
 TEST_CASE_END(marshall_to_file)
@@ -164,10 +172,11 @@ TEST_CASE(marshall_to_str)
   TEST_ASSERT(marshall_u32(&m, value));
   TEST_EQ(marshall_to_str(&m, &str), &str);
   marshall_clean(&m);
-  expected = (s_str) {{0}, 28, {"\0\0\0\0\0\0\0\0"
-                                "\0\0\0\0\0\0\0\0"
-                                "\0\0\0\0\0\0\0\x04"
-                                "\0\0\0\0"}};
+  expected = (s_str) {{0}, 36, {"KC3MARSH"
+                                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                                "\x00\x00\x00\x00\x00\x00\x00\x00"
+                                "\x04\x00\x00\x00\x00\x00\x00\x00"
+                                "\x32\x79\x06\x00"}};
   TEST_STR_EQ(str, expected);
   str_clean(&str);
 }

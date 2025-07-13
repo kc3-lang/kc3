@@ -40,6 +40,7 @@
                   default: src);                                       \
     if ((r = buf_write_ ## type(&m->buf, le)) <= 0)                    \
       return NULL;                                                     \
+    m->buf_pos += r;                                                   \
     return m;                                                          \
   }
 
@@ -142,16 +143,17 @@ sw marshall_to_buf (s_marshall *m, s_buf *out)
   sw result = 0;
   assert(m);
   assert(out);
+  mh.le_magic = htole64(MARSHALL_MAGIC);
   mh.le_heap_count = htole64(m->heap_count);
   mh.le_heap_size = htole64(m->heap_pos);
   mh.le_buf_size = htole64(m->buf_pos);
   if ((r = buf_write(out, &mh, sizeof(mh))) != sizeof(mh))
     return -1;
   result += r;
-  if ((r = buf_xfer(&m->heap, out, m->heap_pos)) != m->heap_pos)
+  if ((r = buf_xfer(out, &m->heap, m->heap_pos)) != m->heap_pos)
     return -1;
   result += r;
-  if ((r = buf_xfer(&m->buf, out, m->buf_pos)) != m->buf_pos)
+  if ((r = buf_xfer(out, &m->buf, m->buf_pos)) != m->buf_pos)
     return -1;
   result += r;
   return result;

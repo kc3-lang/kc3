@@ -118,6 +118,7 @@ test/markdown/*.diff
 test/markdown/*.err
 test/markdown/*.out
 test/markdown/*.ret
+test/.*.kc3m
 *.tmp
 ucd2c/ucd2c
 win32/kc3*

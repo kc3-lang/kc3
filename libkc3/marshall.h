@@ -16,6 +16,8 @@
 
 #include "types.h"
 
+#define MARSHALL_MAGIC ((u64) 0x485352414d33434b)
+
 #define PROTO_MARSHALL(name, type)                                    \
   s_marshall * marshall_ ## name (s_marshall *m, type src)
 

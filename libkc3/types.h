@@ -342,10 +342,11 @@ struct map {
 };
 
 struct marshall_header {
+  u64 le_magic;
   u64 le_heap_count;
   u64 le_heap_size;
   u64 le_buf_size;
-};
+} __attribute((packed));
 
 struct mutex {
   pthread_mutex_t mutex;
