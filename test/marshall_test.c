@@ -66,8 +66,8 @@ TEST_CASE_PROTOTYPE(marshall_s16);
 TEST_CASE_PROTOTYPE(marshall_s32);
 TEST_CASE_PROTOTYPE(marshall_s64);
 TEST_CASE_PROTOTYPE(marshall_to_buf);
-TEST_CASE_PROTOTYPE(marshall_save_to_file);
-TEST_CASE_PROTOTYPE(marshall_read_from_file);
+TEST_CASE_PROTOTYPE(marshall_to_file);
+TEST_CASE_PROTOTYPE(marshall_to_str);
 
 void marshall_test (void)
 {
@@ -80,8 +80,8 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_s32);
   TEST_CASE_RUN(marshall_s64);
   TEST_CASE_RUN(marshall_to_buf);
-  TEST_CASE_RUN(marshall_save_to_file);
-  TEST_CASE_RUN(marshall_read_from_file);
+  TEST_CASE_RUN(marshall_to_str);
+  TEST_CASE_RUN(marshall_to_file);
 }
 
 TEST_CASE(marshall_s8)
@@ -125,16 +125,37 @@ TEST_CASE_END(marshall_sw)
 
 TEST_CASE(marshall_to_buf)
 {
-  s_marshall s = {0};
-  char b[] = {0};
+  char b[1024024] = {0};
   s_buf buf = {0};
+  s_marshall m = {0};
   buf_init(&buf, false, sizeof(b), b);
-  TEST_ASSERT(marshall_init(&s) != NULL);
-  TEST_EQ(marshall_to_buf(&s, &buf), 0);
-  TEST_MEM_EQ(buf.ptr.pu8, buf.wpos, s.buf.ptr.pu8, s.buf.wpos);
+  TEST_ASSERT(marshall_init(&m) != NULL);
+  TEST_EQ(marshall_to_buf(&m, &buf), sizeof(s_marshall_header));
 }
 TEST_CASE_END(marshall_to_buf)
 
+TEST_CASE(marshall_to_file)
+{
+  u32 value = 42;
+  s_marshall m = {0};
+  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_u32(&m, value));
+  TEST_EQ(marshall_to_file(&m, ".marshall_test_to_file"),
+          sizeof(s_marshall_header) +
+          sizeof(u32));
+}
+TEST_CASE_END(marshall_to_file)
+
+TEST_CASE(marshall_to_str)
+{
+  u32 value = 42;
+  s_marshall m = {0};
+  s_str str = {0};
+  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_u32(&m, value));
+  TEST_EQ(marshall_to_str(&m, &str), &str);
+}
+TEST_CASE_END(marshall_to_str)
 
 TEST_CASE(marshall_u8)
 {
@@ -168,27 +189,3 @@ TEST_CASE(marshall_uw)
   MARSHALL_TEST_UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_uw)
-
-TEST_CASE(marshall_save_to_file)
-{
-  u32 value = 42;
-  s_marshall m = {0};
-  TEST_ASSERT(marshall_init(&m));
-  TEST_ASSERT(marshall_u32(&m, value));
-  
-  TEST_EQ(marshall_save_to_file(&m, "./file_test.msh"), 0);
-}
-TEST_CASE_END(marshall_write_to_file)
-
-TEST_CASE(marshall_read_from_file)
-{
-  u32 value = 0;
-  s_marshall *m;
-
-  TEST_ASSERT(
-    (m = marshall_read_from_file("./file_test.msh")) != NULL);
-  MARSHALL_READ(m, u32, value);
-  TEST_EQ(value, 42);
-  marshall_delete(m);
-}
-TEST_CASE_END(marshall_read_from_file)

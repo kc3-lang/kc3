@@ -16,37 +16,16 @@
 
 #include "types.h"
 
-/*
- * This header is written at the beginning of every marshall'd data
- * written on the disk to be recovered when we want to read the file
- * to unmarshall.
-*/
-typedef struct __attribute__((packed)) marshall_header {
-  e_tag_type type;    // Used if someday we want to auto instanciate.
-  size_t buf_size;
-  size_t buf_offset;  // Byte offset where the buffer bytes starts.
-  size_t heap_size;
-  size_t heap_offset; // Byte offset where the heap bytes starts.
-} marshall_header_t;
-
 #define PROTO_MARSHALL(name, type)                                    \
-  s_marshall * marshall_ ## name (s_marshall *marshall, type src)
-
-/*
- * Is a wrapper function really needed ? If so, don't forget endianess.
-*/
-#define MARSHALL_READ(marshall, type, store_in)                       \
-    (buf_read_ ## type (&(marshall)->buf, &(store_in)) > -1           \
-      ? (store_in)                                                    \
-      : -1)
+  s_marshall * marshall_ ## name (s_marshall *m, type src)
 
 /* Stack-allocation compatible functions, call marshall_clean
    after use. */
-void         marshall_clean (s_marshall *marshall);
-s_marshall * marshall_init (s_marshall *marshall);
+void         marshall_clean (s_marshall *m);
+s_marshall * marshall_init (s_marshall *m);
 
 /* Heap-allocation functions, call marshall_delete after use. */
-void         marshall_delete (s_marshall *marshall);
+void         marshall_delete (s_marshall *m);
 s_marshall * marshall_new (void);
 
 /* Operators. */
@@ -89,39 +68,8 @@ PROTO_MARSHALL(uw, uw);
 PROTO_MARSHALL(var, const s_var *);
 
 /* Export. */
-sw           marshall_to_buf (s_marshall *marshall,
-                              s_buf *buf);
-s_str *      marshall_to_str (s_marshall *marshall,
-                              s_str *dest);
-/**
- * @brief Write the marshall struct in a file.
- *
- * This function opens a file in wb (binary write) to write marshall'd
- * data. If the file can't be opened, the finction returns -1. After
- * the operation, the file is then closed.
- *
- * @param marshall self argument
- * @param path Where the marshall'd data will be saved.
- *
- * @return Zero in case of success or -1.
- *
- */
-ssize_t marshall_save_to_file(s_marshall *marshall, const char *path);
-
-/**
- * @brief Load the marshall'd data from a file.
- *
- * This function reads a file, and parses the file header to retrieve
- * a valid s_marshall set of bytes that can then be used with
- * `marshall_read_<type>(s_marshall, param *) to retrieve the data.
- * The file is read at once in an allocated buffer because the size
- * of the file is not known before (and may be > stack size).
- *
- * @param path Where the marshall'd data is saved.
- *
- * @return A new s_marshall allocated pointer or NULL.
- *
- */
-s_marshall *marshall_read_from_file(const char *path);
+sw      marshall_to_buf (s_marshall *m, s_buf *buf);
+s_str * marshall_to_str (s_marshall *m, s_str *dest);
+sw      marshall_to_file (s_marshall *m, const char *path);
 
 #endif /* LIBKC3_MARSHALL_H */

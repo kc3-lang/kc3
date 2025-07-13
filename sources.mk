@@ -515,6 +515,8 @@ KC3_C_SOURCES = \
 	"libkc3/map.h" \
 	"libkc3/marshall.c" \
 	"libkc3/marshall.h" \
+	"libkc3/marshall_read.c" \
+	"libkc3/marshall_read.h" \
 	"libkc3/module.c" \
 	"libkc3/module.h" \
 	"libkc3/mutex.c" \
@@ -566,7 +568,6 @@ KC3_C_SOURCES = \
 	"libkc3/s.c.in" \
 	"libkc3/sequence.c" \
 	"libkc3/sequence.h" \
-	"libkc3/serialize.h" \
 	"libkc3/set.c.in" \
 	"libkc3/set_cursor.c.in" \
 	"libkc3/set_cursor__fact.c" \

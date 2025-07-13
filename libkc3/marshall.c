@@ -25,39 +25,48 @@
 #include "marshall.h"
 
 #define DEF_MARSHALL(type)                                             \
-  s_marshall * marshall_ ## type (s_marshall *marshall, type src)      \
+  s_marshall * marshall_ ## type (s_marshall *m, type src)             \
   {                                                                    \
+    type le;                                                           \
     sw r;                                                              \
-    assert(marshall);                                                  \
-    src = _Generic(src,                                                \
-                   s16:       htole16(src),                            \
-                   u16:       htole16(src),                            \
-                   s32:       htole32(src),                            \
-                   u32:       htole32(src),                            \
-                   s64:       htole64(src),                            \
-                   u64:       htole64(src),                            \
-                   default: src);                                      \
-    if ((r = buf_write_ ## type(&marshall->buf, src)) <= 0)            \
+    assert(m);                                                         \
+    le = _Generic(src,                                                 \
+                  s16:     htole16(src),                               \
+                  u16:     htole16(src),                               \
+                  s32:     htole32(src),                               \
+                  u32:     htole32(src),                               \
+                  s64:     htole64(src),                               \
+                  u64:     htole64(src),                               \
+                  default: src);                                       \
+    if ((r = buf_write_ ## type(&m->buf, le)) <= 0)                    \
       return NULL;                                                     \
-    return marshall;                                                   \
+    return m;                                                          \
   }
 
-/*
- * Initialization
-*/
+DEF_MARSHALL(bool)
 
-s_marshall * marshall_new (void)
+s_marshall * marshall_character (s_marshall *m, character src)
 {
-  s_marshall *marshall;
-  if (! (marshall = alloc(sizeof(s_marshall))))
+  sw r;
+  if ((r = buf_write_character_utf8(&m->buf, src)) <= 0)
     return NULL;
-  if (marshall_init(marshall) == NULL) {
-    free(marshall);
-    return NULL;
-  }
-  return marshall;
+  return m;
 }
-s_marshall * marshall_init (s_marshall *marshall)
+
+void marshall_clean (s_marshall *m)
+{
+  assert(m);
+  buf_clean(&m->buf);
+  buf_clean(&m->heap);
+}
+
+void marshall_delete (s_marshall *m)
+{
+  marshall_clean(m);
+  free(m);
+}
+
+s_marshall * marshall_init (s_marshall *m)
 {
   s_marshall tmp = {0};
   if (buf_init_alloc(&tmp.heap, 1024024) == NULL)
@@ -66,144 +75,20 @@ s_marshall * marshall_init (s_marshall *marshall)
     buf_delete(&tmp.heap);
     return NULL;
   }
-  *marshall = tmp;
-  return marshall;
+  *m = tmp;
+  return m;
 }
 
-void marshall_clean (s_marshall *marshall)
+s_marshall * marshall_new (void)
 {
-  assert(marshall);
-  buf_clean(&marshall->buf);
-  buf_clean(&marshall->heap);
-}
-
-void marshall_delete (s_marshall *marshall)
-{
-  marshall_clean(marshall);
-  free(marshall);
-}
-
-/*
- * Util functions
-*/
-
-// static marshall_header_t *marshall_set_type(marshall_header_t *header,
-//   e_tag_type type)
-// {
-//   header->type = type;
-//   return header;
-// }
-
-static marshall_header_t *marshall_write_header(s_marshall *marshall,
-    marshall_header_t *header)
-{
-  if (header == NULL || marshall == NULL)
+  s_marshall *m;
+  if (! (m = alloc(sizeof(s_marshall))))
     return NULL;
-  header->buf_size = htole64(marshall->buf.wpos);
-  header->buf_offset = htole64(sizeof(*header));
-  header->heap_size = htole64(marshall->heap.wpos);
-  header->heap_offset = htole64(header->buf_offset + header->buf_size);
-  return header;
-}
-
-ssize_t marshall_save_to_file(s_marshall *marshall, const char *path)
-{
-  FILE *fp;
-  marshall_header_t header = {0};
-  s_buf *buf;
-  s_buf *heap;
-  ssize_t ret = 0;
-
-  if (marshall_write_header(marshall, &header) == NULL
-    || path == NULL || (fp = file_open(path, "wb")) == NULL)
-    return -1;
-  buf = &marshall->buf;
-  heap = &marshall->heap;
-  if (fwrite((uint8_t *)&header, sizeof(header), 1, fp) < 1
-    || buf_file_open_w(buf, fp) == NULL
-    || marshall->buf.flush(buf) < 0
-    || buf_file_open_w(heap, fp) == NULL
-    || marshall->buf.flush(heap) < 0)
-      ret = -1;
-  buf_file_close(buf);
-  buf_file_close(heap);
-  fclose(fp);
-  return ret;
-}
-
-static marshall_header_t *marshall_read_header(
-    marshall_header_t *header)
-{
-  #if __BYTE_ORDER == __BIG_ENDIAN
-    header->buf_size = htobe64(header->buf_size);
-    header->buf_offset = htobe64(header->buf_offset);
-    header->heap_size = htobe64(header->heap_size);
-    header->heap_offset = htobe64(header->heap_offset);
-  #endif
-  return header;
-}
-
-s_marshall *marshall_read_from_file(const char *path)
-{
-  s_marshall *marshall;
-  marshall_header_t header = {0};
-  s_str p = {0};
-  s_str s;
-    
-  if (path == NULL)
-    return NULL;
-  if (str_init(&p, NULL, strlen(path), path) == NULL
-    || file_read_all(&p, &s) == NULL
-    || s.size < sizeof(marshall_header_t)
-    || s.ptr.pu8 == NULL
-    || (marshall = marshall_new()) == NULL)
-    return NULL;
-  header = *marshall_read_header((marshall_header_t *)s.ptr.pu8);
-  if (buf_write(&marshall->buf, s.ptr.pu8 + header.buf_offset,
-    header.buf_size) < 0
-    || buf_write(&marshall->heap, s.ptr.pu8 + header.heap_offset,
-    header.heap_size) < 0) {
-    marshall_delete(marshall);
+  if (marshall_init(m) == NULL) {
+    free(m);
     return NULL;
   }
-  marshall->buf.rpos = 0;
-  marshall->heap.rpos = 0;
-  marshall->buf.size = header.buf_size;
-  marshall->heap.size = header.heap_size;
-  return marshall;
-}
-
-/*
- * Types
-*/
-
-DEF_MARSHALL(bool)
-
-s_marshall * marshall_character (s_marshall *marshall, character src)
-{
-  sw r;
-  if ((r = buf_write_character_utf8(&marshall->buf, src)) <= 0)
-    return NULL;
-  return marshall;
-}
-
-/* Works the same as marshall_tuple. */
-s_marshall * marshall_list (s_marshall *marshall,
-                              const s_list *list)
-{
-  const s_list *l;
-  u32 len;
-  assert(marshall);
-  len = list_length(list);
-  if (! marshall_u32(marshall, len))
-    return NULL;
-  l = list;
-  while (l) {
-    if (! marshall_tag(marshall, &l->tag))
-      return NULL;
-    l = list_next(l);
-  }
-  return marshall;
+  return m;
 }
 
 DEF_MARSHALL(s8)
@@ -211,38 +96,38 @@ DEF_MARSHALL(s16)
 DEF_MARSHALL(s32)
 DEF_MARSHALL(s64)
 
-s_marshall * marshall_str (s_marshall *marshall, const s_str *src)
+s_marshall * marshall_str (s_marshall *m, const s_str *src)
 {
   sw r;
-  assert(marshall);
+  assert(m);
   assert(src);
-  if (! marshall_u32(marshall, src->size))
+  if (! marshall_u32(m, src->size))
     return NULL;
-  if ((r = buf_write(&marshall->buf, src->ptr.pchar, src->size)) <= 0)
+  if ((r = buf_write(&m->buf, src->ptr.pchar, src->size)) <= 0)
     return NULL;
-  return marshall;
+  return m;
 }
 
 DEF_MARSHALL(sw)
 
-s_marshall * marshall_tag (s_marshall *marshall, const s_tag *tag)
+s_marshall * marshall_tag (s_marshall *m, const s_tag *tag)
 {
-  marshall_u8(marshall, tag->type);
+  marshall_u8(m, tag->type);
   switch (tag->type){
-  case TAG_BOOL: return marshall_bool(marshall, tag->data.bool_);
+  case TAG_BOOL: return marshall_bool(m, tag->data.bool_);
   case TAG_CHARACTER:
-    return marshall_character(marshall, tag->data.character);
-  case TAG_S8://   return marshall_s8(marshall, tag->data.s8);
-  case TAG_U8:   return marshall_u8(marshall, tag->data.u8);
-  case TAG_S16://  return marshall_s16(marshall, tag->data.s16);
-  case TAG_U16:  return marshall_u16(marshall, tag->data.u16);
-  case TAG_S32://  return marshall_s32(marshall, tag->data.s32);
-  case TAG_U32:  return marshall_u32(marshall, tag->data.u32);
-  case TAG_S64://  return marshall_s64(marshall, tag->data.s64);
-  case TAG_U64:  return marshall_u64(marshall, tag->data.u64);
-  case TAG_STR:  return marshall_str(marshall, &tag->data.str);
-  case TAG_SW://   return marshall_sw(marshall, tag->data.sw);
-  case TAG_UW:   return marshall_uw(marshall, tag->data.uw);
+    return marshall_character(m, tag->data.character);
+  case TAG_S8:   return marshall_s8(m, tag->data.s8);
+  case TAG_U8:   return marshall_u8(m, tag->data.u8);
+  case TAG_S16:  return marshall_s16(m, tag->data.s16);
+  case TAG_U16:  return marshall_u16(m, tag->data.u16);
+  case TAG_S32:  return marshall_s32(m, tag->data.s32);
+  case TAG_U32:  return marshall_u32(m, tag->data.u32);
+  case TAG_S64:  return marshall_s64(m, tag->data.s64);
+  case TAG_U64:  return marshall_u64(m, tag->data.u64);
+  case TAG_STR:  return marshall_str(m, &tag->data.str);
+  case TAG_SW:   return marshall_sw(m, tag->data.sw);
+  case TAG_UW:   return marshall_uw(m, tag->data.uw);
   default:       break;
   }
   err_puts("marshall_tag: not implemented");
@@ -250,32 +135,84 @@ s_marshall * marshall_tag (s_marshall *marshall, const s_tag *tag)
   return NULL;
 }
 
-sw marshall_to_buf (s_marshall *marshall, s_buf *buf)
+sw marshall_to_buf (s_marshall *m, s_buf *out)
 {
-  return buf_xfer(&marshall->buf, buf,
-                  marshall->buf.wpos - marshall->buf.rpos);
+  s_marshall_header mh = {0};
+  sw r;
+  sw result = 0;
+  assert(m);
+  assert(out);
+  mh.le_heap_count = htole64(m->heap_count);
+  mh.le_heap_size = htole64(m->heap_pos);
+  mh.le_buf_size = htole64(m->buf_pos);
+  if ((r = buf_write(out, &mh, sizeof(mh))) != sizeof(mh))
+    return -1;
+  result += r;
+  if ((r = buf_xfer(&m->heap, out, m->heap_pos)) != m->heap_pos)
+    return -1;
+  result += r;
+  if ((r = buf_xfer(&m->buf, out, m->buf_pos)) != m->buf_pos)
+    return -1;
+  result += r;
+  return result;
 }
 
-s_str * marshall_to_str (s_marshall *marshall, s_str *dest)
+sw marshall_to_file (s_marshall *m, const char *path)
 {
-  return buf_read_to_str(&marshall->buf, dest);
+  FILE *fp;
+  s_buf out;
+  sw r;
+  sw result = 0;
+  assert(m);
+  assert(path);
+  if (! buf_init_alloc(&out, 1024 * 1024))
+    return -1;
+  if (! (fp = file_open(path, "wb")) ||
+      ! buf_file_open_w(&out, fp) ||
+      (r = marshall_to_buf(m, &out)) <= 0) {
+    buf_clean(&out);
+    return -1;
+  }
+  result = r;
+  buf_file_close(&out);
+  buf_clean(&out);
+  return result;
 }
 
-s_marshall * marshall_tuple (s_marshall *marshall,
-                               const s_tuple *tuple)
+s_str * marshall_to_str (s_marshall *m, s_str *dest)
+{
+  s_buf out;
+  sw r;
+  assert(m);
+  assert(dest);
+  if (! buf_init_alloc(&out, 1024 * 1024))
+    return NULL;
+  if ((r = marshall_to_buf(m, &out)) <= 0) {
+    buf_clean(&out);
+    return NULL;
+  }
+  if (! buf_read_to_str(&out, dest)) {
+    buf_clean(&out);
+    return NULL;
+  }
+  buf_clean(&out);
+  return dest;
+}
+
+s_marshall * marshall_tuple (s_marshall *m, const s_tuple *tuple)
 {
   uw i;
-  assert(marshall);
+  assert(m);
   assert(tuple);
-  if (! marshall_u32(marshall, tuple->count))
+  if (! marshall_uw(m, tuple->count))
     return NULL;
   i = 0;
   while (i < tuple->count) {
-    if (! marshall_tag(marshall, tuple->tag + i))
+    if (! marshall_tag(m, tuple->tag + i))
       return NULL;
     i++;
   }
-  return marshall;
+  return m;
 }
 
 DEF_MARSHALL(u8)
