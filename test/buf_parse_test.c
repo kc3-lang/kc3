@@ -481,6 +481,9 @@
       TEST_EQ(dest->type, (t));                                        \
     if (expected)                                                      \
       TEST_EQ(dest, (expected));                                       \
+    else                                                               \
+      TEST_ASSERT(dest);                                               \
+    pvar_clean(&dest);                                                 \
     test_context(NULL);                                                \
   } while (0)
 
