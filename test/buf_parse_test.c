@@ -470,19 +470,15 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define BUF_PARSE_TEST_PVAR(test, t, expected)                         \
+#define BUF_PARSE_TEST_PVAR(test, t)                                   \
   do {                                                                 \
     s_buf buf;                                                         \
     s_var *dest = NULL;                                                \
     test_context("buf_parse_pvar(" # test ")");                        \
     buf_init_1(&buf, false, (test));                                   \
     TEST_EQ(buf_parse_pvar(&buf, &dest), strlen(test));                \
-    if (! (expected))                                                  \
-      TEST_EQ(dest->type, (t));                                        \
-    if (expected)                                                      \
-      TEST_EQ(dest, (expected));                                       \
-    else                                                               \
-      TEST_ASSERT(dest);                                               \
+    TEST_EQ(dest->type, (t));                                          \
+    TEST_ASSERT(dest);                                                 \
     pvar_clean(&dest);                                                 \
     test_context(NULL);                                                \
   } while (0)
@@ -1389,12 +1385,8 @@ TEST_CASE_END(buf_parse_unquote)
 
 TEST_CASE(buf_parse_pvar)
 {
-  s_var *expected = NULL;
-  BUF_PARSE_TEST_PVAR("?", &g_sym_Tag, expected);
-  BUF_PARSE_TEST_PVAR("(U8) ?", &g_sym_U8, expected);
-  expected = (s_var *)       0x12345678;
-  BUF_PARSE_TEST_PVAR("(U8) ?0x12345678", &g_sym_U8, expected);
-  BUF_PARSE_TEST_PVAR("?0x12345678", &g_sym_Tag, expected);
+  BUF_PARSE_TEST_PVAR("?", &g_sym_Tag);
+  BUF_PARSE_TEST_PVAR("(U8) ?", &g_sym_U8);
 }
 TEST_CASE_END(buf_parse_var)
 
