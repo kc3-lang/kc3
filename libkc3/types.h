@@ -791,11 +791,12 @@ TYPEDEF_SKIPLIST_NODE(fact, s_fact *);
 TYPEDEF_SKIPLIST(fact, s_fact *);
 
 struct var {
-  const s_sym *type;
+  bool         bound;
   s_mutex      mutex;
+  bool         ready;
   sw           ref_count;
   s_tag        tag;
-  bool         bound;
+  const s_sym *type;
 };
 
 /* 8 */

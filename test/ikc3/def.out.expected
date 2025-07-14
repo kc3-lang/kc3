@@ -45,7 +45,7 @@ fn {
   (x) { reverse(x, []) }
   ([], acc) { acc }
   ([a | b], acc) { reverse(b, [a | acc]) }
-}
+} [x: [1, 2, 3]]
 reverse([1, 2, 3])
 [3, 2, 1]
 def reverse = fn {
@@ -59,7 +59,7 @@ fn {
   (x) { reverse(x, []) }
   ([], acc) { [:reversed | acc] }
   ([a | b], acc) { reverse(b, [a | acc]) }
-}
+} [x: [1, 2, 3]]
 reverse([1, 2, 3])
 [:reversed, 3, 2, 1]
 def reverse = fn {
@@ -73,6 +73,6 @@ fn {
   (x) { reverse(x, []) }
   ([], acc) { acc }
   ([a | b], acc) { reverse(b, [a | acc]) }
-}
+} [x: [1, 2, 3]]
 reverse([1, 2, 3])
 [3, 2, 1]
