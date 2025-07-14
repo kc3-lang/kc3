@@ -338,6 +338,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
         env->silence_errors = silence_errors;
         assert(env->frame == &frame);
         env->frame = env_frame;
+        frame_clean(&frame);
         list_delete_all(args);
         longjmp(*jump.unwind_pattern.jmp, 1);
       }
