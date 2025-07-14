@@ -171,6 +171,7 @@
             strlen(expected));                                         \
     str_clean(&result);                                                \
     pstruct_clean(&struct_test);                                       \
+    TEST_ASSERT(! struct_test);                                        \
     test_context(NULL);                                                \
   } while (0)
 

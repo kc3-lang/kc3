@@ -22,7 +22,10 @@
 
 void pstruct_clean (p_struct *s)
 {
+  bool nullify = (*s)->ref_count == 1;
   struct_delete(*s);
+  if (nullify)
+    *s = NULL;
 }
 
 p_struct * pstruct_init (p_struct *s, const s_sym *module)
