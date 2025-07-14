@@ -1858,8 +1858,11 @@ sw buf_parse_fact (s_buf *buf, s_fact_w *dest)
 
 sw buf_parse_fn (s_buf *buf, s_fn *dest)
 {
+  s_list *frame_list = NULL;
   s_ident ident;
+  s_list *l = NULL;
   sw r;
+  sw r1;
   sw result = 0;
   s_buf_save save;
   s_fn tmp = {0};
@@ -1910,6 +1913,24 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
       goto restore;
     result += r;
   }
+  buf_save_clean(buf, &save);
+  buf_save_init(buf, &save);
+  if ((r = buf_ignore_spaces_but_newline(buf)) <= 0 ||
+      (r1 = buf_parse_list(buf, &frame_list)) <= 0)
+    goto ok;
+  result += r + r1;
+  if (! frame_list)
+    goto ok;
+  tmp.frame = frame_new(NULL);
+  l = frame_list;
+  while (l) {
+    if (! frame_binding_new_copy(tmp.frame,
+                                 l->tag.data.tuple.tag[0].data.sym,
+                                 l->tag.data.tuple.tag + 1))
+      goto restore;
+    l = list_next(l);
+  }
+  list_delete_all(frame_list);
  ok:
   tmp.macro = ident.sym == &g_sym_macro;
   *dest = tmp;

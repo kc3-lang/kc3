@@ -2133,8 +2133,9 @@ sw buf_inspect_facts_spec (s_buf *buf, p_facts_spec spec)
 
 sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
 {
-  const s_fn_clause *clause;
-  s_ident ident;
+  s_binding *binding = NULL;
+  const s_fn_clause *clause = NULL;
+  s_ident ident = {0};
   sw r;
   sw result = 0;
   assert(buf);
@@ -2174,6 +2175,27 @@ sw buf_inspect_fn (s_buf *buf, const s_fn *fn)
   }
   else {
     if ((r = buf_inspect_fn_clause(buf, clause)) < 0)
+      return r;
+    result += r;
+  }
+  if (fn->frame && fn->frame->bindings) {
+    if ((r = buf_write_1(buf, "[")) < 0)
+      return r;
+    result += r;
+    binding = fn->frame->bindings;
+    while (binding) {
+      if ((r = buf_inspect_ident_sym(buf, binding->name)) < 0)
+        return r;
+      result += r;
+      if ((r = buf_write_1(buf, ": ")) < 0)
+        return r;
+      result += r;
+      if ((r = buf_inspect_tag(buf, &binding->value)) < 0)
+        return r;
+      result += r;
+      binding = binding->next;
+    }
+    if ((r = buf_write_1(buf, "]")) < 0)
       return r;
     result += r;
   }
