@@ -21,6 +21,7 @@
 #include "../libkc3/integer.h"
 #include "../libkc3/list.h"
 #include "../libkc3/pstruct.h"
+#include "../libkc3/pvar.h"
 #include "../libkc3/ratio.h"
 #include "../libkc3/str.h"
 #include "../libkc3/struct.h"
@@ -101,6 +102,19 @@
     TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
     str_clean(&str_result);                                            \
     list_delete_all(list_test);                                        \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define INSPECT_TEST_PVAR(test, expected)                              \
+  do {                                                                 \
+    p_var pvar_test;                                                   \
+    s_str str_result;                                                  \
+    test_context("inspect_var(" # test ") -> " # expected);            \
+    TEST_EQ(pvar_init_1(&pvar_test, (test)), &pvar_test);              \
+    TEST_EQ(inspect_var(pvar_test, &str_result), &str_result);        \
+    TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
+    TEST_EQ(str_result.size, strlen(expected));                        \
+    str_clean(&str_result);                                            \
     test_context(NULL);                                                \
   } while (0)
 
@@ -201,32 +215,19 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define INSPECT_TEST_VAR(test, expected)                               \
-  do {                                                                 \
-    s_var var_test;                                                    \
-    s_str str_result;                                                  \
-    test_context("inspect_var(" # test ") -> " # expected);            \
-    TEST_EQ(var_init_1(&var_test, (test)), &var_test);                 \
-    TEST_EQ(inspect_var(&var_test, &str_result), &str_result);         \
-    TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
-    TEST_EQ(str_result.size, strlen(expected));                        \
-    str_clean(&str_result);                                            \
-    test_context(NULL);                                                \
-  } while (0)
-
 TEST_CASE_PROTOTYPE(inspect_array);
 TEST_CASE_PROTOTYPE(inspect_bool);
 TEST_CASE_PROTOTYPE(inspect_call);
 TEST_CASE_PROTOTYPE(inspect_fact);
 TEST_CASE_PROTOTYPE(inspect_ident);
 TEST_CASE_PROTOTYPE(inspect_list);
+TEST_CASE_PROTOTYPE(inspect_pvar);
 TEST_CASE_PROTOTYPE(inspect_ratio);
 TEST_CASE_PROTOTYPE(inspect_str);
 TEST_CASE_PROTOTYPE(inspect_struct);
 TEST_CASE_PROTOTYPE(inspect_sym);
 TEST_CASE_PROTOTYPE(inspect_tag);
 TEST_CASE_PROTOTYPE(inspect_tuple);
-TEST_CASE_PROTOTYPE(inspect_var);
 
 void inspect_test (void)
 {
@@ -242,7 +243,7 @@ void inspect_test (void)
   TEST_CASE_RUN(inspect_sym);
   TEST_CASE_RUN(inspect_tag);
   TEST_CASE_RUN(inspect_tuple);
-  TEST_CASE_RUN(inspect_var);
+  TEST_CASE_RUN(inspect_pvar);
 }
 
 TEST_CASE(inspect_array)
@@ -371,6 +372,15 @@ TEST_CASE(inspect_list)
   INSPECT_TEST_LIST("[[], [] | []]", "[[], []]");
 }
 TEST_CASE_END(inspect_list)
+
+TEST_CASE(inspect_pvar)
+{
+  INSPECT_TEST_PVAR("?", "?");
+  INSPECT_TEST_PVAR("(U8) ?", "(U8) ?");
+  INSPECT_TEST_PVAR("(U8) ?0x12345678",
+                    "(U8) ?0x12345678");
+}
+TEST_CASE_END(inspect_pvar)
 
 TEST_CASE(inspect_ratio)
 {
@@ -537,12 +547,3 @@ TEST_CASE(inspect_tuple)
                      "{{:a, :b}, {:c, :d}, {:e, :f}}");
 }
 TEST_CASE_END(inspect_tuple)
-
-TEST_CASE(inspect_var)
-{
-  INSPECT_TEST_VAR("?", "?");
-  INSPECT_TEST_VAR("(U8) ?", "(U8) ?");
-  INSPECT_TEST_VAR("(U8) ?0x12345678",
-                   "(U8) ?0x12345678");
-}
-TEST_CASE_END(inspect_var)

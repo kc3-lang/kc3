@@ -768,8 +768,8 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   bool is_var_b = false;
   s_tag tmp_a;
   s_tag tmp_b;
-  s_tag *var_a;
-  s_tag *var_b;
+  s_tag *var_a = NULL;
+  s_tag *var_b = NULL;
   assert(env);
   assert(a);
   assert(b);
@@ -777,20 +777,16 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   tag_init_void(&tmp_a);
   tag_init_void(&tmp_b);
   if (a->type == TAG_PVAR) {
-    if (! a->data.pvar->bound) {
-      if (! (var_a = frame_binding_new_var(env->frame)))
-        return false;
-      a = var_a;
-    }
-    is_var_a = true;
+    var_a = &a->data.pvar->tag;
+    a = var_a;
+    if (! a->data.pvar->bound)
+      is_var_a = true;
   }
   if (b->type == TAG_PVAR) {
-    if (! b->data.pvar->bound) {
-      if (! (var_b = frame_binding_new_var(env->frame)))
-        return false;
-      b = var_b;
-    }
-    is_var_b = true;
+    var_b = &b->data.pvar->tag;
+    b = var_b;
+    if (! b->data.pvar->bound)
+      is_var_b = true;
   }
   is_unbound_a = a->type == TAG_IDENT;
   is_unbound_b = ! macro && (b->type == TAG_IDENT);

@@ -200,7 +200,6 @@ bool env_call_get (s_env *env, s_call *call)
   tag_init_sym(  &tag_special_operator, &g_sym_special_operator);
   tag_init_sym(  &tag_symbol, &g_sym_symbol);
   tag_init_sym(  &tag_symbol_value, &g_sym_symbol_value);
-  tag_init_pvar( &tag_pvar, &g_sym_Callable);
   if (! facts_find_fact_by_tags(env->facts, &tag_module_name,
                                 &tag_symbol, &tag_ident, &fact)) {
     err_puts("env_call_get: facts_find_fact_by_tags 1");
@@ -223,8 +222,9 @@ bool env_call_get (s_env *env, s_call *call)
       return false;
     }
   }
+  tag_init_pvar( &tag_pvar, &g_sym_Callable);
   if (! facts_with_tags (env->facts, &cursor, &tag_ident,
-                        &tag_symbol_value, &tag_pvar)) {
+                         &tag_symbol_value, &tag_pvar)) {
     err_puts("env_call_get: facts_with_tags");
     assert(! "env_call_get: facts_with_tags");
     return false;
@@ -248,7 +248,6 @@ bool env_call_get (s_env *env, s_call *call)
                         call->ident.module,
                         call->ident.sym);
   }
-  facts_cursor_clean(&cursor);
   if (! facts_find_fact_by_tags(env->facts, &tag_ident, &tag_is_a,
                                 &tag_special_operator, &found)) {
     err_puts("env_call_get: facts_find_fact_by_tags 4");
@@ -269,6 +268,7 @@ bool env_call_get (s_env *env, s_call *call)
       abort();
     }
   }
+  facts_cursor_clean(&cursor);
   return true;
 }
 
@@ -1694,7 +1694,7 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
     *dest = true;
     return dest;
   }
-  tag_init_sym(&tag_sym_sym, &g_sym_sym);
+  tag_init_sym( &tag_sym_sym, &g_sym_sym);
   tag_init_pvar(&tag_pvar, &g_sym_Ident);
   if (! facts_with(env->facts, &cursor, (t_facts_spec) {
         &tag_module_name, &tag_op, &tag_pvar, NULL,

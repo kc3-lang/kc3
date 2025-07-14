@@ -52,15 +52,29 @@ s_facts_cursor * facts_cursor_init (s_facts *facts,
   tmp.index = index;
   tmp.node = SKIPLIST_NODE_NEXT__fact(pred, 0);
   skiplist_node_delete__fact(pred);
-  if (start)
+  if (start) {
     tmp.start = *start;
+    if (tmp.start.subject->type == TAG_PVAR)
+      tmp.start.subject = &tmp.start.subject->data.pvar->tag;
+    if (tmp.start.predicate->type == TAG_PVAR)
+      tmp.start.predicate = &tmp.start.predicate->data.pvar->tag;
+    if (tmp.start.object->type == TAG_PVAR)
+      tmp.start.object = &tmp.start.object->data.pvar->tag;
+  }
   else {
     tmp.start.subject   = TAG_FIRST;
     tmp.start.predicate = TAG_FIRST;
     tmp.start.object    = TAG_FIRST;
   }
-  if (end)
+  if (end) {
     tmp.end = *end;
+    if (tmp.end.subject->type == TAG_PVAR)
+      tmp.end.subject = &tmp.end.subject->data.pvar->tag;
+    if (tmp.end.predicate->type == TAG_PVAR)
+      tmp.end.predicate = &tmp.end.predicate->data.pvar->tag;
+    if (tmp.end.object->type == TAG_PVAR)
+      tmp.end.object = &tmp.end.object->data.pvar->tag;
+  }
   else {
     tmp.end.subject   = TAG_LAST;
     tmp.end.predicate = TAG_LAST;

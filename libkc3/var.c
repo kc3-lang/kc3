@@ -157,7 +157,8 @@ s_var * var_reset (s_var *var)
 #if HAVE_PTHREAD
   mutex_lock(&var->mutex);
 #endif
-  tag_clean(&var->tag);
+  if (var->bound)
+    tag_clean(&var->tag);
   var->bound = false;
 #if HAVE_PTHREAD
   mutex_unlock(&var->mutex);
@@ -170,6 +171,11 @@ s_var * var_set (s_var *var, s_tag *value)
   const s_sym *value_type;
   assert(var);
   assert(value);
+  if (var->bound) {
+    err_puts("var_set: var is already bound");
+    assert(! "var_set: var is already bound");
+    return NULL;
+  }
   if (var->type != &g_sym_Tag) {
     if (! tag_type(value, &value_type))
       return NULL;
@@ -185,5 +191,11 @@ s_var * var_set (s_var *var, s_tag *value)
   }
   if (! tag_init_copy(&var->tag, value))
     return NULL;
+  var->bound = true;
+  if (true) {
+    err_write_1("var_set: ");
+    err_inspect_var(var);
+    err_write_1("\n");
+  }
   return var;
 }

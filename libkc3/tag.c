@@ -1685,19 +1685,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_LIST:         *dest = &g_sym_List;        return dest;
   case TAG_MAP:          *dest = &g_sym_Map;         return dest;
   case TAG_PTAG:         *dest = &g_sym_Ptag;        return dest;
-  case TAG_PCALLABLE:
-    if (tag->data.pcallable) {
-      switch (tag->data.pcallable->type) {
-      case CALLABLE_FN:  *dest = &g_sym_Fn;         return dest;
-      case CALLABLE_CFN: *dest = &g_sym_Cfn;        return dest;
-      case CALLABLE_VOID:
-        err_puts("tag_type: CALLABLE_VOID");
-        assert(! "tag_type: CALLABLE_VOID");
-        return NULL;
-      }
-    }
-    *dest = &g_sym_Callable;
-    return dest;
+  case TAG_PCALLABLE:    *dest = &g_sym_Callable;    return dest;
   case TAG_PSTRUCT:
     *dest = tag->data.pstruct->pstruct_type->module; return dest;
   case TAG_PSTRUCT_TYPE: *dest = &g_sym_StructType;  return dest;

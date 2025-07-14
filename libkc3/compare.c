@@ -632,6 +632,10 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
       a == TAG_LAST ||
       b == TAG_FIRST)
     return 1;
+  if (a->type == TAG_PVAR && a->data.pvar->bound)
+    a = &a->data.pvar->tag;
+  if (b->type == TAG_PVAR && b->data.pvar->bound)
+    b = &b->data.pvar->tag;
   switch (a->type) {
   case TAG_COMPLEX:
     switch (b->type) {
@@ -1543,10 +1547,14 @@ s8 compare_tag_deref (const s_tag *a, const s_tag *b)
   const s_tag *a_deref;
   const s_tag *b_deref;
   a_deref = a;
-  if (a_deref && a_deref->type == TAG_PVAR)
+  if (a_deref &&
+      a_deref->type == TAG_PVAR &&
+      a_deref->data.pvar->bound)
     a_deref = &a_deref->data.pvar->tag;
   b_deref = b;
-  if (b_deref && b_deref->type == TAG_PVAR)
+  if (b_deref &&
+      b_deref->type == TAG_PVAR &&
+      a_deref->data.pvar->bound)
     b_deref = &b_deref->data.pvar->tag;
   return compare_tag(a_deref, b_deref);
 }
@@ -1638,15 +1646,5 @@ COMPARE_DEF(uw)
 
 s8 compare_var (const s_var *a, const s_var *b)
 {
-  sw r;
-  if (a == b)
-    return 0;
-  if (!a)
-    return -1;
-  if (!b)
-    return 1;
-  if ((r = compare_sym(a->type, b->type)) ||
-      (r = compare_bool(a->bound, b->bound)))
-    return r;
-  return compare_tag(&a->tag, &b->tag);
+  return compare_uw((uw) a, (uw) b);
 }

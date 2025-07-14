@@ -4339,6 +4339,8 @@ sw buf_inspect_var (s_buf *buf, const s_var *var)
   assert(buf);
   assert(var);
   assert(var->type);
+  if (var->bound)
+    return buf_inspect_tag(buf, &var->tag);
   if (var->type == &g_sym_Tag) {
     if ((r = buf_write_1(buf, "?")) < 0)
       return r;
@@ -4368,6 +4370,8 @@ sw buf_inspect_var_size (s_pretty *pretty, const s_var *var)
   assert(pretty);
   assert(var);
   assert(var->type);
+  if (var->bound)
+    return buf_inspect_tag_size(pretty, &var->tag);
   if (var->type == &g_sym_Tag) {
     if ((r = buf_write_1_size(pretty, "?")) < 0)
       return r;
