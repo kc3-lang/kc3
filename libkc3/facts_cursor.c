@@ -29,14 +29,17 @@ void facts_cursor_clean (s_facts_cursor *cursor)
   if (cursor->pvar_subject) {
     var_reset(cursor->pvar_subject);
     pvar_clean(&cursor->pvar_subject);
+    cursor->pvar_subject = NULL;
   }
   if (cursor->pvar_predicate) {
     var_reset(cursor->pvar_predicate);
     pvar_clean(&cursor->pvar_predicate);
+    cursor->pvar_predicate = NULL;
   }
   if (cursor->pvar_object) {
     var_reset(cursor->pvar_object);
     pvar_clean(&cursor->pvar_object);
+    cursor->pvar_object = NULL;
   }
 #if HAVE_PTHREAD
   facts_cursor_lock_clean(cursor);
@@ -171,14 +174,17 @@ s_fact ** facts_cursor_next (s_facts_cursor *cursor,
     if (cursor->pvar_subject) {
       var_reset(cursor->pvar_subject);
       pvar_clean(&cursor->pvar_subject);
+      cursor->pvar_subject = NULL;
     }
     if (cursor->pvar_predicate) {
       var_reset(cursor->pvar_predicate);
-      pvar_clean(&cursor->pvar_subject);
+      pvar_clean(&cursor->pvar_predicate);
+      cursor->pvar_predicate = NULL;
     }
-  if (cursor->pvar_object) {
+    if (cursor->pvar_object) {
       var_reset(cursor->pvar_object);
-      pvar_clean(&cursor->pvar_subject);
+      pvar_clean(&cursor->pvar_object);
+      cursor->pvar_object = NULL;
     }
 #if HAVE_PTHREAD
     facts_cursor_lock_unlock(cursor);
