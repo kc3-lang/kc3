@@ -96,8 +96,7 @@ p_var * pvar_init_cast (p_var *pvar, const s_sym * const *type,
 p_var * pvar_init_copy (p_var *pvar, p_var *src)
 {
   s_var *tmp = NULL;
-  if (*src &&
-      ! (tmp = var_new_ref(*src)))
+  if (! (tmp = var_new_ref(*src)))
     return NULL;
   *pvar = tmp;
   return pvar;

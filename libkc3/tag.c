@@ -1278,6 +1278,15 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
 
 bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
 {
+  if (tag->type == TAG_PVAR) {
+    if (! tag->data.pvar) {
+      err_puts("tag_to_ffi_pointer: NULL pvar");
+      assert(! "tag_to_ffi_pointer: NULL pvar");
+      return false;
+    }
+    if (tag->data.pvar->bound)
+      tag = &tag->data.pvar->tag;
+  }
   if (type == &g_sym_Tag) {
     *dest = tag;
     return true;
@@ -1433,9 +1442,6 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       *dest = &tag->data.pvar;
       return true;
     }
-    if (tag->data.pvar->bound &&
-        tag->data.pvar->type == type)
-      return tag_to_ffi_pointer(&tag->data.pvar->tag, type, dest);
     goto invalid_cast;
   case TAG_QUOTE:
     if (type == &g_sym_Quote) {

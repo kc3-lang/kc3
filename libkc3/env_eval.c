@@ -777,18 +777,26 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   tag_init_void(&tmp_a);
   tag_init_void(&tmp_b);
   if (a->type == TAG_PVAR) {
-    if (! a->data.pvar->bound)
-      is_var_a = true;
     var_a = &a->data.pvar->tag;
-    if (a->data.pvar->bound)
-      a = var_a;
+    if (a->data.pvar->bound) {
+      while (a->data.pvar->bound) {
+        a = var_a;
+        var_a = &a->data.pvar->tag;
+      }
+    }
+    else
+      is_var_a = true;
   }
   if (b->type == TAG_PVAR) {
-    if (! b->data.pvar->bound)
-      is_var_b = true;
     var_b = &b->data.pvar->tag;
-    if (b->data.pvar->bound)
-      b = var_b;
+    if (b->data.pvar->bound) {
+      while (b->data.pvar->bound) {
+        b = var_b;
+        var_b = &b->data.pvar->tag;
+      }
+    }
+    else
+      is_var_b = true;
   }
   is_unbound_a = a->type == TAG_IDENT;
   is_unbound_b = ! macro && (b->type == TAG_IDENT);
@@ -1796,9 +1804,7 @@ bool env_eval_var (s_env *env, s_var *var, s_tag *dest)
   if (var && var->bound)
     return tag_init_copy(dest, &var->tag) ? true : false;
   tmp.type = TAG_PVAR;
-  if (var &&
-      ! pvar_init(&tmp.data.pvar, var->type))
-    return false;
+  tmp.data.pvar = var_new_copy(var);
   *dest = tmp;
   return true;
 }

@@ -47,20 +47,16 @@ s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
     assert(! "frame_binding_new_copy: frame_binding_new");
     return NULL;
   }
-  if (value->type == TAG_PVAR)
-    tag_init_pvar_copy(tag, &tag->data.pvar);
-  else {
-    if (! tag_init_copy(tag, value)) {
-      err_puts("frame_binding_new_copy: tag_init_copy");
-      assert(! "frame_binding_new_copy: tag_init_copy");
-      frame = frame_binding_delete(frame, name);
-      return NULL;
-    }
-    if (tag->type == TAG_PCALLABLE &&
-        tag->data.pcallable &&
-        tag->data.pcallable->type == CALLABLE_FN)
-      fn_set_name_if_null(&tag->data.pcallable->data.fn, NULL, name);
-  }    
+  if (! tag_init_copy(tag, value)) {
+    err_puts("frame_binding_new_copy: tag_init_copy");
+    assert(! "frame_binding_new_copy: tag_init_copy");
+    frame = frame_binding_delete(frame, name);
+    return NULL;
+  }
+  if (tag->type == TAG_PCALLABLE &&
+      tag->data.pcallable &&
+      tag->data.pcallable->type == CALLABLE_FN)
+    fn_set_name_if_null(&tag->data.pcallable->data.fn, NULL, name);
   return frame;
 }
 
