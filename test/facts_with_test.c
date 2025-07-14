@@ -288,6 +288,9 @@ TEST_CASE(facts_with_tags)
   FACT_TEST_EQ(&fact, f);
   TEST_EQ(facts_cursor_next(&cursor, &f), &f);
   TEST_ASSERT(! f);
+  tag_clean(&subject);
+  tag_clean(&predicate);
+  tag_clean(&object);
   facts_with_tags(&facts, &cursor,
                   tag,
                   tag_init_pvar(&predicate, &g_sym_Tag),
@@ -305,6 +308,8 @@ TEST_CASE(facts_with_tags)
   TEST_ASSERT(! f);
   TEST_EQ(facts_cursor_next(&cursor, &f), &f);
   TEST_ASSERT(! f);
+  tag_clean(&predicate);
+  tag_clean(&object);
   facts_with_tags(&facts, &cursor,
                   tag,
                   tag + 1,
@@ -317,6 +322,7 @@ TEST_CASE(facts_with_tags)
   FACT_TEST_EQ(&fact, f);
   TEST_EQ(facts_cursor_next(&cursor, &f), &f);
   TEST_ASSERT(! f);
+  tag_clean(&object);
   facts_with_tags(&facts, &cursor, tag, tag + 1, tag + 2);
   fact_init(&fact, tag, tag + 1, tag + 2);
   TEST_EQ(facts_cursor_next(&cursor, &f), &f);
