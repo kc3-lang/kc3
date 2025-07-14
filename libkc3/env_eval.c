@@ -155,16 +155,26 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
 {
   s_list **tail;
   s_list *tmp = NULL;
+  s_unwind_protect up = {0};
   tail = &tmp;
   while (args) {
     *tail = list_new(NULL);
+    env_unwind_protect_push(env, &up);
+    if (setjmp(up.buf)) {
+      env_unwind_protect_pop(env, &up);
+      list_delete_all(tmp);
+      longjmp(*up.jmp, 1);
+    }
     if (! env_eval_tag(env, &args->tag, &(*tail)->tag)) {
       list_delete_all(tmp);
       err_write_1("env_eval_call_arguments: invalid argument: ");
       err_inspect(&args->tag);
       err_write_1("\n");
+      list_delete_all(tmp);
+      env_unwind_protect_pop(env, &up);
       return false;
     }
+    env_unwind_protect_pop(env, &up);
     tail = &(*tail)->next.data.list;
     args = list_next(args);
   }
@@ -340,6 +350,8 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
         env->frame = env_frame;
         frame_clean(&frame);
         list_delete_all(args);
+        list_delete_all(env->search_modules);
+        env->search_modules = search_modules;
         longjmp(*jump.unwind_pattern.jmp, 1);
       }
       if (env_eval_equal_list(env, fn->macro || fn->special_operator,
