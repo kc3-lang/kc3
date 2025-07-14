@@ -171,10 +171,13 @@ s_var * var_set (s_var *var, s_tag *value)
   const s_sym *value_type;
   assert(var);
   assert(value);
+#if HAVE_PTHREAD
+  mutex_lock(&var->mutex);
+#endif
   if (var->bound) {
     err_puts("var_set: var is already bound");
     assert(! "var_set: var is already bound");
-    return NULL;
+    goto ko;
   }
   if (var->type != &g_sym_Tag) {
     if (! tag_type(value, &value_type))
@@ -186,16 +189,24 @@ s_var * var_set (s_var *var, s_tag *value)
       err_inspect_sym(&value_type);
       err_write_1("\n");
       assert(! "var_set: type mismatch");
-      return NULL;
+      goto ko;
     }
   }
   if (! tag_init_copy(&var->tag, value))
-    return NULL;
+    goto ko;
   var->bound = true;
   if (false) {
     err_write_1("var_set: ");
     err_inspect_var(var);
     err_write_1("\n");
   }
+#if HAVE_PTHREAD
+  mutex_unlock(&var->mutex);
+#endif
   return var;
+ ko:
+#if HAVE_PTHREAD
+  mutex_unlock(&var->mutex);
+#endif
+  return NULL;
 }

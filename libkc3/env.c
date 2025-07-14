@@ -1718,6 +1718,7 @@ bool * env_module_has_ident (s_env *env, const s_sym *module,
         &tag_pvar, &tag_sym_sym, &tag_sym_value, NULL, NULL})) {
     err_puts("env_module_has_ident: facts_with");
     assert(! "env_module_has_ident: facts_with");
+    tag_clean(&tag_pvar);
     return NULL;
   }
   if (! facts_with_cursor_next(&cursor, &fact)) {
