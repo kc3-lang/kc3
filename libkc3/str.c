@@ -435,6 +435,9 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   assert(str);
   assert(type);
   assert(tag);
+  if (tag->type == TAG_PVAR &&
+      tag->data.pvar->bound)
+    tag = &tag->data.pvar->tag;
   switch (tag->type) {
   case TAG_ARRAY:
     return str_init_array(str, &tag->data.array);
