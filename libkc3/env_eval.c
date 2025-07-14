@@ -780,13 +780,15 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     if (! a->data.pvar->bound)
       is_var_a = true;
     var_a = &a->data.pvar->tag;
-    a = var_a;
+    if (a->data.pvar->bound)
+      a = var_a;
   }
   if (b->type == TAG_PVAR) {
     if (! b->data.pvar->bound)
       is_var_b = true;
     var_b = &b->data.pvar->tag;
-    b = var_b;
+    if (b->data.pvar->bound)
+      b = var_b;
   }
   is_unbound_a = a->type == TAG_IDENT;
   is_unbound_b = ! macro && (b->type == TAG_IDENT);

@@ -1430,9 +1430,12 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     return true;
   case TAG_PVAR:
     if (type == &g_sym_Var) {
-      *dest = tag->data.pvar;
+      *dest = &tag->data.pvar;
       return true;
     }
+    if (tag->data.pvar->bound &&
+        tag->data.pvar->type == type)
+      return tag_to_ffi_pointer(&tag->data.pvar->tag, type, dest);
     goto invalid_cast;
   case TAG_QUOTE:
     if (type == &g_sym_Quote) {
