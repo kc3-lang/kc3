@@ -39,7 +39,7 @@ Hello, world !
 f = fn (x) { fn (y) { x * y } }
 fn (x) { fn (y) { x * y } }
 g = f(2)
-fn (y) { x * y }
+fn (y) { x * y } [x: 2]
 g(3)
 6
 h = fn (x) { unwind_protect(do
