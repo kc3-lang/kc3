@@ -3343,10 +3343,6 @@ sw buf_parse_pvar (s_buf *buf, p_var *dest)
       r = -1;
       goto restore;
     }
-    if ((r = buf_parse_tag(buf, &tmp->tag)) <= 0)
-      goto ok;
-    tmp->bound = 1;
-    result += r;
   }
  ok:
   *dest = tmp;

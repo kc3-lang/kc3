@@ -192,7 +192,7 @@ s_var * var_set (s_var *var, s_tag *value)
   if (! tag_init_copy(&var->tag, value))
     return NULL;
   var->bound = true;
-  if (true) {
+  if (false) {
     err_write_1("var_set: ");
     err_inspect_var(var);
     err_write_1("\n");

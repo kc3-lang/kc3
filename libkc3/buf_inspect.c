@@ -4354,12 +4354,14 @@ sw buf_inspect_var (s_buf *buf, const s_var *var)
       return r;
     result += r;
   }
+  /*
   if ((r = buf_write_1(buf, "0x")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_uw_hexadecimal(buf, (uw *) &var)) < 0)
     return r;
   result += r;
+  */
   return result;
 }
 
@@ -4385,12 +4387,14 @@ sw buf_inspect_var_size (s_pretty *pretty, const s_var *var)
       return r;
     result += r;
   }
+  /*
   if ((r = buf_write_1_size(pretty, "0x")) < 0)
     return r;
   result += r;
   if ((r = buf_inspect_uw_hexadecimal_size(pretty, (uw *) &var)) < 0)
     return r;
   result += r;
+  */
   return result;
 }
 

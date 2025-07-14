@@ -1789,13 +1789,13 @@ bool env_eval_var (s_env *env, s_var *var, s_tag *dest)
 {
   s_tag tmp = {0};
   assert(env);
-  assert(var);
   assert(dest);
   (void) env;
-  if (var->bound)
+  if (var && var->bound)
     return tag_init_copy(dest, &var->tag) ? true : false;
   tmp.type = TAG_PVAR;
-  if (! pvar_init(&tmp.data.pvar, var->type))
+  if (var &&
+      ! pvar_init(&tmp.data.pvar, var->type))
     return false;
   *dest = tmp;
   return true;

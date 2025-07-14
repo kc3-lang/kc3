@@ -377,8 +377,6 @@ TEST_CASE(inspect_pvar)
 {
   INSPECT_TEST_PVAR("?", "?");
   INSPECT_TEST_PVAR("(U8) ?", "(U8) ?");
-  INSPECT_TEST_PVAR("(U8) ?0x12345678",
-                    "(U8) ?0x12345678");
 }
 TEST_CASE_END(inspect_pvar)
 
