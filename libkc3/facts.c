@@ -237,6 +237,9 @@ sw facts_dump (s_facts *facts, s_buf *buf)
   }
   r = result;
  clean:
+  tag_clean(&subject);
+  tag_clean(&predicate);
+  tag_clean(&object);
 #if HAVE_PTHREAD
   rwlock_unlock_r(&facts->rwlock);
 #endif
