@@ -1924,9 +1924,9 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
   tmp.frame = frame_new(NULL);
   l = frame_list;
   while (l) {
-    if (! frame_binding_new_copy(tmp.frame,
-                                 l->tag.data.tuple.tag[0].data.sym,
-                                 l->tag.data.tuple.tag + 1))
+    if (! frame_binding_new(tmp.frame,
+                            l->tag.data.tuple.tag[0].data.sym,
+                            l->tag.data.tuple.tag + 1))
       goto restore;
     l = list_next(l);
   }

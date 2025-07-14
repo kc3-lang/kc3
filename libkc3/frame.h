@@ -29,9 +29,10 @@ s_frame * frame_delete (s_frame *frame);
 void      frame_delete_all (s_frame *frame);
 
 /* Operators. */
-s_tag *   frame_binding_new (s_frame *frame, const s_sym *name);
-s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
-                                  s_tag *value);
+s_tag *   frame_binding_new_void (s_frame *frame, const s_sym *name);
+s_frame * frame_binding_new (s_frame *frame, const s_sym *name,
+                             s_tag *value);
+s_frame * frame_binding_new_copy (s_frame *frame, s_binding *src);
 s_tag *   frame_binding_new_var (s_frame *frame);
 s_frame * frame_binding_delete (s_frame *frame, const s_sym *name);
 s_frame * frame_binding_replace (s_frame *frame, const s_sym *name,

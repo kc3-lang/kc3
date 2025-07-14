@@ -28,7 +28,7 @@ s_frame * frame_binding_delete (s_frame *frame, const s_sym *name)
   return frame;
 }
 
-s_tag * frame_binding_new (s_frame *frame, const s_sym *name)
+s_tag * frame_binding_new_void (s_frame *frame, const s_sym *name)
 {
   s_binding *b;
   b = binding_new(name, frame->bindings);
@@ -38,11 +38,11 @@ s_tag * frame_binding_new (s_frame *frame, const s_sym *name)
   return tag_init_void(&b->value);
 }
 
-s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
-                                  s_tag *value)
+s_frame * frame_binding_new (s_frame *frame, const s_sym *name,
+                             s_tag *value)
 {
   s_tag *tag;
-  if (! (tag = frame_binding_new(frame, name))) {
+  if (! (tag = frame_binding_new_void(frame, name))) {
     err_puts("frame_binding_new_copy: frame_binding_new");
     assert(! "frame_binding_new_copy: frame_binding_new");
     return NULL;
@@ -57,6 +57,16 @@ s_frame * frame_binding_new_copy (s_frame *frame, const s_sym *name,
       tag->data.pcallable &&
       tag->data.pcallable->type == CALLABLE_FN)
     fn_set_name_if_null(&tag->data.pcallable->data.fn, NULL, name);
+  return frame;
+}
+
+s_frame * frame_binding_new_copy (s_frame *frame, s_binding *src)
+{
+  while (src) {
+    if (! frame_binding_new(frame, src->name, &src->value))
+      return NULL;
+    src = src->next;
+  }
   return frame;
 }
 
@@ -85,7 +95,7 @@ s_frame * frame_binding_replace (s_frame *frame, const s_sym *name,
     }
     return frame;
   }
-  frame_binding_new(frame, name);
+  frame_binding_new_void(frame, name);
   tag = binding_get_w(frame->bindings, name);
   if (! tag) {
     err_puts("frame_binding_new_copy: binding new");
@@ -240,5 +250,5 @@ s_frame * frame_replace (s_frame *frame, const s_sym *sym,
     }
     return frame;
   }
-  return frame_binding_new_copy(frame, sym, value);
+  return frame_binding_new(frame, sym, value);
 }

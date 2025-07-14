@@ -1112,11 +1112,11 @@ s_env * env_globals_init (s_env *env)
   s_tag *ncpu;
   if (! (env->read_time_frame = frame_new(NULL)))
     return NULL;
-  if (! (file_dir = frame_binding_new(env->read_time_frame,
-                                      &g_sym___DIR__)))
+  if (! (file_dir = frame_binding_new_void(env->read_time_frame,
+                                           &g_sym___DIR__)))
     return NULL;
-  if (! (file_path = frame_binding_new(env->read_time_frame,
-                                       &g_sym___FILE__)))
+  if (! (file_path = frame_binding_new_void(env->read_time_frame,
+                                            &g_sym___FILE__)))
     return NULL;
   file_dir->type = TAG_STR;
   if (! file_pwd(&file_dir->data.str))
@@ -1125,8 +1125,8 @@ s_env * env_globals_init (s_env *env)
     return NULL;
   if (! (env->global_frame = frame_new(env->read_time_frame)))
     return NULL;
-  if (! (ncpu = frame_binding_new(env->read_time_frame,
-                                  &g_sym_ncpu)))
+  if (! (ncpu = frame_binding_new_void(env->read_time_frame,
+                                       &g_sym_ncpu)))
     return NULL;
 #if HAVE_PTHREAD
 # if (defined(__FreeBSD__) || defined(__OpenBSD__))
@@ -1450,9 +1450,9 @@ s_tag * env_let (s_env *env, s_tag *vars, s_tag *tag,
       env->frame = frame_clean(&frame);
       return NULL;
     }
-    if (! frame_binding_new_copy(&frame,
-                                 map->key[i].data.sym,
-                                 map->value + i)) {
+    if (! frame_binding_new(&frame,
+                            map->key[i].data.sym,
+                            map->value + i)) {
       tag_clean(&tmp);
       env->frame = frame_clean(&frame);
       return NULL;
