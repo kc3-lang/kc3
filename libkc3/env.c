@@ -793,8 +793,10 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
     goto clean;
   if (! fact)
     goto ok;
-  if (! fact_w_init_fact(fact_w, fact))
+  if (! fact_w_init_fact(fact_w, fact)) {
+    facts_cursor_clean(&cursor);
     goto clean;
+  }
   env_unwind_protect_push(env, &unwind_protect);
   if (setjmp(unwind_protect.buf)) {
     env_unwind_protect_pop(env, &unwind_protect);
@@ -805,6 +807,7 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
     env_unwind_protect_pop(env, &unwind_protect);
     list_delete_all(arguments);
+    facts_cursor_clean(&cursor);
     goto clean;
   }
   env_unwind_protect_pop(env, &unwind_protect);
@@ -814,7 +817,6 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   *dest = tmp;
   return dest;
  clean:
-  facts_cursor_clean(&cursor);
   tag_clean(&tmp);
   list_delete_all(arguments);
   return NULL;
@@ -966,8 +968,10 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
       goto ok;
     }
     tag_void(&tmp);
-    if (! fact_w_init_fact(fact_w, fact))
+    if (! fact_w_init_fact(fact_w, fact)) {
+      facts_cursor_clean(&cursor);
       goto clean;
+    }
     env_unwind_protect_push(env, &unwind_protect);
     if (setjmp(unwind_protect.buf)) {
       env_unwind_protect_pop(env, &unwind_protect);
@@ -977,6 +981,7 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
     }
     if (! env_eval_call_callable_args(env, callback, arguments, &tmp)) {
       env_unwind_protect_pop(env, &unwind_protect);
+      facts_cursor_clean(&cursor);
       goto clean;
     }
     env_unwind_protect_pop(env, &unwind_protect);
@@ -989,7 +994,6 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
   *dest = tmp;
   return dest;
  clean:
-  facts_cursor_clean(&cursor);
   tag_clean(&tmp);
   list_delete_all(arguments);
   return NULL;
@@ -2189,7 +2193,6 @@ s_struct_type ** env_struct_type_find (s_env *env,
   if (! facts_cursor_next(&cursor, &found)) {
     err_puts("env_struct_type_find: facts_with_cursor_next");
     assert(! "env_struct_type_find: facts_with_cursor_next");
-    facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return NULL;
   }
