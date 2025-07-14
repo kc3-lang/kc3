@@ -25,12 +25,18 @@
 void facts_cursor_clean (s_facts_cursor *cursor)
 {
   assert(cursor);
-  if (cursor->pvar_subject)
+  if (cursor->pvar_subject) {
     var_reset(cursor->pvar_subject);
-  if (cursor->pvar_predicate)
+    var_delete(cursor->pvar_subject);
+  }
+  if (cursor->pvar_predicate) {
     var_reset(cursor->pvar_predicate);
-  if (cursor->pvar_object)
+    var_delete(cursor->pvar_predicate);
+  }
+  if (cursor->pvar_object) {
     var_reset(cursor->pvar_object);
+    var_delete(cursor->pvar_object);
+  }
 #if HAVE_PTHREAD
   facts_cursor_lock_clean(cursor);
 #endif

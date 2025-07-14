@@ -159,6 +159,7 @@ s_var * var_reset (s_var *var)
 #endif
   if (var->bound)
     tag_clean(&var->tag);
+  tag_init(&var->tag);
   var->bound = false;
 #if HAVE_PTHREAD
   mutex_unlock(&var->mutex);
