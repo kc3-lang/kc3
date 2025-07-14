@@ -174,6 +174,9 @@ TEST_CASE(facts_with_)
   TEST_EQ(facts_with_cursor_next(&cursor, &f), &f);
   TEST_ASSERT(! f);
   facts_with_cursor_clean(&cursor);
+  tag_clean(&subject);
+  tag_clean(&predicate);
+  tag_clean(&object);
   facts_with(&facts, &cursor, (s_tag *[]) { tag, tag + 1, tag + 2,
                                                  tag + 1, tag + 3,
                                                  NULL,
