@@ -115,6 +115,7 @@
     TEST_STRNCMP(str_result.ptr.p, (expected), str_result.size);       \
     TEST_EQ(str_result.size, strlen(expected));                        \
     str_clean(&str_result);                                            \
+    pvar_clean(&pvar_test);                                            \
     test_context(NULL);                                                \
   } while (0)
 
