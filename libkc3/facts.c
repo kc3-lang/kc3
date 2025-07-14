@@ -768,12 +768,14 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
   }
   while (fact) {
     list = list_new(list);
+    list->tag.type = TAG_FACT;
     list->tag.data.fact = *fact;
     if (! facts_cursor_next(&cursor, &fact)) {
 #if HAVE_PTHREAD
       rwlock_unlock_w(&facts->rwlock);
 #endif
       list_delete_all(list);
+      tag_clean(&pvar);
       return NULL;
     }
   }
@@ -783,6 +785,8 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
         ! b) {
       list_delete_all(list);
       facts_transaction_rollback(facts, &transaction);
+      facts_cursor_clean(&cursor);
+      tag_clean(&pvar);
 #if HAVE_PTHREAD
       rwlock_unlock_w(&facts->rwlock);
 #endif
@@ -791,6 +795,7 @@ s_fact * facts_replace_tags (s_facts *facts, s_tag *subject,
     list = list_delete(list);
   }
   facts_cursor_clean(&cursor);
+  tag_clean(&pvar);
   fact = facts_add_tags(facts, subject, predicate, object);
   facts_transaction_end(facts, &transaction);
 #if HAVE_PTHREAD
