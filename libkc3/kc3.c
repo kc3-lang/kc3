@@ -194,7 +194,7 @@ s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
     *dest_v = jump.block.tag;
     env_unwind_protect_pop(env, &jump.unwind_protect);
     block_clean(&jump.block);
-    return dest;
+    return dest_v;
   }
   if (! env_eval_tag(env, do_block, &tmp)) {
     env_unwind_protect_pop(env, &jump.unwind_protect);
@@ -204,7 +204,7 @@ s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
   env_unwind_protect_pop(env, &jump.unwind_protect);
   block_clean(&jump.block);
   *dest_v = tmp;
-  return dest;
+  return dest_v;
 }
 
 void kc3_break (void)
