@@ -1212,7 +1212,8 @@ u_ptr_w * kc3_thread_new (u_ptr_w *dest, p_callable *start)
     return NULL;
   }
   tag->data.tuple.tag[2].type = TAG_PTR;
-  if (! (tag->data.tuple.tag[2].data.ptr.p = env_fork_new(env_global()))) {
+  if (! (tag->data.tuple.tag[2].data.ptr.p =
+         env_fork_new(env_global()))) {
     tag_delete(tag);
     return NULL;
   }
