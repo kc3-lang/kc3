@@ -746,7 +746,7 @@ s_marshall ** kc3_marshall_new (s_marshall **marshall)
 
 bool kc3_marshall_tag (s_marshall **marshall, const s_tag *tag)
 {
-  if (! marshall_tag(*marshall, tag))
+  if (! marshall_tag(*marshall, false, tag))
     return false;
   return true;
 }

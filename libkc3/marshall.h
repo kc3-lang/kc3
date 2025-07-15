@@ -31,8 +31,6 @@ void         marshall_delete (s_marshall *m);
 s_marshall * marshall_new (void);
 
 /* Operators. */
-s_marshall * marshall_heap_pointer
-(s_marshall *m, bool heap, void *list);
 PROTO_MARSHALL(array, const s_array *);
 PROTO_MARSHALL(bool, bool);
 PROTO_MARSHALL(call, const s_call *);
@@ -45,6 +43,8 @@ PROTO_MARSHALL(f128, f128);
 PROTO_MARSHALL(f32, f32);
 PROTO_MARSHALL(f64, f64);
 PROTO_MARSHALL(fact, const s_fact *);
+s_marshall * marshall_heap_pointer (s_marshall *m, bool heap, void *p,
+                                    bool *present);
 PROTO_MARSHALL(list, const s_list *);
 PROTO_MARSHALL(ident, const s_ident *);
 PROTO_MARSHALL(integer, const s_integer *);
