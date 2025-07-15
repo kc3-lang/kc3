@@ -13,6 +13,7 @@
 #include <string.h>
 #include "../libkc3/bool.h"
 #include "../libkc3/str.h"
+#include "../libkc3/sym.h"
 #include "test.h"
 
 void bool_test (void);
