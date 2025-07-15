@@ -168,7 +168,7 @@ s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
   s_tag tmp = {0};
   struct {
     s_block block;
-    s_unwind_protect unwind_protect;
+    s_unwind_protect up;
   } jump;
   env = env_global();
   switch (name->type) {
@@ -183,25 +183,25 @@ s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
   }
   if (! block_init(&jump.block, name_sym))
     return NULL;
-  env_unwind_protect_push(env, &jump.unwind_protect);
-  if (setjmp(jump.unwind_protect.buf)) {
-    env_unwind_protect_pop(env, &jump.unwind_protect);
+  env_unwind_protect_push(env, &jump.up);
+  if (setjmp(jump.up.buf)) {
+    env_unwind_protect_pop(env, &jump.up);
     tag_clean(&tmp);
     block_clean(&jump.block);
-    longjmp(*jump.unwind_protect.jmp, 1);
+    longjmp(*jump.up.jmp, 1);
   }
   if (setjmp(jump.block.buf)) {
     *dest_v = jump.block.tag;
-    env_unwind_protect_pop(env, &jump.unwind_protect);
+    env_unwind_protect_pop(env, &jump.up);
     block_clean(&jump.block);
     return dest_v;
   }
   if (! env_eval_tag(env, do_block, &tmp)) {
-    env_unwind_protect_pop(env, &jump.unwind_protect);
+    env_unwind_protect_pop(env, &jump.up);
     block_clean(&jump.block);
     return NULL;
   }
-  env_unwind_protect_pop(env, &jump.unwind_protect);
+  env_unwind_protect_pop(env, &jump.up);
   block_clean(&jump.block);
   *dest_v = tmp;
   return dest_v;
