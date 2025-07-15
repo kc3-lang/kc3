@@ -26,12 +26,13 @@
 
 static s_tag * cfn_tag_init (s_tag *tag, const s_sym *type);
 
-s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag * volatile dest)
+s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
 {
   s_list *a;
   void ** volatile arg_pointer_result = NULL;
   void ** volatile arg_pointers = NULL;
   void ** volatile arg_values = NULL;
+  s_tag * volatile dest_v = dest;
   void **result_pointer = NULL;
   u8 arity;
   s_list *cfn_arg_types;
@@ -171,10 +172,10 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag * volatile dest)
         goto ko;
       }
       tag_clean(&tmp);
-      *dest = tmp2;
+      *dest_v = tmp2;
     }
     else
-      *dest = tmp;
+      *dest_v = tmp;
     assert(env->stacktrace == trace);
     env->stacktrace = list_delete(trace);
   }
@@ -185,7 +186,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag * volatile dest)
   }
   free(arg_pointers);
   free(arg_values);
-  return dest;
+  return dest_v;
  ko:
   free(arg_pointers);
   free(arg_values);

@@ -701,10 +701,11 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
 
 s_tag * env_facts_first_with (s_env *env, s_facts *facts,
                               s_list **spec,
-                              s_callable *callback, s_tag * volatile dest)
+                              s_callable *callback, s_tag *dest)
 {
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
+  s_tag * volatile dest_v = dest;
   s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_tag tmp = {0};
@@ -713,7 +714,7 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
   assert(facts);
   assert(spec);
   assert(callback);
-  assert(dest);
+  assert(dest_v);
   if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
   if (! struct_allocate(arguments->tag.data.pstruct)) {
@@ -751,8 +752,8 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
     err_inspect_tag(&tmp);
     err_write_1("\n");
   }
-  *dest = tmp;
-  return dest;
+  *dest_v = tmp;
+  return dest_v;
  clean:
   facts_with_cursor_clean(&cursor);
   tag_clean(&tmp);
@@ -763,10 +764,11 @@ s_tag * env_facts_first_with (s_env *env, s_facts *facts,
 s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
                                    s_tag *subject, s_tag *predicate,
                                    s_tag *object, s_callable *callback,
-                                   s_tag * volatile dest)
+                                   s_tag *dest)
 {
   s_list *arguments;
   s_facts_cursor cursor = {0};
+  s_tag * volatile dest_v = dest;
   s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_tag tmp = {0};
@@ -777,7 +779,7 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   assert(predicate);
   assert(object);
   assert(callback);
-  assert(dest);
+  assert(dest_v);
   if (! (arguments = list_new_pstruct(&g_sym_FactW, NULL)))
     return NULL;
   if (! struct_allocate(arguments->tag.data.pstruct)) {
@@ -814,8 +816,8 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
   facts_cursor_clean(&cursor);
  ok:
   list_delete_all(arguments);
-  *dest = tmp;
-  return dest;
+  *dest_v = tmp;
+  return dest_v;
  clean:
   tag_clean(&tmp);
   list_delete_all(arguments);
@@ -823,10 +825,11 @@ s_tag * env_facts_first_with_tags (s_env *env, s_facts *facts,
 }
 
 s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
-                        s_callable *callback, s_tag * volatile dest)
+                        s_callable *callback, s_tag *dest)
 {
   s_list *arguments;
   s_facts_with_cursor cursor = {0};
+  s_tag * volatile dest_v = dest;
   s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_tag tmp = {0};
@@ -867,8 +870,8 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   facts_with_cursor_clean(&cursor);
  ok:
   list_delete_all(arguments);
-  *dest = tmp;
-  return dest;
+  *dest_v = tmp;
+  return dest_v;
  clean:
   err_puts("env_facts_with: error");
   assert(! "env_facts_with: error");
@@ -880,9 +883,10 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
 }
 
 s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
-                              s_tag *tag, s_tag * volatile dest)
+                              s_tag *tag, s_tag *dest)
 {
   s_facts_with_cursor cursor = {0};
+  s_tag * volatile dest_v = dest;
   s_fact *fact = NULL;
   s_facts *facts;
   s_tag    facts_eval;
@@ -929,8 +933,8 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
   }
   facts_with_cursor_clean(&cursor);
  ok:
-  *dest = tmp;
-  return dest;
+  *dest_v = tmp;
+  return dest_v;
  clean:
   err_puts("env_facts_with_macro: error");
   assert(! "env_facts_with_macro: error");
@@ -942,10 +946,11 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
 s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
                              s_tag *predicate, s_tag *object,
                              s_callable *callback,
-                             s_tag * volatile dest)
+                             s_tag *dest)
 {
   s_list *arguments;
   s_facts_cursor cursor = {0};
+  s_tag * volatile dest_v = dest;
   s_fact *fact = NULL;
   s_fact_w *fact_w = NULL;
   s_tag tmp = {0};
@@ -991,8 +996,8 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
   facts_cursor_clean(&cursor);
  ok:
   list_delete_all(arguments);
-  *dest = tmp;
-  return dest;
+  *dest_v = tmp;
+  return dest_v;
  clean:
   tag_clean(&tmp);
   list_delete_all(arguments);
@@ -1000,8 +1005,9 @@ s_tag * env_facts_with_tags (s_env *env, s_facts *facts, s_tag *subject,
 }
 
 s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
-                                    s_tag *tag_arg, s_tag * volatile dest)
+                                    s_tag *tag_arg, s_tag *dest)
 {
+  s_tag * volatile dest_v = dest;
   s_tag facts_tag = {0};
   s_facts *facts;
   s_tag tmp = {0};
@@ -1043,8 +1049,8 @@ s_tag * env_facts_with_transaction (s_env *env, s_tag *facts_arg,
   facts_transaction_end(facts, &transaction);
   tag_clean(&facts_tag);
   facts_transaction_clean(&transaction);
-  *dest = tmp;
-  return dest;
+  *dest_v = tmp;
+  return dest_v;
 }
 
 s_frame * env_frame_new_capture (s_env *env, s_fn *fn)
