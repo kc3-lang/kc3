@@ -17,7 +17,7 @@
 #include "types.h"
 
 #define PROTO_MARSHALL_READ(name, type)                                \
-  sw marshall_read_ ## name (s_marshall_read *mr, type *dest)
+  sw marshall_read_ ## name (s_marshall_read *mr, bool heap, type *dest)
 
 /* Stack-allocation compatible functions, call marshall_read_clean
    after use. */

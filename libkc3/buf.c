@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+
 #include <string.h>
 #include <unistd.h>
 #include "alloc.h"
@@ -686,6 +687,8 @@ DEF_BUF_PEEK(s8)
 DEF_BUF_PEEK(s16)
 DEF_BUF_PEEK(s32)
 DEF_BUF_PEEK(s64)
+DEF_BUF_PEEK(bool)
+
 
 sw buf_peek_str (s_buf *buf, const s_str *src)
 {
@@ -849,6 +852,8 @@ DEF_BUF_READ(s8)
 DEF_BUF_READ(s16)
 DEF_BUF_READ(s32)
 DEF_BUF_READ(s64)
+DEF_BUF_READ(sw)
+DEF_BUF_READ(bool)
 
 sw buf_read_str (s_buf *buf, const s_str *src)
 {
@@ -864,8 +869,6 @@ sw buf_read_str (s_buf *buf, const s_str *src)
 #endif
   return r;
 }
-
-DEF_BUF_READ(sw)
 
 sw buf_read_sym (s_buf *buf, const s_sym *src)
 {
@@ -945,6 +948,7 @@ DEF_BUF_READ(u8)
 DEF_BUF_READ(u16)
 DEF_BUF_READ(u32)
 DEF_BUF_READ(u64)
+
 
 s_str * buf_read_until_1_into_str (s_buf *buf, const char *end,
                                    s_str *dest)
