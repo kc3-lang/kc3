@@ -153,11 +153,13 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
 bool env_eval_call_arguments (s_env *env, s_list *args,
                               s_list **dest)
 {
-  s_list **tail;
+  s_list * volatile a;
+  s_list ** volatile tail;
   s_list *tmp = NULL;
   s_unwind_protect up = {0};
   tail = &tmp;
-  while (args) {
+  a = args;
+  while (a) {
     *tail = list_new(NULL);
     env_unwind_protect_push(env, &up);
     if (setjmp(up.buf)) {
@@ -165,7 +167,7 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
       list_delete_all(tmp);
       longjmp(*up.jmp, 1);
     }
-    if (! env_eval_tag(env, &args->tag, &(*tail)->tag)) {
+    if (! env_eval_tag(env, &a->tag, &(*tail)->tag)) {
       list_delete_all(tmp);
       err_write_1("env_eval_call_arguments: invalid argument: ");
       err_inspect(&args->tag);
@@ -176,7 +178,7 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
     }
     env_unwind_protect_pop(env, &up);
     tail = &(*tail)->next.data.list;
-    args = list_next(args);
+    a = list_next(a);
   }
   *dest = tmp;
   return true;
@@ -280,6 +282,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   s_list *args = NULL;
   s_list * volatile args_final = NULL;
   s_fn_clause *clause;
+  s_tag * volatile dest_v = dest;
   s_frame *env_frame;
   s_frame frame = {0};
   const s_sym *module;
@@ -364,6 +367,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       env->silence_errors = silence_errors;
       assert(env->frame == &frame);
       env->frame = env_frame;
+      frame_clean(&frame);
       clause = clause->next_clause;
     }
     if (! clause) {
@@ -436,10 +440,18 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     env->search_modules = search_modules;
     assert(env->frame == &frame);
     env->frame = env_frame;
+    frame_clean(&frame);
     longjmp(*jump.unwind_do.jmp, 1);
   }
   if (setjmp(jump.block.buf)) {
     tag = jump.block.tag;
+    assert(env->stacktrace == trace);
+    env->stacktrace = list_delete(env->stacktrace);
+    list_delete_all(env->search_modules);
+    env->search_modules = search_modules;
+    assert(env->frame == &frame);
+    env->frame = env_frame;
+    frame_clean(&frame);
     goto ok;
   }
   if (! env_eval_do_block(env, &clause->algo, &tag)) {
@@ -475,7 +487,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
       tag_clean(&tag);
       longjmp(*jump.unwind_macro.jmp, 1);
     }
-    if (! env_eval_tag(env, &tag, dest)) {
+    if (! env_eval_tag(env, &tag, dest_v)) {
       env_unwind_protect_pop(env, &jump.unwind_macro);
       tag_clean(&tag);
       return false;
@@ -484,7 +496,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     tag_clean(&tag);
   }
   else
-    *dest = tag;
+    *dest_v = tag;
   return true;
 }
 

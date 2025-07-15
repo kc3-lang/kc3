@@ -1938,8 +1938,8 @@ s_list ** env_module_search_modules (s_env *env,
                                      const s_sym * const *module,
                                      s_list **dest)
 {
-  s_list *tmp = {0};
-  s_list *tmp2 = {0};
+  s_list *tmp = NULL;
+  s_list *tmp2 = NULL;
   assert(env);
   (void) env;
   if (! module || ! *module) {
