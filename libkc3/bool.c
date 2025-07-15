@@ -74,7 +74,7 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_SYM:
   case TAG_TIME:
   case TAG_TUPLE:
-  case TAG_UNQUOTE:
+  case TAG_UNQUOTE:   *b = true;                               return b;
   case TAG_VOID:      *b = false;                              return b;
   default:
     err_write_1("bool_cast: cannot cast ");

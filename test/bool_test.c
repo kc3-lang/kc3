@@ -17,10 +17,12 @@
 
 void bool_test (void);
 TEST_CASE_PROTOTYPE(bool_compat);
+TEST_CASE_PROTOTYPE(bool_init_cast_pstruct);
 
 void bool_test (void)
 {
   TEST_CASE_RUN(bool_compat);
+  TEST_CASE_RUN(bool_init_cast_pstruct);
 }
 
 TEST_CASE(bool_compat)
@@ -33,3 +35,17 @@ TEST_CASE(bool_compat)
   TEST_ASSERT(! (bool) false);
 }
 TEST_CASE_END(bool_compat)
+
+TEST_CASE(bool_init_cast_pstruct)
+{
+  bool b;
+  s_tag pstruct_tag = {0};
+  const s_sym *bool_type = &g_sym_Bool;
+  
+  pstruct_tag.type = TAG_PSTRUCT;
+  pstruct_tag.data.pstruct = NULL; // Minimal pstruct for testing
+  
+  TEST_ASSERT(bool_init_cast(&b, &bool_type, &pstruct_tag));
+  TEST_EQ(b, true);
+}
+TEST_CASE_END(bool_init_cast_pstruct)
