@@ -33,7 +33,7 @@ const s_sym ** http_mime_type (const s_str *ext, const s_sym **dest)
       ! fact ||
       ! tag_mime_type_value.data.pvar->tag.data.sym)
     goto default_mime_type;
-  *dest = tag_mime_type_value.data.sym;
+  *dest = tag_mime_type_value.data.pvar->tag.data.sym;
   return dest;
  default_mime_type:
   *dest = default_mime_type;
