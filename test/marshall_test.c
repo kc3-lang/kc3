@@ -18,12 +18,14 @@
 #include "../libkc3/str.h"
 #include "test.h"
 
-#define MARSHALL_TEST(type, heap, test, expected)                      \
+#define MARSHALL_TEST(type, on_heap, test, expected)                   \
   do {                                                                 \
     s_marshall m = {0};                                                \
+    s_buf *buf = NULL;                                                 \
     TEST_ASSERT(marshall_init(&m));                                    \
-    TEST_ASSERT(marshall_ ## type (&m, heap, (type) (test)));          \
-    TEST_MEM_EQ(m.buf.ptr.pu8, sizeof(type),                           \
+    TEST_ASSERT(marshall_ ## type (&m, on_heap, (type) (test)));       \
+    buf = (on_heap) ? &m.heap : &m.buf;                                \
+    TEST_MEM_EQ(buf->ptr.pu8, sizeof(type),                            \
       (expected), sizeof(expected) - 1);                               \
     marshall_clean(&m);                                                \
   } while (0)

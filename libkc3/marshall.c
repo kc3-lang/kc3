@@ -125,10 +125,10 @@ void marshall_delete (s_marshall *m)
 s_marshall * marshall_init (s_marshall *m)
 {
   s_marshall tmp = {0};
-  if (ht_init(&tmp.ht, &g_sym_Tag, 1024) ||
-    buf_init_alloc(&tmp.heap, 1024024) == NULL)
+  if (! ht_init(&tmp.ht, &g_sym_Tag, 1024) ||
+    ! buf_init_alloc(&tmp.heap, 1024024))
     return NULL;
-  if (buf_init_alloc(&tmp.buf, 1024024) == NULL) {
+  if (! buf_init_alloc(&tmp.buf, 1024024)) {
     buf_delete(&tmp.heap);
     return NULL;
   }
