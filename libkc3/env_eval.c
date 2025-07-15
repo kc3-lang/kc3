@@ -123,6 +123,7 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
 {
   s_call c = {0};
   bool result;
+  s_unwind_protect up = {0};
   assert(env);
   assert(call);
   assert(dest);
@@ -143,7 +144,15 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
     result = false;
     goto clean;
   }
+  env_unwind_protect_push(env, &up);
+  if (setjmp(up.buf)) {
+    env_unwind_protect_pop(env, &up);
+    call_clean(&c);
+    longjmp(*up.jmp, 1);
+    abort();
+  }
   result = env_eval_call_callable(env, &c, dest);
+  env_unwind_protect_pop(env, &up);
  clean:
   call_clean(&c);
   return result;
@@ -172,8 +181,8 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
       err_write_1("env_eval_call_arguments: invalid argument: ");
       err_inspect(&args->tag);
       err_write_1("\n");
-      list_delete_all(tmp);
       env_unwind_protect_pop(env, &up);
+      list_delete_all(tmp);
       return false;
     }
     env_unwind_protect_pop(env, &up);
@@ -445,8 +454,11 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
   }
   if (setjmp(jump.block.buf)) {
     tag = jump.block.tag;
+    env_unwind_protect_pop(env, &jump.unwind_do);
     assert(env->stacktrace == trace);
     env->stacktrace = list_delete(env->stacktrace);
+    list_delete_all(args);
+    list_delete_all(tmp);
     list_delete_all(env->search_modules);
     env->search_modules = search_modules;
     assert(env->frame == &frame);
@@ -711,6 +723,8 @@ bool env_eval_equal_list (s_env *env, bool macro, s_list *a,
     if (! b)
       goto ko;
     *t = list_new(NULL);
+    if (! *t)
+      goto ko;
     if (! env_eval_equal_tag(env, macro, &a->tag, &b->tag,
                              &(*t)->tag))
       goto ko;

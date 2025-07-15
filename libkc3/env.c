@@ -2373,31 +2373,32 @@ s_env * env_toplevel_init (s_env *env)
 
 s_tag * env_unwind_protect (s_env *env, s_tag *protected,
                             s_tag *cleanup,
-                            s_tag * volatile dest)
+                            s_tag *dest)
 {
+  s_tag * volatile dest_v = dest;
   s_tag discard = {0};
   s_tag tmp = {0};
-  s_unwind_protect unwind_protect;
+  s_unwind_protect up;
   assert(env);
   assert(protected);
-  env_unwind_protect_push(env, &unwind_protect);
-  if (setjmp(unwind_protect.buf)) {
-    env_unwind_protect_pop(env, &unwind_protect);
+  env_unwind_protect_push(env, &up);
+  if (setjmp(up.buf)) {
+    env_unwind_protect_pop(env, &up);
     env_eval_tag(env, cleanup, &discard);
     tag_clean(&discard);
-    longjmp(*unwind_protect.jmp, 1);
+    longjmp(*up.jmp, 1);
   }
   if (! env_eval_tag(env, protected, &tmp)) {
-    env_unwind_protect_pop(env, &unwind_protect);
+    env_unwind_protect_pop(env, &up);
     env_eval_tag(env, cleanup, &discard);
     tag_clean(&discard);
     return NULL;
   }
-  env_unwind_protect_pop(env, &unwind_protect);
+  env_unwind_protect_pop(env, &up);
   env_eval_tag(env, cleanup, &discard);
   tag_clean(&discard);
-  *dest = tmp;
-  return dest;
+  *dest_v = tmp;
+  return dest_v;
 }
 
 void env_unwind_protect_pop (s_env *env, s_unwind_protect *up)
