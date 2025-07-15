@@ -58,6 +58,36 @@
 #define MARSHALL_TEST_BUF_SW(test, expected)        \
   MARSHALL_TEST(sw, false, test, expected)
 
+#define MARSHALL_TEST_HEAP_U8(test, expected)       \
+  MARSHALL_TEST(u8, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_U16(test, expected)      \
+  MARSHALL_TEST(u16, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_U32(test, expected)      \
+  MARSHALL_TEST(u32, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_U64(test, expected)      \
+  MARSHALL_TEST(u64, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_UW(test, expected)       \
+  MARSHALL_TEST(uw, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_S8(test, expected)       \
+  MARSHALL_TEST(s8, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_S16(test, expected)      \
+  MARSHALL_TEST(s16, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_S32(test, expected)      \
+  MARSHALL_TEST(s32, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_S64(test, expected)      \
+  MARSHALL_TEST(s64, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_SW(test, expected)       \
+  MARSHALL_TEST(sw, true, test, expected)
+
 void marshal_test (void);
 
 TEST_CASE_PROTOTYPE(marshall_u8);
@@ -95,6 +125,8 @@ TEST_CASE(marshall_s8)
 {
   MARSHALL_TEST_BUF_S8(0, "\0");
   MARSHALL_TEST_BUF_S8(0xAB, "\xAB");
+  MARSHALL_TEST_HEAP_S8(0, "\0");
+  MARSHALL_TEST_HEAP_S8(0xAB, "\xAB");
 }
 TEST_CASE_END(marshall_s8)
 
@@ -102,6 +134,8 @@ TEST_CASE(marshall_s16)
 {
   MARSHALL_TEST_BUF_S16(0, "\0\0");
   MARSHALL_TEST_BUF_S16(-1, "\xFF\xFF");
+  MARSHALL_TEST_HEAP_S16(0, "\0\0");
+  MARSHALL_TEST_HEAP_S16(-1, "\xFF\xFF");
 }
 TEST_CASE_END(marshall_s16)
 
@@ -112,6 +146,11 @@ TEST_CASE(marshall_s32)
   MARSHALL_TEST_BUF_S32(0xDEADBEEF, "\xEF\xBE\xAD\xDE");
   MARSHALL_TEST_BUF_S32(0xDEADCAFE, "\xFE\xCA\xAD\xDE");
   MARSHALL_TEST_BUF_S32(0xFEEDBABE, "\xBE\xBA\xED\xFE");
+  MARSHALL_TEST_HEAP_S32(0, "\0\0\0\0");
+  MARSHALL_TEST_HEAP_S32(~0, "\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_HEAP_S32(0xDEADBEEF, "\xEF\xBE\xAD\xDE");
+  MARSHALL_TEST_HEAP_S32(0xDEADCAFE, "\xFE\xCA\xAD\xDE");
+  MARSHALL_TEST_HEAP_S32(0xFEEDBABE, "\xBE\xBA\xED\xFE");
 }
 TEST_CASE_END(marshall_s32)
 
@@ -119,6 +158,8 @@ TEST_CASE(marshall_s64)
 {
   MARSHALL_TEST_BUF_S64(0, "\0\0\0\0\0\0\0\0");
   MARSHALL_TEST_BUF_S64(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_HEAP_S64(0, "\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_HEAP_S64(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_s64)
 
@@ -126,6 +167,8 @@ TEST_CASE(marshall_sw)
 {
   MARSHALL_TEST_BUF_SW(0, "\0\0\0\0\0\0\0\0");
   MARSHALL_TEST_BUF_SW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_HEAP_SW(0, "\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_HEAP_SW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_sw)
 
@@ -186,24 +229,30 @@ TEST_CASE(marshall_u8)
 {
   MARSHALL_TEST_BUF_U8(0x00, "\x00");
   MARSHALL_TEST_BUF_U8(0xFF, "\xFF");
+  MARSHALL_TEST_HEAP_U8(0x00, "\x00");
+  MARSHALL_TEST_HEAP_U8(0xFF, "\xFF");
 }
 TEST_CASE_END(marshall_u8)
 
 TEST_CASE(marshall_u16)
 {
   MARSHALL_TEST_BUF_U16(0xFFFF, "\xFF\xFF");
+  MARSHALL_TEST_HEAP_U16(0xFFFF, "\xFF\xFF");
 }
 TEST_CASE_END(marshall_u16)
 
 TEST_CASE(marshall_u32)
 {
   MARSHALL_TEST_BUF_U32(0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_HEAP_U32(0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_u32)
 
 TEST_CASE(marshall_u64)
 {
   MARSHALL_TEST_BUF_U64(0xFFFFFFFFFFFFFFFF,
+    "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_HEAP_U64(0xFFFFFFFFFFFFFFFF,
     "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_u64)
@@ -212,5 +261,7 @@ TEST_CASE(marshall_uw)
 {
   MARSHALL_TEST_BUF_UW(0, "\0\0\0\0\0\0\0\0");
   MARSHALL_TEST_BUF_UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_HEAP_UW(0, "\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_HEAP_UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_uw)
