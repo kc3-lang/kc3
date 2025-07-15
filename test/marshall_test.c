@@ -30,20 +30,23 @@
     marshall_clean(&m);                                                \
   } while (0)
 
-#define MARSHALL_TEST_BUF_U8(test, expected)        \
-  MARSHALL_TEST(u8, false, test, expected)
+#define MARSHALL_TEST_BUF_BOOL(test, expected)      \
+  MARSHALL_TEST(bool, false, test, expected)
 
-#define MARSHALL_TEST_BUF_U16(test, expected)       \
-  MARSHALL_TEST(u16, false, test, expected)
+#define MARSHALL_TEST_CHARACTER(on_heap, test, expected)               \
+  do {                                                                 \
+    s_marshall m = {0};                                                \
+    s_buf *buf = NULL;                                                 \
+    TEST_ASSERT(marshall_init(&m));                                    \
+    TEST_ASSERT(marshall_character(&m, (on_heap), (test)));            \
+    buf = ((on_heap)) ? &m.heap : &m.buf;                              \
+    TEST_MEM_EQ(buf->ptr.pu8, sizeof(expected) - 1,                    \
+      (expected), sizeof(expected) - 1);                               \
+    marshall_clean(&m);                                                \
+  } while (0)
 
-#define MARSHALL_TEST_BUF_U32(test, expected)       \
-  MARSHALL_TEST(u32, false, test, expected)
-
-#define MARSHALL_TEST_BUF_U64(test, expected)       \
-  MARSHALL_TEST(u64, false, test, expected)
-
-#define MARSHALL_TEST_BUF_UW(test, expected)        \
-  MARSHALL_TEST(uw, false, test, expected)
+#define MARSHALL_TEST_BUF_CHARACTER(test, expected) \
+  MARSHALL_TEST_CHARACTER(false, test, expected)
 
 #define MARSHALL_TEST_BUF_S8(test, expected)        \
   MARSHALL_TEST(s8, false, test, expected)
@@ -60,20 +63,26 @@
 #define MARSHALL_TEST_BUF_SW(test, expected)        \
   MARSHALL_TEST(sw, false, test, expected)
 
-#define MARSHALL_TEST_HEAP_U8(test, expected)       \
-  MARSHALL_TEST(u8, true, test, expected)
+#define MARSHALL_TEST_BUF_U8(test, expected)        \
+  MARSHALL_TEST(u8, false, test, expected)
 
-#define MARSHALL_TEST_HEAP_U16(test, expected)      \
-  MARSHALL_TEST(u16, true, test, expected)
+#define MARSHALL_TEST_BUF_U16(test, expected)       \
+  MARSHALL_TEST(u16, false, test, expected)
 
-#define MARSHALL_TEST_HEAP_U32(test, expected)      \
-  MARSHALL_TEST(u32, true, test, expected)
+#define MARSHALL_TEST_BUF_U32(test, expected)       \
+  MARSHALL_TEST(u32, false, test, expected)
 
-#define MARSHALL_TEST_HEAP_U64(test, expected)      \
-  MARSHALL_TEST(u64, true, test, expected)
+#define MARSHALL_TEST_BUF_U64(test, expected)       \
+  MARSHALL_TEST(u64, false, test, expected)
 
-#define MARSHALL_TEST_HEAP_UW(test, expected)       \
-  MARSHALL_TEST(uw, true, test, expected)
+#define MARSHALL_TEST_BUF_UW(test, expected)        \
+  MARSHALL_TEST(uw, false, test, expected)
+
+#define MARSHALL_TEST_HEAP_BOOL(test, expected)     \
+  MARSHALL_TEST(bool, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_CHARACTER(test, expected) \
+  MARSHALL_TEST_CHARACTER(true, test, expected)
 
 #define MARSHALL_TEST_HEAP_S8(test, expected)       \
   MARSHALL_TEST(s8, true, test, expected)
@@ -90,13 +99,25 @@
 #define MARSHALL_TEST_HEAP_SW(test, expected)       \
   MARSHALL_TEST(sw, true, test, expected)
 
+#define MARSHALL_TEST_HEAP_U8(test, expected)       \
+  MARSHALL_TEST(u8, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_U16(test, expected)      \
+  MARSHALL_TEST(u16, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_U32(test, expected)      \
+  MARSHALL_TEST(u32, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_U64(test, expected)      \
+  MARSHALL_TEST(u64, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_UW(test, expected)       \
+  MARSHALL_TEST(uw, true, test, expected)
+
 void marshal_test (void);
 
-TEST_CASE_PROTOTYPE(marshall_u8);
-TEST_CASE_PROTOTYPE(marshall_u16);
-TEST_CASE_PROTOTYPE(marshall_u32);
-TEST_CASE_PROTOTYPE(marshall_u64);
-TEST_CASE_PROTOTYPE(marshall_uw);
+TEST_CASE_PROTOTYPE(marshall_bool);
+TEST_CASE_PROTOTYPE(marshall_character);
 TEST_CASE_PROTOTYPE(marshall_s8);
 TEST_CASE_PROTOTYPE(marshall_s16);
 TEST_CASE_PROTOTYPE(marshall_s32);
@@ -105,14 +126,16 @@ TEST_CASE_PROTOTYPE(marshall_sw);
 TEST_CASE_PROTOTYPE(marshall_to_buf);
 TEST_CASE_PROTOTYPE(marshall_to_file);
 TEST_CASE_PROTOTYPE(marshall_to_str);
+TEST_CASE_PROTOTYPE(marshall_u8);
+TEST_CASE_PROTOTYPE(marshall_u16);
+TEST_CASE_PROTOTYPE(marshall_u32);
+TEST_CASE_PROTOTYPE(marshall_u64);
+TEST_CASE_PROTOTYPE(marshall_uw);
 
 void marshall_test (void)
 {
-  TEST_CASE_RUN(marshall_u8);
-  TEST_CASE_RUN(marshall_u16);
-  TEST_CASE_RUN(marshall_u32);
-  TEST_CASE_RUN(marshall_u64);
-  TEST_CASE_RUN(marshall_uw);
+  TEST_CASE_RUN(marshall_bool);
+  TEST_CASE_RUN(marshall_character);
   TEST_CASE_RUN(marshall_s8);
   TEST_CASE_RUN(marshall_s16);
   TEST_CASE_RUN(marshall_s32);
@@ -121,7 +144,32 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_to_buf);
   TEST_CASE_RUN(marshall_to_str);
   TEST_CASE_RUN(marshall_to_file);
+  TEST_CASE_RUN(marshall_u8);
+  TEST_CASE_RUN(marshall_u16);
+  TEST_CASE_RUN(marshall_u32);
+  TEST_CASE_RUN(marshall_u64);
+  TEST_CASE_RUN(marshall_uw);
 }
+
+TEST_CASE(marshall_bool)
+{
+  MARSHALL_TEST_BUF_BOOL(false, "\x00");
+  MARSHALL_TEST_BUF_BOOL(true, "\x01");
+  MARSHALL_TEST_HEAP_BOOL(false, "\x00");
+  MARSHALL_TEST_HEAP_BOOL(true, "\x01");
+}
+TEST_CASE_END(marshall_bool)
+
+TEST_CASE(marshall_character)
+{
+  MARSHALL_TEST_BUF_CHARACTER('A', "A");
+  MARSHALL_TEST_BUF_CHARACTER('\0', "\x00");
+  MARSHALL_TEST_BUF_CHARACTER('Z', "Z");
+  MARSHALL_TEST_HEAP_CHARACTER('A', "A");
+  MARSHALL_TEST_HEAP_CHARACTER('\0', "\x00");
+  MARSHALL_TEST_HEAP_CHARACTER('Z', "Z");
+}
+TEST_CASE_END(marshall_character)
 
 TEST_CASE(marshall_s8)
 {
