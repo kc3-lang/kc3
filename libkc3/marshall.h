@@ -19,7 +19,7 @@
 #define MARSHALL_MAGIC ((u64) 0x485352414d33434b)
 
 #define PROTO_MARSHALL(name, type)                                    \
-  s_marshall * marshall_ ## name (s_marshall *m, type src)
+  s_marshall * marshall_ ## name (s_marshall *m, bool heap, type src)
 
 /* Stack-allocation compatible functions, call marshall_clean
    after use. */
@@ -31,6 +31,8 @@ void         marshall_delete (s_marshall *m);
 s_marshall * marshall_new (void);
 
 /* Operators. */
+s_marshall * marshall_heap_pointer
+(s_marshall *m, bool heap, void *list);
 PROTO_MARSHALL(array, const s_array *);
 PROTO_MARSHALL(bool, bool);
 PROTO_MARSHALL(call, const s_call *);

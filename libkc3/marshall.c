@@ -19,14 +19,18 @@
 #include "buf.h"
 #include "buf_file.h"
 #include "file.h"
+#include "ht.h"
+#include "sym.h"
 #include "list.h"
 #include "str.h"
+#include "tag_init.h"
 #include "types.h"
 #include "marshall.h"
 
 #define DEF_MARSHALL(type)                                             \
-  s_marshall * marshall_ ## type (s_marshall *m, type src)             \
+  s_marshall * marshall_ ## type (s_marshall *m, bool heap, type src)  \
   {                                                                    \
+    s_buf *buf;                                                        \
     type le;                                                           \
     sw r;                                                              \
     assert(m);                                                         \
@@ -38,19 +42,60 @@
                   s64:     htole64(src),                               \
                   u64:     htole64(src),                               \
                   default: src);                                       \
-    if ((r = buf_write_ ## type(&m->buf, le)) <= 0)                    \
+    buf = heap ? &m->heap : &m->buf;                                   \
+    if ((r = buf_write_ ## type(buf, le)) <= 0)                        \
       return NULL;                                                     \
-    m->buf_pos += r;                                                   \
+    if (heap)                                                          \
+      m->heap_pos += r;                                                \
+    else                                                               \
+      m->buf_pos += r;                                                 \
     return m;                                                          \
   }
 
 DEF_MARSHALL(bool)
 
-s_marshall * marshall_character (s_marshall *m, character src)
+s_marshall * marshall_heap_pointer (s_marshall *m,
+                                    bool heap, void *pointer)
+{
+  s_buf *buf;
+  s_tag key = {0};
+  sw r;
+  s_tag tag = {0};
+  assert(m);
+  assert(pointer);
+  buf = heap ? &m->heap : &m->buf;
+  tag_init_tuple(&key, 2);
+  key.data.tuple.tag[0].data.u64 = (u64) pointer;
+  if (ht_get(&m->ht, &key, &tag))
+    goto ok;
+  tag_init_tuple(&tag, 2);
+  tag.data.tuple.tag[0].data.u64 = (u64) pointer;
+  tag.data.tuple.tag[1].data.u64 = (u64) m->heap_pos;
+  if (! ht_add(&m->ht, &tag))
+    return NULL;
+ ok:
+  if ((r = buf_write_u64(buf, tag.data.tuple.tag[1].data.u64)) <= 0)
+    return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
+  return m;
+}
+
+s_marshall * marshall_character (s_marshall *m, bool heap,
+                                 character src)
 {
   sw r;
-  if ((r = buf_write_character_utf8(&m->buf, src)) <= 0)
+  s_buf *buf;
+  assert(m);
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write_character_utf8(buf, src)) <= 0)
     return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
   return m;
 }
 
@@ -70,7 +115,8 @@ void marshall_delete (s_marshall *m)
 s_marshall * marshall_init (s_marshall *m)
 {
   s_marshall tmp = {0};
-  if (buf_init_alloc(&tmp.heap, 1024024) == NULL)
+  if (ht_init(&tmp.ht, &g_sym_Tag, 1024) ||
+    buf_init_alloc(&tmp.heap, 1024024) == NULL)
     return NULL;
   if (buf_init_alloc(&tmp.buf, 1024024) == NULL) {
     buf_delete(&tmp.heap);
@@ -97,38 +143,54 @@ DEF_MARSHALL(s16)
 DEF_MARSHALL(s32)
 DEF_MARSHALL(s64)
 
-s_marshall * marshall_str (s_marshall *m, const s_str *src)
+s_marshall * marshall_str (s_marshall *m, bool heap, const s_str *src)
 {
   sw r;
+  s_buf *buf;
+  
   assert(m);
   assert(src);
-  if (! marshall_u32(m, src->size))
+  if (! marshall_u32(m, heap, src->size))
     return NULL;
-  if ((r = buf_write(&m->buf, src->ptr.pchar, src->size)) <= 0)
+  buf = heap ? &m->heap : &m->buf;
+  if ((r = buf_write(buf, src->ptr.pchar, src->size)) <= 0)
     return NULL;
+  if (heap)
+    m->heap_pos += r;
+  else
+    m->buf_pos += r;
   return m;
 }
 
 DEF_MARSHALL(sw)
 
-s_marshall * marshall_tag (s_marshall *m, const s_tag *tag)
+s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
 {
-  marshall_u8(m, tag->type);
+  bool present = false;
+  marshall_u8(m, heap, tag->type);
   switch (tag->type){
-  case TAG_BOOL: return marshall_bool(m, tag->data.bool_);
+  case TAG_BOOL: return marshall_bool(m, heap, tag->data.bool_);
   case TAG_CHARACTER:
-    return marshall_character(m, tag->data.character);
-  case TAG_S8:   return marshall_s8(m, tag->data.s8);
-  case TAG_U8:   return marshall_u8(m, tag->data.u8);
-  case TAG_S16:  return marshall_s16(m, tag->data.s16);
-  case TAG_U16:  return marshall_u16(m, tag->data.u16);
-  case TAG_S32:  return marshall_s32(m, tag->data.s32);
-  case TAG_U32:  return marshall_u32(m, tag->data.u32);
-  case TAG_S64:  return marshall_s64(m, tag->data.s64);
-  case TAG_U64:  return marshall_u64(m, tag->data.u64);
-  case TAG_STR:  return marshall_str(m, &tag->data.str);
-  case TAG_SW:   return marshall_sw(m, tag->data.sw);
-  case TAG_UW:   return marshall_uw(m, tag->data.uw);
+    return marshall_character(m, heap, tag->data.character);
+  case TAG_S8:   return marshall_s8(m, heap, tag->data.s8);
+  case TAG_U8:   return marshall_u8(m, heap, tag->data.u8);
+  case TAG_S16:  return marshall_s16(m, heap, tag->data.s16);
+  case TAG_U16:  return marshall_u16(m, heap, tag->data.u16);
+  case TAG_S32:  return marshall_s32(m, heap, tag->data.s32);
+  case TAG_U32:  return marshall_u32(m, heap, tag->data.u32);
+  case TAG_S64:  return marshall_s64(m, heap, tag->data.s64);
+  case TAG_U64:  return marshall_u64(m, heap, tag->data.u64);
+  case TAG_STR:  return marshall_str(m, heap, &tag->data.str);
+  case TAG_SW:   return marshall_sw(m, heap, tag->data.sw);
+  case TAG_UW:   return marshall_uw(m, heap, tag->data.uw);
+  case TAG_LIST:
+    if (! marshall_heap_pointer(m, heap,
+                                       (void *)&tag->data.list,
+                                       &present))
+      return NULL;
+    if (! present)
+      marshall_list(m, true, tag->data.list);
+    return m;
   default:       break;
   }
   err_puts("marshall_tag: not implemented");
@@ -136,7 +198,7 @@ s_marshall * marshall_tag (s_marshall *m, const s_tag *tag)
   return NULL;
 }
 
-sw marshall_to_buf (s_marshall *m, s_buf *out)
+sw marshall_to_buf (s_marshall *m, bool heap, s_buf *out)
 {
   s_marshall_header mh = {0};
   sw r;
@@ -159,7 +221,15 @@ sw marshall_to_buf (s_marshall *m, s_buf *out)
   return result;
 }
 
-sw marshall_to_file (s_marshall *m, const char *path)
+s_marshall * marshall_list (s_marshall *m, bool heap, bool heap, s_list *list)
+{
+  if (! marshall_tag(m, heap, &list->tag) ||
+      ! marshall_tag(m, heap, &list->next))
+    return NULL;
+  return m;
+}
+
+sw marshall_to_file (s_marshall *m, bool heap, const char *path)
 {
   FILE *fp;
   s_buf out;
@@ -181,7 +251,7 @@ sw marshall_to_file (s_marshall *m, const char *path)
   return result;
 }
 
-s_str * marshall_to_str (s_marshall *m, s_str *dest)
+s_str * marshall_to_str (s_marshall *m, bool heap, s_str *dest)
 {
   s_buf out;
   sw r;
@@ -201,7 +271,7 @@ s_str * marshall_to_str (s_marshall *m, s_str *dest)
   return dest;
 }
 
-s_marshall * marshall_tuple (s_marshall *m, const s_tuple *tuple)
+s_marshall * marshall_tuple (s_marshall *m, bool heap, const s_tuple *tuple)
 {
   uw i;
   assert(m);

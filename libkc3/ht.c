@@ -111,6 +111,25 @@ s_tag * ht_get_hash (s_ht *ht, s_tag *key, uw hash, s_tag *dest)
   return NULL;
 }
 
+bool ht_has (s_ht *ht, const s_tag *key)
+{
+  uw hash = ht->hash(key);
+  sw c = -1;
+  s_list *item;
+#if HAVE_PTHREAD
+  rwlock_r(&ht->rwlock);
+#endif
+  item = ht->items[hash % ht->size];
+  while (item && (c = ht->compare(&item->tag, key)) < 0) {
+    if ((item = list_next(item)) && ! c)
+      return true;
+  }
+#if HAVE_PTHREAD
+  rwlock_unlock_r(&ht->rwlock);
+#endif
+  return false;
+}
+
 s_ht * ht_init (s_ht *ht, const s_sym *type, uw size)
 {
   s_ht tmp = {0};

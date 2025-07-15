@@ -578,14 +578,6 @@ struct ratio {
   s_integer denominator;
 };
 
-struct marshall {
-  s_buf heap;
-  sw    heap_count;
-  sw    heap_pos;
-  s_buf buf;
-  sw    buf_pos;
-};
-
 struct marshall_read {
   s_buf heap;
   s_buf buf;
@@ -618,6 +610,15 @@ struct array {
 union callable_data {
   s_cfn cfn;
   s_fn fn;
+};
+
+struct marshall {
+  s_buf buf;
+  sw    buf_pos;
+  s_buf heap;
+  sw    heap_count;
+  sw    heap_pos;
+  s_ht  ht;
 };
 
 /* 5 */
