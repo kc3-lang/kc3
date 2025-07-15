@@ -20,7 +20,7 @@
 #define UNMARSHALL_READ(type, m, t)                                    \
 sw unmarshall_read_ ## type (s_marshall *m, s_type *t)                 \
 {                                                                      \
-  if (buf_read_ ## type (m->buf, t) < 0)                               \
+  if (buf_read_ ## type (&m->buf, t) < 0)                              \
     return -1;                                                         \
   return 0;                                                            \
 }                                                                      \
@@ -33,3 +33,24 @@ sw unmarshall_ ## type (s_type *t, s_marshall *m)                      \
   return unmarshall_read_ ## type (t, m);                              \
 }
 
+UNMARSHALL_READ(u8, m, t)
+UNMARSHALL_READ(u16, m, t)
+UNMARSHALL_READ(u32, m, t)
+UNMARSHALL_READ(u64, m, t)
+UNMARSHALL_READ(uw, m, t)
+UNMARSHALL_READ(s8, m, t)
+UNMARSHALL_READ(s16, m, t)
+UNMARSHALL_READ(s32, m, t)
+UNMARSHALL_READ(s64, m, t)
+UNMARSHALL_READ(sw, m, t)
+
+UNMARSHALL_TYPE(u8, m, t)
+UNMARSHALL_TYPE(u16, m, t)
+UNMARSHALL_TYPE(u32, m, t)
+UNMARSHALL_TYPE(u64, m, t)
+UNMARSHALL_TYPE(uw, m, t)
+UNMARSHALL_TYPE(s8, m, t)
+UNMARSHALL_TYPE(s16, m, t)
+UNMARSHALL_TYPE(s32, m, t)
+UNMARSHALL_TYPE(s64, m, t)
+UNMARSHALL_TYPE(sw, m, t)
