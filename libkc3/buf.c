@@ -1529,10 +1529,6 @@ sw buf_write_character_utf8 (s_buf *buf, character c)
 #if HAVE_PTHREAD
   rwlock_w(&buf->rwlock);
 #endif
-  if ((sw) buf->wpos - (sw) buf->rpos < csize)
-    buf_flush(buf);
-  if ((sw) buf->wpos - (sw) buf->rpos < csize)
-    return -1;
   if (c == '\n')
     size = csize + buf->pretty.base_column;
   else
