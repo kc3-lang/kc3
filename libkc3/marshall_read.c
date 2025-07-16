@@ -45,7 +45,6 @@ DEF_MARSHALL_READ(u64, u64)
 DEF_MARSHALL_READ(uw, uw)
 DEF_MARSHALL_READ(bool, bool)
 
-
 sw marshall_read_caracter(s_marshall_read *mr, bool heap,
                           character *dest)
 {
@@ -65,12 +64,121 @@ sw marshall_read_str(s_marshall_read *mr, bool heap, s_str *dest)
   return buf_read_str(buf, dest) < 0 ? -1 : 0;
 }
 
+s_marshall_read * marshall_read_tag(s_marshall_read *mr, bool heap,
+                                   s_tag *dest)
+{
+  s_str dest = {0};
+  marshall_read_u8(mr, heap, &dest->type);
+  switch (dest->type) {
+    case TAG_ARRAY:
+      return marshall_read_array(mr, heap, &dest->data.array);
+    case TAG_DO_BLOCK:
+      return marshall_read_do_block(mr, heap, &dest->data.do_block);
+    case TAG_BOOL:
+      return marshall_read_bool(mr, heap, &dest->data.bool_);
+    case TAG_CALL:
+      return marshall_read_call(mr, heap, &dest->data.call);
+    case TAG_CHARACTER:
+      return marshall_read_character(mr, heap, &dest->data.character);
+    case TAG_COMPLEX:
+      return marshall_read_complex(mr, heap, &dest->data.complex);
+    case TAG_COW:
+      return marshall_read_cow(mr, heap, &dest->data.cow);
+    case TAG_F32:
+      return marshall_read_f32(mr, heap, &dest->data.f32);
+    case TAG_F64:
+      return marshall_read_f64(mr, heap, &dest->data.f64);
+    case TAG_F128:
+      return marshall_read_f128(mr, heap, &dest->data.f128);
+    case TAG_FACT:
+      return marshall_read_fact(mr, heap, &dest->data.fact);
+    case TAG_IDENT:
+      return marshall_read_ident(mr, heap, &dest->data.ident);
+    case TAG_INTEGER:
+      return marshall_read_integer(mr, heap, &dest->data.integer);
+    case TAG_LIST:
+      if (! marshall_read_list
+            (mr, heap, (void *)&dest->data.list, &dest))
+        return NULL;
+      return mr;
+    case TAG_MAP:
+      return marshall_read_map(mr, heap, &dest->data.map);
+    case TAG_PCALLABLE:
+      return marshall_read_pcallable(mr, heap, &dest->data.pcallable);
+    case TAG_PSTRUCT:
+      return marshall_read_pstruct(mr, heap, &dest->data.pstruct);
+    case TAG_PSTRUCT_TYPE:
+      return marshall_read_pstruct_type(mr, heap,
+        &dest->data.pstruct_type);
+    case TAG_PTAG:
+      return marshall_read_ptag(mr, heap, &dest->data.ptag);
+    case TAG_PTR:
+      return marshall_read_ptr(mr, heap, &dest->data.ptr);
+    case TAG_PTR_FREE:
+      return marshall_read_ptr_free(mr, heap, &dest->data.ptr_free);
+    case TAG_QUOTE:
+      return marshall_read_quote(mr, heap, &dest->data.quote);
+    case TAG_RATIO:
+      return marshall_read_ratio(mr, heap, &dest->data.ratio);
+    case TAG_STR:
+      return marshall_read_str(mr, heap, &dest->data.str);
+    case TAG_SYM:
+      return marshall_read_sym(mr, heap, &dest->data.sym);
+    case TAG_S8:
+      return marshall_read_s8(mr, heap, &dest->data.s8);
+    case TAG_S16:
+      return marshall_read_s16(mr, heap, &dest->data.s16);
+    case TAG_S32:
+      return marshall_read_s32(mr, heap, &dest->data.s32);
+    case TAG_S64:
+      return marshall_read_s64(mr, heap, &dest->data.s64);
+    case TAG_SW:
+      return marshall_read_sw(mr, heap, &dest->data.sw);
+    case TAG_TIME:
+      return marshall_read_time(mr, heap, &dest->data.time);
+    case TAG_TUPLE:
+      return marshall_read_tuple(mr, heap, &dest->data.tuple);
+    case TAG_U8:
+      return marshall_read_u8(mr, heap, &dest->data.u8);
+    case TAG_U16:
+      return marshall_read_u16(mr, heap, &dest->data.u16);
+    case TAG_U32:
+      return marshall_read_u32(mr, heap, &dest->data.u32);
+    case TAG_U64:
+      return marshall_read_u64(mr, heap, &dest->data.u64);
+    case TAG_UNQUOTE:
+      return marshall_read_unquote(mr, heap, &dest->data.unquote);
+    case TAG_UW:
+      return marshall_read_uw(mr, heap, &dest->data.uw);
+    case TAG_VAR:
+      return marshall_read_var(mr, heap, &dest->data.var);
+    default:
+      break;
+  }
+  err_puts("marshall_tag: not implemented");
+  assert(!"marshall_tag: not implemented");
+  return NULL;
+}
+
+
+sw marshall_read_list(s_marshall_read *mr, bool heap, s_list *l,
+                     s_str *dest)
+{
+  s_buf *buf = {0};
+  assert(mr);
+  assert(dest);
+  buf = heap ? &mr->heap : &mr->buf;
+  marshall_read_tag(mr, heap, &l->tag);
+  marshall_read_tag(mr, heap, &l->next);
+  marshall_read_mutex(mr, heap, &l->mutex);
+  marshall_read_sw(mr, heap, dest);
+}
+
 // more complex types :
 
 // DEF_MARSHALL_READ(array, s_array)
 // DEF_MARSHALL_READ(call, s_call)
 // DEF_MARSHALL_READ(callable, s_callable)
-// DEF_MARSHALL_READ(character, character) -> buf_read_character_utf8
 // DEF_MARSHALL_READ(cow, s_cow)
 // DEF_MARSHALL_READ(complex, s_complex)
 // DEF_MARSHALL_READ(do_block, s_do_block)
