@@ -20,13 +20,15 @@
 #define DEF_MARSHALL_READ(name, type)                                  \
   s_marshall_read *                                                    \
   marshall_read_ ## name (s_marshall_read *mr, bool heap,              \
-                         type *dest)                                   \
+                          type *dest)                                  \
   {                                                                    \
     s_buf *buf = {0};                                                  \
     assert(mr);                                                        \
     assert(dest);                                                      \
     buf = heap ? &mr->heap : &mr->buf;                                 \
-    return buf_read_ ## type (buf, dest) < 0 ? NULL : mr;              \
+    if (buf_read_ ## type (buf, dest) <= 0)                            \
+      return NULL;                                                     \
+    return mr;                                                         \
   }
 
 DEF_MARSHALL_READ(f128, f128)
@@ -46,9 +48,9 @@ DEF_MARSHALL_READ(u64, u64)
 DEF_MARSHALL_READ(uw, uw)
 DEF_MARSHALL_READ(bool, bool)
 
-s_marshall_read *
-marshall_read_character(s_marshall_read *mr, bool heap,
-                       character *dest)
+s_marshall_read * marshall_read_character (s_marshall_read *mr,
+                                           bool heap,
+                                           character *dest)
 {
   s_buf *buf = {0};
   assert(mr);
@@ -57,8 +59,8 @@ marshall_read_character(s_marshall_read *mr, bool heap,
   return buf_read_character_utf8(buf, dest) < 0 ? NULL : mr;
 }
 
-s_marshall_read *
-marshall_read_str(s_marshall_read *mr, bool heap, s_str *dest)
+s_marshall_read * marshall_read_str (s_marshall_read *mr,
+                                     bool heap, s_str *dest)
 {
   s_buf *buf = {0};
   assert(mr);
@@ -67,8 +69,8 @@ marshall_read_str(s_marshall_read *mr, bool heap, s_str *dest)
   return buf_read_str(buf, dest) < 0 ? NULL : mr;
 }
 
-s_marshall_read * marshall_read_tag(s_marshall_read *mr, bool heap,
-                                   s_tag *dest)
+s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
+                                     s_tag *dest)
 {
   assert(mr);
   assert(dest);
@@ -161,9 +163,8 @@ s_marshall_read * marshall_read_tag(s_marshall_read *mr, bool heap,
   return NULL;
 }
 
-
-s_marshall_read *
-marshall_read_list(s_marshall_read *mr, bool heap, s_list *dest)
+s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
+                                      s_list *dest)
 {
   assert(mr);
   assert(dest);
