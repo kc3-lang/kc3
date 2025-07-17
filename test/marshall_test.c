@@ -319,11 +319,6 @@ TEST_CASE(marshall_uw)
 }
 TEST_CASE_END(marshall_uw)
 
-int nop(void)
-{
-  return 2;
-}
-
 TEST_CASE(marshall_list)
 {
   s_marshall m = {0};
@@ -335,6 +330,5 @@ TEST_CASE(marshall_list)
   TEST_ASSERT(list_test);
   TEST_ASSERT(marshall_list(&m, true, list_test));
   marshall_to_str(&m, &str);
-  nop();
 }
 TEST_CASE_END(marshall_list)
