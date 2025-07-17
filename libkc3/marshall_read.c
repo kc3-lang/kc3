@@ -91,6 +91,8 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
   marshall_read_u8(mr, heap, &u);
   dest->type = u;
   switch (dest->type) {
+    case TAG_VOID:
+      return mr;
     case TAG_ARRAY:
       return marshall_read_array(mr, heap, &dest->data.array);
     case TAG_DO_BLOCK:
@@ -102,9 +104,9 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     case TAG_CHARACTER:
       return marshall_read_character(mr, heap, &dest->data.character);
     case TAG_COMPLEX:
-      return marshall_read_complex(mr, heap, &dest->data.complex);
+      return marshall_read_pcomplex(mr, heap, &dest->data.complex);
     case TAG_COW:
-      return marshall_read_cow(mr, heap, &dest->data.cow);
+      return marshall_read_pcow(mr, heap, &dest->data.cow);
     case TAG_F32:
       return marshall_read_f32(mr, heap, &dest->data.f32);
     case TAG_F64:
@@ -127,7 +129,7 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
       return marshall_read_pstruct(mr, heap, &dest->data.pstruct);
     case TAG_PSTRUCT_TYPE:
       return marshall_read_pstruct_type(mr, heap,
-        &dest->data.pstruct_type);
+                                        &dest->data.pstruct_type);
     case TAG_PTAG:
       return marshall_read_ptag(mr, heap, &dest->data.ptag);
     case TAG_PTR:
@@ -141,7 +143,7 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     case TAG_STR:
       return marshall_read_str(mr, heap, &dest->data.str);
     case TAG_SYM:
-      return marshall_read_sym(mr, heap, &dest->data.sym);
+      return marshall_read_psym(mr, heap, &dest->data.sym);
     case TAG_S8:
       return marshall_read_s8(mr, heap, &dest->data.s8);
     case TAG_S16:
@@ -214,3 +216,9 @@ DEF_MARSHALL_READ(tuple, s_tuple)
 DEF_MARSHALL_READ(time, s_time)
 DEF_MARSHALL_READ(unquote, s_unquote)
 DEF_MARSHALL_READ(var, s_var)
+
+    p_cow
+DEF_MARSHALL_READ(pcomplex, p_complex *)
+DEF_MARSHALL_READ(pcow, p_cow)
+DEF_MARSHALL_READ(plist, s_list **)
+DEF_MARSHALL_READ(plist, s_list **)
