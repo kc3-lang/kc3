@@ -2142,13 +2142,13 @@ bool * env_struct_type_exists (s_env *env, const s_sym *module,
   assert(env);
   assert(module);
   assert(dest);
+  /* too slow, use require
+  if (! env_module_maybe_reload(env, module))
+    return NULL;
+  */
   tag_init_sym(&tag_module, module);
   tag_init_sym(&tag_struct_type, &g_sym_struct_type);
   tag_init_pvar(&tag_pvar, &g_sym_Tag);
-  if (! env_module_maybe_reload(env, module)) {
-    tag_clean(&tag_pvar);
-    return NULL;
-  }
   if (! facts_with_tags(env->facts, &cursor, &tag_module,
                         &tag_struct_type, &tag_pvar)) {
     tag_clean(&tag_pvar);

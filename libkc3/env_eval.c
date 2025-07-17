@@ -563,11 +563,13 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
     assert(! "env_eval_call_resolve: env_ident_resolve_module");
     return false;
   }
+  /* too slow, use require
   if (! env_module_ensure_loaded(env, tmp.ident.module)) {
     err_puts("env_eval_call_resolve: env_module_ensure_loaded");
     assert(! "env_eval_call_resolve: env_module_ensure_loaded");
     return false;
   }
+  */
   if (! env_module_has_ident(env, tmp.ident.module, &tmp.ident,
                              &b)) {
     err_puts("env_eval_call_resolve: env_module_has_ident");
