@@ -1554,7 +1554,7 @@ s8 compare_tag_deref (const s_tag *a, const s_tag *b)
   b_deref = b;
   if (b_deref &&
       b_deref->type == TAG_PVAR &&
-      a_deref->data.pvar->bound)
+      b_deref->data.pvar->bound)
     b_deref = &b_deref->data.pvar->tag;
   return compare_tag(a_deref, b_deref);
 }
