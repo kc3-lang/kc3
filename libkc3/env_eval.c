@@ -151,7 +151,15 @@ bool env_eval_call (s_env *env, s_call *call, s_tag *dest)
     longjmp(*up.jmp, 1);
     abort();
   }
+  if (env->stacktrace_depth > 256) {
+    err_puts("env_eval_call: stacktrace depth > 256");
+    err_stacktrace();
+    assert(! "env_eval_call: stacktrace depth > 256");
+    abort();
+  }
+  env->stacktrace_depth++;
   result = env_eval_call_callable(env, &c, dest);
+  env->stacktrace_depth--;
   env_unwind_protect_pop(env, &up);
  clean:
   call_clean(&c);

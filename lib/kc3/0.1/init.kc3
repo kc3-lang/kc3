@@ -258,6 +258,8 @@ def maybe_reload_directory = fn (dir) {
   end
 }
 
+require Bool
+require Character
 require S8
 require S16
 require S32
@@ -269,5 +271,6 @@ require U8
 require U16
 require U32
 require U64
+require Uw
 
 require Fact

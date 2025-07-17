@@ -6,80 +6,159 @@ defmodule DocController do
   require Str
 
   def doc_index = fn {
-    (path, path_md) { doc_index(path, path_md, path, []) }
-    ([], path_md, dir, acc) { List.reverse(acc) }
-    ([file | rest], path_md, dir, acc) {
-      if (Str.starts_with?(file, ".") ||
-          Str.starts_with?(file, "index.") ||
-          (Str.rindex_character(file, '.') > 0 &&
-           ! Str.ends_with?(file, ".md") &&
-           ! Str.ends_with?(file, ".html"))) do
-        doc_index(rest, path_md, dir, acc)
-      else
-        path = dir + file
-        name = Str.subst(file, "_", " ")
-        url = Str.slice(path, 1, -1)
-        if File.is_directory?(path) do
-          if List.find_if(acc, fn (item) {
-                item.type == :dir &&
-                item.base_url == url
-            }) do
-            doc_index(rest, path_md, dir, acc)
+    (input, path_md) { doc_index(path, path_md, path, []) }
+    (input, path_md, dir, acc) {
+      while input != [] do
+        if (type(input) == Str) do
+          input = List.sort(File.list(input))
+        end
+        if [file | rest] = ^ input do
+          if (Str.starts_with?(file, ".") ||
+              Str.starts_with?(file, "index.") ||
+              (Str.rindex_character(file, '.') > 0 &&
+               ! Str.ends_with?(file, ".md") &&
+               ! Str.ends_with?(file, ".html"))) do
+            input = rest
           else
-            items = doc_index(List.sort(File.list(path)), path_md,
-              path + "/", [])
-            url_locale = if locale == "en" do url else
-              "/#{locale}#{url}"
+            path = dir + file
+            name = Str.subst(file, "_", " ")
+            url = Str.slice(path, 1, -1)
+            if File.is_directory?(path) do
+              if List.find_if(acc, fn (item) {
+                                     item.type == :dir &&
+                                     item.base_url == url
+                                   }) do
+                input = rest
+              else
+                items = doc_index(List.sort(File.list(path)), path_md,
+                  path + "/", [])
+                url_locale = if locale == "en" do url else
+                  "/#{locale}#{url}"
+                end
+                item = %{type: :dir,
+                         base_url: url,
+                         url: url_locale,
+                         name: name,
+                         items: items}
+                input = rest
+                acc = [item | acc]
+              end
+            else # not a directory
+              end_ = Str.rindex_character(name, '.')
+              if (end_ > 0) do
+                name = Str.slice(name, 0, end_)
+                end_ = Str.rindex_character(name, '.')
+                if (end_ > 0) do
+                  name = Str.slice(name, 0, end_)
+                end
+              end
+              end_ = Str.rindex_character(url, '.')
+              if (end_ > 0) do
+                url = Str.slice(url, 0, end_)
+                end_ = Str.rindex_character(url, '.')
+                if (end_ > 0) do
+                  url = Str.slice(url, 0, end_)
+                end
+              end
+              if List.find_if(acc, fn (item) {
+                                     item.type == :file &&
+                                     item.base_url == url
+                                   }) do
+                input = rest
+              else
+                url_locale = if locale == "en" do url else
+                  "/#{locale}#{url}"
+                end
+                item = %{type: :file,
+                         base_url: url,
+                         url: url_locale,
+                         name: name,
+                         items: []}
+                input = rest
+                acc = [item | acc]
+              end
             end
-            item = %{type: :dir,
-                     base_url: url,
-                     url: url_locale,
-                     name: name,
-                     items: items}
-            doc_index(rest, path_md, dir, [item | acc])
-          end
-        else
-          end_ = Str.rindex_character(name, '.')
-          if (end_ > 0) do
-            name = Str.slice(name, 0, end_)
-            end_ = Str.rindex_character(name, '.')
-            if (end_ > 0) do
-              name = Str.slice(name, 0, end_)
-            end
-          end
-          end_ = Str.rindex_character(url, '.')
-          if (end_ > 0) do
-            url = Str.slice(url, 0, end_)
-            end_ = Str.rindex_character(url, '.')
-            if (end_ > 0) do
-              url = Str.slice(url, 0, end_)
-            end
-          end
-          if List.find_if(acc, fn (item) {
-                item.type == :file &&
-                item.base_url == url
-            }) do
-            doc_index(rest, path_md, dir, acc)
-          else
-            url_locale = if locale == "en" do url else
-              "/#{locale}#{url}"
-            end
-            item = %{type: :file,
-                     base_url: url,
-                     url: url_locale,
-                     name: name,
-                     items: []}
-            doc_index(rest, path_md, dir, [item | acc])
           end
         end
       end
-    }
-    (path, path_md, dir, acc) {
-      if (type(path) == Str) do
-        doc_index(List.sort(File.list(path)), path_md, dir, acc)
-      end
+      List.reverse(acc)
     }
   }
+    
+#  def doc_index = fn {
+#    ([], path_md, dir, acc) { List.reverse(acc) }
+#    ([file | rest], path_md, dir, acc) {
+#      if (Str.starts_with?(file, ".") ||
+#          Str.starts_with?(file, "index.") ||
+#          (Str.rindex_character(file, '.') > 0 &&
+#           ! Str.ends_with?(file, ".md") &&
+#           ! Str.ends_with?(file, ".html"))) do
+#        doc_index(rest, path_md, dir, acc)
+#      else
+#        path = dir + file
+#        name = Str.subst(file, "_", " ")
+#        url = Str.slice(path, 1, -1)
+#        if File.is_directory?(path) do
+#          if List.find_if(acc, fn (item) {
+#                item.type == :dir &&
+#                item.base_url == url
+#            }) do
+#            doc_index(rest, path_md, dir, acc)
+#          else
+#            items = doc_index(List.sort(File.list(path)), path_md,
+#              path + "/", [])
+#            url_locale = if locale == "en" do url else
+#              "/#{locale}#{url}"
+#            end
+#            item = %{type: :dir,
+#                     base_url: url,
+#                     url: url_locale,
+#                     name: name,
+#                     items: items}
+#            doc_index(rest, path_md, dir, [item | acc])
+#          end
+#        else
+#          end_ = Str.rindex_character(name, '.')
+#          if (end_ > 0) do
+#            name = Str.slice(name, 0, end_)
+#            end_ = Str.rindex_character(name, '.')
+#            if (end_ > 0) do
+#              name = Str.slice(name, 0, end_)
+#            end
+#          end
+#          end_ = Str.rindex_character(url, '.')
+#          if (end_ > 0) do
+#            url = Str.slice(url, 0, end_)
+#            end_ = Str.rindex_character(url, '.')
+#            if (end_ > 0) do
+#              url = Str.slice(url, 0, end_)
+#            end
+#          end
+#          if List.find_if(acc, fn (item) {
+#                item.type == :file &&
+#                item.base_url == url
+#            }) do
+#            doc_index(rest, path_md, dir, acc)
+#          else
+#            url_locale = if locale == "en" do url else
+#              "/#{locale}#{url}"
+#            end
+#            item = %{type: :file,
+#                     base_url: url,
+#                     url: url_locale,
+#                     name: name,
+#                     items: []}
+#            doc_index(rest, path_md, dir, [item | acc])
+#          end
+#        end
+#      end
+#    }
+#    (path, path_md, dir, acc) {
+#      if (type(path) == Str) do
+#        doc_index(List.sort(File.list(path)), path_md, dir, acc)
+#      end
+#    }
+#  }
 
   def doc_index_sitemap = fn {
     (path) { doc_index_sitemap(path, path, []) }

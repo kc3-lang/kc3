@@ -4498,7 +4498,8 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   case 'v':
-    if ((r = buf_parse_tag_void(buf, dest)) ||
+    if ((r = buf_parse_tag_special_operator(buf, dest)) ||
+        (r = buf_parse_tag_void(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
@@ -4518,43 +4519,53 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   case 'c':
-    if ((r = buf_parse_tag_cow(buf, dest)) ||
+    if ((r = buf_parse_tag_special_operator(buf, dest)) ||
+        (r = buf_parse_tag_cow(buf, dest)) ||
         (r = buf_parse_tag_callable(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
   case 'd':
-    if ((r = buf_parse_tag_do_block(buf, dest)) ||
+    if ((r = buf_parse_tag_special_operator(buf, dest)) ||
+        (r = buf_parse_tag_do_block(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
   case 'u':
-    if ((r = buf_parse_tag_unquote(buf, dest)) ||
+    if ((r = buf_parse_tag_special_operator(buf, dest)) ||
+        (r = buf_parse_tag_unquote(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
   case 'i':
-    if ((r = buf_parse_tag_if(buf, dest)) ||
+    if ((r = buf_parse_tag_special_operator(buf, dest)) ||
+        (r = buf_parse_tag_if(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
   case 'q':
-    if ((r = buf_parse_tag_quote(buf, dest)) ||
+    if ((r = buf_parse_tag_special_operator(buf, dest)) ||
+        (r = buf_parse_tag_quote(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
     goto restore;
   case 'f':
   case 'm':
-    if ((r = buf_parse_tag_callable(buf, dest)))
+    if ((r = buf_parse_tag_special_operator(buf, dest)) ||
+        (r = buf_parse_tag_callable(buf, dest)) ||
+        (r = buf_parse_tag_bool(buf, dest)) ||
+        (r = buf_parse_tag_call(buf, dest)) ||
+        (r = buf_parse_tag_ident(buf, dest)))
       goto end;
-    // fall through
+    goto restore;
   case 't':
-    if ((r = buf_parse_tag_bool(buf, dest)) ||
+    if ((r = buf_parse_tag_special_operator(buf, dest)) ||
+        (r = buf_parse_tag_bool(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)))
       goto end;
@@ -4586,7 +4597,8 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   default:
-    if ((r = buf_parse_tag_callable(buf, dest)) ||
+    if ((r = buf_parse_tag_special_operator(buf, dest)) ||
+        (r = buf_parse_tag_callable(buf, dest)) ||
         (r = buf_parse_tag_call(buf, dest)) ||
         (r = buf_parse_tag_ident(buf, dest)) ||
         (r = buf_parse_tag_sym(buf, dest)))

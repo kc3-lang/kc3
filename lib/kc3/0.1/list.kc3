@@ -61,6 +61,8 @@ defmodule List do
 
   def map = cfn List "list_map" (List, Callable, Result)
 
+  def next = fn ([a | b]) { b }
+
   def reverse = fn {
     (x) { reverse(x, []) }
     ([], acc) { acc }
