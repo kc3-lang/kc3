@@ -11,6 +11,7 @@
  * THIS SOFTWARE.
  */
 
+#include "tag.h"
 #include "types.h"
 #include "assert.h"
 #include "marshall.h"
@@ -51,12 +52,16 @@ DEF_MARSHALL_READ(f64, f64)
 s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
                                       s_list *dest)
 {
+  s_list tmp = {0};
   assert(mr);
   assert(dest);
-  if (! marshall_read_tag(mr, heap, &dest->tag))
+  if (! marshall_read_tag(mr, heap, &tmp.tag))
     return NULL;
-  if (! marshall_read_list(mr, heap, dest->next.data.list))
+  if (! marshall_read_tag(mr, heap, &tmp.next)) {
+    tag_clean(&tmp.tag);
     return NULL;
+  }
+  *dest = tmp;
   return mr;
 }
 
@@ -80,9 +85,11 @@ DEF_MARSHALL_READ(sw, sw)
 s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
                                      s_tag *dest)
 {
+  u8 u = 0;
   assert(mr);
   assert(dest);
-  marshall_read_u8(mr, heap, &dest->type);
+  marshall_read_u8(mr, heap, &u);
+  dest->type = u;
   switch (dest->type) {
     case TAG_ARRAY:
       return marshall_read_array(mr, heap, &dest->data.array);
@@ -111,7 +118,7 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     case TAG_INTEGER:
       return marshall_read_integer(mr, heap, &dest->data.integer);
     case TAG_LIST:
-      return marshall_read_list(mr, heap, &dest->data.list);
+      return marshall_read_plist(mr, heap, dest->data.list);
     case TAG_MAP:
       return marshall_read_map(mr, heap, &dest->data.map);
     case TAG_PCALLABLE:
@@ -163,8 +170,6 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
       return marshall_read_uw(mr, heap, &dest->data.uw);
     case TAG_VAR:
       return marshall_read_var(mr, heap, &dest->data.var);
-    default:
-      break;
   }
   err_puts("marshall_tag: not implemented");
   assert(!"marshall_tag: not implemented");
@@ -179,23 +184,33 @@ DEF_MARSHALL_READ(uw, uw)
 
 // more complex types :
 
-// DEF_MARSHALL_READ(array, s_array)
-// DEF_MARSHALL_READ(call, s_call)
-// DEF_MARSHALL_READ(callable, s_callable)
-// DEF_MARSHALL_READ(cow, s_cow)
-// DEF_MARSHALL_READ(complex, s_complex)
-// DEF_MARSHALL_READ(do_block, s_do_block)
-// DEF_MARSHALL_READ(fact, s_fact)
-// DEF_MARSHALL_READ(list, s_list)
-// DEF_MARSHALL_READ(ident, s_ident)
-// DEF_MARSHALL_READ(integer, s_integer)
-// DEF_MARSHALL_READ(map, s_map)
-// DEF_MARSHALL_READ(quote, s_quote)
-// DEF_MARSHALL_READ(ratio, s_ratio)
-// DEF_MARSHALL_READ(struct, s_struct)
-// DEF_MARSHALL_READ(struct_type, s_struct_type)
-// DEF_MARSHALL_READ(sym, s_sym)
-// DEF_MARSHALL_READ(tuple, s_tuple)
-// DEF_MARSHALL_READ(time, s_time)
-// DEF_MARSHALL_READ(unquote, s_unquote)
-// DEF_MARSHALL_READ(var, s_var)
+#undef DEF_MARSHALL_READ
+#define DEF_MARSHALL_READ(name, type) PROTO_MARSHALL_READ(name, type) \
+    {                                                                 \
+        (void) mr;                                                    \
+        (void) heap;                                                  \
+        (void) dest;                                                  \
+        err_puts("marshall_read_" # name ": not implemented");        \
+        assert(! "marshall_read_" # name ": not implemented");        \
+        return NULL;                                                  \
+    }
+
+DEF_MARSHALL_READ(array, s_array)
+DEF_MARSHALL_READ(call, s_call)
+DEF_MARSHALL_READ(callable, s_callable)
+DEF_MARSHALL_READ(cow, s_cow)
+DEF_MARSHALL_READ(complex, s_complex)
+DEF_MARSHALL_READ(do_block, s_do_block)
+DEF_MARSHALL_READ(fact, s_fact)
+DEF_MARSHALL_READ(ident, s_ident)
+DEF_MARSHALL_READ(integer, s_integer)
+DEF_MARSHALL_READ(map, s_map)
+DEF_MARSHALL_READ(quote, s_quote)
+DEF_MARSHALL_READ(ratio, s_ratio)
+DEF_MARSHALL_READ(struct, s_struct)
+DEF_MARSHALL_READ(struct_type, s_struct_type)
+DEF_MARSHALL_READ(sym, s_sym)
+DEF_MARSHALL_READ(tuple, s_tuple)
+DEF_MARSHALL_READ(time, s_time)
+DEF_MARSHALL_READ(unquote, s_unquote)
+DEF_MARSHALL_READ(var, s_var)

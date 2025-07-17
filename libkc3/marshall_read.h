@@ -78,4 +78,6 @@ PROTO_MARSHALL_READ(unquote,     s_unquote    );
 PROTO_MARSHALL_READ(uw,          uw           );
 PROTO_MARSHALL_READ(var,         s_var        );
 
+PROTO_MARSHALL_READ(pcallable,    s_callable   );
+
 #endif /* LIBKC3_MARSHALL_READ_H */
