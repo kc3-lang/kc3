@@ -1,20 +1,32 @@
-defmodule HTTPd do
+## kc3
+## Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+##
+## Permission is hereby granted to use this software granted the above
+## copyright notice and this permission paragraph are included in all
+## copies and substantial portions of this software.
+##
+## THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+## PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+## THIS SOFTWARE.
 
-  require Event
-  require Facts
-  require File
-  require HTML
-  require HTTP
-  require HTTP.Request
-  require HTTP.Response
-  require HTTP.Upload
-  require HTTPd.Route
-  require List
-  require Socket
-  require Socket.Buf
-  require Str
-  require Thread
-  require URL
+require Event
+require Facts
+require File
+require HTML
+require HTTP
+require HTTP.Request
+require HTTP.Response
+require HTTP.Upload
+require HTTPd.Route
+require List
+require Socket
+require Socket.Buf
+require Str
+require Thread
+require URL
+
+defmodule HTTPd do
 
   def concurrent_requests = 0
   def concurrent_requests_max = ncpu * 2
