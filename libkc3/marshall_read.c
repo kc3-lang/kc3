@@ -18,9 +18,9 @@
 #include "buf.h"
 
 #define DEF_MARSHALL_READ(name, type)                                  \
-  s_marshall_read *                                                    \
-  marshall_read_ ## name (s_marshall_read *mr, bool heap,              \
-                          type *dest)                                  \
+  s_marshall_read * marshall_read_ ## name (s_marshall_read *mr,       \
+                                            bool heap,                 \
+                                            type *dest)                \
   {                                                                    \
     s_buf *buf = {0};                                                  \
     assert(mr);                                                        \
@@ -31,21 +31,6 @@
     return mr;                                                         \
   }
 
-DEF_MARSHALL_READ(f128, f128)
-DEF_MARSHALL_READ(f32, f32)
-DEF_MARSHALL_READ(f64, f64)
-
-DEF_MARSHALL_READ(s8, s8)
-DEF_MARSHALL_READ(s16, s16)
-DEF_MARSHALL_READ(s32, s32)
-DEF_MARSHALL_READ(s64, s64)
-DEF_MARSHALL_READ(sw, sw)
-
-DEF_MARSHALL_READ(u8,  u8)
-DEF_MARSHALL_READ(u16, u16)
-DEF_MARSHALL_READ(u32, u32)
-DEF_MARSHALL_READ(u64, u64)
-DEF_MARSHALL_READ(uw, uw)
 DEF_MARSHALL_READ(bool, bool)
 
 s_marshall_read * marshall_read_character (s_marshall_read *mr,
@@ -59,6 +44,27 @@ s_marshall_read * marshall_read_character (s_marshall_read *mr,
   return buf_read_character_utf8(buf, dest) < 0 ? NULL : mr;
 }
 
+DEF_MARSHALL_READ(f128, f128)
+DEF_MARSHALL_READ(f32, f32)
+DEF_MARSHALL_READ(f64, f64)
+
+s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
+                                      s_list *dest)
+{
+  assert(mr);
+  assert(dest);
+  if (! marshall_read_tag(mr, heap, &dest->tag))
+    return NULL;
+  if (! marshall_read_list(mr, heap, dest->next.data.list))
+    return NULL;
+  return mr;
+}
+
+DEF_MARSHALL_READ(s8, s8)
+DEF_MARSHALL_READ(s16, s16)
+DEF_MARSHALL_READ(s32, s32)
+DEF_MARSHALL_READ(s64, s64)
+
 s_marshall_read * marshall_read_str (s_marshall_read *mr,
                                      bool heap, s_str *dest)
 {
@@ -68,6 +74,8 @@ s_marshall_read * marshall_read_str (s_marshall_read *mr,
   buf = heap ? &mr->heap : &mr->buf;
   return buf_read_str(buf, dest) < 0 ? NULL : mr;
 }
+
+DEF_MARSHALL_READ(sw, sw)
 
 s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
                                      s_tag *dest)
@@ -163,17 +171,11 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
   return NULL;
 }
 
-s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
-                                      s_list *dest)
-{
-  assert(mr);
-  assert(dest);
-  if (! marshall_read_tag(mr, heap, &dest->tag))
-    return NULL;
-  if (! marshall_read_list(mr, heap, dest->next.data.list))
-    return NULL;
-  return mr;
-}
+DEF_MARSHALL_READ(u8,  u8)
+DEF_MARSHALL_READ(u16, u16)
+DEF_MARSHALL_READ(u32, u32)
+DEF_MARSHALL_READ(u64, u64)
+DEF_MARSHALL_READ(uw, uw)
 
 // more complex types :
 
