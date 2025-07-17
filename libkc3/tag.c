@@ -1281,6 +1281,9 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
 
 bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
 {
+  assert(tag);
+  assert(type);
+  assert(dest);
   if (tag->type == TAG_PVAR) {
     if (! tag->data.pvar) {
       err_puts("tag_to_ffi_pointer: NULL pvar");
