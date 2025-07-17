@@ -1,2 +1,4 @@
+quote require Buf
+require Buf
 quote %Buf{}
 %Buf{}

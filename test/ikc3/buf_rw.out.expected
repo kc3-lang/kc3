@@ -1,3 +1,5 @@
+require BufRW
+true
 %BufRW{}
 %BufRW{r: (Ptr) 0x0,
        w: (Ptr) 0x0}

@@ -272,18 +272,21 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
       err_write_1("struct_init: struct_type_find(");
       err_inspect_sym(&module);
       err_puts(")");
+      assert("struct_init: struct_type_find");
       return NULL;
     }
     if (! st) {
       err_write_1("struct_init: struct_type not found: ");
       err_inspect_sym(&module);
       err_write_1("\n");
+      assert(! "struct_init: struct_type not found");
       return NULL;
     }
     if (! pstruct_type_init_copy(&tmp.pstruct_type, &st)) {
       err_write_1("struct_init: pstruct_type_init_copy: ");
       err_inspect_sym(&module);
       err_write_1("\n");
+      assert("struct_init: pstruct_type_init_copy");
       return NULL;
     }
   }

@@ -1,6 +1,9 @@
-defmodule Facts do
+require FactW
+require Rwlock
+require Set.Tag
+require Set.Fact
 
-  require FactW
+defmodule Facts do
 
   defstruct [tags: %Set.Tag{},
              facts: %Set.Fact{},

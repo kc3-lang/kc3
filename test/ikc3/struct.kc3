@@ -1,3 +1,7 @@
+quote require GL.Vec2
+require GL.Vec2
+quote require GL.Vec3
+require GL.Vec3
 quote 0.0
 0.0
 quote %GL.Vec3{}

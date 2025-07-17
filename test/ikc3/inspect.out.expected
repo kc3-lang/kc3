@@ -1,2 +1,4 @@
+require HTTP.Upload
+true
 inspect({123, %HTTP.Upload{}})
 "{123, %HTTP.Upload{filename: \"\",\n                   replace: false,\n                   size: ?,\n                   tmp_path: \"\"}}"

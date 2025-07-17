@@ -1,2 +1,4 @@
+quote require BufRW
+require BufRW
 quote %BufRW{}
 %BufRW{}

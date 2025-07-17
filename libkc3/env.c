@@ -2176,17 +2176,18 @@ s_struct_type ** env_struct_type_find (s_env *env,
   const s_sym *type;
   assert(env);
   assert(module);
-  tag_init_sym( &tag_module, module);
-  tag_init_sym( &tag_struct_type, &g_sym_struct_type);
-  tag_init_pvar(&tag_pvar, &g_sym_StructType);
+  /* too slow
   if (! env_module_maybe_reload(env, module)) {
     err_write_1("env_struct_type_find: env_module_maybe_reload(");
     err_inspect_sym(&module);
     err_puts(")");
     assert(! "env_struct_type_find: env_module_maybe_reload");
-    tag_clean(&tag_pvar);
     return NULL;
   }
+  */
+  tag_init_sym( &tag_module, module);
+  tag_init_sym( &tag_struct_type, &g_sym_struct_type);
+  tag_init_pvar(&tag_pvar, &g_sym_StructType);
   if (! facts_with_tags(env->facts, &cursor,
                         &tag_module, &tag_struct_type, &tag_pvar)) {
     err_write_1("env_struct_type_find: facts_with_tags(");

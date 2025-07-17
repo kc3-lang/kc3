@@ -1,3 +1,7 @@
+require GL.Vec2
+true
+require GL.Vec3
+true
 (F128) 0.0
 (F128) 0.0
 %GL.Vec3{}

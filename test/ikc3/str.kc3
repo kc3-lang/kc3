@@ -1,3 +1,9 @@
+quote require Buf
+require Buf
+quote require BufRW
+require BufRW
+quote require Socket.Buf
+require Socket.Buf
 " "
 "
 "

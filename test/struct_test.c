@@ -10,6 +10,7 @@
  * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
  * THIS SOFTWARE.
  */
+#include "../libkc3/env.h"
 #include "../libkc3/kc3_main.h"
 #include "../libkc3/struct.h"
 #include "../libkc3/sym.h"
@@ -48,6 +49,8 @@ TEST_CASE_PROTOTYPE(struct_test_time);
 
 void struct_test (void)
 {
+  const s_str path = {{0}, 15, {"struct_test.kc3"}};
+  env_load(env_global(), &path);
   TEST_CASE_RUN(struct_test_fact_w);
   TEST_CASE_RUN(struct_test_http_request);
   TEST_CASE_RUN(struct_test_http_response);

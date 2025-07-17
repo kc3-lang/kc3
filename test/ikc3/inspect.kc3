@@ -1,2 +1,4 @@
+quote require HTTP.Upload
+require HTTP.Upload
 quote inspect({123, %HTTP.Upload{}})
 inspect({123, %HTTP.Upload{}})

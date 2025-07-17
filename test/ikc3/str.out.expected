@@ -1,3 +1,9 @@
+require Buf
+true
+require BufRW
+true
+require Socket.Buf
+true
 " "
 "\n"
 "\0"

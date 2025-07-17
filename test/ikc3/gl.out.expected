@@ -1,3 +1,11 @@
+require GL.Triangle
+true
+require GL.Vec2
+true
+require GL.Vec3
+true
+require GL.Vertex
+true
 %GL.Vec2{}
 %GL.Vec2{x: (F32) 0.0,
          y: (F32) 0.0}

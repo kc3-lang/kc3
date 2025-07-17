@@ -1,3 +1,11 @@
+quote require GL.Triangle
+require GL.Triangle
+quote require GL.Vec2
+require GL.Vec2
+quote require GL.Vec3
+require GL.Vec3
+quote require GL.Vertex
+require GL.Vertex
 quote %GL.Vec2{}
 %GL.Vec2{}
 quote %GL.Vec3{}
