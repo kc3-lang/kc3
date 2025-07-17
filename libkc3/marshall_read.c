@@ -120,7 +120,7 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     case TAG_INTEGER:
       return marshall_read_integer(mr, heap, &dest->data.integer);
     case TAG_LIST:
-      return marshall_read_plist(mr, heap, dest->data.list);
+      return marshall_read_plist(mr, heap, &dest->data.list);
     case TAG_MAP:
       return marshall_read_map(mr, heap, &dest->data.map);
     case TAG_PCALLABLE:
@@ -217,8 +217,13 @@ DEF_MARSHALL_READ(time, s_time)
 DEF_MARSHALL_READ(unquote, s_unquote)
 DEF_MARSHALL_READ(var, s_var)
 
-    p_cow
-DEF_MARSHALL_READ(pcomplex, p_complex *)
-DEF_MARSHALL_READ(pcow, p_cow)
-DEF_MARSHALL_READ(plist, s_list **)
-DEF_MARSHALL_READ(plist, s_list **)
+DEF_MARSHALL_READ(pcallable, p_callable )
+DEF_MARSHALL_READ(pcomplex, p_complex )
+DEF_MARSHALL_READ(pcow, p_cow )
+DEF_MARSHALL_READ(plist, p_list )
+DEF_MARSHALL_READ(pstruct, p_struct )
+DEF_MARSHALL_READ(pstruct_type, p_struct_type)
+DEF_MARSHALL_READ(ptag, p_tag )
+DEF_MARSHALL_READ(ptr, u_ptr_w )
+DEF_MARSHALL_READ(ptr_free, u_ptr_w )
+DEF_MARSHALL_READ(psym, p_sym )

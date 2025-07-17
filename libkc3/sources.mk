@@ -90,11 +90,8 @@ HEADERS = \
 	"crypt.h" \
 	"data.h" \
 	"do_block.h" \
-	"env_eval_equal.h" \
 	"env_eval.h" \
-	"env_eval_quote.h" \
 	"env_fork.h" \
-	"env_frame_capture.h" \
 	"env.h" \
 	"error.h" \
 	"error_handler.h" \
@@ -140,15 +137,12 @@ HEADERS = \
 	"pcallable.h" \
 	"pcomplex.h" \
 	"pcow.h" \
-	"plist.h" \
 	"pretty.h" \
 	"pstruct.h" \
 	"pstruct_type.h" \
-	"psym.h" \
 	"ptag.h" \
 	"ptr_free.h" \
 	"ptr.h" \
-	"pvar.h" \
 	"queue.h" \
 	"quote.h" \
 	"ratio.h" \
@@ -286,10 +280,7 @@ SOURCES = \
 	"do_block.c" \
 	"env.c" \
 	"env_eval.c" \
-	"env_eval_equal.c" \
-	"env_eval_quote.c" \
 	"env_fork.c" \
-	"env_frame_capture.c" \
 	"error.c" \
 	"error_handler.c" \
 	"eval.c" \
@@ -332,15 +323,12 @@ SOURCES = \
 	"pcallable.c" \
 	"pcomplex.c" \
 	"pcow.c" \
-	"plist.c" \
 	"pretty.c" \
 	"pstruct.c" \
 	"pstruct_type.c" \
-	"psym.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
-	"pvar.c" \
 	"queue.c" \
 	"quote.c" \
 	"ratio.c" \
@@ -492,10 +480,7 @@ LO_SOURCES = \
 	"do_block.c" \
 	"env.c" \
 	"env_eval.c" \
-	"env_eval_equal.c" \
-	"env_eval_quote.c" \
 	"env_fork.c" \
-	"env_frame_capture.c" \
 	"error.c" \
 	"error_handler.c" \
 	"eval.c" \
@@ -635,15 +620,12 @@ LO_SOURCES = \
 	"pcallable.c" \
 	"pcomplex.c" \
 	"pcow.c" \
-	"plist.c" \
 	"pretty.c" \
 	"pstruct.c" \
 	"pstruct_type.c" \
-	"psym.c" \
 	"ptag.c" \
 	"ptr.c" \
 	"ptr_free.c" \
-	"pvar.c" \
 	"queue.c" \
 	"quote.c" \
 	"ratio.c" \

@@ -2,12 +2,12 @@
 HEADERS = \
 	"entity.h" \
 	"markdown.h" \
-	"md4c-html.h" \
 	"md4c.h" \
+	"md4c-html.h" \
 
 SOURCES = \
 	"entity.c" \
 	"markdown.c" \
-	"md4c-html.c" \
 	"md4c.c" \
+	"md4c-html.c" \
 
