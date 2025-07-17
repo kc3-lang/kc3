@@ -16,6 +16,7 @@
 #include "../libkc3/file.h"
 #include "../libkc3/marshall.h"
 #include "../libkc3/str.h"
+#include "../libkc3/list.h"
 #include "test.h"
 
 #define MARSHALL_TEST(type, on_heap, test, expected)                   \
@@ -131,6 +132,7 @@ TEST_CASE_PROTOTYPE(marshall_u16);
 TEST_CASE_PROTOTYPE(marshall_u32);
 TEST_CASE_PROTOTYPE(marshall_u64);
 TEST_CASE_PROTOTYPE(marshall_uw);
+TEST_CASE_PROTOTYPE(marshall_list);
 
 void marshall_test (void)
 {
@@ -149,6 +151,7 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_u32);
   TEST_CASE_RUN(marshall_u64);
   TEST_CASE_RUN(marshall_uw);
+  TEST_CASE_RUN(marshall_list);
 }
 
 TEST_CASE(marshall_bool)
@@ -315,3 +318,23 @@ TEST_CASE(marshall_uw)
   MARSHALL_TEST_HEAP_UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_uw)
+
+int nop(void)
+{
+  return 2;
+}
+
+TEST_CASE(marshall_list)
+{
+  s_marshall m = {0};
+  s_list *list_test;
+  s_str str = {0};
+
+  TEST_ASSERT(marshall_init(&m));
+  list_test = list_new_1("[0, 1]");
+  TEST_ASSERT(list_test);
+  TEST_ASSERT(marshall_list(&m, true, list_test));
+  marshall_to_str(&m, &str);
+  nop();
+}
+TEST_CASE_END(marshall_list)
