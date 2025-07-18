@@ -136,13 +136,21 @@ s_marshall * marshall_init (s_marshall *m)
   return m;
 }
 
-s_marshall * marshall_plist (s_marshall *m, bool heap,
-                            const p_list list)
+s_marshall * marshall_list (s_marshall *m, bool heap,
+                            const s_list *list)
 {
   if (! marshall_tag(m, heap, &list->tag) ||
       ! marshall_tag(m, heap, &list->next))
     return NULL;
   return m;
+}
+
+s_marshall * marshall_plist (s_marshall *m, bool heap,
+                             const p_list list)
+{
+  if (! list->tag.data.list)
+    return m;
+  return marshall_plist(m, true, list);
 }
 
 s_marshall * marshall_new (void)
