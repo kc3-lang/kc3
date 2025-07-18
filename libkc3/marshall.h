@@ -79,7 +79,7 @@ sw      marshall_to_file (s_marshall *m, const char *path);
 PROTO_MARSHALL(pcallable,    p_callable   );
 PROTO_MARSHALL(pcomplex,     p_complex    );
 PROTO_MARSHALL(pcow,         p_cow        );
-PROTO_MARSHALL(plist,        p_list       );
+PROTO_MARSHALL(plist,        const p_list *     );
 PROTO_MARSHALL(pstruct,      p_struct     );
 PROTO_MARSHALL(pstruct_type, p_struct_type);
 PROTO_MARSHALL(ptag,         p_tag        );
