@@ -32,6 +32,22 @@
     marshall_clean(&m);                                                \
   } while (0)
 
+#define MARSHALL_TEST_TAG(token, on_heap)                              \
+  do {                                                                 \
+    s_marshall m = {0};                                                \
+    s_tag tag;                                                         \
+                                                                       \
+    tag_init_1(&tag, # token);                                         \
+    TEST_ASSERT(marshall_init(&m));                                    \
+    TEST_ASSERT(marshall_tag(&m, on_heap, &tag) != NULL);              \
+    tag_clean(&tag);                                                   \
+    marshall_clean(&m);                                                \
+  } while (0)                                                          \
+
+#define MARSHALL_TEST_TAG_HEAP(token)                                  \
+  MARSHALL_TEST_TAG(token, true);                                      \
+  MARSHALL_TEST_TAG(token, false)                                      \
+
 #define MARSHALL_TEST_BUF_BOOL(test, expected)      \
   MARSHALL_TEST(bool, false, test, expected)
 
@@ -115,9 +131,6 @@
 
 #define MARSHALL_TEST_HEAP_UW(test, expected)       \
   MARSHALL_TEST(uw, true, test, expected)
-
-#define MARSHALL_TEST_TAG(test, expected)       \
-  MARSHALL_TEST(s_tag, true, test, expected)
 
 void marshal_test (void);
 
@@ -337,16 +350,18 @@ TEST_CASE(marshall_plist)
 }
 TEST_CASE_END(marshall_plist)
 
-
 TEST_CASE(marshall_tag)
 {
-  s_marshall m = {0};
-  uw a = UW_MAX;
-  s_tag tag;
-
-  tag_init_1(&tag, "[1, 2, 3]");
-  TEST_ASSERT(marshall_init(&m));
-  TEST_ASSERT(marshall_tag(&m, false, &tag) != NULL);
-  tag_clean(&tag);
+  // normal int
+  MARSHALL_TEST_HEAP_BOOL("1 + 1");
+  MARSHALL_TEST_HEAP_BOOL("2147483647 + 2147483647");
+  MARSHALL_TEST_HEAP_BOOL("2147483647 + 2147483647");
+  MARSHALL_TEST_HEAP_BOOL("-2147483647 + -2147483647");
+  MARSHALL_TEST_HEAP_BOOL("-2147483647 + -2147483647");
+  MARSHALL_TEST_HEAP_BOOL("92233720368547 + 92233720368547", false);
+  MARSHALL_TEST_HEAP_BOOL("92233720368547 + 92233720368547", true);
+  MARSHALL_TEST_HEAP_BOOL("92233720368547 * -5", false);
+  MARSHALL_TEST_HEAP_BOOL("92233720368547 * -5", true);
+  MARSHALL_TEST_HEAP_BOOL("[1, 2, 3, 4, 5]", true);
 }
 TEST_CASE_END(marshall_tag)
