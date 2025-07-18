@@ -32,22 +32,6 @@
     marshall_clean(&m);                                                \
   } while (0)
 
-#define MARSHALL_TEST_TAG(token, on_heap)                              \
-  do {                                                                 \
-    s_marshall m = {0};                                                \
-    s_tag tag;                                                         \
-                                                                       \
-    tag_init_1(&tag, # token);                                         \
-    TEST_ASSERT(marshall_init(&m));                                    \
-    TEST_ASSERT(marshall_tag(&m, on_heap, &tag) != NULL);              \
-    tag_clean(&tag);                                                   \
-    marshall_clean(&m);                                                \
-  } while (0)                                                          \
-
-#define MARSHALL_TEST_TAG_HEAP(token)                                  \
-  MARSHALL_TEST_TAG(token, true);                                      \
-  MARSHALL_TEST_TAG(token, false)                                      \
-
 #define MARSHALL_TEST_BUF_BOOL(test, expected)      \
   MARSHALL_TEST(bool, false, test, expected)
 
@@ -131,6 +115,21 @@
 
 #define MARSHALL_TEST_HEAP_UW(test, expected)       \
   MARSHALL_TEST(uw, true, test, expected)
+
+#define MARSHALL_TEST_TAG(test, on_heap)                               \
+  do {                                                                 \
+    s_marshall m = {0};                                                \
+    s_tag tag = {0};                                                   \
+    tag_init_1(&tag, test);                                            \
+    TEST_EQ(marshall_init(&m), &m);                                    \
+    TEST_EQ(marshall_tag(&m, (on_heap), &tag), &m);                    \
+    marshall_clean(&m);                                                \
+    tag_clean(&tag);                                                   \
+  } while (0)
+
+#define MARSHALL_TEST_TAG_BUF_AND_HEAP(test)                           \
+  MARSHALL_TEST_TAG(test, true);                                       \
+  MARSHALL_TEST_TAG(test, false)
 
 void marshal_test (void);
 
@@ -352,16 +351,13 @@ TEST_CASE_END(marshall_plist)
 
 TEST_CASE(marshall_tag)
 {
-  // normal int
-  MARSHALL_TEST_HEAP_BOOL("1 + 1");
-  MARSHALL_TEST_HEAP_BOOL("2147483647 + 2147483647");
-  MARSHALL_TEST_HEAP_BOOL("2147483647 + 2147483647");
-  MARSHALL_TEST_HEAP_BOOL("-2147483647 + -2147483647");
-  MARSHALL_TEST_HEAP_BOOL("-2147483647 + -2147483647");
-  MARSHALL_TEST_HEAP_BOOL("92233720368547 + 92233720368547", false);
-  MARSHALL_TEST_HEAP_BOOL("92233720368547 + 92233720368547", true);
-  MARSHALL_TEST_HEAP_BOOL("92233720368547 * -5", false);
-  MARSHALL_TEST_HEAP_BOOL("92233720368547 * -5", true);
-  MARSHALL_TEST_HEAP_BOOL("[1, 2, 3, 4, 5]", true);
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("0");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("1");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("2");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("256");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("-2147483648");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("92233720368547");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("10000000000000000000000000000000000");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("[1, 2]");
 }
 TEST_CASE_END(marshall_tag)
