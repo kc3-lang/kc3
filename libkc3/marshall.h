@@ -76,4 +76,15 @@ sw      marshall_to_buf (s_marshall *m, s_buf *buf);
 s_str * marshall_to_str (s_marshall *m, s_str *dest);
 sw      marshall_to_file (s_marshall *m, const char *path);
 
+PROTO_MARSHALL(pcallable,    p_callable   );
+PROTO_MARSHALL(pcomplex,     p_complex    );
+PROTO_MARSHALL(pcow,         p_cow        );
+PROTO_MARSHALL(plist,        p_list       );
+PROTO_MARSHALL(pstruct,      p_struct     );
+PROTO_MARSHALL(pstruct_type, p_struct_type);
+PROTO_MARSHALL(ptag,         p_tag        );
+PROTO_MARSHALL(ptr,          u_ptr_w      );
+PROTO_MARSHALL(ptr_free,     u_ptr_w      );
+PROTO_MARSHALL(psym,         p_sym        );
+
 #endif /* LIBKC3_MARSHALL_H */

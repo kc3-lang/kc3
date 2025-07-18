@@ -49,8 +49,8 @@ DEF_MARSHALL_READ(f128, f128)
 DEF_MARSHALL_READ(f32, f32)
 DEF_MARSHALL_READ(f64, f64)
 
-s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
-                                      s_list *dest)
+s_marshall_read * marshall_read_plist (s_marshall_read *mr, bool heap,
+                                       p_list *dest)
 {
   s_list tmp = {0};
   assert(mr);
@@ -61,7 +61,7 @@ s_marshall_read * marshall_read_list (s_marshall_read *mr, bool heap,
     tag_clean(&tmp.tag);
     return NULL;
   }
-  *dest = tmp;
+  **dest = tmp;
   return mr;
 }
 
@@ -220,7 +220,7 @@ DEF_MARSHALL_READ(var, s_var)
 DEF_MARSHALL_READ(pcallable, p_callable )
 DEF_MARSHALL_READ(pcomplex, p_complex )
 DEF_MARSHALL_READ(pcow, p_cow )
-DEF_MARSHALL_READ(plist, p_list )
+// DEF_MARSHALL_READ(plist, p_list )
 DEF_MARSHALL_READ(pstruct, p_struct )
 DEF_MARSHALL_READ(pstruct_type, p_struct_type)
 DEF_MARSHALL_READ(ptag, p_tag )

@@ -132,7 +132,7 @@ TEST_CASE_PROTOTYPE(marshall_u16);
 TEST_CASE_PROTOTYPE(marshall_u32);
 TEST_CASE_PROTOTYPE(marshall_u64);
 TEST_CASE_PROTOTYPE(marshall_uw);
-TEST_CASE_PROTOTYPE(marshall_list);
+TEST_CASE_PROTOTYPE(marshall_plist);
 
 void marshall_test (void)
 {
@@ -151,7 +151,7 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_u32);
   TEST_CASE_RUN(marshall_u64);
   TEST_CASE_RUN(marshall_uw);
-  TEST_CASE_RUN(marshall_list);
+  TEST_CASE_RUN(marshall_plist);
 }
 
 TEST_CASE(marshall_bool)
@@ -319,7 +319,7 @@ TEST_CASE(marshall_uw)
 }
 TEST_CASE_END(marshall_uw)
 
-TEST_CASE(marshall_list)
+TEST_CASE(marshall_plist)
 {
   s_marshall m = {0};
   s_list *list_test;
@@ -328,7 +328,7 @@ TEST_CASE(marshall_list)
   TEST_ASSERT(marshall_init(&m));
   list_test = list_new_1("[0, 1]");
   TEST_ASSERT(list_test);
-  TEST_ASSERT(marshall_list(&m, true, list_test));
+  TEST_ASSERT(marshall_plist(&m, true, list_test));
   marshall_to_str(&m, &str);
 }
-TEST_CASE_END(marshall_list)
+TEST_CASE_END(marshall_plist)

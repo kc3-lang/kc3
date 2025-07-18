@@ -136,8 +136,8 @@ s_marshall * marshall_init (s_marshall *m)
   return m;
 }
 
-s_marshall * marshall_list (s_marshall *m, bool heap,
-                            const s_list *list)
+s_marshall * marshall_plist (s_marshall *m, bool heap,
+                            const p_list list)
 {
   if (! marshall_tag(m, heap, &list->tag) ||
       ! marshall_tag(m, heap, &list->next))
@@ -185,9 +185,8 @@ DEF_MARSHALL(sw)
 
 s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
 {
-  bool present = false;
   marshall_u8(m, heap, tag->type);
-  switch (tag->type){
+  switch (tag->type) {
   case TAG_BOOL: return marshall_bool(m, heap, tag->data.bool_);
   case TAG_CHARACTER:
     return marshall_character(m, heap, tag->data.character);
@@ -202,13 +201,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_STR:  return marshall_str(m, heap, &tag->data.str);
   case TAG_SW:   return marshall_sw(m, heap, tag->data.sw);
   case TAG_UW:   return marshall_uw(m, heap, tag->data.uw);
-  case TAG_LIST:
-    if (! marshall_heap_pointer(m, heap, (void *) &tag->data.list,
-                                &present))
-      return NULL;
-    if (! present)
-      marshall_list(m, true, tag->data.list);
-    return m;
+  case TAG_LIST: return marshall_plist(m, heap, tag->data.list);
   default:       break;
   }
   err_puts("marshall_tag: not implemented");
