@@ -17,6 +17,7 @@
 #include "../libkc3/marshall.h"
 #include "../libkc3/str.h"
 #include "../libkc3/list.h"
+#include "../libkc3/tag.h"
 #include "test.h"
 
 #define MARSHALL_TEST(type, on_heap, test, expected)                   \
@@ -114,6 +115,9 @@
 
 #define MARSHALL_TEST_HEAP_UW(test, expected)       \
   MARSHALL_TEST(uw, true, test, expected)
+
+#define MARSHALL_TEST_TAG(test, expected)       \
+  MARSHALL_TEST(s_tag, true, test, expected)
 
 void marshal_test (void);
 
@@ -332,3 +336,17 @@ TEST_CASE(marshall_plist)
   marshall_to_str(&m, &str);
 }
 TEST_CASE_END(marshall_plist)
+
+
+TEST_CASE(marshall_tag)
+{
+  s_marshall m = {0};
+  uw a = UW_MAX;
+  s_tag tag;
+
+  tag_init_1(&tag, "[1, 2, 3]");
+  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_tag(&m, false, &tag) != NULL);
+  tag_clean(&tag);
+}
+TEST_CASE_END(marshall_tag)
