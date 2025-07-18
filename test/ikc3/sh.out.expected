@@ -1,3 +1,5 @@
+require Sh
+true
 Sh.escape("")
 "\"\""
 Sh.escape("a")
