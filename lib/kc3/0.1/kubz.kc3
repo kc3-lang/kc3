@@ -10,17 +10,6 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
-defmodule Gtk4.Widget do
-
-  dlopen(__DIR__ + "../gtk4.so")
-
-  def set_halign = cfn Ptr "kc3_gtk4_widget_set_halign" (Ptr, Sym)
-
-  def set_hexpand = cfn Void "kc3_gtk4_widget_set_hexpand" (Ptr, Bool)
-  
-  def set_size_request = cfn Ptr "kc3_gtk4_widget_set_size_request"
-    (Ptr, Tag, Tag)
-
-  def set_vexpand = cfn Void "kc3_gtk4_widget_set_vexpand" (Ptr, Bool)
-
-end
+require GL.Box
+require GL.MarchingCubes
+require GL.Object

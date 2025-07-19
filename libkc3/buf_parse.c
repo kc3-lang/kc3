@@ -996,6 +996,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     if ((r = buf_parse_tag_primary(buf, right)) <= 0)
       goto restore;
     result += r;
+    buf_save_update(buf, &save);
     if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
       break;
     result += r;
@@ -1028,6 +1029,7 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
       result += r;
       tag_init_call(right);
       right->data.call = tmp2;
+      buf_save_update(buf, &save);
       if ((r = buf_ignore_spaces_but_newline(buf)) < 0)
         goto ok;
       result += r;
@@ -1044,18 +1046,19 @@ sw buf_parse_call_op_rec (s_buf *buf, s_call *dest, u8 min_precedence)
     }
   }
  ok:
+  result -= (buf->rpos - save.rpos);
+  buf_save_restore_rpos(buf, &save);
   tag_clean(&next_op_tag);
   tag_clean(&op_tag);
   call_clean(dest);
   *dest = tmp;
-  r = result;
-  goto clean;
+  buf_save_clean(buf, &save);
+  return result;
  restore:
   buf_save_restore_rpos(buf, &save);
   tag_clean(&next_op_tag);
   tag_clean(&op_tag);
   call_clean(&tmp);
- clean:
   buf_save_clean(buf, &save);
   return r;
 }
@@ -2040,9 +2043,16 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
   assert(buf);
   assert(dest);
   buf_save_init(buf, &save);
-  r = buf_parse_module_name(buf, &tmp.module);
-  if (r < 0)
+  if ((r = buf_read_1(buf, "(Ident)")) < 0)
     goto clean;
+  if (r) {
+    result += r;
+    if ((r = buf_ignore_spaces(buf)) < 0)
+      goto restore;
+    result += r;
+  }
+  if ((r = buf_parse_module_name(buf, &tmp.module)) < 0)
+    goto restore;
   if (r > 0) {
     result += r;
     if ((r = buf_read_1(buf, ".")) <= 0)
@@ -4484,6 +4494,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
   switch (c) {
   case '(':
     if ((r = buf_parse_tag_pvar(buf, dest)) ||
+        (r = buf_parse_tag_ident(buf, dest)) ||
         (r = buf_parse_tag_cow(buf, dest)) ||
         (r = buf_parse_tag_number(buf, dest)) ||
         (r = buf_parse_tag_ptr(buf, dest)) ||

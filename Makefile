@@ -325,6 +325,10 @@ gdb_demo_gl: lib_links_debug
 	${MAKE} debug
 	${MAKE} -C window/sdl2 gdb_demo
 
+gdb_demo_kubz: lib_links_debug
+	${MAKE} debug
+	${MAKE} -C window/sdl2/kubz gdb_demo
+
 gdb_fx: httpd_debug lib_links_debug
 	${MAKE} -C httpd gdb_fx
 
