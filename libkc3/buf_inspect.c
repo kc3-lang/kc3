@@ -4414,3 +4414,4 @@ sw buf_inspect_void_size (s_pretty *pretty, const void *v)
 {
   (void) v;
   return buf_write_1_size(pretty, "void");
+}

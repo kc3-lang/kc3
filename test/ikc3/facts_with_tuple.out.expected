@@ -1,6 +1,7 @@
 Facts.with_tuple(Facts.env_db(), {op = ?, :op_sym, sym = ?}, fn (fact) { puts(fact.object); void })
 :!
 :!=
+:%
 :&
 :&&
 :"()"

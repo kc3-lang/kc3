@@ -1,33 +1,34 @@
 Facts.with_tags(Facts.env_db(), op = ?, :op_sym, sym = ?, fn (fact) { puts("#{inspect(sym)} #{inspect(op)}"); 2 })
 :! :op_5
-:!= :op_20
-:& :op_21
-:&& :op_24
+:!= :op_21
+:% :op_9
+:& :op_22
+:&& :op_25
 :"()" :op_1
-:* :op_9
-:+ :op_10
-:+i :op_11
-:- :op_12
+:* :op_10
+:+ :op_11
+:+i :op_12
+:- :op_13
 :- :op_4
 :/ :op_7
-:";" :op_29
-:< :op_15
-:<- :op_26
-:<< :op_13
-:<= :op_16
-:= :op_28
-:== :op_19
-:> :op_17
-:>= :op_18
-:>> :op_14
+:";" :op_30
+:< :op_16
+:<- :op_27
+:<< :op_14
+:<= :op_17
+:= :op_29
+:== :op_20
+:> :op_18
+:>= :op_19
+:>> :op_15
 :"[]" :op_2
-:^ :op_22
+:^ :op_23
 :^ :op_6
-:bor :op_23
+:bor :op_24
 :mod :op_8
-:|| :op_25
+:|| :op_26
 :~ :op_3
-:← :op_27
+:← :op_28
 2
 op = ? ; void
 void
@@ -35,39 +36,40 @@ sym = ? ; void
 void
 Facts.with_tags(Facts.env_db(), op, :op_sym, sym, fn (fact) { puts("#{inspect(sym)} #{inspect(op)}"); 3 })
 :! :op_5
-:!= :op_20
-:& :op_21
-:&& :op_24
+:!= :op_21
+:% :op_9
+:& :op_22
+:&& :op_25
 :"()" :op_1
-:* :op_9
-:+ :op_10
-:+i :op_11
-:- :op_12
+:* :op_10
+:+ :op_11
+:+i :op_12
+:- :op_13
 :- :op_4
 :/ :op_7
-:";" :op_29
-:< :op_15
-:<- :op_26
-:<< :op_13
-:<= :op_16
-:= :op_28
-:== :op_19
-:> :op_17
-:>= :op_18
-:>> :op_14
+:";" :op_30
+:< :op_16
+:<- :op_27
+:<< :op_14
+:<= :op_17
+:= :op_29
+:== :op_20
+:> :op_18
+:>= :op_19
+:>> :op_15
 :"[]" :op_2
-:^ :op_22
+:^ :op_23
 :^ :op_6
-:bor :op_23
+:bor :op_24
 :mod :op_8
-:|| :op_25
+:|| :op_26
 :~ :op_3
-:← :op_27
+:← :op_28
 3
 type(op)
 Var
 sym = :+
 :+
 Facts.with_tags(Facts.env_db(), op = ?, :op_sym, sym, fn (fact) { puts("#{inspect(sym)} #{inspect(op)}"); 4 })
-:+ :op_10
+:+ :op_11
 4
