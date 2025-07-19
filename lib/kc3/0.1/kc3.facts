@@ -69,6 +69,14 @@ add {KC3, :symbol, KC3.while}
 replace {KC3.while, :arity, 2}
 replace {KC3.while, :is_a, :special_operator}
 replace {KC3.while, :symbol_value, cfn Tag "kc3_while" (Tag, Tag, Result)}
+add {KC3, :symbol, (Ident) KC3.break}
+replace {(Ident) KC3.break, :arity, 0}
+replace {(Ident) KC3.break, :is_a, :special_operator}
+replace {(Ident) KC3.break, :symbol_value, cfn Void "kc3_break" ()}
+add {KC3, :symbol, (Ident) KC3.continue}
+replace {(Ident) KC3.continue, :arity, 0}
+replace {(Ident) KC3.continue, :is_a, :special_operator}
+replace {(Ident) KC3.continue, :symbol_value, cfn Void "kc3_continue" ()}
 add {KC3, :symbol, KC3.special_operator_arity}
 replace {KC3.special_operator_arity, :symbol_value, cfn U8 "special_operator_arity" (Ident)}
 add {KC3, :symbol, KC3.str}

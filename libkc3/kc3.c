@@ -209,8 +209,16 @@ s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
 
 void kc3_break (void)
 {
-  err_puts("break");
-  assert(! "break");
+  s_loop_context *lc;
+  s_env *env;
+  env = env_global();
+  assert(env);
+  if (! (lc = env->loop_context)) {
+    err_puts("kc3_break: no loop context");
+    assert(! "kc3_break: no loop context");
+    return;
+  }
+  env_longjmp(env, &lc->break_buf);
   abort();
 }
 
@@ -226,6 +234,21 @@ s_tag * kc3_buf_parse_tag (s_buf *buf, s_tag *dest)
 void kc3_clean (s_env *env)
 {
   env_clean(env);
+}
+
+void kc3_continue (void)
+{
+  s_loop_context *lc;
+  s_env *env;
+  env = env_global();
+  assert(env);
+  if (! (lc = env->loop_context)) {
+    err_puts("kc3_continue: no loop context");
+    assert(! "kc3_continue: no loop context");
+    return;
+  }
+  env_longjmp(env, &lc->continue_buf);
+  abort();
 }
 
 s_tag * kc3_def (const s_call *call, s_tag *dest)

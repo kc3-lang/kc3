@@ -54,6 +54,7 @@ s_env * env_fork_init (s_env *env, s_env *src)
   tmp.global_frame = src->global_frame;
   tmp.in = src->in;
   tmp.loaded = true;
+  // tmp.loop_context = NULL;
   tmp.module_path = src->module_path;
   if (! (tmp.ops = ops_new_copy(src->ops)))
     return NULL;

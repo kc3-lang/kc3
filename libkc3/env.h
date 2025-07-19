@@ -111,6 +111,8 @@ s_tag *        env_kc3_def (s_env *env, const s_call *call,
 s_tag *        env_let (s_env *env, s_tag *vars, s_tag *tag,
                         s_tag *dest);
 bool           env_load (s_env *env, const s_str *path);
+void           env_loop_context_pop (s_env *env, s_loop_context *lc);
+void           env_loop_context_push (s_env *env, s_loop_context *lc);
 bool           env_maybe_reload (s_env *env, const s_str *path);
 bool *         env_module_is_loading (s_env *env, const s_sym *module,
                                       bool *dest);
@@ -121,7 +123,7 @@ bool           env_module_load (s_env *env, const s_sym *module);
 bool           env_module_maybe_reload (s_env *env,
                                         const s_sym *module);
 s_tag *        env_or (s_env *env, s_tag *a, s_tag *b, s_tag *dest);
-u8             env_special_operator_arity (s_env *env,
+s8             env_special_operator_arity (s_env *env,
                                            const s_ident *ident);
 bool *         env_struct_type_exists (s_env *env, const s_sym *module,
                                        bool *dest);

@@ -27,6 +27,22 @@ do
   i
 end
 quote do
+  i = 0
+  while i < 3 do
+    puts(i)
+    i = i + 1
+  end
+  i
+end
+do
+  i = 0
+  while i < 3 do
+    puts(i)
+    i = i + 1
+  end
+  i
+end
+quote do
   sum = 0
   i = 1
   while (i <= 5) do
@@ -39,6 +55,24 @@ do
   sum = 0
   i = 1
   while (i <= 5) do
+    sum = sum + i
+    i = i + 1
+  end
+  sum
+end
+quote do
+  sum = 0
+  i = 1
+  while i <= 5 do
+    sum = sum + i
+    i = i + 1
+  end
+  sum
+end
+do
+  sum = 0
+  i = 1
+  while i <= 5 do
     sum = sum + i
     i = i + 1
   end
@@ -58,6 +92,28 @@ end
 do
   x = 10
   while (x > 0) do
+    if x == 5 do
+      break
+    end
+    puts(x)
+    x = x - 1
+  end
+  x
+end
+quote do
+  x = 10
+  while x > 0 do
+    if x == 5 do
+      break
+    end
+    puts(x)
+    x = x - 1
+  end
+  x
+end
+do
+  x = 10
+  while x > 0 do
     if x == 5 do
       break
     end
@@ -81,6 +137,48 @@ do
   while (i < 3) do
     result = [i | result]
     i = i + 1
+  end
+  result
+end
+quote do
+  result = []
+  i = 0
+  while i < 3 do
+    result = [i | result]
+    i = i + 1
+  end
+  result
+end
+do
+  result = []
+  i = 0
+  while i < 3 do
+    result = [i | result]
+    i = i + 1
+  end
+  result
+end
+quote do
+  i = 0
+  result = []
+  while i < 10 do
+    i = i + 1
+    if i mod 2 == 0 do
+      continue
+    end
+    result = [i | result]
+  end
+  result
+end
+do
+  i = 0
+  result = []
+  while i < 10 do
+    i = i + 1
+    if i mod 2 == 0 do
+      continue
+    end
+    result = [i | result]
   end
   result
 end

@@ -220,6 +220,7 @@ typedef struct list                    s_list;
 typedef struct fact_list               s_fact_list;
 typedef struct list                    s_list_map;
 typedef struct log                     s_log;
+typedef struct loop_context            s_loop_context;
 typedef struct map                     s_map;
 typedef struct mutex                   s_mutex;
 typedef struct op                      s_op;
@@ -326,6 +327,12 @@ struct frame {
 struct fact_list {
   s_fact *fact;
   s_fact_list *next;
+};
+
+struct loop_context {
+  jmp_buf continue_buf;
+  jmp_buf break_buf;
+  s_loop_context *next;
 };
 
 struct map {
@@ -840,6 +847,7 @@ struct env {
   s_frame          *global_frame;
   s_buf            *in;
   bool              loaded;
+  s_loop_context   *loop_context;
   s_str            *module_path;
   s_ops            *ops;
   s_buf            *out;

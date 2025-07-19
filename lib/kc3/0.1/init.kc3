@@ -60,6 +60,12 @@ defoperator %KC3.Op{sym: :mod,
                     associativity: 1,
                     callable: cfn Tag "tag_mod" (Tag, Tag, Result)}
 
+defoperator %KC3.Op{sym: :%,
+                    arity: 2,
+                    precedence: 13,
+                    associativity: 1,
+                    callable: cfn Tag "tag_mod" (Tag, Tag, Result)}
+
 defoperator %KC3.Op{sym: :*,
                     arity: 2,
                     precedence: 13,

@@ -16,6 +16,6 @@
 #include "types.h"
 
 /* Observers */
-u8 special_operator_arity (const s_ident *ident);
+s8 special_operator_arity (const s_ident *ident);
 
 #endif /* LIBKC3_SPECIAL_OPERATOR_H */

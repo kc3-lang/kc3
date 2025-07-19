@@ -1577,6 +1577,31 @@ bool env_load (s_env *env, const s_str *path)
   return false;
 }
 
+void env_loop_context_pop (s_env *env, s_loop_context *lc)
+{
+  assert(env);
+  assert(lc);
+  if (env->loop_context != lc) {
+    err_puts("env_loop_context_pop: mismatch");
+    assert(! "env_loop_context_pop: mismatch");
+    abort();
+  }
+  env->loop_context = lc->next;
+}
+
+void env_loop_context_push (s_env *env, s_loop_context *lc)
+{
+  assert(env);
+  assert(lc);
+  if (env->loop_context == lc) {
+    err_puts("env_loop_context_push: double push");
+    assert(! "env_loop_context_push: double push");
+    abort();
+  }
+  lc->next = env->loop_context;
+  env->loop_context = lc;
+}
+
 bool env_maybe_reload (s_env *env, const s_str *path)
 {
   s_facts_cursor cursor;
@@ -2083,9 +2108,9 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
   return true;
 }
 
-u8 env_special_operator_arity (s_env *env, const s_ident *ident)
+s8 env_special_operator_arity (s_env *env, const s_ident *ident)
 {
-  u8 arity;
+  s8 arity;
   s_facts_cursor cursor;
   s_fact *fact;
   s_tag tag_arity;
@@ -2100,24 +2125,24 @@ u8 env_special_operator_arity (s_env *env, const s_ident *ident)
   if (! facts_with_tags(env->facts, &cursor,
                         &tag_ident, &tag_arity, &tag_pvar)) {
     tag_clean(&tag_pvar);
-    return 0;
+    return -1;
   }
   if (! facts_cursor_next(&cursor, &fact)) {
     tag_clean(&tag_pvar);
-    return 0;
+    return -1;
   }
   if (fact) {
     if (tag_pvar.data.pvar->tag.type != TAG_U8 ||
-        ! tag_pvar.data.pvar->tag.data.u8) {
+        tag_pvar.data.pvar->tag.data.u8 > S8_MAX) {
       err_write_1("env_special_operator_arity: "
                   "invalid arity for special operator ");
       err_inspect_ident(&tag_ident.data.ident);
       err_write_1("\n");
       facts_cursor_clean(&cursor);
       tag_clean(&tag_pvar);
-      return 0;
+      return -1;
     }
-    arity = tag_pvar.data.pvar->tag.data.u8;
+    arity = (s8) tag_pvar.data.pvar->tag.data.u8;
     facts_cursor_clean(&cursor);
     tag_clean(&tag_pvar);
     return arity;
@@ -2128,7 +2153,7 @@ u8 env_special_operator_arity (s_env *env, const s_ident *ident)
               "arity not found for special operator ");
   err_inspect_ident(&tag_ident.data.ident);
   err_write_1("\n");
-  return 0;
+  return -1;
 }
 
 bool * env_struct_type_exists (s_env *env, const s_sym *module,
@@ -2423,6 +2448,8 @@ void env_unwind_protect_pop (s_env *env, s_unwind_protect *up)
 void env_unwind_protect_push (s_env *env,
                               s_unwind_protect *up)
 {
+  assert(env);
+  assert(up);
   if (env->unwind_protect == up) {
     err_puts("env_unwind_protect_push: deadlock");
     assert(! "env_unwind_protect_push: deadlock");
@@ -2438,26 +2465,36 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
 {
   s_tag  cond_bool = {0};
   s_call cond_cast = {0};
+  s_loop_context loop_context = {0};
   s_tag tmp = {0};
   call_init_call_cast(&cond_cast, &g_sym_Bool);
   if (! tag_init_copy(&list_next(cond_cast.arguments)->tag, cond))
     goto ko;
+  env_loop_context_push(env, &loop_context);
+  if (setjmp(loop_context.break_buf))
+    goto ok;
   while (1) {
-    tag_clean(&tmp);
     if (! env_eval_call(env, &cond_cast, &cond_bool))
       goto ko;
     if (cond_bool.type != TAG_BOOL)
       goto ko;
     if (! cond_bool.data.bool_)
       break;
+    tag_clean(&tmp);
+    tag_init(&tmp);
+    if (setjmp(loop_context.continue_buf))
+      continue;
     if (! env_eval_tag(env, body, &tmp))
       goto ko;
   }
+  ok:
+  env_loop_context_pop(env, &loop_context);  
   call_clean(&cond_cast);
   *dest = tmp;
   return dest;
  ko:
   tag_clean(&tmp);
+  env_loop_context_pop(env, &loop_context);  
   call_clean(&cond_cast);
   return NULL;
 }
