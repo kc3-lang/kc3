@@ -1,3 +1,11 @@
+require Socket
+true
+require Socket.Buf
+true
+require HTTP.Request
+true
+require HTTP.Response
+true
 (server = Socket.listen("localhost", "57000")) ; void
 void
 (client = Socket.Buf.connect("localhost", "57000")) ; void

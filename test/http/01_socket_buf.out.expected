@@ -1,3 +1,5 @@
+require Socket.Buf
+true
 a = %Socket.Buf{}
 %Socket.Buf{addr: (Ptr) 0x0,
             addr_len: (U32) 0,

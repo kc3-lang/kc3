@@ -1,2 +1,4 @@
+require HTTP.Response
+true
 def f = fn () { res = %HTTP.Response{body: "a#{:a}"} }
 f

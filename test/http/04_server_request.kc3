@@ -1,3 +1,11 @@
+quote require HTTP.Request
+require HTTP.Request
+quote require HTTP.Response
+require HTTP.Response
+quote require Socket
+require Socket
+quote require Socket.Buf
+require Socket.Buf
 quote (server = Socket.listen("127.0.0.1", "57000")) ; void
 (server = Socket.listen("127.0.0.1", "57000")) ; void
 quote (client = Socket.Buf.connect("127.0.0.1", "57000")) ; void

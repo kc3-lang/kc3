@@ -1,2 +1,4 @@
+quote require HTTP.Response
+require HTTP.Response
 quote def f = fn () { res = %HTTP.Response{body: "a#{:a}"} }
 def f = fn () { res = %HTTP.Response{body: "a#{:a}"} }

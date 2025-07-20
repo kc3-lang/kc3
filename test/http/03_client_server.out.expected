@@ -1,3 +1,7 @@
+require Socket
+true
+require Socket.Buf
+true
 (server = Socket.listen("127.0.0.1", "57000")) ; void
 void
 (client = Socket.Buf.connect("127.0.0.1", "57000")) ; void

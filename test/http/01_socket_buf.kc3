@@ -1,3 +1,5 @@
+quote require Socket.Buf
+require Socket.Buf
 quote a = %Socket.Buf{}
 a = %Socket.Buf{}
 quote a.buf_rw

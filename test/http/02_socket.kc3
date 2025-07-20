@@ -1,2 +1,4 @@
+quote require Socket
+require Socket
 quote %Socket{}
 %Socket{}

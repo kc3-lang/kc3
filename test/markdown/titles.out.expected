@@ -1,3 +1,5 @@
+require Markdown
+true
 Markdown.titles("Text.\n")
 []
 Markdown.titles("# Title\nText.\n\n## Title 2\n")

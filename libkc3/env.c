@@ -2468,6 +2468,7 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
   s_tag * volatile dest_v = dest;
   s_loop_context loop_context = {0};
   s_tag tmp = {0};
+  s_unwind_protect up = {0};
   assert(env);
   assert(cond);
   assert(body);
@@ -2476,6 +2477,14 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
   if (! tag_init_copy(&list_next(cond_cast.arguments)->tag, cond))
     goto ko;
   env_loop_context_push(env, &loop_context);
+  env_unwind_protect_push(env, &up);
+  if (setjmp(up.buf)) {
+    env_unwind_protect_pop(env, &up);
+    tag_clean(&tmp);
+    env_loop_context_pop(env, &loop_context);
+    call_clean(&cond_cast);
+    longjmp(*up.jmp, 1);
+  }
   if (setjmp(loop_context.break_buf))
     goto ok;
   while (1) {
@@ -2493,11 +2502,13 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
       goto ko;
   }
   ok:
+  env_unwind_protect_pop(env, &up);
   env_loop_context_pop(env, &loop_context);  
   call_clean(&cond_cast);
   *dest_v = tmp;
   return dest_v;
  ko:
+  env_unwind_protect_pop(env, &up);
   tag_clean(&tmp);
   env_loop_context_pop(env, &loop_context);  
   call_clean(&cond_cast);
