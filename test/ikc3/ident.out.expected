@@ -25,3 +25,11 @@ _Π
 😄
 🟣
 🤩
+quote Test.symbol
+Test.symbol
+type(quote Test.sym)
+Ident
+type(quote break)
+Ident
+type(quote continue)
+Ident

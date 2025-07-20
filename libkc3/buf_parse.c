@@ -2034,7 +2034,7 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
   return r;
 }
 
-sw buf_parse_ident (s_buf *buf, s_ident *dest)
+sw buf_parse_ident_cast (s_buf *buf, s_ident *dest)
 {
   sw r;
   sw result = 0;
@@ -2051,6 +2051,28 @@ sw buf_parse_ident (s_buf *buf, s_ident *dest)
       goto restore;
     result += r;
   }
+  if ((r = buf_parse_ident(buf, &tmp)) < 0)
+    goto restore;
+  result += r;
+  *dest = tmp;
+  r = result;
+  goto clean;
+ restore:
+  buf_save_restore_rpos(buf, &save);
+ clean:
+  buf_save_clean(buf, &save);
+  return r;
+}
+
+sw buf_parse_ident (s_buf *buf, s_ident *dest)
+{
+  sw r;
+  sw result = 0;
+  s_buf_save save;
+  s_ident tmp = {0};
+  assert(buf);
+  assert(dest);
+  buf_save_init(buf, &save);
   if ((r = buf_parse_module_name(buf, &tmp.module)) < 0)
     goto restore;
   if (r > 0) {
@@ -4224,7 +4246,7 @@ sw buf_parse_tag_ident (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   env = env_global();
-  r = buf_parse_ident(buf, &dest->data.ident);
+  r = buf_parse_ident_cast(buf, &dest->data.ident);
   if (r > 0) {
     if (! dest->data.ident.module &&
         (tag = frame_get_w(env->read_time_frame,

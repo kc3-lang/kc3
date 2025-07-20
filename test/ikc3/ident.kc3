@@ -26,3 +26,11 @@ quote 🎳
 quote 😄
 quote 🟣
 quote 🤩
+quote quote (Ident) Test.symbol
+quote (Ident) Test.symbol
+quote type(quote (Ident) Test.sym)
+type(quote (Ident) Test.sym)
+quote type(quote (Ident) break)
+type(quote (Ident) break)
+quote type(quote (Ident) continue)
+type(quote (Ident) continue)
