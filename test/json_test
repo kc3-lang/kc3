@@ -29,10 +29,10 @@ test_ok() {
 }
 
 if [ $# = 0 ]; then
-    if [ "x${IKC3_TEST}" = "x" ]; then
+    if [ "x${JSON_TEST}" = "x" ]; then
         TARGETS="$(ls -1 *.kc3 | sed -e 's/[.]kc3$//')"
     else
-        TARGETS="${IKC3_TEST}"
+        TARGETS="${JSON_TEST}"
     fi
 else
     TARGETS="$@"
