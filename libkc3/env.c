@@ -2465,8 +2465,13 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
 {
   s_tag  cond_bool = {0};
   s_call cond_cast = {0};
+  s_tag * volatile dest_v = dest;
   s_loop_context loop_context = {0};
   s_tag tmp = {0};
+  assert(env);
+  assert(cond);
+  assert(body);
+  assert(dest_v);
   call_init_call_cast(&cond_cast, &g_sym_Bool);
   if (! tag_init_copy(&list_next(cond_cast.arguments)->tag, cond))
     goto ko;
@@ -2490,8 +2495,8 @@ s_tag * env_while (s_env *env, s_tag *cond, s_tag *body,
   ok:
   env_loop_context_pop(env, &loop_context);  
   call_clean(&cond_cast);
-  *dest = tmp;
-  return dest;
+  *dest_v = tmp;
+  return dest_v;
  ko:
   tag_clean(&tmp);
   env_loop_context_pop(env, &loop_context);  
