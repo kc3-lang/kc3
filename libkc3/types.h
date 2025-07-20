@@ -329,12 +329,6 @@ struct fact_list {
   s_fact_list *next;
 };
 
-struct loop_context {
-  jmp_buf continue_buf;
-  jmp_buf break_buf;
-  s_loop_context *next;
-};
-
 struct map {
   uw count;
   s_tag *key; /* sorted (see tag_compare) */
@@ -494,6 +488,13 @@ struct ident {
 
 struct integer {
   mp_int mp_int;
+};
+
+struct loop_context {
+  jmp_buf continue_buf;
+  jmp_buf break_buf;
+  s_unwind_protect up;
+  s_loop_context *next;
 };
 
 struct str {
