@@ -1,3 +1,5 @@
+quote require JSON
+require JSON
 quote JSON.to_str(%{})
 JSON.to_str(%{})
 quote JSON.to_str(%{"a" => true})

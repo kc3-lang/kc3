@@ -1,3 +1,5 @@
+require JSON
+true
 JSON.from_str("{}")
 %{}
 JSON.from_str("{\"a\": \"b\"}")

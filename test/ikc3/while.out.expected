@@ -117,3 +117,24 @@ do
   result
 end
 [9, 7, 5, 3, 1]
+do
+  result = []
+  i = 0
+  while i < 10 do
+    i = i + 1
+    if i mod 2 == 0 do
+      continue
+    end
+    if i > 7 do
+      break
+    end
+    result = [i | result]
+  end
+  result
+end
+[7, 5, 3, 1]
+loop 0
+loop 1
+loop 2
+loop 3
+:ok

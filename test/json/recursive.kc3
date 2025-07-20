@@ -1,3 +1,5 @@
+quote require JSON
+require JSON
 quote map = JSON.from_str("""{"a": {"b": {"c": 1}}}""")
 map = JSON.from_str("""{"a": {"b": {"c": 1}}}""")
 quote map["a"]["b"]["c"]

@@ -1,3 +1,5 @@
+require JSON
+true
 map = JSON.from_str("{\"a\": {\"b\": {\"c\": 1}}}")
 %{"a" => %{"b" => %{"c" => 1}}}
 map["a"]["b"]["c"]

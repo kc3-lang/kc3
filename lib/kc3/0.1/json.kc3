@@ -10,6 +10,8 @@
 ## AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
 ## THIS SOFTWARE.
 
+require Buf
+
 defmodule JSON do
 
   dlopen(__DIR__ + "json.so")

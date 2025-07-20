@@ -182,3 +182,44 @@ do
   end
   result
 end
+quote do
+  result = []
+  i = 0
+  while i < 10 do
+    i = i + 1
+    if i mod 2 == 0 do
+      continue
+    end
+    if i > 7 do
+      break
+    end
+    result = [i | result]
+  end
+  result
+end
+do
+  result = []
+  i = 0
+  while i < 10 do
+    i = i + 1
+    if i mod 2 == 0 do
+      continue
+    end
+    if i > 7 do
+      break
+    end
+    result = [i | result]
+  end
+  result
+end
+block :test do
+  i = 0
+  while i < 10 do
+    puts("loop #{i}")
+    i = i + 1
+    if i == 4 do
+      return :ok
+    end
+  end
+  :failed
+end
