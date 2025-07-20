@@ -16,6 +16,8 @@
 #include "types.h"
 
 /* Evaluator as a code walker for operator = equal. */
+bool env_eval_equal_cow (s_env *env, bool macro, s_cow *a,
+                         s_cow *b, s_cow **dest);
 bool env_eval_equal_do_block (s_env *env, bool macro,
                               s_do_block *a, s_do_block *b,
                               s_do_block *dest);

@@ -63,7 +63,7 @@ s_cow * cow_freeze_copy (s_cow *cow, s_tag *src)
   if (! tmp)
     return NULL;
   cow->list->next.type = TAG_LIST;
-  cow->list->next.data.list = tmp;
+  cow->list->next.data.plist = tmp;
   return cow;
 }
 

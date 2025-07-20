@@ -510,7 +510,7 @@ sw buf_parse_do_block_inner (s_buf *buf, bool short_form,
         goto restore;
       }
       (*i)->tag = tag;
-      i = &(*i)->next.data.list;
+      i = &(*i)->next.data.plist;
     }
     if ((r = buf_parse_comments(buf)) < 0) {
       err_puts("buf_parse_do_block_inner: buf_parse_comments 1");
@@ -675,7 +675,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
     if ((r = buf_parse_tag(buf, &(*addr_last)->tag)) <= 0)
       goto restore;
     result += r;
-    addr_last = &(*addr_last)->next.data.list;
+    addr_last = &(*addr_last)->next.data.plist;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     result += r;
@@ -690,7 +690,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   tmp.ident.module = &g_sym_KC3;
   tmp.ident.sym = &g_sym__brackets;
   arg_addr->type = TAG_LIST;
-  arg_addr->data.list = addr;
+  arg_addr->data.plist = addr;
   *dest = tmp;
   r = result;
   goto clean;
@@ -761,7 +761,7 @@ sw buf_parse_call_access (s_buf *buf, s_call *dest)
     result += r;
     *k = list_new(NULL);
     r = buf_parse_tag_ident_sym(buf, &(*k)->tag);
-    k = &(*k)->next.data.list;
+    k = &(*k)->next.data.plist;
     if (r <= 0)
       goto restore;
     result += r;
@@ -771,7 +771,7 @@ sw buf_parse_call_access (s_buf *buf, s_call *dest)
       break;
   }
   list_next(tmp.arguments)->tag.type = TAG_LIST;
-  list_next(tmp.arguments)->tag.data.list = key;
+  list_next(tmp.arguments)->tag.data.plist = key;
   *dest = tmp;
   r = result;
   goto clean;
@@ -835,7 +835,7 @@ sw buf_parse_call_args_paren (s_buf *buf, s_call *dest)
       goto restore;
     if (r > 0) {
       result += r;
-      args = &(*args)->next.data.list;
+      args = &(*args)->next.data.plist;
       if ((r = buf_parse_comments(buf)) < 0)
         goto restore;
       result += r;
@@ -1186,7 +1186,7 @@ sw buf_parse_cast (s_buf *buf, s_call *dest)
   result += r;
   call_init_op(&tmp);
   ident_init(&tmp.ident, module, &g_sym_cast);
-  tag_init_sym(&tmp.arguments->tag, module);
+  tag_init_psym(&tmp.arguments->tag, module);
   if ((r = buf_parse_tag_primary(buf,
                                  &list_next(tmp.arguments)->tag)) <= 0)
     goto clean;
@@ -1928,7 +1928,7 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
   l = frame_list;
   while (l) {
     if (! frame_binding_new(tmp.frame,
-                            l->tag.data.tuple.tag[0].data.sym,
+                            l->tag.data.tuple.tag[0].data.psym,
                             l->tag.data.tuple.tag + 1))
       goto restore;
     l = list_next(l);
@@ -2007,7 +2007,7 @@ sw buf_parse_fn_pattern (s_buf *buf, s_list **dest)
     result += r;
     *tail = list_new(NULL);
     (*tail)->tag = tag;
-    tail = &(*tail)->next.data.list;
+    tail = &(*tail)->next.data.plist;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto clean;
     result += r;
@@ -2202,13 +2202,13 @@ sw buf_parse_if (s_buf *buf, s_call *dest)
   if ((r = buf_ignore_spaces(buf)) < 0)
     goto restore;
   result += r;
-  args_last = &(*args_last)->next.data.list;
+  args_last = &(*args_last)->next.data.plist;
   *args_last = list_new(NULL);
   then = &(*args_last)->tag;
   if ((r = buf_parse_if_then(buf, then, &has_else)) < 0)
     goto restore;
   result += r;
-  args_last = &(*args_last)->next.data.list;
+  args_last = &(*args_last)->next.data.plist;
   *args_last = list_new(NULL);
   else_ = &(*args_last)->tag;
   if (has_else) {
@@ -2313,7 +2313,7 @@ sw buf_parse_if_then (s_buf *buf, s_tag *dest, bool *has_else)
       *has_else = true;
       goto ok;
     }
-    i = &(*i)->next.data.list;
+    i = &(*i)->next.data.plist;
   }
   r = 0;
  restore:
@@ -2647,7 +2647,7 @@ sw buf_parse_list (s_buf *buf, s_list **list)
     }
     if (r > 0) {
       result += r;
-      i = &(*i)->next.data.list;
+      i = &(*i)->next.data.plist;
       if ((r = buf_parse_comments(buf)) < 0) {
         err_puts("buf_parse_list: buf_parse_comments 3");
         assert(! "buf_parse_list: buf_parse_comments 3");
@@ -2781,7 +2781,7 @@ sw buf_parse_list_paren (s_buf *buf, s_list **list)
       goto restore;
     if (r > 0) {
       result += r;
-      i = &(*i)->next.data.list;
+      i = &(*i)->next.data.plist;
       if ((r = buf_parse_comments(buf)) < 0)
         goto restore;
       result += r;
@@ -2870,7 +2870,7 @@ sw buf_parse_list_tag (s_buf *buf, s_tag *dest)
       return -2;
     }
     key.type = TAG_SYM;
-    key.data.sym = str_to_sym(&str);
+    key.data.psym = str_to_sym(&str);
     str_clean(&str);
     tmp.data.tuple.tag[0] = key;
     tmp.data.tuple.tag[1] = value;
@@ -2931,7 +2931,7 @@ sw buf_parse_map (s_buf *buf, s_map *dest)
     if ((r = buf_parse_map_key(buf, &(*keys_end)->tag)) <= 0)
       goto restore;
     result += r;
-    keys_end = &(*keys_end)->next.data.list;
+    keys_end = &(*keys_end)->next.data.plist;
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
@@ -2942,7 +2942,7 @@ sw buf_parse_map (s_buf *buf, s_map *dest)
     if ((r = buf_parse_tag(buf, &(*values_end)->tag)) <= 0)
       goto restore;
     result += r;
-    values_end = &(*values_end)->next.data.list;
+    values_end = &(*values_end)->next.data.plist;
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
@@ -3010,7 +3010,7 @@ sw buf_parse_map_key_str (s_buf *buf, s_tag *dest)
     if (r > 0) {
       result += r;
       dest->type = TAG_SYM;
-      dest->data.sym = str_to_sym(&str);
+      dest->data.psym = str_to_sym(&str);
       str_clean(&str);
       goto ok;
     }
@@ -3054,7 +3054,7 @@ sw buf_parse_map_key_sym (s_buf *buf, s_tag *dest)
       goto restore;
     result += r;
     dest->type = TAG_SYM;
-    dest->data.sym = str_to_sym(&str);
+    dest->data.psym = str_to_sym(&str);
     str_clean(&str);
   }
   r = result;
@@ -3528,7 +3528,7 @@ sw buf_parse_special_operator (s_buf *buf, s_call *dest)
       goto restore;
     }
     result += r;
-    args_last = &(*args_last)->next.data.list;
+    args_last = &(*args_last)->next.data.plist;
     i++;
   }
   r = result;
@@ -3848,7 +3848,7 @@ sw buf_parse_struct (s_buf *buf, s_struct *dest)
     if ((r = buf_parse_map_key(buf, &(*keys_end)->tag)) <= 0)
       goto restore;
     result += r;
-    keys_end = &(*keys_end)->next.data.list;
+    keys_end = &(*keys_end)->next.data.plist;
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
@@ -3859,7 +3859,7 @@ sw buf_parse_struct (s_buf *buf, s_struct *dest)
     if ((r = buf_parse_tag(buf, &(*values_end)->tag)) <= 0)
       goto restore;
     result += r;
-    values_end = &(*values_end)->next.data.list;
+    values_end = &(*values_end)->next.data.plist;
     if ((r = buf_parse_comments(buf)) < 0)
       goto restore;
     result += r;
@@ -4193,7 +4193,7 @@ sw buf_parse_tag_complex (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcomplex(buf, &dest->data.complex)) > 0)
+  if ((r = buf_parse_pcomplex(buf, &dest->data.pcomplex)) > 0)
     dest->type = TAG_COMPLEX;
   return r;
 }
@@ -4203,7 +4203,7 @@ sw buf_parse_tag_cow (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_pcow(buf, &dest->data.cow)) > 0)
+  if ((r = buf_parse_pcow(buf, &dest->data.pcow)) > 0)
     dest->type = TAG_COW;
   return r;
 }
@@ -4263,7 +4263,7 @@ sw buf_parse_tag_ident_sym (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_ident_sym(buf, &dest->data.sym)) > 0)
+  if ((r = buf_parse_ident_sym(buf, &dest->data.psym)) > 0)
     dest->type = TAG_SYM;
   return r;
 }
@@ -4293,7 +4293,7 @@ sw buf_parse_tag_list (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_list(buf, &dest->data.list)) > 0)
+  if ((r = buf_parse_list(buf, &dest->data.plist)) > 0)
     dest->type = TAG_LIST;
   return r;
 }
@@ -4313,7 +4313,7 @@ sw buf_parse_tag_module_name (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_module_name(buf, &dest->data.sym)) > 0)
+  if ((r = buf_parse_module_name(buf, &dest->data.psym)) > 0)
     dest->type = TAG_SYM;
   return r;
 }
@@ -4737,7 +4737,7 @@ sw buf_parse_tag_sym (s_buf *buf, s_tag *dest)
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_sym(buf, &dest->data.sym)) > 0)
+  if ((r = buf_parse_sym(buf, &dest->data.psym)) > 0)
     dest->type = TAG_SYM;
   return r;
 }
@@ -5080,7 +5080,7 @@ sw buf_parse_tuple (s_buf *buf, s_tuple *dest)
     if ((r = buf_read_1(buf, ",")) <= 0)
       goto restore;
     result += r;
-    i = &(*i)->next.data.list;
+    i = &(*i)->next.data.plist;
   }
   r = -1;
  restore:

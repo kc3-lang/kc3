@@ -640,7 +640,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_COMPLEX:
     switch (b->type) {
     case TAG_COMPLEX:
-      return compare_complex(a->data.complex, b->data.complex);
+      return compare_complex(a->data.pcomplex, b->data.pcomplex);
     default:
       break;
     }
@@ -648,7 +648,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_F32:
     switch (b->type) {
     case TAG_COMPLEX:
-      return compare_f32(a->data.f32, complex_to_f32(b->data.complex));
+      return compare_f32(a->data.f32, complex_to_f32(b->data.pcomplex));
     case TAG_F32: return compare_f32(a->data.f32, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.f32, b->data.f64);
     case TAG_F128:
@@ -674,7 +674,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_F64:
     switch (b->type) {
     case TAG_COMPLEX:
-      return compare_f64(a->data.f64, complex_to_f64(b->data.complex));
+      return compare_f64(a->data.f64, complex_to_f64(b->data.pcomplex));
     case TAG_F32: return compare_f64(a->data.f64, b->data.f32);
     case TAG_F64: return compare_f64((f64) a->data.f64, b->data.f64);
     case TAG_F128:
@@ -698,13 +698,15 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_F128:
     switch (b->type) {
     case TAG_COMPLEX:
-      return compare_f128(a->data.f128, complex_to_f128(b->data.complex));
+      return compare_f128(a->data.f128,
+                          complex_to_f128(b->data.pcomplex));
     case TAG_F32: return compare_f128(a->data.f128, b->data.f32);
     case TAG_F64: return compare_f128(a->data.f128, (f128) b->data.f64);
     case TAG_F128:
       return compare_f128(a->data.f128, b->data.f128);
     case TAG_INTEGER:
-      return compare_f128(a->data.f128, integer_to_f128(&b->data.integer));
+      return compare_f128(a->data.f128,
+                          integer_to_f128(&b->data.integer));
     case TAG_S8:  return compare_f128(a->data.f128, (f128) b->data.s8);
     case TAG_S16: return compare_f128(a->data.f128, (f128) b->data.s16);
     case TAG_S32: return compare_f128(a->data.f128, (f128) b->data.s32);
@@ -1173,17 +1175,19 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                             &b->data.array);
   case TAG_DO_BLOCK:   return compare_do_block(&a->data.do_block,
                                                &b->data.do_block);
-  case TAG_BOOL:       return compare_bool(a->data.bool_, b->data.bool_);
+  case TAG_BOOL:       return compare_bool(a->data.bool_,
+                                           b->data.bool_);
   case TAG_CALL:       return compare_call(&a->data.call,
                                            &b->data.call);
   case TAG_CHARACTER:  return compare_character(a->data.character,
                                                 b->data.character);
-  case TAG_COW:        return compare_cow(a->data.cow, b->data.cow);
+  case TAG_COW:        return compare_cow(a->data.pcow, b->data.pcow);
   case TAG_FACT:       return compare_fact(&a->data.fact,
                                            &b->data.fact);
   case TAG_IDENT:      return compare_ident(&a->data.ident,
                                             &b->data.ident);
-  case TAG_LIST:       return compare_list(a->data.list, b->data.list);
+  case TAG_LIST:       return compare_list(a->data.plist,
+                                           b->data.plist);
   case TAG_MAP:        return compare_map(&a->data.map, &b->data.map);
   case TAG_PCALLABLE:  return compare_callable(a->data.pcallable,
                                                b->data.pcallable);
@@ -1200,8 +1204,8 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
   case TAG_QUOTE:      return compare_quote(&a->data.quote,
                                             &b->data.quote);
   case TAG_STR:        return compare_str(&a->data.str, &b->data.str);
-  case TAG_SYM:        return compare_str(&a->data.sym->str,
-                                          &b->data.sym->str);
+  case TAG_SYM:        return compare_str(&a->data.psym->str,
+                                          &b->data.psym->str);
   case TAG_TIME:       return compare_time(&a->data.time,
                                            &b->data.time);
   case TAG_TUPLE:      return compare_tuple(&a->data.tuple,

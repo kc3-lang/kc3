@@ -41,7 +41,7 @@ bool ht_add_hash (s_ht *ht, s_tag *tag, uw hash)
 #endif
   item = ht->items + hash % ht->size;
   while (*item && (c = ht->compare(&(*item)->tag, tag)) < 0)
-    item = &(*item)->next.data.list;
+    item = &(*item)->next.data.plist;
   if (*item && ! c) {
     *item = list_delete(*item);
     ht->count--;

@@ -507,8 +507,9 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_CALL:    return hash_update_call(hash, &tag->data.call);
   case TAG_CHARACTER:
     return hash_update_character(hash, tag->data.character);
-  case TAG_COMPLEX: return hash_update_complex(hash, tag->data.complex);
-  case TAG_COW:     return hash_update_cow(hash, tag->data.cow);
+  case TAG_COMPLEX: return hash_update_complex(hash,
+                                               tag->data.pcomplex);
+  case TAG_COW:     return hash_update_cow(hash, tag->data.pcow);
   case TAG_F32:     return hash_update_f32(hash, tag->data.f32);
   case TAG_F64:     return hash_update_f64(hash, tag->data.f64);
   case TAG_F128:    return hash_update_f128(hash, tag->data.f128);
@@ -518,7 +519,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
     return hash_update_integer(hash, &tag->data.integer);
   case TAG_LIST:
     return hash_update_list(hash, (const s_list * const *)
-                            &tag->data.list);
+                            &tag->data.plist);
   case TAG_MAP:     return hash_update_map(hash, &tag->data.map);
   case TAG_PCALLABLE:
     return hash_update_callable(hash, tag->data.pcallable);
@@ -539,7 +540,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_S64:     return hash_update_s64(hash, tag->data.s64);
   case TAG_SW:      return hash_update_sw(hash, tag->data.sw);
   case TAG_STR:     return hash_update_str(hash, &tag->data.str);
-  case TAG_SYM:     return hash_update_sym(hash, &tag->data.sym);
+  case TAG_SYM:     return hash_update_sym(hash, &tag->data.psym);
   case TAG_TIME:    return hash_update_time(hash, &tag->data.time);
   case TAG_TUPLE:   return hash_update_tuple(hash, &tag->data.tuple);
   case TAG_U8:      return hash_update_u8(hash, tag->data.u8);

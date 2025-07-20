@@ -593,7 +593,7 @@ void * data_init_cast (void *data, const s_sym * const *type,
   if (t == &g_sym_Sw)
     return sw_init_cast(data, type, tag);
   if (t == &g_sym_Sym)
-    return sym_init_cast(data, type, tag);
+    return psym_init_cast(data, type, tag);
   if (t == &g_sym_Tag)
     return tag_init_copy(data, tag);
   if (t == &g_sym_Time)
@@ -684,7 +684,7 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_Sw)
     return sw_init_copy(data, src);
   if (type == &g_sym_Sym)
-    return sym_init_copy(data, src);
+    return psym_init_copy(data, src);
   if (type == &g_sym_Tag)
     return tag_init_copy(data, src);
   if (type == &g_sym_Time)

@@ -456,7 +456,8 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   case TAG_INTEGER:
     return str_init_integer(str, &tag->data.integer);
   case TAG_LIST:
-    return str_init_list(str, (const s_list * const *) &tag->data.list);
+    return str_init_list(str,
+                         (const s_list * const *) &tag->data.plist);
   case TAG_MAP:
     return str_init_map(str, &tag->data.map);
   case TAG_PCALLABLE:
@@ -480,7 +481,7 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
   case TAG_STR:
     return str_init_copy(str, &tag->data.str);
   case TAG_SYM:
-    return str_init_copy(str, &tag->data.sym->str);
+    return str_init_copy(str, &tag->data.psym->str);
   case TAG_SW:
     return str_init_sw(str, tag->data.sw);
   case TAG_TUPLE:
@@ -1215,14 +1216,14 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
         *tail = list_new(NULL);
         (*tail)->tag.type = TAG_STR;
         buf_read_to_str(&out_buf, &(*tail)->tag.data.str);
-        tail = &(*tail)->next.data.list;
+        tail = &(*tail)->next.data.plist;
         out_buf.rpos = out_buf.wpos = 0;
       }
       *tail = list_new(NULL);
       r = buf_parse_tag(&in_buf, &(*tail)->tag);
       if (r <= 0)
         goto restore;
-      tail = &(*tail)->next.data.list;
+      tail = &(*tail)->next.data.plist;
       r = buf_ignore_spaces(&in_buf);
       if (r < 0)
         goto restore;
@@ -1273,7 +1274,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
     }
     arg = &tmp.data.call.arguments->tag;
     arg->type = TAG_LIST;
-    arg->data.list = list;
+    arg->data.plist = list;
   }
   *dest = tmp;
   buf_clean(&out_buf);
@@ -1448,7 +1449,7 @@ s_list ** str_split_words (const s_str *str, s_list **dest)
       break;
     }
     if (t_str->size)
-      t = &(*t)->next.data.list;
+      t = &(*t)->next.data.plist;
     else
       *t = list_delete(*t);
   }
@@ -1488,7 +1489,7 @@ s_list ** str_split (const s_str *str, const s_str *separator,
         goto clean;
       break;
     }
-    t = &(*t)->next.data.list;
+    t = &(*t)->next.data.plist;
   }
   *dest = tmp;
   return dest;
@@ -1517,7 +1518,7 @@ s_list ** str_split_list (const s_str *str,
         goto clean;
       break;
     }
-    t = &(*t)->next.data.list;
+    t = &(*t)->next.data.plist;
   }
   *dest = tmp;
   return dest;

@@ -42,11 +42,12 @@
 #include "tuple.h"
 #include "var.h"
 
-bool env_eval_equal_cow (s_env *env, s_cow *a,
+// TODO: unwind_protect
+bool env_eval_equal_cow (s_env *env, bool macro, s_cow *a,
                          s_cow *b, s_cow **dest)
 {
   s8 r;
-  s_cow *tmp = {0};
+  p_cow tmp = NULL;
   assert(env);
   assert(a);
   assert(b);
@@ -62,14 +63,20 @@ bool env_eval_equal_cow (s_env *env, s_cow *a,
     assert(! "env_eval_equal_cow: value mismatch");
     return false;
   }
-  tmp = cow_new_tag_copy(a->type, cow_read_only(a));
-  if (! tmp)
-    return false;
+  if (macro) {
+    tmp = cow_new_tag_copy(a->type, cow_read_only(a));
+    if (! tmp)
+      return false;
+  }
+  else
+    if (! env_eval_pcow(env, &a, &tmp))
+      return false;
   cow_freeze(tmp);
   *dest = tmp;
   return true;
 }
 
+// TODO: unwind_protect
 bool env_eval_equal_list (s_env *env, bool macro, s_list *a,
                           s_list *b, s_list **dest)
 {
@@ -106,7 +113,7 @@ bool env_eval_equal_list (s_env *env, bool macro, s_list *a,
     a = a_next;
     b = b_next;
     if (dest)
-      t = &(*t)->next.data.list;
+      t = &(*t)->next.data.plist;
   }
  ok:
   *dest = tmp;
@@ -116,6 +123,7 @@ bool env_eval_equal_list (s_env *env, bool macro, s_list *a,
   return false;
 }
 
+// TODO: unwind protect
 bool env_eval_equal_map (s_env *env, bool macro, const s_map *a,
                          const s_map *b, s_map *dest)
 {
@@ -162,6 +170,7 @@ bool env_eval_equal_map (s_env *env, bool macro, const s_map *a,
   return true;
 }
 
+// TODO: unwind_protect
 bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
                          s_tag *b, s_tag *dest)
 {
@@ -331,9 +340,9 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
     tag_init_void(dest);
     return true;
   case TAG_LIST:
-    tag_init_list(dest, NULL);
-    return env_eval_equal_list(env, macro, a->data.list, b->data.list,
-                               &dest->data.list);
+    tag_init_plist(dest, NULL);
+    return env_eval_equal_list(env, macro, a->data.plist, b->data.plist,
+                               &dest->data.plist);
   case TAG_MAP:
     dest->type = TAG_MAP;
     return env_eval_equal_map(env, macro, &a->data.map, &b->data.map,
@@ -402,6 +411,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   return false;
 }
 
+// TODO: unwind_protect
 bool env_eval_equal_time (s_env *env, bool macro, s_time *a,
                           s_time *b, s_time *dest)
 {
@@ -455,6 +465,7 @@ bool env_eval_equal_time (s_env *env, bool macro, s_time *a,
   return true;
 }
 
+// TODO: unwind_protect
 bool env_eval_equal_tuple (s_env *env, bool macro, s_tuple *a,
                            s_tuple *b, s_tuple *dest)
 {

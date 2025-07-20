@@ -75,7 +75,7 @@ p_facts_spec facts_spec_new_list (s_list *spec)
       assert(! "facts_spec_new_list: invalid spec: not a List of List");
       return NULL;
     }
-    t = s->tag.data.list;
+    t = s->tag.data.plist;
     if ((c = list_length(t)) < 3) {
       err_puts("facts_spec_new_list: invalid spec: list length < 3");
       assert(! "facts_spec_new_list: invalid spec: list length < 3");
@@ -97,7 +97,7 @@ p_facts_spec facts_spec_new_list (s_list *spec)
   n = new;
   s = spec;
   while (s) {
-    t = s->tag.data.list;
+    t = s->tag.data.plist;
     while (t) {
       *n++ = &t->tag;
       t = list_next(t);

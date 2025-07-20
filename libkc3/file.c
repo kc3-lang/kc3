@@ -322,7 +322,7 @@ s_list ** file_list (const s_str *path, s_list **dest)
       closedir(dir);
       return NULL;
     }
-    tail = &(*tail)->next.data.list;
+    tail = &(*tail)->next.data.plist;
   }
   closedir(dir);
   *dest = tmp;
@@ -619,9 +619,9 @@ s_file_stat * file_stat_init_struct_stat (s_file_stat *dest,
   tmp.st_ino = sb->st_ino;
   tmp.st_mode = 0;
   if (sb->st_mode & S_IFREG)
-    tmp.st_mode = list_new_sym(&g_sym_file, tmp.st_mode);
+    tmp.st_mode = list_new_psym(&g_sym_file, tmp.st_mode);
   else if (sb->st_mode & S_IFDIR)
-    tmp.st_mode = list_new_sym(&g_sym_directory, tmp.st_mode);
+    tmp.st_mode = list_new_psym(&g_sym_directory, tmp.st_mode);
   tmp.st_nlink = sb->st_nlink;
   tmp.st_uid = sb->st_uid;
   tmp.st_gid = sb->st_gid;
@@ -670,7 +670,7 @@ struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
   tmp.st_dev = file_stat->st_dev;
   tmp.st_ino = file_stat->st_ino;
   tmp.st_mode = 0;
-  tag_init_sym(&tag_sym_file, &g_sym_file);
+  tag_init_psym(&tag_sym_file, &g_sym_file);
   if (! list_has((const s_list * const *) &file_stat->st_mode,
                  &tag_sym_file, &b)) {
     err_puts("file_stat_to_struct_stat: list_has(:file)");
@@ -679,7 +679,7 @@ struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
   if (b)
     tmp.st_mode |= S_IFREG;
   else {
-    tag_init_sym(&tag_sym_directory, &g_sym_directory);
+    tag_init_psym(&tag_sym_directory, &g_sym_directory);
     if (! list_has((const s_list * const *) &file_stat->st_mode,
                    &tag_sym_directory, &b)) {
       err_puts("file_stat_to_struct_stat: list_has(:directory)");

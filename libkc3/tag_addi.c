@@ -53,5 +53,5 @@ s_tag * tag_addi (s_tag *a, s_tag *b, s_tag *dest)
   }
   complex_clean(&cb);
   complex_clean(&ca);
-  return tag_init_complex(dest, c);
+  return tag_init_pcomplex(dest, c);
 }

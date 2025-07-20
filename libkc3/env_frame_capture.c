@@ -199,7 +199,7 @@ s_frame * env_frame_capture_tag (s_env *env, s_frame *frame,
   case TAG_FACT:
     return env_frame_capture_fact(env, frame, &tag->data.fact);
   case TAG_LIST:
-    return env_frame_capture_list(env, frame, tag->data.list);
+    return env_frame_capture_list(env, frame, tag->data.plist);
   case TAG_MAP:
     return env_frame_capture_map(env, frame, &tag->data.map);
   case TAG_PTAG:

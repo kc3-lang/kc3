@@ -44,7 +44,6 @@ bool env_eval_callable (s_env *env, s_callable *callable,
                         s_tag *dest);
 bool env_eval_complex (s_env *env, s_complex *c,
                        s_tag *dest);
-bool env_eval_cow (s_env *env, s_cow *cow, s_tag *dest);
 bool env_eval_ident (s_env *env, const s_ident *ident,
                      s_tag *dest);
 bool env_eval_ident_is_bound (s_env *env,
@@ -54,6 +53,8 @@ bool env_eval_integer (s_env *env, const s_integer *integer,
 bool env_eval_list (s_env *env, s_list *list, s_tag *dest);
 bool env_eval_map (s_env *env, s_map *map,
                    s_tag *dest);
+bool env_eval_pcow (s_env *env, p_cow *cow, p_cow *dest);
+bool env_eval_pcow_tag (s_env *env, p_cow *cow, s_tag *dest);
 bool env_eval_progn (s_env *env, s_list *program,
                      s_tag *dest);
 bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest);

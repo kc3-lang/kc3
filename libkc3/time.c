@@ -31,9 +31,9 @@ s_tag * time_access (s_time *time, s_list *key, s_tag *dest)
   k = &key->tag;
   if (k->type != TAG_SYM)
     return NULL;
-  if (k->data.sym == &g_sym_tv_sec)
+  if (k->data.psym == &g_sym_tv_sec)
     return tag_init_uw(dest, time->tv_sec);
-  if (k->data.sym == &g_sym_tv_nsec)
+  if (k->data.psym == &g_sym_tv_nsec)
     return tag_init_uw(dest, time->tv_nsec);
   return NULL;
 }

@@ -122,7 +122,7 @@ s_complex * complex_init_cast (s_complex *c, const s_sym * const *type,
   assert(src);
   switch (src->type) {
   case TAG_COMPLEX:
-    return complex_init_copy(c, src->data.complex);
+    return complex_init_copy(c, src->data.pcomplex);
   case TAG_F32:
     return complex_init_f32(c, src->data.f32);
   case TAG_F64:

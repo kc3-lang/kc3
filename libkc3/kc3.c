@@ -99,13 +99,13 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
   case TAG_ARRAY:
     return array_access(&tag->data.array, *key, dest);
   case TAG_LIST:
-    if (list_is_alist(tag->data.list)) {
-      if (! alist_access(tag->data.list, *key, dest))
-        return list_access(tag->data.list, *key, dest);
+    if (list_is_alist(tag->data.plist)) {
+      if (! alist_access(tag->data.plist, *key, dest))
+        return list_access(tag->data.plist, *key, dest);
       return dest;
     }
     else
-      return list_access(tag->data.list, *key, dest);
+      return list_access(tag->data.plist, *key, dest);
   case TAG_MAP:
     return map_access(&tag->data.map, *key, dest);
   case TAG_PSTRUCT:
@@ -173,7 +173,7 @@ s_tag * kc3_block (s_tag *name, s_tag *do_block, s_tag *dest)
   env = env_global();
   switch (name->type) {
   case TAG_SYM:
-    name_sym = name->data.sym;
+    name_sym = name->data.psym;
   case TAG_VOID:
     break;
   default:
@@ -302,7 +302,7 @@ s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
   if (tag.type != TAG_LIST)
     return NULL;
   tmp.type = TAG_SYM;
-  tmp.data.sym = env_defstruct(env_global(), tag.data.list);
+  tmp.data.psym = env_defstruct(env_global(), tag.data.plist);
   *dest = tmp;
   tag_clean(&tag);
   return dest;
@@ -542,7 +542,7 @@ s_tag * kc3_facts_with_tuple (s_facts *facts, s_tuple *tuple,
 s_tag * kc3_quote_cfn (const s_sym **sym, s_tag *dest)
 {
   assert(sym);
-  return tag_init_sym(dest, *sym);
+  return tag_init_psym(dest, *sym);
 }
 
 s_tag * kc3_getenv (const s_str *name, s_tag *dest)
@@ -917,7 +917,7 @@ s_str * kc3_str (const s_tag *tag, s_str *dest)
   case TAG_LIST:
     return str_init_concatenate_list(dest,
                                      (const s_list **)
-                                     &tag->data.list);
+                                     &tag->data.plist);
   case TAG_STR:
     return str_init_copy(dest, &tag->data.str);
   default:
@@ -969,57 +969,57 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
     err_puts("kc3_sysctl: argument is not a Sym list");
     assert(! "kc3_sysctl: argument is not a Sym list");
   }
-  if (l->tag.data.sym == sym_1("ddb")) {
+  if (l->tag.data.psym == sym_1("ddb")) {
     mib[mib_len] = CTL_DDB;
     mib_len++;
     l = list_next(l);
     
   }
-  else if (l->tag.data.sym == sym_1("debug")) {
+  else if (l->tag.data.psym == sym_1("debug")) {
     mib[mib_len] = CTL_DEBUG;
     mib_len++;
     l = list_next(l);
     
   }
-  else if (l->tag.data.sym == sym_1("fs")) {
+  else if (l->tag.data.psym == sym_1("fs")) {
     mib[mib_len] = CTL_FS;
     mib_len++;
     l = list_next(l);
     
   }
-  else if (l->tag.data.sym == sym_1("hw")) {
+  else if (l->tag.data.psym == sym_1("hw")) {
     mib[mib_len] = CTL_HW;
     mib_len++;
     if ((l = list_next(l))) {
-      if (l->tag.data.sym == sym_1("ncpu")) {
+      if (l->tag.data.psym == sym_1("ncpu")) {
         mib[mib_len] = HW_NCPU;
         mib_len++;
         l = list_next(l);
         if (! l)
           tmp.type = TAG_S32;
       }
-      else if (l->tag.data.sym == sym_1("ncpufound")) {
+      else if (l->tag.data.psym == sym_1("ncpufound")) {
         mib[mib_len] = HW_NCPUFOUND;
         mib_len++;
         l = list_next(l);
         if (! l)
           tmp.type = TAG_S32;
       }
-      else if (l->tag.data.sym == sym_1("ncpuonline")) {
+      else if (l->tag.data.psym == sym_1("ncpuonline")) {
         mib[mib_len] = HW_NCPUONLINE;
         mib_len++;
         l = list_next(l);
         if (! l)
           tmp.type = TAG_S32;
       }
-      else if (l->tag.data.sym == sym_1("pagesize")) {
+      else if (l->tag.data.psym == sym_1("pagesize")) {
         mib[mib_len] = HW_PAGESIZE;
         mib_len++;
         l = list_next(l);
         if (! l)
           tmp.type = TAG_S32;
       }
-      else if (l->tag.data.sym == sym_1("physmem64")) {
+      else if (l->tag.data.psym == sym_1("physmem64")) {
         mib[mib_len] = HW_PHYSMEM64;
         mib_len++;
         l = list_next(l);
@@ -1028,27 +1028,27 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
       }
     }
   }
-  else if (l->tag.data.sym == sym_1("kern")) {
+  else if (l->tag.data.psym == sym_1("kern")) {
     mib[mib_len] = CTL_KERN;
     mib_len++;
     l = list_next(l);
   }
-  else if (l->tag.data.sym == sym_1("machdep")) {
+  else if (l->tag.data.psym == sym_1("machdep")) {
     mib[mib_len] = CTL_MACHDEP;
     mib_len++;
     l = list_next(l);
   }
-  else if (l->tag.data.sym == sym_1("net")) {
+  else if (l->tag.data.psym == sym_1("net")) {
     mib[mib_len] = CTL_NET;
     mib_len++;
     l = list_next(l);
   }
-  else if (l->tag.data.sym == sym_1("vfs")) {
+  else if (l->tag.data.psym == sym_1("vfs")) {
     mib[mib_len] = CTL_VFS;
     mib_len++;
     l = list_next(l);
   }
-  else if (l->tag.data.sym == sym_1("vm")) {
+  else if (l->tag.data.psym == sym_1("vm")) {
     mib[mib_len] = CTL_VM;
     mib_len++;
     l = list_next(l);
@@ -1056,7 +1056,7 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
   if (! tmp.type) {
     err_write_1("kc3_sysctl: invalid argument: ");
     if (l)
-      err_inspect_sym(&l->tag.data.sym);
+      err_inspect_sym(&l->tag.data.psym);
     else
       err_inspect_list(*list);
     err_write_1("\n");

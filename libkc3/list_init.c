@@ -79,46 +79,12 @@ s_list * list_init_call (s_list *list, s_list *next)
   return list;
 }
 
-s_list * list_init_pcallable (s_list *list, s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pcallable(&tmp.tag))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
-s_list * list_init_pcallable_copy (s_list *list, p_callable *src,
-                                   s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_pcallable_copy(&tmp.tag, src))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
 s_list * list_init_character (s_list *list, character c, s_list *next)
 {
   s_list tmp = {0};
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_character(&tmp.tag, c))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
-s_list * list_init_complex (s_list *list, s_complex *c, s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_complex(&tmp.tag, c))
     return NULL;
   *list = tmp;
   return list;
@@ -248,6 +214,51 @@ s_list * list_init_map_from_lists (s_list *list, s_list *keys,
   return list;
 }
 
+s_list * list_init_pcallable (s_list *list, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pcallable(&tmp.tag))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pcallable_copy (s_list *list, p_callable *src,
+                                   s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pcallable_copy(&tmp.tag, src))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_pcomplex (s_list *list, p_complex c, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_pcomplex(&tmp.tag, c))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_plist (s_list *list, p_list plist, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_plist(&tmp.tag, plist))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_pstruct (s_list *list, const s_sym *module,
                             s_list *next)
 {
@@ -317,6 +328,29 @@ s_list * list_init_pstruct_type_clean (s_list *list,
   assert(list);
   list_init(&tmp, next);
   if (! tag_init_pstruct_type_clean(&tmp.tag, st, clean))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_psym (s_list *list, const s_sym *sym, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_psym(&tmp.tag, sym))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+s_list * list_init_psym_anon (s_list *list, const s_str *src,
+                              s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_psym_anon(&tmp.tag, src))
     return NULL;
   *list = tmp;
   return list;
@@ -596,29 +630,6 @@ s_list * list_init_sw (s_list *list, sw i, s_list *next)
   return list;
 }
 
-s_list * list_init_sym (s_list *list, const s_sym *sym, s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_sym(&tmp.tag, sym))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
-s_list * list_init_sym_anon (s_list *list, const s_str *src,
-                             s_list *next)
-{
-  s_list tmp = {0};
-  assert(list);
-  list_init(&tmp, next);
-  if (! tag_init_sym_anon(&tmp.tag, src))
-    return NULL;
-  *list = tmp;
-  return list;
-}
-
 s_list * list_init_tuple (s_list *list, uw count, s_list *next)
 {
   s_list tmp = {0};
@@ -772,32 +783,6 @@ s_list * list_new_call (s_list *next)
   return list;
 }
 
-s_list * list_new_pcallable (s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_pcallable(&list->tag)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_pcallable_copy (p_callable *src, s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_pcallable_copy(&list->tag, src)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
 s_list * list_new_character (character c, s_list *next)
 {
   s_list *list;
@@ -805,19 +790,6 @@ s_list * list_new_character (character c, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_character(&list->tag, c)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_complex (s_complex *c, s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_complex(&list->tag, c)) {
     free(list);
     return NULL;
   }
@@ -968,6 +940,58 @@ s_list * list_new_map_from_lists (s_list *keys, s_list *values,
   return list;
 }
 
+s_list * list_new_pcallable (s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pcallable(&list->tag)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pcallable_copy (p_callable *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pcallable_copy(&list->tag, src)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_pcomplex (p_complex c, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_pcomplex(&list->tag, c)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_plist (p_list plist, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_plist(&list->tag, plist)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
 s_list * list_new_pstruct (const s_sym *module, s_list *next)
 {
   s_list *list;
@@ -1044,6 +1068,32 @@ s_list * list_new_pstruct_type_clean (const s_struct_type *st,
   if (! list)
     return NULL;
   if (! tag_init_pstruct_type_clean(&list->tag, st, clean)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_psym (const s_sym *sym, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_psym(&list->tag, sym)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_psym_anon (const s_str *src, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_psym_anon(&list->tag, src)) {
     free(list);
     return NULL;
   }
@@ -1360,32 +1410,6 @@ s_list * list_new_sw (sw i, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_sw(&list->tag, i)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_sym (const s_sym *sym, s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_sym(&list->tag, sym)) {
-    free(list);
-    return NULL;
-  }
-  return list;
-}
-
-s_list * list_new_sym_anon (const s_str *src, s_list *next)
-{
-  s_list *list;
-  list = list_new(next);
-  if (! list)
-    return NULL;
-  if (! tag_init_sym_anon(&list->tag, src)) {
     free(list);
     return NULL;
   }

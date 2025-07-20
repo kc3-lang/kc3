@@ -116,7 +116,7 @@ uw * struct_type_find_key_index (const s_struct_type *st,
   assert(key);
   while (i < st->map.count) {
     assert(st->map.key[i].type == TAG_SYM);
-    if (st->map.key[i].data.sym == key) {
+    if (st->map.key[i].data.psym == key) {
       *dest = i;
       return dest;
     }

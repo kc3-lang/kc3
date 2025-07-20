@@ -199,7 +199,7 @@ bool env_eval_call_arguments (s_env *env, s_list *args,
       return false;
     }
     env_unwind_protect_pop(env, &up);
-    tail = &(*tail)->next.data.list;
+    tail = &(*tail)->next.data.plist;
     a = list_next(a);
   }
   *dest = tmp;
@@ -248,6 +248,7 @@ bool env_eval_call_callable_args (s_env *env,
   return false;
 }
 
+// TODO: unwind_protect
 bool env_eval_call_cfn_args (s_env *env, s_cfn *cfn, s_list *arguments,
                              s_tag *dest)
 {
@@ -435,9 +436,9 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     frame_clean(&frame);
     return false;
   }
-  tag_init_list(&trace->tag, list_new_ident
-                (&fn->ident, list_new_copy
-                 (args)));
+  tag_init_plist(&trace->tag, list_new_ident
+                 (&fn->ident, list_new_copy
+                  (args)));
   env->stacktrace = trace;
   if (! block_init(&jump.block, fn->ident.sym)) {
     env->stacktrace = list_delete(env->stacktrace);
@@ -666,15 +667,17 @@ bool env_eval_complex (s_env *env, s_complex *c, s_tag *dest)
     return false;
   }
   dest->type = TAG_COMPLEX;
-  dest->data.complex = tmp;
+  dest->data.pcomplex = tmp;
   return true;
 }
 
 // TODO unwind_protect
-bool env_eval_cow (s_env *env, s_cow *cow, s_tag *dest)
+bool env_eval_pcow (s_env *env, p_cow *pcow, p_cow *dest)
 {
-  s_cow *tmp = NULL;
+  p_cow cow = *pcow;
+  p_cow tmp = NULL;
   assert(env);
+  assert(pcow);
   assert(cow);
   assert(dest);
   tmp = cow_new(cow->type);
@@ -686,8 +689,20 @@ bool env_eval_cow (s_env *env, s_cow *cow, s_tag *dest)
     return false;
   }
   cow_freeze(tmp);
-  dest->type = TAG_COW;
-  dest->data.cow = tmp;
+  *dest = tmp;
+  return true;
+}
+
+bool env_eval_pcow_tag (s_env *env, p_cow *cow, s_tag *dest)
+{
+  s_tag tmp = {0};
+  assert(env);
+  assert(cow);
+  assert(dest);
+  if (! env_eval_pcow(env, cow, &tmp.data.pcow))
+    return false;
+  tmp.type = TAG_COW;
+  *dest = tmp;
   return true;
 }
 
@@ -757,11 +772,11 @@ bool env_eval_list (s_env *env, s_list *list, s_tag *dest)
     if (! next)
       if (! env_eval_tag(env, &list->next, &(*tail)->next))
         goto ko;
-    tail = &(*tail)->next.data.list;
+    tail = &(*tail)->next.data.plist;
     list = next;
   }
   dest->type = TAG_LIST;
-  dest->data.list = tmp;
+  dest->data.plist = tmp;
   return true;
  ko:
   list_delete_all(tmp);
@@ -824,7 +839,7 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
       assert(! "env_eval_struct: struct type key is not a Sym");
       goto ko;
     }
-    if (key->data.sym->str.ptr.pchar[0] != '_') {
+    if (key->data.psym->str.ptr.pchar[0] != '_') {
       if (tmp->pstruct_type->map.value[i].type == TAG_PVAR) {
         type = tmp->pstruct_type->map.value[i].data.pvar->type;
       }
@@ -862,7 +877,7 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
   err_write_1("env_eval_struct: invalid type ");
   err_write_1(tag_type_to_string(tag.type));
   err_write_1(" for key ");
-  err_write_1(tmp->pstruct_type->map.key[i].data.sym->str.ptr.pchar);
+  err_write_1(tmp->pstruct_type->map.key[i].data.psym->str.ptr.pchar);
   err_write_1(", expected ");
   err_puts(tag_type_to_string(tmp->pstruct_type->map.value[i].type));
   tag_clean(&tag);
@@ -895,13 +910,13 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_CALL:
     return env_eval_call(env, &tag->data.call, dest);
   case TAG_COMPLEX:
-    return env_eval_complex(env, tag->data.complex, dest);
+    return env_eval_complex(env, tag->data.pcomplex, dest);
   case TAG_COW:
-    return env_eval_cow(env, tag->data.cow, dest);
+    return env_eval_pcow_tag(env, &tag->data.pcow, dest);
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
   case TAG_LIST:
-    return env_eval_list(env, tag->data.list, dest);
+    return env_eval_list(env, tag->data.plist, dest);
   case TAG_MAP:
     return env_eval_map(env, &tag->data.map, dest);
   case TAG_PCALLABLE:

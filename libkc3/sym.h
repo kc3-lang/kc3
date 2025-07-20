@@ -132,38 +132,30 @@ extern const s_sym g_sym_write;
 extern const s_sym g_sym_wx;
 extern const s_sym g_sym_x;
 
-const s_sym  * sym_1 (const char *p);
-const s_sym ** sym_init_1 (const s_sym **sym, const char *p);
-const s_sym ** sym_init_anon (const s_sym **sym, const s_str *prefix);
-const s_sym ** sym_init_cast (const s_sym **sym,
-                              const s_sym * const *type,
-                              const s_tag *tag);
-const s_sym ** sym_init_copy (const s_sym **sym,
-                              const s_sym * const *src);
-void           sym_init_g_sym (void);
-const s_sym ** sym_init_str (const s_sym **sym, const s_str *src);
-bool           sym_register (const s_sym *sym, s_sym *free_sym);
+p_sym   sym_1 (const char *p);
+void    sym_init_g_sym (void);
+bool    sym_register (p_sym sym, s_sym *free_sym);
 
 /* Heap-allocation functions, call sym_delete_all at exit. */
 void           sym_delete_all (void);
-const s_sym *  sym_new (const s_str *src);
+p_sym   sym_new (const s_str *src);
 
 /* Observers */
-const s_sym * sym_array_type (const s_sym *sym);
+p_sym  sym_array_type (p_sym sym);
 bool          sym_character_is_reserved (character c);
-const s_sym * sym_find (const s_str *src);
+p_sym  sym_find (const s_str *src);
 s_tag *       sym_find_to_tag (const s_str *src, s_tag *dest);
-bool          sym_has_ident_reserved_characters (const s_sym *sym);
-bool          sym_has_reserved_characters (const s_sym *sym);
-bool          sym_is_array_type (const s_sym *sym);
-bool          sym_is_module (const s_sym *sym);
+bool          sym_has_ident_reserved_characters (p_sym sym);
+bool          sym_has_reserved_characters (p_sym sym);
+bool          sym_is_array_type (p_sym sym);
+bool          sym_is_module (p_sym sym);
 uw *          sym_list_size (uw *dest);
-bool *        sym_must_clean (const s_sym *sym, bool *must_clean);
-bool          sym_search_modules (const s_sym *sym, const s_sym **dest);
-bool          sym_to_ffi_type (const s_sym *sym, ffi_type *result_type,
+bool *        sym_must_clean (p_sym sym, bool *must_clean);
+bool          sym_search_modules (p_sym sym, p_sym *dest);
+bool          sym_to_ffi_type (p_sym sym, ffi_type *result_type,
                                ffi_type **dest);
-bool          sym_to_tag_type (const s_sym *sym, e_tag_type *dest);
-bool          sym_type_is_integer (const s_sym * const *type);
-uw *          sym_type_size (const s_sym * const *type, uw *size);
+bool          sym_to_tag_type (p_sym sym, e_tag_type *dest);
+bool          sym_type_is_integer (p_sym const *type);
+uw *          sym_type_size (p_sym const *type, uw *size);
 
 #endif /* LIBKC3_SYM_H */

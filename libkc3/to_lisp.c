@@ -29,7 +29,7 @@ s_tag * to_lisp (s_tag *tag, s_tag *dest)
   case TAG_CALL:
     return to_lisp_call(&tag->data.call, dest);
   case TAG_LIST:
-    return to_lisp_list(tag->data.list, dest);
+    return to_lisp_list(tag->data.plist, dest);
   case TAG_TUPLE:
     return to_lisp_tuple(&tag->data.tuple, dest);
   default:
@@ -48,11 +48,11 @@ s_tag * to_lisp_call (s_call *call, s_tag *dest)
     assert(! "to_lisp_call: arguments.type != TAG_LIST");
     return NULL;
   }
-  if (! (list = list_new_ident(&call->ident, arguments.data.list))) {
+  if (! (list = list_new_ident(&call->ident, arguments.data.plist))) {
     tag_clean(&arguments);
     return NULL;
   }
-  return tag_init_list(dest, list);
+  return tag_init_plist(dest, list);
 }
 
 s_tag * to_lisp_list (s_list *list, s_tag *dest)
@@ -67,10 +67,10 @@ s_tag * to_lisp_list (s_list *list, s_tag *dest)
     *tail = list_new(NULL);
     if (! to_lisp(&list_i->tag, &(*tail)->tag))
       goto ko;
-    tail = &(*tail)->next.data.list;
+    tail = &(*tail)->next.data.plist;
     list_i = list_next(list_i);
   }
-  return tag_init_list(dest, tmp);
+  return tag_init_plist(dest, tmp);
  ko:
   list_delete_all(tmp);
   return NULL;

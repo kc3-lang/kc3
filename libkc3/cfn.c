@@ -94,7 +94,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     a = args;
     while (cfn_arg_types) {
       assert(cfn_arg_types->tag.type == TAG_SYM);
-      if (cfn_arg_types->tag.data.sym == &g_sym_Result) {
+      if (cfn_arg_types->tag.data.psym == &g_sym_Result) {
         assert(cfn->cif.rtype == &ffi_type_pointer);
         cfn_tag_init(&tmp2, cfn->result_type);
         if (! tag_to_ffi_pointer(&tmp2, cfn->result_type, &p)) {
@@ -108,7 +108,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       }
       else {
         if (cfn->cif.arg_types[i] == &ffi_type_pointer) {
-          if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.sym,
+          if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.psym,
                                    &p)) {
             err_puts("cfn_apply: tag_to_ffi_pointer 4");
             err_stacktrace();
@@ -119,7 +119,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
           arg_values[i] = &arg_pointers[i];
         }
         else {
-          if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.sym,
+          if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.psym,
                                    &p)) {
             err_write_1("cfn_apply: ");
             err_inspect_str(&cfn->name->str);
@@ -140,9 +140,9 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
   if (cfn->ptr.f) {
     if (! (trace = list_new(env->stacktrace)))
       goto ko;
-    tag_init_list(&trace->tag, list_new_sym
-                  (cfn->name, list_new_copy
-                   (args)));
+    tag_init_plist(&trace->tag, list_new_psym
+                   (cfn->name, list_new_copy
+                    (args)));
     env->stacktrace = trace;
     env_unwind_protect_push(env, &unwind_protect);
     if (setjmp(unwind_protect.buf)) {
@@ -383,12 +383,12 @@ s_cfn * cfn_prep_cif (s_cfn *cfn)
         free(arg_ffi_type);
         goto clean;
       }
-      if (! sym_to_ffi_type(a->tag.data.sym, result_ffi_type,
+      if (! sym_to_ffi_type(a->tag.data.psym, result_ffi_type,
                             arg_ffi_type + i)) {
         free(arg_ffi_type);
         goto clean;
       }
-      if (a->tag.data.sym == &g_sym_Result) {
+      if (a->tag.data.psym == &g_sym_Result) {
         cfn->arg_result = true;
         arg_ffi_type[i] = &ffi_type_pointer;
         result_ffi_type = &ffi_type_pointer;

@@ -255,16 +255,21 @@ typedef union ptr_w         u_ptr_w;
 typedef union tag_data      u_tag_data;
 
 /* typedefs */
-typedef s_callable *   p_callable;
 typedef u32            character;
-typedef s_tag **       p_facts_spec;
 typedef s_tag *        t_facts_spec[];
 typedef SHA1_CTX       t_hash;
+typedef u64            t_skiplist_height;
+
+/* pointer types */
+typedef s_callable *   p_callable;
+typedef s_complex *    p_complex;
+typedef s_cow *        p_cow;
+typedef s_tag **       p_facts_spec;
+typedef s_list *       p_list;
 typedef s_struct *     p_struct;
 typedef s_struct_type *p_struct_type;
 typedef const s_sym *  p_sym;
 typedef s_tag *        p_tag;
-typedef u64            t_skiplist_height;
 typedef s_var *        p_var;
 
 /* function typedefs */
@@ -619,19 +624,20 @@ union tag_data {
   bool          bool_;
   s_call        call;
   character     character;
-  s_complex    *complex;
-  s_cow        *cow;
   f32           f32;
   f64           f64;
   f128          f128;
   s_fact        fact;
   s_ident       ident;
   s_integer     integer;
-  s_list       *list;
   s_map         map;
+  p_complex     pcomplex;
+  p_cow         pcow;
   p_callable    pcallable;
+  p_list        plist;
   p_struct      pstruct;
   p_struct_type pstruct_type;
+  const s_sym  *psym;
   p_tag         ptag;
   u_ptr_w       ptr;
   u_ptr_w       ptr_free;
@@ -639,7 +645,6 @@ union tag_data {
   s_quote       quote;
   s_ratio       ratio;
   s_str         str;
-  const s_sym  *sym;
   s8            s8;
   s16           s16;
   s32           s32;

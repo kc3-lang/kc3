@@ -119,7 +119,7 @@ s_tag * tag_assign (s_tag *tag, s_tag *value, s_tag *dest)
   case TAG_PVAR:
     return var_assign(tag->data.pvar, value, dest);
   case TAG_COW:
-    return pcow_assign(&tag->data.cow, value, dest);
+    return pcow_assign(&tag->data.pcow, value, dest);
   default:
     break;
   }
@@ -238,10 +238,10 @@ void tag_clean (s_tag *tag)
   case TAG_DO_BLOCK:    do_block_clean(&tag->data.do_block);   break;
   case TAG_CALL:        call_clean(&tag->data.call);           break;
   case TAG_PCALLABLE:   pcallable_clean(&tag->data.pcallable); break;
-  case TAG_COMPLEX:     pcomplex_clean(&tag->data.complex);    break;
-  case TAG_COW:         pcow_clean(&tag->data.cow);            break;
+  case TAG_COMPLEX:     pcomplex_clean(&tag->data.pcomplex);   break;
+  case TAG_COW:         pcow_clean(&tag->data.pcow);           break;
   case TAG_INTEGER:     integer_clean(&tag->data.integer);     break;
-  case TAG_LIST:        list_delete_all(tag->data.list);       break;
+  case TAG_LIST:        list_delete_all(tag->data.plist);      break;
   case TAG_MAP:         map_clean(&tag->data.map);             break;
   case TAG_PSTRUCT:     pstruct_clean(&tag->data.pstruct);     break;
   case TAG_PSTRUCT_TYPE:
@@ -521,13 +521,13 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     return tag;
   case TAG_COMPLEX:
     tag->type = src->type;
-    if (! pcomplex_init_copy(&tag->data.complex,
-                             &src->data.complex))
+    if (! pcomplex_init_copy(&tag->data.pcomplex,
+                             &src->data.pcomplex))
       return NULL;
     return tag;
   case TAG_COW:
     tag->type = src->type;
-    if (! pcow_init_copy(&tag->data.cow, &src->data.cow))
+    if (! pcow_init_copy(&tag->data.pcow, &src->data.pcow))
       return NULL;
     return tag;
   case TAG_F32:
@@ -557,7 +557,7 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     return tag;
   case TAG_LIST:
     tag->type = src->type;
-    if (! list_init_copy(&tag->data.list, &src->data.list))
+    if (! list_init_copy(&tag->data.plist, &src->data.plist))
       return NULL;
     return tag;
   case TAG_MAP:
@@ -629,7 +629,7 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     return tag;
   case TAG_SYM:
     tag->type = src->type;
-    tag->data.sym = src->data.sym;
+    tag->data.psym = src->data.psym;
     return tag;
   case TAG_TIME:
     tag->type = src->type;
@@ -856,7 +856,7 @@ bool tag_is_alist (const s_tag *tag)
     return false;
   if (tag->type != TAG_LIST)
     return false;
-  return list_is_alist(tag->data.list);
+  return list_is_alist(tag->data.plist);
 }
 
 bool tag_is_cast (const s_tag *tag, const s_sym *type)
@@ -1047,7 +1047,7 @@ s_tag * tag_list_1 (s_tag *tag, const char *p)
   assert(tag);
   tag_clean(tag);
   tmp.type = TAG_LIST;
-  tmp.data.list = list_new_1(p);
+  tmp.data.plist = list_new_1(p);
   *tag = tmp;
   return tag;
 }
@@ -1170,7 +1170,7 @@ s_tag * tag_paren (s_tag *tag, s_tag *dest)
 s_tag * tag_resolve_cow (s_tag *tag)
 {
   while (tag->type == TAG_COW)
-    tag = cow_read_only(tag->data.cow);
+    tag = cow_read_only(tag->data.pcow);
   if (! tag) {
     err_puts("tag_resolve_cow: cow was not frozen");
     assert(! "tag_resolve_cow: cow was not frozen");
@@ -1222,8 +1222,8 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   case TAG_CALL:         *dest = &tag->data.call;         return true;
   case TAG_PCALLABLE:    *dest = &tag->data.pcallable;    return true;
   case TAG_CHARACTER:    *dest = &tag->data.character;    return true;
-  case TAG_COMPLEX:      *dest = &tag->data.complex;      return true;
-  case TAG_COW:          *dest = &tag->data.cow;          return true;
+  case TAG_COMPLEX:      *dest = &tag->data.pcomplex;     return true;
+  case TAG_COW:          *dest = &tag->data.pcow;         return true;
   case TAG_F32:          *dest = &tag->data.f32;          return true;
   case TAG_F64:          *dest = &tag->data.f64;          return true;
   case TAG_F128:         *dest = &tag->data.f128;         return true;
@@ -1240,7 +1240,7 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   case TAG_U32:          *dest = &tag->data.u32;          return true;
   case TAG_U64:          *dest = &tag->data.u64;          return true;
   case TAG_UW:           *dest = &tag->data.uw;           return true;
-  case TAG_LIST:         *dest = &tag->data.list;         return true;
+  case TAG_LIST:         *dest = &tag->data.plist;        return true;
   case TAG_MAP:          *dest = &tag->data.map;          return true;
   case TAG_PSTRUCT:
     if (type == &g_sym_Struct) {
@@ -1268,7 +1268,7 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   case TAG_QUOTE:        *dest = &tag->data.quote;        return true;
   case TAG_RATIO:        *dest = &tag->data.ratio;        return true;
   case TAG_STR:          *dest = &tag->data.str;          return true;
-  case TAG_SYM:          *dest = &tag->data.sym;          return true;
+  case TAG_SYM:          *dest = &tag->data.psym;         return true;
   case TAG_TIME:         *dest = &tag->data.time;         return true;
   case TAG_TUPLE:        *dest = &tag->data.tuple;        return true;
   case TAG_UNQUOTE:      *dest = &tag->data.unquote;      return true;
@@ -1342,13 +1342,13 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_COMPLEX:
     if (type == &g_sym_Complex) {
-      *dest = &tag->data.complex;
+      *dest = &tag->data.pcomplex;
       return true;
     }
     goto invalid_cast;
   case TAG_COW:
     if (type == &g_sym_Cow) {
-      *dest = &tag->data.cow;
+      *dest = &tag->data.pcow;
       return true;
     }
     // FIXME: other types
@@ -1391,7 +1391,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_LIST:
     if (type == &g_sym_List) {
-      *dest = &tag->data.list;
+      *dest = &tag->data.plist;
       return true;
     }
     goto invalid_cast;
@@ -1480,15 +1480,15 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
     goto invalid_cast;
   case TAG_SYM:
     if (type == &g_sym_Sym) {
-      *dest = (void *) &tag->data.sym;
+      *dest = (void *) &tag->data.psym;
       return true;
     }
     if (type == &g_sym_Str) {
-      *dest = (void *) &tag->data.sym->str;
+      *dest = (void *) &tag->data.psym->str;
       return true;
     }
     if (type == &g_sym_Char__star) {
-      *dest = (void *) tag->data.sym->str.ptr.pchar;
+      *dest = (void *) tag->data.psym->str.ptr.pchar;
       return true;
     }
     goto invalid_cast;
@@ -1606,15 +1606,15 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_BOOL:         *dest = &tag->data.bool_;        return true;
   case TAG_CALL:         *dest = &tag->data.call;         return true;
   case TAG_CHARACTER:    *dest = &tag->data.character;    return true;
-  case TAG_COMPLEX:      *dest = &tag->data.complex;      return true;
-  case TAG_COW:          *dest = &tag->data.cow;          return true;
+  case TAG_COMPLEX:      *dest = &tag->data.pcomplex;     return true;
+  case TAG_COW:          *dest = &tag->data.pcow;         return true;
   case TAG_F32:          *dest = &tag->data.f32;          return true;
   case TAG_F64:          *dest = &tag->data.f64;          return true;
   case TAG_F128:         *dest = &tag->data.f128;         return true;
   case TAG_FACT:         *dest = &tag->data.fact;         return true;
   case TAG_IDENT:        *dest = &tag->data.ident;        return true;
   case TAG_INTEGER:      *dest = &tag->data.integer;      return true;
-  case TAG_LIST:         *dest = &tag->data.list;         return true;
+  case TAG_LIST:         *dest = &tag->data.plist;        return true;
   case TAG_MAP:          *dest = &tag->data.map;          return true;
   case TAG_PCALLABLE:    *dest = &tag->data.pcallable;    return true;
   case TAG_PSTRUCT:
@@ -1640,7 +1640,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_S16:          *dest = &tag->data.s16;          return true;
   case TAG_S8:           *dest = &tag->data.s8;           return true;
   case TAG_STR:          *dest = &tag->data.str;          return true;
-  case TAG_SYM:          *dest = &tag->data.sym;          return true;
+  case TAG_SYM:          *dest = &tag->data.psym;         return true;
   case TAG_TIME:         *dest = &tag->data.time;         return true;
   case TAG_TUPLE:        *dest = &tag->data.tuple;        return true;
   case TAG_U8:           *dest = &tag->data.u8;           return true;

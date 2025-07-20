@@ -15,7 +15,7 @@
 #include "pcow.h"
 #include "tag.h"
 
-s_tag * pcow_assign (s_cow **cow, s_tag *value, s_tag *dest)
+s_tag * pcow_assign (p_cow *cow, s_tag *value, s_tag *dest)
 {
   assert(cow);
   assert(value);
@@ -28,11 +28,11 @@ s_tag * pcow_assign (s_cow **cow, s_tag *value, s_tag *dest)
     return NULL;
   }
   dest->type = TAG_COW;
-  dest->data.cow = *cow;
+  dest->data.pcow = *cow;
   return dest;
 }
 
-void pcow_clean (s_cow **p)
+void pcow_clean (p_cow *p)
 {
   bool nullify;
   assert(p);
@@ -44,9 +44,9 @@ void pcow_clean (s_cow **p)
   }
 }
 
-s_cow ** pcow_init (s_cow **p, const s_sym *type)
+p_cow * pcow_init (p_cow *p, const s_sym *type)
 {
-  s_cow *tmp = NULL;
+  p_cow tmp = NULL;
   assert(p);
   tmp = cow_new(type);
   if (! tmp)
@@ -55,10 +55,10 @@ s_cow ** pcow_init (s_cow **p, const s_sym *type)
   return p;
 }
 
-s_cow ** pcow_init_cast (s_cow **p, const s_sym * const *type,
+p_cow * pcow_init_cast (p_cow *p, const s_sym * const *type,
                          s_tag *src)
 {
-  s_cow *tmp = NULL;
+  p_cow tmp = NULL;
   assert(p);
   assert(src);
   tmp = cow_new_cast(type, src);
@@ -68,7 +68,7 @@ s_cow ** pcow_init_cast (s_cow **p, const s_sym * const *type,
   return p;
 }
 
-s_cow ** pcow_init_copy (s_cow **p, s_cow **src)
+p_cow * pcow_init_copy (p_cow *p, p_cow *src)
 {
   assert(p);
   assert(src);

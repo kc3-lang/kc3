@@ -31,6 +31,7 @@
 #include "pcallable.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
+#include "psym.h"
 #include "ptr.h"
 #include "ptr_free.h"
 #include "pvar.h"
@@ -80,44 +81,12 @@ s_tag * tag_init_call (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_init_pcallable (s_tag *tag)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_PCALLABLE;
-  if (! pcallable_init(&tmp.data.pcallable))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_init_pcallable_copy (s_tag *tag, p_callable *src)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_PCALLABLE;
-  if (! pcallable_init_copy(&tmp.data.pcallable, src))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_init_character (s_tag *tag, character c)
 {
   s_tag tmp = {0};
   assert(tag);
   tmp.type = TAG_CHARACTER;
   tmp.data.character = c;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_init_complex (s_tag *tag, s_complex *c)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_COMPLEX;
-  tmp.data.complex = c;
   *tag = tmp;
   return tag;
 }
@@ -206,16 +175,6 @@ s_tag * tag_init_integer_zero (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_init_list (s_tag *tag, s_list *list)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_LIST;
-  tmp.data.list = list;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_init_map (s_tag *tag, uw count)
 {
   s_tag tmp = {0};
@@ -246,6 +205,48 @@ s_tag * tag_init_map_from_lists (s_tag *tag, s_list *keys,
   tmp.type = TAG_MAP;
   if (! map_init_from_lists(&tmp.data.map, keys, values))
     return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_pcallable (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PCALLABLE;
+  if (! pcallable_init(&tmp.data.pcallable))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_pcallable_copy (s_tag *tag, p_callable *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_PCALLABLE;
+  if (! pcallable_init_copy(&tmp.data.pcallable, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_pcomplex (s_tag *tag, p_complex c)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_COMPLEX;
+  tmp.data.pcomplex = c;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_plist (s_tag *tag, p_list plist)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_LIST;
+  tmp.data.plist = plist;
   *tag = tmp;
   return tag;
 }
@@ -316,6 +317,27 @@ s_tag * tag_init_pstruct_type_clean (s_tag *tag,
   assert(tag);
   tmp.type = TAG_PSTRUCT_TYPE;
   if (! pstruct_type_init_clean(&tmp.data.pstruct_type, st, clean))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_psym (s_tag *tag, const s_sym *sym)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_SYM;
+  tmp.data.psym = sym;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_init_psym_anon (s_tag *tag, const s_str *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tmp.type = TAG_SYM;
+  if (! psym_init_anon(&tmp.data.psym, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -583,27 +605,6 @@ s_tag * tag_init_sw (s_tag *tag, sw i)
   return tag;
 }
 
-s_tag * tag_init_sym (s_tag *tag, const s_sym *sym)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_SYM;
-  tmp.data.sym = sym;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_init_sym_anon (s_tag *tag, const s_str *src)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tmp.type = TAG_SYM;
-  if (! sym_init_anon(&tmp.data.sym, src))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_init_tuple (s_tag *tag, uw count)
 {
   s_tag tmp = {0};
@@ -752,34 +753,6 @@ s_tag * tag_new_call (void)
   return tag;
 }
 
-s_tag * tag_new_pcallable (void)
-{
-  s_tag *tag;
-  tag = alloc(sizeof(s_tag));
-  if (! tag)
-    return NULL;
-  tag->type = TAG_PCALLABLE;
-  if (! pcallable_init(&tag->data.pcallable)) {
-    free(tag);
-    return NULL;
-  }
-  return tag;
-}
-
-s_tag * tag_new_pcallable_copy (p_callable *src)
-{
-  s_tag *tag;
-  tag = alloc(sizeof(s_tag));
-  if (! tag)
-    return NULL;
-  tag->type = TAG_PCALLABLE;
-  if (! pcallable_init_copy(&tag->data.pcallable, src)) {
-    free(tag);
-    return NULL;
-  }
-  return tag;
-}
-
 s_tag * tag_new_character (character c)
 {
   s_tag *tag;
@@ -788,17 +761,6 @@ s_tag * tag_new_character (character c)
     return NULL;
   tag->type = TAG_CHARACTER;
   tag->data.character = c;
-  return tag;
-}
-
-s_tag * tag_new_complex (s_complex *c)
-{
-  s_tag *tag;
-  tag = alloc(sizeof(s_tag));
-  if (! tag)
-    return NULL;
-  tag->type = TAG_COMPLEX;
-  tag->data.complex = c;
   return tag;
 }
 
@@ -902,17 +864,6 @@ s_tag * tag_new_integer_zero (void)
   return tag;
 }
 
-s_tag * tag_new_list (s_list *list)
-{
-  s_tag *tag;
-  tag = alloc(sizeof(s_tag));
-  if (! tag)
-    return NULL;
-  tag->type = TAG_LIST;
-  tag->data.list = list;
-  return tag;
-}
-
 s_tag * tag_new_map (uw count)
 {
   s_tag *tag;
@@ -952,6 +903,56 @@ s_tag * tag_new_map_from_lists (s_list *keys, s_list *values)
     free(tag);
     return NULL;
   }
+  return tag;
+}
+
+s_tag * tag_new_pcallable (void)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_PCALLABLE;
+  if (! pcallable_init(&tag->data.pcallable)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_pcallable_copy (p_callable *src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_PCALLABLE;
+  if (! pcallable_init_copy(&tag->data.pcallable, src)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_pcomplex (p_complex c)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_COMPLEX;
+  tag->data.pcomplex = c;
+  return tag;
+}
+
+s_tag * tag_new_plist (p_list plist)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_LIST;
+  tag->data.plist = plist;
   return tag;
 }
 
@@ -1036,6 +1037,31 @@ s_tag * tag_new_pstruct_type_clean (const s_struct_type *st,
     return NULL;
   tag->type = TAG_PSTRUCT_TYPE;
   if (! pstruct_type_init_clean(&tag->data.pstruct_type, st, clean)) {
+    free(tag);
+    return NULL;
+  }
+  return tag;
+}
+
+s_tag * tag_new_psym (const s_sym *sym)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_SYM;
+  tag->data.psym = sym;
+  return tag;
+}
+
+s_tag * tag_new_psym_anon (const s_str *src)
+{
+  s_tag *tag;
+  tag = alloc(sizeof(s_tag));
+  if (! tag)
+    return NULL;
+  tag->type = TAG_SYM;
+  if (! psym_init_anon(&tag->data.psym, src)) {
     free(tag);
     return NULL;
   }
@@ -1363,31 +1389,6 @@ s_tag * tag_new_sw (sw i)
   return tag;
 }
 
-s_tag * tag_new_sym (const s_sym *sym)
-{
-  s_tag *tag;
-  tag = alloc(sizeof(s_tag));
-  if (! tag)
-    return NULL;
-  tag->type = TAG_SYM;
-  tag->data.sym = sym;
-  return tag;
-}
-
-s_tag * tag_new_sym_anon (const s_str *src)
-{
-  s_tag *tag;
-  tag = alloc(sizeof(s_tag));
-  if (! tag)
-    return NULL;
-  tag->type = TAG_SYM;
-  if (! sym_init_anon(&tag->data.sym, src)) {
-    free(tag);
-    return NULL;
-  }
-  return tag;
-}
-
 s_tag * tag_new_tuple (uw count)
 {
   s_tag *tag;
@@ -1550,30 +1551,6 @@ s_tag * tag_call (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_pcallable (s_tag *tag)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_PCALLABLE;
-  if (! pcallable_init(&tmp.data.pcallable))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_pcallable_copy (s_tag *tag, p_callable *src)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_PCALLABLE;
-  if (! pcallable_init_copy(&tmp.data.pcallable, src))
-    return NULL;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_character (s_tag *tag, character c)
 {
   s_tag tmp = {0};
@@ -1581,17 +1558,6 @@ s_tag * tag_character (s_tag *tag, character c)
   tag_clean(tag);
   tmp.type = TAG_CHARACTER;
   tmp.data.character = c;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_complex (s_tag *tag, s_complex *c)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_COMPLEX;
-  tmp.data.complex = c;
   *tag = tmp;
   return tag;
 }
@@ -1688,17 +1654,6 @@ s_tag * tag_integer_zero (s_tag *tag)
   return tag;
 }
 
-s_tag * tag_list (s_tag *tag, s_list *list)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_LIST;
-  tmp.data.list = list;
-  *tag = tmp;
-  return tag;
-}
-
 s_tag * tag_map (s_tag *tag, uw count)
 {
   s_tag tmp = {0};
@@ -1731,6 +1686,52 @@ s_tag * tag_map_from_lists (s_tag *tag, s_list *keys, s_list *values)
   tmp.type = TAG_MAP;
   if (! map_init_from_lists(&tmp.data.map, keys, values))
     return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_pcallable (s_tag *tag)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PCALLABLE;
+  if (! pcallable_init(&tmp.data.pcallable))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_pcallable_copy (s_tag *tag, p_callable *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_PCALLABLE;
+  if (! pcallable_init_copy(&tmp.data.pcallable, src))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_pcomplex (s_tag *tag, p_complex c)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_COMPLEX;
+  tmp.data.pcomplex = c;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_plist (s_tag *tag, p_list plist)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_LIST;
+  tmp.data.plist = plist;
   *tag = tmp;
   return tag;
 }
@@ -1805,6 +1806,29 @@ s_tag * tag_pstruct_type_clean (s_tag *tag, const s_struct_type *st,
   tag_clean(tag);
   tmp.type = TAG_PSTRUCT_TYPE;
   if (! pstruct_type_init_clean(&tmp.data.pstruct_type, st, clean))
+    return NULL;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_psym (s_tag *tag, const s_sym *sym)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_SYM;
+  tmp.data.psym = sym;
+  *tag = tmp;
+  return tag;
+}
+
+s_tag * tag_psym_anon (s_tag *tag, const s_str *src)
+{
+  s_tag tmp = {0};
+  assert(tag);
+  tag_clean(tag);
+  tmp.type = TAG_SYM;
+  if (! psym_init_anon(&tmp.data.psym, src))
     return NULL;
   *tag = tmp;
   return tag;
@@ -2090,29 +2114,6 @@ s_tag * tag_sw (s_tag *tag, sw i)
   tag_clean(tag);
   tmp.type = TAG_SW;
   tmp.data.sw = i;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_sym (s_tag *tag, const s_sym *sym)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_SYM;
-  tmp.data.sym = sym;
-  *tag = tmp;
-  return tag;
-}
-
-s_tag * tag_sym_anon (s_tag *tag, const s_str *src)
-{
-  s_tag tmp = {0};
-  assert(tag);
-  tag_clean(tag);
-  tmp.type = TAG_SYM;
-  if (! sym_init_anon(&tmp.data.sym, src))
-    return NULL;
   *tag = tmp;
   return tag;
 }

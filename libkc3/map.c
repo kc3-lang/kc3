@@ -296,7 +296,7 @@ s_list ** map_map (const s_map *map, s_callable *callable,
       list_delete_all(tmp);
       return NULL;
     }
-    t = &(*t)->next.data.list;
+    t = &(*t)->next.data.plist;
     list_delete_all(args);
     i++;
   }

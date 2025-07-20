@@ -23,12 +23,8 @@ s_list * list_init_array_copy (s_list *list, const s_array *a,
                                s_list *next);
 s_list * list_init_bool (s_list *list, bool b, s_list *next);
 s_list * list_init_call (s_list *list, s_list *next);
-s_list * list_init_pcallable (s_list *list, s_list *next);
-s_list * list_init_pcallable_copy (s_list *list, p_callable *src,
-                                   s_list *next);
 s_list * list_init_character (s_list *list, character c, s_list *next);
 
-s_list * list_init_complex (s_list *list, s_complex *c, s_list *next);
 s_list * list_init_f32 (s_list *list, f32 f, s_list *next);
 s_list * list_init_f64 (s_list *list, f64 f, s_list *next);
 s_list * list_init_f128 (s_list *list, f128 f, s_list *next);
@@ -40,11 +36,15 @@ s_list * list_init_integer_1 (s_list *list, const char *p,
 s_list * list_init_integer_copy (s_list *list, const s_integer *i,
                                  s_list *next);
 s_list * list_init_integer_zero (s_list *list, s_list *next);
-
 s_list * list_init_map (s_list *list, uw count, s_list *next);
 s_list * list_init_map_1 (s_list *list, const char *p, s_list *next);
 s_list * list_init_map_from_lists (s_list *list, s_list *keys,
                                    s_list *values, s_list *next);
+s_list * list_init_pcallable (s_list *list, s_list *next);
+s_list * list_init_pcallable_copy (s_list *list, p_callable *src,
+                                   s_list *next);
+s_list * list_init_pcomplex (s_list *list, p_complex c, s_list *next);
+s_list * list_init_plist (s_list *list, p_list plist, s_list *next);
 s_list * list_init_pstruct (s_list *list, const s_sym *module,
                             s_list *next);
 s_list * list_init_pstruct_copy (s_list *list, p_struct *src,
@@ -60,6 +60,9 @@ s_list * list_init_pstruct_type_clean (s_list *list,
                                        const s_struct_type *st,
                                        const s_cfn *clean,
                                        s_list *next);
+s_list * list_init_psym (s_list *list, const s_sym *sym, s_list *next);
+s_list * list_init_psym_anon (s_list *list, const s_str *src,
+                              s_list *next);
 s_list * list_init_ptr (s_list *list, void *p, s_list *next);
 s_list * list_init_ptr_free (s_list *list, void *p, s_list *next);
 s_list * list_init_pvar (s_list *list, const s_sym *type, s_list *next);
@@ -94,9 +97,6 @@ s_list * list_init_str_copy (s_list *list, const s_str *src,
                              s_list *next);
 s_list * list_init_str_empty (s_list *list, s_list *next);
 s_list * list_init_sw (s_list *list, sw i, s_list *next);
-s_list * list_init_sym (s_list *list, const s_sym *sym, s_list *next);
-s_list * list_init_sym_anon (s_list *list, const s_str *src,
-                             s_list *next);
 s_list * list_init_tuple (s_list *list, uw count, s_list *next);
 s_list * list_init_tuple_2 (s_list *list, s_tag *a, s_tag *b,
                             s_list *next);
@@ -119,11 +119,8 @@ s_list * list_new_array (const s_sym *type, uw dimension,
 s_list * list_new_array_copy (const s_array *a, s_list *next);
 s_list * list_new_bool (bool b, s_list *next);
 s_list * list_new_call (s_list *next);
-s_list * list_new_pcallable (s_list *next);
-s_list * list_new_pcallable_copy (p_callable *src, s_list *next);
 s_list * list_new_character (character c, s_list *next);
 
-s_list * list_new_complex (s_complex *c, s_list *next);
 s_list * list_new_f32 (f32 f, s_list *next);
 s_list * list_new_f64 (f64 f, s_list *next);
 s_list * list_new_f128 (f128 f, s_list *next);
@@ -132,11 +129,14 @@ s_list * list_new_ident_1 (const char *p, s_list *next);
 s_list * list_new_integer_1 (const char *p, s_list *next);
 s_list * list_new_integer_copy (const s_integer *i, s_list *next);
 s_list * list_new_integer_zero (s_list *next);
-
 s_list * list_new_map (uw count, s_list *next);
 s_list * list_new_map_1 (const char *p, s_list *next);
 s_list * list_new_map_from_lists (s_list *keys, s_list *values,
                                   s_list *next);
+s_list * list_new_pcallable (s_list *next);
+s_list * list_new_pcallable_copy (p_callable *src, s_list *next);
+s_list * list_new_pcomplex (p_complex c, s_list *next);
+s_list * list_new_plist (p_list plist, s_list *next);
 s_list * list_new_pstruct (const s_sym *module, s_list *next);
 s_list * list_new_pstruct_copy (p_struct *src, s_list *next);
 s_list * list_new_pstruct_with_data (const s_sym *module, void *data,
@@ -146,6 +146,8 @@ s_list * list_new_pstruct_type (const s_sym *module, s_list *spec,
                                 s_list *next);
 s_list * list_new_pstruct_type_clean (const s_struct_type *st,
                                       const s_cfn *clean, s_list *next);
+s_list * list_new_psym (const s_sym *sym, s_list *next);
+s_list * list_new_psym_anon (const s_str *src, s_list *next);
 s_list * list_new_ptr (void *p, s_list *next);
 s_list * list_new_ptr_free (void *p, s_list *next);
 s_list * list_new_pvar (const s_sym *type, s_list *next);
@@ -174,8 +176,6 @@ s_list * list_new_str_concatenate_list (const s_list * const *src,
 s_list * list_new_str_copy (const s_str *src, s_list *next);
 s_list * list_new_str_empty (s_list *next);
 s_list * list_new_sw (sw i, s_list *next);
-s_list * list_new_sym (const s_sym *sym, s_list *next);
-s_list * list_new_sym_anon (const s_str *src, s_list *next);
 s_list * list_new_tuple (uw count, s_list *next);
 s_list * list_new_tuple_2 (s_tag *a, s_tag *b, s_list *next);
 s_list * list_new_time (s_list *next);

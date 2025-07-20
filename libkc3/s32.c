@@ -142,10 +142,10 @@ s_tag * s32_sqrt (const s32 x, s_tag *dest)
   assert(dest);
   if (x < 0) {
     dest->type = TAG_COMPLEX;
-    dest->data.complex = complex_new();
-    tag_init_u8(&dest->data.complex->x, 0);
-    dest->data.complex->y.type = TAG_F128;
-    dest->data.complex->y.data.f128 = sqrtl((long double) -x);
+    dest->data.pcomplex = complex_new();
+    tag_init_u8(&dest->data.pcomplex->x, 0);
+    dest->data.pcomplex->y.type = TAG_F128;
+    dest->data.pcomplex->y.data.f128 = sqrtl((long double) -x);
     return dest;
   }
   dest->type = TAG_F128;

@@ -88,7 +88,7 @@ s_call * call_init_call_cast (s_call *call, const s_sym *type)
     list_delete_all(next);
     return NULL;
   }
-  tag_init_sym(&tmp.arguments->tag, type);
+  tag_init_psym(&tmp.arguments->tag, type);
   *call = tmp;
   return call;
 }

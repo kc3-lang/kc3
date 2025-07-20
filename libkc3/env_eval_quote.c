@@ -42,6 +42,7 @@
 #include "tuple.h"
 #include "var.h"
 
+// TODO: unwind_protect
 bool env_eval_quote (s_env *env, s_quote *quote, s_tag *dest)
 {
   bool r;
@@ -54,6 +55,7 @@ bool env_eval_quote (s_env *env, s_quote *quote, s_tag *dest)
   return r;
 }
 
+// TODO: unwind_protect
 bool env_eval_quote_array (s_env *env, s_array *array,
                            s_tag *dest)
 {
@@ -92,6 +94,7 @@ bool env_eval_quote_array (s_env *env, s_array *array,
   return false;
 }
 
+// TODO: unwind_protect
 bool env_eval_quote_do_block (s_env *env, s_do_block *do_block,
                               s_tag *dest)
 {
@@ -114,6 +117,7 @@ bool env_eval_quote_do_block (s_env *env, s_do_block *do_block,
   return false;
 }
 
+// TODO: unwind_protect
 bool env_eval_quote_call (s_env *env, s_call *call, s_tag *dest)
 {
   s_list *arg;
@@ -129,7 +133,7 @@ bool env_eval_quote_call (s_env *env, s_call *call, s_tag *dest)
     *tmp_arg_last = list_new(NULL);
     if (! env_eval_quote_tag(env, &arg->tag, &(*tmp_arg_last)->tag))
       goto ko;
-    tmp_arg_last = &(*tmp_arg_last)->next.data.list;
+    tmp_arg_last = &(*tmp_arg_last)->next.data.plist;
     arg = list_next(arg);
   }
   if (call->pcallable &&
@@ -143,6 +147,7 @@ bool env_eval_quote_call (s_env *env, s_call *call, s_tag *dest)
   return false;
 }
 
+// TODO: unwind_protect
 bool env_eval_quote_complex (s_env *env, s_complex *c,
                              s_tag *dest)
 {
@@ -151,18 +156,19 @@ bool env_eval_quote_complex (s_env *env, s_complex *c,
   assert(c);
   assert(dest);
   tmp.type = TAG_COMPLEX;
-  tmp.data.complex = complex_new();
-  if (! tmp.data.complex)
+  tmp.data.pcomplex = complex_new();
+  if (! tmp.data.pcomplex)
     return false;
-  if (! env_eval_quote_tag(env, &c->x, &tmp.data.complex->x) ||
-      ! env_eval_quote_tag(env, &c->y, &tmp.data.complex->y)) {
-    complex_delete(tmp.data.complex);
+  if (! env_eval_quote_tag(env, &c->x, &tmp.data.pcomplex->x) ||
+      ! env_eval_quote_tag(env, &c->y, &tmp.data.pcomplex->y)) {
+    complex_delete(tmp.data.pcomplex);
     return false;
   }
   *dest = tmp;
   return true;
 }
 
+// TODO: unwind_protect
 bool env_eval_quote_cow (s_env *env, s_cow *cow,
                          s_tag *dest)
 {
@@ -171,19 +177,20 @@ bool env_eval_quote_cow (s_env *env, s_cow *cow,
   assert(cow);
   assert(dest);
   tmp.type = TAG_COW;
-  tmp.data.cow = cow_new(cow->type);
-  if (! tmp.data.cow)
+  tmp.data.pcow = cow_new(cow->type);
+  if (! tmp.data.pcow)
     return false;
   if (! env_eval_quote_tag(env, cow_read_only(cow),
-                           cow_read_write(tmp.data.cow))) {
-    cow_delete(tmp.data.cow);
+                           cow_read_write(tmp.data.pcow))) {
+    cow_delete(tmp.data.pcow);
     return false;
   }
-  cow_freeze(tmp.data.cow);
+  cow_freeze(tmp.data.pcow);
   *dest = tmp;
   return true;
 }
 
+// TODO: unwind_protect
 bool env_eval_quote_list (s_env *env, s_list *list, s_tag *dest)
 {
   s_list *next = NULL;
@@ -201,17 +208,18 @@ bool env_eval_quote_list (s_env *env, s_list *list, s_tag *dest)
     if (! next)
       if (! env_eval_quote_tag(env, &list->next, &(*tail)->next))
         goto ko;
-    tail = &(*tail)->next.data.list;
+    tail = &(*tail)->next.data.plist;
     list = next;
   }
   dest->type = TAG_LIST;
-  dest->data.list = tmp;
+  dest->data.plist = tmp;
   return true;
  ko:
   list_delete_all(tmp);
   return false;
 }
 
+// TODO: unwind_protect
 bool env_eval_quote_map (s_env *env, s_map *map, s_tag *dest)
 {
   s_map tmp = {0};
@@ -235,6 +243,7 @@ bool env_eval_quote_map (s_env *env, s_map *map, s_tag *dest)
   return false;
 }
 
+// TODO: unwind_protect
 bool env_eval_quote_quote (s_env *env, s_quote *quote, s_tag *dest)
 {
   bool r;
@@ -255,6 +264,7 @@ bool env_eval_quote_quote (s_env *env, s_quote *quote, s_tag *dest)
   return true;
 }
 
+// TODO: unwind_protect
 bool env_eval_quote_struct (s_env *env, s_struct *s, s_tag *dest)
 {
   uw i;
@@ -302,11 +312,11 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   case TAG_CALL:
     return env_eval_quote_call(env, &tag->data.call, dest);
   case TAG_COMPLEX:
-    return env_eval_quote_complex(env, tag->data.complex, dest);
+    return env_eval_quote_complex(env, tag->data.pcomplex, dest);
   case TAG_COW:
-    return env_eval_quote_cow(env, tag->data.cow, dest);
+    return env_eval_quote_cow(env, tag->data.pcow, dest);
   case TAG_LIST:
-    return env_eval_quote_list(env, tag->data.list, dest);
+    return env_eval_quote_list(env, tag->data.plist, dest);
   case TAG_MAP:
     return env_eval_quote_map(env, &tag->data.map, dest);
   case TAG_PSTRUCT:
@@ -356,6 +366,7 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
   return false;
 }
 
+// TODO: unwind_protect
 bool env_eval_quote_time (s_env *env, s_time *time, s_tag *dest)
 {
   s_time tmp = {0};
@@ -410,6 +421,7 @@ bool env_eval_quote_tuple (s_env *env, s_tuple *tuple, s_tag *dest)
   return false;
 }
 
+// TODO: unwind_protect
 bool env_eval_quote_unquote (s_env *env, s_unquote *unquote,
                              s_tag *dest)
 {
@@ -433,8 +445,10 @@ bool env_eval_quote_unquote (s_env *env, s_unquote *unquote,
   else
     r = tag_init_unquote_copy(&tmp, unquote) ? true : false;
   env->unquote_level--;
-  if (! r)
+  if (! r) {
+    tag_clean(&tmp);
     return false;
+  }
   *dest = tmp;
   return true;
 }

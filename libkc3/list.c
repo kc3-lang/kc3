@@ -156,7 +156,7 @@ s_list ** list_filter (s_list **list, p_callable *function,
     if (! bool_init_cast(&b, &sym_Bool, &(*tail)->tag))
       goto ko;
     if (b)
-      tail = &(*tail)->next.data.list;
+      tail = &(*tail)->next.data.plist;
     else
       *tail = list_delete(*tail);
     l = list_next(l);
@@ -190,7 +190,7 @@ s_list * list_init (s_list *list, s_list *next)
 {
   assert(list);
   tag_init_void(&list->tag);
-  tag_init_list(&list->next, next);
+  tag_init_plist(&list->next, next);
   return list;
 }
 
@@ -199,7 +199,7 @@ s_list * list_init_1 (s_list *list, const char *p, s_list *next)
   assert(list);
   if (! tag_init_1(&list->tag, p))
     return NULL;
-  tag_init_list(&list->next, next);
+  tag_init_plist(&list->next, next);
   return list;
 }
 
@@ -214,7 +214,7 @@ s_list ** list_init_append (s_list **list, s_list **src,
   s = *src;
   while (s) {
     *tail = list_new_tag_copy(&s->tag, NULL);
-    tail = &(*tail)->next.data.list;
+    tail = &(*tail)->next.data.plist;
     s = list_next(s);
   }
   *tail = list_new_tag_copy(tag, NULL);
@@ -230,7 +230,7 @@ s_list ** list_init_cast (s_list **list, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_LIST:
-    return list_init_copy(list, &tag->data.list);
+    return list_init_copy(list, &tag->data.plist);
   default:
     break;
   }
@@ -344,7 +344,7 @@ s_list ** list_map (s_list **list, p_callable *function,
     *tail = list_new(NULL);
     if (! eval_callable_call(*function, arg, &(*tail)->tag))
       goto ko;
-    tail = &(*tail)->next.data.list;
+    tail = &(*tail)->next.data.plist;
     l = list_next(l);
   }
   list_delete_all(arg);
@@ -362,7 +362,7 @@ s_list * list_next (const s_list *list)
   if (! list)
     return NULL;
   switch (list->next.type) {
-  case TAG_LIST: return list->next.data.list;
+  case TAG_LIST: return list->next.data.plist;
   default: return NULL;
   }
 }
@@ -405,7 +405,7 @@ s_list * list_new_copy (s_list *src)
       goto ko;
     if ((next = list_next(s))) {
       s = next;
-      i = &(*i)->next.data.list;
+      i = &(*i)->next.data.plist;
     }
     else {
       if (! tag_init_copy(&(*i)->next, &s->next))
@@ -423,7 +423,7 @@ s_list * list_new_list (s_list *x, s_list *next)
 {
   s_list *dest;
   if ((dest = list_new(next))) {
-    if (! tag_init_list(&dest->tag, x)) {
+    if (! tag_init_plist(&dest->tag, x)) {
       free(dest);
       return NULL;
     }
@@ -455,7 +455,7 @@ s_list ** list_remove_void (s_list **list)
     if ((*l)->tag.type == TAG_VOID)
       *l = list_delete(*l);
     else if ((*l)->next.type == TAG_LIST)
-      l = &(*l)->next.data.list;
+      l = &(*l)->next.data.plist;
     else
       break;
   }
@@ -487,7 +487,7 @@ s_list ** list_slice (s_list **list, s_tag *start_tag, s_tag *end_tag,
   while (l && i < end) {
     if (i >= start) {
       *tail = list_new_tag_copy(&l->tag, NULL);
-      tail = &(*tail)->next.data.list;
+      tail = &(*tail)->next.data.plist;
     }
     i++;
     l = list_next(l);
@@ -509,7 +509,7 @@ s_list ** list_sort (s_list **list, s_list **dest)
   while (l) {
     t = &tmp;
     while (*t && compare_tag(&(*t)->tag, &l->tag) <= 0)
-      t = &(*t)->next.data.list;
+      t = &(*t)->next.data.plist;
     if (! (new_ = list_new_tag_copy(&l->tag, *t))) {
       list_delete_all(tmp);
       return NULL;
@@ -561,7 +561,7 @@ s_list ** list_sort_by (s_list **list, p_callable *compare,
       tag_clean(&tag);
       if (! b)
         break;
-      t = &(*t)->next.data.list;
+      t = &(*t)->next.data.plist;
     }
     if (! (new_ = list_new_tag_copy(&l->tag, *t)))
       goto ko;
@@ -582,7 +582,7 @@ s_list ** list_tail (s_list **list)
   s_list **tail;
   tail = list;
   while (tail && *tail) {
-    tail = &(*tail)->next.data.list;
+    tail = &(*tail)->next.data.plist;
   }
   return tail;
 }
@@ -668,7 +668,7 @@ s_list ** list_unique (s_list **list, s_list **dest)
     if (! found) {
       if (! (*tail = list_new_tag_copy(&l->tag, NULL)))
         goto ko;
-      tail = &(*tail)->next.data.list;
+      tail = &(*tail)->next.data.plist;
     }
     l = list_next(l);
   }
