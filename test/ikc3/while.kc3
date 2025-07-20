@@ -223,3 +223,35 @@ block :test do
   end
   :failed
 end
+quote block :unwind_test do
+  unwind_protect(
+    do
+      i = 0
+      while i < 5 do
+        puts("unwind loop #{i}")
+        i = i + 1
+        if i == 3 do
+          return "early exit"
+        end
+      end
+      "normal completion"
+    end,
+    puts("cleanup executed")
+  )
+end
+block :unwind_test do
+  unwind_protect(
+    do
+      i = 0
+      while i < 5 do
+        puts("unwind loop #{i}")
+        i = i + 1
+        if i == 3 do
+          return "early exit"
+        end
+      end
+      "normal completion"
+    end,
+    puts("cleanup executed")
+  )
+end

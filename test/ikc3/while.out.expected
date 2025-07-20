@@ -138,3 +138,21 @@ loop 1
 loop 2
 loop 3
 :ok
+block :unwind_test do
+  unwind_protect(do
+    i = 0
+    while i < 5 do
+      puts("unwind loop #{i}")
+      i = i + 1
+      if i == 3 do
+        return "early exit"
+      end
+    end
+    "normal completion"
+  end, puts("cleanup executed"))
+end
+unwind loop 0
+unwind loop 1
+unwind loop 2
+cleanup executed
+"early exit"
