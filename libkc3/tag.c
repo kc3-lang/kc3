@@ -27,6 +27,7 @@
 #include "do_block.h"
 #include "env.h"
 #include "env_eval.h"
+#include "env_eval_equal.h"
 #include "explicit_bzero.h"
 #include "fn.h"
 #include "frame.h"

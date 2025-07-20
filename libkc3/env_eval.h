@@ -45,25 +45,6 @@ bool env_eval_callable (s_env *env, s_callable *callable,
 bool env_eval_complex (s_env *env, s_complex *c,
                        s_tag *dest);
 bool env_eval_cow (s_env *env, s_cow *cow, s_tag *dest);
-bool env_eval_equal_do_block (s_env *env, bool macro,
-                           s_do_block *a, s_do_block *b,
-                           s_do_block *dest);
-bool env_eval_equal_list (s_env *env, bool macro,
-                          s_list *a, s_list *b,
-                          s_list **dest);
-bool env_eval_equal_struct (s_env *env, bool macro,
-                            s_struct *a,
-                            s_struct *b,
-                            p_struct *dest);
-bool env_eval_equal_tag (s_env *env, bool macro,
-                         s_tag *a, s_tag *b,
-                         s_tag *dest);
-bool env_eval_equal_time (s_env *env, bool macro,
-                          s_time *a, s_time *b,
-                          s_time *dest);
-bool env_eval_equal_tuple (s_env *env, bool macro,
-                           s_tuple *a, s_tuple *b,
-                           s_tuple *dest);
 bool env_eval_ident (s_env *env, const s_ident *ident,
                      s_tag *dest);
 bool env_eval_ident_is_bound (s_env *env,
@@ -75,34 +56,6 @@ bool env_eval_map (s_env *env, s_map *map,
                    s_tag *dest);
 bool env_eval_progn (s_env *env, s_list *program,
                      s_tag *dest);
-bool env_eval_quote (s_env *env, s_quote *quote,
-                     s_tag *dest);
-bool env_eval_quote_array (s_env *env, s_array *array,
-                           s_tag *dest);
-bool env_eval_quote_do_block (s_env *env, s_do_block *do_block,
-                           s_tag *dest);
-bool env_eval_quote_call (s_env *env, s_call *call, s_tag *dest);
-bool env_eval_quote_complex (s_env *env, s_complex *c,
-                             s_tag *dest);
-bool env_eval_quote_cow (s_env *env, s_cow *cow,
-                         s_tag *dest);
-bool env_eval_quote_list (s_env *env, s_list *list,
-                          s_tag *dest);
-bool env_eval_quote_map (s_env *env, s_map *map,
-                         s_tag *dest);
-bool env_eval_quote_quote (s_env *env, s_quote *quote,
-                           s_tag *dest);
-bool env_eval_quote_struct (s_env *env, s_struct *s,
-                            s_tag *dest);
-bool env_eval_quote_tag (s_env *env, s_tag *tag,
-                         s_tag *dest);
-bool env_eval_quote_time (s_env *env, s_time *time,
-                          s_tag *dest);
-bool env_eval_quote_tuple (s_env *env, s_tuple *tuple,
-                           s_tag *dest);
-bool env_eval_quote_unquote (s_env *env,
-                             s_unquote *unquote,
-                             s_tag *dest);
 bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest);
 bool env_eval_struct_tag (s_env *env, s_struct *s, s_tag *dest);
 bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest);
