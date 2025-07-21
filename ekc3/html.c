@@ -41,7 +41,7 @@ s_str * html_escape (const s_str *str, s_str *dest)
              " List"));
     return NULL;
   }
-  escape = escape_tag.data.list;
+  escape = escape_tag.data.plist;
   if (! buf_init_alloc(&buf, str->size * 8)) {
     tag_clean(&escape_tag);
     return NULL;

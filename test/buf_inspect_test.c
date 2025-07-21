@@ -440,9 +440,10 @@ TEST_CASE(buf_inspect_tag)
   BUF_INSPECT_TEST_TAG(tag_ident_1(&tag, "ident"), "ident");
   BUF_INSPECT_TEST_TAG(tag_integer_1(&tag, "-0x10000000000000000"), "-18446744073709551616");
   BUF_INSPECT_TEST_TAG(tag_integer_1(&tag, "0x10000000000000000"), "18446744073709551616");
-  BUF_INSPECT_TEST_TAG(tag_list(&tag, NULL), "[]");
-  BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "[[] | []]"), "[[]]");
-  BUF_INSPECT_TEST_TAG(tag_list_1(&tag, "[]"), "[]");
+  BUF_INSPECT_TEST_TAG(tag_plist(&tag, NULL), "[]");
+  BUF_INSPECT_TEST_TAG(tag_plist_1(&tag, "[[] | []]"), "[[]]");
+  BUF_INSPECT_TEST_TAG(tag_plist_1(&tag, "[]"), "[]");
+  BUF_INSPECT_TEST_TAG(tag_psym(&tag, sym_1("Module")), "Module");
   BUF_INSPECT_TEST_TAG(tag_s16(&tag, -0x100), "-256");
   BUF_INSPECT_TEST_TAG(tag_s32(&tag, -0x10000), "-65536");
   BUF_INSPECT_TEST_TAG(tag_s64(&tag, -0x100000000), "-4294967296");
@@ -451,7 +452,6 @@ TEST_CASE(buf_inspect_tag)
   BUF_INSPECT_TEST_TAG(tag_str(&tag, NULL, 0, ""), "\"\"");
   BUF_INSPECT_TEST_TAG(tag_str_1(&tag, NULL, ""), "\"\"");
   BUF_INSPECT_TEST_TAG(tag_str_1(&tag, NULL, "09AZaz"), "\"09AZaz\"");
-  BUF_INSPECT_TEST_TAG(tag_sym(&tag, sym_1("Module")), "Module");
   BUF_INSPECT_TEST_TAG(tag_u16(&tag, 0x100), "256");
   BUF_INSPECT_TEST_TAG(tag_u32(&tag, 0x10000), "65536");
   BUF_INSPECT_TEST_TAG(tag_u64(&tag, 0x100000000), "4294967296");

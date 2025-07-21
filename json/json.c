@@ -75,7 +75,7 @@ sw json_buf_inspect_map (s_buf *buf, const s_map *map)
       result += r;
       break;
     case TAG_SYM:
-      if ((r = buf_inspect_str(buf, &map->key[i].data.sym->str)) < 0)
+      if ((r = buf_inspect_str(buf, &map->key[i].data.psym->str)) < 0)
         return r;
       result += r;
       break;
@@ -134,7 +134,7 @@ sw json_buf_inspect_map_size (s_pretty *pretty, const s_map *map)
       result += r;
       break;
     case TAG_SYM:
-      if ((r = buf_inspect_str_size(pretty, &map->key[i].data.sym->str)) < 0)
+      if ((r = buf_inspect_str_size(pretty, &map->key[i].data.psym->str)) < 0)
         return r;
       result += r;
       break;
@@ -337,7 +337,7 @@ s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest)
       goto restore;
     if ((r = buf_parse_tag_str(buf, &(*k)->tag)) <= 0)
       goto restore;
-    k = &(*k)->next.data.list;
+    k = &(*k)->next.data.plist;
     if ((r = buf_ignore_spaces(buf)) < 0)
       goto restore;
     if ((r = buf_read_1(buf, ":")) <= 0)
@@ -349,7 +349,7 @@ s_tag * json_buf_parse_map (s_buf *buf, s_tag *dest)
       goto restore;
     if (! json_buf_parse(buf, &(*v)->tag))
       goto restore;
-    v = &(*v)->next.data.list;
+    v = &(*v)->next.data.plist;
   }
   if (! tag_init_map_from_lists(dest, keys, values))
     goto restore;

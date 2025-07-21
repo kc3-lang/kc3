@@ -84,15 +84,15 @@ static void kc3_event_callback (int fd, short events, void *tag_tuple)
   arg = tag->data.tuple.tag + 2;
   events_list = NULL;
   if (events & EV_PERSIST)
-    events_list = list_new_sym(&g_sym_persist, events_list);
+    events_list = list_new_psym(&g_sym_persist, events_list);
   if (events & EV_WRITE)
-    events_list = list_new_sym(&g_sym_write, events_list);
+    events_list = list_new_psym(&g_sym_write, events_list);
   if (events & EV_READ)
-    events_list = list_new_sym(&g_sym_read, events_list);
+    events_list = list_new_psym(&g_sym_read, events_list);
   if (events & EV_SIGNAL)
-    events_list = list_new_sym(&g_sym_signal, events_list);
+    events_list = list_new_psym(&g_sym_signal, events_list);
   if (events & EV_TIMEOUT)
-    events_list = list_new_sym(&g_sym_timeout, events_list);
+    events_list = list_new_psym(&g_sym_timeout, events_list);
   arguments = list_new_s64(fd, list_new_list
                            (events_list, list_new_ptr
                             (ev, list_new_tag_copy
@@ -128,11 +128,11 @@ struct event * kc3_event_new (struct event_base **event_base, s64 fd,
   while (e) {
     if (e->tag.type != TAG_SYM)
       goto invalid_event_list;
-    if (e->tag.data.sym == &g_sym_read)
+    if (e->tag.data.psym == &g_sym_read)
       events_s16 |= EV_READ;
-    else if (e->tag.data.sym == &g_sym_write)
+    else if (e->tag.data.psym == &g_sym_write)
       events_s16 |= EV_WRITE;
-    else if (e->tag.data.sym == &g_sym_persist)
+    else if (e->tag.data.psym == &g_sym_persist)
       events_s16 |= EV_PERSIST;
     else
       goto invalid_event_list;

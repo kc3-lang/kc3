@@ -567,7 +567,7 @@ void * data_init_cast (void *data, const s_sym * const *type,
   if (t == &g_sym_Integer)
     return integer_init_cast(data, type, tag);
   if (t == &g_sym_List)
-    return list_init_cast(data, type, tag);
+    return plist_init_cast(data, type, tag);
   if (t == &g_sym_Ptag)
     return ptag_init_cast(data, type, tag);
   if (t == &g_sym_Ptr)
@@ -656,7 +656,7 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (type == &g_sym_Integer)
     return integer_init_copy(data, src);
   if (type == &g_sym_List)
-    return list_init_copy(data, src);
+    return plist_init_copy(data, src);
   if (type == &g_sym_Map)
     return map_init_copy(data, src);
   if (type == &g_sym_Ptag)

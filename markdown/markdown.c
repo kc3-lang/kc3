@@ -59,7 +59,7 @@ void markdown_to_html_str_callback (const MD_CHAR *p, MD_SIZE size,
     assert(! "markdown_to_html_str_callback: list_new_str_cpy");
     return;
   }
-  l = &(*l)->next.data.list;
+  l = &(*l)->next.data.plist;
   *(s_list ***) data = l;
 }
 
@@ -79,7 +79,7 @@ s_list ** markdown_titles (const s_str *markdown, s_list **dest)
   tuple_str = tuple.tag + 2;
   tuple_count = tuple.tag + 3;
   tag_init_u8(tuple_last, 0);
-  tag_init_list(tuple_list, NULL);
+  tag_init_plist(tuple_list, NULL);
   tag_init_str_empty(tuple_str);
   tag_init_u8(tuple_count, 0);
   tag_init_u8(tuple_count + 1, 0);
@@ -94,8 +94,8 @@ s_list ** markdown_titles (const s_str *markdown, s_list **dest)
   parser.text = markdown_titles_text;
   md_parse(markdown->ptr.pchar, markdown->size,
            &parser, &tuple);
-  *dest = tuple_list->data.list;
-  tuple_list->data.list = NULL;
+  *dest = tuple_list->data.plist;
+  tuple_list->data.plist = NULL;
   tuple_clean(&tuple);
   return dest;
 }
@@ -177,9 +177,9 @@ s32 markdown_titles_leave_block (MD_BLOCKTYPE type, void *detail,
     while (i <= level) {
       *str_list_tail = list_new_str_cast(&sym_Str, tuple_count + i,
                                          NULL);
-      str_list_tail = &(*str_list_tail)->next.data.list;
+      str_list_tail = &(*str_list_tail)->next.data.plist;
       *str_list_tail = list_new_str_1(NULL, ".", NULL);
-      str_list_tail = &(*str_list_tail)->next.data.list;
+      str_list_tail = &(*str_list_tail)->next.data.plist;
       i++;
     }
     while (i < 6) {
@@ -187,15 +187,15 @@ s32 markdown_titles_leave_block (MD_BLOCKTYPE type, void *detail,
       i++;
     }
     *str_list_tail = list_new_str_1(NULL, " ", NULL);
-    str_list_tail = &(*str_list_tail)->next.data.list;
+    str_list_tail = &(*str_list_tail)->next.data.plist;
     if (tuple_str->type != TAG_STR) {
       err_puts("markdown_titles_leave_block: tuple_str is not a Str");
       assert(! "markdown_titles_leave_block: tuple_str is not a Str");
       return -1;
     }
     *str_list_tail = list_new_str_copy(&tuple_str->data.str, NULL);
-    str_list_tail = &(*str_list_tail)->next.data.list;
-    tuple_list_tail = list_tail(&tuple_list->data.list);
+    str_list_tail = &(*str_list_tail)->next.data.plist;
+    tuple_list_tail = list_tail(&tuple_list->data.plist);
     *tuple_list_tail = list_new(NULL);
     if (! tag_init_str_concatenate_list(&(*tuple_list_tail)->tag,
                                         (const s_list * const *)

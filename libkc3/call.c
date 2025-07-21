@@ -25,6 +25,7 @@
 #include "ident.h"
 #include "list.h"
 #include "pcallable.h"
+#include "plist.h"
 #include "tag.h"
 
 sw call_arity (const s_call *call)
@@ -124,7 +125,7 @@ s_call * call_init_copy (s_call *call, s_call *src)
   assert(src);
   assert(call);
   if (! ident_init_copy(&tmp.ident, &src->ident) ||
-      ! list_init_copy(&tmp.arguments, &src->arguments))
+      ! plist_init_copy(&tmp.arguments, &src->arguments))
     return NULL;
   if (src->pcallable &&
       ! (tmp.pcallable = callable_new_copy(src->pcallable))) {

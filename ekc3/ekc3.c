@@ -41,7 +41,7 @@ s_list *** ekc3_append_and_empty_buf (s_list ***tail, s_buf *buf)
   (**tail)->tag.type = TAG_STR;
   (**tail)->tag.data.str = str;
   buf_empty(buf);
-  *tail = &(**tail)->next.data.list;
+  *tail = &(**tail)->next.data.plist;
   return tail;
 }
 
@@ -56,7 +56,7 @@ s_list *** ekc3_append_do_block (s_list ***tail, s_do_block *do_block)
     return NULL;
   (**tail)->tag.type = TAG_DO_BLOCK;
   (**tail)->tag.data.do_block = *do_block;
-  *tail = &(**tail)->next.data.list;
+  *tail = &(**tail)->next.data.plist;
   return tail;
 }
 
@@ -84,7 +84,7 @@ s_list *** ekc3_append_str (s_list ***tail, s_str *str)
     return NULL;
   (**tail)->tag.type = TAG_STR;
   (**tail)->tag.data.str = *str;
-  *tail = &(**tail)->next.data.list;
+  *tail = &(**tail)->next.data.plist;
   return tail;
 }
 
@@ -98,8 +98,8 @@ s_list *** ekc3_append_sym (s_list ***tail, const s_sym *sym)
   if (! **tail)
     return NULL;
   (**tail)->tag.type = TAG_SYM;
-  (**tail)->tag.data.sym = sym;
-  *tail = &(**tail)->next.data.list;
+  (**tail)->tag.data.psym = sym;
+  *tail = &(**tail)->next.data.plist;
   return tail;
 }
 
@@ -254,7 +254,7 @@ sw ekc3_buf_parse_kc3_do_block (s_buf *buf, s_do_block *dest)
       break;
     }
     result += r;
-    tail = &(*tail)->next.data.list;
+    tail = &(*tail)->next.data.plist;
   }
   if (! do_block_init_from_list(&tmp, &list)) {
     list_delete_all(list);
@@ -412,7 +412,7 @@ s_tag * ekc3_load (const s_str *path, s_tag *dest)
     goto clean;
   if (! buf_fd_open_r(&buf, fd))
     goto clean;
-  if (! ekc3_buf_parse(&buf, &tmp.data.list))
+  if (! ekc3_buf_parse(&buf, &tmp.data.plist))
     goto clean;
   tmp.type = TAG_LIST;
   buf_clean(&buf);
@@ -434,7 +434,7 @@ sw ekc3_render (s_buf *buf, const p_ekc3 *ekc3)
   l = *ekc3;
   while (l) {
     if (l->tag.type == TAG_SYM &&
-        l->tag.data.sym == sym_1("silent")) {
+        l->tag.data.psym == sym_1("silent")) {
       l = list_next(l);
       if (! l ||
           l->tag.type != TAG_DO_BLOCK) {
@@ -582,7 +582,7 @@ sw ekc3_render_size (s_pretty *pretty, const p_ekc3 *ekc3)
   l = *ekc3;
   while (l) {
     if (l->tag.type == TAG_SYM &&
-        l->tag.data.sym == sym_1("silent")) {
+        l->tag.data.psym == sym_1("silent")) {
       l = list_next(l);
       if (! l ||
           l->tag.type != TAG_DO_BLOCK) {

@@ -259,6 +259,17 @@ s_list * list_init_plist (s_list *list, p_list plist, s_list *next)
   return list;
 }
 
+s_list * list_init_plist_1 (s_list *list, const char *p, s_list *next)
+{
+  s_list tmp = {0};
+  assert(list);
+  list_init(&tmp, next);
+  if (! tag_init_plist_1(&tmp.tag, p))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
 s_list * list_init_pstruct (s_list *list, const s_sym *module,
                             s_list *next)
 {
@@ -986,6 +997,19 @@ s_list * list_new_plist (p_list plist, s_list *next)
   if (! list)
     return NULL;
   if (! tag_init_plist(&list->tag, plist)) {
+    free(list);
+    return NULL;
+  }
+  return list;
+}
+
+s_list * list_new_plist_1 (const char *p, s_list *next)
+{
+  s_list *list;
+  list = list_new(next);
+  if (! list)
+    return NULL;
+  if (! tag_init_plist_1(&list->tag, p)) {
     free(list);
     return NULL;
   }

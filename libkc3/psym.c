@@ -12,8 +12,11 @@
  */
 #include "alloc.h"
 #include "assert.h"
+#include "list.h"
 #include "psym.h"
+#include "str.h"
 #include "sym.h"
+#include "tag_type.h"
 
 p_sym * psym_init_1 (p_sym *sym, const char *p)
 {
@@ -70,13 +73,13 @@ p_sym * psym_init_cast (p_sym *sym, const s_sym * const *type,
   assert(tag);
   switch (tag->type) {
   case TAG_STR:
-    return sym_init_str(sym, &tag->data.str);
+    return psym_init_str(sym, &tag->data.str);
   case TAG_SYM:
-    return sym_init_copy(sym, &tag->data.psym);
+    return psym_init_copy(sym, &tag->data.psym);
   default:
     break;
   }
-  err_write_1("sym_init_cast: cannot cast ");
+  err_write_1("psym_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
   if (*type == &g_sym_Sym)
     err_puts(" to Sym");
@@ -85,7 +88,7 @@ p_sym * psym_init_cast (p_sym *sym, const s_sym * const *type,
     err_inspect_sym(type);
     err_puts(" aka Sym");
   }
-  assert(! "sym_init_cast: cannot cast to Sym");
+  assert(! "psym_init_cast: cannot cast to Sym");
   return NULL;
 }
 

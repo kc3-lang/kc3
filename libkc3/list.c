@@ -99,7 +99,7 @@ void list_delete_all (s_list *list)
     list = list_delete(list);
 }
 
-bool * list_each (s_list **list, p_callable *function, bool *dest)
+bool * list_each (p_list *list, p_callable *function, bool *dest)
 {
   s_list *arg;
   s_list *l;
@@ -124,50 +124,13 @@ bool * list_each (s_list **list, p_callable *function, bool *dest)
   return NULL;
 }
 
-void list_f_clean (s_list **list)
+void list_f_clean (p_list *list)
 {
   s_list *l;
   assert(list);
   l = *list;
   while (l)
     l = list_delete(l);
-}
-
-s_list ** list_filter (s_list **list, p_callable *function,
-                       s_list **dest)
-{
-  s_list *arg;
-  bool b;
-  s_list *l;
-  const s_sym *sym_Bool = &g_sym_Bool;
-  s_list **tail;
-  s_list *tmp;
-  if (! (arg = list_new(NULL)))
-    return NULL;
-  tmp = NULL;
-  tail = &tmp;
-  l = *list;
-  while (l) {
-    if (! tag_copy(&arg->tag, &l->tag))
-      goto ko;
-    *tail = list_new(NULL);
-    if (! eval_callable_call(*function, arg, &(*tail)->tag))
-      goto ko;
-    if (! bool_init_cast(&b, &sym_Bool, &(*tail)->tag))
-      goto ko;
-    if (b)
-      tail = &(*tail)->next.data.plist;
-    else
-      *tail = list_delete(*tail);
-    l = list_next(l);
-  }
-  list_delete_all(arg);
-  *dest = tmp;
-  return dest;
- ko:
-  list_delete_all(tmp);
-  list_delete_all(arg);
-  return NULL;
 }
 
 bool * list_has (const s_list * const *list, const s_tag *tag,
@@ -200,61 +163,6 @@ s_list * list_init_1 (s_list *list, const char *p, s_list *next)
   if (! tag_init_1(&list->tag, p))
     return NULL;
   tag_init_plist(&list->next, next);
-  return list;
-}
-
-s_list ** list_init_append (s_list **list, s_list **src,
-                            s_tag *tag)
-{
-  s_list *s;
-  s_list *tmp;
-  s_list **tail;
-  tmp = NULL;
-  tail = &tmp;
-  s = *src;
-  while (s) {
-    *tail = list_new_tag_copy(&s->tag, NULL);
-    tail = &(*tail)->next.data.plist;
-    s = list_next(s);
-  }
-  *tail = list_new_tag_copy(tag, NULL);
-  *list = tmp;
-  return list;
-}
-
-s_list ** list_init_cast (s_list **list, const s_sym * const *type,
-                          s_tag *tag)
-{
-  assert(list);
-  assert(type);
-  assert(tag);
-  switch (tag->type) {
-  case TAG_LIST:
-    return list_init_copy(list, &tag->data.plist);
-  default:
-    break;
-  }
-  err_write_1("list_init_cast: cannot cast ");
-  err_write_1(tag_type_to_string(tag->type));
-  if (*type == &g_sym_List)
-    err_puts(" to List");
-  else {
-    err_write_1(" to ");
-    err_inspect_sym(type);
-    err_puts(" aka List");
-  }
-  assert(! "list_init_cast: cannot cast to List");
-  return NULL;
-}
-
-s_list ** list_init_copy (s_list **list, s_list **src)
-{
-  s_list *tmp = NULL;
-  assert(src);
-  assert(list);
-  if (*src && ! (tmp = list_new_copy(*src)))
-    return NULL;
-  *list = tmp;
   return list;
 }
 
@@ -297,7 +205,7 @@ bool list_is_plist (const s_list *list)
   return true;
 }
 
-s_tag * list_last (s_list **list, s_tag *dest)
+s_tag * list_last (p_list *list, s_tag *dest)
 {
   s_list *l;
   s_list *last;
@@ -324,36 +232,6 @@ sw list_length (const s_list *list)
     list = list_next(list);
   }
   return length;
-}
-
-s_list ** list_map (s_list **list, p_callable *function,
-                    s_list **dest)
-{
-  s_list *arg;
-  s_list *l;
-  s_list **tail;
-  s_list *tmp;
-  if (! (arg = list_new(NULL)))
-    return NULL;
-  tmp = NULL;
-  tail = &tmp;
-  l = *list;
-  while (l) {
-    if (! tag_copy(&arg->tag, &l->tag))
-      goto ko;
-    *tail = list_new(NULL);
-    if (! eval_callable_call(*function, arg, &(*tail)->tag))
-      goto ko;
-    tail = &(*tail)->next.data.plist;
-    l = list_next(l);
-  }
-  list_delete_all(arg);
-  *dest = tmp;
-  return dest;
- ko:
-  list_delete_all(tmp);
-  list_delete_all(arg);
-  return NULL;
 }
 
 s_list * list_next (const s_list *list)
@@ -392,7 +270,7 @@ s_list * list_new_1 (const char *p)
 /* FIXME: does not work on circular lists */
 s_list * list_new_copy (s_list *src)
 {
-  s_list **i;
+  p_list *i;
   s_list *next;
   s_list *s;
   s_list *list;
@@ -442,149 +320,6 @@ s_list * list_new_tag_copy (s_tag *x, s_list *next)
     return NULL;
   }
   return dest;
-}
-
-s_list ** list_remove_void (s_list **list)
-{
-  s_list *tmp;
-  s_list **l;
-  assert(list);
-  tmp = *list;
-  l = &tmp;
-  while (*l) {
-    if ((*l)->tag.type == TAG_VOID)
-      *l = list_delete(*l);
-    else if ((*l)->next.type == TAG_LIST)
-      l = &(*l)->next.data.plist;
-    else
-      break;
-  }
-  *list = tmp;
-  return list;
-}
-
-s_list ** list_slice (s_list **list, s_tag *start_tag, s_tag *end_tag,
-                      s_list **dest)
-{
-  const s_sym *sym_Sw = &g_sym_Sw;
-  sw end;
-  sw i;
-  s_list *l;
-  sw start;
-  s_list **tail;
-  s_list *tmp = NULL;
-  assert(list);
-  assert(start_tag);
-  assert(end_tag);
-  assert(dest);
-  if (! sw_init_cast(&start, &sym_Sw, start_tag))
-    return NULL;
-  if (! sw_init_cast(&end, &sym_Sw, end_tag))
-    return NULL;
-  tail = &tmp;
-  i = 0;
-  l = *list;
-  while (l && i < end) {
-    if (i >= start) {
-      *tail = list_new_tag_copy(&l->tag, NULL);
-      tail = &(*tail)->next.data.plist;
-    }
-    i++;
-    l = list_next(l);
-  }
-  *dest = tmp;
-  return dest;
-}
-
-s_list ** list_sort (s_list **list, s_list **dest)
-{
-  s_list *l;
-  s_list *new_;
-  s_list *tmp;
-  s_list **t;
-  assert(list);
-  assert(dest);
-  tmp = NULL;
-  l = *list;
-  while (l) {
-    t = &tmp;
-    while (*t && compare_tag(&(*t)->tag, &l->tag) <= 0)
-      t = &(*t)->next.data.plist;
-    if (! (new_ = list_new_tag_copy(&l->tag, *t))) {
-      list_delete_all(tmp);
-      return NULL;
-    }
-    *t = new_;
-    l = list_next(l);
-  }
-  *dest = tmp;
-  return dest;
-}
-
-s_list ** list_sort_by (s_list **list, p_callable *compare,
-                        s_list **dest)
-{
-  s_list *arg1;
-  s_list *arg2;
-  bool b;
-  s_list *l;
-  s_list *new_;
-  const s_sym *sym_Bool = &g_sym_Bool;
-  s_list *tmp;
-  s_list **t;
-  s_tag tag;
-  assert(list);
-  assert(dest);
-  if (! (arg2 = list_new(NULL)))
-    return NULL;
-  if (! (arg1 = list_new(arg2))) {
-    list_delete(arg2);
-    return NULL;
-  }
-  tmp = NULL;
-  l = *list;
-  while (l) {
-    t = &tmp;
-    while (*t) {
-      if (! tag_init_copy(&arg1->tag, &(*t)->tag))
-        goto ko;
-      if (! tag_init_copy(&arg2->tag, &l->tag))
-        goto ko;
-      if (! eval_callable_call(*compare, arg1, &tag))
-        goto ko;
-      tag_void(&arg1->tag);
-      tag_void(&arg2->tag);
-      if (! bool_init_cast(&b, &sym_Bool, &tag)) {
-        tag_clean(&tag);
-        goto ko;
-      }
-      tag_clean(&tag);
-      if (! b)
-        break;
-      t = &(*t)->next.data.plist;
-    }
-    if (! (new_ = list_new_tag_copy(&l->tag, *t)))
-      goto ko;
-    *t = new_;
-    l = list_next(l);
-  }
-  list_delete_all(arg1);
-  *dest = tmp;
-  return dest;
- ko:
-  list_delete_all(tmp);
-  list_delete_all(arg1);
-  return NULL;
-}
-
-s_list ** list_tail (s_list **list)
-{
-  s_list **tail;
-  tail = list;
-  while (tail && *tail) {
-    tail = &(*tail)->next.data.plist;
-  }
-  return tail;
 }
 
 s_array * list_to_array (s_list *list, const s_sym *array_type,
@@ -649,32 +384,5 @@ s_array * list_to_array (s_list *list, const s_sym *array_type,
   }
   free(tmp.data);
   free(tmp.dimensions);
-  return NULL;
-}
-
-s_list ** list_unique (s_list **list, s_list **dest)
-{
-  bool found;
-  s_list *l;
-  s_list **tail;
-  s_list *tmp = NULL;
-  assert(list);
-  assert(dest);
-  tail = &tmp;
-  l = *list;
-  while (l) {
-    if (! list_has((const s_list * const *) &tmp, &l->tag, &found))
-      goto ko;
-    if (! found) {
-      if (! (*tail = list_new_tag_copy(&l->tag, NULL)))
-        goto ko;
-      tail = &(*tail)->next.data.plist;
-    }
-    l = list_next(l);
-  }
-  *dest = tmp;
-  return dest;
- ko:
-  list_delete_all(tmp);
   return NULL;
 }

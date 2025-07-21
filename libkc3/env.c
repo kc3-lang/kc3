@@ -70,6 +70,7 @@
 #include "op.h"
 #include "ops.h"
 #include "pcallable.h"
+#include "plist.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "str.h"
@@ -2046,7 +2047,7 @@ s_list ** env_search_modules (s_env *env, s_list **dest)
   assert(dest);
   assert(env->search_modules);
   assert(env->search_modules->tag.type == TAG_SYM);
-  return list_init_copy(dest, &env->search_modules);
+  return plist_init_copy(dest, &env->search_modules);
 }
 
 s_list ** env_stacktrace (s_env *env, s_list **dest)

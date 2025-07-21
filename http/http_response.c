@@ -71,7 +71,7 @@ s_http_response * http_response_buf_parse (s_http_response *response,
     if (! compare_str(&content_length_str, &str))
       sw_init_str(&content_length, &value->data.str);
     str_clean(&str);
-    l = &(*l)->next.data.list;
+    l = &(*l)->next.data.plist;
   }
   if (! parse_body)
     goto ok;
@@ -153,7 +153,7 @@ sw http_response_buf_write (const s_http_response *response,
       tag_clean(&default_messages);
       return -1;
     }
-    if (alist_get(default_messages.data.list,
+    if (alist_get(default_messages.data.plist,
                   &tag_code, &tag_message)) {
       if (tag_message.type != TAG_STR) {
         err_puts("http_response_buf_write: invalid default message:"
@@ -279,11 +279,11 @@ sw http_response_buf_write (const s_http_response *response,
     else if (type == &g_sym_Map &&
              (map = &response->body.data.map) &&
              map->count == 3 &&
-             map->key[1].data.sym == sym_1("fd") &&
+             map->key[1].data.psym == sym_1("fd") &&
              map->value[1].type == TAG_S32 &&
-             map->key[2].data.sym == sym_1("start") &&
+             map->key[2].data.psym == sym_1("start") &&
              map->value[2].type == TAG_SW &&
-             map->key[0].data.sym == sym_1("end_") &&
+             map->key[0].data.psym == sym_1("end_") &&
              map->value[0].type == TAG_SW) {
       fd    = map->value[1].data.s32;
       start = map->value[2].data.sw;

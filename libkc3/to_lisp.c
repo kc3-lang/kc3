@@ -40,7 +40,7 @@ s_tag * to_lisp (s_tag *tag, s_tag *dest)
 s_tag * to_lisp_call (s_call *call, s_tag *dest)
 {
   s_tag arguments;
-  s_list *list;
+  p_list list;
   if (! to_lisp_list(call->arguments, &arguments))
     return NULL;
   if (arguments.type != TAG_LIST) {
@@ -55,11 +55,11 @@ s_tag * to_lisp_call (s_call *call, s_tag *dest)
   return tag_init_plist(dest, list);
 }
 
-s_tag * to_lisp_list (s_list *list, s_tag *dest)
+s_tag * to_lisp_list (p_list list, s_tag *dest)
 {
-  s_list *list_i;
-  s_list **tail;
-  s_list *tmp;
+  p_list list_i;
+  p_list *tail;
+  p_list tmp;
   tmp = NULL;
   tail = &tmp;
   list_i = list;

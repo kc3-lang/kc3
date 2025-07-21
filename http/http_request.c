@@ -161,7 +161,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
       content_type = value;
     else if (! compare_str_case_insensitive(&cookie_str, key))
       http_request_cookie_add(&tmp_req, value);
-    tail = &(*tail)->next.data.list;
+    tail = &(*tail)->next.data.plist;
   }
   if (content_type && content_length_uw) {
     if (false) {
@@ -175,7 +175,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
     if (str_starts_with_case_insensitive(content_type,
                                          &multipart_form_data,
                                          &b) && b) {
-      tag_init_list(&tmp_req.body, NULL);
+      tag_init_plist(&tmp_req.body, NULL);
       if (! str_init_slice(&boundary_tmp, content_type,
                            multipart_form_data.size, -1))
         goto restore;
@@ -251,7 +251,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
               goto restore;
             }
           } // if (! compare_str_case_insensitive(key, &content_disposition_str))
-          tail = &(*tail)->next.data.list;
+          tail = &(*tail)->next.data.plist;
         }
         if (false) {
           err_write_1("http_request_buf_parse: multipart headers = ");
@@ -332,9 +332,9 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
 	  if (! struct_set(upload.data.pstruct, sym_1("tmp_path"),
 			   &path))
 	    goto restore;
-          tmp_req.body.data.list =
+          tmp_req.body.data.plist =
             list_new_tuple_2(&multipart_name, &upload,
-                             tmp_req.body.data.list);	  
+                             tmp_req.body.data.plist);	  
         }
         else { // if (filename.data.str.size)
           if (! buf_read_until_str_into_str(buf, &boundary_newline,
@@ -345,9 +345,9 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
           }
           multipart_value_tag.type = TAG_STR;
           multipart_value_tag.data.str = multipart_value;
-          tmp_req.body.data.list =
+          tmp_req.body.data.plist =
             list_new_tuple_2(&multipart_name, &multipart_value_tag,
-                             tmp_req.body.data.list);
+                             tmp_req.body.data.plist);
         } // else if (filename.data.str.size)
         list_delete_all(multipart_headers);
         if ((r = buf_read_str(buf, &dash)) < 0) {
@@ -379,7 +379,7 @@ s_tag * http_request_buf_parse (s_tag *req, s_buf *buf)
         err_inspect_tag(&body);
         err_write_1("\n");
       }
-      if (alist_get(body.data.list,
+      if (alist_get(body.data.plist,
                     &method_key, &method_value)) {
         http_request_method_from_str(&method_value.data.str,
                                      &tmp_req.method);
@@ -448,7 +448,7 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
   assert(buf);
   switch (req->method.type) {
   case TAG_SYM:
-    method = &req->method.data.sym->str;
+    method = &req->method.data.psym->str;
     break;
   case TAG_STR:
     method = &req->method.data.str;
@@ -503,7 +503,7 @@ sw http_request_buf_write (s_http_request *req, s_buf *buf)
       result += r;
       break;
     case TAG_SYM:
-      if ((r = buf_write_str(buf, &key->data.sym->str)) <= 0)
+      if ((r = buf_write_str(buf, &key->data.psym->str)) <= 0)
         return r;
       result += r;
       break;
@@ -606,16 +606,16 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
     return NULL;
   }
   if (allowed_methods_tag.type != TAG_LIST ||
-      ! allowed_methods_tag.data.list ||
-      allowed_methods_tag.data.list->tag.type != TAG_SYM) {
+      ! allowed_methods_tag.data.plist ||
+      allowed_methods_tag.data.plist->tag.type != TAG_SYM) {
     err_puts("http_request_method_from_str: invalid"
              " HTTP.Request.allowed_methods");
     assert(!("http_request_method_from_str: invalid"
              " HTTP.Request.allowed_methods"));
     goto clean;
   }
-  allowed_methods = allowed_methods_tag.data.list;
-  if (! (tmp.data.sym = sym_find(str))) {
+  allowed_methods = allowed_methods_tag.data.plist;
+  if (! (tmp.data.psym = sym_find(str))) {
     tmp.type = TAG_STR;
     if (! str_init_copy(&tmp.data.str, str))
       goto clean;
@@ -629,8 +629,8 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
     goto clean;
   }
   if (! b) {
-    tag_init_str(&tmp, NULL, tmp.data.sym->str.size,
-                 tmp.data.sym->str.ptr.pchar);
+    tag_init_str(&tmp, NULL, tmp.data.psym->str.size,
+                 tmp.data.psym->str.ptr.pchar);
   }
   tag_clean(&allowed_methods_tag);
   *dest = tmp;

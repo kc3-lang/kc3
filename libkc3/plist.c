@@ -1,0 +1,322 @@
+/* kc3
+ * Copyright from 2022 to 2025 kmx.io <contact@kmx.io>
+ *
+ * Permission is hereby granted to use this software granted the above
+ * copyright notice and this permission paragraph are included in all
+ * copies and substantial portions of this software.
+ *
+ * THIS SOFTWARE IS PROVIDED "AS-IS" WITHOUT ANY GUARANTEE OF
+ * PURPOSE AND PERFORMANCE. IN NO EVENT WHATSOEVER SHALL THE
+ * AUTHOR BE CONSIDERED LIABLE FOR THE USE AND PERFORMANCE OF
+ * THIS SOFTWARE.
+ */
+#include <string.h>
+#include "alloc.h"
+#include "assert.h"
+#include "array.h"
+#include "bool.h"
+#include "buf.h"
+#include "buf_inspect.h"
+#include "buf_parse.h"
+#include "compare.h"
+#include "data.h"
+#include "eval.h"
+#include "kc3_main.h"
+#include "list.h"
+#include "sym.h"
+#include "sw.h"
+#include "tag.h"
+#include "tuple.h"
+#include "uw.h"
+
+p_list * plist_filter (p_list *list, p_callable *function,
+                       p_list *dest)
+{
+  s_list *arg;
+  bool b;
+  s_list *l;
+  const s_sym *sym_Bool = &g_sym_Bool;
+  p_list *tail;
+  s_list *tmp;
+  if (! (arg = list_new(NULL)))
+    return NULL;
+  tmp = NULL;
+  tail = &tmp;
+  l = *list;
+  while (l) {
+    if (! tag_copy(&arg->tag, &l->tag))
+      goto ko;
+    *tail = list_new(NULL);
+    if (! eval_callable_call(*function, arg, &(*tail)->tag))
+      goto ko;
+    if (! bool_init_cast(&b, &sym_Bool, &(*tail)->tag))
+      goto ko;
+    if (b)
+      tail = &(*tail)->next.data.plist;
+    else
+      *tail = list_delete(*tail);
+    l = list_next(l);
+  }
+  list_delete_all(arg);
+  *dest = tmp;
+  return dest;
+ ko:
+  list_delete_all(tmp);
+  list_delete_all(arg);
+  return NULL;
+}
+
+p_list * plist_init_append (p_list *list, p_list *src,
+                            s_tag *tag)
+{
+  s_list *s;
+  s_list *tmp;
+  p_list *tail;
+  tmp = NULL;
+  tail = &tmp;
+  s = *src;
+  while (s) {
+    *tail = list_new_tag_copy(&s->tag, NULL);
+    tail = &(*tail)->next.data.plist;
+    s = list_next(s);
+  }
+  *tail = list_new_tag_copy(tag, NULL);
+  *list = tmp;
+  return list;
+}
+
+p_list * plist_init_cast (p_list *list, const s_sym * const *type,
+                          s_tag *tag)
+{
+  assert(list);
+  assert(type);
+  assert(tag);
+  switch (tag->type) {
+  case TAG_LIST:
+    return list_init_copy(list, &tag->data.plist);
+  default:
+    break;
+  }
+  err_write_1("list_init_cast: cannot cast ");
+  err_write_1(tag_type_to_string(tag->type));
+  if (*type == &g_sym_List)
+    err_puts(" to List");
+  else {
+    err_write_1(" to ");
+    err_inspect_sym(type);
+    err_puts(" aka List");
+  }
+  assert(! "list_init_cast: cannot cast to List");
+  return NULL;
+}
+
+p_list * plist_init_copy (p_list *list, p_list *src)
+{
+  s_list *tmp = NULL;
+  assert(src);
+  assert(list);
+  if (*src && ! (tmp = list_new_copy(*src)))
+    return NULL;
+  *list = tmp;
+  return list;
+}
+
+p_list * plist_map (p_list *list, p_callable *function,
+                    p_list *dest)
+{
+  s_list *arg;
+  s_list *l;
+  p_list *tail;
+  s_list *tmp;
+  if (! (arg = list_new(NULL)))
+    return NULL;
+  tmp = NULL;
+  tail = &tmp;
+  l = *list;
+  while (l) {
+    if (! tag_copy(&arg->tag, &l->tag))
+      goto ko;
+    *tail = list_new(NULL);
+    if (! eval_callable_call(*function, arg, &(*tail)->tag))
+      goto ko;
+    tail = &(*tail)->next.data.plist;
+    l = list_next(l);
+  }
+  list_delete_all(arg);
+  *dest = tmp;
+  return dest;
+ ko:
+  list_delete_all(tmp);
+  list_delete_all(arg);
+  return NULL;
+}
+
+p_list * plist_remove_void (p_list *list)
+{
+  s_list *tmp;
+  p_list *l;
+  assert(list);
+  tmp = *list;
+  l = &tmp;
+  while (*l) {
+    if ((*l)->tag.type == TAG_VOID)
+      *l = list_delete(*l);
+    else if ((*l)->next.type == TAG_LIST)
+      l = &(*l)->next.data.plist;
+    else
+      break;
+  }
+  *list = tmp;
+  return list;
+}
+
+p_list * plist_slice (p_list *list, s_tag *start_tag, s_tag *end_tag,
+                      p_list *dest)
+{
+  const s_sym *sym_Sw = &g_sym_Sw;
+  sw end;
+  sw i;
+  s_list *l;
+  sw start;
+  p_list *tail;
+  s_list *tmp = NULL;
+  assert(list);
+  assert(start_tag);
+  assert(end_tag);
+  assert(dest);
+  if (! sw_init_cast(&start, &sym_Sw, start_tag))
+    return NULL;
+  if (! sw_init_cast(&end, &sym_Sw, end_tag))
+    return NULL;
+  tail = &tmp;
+  i = 0;
+  l = *list;
+  while (l && i < end) {
+    if (i >= start) {
+      *tail = list_new_tag_copy(&l->tag, NULL);
+      tail = &(*tail)->next.data.plist;
+    }
+    i++;
+    l = list_next(l);
+  }
+  *dest = tmp;
+  return dest;
+}
+
+p_list * plist_sort (p_list *list, p_list *dest)
+{
+  s_list *l;
+  s_list *new_;
+  s_list *tmp;
+  p_list *t;
+  assert(list);
+  assert(dest);
+  tmp = NULL;
+  l = *list;
+  while (l) {
+    t = &tmp;
+    while (*t && compare_tag(&(*t)->tag, &l->tag) <= 0)
+      t = &(*t)->next.data.plist;
+    if (! (new_ = list_new_tag_copy(&l->tag, *t))) {
+      list_delete_all(tmp);
+      return NULL;
+    }
+    *t = new_;
+    l = list_next(l);
+  }
+  *dest = tmp;
+  return dest;
+}
+
+p_list * plist_sort_by (p_list *list, p_callable *compare,
+                        p_list *dest)
+{
+  s_list *arg1;
+  s_list *arg2;
+  bool b;
+  s_list *l;
+  s_list *new_;
+  const s_sym *sym_Bool = &g_sym_Bool;
+  s_list *tmp;
+  p_list *t;
+  s_tag tag;
+  assert(list);
+  assert(dest);
+  if (! (arg2 = list_new(NULL)))
+    return NULL;
+  if (! (arg1 = list_new(arg2))) {
+    list_delete(arg2);
+    return NULL;
+  }
+  tmp = NULL;
+  l = *list;
+  while (l) {
+    t = &tmp;
+    while (*t) {
+      if (! tag_init_copy(&arg1->tag, &(*t)->tag))
+        goto ko;
+      if (! tag_init_copy(&arg2->tag, &l->tag))
+        goto ko;
+      if (! eval_callable_call(*compare, arg1, &tag))
+        goto ko;
+      tag_void(&arg1->tag);
+      tag_void(&arg2->tag);
+      if (! bool_init_cast(&b, &sym_Bool, &tag)) {
+        tag_clean(&tag);
+        goto ko;
+      }
+      tag_clean(&tag);
+      if (! b)
+        break;
+      t = &(*t)->next.data.plist;
+    }
+    if (! (new_ = list_new_tag_copy(&l->tag, *t)))
+      goto ko;
+    *t = new_;
+    l = list_next(l);
+  }
+  list_delete_all(arg1);
+  *dest = tmp;
+  return dest;
+ ko:
+  list_delete_all(tmp);
+  list_delete_all(arg1);
+  return NULL;
+}
+
+p_list * plist_tail (p_list *list)
+{
+  p_list *tail;
+  tail = list;
+  while (tail && *tail) {
+    tail = &(*tail)->next.data.plist;
+  }
+  return tail;
+}
+
+p_list * plist_unique (p_list *list, p_list *dest)
+{
+  bool found;
+  s_list *l;
+  p_list *tail;
+  s_list *tmp = NULL;
+  assert(list);
+  assert(dest);
+  tail = &tmp;
+  l = *list;
+  while (l) {
+    if (! list_has((const s_list * const *) &tmp, &l->tag, &found))
+      goto ko;
+    if (! found) {
+      if (! (*tail = list_new_tag_copy(&l->tag, NULL)))
+        goto ko;
+      tail = &(*tail)->next.data.plist;
+    }
+    l = list_next(l);
+  }
+  *dest = tmp;
+  return dest;
+ ko:
+  list_delete_all(tmp);
+  return NULL;
+}

@@ -334,6 +334,8 @@ class TagInitList
                    [Arg.new("p_complex", "c")]),
        TagInit.new("plist", "TAG_LIST", :init_mode_direct,
                    [Arg.new("p_list", "plist")]),
+       TagInit.new("plist", "1", "TAG_LIST", :init_mode_init,
+                   [Arg.new("const char *", "p")]),
        TagInit.new("pstruct", "TAG_PSTRUCT", :init_mode_init,
                    [Arg.new("const s_sym *", "module")]),
        TagInit.new("pstruct", "copy", "TAG_PSTRUCT", :init_mode_init,

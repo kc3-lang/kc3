@@ -529,6 +529,8 @@ KC3_C_SOURCES = \
 	"libkc3/pcomplex.h" \
 	"libkc3/pcow.c" \
 	"libkc3/pcow.h" \
+	"libkc3/plist.c" \
+	"libkc3/plist.h" \
 	"libkc3/pretty.c" \
 	"libkc3/pretty.h" \
 	"libkc3/pstruct.c" \
