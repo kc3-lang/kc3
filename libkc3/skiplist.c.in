@@ -60,7 +60,8 @@
 */
 
 void
-skiplist_clean___NAME$ (s_skiplist___NAME$ *skiplist)
+skiplist_clean___NAME$
+(s_skiplist___NAME$ *skiplist)
 {
   s_skiplist_node___NAME$ *node;
   assert(skiplist);
@@ -71,7 +72,8 @@ skiplist_clean___NAME$ (s_skiplist___NAME$ *skiplist)
 }
 
 void
-skiplist_delete___NAME$ (s_skiplist___NAME$ *skiplist)
+skiplist_delete___NAME$
+(s_skiplist___NAME$ *skiplist)
 {
   assert(skiplist);
   skiplist_clean___NAME$(skiplist);
@@ -79,7 +81,9 @@ skiplist_delete___NAME$ (s_skiplist___NAME$ *skiplist)
 }
 
 s_skiplist_node___NAME$ *
-skiplist_find___NAME$ (s_skiplist___NAME$ *skiplist, const _TYPE$ _NAME$)
+skiplist_find___NAME$
+(s_skiplist___NAME$ *skiplist,
+ const _TYPE$ _NAME$)
 {
   s_skiplist_node___NAME$ *node = skiplist->head;
   u8 level = node->height;
@@ -95,7 +99,9 @@ skiplist_find___NAME$ (s_skiplist___NAME$ *skiplist, const _TYPE$ _NAME$)
 }
 
 static s_skiplist___NAME$ *
-skiplist_height_table_init___NAME$ (s_skiplist___NAME$ *skiplist, f64 spacing)
+skiplist_height_table_init___NAME$
+(s_skiplist___NAME$ *skiplist,
+ f64 spacing)
 {
   t_skiplist_height *height_table;
   u8 h;
@@ -113,7 +119,10 @@ skiplist_height_table_init___NAME$ (s_skiplist___NAME$ *skiplist, f64 spacing)
 }
 
 s_skiplist___NAME$ *
-skiplist_init___NAME$ (s_skiplist___NAME$ *skiplist, u8 max_height, f64 spacing)
+skiplist_init___NAME$
+(s_skiplist___NAME$ *skiplist,
+ u8 max_height,
+ f64 spacing)
 {
   assert(skiplist);
   skiplist->max_height = max_height;
@@ -127,7 +136,9 @@ skiplist_init___NAME$ (s_skiplist___NAME$ *skiplist, u8 max_height, f64 spacing)
 }
 
 s_skiplist_node___NAME$ *
-skiplist_insert___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ _NAME$)
+skiplist_insert___NAME$
+(s_skiplist___NAME$ *skiplist,
+ _TYPE$ _NAME$)
 {
   s_skiplist_node___NAME$ *pred;
   s_skiplist_node___NAME$ *next;
@@ -147,7 +158,9 @@ skiplist_insert___NAME$ (s_skiplist___NAME$ *skiplist, _TYPE$ _NAME$)
 }
 
 s_skiplist___NAME$ *
-skiplist_new___NAME$ (u8 max_height, f64 spacing)
+skiplist_new___NAME$
+(u8 max_height,
+ f64 spacing)
 {
   s_skiplist___NAME$ *skiplist;
   skiplist = alloc(SKIPLIST_SIZE___NAME$(max_height));
@@ -161,7 +174,9 @@ skiplist_new___NAME$ (u8 max_height, f64 spacing)
 }
 
 s_skiplist_node___NAME$ *
-skiplist_pred___NAME$ (s_skiplist___NAME$ *skiplist, const _TYPE$ _NAME$)
+skiplist_pred___NAME$
+(s_skiplist___NAME$ *skiplist,
+ const _TYPE$ _NAME$)
 {
   int level;
   s_skiplist_node___NAME$ *pred;
@@ -185,7 +200,8 @@ skiplist_pred___NAME$ (s_skiplist___NAME$ *skiplist, const _TYPE$ _NAME$)
 }
 
 u8
-skiplist_random_height___NAME$ (s_skiplist___NAME$ *skiplist)
+skiplist_random_height___NAME$
+(s_skiplist___NAME$ *skiplist)
 {
   u16 height;
   const t_skiplist_height *height_table;
@@ -209,7 +225,9 @@ skiplist_random_height___NAME$ (s_skiplist___NAME$ *skiplist)
 }
 
 bool
-skiplist_remove___NAME$ (s_skiplist___NAME$ *skiplist, const _TYPE$ _NAME$)
+skiplist_remove___NAME$
+(s_skiplist___NAME$ *skiplist,
+ const _TYPE$ _NAME$)
 {
   uw level;
   s_skiplist_node___NAME$ *pred;

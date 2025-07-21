@@ -60,7 +60,8 @@
 */
 
 void
-skiplist_clean__fact (s_skiplist__fact *skiplist)
+skiplist_clean__fact
+(s_skiplist__fact *skiplist)
 {
   s_skiplist_node__fact *node;
   assert(skiplist);
@@ -71,7 +72,8 @@ skiplist_clean__fact (s_skiplist__fact *skiplist)
 }
 
 void
-skiplist_delete__fact (s_skiplist__fact *skiplist)
+skiplist_delete__fact
+(s_skiplist__fact *skiplist)
 {
   assert(skiplist);
   skiplist_clean__fact(skiplist);
@@ -79,7 +81,9 @@ skiplist_delete__fact (s_skiplist__fact *skiplist)
 }
 
 s_skiplist_node__fact *
-skiplist_find__fact (s_skiplist__fact *skiplist, const s_fact * fact)
+skiplist_find__fact
+(s_skiplist__fact *skiplist,
+ const s_fact * fact)
 {
   s_skiplist_node__fact *node = skiplist->head;
   u8 level = node->height;
@@ -95,7 +99,9 @@ skiplist_find__fact (s_skiplist__fact *skiplist, const s_fact * fact)
 }
 
 static s_skiplist__fact *
-skiplist_height_table_init__fact (s_skiplist__fact *skiplist, f64 spacing)
+skiplist_height_table_init__fact
+(s_skiplist__fact *skiplist,
+ f64 spacing)
 {
   t_skiplist_height *height_table;
   u8 h;
@@ -113,7 +119,10 @@ skiplist_height_table_init__fact (s_skiplist__fact *skiplist, f64 spacing)
 }
 
 s_skiplist__fact *
-skiplist_init__fact (s_skiplist__fact *skiplist, u8 max_height, f64 spacing)
+skiplist_init__fact
+(s_skiplist__fact *skiplist,
+ u8 max_height,
+ f64 spacing)
 {
   assert(skiplist);
   skiplist->max_height = max_height;
@@ -127,7 +136,9 @@ skiplist_init__fact (s_skiplist__fact *skiplist, u8 max_height, f64 spacing)
 }
 
 s_skiplist_node__fact *
-skiplist_insert__fact (s_skiplist__fact *skiplist, s_fact * fact)
+skiplist_insert__fact
+(s_skiplist__fact *skiplist,
+ s_fact * fact)
 {
   s_skiplist_node__fact *pred;
   s_skiplist_node__fact *next;
@@ -147,7 +158,9 @@ skiplist_insert__fact (s_skiplist__fact *skiplist, s_fact * fact)
 }
 
 s_skiplist__fact *
-skiplist_new__fact (u8 max_height, f64 spacing)
+skiplist_new__fact
+(u8 max_height,
+ f64 spacing)
 {
   s_skiplist__fact *skiplist;
   skiplist = alloc(SKIPLIST_SIZE__fact(max_height));
@@ -161,7 +174,9 @@ skiplist_new__fact (u8 max_height, f64 spacing)
 }
 
 s_skiplist_node__fact *
-skiplist_pred__fact (s_skiplist__fact *skiplist, const s_fact * fact)
+skiplist_pred__fact
+(s_skiplist__fact *skiplist,
+ const s_fact * fact)
 {
   int level;
   s_skiplist_node__fact *pred;
@@ -185,7 +200,8 @@ skiplist_pred__fact (s_skiplist__fact *skiplist, const s_fact * fact)
 }
 
 u8
-skiplist_random_height__fact (s_skiplist__fact *skiplist)
+skiplist_random_height__fact
+(s_skiplist__fact *skiplist)
 {
   u16 height;
   const t_skiplist_height *height_table;
@@ -209,7 +225,9 @@ skiplist_random_height__fact (s_skiplist__fact *skiplist)
 }
 
 bool
-skiplist_remove__fact (s_skiplist__fact *skiplist, const s_fact * fact)
+skiplist_remove__fact
+(s_skiplist__fact *skiplist,
+ const s_fact * fact)
 {
   uw level;
   s_skiplist_node__fact *pred;

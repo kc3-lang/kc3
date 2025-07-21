@@ -144,37 +144,37 @@ s_tag * tag_shift_left (s_tag *a, s_tag *b, s_tag *result)
       return result;
     case TAG_S16:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.s16
+      integer_lshift(&a->data.integer, b->data.s16,
                      &result->data.integer);
       return result;
     case TAG_S8:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.s8
+      integer_lshift(&a->data.integer, b->data.s8,
                      &result->data.integer);
       return result;
     case TAG_U8:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.u8
+      integer_lshift(&a->data.integer, b->data.u8,
                      &result->data.integer);
       return result;
     case TAG_U16:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.u16
+      integer_lshift(&a->data.integer, b->data.u16,
                      &result->data.integer);
       return result;
     case TAG_U32:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.u32
+      integer_lshift(&a->data.integer, b->data.u32,
                      &result->data.integer);
       return result;
     case TAG_U64:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.u64
+      integer_lshift(&a->data.integer, b->data.u64,
                      &result->data.integer);
       return result;
     case TAG_UW:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.uw
+      integer_lshift(&a->data.integer, b->data.uw,
                      &result->data.integer);
       return result;
     default:

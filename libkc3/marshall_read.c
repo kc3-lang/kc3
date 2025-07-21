@@ -136,9 +136,9 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     case TAG_CHARACTER:
       return marshall_read_character(mr, heap, &dest->data.character);
     case TAG_COMPLEX:
-      return marshall_read_pcomplex(mr, heap, &dest->data.complex);
+      return marshall_read_pcomplex(mr, heap, &dest->data.pcomplex);
     case TAG_COW:
-      return marshall_read_pcow(mr, heap, &dest->data.cow);
+      return marshall_read_pcow(mr, heap, &dest->data.pcow);
     case TAG_F32:
       return marshall_read_f32(mr, heap, &dest->data.f32);
     case TAG_F64:
@@ -152,7 +152,7 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     case TAG_INTEGER:
       return marshall_read_integer(mr, heap, &dest->data.integer);
     case TAG_LIST:
-      return marshall_read_plist(mr, heap, &dest->data.list);
+      return marshall_read_plist(mr, heap, &dest->data.plist);
     case TAG_MAP:
       return marshall_read_map(mr, heap, &dest->data.map);
     case TAG_PCALLABLE:
@@ -175,7 +175,7 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
     case TAG_STR:
       return marshall_read_str(mr, heap, &dest->data.str);
     case TAG_SYM:
-      return marshall_read_psym(mr, heap, &dest->data.sym);
+      return marshall_read_psym(mr, heap, &dest->data.psym);
     case TAG_S8:
       return marshall_read_s8(mr, heap, &dest->data.s8);
     case TAG_S16:
@@ -202,8 +202,8 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
       return marshall_read_unquote(mr, heap, &dest->data.unquote);
     case TAG_UW:
       return marshall_read_uw(mr, heap, &dest->data.uw);
-    case TAG_VAR:
-      return marshall_read_var(mr, heap, &dest->data.var);
+    case TAG_PVAR:
+      return marshall_read_pvar(mr, heap, &dest->data.pvar);
   }
   err_puts("marshall_tag: not implemented");
   assert(!"marshall_tag: not implemented");

@@ -16,7 +16,10 @@
 #include "skiplist_node___NAME$.h"
 
 s_skiplist_node___NAME$ *
-skiplist_node_init (s_skiplist_node___NAME$ *node, _TYPE$ _NAME$, u8 height)
+skiplist_node_init
+(s_skiplist_node___NAME$ *node,
+ _TYPE$ _NAME$,
+ u8 height)
 {
   node->_NAME$ = _NAME$;
   node->height = height;
@@ -26,7 +29,9 @@ skiplist_node_init (s_skiplist_node___NAME$ *node, _TYPE$ _NAME$, u8 height)
 }
 
 s_skiplist_node___NAME$ *
-skiplist_node_new___NAME$ (_TYPE$ _NAME$, u8 height)
+skiplist_node_new___NAME$
+(_TYPE$ _NAME$,
+ u8 height)
 {
   s_skiplist_node___NAME$ *node;
   node = alloc(SKIPLIST_NODE_SIZE___NAME$(height));
@@ -37,13 +42,16 @@ skiplist_node_new___NAME$ (_TYPE$ _NAME$, u8 height)
 }
 
 void
-skiplist_node_delete___NAME$ (s_skiplist_node___NAME$ *node)
+skiplist_node_delete___NAME$
+(s_skiplist_node___NAME$ *node)
 {
   free(node);
 }
 
 void
-skiplist_node_insert___NAME$ (s_skiplist_node___NAME$ *node, s_skiplist_node___NAME$ *pred)
+skiplist_node_insert___NAME$
+(s_skiplist_node___NAME$ *node,
+ s_skiplist_node___NAME$ *pred)
 {
   uw level;
   for (level = 0; level < node->height; level++) {
