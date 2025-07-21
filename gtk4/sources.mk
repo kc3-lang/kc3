@@ -5,8 +5,8 @@ HEADERS = \
 	"application_window.h" \
 	"box.h" \
 	"button.h" \
-	"entry_buffer.h" \
 	"entry.h" \
+	"entry_buffer.h" \
 	"file.h" \
 	"frame.h" \
 	"gsk_gl_renderer.h" \
@@ -34,8 +34,8 @@ SOURCES = \
 	"application_window.c" \
 	"box.c" \
 	"button.c" \
-	"entry_buffer.c" \
 	"entry.c" \
+	"entry_buffer.c" \
 	"file.c" \
 	"frame.c" \
 	"gsk_gl_renderer.c" \
