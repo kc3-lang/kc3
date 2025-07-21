@@ -157,15 +157,6 @@ s_list * list_init (s_list *list, s_list *next)
   return list;
 }
 
-s_list * list_init_1 (s_list *list, const char *p, s_list *next)
-{
-  assert(list);
-  if (! tag_init_1(&list->tag, p))
-    return NULL;
-  tag_init_plist(&list->next, next);
-  return list;
-}
-
 s_list * list_init_tag_copy (s_list *list, s_tag *tag, s_list *next)
 {
   assert(list);
@@ -259,7 +250,7 @@ s_list * list_new_1 (const char *p)
   s_buf buf;
   s_list *list;
   buf_init_1_const(&buf, p);
-  if (buf_parse_list(&buf, &list) != (sw) strlen(p)) {
+  if (buf_parse_plist(&buf, &list) != (sw) strlen(p)) {
     err_puts("list_new_1: invalid list");
     assert(! "list_new_1: invalid list");
     return NULL;

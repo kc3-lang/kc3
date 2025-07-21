@@ -546,7 +546,7 @@ s_http_request * http_request_cookie_add (s_http_request *req,
   s_list *split;
   s_list **tail;
   s_tuple *tuple;
-  tail = list_tail(&req->cookies);
+  tail = plist_tail(&req->cookies);
   if (! str_split(cookies, &separator, &split))
     return NULL;
   s = split;

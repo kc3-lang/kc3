@@ -46,7 +46,7 @@ void matrix_column_clean (s_tag *tag)
     assert(! "matrix_column_clean: invalid tag");
     return;
   }
-  list = tag->data.list;
+  list = tag->data.plist;
   while (list) {
     matrix_text_clean(&list->tag);
     list = list_next(list);
@@ -66,7 +66,7 @@ bool matrix_column_init (s_sequence *seq, s_tag *tag)
     list_delete_all(list);
     return false;
   }
-  tag_init_list(tag, list);
+  tag_init_plist(tag, list);
   return true;
 }
 
@@ -86,7 +86,7 @@ bool matrix_column_render (s_sequence *seq, s_tag *tag)
     assert(! "matrix_column_render: invalid tag");
     return false;
   }
-  list = &tag->data.list;
+  list = &tag->data.plist;
   y = (*list)->tag.data.map.value[2].data.f32;
   if (y < window->h) {
     *list = list_new(*list);
@@ -101,7 +101,7 @@ bool matrix_column_render (s_sequence *seq, s_tag *tag)
       *list = list_delete(*list);
     }
     else
-      list = &(*list)->next.data.list;
+      list = &(*list)->next.data.plist;
   }
   return true;
 }
@@ -152,7 +152,7 @@ void matrix_screen_clean (s_tag *tag)
     assert(! "matrix_screen_clean: invalid tag");
     return;
   }
-  list = tag->data.list;
+  list = tag->data.plist;
   while (list) {
     matrix_column_clean(&list->tag);
     list = list_next(list);
@@ -161,7 +161,7 @@ void matrix_screen_clean (s_tag *tag)
 
 bool matrix_screen_init (s_tag *tag)
 {
-  tag_init_list(tag, NULL);
+  tag_init_plist(tag, NULL);
   return true;
 }
 
@@ -182,7 +182,7 @@ bool matrix_screen_render (s_sequence *seq, s_tag *tag)
     return false;
   }
   x = 0;
-  l = &tag->data.list;
+  l = &tag->data.plist;
   while (*l) {
     if (x > window->w) {
       matrix_column_clean(&(*l)->tag);
@@ -190,7 +190,7 @@ bool matrix_screen_render (s_sequence *seq, s_tag *tag)
     }
     else {
       x += MATRIX_FONT_SIZE;
-      l = &(*l)->next.data.list;
+      l = &(*l)->next.data.plist;
     }
   }
   while (x < window->w) {
@@ -198,10 +198,10 @@ bool matrix_screen_render (s_sequence *seq, s_tag *tag)
     if (! matrix_column_init(seq, &(*l)->tag))
       return false;
     x += MATRIX_FONT_SIZE;
-    l = &(*l)->next.data.list;
+    l = &(*l)->next.data.plist;
   }
   matrix = g_ortho.model_matrix; {
-    list = tag->data.list;
+    list = tag->data.plist;
     while (list) {
       if (! matrix_column_render(seq, &list->tag))
         return false;
@@ -236,12 +236,12 @@ bool matrix_text_init (s_tag *tag, f32 y)
     return false;
   }
   map = &tag->data.map;
-  tag_init_sym(  map->key + 0, sym_1("spacing"));
-  tag_init_f32(map->value + 0, spacing);
-  tag_init_sym(  map->key + 1, sym_1("text"));
-  tag_init_ptr(map->value + 1, text);
-  tag_init_sym(  map->key + 2, sym_1("y"));
-  tag_init_f32(map->value + 2, y + text->pt_h + spacing);
+  tag_init_psym(map->key   + 0, sym_1("spacing"));
+  tag_init_f32( map->value + 0, spacing);
+  tag_init_psym(map->key   + 1, sym_1("text"));
+  tag_init_ptr( map->value + 1, text);
+  tag_init_psym(map->key   + 2, sym_1("y"));
+  tag_init_f32( map->value + 2, y + text->pt_h + spacing);
   return true;
 }
 
@@ -259,16 +259,16 @@ bool matrix_text_render (s_sequence *seq, const s_tag *tag, f32 **py)
   assert(map->count == 3);
   /*
   assert(      map->key[0].type == TAG_SYM);
-  assert(      map->key[0].data.sym == sym_1("spacing"));
+  assert(      map->key[0].data.psym == sym_1("spacing"));
   assert(    map->value[0].type == TAG_F32);
   spacing = &map->value[0].data.f32;
   */
   assert(  map->key[1].type == TAG_SYM);
-  assert(  map->key[1].data.sym == sym_1("text"));
+  assert(  map->key[1].data.psym == sym_1("text"));
   assert(map->value[1].type == TAG_PTR);
   text = map->value[1].data.ptr.p;
   assert(  map->key[2].type == TAG_SYM);
-  assert(  map->key[2].data.sym == sym_1("y"));
+  assert(  map->key[2].data.psym == sym_1("y"));
   assert(map->value[2].type == TAG_F32);
   y =   &map->value[2].data.f32;
   if (seq->t - g_matrix_time > MATRIX_TIME)
@@ -309,7 +309,7 @@ void matrix_text_clean (s_tag *tag)
          (map = &tag->data.map) &&
          map->count == 3 &&
          map->key[1].type == TAG_SYM &&
-         map->key[1].data.sym == sym_1("text") &&
+         map->key[1].data.psym == sym_1("text") &&
          map->value[1].type == TAG_PTR &&
          (text = map->value[1].data.ptr.p))) {
     err_puts("matrix_text_clean: invalid tag");

@@ -265,17 +265,6 @@
     test_context(NULL);                                                \
   } while (0)
 
-#define BUF_PARSE_TEST_LIST(test)                                      \
-  do {                                                                 \
-    s_buf buf;                                                         \
-    s_list *dest = NULL;                                               \
-    test_context("buf_parse_list(" # test ")");                        \
-    buf_init_1_const(&buf, (test));                                    \
-    TEST_EQ(buf_parse_list(&buf, &dest), strlen(test));                \
-    list_delete_all(dest);                                             \
-    test_context(NULL);                                                \
-  } while (0)
-
 #define BUF_PARSE_TEST_NOT_BOOL(test)                                  \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -470,6 +459,17 @@
     test_context(NULL);                                                \
   } while (0)
 
+#define BUF_PARSE_TEST_PLIST(test)                                     \
+  do {                                                                 \
+    s_buf buf;                                                         \
+    s_list *dest = NULL;                                               \
+    test_context("buf_parse_plist(" # test ")");                       \
+    buf_init_1_const(&buf, (test));                                    \
+    TEST_EQ(buf_parse_plist(&buf, &dest), strlen(test));               \
+    list_delete_all(dest);                                             \
+    test_context(NULL);                                                \
+  } while (0)
+
 #define BUF_PARSE_TEST_PVAR(test, t)                                   \
   do {                                                                 \
     s_buf buf;                                                         \
@@ -644,7 +644,7 @@ TEST_CASE_PROTOTYPE(buf_parse_integer_hex);
 TEST_CASE_PROTOTYPE(buf_parse_integer_oct);
 TEST_CASE_PROTOTYPE(buf_parse_integer_bin);
 TEST_CASE_PROTOTYPE(buf_parse_ident);
-TEST_CASE_PROTOTYPE(buf_parse_list);
+TEST_CASE_PROTOTYPE(buf_parse_plist);
 TEST_CASE_PROTOTYPE(buf_parse_pvar);
 TEST_CASE_PROTOTYPE(buf_parse_str);
 TEST_CASE_PROTOTYPE(buf_parse_str_character);
@@ -680,7 +680,7 @@ void buf_parse_test (void)
   TEST_CASE_RUN(buf_parse_str);
   TEST_CASE_RUN(buf_parse_sym);
   TEST_CASE_RUN(buf_parse_ident);
-  TEST_CASE_RUN(buf_parse_list);
+  TEST_CASE_RUN(buf_parse_plist);
   TEST_CASE_RUN(buf_parse_tag);
   TEST_CASE_RUN(buf_parse_tuple);
   TEST_CASE_RUN(buf_parse_unquote);
@@ -1163,16 +1163,16 @@ TEST_CASE(buf_parse_integer_oct)
 }
 TEST_CASE_END(buf_parse_integer_bin)
 
-TEST_CASE(buf_parse_list)
+TEST_CASE(buf_parse_plist)
 {
-  BUF_PARSE_TEST_LIST("[]");
-  BUF_PARSE_TEST_LIST("[[], []]");
-  BUF_PARSE_TEST_LIST("[[] | []]");
-  BUF_PARSE_TEST_LIST("[[], [], []]");
-  BUF_PARSE_TEST_LIST("[[], [] | []]");
-  BUF_PARSE_TEST_LIST("[a | b]");
-  BUF_PARSE_TEST_LIST("[a, b | c]");
-  BUF_PARSE_TEST_LIST("[a, b, c | d]");
+  BUF_PARSE_TEST_PLIST("[]");
+  BUF_PARSE_TEST_PLIST("[[], []]");
+  BUF_PARSE_TEST_PLIST("[[] | []]");
+  BUF_PARSE_TEST_PLIST("[[], [], []]");
+  BUF_PARSE_TEST_PLIST("[[], [] | []]");
+  BUF_PARSE_TEST_PLIST("[a | b]");
+  BUF_PARSE_TEST_PLIST("[a, b | c]");
+  BUF_PARSE_TEST_PLIST("[a, b, c | d]");
 }
 TEST_CASE_END(buf_parse_list)
 

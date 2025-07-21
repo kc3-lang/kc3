@@ -23,13 +23,19 @@
 #include "eval.h"
 #include "kc3_main.h"
 #include "list.h"
+#include "plist.h"
 #include "sym.h"
 #include "sw.h"
 #include "tag.h"
 #include "tuple.h"
 #include "uw.h"
 
-p_list * plist_filter (p_list *list, p_callable *function,
+void plist_clean (p_list *plist)
+{
+  list_delete_all(*plist);
+}
+
+p_list * plist_filter (p_list *plist, p_callable *function,
                        p_list *dest)
 {
   s_list *arg;
@@ -42,7 +48,7 @@ p_list * plist_filter (p_list *list, p_callable *function,
     return NULL;
   tmp = NULL;
   tail = &tmp;
-  l = *list;
+  l = *plist;
   while (l) {
     if (! tag_copy(&arg->tag, &l->tag))
       goto ko;
@@ -66,7 +72,30 @@ p_list * plist_filter (p_list *list, p_callable *function,
   return NULL;
 }
 
-p_list * plist_init_append (p_list *list, p_list *src,
+p_list * plist_init_1 (p_list *plist, const char *p)
+{
+  s_buf buf;
+  uw len;
+  sw r;
+  p_list tmp = NULL;
+  assert(plist);
+  assert(p);
+  len = strlen(p);
+  buf_init_const(&buf, len, p);
+  buf.wpos = len;
+  r = buf_parse_plist(&buf, &tmp);
+  if (r < 0 || (uw) r != len) {
+    err_puts("plist_init_1: invalid list");
+    assert(! "plist_init_1: invalid list");
+    if (r > 0)
+      plist_clean(&tmp);
+    return NULL;
+  }
+  *plist = tmp;
+  return plist;
+}
+
+p_list * plist_init_append (p_list *plist, p_list *src,
                             s_tag *tag)
 {
   s_list *s;
@@ -81,23 +110,23 @@ p_list * plist_init_append (p_list *list, p_list *src,
     s = list_next(s);
   }
   *tail = list_new_tag_copy(tag, NULL);
-  *list = tmp;
-  return list;
+  *plist = tmp;
+  return plist;
 }
 
-p_list * plist_init_cast (p_list *list, const s_sym * const *type,
+p_list * plist_init_cast (p_list *plist, const s_sym * const *type,
                           s_tag *tag)
 {
-  assert(list);
+  assert(plist);
   assert(type);
   assert(tag);
   switch (tag->type) {
   case TAG_LIST:
-    return list_init_copy(list, &tag->data.plist);
+    return plist_init_copy(plist, &tag->data.plist);
   default:
     break;
   }
-  err_write_1("list_init_cast: cannot cast ");
+  err_write_1("plist_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
   if (*type == &g_sym_List)
     err_puts(" to List");
@@ -106,22 +135,22 @@ p_list * plist_init_cast (p_list *list, const s_sym * const *type,
     err_inspect_sym(type);
     err_puts(" aka List");
   }
-  assert(! "list_init_cast: cannot cast to List");
+  assert(! "plist_init_cast: cannot cast to List");
   return NULL;
 }
 
-p_list * plist_init_copy (p_list *list, p_list *src)
+p_list * plist_init_copy (p_list *plist, p_list *src)
 {
   s_list *tmp = NULL;
   assert(src);
-  assert(list);
+  assert(plist);
   if (*src && ! (tmp = list_new_copy(*src)))
     return NULL;
-  *list = tmp;
-  return list;
+  *plist = tmp;
+  return plist;
 }
 
-p_list * plist_map (p_list *list, p_callable *function,
+p_list * plist_map (p_list *plist, p_callable *function,
                     p_list *dest)
 {
   s_list *arg;
@@ -132,7 +161,7 @@ p_list * plist_map (p_list *list, p_callable *function,
     return NULL;
   tmp = NULL;
   tail = &tmp;
-  l = *list;
+  l = *plist;
   while (l) {
     if (! tag_copy(&arg->tag, &l->tag))
       goto ko;
@@ -151,12 +180,12 @@ p_list * plist_map (p_list *list, p_callable *function,
   return NULL;
 }
 
-p_list * plist_remove_void (p_list *list)
+p_list * plist_remove_void (p_list *plist)
 {
   s_list *tmp;
   p_list *l;
-  assert(list);
-  tmp = *list;
+  assert(plist);
+  tmp = *plist;
   l = &tmp;
   while (*l) {
     if ((*l)->tag.type == TAG_VOID)
@@ -166,11 +195,11 @@ p_list * plist_remove_void (p_list *list)
     else
       break;
   }
-  *list = tmp;
-  return list;
+  *plist = tmp;
+  return plist;
 }
 
-p_list * plist_slice (p_list *list, s_tag *start_tag, s_tag *end_tag,
+p_list * plist_slice (p_list *plist, s_tag *start_tag, s_tag *end_tag,
                       p_list *dest)
 {
   const s_sym *sym_Sw = &g_sym_Sw;
@@ -180,7 +209,7 @@ p_list * plist_slice (p_list *list, s_tag *start_tag, s_tag *end_tag,
   sw start;
   p_list *tail;
   s_list *tmp = NULL;
-  assert(list);
+  assert(plist);
   assert(start_tag);
   assert(end_tag);
   assert(dest);
@@ -190,7 +219,7 @@ p_list * plist_slice (p_list *list, s_tag *start_tag, s_tag *end_tag,
     return NULL;
   tail = &tmp;
   i = 0;
-  l = *list;
+  l = *plist;
   while (l && i < end) {
     if (i >= start) {
       *tail = list_new_tag_copy(&l->tag, NULL);
@@ -203,16 +232,16 @@ p_list * plist_slice (p_list *list, s_tag *start_tag, s_tag *end_tag,
   return dest;
 }
 
-p_list * plist_sort (p_list *list, p_list *dest)
+p_list * plist_sort (p_list *plist, p_list *dest)
 {
   s_list *l;
   s_list *new_;
   s_list *tmp;
   p_list *t;
-  assert(list);
+  assert(plist);
   assert(dest);
   tmp = NULL;
-  l = *list;
+  l = *plist;
   while (l) {
     t = &tmp;
     while (*t && compare_tag(&(*t)->tag, &l->tag) <= 0)
@@ -228,7 +257,7 @@ p_list * plist_sort (p_list *list, p_list *dest)
   return dest;
 }
 
-p_list * plist_sort_by (p_list *list, p_callable *compare,
+p_list * plist_sort_by (p_list *plist, p_callable *compare,
                         p_list *dest)
 {
   s_list *arg1;
@@ -240,7 +269,7 @@ p_list * plist_sort_by (p_list *list, p_callable *compare,
   s_list *tmp;
   p_list *t;
   s_tag tag;
-  assert(list);
+  assert(plist);
   assert(dest);
   if (! (arg2 = list_new(NULL)))
     return NULL;
@@ -249,7 +278,7 @@ p_list * plist_sort_by (p_list *list, p_callable *compare,
     return NULL;
   }
   tmp = NULL;
-  l = *list;
+  l = *plist;
   while (l) {
     t = &tmp;
     while (*t) {
@@ -284,26 +313,26 @@ p_list * plist_sort_by (p_list *list, p_callable *compare,
   return NULL;
 }
 
-p_list * plist_tail (p_list *list)
+p_list * plist_tail (p_list *plist)
 {
   p_list *tail;
-  tail = list;
+  tail = plist;
   while (tail && *tail) {
     tail = &(*tail)->next.data.plist;
   }
   return tail;
 }
 
-p_list * plist_unique (p_list *list, p_list *dest)
+p_list * plist_unique (p_list *plist, p_list *dest)
 {
   bool found;
   s_list *l;
   p_list *tail;
   s_list *tmp = NULL;
-  assert(list);
+  assert(plist);
   assert(dest);
   tail = &tmp;
-  l = *list;
+  l = *plist;
   while (l) {
     if (! list_has((const s_list * const *) &tmp, &l->tag, &found))
       goto ko;

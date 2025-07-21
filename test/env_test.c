@@ -14,6 +14,7 @@
 #include "../libkc3/compare.h"
 #include "../libkc3/env.h"
 #include "../libkc3/env_eval.h"
+#include "../libkc3/env_eval_equal.h"
 #include "../libkc3/frame.h"
 #include "../libkc3/list.h"
 #include "../libkc3/sym.h"

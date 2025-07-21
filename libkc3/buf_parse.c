@@ -1243,7 +1243,7 @@ sw buf_parse_cfn (s_buf *buf, s_cfn *dest)
   if ((r = buf_ignore_spaces(buf)) <= 0)
     goto restore;
   result += r;
-  if ((r = buf_parse_list_paren(buf, &arg_types)) <= 0)
+  if ((r = buf_parse_plist_paren(buf, &arg_types)) <= 0)
     goto restore;
   result += r;
   cfn_init(&tmp, name_sym, arg_types, result_type);
@@ -1919,7 +1919,7 @@ sw buf_parse_fn (s_buf *buf, s_fn *dest)
   buf_save_clean(buf, &save);
   buf_save_init(buf, &save);
   if ((r = buf_ignore_spaces_but_newline(buf)) <= 0 ||
-      (r1 = buf_parse_list(buf, &frame_list)) <= 0)
+      (r1 = buf_parse_plist(buf, &frame_list)) <= 0)
     goto ok;
   result += r + r1;
   if (! frame_list)
@@ -2567,16 +2567,16 @@ sw buf_parse_integer_unsigned_oct (s_buf *buf, s_integer *dest)
   return r;
 }
 
-sw buf_parse_list (s_buf *buf, s_list **list)
+sw buf_parse_plist (s_buf *buf, p_list *plist)
 {
-  s_list **i;
+  p_list *i;
   sw r;
   sw result = 0;
   s_buf_save save;
   assert(buf);
-  assert(list);
+  assert(plist);
   buf_save_init(buf, &save);
-  i = list;
+  i = plist;
   if ((r = buf_read_1(buf, "[")) <= 0)
     goto clean;
   result += r;
@@ -2599,7 +2599,7 @@ sw buf_parse_list (s_buf *buf, s_list **list)
   }
   if (r > 0) {
     result += r;
-    *list = NULL;
+    *plist = NULL;
     r = result;
     goto clean;
   }
@@ -2726,20 +2726,20 @@ sw buf_parse_list (s_buf *buf, s_list **list)
     goto restore;
   }
  restore:
-  list_delete_all(*list);
+  list_delete_all(*plist);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
   return r;
 }
 
-sw buf_parse_list_paren (s_buf *buf, s_list **list)
+sw buf_parse_plist_paren (s_buf *buf, p_list *plist)
 {
-  s_list **i;
+  p_list *i;
   sw r;
   sw result = 0;
   s_buf_save save;
-  i = list;
+  i = plist;
   buf_save_init(buf, &save);
   if ((r = buf_read_1(buf, "(")) <= 0)
     goto clean;
@@ -2754,7 +2754,7 @@ sw buf_parse_list_paren (s_buf *buf, s_list **list)
     goto restore;
   if (r > 0) {
     result += r;
-    *list = NULL;
+    *plist = NULL;
     r = result;
     goto clean;
   }
@@ -2818,7 +2818,7 @@ sw buf_parse_list_paren (s_buf *buf, s_list **list)
     goto restore;
   }
  restore:
-  list_delete_all(*list);
+  list_delete_all(*plist);
   buf_save_restore_rpos(buf, &save);
  clean:
   buf_save_clean(buf, &save);
@@ -3221,6 +3221,7 @@ sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest)
   return r;
 }
 
+// TODO: no alloc before parsing, like plist
 sw buf_parse_pcomplex (s_buf *buf, s_complex **c)
 {
   sw r;
@@ -3234,6 +3235,7 @@ sw buf_parse_pcomplex (s_buf *buf, s_complex **c)
   return r;
 }
 
+// TODO: no alloc before parsing, like plist
 sw buf_parse_pcow (s_buf *buf, s_cow **c)
 {
   sw r;
@@ -3247,6 +3249,7 @@ sw buf_parse_pcow (s_buf *buf, s_cow **c)
   return r;
 }
 
+// TODO: no alloc before parsing, like plist
 sw buf_parse_pstruct (s_buf *buf, p_struct *dest)
 {
   sw r;
@@ -4288,12 +4291,12 @@ sw buf_parse_tag_integer (s_buf *buf, s_tag *dest)
   return r;
 }
 
-sw buf_parse_tag_list (s_buf *buf, s_tag *dest)
+sw buf_parse_tag_plist (s_buf *buf, s_tag *dest)
 {
   sw r;
   assert(buf);
   assert(dest);
-  if ((r = buf_parse_list(buf, &dest->data.plist)) > 0)
+  if ((r = buf_parse_plist(buf, &dest->data.plist)) > 0)
     dest->type = TAG_LIST;
   return r;
 }
@@ -4622,7 +4625,7 @@ sw buf_parse_tag_primary_4 (s_buf *buf, s_tag *dest)
       goto end;
     goto restore;
   case '[':
-    if ((r = buf_parse_tag_list(buf, dest)))
+    if ((r = buf_parse_tag_plist(buf, dest)))
       goto end;
     goto restore;
   case ':':

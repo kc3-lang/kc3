@@ -17,6 +17,7 @@
 
 /* Stack-allocation compatible functions, call plist_clean after use. */
 void     plist_clean (p_list *plist);
+p_list * plist_init_1 (p_list *plist, const char *p);
 p_list * plist_init_append (p_list *plist, p_list *src,
                             s_tag *tag);
 p_list * plist_init_cast (p_list *plist, const s_sym * const *type,
@@ -30,8 +31,12 @@ p_list * plist_filter (p_list *plist, p_callable *function,
                        p_list *dest);
 p_list * plist_map (p_list *plist, p_callable *function, p_list *dest);
 p_list * plist_remove_void (p_list *plist);
+p_list * plist_slice (p_list *list, s_tag *start, s_tag *end,
+                      p_list *dest);
+p_list * plist_sort (p_list *list, p_list *dest);
 p_list * plist_sort_by (p_list *plist, p_callable *compare,
                         p_list *dest);
-
+p_list * plist_tail (p_list *list);
+p_list * plist_unique (p_list *list, p_list *dest);
 
 #endif /* LIBKC3_PLIST_H */

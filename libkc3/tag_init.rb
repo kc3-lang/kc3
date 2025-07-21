@@ -552,6 +552,7 @@ tag_init_c.content = <<EOF
 #include "list.h"
 #include "map.h"
 #include "pcallable.h"
+#include "plist.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "psym.h"

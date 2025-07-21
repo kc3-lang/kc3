@@ -125,15 +125,15 @@ s32 markdown_titles_leave_block (MD_BLOCKTYPE type, void *detail,
   MD_BLOCK_H_DETAIL *detail_h;
   u8 i;
   u8 level;
-  s_list  *str_list;
-  s_list **str_list_tail;
+  s_list *str_list;
+  p_list *str_list_tail;
   const s_sym *sym_Str;
   s_tuple *tuple;
   s_tag   *tuple_count;
   s_tag   *tuple_count_level;
   s_tag   *tuple_last;
   s_tag   *tuple_list;
-  s_list **tuple_list_tail;
+  p_list  *tuple_list_tail;
   s_tag   *tuple_str;
   assert(data);
   sym_Str = &g_sym_Str;
@@ -195,7 +195,7 @@ s32 markdown_titles_leave_block (MD_BLOCKTYPE type, void *detail,
     }
     *str_list_tail = list_new_str_copy(&tuple_str->data.str, NULL);
     str_list_tail = &(*str_list_tail)->next.data.plist;
-    tuple_list_tail = list_tail(&tuple_list->data.plist);
+    tuple_list_tail = plist_tail(&tuple_list->data.plist);
     *tuple_list_tail = list_new(NULL);
     if (! tag_init_str_concatenate_list(&(*tuple_list_tail)->tag,
                                         (const s_list * const *)

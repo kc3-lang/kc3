@@ -391,7 +391,7 @@ s_http_response * http_response_init_copy (s_http_response *res,
   tmp.code = src->code;
   if (! str_init_copy(&tmp.message, &src->message))
     goto clean;
-  if (! list_init_copy(&tmp.headers, &src->headers))
+  if (! plist_init_copy(&tmp.headers, &src->headers))
     goto clean;
   if (! tag_init_copy(&tmp.body, &src->body))
     goto clean;

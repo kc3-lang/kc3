@@ -67,23 +67,23 @@ bool mandelbrot_f128_load (s_sequence *seq)
   if (! tag_map(&seq->tag, 9))
     return false;
   map = &seq->tag.data.map;
-  tag_init_sym(    map->key + 0, sym_1("h"));
+  tag_init_psym(   map->key + 0, sym_1("h"));
   tag_init_uw(   map->value + 0, 0);
-  tag_init_sym(    map->key + 1, sym_1("next_x"));
+  tag_init_psym(   map->key + 1, sym_1("next_x"));
   tag_init_f128( map->value + 1, 0.0);
-  tag_init_sym(    map->key + 2, sym_1("next_y"));
+  tag_init_psym(   map->key + 2, sym_1("next_y"));
   tag_init_f128( map->value + 2, 0.0);
-  tag_init_sym(    map->key + 3, sym_1("next_z"));
+  tag_init_psym(   map->key + 3, sym_1("next_z"));
   tag_init_f128( map->value + 3, 0.01);
-  tag_init_sym(    map->key + 4, sym_1("pixels"));
+  tag_init_psym(   map->key + 4, sym_1("pixels"));
   tag_init_array(map->value + 4, sym_1("U8[]"), 0, NULL);
-  tag_init_sym(    map->key + 5, sym_1("w"));
+  tag_init_psym(   map->key + 5, sym_1("w"));
   tag_init_uw(   map->value + 5, 0);
-  tag_init_sym(    map->key + 6, sym_1("x"));
+  tag_init_psym(   map->key + 6, sym_1("x"));
   tag_init_f128( map->value + 6, 0.0);
-  tag_init_sym(    map->key + 7, sym_1("y"));
+  tag_init_psym(   map->key + 7, sym_1("y"));
   tag_init_f128( map->value + 7, 0.0);
-  tag_init_sym(    map->key + 8, sym_1("z"));
+  tag_init_psym(   map->key + 8, sym_1("z"));
   tag_init_f128( map->value + 8, 0.0);
   return true;
 }

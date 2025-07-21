@@ -20,11 +20,11 @@ static const f64 g_speed_y = -40.0;
 s_cairo_sprite   g_sprite_toast = {0};
 s_cairo_sprite   g_sprite_toaster = {0};
 
-static bool toasters_render_toasters (s_list **toasters,
+static bool toasters_render_toasters (p_list *toasters,
                                       s_window_cairo *window,
                                       cairo_t *cr,
                                       s_sequence *seq);
-static bool toasters_render_toasts (s_list **toasts,
+static bool toasters_render_toasts (p_list *toasts,
                                     s_window_cairo *window,
                                     cairo_t *cr,
                                     s_sequence *seq);
@@ -32,10 +32,10 @@ static bool toasters_render_toasts (s_list **toasts,
 static s_tag * toast_init (s_tag *toast, f64 x, f64 y)
 {
   tag_init_map(toast, 2);
-  tag_init_sym(toast->data.map.key   + 0, sym_1("x"));
-  tag_init_f64(toast->data.map.value + 0, x);
-  tag_init_sym(toast->data.map.key   + 1, sym_1("y"));
-  tag_init_f64(toast->data.map.value + 1, y);
+  tag_init_psym(toast->data.map.key   + 0, sym_1("x"));
+  tag_init_f64( toast->data.map.value + 0, x);
+  tag_init_psym(toast->data.map.key   + 1, sym_1("y"));
+  tag_init_f64( toast->data.map.value + 1, y);
   return toast;
 }
 
@@ -65,10 +65,10 @@ static void toast_render (s_tag *toast, s_window_cairo *window,
 static s_tag * toaster_init (s_tag *toaster, f64 y)
 {
   tag_init_map(toaster, 2);
-  tag_init_sym(toaster->data.map.key + 0, sym_1("x"));
-  tag_init_f64(toaster->data.map.value + 0, -150);
-  tag_init_sym(toaster->data.map.key + 1, sym_1("y"));
-  tag_init_f64(toaster->data.map.value + 1, y);
+  tag_init_psym(toaster->data.map.key   + 0, sym_1("x"));
+  tag_init_f64( toaster->data.map.value + 0, -150);
+  tag_init_psym(toaster->data.map.key   + 1, sym_1("y"));
+  tag_init_f64( toaster->data.map.value + 1, y);
   return toaster;
 }
 
@@ -103,18 +103,18 @@ bool toasters_load (s_sequence *seq)
   s_map *map;
   tag_map(&seq->tag, 2);
   map = &seq->tag.data.map;
-  tag_init_sym( map->key + 0, sym_1("toasters"));
-  tag_init_list(map->value + 0, NULL);
-  tag_init_sym( map->key + 1, sym_1("toasts"));
-  tag_init_list(map->value + 1, NULL);
+  tag_init_psym( map->key   + 0, sym_1("toasters"));
+  tag_init_plist(map->value + 0, NULL);
+  tag_init_psym( map->key   + 1, sym_1("toasts"));
+  tag_init_plist(map->value + 1, NULL);
   return true;
 }
 
 bool toasters_render (s_sequence *seq)
 {
   cairo_t *cr;
-  s_list **toasters;
-  s_list **toasts;
+  p_list *toasters;
+  p_list *toasts;
   s_window_cairo *window;
   window = seq->window;
   cr = window->cr;
@@ -123,21 +123,21 @@ bool toasters_render (s_sequence *seq)
   cairo_fill(cr);
   /* io_inspect(&seq->tag); */
   if (seq->tag.type == TAG_MAP) {
-    toasters = &seq->tag.data.map.value[0].data.list;
-    toasts   = &seq->tag.data.map.value[1].data.list;
+    toasters = &seq->tag.data.map.value[0].data.plist;
+    toasts   = &seq->tag.data.map.value[1].data.plist;
     toasters_render_toasts(toasts, window, cr, seq);
     toasters_render_toasters(toasters, window, cr, seq);
   }
   return true;
 }
 
-bool toasters_render_toasts (s_list **toasts, s_window_cairo *window,
+bool toasters_render_toasts (p_list *toasts, s_window_cairo *window,
                              cairo_t *cr, s_sequence *seq)
 {
   s_list *i;
   s_list *j;
   s_map *map;
-  s_list **t = NULL;
+  p_list *t = NULL;
   f64 x;
   f64 y;
   assert(toasts);
@@ -146,22 +146,22 @@ bool toasters_render_toasts (s_list **toasts, s_window_cairo *window,
   assert(seq);
   y = window->w * g_speed_y / g_speed_x - 210;
   if (*toasts && (*toasts)->tag.type == TAG_MAP) {
-    t = &(*toasts)->tag.data.map.value[0].data.list;
+    t = &(*toasts)->tag.data.map.value[0].data.plist;
     y =  (*toasts)->tag.data.map.value[1].data.f64;
   }
   while (y < window->h - 100) {
     y += 170.0;
     *toasts = list_new_map(2, *toasts);
     map = &(*toasts)->tag.data.map;
-    tag_init_sym(map->key  + 0, sym_1("toasts"));
-    tag_init_list(map->value + 0, NULL);
-    tag_init_sym(map->key  + 1, sym_1("y"));
-    tag_init_f64(map->value  + 1, y);
+    tag_init_psym( map->key   + 0, sym_1("toasts"));
+    tag_init_plist(map->value + 0, NULL);
+    tag_init_psym( map->key   + 1, sym_1("y"));
+    tag_init_f64(  map->value + 1, y);
   }
   i = *toasts;
   while (i) {
     if (i->tag.type == TAG_MAP) {
-      t = &i->tag.data.map.value[0].data.list;
+      t = &i->tag.data.map.value[0].data.plist;
       y =  i->tag.data.map.value[1].data.f64;
       x = 0.0;
       if (*t && (*t)->tag.type == TAG_MAP)
@@ -170,7 +170,7 @@ bool toasters_render_toasts (s_list **toasts, s_window_cairo *window,
         *t = list_new(*t);
         toast_init(&(*t)->tag, window->w, y);
       }
-      list_remove_void(t);
+      plist_remove_void(t);
       j = *t;
       while (j) {
         toast_render(&j->tag, window, cr, seq);
@@ -182,39 +182,39 @@ bool toasters_render_toasts (s_list **toasts, s_window_cairo *window,
   return true;
 }
 
-bool toasters_render_toasters (s_list **toasters,
+bool toasters_render_toasters (p_list *toasters,
                                s_window_cairo *window, cairo_t *cr,
                                s_sequence *seq)
 {
   s_list *i;
   s_list *j;
   s_map *map;
-  s_list **t = NULL;
+  p_list *t = NULL;
   f64 x;
   f64 y;
   assert(toasters);
   assert(window);
   assert(cr);
   assert(seq);
-  /* io_inspect_list((const s_list **) toasters); */
+  /* io_inspect_list((const p_list *) toasters); */
   y = -100.0;
   if (*toasters && (*toasters)->tag.type == TAG_MAP) {
-    t = &(*toasters)->tag.data.map.value[0].data.list;
+    t = &(*toasters)->tag.data.map.value[0].data.plist;
     y =  (*toasters)->tag.data.map.value[1].data.f64;
   }
   while (y < window->h - window->w * g_speed_y / g_speed_x) {
     y += 170.0;
     *toasters = list_new_map(2, *toasters);
     map = &(*toasters)->tag.data.map;
-    tag_init_sym(map->key  + 0, sym_1("toasters"));
-    tag_init_list(map->value + 0, NULL);
-    tag_init_sym(map->key  + 1, sym_1("y"));
-    tag_init_f64(map->value  + 1, y);
+    tag_init_psym( map->key   + 0, sym_1("toasters"));
+    tag_init_plist(map->value + 0, NULL);
+    tag_init_psym( map->key   + 1, sym_1("y"));
+    tag_init_f64(  map->value + 1, y);
   }
   i = *toasters;
   while (i) {
     if (i->tag.type == TAG_MAP) {
-      t = &i->tag.data.map.value[0].data.list;
+      t = &i->tag.data.map.value[0].data.plist;
       y =  i->tag.data.map.value[1].data.f64;
       x = 1000.0;
       if (*t && (*t)->tag.type == TAG_MAP)
@@ -223,7 +223,7 @@ bool toasters_render_toasters (s_list **toasters,
         *t = list_new(*t);
         toaster_init(&(*t)->tag, y);
       }
-      list_remove_void(t);
+      plist_remove_void(t);
       j = *t;
       while (j) {
         toaster_render(&j->tag, window, cr, seq);

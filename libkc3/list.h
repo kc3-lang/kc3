@@ -25,7 +25,7 @@
 /* Stack-allocation functions, call list_clean after use. */
 void      list_clean (s_list *list);
 s_list  * list_init (s_list *list, s_list *next);
-s_list  * list_init_1 (s_list *list, const char *p, s_list *next);
+s_list  * list_init_1 (s_list *list, const char *p);
 s_list  * list_init_eval (s_list *list, const char *p);
 s_list  * list_init_tag_copy (s_list *list, s_tag *tag,
                               s_list *next);
@@ -46,29 +46,17 @@ s_list * list_new_tag_copy (s_tag *tag, s_list *next);
 /* Observers */
 s_tag *   list_at (s_list *list, uw position, s_tag *dest);
 s_tag *   list_access (s_list *list, s_list *key, s_tag *dest);
-p_list * list_cast (const s_tag *tag, p_list *list);
 bool *    list_has (const s_list * const *list, const s_tag *tag,
                     bool *dest);
 bool      list_is_alist (const s_list *list);
 bool      list_is_plist (const s_list *list);
 sw        list_length (const s_list *list);
 s_list  * list_next (const s_list *list);
-p_list * list_slice (p_list *list, s_tag *start, s_tag *end,
-                      p_list *dest);
-p_list * list_sort (p_list *list, p_list *dest);
-p_list * list_tail (p_list *list);
 s_tuple * list_to_tuple_reverse (const s_list *list, s_tuple *dest);
 
 /* Operators */
 bool *    list_each (p_list *list, p_callable *function, bool *dest);
-p_list * list_filter (p_list *list, p_callable *function,
-                       p_list *dest);
-p_list * list_map (p_list *list, p_callable *function, p_list *dest);
-p_list * list_remove_void (p_list *list);
-p_list * list_sort_by (p_list *list, p_callable *compare,
-                        p_list *dest);
 s_array * list_to_array (s_list *list, const s_sym *type,
                          s_array *dest);
-p_list * list_unique (p_list *list, p_list *dest);
 
 #endif /* LIBKC3_LIST_H */

@@ -39,6 +39,7 @@
 #include "pcallable.h"
 #include "pcomplex.h"
 #include "pcow.h"
+#include "plist.h"
 #include "pstruct.h"
 #include "pstruct_type.h"
 #include "ptr.h"
@@ -557,7 +558,7 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     return tag;
   case TAG_LIST:
     tag->type = src->type;
-    if (! list_init_copy(&tag->data.plist, &src->data.plist))
+    if (! plist_init_copy(&tag->data.plist, &src->data.plist))
       return NULL;
     return tag;
   case TAG_MAP:
