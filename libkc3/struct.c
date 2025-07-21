@@ -55,7 +55,8 @@ s_tag * struct_access (s_struct *s, s_list *key, s_tag *dest)
     err_write_1(", ");
     err_inspect_tag(first);
     err_write_1(")\n");
-    assert(! "struct_access: map_access_sym");
+    err_stacktrace();
+    assert(! "struct_access: struct_access_sym");
     return NULL;
   }
   if (! next) {
