@@ -6,7 +6,7 @@ defmodule DocController do
   require Str
 
   def doc_index = fn {
-    (input, path_md) { doc_index(path, path_md, path, []) }
+    (input, path_md) { doc_index(input, path_md, input, []) }
     (input, path_md, dir, acc) {
       while input != [] do
         if (type(input) == Str) do
@@ -18,7 +18,7 @@ defmodule DocController do
               (Str.rindex_character(file, '.') > 0 &&
                ! Str.ends_with?(file, ".md") &&
                ! Str.ends_with?(file, ".html"))) do
-            input = rest
+            input = ^ rest
           else
             path = dir + file
             name = Str.subst(file, "_", " ")
@@ -28,7 +28,7 @@ defmodule DocController do
                                      item.type == :dir &&
                                      item.base_url == url
                                    }) do
-                input = rest
+                input = ^ rest
               else
                 items = doc_index(List.sort(File.list(path)), path_md,
                   path + "/", [])
@@ -40,7 +40,7 @@ defmodule DocController do
                          url: url_locale,
                          name: name,
                          items: items}
-                input = rest
+                input = ^ rest
                 acc = [item | acc]
               end
             else # not a directory
@@ -64,7 +64,7 @@ defmodule DocController do
                                      item.type == :file &&
                                      item.base_url == url
                                    }) do
-                input = rest
+                input = ^ rest
               else
                 url_locale = if locale == "en" do url else
                   "/#{locale}#{url}"
@@ -74,7 +74,7 @@ defmodule DocController do
                          url: url_locale,
                          name: name,
                          items: []}
-                input = rest
+                input = ^ rest
                 acc = [item | acc]
               end
             end
