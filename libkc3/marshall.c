@@ -216,7 +216,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_STR:  return marshall_str(m, heap, &tag->data.str);
   case TAG_SW:   return marshall_sw(m, heap, tag->data.sw);
   case TAG_UW:   return marshall_uw(m, heap, tag->data.uw);
-  case TAG_LIST: return marshall_plist(m, heap, &tag->data.list);
+  case TAG_LIST: return marshall_plist(m, heap, &tag->data.plist);
   default:       break;
   }
   err_puts("marshall_tag: not implemented");
