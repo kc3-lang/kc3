@@ -795,7 +795,8 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
     pretty_save_init(&pretty_save, &buf->pretty);
     pretty_indent(&buf->pretty, PRETTY_INDENT);
     if (then->type == TAG_DO_BLOCK) {
-      if ((r = buf_inspect_do_block_inner(buf, &else_->data.do_block)) < 0)
+      if ((r = buf_inspect_do_block_inner(buf,
+                                          &else_->data.do_block)) < 0)
         return r;
     }
     else
@@ -810,7 +811,8 @@ sw buf_inspect_call_if_then_else (s_buf *buf, const s_call *call)
   return result;
 }
 
-sw buf_inspect_call_if_then_else_size (s_pretty *pretty, const s_call *call)
+sw buf_inspect_call_if_then_else_size (s_pretty *pretty,
+                                       const s_call *call)
 {
   s_tag *condition;
   s_tag *else_;
@@ -842,7 +844,8 @@ sw buf_inspect_call_if_then_else_size (s_pretty *pretty, const s_call *call)
       if ((r = buf_write_1_size(pretty, "\n")) < 0)
         return r;
       result += r;
-      if ((r = buf_inspect_tag_size(pretty, then->data.do_block.tag + i)) < 0)
+      if ((r = buf_inspect_tag_size(pretty,
+                                    then->data.do_block.tag + i)) < 0)
         return r;
       i++;
     }
@@ -877,7 +880,8 @@ sw buf_inspect_call_if_then_else_size (s_pretty *pretty, const s_call *call)
   return result;
 }
 
-sw buf_inspect_call_op (s_buf *buf, const s_call *call, u8 op_precedence)
+sw buf_inspect_call_op (s_buf *buf, const s_call *call,
+                        u8 op_precedence)
 {
   sw arity;
   s_tag *left;
@@ -1273,7 +1277,8 @@ sw buf_inspect_call_special_operator (s_buf *buf, const s_call *call)
   return result;
 }
 
-sw buf_inspect_call_special_operator_size (s_pretty *pretty, const s_call *call)
+sw buf_inspect_call_special_operator_size (s_pretty *pretty,
+                                           const s_call *call)
 {
   const s_list *args;
   bool b;
@@ -1337,7 +1342,8 @@ sw buf_inspect_call_str_size (s_pretty *pretty, const s_call *call)
     assert(! "buf_inspect_call_str_size: invalid call");
     return -1;
   }
-  return buf_inspect_str_eval_size(pretty, call->arguments->tag.data.plist);
+  return buf_inspect_str_eval_size(pretty,
+                                   call->arguments->tag.data.plist);
 }
 
 sw buf_inspect_callable (s_buf *buf, const s_callable *callable)
@@ -1357,7 +1363,8 @@ sw buf_inspect_callable (s_buf *buf, const s_callable *callable)
   return -1;
 }
 
-sw buf_inspect_callable_size (s_pretty *pretty, const s_callable *callable)
+sw buf_inspect_callable_size (s_pretty *pretty,
+                              const s_callable *callable)
 {
   switch (callable->type) {
   case CALLABLE_CFN:
@@ -2442,7 +2449,8 @@ sw buf_inspect_ident_sym_reserved (s_buf *buf, const s_sym *sym)
   return result;
 }
 
-sw buf_inspect_ident_sym_reserved_size (s_pretty *pretty, const s_sym *sym)
+sw buf_inspect_ident_sym_reserved_size (s_pretty *pretty,
+                                        const s_sym *sym)
 {
   sw r;
   sw result = 0;
@@ -2985,7 +2993,8 @@ sw buf_inspect_pstruct_size (s_pretty *pretty, p_struct const *pstruct)
   return buf_inspect_struct_size(pretty, *pstruct);
 }
   
-sw buf_inspect_pstruct_type (s_buf *buf, p_struct_type const *pstruct_type)
+sw buf_inspect_pstruct_type (s_buf *buf,
+                             p_struct_type const *pstruct_type)
 {
   return buf_inspect_struct_type(buf, *pstruct_type);
 }
@@ -3642,14 +3651,17 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
   }
   result += r;
   if (! sym_is_module(s->pstruct_type->module)) {
-    err_puts("buf_inspect_struct: sym_is_module(s->pstruct_type->module)");
-    assert(! "buf_inspect_struct: sym_is_module(s->pstruct_type->module)");
+    err_puts("buf_inspect_struct: "
+             "sym_is_module(s->pstruct_type->module)");
+    assert(! "buf_inspect_struct: "
+             "sym_is_module(s->pstruct_type->module)");
     return -1;
   }
   if ((r =
-       buf_write_str_without_indent(buf,
-                                    &s->pstruct_type->module->str)) < 0) {
-    assert(! "buf_inspect_struct: buf_write_str_without_indent: module");
+       buf_write_str_without_indent(buf, &s->pstruct_type->module->str))
+      < 0) {
+    assert(! "buf_inspect_struct: "
+             "buf_write_str_without_indent: module");
     return r;
   }
   result += r;
@@ -3693,7 +3705,8 @@ sw buf_inspect_struct (s_buf *buf, const s_struct *s)
         else {
           r = buf_write_str_without_indent(buf, &k->data.psym->str);
           if (r < 0) {
-            assert(! "buf_inspect_struct: buf_write_str_without_ident: k");
+            assert(! "buf_inspect_struct: "
+                     "buf_write_str_without_ident: k");
             goto clean;
           }
         }
@@ -3767,13 +3780,16 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
   }
   result += r;
   if (! sym_is_module(s->pstruct_type->module)) {
-    err_puts("buf_inspect_struct_size: sym_is_module(s->pstruct_type->module)");
-    assert(! "buf_inspect_struct_size: sym_is_module(s->pstruct_type->module)");
+    err_puts("buf_inspect_struct_size: "
+             "sym_is_module(s->pstruct_type->module)");
+    assert(! "buf_inspect_struct_size: "
+             "sym_is_module(s->pstruct_type->module)");
     return -1;
   }
   if ((r = buf_write_str_without_indent_size
        (pretty, &s->pstruct_type->module->str)) < 0) {
-    assert(! "buf_inspect_struct_size: buf_write_str_without_indent: module");
+    assert(! "buf_inspect_struct_size: "
+             "buf_write_str_without_indent: module");
     return r;
   }
   result += r;
@@ -3799,7 +3815,8 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
       if (display) {
         k = s->pstruct_type->map.key + i;
         if (k->type != TAG_SYM) {
-          err_write_1("buf_inspect_struct_size: key type is not a symbol: ");
+          err_write_1("buf_inspect_struct_size: "
+                      "key type is not a symbol: ");
           err_inspect_tag(k);
           err_write_1(" (");
           err_write_1(tag_type_to_string(k->type));
@@ -3809,7 +3826,8 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
           goto clean;
         }
         if (sym_has_reserved_characters(k->data.psym)) {
-          if ((r = buf_inspect_str_size(pretty, &k->data.psym->str)) < 0) {
+          if ((r = buf_inspect_str_size(pretty,
+                                        &k->data.psym->str)) < 0) {
             assert(! "buf_inspect_struct_size: buf_inspect_str: k");
             goto clean;
           }
@@ -3817,7 +3835,8 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
         else
           if ((r = buf_write_str_without_indent_size
                (pretty, &k->data.psym->str)) < 0) {
-            assert(! "buf_inspect_struct_size: buf_write_str_without_ident: k");
+            assert(! "buf_inspect_struct_size: "
+                     "buf_write_str_without_ident: k");
             goto clean;
           }
         result += r;
@@ -3832,9 +3851,9 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
             goto clean;
           }
           assert(s->pstruct_type->offset[i] < s->pstruct_type->size);
-          if ((r = data_buf_inspect_size(pretty, type,
-                                         (char *) s->data +
-                                         s->pstruct_type->offset[i])) < 0) {
+          if ((r = data_buf_inspect_size
+                   (pretty, type, (char *) s->data +
+                    s->pstruct_type->offset[i])) < 0) {
             assert(! "buf_inspect_struct_size: data_buf_inspect");
             goto clean;
           }
@@ -3924,7 +3943,8 @@ sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
   return result;
 }
 
-sw buf_inspect_struct_type_size (s_pretty *pretty, const s_struct_type *st)
+sw buf_inspect_struct_type_size (s_pretty *pretty,
+                                 const s_struct_type *st)
 {
   s_array offset_array;
   uw offset_array_dimension;

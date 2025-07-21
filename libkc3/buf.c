@@ -958,7 +958,8 @@ s_str * buf_read_until_1_into_str (s_buf *buf, const char *end,
   return buf_read_until_str_into_str(buf, &str, dest);
 }
 
-s_str * buf_read_until_character_into_str (s_buf *buf, character end, s_str *dest)
+s_str * buf_read_until_character_into_str (s_buf *buf, character end,
+                                           s_str *dest)
 {
   s_str end_str;
   s_str *r;
@@ -1049,7 +1050,8 @@ s_str * buf_read_until_list_into_str (s_buf *buf,
     }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
       if (false)
-        err_puts("buf_read_until_str_into_str: buf_read_character_utf8");
+        err_puts("buf_read_until_str_into_str: "
+                 "buf_read_character_utf8");
       goto restore;
     }
   }
@@ -1128,7 +1130,8 @@ sw buf_read_until_str_into_file (s_buf *buf, const s_str *end,
     return -1;
   }
   if ((r = buf_read_until_str_into_buf(buf, end, &dest)) < 0) {
-    err_puts("buf_read_until_str_into_file: buf_read_until_str_into_buf");
+    err_puts("buf_read_until_str_into_file: "
+             "buf_read_until_str_into_buf");
     buf_fd_close(&dest);
     buf_clean(&dest);
     close(fd);
@@ -1171,7 +1174,8 @@ s_str * buf_read_until_str_into_str (s_buf *buf, const s_str *end,
     }
     if ((r = buf_read_character_utf8(buf, &c)) <= 0) {
       if (false)
-        err_puts("buf_read_until_str_into_str: buf_read_character_utf8");
+        err_puts("buf_read_until_str_into_str: "
+                 "buf_read_character_utf8");
       goto restore;
     }
   }

@@ -78,7 +78,8 @@ sw buf_fd_open_r_refill (s_buf *buf)
   fd = ((s_buf_fd *) (buf->user_ptr))->fd;
   //r = read(fd, buf->ptr.pchar + buf->wpos, size);
 #if defined(WIN32) || defined(WIN64)
-  WSAIoctl(fd, FIONREAD, NULL, 0, &avail, sizeof(avail), NULL, NULL, NULL);
+  WSAIoctl(fd, FIONREAD, NULL, 0, &avail, sizeof(avail), NULL, NULL,
+           NULL);
 #else
   if (ioctl(fd, FIONREAD, &avail) == -1) {
     err_puts("buf_fd_open_r_refill: ioctl FIONREAD: -1");
