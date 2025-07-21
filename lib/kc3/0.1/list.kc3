@@ -58,14 +58,7 @@ defmodule List do
 
   def has? = cfn Bool "plist_has" (List, Tag, Result)
 
-  def join = fn {
-    (list, separator) { join(list, separator, []) }
-    ([], sep, acc) { str(reverse(acc)) }
-    ([first, second | rest], sep, acc) {
-      join([second | rest], sep, [sep, first | acc])
-    }
-    ([first], sep, acc) { str(reverse([first | acc])) }
-  }
+  def join = cfn Str "plist_join" (List, Str, Result)
 
   def last = cfn Tag "plist_last" (List, Result)
 
@@ -75,11 +68,7 @@ defmodule List do
 
   def next = fn ([a | b]) { b }
 
-  def reverse = fn {
-    (x) { reverse(x, []) }
-    ([], acc) { acc }
-    ([a | b], acc) { reverse(b, [a | acc]) }
-  }
+  def reverse = cfn List "plist_reverse" (List, Result)
 
   def slice = cfn List "plist_slice" (List, Tag, Tag, Result)
 

@@ -32,8 +32,10 @@ p_list * plist_filter (p_list *plist, p_callable *function,
                        p_list *dest);
 bool *   plist_has (const s_list * const *plist, const s_tag *tag,
                     bool *dest);
+s_str  * plist_join (p_list *plist, s_str *sep, s_str *dest);
 p_list * plist_map (p_list *plist, p_callable *function, p_list *dest);
 p_list * plist_remove_void (p_list *plist);
+p_list * plist_reverse (p_list *plist, p_list *dest);
 p_list * plist_slice (p_list *list, s_tag *start, s_tag *end,
                       p_list *dest);
 p_list * plist_sort (p_list *list, p_list *dest);

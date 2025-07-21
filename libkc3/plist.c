@@ -24,6 +24,7 @@
 #include "kc3_main.h"
 #include "list.h"
 #include "plist.h"
+#include "str.h"
 #include "sym.h"
 #include "sw.h"
 #include "tag.h"
@@ -191,6 +192,33 @@ p_list * plist_init_copy (p_list *plist, p_list *src)
   return plist;
 }
 
+s_str * plist_join (p_list *plist, s_str *sep, s_str *dest)
+{
+  p_list i;
+  p_list *tail;
+  p_list tmp = NULL;
+  i = *plist;
+  tail = &tmp;
+  while (i) {
+    if (! (*tail = list_new_tag_copy(&i->tag, NULL)))
+      goto ko;
+    tail = &(*tail)->next.data.plist;
+    if (list_next(i)) {
+      if (! (*tail = list_new_str_copy(sep, NULL)))
+        goto ko;
+      tail = &(*tail)->next.data.plist;
+    }
+    i = list_next(i);
+  }
+  if (! str_init_concatenate_list(dest, (const s_list * const *) &tmp))
+    goto ko;
+  list_delete_all(tmp);
+  return dest;
+ ko:
+  list_delete_all(tmp);
+  return NULL;
+}
+
 s_tag * plist_last (p_list *plist, s_tag *dest)
 {
   s_list *l;
@@ -257,6 +285,22 @@ p_list * plist_remove_void (p_list *plist)
   }
   *plist = tmp;
   return plist;
+}
+
+p_list * plist_reverse (p_list *plist, p_list *dest)
+{
+  p_list acc = NULL;
+  p_list i;
+  i = *plist;
+  while (i) {
+    if (! (acc = list_new_tag_copy(&i->tag, acc))) {
+      list_delete_all(acc);
+      return NULL;
+    }
+    i = list_next(i);
+  }
+  *dest = acc;
+  return dest;
 }
 
 p_list * plist_slice (p_list *plist, s_tag *start_tag, s_tag *end_tag,
