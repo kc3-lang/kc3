@@ -190,6 +190,26 @@ TEST_CASE(marshall_character)
 }
 TEST_CASE_END(marshall_character)
 
+TEST_CASE(marshall_plist)
+{
+  s_marshall m = {0};
+  s_list *list_test;
+  s_str str = {0};
+  const s_str expected =
+    {{0}, 51, {"KC3MARSH\x02\0\0\0\0\0\0\0"
+               "\x13\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+               "\0\0\0\0\0\0\0\0\x13\0\x18\0\0\0\0\0"
+               "\0\0\0"}};
+
+  TEST_ASSERT(marshall_init(&m));
+  list_test = list_new_1("[0, 1]");
+  TEST_ASSERT(list_test);
+  TEST_ASSERT(marshall_plist(&m, true, &list_test));
+  marshall_to_str(&m, &str);
+  TEST_STR_EQ(str, expected);
+}
+TEST_CASE_END(marshall_plist)
+
 TEST_CASE(marshall_s8)
 {
   MARSHALL_TEST_BUF_S8(0, "\0");
@@ -241,6 +261,22 @@ TEST_CASE(marshall_sw)
 }
 TEST_CASE_END(marshall_sw)
 
+TEST_CASE(marshall_tag)
+{
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("0");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("1");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("2");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("256");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("-2147483648");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("92233720368547");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("10000000000000000000000000000000000");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("[1, 2]");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("defmodule Test do end");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("%{a: 1, b: 2}");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("List.reverse([])");
+  MARSHALL_TEST_TAG_BUF_AND_HEAP("a = 1");
+}
+TEST_CASE_END(marshall_tag)
 
 TEST_CASE(marshall_to_buf)
 {
@@ -334,40 +370,3 @@ TEST_CASE(marshall_uw)
   MARSHALL_TEST_HEAP_UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_uw)
-
-TEST_CASE(marshall_plist)
-{
-  s_marshall m = {0};
-  s_list *list_test;
-  s_str str = {0};
-  const s_str expected =
-    {{0}, 51, {"KC3MARSH\x02\0\0\0\0\0\0\0"
-               "\x13\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-               "\0\0\0\0\0\0\0\0\x13\0\x18\0\0\0\0\0"
-               "\0\0\0"}};
-
-  TEST_ASSERT(marshall_init(&m));
-  list_test = list_new_1("[0, 1]");
-  TEST_ASSERT(list_test);
-  TEST_ASSERT(marshall_plist(&m, true, &list_test));
-  marshall_to_str(&m, &str);
-  TEST_STR_EQ(str, expected);
-}
-TEST_CASE_END(marshall_plist)
-
-TEST_CASE(marshall_tag)
-{
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("0");
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("1");
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("2");
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("256");
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("-2147483648");
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("92233720368547");
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("10000000000000000000000000000000000");
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("[1, 2]");
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("defmodule Test do end");
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("%{a: 1, b: 2}");
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("List.reverse([])");
-  MARSHALL_TEST_TAG_BUF_AND_HEAP("a = 1");
-}
-TEST_CASE_END(marshall_tag)
