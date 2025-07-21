@@ -207,6 +207,9 @@ TEST_CASE(marshall_plist)
   TEST_ASSERT(marshall_plist(&m, true, &list_test));
   marshall_to_str(&m, &str);
   TEST_STR_EQ(str, expected);
+  str_clean(&str);
+  list_delete_all(list_test);
+  marshall_clean(&m);
 }
 TEST_CASE_END(marshall_plist)
 
@@ -306,6 +309,7 @@ TEST_CASE(marshall_to_file)
   TEST_EQ(str_init_1(&path, NULL, ".marshall_test_to_file.1.kc3m"),
           &path);
   TEST_ASSERT(file_unlink(&path));
+  str_clean(&path);
   marshall_clean(&m);
 }
 TEST_CASE_END(marshall_to_file)

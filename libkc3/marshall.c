@@ -116,6 +116,7 @@ void marshall_clean (s_marshall *m)
   assert(m);
   buf_clean(&m->buf);
   buf_clean(&m->heap);
+  ht_clean(&m->ht);
 }
 
 void marshall_delete (s_marshall *m)
