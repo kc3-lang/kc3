@@ -82,8 +82,10 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap, void *p,
     goto ko;
   tag_clean(&key);
   tag_clean(&tag);
-  if (heap)
+  if (heap) {
     m->heap_pos += r;
+    m->heap_count++;
+  }
   else
     m->buf_pos += r;
   return m;
@@ -151,8 +153,11 @@ s_marshall * marshall_plist (s_marshall *m, bool heap,
   bool present = false;
   if (! m || ! list)
     return NULL;
-  marshall_heap_pointer(m, heap, ???, &present);
-  return (*list) ? marshall_list(m, true, *list) : m;
+  if (! marshall_heap_pointer(m, heap, *list, &present))
+    return NULL;
+  if (! present)
+    return marshall_list(m, true, *list);
+  return m;
 }
 
 s_marshall * marshall_new (void)
@@ -211,7 +216,7 @@ s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
   case TAG_STR:  return marshall_str(m, heap, &tag->data.str);
   case TAG_SW:   return marshall_sw(m, heap, tag->data.sw);
   case TAG_UW:   return marshall_uw(m, heap, tag->data.uw);
-  case TAG_LIST: return marshall_plist(m, heap, tag->data.list);
+  case TAG_LIST: return marshall_plist(m, heap, &tag->data.list);
   default:       break;
   }
   err_puts("marshall_tag: not implemented");

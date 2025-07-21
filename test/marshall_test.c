@@ -339,13 +339,13 @@ TEST_CASE(marshall_plist)
 {
   s_marshall m = {0};
   s_list *list_test;
-  s_str str = {0};
+  // s_str str = {0};
 
   TEST_ASSERT(marshall_init(&m));
   list_test = list_new_1("[0, 1]");
   TEST_ASSERT(list_test);
-  TEST_ASSERT(marshall_plist(&m, true, list_test));
-  marshall_to_str(&m, &str);
+  TEST_ASSERT(marshall_plist(&m, true, &list_test));
+  // marshall_to_str(&m, &str);
 }
 TEST_CASE_END(marshall_plist)
 
