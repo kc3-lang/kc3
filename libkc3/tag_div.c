@@ -242,8 +242,8 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     case TAG_COMPLEX:
       if (! complex_init_integer(&c, &a->data.integer))
         return NULL;
-      if (! tag_init_pcomplex(dest, complex_new_div(&c,
-                                                    b->data.pcomplex))) {
+      if (! tag_init_pcomplex(dest,
+                              complex_new_div(&c, b->data.pcomplex))) {
         complex_clean(&c);
         return NULL;
       }
@@ -337,8 +337,8 @@ s_tag * tag_div (s_tag *a, s_tag *b, s_tag *dest)
     case TAG_COMPLEX:
       if (! complex_init_ratio(&c, &a->data.ratio))
         return NULL;
-      if (! tag_init_pcomplex(dest, complex_new_div(&c,
-                                                    b->data.pcomplex))) {
+      if (! tag_init_pcomplex(dest,
+                              complex_new_div(&c, b->data.pcomplex))) {
         complex_clean(&c);
         return NULL;
       }

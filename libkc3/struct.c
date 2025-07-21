@@ -386,7 +386,8 @@ s_struct * struct_init_from_lists (s_struct *s, const s_sym *module,
         goto ko;
       }
       if (k->tag.data.psym->str.ptr.pchar[0] != '_') {
-        if (k->tag.data.psym == tmp.pstruct_type->map.key[i].data.psym) {
+        if (k->tag.data.psym ==
+            tmp.pstruct_type->map.key[i].data.psym) {
           if (! tag_init_copy(tmp.tag + i, &v->tag))
             goto ko;
           goto next;
@@ -563,7 +564,8 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
       return NULL;
     }
     if (s->pstruct_type->map.key[i].data.psym == key) {
-      if (s->pstruct_type->map.key[i].data.psym->str.ptr.pchar[0] == '_') {
+      if (s->pstruct_type->map.key[i].data.psym->str.ptr.pchar[0] ==
+          '_') {
         err_write_1("struct_set: cannot set read only member ");
         err_inspect_sym(s->pstruct_type->map.key[i].data.psym);
         err_write_1("\n");

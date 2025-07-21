@@ -102,14 +102,14 @@
     return buf_to_str(&buf, str);                                      \
   }
 
-#define DEF_STR_INIT_PTR(name, type)                                       \
+#define DEF_STR_INIT_PTR(name, type)                                   \
   s_str * str_init_ ## name (s_str *str, type x)                       \
   {                                                                    \
     s_buf buf;                                                         \
     s_pretty pretty = {0};                                             \
     sw r;                                                              \
     sw size;                                                           \
-    size = buf_inspect_ ## name ## _size(&pretty, x);                 \
+    size = buf_inspect_ ## name ## _size(&pretty, x);                  \
     if (! size)                                                        \
       return str_init_empty(str);                                      \
     if (size < 0) {                                                    \
@@ -121,7 +121,7 @@
       err_puts("str_init_" # name ": buf_init_alloc");                 \
       return NULL;                                                     \
     }                                                                  \
-    if ((r = buf_inspect_ ## name(&buf, x)) < 0) {                    \
+    if ((r = buf_inspect_ ## name(&buf, x)) < 0) {                     \
       err_puts("str_init_" # name ": buf_inspect_" # name " < 0");     \
       buf_clean(&buf);                                                 \
       return NULL;                                                     \
