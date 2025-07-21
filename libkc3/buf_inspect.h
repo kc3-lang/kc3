@@ -155,8 +155,25 @@ sw buf_inspect_map (s_buf *buf, const s_map *map);
 sw buf_inspect_map_size (s_pretty *pretty, const s_map *map);
 sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym);
 sw buf_inspect_paren_sym_size (s_pretty *pretty, const s_sym *sym);
+sw buf_inspect_pcallable (s_buf *buf,
+                          const s_callable * const *pcallable);
+sw buf_inspect_pcallable_size (s_pretty *pretty,
+                               const s_callable * const *pcallable);
+sw buf_inspect_pcomplex (s_buf *buf, p_complex const *pcomplex);
+sw buf_inspect_pcomplex_size (s_pretty *pretty,
+                              p_complex const *pcomplex);
+sw buf_inspect_pcow (s_buf *buf, p_cow const *pcow);
+sw buf_inspect_pcow_size (s_pretty *pretty, p_cow const *pcow);
 sw buf_inspect_pointer (s_buf *buf, const void *ptr);
 sw buf_inspect_pointer_size (s_pretty *pretty, const void *ptr);
+sw buf_inspect_pstruct (s_buf *buf, p_struct const *pstruct);
+sw buf_inspect_pstruct_size (s_pretty *pretty, p_struct const *pstruct);
+sw buf_inspect_pstruct_type (s_buf *buf,
+                             p_struct_type const *pstruct_type);
+sw buf_inspect_pstruct_type_size (s_pretty *pretty,
+                                  p_struct_type const *pstruct_type);
+sw buf_inspect_psym (s_buf *buf, p_sym const *psym);
+sw buf_inspect_psym_size (s_pretty *pretty, p_sym const *psym);
 sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag);
 sw buf_inspect_ptag_size (s_pretty *pretty, const p_tag *ptag);
 sw buf_inspect_ptr (s_buf *buf, const u_ptr_w *ptr);
@@ -194,10 +211,10 @@ sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st);
 sw buf_inspect_struct_type_size (s_pretty *pretty,
                                  const s_struct_type *st);
 BUF_INSPECT_S_PROTOTYPES(w);
-sw buf_inspect_sym (s_buf *buf, const s_sym * const *sym);
+sw buf_inspect_sym (s_buf *buf, const s_sym *sym);
 sw buf_inspect_sym_reserved (s_buf *buf, const s_sym *sym);
 sw buf_inspect_sym_reserved_size (s_pretty *pretty, const s_sym *sym);
-sw buf_inspect_sym_size (s_pretty *pretty, const s_sym * const *sym);
+sw buf_inspect_sym_size (s_pretty *pretty, const s_sym *sym);
 sw buf_inspect_tag (s_buf *buf, const s_tag *tag);
 sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag);
 sw buf_inspect_tag_type (s_buf *buf, e_tag_type type);

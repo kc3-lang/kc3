@@ -137,25 +137,25 @@ void    sym_init_g_sym (void);
 bool    sym_register (p_sym sym, s_sym *free_sym);
 
 /* Heap-allocation functions, call sym_delete_all at exit. */
-void           sym_delete_all (void);
+void    sym_delete_all (void);
 p_sym   sym_new (const s_str *src);
 
 /* Observers */
-p_sym  sym_array_type (p_sym sym);
-bool          sym_character_is_reserved (character c);
-p_sym  sym_find (const s_str *src);
-s_tag *       sym_find_to_tag (const s_str *src, s_tag *dest);
-bool          sym_has_ident_reserved_characters (p_sym sym);
-bool          sym_has_reserved_characters (p_sym sym);
-bool          sym_is_array_type (p_sym sym);
-bool          sym_is_module (p_sym sym);
-uw *          sym_list_size (uw *dest);
-bool *        sym_must_clean (p_sym sym, bool *must_clean);
-bool          sym_search_modules (p_sym sym, p_sym *dest);
-bool          sym_to_ffi_type (p_sym sym, ffi_type *result_type,
-                               ffi_type **dest);
-bool          sym_to_tag_type (p_sym sym, e_tag_type *dest);
-bool          sym_type_is_integer (p_sym const *type);
-uw *          sym_type_size (p_sym const *type, uw *size);
+p_sym   sym_array_type (p_sym sym);
+bool    sym_character_is_reserved (character c);
+p_sym   sym_find (const s_str *src);
+s_tag * sym_find_to_tag (const s_str *src, s_tag *dest);
+bool    sym_has_ident_reserved_characters (p_sym sym);
+bool    sym_has_reserved_characters (p_sym sym);
+bool    sym_is_array_type (p_sym sym);
+bool    sym_is_module (p_sym sym);
+uw *    sym_list_size (uw *dest);
+bool *  sym_must_clean (p_sym sym, bool *must_clean);
+bool    sym_search_modules (p_sym sym, p_sym *dest);
+bool    sym_to_ffi_type (p_sym sym, ffi_type *result_type,
+                         ffi_type **dest);
+bool    sym_to_tag_type (p_sym sym, e_tag_type *dest);
+bool    sym_type_is_integer (p_sym type);
+uw *    sym_type_size (p_sym type, uw *size);
 
 #endif /* LIBKC3_SYM_H */

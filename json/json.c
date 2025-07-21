@@ -47,7 +47,7 @@ sw json_buf_inspect (s_buf *buf, const s_tag *tag)
   }
   err_write_1("json_buf_inspect: unknown tag type: ");
   tag_type(tag, &type);
-  err_inspect_sym(&type);
+  err_inspect_sym(type);
   err_write_1("\n");
   assert(! "json_buf_inspect: unknown tag type");
   return -1;
@@ -203,7 +203,7 @@ sw json_buf_inspect_size (s_pretty *pretty, const s_tag *tag)
   }
   err_write_1("json_buf_inspect: unknown tag type: ");
   tag_type(tag, &type);
-  err_inspect_sym(&type);
+  err_inspect_sym(type);
   err_write_1("\n");
   assert(! "json_buf_inspect: unknown tag type");
   return -1;

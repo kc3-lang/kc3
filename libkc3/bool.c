@@ -83,7 +83,7 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
       err_puts(" to Bool");
     else {
       err_write_1(" to ");
-      err_inspect_sym(type);
+      err_inspect_psym(type);
       err_puts(" aka Bool");
     }
     assert(! "bool_cast: cannot cast to Bool");

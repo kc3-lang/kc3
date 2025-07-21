@@ -26,9 +26,13 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
   if (type == &g_sym_Callable ||
       type == &g_sym_Cfn ||
       type == &g_sym_Fn)
-    return buf_inspect_callable(buf, *(p_callable *) data);
+    return buf_inspect_pcallable(buf, data);
   if (type == &g_sym_Character)
     return buf_inspect_character(buf, data);
+  if (type == &g_sym_Complex)
+    return buf_inspect_pcomplex(buf, data);
+  if (type == &g_sym_Cow)
+    return buf_inspect_pcow(buf, data);
   if (type == &g_sym_F32)
     return buf_inspect_f32(buf, data);
   if (type == &g_sym_F64)
@@ -64,13 +68,13 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
   if (type == &g_sym_Str)
     return buf_inspect_str(buf, data);
   if (type == &g_sym_Struct)
-    return buf_inspect_struct(buf, * (p_struct *) data);
+    return buf_inspect_pstruct(buf, data);
   if (type == &g_sym_StructType)
-    return buf_inspect_struct_type(buf, * (p_struct_type *) data);
+    return buf_inspect_pstruct_type(buf, data);
   if (type == &g_sym_Sw)
     return buf_inspect_sw(buf, data);
   if (type == &g_sym_Sym)
-    return buf_inspect_sym(buf, data);
+    return buf_inspect_psym(buf, data);
   if (type == &g_sym_Tag)
     return buf_inspect_tag(buf, data);
   if (type == &g_sym_Time)
@@ -99,7 +103,7 @@ sw data_buf_inspect (s_buf *buf, const s_sym *type, const void *data)
     return buf_inspect_struct(buf, &s);
   }
   err_write_1("data_buf_inspect: unknown type: ");
-  err_inspect_sym(&type);
+  err_inspect_sym(type);
   err_write_1("\n");
   assert(! "data_buf_inspect: unknown type");
   return -1;
@@ -164,7 +168,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
   if (type == &g_sym_Sw)
     return buf_inspect_sw_size(pretty, data);
   if (type == &g_sym_Sym)
-    return buf_inspect_sym_size(pretty, data);
+    return buf_inspect_psym_size(pretty, data);
   if (type == &g_sym_Tag)
     return buf_inspect_tag_size(pretty, data);
   if (type == &g_sym_Time)
@@ -193,7 +197,7 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
     return buf_inspect_struct_size(pretty, &s);
   }
   err_write_1("data_buf_inspect_size: unknown type: ");
-  err_inspect_sym(&type);
+  err_inspect_sym(type);
   err_write_1("\n");
   assert(! "data_buf_inspect_size: unknown type");
   return -1;
@@ -342,7 +346,7 @@ bool data_clean (const s_sym *type, void *data)
     return true;
   }
   err_write_1("data_clean: unknown type: ");
-  err_inspect_sym(&type);
+  err_inspect_sym(type);
   err_write_1("\n");
   assert(! "data_clean: unknown type");
   return false;
@@ -437,7 +441,7 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
       sym_is_array_type(type))
     return compare_array(a, b);
   err_write_1("data_compare: unknown type: ");
-  err_inspect_sym(&type);
+  err_inspect_sym(type);
   err_write_1("\n");
   assert(! "data_compare: unknown type");
   return COMPARE_ERROR;
@@ -528,7 +532,7 @@ bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
     return hash_update_struct(hash, &s);
   }
   err_write_1("data_hash_update: unknown type: ");
-  err_inspect_sym(&type);
+  err_inspect_sym(type);
   err_write_1("\n");
   assert(! "data_hash_update: unknown type");
   return false;
@@ -619,7 +623,7 @@ void * data_init_cast (void *data, const s_sym * const *type,
   if (st)
     return pstruct_init_cast(&s, type, tag);
   err_write_1("data_init_cast: unknown type: ");
-  err_inspect_sym(type);
+  err_inspect_sym(t);
   err_write_1("\n");
   assert(! "data_init_cast: unknown type");
   return NULL;
@@ -710,7 +714,7 @@ void * data_init_copy (const s_sym *type, void *data, void *src)
   if (st)
     return struct_type_copy_data(st, data, src);
   err_write_1("data_init_copy: unknown type: ");
-  err_inspect_sym(&type);
+  err_inspect_sym(type);
   err_write_1("\n");
   assert(! "data_init_copy: unknown type");
   return NULL;

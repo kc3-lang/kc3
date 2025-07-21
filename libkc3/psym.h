@@ -15,11 +15,16 @@
 
 #include "types.h"
 
+/* Allocation functions. */
 p_sym * psym_init_1 (p_sym *sym, const char *p);
 p_sym * psym_init_anon (p_sym *sym, const s_str *prefix);
 p_sym * psym_init_cast (p_sym *sym, p_sym const *type,
                         const s_tag *tag);
 p_sym * psym_init_copy (p_sym *sym, p_sym  const *src);
 p_sym * psym_init_str (p_sym *sym, const s_str *src);
+
+/* Observers. */
+bool    psym_type_is_integer (p_sym const *type);
+uw *    psym_type_size (p_sym const *type, uw *size);
 
 #endif /* LIBKC3_PSYM_H */

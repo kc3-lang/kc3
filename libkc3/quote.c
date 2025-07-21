@@ -45,7 +45,7 @@ s_quote * quote_init_cast (s_quote *quote, const s_sym * const *type,
     err_puts(" to Quote");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka Quote");
   }
   assert(! "quote_init_cast: cannot cast to Quote");

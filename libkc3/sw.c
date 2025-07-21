@@ -96,7 +96,7 @@ sw * sw_init_cast
     err_puts(" to Sw");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka Sw");
   }
   if (true) {

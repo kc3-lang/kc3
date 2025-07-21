@@ -74,7 +74,7 @@ bool env_eval_array (s_env *env, const s_array *array, s_array *dest)
           err_write_1("env_eval_array: cannot cast ");
           err_inspect_tag(&tag_eval);
           err_write_1(" to ");
-          err_inspect_sym(&tmp.element_type);
+          err_inspect_sym(tmp.element_type);
           err_puts(".");
           goto ko;
         }
@@ -554,7 +554,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
     err_write_1("env_eval_call_resolve: arity = ");
     err_inspect_sw(&arity);
     err_write_1(" sym = ");
-    err_inspect_sym(&tmp.ident.sym);
+    err_inspect_sym(tmp.ident.sym);
     err_write_1("\n");
   }
   /* FIXME: multiple env and env->ops. See env_defoperator. */
@@ -592,7 +592,7 @@ bool env_eval_call_resolve (s_env *env, s_call *call)
   }
   if (! b) {
     err_write_1("env_eval_call_resolve: env_module_has_ident(");
-    err_inspect_sym(&tmp.ident.module);
+    err_inspect_sym(tmp.ident.module);
     err_write_1(", ");
     err_inspect_ident(&tmp.ident);
     err_puts(") -> false");
@@ -860,7 +860,7 @@ bool env_eval_struct (s_env *env, s_struct *s, p_struct *dest)
       }
       if (false) {
         err_write_1("env_eval_struct: type = ");
-        err_inspect_sym(&type);
+        err_inspect_sym(type);
         err_write_1("\n");
       }
       tmp_data = (s8 *) tmp->data + tmp->pstruct_type->offset[i];

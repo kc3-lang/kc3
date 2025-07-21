@@ -710,7 +710,7 @@ bool kc3_killpg (sw process_group, const s_sym * const *signal)
 #endif
   else {
     err_write_1("kc3_killpg: unknown signal: ");
-    err_inspect_sym(signal);
+    err_inspect_psym(signal);
     err_write_1("\n");
     assert(! "kc3_killpg: unknown signal");
     return false;
@@ -737,20 +737,20 @@ void kc3_license (void)
   io_write_1(g_kc3_license);
 }
 
-s_tag * kc3_list_length (const s_list **list, s_tag *dest)
+s_tag * kc3_plist_length (const s_list **plist, s_tag *dest)
 {
   s_tag tmp = {0};
-  tag_init_sw(&tmp, list_length(*list));
+  tag_init_sw(&tmp, list_length(*plist));
   tag_integer_reduce(&tmp);
   *dest = tmp;
   return dest;
 }
 
-s_array * kc3_list_to_array (s_list **list,
-                             const s_sym * const *array_type,
-                             s_array *dest)
+s_array * kc3_plist_to_array (p_list *plist,
+                              const s_sym * const *array_type,
+                              s_array *dest)
 {
-  return list_to_array(*list, *array_type, dest);
+  return list_to_array(*plist, *array_type, dest);
 }
 
 bool kc3_load (const s_str *path)
@@ -1056,7 +1056,7 @@ s_tag * kc3_sysctl (s_tag *dest, const s_list * const *list)
   if (! tmp.type) {
     err_write_1("kc3_sysctl: invalid argument: ");
     if (l)
-      err_inspect_sym(&l->tag.data.psym);
+      err_inspect_sym(l->tag.data.psym);
     else
       err_inspect_list(*list);
     err_write_1("\n");

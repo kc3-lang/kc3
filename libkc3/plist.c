@@ -35,6 +35,31 @@ void plist_clean (p_list *plist)
   list_delete_all(*plist);
 }
 
+bool * plist_each (p_list *plist, p_callable *function, bool *dest)
+{
+  s_list *arg;
+  s_list *l;
+  s_tag tmp;
+  if (! (arg = list_new(NULL)))
+    return NULL;
+  l = *plist;
+  while (l) {
+    if (! tag_copy(&arg->tag, &l->tag))
+      goto ko;
+    if (! eval_callable_call(*function, arg, &tmp))
+      goto ko;
+    tag_clean(&tmp);
+    l = list_next(l);
+  }
+  list_delete_all(arg);
+  *dest = true;
+  return dest;
+ ko:
+  tag_clean(&tmp);
+  list_delete_all(arg);
+  return NULL;
+}
+
 p_list * plist_filter (p_list *plist, p_callable *function,
                        p_list *dest)
 {
@@ -70,6 +95,22 @@ p_list * plist_filter (p_list *plist, p_callable *function,
   list_delete_all(tmp);
   list_delete_all(arg);
   return NULL;
+}
+
+bool * plist_has (const s_list * const *plist, const s_tag *tag,
+                  bool *dest)
+{
+  const s_list *l;
+  l = *plist;
+  while (l) {
+    if (! compare_tag(tag, &l->tag)) {
+      *dest = true;
+      return dest;
+    }
+    l = list_next(l);
+  }
+  *dest = false;
+  return dest;
 }
 
 p_list * plist_init_1 (p_list *plist, const char *p)
@@ -132,7 +173,7 @@ p_list * plist_init_cast (p_list *plist, const s_sym * const *type,
     err_puts(" to List");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka List");
   }
   assert(! "plist_init_cast: cannot cast to List");
@@ -148,6 +189,25 @@ p_list * plist_init_copy (p_list *plist, p_list *src)
     return NULL;
   *plist = tmp;
   return plist;
+}
+
+s_tag * plist_last (p_list *plist, s_tag *dest)
+{
+  s_list *l;
+  s_list *last;
+  s_tag tag = {0};
+  last = NULL;
+  l = *plist;
+  while (l) {
+    last = l;
+    l = list_next(l);
+  }
+  if (last) {
+    if (! tag_init_copy(&tag, &last->tag))
+      return NULL;
+  }
+  *dest = tag;
+  return dest;
 }
 
 p_list * plist_map (p_list *plist, p_callable *function,
@@ -334,7 +394,7 @@ p_list * plist_unique (p_list *plist, p_list *dest)
   tail = &tmp;
   l = *plist;
   while (l) {
-    if (! list_has((const s_list * const *) &tmp, &l->tag, &found))
+    if (! plist_has((const s_list * const *) &tmp, &l->tag, &found))
       goto ko;
     if (! found) {
       if (! (*tail = list_new_tag_copy(&l->tag, NULL)))

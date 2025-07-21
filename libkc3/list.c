@@ -99,31 +99,6 @@ void list_delete_all (s_list *list)
     list = list_delete(list);
 }
 
-bool * list_each (p_list *list, p_callable *function, bool *dest)
-{
-  s_list *arg;
-  s_list *l;
-  s_tag tmp;
-  if (! (arg = list_new(NULL)))
-    return NULL;
-  l = *list;
-  while (l) {
-    if (! tag_copy(&arg->tag, &l->tag))
-      goto ko;
-    if (! eval_callable_call(*function, arg, &tmp))
-      goto ko;
-    tag_clean(&tmp);
-    l = list_next(l);
-  }
-  list_delete_all(arg);
-  *dest = true;
-  return dest;
- ko:
-  tag_clean(&tmp);
-  list_delete_all(arg);
-  return NULL;
-}
-
 void list_f_clean (p_list *list)
 {
   s_list *l;
@@ -131,22 +106,6 @@ void list_f_clean (p_list *list)
   l = *list;
   while (l)
     l = list_delete(l);
-}
-
-bool * list_has (const s_list * const *list, const s_tag *tag,
-                 bool *dest)
-{
-  const s_list *l;
-  l = *list;
-  while (l) {
-    if (! compare_tag(tag, &l->tag)) {
-      *dest = true;
-      return dest;
-    }
-    l = list_next(l);
-  }
-  *dest = false;
-  return dest;
 }
 
 s_list * list_init (s_list *list, s_list *next)
@@ -194,25 +153,6 @@ bool list_is_plist (const s_list *list)
     l = list_next(l);
   }
   return true;
-}
-
-s_tag * list_last (p_list *list, s_tag *dest)
-{
-  s_list *l;
-  s_list *last;
-  s_tag tag = {0};
-  last = NULL;
-  l = *list;
-  while (l) {
-    last = l;
-    l = list_next(l);
-  }
-  if (last) {
-    if (! tag_init_copy(&tag, &last->tag))
-      return NULL;
-  }
-  *dest = tag;
-  return dest;
 }
 
 sw list_length (const s_list *list)
@@ -333,7 +273,7 @@ s_array * list_to_array (s_list *list, const s_sym *array_type,
   }
   tmp.array_type = array_type;
   tmp.element_type = sym_array_type(array_type);
-  if (! sym_type_size(&tmp.element_type, &size))
+  if (! sym_type_size(tmp.element_type, &size))
     return NULL;
   if (! size) {
     err_puts("list_to_array: zero item size");

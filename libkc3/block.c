@@ -71,7 +71,7 @@ void block_return_from (const s_sym *name, s_tag *value)
   if (! block || ! *block) {
     err_write_1("block_return_from: ");
     if (name)
-      err_inspect_sym(&name);
+      err_inspect_sym(name);
     else
       err_write_1("void");
     err_puts(": no matching block found");

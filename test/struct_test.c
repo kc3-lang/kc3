@@ -37,7 +37,7 @@
     const s_sym *sym;                                                  \
     test_context("sym_type_size(" # module ") = sizeof(" # type ")");  \
     sym = sym_1(# module);                                             \
-    TEST_EQ(sym_type_size(&sym, &size), &size);                        \
+    TEST_EQ(sym_type_size(sym, &size), &size);                        \
     TEST_EQ(size, sizeof(type));                                       \
     test_context(NULL);                                                \
   } while (0)

@@ -95,7 +95,7 @@ u64 * u64_init_cast
     err_puts(" to U64");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka U64");
   }
   err_inspect_stacktrace(env_global()->stacktrace);

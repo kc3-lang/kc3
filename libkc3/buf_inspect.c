@@ -1124,7 +1124,7 @@ sw buf_inspect_call_op_unary_size (s_pretty *pretty, const s_call *call)
     tag_clean(&op_tag);
     return buf_inspect_call_paren_size(pretty, call);
   }
-  if ((r = buf_inspect_sym_size(pretty, &op.sym)) < 0) {
+  if ((r = buf_inspect_sym_size(pretty, op.sym)) < 0) {
     tag_clean(&op_tag);
     return r;
   }
@@ -1439,7 +1439,7 @@ sw buf_inspect_cfn (s_buf *buf, const s_cfn *cfn)
   if ((r = buf_write_1(buf, "cfn ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sym(buf, &cfn->result_type)) < 0)
+  if ((r = buf_inspect_sym(buf, cfn->result_type)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, " ")) < 0)
@@ -1466,7 +1466,7 @@ sw buf_inspect_cfn_size (s_pretty *pretty, const s_cfn *cfn)
   if ((r = buf_write_1_size(pretty, "cfn ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sym_size(pretty, &cfn->result_type)) < 0)
+  if ((r = buf_inspect_sym_size(pretty, cfn->result_type)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1_size(pretty, " ")) < 0)
@@ -2382,7 +2382,7 @@ sw buf_inspect_ident (s_buf *buf, const s_ident *ident)
   result = 0;
   // FIXME
   if (ident->module && ident->module != env->current_defmodule) {
-    if ((r = buf_inspect_sym(buf, &ident->module)) < 0)
+    if ((r = buf_inspect_sym(buf, ident->module)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1(buf, ".")) < 0)
@@ -2403,7 +2403,7 @@ sw buf_inspect_ident_size (s_pretty *pretty, const s_ident *ident)
   assert(ident);
   env = env_global();
   if (ident->module && ident->module != env->current_defmodule) {
-    if ((r = buf_inspect_sym_size(pretty, &ident->module)) < 0)
+    if ((r = buf_inspect_sym_size(pretty, ident->module)) < 0)
       return r;
     result += r;
     if ((r = buf_write_1_size(pretty, ".")) < 0)
@@ -2897,7 +2897,7 @@ sw buf_inspect_paren_sym (s_buf *buf, const s_sym *sym)
     result += r;
   }
   else {
-    if ((r = buf_inspect_sym(buf, &sym)) <= 0)
+    if ((r = buf_inspect_sym(buf, sym)) <= 0)
       goto clean;
     result += r;
   }
@@ -2917,7 +2917,7 @@ sw buf_inspect_paren_sym_size (s_pretty *pretty, const s_sym *sym)
   if ((r = buf_write_1_size(pretty, "(")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sym_size(pretty, &sym)) <= 0)
+  if ((r = buf_inspect_sym_size(pretty, sym)) <= 0)
     goto clean;
   result += r;
   if ((r = buf_write_1_size(pretty, ")")) < 0)
@@ -2926,6 +2926,39 @@ sw buf_inspect_paren_sym_size (s_pretty *pretty, const s_sym *sym)
   r = result;
  clean:
   return r;
+}
+
+sw buf_inspect_pcallable (s_buf *buf,
+                          const s_callable * const *pcallable)
+{
+  return buf_inspect_callable(buf, *pcallable);
+}
+
+sw buf_inspect_pcallable_size (s_pretty *pretty,
+                               const s_callable * const *pcallable)
+{
+  return buf_inspect_callable_size(pretty, *pcallable);
+}
+
+sw buf_inspect_pcomplex (s_buf *buf, p_complex const *pcomplex)
+{
+  return buf_inspect_complex(buf, *pcomplex);
+}
+
+sw buf_inspect_pcomplex_size (s_pretty *pretty,
+                              p_complex const *pcomplex)
+{
+  return buf_inspect_complex_size(pretty, *pcomplex);
+}
+
+sw buf_inspect_pcow (s_buf *buf, p_cow const *pcow)
+{
+  return buf_inspect_cow(buf, *pcow);
+}
+
+sw buf_inspect_pcow_size (s_pretty *pretty, p_cow const *pcow)
+{
+  return buf_inspect_cow_size(pretty, *pcow);
 }
 
 sw buf_inspect_pointer (s_buf *buf, const void *ptr)
@@ -2940,6 +2973,37 @@ sw buf_inspect_pointer (s_buf *buf, const void *ptr)
     return r;
   result += r;
   return result;
+}
+
+sw buf_inspect_pstruct (s_buf *buf, p_struct const *pstruct)
+{
+  return buf_inspect_struct(buf, *pstruct);
+}
+
+sw buf_inspect_pstruct_size (s_pretty *pretty, p_struct const *pstruct)
+{
+  return buf_inspect_struct_size(pretty, *pstruct);
+}
+  
+sw buf_inspect_pstruct_type (s_buf *buf, p_struct_type const *pstruct_type)
+{
+  return buf_inspect_struct_type(buf, *pstruct_type);
+}
+  
+sw buf_inspect_pstruct_type_size (s_pretty *pretty,
+                                  p_struct_type const *pstruct_type)
+{
+  return buf_inspect_struct_type_size(pretty, *pstruct_type);
+}
+
+sw buf_inspect_psym (s_buf *buf, p_sym const *psym)
+{
+  return buf_inspect_sym(buf, *psym);
+}
+
+sw buf_inspect_psym_size (s_pretty *pretty, p_sym const *psym)
+{
+  return buf_inspect_sym_size(pretty, *psym);
 }
 
 sw buf_inspect_ptag (s_buf *buf, const p_tag *ptag)
@@ -3697,20 +3761,26 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
   assert(pretty);
   assert(s);
   assert(sym_is_module(s->pstruct_type->module));
-  if ((r = buf_write_1_size(pretty, "%")) < 0)
+  if ((r = buf_write_1_size(pretty, "%")) < 0) {
+    assert(! "buf_inspect_struct_size: buf_write_1: %");
     return r;
+  }
   result += r;
   if (! sym_is_module(s->pstruct_type->module)) {
-    err_puts("buf_inspect_struct: sym_is_module(s->pstruct_type->module)");
-    assert(! "buf_inspect_struct: sym_is_module(s->pstruct_type->module)");
+    err_puts("buf_inspect_struct_size: sym_is_module(s->pstruct_type->module)");
+    assert(! "buf_inspect_struct_size: sym_is_module(s->pstruct_type->module)");
     return -1;
   }
   if ((r = buf_write_str_without_indent_size
-       (pretty, &s->pstruct_type->module->str)) < 0)
+       (pretty, &s->pstruct_type->module->str)) < 0) {
+    assert(! "buf_inspect_struct_size: buf_write_str_without_indent: module");
     return r;
+  }
   result += r;
-  if ((r = buf_write_1_size(pretty, "{")) < 0)
+  if ((r = buf_write_1_size(pretty, "{")) < 0) {
+    assert(! "buf_inspect_struct_size: buf_write_1: {");
     return r;
+  }
   result += r;
   pretty_save_init(&pretty_save, pretty);
   pretty_indent_from_column(pretty, 0);
@@ -3729,7 +3799,7 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
       if (display) {
         k = s->pstruct_type->map.key + i;
         if (k->type != TAG_SYM) {
-          err_write_1("buf_inspect_struct: key type is not a symbol: ");
+          err_write_1("buf_inspect_struct_size: key type is not a symbol: ");
           err_inspect_tag(k);
           err_write_1(" (");
           err_write_1(tag_type_to_string(k->type));
@@ -3739,13 +3809,17 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
           goto clean;
         }
         if (sym_has_reserved_characters(k->data.psym)) {
-          if ((r = buf_inspect_str_size(pretty, &k->data.psym->str)) < 0)
+          if ((r = buf_inspect_str_size(pretty, &k->data.psym->str)) < 0) {
+            assert(! "buf_inspect_struct_size: buf_inspect_str: k");
             goto clean;
+          }
         }
         else
           if ((r = buf_write_str_without_indent_size
-               (pretty, &k->data.psym->str)) < 0)
+               (pretty, &k->data.psym->str)) < 0) {
+            assert(! "buf_inspect_struct_size: buf_write_str_without_ident: k");
             goto clean;
+          }
         result += r;
         if ((r = buf_write_1_size(pretty, ": ")) < 0)
           goto clean;
@@ -3753,26 +3827,34 @@ sw buf_inspect_struct_size (s_pretty *pretty, const s_struct *s)
         if (s->data) {
           if (s->pstruct_type->map.value[i].type == TAG_PVAR)
             type = s->pstruct_type->map.value[i].data.pvar->type;
-          else if (! tag_type(s->pstruct_type->map.value + i, &type))
+          else if (! tag_type(s->pstruct_type->map.value + i, &type)) {
+            assert(! "buf_inspect_struct_size: tag_type");
             goto clean;
+          }
           assert(s->pstruct_type->offset[i] < s->pstruct_type->size);
           if ((r = data_buf_inspect_size(pretty, type,
                                          (char *) s->data +
-                                         s->pstruct_type->offset[i])) < 0)
+                                         s->pstruct_type->offset[i])) < 0) {
+            assert(! "buf_inspect_struct_size: data_buf_inspect");
             goto clean;
+          }
           result += r;
         }
         else if (s->tag) {
-          if ((r = buf_inspect_tag_size(pretty, s->tag + i)) < 0)
+          if ((r = buf_inspect_tag_size(pretty, s->tag + i)) < 0) {
+            assert(! "buf_inspect_struct_size: buf_inspect_tag");
             goto clean;
+          }
           result += r;
         }
       }
       if (display &&
           i < display_last &&
           i < s->pstruct_type->map.count - 1) {
-        if ((r = buf_write_1_size(pretty, ",\n")) < 0)
+        if ((r = buf_write_1_size(pretty, ",\n")) < 0) {
+          assert(! "buf_inspect_struct_size: buf_write_1(\",\\n\")");
           goto clean;
+        }
         result += r;
       }
       i++;
@@ -3808,7 +3890,7 @@ sw buf_inspect_struct_type (s_buf *buf, const s_struct_type *st)
   if ((r = buf_write_1(buf, "module: ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sym(buf, &st->module)) < 0)
+  if ((r = buf_inspect_sym(buf, st->module)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1(buf, ",\nmap: ")) < 0)
@@ -3862,7 +3944,7 @@ sw buf_inspect_struct_type_size (s_pretty *pretty, const s_struct_type *st)
   if ((r = buf_write_1_size(pretty, "module: ")) < 0)
     return r;
   result += r;
-  if ((r = buf_inspect_sym_size(pretty, &st->module)) < 0)
+  if ((r = buf_inspect_sym_size(pretty, st->module)) < 0)
     return r;
   result += r;
   if ((r = buf_write_1_size(pretty, ",\nmap: ")) < 0)
@@ -3897,46 +3979,40 @@ sw buf_inspect_struct_type_size (s_pretty *pretty, const s_struct_type *st)
   return result;
 }
 
-sw buf_inspect_sym (s_buf *buf, const s_sym * const *sym)
+sw buf_inspect_sym (s_buf *buf, const s_sym *sym)
 {
   sw r;
   sw size;
-  const s_sym *x;
   assert(buf);
   assert(sym);
-  x = *sym;
-  assert(x);
-  if (x->str.size == 0)
+  if (sym->str.size == 0)
     return buf_write_1(buf, ":\"\"");
-  if (sym_has_reserved_characters(x))
-    return buf_inspect_sym_reserved(buf, x);
-  if (sym_is_module(x) || sym_is_array_type(x))
-    return buf_write_str(buf, &x->str);
-  size = x->str.size + 1;
+  if (sym_has_reserved_characters(sym))
+    return buf_inspect_sym_reserved(buf, sym);
+  if (sym_is_module(sym) || sym_is_array_type(sym))
+    return buf_write_str(buf, &sym->str);
+  size = sym->str.size + 1;
   if ((r = buf_write_1(buf, ":")) < 0 ||
-      (r = buf_write_str(buf, &x->str)) < 0)
+      (r = buf_write_str(buf, &sym->str)) < 0)
     return r;
   return size;
 }
 
-sw buf_inspect_sym_size (s_pretty *pretty, const s_sym * const *sym)
+sw buf_inspect_sym_size (s_pretty *pretty, const s_sym *sym)
 {
   sw r;
   sw size;
-  const s_sym *x;
   assert(pretty);
   assert(sym);
-  x = *sym;
-  assert(x);
-  if (x->str.size == 0)
+  if (sym->str.size == 0)
     return buf_write_1_size(pretty, ":\"\"");
-  if (sym_has_reserved_characters(x))
-    return buf_inspect_sym_reserved_size(pretty, x);
-  if (sym_is_module(x) || sym_is_array_type(x))
-    return buf_write_str_size(pretty, &x->str);
-  size = x->str.size + 1;
+  if (sym_has_reserved_characters(sym))
+    return buf_inspect_sym_reserved_size(pretty, sym);
+  if (sym_is_module(sym) || sym_is_array_type(sym))
+    return buf_write_str_size(pretty, &sym->str);
+  size = sym->str.size + 1;
   if ((r = buf_write_1_size(pretty, ":")) < 0 ||
-      (r = buf_write_str_size(pretty, &x->str)) < 0)
+      (r = buf_write_str_size(pretty, &sym->str)) < 0)
     return r;
   return size;
 }
@@ -4008,7 +4084,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_S64:     return buf_inspect_s64(buf, &tag->data.s64);
   case TAG_SW:      return buf_inspect_sw(buf, &tag->data.sw);
   case TAG_STR:     return buf_inspect_str(buf, &tag->data.str);
-  case TAG_SYM:     return buf_inspect_sym(buf, &tag->data.psym);
+  case TAG_SYM:     return buf_inspect_sym(buf, tag->data.psym);
   case TAG_TIME:    return buf_inspect_time(buf, &tag->data.time);
   case TAG_TUPLE:   return buf_inspect_tuple(buf, &tag->data.tuple);
   case TAG_U8:      return buf_inspect_u8(buf, &tag->data.u8);
@@ -4090,7 +4166,7 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
   case TAG_STR:
     return buf_inspect_str_size(pretty, &tag->data.str);
   case TAG_SYM:
-    return buf_inspect_sym_size(pretty, &tag->data.psym);
+    return buf_inspect_sym_size(pretty, tag->data.psym);
   case TAG_TIME:
     return buf_inspect_time_size(pretty, &tag->data.time);
   case TAG_TUPLE:

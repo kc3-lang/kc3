@@ -58,7 +58,7 @@ s_fact * fact_init_cast (s_fact *fact, const s_sym * const *type,
     err_puts(" to Fact");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka Fact");
   }
   assert(! "fact_init_cast: cannot cast to Fact");
@@ -122,7 +122,7 @@ s_fact_w * fact_w_init_cast (s_fact_w *fact, const s_sym * const *type,
   if (*type == &g_sym_FactW)
     err_puts("FactW");
   else {
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka FactW");
   }
   assert(! "fact_w_init_cast: cannot cast");

@@ -104,7 +104,7 @@ s_tuple * tuple_init_cast (s_tuple *tuple, const s_sym * const *type,
     err_puts(" to Tuple");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka Tuple");
   }
   assert(! "tuple_init_cast: cannot cast to Tuple");

@@ -12,9 +12,9 @@
 
 defmodule List do
 
-  def append = cfn List "list_init_append" (Result, List, Tag)
+  def append = cfn List "plist_init_append" (Result, List, Tag)
 
-  def cast = cfn List "list_init_cast" (Result, Sym, Tag)
+  def cast = cfn List "plist_init_cast" (Result, Sym, Tag)
 
   def count = fn {
     (n) { count(n, []) }
@@ -38,9 +38,9 @@ defmodule List do
     }
   }
 
-  def each = cfn Bool "list_each" (List, Callable, Result)
+  def each = cfn Bool "plist_each" (List, Callable, Result)
 
-  def filter = cfn List "list_filter" (List, Callable, Result)
+  def filter = cfn List "plist_filter" (List, Callable, Result)
 
   def find_if = fn {
     ([], _) { false }
@@ -56,7 +56,7 @@ defmodule List do
 
   def first = fn ([a | _]) { a }
 
-  def has? = cfn Bool "list_has" (List, Tag, Result)
+  def has? = cfn Bool "plist_has" (List, Tag, Result)
 
   def join = fn {
     (list, separator) { join(list, separator, []) }
@@ -67,11 +67,11 @@ defmodule List do
     ([first], sep, acc) { str(reverse([first | acc])) }
   }
 
-  def last = cfn Tag "list_last" (List, Result)
+  def last = cfn Tag "plist_last" (List, Result)
 
-  def length = cfn Tag "kc3_list_length" (List, Result)
+  def length = cfn Tag "kc3_plist_length" (List, Result)
 
-  def map = cfn List "list_map" (List, Callable, Result)
+  def map = cfn List "plist_map" (List, Callable, Result)
 
   def next = fn ([a | b]) { b }
 
@@ -81,14 +81,14 @@ defmodule List do
     ([a | b], acc) { reverse(b, [a | acc]) }
   }
 
-  def slice = cfn List "list_slice" (List, Tag, Tag, Result)
+  def slice = cfn List "plist_slice" (List, Tag, Tag, Result)
 
-  def sort = cfn List "list_sort" (List, Result)
+  def sort = cfn List "plist_sort" (List, Result)
 
-  def sort_by = cfn List "list_sort_by" (List, Callable, Result)
+  def sort_by = cfn List "plist_sort_by" (List, Callable, Result)
 
-  def to_array = cfn Array "kc3_list_to_array" (List, Sym, Result)
+  def to_array = cfn Array "kc3_plist_to_array" (List, Sym, Result)
 
-  def unique = cfn List "list_unique" (List, Result)
+  def unique = cfn List "plist_unique" (List, Result)
 
 end

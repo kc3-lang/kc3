@@ -71,7 +71,7 @@ u_ptr_w * ptr_free_init_cast (u_ptr_w *p,
     err_puts(" to PtrFree");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka PtrFree");
   }
   assert(! "ptr_free_init_cast: cannot cast to PtrFree");

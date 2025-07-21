@@ -28,6 +28,7 @@
 #include "file.h"
 #include "io.h"
 #include "list.h"
+#include "plist.h"
 #include "str.h"
 #include "sym.h"
 #include "tag.h"
@@ -99,7 +100,7 @@ void file_close (const s_tag *tag)
     close(tag->data.u64);
   else {
     err_write_1("file_close: unknown tag type: ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_write_1("\n");
   }
 }
@@ -671,19 +672,19 @@ struct stat * file_stat_to_struct_stat (const s_file_stat *file_stat,
   tmp.st_ino = file_stat->st_ino;
   tmp.st_mode = 0;
   tag_init_psym(&tag_sym_file, &g_sym_file);
-  if (! list_has((const s_list * const *) &file_stat->st_mode,
+  if (! plist_has((const s_list * const *) &file_stat->st_mode,
                  &tag_sym_file, &b)) {
-    err_puts("file_stat_to_struct_stat: list_has(:file)");
-    err_puts("file_stat_to_struct_stat: list_has(:file)");
+    err_puts("file_stat_to_struct_stat: plist_has(:file)");
+    err_puts("file_stat_to_struct_stat: plist_has(:file)");
   }
   if (b)
     tmp.st_mode |= S_IFREG;
   else {
     tag_init_psym(&tag_sym_directory, &g_sym_directory);
-    if (! list_has((const s_list * const *) &file_stat->st_mode,
+    if (! plist_has((const s_list * const *) &file_stat->st_mode,
                    &tag_sym_directory, &b)) {
-      err_puts("file_stat_to_struct_stat: list_has(:directory)");
-      err_puts("file_stat_to_struct_stat: list_has(:directory)");
+      err_puts("file_stat_to_struct_stat: plist_has(:directory)");
+      err_puts("file_stat_to_struct_stat: plist_has(:directory)");
     }
     if (b)
       tmp.st_mode |= S_IFDIR;

@@ -56,9 +56,9 @@ p_callable * pcallable_init_cast (p_callable *callable,
   }
   err_write_1("pcallable_init_cast: cannot cast from ");
   tag_type(tag, &tag_type_);
-  err_inspect_sym(&tag_type_);
+  err_inspect_sym(tag_type_);
   err_write_1(" to ");
-  err_inspect_sym(type);
+  err_inspect_psym(type);
   err_write_1(" aka Callable.\n");
   assert(! "pcallable_init_cast: cannot cast to Callable.");
   return NULL;

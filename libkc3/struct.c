@@ -270,21 +270,21 @@ s_struct * struct_init (s_struct *s, const s_sym *module)
   if (module) {
     if (! struct_type_find(module, &st)) {
       err_write_1("struct_init: struct_type_find(");
-      err_inspect_sym(&module);
+      err_inspect_sym(module);
       err_puts(")");
       assert("struct_init: struct_type_find");
       return NULL;
     }
     if (! st) {
       err_write_1("struct_init: struct_type not found: ");
-      err_inspect_sym(&module);
+      err_inspect_sym(module);
       err_write_1("\n");
       assert(! "struct_init: struct_type not found");
       return NULL;
     }
     if (! pstruct_type_init_copy(&tmp.pstruct_type, &st)) {
       err_write_1("struct_init: pstruct_type_init_copy: ");
-      err_inspect_sym(&module);
+      err_inspect_sym(module);
       err_write_1("\n");
       assert("struct_init: pstruct_type_init_copy");
       return NULL;
@@ -418,7 +418,7 @@ s_struct * struct_init_with_data (s_struct *s, const s_sym *module,
     return NULL;
   if (! st) {
     err_write_1("struct_init_with_data: struct_type not found: ");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_write_1("\n");
     assert(! "struct_init_with_data: struct_type not found");
     return NULL;
@@ -535,7 +535,7 @@ uw * struct_offset (const s_struct *s, const s_sym * const *key,
   assert(key);
   if (! struct_find_key_index(s, *key, &i)) {
     err_write_1("struct_offset: key not found: ");
-    err_inspect_sym(key);
+    err_inspect_psym(key);
     err_write_1("\n");
     return NULL;
   }
@@ -565,7 +565,7 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
     if (s->pstruct_type->map.key[i].data.psym == key) {
       if (s->pstruct_type->map.key[i].data.psym->str.ptr.pchar[0] == '_') {
         err_write_1("struct_set: cannot set read only member ");
-        err_inspect_sym(&s->pstruct_type->map.key[i].data.psym);
+        err_inspect_sym(s->pstruct_type->map.key[i].data.psym);
         err_write_1("\n");
         assert(! "struct_set: cannot set read only member");
         return NULL;
@@ -594,7 +594,7 @@ s_struct * struct_set (s_struct *s, const s_sym *key,
     i++;
   }
   err_write_1("struct_set: key not found: ");
-  err_inspect_sym(&key);
+  err_inspect_sym(key);
   err_write_1("\n");
   assert(! "struct_set: key not found");
   return NULL;

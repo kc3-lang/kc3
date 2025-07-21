@@ -89,7 +89,7 @@ f32 * f32_init_cast (f32 *x, const s_sym * const *type,
     err_puts(" to F32");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka F32");
   }
   assert(! "f32_init_cast: cannot cast to F32");

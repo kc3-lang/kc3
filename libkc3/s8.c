@@ -96,7 +96,7 @@ s8 * s8_init_cast
     err_puts(" to S8");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka S8");
   }
   if (true) {

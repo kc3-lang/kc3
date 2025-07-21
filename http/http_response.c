@@ -342,7 +342,7 @@ sw http_response_buf_write (const s_http_response *response,
     }
     else {
       err_write_1("http_response_buf_write: unknown body type: ");
-      err_inspect_sym(&type);
+      err_inspect_sym(type);
       err_write_1("\n");
       return -1;
     }

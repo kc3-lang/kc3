@@ -144,7 +144,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
   assert(spec);
   if (false) {
     err_write_1("struct_type_init: ");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_write_1("\n");
   }
   count = list_length(spec);
@@ -171,7 +171,7 @@ s_struct_type * struct_type_init (s_struct_type *st,
     tuple = &s->tag.data.tuple;
     if (tuple->tag[1].type == TAG_PVAR) {
       type = tuple->tag[1].data.pvar->type;
-      if (! sym_type_size(&type, &size)) {
+      if (! sym_type_size(type, &size)) {
         map_clean(&tmp.map);
         free(tmp.offset);
         return NULL;

@@ -162,7 +162,7 @@ s_complex * complex_init_cast (s_complex *c, const s_sym * const *type,
     err_puts(" to Complex");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka Complex");
   }
   assert(! "complex_init_cast: cannot cast to Complex");

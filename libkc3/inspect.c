@@ -307,13 +307,13 @@ s_str * inspect_sym (const s_sym *sym, s_str *dest)
   s_buf buf;
   s_pretty pretty = {0};
   sw size;
-  size = buf_inspect_sym_size(&pretty, &sym);
+  size = buf_inspect_sym_size(&pretty, sym);
   if (size < 0) {
     assert(! "error");
     return NULL;
   }
   buf_init_alloc(&buf, size);
-  buf_inspect_sym(&buf, &sym);
+  buf_inspect_sym(&buf, sym);
   assert(buf.wpos == buf.size);
   return buf_to_str(&buf, dest);
 }

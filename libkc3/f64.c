@@ -80,7 +80,7 @@ f64 * f64_init_cast (f64 *x, const s_sym * const *type, const s_tag *tag)
     err_puts(" to F64");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka F64");
   }
   assert(! "f64_init_cast: cannot cast to F64");

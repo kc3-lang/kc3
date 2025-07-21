@@ -112,7 +112,7 @@ s_call * call_init_cast (s_call *call, const s_sym * const *type,
     err_puts(" to Call");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka Call");
   }
   assert(! "call_init_cast: cannot cast to Call");

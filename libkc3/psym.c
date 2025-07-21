@@ -85,7 +85,7 @@ p_sym * psym_init_cast (p_sym *sym, const s_sym * const *type,
     err_puts(" to Sym");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka Sym");
   }
   assert(! "psym_init_cast: cannot cast to Sym");
@@ -110,4 +110,14 @@ p_sym * psym_init_str (p_sym *sym, const s_str *src)
     return NULL;
   *sym = tmp;
   return sym;
+}
+
+bool psym_type_is_integer (p_sym const *type)
+{
+  return sym_type_is_integer(*type);
+}
+
+uw * psym_type_size (p_sym const *type, uw *size)
+{
+  return sym_type_size(*type, size);
 }

@@ -1192,7 +1192,7 @@ uw * tag_size (const s_tag *tag, uw *dest)
   uw tmp = 0;
   assert(tag);
   if (! tag_type(tag, &type) ||
-      ! sym_type_size(&type, &tmp))
+      ! sym_type_size(type, &tmp))
     return NULL;
   *dest = tmp;
   return dest;
@@ -1256,7 +1256,7 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
     err_write_1("tag_to_const_pointer: cannot cast ");
     err_write_1(tag_type_to_string(tag->type));
     err_write_1(" to ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_write_1("\n");
     assert(! "tag_to_const_pointer: cannot cast");
     return false;
@@ -1658,11 +1658,11 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
  invalid_cast:
   err_write_1("tag_to_pointer: invalid cast from ");
   if (tag->type == TAG_PSTRUCT)
-    err_inspect_sym(&tag->data.pstruct->pstruct_type->module);
+    err_inspect_sym(tag->data.pstruct->pstruct_type->module);
   else
     err_write_1(tag_type_to_string(tag->type));
   err_write_1(" to ");
-  err_inspect_sym(&type);
+  err_inspect_sym(type);
   err_write_1("\n");
   assert(! "tag_to_pointer: invalid cast");
   return false;

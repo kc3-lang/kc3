@@ -87,7 +87,7 @@ f128 * f128_init_cast (f128 *x, const s_sym * const *type,
     err_puts(" to F128");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka F128");
   }
   assert(! "f128_init_cast: cannot cast to F128");

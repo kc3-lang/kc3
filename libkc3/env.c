@@ -375,7 +375,7 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
     return NULL;
   if (! st) {
     err_write_1("env_def_clean: module ");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_write_1(": struct type not found");
     assert(! "env_def_clean: module struct type not found");
     return NULL;
@@ -383,7 +383,7 @@ const s_sym * env_def_clean (s_env *env, const s_sym *module,
   if (clean->type != TAG_PCALLABLE ||
       clean->data.pcallable->type != CALLABLE_CFN) {
     err_write_1("env_def_clean: module ");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_write_1(": clean method must be a Cfn");
     assert(! "env_def_clean: module clean method must be a Cfn");
     return NULL;
@@ -1194,7 +1194,7 @@ s_tag * env_ident_get (s_env *env, const s_ident *ident, s_tag *dest)
     if (! env_sym_search_modules(env, ident->sym, &module) ||
         ! module) {
       err_write_1("env_ident_get: symbol not found: ");
-      err_inspect_sym(&ident->sym);
+      err_inspect_sym(ident->sym);
       err_write_1("\n");
       assert(! "env_ident_get: symbol not found");
       return NULL;
@@ -1855,7 +1855,7 @@ bool env_module_load (s_env *env, const s_sym *module)
     tag_init_time_now(&tag_time);
     if (! env_load(env, &path)) {
       err_write_1("env_module_load: ");
-      err_inspect_sym(&module);
+      err_inspect_sym(module);
       err_puts(": env_load");
       str_clean(&path);
       goto rollback;
@@ -1928,7 +1928,7 @@ const s_time ** env_module_load_time (s_env *env, const s_sym *module,
   }
   if (fact->object->type != TAG_TIME) {
     err_write_1("env_module_load_time: module ");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_puts(" load time is not a %Time{}");
     assert(! "env_module_load_time: module load time is not a %Time{}");
     facts_with_cursor_clean(&cursor);
@@ -2077,7 +2077,7 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
     if (search_module->tag.type != TAG_SYM ||
         ! search_module->tag.data.psym) {
       err_write_1("env_sym_search_modules: ");
-      err_inspect_sym(&sym);
+      err_inspect_sym(sym);
       err_puts(": invalid env->search_modules");
       assert(! "env_sym_search_modules: invalid env->search_modules");
       return false;
@@ -2092,18 +2092,18 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
       *dest = module;
       if (false) {
         err_write_1("env_sym_search_modules: ");
-        err_inspect_sym(&sym);
+        err_inspect_sym(sym);
         err_write_1(": search_module: ");
-        err_inspect_sym(&module);
+        err_inspect_sym(module);
         err_write_1(" -> Ok\n");
       }
       return true;
     }
     if (false) {
       err_write_1("env_sym_search_modules: ");
-      err_inspect_sym(&sym);
+      err_inspect_sym(sym);
       err_write_1(": search_module: ");
-      err_inspect_sym(&module);
+      err_inspect_sym(module);
       err_write_1(" ");
       err_inspect_list(search_module);
       err_puts(" -> not found");
@@ -2112,7 +2112,7 @@ bool env_sym_search_modules (s_env *env, const s_sym *sym,
   }
   if (false) {
     err_write_1("env_sym_search_modules: ");
-    err_inspect_sym(&sym);
+    err_inspect_sym(sym);
     err_write_1(": search_module: ");
     err_inspect_list(env->search_modules);
     err_write_1(" -> false\n");
@@ -2217,7 +2217,7 @@ s_struct_type ** env_struct_type_find (s_env *env,
   /* too slow
   if (! env_module_maybe_reload(env, module)) {
     err_write_1("env_struct_type_find: env_module_maybe_reload(");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_puts(")");
     assert(! "env_struct_type_find: env_module_maybe_reload");
     return NULL;
@@ -2229,7 +2229,7 @@ s_struct_type ** env_struct_type_find (s_env *env,
   if (! facts_with_tags(env->facts, &cursor,
                         &tag_module, &tag_struct_type, &tag_pvar)) {
     err_write_1("env_struct_type_find: facts_with_tags(");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_puts(", :struct_type, ?)");
     assert(! "env_struct_type_find: facts_with");
     tag_clean(&tag_pvar);
@@ -2250,9 +2250,9 @@ s_struct_type ** env_struct_type_find (s_env *env,
   if (found->object->type != TAG_PSTRUCT_TYPE) {
     tag_type(found->object, &type);
     err_write_1("env_struct_type_find: module ");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_write_1(" :struct_type is actually a ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_write_1("\n");
     assert(! "env_struct_type_find: invalid struct_type");
     facts_cursor_clean(&cursor);
@@ -2292,9 +2292,9 @@ f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
       found->object->data.pcallable->type != CALLABLE_CFN) {
     tag_type(found->object, &type);
     err_write_1("env_struct_type_get_clean: ");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_write_1(": clean is actually a ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_write_1(", it should be a Cfn.\n");
     assert(! "env_struct_type_get_clean: invalid object");
     facts_with_cursor_clean(&cursor);
@@ -2303,7 +2303,7 @@ f_clean env_struct_type_get_clean (s_env *env, const s_sym *module)
   }
   if (found->object->data.pcallable->data.cfn.arity != 1) {
     err_write_1("env_struct_type_get_clean: ");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_write_1(": clean arity is ");
     err_inspect_u8(&found->object->data.pcallable->data.cfn.arity);
     err_write_1(", it should be 1.\n");
@@ -2340,7 +2340,7 @@ s_list ** env_struct_type_get_spec (s_env *env,
   }
   if (! found) {
     err_write_1("env_struct_type_get_spec: ");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_puts(": defstruct not found");
     assert(! "env_struct_type_get_spec: defstruct not found");
     tag_clean(&tag_pvar);

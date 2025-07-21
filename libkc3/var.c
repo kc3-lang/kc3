@@ -71,7 +71,7 @@ s_var * var_init (s_var *var, const s_sym *type)
   assert(type);
   if (! sym_is_module(type)) {
     err_write_1("var_init: invalid type: ");
-    err_inspect_sym(&type);
+    err_inspect_sym(type);
     err_write_1("\n");
     assert(! "var_init: invalid type");
     return NULL;
@@ -185,9 +185,9 @@ s_var * var_set (s_var *var, s_tag *value)
       return NULL;
     if (var->type != value_type) {
       err_write_1("var_set: type mismatch: ");
-      err_inspect_sym(&var->type);
+      err_inspect_sym(var->type);
       err_write_1(" != ");
-      err_inspect_sym(&value_type);
+      err_inspect_sym(value_type);
       err_write_1("\n");
       assert(! "var_set: type mismatch");
       goto ko;

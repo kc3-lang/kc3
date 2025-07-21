@@ -624,8 +624,8 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
     return dest;
   }
   tmp.type = TAG_SYM;
-  if (! list_has(&allowed_methods, &tmp, &b)) {
-    err_puts("http_request_method_from_str: list_has");
+  if (! plist_has(&allowed_methods, &tmp, &b)) {
+    err_puts("http_request_method_from_str: plist_has");
     goto clean;
   }
   if (! b) {

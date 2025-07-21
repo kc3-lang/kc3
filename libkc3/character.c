@@ -57,7 +57,7 @@ character * character_init_cast (character *c, const s_sym * const *type,
     err_puts(" to Character");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka Character");
   }
   assert(! "character_cast: cannot cast to Character");

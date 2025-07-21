@@ -91,7 +91,7 @@ p_struct * pstruct_init_cast (p_struct *s, const s_sym * const *type,
   err_write_1("struct_init_cast: cannot cast ");
   err_write_1(tag_type_to_string(tag->type));
   err_write_1(" to %");
-  err_inspect_sym(type);
+  err_inspect_psym(type);
   err_write_1("{}\n");
   assert(! "struct_init_cast: cannot cast to Struct");
   return NULL;

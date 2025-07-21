@@ -60,7 +60,7 @@ void array_clean (s_array *a)
   if (a->data &&
       sym_must_clean(a->element_type, &must_clean) &&
       must_clean &&
-      sym_type_size(&a->element_type, &size) &&
+      sym_type_size(a->element_type, &size) &&
       size) {
     data = a->data;
     i = 0;
@@ -195,7 +195,7 @@ s_array * array_init (s_array *a, const s_sym *array_type, uw dimension,
       i++;
     }
     i--;
-    if (! sym_type_size(&tmp.element_type, &item_size)) {
+    if (! sym_type_size(tmp.element_type, &item_size)) {
       free(tmp.dimensions);
       return NULL;
     }
@@ -268,7 +268,7 @@ s_array * array_init_cast (s_array *array, const s_sym * const *type,
     err_puts(" to Array");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka Array");
   }
   assert(! "array_init_cast: cannot cast to Array");

@@ -297,7 +297,7 @@ sw buf_parse_array_dimensions (s_buf *buf, s_array *dest)
   assert(buf);
   assert(dest);
   tmp = *dest;
-  if (! sym_type_size(&tmp.element_type, &size))
+  if (! sym_type_size(tmp.element_type, &size))
     return -1;
   if (! size) {
     err_puts("buf_parse_array_dimensions: zero item size");
@@ -1460,9 +1460,9 @@ sw buf_parse_cow (s_buf *buf, s_cow *cow)
     }
     if (tmp.type != type) {
       err_write_1("buf_parse_cow: type mismatch: ");
-      err_inspect_sym(&tmp.type);
+      err_inspect_sym(tmp.type);
       err_write_1(" != ");
-      err_inspect_sym(&type);
+      err_inspect_sym(type);
       assert(! "buf_parse_cow: type mismatch");
       r = -1;
       goto restore;
@@ -3116,7 +3116,7 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
   }
   result += r;
   buf_init_alloc(&buf_tmp, SYM_MAX);
-  if ((r = buf_inspect_sym(&buf_tmp, &sym)) < 0)
+  if ((r = buf_inspect_sym(&buf_tmp, sym)) < 0)
     goto clean;
   save.rpos = buf->rpos;
   while ((r = buf_read_1(buf, ".")) > 0 &&
@@ -3125,7 +3125,7 @@ sw buf_parse_module_name (s_buf *buf, const s_sym **dest)
     result += r + 1;
     save.rpos = buf->rpos;
     if ((r = buf_write_1(&buf_tmp, ".")) < 0 ||
-        (r = buf_inspect_sym(&buf_tmp, &sym)) < 0)
+        (r = buf_inspect_sym(&buf_tmp, sym)) < 0)
       goto clean;
   }
   buf_save_restore_rpos(buf, &save);
@@ -3193,7 +3193,7 @@ sw buf_parse_paren_sym (s_buf *buf, const s_sym **dest)
       result += r;
       buf_init(&tmp_buf, false, sizeof(tmp_buf_data),
               tmp_buf_data);
-      buf_inspect_sym(&tmp_buf, &tmp);
+      buf_inspect_sym(&tmp_buf, tmp);
       buf_write_1(&tmp_buf, "[");
       if ((r = buf_parse_uw(buf, &b)) <= 0)
         goto restore;
@@ -3838,7 +3838,7 @@ sw buf_parse_struct (s_buf *buf, s_struct *dest)
     result += r;
     if (! struct_init(&tmp, module)) {
       err_write_1("buf_parse_struct: struct_init(");
-      err_inspect_sym(&module);
+      err_inspect_sym(module);
       err_puts(")");
       assert(! "buf_parse_struct: struct init");
       r = -2;
@@ -3887,7 +3887,7 @@ sw buf_parse_struct (s_buf *buf, s_struct *dest)
   }
   if (! struct_init_from_lists(&tmp, module, keys, values)) {
     err_write_1("buf_parse_struct: struct_init_from_lists ");
-    err_inspect_sym(&module);
+    err_inspect_sym(module);
     err_puts(".");    
     r = -2;
     goto clean;
@@ -4346,7 +4346,7 @@ sw buf_parse_tag_number (s_buf *buf, s_tag *dest)
     return r;
   buf_save_init(buf, &save);
   if ((r = buf_parse_paren_sym(buf, &type)) > 0) {
-    if (! sym_type_is_integer(&type)) {
+    if (! sym_type_is_integer(type)) {
       r = 0;
       goto restore;
     }

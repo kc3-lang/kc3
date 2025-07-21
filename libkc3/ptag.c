@@ -33,7 +33,7 @@ p_tag * ptag_init_cast (p_tag *ptag, const s_sym * const *type,
     err_puts(" to Ptag");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka Ptag");
   }
   assert(! "ptag_init_cast: cannot cast to Ptag");

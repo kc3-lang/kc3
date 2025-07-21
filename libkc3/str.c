@@ -507,7 +507,7 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     err_puts(" to Str");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka Str");
   }
   assert(! "str_init_cast: cannot cast to Str");

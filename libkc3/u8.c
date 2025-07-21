@@ -95,7 +95,7 @@ u8 * u8_init_cast
     err_puts(" to U8");
   else {
     err_write_1(" to ");
-    err_inspect_sym(type);
+    err_inspect_psym(type);
     err_puts(" aka U8");
   }
   err_inspect_stacktrace(env_global()->stacktrace);
