@@ -41,7 +41,8 @@ int __waitpid_internal (pid_t pid, int * status, int options,
 			siginfo_t * infop, struct rusage * rusage)
 {
     int saved_status = 0;
-    HANDLE hProcess = INVALID_HANDLE_VALUE, hSnapshot = INVALID_HANDLE_VALUE;
+    HANDLE hProcess = INVALID_HANDLE_VALUE;
+    HANDLE hSnapshot = INVALID_HANDLE_VALUE;
     int (*filter)(PROCESSENTRY32W*, DWORD);
     PROCESSENTRY32W pe;
     DWORD wait_status = 0, exit_code = 0;
@@ -91,7 +92,9 @@ int __waitpid_internal (pid_t pid, int * status, int options,
     {
         if (filter(&pe, pid))
         {    
-            hProcess = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_INFORMATION, 0, pe.th32ProcessID);
+            hProcess = OpenProcess(SYNCHRONIZE |
+                                   PROCESS_QUERY_INFORMATION,
+                                   0, pe.th32ProcessID);
             if (INVALID_HANDLE_VALUE == hProcess)
             {
                 CloseHandle(hSnapshot);
@@ -133,7 +136,8 @@ int __waitpid_internal (pid_t pid, int * status, int options,
         /*
         FIXME: causes FILETIME to conflict
         FILETIME creation_time, exit_time, kernel_time, user_time;
-        if (GetProcessTimes(hProcess, &creation_time, &exit_time, &kernel_time, &user_time))
+        if (GetProcessTimes(hProcess, &creation_time, &exit_time,
+                            &kernel_time, &user_time))
         {
              __filetime2timeval(kernel_time, &rusage->ru_stime);
              __filetime2timeval(user_time, &rusage->ru_utime);
@@ -182,7 +186,8 @@ pid_t wait3(int * status, int options, struct rusage * rusage)
     return __waitpid_internal(-1, status, options, NULL, rusage);
 }
 
-pid_t wait4(pid_t pid, int * status, int options, struct rusage * rusage)
+pid_t wait4(pid_t pid, int * status, int options,
+            struct rusage * rusage)
 {
     return __waitpid_internal(pid, status, options, NULL, rusage);
 }

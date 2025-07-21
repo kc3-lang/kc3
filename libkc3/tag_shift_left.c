@@ -28,7 +28,8 @@ s_tag * tag_shift_left (s_tag *a, s_tag *b, s_tag *result)
       return tag_init_bool(result, tmp_a.data.bool_ <<
                            (b->data.bool_ ? 1 : 0));
     case TAG_CHARACTER:
-      return tag_init_bool(result, tmp_a.data.bool_ << b->data.character);
+      return tag_init_bool(result,
+                           tmp_a.data.bool_ << b->data.character);
     case TAG_INTEGER:
       integer_init_u8(&tmp, tmp_a.data.bool_);
       integer_lshift(&tmp, integer_to_sw(&b->data.integer), &tmp2);
@@ -66,7 +67,8 @@ s_tag * tag_shift_left (s_tag *a, s_tag *b, s_tag *result)
       return tag_init_character(result, a->data.character <<
                                 (b->data.bool_ ? 1 : 0));
     case TAG_CHARACTER:
-      return tag_init_character(result, a->data.character << b->data.character);
+      return tag_init_character(result,
+                                a->data.character << b->data.character);
     case TAG_INTEGER:
       integer_init_u32(&tmp, a->data.character);
       integer_lshift(&tmp, integer_to_sw(&b->data.integer), &tmp2);
@@ -75,25 +77,35 @@ s_tag * tag_shift_left (s_tag *a, s_tag *b, s_tag *result)
       integer_clean(&tmp2);
       return result;
     case TAG_SW:
-      return tag_init_character(result, a->data.character << b->data.sw);
+      return tag_init_character(result,
+                                a->data.character << b->data.sw);
     case TAG_S64:
-      return tag_init_character(result, a->data.character << b->data.s64);
+      return tag_init_character(result,
+                                a->data.character << b->data.s64);
     case TAG_S32:
-      return tag_init_character(result, a->data.character << b->data.s32);
+      return tag_init_character(result,
+                                a->data.character << b->data.s32);
     case TAG_S16:
-      return tag_init_character(result, a->data.character << b->data.s16);
+      return tag_init_character(result,
+                                a->data.character << b->data.s16);
     case TAG_S8:
-      return tag_init_character(result, a->data.character << b->data.s8);
+      return tag_init_character(result,
+                                a->data.character << b->data.s8);
     case TAG_U8:
-      return tag_init_character(result, a->data.character << b->data.u8);
+      return tag_init_character(result,
+                                a->data.character << b->data.u8);
     case TAG_U16:
-      return tag_init_character(result, a->data.character << b->data.u16);
+      return tag_init_character(result,
+                                a->data.character << b->data.u16);
     case TAG_U32:
-      return tag_init_character(result, a->data.character << b->data.u32);
+      return tag_init_character(result,
+                                a->data.character << b->data.u32);
     case TAG_U64:
-      return tag_init_character(result, a->data.character << b->data.u64);
+      return tag_init_character(result,
+                                a->data.character << b->data.u64);
     case TAG_UW:
-      return tag_init_character(result, a->data.character << b->data.uw);
+      return tag_init_character(result,
+                                a->data.character << b->data.uw);
     default:
       goto error;
     }
@@ -122,39 +134,48 @@ s_tag * tag_shift_left (s_tag *a, s_tag *b, s_tag *result)
       return result;
     case TAG_S64:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.s64, &result->data.integer);
+      integer_lshift(&a->data.integer, b->data.s64,
+                     &result->data.integer);
       return result;
     case TAG_S32:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.s32, &result->data.integer);
+      integer_lshift(&a->data.integer, b->data.s32,
+                     &result->data.integer);
       return result;
     case TAG_S16:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.s16, &result->data.integer);
+      integer_lshift(&a->data.integer, b->data.s16
+                     &result->data.integer);
       return result;
     case TAG_S8:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.s8, &result->data.integer);
+      integer_lshift(&a->data.integer, b->data.s8
+                     &result->data.integer);
       return result;
     case TAG_U8:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.u8, &result->data.integer);
+      integer_lshift(&a->data.integer, b->data.u8
+                     &result->data.integer);
       return result;
     case TAG_U16:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.u16, &result->data.integer);
+      integer_lshift(&a->data.integer, b->data.u16
+                     &result->data.integer);
       return result;
     case TAG_U32:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.u32, &result->data.integer);
+      integer_lshift(&a->data.integer, b->data.u32
+                     &result->data.integer);
       return result;
     case TAG_U64:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.u64, &result->data.integer);
+      integer_lshift(&a->data.integer, b->data.u64
+                     &result->data.integer);
       return result;
     case TAG_UW:
       result->type = TAG_INTEGER;
-      integer_lshift(&a->data.integer, b->data.uw, &result->data.integer);
+      integer_lshift(&a->data.integer, b->data.uw
+                     &result->data.integer);
       return result;
     default:
       goto error;

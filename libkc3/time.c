@@ -146,7 +146,8 @@ s_time * time_init_str (s_time *time, const s_str *src)
   return time;
 }
 
-s_timespec * time_sub (const s_timespec *a, const s_timespec *b, s_timespec *dest)
+s_timespec * time_sub (const s_timespec *a, const s_timespec *b,
+                       s_timespec *dest)
 {
   if ((a->tv_nsec - b->tv_nsec) < 0) {
     dest->tv_sec = a->tv_sec - b->tv_sec - 1;
