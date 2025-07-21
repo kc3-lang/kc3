@@ -8,10 +8,10 @@
 - [d] Marshall (write)
     - [x] signed/unsigned
     - [ ] str
-    - [ ] pointers
+    - [d] pointers
     - [ ] tuple
     - [ ] autres types ...
-    - [ ] tag
+    - [d] tag
 
 - [d] marshall_read
     - [x] signed/unsigned

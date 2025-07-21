@@ -346,7 +346,6 @@ struct marshall_header {
   u64 le_heap_count;
   u64 le_heap_size;
   u64 le_buf_size;
-  u64 le_refs[];
 } __attribute((packed));
 
 struct mutex {
