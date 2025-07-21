@@ -150,8 +150,8 @@ bool toasters_render (s_sequence *seq)
   mat4_scale(&g_ortho.model_matrix, 1, -1, 1);
   /* io_inspect(&seq->tag); */
   if (seq->tag.type == TAG_MAP) {
-    toasters = &seq->tag.data.map.value[0].data.list;
-    toasts   = &seq->tag.data.map.value[1].data.list;
+    toasters = &seq->tag.data.map.value[0].data.plist;
+    toasts   = &seq->tag.data.map.value[1].data.plist;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR_MIPMAP_LINEAR);
     toasters_render_toasts(toasts, window, seq);
@@ -176,7 +176,7 @@ bool toasters_render_toasts (s_list **toasts, s_window_sdl2 *window,
     TOASTERS_SPACING * 3.0 / 2.0 +
     50;
   if (*toasts && (*toasts)->tag.type == TAG_MAP) {
-    t = &(*toasts)->tag.data.map.value[0].data.list;
+    t = &(*toasts)->tag.data.map.value[0].data.plist;
     y =  (*toasts)->tag.data.map.value[1].data.f64;
   }
   while (y < window->h - TOASTERS_SPACING / 2) {
@@ -191,7 +191,7 @@ bool toasters_render_toasts (s_list **toasts, s_window_sdl2 *window,
   i = *toasts;
   while (i) {
     if (i->tag.type == TAG_MAP) {
-      t = &i->tag.data.map.value[0].data.list;
+      t = &i->tag.data.map.value[0].data.plist;
       y =  i->tag.data.map.value[1].data.f64;
       x = 0.0;
       if (*t && (*t)->tag.type == TAG_MAP)
@@ -200,7 +200,7 @@ bool toasters_render_toasts (s_list **toasts, s_window_sdl2 *window,
         *t = list_new(*t);
         toast_init(&(*t)->tag, window->w, y);
       }
-      list_remove_void(t);
+      plist_remove_void(t);
       j = *t;
       while (j) {
         toast_render(&j->tag, window, seq);
@@ -227,7 +227,7 @@ bool toasters_render_toasters (s_list **toasters, s_window_sdl2 *window,
   /* io_inspect_list((const s_list **) toasters); */
   y = -TOASTERS_SPACING - 40;
   if (*toasters && (*toasters)->tag.type == TAG_MAP) {
-    t = &(*toasters)->tag.data.map.value[0].data.list;
+    t = &(*toasters)->tag.data.map.value[0].data.plist;
     y =  (*toasters)->tag.data.map.value[1].data.f64;
   }
   while (y < window->h - window->w * g_speed_y / g_speed_x +
@@ -243,7 +243,7 @@ bool toasters_render_toasters (s_list **toasters, s_window_sdl2 *window,
   i = *toasters;
   while (i) {
     if (i->tag.type == TAG_MAP) {
-      t = &i->tag.data.map.value[0].data.list;
+      t = &i->tag.data.map.value[0].data.plist;
       y =  i->tag.data.map.value[1].data.f64;
       x = 1000.0;
       if (*t && (*t)->tag.type == TAG_MAP)
@@ -252,7 +252,7 @@ bool toasters_render_toasters (s_list **toasters, s_window_sdl2 *window,
         *t = list_new(*t);
         toaster_init(&(*t)->tag, y);
       }
-      list_remove_void(t);
+      plist_remove_void(t);
       j = *t;
       while (j) {
         toaster_render(&j->tag, window, seq);
