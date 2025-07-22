@@ -18,6 +18,7 @@
 #include "alloc.h"
 #include "buf.h"
 #include "buf_file.h"
+#include "endian.h"
 #include "file.h"
 #include "ht.h"
 #include "sym.h"

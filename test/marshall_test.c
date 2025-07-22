@@ -12,7 +12,7 @@
  */
 
 #include <assert.h>
-#include <endian.h>
+#include "../libkc3/endian.h"
 #include "../libkc3/file.h"
 #include "../libkc3/marshall.h"
 #include "../libkc3/str.h"
