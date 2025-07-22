@@ -69,6 +69,7 @@ There are now four full applications written in KC3 that we know of :
 ## New in this release
 
  - libkc3
+   - stacktrace (in gdb: `gdb> p err_stacktrace()`)
    - hash table (ht.h, ht.c)
    - operators hash table
      - defoperator
@@ -89,15 +90,20 @@ There are now four full applications written in KC3 that we know of :
    - add a named block to function evaluation to implement return from
      functions. The first name you give to the function is the name of
      the function implicit block.
-   - added unwind_protect and env_unwind_protect_push/pop dance to a
+   - added `unwind_protect` and `env_unwind_protect_push/pop` dance to a
      few functions
      - marked remaining code paths with TODO where unwind_protect is
        still needed (potential memleaks / env corruption)
    - `env_frame_capture` implements closures that capture their lexical
      environment (free variables)
+   - while, break, continue as special operators with tests
+     - reworked parser and evaluator to allow for special operators
+       without arguments
+     - introduced a new syntax `(Ident) Module.sym` to exclude special
+       operator parsing.
    - converted almost every file to 72 columns max
    - added licenses to kc3 files
-   - started marshall/marshall_read work (not ready yet)
+   - started to work on marshall/marshall_read (not ready yet)
 
 
 ## Discord invite
@@ -162,7 +168,6 @@ to discover how to use KC3 for your own projects.
    - enums
    - unions
    - errors (setjmp, longjmp)
-     - stacktrace
        - ffi ?
          - libdwarf
    - control structures
