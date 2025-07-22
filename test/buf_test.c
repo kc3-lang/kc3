@@ -36,7 +36,7 @@
     test_context(# test " -> " # expected);                            \
     TEST_EQ(test, len);                                                \
     TEST_EQ(buf.wpos, pos + len);                                      \
-    TEST_STRNCMP(buf.ptr.pchar + pos, expected, len);                    \
+    TEST_STRNCMP(buf.ptr.pchar + pos, expected, len);                  \
   } while (0)
 
 #define BUF_TEST_IGNORE(test, count, expected)                         \

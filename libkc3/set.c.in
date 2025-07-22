@@ -33,7 +33,11 @@ set_add___NAME$ (s_set___NAME$ *set, _TYPE$ *data)
 }
 
 s_set_item___NAME$ *
-set_add_collision___NAME$ (s_set___NAME$ *set, _TYPE$ *data, uw hash, s_set_item___NAME$ *item)
+set_add_collision___NAME$
+(s_set___NAME$ *set,
+ _TYPE$ *data,
+ uw hash,
+ s_set_item___NAME$ *item)
 {
   s_set_item___NAME$ *new_item;
   new_item = set_item_new___NAME$(data, hash, item->next);
@@ -88,7 +92,10 @@ set_get___NAME$ (const s_set___NAME$ *set, const _TYPE$ *data)
 }
 
 s_set_item___NAME$ *
-set_get_h___NAME$ (const s_set___NAME$ *set, const _TYPE$ *data, uw hash)
+set_get_h___NAME$
+(const s_set___NAME$ *set,
+ const _TYPE$ *data,
+ uw hash)
 {
   s_set_item___NAME$ *i;
   assert(set);

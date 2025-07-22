@@ -134,7 +134,8 @@ sw json_buf_inspect_map_size (s_pretty *pretty, const s_map *map)
       result += r;
       break;
     case TAG_SYM:
-      if ((r = buf_inspect_str_size(pretty, &map->key[i].data.psym->str)) < 0)
+      if ((r = buf_inspect_str_size(pretty,
+                                    &map->key[i].data.psym->str)) < 0)
         return r;
       result += r;
       break;

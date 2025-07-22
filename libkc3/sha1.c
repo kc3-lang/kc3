@@ -64,7 +64,8 @@ typedef union {
  * Hash a single 512-bit block. This is the core of the algorithm.
  */
 void
-SHA1Transform(uint32_t state[5], const uint8_t buffer[SHA1_BLOCK_LENGTH])
+SHA1Transform(uint32_t state[5],
+              const uint8_t buffer[SHA1_BLOCK_LENGTH])
 {
 	uint32_t a, b, c, d, e;
 	uint8_t workspace[SHA1_BLOCK_LENGTH];
@@ -169,7 +170,8 @@ SHA1Pad(SHA1_CTX *context)
 	SHA1Update(context, (uint8_t *)"\200", 1);
 	while ((context->count & 504) != 448)
 		SHA1Update(context, (uint8_t *)"\0", 1);
-	SHA1Update(context, finalcount, 8); /* Should cause a SHA1Transform() */
+	/* Should cause a SHA1Transform() */
+	SHA1Update(context, finalcount, 8);
 }
 
 void
