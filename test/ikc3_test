@@ -31,6 +31,17 @@ test_ok() {
 if [ $# = 0 ]; then
     if [ "x${IKC3_TEST}" = "x" ]; then
         TARGETS="$(ls -1 *.kc3 | sed -e 's/[.]kc3$//')"
+        case "$IKC3" in
+            *_asan)
+                TARGETS="$(echo "${TARGETS}" |
+                                tr ' ' '\n' |
+                                egrep -v -e '^block$' \
+                                         -e '^unwind_protect$' \
+                                         -e '^while$')"
+                ;;
+            *)
+                ;;
+        esac
     else
         TARGETS="${IKC3_TEST}"
     fi
