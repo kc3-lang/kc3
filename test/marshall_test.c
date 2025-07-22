@@ -149,6 +149,7 @@ TEST_CASE_PROTOTYPE(marshall_u32);
 TEST_CASE_PROTOTYPE(marshall_u64);
 TEST_CASE_PROTOTYPE(marshall_uw);
 TEST_CASE_PROTOTYPE(marshall_plist);
+TEST_CASE_PROTOTYPE(marshall_plist_twice);
 
 void marshall_test (void)
 {
@@ -168,6 +169,7 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_u64);
   TEST_CASE_RUN(marshall_uw);
   TEST_CASE_RUN(marshall_plist);
+  TEST_CASE_RUN(marshall_plist_twice);
 }
 
 TEST_CASE(marshall_bool)
@@ -212,6 +214,31 @@ TEST_CASE(marshall_plist)
   marshall_clean(&m);
 }
 TEST_CASE_END(marshall_plist)
+
+TEST_CASE(marshall_plist_twice)
+{
+  s_marshall m = {0};
+  s_list *list_test;
+  s_str str = {0};
+  const s_str expected =
+    {{0}, 59, {"KC3MARSH\x02\0\0\0\0\0\0\0"
+               "\x1B\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+               "\0\0\0\0\0\0\0\0\x13\0\x18\0\0\0\0\0"
+               "\0\0\0\0\0\0\0\0\0\0\0"}};
+
+  TEST_ASSERT(marshall_init(&m));
+  list_test = list_new_1("[0, 1]");
+  TEST_ASSERT(list_test);
+  TEST_ASSERT(marshall_plist(&m, true, &list_test));
+  // Second time
+  TEST_ASSERT(marshall_plist(&m, true, &list_test));
+  marshall_to_str(&m, &str);
+  TEST_STR_EQ(str, expected);
+  str_clean(&str);
+  list_delete_all(list_test);
+  marshall_clean(&m);
+}
+TEST_CASE_END(marshall_plist_twice)
 
 TEST_CASE(marshall_s8)
 {

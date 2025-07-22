@@ -63,11 +63,10 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap, void *p,
   sw r;
   s_tag tag = {0};
   assert(m);
-  assert(p);
   buf = heap ? &m->heap : &m->buf;
   tag_init_tuple(&key, 2);
   key.data.tuple.tag[0].data.u64 = (u64) p;
-  if (ht_get(&m->ht, &key, &tag)) {
+  if (! m || ht_get(&m->ht, &key, &tag)) {
     *present = true;
     goto ok;
   }
