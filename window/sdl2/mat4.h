@@ -32,8 +32,10 @@ s_mat4 * mat4_new_matrix_mult (const s_mat4 *a, const s_mat4 *b);
 s_mat4 * mat4_new_zero (void);
 
 /* Operators. */
-s_mat4 * mat4_mult_mat4 (const s_mat4 *a, const s_mat4 *b, s_mat4 *dest);
-s_vec3 * mat4_mult_vec3 (const s_mat4 *a, const s_vec3 *b, s_vec3 *dest);
+s_mat4 * mat4_mult_mat4 (const s_mat4 *a, const s_mat4 *b,
+                         s_mat4 *dest);
+s_vec3 * mat4_mult_vec3 (const s_mat4 *a, const s_vec3 *b,
+                         s_vec3 *dest);
 s_mat4 * mat4_ortho (s_mat4 *m, f32 x1, f32 x2, f32 y1, f32 y2,
                      f32 clip_z_near, f32 clip_z_far);
 s_mat4 * mat4_perspective (s_mat4 *m, f32 fov_y, f32 aspect_ratio,

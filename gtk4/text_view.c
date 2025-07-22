@@ -68,7 +68,8 @@ void kc3_gtk4_text_view_set_text (GtkTextView **text_view,
   GtkTextBuffer *buffer;
   assert(text_view);
   assert(text);
-  if (! (buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(*text_view)))) {
+  buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(*text_view));
+  if (! buffer) {
     err_puts("kc3_gtk4_text_view_set_text: gtk_text_view_get_buffer");
     assert(! "kc3_gtk4_text_view_set_text: gtk_text_view_get_buffer");
     return;

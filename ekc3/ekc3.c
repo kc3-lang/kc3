@@ -60,7 +60,8 @@ s_list *** ekc3_append_do_block (s_list ***tail, s_do_block *do_block)
   return tail;
 }
 
-s_list *** ekc3_append_silent_do_block (s_list ***tail, s_do_block *do_block)
+s_list *** ekc3_append_silent_do_block (s_list ***tail,
+                                        s_do_block *do_block)
 {
   assert(tail);
   assert(*tail);
@@ -306,8 +307,10 @@ sw ekc3_buf_parse_kc3_silent_do_block (s_buf *buf, s_do_block *dest)
   result += r;
   r = ekc3_buf_parse_kc3_do_block(buf, dest);
   if (r <= 0) {
-    err_puts("ekc3_buf_parse_kc3_silent_do_block: buf_parse_kc3_do_block");
-    assert(! "ekc3_buf_parse_kc3_silent_do_block: buf_parse_kc3_do_block");
+    err_puts("ekc3_buf_parse_kc3_silent_do_block:"
+             " buf_parse_kc3_do_block");
+    assert(!("ekc3_buf_parse_kc3_silent_do_block:"
+             " buf_parse_kc3_do_block"));
     goto restore;
   }
   result += r;
@@ -544,7 +547,8 @@ sw ekc3_render_raw_do_block (s_buf *buf, const s_do_block *do_block)
   return r;
 }
 
-sw ekc3_render_raw_do_block_size (s_pretty *pretty, const s_do_block *do_block)
+sw ekc3_render_raw_do_block_size (s_pretty *pretty,
+                                  const s_do_block *do_block)
 {
   uw i;
   sw r;

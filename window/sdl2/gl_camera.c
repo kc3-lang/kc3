@@ -45,7 +45,7 @@ static const char * g_gl_camera_fragment_shader_src =
   "uniform sampler2D uTex2D;\n"
   "uniform vec3 uAmbiantLightColor;\n"
   "uniform int uLightCount;\n"
-  "uniform vec4 uLightPos[16];       // Light position in cam. coords.\n"
+  "uniform vec4 uLightPos[16]; // Light position in camera coords.\n"
   "uniform vec3 uLightColor[16];\n"
   "void main() {\n"
   "  vec4 ambiantColor;"
@@ -90,12 +90,12 @@ static const char * g_gl_camera_fragment_shader_src =
   "uniform bool uEnableTex2D;\n"
   "uniform sampler2D uTex2D;\n"
   "uniform int uLightCount;\n"
-  "uniform vec4 uLightPos[16];       // Light position in cam. coords.\n"
+  "uniform vec4 uLightPos[16]; // Light position in cam. coords.\n"
   "uniform vec3 uLightColor[16];\n"
   "uniform struct MaterialInfo {\n"
-  "  float Rough;     // Roughness\n"
-  "  bool Metal;      // Metallic (true) or dielectric (false)\n"
-  "  vec3 Color;      // Diffuse color for dielectrics, f0 for metallic\n"
+  "  float Rough; // Roughness\n"
+  "  bool Metal;  // Metallic (true) or dielectric (false)\n"
+  "  vec3 Color;  // Diffuse color for dielectrics, f0 for metallic\n"
   "} uMaterial;\n"
   "float ggxDistribution( float nDotH ) {\n"
   "  float alpha2 = uMaterial.Rough * uMaterial.Rough *\n"
@@ -104,7 +104,8 @@ static const char * g_gl_camera_fragment_shader_src =
   "  return alpha2 / (PI * d * d);\n"
   "}\n"
   "float geomSmith( float dotProd ) {\n"
-  "  float k = (uMaterial.Rough + 1.0) * (uMaterial.Rough + 1.0) / 8.0;\n"
+  "  float k = (uMaterial.Rough + 1.0) *\n"
+  "    (uMaterial.Rough + 1.0) / 8.0;\n"
   "  float denom = dotProd * (1 - k) + k;\n"
   "  return 1.0 / denom;\n"
   "}\n"
@@ -231,7 +232,8 @@ s_gl_camera * gl_camera_init (s_gl_camera *camera, uw w, uw h)
   glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
   if (! success) {
     char info_log[512];
-    glGetShaderInfoLog(fragment_shader, sizeof(info_log), NULL, info_log);
+    glGetShaderInfoLog(fragment_shader, sizeof(info_log), NULL,
+                       info_log);
     err_write_1("gl_camera_init: shader compilation failed: ");
     err_puts(info_log);
   }

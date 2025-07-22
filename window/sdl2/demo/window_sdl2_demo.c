@@ -268,7 +268,8 @@ bool window_sdl2_demo_render (s_window_sdl2 *window)
   gl_text_update_1(&g_text_seq_title, seq->title);
   mat4_init_identity(&g_ortho.model_matrix);
   gl_ortho_text_render_outline(&g_ortho, &g_text_seq_title,
-                               20.0f, 30.0f, text_color, text_color + 1);
+                               20.0f, 30.0f, text_color,
+                               text_color + 1);
   /* progress bar */
   mat4_init_identity(&g_ortho.model_matrix);
   glDisable(GL_BLEND);

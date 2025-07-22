@@ -201,7 +201,8 @@ bool window_sdl2_run (s_window_sdl2 *window)
     return false;
   }
   if (SDL_GL_MakeCurrent(window->sdl_window, window->context)) {
-    err_write_1("window_sdl2_run: failed to make OpenGL context current: ");
+    err_write_1("window_sdl2_run: failed to make OpenGL context"
+                " current: ");
     err_write_1(SDL_GetError());
     goto ko;
   }

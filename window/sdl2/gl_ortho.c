@@ -144,7 +144,8 @@ s_gl_ortho * gl_ortho_init (s_gl_ortho *ortho)
   glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
   if (! success) {
     char info_log[512];
-    glGetShaderInfoLog(fragment_shader, sizeof(info_log), NULL, info_log);
+    glGetShaderInfoLog(fragment_shader, sizeof(info_log), NULL,
+                       info_log);
     err_write_1("gl_ortho_init: shader compilation failed: ");
     err_puts(info_log);
   }

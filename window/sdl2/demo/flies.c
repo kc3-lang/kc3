@@ -339,7 +339,8 @@ bool flies_render (s_sequence *seq)
                          dead_fly_scale, 1.0);
               gl_ortho_update_model_matrix(&g_ortho);
               gl_ortho_bind_texture(&g_ortho,
-                                    gl_sprite_texture(&g_sprite_dead_fly, 0));
+                                    gl_sprite_texture(&g_sprite_dead_fly,
+                                                      0));
               gl_ortho_color(&g_ortho, 1.0f, 1.0f, 1.0f, 1.0f);
               gl_ortho_rect(&g_ortho, 0, 0, g_sprite_dead_fly.pt_w,
                             g_sprite_dead_fly.pt_h);

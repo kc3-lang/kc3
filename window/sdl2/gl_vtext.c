@@ -173,7 +173,8 @@ bool gl_vtext_render_to_texture (s_gl_text *text)
     x = (data_w - (glyph->metrics.width >> 6)) / 2;
     i = 0;
     while (i < glyph->bitmap.rows) {
-      data_y = data_h - line_height - 1 - (y + i + max_ascent - glyph->bitmap_top);
+      data_y = data_h - line_height - 1 -
+        (y + i + max_ascent - glyph->bitmap_top);
       //printf("\n");
       j = 0;
       while (j < glyph->bitmap.width) {

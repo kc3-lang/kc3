@@ -72,13 +72,14 @@ bool window_cairo_xcb_event (s_window_cairo *window,
     *pixmap = xcb_generate_id(conn);
     xcb_create_pixmap(conn, screen->root_depth, *pixmap, xcb_window,
                       window->w, window->h);
-    *surface = cairo_xcb_surface_create(conn, *pixmap, visual, window->w,
-                                        window->h);
+    *surface = cairo_xcb_surface_create(conn, *pixmap, visual,
+                                        window->w, window->h);
     window->cr = cairo_create(*surface);
     break;
   case XCB_KEY_PRESS:
     event_key = (xcb_key_press_event_t *) event;
-    xkb_keysym_t sym = xkb_state_key_get_one_sym(xkb_state, event_key->detail);
+    xkb_keysym_t sym = xkb_state_key_get_one_sym(xkb_state,
+                                                 event_key->detail);
     if (! window->key(window, sym))
       goto ko;
     break;
@@ -207,7 +208,8 @@ bool window_cairo_xcb_run (s_window_cairo *window)
       event.width = window->w;
       event.height = window->h;
       event.count = 0;
-      xcb_send_event(conn, false, xcb_window, XCB_EVENT_MASK_EXPOSURE, (const char *)&event);
+      xcb_send_event(conn, false, xcb_window, XCB_EVENT_MASK_EXPOSURE,
+                     (const char *) &event);
       xcb_flush(conn);
     }
   }

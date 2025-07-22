@@ -34,9 +34,11 @@ bool window_sdl2_default_button_cb (s_window_sdl2 *window, u8 button,
 bool window_sdl2_default_key_cb (s_window_sdl2 *window,
                                  SDL_Keysym *keysym);
 bool window_sdl2_default_load_cb (s_window_sdl2 *window);
-bool window_sdl2_default_motion_cb (s_window_sdl2 *window, s64 x, s64 y);
+bool window_sdl2_default_motion_cb (s_window_sdl2 *window,
+                                    s64 x, s64 y);
 bool window_sdl2_default_render_cb (s_window_sdl2 *window);
-bool window_sdl2_default_resize_cb (s_window_sdl2 *window, u64 w, u64 h);
+bool window_sdl2_default_resize_cb (s_window_sdl2 *window,
+                                    u64 w, u64 h);
 void window_sdl2_default_unload_cb (s_window_sdl2 *window);
 
 #endif /* LIBKC3_WINDOW_SDL2_H */

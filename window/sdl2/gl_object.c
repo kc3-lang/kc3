@@ -72,7 +72,8 @@ void gl_object_render (const s_gl_object *object)
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
   assert(glGetError() == GL_NO_ERROR);
-  glDrawElements(GL_TRIANGLES, object->triangle.count * 3, GL_UNSIGNED_INT,
+  glDrawElements(GL_TRIANGLES, object->triangle.count * 3,
+                 GL_UNSIGNED_INT,
                  NULL);
   if ((error = glGetError()) != GL_NO_ERROR) {
     err_write_1("gl_object_render: glDrawElements: ");
@@ -158,14 +159,16 @@ bool gl_object_update (s_gl_object *object)
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ARRAY_BUFFER, object->gl_vbo);
   assert(glGetError() == GL_NO_ERROR);
-  glBufferData(GL_ARRAY_BUFFER, object->vertex.count * sizeof(s_gl_vertex),
+  glBufferData(GL_ARRAY_BUFFER,
+               object->vertex.count * sizeof(s_gl_vertex),
                object->vertex.data, GL_DYNAMIC_DRAW);
   assert(glGetError() == GL_NO_ERROR);
   gl_vertex_attrib();
   assert(glGetError() == GL_NO_ERROR);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->gl_ebo);
   assert(glGetError() == GL_NO_ERROR);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->triangle.count * sizeof(s_gl_triangle),
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+               object->triangle.count * sizeof(s_gl_triangle),
                object->triangle.data, GL_DYNAMIC_DRAW);
   assert(glGetError() == GL_NO_ERROR);
   return true;
