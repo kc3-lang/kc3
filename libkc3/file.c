@@ -124,7 +124,8 @@ sw file_copy (const char *from, const char *to)
     assert(! "file_copy: failed to open file for reading");
     return -1;
   }
-  if ((fd_to = open(to, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0666)) < 0) {
+  if ((fd_to = open(to, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY,
+                    0666)) < 0) {
     e = errno;
     err_write_1("file_copy: ");
     err_write_1(strerror(e));

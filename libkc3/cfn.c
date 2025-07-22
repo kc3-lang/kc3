@@ -108,7 +108,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
       }
       else {
         if (cfn->cif.arg_types[i] == &ffi_type_pointer) {
-          if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.psym,
+          if (! tag_to_ffi_pointer(&a->tag,
+                                   cfn_arg_types->tag.data.psym,
                                    &p)) {
             err_puts("cfn_apply: tag_to_ffi_pointer 4");
             err_stacktrace();
@@ -119,7 +120,8 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
           arg_values[i] = &arg_pointers[i];
         }
         else {
-          if (! tag_to_ffi_pointer(&a->tag, cfn_arg_types->tag.data.psym,
+          if (! tag_to_ffi_pointer(&a->tag,
+                                   cfn_arg_types->tag.data.psym,
                                    &p)) {
             err_write_1("cfn_apply: ");
             err_inspect_str(&cfn->name->str);
@@ -308,7 +310,8 @@ s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
   tmp.arity = src->arity;
   tmp.cif = src->cif;
   if (src->arity && src->cif.arg_types) {
-    tmp.cif.arg_types = alloc((src->cif.nargs + 1) * sizeof(ffi_type *));
+    tmp.cif.arg_types = alloc((src->cif.nargs + 1) *
+                              sizeof(ffi_type *));
     if (! tmp.cif.arg_types) {
       list_delete_all(tmp.arg_types);
       return NULL;

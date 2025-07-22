@@ -106,13 +106,21 @@ typedef struct FILETIME {
 
 WINBASEAPI DWORD WINAPI GetCurrentProcessId(VOID);
 WINBASEAPI BOOL WINAPI CloseHandle(HANDLE hObject);
-WINBASEAPI HANDLE WINAPI OpenProcess(DWORD dwDesiredAccess, BOOL bInheritHandle, DWORD dwProcessId);
-WINBASEAPI DWORD WINAPI WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds);
-WINBASEAPI BOOL WINAPI GetExitCodeProcess(HANDLE hProcess, LPDWORD lpExitCode);
+WINBASEAPI HANDLE WINAPI OpenProcess(DWORD dwDesiredAccess,
+                                     BOOL bInheritHandle,
+                                     DWORD dwProcessId);
+WINBASEAPI DWORD WINAPI WaitForSingleObject(HANDLE hHandle,
+                                            DWORD dwMilliseconds);
+WINBASEAPI BOOL WINAPI GetExitCodeProcess(HANDLE hProcess,
+                                          LPDWORD lpExitCode);
 
 /*
 FIXME: causes FILETIME to conflict
-WINBASEAPI BOOL WINAPI GetProcessTimes(HANDLE hProcess, LPFILETIME lpCreationTime, LPFILETIME lpExitTime, LPFILETIME lpKernelTime, LPFILETIME lpUserTime);
+WINBASEAPI BOOL WINAPI GetProcessTimes(HANDLE hProcess,
+                                       LPFILETIME lpCreationTime,
+                                       LPFILETIME lpExitTime,
+                                       LPFILETIME lpKernelTime,
+                                       LPFILETIME lpUserTime);
 */
 
 #endif /* _INC_WINDOWS */
@@ -150,7 +158,8 @@ typedef PROCESSENTRY32W *  LPPROCESSENTRY32W;
 #define TH32CS_SNAPPROCESS 2
 #endif /* TH32CS_SNAPPROCESS */
 
-HANDLE WINAPI CreateToolhelp32Snapshot(DWORD dwFlags, DWORD th32ProcessID);
+HANDLE WINAPI CreateToolhelp32Snapshot(DWORD dwFlags,
+                                       DWORD th32ProcessID);
 BOOL WINAPI Process32FirstW(HANDLE hSnapshot, LPPROCESSENTRY32W lppe);
 BOOL WINAPI Process32NextW(HANDLE hSnapshot, LPPROCESSENTRY32W lppe);
 
@@ -177,7 +186,8 @@ BOOL WINAPI Process32NextW(HANDLE hSnapshot, LPPROCESSENTRY32W lppe);
 #endif /* __WTERMSIG */
 
 #ifndef __WIFSIGNALED
-#define __WIFSIGNALED(status) (((signed char)(__WTERMSIG(status) + 1) >> 1) > 0)
+#define __WIFSIGNALED(status) \
+  (((signed char)(__WTERMSIG(status) + 1) >> 1) > 0)
 #endif /* __WIFSIGNALED */
 
 #ifndef __WIFSTOPPED
@@ -225,7 +235,8 @@ BOOL WINAPI Process32NextW(HANDLE hSnapshot, LPPROCESSENTRY32W lppe);
 #define _PID_T_
 typedef int __pid_t;
 typedef __pid_t pid_t;
-#endif /* !defined(__pid_t_defined) && !defined(_PID_T_) && !defined(pid_t) */
+#endif /* !defined(__pid_t_defined) && !defined(_PID_T_) &&
+          !defined(pid_t) */
 
 #ifndef __id_t_defined
 #define __id_t_defined 1
@@ -245,7 +256,8 @@ typedef struct
 {
     int si_signo; /* signal number */
     int si_code; /* signal code */
-    int si_errno; /* if non-zero, errno associated with this signal, as defined in <errno.h> */
+    int si_errno; /* if non-zero, errno associated with this signal,
+                     as defined in <errno.h> */
     pid_t si_pid; /* sending process ID */
     uid_t si_uid; /* real user ID of sending process */
     void * si_addr; /* address of faulting instruction */
@@ -308,7 +320,8 @@ int wait (int *status);
 
 int waitid (idtype_t idtype, id_t id, siginfo_t * infop, int options);
 pid_t wait3 (int * status, int options, struct rusage * rusage);
-pid_t wait4 (pid_t pid, int * status, int options, struct rusage * rusage);
+pid_t wait4 (pid_t pid, int * status, int options,
+             struct rusage * rusage);
 
 #endif /* _XOPEN_SOURCE */
 

@@ -28,7 +28,7 @@ character character_1 (const char *p)
   return c;
 }
 
-character * character_init_cast (character *c, const s_sym * const *type,
+character * character_init_cast (character *c, p_sym const *type,
                                  const s_tag *tag)
 {
   assert(c);

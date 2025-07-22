@@ -141,7 +141,8 @@ s_facts_cursor * facts_with_3 (s_facts *facts,
   fact.subject = subject;
   fact.predicate = predicate;
   fact.object = object;
-  return facts_cursor_init(facts, cursor, facts->index_spo, &fact, &fact);
+  return facts_cursor_init(facts, cursor, facts->index_spo,
+                           &fact, &fact);
 }
 
 s_facts_with_cursor * facts_with_list (s_facts *facts,

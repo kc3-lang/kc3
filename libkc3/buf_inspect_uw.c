@@ -34,7 +34,8 @@ sw buf_inspect_uw (s_buf *buf, const uw *u)
       return r;
     result += r;
   }
-  if ((r = buf_inspect_uw_base(buf, &g_kc3_base_decimal, u)) < 0)
+  if ((r = buf_inspect_uw_base(buf, &g_kc3_base_decimal,
+                                    u)) < 0)
     return r;
   result += r;
   return result;
@@ -161,7 +162,8 @@ sw buf_inspect_uw_size (s_pretty *pretty, const uw *u)
     result += r;
     result += strlen(" ");
   }
-  if ((r = buf_inspect_uw_base_size(pretty, &g_kc3_base_decimal, u)) < 0)
+  if ((r = buf_inspect_uw_base_size(pretty, &g_kc3_base_decimal,
+                                         u)) < 0)
     return r;
   result += r;
   return result;

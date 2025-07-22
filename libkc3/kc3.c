@@ -255,7 +255,7 @@ s_tag * kc3_def (const s_call *call, s_tag *dest)
   return env_kc3_def(env_global(), call, dest);
 }
 
-s_tag * kc3_defmodule (const s_sym **name, const s_do_block *do_block,
+s_tag * kc3_defmodule (p_sym const *name, const s_do_block *do_block,
                        s_tag *dest)
 {
   return env_defmodule(env_global(), name, do_block, dest);
@@ -1231,7 +1231,8 @@ void * kc3_thread_start (void *arg)
   s_callable *start;
   tag = arg;
   if (tag->type != TAG_TUPLE) {
-    fprintf(stderr, "kc3_thread_start: invalid argument: not a tuple\n");
+    fprintf(stderr,
+            "kc3_thread_start: invalid argument: not a tuple\n");
     assert(! "kc3_thread_start: invalid argument: not a tuple");
     return NULL;
   }

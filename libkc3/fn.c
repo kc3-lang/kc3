@@ -85,7 +85,7 @@ s_fn * fn_init_1 (s_fn *fn, const char *p)
 }
 
 /*
-s_fn * fn_init_cast (s_fn *fn, const s_sym * const *type, const s_tag *tag)
+s_fn * fn_init_cast (s_fn *fn, p_sym const *type, const s_tag *tag)
 {
   assert(fn);
   assert(type);

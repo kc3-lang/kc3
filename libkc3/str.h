@@ -128,7 +128,8 @@ bool *        str_has_str (const s_str *src, const s_str *search,
 sw            str_length_utf8 (const s_str *str);
 bool          str_parse_eval (const s_str *str, s_tag *dest);
 sw            str_peek_bool (const s_str *str, bool *dest);
-sw            str_peek_character_utf8 (const s_str *str, character *dest);
+sw            str_peek_character_utf8 (const s_str *str,
+                                       character *dest);
 sw            str_peek_f32 (const s_str *str, f32 *dest);
 sw            str_peek_f64 (const s_str *str, f64 *dest);
 sw            str_peek_s8 (const s_str *str, s8 *dest);

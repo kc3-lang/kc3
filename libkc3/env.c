@@ -888,8 +888,9 @@ s_tag * env_facts_with (s_env *env, s_facts *facts, s_list **spec,
   return NULL;
 }
 
-s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag, s_tag *spec_tag,
-                              s_tag *tag, s_tag *dest)
+s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
+                              s_tag *spec_tag, s_tag *tag,
+                              s_tag *dest)
 {
   s_facts_with_cursor cursor = {0};
   s_tag * volatile dest_v = dest;
@@ -1911,7 +1912,8 @@ const s_time ** env_module_load_time (s_env *env, const s_sym *module,
   tag_init_psym(&tag_load_time, &g_sym_load_time);
   tag_init_pvar(&tag_time_pvar, &g_sym_Time);
   if (! facts_with(env->facts, &cursor, (t_facts_spec) {
-        &tag_module_name, &tag_load_time, &tag_time_pvar, NULL, NULL })) {
+        &tag_module_name, &tag_load_time, &tag_time_pvar,
+        NULL, NULL })) {
     tag_clean(&tag_time_pvar);
     return NULL;
   }

@@ -43,6 +43,7 @@ s_tag * time_to_tag (const s_timespec *time, s_tag *dest);
 
 /* Operators */
 s_time * time_allocate (s_time *time);
-s_timespec * time_sub (const s_timespec *a, const s_timespec *b, s_timespec *dest);
+s_timespec * time_sub (const s_timespec *a, const s_timespec *b,
+                       s_timespec *dest);
 
 #endif /* LIBKC3_TIME_H */

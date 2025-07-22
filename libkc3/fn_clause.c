@@ -41,7 +41,8 @@ void fn_clause_delete_all (s_fn_clause *fn_clause)
     fn_clause = fn_clause_delete(fn_clause);
 }
 
-s_fn_clause * fn_clause_init (s_fn_clause *fn_clause, s_fn_clause *next_clause)
+s_fn_clause * fn_clause_init (s_fn_clause *fn_clause,
+                              s_fn_clause *next_clause)
 {
   s_fn_clause tmp = {0};
   assert(fn_clause);

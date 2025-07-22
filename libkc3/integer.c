@@ -679,7 +679,8 @@ s_tag * integer_sqrt (const s_integer *a, s_tag *dest)
   }
   dest->type = TAG_INTEGER;
   integer_init(&dest->data.integer);
-  if ((r = mp_sqrt(&a->mp_int, &dest->data.integer.mp_int)) != MP_OKAY) {
+  if ((r = mp_sqrt(&a->mp_int,
+                   &dest->data.integer.mp_int)) != MP_OKAY) {
     err_write_1("integer_sqrt: ");
     err_puts(mp_error_to_string(r));
     assert(! "integer_sqrt: mp_sqrt");

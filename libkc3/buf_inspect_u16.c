@@ -34,7 +34,8 @@ sw buf_inspect_u16 (s_buf *buf, const u16 *u)
       return r;
     result += r;
   }
-  if ((r = buf_inspect_u16_base(buf, &g_kc3_base_decimal, u)) < 0)
+  if ((r = buf_inspect_u16_base(buf, &g_kc3_base_decimal,
+                                    u)) < 0)
     return r;
   result += r;
   return result;
@@ -161,7 +162,8 @@ sw buf_inspect_u16_size (s_pretty *pretty, const u16 *u)
     result += r;
     result += strlen(" ");
   }
-  if ((r = buf_inspect_u16_base_size(pretty, &g_kc3_base_decimal, u)) < 0)
+  if ((r = buf_inspect_u16_base_size(pretty, &g_kc3_base_decimal,
+                                         u)) < 0)
     return r;
   result += r;
   return result;

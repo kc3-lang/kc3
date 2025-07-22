@@ -33,7 +33,8 @@ set_add__tag (s_set__tag *set, s_tag *data)
 }
 
 s_set_item__tag *
-set_add_collision__tag (s_set__tag *set, s_tag *data, uw hash, s_set_item__tag *item)
+set_add_collision__tag (s_set__tag *set, s_tag *data, uw hash,
+                        s_set_item__tag *item)
 {
   s_set_item__tag *new_item;
   new_item = set_item_new__tag(data, hash, item->next);

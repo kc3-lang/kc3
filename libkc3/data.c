@@ -164,7 +164,8 @@ sw data_buf_inspect_size (s_pretty *pretty, const s_sym *type,
   if (type == &g_sym_Struct)
     return buf_inspect_struct_size(pretty, * (p_struct *) data);
   if (type == &g_sym_StructType)
-    return buf_inspect_struct_type_size(pretty, * (p_struct_type *) data);
+    return buf_inspect_struct_type_size(pretty,
+                                        * (p_struct_type *) data);
   if (type == &g_sym_Sw)
     return buf_inspect_sw_size(pretty, data);
   if (type == &g_sym_Sym)
@@ -447,7 +448,8 @@ s8 data_compare (const s_sym *type, const void *a, const void *b)
   return COMPARE_ERROR;
 }
 
-bool data_hash_update (const s_sym *type, t_hash *hash, const void *data)
+bool data_hash_update (const s_sym *type, t_hash *hash,
+                       const void *data)
 {
   s_struct s = {0};
   s_struct_type *st;

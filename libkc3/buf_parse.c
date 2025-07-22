@@ -185,7 +185,8 @@ sw buf_parse_array_data_rec (s_buf *buf, s_array *dest, uw *address,
       else {
         if ((r = buf_parse_array_data_rec(buf, &tmp, address, tag,
                                           dimension + 1)) <= 0) {
-          err_puts("buf_parse_array_data_rec: buf_parse_array_data_rec");
+          err_puts("buf_parse_array_data_rec: "
+                   "buf_parse_array_data_rec");
           goto restore;
         }
         result += r;
@@ -393,7 +394,9 @@ sw buf_parse_array_dimensions_rec (s_buf *buf, s_array *dest,
   if (! tmp.dimensions[dimension].count) {
     tmp.dimensions[dimension].count = address[dimension];
     if (dimension < tmp.dimension - 1)
-      tmp.dimensions[dimension].item_size = tmp.dimensions[dimension + 1].count * tmp.dimensions[dimension + 1].item_size;
+      tmp.dimensions[dimension].item_size =
+        tmp.dimensions[dimension + 1].count *
+        tmp.dimensions[dimension + 1].item_size;
   }
   else if (tmp.dimensions[dimension].count != address[dimension]) {
     err_write_1("buf_parse_array_dimensions_rec: dimension mismatch: ");

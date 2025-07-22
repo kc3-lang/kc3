@@ -311,7 +311,8 @@ s_str * marshall_to_str (s_marshall *m, s_str *dest)
   return dest;
 }
 
-s_marshall * marshall_tuple (s_marshall *m, bool heap, const s_tuple *tuple)
+s_marshall * marshall_tuple (s_marshall *m, bool heap,
+                             const s_tuple *tuple)
 {
   uw i;
   assert(m);

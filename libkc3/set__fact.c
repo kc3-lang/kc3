@@ -33,7 +33,8 @@ set_add__fact (s_set__fact *set, s_fact *data)
 }
 
 s_set_item__fact *
-set_add_collision__fact (s_set__fact *set, s_fact *data, uw hash, s_set_item__fact *item)
+set_add_collision__fact (s_set__fact *set, s_fact *data, uw hash,
+                         s_set_item__fact *item)
 {
   s_set_item__fact *new_item;
   new_item = set_item_new__fact(data, hash, item->next);

@@ -43,8 +43,10 @@ s_float * float_new_integer (const s_integer *num,
 s_float * float_new_w (sw num, uw div);
 
 /* Operators */
-s_float * float_add (const s_float *a, const s_float *b, s_float *result);
-s_float * float_mul (const s_float *a, const s_float *b, s_float *result);
+s_float * float_add (const s_float *a, const s_float *b,
+                     s_float *result);
+s_float * float_mul (const s_float *a, const s_float *b,
+                     s_float *result);
 s_float * float_neg (const s_float *f, s_float *result);
 s_float * float_sq (const s_float *f, s_float *result);
 s_float * float_sqrt (const s_float *f, s_float *result);

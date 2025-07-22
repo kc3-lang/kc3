@@ -20,7 +20,8 @@
 
 #include "types.h"
 
-/* Stack-allocation compatible functions, call struct_clean after use. */
+/* Stack-allocation compatible functions, call struct_clean
+   after use. */
 void       struct_clean (s_struct *s);
 s_struct * struct_init (s_struct *s, const s_sym *module);
 s_struct * struct_init_copy (s_struct *s, s_struct *src);

@@ -394,7 +394,8 @@ s_map * map_put (s_map *map, s_tag *key,
 }
 
 /*
-s_map * map_put_list (const s_map *map, const s_list *alist, s_map *dest)
+s_map * map_put_list (const s_map *map, const s_list *alist,
+                      s_map *dest)
 {
   const s_list *i = NULL;
   s_map tmp = {0};
@@ -408,7 +409,8 @@ s_map * map_put_list (const s_map *map, const s_list *alist, s_map *dest)
       assert(! "map_put_list: not an associative list");
       goto ko;
     }
-    if (! map_set(&tmp, i->tag.data.tuple.tag, i->tag.data.tuple.tag + 1))
+    if (! map_set(&tmp, i->tag.data.tuple.tag,
+                  i->tag.data.tuple.tag + 1))
       goto ko;
     i = list_next(i);
   }
