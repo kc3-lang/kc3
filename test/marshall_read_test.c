@@ -33,89 +33,10 @@
     marshall_clean(&m);                                                \
   } while (0)
 
-#define MARSHALL_READ_TEST_BUF_BOOL(test, expected)      \
-  MARSHALL_READ_TEST(bool, false, test, expected)
+#define MARSHALL_READ_TEST_BUF_AND_HEAP(type, test, expected)  \
+  MARSHALL_READ_TEST(type, false, test, expected)              \
+  MARSHALL_READ_TEST(type, true, test, expected)
 
-#define MARSHALL_READ_TEST_CHARACTER(on_heap, test, expected)          \
-  do {                                                                 \
-    s_marshall_read m = {0};                                                \
-    s_buf *buf = NULL;                                                 \
-    TEST_ASSERT(marshall_init(&m));                                    \
-    TEST_ASSERT(marshall_read_character(&m, (on_heap), (test)));       \
-    buf = ((on_heap)) ? &m.heap : &m.buf;                              \
-    TEST_MEM_EQ(buf->ptr.pu8, sizeof(expected) - 1,                    \
-      (expected), sizeof(expected) - 1);                               \
-    marshall_clean(&m);                                                \
-  } while (0)
-
-#define MARSHALL_READ_TEST_BUF_CHARACTER(test, expected) \
-  MARSHALL_READ_TEST_CHARACTER(false, test, expected)
-
-#define MARSHALL_READ_TEST_BUF_S8(test, expected)        \
-  MARSHALL_READ_TEST(s8, false, test, expected)
-
-#define MARSHALL_READ_TEST_BUF_S16(test, expected)       \
-  MARSHALL_READ_TEST(s16, false, test, expected)
-
-#define MARSHALL_READ_TEST_BUF_S32(test, expected)       \
-  MARSHALL_READ_TEST(s32, false, test, expected)
-
-#define MARSHALL_READ_TEST_BUF_S64(test, expected)       \
-  MARSHALL_READ_TEST(s64, false, test, expected)
-
-#define MARSHALL_READ_TEST_BUF_SW(test, expected)        \
-  MARSHALL_READ_TEST(sw, false, test, expected)
-
-#define MARSHALL_READ_TEST_BUF_U8(test, expected)        \
-  MARSHALL_READ_TEST(u8, false, test, expected)
-
-#define MARSHALL_READ_TEST_BUF_U16(test, expected)       \
-  MARSHALL_READ_TEST(u16, false, test, expected)
-
-#define MARSHALL_READ_TEST_BUF_U32(test, expected)       \
-  MARSHALL_READ_TEST(u32, false, test, expected)
-
-#define MARSHALL_READ_TEST_BUF_U64(test, expected)       \
-  MARSHALL_READ_TEST(u64, false, test, expected)
-
-#define MARSHALL_READ_TEST_BUF_UW(test, expected)        \
-  MARSHALL_READ_TEST(uw, false, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_BOOL(test, expected)     \
-  MARSHALL_READ_TEST(bool, true, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_CHARACTER(test, expected) \
-  MARSHALL_READ_TEST_CHARACTER(true, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_S8(test, expected)       \
-  MARSHALL_READ_TEST(s8, true, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_S16(test, expected)      \
-  MARSHALL_READ_TEST(s16, true, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_S32(test, expected)      \
-  MARSHALL_READ_TEST(s32, true, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_S64(test, expected)      \
-  MARSHALL_READ_TEST(s64, true, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_SW(test, expected)       \
-  MARSHALL_READ_TEST(sw, true, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_U8(test, expected)       \
-  MARSHALL_READ_TEST(u8, true, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_U16(test, expected)      \
-  MARSHALL_READ_TEST(u16, true, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_U32(test, expected)      \
-  MARSHALL_READ_TEST(u32, true, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_U64(test, expected)      \
-  MARSHALL_READ_TEST(u64, true, test, expected)
-
-#define MARSHALL_READ_TEST_HEAP_UW(test, expected)       \
-  MARSHALL_READ_TEST(uw, true, test, expected)
 
 #define MARSHALL_READ_TEST_TAG(test, on_heap)                          \
   do {                                                                 \
@@ -173,21 +94,21 @@ void marshall_read_test (void)
 
 TEST_CASE(marshall_read_bool)
 {
-  MARSHALL_READ_TEST_BUF_BOOL(false, "\x00");
-  MARSHALL_READ_TEST_BUF_BOOL(true, "\x01");
-  MARSHALL_READ_TEST_HEAP_BOOL(false, "\x00");
-  MARSHALL_READ_TEST_HEAP_BOOL(true, "\x01");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(bool, false, "\x00");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(bool, true, "\x01");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(bool, false, "\x00");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(bool, true, "\x01");
 }
 TEST_CASE_END(marshall_read_bool)
 
 TEST_CASE(marshall_read_character)
 {
-  MARSHALL_READ_TEST_BUF_CHARACTER('A', "A");
-  MARSHALL_READ_TEST_BUF_CHARACTER('\0', "\x00");
-  MARSHALL_READ_TEST_BUF_CHARACTER('Z', "Z");
-  MARSHALL_READ_TEST_HEAP_CHARACTER('A', "A");
-  MARSHALL_READ_TEST_HEAP_CHARACTER('\0', "\x00");
-  MARSHALL_READ_TEST_HEAP_CHARACTER('Z', "Z");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(char, 'A', "A");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(char, '\0', "\x00");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(char, 'Z', "Z");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(char, 'A', "A");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(char, '\0', "\x00");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(char, 'Z', "Z");
 }
 TEST_CASE_END(marshall_read_character)
 
@@ -213,52 +134,52 @@ TEST_CASE_END(marshall_read_plist)
 
 TEST_CASE(marshall_read_s8)
 {
-  MARSHALL_READ_TEST_BUF_S8(0, "\0");
-  MARSHALL_READ_TEST_BUF_S8(0xAB, "\xAB");
-  MARSHALL_READ_TEST_HEAP_S8(0, "\0");
-  MARSHALL_READ_TEST_HEAP_S8(0xAB, "\xAB");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s8, 0, "\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s8, 0xAB, "\xAB");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s8, 0, "\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s8, 0xAB, "\xAB");
 }
 TEST_CASE_END(marshall_read_s8)
 
 TEST_CASE(marshall_read_s16)
 {
-  MARSHALL_READ_TEST_BUF_S16(0, "\0\0");
-  MARSHALL_READ_TEST_BUF_S16(-1, "\xFF\xFF");
-  MARSHALL_READ_TEST_HEAP_S16(0, "\0\0");
-  MARSHALL_READ_TEST_HEAP_S16(-1, "\xFF\xFF");
+  S16(0, "\0\0");
+  S16(-1, "\xFF\xFF");
+  S16(0, "\0\0");
+  S16(-1, "\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_s16)
 
 TEST_CASE(marshall_read_s32)
 {
-  MARSHALL_READ_TEST_BUF_S32(0, "\0\0\0\0");
-  MARSHALL_READ_TEST_BUF_S32(~0, "\xFF\xFF\xFF\xFF");
-  MARSHALL_READ_TEST_BUF_S32(0xDEADBEEF, "\xEF\xBE\xAD\xDE");
-  MARSHALL_READ_TEST_BUF_S32(0xDEADCAFE, "\xFE\xCA\xAD\xDE");
-  MARSHALL_READ_TEST_BUF_S32(0xFEEDBABE, "\xBE\xBA\xED\xFE");
-  MARSHALL_READ_TEST_HEAP_S32(0, "\0\0\0\0");
-  MARSHALL_READ_TEST_HEAP_S32(~0, "\xFF\xFF\xFF\xFF");
-  MARSHALL_READ_TEST_HEAP_S32(0xDEADBEEF, "\xEF\xBE\xAD\xDE");
-  MARSHALL_READ_TEST_HEAP_S32(0xDEADCAFE, "\xFE\xCA\xAD\xDE");
-  MARSHALL_READ_TEST_HEAP_S32(0xFEEDBABE, "\xBE\xBA\xED\xFE");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s32, 0, "\0\0\0\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s32, ~0, "\xFF\xFF\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s32, 0xDEADBEEF, "\xEF\xBE\xAD\xDE");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s32, 0xDEADCAFE, "\xFE\xCA\xAD\xDE");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s32, 0xFEEDBABE, "\xBE\xBA\xED\xFE");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s32, 0, "\0\0\0\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s32, ~0, "\xFF\xFF\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s32, 0xDEADBEEF, "\xEF\xBE\xAD\xDE");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s32, 0xDEADCAFE, "\xFE\xCA\xAD\xDE");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s32, 0xFEEDBABE, "\xBE\xBA\xED\xFE");
 }
 TEST_CASE_END(marshall_read_s32)
 
 TEST_CASE(marshall_read_s64)
 {
-  MARSHALL_READ_TEST_BUF_S64(0, "\0\0\0\0\0\0\0\0");
-  MARSHALL_READ_TEST_BUF_S64(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_READ_TEST_HEAP_S64(0, "\0\0\0\0\0\0\0\0");
-  MARSHALL_READ_TEST_HEAP_S64(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  S64(0, "\0\0\0\0\0\0\0\0");
+  S64(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  S64(0, "\0\0\0\0\0\0\0\0");
+  S64(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_s64)
 
 TEST_CASE(marshall_read_sw)
 {
-  MARSHALL_READ_TEST_BUF_SW(0, "\0\0\0\0\0\0\0\0");
-  MARSHALL_READ_TEST_BUF_SW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_READ_TEST_HEAP_SW(0, "\0\0\0\0\0\0\0\0");
-  MARSHALL_READ_TEST_HEAP_SW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  SW(0, "\0\0\0\0\0\0\0\0");
+  SW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  SW(0, "\0\0\0\0\0\0\0\0");
+  SW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_sw)
 
@@ -333,41 +254,41 @@ TEST_CASE_END(marshall_read_to_str)
 
 TEST_CASE(marshall_read_u8)
 {
-  MARSHALL_READ_TEST_BUF_U8(0x00, "\x00");
-  MARSHALL_READ_TEST_BUF_U8(0xFF, "\xFF");
-  MARSHALL_READ_TEST_HEAP_U8(0x00, "\x00");
-  MARSHALL_READ_TEST_HEAP_U8(0xFF, "\xFF");
+  U8(0x00, "\x00");
+  U8(0xFF, "\xFF");
+  U8(0x00, "\x00");
+  U8(0xFF, "\xFF");
 }
 TEST_CASE_END(marshall_read_u8)
 
 TEST_CASE(marshall_read_u16)
 {
-  MARSHALL_READ_TEST_BUF_U16(0xFFFF, "\xFF\xFF");
-  MARSHALL_READ_TEST_HEAP_U16(0xFFFF, "\xFF\xFF");
+  U16(0xFFFF, "\xFF\xFF");
+  U16(0xFFFF, "\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_u16)
 
 TEST_CASE(marshall_read_u32)
 {
-  MARSHALL_READ_TEST_BUF_U32(0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
-  MARSHALL_READ_TEST_HEAP_U32(0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
+  U32(0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
+  U32(0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_u32)
 
 TEST_CASE(marshall_read_u64)
 {
-  MARSHALL_READ_TEST_BUF_U64(0xFFFFFFFFFFFFFFFF,
+  U64(0xFFFFFFFFFFFFFFFF,
     "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_READ_TEST_HEAP_U64(0xFFFFFFFFFFFFFFFF,
+  U64(0xFFFFFFFFFFFFFFFF,
     "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_u64)
 
 TEST_CASE(marshall_read_uw)
 {
-  MARSHALL_READ_TEST_BUF_UW(0, "\0\0\0\0\0\0\0\0");
-  MARSHALL_READ_TEST_BUF_UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_READ_TEST_HEAP_UW(0, "\0\0\0\0\0\0\0\0");
-  MARSHALL_READ_TEST_HEAP_UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  UW(0, "\0\0\0\0\0\0\0\0");
+  UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  UW(0, "\0\0\0\0\0\0\0\0");
+  UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_uw)
