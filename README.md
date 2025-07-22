@@ -79,15 +79,26 @@ There are now four full applications written in KC3 that we know of :
      - Struct
      - StructType
    - optional pass by copy (--copy) for use with ASAN.
-     - `env_init_args --copy`
+     - `env_init_args` now parses `--copy`
    - documentation
-     - document all basic types (see <kc3-lang.org/doc>)
+     - document all basic types (see /doc/*/*.md or
+       <https://kc3-lang.org/doc>)
      - document facts module
    - rename block into do_block
    - implement named blocks, return and return_from like in Common Lisp
    - add a named block to function evaluation to implement return from
      functions. The first name you give to the function is the name of
      the function implicit block.
+   - added unwind_protect and env_unwind_protect_push/pop dance to a
+     few functions
+     - marked remaining code paths with TODO where unwind_protect is
+       still needed (potential memleaks / env corruption)
+   - `env_frame_capture` implements closures that capture their lexical
+     environment (free variables)
+   - converted almost every file to 72 columns max
+   - added licenses to kc3 files
+   - started marshall/marshall_read work (not ready yet)
+
 
 ## Discord invite
 
@@ -119,10 +130,9 @@ to discover how to use KC3 for your own projects.
      - recursive
  - libkc3
    - hash-table as a KC3 value (map ?)
-   - unwind-protect
-   - defspecial
+    - defspecial
    - special operators hash table
-   - serialization / deserialization
+   - marshall / marshall_read
      - to buf
      - to str
      - to file
