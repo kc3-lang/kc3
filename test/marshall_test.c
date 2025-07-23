@@ -221,7 +221,7 @@ TEST_CASE(marshall_plist_twice)
   s_list *list_test;
   s_str str = {0};
   const s_str expected =
-    {{0}, 59, {"KC3MARSH\x02\0\0\0\0\0\0\0"
+    {{0}, 59, {"KC3MARSH\x03\0\0\0\0\0\0\0"
                "\x1B\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
                "\0\0\0\0\0\0\0\0\x13\0\x18\0\0\0\0\0"
                "\0\0\0\0\0\0\0\0\0\0\0"}};
