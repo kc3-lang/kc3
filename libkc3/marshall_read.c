@@ -15,9 +15,9 @@
 #include "types.h"
 #include "list.h"
 #include "assert.h"
-#include "marshall.h"
 #include "marshall_read.h"
 #include "buf.h"
+#include <stdlib.h>
 
 #define DEF_MARSHALL_READ(name, type)                                  \
   s_marshall_read * marshall_read_ ## name (s_marshall_read *mr,       \
@@ -46,11 +46,16 @@ s_marshall_read * marshall_read_character (s_marshall_read *mr,
   return buf_read_character_utf8(buf, dest) < 0 ? NULL : mr;
 }
 
+void marshall_read_clean(s_marshall_read *mr)
+{
+  assert(mr);
+  buf_clean(&mr->heap);
+  buf_clean(&mr->buf);
+}
+
 DEF_MARSHALL_READ(f128, f128)
 DEF_MARSHALL_READ(f32, f32)
 DEF_MARSHALL_READ(f64, f64)
-
-
 
 s_marshall_read *marshall_read_heap_pointer(s_marshall_read *mr,
                                            bool heap, sw *heap_offset)
@@ -61,6 +66,43 @@ s_marshall_read *marshall_read_heap_pointer(s_marshall_read *mr,
   if (! heap_offset || marshall_read_sw(mr, heap, &r) == NULL)
     return NULL;
   *heap_offset += r;
+  return mr;
+}
+
+s_marshall_read * marshall_read_init(s_marshall_read *mr)
+{
+  if (mr == NULL)
+    return NULL;
+  if (! buf_init_alloc(&mr->heap, BUF_SIZE))
+    return NULL;
+  if (! buf_init_alloc(&mr->buf, BUF_SIZE))
+    return NULL;
+  return mr;
+}
+
+s_marshall_read * marshall_read_init_1 (s_marshall_read *mr,
+                                        const char *p, uw size)
+{
+  s_str str = {0};
+  static const s_str str_0 = {0};
+  assert(mr);
+  if (! p || ! size)
+    return marshall_read_init_str(mr, &str_0);
+  str.size = size;
+  str.ptr.pchar = p;
+  return marshall_read_init_str(mr, &str);
+}
+
+s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
+                                          const s_str *src)
+{
+   assert(mr);
+  if (mr == NULL)
+    return NULL;
+  if (! buf_init_str_copy(&mr->heap, src))
+    return NULL;
+  if (! buf_init_str_copy(&mr->buf, src))
+    return NULL;
   return mr;
 }
 

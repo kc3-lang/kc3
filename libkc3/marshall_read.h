@@ -25,12 +25,14 @@
    after use. */
 void              marshall_read_clean (s_marshall_read *mr);
 s_marshall_read * marshall_read_init (s_marshall_read *mr);
+s_marshall_read * marshall_read_init_1 (s_marshall_read *mr,
+                                        const char *p, uw size);
 s_marshall_read * marshall_read_init_buf (s_marshall_read *mr,
                                           s_buf *buf);
 s_marshall_read * marshall_read_init_file (s_marshall_read *mr,
                                            const char *path);
 s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
-                                          s_str *src);
+                                          const s_str *src);
 
 /* Heap-allocation functions, call marshall_read_delete after use. */
 void              marshall_read_delete (s_marshall_read *mr);
