@@ -37,6 +37,7 @@ SOURCES = \
 	"inspect_test.c" \
 	"libkc3_test.c" \
 	"list_test.c" \
+	"marshall_read_test.c" \
 	"marshall_test.c" \
 	"ops_test.c" \
 	"ratio_test.c" \

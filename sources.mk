@@ -715,6 +715,7 @@ KC3_C_SOURCES = \
 	"test/inspect_test.c" \
 	"test/libkc3_test.c" \
 	"test/list_test.c" \
+	"test/marshall_read_test.c" \
 	"test/marshall_test.c" \
 	"test/ops_test.c" \
 	"test/ratio_test.c" \
