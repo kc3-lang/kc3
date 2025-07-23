@@ -32,9 +32,6 @@
     marshall_clean(&m);                                                \
   } while (0)
 
-#define MARSHALL_TEST_BUF_BOOL(test, expected)      \
-  MARSHALL_TEST(bool, false, test, expected)
-
 #define MARSHALL_TEST_CHARACTER(on_heap, test, expected)               \
   do {                                                                 \
     s_marshall m = {0};                                                \
@@ -47,7 +44,8 @@
     marshall_clean(&m);                                                \
   } while (0)
 
-#define MARSHALL_READ_TEST_BOTH_MEM_ZONE(test, expected) \
+#define MARSHALL_TEST_BUF_BOOL(test, expected)        \
+  MARSHALL_TEST(bool, false, test, expected)
 
 #define MARSHALL_TEST_BUF_CHARACTER(test, expected) \
   MARSHALL_TEST_CHARACTER(false, test, expected)

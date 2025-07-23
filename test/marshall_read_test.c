@@ -24,14 +24,15 @@
 #define MARSHALL_READ_TEST(type, on_heap, test, expected)              \
   do {                                                                 \
     s_marshall_read m = {0};                                           \
-    TEST_ASSERT(marshall_init(&m));                                    \
+    s_buf *buf = NULL;                                                 \
+    TEST_ASSERT(marshall_read_init(&m));                               \
     TEST_ASSERT(marshall_read_## type (&m,                             \
                                        on_heap, (type) (test)));       \
     buf = (on_heap) ? &m.heap : &m.buf;                                \
     TEST_MEM_EQ(buf->ptr.pu8, sizeof(type),                            \
       (expected), sizeof(expected) - 1);                               \
     marshall_clean(&m);                                                \
-  } while (0)
+  } while (0);
 
 #define MARSHALL_READ_TEST_BUF_AND_HEAP(type, test, expected)  \
   MARSHALL_READ_TEST(type, false, test, expected)              \
@@ -43,7 +44,7 @@
     s_marshall_read m = {0};                                           \
     s_tag tag = {0};                                                   \
     tag_init_1(&tag, test);                                            \
-    TEST_EQ(marshall_init(&m), &m);                                    \
+    TEST_EQ(marshall_read_init(&m), &m);                               \
     TEST_EQ(marshall_read_tag(&m, (on_heap), &tag), &m);               \
     marshall_clean(&m);                                                \
     tag_clean(&tag);                                                   \
@@ -103,12 +104,12 @@ TEST_CASE_END(marshall_read_bool)
 
 TEST_CASE(marshall_read_character)
 {
-  MARSHALL_READ_TEST_BUF_AND_HEAP(char, 'A', "A");
-  MARSHALL_READ_TEST_BUF_AND_HEAP(char, '\0', "\x00");
-  MARSHALL_READ_TEST_BUF_AND_HEAP(char, 'Z', "Z");
-  MARSHALL_READ_TEST_BUF_AND_HEAP(char, 'A', "A");
-  MARSHALL_READ_TEST_BUF_AND_HEAP(char, '\0', "\x00");
-  MARSHALL_READ_TEST_BUF_AND_HEAP(char, 'Z', "Z");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(character, 'A', "A");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(character, '\0', "\x00");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(character, 'Z', "Z");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(character, 'A', "A");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(character, '\0', "\x00");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(character, 'Z', "Z");
 }
 TEST_CASE_END(marshall_read_character)
 
@@ -123,7 +124,7 @@ TEST_CASE(marshall_read_plist)
                "\0\0\0\0\0\0\0\0\x13\0\x18\0\0\0\0\0"
                "\0\0\0"}};
 
-  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_read_init(&m));
   list_test = list_new_1("[0, 1]");
   TEST_ASSERT(list_test);
   TEST_ASSERT(marshall_read_plist(&m, true, &list_test));
@@ -143,10 +144,10 @@ TEST_CASE_END(marshall_read_s8)
 
 TEST_CASE(marshall_read_s16)
 {
-  S16(0, "\0\0");
-  S16(-1, "\xFF\xFF");
-  S16(0, "\0\0");
-  S16(-1, "\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s16, 0, "\0\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s16, -1, "\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s16, 0, "\0\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s16, -1, "\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_s16)
 
@@ -167,19 +168,27 @@ TEST_CASE_END(marshall_read_s32)
 
 TEST_CASE(marshall_read_s64)
 {
-  S64(0, "\0\0\0\0\0\0\0\0");
-  S64(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  S64(0, "\0\0\0\0\0\0\0\0");
-  S64(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s64, 0,
+                                 "\0\0\0\0\0\0\0\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s64, ~0,
+                                 "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s64, 0,
+                                 "\0\0\0\0\0\0\0\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s64, ~0,
+                                 "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_s64)
 
 TEST_CASE(marshall_read_sw)
 {
-  SW(0, "\0\0\0\0\0\0\0\0");
-  SW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  SW(0, "\0\0\0\0\0\0\0\0");
-  SW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s64, 0,
+                                 "\0\0\0\0\0\0\0\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s64, ~0,
+                                 "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s64, 0,
+                                 "\0\0\0\0\0\0\0\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(s64, ~0,
+                                 "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_sw)
 
@@ -191,7 +200,7 @@ TEST_CASE(marshall_read_tag)
   MARSHALL_READ_TEST_TAG_BUF_AND_HEAP("256");
   MARSHALL_READ_TEST_TAG_BUF_AND_HEAP("-2147483648");
   MARSHALL_READ_TEST_TAG_BUF_AND_HEAP("92233720368547");
-  MARSHALL_READ_TEST_TAG_BUF_AND_HEAP("10000000000000000000000000000000000");
+  MARSHALL_READ_TEST_TAG_BUF_AND_HEAP("100000000000000000000000000000");
   MARSHALL_READ_TEST_TAG_BUF_AND_HEAP("[1, 2]");
   MARSHALL_READ_TEST_TAG_BUF_AND_HEAP("defmodule Test do end");
   MARSHALL_READ_TEST_TAG_BUF_AND_HEAP("%{a: 1, b: 2}");
@@ -206,8 +215,8 @@ TEST_CASE(marshall_read_to_buf)
   s_buf buf = {0};
   s_marshall_read m = {0};
   buf_init(&buf, false, sizeof(b), b);
-  TEST_ASSERT(marshall_init(&m) != NULL);
-  TEST_EQ(marshall_read_to_buf(&m, &buf), sizeof(s_marshall_read_read_header));
+  TEST_ASSERT(marshall_read_init(&m) != NULL);
+  TEST_EQ(marshall_read_to_buf(&m, &buf), sizeof(s_marshall_read));
   marshall_clean(&m);
 }
 TEST_CASE_END(marshall_read_to_buf)
@@ -217,10 +226,10 @@ TEST_CASE(marshall_read_to_file)
   u32 value = 42;
   s_marshall_read m = {0};
   s_str path = {0};
-  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_read_init(&m));
   TEST_ASSERT(marshall_read_u32(&m, false, value));
   TEST_EQ(marshall_read_to_file(&m, ".marshall_read_test_to_file.1.kc3m"),
-          sizeof(s_marshall_read_read_header) +
+          sizeof(s_marshall_read) +
           sizeof(u32));
   TEST_EQ(test_file_compare(".marshall_read_test_to_file.1.kc3m",
                              "marshall_read_test_to_file.1.expected.kc3m"),
@@ -238,7 +247,7 @@ TEST_CASE(marshall_read_to_str)
   s_marshall_read m = {0};
   s_str str = {0};
   s_str expected = {0};
-  TEST_ASSERT(marshall_init(&m));
+  TEST_ASSERT(marshall_read_init(&m));
   TEST_ASSERT(marshall_read_u32(&m, false, value));
   TEST_EQ(marshall_read_to_str(&m, &str), &str);
   marshall_clean(&m);
@@ -254,24 +263,24 @@ TEST_CASE_END(marshall_read_to_str)
 
 TEST_CASE(marshall_read_u8)
 {
-  U8(0x00, "\x00");
-  U8(0xFF, "\xFF");
-  U8(0x00, "\x00");
-  U8(0xFF, "\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(u8, 0x00, "\x00");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(u8, 0xFF, "\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(u8, 0x00, "\x00");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(u8, 0xFF, "\xFF");
 }
 TEST_CASE_END(marshall_read_u8)
 
 TEST_CASE(marshall_read_u16)
 {
-  U16(0xFFFF, "\xFF\xFF");
-  U16(0xFFFF, "\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(u16, 0xFFFF, "\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(u16, 0xFFFF, "\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_u16)
 
 TEST_CASE(marshall_read_u32)
 {
-  U32(0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
-  U32(0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(u32, 0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(u32, 0xFFFFFFFF, "\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_u32)
 
@@ -286,9 +295,10 @@ TEST_CASE_END(marshall_read_u64)
 
 TEST_CASE(marshall_read_uw)
 {
-  UW(0, "\0\0\0\0\0\0\0\0");
-  UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  UW(0, "\0\0\0\0\0\0\0\0");
-  UW(~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(uw, 0, "\0\0\0\0\0\0\0\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(uw, ~0,
+                                  "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(uw, 0, "\0\0\0\0\0\0\0\0");
+  MARSHALL_READ_TEST_BUF_AND_HEAP(uw, ~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_uw)
