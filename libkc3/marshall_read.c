@@ -17,7 +17,6 @@
 #include "assert.h"
 #include "marshall_read.h"
 #include "buf.h"
-#include <stdlib.h>
 
 #define DEF_MARSHALL_READ(name, type)                                  \
   s_marshall_read * marshall_read_ ## name (s_marshall_read *mr,       \
