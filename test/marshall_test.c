@@ -351,11 +351,11 @@ TEST_CASE(marshall_to_str)
   TEST_ASSERT(marshall_u32(&m, false, value));
   TEST_EQ(marshall_to_str(&m, &str), &str);
   marshall_clean(&m);
-  expected = (s_str) {{0}, 36, {"KC3MARSH"
-                                "\x00\x00\x00\x00\x00\x00\x00\x00"
-                                "\x00\x00\x00\x00\x00\x00\x00\x00"
-                                "\x04\x00\x00\x00\x00\x00\x00\x00"
-                                "\x32\x79\x06\x00"}};
+  expected = STR_1("KC3MARSH"
+                   "\x00\x00\x00\x00\x00\x00\x00\x00"
+                   "\x00\x00\x00\x00\x00\x00\x00\x00"
+                   "\x04\x00\x00\x00\x00\x00\x00\x00"
+                   "\x32\x79\x06\x00");
   TEST_STR_EQ(str, expected);
   str_clean(&str);
 }
