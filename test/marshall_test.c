@@ -47,6 +47,8 @@
     marshall_clean(&m);                                                \
   } while (0)
 
+#define MARSHALL_READ_TEST_BOTH_MEM_ZONE(test, expected) \
+
 #define MARSHALL_TEST_BUF_CHARACTER(test, expected) \
   MARSHALL_TEST_CHARACTER(false, test, expected)
 
