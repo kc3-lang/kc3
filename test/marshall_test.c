@@ -24,7 +24,6 @@
   do {                                                                 \
     s_marshall m = {0};                                                \
     const s_str expected_str = STR_1(expected);                        \
-    s_buf *buf = NULL;                                                 \
     s_str test_str = {0};                                              \
     TEST_ASSERT(marshall_init(&m));                                    \
     TEST_ASSERT(marshall_ ## type (&m, on_heap, (type) (test)));       \
