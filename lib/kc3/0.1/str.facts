@@ -10,6 +10,9 @@ replace {Str.ends_with?, :symbol_value,
 add {Str, :symbol, Str.ftime}
 replace {Str.ftime, :symbol_value,
          cfn Str "str_init_ftime" (Result, Time, Str)}
+add {Str, :symbol, Str.has_reserved_characters?}
+replace {Str.has_reserved_characters?, :symbol_value,
+         cfn Bool "str_has_reserved_characters" (Str, Result)}
 add {Str, :symbol, Str.has_str?}
 replace {Str.has_str?, :symbol_value,
          cfn Bool "str_has_str" (Str, Str, Result)}

@@ -3787,9 +3787,8 @@ sw buf_parse_str_u8 (s_buf *buf, u8 *dest)
     *dest = digit[0] * 64 + digit[1] * 8 + digit[2];
     r = result;
     goto clean;
-  read_u8:
-    buf_save_restore_rpos(buf, &save);
   }
+ read_u8:
   r = buf_read_u8(buf, dest);
   goto clean;
  restore:

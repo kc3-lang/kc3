@@ -325,16 +325,16 @@ bool * str_has_reserved_characters (const s_str *src, bool *dest)
   sw r;
   s_str str;
   str_init(&str, NULL, src->size, src->ptr.p);
-  while (str.size > 0) {
-    if ((r = str_read_character_utf8(&str, &c)) < 0) {
-      *dest = true;
-      return dest;
-    }
-    if (! r)
-      break;
-    if (str_character_is_reserved(c)) {
-      *dest = true;
-      return dest;
+  if (str.size) {
+    while (str.size > 0) {
+      if ((r = str_read_character_utf8(&str, &c)) <= 0) {
+        *dest = true;
+        return dest;
+      }
+      if (str_character_is_reserved(c)) {
+        *dest = true;
+        return dest;
+      }
     }
   }
   *dest = false;
