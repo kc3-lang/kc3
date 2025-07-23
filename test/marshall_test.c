@@ -23,24 +23,13 @@
 #define MARSHALL_TEST(type, on_heap, test, expected)                   \
   do {                                                                 \
     s_marshall m = {0};                                                \
+    const s_str expected_str = STR_1(expected);                        \
     s_buf *buf = NULL;                                                 \
+    s_str test_str = {0};                                              \
     TEST_ASSERT(marshall_init(&m));                                    \
     TEST_ASSERT(marshall_ ## type (&m, on_heap, (type) (test)));       \
-    buf = (on_heap) ? &m.heap : &m.buf;                                \
-    TEST_MEM_EQ(buf->ptr.pu8, sizeof(type),                            \
-      (expected), sizeof(expected) - 1);                               \
-    marshall_clean(&m);                                                \
-  } while (0)
-
-#define MARSHALL_TEST_CHARACTER(on_heap, test, expected)               \
-  do {                                                                 \
-    s_marshall m = {0};                                                \
-    s_buf *buf = NULL;                                                 \
-    TEST_ASSERT(marshall_init(&m));                                    \
-    TEST_ASSERT(marshall_character(&m, (on_heap), (test)));            \
-    buf = ((on_heap)) ? &m.heap : &m.buf;                              \
-    TEST_MEM_EQ(buf->ptr.pu8, sizeof(expected) - 1,                    \
-      (expected), sizeof(expected) - 1);                               \
+    TEST_ASSERT(marshall_to_str(&m, &test_str));                       \
+    TEST_STR_EQ(test_str, expected_str);                               \
     marshall_clean(&m);                                                \
   } while (0)
 
@@ -48,7 +37,7 @@
   MARSHALL_TEST(bool, false, test, expected)
 
 #define MARSHALL_TEST_BUF_CHARACTER(test, expected) \
-  MARSHALL_TEST_CHARACTER(false, test, expected)
+  MARSHALL_TEST(character, false, test, expected)
 
 #define MARSHALL_TEST_BUF_S8(test, expected)        \
   MARSHALL_TEST(s8, false, test, expected)
@@ -84,7 +73,7 @@
   MARSHALL_TEST(bool, true, test, expected)
 
 #define MARSHALL_TEST_HEAP_CHARACTER(test, expected) \
-  MARSHALL_TEST_CHARACTER(true, test, expected)
+  MARSHALL_TEST(character, true, test, expected)
 
 #define MARSHALL_TEST_HEAP_S8(test, expected)       \
   MARSHALL_TEST(s8, true, test, expected)

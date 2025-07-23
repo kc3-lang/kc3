@@ -170,36 +170,38 @@
 
 #define TEST_STR_EQ(test, expected)                                    \
   do {                                                                 \
-    bool ko = false;                                                   \
-    s_str test_str = (test);                                           \
-    s_str expected_str = (expected);                                   \
+    bool  TEST_STR_EQ_ko = false;                                      \
+    s_str TEST_STR_EQ_test_str = (test);                               \
+    s_str TEST_STR_EQ_expected_str = (expected);                       \
     sw i = 0;                                                          \
-    if (test_str.size != expected_str.size)                            \
-      ko = true;                                                       \
-    else {							       \
-      while (i < test_str.size) {                                      \
-        if (test_str.ptr.pchar[i] != expected_str.ptr.pchar[i]) {      \
-          ko = true;						       \
+    if (TEST_STR_EQ_test_str.size !=                                   \
+        TEST_STR_EQ_expected_str.size)                                 \
+      TEST_STR_EQ_ko = true;                                           \
+    else {							                                               \
+      while (i < TEST_STR_EQ_test_str.size) {                          \
+        if (TEST_STR_EQ_test_str.ptr.pchar[i] !=                       \
+            TEST_STR_EQ_expected_str.ptr.pchar[i]) {                   \
+          TEST_STR_EQ_ko = true;						                           \
           break;                                                       \
         }                                                              \
-	i++;							       \
-      }								       \
-    }								       \
-    if (ko) {							       \
-      test_ko();						       \
-      fprintf(stderr, "\n%sTEST_STR_EQ failed in %s:%d %s\n"	       \
-	      "Expected ",					       \
-	      TEST_COLOR_KO,					       \
-	      __FILE__, __LINE__, __func__);			       \
-      fflush(stderr);						       \
-      err_inspect_str(&expected_str);				       \
-      fprintf(stderr, "\n"					       \
-	      "got      ");					       \
-      err_inspect_str(&test_str);				       \
-      fprintf(stderr, "%s\n",					       \
-	      TEST_COLOR_RESET);				       \
-      return 1;							       \
-    }								       \
+	      i++;							                                             \
+      }								                                                 \
+    }								                                                   \
+    if (TEST_STR_EQ_ko) {							                                 \
+      test_ko();						                                           \
+      fprintf(stderr, "\n%sTEST_STR_EQ failed in %s:%d %s\n"	         \
+	      "Expected ",					                                         \
+	      TEST_COLOR_KO,					                                       \
+	      __FILE__, __LINE__, __func__);			                           \
+      fflush(stderr);						                                       \
+      err_inspect_str(&TEST_STR_EQ_expected_str);				               \
+      fprintf(stderr, "\n"					                                   \
+	      "got      ");					                                         \
+      err_inspect_str(&TEST_STR_EQ_test_str);				                   \
+      fprintf(stderr, "%s\n",					                                 \
+	      TEST_COLOR_RESET);				                                     \
+      return 1;							                                           \
+    }								                                                   \
   } while (0)
 
 #define TEST_STRNCMP(test, result, bytes)                              \

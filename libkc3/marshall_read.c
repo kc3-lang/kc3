@@ -15,6 +15,7 @@
 #include "types.h"
 #include "list.h"
 #include "assert.h"
+#include "marshall.h"
 #include "marshall_read.h"
 #include "buf.h"
 
@@ -56,8 +57,31 @@ DEF_MARSHALL_READ(f128, f128)
 DEF_MARSHALL_READ(f32, f32)
 DEF_MARSHALL_READ(f64, f64)
 
-s_marshall_read *marshall_read_heap_pointer(s_marshall_read *mr,
-                                           bool heap, sw *heap_offset)
+s_marshall_read * marshall_read_header (s_marshall_read *mr)
+{
+  s_marshall_header header = {0};
+  s_str str = {{0}, sizeof(s_marshall_header), {&header}};
+  s_marshall_read tmp;
+  assert(mr);
+  tmp = *mr;
+  if (! buf_read(&tmp.buf, sizeof(s_marshall_header), &str))
+    return NULL;
+  if (le64toh(header.le_magic) != MARSHALL_MAGIC) {
+    err_puts("marshall_read_header: invalid magic");
+    assert(! "marshall_read_header: invalid magic");
+    return NULL;
+  }
+  tmp.heap_count = le64toh(header.le_heap_count);
+  tmp.heap_size = le64toh(header.le_heap_size);
+  tmp.buf_size = le64toh(header.le_buf_size);
+  *mr = tmp;
+  return mr;
+}
+
+
+s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
+                                              bool heap,
+                                              sw *heap_offset)
 {
   sw r = 0;
   assert(mr);
@@ -83,10 +107,9 @@ s_marshall_read * marshall_read_init_1 (s_marshall_read *mr,
                                         const char *p, uw size)
 {
   s_str str = {0};
-  static const s_str str_0 = {0};
   assert(mr);
   if (! p || ! size)
-    return marshall_read_init_str(mr, &str_0);
+    return NULL;
   str.size = size;
   str.ptr.pchar = p;
   return marshall_read_init_str(mr, &str);
@@ -95,13 +118,19 @@ s_marshall_read * marshall_read_init_1 (s_marshall_read *mr,
 s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
                                           const s_str *src)
 {
-   assert(mr);
-  if (mr == NULL)
+  s_marshall_read tmp = {0};
+  assert(mr);
+  if (! buf_init_str_copy(&tmp.buf, src))
     return NULL;
-  if (! buf_init_str_copy(&mr->heap, src))
+  if (! marshall_read_header(&tmp)) {
+    buf_clean(&tmp.buf);
     return NULL;
-  if (! buf_init_str_copy(&mr->buf, src))
+  }
+  if (! buf_init(&tmp.heap, false, tmp.buf.size, tmp.buf.ptr.pchar)) {
+    buf_clean(&tmp.buf);
     return NULL;
+  }
+  *mr = tmp;
   return mr;
 }
 
