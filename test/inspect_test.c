@@ -462,6 +462,7 @@ TEST_CASE(inspect_str)
   INSPECT_TEST_STR(str_init(&str, NULL, 16, zero),
                    "\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0"
                    "\\0\"");
+  INSPECT_TEST_STR(str_init(&str, NULL, 1, "\xFF"), "\"\\xFF\"");
 }
 TEST_CASE_END(inspect_str)
 
