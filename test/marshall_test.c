@@ -256,42 +256,84 @@ TEST_CASE_END(marshall_plist_twice)
 
 TEST_CASE(marshall_s8)
 {
-  MARSHALL_TEST_BUF_S8(0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_BUF_S8(0xAB, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\xAB");
-  MARSHALL_TEST_HEAP_S8(0, "KC3MARSH\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_HEAP_S8(0xAB, "KC3MARSH\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xAB");
+  MARSHALL_TEST_BUF_S8(0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                       "\0\0\0\0\0\0\0\0"
+                       "\x01\0\0\0\0\0\0\0"
+                       "\0");
+  MARSHALL_TEST_BUF_S8(0xAB, "KC3MARSH\0\0\0\0\0\0\0\0"
+                       "\0\0\0\0\0\0\0\0"
+                       "\x01\0\0\0\0\0\0\0"
+                       "\xAB");
+  MARSHALL_TEST_HEAP_S8(0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\x01\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\0");
+  MARSHALL_TEST_HEAP_S8(0xAB, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\x01\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\xAB");
 }
 TEST_CASE_END(marshall_s8)
 
 TEST_CASE(marshall_s16)
 {
-  MARSHALL_TEST_BUF_S16(0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x02\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_BUF_S16(-1, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x02\0\0\0\0\0\0\0\xFF\xFF");
-  MARSHALL_TEST_HEAP_S16(0, "KC3MARSH\0\0\0\0\0\0\0\0\x02\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_HEAP_S16(-1, "KC3MARSH\0\0\0\0\0\0\0\0\x02\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xFF\xFF");
+  MARSHALL_TEST_BUF_S16(0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\x02\0\0\0\0\0\0\0"
+                        "\0\0");
+  MARSHALL_TEST_BUF_S16(-1, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\x02\0\0\0\0\0\0\0"
+                        "\xFF\xFF");
+  MARSHALL_TEST_HEAP_S16(0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                         "\x02\0\0\0\0\0\0\0"
+                         "\0\0\0\0\0\0\0\0"
+                         "\0\0");
+  MARSHALL_TEST_HEAP_S16(-1, "KC3MARSH\0\0\0\0\0\0\0\0"
+                         "\x02\0\0\0\0\0\0\0"
+                         "\0\0\0\0\0\0\0\0"
+                         "\xFF\xFF");
 }
 TEST_CASE_END(marshall_s16)
 
 TEST_CASE(marshall_s32)
 {
-  MARSHALL_TEST_BUF_S32(0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-                        "\x04\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_BUF_S32(~0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-                        "\x04\0\0\0\0\0\0\0\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_BUF_S32(0xDEADBEEF, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0"
-                        "\0\0\0\0\x04\0\0\0\0\0\0\0\xEF\xBE\xAD\xDE");
-  MARSHALL_TEST_BUF_S32(0xDEADCAFE, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0"
-                        "\0\0\0\0\x04\0\0\0\0\0\0\0\xFE\xCA\xAD\xDE");
-  MARSHALL_TEST_BUF_S32(0xFEEDBABE, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0"
-                        "\0\0\0\0\x04\0\0\0\0\0\0\0\xBE\xBA\xED\xFE");
-  MARSHALL_TEST_HEAP_S32(0, "KC3MARSH\0\0\0\0\0\0\0\0\x04\0\0\0\0\0\0"
-                         "\0\0\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_HEAP_S32(~0, "KC3MARSH\0\0\0\0\0\0\0\0\x04\0\0\0\0\0\0"
-                         "\0\0\0\0\0\0\0\0\0\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_HEAP_S32(0xDEADBEEF, "KC3MARSH\0\0\0\0\0\0\0\0\x04\0\0"
-                         "\0\0\0\0\0\0\0\0\0\0\0\0\0\xEF\xBE\xAD\xDE");
-  MARSHALL_TEST_HEAP_S32(0xDEADCAFE, "KC3MARSH\0\0\0\0\0\0\0\0\x04\0\0"
-                         "\0\0\0\0\0\0\0\0\0\0\0\0\0\xFE\xCA\xAD\xDE");
+  MARSHALL_TEST_BUF_S32(0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\x04\0\0\0\0\0\0\0"
+                        "\0\0\0\0");
+  MARSHALL_TEST_BUF_S32(~0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\x04\0\0\0\0\0\0\0"
+                        "\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_BUF_S32(0xDEADBEEF, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\x04\0\0\0\0\0\0\0"
+                        "\xEF\xBE\xAD\xDE");
+  MARSHALL_TEST_BUF_S32(0xDEADCAFE, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\x04\0\0\0\0\0\0\0"
+                        "\xFE\xCA\xAD\xDE");
+  MARSHALL_TEST_BUF_S32(0xFEEDBABE, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\x04\0\0\0\0\0\0\0"
+                        "\xBE\xBA\xED\xFE");
+  MARSHALL_TEST_HEAP_S32(0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                         "\x04\0\0\0\0\0\0\0"
+                         "\0\0\0\0\0\0\0\0"
+                         "\0\0\0\0");
+  MARSHALL_TEST_HEAP_S32(~0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                         "\x04\0\0\0\0\0\0\0"
+                         "\0\0\0\0\0\0\0\0"
+                         "\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_HEAP_S32(0xDEADBEEF, "KC3MARSH\0\0\0\0\0\0\0\0"
+                         "\x04\0\0\0\0\0\0\0"
+                         "\0\0\0\0\0\0\0\0"
+                         "\xEF\xBE\xAD\xDE");
+  MARSHALL_TEST_HEAP_S32(0xDEADCAFE, "KC3MARSH\0\0\0\0\0\0\0\0"
+                         "\x04\0\0\0\0\0\0\0"
+                         "\0\0\0\0\0\0\0\0"
+                         "\xFE\xCA\xAD\xDE");
   MARSHALL_TEST_HEAP_S32(0xFEEDBABE, "KC3MARSH\0\0\0\0\0\0\0\0\x04\0\0"
                          "\0\0\0\0\0\0\0\0\0\0\0\0\0\xBE\xBA\xED\xFE");
 }
