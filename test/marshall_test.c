@@ -25,11 +25,33 @@
     s_marshall m = {0};                                                \
     const s_str expected_str = STR_1(expected);                        \
     s_str test_str = {0};                                              \
+    test_context("marshall_" # type "(&m, " # on_heap ", " # test ")"  \
+                 " -> " # expected);                                   \
     TEST_ASSERT(marshall_init(&m));                                    \
     TEST_ASSERT(marshall_ ## type (&m, on_heap, (type) (test)));       \
     TEST_ASSERT(marshall_to_str(&m, &test_str));                       \
     TEST_STR_EQ(test_str, expected_str);                               \
     marshall_clean(&m);                                                \
+    test_context(NULL);                                                \
+  } while (0)
+
+#define MARSHALL_TEST_STR(test, on_heap, expected)                     \
+  do {                                                                 \
+    s_str str_expected = STR_1(expected);                              \
+    s_str str_test = {0};                                              \
+    s_str str_result = {0};                                            \
+    test_context("marshall_str(&m, " # on_heap ", " # test ")"         \
+                 " -> " # expected);                                   \
+    TEST_EQ(marshall_init(&m), &m);                                    \
+    TEST_EQ(str_init(&str_test, NULL, sizeof(test) - 1, (test)),       \
+            &str_test);                                                \
+    TEST_EQ(marshall_str(&m, (on_heap), &str_test), &m);               \
+    TEST_EQ(marshall_to_str(&m, &str_result), &str_result);            \
+    TEST_STR_EQ(str_result, str_expected);                             \
+    str_clean(&str_result);                                            \
+    str_clean(&str_test);                                              \
+    marshall_clean(&m);                                                \
+    test_context(NULL);                                                \
   } while (0)
 
 #define MARSHALL_TEST_BUF_BOOL(test, expected)                         \
@@ -49,6 +71,9 @@
 
 #define MARSHALL_TEST_BUF_S64(test, expected)                          \
   MARSHALL_TEST(s64, false, test, expected)
+
+#define MARSHALL_TEST_BUF_STR(test, expected)                          \
+  MARSHALL_TEST_STR(test, false, expected)
 
 #define MARSHALL_TEST_BUF_SW(test, expected)                           \
   MARSHALL_TEST(sw, false, test, expected)
@@ -85,6 +110,9 @@
 
 #define MARSHALL_TEST_HEAP_S64(test, expected)                         \
   MARSHALL_TEST(s64, true, test, expected)
+
+#define MARSHALL_TEST_HEAP_STR(test, expected)   \
+  MARSHALL_TEST_STR(test, true, expected)
 
 #define MARSHALL_TEST_HEAP_SW(test, expected)                          \
   MARSHALL_TEST(sw, true, test, expected)
@@ -138,6 +166,7 @@ TEST_CASE_PROTOTYPE(marshall_u64);
 TEST_CASE_PROTOTYPE(marshall_uw);
 TEST_CASE_PROTOTYPE(marshall_plist);
 TEST_CASE_PROTOTYPE(marshall_plist_twice);
+TEST_CASE_PROTOTYPE(marshall_str);
 
 void marshall_test (void)
 {
@@ -158,6 +187,7 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_uw);
   TEST_CASE_RUN(marshall_plist);
   TEST_CASE_RUN(marshall_plist_twice);
+  TEST_CASE_RUN(marshall_str);
 }
 
 TEST_CASE(marshall_bool)
@@ -354,6 +384,32 @@ TEST_CASE(marshall_s64)
                          "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_s64)
+
+TEST_CASE(marshall_str)
+{
+  s_marshall m = {0};
+  MARSHALL_TEST_BUF_STR("",
+                        "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\x04\0\0\0\0\0\0\0"
+                        "\0\0\0\0");
+  MARSHALL_TEST_BUF_STR("hello",
+                        "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\t\0\0\0\0\0\0\0"
+                        "\x05\0\0\0hello");
+  MARSHALL_TEST_BUF_STR("hello\xFF\x00world",
+                        "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\x10\0\0\0\0\0\0\0"
+                        "\x0C\0\0\0hello\xFF\0world");
+  MARSHALL_TEST_BUF_STR("héllo wörld",
+                        "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0"
+                        "\x11\0\0\0\0\0\0\0"
+                        "\r\0\0\0héllo wörld");
+}
+TEST_CASE_END(marshall_str)
 
 TEST_CASE(marshall_sw)
 {

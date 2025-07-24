@@ -204,6 +204,8 @@ s_marshall * marshall_str (s_marshall *m, bool heap, const s_str *src)
   assert(src);
   if (! marshall_u32(m, heap, src->size))
     return NULL;
+  if (! src->size)
+    return m;
   buf = heap ? &m->heap : &m->buf;
   if ((r = buf_write(buf, src->ptr.pchar, src->size)) <= 0)
     return NULL;
