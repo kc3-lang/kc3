@@ -3225,13 +3225,13 @@ sw buf_inspect_str (s_buf *buf, const s_str *str)
   if (b)
     return buf_inspect_str_reserved(buf, str, true);
   buf_save_init(buf, &save);
-  if ((r = buf_write_character_utf8(buf, '"')) <= 0)
+  if ((r = buf_write_1(buf, "\"")) <= 0)
     goto clean;
   result += r;
   if ((r = buf_write_str_without_indent(buf, str)) < 0)
     goto restore;
   result += r;
-  if ((r = buf_write_character_utf8(buf, '"')) <= 0)
+  if ((r = buf_write_1(buf, "\"")) <= 0)
     goto restore;
   result += r;
   r = result;
@@ -3249,12 +3249,12 @@ sw buf_inspect_str_byte (s_buf *buf, const u8 *byte)
   sw result = 0;
   s_buf_save save;
   buf_save_init(buf, &save);
-  if ((r = buf_write_1(buf, "\\")) <= 0) {
+  if ((r = buf_write_1(buf, "\\")) != 1) {
     r = -1;
     goto clean;
   }
   result += r;
-  if ((r = buf_write_1(buf, "x")) <= 0)
+  if ((r = buf_write_1(buf, "x")) != 1)
     goto restore;
   result += r;
   if ((r = buf_u8_to_hex(buf, byte)) != 2)
@@ -3273,18 +3273,9 @@ sw buf_inspect_str_byte (s_buf *buf, const u8 *byte)
 
 sw buf_inspect_str_byte_size (s_pretty *pretty, const u8 *byte)
 {
-  sw r;
-  sw result = 0;
   (void) byte;
-  if ((r = buf_write_1_size(pretty, "\\")) < 0)
-    return r;
-  result += r;
-  if ((r = buf_write_1_size(pretty, "x")) < 0)
-    return r;
-  result += r;
-  r = 2;
-  result += r;
-  return result;
+  (void) pretty;
+  return 4;
 }
 
 sw buf_inspect_str_character (s_buf *buf, const character *c)
@@ -3540,9 +3531,7 @@ sw buf_inspect_str_reserved (s_buf *buf, const s_str *str, bool quotes)
   }
   s = *str;
   while (r) {
-    if ((r = str_read_character_utf8(&s, &c)) < 0)
-      goto restore;
-    if (r) {
+    if ((r = str_read_character_utf8(&s, &c)) > 0) {
       if ((r = buf_inspect_str_character(buf, &c)) <= 0)
         goto restore;
       result += r;
@@ -3581,29 +3570,47 @@ sw buf_inspect_str_reserved_size (s_pretty *pretty, const s_str *str,
   sw result = 0;
   s_str s;
   if (quotes) {
-    if ((r = buf_write_1_size(pretty, "\"")) <= 0)
+    if ((r = buf_write_1_size(pretty, "\"")) <= 0) {
+      err_puts("buf_inspect_str_reserved_size: buf_write_1_size 1");
+      assert(! "buf_inspect_str_reserved_size: buf_write_1_size 1");
       return r;
+    }
     result += r;
   }
   s = *str;
   while (r) {
-    if ((r = str_read_character_utf8(&s, &c)) < 0)
-      goto restore;
-    if (r) {
-      if ((r = buf_inspect_str_character_size(pretty, &c)) <= 0)
+    if ((r = str_read_character_utf8(&s, &c)) > 0) {
+      if ((r = buf_inspect_str_character_size(pretty, &c)) <= 0) {
+        err_puts("buf_inspect_str_reserved_size:"
+                 " buf_inspect_str_character_size");
+        assert(!("buf_inspect_str_reserved_size:"
+                 " buf_inspect_str_character_size"));
         goto restore;
+      }
       result += r;
     }
-    else if ((r = str_read_u8(&s, &byte)) < 0)
+    else if ((r = str_read_u8(&s, &byte)) < 0) {
+      err_puts("buf_inspect_str_reserved_size: str_read_u8");
+      assert(!("buf_inspect_str_reserved_size: str_read_u8"));
       goto restore;
+    }
     else if (r) {
-      r = buf_inspect_str_byte_size(pretty, &byte);
+      if ((r = buf_inspect_str_byte_size(pretty, &byte)) <= 0) {
+        err_puts("buf_inspect_str_reserved_size:"
+                 " buf_inspect_str_byte_size");
+        assert(!("buf_inspect_str_reserved_size:"
+                 " buf_inspect_str_byte_size"));
+        goto restore;
+      }
       result += r;
     }
   }
   if (quotes) {
-    if ((r = buf_write_1_size(pretty, "\"")) <= 0)
-      return r;
+    if ((r = buf_write_1_size(pretty, "\"")) <= 0) {
+      err_puts("buf_inspect_str_reserved_size: buf_write_1_size 2");
+      assert(! "buf_inspect_str_reserved_size: buf_write_1_size 2");
+      goto restore;
+    }
     result += r;
   }
   return result;
@@ -3616,18 +3623,30 @@ sw buf_inspect_str_size (s_pretty *pretty, const s_str *str)
   bool b;
   sw r;
   sw result = 0;
-  if (! str_has_reserved_characters(str, &b))
+  if (! str_has_reserved_characters(str, &b)) {
+    err_puts("buf_inspect_str_size: str_has_reserved_characters");
+    assert(! "buf_inspect_str_size: str_has_reserved_characters");
     return -1;
+  }
   if (b)
     return buf_inspect_str_reserved_size(pretty, str, true);
-  if ((r = buf_write_1_size(pretty, "\"")) < 0)
+  if ((r = buf_write_1_size(pretty, "\"")) < 0) {
+    err_puts("buf_inspect_str_size: buf_write_1_size 1");
+    assert(! "buf_inspect_str_size: buf_write_1_size 1");
     return r;
+  }
   result += r; 
-  if ((r = buf_write_str_size(pretty, str)) < 0)
+  if ((r = buf_write_str_without_indent_size(pretty, str)) < 0) {
+    err_puts("buf_inspect_str_size: buf_write_str_without_indent_size");
+    assert(! "buf_inspect_str_size: buf_write_str_without_indent_size");
     return r;
+  }
   result += r;
-  if ((r = buf_write_1_size(pretty, "\"")) < 0)
+  if ((r = buf_write_1_size(pretty, "\"")) < 0) {
+    err_puts("buf_inspect_str_size: buf_write_1_size 2");
+    assert(! "buf_inspect_str_size: buf_write_1_size 2");
     return r;
+  }
   result += r;
   return result;
 }

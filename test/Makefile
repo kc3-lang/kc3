@@ -225,8 +225,14 @@ test_kc3s_debug:
 test_libkc3: libkc3_test
 	time ./libkc3_test
 
+test_libkc3_asan: libkc3_test_asan
+	time ./libkc3_test_asan
+
 test_libkc3_cov: libkc3_test_cov
 	time ./libkc3_test_cov
+
+test_libkc3_debug: libkc3_test_debug
+	time ./libkc3_test_debug
 
 test_markdown:
 	IKC3=${SRC_TOP}/ikc3/ikc3 time ./markdown_test
@@ -284,6 +290,10 @@ test_valgrind: libkc3_test
 	test_httpd_debug \
 	test_ikc3 \
 	test_kc3s \
+	test_libkc3 \
+	test_libkc3_asan \
+	test_libkc3_cov \
+	test_libkc3_debug \
 	test_socket \
 	test_valgrind
 
