@@ -205,16 +205,18 @@ TEST_CASE(marshall_plist)
   s_marshall m = {0};
   s_list *list_test;
   s_str str = {0};
-  const s_str expected =
-    {{0}, 51, {"KC3MARSH\x02\0\0\0\0\0\0\0"
-               "\x13\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-               "\0\0\0\0\0\0\0\0\x13\0\x18\0\0\0\0\0"
-               "\0\0\0"}};
+  const s_str expected = STR_1("KC3MARSH\x02\0\0\0\0\0\0\0"
+                               "\x16\0\0\0\0\0\0\0"
+                               "\x08\0\0\0\0\0\0\0"
+                               "\x13\0\x18#\0\0\0\0"
+                               "\0\0\0\x13\x01\x18.\0"
+                               "\0\0\0\0\0\0 \0\0"
+                               "\0\0\0\0\0");
 
   TEST_ASSERT(marshall_init(&m));
   list_test = list_new_1("[0, 1]");
   TEST_ASSERT(list_test);
-  TEST_ASSERT(marshall_plist(&m, true, &list_test));
+  TEST_ASSERT(marshall_plist(&m, false, &list_test));
   marshall_to_str(&m, &str);
   TEST_STR_EQ(str, expected);
   str_clean(&str);
@@ -228,18 +230,22 @@ TEST_CASE(marshall_plist_twice)
   s_marshall m = {0};
   s_list *list_test;
   s_str str = {0};
-  const s_str expected =
-    {{0}, 59, {"KC3MARSH\x03\0\0\0\0\0\0\0"
-               "\x1B\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-               "\0\0\0\0\0\0\0\0\x13\0\x18\0\0\0\0\0"
-               "\0\0\0\0\0\0\0\0\0\0\0"}};
+  const s_str expected = STR_1("KC3MARSH\x04\0\0\0\0\0\0\0"
+                               ",\0\0\0\0\0\0\0"
+                               "\x10\0\0\0\0\0\0\0"
+                               "\x13\0\x18#\0\0\0\0"
+                               "\0\0\0\x13\x01\x18.\0"
+                               "\0\0\0\0\0\0\x13\0"
+                               "\x18\x39\0\0\0\0\0\0\0"
+                               "\x13\x01\x18\x44\0\0\0\0"
+                               "\0\0\0 \0\0\0\0\0\0\0"
+                               "\x36\0\0\0\0\0\0\0");
 
   TEST_ASSERT(marshall_init(&m));
   list_test = list_new_1("[0, 1]");
   TEST_ASSERT(list_test);
-  TEST_ASSERT(marshall_plist(&m, true, &list_test));
-  // Second time
-  TEST_ASSERT(marshall_plist(&m, true, &list_test));
+  TEST_ASSERT(marshall_plist(&m, false, &list_test));
+  TEST_ASSERT(marshall_plist(&m, false, &list_test));
   marshall_to_str(&m, &str);
   TEST_STR_EQ(str, expected);
   str_clean(&str);

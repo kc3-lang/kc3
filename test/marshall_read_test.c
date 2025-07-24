@@ -11,7 +11,6 @@
  * THIS SOFTWARE.
  */
 
-#include <assert.h>
 #include <endian.h>
 #include "../libkc3/file.h"
 #include "../libkc3/inspect.h"
@@ -20,7 +19,9 @@
 #include "../libkc3/str.h"
 #include "../libkc3/list.h"
 #include "../libkc3/tag.h"
+#include "../libkc3/tag_init.h"
 #include "test.h"
+#include "tag_test.h"
 
 #define MARSHALL_READ_TEST(type, on_heap, test, expected)              \
   do {                                                                 \
@@ -95,21 +96,23 @@ TEST_CASE_END(marshall_read_bool)
 
 TEST_CASE(marshall_read_plist)
 {
-  s_marshall_read m = {0};
-  s_list *list_test;
-  s_str str = {0};
-  const s_str expected =
-    {{0}, 51, {"KC3MARSH\x02\0\0\0\0\0\0\0"
-               "\x13\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-               "\0\0\0\0\0\0\0\0\x13\0\x18\0\0\0\0\0"
-               "\0\0\0"}};
-
-  TEST_ASSERT(marshall_read_init(&m));
-  list_test = list_new_1("[0, 1]");
-  TEST_ASSERT(list_test);
-  TEST_ASSERT(marshall_read_plist(&m, true, &list_test));
-  marshall_read_to_str(&m, &str);
-  TEST_STR_EQ(str, expected);
+  s_marshall_read mr = {0};
+  s_tag expected = {0};
+  s_tag test_tag = {0};
+  const char test_str[] = "KC3MARSH\x02\0\0\0\0\0\0\0"
+                          "\x13\0\0\0\0\0\0\0"
+                          "\0\0\0\0\0\0\0\0"
+                          "\0\0\0\0\0\0\0\0"
+                          "\x13\0\x18\0\0\0\0\0"
+                          "\0\0\0";
+  TEST_EQ(marshall_read_init_1(&mr, test_str, sizeof(test_str) - 1),
+          &mr);
+  TEST_EQ(marshall_read_plist(&mr, true, &test_tag.data.plist), &mr);
+  test_tag.type = TAG_LIST;
+  tag_init_plist_1(&expected, "[0, 1]");
+  TAG_TEST_EQ(&test_tag, &expected);
+  tag_clean(&test_tag);
+  tag_clean(&expected);
 }
 TEST_CASE_END(marshall_read_plist)
 
