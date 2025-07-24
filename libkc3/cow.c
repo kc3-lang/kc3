@@ -134,7 +134,7 @@ s_cow * cow_init_copy (s_cow *cow, s_cow *src)
   assert(src);
   tmp.type = src->type;
   tmp.ref_count = 1;
-  tmp.list = list_new_copy(src->list);
+  tmp.list = list_new_copy_all(src->list);
   if (! tmp.list)
     return NULL;
   *cow = tmp;

@@ -67,7 +67,7 @@ s_fn_clause * fn_clause_new_copy (s_fn_clause *src)
   while (src) {
     *tail = fn_clause_new(NULL);
     (*tail)->arity = src->arity;
-    (*tail)->pattern = list_new_copy(src->pattern);
+    (*tail)->pattern = list_new_copy_all(src->pattern);
     do_block_init_copy(&(*tail)->algo, &src->algo);
     tail = &(*tail)->next_clause;
     src = src->next_clause;

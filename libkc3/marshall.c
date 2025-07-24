@@ -62,22 +62,36 @@ s_marshall * marshall_heap_pointer (s_marshall *m, bool heap, void *p,
   s_tag key = {0};
   sw r;
   s_tag tag = {0};
+  u64 offset;
   assert(m);
   buf = heap ? &m->heap : &m->buf;
   tag_init_tuple(&key, 2);
   key.data.tuple.tag[0].data.u64 = (u64) p;
-  if (! m || ht_get(&m->ht, &key, &tag)) {
+  if (ht_get(&m->ht, &key, &tag)) {
     *present = true;
     goto ok;
   }
   *present = false;
   tag_init_tuple(&tag, 2);
   tag.data.tuple.tag[0].data.u64 = (u64) p;
-  tag.data.tuple.tag[1].data.u64 = (u64) m->heap_pos;
+  tag.data.tuple.tag[0].type = TAG_U64;
+  tag.data.tuple.tag[1].data.u64 =
+    (u64) m->heap_pos + sizeof(s_marshall_header);
+  tag.data.tuple.tag[1].type = TAG_U64;
   if (! ht_add(&m->ht, &tag))
     goto ko;
  ok:
-  if ((r = buf_write_u64(buf, tag.data.tuple.tag[1].data.u64)) <= 0)
+  if (tag.type != TAG_TUPLE ||
+      tag.data.tuple.count != 2 ||
+      tag.data.tuple.tag[1].type != TAG_U64) {
+    err_puts("marshall_heap_pointer: invalid offset in hash table");
+    err_inspect_tag(&tag);
+    err_write_1("\n");
+    assert(! "marshall_heap_pointer: invalid offset in hash table");
+    goto ko;
+  }
+  offset = tag.data.tuple.tag[1].data.u64;
+  if ((r = buf_write_u64(buf, offset)) <= 0)
     goto ko;
   tag_clean(&key);
   tag_clean(&tag);
@@ -141,6 +155,8 @@ s_marshall * marshall_init (s_marshall *m)
 s_marshall * marshall_list (s_marshall *m, bool heap,
                             const s_list *list)
 {
+  assert(m);
+  assert(list);
   if (! marshall_tag(m, heap, &list->tag) ||
       ! marshall_tag(m, heap, &list->next))
     return NULL;
@@ -148,15 +164,17 @@ s_marshall * marshall_list (s_marshall *m, bool heap,
 }
 
 s_marshall * marshall_plist (s_marshall *m, bool heap,
-                             const p_list *list)
+                             const p_list *plist)
 {
+  assert(m);
+  assert(plist);
   bool present = false;
-  if (! m || ! list)
+  if (! m || ! plist)
     return NULL;
-  if (! marshall_heap_pointer(m, heap, *list, &present))
+  if (! marshall_heap_pointer(m, heap, *plist, &present))
     return NULL;
-  if (! present)
-    return marshall_list(m, true, *list);
+  if (! present && *plist)
+    return marshall_list(m, true, *plist);
   return m;
 }
 
@@ -200,6 +218,8 @@ DEF_MARSHALL(sw)
 
 s_marshall * marshall_tag (s_marshall *m, bool heap, const s_tag *tag)
 {
+  assert(m);
+  assert(tag);
   marshall_u8(m, heap, tag->type);
   switch (tag->type) {
   case TAG_BOOL: return marshall_bool(m, heap, tag->data.bool_);

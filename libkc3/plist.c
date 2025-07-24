@@ -186,7 +186,7 @@ p_list * plist_init_copy (p_list *plist, p_list *src)
   s_list *tmp = NULL;
   assert(src);
   assert(plist);
-  if (*src && ! (tmp = list_new_copy(*src)))
+  if (*src && ! (tmp = list_new_copy_all(*src)))
     return NULL;
   *plist = tmp;
   return plist;

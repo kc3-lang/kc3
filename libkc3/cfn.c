@@ -141,7 +141,7 @@ s_tag * cfn_apply (s_cfn *cfn, s_list *args, s_tag *dest)
     if (! (trace = list_new(env->stacktrace)))
       goto ko;
     tag_init_plist(&trace->tag, list_new_psym
-                   (cfn->name, list_new_copy
+                   (cfn->name, list_new_copy_all
                     (args)));
     env->stacktrace = trace;
     env_unwind_protect_push(env, &unwind_protect);
@@ -303,7 +303,7 @@ s_cfn * cfn_init_copy (s_cfn *cfn, const s_cfn *src)
   tmp.name = src->name;
   tmp.arg_result = src->arg_result;
   if (src->arg_types &&
-      ! (tmp.arg_types = list_new_copy(src->arg_types)))
+      ! (tmp.arg_types = list_new_copy_all(src->arg_types)))
     return NULL;
   tmp.arity = src->arity;
   tmp.cif = src->cif;

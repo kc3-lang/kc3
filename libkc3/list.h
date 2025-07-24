@@ -36,7 +36,7 @@ void     list_delete_all (s_list *list);
 void     list_f_clean (p_list *list);
 s_list * list_new (s_list *next);
 s_list * list_new_1 (const char *p);
-s_list * list_new_copy (s_list *src);
+s_list * list_new_copy_all (s_list *src);
 s_list * list_new_f64 (f64 x, s_list *next);
 s_list * list_new_list (s_list *list, s_list *next);
 s_list * list_new_map (uw count, s_list *next);

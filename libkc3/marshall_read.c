@@ -78,17 +78,19 @@ s_marshall_read * marshall_read_header (s_marshall_read *mr)
   return mr;
 }
 
-
 s_marshall_read * marshall_read_heap_pointer (s_marshall_read *mr,
                                               bool heap,
-                                              sw *heap_offset)
+                                              u64 *heap_offset,
+                                              void **present)
 {
-  sw r = 0;
+  u64 offset = 0;
   assert(mr);
   assert(heap_offset);
-  if (! heap_offset || marshall_read_sw(mr, heap, &r) == NULL)
+  assert(present);
+  if (! heap_offset || ! marshall_read_u64(mr, heap, &offset))
     return NULL;
-  *heap_offset += r;
+  *heap_offset = offset;
+  *present = NULL;
   return mr;
 }
 
@@ -137,17 +139,20 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
 s_marshall_read * marshall_read_plist (s_marshall_read *mr, bool heap,
                                        p_list *dest)
 {
-  p_list tmp = {0};
-  sw heap_pos = 0;
+  s_list tmp = {0};
+  u64 heap_pos = 0;
+  void *present = NULL;
   assert(mr);
   assert(dest);
-  if (! marshall_read_heap_pointer(mr, heap, &heap_pos))
+  if (! marshall_read_heap_pointer(mr, heap, &heap_pos, &present))
     return NULL;
-  if (! marshall_read_tag(mr, heap, &tmp->next)) {
-    list_delete_all(tmp);
-    return NULL;
+  if (present) {
+    *dest = present;
+    return mr;
   }
-  *dest = tmp;
+  if (! marshall_read_list(mr, true, &tmp))
+    return NULL;
+  *dest = list_new_copy_all(&tmp);
   return mr;
 }
 

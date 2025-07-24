@@ -437,7 +437,7 @@ bool env_eval_call_fn_args (s_env *env, const s_fn *fn,
     return false;
   }
   tag_init_plist(&trace->tag, list_new_ident
-                 (&fn->ident, list_new_copy
+                 (&fn->ident, list_new_copy_all
                   (args)));
   env->stacktrace = trace;
   if (! block_init(&jump.block, fn->ident.sym)) {

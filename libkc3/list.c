@@ -199,7 +199,7 @@ s_list * list_new_1 (const char *p)
 }
 
 /* FIXME: does not work on circular lists */
-s_list * list_new_copy (s_list *src)
+s_list * list_new_copy_all (s_list *src)
 {
   p_list *i;
   s_list *next;
