@@ -196,6 +196,24 @@ s_tag * str_access (const s_str *str, s_list *key, s_tag *dest)
   return dest;
 }
 
+u8 * str_byte (const s_str *str, s_tag *key, u8 *dest)
+{
+  uw pos;
+  const s_sym *sym_Uw = &g_sym_Uw;
+  if (! uw_init_cast(&pos, &sym_Uw, key)) {
+    err_puts("str_byte: cannot cast to Uw");
+    assert(! "str_byte: cannot cast to Uw");
+    return NULL;
+  }
+  if (pos >= str->size) {
+    err_puts("str_byte: invalid offset (buffer overflow)");
+    assert(! "str_byte: invalid offset (buffer overflow)");
+    return NULL;
+  }
+  *dest = str->ptr.pchar[pos];
+  return dest;
+}
+
 sw str_character (const s_str *str, uw position, character *dest)
 {
   character c;

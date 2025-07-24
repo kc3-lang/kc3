@@ -65,3 +65,5 @@ replace {Str.count_words, :symbol_value, fn (doc) {
 add {Str, :symbol, Str.to_lower}
 replace {Str.to_lower, :symbol_value,
          cfn Str "str_init_to_lower" (Result, Str)}
+add {Str, :symbol, Str.byte}
+replace {Str.byte, :symbol_value, cfn U8 "str_byte" (Str, Tag, Result)}
