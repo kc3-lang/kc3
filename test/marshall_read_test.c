@@ -93,19 +93,6 @@ TEST_CASE(marshall_read_bool)
 }
 TEST_CASE_END(marshall_read_bool)
 
-/* if 0
-
-TEST_CASE(marshall_read_character)
-{
-  MARSHALL_READ_TEST(character, 'A', "A");
-  MARSHALL_READ_TEST(character, '\0', "\x00");
-  MARSHALL_READ_TEST(character, 'Z', "Z");
-  MARSHALL_READ_TEST(character, 'A', "A");
-  MARSHALL_READ_TEST(character, '\0', "\x00");
-  MARSHALL_READ_TEST(character, 'Z', "Z");
-}
-TEST_CASE_END(marshall_read_character)
-
 TEST_CASE(marshall_read_plist)
 {
   s_marshall_read m = {0};
@@ -125,6 +112,20 @@ TEST_CASE(marshall_read_plist)
   TEST_STR_EQ(str, expected);
 }
 TEST_CASE_END(marshall_read_plist)
+
+/* if 0
+
+TEST_CASE(marshall_read_character)
+{
+  MARSHALL_READ_TEST(character, 'A', "A");
+  MARSHALL_READ_TEST(character, '\0', "\x00");
+  MARSHALL_READ_TEST(character, 'Z', "Z");
+  MARSHALL_READ_TEST(character, 'A', "A");
+  MARSHALL_READ_TEST(character, '\0', "\x00");
+  MARSHALL_READ_TEST(character, 'Z', "Z");
+}
+TEST_CASE_END(marshall_read_character)
+
 
 TEST_CASE(marshall_read_s8)
 {
