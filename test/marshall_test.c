@@ -32,76 +32,76 @@
     marshall_clean(&m);                                                \
   } while (0)
 
-#define MARSHALL_TEST_BUF_BOOL(test, expected)        \
+#define MARSHALL_TEST_BUF_BOOL(test, expected)                         \
   MARSHALL_TEST(bool, false, test, expected)
 
-#define MARSHALL_TEST_BUF_CHARACTER(test, expected) \
+#define MARSHALL_TEST_BUF_CHARACTER(test, expected)                    \
   MARSHALL_TEST(character, false, test, expected)
 
-#define MARSHALL_TEST_BUF_S8(test, expected)        \
+#define MARSHALL_TEST_BUF_S8(test, expected)                           \
   MARSHALL_TEST(s8, false, test, expected)
 
-#define MARSHALL_TEST_BUF_S16(test, expected)       \
+#define MARSHALL_TEST_BUF_S16(test, expected)                          \
   MARSHALL_TEST(s16, false, test, expected)
 
-#define MARSHALL_TEST_BUF_S32(test, expected)       \
+#define MARSHALL_TEST_BUF_S32(test, expected)                          \
   MARSHALL_TEST(s32, false, test, expected)
 
-#define MARSHALL_TEST_BUF_S64(test, expected)       \
+#define MARSHALL_TEST_BUF_S64(test, expected)                          \
   MARSHALL_TEST(s64, false, test, expected)
 
-#define MARSHALL_TEST_BUF_SW(test, expected)        \
+#define MARSHALL_TEST_BUF_SW(test, expected)                           \
   MARSHALL_TEST(sw, false, test, expected)
 
-#define MARSHALL_TEST_BUF_U8(test, expected)        \
+#define MARSHALL_TEST_BUF_U8(test, expected)                           \
   MARSHALL_TEST(u8, false, test, expected)
 
-#define MARSHALL_TEST_BUF_U16(test, expected)       \
+#define MARSHALL_TEST_BUF_U16(test, expected)                          \
   MARSHALL_TEST(u16, false, test, expected)
 
-#define MARSHALL_TEST_BUF_U32(test, expected)       \
+#define MARSHALL_TEST_BUF_U32(test, expected)                          \
   MARSHALL_TEST(u32, false, test, expected)
 
-#define MARSHALL_TEST_BUF_U64(test, expected)       \
+#define MARSHALL_TEST_BUF_U64(test, expected)                          \
   MARSHALL_TEST(u64, false, test, expected)
 
-#define MARSHALL_TEST_BUF_UW(test, expected)        \
+#define MARSHALL_TEST_BUF_UW(test, expected)                           \
   MARSHALL_TEST(uw, false, test, expected)
 
-#define MARSHALL_TEST_HEAP_BOOL(test, expected)     \
+#define MARSHALL_TEST_HEAP_BOOL(test, expected)                        \
   MARSHALL_TEST(bool, true, test, expected)
 
-#define MARSHALL_TEST_HEAP_CHARACTER(test, expected) \
+#define MARSHALL_TEST_HEAP_CHARACTER(test, expected)                   \
   MARSHALL_TEST(character, true, test, expected)
 
-#define MARSHALL_TEST_HEAP_S8(test, expected)       \
+#define MARSHALL_TEST_HEAP_S8(test, expected)                          \
   MARSHALL_TEST(s8, true, test, expected)
 
-#define MARSHALL_TEST_HEAP_S16(test, expected)      \
+#define MARSHALL_TEST_HEAP_S16(test, expected)                         \
   MARSHALL_TEST(s16, true, test, expected)
 
-#define MARSHALL_TEST_HEAP_S32(test, expected)      \
+#define MARSHALL_TEST_HEAP_S32(test, expected)                         \
   MARSHALL_TEST(s32, true, test, expected)
 
-#define MARSHALL_TEST_HEAP_S64(test, expected)      \
+#define MARSHALL_TEST_HEAP_S64(test, expected)                         \
   MARSHALL_TEST(s64, true, test, expected)
 
-#define MARSHALL_TEST_HEAP_SW(test, expected)       \
+#define MARSHALL_TEST_HEAP_SW(test, expected)                          \
   MARSHALL_TEST(sw, true, test, expected)
 
-#define MARSHALL_TEST_HEAP_U8(test, expected)       \
+#define MARSHALL_TEST_HEAP_U8(test, expected)                          \
   MARSHALL_TEST(u8, true, test, expected)
 
-#define MARSHALL_TEST_HEAP_U16(test, expected)      \
+#define MARSHALL_TEST_HEAP_U16(test, expected)                         \
   MARSHALL_TEST(u16, true, test, expected)
 
-#define MARSHALL_TEST_HEAP_U32(test, expected)      \
+#define MARSHALL_TEST_HEAP_U32(test, expected)                         \
   MARSHALL_TEST(u32, true, test, expected)
 
-#define MARSHALL_TEST_HEAP_U64(test, expected)      \
+#define MARSHALL_TEST_HEAP_U64(test, expected)                         \
   MARSHALL_TEST(u64, true, test, expected)
 
-#define MARSHALL_TEST_HEAP_UW(test, expected)       \
+#define MARSHALL_TEST_HEAP_UW(test, expected)                          \
   MARSHALL_TEST(uw, true, test, expected)
 
 #define MARSHALL_TEST_TAG(test, on_heap)                               \
@@ -162,21 +162,41 @@ void marshall_test (void)
 
 TEST_CASE(marshall_bool)
 {
-  MARSHALL_TEST_BUF_BOOL(false, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_BUF_BOOL(true, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\x01");
-  MARSHALL_TEST_HEAP_BOOL(false, "KC3MARSH\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_HEAP_BOOL(true, "KC3MARSH\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01");
+  MARSHALL_TEST_BUF_BOOL(false, "KC3MARSH\0\0\0\0\0\0\0\0"
+                         "\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0"
+                         "\0");
+  MARSHALL_TEST_BUF_BOOL(true, "KC3MARSH\0\0\0\0\0\0\0\0"
+                         "\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0"
+                         "\x01");
+  MARSHALL_TEST_HEAP_BOOL(false, "KC3MARSH\0\0\0\0\0\0\0\0"
+                          "\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                          "\0");
+  MARSHALL_TEST_HEAP_BOOL(true, "KC3MARSH\0\0\0\0\0\0\0\0"
+                          "\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                          "\x01");
 }
 TEST_CASE_END(marshall_bool)
 
 TEST_CASE(marshall_character)
 {
-  MARSHALL_TEST_BUF_CHARACTER('A', "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0A");
-  MARSHALL_TEST_BUF_CHARACTER('\0', "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_BUF_CHARACTER('Z', "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0Z");
-  MARSHALL_TEST_HEAP_CHARACTER('A', "KC3MARSH\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0A");
-  MARSHALL_TEST_HEAP_CHARACTER('\0', "KC3MARSH\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_HEAP_CHARACTER('Z', "KC3MARSH\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0Z");
+  MARSHALL_TEST_BUF_CHARACTER('A', "KC3MARSH\0\0\0\0\0\0\0\0"
+                              "\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0"
+                              "A");
+  MARSHALL_TEST_BUF_CHARACTER('\0', "KC3MARSH\0\0\0\0\0\0\0\0"
+                              "\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0"
+                              "\0");
+  MARSHALL_TEST_BUF_CHARACTER('Z', "KC3MARSH\0\0\0\0\0\0\0\0"
+                              "\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0"\0"
+                              "Z");
+  MARSHALL_TEST_HEAP_CHARACTER('A', "KC3MARSH\0\0\0\0\0\0\0\0"
+                               "\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                               "A");
+  MARSHALL_TEST_HEAP_CHARACTER('\0', "KC3MARSH\0\0\0\0\0\0\0\0"
+                               "\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                               "\0");
+  MARSHALL_TEST_HEAP_CHARACTER('Z', "KC3MARSH\0\0\0\0\0\0\0\0"
+                               "\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                               "Z");
 }
 TEST_CASE_END(marshall_character)
 
@@ -248,34 +268,58 @@ TEST_CASE_END(marshall_s16)
 
 TEST_CASE(marshall_s32)
 {
-  MARSHALL_TEST_BUF_S32(0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x04\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_BUF_S32(~0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x04\0\0\0\0\0\0\0\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_BUF_S32(0xDEADBEEF, "\xEF\xBE\xAD\xDE");
-  MARSHALL_TEST_BUF_S32(0xDEADCAFE, "\xFE\xCA\xAD\xDE");
-  MARSHALL_TEST_BUF_S32(0xFEEDBABE, "\xBE\xBA\xED\xFE");
-  MARSHALL_TEST_HEAP_S32(0, "\0\0\0\0");
-  MARSHALL_TEST_HEAP_S32(~0, "\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_HEAP_S32(0xDEADBEEF, "\xEF\xBE\xAD\xDE");
-  MARSHALL_TEST_HEAP_S32(0xDEADCAFE, "\xFE\xCA\xAD\xDE");
-  MARSHALL_TEST_HEAP_S32(0xFEEDBABE, "\xBE\xBA\xED\xFE");
+  MARSHALL_TEST_BUF_S32(0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                        "\x04\0\0\0\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_BUF_S32(~0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                        "\x04\0\0\0\0\0\0\0\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_BUF_S32(0xDEADBEEF, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\x04\0\0\0\0\0\0\0\xEF\xBE\xAD\xDE");
+  MARSHALL_TEST_BUF_S32(0xDEADCAFE, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\x04\0\0\0\0\0\0\0\xFE\xCA\xAD\xDE");
+  MARSHALL_TEST_BUF_S32(0xFEEDBABE, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\x04\0\0\0\0\0\0\0\xBE\xBA\xED\xFE");
+  MARSHALL_TEST_HEAP_S32(0, "KC3MARSH\0\0\0\0\0\0\0\0\x04\0\0\0\0\0\0"
+                         "\0\0\0\0\0\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_HEAP_S32(~0, "KC3MARSH\0\0\0\0\0\0\0\0\x04\0\0\0\0\0\0"
+                         "\0\0\0\0\0\0\0\0\0\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_HEAP_S32(0xDEADBEEF, "KC3MARSH\0\0\0\0\0\0\0\0\x04\0\0"
+                         "\0\0\0\0\0\0\0\0\0\0\0\0\0\xEF\xBE\xAD\xDE");
+  MARSHALL_TEST_HEAP_S32(0xDEADCAFE, "KC3MARSH\0\0\0\0\0\0\0\0\x04\0\0"
+                         "\0\0\0\0\0\0\0\0\0\0\0\0\0\xFE\xCA\xAD\xDE");
+  MARSHALL_TEST_HEAP_S32(0xFEEDBABE, "KC3MARSH\0\0\0\0\0\0\0\0\x04\0\0"
+                         "\0\0\0\0\0\0\0\0\0\0\0\0\0\xBE\xBA\xED\xFE");
 }
 TEST_CASE_END(marshall_s32)
 
 TEST_CASE(marshall_s64)
 {
-  MARSHALL_TEST_BUF_S64(0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_BUF_S64(~0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x08\0\0\0\0\0\0\0\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_HEAP_S64(0, "KC3MARSH\0\0\0\0\0\0\0\0\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_HEAP_S64(~0, "KC3MARSH\0\0\0\0\0\0\0\0\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_BUF_S64(0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                        "\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_BUF_S64(~0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                        "\x08\0\0\0\0\0\0\0"
+                        "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_HEAP_S64(0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                         "\x08\0\0\0\0\0\0\0\0\0\0\0"
+                         "\0\0\0\0\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_HEAP_S64(~0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                         "\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                         "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_s64)
 
 TEST_CASE(marshall_sw)
 {
-  MARSHALL_TEST_BUF_SW(0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_BUF_SW(~0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x08\0\0\0\0\0\0\0\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
-  MARSHALL_TEST_HEAP_SW(0, "KC3MARSH\0\0\0\0\0\0\0\0\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_HEAP_SW(~0, "KC3MARSH\0\0\0\0\0\0\0\0\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_BUF_SW(0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                       "\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_BUF_SW(~0, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                       "\x08\0\0\0\0\0\0\0"
+                       "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
+  MARSHALL_TEST_HEAP_SW(0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\x08\0\0\0\0\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_HEAP_SW(~0, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\x08\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+                        "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_sw)
 
@@ -351,10 +395,20 @@ TEST_CASE_END(marshall_to_str)
 
 TEST_CASE(marshall_u8)
 {
-  MARSHALL_TEST_BUF_U8(0x00, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_BUF_U8(0xFF, "KC3MARSH\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\xFF");
-  MARSHALL_TEST_HEAP_U8(0x00, "KC3MARSH\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
-  MARSHALL_TEST_HEAP_U8(0xFF, "KC3MARSH\0\0\0\0\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xFF");
+  MARSHALL_TEST_BUF_U8(0x00, "KC3MARSH\0\0\0\0\0\0\0\0"
+                       "\0\0\0\0\0\0\0\0"
+                       "\x01\0\0\0\0\0\0\0"
+                       "\0");
+  MARSHALL_TEST_BUF_U8(0xFF, "KC3MARSH\0\0\0\0\0\0\0\0"
+                       "\0\0\0\0\0\0\0\0"
+                       "\x01\0\0\0\0\0\0\0"
+                       "\xFF");
+  MARSHALL_TEST_HEAP_U8(0x00, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\x01\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0\0");
+  MARSHALL_TEST_HEAP_U8(0xFF, "KC3MARSH\0\0\0\0\0\0\0\0"
+                        "\x01\0\0\0\0\0\0\0"
+                        "\0\0\0\0\0\0\0\0\xFF");
 }
 TEST_CASE_END(marshall_u8)
 

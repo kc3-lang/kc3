@@ -253,16 +253,13 @@ sw buf_ignore (s_buf *buf, uw size)
     goto clean;
   }
   while (i < size) {
-    if ((r = buf_read_character_utf8(buf, &c)) < 0) {
-      err_puts("buf_ignore: buf_read_character_utf8");
-      goto clean;
-    }
-    if (r > 0) {
+    if ((r = buf_read_character_utf8(buf, &c)) > 0) {
       i += r;
       continue;
     }
     if ((r = buf_read_u8(buf, &b)) < 0) {
-      err_puts("buf_ignore: buf_read_u8");
+      err_puts("buf_ignore: failed to read");
+      assert(! "buf_ignore: failed to read");
       goto clean;
     }
     if (r > 0) {
@@ -271,6 +268,7 @@ sw buf_ignore (s_buf *buf, uw size)
       continue;
     }
     err_puts("buf_ignore: failed to read");
+    assert(! "buf_ignore: failed to read");
     r = -1;
     goto clean;
   }
