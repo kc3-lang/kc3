@@ -29,11 +29,14 @@
     s_str tmp_str = {{0}, sizeof(expected) - 1, {expected}};           \
     s_marshall_read m = {0};                                           \
     s_str test_str = {0};                                              \
+    test_context("marshall_read_" # type "(" # on_heap ", " # test     \
+                 ") -> " # expected);                                  \
     TEST_EQ(marshall_read_init_1(&m, (test), sizeof(test) - 1), &m);   \
     TEST_EQ(marshall_read_## type (&m, (on_heap), &tmp), &m);          \
     marshall_read_clean(&m);                                           \
     inspect_ ## type(&tmp, &test_str);                                 \
     TEST_STR_EQ(test_str, tmp_str);                                    \
+    test_context(NULL);                                                \
   } while (0)
 
 #define MARSHALL_READ_TEST_TAG(test, on_heap)                          \
@@ -87,10 +90,30 @@ void marshall_read_test (void)
 
 TEST_CASE(marshall_read_bool)
 {
-  MARSHALL_READ_TEST(bool, false, "\x00", "false");
-  MARSHALL_READ_TEST(bool, false, "\x01", "true");
-  MARSHALL_READ_TEST(bool, true, "\x00", "false");
-  MARSHALL_READ_TEST(bool, true, "\x01", "true");
+  MARSHALL_READ_TEST(bool, false,
+                     "KC3MARSH\0\0\0\0\0\0\0\0"
+                     "\0\0\0\0\0\0\0\0"
+                     "\x01\0\0\0\0\0\0\0"
+                     "\0",
+                     "false");
+  MARSHALL_READ_TEST(bool, false,
+                     "KC3MARSH\0\0\0\0\0\0\0\0"
+                     "\0\0\0\0\0\0\0\0"
+                     "\x01\0\0\0\0\0\0\0"
+                     "\0",
+                     "true");
+  MARSHALL_READ_TEST(bool, true,
+                     "KC3MARSH\0\0\0\0\0\0\0\0"
+                     "\x01\0\0\0\0\0\0\0"
+                     "\0\0\0\0\0\0\0\0"
+                     "\0",
+                     "false");
+  MARSHALL_READ_TEST(bool, true,
+                     "KC3MARSH\0\0\0\0\0\0\0\0"
+                     "\x01\0\0\0\0\0\0\0"
+                     "\0\0\0\0\0\0\0\0"
+                     "\x01",
+                     "true");
 }
 TEST_CASE_END(marshall_read_bool)
 

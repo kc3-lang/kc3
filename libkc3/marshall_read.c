@@ -128,10 +128,8 @@ s_marshall_read * marshall_read_init_str (s_marshall_read *mr,
     buf_clean(&tmp.buf);
     return NULL;
   }
-  if (! buf_init(&tmp.heap, false, tmp.buf.size, tmp.buf.ptr.pchar)) {
-    buf_clean(&tmp.buf);
-    return NULL;
-  }
+  tmp.heap = tmp.buf;
+  tmp.heap.free = false;
   *mr = tmp;
   return mr;
 }
