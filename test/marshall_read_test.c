@@ -46,6 +46,7 @@
     s_marshall_read mr = {0};                                          \
     s_tag tag = {0};                                                   \
     s_tag tag_expected = {0};                                          \
+    test_context("marshall_read_tag("# on_heap "," # test")");         \
     TEST_ASSERT(tag_init_1(&tag_expected, (expected)));                \
     TEST_EQ(marshall_read_init_1(&mr, (test), sizeof(test) - 1), &mr); \
     TEST_EQ(marshall_read_tag(&mr, (on_heap), &tag), &mr);             \
@@ -53,6 +54,7 @@
     marshall_read_clean(&mr);                                          \
     tag_clean(&tag);                                                   \
     tag_clean(&tag_expected);                                          \
+    test_context(NULL);         \
   } while (0)
 
 #define MARSHALL_READ_TEST_TAG_BUF(test, expected)                     \
@@ -154,6 +156,7 @@ TEST_CASE_END(marshall_read_plist)
 
 TEST_CASE(marshall_read_tag)
 {
+  // u8
   MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
                              "\0\0\0\0\0\0\0\0"
                              "\x01\0\0\0\0\0\0\0"
@@ -169,6 +172,54 @@ TEST_CASE(marshall_read_tag)
                              "\x01\0\0\0\0\0\0\0"
                              "\x13\xFF",
                              "255");
+  // u16
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x13\0\0",
+                             "(U16) 0");
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x13\x01\0",
+                             "(U16) 1");
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x14\xFF\xFF",
+                             "(U16) 65535");
+  // u32
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x15\0\0\0\0",
+                             "(U32) 0");
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x15\x01\0\0\0",
+                             "(U32) 1");
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x15\xFF\xFF\xFF\xFF",
+                             "(U32) 4294967295");
+  // u64 and uw
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x16\0\0\0\0\0\0\0\0",
+                             "(U64) 0");
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x16\x01\0\0\0\0\0\0\0",
+                             "(U64) 1");
+  MARSHALL_READ_TEST_TAG_BUF("KC3MARSH\0\0\0\0\0\0\0\0"
+                             "\0\0\0\0\0\0\0\0"
+                             "\x01\0\0\0\0\0\0\0"
+                             "\x16\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
+                             "18446744073709551615");
 }
 TEST_CASE_END(marshall_read_tag)
 
