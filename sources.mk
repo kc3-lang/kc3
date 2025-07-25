@@ -1705,6 +1705,7 @@ KC3_TEST_MARKDOWN_SOURCES = \
 KC3_OTHER_SOURCES = \
 	"AUTHORS.md" \
 	"BUGS.md" \
+	"CLAUDE.md" \
 	"CONTRIBUTING.md" \
 	"ChangeLog.md" \
 	"LICENSE.md" \
@@ -1984,7 +1985,6 @@ KC3_EXTERNAL_SOURCES = \
 
 KC3_DOC_SOURCES = \
 	"doc/1_KC3/.#1.05_List.en.md" \
-	"doc/1_KC3/.#1.26_Named_block.en.md" \
 	"doc/1_KC3/1.01_Introduction.en.md" \
 	"doc/1_KC3/1.01_Introduction.fr.md" \
 	"doc/1_KC3/1.02_Array.en.md" \
