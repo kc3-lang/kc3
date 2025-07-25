@@ -139,7 +139,7 @@ TEST_CASE(marshall_read_plist)
 }
 TEST_CASE_END(marshall_read_plist)
 
-/* if 0
+#if 0
 
 TEST_CASE(marshall_read_character)
 {
@@ -151,7 +151,6 @@ TEST_CASE(marshall_read_character)
   MARSHALL_READ_TEST(character, 'Z', "Z");
 }
 TEST_CASE_END(marshall_read_character)
-
 
 TEST_CASE(marshall_read_s8)
 {
@@ -270,4 +269,5 @@ TEST_CASE(marshall_read_uw)
   MARSHALL_READ_TEST(uw, ~0, "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF");
 }
 TEST_CASE_END(marshall_read_uw)
-*/
+
+#endif
