@@ -166,6 +166,7 @@ TEST_CASE_PROTOTYPE(marshall_uw);
 TEST_CASE_PROTOTYPE(marshall_plist);
 TEST_CASE_PROTOTYPE(marshall_plist_twice);
 TEST_CASE_PROTOTYPE(marshall_str);
+TEST_CASE_PROTOTYPE(marshall_tag);
 
 void marshall_test (void)
 {
@@ -187,6 +188,7 @@ void marshall_test (void)
   TEST_CASE_RUN(marshall_plist);
   TEST_CASE_RUN(marshall_plist_twice);
   TEST_CASE_RUN(marshall_str);
+  TEST_CASE_RUN(marshall_tag);
 }
 
 TEST_CASE(marshall_bool)
