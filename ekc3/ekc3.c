@@ -417,7 +417,7 @@ s_tag * ekc3_load (const s_str *path, s_tag *dest)
     goto clean;
   if (! ekc3_buf_parse(&buf, &tmp.data.plist))
     goto clean;
-  tmp.type = TAG_LIST;
+  tmp.type = TAG_PLIST;
   buf_clean(&buf);
   *dest = tmp;
   return dest;

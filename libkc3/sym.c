@@ -929,7 +929,7 @@ bool sym_to_tag_type (const s_sym *sym, e_tag_type *dest)
     return true;
   }
   if (sym == &g_sym_List) {
-    *dest = TAG_LIST;
+    *dest = TAG_PLIST;
     return true;
   }
   if (sym == &g_sym_Map) {

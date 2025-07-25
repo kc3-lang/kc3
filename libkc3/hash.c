@@ -517,7 +517,7 @@ bool hash_update_tag (t_hash *hash, const s_tag *tag)
   case TAG_IDENT:   return hash_update_ident(hash, &tag->data.ident);
   case TAG_INTEGER:
     return hash_update_integer(hash, &tag->data.integer);
-  case TAG_LIST:
+  case TAG_PLIST:
     return hash_update_list(hash, (const s_list * const *)
                             &tag->data.plist);
   case TAG_MAP:     return hash_update_map(hash, &tag->data.map);

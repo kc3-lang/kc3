@@ -70,7 +70,7 @@ p_facts_spec facts_spec_new_list (s_list *spec)
     return NULL;
   s = spec;
   while (s) {
-    if (s->tag.type != TAG_LIST) {
+    if (s->tag.type != TAG_PLIST) {
       err_puts("facts_spec_new_list: invalid spec: not a List of List");
       assert(! "facts_spec_new_list: invalid spec: not a List of List");
       return NULL;

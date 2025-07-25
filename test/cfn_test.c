@@ -114,7 +114,7 @@ TEST_CASE(cfn_init_clean)
   TEST_EQ(a.arg_result, false);
   TEST_EQ(a.arg_types->tag.type, TAG_SYM);
   TEST_EQ(a.arg_types->tag.data.psym, sym_1("bool"));
-  TEST_EQ(a.arg_types->next.type, TAG_LIST);
+  TEST_EQ(a.arg_types->next.type, TAG_PLIST);
   TEST_EQ(a.arg_types->next.data.plist, NULL);
   TEST_EQ(a.cif.abi, 0);
   TEST_EQ(a.cif.nargs, 0);

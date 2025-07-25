@@ -1208,7 +1208,7 @@ s8 compare_tag (const s_tag *a, const s_tag *b) {
                                            &b->data.fact);
   case TAG_IDENT:      return compare_ident(&a->data.ident,
                                             &b->data.ident);
-  case TAG_LIST:       return compare_list(a->data.plist,
+  case TAG_PLIST:       return compare_list(a->data.plist,
                                            b->data.plist);
   case TAG_MAP:        return compare_map(&a->data.map, &b->data.map);
   case TAG_PCALLABLE:  return compare_callable(a->data.pcallable,

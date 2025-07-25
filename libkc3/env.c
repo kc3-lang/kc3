@@ -632,7 +632,7 @@ s_tag * env_facts_collect_with (s_env *env, s_facts *facts,
   }
  ok:
   list_delete_all(arguments);
-  tmp.type = TAG_LIST;
+  tmp.type = TAG_PLIST;
   tmp.data.plist = list;
   if (false) {
     err_write_1("env_facts_collect_with: ");
@@ -694,7 +694,7 @@ s_tag * env_facts_collect_with_tags (s_env *env, s_facts *facts,
   }
  ok:
   list_delete_all(arguments);
-  tmp.type = TAG_LIST;
+  tmp.type = TAG_PLIST;
   tmp.data.plist = list;
   *dest = tmp;
   return dest;
@@ -911,7 +911,7 @@ s_tag * env_facts_with_macro (s_env *env, s_tag *facts_tag,
   facts = facts_eval.data.ptr.p;
   if (! env_eval_tag(env, spec_tag, &spec_eval))
     return NULL;
-  if (spec_eval.type != TAG_LIST) {
+  if (spec_eval.type != TAG_PLIST) {
     err_puts("env_facts_with_macro: spec is not a List");
     assert(! "env_facts_with_macro: spec is not a List");
     return NULL;
@@ -2352,7 +2352,7 @@ s_list ** env_struct_type_get_spec (s_env *env,
     tag_clean(&tag_pvar);
     return NULL;
   }
-  if (tmp.type != TAG_LIST ||
+  if (tmp.type != TAG_PLIST ||
       ! list_is_plist(tmp.data.plist)) {
     err_write_1("env_struct_type_get_spec: module ");
     err_write_1(module->str.ptr.pchar);

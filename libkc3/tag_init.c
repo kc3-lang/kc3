@@ -246,7 +246,7 @@ s_tag * tag_init_plist (s_tag *tag, p_list plist)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_LIST;
+  tmp.type = TAG_PLIST;
   tmp.data.plist = plist;
   *tag = tmp;
   return tag;
@@ -256,7 +256,7 @@ s_tag * tag_init_plist_1 (s_tag *tag, const char *p)
 {
   s_tag tmp = {0};
   assert(tag);
-  tmp.type = TAG_LIST;
+  tmp.type = TAG_PLIST;
   if (! plist_init_1(&tmp.data.plist, p))
     return NULL;
   *tag = tmp;
@@ -963,7 +963,7 @@ s_tag * tag_new_plist (p_list plist)
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_LIST;
+  tag->type = TAG_PLIST;
   tag->data.plist = plist;
   return tag;
 }
@@ -974,7 +974,7 @@ s_tag * tag_new_plist_1 (const char *p)
   tag = alloc(sizeof(s_tag));
   if (! tag)
     return NULL;
-  tag->type = TAG_LIST;
+  tag->type = TAG_PLIST;
   if (! plist_init_1(&tag->data.plist, p)) {
     free(tag);
     return NULL;
@@ -1756,7 +1756,7 @@ s_tag * tag_plist (s_tag *tag, p_list plist)
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_LIST;
+  tmp.type = TAG_PLIST;
   tmp.data.plist = plist;
   *tag = tmp;
   return tag;
@@ -1767,7 +1767,7 @@ s_tag * tag_plist_1 (s_tag *tag, const char *p)
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_LIST;
+  tmp.type = TAG_PLIST;
   if (! plist_init_1(&tmp.data.plist, p))
     return NULL;
   *tag = tmp;

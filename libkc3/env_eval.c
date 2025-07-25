@@ -775,7 +775,7 @@ bool env_eval_list (s_env *env, s_list *list, s_tag *dest)
     tail = &(*tail)->next.data.plist;
     list = next;
   }
-  dest->type = TAG_LIST;
+  dest->type = TAG_PLIST;
   dest->data.plist = tmp;
   return true;
  ko:
@@ -915,7 +915,7 @@ bool env_eval_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_pcow_tag(env, &tag->data.pcow, dest);
   case TAG_IDENT:
     return env_eval_ident(env, &tag->data.ident, dest);
-  case TAG_LIST:
+  case TAG_PLIST:
     return env_eval_list(env, tag->data.plist, dest);
   case TAG_MAP:
     return env_eval_map(env, &tag->data.map, dest);

@@ -692,7 +692,7 @@ sw buf_parse_brackets (s_buf *buf, s_call *dest)
   }
   tmp.ident.module = &g_sym_KC3;
   tmp.ident.sym = &g_sym__brackets;
-  arg_addr->type = TAG_LIST;
+  arg_addr->type = TAG_PLIST;
   arg_addr->data.plist = addr;
   *dest = tmp;
   r = result;
@@ -773,7 +773,7 @@ sw buf_parse_call_access (s_buf *buf, s_call *dest)
     if (r == 0)
       break;
   }
-  list_next(tmp.arguments)->tag.type = TAG_LIST;
+  list_next(tmp.arguments)->tag.type = TAG_PLIST;
   list_next(tmp.arguments)->tag.data.plist = key;
   *dest = tmp;
   r = result;
@@ -3564,7 +3564,7 @@ sw buf_parse_static_tag (s_buf *buf, s_tag *tag)
        tmp.data.call.ident.module == &g_sym_KC3) &&
       tmp.data.call.ident.sym == &g_sym_str &&
       tmp.data.call.arguments &&
-      tmp.data.call.arguments->tag.type == TAG_LIST) {
+      tmp.data.call.arguments->tag.type == TAG_PLIST) {
     tag_void(&tmp);
     buf_save_restore_rpos(buf, &save);
     if ((r = buf_parse_str(buf, &str)) <= 0)
@@ -4299,7 +4299,7 @@ sw buf_parse_tag_plist (s_buf *buf, s_tag *dest)
   assert(buf);
   assert(dest);
   if ((r = buf_parse_plist(buf, &dest->data.plist)) > 0)
-    dest->type = TAG_LIST;
+    dest->type = TAG_PLIST;
   return r;
 }
 

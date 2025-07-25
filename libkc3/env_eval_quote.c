@@ -211,7 +211,7 @@ bool env_eval_quote_list (s_env *env, s_list *list, s_tag *dest)
     tail = &(*tail)->next.data.plist;
     list = next;
   }
-  dest->type = TAG_LIST;
+  dest->type = TAG_PLIST;
   dest->data.plist = tmp;
   return true;
  ko:
@@ -315,7 +315,7 @@ bool env_eval_quote_tag (s_env *env, s_tag *tag, s_tag *dest)
     return env_eval_quote_complex(env, tag->data.pcomplex, dest);
   case TAG_COW:
     return env_eval_quote_cow(env, tag->data.pcow, dest);
-  case TAG_LIST:
+  case TAG_PLIST:
     return env_eval_quote_list(env, tag->data.plist, dest);
   case TAG_MAP:
     return env_eval_quote_map(env, &tag->data.map, dest);

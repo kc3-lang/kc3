@@ -97,7 +97,7 @@ s_tag * kc3_access (s_tag *tag, s_list **key,
   switch (tag->type) {
   case TAG_ARRAY:
     return array_access(&tag->data.array, *key, dest);
-  case TAG_LIST:
+  case TAG_PLIST:
     if (list_is_alist(tag->data.plist)) {
       if (! alist_access(tag->data.plist, *key, dest))
         return list_access(tag->data.plist, *key, dest);
@@ -298,7 +298,7 @@ s_tag * kc3_defstruct (s_list **spec, s_tag *dest)
     return NULL;
   if (! env_eval_list(env_global(), *spec, &tag))
     return NULL;
-  if (tag.type != TAG_LIST)
+  if (tag.type != TAG_PLIST)
     return NULL;
   tmp.type = TAG_SYM;
   tmp.data.psym = env_defstruct(env_global(), tag.data.plist);
@@ -888,7 +888,7 @@ s_str * kc3_str (const s_tag *tag, s_str *dest)
 {
   const s_sym *sym;
   switch (tag->type) {
-  case TAG_LIST:
+  case TAG_PLIST:
     return str_init_concatenate_list(dest,
                                      (const s_list **)
                                      &tag->data.plist);

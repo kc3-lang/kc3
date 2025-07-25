@@ -163,7 +163,7 @@ p_list * plist_init_cast (p_list *plist, const s_sym * const *type,
   assert(type);
   assert(tag);
   switch (tag->type) {
-  case TAG_LIST:
+  case TAG_PLIST:
     return plist_init_copy(plist, &tag->data.plist);
   default:
     break;
@@ -278,7 +278,7 @@ p_list * plist_remove_void (p_list *plist)
   while (*l) {
     if ((*l)->tag.type == TAG_VOID)
       *l = list_delete(*l);
-    else if ((*l)->next.type == TAG_LIST)
+    else if ((*l)->next.type == TAG_PLIST)
       l = &(*l)->next.data.plist;
     else
       break;

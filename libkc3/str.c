@@ -473,7 +473,7 @@ s_str * str_init_cast (s_str *str, const s_sym * const *type,
     return str_init_ident(str, &tag->data.ident);
   case TAG_INTEGER:
     return str_init_integer(str, &tag->data.integer);
-  case TAG_LIST:
+  case TAG_PLIST:
     return str_init_list(str,
                          (const s_list * const *) &tag->data.plist);
   case TAG_MAP:
@@ -1291,7 +1291,7 @@ bool str_parse_eval (const s_str *str, s_tag *dest)
       l = list_next(l);
     }
     arg = &tmp.data.call.arguments->tag;
-    arg->type = TAG_LIST;
+    arg->type = TAG_PLIST;
     arg->data.plist = list;
   }
   *dest = tmp;

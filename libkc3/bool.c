@@ -80,7 +80,7 @@ bool * bool_init_cast (bool *b, const s_sym * const *type,
   case TAG_CALL:
   case TAG_FACT:
   case TAG_IDENT:
-  case TAG_LIST:
+  case TAG_PLIST:
   case TAG_MAP:
   case TAG_PCALLABLE:
   case TAG_PSTRUCT:

@@ -161,7 +161,7 @@ typedef enum {
   TAG_U32          = 21, // \x15
   TAG_U64          = 22, // \x16
   TAG_UW           = 23, // \x17
-  TAG_LIST         = 24, // \x18
+  TAG_PLIST        = 24, // \x18
   TAG_MAP          = 25, // \x19
   TAG_PCALLABLE    = 26, // \x1A
   TAG_PSTRUCT      = 27, // \x1B

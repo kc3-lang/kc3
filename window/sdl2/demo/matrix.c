@@ -41,7 +41,7 @@ bool matrix_update (s_sequence *seq);
 void matrix_column_clean (s_tag *tag)
 {
   s_list *list;
-  if (tag->type != TAG_LIST) {
+  if (tag->type != TAG_PLIST) {
     err_puts("matrix_column_clean: invalid tag");
     assert(! "matrix_column_clean: invalid tag");
     return;
@@ -81,7 +81,7 @@ bool matrix_column_render (s_sequence *seq, s_tag *tag)
   window = seq->window;
   assert(window);
   if (!tag ||
-      tag->type != TAG_LIST) {
+      tag->type != TAG_PLIST) {
     err_puts("matrix_column_render: invalid tag");
     assert(! "matrix_column_render: invalid tag");
     return false;
@@ -147,7 +147,7 @@ void matrix_screen_clean (s_tag *tag)
 {
   s_list *list;
   if (! tag ||
-      tag->type != TAG_LIST) {
+      tag->type != TAG_PLIST) {
     err_puts("matrix_screen_clean: invalid tag");
     assert(! "matrix_screen_clean: invalid tag");
     return;
@@ -176,7 +176,7 @@ bool matrix_screen_render (s_sequence *seq, s_tag *tag)
   window = seq->window;
   assert(window);
   if (! tag ||
-      tag->type != TAG_LIST) {
+      tag->type != TAG_PLIST) {
     err_puts("matrix_screen_render: invalid tag");
     assert(! "matrix_screen_render: invalid tag");
     return false;

@@ -242,7 +242,7 @@ void tag_clean (s_tag *tag)
   case TAG_COMPLEX:     pcomplex_clean(&tag->data.pcomplex);   break;
   case TAG_COW:         pcow_clean(&tag->data.pcow);           break;
   case TAG_INTEGER:     integer_clean(&tag->data.integer);     break;
-  case TAG_LIST:        list_delete_all(tag->data.plist);      break;
+  case TAG_PLIST:        list_delete_all(tag->data.plist);      break;
   case TAG_MAP:         map_clean(&tag->data.map);             break;
   case TAG_PSTRUCT:     pstruct_clean(&tag->data.pstruct);     break;
   case TAG_PSTRUCT_TYPE:
@@ -556,7 +556,7 @@ s_tag * tag_init_copy (s_tag *tag, s_tag *src)
     if (! integer_init_copy(&tag->data.integer, &src->data.integer))
       return NULL;
     return tag;
-  case TAG_LIST:
+  case TAG_PLIST:
     tag->type = src->type;
     if (! plist_init_copy(&tag->data.plist, &src->data.plist))
       return NULL;
@@ -855,7 +855,7 @@ bool tag_is_alist (const s_tag *tag)
   assert(tag);
   if (! tag)
     return false;
-  if (tag->type != TAG_LIST)
+  if (tag->type != TAG_PLIST)
     return false;
   return list_is_alist(tag->data.plist);
 }
@@ -887,7 +887,7 @@ bool tag_is_integer (s_tag *tag)
   case TAG_F64:
   case TAG_F128:
   case TAG_FACT:
-  case TAG_LIST:
+  case TAG_PLIST:
   case TAG_MAP:
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
@@ -938,7 +938,7 @@ bool tag_is_number (s_tag *tag)
   case TAG_PCALLABLE:
   case TAG_CHARACTER:
   case TAG_FACT:
-  case TAG_LIST:
+  case TAG_PLIST:
   case TAG_MAP:
   case TAG_PSTRUCT:
   case TAG_PSTRUCT_TYPE:
@@ -1047,7 +1047,7 @@ s_tag * tag_list_1 (s_tag *tag, const char *p)
   s_tag tmp = {0};
   assert(tag);
   tag_clean(tag);
-  tmp.type = TAG_LIST;
+  tmp.type = TAG_PLIST;
   tmp.data.plist = list_new_1(p);
   *tag = tmp;
   return tag;
@@ -1241,7 +1241,7 @@ bool tag_to_const_pointer (s_tag *tag, const s_sym *type,
   case TAG_U32:          *dest = &tag->data.u32;          return true;
   case TAG_U64:          *dest = &tag->data.u64;          return true;
   case TAG_UW:           *dest = &tag->data.uw;           return true;
-  case TAG_LIST:         *dest = &tag->data.plist;        return true;
+  case TAG_PLIST:         *dest = &tag->data.plist;        return true;
   case TAG_MAP:          *dest = &tag->data.map;          return true;
   case TAG_PSTRUCT:
     if (type == &g_sym_Struct) {
@@ -1390,7 +1390,7 @@ bool tag_to_ffi_pointer (s_tag *tag, const s_sym *type, void **dest)
       return true;
     }
     goto invalid_cast;
-  case TAG_LIST:
+  case TAG_PLIST:
     if (type == &g_sym_List) {
       *dest = &tag->data.plist;
       return true;
@@ -1615,7 +1615,7 @@ bool tag_to_pointer (s_tag *tag, const s_sym *type, void **dest)
   case TAG_FACT:         *dest = &tag->data.fact;         return true;
   case TAG_IDENT:        *dest = &tag->data.ident;        return true;
   case TAG_INTEGER:      *dest = &tag->data.integer;      return true;
-  case TAG_LIST:         *dest = &tag->data.plist;        return true;
+  case TAG_PLIST:         *dest = &tag->data.plist;        return true;
   case TAG_MAP:          *dest = &tag->data.map;          return true;
   case TAG_PCALLABLE:    *dest = &tag->data.pcallable;    return true;
   case TAG_PSTRUCT:
@@ -1699,7 +1699,7 @@ const s_sym ** tag_type (const s_tag *tag, const s_sym **dest)
   case TAG_U32:          *dest = &g_sym_U32;         return dest;
   case TAG_U64:          *dest = &g_sym_U64;         return dest;
   case TAG_UW:           *dest = &g_sym_Uw;          return dest;
-  case TAG_LIST:         *dest = &g_sym_List;        return dest;
+  case TAG_PLIST:         *dest = &g_sym_List;        return dest;
   case TAG_MAP:          *dest = &g_sym_Map;         return dest;
   case TAG_PTAG:         *dest = &g_sym_Ptag;        return dest;
   case TAG_PCALLABLE:    *dest = &g_sym_Callable;    return dest;

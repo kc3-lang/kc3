@@ -532,7 +532,7 @@ sw buf_inspect_call (s_buf *buf, const s_call *call)
        call->ident.module == &g_sym_KC3) &&
       call->ident.sym == &g_sym_str &&
       call->arguments &&
-      call->arguments->tag.type == TAG_LIST)
+      call->arguments->tag.type == TAG_PLIST)
     return buf_inspect_call_str(buf, call);
   if (call->ident.sym == &g_sym_cast)
     return buf_inspect_cast(buf, call);
@@ -585,7 +585,7 @@ sw buf_inspect_call_access (s_buf *buf, const s_call *call)
     return r;
   result += r;
   key = list_next(args);
-  if (key->tag.type != TAG_LIST)
+  if (key->tag.type != TAG_PLIST)
     goto invalid_key;
   key = key->tag.data.plist;
   while (key) {
@@ -688,7 +688,7 @@ sw buf_inspect_call_brackets (s_buf *buf, const s_call *call)
   next = list_next(call->arguments);
   assert(next);
   assert(! list_next(next));
-  assert(next->tag.type == TAG_LIST);
+  assert(next->tag.type == TAG_PLIST);
   key = next->tag.data.plist;
   tag = &call->arguments->tag;
   if ((r = buf_inspect_tag(buf, tag)) < 0)
@@ -1198,7 +1198,7 @@ sw buf_inspect_call_size (s_pretty *pretty, const s_call *call)
        call->ident.module == &g_sym_KC3) &&
       call->ident.sym == &g_sym_str &&
       call->arguments &&
-      call->arguments->tag.type == TAG_LIST)
+      call->arguments->tag.type == TAG_PLIST)
     return buf_inspect_call_str_size(pretty, call);
   if (call->ident.sym == &g_sym_cast)
     return buf_inspect_cast_size(pretty, call);
@@ -1323,7 +1323,7 @@ sw buf_inspect_call_str (s_buf *buf, const s_call *call)
        call->ident.module != &g_sym_KC3) ||
       call->ident.sym != &g_sym_str ||
       ! call->arguments ||
-      call->arguments->tag.type != TAG_LIST) {
+      call->arguments->tag.type != TAG_PLIST) {
     err_puts("buf_inspect_call_str: invalid call");
     assert(! "buf_inspect_call_str: invalid call");
     return -1;
@@ -1337,7 +1337,7 @@ sw buf_inspect_call_str_size (s_pretty *pretty, const s_call *call)
        call->ident.module != &g_sym_KC3) ||
       call->ident.sym != &g_sym_str ||
       ! call->arguments ||
-      call->arguments->tag.type != TAG_LIST) {
+      call->arguments->tag.type != TAG_PLIST) {
     err_puts("buf_inspect_call_str_size: invalid call");
     assert(! "buf_inspect_call_str_size: invalid call");
     return -1;
@@ -2600,7 +2600,7 @@ sw buf_inspect_list (s_buf *buf, const s_list * const *x)
       return r;
     result += r;
     switch (i->next.type) {
-    case TAG_LIST:
+    case TAG_PLIST:
       if (i->next.data.plist) {
         if (alist) {
           if ((r = buf_write_1(buf, ",\n")) < 0)
@@ -2647,7 +2647,7 @@ sw buf_inspect_list_paren (s_buf *buf, const s_list * const *x)
       return r;
     result += r;
     switch (i->next.type) {
-    case TAG_LIST:
+    case TAG_PLIST:
       if (i->next.data.plist) {
         if ((r = buf_write_1(buf, ", ")) < 0)
           return r;
@@ -2693,7 +2693,7 @@ sw buf_inspect_list_size (s_pretty *pretty, const s_list * const *x)
       return r;
     result += r;
     switch (i->next.type) {
-    case TAG_LIST:
+    case TAG_PLIST:
       if (i->next.data.plist) {
         if (alist) {
           if ((r = buf_write_1_size(pretty, ",\n")) < 0)
@@ -3190,7 +3190,7 @@ sw buf_inspect_stacktrace (s_buf *buf, const s_list *stacktrace)
     if ((r = buf_write_1(buf, " ")) < 0)
       return r;
     result += r;
-    if (s->tag.type == TAG_LIST) {
+    if (s->tag.type == TAG_PLIST) {
       if ((r = buf_inspect_tag(buf, &s->tag.data.plist->tag)) < 0)
         return r;
       result += r;
@@ -4102,7 +4102,7 @@ sw buf_inspect_tag (s_buf *buf, const s_tag *tag)
   case TAG_FACT:    return buf_inspect_fact(buf, &tag->data.fact);
   case TAG_IDENT:   return buf_inspect_ident(buf, &tag->data.ident);
   case TAG_INTEGER: return buf_inspect_integer(buf, &tag->data.integer);
-  case TAG_LIST:
+  case TAG_PLIST:
     return buf_inspect_list(buf, (const s_list **) &tag->data.plist);
   case TAG_MAP:     return buf_inspect_map(buf, &tag->data.map);
   case TAG_PCALLABLE:
@@ -4169,7 +4169,7 @@ sw buf_inspect_tag_size (s_pretty *pretty, const s_tag *tag)
     return buf_inspect_ident_size(pretty, &tag->data.ident);
   case TAG_INTEGER:
     return buf_inspect_integer_size(pretty, &tag->data.integer);
-  case TAG_LIST:
+  case TAG_PLIST:
     return buf_inspect_list_size(pretty,
                                  (const s_list **) &tag->data.plist);
   case TAG_MAP:

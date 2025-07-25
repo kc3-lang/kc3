@@ -339,7 +339,7 @@ bool env_eval_equal_tag (s_env *env, bool macro, s_tag *a,
   case TAG_VOID:
     tag_init_void(dest);
     return true;
-  case TAG_LIST:
+  case TAG_PLIST:
     tag_init_plist(dest, NULL);
     return env_eval_equal_list(env, macro, a->data.plist, b->data.plist,
                                &dest->data.plist);

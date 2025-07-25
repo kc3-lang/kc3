@@ -28,7 +28,7 @@ s_tag * to_lisp (s_tag *tag, s_tag *dest)
   switch (tag->type) {
   case TAG_CALL:
     return to_lisp_call(&tag->data.call, dest);
-  case TAG_LIST:
+  case TAG_PLIST:
     return to_lisp_list(tag->data.plist, dest);
   case TAG_TUPLE:
     return to_lisp_tuple(&tag->data.tuple, dest);
@@ -43,9 +43,9 @@ s_tag * to_lisp_call (s_call *call, s_tag *dest)
   p_list list;
   if (! to_lisp_list(call->arguments, &arguments))
     return NULL;
-  if (arguments.type != TAG_LIST) {
-    err_puts("to_lisp_call: arguments.type != TAG_LIST");
-    assert(! "to_lisp_call: arguments.type != TAG_LIST");
+  if (arguments.type != TAG_PLIST) {
+    err_puts("to_lisp_call: arguments.type != TAG_PLIST");
+    assert(! "to_lisp_call: arguments.type != TAG_PLIST");
     return NULL;
   }
   if (! (list = list_new_ident(&call->ident, arguments.data.plist))) {

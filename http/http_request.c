@@ -605,7 +605,7 @@ s_tag * http_request_method_from_str (const s_str *str, s_tag *dest)
              " HTTP.Request.allowed_methods"));
     return NULL;
   }
-  if (allowed_methods_tag.type != TAG_LIST ||
+  if (allowed_methods_tag.type != TAG_PLIST ||
       ! allowed_methods_tag.data.plist ||
       allowed_methods_tag.data.plist->tag.type != TAG_SYM) {
     err_puts("http_request_method_from_str: invalid"

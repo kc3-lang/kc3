@@ -34,7 +34,7 @@ bool tag_type_size (e_tag_type type, uw *dest)
   case TAG_FACT:         *dest = sizeof(s_fact);        return true;
   case TAG_IDENT:        *dest = sizeof(s_ident);       return true;
   case TAG_INTEGER:      *dest = sizeof(s_integer);     return true;
-  case TAG_LIST:         *dest = sizeof(s_list *);      return true;
+  case TAG_PLIST:         *dest = sizeof(s_list *);      return true;
   case TAG_MAP:          *dest = sizeof(s_map);         return true;
   case TAG_PCALLABLE:    *dest = sizeof(p_callable);    return true;
   case TAG_PSTRUCT:      *dest = sizeof(p_struct);      return true;
@@ -82,7 +82,7 @@ bool tag_type_to_ffi_type (e_tag_type type, ffi_type **dest)
   case TAG_FACT:         *dest = &ffi_type_pointer;    return true;
   case TAG_IDENT:        *dest = &ffi_type_pointer;    return true;
   case TAG_INTEGER:      *dest = &ffi_type_pointer;    return true;
-  case TAG_LIST:         *dest = &ffi_type_pointer;    return true;
+  case TAG_PLIST:         *dest = &ffi_type_pointer;    return true;
   case TAG_MAP:          *dest = &ffi_type_pointer;    return true;
   case TAG_PCALLABLE:    *dest = &ffi_type_pointer;    return true;
   case TAG_PSTRUCT:      *dest = &ffi_type_pointer;    return true;
@@ -132,7 +132,7 @@ const char * tag_type_to_string (e_tag_type tag_type)
   case TAG_FACT:         return "Fact";
   case TAG_IDENT:        return "Ident";
   case TAG_INTEGER:      return "Integer";
-  case TAG_LIST:         return "List";
+  case TAG_PLIST:         return "List";
   case TAG_MAP:          return "Map";
   case TAG_PCALLABLE:    return "Callable";
   case TAG_PSTRUCT:      return "Struct";

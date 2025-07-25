@@ -146,7 +146,7 @@ TEST_CASE(marshall_read_plist)
   TEST_EQ(marshall_read_init_1(&mr, test_str, sizeof(test_str) - 1),
           &mr);
   TEST_EQ(marshall_read_plist(&mr, true, &test_tag.data.plist), &mr);
-  test_tag.type = TAG_LIST;
+  test_tag.type = TAG_PLIST;
   tag_init_plist_1(&expected, "[0, 1]");
   TAG_TEST_EQ(&test_tag, &expected);
   tag_clean(&test_tag);

@@ -244,7 +244,7 @@ s_marshall_read * marshall_read_tag (s_marshall_read *mr, bool heap,
       return marshall_read_ident(mr, heap, &dest->data.ident);
     case TAG_INTEGER:
       return marshall_read_integer(mr, heap, &dest->data.integer);
-    case TAG_LIST:
+    case TAG_PLIST:
       return marshall_read_plist(mr, heap, &dest->data.plist);
     case TAG_MAP:
       return marshall_read_map(mr, heap, &dest->data.map);
